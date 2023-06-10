@@ -25,8 +25,9 @@ NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString ACommand, TPr
 __removed TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uint32_t Filter, TFileChangedEvent OnChanged);
 extern bool DontCopyCommandToClipboard;
 bool CopyCommandToClipboard(const UnicodeString & Command);
-bool DoesSessionExistInPutty(TSessionData * SessionData);
+bool DoesSessionExistInPutty(const UnicodeString & StorageKey);
 bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName);
+void OpenSessionInPutty(TSessionData * SessionData);
 NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString APuttyPath,
   TSessionData * SessionData);
 NB_CORE_EXPORT bool SpecialFolderLocation(int32_t APathID, UnicodeString & APath);
@@ -38,7 +39,7 @@ NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString ADirName);
 
 int GetSessionColorImage(TCustomImageList * ImageList, TColor Color, int MaskIndex);
 void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex);
-void SetSubmenu(TTBXCustomItem * Item);
+void SetSubmenu(TTBXCustomItem * Item, bool Enable);
 typedef int (*TCalculateWidth)(UnicodeString Text, void * Arg);
 void ApplyTabs(
   UnicodeString & Text, wchar_t Padding,
@@ -64,6 +65,7 @@ void NavigateBrowserToUrl(TWebBrowserEx * WebBrowser, const UnicodeString & Url)
 void ReadyBrowserForStreaming(TWebBrowserEx * WebBrowser);
 void WaitBrowserToIdle(TWebBrowserEx * WebBrowser);
 void HideBrowserScrollbars(TWebBrowserEx * WebBrowser);
+bool CopyTextFromBrowser(TWebBrowserEx * WebBrowser, UnicodeString & Text);
 UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, const UnicodeString & Body, bool Seamless);
 void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Document);
 TComponent * FindComponentRecursively(TComponent * Root, const UnicodeString & Name);
@@ -211,6 +213,10 @@ NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat
 // https://stackoverflow.com/q/4685863/850848
 class TUIStateAwareLabel : public TLabel
 {
+public:
+  virtual TUIStateAwareLabel(TComponent * AOwner);
+  virtual void Dispatch(void * AMessage);
+
 protected:
   DYNAMIC void DoDrawText(TRect & Rect, int Flags);
 };

@@ -1284,7 +1284,7 @@ TObjectList * TGUIConfiguration::GetLocales()
         GetLocaleInfo(Locale, LOCALE_SENGLANGUAGE,
           LocaleStr, LENOF(LocaleStr));
         UnicodeString Name = LocaleStr;
-        Name += L" - ";
+        Name += TitleSeparator;
         // LOCALE_SNATIVELANGNAME
         GetLocaleInfo(Locale, LOCALE_SLANGUAGE,
           LocaleStr, LENOF(LocaleStr));
@@ -1452,11 +1452,12 @@ void TGUIConfiguration::SetQueueKeepDoneItemsFor(int32_t Value)
 }
 //---------------------------------------------------------------------
 TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
-  TStoredSessionList * Sessions, UnicodeString & /*Error*/)
+  const UnicodeString & RootKey, const UnicodeString & Source, TStoredSessionList * Sessions, UnicodeString & /*Error*/)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(std::make_unique<TStoredSessionList>(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
+  UnicodeString SessionsKey = GetPuttySessionsKey(RootKey);
   std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetPuttySessionsKey()));
   Storage->ConfigureForPutty();
   if (Storage->OpenRootKey(false))
@@ -1476,7 +1477,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
   else
   {
-    __removed Error = FMTLOAD(PUTTY_NO_SITES, (PuttySessionsKey));
+    Error = FMTLOAD(PUTTY_NO_SITES2, Source, SessionsKey);
   }
 
   return ImportSessionList.release();
@@ -1487,8 +1488,9 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * ASessions)
   try
   {
     UnicodeString Error;
-    std::unique_ptr<TStoredSessionList> Sessions(SelectPuttySessionsForImport(ASessions, Error));
-    return (Sessions->GetCount() > 0);
+    std::unique_ptr<TStoredSessionList> SessionsForImport(
+      SelectPuttySessionsForImport(OriginalPuttyRegistryStorageKey, L"PuTTY", Sessions, Error));
+    return (SessionsForImport->Count > 0);
   }
   catch (...)
   {

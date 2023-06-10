@@ -719,8 +719,8 @@ uint32_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   return 0;
 }
 
-uint32_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  int SessionReopenTimeout, const UnicodeString MessageFormat, uint32_t Answers,
+uint32_t FatalExceptionMessageDialog(
+  Exception * E, TQueryType Type, const UnicodeString MessageFormat, uint32_t Answers,
   UnicodeString HelpKeyword, const TMessageParams * Params)
 {
 #if 0
@@ -737,14 +737,6 @@ uint32_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
     AParams = *Params;
   }
   DebugAssert(AParams.Timeout == 0);
-  // the condition is de facto excess
-  if (SessionReopenTimeout > 0)
-  {
-    AParams.Timeout = SessionReopenTimeout;
-    AParams.TimeoutAnswer = qaRetry;
-    AParams.TimeoutResponse = AParams.TimeoutAnswer;
-  }
-  DebugAssert(AParams.Aliases == nullptr);
   AParams.Aliases = Aliases;
   AParams.AliasesCount = LENOF(Aliases);
 
@@ -1383,7 +1375,17 @@ void CenterButtonImage(TButton * Button)
 
     std::unique_ptr<TCanvas> Canvas(CreateControlCanvas(Button));
 
-    UnicodeString Caption = Button->Caption.Trim();
+    UnicodeString Caption;
+    // Centering unlinks the caption from the action
+    TAction * Action = dynamic_cast<TAction *>(Button->Action);
+    if (Action != NULL)
+    {
+      Caption = Action->Caption;
+    }
+    else
+    {
+      Caption = Button->Caption.Trim();
+    }
     UnicodeString Padding;
     while (Canvas->TextWidth(Padding) < ImageWidth)
     {
@@ -1720,9 +1722,6 @@ void WinInitialize()
   MainThread = GetCurrentThreadId();
   __removed Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
 
-__removed #pragma warn -8111
-__removed #pragma warn .8111
-
 }
 
 void WinFinalize()
@@ -1792,7 +1791,8 @@ void ::TTrayIcon::PopupBalloon(UnicodeString Title,
     Timeout = 30000;
   }
   FTrayIcon->uFlags |= NIF_INFO;
-  Title = FORMAT(L"%s - %s", (Title, AppNameString()));
+  AppLogFmt("Tray popup balloon: %s - %s", (Title, Str));
+  Title = Title + TitleSeparator + AppNameString();
   StrPLCopy(FTrayIcon->szInfoTitle, Title, LENOF(FTrayIcon->szInfoTitle) - 1);
   UnicodeString Info = Str;
   // When szInfo is empty, balloon is not shown

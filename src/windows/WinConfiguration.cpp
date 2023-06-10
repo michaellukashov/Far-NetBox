@@ -112,11 +112,6 @@ bool TEditorData::operator==(const TEditorData & rhd) const
 
 void TEditorData::ExternalEditorOptionsAutodetect()
 {
-  // By default we use default transfer mode (binary),
-  // as all reasonable 3rd party editors support all EOL styles.
-  // A notable exception is Windows Notepad, so here's an exception for it.
-  // Notepad support unix line endings since Windows 10 1809. Once that's widespread, remove this.
-
   UnicodeString Command = ExternalEditor;
   ReformatFileNameCommand(Command);
   UnicodeString ProgramName = ExtractProgramName(Command);
@@ -126,7 +121,11 @@ void TEditorData::ExternalEditorOptionsAutodetect()
   UnicodeString NotepadProgramName = ExtractProgramName(NotepadName);
   if (SameText(ProgramName, NotepadProgramName))
   {
-    ExternalEditorText = true;
+    // By default we use default transfer mode (binary),
+    // as all reasonable 3rd party editors support all EOL styles.
+    // A notable exception is Windows Notepad before Windows 10 1809, so here's an exception for it.
+    ExternalEditorText = !IsWin10Build(17763);
+
     SDIExternalEditor = true;
   }
 }
@@ -548,6 +547,7 @@ void TWinConfiguration::Default()
   FConfirmClosingSession = true;
   FDoubleClickAction = dcaEdit;
   FCopyOnDoubleClickConfirmation = false;
+  FAlwaysRespectDoubleClickAction = false;
   FDimmHiddenFiles = true;
   FRenameWholeName = false;
   FAutoStartSession = L"";
@@ -587,6 +587,7 @@ void TWinConfiguration::Default()
   FPanelFont.FontStyle = 0;
   FPanelFont.FontCharset = DEFAULT_CHARSET;
   FNaturalOrderNumericalSorting = true;
+  FAlwaysSortDirectoriesByName = false;
   FFullRowSelect = false;
   FOfferedEditorAutoConfig = false;
   FVersionHistory = L"";
@@ -604,6 +605,7 @@ void TWinConfiguration::Default()
   FExternalSessionInExistingInstance = true;
   FShowLoginWhenNoSession = true;
   FKeepOpenWhenNoSession = true;
+  FDefaultToNewRemoteTab = true;
   FLocalIconsByExt = false;
   FFlashTaskbar = true;
   FMaxSessions = 100;
@@ -624,6 +626,8 @@ void TWinConfiguration::Default()
   UseIconUpdateThread = true;
   AllowWindowPrint = false;
   StoreTransition = stInit;
+  QueueTransferLimitMax = 9;
+  EditorCheckNotModified = false;
   FirstRun = StandardDatestamp();
 
   FEditor.Font.FontName = DefaultFixedWidthFontName;
@@ -646,6 +650,7 @@ void TWinConfiguration::Default()
   FEditor.Encoding = CP_ACP;
   FEditor.WarnOnEncodingFallback = true;
   FEditor.WarnOrLargeFileSize = true;
+  FEditor.AutoFont = true;
 
   FQueueView.Height = 140;
   FQueueView.HeightPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
@@ -671,6 +676,7 @@ void TWinConfiguration::Default()
   FUpdates.BetaVersions = asAuto;
   FUpdates.ShowOnStartup = true;
   FUpdates.AuthenticationEmail = L"";
+  FUpdates.Mode = EmptyStr;
   // for backward compatibility the default is decided based on value of ProxyHost
   FUpdates.ConnectionType = (TConnectionType)-1;
   FUpdates.ProxyHost = L""; // keep empty (see above)
@@ -695,8 +701,8 @@ void TWinConfiguration::Default()
        "Preferences=1:TopDock:4+0,"
        "Sort=0:TopDock:5+0,"
        "Address=1:TopDock:1+0,"
-       "Updates=1:TopDock:4+416,"
-       "Transfer=1:TopDock:4+194,"
+       "Updates=1:TopDock:4+393,"
+       "Transfer=1:TopDock:4+171,"
        "CustomCommands=0:TopDock:7+0,") +
     PixelsPerInchToolbarValue;
   FScpExplorer.ToolbarsButtons = UnicodeString();
@@ -727,8 +733,8 @@ void TWinConfiguration::Default()
        "Session=0:TopDock:1+602,"
        "Sort=0:TopDock:2+0,"
        "Commands=1:TopDock:1+0,"
-       "Updates=1:TopDock:1+619,"
-       "Transfer=1:TopDock:1+364,"
+       "Updates=1:TopDock:1+596,"
+       "Transfer=1:TopDock:1+341,"
        "CustomCommands=0:TopDock:3+0,"
        "RemoteHistory=1:RemoteTopDock:0+172,"
        "RemoteNavigation=1:RemoteTopDock:0+252,"
@@ -766,6 +772,8 @@ void TWinConfiguration::Default()
   FScpCommander.LocalPanel.DriveViewWidth = 100;
   FScpCommander.LocalPanel.DriveViewWidthPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
   FScpCommander.LocalPanel.LastPath = UnicodeString();
+  FScpCommander.OtherLocalPanelDirViewParams = FScpCommander.LocalPanel.DirViewParams;
+  FScpCommander.OtherLocalPanelLastPath = UnicodeString();
 
   FBookmarks->Clear();
 }
@@ -986,6 +994,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
   BLOCK("Interface", CANCREATE, \
     KEYEX(Integer,DoubleClickAction, "CopyOnDoubleClick"); \
     KEY(Bool,     CopyOnDoubleClickConfirmation); \
+    KEY(Bool,     AlwaysRespectDoubleClickAction); \
     KEY(Bool,     DDDisableMove); \
     KEYEX(Integer, DDTransferConfirmation, "DDTransferConfirmation2"); \
     KEY(String,   DDTemporaryDirectory); \
@@ -1040,6 +1049,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEYEX(Integer,PanelFont.FontStyle, "PanelFontStyle"); \
     KEYEX(Integer,PanelFont.FontCharset, "PanelFontCharset"); \
     KEY(Bool,     NaturalOrderNumericalSorting); \
+    KEY(Bool,     AlwaysSortDirectoriesByName); \
     KEY(Bool,     FullRowSelect); \
     KEY(Bool,     OfferedEditorAutoConfig); \
     KEY(Integer,  LastMonitor); \
@@ -1054,6 +1064,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     ExternalSessionInExistingInstance); \
     KEY(Bool,     ShowLoginWhenNoSession); \
     KEY(Bool,     KeepOpenWhenNoSession); \
+    KEY(Bool,     DefaultToNewRemoteTab); \
     KEY(Bool,     LocalIconsByExt); \
     KEY(Bool,     FlashTaskbar); \
     KEY(Integer,  MaxSessions); \
@@ -1075,6 +1086,8 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     UseIconUpdateThread); \
     KEY(Bool,     AllowWindowPrint); \
     KEY(Integer,  StoreTransition); \
+    KEY(Integer,  QueueTransferLimitMax); \
+    KEY(Bool,     EditorCheckNotModified); \
     KEY(String,   FirstRun); \
   ); \
   BLOCK("Interface\\Editor", CANCREATE, \
@@ -1098,6 +1111,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer,  Editor.Encoding); \
     KEY(Bool,     Editor.WarnOnEncodingFallback); \
     KEY(Bool,     Editor.WarnOrLargeFileSize); \
+    KEY(Bool,     Editor.AutoFont); \
   ); \
   BLOCK("Interface\\QueueView", CANCREATE, \
     KEY(Integer,  QueueView.Height); \
@@ -1119,6 +1133,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer,  FUpdates.BetaVersions); \
     KEY(Bool,     FUpdates.ShowOnStartup); \
     KEY(String,   FUpdates.AuthenticationEmail); \
+    KEY(String,   FUpdates.Mode); \
     KEY(Integer,  FUpdates.ConnectionType); \
     KEY(String,   FUpdates.ProxyHost); \
     KEY(Integer,  FUpdates.ProxyPort); \
@@ -1196,8 +1211,13 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer, ScpCommander.RemotePanel.DriveViewHeightPixelsPerInch); \
     KEY(Integer, ScpCommander.RemotePanel.DriveViewWidth); \
     KEY(Integer, ScpCommander.RemotePanel.DriveViewWidthPixelsPerInch); \
+    KEY(String,  ScpCommander.RemotePanel.LastPath); \
   ); \
-  BLOCK("Security", CANCREATE, \
+  BLOCK(L"Interface\\Commander\\OtherLocalPanel", CANCREATE, \
+    KEYEX(String, ScpCommander.OtherLocalPanelDirViewParams, L"DirViewParams"); \
+    KEYEX(String, ScpCommander.OtherLocalPanelLastPath, L"LastPath"); \
+  ); \
+  BLOCK(L"Security", CANCREATE, \
     KEY(Bool,    FUseMasterPassword); \
     KEY(String,  FMasterPasswordVerifier); \
   );
@@ -2745,6 +2765,16 @@ void TWinConfiguration::SetStoreTransition(TStoreTransition value)
   SET_CONFIG_PROPERTY(StoreTransition);
 }
 
+void TWinConfiguration::SetQueueTransferLimitMax(int value)
+{
+  SET_CONFIG_PROPERTY(QueueTransferLimitMax);
+}
+
+void TWinConfiguration::SetEditorCheckNotModified(bool value)
+{
+  SET_CONFIG_PROPERTY(EditorCheckNotModified);
+}
+
 void TWinConfiguration::SetFirstRun(const UnicodeString & value)
 {
   SET_CONFIG_PROPERTY(FirstRun);
@@ -3479,16 +3509,22 @@ UnicodeString TCustomCommandType::GetCommandWithExpandedOptions(
     {
       UnicodeString OptionKey = GetOptionKey(Option, Site);
       UnicodeString OptionValue;
+      bool NeedEscape;
       if (CustomCommandOptions->IndexOfName(OptionKey) >= 0)
       {
         OptionValue = CustomCommandOptions->Values[OptionKey];
+        NeedEscape = true;
       }
       else
       {
         OptionValue = Option.Default;
+        NeedEscape = !Option.CanHavePatterns(); // approximation only?
       }
       UnicodeString OptionCommand = GetOptionCommand(Option, OptionValue);
-      OptionCommand = TCustomCommand::Escape(OptionCommand);
+      if (NeedEscape)
+      {
+        OptionCommand = TCustomCommand::Escape(OptionCommand);
+      }
       Result = ReplaceText(Result, FORMAT(L"%%%s%%", (Option.Id)), OptionCommand);
     }
   }
@@ -3535,23 +3571,27 @@ bool TCustomCommandType::TOption::GetIsControl() const
   return (Id != L"-");
 }
 
-bool TCustomCommandType::TOption::HasPatterns(TCustomCommand * CustomCommandForOptions) const
+bool TCustomCommandType::TOption::CanHavePatterns() const
 {
-  bool CanHavePatterns;
+  bool Result;
   switch (Kind)
   {
     case okTextBox:
     case okFile:
-      CanHavePatterns = true;
+      Result = true;
       break;
 
     default:
-      CanHavePatterns = false;
+      Result = false;
       break;
   }
+  return Result;
+}
 
+bool TCustomCommandType::TOption::HasPatterns(TCustomCommand * CustomCommandForOptions) const
+{
   bool Result =
-    CanHavePatterns &&
+    CanHavePatterns() &&
     FLAGSET(Flags, TCustomCommandType::ofRun) &&
     FLAGCLEAR(Flags, TCustomCommandType::ofConfig) &&
     CustomCommandForOptions->HasAnyPatterns(Default);

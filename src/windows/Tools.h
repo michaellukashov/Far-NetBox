@@ -17,6 +17,7 @@ void ExecuteProcessCheckedAndWait(
 bool IsKeyPressed(int VirtualKey);
 bool UseAlternativeFunction();
 bool OpenInNewWindow();
+void ExecuteSelf(const UnicodeString & Params);
 void ExecuteNewInstance(const UnicodeString & Param, const UnicodeString & AdditionalParams = UnicodeString());
 IShellLink * CreateAppDesktopShortCut(
   const UnicodeString & Name, const UnicodeString & Params, const UnicodeString & Description,
@@ -75,6 +76,8 @@ NB_CORE_EXPORT void ShutDownWindows();
 NB_CORE_EXPORT void SuspendWindows();
 NB_CORE_EXPORT void EditSelectBaseName(HWND Edit);
 NB_CORE_EXPORT UnicodeString GetConvertedKeyFileName(const UnicodeString & FileName);
+struct TPrivateKey;
+UnicodeString AddMatchingKeyCertificate(TPrivateKey * PrivateKey, const UnicodeString & FileName);
 NB_CORE_EXPORT void VerifyAndConvertKey(UnicodeString & FileName, bool CanIgnore);
 NB_CORE_EXPORT void VerifyKey(const UnicodeString & FileName);
 NB_CORE_EXPORT void VerifyCertificate(const UnicodeString & FileName);

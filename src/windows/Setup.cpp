@@ -34,6 +34,7 @@
 #include <Soap.HTTPUtil.hpp>
 #include <Web.HTTPApp.hpp>
 #include <System.IOUtils.hpp>
+#include <WinApi.h>
 
 #define KEY _T("SYSTEM\\CurrentControlSet\\Control\\") \
             _T("Session Manager\\Environment")
@@ -509,7 +510,7 @@ static void RegisterProtocolForDefaultPrograms(HKEY RootKey, const UnicodeString
     Abort();
   }
 
-  UnicodeString Description = LoadStr(REGISTERED_APP_DESC3);
+  UnicodeString Description = LoadStr(REGISTERED_APP_DESC4);
   Registry->WriteString(L"ApplicationDescription", Description);
 
   if (!Registry->OpenKey(L"UrlAssociations", true))
@@ -806,11 +807,12 @@ UnicodeString ProgramUrl(UnicodeString URL)
     FORMAT(L"%d.%d.%d.%d",
       (HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
        HIWORD(FileInfo->dwFileVersionLS), LOWORD(FileInfo->dwFileVersionLS)));
+  int IsInstalledFlag = (IsInstalled() ? 1 : (IsInstalledMsi() ? 2 : 0));
   UnicodeString Params =
     FORMAT(L"v=%s&lang=%s&isinstalled=%d",
       (CurrentVersionStr,
       GUIConfiguration->AppliedLocaleHex,
-      int(IsInstalled())));
+      IsInstalledFlag));
 
   if (Configuration->IsUnofficial)
   {
@@ -916,6 +918,10 @@ static bool DoQueryUpdates(TUpdatesConfiguration & Updates, bool CollectUsage)
     else
     {
       URL += L"&package=" + EncodeUrlString(GetPackageName());
+    }
+    if (!Updates.Mode.IsEmpty())
+    {
+      URL += L"&mode=" + EncodeUrlString(Updates.Mode);
     }
 
     AppLogFmt(L"Updates check URL: %s", (URL));
@@ -1612,139 +1618,127 @@ bool CheckForUpdates(bool CachedResults)
   bool Result = false;
   TOperationVisualizer Visualizer;
 
-  try
+  TUpdatesConfiguration Updates = WinConfiguration->Updates;
+  bool Cached =
+    Updates.HaveValidResultsForVersion(Configuration->CompoundVersion) &&
+    CachedResults;
+  if (!Cached)
   {
-    if (ActiveForm)
+    DoQueryUpdates(WinConfiguration->CollectUsage);
+    // reread new data
+    Updates = WinConfiguration->Updates;
+  }
+
+  if (!Updates.ShownResults)
+  {
+    Updates.ShownResults = true;
+    WinConfiguration->Updates = Updates;
+  }
+  DebugAssert(Updates.HaveResults);
+
+  UnicodeString Message;
+  bool New;
+  TQueryType Type;
+  GetUpdatesMessage(Message, New, Type, true);
+
+  Configuration->Usage->Inc(L"UpdateDisplays");
+  if (New)
+  {
+    Configuration->Usage->Inc(L"UpdateDisplaysNew");
+  }
+
+  if ((double(Updates.Period) > 0) &&
+      // do not show next check time, if we have new version info
+      !New)
+  {
+    Message += L"\n\n" +
+      FMTLOAD(UPDATE_NEXT, (FormatDateTime("ddddd", Updates.LastCheck + Updates.Period)));
+  }
+  else if (New)
+  {
+    UnicodeString Version = Configuration->GetVersionStrHuman();
+    Message += L"\n\n" + FMTLOAD(UPDATE_CURRENT, (Version));
+  }
+
+  int Answers = qaOK |
+    // show "what's new" button only when change list URL was not provided in results
+    FLAGMASK(New && Updates.Results.NewsUrl.IsEmpty(), qaAll) |
+    FLAGMASK(New, qaCancel) |
+    FLAGMASK(!Updates.Results.Url.IsEmpty(), qaYes);
+  TQueryButtonAlias Aliases[4];
+  Aliases[0].Button = qaYes;
+  if (Updates.Results.UrlButton.IsEmpty())
+  {
+    Aliases[0].Alias = LoadStr(UPDATE_URL_BUTTON);
+  }
+  else
+  {
+    Aliases[0].Alias = Updates.Results.UrlButton;
+  }
+  Aliases[1].Button = qaAll;
+  Aliases[1].Alias = LoadStr(WHATS_NEW_BUTTON);
+  Aliases[1].OnSubmit = MakeMethod<TButtonSubmitEvent>(NULL, OpenHistory);
+  Aliases[2].Button = qaCancel;
+  Aliases[2].Alias = Vcl_Consts_SMsgDlgClose;
+  // Used only when New == true, see AliasesCount below
+  Aliases[3].Button = qaOK;
+  Aliases[3].Alias = LoadStr(UPGRADE_BUTTON);
+  if (!Updates.Results.DownloadUrl.IsEmpty())
+  {
+    Aliases[3].OnSubmit = MakeMethod<TButtonSubmitEvent>(NULL, DownloadUpdate);
+    Aliases[3].ElevationRequired = true;
+  }
+
+  TMessageParams Params;
+  Params.Aliases = Aliases;
+  Params.MoreMessagesUrl = Updates.Results.NewsUrl;
+  Params.MoreMessagesSize = Updates.Results.NewsSize;
+  // alias "ok" button to "upgrade" only if we have new version
+  Params.AliasesCount = LENOF(Aliases) - (New ? 0 : 1);
+  Params.CustomCaption = LoadStr(CHECK_FOR_UPDATES_TITLE);
+
+  if (New)
+  {
+    Params.ImageName = L"Installer";
+  }
+
+  std::unique_ptr<TForm> Dialog(
+    CreateMoreMessageDialogEx(Message, NULL, Type, Answers, HELP_UPDATES, &Params));
+
+  if (New)
+  {
+    // Internet Explorer on Windows XP cannot talk to CDN77, where we host Store Get button.
+    // As a simple solution, we just do not display the donation panel on Windows XP.
+    if (Updates.Results.DownloadUrl.IsEmpty() && IsInstalled() && IsWinVista())
     {
-      DebugAssert(ActiveForm->Enabled);
-      ActiveForm->Enabled = false;
-    }
-
-    TUpdatesConfiguration Updates = WinConfiguration->Updates;
-    bool Cached =
-      Updates.HaveValidResultsForVersion(Configuration->CompoundVersion) &&
-      CachedResults;
-    if (!Cached)
-    {
-      DoQueryUpdates(WinConfiguration->CollectUsage);
-      // reread new data
-      Updates = WinConfiguration->Updates;
-    }
-
-    if (!Updates.ShownResults)
-    {
-      Updates.ShownResults = true;
-      WinConfiguration->Updates = Updates;
-    }
-    DebugAssert(Updates.HaveResults);
-
-    UnicodeString Message;
-    bool New;
-    TQueryType Type;
-    GetUpdatesMessage(Message, New, Type, true);
-
-    Configuration->Usage->Inc(L"UpdateDisplays");
-    if (New)
-    {
-      Configuration->Usage->Inc(L"UpdateDisplaysNew");
-    }
-
-    if (Updates.HaveResults &&
-        (double(Updates.Period) > 0) &&
-        // do not show next check time, if we have new version info
-        !New)
-    {
-      Message += L"\n\n" +
-        FMTLOAD(UPDATE_NEXT, (FormatDateTime("ddddd", Updates.LastCheck + Updates.Period)));
-    }
-
-    int Answers = qaOK |
-      // show "what's new" button only when change list URL was not provided in results
-      FLAGMASK(New && Updates.Results.NewsUrl.IsEmpty(), qaAll) |
-      FLAGMASK(New, qaCancel) |
-      FLAGMASK(!Updates.Results.Url.IsEmpty(), qaYes);
-    TQueryButtonAlias Aliases[4];
-    Aliases[0].Button = qaYes;
-    if (Updates.Results.UrlButton.IsEmpty())
-    {
-      Aliases[0].Alias = LoadStr(UPDATE_URL_BUTTON);
-    }
-    else
-    {
-      Aliases[0].Alias = Updates.Results.UrlButton;
-    }
-    Aliases[1].Button = qaAll;
-    Aliases[1].Alias = LoadStr(WHATS_NEW_BUTTON);
-    Aliases[1].OnSubmit = MakeMethod<TButtonSubmitEvent>(nullptr, OpenHistory);
-    Aliases[2].Button = qaCancel;
-    Aliases[2].Alias = Vcl_Consts_SMsgDlgClose;
-    // Used only when New == true, see AliasesCount below
-    Aliases[3].Button = qaOK;
-    Aliases[3].Alias = LoadStr(UPGRADE_BUTTON);
-    if (!Updates.Results.DownloadUrl.IsEmpty())
-    {
-      Aliases[3].OnSubmit = MakeMethod<TButtonSubmitEvent>(nullptr, DownloadUpdate);
-      Aliases[3].ElevationRequired = true;
-    }
-
-    TMessageParams Params;
-    Params.Aliases = Aliases;
-    Params.MoreMessagesUrl = Updates.Results.NewsUrl;
-    Params.MoreMessagesSize = Updates.Results.NewsSize;
-    // alias "ok" button to "upgrade" only if we have new version
-    Params.AliasesCount = LENOF(Aliases) - (New ? 0 : 1);
-    Params.CustomCaption = LoadStr(CHECK_FOR_UPDATES_TITLE);
-
-    if (New)
-    {
-      Params.ImageName = L"Installer";
-    }
-
-    std::unique_ptr<TForm> Dialog(
-      CreateMoreMessageDialogEx(Message, nullptr, Type, Answers, HELP_UPDATES, &Params));
-
-    if (New)
-    {
-      // Internet Explorer on Windows XP cannot talk to CDN77, where we host Store Get button.
-      // As a simple solution, we just do not display the donation panel on Windows XP.
-      if (Updates.Results.DownloadUrl.IsEmpty() && IsInstalled() && IsWinVista())
-      {
-        DebugAssert(Dialog->OnShow == nullptr);
-        // InsertDonateLink need to be called only after MessageBrowser is created
-        Dialog->OnShow = MakeMethod<TNotifyEvent>(nullptr, InsertDonateLink);
-      }
-    }
-
-    unsigned int Answer = ExecuteMessageDialog(Dialog.get(), Answers, &Params);
-    switch (Answer)
-    {
-      case qaOK:
-        if (New)
-        {
-          Configuration->Usage->Inc(L"UpdateDownloadOpens");
-          UnicodeString UpgradeUrl = ProgramUrl(LoadStr(UPGRADE_URL));
-          UpgradeUrl = WantBetaUrl(UpgradeUrl, true);
-          UpgradeUrl = AppendUrlParams(UpgradeUrl, FORMAT(L"to=%s", (VersionStrFromCompoundVersion(Updates.Results.Version))));
-          OpenBrowser(UpgradeUrl);
-          Result = true;
-        }
-        break;
-
-      case qaYes:
-        OpenBrowser(Updates.Results.Url);
-        break;
-
-      case qaAll:
-        DebugFail();
-        break;
+      DebugAssert(Dialog->OnShow == NULL);
+      // InsertDonateLink need to be called only after MessageBrowser is created
+      Dialog->OnShow = MakeMethod<TNotifyEvent>(NULL, InsertDonateLink);
     }
   }
-  __finally
+
+  unsigned int Answer = ExecuteMessageDialog(Dialog.get(), Answers, &Params);
+  switch (Answer)
   {
-    if (ActiveForm)
-    {
-      ActiveForm->Enabled = true;
-    }
+    case qaOK:
+      if (New)
+      {
+        Configuration->Usage->Inc(L"UpdateDownloadOpens");
+        UnicodeString UpgradeUrl = ProgramUrl(LoadStr(UPGRADE_URL));
+        UpgradeUrl = WantBetaUrl(UpgradeUrl, true);
+        UpgradeUrl = AppendUrlParams(UpgradeUrl, FORMAT(L"to=%s", (VersionStrFromCompoundVersion(Updates.Results.Version))));
+        OpenBrowser(UpgradeUrl);
+        Result = true;
+      }
+      break;
+
+    case qaYes:
+      OpenBrowser(Updates.Results.Url);
+      break;
+
+    case qaAll:
+      DebugFail();
+      break;
   }
   return Result;
 }
@@ -1976,6 +1970,12 @@ bool AnyOtherInstanceOfSelf()
   return Result;
 }
 
+static bool DoIsPathToExe(const UnicodeString & Path)
+{
+  UnicodeString ExePath = ExcludeTrailingBackslash(ExtractFilePath(Application->ExeName));
+  return IsPathToSameFile(ExePath, Path);
+}
+
 static bool DoIsInstalled(HKEY RootKey)
 {
   std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>(KEY_READ));
@@ -1985,10 +1985,9 @@ static bool DoIsInstalled(HKEY RootKey)
   if (Result)
   {
     UnicodeString InstallPath = ExcludeTrailingBackslash(Registry->ReadString(L"Inno Setup: App Path"));
-    UnicodeString ExePath = ExcludeTrailingBackslash(ExtractFilePath(Application->ExeName));
     Result =
       !InstallPath.IsEmpty() &&
-      IsPathToSameFile(ExePath, InstallPath);
+      DoIsPathToExe(InstallPath);
   }
   return Result;
 }
@@ -2000,7 +1999,39 @@ bool IsInstalled()
     DoIsInstalled(HKEY_CURRENT_USER);
 }
 
-static TStringList * TextToTipList(const UnicodeString & Text)
+static int GIsInstalledMsi = -1;
+bool IsInstalledMsi()
+{
+  if (GIsInstalledMsi < 0)
+  {
+    GIsInstalledMsi = 0;
+    wchar_t ProductCode[MAX_GUID_CHARS + 1];
+    if (MsiEnumRelatedProducts(L"{029F9450-CFEF-4408-A2BB-B69ECE29EB18}", 0, 0, ProductCode) == ERROR_SUCCESS)
+    {
+      UnicodeString InstallPath;
+      InstallPath.SetLength(MAX_PATH);
+      unsigned long Size = InstallPath.Length() + 1;
+      int ErrorCode = MsiGetProductInfo(ProductCode, INSTALLPROPERTY_INSTALLLOCATION, InstallPath.c_str(), &Size);
+      if (ErrorCode == ERROR_MORE_DATA)
+      {
+        InstallPath.SetLength(Size);
+        Size++;
+        ErrorCode = MsiGetProductInfo(ProductCode, INSTALLPROPERTY_INSTALLLOCATION, InstallPath.c_str(), &Size);
+      }
+      if (ErrorCode == ERROR_SUCCESS)
+      {
+        InstallPath.SetLength(Size);
+        if (DoIsPathToExe(InstallPath))
+        {
+          GIsInstalledMsi = 1;
+        }
+      }
+    }
+  }
+  return (GIsInstalledMsi > 0);
+}
+
+static TStringList * __fastcall TextToTipList(const UnicodeString & Text)
 {
   std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->CommaText = Text;
@@ -2139,7 +2170,7 @@ static void ShowTip(bool AutoShow)
   Params.MoreMessagesUrl = TipUrl(TipsData.get());
   Params.Aliases = Aliases;
   Params.AliasesCount = LENOF(Aliases);
-  Params.ImageName = L"Bulb On n p";
+  Params.ImageName = L"Bulb On";
 
   if (AutoShow)
   {

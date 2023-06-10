@@ -285,7 +285,8 @@ public:
   bool UsingInternalTranslation() const;
   UnicodeString AppliedLocaleCopyright() const;
   UnicodeString AppliedLocaleVersion();
-  TStoredSessionList * SelectPuttySessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
+  TStoredSessionList * SelectPuttySessionsForImport(
+    const UnicodeString & RootKey, const UnicodeString & Source, TStoredSessionList * Sessions, UnicodeString & Error);
   bool AnyPuttySessionForImport(TStoredSessionList * ASessions);
 
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };

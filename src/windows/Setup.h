@@ -28,6 +28,7 @@ UnicodeString CampaignUrl(UnicodeString URL);
 void UpdateJumpList(TStrings * SessionNames, TStrings * WorkspaceNames);
 bool AnyOtherInstanceOfSelf();
 bool IsInstalled();
+bool IsInstalledMsi();
 UnicodeString ProgramUrl(UnicodeString URL);
 void AutoShowNewTip();
 bool AnyTips();

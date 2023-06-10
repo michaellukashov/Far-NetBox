@@ -12,6 +12,8 @@ __removed #include <Buttons.hpp>
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #endif // FARPLUGIN
+__removed #include <Script.h>
+__removed #include "HistoryComboBox.hpp"
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
@@ -44,6 +46,7 @@ extern HINSTANCE HInstance;
 #define KEYGEN_OUTPUT_SWITCH L"Output"
 #define KEYGEN_COMMENT_SWITCH L"Comment"
 #define KEYGEN_CHANGE_PASSPHRASE_SWITCH L"ChangePassphrase"
+#define KEYGEN_CERTIFICATE_SWITCH L"Certificate"
 #define LOG_SWITCH L"Log"
 #define LOGSIZE_SWITCH L"LogSize"
 #define LOGSIZE_SEPARATOR L"*"
@@ -151,8 +154,8 @@ uint32_t MoreMessageDialog(const UnicodeString Message,
 uint32_t ExceptionMessageDialog(Exception * E, TQueryType Type,
   const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
   UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
-uint32_t FatalExceptionMessageDialog(Exception * E, TQueryType Type,
-  int SessionReopenTimeout, const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
+uint32_t FatalExceptionMessageDialog(
+  Exception * E, TQueryType Type, const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
   UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 
 // forms\Custom.cpp
@@ -245,6 +248,15 @@ bool DoCopyDialog(
   bool ToRemote, bool Move, TStrings * FileList, UnicodeString & TargetDirectory,
   TGUICopyParamType * Params, int Options, int CopyParamAttrs,
   TSessionData * SessionData, int * OutputOptions, int AutoSubmit);
+bool CopyDialogValidateLocalDirectory(const UnicodeString & Directory/*, THistoryComboBox * DirectoryEdit*/);
+bool CopyDialogValidateFileMask(
+  const UnicodeString & FileMask, /*THistoryComboBox * DirectoryEdit, */bool MultipleFiles, bool RemotePaths);
+
+// forms\CopyLocal.cpp
+constexpr int32_t cloShortCutHint = 0x01;
+constexpr int32_t cloMultipleFiles = 0x02;
+constexpr int32_t clooDoNotShowAgain = 0x01;
+bool DoCopyLocalDialog(bool Move, int Options, UnicodeString & TargetDirectory, UnicodeString & FileMask, int & OutputOptions);
 
 // forms\CreateDirectory.cpp
 bool DoCreateDirectoryDialog(UnicodeString & Directory,
@@ -520,31 +532,14 @@ bool DoEditorPreferencesDialog(TEditorData * Editor,
   bool & Remember, TEditorPreferencesMode Mode, bool MayRemote);
 
 // forms\Find.cpp
-#if 0
-typedef void (__closure *TFindEvent)
-  (TTerminal * Terminal, UnicodeString Directory, const TFileMasks & FileMask,
-   TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
-#endif // #if 0
 using TFindEvent = nb::FastDelegate5<void,
   TTerminal * /*Terminal*/, UnicodeString /*Directory*/, const TFileMasks & /*FileMask*/,
   TFileFoundEvent /*OnFileFound*/,
   TFindingFileEvent /*OnFindingFile*/>;
-#if 0
-typedef void (__closure *TFocusFileEvent)
-  (TTerminal * Terminal, const UnicodeString & Path);
-#endif // #if 0
 using TFocusFileEvent = nb::FastDelegate2<void,
   TTerminal * /*Terminal*/, UnicodeString /*Path*/>;
-#if 0
-typedef void (__closure *TFileOperationFinishedEvent)
-  (const UnicodeString & FileName, bool Success);
-#endif // #if 0
-using TFileOperationFinished2Event = nb::FastDelegate2<void,
-  UnicodeString /*FileName*/, bool /*Success*/>;
-#if 0
-typedef void (__closure *TFileListOperationEvent)
-  (TTerminal * Terminal, TStrings * FileList, TFileOperationFinishedEvent OnFileOperationFinished);
-#endif // #if 0
+using TFileOperationFinished2Event = nb::FastDelegate3<void,
+  TOperationSide /*Side*/, UnicodeString /*FileName*/, bool /*Success*/>;
 using TFileListOperationEvent = nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, TStrings * /*FileList*/, TFileOperationFinished2Event /*OnFileOperationFinished*/>;
 

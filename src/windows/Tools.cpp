@@ -20,6 +20,7 @@ __removed #include <Consts.hpp>
 #include <PuttyTools.h>
 #include <Interface.h>
 #include <LibraryLoader.hpp>
+#include <StrUtils.hpp>
 
 #include "WinInterface.h"
 #include "GUITools.h"
@@ -497,19 +498,23 @@ bool OpenInNewWindow()
   return UseAlternativeFunction();
 }
 
+void ExecuteSelf(const UnicodeString & Params)
+{
+  ExecuteShellChecked(Application->ExeName, Params);
+}
+
 void ExecuteNewInstance(const UnicodeString Param, const UnicodeString AdditionalParams)
 {
-  UnicodeString Arg = Param;
-  if (!Arg.IsEmpty())
+  UnicodeString Arg;
+  if (!Param.IsEmpty())
   {
-    Arg = FORMAT(L"\"%s\" %s", Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH));
-    if (!AdditionalParams.IsEmpty())
-    {
-      Arg += L" " + AdditionalParams;
-    }
+    Arg = FORMAT(L"\"%s\"", Param);
   }
+  UnicodeString Space(L" ");
+  AddToList(Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH), Space);
+  AddToList(Arg, AdditionalParams, Space);
 
-  ExecuteShellChecked(Application->ExeName, Arg);
+  ExecuteSelf(Arg);
 }
 
 IShellLink * CreateDesktopShortCut(const UnicodeString & Name,
@@ -1142,6 +1147,7 @@ void CopyToClipboard(UnicodeString Text)
   HANDLE Data;
   void * DataPtr;
 
+  AppLogFmt(L"Copying text to clipboard [%d]", Text.Length());
   if (OpenClipboard(0))
   {
     try
@@ -1172,6 +1178,7 @@ void CopyToClipboard(UnicodeString Text)
     {
       CloseClipboard();
     }
+    AppLogFmt(L"Copied text to clipboard [%d]", Text.Length());
   }
   else
   {
@@ -1269,6 +1276,32 @@ UnicodeString GetConvertedKeyFileName(const UnicodeString & FileName)
   return ChangeFileExt(FileName, FORMAT(L".%s", PuttyKeyExt));
 }
 
+UnicodeString AddMatchingKeyCertificate(TPrivateKey * PrivateKey, const UnicodeString & FileName)
+{
+  UnicodeString CertificateFileName = FileName;
+  UnicodeString S = FORMAT(L".%s", PuttyKeyExt);
+  if (EndsText(S, CertificateFileName))
+  {
+    CertificateFileName.SetLength(CertificateFileName.Length() - S.Length());
+  }
+  CertificateFileName += L"-cert.pub";
+
+  UnicodeString Result;
+  if (::SysUtulsFileExists(CertificateFileName))
+  {
+    try
+    {
+      AddCertificateToKey(PrivateKey, CertificateFileName);
+      Result = CertificateFileName;
+    }
+    catch (Exception & E)
+    {
+      AppLogFmt(L"Cannot add certificate from auto-detected \"%s\": %s", CertificateFileName, E.Message);
+    }
+  }
+  return Result;
+}
+
 static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 {
   UnicodeString Passphrase;
@@ -1289,6 +1322,16 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
 
   try__finally
   {
+    AppLogFmt(L"Loaded key from \"%s\".", FileName);
+
+    UnicodeString CertificateMessage;
+    UnicodeString CertificateFileName = AddMatchingKeyCertificate(PrivateKey, FileName);
+    if (!CertificateFileName.IsEmpty())
+    {
+      AppLogFmt(L"Added certificate from auto-detected \"%s\".", CertificateFileName);
+      CertificateMessage = L"\n" + FMTLOAD(CERTIFICATE_ADDED, CertificateFileName);
+    }
+
     FileName = GetConvertedKeyFileName(FileName);
 
     if (!SaveDialog(LoadStr(CONVERTKEY_SAVE_TITLE), LoadStr(CONVERTKEY_SAVE_FILTER), PuttyKeyExt, FileName))
@@ -1297,9 +1340,13 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     }
 
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
+    AppLogFmt(L"Saved converted key to \"%s\".", FileName);
 
-    MessageDialog(MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)), qtInformation, qaOK);
-  },
+    UnicodeString Message =
+      MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)) +
+      CertificateMessage;
+    MessageDialog(Message, qtInformation, qaOK);
+  }
   __finally
   {
     FreeKey(PrivateKey);

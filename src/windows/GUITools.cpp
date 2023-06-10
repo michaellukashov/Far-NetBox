@@ -124,11 +124,11 @@ bool FindFile(UnicodeString &Path)
   return Result;
 }
 
-bool DoesSessionExistInPutty(TSessionData * SessionData)
+bool DoesSessionExistInPutty(const UnicodeString & StorageKey)
 {
   std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
   Storage->ConfigureForPutty();
-  return Storage->OpenRootKey(true) && Storage->KeyExists(SessionData->StorageKey);
+  return Storage->OpenRootKey(true) && Storage->KeyExists(StorageKey);
 }
 
 bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName)
@@ -140,9 +140,13 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
   if (Storage->OpenRootKey(true))
   {
     Result = ReuseExisting && Storage->KeyExists(SessionData->StorageKey);
-    if (!Result)
+    if (Result)
     {
-      std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
+      AppLogFmt(L"Reusing existing PuTTY session: %s", SessionData->StorageKey);
+    }
+    else
+    {
+      std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(Configuration->PuttySessionsKey));
       SourceStorage->ConfigureForPutty();
       if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
           Storage->OpenSubKey(SessionName, true))
@@ -173,22 +177,159 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
       }
 
       ExportData->Save(Storage.get(), true);
+      AppLogFmt(L"Exported site settings to PuTTY session: %s", SessionName);
     }
   }
   return Result;
 }
 
-void OpenSessionInPutty(const UnicodeString PuttyPath,
-  TSessionData * SessionData)
+class TPuttyCleanupThread : public TSimpleThread
 {
+public:
+  static void Schedule();
+  static void Finalize();
+
+protected:
+  virtual void Execute();
+  virtual void Terminate();
+  bool Finished();
+  void DoSchedule();
+
+private:
+  TDateTime FTimer;
+  static TPuttyCleanupThread * FInstance;
+  static std::unique_ptr<TCriticalSection> FSection;
+};
+
+std::unique_ptr<TCriticalSection> TPuttyCleanupThread::FSection(TraceInitPtr(new TCriticalSection()));
+TPuttyCleanupThread * TPuttyCleanupThread::FInstance;
+
+void TPuttyCleanupThread::Schedule()
+{
+  TGuard Guard(FSection.get());
+  if (FInstance == NULL)
+  {
+    FInstance = new TPuttyCleanupThread();
+    FInstance->DoSchedule();
+    FInstance->Start();
+  }
+  else
+  {
+    FInstance->DoSchedule();
+  }
+}
+
+void TPuttyCleanupThread::Finalize()
+{
+  while (true)
+  {
+    {
+      TGuard Guard(FSection.get());
+      if (FInstance == NULL)
+      {
+        return;
+      }
+    }
+    Sleep(100);
+  }
+}
+
+void TPuttyCleanupThread::Execute()
+{
+  try
+  {
+    std::unique_ptr<TStrings> Sessions(new TStringList());
+    bool Continue = true;
+
+    do
+    {
+      {
+        TGuard Guard(FSection.get());
+        std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(Configuration->PuttySessionsKey));
+        Storage->AccessMode = smReadWrite;
+        Storage->ConfigureForPutty();
+
+        std::unique_ptr<TStringList> Sessions2(new TStringList());
+        if (Storage->OpenRootKey(true))
+        {
+          std::unique_ptr<TStrings> SubKeys(new TStringList());
+          Storage->GetSubKeyNames(SubKeys.get());
+          for (int Index = 0; Index < SubKeys->Count; Index++)
+          {
+            UnicodeString SessionName = SubKeys->Strings[Index];
+            if (StartsStr(GUIConfiguration->PuttySession, SessionName))
+            {
+              Sessions2->Add(SessionName);
+            }
+          }
+
+          Sessions2->Sort();
+          if (!Sessions->Equals(Sessions2.get()))
+          {
+            // Just in case new sessions from another WinSCP instance are added, delay the cleanup
+            // (to avoid having to implement some inter-process communication).
+            // Both instances will attempt to do the cleanup, but that not a problem
+            Sessions->Assign(Sessions2.get());
+            DoSchedule();
+          }
+        }
+
+        if (FTimer < Now())
+        {
+          for (int Index = 0; Index < Sessions->Count; Index++)
+          {
+            UnicodeString SessionName = Sessions->Strings[Index];
+            Storage->RecursiveDeleteSubKey(SessionName);
+          }
+
+          Continue = false;
+        }
+      }
+
+      if (Continue)
+      {
+        Sleep(1000);
+      }
+    }
+    while (Continue);
+  }
+  __finally
+  {
+    TGuard Guard(FSection.get());
+    FInstance = NULL;
+  }
+}
+
+void TPuttyCleanupThread::Terminate()
+{
+  DebugFail();
+}
+
+bool TPuttyCleanupThread::Finished()
+{
+  // self-destroy
+  return TSimpleThread::Finished() || true;
+}
+
+void TPuttyCleanupThread::DoSchedule()
+{
+  FTimer = IncSecond(Now(), 10);
+}
+
+void OpenSessionInPutty(TSessionData * SessionData)
+{
+  // putty does not support resolving environment variables in session settings
+  SessionData->ExpandEnvironmentVariables();
   // See also TSiteAdvancedDialog::PuttySettingsButtonClick
-  UnicodeString Program, Params, Dir;
-  SplitCommand(PuttyPath, Program, Params, Dir);
-  Program = ::ExpandEnvironmentVariables(Program);
+  UnicodeString Program, AParams, Dir;
+  SplitCommand(GUIConfiguration->PuttyPath, Program, AParams, Dir);
+  Program = ExpandEnvironmentVariables(Program);
+  AppLogFmt(L"PuTTY program: %s", Program);
+  AppLogFmt(L"Params: %s", AParams);
   if (FindFile(Program))
   {
 
-    Params = ::ExpandEnvVars(Params);
+    AParams = ::ExpandEnvVars(Params);
     UnicodeString Password;
     if (GetGUIConfiguration()->PuttyPassword)
     {
@@ -210,8 +351,9 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
     UnicodeString Params =
       LocalCustomCommand.Complete(InteractiveCustomCommand.Complete(Params, false), true);
     UnicodeString PuttyParams;
+    AppLogFmt(L"Expanded params: %s", AParams);
 
-    if (!LocalCustomCommand.IsSiteCommand(Params))
+    if (!LocalCustomCommand.IsSiteCommand(AParams))
     {
       {
         bool SessionList = false;
@@ -224,7 +366,8 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         std::unique_ptr<TStoredSessionList> HostKeySessionList(std::make_unique<TStoredSessionList>());
         HostKeySessionList->SetOwnsObjects(false);
         HostKeySessionList->Add(SessionData);
-        TStoredSessionList::ImportHostKeys(SourceHostKeyStorage.get(), TargetHostKeyStorage.get(), HostKeySessionList.get(), false);
+        int Imported = TStoredSessionList::ImportHostKeys(SourceHostKeyStorage.get(), TargetHostKeyStorage.get(), HostKeySessionList.get(), false);
+        AppLogFmt(L"Imported host keys: %d", Imported);
       }
 
       if (IsUWP())
@@ -248,9 +391,10 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
 
         if (!Telnet)
         {
-          if (!SessionData->PublicKeyFile().IsEmpty())
+          UnicodeString PublicKeyFile = SessionData->ResolvePublicKeyFile();
+          if (!PublicKeyFile.IsEmpty())
           {
-            AddToList(PuttyParams, FORMAT("-i \"%s\"", SessionData->PublicKeyFile()), L" ");
+            AddToList(PuttyParams, FORMAT("-i \"%s\"", PublicKeyFile), L" ");
           }
           AddToList(PuttyParams, (SessionData->TryAgent() ? L"-agent" : L"-noagent"), L" ");
           if (SessionData->TryAgent())
@@ -276,17 +420,29 @@ void OpenSessionInPutty(const UnicodeString PuttyPath,
         {
           AddToList(PuttyParams, L"-6", L" ");
         }
+
+        AppLogFmt(L"Using command-line instead of stored session in UWP: %s", PuttyParams);
       }
       else
       {
         UnicodeString SessionName;
-        if (ExportSessionToPutty(SessionData, true, GetGUIConfiguration()->PuttySession))
+
+        UnicodeString PuttySession = GUIConfiguration->PuttySession;
+        int Uniq = 1;
+        while (DoesSessionExistInPutty(PuttySession))
+        {
+          Uniq++;
+          PuttySession = FORMAT(L"%s (%d)", GUIConfiguration->PuttySession, Uniq);
+        }
+
+        if (ExportSessionToPutty(SessionData, true, PuttySession))
         {
           SessionName = SessionData->SessionName;
         }
         else
         {
-          SessionName = GetGUIConfiguration()->PuttySession;
+          SessionName = PuttySession;
+          TPuttyCleanupThread::Schedule();
           if ((SessionData->FSProtocol == fsFTP) &&
               GetGUIConfiguration()->TelnetForFtpInPutty)
           {
@@ -425,6 +581,7 @@ bool CopyCommandToClipboard(const UnicodeString & ACommand)
   if (Result)
   {
     TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
+    AppLogFmt(L"Copied command to the clipboard: %s", Command);
     CopyToClipboard(ACommand);
   }
   return Result;
@@ -458,6 +615,7 @@ static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString Para
     ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
     ExecuteInfo.nShow = SW_SHOW;
 
+    AppLogFmt(L"Executing program \"%s\" with params: %s", Path, Params);
     Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
     if (Result)
     {
@@ -535,7 +693,7 @@ bool SpecialFolderLocation(int32_t PathID, UnicodeString & APath)
   LPITEMIDLIST Pidl;
   wchar_t Buf[MAX_PATH];
   if (::SHGetSpecialFolderLocation(nullptr, nb::ToInt(PathID), &Pidl) == NO_ERROR &&
-    ::SHGetPathFromIDList(Pidl, Buf))
+      ::SHGetPathFromIDList(Pidl, Buf))
   {
     APath = UnicodeString(Buf);
     return true;
@@ -726,7 +884,7 @@ void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskInde
   DebugAssert(SessionColors->ColorMap == ColorMap);
 }
 
-void SetSubmenu(TTBXCustomItem * Item)
+void SetSubmenu(TTBXCustomItem * Item, bool Enable)
 {
   class TTBXPublicItem : public TTBXCustomItem
   {
@@ -736,7 +894,14 @@ void SetSubmenu(TTBXCustomItem * Item)
   TTBXPublicItem * PublicItem = reinterpret_cast<TTBXPublicItem *>(Item);
   DebugAssert(PublicItem != nullptr);
   // See TTBItemViewer.IsPtInButtonPart (called from TTBItemViewer.MouseDown)
-  PublicItem->ItemStyle = PublicItem->ItemStyle << tbisSubmenu;
+  if (Enable)
+  {
+    PublicItem->ItemStyle = PublicItem->ItemStyle << tbisSubmenu;
+  }
+  else
+  {
+    PublicItem->ItemStyle = PublicItem->ItemStyle >> tbisSubmenu;
+  }
 }
 
 bool IsEligibleForApplyingTabs(
@@ -1039,11 +1204,22 @@ UnicodeString FormatIncrementalSearchStatus(const UnicodeString & Text, bool Hav
 class TCustomDocHandler : public TComponent, public ::IDocHostUIHandler
 {
 public:
-  TCustomDocHandler(TComponent * Owner) : TComponent(Owner)
+  TCustomDocHandler(TComponent * Owner, ICustomDoc * CustomDoc) :
+    TComponent(Owner), FCustomDoc(CustomDoc)
   {
   }
 
+  virtual ~TCustomDocHandler()
+  {
+    // Something keeps the reference behind otherwise and calls it on WM_SETTINGCHANGE.
+    // Would make sense with TWebBrowserEx, which leaks. But it happens even with TWebBrowser.
+    FCustomDoc->SetUIHandler(NULL);
+    FCustomDoc->Release();
+  }
+
 protected:
+  ICustomDoc * FCustomDoc;
+
   #pragma warn -hid
   virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID ClassId, void ** Intf)
   {
@@ -1324,9 +1500,18 @@ void HideBrowserScrollbars(TWebBrowserEx * WebBrowser)
       SUCCEEDED(WebBrowser->Document->QueryInterface(&CustomDoc)) &&
       DebugAlwaysTrue(CustomDoc != nullptr))
   {
-    TCustomDocHandler * Handler = new TCustomDocHandler(WebBrowser);
+    TCustomDocHandler * Handler = new TCustomDocHandler(WebBrowser, CustomDoc);
     CustomDoc->SetUIHandler(Handler);
   }
+}
+
+bool CopyTextFromBrowser(TWebBrowserEx * WebBrowser, UnicodeString & Text)
+{
+  WebBrowser->SelectAll();
+  WebBrowser->CopyToClipBoard();
+  bool Result = NonEmptyTextFromClipboard(Text);
+  WebBrowser->DoCommand(L"UNSELECT");
+  return Result;
 }
 
 UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, const UnicodeString & Body, bool Seamless)
@@ -1388,6 +1573,7 @@ void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Docum
       DebugAlwaysTrue(PersistStreamInit != nullptr))
   {
     PersistStreamInit->Load(static_cast<_di_IStream>(*DocumentStreamAdapter));
+    PersistStreamInit->Release();
   }
 }
 
@@ -2161,6 +2347,11 @@ static int HideAccelFlag(TControl * Control)
   return Result;
 }
 
+TUIStateAwareLabel::TUIStateAwareLabel(TComponent * AOwner) :
+  TLabel(AOwner)
+{
+}
+
 void TUIStateAwareLabel::DoDrawText(TRect & Rect, int Flags)
 {
   if (ShowAccelChar)
@@ -2168,6 +2359,31 @@ void TUIStateAwareLabel::DoDrawText(TRect & Rect, int Flags)
     Flags = Flags | HideAccelFlag(this);
   }
   TLabel::DoDrawText(Rect, Flags);
+}
+
+void TUIStateAwareLabel::Dispatch(void * AMessage)
+{
+  TMessage * Message = static_cast<TMessage*>(AMessage);
+  // WORKAROUND: Particularly when focusing csDropDownList-style combobox via label, there's no visual feedback
+  // that the combobox was selected (strangely, there is, when the previous focus was on TTreeView).
+  // For consistency, we enable focus display for all controls types (like checkboxes).
+  if (Message->Msg == CM_DIALOGCHAR)
+  {
+    bool WasFocused = (FocusControl != NULL) ? FocusControl->Focused() : false;
+    TLabel::Dispatch(AMessage);
+    if (!WasFocused && (FocusControl != NULL) && FocusControl->Focused())
+    {
+      TCustomForm * ParentForm = GetParentForm(this);
+      if (ParentForm != NULL)
+      {
+        ParentForm->Perform(WM_CHANGEUISTATE, MAKELONG(UIS_CLEAR, UISF_HIDEFOCUS), 0);
+      }
+    }
+  }
+  else
+  {
+    TLabel::Dispatch(AMessage);
+  }
 }
 
 void FindComponentClass(
@@ -2267,6 +2483,8 @@ void SystemRequired()
 
 void GUIFinalize()
 {
+  TPuttyCleanupThread::Finalize();
+
   TSystemRequiredThread * Thread;
   {
     TGuard Guard(SystemRequiredThreadSection.get());
