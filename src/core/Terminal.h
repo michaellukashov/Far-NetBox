@@ -218,6 +218,7 @@ private:
   std::unique_ptr<TSessionData> FSessionData;
   std::unique_ptr<TSessionLog> FLog;
   std::unique_ptr<TActionLog> FActionLog;
+  bool FActionLogOwned{false};
   TConfiguration * FConfiguration{nullptr};
   UnicodeString FCurrentDirectory;
   int32_t FExceptionOnFail{0};
@@ -269,6 +270,7 @@ private:
   TNotifyEvent FOnClose{nullptr};
   TCallbackGuard * FCallbackGuard{nullptr};
   TFindingFileEvent FOnFindingFile{nullptr};
+  std::unique_ptr<TStrings> FShellChecksumAlgDefs;
   bool FEnableSecureShellUsage{false};
   bool FCollectFileSystemUsage{false};
   bool FRememberedPasswordTried{false};
@@ -333,8 +335,8 @@ protected:
     int32_t Params);
   void DoCustomCommandOnFile(UnicodeString AFileName,
     const TRemoteFile * AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent);
-  bool DoRenameFile(const UnicodeString AFileName, const TRemoteFile * AFile,
-    const UnicodeString ANewName, bool Move);
+  bool DoRenameFile(
+    const UnicodeString AFileName, const TRemoteFile * AFile, const UnicodeString ANewName, bool Move, bool DontOverwrite);
   bool DoMoveFile(const UnicodeString & FileName, const TRemoteFile * File, /*const TMoveFileParams*/ void * Param);
   void DoCopyFile(const UnicodeString AFileName, const TRemoteFile * AFile, UnicodeString ANewName);
   void DoChangeFileProperties(const UnicodeString AFileName,
@@ -547,6 +549,11 @@ protected:
   void UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode);
   TRemoteFile * CheckRights(const UnicodeString & EntryType, const UnicodeString & FileName, bool & WrongRights);
   bool IsValidFile(TRemoteFile * File) const;
+  void CalculateSubFoldersChecksum(
+    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    TFileOperationProgressType * OperationProgress, bool FirstLevel);
+  void GetShellChecksumAlgs(TStrings * Algs);
+  TStrings * GetShellChecksumAlgDefs();
 
   UnicodeString EncryptFileName(const UnicodeString APath, bool EncryptNewFiles);
   UnicodeString DecryptFileName(const UnicodeString APath, bool DecryptFullPath, bool DontCache);
@@ -563,7 +570,7 @@ protected:
 
 public:
   explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal) noexcept;
-  void Init(TSessionData *ASessionData, TConfiguration * AConfiguration);
+  void Init(TSessionData *ASessionData, TConfiguration * AConfiguration, TActionLog * ActionLog = nullptr);
   virtual ~TTerminal() noexcept;
   void Open();
   void Close();
@@ -587,6 +594,7 @@ public:
   TRemoteFileList * CustomReadDirectoryListing(UnicodeString Directory, bool UseCache);
   TRemoteFile * ReadFileListing(UnicodeString APath);
   void ReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
+  TRemoteFile * TryReadFile(const UnicodeString & FileName);
   bool FileExists(const UnicodeString AFileName, TRemoteFile **AFile = nullptr);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& AFile);
   bool CopyToLocal(
@@ -621,22 +629,20 @@ public:
   void TerminalError(Exception * E, UnicodeString AMsg, UnicodeString AHelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
-  void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString ANewName, bool CheckExistence);
+  void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString ANewName);
   void TerminalMoveFile(const UnicodeString AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool TerminalMoveFiles(TStrings * AFileList, const UnicodeString ATarget,
-    const UnicodeString AFileMask);
+  bool TerminalMoveFiles(
+    TStrings * AFileList, const UnicodeString ATarget, const UnicodeString AFileMask, bool DontOverwrite);
   void TerminalCopyFile(const UnicodeString AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
   bool TerminalCopyFiles(TStrings *AFileList, const UnicodeString ATarget,
     const UnicodeString AFileMask);
-  bool CalculateFilesSize(TStrings * AFileList, int64_t &Size,
-    int32_t AParams, const TCopyParamType * CopyParam, bool AllowDirs,
-    TCalculateSizeStats &Stats);
+  bool CalculateFilesSize(TStrings * AFileList, int64_t &Size, TCalculateSizeParams & Params);
   bool CalculateLocalFilesSize(TStrings * FileList, int64_t & Size,
     const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files, TCalculatedSizes * CalculatedSizes);
-  void CalculateFilesChecksum(const UnicodeString Alg, TStrings * AFileList,
-    TStrings *Checksums, TCalculatedChecksumEvent OnCalculatedChecksum);
+  void CalculateFilesChecksum(
+    const UnicodeString Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum);
   void ClearCaches();
   TSynchronizeChecklist * SynchronizeCollect(const UnicodeString LocalDirectory,
     const UnicodeString ARemoteDirectory, TSynchronizeMode Mode,
@@ -677,6 +683,7 @@ public:
   void FillSessionDataForCode(TSessionData * SessionData) const;
   void UpdateSessionCredentials(TSessionData * Data);
   UnicodeString UploadPublicKey(const UnicodeString & FileName);
+  TCustomFileSystem * GetFileSystemForCapability(TFSCapability Capability, bool NeedCurrentDirectory = false);
 
   const TSessionInfo & GetSessionInfo() const;
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
@@ -849,8 +856,9 @@ public:
   explicit TSecondaryTerminal(TTerminal * MainTerminal) noexcept;
   explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal) noexcept;
   virtual ~TSecondaryTerminal() = default;
-  void Init(TSessionData * ASessionData, TConfiguration * AConfiguration,
-    const UnicodeString Name);
+  void Init(
+    TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration,
+    const UnicodeString Name, TActionLog * ActionLog);
 
   void UpdateFromMain();
 
@@ -920,18 +928,20 @@ struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
 NB_DEFINE_CLASS_ID(TCalculateSizeParams);
 struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
+friend class TTerminal;
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCalculateSizeParams); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCalculateSizeParams) || TObject::is(Kind); }
 public:
   TCalculateSizeParams() noexcept;
-  int64_t Size{0};
   int32_t Params{0};
   const TCopyParamType *CopyParam{nullptr};
   TCalculateSizeStats *Stats{nullptr};
   bool AllowDirs{true};
-  TCollectedFileList *Files{nullptr};
+  bool UseCache{false};
+  TCollectedFileList * Files{nullptr};
   UnicodeString LastDirPath;
+  int64_t Size{0};
   bool Result{true};
 };
 
@@ -1004,10 +1014,10 @@ public:
   bool Retry();
 
 private:
-  TTerminal *FTerminal{nullptr};
-  TFileOperationProgressType *FOperationProgress{nullptr};
+  TTerminal * FTerminal{nullptr};
+  TFileOperationProgressType * FOperationProgress{nullptr};
   bool FRetry{false};
-  bool *FAnyTransfer{nullptr};
+  bool * FAnyTransfer{nullptr};
   bool FPrevAnyTransfer{false};
   TDateTime FStart;
   bool FCanRetry{false};
@@ -1021,6 +1031,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCollectedFileList) || TObject::is(Kind); }
 public:
   TCollectedFileList() noexcept;
+  virtual ~TCollectedFileList();
   int32_t Add(const UnicodeString AFileName, TObject *Object, bool Dir);
   void DidNotRecurse(int32_t Index);
   void Delete(int32_t Index);
@@ -1034,6 +1045,8 @@ public:
   void SetState(int Index, int State);
 
 private:
+  void Deleting(int Index);
+
   struct TFileData
   {
     CUSTOM_MEM_ALLOCATION_IMPL
