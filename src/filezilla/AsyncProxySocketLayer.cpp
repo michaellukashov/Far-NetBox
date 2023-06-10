@@ -51,7 +51,6 @@ CAsyncProxySocketLayer::~CAsyncProxySocketLayer()
 
 void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, int ProxyPort, bool bUseLogon, const char * pProxyUser, const char * pProxyPass)
 {
-  USES_CONVERSION;
   //Validate the parameters
   DebugAssert(!m_nProxyOpID);
   DebugAssert(pProxyHost && *pProxyHost);
@@ -788,7 +787,6 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       }
       nb_free(pHost);
 
-      USES_CONVERSION;
       CString status;
       status.Format(L"HTTP proxy command: %s", (LPCWSTR)CString(str));
       LogSocketMessageRaw(FZ_LOG_PROGRESS, status);

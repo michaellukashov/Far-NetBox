@@ -485,8 +485,6 @@ int CFtpControlSocket::InitConnectState()
 
 void CFtpControlSocket::Connect(t_server &server)
 {
-  USES_CONVERSION;
-
   if (m_Operation.nOpMode)
   {
     ShowStatus(L"Internal error: m_Operation.nOpMode not zero in Connect", FZ_LOG_ERROR);
@@ -946,8 +944,8 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
   if (m_CurrentServer.port != 21)
     hostname.Format(hostname+  L":%d", m_CurrentServer.port); // add port to hostname (only if port is not 21)
 
-  USES_CONVERSION;
 #ifndef MPEXT_NO_GSS
+  USES_CONVERSION;
   //**** GSS Authentication ****
   if (m_Operation.nOpState==CONNECT_GSS_INIT)  //authenticate
   {
@@ -2310,7 +2308,6 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
           host = GetOption(OPTION_TRANSFERIP6);
           if (host != L"")
           {
-            USES_CONVERSION;
             addrinfo hints, *res;
             memset(&hints, 0, sizeof(addrinfo));
             hints.ai_family = AF_INET6;
@@ -2413,8 +2410,6 @@ bool CFtpControlSocket::ConnectTransferSocket(const CString & host, UINT port)
 
 void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
 {
-  USES_CONVERSION;
-
   #define LISTFILE_INIT  -1
   #define LISTFILE_MLST  1
   #define LISTFILE_TYPE  2
@@ -2481,7 +2476,6 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
     }
     else
     {
-      USES_CONVERSION;
       CStringA Buf = m_ListFile + '\n';
       const bool mlst = true;
       CFtpListResult * pListResult = CreateListResult(mlst);
@@ -2672,6 +2666,79 @@ void CFtpControlSocket::ResetTransferSocket(int Error)
   }
 }
 
+int CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
+{
+  int nReplyError = 0;
+  bool res;
+  if (pData->transferfile.get)
+  {
+    if (pData->transferfile.OnTransferOut == NULL)
+    {
+      m_pDataFile = new CFile();
+      if (pData->transferdata.bResume)
+        res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeCreate|CFile::modeWrite|CFile::modeNoTruncate|CFile::shareDenyWrite);
+      else
+        res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
+    }
+    else
+    {
+      res = true;
+    }
+  }
+  else
+  {
+    if (pData->transferfile.OnTransferIn == NULL)
+    {
+      m_pDataFile = new CFile();
+      res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeRead|CFile::shareDenyNone);
+    }
+    else
+    {
+      res = true;
+    }
+  }
+  if (!res)
+  {
+    wchar_t * Error = m_pTools->LastSysErrorMessage();
+    //Error opening the file
+    CString str;
+    str.Format(IDS_ERRORMSG_FILEOPENFAILED,pData->transferfile.localfile);
+    str += L"\n";
+    str += Error;
+    nb_free(Error);
+    ShowStatus(str,FZ_LOG_ERROR);
+    nReplyError = FZ_REPLY_ERROR;
+  }
+  else
+  {
+    m_pTransferSocket->m_pFile = m_pDataFile;
+    m_pTransferSocket->m_OnTransferOut = pData->transferfile.OnTransferOut;
+    m_pTransferSocket->m_OnTransferIn = pData->transferfile.OnTransferIn;
+  }
+
+  return nReplyError;
+}
+
+int CFtpControlSocket::ActivateTransferSocket(CFileTransferData * pData)
+{
+  int nReplyError = 0;
+  if (pData->transferfile.get && (m_pDataFile == NULL))
+  {
+    nReplyError = OpenTransferFile(pData);
+  }
+  if (!nReplyError)
+  {
+    m_pTransferSocket->SetActive();
+  }
+  return nReplyError;
+}
+
+void CFtpControlSocket::CancelTransferResume(CFileTransferData * pData)
+{
+  pData->transferdata.transferleft = pData->transferdata.transfersize;
+  pData->transferdata.bResume = FALSE;
+}
+
 void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFinish/*=FALSE*/,int nError/*=0*/)
 {
   USES_CONVERSION;
@@ -2701,6 +2768,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
   #define FILETRANSFER_WAIT      20
 
   #define FILETRANSFER_MFMT      21
+  #define FILETRANSFER_OPTS_REST 22
+
+  #define FILETRANSFER_OPTION_COMMAND_2 (NeedOptsCommand() ? FILETRANSFER_OPTS : FILETRANSFER_PORTPASV)
+  #define FILETRANSFER_OPTION_COMMAND_1 (NeedModeCommand() ? FILETRANSFER_MODE : FILETRANSFER_OPTION_COMMAND_2)
 
   //Partial flowchart of FileTransfer
   //
@@ -3433,7 +3504,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     case FILETRANSFER_TYPE:
       if (code!=2 && code!=3)
         nReplyError = FZ_REPLY_ERROR;
-      m_Operation.nOpState = NeedModeCommand() ? FILETRANSFER_MODE : (NeedOptsCommand() ? FILETRANSFER_OPTS : FILETRANSFER_PORTPASV);
+      m_Operation.nOpState = !pData->transferfile.get && pData->transferdata.bResume ? FILETRANSFER_OPTS_REST : FILETRANSFER_OPTION_COMMAND_1;
       break;
     case FILETRANSFER_WAIT:
       if (!pData->nWaitNextOpState)
@@ -3448,7 +3519,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
 #else
       if (code == 2 || code == 3)
         m_useZlib = !m_useZlib;
-      m_Operation.nOpState = NeedOptsCommand() ? FILETRANSFER_OPTS : FILETRANSFER_PORTPASV;
+      m_Operation.nOpState = FILETRANSFER_OPTION_COMMAND_2;
 #endif
       break;
     case FILETRANSFER_OPTS:
@@ -3584,51 +3655,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           m_Operation.nOpState = FILETRANSFER_REST;
         else
           m_Operation.nOpState = FILETRANSFER_RETRSTOR;
-        BOOL res;
         if (m_pDataFile != nullptr)
         {
           delete m_pDataFile;
           m_pDataFile = nullptr;
-        }
-        if (pData->transferfile.get)
-        {
-          if (pData->transferfile.OnTransferOut == nullptr)
-          {
-            m_pDataFile = new CFile();
-            if (pData->transferdata.bResume)
-              res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeCreate|CFile::modeWrite|CFile::modeNoTruncate|CFile::shareDenyWrite);
-            else
-              res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeWrite|CFile::modeCreate|CFile::shareDenyWrite);
-          }
-          else
-          {
-            res = TRUE;
-          }
-        }
-        else
-        {
-          if (pData->transferfile.OnTransferIn == nullptr)
-          {
-            m_pDataFile = new CFile();
-            res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeRead|CFile::shareDenyNone);
-          }
-          else
-          {
-            res = TRUE;
-          }
-        }
-        if (!res)
-        {
-          wchar_t * Error = m_pTools->LastSysErrorMessage();
-          //Error opening the file
-          CString str;
-          str.Format(IDS_ERRORMSG_FILEOPENFAILED,pData->transferfile.localfile);
-          str += L"\n";
-          str += Error;
-          free(Error);
-          ShowStatus(str,FZ_LOG_ERROR);
-          nReplyError = FZ_REPLY_ERROR;
-          break;
         }
 
         if (!m_pTransferSocket)
@@ -3637,11 +3667,14 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           break;
         }
 
-        m_pTransferSocket->m_pFile = m_pDataFile;
-        m_pTransferSocket->m_OnTransferOut = pData->transferfile.OnTransferOut;
-        m_pTransferSocket->m_OnTransferIn = pData->transferfile.OnTransferIn;
         if (!pData->transferfile.get)
         {
+          nReplyError = OpenTransferFile(pData);
+          if (nReplyError)
+          {
+            break;
+          }
+
           if (m_pDataFile != nullptr)
           {
             // See comment in !get branch below
@@ -3672,14 +3705,23 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         }
         else
         {
+          if (pData->transferdata.bResume)
+          {
+            nReplyError = OpenTransferFile(pData);
+            if (nReplyError)
+            {
+              break;
+            }
+          }
+
           CString remotefile=pData->transferfile.remotefile;
           if (m_pDirectoryListing)
             for (int i=0; i<m_pDirectoryListing->num; i++)
             {
               if (m_pDirectoryListing->direntry[i].name==remotefile)
               {
-                  pData->hasRemoteDate = true;
-                  pData->remoteDate = m_pDirectoryListing->direntry[i].date;
+                pData->hasRemoteDate = true;
+                pData->remoteDate = m_pDirectoryListing->direntry[i].date;
                 pData->transferdata.transfersize=m_pDirectoryListing->direntry[i].size;
               }
             }
@@ -3696,6 +3738,15 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         }
         else
           nReplyError = FZ_REPLY_ERROR;
+      break;
+    case FILETRANSFER_OPTS_REST:
+      // anything else means the resume is allowed (2xx) or the server does not understand OPTS REST STOR (5xx)
+      if (code == 4)
+      {
+        ShowStatus(L"Resume not allowed by the server, restarting upload from the scratch.", FZ_LOG_PROGRESS);
+        CancelTransferResume(pData);
+      }
+      m_Operation.nOpState = FILETRANSFER_OPTION_COMMAND_1;
       break;
     case FILETRANSFER_REST:
       { //Resume
@@ -3736,8 +3787,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
               }
 
               ShowStatus(IDS_ERRORMSG_CANTRESUME, FZ_LOG_ERROR);
-              pData->transferdata.transferleft=pData->transferdata.transfersize;
-              pData->transferdata.bResume=FALSE;
+              CancelTransferResume(pData);
               m_Operation.nOpState=FILETRANSFER_RETRSTOR;
             }
             else
@@ -3832,12 +3882,12 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
           }
           if (!nReplyError && !GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
           {
-            m_pTransferSocket->SetActive();
+            nReplyError = ActivateTransferSocket(pData);
           }
         }
-        else if (pData->bPasv && !GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
+        else if (!nReplyError && pData->bPasv && !GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY))
         {
-          m_pTransferSocket->SetActive();
+          nReplyError = ActivateTransferSocket(pData);
         }
       }
       break;
@@ -4342,6 +4392,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
       }
     }
     break;
+  case FILETRANSFER_OPTS_REST:
+    if (!Send(L"OPTS REST STOR"))
+      bError = TRUE;
+    break;
   case FILETRANSFER_REST:
     DebugAssert(m_pDataFile);
     {
@@ -4365,7 +4419,10 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     m_pTransferSocket->m_transferdata=pData->transferdata;
     if (GetOptionVal(OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY) || !pData->bPasv)
     {
-      m_pTransferSocket->SetActive();
+      if (ActivateTransferSocket(pData))
+      {
+        bError = TRUE;
+      }
     }
     CString filename;
 
@@ -5809,8 +5866,6 @@ int CFtpControlSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
 #endif
       else if (iter->pLayer == m_pSslLayer)
       {
-        USES_CONVERSION;
-
         switch (iter->nParam1)
         {
         case SSL_INFO:
@@ -6098,7 +6153,7 @@ CString CFtpControlSocket::ConvertDomainName(CString domain)
   nb_free(utf8);
 
   CString result = A2T(output);
-  free(output);
+  nb_free(output);
   return result;
 }
 
@@ -6195,7 +6250,6 @@ void CFtpControlSocket::DiscardLine(CStringA line)
     }
     else if (line.Left(4) == "MLST")
     {
-      USES_CONVERSION;
       std::string facts;
       if (line.GetLength() > 5)
       {
