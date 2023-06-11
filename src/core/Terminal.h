@@ -1032,7 +1032,7 @@ public:
 public:
   TCollectedFileList() noexcept;
   virtual ~TCollectedFileList();
-  int32_t Add(const UnicodeString AFileName, TObject *Object, bool Dir);
+  int32_t Add(const UnicodeString AFileName, TObject * Object, bool Dir);
   void DidNotRecurse(int32_t Index);
   void Delete(int32_t Index);
 
@@ -1041,11 +1041,11 @@ public:
   TObject * GetObj(int32_t Index) const;
   bool IsDir(int32_t Index) const;
   bool IsRecursed(int32_t Index) const;
-  int GetState(int Index) const;
-  void SetState(int Index, int State);
+  int32_t GetState(int32_t Index) const;
+  void SetState(int32_t Index, int32_t State);
 
 private:
-  void Deleting(int Index);
+  void Deleting(int32_t Index);
 
   struct TFileData
   {
@@ -1054,7 +1054,7 @@ private:
     TObject * Object{nullptr};
     bool Dir{false};
     bool Recursed{false};
-    int State{0};
+    int32_t State{0};
   };
   using TFileDataList = nb::vector_t<TFileData>;
   TFileDataList FList;
