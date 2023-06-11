@@ -93,7 +93,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FNoConnectionResponse = false;
   FCollectPrivateKeyUsage = false;
   FWaitingForData = 0;
-  FCallbackSet.reset(new callback_set());
+  FCallbackSet.reset(std::make_unique<callback_set>());
   memset(FCallbackSet.get(), 0, sizeof(callback_set));
   FCallbackSet->ready_event = INVALID_HANDLE_VALUE;
 }
@@ -205,6 +205,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   for (int c = 0; c < CIPHER_COUNT; c++)
   {
     int pcipher;
+    // Update also CollectUsage
     switch (Data->GetCipher(c)) {
       case cipWarn: pcipher = CIPHER_WARN; break;
       case cip3DES: pcipher = CIPHER_3DES; break;
@@ -213,6 +214,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case cipDES: pcipher = CIPHER_DES; break;
       case cipArcfour: pcipher = CIPHER_ARCFOUR; break;
       case cipChaCha20: pcipher = CIPHER_CHACHA20; break;
+      case cipAESGCM: pcipher = CIPHER_AESGCM; break;
       default: DebugFail();
     }
     conf_set_int_int(conf, CONF_ssh_cipherlist, c, pcipher);
@@ -226,9 +228,14 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case kexWarn: pkex = KEX_WARN; break;
       case kexDHGroup1: pkex = KEX_DHGROUP1; break;
       case kexDHGroup14: pkex = KEX_DHGROUP14; break;
+      case kexDHGroup15: pkex = KEX_DHGROUP15; break;
+      case kexDHGroup16: pkex = KEX_DHGROUP16; break;
+      case kexDHGroup17: pkex = KEX_DHGROUP17; break;
+      case kexDHGroup18: pkex = KEX_DHGROUP18; break;
       case kexDHGEx: pkex = KEX_DHGEX; break;
       case kexRSA: pkex = KEX_RSA; break;
       case kexECDH: pkex = KEX_ECDH; break;
+      case kexNTRUHybrid: pkex = KEX_NTRU_HYBRID; break;
       default: DebugFail();
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
@@ -237,23 +244,14 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   DebugAssert(static_cast<THostKey>(HK_MAX) == HOSTKEY_COUNT);
   for (int h = 0; h < HOSTKEY_COUNT; h++)
   {
-    int phk = 0;
-    switch (Data->GetHostKeys(h)) {
-      case hkWarn: phk = HK_WARN; break;
-      case hkRSA: phk = HK_RSA; break;
-      case hkDSA: phk = hkDSA; break;
-      case hkECDSA: phk = HK_ECDSA; break;
-      case hkED25519: phk = HK_ED25519; break;
-      case hkED448: phk = HK_ED448; break;
-      default: DebugFail();
-    }
+    int32_t phk = HostKeyToPutty(Data->HostKeys[h]);
     conf_set_int_int(conf, CONF_ssh_hklist, h, phk);
   }
 
   DebugAssert(ngsslibs == GSSLIB_COUNT);
-  for (int g = 0; g < GSSLIB_COUNT; g++)
+  for (int32_t g = 0; g < GSSLIB_COUNT; g++)
   {
-    int pgsslib = 0;
+    int32_t pgsslib = 0;
     switch (Data->GetGssLib(g)) {
       case gssGssApi32: pgsslib = 0; break;
       case gssSspi: pgsslib = 1; break;
@@ -266,28 +264,28 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_filename(conf, CONF_ssh_gss_custom, GssLibCustomFileName);
   filename_free(GssLibCustomFileName);
 
-  UnicodeString SPublicKeyFile = Data->GetPublicKeyFile();
-  if (SPublicKeyFile.IsEmpty()) { SPublicKeyFile = GetConfiguration()->GetDefaultKeyFile(); }
-  // StripPathQuotes should not be needed as we do not feed quotes anymore
-  SPublicKeyFile = StripPathQuotes(::ExpandEnvironmentVariables(SPublicKeyFile));
-  Filename *KeyFileFileName = filename_from_str(UTF8String(SPublicKeyFile).c_str());
-  conf_set_filename(conf, CONF_keyfile, KeyFileFileName);
-  filename_free(KeyFileFileName);
+  Filename * AFileName = filename_from_str(UTF8String(Data->ResolvePublicKeyFile()).c_str());
+  conf_set_filename(conf, CONF_keyfile, AFileName);
+  filename_free(AFileName);
 
-  conf_set_bool(conf, CONF_ssh2_des_cbc, Data->GetSsh2DES());
-  conf_set_bool(conf, CONF_ssh_no_userauth, Data->GetSshNoUserAuth());
-  conf_set_bool(conf, CONF_try_ki_auth, Data->FAuthKI);
-  conf_set_bool(conf, CONF_try_gssapi_auth, Data->GetAuthGSSAPI());
-  conf_set_bool(conf, CONF_try_gssapi_kex, Data->FAuthGSSAPIKEX);
-  conf_set_bool(conf, CONF_gssapifwd, Data->FGSSAPIFwdTGT);
-  conf_set_bool(conf, CONF_change_username, Data->GetChangeUsername());
+  AFileName = filename_from_str(UTF8String(ExpandEnvironmentVariables(Data->DetachedCertificate)).c_str());
+  conf_set_filename(conf, CONF_detached_cert, AFileName);
+  filename_free(AFileName);
 
-  conf_set_int(conf, CONF_proxy_type, Data->GetActualProxyMethod());
-  conf_set_str(conf, CONF_proxy_host, AnsiString(Data->GetProxyHost()).c_str());
-  conf_set_int(conf, CONF_proxy_port, nb::ToInt(Data->GetProxyPort()));
-  conf_set_str(conf, CONF_proxy_username, UTF8String(Data->GetProxyUsername()).c_str());
-  conf_set_str(conf, CONF_proxy_password, UTF8String(Data->GetProxyPassword()).c_str());
-  if (Data->GetProxyMethod() == pmCmd)
+  conf_set_bool(conf, CONF_ssh2_des_cbc, Data->Ssh2DES);
+  conf_set_bool(conf, CONF_ssh_no_userauth, Data->SshNoUserAuth);
+  conf_set_bool(conf, CONF_try_ki_auth, Data->AuthKI);
+  conf_set_bool(conf, CONF_try_gssapi_auth, Data->AuthGSSAPI);
+  conf_set_bool(conf, CONF_try_gssapi_kex, Data->AuthGSSAPIKEX);
+  conf_set_bool(conf, CONF_gssapifwd, Data->GSSAPIFwdTGT);
+  conf_set_bool(conf, CONF_change_username, Data->ChangeUsername);
+
+  conf_set_int(conf, CONF_proxy_type, Data->ProxyMethod);
+  conf_set_str(conf, CONF_proxy_host, AnsiString(Data->ProxyHost).c_str());
+  conf_set_int(conf, CONF_proxy_port, Data->ProxyPort);
+  conf_set_str(conf, CONF_proxy_username, UTF8String(Data->ProxyUsername).c_str());
+  conf_set_str(conf, CONF_proxy_password, UTF8String(Data->ProxyPassword).c_str());
+  if (Data->ProxyMethod == pmCmd)
   {
     conf_set_str(conf, CONF_proxy_telnet_command, AnsiString(Data->GetProxyLocalCommand()).c_str());
   }
@@ -2883,6 +2881,20 @@ void TSecureShell::CollectUsage()
   else
   {
     Usage->Inc("OpenedSessionsSSHOther");
+  }
+
+  int CipherGroup = GetCipherGroup(get_cscipher(FBackendHandle));
+  switch (CipherGroup)
+  {
+    case CIPHER_3DES: Configuration->Usage->Inc(L"OpenedSessionsSSHCipher3DES"); break;
+    case CIPHER_BLOWFISH: Configuration->Usage->Inc(L"OpenedSessionsSSHCipherBlowfish"); break;
+    case CIPHER_AES: Configuration->Usage->Inc(L"OpenedSessionsSSHCipherAES"); break;
+    // All following miss "Cipher"
+    case CIPHER_DES: Configuration->Usage->Inc(L"OpenedSessionsSSHDES"); break;
+    case CIPHER_ARCFOUR: Configuration->Usage->Inc(L"OpenedSessionsSSHArcfour"); break;
+    case CIPHER_CHACHA20: Configuration->Usage->Inc(L"OpenedSessionsSSHChaCha20"); break;
+    case CIPHER_AESGCM: Configuration->Usage->Inc(L"OpenedSessionsSSHAESGCM"); break;
+    default: DebugFail(); break;
   }
 #endif // #if 0
 }

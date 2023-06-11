@@ -194,6 +194,8 @@ private:
   void CheckMultiFilesToOne(TStrings * FileList, const UnicodeString & Target, bool Unix);
   void LogOption(const UnicodeString & LogStr);
   void DoMvOrCp(TScriptProcParams * Parameters, TFSCapability Capability, bool Cp);
+  void DoCalculatedChecksum(
+    const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
 };
 
 typedef void (__closure *TScriptInputEvent)(TScript * Script, const UnicodeString Prompt, UnicodeString & Str);
