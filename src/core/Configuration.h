@@ -304,7 +304,7 @@ public:
   bool RegistryPathExists(const UnicodeString RegistryPath) const;
   bool HasLocalPortNumberLimits() const;
   virtual UnicodeString TemporaryDir(bool Mask = false) const = 0;
-  UnicodeString GetVersionStrHuman() const;
+  UnicodeString GetVersionStrHuman();
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
     TStoredSessionList *Sessions, UnicodeString &Error);
@@ -335,7 +335,7 @@ public:
   __property UnicodeString PuttyRegistryStorageKey  = { read = FPuttyRegistryStorageKey, write = SetPuttyRegistryStorageKey };
   RWProperty<UnicodeString> PuttyRegistryStorageKey{nb::bind(&TConfiguration::GetPuttyRegistryStorageKey, this), nb::bind(&TConfiguration::SetPuttyRegistryStorageKey, this)};
   __property UnicodeString PuttySessionsKey  = { read = GetPuttySessionsKey };
-  ROProperty<UnicodeString> PuttySessionsKey{nb::bind(&TConfiguration::GetPuttySessionsKey, this)};
+  ROProperty<UnicodeString> PuttySessionsKey{nb::bind(&TConfiguration::DoGetPuttySessionsKey, this)};
   __property UnicodeString RandomSeedFile  = { read = FRandomSeedFile, write = SetRandomSeedFile };
   __property UnicodeString RandomSeedFileName  = { read = GetRandomSeedFileName };
   __property UnicodeString SshHostKeysSubKey  = { read = GetSshHostKeysSubKey };

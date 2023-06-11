@@ -832,7 +832,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
 {
   struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
 
-  TKeyType Type = KeyType(CertificateFileName);
+  TKeyType Type = GetKeyType(CertificateFileName);
   int Error = errno;
   if ((Type != SSH_KEYTYPE_SSH2_PUBLIC_RFC4716) &&
       (Type != SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH))
@@ -851,7 +851,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
   Filename * CertFilename = filename_from_str(UtfCertificateFileName.c_str());
 
   LoadedFile * CertLoadedFile;
-  try
+  try__finally
   {
     const char * ErrorStr = NULL;
     CertLoadedFile = lf_load_keyfile(CertFilename, &ErrorStr);
@@ -860,33 +860,33 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
       // not capturing errno, as this in unlikely file access error, after we have passed KeyType above
       throw ExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, (CertificateFileName)), Error);
     }
-  }
+  },
   __finally
   {
     filename_free(CertFilename);
-  }
+  } end_try__finally
 
   strbuf * Pub = strbuf_new();
   char * AlgorithmName = NULL;
-  try
+  try__finally
   {
     const char * ErrorStr = NULL;
     char * CommentStr = NULL;
     if (!ppk_loadpub_s(BinarySource_UPCAST(CertLoadedFile), &AlgorithmName,
                        BinarySink_UPCAST(Pub), &CommentStr, &ErrorStr))
     {
-      UnicodeString Error = AnsiString(ErrorStr);
+      UnicodeString Error = ErrorStr;
       throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, (CertificateFileName)), Error);
     }
     sfree(CommentStr);
-  }
+  },
   __finally
   {
     lf_free(CertLoadedFile);
-  }
+  } end_try__finally
 
   const ssh_keyalg * KeyAlg;
-  try
+  try__finally
   {
     KeyAlg = find_pubkey_alg(AlgorithmName);
     if (KeyAlg == NULL)
@@ -924,12 +924,12 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
 
     ssh_key_free(Ssh2Key->key);
     Ssh2Key->key = NewKey;
-  }
+  },
   __finally
   {
     strbuf_free(Pub);
     sfree(AlgorithmName);
-  }
+  } end_try__finally
 }
 
 void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
@@ -1066,7 +1066,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
   // We may use find_pubkey_alg, but it gets complicated with normalized fingerprint
   // as the names have different number of dashes
   get_hostkey_algs(-1, &Count, &SignKeys);
-  try
+  try__finally
   {
     for (int Index = 0; Index < Count; Index++)
     {
@@ -1097,11 +1097,11 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
         return;
       }
     }
-  }
+  },
   __finally
   {
     sfree(SignKeys);
-  }
+  } end_try__finally
 }
 
 void NormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & KeyName)
@@ -1327,21 +1327,21 @@ TStrings * SshHostKeyList()
   {
     int Type = HostKeyToPutty(DefaultHostKeyList[DefaultIndex]);
     cp_ssh_keyalg * SignKeys;
-    int Count;
+    int32_t Count;
     get_hostkey_algs(Type, &Count, &SignKeys);
-    try
+    try__finally
     {
-      for (int Index = 0; Index < Count; Index++)
+      for (int32_t Index = 0; Index < Count; Index++)
       {
         cp_ssh_keyalg SignKey = SignKeys[Index];
         UnicodeString Name = UnicodeString(SignKey->ssh_id);
         Result->Add(Name);
       }
-    }
+    },
     __finally
     {
       sfree(SignKeys);
-    }
+    } end_try__finally
   }
   return Result.release();
 }
@@ -1350,10 +1350,10 @@ TStrings * SshMacList()
 {
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   const struct ssh2_macalg ** Macs = nullptr;
-  int Count = 0;
+  int32_t Count = 0;
   get_macs(&Count, &Macs);
 
-  for (int Index = 0; Index < Count; Index++)
+  for (int32_t Index = 0; Index < Count; Index++)
   {
     UnicodeString Name = UnicodeString(Macs[Index]->name);
     UnicodeString S = Name;

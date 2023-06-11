@@ -137,7 +137,7 @@ UnicodeString TOptions::GetParam(int32_t AIndex) const
 
 UnicodeString TOptions::ConsumeParam()
 {
-  UnicodeString Result = Param[1];
+  UnicodeString Result; // = Param[1];
   ParamsProcessed(1, 1);
   return Result;
 }

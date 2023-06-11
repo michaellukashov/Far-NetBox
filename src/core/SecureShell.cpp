@@ -93,7 +93,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FNoConnectionResponse = false;
   FCollectPrivateKeyUsage = false;
   FWaitingForData = 0;
-  FCallbackSet.reset(std::make_unique<callback_set>());
+  FCallbackSet.reset(new callback_set());
   memset(FCallbackSet.get(), 0, sizeof(callback_set));
   FCallbackSet->ready_event = INVALID_HANDLE_VALUE;
 }
@@ -244,7 +244,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   DebugAssert(static_cast<THostKey>(HK_MAX) == HOSTKEY_COUNT);
   for (int h = 0; h < HOSTKEY_COUNT; h++)
   {
-    int32_t phk = HostKeyToPutty(Data->HostKeys[h]);
+    int32_t phk = HostKeyToPutty(Data->GetHostKeys(h));
     conf_set_int_int(conf, CONF_ssh_hklist, h, phk);
   }
 
@@ -274,18 +274,18 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 
   conf_set_bool(conf, CONF_ssh2_des_cbc, Data->Ssh2DES);
   conf_set_bool(conf, CONF_ssh_no_userauth, Data->SshNoUserAuth);
-  conf_set_bool(conf, CONF_try_ki_auth, Data->AuthKI);
-  conf_set_bool(conf, CONF_try_gssapi_auth, Data->AuthGSSAPI);
-  conf_set_bool(conf, CONF_try_gssapi_kex, Data->AuthGSSAPIKEX);
-  conf_set_bool(conf, CONF_gssapifwd, Data->GSSAPIFwdTGT);
-  conf_set_bool(conf, CONF_change_username, Data->ChangeUsername);
+  conf_set_bool(conf, CONF_try_ki_auth, Data->FAuthKI);
+  conf_set_bool(conf, CONF_try_gssapi_auth, Data->FAuthGSSAPI);
+  conf_set_bool(conf, CONF_try_gssapi_kex, Data->FAuthGSSAPIKEX);
+  conf_set_bool(conf, CONF_gssapifwd, Data->FGSSAPIFwdTGT);
+  conf_set_bool(conf, CONF_change_username, Data->FChangeUsername);
 
-  conf_set_int(conf, CONF_proxy_type, Data->ProxyMethod);
-  conf_set_str(conf, CONF_proxy_host, AnsiString(Data->ProxyHost).c_str());
-  conf_set_int(conf, CONF_proxy_port, Data->ProxyPort);
-  conf_set_str(conf, CONF_proxy_username, UTF8String(Data->ProxyUsername).c_str());
-  conf_set_str(conf, CONF_proxy_password, UTF8String(Data->ProxyPassword).c_str());
-  if (Data->ProxyMethod == pmCmd)
+  conf_set_int(conf, CONF_proxy_type, Data->FProxyMethod);
+  conf_set_str(conf, CONF_proxy_host, AnsiString(Data->FProxyHost).c_str());
+  conf_set_int(conf, CONF_proxy_port, Data->FProxyPort);
+  conf_set_str(conf, CONF_proxy_username, UTF8String(Data->FProxyUsername).c_str());
+  conf_set_str(conf, CONF_proxy_password, UTF8String(Data->FProxyPassword.c_str()).c_str());
+  if (Data->FProxyMethod == pmCmd)
   {
     conf_set_str(conf, CONF_proxy_telnet_command, AnsiString(Data->GetProxyLocalCommand()).c_str());
   }
