@@ -38,8 +38,6 @@
 #define HAVE_SETSOCKOPT
 
 #define HAVE_SSPI
-#define HAVE_SOCKLEN_T
-#define HAVE_WSPIAPI_H
 
 #define NE_HAVE_TS_SSL 1
 
