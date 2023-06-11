@@ -48,9 +48,10 @@ public:
     const TRemoteFile *AFile, const TRemoteProperties *Properties,
     TChmodSessionAction &Action) override;
   virtual bool LoadFilesProperties(TStrings *AFileList) override;
-  virtual void CalculateFilesChecksum(const UnicodeString Alg,
-    TStrings *AFileList, TStrings *Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum) override;
+  virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg) override;
+  void CalculateFilesChecksum(
+    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    TFileOperationProgressType * OperationProgress, bool FirstLevel);
   virtual void CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     int32_t Params, TFileOperationProgressType *OperationProgress,
@@ -209,11 +210,8 @@ protected:
   bool NeedAutoDetectTimeDifference() const;
   bool LookupUploadModificationTime(
     const UnicodeString FileName, TDateTime &Modification, TModificationFmt ModificationFmt);
-  UnicodeString DoCalculateFileChecksum(bool UsingHashCommand, const UnicodeString Alg, TRemoteFile *File);
-  void DoCalculateFilesChecksum(bool UsingHashCommand, const UnicodeString Alg,
-    TStrings *FileList, TStrings *Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum,
-    TFileOperationProgressType *OperationProgress, bool FirstLevel);
+  UnicodeString DoCalculateFileChecksum(const UnicodeString & Alg, TRemoteFile * File);
+  bool UsingHashCommandChecksum(const UnicodeString & Alg) const;
   void HandleFeatReply();
   void ResetFeatures();
   void ProcessFeatures();
@@ -260,12 +258,13 @@ private:
   std::unique_ptr<TStrings> FLastErrorResponse{nullptr};
   std::unique_ptr<TStrings> FLastError{nullptr};
   UnicodeString FSystem;
+  UnicodeString FServerID;
   std::unique_ptr<TStrings> FFeatures{nullptr};
   UnicodeString FCurrentDirectory;
   bool FReadCurrentDirectory{false};
   UnicodeString FHomeDirectory;
-  TRemoteFileList *FFileList{nullptr};
-  TRemoteFileList *FFileListCache{nullptr};
+  TRemoteFileList * FFileList{nullptr};
+  TRemoteFileList * FFileListCache{nullptr};
   UnicodeString FFileListCachePath;
   UnicodeString FWelcomeMessage;
   bool FActive{false};
@@ -308,6 +307,7 @@ private:
   bool FMVS{false};
   bool FVMS{false};
   bool FFileZilla{false};
+  bool FIIS{false};
   bool FFileTransferAny{false};
   bool FLoggedIn{false};
   bool FVMSAllRevisions{false};
