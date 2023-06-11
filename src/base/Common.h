@@ -35,6 +35,7 @@ extern const wchar_t TokenReplacement;
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
 extern const UnicodeString Ellipsis;
+extern const UnicodeString TitleSeparator;
 
 extern const UnicodeString HttpProtocol;
 extern const UnicodeString HttpsProtocol;
@@ -61,8 +62,8 @@ NB_CORE_EXPORT UnicodeString CopyToChars(const UnicodeString Str, int32_t &From,
   wchar_t *Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
 NB_CORE_EXPORT UnicodeString CopyToChar(const UnicodeString Str, wchar_t Ch, bool Trim);
 NB_CORE_EXPORT UnicodeString RemoveSuffix(const UnicodeString Str, const UnicodeString Suffix, bool RemoveNumbersAfterSuffix = false);
-NB_CORE_EXPORT UnicodeString DelimitStr(const UnicodeString Str, const UnicodeString Chars);
-NB_CORE_EXPORT UnicodeString ShellDelimitStr(UnicodeString Str, wchar_t Quote);
+UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote = L'"');
+UnicodeString ShellQuoteStr(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString ExceptionLogString(Exception *E);
 NB_CORE_EXPORT UnicodeString MainInstructions(const UnicodeString S);
 NB_CORE_EXPORT bool HasParagraphs(const UnicodeString S);
@@ -142,6 +143,7 @@ NB_CORE_EXPORT bool CutToken(UnicodeString &AStr, UnicodeString &AToken,
 NB_CORE_EXPORT bool CutTokenEx(UnicodeString &Str, UnicodeString &Token,
   UnicodeString *RawToken = nullptr, UnicodeString *Separator = nullptr);
 NB_CORE_EXPORT void AddToList(UnicodeString &List, const UnicodeString Value, const UnicodeString Delimiter);
+void AddToShellFileListCommandLine(UnicodeString & List, const UnicodeString & Value);
 bool IsWinVista();
 bool IsWin7();
 bool IsWin8();
@@ -197,6 +199,8 @@ NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, const UnicodeString & Value);
 UnicodeString GetAncestorProcessName(int Levels = 1);
 UnicodeString GetAncestorProcessNames();
+void NotImplemented();
+UnicodeString GetDividerLine();
 
 struct NB_CORE_EXPORT TSearchRecSmart : public TSearchRec
 {
@@ -238,7 +242,7 @@ NB_CORE_EXPORT DWORD FindNextChecked(TSearchRecChecked &F);
 DWORD FindNextUnchecked(TSearchRecChecked & F);
 NB_CORE_EXPORT void ProcessLocalDirectory(UnicodeString ADirName,
   TProcessLocalFileEvent CallBackFunc, void *Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
-NB_CORE_EXPORT DWORD FileGetAttrFix(const UnicodeString AFileName);
+NB_CORE_EXPORT DWORD FileGetAttrFix(const UnicodeString & AFileName);
 
 extern const wchar_t * DSTModeNames;
 enum TDSTMode
@@ -276,6 +280,7 @@ NB_CORE_EXPORT int32_t TimeToMSec(const TDateTime &T);
 NB_CORE_EXPORT int32_t TimeToSeconds(const TDateTime &T);
 NB_CORE_EXPORT int32_t TimeToMinutes(const TDateTime &T);
 NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime);
+UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen, bool DateOnly);
 NB_CORE_EXPORT TStrings * TlsCipherList();
 
 #if 0

@@ -109,7 +109,7 @@ private:
   int32_t FSessionReopenAutoMaximumNumberOfRetries{0};
   int32_t FKeyVersion{0};
   UnicodeString FCertificateStorage;
-  bool FExperimentalFeatures{false};
+  UnicodeString FChecksumCommands;
 
   bool FDisablePasswordStoring{false};
   bool FForceBanners{false};
@@ -128,7 +128,7 @@ public:
   UnicodeString GetCompanyName() const;
   UnicodeString GetFileVersion(TVSFixedFileInfo *Info) const;
   UnicodeString GetStoredSessionsSubKey() const;
-  UnicodeString GetPuttySessionsKey() const;
+  UnicodeString DoGetPuttySessionsKey() const;
   UnicodeString GetPuttySessionsSubKey() const;
   void SetRandomSeedFile(UnicodeString Value);
   UnicodeString GetRandomSeedFileName() const;
@@ -227,6 +227,7 @@ public:
   void SaveCustomIniFileStorageName();
   UnicodeString GetRegistryStorageOverrideKey() const;
   TStrings * GetCaches() const;
+  UnicodeString GetFullVersion() const;
 
   virtual UnicodeString ModuleFileName() const;
 
@@ -303,6 +304,7 @@ public:
   bool RegistryPathExists(const UnicodeString RegistryPath) const;
   bool HasLocalPortNumberLimits() const;
   virtual UnicodeString TemporaryDir(bool Mask = false) const = 0;
+  UnicodeString GetVersionStrHuman() const;
 
   TStoredSessionList *SelectFilezillaSessionsForImport(
     TStoredSessionList *Sessions, UnicodeString &Error);
@@ -312,6 +314,7 @@ public:
   TStoredSessionList *SelectKnownHostsSessionsForImport(
     TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error);
   TStoredSessionList * SelectOpensshSessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
+  UnicodeString GetPuttySessionsKey(const UnicodeString & RootKey) const;
 
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read = GetFixedApplicationInfo };
   __property void *ApplicationInfo  = { read = GetApplicationInfo };
@@ -320,10 +323,9 @@ public:
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   RWProperty<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
-  __property bool ExperimentalFeatures = { read = FExperimentalFeatures, write = FExperimentalFeatures };
   __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
   __property UnicodeString PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
-  __property UnicodeString PuttySessionsKey  = { read=GetPuttySessionsKey };
+  __property UnicodeString PuttySessionsKey  = { read=DoGetPuttySessionsKey };
   __property UnicodeString PuttySessionsSubKey  = { read=GetPuttySessionsSubKey };
   __property UnicodeString RandomSeedFile  = { read=FRandomSeedFile, write=SetRandomSeedFile };
   __property UnicodeString RandomSeedFileName  = { read=GetRandomSeedFileName };
@@ -388,15 +390,14 @@ public:
   __property UnicodeString ExternalIpAddress = { read = FExternalIpAddress, write = SetExternalIpAddress };
   __property UnicodeString CertificateStorage = { read = FCertificateStorage, write = SetCertificateStorage };
   __property UnicodeString CertificateStorageExpanded = { read = GetCertificateStorageExpanded };
+  __property UnicodeString ChecksumCommands = { read = FChecksumCommands };
   __property int LocalPortNumberMin = { read = FLocalPortNumberMin, write = SetLocalPortNumberMin };
   __property int LocalPortNumberMax = { read = FLocalPortNumberMax, write = SetLocalPortNumberMax };
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property int ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
   __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
-  int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
   __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
-  int32_t& ScriptProgressFileNameLimit{FScriptProgressFileNameLimit};
   __property int32_t KeyVersion = { read = FKeyVersion, write = FKeyVersion };
   int32_t& KeyVersion{FKeyVersion};
 

@@ -17,6 +17,7 @@
 #include <System.ShlObj.hpp>
 #include <System.IOUtils.hpp>
 #include <System.StrUtils.hpp>
+#include <System.DateUtils.hpp>
 
 __removed #pragma package(smart_init)
 
@@ -123,14 +124,13 @@ void TConfiguration::Default()
   FTryFtpWhenSshFails = true;
   FParallelDurationThreshold = 10;
   SetCollectUsage(FDefaultCollectUsage);
+  FMimeTypes = UnicodeString();
   FCertificateStorage = EmptyStr;
+  FChecksumCommands = EmptyStr;
   FDontReloadMoreThanSessions = 1000;
   FScriptProgressFileNameLimit = 25;
-  SetMimeTypes(UnicodeString());
-  FSessionReopenAutoMaximumNumberOfRetries = CONST_DEFAULT_NUMBER_OF_RETRIES;
   FKeyVersion = 0;
   CollectUsage = FDefaultCollectUsage;
-  FExperimentalFeatures = false;
 
   FLogging = false;
   FPermanentLogging = false;
@@ -208,7 +208,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   }
   else if (GetStorage() == stNul)
   {
-    __removed Result = TIniFileStorage::CreateFromPath(INI_NUL);
+    __removed Result = TIniFileStorage::CreateNul();
     ThrowNotImplemented(3005);
     DebugAssert(false);
   }
@@ -299,7 +299,6 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString Property)
     KEY(Bool,     CollectUsage); \
     KEY3(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
     KEY5(String,   CertificateStorage); \
-    KEY4(Bool,     ExperimentalFeatures); \
   ); \
   BLOCK("Logging", CANCREATE, \
     KEYEX(Bool,  PermanentLogging, Logging); \
@@ -1076,6 +1075,79 @@ bool TConfiguration::GetIsUnofficial() const
 #endif
 }
 
+static TDateTime GetBuildDate()
+{
+  UnicodeString BuildDateStr = __DATE__;
+  UnicodeString MonthStr = CutToChar(BuildDateStr, L' ', true);
+  int Month = ParseShortEngMonthName(MonthStr);
+  int Day = StrToInt(CutToChar(BuildDateStr, L' ', true));
+  int Year = StrToInt(Trim(BuildDateStr));
+  TDateTime Result = EncodeDateVerbose(static_cast<Word>(Year), static_cast<Word>(Month), static_cast<Word>(Day));
+  return Result;
+}
+
+UnicodeString TConfiguration::GetFullVersion()
+{
+  UnicodeString Result = Version;
+
+  UnicodeString AReleaseType = GetReleaseType();
+  if (DebugAlwaysTrue(!AReleaseType.IsEmpty()) &&
+      !SameText(AReleaseType, L"stable") &&
+      !SameText(AReleaseType, L"development"))
+  {
+    Result += L" " + AReleaseType;
+  }
+  return Result;
+}
+
+static UnicodeString GetUnofficialBuildTag()
+{
+  DebugAssert(Configuration->IsUnofficial);
+  UnicodeString Result;
+  #ifdef _DEBUG
+  Result = LoadStr(VERSION_DEBUG_BUILD);
+  #else
+  Result = LoadStr(VERSION_DEV_BUILD);
+  #endif
+  return Result;
+}
+
+UnicodeString TConfiguration::GetVersionStrHuman()
+{
+  TGuard Guard(FCriticalSection);
+  try
+  {
+    TDateTime BuildDate = GetBuildDate();
+
+    UnicodeString FullVersion = GetFullVersion();
+
+    if (IsUnofficial)
+    {
+      UnicodeString BuildStr = GetUnofficialBuildTag();
+      FullVersion += L" " + BuildStr;
+    }
+
+    UnicodeString DateStr;
+    TDateTime ANow = Now();
+    if (BuildDate < ANow)
+    {
+      DateStr = FormatRelativeTime(ANow, BuildDate, true);
+    }
+    else
+    {
+      DateStr = FormatDateTime(L"ddddd", BuildDate);
+    }
+
+    UnicodeString Result = FORMAT(L"%s (%s)", (FullVersion, DateStr));
+
+    return Result;
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(&E, L"Can't get application version");
+  }
+}
+
 UnicodeString TConfiguration::GetVersionStr() const
 {
   return GetProductVersionStr();
@@ -1102,12 +1174,10 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     }
     else
     {
-      #ifdef _DEBUG
-      BuildStr = LoadStr(VERSION_DEBUG_BUILD);
-      #else
-      BuildStr = LoadStr(VERSION_DEV_BUILD);
-      #endif
+      BuildStr = GetUnofficialBuildTag();
     }
+
+    UnicodeString FullVersion = GetFullVersion();
 
     WORD Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
     if (Build > 0)
@@ -1125,23 +1195,14 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     AddToList(BuildStr, DateStr, L" ");
 #endif
 
-    UnicodeString FullVersion = GetProductVersion();
+    UnicodeString Result = FMTLOAD(VERSION2, FullVersion, BuildStr);
 
-    UnicodeString AReleaseType = GetReleaseType();
-    if (DebugAlwaysTrue(!AReleaseType.IsEmpty()) &&
-        !SameText(AReleaseType, L"stable") &&
-        !SameText(AReleaseType, L"development"))
+    if (IsUnofficial)
     {
-      FullVersion += L" " + AReleaseType;
+      Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
     }
 
-    Result = FMTLOAD(VERSION2, GetProductVersion(), Build);
-
-#if 0
-    #ifndef BUILD_OFFICIAL
-    Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
-    #endif
-#endif
+    return Result;
   }
   catch (Exception &E)
   {
@@ -1404,7 +1465,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly) const
   }
   else if (!FCustomIniFileStorageName.IsEmpty())
   {
-    Result = FCustomIniFileStorageName;
+    Result = ExpandEnvironmentVariables(FCustomIniFileStorageName);
   }
   else
   {
@@ -1433,9 +1494,14 @@ UnicodeString TConfiguration::GetPuttySessionsSubKey() const
   return StoredSessionsSubKey;
 }
 
-UnicodeString TConfiguration::GetPuttySessionsKey() const
+UnicodeString TConfiguration::GetPuttySessionsKey(const UnicodeString & RootKey) const
 {
-  return GetPuttyRegistryStorageKey() + L"\\" + GetPuttySessionsSubKey();
+  return RootKey + L"\\" + PuttySessionsSubKey;
+}
+
+UnicodeString TConfiguration::DoGetPuttySessionsKey() const
+{
+  return GetPuttySessionsKey(PuttyRegistryStorageKey);
 }
 
 UnicodeString TConfiguration::GetStoredSessionsSubKey() const
@@ -1462,6 +1528,7 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString ACustomI
 {
   if ((FStorage != AStorage) ||
       ((FStorage == stIniFile) && !FIniFileStorageName.IsEmpty()) ||
+      // Not expanding, as we want to allow change from explicit path to path with variables and vice versa
       !IsPathToSameFile(FCustomIniFileStorageName, ACustomIniFileStorageName))
   {
     TStorage StorageBak = FStorage;
@@ -1584,8 +1651,8 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
   try
   {
     UnicodeString Error;
-    std::unique_ptr<TStoredSessionList> SessionsList(SelectFilezillaSessionsForImport(Sessions, Error));
-    return (SessionsList->GetCount() > 0);
+    std::unique_ptr<TStoredSessionList> SessionsForImport(SelectFilezillaSessionsForImport(Sessions, Error));
+    return (SessionsForImport->GetCount() > 0);
   }
   catch (...)
   {
