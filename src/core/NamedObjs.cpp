@@ -175,11 +175,6 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName)
   return nullptr;
 }
 
-void TNamedObjectList::SetCount(int32_t Value)
-{
-  TObjectList::SetCount(Value/*+HiddenCount*/);
-}
-
 int32_t TNamedObjectList::GetCount() const
 {
   DebugAssert(FHiddenCount >= 0);

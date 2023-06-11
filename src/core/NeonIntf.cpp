@@ -565,6 +565,12 @@ void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion
     MASK_TLS_VERSION(tls13, SSL_OP_NO_TLSv1_3);
   // adds flags (not sets)
   SSL_set_options(Ssl, Options);
+
+  // Since OpenSSL 3, SSL 3.0, TLS 1.0 and 1.1 are enabled on security level 0 only
+  if (MinTlsVersion <= tls11)
+  {
+    SSL_set_security_level(Ssl, 0);
+  }
 }
 
 void UpdateNeonDebugMask()

@@ -135,6 +135,13 @@ UnicodeString TOptions::GetParam(int32_t AIndex) const
   return Result;
 }
 
+UnicodeString TOptions::ConsumeParam()
+{
+  UnicodeString Result = Param[1];
+  ParamsProcessed(1, 1);
+  return Result;
+}
+
 bool TOptions::GetEmpty() const
 {
   return FOptions.empty();

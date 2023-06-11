@@ -330,7 +330,7 @@ void TSessionData::DefaultSettings()
   SetFtpPingType(ptDummyCommand);
   SetFtpTransferActiveImmediately(asAuto);
   SetFtps(ftpsNone);
-  FMinTlsVersion = tls10;
+  FMinTlsVersion = tls12;
   FMaxTlsVersion = tls13;
   SetFtpListAll(asAuto);
   SetFtpHost(asAuto);
@@ -902,7 +902,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FProtocolFeatures = Storage->ReadString(L"ProtocolFeatures", FProtocolFeatures);
   SetSshSimple(Storage->ReadBool("SshSimple", GetSshSimple()));
 
-  SetProxyMethod(static_cast<TProxyMethod>(Storage->ReadInteger("ProxyMethod", ::pmNone)));
+  SetProxyMethod(static_cast<TProxyMethod>(Storage->ReadInteger("ProxyMethod", ProxyMethodMapping)));
   FProxyHost = Storage->ReadString(L"ProxyHost", FProxyHost);
   FProxyPort = Storage->ReadInteger(L"ProxyPort", FProxyPort);
   FProxyUsername = Storage->ReadString(L"ProxyUsername", FProxyUsername);

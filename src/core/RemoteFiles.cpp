@@ -439,6 +439,7 @@ UnicodeString UserModificationStr(TDateTime DateTime,
       return FormatDateTime(L"ddddd t", DateTime);
     case mfFull:
     default:
+      // Keep consistent with TDirView.GetDisplayInfo
       return FormatDateTime(L"ddddd tt", DateTime);
   }
 }

@@ -507,10 +507,11 @@ void TScript::Command(UnicodeString Cmd)
 
         if (Configuration->ActualLogProtocol >= 1)
         {
+          UnicodeString LogCmdParams = LogCmd;
           UnicodeString DummyLogCmd;
-          if (DebugAlwaysTrue(CutToken(LogCmd, DummyLogCmd)))
+          if (DebugAlwaysTrue(CutToken(LogCmdParams, DummyLogCmd)))
           {
-            std::unique_ptr<TScriptProcParams> Parameters(new TScriptProcParams(FCommands->ResolveCommand(Cmd), LogCmd));
+            std::unique_ptr<TScriptProcParams> Parameters(new TScriptProcParams(FCommands->ResolveCommand(Cmd), LogCmdParams));
             Parameters->LogOptions(LogOption);
           }
         }
@@ -658,7 +659,7 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
             FTerminal->ExceptionOnFail = true;
             try
             {
-              FTerminal->ReadFile(UnixExcludeTrailingBackslash(FileName), File);
+              File = FTerminal->ReadFile(UnixExcludeTrailingBackslash(FileName));
               if (!File->HaveFullFileName)
               {
                 File->FullFileName = FileName;

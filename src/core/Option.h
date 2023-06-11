@@ -26,12 +26,12 @@ public:
   bool FindSwitchCaseSensitive(const UnicodeString Switch);
   bool FindSwitchCaseSensitive(const UnicodeString Switch, TStrings *Params,
     int32_t ParamsMax = -1);
-  void ParamsProcessed(int32_t Position, int32_t ParamsCount);
   UnicodeString SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");
   bool SwitchValue(const UnicodeString Switch, bool Default);
   bool SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence);
   bool UnusedSwitch(UnicodeString &Switch) const;
   bool WasSwitchAdded(UnicodeString &Switch, UnicodeString & Value, wchar_t &SwitchMark) const;
+  UnicodeString ConsumeParam();
 
   void LogOptions(TLogOptionEvent OnEnumOption);
 
@@ -51,6 +51,7 @@ protected:
     UnicodeString &Value, int32_t &ParamsStart, int32_t &ParamsCount, bool CaseSensitive, bool &ValueSet);
   bool DoFindSwitch(const UnicodeString Switch, TStrings *Params,
     int32_t ParamsMax, bool CaseInsensitive);
+  void ParamsProcessed(int32_t Position, int32_t Count);
 
 private:
   struct TOption : public TObject

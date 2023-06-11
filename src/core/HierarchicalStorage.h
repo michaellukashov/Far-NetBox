@@ -322,3 +322,4 @@ protected:
 NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString Str);
 NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString Str);
 NB_CORE_EXPORT AnsiString PuttyStr(const UnicodeString Str);
+TIntMapping CreateIntMappingFromEnumNames(const UnicodeString & Names);

@@ -164,6 +164,7 @@ constexpr char * SFTP_EXT_HARDLINK_VALUE_V1 = "1";
 constexpr char * SFTP_EXT_COPY_FILE = "copy-file";
 constexpr char * SFTP_EXT_COPY_DATA = "copy-data";
 constexpr char * SFTP_EXT_LIMITS = "limits@openssh.com";
+constexpr char * SFTP_EXT_LIMITS_VALUE_V1 = "1";
 
 constexpr wchar_t OGQ_LIST_OWNERS = 0x01;
 constexpr wchar_t OGQ_LIST_GROUPS = 0x02;
@@ -3197,6 +3198,7 @@ void TSFTPFileSystem::DoStartup()
   FSupport->Loaded = false;
   FSupportsStatVfsV2 = false;
   FSupportsHardlink = false;
+  bool SupportsLimits = false;
   SAFE_DESTROY(FFixedPaths);
 
   if (FVersion >= 3)
@@ -3412,8 +3414,7 @@ void TSFTPFileSystem::DoStartup()
       Packet2.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
       SendPacket(&Packet2);
       // we are not interested in the response, do not wait for it
-      ReceiveResponse(&Packet2, &Packet2);
-      //ReserveResponse(&Packet, nullptr);
+      ReserveResponse(&Packet, nullptr);
     }
   }
 
@@ -3781,9 +3782,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
           FTerminal->SetExceptionOnFail(true);
           try__finally
           {
-            File = nullptr;
-            FTerminal->ReadFile(
-              base::UnixIncludeTrailingBackslash(FileList->GetDirectory()) + PARENTDIRECTORY, File);
+            File = FTerminal->ReadFile(base::UnixCombinePaths(FileList->GetDirectory()), PARENTDIRECTORY);
           },
           __finally
           {

@@ -48,7 +48,6 @@ public:
   int32_t GetCount() const;
   int32_t GetCountIncludingHidden() const;
   virtual void Notify(void *Ptr, TListNotification Action) override;
-  void SetCount(int32_t Value);
 protected:
   int32_t FHiddenCount{0};
   bool FAutoSort{true};
@@ -67,7 +66,7 @@ public:
   virtual TNamedObject * AtObject(int32_t Index);
   const TNamedObject * FindByName(const UnicodeString AName) const;
   TNamedObject * FindByName(const UnicodeString Name);
-  __property int Count = { read = GetCount, write = SetCount };
+  __property int Count = { read = GetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };
 };
 

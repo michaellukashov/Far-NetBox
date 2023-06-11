@@ -1098,9 +1098,7 @@ UnicodeString TSessionLog::GetTlsVersionName(TTlsVersion TlsVersion) const
     default:
       DebugFail();
     case ssl2:
-      return "SSLv2";
     case ssl3:
-      return "SSLv3";
     case tls10:
       return "TLSv1.0";
     case tls11:
@@ -1328,7 +1326,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         ADF("Local command: %s", Data->FProxyLocalCommand);
       }
     }
-    if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
+    if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP) || (Data->FSProtocol == fsS3))
     {
       ADF(L"Send buffer: %d", Data->FSendBuf);
     }

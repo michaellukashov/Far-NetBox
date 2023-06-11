@@ -729,6 +729,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
     { "SSH password", PASSWORD_TITLE },
     { "New SSH password", NEW_PASSWORD_TITLE },
     { "SOCKS proxy authentication", PROXY_AUTH_TITLE },
+    { "HTTP proxy authentication", PROXY_AUTH_TITLE },
   };
 
   int Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), AName);
@@ -762,7 +763,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
   {
     PromptKind = pkNewPassword;
   }
-  else if (Index == 8)
+  else if ((Index == 8) || (Index == 9))
   {
     PromptKind = pkProxyAuth;
   }
@@ -1841,7 +1842,14 @@ void TSecureShell::CheckConnection(int Message)
     {
       Str += L" " + FMTLOAD(SSH_EXITCODE, ExitCode);
     }
-    FatalError(Str, HelpKeyword);
+    if (!FClosed)
+    {
+      FatalError(Str, HelpKeyword);
+    }
+    else
+    {
+      LogEvent(FORMAT(L"Ignoring closed connection: %s", (Str)));
+    }
   }
 }
 

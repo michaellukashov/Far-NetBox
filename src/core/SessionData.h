@@ -22,17 +22,17 @@ enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGroup15, kexDHGroup16, kexD
 enum THostKey { hkWarn, hkRSA, hkDSA, hkECDSA, hkED25519, hkED448, hkCount };
 #define HOSTKEY_COUNT (hkCount)
 enum TGssLib { gssGssApi32, gssSspi, gssCustom };
-#define GSSLIB_COUNT (gssCustom + 1)
+#define GSSLIB_COUNT (gssCustom+1)
 // names have to match PuTTY registry entries (see settings.c)
 enum TSshBug { sbHMAC2, sbDeriveKey2, sbRSAPad2,
   sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj, sbChanReq };
-#define BUG_COUNT (sbChanReq + 1)
-enum TSftpBug { sbSymlink, sbSignedTS, };
-#define SFTP_BUG_COUNT (sbSignedTS + 1)
+#define BUG_COUNT (sbChanReq+1)
+enum TSftpBug { sbSymlink, sbSignedTS };
+#define SFTP_BUG_COUNT (sbSignedTS+1)
 extern const wchar_t * PingTypeNames;
-enum TPingType { ptOff, ptNullPacket, ptDummyCommand, };
-enum TAddressFamily { afAuto, afIPv4, afIPv6, };
-enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls, };
+enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
+enum TAddressFamily { afAuto, afIPv4, afIPv6 };
+enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls };
 // ssl2 and ssh3 are equivalent of tls10 now
 enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12, tls13 = 13 };
 // has to match libs3 S3UriStyle
