@@ -2237,7 +2237,7 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem *AMainFileSystem)
 
     if (FNeonLockStore != nullptr)
     {
-      struct ne_lock *Lock;
+      struct ne_lock * Lock;
       while ((Lock = ne_lockstore_first(FNeonLockStore)) != nullptr)
       {
         ne_lockstore_remove(FNeonLockStore, Lock);

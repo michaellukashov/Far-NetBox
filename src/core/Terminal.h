@@ -35,6 +35,7 @@ class TCallbackGuard;
 class TParallelOperation;
 class TCollectedFileList;
 struct TLocalFileHandle;
+struct TNeonCertificateData;
 using TCalculatedSizes = nb::vector_t<int64_t>;
 
 using TQueryUserEvent = nb::FastDelegate8<void,
@@ -503,6 +504,9 @@ protected:
     int32_t Failures);
   bool ConfirmCertificate(
     TSessionInfo & SessionInfo, int32_t AFailures, const UnicodeString ACertificateStorageKey, bool CanRemember);
+  bool VerifyOrConfirmHttpCertificate(
+    const UnicodeString & AHostName, int APortNumber, const TNeonCertificateData & Data, bool CanRemember,
+    TSessionInfo & SessionInfo);
   void CollectTlsUsage(const UnicodeString TlsVersionStr);
   bool LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey);
   bool TryStartOperationWithFile(
@@ -593,9 +597,9 @@ public:
   TRemoteFileList * ReadDirectoryListing(UnicodeString Directory, const TFileMasks &Mask);
   TRemoteFileList * CustomReadDirectoryListing(UnicodeString Directory, bool UseCache);
   TRemoteFile * ReadFileListing(UnicodeString APath);
-  void ReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
+  TRemoteFile * ReadFile(const UnicodeString AFileName);
   TRemoteFile * TryReadFile(const UnicodeString & FileName);
-  bool FileExists(const UnicodeString AFileName, TRemoteFile **AFile = nullptr);
+  bool FileExists(const UnicodeString AFileName);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& AFile);
   bool CopyToLocal(
     TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,

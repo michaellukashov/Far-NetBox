@@ -215,10 +215,10 @@ class TUIStateAwareLabel : public TLabel
 {
 public:
   virtual TUIStateAwareLabel(TComponent * AOwner);
-  virtual void Dispatch(void * AMessage);
 
 protected:
   DYNAMIC void DoDrawText(TRect & Rect, int Flags);
+  virtual void Dispatch(void * AMessage);
 };
 // FindComponentClass takes parameter by reference and as such it cannot be implemented in
 // an inline method without a compiler warning, which we cannot suppress in a macro.

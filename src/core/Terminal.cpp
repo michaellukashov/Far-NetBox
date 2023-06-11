@@ -22,6 +22,7 @@
 #include "CoreMain.h"
 #include "Queue.h"
 #include "Cryptography.h"
+#include "NeonIntf.h"
 #include <openssl/pkcs12.h>
 #include <openssl/err.h>
 
@@ -3744,10 +3745,10 @@ TRemoteFile * TTerminal::ReadFileListing(UnicodeString APath)
     {
       // reset caches
       AnnounceFileListOperation();
-      ReadFile(APath, File);
+      File = ReadFile(Path);
       Action.File(File);
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       RetryLoop.Error(E, Action);
     }
@@ -3921,67 +3922,60 @@ void TTerminal::ReadSymlink(TRemoteFile *SymlinkFile,
   }
 }
 
-void TTerminal::ReadFile(const UnicodeString AFileName,
-  TRemoteFile *&AFile)
+TRemoteFile * TTerminal::ReadFile(const UnicodeString AFileName)
 {
   DebugAssert(FFileSystem);
-  AFile = nullptr;
+  std::unique_ptr<TRemoteFile> File;
   try
   {
     LogEvent(FORMAT("Listing file \"%s\".", AFileName));
-    FFileSystem->ReadFile(AFileName, AFile);
+    TRemoteFile * AFile = NULL;
+    FFileSystem->ReadFile(FileName, AFile);
+    File.reset(AFile);
     ReactOnCommand(fsListFile);
-    LogRemoteFile(AFile);
+    LogRemoteFile(File.get());
   }
   catch (Exception &E)
   {
-    if (AFile)
-    {
-      SAFE_DESTROY(AFile);
-    }
-    AFile = nullptr;
-    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, AFileName));
+    File.reset(NULL);
+    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, (FileName)));
   }
+  return File.release();
 }
 
-bool TTerminal::FileExists(const UnicodeString AFileName, TRemoteFile ** AFile)
+TRemoteFile * TTerminal::TryReadFile(const UnicodeString & FileName)
 {
-  bool Result;
-  TRemoteFile *File = nullptr;
+  TRemoteFile * File;
   try
   {
     SetExceptionOnFail(true);
     try__finally
     {
-      ReadFile(base::UnixExcludeTrailingBackslash(AFileName), File);
+      File = ReadFile(base::UnixExcludeTrailingBackslash(AFileName));
     },
     __finally
     {
       SetExceptionOnFail(false);
     } end_try__finally
-
-    if (AFile != nullptr)
-    {
-      *AFile = File;
-    }
-    else
-    {
-      SAFE_DESTROY(File);
-    }
-    Result = true;
   }
-  catch (...)
+  catch(...)
   {
     if (GetActive())
     {
-      Result = false;
+      File = nullptr;
     }
     else
     {
       throw;
     }
   }
-  return Result;
+  return File;
+}
+
+bool TTerminal::FileExists(const UnicodeString & FileName)
+{
+  std::unique_ptr<TRemoteFile> File(TryReadFile(FileName));
+  return (File.get() != NULL);
 }
 
 void TTerminal::AnnounceFileListOperation()
@@ -4850,6 +4844,7 @@ void TTerminal::TerminalRenameFile(const TRemoteFile * File, const UnicodeString
       ReactOnCommand(fsRenameFile);
     }
   }
+}
 
 bool TTerminal::DoRenameFile(
   const UnicodeString & FileName, const TRemoteFile * File, const UnicodeString & NewName, bool Move, bool DontOverwrite)
@@ -7673,11 +7668,11 @@ void TTerminal::SourceRobust(
 bool TTerminal::CreateTargetDirectory(
   const UnicodeString & ADirectoryPath, uint32_t Attrs, const TCopyParamType * CopyParam)
 {
-  TRemoteFile * File = nullptr;
+  std::unique_ptr<TRemoteFile> File(TryReadFile(DirectoryPath));
   bool DoCreate =
-    !FileExists(ADirectoryPath, &File) ||
+    (File.get() == NULL) ||
     !File->IsDirectory; // just try to create and make it fail
-  delete File;
+  File.reset(NULL);
   if (DoCreate)
   {
     TRemoteProperties Properties;
@@ -8632,6 +8627,61 @@ void TTerminal::CacheCertificate(
   }
 }
 
+// Shared implementation for WebDAV and S3
+bool TTerminal::VerifyOrConfirmHttpCertificate(
+  const UnicodeString & AHostName, int APortNumber, const TNeonCertificateData & AData, bool CanRemember,
+  TSessionInfo & SessionInfo)
+{
+  TNeonCertificateData Data = AData;
+  SessionInfo.CertificateFingerprintSHA1 = Data.FingerprintSHA1;
+  SessionInfo.CertificateFingerprintSHA256 = Data.FingerprintSHA256;
+
+  bool Result;
+  if (SessionData->FingerprintScan)
+  {
+    Result = false;
+  }
+  else
+  {
+    LogEvent(0, CertificateVerificationMessage(Data));
+
+    UnicodeString WindowsValidatedMessage;
+    // Side effect is that NE_SSL_UNTRUSTED is removed from Failure, before we call VerifyCertificate,
+    // as it compares failures against a cached failures that do not include NE_SSL_UNTRUSTED
+    // (if the certificate is trusted by Windows certificate store).
+    // But we will log that result only if we actually use it for the decision.
+    bool WindowsValidated = NeonWindowsValidateCertificateWithMessage(Data, WindowsValidatedMessage);
+
+    UnicodeString SiteKey = TSessionData::FormatSiteKey(AHostName, APortNumber);
+    Result =
+      VerifyCertificate(
+        HttpsCertificateStorageKey, SiteKey, Data.FingerprintSHA1, Data.FingerprintSHA256, Data.Subject, Data.Failures);
+
+    if (Result)
+    {
+      SessionInfo.CertificateVerifiedManually = true;
+    }
+    else
+    {
+      Result = WindowsValidated;
+      LogEvent(0, WindowsValidatedMessage);
+    }
+
+    SessionInfo.Certificate = CertificateSummary(Data, AHostName);
+
+    if (!Result)
+    {
+      if (ConfirmCertificate(SessionInfo, Data.Failures, HttpsCertificateStorageKey, CanRemember))
+      {
+        Result = true;
+        SessionInfo.CertificateVerifiedManually = true;
+      }
+    }
+  }
+
+  return Result;
+}
+
 void TTerminal::CollectTlsUsage(const UnicodeString TlsVersionStr)
 {
   // see SSL_get_version() in OpenSSL ssl_lib.c
@@ -8853,27 +8903,25 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString Path, bool DecryptF
 TRemoteFile * TTerminal::CheckRights(const UnicodeString & EntryType, const UnicodeString & FileName, bool & WrongRights)
 {
   std::unique_ptr<TRemoteFile> FileOwner;
-  TRemoteFile * File;
   try
   {
     LogEvent(FORMAT(L"Checking %s \"%s\"...", LowerCase(EntryType), FileName));
-    ReadFile(FileName, File);
-    FileOwner.reset(File);
+    File.reset(ReadFile(FileName));
     int ForbiddenRights = TRights::rfGroupWrite | TRights::rfOtherWrite;
     if ((File->Rights->Number & ForbiddenRights) != 0)
     {
-      LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", (EntryType, FileName, File->Rights->Octal)));
+      LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", EntryType, FileName, File->Rights->Octal));
       WrongRights = true;
     }
     else
     {
-      LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", (EntryType, FileName, File->Rights->Octal)));
+      LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", EntryType, FileName, File->Rights->Octal));
     }
   }
   catch (Exception & E)
   {
   }
-  return FileOwner.release();
+  return File.release();
 }
 
 UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
