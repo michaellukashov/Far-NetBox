@@ -1276,7 +1276,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
     ADF(L"User name: %s (Password: %s, Key file: %s, Passphrase: %s)",
       UserName, LogSensitive(Data->GetPassword()),
-       LogSensitive(Data->PublicKeyFile), LogSensitive(Data->Passphrase));
+       LogSensitive(Data->ResolvePublicKeyFile()), LogSensitive(Data->Passphrase));
     if (Data->GetUsesSsh())
     {
       ADF(L"Tunnel: %s", BooleanToEngStr(Data->FTunnel));

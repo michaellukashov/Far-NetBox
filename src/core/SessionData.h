@@ -10,18 +10,18 @@
 #include "Configuration.h"
 #include <Xml.XMLIntf.hpp>
 
-enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour, cipChaCha20, };
-#define CIPHER_COUNT (cipChaCha20 + 1)
+enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour, cipChaCha20, cipAESGCM, cipCount };
+#define CIPHER_COUNT (cipCount)
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
 enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6, fsS3 = 7, };
 #define FSPROTOCOL_COUNT (fsS3+1)
-extern const wchar_t *ProxyMethodNames;
-enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd, };
-enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGEx, kexRSA, kexECDH, };
-#define KEX_COUNT (kexECDH + 1)
-enum THostKey { hkWarn, hkRSA, hkDSA, hkECDSA, hkED25519, hkED448, hkMax, };
-#define HOSTKEY_COUNT (hkMax)
-enum TGssLib { gssGssApi32, gssSspi, gssCustom, };
+extern const wchar_t * ProxyMethodNames;
+enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd };
+enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGroup15, kexDHGroup16, kexDHGroup17, kexDHGroup18, kexDHGEx, kexRSA, kexECDH, kexNTRUHybrid, kexCount };
+#define KEX_COUNT (kexCount)
+enum THostKey { hkWarn, hkRSA, hkDSA, hkECDSA, hkED25519, hkED448, hkCount };
+#define HOSTKEY_COUNT (hkCount)
+enum TGssLib { gssGssApi32, gssSspi, gssCustom };
 #define GSSLIB_COUNT (gssCustom + 1)
 // names have to match PuTTY registry entries (see settings.c)
 enum TSshBug { sbHMAC2, sbDeriveKey2, sbRSAPad2,
@@ -33,8 +33,7 @@ extern const wchar_t * PingTypeNames;
 enum TPingType { ptOff, ptNullPacket, ptDummyCommand, };
 enum TAddressFamily { afAuto, afIPv4, afIPv6, };
 enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls, };
-
-// ssl2 has no effect now
+// ssl2 and ssh3 are equivalent of tls10 now
 enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12, tls13 = 13 };
 // has to match libs3 S3UriStyle
 enum TS3UrlStyle { s3usVirtualHost, s3usPath };
@@ -187,11 +186,13 @@ private:
   bool FVMSAllRevisions{false};
   UnicodeString FPublicKeyFile;
   UnicodeString FPassphrase;
+  UnicodeString FDetachedCertificate;
   UnicodeString FPuttyProtocol;
   TFSProtocol FFSProtocol{};
   bool FModified{false};
   UnicodeString FLocalDirectory;
   UnicodeString FRemoteDirectory;
+  UnicodeString FOtherLocalDirectory;
   bool FSpecial{false};
   bool FSynchronizeBrowsing{false};
   bool FUpdateDirectories{false};
@@ -279,6 +280,7 @@ private:
   int32_t FInternalEditorEncoding{0};
   UnicodeString FS3DefaultRegion;
   UnicodeString FS3SessionToken;
+  UnicodeString FS3Profile;
   TS3UrlStyle FS3UrlStyle;
   TAutoSwitch FS3MaxKeys;
   bool FS3CredentialsEnv{false};
@@ -337,9 +339,12 @@ public:
   void SetPublicKeyFile(UnicodeString value);
   UnicodeString GetPassphrase() const;
   void SetPassphrase(UnicodeString value);
+  void SetDetachedCertificate(UnicodeString value);
 
   void SetPuttyProtocol(UnicodeString value);
   bool GetCanLogin() const;
+  bool GetCanOpen() const;
+  bool GetIsLocalBrowser() const;
   void SetPingIntervalDT(TDateTime value);
   TDateTime GetPingIntervalDT() const;
   TDateTime GetFtpPingIntervalDT() const;
@@ -352,6 +357,7 @@ public:
   void SetFSProtocol(TFSProtocol value);
   UnicodeString GetFSProtocolStr() const;
   void SetLocalDirectory(UnicodeString value);
+  void SetOtherLocalDirectory(const UnicodeString & value);
   UnicodeString GetLocalDirectoryExpanded() const;
   void SetRemoteDirectory(UnicodeString value);
   void SetSynchronizeBrowsing(bool value);
@@ -466,6 +472,7 @@ public:
   void SetInternalEditorEncoding(int32_t value);
   void SetS3DefaultRegion(UnicodeString value);
   void SetS3SessionToken(UnicodeString value);
+  void SetS3Profile(UnicodeString value);
   void SetS3UrlStyle(TS3UrlStyle value);
   void SetS3MaxKeys(TAutoSwitch value);
   void SetS3CredentialsEnv(bool value);
@@ -486,7 +493,7 @@ public:
   UnicodeString GetFolderName() const;
   void Modify();
   UnicodeString GetSource() const;
-  void DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword, bool Unsafe);
+  void DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword, bool Unsafe, bool RespectDisablePasswordStoring);
   void DoSave(THierarchicalStorage * Storage,
     bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords);
 #if 0
@@ -502,6 +509,7 @@ public:
   void CopyStateData(TSessionData * SourceData);
   void CopyNonCoreData(TSessionData * SourceData);
   UnicodeString GetNormalizedPuttyProtocol() const;
+  void ReadPasswordsFromFiles();
   static RawByteString EncryptPassword(const UnicodeString Password, UnicodeString Key);
   static UnicodeString DecryptPassword(const RawByteString Password, UnicodeString Key);
   static RawByteString StronglyRecryptPassword(const RawByteString Password, UnicodeString Key);
@@ -547,7 +555,7 @@ public:
   void NonPersistent();
   void Load(THierarchicalStorage * Storage, bool PuttyImport);
   void ApplyRawSettings(TStrings * RawSettings, bool Unsafe);
-  void ApplyRawSettings(THierarchicalStorage * Storage, bool Unsafe);
+  void ApplyRawSettings(THierarchicalStorage * Storage, bool Unsafe, bool RespectDisablePasswordStoring);
   __removed void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode);
   void ImportFromOpenssh(TStrings * Lines);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
@@ -584,6 +592,7 @@ public:
   bool HasSessionName() const;
   bool HasAutoCredentials() const;
   int32_t GetDefaultPort() const;
+  UnicodeString ResolvePublicKeyFile();
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
   __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
@@ -650,14 +659,20 @@ public:
   RWProperty<UnicodeString> PublicKeyFile{nb::bind(&TSessionData::GetPublicKeyFile, this), nb::bind(&TSessionData::SetPublicKeyFile, this)};
   __property UnicodeString Passphrase  = { read = GetPassphrase, write = SetPassphrase };
   RWProperty<UnicodeString> Passphrase{nb::bind(&TSessionData::GetPassphrase, this), nb::bind(&TSessionData::SetPassphrase, this)};
+  __property UnicodeString DetachedCertificate  = { read=FDetachedCertificate, write=SetDetachedCertificate };
+  RWPropertySimple<UnicodeString> DetachedCertificate{FDetachedCertificate, nb::bind(&TSessionData::SetDetachedCertificate, this)};
   __property UnicodeString PuttyProtocol  = { read = FPuttyProtocol, write = SetPuttyProtocol };
   RWProperty<UnicodeString> PuttyProtoco{nb::bind(&TSessionData::GetPuttyProtocol, this), nb::bind(&TSessionData::SetPuttyProtocol, this)};
   __property TFSProtocol FSProtocol = { read = FFSProtocol, write = SetFSProtocol  };
   RWProperty<TFSProtocol> FSProtocol{nb::bind(&TSessionData::GetFSProtocol, this), nb::bind(&TSessionData::SetFSProtocol, this)};
-  __property UnicodeString FSProtocolStr  = { read = GetFSProtocolStr };
+  __property UnicodeString FSProtocolStr = { read = GetFSProtocolStr };
   ROProperty<UnicodeString> FSProtocolStr{nb::bind(&TSessionData::GetFSProtocolStr, this)};
   __property bool Modified  = { read = FModified, write = FModified };
   __property bool CanLogin  = { read = GetCanLogin };
+  __property bool CanOpen = { read=GetCanOpen };
+  ROProperty<bool> CanOpen{nb::bind(&TSessionData::GetCanOpen, this)};
+  __property bool IsLocalBrowser = { read=GetIsLocalBrowser };
+  ROProperty<bool> IsLocalBrowser{nb::bind(&TSessionData::GetIsLocalBrowser, this)};
   __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
   RWPropertySimple<bool> ClearAliases{&FClearAliases, nb::bind(&TSessionData::SetClearAliases, this)};
   __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
@@ -672,6 +687,8 @@ public:
   __property UnicodeString LocalDirectory  = { read = FLocalDirectory, write = SetLocalDirectory };
   RWPropertySimple<UnicodeString> LocalDirectory{&FLocalDirectory, nb::bind(&TSessionData::SetLocalDirectory, this) };
   __property UnicodeString LocalDirectoryExpanded = { read = GetLocalDirectoryExpanded };
+  __property UnicodeString OtherLocalDirectory = { read=FOtherLocalDirectory, write=SetOtherLocalDirectory };
+  RWPropertySimple<UnicodeString> OtherLocalDirectory{&FOtherLocalDirectory, nb::bind(&TSessionData::SetOtherLocalDirectory, this) };
   __property UnicodeString RemoteDirectory  = { read = FRemoteDirectory, write = SetRemoteDirectory };
   RWProperty<UnicodeString> RemoteDirectory{nb::bind(&TSessionData::GetRemoteDirectory, this), nb::bind(&TSessionData::SetRemoteDirectory, this)};
   __property bool SynchronizeBrowsing = { read = FSynchronizeBrowsing, write = SetSynchronizeBrowsing };
@@ -805,6 +822,8 @@ public:
   __property UnicodeString S3DefaultRegion = { read = FS3DefaultRegion, write = SetS3DefaultRegion };
   RWProperty<UnicodeString> S3DefaultRegion{nb::bind(&TSessionData::GetS3DefaultRegion, this), nb::bind(&TSessionData::SetS3DefaultRegion, this)};
   __property UnicodeString S3SessionToken = { read = FS3SessionToken, write = SetS3SessionToken };
+  __property UnicodeString S3Profile = { read = FS3Profile, write = SetS3Profile };
+  RWPropertySimple<UnicodeString> S3Profile{&FS3Profile, nb::bind(&TSessionData::SetS3Profile, this) };
   __property TS3UrlStyle S3UrlStyle = { read = FS3UrlStyle, write = SetS3UrlStyle };
   __property TAutoSwitch S3MaxKeys = { read = FS3MaxKeys, write = SetS3MaxKeys };
   __property bool S3CredentialsEnv = { read = FS3CredentialsEnv, write = SetS3CredentialsEnv };
@@ -1046,7 +1065,7 @@ public:
   TSessionData * ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr, int32_t Flags = 0);
   bool IsUrl(UnicodeString Url);
-  bool CanLogin(TSessionData * Data);
+  bool CanOpen(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString Name, TList * List);
   TStrings * GetFolderOrWorkspaceList(const UnicodeString Name);
   TStrings * GetWorkspaces() const;
@@ -1057,7 +1076,7 @@ public:
   __property TSessionData *DefaultSettings  = { read = FDefaultSettings, write = SetDefaultSettings };
   RWProperty<const TSessionData *> DefaultSettings{nb::bind(&TStoredSessionList::GetDefaultSettingsConst, this), nb::bind(&TStoredSessionList::SetDefaultSettings, this)};
 
-  static void ImportHostKeys(
+  static int32_t ImportHostKeys(
     THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected);
   static void ImportHostKeys(
     const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected);
