@@ -329,6 +329,7 @@ void TSimpleThread::InitSimpleThread()
 
 TSimpleThread::~TSimpleThread() noexcept
 {
+  // This is turn calls pure virtual Terminate, what does not work as intended, do not rely on it and remove the call eventually
   Close();
 
   if (FThread != nullptr)
@@ -1264,8 +1265,9 @@ void TBackgroundTerminal::Init(
   TSessionData *ASessionData, TConfiguration *AConfiguration, TTerminalItem *Item,
   const UnicodeString Name)
 {
-  TSecondaryTerminal::Init(ASessionData, AConfiguration, Name);
+  TSecondaryTerminal::Init(ASessionData, AConfiguration, Name, nullptr);
   FItem = Item;
+  ActionLog->Enabled = false;
 }
 
 bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
@@ -2210,9 +2212,9 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal *Terminal,
   FFilesToCopy = std::make_unique<TStringList>();
   for (int32_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
-    FFilesToCopy->AddObject(AFilesToCopy->GetString(Index),
-      ((AFilesToCopy->GetObj(Index) == nullptr) || (Side == osLocal)) ? nullptr :
-      AFilesToCopy->GetAs<TRemoteFile>(Index)->Duplicate());
+    UnicodeString FileName = AFilesToCopy->GetString(Index);
+    TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(Index);
+    FFilesToCopy->AddObject(FileName, ((File == nullptr) || (Side == osLocal)) ? nullptr : File->Duplicate());
   }
 
   FTargetDir = TargetDir;
@@ -2441,6 +2443,15 @@ void TParallelTransferQueueItem::DoExecute(TTerminal *Terminal)
 
 // TDownloadQueueItem
 
+static void ExtractRemoteSourcePath(TTerminal * Terminal, TStrings * Files, UnicodeString & Path)
+{
+  if (!base::UnixExtractCommonPath(Files, Path))
+  {
+    Path = Terminal->CurrentDirectory;
+  }
+  Path = UnixExcludeTrailingBackslash(Path);
+}
+
 TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
   const TStrings *AFilesToCopy, const UnicodeString TargetDir,
   const TCopyParamType *CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
@@ -2448,11 +2459,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
 {
   if (AFilesToCopy->GetCount() > 1)
   {
-    if (!base::UnixExtractCommonPath(AFilesToCopy, FInfo->Source))
-    {
-      FInfo->Source = Terminal->RemoteGetCurrentDirectory();
-    }
-    FInfo->Source = base::UnixExcludeTrailingBackslash(FInfo->Source);
+    ExtractRemoteSourcePath(Terminal, FilesToCopy, FInfo->Source);
     FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
       base::UnixIncludeTrailingBackslash(FInfo->Source);
   }
@@ -2486,10 +2493,31 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
+void __fastcall TDownloadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation)
+{
+  Terminal->CopyToLocal(FFilesToCopy, FTargetDir, FCopyParam, FParams, ParallelOperation);
+}
+
 void TDownloadQueueItem::DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation)
 {
   DebugAssert(Terminal != nullptr);
   Terminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam, FParams, ParallelOperation);
+}
+
+
+TDeleteQueueItem::TDeleteQueueItem(TTerminal * Terminal, TStrings * FilesToDelete, int Params) :
+  TLocatedQueueItem(Terminal)
+{
+  FInfo->Operation = foDelete;
+  FInfo->Side = osRemote;
+
+  DebugAssert(FilesToDelete != NULL);
+  FFilesToDelete.reset(TRemoteFileList::CloneStrings(FilesToDelete));
+  ExtractRemoteSourcePath(Terminal, FilesToDelete, FInfo->Source);
+
+  FInfo->ModifiedRemote = FInfo->Source;
+
+  FParams = Params;
 }
 
 // TTerminalThread

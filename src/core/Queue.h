@@ -471,6 +471,19 @@ protected:
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
 
+class TDeleteQueueItem : public TLocatedQueueItem
+{
+public:
+  TDeleteQueueItem(TTerminal * Terminal, TStrings * FilesToDelete, int Params);
+
+protected:
+  virtual void DoExecute(TTerminal * Terminal);
+
+private:
+  std::unique_ptr<TStrings> FFilesToDelete;
+  int32_t FParams{0};
+};
+
 class TUserAction;
 NB_DEFINE_CLASS_ID(TTerminalThread);
 class NB_CORE_EXPORT TTerminalThread : public TSignalThread
