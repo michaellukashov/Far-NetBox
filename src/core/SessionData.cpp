@@ -4218,7 +4218,7 @@ void TSessionData::SetLocalDirectory(UnicodeString value)
   SET_SESSION_PROPERTY(LocalDirectory);
 }
 
-void TSessionData::SetOtherLocalDirectory(const UnicodeString & value)
+void TSessionData::SetOtherLocalDirectory(UnicodeString value)
 {
   SET_SESSION_PROPERTY(OtherLocalDirectory);
 }

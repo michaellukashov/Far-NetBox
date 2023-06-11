@@ -114,19 +114,18 @@ private:
   TRemoteToken FGroup{};
   int32_t FIconIndex{0};
   bool FIsSymLink{false};
-  int32_t FIsHidden{0};
-  TRemoteFile *FLinkedFile{nullptr};
-  TRemoteFile *FLinkedByFile{nullptr};
-  TRights *FRights{nullptr};
-  TTerminal *FTerminal{nullptr};
+  TRemoteFile * FLinkedFile{nullptr};
+  TRemoteFile * FLinkedByFile{nullptr};
   UnicodeString FLinkTo;
+  TRights *FRights{nullptr};
   UnicodeString FHumanRights;
+  TTerminal *FTerminal{nullptr};
+  wchar_t FType{0};
+  bool FCyclicLink{false};
   UnicodeString FFullFileName;
+  int32_t FIsHidden{0};
   UnicodeString FTypeName;
   bool FIsEncrypted{false};
-  wchar_t FType{0};
-  bool FIsSymLink{false};
-  bool FCyclicLink{false};
 
 public:
   int32_t GetAttr() const;

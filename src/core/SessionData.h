@@ -357,7 +357,7 @@ public:
   void SetFSProtocol(TFSProtocol value);
   UnicodeString GetFSProtocolStr() const;
   void SetLocalDirectory(UnicodeString value);
-  void SetOtherLocalDirectory(const UnicodeString & value);
+  void SetOtherLocalDirectory(UnicodeString value);
   UnicodeString GetLocalDirectoryExpanded() const;
   void SetRemoteDirectory(UnicodeString value);
   void SetSynchronizeBrowsing(bool value);
@@ -660,7 +660,7 @@ public:
   __property UnicodeString Passphrase  = { read = GetPassphrase, write = SetPassphrase };
   RWProperty<UnicodeString> Passphrase{nb::bind(&TSessionData::GetPassphrase, this), nb::bind(&TSessionData::SetPassphrase, this)};
   __property UnicodeString DetachedCertificate  = { read=FDetachedCertificate, write=SetDetachedCertificate };
-  RWPropertySimple<UnicodeString> DetachedCertificate{FDetachedCertificate, nb::bind(&TSessionData::SetDetachedCertificate, this)};
+  RWPropertySimple<UnicodeString> DetachedCertificate{&FDetachedCertificate, nb::bind(&TSessionData::SetDetachedCertificate, this)};
   __property UnicodeString PuttyProtocol  = { read = FPuttyProtocol, write = SetPuttyProtocol };
   RWProperty<UnicodeString> PuttyProtoco{nb::bind(&TSessionData::GetPuttyProtocol, this), nb::bind(&TSessionData::SetPuttyProtocol, this)};
   __property TFSProtocol FSProtocol = { read = FFSProtocol, write = SetFSProtocol  };

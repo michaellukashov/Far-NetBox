@@ -21,7 +21,7 @@ public:
   virtual ~THierarchicalStorage() noexcept;
   virtual void Init() {}
   void ConfigureForPutty();
-  virtual bool OpenRootKey(bool CanCreate);
+  bool OpenRootKey(bool CanCreate);
   virtual bool OpenSubKey(const UnicodeString ASubKey, bool CanCreate);
   virtual void CloseSubKey();
   void CloseAll();
@@ -161,10 +161,10 @@ protected:
   size_t BinaryDataSize(const UnicodeString & Name);
   UnicodeString ReadAccessString();
   uint32_t ReadAccess(uint32_t CurrentAccess);
-  bool HasAccess(uint32_t Access);
+  virtual bool HasAccess(uint32_t Access);
   bool CanRead();
   bool CanWrite();
-  uint32_t GetCurrentAccess();
+  virtual uint32_t GetCurrentAccess();
 };
 
 extern TIntMapping AutoSwitchMapping;
@@ -237,8 +237,8 @@ public:
   TCustomIniFileStorage(const UnicodeString & Storage, TCustomIniFile * IniFile);
   virtual ~TCustomIniFileStorage();
 
-  virtual bool OpenRootKey(bool CanCreate);
   virtual bool OpenSubKey(const UnicodeString & SubKey, bool CanCreate);
+  virtual void CloseSubKey();
 
 private:
   UnicodeString GetCurrentSection();
@@ -284,6 +284,8 @@ protected:
   virtual size_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
 
   virtual UnicodeString DoReadRootAccessString();
+  virtual uint32_t GetCurrentAccess() override;
+  virtual bool HasAccess(uint32_t Access) override;
 
   void CacheSections();
   void ResetCache();
@@ -294,6 +296,7 @@ class TIniFileStorage : public TCustomIniFileStorage
 {
 public:
   static TIniFileStorage * CreateFromPath(const UnicodeString & AStorage);
+  static TIniFileStorage * CreateNul();
   virtual ~TIniFileStorage();
 
   virtual void Flush();

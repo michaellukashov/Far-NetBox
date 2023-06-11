@@ -2,6 +2,7 @@
 #pragma once
 
 #include <Classes.hpp>
+#include <SessionData.h>
 
 enum TKeyType
 {
@@ -17,10 +18,11 @@ struct TPrivateKey;
 NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase);
 UnicodeString TestKey(TKeyType KeyType, const UnicodeString & FileName);
 NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment);
+void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & CertificateFileName);
 NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString FileName,
   const UnicodeString Passphrase, TPrivateKey *PrivateKey);
 NB_CORE_EXPORT void FreeKey(TPrivateKey *PrivateKey);
-UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment);
+UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment, bool & HasCertificate);
 extern const UnicodeString PuttyKeyExt;
 
 NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString CustomPath);
@@ -45,6 +47,7 @@ bool IsOpenSSH(const UnicodeString SshImplementation);
 
 TStrings * SshCipherList();
 TStrings * SshKexList();
+int HostKeyToPutty(THostKey HostKey);
 TStrings * SshHostKeyList();
 TStrings * SshMacList();
 

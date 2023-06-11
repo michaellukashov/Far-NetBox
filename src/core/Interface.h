@@ -30,6 +30,7 @@ __removed #include <typeinfo>
 #define USERNAME_SWITCH L"username"
 #define PASSWORD_SWITCH L"password"
 #define PRIVATEKEY_SWITCH L"privatekey"
+#define PASSWORDSFROMFILES_SWITCH L"passwordsfromfiles"
 extern const wchar_t * TransferModeNames[];
 extern const int TransferModeNamesCount;
 extern const wchar_t *ToggleNames[];

@@ -66,8 +66,14 @@ void TOptions::Add(const UnicodeString Value)
           ValueDelimiter = Value[Index];
           break;
         }
-        // this is to treat /home/martin as parameter, not as switch
-        if ((Value[Index] != L'?') && !IsLetter(Value[Index]))
+        // This is to treat /home/martin as parameter, not as switch.
+        else if ((Value[Index] == L'?') ||
+                 IsLetter(Value[Index]) ||
+                 ((Value[Index] == L'-') && (SwitchMark == L'-') && (Value[2] == L'-'))) // allow --puttygen-switches
+        {
+          // noop
+        }
+        else
         {
           Switch = false;
           break;

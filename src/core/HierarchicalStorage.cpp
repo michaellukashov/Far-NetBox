@@ -198,6 +198,10 @@ void THierarchicalStorage::ConfigureForPutty()
 
 bool THierarchicalStorage::OpenRootKey(bool CanCreate)
 {
+  // This do not seem to be doing what it advertises.
+  // It probably "works" only when used as a first "Open". So let's verify that by this assertion.
+  DebugAssert(CurrentSubKey().IsEmpty());
+
   return OpenSubKey(UnicodeString(), CanCreate);
 }
 
@@ -1162,15 +1166,6 @@ bool TCustomIniFileStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanC
   return Result;
 }
 
-bool TCustomIniFileStorage::OpenRootKey(bool CanCreate)
-{
-  // Not supported with master storage.
-  // Actually currently, we use OpenRootKey with TRegistryStorage only.
-  DebugAssert(FMasterStorage.get() == nullptr);
-
-  return THierarchicalStorage::OpenRootKey(CanCreate);
-}
-
 bool TCustomIniFileStorage::OpenSubKey(const UnicodeString & Key, bool CanCreate)
 {
   bool Result;
@@ -1207,7 +1202,12 @@ bool TCustomIniFileStorage::OpenSubKey(const UnicodeString & Key, bool CanCreate
   return Result;
 }
 
-void TCustomIniFileStorage::DoCloseSubKey()
+void __fastcall TCustomIniFileStorage::DoCloseSubKey()
+{
+  // noop
+}
+
+void TCustomIniFileStorage::CloseSubKey()
 {
   // What we are called to restore previous key from OpenSubKey,
   // when opening path component fails, the master storage was not involved yet
@@ -1222,6 +1222,8 @@ void TCustomIniFileStorage::DoCloseSubKey()
       FMasterStorage->CloseSubKey();
     }
   }
+
+  THierarchicalStorage::CloseSubKey();
 }
 
 void TCustomIniFileStorage::DoDeleteSubKey(const UnicodeString & SubKey)
@@ -1593,6 +1595,37 @@ UnicodeString TCustomIniFileStorage::DoReadRootAccessString()
   }
   return Result;
 }
+
+uint32_t TCustomIniFileStorage::GetCurrentAccess()
+{
+  unsigned int Result;
+  // The way THierarchicalStorage::OpenSubKey is implemented, the access will be zero for non-existing keys in
+  // configuration overrides => delegating access handling to the master storage (which still should read overriden access keys)
+  if (FMasterStorage.get() != NULL)
+  {
+    Result = FMasterStorage->GetCurrentAccess();
+  }
+  else
+  {
+    Result = THierarchicalStorage::GetCurrentAccess();
+  }
+  return Result;
+}
+//---------------------------------------------------------------------------
+bool TCustomIniFileStorage::HasAccess(uint32_t Access)
+{
+  bool Result;
+  // Avoid the FFakeReadOnlyOpens assertion in THierarchicalStorage::HasAccess, which is not valid for overriden configuration
+  if (HandleByMasterStorage())
+  {
+    Result = FMasterStorage->HasAccess(Access);
+  }
+  else
+  {
+    Result = THierarchicalStorage::HasAccess(Access);
+  }
+  return Result;
+}
 //===========================================================================
 TIniFileStorage * TIniFileStorage::CreateFromPath(const UnicodeString & AStorage)
 {
@@ -1601,6 +1634,14 @@ TIniFileStorage * TIniFileStorage::CreateFromPath(const UnicodeString & AStorage
   // Moving the code to a factory solves this.
   TMemIniFile * IniFile = new TMemIniFile(AStorage);
   return new TIniFileStorage(AStorage, IniFile);
+}
+
+TIniFileStorage * TIniFileStorage::CreateNul()
+{
+  // Before we passed "nul", but we have report of a system, where opening "nul" file fails.
+  // Passing an empty string is even more efficient, as it does not even try to read the file.
+  TMemIniFile * IniFile = new TMemIniFile(EmptyStr);
+  return new TIniFileStorage(INI_NUL, IniFile);
 }
 
 TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage, TCustomIniFile * IniFile):
@@ -1617,9 +1658,10 @@ void TIniFileStorage::Flush()
   {
     FMasterStorage->Flush();
   }
-  if (FOriginal != nullptr)
+  // This does not seem correct, if storage is written after it is flushed (though we probably never do that currently)
+  if ((FOriginal != nullptr) && !FIniFile->FileName.IsEmpty())
   {
-    std::unique_ptr<TStrings> Strings(new TStringList);
+    std::unique_ptr<TStrings> Strings(std::make_unique<TStringList>());
     std::unique_ptr<TStrings> Original(FOriginal);
     FOriginal = nullptr;
 
@@ -1766,7 +1808,6 @@ private:
   UnicodeString FRootKey;
 
   bool AllowWrite();
-  void NotImplemented();
   bool AllowSection(const UnicodeString & Section);
   UnicodeString FormatKey(const UnicodeString & Section, const UnicodeString & Ident);
 };
@@ -1781,11 +1822,6 @@ TOptionsIniFile::TOptionsIniFile(TStrings * Options, TWriteMode WriteMode, const
   {
     FRootKey += PathDelim;
   }
-}
-
-void TOptionsIniFile::NotImplemented()
-{
-  throw Exception(L"Not implemented");
 }
 
 bool TOptionsIniFile::AllowWrite()
