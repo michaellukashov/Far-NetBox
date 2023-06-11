@@ -218,7 +218,6 @@ void CoreInitialize()
 
   PuttyInitialize();
   TFileZillaIntf::Initialize();
-  // TlsCipherList() also relies on this to be called
   NeonInitialize();
 
   CoreLoad();

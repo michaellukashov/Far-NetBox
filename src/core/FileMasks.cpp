@@ -1035,7 +1035,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString Command,
 
 void TCustomCommand::DelimitReplacement(UnicodeString &Replacement, wchar_t Quote)
 {
-  Replacement = ShellDelimitStr(Replacement, Quote);
+  Replacement = DelimitStr(Replacement, Quote);
 }
 
 void TCustomCommand::Validate(const UnicodeString Command)
@@ -1118,33 +1118,33 @@ int32_t TInteractiveCustomCommand::PatternLen(const UnicodeString Command, int32
   wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
   switch (PatternCmd)
   {
-  case L'?':
-  {
-    const wchar_t *Ptr = Command.c_str() + Index - 1;
-    const wchar_t *PatternEnd = wcschr(Ptr + 1, L'!');
-    if (PatternEnd == nullptr)
-    {
-      throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
-    }
-    Len = PatternEnd - Ptr + 1;
-  }
-  break;
+    case L'?':
+      {
+        const wchar_t * Ptr = Command.c_str() + Index - 1;
+        const wchar_t * PatternEnd = wcschr(Ptr + 1, L'!');
+        if (PatternEnd == nullptr)
+        {
+          throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
+        }
+        Len = PatternEnd - Ptr + 1;
+      }
+      break;
 
-  case L'`':
-  {
-    const wchar_t *Ptr = Command.c_str() + Index - 1;
-    const wchar_t *PatternEnd = wcschr(Ptr + 2, L'`');
-    if (PatternEnd == nullptr)
-    {
-      throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
-    }
-    Len = PatternEnd - Ptr + 1;
-  }
-  break;
+    case L'`':
+      {
+        const wchar_t * Ptr = Command.c_str() + Index - 1;
+        const wchar_t * PatternEnd = wcschr(Ptr + 2, L'`');
+        if (PatternEnd == nullptr)
+        {
+          throw Exception(FMTLOAD(CUSTOM_COMMAND_UNTERMINATED, Command[Index + 1], Index));
+        }
+        Len = PatternEnd - Ptr + 1;
+      }
+      break;
 
-  default:
-    Len = FChildCustomCommand->PatternLen(Command, Index);
-    break;
+    default:
+      Len = FChildCustomCommand->PatternLen(Command, Index);
+      break;
   }
   return Len;
 }
@@ -1296,6 +1296,7 @@ int32_t TFileCustomCommand::PatternLen(const UnicodeString Command, int32_t Inde
     case L'@':
     case L'u':
     case L'p':
+    case L'k':
     case L'#':
     case L'/':
     case L'&':
@@ -1354,9 +1355,16 @@ bool TFileCustomCommand::PatternReplacement(
   }
   else if (::SameText(Pattern, L"!#"))
   {
+    if (FData.SessionData != nullptr)
+    {
+      Replacement = IntToStr(FData.SessionData->PortNumber);
+    }
+  }
+  else if (SameText(Pattern, L"!k"))
+  {
     if (SessionData != nullptr)
     {
-      Replacement = IntToStr(SessionData->GetPortNumber());
+      Replacement = FData.SessionData->ResolvePublicKeyFile();
     }
   }
   else if (Pattern == L"!/")

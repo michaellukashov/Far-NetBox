@@ -165,9 +165,10 @@ public:
     const TRemoteFile *AFile, const TRemoteProperties *Properties,
     TChmodSessionAction &Action) = 0;
   virtual bool LoadFilesProperties(TStrings *AFileList) = 0;
-  virtual void CalculateFilesChecksum(const UnicodeString Alg,
-    TStrings *AFileList, TStrings *Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum) = 0;
+  virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg);
+  virtual void CalculateFilesChecksum(
+    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    TFileOperationProgressType * OperationProgress, bool FirstLevel) = 0;
   virtual void CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     int32_t AParams, TFileOperationProgressType *OperationProgress,

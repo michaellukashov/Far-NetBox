@@ -2,13 +2,11 @@
 #pragma once
 
 #include <Common.h>
+#include "SessionInfo.h"
 
-class TConfiguration;
 extern TConfiguration *Configuration;
-class TStoredSessionList;
 NB_CORE_EXPORT extern TStoredSessionList *StoredSessions;
 extern bool AnySession;
-class TApplicationLog;
 extern TApplicationLog * ApplicationLog;
 #define AppLog(S) if (ApplicationLog->Logging) ApplicationLog->Log(S)
 #define AppLogFmt(S, F) AppLog(FORMAT(S, F))

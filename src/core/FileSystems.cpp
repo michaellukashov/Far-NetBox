@@ -43,5 +43,12 @@ UnicodeString TCustomFileSystem::CreateTargetDirectory(
 
 UnicodeString TCustomFileSystem::GetHomeDirectory()
 {
-  throw Exception("Not implemented");
+  NotImplemented();
+  return EmptyStr;
+}
+
+UnicodeString TCustomFileSystem::CalculateFilesChecksumInitialize(const UnicodeString & DebugUsedArg(Alg))
+{
+  NotImplemented();
+  return EmptyStr;
 }
