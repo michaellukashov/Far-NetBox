@@ -162,6 +162,7 @@ constexpr int64_t SFTP_EXT_STATVFS_ST_NOSUID = 0x2;
 constexpr char * SFTP_EXT_HARDLINK = "hardlink@openssh.com";
 constexpr char * SFTP_EXT_HARDLINK_VALUE_V1 = "1";
 constexpr char * SFTP_EXT_COPY_FILE = "copy-file";
+constexpr char * SFTP_EXT_COPY_DATA = "copy-data";
 constexpr char * SFTP_EXT_LIMITS = "limits@openssh.com";
 
 constexpr wchar_t OGQ_LIST_OWNERS = 0x01;
@@ -2011,9 +2012,7 @@ void TSFTPFileSystem::Init(void * Data /* TSecureShell*/)
   FFileSystemInfoValid = false;
   FVersion = nb::NPOS;
   FPacketReservations = std::make_unique<TList>();
-  FPacketNumbers.clear();
-  FPreviousLoggedPacket = 0;
-  FNotLoggedPackets = 0;
+  ResetConnection();
   FBusy = 0;
   FAvoidBusy = false;
   FUtfStrings = asOff;
@@ -2057,6 +2056,7 @@ void TSFTPFileSystem::Open()
 void TSFTPFileSystem::Close()
 {
   FSecureShell->Close();
+  ResetConnection();
 }
 
 bool TSFTPFileSystem::GetActive() const
@@ -2196,7 +2196,11 @@ void TSFTPFileSystem::ResetConnection()
     SAFE_DESTROY(Item);
   }
   FPacketReservations->Clear();
+  // FPacketNumbers = VarArrayCreate(OPENARRAY(int, (0, 1)), varLongWord);
   FPacketNumbers.clear();
+  FNotLoggedRequests.clear();
+  FPreviousLoggedPacket = 0;
+  FNotLoggedWritePackets = FNotLoggedReadPackets = FNotLoggedStatusPackets = FNotLoggedDataPackets = 0;
 }
 
 bool TSFTPFileSystem::IsCapable(int32_t Capability) const
@@ -2207,6 +2211,7 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
     case fcShellAnyCommand:
     case fcLocking:
     case fcAclChangingFiles: // pending implementation
+    case fcMoveOverExistingFile:
       return false;
 
     case fcNewerOnlyUpload:
@@ -2302,7 +2307,9 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
 
     case fcRemoteCopy:
       return
+        // Implemented by ProFTPD/mod_sftp, OpenSSH (since 9.0) and Bitvise WinSSHD (without announcing it)
         SupportsExtension(SFTP_EXT_COPY_FILE) ||
+        SupportsExtension(SFTP_EXT_COPY_DATA) ||
         // see above
         (FSecureShell->GetSshImplementation() == sshiBitvise);
 
@@ -2322,7 +2329,12 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
 
 bool TSFTPFileSystem::SupportsExtension(const UnicodeString Extension) const
 {
-  return FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension) >= 0);
+  return
+    // OpenSSH announce extensions directly in the SSH_FXP_VERSION packet only.
+    // Bitvise uses "supported2" extension for some (mostly the standard ones) and SSH_FXP_VERSION for other.
+    // ProFTPD uses "supported2" extension for the standard extensions. And repeats them along with non-standard in the SSH_FXP_VERSION.
+    (FExtensions->IndexOfName(Extension) >= 0) ||
+    (FSupport->Loaded && (FSupport->Extensions->IndexOf(Extension) >= 0));
 }
 
 void TSFTPFileSystem::BusyStart()
@@ -2444,6 +2456,36 @@ void TSFTPFileSystem::Progress(TFileOperationProgressType *OperationProgress)
   FTerminal->Progress(OperationProgress);
 }
 
+void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
+{
+  std::vector<UnicodeString> NotLogged;
+  #define ADD_NOT_LOGGED(V, N) \
+    if (FNotLogged##V##Packets > 0) \
+    { \
+      NotLogged.push_back(FORMAT(L"%d SSH_FXP_"#N, FNotLogged##V##Packets)); \
+      FNotLogged##V##Packets = 0; \
+    }
+  ADD_NOT_LOGGED(Write, WRITE);
+  ADD_NOT_LOGGED(Read, READ);
+  ADD_NOT_LOGGED(Data, DATA);
+  ADD_NOT_LOGGED(Status, STATUS);
+  if (!NotLogged.empty())
+  {
+    UnicodeString S;
+    for (size_t Index = 0; Index < NotLogged.size(); Index++)
+    {
+      AddToList(S, NotLogged[Index], (Index < NotLogged.size() - 1 ? L", " : L" and "));
+    }
+    FTerminal->LogEvent(FORMAT(L"Skipped %s packets", S));
+  }
+  FTerminal->Log->Add(
+    Type, FORMAT(L"Type: %s, Size: %d, Number: %d", Packet->TypeName, (int)Packet->Length, (int)Packet->MessageNumber));
+  if (FTerminal->Configuration->ActualLogProtocol >= 2)
+  {
+    FTerminal->Log->Add(Type, Packet->Dump());
+  }
+}
+
 void TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
 {
   // putting here for a lack of better place
@@ -2463,23 +2505,20 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
           (Packet->GetType() != FPreviousLoggedPacket) ||
           (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1))
       {
-        if (FNotLoggedPackets)
-        {
-          FTerminal->LogEvent(FORMAT("%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
-            FNotLoggedPackets));
-          FNotLoggedPackets = 0;
-        }
-        FTerminal->GetLog()->Add(llInput, FORMAT("Type: %s, Size: %d, Number: %d",
-          Packet->GetTypeName(), nb::ToInt(Packet->GetLength()), nb::ToInt(Packet->GetMessageNumber())));
-        if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2)
-        {
-          __removed FTerminal->GetLog()->Add(llInput, Packet->Dump());
-        }
-        FPreviousLoggedPacket = Packet->GetType();
+        LogPacket(Packet, llInput);
+        FPreviousLoggedPacket = Packet->Type;
       }
       else
       {
-        FNotLoggedPackets++;
+        if (Packet->Type == SSH_FXP_WRITE)
+        {
+          FNotLoggedWritePackets++;
+        }
+        else if (DebugAlwaysTrue(Packet->Type == SSH_FXP_READ))
+        {
+          FNotLoggedReadPackets++;
+        }
+        FNotLoggedRequests.insert(Packet->MessageNumber);
       }
     }
     FSecureShell->Send(Packet->GetSendData(), Packet->GetSendLength());
@@ -2490,13 +2529,12 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
   } end_try__finally
 }
 
-SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
-  SSH_FX_TYPE AllowStatus)
+SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
+  TSFTPPacket * Packet, SSH_FX_TYPE AllowStatus, bool DoNotForceLog)
 {
   SSH_FX_TYPE Code = Packet->GetCardinal();
 
-  static int32_t Messages[] =
-  {
+  static int32_t Messages[] = {
     SFTP_STATUS_OK,
     SFTP_STATUS_EOF,
     SFTP_STATUS_NO_SUCH_FILE,
@@ -2592,13 +2630,13 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
     UnicodeString HelpKeyword;
     switch (Code)
     {
-    case SSH_FX_FAILURE:
-      HelpKeyword = HELP_SFTP_STATUS_FAILURE;
-      break;
+      case SSH_FX_FAILURE:
+        HelpKeyword = HELP_SFTP_STATUS_FAILURE;
+        break;
 
-    case SSH_FX_PERMISSION_DENIED:
-      HelpKeyword = HELP_SFTP_STATUS_PERMISSION_DENIED;
-      break;
+      case SSH_FX_PERMISSION_DENIED:
+        HelpKeyword = HELP_SFTP_STATUS_PERMISSION_DENIED;
+        break;
     }
     UnicodeString Error = FMTLOAD(SFTP_ERROR_FORMAT3, MessageStr,
       Code, LanguageTag, ServerMessage);
@@ -2612,7 +2650,7 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(TSFTPPacket *Packet,
   }
   else
   {
-    if (!FNotLoggedPackets || Code)
+    if (!DoNotForceLog || (Code != 0))
     {
       if (FTerminal->Configuration->ActualLogProtocol >= 0)
       {
@@ -2681,6 +2719,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
 
   SSH_FX_TYPE Result = SSH_FX_OK;
   int32_t Reservation = FPacketReservations->IndexOf(Packet);
+  bool NotLogged;
 
   if ((Reservation < 0) || (Packet->GetCapacity() == 0))
   {
@@ -2688,6 +2727,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
     do
     {
       IsReserved = false;
+      NotLogged = false;
 
       DebugAssert(Packet);
 
@@ -2706,29 +2746,26 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
         FSecureShell->Receive(Packet->GetData(), Length);
         Packet->DataUpdated(Length);
 
+        bool ResponseToNotLoggedRequest = (FNotLoggedRequests.erase(Packet->MessageNumber) != 0);
         if (FTerminal->Log->Logging && (FTerminal->Configuration->ActualLogProtocol >= 0))
         {
-          if ((FPreviousLoggedPacket != SSH_FXP_READ &&
-               FPreviousLoggedPacket != SSH_FXP_WRITE) ||
-              (Packet->GetType() != SSH_FXP_STATUS && Packet->GetType() != SSH_FXP_DATA) ||
-              (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1))
+          if (!ResponseToNotLoggedRequest ||
+              (Packet->Type != SSH_FXP_STATUS && Packet->Type != SSH_FXP_DATA) ||
+              (FTerminal->Configuration->ActualLogProtocol >= 1))
           {
-            if (FNotLoggedPackets)
-            {
-              FTerminal->LogEvent(FORMAT("%d skipped SSH_FXP_WRITE, SSH_FXP_READ, SSH_FXP_DATA and SSH_FXP_STATUS packets.",
-                FNotLoggedPackets));
-              FNotLoggedPackets = 0;
-            }
-            FTerminal->GetLog()->Add(llOutput, FORMAT("Type: %s, Size: %d, Number: %d",
-              Packet->GetTypeName(), nb::ToInt(Packet->GetLength()), nb::ToInt(Packet->GetMessageNumber())));
-            if (False && (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
-            {
-              FTerminal->GetLog()->Add(llOutput, Packet->Dump());
-            }
+            LogPacket(Packet, llOutput);
           }
           else
           {
-            FNotLoggedPackets++;
+            if (Packet->Type == SSH_FXP_STATUS)
+            {
+              FNotLoggedStatusPackets++;
+            }
+            else if (DebugAlwaysTrue(Packet->Type == SSH_FXP_DATA))
+            {
+              FNotLoggedDataPackets++;
+            }
+            NotLogged = true; // used only for the response we wait for
           }
         }
 
@@ -2790,7 +2827,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
         {
           AllowStatus = (ExpectedType == SSH_FXP_STATUS ? asOK : asNo);
         }
-        Result = GotStatusPacket(Packet, AllowStatus);
+        Result = GotStatusPacket(Packet, AllowStatus, NotLogged);
       }
       else if (ExpectedType != Packet->GetType())
       {
@@ -3339,7 +3376,23 @@ void TSFTPFileSystem::DoStartup()
       else if (ExtensionName == SFTP_EXT_LIMITS)
       {
         UnicodeString LimitsVersion = AnsiToString(ExtensionData);
-        FTerminal->LogEvent(FORMAT(L"Supports %s extension version %s", ExtensionName, LimitsVersion));
+        if (LimitsVersion == SFTP_EXT_LIMITS_VALUE_V1)
+        {
+          SupportsLimits = true;
+          FTerminal->LogEvent(FORMAT(L"Supports %s extension version %s", ExtensionName, LimitsVersion));
+        }
+        else
+        {
+          FTerminal->LogEvent(FORMAT(L"Unsupported %s extension version %s", ExtensionName, LimitsVersion));
+        }
+      }
+      // See the comment in SupportsExtension
+      else if ((ExtensionName == SFTP_EXT_COPY_FILE) ||
+               (ExtensionName == SFTP_EXT_COPY_DATA) ||
+               (ExtensionName == SFTP_EXT_SPACE_AVAILABLE) ||
+               (ExtensionName == SFTP_EXT_CHECK_FILE))
+      {
+        FTerminal->LogEvent(FORMAT(L"Supports extension %s=%s", ExtensionName, ExtensionDisplayData));
       }
       else
       {
@@ -3382,50 +3435,61 @@ void TSFTPFileSystem::DoStartup()
   const TSessionInfo &Info = GetSessionInfo();
   switch (GetSessionData()->GetNotUtf())
   {
-  case asOff:
-    FUtfStrings = asOn;
-    FTerminal->LogEvent("We will use UTF-8 strings as configured");
-    break;
+    case asOff:
+      FUtfStrings = asOn;
+      FTerminal->LogEvent("We will use UTF-8 strings as configured");
+      break;
 
-  case asAuto:
-    // Nb, Foxit server does not exist anymore
-    if (GetSessionInfo().SshImplementation.Pos("Foxit-WAC-Server") == 1)
-    {
-      FUtfStrings = asOff;
-      FTerminal->LogEvent("We will not use UTF-8 strings as the server is known not to use them");
-    }
-    else
-    {
-      if (FVersion >= 4)
+    case asAuto:
+      // Nb, Foxit server does not exist anymore
+      if (GetSessionInfo().SshImplementation.Pos("Foxit-WAC-Server") == 1)
       {
-        FTerminal->LogEvent("We will use UTF-8 strings as it is mandatory with SFTP version 4 and newer");
-        FUtfStrings = asOn;
+        FUtfStrings = asOff;
+        FTerminal->LogEvent("We will not use UTF-8 strings as the server is known not to use them");
       }
       else
       {
-        FTerminal->LogEvent("We will use UTF-8 strings until server sends an invalid UTF-8 string as with SFTP version 3 and older UTF-8 strings are not mandatory");
-        FUtfStrings = asAuto;
-        FUtfDisablingAnnounced = false;
+        if (FVersion >= 4)
+        {
+          FTerminal->LogEvent("We will use UTF-8 strings as it is mandatory with SFTP version 4 and newer");
+          FUtfStrings = asOn;
+        }
+        else
+        {
+          FTerminal->LogEvent("We will use UTF-8 strings until server sends an invalid UTF-8 string as with SFTP version 3 and older UTF-8 strings are not mandatory");
+          FUtfStrings = asAuto;
+          FUtfDisablingAnnounced = false;
+        }
       }
-    }
-    break;
+      break;
 
-  case asOn:
-    FTerminal->LogEvent("We will not use UTF-8 strings as configured");
-    FUtfStrings = asOff;
-    break;
+    case asOn:
+      FTerminal->LogEvent("We will not use UTF-8 strings as configured");
+      FUtfStrings = asOff;
+      break;
 
-  default:
-    DebugFail();
-    break;
+    default:
+      DebugFail();
+      break;
   }
 
   FMaxPacketSize = nb::ToUInt32(GetSessionData()->GetSFTPMaxPacketSize());
   if (FMaxPacketSize == 0)
   {
-    if ((FSecureShell->GetSshImplementation() == sshiOpenSSH) && (FVersion == 3) && !FSupport->Loaded)
+    uint32_t PacketPayload = 4;
+    if (SupportsLimits)
     {
-      FMaxPacketSize = 4 + (256 * 1024); // len + 256kB payload
+      TSFTPPacket Packet(SSH_FXP_EXTENDED);
+      Packet.AddString(SFTP_EXT_LIMITS);
+      SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
+      unsigned int MaxPacketSize = std::min(static_cast<__int64>(std::numeric_limits<unsigned long>::max()), Packet.GetInt64());
+      FTerminal->LogEvent(FORMAT(L"Limiting packet size to server's limit of %d + %d bytes",
+        (static_cast<int>(MaxPacketSize), static_cast<int>(PacketPayload))));
+      FMaxPacketSize = MaxPacketSize + PacketPayload;
+    }
+    else if ((FSecureShell->GetSshImplementation() == sshiOpenSSH) && (FVersion == 3) && !FSupport->Loaded)
+    {
+      FMaxPacketSize = PacketPayload + (256 * 1024); // len + 256kB payload
       FTerminal->LogEvent(FORMAT("Limiting packet size to OpenSSH sftp-server limit of %d bytes",
         int(FMaxPacketSize)));
     }
@@ -3433,7 +3497,7 @@ void TSFTPFileSystem::DoStartup()
     // possibly it is sshlib-related
     else if (Info.SshImplementation.Pos(L"Momentum SSH Server") != 0)
     {
-      FMaxPacketSize = 4 + (32 * 1024);
+      FMaxPacketSize = PacketPayload + (32 * 1024);
       FTerminal->LogEvent(FORMAT("Limiting packet size to Momentum sftp-server limit of %d bytes",
         int(FMaxPacketSize)));
     }
@@ -3690,7 +3754,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
       }
       else if (Response.GetType() == SSH_FXP_STATUS)
       {
-        isEOF = (GotStatusPacket(&Response, asEOF) == SSH_FX_EOF);
+        isEOF = (GotStatusPacket(&Response, asEOF, false) == SSH_FX_EOF);
       }
       else
       {
@@ -3948,19 +4012,64 @@ void TSFTPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRem
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
-  const UnicodeString ANewName)
+void TSFTPFileSystem::DoCloseRemoteIfOpened(const RawByteString & Handle)
 {
-  // Implemented by ProFTPD/mod_sftp and Bitvise WinSSHD (without announcing it)
-  DebugAssert(SupportsExtension(SFTP_EXT_COPY_FILE) || (FSecureShell->GetSshImplementation() == sshiBitvise));
-  TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
-  Packet.AddString(SFTP_EXT_COPY_FILE);
-  UnicodeString RealName = Canonify(AFileName);
-  bool Encrypted = FTerminal->IsFileEncrypted(RealName);
-  AddPathString(Packet, RealName);
-  AddPathString(Packet, Canonify(ANewName), Encrypted);
-  Packet.AddBool(false);
-  SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+  if (!Handle.IsEmpty())
+  {
+    TSFTPPacket Packet(SSH_FXP_CLOSE);
+    Packet.AddString(Handle);
+    SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+  }
+}
+
+void TSFTPFileSystem::RemoteCopyFile(
+  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString ANewName)
+{
+  UnicodeString FileNameCanonical = Canonify(FileName);
+  bool Encrypted = FTerminal->IsFileEncrypted(FileNameCanonical);
+  UnicodeString NewNameCanonical = Canonify(NewName);
+
+  if (SupportsExtension(SFTP_EXT_COPY_FILE) || (FSecureShell->SshImplementation == sshiBitvise))
+  {
+    TSFTPPacket Packet(SSH_FXP_EXTENDED);
+    Packet.AddString(SFTP_EXT_COPY_FILE);
+    AddPathString(Packet, FileNameCanonical);
+    AddPathString(Packet, NewNameCanonical, Encrypted);
+    Packet.AddBool(false);
+    SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+  }
+  else
+  {
+    DebugAssert(SupportsExtension(SFTP_EXT_COPY_DATA));
+
+    __int64 Size = DebugAlwaysTrue(File != NULL) ? File->Size : -1;
+    RawByteString SourceRemoteHandle, DestRemoteHandle;
+    try
+    {
+      SourceRemoteHandle = SFTPOpenRemoteFile(FileNameCanonical, SSH_FXF_READ, Encrypted, Size);
+      // SFTP_EXT_COPY_FILE does not allow overwritting existing files
+      // (the specification does not mandate it, but it is implemented like that both in ProFTPD and Bitvise).
+      // So using SSH_FXF_EXCL for consistency.
+      DestRemoteHandle = SFTPOpenRemoteFile(NewNameCanonical, SSH_FXF_WRITE | SSH_FXF_CREAT | SSH_FXF_EXCL, Encrypted, Size);
+
+      TSFTPPacket Packet(SSH_FXP_EXTENDED);
+      Packet.AddString(SFTP_EXT_COPY_DATA);
+      Packet.AddString(SourceRemoteHandle);
+      Packet.AddInt64(0);
+      Packet.AddInt64(0); // until EOF
+      Packet.AddString(DestRemoteHandle);
+      Packet.AddInt64(0);
+      SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+    }
+    __finally
+    {
+      if (FTerminal->Active)
+      {
+        DoCloseRemoteIfOpened(SourceRemoteHandle);
+        DoCloseRemoteIfOpened(DestRemoteHandle);
+      }
+    }
+  }
 }
 
 void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt)
@@ -4184,77 +4293,37 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings *AFileList)
   return Result;
 }
 
-void TSFTPFileSystem::DoCalculateFilesChecksum(
-  const UnicodeString Alg, const UnicodeString SftpAlg,
-  TStrings *AFileList, TStrings *Checksums,
-  TCalculatedChecksumEvent OnCalculatedChecksum,
-  TFileOperationProgressType *OperationProgress, bool FirstLevel)
+void TSFTPFileSystem::CalculateFilesChecksum(
+  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+  TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
-  TOnceDoneOperation OnceDoneOperation; // not used
-
-  // recurse into subdirectories only if we have callback function
-  if (OnCalculatedChecksum != nullptr)
-  {
-    for (int32_t Index1 = 0; Index1 < AFileList->GetCount(); ++Index1)
-    {
-      TRemoteFile *File = AFileList->GetAs<TRemoteFile>(Index1);
-      DebugAssert(File != nullptr);
-      if (File && File->GetIsDirectory() && FTerminal->CanRecurseToDirectory(File) &&
-          IsRealFile(File->FileName))
-      {
-        OperationProgress->SetFile(File->GetFileName());
-        std::unique_ptr<TRemoteFileList> SubFiles(
-          FTerminal->CustomReadDirectoryListing(File->GetFullFileName(), false));
-
-        if (SubFiles != nullptr)
-        {
-          std::unique_ptr<TStrings> SubFileList(std::make_unique<TStringList>());
-          bool Success = false;
-          try__finally
-          {
-            OperationProgress->SetFile(File->GetFileName());
-
-            for (int32_t Index2 = 0; Index2 < SubFiles->GetCount(); ++Index2)
-            {
-              TRemoteFile *SubFile = SubFiles->GetFile(Index2);
-              SubFileList->AddObject(SubFile->GetFullFileName(), SubFile);
-            }
-
-            // do not collect checksums for files in subdirectories,
-            // only send back checksums via callback
-            DoCalculateFilesChecksum(Alg, SftpAlg, SubFileList.get(), nullptr,
-              OnCalculatedChecksum, OperationProgress, false);
-
-            Success = true;
-          },
-          __finally
-          {
-            __removed delete SubFiles;
-            __removed delete SubFileList;
-
-            if (FirstLevel && File)
-            {
-              OperationProgress->Finish(File->GetFileName(), Success, OnceDoneOperation);
-            }
-          } end_try__finally
-        }
-      }
-    }
-  }
+  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, OnCalculatedChecksum, OperationProgress, FirstLevel);
 
   static int CalculateFilesChecksumQueueLen = 5;
-  TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
-  try__finally
+  TSFTPCalculateFilesChecksumQueue Queue(this);
+  TOnceDoneOperation OnceDoneOperation; // not used
+  try
   {
-    if (Queue.Init(CalculateFilesChecksumQueueLen, SftpAlg, AFileList))
+    UnicodeString SftpAlg;
+    int Index = FChecksumAlgs->IndexOf(Alg);
+    if (Index >= 0)
     {
-      TSFTPPacket Packet(FCodePage);
+      SftpAlg = FChecksumSftpAlgs->Strings[Index];
+    }
+    else
+    {
+      // try user-specified alg
+      SftpAlg = Alg;
+    }
+
+    if (Queue.Init(CalculateFilesChecksumQueueLen, SftpAlg, FileList))
+    {
+      TSFTPPacket Packet;
       bool Next;
       do
       {
         bool Success = false;
-        UnicodeString Checksum;
-        TRemoteFile *File = nullptr;
+        TRemoteFile * File = NULL;
 
         try__finally
         {
@@ -4291,10 +4360,6 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
             Next = false;
           }
 
-          if (Checksums != nullptr)
-          {
-            Checksums->Add(Checksum);
-          }
         },
         __finally
         {
@@ -4319,35 +4384,9 @@ void TSFTPFileSystem::DoCalculateFilesChecksum(
   // queue is discarded here
 }
 
-void TSFTPFileSystem::CalculateFilesChecksum(const UnicodeString Alg,
-  TStrings *AFileList, TStrings *Checksums,
-  TCalculatedChecksumEvent OnCalculatedChecksum)
+UnicodeString TSFTPFileSystem::CalculateFilesChecksumInitialize(const UnicodeString & Alg)
 {
-  TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, FTerminal), nb::bind(&TTerminal::DoFinished, FTerminal));
-
-  UnicodeString NormalizedAlg = FindIdent(Alg, FChecksumAlgs.get());
-  UnicodeString SftpAlg;
-  int32_t Index = FChecksumAlgs->IndexOf(NormalizedAlg);
-  if (Index >= 0)
-  {
-    SftpAlg = FChecksumSftpAlgs->GetString(Index);
-  }
-  else
-  {
-    // try user-specified alg
-    SftpAlg = NormalizedAlg;
-  }
-
-  FTerminal->OperationStart(Progress, foCalculateChecksum, osRemote, AFileList->Count);
-  try__finally
-  {
-    DoCalculateFilesChecksum(NormalizedAlg, SftpAlg, AFileList, Checksums, OnCalculatedChecksum,
-      &Progress, true);
-  },
-  __finally
-  {
-    FTerminal->OperationStop(Progress);
-  } end_try__finally
+  return FindIdent(Alg, FChecksumAlgs.get());
 }
 
 void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
