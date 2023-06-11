@@ -58,9 +58,10 @@ public:
     const TRemoteFile *AFile, const TRemoteProperties *AProperties,
     TChmodSessionAction &Action) override;
   virtual bool LoadFilesProperties(TStrings *AFileList) override;
-  virtual void CalculateFilesChecksum(const UnicodeString Alg,
-    TStrings *AFileList, TStrings *Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum) override;
+  virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg);
+  virtual void CalculateFilesChecksum(
+    const UnicodeString Alg, TStrings *AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
     int32_t AParams, TFileOperationProgressType *OperationProgress,
@@ -129,7 +130,8 @@ protected:
   std::unique_ptr<TList> FPacketReservations;
   nb::vector_t<uintptr_t> FPacketNumbers;
   SSH_FXP_TYPE FPreviousLoggedPacket{0};
-  int32_t FNotLoggedPackets{0};
+  int32_t FNotLoggedWritePackets{0}, FNotLoggedReadPackets{0}, FNotLoggedStatusPackets{0}, FNotLoggedDataPackets{0};
+  std::set<uint32_t> FNotLoggedRequests;
   int32_t FBusy{0};
   void * FBusyToken{nullptr};
   bool FAvoidBusy{false};
@@ -153,7 +155,7 @@ protected:
     SSH_FX_TYPE AllowStatus = -1);
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
-  SSH_FX_TYPE GotStatusPacket(TSFTPPacket *Packet, SSH_FX_TYPE AllowStatus);
+  SSH_FX_TYPE GotStatusPacket(TSFTPPacket *Packet, SSH_FX_TYPE AllowStatus, bool DoNotForceLog);
   bool RemoteFileExists(const UnicodeString AFullPath, TRemoteFile **AFile = nullptr);
   TRemoteFile * LoadFile(TSFTPPacket *Packet,
     TRemoteFile *ALinkedByFile, const UnicodeString AFileName,
@@ -176,14 +178,10 @@ protected:
   SSH_FX_TYPE SendPacketAndReceiveResponse(const TSFTPPacket *Packet,
     TSFTPPacket *Response, SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket *Response);
+  void LogPacket(const TSFTPPacket * Packet, TLogLineType Type);
   void TryOpenDirectory(const UnicodeString ADirectory);
   bool SupportsExtension(const UnicodeString AExtension) const;
   void ResetConnection();
-  void DoCalculateFilesChecksum(
-    const UnicodeString Alg, const UnicodeString SftpAlg,
-    TStrings *AFileList, TStrings *Checksums,
-    TCalculatedChecksumEvent OnCalculatedChecksum,
-    TFileOperationProgressType *OperationProgress, bool FirstLevel);
   void RegisterChecksumAlg(const UnicodeString Alg, const UnicodeString SftpAlg);
   void DoDeleteFile(const UnicodeString AFileName, SSH_FXP_TYPE Type);
 
@@ -209,8 +207,7 @@ protected:
   void BusyStart();
   void BusyEnd();
   uint32_t TransferBlockSize(uint32_t Overhead,
-    TFileOperationProgressType *OperationProgress, uint32_t MinPacketSize = 0,
-    uint32_t MaxPacketSize = 0) const;
+    TFileOperationProgressType *OperationProgress, uint32_t MinPacketSize = 0, uint32_t MaxPacketSize = 0) const;
   uint32_t UploadBlockSize(const RawByteString Handle,
     TFileOperationProgressType *OperationProgress) const;
   uint32_t DownloadBlockSize(
@@ -222,6 +219,7 @@ protected:
     const TCopyParamType * CopyParam, TStream * FileStream, TFileBuffer & BlockBuf, UnicodeString ALocalFileName,
     TFileOperationProgressType * OperationProgress);
   bool DoesFileLookLikeSymLink(TRemoteFile * File) const;
+  void DoCloseRemoteIfOpened(const RawByteString & Handle);
 
 private:
   const TSessionData *GetSessionData() const;
