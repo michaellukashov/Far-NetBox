@@ -4,7 +4,6 @@
 
 #include "putty.h"
 
-#include "putty.h"
 #include "ssh.h"
 
 #include "cryptoapi.h"

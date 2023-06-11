@@ -880,7 +880,7 @@ enum kexlist {
     NKEXLIST
 };
 
-#pragma option push -w-mnc // WINSCP
+//#pragma option push -w-mnc // WINSCP
 struct ssh_keyalg {
     /* Constructors that create an ssh_key */
     ssh_key *(*new_pub) (const ssh_keyalg *self, ptrlen pub);
@@ -924,7 +924,7 @@ struct ssh_keyalg {
     bool is_certificate;   /* is this a certified key type? */
     const ssh_keyalg *base_alg; /* if so, for what underlying key alg? */
 };
-#pragma option pop // WINSCP
+//#pragma option pop // WINSCP
 
 static inline ssh_key *ssh_key_new_pub(const ssh_keyalg *self, ptrlen pub)
 { return self->new_pub(self, pub); }
