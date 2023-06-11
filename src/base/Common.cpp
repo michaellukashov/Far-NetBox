@@ -138,6 +138,16 @@ UnicodeString UnixExtractFileName(const UnicodeString APath)
   return Result;
 }
 
+UnicodeString ExtractShortName(const UnicodeString & Path, bool Unix)
+{
+  UnicodeString Result = ExtractFileName(Path, Unix);
+  if (Result.IsEmpty())
+  {
+    Result = Path;
+  }
+  return Result;
+}
+
 UnicodeString UnixExtractFileExt(const UnicodeString APath)
 {
   UnicodeString FileName = UnixExtractFileName(APath);

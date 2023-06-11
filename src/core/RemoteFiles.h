@@ -104,11 +104,17 @@ private:
   TRemoteFileList *FDirectory{nullptr};
   TRemoteToken FOwner;
   TModificationFmt FModificationFmt{mfFull};
+  int64_t FSize{0};
+  int64_t FCalculatedSize{0};
   UnicodeString FFileName;
   UnicodeString FDisplayName;
+  int64_t FINodeBlocks{0};
   TDateTime FModification{};
   TDateTime FLastAccess{};
   TRemoteToken FGroup{};
+  int32_t FIconIndex{0};
+  bool FIsSymLink{false};
+  int32_t FIsHidden{0};
   TRemoteFile *FLinkedFile{nullptr};
   TRemoteFile *FLinkedByFile{nullptr};
   TRights *FRights{nullptr};
@@ -118,10 +124,6 @@ private:
   UnicodeString FFullFileName;
   UnicodeString FTypeName;
   bool FIsEncrypted{false};
-  int64_t FSize{0};
-  int64_t FINodeBlocks{0};
-  int32_t FIconIndex{0};
-  int32_t FIsHidden{0};
   wchar_t FType{0};
   bool FIsSymLink{false};
   bool FCyclicLink{false};
@@ -179,6 +181,8 @@ public:
   __property UnicodeString RightsStr = { read = GetRightsStr };
   __property __int64 Size = { read = GetSize, write = FSize };
   RWProperty<int64_t> Size{nb::bind(&TRemoteFile::GetSize, this), nb::bind(&TRemoteFile::SetSize, this)};
+  __property __int64 CalculatedSize = { read = FCalculatedSize, write = FCalculatedSize };
+  RWProperty2<int64_t> CalculatedSize{&FCalculatedSize};
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
   TRemoteToken& Owner{FOwner};
   __property TRemoteToken Group = { read = FGroup, write = FGroup };

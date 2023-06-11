@@ -562,6 +562,7 @@ NB_CORE_EXPORT UnicodeString UnixCombinePaths(UnicodeString APath1, UnicodeStrin
 NB_CORE_EXPORT UnicodeString UnixExtractFileDir(UnicodeString APath);
 NB_CORE_EXPORT UnicodeString UnixExtractFilePath(UnicodeString APath);
 NB_CORE_EXPORT UnicodeString UnixExtractFileName(UnicodeString APath);
+UnicodeString ExtractShortName(const UnicodeString & Path, bool Unix);
 NB_CORE_EXPORT UnicodeString UnixExtractFileExt(UnicodeString APath);
 NB_CORE_EXPORT Boolean UnixSamePath(UnicodeString APath1, UnicodeString APath2);
 NB_CORE_EXPORT bool UnixIsChildPath(UnicodeString AParent, UnicodeString AChild);

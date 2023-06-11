@@ -827,6 +827,7 @@ TRemoteFile::TRemoteFile(TRemoteFile *ALinkedByFile) noexcept :
   Init();
   FLinkedByFile = ALinkedByFile;
   FIsEncrypted = false;
+  FCalculatedSize = -1;
 }
 
 TRemoteFile::~TRemoteFile() noexcept
@@ -851,6 +852,7 @@ TRemoteFile *TRemoteFile::Duplicate(bool Standalone) const
     COPY_FP(Owner);
     COPY_FP(ModificationFmt);
     COPY_FP(Size);
+    COPY_FP(CalculatedSize);
     COPY_FP(FileName);
     COPY_FP(DisplayName);
     COPY_FP(INodeBlocks);
