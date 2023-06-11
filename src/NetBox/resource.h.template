@@ -13,4 +13,4 @@
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
 #define ZLIB_VERSION_WTXT           L"1.2.12"
 #define OPENSSL_VERSION_WTXT        L"1.1.1s"
-#define WINSCP_VERSION_WTXT         L"5.21.6"
+#define WINSCP_VERSION_WTXT         L"6.1.1"
