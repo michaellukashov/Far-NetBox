@@ -142,11 +142,11 @@ TIntMapping CreateIntMappingFromEnumNames(const UnicodeString & ANames)
 {
   UnicodeString Names(ANames);
   TIntMapping Result;
-  int Index = 0;
+  int32_t Index = 0;
   while (!Names.IsEmpty())
   {
     UnicodeString Name = CutToChar(Names, L';', true);
-    Result.insert(std::make_pair(Name, Index));
+    Result[Name] = Index;
     Index++;
   }
   return Result;
@@ -308,7 +308,7 @@ bool THierarchicalStorage::OpenSubKeyPath(const UnicodeString & KeyPath, bool Ca
   DebugAssert(!KeyPath.IsEmpty() && (KeyPath[KeyPath.Length()] != L'\\'));
   bool Result;
   UnicodeString Buf(KeyPath);
-  int Opens = 0;
+  int32_t Opens = 0;
   while (!Buf.IsEmpty())
   {
     UnicodeString SubKey = CutToChar(Buf, L'\\', false);
@@ -377,7 +377,7 @@ void THierarchicalStorage::CloseSubKeyPath()
     throw Exception(UnicodeString());
   }
 
-  int Levels = FKeyHistory.back().Levels;
+  int32_t Levels = FKeyHistory.back().Levels;
   FKeyHistory.back().Levels = 1; // to satify the assertion in CloseSubKey()
   while (Levels > 0)
   {
@@ -527,7 +527,7 @@ void THierarchicalStorage::WriteValues(TStrings * Strings, bool MaintainKeys)
 
   if (Strings != nullptr)
   {
-    for (int Index = 0; Index < Strings->Count; Index++)
+    for (int32_t Index = 0; Index < Strings->Count; Index++)
     {
       if (MaintainKeys)
       {

@@ -1062,13 +1062,13 @@ bool HasGSSAPI(UnicodeString CustomPath)
 static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & KeyName, UnicodeString & KeyType)
 {
   cp_ssh_keyalg * SignKeys;
-  int Count;
+  int32_t Count;
   // We may use find_pubkey_alg, but it gets complicated with normalized fingerprint
   // as the names have different number of dashes
   get_hostkey_algs(-1, &Count, &SignKeys);
   try__finally
   {
-    for (int Index = 0; Index < Count; Index++)
+    for (int32_t Index = 0; Index < Count; Index++)
     {
       cp_ssh_keyalg SignKey = SignKeys[Index];
       UnicodeString Name = UnicodeString(SignKey->ssh_id);
@@ -1258,7 +1258,7 @@ TStrings * SshCipherList()
     const ssh2_ciphers * Cipher = Ciphers[Index].Cipher;
     for (int Index2 = 0; Index2 < Cipher->nciphers; Index2++)
     {
-      UnicodeString Name = UnicodeString(Ciphers[Index]->list[Index2]->ssh2_id);
+      UnicodeString Name = UnicodeString(Cipher->list[Index2]->ssh2_id);
       Result->Add(Name);
     }
   }
@@ -1268,7 +1268,7 @@ TStrings * SshCipherList()
 int GetCipherGroup(const ssh_cipher * TheCipher)
 {
   DebugAssert(strlen(TheCipher->vt->ssh2_id) > 0);
-  for (unsigned int Index = 0; Index < LENOF(Ciphers); Index++)
+  for (uint32_t Index = 0; Index < LENOF(Ciphers); Index++)
   {
     TCipherGroup & CipherGroup = Ciphers[Index];
     const ssh2_ciphers * Cipher = CipherGroup.Cipher;
@@ -1293,7 +1293,7 @@ TStrings * SshKexList()
     &ssh_ntru_hybrid_kex, &ssh_ecdh_kex, &ssh_diffiehellman_gex,
     &ssh_diffiehellman_group18, &ssh_diffiehellman_group17, &ssh_diffiehellman_group16, &ssh_diffiehellman_group15, &ssh_diffiehellman_group14,
     &ssh_rsa_kex, &ssh_diffiehellman_group1 };
-  for (unsigned int Index = 0; Index < LENOF(Kexes); Index++)
+  for (uint32_t Index = 0; Index < LENOF(Kexes); Index++)
   {
     for (int Index2 = 0; Index2 < Kexes[Index]->nkexes; Index2++)
     {

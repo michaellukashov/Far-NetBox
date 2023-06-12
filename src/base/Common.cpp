@@ -2241,11 +2241,11 @@ DWORD FileGetAttrFix(const UnicodeString & AFileName)
           Result = GetFileAttributes(ApiPath(TargetName).c_str());
         }
       }
-      catch (EOSError & E)
+      catch (EOSError & DebugUsedArg(E))
       {
         Result = -1;
       }
-      catch (EDirectoryNotFoundException & E) // throws by FileSystemAttributes
+      catch (EDirectoryNotFoundException & DebugUsedArg(E)) // throws by FileSystemAttributes
       {
         Result = -1;
       }

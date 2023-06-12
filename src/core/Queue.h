@@ -41,7 +41,6 @@ class NB_CORE_EXPORT TSignalThread : public TSimpleThread
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSignalThread); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSignalThread) || TSimpleThread::is(Kind); }
-  void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
 public:
   virtual void Start() override;
   virtual void Terminate() override;
@@ -52,8 +51,8 @@ protected:
   bool FTerminated{false};
 
   explicit TSignalThread(TObjectClassId Kind) noexcept;
-  explicit TSignalThread(bool LowPriority, HANDLE Event = nullptr);
   virtual ~TSignalThread() noexcept;
+  void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
 
   virtual bool WaitForEvent();
   uint32_t WaitForEvent(uint32_t Timeout) const;
@@ -471,10 +470,14 @@ protected:
   virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
 };
 
+NB_DEFINE_CLASS_ID(TDeleteQueueItem);
 class TDeleteQueueItem : public TLocatedQueueItem
 {
 public:
-  TDeleteQueueItem(TTerminal * Terminal, TStrings * FilesToDelete, int Params);
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TDeleteQueueItem); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDeleteQueueItem) || TQueueItem::is(Kind); }
+public:
+  explicit TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept;
 
 protected:
   virtual void DoExecute(TTerminal * Terminal);
@@ -517,21 +520,21 @@ protected:
 private:
   TTerminal *FTerminal{nullptr};
 
-  TInformationEvent FOnInformation;
-  TQueryUserEvent FOnQueryUser;
-  TPromptUserEvent FOnPromptUser;
-  TExtendedExceptionEvent FOnShowExtendedException;
-  TDisplayBannerEvent FOnDisplayBanner;
-  TNotifyEvent FOnChangeDirectory;
-  TReadDirectoryEvent FOnReadDirectory;
-  TNotifyEvent FOnStartReadDirectory;
-  TReadDirectoryProgressEvent FOnReadDirectoryProgress;
-  TNotifyEvent FOnInitializeLog;
+  TInformationEvent FOnInformation{nullptr};
+  TQueryUserEvent FOnQueryUser{nullptr};
+  TPromptUserEvent FOnPromptUser{nullptr};
+  TExtendedExceptionEvent FOnShowExtendedException{nullptr};
+  TDisplayBannerEvent FOnDisplayBanner{nullptr};
+  TNotifyEvent FOnChangeDirectory{nullptr};
+  TReadDirectoryEvent FOnReadDirectory{nullptr};
+  TNotifyEvent FOnStartReadDirectory{nullptr};
+  TReadDirectoryProgressEvent FOnReadDirectoryProgress{nullptr};
+  TNotifyEvent FOnInitializeLog{nullptr};
 
-  TNotifyEvent FOnIdle;
+  TNotifyEvent FOnIdle{nullptr};
 
-  TNotifyEvent FAction{};
-  HANDLE FActionEvent{};
+  TNotifyEvent FAction{nullptr};
+  HANDLE FActionEvent{nullptr};
   TUserAction *FUserAction{nullptr};
 
   Exception *FException{nullptr};

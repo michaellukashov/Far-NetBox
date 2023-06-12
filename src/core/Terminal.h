@@ -574,7 +574,7 @@ protected:
 
 public:
   explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal) noexcept;
-  void Init(TSessionData *ASessionData, TConfiguration * AConfiguration, TActionLog * ActionLog = nullptr);
+  void Init(TSessionData *ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog = nullptr);
   virtual ~TTerminal() noexcept;
   void Open();
   void Close();
@@ -596,10 +596,10 @@ public:
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
   TRemoteFileList * ReadDirectoryListing(UnicodeString Directory, const TFileMasks &Mask);
   TRemoteFileList * CustomReadDirectoryListing(UnicodeString Directory, bool UseCache);
-  TRemoteFile * ReadFileListing(UnicodeString APath);
-  TRemoteFile * ReadFile(const UnicodeString AFileName);
-  TRemoteFile * TryReadFile(const UnicodeString & FileName);
-  bool FileExists(const UnicodeString AFileName);
+  TRemoteFile * ReadFileListing(const UnicodeString & APath);
+  TRemoteFile * ReadFile(const UnicodeString & AFileName);
+  TRemoteFile * TryReadFile(const UnicodeString & AFileName);
+  bool FileExists(const UnicodeString & AFileName);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& AFile);
   bool CopyToLocal(
     TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
@@ -861,7 +861,7 @@ public:
   explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal *MainTerminal) noexcept;
   virtual ~TSecondaryTerminal() = default;
   void Init(
-    TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration,
+    TSessionData * ASessionData, TConfiguration * AConfiguration,
     const UnicodeString Name, TActionLog * ActionLog);
 
   void UpdateFromMain();

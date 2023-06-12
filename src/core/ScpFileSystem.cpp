@@ -730,7 +730,7 @@ void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, int32_t Params,
 
 void TSCPFileSystem::InvalidOutputError(const UnicodeString & Command)
 {
-  FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR, Command, Output->Text));
+  FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR, Command, Output->GetText()));
 }
 
 #if defined(__BORLANDC__)
@@ -1374,7 +1374,7 @@ bool TSCPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 
 UnicodeString TSCPFileSystem::CalculateFilesChecksumInitialize(const UnicodeString & Alg)
 {
-  std::unique_ptr<TStrings> Algs(new TStringList());
+  std::unique_ptr<TStrings> Algs(std::make_unique<TStringList>());
   GetSupportedChecksumAlgs(Algs.get());
   return FindIdent(Alg, Algs.get());
 }
@@ -1402,7 +1402,7 @@ void TSCPFileSystem::ProcessFileChecksum(
   {
     if (OnCalculatedChecksum != NULL)
     {
-      OnCalculatedChecksum(UnixExtractFileName(FileName), Alg, Checksum);
+      OnCalculatedChecksum(base::UnixExtractFileName(FileName), Alg, Checksum);
     }
     Action.Checksum(Alg, Checksum);
   }
@@ -1421,20 +1421,20 @@ void TSCPFileSystem::CalculateFilesChecksum(
 
   TStrings * AlgDefs = FTerminal->GetShellChecksumAlgDefs();
   int AlgIndex = AlgDefs->IndexOfName(Alg);
-  UnicodeString AlgCommand = (AlgIndex >= 0) ? AlgDefs->ValueFromIndex[AlgIndex] : Alg;
+  UnicodeString AlgCommand = (AlgIndex >= 0) ? AlgDefs->GetValueFromIndex(AlgIndex) : Alg;
 
   int Index = 0;
   while ((Index < FileList->Count) && !OperationProgress->Cancel)
   {
-    std::unique_ptr<TStrings> BatchFileList(new TStringList());
+    std::unique_ptr<TStrings> BatchFileList(std::make_unique<TStringList>());
     UnicodeString FileListCommandLine;
-    __int64 BatchSize = 0;
+    int64_t BatchSize = 0;
     while (Index < FileList->Count)
     {
-      TRemoteFile * File = DebugNotNull(dynamic_cast<TRemoteFile *>(FileList->Objects[Index]));
+      TRemoteFile * File = DebugNotNull(FileList->GetAs<TRemoteFile>(Index));
       if (!File->IsDirectory)
       {
-        UnicodeString FileName = FileList->Strings[Index];
+        UnicodeString FileName = FileList->GetString(Index);
         UnicodeString FileListCommandLineBak = FileListCommandLine;
         AddToShellFileListCommandLine(FileListCommandLine, FileName);
         BatchSize += File->Size;
@@ -1456,12 +1456,12 @@ void TSCPFileSystem::CalculateFilesChecksum(
     if (!FileListCommandLine.IsEmpty())
     {
       bool IndividualCommands = false;
-      std::unique_ptr<TStrings> BatchChecksums(new TStringList());
+      std::unique_ptr<TStrings> BatchChecksums(std::make_unique<TStringList>());
       try
       {
-        UnicodeString BatchCommand = FORMAT(L"%s %s", (AlgCommand, FileListCommandLine));
-        AnyCommand(BatchCommand, NULL);
-        if (Output->Count != BatchFileList->Count)
+        UnicodeString BatchCommand = FORMAT(L"%s %s", AlgCommand, FileListCommandLine);
+        AnyCommand(BatchCommand, nullptr);
+        if (Output()->Count() != BatchFileList->Count())
         {
           InvalidOutputError(BatchCommand);
         }
@@ -1491,9 +1491,9 @@ void TSCPFileSystem::CalculateFilesChecksum(
       if (!IndividualCommands)
       {
         // None of this should throw
-        for (int BatchIndex = 0; BatchIndex < BatchFileList->Count; BatchIndex++)
+        for (int32_t BatchIndex = 0; BatchIndex < BatchFileList->Count; BatchIndex++)
         {
-          UnicodeString FileName = BatchFileList->Strings[BatchIndex];
+          UnicodeString FileName = BatchFileList->GetString(BatchIndex);
           TRemoteFile * File = DebugNotNull(dynamic_cast<TRemoteFile *>(BatchFileList->Objects[BatchIndex]));
           TChecksumSessionAction Action(FTerminal->ActionLog);
           Action.FileName(File->FullFileName);
@@ -1507,38 +1507,38 @@ void TSCPFileSystem::CalculateFilesChecksum(
         FTerminal->LogEvent(
           L"Batch checksum calculation failed, falling back to calculating checksum individually for each file...");
 
-        for (int BatchIndex = 0; BatchIndex < BatchFileList->Count; BatchIndex++)
+        for (int32_t BatchIndex = 0; BatchIndex < BatchFileList->Count; BatchIndex++)
         {
-          TRemoteFile * File = DebugNotNull(dynamic_cast<TRemoteFile *>(BatchFileList->Objects[BatchIndex]));
+          TRemoteFile * File = DebugNotNull(BatchFileList->GetAs<TRemoteFile>(BatchIndex));
           TChecksumSessionAction Action(FTerminal->ActionLog);
-          try
+          try__catch
           {
             UnicodeString FileName = BatchFileList->Strings[BatchIndex];
             OperationProgress->SetFile(FileName);
             Action.FileName(File->FullFileName);
 
             UnicodeString Checksum;
-            try
+            try__finally
             {
-              UnicodeString Command = FORMAT(L"%s %s", (AlgCommand, ShellQuoteStr(FileName)));
-              AnyCommand(Command, NULL);
+              UnicodeString Command = FORMAT(L"%s %s", AlgCommand, ShellQuoteStr(FileName));
+              AnyCommand(Command, nullptr);
               if (Output->Count != 1)
               {
                 InvalidOutputError(Command);
               }
               UnicodeString Line = Output->Strings[0];
               Checksum = ParseFileChecksum(Line, FileName, Command);
-            }
+            },
             __finally
             {
               ProcessFileChecksum(OnCalculatedChecksum, Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
-            }
+            } end_try__finally
           }
           catch (Exception & E)
           {
             FTerminal->RollbackAction(Action, OperationProgress, &E);
 
-            UnicodeString Error = FMTLOAD(CHECKSUM_ERROR, (File->FullFileName));
+            UnicodeString Error = FMTLOAD(CHECKSUM_ERROR, File->FullFileName);
             FTerminal->CommandError(&E, Error);
             // Abort loop.
             // TODO: retries? resume?

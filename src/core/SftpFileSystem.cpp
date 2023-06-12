@@ -2043,7 +2043,7 @@ TSFTPFileSystem::~TSFTPFileSystem() noexcept
   ResetConnection();
 //  SAFE_DESTROY(FPacketReservations);
 //  SAFE_DESTROY(FExtensions);
-  SAFE_DESTROY(FFixedPaths);
+//  SAFE_DESTROY(FFixedPaths);
   SAFE_DESTROY(FSecureShell);
 }
 
@@ -3199,7 +3199,7 @@ void TSFTPFileSystem::DoStartup()
   FSupportsStatVfsV2 = false;
   FSupportsHardlink = false;
   bool SupportsLimits = false;
-  SAFE_DESTROY(FFixedPaths);
+  SAFE_DESTROY(FFixedPaths.release());
 
   if (FVersion >= 3)
   {
@@ -3300,7 +3300,7 @@ void TSFTPFileSystem::DoStartup()
       {
         FTerminal->LogEvent("File system roots:\n");
         DebugAssert(FFixedPaths == nullptr);
-        FFixedPaths = new TStringList();
+        FFixedPaths = std::make_unique<TStringList>();
         try
         {
           TSFTPPacket RootsPacket(ExtensionData, FCodePage);
@@ -4403,7 +4403,7 @@ void TSFTPFileSystem::AnyCommand(const UnicodeString /*Command*/,
 
 TStrings * TSFTPFileSystem::GetFixedPaths() const
 {
-  return FFixedPaths;
+  return FFixedPaths.get();
 }
 
 void TSFTPFileSystem::SpaceAvailable(const UnicodeString APath,

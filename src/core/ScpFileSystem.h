@@ -41,7 +41,7 @@ public:
   virtual bool LoadFilesProperties(TStrings *AFileList) override;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg) override;
   virtual void CalculateFilesChecksum(
-    const UnicodeString Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType * ACopyParam,
@@ -97,7 +97,9 @@ public:
 
 protected:
   __property TStrings * Output = { read = FOutput.get() };
+  ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
   __property int ReturnCode = { read = FReturnCode };
+  ROPropertySimple<int32_t> ReturnCode{&FReturnCode};
 
   TStrings *GetOutput() const { return FOutput.get(); }
   int32_t GetReturnCode() const { return FReturnCode; }

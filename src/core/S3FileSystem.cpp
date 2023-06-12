@@ -71,24 +71,24 @@ UnicodeString S3LibDefaultRegion()
 
 UnicodeString S3ConfigFileName;
 TDateTime S3ConfigTimestamp;
-std::unique_ptr<TCustomIniFile> S3ConfigFile;
+__removed std::unique_ptr<TCustomIniFile> S3ConfigFile;
 UnicodeString S3Profile;
 
+#if 0
 static void NeedS3Config()
 {
-  TGuard Guard(LibS3Section.get());
+  TGuard Guard(*LibS3Section.get());
   if (S3Profile.IsEmpty())
   {
-    S3Profile = GetEnvironmentVariable(AWS_PROFILE);
+      S3Profile = base::GetEnvVariable(AWS_PROFILE);
     if (S3Profile.IsEmpty())
     {
       S3Profile = AWS_PROFILE_DEFAULT;
     }
   }
-
   if (S3ConfigFileName.IsEmpty())
   {
-    S3ConfigFileName = GetEnvironmentVariable(AWS_CONFIG_FILE);
+    S3ConfigFileName = base::GetEnvVariable(AWS_CONFIG_FILE);
     UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
     UnicodeString DefaultConfigFileName = IncludeTrailingBackslash(ProfilePath) + L".aws\\credentials";
     // "aws" cli really prefers the default location over location specified by AWS_CONFIG_FILE
@@ -104,7 +104,7 @@ static void NeedS3Config()
   {
     S3ConfigTimestamp = Timestamp;
     // TMemIniFile silently ignores empty paths or non-existing files
-    S3ConfigFile.reset(new TMemIniFile(S3ConfigFileName));
+    S3ConfigFile.reset(std::make_unique<TMemIniFile>(S3ConfigFileName));
   }
 }
 
@@ -113,7 +113,7 @@ TStrings * GetS3Profiles()
   NeedS3Config();
   // S3 allegedly treats the section case-sensitivelly, but our GetS3ConfigValue (ReadString) does not,
   // so consistently we return case-insensitive list.
-  std::unique_ptr<TStrings> Result(new TStringList());
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   if (S3ConfigFile.get() != NULL)
   {
     S3ConfigFile->ReadSections(Result.get());
@@ -194,7 +194,7 @@ UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * S
 {
   return GetS3ConfigValue(Profile, AWS_SESSION_TOKEN, Source);
 }
-
+#endif //if 0
 
 const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
 const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;

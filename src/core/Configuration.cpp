@@ -1079,16 +1079,16 @@ static TDateTime GetBuildDate()
 {
   UnicodeString BuildDateStr = __DATE__;
   UnicodeString MonthStr = CutToChar(BuildDateStr, L' ', true);
-  int Month = ParseShortEngMonthName(MonthStr);
-  int Day = StrToInt(CutToChar(BuildDateStr, L' ', true));
-  int Year = StrToInt(Trim(BuildDateStr));
+  int32_t Month = ParseShortEngMonthName(MonthStr);
+  int32_t Day = StrToIntDef(CutToChar(BuildDateStr, L' ', true), 0);
+  int32_t Year = StrToIntDef(Trim(BuildDateStr), 0);
   TDateTime Result = EncodeDateVerbose(static_cast<Word>(Year), static_cast<Word>(Month), static_cast<Word>(Day));
   return Result;
 }
 
-UnicodeString TConfiguration::GetFullVersion()
+UnicodeString TConfiguration::GetFullVersion() const
 {
-  UnicodeString Result = Version;
+  UnicodeString Result = GetVersion();
 
   UnicodeString AReleaseType = GetReleaseType();
   if (DebugAlwaysTrue(!AReleaseType.IsEmpty()) &&

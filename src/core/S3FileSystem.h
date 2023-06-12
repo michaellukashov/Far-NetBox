@@ -61,7 +61,7 @@ public:
     TChmodSessionAction &Action) override;
   virtual bool LoadFilesProperties(TStrings *FileList) override;
   virtual void CalculateFilesChecksum(
-    const UnicodeString Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
@@ -127,13 +127,13 @@ protected:
   UTF8String FAccessKeyId;
   UTF8String FSecretAccessKey;
   UTF8String FSecurityTokenBuf;
-  const char * FSecurityToken;
+  const char * FSecurityToken{nullptr};
   UTF8String FHostName;
   UTF8String FPortSuffix;
-  int FTimeout{0};
+  int32_t FTimeout{0};
   S3RequestContext *FRequestContext{nullptr};
   _S3Protocol FLibS3Protocol{};
-  ne_session_s *FNeonSession{nullptr};
+  ne_session_s * FNeonSession{nullptr};
   UnicodeString FTlsVersionStr;
   UnicodeString FResponse;
   bool FResponseIgnore{false};

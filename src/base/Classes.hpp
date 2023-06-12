@@ -302,6 +302,7 @@ public:
 
   // TODO: ROIndexedProperty<TObject *> Objects{nb::bind(&TStrings::GetObj, this)};
   // TODO: ROIndexedProperty<UnicodeString> Names{nb::bind(&TList::GetName, this)};
+  // TODO: ROIndexedProperty<UnicodeString> Strings{nb::bind(&TList::GetName, this)};
 
 protected:
   TDuplicatesEnum FDuplicates{dupAccept};
@@ -380,7 +381,7 @@ private:
 class NB_CORE_EXPORT TDateTime : public TObject
 {
 public:
-  TDateTime() noexcept : FValue(0.0) {}
+  TDateTime() noexcept = default;
   explicit TDateTime(double Value) noexcept : FValue(Value) {}
   explicit TDateTime(uint16_t Hour,
     uint16_t Min, uint16_t Sec, uint16_t MSec = 0);

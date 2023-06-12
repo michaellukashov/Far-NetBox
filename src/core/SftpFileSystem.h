@@ -140,7 +140,7 @@ protected:
   TAutoSwitch FUtfStrings{asAuto};
   bool FUtfDisablingAnnounced{false};
   bool FSignedTS{false};
-  TStrings *FFixedPaths{nullptr};
+  std::unique_ptr<TStrings> FFixedPaths;
   uint32_t FMaxPacketSize{0};
   bool FSupportsStatVfsV2{false};
   uint32_t FCodePage{0};

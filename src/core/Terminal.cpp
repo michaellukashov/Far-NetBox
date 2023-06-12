@@ -1095,16 +1095,16 @@ TTerminal::TTerminal(TObjectClassId Kind) noexcept :
   FOldFiles = std::make_unique<TRemoteDirectory>(this);
 }
 
-void TTerminal::Init(TSessionData *ASessionData, TConfiguration * AConfiguration, TActionLog * ActionLog)
+void TTerminal::Init(TSessionData *ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog)
 {
   FConfiguration = AConfiguration;
   //FSessionData = new TSessionData(L"");
   FSessionData->Assign(ASessionData);
   TDateTime Started = Now(); // use the same time for session and XML log
   FLog = std::make_unique<TSessionLog>(this, Started, FSessionData.get(), FConfiguration);
-  if (ActionLog != nullptr)
+  if (AActionLog != nullptr)
   {
-    FActionLog = ActionLog;
+    FActionLog = AActionLog;
     FActionLogOwned = false;
   }
   else
@@ -3733,7 +3733,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(UnicodeString ADirectory, cons
   return FileList;
 }
 
-TRemoteFile * TTerminal::ReadFileListing(UnicodeString APath)
+TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
 {
   TRemoteFile *File = nullptr;
   TRetryOperationLoop RetryLoop(this);
@@ -3922,7 +3922,7 @@ void TTerminal::ReadSymlink(TRemoteFile *SymlinkFile,
   }
 }
 
-TRemoteFile * TTerminal::ReadFile(const UnicodeString AFileName)
+TRemoteFile * TTerminal::ReadFile(const UnicodeString & AFileName)
 {
   DebugAssert(FFileSystem);
   std::unique_ptr<TRemoteFile> File;
@@ -3938,12 +3938,12 @@ TRemoteFile * TTerminal::ReadFile(const UnicodeString AFileName)
   catch (Exception &E)
   {
     File.reset(NULL);
-    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, (FileName)));
+    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName));
   }
   return File.release();
 }
 
-TRemoteFile * TTerminal::TryReadFile(const UnicodeString & FileName)
+TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName)
 {
   TRemoteFile * File;
   try

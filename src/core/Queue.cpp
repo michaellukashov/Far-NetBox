@@ -478,7 +478,7 @@ TTerminalQueue::TTerminalQueue(TTerminal *ATerminal,
 
 void TTerminalQueue::InitTerminalQueue()
 {
-  TSignalThread::InitSignalThread(true);
+  TSignalThread::InitSignalThread(false);
   FOnQueryUser = nullptr;
   FOnPromptUser = nullptr;
   FOnShowExtendedException = nullptr;
@@ -1267,7 +1267,7 @@ void TBackgroundTerminal::Init(
 {
   TSecondaryTerminal::Init(ASessionData, AConfiguration, Name, nullptr);
   FItem = Item;
-  ActionLog->Enabled = false;
+  GetActionLog()->Enabled = false;
 }
 
 bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
@@ -2443,13 +2443,13 @@ void TParallelTransferQueueItem::DoExecute(TTerminal *Terminal)
 
 // TDownloadQueueItem
 
-static void ExtractRemoteSourcePath(TTerminal * Terminal, TStrings * Files, UnicodeString & Path)
+static void ExtractRemoteSourcePath(TTerminal * Terminal, const TStrings * Files, UnicodeString & Path)
 {
   if (!base::UnixExtractCommonPath(Files, Path))
   {
     Path = Terminal->CurrentDirectory;
   }
-  Path = UnixExcludeTrailingBackslash(Path);
+  Path = base::UnixExcludeTrailingBackslash(Path);
 }
 
 TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
@@ -2457,15 +2457,15 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
   const TCopyParamType *CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
   TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem, Terminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile, Parallel)
 {
-  if (AFilesToCopy->GetCount() > 1)
+  if (AFilesToCopy->Count > 1)
   {
-    ExtractRemoteSourcePath(Terminal, FilesToCopy, FInfo->Source);
+    ExtractRemoteSourcePath(Terminal, AFilesToCopy, FInfo->Source);
     FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
       base::UnixIncludeTrailingBackslash(FInfo->Source);
   }
   else
   {
-    DebugAssert(AFilesToCopy->GetCount() > 0);
+    DebugAssert(AFilesToCopy->Count > 0);
     FInfo->Source = AFilesToCopy->GetString(0);
     if (base::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
@@ -2493,20 +2493,15 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal *Terminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
-void __fastcall TDownloadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation)
-{
-  Terminal->CopyToLocal(FFilesToCopy, FTargetDir, FCopyParam, FParams, ParallelOperation);
-}
-
-void TDownloadQueueItem::DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation)
+void TDownloadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation)
 {
   DebugAssert(Terminal != nullptr);
   Terminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam, FParams, ParallelOperation);
 }
 
 
-TDeleteQueueItem::TDeleteQueueItem(TTerminal * Terminal, TStrings * FilesToDelete, int Params) :
-  TLocatedQueueItem(Terminal)
+TDeleteQueueItem::TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept :
+  TLocatedQueueItem(Kind, Terminal)
 {
   FInfo->Operation = foDelete;
   FInfo->Side = osRemote;
@@ -2524,19 +2519,7 @@ TDeleteQueueItem::TDeleteQueueItem(TTerminal * Terminal, TStrings * FilesToDelet
 
 TTerminalThread::TTerminalThread(TTerminal *Terminal) noexcept :
   TSignalThread(OBJECT_CLASS_TTerminalThread),
-  FTerminal(Terminal),
-  FOnInformation(nullptr),
-  FOnQueryUser(nullptr),
-  FOnPromptUser(nullptr),
-  FOnShowExtendedException(nullptr),
-  FOnDisplayBanner(nullptr),
-  FOnChangeDirectory(nullptr),
-  FOnReadDirectory(nullptr),
-  FOnStartReadDirectory(nullptr),
-  FOnReadDirectoryProgress(nullptr),
-  FOnInitializeLog(nullptr),
-  FOnIdle(nullptr),
-  FAction(nullptr)
+  FTerminal(Terminal)
 {
   FAction = nullptr;
   FActionEvent = ::CreateEvent(nullptr, false, false, nullptr);
@@ -3085,7 +3068,7 @@ bool TTerminalThread::Finished()
 
 
 TQueueFileList::TQueueFileList() :
-  FList(new TStringList())
+  FList(std::make_unique<TStringList>())
 {
   Clear();
 }

@@ -389,7 +389,7 @@ TWebDAVFileSystem::TSessionContext * TWebDAVFileSystem::NeonOpen(const UnicodeSt
   return Result.release();
 }
 
-bool TWebDAVFileSystem::IsTlsSession(ne_session * Session)
+bool TWebDAVFileSystem::IsTlsSession(ne_session * Session) const
 {
   ne_uri uri = {0};
   ne_fill_server_uri(Session, &uri);

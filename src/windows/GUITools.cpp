@@ -14,6 +14,7 @@
 #include <SessionData.h>
 #include <WinInterface.h>
 #include <Interface.h>
+#include <Queue.h>
 
 #if 0
 
@@ -206,7 +207,7 @@ TPuttyCleanupThread * TPuttyCleanupThread::FInstance;
 
 void TPuttyCleanupThread::Schedule()
 {
-  TGuard Guard(FSection.get());
+  TGuard Guard(*FSection.get());
   if (FInstance == NULL)
   {
     FInstance = new TPuttyCleanupThread();
