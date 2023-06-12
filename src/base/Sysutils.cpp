@@ -1768,6 +1768,227 @@ void WriteAllText(const UnicodeString FileName, const UnicodeString Text)
   }
 }
 
+static bool TryStringToGUID(const UnicodeString &S, GUID &Guid)
+{
+  bool e;
+  const char* p;
+
+  auto rb = [&p, &e]() -> unsigned char
+  {
+      unsigned char result;
+      if ((*p >= '0') && (*p <= '9'))
+      {
+          result = *p - '0';
+      }
+      else if ((*p >= 'a') && (*p <= 'f'))
+      {
+          result = *p - 'a' + 10;
+      }
+      else if ((*p >= 'A') && (*p <= 'F'))
+      {
+          result = *p - 'A' + 10;
+      }
+      else
+      {
+          e = false;
+      }
+      ++p;
+      return result;
+  };
+
+  auto nextChar = [&p, &e](char c) {
+      if (*p != c)
+          e = false;
+      ++p;
+  };
+
+  if (S.Length() != 38)
+    return false;
+
+  e = true;
+  AnsiString str(S.c_str());
+  p = str.c_str();
+  nextChar('{');
+  Guid.Data1 = (rb() << 28) | (rb() << 24) | (rb() << 20) | (rb() << 16) | (rb() << 12) | (rb() << 8) | (rb() << 4) | rb();
+  nextChar('-');
+  Guid.Data2 = (rb() << 12) | (rb() << 8) | (rb() << 4) | rb();
+  nextChar('-');
+  Guid.Data3 = (rb() << 12) | (rb() << 8) | (rb() << 4) | rb();
+  nextChar('-');
+  Guid.Data4[0] = (rb() << 4) | rb();
+  Guid.Data4[1] = (rb() << 4) | rb();
+  nextChar('-');
+  Guid.Data4[2] = (rb() << 4) | rb();
+  Guid.Data4[3] = (rb() << 4) | rb();
+  Guid.Data4[4] = (rb() << 4) | rb();
+  Guid.Data4[5] = (rb() << 4) | rb();
+  Guid.Data4[6] = (rb() << 4) | rb();
+  Guid.Data4[7] = (rb() << 4) | rb();
+  nextChar('}');
+  return e;
+}
+
+bool FileGetSymLinkTarget(const UnicodeString AFileName, UnicodeString & TargetName)
+{
+
+    struct TUnicodeSymLinkRec
+    {
+      // Define the members of TUnicodeSymLinkRec structure
+      UnicodeString TargetName;
+      DWORD Attr;
+      int64_t Size;
+    };
+
+    enum TSymLinkResult
+    {
+      slrError,
+      slrNoSymLink,
+      slrOk
+    };
+
+    // Reparse point specific declarations from Windows headers
+#ifndef IO_REPARSE_TAG_MOUNT_POINT
+    const ULONG IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
+#endif
+#ifndef IO_REPARSE_TAG_SYMLINK
+    const ULONG IO_REPARSE_TAG_SYMLINK = 0xA000000C;
+#endif
+#ifndef ERROR_REPARSE_TAG_INVALID
+    const DWORD ERROR_REPARSE_TAG_INVALID = 4393;
+#endif
+#ifndef FSCTL_GET_REPARSE_POINT
+    constexpr DWORD FSCTL_GET_REPARSE_POINT = 0x900A8;
+#endif
+//    const DWORD MAXIMUM_REPARSE_DATA_BUFFER_SIZE = 16 * 1024;
+#ifndef SYMLINK_FLAG_RELATIVE
+    const ULONG SYMLINK_FLAG_RELATIVE = 1;
+#endif
+#ifndef FILE_FLAG_OPEN_REPARSE_POINT
+    const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x200000;
+#endif
+#ifndef FILE_READ_EA
+   const DWORD FILE_READ_EA = 0x8;
+#endif
+   struct TReparseDataBuffer
+   {
+      ULONG ReparseTag;
+      WORD ReparseDataLength;
+      WORD Reserved;
+      WORD SubstituteNameOffset;
+      WORD SubstituteNameLength;
+      WORD PrintNameOffset;
+      WORD PrintNameLength;
+      union {
+          WCHAR PathBufferMount[4096];
+          struct
+          {
+            ULONG Flags;
+            WCHAR PathBufferSym[4096];
+          };
+      };
+   };
+
+    const DWORD CShareAny = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+    const DWORD COpenReparse = FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS;
+    const UnicodeString CVolumePrefix = L"Volume";
+    const UnicodeString CGlobalPrefix = L"\\\\?\\";
+
+    HANDLE HFile, Handle;
+    TReparseDataBuffer* PBuffer = nullptr;
+    DWORD BytesReturned;
+    GUID guid;
+
+    TSymLinkResult Result = slrError;
+    TUnicodeSymLinkRec SymLinkRec;
+
+    HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, 0);
+    if (HFile != INVALID_HANDLE_VALUE)
+    {
+      try
+      {
+        PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
+        if (PBuffer != nullptr)
+        {
+          if (DeviceIoControl(HFile, FSCTL_GET_REPARSE_POINT, nullptr, 0,
+                              PBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &BytesReturned, nullptr))
+          {
+            switch (PBuffer->ReparseTag)
+            {
+              case IO_REPARSE_TAG_MOUNT_POINT:
+              {
+                SymLinkRec.TargetName = UnicodeString(
+                    &PBuffer->PathBufferMount[4 + PBuffer->SubstituteNameOffset / sizeof(WCHAR)],
+                    (PBuffer->SubstituteNameLength / sizeof(WCHAR)) - 4);
+                if (SymLinkRec.TargetName.Length() == (CVolumePrefix.Length() + 2 + 32 + 4 + 1)
+                    && SymLinkRec.TargetName.SubStr(0, CVolumePrefix.Length()) == CVolumePrefix
+                    && TryStringToGUID(UnicodeString(
+                                           SymLinkRec.TargetName.SubStr(CVolumePrefix.Length() + 1)),
+                                       guid)) {
+                    SymLinkRec.TargetName = CGlobalPrefix + SymLinkRec.TargetName;
+                }
+                break;
+              }
+            case IO_REPARSE_TAG_SYMLINK:
+              {
+                SymLinkRec.TargetName
+                    = UnicodeString(&PBuffer->PathBufferSym[PBuffer->PrintNameOffset / sizeof(WCHAR)],
+                                    PBuffer->PrintNameLength / sizeof(WCHAR));
+                if ((PBuffer->Flags & SYMLINK_FLAG_RELATIVE) != 0) {
+                    SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName)
+                                                           + SymLinkRec.TargetName);
+                }
+                break;
+              }
+            }
+
+            if (!SymLinkRec.TargetName.IsEmpty())
+            {
+                WIN32_FILE_ATTRIBUTE_DATA fileAttributeData;
+                if (GetFileAttributesExW(SymLinkRec.TargetName.c_str(), GetFileExInfoStandard, &fileAttributeData))
+                {
+                    SymLinkRec.Attr = fileAttributeData.dwFileAttributes;
+                    SymLinkRec.Size = static_cast<uint64_t>(fileAttributeData.nFileSizeHigh) << 32 | fileAttributeData.nFileSizeLow;
+                }
+                /*else if (RaiseErrorOnMissing)
+                {
+                    throw std::runtime_error("Directory not found: " + std::to_string(GetLastError()));
+                }*/
+                else
+                {
+                    SymLinkRec.TargetName.Clear();
+                }
+            }
+            else
+            {
+                SetLastError(ERROR_REPARSE_TAG_INVALID);
+                Result = slrNoSymLink;
+            }
+          }
+          else
+          {
+            SetLastError(ERROR_REPARSE_TAG_INVALID);
+          }
+
+          nb_free(PBuffer);
+        }
+      }
+      catch (...)
+      {
+        CloseHandle(HFile);
+        throw;
+      }
+
+      CloseHandle(HFile);
+    }
+
+    if (!SymLinkRec.TargetName.IsEmpty())
+    {
+      Result = slrOk;
+    }
+
+    return Result == slrOk;
+}
+
 } // namespace Sysutils
 
 namespace base {

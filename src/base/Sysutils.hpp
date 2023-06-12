@@ -388,6 +388,9 @@ NB_DEFINE_CLASS_ID(EConvertError);
 class NB_CORE_EXPORT EConvertError : public Exception
 {
 public:
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EConvertError); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EConvertError) || Exception::is(Kind); }
+public:
   explicit EConvertError(const UnicodeString Msg) noexcept : Exception(OBJECT_CLASS_EConvertError, Msg) {}
 };
 
@@ -647,6 +650,19 @@ UnicodeString ReadAllText(const UnicodeString FileName);
 void WriteAllText(const UnicodeString FileName, const UnicodeString Text);
 
 extern UnicodeString EmptyStr;
+
+bool FileGetSymLinkTarget(const UnicodeString AFileName, UnicodeString & TargetName);
+
+NB_DEFINE_CLASS_ID(EDirectoryNotFoundException);
+class NB_CORE_EXPORT EDirectoryNotFoundException : public Exception
+{
+  public:
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EDirectoryNotFoundException); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EDirectoryNotFoundException) || Exception::is(Kind); }
+  public:
+  explicit EDirectoryNotFoundException(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EDirectoryNotFoundException, What) {}
+  explicit EDirectoryNotFoundException(TObjectClassId Kind, const UnicodeString What) noexcept : Exception(Kind, What) {}
+};
 
 } // namespace Sysutils
 
