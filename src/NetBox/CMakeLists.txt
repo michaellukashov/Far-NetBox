@@ -5,6 +5,11 @@ set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
 
 project(NetBox)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Remove for compiler-specific features
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug")
 endif()
