@@ -1452,13 +1452,13 @@ void TGUIConfiguration::SetQueueKeepDoneItemsFor(int32_t Value)
 }
 //---------------------------------------------------------------------
 TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
-  const UnicodeString & RootKey, const UnicodeString & Source, TStoredSessionList * Sessions, UnicodeString & /*Error*/)
+  const UnicodeString & RootKey, const UnicodeString & Source, TStoredSessionList * Sessions, UnicodeString & AError)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(std::make_unique<TStoredSessionList>(true));
   ImportSessionList->SetDefaultSettings(Sessions->GetDefaultSettings());
 
   UnicodeString SessionsKey = GetPuttySessionsKey(RootKey);
-  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetPuttySessionsKey()));
+  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(SessionsKey));
   Storage->ConfigureForPutty();
   if (Storage->OpenRootKey(false))
   {
@@ -1477,7 +1477,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
   else
   {
-    Error = FMTLOAD(PUTTY_NO_SITES2, Source, SessionsKey);
+    AError = FMTLOAD(PUTTY_NO_SITES2, Source, SessionsKey);
   }
 
   return ImportSessionList.release();
@@ -1489,7 +1489,7 @@ bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * ASessions)
   {
     UnicodeString Error;
     std::unique_ptr<TStoredSessionList> SessionsForImport(
-      SelectPuttySessionsForImport(OriginalPuttyRegistryStorageKey, L"PuTTY", Sessions, Error));
+      SelectPuttySessionsForImport(OriginalPuttyRegistryStorageKey, L"PuTTY", ASessions, Error));
     return (SessionsForImport->Count > 0);
   }
   catch (...)

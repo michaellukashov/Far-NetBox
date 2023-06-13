@@ -286,7 +286,7 @@ public:
   UnicodeString AppliedLocaleCopyright() const;
   UnicodeString AppliedLocaleVersion();
   TStoredSessionList * SelectPuttySessionsForImport(
-    const UnicodeString & RootKey, const UnicodeString & Source, TStoredSessionList * Sessions, UnicodeString & Error);
+    const UnicodeString & RootKey, const UnicodeString & Source, TStoredSessionList * Sessions, UnicodeString & AError);
   bool AnyPuttySessionForImport(TStoredSessionList * ASessions);
 
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };

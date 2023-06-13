@@ -1346,7 +1346,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
       MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)) +
       CertificateMessage;
     MessageDialog(Message, qtInformation, qaOK);
-  }
+  },
   __finally
   {
     FreeKey(PrivateKey);

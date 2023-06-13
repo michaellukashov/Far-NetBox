@@ -15,6 +15,7 @@
 #include <WinInterface.h>
 #include <Interface.h>
 #include <Queue.h>
+#include <StrUtils.hpp>
 
 #if 0
 
@@ -225,7 +226,7 @@ void TPuttyCleanupThread::Finalize()
   while (true)
   {
     {
-      TGuard Guard(FSection.get());
+      TGuard Guard(*FSection.get());
       if (FInstance == NULL)
       {
         return;
@@ -237,28 +238,28 @@ void TPuttyCleanupThread::Finalize()
 
 void TPuttyCleanupThread::Execute()
 {
-  try
+  try__finally
   {
-    std::unique_ptr<TStrings> Sessions(new TStringList());
+    std::unique_ptr<TStrings> Sessions(std::make_unique<TStringList>());
     bool Continue = true;
 
     do
     {
       {
-        TGuard Guard(FSection.get());
+        TGuard Guard(*FSection.get());
         std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(Configuration->PuttySessionsKey));
         Storage->AccessMode = smReadWrite;
         Storage->ConfigureForPutty();
 
-        std::unique_ptr<TStringList> Sessions2(new TStringList());
+        std::unique_ptr<TStringList> Sessions2(std::make_unique<TStringList>());
         if (Storage->OpenRootKey(true))
         {
-          std::unique_ptr<TStrings> SubKeys(new TStringList());
+          std::unique_ptr<TStrings> SubKeys(std::make_unique<TStringList>());
           Storage->GetSubKeyNames(SubKeys.get());
-          for (int Index = 0; Index < SubKeys->Count; Index++)
+          for (int32_t Index = 0; Index < SubKeys->Count; Index++)
           {
             UnicodeString SessionName = SubKeys->Strings[Index];
-            if (StartsStr(GUIConfiguration->PuttySession, SessionName))
+            if (::StartsStr(GetGUIConfiguration()->PuttySession, SessionName))
             {
               Sessions2->Add(SessionName);
             }
@@ -293,12 +294,12 @@ void TPuttyCleanupThread::Execute()
       }
     }
     while (Continue);
-  }
+  },
   __finally
   {
     TGuard Guard(FSection.get());
     FInstance = NULL;
-  }
+  } end_try__finally
 }
 
 void TPuttyCleanupThread::Terminate()
