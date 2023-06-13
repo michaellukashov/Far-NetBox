@@ -297,7 +297,7 @@ void TPuttyCleanupThread::Execute()
   },
   __finally
   {
-    TGuard Guard(FSection.get());
+    TGuard Guard(*FSection.get());
     FInstance = NULL;
   } end_try__finally
 }
@@ -324,14 +324,14 @@ void OpenSessionInPutty(TSessionData * SessionData)
   SessionData->ExpandEnvironmentVariables();
   // See also TSiteAdvancedDialog::PuttySettingsButtonClick
   UnicodeString Program, AParams, Dir;
-  SplitCommand(GUIConfiguration->PuttyPath, Program, AParams, Dir);
+  SplitCommand(GetGUIConfiguration()->PuttyPath, Program, AParams, Dir);
   Program = ExpandEnvironmentVariables(Program);
   AppLogFmt(L"PuTTY program: %s", Program);
   AppLogFmt(L"Params: %s", AParams);
   if (FindFile(Program))
   {
 
-    AParams = ::ExpandEnvVars(Params);
+    AParams = ::ExpandEnvVars(AParams);
     UnicodeString Password;
     if (GetGUIConfiguration()->PuttyPassword)
     {
@@ -429,12 +429,12 @@ void OpenSessionInPutty(TSessionData * SessionData)
       {
         UnicodeString SessionName;
 
-        UnicodeString PuttySession = GUIConfiguration->PuttySession;
+        UnicodeString PuttySession = GetGUIConfiguration()->PuttySession;
         int Uniq = 1;
         while (DoesSessionExistInPutty(PuttySession))
         {
           Uniq++;
-          PuttySession = FORMAT(L"%s (%d)", GUIConfiguration->PuttySession, Uniq);
+          PuttySession = FORMAT(L"%s (%d)", PuttySession, Uniq);
         }
 
         if (ExportSessionToPutty(SessionData, true, PuttySession))
@@ -583,7 +583,7 @@ bool CopyCommandToClipboard(const UnicodeString & ACommand)
   if (Result)
   {
     TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
-    AppLogFmt(L"Copied command to the clipboard: %s", Command);
+    AppLogFmt(L"Copied command to the clipboard: %s", ACommand);
     CopyToClipboard(ACommand);
   }
   return Result;
@@ -617,7 +617,7 @@ static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString Para
     ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
     ExecuteInfo.nShow = SW_SHOW;
 
-    AppLogFmt(L"Executing program \"%s\" with params: %s", Path, Params);
+    AppLogFmt(L"Executing program \"%s\" with params: %s", APath, Params);
     Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
     if (Result)
     {
