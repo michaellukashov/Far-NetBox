@@ -1775,7 +1775,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
         };
         if (Move)
         {
-          GetTerminal()->TerminalMoveFiles(FileList.get(), Target, FileMask);
+          GetTerminal()->TerminalMoveFiles(FileList.get(), Target, FileMask, false);
         }
         else
         {
@@ -1807,7 +1807,7 @@ void TWinSCPFileSystem::RenameFile()
           RedrawPanel();
         }
       };
-      GetTerminal()->TerminalRenameFile(File, NewName, true);
+      GetTerminal()->TerminalRenameFile(File, NewName);
     }
   }
 }
