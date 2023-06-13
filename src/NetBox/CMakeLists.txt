@@ -1153,6 +1153,30 @@ add_library(putty STATIC
   ../../libs/putty/windows/utils/security_p.c
   ../../libs/putty/windows/utils/win_strerror.c
 #  ../../libs/putty/ldisc.c
+  ../../libs/putty/crypto/aesgcm-common.c
+  ../../libs/putty/crypto/aesgcm-footer.h
+  ../../libs/putty/crypto/aesgcm-ref-poly.c
+  ../../libs/putty/crypto/aesgcm-select.c
+  ../../libs/putty/crypto/aesgcm-sw.c
+  ../../libs/putty/crypto/aesgcm.h
+  ../../libs/putty/crypto/ntru.c
+  ../../libs/putty/crypto/openssh-certs.c
+  ../../libs/putty/stubs/null-cipher.c
+  ../../libs/putty/stubs/null-key.c
+#  ../../libs/putty/stubs/null-lp.c
+  ../../libs/putty/stubs/null-mac.c
+  ../../libs/putty/stubs/null-opener.c
+#  ../../libs/putty/stubs/null-plug.c
+#  ../../libs/putty/stubs/null-seat.c
+  ../../libs/putty/utils/base64_decode.c
+  ../../libs/putty/utils/base64_encode.c
+  ../../libs/putty/utils/cert-expr.c
+  ../../libs/putty/utils/host_ca_new_free.c
+  ../../libs/putty/utils/key_components.c
+  ../../libs/putty/utils/percent_decode.c
+  ../../libs/putty/utils/percent_encode.c
+  ../../libs/putty/utils/seat_dialog_text.c
+  ../../libs/putty/windows/utils/registry.c
 )
 
 target_include_directories(putty PRIVATE
