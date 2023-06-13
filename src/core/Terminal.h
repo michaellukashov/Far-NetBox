@@ -693,7 +693,7 @@ public:
   const TFileSystemInfo & GetFileSystemInfo(bool Retrieve = false);
   void LogEvent(const UnicodeString AStr);
   void LogEvent(int32_t Level, const UnicodeString AStr);
-  void GetSupportedChecksumAlgs(TStrings *Algs) const;
+  void GetSupportedChecksumAlgs(TStrings *Algs);
   UnicodeString ChangeFileName(const TCopyParamType *CopyParam,
     UnicodeString AFileName, TOperationSide Side, bool FirstLevel) const;
   UnicodeString GetBaseFileName(UnicodeString AFileName) const;

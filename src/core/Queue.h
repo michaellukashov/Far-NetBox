@@ -23,7 +23,7 @@ public:
   bool IsFinished() const;
 
 protected:
-  HANDLE FThread{};
+  HANDLE FThread{nullptr};
   TThreadID FThreadId{};
   bool FFinished{true};
 

@@ -556,9 +556,9 @@ UnicodeString NeonTlsSessionInfo(
 
 void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
 {
+  MaxTlsVersion = (TTlsVersion)std::max(MaxTlsVersion, tls10); // the lowest currently supported version
   #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > (VERSION)) || (MaxTlsVersion < (VERSION)) ? (FLAG) : 0)
   int32_t Options =
-    MASK_TLS_VERSION(ssl3, SSL_OP_NO_SSLv3) |
     MASK_TLS_VERSION(tls10, SSL_OP_NO_TLSv1) |
     MASK_TLS_VERSION(tls11, SSL_OP_NO_TLSv1_1) |
     MASK_TLS_VERSION(tls12, SSL_OP_NO_TLSv1_2) |

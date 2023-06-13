@@ -4892,7 +4892,7 @@ bool TTerminal::DoRenameFile(
       switch (Answer)
       {
         case qaNeverAskAgain:
-          Configuration->ConfirmOverwriting = false;
+          FConfiguration->FConfirmOverwriting = false;
           Result = true;
           break;
 
@@ -5140,7 +5140,7 @@ void TTerminal::DoCopyFile(const UnicodeString AFileName, const TRemoteFile * AF
     try
     {
       DebugAssert(FFileSystem);
-      GetFileSystemForCapability(fcRemoteCopy)->CopyFile(FileName, File, NewName);
+      GetFileSystemForCapability(fcRemoteCopy)->RemoteCopyFile(AFileName, AFile, ANewName);
     }
     catch (Exception & E)
     {
@@ -5537,8 +5537,8 @@ void TTerminal::DoAnyCommand(const UnicodeString ACommand,
     DirectoryModified(RemoteGetCurrentDirectory(), false);
     LogEvent(L"Executing user defined command.");
     TCustomFileSystem * FileSystem = GetFileSystemForCapability(fcAnyCommand);
-    FileSystem->AnyCommand(Command, OutputEvent);
-    if (CommandSessionOpened && (FileSystem == FCommandSession->FFileSystem))
+    FileSystem->AnyCommand(ACommand, OutputEvent);
+    if (GetCommandSessionOpened() && (FileSystem == FCommandSession->FFileSystem.get()))
     {
       FCommandSession->GetFileSystem()->ReadCurrentDirectory();
 
@@ -7207,7 +7207,7 @@ TStrings * TTerminal::GetShellChecksumAlgDefs()
 {
   if (FShellChecksumAlgDefs.get() == nullptr)
   {
-    UnicodeString ChecksumCommandsDef = Configuration->ChecksumCommands;
+    UnicodeString ChecksumCommandsDef = Configuration->FChecksumCommands;
     if (ChecksumCommandsDef.IsEmpty())
     {
       UnicodeString Delimiter(L",");
@@ -7219,8 +7219,8 @@ TStrings * TTerminal::GetShellChecksumAlgDefs()
       AddToList(ChecksumCommandsDef, Md5ChecksumAlg + L"=md5sums", Delimiter);
     }
 
-    FShellChecksumAlgDefs.reset(std::make_unique<TStringList>());
-    FShellChecksumAlgDefs->CommaText = ChecksumCommandsDef;
+    FShellChecksumAlgDefs = std::make_unique<TStringList>();
+    FShellChecksumAlgDefs->SetCommaText(ChecksumCommandsDef);
   }
   return FShellChecksumAlgDefs.get();
 }
@@ -7230,16 +7230,16 @@ void TTerminal::GetShellChecksumAlgs(TStrings * Algs)
   TStrings * AlgDefs = GetShellChecksumAlgDefs();
   for (int32_t Index = 0; Index < AlgDefs->Count; Index++)
   {
-    Algs->Add(AlgDefs->Names[Index]);
+    Algs->Add(AlgDefs->GetName(Index));
   }
 }
 
-void TTerminal::GetSupportedChecksumAlgs(TStrings *Algs) const
+void TTerminal::GetSupportedChecksumAlgs(TStrings *Algs)
 {
-  if (!IsCapable[fcCalculatingChecksum] && IsCapable[fcSecondaryShell])
+  if (!GetIsCapable(fcCalculatingChecksum) && GetIsCapable(fcSecondaryShell))
   {
     // Both return the same anyway
-    if (CommandSessionOpened)
+    if (GetCommandSessionOpened())
     {
       FCommandSession->GetSupportedChecksumAlgs(Algs);
     }
@@ -7669,7 +7669,7 @@ void TTerminal::SourceRobust(
 bool TTerminal::CreateTargetDirectory(
   const UnicodeString & ADirectoryPath, uint32_t Attrs, const TCopyParamType * CopyParam)
 {
-  std::unique_ptr<TRemoteFile> File(TryReadFile(DirectoryPath));
+  std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath));
   bool DoCreate =
     (File.get() == NULL) ||
     !File->IsDirectory; // just try to create and make it fail
@@ -8903,12 +8903,12 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString Path, bool DecryptF
 
 TRemoteFile * TTerminal::CheckRights(const UnicodeString & EntryType, const UnicodeString & FileName, bool & WrongRights)
 {
-  std::unique_ptr<TRemoteFile> FileOwner;
+  std::unique_ptr<TRemoteFile> File;
   try
   {
     LogEvent(FORMAT(L"Checking %s \"%s\"...", LowerCase(EntryType), FileName));
     File.reset(ReadFile(FileName));
-    int ForbiddenRights = TRights::rfGroupWrite | TRights::rfOtherWrite;
+    int32_t ForbiddenRights = TRights::rfGroupWrite | TRights::rfOtherWrite;
     if ((File->Rights->Number & ForbiddenRights) != 0)
     {
       LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", EntryType, FileName, File->Rights->Octal));
@@ -8919,7 +8919,7 @@ TRemoteFile * TTerminal::CheckRights(const UnicodeString & EntryType, const Unic
       LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", EntryType, FileName, File->Rights->Octal));
     }
   }
-  catch (Exception & E)
+  catch (Exception & DebugUsedArg(E))
   {
   }
   return File.release();
