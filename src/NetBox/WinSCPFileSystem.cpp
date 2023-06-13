@@ -1285,7 +1285,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
             TFileOperationProgressType Progress(nb::bind(&TWinSCPFileSystem::OperationProgress, this), nb::bind(&TWinSCPFileSystem::OperationFinished, this));
 
-            Progress.Start(foCustomCommand, osRemote, nb::ToIntPtr(FileListCommand ? 1 : FileList->GetCount()));
+            Progress.Start(foCustomCommand, osRemote, nb::ToInt32(FileListCommand ? 1 : FileList->GetCount()));
             {
               SCOPE_EXIT
               {
@@ -4100,7 +4100,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
       Window.Pos = Pos;
       UnicodeString EditedFileName(1024, 0);
       Window.Name = ToWChar(EditedFileName);
-      Window.NameSize = nb::ToInt(EditedFileName.GetLength());
+      Window.NameSize = nb::ToIntPtr(EditedFileName.GetLength());
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, 0, &Window) != 0)
       {
         if ((Window.Type == WTYPE_EDITOR) &&
@@ -4176,13 +4176,13 @@ void TWinSCPFileSystem::EditHistory()
   int32_t Result = GetWinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       GetMsg(NB_MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
 
-  if ((Result >= 0) && (Result < nb::ToIntPtr(FEditHistories.size())))
+  if ((Result >= 0) && (Result < nb::ToInt32(FEditHistories.size())))
   {
     TRemoteFile *File = nullptr;
     const TEditHistory &EditHistory = FEditHistories[Result];
     UnicodeString FullFileName =
       base::UnixIncludeTrailingBackslash(EditHistory.Directory) + EditHistory.FileName;
-    FTerminal->ReadFile(FullFileName, File);
+    File = FTerminal->ReadFile(FullFileName);
     std::unique_ptr<TRemoteFile> FilePtr(File);
     DebugAssert(FilePtr.get());
     if (File && !File->GetHaveFullFileName())
