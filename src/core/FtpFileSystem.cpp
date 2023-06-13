@@ -1941,7 +1941,7 @@ void TFTPFileSystem::DoStartup()
       FORMAT(L"%s %s=%s;%s=%s", CsidCommand, NameFact, GetAppNameString(), VersionFact, FTerminal->Configuration->Version);
     SendCommand(Command);
     TStrings * Response = nullptr;
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE, EmptyStr, NULL, &Response);
+    GotReply(WaitForCommandReply(), REPLY_2XX_CODE, EmptyStr, nullptr, &Response);
     std::unique_ptr<TStrings> ResponseOwner(Response);
     // Not using REPLY_SINGLE_LINE to make it robust
     if (Response->Count == 1)
@@ -2337,7 +2337,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
           else if (fabs(Hours) >= 48)
           {
             FTimeDifference = 0;
-            LogMessage = FORMAT(L"Ignoring suspicious timezone difference of %s hours, detected using file %s", (IntToStr(__int64(Hours)), FileLog));
+            LogMessage = FORMAT(L"Ignoring suspicious timezone difference of %s hours, detected using file %s", (IntToStr(int64_t(Hours)), FileLog));
           }
           else
           {
@@ -2979,14 +2979,14 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
 
     case OPTION_MPEXT_TRANSFER_SIZE:
       {
-        __int64 TransferSize = 0;
-        if ((FTerminal->OperationProgress != NULL) &&
+        int64_t TransferSize = 0;
+        if ((FTerminal->OperationProgress != nullptr) &&
             (FTerminal->OperationProgress->Operation == foCopy) &&
             (FTerminal->OperationProgress->Side == osLocal))
         {
           TransferSize = FTerminal->OperationProgress->TransferSize - FTerminal->OperationProgress->TransferredSize;
         }
-        Result = static_cast<int>(static_cast<unsigned int>(TransferSize & std::numeric_limits<unsigned int>::max()));
+        Result = static_cast<int32_t>(static_cast<uint32_t>(TransferSize & std::numeric_limits<uint32_t>::max()));
       }
       break;
 

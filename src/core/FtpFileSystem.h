@@ -239,7 +239,7 @@ private:
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
   std::unique_ptr<TMessageQueue> FQueue{nullptr};
-  HANDLE FQueueEvent{};
+  HANDLE FQueueEvent{nullptr};
   TSessionInfo FSessionInfo;
   TFileSystemInfo FFileSystemInfo;
   bool FFileSystemInfoValid{false};
