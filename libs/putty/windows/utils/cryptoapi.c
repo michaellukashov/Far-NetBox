@@ -10,6 +10,12 @@
 
 DEF_WINDOWS_FUNCTION(CryptProtectMemory);
 
+#ifndef CRYPTPROTECTMEMORY_BLOCK_SIZE
+//from dpapi.h
+#define CRYPTPROTECTMEMORY_BLOCK_SIZE           16
+#define CRYPTPROTECTMEMORY_CROSS_PROCESS        0x01
+#endif
+
 bool got_crypt(void)
 {
     static bool attempted = false;
@@ -20,7 +26,7 @@ bool got_crypt(void)
         attempted = true;
         crypt = load_system32_dll("crypt32.dll");
         successful = crypt &&
-            GET_WINDOWS_FUNCTION(crypt, CryptProtectMemory);
+            GET_WINDOWS_FUNCTION_NO_TYPECHECK(crypt, CryptProtectMemory);
     }
     return successful;
 }
