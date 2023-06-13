@@ -315,9 +315,9 @@ private:
   TTerminalQueueStatus *FQueueStatus{nullptr};
   TCriticalSection FQueueStatusSection;
   TQueueEvent FQueueEvent{qeEmpty};
-  HANDLE FProgressSaveScreenHandle{};
-  HANDLE FSynchronizationSaveScreenHandle{};
-  HANDLE FAuthenticationSaveScreenHandle{};
+  HANDLE FProgressSaveScreenHandle{nullptr};
+  HANDLE FSynchronizationSaveScreenHandle{nullptr};
+  HANDLE FAuthenticationSaveScreenHandle{nullptr};
   TDateTime FSynchronizationStart;
   std::unique_ptr<TStrings> FFileList;
   TList *FPanelItems{nullptr};
@@ -328,7 +328,7 @@ private:
   UnicodeString FLastMultipleEditFileTitle;
   UnicodeString FLastMultipleEditDirectory;
   int32_t FLastEditorID{-1};
-  TGUICopyParamType FLastEditCopyParam;
+  TGUICopyParamType FLastEditCopyParam{};
   TKeepAliveThread *FKeepaliveThread{nullptr};
   TSynchronizeController *FSynchronizeController{nullptr};
   std::unique_ptr<TStrings> FCapturedLog;
