@@ -1104,7 +1104,7 @@ void TTerminal::Init(TSessionData *ASessionData, TConfiguration * AConfiguration
   FLog = std::make_unique<TSessionLog>(this, Started, FSessionData.get(), FConfiguration);
   if (AActionLog != nullptr)
   {
-    FActionLog = AActionLog;
+    FActionLog.reset(AActionLog);
     FActionLogOwned = false;
   }
   else
@@ -3745,7 +3745,7 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
     {
       // reset caches
       AnnounceFileListOperation();
-      File = ReadFile(Path);
+      File = ReadFile(APath);
       Action.File(File);
     }
     catch (Exception & E)
@@ -3929,16 +3929,16 @@ TRemoteFile * TTerminal::ReadFile(const UnicodeString & AFileName)
   try
   {
     LogEvent(FORMAT("Listing file \"%s\".", AFileName));
-    TRemoteFile * AFile = NULL;
-    FFileSystem->ReadFile(FileName, AFile);
+    TRemoteFile * AFile = nullptr;
+    FFileSystem->ReadFile(AFileName, AFile);
     File.reset(AFile);
     ReactOnCommand(fsListFile);
     LogRemoteFile(File.get());
   }
   catch (Exception &E)
   {
-    File.reset(NULL);
-    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, FileName));
+    File.reset(nullptr);
+    CommandError(&E, FMTLOAD(CANT_GET_ATTRS, AFileName));
   }
   return File.release();
 }
@@ -4825,11 +4825,11 @@ void TTerminal::CalculateFilesChecksum(
     UnicodeString NormalizedAlg = FileSystem->CalculateFilesChecksumInitialize(Alg);
 
     FileSystem->CalculateFilesChecksum(NormalizedAlg, FileList, OnCalculatedChecksum, &Progress, true);
-  }
-  __try__finally
+  },
+  __finally
   {
     OperationStop(Progress);
-  }
+  } end_try__finally
 }
 
 void TTerminal::TerminalRenameFile(const TRemoteFile * File, const UnicodeString & NewName)

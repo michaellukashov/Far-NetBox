@@ -903,7 +903,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FProtocolFeatures = Storage->ReadString(L"ProtocolFeatures", FProtocolFeatures);
   SetSshSimple(Storage->ReadBool("SshSimple", GetSshSimple()));
 
-  SetProxyMethod(static_cast<TProxyMethod>(Storage->ReadInteger("ProxyMethod", ProxyMethodMapping)));
+  SetProxyMethod(Storage->ReadEnum<TProxyMethod>("ProxyMethod", GetProxyMethod(), ProxyMethodMapping));
   FProxyHost = Storage->ReadString(L"ProxyHost", FProxyHost);
   FProxyPort = Storage->ReadInteger(L"ProxyPort", FProxyPort);
   FProxyUsername = Storage->ReadString(L"ProxyUsername", FProxyUsername);
@@ -1191,10 +1191,10 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
   {
     WRITE_DATA_EX(String, "UserName", SessionGetUserName(), );
     WRITE_DATA(String, PublicKeyFile);
-    WRITE_DATA_EX2(String, "DetachedCertificate", GetDetachedCertificate(), );
+    WRITE_DATA_EX(String, "DetachedCertificate", FDetachedCertificate, );
     WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), );
     WRITE_DATA(String, LocalDirectory);
-    WRITE_DATA(String, OtherLocalDirectory);
+    WRITE_DATA_EX(String, "OtherLocalDirectory", FOtherLocalDirectory, );
     WRITE_DATA(String, RemoteDirectory);
     WRITE_DATA(Bool, SynchronizeBrowsing);
     WRITE_DATA(Bool, UpdateDirectories);
@@ -2829,12 +2829,12 @@ bool TSessionData::GetCanLogin() const
 
 bool TSessionData::GetIsLocalBrowser() const
 {
-  return !LocalDirectory.IsEmpty() && !OtherLocalDirectory.IsEmpty();
+  return !LocalDirectory().IsEmpty() && !OtherLocalDirectory().IsEmpty();
 }
 
 bool TSessionData::GetCanOpen() const
 {
-  return CanLogin || IsLocalBrowser;
+  return GetCanLogin() || IsLocalBrowser();
 }
 
 int32_t TSessionData::GetDefaultPort() const
@@ -3494,8 +3494,8 @@ UnicodeString TSessionData::GetDefaultSessionName() const
   if (IsLocalBrowser)
   {
     // See also TScpCommanderForm::GetLocalBrowserSessionTitle
-    UnicodeString Path1 = ExtractShortName(LocalDirectory, false);
-    UnicodeString Path2 = ExtractShortName(OtherLocalDirectory, false);
+    UnicodeString Path1 = base::ExtractShortName(LocalDirectory, false);
+    UnicodeString Path2 = base::ExtractShortName(OtherLocalDirectory, false);
     Result = Path1 + TitleSeparator + Path2;
   }
   else if (!HostName.IsEmpty() && !UserName.IsEmpty())

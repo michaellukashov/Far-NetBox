@@ -749,6 +749,7 @@ public:
   __property int ProxyPort  = { read = FProxyPort, write = SetProxyPort };
   __property UnicodeString ProxyUsername  = { read = FProxyUsername, write = SetProxyUsername };
   __property UnicodeString ProxyPassword  = { read = GetProxyPassword, write = SetProxyPassword };
+  RWProperty<UnicodeString> ProxyPassword{nb::bind(&TSessionData::GetProxyPassword, this), nb::bind(&TSessionData::SetProxyPassword, this)};
   __property UnicodeString ProxyTelnetCommand  = { read = FProxyTelnetCommand, write = SetProxyTelnetCommand };
   __property UnicodeString ProxyLocalCommand  = { read = FProxyLocalCommand, write = SetProxyLocalCommand };
   __property TAutoSwitch ProxyDNS  = { read = FProxyDNS, write = SetProxyDNS };
@@ -796,8 +797,10 @@ public:
   __property int TunnelPortNumber = { read = FTunnelPortNumber, write = SetTunnelPortNumber };
   __property UnicodeString TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
   __property UnicodeString TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
+  RWProperty<UnicodeString> TunnelPassword{nb::bind(&TSessionData::GetTunnelPassword, this), nb::bind(&TSessionData::SetTunnelPassword, this)};
   __property UnicodeString TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
   __property UnicodeString TunnelPassphrase = { read = GetTunnelPassphrase, write = SetTunnelPassphrase };
+  RWProperty<UnicodeString> TunnelPassphrase{nb::bind(&TSessionData::GetTunnelPassphrase, this), nb::bind(&TSessionData::SetTunnelPassphrase, this)};
   __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
   __property UnicodeString TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };

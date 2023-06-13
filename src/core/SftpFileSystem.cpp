@@ -4322,12 +4322,12 @@ void TSFTPFileSystem::CalculateFilesChecksum(
 
     if (Queue.Init(CalculateFilesChecksumQueueLen, SftpAlg, FileList))
     {
-      TSFTPPacket Packet;
+      TSFTPPacket Packet(FCodePage);
       bool Next;
       do
       {
         bool Success = false;
-        TRemoteFile * File = NULL;
+        TRemoteFile * File = nullptr;
 
         try__finally
         {
@@ -4342,7 +4342,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
 
             // skip alg
             nb::used(Packet.GetAnsiString());
-            Checksum = BytesToHex(reinterpret_cast<const unsigned char *>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength(), false);
+            UnicodeString Checksum = BytesToHex(reinterpret_cast<const uint8_t *>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength(), false);
             if (OnCalculatedChecksum != nullptr)
             {
               OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
