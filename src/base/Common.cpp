@@ -3921,7 +3921,7 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
   UnicodeString Result;
   if (DateOnly)
   {
-    if (IsSameDay(AThen, ANow - 1))
+    if (IsSameDay(AThen, TDateTime(ANow - 1.0)))
     {
       Result = LoadStrPart(TIME_RELATIVE, 3);
     }
@@ -3933,7 +3933,7 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
 
   if (Result.IsEmpty())
   {
-    int Part, Num;
+    int32_t Part, Num;
 
     Num = YearsBetween(ANow, AThen);
     if (Num > 1)
@@ -3968,7 +3968,7 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
         }
         else
         {
-          Num = static_cast<int>(HoursBetween(ANow, AThen));
+          Num = static_cast<int32_t>(HoursBetween(ANow, AThen));
           if (Num > 1)
           {
             Part = 10;
@@ -3979,7 +3979,7 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
           }
           else
           {
-            Num = static_cast<int>(MinutesBetween(ANow, AThen));
+            Num = static_cast<int32_t>(MinutesBetween(ANow, AThen));
             if (Num > 1)
             {
               Part = 8;
@@ -5180,5 +5180,5 @@ void NotImplemented()
 
 UnicodeString GetDividerLine()
 {
-  return UnicodeString::StringOfChar(L'-', 27);
+  return ::StringOfChar(L'-', 27);
 }

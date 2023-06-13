@@ -300,9 +300,13 @@ public:
   void SetValue(UnicodeString Name, UnicodeString Value);
   UnicodeString GetValueFromIndex(int32_t Index) const;
 
+public:
   // TODO: ROIndexedProperty<TObject *> Objects{nb::bind(&TStrings::GetObj, this)};
-  // TODO: ROIndexedProperty<UnicodeString> Names{nb::bind(&TList::GetName, this)};
-  // TODO: ROIndexedProperty<UnicodeString> Strings{nb::bind(&TList::GetName, this)};
+  // TODO: ROIndexedProperty<UnicodeString> Names{nb::bind(&TStrings::GetName, this)};
+  ROIndexedProperty<UnicodeString> Strings{nb::bind(&TStrings::GetStrings, this)};
+
+protected:
+  UnicodeString GetStrings(int32_t Index) const { return GetString(Index); }
 
 protected:
   TDuplicatesEnum FDuplicates{dupAccept};
@@ -445,14 +449,13 @@ private:
   double FValue{0.0};
 };
 
-#define MinDateTime TDateTime(-657434.0)
-// constexpr TDateTime MinDateTime = TDateTime(-657434.0);
+//#define MinDateTime TDateTime(-657434.0)
+constexpr const double MinDateTime = -657434.0;
 
+// TODO: move to DateUtils.hpp
 NB_CORE_EXPORT TDateTime Now();
 NB_CORE_EXPORT TDateTime SpanOfNowAndThen(const TDateTime &ANow, const TDateTime &AThen);
 NB_CORE_EXPORT double MilliSecondSpan(const TDateTime &ANow, const TDateTime &AThen);
-NB_CORE_EXPORT int64_t MilliSecondsBetween(const TDateTime &ANow, const TDateTime &AThen);
-NB_CORE_EXPORT int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AThen);
 
 class TTimeSpan
 {

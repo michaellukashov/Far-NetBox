@@ -1166,17 +1166,6 @@ double MilliSecondSpan(const TDateTime &ANow, const TDateTime &AThen)
   return Result;
 }
 
-int64_t MilliSecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
-{
-  const double Result = floor(MilliSecondSpan(ANow, AThen));
-  return nb::ToInt64(Result);
-}
-
-int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
-{
-  return MilliSecondsBetween(ANow, AThen);
-}
-
 /*
 TSHFileInfo::TSHFileInfo() :
   FGetFileInfo(nullptr)

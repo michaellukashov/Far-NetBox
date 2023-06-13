@@ -1592,6 +1592,84 @@ Boolean IsLeapYear(Word Year)
   return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
 }
 
+constexpr double TDateTimeEpsilon = 2.2204460493e-16;
+constexpr double OneMillisecond = 0.001;
+//constexpr double HalfMilliSecond = OneMillisecond / 2.0;
+constexpr double HalfMilliSecond = 0.0005;
+constexpr double ApproxDaysPerMonth = 30.4375;
+constexpr double ApproxDaysPerYear = 365.25;
+//constexpr int32_t HoursPerDay = 24; // Adjust the value accordingly
+//constexpr int32_t MinsPerDay = 1440;
+
+bool IsSameDay(const TDateTime & AValue, const TDateTime & ABasis)
+{
+  double D = AValue - floor(ABasis);
+  bool Result = (D >= 0) && (D < 1);
+  return Result;
+}
+
+double DateTimeToNumber(const TDateTime & ADateTime)
+{
+  if (ADateTime >= 0)
+    return ADateTime;
+  else
+    return std::trunc(ADateTime) - std::fmod(ADateTime, 1.0);
+}
+
+TDateTime NumberToDateTime(double AValue)
+{
+  if (AValue >= 0)
+    return TDateTime(AValue);
+  else
+    return TDateTime(std::trunc(AValue) + std::fmod(AValue, 1.0));
+}
+
+TDateTime DateTimeDiff(const TDateTime & ANow, const TDateTime & AThen)
+{
+  return TDateTime(NumberToDateTime(DateTimeToNumber(ANow) - DateTimeToNumber(AThen)));
+}
+
+int32_t YearsBetween(const TDateTime & ANow, const TDateTime & AThen)
+{
+  double result = floor((abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) / ApproxDaysPerYear);
+  return static_cast<int32_t>(result);
+}
+
+int32_t MonthsBetween(const TDateTime& ANow, const TDateTime& AThen)
+{
+  return static_cast<int32_t>((std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) / ApproxDaysPerMonth);
+}
+
+int32_t DaysBetween(const TDateTime& ANow, const TDateTime& AThen)
+{
+  if (ANow > AThen) {
+    return static_cast<int>(std::trunc(std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond));
+  } else {
+    return static_cast<int>(std::trunc(std::abs(DateTimeDiff(AThen, ANow)) + HalfMilliSecond));
+  }
+}
+
+int64_t HoursBetween(const TDateTime & ANow, const TDateTime & AThen)
+{
+  return static_cast<int64_t>(std::trunc((std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) * HoursPerDay));
+}
+
+int64_t MinutesBetween(const TDateTime& ANow, const TDateTime& AThen)
+{
+  return static_cast<int64_t>(std::trunc((std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) * MinsPerDay));
+}
+
+int64_t MilliSecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
+{
+  const double Result = floor(MilliSecondSpan(ANow, AThen));
+  return nb::ToInt64(Result);
+}
+
+int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
+{
+  return MilliSecondsBetween(ANow, AThen);
+}
+
 UnicodeString StripHotkey(const UnicodeString AText)
 {
   UnicodeString Result = AText;

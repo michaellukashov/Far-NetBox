@@ -196,6 +196,39 @@ public:
 };
 
 template <typename T>
+class ROIndexedProperty
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
+private:
+  using TGetValueFunctor = fastdelegate::FastDelegate1<T, int32_t>;
+  TGetValueFunctor _getter;
+
+public:
+  ROIndexedProperty() = delete;
+  explicit ROIndexedProperty(const TGetValueFunctor &Getter) noexcept
+      : _getter(Getter)
+  {
+    Expects(_getter != nullptr);
+  }
+  ROIndexedProperty(const ROIndexedProperty&) = default;
+  ROIndexedProperty(ROIndexedProperty&&) = default;
+  ROIndexedProperty& operator=(const ROIndexedProperty&) = default;
+  ROIndexedProperty& operator=(ROIndexedProperty&&) = default;
+  constexpr T operator[](int32_t Index)
+  {
+    Expects(_getter);
+    return _getter(Index);
+  }
+
+  friend bool constexpr inline operator==(const ROIndexedProperty &lhs, const ROIndexedProperty &rhs)
+  {
+    Expects(lhs._getter);
+    Expects(rhs._getter);
+    return lhs._getter() == rhs._getter();
+  }
+};
+
+template <typename T>
 class ROPropertySimple //8 bytes
 {
 CUSTOM_MEM_ALLOCATION_IMPL
