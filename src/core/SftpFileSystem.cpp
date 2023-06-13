@@ -996,10 +996,13 @@ public:
   __property unsigned int SendLength = { read = GetSendLength };
   __property unsigned int Capacity = { read = FCapacity, write = SetCapacity };
   __property unsigned char Type = { read = FType };
+  ROPropertySimple<SSH_FXP_TYPE> Type{&FType};
   __property unsigned char RequestType = { read = GetRequestType };
   __property unsigned int MessageNumber = { read = FMessageNumber, write = FMessageNumber };
+  RWProperty2<uint32_t> MessageNumber{&FMessageNumber};
   __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
   __property UnicodeString TypeName = { read = GetTypeName };
+  ROProperty<UnicodeString> TypeName{nb::bind(&TSFTPPacket::GetTypeName, this)};
 
   uint32_t GetLength() const { return FLength; }
   uint8_t *GetData() const { return FData; }
@@ -2459,7 +2462,7 @@ void TSFTPFileSystem::Progress(TFileOperationProgressType *OperationProgress)
 
 void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
 {
-  std::vector<UnicodeString> NotLogged;
+  rde::vector<UnicodeString> NotLogged;
   #define ADD_NOT_LOGGED(V, N) \
     if (FNotLogged##V##Packets > 0) \
     { \
@@ -2480,7 +2483,7 @@ void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
     FTerminal->LogEvent(FORMAT(L"Skipped %s packets", S));
   }
   FTerminal->Log->Add(
-    Type, FORMAT(L"Type: %s, Size: %d, Number: %d", Packet->TypeName, (int)Packet->Length, (int)Packet->MessageNumber));
+    Type, FORMAT(L"Type: %s, Size: %d, Number: %d", Packet->TypeName(), (int)Packet->GetLength(), (int)Packet->GetMessageNumber()));
   if (FTerminal->Configuration->ActualLogProtocol >= 2)
   {
     FTerminal->Log->Add(Type, Packet->Dump());
@@ -2507,19 +2510,19 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket *Packet)
           (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1))
       {
         LogPacket(Packet, llInput);
-        FPreviousLoggedPacket = Packet->Type;
+        FPreviousLoggedPacket = Packet->GetType();
       }
       else
       {
-        if (Packet->Type == SSH_FXP_WRITE)
+        if (Packet->GetType() == SSH_FXP_WRITE)
         {
           FNotLoggedWritePackets++;
         }
-        else if (DebugAlwaysTrue(Packet->Type == SSH_FXP_READ))
+        else if (DebugAlwaysTrue(Packet->GetType() == SSH_FXP_READ))
         {
           FNotLoggedReadPackets++;
         }
-        FNotLoggedRequests.insert(Packet->MessageNumber);
+        FNotLoggedRequests.insert(Packet->MessageNumber());
       }
     }
     FSecureShell->Send(Packet->GetSendData(), Packet->GetSendLength());
@@ -2747,7 +2750,8 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket *Packet,
         FSecureShell->Receive(Packet->GetData(), Length);
         Packet->DataUpdated(Length);
 
-        bool ResponseToNotLoggedRequest = (FNotLoggedRequests.erase(Packet->MessageNumber) != 0);
+        bool ResponseToNotLoggedRequest = FNotLoggedRequests.find(Packet->MessageNumber()) != FNotLoggedRequests.end();
+        FNotLoggedRequests.erase(Packet->MessageNumber());
         if (FTerminal->Log->Logging && (FTerminal->Configuration->ActualLogProtocol >= 0))
         {
           if (!ResponseToNotLoggedRequest ||
@@ -3199,7 +3203,8 @@ void TSFTPFileSystem::DoStartup()
   FSupportsStatVfsV2 = false;
   FSupportsHardlink = false;
   bool SupportsLimits = false;
-  SAFE_DESTROY(FFixedPaths.release());
+  TStrings * FixedPaths = FFixedPaths.release();
+  SAFE_DESTROY(FixedPaths);
 
   if (FVersion >= 3)
   {
@@ -3414,7 +3419,7 @@ void TSFTPFileSystem::DoStartup()
       Packet2.AddInt64(LOWORD(FTerminal->GetConfiguration()->GetFixedApplicationInfo()->dwFileVersionLS));
       SendPacket(&Packet2);
       // we are not interested in the response, do not wait for it
-      ReserveResponse(&Packet, nullptr);
+      ReserveResponse(&Packet2, nullptr);
     }
   }
 
@@ -3782,7 +3787,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
           FTerminal->SetExceptionOnFail(true);
           try__finally
           {
-            File = FTerminal->ReadFile(base::UnixCombinePaths(FileList->GetDirectory()), PARENTDIRECTORY);
+            File = FTerminal->ReadFile(base::UnixCombinePaths(FileList->GetDirectory(), PARENTDIRECTORY));
           },
           __finally
           {
@@ -4022,13 +4027,13 @@ void TSFTPFileSystem::DoCloseRemoteIfOpened(const RawByteString & Handle)
 }
 
 void TSFTPFileSystem::RemoteCopyFile(
-  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString ANewName)
+  const UnicodeString AFileName, const TRemoteFile * AFile, const UnicodeString ANewName)
 {
-  UnicodeString FileNameCanonical = Canonify(FileName);
+  UnicodeString FileNameCanonical = Canonify(AFileName);
   bool Encrypted = FTerminal->IsFileEncrypted(FileNameCanonical);
-  UnicodeString NewNameCanonical = Canonify(NewName);
+  UnicodeString NewNameCanonical = Canonify(ANewName);
 
-  if (SupportsExtension(SFTP_EXT_COPY_FILE) || (FSecureShell->SshImplementation == sshiBitvise))
+  if (SupportsExtension(SFTP_EXT_COPY_FILE) || (FSecureShell->FSshImplementation == sshiBitvise))
   {
     TSFTPPacket Packet(SSH_FXP_EXTENDED);
     Packet.AddString(SFTP_EXT_COPY_FILE);
@@ -4041,9 +4046,9 @@ void TSFTPFileSystem::RemoteCopyFile(
   {
     DebugAssert(SupportsExtension(SFTP_EXT_COPY_DATA));
 
-    __int64 Size = DebugAlwaysTrue(File != NULL) ? File->Size : -1;
+    int64_t Size = DebugAlwaysTrue(AFile != nullptr) ? AFile->Size : -1;
     RawByteString SourceRemoteHandle, DestRemoteHandle;
-    try
+    try__finally
     {
       SourceRemoteHandle = SFTPOpenRemoteFile(FileNameCanonical, SSH_FXF_READ, Encrypted, Size);
       // SFTP_EXT_COPY_FILE does not allow overwritting existing files
@@ -4059,7 +4064,7 @@ void TSFTPFileSystem::RemoteCopyFile(
       Packet.AddString(DestRemoteHandle);
       Packet.AddInt64(0);
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
-    }
+    },
     __finally
     {
       if (FTerminal->Active)
@@ -4067,7 +4072,7 @@ void TSFTPFileSystem::RemoteCopyFile(
         DoCloseRemoteIfOpened(SourceRemoteHandle);
         DoCloseRemoteIfOpened(DestRemoteHandle);
       }
-    }
+    } end_try__finally
   }
 }
 
@@ -4299,9 +4304,9 @@ void TSFTPFileSystem::CalculateFilesChecksum(
   FTerminal->CalculateSubFoldersChecksum(Alg, FileList, OnCalculatedChecksum, OperationProgress, FirstLevel);
 
   static int CalculateFilesChecksumQueueLen = 5;
-  TSFTPCalculateFilesChecksumQueue Queue(this);
+  TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
   TOnceDoneOperation OnceDoneOperation; // not used
-  try
+  try__finally
   {
     UnicodeString SftpAlg;
     int Index = FChecksumAlgs->IndexOf(Alg);

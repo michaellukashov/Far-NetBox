@@ -44,7 +44,7 @@ public:
     TChmodSessionAction & Action) override;
   virtual bool LoadFilesProperties(TStrings * AFileList) override;
   virtual void CalculateFilesChecksum(
-    const UnicodeString Alg, TStrings * AFileList, TStrings * Checksums, TCalculatedChecksumEvent OnCalculatedChecksum,
+    const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString TargetDir, const TCopyParamType * CopyParam,

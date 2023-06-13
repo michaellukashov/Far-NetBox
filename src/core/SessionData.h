@@ -822,6 +822,7 @@ public:
   __property UnicodeString S3DefaultRegion = { read = FS3DefaultRegion, write = SetS3DefaultRegion };
   RWProperty<UnicodeString> S3DefaultRegion{nb::bind(&TSessionData::GetS3DefaultRegion, this), nb::bind(&TSessionData::SetS3DefaultRegion, this)};
   __property UnicodeString S3SessionToken = { read = FS3SessionToken, write = SetS3SessionToken };
+  RWPropertySimple<UnicodeString> S3SessionToken{&FS3SessionToken, nb::bind(&TSessionData::SetS3SessionToken, this)};
   __property UnicodeString S3Profile = { read = FS3Profile, write = SetS3Profile };
   RWPropertySimple<UnicodeString> S3Profile{&FS3Profile, nb::bind(&TSessionData::SetS3Profile, this) };
   __property TS3UrlStyle S3UrlStyle = { read = FS3UrlStyle, write = SetS3UrlStyle };

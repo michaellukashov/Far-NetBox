@@ -9,7 +9,7 @@ NB_CORE_EXPORT extern TStoredSessionList *StoredSessions;
 extern bool AnySession;
 extern TApplicationLog * ApplicationLog;
 #define AppLog(S) if (ApplicationLog->Logging) ApplicationLog->Log(S)
-#define AppLogFmt(S, F) AppLog(FORMAT(S, F))
+#define AppLogFmt(S, ...) AppLog(FORMAT(S, __VA_ARGS__))
 
 NB_CORE_EXPORT void CoreInitialize();
 NB_CORE_EXPORT void CoreFinalize();

@@ -1332,9 +1332,9 @@ void TFTPFileSystem::CalculateFilesChecksum(
       try
       {
         OperationProgress->SetFile(File->GetFileName());
-        Action.FileName(File->FullFileName);
+        Action.SetFileName(File->FullFileName);
         bool Success = false;
-        try
+        try__finally
         {
           UnicodeString Checksum = DoCalculateFileChecksum(Alg, File);
 
@@ -1344,14 +1344,14 @@ void TFTPFileSystem::CalculateFilesChecksum(
           }
           Action.Checksum(Alg, Checksum);
           Success = true;
-        }
+        },
         __finally
         {
           if (FirstLevel)
           {
             OperationProgress->Finish(File->FileName, Success, OnceDoneOperation);
           }
-        }
+        } end_try__finally
       }
       catch (Exception &E)
       {
@@ -1390,7 +1390,7 @@ UnicodeString TFTPFileSystem::CalculateFilesChecksumInitialize(const UnicodeStri
   return NormalizedAlg;
 }
 
-bool TFTPFileSystem::UsingHashCommandChecksum(const UnicodeString & Alg)
+bool TFTPFileSystem::UsingHashCommandChecksum(const UnicodeString & Alg) const
 {
   return (FHashAlgs->IndexOf(Alg) >= 0);
 }
@@ -1938,9 +1938,9 @@ void TFTPFileSystem::DoStartup()
     UnicodeString NameFact = L"Name";
     UnicodeString VersionFact = L"Version";
     UnicodeString Command =
-      FORMAT(L"%s %s=%s;%s=%s", (CsidCommand, NameFact, AppNameString(), VersionFact, FTerminal->Configuration->Version));
+      FORMAT(L"%s %s=%s;%s=%s", CsidCommand, NameFact, GetAppNameString(), VersionFact, FTerminal->Configuration->Version);
     SendCommand(Command);
-    TStrings * Response = NULL;
+    TStrings * Response = nullptr;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, EmptyStr, NULL, &Response);
     std::unique_ptr<TStrings> ResponseOwner(Response);
     // Not using REPLY_SINGLE_LINE to make it robust

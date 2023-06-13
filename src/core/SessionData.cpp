@@ -69,7 +69,7 @@ const UnicodeString FtpesProtocol("ftpes");
 const UnicodeString WebDAVProtocol("dav");
 const UnicodeString WebDAVSProtocol("davs");
 const UnicodeString S3Protocol("s3");
-+const UnicodeString S3PlainProtocol(L"s3plain");
+const UnicodeString S3PlainProtocol(L"s3plain");
 const UnicodeString SshProtocol("ssh");
 const UnicodeString WinSCPProtocolPrefix("winscp-");
 const wchar_t UrlParamSeparator = L';';
@@ -390,19 +390,20 @@ void TSessionData::NonPersistent()
   SetPreserveDirectoryChanges(false);
 }
 
+  //PROPERTY(UserName); \
+
 #define PROPERTY(P) PROPERTY_HANDLER(P, )
 #define BASE_PROPERTIES \
   PROPERTY(HostName); \
   PROPERTY(PortNumber); \
-  PROPERTY(UserName); \
   PROPERTY_HANDLER(Password, F); \
   PROPERTY(PublicKeyFile); \
-  PROPERTY(DetachedCertificate); \
+  PROPERTY2(DetachedCertificate); \
   PROPERTY_HANDLER(Passphrase, F); \
   PROPERTY(FSProtocol); \
   PROPERTY(Ftps); \
   PROPERTY(LocalDirectory); \
-  PROPERTY(OtherLocalDirectory); \
+  PROPERTY2(OtherLocalDirectory); \
   PROPERTY(RemoteDirectory); \
   PROPERTY2(RequireDirectories);
 #if 0
@@ -641,9 +642,9 @@ void TSessionData::CopyDirectoriesStateData(TSessionData * SourceData)
 bool TSessionData::HasStateData() const
 {
   return
-    !GetRemoteDirectory().IsEmpty() ||
-    !GetLocalDirectory().IsEmpty() ||
-    !OtherLocalDirectory.IsEmpty() ||
+    !RemoteDirectory().IsEmpty() ||
+    !LocalDirectory().IsEmpty() ||
+    !OtherLocalDirectory().IsEmpty() ||
     (GetColor() != 0);
 }
 
@@ -1190,7 +1191,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
   {
     WRITE_DATA_EX(String, "UserName", SessionGetUserName(), );
     WRITE_DATA(String, PublicKeyFile);
-    WRITE_DATA(String, DetachedCertificate);
+    WRITE_DATA_EX2(String, "DetachedCertificate", GetDetachedCertificate(), );
     WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), );
     WRITE_DATA(String, LocalDirectory);
     WRITE_DATA(String, OtherLocalDirectory);
@@ -1937,8 +1938,8 @@ void TSessionData::RecryptPasswords()
 
 // Caching read password files, particularly when the file is actually a named pipe
 // that does not support repeated reading.
-static std::unique_ptr<TCriticalSection> PasswordFilesCacheSection(TraceInitPtr(new TCriticalSection()));
-typedef std::map<UnicodeString, UnicodeString> TPasswordFilesCache;
+static std::unique_ptr<TCriticalSection> PasswordFilesCacheSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
+typedef rde::map<UnicodeString, UnicodeString> TPasswordFilesCache;
 static TPasswordFilesCache PasswordFilesCache;
 
 static UnicodeString ReadPasswordFromFile(const UnicodeString & FileName)
@@ -1946,8 +1947,8 @@ static UnicodeString ReadPasswordFromFile(const UnicodeString & FileName)
   UnicodeString Result;
   if (!FileName.IsEmpty())
   {
-    TGuard Guard(PasswordFilesCacheSection.get());
-    TPasswordFilesCache::const_iterator I = PasswordFilesCache.find(FileName);
+    TGuard Guard(*PasswordFilesCacheSection.get());
+    TPasswordFilesCache::iterator I = PasswordFilesCache.find(FileName);
     if (I != PasswordFilesCache.end())
     {
       Result = I->second;

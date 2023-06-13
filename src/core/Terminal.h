@@ -708,6 +708,7 @@ public:
   __property TSessionLog * Log = { read = FLog };
   ROProperty<TSessionLog *> Log{nb::bind(&TTerminal::GetLogConst, this)};
   __property TActionLog * ActionLog = { read = FActionLog };
+  ROProperty<TActionLog *> ActionLog{nb::bind(&TTerminal::GetActionLog, this)};
   __property TConfiguration * Configuration = { read = FConfiguration };
   ROProperty<const TConfiguration *> Configuration{nb::bind(&TTerminal::GetConfigurationConst, this)};
   __property bool Active = { read = GetActive };
@@ -1140,7 +1141,7 @@ struct TLocalFileHandle
   void Release();
 
   UnicodeString FileName;
-  HANDLE Handle{0};
+  HANDLE Handle{nullptr};
   DWORD Attrs{0};
   bool Directory{false};
   TDateTime Modification;

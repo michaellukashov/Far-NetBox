@@ -1495,8 +1495,8 @@ void TSCPFileSystem::CalculateFilesChecksum(
         {
           UnicodeString FileName = BatchFileList->GetString(BatchIndex);
           TRemoteFile * File = DebugNotNull(BatchFileList->GetAs<TRemoteFile>(BatchIndex));
-          TChecksumSessionAction Action(FTerminal->ActionLog);
-          Action.FileName(File->FullFileName);
+          TChecksumSessionAction Action(FTerminal->ActionLog());
+          Action.SetFileName(File->FullFileName);
           OperationProgress->SetFile(FileName);
           UnicodeString Checksum = BatchChecksums->Strings[BatchIndex];
           ProcessFileChecksum(OnCalculatedChecksum, Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
@@ -1511,11 +1511,11 @@ void TSCPFileSystem::CalculateFilesChecksum(
         {
           TRemoteFile * File = DebugNotNull(BatchFileList->GetAs<TRemoteFile>(BatchIndex));
           TChecksumSessionAction Action(FTerminal->ActionLog);
-          try__catch
+          try
           {
             UnicodeString FileName = BatchFileList->Strings[BatchIndex];
             OperationProgress->SetFile(FileName);
-            Action.FileName(File->FullFileName);
+            Action.SetFileName(File->FullFileName);
 
             UnicodeString Checksum;
             try__finally

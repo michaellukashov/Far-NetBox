@@ -423,7 +423,7 @@ void TWebDAVFileSystem::NeonAddAuthentication(TSessionContext * SessionContext, 
 
 UnicodeString TWebDAVFileSystem::GetRedirectUrl() const
 {
-  UnicodeString Result = GetNeonRedirectUrl(FSessionContext->FNeonSession);
+  UnicodeString Result = GetNeonRedirectUrl(FSessionContext->NeonSession);
   FTerminal->LogEvent(FORMAT("Redirected to \"%s\".", Result));
   return Result;
 }
@@ -1194,7 +1194,7 @@ bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
 }
 
 void TWebDAVFileSystem::CalculateFilesChecksum(
-  const UnicodeString /*Alg*/, TStrings * /*FileList*/, TStrings * /*Checksums*/, TCalculatedChecksumEvent /*OnCalculatedChecksum*/,
+  const UnicodeString & DebugUsedArg(Alg), TStrings * DebugUsedArg(FileList), TCalculatedChecksumEvent DebugUsedArg(OnCalculatedChecksum),
   TFileOperationProgressType *, bool DebugUsedArg(FirstLevel))
 {
   DebugFail();
@@ -1818,8 +1818,8 @@ void TWebDAVFileSystem::Sink(
       TAutoFlag DownloadingFlag(FDownloading); nb::used(DownloadingFlag);
 
       ClearNeonError();
-      int NeonStatus = ne_get(FSessionContext->NeonSession, PathToNeon(FileName), FD);
-      UnicodeString DiscardPath = FileName;
+      int NeonStatus = ne_get(FSessionContext->NeonSession, PathToNeon(AFileName), FD);
+      UnicodeString DiscardPath = AFileName;
       if (IsValidRedirect(NeonStatus, DiscardPath))
       {
         UnicodeString CorrectedUrl = GetRedirectUrl();
@@ -1875,7 +1875,7 @@ void TWebDAVFileSystem::Sink(
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }
 
-bool TWebDAVFileSystem::VerifyCertificate(TSessionContext * SessionContext, TNeonCertificateData Data, bool Aux)
+bool TWebDAVFileSystem::VerifyCertificate(TSessionContext * SessionContext, TNeonCertificateData & Data, bool Aux)
 {
   bool Result =
     FTerminal->VerifyOrConfirmHttpCertificate(

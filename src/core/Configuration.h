@@ -349,6 +349,7 @@ public:
   __property UnicodeString VersionStr = { read = GetVersionStr };
   ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
   __property UnicodeString Version = { read = GetVersion };
+  ROProperty<UnicodeString> Version {nb::bind(&TConfiguration::GetVersion, this)};
   __property int CompoundVersion = { read = GetCompoundVersion };
   ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
   __property UnicodeString ProductVersion = { read = GetProductVersion };
