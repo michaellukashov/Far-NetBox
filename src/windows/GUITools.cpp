@@ -141,14 +141,14 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
   Storage->ConfigureForPutty();
   if (Storage->OpenRootKey(true))
   {
-    Result = ReuseExisting && Storage->KeyExists(SessionData->StorageKey);
+    Result = ReuseExisting && Storage->KeyExists(SessionData->StorageKey());
     if (Result)
     {
-      AppLogFmt(L"Reusing existing PuTTY session: %s", SessionData->StorageKey);
+      AppLogFmt(L"Reusing existing PuTTY session: %s", SessionData->StorageKey());
     }
     else
     {
-      std::unique_ptr<TRegistryStorage> SourceStorage(new TRegistryStorage(Configuration->PuttySessionsKey));
+      std::unique_ptr<TRegistryStorage> SourceStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
       SourceStorage->ConfigureForPutty();
       if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
           Storage->OpenSubKey(SessionName, true))
@@ -254,7 +254,7 @@ void TPuttyCleanupThread::Execute()
     {
       {
         TGuard Guard(*FSection.get());
-        std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(Configuration->PuttySessionsKey));
+        std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
         Storage->AccessMode = smReadWrite;
         Storage->ConfigureForPutty();
 
