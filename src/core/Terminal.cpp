@@ -1196,11 +1196,12 @@ TTerminal::~TTerminal() noexcept
 //  SAFE_DESTROY_EX(TSessionLog, FLog);
   if (FActionLogOwned)
   {
-    SAFE_DESTROY_EX(TActionLog, FActionLog);
+    TActionLog * ActionLog = FActionLog.release();
+    SAFE_DESTROY_EX(TActionLog, ActionLog);
   }
   else
   {
-    FActionLog = NULL;
+    FActionLog.release();
   }
 //  SAFE_DESTROY_EX(TActionLog, FActionLog);
 //  SAFE_DESTROY(FFiles);
@@ -4293,7 +4294,7 @@ void TTerminal::DoDeleteFile(const UnicodeString AFileName,
   const TRemoteFile * AFile, int32_t Params)
 {
   LogEvent(FORMAT(L"Deleting file \"%s\".", AFileName));
-  FileModified(File, FileName, true);
+  FileModified(AFile, AFileName, true);
 
   TRetryOperationLoop RetryLoop(this);
   do
@@ -4317,7 +4318,7 @@ void TTerminal::DoDeleteFile(const UnicodeString AFileName,
   while (RetryLoop.Retry());
 
   // Forget if file was or was not encrypted and use user preferences, if we ever recreate it.
-  FEncryptedFileNames.erase(GetAbsolutePath(FileName, true));
+  FEncryptedFileNames.erase(GetAbsolutePath(AFileName, true));
   ReactOnCommand(fsDeleteFile);
 }
 
@@ -4377,15 +4378,15 @@ void TTerminal::CustomCommandOnFile(UnicodeString AFileName,
 TCustomFileSystem * TTerminal::GetFileSystemForCapability(TFSCapability Capability, bool NeedCurrentDirectory)
 {
   TCustomFileSystem * Result;
-  if (IsCapable[Capability])
+  if (GetIsCapable(Capability))
   {
     DebugAssert(FFileSystem != NULL);
-    Result = FFileSystem;
+    Result = FFileSystem.get();
   }
   else
   {
-    DebugAssert(CommandSessionOpened);
-    DebugAssert(FCommandSession->FSProtocol == cfsSCP);
+    DebugAssert(GetCommandSessionOpened());
+    DebugAssert(FCommandSession->FFSProtocol == cfsSCP);
     LogEvent(L"Performing operation on command session.");
 
     if (FCommandSession->CurrentDirectory != CurrentDirectory)
@@ -4404,7 +4405,7 @@ TCustomFileSystem * TTerminal::GetFileSystemForCapability(TFSCapability Capabili
       }
     }
 
-    Result = FCommandSession->FFileSystem;
+    Result = FCommandSession->FFileSystem.get();
   }
   return Result;
 }
@@ -4419,7 +4420,7 @@ void TTerminal::DoCustomCommandOnFile(UnicodeString AFileName,
     try
     {
       TCustomFileSystem * FileSystem = GetFileSystemForCapability(fcAnyCommand, true);
-      DebugAssert((FileSystem != FFileSystem) || IsCapable[fcShellAnyCommand]);
+      DebugAssert((FileSystem != FFileSystem.get()) || GetIsCapable(fcShellAnyCommand));
 
       FileSystem->CustomCommandOnFile(AFileName, AFile, ACommand, AParams, OutputEvent);
     }
@@ -4452,7 +4453,7 @@ void TTerminal::CustomCommandOnFiles(UnicodeString ACommand,
 
       if (!Dir || FLAGSET(AParams, ccApplyToDirectories))
       {
-        AddToShellFileListCommandLine(FileList, Files->GetStr(Index));
+        AddToShellFileListCommandLine(FileList, AFiles->GetString(Index));
       }
     }
 
@@ -4711,7 +4712,7 @@ bool TTerminal::DoCalculateDirectorySize(const UnicodeString FileName, TCalculat
   {
     try
     {
-      ProcessDirectory(FileName, nb::bind(&TTerminal::CalculateFileSize, Params, Params->UseCache);
+      ProcessDirectory(FileName, nb::bind(&TTerminal::CalculateFileSize, this), Params, Params->UseCache);
       Result = true;
     }
     catch (Exception &E)
@@ -4749,7 +4750,7 @@ bool TTerminal::CalculateFilesSize(TStrings *AFileList, int64_t & Size, TCalcula
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor); nb::used(UseBusyCursorRestorer);
   FUseBusyCursor = false;
 
-  ProcessFiles(AFileList, foCalculateSize, nb::bind(&TTerminal::DoCalculateFileSize, this), &Param);
+  ProcessFiles(AFileList, foCalculateSize, nb::bind(&TTerminal::DoCalculateFileSize, this), &Params);
   Size = Params.Size;
   if (Configuration->ActualLogProtocol >= 1)
   {
@@ -4770,7 +4771,7 @@ void TTerminal::CalculateSubFoldersChecksum(
     while ((Index < FileList->Count) && !OperationProgress->Cancel)
     {
       UnicodeString FileName = FileList->Strings[Index];
-      TRemoteFile * File = DebugNotNull(dynamic_cast<TRemoteFile *>(FileList->Objects[Index]));
+      TRemoteFile * File = DebugNotNull(FileList->GetAs<TRemoteFile>(Index));
 
       if (File->IsDirectory &&
           CanRecurseToDirectory(File) &&
@@ -4779,32 +4780,32 @@ void TTerminal::CalculateSubFoldersChecksum(
         OperationProgress->SetFile(File->FileName);
         std::unique_ptr<TRemoteFileList> SubFiles(CustomReadDirectoryListing(File->FullFileName, false));
 
-        if (SubFiles.get() != NULL)
+        if (SubFiles.get() != nullptr)
         {
-          std::unique_ptr<TStrings> SubFileList(new TStringList());
+          std::unique_ptr<TStrings> SubFileList(std::make_unique<TStringList>());
           bool Success = false;
-          try
+          try__finally
           {
             OperationProgress->SetFile(File->FileName);
 
-            for (int Index = 0; Index < SubFiles->Count; Index++)
+            for (int32_t Index = 0; Index < SubFiles->Count; Index++)
             {
               TRemoteFile * SubFile = SubFiles->Files[Index];
-              UnicodeString SubFileName = UnixCombinePaths(FileName, SubFile->FileName);
+              UnicodeString SubFileName = base::UnixCombinePaths(FileName, SubFile->FileName);
               SubFileList->AddObject(SubFileName, SubFile);
             }
 
             FFileSystem->CalculateFilesChecksum(Alg, SubFileList.get(), OnCalculatedChecksum, OperationProgress, false);
 
             Success = true;
-          }
+          },
           __finally
           {
             if (FirstLevel)
             {
               OperationProgress->Finish(File->FileName, Success, OnceDoneOperation);
             }
-          }
+          } end_try__finally
         }
       }
       Index++;
@@ -4815,8 +4816,8 @@ void TTerminal::CalculateSubFoldersChecksum(
 void TTerminal::CalculateFilesChecksum(
   const UnicodeString Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum)
 {
-  TFileOperationProgressType Progress(&DoProgress, &DoFinished);
-  OperationStart(Progress, foCalculateChecksum, osRemote, FileList->Count);
+  TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, this), nb::bind(&TTerminal::DoFinished, this));
+  OperationStart(Progress, foCalculateChecksum, osRemote, AFileList->Count);
 
   try__finally
   {
@@ -4824,7 +4825,7 @@ void TTerminal::CalculateFilesChecksum(
 
     UnicodeString NormalizedAlg = FileSystem->CalculateFilesChecksumInitialize(Alg);
 
-    FileSystem->CalculateFilesChecksum(NormalizedAlg, FileList, OnCalculatedChecksum, &Progress, true);
+    FileSystem->CalculateFilesChecksum(NormalizedAlg, AFileList, OnCalculatedChecksum, &Progress, true);
   },
   __finally
   {
@@ -4835,10 +4836,10 @@ void TTerminal::CalculateFilesChecksum(
 void TTerminal::TerminalRenameFile(const TRemoteFile * File, const UnicodeString & NewName)
 {
   // Already checked in TUnixDirView::InternalEdit
-  if (DebugAlwaysTrue(File->FileName != NewName))
+  if (DebugAlwaysTrue(File->FileName() != NewName))
   {
     FileModified(File, File->FileName);
-    LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", File->FileName, NewName));
+    LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", File->FileName(), NewName));
     if (DoRenameFile(File->FileName, File, NewName, false, false))
     {
       ReactOnCommand(fsRenameFile);
@@ -4852,7 +4853,7 @@ bool TTerminal::DoRenameFile(
   // Can be foDelete when recycling (and overwrite should not happen in this case)
   bool IsBatchMove = (OperationProgress != NULL) && (OperationProgress->Operation == foRemoteMove);
   TBatchOverwrite BatchOverwrite = (IsBatchMove ? OperationProgress->BatchOverwrite : boNo);
-  UnicodeString AbsoluteNewName = AbsolutePath(NewName, true);
+  UnicodeString AbsoluteNewName = GetAbsolutePath(NewName, true);
   bool Result = true;
   bool ExistenceKnown = false;
   std::unique_ptr<TRemoteFile> DuplicateFile;
@@ -4867,7 +4868,7 @@ bool TTerminal::DoRenameFile(
     // noop
   }
   else if (DebugAlwaysTrue(BatchOverwrite == boNo) &&
-           Configuration->ConfirmOverwriting &&
+           Configuration->GetConfirmOverwriting() &&
            !DontOverwrite)
   {
     DuplicateFile.reset(TryReadFile(AbsoluteNewName));
@@ -4882,7 +4883,7 @@ bool TTerminal::DoRenameFile(
       }
       else
       {
-        QuestionFmt = LoadStr(FILE_OVERWRITE);
+        QuestionFmt = LoadStr(CORE_PROMPT_FILE_OVERWRITE);
       }
       TQueryParams Params(qpNeverAskAgainCheck);
       UnicodeString Question = MainInstructions(FORMAT(QuestionFmt, (NewName)));
@@ -4936,16 +4937,16 @@ bool TTerminal::DoRenameFile(
   {
     // Prevent destroying TRemoteFile between delete and rename
     BeginTransaction();
-    try
+    try__finally
     {
-      if (!IsCapable[fcMoveOverExistingFile] && !DontOverwrite)
+      if (!GetIsCapable(fcMoveOverExistingFile) && !DontOverwrite)
       {
         if (!ExistenceKnown)
         {
           DuplicateFile.reset(TryReadFile(AbsoluteNewName));
         }
 
-        if (DuplicateFile.get() != NULL)
+        if (DuplicateFile.get() != nullptr)
         {
           DoDeleteFile(AbsoluteNewName, DuplicateFile.get(), 0);
         }
@@ -4954,11 +4955,11 @@ bool TTerminal::DoRenameFile(
       TRetryOperationLoop RetryLoop(this);
       do
       {
-        TMvSessionAction Action(ActionLog, AbsolutePath(FileName, true), AbsoluteNewName);
+        TMvSessionAction Action(ActionLog, GetAbsolutePath(FileName, true), AbsoluteNewName);
         try
         {
           DebugAssert(FFileSystem);
-          FFileSystem->RenameFile(FileName, File, NewName);
+          FFileSystem->RemoteRenameFile(FileName, File, NewName);
         }
         catch(Exception & E)
         {
@@ -4968,11 +4969,11 @@ bool TTerminal::DoRenameFile(
       }
       while (RetryLoop.Retry());
       Result = RetryLoop.Succeeded();
-    }
+    },
     __finally
     {
       EndTransaction();
-    }
+    } end_try__finally
   }
   return Result;
 }
@@ -7218,7 +7219,7 @@ TStrings * TTerminal::GetShellChecksumAlgDefs()
       AddToList(ChecksumCommandsDef, Md5ChecksumAlg + L"=md5sums", Delimiter);
     }
 
-    FShellChecksumAlgDefs.reset(new TStringList());
+    FShellChecksumAlgDefs.reset(std::make_unique<TStringList>());
     FShellChecksumAlgDefs->CommaText = ChecksumCommandsDef;
   }
   return FShellChecksumAlgDefs.get();
@@ -8981,7 +8982,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
     if (AuthorizedKeysFileFile.get() != nullptr)
     {
       AuthorizedKeysFileFile->FullFileName = AuthorizedKeysFileAbsolutePath;
-      std::unique_ptr<TStrings> Files(new TStringList());
+      std::unique_ptr<TStrings> Files(std::make_unique<TStringList>());
       Files->AddObject(AuthorizedKeysFileAbsolutePath, AuthorizedKeysFileFile.get());
       LogEvent(FORMAT(L"Downloading current \"%s\" file...", OpensshAuthorizedKeysFileName));
       CopyToLocal(Files.get(), TemporaryDir, &CopyParam, cpNoConfirmation, nullptr);
@@ -9026,7 +9027,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
       AuthorizedKeys += Line + L"\n";
       // Overload without Encoding parameter uses TEncoding::UTF8, but does not write BOM, what we want
       WriteAllText(TemporaryAuthorizedKeysFile, AuthorizedKeys);
-      std::unique_ptr<TStrings> Files(new TStringList());
+      std::unique_ptr<TStrings> Files(std::make_unique<TStringList>());
       Files->Add(TemporaryAuthorizedKeysFile);
       LogEvent(FORMAT(L"Uploading updated \"%s\" file...", OpensshAuthorizedKeysFileName));
       CopyToRemote(Files.get(), SshFolderAbsolutePath, &CopyParam, cpNoConfirmation, nullptr);

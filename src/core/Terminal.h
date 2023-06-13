@@ -337,7 +337,7 @@ protected:
   void DoCustomCommandOnFile(UnicodeString AFileName,
     const TRemoteFile * AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent);
   bool DoRenameFile(
-    const UnicodeString AFileName, const TRemoteFile * AFile, const UnicodeString ANewName, bool Move, bool DontOverwrite);
+    const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Move, bool DontOverwrite);
   bool DoMoveFile(const UnicodeString & FileName, const TRemoteFile * File, /*const TMoveFileParams*/ void * Param);
   void DoCopyFile(const UnicodeString AFileName, const TRemoteFile * AFile, UnicodeString ANewName);
   void DoChangeFileProperties(const UnicodeString AFileName,
@@ -633,7 +633,7 @@ public:
   void TerminalError(Exception * E, UnicodeString AMsg, UnicodeString AHelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
-  void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString ANewName);
+  void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & ANewName);
   void TerminalMoveFile(const UnicodeString AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
   bool TerminalMoveFiles(

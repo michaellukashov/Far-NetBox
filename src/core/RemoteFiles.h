@@ -325,6 +325,7 @@ public:
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
   __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
+  ROIndexedProperty<TRemoteFile *> Files{nb::bind(&TRemoteFileList::GetFile, this)};
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
   ROProperty<UnicodeString> FullDirectory{nb::bind(&TRemoteFileList::GetFullDirectory, this)};
   __property Boolean IsRoot = { read = GetIsRoot };
