@@ -185,9 +185,16 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
   return Result;
 }
 
+NB_DEFINE_CLASS_ID(TPuttyCleanupThread);
 class TPuttyCleanupThread : public TSimpleThread
 {
 public:
+    static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TPuttyCleanupThread); }
+    bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TObject::is(Kind); }
+public:
+  TPuttyCleanupThread() noexcept:
+    TSimpleThread(OBJECT_CLASS_TPuttyCleanupThread)
+  {}
   static void Schedule();
   static void Finalize();
 
@@ -209,7 +216,7 @@ TPuttyCleanupThread * TPuttyCleanupThread::FInstance;
 void TPuttyCleanupThread::Schedule()
 {
   TGuard Guard(*FSection.get());
-  if (FInstance == NULL)
+  if (FInstance == nullptr)
   {
     FInstance = new TPuttyCleanupThread();
     FInstance->DoSchedule();
