@@ -1102,7 +1102,7 @@ UnicodeString TConfiguration::GetFullVersion() const
 
 static UnicodeString GetUnofficialBuildTag()
 {
-  DebugAssert(Configuration->GetIsUnofficial());
+  DebugAssert(GetConfiguration()->GetIsUnofficial());
   UnicodeString Result;
   #ifdef _DEBUG
   Result = LoadStr(VERSION_DEBUG_BUILD);

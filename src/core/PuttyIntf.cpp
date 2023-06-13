@@ -569,7 +569,7 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
   }
   else if (DebugAlwaysTrue(PuttyRegistryMode == prmRedirect))
   {
-    DebugAssert(Configuration != NULL);
+    DebugAssert(GetConfiguration() != NULL);
 
     UnicodeString ValueName = UTF8String(Name);
     bool Success;
@@ -578,7 +578,7 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
     {
       if (ValueName == L"RandSeedFile")
       {
-        Value = Configuration->GetRandomSeedFileName();
+        Value = GetConfiguration()->GetRandomSeedFileName();
         Success = true;
       }
       else

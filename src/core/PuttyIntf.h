@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <nbcore.h>
+
 NB_CORE_EXPORT void PuttyInitialize();
 NB_CORE_EXPORT void PuttyFinalize();
 
@@ -38,7 +40,7 @@ int32_t GetCipherGroup(const ssh_cipher * TheCipher);
 class TSecureShell;
 struct ScpSeat : public Seat
 {
-  TSecureShell * SecureShell;
+  TSecureShell * SecureShell{nullptr};
 
   ScpSeat(TSecureShell * SecureShell);
 };

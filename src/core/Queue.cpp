@@ -2515,6 +2515,14 @@ TDeleteQueueItem::TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TS
   FParams = Params;
 }
 
+void TDeleteQueueItem::DoExecute(TTerminal * Terminal)
+{
+  TLocatedQueueItem::DoExecute(Terminal);
+
+  DebugAssert(Terminal != nullptr);
+  Terminal->RemoteDeleteFiles(FFilesToDelete.get(), FParams);
+}
+
 // TTerminalThread
 
 TTerminalThread::TTerminalThread(TTerminal *Terminal) noexcept :

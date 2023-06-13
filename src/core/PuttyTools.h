@@ -19,8 +19,8 @@ NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileNa
 UnicodeString TestKey(TKeyType KeyType, const UnicodeString & FileName);
 NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment);
 void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & CertificateFileName);
-NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString FileName,
-  const UnicodeString Passphrase, TPrivateKey *PrivateKey);
+NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
+  const UnicodeString & Passphrase, TPrivateKey *PrivateKey);
 NB_CORE_EXPORT void FreeKey(TPrivateKey *PrivateKey);
 UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment, bool & HasCertificate);
 extern const UnicodeString PuttyKeyExt;

@@ -254,11 +254,13 @@ void TS3FileSystem::Open()
   }
   if (!S3Profile.IsEmpty() && !FTerminal->SessionData->FingerprintScan)
   {
+#if 0
     std::unique_ptr<TStrings> S3Profiles(GetS3Profiles());
     if (S3Profiles->IndexOf(S3Profile) < 0)
     {
       throw Exception(MainInstructions(FMTLOAD(S3_PROFILE_NOT_EXIST, (S3Profile))));
     }
+#endif //if 0
   }
 
   UnicodeString AccessKeyId = Data->GetUserNameExpanded();
@@ -281,7 +283,9 @@ void TS3FileSystem::Open()
   if (Password.IsEmpty() && Data->FS3CredentialsEnv)
   {
     UnicodeString PasswordSource;
+#if 0
     Password = S3EnvPassword(S3Profile, &PasswordSource);
+#endif //if 0
     if (!Password.IsEmpty())
     {
       FTerminal->LogEvent(FORMAT(L"Password (secret access key) read from %s", PasswordSource));
@@ -303,7 +307,9 @@ void TS3FileSystem::Open()
   if (SessionToken.IsEmpty() && Data->FS3CredentialsEnv)
   {
     UnicodeString SessionTokenSource;
+#if 0
     SessionToken = S3EnvSessionToken(S3Profile, &SessionTokenSource);
+#endif //if 0
     if (!SessionToken.IsEmpty())
     {
       FTerminal->LogEvent(FORMAT(L"Session token read from %s", SessionTokenSource));

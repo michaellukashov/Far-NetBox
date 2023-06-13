@@ -1955,8 +1955,10 @@ static UnicodeString ReadPasswordFromFile(const UnicodeString & FileName)
     }
     else
     {
-      std::unique_ptr<TStrings> Lines(new TStringList());
+      std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
+#if 0
       LoadScriptFromFile(FileName, Lines.get());
+#endif //if 0
       if (Lines->Count > 0)
       {
         Result = Lines->Strings[0];
@@ -2982,7 +2984,9 @@ UnicodeString TSessionData::GetUserNameExpanded() const
   UnicodeString Result = ::ExpandEnvironmentVariables(UserName);
   if (Result.IsEmpty() && HasS3AutoCredentials())
   {
+#if 0
     Result = S3EnvUserName(S3Profile);
+#endif //if 0
   }
   return Result;
 }
@@ -2992,7 +2996,9 @@ UnicodeString TSessionData::GetUserNameSource() const
   UnicodeString Result;
   if (UserName().IsEmpty() && HasS3AutoCredentials())
   {
+#if 0
     S3EnvUserName(S3Profile, &Result);
+#endif //if 0
   }
   if (Result.IsEmpty() && (UserName() != GetUserNameExpanded()))
   {
@@ -3340,7 +3346,7 @@ UnicodeString TSessionData::ResolvePublicKeyFile()
   UnicodeString Result = PublicKeyFile;
   if (Result.IsEmpty())
   {
-    Result = Configuration->DefaultKeyFile;
+    Result = GetConfiguration()->DefaultKeyFile;
   }
   // StripPathQuotes should not be needed as we do not feed quotes anymore
   Result = StripPathQuotes(::ExpandEnvironmentVariables(Result));
@@ -6138,8 +6144,8 @@ TStrings *TStoredSessionList::GetFolderOrWorkspaceList(
   std::unique_ptr<TObjectList> DataList(new TObjectList());
   DoGetFolderOrWorkspace(Name, DataList.get(), true);
 
-  std::unique_ptr<TStringList> Result(new TStringList());
-  for (int Index = 0; (Index < DataList->Count); Index++)
+  std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
+  for (int32_t Index = 0; (Index < DataList->Count); Index++)
   {
     Result->Add(dyn_cast<TSessionData>(DataList->GetObj(Index))->GetSessionName());
   }
