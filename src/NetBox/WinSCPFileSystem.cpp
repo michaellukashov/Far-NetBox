@@ -2042,7 +2042,7 @@ void TWinSCPFileSystem::ClearCaches()
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   DebugAssert(Connected());
-  ::OpenSessionInPutty(GetGUIConfiguration()->GetPuttyPath(), GetSessionData());
+  ::OpenSessionInPutty(GetSessionData());
 }
 
 void TWinSCPFileSystem::QueueShow(bool ClosingPlugin)
