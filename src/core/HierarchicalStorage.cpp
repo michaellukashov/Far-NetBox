@@ -149,7 +149,7 @@ TIntMapping CreateIntMappingFromEnumNames(const UnicodeString & ANames)
     Result[Name] = Index;
     Index++;
   }
-  return Result;
+  return TIntMapping(Result.begin(), Result.end());
 }
 
 TIntMapping AutoSwitchMapping = CreateIntMapping(L"on", asOn, L"off", asOff, L"auto", asAuto);

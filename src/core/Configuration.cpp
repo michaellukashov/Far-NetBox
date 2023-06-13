@@ -1102,7 +1102,7 @@ UnicodeString TConfiguration::GetFullVersion() const
 
 static UnicodeString GetUnofficialBuildTag()
 {
-  DebugAssert(Configuration->IsUnofficial);
+  DebugAssert(Configuration->GetIsUnofficial());
   UnicodeString Result;
   #ifdef _DEBUG
   Result = LoadStr(VERSION_DEBUG_BUILD);
@@ -1121,7 +1121,7 @@ UnicodeString TConfiguration::GetVersionStrHuman()
 
     UnicodeString FullVersion = GetFullVersion();
 
-    if (IsUnofficial)
+    if (GetIsUnofficial())
     {
       UnicodeString BuildStr = GetUnofficialBuildTag();
       FullVersion += L" " + BuildStr;
@@ -1197,7 +1197,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
 
     UnicodeString Result = FMTLOAD(VERSION2, FullVersion, BuildStr);
 
-    if (IsUnofficial)
+    if (GetIsUnofficial())
     {
       Result += L" " + LoadStr(VERSION_DONT_DISTRIBUTE);
     }
@@ -1496,7 +1496,7 @@ UnicodeString TConfiguration::GetPuttySessionsSubKey() const
 
 UnicodeString TConfiguration::GetPuttySessionsKey(const UnicodeString & RootKey) const
 {
-  return RootKey + L"\\" + PuttySessionsSubKey;
+  return RootKey + L"\\" + GetPuttySessionsSubKey();
 }
 
 UnicodeString TConfiguration::DoGetPuttySessionsKey() const

@@ -248,7 +248,7 @@ void TS3FileSystem::Open()
   FLibS3Protocol = (Data->GetFtps() != ftpsNone) ? S3ProtocolHTTPS : S3ProtocolHTTP;
 
   UnicodeString S3Profile;
-  if (Data->S3CredentialsEnv)
+  if (Data->FS3CredentialsEnv)
   {
     S3Profile = FTerminal->SessionData->S3Profile;
   }
@@ -408,7 +408,7 @@ int TS3FileSystem::LibS3SslCallback(int Failures, const ne_ssl_certificate_s *Ce
   return FileSystem->VerifyCertificate(Data) ? NE_OK : NE_ERROR;
 }
 
-bool TS3FileSystem::VerifyCertificate(TNeonCertificateData Data)
+bool TS3FileSystem::VerifyCertificate(TNeonCertificateData &Data)
 {
   bool Result =
     FTerminal->VerifyOrConfirmHttpCertificate(

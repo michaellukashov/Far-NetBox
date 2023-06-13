@@ -578,7 +578,7 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
     {
       if (ValueName == L"RandSeedFile")
       {
-        Value = Configuration->RandomSeedFileName;
+        Value = Configuration->GetRandomSeedFileName();
         Success = true;
       }
       else

@@ -1,6 +1,7 @@
 ﻿
 #pragma once
 
+#include <rdestl/set.h>
 #include <FileSystems.h>
 
 using SSH_FX_TYPE = int32_t;
@@ -60,7 +61,7 @@ public:
   virtual bool LoadFilesProperties(TStrings *AFileList) override;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg);
   virtual void CalculateFilesChecksum(
-    const UnicodeString Alg, TStrings *AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    const UnicodeString & Alg, TStrings *AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings *AFilesToCopy,
     const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
@@ -131,7 +132,7 @@ protected:
   nb::vector_t<uintptr_t> FPacketNumbers;
   SSH_FXP_TYPE FPreviousLoggedPacket{0};
   int32_t FNotLoggedWritePackets{0}, FNotLoggedReadPackets{0}, FNotLoggedStatusPackets{0}, FNotLoggedDataPackets{0};
-  std::set<uint32_t> FNotLoggedRequests;
+  rde::set<uint32_t> FNotLoggedRequests;
   int32_t FBusy{0};
   void * FBusyToken{nullptr};
   bool FAvoidBusy{false};

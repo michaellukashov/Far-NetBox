@@ -1494,7 +1494,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
         for (int32_t BatchIndex = 0; BatchIndex < BatchFileList->Count; BatchIndex++)
         {
           UnicodeString FileName = BatchFileList->GetString(BatchIndex);
-          TRemoteFile * File = DebugNotNull(dynamic_cast<TRemoteFile *>(BatchFileList->Objects[BatchIndex]));
+          TRemoteFile * File = DebugNotNull(BatchFileList->GetAs<TRemoteFile>(BatchIndex));
           TChecksumSessionAction Action(FTerminal->ActionLog);
           Action.FileName(File->FullFileName);
           OperationProgress->SetFile(FileName);
