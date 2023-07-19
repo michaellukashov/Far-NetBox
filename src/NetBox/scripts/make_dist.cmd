@@ -43,7 +43,7 @@ copy ..\..\%FARVER%_%PLUGINARCH%\Plugins\%PLUGINNAME%\%PLUGINNAME%.dll %PKGDIRAR
 if exist %PKGNAME% del %PKGNAME%
 if exist ../../build/%PLUGINNAME%/%FARVER%/%PLUGINARCH% (
   if exist "C:\Program Files\7-Zip\7z.exe" (
-    call "C:\Program Files\7-Zip\7z.exe" a -m0=LZMA -mf=off -mx9 -r ../../build/%PKGNAME% ../../build/%PLUGINNAME%/%FARVER%/%PLUGINARCH%/* > NUL
+    call "C:\Program Files\7-Zip\7z.exe" a -m0=LZMA -mf=BCJ2 -mx9 -r ../../build/%PKGNAME% ../../build/%PLUGINNAME%/%FARVER%/%PLUGINARCH%/* > NUL
     if errorlevel 1 echo Error creating archive & exit 1 /b
     @rem rmdir /S /Q %PKGDIRARCH%
     echo Package %PKGNAME% created
