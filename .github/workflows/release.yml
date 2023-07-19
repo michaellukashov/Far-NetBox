@@ -69,8 +69,8 @@ jobs:
         shell: bash
         run: |
           cp LICENSE.txt README.md README.RU.md README.PL.md ./Far3_${{ matrix.platform }}/Plugins/NetBox/
-          7z a ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/* -xr!*.pdb
-          7z a ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
+          7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/* -xr!*.pdb
+          7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
 
       - name: Upload result
         uses: actions/upload-artifact@v2
