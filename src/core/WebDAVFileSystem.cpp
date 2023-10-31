@@ -321,15 +321,8 @@ void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString &CorrectedUr
 
 void TWebDAVFileSystem::SetSessionTls(TSessionContext * SessionContext, ne_session_s * Session, bool Aux)
 {
-  SetNeonTlsInit(Session, InitSslSession);
-
-  // When the CA certificate or server certificate has
-  // verification problems, neon will call our verify function before
-  // outright rejection of the connection.
   ne_ssl_verify_fn Callback = Aux ? NeonServerSSLCallbackAux : NeonServerSSLCallbackMain;
-  ne_ssl_set_verify(Session, Callback, SessionContext);
-
-  ne_ssl_trust_default_ca(Session);
+  InitNeonTls(Session, InitSslSession, Callback, SessionContext, FTerminal);
 }
 
 void TWebDAVFileSystem::InitSession(TSessionContext * SessionContext, ne_session_s * Session)
@@ -417,6 +410,10 @@ void TWebDAVFileSystem::NeonAddAuthentication(TSessionContext * SessionContext, 
   if (UseNegotiate)
   {
     NeonAuthTypes |= NE_AUTH_NEGOTIATE;
+  }
+  if (FTerminal->SessionData->WebDavAuthLegacy)
+  {
+    NeonAuthTypes |= NE_AUTH_LEGACY_DIGEST;
   }
   ne_add_server_auth(SessionContext->NeonSession, NeonAuthTypes, NeonRequestAuth, SessionContext);
 }
@@ -522,6 +519,10 @@ void TWebDAVFileSystem::CollectUsage()
   if (SameText(FLastAuthorizationProtocol, "Passport1.4"))
   {
 //    Configuration->Usage->Inc("OpenedSessionsWebDAVSPassport");
+  }
+  else if (SameText(FLastAuthorizationProtocol, L"Basic"))
+  {
+//    Configuration->Usage->Inc(L"OpenedSessionsWebDAVAuthBasic");
   }
 
   UnicodeString RemoteSystem = FFileSystemInfo.RemoteSystem;
@@ -652,6 +653,7 @@ bool TWebDAVFileSystem::IsCapable(int32_t Capability) const
     case fcChangePassword:
     case fcTransferOut:
     case fcTransferIn:
+    case fcParallelFileTransfers:
       return false;
 
     case fcLocking:
@@ -1106,8 +1108,8 @@ void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString /*AFileName*/,
 {
   Action.Recursive();
   ClearNeonError();
-  TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
-  RawByteString Path = PathToNeon(FilePath(AFile));
+  TOperationVisualizer Visualizer(FTerminal->UseBusyCursor);
+  RawByteString Path = PathToNeon(FilePath(File));
   // WebDAV does not allow non-recursive delete:
   // RFC 4918, section 9.6.1:
   // "A client MUST NOT submit a Depth header with a DELETE on a collection with any value but infinity."
@@ -1119,21 +1121,20 @@ void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString /*AFileName*/,
   DiscardLock(Path);
 }
 
-int TWebDAVFileSystem::RenameFileInternal(const UnicodeString AFileName,
-  const UnicodeString ANewName)
+int TWebDAVFileSystem::RenameFileInternal(
+  const UnicodeString AFileName,const UnicodeString ANewName, bool Overwrite)
 {
-  const int Overwrite = 1;
   return ne_move(FSessionContext->NeonSession, Overwrite, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
-void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
-  const UnicodeString ANewName)
+void TWebDAVFileSystem::RemoteRenameFile(
+  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString ANewName, bool Overwrite)
 {
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
 
   UnicodeString Path = AFileName;
-  int NeonStatus = RenameFileInternal(Path, ANewName);
+  int NeonStatus = RenameFileInternal(Path, NewName, Overwrite);
   if (IsValidRedirect(NeonStatus, Path))
   {
     NeonStatus = RenameFileInternal(Path, ANewName);
@@ -1143,24 +1144,23 @@ void TWebDAVFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TR
   DiscardLock(PathToNeon(Path));
 }
 
-int TWebDAVFileSystem::CopyFileInternal(const UnicodeString AFileName,
-  const UnicodeString ANewName)
+int TWebDAVFileSystem::CopyFileInternal(
+  const UnicodeString AFileName, const UnicodeString ANewName, bool Overwrite)
 {
-  // 0 = no overwrite
-  return ne_copy(FSessionContext->NeonSession, 0, NE_DEPTH_INFINITE, PathToNeon(AFileName), PathToNeon(ANewName));
+  return ne_copy(FSessionContext->NeonSession, Overwrite, NE_DEPTH_INFINITE, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
-void TWebDAVFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
-  const UnicodeString ANewName)
+void TWebDAVFileSystem::RemoteCopyFile(
+  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString ANewName, bool Overwrite)
 {
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
 
   UnicodeString Path = AFileName;
-  int NeonStatus = CopyFileInternal(Path, ANewName);
+  int NeonStatus = CopyFileInternal(Path, ANewName, Overwrite);
   if (IsValidRedirect(NeonStatus, Path))
   {
-    NeonStatus = CopyFileInternal(Path, ANewName);
+    NeonStatus = CopyFileInternal(Path, ANewName, Overwrite);
   }
   CheckStatus(NeonStatus);
 }
@@ -1860,13 +1860,7 @@ void TWebDAVFileSystem::Sink(
 
       if (DeleteLocalFile)
       {
-        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-          FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
-        [&]()
-        {
-          THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestFullName))); // TODO: Terminal->LocalRemoveFile
-        });
-        __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
+        FTerminal->DoDeleteLocalFile(DestFullName);
       }
     } end_try__finally
   });
@@ -1962,7 +1956,6 @@ int TWebDAVFileSystem::NeonRequestAuth(
       if (!Terminal->PromptUser(SessionData, pkUserName, LoadStr(USERNAME_TITLE), "",
             LoadStr(USERNAME_PROMPT2), true, NE_ABUFSIZ, FileSystem->FUserName))
       {
-        // note that we never get here actually
         Result = false;
       }
     }
@@ -1985,7 +1978,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
     {
       if (FileSystem->FIgnoreAuthenticationFailure == iafPasswordFailed)
       {
-        // Fail PROPFIND /nonexisting request...
+        // Fail PROPFIND /nonexising request...
         Result = false;
       }
       else
@@ -2004,7 +1997,6 @@ int TWebDAVFileSystem::NeonRequestAuth(
       {
         // Asking for password (or using configured password) the first time,
         // and asking for password.
-        // Note that we never get false here actually
         Terminal->LogEvent("Password prompt");
         Result =
           Terminal->PromptUser(

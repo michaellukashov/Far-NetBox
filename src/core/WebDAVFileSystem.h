@@ -74,10 +74,10 @@ public:
     TRemoteFile *& AFile) override;
   virtual void ReadSymlink(TRemoteFile *SymlinkFile,
     TRemoteFile *& AFile) override;
-  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
-  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
+  virtual void RemoteRenameFile(
+    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite) override;
+  virtual void RemoteCopyFile(
+    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable & ASpaceAvailable) override;
@@ -197,8 +197,8 @@ private:
   UnicodeString GetRedirectUrl() const;
   UnicodeString ParsePathFromUrl(const UnicodeString Url) const;
   int ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList *AFileList);
-  int RenameFileInternal(const UnicodeString AFileName, const UnicodeString ANewName);
-  int CopyFileInternal(const UnicodeString AFileName, const UnicodeString ANewName);
+  int RenameFileInternal(const UnicodeString AFileName, const UnicodeString ANewName, bool Overwrite);
+  int CopyFileInternal(const UnicodeString AFileName, const UnicodeString ANewName, bool Overwrite);
   bool IsValidRedirect(int32_t NeonStatus, UnicodeString &APath) const;
   UnicodeString DirectoryPath(UnicodeString APath) const;
   UnicodeString FilePath(const TRemoteFile *AFile) const;
