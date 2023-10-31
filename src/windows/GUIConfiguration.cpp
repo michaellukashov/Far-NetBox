@@ -581,7 +581,6 @@ void TGUIConfiguration::Default()
   FSynchronizeMode = TTerminal::smRemote;
   FMaxWatchDirectories = 500;
   FSynchronizeOptions = soRecurse | soSynchronizeAsk;
-  FQueueTransfersLimit = 2;
   FQueueBootstrap = false;
   FQueueKeepDoneItems = true;
   FQueueKeepDoneItemsFor = 15;
@@ -594,6 +593,7 @@ void TGUIConfiguration::Default()
   FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\" + OriginalPuttyExecutable;
   FDefaultPuttyPath = L"%ProgramFiles%\\PuTTY\\" + OriginalPuttyExecutable;
   FPuttyPath = FormatCommand(FDefaultPuttyPath, L"");
+  FUsePuttyPwFile = asAuto;
   FPuttyPassword = false;
   FTelnetForFtpInPutty = true;
   FPuttySession = "WinSCP temporary session";
@@ -675,7 +675,6 @@ static UnicodeString PropertyToKey(UnicodeString Property)
     KEY3(Integer,  SynchronizeModeAuto); \
     KEY3(Integer,  SynchronizeMode); \
     KEY3(Integer,  MaxWatchDirectories); \
-    KEY3(Integer,  QueueTransfersLimit); \
     KEY(Bool,     QueueBootstrap); \
     KEY(Bool,     QueueKeepDoneItems); \
     KEY3(Integer,  QueueKeepDoneItemsFor); \
@@ -683,6 +682,7 @@ static UnicodeString PropertyToKey(UnicodeString Property)
     KEYEX2(Bool,   SessionRememberPassword, SessionRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
+    KEY3(Integer, UsePuttyPwFile); \
     KEY(Bool,     PuttyPassword); \
     KEY(Bool,     TelnetForFtpInPutty); \
     KEY(DateTime, IgnoreCancelBeforeFinish); \
@@ -1429,11 +1429,6 @@ void TGUIConfiguration::SetNewDirectoryProperties(
   const TRemoteProperties &Value)
 {
   SET_CONFIG_PROPERTY(NewDirectoryProperties);
-}
-
-void TGUIConfiguration::SetQueueTransfersLimit(int32_t Value)
-{
-  SET_CONFIG_PROPERTY(QueueTransfersLimit);
 }
 
 void TGUIConfiguration::SetQueueBootstrap(bool Value)

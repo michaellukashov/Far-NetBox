@@ -10,6 +10,7 @@ __removed #include <Vcl.Graphics.hpp>
 
 #if 0
 void CenterFormOn(TForm * Form, TControl * CenterOn);
+void ExecuteProcessAndReadOutput(const UnicodeString & Command, UnicodeString & Output, DWORD & ExitCode, bool ReadStdErr);
 void ExecuteProcessChecked(
   const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output);
 void ExecuteProcessCheckedAndWait(

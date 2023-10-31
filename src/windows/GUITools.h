@@ -14,6 +14,7 @@ using TProcessMessagesEvent = nb::FastDelegate0<void>;
 
 void GUIFinalize();
 NB_CORE_EXPORT bool FindFile(UnicodeString & APath);
+UnicodeString FindPuttyPath();
 NB_CORE_EXPORT bool FindTool(const UnicodeString & AName, UnicodeString & APath);
 NB_CORE_EXPORT void ExecuteTool(const UnicodeString & AName);
 NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString APath, const UnicodeString AParams,
@@ -33,7 +34,6 @@ NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString APuttyPath,
 NB_CORE_EXPORT bool SpecialFolderLocation(int32_t APathID, UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString ABaseDir,
   const UnicodeString Identity, bool Mask = false);
-NB_CORE_EXPORT bool DeleteDirectory(const UnicodeString ADirName);
 
 #if 0
 

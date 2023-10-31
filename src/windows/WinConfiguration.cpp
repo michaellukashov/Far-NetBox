@@ -31,6 +31,13 @@ static UnicodeString NotepadName(L"notepad.exe");
 static UnicodeString ToolbarsLayoutKey(L"ToolbarsLayout2");
 static UnicodeString ToolbarsLayoutOldKey(L"ToolbarsLayout");
 TDateTime DefaultUpdatesPeriod(7);
+// WORKAROUND (the semicolon, see TCustomListViewColProperties.GetParamsStr, and see other instances below)
+const UnicodeString ScpExplorerDirViewParamsDefault =
+  L"0;1;0|150,1;70,1;150,1;79,1;62,1;55,0;20,0;150,0;125,0;@" + SaveDefaultPixelsPerInch() + L"|6;7;8;0;1;2;3;4;5";
+const UnicodeString ScpCommanderRemotePanelDirViewParamsDefault = ScpExplorerDirViewParamsDefault;
+const UnicodeString ScpCommanderLocalPanelDirViewParamsDefault =
+  L"0;1;0|150,1;70,1;120,1;150,1;55,0;55,0;@" + SaveDefaultPixelsPerInch() + L"|5;0;1;2;3;4";
+UnicodeString QueueViewLayoutDefault;
 
 static const wchar_t FileColorDataSeparator = L':';
 TFileColorData::TFileColorData() :
@@ -627,6 +634,7 @@ void TWinConfiguration::Default()
   AllowWindowPrint = false;
   StoreTransition = stInit;
   QueueTransferLimitMax = 9;
+  HiContrast = false;
   EditorCheckNotModified = false;
   FirstRun = StandardDatestamp();
 
@@ -654,11 +662,15 @@ void TWinConfiguration::Default()
 
   FQueueView.Height = 140;
   FQueueView.HeightPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
-  // with 1000 pixels wide screen, both interfaces are wide enough to fit wider queue
-  FQueueView.Layout =
-    UnicodeString((WorkAreaWidthScaled > 1000) ? L"70,250,250,80,80,80,100" : L"70,160,160,80,80,80,100") +
-    // WORKAROUND (the comma), see GetListViewStr
-    L",;" + SaveDefaultPixelsPerInch();
+  if (QueueViewLayoutDefault.IsEmpty())
+  {
+    // with 1000 pixels wide screen, both interfaces are wide enough to fit wider queue
+    QueueViewLayoutDefault =
+      UnicodeString((WorkAreaWidthScaled > 1000) ? L"70,250,250,80,80,80,100" : L"70,160,160,80,80,80,100") +
+      // WORKAROUND (the comma), see GetListViewStr
+      L",;" + SaveDefaultPixelsPerInch();
+  }
+  FQueueView.Layout = QueueViewLayoutDefault;
   FQueueView.Show = qvHideWhenEmpty;
   FQueueView.LastHideShow = qvHideWhenEmpty;
   FQueueView.ToolBar = true;
@@ -689,8 +701,7 @@ void TWinConfiguration::Default()
   int ExplorerHeight = Min(WorkAreaHeightScaled - 30, 720);
   FScpExplorer.WindowParams = FormatDefaultWindowParams(ExplorerWidth, ExplorerHeight);
 
-  // WORKAROUND (the semicolon, see TCustomListViewColProperties.GetParamsStr, and see other instances below)
-  FScpExplorer.DirViewParams = L"0;1;0|150,1;70,1;150,1;79,1;62,1;55,0;20,0;150,0;125,0;@" + SaveDefaultPixelsPerInch() + L"|6;7;8;0;1;2;3;4;5";
+  FScpExplorer.DirViewParams = ScpExplorerDirViewParamsDefault;
   FScpExplorer.ToolbarsLayout =
     UnicodeString(
       L"Queue=1::0+-1,"
@@ -756,7 +767,7 @@ void TWinConfiguration::Default()
   FScpCommander.TreeOnLeft = false;
   FScpCommander.ExplorerKeyboardShortcuts = false;
   FScpCommander.SystemContextMenu = false;
-  FScpCommander.RemotePanel.DirViewParams = L"0;1;0|150,1;70,1;150,1;79,1;62,1;55,0;20,0;150,0;125,0;@" + SaveDefaultPixelsPerInch() + L"|6;7;8;0;1;2;3;4;5";
+  FScpCommander.RemotePanel.DirViewParams = ScpCommanderRemotePanelDirViewParamsDefault;
   FScpCommander.RemotePanel.StatusBar = true;
   FScpCommander.RemotePanel.DriveView = false;
   FScpCommander.RemotePanel.DriveViewHeight = 100;
@@ -764,7 +775,7 @@ void TWinConfiguration::Default()
   FScpCommander.RemotePanel.DriveViewWidth = 100;
   FScpCommander.RemotePanel.DriveViewWidthPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
   FScpCommander.RemotePanel.LastPath = UnicodeString();
-  FScpCommander.LocalPanel.DirViewParams = L"0;1;0|150,1;70,1;120,1;150,1;55,0;55,0;@" + SaveDefaultPixelsPerInch() + L"|5;0;1;2;3;4";
+  FScpCommander.LocalPanel.DirViewParams = ScpCommanderLocalPanelDirViewParamsDefault;
   FScpCommander.LocalPanel.StatusBar = true;
   FScpCommander.LocalPanel.DriveView = false;
   FScpCommander.LocalPanel.DriveViewHeight = 100;
@@ -1087,6 +1098,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     AllowWindowPrint); \
     KEY(Integer,  StoreTransition); \
     KEY(Integer,  QueueTransferLimitMax); \
+    KEY(Bool,     HiContrast); \
     KEY(Bool,     EditorCheckNotModified); \
     KEY(String,   FirstRun); \
   ); \
@@ -1202,6 +1214,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer, ScpCommander.LocalPanel.DriveViewHeightPixelsPerInch); \
     KEY(Integer, ScpCommander.LocalPanel.DriveViewWidth); \
     KEY(Integer, ScpCommander.LocalPanel.DriveViewWidthPixelsPerInch); \
+    KEY(String,  ScpCommander.LocalPanel.LastPath); \
   ); \
   BLOCK("Interface\\Commander\\RemotePanel", CANCREATE, \
     KEY(String,  ScpCommander.RemotePanel.DirViewParams); \
@@ -1369,7 +1382,7 @@ void TWinConfiguration::DoLoadExtensionList(
 
           try
           {
-            CustomCommand->LoadExtension(IncludeTrailingBackslash(Path) + SearchRec.Name);
+            CustomCommand->LoadExtension(SearchRec.GetFilePath());
             FExtensionList->Add(CustomCommand.release());
           }
           catch (...)
@@ -2123,6 +2136,11 @@ void TWinConfiguration::SetCopyOnDoubleClickConfirmation(bool value)
   SET_CONFIG_PROPERTY(CopyOnDoubleClickConfirmation);
 }
 
+void TWinConfiguration::SetAlwaysRespectDoubleClickAction(bool value)
+{
+  SET_CONFIG_PROPERTY(AlwaysRespectDoubleClickAction);
+}
+
 void TWinConfiguration::SetDimmHiddenFiles(bool value)
 {
   SET_CONFIG_PROPERTY(DimmHiddenFiles);
@@ -2301,6 +2319,11 @@ void TWinConfiguration::SetNaturalOrderNumericalSorting(bool value)
   SET_CONFIG_PROPERTY(NaturalOrderNumericalSorting);
 }
 
+void TWinConfiguration::SetAlwaysSortDirectoriesByName(bool value)
+{
+  SET_CONFIG_PROPERTY(AlwaysSortDirectoriesByName);
+}
+
 void TWinConfiguration::SetFullRowSelect(bool value)
 {
   SET_CONFIG_PROPERTY(FullRowSelect);
@@ -2354,6 +2377,11 @@ void TWinConfiguration::SetShowLoginWhenNoSession(bool value)
 void TWinConfiguration::SetKeepOpenWhenNoSession(bool value)
 {
   SET_CONFIG_PROPERTY(KeepOpenWhenNoSession);
+}
+
+void TWinConfiguration::SetDefaultToNewRemoteTab(bool value)
+{
+  SET_CONFIG_PROPERTY(DefaultToNewRemoteTab);
 }
 
 void TWinConfiguration::SetLocalIconsByExt(bool value)
@@ -2560,14 +2588,13 @@ TStrings * TWinConfiguration::DoFindTemporaryFolders(bool OnlyFirst)
   std::unique_ptr<TStrings> Result(new TStringList());
   TSearchRecOwned SRec;
   UnicodeString Mask = TemporaryDir(true);
-  UnicodeString Directory = ExtractFilePath(Mask);
   if (FindFirstUnchecked(Mask, faDirectory | faHidden, SRec) == 0)
   {
     do
     {
       if (SRec.IsDirectory())
       {
-        Result->Add(Directory + SRec.Name);
+        Result->Add(SRec.GetFilePath());
       }
     }
     while ((FindNextChecked(SRec) == 0) && (!OnlyFirst || Result->Count == 0));
@@ -2611,7 +2638,7 @@ void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
   UnicodeString ErrorList;
   for (int i = 0; i < Folders->Count; i++)
   {
-    if (!DeleteDirectory(Folders->Strings[i]))
+    if (!RecursiveDeleteFile(Folders->Strings[i]))
     {
       if (!ErrorList.IsEmpty())
       {
@@ -2770,6 +2797,11 @@ void TWinConfiguration::SetQueueTransferLimitMax(int value)
   SET_CONFIG_PROPERTY(QueueTransferLimitMax);
 }
 
+void TWinConfiguration::SetHiContrast(bool value)
+{
+  SET_CONFIG_PROPERTY(HiContrast);
+}
+
 void TWinConfiguration::SetEditorCheckNotModified(bool value)
 {
   SET_CONFIG_PROPERTY(EditorCheckNotModified);
@@ -2910,6 +2942,7 @@ void TWinConfiguration::UpdateStaticUsage()
   Usage->Set(L"ShowingTips", ShowTips);
   Usage->Set(L"KeepingOpenWhenNoSession", KeepOpenWhenNoSession);
   Usage->Set(L"ShowingLoginWhenNoSession", ShowLoginWhenNoSession);
+  Usage->Set(L"DefaultingToNewRemoteTab", DefaultToNewRemoteTab);
   TipsUpdateStaticUsage();
 
   Usage->Set(L"CommanderNortonLikeMode", int(ScpCommander.NortonLikeMode));
@@ -2981,6 +3014,51 @@ void TWinConfiguration::StoreFont(
   Configuration.FontSize = Font->Size;
   Configuration.FontCharset = Font->Charset;
   Configuration.FontStyle = FontStylesToInt(Font->Style);
+}
+
+TResolvedDoubleClickAction TWinConfiguration::ResolveDoubleClickAction(bool IsDirectory, TTerminal * Terminal)
+{
+  TResolvedDoubleClickAction Result;
+  // Anything special is done on files only (not directories)
+  if (IsDirectory)
+  {
+    Result = rdcaChangeDir;
+  }
+  else
+  {
+    Result = rdcaNone;
+    if (Terminal != NULL)
+    {
+      if (!Terminal->ResolvingSymlinks && !Terminal->IsEncryptingFiles() && !AlwaysRespectDoubleClickAction)
+      {
+        Result = rdcaChangeDir;
+      }
+    }
+
+    if (Result == rdcaNone)
+    {
+      switch (DoubleClickAction)
+      {
+        case dcaOpen:
+          Result = rdcaOpen;
+          break;
+
+        case dcaCopy:
+          Result = rdcaCopy;
+          break;
+
+        case dcaEdit:
+          Result = rdcaEdit;
+          break;
+
+        default:
+          DebugFail();
+          Abort();
+          break;
+      }
+    }
+  }
+  return Result;
 }
 
 

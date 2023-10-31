@@ -213,6 +213,10 @@ struct TUpdatesData
 
 enum TConnectionType { ctDirect, ctAuto, ctProxy };
 extern TDateTime DefaultUpdatesPeriod;
+extern const UnicodeString ScpExplorerDirViewParamsDefault;
+extern const UnicodeString ScpCommanderRemotePanelDirViewParamsDefault;
+extern const UnicodeString ScpCommanderLocalPanelDirViewParamsDefault;
+extern UnicodeString QueueViewLayoutDefault;
 
 struct TUpdatesConfiguration
 {
@@ -478,6 +482,7 @@ private:
   bool FAllowWindowPrint;
   TStoreTransition FStoreTransition;
   int FQueueTransferLimitMax;
+  bool FHiContrast;
   bool FEditorCheckNotModified;
   UnicodeString FFirstRun;
   int FDontDecryptPasswords;
@@ -493,6 +498,7 @@ private:
 
   void SetDoubleClickAction(TDoubleClickAction value);
   void SetCopyOnDoubleClickConfirmation(bool value);
+  void SetAlwaysRespectDoubleClickAction(bool value);
   void SetDDDisableMove(bool value);
   void SetDDTransferConfirmation(TAutoSwitch value);
   void SetDeleteToRecycleBin(bool value);
@@ -559,6 +565,7 @@ private:
   void SetRefreshRemotePanelInterval(TDateTime value);
   void SetPanelFont(const TFontConfiguration & value);
   void SetNaturalOrderNumericalSorting(bool value);
+  void SetAlwaysSortDirectoriesByName(bool value);
   void SetFullRowSelect(bool value);
   void SetOfferedEditorAutoConfig(bool value);
   void SetLastMonitor(int value);
@@ -572,6 +579,7 @@ private:
   void SetExternalSessionInExistingInstance(bool value);
   void SetShowLoginWhenNoSession(bool value);
   void SetKeepOpenWhenNoSession(bool value);
+  void SetDefaultToNewRemoteTab(bool value);
   void SetLocalIconsByExt(bool value);
   void SetFlashTaskbar(bool value);
   void SetBidiModeOverride(TLocaleFlagOverride value);
@@ -596,6 +604,7 @@ private:
   void SetAllowWindowPrint(bool value);
   void SetStoreTransition(TStoreTransition value);
   void SetQueueTransferLimitMax(int value);
+  void SetHiContrast(bool value);
   void SetEditorCheckNotModified(bool value);
   void SetFirstRun(const UnicodeString & value);
   int GetLocaleCompletenessTreshold();
@@ -799,6 +808,7 @@ public:
   __property bool AllowWindowPrint = { read = FAllowWindowPrint, write = SetAllowWindowPrint };
   __property TStoreTransition StoreTransition = { read = FStoreTransition, write = SetStoreTransition };
   __property int QueueTransferLimitMax = { read = FQueueTransferLimitMax, write = SetQueueTransferLimitMax };
+  __property bool HiContrast = { read = FHiContrast, write = SetHiContrast };
   __property bool EditorCheckNotModified = { read = FEditorCheckNotModified, write = SetEditorCheckNotModified };
   __property UnicodeString FirstRun = { read = FFirstRun, write = SetFirstRun };
   __property LCID DefaultLocale = { read = FDefaultLocale };

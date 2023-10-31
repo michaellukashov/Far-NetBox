@@ -102,6 +102,7 @@ private:
 class TCustomScpExplorerForm;
 TCustomScpExplorerForm * CreateScpExplorer();
 
+UnicodeString GetThemeName(bool Dark);
 void ConfigureInterface();
 
 void DoProductLicense();
@@ -177,6 +178,7 @@ bool DoCustomCommandOptionsDialog(
 #endif // #if 0
 void DoUsageStatisticsDialog();
 void DoSiteRawDialog(TSessionData * Data);
+bool DoSshHostCADialog(bool Add, TSshHostCA & SshHostCA);
 
 // windows\UserInterface.cpp
 bool DoMasterPasswordDialog();
@@ -237,9 +239,11 @@ constexpr int32_t coAllowRemoteTransfer = 0x100;
 constexpr int32_t coNoQueue             = 0x200;
 constexpr int32_t coShortCutHint        = 0x800;
 constexpr int32_t coAllFiles            = 0x1000;
+constexpr int32_t coBrowse              = 0x2000;
 constexpr int32_t cooDoNotShowAgain     = 0x01;
 constexpr int32_t cooRemoteTransfer     = 0x02;
 constexpr int32_t cooSaveSettings       = 0x04;
+constexpr int32_t cooBrowse             = 0x08;
 
 constexpr int32_t coTempTransfer        = 0x08;
 constexpr int32_t coDisableNewerOnly    = 0x10;
@@ -363,11 +367,14 @@ bool DoPropertiesDialog(TStrings * FileList,
     int AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
     TCalculateChecksumEvent OnCalculateChecksum);
 
-bool DoRemoteMoveDialog(bool Multi, UnicodeString & Target, UnicodeString & FileMask);
-enum TDirectRemoteCopy { drcDisallow, drcAllow, drcConfirmCommandSession };
-bool DoRemoteCopyDialog(TStrings * Sessions, TStrings * Directories,
-  TDirectRemoteCopy AllowDirectCopy, bool Multi, void *& Session,
-  UnicodeString & Target, UnicodeString & FileMask, bool & DirectCopy, void * CurrentSession);
+using TDirectoryExistsEvent = nb::FastDelegate4<bool, void * /*Session*/, const UnicodeString & /*Directory*/>;
+bool DoRemoteMoveDialog(
+  bool Multi, UnicodeString & Target, UnicodeString & FileMask, TDirectoryExistsEvent OnDirectoryExists);
+enum TDirectRemoteCopy { drcDisallow, drcAllow, drcConfirmCommandSession, drcConfirmCommandSessionDirs };
+bool DoRemoteCopyDialog(
+  TStrings * Sessions, TStrings * Directories,
+  TDirectRemoteCopy AllowDirectCopy, bool Multi, void *& Session, UnicodeString & Target, UnicodeString & FileMask,
+  bool & DirectCopy, void * CurrentSession, TDirectoryExistsEvent OnDirectoryExists);
 
 #if 0
 // forms\SelectMask.cpp

@@ -65,10 +65,10 @@ void err_out_sys(LPCTSTR base_err_msg, LONG sys_err)
 
 // Works as "strcmp" but the comparison is not case sensitive.
 int tcharicmp(LPCTSTR str1, LPCTSTR str2){
-    for (; tolower(*str1) == tolower(*str2); ++str1, ++str2)
+    for (; towlower(*str1) == towlower(*str2); ++str1, ++str2)
         if (*str1 == L'\0')
             return 0;
-    return tolower(*str1) - tolower(*str2);
+    return towlower(*str1) - towlower(*str2);
 }
 
 // Returns un unquoted copy of "str" (or a copy of "str" if the quotes are
@@ -876,6 +876,10 @@ static THttp * CreateHttp(const TUpdatesConfiguration & Updates)
       break;
   }
 
+  if (!ProxyHost.IsEmpty())
+  {
+    AppLogFmt("Using proxy: %s:%d", ProxyHost, ProxyPort);
+  }
   Http->ProxyHost = ProxyHost;
   Http->ProxyPort = ProxyPort;
 
@@ -885,6 +889,16 @@ static THttp * CreateHttp(const TUpdatesConfiguration & Updates)
 THttp * CreateHttp()
 {
   return CreateHttp(WinConfiguration->Updates);
+}
+
+UnicodeString GetUpdatesCertificate()
+{
+  UnicodeString Result = ReadResource(L"UPDATES_ROOT_CA");
+  Result = ReplaceStr(Result, L"-----BEGIN CERTIFICATE-----", EmptyStr);
+  Result = ReplaceStr(Result, L"-----END CERTIFICATE-----", EmptyStr);
+  Result = ReplaceStr(Result, L"\n", EmptyStr);
+  Result = ReplaceStr(Result, L"\r", EmptyStr);
+  return Result;
 }
 
 static bool DoQueryUpdates(TUpdatesConfiguration & Updates, bool CollectUsage)
@@ -927,7 +941,8 @@ static bool DoQueryUpdates(TUpdatesConfiguration & Updates, bool CollectUsage)
     AppLogFmt(L"Updates check URL: %s", (URL));
     CheckForUpdatesHTTP->URL = URL;
     // sanity check
-    CheckForUpdatesHTTP->ResponseLimit = 102400;
+    CheckForUpdatesHTTP->ResponseLimit = BasicHttpResponseLimit;
+    CheckForUpdatesHTTP->Certificate = GetUpdatesCertificate();
     try
     {
       if (CollectUsage)
@@ -945,6 +960,7 @@ static bool DoQueryUpdates(TUpdatesConfiguration & Updates, bool CollectUsage)
     {
       if (CheckForUpdatesHTTP->IsCertificateError())
       {
+        AppLog(L"Certificate error detected.");
         Configuration->Usage->Inc(L"UpdateCertificateErrors");
       }
       throw;
@@ -1236,6 +1252,33 @@ static int DownloadSizeToProgress(int64_t Size)
   return static_cast<int>(Size / 1024);
 }
 
+static UnicodeString GetInstallationPath(HKEY RootKey)
+{
+  std::unique_ptr<TRegistry> Registry(new TRegistry(KEY_READ));
+  Registry->RootKey = RootKey;
+  UnicodeString Result;
+  if (Registry->OpenKey(L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\winscp3_is1", false))
+  {
+    Result = ExcludeTrailingBackslash(Registry->ReadString(L"Inno Setup: App Path"));
+  }
+  return Result;
+}
+
+static bool DoIsPathToExe(const UnicodeString & Path)
+{
+  UnicodeString ExePath = ExcludeTrailingBackslash(ExtractFilePath(Application->ExeName));
+  return IsPathToSameFile(ExePath, Path);
+}
+
+static bool DoIsInstalled(HKEY RootKey)
+{
+  UnicodeString InstallPath = GetInstallationPath(RootKey);
+  bool Result =
+    !InstallPath.IsEmpty() &&
+    DoIsPathToExe(InstallPath);
+  return Result;
+}
+
 class TUpdateDownloadThread : public TCompThread
 {
 public:
@@ -1396,10 +1439,31 @@ void TUpdateDownloadThread::UpdateDownloaded()
   {
     Params += L" /OpenGettingStarted";
   }
+  if (ApplicationLog->Logging)
+  {
+    Params += FORMAT(" /LOG=\"%s\"", ApplicationLog->Path + L".setup");
+  }
+  // This condition is not necessary, it's here to reduce an impact of the change only
+  if (!GetInstallationPath(HKEY_LOCAL_MACHINE).IsEmpty() &&
+      !GetInstallationPath(HKEY_CURRENT_USER).IsEmpty())
+  {
+    UnicodeString Mode;
+    if (DoIsInstalled(HKEY_LOCAL_MACHINE))
+    {
+      Mode = L" /ALLUSERS";
+    }
+    else if (DebugAlwaysTrue(DoIsInstalled(HKEY_CURRENT_USER)))
+    {
+      Mode = L" /CURRENTUSER";
+    }
+    AppLogFmt(L"Both administrative and non-administrative installation found, explicitly requesting this installation mode:%s", Mode);
+    Params += Mode;
+  }
 
   ExecuteShellChecked(SetupPath, Params);
 
   Configuration->Usage->Inc(L"UpdateRuns");
+  AppLog(L"Terminating to allow installation...");
   TerminateApplication();
 }
 
@@ -1613,8 +1677,6 @@ static void InsertDonateLink(void * /*Data*/, TObject * Sender)
 
 bool CheckForUpdates(bool CachedResults)
 {
-  TCustomForm * ActiveForm = Screen->ActiveCustomForm;
-
   bool Result = false;
   TOperationVisualizer Visualizer;
 
@@ -1677,7 +1739,7 @@ bool CheckForUpdates(bool CachedResults)
   }
   Aliases[1].Button = qaAll;
   Aliases[1].Alias = LoadStr(WHATS_NEW_BUTTON);
-  Aliases[1].OnSubmit = MakeMethod<TButtonSubmitEvent>(NULL, OpenHistory);
+  Aliases[1].OnSubmit = MakeMethod<TButtonSubmitEvent>(nullptr, OpenHistory);
   Aliases[2].Button = qaCancel;
   Aliases[2].Alias = Vcl_Consts_SMsgDlgClose;
   // Used only when New == true, see AliasesCount below
@@ -1685,8 +1747,8 @@ bool CheckForUpdates(bool CachedResults)
   Aliases[3].Alias = LoadStr(UPGRADE_BUTTON);
   if (!Updates.Results.DownloadUrl.IsEmpty())
   {
-    Aliases[3].OnSubmit = MakeMethod<TButtonSubmitEvent>(NULL, DownloadUpdate);
-    Aliases[3].ElevationRequired = true;
+    Aliases[3].OnSubmit = MakeMethod<TButtonSubmitEvent>(nullptr, DownloadUpdate);
+    Aliases[3].ElevationRequired = DoIsInstalled(HKEY_LOCAL_MACHINE);
   }
 
   TMessageParams Params;
@@ -1703,7 +1765,7 @@ bool CheckForUpdates(bool CachedResults)
   }
 
   std::unique_ptr<TForm> Dialog(
-    CreateMoreMessageDialogEx(Message, NULL, Type, Answers, HELP_UPDATES, &Params));
+    CreateMoreMessageDialogEx(Message, nullptr, Type, Answers, HELP_UPDATES, &Params));
 
   if (New)
   {
@@ -1711,9 +1773,9 @@ bool CheckForUpdates(bool CachedResults)
     // As a simple solution, we just do not display the donation panel on Windows XP.
     if (Updates.Results.DownloadUrl.IsEmpty() && IsInstalled() && IsWinVista())
     {
-      DebugAssert(Dialog->OnShow == NULL);
+      DebugAssert(Dialog->OnShow == nullptr);
       // InsertDonateLink need to be called only after MessageBrowser is created
-      Dialog->OnShow = MakeMethod<TNotifyEvent>(NULL, InsertDonateLink);
+      Dialog->OnShow = MakeMethod<TNotifyEvent>(nullptr, InsertDonateLink);
     }
   }
 
@@ -1970,28 +2032,6 @@ bool AnyOtherInstanceOfSelf()
   return Result;
 }
 
-static bool DoIsPathToExe(const UnicodeString & Path)
-{
-  UnicodeString ExePath = ExcludeTrailingBackslash(ExtractFilePath(Application->ExeName));
-  return IsPathToSameFile(ExePath, Path);
-}
-
-static bool DoIsInstalled(HKEY RootKey)
-{
-  std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>(KEY_READ));
-  Registry->RootKey = RootKey;
-  bool Result =
-    Registry->OpenKey(L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\winscp3_is1", false);
-  if (Result)
-  {
-    UnicodeString InstallPath = ExcludeTrailingBackslash(Registry->ReadString(L"Inno Setup: App Path"));
-    Result =
-      !InstallPath.IsEmpty() &&
-      DoIsPathToExe(InstallPath);
-  }
-  return Result;
-}
-
 bool IsInstalled()
 {
   return
@@ -2031,7 +2071,7 @@ bool IsInstalledMsi()
   return (GIsInstalledMsi > 0);
 }
 
-static TStringList * __fastcall TextToTipList(const UnicodeString & Text)
+static TStringList * TextToTipList(const UnicodeString & Text)
 {
   std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->CommaText = Text;

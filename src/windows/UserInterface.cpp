@@ -112,7 +112,7 @@ void SetOnForeground(bool OnForeground)
 void FlashOnBackground()
 {
   DebugAssert(Application);
-  if ((WinConfiguration != NULL) && WinConfiguration->FlashTaskbar && !ForcedOnForeground && !ForegroundTask())
+  if ((WinConfiguration != nullptr) && WinConfiguration->FlashTaskbar && !ForcedOnForeground && !ForegroundTask())
   {
     FlashWindow(Application->MainFormHandle, true);
   }
@@ -222,11 +222,11 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
     if (!DoNotDisplay)
     {
       ESshTerminate * Terminate = dynamic_cast<ESshTerminate*>(E);
-      bool CloseOnCompletion = (Terminate != NULL);
+      bool CloseOnCompletion = (Terminate != nullptr);
 
       bool ForActiveTerminal =
-        E->InheritsFrom(__classid(EFatal)) && (Terminal != NULL) &&
-        (Manager != NULL) && (Manager->ActiveTerminal == Terminal);
+        E->InheritsFrom(__classid(EFatal)) && (Terminal != nullptr) &&
+        (Manager != nullptr) && (Manager->ActiveTerminal == Terminal);
 
       unsigned int Result;
       if (CloseOnCompletion)
@@ -300,7 +300,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
           if (ForActiveTerminal)
           {
             TMessageParams Params;
-            if (DebugAlwaysTrue(Manager->ActiveTerminal != NULL) &&
+            if (DebugAlwaysTrue(Manager->ActiveTerminal != nullptr) &&
                 ((Configuration->SessionReopenTimeout == 0) ||
                  ((double)Manager->ActiveTerminal->ReopenStart == 0) ||
                  (int(double(Now() - Manager->ActiveTerminal->ReopenStart) * MSecsPerDay) < Configuration->SessionReopenTimeout)))
@@ -334,7 +334,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
       if (Result == qaYes)
       {
         DebugAssert(CloseOnCompletion);
-        DebugAssert(Terminate != NULL);
+        DebugAssert(Terminate != nullptr);
         DebugAssert(Terminate->Operation != odoIdle);
         TerminateApplication();
 
@@ -390,14 +390,19 @@ void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   Manager->ScpExplorer->PopupTrayBalloon(Terminal, Str, Type);
 }
 
+UnicodeString GetThemeName(bool Dark)
+{
+  return Dark ? L"DarkOfficeXP" : L"OfficeXP";
+}
+
 void ConfigureInterface()
 {
-  DebugAssert(WinConfiguration != NULL);
+  DebugAssert(WinConfiguration != nullptr);
   int BidiModeFlag =
     AdjustLocaleFlag(LoadStr(BIDI_MODE), WinConfiguration->BidiModeOverride, false, bdRightToLeft, bdLeftToRight);
   Application->BiDiMode = static_cast<TBiDiMode>(BidiModeFlag);
   SetTBXSysParam(TSP_XPVISUALSTYLE, XPVS_AUTOMATIC);
-  UnicodeString Theme = WinConfiguration->UseDarkTheme() ? L"DarkOfficeXP" : L"OfficeXP";
+  UnicodeString Theme = GetThemeName(WinConfiguration->UseDarkTheme());
   if (!SameText(TBXCurrentTheme(), Theme))
   {
     TBXSetTheme(Theme);
@@ -1249,8 +1254,9 @@ bool IsCustomShortCut(TShortCut ShortCut)
 class TMasterPasswordDialog : public TCustomDialog
 {
 public:
-  TMasterPasswordDialog(bool Current);
+  TMasterPasswordDialog(TComponent * AOwner);
 
+  void Init(bool Current);
   bool Execute(UnicodeString & CurrentPassword, UnicodeString & NewPassword);
 
 protected:
@@ -1263,9 +1269,15 @@ private:
   TPasswordEdit * ConfirmEdit;
 };
 
-TMasterPasswordDialog::TMasterPasswordDialog(bool Current) :
-  TCustomDialog(Current ? HELP_MASTER_PASSWORD_CURRENT : HELP_MASTER_PASSWORD_CHANGE)
+// Need to have an Owner argument for SafeFormCreate
+TMasterPasswordDialog::TMasterPasswordDialog(TComponent *) :
+  TCustomDialog(EmptyStr)
 {
+}
+
+void TMasterPasswordDialog::Init(bool Current)
+{
+  HelpKeyword = Current ? HELP_MASTER_PASSWORD_CURRENT : HELP_MASTER_PASSWORD_CHANGE;
   Caption = LoadStr(MASTER_PASSWORD_CAPTION);
 
   CurrentEdit = new TPasswordEdit(this);
@@ -1362,9 +1374,11 @@ static bool DoMasterPasswordDialog(bool Current,
   UnicodeString & NewPassword)
 {
   bool Result;
-  TMasterPasswordDialog * Dialog = new TMasterPasswordDialog(Current);
+  // This can be a standalone dialog when opening session from commandline
+  TMasterPasswordDialog * Dialog = SafeFormCreate<TMasterPasswordDialog>();
   try
   {
+    Dialog->Init(Current);
     UnicodeString CurrentPassword;
     Result = Dialog->Execute(CurrentPassword, NewPassword);
     if (Result)

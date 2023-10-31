@@ -21,7 +21,6 @@
 
 #include <TbxUtils.hpp>
 #include <Math.hpp>
-#include <WebBrowserEx.hpp>
 #include <Tools.h>
 #include "PngImageList.hpp"
 #include <StrUtils.hpp>
@@ -234,7 +233,7 @@ void TPuttyCleanupThread::Finalize()
   {
     {
       TGuard Guard(*FSection.get());
-      if (FInstance == NULL)
+      if (FInstance == nullptr)
       {
         return;
       }
@@ -305,7 +304,7 @@ void TPuttyCleanupThread::Execute()
   __finally
   {
     TGuard Guard(*FSection.get());
-    FInstance = NULL;
+    FInstance = nullptr;
   } end_try__finally
 }
 
@@ -325,20 +324,155 @@ void TPuttyCleanupThread::DoSchedule()
   FTimer = IncSecond(Now(), 10);
 }
 
+class TPuttyPasswordThread : public TSimpleThread
+{
+public:
+  TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName);
+  virtual ~TPuttyPasswordThread();
+
+protected:
+  virtual void Execute();
+  virtual void Terminate();
+  virtual bool Finished();
+
+private:
+  HANDLE FPipe;
+  AnsiString FPassword;
+
+  void DoSleep(int & Timeout);
+};
+
+TPuttyPasswordThread::TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName)
+{
+  DWORD OpenMode = PIPE_ACCESS_OUTBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE;
+  DWORD PipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT | PIPE_REJECT_REMOTE_CLIENTS;
+  DWORD BufferSize = 16 * 1024;
+  FPipe = CreateNamedPipe(PipeName.c_str(), OpenMode, PipeMode, 1, BufferSize, BufferSize, NMPWAIT_USE_DEFAULT_WAIT, nullptr);
+  if (FPipe == INVALID_HANDLE_VALUE)
+  {
+    throw EOSExtException(L"Cannot create password pipe");
+  }
+  FPassword = AnsiString(Password);
+  Start();
+}
+
+TPuttyPasswordThread::~TPuttyPasswordThread()
+{
+  DebugAlwaysTrue(FFinished);
+  AppLog(L"Disconnecting and closing password pipe");
+  DisconnectNamedPipe(FPipe);
+  CloseHandle(FPipe);
+}
+
+void TPuttyPasswordThread::Terminate()
+{
+  // noop - the thread always self-terminates
+}
+
+bool TPuttyPasswordThread::Finished()
+{
+  return true;
+}
+
+void TPuttyPasswordThread::DoSleep(int & Timeout)
+{
+  unsigned int Step = 50;
+  Sleep(Step);
+  Timeout -= Step;
+  if (Timeout <= 0)
+  {
+    AppLog(L"Timeout waiting for PuTTY");
+  }
+}
+
+void TPuttyPasswordThread::Execute()
+{
+  AppLog(L"Waiting for PuTTY to connect to password pipe");
+  int Timeout = MSecsPerSec * SecsPerMin;
+  while (Timeout > 0)
+  {
+    if (ConnectNamedPipe(FPipe, nullptr))
+    {
+      AppLog(L"Password pipe is ready");
+    }
+    else
+    {
+      int Error = GetLastError();
+      if (Error == ERROR_PIPE_CONNECTED)
+      {
+        AppLog(L"PuTTY has connected to password pipe");
+        int Pos = 0;
+        while ((Timeout > 0) && (Pos < FPassword.Length()))
+        {
+          DWORD Written = 0;
+          if (!WriteFile(FPipe, FPassword.c_str() + Pos, FPassword.Length() - Pos, &Written, nullptr))
+          {
+            AppLog(L"Error writting password pipe");
+            Timeout = 0;
+          }
+          else
+          {
+            Pos += Written;
+            if (Pos >= FPassword.Length())
+            {
+              FlushFileBuffers(FPipe);
+              AppLog(L"Complete password was written to pipe");
+              Timeout = 0;
+            }
+            else
+            {
+              AppLog(L"Part of password was written to pipe");
+              DoSleep(Timeout);
+            }
+          }
+        }
+      }
+      else if (Error == ERROR_PIPE_LISTENING)
+      {
+        DoSleep(Timeout);
+      }
+      else
+      {
+        AppLogFmt(L"Password pipe error %d", (Error));
+        Timeout = 0;
+      }
+    }
+  }
+}
+
+void SplitPuttyCommand(UnicodeString & Program, UnicodeString & Params)
+{
+  // See also TSiteAdvancedDialog::PuttySettingsButtonClick
+  UnicodeString Dir;
+  SplitCommand(GUIConfiguration->PuttyPath, Program, Params, Dir);
+  Program = ExpandEnvironmentVariables(Program);
+  Params = ExpandEnvironmentVariables(Params);
+}
+
+UnicodeString FindPuttyPath()
+{
+  UnicodeString Program, Params;
+  SplitPuttyCommand(Program, Params);
+  if (!FindFile(Program))
+  {
+    throw Exception(FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+  }
+  return Program;
+}
+
+unsigned int PipeCounter = 0;
+
 void OpenSessionInPutty(TSessionData * SessionData)
 {
   // putty does not support resolving environment variables in session settings
   SessionData->ExpandEnvironmentVariables();
-  // See also TSiteAdvancedDialog::PuttySettingsButtonClick
-  UnicodeString Program, AParams, Dir;
-  SplitCommand(GetGUIConfiguration()->PuttyPath, Program, AParams, Dir);
-  Program = ExpandEnvironmentVariables(Program);
+  UnicodeString Program, AParams;
+  SplitPuttyCommand(Program, AParams);
   AppLogFmt(L"PuTTY program: %s", Program);
   AppLogFmt(L"Params: %s", AParams);
   if (FindFile(Program))
   {
 
-    AParams = ::ExpandEnvVars(AParams);
     UnicodeString Password;
     if (GetGUIConfiguration()->PuttyPassword)
     {
@@ -472,7 +606,42 @@ void OpenSessionInPutty(TSessionData * SessionData)
     if (!Password.IsEmpty() && !LocalCustomCommand.IsPasswordCommand(Params))
     {
       Password = NormalizeString(Password); // if password is empty, we should quote it always
-      AddToList(PuttyParams, FORMAT(L"-pw %s", EscapePuttyCommandParam(Password)), L" ");
+      bool UsePuttyPwFile;
+      if (GUIConfiguration->UsePuttyPwFile == asAuto)
+      {
+        UsePuttyPwFile = false;
+        if (SameText(ExtractFileName(Program), OriginalPuttyExecutable))
+        {
+          unsigned int Version = GetFileVersion(Program);
+          if (Version != static_cast<unsigned int>(-1))
+          {
+            int MajorVersion = HIWORD(Version);
+            int MinorVersion = LOWORD(Version);
+            if (CalculateCompoundVersion(MajorVersion, MinorVersion) >= CalculateCompoundVersion(0, 77))
+            {
+              UsePuttyPwFile = true;
+            }
+          }
+        }
+      }
+      else
+      {
+        UsePuttyPwFile = (GUIConfiguration->UsePuttyPwFile == asOn);
+      }
+
+      UnicodeString PasswordParam;
+      if (UsePuttyPwFile)
+      {
+        PipeCounter++;
+        UnicodeString PipeName = FORMAT(L"\\\\.\\PIPE\\WinSCPPuTTYPassword.%.8x.%.8x.%.4x", (GetCurrentProcessId(), PipeCounter, rand()));
+        new TPuttyPasswordThread(Password, PipeName);
+        PasswordParam = FORMAT(L"-pwfile \"%s\"", (PipeName));
+      }
+      else
+      {
+        PasswordParam = FORMAT(L"-pw %s", (EscapePuttyCommandParam(Password)));
+      }
+      AddToList(PuttyParams, PasswordParam, L" ");
     }
 
     AddToList(PuttyParams, Params, L" ");
@@ -732,47 +901,6 @@ UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Ident
 
   return TempDir;
 }
-
-bool DeleteDirectory(const UnicodeString ADirName)
-{
-  TSearchRecOwned sr;
-  bool retval = true;
-  if (FindFirstUnchecked(ADirName + L"\\*", faAnyFile, sr) == 0) // VCL Function
-  {
-    if (sr.IsDirectory())
-    {
-      if (sr.IsRealFile())
-        retval = ::DeleteDirectory(ADirName + L"\\" + sr.Name);
-    }
-    else
-    {
-      retval = ::SysUtulsRemoveFile(ApiPath(ADirName + L"\\" + sr.Name));
-    }
-
-    if (retval)
-    {
-      while (FindNextChecked(sr) == 0)
-      { // VCL Function
-        if (sr.IsDirectory())
-        {
-          if (sr.IsRealFile())
-            retval = DeleteDirectory(ADirName + L"\\" + sr.Name);
-        }
-        else
-        {
-          retval = ::SysUtulsRemoveFile(ApiPath(ADirName + L"\\" + sr.Name));
-        }
-
-        if (!retval) break;
-      }
-    }
-  }
-  sr.Close();
-  if (retval) retval = ::SysUtulsRemoveDir(ApiPath(ADirName)); // VCL function
-  return retval;
-}
-
-#if 0
 
 class TSessionColors : public TComponent
 {
@@ -1222,7 +1350,7 @@ public:
   {
     // Something keeps the reference behind otherwise and calls it on WM_SETTINGCHANGE.
     // Would make sense with TWebBrowserEx, which leaks. But it happens even with TWebBrowser.
-    FCustomDoc->SetUIHandler(NULL);
+    FCustomDoc->SetUIHandler(nullptr);
     FCustomDoc->Release();
   }
 
@@ -2378,12 +2506,12 @@ void TUIStateAwareLabel::Dispatch(void * AMessage)
   // For consistency, we enable focus display for all controls types (like checkboxes).
   if (Message->Msg == CM_DIALOGCHAR)
   {
-    bool WasFocused = (FocusControl != NULL) ? FocusControl->Focused() : false;
+    bool WasFocused = (FocusControl != nullptr) ? FocusControl->Focused() : false;
     TLabel::Dispatch(AMessage);
-    if (!WasFocused && (FocusControl != NULL) && FocusControl->Focused())
+    if (!WasFocused && (FocusControl != nullptr) && FocusControl->Focused())
     {
       TCustomForm * ParentForm = GetParentForm(this);
-      if (ParentForm != NULL)
+      if (ParentForm != nullptr)
       {
         ParentForm->Perform(WM_CHANGEUISTATE, MAKELONG(UIS_CLEAR, UISF_HIDEFOCUS), 0);
       }
@@ -2412,6 +2540,7 @@ bool CanShowTimeEstimate(TDateTime StartTime)
 {
   return (SecondsBetween(StartTime, Now()) >= 3);
 }
+
 class TSystemRequiredThread : public TSignalThread
 {
 public:

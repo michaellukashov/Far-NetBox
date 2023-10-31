@@ -131,7 +131,7 @@ TTerminalManager::~TTerminalManager()
 
 void TTerminalManager::SetQueueConfiguration(TTerminalQueue * Queue)
 {
-  Queue->TransfersLimit = GUIConfiguration->QueueTransfersLimit;
+  Queue->TransfersLimit = Configuration->QueueTransfersLimit;
   Queue->KeepDoneItemsFor =
     (GUIConfiguration->QueueKeepDoneItems ? GUIConfiguration->QueueKeepDoneItemsFor : 0);
 }
@@ -492,8 +492,6 @@ void TTerminalManager::DisconnectActiveTerminalIfPermanentFreeOtherwise()
 
 bool TTerminalManager::ConnectActiveTerminal()
 {
-  ActiveTerminal->CollectUsage();
-
   // add only stored sessions to the jump list,
   // ad-hoc session cannot be reproduced from just a session name
   if (StoredSessions->FindSame(ActiveTerminal->SessionData) != nullptr)

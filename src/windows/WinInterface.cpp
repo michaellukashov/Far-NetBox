@@ -112,14 +112,6 @@ void TMessageParams::Assign(const TQueryParams * AParams)
     Timeout = AParams->Timeout;
     TimeoutAnswer = AParams->TimeoutAnswer;
     TimeoutResponse = AParams->TimeoutResponse;
-    /*NeverAskAgainTitle = AParams->NeverAskAgainTitle;
-    NeverAskAgainAnswer = AParams->NeverAskAgainAnswer;
-    NeverAskAgainCheckedInitially = AParams->NeverAskAgainCheckedInitially;
-    AllowHelp = AParams->AllowHelp;
-    ImageName = AParams->ImageName;
-    MoreMessagesUrl = AParams->MoreMessagesUrl;
-    MoreMessagesSize = AParams->MoreMessagesSize;
-    CustomCaption = AParams->CustomCaption;*/
 
     if (FLAGSET(AParams->Params, qpNeverAskAgainCheck))
     {
@@ -1172,112 +1164,10 @@ void TWinInteractiveCustomCommand::Prompt(
 void TWinInteractiveCustomCommand::Execute(
   const UnicodeString /*Command*/, UnicodeString &/*Value*/) const
 {
-#if 0
-  HANDLE StdOutOutput;
-  HANDLE StdOutInput;
-  HANDLE StdInOutput;
-  HANDLE StdInInput;
-  SECURITY_ATTRIBUTES SecurityAttributes;
-  SecurityAttributes.nLength = sizeof(SecurityAttributes);
-  SecurityAttributes.lpSecurityDescriptor = nullptr;
-  SecurityAttributes.bInheritHandle = TRUE;
-  try
-  {
-    if (!CreatePipe(&StdOutOutput, &StdOutInput, &SecurityAttributes, 0))
-    {
-      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"out")));
-    }
-    else if (!CreatePipe(&StdInOutput, &StdInInput, &SecurityAttributes, 0))
-    {
-      throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"in")));
-    }
-    else
-    {
-      STARTUPINFO StartupInfo;
-      PROCESS_INFORMATION ProcessInformation;
-
-      FillMemory(&StartupInfo, sizeof(StartupInfo), 0);
-      StartupInfo.cb = sizeof(StartupInfo);
-      StartupInfo.wShowWindow = SW_HIDE;
-      StartupInfo.hStdInput = StdInOutput;
-      StartupInfo.hStdOutput = StdOutInput;
-      StartupInfo.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
-
-      if (!CreateProcess(nullptr, Command.c_str(), &SecurityAttributes, &SecurityAttributes,
-            TRUE, NORMAL_PRIORITY_CLASS, nullptr, nullptr, &StartupInfo, &ProcessInformation))
-      {
-        throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"process")));
-      }
-      else
-      {
-        try
-        {
-          // wait until the console program terminated
-          bool Running = true;
-          while (Running)
-          {
-            switch (WaitForSingleObject(ProcessInformation.hProcess, 200))
-            {
-              case WAIT_TIMEOUT:
-                Application->ProcessMessages();
-                break;
-
-              case WAIT_OBJECT_0:
-                Running = false;
-                break;
-
-              default:
-                throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"wait")));
-            }
-          }
-
-          char Buffer[1024];
-          unsigned long Read;
-          while (PeekNamedPipe(StdOutOutput, nullptr, 0, nullptr, &Read, nullptr) &&
-                 (Read > 0))
-
-          {
-            if (!ReadFile(StdOutOutput, &Buffer, Read, &Read, nullptr))
-            {
-              throw Exception(FMTLOAD(SHELL_PATTERN_ERROR, (Command, L"read")));
-            }
-            else if (Read > 0)
-            {
-              Value += AnsiToString(Buffer, Read);
-            }
-          }
-
-          // trim trailing cr/lf
-          Value = TrimRight(Value);
-        }
-        __finally
-        {
-          CloseHandle(ProcessInformation.hProcess);
-          CloseHandle(ProcessInformation.hThread);
-        }
-      }
-    }
-  }
-  __finally
-  {
-    if (StdOutOutput != INVALID_HANDLE_VALUE)
-    {
-      CloseHandle(StdOutOutput);
-    }
-    if (StdOutInput != INVALID_HANDLE_VALUE)
-    {
-      CloseHandle(StdOutInput);
-    }
-    if (StdInOutput != INVALID_HANDLE_VALUE)
-    {
-      CloseHandle(StdInOutput);
-    }
-    if (StdInInput != INVALID_HANDLE_VALUE)
-    {
-      CloseHandle(StdInInput);
-    }
-  }
-#endif // #if 0
+  DWORD DummyExitCode;
+  ExecuteProcessAndReadOutput(Command, Value, DummyExitCode, false);
+  // trim trailing cr/lf
+  Value = TrimRight(Value);
   ThrowNotImplemented(3019);
 }
 #if 0

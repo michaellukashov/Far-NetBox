@@ -163,7 +163,7 @@ TEditedFileData * TEditorManager::FindByUploadCompleteEvent(HANDLE UploadComplet
       return FileData->Data;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 void TEditorManager::ProcessFiles(TEditedFileProcessEvent Callback, void * Arg)
@@ -477,7 +477,7 @@ bool TEditorManager::CloseFile(int Index, bool IgnoreErrors, bool Delete)
 
     if (Delete && !LocalRootDirectory.IsEmpty())
     {
-      if (!RecursiveDeleteFile(ExcludeTrailingBackslash(LocalRootDirectory), false) &&
+      if (!RecursiveDeleteFile(ExcludeTrailingBackslash(LocalRootDirectory)) &&
           !IgnoreErrors)
       {
         throw Exception(FMTLOAD(DELETE_TEMP_EXECUTE_FILE_ERROR, (LocalRootDirectory)));
@@ -534,10 +534,19 @@ void TEditorManager::CheckFileChange(int Index, bool Force)
     TFileData * FileData = &FFiles[Index];
     if (FileData->UploadCompleteEvent != INVALID_HANDLE_VALUE)
     {
+      AppLogFmt(L"Opened/edited file \"%s\" was changed, but it still being uploaded.", (FileData->FileName));
       FileData->Reupload = true;
     }
     else
     {
+      if (Changed)
+      {
+        AppLogFmt(L"Opened/edited file \"%s\" was changed.", (FileData->FileName));
+      }
+      else
+      {
+        AppLogFmt(L"Forcing upload of opened/edited file \"%s\".", (FileData->FileName));
+      }
       bool Upload = true;
       if (!Force)
       {
@@ -545,6 +554,7 @@ void TEditorManager::CheckFileChange(int Index, bool Force)
         if (Handle == INVALID_HANDLE_VALUE)
         {
           int Error = GetLastError();
+          AppLogFmt(L"Opened/edited file \"%s\" is locked, delaying upload.", (FileData->FileName));
           if (Error == ERROR_ACCESS_DENIED)
           {
             Upload = false;
@@ -573,15 +583,18 @@ void TEditorManager::CheckFileChange(int Index, bool Force)
         {
           DebugAssert(OnFileChange != nullptr);
           bool Retry = false;
+          AppLogFmt(L"Uploading opened/edited file \"%s\".", (FileData->FileName));
           OnFileChange(FileData->FileName, FileData->Data, FileData->UploadCompleteEvent, Retry);
           if (Retry)
           {
+            AppLogFmt(L"Will retry uploading opened/edited file \"%s\".", (FileData->FileName));
             UploadComplete(Index);
             FileData->Timestamp = PrevTimestamp;
           }
         }
         catch(...)
         {
+          AppLogFmt(L"Failed to upload opened/edited file \"%s\".", (FileData->FileName));
           // upload failed (was not even started)
           if (FileData->UploadCompleteEvent != INVALID_HANDLE_VALUE)
           {

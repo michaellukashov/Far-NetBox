@@ -191,6 +191,7 @@ private:
   bool FContinueOnError{false};
   bool FConfirmCommandSession{false};
   UnicodeString FPuttyPath;
+  TAutoSwitch FUsePuttyPwFile{asAuto};
   bool FPuttyPassword{false};
   bool FTelnetForFtpInPutty{false};
   UnicodeString FPuttySession;
@@ -202,7 +203,6 @@ private:
   TDateTime FIgnoreCancelBeforeFinish;
   bool FQueueAutoPopup{false};
   bool FSessionRememberPassword{false};
-  int32_t FQueueTransfersLimit{0};
   bool FQueueBootstrap{false};
   bool FQueueKeepDoneItems{false};
   int32_t FQueueKeepDoneItemsFor{0};
@@ -253,7 +253,6 @@ public:
   void SetCopyParamCurrent(UnicodeString Value);
   void SetNewDirectoryProperties(const TRemoteProperties & Value);
   virtual void Saved() override;
-  void SetQueueTransfersLimit(int32_t Value);
   void SetQueueBootstrap(bool Value);
   void SetQueueKeepDoneItems(bool Value);
   void SetQueueKeepDoneItemsFor(int32_t Value);
@@ -296,7 +295,6 @@ public:
   __property int SynchronizeModeAuto = { read = FSynchronizeModeAuto, write = FSynchronizeModeAuto };
   __property int SynchronizeMode = { read = FSynchronizeMode, write = FSynchronizeMode };
   __property int MaxWatchDirectories = { read = FMaxWatchDirectories, write = FMaxWatchDirectories };
-  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
   __property bool QueueBootstrap = { read = FQueueBootstrap, write = SetQueueBootstrap };
   __property bool QueueKeepDoneItems = { read = FQueueKeepDoneItems, write = SetQueueKeepDoneItems };
   __property int QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
@@ -310,6 +308,8 @@ public:
   ROProperty<TObjectList *> Locales{nb::bind(&TGUIConfiguration::GetLocales, this)};
   __property UnicodeString PuttyPath = { read = FPuttyPath, write = FPuttyPath };
   UnicodeString& PuttyPath{FPuttyPath};
+  __property TAutoSwitch UsePuttyPwFile = { read = FUsePuttyPwFile, write = FUsePuttyPwFile };
+  TAutoSwitch& UsePuttyPwFile{FFUsePuttyPwFile};
   __property UnicodeString DefaultPuttyPath = { read = FDefaultPuttyPath };
   const UnicodeString& DefaultPuttyPath{FDefaultPuttyPath};
   __property bool PuttyPassword = { read = FPuttyPassword, write = FPuttyPassword };

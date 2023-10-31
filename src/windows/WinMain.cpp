@@ -23,14 +23,24 @@
 
 #pragma package(smart_init)
 
+UnicodeString GetFolderOrWorkspaceName(const UnicodeString & SessionName)
+{
+  UnicodeString FolderOrWorkspaceName = DecodeUrlChars(SessionName);
+  UnicodeString Result;
+  if (StoredSessions->IsFolderOrWorkspace(FolderOrWorkspaceName))
+  {
+    Result = FolderOrWorkspaceName;
+  }
+  return Result;
+}
+
 void GetLoginData(UnicodeString SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, TForm * LinkedForm, int Flags)
 {
   bool DefaultsOnly = false;
 
-  UnicodeString FolderOrWorkspaceName = DecodeUrlChars(SessionName);
-  if (StoredSessions->IsFolder(FolderOrWorkspaceName) ||
-      StoredSessions->IsWorkspace(FolderOrWorkspaceName))
+  UnicodeString FolderOrWorkspaceName = GetFolderOrWorkspaceName(SessionName);
+  if (!FolderOrWorkspaceName.IsEmpty())
   {
     StoredSessions->GetFolderOrWorkspace(FolderOrWorkspaceName, DataList);
   }
@@ -121,7 +131,7 @@ void Upload(TTerminal * Terminal, TStrings * FileList, int UseDefaults)
   }
 }
 
-void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefaults)
+void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefaults, bool & Browse, UnicodeString & BrowseFile)
 {
   TRemoteFile * File = nullptr;
 
@@ -159,33 +169,45 @@ void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefault
     std::unique_ptr<TStrings> FileListFriendly(std::make_unique<TStringList>());
     FileListFriendly->AddObject(FriendyFileName, File);
 
-    int Options = coDisableQueue;
+    int Options = coDisableQueue | coBrowse;
     int CopyParamAttrs = Terminal->UsableCopyParamAttrs(0).Download;
+    int OutputOptions = 0;
     if ((UseDefaults == 0) ||
         DoCopyDialog(false, false, FileListFriendly.get(), TargetDirectory, &CopyParam,
-          Options, CopyParamAttrs, nullptr, nullptr, UseDefaults))
+          Options, CopyParamAttrs, nullptr, &OutputOptions, UseDefaults))
     {
-      // Setting parameter overrides only now, otherwise the dialog would present the parametes as non-default
-
-      if (CustomDisplayName)
+      if (FLAGCLEAR(OutputOptions, cooBrowse))
       {
-        // Set only now, so that it is not redundantly displayed on the copy dialog.
-        // We should escape the * and ?'s.
-        CopyParam.FileMask = DisplayName;
+        // Setting parameter overrides only now, otherwise the dialog would present the parametes as non-default
+
+        if (CustomDisplayName)
+        {
+          // Set only now, so that it is not redundantly displayed on the copy dialog.
+          // We should escape the * and ?'s.
+          CopyParam.FileMask = DisplayName;
+        }
+
+        CopyParam.OnceDoneOperation = odoDisconnect;
+
+        std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
+        FileList->AddObject(FileName, File);
+        CopyParam.IncludeFileMask.SetRoots(TargetDirectory, FileList.get());
+
+        Terminal->CopyToLocal(FileList.get(), TargetDirectory, &CopyParam, 0, NULL);
       }
-
-      CopyParam.OnceDoneOperation = odoDisconnect;
-
-      std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
-      FileList->AddObject(FileName, File);
-      CopyParam.IncludeFileMask.SetRoots(TargetDirectory, FileList.get());
-
-      Terminal->CopyToLocal(FileList.get(), TargetDirectory, &CopyParam, 0, nullptr);
+      else
+      {
+        UnicodeString Directory = UnixExtractFilePath(FileName);
+        BrowseFile = UnixExtractFileName(FileName);
+        Browse = true;
+        Terminal->AutoReadDirectory = true;
+        Terminal->ChangeDirectory(Directory);
+      }
     }
-
-    UnicodeString Directory = UnixExtractFilePath(FileName);
-    Terminal->AutoReadDirectory = true;
-    Terminal->ChangeDirectory(Directory);
+    else
+    {
+      Abort();
+    }
   }
   __finally
   {
@@ -471,6 +493,7 @@ int LifetimeRuns = -1;
 void InterfaceStartDontMeasure()
 {
   Started = TDateTime();
+  StartupThread->Terminate();
 }
 
 void AddStartupSequence(const UnicodeString & Tag)
@@ -633,6 +656,7 @@ void UpdateFinalStaticUsage()
 void MaintenanceTask()
 {
   CoreMaintenanceTask();
+  InterfaceStartDontMeasure();
 }
 
 typedef nb::vector_t<HWND> THandles;
@@ -829,7 +853,7 @@ bool ShowUpdatesIfAvailable()
 int Execute()
 {
   std::unique_ptr<TStartupThread> StartupThreadOwner(StartupThread);
-  AddStartupSequence(L"E");
+  AddStartupSequence(L"X");
   DebugAssert(StoredSessions);
   TProgramParams * Params = TProgramParams::Instance();
   DebugAssert(Params);
@@ -960,6 +984,7 @@ int Execute()
 
   if (Mode != cmNone)
   {
+    InterfaceStartDontMeasure();
     return Console(Mode);
   }
 
@@ -1162,9 +1187,30 @@ int Execute()
       {
         AutoStartSession = Params->ConsumeParam();
 
-        if ((ParamCommand == pcNone) &&
-            (WinConfiguration->ExternalSessionInExistingInstance != OpenInNewWindow()) &&
-            !NewInstance &&
+        bool TrySendToAnotherInstance =
+          (ParamCommand == pcNone) &&
+          (WinConfiguration->ExternalSessionInExistingInstance != OpenInNewWindow()) &&
+          !NewInstance;
+
+        if (TrySendToAnotherInstance &&
+            !AutoStartSession.IsEmpty() &&
+            (AutoStartSession.Pos(L"/") > 0) && // optimization
+            GetFolderOrWorkspaceName(AutoStartSession).IsEmpty())
+        {
+          bool DummyDefaultsOnly = false;
+          UnicodeString DownloadFile2;
+          int Flags = GetCommandLineParseUrlFlags(Params) | pufParseOnly;
+          // Make copy, as ParseUrl consumes /rawsettings
+          TOptions Options(*Params);
+          std::unique_ptr<TSessionData> SessionData(
+            StoredSessions->ParseUrl(AutoStartSession, &Options, DummyDefaultsOnly, &DownloadFile2, NULL, NULL, Flags));
+          if (!DownloadFile2.IsEmpty())
+          {
+            TrySendToAnotherInstance = false;
+          }
+        }
+
+        if (TrySendToAnotherInstance &&
             SendToAnotherInstance())
         {
           Configuration->Usage->Inc(L"SendToAnotherInstance");
@@ -1245,10 +1291,10 @@ int Execute()
 
               bool CanStart;
               bool Browse = false;
+              UnicodeString BrowseFile;
               if (DataList->Count > 0)
               {
                 TManagedTerminal * Session = TerminalManager->NewSessions(DataList.get());
-                UnicodeString BrowseFile;
                 if (Params->FindSwitch(BROWSE_SWITCH, BrowseFile) &&
                     (!BrowseFile.IsEmpty() || !DownloadFile.IsEmpty()))
                 {
@@ -1256,10 +1302,6 @@ int Execute()
                   {
                     BrowseFile = DownloadFile;
                   }
-                  DebugAssert(Session->RemoteExplorerState == nullptr);
-                  Session->RemoteExplorerState = CreateDirViewStateForFocusedItem(BrowseFile);
-                  DebugAssert(Session->LocalExplorerState == nullptr);
-                  Session->LocalExplorerState = CreateDirViewStateForFocusedItem(BrowseFile);
                   DownloadFile = UnicodeString();
                   Browse = true;
                 }
@@ -1305,6 +1347,7 @@ int Execute()
                   {
                     Configuration->Usage->Inc(L"CommandLineOperation");
                     ScpExplorer->StandaloneOperation = true;
+                    InterfaceStartDontMeasure();
                   }
 
                   if (ParamCommand == pcUpload)
@@ -1327,8 +1370,8 @@ int Execute()
                   }
                   else if (!DownloadFile.IsEmpty())
                   {
-                    Download(TerminalManager->ActiveSession, DownloadFile,
-                      UseDefaults);
+                    Download(
+                      TerminalManager->ActiveSession, DownloadFile, UseDefaults, Browse, BrowseFile);
                   }
                   else
                   {
@@ -1342,7 +1385,7 @@ int Execute()
 
                   if (Browse)
                   {
-                    ScpExplorer->BrowseFile();
+                    ScpExplorer->BrowseFile(BrowseFile);
                   }
 
                   AddStartupSequence(L"R");
