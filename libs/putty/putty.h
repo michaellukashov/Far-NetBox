@@ -21,14 +21,14 @@
  * Fingerprints of the current and previous PGP master keys, to
  * establish a trust path between an executable and other files.
  */
-#define PGP_MASTER_KEY_YEAR "2021"
-#define PGP_MASTER_KEY_DETAILS "RSA, 3072-bit"
+#define PGP_MASTER_KEY_YEAR "2023"
+#define PGP_MASTER_KEY_DETAILS "RSA, 4096-bit"
 #define PGP_MASTER_KEY_FP                                  \
-    "A872 D42F 1660 890F 0E05  223E DD43 55EA AC11 19DE"
-#define PGP_PREV_MASTER_KEY_YEAR "2018"
-#define PGP_PREV_MASTER_KEY_DETAILS "RSA, 4096-bit"
+    "28D4 7C46 55E7 65A6 D827  AC66 B15D 9EFC 216B 06A1"
+#define PGP_PREV_MASTER_KEY_YEAR "2021"
+#define PGP_PREV_MASTER_KEY_DETAILS "RSA, 3072-bit"
 #define PGP_PREV_MASTER_KEY_FP                                  \
-    "24E1 B1C5 75EA 3C9F F752  A922 76BC 7FE4 EBFD 2D9E"
+    "A872 D42F 1660 890F 0E05  223E DD43 55EA AC11 19DE"
 
 /*
  * Definitions of three separate indexing schemes for colour palette
@@ -1285,7 +1285,7 @@ struct SeatVtable {
         Seat *seat, const char *host, int port, const char *keytype,
         char *keystr, SeatDialogText *text, HelpCtx helpctx,
         void (*callback)(void *ctx, SeatPromptResult result), void *ctx,
-        char **fingerprints, bool is_certificate); // WINSCP
+        char **fingerprints, bool is_certificate, int ca_count, bool already_verified); // WINSCP
 
     /*
      * Check with the seat whether it's OK to use a cryptographic
@@ -1442,10 +1442,10 @@ static inline SeatPromptResult seat_confirm_ssh_host_key(
     InteractionReadySeat iseat, const char *h, int p, const char *ktyp,
     char *kstr, SeatDialogText *text, HelpCtx helpctx,
     void (*cb)(void *ctx, SeatPromptResult result), void *ctx,
-    char **fingerprints, bool is_certificate) // WINSCP
+    char **fingerprints, bool is_certificate, int ca_count, bool already_verified) // WINSCP
 { return iseat.seat->vt->confirm_ssh_host_key(
         iseat.seat, h, p, ktyp, kstr, text, helpctx, cb, ctx,
-        fingerprints, is_certificate); } // WINSCP
+        fingerprints, is_certificate, ca_count, already_verified); } // WINSCP
 static inline SeatPromptResult seat_confirm_weak_crypto_primitive(
     InteractionReadySeat iseat, const char *atyp, const char *aname,
     void (*cb)(void *ctx, SeatPromptResult result), void *ctx)
@@ -1539,7 +1539,7 @@ SeatPromptResult nullseat_confirm_ssh_host_key(
     Seat *seat, const char *host, int port, const char *keytype,
     char *keystr, SeatDialogText *text, HelpCtx helpctx,
     void (*callback)(void *ctx, SeatPromptResult result), void *ctx,
-    char **fingerprints, bool is_certificate); // WINSCP
+    char **fingerprints, bool is_certificate, int ca_count, bool already_verified); // WINSCP
 SeatPromptResult nullseat_confirm_weak_crypto_primitive(
     Seat *seat, const char *algtype, const char *algname,
     void (*callback)(void *ctx, SeatPromptResult result), void *ctx);

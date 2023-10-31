@@ -880,7 +880,7 @@ enum kexlist {
     NKEXLIST
 };
 
-//#pragma option push -w-mnc // WINSCP
+#pragma option push -w-mnc // WINSCP
 struct ssh_keyalg {
     /* Constructors that create an ssh_key */
     ssh_key *(*new_pub) (const ssh_keyalg *self, ptrlen pub);
@@ -924,7 +924,7 @@ struct ssh_keyalg {
     bool is_certificate;   /* is this a certified key type? */
     const ssh_keyalg *base_alg; /* if so, for what underlying key alg? */
 };
-//#pragma option pop // WINSCP
+#pragma option pop // WINSCP
 
 static inline ssh_key *ssh_key_new_pub(const ssh_keyalg *self, ptrlen pub)
 { return self->new_pub(self, pub); }
@@ -1508,7 +1508,6 @@ int rsa1_loadpub_f(const Filename *filename, BinarySink *bs,
 extern const ssh_keyalg *const all_keyalgs[];
 extern const size_t n_keyalgs;
 const ssh_keyalg *find_pubkey_alg(const char *name);
-const ssh_keyalg *find_pubkey_alg_winscp_host(const char *name);
 const ssh_keyalg *find_pubkey_alg_len(ptrlen name);
 
 ptrlen pubkey_blob_to_alg_name(ptrlen blob);
