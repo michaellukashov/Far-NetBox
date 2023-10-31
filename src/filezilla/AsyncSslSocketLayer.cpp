@@ -18,11 +18,10 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CAsyncSslSocketLayer
-CCriticalSectionWrapper CAsyncSslSocketLayer::m_sCriticalSection;
+std::unique_ptr<TCriticalSection> CAsyncSslSocketLayer::m_sCriticalSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
 
 CAsyncSslSocketLayer::t_SslLayerList* CAsyncSslSocketLayer::m_pSslLayerList = 0;
-int CAsyncSslSocketLayer::m_nSslRefCount = 0;
-nb::map_t<SSL_CTX *, int> CAsyncSslSocketLayer::m_contextRefCount;
+bool CAsyncSslSocketLayer::m_bSslInitialized = false;
 
 CAsyncSslSocketLayer::CAsyncSslSocketLayer()
 {
@@ -56,39 +55,35 @@ CAsyncSslSocketLayer::CAsyncSslSocketLayer()
   m_onCloseCalled = false;
   m_Main = nullptr;
   m_sessionid = nullptr;
+  m_sessionidSerialized = nullptr;
   m_sessionreuse = true;
   m_sessionreuse_failed = false;
 
   FCertificate = nullptr;
   FPrivateKey = nullptr;
+  m_CriticalSection.reset(std::make_unique<TCriticalSection>());
 }
 
 CAsyncSslSocketLayer::~CAsyncSslSocketLayer()
 {
-  UnloadSSL();
+  ResetSslSession();
   nb_free(m_pNetworkSendBuffer);
   nb_free(m_pRetrySendBuffer);
 }
 
 int CAsyncSslSocketLayer::InitSSL()
 {
-  if (m_bSslInitialized)
-    return 0;
+  TGuard Guard(m_sCriticalSection.get());
 
-  m_sCriticalSection.Lock();
-
-  if (!m_nSslRefCount)
+  if (!m_bSslInitialized)
   {
     if (!OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS | OPENSSL_INIT_LOAD_CRYPTO_STRINGS, nullptr))
     {
       return SSL_FAILURE_INITSSL;
     }
+
+    m_bSslInitialized = true;
   }
-
-  m_nSslRefCount++;
-  m_sCriticalSection.Unlock();
-
-  m_bSslInitialized = true;
 
   return 0;
 }
@@ -636,6 +631,28 @@ BOOL CAsyncSslSocketLayer::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
   return res;
 }
 
+void CAsyncSslSocketLayer::SetSession(SSL_SESSION * Session)
+{
+  TGuard Guard(m_CriticalSection.get());
+  if (m_sessionid != nullptr)
+  {
+    SSL_SESSION_free(m_sessionid);
+  }
+  if (m_sessionidSerialized != nullptr)
+  {
+    nb_free(m_sessionidSerialized);
+    m_sessionidSerialized = nullptr;
+  }
+  m_sessionid = Session;
+  if (m_sessionid != nullptr)
+  {
+    m_sessionidSerializedLen = i2d_SSL_SESSION(m_sessionid, nullptr);
+    m_sessionidSerialized = nb::chcalloc(m_sessionidSerializedLen);
+    unsigned char * P = m_sessionidSerialized;
+    i2d_SSL_SESSION(m_sessionid, &P);
+  }
+}
+
 bool CAsyncSslSocketLayer::HandleSession(SSL_SESSION * Session)
 {
   bool Result = false;
@@ -657,30 +674,22 @@ bool CAsyncSslSocketLayer::HandleSession(SSL_SESSION * Session)
             m_Main->m_sessionreuse_failed = true;
           }
         }
-        LogSocketMessageRaw(FZ_LOG_DEBUG, L"Saving session ID");
       }
       else
       {
-        SSL_SESSION_free(m_sessionid);
         LogSocketMessageRaw(FZ_LOG_INFO, L"Session ID changed");
       }
-      m_sessionid = Session;
-      // Some TLS 1.3 servers require reuse of the session of the previous data connection, not of the main session.
-      // It seems that it's safe to do this even for older TLS versions, but let's not for now.
-      // Once we do, we can simply always use main session's m_sessionid field in the code above.
-      if ((SSL_version(m_ssl) >= TLS1_3_VERSION) && (m_Main != nullptr))
+
+      if (m_Main == nullptr)
       {
-        if (m_Main->m_sessionid != nullptr)
-        {
-          SSL_SESSION_free(m_Main->m_sessionid);
-        }
-        m_Main->m_sessionid = Session;
-        if (Session != nullptr)
-        {
-          SSL_SESSION_up_ref(Session);
-        }
+        LogSocketMessageRaw(FZ_LOG_INFO, L"Saving session ID");
+        SetSession(Session);
+        Result = true;
       }
-      Result = true;
+      else
+      {
+        m_sessionid = Session;
+      }
     }
   }
   return Result;
@@ -703,8 +712,7 @@ int CAsyncSslSocketLayer::NewSessionCallback(struct ssl_st * Ssl, SSL_SESSION * 
 
 int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   CAsyncSslSocketLayer* main, bool sessionreuse, const CString & host,
-  CFileZillaTools * tools,
-  void* pSslContext /*=0*/)
+  CFileZillaTools * tools)
 {
   if (m_bUseSSL)
     return 0;
@@ -712,89 +720,70 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   if (res)
     return res;
 
-  m_sCriticalSection.Lock();
-  SSL_CTX * ssl_ctx = (SSL_CTX*)pSslContext;
-  if (ssl_ctx)
   {
-    if (m_ssl_ctx)
-    {
-      m_sCriticalSection.Unlock();
-      ResetSslSession();
-      return SSL_FAILURE_INITSSL;
-    }
+    // What is the point of this guard?
+    // Maybe the m_ssl_ctx was intended to be global. But as it is not, the guard is probably pointless.
+    TGuard Guard(m_sCriticalSection.get());
 
-    nb::map_t<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(ssl_ctx);
-    if (iter == m_contextRefCount.end() || iter->second < 1)
+    if (!m_ssl_ctx)
     {
-      m_sCriticalSection.Unlock();
-      ResetSslSession();
-      return SSL_FAILURE_INITSSL;
-    }
-    m_ssl_ctx = ssl_ctx;
-    iter->second++;
-  }
-  else if (!m_ssl_ctx)
-  {
-    // Create new context if none given
-    if (!(m_ssl_ctx = SSL_CTX_new( SSLv23_method())))
-    {
-      m_sCriticalSection.Unlock();
-      ResetSslSession();
-      return SSL_FAILURE_INITSSL;
-    }
-    m_contextRefCount[m_ssl_ctx] = 1;
-
-    if (clientMode)
-    {
-      USES_CONVERSION;
-      SSL_CTX_set_verify(m_ssl_ctx, SSL_VERIFY_PEER, verify_callback);
-      SSL_CTX_set_client_cert_cb(m_ssl_ctx, ProvideClientCert);
-      // https://www.mail-archive.com/openssl-users@openssl.org/msg86186.html
-      SSL_CTX_set_session_cache_mode(m_ssl_ctx, SSL_SESS_CACHE_CLIENT | SSL_SESS_CACHE_NO_INTERNAL_STORE | SSL_SESS_CACHE_NO_AUTO_CLEAR);
-      SSL_CTX_sess_set_new_cb(m_ssl_ctx, NewSessionCallback);
-      CFileStatus Dummy;
-      if (!m_CertStorage.IsEmpty() &&
-          CFile::GetStatus((LPCTSTR)m_CertStorage, Dummy))
+      // Create new context if none given
+      if (!(m_ssl_ctx = SSL_CTX_new( SSLv23_method())))
       {
-        SSL_CTX_load_verify_locations(m_ssl_ctx, T2CA(m_CertStorage), 0);
+        ResetSslSession();
+        return SSL_FAILURE_INITSSL;
+      }
+
+      if (clientMode)
+      {
+        USES_CONVERSION;
+        SSL_CTX_set_verify(m_ssl_ctx, SSL_VERIFY_PEER, verify_callback);
+        SSL_CTX_set_client_cert_cb(m_ssl_ctx, ProvideClientCert);
+        // https://www.mail-archive.com/openssl-users@openssl.org/msg86186.html
+        SSL_CTX_set_session_cache_mode(m_ssl_ctx, SSL_SESS_CACHE_CLIENT | SSL_SESS_CACHE_NO_INTERNAL_STORE | SSL_SESS_CACHE_NO_AUTO_CLEAR);
+        SSL_CTX_sess_set_new_cb(m_ssl_ctx, NewSessionCallback);
+        CFileStatus Dummy;
+        if (!m_CertStorage.IsEmpty() &&
+            CFile::GetStatus((LPCTSTR)m_CertStorage, Dummy))
+        {
+          SSL_CTX_load_verify_locations(m_ssl_ctx, T2CA(m_CertStorage), 0);
+        }
       }
     }
-  }
 
-  //Create new SSL session
-  if (!(m_ssl = SSL_new(m_ssl_ctx)))
-  {
-    m_sCriticalSection.Unlock();
-    ResetSslSession();
-    return SSL_FAILURE_INITSSL;
-  }
+    //Create new SSL session
+    if (!(m_ssl = SSL_new(m_ssl_ctx)))
+    {
+      ResetSslSession();
+      return SSL_FAILURE_INITSSL;
+    }
 
-  if (clientMode && (host.GetLength() > 0))
-  {
-    USES_CONVERSION;
-    SSL_set_tlsext_host_name(m_ssl, T2CA(host));
-  }
+    if (clientMode && (host.GetLength() > 0))
+    {
+      USES_CONVERSION;
+      SSL_set_tlsext_host_name(m_ssl, T2CA(host));
+    }
 
 #ifdef _DEBUG
-  if ((main == nullptr) && LoggingSocketMessage(FZ_LOG_INFO))
-  {
-    USES_CONVERSION;
-    LogSocketMessageRaw(FZ_LOG_INFO, L"Supported ciphersuites:");
-    STACK_OF(SSL_CIPHER) * ciphers = SSL_get_ciphers(m_ssl);
-    for (int i = 0; i < sk_SSL_CIPHER_num(ciphers); i++)
+    if ((main == nullptr) && LoggingSocketMessage(FZ_LOG_INFO))
     {
-      const SSL_CIPHER * cipher = sk_SSL_CIPHER_value(ciphers, i);
-      LogSocketMessageRaw(FZ_LOG_INFO, A2CT(SSL_CIPHER_get_name(cipher)));
+      USES_CONVERSION;
+      LogSocketMessageRaw(FZ_LOG_INFO, L"Supported ciphersuites:");
+      STACK_OF(SSL_CIPHER) * ciphers = SSL_get_ciphers(m_ssl);
+      for (int i = 0; i < sk_SSL_CIPHER_num(ciphers); i++)
+      {
+        const SSL_CIPHER * cipher = sk_SSL_CIPHER_value(ciphers, i);
+        LogSocketMessageRaw(FZ_LOG_INFO, A2CT(SSL_CIPHER_get_name(cipher)));
+      }
     }
-  }
 #endif
 
-  //Add current instance to list of active instances
-  t_SslLayerList *tmp = m_pSslLayerList;
-  m_pSslLayerList = new t_SslLayerList();
-  m_pSslLayerList->pNext = tmp;
-  m_pSslLayerList->pLayer = this;
-  m_sCriticalSection.Unlock();
+    //Add current instance to list of active instances
+    t_SslLayerList *tmp = m_pSslLayerList;
+    m_pSslLayerList = new t_SslLayerList;
+    m_pSslLayerList->pNext = tmp;
+    m_pSslLayerList->pLayer = this;
+  }
 
   SSL_set_info_callback(m_ssl, apps_ssl_info_callback);
 
@@ -804,7 +793,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   // For 32768 buffer, the sizes are 32725-32746, 65471-65492, 98217-98238 (tested up to 1048576)
   // Do not know how to fix that, so as a workaround, using buffer size that does not result in the problem.
   unsigned long TransferSize = 0;
-  if (main != NULL)
+  if (main != nullptr)
   {
     TransferSize = static_cast<unsigned long>(GetSocketOptionVal(OPTION_MPEXT_TRANSFER_SIZE));
   }
@@ -843,14 +832,22 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   m_sessionreuse = sessionreuse;
   if ((m_Main != nullptr) && m_sessionreuse)
   {
-    if (m_Main->m_sessionid == nullptr)
+    TGuard Guard(m_Main->m_CriticalSection.get());
+    if (m_Main->m_sessionidSerialized == nullptr)
     {
       DebugFail();
       SSL_set_session(m_ssl, nullptr);
     }
     else if (!m_Main->m_sessionreuse_failed)
     {
-      if (!SSL_set_session(m_ssl, m_Main->m_sessionid))
+      // This is what Python SSL module does, instead of directly using SSL_SESSION of the other session,
+      // claiming a bug in OpenSSL 1.1.1 and newer. See PySSL_get_session/PySSL_set_session.
+      // OpenSSL refutes this as a bug in Python session handling.
+      // https://github.com/openssl/openssl/issues/1550
+      // But it works for us too.
+      const unsigned char * P = m_Main->m_sessionidSerialized;
+      SSL_SESSION * Session = DebugNotNull(d2i_SSL_SESSION(nullptr, &P, m_Main->m_sessionidSerializedLen));
+      if (!SSL_set_session(m_ssl, Session))
       {
         LogSocketMessageRaw(FZ_LOG_INFO, L"SSL_set_session failed");
         return SSL_FAILURE_INITSSL;
@@ -938,21 +935,11 @@ void CAsyncSslSocketLayer::ResetSslSession()
     SSL_free(m_ssl);
   }
 
-  m_sCriticalSection.Lock();
+  TGuard Guard(m_sCriticalSection.get());
 
   if (m_ssl_ctx)
   {
-    nb::map_t<SSL_CTX *, int>::iterator iter = m_contextRefCount.find(m_ssl_ctx);
-    if (iter != m_contextRefCount.end())
-    {
-      if (iter->second <= 1)
-      {
-        SSL_CTX_free(m_ssl_ctx);
-        m_contextRefCount.erase(m_ssl_ctx);
-      }
-      else
-        iter->second--;
-    }
+    SSL_CTX_free(m_ssl_ctx);
     m_ssl_ctx = 0;
   }
 
@@ -960,7 +947,6 @@ void CAsyncSslSocketLayer::ResetSslSession()
   t_SslLayerList *cur = m_pSslLayerList;
   if (!cur)
   {
-    m_sCriticalSection.Unlock();
     return;
   }
 
@@ -978,21 +964,15 @@ void CAsyncSslSocketLayer::ResetSslSession()
         cur->pNext = cur->pNext->pNext;
         delete tmp;
 
-        m_sCriticalSection.Unlock();
         return;
       }
       cur = cur->pNext;
     }
 
-  if (m_sessionid != nullptr)
-  {
-    SSL_SESSION_free(m_sessionid);
-    m_sessionid = nullptr;
-  }
+  SetSession(nullptr);
   m_sessionreuse = true;
   m_sessionreuse_failed = false;
 
-  m_sCriticalSection.Unlock();
 }
 
 bool CAsyncSslSocketLayer::IsUsingSSL()
@@ -1119,24 +1099,23 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
 {
   USES_CONVERSION;
   CAsyncSslSocketLayer *pLayer = 0;
-  m_sCriticalSection.Lock();
-  t_SslLayerList *cur = m_pSslLayerList;
-  while (cur)
   {
-    if (cur->pLayer->m_ssl == s)
-      break;
-    cur = cur->pNext;
+    TGuard Guard(m_sCriticalSection.get());
+    t_SslLayerList *cur = m_pSslLayerList;
+    while (cur)
+    {
+      if (cur->pLayer->m_ssl == s)
+        break;
+      cur = cur->pNext;
+    }
+    if (!cur)
+    {
+      MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
+      return;
+    }
+    else
+      pLayer = cur->pLayer;
   }
-  if (!cur)
-  {
-    m_sCriticalSection.Unlock();
-    // TODO: report error
-//    MessageBox(0, L"Can't lookup TLS session!", L"Critical error", MB_ICONEXCLAMATION);
-    return;
-  }
-  else
-    pLayer = cur->pLayer;
-  m_sCriticalSection.Unlock();
 
   // Called while unloading?
   if (!pLayer->m_bUseSSL && (where != SSL_CB_LOOP))
@@ -1238,38 +1217,16 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   {
     // For 1.2 and older, session is always established at this point.
     // For 1.3, session can be restarted later, so this is handled in NewSessionCallback.
-    if (SSL_version(pLayer->m_ssl) < TLS1_3_VERSION)
+    // But at least with Cerberus server, it is not, so if we want to have "reuse" logged, we need to do it here.
+    SSL_SESSION * sessionid = SSL_get1_session(pLayer->m_ssl);
+    if (!pLayer->HandleSession(sessionid))
     {
-      SSL_SESSION * sessionid = SSL_get1_session(pLayer->m_ssl);
-      if (!pLayer->HandleSession(sessionid))
-      {
-        SSL_SESSION_free(sessionid);
-      }
+      SSL_SESSION_free(sessionid);
     }
     int error = SSL_get_verify_result(pLayer->m_ssl);
     pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERIFY_CERT, error);
     pLayer->m_bBlocking = TRUE;
   }
-}
-
-
-void CAsyncSslSocketLayer::UnloadSSL()
-{
-  if (!m_bSslInitialized)
-    return;
-  ResetSslSession();
-
-  m_bSslInitialized = false;
-
-  m_sCriticalSection.Lock();
-  m_nSslRefCount--;
-  if (m_nSslRefCount)
-  {
-    m_sCriticalSection.Unlock();
-    return;
-  }
-
-  m_sCriticalSection.Unlock();
 }
 
 bool AsnTimeToValidTime(ASN1_TIME * AsnTime, t_SslCertData::t_validTime & ValidTime)
@@ -1751,17 +1708,20 @@ void CAsyncSslSocketLayer::OnConnect(int nErrorCode)
 CAsyncSslSocketLayer * CAsyncSslSocketLayer::LookupLayer(SSL * Ssl)
 {
   CAsyncSslSocketLayer * Result = nullptr;
-  m_sCriticalSection.Lock();
-  t_SslLayerList * Cur = m_pSslLayerList;
-  while (Cur != nullptr)
+  t_SslLayerList * Cur = nullptr;
+
   {
-    if (Cur->pLayer->m_ssl == Ssl)
+    TGuard Guard(m_sCriticalSection.get());
+    Cur = m_pSslLayerList;
+    while (Cur != nullptr)
     {
-      break;
+      if (Cur->pLayer->m_ssl == Ssl)
+      {
+        break;
+      }
+      Cur = Cur->pNext;
     }
-    Cur = Cur->pNext;
   }
-  m_sCriticalSection.Unlock();
 
   if (Cur == nullptr)
   {

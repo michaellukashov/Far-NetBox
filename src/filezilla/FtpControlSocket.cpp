@@ -737,7 +737,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       ftp_capabilities_t cap = m_serverCapabilities.GetCapabilityString(opts_mlst_command);
       if (cap == unknown)
       {
-        std::transform(facts.begin(), facts.end(), facts.begin(), ::tolower);
+        std::transform(facts.begin(), facts.end(), facts.begin(), ::towlower);
         bool had_unset = false;
         std::string opts_facts;
         // Create a list of all facts understood by both FZ and the server.
@@ -6435,7 +6435,8 @@ bool CFtpControlSocket::IsRoutableAddress(const CString & host)
   if (host.Left(3) == L"127" ||
       host.Left(3) == L"10." ||
       host.Left(7) == L"192.168" ||
-      host.Left(7) == L"169.254")
+      host.Left(7) == L"169.254" ||
+      host.Left(2) == L"0.")
   {
     return false;
   }
