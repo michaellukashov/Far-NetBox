@@ -100,10 +100,10 @@ public:
     TRemoteFile *&AFile) override;
   virtual void ReadSymlink(TRemoteFile *ASymlinkFile,
     TRemoteFile *&AFile) override;
-  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
-  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
+  virtual void RemoteRenameFile(
+    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite) override;
+  virtual void RemoteCopyFile(
+    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) override;
@@ -136,7 +136,8 @@ protected:
   int32_t FBusy{0};
   void * FBusyToken{nullptr};
   bool FAvoidBusy{false};
-  std::unique_ptr<TStrings> FExtensions;
+  UnicodeString FExtensions;
+  std::unique_ptr<TStrings> FSupportedExtensions;
   std::unique_ptr<TSFTPSupport> FSupport;
   TAutoSwitch FUtfStrings{asAuto};
   bool FUtfDisablingAnnounced{false};
@@ -207,8 +208,8 @@ protected:
   char *GetEOL() const;
   void BusyStart();
   void BusyEnd();
-  uint32_t TransferBlockSize(uint32_t Overhead,
-    TFileOperationProgressType *OperationProgress, uint32_t MinPacketSize = 0, uint32_t MaxPacketSize = 0) const;
+  uint32_t TransferBlockSize(
+    uint32_t Overhead, TFileOperationProgressType *OperationProgress, uint32_t MinPacketSize = 0, uint32_t MaxPacketSize = 0) const;
   uint32_t UploadBlockSize(const RawByteString Handle,
     TFileOperationProgressType *OperationProgress) const;
   uint32_t DownloadBlockSize(
@@ -221,6 +222,7 @@ protected:
     TFileOperationProgressType * OperationProgress);
   bool DoesFileLookLikeSymLink(TRemoteFile * File) const;
   void DoCloseRemoteIfOpened(const RawByteString & Handle);
+  void NoPacketReservations();
 
 private:
   const TSessionData *GetSessionData() const;
