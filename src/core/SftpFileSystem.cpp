@@ -2139,7 +2139,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
       FFileSystemInfo.AdditionalInfo += LoadStr(FS_RENAME_NOT_SUPPORTED) + L"\r\n\r\n";
     }
 
-    if (FExtensions->GetCount() > 0)
+    if (!FExtensions.IsEmpty())
     {
       FFileSystemInfo.AdditionalInfo +=
         LoadStr(SFTP_EXTENSION_INFO) + L"\r\n" +
@@ -2364,15 +2364,15 @@ const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
 
 uint32_t TSFTPFileSystem::TransferBlockSize(
   uint32_t Overhead, TFileOperationProgressType * OperationProgress)
-{
-  const uint32_t minPacketSize = MinPacketSize ? MinPacketSize : 32 * 1024;
 
-  // uint32_t AMinPacketSize = FSecureShell->MinPacketSize(); nb::used(AMinPacketSize);
+uint32_t TSFTPFileSystem::TransferBlockSize(
+  uint32_t Overhead, TFileOperationProgressType * OperationProgress)
+{
+  const uint32_t MinPacketSize = 32768;
   uint32_t AMaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (AMaxPacketSize > 0);
   uint32_t CPSRounded = TEncryption::RoundToBlock(OperationProgress->CPS());
-  uint32_t Result = static_cast<uint32_t>(CPSRounded);
-
+  uint32_t Result = CPSRounded;
   if ((FMaxPacketSize > 0) &&
       ((FMaxPacketSize < AMaxPacketSize) || !MaxPacketSizeValid))
   {
@@ -3191,14 +3191,14 @@ void TSFTPFileSystem::DoStartup()
       FVersion, SFTPMinVersion, SFTPMaxVersion));
   }
 
-  FExtensions->Clear();
+  FExtensions = EmptyStr;
   FEOL = "\r\n";
   FSupport->Loaded = false;
   FSupportsStatVfsV2 = false;
   FSupportsHardlink = false;
   bool SupportsLimits = false;
-  TStrings * FixedPaths = FFixedPaths.release();
-  SAFE_DESTROY(FixedPaths);
+  SAFE_DESTROY(FFixedPaths);
+  // OpenSSH announce extensions directly in the SSH_FXP_VERSION packet only.
   // OpenSSH announce extensions directly in the SSH_FXP_VERSION packet only.
   // Bitvise uses "supported2" extension for some (mostly the standard ones) and SSH_FXP_VERSION for other.
   // ProFTPD uses "supported2" extension for the standard extensions. And repeats them along with non-standard in the SSH_FXP_VERSION.
@@ -5079,7 +5079,7 @@ void TSFTPFileSystem::Source(
       HELP_RENAME_AFTER_RESUME_ERROR,
     [&]()
     {
-      this->RemoteRenameFile(OpenParams.RemoteFileName, nullptr, ADestFileName);
+      this->RemoteRenameFile(OpenParams.RemoteFileName, nullptr, ADestFileName, false);
     });
     __removed FILE_OPERATION_LOOP_END_CUSTOM(
     __removed   FMTLOAD(RENAME_AFTER_RESUME_ERROR,

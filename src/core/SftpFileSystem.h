@@ -213,7 +213,7 @@ protected:
   uint32_t UploadBlockSize(const RawByteString Handle,
     TFileOperationProgressType *OperationProgress) const;
   uint32_t DownloadBlockSize(
-   TFileOperationProgressType *OperationProgress) const;
+   uint32_t Overhead, TFileOperationProgressType *OperationProgress) const;
   int32_t PacketLength(uint8_t *LenBuf, SSH_FXP_TYPE ExpectedType) const;
   void Progress(TFileOperationProgressType * OperationProgress);
   void AddPathString(TSFTPPacket & Packet, const UnicodeString Value, bool EncryptNewFiles = false);
