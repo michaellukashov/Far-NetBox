@@ -538,7 +538,7 @@ void TFTPFileSystem::Open()
       if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(USERNAME_TITLE), "",
             LoadStr(USERNAME_PROMPT2), true, 0, UserName))
       {
-        FTerminal->FatalError(nullptr, LoadStr(AUTHENTICATION_FAILED));
+        FTerminal->FatalError(nullptr, LoadStr(CREDENTIALS_NOT_SPECIFIED));
       }
       else
       {
@@ -557,7 +557,7 @@ void TFTPFileSystem::Open()
       if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), "",
             LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
-        FTerminal->FatalError(nullptr, LoadStr(AUTHENTICATION_FAILED));
+        FTerminal->FatalError(nullptr, LoadStr(CREDENTIALS_NOT_SPECIFIED));
       }
     }
 
@@ -2043,6 +2043,7 @@ bool TFTPFileSystem::IsCapable(int32_t Capability) const
     case fcPreservingTimestampDirs:
     case fcResumeSupport:
     case fcChangePassword:
+    case fcParallelFileTransfers:
       return false;
 
     default:
@@ -2620,8 +2621,8 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
   }
 }
 
-void TFTPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
-  const UnicodeString ANewName)
+void TFTPFileSystem::RemoteRenameFile(
+  const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString NewName = GetAbsolutePath(ANewName, false);
@@ -2642,8 +2643,8 @@ void TFTPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemo
   }
 }
 
-void TFTPFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
-  const UnicodeString ANewName)
+void TFTPFileSystem::RemoteCopyFile(
+  const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
   EnsureLocation();
@@ -2748,8 +2749,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
         FORMAT("%s\r\n", LoadStr(FTP_FEATURE_INFO));
       for (int32_t Index = 0; Index < FFeatures->GetCount(); ++Index)
       {
-        // For TrimLeft, refer to HandleFeatReply
-        FFileSystemInfo.AdditionalInfo += FORMAT("  %s\r\n", TrimLeft(FFeatures->GetString(Index)));
+        FFileSystemInfo.AdditionalInfo += FORMAT("  %s\r\n", FFeatures->GetString(Index));
       }
     }
 
@@ -3706,85 +3706,9 @@ void TFTPFileSystem::ResetFeatures()
   FSupportsAnyChecksumFeature = false;
 }
 
-UnicodeString TFTPFileSystem::CutFeature(UnicodeString & Buf)
-{
-  UnicodeString Result;
-  if (Buf.SubString(1, 1) == L"\"")
-  {
-    Buf.Delete(1, 1);
-    int P = Buf.Pos(L"\",");
-    if (P == 0)
-    {
-      Result = Buf;
-      Buf = UnicodeString();
-      // there should be the ending quote, but if not, just do nothing
-      if (Result.SubString(Result.Length(), 1) == L"\"")
-      {
-        Result.SetLength(Result.Length() - 1);
-      }
-    }
-    else
-    {
-      Result = Buf.SubString(1, P - 1);
-      Buf.Delete(1, P + 1);
-    }
-    Buf = Buf.TrimLeft();
-  }
-  else
-  {
-    Result = CutToChar(Buf, L',', true);
-  }
-  return Result;
-}
-
 void TFTPFileSystem::ProcessFeatures()
 {
-  std::unique_ptr<TStrings> Features(std::make_unique<TStringList>());
-  UnicodeString FeaturesOverride = FTerminal->SessionData->FProtocolFeatures.Trim();
-  if (FeaturesOverride.SubString(1, 1) == L"*")
-  {
-    FeaturesOverride.Delete(1, 1);
-    while (!FeaturesOverride.IsEmpty())
-    {
-      UnicodeString Feature = CutFeature(FeaturesOverride);
-      Features->Add(Feature);
-    }
-  }
-  else
-  {
-    std::unique_ptr<TStrings> DeleteFeatures(CreateSortedStringList());
-    std::unique_ptr<TStrings> AddFeatures(std::make_unique<TStringList>());
-    while (!FeaturesOverride.IsEmpty())
-    {
-      UnicodeString Feature = CutFeature(FeaturesOverride);
-      if (Feature.SubString(1, 1) == L"-")
-      {
-        Feature.Delete(1, 1);
-        DeleteFeatures->Add(Feature.LowerCase());
-      }
-      else
-      {
-        if (Feature.SubString(1, 1) == L"+")
-        {
-          Feature.Delete(1, 1);
-        }
-        AddFeatures->Add(Feature);
-      }
-    }
-
-    for (int32_t Index = 0; Index < FFeatures->Count(); Index++)
-    {
-      // IIS 2003 indents response by 4 spaces, instead of one,
-      // see example in HandleReplyStatus
-      UnicodeString Feature = FFeatures->GetString(Index).Trim();
-      if (DeleteFeatures->IndexOf(Feature) < 0)
-      {
-        Features->Add(Feature);
-      }
-    }
-
-    Features->AddStrings(AddFeatures.get());
-  }
+  std::unique_ptr<TStrings> Features(FTerminal->ProcessFeatures(FFeatures));
 
   for (int32_t Index = 0; Index < Features->Count; Index++)
   {
@@ -3844,8 +3768,11 @@ void TFTPFileSystem::HandleFeatReply()
   if ((FLastCode == 211) && (FLastResponse->GetCount() > 2))
   {
     FLastResponse->Delete(0);
-    FLastResponse->Delete(FLastResponse->GetCount() - 1);
-    FFeatures->Assign(FLastResponse.get());
+    FLastResponse->Delete(FLastResponse->Count - 1);
+    for (int Index = 0; Index < FLastResponse->Count; Index++)
+    {
+      FFeatures->Add(FLastResponse->Strings[Index].Trim());
+    }
   }
 }
 

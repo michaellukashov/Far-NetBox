@@ -59,6 +59,8 @@ void TCopyParamType::Default()
   ExcludeHiddenFiles = false;
   ExcludeEmptyDirectories = false;
   Size = -1;
+  PartOffset = -1;
+  PartSize = -1;
   OnceDoneOperation = odoIdle;
   FOnTransferOut = nullptr;
   FOnTransferIn = nullptr;
@@ -602,6 +604,8 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
   COPY2(ExcludeHiddenFiles);
   COPY2(ExcludeEmptyDirectories);
   COPY2(Size);
+  COPY2(PartOffset);
+  COPY2(PartSize);
   COPY2(OnceDoneOperation);
   COPY2(OnTransferOut);
   COPY2(OnTransferIn);
@@ -819,7 +823,7 @@ DWORD TCopyParamType::LocalFileAttrs(const TRights &Rights) const
 bool TCopyParamType::AllowResume(int64_t Size, const UnicodeString & FileName) const
 {
   bool Result;
-  if (FileName.Length() + UnicodeString(PARTIAL_EXT).Length() > 255) // it's a different limit than MAX_PATH
+  if (FileName.Length() + PartialExt.Length() > 255) // it's a different limit than MAX_PATH
   {
     Result = false;
   }
@@ -958,6 +962,8 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   ExcludeHiddenFiles = Storage->ReadBool("ExcludeHiddenFiles", ExcludeHiddenFiles);
   ExcludeEmptyDirectories = Storage->ReadBool("ExcludeEmptyDirectories", ExcludeEmptyDirectories);
   Size = -1;
+  PartOffset = -1;
+  PartSize = -1;
   OnceDoneOperation = odoIdle;
   FOnTransferOut = nullptr;
   FOnTransferIn = nullptr;
@@ -1013,6 +1019,8 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA(Bool, ExcludeHiddenFiles);
   WRITE_DATA(Bool, ExcludeEmptyDirectories);
   DebugAssert(Size < 0);
+  DebugAssert(PartOffset < 0);
+  DebugAssert(PartSize < 0);
   DebugAssert(OnceDoneOperation == odoIdle);
   DebugAssert(FOnTransferOut.empty());
   DebugAssert(FOnTransferIn.empty());
@@ -1057,6 +1065,8 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
     C2(ExcludeHiddenFiles) &&
     C2(ExcludeEmptyDirectories) &&
     C2(Size) &&
+    C2(PartOffset) &&
+    C2(PartSize) &&
     C2(OnceDoneOperation) &&
     true;
 }

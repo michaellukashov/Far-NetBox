@@ -1196,7 +1196,10 @@ bool TCustomIniFileStorage::OpenSubKey(const UnicodeString & Key, bool CanCreate
   {
     if (FMasterStorageOpenFailures > 0)
     {
-      FMasterStorageOpenFailures++;
+      if (Result)
+      {
+        FMasterStorageOpenFailures++;
+      }
     }
     else
     {
@@ -1216,7 +1219,7 @@ bool TCustomIniFileStorage::OpenSubKey(const UnicodeString & Key, bool CanCreate
   return Result;
 }
 
-void __fastcall TCustomIniFileStorage::DoCloseSubKey()
+void TCustomIniFileStorage::DoCloseSubKey()
 {
   // noop
 }

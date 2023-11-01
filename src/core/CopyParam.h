@@ -81,6 +81,8 @@ private:
   bool FExcludeHiddenFiles{false};
   bool FExcludeEmptyDirectories{false};
   int64_t FSize{0};
+  int64_t FPartOffset{0};
+  int64_t FPartSize{0};
   TOnceDoneOperation FOnceDoneOperation;
   TTransferOutEvent FOnTransferOut;
   TTransferInEvent FOnTransferIn;
@@ -187,6 +189,10 @@ public:
   bool& ExcludeEmptyDirectories{FExcludeEmptyDirectories};
   __property __int64 Size = { read = FSize, write = FSize };
   int64_t& Size{FSize};
+  __property __int64 PartSize = { read = FPartSize, write = FPartSize };
+  int64_t& Size{FPartOffset};
+  __property __int64 PartOffset = { read = FPartOffset, write = FPartOffset };
+  int64_t& Size{FPartOffset};
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
   TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};
   __property TTransferOutEvent OnTransferOut = { read = FOnTransferOut, write = FOnTransferOut };

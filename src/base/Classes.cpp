@@ -1358,12 +1358,30 @@ void THandleStream::SetSize(const int64_t NewSize)
 }
 
 TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
-  THandleStream(AHandle)
+  THandleStream(AHandle),
+  FSource(nullptr)
 {
+}
+
+TSafeHandleStream::TSafeHandleStream(THandleStream * Source, bool Own) :
+  THandleStream(Source->Handle)
+{
+  FSource = Own ? Source : nullptr;
+}
+
+TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, unsigned short Mode)
+{
+  return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
+}
+
+TSafeHandleStream::~TSafeHandleStream()
+{
+  SAFE_DESTROY(FSource);
 }
 
 int64_t TSafeHandleStream::Read(void *Buffer, int64_t Count)
 {
+  // This is invoked for example via CopyFrom from TParallelOperation::Done
   const int64_t Result = ::FileRead(FHandle, Buffer, Count);
   if (Result == nb::ToInt64(-1))
   {
@@ -1374,6 +1392,7 @@ int64_t TSafeHandleStream::Read(void *Buffer, int64_t Count)
 
 int64_t TSafeHandleStream::Write(const void *Buffer, int64_t Count)
 {
+  // This is invoked for example by TIniFileStorage::Flush or via CopyFrom from TParallelOperation::Done
   const int64_t Result = ::FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {

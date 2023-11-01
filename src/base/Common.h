@@ -26,6 +26,7 @@
 #define PARENTDIRECTORY L".."
 #define THISDIRECTORY L"."
 
+extern const UnicodeString AnyMask;
 extern const wchar_t EngShortMonthNames[12][4];
 __removed extern const char Bom[3];
 #define CONST_BOM "\xEF\xBB\xBF"
@@ -63,6 +64,7 @@ NB_CORE_EXPORT UnicodeString CopyToChars(const UnicodeString Str, int32_t &From,
 NB_CORE_EXPORT UnicodeString CopyToChar(const UnicodeString Str, wchar_t Ch, bool Trim);
 NB_CORE_EXPORT UnicodeString RemoveSuffix(const UnicodeString Str, const UnicodeString Suffix, bool RemoveNumbersAfterSuffix = false);
 UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote = L'"');
+UnicodeString MidStr(const UnicodeString & Text, int Start);
 UnicodeString ShellQuoteStr(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString ExceptionLogString(Exception *E);
 NB_CORE_EXPORT UnicodeString MainInstructions(const UnicodeString S);
@@ -75,6 +77,8 @@ NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(UnicodeString S);
 NB_CORE_EXPORT UnicodeString RemoveEmptyLines(const UnicodeString S);
 bool IsNumber(const UnicodeString Str);
 extern const wchar_t NormalizedFingerprintSeparator;
+UnicodeString EncodeStrToBase64(const RawByteString & Str);
+RawByteString DecodeBase64ToStr(const UnicodeString & Str);
 UnicodeString Base64ToUrlSafe(const UnicodeString & S);
 UnicodeString MD5ToUrlSafe(const UnicodeString & S);
 bool SameChecksum(const UnicodeString & AChecksum1, const UnicodeString & AChecksum2, bool Base64);
@@ -128,7 +132,7 @@ NB_CORE_EXPORT UnicodeString EncodeUrlString(UnicodeString S);
 NB_CORE_EXPORT UnicodeString EncodeUrlPath(UnicodeString S);
 NB_CORE_EXPORT UnicodeString AppendUrlParams(UnicodeString AURL, UnicodeString Params);
 NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(const UnicodeString Url);
-NB_CORE_EXPORT bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin);
+NB_CORE_EXPORT bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin = false);
 NB_CORE_EXPORT int32_t RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin);
 NB_CORE_EXPORT void DeleteFileChecked(const UnicodeString AFileName);
 NB_CORE_EXPORT uint32_t CancelAnswer(uint32_t Answers);
@@ -228,7 +232,9 @@ NB_CORE_EXPORT void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest);
 struct NB_CORE_EXPORT TSearchRecChecked : public TSearchRecSmart
 {
   UnicodeString Path;
-  bool Opened{false};
+  UnicodeString Dir;
+  bool Opened;
+  UnicodeString GetFilePath() const;
 };
 struct NB_CORE_EXPORT TSearchRecOwned : public TSearchRecChecked
 {

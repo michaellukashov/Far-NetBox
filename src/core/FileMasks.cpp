@@ -14,7 +14,6 @@ UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
 static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
-UnicodeString AnyMask = L"*.*";
 static UnicodeString MaskSymbols = L"?*[";
 
 EFileMasksException::EFileMasksException(
@@ -1070,7 +1069,7 @@ bool TCustomCommand::FindPattern(const UnicodeString Command,
     int32_t Len;
     wchar_t APatternCmd;
     GetToken(Command, Index, Len, APatternCmd);
-    if (((PatternCmd != L'!') && (tolower(PatternCmd) == tolower(APatternCmd))) ||
+    if (((PatternCmd != L'!') && (towlower(PatternCmd) == towlower(APatternCmd))) ||
         ((PatternCmd == L'!') && (Len == 1) && (APatternCmd != TEXT_TOKEN)) ||
         ((PatternCmd == L'\0') && (APatternCmd != TEXT_TOKEN)))
     {
@@ -1275,7 +1274,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData &AData,
 }
 
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-    const UnicodeString Path, const UnicodeString FileName,
+    const UnicodeString & Path, const UnicodeString & FileName,
     const UnicodeString FileList) noexcept :
   TCustomCommand()
 {
@@ -1285,10 +1284,10 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
   FFileList = FileList;
 }
 
-int32_t TFileCustomCommand::PatternLen(const UnicodeString Command, int32_t Index) const
+int32_t TFileCustomCommand::PatternLen(const UnicodeString & Command, int32_t Index) const
 {
   int32_t Len;
-  wchar_t PatternCmd = (Index < Command.Length()) ? static_cast<wchar_t>(::tolower(Command[Index + 1])) : L'\0';
+  wchar_t PatternCmd = (Index < Command.Length()) ? static_cast<wchar_t>(::towlower(Command[Index + 1])) : L'\0';
   switch (PatternCmd)
   {
     case L's':

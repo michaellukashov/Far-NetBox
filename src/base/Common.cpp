@@ -13,6 +13,7 @@
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
 //#include <CoreMain.h>
+#include <System.IOUtils.hpp>
 #include <cmath>
 #include <limits>
 #include <algorithm>
@@ -20,10 +21,7 @@
 #include <rdestl/vector.h>
 #include <CoreMain.h>
 #include <SessionInfo.h>
-#include <openssl/pkcs12.h>
-#include <openssl/pem.h>
-#include <openssl/err.h>
-#include <openssl/ssl.h>
+#include <Soap.EncdDecd.hpp>
 
 __removed #pragma package(smart_init)
 
@@ -653,8 +651,17 @@ UnicodeString GetEnvVariable(UnicodeStringconst UnicodeString & AEnvVarName)
 } // namespace base
 
 
+#include <openssl/pkcs12.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+
+//#pragma package(smart_init)
+
 const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
+
+const UnicodeString AnyMask = L"*.*";
 const wchar_t EngShortMonthNames[12][4] =
 {
   L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
@@ -758,7 +765,7 @@ UnicodeString AnsiToString(const char *S, size_t Len)
 }
 
 // Note similar function ValidLocalFileName
-UnicodeString MakeValidFileName(const UnicodeString AFileName)
+UnicodeString MakeValidFileName(const UnicodeString & AFileName)
 {
   UnicodeString Result = AFileName;
   // Note similar list in LocalInvalidChars
@@ -838,7 +845,7 @@ UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim)
   return Result;
 }
 
-UnicodeString CopyToChars(const UnicodeString Str, int32_t &From, const UnicodeString Chs, bool Trim,
+UnicodeString CopyToChars(const UnicodeString & Str, int32_t &From, const UnicodeString & Chs, bool Trim,
   wchar_t *Delimiter, bool DoubleDelimiterEscapes)
 {
   UnicodeString Result;
@@ -896,13 +903,13 @@ UnicodeString CopyToChars(const UnicodeString Str, int32_t &From, const UnicodeS
   return Result;
 }
 
-UnicodeString CopyToChar(const UnicodeString Str, wchar_t Ch, bool Trim)
+UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim)
 {
   int From = 1;
   return CopyToChars(Str, From, UnicodeString(Ch), Trim);
 }
 
-UnicodeString RemoveSuffix(const UnicodeString Str, const UnicodeString Suffix, bool RemoveNumbersAfterSuffix)
+UnicodeString RemoveSuffix(const UnicodeString Str, const UnicodeString & Suffix, bool RemoveNumbersAfterSuffix)
 {
   UnicodeString Result = Str;
   UnicodeString Buf = Str;
@@ -947,6 +954,11 @@ UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote)
   return Result;
 }
 
+UnicodeString MidStr(const UnicodeString & Text, int Start)
+{
+  return Text.SubString(Start, Text.Length() - Start + 1);
+}
+
 UnicodeString ShellQuoteStr(const UnicodeString & Str)
 {
   wchar_t Quote = L'"';
@@ -983,18 +995,18 @@ UnicodeString ExceptionLogString(Exception *E)
   }
 }
 
-UnicodeString MainInstructions(const UnicodeString S)
+UnicodeString MainInstructions(const UnicodeString & S)
 {
   UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
   return MainMsgTag + S + MainMsgTag;
 }
 
-bool HasParagraphs(const UnicodeString S)
+bool HasParagraphs(const UnicodeString & S)
 {
   return (S.Pos("\n\n") > 0);
 }
 
-UnicodeString MainInstructionsFirstParagraph(const UnicodeString S)
+UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S)
 {
   // WORKAROUND, we consider it bad practice, the highlighting should better
   // be localized (but maybe we change our mind later)
@@ -1014,7 +1026,7 @@ UnicodeString MainInstructionsFirstParagraph(const UnicodeString S)
   return Result;
 }
 
-bool ExtractMainInstructions(UnicodeString &S, UnicodeString &MainInstructions)
+bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions)
 {
   bool Result = false;
   UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
@@ -1036,7 +1048,7 @@ bool ExtractMainInstructions(UnicodeString &S, UnicodeString &MainInstructions)
   return Result;
 }
 
-static int32_t FindInteractiveMsgStart(const UnicodeString S)
+static int32_t FindInteractiveMsgStart(const UnicodeString & S)
 {
   int32_t Result = 0;
   UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
@@ -1052,7 +1064,7 @@ static int32_t FindInteractiveMsgStart(const UnicodeString S)
   return Result;
 }
 
-UnicodeString RemoveMainInstructionsTag(const UnicodeString S)
+UnicodeString RemoveMainInstructionsTag(const UnicodeString & S)
 {
   UnicodeString Result = S;
 
@@ -1064,7 +1076,7 @@ UnicodeString RemoveMainInstructionsTag(const UnicodeString S)
   return Result;
 }
 
-UnicodeString UnformatMessage(const UnicodeString S)
+UnicodeString UnformatMessage(const UnicodeString & S)
 {
   UnicodeString Result = RemoveMainInstructionsTag(S);
 
@@ -1076,7 +1088,7 @@ UnicodeString UnformatMessage(const UnicodeString S)
   return Result;
 }
 
-UnicodeString RemoveInteractiveMsgTag(const UnicodeString S)
+UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S)
 {
   UnicodeString Result = S;
 
@@ -1090,7 +1102,7 @@ UnicodeString RemoveInteractiveMsgTag(const UnicodeString S)
   return Result;
 }
 
-UnicodeString RemoveEmptyLines(const UnicodeString S)
+UnicodeString RemoveEmptyLines(const UnicodeString & S)
 {
   return
     ReplaceStr(
@@ -1100,10 +1112,31 @@ UnicodeString RemoveEmptyLines(const UnicodeString S)
 
 bool IsNumber(const UnicodeString Str)
 {
-  int64_t Value = 0;
-  if (Str == L"0")
-    return true;
-  return TryStrToInt64(Str, Value);
+  bool Result = (Str.Length() > 0);
+  for (int32_t Index = 1; (Index < Str.Length()) && Result; Index++)
+  {
+    wchar_t C = Str[Index];
+    if ((C < L'0') || (C > L'9'))
+    {
+      Result = false;
+    }
+  }
+  return Result;
+}
+
+UnicodeString EncodeStrToBase64(const RawByteString & Str)
+{
+  UnicodeString Result = EncodeBase64(Str.c_str(), Str.Length());
+  Result = ReplaceStr(Result, sLineBreak, EmptyStr);
+  return Result;
+}
+
+RawByteString DecodeBase64ToStr(const UnicodeString & Str)
+{
+  TBytes Bytes = DecodeBase64(Str);
+  // This might be the same as TEncoding::ASCII->GetString.
+  // const_cast: The operator[] const is (badly?) implemented to return by value
+  return RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), Bytes.Length);
 }
 
 UnicodeString Base64ToUrlSafe(const UnicodeString & S)
@@ -2129,6 +2162,11 @@ bool TSearchRecSmart::IsHidden() const
   return FLAGSET(Attr, faHidden);
 }
 
+UnicodeString TSearchRecChecked::GetFilePath() const
+{
+  return TPath::Combine(Dir, Name);
+}
+
 TSearchRecOwned::~TSearchRecOwned() noexcept
 {
   if (Opened)
@@ -2157,6 +2195,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString APath)
 DWORD FindFirstUnchecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
 {
   F.Path = APath;
+  F.Dir = ExtractFilePath(Path);
   DWORD Result = base::FindFirst(ApiPath(APath), LocalFileAttrs, F);
   F.Opened = (Result == 0);
   return Result;
@@ -2217,7 +2256,7 @@ UnicodeString GetEnvironmentInfo()
   return Result;
 }
 
-void ProcessLocalDirectory(const UnicodeString ADirName,
+void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param,
   DWORD FindAttrs)
 {
@@ -2227,17 +2266,14 @@ void ProcessLocalDirectory(const UnicodeString ADirName,
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
 
-  UnicodeString DirName = ApiPath(::IncludeTrailingBackslash(ADirName));
   TSearchRecOwned SearchRec;
-  if (FindFirstChecked(DirName + L"*.*", FindAttrs, SearchRec) == 0)
+  if (FindFirstChecked(TPath::Combine(DirName, AnyMask), FindAttrs, SearchRec) == 0)
   {
     do
     {
       if (SearchRec.IsRealFile())
       {
-        UnicodeString FileName = DirName + SearchRec.Name;
-        CallBackFunc(FileName, SearchRec, Param);
-        CallBackFunc(DirName + SearchRec.Name, SearchRec, Param);
+        CallBackFunc(SearchRec.GetFilePath(), SearchRec, Param);
       }
 
     } while (FindNextChecked(SearchRec) == 0);
@@ -2726,7 +2762,7 @@ bool TryStrToSize(UnicodeString ASizeStr, int64_t &ASize)
       Result = (SizeStr.Length() == 1);
       if (Result)
       {
-        const wchar_t Unit = static_cast<wchar_t>(toupper(SizeStr[1]));
+        const wchar_t Unit = towupper(SizeStr[1]);
         switch (Unit)
         {
           case GigaSize:
@@ -3212,11 +3248,11 @@ static bool DoRecursiveDeleteFile(
 
   if (!ToRecycleBin)
   {
-    TSearchRecChecked SearchRec;
+    TSearchRecChecked InitialSearchRec;
     Result = FileSearchRec(AFileName, SearchRec);
     if (Result)
     {
-      if (!SearchRec.IsDirectory())
+      if (!InitialSearchRec.IsDirectory())
       {
         Result = ::SysUtulsRemoveFile(ApiPath(AFileName));
         if (Result)
@@ -3226,41 +3262,35 @@ static bool DoRecursiveDeleteFile(
       }
       else
       {
+        TSearchRecOwned SearchRec;
         Result = (FindFirstUnchecked(AFileName + L"\\*", faAnyFile, SearchRec) == 0);
 
         if (Result)
         {
-          try__finally
+          do
           {
-            do
+            UnicodeString FileName2 = SearchRec.GetFilePath();
+            if (SearchRec.IsDirectory())
             {
-              UnicodeString FileName2 = AFileName + L"\\" + SearchRec.Name;
-              if (SearchRec.IsDirectory())
+              if (SearchRec.IsRealFile())
               {
-                if (SearchRec.IsRealFile())
-                {
-                  Result = DoRecursiveDeleteFile(FileName2, DebugAlwaysFalse(ToRecycleBin), ErrorPath, Deleted);
-                }
+                Result = DoRecursiveDeleteFile(FileName2, DebugAlwaysFalse(ToRecycleBin), AErrorPath, Deleted);
+              }
+            }
+            else
+            {
+              Result = DeleteFile(ApiPath(FileName2));
+              if (!Result)
+              {
+                AErrorPath = FileName2;
               }
               else
               {
-                Result = ::SysUtulsRemoveFile(ApiPath(FileName2));
-                if (!Result)
-                {
-                  ErrorPath = FileName2;
-                }
-                else
-                {
-                  Deleted++;
-                }
+                Deleted++;
               }
             }
-            while (Result && (FindNextUnchecked(SearchRec) == 0));
-          },
-          __finally
-          {
-            base::FindClose(SearchRec);
-          } end_try__finally
+          }
+          while (Result && (FindNextUnchecked(SearchRec) == 0));
 
           if (Result)
           {

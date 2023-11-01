@@ -41,6 +41,7 @@ const UnicodeString FtpsCertificateStorageKey(L"FtpsCertificates");
 const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
 const UnicodeString LastFingerprintsStorageKey(L"LastFingerprints");
 const UnicodeString DirectoryStatisticsCacheKey(L"DirectoryStatisticsCache");
+const UnicodeString SshHostCAsKey(L"SshHostCAs");
 const UnicodeString CDCacheKey(L"CDCache");
 const UnicodeString BannersKey(L"Banners");
 
@@ -49,10 +50,127 @@ const UnicodeString OpensshAuthorizedKeysFileName(L"authorized_keys");
 
 const int BelowNormalLogLevels = 1;
 
+
+TSshHostCA::TSshHostCA()
+{
+  PermitRsaSha1 = false;
+  PermitRsaSha256 = true;
+  PermitRsaSha512 = true;
+}
+
+bool TSshHostCA::Load(THierarchicalStorage * Storage)
+{
+  PublicKey = DecodeBase64ToStr(Storage->ReadString(L"PublicKey", PublicKey));
+  ValidityExpression = Storage->ReadString(L"Validity", ValidityExpression);
+  PermitRsaSha1 = Storage->ReadBool(L"PermitRSASHA1", PermitRsaSha1);
+  PermitRsaSha256 = Storage->ReadBool(L"PermitRSASHA256", PermitRsaSha256);
+  PermitRsaSha512 = Storage->ReadBool(L"PermitRSASHA512", PermitRsaSha512);
+  return !PublicKey.IsEmpty() && !ValidityExpression.IsEmpty();
+}
+
+void TSshHostCA::Save(THierarchicalStorage * Storage) const
+{
+  Storage->WriteString(L"PublicKey", EncodeStrToBase64(PublicKey));
+  Storage->WriteString(L"Validity", ValidityExpression);
+  Storage->WriteBool(L"PermitRSASHA1", PermitRsaSha1);
+  Storage->WriteBool(L"PermitRSASHA256", PermitRsaSha256);
+  Storage->WriteBool(L"PermitRSASHA512", PermitRsaSha512);
+}
+
+
+TSshHostCAList::TSshHostCAList()
+{
+}
+
+TSshHostCAList::TSshHostCAList(const TSshHostCA::TList & List)
+{
+  FList = List;
+}
+
+void TSshHostCAList::Default()
+{
+  FList.clear();
+}
+
+void TSshHostCAList::Save(THierarchicalStorage * Storage)
+{
+  Storage->ClearSubKeys();
+  TSshHostCA::TList::const_iterator I = FList.begin();
+  while (I != FList.end())
+  {
+    const TSshHostCA & SshHostCA = *I;
+    if (Storage->OpenSubKey(SshHostCA.Name, true))
+    {
+      SshHostCA.Save(Storage);
+      Storage->CloseSubKey();
+    }
+    ++I;
+  }
+}
+
+void TSshHostCAList::Load(THierarchicalStorage * Storage)
+{
+  FList.clear();
+  std::unique_ptr<TStrings> SubKeys(new TStringList());
+  Storage->GetSubKeyNames(SubKeys.get());
+
+  for (int Index = 0; Index < SubKeys->Count; Index++)
+  {
+    TSshHostCA SshHostCA;
+    SshHostCA.Name = SubKeys->Strings[Index];
+    if (Storage->OpenSubKey(SshHostCA.Name, false))
+    {
+      if (SshHostCA.Load(Storage))
+      {
+        FList.push_back(SshHostCA);
+      }
+
+      Storage->CloseSubKey();
+    }
+  }
+}
+
+int TSshHostCAList::GetCount() const
+{
+  return FList.size();
+}
+
+const TSshHostCA * TSshHostCAList::Get(int Index) const
+{
+  return &FList[Index];
+}
+
+const TSshHostCA * TSshHostCAList::Find(const UnicodeString & Name) const
+{
+  TSshHostCA::TList::const_iterator I = FList.begin();
+  while (I != FList.end())
+  {
+    const TSshHostCA & SshHostCA = *I;
+    if (SameStr(SshHostCA.Name, Name))
+    {
+      return &SshHostCA;
+    }
+    ++I;
+  }
+  return nullptr;
+}
+
+const TSshHostCA::TList & TSshHostCAList::GetList() const
+{
+  return FList;
+}
+
+TSshHostCAList & TSshHostCAList::operator =(const TSshHostCAList & other)
+{
+  FList = other.FList;
+  return *this;
+}
+
+
 TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   TObject(Kind)
 {
-  __removed FCriticalSection = new TCriticalSection();
+  FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stDetect;
   FDontSave = false;
@@ -61,6 +179,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   __removed FUsage = std::make_unique<TUsage>(this);
   FDefaultCollectUsage = false;
   FScripting = false;
+  FSshHostCAList.reset(std::make_unique<TSshHostCAList>());
 
   UnicodeString RandomSeedPath;
   if (!base::GetEnvVariable("APPDATA").IsEmpty())
@@ -126,10 +245,17 @@ void TConfiguration::Default()
   SetCollectUsage(FDefaultCollectUsage);
   FMimeTypes = UnicodeString();
   FCertificateStorage = EmptyStr;
+  FAWSMetadataService = EmptyStr;
   FChecksumCommands = EmptyStr;
   FDontReloadMoreThanSessions = 1000;
   FScriptProgressFileNameLimit = 25;
+  FQueueTransfersLimit = 2;
+  FParallelTransferThreshold = -1; // default (currently off), 0 = explicitly off
   FKeyVersion = 0;
+  FSshHostCAList->Default();
+  RefreshPuttySshHostCAList();
+  FSshHostCAsFromPuTTY = false;
+  FHttpsCertificateValidation = 0;
   CollectUsage = FDefaultCollectUsage;
 
   FLogging = false;
@@ -249,7 +375,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString Property)
   // no longer useful
   int P = Property.LastDelimiter(L".>");
   UnicodeString Result = Property.SubString(P + 1, Property.Length() - P);
-  if ((Result[1] == L'F') && ((wchar_t)toupper(Result[2]) == Result[2]))
+  if ((Result[1] == L'F') && (towupper(Result[2]) == Result[2]))
   {
     Result.Delete(1, 1);
   }
@@ -295,10 +421,15 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString Property)
     KEY(String,   MimeTypes); \
     KEY4(Integer,  DontReloadMoreThanSessions); \
     KEY4(Integer,  ScriptProgressFileNameLimit); \
+    KEY4(Integer,  QueueTransfersLimit); \
+    KEY4(Integer,  ParallelTransferThreshold); \
     KEY4(Integer,  KeyVersion); \
+    KEY4(Bool,     SshHostCAsFromPuTTY); \
+    KEY4(Integer,  HttpsCertificateValidation); \
     KEY(Bool,     CollectUsage); \
     KEY3(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
     KEY5(String,   CertificateStorage); \
+    KEY5(String,   AWSMetadataService); \
   ); \
   BLOCK("Logging", CANCREATE, \
     KEYEX(Bool,  PermanentLogging, Logging); \
@@ -345,6 +476,21 @@ void TConfiguration::SaveExplicit()
   DoSave(false, true);
 }
 
+void TConfiguration::DoSave(THierarchicalStorage * AStorage, bool All)
+{
+  if (AStorage->OpenSubKey(ConfigurationSubKey, true))
+  {
+    SaveData(AStorage, All);
+    AStorage->CloseSubKey();
+  }
+
+  if (AStorage->OpenSubKey(SshHostCAsKey, true))
+  {
+    FSshHostCAList->Save(AStorage);
+    AStorage->CloseSubKey();
+  }
+}
+
 void TConfiguration::DoSave(bool All, bool Explicit)
 {
   if (FDontSave)
@@ -358,13 +504,10 @@ void TConfiguration::DoSave(bool All, bool Explicit)
     Storage->SetAccessMode(smReadWrite);
     Storage->SetExplicit(Explicit);
     Storage->ForceSave = FForceSave;
-    if (Storage->OpenSubKey(GetConfigurationSubKey(), true))
-    {
-      // if saving to TOptionsStorage, make sure we save everything so that
-      // all configuration is properly transferred to the master storage
-      bool ConfigAll = All || Storage->Temporary();
-      SaveData(Storage.get(), ConfigAll);
-    }
+    // if saving to TOptionsStorage, make sure we save everything so that
+    // all configuration is properly transferred to the master storage
+    bool ConfigAll = All || AStorage->Temporary;
+    DoSave(AStorage, ConfigAll);
   },
   __finally__removed
   ({
@@ -429,10 +572,7 @@ void TConfiguration::Export(const UnicodeString /*AFileName*/)
 
     CopyData(Storage, ExportStorage);
 
-    if (ExportStorage->OpenSubKey(ConfigurationSubKey, true))
-    {
-      SaveData(ExportStorage, true);
-    }
+    DoSave(ExportStorage, true);
   }
   __finally
   {
@@ -522,6 +662,15 @@ void TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
   FDefaultCollectUsage = Storage->ReadBool("DefaultCollectUsage", FDefaultCollectUsage);
 }
 
+void TConfiguration::LoadSshHostCAList(TSshHostCAList * SshHostCAList, THierarchicalStorage * Storage)
+{
+  if (Storage->OpenSubKey(SshHostCAsKey, false))
+  {
+    SshHostCAList->Load(Storage);
+    Storage->CloseSubKey();
+  }
+}
+
 void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
 {
   if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
@@ -529,6 +678,7 @@ void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
     LoadData(Storage);
     Storage->CloseSubKey();
   }
+  LoadSshHostCAList(FSshHostCAList.get(), Storage);
 }
 
 UnicodeString TConfiguration::GetRegistryStorageOverrideKey() const
@@ -1881,6 +2031,11 @@ UnicodeString TConfiguration::GetCertificateStorageExpanded() const
   return Result;
 }
 
+void TConfiguration::SetAWSMetadataService(const UnicodeString & value)
+{
+  SET_CONFIG_PROPERTY(AWSMetadataService);
+}
+
 void TConfiguration::SetTryFtpWhenSshFails(bool Value)
 {
   SET_CONFIG_PROPERTY(TryFtpWhenSshFails);
@@ -1893,7 +2048,8 @@ void TConfiguration::SetParallelDurationThreshold(int32_t Value)
 
 void TConfiguration::SetPuttyRegistryStorageKey(UnicodeString Value)
 {
-  SET_CONFIG_PROPERTY(PuttyRegistryStorageKey);
+  SET_CONFIG_PROPERTY_EX(PuttyRegistryStorageKey,
+    RefreshPuttySshHostCAList());
 }
 
 TEOLType TConfiguration::GetLocalEOLType() const
@@ -2144,11 +2300,6 @@ UnicodeString TConfiguration::GetConfigurationTimeFormat() const
   return "h:nn:ss";
 }
 
-UnicodeString TConfiguration::GetPartialExt() const
-{
-  return PARTIAL_EXT;
-}
-
 UnicodeString TConfiguration::GetDefaultKeyFile() const
 {
   return "";
@@ -2197,6 +2348,43 @@ void TConfiguration::SetCacheDirectoryChangesMaxSize(int32_t Value)
 void TConfiguration::SetShowFtpWelcomeMessage(bool Value)
 {
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
+}
+
+void TConfiguration::SetQueueTransfersLimit(int value)
+{
+  SET_CONFIG_PROPERTY(QueueTransfersLimit);
+}
+
+const TSshHostCAList * TConfiguration::GetSshHostCAList()
+{
+  return FSshHostCAList.get();
+}
+
+void TConfiguration::SetSshHostCAList(const TSshHostCAList * value)
+{
+  *FSshHostCAList = *value;
+}
+
+const TSshHostCAList * TConfiguration::GetPuttySshHostCAList()
+{
+  if (FPuttySshHostCAList.get() == NULL)
+  {
+    std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(PuttyRegistryStorageKey));
+    Storage->ConfigureForPutty();
+    FPuttySshHostCAList.reset(new TSshHostCAList());
+    LoadSshHostCAList(FPuttySshHostCAList.get(), Storage.get());
+  }
+  return FPuttySshHostCAList.get();
+}
+
+void TConfiguration::RefreshPuttySshHostCAList()
+{
+  FPuttySshHostCAList.reset(NULL);
+}
+
+const TSshHostCAList * TConfiguration::GetActiveSshHostCAList()
+{
+  return FSshHostCAsFromPuTTY ? PuttySshHostCAList : SshHostCAList;
 }
 
 bool TConfiguration::GetPersistent() const

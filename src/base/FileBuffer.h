@@ -33,14 +33,13 @@ public:
   DWORD LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, int64_t Len);
   void WriteToStream(TStream * Stream, const int64_t Len);
   void WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len);
-  __property TMemoryStream * Memory  = { read=FMemory, write=SetMemory };
-  RWProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this), nb::bind(&TFileBuffer::SetMemory, this)};
+  void Reset();
+  __property TMemoryStream * Memory  = { read=FMemory };
+  ROProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this)};
   __property char * Data = { read=GetData };
   ROProperty<char *> Data{nb::bind(&TFileBuffer::GetData, this)};
   __property int Size = { read=FSize, write=SetSize };
   RWProperty<int64_t> Size{nb::bind(&TFileBuffer::GetSize, this), nb::bind(&TFileBuffer::SetSize, this)};
-  __property int Position = { read=GetPosition, write=SetPosition };
-  RWProperty<int64_t> Position{nb::bind(&TFileBuffer::GetPosition, this), nb::bind(&TFileBuffer::SetPosition, this)};
 
 private:
   std::unique_ptr<TMemoryStream> FMemory;
@@ -50,10 +49,12 @@ public:
   TMemoryStream * GetMemory() const { return FMemory.get(); }
   void SetMemory(TMemoryStream * value);
   char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
+  char * GetPointer() const { return GetData() + GetPosition(); }
+  void NeedSpace(int64_t Size);
   int64_t GetSize() const { return FMemory->GetSize(); }
   void SetSize(int64_t Value);
+  int32_t GetPosition() const { return nb::ToInt(FMemory->Position); }
   void SetPosition(int64_t Value);
-  int64_t GetPosition() const;
   void ProcessRead(DWORD Len, DWORD Result);
 };
 
@@ -63,10 +64,16 @@ class TSafeHandleStream : public THandleStream
 {
 public:
   TSafeHandleStream(int AHandle);
+  TSafeHandleStream(THandleStream * Source, bool Own);
+  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, unsigned short Mode);
+  virtual ~TSafeHandleStream();
   virtual int Read(void * Buffer, int Count);
   virtual int Write(const void * Buffer, int Count);
   virtual int Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
   virtual int Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
+private:
+  THandleStream * FSource;
+  bool FOwned;
 };
 #endif // if 0
 

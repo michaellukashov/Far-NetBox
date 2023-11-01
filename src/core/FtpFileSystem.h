@@ -88,10 +88,10 @@ public:
     TRemoteFile *&AFile) override;
   virtual void ReadSymlink(TRemoteFile *SymlinkFile,
     TRemoteFile *&AFile) override;
-  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
-  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
+  virtual void RemoteRenameFile(
+   const UnicodeString & AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite) override;
+  virtual void RemoteCopyFile(
+    const UnicodeString & AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) override;
@@ -215,7 +215,6 @@ protected:
   void HandleFeatReply();
   void ResetFeatures();
   void ProcessFeatures();
-  UnicodeString CutFeature(UnicodeString & Buf);
   bool SupportsSiteCommand(const UnicodeString ACommand) const;
   bool SupportsCommand(const UnicodeString ACommand) const;
   void RegisterChecksumAlgCommand(const UnicodeString Alg, const UnicodeString ACommand);

@@ -634,9 +634,14 @@ class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
 {
 public:
   explicit TSafeHandleStream(THandle AHandle) noexcept;
-  virtual ~TSafeHandleStream() = default;
+  TSafeHandleStream(THandleStream * Source, bool Own);
+  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, unsigned short Mode);
+  virtual ~TSafeHandleStream();
   virtual int64_t Read(void *Buffer, int64_t Count) override;
   virtual int64_t Write(const void *Buffer, int64_t Count) override;
+private:
+  THandleStream * FSource{nullptr};
+  bool FOwned{false};
 };
 
 class NB_CORE_EXPORT EReadError : public std::runtime_error

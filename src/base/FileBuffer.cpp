@@ -42,22 +42,9 @@ void TFileBuffer::SetSize(int64_t Value)
   }
 }
 
-void TFileBuffer::SetPosition(int64_t Value)
+void TFileBuffer::Reset()
 {
-  FMemory->SetPosition(Value);
-}
-
-int64_t TFileBuffer::GetPosition() const
-{
-  return FMemory->GetPosition();
-}
-
-void TFileBuffer::SetMemory(TMemoryStream * Value)
-{
-  if (FMemory.get() != Value)
-  {
-    FMemory.reset(Value);
-  }
+  FMemory->Position = 0;
 }
 
 void TFileBuffer::ProcessRead(DWORD Len, DWORD Result)
@@ -69,22 +56,26 @@ void TFileBuffer::ProcessRead(DWORD Len, DWORD Result)
   FMemory->Seek(Result, TSeekOrigin::soFromCurrent);
 }
 
+void TFileBuffer::NeedSpace(int64_t Len)
+{
+  Size = GetPosition() + Len;
+}
+
+
 int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceLen)
 {
   int64_t Result = 0;
   try
   {
-    SetSize(GetPosition() + Len);
-    // C++5
-    // FMemory->SetSize(FMemory->Position + Len);
+    NeedSpace(Len);
     if (ForceLen)
     {
-      Stream->ReadBuffer(GetData() + GetPosition(), Len);
+      Stream->ReadBuffer(GetPointer(), Len);
       Result = Len;
     }
     else
     {
-      Result = Stream->Read(GetData() + GetPosition(), Len);
+      Result = Stream->Read(GetPointer(), Len);
     }
     ProcessRead(Len, Result);
   }
@@ -105,9 +96,9 @@ int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceL
 DWORD TFileBuffer::LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, int64_t Len)
 {
   FMemory->Seek(0, TSeekOrigin::soFromBeginning);
-  DebugAssert(Position() == 0);
-  Size = Position() + Len;
-  size_t Result = OnTransferIn(Sender, reinterpret_cast<unsigned char *>(Data()) + Position(), Len);
+  DebugAssert(GetPosition() == 0);
+  NeedSpace(Len);
+  size_t Result = OnTransferIn(Sender, reinterpret_cast<unsigned char *>(GetPointer(), Len);
   ProcessRead(Len, Result);
   return Result;
 }
@@ -246,7 +237,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   DebugAssert(Stream);
   try
   {
-    Stream->WriteBuffer(GetData() + GetPosition(), Len);
+    Stream->WriteBuffer(GetPointer, Len);
     const int64_t res = FMemory->Seek(Len, TSeekOrigin::soFromCurrent);
     DebugAssert(res >= Len);
   }
@@ -258,18 +249,35 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 
 void TFileBuffer::WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len)
 {
-  OnTransferOut(Sender, reinterpret_cast<const unsigned char *>(Data()) + Position(), Len);
+  OnTransferOut(Sender, reinterpret_cast<const unsigned char *>(GetPointer(), Len);
   FMemory->Seek(Len, TSeekOrigin::soFromCurrent);
 }
 
 #if 0
 moved to Classes.cpp
 TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
-  THandleStream(AHandle)
+  THandleStream(AHandle),
+  FSource(nullptr)
 {
 }
 
-int64_t TSafeHandleStream::Read(void * Buffer, int64_t Count)
+TSafeHandleStream::TSafeHandleStream(THandleStream * Source, bool Own) :
+  THandleStream(Source->Handle)
+{
+  FSource = Own ? Source : nullptr;
+}
+
+TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, unsigned short Mode)
+{
+  return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
+}
+
+TSafeHandleStream::~TSafeHandleStream()
+{
+  SAFE_DESTROY(FSource);
+}
+
+int64_t TSafeHandleStream::Read(void * Buffer, int Count)
 {
   int Result = FileRead(FHandle, Buffer, Count);
   if (Result == -1)
@@ -291,7 +299,7 @@ int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
 
 int TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count)
 {
-  DebugFail(); // untested
+  // This is invoked for example via CopyFrom from TParallelOperation::Done
   int Result = FileRead(FHandle, Buffer, Offset, Count);
   if (Result == -1)
   {
@@ -302,7 +310,7 @@ int TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int Offse
 
 int TSafeHandleStream::Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count)
 {
-  // This is invoked for example by TIniFileStorage::Flush
+  // This is invoked for example by TIniFileStorage::Flush or via CopyFrom from TParallelOperation::Done
   int Result = FileWrite(FHandle, Buffer, Offset, Count);
   if (Result == -1)
   {

@@ -209,10 +209,10 @@ public:
     TRemoteFile *&File) = 0;
   virtual void ReadSymlink(TRemoteFile *SymLinkFile,
     TRemoteFile *&File) = 0;
-  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) = 0;
-  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) = 0;
+  virtual void RemoteRenameFile(
+    const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) = 0;
+  virtual void RemoteCopyFile(
+    const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) = 0;
   virtual TStrings * GetFixedPaths() const = 0;
   virtual void SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) = 0;
