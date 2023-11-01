@@ -34,7 +34,7 @@ enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
 enum TAddressFamily { afAuto, afIPv4, afIPv6 };
 enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls };
 // ssl2 and ssh3 are equivalent of tls10 now
-enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12, tls13 = 13 };
+enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12, tls13 = 13, tlsMin = tls10, tlsDefaultMin = tls12, tlsMax = tls13 };
 // has to match libs3 S3UriStyle
 enum TS3UrlStyle { s3usVirtualHost, s3usPath };
 enum TSessionSource { ssNone, ssStored, ssStoredModified };
@@ -55,6 +55,7 @@ enum TParseUrlFlags
   pufAllowStoredSiteWithProtocol = 0x01,
   pufUnsafe = 0x02,
   pufPreferProtocol = 0x04,
+  pufParseOnly = 0x08,
 };
 
 enum TFSProtocol_219
@@ -294,6 +295,7 @@ private:
   UnicodeString FWinTitle;
   RawByteString FEncryptKey;
   bool FWebDavLiberalEscaping{false};
+  bool FWebDavAuthLegacy{false};
 
   UnicodeString FOrigHostName;
   int32_t FOrigPortNumber{0};
@@ -486,6 +488,7 @@ public:
   UnicodeString GetEncryptKey() const;
   void SetEncryptKey(UnicodeString value);
   void SetWebDavLiberalEscaping(bool value);
+  void SetWebDavAuthLegacy(bool value);
 
   TDateTime GetTimeoutDT() const;
   void SavePasswords(THierarchicalStorage * Storage, bool PuttyExport, bool DoNotEncryptPasswords, bool SaveAll);
@@ -586,13 +589,14 @@ public:
   bool IsSame(const TSessionData * Default, bool AdvancedOnly) const;
   bool IsSameDecrypted(const TSessionData * Default) const;
   bool IsSameSite(const TSessionData * Default) const;
-  bool IsInFolderOrWorkspace(UnicodeString Name) const;
+  bool IsInFolderOrWorkspace(const UnicodeString & Name) const;
   UnicodeString GenerateSessionUrl(uint32_t Flags) const;
   bool HasRawSettingsForUrl();
   bool HasSessionName() const;
   bool HasAutoCredentials() const;
   int32_t GetDefaultPort() const;
   UnicodeString ResolvePublicKeyFile();
+  UnicodeString GetSessionPasswordEncryptionKey() const;
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
   __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
@@ -845,6 +849,8 @@ public:
   __property UnicodeString EncryptKey = { read = GetEncryptKey, write = SetEncryptKey };
   RWProperty<UnicodeString> EncryptKey{nb::bind(&TSessionData::GetEncryptKey, this), nb::bind(&TSessionData::SetEncryptKey, this)};
   __property bool WebDavLiberalEscaping = { read = FWebDavLiberalEscaping, write = SetWebDavLiberalEscaping };
+  __property bool WebDavAuthLegacy = { read = FWebDavAuthLegacy, write = SetWebDavAuthLegacy };
+  RWPropertySimple<bool> WebDavAuthLegacy{&FWebDavAuthLegacy, nb::bind(&TSessionData::SetWebDavAuthLegacy, this) };
 
   __property UnicodeString StorageKey = { read = GetStorageKey };
   ROProperty<UnicodeString> StorageKey{nb::bind(&TSessionData::GetStorageKey, this)};
@@ -1066,6 +1072,7 @@ public:
   void NewWorkspace(const UnicodeString Name, TList * DataList);
   bool GetIsFolder(const UnicodeString Name) const;
   bool GetIsWorkspace(const UnicodeString Name) const;
+  bool IsFolderOrWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr, int32_t Flags = 0);
   bool IsUrl(UnicodeString Url);
@@ -1107,7 +1114,7 @@ private:
     TSessionData *Data, bool All, bool RecryptPasswordOnly,
     TSessionData *FactoryDefaults);
   TSessionData * ResolveWorkspaceData(TSessionData * Data);
-  bool IsFolderOrWorkspace(const UnicodeString Name, bool Workspace) const;
+  TSessionData * GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData *Data, const UnicodeString Name);
   __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode);

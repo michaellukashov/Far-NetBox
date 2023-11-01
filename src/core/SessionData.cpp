@@ -99,25 +99,43 @@ static bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & D
   bool Result = IsValidOpensshLine(ALine);
   if (Result)
   {
-    int From = 1;
-    wchar_t Equal = L'=';
-    UnicodeString Delimiters(UnicodeString(L" \t") + Equal);
-    wchar_t Delimiter;
     UnicodeString Line = Trim(ALine);
-    Directive = CopyToChars(Line, From, Delimiters, false, &Delimiter, false);
-    Result = !Directive.IsEmpty();
-    if (Result)
+    if (Line.SubString(1, 1) == "\"")
     {
-      Value = Line;
-      Value.Delete(1, Directive.Length() + 1);
-      Value = Trim(Value);
-      if ((Delimiter != Equal) && !Value.IsEmpty() && (Value[1] == Equal))
+      Line.Delete(1, 1);
+      int32_t P = Line.Pos("\"");
+      Result = (P > 0);
+      if (Result)
       {
-        Value.Delete(1, 1);
-        Value = Trim(Value); // not sure about this, but for the directives we support it does not matter
+        Directive = Line.SubString(1, P - 1);
+        Line = MidStr(Line, P + 1).Trim();
       }
-      Result = !Value.IsEmpty();
     }
+    else
+    {
+      wchar_t Equal = L'=';
+      UnicodeString Whitespaces(L" \t");
+      UnicodeString Delimiters(Whitespaces + Equal);
+      int32_t P = FindDelimiter(Delimiters, Line);
+      Result = (P > 0);
+      if (Result)
+      {
+        Directive = Line.SubString(1, P - 1);
+        Line.Delete(1, P - 1);
+        UnicodeString TrimChars = Delimiters;
+        while (!Line.IsEmpty() && Line.IsDelimiter(TrimChars, 1))
+        {
+          if (Line[1] == Equal)
+          {
+            TrimChars = Whitespaces;
+          }
+          Line.Delete(1, 1);
+        }
+      }
+    }
+
+    Value = Line;
+    Result = !Value.IsEmpty();
   }
   return Result;
 }
@@ -227,7 +245,8 @@ void TSessionData::DefaultSettings()
 
   EncryptKey = UnicodeString();
 
-  FWebDavLiberalEscaping = false;
+  WebDavLiberalEscaping = false;
+  WebDavAuthLegacy = false;
 
   FProxyMethod = ::pmNone;
   FProxyHost = L"proxy";
@@ -330,8 +349,8 @@ void TSessionData::DefaultSettings()
   SetFtpPingType(ptDummyCommand);
   SetFtpTransferActiveImmediately(asAuto);
   SetFtps(ftpsNone);
-  FMinTlsVersion = tls12;
-  FMaxTlsVersion = tls13;
+  MinTlsVersion = tlsDefaultMin;
+  MaxTlsVersion = tlsMax;
   SetFtpListAll(asAuto);
   SetFtpHost(asAuto);
   SetFtpDupFF(false);
@@ -540,6 +559,7 @@ void TSessionData::NonPersistent()
   PROPERTY_HANDLER(EncryptKey, F); \
   \
   PROPERTY2(WebDavLiberalEscaping); \
+  PROPERTY2(WebDavAuthLegacy); \
   \
   PROPERTY2(PuttySettings); \
   \
@@ -755,7 +775,7 @@ bool TSessionData::IsSameSite(const TSessionData * Other) const
     (SessionGetUserName() == Other->SessionGetUserName());
 }
 
-bool TSessionData::IsInFolderOrWorkspace(UnicodeString AFolder) const
+bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
 {
   return ::StartsText(base::UnixIncludeTrailingBackslash(AFolder), GetName());
 }
@@ -1013,6 +1033,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   LOAD_PASSWORD(EncryptKey, L"EncryptKeyPlain");
 
   FWebDavLiberalEscaping = Storage->ReadBool(L"WebDavLiberalEscaping", FWebDavLiberalEscaping);
+  WebDavAuthLegacy = Storage->ReadBool(L"WebDavAuthLegacy", WebDavAuthLegacy);
 
 #if 0
   IsWorkspace = Storage->ReadBool(L"IsWorkspace", IsWorkspace);
@@ -1349,6 +1370,7 @@ void TSessionData::DoSave(THierarchicalStorage *Storage,
     WRITE_DATA(Integer, MaxTlsVersion);
 
     WRITE_DATA3(Bool, WebDavLiberalEscaping);
+    WRITE_DATA3(Bool, WebDavAuthLegacy);
 
 #if 0
     WRITE_DATA(Bool, IsWorkspace);
@@ -1710,13 +1732,59 @@ bool OpensshBoolValue(const UnicodeString & Value)
 
 UnicodeString CutOpensshToken(UnicodeString & S)
 {
-  DebugAssert(!S.IsEmpty() && (S == Trim(S)));
-  int From = 1;
-  UnicodeString Result = CopyToChars(S, From, L" \t", false);
-  S.Delete(1, Result.Length());
-  S = Trim(S);
-  DebugAssert(!Result.IsEmpty() && (Result == Trim(Result)));
-  Result = Trim(Result);
+  const wchar_t NoQuote = L'\0';
+  wchar_t Quote = NoQuote;
+  UnicodeString Result;
+  int32_t P = 1;
+  while (P <= S.Length())
+  {
+    wchar_t C = S[P];
+    if ((C == L'\\') &&
+        (P < S.Length()) &&
+        ((S[P + 1] == L'\'') ||
+         (S[P + 1] == L'\"') ||
+         (S[P + 1] == L'\\') ||
+         ((Quote == NoQuote) && S[P + 1] == L' ')))
+    {
+      Result += S[P + 1];
+      P++;
+    }
+    else if ((Quote == NoQuote) && ((C == L' ') || (C == L'\t')))
+    {
+      break;
+    }
+    else if ((Quote == NoQuote) && ((C == L'\'') || (C == L'"')))
+    {
+      Quote = C;
+    }
+    else if ((Quote != NoQuote) && (Quote == C))
+    {
+      Quote = NoQuote;
+    }
+    else
+    {
+      Result += C;
+    }
+    P++;
+  }
+
+  S = MidStr(S, P).Trim();
+
+  return Result;
+}
+
+static UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path)
+{
+  // It's likely there would be forward slashes in OpenSSH config file and our load/save dialogs
+  // (e.g. when converting keys) work suboptimally when working with forward slashes.
+  UnicodeString Result = GetNormalizedPath(Path);
+  const UnicodeString HomePathPrefix = L"~";
+  if (StartsStr(HomePathPrefix, Result + L"\\"))
+  {
+    Result =
+      GetShellFolderPath(CSIDL_PROFILE) +
+      Result.SubString(HomePathPrefix.Length() + 1, Result.Length() - HomePathPrefix.Length());
+  }
   return Result;
 }
 
@@ -1732,12 +1800,10 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
     {
       if (SameText(Directive, OpensshHostDirective))
       {
-        DebugAssert(!Value.IsEmpty() && (Value == Trim(Value)));
-
         SkippingSection = true;
-        while (!Value.IsEmpty())
+        while (!Args.IsEmpty())
         {
-          UnicodeString M = CutOpensshToken(Value);
+          UnicodeString M = CutOpensshToken(Args);
           bool Negated = DebugAlwaysTrue(!M.IsEmpty()) && (M[1] == L'!');
           if (Negated)
           {
@@ -1769,95 +1835,94 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
       }
       else if (!SkippingSection && (UsedDirectives->IndexOf(Directive) < 0))
       {
-        if (SameText(Directive, L"AddressFamily"))
+        UnicodeString Value = CutOpensshToken(Args);
+        // All the directives we support allow only one token
+        if (Args.IsEmpty())
         {
-          if (SameText(Value, L"inet"))
+          if (SameText(Directive, L"AddressFamily"))
           {
-            AddressFamily = afIPv4;
-          }
-          else if (SameText(Value, L"inet6"))
-          {
-            AddressFamily = afIPv6;
-          }
-          else
-          {
-            AddressFamily = afAuto;
-          }
-        }
-        else if (SameText(Directive, L"BindAddress"))
-        {
-          FSourceAddress = Value;
-        }
-        else if (SameText(Directive, L"Compression"))
-        {
-          Compression = OpensshBoolValue(Value);
-        }
-        else if (SameText(Directive, L"ForwardAgent"))
-        {
-          AgentFwd = OpensshBoolValue(Value);
-        }
-        else if (SameText(Directive, L"GSSAPIAuthentication"))
-        {
-          FAuthGSSAPI = OpensshBoolValue(Value);
-        }
-        else if (SameText(Directive, L"GSSAPIDelegateCredentials"))
-        {
-          FAuthGSSAPIKEX = OpensshBoolValue(Value);
-        }
-        else if (SameText(Directive, L"Hostname"))
-        {
-          HostName = Value;
-        }
-        else if (SameText(Directive, L"IdentityFile"))
-        {
-          // It's likely there would be forward slashes in OpenSSH config file and our load/save dialogs
-          // (e.g. when converting keys) work suboptimally when working with forward slashes.
-          UnicodeString Path = GetNormalizedPath(Value);
-          const UnicodeString HomePathPrefix = L"~";
-          if (StartsStr(HomePathPrefix, Path + L"\\"))
-          {
-            Path =
-              GetShellFolderPath(CSIDL_PROFILE) +
-              Path.SubString(HomePathPrefix.Length() + 1, Path.Length() - HomePathPrefix.Length());
-          }
-          PublicKeyFile = Path;
-        }
-        else if (SameText(Directive, L"KbdInteractiveAuthentication"))
-        {
-          FAuthKI = OpensshBoolValue(Value);
-        }
-        else if (SameText(Directive, L"Port"))
-        {
-          FPortNumber = StrToIntDef(Value, 0);
-        }
-        else if (SameText(Directive, L"User"))
-        {
-          FUserName = Value;
-        }
-        else if (SameText(Directive, L"ProxyJump"))
-        {
-          UnicodeString Jump = Value;
-          // multiple jumps are not supported
-          if (Jump.Pos(L",") == 0)
-          {
-            std::unique_ptr<TSessionData> JumpData(new TSessionData(EmptyStr));
-            bool DefaultsOnly;
-            if ((JumpData->ParseUrl(Jump, nullptr, nullptr, DefaultsOnly, nullptr, nullptr, nullptr, 0)) &&
-                !JumpData->FHostName.IsEmpty())
+            if (SameText(Value, L"inet"))
             {
-              JumpData->SetName(JumpData->FHostName);
-              JumpData->ImportFromOpenssh(Lines);
-
-              FTunnel = true;
-              FTunnelHostName = JumpData->FHostName;
-              FTunnelPortNumber = JumpData->FPortNumber;
-              FTunnelUserName = JumpData->FUserName;
-              FTunnelPassword = JumpData->FPassword;
-              FTunnelPublicKeyFile = JumpData->FPublicKeyFile;
+              AddressFamily = afIPv4;
+            }
+            else if (SameText(Value, L"inet6"))
+            {
+              AddressFamily = afIPv6;
+            }
+            else
+            {
+              AddressFamily = afAuto;
             }
           }
+          else if (SameText(Directive, L"BindAddress"))
+          {
+            SourceAddress = Value;
+          }
+          else if (SameText(Directive, L"Compression"))
+          {
+            Compression = OpensshBoolValue(Value);
+          }
+          else if (SameText(Directive, L"ForwardAgent"))
+          {
+            AgentFwd = OpensshBoolValue(Value);
+          }
+          else if (SameText(Directive, L"GSSAPIAuthentication"))
+          {
+            AuthGSSAPI = OpensshBoolValue(Value);
+          }
+          else if (SameText(Directive, L"GSSAPIDelegateCredentials"))
+          {
+            AuthGSSAPIKEX = OpensshBoolValue(Value);
+          }
+          else if (SameText(Directive, L"Hostname"))
+          {
+            HostName = Value;
+          }
+          else if (SameText(Directive, L"IdentityFile"))
+          {
+            PublicKeyFile = ConvertPathFromOpenssh(Value);
+          }
+          else if (SameText(Directive, L"CertificateFile"))
+          {
+            DetachedCertificate = ConvertPathFromOpenssh(Value);
+          }
+          else if (SameText(Directive, L"KbdInteractiveAuthentication"))
+          {
+            AuthKI = OpensshBoolValue(Value);
+          }
+          else if (SameText(Directive, L"Port"))
+          {
+            PortNumber = StrToInt(Value);
+          }
+          else if (SameText(Directive, L"User"))
+          {
+            UserName = Value;
+          }
+          else if (SameText(Directive, L"ProxyJump"))
+          {
+            UnicodeString Jump = Value;
+            // multiple jumps are not supported
+            if (Jump.Pos(L",") == 0)
+            {
+              std::unique_ptr<TSessionData> JumpData(new TSessionData(EmptyStr));
+              bool DefaultsOnly;
+              if ((JumpData->ParseUrl(Jump, nullptr, nullptr, DefaultsOnly, nullptr, nullptr, nullptr, 0)) &&
+                  !JumpData->HostName.IsEmpty())
+              {
+                JumpData->Name = JumpData->HostName;
+                JumpData->ImportFromOpenssh(Lines);
+
+                Tunnel = true;
+                TunnelHostName = JumpData->HostName;
+                TunnelPortNumber = JumpData->PortNumber;
+                TunnelUserName = JumpData->UserName;
+                TunnelPassword = JumpData->Password;
+                TunnelPublicKeyFile = JumpData->PublicKeyFile;
+              }
+            }
+          }
+          UsedDirectives->Add(Directive);
         }
-        UsedDirectives->Add(Directive);
       }
     }
   }
@@ -2366,21 +2431,27 @@ bool TSessionData::ParseUrl(UnicodeString Url, TOptions *Options,
       }
     }
 
-    UnicodeString RemoteDirectory;
+    UnicodeString ARemoteDirectory;
 
+    bool ParseOnly = FLAGSET(Flags, pufParseOnly);
     if (Data != nullptr)
     {
-      Assign(Data);
-      RemoteDirectory = Url.SubString(Data->GetName().Length() + 1);
-      if (RemoteDirectory.Length() > 0 && RemoteDirectory[1] == ':')
-        RemoteDirectory.Delete(1, 1);
+      DoCopyData(Data, ParseOnly);
+      FSource = Data->FSource;
+      int32_t P = 1;
+      while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), Data->Name))
+      {
+        P++;
+        DebugAssert(P <= Url.Length());
+      }
+      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
 
-      if (Data->GetHidden())
+      if (Data->Hidden && !ParseOnly)
       {
         Data->Remove();
-        AStoredSessions->Remove(Data);
+        StoredSessions->Remove(Data);
         // only modified, implicit
-        AStoredSessions->Save(false, false);
+        StoredSessions->Save(false, false);
       }
 
       if (MaskedUrl != nullptr)
@@ -2395,15 +2466,11 @@ bool TSessionData::ParseUrl(UnicodeString Url, TOptions *Options,
       RequireDirectories = true;
 
       // This happens when pasting URL on Login dialog
-      if (AStoredSessions != nullptr)
+      if (StoredSessions != nullptr)
       {
-        CopyData(AStoredSessions->GetDefaultSettings());
-#if 0
-        SetUserName(ANONYMOUS_USER_NAME);
-        SetLoginType(ltAnonymous);
-#endif // #if 0
+        DoCopyData(StoredSessions->DefaultSettings, ParseOnly);
       }
-      SetName(L"");
+      Name = L"";
 
       int32_t PSlash = Url.Pos(L"/");
       if (PSlash == 0)
@@ -2458,7 +2525,8 @@ bool TSessionData::ParseUrl(UnicodeString Url, TOptions *Options,
         if ((AFSProtocol == fsWebDAV) &&
             (IsDomainOrSubdomain(HostName, S3LibDefaultHostName()) ||
              IsDomainOrSubdomain(HostName, L"digitaloceanspaces.com") ||
-             IsDomainOrSubdomain(HostName, L"storage.googleapis.com")))
+             IsDomainOrSubdomain(HostName, L"storage.googleapis.com") ||
+             IsDomainOrSubdomain(HostName, L"r2.cloudflarestorage.com")))
         {
           AFSProtocol = fsS3;
         }
@@ -2824,6 +2892,11 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString APassword, Unico
   return Result;
 }
 
+UnicodeString TSessionData::GetSessionPasswordEncryptionKey() const
+{
+  return UserName + HostName;
+}
+
 bool TSessionData::GetCanLogin() const
 {
   return !FHostName.IsEmpty();
@@ -3009,24 +3082,24 @@ UnicodeString TSessionData::GetUserNameSource() const
 
 void TSessionData::SetPassword(UnicodeString AValue)
 {
-  RawByteString value = EncryptPassword(AValue, SessionGetUserName() + GetHostName());
+  RawByteString value = EncryptPassword(avalue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(Password);
 }
 
 UnicodeString TSessionData::GetPassword() const
 {
-  return DecryptPassword(FPassword, SessionGetUserName() + GetHostName());
+  return DecryptPassword(FPassword, GetSessionPasswordEncryptionKey());
 }
 
 void TSessionData::SetNewPassword(UnicodeString AValue)
 {
-  RawByteString value = EncryptPassword(AValue, SessionGetUserName() + GetHostName());
+  RawByteString value = EncryptPassword(avalue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(NewPassword);
 }
 
 UnicodeString TSessionData::GetNewPassword() const
 {
-  return DecryptPassword(FNewPassword, SessionGetUserName() + GetHostName());
+  return DecryptPassword(FNewPassword, GetSessionPasswordEncryptionKey());
 }
 
 void TSessionData::SetChangePassword(bool value)
@@ -4955,18 +5028,23 @@ void TSessionData::SetFtpUndupFF(bool value)
 
 UnicodeString TSessionData::GetEncryptKey() const
 {
-  return DecryptPassword(FEncryptKey, UserName() + HostName());
+  return DecryptPassword(FEncryptKey, GetSessionPasswordEncryptionKey());
 }
 
 void TSessionData::SetEncryptKey(UnicodeString AValue)
 {
-  RawByteString value = EncryptPassword(AValue, UserName() + HostName());
+  RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(EncryptKey);
 }
 
 void TSessionData::SetWebDavLiberalEscaping(bool value)
 {
   SET_SESSION_PROPERTY(WebDavLiberalEscaping);
+}
+
+void TSessionData::SetWebDavAuthLegacy(bool value)
+{
+  SET_SESSION_PROPERTY(WebDavAuthLegacy);
 }
 
 UnicodeString TSessionData::GetInfoTip() const
@@ -6038,48 +6116,50 @@ void TStoredSessionList::SelectKnownHostsForSelectedSessions(
   }
 }
 
-bool TStoredSessionList::IsFolderOrWorkspace(
-  UnicodeString Name, bool Workspace) const
+TSessionData * TStoredSessionList::GetFirstFolderOrWorkspaceSession(const UnicodeString & Name)
 {
-  bool Result = false;
-  const TSessionData *FirstData = nullptr;
+  TSessionData * Result = nullptr;
   if (!Name.IsEmpty())
   {
-    for (int32_t Index = 0; !Result && (Index < GetCount()); ++Index)
+    UnicodeString NameWithSlash = UnixIncludeTrailingBackslash(Name); // optimization
+    for (int Index = 0; (Result == nullptr) && (Index < Count); Index++)
     {
-      Result = GetSession(Index)->IsInFolderOrWorkspace(Name);
-      if (Result)
+      if (Sessions[Index]->IsInFolderOrWorkspace(NameWithSlash))
       {
-        FirstData = GetSession(Index);
+        Result = Sessions[Index];
       }
     }
   }
 
-  return
-    Result &&
-    DebugAlwaysTrue(FirstData != nullptr) &&
-    (FirstData->GetIsWorkspace() == Workspace);
+  return Result;
 }
 
-bool TStoredSessionList::GetIsFolder(const UnicodeString Name) const
+bool TStoredSessionList::IsFolderOrWorkspace(const UnicodeString & Name)
 {
-  return IsFolderOrWorkspace(Name, false);
+  return (GetFirstFolderOrWorkspaceSession(Name) != nullptr);
 }
 
-bool TStoredSessionList::GetIsWorkspace(const UnicodeString Name) const
+bool TStoredSessionList::IsFolder(const UnicodeString & Name)
 {
-  return IsFolderOrWorkspace(Name, true);
+  TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
+  return (SessionData != nullptr) && !SessionData->IsWorkspace;
+}
+
+bool TStoredSessionList::IsWorkspace(const UnicodeString & Name)
+{
+  TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
+  return (SessionData != nullptr) && SessionData->IsWorkspace;
 }
 
 TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
-  TSessionData * Data, const UnicodeString Name)
+  TSessionData * Data, const UnicodeString & Name)
 {
-  if (Data && Data->IsInFolderOrWorkspace(Name))
+  if (Data->IsInFolderOrWorkspace(Name))
   {
     Data = ResolveWorkspaceData(Data);
 
     if ((Data != nullptr) && Data->CanOpen &&
-        DebugAlwaysTrue(Data->GetLink().IsEmpty()))
+        DebugAlwaysTrue(Data->Link.IsEmpty()))
     {
       return Data;
     }
@@ -6087,7 +6167,7 @@ TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   return nullptr;
 }
 
-void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString Name, TList *List)
+void TStoredSessionList::GetFolderOrWorkspace(const UnicodeString & Name, TList * List)
 {
   DoGetFolderOrWorkspace(Name, List, false);
 }

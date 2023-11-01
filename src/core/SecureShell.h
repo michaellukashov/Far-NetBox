@@ -57,6 +57,7 @@ private:
   bool FStoredPasswordTried{false};
   bool FStoredPasswordTriedForKI{false};
   bool FStoredPassphraseTried{false};
+  bool FAuthenticationCancelled{false};
   bool FOpened{false};
   bool FClosed{false};
   int32_t FWaiting{0};
@@ -184,11 +185,11 @@ public:
   const UnicodeString & GetStdError() const;
   void VerifyHostKey(
     const UnicodeString AHost, int32_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
-    const UnicodeString & FingerprintSHA256, const UnicodeString & FingerprintMD5);
+    const UnicodeString & FingerprintSHA256, const UnicodeString & FingerprintMD5,
+    bool IsCertificate, int CACount, bool AlreadyVerified);
   bool HaveHostKey(UnicodeString AHost, int32_t Port, const UnicodeString KeyType);
   void AskAlg(UnicodeString AAlgType, UnicodeString AlgName);
   void DisplayBanner(const UnicodeString Banner);
-  void OldKeyfileWarning();
   void PuttyLogEvent(const char * AStr);
   UnicodeString ConvertFromPutty(const char * Str, int32_t Length) const;
   struct callback_set * GetCallbackSet();

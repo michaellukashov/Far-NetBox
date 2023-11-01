@@ -1446,6 +1446,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         ADF(L"S3: Session token: %s", Data->FS3SessionToken);
       }
+      if (Data->S3CredentialsEnv)
+      {
+        ADF(L"S3: Credentials from AWS environment: %s", DefaultStr(Data->S3Profile, L"General"));
+      }
     }
     if (FtpsOn)
     {
@@ -1824,7 +1828,8 @@ TApplicationLog::~TApplicationLog()
 void TApplicationLog::Enable(const UnicodeString & Path)
 {
   UnicodeString Dummy;
-  FFile = LocalOpenLogFile(Path, Now(), nullptr, false, Dummy);
+  FPath = Path;
+  FFile = LocalOpenLogFile(FPath, Now(), nullptr, false, Dummy);
   FLogging = true;
 }
 
@@ -1842,7 +1847,7 @@ void TApplicationLog::Log(UnicodeString S)
   if (FFile != nullptr)
   {
     UnicodeString Timestamp = FormatDateTime(L"yyyy-mm-dd hh:nn:ss.zzz", Now());
-    UnicodeString Line = FORMAT(L"[%s] [%x] %s\r\n", Timestamp, static_cast<int>(GetCurrentThreadId()), S);
+    UnicodeString Line = FORMAT(L"[%s] [%x] %s\r\n", Timestamp, nb::ToInt(GetCurrentThreadId()), S);
     UTF8String UtfLine = UTF8String(Line);
     int32_t Writting = UtfLine.Length();
     TGuard Guard(*FCriticalSection.get());

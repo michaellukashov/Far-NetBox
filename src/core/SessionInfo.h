@@ -46,7 +46,9 @@ enum TFSCapability { fcUserGroupListing = 0, fcModeChanging, fcAclChangingFiles,
   fcModeChangingUpload, fcPreservingTimestampUpload, fcShellAnyCommand,
   fcSecondaryShell, fcRemoveCtrlZUpload, fcRemoveBOMUpload, fcMoveToQueue,
   fcLocking, fcPreservingTimestampDirs, fcResumeSupport,
-  fcChangePassword, fcSkipTransfer, fcParallelTransfers, fcBackgroundTransfers,
+  fcChangePassword, fcSkipTransfer,
+  fcParallelTransfers, fcParallelFileTransfers,
+  fcBackgroundTransfers,
   fcTransferOut, fcTransferIn,
   fcMoveOverExistingFile,
   fcCount };
@@ -425,12 +427,14 @@ public:
   ~TApplicationLog();
   void Enable(const UnicodeString & Path);
   void AddStartupInfo();
-  void Log(const UnicodeString S);
+  void Log(const UnicodeString & S);
   __property bool Logging = { read = FLogging };
-
   ROPropertySimple<bool> Logging{&FLogging};
+  __property UnicodeString Path = { read = FPath };
+  ROPropertySimple<UnicodeString> Path{&FPath};
 
 private:
+  UnicodeString FPath;
   void * FFile{nullptr};
   bool FLogging{false};
   std::unique_ptr<TCriticalSection> FCriticalSection;
