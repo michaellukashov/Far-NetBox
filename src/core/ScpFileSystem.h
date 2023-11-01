@@ -77,10 +77,10 @@ public:
     TRemoteFile *& AFile) override;
   virtual void ReadSymlink(TRemoteFile *ASymlinkFile,
     TRemoteFile *& AFile) override;
-  virtual void RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
-  virtual void RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ANewName) override;
+  virtual void RemoteRenameFile(
+    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite)) override;
+  virtual void RemoteCopyFile(
+    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, ) override;
   virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) override;
@@ -129,8 +129,6 @@ private:
   bool IsLastLine(UnicodeString &Line);
   static bool IsTotalListingLine(const UnicodeString ALine);
   void EnsureLocation();
-  void ExecCommand(const UnicodeString ACmd, int32_t AParams,
-    const UnicodeString CmdString);
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
 
@@ -150,7 +148,7 @@ private:
   void SCPSource(const UnicodeString AFileName,
     const UnicodeString TargetDir, const TCopyParamType *CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, int32_t Level);
-  void SendCommand(const UnicodeString Cmd);
+  void SendCommand(const UnicodeString & Cmd, bool NoEnsureLocation = false);
   void SkipFirstLine();
   void SkipStartupMessage();
   void UnsetNationalVars();

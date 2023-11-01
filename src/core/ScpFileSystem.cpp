@@ -27,10 +27,11 @@ constexpr int32_t coIgnoreWarnings = 16;
 constexpr int32_t coReadProgress = 32;
 constexpr int32_t coIgnoreStdErr = 64;
 
-constexpr int32_t ecRaiseExcept = 1;
-constexpr int32_t ecIgnoreWarnings = 2;
-constexpr int32_t ecReadProgress = 4;
-constexpr int32_t ecIgnoreStdErr = 8;
+constexpr int32_t ecRaiseExcept = 0x01;
+constexpr int32_t ecIgnoreWarnings = 0x02;
+constexpr int32_t ecReadProgress = 0x04;
+constexpr int32_t ecIgnoreStdErr = 0x08;
+constexpr int32_t ecNoEnsureLocation = 0x10;
 constexpr int32_t ecDefault = ecRaiseExcept;
 
 DERIVE_EXT_EXCEPTION(EScpFileSkipped, ESkipFile);
@@ -505,6 +506,7 @@ bool TSCPFileSystem::IsCapable(int32_t Capability) const
     case fcResumeSupport:
     case fcSkipTransfer:
     case fcParallelTransfers: // does not implement cpNoRecurse
+    case fcParallelFileTransfers:
     case fcTransferOut:
     case fcTransferIn:
       return false;
@@ -546,9 +548,12 @@ void TSCPFileSystem::EnsureLocation()
   }
 }
 
-void TSCPFileSystem::SendCommand(UnicodeString Cmd)
+void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocation)
 {
-  EnsureLocation();
+  if (!NoEnsureLocation)
+  {
+    EnsureLocation();
+  }
 
   UnicodeString Line;
   FSecureShell->ClearStdError();
@@ -706,6 +711,11 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
   } end_try__finally
 }
 
+void TSCPFileSystem::InvalidOutputError(const UnicodeString & Command)
+{
+  FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR, Command, Output->Text));
+}
+
 void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, int32_t Params,
   const UnicodeString CmdString)
 {
@@ -714,9 +724,12 @@ void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, int32_t Params,
     Params = ecDefault;
   }
 
+  UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args, size);
+  UnicodeString Command = FCommandSet->Command(Cmd, args, size);
+
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
 
-  SendCommand(Cmd);
+  SendCommand(FullCommand, FLAGSET(Params, ecNoEnsureLocation));
 
   int COParams =
     coWaitForLastLine |
@@ -725,40 +738,8 @@ void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, int32_t Params,
     FLAGMASK(FLAGSET(Params, ecReadProgress), coReadProgress) |
     FLAGMASK(FLAGSET(Params, ecIgnoreStdErr), coIgnoreStdErr);
 
-  ReadCommandOutput(COParams, &CmdString);
-}
+  ReadCommandOutput(COParams, &Command);
 
-void TSCPFileSystem::InvalidOutputError(const UnicodeString & Command)
-{
-  FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR, Command, Output->GetText()));
-}
-
-#if defined(__BORLANDC__)
-void TSCPFileSystem::ExecCommand(TFSCommand Cmd, const TVarRec * args,
-  int size, int Params)
-{
-  if (Params < 0) Params = ecDefault;
-  UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args, size);
-  UnicodeString Command = FCommandSet->Command(Cmd, args, size);
-  ExecCommand(FullCommand, Params, Command);
-  if (Params & ecRaiseExcept)
-  {
-    Integer MinL = FCommandSet->MinLines[Cmd];
-    Integer MaxL = FCommandSet->MaxLines[Cmd];
-    if (((MinL >= 0) && (MinL > FOutput->Count)) ||
-        ((MaxL >= 0) && (MaxL > FOutput->Count)))
-    {
-      InvalidOutputError(FullCommand);
-    }
-  }
-}
-#endif // if defined(__BORLANDC__)
-
-void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args)
-{
-  UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
-  UnicodeString Command = FCommandSet->Command(Cmd, args);
-  ExecCommand(FullCommand, Params, Command);
   if (Params & ecRaiseExcept)
   {
     int MinL = FCommandSet->GetMinLines(Cmd);
@@ -766,10 +747,17 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList ar
     if (((MinL >= 0) && (MinL > nb::ToInt(FOutput->GetCount()))) ||
         ((MaxL >= 0) && (MaxL > nb::ToInt(FOutput->GetCount()))))
     {
-      FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR,
-          FullCommand, GetOutput()->GetText()));
+      InvalidOutputError(FullCommand);
     }
   }
+}
+
+
+void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args)
+{
+  UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
+  UnicodeString Command = FCommandSet->Command(Cmd, args);
+  ExecCommand(FullCommand, Params, Command);
 }
 
 UnicodeString TSCPFileSystem::RemoteGetCurrentDirectory() const
@@ -1023,8 +1011,29 @@ void TSCPFileSystem::AnnounceFileListOperation()
   // noop
 }
 
-void TSCPFileSystem::ChangeDirectory(UnicodeString Directory)
+void TSCPFileSystem::ChangeDirectory(const UnicodeString ADirectory)
 {
+  int32_t Params = ecDefault;
+  UnicodeString Directory = ADirectory;
+  try
+  {
+    EnsureLocation();
+  }
+  catch (...)
+  {
+    if (FTerminal->Active && DebugAlwaysTrue(!FCachedDirectoryChange.IsEmpty()))
+    {
+      Params |= ecNoEnsureLocation;
+      Directory = ::AbsolutePath(AbsolutePath(FCachedDirectoryChange, true), Directory);
+      FTerminal->LogEvent(
+        FORMAT(L"Cannot locate to cached directory, assuming that target absolute path is \"%s\".", Directory));
+    }
+    else
+    {
+      throw;
+    }
+  }
+
   UnicodeString ToDir;
   // This effectivelly disallows entering subdirectories starting with ~ and containing space
   if (!Directory.IsEmpty() &&
@@ -1036,7 +1045,7 @@ void TSCPFileSystem::ChangeDirectory(UnicodeString Directory)
   {
     ToDir = DelimitStr(Directory);
   }
-  ExecCommand(fsChangeDirectory, 0, ToDir);
+  ExecCommand(fsChangeDirectory, 0, ToDir, Params);
   FCachedDirectoryChange.Clear();
 }
 
@@ -1245,14 +1254,14 @@ void TSCPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
   ExecCommand(fsDeleteFile, Params, DelimitStr(AFileName));
 }
 
-void TSCPFileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
-  UnicodeString ANewName)
+void TSCPFileSystem::RemoteRenameFile(
+  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   ExecCommand(fsRenameFile, 0, DelimitStr(AFileName), DelimitStr(ANewName));
 }
 
-void TSCPFileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * /*AFile*/,
-  const UnicodeString ANewName)
+void TSCPFileSystem::RemoteCopyFile(
+  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   UnicodeString DelimitedFileName = DelimitStr(AFileName);
   UnicodeString DelimitedNewName = DelimitStr(ANewName);
@@ -1815,7 +1824,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
             CopyParamCur.SetRights(*File2->GetRights());
           if (File2->GetIsDirectory())
           {
-            UnicodeString Message = FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly);
+            UnicodeString Message = MainInstructions(FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly));
             TQueryParams QueryParams(qpNeverAskAgainCheck);
 
             TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
@@ -2291,7 +2300,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
 
     while (FindOK && !OperationProgress->Cancel)
     {
-      UnicodeString FileName = IncludeTrailingBackslash(DirectoryName) + SearchRec.Name;
+      UnicodeString FileName = SearchRec.GetFilePath();
       try
       {
         if (SearchRec.IsRealFile())
@@ -2826,7 +2835,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                 do
                 {
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
-                  BlockBuf.SetPosition(0);
+                  BlockBuf.Reset();
 
                   FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), nb::ToIntPtr(BlockBuf.GetSize()));
                   OperationProgress->AddTransferred(BlockBuf.GetSize());

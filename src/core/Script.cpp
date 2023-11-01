@@ -310,6 +310,9 @@ TScript::TScript(bool LimitedOutput)
   FLoggingTerminal = nullptr;
   FGroups = false;
   FWantsProgress = false;
+  FInteractive = false;
+  FOnTransferOut = nullptr;
+  FOnTransferIn = nullptr;
   FIncludeFileMaskOptionUsed = false;
   FPendingLogLines = new TStringList();
 
@@ -760,12 +763,11 @@ TStrings * TScript::CreateLocalFileList(TScriptProcParams * Parameters,
         bool AnyFound = false;
         if (FindFirstUnchecked(FileName, FindAttrs, SearchRec) == 0)
         {
-          UnicodeString Directory = ExtractFilePath(FileName);
           do
           {
             if (SearchRec.IsRealFile())
             {
-              UnicodeString FileName = Directory + SearchRec.Name;
+              UnicodeString FileName = SearchRec.GetFilePath();
               TLocalFile * LocalFile = new TLocalFile;
               CopySearchRec(SearchRec, LocalFile->SearchRec);
               Result->AddObject(FileName, LocalFile);
@@ -1388,13 +1390,13 @@ void TScript::DoMvOrCp(TScriptProcParams * Parameters, TFSCapability Capability,
 
     Target = UnixIncludeTrailingBackslash(TargetDirectory) + FileMask;
     CheckMultiFilesToOne(FileList, Target, true);
+    bool DontOverwrite = true; // might use FConfirm eventually, but that would be breaking change
     if (Cp)
     {
-      FTerminal->CopyFiles(FileList, TargetDirectory, FileMask);
+      FTerminal->CopyFiles(FileList, TargetDirectory, FileMask, DontOverwrite);
     }
     else
     {
-      bool DontOverwrite = true; // might use FConfirm eventually, but that would be breaking change
       FTerminal->MoveFiles(FileList, TargetDirectory, FileMask, DontOverwrite);
     }
   }

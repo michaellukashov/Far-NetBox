@@ -33,6 +33,10 @@
 #include <ne_request.h>
 #include <StrUtils.hpp>
 #include <limits>
+#include "CoreMain.h"
+#include "Http.h"
+#include <System.JSON.hpp>
+#include <System.DateUtils.hpp>
 
 __removed #pragma package(smart_init)
 
@@ -73,6 +77,11 @@ UnicodeString S3ConfigFileName;
 TDateTime S3ConfigTimestamp;
 __removed std::unique_ptr<TCustomIniFile> S3ConfigFile;
 UnicodeString S3Profile;
+bool S3SecurityProfileChecked = false;
+TDateTime S3CredentialsExpiration;
+UnicodeString S3SecurityProfile;
+typedef std::map<UnicodeString, UnicodeString> TS3Credentials;
+TS3Credentials S3Credentials;
 
 #if 0
 static void NeedS3Config()
@@ -86,6 +95,7 @@ static void NeedS3Config()
       S3Profile = AWS_PROFILE_DEFAULT;
     }
   }
+
   if (S3ConfigFileName.IsEmpty())
   {
     S3ConfigFileName = base::GetEnvVariable(AWS_CONFIG_FILE);
@@ -104,6 +114,7 @@ static void NeedS3Config()
   {
     S3ConfigTimestamp = Timestamp;
     // TMemIniFile silently ignores empty paths or non-existing files
+    AppLog(L"Reading AWS credentials file");
     S3ConfigFile.reset(std::make_unique<TMemIniFile>(S3ConfigFileName));
   }
 }
@@ -121,6 +132,9 @@ TStrings * GetS3Profiles()
     while (Index < Result->Count)
     {
       UnicodeString Section = Result->Strings[Index];
+      // This is not consistent with AWS CLI.
+      // AWS CLI fails if one of AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY is set and other is missing:
+      // "Partial credentials found in env, missing: AWS_SECRET_ACCESS_KEY"
       if (S3ConfigFile->ReadString(Section, AWS_ACCESS_KEY_ID, EmptyStr).IsEmpty() &&
           S3ConfigFile->ReadString(Section, AWS_SECRET_ACCESS_KEY, EmptyStr).IsEmpty() &&
           S3ConfigFile->ReadString(Section, AWS_SESSION_TOKEN, EmptyStr).IsEmpty())
@@ -137,11 +151,22 @@ TStrings * GetS3Profiles()
   return Result.release();
 }
 
-UnicodeString GetS3ConfigValue(const UnicodeString & Profile, const UnicodeString & Name, UnicodeString * Source)
+UnicodeString ReadUrl(const UnicodeString & Url)
+{
+  std::unique_ptr<THttp> Http(new THttp());
+  Http->URL = Url;
+  Http->ResponseLimit = BasicHttpResponseLimit;
+  Http->Get();
+  return Http->Response.Trim();
+}
+
+UnicodeString GetS3ConfigValue(
+  const UnicodeString & Profile, const UnicodeString & Name, const UnicodeString & CredentialsName, UnicodeString * Source)
 {
   UnicodeString Result;
   UnicodeString ASource;
   TGuard Guard(*LibS3Section.get());
+
   try
   {
     if (Profile.IsEmpty())
@@ -160,6 +185,9 @@ UnicodeString GetS3ConfigValue(const UnicodeString & Profile, const UnicodeStrin
       if (S3ConfigFile.get() != nullptr)
       {
         UnicodeString AProfile = DefaultStr(Profile, S3Profile);
+        // This is not consistent with AWS CLI.
+        // AWS CLI fails if one of aws_access_key_id or aws_secret_access_key is set and other is missing:
+        // "Partial credentials found in shared-credentials-file, missing: aws_secret_access_key"
         Result = S3ConfigFile->ReadString(AProfile, Name, EmptyStr);
         if (!Result.IsEmpty())
         {
@@ -173,6 +201,92 @@ UnicodeString GetS3ConfigValue(const UnicodeString & Profile, const UnicodeStrin
   {
     throw ExtException(&E, MainInstructions(LoadStr(S3_CONFIG_ERROR)));
   }
+
+  if (Result.IsEmpty())
+  {
+    if (S3SecurityProfileChecked && (S3CredentialsExpiration != TDateTime()) && (IncHour(S3CredentialsExpiration, -1) < Now()))
+    {
+      AppLog(L"AWS security credentials has expired or is close to expiration, will retrieve new");
+      S3SecurityProfileChecked = false;
+    }
+
+    if (!S3SecurityProfileChecked)
+    {
+      S3Credentials.clear();
+      S3SecurityProfile = EmptyStr;
+      S3SecurityProfileChecked = true;
+      S3CredentialsExpiration = TDateTime();
+      try
+      {
+        UnicodeString AWSMetadataService = DefaultStr(Configuration->AWSMetadataService, L"http://169.254.169.254/latest/meta-data/");
+        UnicodeString SecurityCredentialsUrl = AWSMetadataService + L"iam/security-credentials/";
+
+        AppLogFmt(L"Retrieving AWS security credentials from %s", (SecurityCredentialsUrl));
+        S3SecurityProfile = ReadUrl(SecurityCredentialsUrl);
+
+        if (S3SecurityProfile.IsEmpty())
+        {
+            AppLog(L"No AWS security credentials role detected");
+        }
+        else
+        {
+          UnicodeString SecurityProfileUrl = SecurityCredentialsUrl + EncodeUrlString(S3SecurityProfile);
+          AppLogFmt(L"AWS security credentials role detected: %s, retrieving %s", (S3SecurityProfile, SecurityProfileUrl));
+          UnicodeString ProfileDataStr = ReadUrl(SecurityProfileUrl);
+
+          std::unique_ptr<TJSONValue> ProfileDataValue(TJSONObject::ParseJSONValue(ProfileDataStr));
+          TJSONObject * ProfileData = dynamic_cast<TJSONObject *>(ProfileDataValue.get());
+          if (ProfileData == nullptr)
+          {
+            throw new Exception(FORMAT(L"Unexpected response: %s", (ProfileDataStr.SubString(1, 1000))));
+          }
+          TJSONValue * CodeValue = ProfileData->Values[L"Code"];
+          if (CodeValue == nullptr)
+          {
+            throw new Exception(L"Missing \"Code\" value");
+          }
+          UnicodeString Code = CodeValue->Value();
+          if (!SameText(Code, L"Success"))
+          {
+            throw new Exception(FORMAT(L"Received non-success code: %s", (Code)));
+          }
+          TJSONValue * ExpirationValue = ProfileData->Values[L"Expiration"];
+          if (ExpirationValue == nullptr)
+          {
+            throw new Exception(L"Missing \"Expiration\" value");
+          }
+          UnicodeString ExpirationStr = ExpirationValue->Value();
+          S3CredentialsExpiration = ISO8601ToDate(ExpirationStr, false);
+          AppLogFmt(L"Credentials expiration: %s", (StandardTimestamp(S3CredentialsExpiration)));
+
+          std::unique_ptr<TJSONPairEnumerator> Enumerator(ProfileData->GetEnumerator());
+          UnicodeString Names;
+          while (Enumerator->MoveNext())
+          {
+            TJSONPair * Pair = Enumerator->Current;
+            UnicodeString Name = Pair->JsonString->Value();
+            S3Credentials.insert(std::make_pair(Name, Pair->JsonValue->Value()));
+            AddToList(Names, Name, L", ");
+          }
+          AppLogFmt(L"Response contains following values: %s", (Names));
+        }
+      }
+      catch (Exception & E)
+      {
+        UnicodeString Message;
+        ExceptionMessage(&E, Message);
+        AppLogFmt(L"Error retrieving AWS security credentials role: %s", (Message));
+      }
+    }
+
+    TS3Credentials::const_iterator I = S3Credentials.find(CredentialsName);
+    if (I != S3Credentials.end())
+    {
+      Result = I->second;
+      ASource = FORMAT(L"meta-data/%s", (S3SecurityProfile));
+    }
+  }
+
   if (Source != nullptr)
   {
     *Source = ASource;
@@ -182,17 +296,17 @@ UnicodeString GetS3ConfigValue(const UnicodeString & Profile, const UnicodeStrin
 
 UnicodeString S3EnvUserName(const UnicodeString & Profile, UnicodeString * Source)
 {
-  return GetS3ConfigValue(Profile, AWS_ACCESS_KEY_ID, Source);
+  return GetS3ConfigValue(Profile, AccessKeyId, Source);
 }
 
 UnicodeString S3EnvPassword(const UnicodeString & Profile, UnicodeString * Source)
 {
-  return GetS3ConfigValue(Profile, AWS_SECRET_ACCESS_KEY, Source);
+  return GetS3ConfigValue(Profile, SecretAccessKey, Source);
 }
 
 UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * Source)
 {
-  return GetS3ConfigValue(Profile, AWS_SESSION_TOKEN, Source);
+  return GetS3ConfigValue(Profile, Token, Source);
 }
 #endif //if 0
 
@@ -269,8 +383,7 @@ void TS3FileSystem::Open()
     if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(S3_ACCESS_KEY_ID_TITLE), L"",
           LoadStr(S3_ACCESS_KEY_ID_PROMPT), true, 0, AccessKeyId))
     {
-      // note that we never get here actually
-      throw Exception("");
+      FTerminal->FatalError(nullptr, LoadStr(CREDENTIALS_NOT_SPECIFIED));
     }
   }
   FAccessKeyId = UTF8String(AccessKeyId);
@@ -297,8 +410,7 @@ void TS3FileSystem::Open()
     if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(S3_SECRET_ACCESS_KEY_TITLE), L"",
           LoadStr(S3_SECRET_ACCESS_KEY_PROMPT), false, 0, SecretAccessKey))
     {
-      // note that we never get here actually
-      throw Exception("");
+      FTerminal->FatalError(nullptr, LoadStr(CREDENTIALS_NOT_SPECIFIED));
     }
   }
   FSecretAccessKey = UTF8String(SecretAccessKey);
@@ -392,7 +504,7 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s *Session, void *CallbackDa
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FileSystem->FTerminal);
 
-  SetNeonTlsInit(Session, FileSystem->InitSslSession);
+  SetNeonTlsInit(Session, FileSystem->InitSslSession, FileSystem->FTerminal);
 
   ne_set_session_flag(Session, SE_SESSFLAG_SNDBUF, Data->FSendBuf);
 
@@ -856,6 +968,7 @@ bool TS3FileSystem::IsCapable(int32_t Capability) const
     case fcLocking:
     case fcTransferOut:
     case fcTransferIn:
+    case fcParallelFileTransfers:
       return false;
 
     default:
@@ -1007,7 +1120,8 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
       int Sec = 0;
       // The libs3's parseIso8601Time uses mktime, so returns a local time, which we would have to complicatedly restore,
       // Doing own parting instead as it's easier.
-      // Keep is sync with WebDAV
+      // Might be replaced with ISO8601ToDate.
+      // Keep is sync with WebDAV.
       int Filled =
         sscanf(Content->lastModifiedStr, ISO8601_FORMAT, &Year, &Month, &Day, &Hour, &Min, &Sec);
       if (Filled == 6)
@@ -1281,21 +1395,21 @@ void TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
   }
 }
 
-void TS3FileSystem::RemoteRenameFile(const UnicodeString AFileName, const TRemoteFile * AFile,
-  const UnicodeString ANewName)
+void TS3FileSystem::RemoteRenameFile(
+  const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString ANewName, bool Overwrite)
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
   {
     throw Exception(LoadStr(FS_RENAME_NOT_SUPPORTED));
   }
-  RemoteCopyFile(AFileName, AFile, ANewName);
+  RemoteCopyFile(AFileName, AFile, ANewName, Overwrite);
   TRmSessionAction DummyAction(FTerminal->GetActionLog(), AFileName);
   RemoteDeleteFile(AFileName, AFile, dfForceDelete, DummyAction);
   DummyAction.Cancel();
 }
 
-void TS3FileSystem::RemoteCopyFile(const UnicodeString AFileName, const TRemoteFile * AFile,
-  const UnicodeString ANewName)
+void TS3FileSystem::RemoteCopyFile(
+  const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
   {
@@ -2288,13 +2402,7 @@ void TS3FileSystem::Sink(
 
        if (DeleteLocalFile)
        {
-         FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-           FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, DestFullName), "",
-         [&]()
-         {
-           THROWOSIFFALSE(::SysUtulsRemoveFile(ApiPath(DestFullName)));
-         });
-         __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, (DestFullName)));
+        FTerminal->DoDeleteLocalFile(DestFullName);
        }
     } end_try__finally
   });
