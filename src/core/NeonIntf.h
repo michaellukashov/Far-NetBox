@@ -28,20 +28,23 @@ struct TNeonCertificateData
   int Failures{0};
 };
 
-void NeonParseUrl(const UnicodeString Url, ne_uri &uri);
-bool IsTlsUri(const ne_uri &uri);
-ne_session * CreateNeonSession(const ne_uri &uri);
-void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const UnicodeString AProxyHost,
-  int32_t ProxyPort, const UnicodeString AProxyUsername, const UnicodeString AProxyPassword, TTerminal * Terminal);
+void NeonParseUrl(const UnicodeString & Url, ne_uri & uri);
+bool IsTlsUri(const ne_uri & uri);
+ne_session * CreateNeonSession(const ne_uri & uri);
+void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const UnicodeString & AProxyHost,
+  int32_t ProxyPort, const UnicodeString & AProxyUsername, const UnicodeString & AProxyPassword, TTerminal * Terminal);
 void DestroyNeonSession(ne_session * Session);
 UnicodeString GetNeonError(ne_session * Session);
 void CheckNeonStatus(ne_session *Session, int32_t NeonStatus,
-  const UnicodeString AHostName, const UnicodeString CustomError = L"");
+  const UnicodeString & AHostName, const UnicodeString & CustomError = L"");
 UnicodeString GetNeonRedirectUrl(ne_session *Session);
-void CheckRedirectLoop(const UnicodeString RedirectUrl, TStrings *AttemptedUrls);
-__removed typedef void (__closure *TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
+void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls);
+__removed typedef void (__closure *TNeonTlsInit)(struct ssl_st * Ssl, ne_session * Session);
 typedef void (*TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
-void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit);
+void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal * Terminal);
+void InitNeonTls(
+  ne_session * Session, TNeonTlsInit OnNeonTlsInit, ne_ssl_verify_fn VerifyCallback, void * VerifyContext,
+  TTerminal * Terminal);
 AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate);
 bool NeonWindowsValidateCertificate(int &Failures, const AnsiString AsciiCert, UnicodeString &Error);
 bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &Message);

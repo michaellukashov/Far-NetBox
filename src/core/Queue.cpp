@@ -2315,6 +2315,8 @@ TQueueItem *TTransferQueueItem::CreateParallelOperation()
   DebugAssert(FParallelOperation.get() != nullptr);
 
   FParallelOperation->AddClient();
+  DebugAssert(!FInfo->SingleFile || FParallelOperation->IsParallelFileTransfer);
+  FInfo->SingleFile = false;
   return new TParallelTransferQueueItem(this, FParallelOperation.get());
 }
 

@@ -10,16 +10,12 @@ struct ne_ssl_certificate_s;
 struct ssl_st;
 
 class THttp;
-#if 0
-typedef void (__closure *THttpDownloadEvent)(THttp *Sender, __int64 Size, bool &Cancel);
-#endif // #if 0
 using THttpDownloadEvent = nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/>;
-#if 0
-typedef void (__closure *THttpErrorEvent)(THttp *Sender, int Status, const UnicodeString &Message);
-#endif // #if 0
 using THttpErrorEvent = nb::FastDelegate3<void,
   THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/>;
+
+extern const int BasicHttpResponseLimit;
 
 class THttp : public TObject
 {
@@ -42,6 +38,8 @@ public:
   __property int64_t ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
   __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload };
   __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };
+  __property UnicodeString Certificate = { read = FCertificate, write = FCertificate };
+  RWProperty2<UnicodeString> Certificate{&FCertificate};
 
   UnicodeString GetURL() const { return FURL; }
   void SetURL(UnicodeString Value) { FURL = Value; }
@@ -73,6 +71,7 @@ private:
   UnicodeString FCertificateError;
   std::unique_ptr<TStrings> FRequestHeaders;
   std::unique_ptr<TStrings> FResponseHeaders;
+  UnicodeString FCertificate;
 
   static int NeonBodyReader(void *UserData, const char *Buf, size_t Len);
   int NeonBodyReaderImpl(const char *Buf, size_t Len);

@@ -9,6 +9,8 @@
 #include <DateUtils.hpp>
 
 #include "RemoteFiles.h"
+#include "Exceptions.h"
+#include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
 #include "HelpCore.h"
@@ -16,6 +18,8 @@
 // moved to Common.cpp
 #if 0
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
+
+const UnicodeString PartialExt(L".filepart");
 
 bool IsUnixStyleWindowsPath(const UnicodeString & Path)
 {
@@ -30,7 +34,7 @@ bool UnixIsAbsolutePath(const UnicodeString & Path)
     IsUnixStyleWindowsPath(Path);
 }
 
-UnicodeString UnixIncludeTrailingBackslash(const UnicodeString Path)
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path)
 {
   // it used to return "/" when input path was empty
   if (!Path.IsEmpty() && !Path.IsDelimiter(L"/", Path.Length()))
@@ -44,7 +48,7 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString Path)
 }
 
 // Keeps "/" for root path
-UnicodeString UnixExcludeTrailingBackslash(const UnicodeString Path, bool Simple)
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simple)
 {
   if (Path.IsEmpty() ||
       (Path == L"/") ||
@@ -59,7 +63,7 @@ UnicodeString UnixExcludeTrailingBackslash(const UnicodeString Path, bool Simple
   }
 }
 
-UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString Path)
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
 {
   return UnixExcludeTrailingBackslash(Path, true);
 }
@@ -69,19 +73,19 @@ UnicodeString UnixCombinePaths(const UnicodeString & Path1, const UnicodeString 
   return UnixIncludeTrailingBackslash(Path1) + Path2;
 }
 
-Boolean UnixSamePath(const UnicodeString Path1, const UnicodeString Path2)
+Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   return (UnixIncludeTrailingBackslash(Path1) == UnixIncludeTrailingBackslash(Path2));
 }
 
-bool UnixIsChildPath(UnicodeString Parent, UnicodeString Child)
+bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild)
 {
-  Parent = UnixIncludeTrailingBackslash(Parent);
-  Child = UnixIncludeTrailingBackslash(Child);
+  UnicodeString Parent = UnixIncludeTrailingBackslash(AParent);
+  UnicodeString Child = UnixIncludeTrailingBackslash(AChild);
   return (Child.SubString(1, Parent.Length()) == Parent);
 }
 
-UnicodeString UnixExtractFileDir(const UnicodeString Path)
+UnicodeString UnixExtractFileDir(const UnicodeString & Path)
 {
   int Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
@@ -96,7 +100,7 @@ UnicodeString UnixExtractFileDir(const UnicodeString Path)
 }
 
 // must return trailing backslash
-UnicodeString UnixExtractFilePath(const UnicodeString Path)
+UnicodeString UnixExtractFilePath(const UnicodeString & Path)
 {
   int Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
@@ -110,7 +114,7 @@ UnicodeString UnixExtractFilePath(const UnicodeString Path)
   }
 }
 
-UnicodeString UnixExtractFileName(const UnicodeString Path)
+UnicodeString UnixExtractFileName(const UnicodeString & Path)
 {
   int Pos = Path.LastDelimiter(L'/');
   UnicodeString Result;
@@ -125,7 +129,7 @@ UnicodeString UnixExtractFileName(const UnicodeString Path)
   return Result;
 }
 
-UnicodeString UnixExtractFileExt(const UnicodeString Path)
+UnicodeString UnixExtractFileExt(const UnicodeString & Path)
 {
   UnicodeString FileName = UnixExtractFileName(Path);
   int Pos = FileName.LastDelimiter(L".");
@@ -142,6 +146,16 @@ UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix)
   {
     return ExtractFileName(Path);
   }
+}
+
+UnicodeString ExtractShortName(const UnicodeString & Path, bool Unix)
+{
+  UnicodeString Result = ExtractFileName(Path, Unix);
+  if (Result.IsEmpty())
+  {
+    Result = Path;
+  }
+  return Result;
 }
 
 bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
@@ -212,12 +226,12 @@ bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
   return Result;
 }
 
-bool IsUnixRootPath(const UnicodeString Path)
+bool IsUnixRootPath(const UnicodeString & Path)
 {
   return Path.IsEmpty() || (Path == ROOTDIRECTORY);
 }
 
-bool IsUnixHiddenFile(const UnicodeString FileName)
+bool IsUnixHiddenFile(const UnicodeString & FileName)
 {
   return IsRealFile(FileName) && !FileName.IsEmpty() && (FileName[1] == L'.');
 }
@@ -262,12 +276,12 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
   return Result;
 }
 
-UnicodeString FromUnixPath(const UnicodeString Path)
+UnicodeString FromUnixPath(const UnicodeString & Path)
 {
   return ReplaceStr(Path, L"/", L"\\");
 }
 
-UnicodeString ToUnixPath(const UnicodeString Path)
+UnicodeString ToUnixPath(const UnicodeString & Path)
 {
   return ReplaceStr(Path, L"\\", L"/");
 }
@@ -313,7 +327,7 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
   }
 }
 
-UnicodeString MinimizeName(const UnicodeString FileName, int MaxLen, bool Unix)
+UnicodeString MinimizeName(const UnicodeString & FileName, int MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name, Result;
   UnicodeString Sep = Unix ? L"/" : L"\\";
@@ -476,6 +490,28 @@ UnicodeString ModificationStr(TDateTime DateTime,
   }
 }
 
+int GetPartialFileExtLen(const UnicodeString & FileName)
+{
+  int Result = 0;
+  if (EndsText(PartialExt, FileName))
+  {
+    Result = PartialExt.Length();
+  }
+  else
+  {
+    int P = FileName.LastDelimiter(L".");
+    if ((P > 0) && (P < FileName.Length()))
+    {
+      if (IsNumber(MidStr(FileName, P + 1)) &&
+          EndsText(PartialExt, FileName.SubString(1, P - 1)))
+      {
+        Result = PartialExt.Length() + (FileName.Length() - P + 1);
+      }
+    }
+  }
+  return Result;
+}
+
 int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   UnicodeString * TypeName)
 {
@@ -491,10 +527,10 @@ int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
   }
   // this should be somewhere else, probably in TUnixDirView,
   // as the "partial" overlay is added there too
-  if (SameText(UnixExtractFileExt(FileName), PARTIAL_EXT))
+  int PartialFileExtLen = GetPartialFileExtLen(FileName);
+  if (GetPartialFileExtLen(FileName) > 0)
   {
-    static const size_t PartialExtLen = LENOF(PARTIAL_EXT) - 1;
-    FileName.SetLength(FileName.Length() - PartialExtLen);
+    FileName.SetLength(FileName.Length() - PartialFileExtLen);
   }
 
   int Icon;
@@ -1669,26 +1705,26 @@ void TRemoteFileList::AddFile(TRemoteFile *AFile)
   }
 }
 
-void TRemoteFileList::AddFiles(const TRemoteFileList *AFileList)
+Strings * TRemoteFileList::CloneStrings(TStrings * List)
 {
-  if (!AFileList)
-    return;
-  for (int32_t Index = 0; Index < AFileList->GetCount(); ++Index)
+  std::unique_ptr<TStringList> Result(new TStringList());
+  Result->OwnsObjects = true;
+  for (int Index = 0; Index < List->Count; Index++)
   {
-    AddFile(AFileList->GetFile(Index));
-  }
-}
-
-TStrings *TRemoteFileList::CloneStrings(TStrings *List)
-{
-  std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
-  Result->SetOwnsObjects(true);
-  for (int32_t Index = 0; Index < List->GetCount(); Index++)
-  {
-    TRemoteFile *File = List->GetAs<TRemoteFile>(Index);
-    Result->AddObject(List->GetString(Index), File->Duplicate(true));
+    TRemoteFile * File = static_cast<TRemoteFile *>(List->Objects[Index]);
+    Result->AddObject(List->Strings[Index], File->Duplicate(true));
   }
   return Result.release();
+}
+
+bool TRemoteFileList::AnyDirectory(TStrings * List)
+{
+  bool Result = false;
+  for (int Index = 0; !Result && (Index < List->Count); Index++)
+  {
+    Result = static_cast<TRemoteFile *>(List->Objects[Index])->IsDirectory;
+  }
+  return Result;
 }
 
 void TRemoteFileList::DuplicateTo(TRemoteFileList *Copy) const

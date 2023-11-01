@@ -118,15 +118,6 @@ void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const Unicod
 
   ne_redirect_register(Session);
   ne_set_useragent(Session, StrToNeon(FORMAT("%s/%s", GetAppNameString(), GetConfiguration()->GetVersion())));
-  UnicodeString CertificateStorage = GetConfiguration()->GetCertificateStorageExpanded();
-  if (!CertificateStorage.IsEmpty())
-  {
-    ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
-    if (Terminal != nullptr)
-    {
-      Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", CertificateStorage));
-    }
-  }
 
   if (Terminal != nullptr)
   {
@@ -145,13 +136,14 @@ void DestroyNeonSession(ne_session *Session)
   ne_session_destroy(Session);
 }
 
-UnicodeString GetNeonError(ne_session *Session)
+UnicodeString GetNeonError(ne_session * Session)
 {
-  return StrFromNeon(ne_get_error(Session));
+  // The error may contain localized Windows error messages (in legacy Ansi encoding)
+  return UnicodeString(AnsiString(ne_get_error(Session)));
 }
 
 void CheckNeonStatus(ne_session * Session, int32_t NeonStatus,
-  const UnicodeString AHostName, const UnicodeString CustomError)
+  const UnicodeString & AHostName, const UnicodeString & CustomError)
 {
   if (NeonStatus == NE_OK)
   {
@@ -214,6 +206,9 @@ void CheckNeonStatus(ne_session * Session, int32_t NeonStatus,
       }
     }
 
+    UnicodeString LogError(Error);
+    AddToList(LogError, NeonError, sLineBreak);
+    AppLogFmt(L"HTTP request failed: %s", (LogError));
     throw ExtException(Error, NeonError);
   }
 }
@@ -264,23 +259,44 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 } // extern "C"
 
-void SetNeonTlsInit(ne_session *Session, TNeonTlsInit OnNeonTlsInit)
+void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal * Terminal)
 {
-  // TMethod &Method = *(TMethod*)&OnNeonTlsInit;
-  // ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
-  // ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
-  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, nb::ToPtr(OnNeonTlsInit));
+  UnicodeString CertificateStorage = Configuration->CertificateStorageExpanded;
+  if (!CertificateStorage.IsEmpty())
+  {
+    ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
+    if (Terminal != nullptr)
+    {
+      Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", (CertificateStorage)));
+    }
+  }
+
+  // As the OnNeonTlsInit always only calls SetupSsl, we can simplify this with one shared implementation
+  TMethod & Method = *(TMethod*)&OnNeonTlsInit;
+  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
+  ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
 }
 
-AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate)
+void InitNeonTls(
+  ne_session * Session, TNeonTlsInit OnNeonTlsInit, ne_ssl_verify_fn VerifyCallback, void * VerifyContext,
+  TTerminal * Terminal)
 {
-  char *AsciiCert = ne_ssl_cert_export(Certificate);
+  SetNeonTlsInit(Session, OnNeonTlsInit, Terminal);
+
+  ne_ssl_set_verify(Session, VerifyCallback, VerifyContext);
+
+  ne_ssl_trust_default_ca(Session);
+}
+
+AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
+{
+  char * AsciiCert = ne_ssl_cert_export(Certificate);
   AnsiString Result = AsciiCert;
   ne_free(AsciiCert);
   return Result;
 }
 
-bool NeonWindowsValidateCertificate(int &Failures, const AnsiString AsciiCert, UnicodeString &Error)
+bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert, UnicodeString & Error)
 {
   bool Result = false;
   // We can accept only unknown certificate authority.
@@ -305,7 +321,7 @@ bool NeonWindowsValidateCertificate(int &Failures, const AnsiString AsciiCert, U
   return Result;
 }
 
-bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &AMessage)
+bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString & AMessage)
 {
   bool Result;
   UnicodeString WindowsCertificateError;
@@ -556,8 +572,8 @@ UnicodeString NeonTlsSessionInfo(
 
 void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
 {
-  MaxTlsVersion = (TTlsVersion)std::max(MaxTlsVersion, tls10); // the lowest currently supported version
-  #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > (VERSION)) || (MaxTlsVersion < (VERSION)) ? (FLAG) : 0)
+  MaxTlsVersion = (TTlsVersion)std::max(MaxTlsVersion, tlsMin); // the lowest currently supported version
+  #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > VERSION) || (MaxTlsVersion < VERSION) ? FLAG : 0)
   int32_t Options =
     MASK_TLS_VERSION(tls10, SSL_OP_NO_TLSv1) |
     MASK_TLS_VERSION(tls11, SSL_OP_NO_TLSv1_1) |

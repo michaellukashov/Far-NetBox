@@ -29,16 +29,25 @@ __removed #pragma package(smart_init)
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 
+#include "Exceptions.h"
+#include "Interface.h"
+#include "Terminal.h"
+#include "TextsCore.h"
+#include "HelpCore.h"
+#include "Cryptography.h"
+
 namespace base { // from RemoteFiles.cpp
 
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
 
-bool IsUnixStyleWindowsPath(const UnicodeString APath)
+const UnicodeString PartialExt(L".filepart");
+
+bool IsUnixStyleWindowsPath(const UnicodeString & APath)
 {
   return (APath.Length() >= 3) && IsLetter(APath[1]) && (APath[2] == L':') && (APath[3] == L'/');
 }
 
-bool UnixIsAbsolutePath(const UnicodeString APath)
+bool UnixIsAbsolutePath(const UnicodeString & APath)
 {
   return
     ((APath.Length() >= 1) && (APath[1] == L'/')) ||
@@ -46,7 +55,7 @@ bool UnixIsAbsolutePath(const UnicodeString APath)
     base::IsUnixStyleWindowsPath(APath);
 }
 
-UnicodeString UnixIncludeTrailingBackslash(const UnicodeString APath)
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & APath)
 {
   // it used to return "/" when input path was empty
   if (!APath.IsEmpty() && !APath.IsDelimiter(SLASH, APath.Length()))
@@ -57,7 +66,7 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString APath)
 }
 
 // Keeps "/" for root path
-UnicodeString UnixExcludeTrailingBackslash(const UnicodeString APath, bool Simple)
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & APath, bool Simple)
 {
   UnicodeString Result;
   if (APath.IsEmpty() ||
@@ -78,29 +87,29 @@ UnicodeString UnixExcludeTrailingBackslash(const UnicodeString APath, bool Simpl
   return Result;
 }
 
-UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString APath)
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath)
 {
   return base::UnixExcludeTrailingBackslash(APath, true);
 }
 
-UnicodeString UnixCombinePaths(const UnicodeString APath1, const UnicodeString APath2)
+UnicodeString UnixCombinePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 {
   return UnixIncludeTrailingBackslash(APath1) + APath2;
 }
 
-Boolean UnixSamePath(const UnicodeString APath1, const UnicodeString APath2)
+Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2)
 {
   return (base::UnixIncludeTrailingBackslash(APath1) == base::UnixIncludeTrailingBackslash(APath2));
 }
 
-bool UnixIsChildPath(UnicodeString AParent, UnicodeString AChild)
+bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild)
 {
   UnicodeString Parent = base::UnixIncludeTrailingBackslash(AParent);
   UnicodeString Child = base::UnixIncludeTrailingBackslash(AChild);
   return (Child.SubString(1, Parent.Length()) == Parent);
 }
 
-UnicodeString UnixExtractFileDir(const UnicodeString APath)
+UnicodeString UnixExtractFileDir(const UnicodeString & APath)
 {
   const int32_t Pos = APath.LastDelimiter(L'/');
   // it used to return Path when no slash was found
@@ -108,11 +117,14 @@ UnicodeString UnixExtractFileDir(const UnicodeString APath)
   {
     return APath.SubString(1, Pos - 1);
   }
-  return (Pos == 1) ? UnicodeString(ROOTDIRECTORY) : UnicodeString();
+  else
+  {
+    return (Pos == 1) ? UnicodeString(ROOTDIRECTORY) : UnicodeString();
+  }
 }
 
 // must return trailing backslash
-UnicodeString UnixExtractFilePath(const UnicodeString APath)
+UnicodeString UnixExtractFilePath(const UnicodeString & APath)
 {
   const int32_t Pos = APath.LastDelimiter(L'/');
   // it used to return Path when no slash was found
@@ -123,7 +135,7 @@ UnicodeString UnixExtractFilePath(const UnicodeString APath)
   return UnicodeString();
 }
 
-UnicodeString UnixExtractFileName(const UnicodeString APath)
+UnicodeString UnixExtractFileName(const UnicodeString & APath)
 {
   int32_t Pos = APath.LastDelimiter(L'/');
   UnicodeString Result;
@@ -148,7 +160,7 @@ UnicodeString ExtractShortName(const UnicodeString & Path, bool Unix)
   return Result;
 }
 
-UnicodeString UnixExtractFileExt(const UnicodeString APath)
+UnicodeString UnixExtractFileExt(const UnicodeString & APath)
 {
   UnicodeString FileName = UnixExtractFileName(APath);
   int32_t Pos = FileName.LastDelimiter(L".");
@@ -158,7 +170,7 @@ UnicodeString UnixExtractFileExt(const UnicodeString APath)
     return UnicodeString();
 }
 
-UnicodeString ExtractFileName(const UnicodeString APath, bool Unix)
+UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
 {
   if (Unix)
   {
@@ -197,7 +209,7 @@ bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
   return Result;
 }
 
-static UnicodeString GetFileListItemPath(const TStrings * Files, int Index)
+static UnicodeString GetFileListItemPath(const TStrings * Files, int32_t Index)
 {
   UnicodeString Result;
   if (Files->GetObj(Index) != nullptr)
@@ -238,19 +250,19 @@ bool UnixExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
   return Result;
 }
 
-bool IsUnixRootPath(const UnicodeString APath)
+bool IsUnixRootPath(const UnicodeString & APath)
 {
   return APath.IsEmpty() || (APath == ROOTDIRECTORY);
 }
 
-bool IsUnixHiddenFile(const UnicodeString AFileName)
+bool IsUnixHiddenFile(const UnicodeString & AFileName)
 {
 //  return (APath != THISDIRECTORY) && (APath != PARENTDIRECTORY) &&
 //    !APath.IsEmpty() && (APath[1] == L'.');
   return IsRealFile(AFileName) && !AFileName.IsEmpty() && (AFileName[1] == L'.');
 }
 
-UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)
+UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APath)
 {
   // There's a duplicate implementation in TTerminal::ExpandFileName()
   UnicodeString Result;
@@ -290,7 +302,7 @@ UnicodeString AbsolutePath(const UnicodeString Base, const UnicodeString APath)
   return Result;
 }
 
-UnicodeString FromUnixPath(const UnicodeString APath)
+UnicodeString FromUnixPath(const UnicodeString & APath)
 {
   return ReplaceStr(APath, SLASH, BACKSLASH);
 }
@@ -300,7 +312,7 @@ UnicodeString ToUnixPath(const UnicodeString APath)
   return ReplaceStr(APath, BACKSLASH, SLASH);
 }
 
-static void CutFirstDirectory(UnicodeString &S, bool Unix)
+static void CutFirstDirectory(UnicodeString & S, bool Unix)
 {
   UnicodeString Sep = Unix ? SLASH : BACKSLASH;
   if (S == Sep)
@@ -340,7 +352,7 @@ static void CutFirstDirectory(UnicodeString &S, bool Unix)
   }
 }
 
-UnicodeString MinimizeName(const UnicodeString AFileName, int32_t MaxLen, bool Unix)
+UnicodeString MinimizeName(const UnicodeString & AFileName, int32_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name;
   UnicodeString Sep = Unix ? SLASH : BACKSLASH;
@@ -396,7 +408,7 @@ UnicodeString MinimizeName(const UnicodeString AFileName, int32_t MaxLen, bool U
   return Result;
 }
 
-UnicodeString MakeFileList(const TStrings *AFileList)
+UnicodeString MakeFileList(const TStrings * AFileList)
 {
   UnicodeString Result;
   for (int32_t Index = 0; Index < AFileList->GetCount(); ++Index)
@@ -409,7 +421,7 @@ UnicodeString MakeFileList(const TStrings *AFileList)
 }
 
 // copy from BaseUtils.pas
-TDateTime ReduceDateTimePrecision(const TDateTime &ADateTime,
+TDateTime ReduceDateTimePrecision(const TDateTime & ADateTime,
   TModificationFmt Precision)
 {
   TDateTime DateTime = ADateTime;
@@ -453,7 +465,7 @@ TModificationFmt LessDateTimePrecision(
   return (Precision1 < Precision2) ? Precision1 : Precision2;
 }
 
-UnicodeString UserModificationStr(const TDateTime &DateTime,
+UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision)
 {
   Word Year, Month, Day, Hour, Min, Sec, MSec;
@@ -506,6 +518,28 @@ UnicodeString ModificationStr(const TDateTime &DateTime,
   }
 }
 
+int32_t GetPartialFileExtLen(const UnicodeString & FileName)
+{
+  int32_t Result = 0;
+  if (EndsText(PartialExt, FileName))
+  {
+    Result = PartialExt.Length();
+  }
+  else
+  {
+    int32_t P = FileName.LastDelimiter(L".");
+    if ((P > 0) && (P < FileName.Length()))
+    {
+      if (IsNumber(MidStr(FileName, P + 1)) &&
+          EndsText(PartialExt, FileName.SubString(1, P - 1)))
+      {
+        Result = PartialExt.Length() + (FileName.Length() - P + 1);
+      }
+    }
+  }
+  return Result;
+}
+
 int FakeFileImageIndex(UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
   UnicodeString * /*TypeName*/)
 {
@@ -522,10 +556,10 @@ int FakeFileImageIndex(UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
   }
   // this should be somewhere else, probably in TUnixDirView,
   // as the "partial" overlay is added there too
-  if (::SameText(base::UnixExtractFileExt(FileName), PARTIAL_EXT))
+  int PartialFileExtLen = GetPartialFileExtLen(FileName);
+  if (GetPartialFileExtLen(FileName) > 0)
   {
-    static const size_t PartialExtLen = _countof(PARTIAL_EXT) - 1;
-    FileName.SetLength(FileName.Length() - PartialExtLen);
+    FileName.SetLength(FileName.Length() - PartialFileExtLen);
   }
 
   int Icon;
@@ -553,7 +587,7 @@ int FakeFileImageIndex(UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
   return -1;
 }
 
-bool SameUserName(const UnicodeString UserName1, const UnicodeString UserName2)
+bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2)
 {
   // Bitvise reports file owner as "user@host", but we login with "user" only.
   UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
@@ -561,7 +595,7 @@ bool SameUserName(const UnicodeString UserName1, const UnicodeString UserName2)
   return ::SameText(AUserName1, AUserName2);
 }
 
-UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString ATarget, bool Unix)
+UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, bool Unix)
 {
   UnicodeString Dir;
   UnicodeString Name;
@@ -604,7 +638,7 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   return Result;
 }
 
-UnicodeString GetEnvVariable(UnicodeString AEnvVarName)
+UnicodeString GetEnvVariable(UnicodeStringconst UnicodeString & AEnvVarName)
 {
   UnicodeString Result;
   const int32_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);

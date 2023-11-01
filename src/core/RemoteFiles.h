@@ -15,7 +15,7 @@
 #define FILETYPE_DEFAULT L'-'
 #define FILETYPE_SYMLINK L'L'
 #define FILETYPE_DIRECTORY L'D'
-#define PARTIAL_EXT L".filepart"
+extern const UnicodeString PartialExt;
 
 class TTerminal;
 class TRights;
@@ -321,6 +321,7 @@ public:
   virtual void AddFile(TRemoteFile * AFile);
 
   static TStrings * CloneStrings(TStrings * List);
+  static bool AnyDirectory(TStrings * List);
 
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};

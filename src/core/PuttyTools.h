@@ -11,21 +11,22 @@ enum TKeyType
   ktOpenSSHAuto, ktOpenSSHPEM, ktOpenSSHNew, ktSSHCom,
   ktSSH1Public, ktSSH2PublicRFC4716, ktSSH2PublicOpenSSH,
 };
-NB_CORE_EXPORT TKeyType GetKeyType(const UnicodeString AFileName);
-NB_CORE_EXPORT UnicodeString GetKeyTypeName(TKeyType KeyType);
-NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment);
+NB_CORE_EXPORT TKeyType GetKeyType(const UnicodeString & AFileName);
+NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeString & Comment);
 struct TPrivateKey;
-NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase);
+NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase);
 UnicodeString TestKey(TKeyType KeyType, const UnicodeString & FileName);
-NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey *PrivateKey, const UnicodeString Comment);
+NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey * PrivateKey, const UnicodeString & Comment);
 void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & CertificateFileName);
 NB_CORE_EXPORT void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
-  const UnicodeString & Passphrase, TPrivateKey *PrivateKey);
-NB_CORE_EXPORT void FreeKey(TPrivateKey *PrivateKey);
+  const UnicodeString & Passphrase, TPrivateKey * PrivateKey);
+NB_CORE_EXPORT void FreeKey(TPrivateKey * PrivateKey);
+RawByteString LoadPublicKey(
+  const UnicodeString & FileName, UnicodeString & Algorithm, UnicodeString & Comment, bool & HasCertificate);
 UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment, bool & HasCertificate);
 extern const UnicodeString PuttyKeyExt;
 
-NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString CustomPath);
+NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString & CustomPath);
 
 NB_CORE_EXPORT void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
   size_t PasswordLen, const char *Salt);
@@ -37,13 +38,16 @@ NB_CORE_EXPORT UnicodeString GetPuTTYVersion();
 
 NB_CORE_EXPORT UnicodeString Sha256(const char *Data, size_t Size);
 
-NB_CORE_EXPORT void DllHijackingProtection();
-
-UnicodeString ParseOpenSshPubLine(const UnicodeString ALine, const struct ssh_keyalg *& Algorithm);
+UnicodeString ParseOpenSshPubLine(const UnicodeString & ALine, const struct ssh_keyalg *& Algorithm);
+void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & PublicKey, UnicodeString & Fingerprint);
+bool IsCertificateValidityExpressionValid(
+  const UnicodeString & Str, UnicodeString & Error, int & ErrorStart, int & ErrorLen);
 
 UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType);
 
 bool IsOpenSSH(const UnicodeString SshImplementation);
+
+NB_CORE_EXPORT UnicodeString GetKeyTypeName(TKeyType KeyType);
 
 TStrings * SshCipherList();
 TStrings * SshKexList();

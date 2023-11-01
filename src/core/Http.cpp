@@ -8,7 +8,10 @@
 #include "Http.h"
 #include "NeonIntf.h"
 #include "Exceptions.h"
+#include "CoreMain.h"
 #include "TextsCore.h"
+
+constexpr const int32_t BasicHttpResponseLimit = 100 * 1024;
 
 THttp::THttp() noexcept :
   FResponseHeaders(std::make_unique<TStringList>())
@@ -72,9 +75,7 @@ void THttp::SendRequest(const char *Method, const UnicodeString Request)
 
       if (IsTls)
       {
-        SetNeonTlsInit(NeonSession, InitSslSession);
-
-        ne_ssl_set_verify(NeonSession, NeonServerSSLCallback, this);
+        InitNeonTls(NeonSession, InitSslSession, NeonServerSSLCallback, this, nullptr);
 
         ne_ssl_trust_default_ca(NeonSession);
       }
@@ -227,19 +228,57 @@ int THttp::NeonServerSSLCallback(void *UserData, int Failures, const ne_ssl_cert
   return Http->NeonServerSSLCallbackImpl(Failures, Certificate);
 }
 
-int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate *Certificate)
+enum { hcvNoWindows = 0x01, hcvNoKnown = 0x02 };
+
+int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate * ACertificate)
 {
-  AnsiString AsciiCert = NeonExportCertificate(Certificate);
+  AnsiString AsciiCert = NeonExportCertificate(ACertificate);
 
   UnicodeString WindowsCertificateError;
-  if (Failures != 0)
+  if ((Failures != 0) && FLAGCLEAR(Configuration->HttpsCertificateValidation, hcvNoWindows))
   {
-    NeonWindowsValidateCertificate(Failures, AsciiCert, WindowsCertificateError);
+    AppLogFmt(L"TLS failure: %s (%d)", NeonCertificateFailuresErrorStr(Failures, FHostName), Failures);
+    AppLogFmt(L"Hostname: %s, Certificate: %s", FHostName, AsciiCert, AsciiCert);
+    if (NeonWindowsValidateCertificate(Failures, AsciiCert, WindowsCertificateError))
+    {
+      AppLogFmt(L"Certificate trusted by Windows certificate store (%d)", Failures);
+    }
+    if (!WindowsCertificateError.IsEmpty())
+    {
+      AppLogFmt(L"Error from Windows certificate store: %s", WindowsCertificateError);
+    }
+  }
+
+  if ((Failures != 0) && FLAGSET(Failures, NE_SSL_UNTRUSTED) && FLAGCLEAR(Configuration->HttpsCertificateValidation, hcvNoKnown) &&
+      !Certificate.IsEmpty())
+  {
+    const ne_ssl_certificate * RootCertificate = ACertificate;
+    do
+    {
+      const ne_ssl_certificate * Issuer = ne_ssl_cert_signedby(RootCertificate);
+      if (Issuer != nullptr)
+      {
+        RootCertificate = Issuer;
+      }
+      else
+      {
+        break;
+      }
+    }
+    while (true);
+
+    UnicodeString RootCert = UnicodeString(NeonExportCertificate(RootCertificate));
+    if (RootCert == Certificate)
+    {
+      Failures &= ~NE_SSL_UNTRUSTED;
+      AppLogFmt(L"Certificate is known (%d)", (Failures));
+    }
   }
 
   if (Failures != 0)
   {
     FCertificateError = NeonCertificateFailuresErrorStr(Failures, FHostName);
+    AppLogFmt(L"TLS certificate error: %s", FCertificateError);
     AddToList(FCertificateError, WindowsCertificateError, L"\n");
   }
 
