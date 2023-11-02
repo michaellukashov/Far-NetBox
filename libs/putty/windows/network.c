@@ -20,7 +20,9 @@
 
 #ifdef MPEXT
 // ws2tcpip.h does not compile without _MSC_VER defined
+#ifndef _MSC_VER
 #define _MSC_VER 1000
+#endif
 #endif
 #include <ws2tcpip.h>
 
