@@ -98,7 +98,7 @@ DWORD TFileBuffer::LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, i
   FMemory->Seek(0, TSeekOrigin::soFromBeginning);
   DebugAssert(GetPosition() == 0);
   NeedSpace(Len);
-  size_t Result = OnTransferIn(Sender, reinterpret_cast<unsigned char *>(GetPointer(), Len);
+  size_t Result = OnTransferIn(Sender, reinterpret_cast<unsigned char *>(GetPointer()), Len);
   ProcessRead(Len, Result);
   return Result;
 }
@@ -237,7 +237,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   DebugAssert(Stream);
   try
   {
-    Stream->WriteBuffer(GetPointer, Len);
+    Stream->WriteBuffer(GetPointer(), Len);
     const int64_t res = FMemory->Seek(Len, TSeekOrigin::soFromCurrent);
     DebugAssert(res >= Len);
   }
@@ -249,7 +249,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 
 void TFileBuffer::WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len)
 {
-  OnTransferOut(Sender, reinterpret_cast<const unsigned char *>(GetPointer(), Len);
+  OnTransferOut(Sender, reinterpret_cast<const unsigned char *>(GetPointer()), Len);
   FMemory->Seek(Len, TSeekOrigin::soFromCurrent);
 }
 

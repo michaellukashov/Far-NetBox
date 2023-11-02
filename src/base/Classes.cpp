@@ -1371,7 +1371,7 @@ TSafeHandleStream::TSafeHandleStream(THandleStream * Source, bool Own) :
 
 TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, unsigned short Mode)
 {
-  return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
+  return nullptr; //TODO: new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
 }
 
 TSafeHandleStream::~TSafeHandleStream()

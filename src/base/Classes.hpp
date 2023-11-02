@@ -218,6 +218,8 @@ public:
   explicit TObjectList(TObjectClassId Kind);
   virtual ~TObjectList() override;
 
+  RWProperty2<bool> OwnsObjects{&FOwnsObjects};
+
   template<class T>
   T *GetAs(int32_t Index) const { return dyn_cast<T>(GetObj(Index)); }
   TObject *operator[](int32_t Index) const;
@@ -299,6 +301,8 @@ public:
   UnicodeString GetValue(UnicodeString Name) const;
   void SetValue(UnicodeString Name, UnicodeString Value);
   UnicodeString GetValueFromIndex(int32_t Index) const;
+
+  ROProperty<UnicodeString> Text{nb::bind(&TStrings::GetText, this)};
 
 public:
   // TODO: ROIndexedProperty<TObject *> Objects{nb::bind(&TStrings::GetObj, this)};

@@ -66,15 +66,15 @@ NB_CORE_EXPORT UnicodeString RemoveSuffix(const UnicodeString Str, const Unicode
 UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote = L'"');
 UnicodeString MidStr(const UnicodeString & Text, int Start);
 UnicodeString ShellQuoteStr(const UnicodeString & Str);
-NB_CORE_EXPORT UnicodeString ExceptionLogString(Exception *E);
-NB_CORE_EXPORT UnicodeString MainInstructions(const UnicodeString S);
-NB_CORE_EXPORT bool HasParagraphs(const UnicodeString S);
-NB_CORE_EXPORT UnicodeString MainInstructionsFirstParagraph(const UnicodeString S);
-NB_CORE_EXPORT bool ExtractMainInstructions(UnicodeString &S, UnicodeString &MainInstructions);
-NB_CORE_EXPORT UnicodeString RemoveMainInstructionsTag(UnicodeString S);
-NB_CORE_EXPORT UnicodeString UnformatMessage(UnicodeString S);
-NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(UnicodeString S);
-NB_CORE_EXPORT UnicodeString RemoveEmptyLines(const UnicodeString S);
+NB_CORE_EXPORT UnicodeString ExceptionLogString(Exception * E);
+NB_CORE_EXPORT UnicodeString MainInstructions(const UnicodeString & S);
+NB_CORE_EXPORT bool HasParagraphs(const UnicodeString & S);
+NB_CORE_EXPORT UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S);
+NB_CORE_EXPORT bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions);
+NB_CORE_EXPORT UnicodeString RemoveMainInstructionsTag(const UnicodeString & S);
+NB_CORE_EXPORT UnicodeString UnformatMessage(const UnicodeString & S);
+NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
+NB_CORE_EXPORT UnicodeString RemoveEmptyLines(const UnicodeString & S);
 bool IsNumber(const UnicodeString Str);
 extern const wchar_t NormalizedFingerprintSeparator;
 UnicodeString EncodeStrToBase64(const RawByteString & Str);
@@ -563,9 +563,8 @@ enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
 
 namespace base {
 //TODO: move to Sysutils.hpp
-NB_CORE_EXPORT UnicodeString GetEnvVariable(UnicodeString AEnvVarName);
+NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName);
 NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
-NB_CORE_EXPORT UnicodeString GetEnvVariable(UnicodeString AEnvVarName);
 } // namespace base
 
 constexpr char * LOCAL_INVALID_CHARS = "/\\:*?\"<>|";

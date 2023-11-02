@@ -256,7 +256,7 @@ NB_CORE_EXPORT wchar_t LowCase(const wchar_t Ch);
 NB_CORE_EXPORT UnicodeString AnsiReplaceStr(const UnicodeString Str, const UnicodeString From, const UnicodeString To);
 NB_CORE_EXPORT int32_t AnsiPos(const UnicodeString Str, wchar_t Ch);
 NB_CORE_EXPORT int32_t Pos(const UnicodeString Str, const UnicodeString Substr);
-NB_CORE_EXPORT UnicodeString StringReplaceAll(const UnicodeString Str, const UnicodeString From, const UnicodeString To);
+NB_CORE_EXPORT UnicodeString StringReplaceAll(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
 NB_CORE_EXPORT bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, int32_t AIndex);
 NB_CORE_EXPORT int32_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
 NB_CORE_EXPORT int32_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str);

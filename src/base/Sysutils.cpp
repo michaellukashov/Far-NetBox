@@ -288,7 +288,7 @@ int32_t Pos(const UnicodeString Str, const UnicodeString Substr)
   return Result;
 }
 
-UnicodeString StringReplaceAll(const UnicodeString Str, const UnicodeString From, const UnicodeString To)
+UnicodeString StringReplaceAll(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To)
 {
   return AnsiReplaceStr(Str, From, To);
 }

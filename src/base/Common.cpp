@@ -636,7 +636,7 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   return Result;
 }
 
-UnicodeString GetEnvVariable(UnicodeStringconst UnicodeString & AEnvVarName)
+UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 {
   UnicodeString Result;
   const int32_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
@@ -1136,7 +1136,7 @@ RawByteString DecodeBase64ToStr(const UnicodeString & Str)
   TBytes Bytes = DecodeBase64(Str);
   // This might be the same as TEncoding::ASCII->GetString.
   // const_cast: The operator[] const is (badly?) implemented to return by value
-  return RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), Bytes.Length);
+  return RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), Bytes.size());
 }
 
 UnicodeString Base64ToUrlSafe(const UnicodeString & S)
@@ -2195,7 +2195,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString APath)
 DWORD FindFirstUnchecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
 {
   F.Path = APath;
-  F.Dir = ExtractFilePath(Path);
+  F.Dir = ExtractFilePath(APath);
   DWORD Result = base::FindFirst(ApiPath(APath), LocalFileAttrs, F);
   F.Opened = (Result == 0);
   return Result;
@@ -2267,7 +2267,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   }
 
   TSearchRecOwned SearchRec;
-  if (FindFirstChecked(TPath::Combine(DirName, AnyMask), FindAttrs, SearchRec) == 0)
+  if (FindFirstChecked(TPath::Combine(ADirName, AnyMask), FindAttrs, SearchRec) == 0)
   {
     do
     {
@@ -3249,7 +3249,7 @@ static bool DoRecursiveDeleteFile(
   if (!ToRecycleBin)
   {
     TSearchRecChecked InitialSearchRec;
-    Result = FileSearchRec(AFileName, SearchRec);
+    Result = FileSearchRec(AFileName, InitialSearchRec);
     if (Result)
     {
       if (!InitialSearchRec.IsDirectory())
@@ -3279,7 +3279,7 @@ static bool DoRecursiveDeleteFile(
             }
             else
             {
-              Result = DeleteFile(ApiPath(FileName2));
+              Result = ::SysUtulsRemoveFile(ApiPath(FileName2));
               if (!Result)
               {
                 AErrorPath = FileName2;
