@@ -229,22 +229,22 @@ public:
 };
 
 template <typename T>
-class ROPropertySimple //8 bytes
+class ROProperty2 //8 bytes
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 private:
   const T *_value{nullptr};
 public:
-  ROPropertySimple() = delete;
-  explicit ROPropertySimple(const T *Value) noexcept :
+  ROProperty2() = delete;
+  explicit ROProperty2(const T *Value) noexcept :
     _value(Value)
   {
     Expects(_value != nullptr);
   }
-  ROPropertySimple(const ROPropertySimple&) = default;
-  ROPropertySimple(ROPropertySimple&&) = default;
-  ROPropertySimple& operator=(const ROPropertySimple&) = default;
-  ROPropertySimple& operator=(ROPropertySimple&&) = default;
+  ROProperty2(const ROProperty2&) = default;
+  ROProperty2(ROProperty2&&) = default;
+  ROProperty2& operator=(const ROProperty2&) = default;
+  ROProperty2& operator=(ROProperty2&&) = default;
   constexpr T operator()() const
   {
     Expects(_value);
@@ -267,24 +267,24 @@ public:
   }
   constexpr decltype(auto) operator*() const { return *_value; }
 
-  friend bool constexpr inline operator==(const ROPropertySimple &lhs, const ROPropertySimple &rhs)
+  friend bool constexpr inline operator==(const ROProperty2 &lhs, const ROProperty2 &rhs)
   {
     Expects(lhs._value);
     Expects(rhs._value);
     return *lhs._value == *rhs._value;
   }
-  friend bool constexpr inline operator==(const ROPropertySimple &lhs, const T &rhs)
+  friend bool constexpr inline operator==(const ROProperty2 &lhs, const T &rhs)
   {
     Expects(lhs._value);
     return *lhs._value == rhs;
   }
-  friend bool constexpr inline operator!=(const ROPropertySimple &lhs, const ROPropertySimple &rhs)
+  friend bool constexpr inline operator!=(const ROProperty2 &lhs, const ROProperty2 &rhs)
   {
     Expects(lhs._value);
     Expects(rhs._value);
     return *lhs._value != *rhs._value;
   }
-  friend bool constexpr inline operator!=(ROPropertySimple &lhs, const T &rhs)
+  friend bool constexpr inline operator!=(ROProperty2 &lhs, const T &rhs)
   {
     Expects(lhs._value);
     return *lhs._value != rhs;

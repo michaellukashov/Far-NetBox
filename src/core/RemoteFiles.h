@@ -541,9 +541,9 @@ public:
   __property unsigned short Number = { read = GetNumber, write = SetNumber };
   RWProperty<uint16_t> Number{nb::bind(&TRights::GetNumber, this), nb::bind(&TRights::SetNumber, this)};
   __property unsigned short NumberSet = { read = FSet };
-  ROPropertySimple<uint16_t> NumberSet{&FSet};
+  ROProperty2<uint16_t> NumberSet{&FSet};
   __property unsigned short NumberUnset = { read = FUnset };
-  ROPropertySimple<uint16_t> NumberUnset{&FUnset};
+  ROProperty2<uint16_t> NumberUnset{&FUnset};
   __property unsigned long NumberDecadic = { read = GetNumberDecadic };
   __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
   __property bool Right[TRight Right] = { read = GetRight, write = SetRight };

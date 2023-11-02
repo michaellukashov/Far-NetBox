@@ -429,9 +429,9 @@ public:
   void AddStartupInfo();
   void Log(const UnicodeString & S);
   __property bool Logging = { read = FLogging };
-  ROPropertySimple<bool> Logging{&FLogging};
+  ROProperty2<bool> Logging{&FLogging};
   __property UnicodeString Path = { read = FPath };
-  ROPropertySimple<UnicodeString> Path{&FPath};
+  ROProperty2<UnicodeString> Path{&FPath};
 
 private:
   UnicodeString FPath;

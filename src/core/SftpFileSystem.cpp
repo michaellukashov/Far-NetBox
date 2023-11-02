@@ -992,7 +992,7 @@ public:
   __property unsigned int SendLength = { read = GetSendLength };
   __property unsigned int Capacity = { read = FCapacity, write = SetCapacity };
   __property unsigned char Type = { read = FType };
-  ROPropertySimple<SSH_FXP_TYPE> Type{&FType};
+  ROProperty2<SSH_FXP_TYPE> Type{&FType};
   __property unsigned char RequestType = { read = GetRequestType };
   __property unsigned int MessageNumber = { read = FMessageNumber, write = FMessageNumber };
   RWProperty2<uint32_t> MessageNumber{&FMessageNumber};
