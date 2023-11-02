@@ -156,28 +156,28 @@ public:
   // Needs an explicit virtual destructor, as is has virtual methods
   virtual ~TCustomCommand() = default;
 
-  UnicodeString Complete(const UnicodeString Command, bool LastPass);
-  virtual void Validate(const UnicodeString Command);
-  bool HasAnyPatterns(const UnicodeString Command) const;
+  UnicodeString Complete(const UnicodeString & Command, bool LastPass);
+  virtual void Validate(const UnicodeString & Command);
+  bool HasAnyPatterns(const UnicodeString & Command) const;
 
   static UnicodeString Escape(const UnicodeString S);
 
 protected:
   static const wchar_t NoQuote;
   static const UnicodeString Quotes;
-  void GetToken(const UnicodeString Command,
-    int32_t Index, int32_t &Len, wchar_t &PatternCmd) const;
-  void CustomValidate(const UnicodeString Command, void *Arg);
-  bool FindPattern(const UnicodeString Command, wchar_t PatternCmd) const;
+  void GetToken(const UnicodeString & Command,
+    int32_t Index, int32_t & Len, wchar_t & PatternCmd) const;
+  void CustomValidate(const UnicodeString & Command, void * Arg);
+  bool FindPattern(const UnicodeString & Command, wchar_t PatternCmd) const;
 
-  virtual void ValidatePattern(const UnicodeString Command,
+  virtual void ValidatePattern(const UnicodeString & Command,
     int32_t Index, int32_t Len, wchar_t PatternCmd, void *Arg);
 
-  virtual int32_t PatternLen(const UnicodeString Command, int32_t Index) const = 0;
-  virtual void PatternHint(int32_t Index, const UnicodeString Pattern);
-  virtual bool PatternReplacement(int32_t Index, const UnicodeString Pattern,
-    UnicodeString &Replacement, bool &Delimit) const = 0;
-  virtual void DelimitReplacement(UnicodeString &Replacement, wchar_t Quote);
+  virtual int32_t PatternLen(const UnicodeString & Command, int32_t Index) const = 0;
+  virtual void PatternHint(int32_t Index, const UnicodeString & Pattern);
+  virtual bool PatternReplacement(int32_t Index, const UnicodeString & Pattern,
+    UnicodeString &Replacement, bool & Delimit) const = 0;
+  virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
 
 class NB_CORE_EXPORT TInteractiveCustomCommand : public TCustomCommand
@@ -189,15 +189,15 @@ public:
 
 protected:
   virtual void Prompt(int32_t Index, const UnicodeString Prompt,
-    UnicodeString &Value) const;
-  virtual void Execute(const UnicodeString Command,
-    UnicodeString &Value) const;
-  virtual int32_t PatternLen(const UnicodeString Command, int32_t Index) const override;
-  virtual bool PatternReplacement(int32_t Index, const UnicodeString Pattern,
-    UnicodeString &Replacement, bool &Delimit) const override;
+    UnicodeString & Value) const;
+  virtual void Execute(const UnicodeString & Command,
+    UnicodeString & Value) const;
+  virtual int32_t PatternLen(const UnicodeString & Command, int32_t Index) const override;
+  virtual bool PatternReplacement(int32_t Index, const UnicodeString & Pattern,
+    UnicodeString & Replacement, bool & Delimit) const override;
   void ParsePromptPattern(
-    const UnicodeString Pattern, UnicodeString &Prompt, UnicodeString &Default, bool &Delimit) const;
-  bool IsPromptPattern(const UnicodeString Pattern) const;
+    const UnicodeString Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const;
+  bool IsPromptPattern(const UnicodeString & Pattern) const;
 
 private:
   TCustomCommand *FChildCustomCommand{nullptr};
@@ -235,26 +235,26 @@ class NB_CORE_EXPORT TFileCustomCommand : public TCustomCommand
 {
 public:
   TFileCustomCommand() noexcept;
-  explicit TFileCustomCommand(const TCustomCommandData &Data, const UnicodeString APath) noexcept;
-  explicit TFileCustomCommand(const TCustomCommandData &Data, const UnicodeString APath,
-    const UnicodeString AFileName, const UnicodeString FileList) noexcept;
+  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath) noexcept;
+  explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath,
+    const UnicodeString & AFileName, const UnicodeString & FileList) noexcept;
   virtual ~TFileCustomCommand() = default;
 
-  virtual void Validate(const UnicodeString Command) override;
-  virtual void ValidatePattern(const UnicodeString Command,
-    int32_t Index, int32_t Len, wchar_t PatternCmd, void *Arg) override;
+  virtual void Validate(const UnicodeString & Command) override;
+  virtual void ValidatePattern(const UnicodeString & Command,
+    int32_t Index, int32_t Len, wchar_t PatternCmd, void * Arg) override;
 
-  bool IsFileListCommand(const UnicodeString Command) const;
-  virtual bool IsFileCommand(const UnicodeString Command) const;
-  bool IsRemoteFileCommand(const UnicodeString Command) const;
-  bool IsSiteCommand(const UnicodeString Command) const;
-  bool IsSessionCommand(const UnicodeString Command) const;
-  bool IsPasswordCommand(const UnicodeString Command) const;
+  bool IsFileListCommand(const UnicodeString & Command) const;
+  virtual bool IsFileCommand(const UnicodeString & Command) const;
+  bool IsRemoteFileCommand(const UnicodeString & Command) const;
+  bool IsSiteCommand(const UnicodeString & Command) const;
+  bool IsSessionCommand(const UnicodeString & Command) const;
+  bool IsPasswordCommand(const UnicodeString & Command) const;
 
 protected:
-  virtual int32_t PatternLen(const UnicodeString Command, int32_t Index) const override;
-  virtual bool PatternReplacement(int32_t Index, const UnicodeString Pattern,
-    UnicodeString &Replacement, bool &Delimit) const override;
+  virtual int32_t PatternLen(const UnicodeString & Command, int32_t Index) const override;
+  virtual bool PatternReplacement(int32_t Index, const UnicodeString & Pattern,
+    UnicodeString & Replacement, bool & Delimit) const override;
 
 private:
   TCustomCommandData FData;

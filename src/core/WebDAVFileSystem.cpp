@@ -800,7 +800,7 @@ struct TReadFileData
 };
 
 int TWebDAVFileSystem::ReadDirectoryInternal(
-  UnicodeString APath, TRemoteFileList *AFileList)
+  const UnicodeString & APath, TRemoteFileList * AFileList)
 {
   TReadFileData Data;
   Data.FileSystem = this;
@@ -1122,13 +1122,13 @@ void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString /*AFileName*/,
 }
 
 int TWebDAVFileSystem::RenameFileInternal(
-  const UnicodeString AFileName,const UnicodeString ANewName, bool Overwrite)
+  const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite)
 {
   return ne_move(FSessionContext->NeonSession, Overwrite, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
 void TWebDAVFileSystem::RemoteRenameFile(
-  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString ANewName, bool Overwrite)
+  const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool Overwrite)
 {
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);

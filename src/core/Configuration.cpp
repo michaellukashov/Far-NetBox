@@ -170,7 +170,7 @@ TSshHostCAList & TSshHostCAList::operator =(const TSshHostCAList & other)
 TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   TObject(Kind)
 {
-  FCriticalSection = new TCriticalSection();
+  // FCriticalSection = new TCriticalSection();
   FUpdating = 0;
   FStorage = stDetect;
   FDontSave = false;
@@ -179,7 +179,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   __removed FUsage = std::make_unique<TUsage>(this);
   FDefaultCollectUsage = false;
   FScripting = false;
-  FSshHostCAList.reset(std::make_unique<TSshHostCAList>());
+  FSshHostCAList.reset();
 
   UnicodeString RandomSeedPath;
   if (!base::GetEnvVariable("APPDATA").IsEmpty())
@@ -370,7 +370,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   return Result;
 }
 
-UnicodeString TConfiguration::PropertyToKey(const UnicodeString Property)
+UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 {
   // no longer useful
   int P = Property.LastDelimiter(L".>");
@@ -506,12 +506,12 @@ void TConfiguration::DoSave(bool All, bool Explicit)
     Storage->ForceSave = FForceSave;
     // if saving to TOptionsStorage, make sure we save everything so that
     // all configuration is properly transferred to the master storage
-    bool ConfigAll = All || AStorage->Temporary;
-    DoSave(AStorage, ConfigAll);
+    bool ConfigAll = All || Storage->Temporary;
+    DoSave(Storage.get(), ConfigAll);
   },
   __finally__removed
   ({
-    delete AStorage;
+    delete Storage;
   }) end_try__finally
 
   Saved();
@@ -820,7 +820,7 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
   }) end_try__finally
 }
 
-UnicodeString TConfiguration::BannerHash(const UnicodeString ABanner) const
+UnicodeString TConfiguration::BannerHash(const UnicodeString & ABanner) const
 {
   RawByteString Result;
   char *Buf = Result.SetLength(16);
@@ -831,7 +831,7 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString ABanner) const
 }
 
 void TConfiguration::GetBannerData(
-  const UnicodeString ASessionKey, UnicodeString &ABannerHash, uint32_t &AParams)
+  const UnicodeString & ASessionKey, UnicodeString & ABannerHash, uint32_t & AParams)
 {
   ABannerHash = UnicodeString();
   AParams = 0;
@@ -848,7 +848,7 @@ void TConfiguration::GetBannerData(
 }
 
 bool TConfiguration::ShowBanner(
-  const UnicodeString ASessionKey, const UnicodeString ABanner, uint32_t &AParams)
+  const UnicodeString & ASessionKey, const UnicodeString & ABanner, uint32_t & AParams)
 {
   UnicodeString StoredBannerHash;
   GetBannerData(ASessionKey, StoredBannerHash, AParams);
@@ -857,7 +857,7 @@ bool TConfiguration::ShowBanner(
 }
 
 void TConfiguration::SetBannerData(
-  const UnicodeString ASessionKey, const UnicodeString ABannerHash, uint32_t Params)
+  const UnicodeString & ASessionKey, const UnicodeString & ABannerHash, uint32_t Params)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
@@ -869,7 +869,7 @@ void TConfiguration::SetBannerData(
   }
 }
 
-void TConfiguration::NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner)
+void TConfiguration::NeverShowBanner(const UnicodeString & ASessionKey, const UnicodeString & ABanner)
 {
   UnicodeString DummyBannerHash;
   uint32_t Params;
@@ -877,7 +877,7 @@ void TConfiguration::NeverShowBanner(const UnicodeString ASessionKey, const Unic
   SetBannerData(ASessionKey, BannerHash(ABanner), Params);
 }
 
-void TConfiguration::SetBannerParams(const UnicodeString ASessionKey, uint32_t AParams)
+void TConfiguration::SetBannerParams(const UnicodeString & ASessionKey, uint32_t AParams)
 {
   UnicodeString BannerHash;
   uint32_t DummyParams;
@@ -885,12 +885,12 @@ void TConfiguration::SetBannerParams(const UnicodeString ASessionKey, uint32_t A
   SetBannerData(ASessionKey, BannerHash, AParams);
 }
 
-UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString ASiteKey, const UnicodeString AFingerprintType) const
+UnicodeString TConfiguration::FormatFingerprintKey(const UnicodeString & ASiteKey, const UnicodeString & AFingerprintType) const
 {
   return FORMAT("%s:%s", ASiteKey, AFingerprintType);
 }
 
-void TConfiguration::RememberLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType, const UnicodeString AFingerprint)
+void TConfiguration::RememberLastFingerprint(const UnicodeString & ASiteKey, const UnicodeString & AFingerprintType, const UnicodeString & AFingerprint)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   Storage->SetAccessMode(smReadWrite);
@@ -995,9 +995,9 @@ bool TConfiguration::RegistryPathExists(const UnicodeString RegistryPath) const
     Registry->KeyExists(SubKey);
 }
 
-void TConfiguration::CleanupRegistry(const UnicodeString RegistryPath)
+void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
 {
-  std::unique_ptr<TRegistryStorage> Registry(new TRegistryStorage(RegistryStorageKey()));
+  std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(RegistryStorageKey()));
 
   UnicodeString ParentKey = ExtractFileDir(RegistryPath);
   if (ParentKey.IsEmpty() ||
@@ -1152,7 +1152,7 @@ UnicodeString TConfiguration::ModuleFileName() const
   return "";
 }
 
-void * TConfiguration::GetFileApplicationInfo(const UnicodeString AFileName) const
+void * TConfiguration::GetFileApplicationInfo(const UnicodeString & AFileName) const
 {
   void * Result{nullptr};
   if (AFileName.IsEmpty())
@@ -1175,12 +1175,12 @@ void * TConfiguration::GetApplicationInfo() const
   return GetFileApplicationInfo("");
 }
 
-UnicodeString TConfiguration::GetFileProductName(const UnicodeString AFileName) const
+UnicodeString TConfiguration::GetFileProductName(const UnicodeString & AFileName) const
 {
   return GetFileFileInfoString("ProductName", AFileName);
 }
 
-UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString AFileName) const
+UnicodeString TConfiguration::GetFileCompanyName(const UnicodeString & AFileName) const
 {
   // particularly in IDE build, company name is empty
   return GetFileFileInfoString("CompanyName", AFileName, true);

@@ -1705,13 +1705,13 @@ void TRemoteFileList::AddFile(TRemoteFile *AFile)
   }
 }
 
-Strings * TRemoteFileList::CloneStrings(TStrings * List)
+TStrings * TRemoteFileList::CloneStrings(TStrings * List)
 {
-  std::unique_ptr<TStringList> Result(new TStringList());
+  std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
   Result->OwnsObjects = true;
-  for (int Index = 0; Index < List->Count; Index++)
+  for (int32_t Index = 0; Index < List->Count; Index++)
   {
-    TRemoteFile * File = static_cast<TRemoteFile *>(List->Objects[Index]);
+    TRemoteFile * File = List->GetAs<TRemoteFile>(Index);
     Result->AddObject(List->Strings[Index], File->Duplicate(true));
   }
   return Result.release();
@@ -1720,9 +1720,9 @@ Strings * TRemoteFileList::CloneStrings(TStrings * List)
 bool TRemoteFileList::AnyDirectory(TStrings * List)
 {
   bool Result = false;
-  for (int Index = 0; !Result && (Index < List->Count); Index++)
+  for (int32_t Index = 0; !Result && (Index < List->Count); Index++)
   {
-    Result = static_cast<TRemoteFile *>(List->Objects[Index])->IsDirectory;
+    Result = List->GetAs<TRemoteFile>(Index)->IsDirectory;
   }
   return Result;
 }

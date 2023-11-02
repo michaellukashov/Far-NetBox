@@ -190,9 +190,9 @@ public:
   __property __int64 Size = { read = FSize, write = FSize };
   int64_t& Size{FSize};
   __property __int64 PartSize = { read = FPartSize, write = FPartSize };
-  int64_t& Size{FPartOffset};
+  int64_t& PartSize{FPartSize};
   __property __int64 PartOffset = { read = FPartOffset, write = FPartOffset };
-  int64_t& Size{FPartOffset};
+  int64_t& PartOffset{FPartOffset};
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
   TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};
   __property TTransferOutEvent OnTransferOut = { read = FOnTransferOut, write = FOnTransferOut };

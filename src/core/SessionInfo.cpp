@@ -1842,7 +1842,7 @@ void TApplicationLog::AddStartupInfo()
   }
 }
 
-void TApplicationLog::Log(UnicodeString S)
+void TApplicationLog::Log(const UnicodeString & S)
 {
   if (FFile != nullptr)
   {
@@ -1850,7 +1850,7 @@ void TApplicationLog::Log(UnicodeString S)
     UnicodeString Line = FORMAT(L"[%s] [%x] %s\r\n", Timestamp, nb::ToInt(GetCurrentThreadId()), S);
     UTF8String UtfLine = UTF8String(Line);
     int32_t Writting = UtfLine.Length();
-    TGuard Guard(*FCriticalSection.get());
+    TGuard Guard(*FCriticalSection.get()); nb::used(Guard);
     fwrite(UtfLine.c_str(), 1, Writting, static_cast<FILE *>(FFile));
   }
 }

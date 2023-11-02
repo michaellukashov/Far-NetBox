@@ -243,24 +243,25 @@ protected:
 public:
   virtual TStorage GetStorage() const;
   virtual void Changed() override;
-  virtual void SaveData(THierarchicalStorage *Storage, bool All);
-  virtual void LoadData(THierarchicalStorage *Storage);
-  virtual void LoadFrom(THierarchicalStorage *Storage);
-  virtual void CopyData(THierarchicalStorage *Source, THierarchicalStorage *Target);
-  virtual void LoadAdmin(THierarchicalStorage *Storage);
+  virtual void SaveData(THierarchicalStorage * Storage, bool All);
+  virtual void LoadData(THierarchicalStorage * Storage);
+  virtual void LoadFrom(THierarchicalStorage * Storage);
+  virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
+  virtual void LoadAdmin(THierarchicalStorage * Storage);
   void LoadSshHostCAList(TSshHostCAList * SshHostCAList, THierarchicalStorage * Storage);
   virtual UnicodeString GetDefaultKeyFile() const;
   virtual void Saved();
-  void CleanupRegistry(const UnicodeString RegistryPath);
+  void CleanupRegistry(const UnicodeString & RegistryPath);
   void CopyAllStringsInSubKey(
     THierarchicalStorage * Source, THierarchicalStorage * Target, const UnicodeString & Name);
   bool CopySubKey(THierarchicalStorage * Source, THierarchicalStorage * Target, const UnicodeString & Name);
-  UnicodeString BannerHash(const UnicodeString Banner) const;
+  UnicodeString BannerHash(const UnicodeString & Banner) const;
   void SetBannerData(const UnicodeString & ASessionKey, const UnicodeString & ABannerHash, uint32_t AParams);
   void GetBannerData(const UnicodeString & ASessionKey, UnicodeString & ABannerHash, uint32_t &AParams);
-  static UnicodeString PropertyToKey(const UnicodeString Property);
+  static UnicodeString PropertyToKey(const UnicodeString & Property);
+  void DoSave(THierarchicalStorage * AStorage, bool All);
   virtual void DoSave(bool All, bool Explicit);
-  UnicodeString FormatFingerprintKey(const UnicodeString & ASiteKey, const UnicodeString&  AFingerprintType) const;
+  UnicodeString FormatFingerprintKey(const UnicodeString & ASiteKey, const UnicodeString & AFingerprintType) const;
   THierarchicalStorage * OpenDirectoryStatisticsCache(bool CanCreate);
   UnicodeString GetDirectoryStatisticsCacheKey(
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
@@ -281,12 +282,12 @@ public:
 
   virtual UnicodeString ModuleFileName() const;
 
-  UnicodeString GetFileFileInfoString(const UnicodeString AKey,
-    const UnicodeString AFileName, bool AllowEmpty = false) const;
-  void *GetFileApplicationInfo(const UnicodeString AFileName) const;
-  UnicodeString GetFileProductVersion(const UnicodeString AFileName) const;
-  UnicodeString GetFileProductName(const UnicodeString AFileName) const;
-  UnicodeString GetFileCompanyName(const UnicodeString AFileName) const;
+  UnicodeString GetFileFileInfoString(const UnicodeString & AKey,
+    const UnicodeString & AFileName, bool AllowEmpty = false) const;
+  void *GetFileApplicationInfo(const UnicodeString & AFileName) const;
+  UnicodeString GetFileProductVersion(const UnicodeString & AFileName) const;
+  UnicodeString GetFileProductName(const UnicodeString & AFileName) const;
+  UnicodeString GetFileCompanyName(const UnicodeString & AFileName) const;
 
   __property bool PermanentLogging  = { read = GetLogging, write = SetLogging };
   __property UnicodeString PermanentLogFileName  = { read = GetLogFileName, write = SetLogFileName };
@@ -331,10 +332,10 @@ public:
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
   void SaveDirectoryStatisticsCache(
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam, TStrings * DataList);
-  bool ShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner, uint32_t &AParams);
-  void NeverShowBanner(const UnicodeString ASessionKey, const UnicodeString ABanner);
-  void SetBannerParams(const UnicodeString ASessionKey, uint32_t AParams);
-  void RememberLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType, const UnicodeString AFingerprint);
+  bool ShowBanner(const UnicodeString & ASessionKey, const UnicodeString & ABanner, uint32_t & AParams);
+  void NeverShowBanner(const UnicodeString & ASessionKey, const UnicodeString & ABanner);
+  void SetBannerParams(const UnicodeString & ASessionKey, uint32_t AParams);
+  void RememberLastFingerprint(const UnicodeString & ASiteKey, const UnicodeString & AFingerprintType, const UnicodeString & AFingerprint);
   UnicodeString GetLastFingerprint(const UnicodeString SiteKey, const UnicodeString FingerprintType);
   THierarchicalStorage *CreateConfigStorage();
   THierarchicalStorage * CreateConfigRegistryStorage();

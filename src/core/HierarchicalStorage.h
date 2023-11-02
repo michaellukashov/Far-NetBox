@@ -22,7 +22,7 @@ public:
   virtual void Init() {}
   void ConfigureForPutty();
   bool OpenRootKey(bool CanCreate);
-  virtual bool OpenSubKey(const UnicodeString ASubKey, bool CanCreate);
+  virtual bool OpenSubKey(const UnicodeString & ASubKey, bool CanCreate);
   virtual void CloseSubKey();
   void CloseAll();
   bool OpenSubKeyPath(const UnicodeString & KeyPath, bool CanCreate);

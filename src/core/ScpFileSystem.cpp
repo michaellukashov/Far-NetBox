@@ -716,16 +716,12 @@ void TSCPFileSystem::InvalidOutputError(const UnicodeString & Command)
   FTerminal->TerminalError(FMTLOAD(INVALID_OUTPUT_ERROR, Command, Output->Text));
 }
 
-void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, int32_t Params,
-  const UnicodeString CmdString)
+void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args)
 {
-  if (Params < 0)
-  {
-    Params = ecDefault;
-  }
+  if (Params < 0) { Params = ecDefault; }
 
-  UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args, size);
-  UnicodeString Command = FCommandSet->Command(Cmd, args, size);
+  UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
+  UnicodeString Command = FCommandSet->Command(Cmd, args);
 
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
 
@@ -752,13 +748,6 @@ void TSCPFileSystem::ExecCommand(const UnicodeString Cmd, int32_t Params,
   }
 }
 
-
-void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args)
-{
-  UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
-  UnicodeString Command = FCommandSet->Command(Cmd, args);
-  ExecCommand(FullCommand, Params, Command);
-}
 
 UnicodeString TSCPFileSystem::RemoteGetCurrentDirectory() const
 {
@@ -1024,7 +1013,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString ADirectory)
     if (FTerminal->Active && DebugAlwaysTrue(!FCachedDirectoryChange.IsEmpty()))
     {
       Params |= ecNoEnsureLocation;
-      Directory = ::AbsolutePath(AbsolutePath(FCachedDirectoryChange, true), Directory);
+      Directory = base::AbsolutePath(FTerminal->GetAbsolutePath(FCachedDirectoryChange, true), Directory);
       FTerminal->LogEvent(
         FORMAT(L"Cannot locate to cached directory, assuming that target absolute path is \"%s\".", Directory));
     }
@@ -1255,13 +1244,13 @@ void TSCPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
 }
 
 void TSCPFileSystem::RemoteRenameFile(
-  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
+  const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   ExecCommand(fsRenameFile, 0, DelimitStr(AFileName), DelimitStr(ANewName));
 }
 
 void TSCPFileSystem::RemoteCopyFile(
-  const UnicodeString AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
+  const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   UnicodeString DelimitedFileName = DelimitStr(AFileName);
   UnicodeString DelimitedNewName = DelimitStr(ANewName);

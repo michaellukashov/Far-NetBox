@@ -1107,7 +1107,7 @@ public:
     bool &Recursed, TCopyParamType *& CustomCopyParam);
   void Done(
     const UnicodeString AFileName, bool Dir, bool Success, const UnicodeString & TargetDir,
-    const TCopyParamType * CopyParam, TTerminal * Terminal));
+    const TCopyParamType * CopyParam, TTerminal * Terminal);
   bool UpdateFileList(TQueueFileList * UpdateFileList);
 
   static bool GetOnlyFile(TStrings * FileList, UnicodeString & FileName, TObject *& Object);
@@ -1151,17 +1151,17 @@ private:
   TFileOperationProgressType *FMainOperationProgress{nullptr};
   TOperationSide FSide{osLocal};
   UnicodeString FMainName;
-  int FVersion{0};
+  int32_t FVersion{0};
   bool FIsParallelFileTransfer{false};
   int64_t FParallelFileSize{0};
   int64_t FParallelFileOffset{0};
   int FParallelFileCount{0};
   UnicodeString FParallelFileTargetName;
-  typedef std::vector<__int64int64_t> TParallelFileOffsets;
+  typedef std::vector<int64_t> TParallelFileOffsets;
   TParallelFileOffsets FParallelFileOffsets;
-  nb::vector<bool> FParallelFileDones;
+  rde::vector<bool> FParallelFileDones;
   bool FParallelFileMerging{false};
-  int FParallelFileMerged{0};
+  int32_t FParallelFileMerged{0};
 
   bool CheckEnd(TCollectedFileList * Files);
   TCollectedFileList * GetFileList(int Index);

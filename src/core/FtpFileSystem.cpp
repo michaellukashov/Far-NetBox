@@ -3708,7 +3708,7 @@ void TFTPFileSystem::ResetFeatures()
 
 void TFTPFileSystem::ProcessFeatures()
 {
-  std::unique_ptr<TStrings> Features(FTerminal->ProcessFeatures(FFeatures));
+  std::unique_ptr<TStrings> Features(FTerminal->ProcessFeatures(FFeatures.get()));
 
   for (int32_t Index = 0; Index < Features->Count; Index++)
   {

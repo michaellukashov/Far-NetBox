@@ -949,7 +949,7 @@ void TParallelOperation::Done(
               {
                 UnicodeString TargetName = TPath::Combine(TargetDir, FParallelFileTargetName);
                 UnicodeString TargetNamePartial = TargetName + PartialExt;
-                UnicodeString TargetNamePartialOnly = ExtractFileName(TargetNamePartial);
+                UnicodeString TargetNamePartialOnly = base::UnixExtractFileName(TargetNamePartial);
 
                 while (true)
                 {
@@ -959,9 +959,9 @@ void TParallelOperation::Done(
                   }
                   else
                   {
-                    TUnguard Unguard(FSection.get());
+                    TUnguard Unguard(FSection.get()); nb::used(Unguard);
 
-                    UnicodeString FileNameOnly = UnixExtractFileName(FileName);
+                    UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
                     // Safe as write access to FParallelFileMerged is guarded by FParallelFileMerging
                     int Index = FParallelFileMerged;
                     UnicodeString TargetPartName = GetPartPrefix(TPath::Combine(TargetDir, FileNameOnly)) + IntToStr(Index);

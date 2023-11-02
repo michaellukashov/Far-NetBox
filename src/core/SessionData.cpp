@@ -1792,11 +1792,11 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
 {
   bool SkippingSection = false;
   std::unique_ptr<TStrings> UsedDirectives(CreateSortedStringList());
-  for (int Index = 0; Index < Lines->Count; Index++)
+  for (int32_t Index = 0; Index < Lines->Count; Index++)
   {
     UnicodeString Line = Lines->GetString(Index);
-    UnicodeString Directive, Value;
-    if (ParseOpensshDirective(Line, Directive, Value))
+    UnicodeString Directive, Args;
+    if (ParseOpensshDirective(Line, Directive, Args))
     {
       if (SameText(Directive, OpensshHostDirective))
       {
@@ -1904,7 +1904,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
             // multiple jumps are not supported
             if (Jump.Pos(L",") == 0)
             {
-              std::unique_ptr<TSessionData> JumpData(new TSessionData(EmptyStr));
+              std::unique_ptr<TSessionData> JumpData(std::make_unique<TSessionData>(EmptyStr));
               bool DefaultsOnly;
               if ((JumpData->ParseUrl(Jump, nullptr, nullptr, DefaultsOnly, nullptr, nullptr, nullptr, 0)) &&
                   !JumpData->HostName.IsEmpty())
@@ -4393,7 +4393,7 @@ void TSessionData::SetSendBuf(int value)
   SET_SESSION_PROPERTY(SendBuf);
 }
 
-void TSessionData::SetSourceAddress(const UnicodeString & value)
+void TSessionData::SetSourceAddress(const UnicodeString value)
 {
   SET_SESSION_PROPERTY(SourceAddress);
 }

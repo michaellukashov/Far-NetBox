@@ -389,7 +389,7 @@ public:
   void SetIgnoreLsWarnings(bool value);
   void SetTcpNoDelay(bool value);
   void SetSendBuf(int32_t value);
-  void SetSourceAddress(const UnicodeString & value);
+  void SetSourceAddress(const UnicodeString value);
   void SetProtocolFeatures(const UnicodeString & value);
   void SetSshSimple(bool value);
   bool GetUsesSsh() const;
@@ -642,7 +642,9 @@ public:
   __property bool AuthKI  = { read = FAuthKI, write = SetAuthKI };
   __property bool AuthKIPassword  = { read = FAuthKIPassword, write = SetAuthKIPassword };
   __property bool AuthGSSAPI  = { read = FAuthGSSAPI, write = SetAuthGSSAPI };
+  RWPropertySimple<bool> AuthGSSAPI{&FAuthGSSAPI, nb::bind(&TSessionData::SetAuthGSSAPI, this)};
   __property bool AuthGSSAPIKEX  = { read=FAuthGSSAPIKEX, write=SetAuthGSSAPIKEX };
+  RWPropertySimple<bool> AuthGSSAPIKEX{&FAuthGSSAPIKEX, nb::bind(&TSessionData::SetAuthGSSAPIKEX, this)};
   __property bool GSSAPIFwdTGT = { read = FGSSAPIFwdTGT, write = SetGSSAPIFwdTGT };
   __property bool ChangeUsername  = { read = FChangeUsername, write = SetChangeUsername };
   RWPropertySimple<bool> ChangeUsername{&FChangeUsername, nb::bind(&TSessionData::SetChangeUsername, this)};
@@ -738,6 +740,7 @@ public:
   __property bool TcpNoDelay  = { read = FTcpNoDelay, write = SetTcpNoDelay };
   __property int SendBuf  = { read = FSendBuf, write = SetSendBuf };
   __property UnicodeString SourceAddress = { read=FSourceAddress, write=SetSourceAddress };
+  RWPropertySimple<UnicodeString> SourceAddress{&FSourceAddress, nb::bind(&TSessionData::SetSourceAddress, this)};
   __property UnicodeString ProtocolFeatures = { read=FProtocolFeatures, write=SetProtocolFeatures };
   __property bool SshSimple = { read = FSshSimple, write = SetSshSimple };
   __property UnicodeString CipherList = { read = GetCipherList, write = SetCipherList };
@@ -820,7 +823,9 @@ public:
   __property TFtps Ftps = { read = FFtps, write = SetFtps };
   RWProperty<TFtps> Ftps{nb::bind(&TSessionData::GetFtps, this), nb::bind(&TSessionData::SetFtps, this)};
   __property TTlsVersion MinTlsVersion = { read = FMinTlsVersion, write = SetMinTlsVersion };
+  RWPropertySimple<TTlsVersion> MinTlsVersion{&FMinTlsVersion, nb::bind(&TSessionData::SetMinTlsVersion, this)};
   __property TTlsVersion MaxTlsVersion = { read = FMaxTlsVersion, write = SetMaxTlsVersion };
+  RWPropertySimple<TTlsVersion> MaxTlsVersion{&FMaxTlsVersion, nb::bind(&TSessionData::SetMaxTlsVersion, this)};
   __property UnicodeString LogicalHostName = { read = FLogicalHostName, write = SetLogicalHostName };
   RWProperty<UnicodeString> LogicalHostName{nb::bind(&TSessionData::GetLogicalHostName, this), nb::bind(&TSessionData::SetLogicalHostName, this)};
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
@@ -835,6 +840,7 @@ public:
   __property TS3UrlStyle S3UrlStyle = { read = FS3UrlStyle, write = SetS3UrlStyle };
   __property TAutoSwitch S3MaxKeys = { read = FS3MaxKeys, write = SetS3MaxKeys };
   __property bool S3CredentialsEnv = { read = FS3CredentialsEnv, write = SetS3CredentialsEnv };
+  RWPropertySimple<bool> S3CredentialsEnv{&FS3CredentialsEnv, nb::bind(&TSessionData::SetS3CredentialsEnv, this) };
   __property bool IsWorkspace = { read = FIsWorkspace, write = SetIsWorkspace };
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString NameOverride = { read = FNameOverride, write = SetNameOverride };
@@ -844,11 +850,13 @@ public:
   __property bool FingerprintScan = { read = FFingerprintScan, write = FFingerprintScan };
   RWProperty2<bool> FingerprintScan{&FFingerprintScan};
   __property bool OverrideCachedHostKey = { read = FOverrideCachedHostKey };
+  ROProperty2<bool> OverrideCachedHostKey{&FOverrideCachedHostKey};
   __property UnicodeString Note = { read = FNote, write = SetNote };
   __property UnicodeString WinTitle = { read = FWinTitle, write = SetWinTitle };
   __property UnicodeString EncryptKey = { read = GetEncryptKey, write = SetEncryptKey };
   RWProperty<UnicodeString> EncryptKey{nb::bind(&TSessionData::GetEncryptKey, this), nb::bind(&TSessionData::SetEncryptKey, this)};
   __property bool WebDavLiberalEscaping = { read = FWebDavLiberalEscaping, write = SetWebDavLiberalEscaping };
+  RWPropertySimple<bool> WebDavLiberalEscaping{&FWebDavLiberalEscaping, nb::bind(&TSessionData::SetWebDavLiberalEscaping, this) };
   __property bool WebDavAuthLegacy = { read = FWebDavAuthLegacy, write = SetWebDavAuthLegacy };
   RWPropertySimple<bool> WebDavAuthLegacy{&FWebDavAuthLegacy, nb::bind(&TSessionData::SetWebDavAuthLegacy, this) };
 

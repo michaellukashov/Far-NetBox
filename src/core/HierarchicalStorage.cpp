@@ -335,9 +335,9 @@ bool THierarchicalStorage::OpenSubKeyPath(const UnicodeString & KeyPath, bool Ca
   return Result;
 }
 
-bool THierarchicalStorage::OpenSubKey(const UnicodeString Key, bool CanCreate)
+bool THierarchicalStorage::OpenSubKey(const UnicodeString & ASubKey, bool CanCreate)
 {
-  UnicodeString MungedKey = MungeKeyName(Key);
+  UnicodeString MungedKey = MungeKeyName(ASubKey);
 
   bool Result;
   uint32_t InheritAccess;

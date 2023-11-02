@@ -2516,7 +2516,7 @@ void TSecureShell::VerifyHostKey(
   const UnicodeString & AFingerprintSHA256, const UnicodeString & AFingerprintMD5,
   bool IsCertificate, int CACount, bool AlreadyVerified)
 {
-  if (Configuration->ActualLogProtocol >= 1)
+  if (GetConfiguration()->ActualLogProtocol >= 1)
   {
     UnicodeString HostKeyAction = AlreadyVerified ? L"Got" : L"Verifying";
     LogEvent(FORMAT(L"%s host key %s %s with fingerprints %s, %s", HostKeyAction, KeyType, FormatKeyStr(KeyStr), AFingerprintSHA256, AFingerprintMD5));
@@ -2622,7 +2622,7 @@ void TSecureShell::VerifyHostKey(
         {
           throw Exception(UnicodeString());
         }
-        Configuration->Usage->Inc(L"HostKeyNewAccepted");
+        GetConfiguration()->Usage->Inc(L"HostKeyNewAccepted");
         LogEvent(FORMAT(L"Warning: Stored new host key to %s - This should occur only on the first connection", (StorageSource)));
         Result = true;
       }
@@ -2635,18 +2635,18 @@ void TSecureShell::VerifyHostKey(
     if (!Result)
     {
       bool Verified;
-      if (ConfiguredKeyNotMatch || Configuration->DisableAcceptingHostKeys)
+      if (ConfiguredKeyNotMatch || GetConfiguration()->DisableAcceptingHostKeys)
       {
         Verified = false;
       }
       // no point offering manual verification, if we cannot persist the verified key
-      else if (!Configuration->Persistent && Configuration->Scripting)
+      else if (!GetConfiguration()->Persistent && GetConfiguration()->Scripting)
       {
         Verified = false;
       }
       else
       {
-        // We should not offer caching if !Configuration->Persistent,
+        // We should not offer caching if !GetConfiguration()->Persistent,
         // but as scripting mode is handled earlier and in GUI it hardly happens,
         // it's a small issue.
         TClipboardHandler ClipboardHandler;
@@ -2664,20 +2664,20 @@ void TSecureShell::VerifyHostKey(
         UnicodeString CancelButton = Vcl_Consts_SMsgDlgCancel;
         UnicodeString UpdateButton = LoadStr(UPDATE_KEY_BUTTON);
         UnicodeString AddButton = LoadStr(ADD_KEY_BUTTON);
-        int Answers;
-        std::vector<TQueryButtonAlias> Aliases;
+        int32_t Answers;
+        rde::vector<TQueryButtonAlias> Aliases;
 
         TQueryButtonAlias CopyAlias;
         CopyAlias.Button = qaRetry;
         CopyAlias.Alias = LoadStr(COPY_KEY_BUTTON);
         CopyAlias.ActionAlias = LoadStr(COPY_KEY_ACTION);
-        CopyAlias.OnSubmit = &ClipboardHandler.Copy;
+        CopyAlias.OnSubmit = nb::bind(&TClipboardHandler::Copy, &ClipboardHandler) ;
         Aliases.push_back(CopyAlias);
 
         TQueryButtonAlias PasteAlias;
         PasteAlias.Button = qaIgnore;
         PasteAlias.Alias = LoadStr(PASTE_KEY_BUTTON);
-        PasteAlias.OnSubmit = &PasteKeyHandler.Paste;
+        PasteAlias.OnSubmit = nb::bind(&TPasteKeyHandler::Paste, &PasteKeyHandler) ;
         PasteAlias.GroupWith = qaYes;
         Aliases.push_back(PasteAlias);
 
@@ -2791,7 +2791,7 @@ void TSecureShell::VerifyHostKey(
             FMTLOAD(HOSTKEY_CANCEL_CHANGE, (StripHotkey(CancelButton), StripHotkey(CancelButton)));
         }
 
-        if (Configuration->Scripting)
+        if (GetConfiguration()->Scripting)
         {
           AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), Para);
         }
@@ -2822,14 +2822,14 @@ void TSecureShell::VerifyHostKey(
 
       if (!Verified)
       {
-        Configuration->Usage->Inc(L"HostNotVerified");
+        GetConfiguration()->Usage->Inc(L"HostNotVerified");
 
         UnicodeString Message;
         if (ConfiguredKeyNotMatch)
         {
           Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, (ConfigHostKey));
         }
-        else if (!Configuration->Persistent && Configuration->Scripting)
+        else if (!GetConfiguration()->Persistent && GetConfiguration()->Scripting)
         {
           Message = LoadStr(HOSTKEY_NOT_CONFIGURED);
         }
@@ -2839,14 +2839,14 @@ void TSecureShell::VerifyHostKey(
         }
 
         Exception * E = new Exception(MainInstructions(Message));
-        try
+        try__finally
         {
           FUI->FatalError(E, FMTLOAD(HOSTKEY, (FingerprintSHA256)));
-        }
+        },
         __finally
         {
           delete E;
-        }
+        } end_try__finally
       }
     }
   }
@@ -3011,14 +3011,14 @@ void TSecureShell::CollectUsage()
   int CipherGroup = GetCipherGroup(get_cscipher(FBackendHandle));
   switch (CipherGroup)
   {
-    case CIPHER_3DES: Configuration->Usage->Inc(L"OpenedSessionsSSHCipher3DES"); break;
-    case CIPHER_BLOWFISH: Configuration->Usage->Inc(L"OpenedSessionsSSHCipherBlowfish"); break;
-    case CIPHER_AES: Configuration->Usage->Inc(L"OpenedSessionsSSHCipherAES"); break;
+    case CIPHER_3DES: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHCipher3DES"); break;
+    case CIPHER_BLOWFISH: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHCipherBlowfish"); break;
+    case CIPHER_AES: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHCipherAES"); break;
     // All following miss "Cipher"
-    case CIPHER_DES: Configuration->Usage->Inc(L"OpenedSessionsSSHDES"); break;
-    case CIPHER_ARCFOUR: Configuration->Usage->Inc(L"OpenedSessionsSSHArcfour"); break;
-    case CIPHER_CHACHA20: Configuration->Usage->Inc(L"OpenedSessionsSSHChaCha20"); break;
-    case CIPHER_AESGCM: Configuration->Usage->Inc(L"OpenedSessionsSSHAESGCM"); break;
+    case CIPHER_DES: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHDES"); break;
+    case CIPHER_ARCFOUR: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHArcfour"); break;
+    case CIPHER_CHACHA20: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHChaCha20"); break;
+    case CIPHER_AESGCM: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHAESGCM"); break;
     default: DebugFail(); break;
   }
 #endif // #if 0

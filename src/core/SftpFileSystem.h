@@ -101,9 +101,9 @@ public:
   virtual void ReadSymlink(TRemoteFile *ASymlinkFile,
     TRemoteFile *&AFile) override;
   virtual void RemoteRenameFile(
-    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite) override;
+    const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual void RemoteCopyFile(
-    const UnicodeString AFileName, const TRemoteFile *AFile, const UnicodeString ANewName, bool Overwrite) override;
+    const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString APath,
     TSpaceAvailable &ASpaceAvailable) override;
