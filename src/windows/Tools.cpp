@@ -1661,7 +1661,7 @@ bool AutodetectProxy(UnicodeString & HostName, int32_t& PortNumber)
     {
       HostName = CutToChar(Proxy, L':', true);
       PortNumber = StrToIntDef(Proxy, ProxyPortNumber);
-      AppLogFmt("Proxy autodetected: %s:%d", (HostName, PortNumber));
+      AppLogFmt("Proxy autodetected: %s:%d", HostName, PortNumber);
     }
   }
 

@@ -438,7 +438,7 @@ void TPuttyPasswordThread::Execute()
       }
       else
       {
-        AppLogFmt(L"Password pipe error %d", (Error));
+        AppLogFmt(L"Password pipe error %d", Error);
         Timeout = 0;
       }
     }
@@ -449,7 +449,7 @@ void SplitPuttyCommand(UnicodeString & Program, UnicodeString & Params)
 {
   // See also TSiteAdvancedDialog::PuttySettingsButtonClick
   UnicodeString Dir;
-  SplitCommand(GUIConfiguration->PuttyPath, Program, Params, Dir);
+  SplitCommand(GetGUIConfiguration()->PuttyPath, Program, Params, Dir);
   Program = ExpandEnvironmentVariables(Program);
   Params = ExpandEnvironmentVariables(Params);
 }
@@ -612,12 +612,12 @@ void OpenSessionInPutty(TSessionData * SessionData)
     {
       Password = NormalizeString(Password); // if password is empty, we should quote it always
       bool UsePuttyPwFile;
-      if (GUIConfiguration->UsePuttyPwFile == asAuto)
+      if (GetGUIConfiguration()->UsePuttyPwFile == asAuto)
       {
         UsePuttyPwFile = false;
-        if (SameText(base::ExtractFileName(Program), OriginalPuttyExecutable))
+        if (SameText(base::ExtractFileName(Program, false), OriginalPuttyExecutable))
         {
-          unsigned int Version = GetFileVersion(Program);
+          uint32_t Version = -1; //TODO: GetFileVersion(Program);
           if (Version != static_cast<unsigned int>(-1))
           {
             int MajorVersion = HIWORD(Version);
@@ -631,7 +631,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
       }
       else
       {
-        UsePuttyPwFile = (GUIConfiguration->UsePuttyPwFile == asOn);
+        UsePuttyPwFile = (GetGUIConfiguration()->UsePuttyPwFile == asOn);
       }
 
       UnicodeString PasswordParam;
