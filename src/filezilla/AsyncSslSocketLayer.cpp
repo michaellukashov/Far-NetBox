@@ -61,7 +61,7 @@ CAsyncSslSocketLayer::CAsyncSslSocketLayer()
 
   FCertificate = nullptr;
   FPrivateKey = nullptr;
-  m_CriticalSection.reset(std::make_unique<TCriticalSection>());
+  m_CriticalSection.reset();
 }
 
 CAsyncSslSocketLayer::~CAsyncSslSocketLayer()
@@ -73,7 +73,7 @@ CAsyncSslSocketLayer::~CAsyncSslSocketLayer()
 
 int CAsyncSslSocketLayer::InitSSL()
 {
-  TGuard Guard(m_sCriticalSection.get());
+  TGuard Guard(*m_sCriticalSection.get());
 
   if (!m_bSslInitialized)
   {
@@ -633,7 +633,7 @@ BOOL CAsyncSslSocketLayer::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
 
 void CAsyncSslSocketLayer::SetSession(SSL_SESSION * Session)
 {
-  TGuard Guard(m_CriticalSection.get());
+  TGuard Guard(*m_CriticalSection.get());
   if (m_sessionid != nullptr)
   {
     SSL_SESSION_free(m_sessionid);
@@ -647,7 +647,7 @@ void CAsyncSslSocketLayer::SetSession(SSL_SESSION * Session)
   if (m_sessionid != nullptr)
   {
     m_sessionidSerializedLen = i2d_SSL_SESSION(m_sessionid, nullptr);
-    m_sessionidSerialized = nb::chcalloc(m_sessionidSerializedLen);
+    m_sessionidSerialized = reinterpret_cast<unsigned char *>(nb::chcalloc(m_sessionidSerializedLen));
     unsigned char * P = m_sessionidSerialized;
     i2d_SSL_SESSION(m_sessionid, &P);
   }
@@ -723,7 +723,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   {
     // What is the point of this guard?
     // Maybe the m_ssl_ctx was intended to be global. But as it is not, the guard is probably pointless.
-    TGuard Guard(m_sCriticalSection.get());
+    TGuard Guard(*m_sCriticalSection.get());
 
     if (!m_ssl_ctx)
     {
@@ -832,7 +832,7 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
   m_sessionreuse = sessionreuse;
   if ((m_Main != nullptr) && m_sessionreuse)
   {
-    TGuard Guard(m_Main->m_CriticalSection.get());
+    TGuard Guard(*m_Main->m_CriticalSection.get());
     if (m_Main->m_sessionidSerialized == nullptr)
     {
       DebugFail();
@@ -935,7 +935,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
     SSL_free(m_ssl);
   }
 
-  TGuard Guard(m_sCriticalSection.get());
+  TGuard Guard(*m_sCriticalSection.get());
 
   if (m_ssl_ctx)
   {
@@ -1100,7 +1100,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   USES_CONVERSION;
   CAsyncSslSocketLayer *pLayer = 0;
   {
-    TGuard Guard(m_sCriticalSection.get());
+    TGuard Guard(*m_sCriticalSection.get());
     t_SslLayerList *cur = m_pSslLayerList;
     while (cur)
     {
@@ -1711,7 +1711,7 @@ CAsyncSslSocketLayer * CAsyncSslSocketLayer::LookupLayer(SSL * Ssl)
   t_SslLayerList * Cur = nullptr;
 
   {
-    TGuard Guard(m_sCriticalSection.get());
+    TGuard Guard(*m_sCriticalSection.get());
     Cur = m_pSslLayerList;
     while (Cur != nullptr)
     {
