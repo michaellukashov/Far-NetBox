@@ -638,8 +638,8 @@ NB_CORE_EXPORT UnicodeString UserModificationStr(const TDateTime &DateTime,
 NB_CORE_EXPORT UnicodeString ModificationStr(const TDateTime &DateTime,
   TModificationFmt Precision);
 int32_t GetPartialFileExtLen(const UnicodeString & FileName);
-NB_CORE_EXPORT int FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
-  UnicodeString *TypeName = nullptr);
+NB_CORE_EXPORT int32_t FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
+  UnicodeString * TypeName = nullptr);
 NB_CORE_EXPORT bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
 NB_CORE_EXPORT UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, bool Unix);
 

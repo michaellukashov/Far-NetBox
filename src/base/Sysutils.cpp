@@ -531,18 +531,18 @@ int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
   return (nb::ToInt64(high) << 32) + low;
 }
 
-bool SysUtulsFileExists(const UnicodeString AFileName)
+bool SysUtulsFileExists(const UnicodeString & AFileName)
 {
   return SysUtulsFileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
 }
 
-bool SysUtulsRenameFile(const UnicodeString From, const UnicodeString To)
+bool SysUtulsRenameFile(const UnicodeString & From, const UnicodeString & To)
 {
   const bool Result = ::MoveFileW(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
   return Result;
 }
 
-bool SysUtulsDirectoryExists(const UnicodeString ADir)
+bool SysUtulsDirectoryExists(const UnicodeString & ADir)
 {
   if ((ADir == THISDIRECTORY) || (ADir == PARENTDIRECTORY))
   {
@@ -558,7 +558,7 @@ bool SysUtulsDirectoryExists(const UnicodeString ADir)
   return false;
 }
 
-UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeString DirectoryList)
+UnicodeString SysUtulsFileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList)
 {
   UnicodeString Result;
   UnicodeString Temp = DirectoryList;
@@ -593,7 +593,7 @@ UnicodeString SysUtulsFileSearch(const UnicodeString AFileName, const UnicodeStr
   return Result;
 }
 
-void SysUtulsFileAge(const UnicodeString AFileName, TDateTime &ATimestamp)
+void SysUtulsFileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 {
   WIN32_FIND_DATA FindData;
   const HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
@@ -620,22 +620,22 @@ bool SysUtulsFileSetAttr(const UnicodeString AFileName, DWORD LocalFileAttrs)
   return Result;
 }
 
-bool SysUtulsCreateDir(const UnicodeString ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool SysUtulsCreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return ::CreateDirectoryW(ApiPath(ADir).c_str(), SecurityAttributes) != FALSE;
 }
 
-bool SysUtulsRemoveDir(const UnicodeString ADir)
+bool SysUtulsRemoveDir(const UnicodeString & ADir)
 {
   return ::RemoveDirectoryW(ApiPath(ADir).c_str()) != FALSE;
 }
 
-bool SysUtulsMoveFile(const UnicodeString LocalFileName, const UnicodeString NewLocalFileName, DWORD AFlags)
+bool SysUtulsMoveFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD AFlags)
 {
   return ::MoveFileExW(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), AFlags) != FALSE;
 }
 
-bool SysUtulsForceDirectories(const UnicodeString ADir)
+bool SysUtulsForceDirectories(const UnicodeString & ADir)
 {
   bool Result = true;
   if (ADir.IsEmpty())
@@ -655,7 +655,7 @@ bool SysUtulsForceDirectories(const UnicodeString ADir)
   return Result;
 }
 
-bool SysUtulsRemoveFile(const UnicodeString AFileName)
+bool SysUtulsRemoveFile(const UnicodeString & AFileName)
 {
   ::DeleteFileW(ApiPath(AFileName).c_str());
   return !::SysUtulsFileExists(AFileName);
@@ -2113,7 +2113,17 @@ bool WriteAndFlush(FILE *file, void const *data, size_t size)
   return true;
 }
 
-DWORD FindFirst(const UnicodeString AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
+bool FileExists(const UnicodeString & AFileName)
+{
+  return ::SysUtulsFileExists(ApiPath(AFileName));
+}
+
+bool DirectoryExists(const UnicodeString & ADir)
+{
+  return ::SysUtulsDirectoryExists(ApiPath(ADir));
+}
+
+DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
 {
   const DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;

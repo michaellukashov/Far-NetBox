@@ -538,7 +538,7 @@ int32_t GetPartialFileExtLen(const UnicodeString & FileName)
   return Result;
 }
 
-int FakeFileImageIndex(UnicodeString /*AFileName*/, uint32_t /*Attrs*/,
+int32_t FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs*/,
   UnicodeString * /*TypeName*/)
 {
 #if 0
@@ -3835,7 +3835,7 @@ static void NeedUWPData()
       {
         GPackageName = L"err";
       }
-      AppLogFmt(L"Package name: %s", (GPackageName));
+      AppLogFmt(L"Package name: %s", GPackageName);
     }
     else
     {
