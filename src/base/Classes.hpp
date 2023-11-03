@@ -37,6 +37,8 @@ using THandle = HANDLE;
 using TThreadID = DWORD;
 
 using TSize = size_t;
+using Word = uint16_t;
+using Cardinal = uint32_t;
 
 constexpr const int32_t MonthsPerYear = 12;
 constexpr const int32_t DaysPerWeek = 7;
@@ -587,12 +589,23 @@ private:
 };
 #endif // #if 0
 
-enum class TSeekOrigin
-{
-  soFromBeginning = 0,
-  soFromCurrent = 1,
-  soFromEnd = 2
-};
+constexpr const uint32_t soFromBeginning = 0;
+constexpr const uint32_t soFromCurrent = 1;
+constexpr const uint32_t soFromEnd = 2;
+
+enum class TSeekOrigin { soBeginning = soFromBeginning, soCurrent = soFromCurrent, soEnd = soFromEnd };
+
+// TFileStream create mode
+constexpr const uint16_t fmCreate = 0xFFFF;
+constexpr const uint16_t fmOpenRead = 0x0;
+constexpr const uint16_t fmOpenWrite = 0x1;
+constexpr const uint16_t fmOpenReadWrite = 0x2;
+// Share modes
+constexpr const uint16_t fmShareCompat    = 0x0000;
+constexpr const uint16_t fmShareExclusive = 0x0010;
+constexpr const uint16_t fmShareDenyWrite = 0x0020;
+constexpr const uint16_t fmShareDenyRead  = 0x0030;
+constexpr const uint16_t fmShareDenyNone  = 0x0040;
 
 class NB_CORE_EXPORT TStream : public TObject
 {
@@ -620,6 +633,7 @@ class NB_CORE_EXPORT THandleStream : public TStream
 {
   NB_DISABLE_COPY(THandleStream)
 public:
+  using TStream::TStream;
   explicit THandleStream(HANDLE AHandle) noexcept;
   virtual ~THandleStream() = default;
   virtual int64_t Read(void *Buffer, int64_t Count) override;
@@ -636,15 +650,26 @@ protected:
   HANDLE FHandle{};
 };
 
+class TFileStream : public THandleStream
+{
+public:
+  explicit TFileStream(const UnicodeString & AFileName, uint16_t Mode);
+  //explicit TFileStream(const UnicodeString & AFileName, uint16_t Mode, uint32_t Rights);
+  ~TFileStream();
+  UnicodeString GetFileName() const { return FFileName; }
+private:
+  UnicodeString FFileName;
+};
+
 class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
 {
 public:
   explicit TSafeHandleStream(THandle AHandle) noexcept;
   TSafeHandleStream(THandleStream * Source, bool Own);
-  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, unsigned short Mode);
+  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, uint16_t Mode);
   virtual ~TSafeHandleStream();
-  virtual int64_t Read(void *Buffer, int64_t Count) override;
-  virtual int64_t Write(const void *Buffer, int64_t Count) override;
+  virtual int64_t Read(void * Buffer, int64_t Count) override;
+  virtual int64_t Write(const void * Buffer, int64_t Count) override;
 private:
   THandleStream * FSource{nullptr};
   bool FOwned{false};

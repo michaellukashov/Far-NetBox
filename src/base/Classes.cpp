@@ -1251,16 +1251,6 @@ UnicodeString TSHFileInfo::GetFileType(UnicodeString StrFileName)
 }
 */
 
-NB_DEFINE_CLASS_ID(EStreamError);
-class EStreamError : public ExtException
-{
-public:
-  explicit EStreamError(UnicodeString Msg) :
-    ExtException(OBJECT_CLASS_EStreamError, static_cast<const Exception *>(nullptr), Msg)
-  {
-  }
-};
-
 void TStream::ReadBuffer(void *Buffer, int64_t Count)
 {
   if ((Count != 0) && (Read(Buffer, Count) != Count))
@@ -1279,22 +1269,22 @@ void TStream::WriteBuffer(const void *Buffer, int64_t Count)
 
 int64_t TStream::GetPosition() const
 {
-  return Seek(0, TSeekOrigin::soFromCurrent);
+  return Seek(0, TSeekOrigin::soCurrent);
 }
 
 int64_t TStream::GetSize() const
 {
-  const int64_t Pos = Seek(0, TSeekOrigin::soFromCurrent);
-  const int64_t Result = Seek(0, TSeekOrigin::soFromEnd);
-  const auto res = Seek(Pos, TSeekOrigin::soFromBeginning);
-  DebugAssert(res == Pos);
+  const int64_t Pos = Seek(0, TSeekOrigin::soCurrent);
+  const int64_t Result = Seek(0, TSeekOrigin::soEnd);
+  const auto Res = Seek(Pos, TSeekOrigin::soBeginning);
+  DebugAssert(Res == Pos);
   return Result;
 }
 
 void TStream::SetPosition(const int64_t Pos)
 {
-  const auto res = Seek(Pos, TSeekOrigin::soFromBeginning);
-  DebugAssert(res == Pos);
+  const auto Res = Seek(Pos, TSeekOrigin::soBeginning);
+  DebugAssert(Res == Pos);
 }
 
 static void ReadError(UnicodeString Name)
@@ -1332,13 +1322,13 @@ int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
   DWORD origin = FILE_BEGIN;
   switch (Origin)
   {
-  case TSeekOrigin::soFromBeginning:
+  case TSeekOrigin::soBeginning:
     origin = FILE_BEGIN;
     break;
-  case TSeekOrigin::soFromCurrent:
+  case TSeekOrigin::soCurrent:
     origin = FILE_CURRENT;
     break;
-  case TSeekOrigin::soFromEnd:
+  case TSeekOrigin::soEnd:
     origin = FILE_END;
     break;
   }
@@ -1348,13 +1338,47 @@ int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
 
 void THandleStream::SetSize(const int64_t NewSize)
 {
-  const auto res = Seek(NewSize, TSeekOrigin::soFromBeginning);
+  const auto res = Seek(NewSize, TSeekOrigin::soBeginning);
   DebugAssert(res == NewSize);
   // LARGE_INTEGER li;
   // li.QuadPart = size;
   // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
   // handleLastErrorImpl(_path);
   ::Win32Check(::SetEndOfFile(FHandle) > 0);
+}
+
+TFileStream::TFileStream(const UnicodeString & AFileName, uint16_t Mode) :
+  FFileName(AFileName)
+{
+  if (Mode == fmCreate)
+  {
+    FHandle = ::CreateFile(ApiPath(AFileName).c_str(), GENERIC_ALL, FILE_SHARE_WRITE, nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+  }
+  else
+  {
+    FHandle = ::CreateFile(ApiPath(AFileName).c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  }
+  if (FHandle == INVALID_HANDLE_VALUE)
+  {
+    if (Mode == fmCreate)
+    {
+      throw EFCreateError(FMTLOAD(SFCreateError, AFileName));
+    }
+    else
+    {
+      throw EFOpenError(FMTLOAD(SFOpenError, AFileName));
+    }
+  }
+}
+
+/*TFileStream::TFileStream(const UnicodeString & AFileName, uint16_t Mode, uint32_t Rights)
+{
+
+}*/
+
+TFileStream::~TFileStream()
+{
+  SAFE_CLOSE_HANDLE(FHandle);
 }
 
 TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
@@ -1369,9 +1393,9 @@ TSafeHandleStream::TSafeHandleStream(THandleStream * Source, bool Own) :
   FSource = Own ? Source : nullptr;
 }
 
-TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, unsigned short Mode)
+TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, uint16_t Mode)
 {
-  return nullptr; //TODO: new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
+  return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
 }
 
 TSafeHandleStream::~TSafeHandleStream()
@@ -1439,13 +1463,13 @@ int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
 {
   switch (Origin)
   {
-  case TSeekOrigin::soFromBeginning:
+  case TSeekOrigin::soBeginning:
     FPosition = Offset;
     break;
-  case TSeekOrigin::soFromCurrent:
+  case TSeekOrigin::soCurrent:
     FPosition += Offset;
     break;
-  case TSeekOrigin::soFromEnd:
+  case TSeekOrigin::soEnd:
     FPosition = FSize + Offset;
     break;
   }
@@ -1482,7 +1506,7 @@ void TMemoryStream::SetSize(const int64_t NewSize)
   FSize = NewSize;
   if (OldPosition > NewSize)
   {
-    const auto res = Seek(0, TSeekOrigin::soFromEnd);
+    const auto res = Seek(0, TSeekOrigin::soEnd);
     DebugAssert(res == NewSize);
   }
 }
@@ -2131,3 +2155,4 @@ TTimeSpan TTimeSpan::FromSeconds(double Value)
   Result.FTicks = round(Value * TicksPerSecond);
   return Result;
 }
+

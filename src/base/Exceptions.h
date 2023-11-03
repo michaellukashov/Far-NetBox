@@ -229,6 +229,46 @@ public:
   ECallbackGuardAbort();
 };
 
+NB_DEFINE_CLASS_ID(EStreamError);
+class EStreamError : public ExtException
+{
+public:
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EStreamError); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EStreamError) || Exception::is(Kind); }
+public:
+  using ExtException::ExtException;
+  explicit EStreamError(UnicodeString Msg) :
+      ExtException(OBJECT_CLASS_EStreamError, static_cast<const Exception *>(nullptr), Msg)
+  {
+  }
+};
+
+NB_DEFINE_CLASS_ID(EFCreateError);
+class NB_CORE_EXPORT EFCreateError : public EStreamError
+{
+public:
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFCreateError); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFCreateError) || Exception::is(Kind); }
+public:
+  explicit EFCreateError(UnicodeString Msg) :
+      EStreamError(OBJECT_CLASS_EFCreateError, static_cast<const Exception *>(nullptr), Msg)
+  {
+  }
+};
+
+NB_DEFINE_CLASS_ID(EFOpenError);
+class NB_CORE_EXPORT EFOpenError : public EStreamError
+{
+public:
+  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFOpenError); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFOpenError) || Exception::is(Kind); }
+public:
+  explicit EFOpenError(UnicodeString Msg) :
+      EStreamError(OBJECT_CLASS_EFOpenError, static_cast<const Exception *>(nullptr), Msg)
+  {
+  }
+};
+
 NB_CORE_EXPORT Exception *CloneException(Exception *E);
 NB_CORE_EXPORT void RethrowException(Exception *E);
 NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception* E);

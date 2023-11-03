@@ -96,6 +96,9 @@ public:
   explicit Exception(TObjectClassId Kind, int32_t Ident) noexcept;
   virtual ~Exception() = default;
 
+//  void Createfmt(int32_t Id, fmt::ArgList Args);
+//  FMT_VARIADIC_W(void, Createfmt, int32_t)
+
 private:
   TObjectClassId FKind{0};
 public:
