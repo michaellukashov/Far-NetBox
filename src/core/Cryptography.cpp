@@ -681,7 +681,7 @@ TEncryption::TEncryption(const RawByteString AKey) noexcept
   }
 }
 
-TEncryption::~TEncryption()
+TEncryption::~TEncryption() // noexcept(false) // throw(std::runtime_error)
 {
   if (FContext != nullptr)
   {
@@ -824,7 +824,7 @@ void TEncryption::Aes(RawByteString& Buffer)
   Buffer.SetLength(Size);
 }
 
-UnicodeString TEncryption::EncryptFileName(const UnicodeString AFileName)
+UnicodeString TEncryption::EncryptFileName(const UnicodeString & AFileName)
 {
   NeedSalt();
   UTF8String FileNameUtf(AFileName);
@@ -842,7 +842,7 @@ UnicodeString TEncryption::EncryptFileName(const UnicodeString AFileName)
   return Result;
 }
 
-UnicodeString TEncryption::DecryptFileName(const UnicodeString AFileName)
+UnicodeString TEncryption::DecryptFileName(const UnicodeString & AFileName)
 {
   if (!IsEncryptedFileName(AFileName))
   {

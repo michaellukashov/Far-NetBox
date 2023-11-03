@@ -25,15 +25,15 @@ class TEncryption : public TObject
 {
 public:
   explicit TEncryption(const RawByteString AKey) noexcept;
-  virtual ~TEncryption();
+  virtual ~TEncryption(); //noexcept(false); //throw(std::runtime_error);
 
   static bool IsEncryptedFileName(const UnicodeString AFileName);
 
   void Encrypt(TFileBuffer & Buffer, bool Last);
   void Decrypt(TFileBuffer & Buffer);
   bool DecryptEnd(TFileBuffer & Buffer);
-  UnicodeString EncryptFileName(const UnicodeString AFileName);
-  UnicodeString DecryptFileName(const UnicodeString AFileName);
+  UnicodeString EncryptFileName(const UnicodeString & AFileName);
+  UnicodeString DecryptFileName(const UnicodeString & AFileName);
 
   static int32_t GetOverhead();
   static int32_t RoundToBlock(int32_t Size);
