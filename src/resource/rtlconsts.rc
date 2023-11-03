@@ -1,0 +1,6 @@
+#include "rtlconsts.h"
+
+STRINGTABLE
+BEGIN
+  Vcl_Consts_SMsgDlgCancel, "Cancel"
+END
