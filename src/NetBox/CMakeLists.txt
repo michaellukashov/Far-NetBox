@@ -1936,6 +1936,7 @@ set(NETBOX_SOURCES
 
   ../resource/TextsFileZilla.rc
   ../resource/TextsCore1.rc
+  ../resource/rtlconsts.rc
 #  ../resource/TextsWin1.rc
   NetBox.rc
   NetBox.def
