@@ -780,12 +780,12 @@ UnicodeString UnicodeString::SubString(int32_t Pos) const
   return SubStr(Pos);
 }
 
-bool UnicodeString::IsDelimiter(UnicodeString Chars, int32_t Pos) const
+bool UnicodeString::IsDelimiter(const UnicodeString & Chars, int32_t Pos) const
 {
   return ::IsDelimiter(Chars, *this, Pos);
 }
 
-int32_t UnicodeString::LastDelimiter(UnicodeString Delimiters) const
+int32_t UnicodeString::LastDelimiter(const UnicodeString & Delimiters) const
 {
   return ::LastDelimiter(Delimiters, *this);
 }

@@ -260,8 +260,8 @@ NB_CORE_EXPORT UnicodeString AnsiReplaceStr(const UnicodeString Str, const Unico
 NB_CORE_EXPORT int32_t AnsiPos(const UnicodeString Str, wchar_t Ch);
 NB_CORE_EXPORT int32_t Pos(const UnicodeString Str, const UnicodeString Substr);
 NB_CORE_EXPORT UnicodeString StringReplaceAll(const UnicodeString & Str, const UnicodeString & From, const UnicodeString & To);
-NB_CORE_EXPORT bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, int32_t AIndex);
-NB_CORE_EXPORT int32_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
+NB_CORE_EXPORT bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, int32_t AIndex);
+NB_CORE_EXPORT int32_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 NB_CORE_EXPORT int32_t LastDelimiter(const UnicodeString Delimiters, const UnicodeString Str);
 
 NB_CORE_EXPORT int32_t CompareText(const UnicodeString Str1, const UnicodeString Str2);
@@ -279,6 +279,7 @@ NB_CORE_EXPORT bool ContainsStr(const UnicodeString Str1, const UnicodeString St
 NB_CORE_EXPORT bool ContainsText(const UnicodeString Str1, const UnicodeString Str2);
 NB_CORE_EXPORT UnicodeString RightStr(const UnicodeString Str, int32_t ACount);
 NB_CORE_EXPORT int32_t PosEx(const UnicodeString SubStr, const UnicodeString Str, int32_t Offset = 1);
+int32_t FindDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str);
 
 NB_CORE_EXPORT UnicodeString UTF8ToString(const RawByteString Str);
 NB_CORE_EXPORT UnicodeString UTF8ToString(const char *Str, int32_t Len);

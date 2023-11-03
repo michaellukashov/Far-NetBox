@@ -293,7 +293,7 @@ UnicodeString StringReplaceAll(const UnicodeString & Str, const UnicodeString & 
   return AnsiReplaceStr(Str, From, To);
 }
 
-bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, int32_t AIndex)
+bool IsDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str, int32_t AIndex)
 {
   if (AIndex <= Str.Length())
   {
@@ -309,7 +309,7 @@ bool IsDelimiter(const UnicodeString Delimiters, const UnicodeString Str, int32_
   return false;
 }
 
-int32_t FirstDelimiter(const UnicodeString Delimiters, const UnicodeString Str)
+int32_t FirstDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str)
 {
   if (Str.Length())
   {
@@ -426,6 +426,11 @@ int32_t PosEx(const UnicodeString SubStr, const UnicodeString Str, int32_t Offse
   UnicodeString S = Str.SubString(Offset);
   const int32_t Result = S.Pos(SubStr) + Offset;
   return Result;
+}
+
+int32_t FindDelimiter(const UnicodeString & Delimiters, const UnicodeString & Str)
+{
+  return FirstDelimiter(Delimiters, Str);
 }
 
 UnicodeString UTF8ToString(const RawByteString Str)

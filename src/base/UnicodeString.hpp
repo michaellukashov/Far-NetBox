@@ -141,8 +141,8 @@ public:
   UnicodeString SubString(int32_t Pos, int32_t Len) const;
   UnicodeString SubString(int32_t Pos) const;
 
-  bool IsDelimiter(UnicodeString Chars, int32_t Pos) const;
-  int32_t LastDelimiter(UnicodeString Delimiters) const;
+  bool IsDelimiter(const UnicodeString & Chars, int32_t Pos) const;
+  int32_t LastDelimiter(const UnicodeString & Delimiters) const;
 
   UnicodeString Trim() const;
   UnicodeString TrimLeft() const;
