@@ -1084,15 +1084,15 @@ public:
   const TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(UnicodeString SessionName, TSessionData * Session);
   void NewWorkspace(const UnicodeString Name, TList * DataList);
-  bool GetIsFolder(const UnicodeString Name) const;
-  bool GetIsWorkspace(const UnicodeString Name) const;
+  bool GetIsFolder(const UnicodeString & Name) const;
+  bool GetIsWorkspace(const UnicodeString & Name) const;
   bool IsFolderOrWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr, int32_t Flags = 0);
   bool IsUrl(UnicodeString Url);
   bool CanOpen(TSessionData * Data);
-  void GetFolderOrWorkspace(const UnicodeString Name, TList * List);
-  TStrings * GetFolderOrWorkspaceList(const UnicodeString Name);
+  void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
+  TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
   TStrings * GetWorkspaces() const;
   bool HasAnyWorkspace() const;
   TSessionData * SaveWorkspaceData(TSessionData * Data, int Index);
@@ -1128,7 +1128,7 @@ private:
     TSessionData *Data, bool All, bool RecryptPasswordOnly,
     TSessionData *FactoryDefaults);
   TSessionData * ResolveWorkspaceData(TSessionData * Data);
-  TSessionData * GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const;
+  const TSessionData * GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData *Data, const UnicodeString & Name);
   __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode);

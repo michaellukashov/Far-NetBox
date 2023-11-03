@@ -1734,15 +1734,15 @@ void TFTPFileSystem::Sink(
 }
 
 void TFTPFileSystem::TransferOnDirectory(
-  const UnicodeString Directory, const TCopyParamType *CopyParam, int32_t Params)
+  const UnicodeString & Directory, const TCopyParamType * CopyParam, int32_t Params)
 {
   AutoDetectTimeDifference(Directory, CopyParam, Params);
 }
 
-void TFTPFileSystem::CopyToRemote(TStrings *AFilesToCopy,
-  const UnicodeString TargetDir, const TCopyParamType *CopyParam,
-  int32_t Params, TFileOperationProgressType *OperationProgress,
-  TOnceDoneOperation &OnceDoneOperation)
+void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
+  int32_t Params, TFileOperationProgressType * OperationProgress,
+  TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
 
@@ -2760,7 +2760,7 @@ const TFileSystemInfo & TFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
   return FFileSystemInfo;
 }
 
-bool TFTPFileSystem::TemporaryTransferFile(const UnicodeString /*FileName*/)
+bool TFTPFileSystem::TemporaryTransferFile(const UnicodeString & /*FileName*/)
 {
   return false;
 }
@@ -3459,7 +3459,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
   return Result;
 }
 
-void TFTPFileSystem::SendCommand(const UnicodeString Command)
+void TFTPFileSystem::SendCommand(const UnicodeString & Command)
 {
   FFileZillaIntf->CustomCommand(Command.c_str());
   FLastCommandSent = CopyToChar(Command, L' ', false);
@@ -4826,7 +4826,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t *AFileName, stru
   return Result;
 }
 
-void TFTPFileSystem::RegisterChecksumAlgCommand(const UnicodeString Alg, const UnicodeString Command)
+void TFTPFileSystem::RegisterChecksumAlgCommand(const UnicodeString & Alg, const UnicodeString & Command)
 {
   FChecksumAlgs->Add(Alg);
   FChecksumCommands->Add(Command);
@@ -4851,22 +4851,22 @@ void TFTPFileSystem::GetSupportedChecksumAlgs(TStrings *Algs)
   }
 }
 
-bool TFTPFileSystem::SupportsSiteCommand(const UnicodeString Command) const
+bool TFTPFileSystem::SupportsSiteCommand(const UnicodeString & Command) const
 {
   return (FSupportedSiteCommands->IndexOf(Command) >= 0);
 }
 
-bool TFTPFileSystem::SupportsCommand(const UnicodeString Command) const
+bool TFTPFileSystem::SupportsCommand(const UnicodeString & Command) const
 {
   return (FSupportedCommands->IndexOf(Command) >= 0);
 }
 
-void TFTPFileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/)
+void TFTPFileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 
-void TFTPFileSystem::UnlockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/)
+void TFTPFileSystem::UnlockFile(const UnicodeString & /*AFileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }

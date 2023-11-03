@@ -2894,7 +2894,7 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString APassword, Unico
 
 UnicodeString TSessionData::GetSessionPasswordEncryptionKey() const
 {
-  return UserName + HostName;
+  return UserName() + HostName();
 }
 
 bool TSessionData::GetCanLogin() const
@@ -3082,7 +3082,7 @@ UnicodeString TSessionData::GetUserNameSource() const
 
 void TSessionData::SetPassword(UnicodeString AValue)
 {
-  RawByteString value = EncryptPassword(avalue, GetSessionPasswordEncryptionKey());
+  RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(Password);
 }
 
@@ -3093,7 +3093,7 @@ UnicodeString TSessionData::GetPassword() const
 
 void TSessionData::SetNewPassword(UnicodeString AValue)
 {
-  RawByteString value = EncryptPassword(avalue, GetSessionPasswordEncryptionKey());
+  RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(NewPassword);
 }
 
@@ -6116,17 +6116,17 @@ void TStoredSessionList::SelectKnownHostsForSelectedSessions(
   }
 }
 
-TSessionData * TStoredSessionList::GetFirstFolderOrWorkspaceSession(const UnicodeString & Name)
+const TSessionData * TStoredSessionList::GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const
 {
-  TSessionData * Result = nullptr;
+  const TSessionData * Result = nullptr;
   if (!Name.IsEmpty())
   {
-    UnicodeString NameWithSlash = UnixIncludeTrailingBackslash(Name); // optimization
-    for (int Index = 0; (Result == nullptr) && (Index < Count); Index++)
+    UnicodeString NameWithSlash = base::UnixIncludeTrailingBackslash(Name); // optimization
+    for (int32_t Index = 0; (Result == nullptr) && (Index < Count); Index++)
     {
-      if (Sessions[Index]->IsInFolderOrWorkspace(NameWithSlash))
+      if (GetSession(Index)->IsInFolderOrWorkspace(NameWithSlash))
       {
-        Result = Sessions[Index];
+        Result = GetSession(Index);
       }
     }
   }
@@ -6139,16 +6139,16 @@ bool TStoredSessionList::IsFolderOrWorkspace(const UnicodeString & Name) const
   return (GetFirstFolderOrWorkspaceSession(Name) != nullptr);
 }
 
-bool TStoredSessionList::IsFolder(const UnicodeString & Name) const
+bool TStoredSessionList::GetIsFolder(const UnicodeString & Name) const
 {
-  TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
-  return (SessionData != nullptr) && !SessionData->IsWorkspace;
+  const TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
+  return (SessionData != nullptr) && !SessionData->GetIsWorkspace();
 }
 
-bool TStoredSessionList::IsWorkspace(const UnicodeString & Name) const
+bool TStoredSessionList::GetIsWorkspace(const UnicodeString & Name) const
 {
-  TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
-  return (SessionData != nullptr) && SessionData->IsWorkspace;
+  const TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
+  return (SessionData != nullptr) && SessionData->GetIsWorkspace();
 }
 
 TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
@@ -6159,7 +6159,7 @@ TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
     Data = ResolveWorkspaceData(Data);
 
     if ((Data != nullptr) && Data->CanOpen &&
-        DebugAlwaysTrue(Data->Link.IsEmpty()))
+        DebugAlwaysTrue(Data->GetLink().IsEmpty()))
     {
       return Data;
     }
@@ -6219,7 +6219,7 @@ void TStoredSessionList::DoGetFolderOrWorkspace(const UnicodeString & Name, TLis
 }
 
 TStrings *TStoredSessionList::GetFolderOrWorkspaceList(
-  const UnicodeString Name)
+  const UnicodeString & Name)
 {
   std::unique_ptr<TObjectList> DataList(new TObjectList());
   DoGetFolderOrWorkspace(Name, DataList.get(), true);

@@ -2383,9 +2383,9 @@ uint32_t TSFTPFileSystem::TransferBlockSize(
     Result = nb::ToUInt32(OperationProgress->StaticBlockSize());
   }
 
-  if (Result < minPacketSize)
+  if (Result < MinPacketSize)
   {
-    Result = minPacketSize;
+    Result = MinPacketSize;
   }
 
   if (MaxPacketSizeValid)
@@ -4962,7 +4962,7 @@ void TSFTPFileSystem::Source(
         FTerminal->LogEvent("Resuming file transfer (append style).");
         ResumeOffset = OpenParams.DestFileSize;
       }
-      FileSeek(static_cast<THandle>(AHandle.Handle), ResumeOffset, soBeginning);
+      FileSeek(static_cast<THandle>(AHandle.Handle), ResumeOffset, soFromBeginning);
       OperationProgress->AddResumed(ResumeOffset);
     }
 
@@ -5542,7 +5542,7 @@ void TSFTPFileSystem::Sink(
     !OperationProgress->GetAsciiTransfer() &&
     CopyParam->AllowResume(OperationProgress->TransferSize, ADestFileName) &&
     !FTerminal->IsEncryptingFiles() &&
-    (CopyParam->FOnTransferOut.empty() &&
+    CopyParam->FOnTransferOut.empty() &&
     (CopyParam->PartOffset < 0);
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
@@ -5595,7 +5595,7 @@ void TSFTPFileSystem::Sink(
         else
         {
           FTerminal->LogEvent("Resuming file transfer.");
-          FileSeek(static_cast<THandle>(LocalFileHandle), ResumeOffset, soBeginning);
+          FileSeek(static_cast<THandle>(LocalFileHandle), ResumeOffset, soFromBeginning);
           OperationProgress->AddResumed(ResumeOffset);
         }
       }
@@ -5695,7 +5695,7 @@ void TSFTPFileSystem::Sink(
           FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE, nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
         }
         ResumeAllowed = false;
-        FileSeek(static_cast<THandle>(LocalFileHandle), DestFileSize, soBeginning);;
+        FileSeek(static_cast<THandle>(LocalFileHandle), DestFileSize, soFromBeginning);
         if (OverwriteMode == omAppend)
         {
           FTerminal->LogEvent("Appending to file.");
@@ -5957,7 +5957,7 @@ void TSFTPFileSystem::Sink(
   } end_try__finally
 }
 
-void TSFTPFileSystem::RegisterChecksumAlg(const UnicodeString & Alg, const UnicodeString SftpAlg)
+void TSFTPFileSystem::RegisterChecksumAlg(const UnicodeString & Alg, const UnicodeString & SftpAlg)
 {
   FChecksumAlgs->Add(Alg);
   FChecksumSftpAlgs->Add(SftpAlg);

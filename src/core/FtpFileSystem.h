@@ -215,11 +215,11 @@ protected:
   void HandleFeatReply();
   void ResetFeatures();
   void ProcessFeatures();
-  bool SupportsSiteCommand(const UnicodeString ACommand) const;
-  bool SupportsCommand(const UnicodeString ACommand) const;
-  void RegisterChecksumAlgCommand(const UnicodeString Alg, const UnicodeString ACommand);
-  void SendCommand(const UnicodeString ACommand);
-  bool CanTransferSkipList(int32_t AParams, uint32_t AFlags, const TCopyParamType *CopyParam) const;
+  bool SupportsSiteCommand(const UnicodeString & ACommand) const;
+  bool SupportsCommand(const UnicodeString & ACommand) const;
+  void RegisterChecksumAlgCommand(const UnicodeString & Alg, const UnicodeString & ACommand);
+  void SendCommand(const UnicodeString & ACommand);
+  bool CanTransferSkipList(int32_t AParams, uint32_t AFlags, const TCopyParamType * CopyParam) const;
   void Disconnect();
   UnicodeString RemoteExtractFilePath(const UnicodeString & Path);
 

@@ -13,10 +13,10 @@
 //#define SDuplicateItem 2010
 //#define SDuplicateName 2011
 #define SDuplicateString 2012
-//#define SFCreateError 2013
+#define SFCreateError 2013
 //#define SFixedColTooBig 2014
 //#define SFixedRowTooBig 2015
-//#define SFOpenError 2016
+#define SFOpenError 2016
 //#define SGridTooLarge 2017
 //#define SIdentifierExpected 2018
 //#define SIndexOutOfRange 2019

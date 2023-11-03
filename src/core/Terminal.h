@@ -345,7 +345,7 @@ protected:
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Move, bool DontOverwrite);
   bool DoMoveFile(const UnicodeString & FileName, const TRemoteFile * File, /*const TMoveFileParams*/ void * Param);
   void DoCopyFile(
-    const UnicodeString AFileName, const TRemoteFile * AFile, UnicodeString ANewName, bool DontOverwrite);
+    const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool DontOverwrite);
   void DoChangeFileProperties(const UnicodeString AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties);
   void DoChangeDirectory();
@@ -372,7 +372,7 @@ protected:
   void ReadDirectory(TRemoteFileList *AFileList);
   void CustomReadDirectory(TRemoteFileList *AFileList);
   void DoCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
-  bool TerminalCreateLocalFile(const UnicodeString ATargetFileName,
+  bool TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
     TFileOperationProgressType * OperationProgress, HANDLE *AHandle,
     bool NoConfirmation);
   void TerminalOpenLocalFile(const UnicodeString ATargetFileName, DWORD Access,
@@ -542,7 +542,7 @@ protected:
     const UnicodeString & BaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
     const TFileMasks::TParams & MaskParams);
   void SelectTransferMode(
-    const UnicodeString ABaseFileName, TOperationSide Side, const TCopyParamType *CopyParam,
+    const UnicodeString & ABaseFileName, TOperationSide Side, const TCopyParamType *CopyParam,
     const TFileMasks::TParams & MaskParams);
   void SelectSourceTransferMode(const TLocalFileHandle & Handle, const TCopyParamType *CopyParam);
   void DoDeleteLocalFile(const UnicodeString & FileName);
@@ -851,7 +851,7 @@ public:
   TCustomFileSystem *GetFileSystem() const { return FFileSystem.get(); }
   TCustomFileSystem *GetFileSystem() { return FFileSystem.get(); }
 
-  HANDLE TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD DesiredAccess,
+  HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
 
   bool CheckForEsc() const;
@@ -1094,7 +1094,7 @@ public:
   virtual ~TParallelOperation() noexcept;
 
   void Init(
-    TStrings * AFiles, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
+    TStrings * AFiles, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * MainOperationProgress, const UnicodeString AMainName,
     int64_t ParallelFileSize);
 
@@ -1104,15 +1104,15 @@ public:
   void AddClient();
   void RemoveClient();
   int32_t GetNext(
-    TTerminal *Terminal, UnicodeString &AFileName, TObject *&Object, UnicodeString &ATargetDir, bool &Dir, 
-    bool &Recursed, TCopyParamType *& CustomCopyParam);
+    TTerminal * Terminal, UnicodeString & AFileName, TObject *& Object, UnicodeString & ATargetDir, bool & Dir,
+    bool & Recursed, TCopyParamType *& CustomCopyParam);
   void Done(
     const UnicodeString AFileName, bool Dir, bool Success, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, TTerminal * Terminal);
   bool UpdateFileList(TQueueFileList * UpdateFileList);
 
   static bool GetOnlyFile(TStrings * FileList, UnicodeString & FileName, TObject *& Object);
-  static TCollectedFileList * GetFileList(TStrings * FileList, int Index);
+  static TCollectedFileList * GetFileList(TStrings * FileList, int32_t Index);
   static UnicodeString GetPartPrefix(const UnicodeString & FileName);
   __property TOperationSide Side = { read = FSide };
   __property const TCopyParamType * CopyParam = { read = FCopyParam };
@@ -1165,7 +1165,7 @@ private:
   int32_t FParallelFileMerged{0};
 
   bool CheckEnd(TCollectedFileList * Files);
-  TCollectedFileList * GetFileList(int Index);
+  TCollectedFileList * GetFileList(int32_t Index);
 };
 
 struct TLocalFileHandle

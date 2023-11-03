@@ -2066,7 +2066,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
           BlockBuf.Convert(FTerminal->GetConfiguration()->GetLocalEOLType(),
             FTerminal->GetSessionData()->GetEOLType(),
             ConvertParams, ConvertToken);
-          BlockBuf.GetMemory()->Seek(0, TSeekOrigin::soFromBeginning);
+          BlockBuf.GetMemory()->Seek(0, TSeekOrigin::soBeginning);
           AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
           // We don't need it any more
           BlockBuf.GetMemory()->Clear();

@@ -768,7 +768,7 @@ TParallelOperation::TParallelOperation(TOperationSide Side) noexcept
 }
 
 void TParallelOperation::Init(
-  TStrings * AFileList, const UnicodeString TargetDir, const TCopyParamType * CopyParam, int32_t Params,
+  TStrings * AFileList, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int32_t Params,
   TFileOperationProgressType * MainOperationProgress, const UnicodeString MainName,
   int64_t ParallelFileSize)
 {
@@ -986,10 +986,10 @@ void TParallelOperation::Done(
                         Terminal->LogEvent(FORMAT(L"Appending part %d of \"%s\" to \"%s\"...", Index, FileNameOnly, TargetNamePartialOnly));
                         std::unique_ptr<THandleStream> SourceStream(TSafeHandleStream::CreateFromFile(TargetPartName, fmOpenRead | fmShareDenyWrite));
                         std::unique_ptr<THandleStream> DestStream(TSafeHandleStream::CreateFromFile(TargetNamePartial, fmOpenWrite | fmShareDenyWrite));
-                        HANDLE DestHandle = reinterpret_cast<HANDLE>(DestStream->Handle);
+                        HANDLE DestHandle = reinterpret_cast<HANDLE>(DestStream->Handle());
                         FILETIME WrTime;
                         bool GotWrTime = GetFileTime(DestHandle, nullptr, nullptr, &WrTime);
-                        DestStream->Seek(0L, TSeekOrigin::soFromEnd);
+                        DestStream->Seek(0L, TSeekOrigin::soEnd);
                         DestStream->CopyFrom(SourceStream.get(), SourceStream->Size);
                         if (GotWrTime)
                         {
@@ -1059,12 +1059,12 @@ bool TParallelOperation::GetOnlyFile(TStrings * FileList, UnicodeString & FileNa
   return Result;
 }
 
-TCollectedFileList * TParallelOperation::GetFileList(TStrings * FileList, int Index)
+TCollectedFileList * TParallelOperation::GetFileList(TStrings * FileList, int32_t Index)
 {
-  return DebugNotNull(dynamic_cast<TCollectedFileList *>(FileList->Objects[Index]));
+  return DebugNotNull(dynamic_cast<TCollectedFileList *>(FileList->GetObj(Index)));
 }
 
-TCollectedFileList * TParallelOperation::GetFileList(int Index)
+TCollectedFileList * TParallelOperation::GetFileList(int32_t Index)
 {
   return GetFileList(FFileList.get(), Index);
 }
@@ -1075,13 +1075,12 @@ UnicodeString TParallelOperation::GetPartPrefix(const UnicodeString & FileName)
 }
 
 int32_t TParallelOperation::GetNext(
-  TTerminal * Terminal, UnicodeString & FileName, TObject *&Object, UnicodeString &TargetDir, bool & Dir,
-  bool & Recursed, bool &FirstLevelTCopyParamType *& CustomCopyParam)
+  TTerminal * Terminal, UnicodeString & FileName, TObject *& Object, UnicodeString & TargetDir, bool & Dir,
+  bool & Recursed, TCopyParamType *& CustomCopyParam)
 {
   TGuard Guard(*FSection.get()); nb::used(Guard);
   int32_t Result = 1;
   TCollectedFileList * Files;
-  FirstLevel = false;
   do
   {
     if (FFileList->GetCount() > FListIndex)
@@ -1110,6 +1109,7 @@ int32_t TParallelOperation::GetNext(
     Dir = Files->IsDir(FIndex);
     Recursed = Files->IsRecursed(FIndex);
     UnicodeString DirPath;
+    bool FirstLevel;
     if (FSide == osLocal)
     {
       DirPath = ::ExtractFileDir(FileName);
@@ -1127,15 +1127,12 @@ int32_t TParallelOperation::GetNext(
     }
     else
     {
-      UnicodeString DirPath_nobs = Sysutils::ExcludeTrailingBackslash(DirPath);
       TDirectories::const_iterator DirectoryIterator = FDirectories.find(DirPath);
       if (DebugAlwaysFalse(DirectoryIterator == FDirectories.end()))
       {
-        DirectoryIterator = FDirectories.find(DirPath_nobs);
-     		if (DirectoryIterator == FDirectories.end())
-          throw EInvalidOperation(L"Parent path not known");
+        throw EInvalidOperation(L"Parent path not known");
       }
-      const TDirectoryData &DirectoryData = DirectoryIterator->second;
+      const TDirectoryData & DirectoryData = DirectoryIterator->second;
       if (!DirectoryData.Exists)
       {
         Result = 0; // wait for parent directory to be created
@@ -1186,7 +1183,7 @@ int32_t TParallelOperation::GetNext(
         CustomCopyParam = new TCopyParamType(*FCopyParam);
         CustomCopyParam->PartOffset = FParallelFileOffset;
         __int64 Remaining = FParallelFileSize - CustomCopyParam->PartOffset;
-        CustomCopyParam->PartSize = FParallelFileSize / Configuration->QueueTransfersLimit;
+        CustomCopyParam->PartSize = FParallelFileSize / GetConfiguration()->QueueTransfersLimit();
         DebugAssert(!OnlyFileName.IsEmpty());
         if (FParallelFileTargetName.IsEmpty())
         {
@@ -1551,7 +1548,7 @@ void TTerminal::FingerprintScan(UnicodeString & SHA256, UnicodeString & SHA1, Un
 void TTerminal::Open()
 {
   AnySession = true;
-  Configuration->Usage->Inc(L"SessionOpens");
+  GetConfiguration()->Usage->Inc(L"SessionOpens");
   TAutoNestingCounter OpeningCounter(FOpening);
   ReflectSettings();
   try
@@ -1829,7 +1826,7 @@ void TTerminal::SetupTunnelLocalPortNumber()
   {
     // Randomizing the port selection to reduce a chance of conflicts.
     rde::vector<int32_t> Ports;
-    for (int32_t Port = Configuration->FTunnelLocalPortNumberLow; Port <= Configuration->FTunnelLocalPortNumberHigh; Port++)
+    for (int32_t Port = GetConfiguration()->FTunnelLocalPortNumberLow; Port <= GetConfiguration()->FTunnelLocalPortNumberHigh; Port++)
     {
       Ports.push_back(Port);
     }
@@ -2080,7 +2077,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   bool PasswordOrPassphrasePrompt = ::IsPasswordOrPassphrasePrompt(Kind, Prompts);
   if (PasswordOrPassphrasePrompt)
   {
-    bool &PasswordTried =
+    bool & PasswordTried =
       FTunnelOpening ? FRememberedTunnelPasswordTried : FRememberedPasswordTried;
     if (!PasswordTried)
     {
@@ -2097,8 +2094,8 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
         Password = PrimaryTerminal->GetRememberedPassword();
       }
       FRememberedPasswordUsed = true;
-      Response->SetString(0, Password);
-      if (!Response->GetString(0).IsEmpty())
+      Results->SetString(0, Password);
+      if (!Results->GetString(0).IsEmpty())
       {
         LogEvent("Using remembered password.");
         Result = true;
@@ -2119,7 +2116,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       TCallbackGuard Guard(this);
       try
       {
-        GetOnPromptUser()(this, Kind, AName, AInstructions, Prompts, Response, Result, nullptr);
+        GetOnPromptUser()(this, Kind, AName, AInstructions, Prompts, Results, Result, nullptr);
         Guard.Verify();
       }
       catch (Exception & E)
@@ -2134,7 +2131,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     if (Result && PasswordOrPassphrasePrompt &&
         (GetConfiguration()->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->GetObj(0)), pupRemember)))
     {
-      RawByteString EncryptedPassword = EncryptPassword(Response->GetString(0));
+      RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
       if (FTunnelOpening)
       {
         PrimaryTerminal->SetRememberedTunnelPassword(EncryptedPassword);
@@ -4567,8 +4564,8 @@ void TTerminal::CustomCommandOnFile(UnicodeString AFileName,
 
 void TTerminal::PrepareCommandSession(bool NeedCurrentDirectory)
 {
-  DebugAssert(CommandSessionOpened);
-  DebugAssert(FCommandSession->FSProtocol == cfsSCP);
+  DebugAssert(GetCommandSessionOpened());
+  DebugAssert(FCommandSession->GetFSProtocol() == cfsSCP);
   LogEvent(L"Performing operation on command session.");
 
   if (FCommandSession->CurrentDirectory != CurrentDirectory)
@@ -5047,7 +5044,7 @@ bool TTerminal::DoRenameOrCopyFile(
   bool Move, bool DontOverwrite, bool IsBatchOperation)
 {
   TBatchOverwrite BatchOverwrite = (IsBatchOperation ? OperationProgress->BatchOverwrite : boNo);
-  UnicodeString AbsoluteNewName = AbsolutePath(NewName, true);
+  UnicodeString AbsoluteNewName = GetAbsolutePath(NewName, true);
   bool Result = true;
   bool ExistenceKnown = false;
   std::unique_ptr<TRemoteFile> DuplicateFile;
@@ -5079,7 +5076,7 @@ bool TTerminal::DoRenameOrCopyFile(
       }
       else
       {
-        QuestionFmt = MainInstructions(LoadStr(FILE_OVERWRITE));
+        QuestionFmt = MainInstructions(LoadStr(CORE_PROMPT_FILE_OVERWRITE));
         QueryType = qtConfirmation;
       }
       TQueryParams Params(qpNeverAskAgainCheck);
@@ -5152,14 +5149,14 @@ bool TTerminal::DoRenameOrCopyFile(
       TRetryOperationLoop RetryLoop(this);
       do
       {
-        UnicodeString AbsoluteFileName = AbsolutePath(FileName, true);
+        UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
         DebugAssert(FFileSystem != nullptr);
         if (Rename)
         {
           TMvSessionAction Action(ActionLog, AbsoluteFileName, AbsoluteNewName);
           try
           {
-            FFileSystem->RenameFile(FileName, File, NewName, !DontOverwrite);
+            FFileSystem->RemoteRenameFile(FileName, File, NewName, !DontOverwrite);
           }
           catch (Exception & E)
           {
@@ -5172,19 +5169,19 @@ bool TTerminal::DoRenameOrCopyFile(
           TCpSessionAction Action(ActionLog, AbsoluteFileName, AbsoluteNewName);
           try
           {
-            bool CopyDirsOnSecondarySession = IsCapable[fcSecondaryShell];
+            bool CopyDirsOnSecondarySession = GetIsCapable(fcSecondaryShell);
             TCustomFileSystem * FileSystem;
             if (CopyDirsOnSecondarySession && File->IsDirectory &&
                 (FCommandSession != nullptr)) // Won't be in scripting, there we let it fail later
             {
               PrepareCommandSession();
-              FileSystem = FCommandSession->FFileSystem;
+              FileSystem = FCommandSession->GetFileSystem();
             }
             else
             {
               FileSystem = GetFileSystemForCapability(fcRemoteCopy);
             }
-            FileSystem->CopyFile(FileName, File, NewName, !DontOverwrite);
+            FileSystem->RemoteCopyFile(FileName, File, NewName, !DontOverwrite);
           }
           catch (Exception & E)
           {
@@ -5216,8 +5213,8 @@ bool TTerminal::DoMoveFile(const UnicodeString & FileName, const TRemoteFile * F
   StartOperationWithFile(FileName, foRemoteMove, foDelete);
   DebugAssert(Param != nullptr);
   const TMoveFileParams & Params = *static_cast<const TMoveFileParams*>(Param);
-  UnicodeString NewName = UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(UnixExtractFileName(FileName), Params.FileMask);
+  UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
+    MaskFileName(base::UnixExtractFileName(FileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", FileName, NewName));
   FileModified(File, FileName);
   bool Result = DoRenameFile(FileName, File, NewName, true, Params.DontOverwrite);
@@ -5296,11 +5293,11 @@ bool TTerminal::TerminalMoveFiles(
 }
 
 void TTerminal::DoCopyFile(
-  const UnicodeString AFileName, const TRemoteFile * AFile, const UnicodeString ANewNam, bool DontOverwrite)
+  const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool DontOverwrite)
 {
   bool IsBatchOperation = DebugAlwaysTrue(OperationProgress != nullptr);
   bool Move = false; // not used
-  DoRenameOrCopyFile(false, FileName, File, NewName, Move, DontOverwrite, IsBatchOperation);
+  DoRenameOrCopyFile(false, AFileName, AFile, ANewName, Move, DontOverwrite, IsBatchOperation);
 }
 
 void TTerminal::TerminalCopyFile(const UnicodeString AFileName,
@@ -5825,7 +5822,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
   return Result;
 }
 
-bool TTerminal::TerminalCreateLocalFile(const UnicodeString ATargetFileName,
+bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   TFileOperationProgressType *OperationProgress, HANDLE *AHandle,
   bool NoConfirmation)
 {
@@ -7954,7 +7951,7 @@ bool TTerminal::UseAsciiTransfer(
   const TFileMasks::TParams & MaskParams)
 {
   return
-    IsCapable[fcTextMode] &&
+      GetIsCapable(fcTextMode) &&
     CopyParam->UseAsciiTransfer(BaseFileName, Side, MaskParams) &&
     // Used either before PartSize is set (to check that file is to be transfered in binary mode, hence allows parallel file transfer),
     // or later during parallel transfer (which never happens for ascii mode).
@@ -7962,7 +7959,7 @@ bool TTerminal::UseAsciiTransfer(
 }
 
 void TTerminal::SelectTransferMode(
-  const UnicodeString ABaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
+  const UnicodeString & ABaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
   const TFileMasks::TParams & MaskParams)
 {
   bool AsciiTransfer = UseAsciiTransfer(ABaseFileName, Side, CopyParam, MaskParams);
@@ -7971,7 +7968,7 @@ void TTerminal::SelectTransferMode(
   LogEvent(0, FORMAT("%s transfer mode selected.", ModeName));
 }
 
-void TTerminal::SelectSourceTransferMode(const TLocalFileHandle &Handle, const TCopyParamType *CopyParam)
+void TTerminal::SelectSourceTransferMode(const TLocalFileHandle & Handle, const TCopyParamType * CopyParam)
 {
   // Will we use ASCII or BINARY file transfer?
   TFileMasks::TParams MaskParams;
@@ -9416,7 +9413,7 @@ void TTerminal::SetLocalFileTime(UnicodeString LocalFileName,
   });
 }
 
-HANDLE TTerminal::TerminalCreateLocalFile(UnicodeString LocalFileName, DWORD DesiredAccess,
+HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
   DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   if (GetOnCreateLocalFile())
