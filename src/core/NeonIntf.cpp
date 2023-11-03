@@ -208,7 +208,7 @@ void CheckNeonStatus(ne_session * Session, int32_t NeonStatus,
 
     UnicodeString LogError(Error);
     AddToList(LogError, NeonError, sLineBreak);
-    AppLogFmt(L"HTTP request failed: %s", (LogError));
+    AppLogFmt(L"HTTP request failed: %s", LogError);
     throw ExtException(Error, NeonError);
   }
 }
@@ -272,9 +272,12 @@ void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal 
   }
 
   // As the OnNeonTlsInit always only calls SetupSsl, we can simplify this with one shared implementation
+#if 0
   TMethod & Method = *(TMethod*)&OnNeonTlsInit;
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
   ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
+#endif
+  ne_set_session_private(Session, SESSION_TLS_INIT_KEY, nb::ToPtr(OnNeonTlsInit));
 }
 
 void InitNeonTls(

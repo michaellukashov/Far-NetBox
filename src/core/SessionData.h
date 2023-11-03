@@ -390,7 +390,7 @@ public:
   void SetTcpNoDelay(bool value);
   void SetSendBuf(int32_t value);
   void SetSourceAddress(const UnicodeString value);
-  void SetProtocolFeatures(const UnicodeString & value);
+  void SetProtocolFeatures(const UnicodeString Value);
   void SetSshSimple(bool value);
   bool GetUsesSsh() const;
   void SetCipherList(UnicodeString value);
@@ -743,6 +743,7 @@ public:
   __property UnicodeString SourceAddress = { read=FSourceAddress, write=SetSourceAddress };
   RWPropertySimple<UnicodeString> SourceAddress{&FSourceAddress, nb::bind(&TSessionData::SetSourceAddress, this)};
   __property UnicodeString ProtocolFeatures = { read=FProtocolFeatures, write=SetProtocolFeatures };
+  RWPropertySimple<UnicodeString> ProtocolFeatures{&FProtocolFeatures, nb::bind(&TSessionData::SetProtocolFeatures, this)};
   __property bool SshSimple = { read = FSshSimple, write = SetSshSimple };
   __property UnicodeString CipherList = { read = GetCipherList, write = SetCipherList };
   RWProperty<UnicodeString> CipherList{nb::bind(&TSessionData::GetCipherList, this), nb::bind(&TSessionData::SetCipherList, this)};

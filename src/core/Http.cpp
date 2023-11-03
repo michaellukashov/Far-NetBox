@@ -271,7 +271,7 @@ int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate * AC
     if (RootCert == Certificate)
     {
       Failures &= ~NE_SSL_UNTRUSTED;
-      AppLogFmt(L"Certificate is known (%d)", (Failures));
+      AppLogFmt(L"Certificate is known (%d)", Failures);
     }
   }
 

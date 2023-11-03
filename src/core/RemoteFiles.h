@@ -195,6 +195,7 @@ public:
   __property UnicodeString ModificationStr = { read = GetModificationStr };
   __property UnicodeString UserModificationStr = { read = GetUserModificationStr };
   __property TModificationFmt ModificationFmt = { read = FModificationFmt, write = FModificationFmt };
+  TModificationFmt& ModificationFmt{FModificationFmt};
   __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
   __property bool IsSymLink = { read = FIsSymLink };
   ROProperty<bool> IsSymLink{nb::bind(&TRemoteFile::GetIsSymLink, this)};
@@ -828,4 +829,43 @@ private:
   int64_t GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 };
 
+// moved to Common.h
+#if 0
+bool IsUnixStyleWindowsPath(const UnicodeString & Path);
+bool UnixIsAbsolutePath(const UnicodeString & Path);
+UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path);
+UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simple = false);
+UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path);
+UnicodeString UnixCombinePaths(const UnicodeString & Path1, const UnicodeString & Path2);
+UnicodeString UnixExtractFileDir(const UnicodeString & Path);
+UnicodeString UnixExtractFilePath(const UnicodeString & Path);
+UnicodeString UnixExtractFileName(const UnicodeString & Path);
+UnicodeString ExtractShortName(const UnicodeString & Path, bool Unix);
+UnicodeString UnixExtractFileExt(const UnicodeString & Path);
+Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2);
+bool UnixIsChildPath(const UnicodeString & Parent, const UnicodeString & Child);
+bool ExtractCommonPath(TStrings * Files, UnicodeString & Path);
+bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path);
+UnicodeString ExtractFileName(const UnicodeString & Path, bool Unix);
+bool IsUnixRootPath(const UnicodeString & Path);
+bool IsUnixHiddenFile(const UnicodeString & Path);
+UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
+UnicodeString FromUnixPath(const UnicodeString & Path);
+UnicodeString ToUnixPath(const UnicodeString & Path);
+UnicodeString MinimizeName(const UnicodeString & FileName, int MaxLen, bool Unix);
+UnicodeString MakeFileList(TStrings * FileList);
+TDateTime ReduceDateTimePrecision(TDateTime DateTime,
+  TModificationFmt Precision);
+TModificationFmt LessDateTimePrecision(
+  TModificationFmt Precision1, TModificationFmt Precision2);
+UnicodeString UserModificationStr(TDateTime DateTime,
+  TModificationFmt Precision);
+UnicodeString ModificationStr(TDateTime DateTime,
+  TModificationFmt Precision);
+int GetPartialFileExtLen(const UnicodeString & FileName);
+int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs = 0,
+  UnicodeString * TypeName = nullptr);
+bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
+UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bool Unix);
 
+#endif

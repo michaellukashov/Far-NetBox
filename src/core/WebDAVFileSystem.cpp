@@ -1977,7 +1977,7 @@ int TWebDAVFileSystem::NeonRequestAuth(
     {
       if (FileSystem->FIgnoreAuthenticationFailure == iafPasswordFailed)
       {
-        // Fail PROPFIND /nonexising request...
+        // Fail PROPFIND /nonexisting request...
         Result = false;
       }
       else

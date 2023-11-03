@@ -2162,7 +2162,7 @@ const TFileSystemInfo & TSFTPFileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 
 bool TSFTPFileSystem::TemporaryTransferFile(const UnicodeString & AFileName)
 {
-  return (GetPartialFileExtLen(AFileName) > 0);
+  return (base::GetPartialFileExtLen(AFileName) > 0);
 }
 
 bool TSFTPFileSystem::GetStoredCredentialsTried() const
@@ -3513,7 +3513,7 @@ void TSFTPFileSystem::DoStartup()
     Packet.AddString(FTerminal->Configuration->GetCompanyName());
     Packet.AddString(FTerminal->Configuration->GetProductName());
     Packet.AddString(FTerminal->Configuration->GetProductVersion());
-    Packet.AddInt64(LOWORD(FTerminal->Configuration->FixedApplicationInfo->dwFileVersionLS));
+    Packet.AddInt64(LOWORD(FTerminal->Configuration->GetFixedApplicationInfo()->dwFileVersionLS));
     SendPacket(&Packet);
     // we are not interested in the response, do not wait for it
     ReserveResponse(&Packet, nullptr);

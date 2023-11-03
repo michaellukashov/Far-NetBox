@@ -4398,7 +4398,7 @@ void TSessionData::SetSourceAddress(const UnicodeString value)
   SET_SESSION_PROPERTY(SourceAddress);
 }
 
-void TSessionData::SetProtocolFeatures(const UnicodeString & value)
+void TSessionData::SetProtocolFeatures(const UnicodeString value)
 {
   SET_SESSION_PROPERTY(ProtocolFeatures);
 }

@@ -222,7 +222,7 @@ UnicodeString GetS3ConfigValue(
         UnicodeString AWSMetadataService = DefaultStr(Configuration->AWSMetadataService, L"http://169.254.169.254/latest/meta-data/");
         UnicodeString SecurityCredentialsUrl = AWSMetadataService + L"iam/security-credentials/";
 
-        AppLogFmt(L"Retrieving AWS security credentials from %s", (SecurityCredentialsUrl));
+        AppLogFmt(L"Retrieving AWS security credentials from %s", SecurityCredentialsUrl);
         S3SecurityProfile = ReadUrl(SecurityCredentialsUrl);
 
         if (S3SecurityProfile.IsEmpty())
@@ -232,7 +232,7 @@ UnicodeString GetS3ConfigValue(
         else
         {
           UnicodeString SecurityProfileUrl = SecurityCredentialsUrl + EncodeUrlString(S3SecurityProfile);
-          AppLogFmt(L"AWS security credentials role detected: %s, retrieving %s", (S3SecurityProfile, SecurityProfileUrl));
+          AppLogFmt(L"AWS security credentials role detected: %s, retrieving %s", S3SecurityProfile, SecurityProfileUrl);
           UnicodeString ProfileDataStr = ReadUrl(SecurityProfileUrl);
 
           std::unique_ptr<TJSONValue> ProfileDataValue(TJSONObject::ParseJSONValue(ProfileDataStr));
@@ -258,7 +258,7 @@ UnicodeString GetS3ConfigValue(
           }
           UnicodeString ExpirationStr = ExpirationValue->Value();
           S3CredentialsExpiration = ISO8601ToDate(ExpirationStr, false);
-          AppLogFmt(L"Credentials expiration: %s", (StandardTimestamp(S3CredentialsExpiration)));
+          AppLogFmt(L"Credentials expiration: %s", StandardTimestamp(S3CredentialsExpiration));
 
           std::unique_ptr<TJSONPairEnumerator> Enumerator(ProfileData->GetEnumerator());
           UnicodeString Names;
@@ -269,14 +269,14 @@ UnicodeString GetS3ConfigValue(
             S3Credentials.insert(std::make_pair(Name, Pair->JsonValue->Value()));
             AddToList(Names, Name, L", ");
           }
-          AppLogFmt(L"Response contains following values: %s", (Names));
+          AppLogFmt(L"Response contains following values: %s", Names);
         }
       }
       catch (Exception & E)
       {
         UnicodeString Message;
         ExceptionMessage(&E, Message);
-        AppLogFmt(L"Error retrieving AWS security credentials role: %s", (Message));
+        AppLogFmt(L"Error retrieving AWS security credentials role: %s", Message);
       }
     }
 

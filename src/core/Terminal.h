@@ -524,15 +524,15 @@ protected:
   bool CanParallel(const TCopyParamType * CopyParam, int32_t AParams, TParallelOperation * ParallelOperation) const;
   void CopyParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * OperationProgress);
   void DoCopyToRemote(
-    TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
+    TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, uint32_t AFlags, TOnceDoneOperation & OnceDoneOperation);
   void SourceRobust(
-    const UnicodeString AFileName, const TSearchRecSmart * SearchRec,
-    const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
+    const UnicodeString & AFileName, const TSearchRecSmart * SearchRec,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, uint32_t AFlags);
   void Source(
-    const UnicodeString AFileName, const TSearchRecSmart * SearchRec,
-    const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
+    const UnicodeString & AFileName, const TSearchRecSmart * SearchRec,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, uint32_t AFlags, TUploadSessionAction &Action, bool & ChildError);
   void DirectorySource(
     const UnicodeString ADirectoryName, const UnicodeString ATargetDir, const UnicodeString ADestDirectoryName,
@@ -542,9 +542,9 @@ protected:
     const UnicodeString & BaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
     const TFileMasks::TParams & MaskParams);
   void SelectTransferMode(
-    const UnicodeString & ABaseFileName, TOperationSide Side, const TCopyParamType *CopyParam,
+    const UnicodeString & ABaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
     const TFileMasks::TParams & MaskParams);
-  void SelectSourceTransferMode(const TLocalFileHandle & Handle, const TCopyParamType *CopyParam);
+  void SelectSourceTransferMode(const TLocalFileHandle & Handle, const TCopyParamType * CopyParam);
   void DoDeleteLocalFile(const UnicodeString & FileName);
   void DoRenameLocalFileForce(const UnicodeString & OldName, const UnicodeString & NewName);
   void UpdateSource(const TLocalFileHandle & Handle, const TCopyParamType * CopyParam, int32_t AParams);
@@ -617,10 +617,10 @@ public:
   bool FileExists(const UnicodeString & AFileName);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& AFile);
   bool CopyToLocal(
-    TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
+    TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TParallelOperation * ParallelOperation);
   bool CopyToRemote(
-    TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
+    TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TParallelOperation * ParallelOperation);
   int32_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType *OperationProgress);
   void LogParallelTransfer(TParallelOperation * ParallelOperation);
