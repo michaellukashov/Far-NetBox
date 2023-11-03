@@ -154,50 +154,50 @@ public:
   virtual bool GetActive() const = 0;
   virtual void CollectUsage() = 0;
   virtual void Idle() = 0;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) = 0;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const = 0;
-  virtual void AnyCommand(const UnicodeString ACommand,
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) = 0;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const = 0;
+  virtual void AnyCommand(const UnicodeString & ACommand,
     TCaptureOutputEvent OutputEvent) = 0;
-  virtual void ChangeDirectory(const UnicodeString ADirectory) = 0;
-  virtual void CachedChangeDirectory(const UnicodeString ADirectory) = 0;
+  virtual void ChangeDirectory(const UnicodeString & ADirectory) = 0;
+  virtual void CachedChangeDirectory(const UnicodeString & ADirectory) = 0;
   virtual void AnnounceFileListOperation() = 0;
-  virtual void ChangeFileProperties(const UnicodeString AFileName,
-    const TRemoteFile *AFile, const TRemoteProperties *Properties,
-    TChmodSessionAction &Action) = 0;
-  virtual bool LoadFilesProperties(TStrings *AFileList) = 0;
+  virtual void ChangeFileProperties(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, const TRemoteProperties * Properties,
+    TChmodSessionAction & Action) = 0;
+  virtual bool LoadFilesProperties(TStrings * AFileList) = 0;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg);
   virtual void CalculateFilesChecksum(
     const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) = 0;
-  virtual void CopyToLocal(TStrings *AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-    int32_t AParams, TFileOperationProgressType *OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation) = 0;
-  virtual void CopyToRemote(TStrings *AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-    int32_t AParams, TFileOperationProgressType *OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation) = 0;
+  virtual void CopyToLocal(TStrings * AFilesToCopy,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
+    int32_t AParams, TFileOperationProgressType * OperationProgress,
+    TOnceDoneOperation & OnceDoneOperation) = 0;
+  virtual void CopyToRemote(TStrings * AFilesToCopy,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
+    int32_t AParams, TFileOperationProgressType * OperationProgress,
+    TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void TransferOnDirectory(
     const UnicodeString /*ADirectory*/, const TCopyParamType * /*CopyParam*/, int32_t /*AParams*/) {}
   virtual void Source(
-    TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
-    const TCopyParamType *CopyParam, int32_t AParams,
-    TFileOperationProgressType *OperationProgress, uint32_t AFlags,
-    TUploadSessionAction &Action, bool &ChildError) = 0;
+    TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
+    const TCopyParamType * CopyParam, int32_t AParams,
+    TFileOperationProgressType * OperationProgress, uint32_t AFlags,
+    TUploadSessionAction & Action, bool & ChildError) = 0;
   virtual void DirectorySunk(
-    const UnicodeString /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
+    const UnicodeString & /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
   virtual void Sink(
-    const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t AAttrs,
-    const TCopyParamType* CopyParam, int32_t AParams, TFileOperationProgressType* OperationProgress,
+    const UnicodeString & AFileName, const TRemoteFile * AFile,
+    const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t AAttrs,
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction& Action) = 0;
-  virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) = 0;
-  virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) = 0;
-  virtual void RemoteDeleteFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, int32_t AParams,
-    TRmSessionAction &Action) = 0;
-  virtual void CustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) = 0;
+  virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) = 0;
+  virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) = 0;
+  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, int32_t AParams,
+    TRmSessionAction & Action) = 0;
+  virtual void CustomCommandOnFile(const UnicodeString & AFileName,
+    const TRemoteFile *AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
   virtual UnicodeString GetHomeDirectory();
@@ -214,16 +214,16 @@ public:
   virtual void RemoteCopyFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) = 0;
   virtual TStrings * GetFixedPaths() const = 0;
-  virtual void SpaceAvailable(const UnicodeString APath,
-    TSpaceAvailable &ASpaceAvailable) = 0;
+  virtual void SpaceAvailable(const UnicodeString & APath,
+    TSpaceAvailable & ASpaceAvailable) = 0;
   virtual const TSessionInfo & GetSessionInfo() const = 0;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
-  virtual bool TemporaryTransferFile(const UnicodeString AFileName) = 0;
+  virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() const = 0;
   virtual UnicodeString RemoteGetUserName() const = 0;
-  virtual void GetSupportedChecksumAlgs(TStrings *Algs) = 0;
-  virtual void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) = 0;
-  virtual void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) = 0;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs) = 0;
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) = 0;
   virtual void ClearCaches() = 0;
 

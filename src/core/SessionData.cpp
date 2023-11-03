@@ -1892,7 +1892,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
           }
           else if (SameText(Directive, L"Port"))
           {
-            PortNumber = StrToInt(Value);
+            PortNumber = ::StrToIntDef(Value, 0);
           }
           else if (SameText(Directive, L"User"))
           {
@@ -1907,7 +1907,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
               std::unique_ptr<TSessionData> JumpData(std::make_unique<TSessionData>(EmptyStr));
               bool DefaultsOnly;
               if ((JumpData->ParseUrl(Jump, nullptr, nullptr, DefaultsOnly, nullptr, nullptr, nullptr, 0)) &&
-                  !JumpData->HostName.IsEmpty())
+                  !JumpData->HostName().IsEmpty())
               {
                 JumpData->Name = JumpData->HostName;
                 JumpData->ImportFromOpenssh(Lines);
@@ -2513,7 +2513,7 @@ bool TSessionData::ParseUrl(UnicodeString Url, TOptions *Options,
       // expanded from ?: operator, as it caused strange "access violation" errors
       if (!HostInfo.IsEmpty())
       {
-        int APortNumber = StrToIntDef(DecodeUrlChars(HostInfo), -1);
+        int APortNumber = ::StrToIntDef(DecodeUrlChars(HostInfo), -1);
         if ((APortNumber > 0) && (APortNumber <= 65535))
         {
           PortNumber = APortNumber;
@@ -2621,9 +2621,9 @@ bool TSessionData::ParseUrl(UnicodeString Url, TOptions *Options,
       }
     }
 
-    if (!RemoteDirectory.IsEmpty() && (RemoteDirectory != ROOTDIRECTORY))
+    if (!RemoteDirectory().IsEmpty() && (RemoteDirectory() != ROOTDIRECTORY))
     {
-      if ((RemoteDirectory[RemoteDirectory.Length()] != L'/') &&
+      if ((RemoteDirectory()[RemoteDirectory().Length()] != L'/') &&
           (AFileName != nullptr))
       {
         *AFileName = DecodeUrlChars(base::UnixExtractFileName(RemoteDirectory));
@@ -6134,18 +6134,18 @@ TSessionData * TStoredSessionList::GetFirstFolderOrWorkspaceSession(const Unicod
   return Result;
 }
 
-bool TStoredSessionList::IsFolderOrWorkspace(const UnicodeString & Name)
+bool TStoredSessionList::IsFolderOrWorkspace(const UnicodeString & Name) const
 {
   return (GetFirstFolderOrWorkspaceSession(Name) != nullptr);
 }
 
-bool TStoredSessionList::IsFolder(const UnicodeString & Name)
+bool TStoredSessionList::IsFolder(const UnicodeString & Name) const
 {
   TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
   return (SessionData != nullptr) && !SessionData->IsWorkspace;
 }
 
-bool TStoredSessionList::IsWorkspace(const UnicodeString & Name)
+bool TStoredSessionList::IsWorkspace(const UnicodeString & Name) const
 {
   TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
   return (SessionData != nullptr) && SessionData->IsWorkspace;

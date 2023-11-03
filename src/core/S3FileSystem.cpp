@@ -12,6 +12,7 @@
 #define NEED_LIBS3
 #endif
 
+#include <rdestl/map.h>
 #include <StrUtils.hpp>
 #include <NeonIntf.h>
 #include <SessionData.h>
@@ -80,7 +81,7 @@ UnicodeString S3Profile;
 bool S3SecurityProfileChecked = false;
 TDateTime S3CredentialsExpiration;
 UnicodeString S3SecurityProfile;
-typedef std::map<UnicodeString, UnicodeString> TS3Credentials;
+typedef rde::map<UnicodeString, UnicodeString> TS3Credentials;
 TS3Credentials S3Credentials;
 
 #if 0
@@ -889,7 +890,7 @@ const TFileSystemInfo &TS3FileSystem::GetFileSystemInfo(bool /*Retrieve*/)
   return FFileSystemInfo;
 }
 
-bool TS3FileSystem::TemporaryTransferFile(const UnicodeString /*AFileName*/)
+bool TS3FileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*/)
 {
   return false;
 }
@@ -910,7 +911,7 @@ void TS3FileSystem::Idle()
   // noop
 }
 
-UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString Path, bool /*Local*/) const
+UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString & Path, bool /*Local*/) const
 {
   if (base::UnixIsAbsolutePath(Path))
   {
@@ -1027,7 +1028,7 @@ void TS3FileSystem::TryOpenDirectory(const UnicodeString ADirectory)
   ReadDirectoryInternal(ADirectory, FileList.get(), 1, UnicodeString());
 }
 
-void TS3FileSystem::ChangeDirectory(const UnicodeString ADirectory)
+void TS3FileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString Path = GetAbsolutePath(ADirectory, false);
 
@@ -1038,7 +1039,7 @@ void TS3FileSystem::ChangeDirectory(const UnicodeString ADirectory)
   FCachedDirectoryChange = Path;
 }
 
-void TS3FileSystem::CachedChangeDirectory(const UnicodeString Directory)
+void TS3FileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
@@ -1342,7 +1343,7 @@ void TS3FileSystem::ReadFile(const UnicodeString AFileName,
   }
 }
 
-void TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
+void TS3FileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t AParams, TRmSessionAction & Action)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -1396,7 +1397,7 @@ void TS3FileSystem::RemoteDeleteFile(const UnicodeString AFileName,
 }
 
 void TS3FileSystem::RemoteRenameFile(
-  const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString ANewName, bool Overwrite)
+  const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite)
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
   {
@@ -1447,7 +1448,7 @@ void TS3FileSystem::RemoteCopyFile(
   CheckLibS3Error(Data);
 }
 
-void TS3FileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*Encrypt*/)
+void TS3FileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
   UnicodeString DirName = base::UnixExcludeTrailingBackslash(GetAbsolutePath(ADirName, false));
@@ -1507,8 +1508,8 @@ void TS3FileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*E
   }
 }
 
-void TS3FileSystem::RemoteCreateLink(const UnicodeString FileName,
-  const UnicodeString PointTo, bool /*Symbolic*/)
+void TS3FileSystem::RemoteCreateLink(const UnicodeString & FileName,
+  const UnicodeString & PointTo, bool /*Symbolic*/)
 {
   DebugFail();
 }
@@ -1590,7 +1591,7 @@ static void AddAclGrant(
   }
 }
 
-void TS3FileSystem::ChangeFileProperties(const UnicodeString FileName,
+void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
   const TRemoteFile * File, const TRemoteProperties * Properties,
   TChmodSessionAction & /*Action*/)
 {
@@ -1830,13 +1831,13 @@ void TS3FileSystem::CalculateFilesChecksum(
   DebugFail();
 }
 
-void TS3FileSystem::CustomCommandOnFile(const UnicodeString /*AFileName*/,
-  const TRemoteFile * /*AFile*/, UnicodeString /*ACommand*/, int32_t /*AParams*/, TCaptureOutputEvent /*OutputEvent*/)
+void TS3FileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
+  const TRemoteFile * /*AFile*/, const UnicodeString & /*ACommand*/, int32_t /*AParams*/, TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
 }
 
-void TS3FileSystem::AnyCommand(const UnicodeString /*ACommand*/,
+void TS3FileSystem::AnyCommand(const UnicodeString & /*ACommand*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   DebugFail();
@@ -1847,14 +1848,14 @@ TStrings *TS3FileSystem::GetFixedPaths() const
   return nullptr;
 }
 
-void TS3FileSystem::SpaceAvailable(const UnicodeString /*APath*/,
+void TS3FileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   DebugFail();
 }
 
 void TS3FileSystem::CopyToRemote(
-  TStrings * AFilesToCopy, const UnicodeString ATargetDir, const TCopyParamType * CopyParam,
+  TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
   int32_t AParams, TFileOperationProgressType * OperationProgress, TOnceDoneOperation & OnceDoneOperation)
 {
   AParams &= ~cpAppend;
@@ -2028,9 +2029,9 @@ int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int BufferSize, cha
 }
 
 void TS3FileSystem::Source(
-  TLocalFileHandle &AHandle, const UnicodeString TargetDir, UnicodeString &ADestFileName,
-  const TCopyParamType *CopyParam, int32_t Params,
-  TFileOperationProgressType *OperationProgress, uint32_t /*Flags*/,
+  TLocalFileHandle & AHandle, const UnicodeString & TargetDir, UnicodeString & ADestFileName,
+  const TCopyParamType * CopyParam, int32_t Params,
+  TFileOperationProgressType * OperationProgress, uint32_t /*Flags*/,
   TUploadSessionAction &Action, bool & /*ChildError*/)
 {
   UnicodeString DestFullName = TargetDir + ADestFileName;
@@ -2260,8 +2261,8 @@ void TS3FileSystem::Source(
 }
 
 void TS3FileSystem::CopyToLocal(
-  TStrings *FilesToCopy, const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-  int32_t AParams, TFileOperationProgressType *OperationProgress, TOnceDoneOperation &OnceDoneOperation)
+  TStrings * FilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
+  int32_t AParams, TFileOperationProgressType * OperationProgress, TOnceDoneOperation & OnceDoneOperation)
 {
   AParams &= ~cpAppend;
 
@@ -2314,10 +2315,10 @@ S3Status TS3FileSystem::GetObjectData(int BufferSize, const char *Buffer, TLibS3
 }
 
 void TS3FileSystem::Sink(
-  const UnicodeString AFileName, const TRemoteFile *AFile,
-  const UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t Attrs,
-  const TCopyParamType *CopyParam, int32_t Params, TFileOperationProgressType *OperationProgress,
-  uint32_t /*AFlags*/, TDownloadSessionAction &Action)
+  const UnicodeString & AFileName, const TRemoteFile * AFile,
+  const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
+  const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * OperationProgress,
+  uint32_t /*AFlags*/, TDownloadSessionAction & Action)
 {
   UnicodeString DestFullName = ATargetDir + ADestFileName;
   if (::SysUtulsFileExists(ApiPath(DestFullName)))
@@ -2416,12 +2417,12 @@ void TS3FileSystem::GetSupportedChecksumAlgs(TStrings * /*Algs*/)
   // NOOP
 }
 
-void TS3FileSystem::LockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
+void TS3FileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
 
-void TS3FileSystem::UnlockFile(const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/)
+void TS3FileSystem::UnlockFile(const UnicodeString & /*AFileName*/, const TRemoteFile * /*AFile*/)
 {
   DebugFail();
 }
@@ -2437,7 +2438,7 @@ void TS3FileSystem::ClearCaches()
   FHostNames.clear();
 }
 
-UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
+UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
   return static_cast<const TS3FileSystem *>(this)->GetAbsolutePath(APath, Local);
 }

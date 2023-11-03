@@ -687,7 +687,7 @@ strbuf * get_reg_multi_sz_winscp(HKEY, const char * DebugUsedArg(name))
   return NULL;
 }
 
-TKeyType GetKeyType(const UnicodeString FileName)
+TKeyType GetKeyType(const UnicodeString & FileName)
 {
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   DebugAssert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
@@ -699,7 +699,7 @@ TKeyType GetKeyType(const UnicodeString FileName)
   return Result;
 }
 
-bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString FileName, UnicodeString &Comment)
+bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeString & Comment)
 {
   UTF8String UtfFileName = UTF8String(FileName);
   bool Result;
@@ -793,7 +793,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
   return reinterpret_cast<TPrivateKey *>(Ssh2Key);
 }
 
-TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString FileName, const UnicodeString Passphrase)
+TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase)
 {
   UnicodeString Error;
   TPrivateKey * Result = LoadKey(KeyType, FileName, Passphrase, Error);
@@ -1197,7 +1197,7 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
   AnsiString AnsiStr = AnsiString(Str);
   ptrlen Data = ptrlen_from_asciz(AnsiStr.c_str());
   strbuf * Blob = strbuf_new();
-  try
+  try__finally
   {
     // See if we have a plain base64-encoded public key blob.
     if (base64_valid(Data))
@@ -1245,11 +1245,11 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
     ssh_key_free(Key);
 
     PublicKey = StrBufToString(Blob);
-  }
+  },
   __finally
   {
     strbuf_free(Blob);
-  }
+  } end_try__finally
 }
 
 bool IsCertificateValidityExpressionValid(
@@ -1519,7 +1519,7 @@ struct host_ca_enum
 
 host_ca_enum * enum_host_ca_start()
 {
-  Configuration->RefreshPuttySshHostCAList();
+  GetConfiguration()->RefreshPuttySshHostCAList();
   host_ca_enum * Result = new host_ca_enum();
   Result->Index = 0;
   return Result;
@@ -1527,7 +1527,7 @@ host_ca_enum * enum_host_ca_start()
 
 bool enum_host_ca_next(host_ca_enum * Enum, strbuf * StrBuf)
 {
-  const TSshHostCAList * SshHostCAList = Configuration->ActiveSshHostCAList;
+  const TSshHostCAList * SshHostCAList = GetConfiguration()->GetActiveSshHostCAList();
   bool Result = (Enum->Index < SshHostCAList->GetCount());
   if (Result)
   {
@@ -1546,7 +1546,7 @@ host_ca * host_ca_load(const char * NameStr)
 {
   host_ca * Result = nullptr;
   UnicodeString Name = UTF8String(NameStr);
-  const TSshHostCA * SshHostCA = Configuration->ActiveSshHostCAList->Find(Name);
+  const TSshHostCA * SshHostCA = GetConfiguration()->GetActiveSshHostCAList()->Find(Name);
   if (DebugAlwaysTrue(SshHostCA != nullptr))
   {
     Result = host_ca_new();

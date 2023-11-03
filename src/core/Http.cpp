@@ -11,7 +11,7 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 
-constexpr const int32_t BasicHttpResponseLimit = 100 * 1024;
+const int32_t BasicHttpResponseLimit = 100 * 1024;
 
 THttp::THttp() noexcept :
   FResponseHeaders(std::make_unique<TStringList>())
@@ -28,7 +28,7 @@ THttp::~THttp() noexcept
   __removed SAFE_DESTROY(FRequestHeaders);
 }
 
-void THttp::SendRequest(const char *Method, const UnicodeString Request)
+void THttp::SendRequest(const char * Method, const UnicodeString & Request)
 {
   std::unique_ptr<TStringList> AttemptedUrls(CreateSortedStringList());
   AttemptedUrls->Add(GetURL());
@@ -235,7 +235,7 @@ int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate * AC
   AnsiString AsciiCert = NeonExportCertificate(ACertificate);
 
   UnicodeString WindowsCertificateError;
-  if ((Failures != 0) && FLAGCLEAR(Configuration->HttpsCertificateValidation, hcvNoWindows))
+  if ((Failures != 0) && FLAGCLEAR(GetConfiguration()->HttpsCertificateValidation, hcvNoWindows))
   {
     AppLogFmt(L"TLS failure: %s (%d)", NeonCertificateFailuresErrorStr(Failures, FHostName), Failures);
     AppLogFmt(L"Hostname: %s, Certificate: %s", FHostName, AsciiCert, AsciiCert);
@@ -249,8 +249,8 @@ int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate * AC
     }
   }
 
-  if ((Failures != 0) && FLAGSET(Failures, NE_SSL_UNTRUSTED) && FLAGCLEAR(Configuration->HttpsCertificateValidation, hcvNoKnown) &&
-      !Certificate.IsEmpty())
+  if ((Failures != 0) && FLAGSET(Failures, NE_SSL_UNTRUSTED) && FLAGCLEAR(GetConfiguration()->HttpsCertificateValidation, hcvNoKnown) &&
+      !Certificate().IsEmpty())
   {
     const ne_ssl_certificate * RootCertificate = ACertificate;
     do

@@ -408,7 +408,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
   return FFileSystemInfo;
 }
 
-bool TSCPFileSystem::TemporaryTransferFile(const UnicodeString /*AFileName*/)
+bool TSCPFileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*/)
 {
   return false;
 }
@@ -454,12 +454,12 @@ void TSCPFileSystem::Idle()
   FSecureShell->Idle();
 }
 
-UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
+UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
   return static_cast<const TSCPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString APath, bool /*Local*/) const
+UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   return base::AbsolutePath(RemoteGetCurrentDirectory(), APath);
 }
@@ -1000,7 +1000,7 @@ void TSCPFileSystem::AnnounceFileListOperation()
   // noop
 }
 
-void TSCPFileSystem::ChangeDirectory(const UnicodeString ADirectory)
+void TSCPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
   int32_t Params = ecDefault;
   UnicodeString Directory = ADirectory;
@@ -1038,7 +1038,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString ADirectory)
   FCachedDirectoryChange.Clear();
 }
 
-void TSCPFileSystem::CachedChangeDirectory(const UnicodeString Directory)
+void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 {
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
@@ -1233,7 +1233,7 @@ void TSCPFileSystem::CustomReadFile(UnicodeString AFileName,
   }
 }
 
-void TSCPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
+void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action)
 {
   DebugUsedParam(AFile);
@@ -1275,13 +1275,13 @@ void TSCPFileSystem::RemoteCopyFile(
   }
 }
 
-void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*Encrypt*/)
+void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   ExecCommand(fsCreateDirectory, 0, DelimitStr(ADirName));
 }
 
-void TSCPFileSystem::RemoteCreateLink(UnicodeString AFileName,
-  UnicodeString APointTo, bool Symbolic)
+void TSCPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
+  const UnicodeString & APointTo, bool Symbolic)
 {
   ExecCommand(fsCreateLink, 0,
     Symbolic ? L"-s" : L"", DelimitStr(APointTo), DelimitStr(AFileName));
@@ -1306,9 +1306,9 @@ void TSCPFileSystem::ChangeFileToken(const UnicodeString DelimitedName,
   }
 }
 
-void TSCPFileSystem::ChangeFileProperties(UnicodeString AFileName,
-  const TRemoteFile *AFile, const TRemoteProperties *Properties,
-  TChmodSessionAction &Action)
+void TSCPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, const TRemoteProperties * Properties,
+  TChmodSessionAction & Action)
 {
   DebugAssert(Properties);
   int Directory = ((AFile == nullptr) ? -1 : (AFile->GetIsDirectory() ? 1 : 0));
@@ -1549,8 +1549,8 @@ void TSCPFileSystem::CalculateFilesChecksum(
   }
 }
 
-void TSCPFileSystem::CustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile * AFile, UnicodeString ACommand, int32_t AParams,
+void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams,
     TCaptureOutputEvent OutputEvent)
 {
   DebugAssert(AFile);
@@ -1594,7 +1594,7 @@ void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, TCaptureOutp
   }
 }
 
-void TSCPFileSystem::AnyCommand(UnicodeString Command,
+void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
 {
   DebugAssert(!FSecureShell->GetOnCaptureOutput());
@@ -1624,7 +1624,7 @@ TStrings * TSCPFileSystem::GetFixedPaths() const
   return nullptr;
 }
 
-void TSCPFileSystem::SpaceAvailable(UnicodeString /*APath*/,
+void TSCPFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
   TSpaceAvailable & /*ASpaceAvailable*/)
 {
   DebugFail();
@@ -1734,7 +1734,7 @@ void TSCPFileSystem::SCPResponse(bool * GotLastLine)
 }
 
 void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
-  const UnicodeString TargetDir, const TCopyParamType * CopyParam,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   int32_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
@@ -1960,7 +1960,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 }
 
 void TSCPFileSystem::Source(
-  TLocalFileHandle & /*AHandle*/, const UnicodeString /*ATargetDir*/, UnicodeString & /*ADestFileName*/,
+  TLocalFileHandle & /*AHandle*/, const UnicodeString & /*ATargetDir*/, UnicodeString & /*ADestFileName*/,
   const TCopyParamType * /*CopyParam*/, int32_t /*Params*/,
   TFileOperationProgressType * /*OperationProgress*/, uint32_t /*Flags*/,
   TUploadSessionAction & /*Action*/, bool & /*ChildError*/)
@@ -2362,7 +2362,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
 }
 
 void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
-  const UnicodeString TargetDir, const TCopyParamType * CopyParam,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   int32_t Params, TFileOperationProgressType * OperationProgress,
   TOnceDoneOperation & OnceDoneOperation)
 {
@@ -2494,8 +2494,8 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
 }
 
 void TSCPFileSystem::Sink(
-  const UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/,
-  const UnicodeString /*ATargetDir*/, UnicodeString & /*ADestFileName*/, int32_t /*Attrs*/,
+  const UnicodeString & /*AFileName*/, const TRemoteFile * /*AFile*/,
+  const UnicodeString & /*ATargetDir*/, UnicodeString & /*ADestFileName*/, int32_t /*Attrs*/,
   const TCopyParamType * /*CopyParam*/, int32_t /*Params*/, TFileOperationProgressType * /*OperationProgress*/,
   uint32_t /*Flags*/, TDownloadSessionAction & /*Action*/)
 {
@@ -2962,12 +2962,12 @@ void TSCPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
   FTerminal->GetShellChecksumAlgs(Algs);
 }
 
-void TSCPFileSystem::LockFile(UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
+void TSCPFileSystem::LockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }
 
-void TSCPFileSystem::UnlockFile(UnicodeString /*FileName*/, const TRemoteFile * /*File*/)
+void TSCPFileSystem::UnlockFile(const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/)
 {
   DebugFail();
 }

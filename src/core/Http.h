@@ -15,7 +15,7 @@ using THttpDownloadEvent = nb::FastDelegate3<void,
 using THttpErrorEvent = nb::FastDelegate3<void,
   THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/>;
 
-extern const int BasicHttpResponseLimit;
+extern const int32_t BasicHttpResponseLimit;
 
 class THttp : public TObject
 {
@@ -73,13 +73,13 @@ private:
   std::unique_ptr<TStrings> FResponseHeaders;
   UnicodeString FCertificate;
 
-  static int NeonBodyReader(void *UserData, const char *Buf, size_t Len);
-  int NeonBodyReaderImpl(const char *Buf, size_t Len);
-  void SendRequest(const char *Method, const UnicodeString Request);
+  static int NeonBodyReader(void * UserData, const char * Buf, size_t Len);
+  int NeonBodyReaderImpl(const char * Buf, size_t Len);
+  void SendRequest(const char * Method, const UnicodeString & Request);
   UnicodeString GetResponse() const;
   int64_t GetResponseLength() const;
-  static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);
-  static int NeonServerSSLCallback(void *UserData, int Failures, const ne_ssl_certificate_s *Certificate);
-  int NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate_s *Certificate);
+  static void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
+  static int NeonServerSSLCallback(void * UserData, int Failures, const ne_ssl_certificate_s * Certificate);
+  int NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate_s * Certificate);
 };
 

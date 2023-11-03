@@ -49,46 +49,46 @@ public:
   virtual bool GetActive() const override;
   virtual void CollectUsage() override;
   virtual void Idle() override;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
-  virtual void AnyCommand(const UnicodeString ACommand,
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) override;
+  virtual void AnyCommand(const UnicodeString & ACommand,
     TCaptureOutputEvent OutputEvent) override;
-  virtual void ChangeDirectory(const UnicodeString ADirectory) override;
-  virtual void CachedChangeDirectory(const UnicodeString ADirectory) override;
+  virtual void ChangeDirectory(const UnicodeString & ADirectory) override;
+  virtual void CachedChangeDirectory(const UnicodeString & ADirectory) override;
   virtual void AnnounceFileListOperation() override;
-  virtual void ChangeFileProperties(const UnicodeString AFileName,
-    const TRemoteFile *AFile, const TRemoteProperties *AProperties,
-    TChmodSessionAction &Action) override;
+  virtual void ChangeFileProperties(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, const TRemoteProperties * AProperties,
+    TChmodSessionAction & Action) override;
   virtual bool LoadFilesProperties(TStrings *AFileList) override;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg);
   virtual void CalculateFilesChecksum(
     const UnicodeString & Alg, TStrings *AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings *AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-    int32_t AParams, TFileOperationProgressType *OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation) override;
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
+    int32_t AParams, TFileOperationProgressType * OperationProgress,
+    TOnceDoneOperation & OnceDoneOperation) override;
   virtual void CopyToRemote(TStrings *AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType *ACopyParam,
-    int32_t AParams, TFileOperationProgressType *OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation) override;
+    const UnicodeString & ATargetDir, const TCopyParamType * ACopyParam,
+    int32_t AParams, TFileOperationProgressType * OperationProgress,
+    TOnceDoneOperation & OnceDoneOperation) override;
   virtual void Source(
-    TLocalFileHandle &AHandle, const UnicodeString ATargetDir, UnicodeString &ADestFileName,
-    const TCopyParamType *CopyParam, int32_t AParams,
-    TFileOperationProgressType *OperationProgress, uint32_t AFlags,
-    TUploadSessionAction &Action, bool &ChildError) override;
+    TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
+    const TCopyParamType * CopyParam, int32_t AParams,
+    TFileOperationProgressType * OperationProgress, uint32_t AFlags,
+    TUploadSessionAction & Action, bool & ChildError) override;
   virtual void DirectorySunk(
-    const UnicodeString ADestFullName, const TRemoteFile *AFile, const TCopyParamType * CopyParam) override;
+    const UnicodeString & ADestFullName, const TRemoteFile * AFile, const TCopyParamType * CopyParam) override;
   virtual void Sink(
-    const UnicodeString AFileName, const TRemoteFile *AFile,
-    const UnicodeString ATargetDir, UnicodeString &ADestFileName, int32_t AAttrs,
-    const TCopyParamType* CopyParam, int32_t AParams, TFileOperationProgressType* OperationProgress,
-    uint32_t AFlags, TDownloadSessionAction& Action) override;
-  virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) override;
-  virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
-  virtual void RemoteDeleteFile(const UnicodeString AFileName,
+    const UnicodeString & AFileName, const TRemoteFile * AFile,
+    const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t AAttrs,
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
+    uint32_t AFlags, TDownloadSessionAction & Action) override;
+  virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
+  virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
+  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile *AFile, int32_t Params, TRmSessionAction &Action) override;
-  virtual void CustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile *AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
+  virtual void CustomCommandOnFile(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual UnicodeString GetHomeDirectory() override;
@@ -105,20 +105,20 @@ public:
   virtual void RemoteCopyFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
-  virtual void SpaceAvailable(const UnicodeString APath,
+  virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable &ASpaceAvailable) override;
   virtual const TSessionInfo & GetSessionInfo() const override;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) override;
-  virtual bool TemporaryTransferFile(const UnicodeString AFileName) override;
+  virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
-  virtual void LockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
-  virtual void UnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile) override;
-  virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile *AFile) override;
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile *AFile) override;
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
   virtual void ClearCaches() override;
 
-  UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
+  UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 protected:
   TSecureShell *FSecureShell{nullptr};
   TFileSystemInfo FFileSystemInfo{};
@@ -181,42 +181,43 @@ protected:
     TSFTPPacket *Response, SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1);
   void UnreserveResponse(TSFTPPacket *Response);
   void LogPacket(const TSFTPPacket * Packet, TLogLineType Type);
-  void TryOpenDirectory(const UnicodeString ADirectory);
-  bool SupportsExtension(const UnicodeString AExtension) const;
+  void TryOpenDirectory(const UnicodeString & ADirectory);
+  bool SupportsExtension(const UnicodeString & AExtension) const;
   void ResetConnection();
-  void RegisterChecksumAlg(const UnicodeString Alg, const UnicodeString SftpAlg);
-  void DoDeleteFile(const UnicodeString AFileName, SSH_FXP_TYPE Type);
+  void RegisterChecksumAlg(const UnicodeString & Alg, const UnicodeString & SftpAlg);
+  void DoDeleteFile(const UnicodeString & AFileName, SSH_FXP_TYPE Type);
 
-  void SFTPSource(const UnicodeString AFileName,
-    const TRemoteFile *AFile,
-    const UnicodeString TargetDir, const TCopyParamType *CopyParam, int32_t Params,
-    TOpenRemoteFileParams &OpenParams,
-    TOverwriteFileParams &FileParams,
-    TFileOperationProgressType *OperationProgress, uint32_t Flags,
-    TUploadSessionAction &Action, bool &ChildError);
-  RawByteString SFTPOpenRemoteFile(const UnicodeString AFileName,
+  void SFTPSource(const UnicodeString & AFileName,
+    const TRemoteFile * AFile,
+    const UnicodeString & TargetDir, const TCopyParamType *CopyParam, int32_t Params,
+    TOpenRemoteFileParams & OpenParams,
+    TOverwriteFileParams & FileParams,
+    TFileOperationProgressType * OperationProgress, uint32_t Flags,
+    TUploadSessionAction & Action, bool & ChildError);
+  RawByteString SFTPOpenRemoteFile(const UnicodeString & AFileName,
     SSH_FXF_TYPE OpenType, bool EncryptNewFiles = false, int64_t Size = -1);
-  int32_t SFTPOpenRemote(void *AOpenParams, void *Param2);
-  void SFTPCloseRemote(const RawByteString Handle,
-    const UnicodeString AFileName, TFileOperationProgressType *OperationProgress,
-    bool TransferFinished, bool Request, TSFTPPacket *Packet);
-  void SFTPConfirmOverwrite(const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
-    const TCopyParamType *CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress,
-    TOverwriteMode &OverwriteMode, const TOverwriteFileParams *FileParams);
-  bool SFTPConfirmResume(const UnicodeString DestFileName, bool PartialBiggerThanSource,
-    TFileOperationProgressType *OperationProgress);
+  int32_t SFTPOpenRemote(void * AOpenParams, void * Param2);
+  void SFTPCloseRemote(const RawByteString & Handle,
+    const UnicodeString & AFileName, TFileOperationProgressType * OperationProgress,
+    bool TransferFinished, bool Request, TSFTPPacket * Packet);
+  void SFTPConfirmOverwrite(const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress,
+    TOverwriteMode &OverwriteMode, const TOverwriteFileParams * FileParams);
+  bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,
+    TFileOperationProgressType * OperationProgress);
   char *GetEOL() const;
   void BusyStart();
   void BusyEnd();
   uint32_t TransferBlockSize(
-    uint32_t Overhead, TFileOperationProgressType *OperationProgress, uint32_t MinPacketSize = 0, uint32_t MaxPacketSize = 0) const;
-  uint32_t UploadBlockSize(const RawByteString Handle,
-    TFileOperationProgressType *OperationProgress) const;
+    uint32_t Overhead, TFileOperationProgressType * OperationProgress,
+    uint32_t MinPacketSize = 0, uint32_t MaxPacketSize = 0) const;
+  uint32_t UploadBlockSize(const RawByteString & Handle,
+    TFileOperationProgressType * OperationProgress) const;
   uint32_t DownloadBlockSize(
-   uint32_t Overhead, TFileOperationProgressType *OperationProgress) const;
-  int32_t PacketLength(uint8_t *LenBuf, SSH_FXP_TYPE ExpectedType) const;
+   TFileOperationProgressType * OperationProgress) const;
+  int32_t PacketLength(uint8_t * LenBuf, SSH_FXP_TYPE ExpectedType) const;
   void Progress(TFileOperationProgressType * OperationProgress);
-  void AddPathString(TSFTPPacket & Packet, const UnicodeString Value, bool EncryptNewFiles = false);
+  void AddPathString(TSFTPPacket & Packet, const UnicodeString & Value, bool EncryptNewFiles = false);
   void WriteLocalFile(
     const TCopyParamType * CopyParam, TStream * FileStream, TFileBuffer & BlockBuf, UnicodeString ALocalFileName,
     TFileOperationProgressType * OperationProgress);

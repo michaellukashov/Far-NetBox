@@ -261,13 +261,13 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal * Terminal)
 {
-  UnicodeString CertificateStorage = Configuration->CertificateStorageExpanded;
+  UnicodeString CertificateStorage = GetConfiguration()->CertificateStorageExpanded;
   if (!CertificateStorage.IsEmpty())
   {
     ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
     if (Terminal != nullptr)
     {
-      Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", (CertificateStorage)));
+      Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", CertificateStorage));
     }
   }
 
@@ -341,7 +341,7 @@ bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, Unico
   return Result;
 }
 
-UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString AHostName)
+UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & AHostName)
 {
   int FailuresToList = Failures;
 

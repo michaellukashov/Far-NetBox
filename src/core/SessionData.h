@@ -640,6 +640,7 @@ public:
   RWProperty<bool> AgentFwd{nb::bind(&TSessionData::GetAgentFwd, this), nb::bind(&TSessionData::SetAgentFwd, this)};
   __property UnicodeString ListingCommand = { read = FListingCommand, write = SetListingCommand };
   __property bool AuthKI  = { read = FAuthKI, write = SetAuthKI };
+  RWPropertySimple<bool> AuthKI{&FAuthKI, nb::bind(&TSessionData::SetAuthKI, this)};
   __property bool AuthKIPassword  = { read = FAuthKIPassword, write = SetAuthKIPassword };
   __property bool AuthGSSAPI  = { read = FAuthGSSAPI, write = SetAuthGSSAPI };
   RWPropertySimple<bool> AuthGSSAPI{&FAuthGSSAPI, nb::bind(&TSessionData::SetAuthGSSAPI, this)};
@@ -800,12 +801,17 @@ public:
   RWPropertySimple<uint32_t> RekeyTime{&FRekeyTime, nb::bind(&TSessionData::SetRekeyTime, this)};
   __property int Color = { read = FColor, write = SetColor };
   __property bool Tunnel = { read = FTunnel, write = SetTunnel };
+  RWPropertySimple<bool> Tunnel{&FTunnel, nb::bind(&TSessionData::SetTunnel, this)};
   __property UnicodeString TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
+  RWPropertySimple<UnicodeString> TunnelHostName{&FTunnelHostName, nb::bind(&TSessionData::SetTunnelHostName, this)};
   __property int TunnelPortNumber = { read = FTunnelPortNumber, write = SetTunnelPortNumber };
+  RWPropertySimple<int32_t> TunnelPortNumber{&FTunnelPortNumber, nb::bind(&TSessionData::SetTunnelPortNumber, this)};
   __property UnicodeString TunnelUserName = { read = FTunnelUserName, write = SetTunnelUserName };
+  RWPropertySimple<UnicodeString> TunnelUserName{&FTunnelUserName, nb::bind(&TSessionData::SetTunnelUserName, this)};
   __property UnicodeString TunnelPassword = { read = GetTunnelPassword, write = SetTunnelPassword };
   RWProperty<UnicodeString> TunnelPassword{nb::bind(&TSessionData::GetTunnelPassword, this), nb::bind(&TSessionData::SetTunnelPassword, this)};
   __property UnicodeString TunnelPublicKeyFile = { read = FTunnelPublicKeyFile, write = SetTunnelPublicKeyFile };
+  RWPropertySimple<UnicodeString> TunnelPublicKeyFile{&FTunnelPublicKeyFile, nb::bind(&TSessionData::SetTunnelPublicKeyFile, this)};
   __property UnicodeString TunnelPassphrase = { read = GetTunnelPassphrase, write = SetTunnelPassphrase };
   RWProperty<UnicodeString> TunnelPassphrase{nb::bind(&TSessionData::GetTunnelPassphrase, this), nb::bind(&TSessionData::SetTunnelPassphrase, this)};
   __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
@@ -1124,7 +1130,7 @@ private:
   TSessionData * ResolveWorkspaceData(TSessionData * Data);
   TSessionData * GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
-    TSessionData *Data, const UnicodeString Name);
+    TSessionData *Data, const UnicodeString & Name);
   __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode);
   void DoGetFolderOrWorkspace(const UnicodeString & Name, TList * List, bool NoRecrypt);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();

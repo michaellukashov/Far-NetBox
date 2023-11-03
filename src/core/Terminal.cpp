@@ -927,23 +927,23 @@ void TParallelOperation::Done(
   {
     if (IsParallelFileTransfer)
     {
-      TGuard Guard(FSection.get());
+      TGuard Guard(*FSection.get());
 
-      try
+      try__finally
       {
         if (Success && DebugAlwaysTrue(FSide == osRemote))
         {
           TParallelFileOffsets::const_iterator I = std::find(FParallelFileOffsets.begin(), FParallelFileOffsets.end(), CopyParam->PartOffset);
           if (DebugAlwaysTrue(I != FParallelFileOffsets.end()))
           {
-            int Index = I - FParallelFileOffsets.begin();
+            int32_t Index = I - FParallelFileOffsets.begin();
             DebugAssert(!FParallelFileDones[Index]);
             FParallelFileDones[Index] = true;
 
             if (!FParallelFileMerging)
             {
               // Once we obtain "merging" semaphor, we won't leave until everything is merged
-              TAutoFlag MergingFlag(FParallelFileMerging);
+              TAutoFlag MergingFlag(FParallelFileMerging); nb::used(MergingFlag);
 
               try
               {
@@ -959,11 +959,11 @@ void TParallelOperation::Done(
                   }
                   else
                   {
-                    TUnguard Unguard(FSection.get()); nb::used(Unguard);
+                    TUnguard Unguard(*FSection.get()); nb::used(Unguard);
 
                     UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
                     // Safe as write access to FParallelFileMerged is guarded by FParallelFileMerging
-                    int Index = FParallelFileMerged;
+                    int32_t Index = FParallelFileMerged;
                     UnicodeString TargetPartName = GetPartPrefix(TPath::Combine(TargetDir, FileNameOnly)) + IntToStr(Index);
 
                     if ((CopyParam->PartSize >= 0) && (Terminal->OperationProgress->TransferredSize != CopyParam->PartSize))
@@ -989,7 +989,7 @@ void TParallelOperation::Done(
                         HANDLE DestHandle = reinterpret_cast<HANDLE>(DestStream->Handle);
                         FILETIME WrTime;
                         bool GotWrTime = GetFileTime(DestHandle, nullptr, nullptr, &WrTime);
-                        DestStream->Seek(0L, soEnd);
+                        DestStream->Seek(0L, TSeekOrigin::soFromEnd);
                         DestStream->CopyFrom(SourceStream.get(), SourceStream->Size);
                         if (GotWrTime)
                         {
@@ -1018,7 +1018,7 @@ void TParallelOperation::Done(
             }
           }
         }
-      }
+      },
       __finally
       {
         if (!Success)
@@ -1027,7 +1027,7 @@ void TParallelOperation::Done(
           // We should get here only after the user sees/acknowledges the failure.
           FMainOperationProgress->SetCancel(csCancel);
         }
-      }
+      } end_try__finally
     }
   }
 }
@@ -1049,11 +1049,11 @@ bool TParallelOperation::GetOnlyFile(TStrings * FileList, UnicodeString & FileNa
   if (Result)
   {
     TCollectedFileList * OnlyFileList = GetFileList(FileList, 0);
-    Result = (OnlyFileList->Count() == 1) && !OnlyFileList->IsDir(0);
+    Result = (OnlyFileList->GetCount() == 1) && !OnlyFileList->IsDir(0);
     if (Result)
     {
       FileName = OnlyFileList->GetFileName(0);
-      Object = OnlyFileList->GetObject(0);
+      Object = OnlyFileList->GetObj(0);
     }
   }
   return Result;

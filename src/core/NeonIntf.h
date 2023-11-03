@@ -46,9 +46,9 @@ void InitNeonTls(
   ne_session * Session, TNeonTlsInit OnNeonTlsInit, ne_ssl_verify_fn VerifyCallback, void * VerifyContext,
   TTerminal * Terminal);
 AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate);
-bool NeonWindowsValidateCertificate(int &Failures, const AnsiString AsciiCert, UnicodeString &Error);
-bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString &Message);
-UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString HostName);
+bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert, UnicodeString & Error);
+bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData & Data, UnicodeString & Message);
+UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & HostName);
 void UpdateNeonDebugMask();
 void RegisterForNeonDebug(TTerminal *Terminal);
 void UnregisterFromNeonDebug(TTerminal *Terminal);

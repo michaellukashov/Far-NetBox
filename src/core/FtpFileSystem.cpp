@@ -923,12 +923,12 @@ void TFTPFileSystem::Discard()
   }
 }
 
-UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString APath, bool Local)
+UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
 {
   return static_cast<const TFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString APath, bool /*Local*/) const
+UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   TODO("improve (handle .. etc.)");
   if (base::UnixIsAbsolutePath(APath))
@@ -993,7 +993,7 @@ bool TFTPFileSystem::EnsureLocationWhenWorkFromCwd(const UnicodeString & Directo
 }
 
 
-void TFTPFileSystem::AnyCommand(const UnicodeString Command,
+void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent OutputEvent)
 {
   // end-user has right to expect that client current directory is really
@@ -1043,7 +1043,7 @@ void TFTPFileSystem::SendCwd(const UnicodeString & Directory)
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
 }
 
-void TFTPFileSystem::DoChangeDirectory(const UnicodeString Directory)
+void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 {
   if (FWorkFromCwd == asOn)
   {
@@ -1078,7 +1078,7 @@ void TFTPFileSystem::DoChangeDirectory(const UnicodeString Directory)
   }
 }
 
-void TFTPFileSystem::ChangeDirectory(const UnicodeString ADirectory)
+void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString Directory = ADirectory;
   try
@@ -1110,15 +1110,15 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString ADirectory)
   FReadCurrentDirectory = true;
 }
 
-void TFTPFileSystem::CachedChangeDirectory(const UnicodeString ADirectory)
+void TFTPFileSystem::CachedChangeDirectory(const UnicodeString & ADirectory)
 {
   FCurrentDirectory = base::UnixExcludeTrailingBackslash(ADirectory);
   FReadCurrentDirectory = false;
 }
 
-void TFTPFileSystem::ChangeFileProperties(const UnicodeString AFileName,
-  const TRemoteFile *AFile, const TRemoteProperties *Properties,
-  TChmodSessionAction &Action)
+void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, const TRemoteProperties * Properties,
+  TChmodSessionAction & Action)
 {
   DebugAssert(Properties);
   DebugAssert(Properties && !Properties->Valid.Contains(vpGroup)); //-V595
@@ -1641,10 +1641,10 @@ void TFTPFileSystem::FileTransfer(const UnicodeString AFileName,
   }
 }
 
-void TFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
-  const UnicodeString ATargetDir, const TCopyParamType *CopyParam,
-  int32_t Params, TFileOperationProgressType *OperationProgress,
-  TOnceDoneOperation &OnceDoneOperation)
+void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
+  const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
+  int32_t Params, TFileOperationProgressType * OperationProgress,
+  TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
 
@@ -1670,10 +1670,10 @@ UnicodeString TFTPFileSystem::RemoteExtractFilePath(const UnicodeString & Path)
 }
 
 void TFTPFileSystem::Sink(
-  const UnicodeString AFileName, const TRemoteFile *File,
-  const UnicodeString TargetDir, UnicodeString &DestFileName, int32_t Attrs,
-  const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType *OperationProgress,
-  uint32_t AFlags, TDownloadSessionAction &Action)
+  const UnicodeString & AFileName, const TRemoteFile * File,
+  const UnicodeString & TargetDir, UnicodeString & DestFileName, int32_t Attrs,
+  const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * OperationProgress,
+  uint32_t AFlags, TDownloadSessionAction & Action)
 {
   AutoDetectTimeDifference(base::UnixExtractFileDir(AFileName), CopyParam, Params);
 
@@ -1763,10 +1763,10 @@ bool TFTPFileSystem::CanTransferSkipList(int32_t Params, uint32_t Flags, const T
 }
 
 void TFTPFileSystem::Source(
-  TLocalFileHandle &Handle, const UnicodeString TargetDir, UnicodeString &ADestFileName,
-  const TCopyParamType *CopyParam, int32_t Params,
-  TFileOperationProgressType *OperationProgress, uint32_t Flags,
-  TUploadSessionAction &Action, bool & /*ChildError*/)
+  TLocalFileHandle & Handle, const UnicodeString & TargetDir, UnicodeString & ADestFileName,
+  const TCopyParamType * CopyParam, int32_t Params,
+  TFileOperationProgressType * OperationProgress, uint32_t Flags,
+  TUploadSessionAction & Action, bool & /*ChildError*/)
 {
   if (CopyParam->FOnTransferIn.empty())
   {
@@ -1831,7 +1831,7 @@ void TFTPFileSystem::Source(
   FLastDataSent = Now();
 }
 
-void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*Encrypt*/)
+void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   UnicodeString DirName = GetAbsolutePath(ADirName, false);
 
@@ -1845,8 +1845,8 @@ void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString ADirName, bool /*
   }
 }
 
-void TFTPFileSystem::RemoteCreateLink(const UnicodeString AFileName,
-  const UnicodeString APointTo, bool Symbolic)
+void TFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
+  const UnicodeString & APointTo, bool Symbolic)
 {
   DebugAssert(SupportsSiteCommand(SymlinkSiteCommand));
   if (DebugAlwaysTrue(Symbolic))
@@ -1859,8 +1859,8 @@ void TFTPFileSystem::RemoteCreateLink(const UnicodeString AFileName,
   }
 }
 
-void TFTPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
-  const TRemoteFile *AFile, int32_t Params, TRmSessionAction &Action)
+void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, int32_t Params, TRmSessionAction &Action)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
@@ -1902,8 +1902,8 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString AFileName,
   }
 }
 
-void TFTPFileSystem::CustomCommandOnFile(const UnicodeString /*FileName*/,
-  const TRemoteFile * /*File*/, UnicodeString /*Command*/, int32_t /*Params*/,
+void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*FileName*/,
+  const TRemoteFile * /*File*/, const UnicodeString & /*Command*/, int32_t /*Params*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
@@ -2665,8 +2665,8 @@ TStrings * TFTPFileSystem::GetFixedPaths() const
   return nullptr;
 }
 
-void TFTPFileSystem::SpaceAvailable(const UnicodeString APath,
-  TSpaceAvailable &ASpaceAvailable)
+void TFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
+  TSpaceAvailable & ASpaceAvailable)
 {
   if (FBytesAvailableSupported)
   {

@@ -1115,7 +1115,7 @@ UnicodeString TConfiguration::DecryptPassword(const RawByteString Password, cons
   return ::DecryptPassword(Password, Key);
 }
 
-RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString Password, const UnicodeString /*Key*/)
+RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & /*Key*/)
 {
   return Password;
 }
@@ -1196,12 +1196,12 @@ UnicodeString TConfiguration::GetCompanyName() const
   return GetFileCompanyName("");
 }
 
-UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString AFileName) const
+UnicodeString TConfiguration::GetFileProductVersion(const UnicodeString & AFileName) const
 {
   return TrimVersion(GetFileFileInfoString("ProductVersion", AFileName));
 }
 
-UnicodeString TConfiguration::GetFileDescription(const UnicodeString AFileName) const
+UnicodeString TConfiguration::GetFileDescription(const UnicodeString & AFileName) const
 {
   return GetFileFileInfoString("FileDescription", AFileName);
 }
@@ -1361,7 +1361,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   return Result;
 }
 
-UnicodeString TConfiguration::GetFileVersion(const UnicodeString AFileName) const
+UnicodeString TConfiguration::GetFileVersion(const UnicodeString & AFileName) const
 {
   UnicodeString Result;
   void * FileInfo = CreateFileInfo(AFileName);
@@ -1423,8 +1423,8 @@ UnicodeString TConfiguration::GetVersion() const
   return GetFileVersion(GetFixedApplicationInfo());
 }
 
-UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
-  const UnicodeString AFileName, bool AllowEmpty) const
+UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
+  const UnicodeString & AFileName, bool AllowEmpty) const
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
 
@@ -1461,12 +1461,12 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString AKey,
   return Result;
 }
 
-UnicodeString TConfiguration::GetFileInfoString(const UnicodeString Key) const
+UnicodeString TConfiguration::GetFileInfoString(const UnicodeString & Key) const
 {
   return GetFileFileInfoString(Key, "");
 }
 
-UnicodeString TConfiguration::GetFileMimeType(const UnicodeString AFileName) const
+UnicodeString TConfiguration::GetFileMimeType(const UnicodeString & AFileName) const
 {
   UnicodeString Result;
   bool Found = false;
@@ -1922,7 +1922,7 @@ void TConfiguration::SetRandomSeedFile(UnicodeString Value)
 }
 
 UnicodeString TConfiguration::GetDirectoryStatisticsCacheKey(
-  const UnicodeString SessionKey, const UnicodeString Path, const TCopyParamType & CopyParam)
+  const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam)
 {
   std::unique_ptr<TStringList> RawOptions(std::make_unique<TStringList>());
   RawOptions->Add(SessionKey);
@@ -1987,7 +1987,7 @@ UnicodeString TConfiguration::GetRandomSeedFileName() const
   return StripPathQuotes(::ExpandEnvironmentVariables(FRandomSeedFile)).Trim();
 }
 
-void TConfiguration::SetExternalIpAddress(UnicodeString Value)
+void TConfiguration::SetExternalIpAddress(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY(ExternalIpAddress);
 }
@@ -2007,12 +2007,12 @@ void TConfiguration::SetLocalPortNumberMax(int32_t Value)
   SET_CONFIG_PROPERTY2(LocalPortNumberMax);
 }
 
-void TConfiguration::SetMimeTypes(UnicodeString Value)
+void TConfiguration::SetMimeTypes(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY(MimeTypes);
 }
 
-void TConfiguration::SetCertificateStorage(const UnicodeString Value)
+void TConfiguration::SetCertificateStorage(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY2(CertificateStorage);
 }
@@ -2031,9 +2031,9 @@ UnicodeString TConfiguration::GetCertificateStorageExpanded() const
   return Result;
 }
 
-void TConfiguration::SetAWSMetadataService(const UnicodeString & value)
+void TConfiguration::SetAWSMetadataService(const UnicodeString & Value)
 {
-  SET_CONFIG_PROPERTY(AWSMetadataService);
+  SET_CONFIG_PROPERTY2(AWSMetadataService);
 }
 
 void TConfiguration::SetTryFtpWhenSshFails(bool Value)
@@ -2350,12 +2350,12 @@ void TConfiguration::SetShowFtpWelcomeMessage(bool Value)
   SET_CONFIG_PROPERTY(ShowFtpWelcomeMessage);
 }
 
-void TConfiguration::SetQueueTransfersLimit(int value)
+void TConfiguration::SetQueueTransfersLimit(int32_t Value)
 {
-  SET_CONFIG_PROPERTY(QueueTransfersLimit);
+  SET_CONFIG_PROPERTY2(QueueTransfersLimit);
 }
 
-const TSshHostCAList * TConfiguration::GetSshHostCAList()
+TSshHostCAList * TConfiguration::GetSshHostCAList() const
 {
   return FSshHostCAList.get();
 }
@@ -2367,11 +2367,11 @@ void TConfiguration::SetSshHostCAList(const TSshHostCAList * value)
 
 const TSshHostCAList * TConfiguration::GetPuttySshHostCAList()
 {
-  if (FPuttySshHostCAList.get() == NULL)
+  if (FPuttySshHostCAList.get() == nullptr)
   {
-    std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(PuttyRegistryStorageKey));
+    std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(PuttyRegistryStorageKey));
     Storage->ConfigureForPutty();
-    FPuttySshHostCAList.reset(new TSshHostCAList());
+    FPuttySshHostCAList = std::make_unique<TSshHostCAList>();
     LoadSshHostCAList(FPuttySshHostCAList.get(), Storage.get());
   }
   return FPuttySshHostCAList.get();
@@ -2379,12 +2379,12 @@ const TSshHostCAList * TConfiguration::GetPuttySshHostCAList()
 
 void TConfiguration::RefreshPuttySshHostCAList()
 {
-  FPuttySshHostCAList.reset(NULL);
+  FPuttySshHostCAList.reset(nullptr);
 }
 
 const TSshHostCAList * TConfiguration::GetActiveSshHostCAList()
 {
-  return FSshHostCAsFromPuTTY ? PuttySshHostCAList : SshHostCAList;
+  return FSshHostCAsFromPuTTY ? GetPuttySshHostCAList() : GetSshHostCAList();
 }
 
 bool TConfiguration::GetPersistent() const

@@ -33,13 +33,13 @@ public:
   virtual bool GetActive() const override;
   virtual void CollectUsage() override;
   virtual void Idle() override;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) override;
-  virtual void AnyCommand(const UnicodeString ACommand,
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) override;
+  virtual void AnyCommand(const UnicodeString & ACommand,
     TCaptureOutputEvent OutputEvent) override;
-  virtual void ChangeDirectory(const UnicodeString ADirectory) override;
-  virtual void CachedChangeDirectory(const UnicodeString ADirectory) override;
+  virtual void ChangeDirectory(const UnicodeString & ADirectory) override;
+  virtual void CachedChangeDirectory(const UnicodeString & ADirectory) override;
   virtual void AnnounceFileListOperation() override;
-  virtual void ChangeFileProperties(const UnicodeString AFileName,
+  virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * Properties,
     TChmodSessionAction & Action) override;
   virtual bool LoadFilesProperties(TStrings * AFileList) override;
@@ -47,23 +47,23 @@ public:
     const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings * AFilesToCopy,
-    const UnicodeString TargetDir, const TCopyParamType * CopyParam,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
   virtual void CopyToRemote(TStrings * AFilesToCopy,
-    const UnicodeString ATargetDir, const TCopyParamType * CopyParam,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
-  virtual void Source(TLocalFileHandle & AHandle, const UnicodeString ATargetDir, UnicodeString & ADestFileName,
+  virtual void Source(TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
     const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, uint32_t AFlags,
     TUploadSessionAction & Action, bool & ChildError) override;
-  virtual void RemoteCreateDirectory(const UnicodeString ADirName, bool Encrypt) override;
-  virtual void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic) override;
-  virtual void RemoteDeleteFile(const UnicodeString AFileName,
+  virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
+  virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
+  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action) override;
-  virtual void CustomCommandOnFile(const UnicodeString AFileName,
-    const TRemoteFile * AFile, UnicodeString ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
+  virtual void CustomCommandOnFile(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(int32_t Capability) const override;
@@ -79,29 +79,29 @@ public:
   virtual void RemoteCopyFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
-  virtual void SpaceAvailable(const UnicodeString APath,
+  virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable) override;
   virtual const TSessionInfo & GetSessionInfo() const override;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) override;
-  virtual bool TemporaryTransferFile(const UnicodeString AFileName) override;
+  virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs) override;
-  virtual void LockFile(const UnicodeString AFileName, const TRemoteFile * AFile) override;
-  virtual void UnlockFile(const UnicodeString AFileName, const TRemoteFile * AFile) override;
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem * AMainFileSystem) override;
   virtual void ClearCaches() override;
 
-  virtual UnicodeString GetAbsolutePath(const UnicodeString APath, bool Local) const override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
-  void NeonDebug(UnicodeString AMessage);
+  void NeonDebug(const UnicodeString & AMessage);
 
 protected:
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
   virtual void Sink(
-    const UnicodeString AFileName, const TRemoteFile * AFile,
-    const UnicodeString ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
+    const UnicodeString & AFileName, const TRemoteFile * AFile,
+    const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) override;
   void ConfirmOverwrite(
@@ -187,23 +187,23 @@ private:
   bool FAuthenticationRetry{false};
   bool FOneDrive{false};
 
-  void CustomReadFile(UnicodeString AFileName,
+  void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
-  int32_t CustomReadFileInternal(const UnicodeString AFileName,
+  int32_t CustomReadFileInternal(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   bool VerifyCertificate(TSessionContext * SessionContext, TNeonCertificateData & Data, bool Aux);
-  void OpenUrl(const UnicodeString Url);
+  void OpenUrl(const UnicodeString & Url);
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;
-  UnicodeString ParsePathFromUrl(const UnicodeString Url) const;
+  UnicodeString ParsePathFromUrl(const UnicodeString & Url) const;
   int ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList);
   int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
   int CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
-  bool IsValidRedirect(int32_t NeonStatus, UnicodeString &APath) const;
-  UnicodeString DirectoryPath(UnicodeString APath) const;
-  UnicodeString FilePath(const TRemoteFile *AFile) const;
-  struct ne_lock * FindLock(const RawByteString APath) const;
-  void DiscardLock(const RawByteString APath);
+  bool IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const;
+  UnicodeString DirectoryPath(const UnicodeString & APath) const;
+  UnicodeString FilePath(const TRemoteFile * AFile) const;
+  struct ne_lock * FindLock(const RawByteString & APath) const;
+  void DiscardLock(const RawByteString & APath);
   bool IsNtlmAuthentication(TSessionContext * SessionContext) const;
   static void NeonAuxRequestInit(ne_session_s * Session, ne_request * Request, void * UserData);
   void SetSessionTls(TSessionContext * SessionContext, ne_session_s * Session, bool Aux);

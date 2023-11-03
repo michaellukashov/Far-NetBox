@@ -152,8 +152,8 @@ private:
   UnicodeString FChecksumCommands;
   std::unique_ptr<TSshHostCAList> FSshHostCAList;
   std::unique_ptr<TSshHostCAList> FPuttySshHostCAList;
-  bool FSshHostCAsFromPuTTY;
-  int FHttpsCertificateValidation;
+  bool FSshHostCAsFromPuTTY{false};
+  int32_t FHttpsCertificateValidation{0};
 
   bool FDisablePasswordStoring{false};
   bool FForceBanners{false};
@@ -204,9 +204,9 @@ public:
   UnicodeString GetIniFileStorageNameForReadingWriting() const;
   UnicodeString GetIniFileStorageNameForReading();
   UnicodeString GetIniFileStorageName(bool ReadingOnly) const;
-  void SetOptionsStorage(TStrings *Value);
+  void SetOptionsStorage(TStrings * Value);
   TStrings *GetOptionsStorage();
-  UnicodeString GetFileInfoString(const UnicodeString Key) const;
+  UnicodeString GetFileInfoString(const UnicodeString & Key) const;
   void SetSessionReopenAuto(int32_t Value);
   void SetSessionReopenBackground(int32_t Value);
   void SetSessionReopenTimeout(int32_t Value);
@@ -217,22 +217,22 @@ public:
   void SetShowFtpWelcomeMessage(bool Value);
   int32_t GetCompoundVersion() const;
   void UpdateActualLogProtocol();
-  void SetExternalIpAddress(UnicodeString Value);
+  void SetExternalIpAddress(const UnicodeString & Value);
   void SetTryFtpWhenSshFails(bool Value);
   void SetParallelDurationThreshold(int32_t Value);
-  void SetMimeTypes(UnicodeString Value);
-  void SetCertificateStorage(const UnicodeString value);
+  void SetMimeTypes(const UnicodeString & Value);
+  void SetCertificateStorage(const UnicodeString & value);
   UnicodeString GetCertificateStorageExpanded() const;
   void SetAWSMetadataService(const UnicodeString & Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;
   bool GetPersistent() const;
-  void SetLocalPortNumberMin(int32_t value);
-  void SetLocalPortNumberMax(int32_t value);
-  void SetQueueTransfersLimit(int value);
-  const TSshHostCAList * GetSshHostCAList();
-  void SetSshHostCAList(const TSshHostCAList * value);
+  void SetLocalPortNumberMin(int32_t Value);
+  void SetLocalPortNumberMax(int32_t Value);
+  void SetQueueTransfersLimit(int32_t Value);
+  TSshHostCAList * GetSshHostCAList() const;
+  void SetSshHostCAList(const TSshHostCAList * Value);
   const TSshHostCAList * GetPuttySshHostCAList();
   const TSshHostCAList * GetActiveSshHostCAList();
 
@@ -348,10 +348,10 @@ public:
   void TemporaryLogMaxCount(int32_t ALogMaxCount);
   virtual RawByteString EncryptPassword(const UnicodeString Password, const UnicodeString Key);
   virtual UnicodeString DecryptPassword(const RawByteString Password, const UnicodeString Key);
-  virtual RawByteString StronglyRecryptPassword(const RawByteString Password, const UnicodeString Key);
-  UnicodeString GetFileDescription(const UnicodeString AFileName) const;
-  UnicodeString GetFileVersion(const UnicodeString AFileName) const;
-  UnicodeString GetFileMimeType(const UnicodeString AFileName) const;
+  virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
+  UnicodeString GetFileVersion(const UnicodeString & AFileName) const;
+  UnicodeString GetFileMimeType(const UnicodeString & AFileName) const;
   bool RegistryPathExists(const UnicodeString RegistryPath) const;
   bool HasLocalPortNumberLimits() const;
   virtual UnicodeString TemporaryDir(bool Mask = false) const = 0;
@@ -442,6 +442,7 @@ public:
   __property UnicodeString ExternalIpAddress = { read = FExternalIpAddress, write = SetExternalIpAddress };
   __property UnicodeString CertificateStorage = { read = FCertificateStorage, write = SetCertificateStorage };
   __property UnicodeString CertificateStorageExpanded = { read = GetCertificateStorageExpanded };
+  ROProperty<UnicodeString> CertificateStorageExpanded{nb::bind(&TConfiguration::GetCertificateStorageExpanded, this)};
   __property UnicodeString AWSMetadataService = { read = FAWSMetadataService, write = SetAWSMetadataService };
   __property UnicodeString ChecksumCommands = { read = FChecksumCommands };
   __property int LocalPortNumberMin = { read = FLocalPortNumberMin, write = SetLocalPortNumberMin };
@@ -458,9 +459,12 @@ public:
   int32_t& KeyVersion{FKeyVersion};
   __property TSshHostCAList * SshHostCAList = { read = GetSshHostCAList, write = SetSshHostCAList };
   __property TSshHostCAList * PuttySshHostCAList = { read = GetPuttySshHostCAList };
+//  ROProperty<TSshHostCAList *> PuttySshHostCAList{nb::bind(&TConfiguration::GetPuttySshHostCAList, this)};
   __property TSshHostCAList * ActiveSshHostCAList = { read = GetActiveSshHostCAList };
+//  ROProperty<TSshHostCAList *> ActiveSshHostCAList{nb::bind(&TConfiguration::GetActiveSshHostCAList, this)};
   __property bool SshHostCAsFromPuTTY = { read = FSshHostCAsFromPuTTY, write = FSshHostCAsFromPuTTY };
   __property int HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };
+  int32_t& HttpsCertificateValidation{FHttpsCertificateValidation};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetConfigurationTimeFormat, this)};

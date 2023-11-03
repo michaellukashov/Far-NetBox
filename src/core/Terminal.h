@@ -749,6 +749,7 @@ public:
   __property TFileOperationFinished OnFinished  = { read=FOnFinished, write=FOnFinished };
   __property TCurrentFSProtocol FSProtocol = { read = FFSProtocol };
   __property bool UseBusyCursor = { read = FUseBusyCursor, write = FUseBusyCursor };
+  bool& UseBusyCursor{FUseBusyCursor};
   __property UnicodeString UserName = { read=GetUserName };
   ROProperty<UnicodeString> UserName{nb::bind(&TTerminal::TerminalGetUserName, this)};
   __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
