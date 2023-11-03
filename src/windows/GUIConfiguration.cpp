@@ -682,7 +682,7 @@ static UnicodeString PropertyToKey(UnicodeString Property)
     KEYEX2(Bool,   SessionRememberPassword, SessionRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
-    KEY3(Integer, UsePuttyPwFile); \
+    KEY4(Integer, UsePuttyPwFile); \
     KEY(Bool,     PuttyPassword); \
     KEY(Bool,     TelnetForFtpInPutty); \
     KEY(DateTime, IgnoreCancelBeforeFinish); \

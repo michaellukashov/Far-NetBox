@@ -324,8 +324,12 @@ void TPuttyCleanupThread::DoSchedule()
   FTimer = IncSecond(Now(), 10);
 }
 
+NB_DEFINE_CLASS_ID(TPuttyPasswordThread);
 class TPuttyPasswordThread : public TSimpleThread
 {
+public:
+  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TPuttyPasswordThread); }
+  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyPasswordThread) || TObject::is(Kind); }
 public:
   TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName);
   virtual ~TPuttyPasswordThread();
@@ -342,7 +346,8 @@ private:
   void DoSleep(int & Timeout);
 };
 
-TPuttyPasswordThread::TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName)
+TPuttyPasswordThread::TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName) :
+  TSimpleThread(OBJECT_CLASS_TPuttyPasswordThread)
 {
   DWORD OpenMode = PIPE_ACCESS_OUTBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE;
   DWORD PipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT | PIPE_REJECT_REMOTE_CLIENTS;
@@ -610,7 +615,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
       if (GUIConfiguration->UsePuttyPwFile == asAuto)
       {
         UsePuttyPwFile = false;
-        if (SameText(ExtractFileName(Program), OriginalPuttyExecutable))
+        if (SameText(base::ExtractFileName(Program), OriginalPuttyExecutable))
         {
           unsigned int Version = GetFileVersion(Program);
           if (Version != static_cast<unsigned int>(-1))
@@ -901,6 +906,8 @@ UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Ident
 
   return TempDir;
 }
+
+#if 0
 
 class TSessionColors : public TComponent
 {

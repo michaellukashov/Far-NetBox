@@ -309,7 +309,7 @@ public:
   __property UnicodeString PuttyPath = { read = FPuttyPath, write = FPuttyPath };
   UnicodeString& PuttyPath{FPuttyPath};
   __property TAutoSwitch UsePuttyPwFile = { read = FUsePuttyPwFile, write = FUsePuttyPwFile };
-  TAutoSwitch& UsePuttyPwFile{FFUsePuttyPwFile};
+  TAutoSwitch& UsePuttyPwFile{FUsePuttyPwFile};
   __property UnicodeString DefaultPuttyPath = { read = FDefaultPuttyPath };
   const UnicodeString& DefaultPuttyPath{FDefaultPuttyPath};
   __property bool PuttyPassword = { read = FPuttyPassword, write = FPuttyPassword };
@@ -352,7 +352,6 @@ public:
   void SetSynchronizeMode(int32_t Value) { FSynchronizeMode = Value; }
   int32_t GetMaxWatchDirectories() const { return FMaxWatchDirectories; }
   void SetMaxWatchDirectories(int32_t Value) { FMaxWatchDirectories = Value; }
-  int32_t GetQueueTransfersLimit() const { return FQueueTransfersLimit; }
   bool GetQueueBootstrap() const { return FQueueBootstrap; }
   bool GetQueueKeepDoneItems() const { return FQueueKeepDoneItems; }
   int32_t GetQueueKeepDoneItemsFor() const { return FQueueKeepDoneItemsFor; }

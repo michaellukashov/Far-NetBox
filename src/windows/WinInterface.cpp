@@ -1114,7 +1114,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   FHelpKeyword = HelpKeyword;
 }
 
-void TWinInteractiveCustomCommand::PatternHint(int32_t Index, const UnicodeString Pattern)
+void TWinInteractiveCustomCommand::PatternHint(int32_t Index, const UnicodeString & Pattern)
 {
   if (IsPromptPattern(Pattern))
   {
@@ -1162,13 +1162,13 @@ void TWinInteractiveCustomCommand::Prompt(
 }
 
 void TWinInteractiveCustomCommand::Execute(
-  const UnicodeString /*Command*/, UnicodeString &/*Value*/) const
+  const UnicodeString & Command, UnicodeString & Value) const
 {
   DWORD DummyExitCode;
-  ExecuteProcessAndReadOutput(Command, Value, DummyExitCode, false);
+  ThrowNotImplemented(3019);
+//  ExecuteProcessAndReadOutput(Command, Value, DummyExitCode, false);
   // trim trailing cr/lf
   Value = TrimRight(Value);
-  ThrowNotImplemented(3019);
 }
 #if 0
 

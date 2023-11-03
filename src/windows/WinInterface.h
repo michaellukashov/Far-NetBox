@@ -672,9 +672,9 @@ public:
 protected:
   virtual void Prompt(int32_t Index, const UnicodeString Prompt,
     UnicodeString &Value) const override;
-  virtual void Execute(const UnicodeString Command,
+  virtual void Execute(const UnicodeString & Command,
     UnicodeString &Value) const override;
-  virtual void PatternHint(int32_t Index, UnicodeString Pattern) override;
+  virtual void PatternHint(int32_t Index, const UnicodeString & Pattern) override;
 
 private:
   UnicodeString FCustomCommandName;
