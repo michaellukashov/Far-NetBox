@@ -524,7 +524,7 @@ HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
       // we expect this to be called only from retrieve_host_key() or store_host_key()
       DebugAssert(RegKey == L"SshHostKeys");
 
-      DebugAssert(PuttyStorage != NULL);
+      DebugAssert(PuttyStorage != nullptr);
       DebugAssert(PuttyStorage->AccessMode == (Create ? smReadWrite : smRead));
       if (PuttyStorage->OpenSubKey(RegKey, Create))
       {
@@ -532,14 +532,14 @@ HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
       }
       else
       {
-        Result = NULL;
+        Result = nullptr;
       }
     }
   }
   else
   {
     DebugFail();
-    Result = NULL;
+    Result = nullptr;
   }
   return Result;
 }
@@ -568,11 +568,11 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
   char * Result;
   if (PuttyRegistryMode == prmCollect)
   {
-    Result = NULL;
+    Result = nullptr;
   }
   else if (DebugAlwaysTrue(PuttyRegistryMode == prmRedirect))
   {
-    DebugAssert(GetConfiguration() != NULL);
+    DebugAssert(GetConfiguration() != nullptr);
 
     UnicodeString ValueName = UTF8String(Name);
     bool Success;
@@ -606,7 +606,7 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
 
     if (!Success)
     {
-      Result = NULL;
+      Result = nullptr;
     }
     else
     {
@@ -617,7 +617,7 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
   }
   else
   {
-    Result = NULL;
+    Result = nullptr;
   }
   return Result;
 }
@@ -659,8 +659,8 @@ bool put_reg_sz_winscp(HKEY Key, const char * Name, const char * Str)
     UnicodeString Value = UTF8String(Str);
     DebugAssert(Key != RandSeedFileStorage);
     THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
-    DebugAssert(Storage != NULL);
-    if (Storage != NULL)
+    DebugAssert(Storage != nullptr);
+    if (Storage != nullptr)
     {
       Storage->WriteStringRaw(ValueName, Value);
     }
@@ -684,7 +684,7 @@ strbuf * get_reg_multi_sz_winscp(HKEY, const char * DebugUsedArg(name))
 {
   // Needed for CA
   DebugFail();
-  return NULL;
+  return nullptr;
 }
 
 TKeyType GetKeyType(const UnicodeString & FileName)
@@ -856,9 +856,9 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
   LoadedFile * CertLoadedFile;
   try__finally
   {
-    const char * ErrorStr = NULL;
+    const char * ErrorStr = nullptr;
     CertLoadedFile = lf_load_keyfile(CertFilename, &ErrorStr);
-    if (CertLoadedFile == NULL)
+    if (CertLoadedFile == nullptr)
     {
       // not capturing errno, as this in unlikely file access error, after we have passed KeyType above
       throw ExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, (CertificateFileName)), Error);
@@ -870,11 +870,11 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
   } end_try__finally
 
   strbuf * Pub = strbuf_new();
-  char * AlgorithmName = NULL;
+  char * AlgorithmName = nullptr;
   try__finally
   {
-    const char * ErrorStr = NULL;
-    char * CommentStr = NULL;
+    const char * ErrorStr = nullptr;
+    char * CommentStr = nullptr;
     if (!ppk_loadpub_s(BinarySource_UPCAST(CertLoadedFile), &AlgorithmName,
                        BinarySink_UPCAST(Pub), &CommentStr, &ErrorStr))
     {
@@ -892,7 +892,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
   try__finally
   {
     KeyAlg = find_pubkey_alg(AlgorithmName);
-    if (KeyAlg == NULL)
+    if (KeyAlg == nullptr)
     {
       throw Exception(FMTLOAD(PUB_KEY_UNKNOWN, (AlgorithmName)));
     }
@@ -920,7 +920,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     ssh_key * NewKey = ssh_key_new_priv(KeyAlg, ptrlen_from_strbuf(Pub), ptrlen_from_strbuf(Priv));
     strbuf_free(Priv);
 
-    if (NewKey == NULL)
+    if (NewKey == nullptr)
     {
       throw Exception(FMTLOAD(CERTIFICATE_CANNOT_COMBINE, (CertificateFileName)));
     }
@@ -1005,7 +1005,7 @@ RawByteString LoadPublicKey(
     }
     Algorithm = UnicodeString(AnsiString(AlgorithmStr));
     const ssh_keyalg * KeyAlg = find_pubkey_alg(AlgorithmStr);
-    HasCertificate = (KeyAlg != NULL) && KeyAlg->is_certificate;
+    HasCertificate = (KeyAlg != nullptr) && KeyAlg->is_certificate;
     sfree(AlgorithmStr);
     Comment = UnicodeString(AnsiString(CommentStr));
     sfree(CommentStr);

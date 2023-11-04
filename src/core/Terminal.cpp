@@ -4163,7 +4163,7 @@ TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName)
 bool TTerminal::FileExists(const UnicodeString & FileName)
 {
   std::unique_ptr<TRemoteFile> File(TryReadFile(FileName));
-  return (File.get() != NULL);
+  return (File.get() != nullptr);
 }
 
 void TTerminal::AnnounceFileListOperation()
@@ -4590,7 +4590,7 @@ TCustomFileSystem * TTerminal::GetFileSystemForCapability(TFSCapability Capabili
   TCustomFileSystem * Result;
   if (GetIsCapable(Capability))
   {
-    DebugAssert(FFileSystem != NULL);
+    DebugAssert(FFileSystem != nullptr);
     Result = FFileSystem.get();
   }
   else
@@ -4956,7 +4956,7 @@ void TTerminal::CalculateSubFoldersChecksum(
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
   // recurse into subdirectories only if we have callback function
-  if (OnCalculatedChecksum != NULL)
+  if (OnCalculatedChecksum)
   {
     int Index = 0;
     TOnceDoneOperation OnceDoneOperation; // unused
@@ -5065,7 +5065,7 @@ bool TTerminal::DoRenameOrCopyFile(
     DuplicateFile.reset(TryReadFile(AbsoluteNewName));
     ExistenceKnown = true;
 
-    if (DuplicateFile.get() != NULL)
+    if (DuplicateFile.get() != nullptr)
     {
       UnicodeString QuestionFmt;
       TQueryType QueryType;
@@ -7820,9 +7820,9 @@ bool TTerminal::CreateTargetDirectory(
 {
   std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath));
   bool DoCreate =
-    (File.get() == NULL) ||
+    (File.get() == nullptr) ||
     !File->IsDirectory; // just try to create and make it fail
-  File.reset(NULL);
+  File.reset(nullptr);
   if (DoCreate)
   {
     TRemoteProperties Properties;

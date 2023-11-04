@@ -760,7 +760,7 @@ TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) 
 TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) noexcept :
   TSessionAction(Log, laDifference)
 {
-  if (FRecord != NULL)
+  if (FRecord != nullptr)
   {
     FRecord->SynchronizeChecklistItem(Item);
   }

@@ -473,7 +473,7 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
 
 TWebDAVFileSystem::TSessionContext::~TSessionContext()
 {
-  if (NeonSession != NULL)
+  if (NeonSession != nullptr)
   {
     DestroyNeonSession(NeonSession);
   }

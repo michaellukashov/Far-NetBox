@@ -1338,7 +1338,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
         {
           UnicodeString Checksum = DoCalculateFileChecksum(Alg, File);
 
-          if (OnCalculatedChecksum != NULL)
+          if (OnCalculatedChecksum)
           {
             OnCalculatedChecksum(File->FileName, Alg, Checksum);
           }

@@ -692,7 +692,7 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
         bool WrongOutput = !Message.IsEmpty() && ((FOutput->Count() == 0) || IsStdErrOnlyError);
         if (WrongOutput || WrongReturnCode)
         {
-          DebugAssert(Cmd != NULL);
+          DebugAssert(Cmd != nullptr);
           if (Message.IsEmpty())
           {
             FTerminal->TerminalError(FMTLOAD(COMMAND_FAILED_CODEONLY, FReturnCode));
@@ -1398,7 +1398,7 @@ void TSCPFileSystem::ProcessFileChecksum(
   bool Success = !Checksum.IsEmpty();
   if (Success)
   {
-    if (OnCalculatedChecksum != NULL)
+    if (OnCalculatedChecksum)
     {
       OnCalculatedChecksum(base::UnixExtractFileName(FileName), Alg, Checksum);
     }

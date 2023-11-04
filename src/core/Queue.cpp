@@ -2508,7 +2508,7 @@ TDeleteQueueItem::TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TS
   FInfo->Operation = foDelete;
   FInfo->Side = osRemote;
 
-  DebugAssert(FilesToDelete != NULL);
+  DebugAssert(FilesToDelete != nullptr);
   FFilesToDelete.reset(TRemoteFileList::CloneStrings(FilesToDelete));
   ExtractRemoteSourcePath(Terminal, FilesToDelete, FInfo->Source);
 
