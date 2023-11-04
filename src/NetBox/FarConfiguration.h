@@ -15,7 +15,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
 public:
-  explicit TFarConfiguration(TCustomFarPlugin *APlugin) noexcept;
+  TFarConfiguration() = delete;
+  explicit TFarConfiguration(TCustomFarPlugin * APlugin) noexcept;
   virtual ~TFarConfiguration() noexcept;
 
   virtual void Load();
