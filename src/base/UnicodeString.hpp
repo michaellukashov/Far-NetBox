@@ -149,6 +149,7 @@ public:
   UnicodeString TrimRight() const;
 
   void Unique();
+  static UnicodeString StringOfChar(const wchar_t Ch, int32_t Len);
 
 public:
   UnicodeString &operator=(UnicodeString StrCopy);

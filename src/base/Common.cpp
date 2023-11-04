@@ -678,7 +678,7 @@ const UnicodeString Ellipsis(TraceInitStr(L"..."));
 const UnicodeString TitleSeparator(TraceInitStr(L" \u2013 ")); // En-Dash
 const UnicodeString OfficialPackage(TraceInitStr(L"MartinPikryl.WinSCP_tvv458r3h9r5m"));
 
-UnicodeString ReplaceChar(const UnicodeString Str, wchar_t A, wchar_t B)
+UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
   wchar_t *Buffer = ToWChar(Result);
@@ -690,7 +690,7 @@ UnicodeString ReplaceChar(const UnicodeString Str, wchar_t A, wchar_t B)
   return Result;
 }
 
-UnicodeString DeleteChar(const UnicodeString Str, wchar_t C)
+UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C)
 {
   UnicodeString Result = Str;
   int32_t P;
@@ -708,23 +708,23 @@ void DoPackStr(T &Str)
   Str = Str.c_str();
 }
 
-void PackStr(UnicodeString &Str)
+void PackStr(UnicodeString & Str)
 {
   DoPackStr(Str);
 }
 
-void PackStr(RawByteString &Str)
+void PackStr(RawByteString & Str)
 {
   DoPackStr(Str);
 }
 
-void PackStr(AnsiString &Str)
+void PackStr(AnsiString & Str)
 {
   DoPackStr(Str);
 }
 
 template <typename T>
-void DoShred(T &Str)
+void DoShred(T & Str)
 {
   if (!Str.IsEmpty())
   {
@@ -749,7 +749,7 @@ void Shred(AnsiString & Str)
   DoShred(Str);
 }
 
-void Shred(RawByteString &Str)
+void Shred(RawByteString & Str)
 {
   DoShred(Str);
 }
@@ -813,7 +813,7 @@ UnicodeString BooleanToStr(bool B)
   return LoadStr(NO_STR);
 }
 
-UnicodeString DefaultStr(const UnicodeString Str, const UnicodeString Default)
+UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Default)
 {
   if (!Str.IsEmpty())
   {
@@ -1217,7 +1217,7 @@ static UnicodeString GetWineHomeFolder()
     }
   }
 
-  if (!SysUtulsDirectoryExists(Result))
+  if (!base::DirectoryExists(Result))
   {
     Result = L"";
   }
@@ -1227,8 +1227,7 @@ static UnicodeString GetWineHomeFolder()
 
 UnicodeString GetPersonalFolder()
 {
-  UnicodeString Result;
-  Result = GetShellFolderPath(CSIDL_PERSONAL);
+  UnicodeString Result = GetShellFolderPath(CSIDL_PERSONAL);
 
   if (IsWine())
   {
@@ -1242,7 +1241,7 @@ UnicodeString GetPersonalFolder()
       // but try to go deeper to "Documents"
       UnicodeString WineDocuments =
         IncludeTrailingBackslash(WineHome) + "Documents";
-      if (SysUtulsDirectoryExists(WineDocuments))
+      if (base::DirectoryExists(WineDocuments))
       {
         Result = WineDocuments;
       }
@@ -1253,8 +1252,7 @@ UnicodeString GetPersonalFolder()
 
 UnicodeString GetDesktopFolder()
 {
-  UnicodeString Result;
-  Result = GetShellFolderPath(CSIDL_DESKTOPDIRECTORY);
+  UnicodeString Result = GetShellFolderPath(CSIDL_DESKTOPDIRECTORY);
 
   if (IsWine())
   {
@@ -1264,7 +1262,7 @@ UnicodeString GetDesktopFolder()
     {
       UnicodeString WineDesktop =
         IncludeTrailingBackslash(WineHome) + L"Desktop";
-      if (SysUtulsDirectoryExists(WineHome))
+      if (base::DirectoryExists(WineHome))
       {
         Result = WineDesktop;
       }
@@ -1301,8 +1299,8 @@ UnicodeString AddPathQuotes(const UnicodeString & APath)
   return AddQuotes(Result);
 }
 
-static wchar_t *ReplaceChar(
-  UnicodeString &AFileName, wchar_t *InvalidChar, wchar_t InvalidCharsReplacement)
+static wchar_t * ReplaceChar(
+  UnicodeString & AFileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
 {
   const int32_t Index = InvalidChar - AFileName.c_str() + 1;
   if (InvalidCharsReplacement == TokenReplacement)
@@ -2181,7 +2179,7 @@ void TSearchRecOwned::Close()
   Opened = false;
 }
 
-DWORD FindCheck(DWORD Result, const UnicodeString APath)
+DWORD FindCheck(DWORD Result, const UnicodeString & APath)
 {
   if ((Result != ERROR_SUCCESS) &&
       (Result != ERROR_FILE_NOT_FOUND) &&
@@ -2192,7 +2190,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString APath)
   return Result;
 }
 
-DWORD FindFirstUnchecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
+DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
 {
   F.Path = APath;
   F.Dir = ExtractFilePath(APath);
@@ -2201,14 +2199,14 @@ DWORD FindFirstUnchecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearc
   return Result;
 }
 
-DWORD FindFirstChecked(const UnicodeString APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
+DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
 {
   const DWORD Result = FindFirstUnchecked(APath, LocalFileAttrs, F);
   return FindCheck(Result, F.Path);
 }
 
 // Equivalent to FindNext, just to complement to FindFirstUnchecked
-DWORD FindNextUnchecked(TSearchRecChecked &F)
+DWORD FindNextUnchecked(TSearchRecChecked & F)
 {
   return base::FindNext(F);
 }
@@ -2216,12 +2214,12 @@ DWORD FindNextUnchecked(TSearchRecChecked &F)
 // It can make sense to use FindNextChecked, even if unchecked FindFirst is used.
 // I.e. even if we do not care that FindFirst failed, if FindNext
 // fails after successful FindFirst, it means some terrible problem
-DWORD FindNextChecked(TSearchRecChecked &F)
+DWORD FindNextChecked(TSearchRecChecked & F)
 {
   return FindCheck(FindNextUnchecked(F), F.Path);
 }
 
-bool FileSearchRec(const UnicodeString AFileName, TSearchRec &Rec)
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec &Rec)
 {
   const DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   const bool Result = (base::FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
@@ -2238,7 +2236,7 @@ void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest)
   Dest.Assign(Source);
 }
 
-bool IsRealFile(const UnicodeString AFileName)
+bool IsRealFile(const UnicodeString & AFileName)
 {
   return (AFileName != THISDIRECTORY) && (AFileName != PARENTDIRECTORY);
 }
@@ -2645,7 +2643,7 @@ int64_t Round(double Number)
   return nb::ToInt64(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 
-bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, bool Add)
+bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, bool Add)
 {
   UnicodeString S = AStr.Trim();
   int32_t Index = 1;
@@ -2728,7 +2726,7 @@ bool TryRelativeStrToDateTime(const UnicodeString AStr, TDateTime &DateTime, boo
   return Result;
 }
 
-bool TryStrToDateTimeStandard(const UnicodeString S, TDateTime &Value)
+bool TryStrToDateTimeStandard(const UnicodeString & S, TDateTime &Value)
 {
   TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
   FormatSettings.DateSeparator = L'-';
@@ -3940,7 +3938,7 @@ UnicodeString WindowsVersionLong()
   return Result;
 }
 
-bool IsDirectoryWriteable(const UnicodeString APath)
+bool IsDirectoryWriteable(const UnicodeString & APath)
 {
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(APath) +
@@ -3967,7 +3965,7 @@ UnicodeString FormatSize(int64_t ASize)
   return FormatNumber(ASize);
 }
 
-UnicodeString FormatDateTimeSpan(const UnicodeString TimeFormat, TDateTime DateTime)
+UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime DateTime)
 {
   UnicodeString Result;
   if (nb::ToInt64(DateTime) > 0)
@@ -4090,12 +4088,12 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
   return Result;
 }
 
-UnicodeString ExtractFileBaseName(const UnicodeString APath)
+UnicodeString ExtractFileBaseName(const UnicodeString & APath)
 {
   return ChangeFileExt(base::ExtractFileName(APath, false), L"");
 }
 
-TStringList *TextToStringList(const UnicodeString Text)
+TStringList *TextToStringList(const UnicodeString & Text)
 {
   std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->SetText(Text);
@@ -4116,14 +4114,21 @@ UnicodeString StringsToText(TStrings *Strings)
   return Result;
 }
 
-TStrings *CloneStrings(TStrings *Strings)
+TStringList * CommaTextToStringList(const UnicodeString & CommaText)
+{
+  std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
+  List->SetCommaText(CommaText);
+  return List.release();
+}
+
+TStrings * CloneStrings(TStrings * Strings)
 {
   std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->AddStrings(Strings);
   return List.release();
 }
 
-UnicodeString TrimVersion(UnicodeString AVersion)
+UnicodeString TrimVersion(const UnicodeString & AVersion)
 {
   UnicodeString Version = AVersion;
 
@@ -4158,7 +4163,7 @@ int32_t IndexStr(const UnicodeString & AText, const UnicodeString (&AValues)[N])
   return -1;
 }
 
-int32_t ParseShortEngMonthName(const UnicodeString MonthStr)
+int32_t ParseShortEngMonthName(const UnicodeString & MonthStr)
 {
   TFormatSettings FormatSettings = GetEngFormatSettings();
   return IndexStr<_countof(FormatSettings.ShortMonthNames)>(MonthStr, FormatSettings.ShortMonthNames) + 1;
@@ -4173,7 +4178,7 @@ TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplica
   return Result;
 }
 
-static UnicodeString NormalizeIdent(UnicodeString AIdent)
+static UnicodeString NormalizeIdent(const UnicodeString & AIdent)
 {
   UnicodeString Ident = AIdent;
   int32_t Index = 1;
@@ -4191,7 +4196,7 @@ static UnicodeString NormalizeIdent(UnicodeString AIdent)
   return Ident;
 }
 
-UnicodeString FindIdent(const UnicodeString Ident, TStrings *Idents)
+UnicodeString FindIdent(const UnicodeString & Ident, TStrings *Idents)
 {
   UnicodeString NormalizedIdent(NormalizeIdent(Ident));
   for (int32_t Index = 0; Index < Idents->GetCount(); Index++)
@@ -4212,9 +4217,9 @@ static UnicodeString GetTlsErrorStr(int Err)
   return UnicodeString(UTF8String(Buffer));
 }
 
-static FILE *OpenCertificate(const UnicodeString Path)
+static FILE * OpenCertificate(const UnicodeString & Path)
 {
-  FILE *Result = _wfopen(ApiPath(Path).c_str(), L"rb");
+  FILE * Result = _wfopen(ApiPath(Path).c_str(), L"rb");
   if (Result == nullptr)
   {
     int Error = errno;
@@ -4229,7 +4234,7 @@ struct TPemPasswordCallbackData
   UnicodeString *Passphrase;
 };
 
-static int PemPasswordCallback(char *Buf, int ASize, int /*RWFlag*/, void *UserData)
+static int PemPasswordCallback(char * Buf, int ASize, int /*RWFlag*/, void *UserData)
 {
   TPemPasswordCallbackData &Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
@@ -4264,8 +4269,8 @@ static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString P
   }
 }
 
-void ParseCertificate(const UnicodeString Path,
-  const UnicodeString Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
+void ParseCertificate(const UnicodeString & Path,
+  const UnicodeString & Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
   bool & WrongPassphrase)
 {
   Certificate = nullptr;
@@ -4344,7 +4349,7 @@ void ParseCertificate(const UnicodeString Path,
 
       if (Certificate == nullptr)
       {
-        unsigned long Error = ERR_get_error();
+        uint32_t Error = ERR_get_error();
         // unlikely
         if (IsTlsPassphraseError(Error, HasPassphrase))
         {
@@ -4353,12 +4358,12 @@ void ParseCertificate(const UnicodeString Path,
         else
         {
           UnicodeString CertificatePath = ChangeFileExt(Path, L".cer");
-          if (!::SysUtulsFileExists(CertificatePath))
+          if (!base::FileExists(CertificatePath))
           {
             CertificatePath = ChangeFileExt(Path, L".crt");
           }
 
-          if (!::SysUtulsFileExists(CertificatePath))
+          if (!base::FileExists(CertificatePath))
           {
             throw Exception(MainInstructions(FMTLOAD(CERTIFICATE_PUBLIC_KEY_NOT_FOUND, Path)));
           }
@@ -4416,7 +4421,7 @@ void ParseCertificate(const UnicodeString Path,
   }
 }
 
-void CheckCertificate(const UnicodeString Path)
+void CheckCertificate(const UnicodeString & Path)
 {
   X509 * Certificate;
   EVP_PKEY * PrivateKey;
@@ -4438,24 +4443,25 @@ const UnicodeString HttpProtocol(L"http");
 const UnicodeString HttpsProtocol(L"https");
 const UnicodeString ProtocolSeparator(L"://");
 
-bool IsHttpUrl(const UnicodeString S)
+bool IsHttpUrl(const UnicodeString & S)
 {
   return StartsText(HttpProtocol + ProtocolSeparator, S);
 }
 
-bool IsHttpOrHttpsUrl(const UnicodeString S)
+bool IsHttpOrHttpsUrl(const UnicodeString & S)
 {
   return
     IsHttpUrl(S) ||
     StartsText(HttpsProtocol + ProtocolSeparator, S);
 }
 
-UnicodeString ChangeUrlProtocol(const UnicodeString S, const UnicodeString Protocol)
+UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & Protocol)
 {
   const int32_t P = S.Pos(ProtocolSeparator);
   DebugAssert(P > 0);
   return Protocol + ProtocolSeparator + RightStr(S, S.Length() - P - ProtocolSeparator.Length() + 1);
 }
+
 #if 0
 
 const UnicodeString RtfPara(TraceInitStr(L"\\par\n"));
@@ -4569,7 +4575,6 @@ UnicodeString RtfSwitch(
 {
   return RtfSwitchValue(Name, Link, RtfText(FORMAT("\"%s\"", (EscapeParam(Value))), Rtf), Rtf);
 }
-
 UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf)
 {
@@ -5025,7 +5030,7 @@ void LoadScriptFromFile(UnicodeString FileName, TStrings * Lines, bool FallbackT
 
 #endif // #if 0
 
-UnicodeString StripEllipsis(const UnicodeString S)
+UnicodeString StripEllipsis(const UnicodeString & S)
 {
   UnicodeString Result = S;
   if (Result.SubString(Result.Length() - Ellipsis.Length() + 1, Ellipsis.Length()) == Ellipsis)
@@ -5036,7 +5041,7 @@ UnicodeString StripEllipsis(const UnicodeString S)
   return Result;
 }
 
-UnicodeString GetFileMimeType(const UnicodeString FileName)
+UnicodeString GetFileMimeType(const UnicodeString & FileName)
 {
   wchar_t * MimeOut = nullptr;
   UnicodeString Result;
@@ -5244,5 +5249,5 @@ void NotImplemented()
 
 UnicodeString GetDividerLine()
 {
-  return ::StringOfChar(L'-', 27);
+  return UnicodeString::StringOfChar(L'-', 27);
 }

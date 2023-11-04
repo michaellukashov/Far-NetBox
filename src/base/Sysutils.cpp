@@ -2123,6 +2123,30 @@ bool FileExists(const UnicodeString & AFileName)
   return ::SysUtulsFileExists(ApiPath(AFileName));
 }
 
+bool DoExists(bool R, const UnicodeString & Path)
+{
+  int32_t Error;
+  bool Result = R;
+  if (!Result)
+  {
+    Error = GetLastError();
+    if ((Error = ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
+       (Error = ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
+    {
+      Result = SysUtulsDirectoryExists(ApiPath(ExtractFileDir(Path)));
+    }
+  }
+  return Result;
+}
+
+bool FileExistsFix(const UnicodeString & Path)
+{
+  // WORKAROUND
+  SetLastError(ERROR_SUCCESS);
+  bool Result = DoExists(::SysUtulsFileExists(ApiPath(Path)), Path);
+  return Result;
+}
+
 bool DirectoryExists(const UnicodeString & ADir)
 {
   return ::SysUtulsDirectoryExists(ApiPath(ADir));

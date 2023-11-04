@@ -810,6 +810,11 @@ void UnicodeString::Unique()
   Init(Data.c_str(), Data.GetLength());
 }
 
+UnicodeString UnicodeString::StringOfChar(const wchar_t Ch, int32_t Len)
+{
+  return ::StringOfChar(Ch, Len);
+}
+
 UnicodeString &UnicodeString::operator=(UnicodeString StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.GetLength());

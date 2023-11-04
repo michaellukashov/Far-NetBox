@@ -668,10 +668,10 @@ bool FileGetSymLinkTarget(const UnicodeString AFileName, UnicodeString & TargetN
 NB_DEFINE_CLASS_ID(EDirectoryNotFoundException);
 class NB_CORE_EXPORT EDirectoryNotFoundException : public Exception
 {
-  public:
+public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EDirectoryNotFoundException); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EDirectoryNotFoundException) || Exception::is(Kind); }
-  public:
+public:
   explicit EDirectoryNotFoundException(const UnicodeString What) noexcept : Exception(OBJECT_CLASS_EDirectoryNotFoundException, What) {}
   explicit EDirectoryNotFoundException(TObjectClassId Kind, const UnicodeString What) noexcept : Exception(Kind, What) {}
 };
@@ -686,6 +686,7 @@ FILE *LocalOpenFileForWriting(const UnicodeString LogFileName, bool Append = fal
 bool WriteAndFlush(FILE *file, void const *data, size_t size);
 
 bool FileExists(const UnicodeString & AFileName);
+bool FileExistsFix(const UnicodeString & Path);
 bool DirectoryExists(const UnicodeString &ADir);
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
 DWORD FindNext(TSearchRec & Rec);
