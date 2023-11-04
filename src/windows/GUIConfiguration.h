@@ -272,6 +272,7 @@ public:
   void SetInitialLocale(LCID Value);
   void ConfigurationInit() override;
 public:
+  TGUIConfiguration() = delete;
   explicit TGUIConfiguration(TObjectClassId Kind) noexcept;
   virtual ~TGUIConfiguration() noexcept;
   virtual void Default() override;
