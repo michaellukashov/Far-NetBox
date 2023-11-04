@@ -823,7 +823,7 @@ UnicodeString DefaultStr(const UnicodeString Str, const UnicodeString Default)
 }
 
 // For alternative with quoting support, see TFTPFileSystem::CutFeature
-UnicodeString CutToChar(UnicodeString &Str, wchar_t Ch, bool Trim)
+UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
 {
   const int32_t P = Str.Pos(Ch);
   UnicodeString Result;
