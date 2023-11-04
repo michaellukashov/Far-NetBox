@@ -4889,7 +4889,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
   }
 }
 
-bool TTerminal::DoCalculateDirectorySize(const UnicodeString FileName, TCalculateSizeParams * Params)
+bool TTerminal::DoCalculateDirectorySize(const UnicodeString & FileName, TCalculateSizeParams * Params)
 {
   bool Result = false;
   if (FLAGSET(Params->Params, csStopOnFirstFile) && (Configuration->ActualLogProtocol >= 1))
@@ -6051,7 +6051,7 @@ bool TTerminal::AllowLocalFileTransfer(
 }
 
 void TTerminal::MakeLocalFileList(
-  const UnicodeString AFileName, const TSearchRecSmart & Rec, void * Param)
+  const UnicodeString & AFileName, const TSearchRecSmart & Rec, void * Param)
 {
   TMakeLocalFileListParams &Params = *cast_to<TMakeLocalFileListParams>(Param);
   Expects(Params.FileList != nullptr);
@@ -6072,7 +6072,7 @@ void TTerminal::MakeLocalFileList(
 }
 
 void TTerminal::CalculateLocalFileSize(
-  UnicodeString AFileName, const TSearchRecSmart & Rec, /*TCalculateSizeParams*/ void * AParams)
+  const UnicodeString & AFileName, const TSearchRecSmart & Rec, /*TCalculateSizeParams*/ void * AParams)
 {
   TCalculateSizeParams *Params = cast_to<TCalculateSizeParams>(AParams);
   Expects(Params != nullptr);
@@ -7367,8 +7367,7 @@ TStrings * TTerminal::GetShellChecksumAlgDefs()
       AddToList(ChecksumCommandsDef, Md5ChecksumAlg + L"=md5sums", Delimiter);
     }
 
-    FShellChecksumAlgDefs = std::make_unique<TStringList>();
-    FShellChecksumAlgDefs->SetCommaText(ChecksumCommandsDef);
+    FShellChecksumAlgDefs.reset(CommaTextToStringList(ChecksumCommandsDef));
   }
   return FShellChecksumAlgDefs.get();
 }
@@ -7382,7 +7381,7 @@ void TTerminal::GetShellChecksumAlgs(TStrings * Algs)
   }
 }
 
-void TTerminal::GetSupportedChecksumAlgs(TStrings *Algs)
+void TTerminal::GetSupportedChecksumAlgs(TStrings * Algs)
 {
   if (!GetIsCapable(fcCalculatingChecksum) && GetIsCapable(fcSecondaryShell))
   {

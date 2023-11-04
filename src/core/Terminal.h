@@ -387,9 +387,8 @@ protected:
     const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * ASize);
   void DoCalculateFileSize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParam);
-  bool DoCalculateDirectorySize(const UnicodeString AFileName, TCalculateSizeParams * Params);
-  void CalculateLocalFileSize(
-    const UnicodeString AFileName, const TSearchRecSmart & Rec, /*int64_t*/ void * Size);
+  bool DoCalculateDirectorySize(const UnicodeString & AFileName, TCalculateSizeParams * Params);
+  void CalculateLocalFileSize(const UnicodeString & AFileName, const TSearchRecSmart & Rec, /*int64_t*/ void * Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     const UnicodeString ASourceFullFileName, const TCopyParamType * CopyParam, int32_t Params,
     TFileOperationProgressType * OperationProgress, bool Special) const;
@@ -681,7 +680,7 @@ public:
   void UnlockFiles(TStrings *AFileList);
   TRemoteFileList * DirectoryFileList(const UnicodeString APath, TDateTime Timestamp, bool CanLoad);
   void MakeLocalFileList(
-    const UnicodeString AFileName, const TSearchRecSmart & Rec, void * Param);
+    const UnicodeString & AFileName, const TSearchRecSmart & Rec, void * Param);
   bool FileOperationLoopQuery(Exception &E,
     TFileOperationProgressType *OperationProgress, const UnicodeString Message,
     uint32_t AFlags, UnicodeString SpecialRetry = "", UnicodeString HelpKeyword = "");
