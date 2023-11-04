@@ -53,7 +53,7 @@ using TReadDirectoryEvent = nb::FastDelegate2<void, TObject * /*Sender*/, Boolea
 using TReadDirectoryProgressEvent = nb::FastDelegate4<void,
   TObject * /*Sender*/, int32_t /*Progress*/, int32_t /*ResolvedLinks*/, bool & /*Cancel*/>;
 using TProcessFileEvent = nb::FastDelegate3<void,
-  UnicodeString /*AFileName*/, const TRemoteFile * /*AFile*/, void * /*AParam*/>;
+  const UnicodeString & /*AFileName*/, const TRemoteFile * /*AFile*/, void * /*AParam*/>;
 using TProcessFileEventEx = nb::FastDelegate4<void,
   const UnicodeString /*AFileName*/, const TRemoteFile * /*File*/,
   void * /*Param*/, int32_t /*Index*/>;
@@ -358,12 +358,12 @@ protected:
     TFileOperationProgressType * OperationProgress, uint32_t AFlags,
     const UnicodeString Message, void *Param1 = nullptr, void *Param2 = nullptr);
   bool GetIsCapableProtected(TFSCapability Capability) const;
-  bool ProcessFiles(TStrings *AFileList, TFileOperation Operation,
-    TProcessFileEvent ProcessFile, void *Param = nullptr, TOperationSide Side = osRemote,
+  bool ProcessFiles(TStrings * AFileList, TFileOperation Operation,
+    TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
   bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
     TProcessFileEventEx ProcessFile, void * AParam = nullptr, TOperationSide Side = osRemote);
-  void ProcessDirectory(const UnicodeString ADirName,
+  void ProcessDirectory(const UnicodeString & ADirName,
     TProcessFileEvent CallBackFunc, void * AParam = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
   bool DeleteContentsIfDirectory(
@@ -384,10 +384,10 @@ protected:
     const UnicodeString AFileName, const TSearchRecSmart * SearchRec,
     const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
   bool HandleException(Exception * E);
-  void CalculateFileSize(UnicodeString AFileName,
-    const TRemoteFile *AFile, /*TCalculateSizeParams*/ void *ASize);
-  void DoCalculateFileSize(UnicodeString AFileName,
-    const TRemoteFile *AFile, void *AParam);
+  void CalculateFileSize(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * ASize);
+  void DoCalculateFileSize(const UnicodeString & AFileName,
+    const TRemoteFile * AFile, void * AParam);
   bool DoCalculateDirectorySize(const UnicodeString AFileName, TCalculateSizeParams * Params);
   void CalculateLocalFileSize(
     const UnicodeString AFileName, const TSearchRecSmart & Rec, /*int64_t*/ void * Size);
@@ -417,16 +417,16 @@ protected:
     const UnicodeString ALocalDirectory, const TCopyParamType * CopyParam, bool DisallowTemporaryTransferFiles);
   bool IsEmptyRemoteDirectory(
     const TRemoteFile * File, const TCopyParamType * CopyParam, bool DisallowTemporaryTransferFiles);
-  void DoSynchronizeCollectFile(const UnicodeString AFileName,
+  void DoSynchronizeCollectFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TSynchronizeData* */void * Param);
-  void SynchronizeCollectFile(const UnicodeString AFileName,
+  void SynchronizeCollectFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TSynchronizeData* */ void * Param);
-  void SynchronizeRemoteTimestamp(const UnicodeString AFileName,
+  void SynchronizeRemoteTimestamp(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * Param);
-  void SynchronizeLocalTimestamp(const UnicodeString AFileName,
+  void SynchronizeLocalTimestamp(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * Param);
   void DoSynchronizeProgress(const TSynchronizeData & Data, bool Collect);
-  void DeleteLocalFile(UnicodeString AFileName,
+  void DeleteLocalFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * Params);
   bool RecycleFile(const UnicodeString AFileName, const TRemoteFile * AFile);
   TStrings * GetFixedPaths() const;
@@ -440,19 +440,19 @@ protected:
   void OpenTunnel();
   void CloseTunnel();
   void DoInformation(
-    const UnicodeString AStr, bool Status, int32_t Phase = -1, const UnicodeString & Additional = UnicodeString());
+    const UnicodeString & AStr, bool Status, int32_t Phase = -1, const UnicodeString & Additional = UnicodeString());
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    UnicodeString AName, UnicodeString AInstructions, UnicodeString Prompt, bool Echo,
+    const UnicodeString & AName, const UnicodeString & AInstructions, const UnicodeString & Prompt, bool Echo,
     int32_t MaxLen, UnicodeString & AResult);
-  void FileFind(UnicodeString AFileName, const TRemoteFile * AFile, void *Param);
-  void DoFilesFind(UnicodeString ADirectory, TFilesFindParams & Params, UnicodeString ARealDirectory);
-  bool DoCreateLocalFile(const UnicodeString AFileName,
+  void FileFind(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
+  void DoFilesFind(const UnicodeString & ADirectory, TFilesFindParams & Params, const UnicodeString & ARealDirectory);
+  bool DoCreateLocalFile(const UnicodeString & AFileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
-  void LockFile(const UnicodeString AFileName, const TRemoteFile * AFile, void * Param);
-  void UnlockFile(const UnicodeString AFileName, const TRemoteFile * AFile, void * Param);
-  void DoLockFile(const UnicodeString AFileName, const TRemoteFile * AFile);
-  void DoUnlockFile(const UnicodeString AFileName, const TRemoteFile * AFile);
+  void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
+  void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
+  void DoLockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
+  void DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   void OperationFinish(
     TFileOperationProgressType * Progress, const void * Item, const UnicodeString AFileName,
     bool Success, TOnceDoneOperation & OnceDoneOperation);
@@ -555,10 +555,10 @@ protected:
     const UnicodeString AFileName, const TRemoteFile * AFile, const UnicodeString ATargetDir,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress, uint32_t AFlags);
   void Sink(
-    const UnicodeString AFileName, const TRemoteFile * AFile, const UnicodeString ATargetDir,
+    const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString ATargetDir,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress, uint32_t AFlags,
     TDownloadSessionAction & Action);
-  void SinkFile(UnicodeString AFileName, const TRemoteFile * AFile, void * Param);
+  void SinkFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void UpdateTargetAttrs(
     const UnicodeString ADestFullName, const TRemoteFile * AFile, const TCopyParamType *CopyParam, int32_t Attrs);
   void UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode);
@@ -625,13 +625,13 @@ public:
   int32_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType *OperationProgress);
   void LogParallelTransfer(TParallelOperation * ParallelOperation);
   void RemoteCreateDirectory(const UnicodeString ADirName, const TRemoteProperties * Properties = nullptr);
-  void RemoteCreateLink(const UnicodeString AFileName, const UnicodeString APointTo, bool Symbolic);
-  void RemoteDeleteFile(const UnicodeString AFileName,
+  void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
+  void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * AParams = nullptr);
   bool RemoteDeleteFiles(TStrings * AFilesToDelete, int32_t Params = 0);
   bool DeleteLocalFiles(TStrings * AFileList, int32_t Params = 0);
   bool IsRecycledFile(UnicodeString AFileName);
-  void CustomCommandOnFile(UnicodeString AFileName,
+  void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(UnicodeString ACommand, int32_t AParams,
     TStrings * AFiles, TCaptureOutputEvent OutputEvent);
@@ -639,25 +639,24 @@ public:
   void EndTransaction();
   void HomeDirectory();
   UnicodeString GetHomeDirectory();
-  void ChangeFileProperties(UnicodeString AFileName,
+  void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile *AFile, /*const TRemoteProperties*/ void *Properties);
   void ChangeFilesProperties(TStrings *AFileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * AFileList);
-  void TerminalError(UnicodeString Msg);
-  void TerminalError(Exception * E, UnicodeString AMsg, UnicodeString AHelpKeyword = L"");
+  void TerminalError(const UnicodeString & Msg);
+  void TerminalError(Exception * E, const UnicodeString & AMsg, const UnicodeString & AHelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
   void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & ANewName);
-  void TerminalMoveFile(const UnicodeString AFileName, const TRemoteFile * AFile,
+  void TerminalMoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
   bool TerminalMoveFiles(
-    TStrings * AFileList, const UnicodeString ATarget, const UnicodeString AFileMask, bool DontOverwrite);
-  void TerminalCopyFile(const UnicodeString AFileName, const TRemoteFile * AFile,
+    TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite);
+  void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool TerminalCopyFiles(
-    TStrings *AFileList, const UnicodeString ATarget, const UnicodeString AFileMask, bool DontOverwrite);
-  bool CalculateFilesSize(TStrings * AFileList, int64_t &Size, TCalculateSizeParams & Params);
+  bool TerminalCopyFiles(TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite);
+  bool CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalculateSizeParams & Params);
   bool CalculateLocalFilesSize(TStrings * FileList, int64_t & Size,
     const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files, TCalculatedSizes * CalculatedSizes);
   void CalculateFilesChecksum(

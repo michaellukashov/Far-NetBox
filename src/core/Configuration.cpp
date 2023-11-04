@@ -111,10 +111,10 @@ void TSshHostCAList::Save(THierarchicalStorage * Storage)
 void TSshHostCAList::Load(THierarchicalStorage * Storage)
 {
   FList.clear();
-  std::unique_ptr<TStrings> SubKeys(new TStringList());
+  std::unique_ptr<TStrings> SubKeys(std::make_unique<TStringList>());
   Storage->GetSubKeyNames(SubKeys.get());
 
-  for (int Index = 0; Index < SubKeys->Count; Index++)
+  for (int32_t Index = 0; Index < SubKeys->Count; Index++)
   {
     TSshHostCA SshHostCA;
     SshHostCA.Name = SubKeys->Strings[Index];
@@ -130,12 +130,12 @@ void TSshHostCAList::Load(THierarchicalStorage * Storage)
   }
 }
 
-int TSshHostCAList::GetCount() const
+int32_t TSshHostCAList::GetCount() const
 {
   return FList.size();
 }
 
-const TSshHostCA * TSshHostCAList::Get(int Index) const
+const TSshHostCA * TSshHostCAList::Get(int32_t Index) const
 {
   return &FList[Index];
 }
@@ -373,7 +373,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
 UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 {
   // no longer useful
-  int P = Property.LastDelimiter(L".>");
+  int32_t P = Property.LastDelimiter(L".>");
   UnicodeString Result = Property.SubString(P + 1, Property.Length() - P);
   if ((Result[1] == L'F') && (towupper(Result[2]) == Result[2]))
   {
@@ -1761,7 +1761,7 @@ TStorage TConfiguration::GetStorage() const
 
 static TStoredSessionList * CreateSessionsForImport(TStoredSessionList * Sessions)
 {
-  std::unique_ptr<TStoredSessionList> Result(new TStoredSessionList(true));
+  std::unique_ptr<TStoredSessionList> Result(std::make_unique<TStoredSessionList>(true));
   Result->DefaultSettings = Sessions->DefaultSettings;
   return Result.release();
 }

@@ -2033,7 +2033,7 @@ void TTerminal::Reopen(int32_t Params)
 }
 
 bool TTerminal::PromptUser(TSessionData *Data, TPromptKind Kind,
-  const UnicodeString AName, UnicodeString Instructions, UnicodeString Prompt, bool Echo, int32_t MaxLen, UnicodeString &AResult)
+  const UnicodeString & AName, const UnicodeString & Instructions, const UnicodeString & Prompt, bool Echo, int32_t MaxLen, UnicodeString &AResult)
 {
   bool Result;
   std::unique_ptr<TStrings> Prompts(std::make_unique<TStringList>());
@@ -2304,7 +2304,7 @@ void TTerminal::ShowExtendedException(Exception *E)
 }
 
 void TTerminal::DoInformation(
-  const UnicodeString AStr, bool Status, int32_t Phase, const UnicodeString & Additional)
+  const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional)
 {
   if (GetOnInformation())
   {
@@ -2481,13 +2481,13 @@ void TTerminal::ReactOnCommand(int32_t ACmd)
   }
 }
 
-void TTerminal::TerminalError(UnicodeString Msg)
+void TTerminal::TerminalError(const UnicodeString & Msg)
 {
   TerminalError(nullptr, Msg);
 }
 
 void TTerminal::TerminalError(
-  Exception *E, UnicodeString AMsg, UnicodeString AHelpKeyword)
+  Exception *E, const UnicodeString & AMsg, const UnicodeString & AHelpKeyword)
 {
   throw ETerminal(E, AMsg, AHelpKeyword);
 }
@@ -4024,8 +4024,8 @@ bool TTerminal::DeleteContentsIfDirectory(
   return Dir && !AFile->IsSymLink;
 }
 
-void TTerminal::ProcessDirectory(const UnicodeString ADirName,
-  TProcessFileEvent CallBackFunc, void *AParam, bool UseCache, bool IgnoreErrors)
+void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
+  TProcessFileEvent CallBackFunc, void * AParam, bool UseCache, bool IgnoreErrors)
 {
   std::unique_ptr<TRemoteFileList> FileList;
   if (IgnoreErrors)
@@ -4209,7 +4209,7 @@ void TTerminal::OperationStop(TFileOperationProgressType & Progress)
 }
 
 bool TTerminal::ProcessFiles(TStrings * AFileList,
-  TFileOperation Operation, TProcessFileEvent ProcessFile, void *Param,
+  TFileOperation Operation, TProcessFileEvent ProcessFile, void * Param,
   TOperationSide Side, bool Ex)
 {
   DebugAssert(FFileSystem);
@@ -4238,7 +4238,7 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
         while ((Index < AFileList->GetCount()) && (Progress.GetCancel() == csContinue))
         {
           UnicodeString FileName = AFileList->GetString(Index);
-          TRemoteFile * File = reinterpret_cast<TRemoteFile *>(AFileList->GetObj(Index));
+          TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
           try
           {
             bool Success = false;
@@ -4453,8 +4453,8 @@ void TTerminal::StartOperationWithFile(
   }
 }
 
-void TTerminal::RemoteDeleteFile(UnicodeString AFileName,
-  const TRemoteFile *AFile, void *AParams)
+void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, void * AParams)
 {
   UnicodeString FileName = AFileName;
   if (FileName.IsEmpty() && AFile)
@@ -4520,7 +4520,7 @@ bool TTerminal::RemoteDeleteFiles(TStrings *AFilesToDelete, int32_t Params)
   return this->ProcessFiles(AFilesToDelete, foDelete, nb::bind(&TTerminal::RemoteDeleteFile, this), &Params);
 }
 
-void TTerminal::DeleteLocalFile(UnicodeString AFileName,
+void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
   const TRemoteFile * /*AFile*/, void *Params)
 {
   StartOperationWithFile(AFileName, foDelete);
@@ -4544,8 +4544,8 @@ bool TTerminal::DeleteLocalFiles(TStrings *AFileList, int32_t Params)
   return ProcessFiles(AFileList, foDelete, nb::bind(&TTerminal::DeleteLocalFile, this), &Params, osLocal);
 }
 
-void TTerminal::CustomCommandOnFile(UnicodeString AFileName,
-  const TRemoteFile *AFile, void *AParams)
+void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, void * AParams)
 {
   TCustomCommandParams *Params = cast_to<TCustomCommandParams>(AParams);
   UnicodeString LocalFileName = AFileName;
@@ -4670,7 +4670,7 @@ bool TTerminal::DoOnCustomCommand(UnicodeString Command)
   return Result;
 }
 
-void TTerminal::ChangeFileProperties(UnicodeString AFileName,
+void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile *AFile, /*const TRemoteProperties*/ void *Properties)
 {
   TRemoteProperties *RProperties = cast_to<TRemoteProperties>(Properties);
@@ -4779,11 +4779,11 @@ bool TTerminal::LoadFilesProperties(TStrings *AFileList)
   return Result;
 }
 
-void TTerminal::DoCalculateFileSize(UnicodeString AFileName,
-  const TRemoteFile *AFile, /*TCalculateSizeParams*/ void *AParam)
+void TTerminal::DoCalculateFileSize(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * AParam)
 {
   // This is called for top-level entries only
-  TCalculateSizeParams *AParams = cast_to<TCalculateSizeParams>(AParam);
+  TCalculateSizeParams * AParams = cast_to<TCalculateSizeParams>(AParam);
   Expects(AParams && AParams->Stats);
 
   if (AParams->Stats->FoundFiles != nullptr)
@@ -4808,8 +4808,8 @@ void TTerminal::DoCalculateFileSize(UnicodeString AFileName,
   }
 }
 
-void TTerminal::CalculateFileSize(UnicodeString AFileName,
-  const TRemoteFile *AFile, /*TCalculateSizeParams*/ void *AParam)
+void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * AParam)
 {
   DebugAssert(AParam);
   DebugAssert(AFile);
@@ -5225,13 +5225,13 @@ bool TTerminal::DoMoveFile(const UnicodeString & FileName, const TRemoteFile * F
   return Result;
 }
 
-void TTerminal::TerminalMoveFile(const UnicodeString FileName, const TRemoteFile * File, /*const TMoveFileParams*/ void * Param)
+void TTerminal::TerminalMoveFile(const UnicodeString & FileName, const TRemoteFile * File, /*const TMoveFileParams*/ void * Param)
 {
   DoMoveFile(FileName, File, Param);
 }
 
 bool TTerminal::TerminalMoveFiles(
-  TStrings * AFileList, const UnicodeString ATarget, const UnicodeString AFileMask, bool DontOverwrite)
+  TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite)
 {
   TMoveFileParams Params;
   Params.Target = ATarget;
@@ -5300,7 +5300,7 @@ void TTerminal::DoCopyFile(
   DoRenameOrCopyFile(false, AFileName, AFile, ANewName, Move, DontOverwrite, IsBatchOperation);
 }
 
-void TTerminal::TerminalCopyFile(const UnicodeString AFileName,
+void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*const TMoveFileParams*/ void * Param)
 {
   StartOperationWithFile(AFileName, foRemoteCopy);
@@ -5314,7 +5314,7 @@ void TTerminal::TerminalCopyFile(const UnicodeString AFileName,
 }
 
 bool TTerminal::TerminalCopyFiles(
-  TStrings * AFileList, const UnicodeString ATarget, const UnicodeString AFileMask, bool DontOverwrite)
+  TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite)
 {
   TMoveFileParams Params;
   Params.Target = ATarget;
@@ -5365,8 +5365,8 @@ void TTerminal::DoCreateDirectory(const UnicodeString ADirName, bool Encrypt)
   while (RetryLoop.Retry());
 }
 
-void TTerminal::RemoteCreateLink(const UnicodeString AFileName,
-  const UnicodeString APointTo, bool Symbolic)
+void TTerminal::RemoteCreateLink(const UnicodeString & AFileName,
+  const UnicodeString & APointTo, bool Symbolic)
 {
   DebugAssert(FFileSystem);
   EnsureNonExistence(AFileName);
@@ -5712,8 +5712,8 @@ void TTerminal::DoAnyCommand(const UnicodeString ACommand,
   }
 }
 
-bool TTerminal::DoCreateLocalFile(const UnicodeString AFileName,
-  TFileOperationProgressType *OperationProgress, HANDLE *AHandle,
+bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
+  TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
   bool NoConfirmation)
 {
   DebugAssert(OperationProgress);
@@ -6587,8 +6587,8 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString ALocalDirector
   } end_try__finally
 }
 
-void TTerminal::SynchronizeCollectFile(const UnicodeString AFileName,
-  const TRemoteFile *AFile, /*TSynchronizeData*/ void *Param)
+void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
   try
   {
@@ -6623,7 +6623,7 @@ bool TTerminal::IsEmptyRemoteDirectory(
   return Params.Result && (Stats.Files == 0);
 }
 
-void TTerminal::DoSynchronizeCollectFile(const UnicodeString AFileName,
+void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
   TSynchronizeData * Data = cast_to<TSynchronizeData>(Param);
@@ -7099,8 +7099,8 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData &Data,
   }
 }
 
-void TTerminal::SynchronizeLocalTimestamp(const UnicodeString /*AFileName*/,
-  const TRemoteFile *AFile, void * /*Param*/)
+void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*AFileName*/,
+  const TRemoteFile * AFile, void * /*Param*/)
 {
   const TChecklistItem *ChecklistItem =
     reinterpret_cast<const TChecklistItem *>(AFile);
@@ -7129,8 +7129,8 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString /*AFileName*/,
   __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, LocalFile));
 }
 
-void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString /*AFileName*/,
-  const TRemoteFile *AFile, void * /*Param*/)
+void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*AFileName*/,
+  const TRemoteFile * AFile, void * /*Param*/)
 {
   const TChecklistItem *ChecklistItem =
     reinterpret_cast<const TChecklistItem *>(AFile);
@@ -7145,8 +7145,8 @@ void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString /*AFileName*/,
     nullptr, &Properties);
 }
 
-void TTerminal::FileFind(UnicodeString AFileName,
-  const TRemoteFile *AFile, /*TFilesFindParams*/ void *Param)
+void TTerminal::FileFind(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, /*TFilesFindParams*/ void * Param)
 {
   // see DoFilesFind
   FOnFindingFile = nullptr;
@@ -7203,7 +7203,7 @@ void TTerminal::FileFind(UnicodeString AFileName,
   }
 }
 
-void TTerminal::DoFilesFind(UnicodeString ADirectory, TFilesFindParams & Params, UnicodeString ARealDirectory)
+void TTerminal::DoFilesFind(const UnicodeString & ADirectory, TFilesFindParams & Params, const UnicodeString & ARealDirectory)
 {
   LogEvent(FORMAT("Searching directory \"%s\" (real path \"%s\")", ADirectory, ARealDirectory));
   Params.OnFindingFile(this, ADirectory, Params.Cancel);
@@ -7259,7 +7259,7 @@ void TTerminal::SpaceAvailable(const UnicodeString APath,
   }
 }
 
-void TTerminal::LockFile(const UnicodeString AFileName,
+void TTerminal::LockFile(const UnicodeString & AFileName,
   const TRemoteFile *AFile, void * /*Param*/)
 {
   StartOperationWithFile(AFileName, foLock);
@@ -7271,7 +7271,7 @@ void TTerminal::LockFile(const UnicodeString AFileName,
   ReactOnCommand(fsLock);
 }
 
-void TTerminal::DoLockFile(const UnicodeString AFileName, const TRemoteFile *AFile)
+void TTerminal::DoLockFile(const UnicodeString & AFileName, const TRemoteFile *AFile)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -7288,8 +7288,8 @@ void TTerminal::DoLockFile(const UnicodeString AFileName, const TRemoteFile *AFi
   while (RetryLoop.Retry());
 }
 
-void TTerminal::UnlockFile(const UnicodeString AFileName,
-  const TRemoteFile *AFile, void * /*Param*/)
+void TTerminal::UnlockFile(const UnicodeString & AFileName,
+  const TRemoteFile * AFile, void * /*Param*/)
 {
   StartOperationWithFile(AFileName, foUnlock);
 
@@ -7300,7 +7300,7 @@ void TTerminal::UnlockFile(const UnicodeString AFileName,
   ReactOnCommand(fsLock);
 }
 
-void TTerminal::DoUnlockFile(const UnicodeString AFileName, const TRemoteFile *AFile)
+void TTerminal::DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -8465,7 +8465,7 @@ struct TSinkFileParams
 #endif //if 0
 
 void TTerminal::Sink(
-  const UnicodeString AFileName, const TRemoteFile * AFile, const UnicodeString ATargetDir,
+  const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString ATargetDir,
   const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress, uint32_t AFlags,
   TDownloadSessionAction & Action)
 {
@@ -8633,7 +8633,7 @@ void TTerminal::UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode
   }
 }
 
-void TTerminal::SinkFile(UnicodeString AFileName, const TRemoteFile *AFile, void *AParam)
+void TTerminal::SinkFile(const UnicodeString & AFileName, const TRemoteFile *AFile, void *AParam)
 {
   TSinkFileParams * Params = cast_to<TSinkFileParams>(AParam);
   DebugAssert(Params->OperationProgress != nullptr);

@@ -20,6 +20,10 @@ THttp::THttp() noexcept :
   FOnDownload = nullptr;
   FOnError = nullptr;
   FResponseLimit = -1;
+#if 0
+  FRequestHeaders = nullptr;
+  FResponseHeaders = new TStringList();
+#endif
 }
 
 THttp::~THttp() noexcept
@@ -238,7 +242,7 @@ int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate * AC
   if ((Failures != 0) && FLAGCLEAR(GetConfiguration()->HttpsCertificateValidation, hcvNoWindows))
   {
     AppLogFmt(L"TLS failure: %s (%d)", NeonCertificateFailuresErrorStr(Failures, FHostName), Failures);
-    AppLogFmt(L"Hostname: %s, Certificate: %s", FHostName, AsciiCert, AsciiCert);
+    AppLogFmt(L"Hostname: %s, Certificate: %s", FHostName, UnicodeString(AsciiCert));
     if (NeonWindowsValidateCertificate(Failures, AsciiCert, WindowsCertificateError))
     {
       AppLogFmt(L"Certificate trusted by Windows certificate store (%d)", Failures);

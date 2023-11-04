@@ -1732,7 +1732,7 @@ unsigned short TS3FileSystem::AclGrantToPermissions(S3AclGrant & AclGrant, const
   return Result;
 }
 
-void TS3FileSystem::LoadFileProperties(UnicodeString AFileName, const TRemoteFile * File, void * Param)
+void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, void * Param)
 {
   bool & Result = *static_cast<bool *>(Param);
   TS3FileProperties Properties;

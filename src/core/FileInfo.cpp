@@ -178,7 +178,7 @@ typedef TTranslation TTranslations[65536];
 typedef TTranslation *PTranslations;
 
 // Return pointer to fixed file version info
-PVSFixedFileInfo GetFixedFileInfo(void *FileInfo)
+PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
 {
   UINT Len;
   PVSFixedFileInfo Result = nullptr;
@@ -192,7 +192,7 @@ PVSFixedFileInfo GetFixedFileInfo(void *FileInfo)
 }
 
 // Return number of available file version info translations
-uint32_t GetTranslationCount(void *FileInfo)
+uint32_t GetTranslationCount(void * FileInfo)
 {
   PTranslations P;
   UINT Len;
@@ -204,7 +204,7 @@ uint32_t GetTranslationCount(void *FileInfo)
 }
 
 // Return i-th translation in the file version info translation list
-TTranslation GetTranslation(void *FileInfo, uint32_t I)
+TTranslation GetTranslation(void * FileInfo, uint32_t I)
 {
   PTranslations P = nullptr;
   UINT Len;
@@ -235,8 +235,8 @@ UnicodeString GetLanguage(Word Language)
 
 // Return the value of the specified file version info string using the
 // specified translation
-UnicodeString GetFileInfoString(void *FileInfo,
-  TTranslation Translation, UnicodeString StringName, bool AllowEmpty)
+UnicodeString GetFileInfoString(void * FileInfo,
+  TTranslation Translation, const UnicodeString & StringName, bool AllowEmpty)
 {
   UnicodeString Result;
   wchar_t *P;
@@ -278,7 +278,7 @@ int32_t StrToCompoundVersion(UnicodeString S)
   return CalculateCompoundVersion(MajorVer, MinorVer, Release);
 }
 
-int32_t CompareVersion(UnicodeString V1, UnicodeString V2)
+int32_t CompareVersion(const UnicodeString & V1, const UnicodeString & V2)
 {
   int32_t Result = 0;
   UnicodeString _V1(V1), _V2(V2);

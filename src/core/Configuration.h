@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-//#include <rdestl/set.h>
+#include <rdestl/vector.h>
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
@@ -42,11 +42,11 @@ public:
   UnicodeString Name;
   RawByteString PublicKey;
   UnicodeString ValidityExpression;
-  bool PermitRsaSha1;
-  bool PermitRsaSha256;
-  bool PermitRsaSha512;
+  bool PermitRsaSha1{false};
+  bool PermitRsaSha256{false};
+  bool PermitRsaSha512{false};
 
-  typedef std::vector<TSshHostCA> TList;
+  typedef rde::vector<TSshHostCA> TList;
 };
 
 class TSshHostCAList
@@ -57,8 +57,8 @@ public:
   TSshHostCAList & operator =(const TSshHostCAList & other);
   void Default();
   const TSshHostCA::TList & GetList() const;
-  int GetCount() const;
-  const TSshHostCA * Get(int Index) const;
+  int32_t GetCount() const;
+  const TSshHostCA * Get(int32_t Index) const;
   const TSshHostCA * Find(const UnicodeString & Name) const;
 
   void Save(THierarchicalStorage * Storage);

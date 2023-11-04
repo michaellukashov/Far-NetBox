@@ -169,7 +169,7 @@ protected:
   S3Status GetObjectData(int BufferSize, const char *Buffer, TLibS3GetObjectDataCallbackData &Data);
   bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &Data);
   bool IsGoogleCloud() const;
-  void LoadFileProperties(UnicodeString AFileName, const TRemoteFile * File, void * Param);
+  void LoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, void * Param);
   bool DoLoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, TS3FileProperties & Properties);
   unsigned short AclGrantToPermissions(S3AclGrant & AclGrant, const TS3FileProperties & Properties);
   bool ParsePathForPropertiesRequests(
