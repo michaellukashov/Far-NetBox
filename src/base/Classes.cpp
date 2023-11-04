@@ -1267,6 +1267,55 @@ void TStream::WriteBuffer(const void *Buffer, int64_t Count)
   }
 }
 
+int64_t TStream::CopyFrom(TStream * Source, int64_t Count)
+{
+  DebugAssert(Source);
+  constexpr int64_t MaxSize = 0x20000;
+  int64_t Result = 0;
+  if (Count == 0)
+  {
+    Source->SetPosition(0); // This WILL fail for non-seekable streams...
+  }
+  int64_t BufferSize = MaxSize;
+  if ((Count > 0) && (Count < BufferSize))
+  {
+    BufferSize = Count; // do not allocate more than needed
+  }
+  void * Buffer = nb::calloc<void *>(1, static_cast<::size_t>(BufferSize));
+  try__finally
+  {
+    int64_t I = 0;
+    if (Count == 0)
+    {
+      do
+      {
+        I = Source->Read(Buffer, BufferSize);
+        if (I > 0)
+        {
+          WriteBuffer(Buffer, I);
+        }
+        Result += I;
+      } while (I < BufferSize);
+    }
+    else
+    {
+      while (Count > 0)
+      {
+        I = (Count > BufferSize) ? BufferSize : Count;
+        Source->ReadBuffer(Buffer, I);
+        WriteBuffer(Buffer, I);
+        Count -= I;
+        Result += I;
+      }
+    }
+  },
+  __finally
+  {
+    nb_free(Buffer);
+  } end_try__finally
+  return Result;
+}
+
 int64_t TStream::GetPosition() const
 {
   return Seek(0, TSeekOrigin::soCurrent);

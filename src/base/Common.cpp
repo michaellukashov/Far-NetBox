@@ -34,11 +34,11 @@ __removed #pragma package(smart_init)
 #include "HelpCore.h"
 #include "Cryptography.h"
 
+const UnicodeString PartialExt(L".filepart");
+
 namespace base { // from RemoteFiles.cpp
 
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
-
-const UnicodeString PartialExt(L".filepart");
 
 bool IsUnixStyleWindowsPath(const UnicodeString & APath)
 {
@@ -305,7 +305,7 @@ UnicodeString FromUnixPath(const UnicodeString & APath)
   return ReplaceStr(APath, SLASH, BACKSLASH);
 }
 
-UnicodeString ToUnixPath(const UnicodeString APath)
+UnicodeString ToUnixPath(const UnicodeString & APath)
 {
   return ReplaceStr(APath, BACKSLASH, SLASH);
 }
@@ -754,7 +754,7 @@ void Shred(RawByteString &Str)
   DoShred(Str);
 }
 
-UnicodeString AnsiToString(const RawByteString S)
+UnicodeString AnsiToString(const RawByteString & S)
 {
   return UnicodeString(AnsiString(S));
 }
@@ -845,8 +845,8 @@ UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim)
   return Result;
 }
 
-UnicodeString CopyToChars(const UnicodeString & Str, int32_t &From, const UnicodeString & Chs, bool Trim,
-  wchar_t *Delimiter, bool DoubleDelimiterEscapes)
+UnicodeString CopyToChars(const UnicodeString & Str, int32_t & From, const UnicodeString & Chs, bool Trim,
+  wchar_t * Delimiter, bool DoubleDelimiterEscapes)
 {
   UnicodeString Result;
 
@@ -909,7 +909,7 @@ UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim)
   return CopyToChars(Str, From, UnicodeString(Ch), Trim);
 }
 
-UnicodeString RemoveSuffix(const UnicodeString Str, const UnicodeString & Suffix, bool RemoveNumbersAfterSuffix)
+UnicodeString RemoveSuffix(const UnicodeString & Str, const UnicodeString & Suffix, bool RemoveNumbersAfterSuffix)
 {
   UnicodeString Result = Str;
   UnicodeString Buf = Str;
@@ -1275,7 +1275,7 @@ UnicodeString GetDesktopFolder()
 
 // Particularly needed when using file name selected by TFilenameEdit,
 // as it wraps a path to double-quotes, when there is a space in the path.
-UnicodeString StripPathQuotes(const UnicodeString APath)
+UnicodeString StripPathQuotes(const UnicodeString & APath)
 {
   if ((APath.Length() >= 2) &&
       (APath[1] == L'\"') && (APath[APath.Length()] == L'\"'))
@@ -1285,7 +1285,7 @@ UnicodeString StripPathQuotes(const UnicodeString APath)
   return APath;
 }
 
-UnicodeString AddQuotes(const UnicodeString AStr)
+UnicodeString AddQuotes(const UnicodeString & AStr)
 {
   UnicodeString Result = AStr;
   if (Result.Pos(" ") > 0)
@@ -1295,7 +1295,7 @@ UnicodeString AddQuotes(const UnicodeString AStr)
   return Result;
 }
 
-UnicodeString AddPathQuotes(const UnicodeString APath)
+UnicodeString AddPathQuotes(const UnicodeString & APath)
 {
   UnicodeString Result = StripPathQuotes(APath);
   return AddQuotes(Result);
@@ -1326,14 +1326,14 @@ static wchar_t *ReplaceChar(
 }
 
 //  Note similar function MakeValidFileName
-UnicodeString ValidLocalFileName(const UnicodeString AFileName)
+UnicodeString ValidLocalFileName(const UnicodeString & AFileName)
 {
   return ValidLocalFileName(AFileName, L'_', L"", LOCAL_INVALID_CHARS);
 }
 
 UnicodeString ValidLocalFileName(
-  const UnicodeString AFileName, wchar_t AInvalidCharsReplacement,
-  const UnicodeString ATokenizibleChars, const UnicodeString ALocalInvalidChars)
+  const UnicodeString & AFileName, wchar_t AInvalidCharsReplacement,
+  const UnicodeString & ATokenizibleChars, const UnicodeString & ALocalInvalidChars)
 {
   UnicodeString FileName = AFileName;
 
@@ -1382,8 +1382,8 @@ UnicodeString ValidLocalFileName(
   return FileName;
 }
 
-void SplitCommand(const UnicodeString ACommand, UnicodeString &Program,
-  UnicodeString &Params, UnicodeString &Dir)
+void SplitCommand(const UnicodeString & ACommand, UnicodeString & Program,
+  UnicodeString & Params, UnicodeString & Dir)
 {
   UnicodeString Command = ACommand.Trim();
   Params.Clear();
@@ -1422,7 +1422,7 @@ void SplitCommand(const UnicodeString ACommand, UnicodeString &Program,
   }
 }
 
-UnicodeString ExtractProgram(const UnicodeString ACommand)
+UnicodeString ExtractProgram(const UnicodeString & ACommand)
 {
   UnicodeString Program;
   UnicodeString Params;
@@ -1433,7 +1433,7 @@ UnicodeString ExtractProgram(const UnicodeString ACommand)
   return Program;
 }
 
-UnicodeString ExtractProgramName(const UnicodeString ACommand)
+UnicodeString ExtractProgramName(const UnicodeString & ACommand)
 {
   UnicodeString Name = base::ExtractFileName(ExtractProgram(ACommand), false);
   const int32_t Dot = Name.LastDelimiter(L".");
@@ -1444,7 +1444,7 @@ UnicodeString ExtractProgramName(const UnicodeString ACommand)
   return Name;
 }
 
-UnicodeString FormatCommand(const UnicodeString AProgram, const UnicodeString AParams)
+UnicodeString FormatCommand(const UnicodeString & AProgram, const UnicodeString & AParams)
 {
   UnicodeString Program = AProgram.Trim();
   UnicodeString Params = AParams.Trim();
@@ -1469,20 +1469,20 @@ void ReformatFileNameCommand(UnicodeString & ACommand)
   }
 }
 
-UnicodeString ExpandFileNameCommand(const UnicodeString ACommand,
-  const UnicodeString AFileName)
+UnicodeString ExpandFileNameCommand(const UnicodeString & ACommand,
+  const UnicodeString & AFileName)
 {
   return AnsiReplaceStr(ACommand, ShellCommandFileNamePattern,
     AddPathQuotes(AFileName));
 }
 
-UnicodeString EscapeParam(const UnicodeString AParam)
+UnicodeString EscapeParam(const UnicodeString & AParam)
 {
   // Make sure this won't break RTF syntax
   return ReplaceStr(AParam, L"\"", L"\"\"");
 }
 
-UnicodeString EscapePuttyCommandParam(const UnicodeString AParam)
+UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam)
 {
   UnicodeString Param = AParam;
 
@@ -1546,7 +1546,7 @@ UnicodeString StringsToParams(TStrings * Strings)
   return Result;
 }
 
-UnicodeString ExpandEnvironmentVariables(const UnicodeString Str)
+UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
 {
   UnicodeString Buf;
   const int32_t Size = 1024;
@@ -1583,7 +1583,7 @@ UnicodeString GetCanonicalPath(const UnicodeString & Path)
   return Result;
 }
 
-bool IsPathToSameFile(const UnicodeString Path1, const UnicodeString Path2)
+bool IsPathToSameFile(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   UnicodeString CanonicalPath1 = GetCanonicalPath(Path1);
   UnicodeString CanonicalPath2 = GetCanonicalPath(Path2);
@@ -1592,14 +1592,14 @@ bool IsPathToSameFile(const UnicodeString Path1, const UnicodeString Path2)
   return Result;
 }
 
-bool SamePaths(const UnicodeString Path1, const UnicodeString Path2)
+bool SamePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   // TODO: ExpandUNCFileName
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
 }
 
 int32_t CompareLogicalText(
-  const UnicodeString S1, const UnicodeString S2, bool NaturalOrderNumericalSorting)
+  const UnicodeString & S1, const UnicodeString & S2, bool NaturalOrderNumericalSorting)
 {
   // Keep in sync with CompareLogicalTextPas
 
@@ -1638,7 +1638,7 @@ int CompareNumber(__int64 Value1, __int64 Value2)
   return Result;
 }
 
-bool ContainsTextSemiCaseSensitive(const UnicodeString Text, const UnicodeString SubText)
+bool ContainsTextSemiCaseSensitive(const UnicodeString & Text, const UnicodeString & SubText)
 {
   bool Result;
   if (AnsiLowerCase(SubText) == SubText)
@@ -1652,7 +1652,7 @@ bool ContainsTextSemiCaseSensitive(const UnicodeString Text, const UnicodeString
   return Result;
 }
 
-bool IsReservedName(const UnicodeString AFileName)
+bool IsReservedName(const UnicodeString & AFileName)
 {
   UnicodeString FileName = AFileName;
 
@@ -1934,7 +1934,7 @@ UnicodeString MakeUnicodeLargePath(const UnicodeString APath)
   return Result;
 }
 
-UnicodeString ApiPath(const UnicodeString APath)
+UnicodeString ApiPath(const UnicodeString & APath)
 {
   UnicodeString Path = APath;
 
@@ -1957,7 +1957,7 @@ UnicodeString ApiPath(const UnicodeString APath)
   return Path;
 }
 
-UnicodeString DisplayableStr(const RawByteString Str)
+UnicodeString DisplayableStr(const RawByteString & Str)
 {
   bool Displayable = true;
   int32_t Index1 = 1;
@@ -2044,7 +2044,7 @@ UnicodeString BytesToHex(const uint8_t *B, uint32_t Length, bool UpperCase, wcha
   return Result;
 }
 
-UnicodeString BytesToHex(const RawByteString Str, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase, wchar_t Separator)
 {
   return BytesToHex(reinterpret_cast<const uint8_t *>(Str.c_str()), static_cast<uint32_t>(Str.Length()), UpperCase, Separator);
 }

@@ -616,8 +616,8 @@ public:
   virtual int64_t Write(const void *Buffer, int64_t Count) = 0;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const = 0;
   void ReadBuffer(void *Buffer, int64_t Count);
-  void WriteBuffer(const void *Buffer, int64_t Count);
-  int64_t CopyFrom(TStream *Source, int64_t Count);
+  void WriteBuffer(const void * Buffer, int64_t Count);
+  int64_t CopyFrom(TStream * Source, int64_t Count);
 
 public:
   int64_t GetPosition() const;
@@ -708,7 +708,7 @@ public:
   void *GetMemory() const { return FMemory; }
 
 protected:
-  void SetPointer(void *Ptr, int64_t ASize);
+  void SetPointer(void * Ptr, int64_t ASize);
   virtual void *Realloc(int64_t &NewCapacity);
   int64_t GetCapacity() const { return FCapacity; }
 
@@ -716,7 +716,7 @@ private:
   void SetCapacity(int64_t NewCapacity);
 
 private:
-  void *FMemory{nullptr};
+  void * FMemory{nullptr};
   int64_t FSize{0};
   mutable int64_t FPosition{0};
   int64_t FCapacity{0};
