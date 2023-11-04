@@ -650,15 +650,6 @@ void TGUIConfiguration::UpdateStaticUsage()
   Usage->Set("Putty", ExtractProgramName(PuttyPath));
 }
 
-#if 0
-static UnicodeString PropertyToKey(UnicodeString Property)
-{
-  // no longer useful
-  int32_t P = Property.LastDelimiter(L".>");
-  return Property.SubString(P + 1, Property.Length() - P);
-}
-#endif // if 0
-
 // duplicated from core\configuration.cpp
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
@@ -682,7 +673,6 @@ static UnicodeString PropertyToKey(UnicodeString Property)
     KEYEX2(Bool,   SessionRememberPassword, SessionRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
-    KEY4(Integer, UsePuttyPwFile); \
     KEY(Bool,     PuttyPassword); \
     KEY(Bool,     TelnetForFtpInPutty); \
     KEY(DateTime, IgnoreCancelBeforeFinish); \
@@ -691,7 +681,9 @@ static UnicodeString PropertyToKey(UnicodeString Property)
     KEY3(Integer,  KeepUpToDateChangeDelay); \
     KEY(String,   ChecksumAlg); \
     KEY3(Integer,  SessionReopenAutoIdle); \
-  );
+  ); \
+
+    __removed KEY3(Integer, UsePuttyPwFile); \
     __removed KEY(String,   BeepSound); \
 
 bool TGUIConfiguration::DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults)

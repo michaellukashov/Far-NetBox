@@ -16,6 +16,7 @@
 #include <Interface.h>
 #include <Queue.h>
 #include <StrUtils.hpp>
+#include <FileInfo.h>
 
 #if 0
 
@@ -64,7 +65,7 @@ bool DoExists(bool R, UnicodeString Path)
   return Result;
 }
 
-bool FileExistsFix(const UnicodeString Path)
+bool FileExistsFix(const UnicodeString & Path)
 {
   // WORKAROUND
   SetLastError(ERROR_SUCCESS);
@@ -72,7 +73,7 @@ bool FileExistsFix(const UnicodeString Path)
   return Result;
 }
 
-bool FindFile(UnicodeString &Path)
+bool FindFile(UnicodeString & Path)
 {
   bool Result = ::SysUtulsFileExists(FileExistsFix(Path));
   if (!Result)
