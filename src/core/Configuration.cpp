@@ -179,7 +179,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   __removed FUsage = std::make_unique<TUsage>(this);
   FDefaultCollectUsage = false;
   FScripting = false;
-  FSshHostCAList.reset();
+  FSshHostCAList = std::make_unique<TSshHostCAList>();
 
   UnicodeString RandomSeedPath;
   if (!base::GetEnvVariable("APPDATA").IsEmpty())
@@ -2379,7 +2379,7 @@ const TSshHostCAList * TConfiguration::GetPuttySshHostCAList()
 
 void TConfiguration::RefreshPuttySshHostCAList()
 {
-  FPuttySshHostCAList.reset(nullptr);
+  FPuttySshHostCAList.reset();
 }
 
 const TSshHostCAList * TConfiguration::GetActiveSshHostCAList()

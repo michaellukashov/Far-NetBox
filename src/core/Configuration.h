@@ -46,14 +46,14 @@ public:
   bool PermitRsaSha256{false};
   bool PermitRsaSha512{false};
 
-  typedef rde::vector<TSshHostCA> TList;
+  using TList = rde::vector<TSshHostCA>;
 };
 
 class TSshHostCAList
 {
 public:
   TSshHostCAList();
-  TSshHostCAList(const TSshHostCA::TList & List);
+  explicit TSshHostCAList(const TSshHostCA::TList & List);
   TSshHostCAList & operator =(const TSshHostCAList & other);
   void Default();
   const TSshHostCA::TList & GetList() const;
@@ -299,6 +299,7 @@ public:
   __property int PermanentLogMaxCount  = { read = GetLogMaxCount, write = SetLogMaxCount };
 
 public:
+  TConfiguration() = delete;
   explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration) noexcept;
   virtual ~TConfiguration() noexcept;
   virtual void ConfigurationInit();
