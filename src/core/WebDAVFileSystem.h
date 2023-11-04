@@ -172,6 +172,7 @@ private:
   uint32_t FCapabilities{0};
   struct TSessionContext
   {
+    TSessionContext() = default;
     ~TSessionContext();
     TWebDAVFileSystem * FileSystem{nullptr};
     ne_session_s * NeonSession{nullptr}; // The main one (there might be aux session for the same context)
@@ -180,7 +181,7 @@ private:
     bool NtlmAuthenticationFailed{false};
     UnicodeString AuthorizationProtocol;
   };
-  TSessionContext * FSessionContext{nullptr};
+  std::unique_ptr<TSessionContext> FSessionContext;
   enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure{iafNo};
   UnicodeString FAuthorizationProtocol;
   UnicodeString FLastAuthorizationProtocol;

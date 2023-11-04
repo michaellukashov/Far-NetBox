@@ -289,8 +289,8 @@ void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString &CorrectedUr
     FSessionInfo.SCCipher = EmptyStr;
 
     UTF8String Path, DiscardQuery;
-    DebugAssert(FSessionContext == NULL);
-    FSessionContext = NeonOpen(Url, Path, DiscardQuery);
+    DebugAssert(FSessionContext.get() == nullptr);
+    FSessionContext.reset(NeonOpen(Url, Path, DiscardQuery));
 
     bool Ssl = IsTlsSession(FSessionContext->NeonSession);
     FSessionInfo.SecurityProtocolName = Ssl ? LoadStr(FTPS_IMPLICIT) : EmptyStr;
@@ -481,10 +481,9 @@ TWebDAVFileSystem::TSessionContext::~TSessionContext()
 
 void TWebDAVFileSystem::CloseNeonSession()
 {
-  if (FSessionContext != nullptr)
+  if (FSessionContext.get() != nullptr)
   {
-    delete FSessionContext;
-    FSessionContext = NULL;
+    FSessionContext.reset();
   }
 }
 
@@ -693,7 +692,7 @@ UnicodeString TWebDAVFileSystem::GetNeonError() const
 
 void TWebDAVFileSystem::CheckStatus(int32_t NeonStatus)
 {
-  CheckStatus(FSessionContext, NeonStatus);
+  CheckStatus(FSessionContext.get(), NeonStatus);
 }
 
 void TWebDAVFileSystem::CheckStatus(TSessionContext * SessionContext, int32_t NeonStatus)
@@ -1501,7 +1500,7 @@ void TWebDAVFileSystem::NeonCreateRequest(
 }
 
 void TWebDAVFileSystem::NeonPreSend(
-  ne_request *Request, void *UserData, ne_buffer *Header)
+  ne_request * Request, void * UserData, ne_buffer * Header)
 {
   TSessionContext * SessionContext = static_cast<TSessionContext *>(UserData);
   TWebDAVFileSystem *FileSystem = static_cast<TWebDAVFileSystem *>(SessionContext->FileSystem);
@@ -1518,7 +1517,7 @@ void TWebDAVFileSystem::NeonPreSend(
     {
       UnicodeString AuthorizationHeader = HeaderBuf.SubString(P, P2 - P).Trim();
       SessionContext->AuthorizationProtocol = CutToChar(AuthorizationHeader, L' ', false);
-      if (SessionContext == FileSystem->FSessionContext)
+      if (SessionContext == FileSystem->FSessionContext.get())
       {
         FileSystem->FLastAuthorizationProtocol = SessionContext->AuthorizationProtocol;
       }
@@ -1874,7 +1873,7 @@ bool TWebDAVFileSystem::VerifyCertificate(TSessionContext * SessionContext, TNeo
     FTerminal->VerifyOrConfirmHttpCertificate(
       SessionContext->HostName, SessionContext->PortNumber, Data, !Aux, FSessionInfo);
 
-  if (Result && !Aux && (SessionContext == FSessionContext))
+  if (Result && !Aux && (SessionContext == FSessionContext.get()))
   {
     CollectTLSSessionInfo();
   }
