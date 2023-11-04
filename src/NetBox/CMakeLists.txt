@@ -1009,6 +1009,7 @@ target_include_directories(atlmfc PRIVATE
 add_library(putty STATIC
   ../../libs/putty/be_list.c
   ../../libs/putty/callback.c
+#  ../../libs/putty/misc.c
   ../../libs/putty/crypto/aes-common.c
   ../../libs/putty/crypto/aesold.c
   ../../libs/putty/crypto/aes-select.c
@@ -1126,6 +1127,8 @@ add_library(putty STATIC
   ../../libs/putty/utils/version.c
   ../../libs/putty/utils/wildcard.c
   ../../libs/putty/utils/write_c_string_literal.c
+  ../../libs/putty/utils/conf_dest.c
+  ../../libs/putty/utils/base64_valid.c
   ../../libs/putty/windows/agent-client.c
   ../../libs/putty/windows/gss.c
   ../../libs/putty/windows/handle-io.c
