@@ -14,7 +14,7 @@ enum TKeyType
 NB_CORE_EXPORT TKeyType GetKeyType(const UnicodeString & AFileName);
 NB_CORE_EXPORT bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeString & Comment);
 struct TPrivateKey;
-NB_CORE_EXPORT TPrivateKey *LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase);
+NB_CORE_EXPORT TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase);
 UnicodeString TestKey(TKeyType KeyType, const UnicodeString & FileName);
 NB_CORE_EXPORT void ChangeKeyComment(TPrivateKey * PrivateKey, const UnicodeString & Comment);
 void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & CertificateFileName);
@@ -28,26 +28,28 @@ extern const UnicodeString PuttyKeyExt;
 
 NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString & CustomPath);
 
-NB_CORE_EXPORT void AES256EncodeWithMAC(char *Data, size_t Len, const char *Password,
-  size_t PasswordLen, const char *Salt);
+NB_CORE_EXPORT void AES256EncodeWithMAC(char * Data, size_t Len, const char * Password,
+  size_t PasswordLen, const char * Salt);
 
 NB_CORE_EXPORT void NormalizeFingerprint(UnicodeString & AFingerprint, UnicodeString & KeyName);
-NB_CORE_EXPORT UnicodeString KeyTypeFromFingerprint(UnicodeString AFingerprint);
+NB_CORE_EXPORT UnicodeString KeyTypeFromFingerprint(const UnicodeString & AFingerprint);
 
 NB_CORE_EXPORT UnicodeString GetPuTTYVersion();
 
-NB_CORE_EXPORT UnicodeString Sha256(const char *Data, size_t Size);
+NB_CORE_EXPORT UnicodeString Sha256(const char * Data, size_t Size);
 
 UnicodeString ParseOpenSshPubLine(const UnicodeString & ALine, const struct ssh_keyalg *& Algorithm);
 void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & PublicKey, UnicodeString & Fingerprint);
 bool IsCertificateValidityExpressionValid(
   const UnicodeString & Str, UnicodeString & Error, int & ErrorStart, int & ErrorLen);
 
-UnicodeString GetKeyTypeHuman(const UnicodeString AKeyType);
+UnicodeString GetKeyTypeHuman(const UnicodeString & AKeyType);
 
-bool IsOpenSSH(const UnicodeString SshImplementation);
+bool IsOpenSSH(const UnicodeString & SshImplementation);
 
 NB_CORE_EXPORT UnicodeString GetKeyTypeName(TKeyType KeyType);
+
+bool IsOpenSSH(const UnicodeString & SshImplementation);
 
 TStrings * SshCipherList();
 TStrings * SshKexList();

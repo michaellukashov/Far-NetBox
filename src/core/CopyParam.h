@@ -113,16 +113,16 @@ public:
     const TFileMasks::TParams &Params) const;
   bool AllowResume(int64_t Size, const UnicodeString & FileName) const;
   bool ResumeTransfer(const UnicodeString AFileName) const;
-  UnicodeString ValidLocalFileName(const UnicodeString AFileName) const;
-  UnicodeString ValidLocalPath(const UnicodeString APath) const;
+  UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
+  UnicodeString ValidLocalPath(const UnicodeString & APath) const;
   bool AllowAnyTransfer() const;
-  bool AllowTransfer(const UnicodeString AFileName, TOperationSide Side,
+  bool AllowTransfer(const UnicodeString & AFileName, TOperationSide Side,
     bool Directory, const TFileMasks::TParams & Params, bool Hidden) const;
-  bool SkipTransfer(const UnicodeString AFileName, bool Directory) const;
+  bool SkipTransfer(const UnicodeString & AFileName, bool Directory) const;
 
   virtual void Load(THierarchicalStorage *Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
-  UnicodeString GetInfoStr(const UnicodeString Separator, int32_t Attrs) const;
+  UnicodeString GetInfoStr(const UnicodeString & Separator, int32_t Attrs) const;
   bool AnyUsableCopyParam(int32_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link) const;
   UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */int Attrs) const;

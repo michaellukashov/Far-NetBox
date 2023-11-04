@@ -37,7 +37,7 @@ void DestroyNeonSession(ne_session * Session);
 UnicodeString GetNeonError(ne_session * Session);
 void CheckNeonStatus(ne_session *Session, int32_t NeonStatus,
   const UnicodeString & AHostName, const UnicodeString & CustomError = L"");
-UnicodeString GetNeonRedirectUrl(ne_session *Session);
+UnicodeString GetNeonRedirectUrl(ne_session * Session);
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls);
 __removed typedef void (__closure *TNeonTlsInit)(struct ssl_st * Ssl, ne_session * Session);
 typedef void (*TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);

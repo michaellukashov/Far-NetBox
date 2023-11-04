@@ -202,7 +202,6 @@ private:
   TMoveLocalFileEvent FOnMoveLocalFile;
   TRemoveLocalDirectoryEvent FOnRemoveLocalDirectory;
   TCreateLocalDirectoryEvent FOnCreateLocalDirectory;
-  std::unique_ptr<TRemoteDirectory> FOldFiles;
 
 // for ReactOnCommand()
 friend class TSCPFileSystem;

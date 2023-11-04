@@ -26,8 +26,8 @@ class NB_CORE_EXPORT TRemoteToken : public TObject
 {
 public:
   TRemoteToken() noexcept;
-  TRemoteToken(const TRemoteToken &rhs) noexcept;
-  explicit TRemoteToken(const UnicodeString Name) noexcept;
+  TRemoteToken(const TRemoteToken & rhs) noexcept;
+  explicit TRemoteToken(const UnicodeString & Name) noexcept;
 
   void Clear();
 
@@ -310,7 +310,6 @@ public:
   TRemoteFile * GetParentDirectory();
   UnicodeString GetParentPath() const;
   int64_t GetTotalSize() const;
-  virtual void AddFiles(const TRemoteFileList *AFileList);
 
 public:
   TRemoteFileList() noexcept;

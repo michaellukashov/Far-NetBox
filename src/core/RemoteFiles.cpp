@@ -586,12 +586,16 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bo
 #endif // if 0
 
 
-TRemoteToken::TRemoteToken() noexcept
+TRemoteToken::TRemoteToken() noexcept :
+  FID(0),
+  FIDValid(false)
 {
 }
 
-TRemoteToken::TRemoteToken(const UnicodeString Name) noexcept :
-  FName(Name)
+TRemoteToken::TRemoteToken(const UnicodeString & Name) noexcept :
+  FName(Name),
+  FID(0),
+  FIDValid(false)
 {
 }
 

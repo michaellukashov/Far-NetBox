@@ -1276,7 +1276,6 @@ TTerminal::TTerminal(TObjectClassId Kind) noexcept :
   FFSProtocol(cfsUnknown),
   FStatus(ssClosed)
 {
-  FOldFiles = std::make_unique<TRemoteDirectory>(this);
 }
 
 void TTerminal::Init(TSessionData *ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog)
@@ -3732,9 +3731,8 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       {
         DoReadDirectoryProgress(-1, 0, Cancel);
         FReadingCurrentDirectory = false;
-        FOldFiles->Reset();
-        FOldFiles->AddFiles(FFiles.release());
-        FFiles = std::move(Files);
+        std::unique_ptr<TRemoteDirectory> OldFiles(FFiles.release());
+        FFiles.reset(Files.release());
         try__finally
         {
           DoReadDirectory(ReloadOnly);
@@ -3745,7 +3743,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
           // not to destroy the file objects that the view holds
           // (can be issue in multi threaded environment, such as when the
           // terminal is reconnecting in the terminal thread)
-          FOldFiles->Reset();
+          OldFiles->Reset();
         } end_try__finally
         if (GetActive())
         {

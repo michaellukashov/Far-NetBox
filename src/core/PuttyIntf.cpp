@@ -1030,7 +1030,7 @@ UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & C
   return Result;
 }
 
-bool HasGSSAPI(UnicodeString CustomPath)
+bool HasGSSAPI(const UnicodeString & CustomPath)
 {
   static int has = -1;
   if (has < 0)
@@ -1118,10 +1118,11 @@ void NormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & KeyName)
   DoNormalizeFingerprint(Fingerprint, KeyName, KeyType);
 }
 
-UnicodeString KeyTypeFromFingerprint(UnicodeString Fingerprint)
+UnicodeString KeyTypeFromFingerprint(const UnicodeString & AFingerprint)
 {
   UnicodeString KeyType;
   UnicodeString KeyName; // unused
+  UnicodeString Fingerprint = AFingerprint;
   DoNormalizeFingerprint(Fingerprint, KeyName, KeyType);
   return KeyType;
 }
@@ -1146,7 +1147,7 @@ UnicodeString Sha256(const char * Data, size_t Size)
   return Result;
 }
 
-UnicodeString ParseOpenSshPubLine(const UnicodeString Line, const struct ssh_keyalg *& Algorithm)
+UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_keyalg *& Algorithm)
 {
   UTF8String UtfLine = UTF8String(Line);
   char * AlgorithmName = nullptr;

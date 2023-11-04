@@ -6378,7 +6378,7 @@ void TStoredSessionList::Load(UnicodeString AKey, bool UseDefaults)
 }
 #endif // if 0
 //===========================================================================
-UnicodeString GetExpandedLogFileName(UnicodeString LogFileName, TDateTime Started, TSessionData *SessionData)
+UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TDateTime Started, TSessionData * SessionData)
 {
   // StripPathQuotes should not be needed as we do not feed quotes anymore
   UnicodeString Result = StripPathQuotes(::ExpandEnvironmentVariables(LogFileName));

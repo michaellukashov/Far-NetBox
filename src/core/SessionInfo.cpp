@@ -757,7 +757,7 @@ TCwdSessionAction::TCwdSessionAction(TActionLog *Log, const UnicodeString Path) 
 }
 
 
-TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem* Item) noexcept :
+TDifferenceSessionAction::TDifferenceSessionAction(TActionLog * Log, const TChecklistItem * Item) noexcept :
   TSessionAction(Log, laDifference)
 {
   if (FRecord != nullptr)

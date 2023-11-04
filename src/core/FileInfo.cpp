@@ -147,7 +147,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, DWORD Handle,
 }
 
 // Return pointer to file version info block
-void *CreateFileInfo(UnicodeString AFileName)
+void * CreateFileInfo(const UnicodeString & AFileName)
 {
   DWORD Handle;
   void *Result = nullptr;

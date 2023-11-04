@@ -67,7 +67,7 @@ void TCopyParamType::Default()
 }
 
 UnicodeString TCopyParamType::GetInfoStr(
-  UnicodeString Separator, int32_t Attrs) const
+  const UnicodeString & Separator, int32_t Attrs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded{false};
@@ -640,7 +640,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool Value)
   }
 }
 
-UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString AFileName) const
+UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString & AFileName) const
 {
   return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LOCAL_INVALID_CHARS);
 }
@@ -687,7 +687,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString AFileName) const
   return FileName;
 }
 
-UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString APath) const
+UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString & APath) const
 {
   UnicodeString Result;
   UnicodeString Path = APath;
@@ -855,7 +855,7 @@ bool TCopyParamType::AllowAnyTransfer() const
     FTransferResumeFile.IsEmpty();
 }
 
-bool TCopyParamType::AllowTransfer(const UnicodeString AFileName,
+bool TCopyParamType::AllowTransfer(const UnicodeString & AFileName,
   TOperationSide Side, bool Directory, const TFileMasks::TParams & Params, bool Hidden) const
 {
   bool Result = true;
@@ -872,7 +872,7 @@ bool TCopyParamType::AllowTransfer(const UnicodeString AFileName,
 }
 
 bool TCopyParamType::SkipTransfer(
-  UnicodeString AFileName, bool Directory) const
+  const UnicodeString & AFileName, bool Directory) const
 {
   bool Result = false;
   // we deliberately do not filter directories, as path is added to resume list

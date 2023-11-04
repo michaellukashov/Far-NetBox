@@ -29,7 +29,7 @@ extern "C"
 #define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
 #define SESSION_TERMINAL_KEY "terminal"
 
-void NeonParseUrl(const UnicodeString Url, ne_uri &uri)
+void NeonParseUrl(const UnicodeString & Url, ne_uri &uri)
 {
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
   {
@@ -79,13 +79,13 @@ static int NeonProxyAuth(
   return Result;
 }
 
-ne_session *CreateNeonSession(const ne_uri &uri)
+ne_session * CreateNeonSession(const ne_uri &uri)
 {
   return ne_session_create(uri.scheme, uri.host, uri.port);
 }
 
-void InitNeonSession(ne_session *Session, TProxyMethod ProxyMethod, const UnicodeString AProxyHost,
-  int32_t ProxyPort, const UnicodeString AProxyUsername, const UnicodeString AProxyPassword, TTerminal *Terminal)
+void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const UnicodeString & AProxyHost,
+  int32_t ProxyPort, const UnicodeString & AProxyUsername, const UnicodeString & AProxyPassword, TTerminal *Terminal)
 {
   if (ProxyMethod != ::pmNone)
   {
@@ -224,7 +224,7 @@ UnicodeString GetNeonRedirectUrl(ne_session *Session)
 
 constexpr int32_t MAX_REDIRECT_ATTEMPTS = 5;
 
-void CheckRedirectLoop(const UnicodeString RedirectUrl, TStrings *AttemptedUrls)
+void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls)
 {
   if (AttemptedUrls->GetCount() > MAX_REDIRECT_ATTEMPTS)
   {
