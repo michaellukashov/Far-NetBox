@@ -1191,7 +1191,7 @@ UnicodeString GetShellFolderPath(int32_t CSIdl)
 {
   UnicodeString Result;
   wchar_t Path[2 * MAX_PATH + 10] = L"\0";
-  if (SUCCEEDED(SHGetFolderPath(NULL, CSIdl, NULL, SHGFP_TYPE_CURRENT, Path)))
+  if (SUCCEEDED(SHGetFolderPath(nullptr, CSIdl, nullptr, SHGFP_TYPE_CURRENT, Path)))
   {
     Result = Path;
   }
@@ -5001,7 +5001,7 @@ void LoadScriptFromFile(UnicodeString FileName, TStrings * Lines, bool FallbackT
   while (Read > 0);
   Buffer.Length = Offset;
 
-  TEncoding * Encoding = NULL;
+  TEncoding * Encoding = nullptr;
   int PreambleSize = TEncoding::GetBufferEncoding(Buffer, Encoding, TEncoding::UTF8);
   UnicodeString S;
   try
