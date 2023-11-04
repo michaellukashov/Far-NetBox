@@ -729,7 +729,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   Dialog->AddStandardButtons();
 
   TFarConfiguration *FarConfiguration = GetFarConfiguration();
-  QueueTransferLimitEdit->SetAsInteger(FarConfiguration->GetQueueTransfersLimit());
+  QueueTransferLimitEdit->SetAsInteger(FarConfiguration->QueueTransfersLimit());
   QueueCheck->SetChecked(FarConfiguration->GetDefaultCopyParam().GetQueue());
   QueueAutoPopupCheck->SetChecked(FarConfiguration->GetQueueAutoPopup());
   RememberPasswordCheck->SetChecked(GetGUIConfiguration()->GetSessionRememberPassword());

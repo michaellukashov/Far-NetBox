@@ -1779,7 +1779,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
         }
         else
         {
-          GetTerminal()->TerminalCopyFiles(FileList.get(), Target, FileMask);
+          GetTerminal()->TerminalCopyFiles(FileList.get(), Target, FileMask, false); //TODO: use option DontOverwrite
         }
       }
     }
@@ -2603,7 +2603,7 @@ TTerminalQueue *TWinSCPFileSystem::GetQueue()
   {
     FQueue = new TTerminalQueue(FTerminal, GetConfiguration());
     FQueue->InitTerminalQueue();
-    FQueue->SetTransfersLimit(GetGUIConfiguration()->GetQueueTransfersLimit());
+    FQueue->SetTransfersLimit(GetGUIConfiguration()->QueueTransfersLimit());
     FQueue->SetOnQueryUser(nb::bind(&TWinSCPFileSystem::TerminalQueryUser, this));
     FQueue->SetOnPromptUser(nb::bind(&TWinSCPFileSystem::TerminalPromptUser, this));
     FQueue->SetOnShowExtendedException(nb::bind(&TWinSCPFileSystem::TerminalShowExtendedException, this));
