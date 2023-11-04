@@ -49,33 +49,10 @@
 const UnicodeString PageantTool = L"pageant.exe";
 const UnicodeString PuttygenTool = L"puttygen.exe";
 
-bool DoExists(bool R, UnicodeString Path)
-{
-  int32_t Error;
-  bool Result = R;
-  if (!Result)
-  {
-    Error = GetLastError();
-    if ((Error = ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
-       (Error = ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
-    {
-      Result = SysUtulsDirectoryExists(ApiPath(ExtractFileDir(Path)));
-    }
-  }
-  return Result;
-}
-
-bool FileExistsFix(const UnicodeString & Path)
-{
-  // WORKAROUND
-  SetLastError(ERROR_SUCCESS);
-  bool Result = DoExists(SysUtulsFileExists(ApiPath(Path)), Path);
-  return Result;
-}
-
 bool FindFile(UnicodeString & Path)
 {
-  bool Result = ::SysUtulsFileExists(FileExistsFix(Path));
+  bool Result = base::FileExistsFix(Path);
+
   if (!Result)
   {
     UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
@@ -94,12 +71,12 @@ bool FindFile(UnicodeString & Path)
     }
   }
 
-  if (!Result && SameText(base::ExtractFileName(Path, false), Path))
+  if (!Result && SameText(base::ExtractFileName(Path), Path))
   {
     UnicodeString Paths = base::GetEnvVariable("PATH");
     if (!Paths.IsEmpty())
     {
-      UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(Path, false), Paths);
+      UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(Path), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {
@@ -114,7 +91,7 @@ bool FindFile(UnicodeString & Path)
           UnicodeString P = CutToChar(Paths, L';', false);
           // Not using TPath::Combine as it throws on an invalid path and PATH is not under our control
           NewPath = IncludeTrailingBackslash(P) + Path;
-          Result = FileExistsFix(NewPath);
+          Result = base::FileExistsFix(NewPath);
           if (Result)
           {
             Path = NewPath;
@@ -136,7 +113,7 @@ bool DoesSessionExistInPutty(const UnicodeString & StorageKey)
 bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName)
 {
   bool Result = true;
-  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
+  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
   Storage->AccessMode = smReadWrite;
   Storage->ConfigureForPutty();
   if (Storage->OpenRootKey(true))
@@ -254,7 +231,7 @@ void TPuttyCleanupThread::Execute()
     {
       {
         TGuard Guard(*FSection.get());
-        std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
+        std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
         Storage->AccessMode = smReadWrite;
         Storage->ConfigureForPutty();
 
@@ -581,7 +558,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
         while (DoesSessionExistInPutty(PuttySession))
         {
           Uniq++;
-          PuttySession = FORMAT(L"%s (%d)", PuttySession, Uniq);
+          PuttySession = FORMAT(L"%s (%d)", GetGUIConfiguration()->PuttySession, Uniq);
         }
 
         if (ExportSessionToPutty(SessionData, true, PuttySession))
@@ -616,7 +593,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
       if (GetGUIConfiguration()->UsePuttyPwFile == asAuto)
       {
         UsePuttyPwFile = false;
-        if (SameText(base::ExtractFileName(Program, false), OriginalPuttyExecutable))
+        if (SameText(base::ExtractFileName(Program), OriginalPuttyExecutable))
         {
           uint32_t Version = -1; //TODO: GetFileVersion(Program);
           if (Version != static_cast<unsigned int>(-1))
@@ -664,13 +641,13 @@ void OpenSessionInPutty(TSessionData * SessionData)
 
 bool FindTool(const UnicodeString & Name, UnicodeString & APath)
 {
-  UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName()));
+  UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName())); //TODO: use Application->ExeName
   APath = AppPath + Name;
   bool Result = true;
-  if (!::SysUtulsFileExists(ApiPath(APath)))
+  if (!base::FileExists(ApiPath(APath)))
   {
     APath = AppPath + L"PuTTY\\" + Name;
-    if (!::SysUtulsFileExists(ApiPath(APath)))
+    if (!base::FileExists(ApiPath(APath)))
     {
       APath = Name;
       if (!FindFile(APath))
@@ -682,7 +659,7 @@ bool FindTool(const UnicodeString & Name, UnicodeString & APath)
   return Result;
 }
 
-void ExecuteTool(UnicodeString AName)
+void ExecuteTool(const UnicodeString & AName)
 {
   UnicodeString Path;
   if (!FindTool(AName, Path))
@@ -694,12 +671,12 @@ void ExecuteTool(UnicodeString AName)
 }
 
 #if 0
-TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileChangedEvent OnChanged)
+
+TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uint32_t Filter, TFileChangedEvent OnChanged)
 {
   std::unique_ptr<TStrings> Drives(std::make_unique<TStringList>());
 
-  std::unique_ptr<TStrings> DDDrives(std::make_unique<TStringList>());
-  DDDrives->CommaText = WinConfiguration->DDDrives;
+  std::unique_ptr<TStrings> DDDrives(CommaTextToStringList(WinConfiguration->DDDrives));
   UnicodeString ExcludedDrives;
   for (int Index = 0; Index < DDDrives->Count; Index++)
   {
@@ -755,6 +732,7 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uintptr_t Filter, TFileC
   }
   return Result.release();
 }
+
 #endif // #if 0
 
 bool DontCopyCommandToClipboard = false;
@@ -771,7 +749,7 @@ bool CopyCommandToClipboard(const UnicodeString & ACommand)
   return Result;
 }
 
-static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString Params,
+static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   bool ChangeWorkingDirectory, HANDLE * Handle)
 {
   bool Result = CopyCommandToClipboard(FormatCommand(APath, Params));
@@ -812,7 +790,7 @@ static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString Para
   return Result;
 }
 
-void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params, bool ChangeWorkingDirectory)
+void ExecuteShellChecked(const UnicodeString & APath, const UnicodeString & Params, bool ChangeWorkingDirectory)
 {
   if (!DoExecuteShell(APath, Params, ChangeWorkingDirectory, nullptr))
   {
@@ -820,20 +798,20 @@ void ExecuteShellChecked(const UnicodeString APath, const UnicodeString Params, 
   }
 }
 
-void ExecuteShellChecked(const UnicodeString Command)
+void ExecuteShellChecked(const UnicodeString & Command)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
   ExecuteShellChecked(Program, Params);
 }
 
-bool ExecuteShell(const UnicodeString Path, const UnicodeString Params,
-  HANDLE &Handle)
+bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
+  HANDLE & Handle)
 {
   return DoExecuteShell(Path, Params, false, &Handle);
 }
 
-void ExecuteShellCheckedAndWait(const UnicodeString Command,
+void ExecuteShellCheckedAndWait(const UnicodeString & Command,
   TProcessMessagesEvent ProcessMessages)
 {
   UnicodeString Program, Params, Dir;
@@ -903,7 +881,7 @@ UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Ident
       TempDir += ::IncludeTrailingBackslash(FormatDateTime(L"nnzzz", Now()));
     }
   }
-  while (!Mask && ::SysUtulsDirectoryExists(ApiPath(TempDir)));
+  while (!Mask && base::DirectoryExists(ApiPath(TempDir)));
 
   return TempDir;
 }
@@ -1478,6 +1456,9 @@ protected:
     return E_NOTIMPL;
   }
 };
+
+// Included only here as it defines ambiguous LONG_PTR, causing INVALID_HANDLE_VALUE to be unusable
+#include <WebBrowserEx.hpp>
 
 class TBrowserViewer : public TWebBrowserEx
 {
@@ -2357,7 +2338,7 @@ TControl * TScreenTipHintWindow::GetHintControl(void * Data)
   return reinterpret_cast<TControl *>(DebugNotNull(Data));
 }
 
-UnicodeString TScreenTipHintWindow::GetLongHintIfAny(UnicodeString & AHint)
+UnicodeString TScreenTipHintWindow::GetLongHintIfAny(const UnicodeString & AHint)
 {
   UnicodeString Result;
   int P = Pos(L"|", AHint);
@@ -2649,8 +2630,9 @@ void GUIFinalize()
 
 #endif // #if 0
 
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, int32_t Count, UnicodeString FirstItem)
+// TODO: move to Sysutils
+UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
+  const UnicodeString & MultiItemsFormat, int32_t Count, const UnicodeString & FirstItem)
 {
   UnicodeString Result;
   if (Count == 1)
@@ -2664,15 +2646,15 @@ UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
   return Result;
 }
 
-UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, const TStrings *Items)
+UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
+  const UnicodeString & MultiItemsFormat, const TStrings *Items)
 {
   return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
       Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
 }
 
-UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
-  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote)
+UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
+  const UnicodeString & MultiFilesFormat, const TStrings *AFiles, bool Remote)
 {
   DebugAssert(AFiles != nullptr);
   UnicodeString Item;

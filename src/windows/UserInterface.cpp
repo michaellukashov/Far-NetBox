@@ -25,6 +25,7 @@ __removed #include "Custom.h"
 #include <GUITools.h>
 
 #if 0
+
 #pragma package(smart_init)
 
 const UnicodeString AppName = L"WinSCP";
@@ -67,6 +68,7 @@ TOptions * GetGlobalOptions()
 {
   return nullptr; // TProgramParams::Instance();
 }
+
 #if 0
 
 TCustomScpExplorerForm * CreateScpExplorer()
@@ -416,14 +418,14 @@ void DoAboutDialog(TConfiguration *Configuration)
 {
   DoAboutDialog(Configuration, true, nullptr);
 }
-//---------------------------------------------------------------------
+
 void DoProductLicense()
 {
   DoLicenseDialog(lcWinScp);
 }
 
 const UnicodeString PixelsPerInchKey = L"PixelsPerInch";
-//---------------------------------------------------------------------
+
 int GetToolbarLayoutPixelsPerInch(TStrings * Storage, TControl * Control)
 {
   int Result;
@@ -437,14 +439,14 @@ int GetToolbarLayoutPixelsPerInch(TStrings * Storage, TControl * Control)
   }
   return Result;
 }
-//---------------------------------------------------------------------
+
 UnicodeString GetToolbarKey(const UnicodeString & ToolbarName)
 {
   UnicodeString Result = ToolbarName;
   Result = RemoveSuffix(Result, L"Toolbar", true);
   return Result;
 }
-//---------------------------------------------------------------------
+
 static inline void GetToolbarKey(const UnicodeString & ToolbarName,
   const UnicodeString & Value, UnicodeString & ToolbarKey)
 {
@@ -565,10 +567,9 @@ UnicodeString GetToolbarsLayoutStr(TControl * OwnerControl)
 
 void LoadToolbarsLayoutStr(TControl * OwnerControl, UnicodeString LayoutStr)
 {
-  TStrings * Storage = new TStringList();
+  TStrings * Storage = CommaTextToStringList(LayoutStr);
   try
   {
-    Storage->CommaText = LayoutStr;
     TBCustomLoadPositions(OwnerControl, ToolbarReadInt, ToolbarReadString,
       Storage);
     int PixelsPerInch = GetToolbarLayoutPixelsPerInch(Storage, OwnerControl);

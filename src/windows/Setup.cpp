@@ -722,12 +722,11 @@ void LaunchAdvancedAssociationUI()
 void TemporaryDirectoryCleanup()
 {
   std::unique_ptr<TStrings> Folders(WinConfiguration->FindTemporaryFolders());
-  TStrings * Folders = nullptr;
+  if (Folders.get() != nullptr)
   {
     bool Continue = true;
     if (WinConfiguration->ConfirmTemporaryDirectoryCleanup)
     {
-      Continue = (Folders != nullptr);
       Configuration->Usage->Inc(L"TemporaryDirectoryCleanupConfirmations");
 
       TQueryButtonAlias Aliases[1];
@@ -770,7 +769,7 @@ void TemporaryDirectoryCleanup()
     }
   }
 }
-//-------------------------------------------- -------------------------------
+
 UnicodeString VersionStrFromCompoundVersion(int Version)
 {
   int MajorVer = Version / (10000*100*100);
@@ -2071,19 +2070,12 @@ bool IsInstalledMsi()
   return (GIsInstalledMsi > 0);
 }
 
-static TStringList * TextToTipList(const UnicodeString & Text)
-{
-  std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
-  List->CommaText = Text;
-  return List.release();
-}
-
 UnicodeString FirstUnshownTip()
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
-  std::unique_ptr<TStringList> Tips(TextToTipList(Updates.Results.Tips));
+  std::unique_ptr<TStringList> Tips(CommaTextToStringList(Updates.Results.Tips));
   Tips->CaseSensitive = false;
-  std::unique_ptr<TStringList> TipsSeen(TextToTipList(WinConfiguration->TipsSeen));
+  std::unique_ptr<TStringList> TipsSeen(CommaTextToStringList(WinConfiguration->TipsSeen));
   TipsSeen->CaseSensitive = false;
 
   int LastTipSeen = -1;
@@ -2150,7 +2142,7 @@ static UnicodeString TipUrl(TTipsData * TipsData)
 
 static void TipSeen(const UnicodeString & Tip)
 {
-  std::unique_ptr<TStringList> TipsSeen(TextToTipList(WinConfiguration->TipsSeen));
+  std::unique_ptr<TStringList> TipsSeen(CommaTextToStringList(WinConfiguration->TipsSeen));
   TipsSeen->Values[Tip] = FormatDateTime(L"yyyy-mm-dd", Now());
   WinConfiguration->TipsSeen = TipsSeen->CommaText;
   WinConfiguration->TipsShown = Now();
@@ -2174,7 +2166,7 @@ static void ShowTip(bool AutoShow)
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
   UnicodeString Tip = FirstUnshownTip();
-  std::unique_ptr<TStringList> Tips(TextToTipList(Updates.Results.Tips));
+  std::unique_ptr<TStringList> Tips(CommaTextToStringList(Updates.Results.Tips));
   Tips->CaseSensitive = false;
   int Index;
   if (Tip.IsEmpty())
@@ -2265,9 +2257,9 @@ void ShowTips()
 void TipsUpdateStaticUsage()
 {
   TUpdatesConfiguration Updates = WinConfiguration->Updates;
-  std::unique_ptr<TStringList> Tips(TextToTipList(Updates.Results.Tips));
+  std::unique_ptr<TStringList> Tips(CommaTextToStringList(Updates.Results.Tips));
   Configuration->Usage->Set(L"TipsCount", Tips->Count);
-  std::unique_ptr<TStringList> TipsSeen(TextToTipList(WinConfiguration->TipsSeen));
+  std::unique_ptr<TStringList> TipsSeen(CommaTextToStringList(WinConfiguration->TipsSeen));
   Configuration->Usage->Set(L"TipsSeen", TipsSeen->Count);
 }
 

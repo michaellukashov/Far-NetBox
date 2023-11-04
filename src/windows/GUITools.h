@@ -17,12 +17,12 @@ NB_CORE_EXPORT bool FindFile(UnicodeString & APath);
 UnicodeString FindPuttyPath();
 NB_CORE_EXPORT bool FindTool(const UnicodeString & AName, UnicodeString & APath);
 NB_CORE_EXPORT void ExecuteTool(const UnicodeString & AName);
-NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString APath, const UnicodeString AParams,
+NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString & APath, const UnicodeString & AParams,
   bool ChangeWorkingDirectory = false);
-NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString ACommand);
-NB_CORE_EXPORT bool ExecuteShell(const UnicodeString APath, const UnicodeString AParams,
+NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString & ACommand);
+NB_CORE_EXPORT bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams,
   HANDLE & Handle);
-NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString ACommand, TProcessMessagesEvent ProcessMessages);
+NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString & ACommand, TProcessMessagesEvent ProcessMessages);
 __removed TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uint32_t Filter, TFileChangedEvent OnChanged);
 extern bool DontCopyCommandToClipboard;
 bool CopyCommandToClipboard(const UnicodeString & Command);
@@ -196,15 +196,15 @@ private:
 };
 #endif // #if 0
 
-NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, int32_t Count, UnicodeString FirstItem);
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
+  const UnicodeString & MultiItemsFormat, int32_t Count, const UnicodeString & FirstItem);
 NB_CORE_EXPORT UnicodeString GetPersonalFolder();
-NB_CORE_EXPORT UnicodeString ItemsFormatString(UnicodeString SingleItemFormat,
-  UnicodeString MultiItemsFormat, const TStrings *Items);
-NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
-  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
-NB_CORE_EXPORT UnicodeString FileNameFormatString(UnicodeString SingleFileFormat,
-  UnicodeString MultiFilesFormat, const TStrings *AFiles, bool Remote);
+NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
+  const UnicodeString & MultiItemsFormat, const TStrings *Items);
+NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
+  const UnicodeString & MultiFilesFormat, const TStrings *AFiles, bool Remote);
+NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
+  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);
 
 #if 0
 

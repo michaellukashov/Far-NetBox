@@ -60,8 +60,7 @@ UnicodeString TFileColorData::Save() const
 
 void TFileColorData::LoadList(const UnicodeString & S, TList & List)
 {
-  std::unique_ptr<TStringList> Strings(std::make_unique<TStringList>());
-  Strings->CommaText = S;
+  std::unique_ptr<TStringList> Strings(CommaTextToStringList(S));
 
   List.clear();
   for (int Index = 0; Index < Strings->Count; Index++)
@@ -271,7 +270,7 @@ TEditorList::~TEditorList()
   Clear();
   delete FEditors;
 }
-//---------------------------------------------------------------------
+
 void TEditorList::Modify()
 {
   FModified = true;
@@ -2848,7 +2847,7 @@ void TWinConfiguration::UpdateEntryInJumpList(
 {
   try
   {
-    std::auto_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
+    std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
     TAutoNestingCounter DontDecryptPasswordsCounter(FDontDecryptPasswords);
 
     Storage->AccessMode = smReadWrite;
@@ -3027,7 +3026,7 @@ TResolvedDoubleClickAction TWinConfiguration::ResolveDoubleClickAction(bool IsDi
   else
   {
     Result = rdcaNone;
-    if (Terminal != NULL)
+    if (Terminal != nullptr)
     {
       if (!Terminal->ResolvingSymlinks && !Terminal->IsEncryptingFiles() && !AlwaysRespectDoubleClickAction)
       {
