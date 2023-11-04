@@ -244,7 +244,7 @@ void TScriptCommands::CheckParams(TOptions * Parameters,
   UnicodeString Switch;
   if (!Switches && Parameters->UnusedSwitch(Switch))
   {
-    throw Exception(FMTLOAD(SCRIPT_UNKNOWN_SWITCH, (Switch)));
+    throw Exception(FMTLOAD(SCRIPT_UNKNOWN_SWITCH, Switch));
   }
 }
 
@@ -272,11 +272,11 @@ void TScriptCommands::Execute(const UnicodeString & Command, const UnicodeString
 
   if (Index == -2)
   {
-    throw Exception(FMTLOAD(SCRIPT_COMMAND_AMBIGUOUS, (Command, Matches)));
+    throw Exception(FMTLOAD(SCRIPT_COMMAND_AMBIGUOUS, Command, Matches));
   }
   else if (Index < 0)
   {
-    throw Exception(FMTLOAD(SCRIPT_COMMAND_UNKNOWN, (Command)));
+    throw Exception(FMTLOAD(SCRIPT_COMMAND_UNKNOWN, Command));
   }
 
   TScriptCommand * ScriptCommand = reinterpret_cast<TScriptCommand *>(Objects[Index]);
@@ -285,11 +285,11 @@ void TScriptCommands::Execute(const UnicodeString & Command, const UnicodeString
   std::unique_ptr<TScriptProcParams> Parameters(std::make_unique<TScriptProcParams>(FullCommand, Params));
   if (Parameters->ParamCount < ScriptCommand->MinParams)
   {
-    throw Exception(FMTLOAD(SCRIPT_MISSING_PARAMS, (FullCommand)));
+    throw Exception(FMTLOAD(SCRIPT_MISSING_PARAMS, FullCommand));
   }
   else if ((ScriptCommand->MaxParams >= 0) && (Parameters->ParamCount > ScriptCommand->MaxParams))
   {
-    throw Exception(FMTLOAD(SCRIPT_TOO_MANY_PARAMS, (FullCommand)));
+    throw Exception(FMTLOAD(SCRIPT_TOO_MANY_PARAMS, FullCommand));
   }
   else
   {
@@ -389,7 +389,7 @@ void TScript::RequireParams(TScriptProcParams * Parameters, int MinParams)
 {
   if (Parameters->ParamCount < MinParams)
   {
-    throw Exception(FMTLOAD(SCRIPT_MISSING_PARAMS, (Parameters->FullCommand)));
+    throw Exception(FMTLOAD(SCRIPT_MISSING_PARAMS, Parameters->FullCommand));
   }
 }
 
@@ -719,7 +719,7 @@ TStrings * TScript::CreateFileList(TScriptProcParams * Parameters, int Start,
         TRemoteFile * File = dynamic_cast<TRemoteFile *>(Result->Objects[Index]);
         if (File->IsDirectory)
         {
-          throw Exception(FMTLOAD(NOT_FILE_ERROR, (File->FileName)));
+          throw Exception(FMTLOAD(NOT_FILE_ERROR, File->FileName));
         }
       }
     }
@@ -791,7 +791,7 @@ TStrings * TScript::CreateLocalFileList(TScriptProcParams * Parameters,
             // once we need to have the code in place anyway)
             if (FLAGSET(ListType, fltLatest))
             {
-              throw Exception(FMTLOAD(FILE_NOT_EXISTS, (FileName)));
+              throw Exception(FMTLOAD(FILE_NOT_EXISTS, FileName));
             }
             Result->Add(FileName);
             AnyFound = true;
@@ -860,7 +860,7 @@ void TScript::NoMatch(const UnicodeString & Message)
 
 void TScript::NoMatch(const UnicodeString & Mask, const UnicodeString & Error)
 {
-  UnicodeString Message = FMTLOAD(SCRIPT_MATCH_NO_MATCH, (Mask));
+  UnicodeString Message = FMTLOAD(SCRIPT_MATCH_NO_MATCH, Mask);
   if (!Error.IsEmpty())
   {
     Message += FORMAT(L" (%s)", (Error));
@@ -1075,7 +1075,7 @@ void TScript::CopyParamParams(TCopyParamType & CopyParam, TScriptProcParams * Pa
       int ThresholdValue;
       if (!TryStrToInt(Value, ThresholdValue))
       {
-        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, (RESUMESUPPORT_SWITCH, Value)));
+        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, RESUMESUPPORT_SWITCH, Value));
       }
       CopyParam.ResumeSupport = rsSmart;
       CopyParam.ResumeThreshold = ThresholdValue * 1024;
@@ -1156,7 +1156,7 @@ void TScript::HelpProc(TScriptProcParams * Parameters)
       }
       else
       {
-        throw Exception(FMTLOAD(SCRIPT_COMMAND_UNKNOWN, (Parameters->Param[i])));
+        throw Exception(FMTLOAD(SCRIPT_COMMAND_UNKNOWN, Parameters->Param[i]));
       }
     }
   }
@@ -1238,7 +1238,7 @@ void TScript::ChecksumProc(TScriptProcParams * Parameters)
       if ((FileList->Count != 1) ||
           DebugNotNull(dynamic_cast<TRemoteFile *>(FileList->Objects[0]))->IsDirectory)
       {
-        throw Exception(FMTLOAD(NOT_FILE_ERROR, (FileList->Strings[0])));
+        throw Exception(FMTLOAD(NOT_FILE_ERROR, FileList->Strings[0]));
       }
 
       FTerminal->CalculateFilesChecksum(Alg, FileList, DoCalculatedChecksum);
@@ -1601,7 +1601,7 @@ TTransferMode TScript::ParseTransferModeName(UnicodeString Name)
     TransferModeNamesCount, Name);
   if (Value < 0)
   {
-    throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, (L"transfer", Name)));
+    throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, L"transfer", Name));
   }
 
   return (TTransferMode)Value;
@@ -1622,7 +1622,7 @@ void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
     Option = TScriptCommands::FindCommand(Names, LENOF(Names), OptionName);
     if (Option < 0)
     {
-      throw Exception(FMTLOAD(SCRIPT_OPTION_UNKNOWN, (OptionName)));
+      throw Exception(FMTLOAD(SCRIPT_OPTION_UNKNOWN, OptionName));
     }
     else
     {
@@ -1642,7 +1642,7 @@ void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
       int Value = TScriptCommands::FindCommand(ToggleNames, LENOF(ToggleNames), ValueName);
       if (Value < 0)
       {
-        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, (ValueName, OptionName)));
+        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, ValueName, OptionName));
       }
       FEcho = (Value == ToggleOn);
     }
@@ -1657,7 +1657,7 @@ void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
       int Value = TScriptCommands::FindCommand(BatchModeNames, LENOF(BatchModeNames), ValueName);
       if (Value < 0)
       {
-        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, (ValueName, OptionName)));
+        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, ValueName, OptionName));
       }
       FBatch = (TBatchMode)Value;
       FInteractiveBatch = FBatch;
@@ -1680,7 +1680,7 @@ void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
       int Value = TScriptCommands::FindCommand(ToggleNames, LENOF(ToggleNames), ValueName);
       if (Value < 0)
       {
-        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, (ValueName, OptionName)));
+        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, ValueName, OptionName));
       }
       FConfirm = (Value == ToggleOn);
       FInteractiveConfirm = FConfirm;
@@ -1710,7 +1710,7 @@ void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
       int Value = TScriptCommands::FindCommand(ToggleNames, LENOF(ToggleNames), ValueName);
       if (Value < 0)
       {
-        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, (ValueName, OptionName)));
+        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, ValueName, OptionName));
       }
       FSynchronizeParams =
         (FSynchronizeParams & ~TTerminal::spDelete) |
@@ -1763,7 +1763,7 @@ void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
       {
         if (!TryStrToInt(ValueName, Value))
         {
-          throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, (ValueName, OptionName)));
+          throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, ValueName, OptionName));
         }
         else
         {
@@ -1792,7 +1792,7 @@ void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
       int Value = TScriptCommands::FindCommand(ToggleNames, LENOF(ToggleNames), ValueName);
       if (Value < 0)
       {
-        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, (ValueName, OptionName)));
+        throw Exception(FMTLOAD(SCRIPT_VALUE_UNKNOWN, ValueName, OptionName));
       }
       FFailOnNoMatch = (Value == ToggleOn);
     }
@@ -1919,7 +1919,7 @@ void TScript::SynchronizePreview(
       {
         case TSynchronizeChecklist::saUploadNew:
           Message =
-            FMTLOAD(SCRIPT_SYNC_UPLOAD_NEW, (LocalRecord));
+            FMTLOAD(SCRIPT_SYNC_UPLOAD_NEW, LocalRecord);
           break;
 
         case TSynchronizeChecklist::saDownloadNew:

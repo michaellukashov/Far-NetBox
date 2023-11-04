@@ -447,7 +447,7 @@ void TMessageTimeout::UpdateButton()
 {
   DebugAssert(FButton != nullptr);
   FButton->Caption =
-    !Enabled ? FOrigCaption : FMTLOAD(TIMEOUT_BUTTON, (FOrigCaption, int(FTimeout / MSecsPerSec)));
+    !Enabled ? FOrigCaption : FMTLOAD(TIMEOUT_BUTTON, FOrigCaption, int(FTimeout / MSecsPerSec));
 }
 
 void TMessageTimeout::DoTimer(TObject * /*Sender*/)
@@ -1054,7 +1054,7 @@ TCustomCommandPromptsDialog::TCustomCommandPromptsDialog(
 {
 
   FCustomCommandName = CustomCommandName;
-  Caption = FMTLOAD(CUSTOM_COMMANDS_PARAMS_TITLE, (FCustomCommandName));
+  Caption = FMTLOAD(CUSTOM_COMMANDS_PARAMS_TITLE, FCustomCommandName);
 
   FPrompts = Prompts;
   DebugAssert(FPrompts.size() == Defaults.size());
@@ -1513,7 +1513,7 @@ void CheckConfigurationForceSave()
     int Attr = GetFileAttributes(ApiPath(Configuration->IniFileStorageName).c_str());
     if (FLAGSET(Attr, FILE_ATTRIBUTE_READONLY))
     {
-      UnicodeString Message = FMTLOAD(READONLY_INI_FILE_OVERWRITE, (Configuration->IniFileStorageName));
+      UnicodeString Message = FMTLOAD(READONLY_INI_FILE_OVERWRITE, Configuration->IniFileStorageName);
       if (MessageDialog(Message, qtConfirmation, qaOK | qaCancel, HELP_READONLY_INI_FILE) == qaOK)
       {
         Configuration->ForceSave = true;

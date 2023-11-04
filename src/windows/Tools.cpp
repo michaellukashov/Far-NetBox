@@ -382,7 +382,7 @@ void ExecuteProcessAndReadOutput(const UnicodeString & Command, UnicodeString & 
   if (!CreatePipe(&PipeRead, &PipeWrite, &SecurityAttributes, 0) ||
       !SetHandleInformation(PipeRead, HANDLE_FLAG_INHERIT, 0))
   {
-    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Command)));
+    throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
   }
 
   PROCESS_INFORMATION ProcessInformation;
@@ -405,7 +405,7 @@ void ExecuteProcessAndReadOutput(const UnicodeString & Command, UnicodeString & 
 
       if (!CreateProcess(nullptr, Command.c_str(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &StartupInfo, &ProcessInformation))
       {
-        throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, (Command)));
+        throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Command));
       }
     }
     __finally
@@ -460,7 +460,7 @@ static void DoExecuteProcessAndReadOutput(
       }
       else
       {
-        UnicodeString Message = MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, (static_cast<int>(ExitCode))));
+        UnicodeString Message = MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, static_cast<int>(ExitCode)));
         throw ExtException(Message, Output, HelpKeyword);
       }
     }
@@ -665,7 +665,7 @@ IShellLink * CreateDesktopSessionShortCut(
     TSessionData * SessionData =
       StoredSessions->ParseUrl(EncodeUrlString(SessionName), nullptr, DefaultsOnly);
     InfoTip =
-      FMTLOAD(SHORTCUT_INFO_TIP, (SessionName, SessionData->InfoTip));
+      FMTLOAD(SHORTCUT_INFO_TIP, SessionName, SessionData->InfoTip);
     if (Name.IsEmpty())
     {
       // no slashes in filename

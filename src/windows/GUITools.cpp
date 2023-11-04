@@ -461,7 +461,7 @@ UnicodeString FindPuttyPath()
   SplitPuttyCommand(Program, Params);
   if (!FindFile(Program))
   {
-    throw Exception(FMTLOAD(EXECUTE_APP_ERROR, (Program)));
+    throw Exception(FMTLOAD(EXECUTE_APP_ERROR, Program));
   }
   return Program;
 }

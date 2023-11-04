@@ -226,7 +226,7 @@ UnicodeString TCopyParamRule::GetInfoStr(UnicodeString Separator) const
   UnicodeString Result;
 #define ADD(FMT, ELEM) \
     if (!FData.ELEM.IsEmpty()) \
-      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, (FData.ELEM));
+      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM);
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);

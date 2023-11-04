@@ -1691,7 +1691,7 @@ protected:
         {
           BlockBuf.LoadStream(FStream.get(), BlockSize, false);
         });
-        __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, (FFileName)));
+        __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, FFileName));
         Last = (FStream->Position >= FStream->Size);
       }
 
@@ -5148,7 +5148,7 @@ void TSFTPFileSystem::Source(
         }
       });
       __removed FILE_OPERATION_LOOP_END_CUSTOM(
-      __removed   FMTLOAD(PRESERVE_TIME_PERM_ERROR3, (DestFileName)),
+      __removed   FMTLOAD(PRESERVE_TIME_PERM_ERROR3, DestFileName),
       __removed   folAllowSkip, HELP_PRESERVE_TIME_PERM_ERROR);
     }
     catch(Exception & E)
@@ -5471,7 +5471,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
       }
     }
   });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_CLOSE_FILE_ERROR, (FileName)));
+  __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_CLOSE_FILE_ERROR, FileName));
 }
 
 void TSFTPFileSystem::CopyToLocal(TStrings *AFilesToCopy,
@@ -5524,7 +5524,7 @@ void TSFTPFileSystem::WriteLocalFile(
     {
       BlockBuf.WriteToStream(FileStream, BlockBuf.Size);
     });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, (ALocalFileName)));
+    __removed FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, ALocalFileName));
   }
 
   OperationProgress->AddLocallyUsed(BlockBuf.Size);
@@ -5618,7 +5618,7 @@ void TSFTPFileSystem::Sink(
       RemoteHandle = SFTPOpenRemoteFile(AFileName, OpenType);
       OperationProgress->Progress();
     });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_OPEN_FILE_ERROR, (AFileName)));
+    __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_OPEN_FILE_ERROR, AFileName));
 
     FILETIME AcTime;
     nb::ClearStruct(AcTime);
@@ -5920,7 +5920,7 @@ void TSFTPFileSystem::Sink(
           }
           THROWOSIFFALSE(::SysUtulsRenameFile(ApiPath(DestPartialFullName), ApiPath(DestFullName)));
         });
-        __removed FILE_OPERATION_LOOP_END(FMTLOAD(RENAME_AFTER_RESUME_ERROR, (ExtractFileName(DestPartialFullName), ADestFileName)));
+        __removed FILE_OPERATION_LOOP_END(FMTLOAD(RENAME_AFTER_RESUME_ERROR, ExtractFileName(DestPartialFullName), ADestFileName));
       }
 
       DeleteLocalFile = false;

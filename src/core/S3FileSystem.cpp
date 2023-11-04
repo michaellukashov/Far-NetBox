@@ -373,7 +373,7 @@ void TS3FileSystem::Open()
     std::unique_ptr<TStrings> S3Profiles(GetS3Profiles());
     if (S3Profiles->IndexOf(S3Profile) < 0)
     {
-      throw Exception(MainInstructions(FMTLOAD(S3_PROFILE_NOT_EXIST, (S3Profile))));
+      throw Exception(MainInstructions(FMTLOAD(S3_PROFILE_NOT_EXIST, S3Profile)));
     }
 #endif //if 0
   }
@@ -2123,7 +2123,7 @@ void TS3FileSystem::Source(
 
       MultipartUploadId = Data.UploadId;
     });
-    __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, (AHandle.FileName)), (folAllowSkip | folRetryOnFatal));
+    __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AHandle.FileName), (folAllowSkip | folRetryOnFatal));
 
     FTerminal->LogEvent(FORMAT("Initiated multipart upload (%s - %d parts)", UnicodeString(MultipartUploadId), Parts));
 
@@ -2407,7 +2407,7 @@ void TS3FileSystem::Sink(
        }
     } end_try__finally
   });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
+  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
 
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }

@@ -1358,7 +1358,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
         FTerminal->RollbackAction(Action, OperationProgress, &E);
 
         // Error formatting expanded from inline to avoid strange exceptions
-        UnicodeString Error = FMTLOAD(CHECKSUM_ERROR, (File != nullptr ? File->GetFullFileName() : L""));
+        UnicodeString Error = FMTLOAD(CHECKSUM_ERROR, File != nullptr ? File->GetFullFileName() : L"");
         FTerminal->CommandError(&E, Error);
         // Abort loop.
         TODO("retries? resume?");
@@ -1385,7 +1385,7 @@ UnicodeString TFTPFileSystem::CalculateFilesChecksumInitialize(const UnicodeStri
   }
   else
   {
-    throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, (Alg)));
+    throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, Alg));
   }
   return NormalizedAlg;
 }
@@ -1619,7 +1619,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString AFileName,
     uint32_t Reply = WaitForCommandReply();
     GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
   });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
+  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
 
   switch (FFileTransferAbort)
   {
@@ -4365,7 +4365,7 @@ bool TFTPFileSystem::HandleAsyncRequestVerifyCertificate(
       // even if the fingerprint is cached, the certificate is still not trusted for a purposes of the info dialog.
       if (!Trusted)
       {
-        AddToList(Summary, VerificationResultStr + L" " + FMTLOAD(CERT_ERRDEPTH, (Data.VerificationDepth + 1)), SummarySeparator);
+        AddToList(Summary, VerificationResultStr + L" " + FMTLOAD(CERT_ERRDEPTH, Data.VerificationDepth + 1), SummarySeparator);
       }
 
       if (IsHostNameIPAddress)

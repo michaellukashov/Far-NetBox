@@ -7941,7 +7941,7 @@ void TTerminal::DirectorySource(
       {
         THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADirectoryName), static_cast<DWORD>(Attrs & ~faArchive)) == 0);
       });
-      __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (DirectoryName)));
+      __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, DirectoryName));
     }
   }
 }
@@ -8027,7 +8027,7 @@ void TTerminal::UpdateSource(const TLocalFileHandle & AHandle, const TCopyParamT
     {
       THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(AHandle.FileName), (AHandle.Attrs & ~faArchive)) == 0);
     });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (Handle.FileName)));
+    __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, Handle.FileName));
   }
 }
 
@@ -8506,14 +8506,14 @@ void TTerminal::Sink(
           ThrowExtException();
         }
       });
-      __removed FILE_OPERATION_LOOP_END(FMTLOAD(NOT_DIRECTORY_ERROR, (DestFullName)));
+      __removed FILE_OPERATION_LOOP_END(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName));
 
       FileOperationLoopCustom(this, OperationProgress, AFlags, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "",
       [&]()
       {
         THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFullName)));
       });
-      __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, (DestFullName)));
+      __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, DestFullName));
 
       if (FLAGCLEAR(AParams, cpNoRecurse))
       {
@@ -8590,7 +8590,7 @@ void TTerminal::Sink(
           ThrowExtException();
         }
       });
-      __removed FILE_OPERATION_LOOP_END(FMTLOAD(NOT_FILE_ERROR, (DestFullName)));
+      __removed FILE_OPERATION_LOOP_END(FMTLOAD(NOT_FILE_ERROR, DestFullName));
       LogFileName = ::ExpandUNCFileName(DestFullName);
     }
 
@@ -8618,7 +8618,7 @@ void TTerminal::UpdateTargetAttrs(
     {
       THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADestFullName), static_cast<DWORD>(Attrs | NewAttrs)) == 0);
     });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (ADestFullName)));
+    __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, ADestFullName));
   }
 }
 
@@ -9222,7 +9222,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
     TemporaryDir = ExcludeTrailingBackslash(Configuration->TemporaryDir());
     if (!::SysUtulsForceDirectories(ApiPath(TemporaryDir)))
     {
-      throw EOSExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, (TemporaryDir)));
+      throw EOSExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, TemporaryDir));
     }
     UnicodeString TemporaryAuthorizedKeysFile = IncludeTrailingBackslash(TemporaryDir) + OpensshAuthorizedKeysFileName;
 

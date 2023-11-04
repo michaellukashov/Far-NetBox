@@ -842,11 +842,11 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
   {
     if (Type == ktUnopenable)
     {
-      throw EOSExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, (CertificateFileName)), Error);
+      throw EOSExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, CertificateFileName), Error);
     }
     else
     {
-      throw Exception(FMTLOAD(KEYGEN_NOT_PUBLIC, (CertificateFileName)));
+      throw Exception(FMTLOAD(KEYGEN_NOT_PUBLIC, CertificateFileName));
     }
   }
 
@@ -861,7 +861,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     if (CertLoadedFile == nullptr)
     {
       // not capturing errno, as this in unlikely file access error, after we have passed KeyType above
-      throw ExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, (CertificateFileName)), Error);
+      throw ExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, CertificateFileName), Error);
     }
   },
   __finally
@@ -879,7 +879,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
                        BinarySink_UPCAST(Pub), &CommentStr, &ErrorStr))
     {
       UnicodeString Error = ErrorStr;
-      throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, (CertificateFileName)), Error);
+      throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, CertificateFileName), Error);
     }
     sfree(CommentStr);
   },
@@ -894,7 +894,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     KeyAlg = find_pubkey_alg(AlgorithmName);
     if (KeyAlg == nullptr)
     {
-      throw Exception(FMTLOAD(PUB_KEY_UNKNOWN, (AlgorithmName)));
+      throw Exception(FMTLOAD(PUB_KEY_UNKNOWN, AlgorithmName));
     }
 
     // Check the two public keys match apart from certificates
@@ -912,7 +912,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
 
     if (!Match)
     {
-      throw Exception(FMTLOAD(CERTIFICATE_NOT_MATCH, (CertificateFileName)));
+      throw Exception(FMTLOAD(CERTIFICATE_NOT_MATCH, CertificateFileName));
     }
 
     strbuf * Priv = strbuf_new_nm();
@@ -922,7 +922,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
 
     if (NewKey == nullptr)
     {
-      throw Exception(FMTLOAD(CERTIFICATE_CANNOT_COMBINE, (CertificateFileName)));
+      throw Exception(FMTLOAD(CERTIFICATE_CANNOT_COMBINE, CertificateFileName));
     }
 
     ssh_key_free(Ssh2Key->key);
@@ -957,7 +957,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
           if (!ppk_save_f(KeyFile, Ssh2Key, PassphrasePtr, &Params))
           {
             int Error = errno;
-            throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, (FileName)), Error);
+            throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName), Error);
           }
         }
         break;
@@ -1212,7 +1212,7 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
       const char * Error;
       if (!ppk_loadpub_s(Src, nullptr, BinarySink_UPCAST(Blob), nullptr, &Error))
       {
-        throw Exception(FMTLOAD(SSH_HOST_CA_DECODE_ERROR, (Error)));
+        throw Exception(FMTLOAD(SSH_HOST_CA_DECODE_ERROR, Error));
       }
     }
 
@@ -1226,17 +1226,17 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
     const ssh_keyalg * Alg = find_pubkey_alg_len(AlgNamePtrLen);
     if (Alg == nullptr)
     {
-      throw Exception(FMTLOAD(PUB_KEY_UNKNOWN, (AlgName)));
+      throw Exception(FMTLOAD(PUB_KEY_UNKNOWN, AlgName));
     }
     if (Alg->is_certificate)
     {
-      throw Exception(FMTLOAD(SSH_HOST_CA_CERTIFICATE, (AlgName)));
+      throw Exception(FMTLOAD(SSH_HOST_CA_CERTIFICATE, AlgName));
     }
 
     ssh_key * Key = ssh_key_new_pub(Alg, ptrlen_from_strbuf(Blob));
     if (Key == nullptr)
     {
-      throw Exception(FMTLOAD(SSH_HOST_CA_INVALID, (AlgName)));
+      throw Exception(FMTLOAD(SSH_HOST_CA_INVALID, AlgName));
     }
 
     char * FingerprintPtr = ssh2_fingerprint(Key, SSH_FPTYPE_DEFAULT);

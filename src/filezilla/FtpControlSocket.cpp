@@ -1585,7 +1585,7 @@ int CFtpControlSocket::TryGetReplyCode()
   }
   else if ((str[0] < '1') || (str[0] > '9'))
   {
-    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, (UnicodeString(str)));
+    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, UnicodeString(str));
     LogMessageRaw(FZ_LOG_WARNING, Error.c_str());
     return 0;
   }
@@ -1600,7 +1600,7 @@ int CFtpControlSocket::GetReplyCode()
   int Result = TryGetReplyCode();
   if (Result < 0)
   {
-    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, (UnicodeString()));
+    UnicodeString Error = FMTLOAD(FTP_MALFORMED_RESPONSE, UnicodeString());
     LogMessageRaw(FZ_LOG_WARNING, Error.c_str());
     Result = 0;
   }

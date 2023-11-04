@@ -581,7 +581,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bo
     Name = ExtractFileName(Target);
     Path = IncludeTrailingBackslash(Target);
   }
-  return FMTLOAD(MULTI_FILES_TO_ONE, (Name, Dir, Path));
+  return FMTLOAD(MULTI_FILES_TO_ONE, Name, Dir, Path);
 }
 #endif // if 0
 

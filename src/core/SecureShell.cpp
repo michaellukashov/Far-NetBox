@@ -2720,14 +2720,14 @@ void TSecureShell::VerifyHostKey(
         UnicodeString NewLine = L"\n";
         UnicodeString Para = NewLine + NewLine;
         UnicodeString Message;
-        UnicodeString ServerPara = FMTLOAD(HOSTKEY_SERVER, (Host, Port)) + Para;
+        UnicodeString ServerPara = FMTLOAD(HOSTKEY_SERVER, Host, Port) + Para;
         UnicodeString Nbsp = L"\xA0";
         UnicodeString Indent = Nbsp + Nbsp + Nbsp + Nbsp;
         UnicodeString FingerprintPara =
-          Indent + FMTLOAD(HOSTKEY_FINGERPRINT, (KeyType)) + NewLine +
+          Indent + FMTLOAD(HOSTKEY_FINGERPRINT, KeyType) + NewLine +
           Indent + ReplaceStr(FingerprintSHA256, L" ", Nbsp) + Para;
         UnicodeString AdministratorChangerOrAnotherComputerExplanationPara =
-          FMTLOAD(HOSTKEY_TWO_EXPLANATIONS, (LoadStr(HOSTKEY_ADMINISTRATOR_CHANGED), LoadStr(HOSTKEY_ANOTHER_COMPUTER))) + Para;
+          FMTLOAD(HOSTKEY_TWO_EXPLANATIONS, LoadStr(HOSTKEY_ADMINISTRATOR_CHANGED), LoadStr(HOSTKEY_ANOTHER_COMPUTER)) + Para;
         UnicodeString CertifiedTrustLine;
         if (IsCertificate)
         {
@@ -2744,7 +2744,7 @@ void TSecureShell::VerifyHostKey(
               Message += LoadStr(HOSTKEY_CERTIFIED_DOESNT_MATCH_ALSO) + Para;
             }
             Message +=
-              FMTLOAD(HOSTKEY_TWO_EXPLANATIONS, (LoadStr(HOSTKEY_CERTIFIED_ANOTHER), LoadStr(HOSTKEY_ANOTHER_COMPUTER))) + Para;
+              FMTLOAD(HOSTKEY_TWO_EXPLANATIONS, LoadStr(HOSTKEY_CERTIFIED_ANOTHER), LoadStr(HOSTKEY_ANOTHER_COMPUTER)) + Para;
           }
           else
           {
@@ -2777,18 +2777,18 @@ void TSecureShell::VerifyHostKey(
         if (Unknown)
         {
           Message +=
-            FMTLOAD(HOSTKEY_ACCEPT_NEW, (StripHotkey(AcceptButton))) + NewLine +
+            FMTLOAD(HOSTKEY_ACCEPT_NEW, StripHotkey(AcceptButton)) + NewLine +
             CertifiedTrustLine +
-            FMTLOAD(HOSTKEY_ONCE_NEW, (StripHotkey(OnceButton))) + NewLine +
-            FMTLOAD(HOSTKEY_CANCEL_NEW, (StripHotkey(CancelButton)));
+            FMTLOAD(HOSTKEY_ONCE_NEW, StripHotkey(OnceButton)) + NewLine +
+            FMTLOAD(HOSTKEY_CANCEL_NEW, StripHotkey(CancelButton));
         }
         else
         {
           Message +=
-            FMTLOAD(HOSTKEY_ACCEPT_CHANGE, (StripHotkey(UpdateButton), StripHotkey(AddButton))) + NewLine +
+            FMTLOAD(HOSTKEY_ACCEPT_CHANGE, StripHotkey(UpdateButton), StripHotkey(AddButton)) + NewLine +
             CertifiedTrustLine +
-            FMTLOAD(HOSTKEY_ONCE_CHANGE, (StripHotkey(OnceButton))) + NewLine +
-            FMTLOAD(HOSTKEY_CANCEL_CHANGE, (StripHotkey(CancelButton), StripHotkey(CancelButton)));
+            FMTLOAD(HOSTKEY_ONCE_CHANGE, StripHotkey(OnceButton)) + NewLine +
+            FMTLOAD(HOSTKEY_CANCEL_CHANGE, StripHotkey(CancelButton), StripHotkey(CancelButton));
         }
 
         if (GetConfiguration()->Scripting)
@@ -2827,7 +2827,7 @@ void TSecureShell::VerifyHostKey(
         UnicodeString Message;
         if (ConfiguredKeyNotMatch)
         {
-          Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, (ConfigHostKey));
+          Message = FMTLOAD(CONFIGURED_KEY_NOT_MATCH, ConfigHostKey);
         }
         else if (!GetConfiguration()->Persistent && GetConfiguration()->Scripting)
         {
@@ -2841,7 +2841,7 @@ void TSecureShell::VerifyHostKey(
         Exception * E = new Exception(MainInstructions(Message));
         try__finally
         {
-          FUI->FatalError(E, FMTLOAD(HOSTKEY, (FingerprintSHA256)));
+          FUI->FatalError(E, FMTLOAD(HOSTKEY, FingerprintSHA256));
         },
         __finally
         {

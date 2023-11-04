@@ -1408,7 +1408,7 @@ void TWebDAVFileSystem::Source(
       ClearNeonError();
       CheckStatus(ne_put(FSessionContext->NeonSession, PathToNeon(DestFullName), FD));
     });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (AHandle.FileName)));
+    __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, AHandle.FileName));
 
     if (CopyParam->GetPreserveTime())
     {
@@ -1863,7 +1863,7 @@ void TWebDAVFileSystem::Sink(const UnicodeString & AFileName, const TRemoteFile 
       }
     } end_try__finally
   });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, (FileName)));
+  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
 
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }

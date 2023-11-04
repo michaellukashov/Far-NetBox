@@ -2049,7 +2049,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
           BlockBuf.LoadStream(Stream.get(), OperationProgress->LocalBlockSize(), true);
         });
         __removed FILE_OPERATION_LOOP_END_EX(
-        __removed   FMTLOAD(READ_ERROR, (FileName)),
+        __removed   FMTLOAD(READ_ERROR, FileName),
         __removed   FLAGMASK(!OperationProgress->TransferringFile, folAllowSkip));
 
         OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
@@ -2268,7 +2268,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
       ::RaiseLastOSError();
     }
   });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, (DirectoryName)));
+  __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, DirectoryName));
 
   UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
 
@@ -2305,7 +2305,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
         TQueryParams Params(qpAllowContinueOnError);
         TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
 
-        if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, (FileName)), &E,
+        if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName), &E,
               qaOK | qaAbort, &Params, qtError) == qaAbort)
         {
           OperationProgress->SetCancel(csCancel);
@@ -2345,7 +2345,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
         {
           THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DirectoryName), LocalFileAttrs & ~faArchive));
         });
-        __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (DirectoryName)));
+        __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, DirectoryName));
       }
     }
   },
@@ -2424,7 +2424,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
                 // from current directory
                 FTerminal->RemoteDeleteFile(FileName, File);
               });
-              __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_FILE_ERROR, (FileName)));
+              __removed FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_FILE_ERROR, FileName));
             },
             __finally
             {
@@ -2610,7 +2610,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
         {
           case 1:
             // Error (already logged by ReceiveLine())
-            throw EScpFileSkipped(nullptr, FMTLOAD(REMOTE_ERROR, (Line)));
+            throw EScpFileSkipped(nullptr, FMTLOAD(REMOTE_ERROR, Line));
 
           case 2:
             // Fatal error, terminate copying
@@ -2730,7 +2730,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             {
               THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFileName)));
             });
-            __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, (DestFileName)));
+            __removed FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, DestFileName));
             /* SCP: can we set the timestamp for directories ? */
           }
           FullFileName = SourceDir + OperationProgress->GetFileName();
@@ -2845,7 +2845,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
                   {
                     BlockBuf.WriteToStream(FileStream.get(), nb::ToUInt32(BlockBuf.GetSize()));
                   });
-                  __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(WRITE_ERROR, (DestFileName)), folNone);
+                  __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(WRITE_ERROR, DestFileName), folNone);
 
                   OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
@@ -2921,7 +2921,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
             {
               THROWOSIFFALSE(FTerminal->SetLocalFileAttributes(ApiPath(DestFileName), FileData.LocalFileAttrs | NewAttrs));
             });
-            __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, (DestFileName)));
+            __removed FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, DestFileName));
           }
 
           FTerminal->LogFileDone(OperationProgress, DestFileName, Action);
@@ -2934,7 +2934,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
       {
         TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
         TQueryParams QueryParams(qpAllowContinueOnError);
-        if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, (FullFileName)),
+        if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FullFileName),
             &E, qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
         {
           OperationProgress->SetCancel(csCancel);

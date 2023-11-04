@@ -2791,7 +2791,7 @@ TSessionData * TSessionData::CreateTunnelData(int32_t TunnelLocalPortNumber)
 {
   std::unique_ptr<TSessionData> TunnelData(std::make_unique<TSessionData>(EmptyStr));
   TunnelData->Assign(StoredSessions->DefaultSettings);
-  TunnelData->Name = FMTLOAD(TUNNEL_SESSION_NAME, (SessionName));
+  TunnelData->Name = FMTLOAD(TUNNEL_SESSION_NAME, SessionName);
   TunnelData->FTunnel = false;
   TunnelData->FHostName = FTunnelHostName;
   TunnelData->FPortNumber = FTunnelPortNumber;
