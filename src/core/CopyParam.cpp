@@ -191,7 +191,7 @@ void TCopyParamType::DoGetInfoStr(
   if (GetFileNameCase() != Defaults.GetFileNameCase())
   {
     if (ADD(FORMAT(LoadStrPart(COPY_INFO_FILENAME, 1),
-         (LoadStrPart(COPY_INFO_FILENAME, FileNameCase + 2))),
+         LoadStrPart(COPY_INFO_FILENAME, FileNameCase + 2)),
          cpaIncludeMaskOnly))
     {
       ScriptNonDefaults.FileNameCase = FileNameCase;
@@ -517,7 +517,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     ScriptArgs +=
       RtfSwitch(RAWTRANSFERSETTINGS_SWITCH, ALink) +
-      FORMAT("[%d]", (RawOptions->Count)) +
+      FORMAT("[%d]", RawOptions->Count) +
       StringsToParams(RawOptions.get());
   }
 

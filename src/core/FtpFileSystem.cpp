@@ -1037,7 +1037,7 @@ bool TFTPFileSystem::DoQuit()
 
 void TFTPFileSystem::SendCwd(const UnicodeString & Directory)
 {
-  UnicodeString Command = FORMAT(L"CWD %s", (Directory));
+  UnicodeString Command = FORMAT(L"CWD %s", Directory);
   SendCommand(Command);
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
@@ -1376,7 +1376,7 @@ UnicodeString TFTPFileSystem::CalculateFilesChecksumInitialize(const UnicodeStri
   {
     // The server should understand lowercase alg name by spec,
     // but we should use uppercase anyway
-    SendCommand(FORMAT(L"OPTS %s %s", (HashCommand, UpperCase(NormalizedAlg))));
+    SendCommand(FORMAT(L"OPTS %s %s", HashCommand, UpperCase(NormalizedAlg)));
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
   else if (FChecksumAlgs->IndexOf(NormalizedAlg) >= 0)
@@ -1966,7 +1966,7 @@ void TFTPFileSystem::DoStartup()
       {
         FServerID = Name;
         AddToList(FServerID, Version, L" ");
-        FTerminal->LogEvent(FORMAT("Server: %s", (FServerID)));
+        FTerminal->LogEvent(FORMAT("Server: %s", FServerID));
       }
     }
   }
@@ -2338,7 +2338,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
           else if (fabs(Hours) >= 48)
           {
             FTimeDifference = 0;
-            LogMessage = FORMAT(L"Ignoring suspicious timezone difference of %s hours, detected using file %s", (IntToStr(int64_t(Hours)), FileLog));
+            LogMessage = FORMAT(L"Ignoring suspicious timezone difference of %s hours, detected using file %s", IntToStr(int64_t(Hours)), FileLog);
           }
           else
           {
@@ -3333,7 +3333,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
         {
           if (FAnyTransferSucceeded)
           {
-            FTerminal->LogEvent(FORMAT(L"Got %d after some previous data connections succeeded, retrying connection", (FLastCode)));
+            FTerminal->LogEvent(FORMAT(L"Got %d after some previous data connections succeeded, retrying connection", FLastCode));
             RetryTransfer = true;
           }
           else if (!FTerminal->SessionData->FFtpPasvMode)

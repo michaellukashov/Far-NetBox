@@ -1288,7 +1288,7 @@ UnicodeString TConfiguration::GetVersionStrHuman()
       DateStr = FormatDateTime(L"ddddd", BuildDate);
     }
 
-    UnicodeString Result = FORMAT(L"%s (%s)", (FullVersion, DateStr));
+    UnicodeString Result = FORMAT(L"%s (%s)", FullVersion, DateStr);
 
     return Result;
   }
@@ -1891,7 +1891,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
   }
   catch (Exception & E)
   {
-    Error = FORMAT(L"%s\n(%s)", (E.Message, ConfigFile));
+    Error = FORMAT(L"%s\n(%s)", E.Message, ConfigFile);
   }
 
   return ImportSessionList.release();

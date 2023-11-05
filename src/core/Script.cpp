@@ -446,7 +446,7 @@ bool TScript::IsTerminalLogging(TTerminal * ATerminal)
 const static UnicodeString ScriptLogFormat(L"Script: %s");
 void TScript::Log(TLogLineType Type, const UnicodeString & AStr, TTerminal * ATerminal)
 {
-  UnicodeString Str = FORMAT(ScriptLogFormat, (AStr));
+  UnicodeString Str = FORMAT(ScriptLogFormat, AStr);
   TTerminal * LoggingTerminal = (ATerminal != nullptr ? ATerminal : (FLoggingTerminal != nullptr ? FLoggingTerminal : Terminal));
   if (IsTerminalLogging(LoggingTerminal))
   {
@@ -469,7 +469,7 @@ void TScript::LogPendingLines(TTerminal * ATerminal)
   {
     // not using Log(), as we want to log to ATerminal, not Terminal,
     // what is different here, as we are called from TManagementScript::Connect()
-    ATerminal->Log->Add(llMessage, FORMAT(ScriptLogFormat, (L"Retrospectively logging previous script records:")));
+    ATerminal->Log->Add(llMessage, FORMAT(ScriptLogFormat, L"Retrospectively logging previous script records:"));
 
     for (int Index = 0; Index < FPendingLogLines->Count; Index++)
     {
@@ -863,7 +863,7 @@ void TScript::NoMatch(const UnicodeString & Mask, const UnicodeString & Error)
   UnicodeString Message = FMTLOAD(SCRIPT_MATCH_NO_MATCH, Mask);
   if (!Error.IsEmpty())
   {
-    Message += FORMAT(L" (%s)", (Error));
+    Message += FORMAT(L" (%s)", Error);
   }
 
   NoMatch(Message);
@@ -1140,7 +1140,7 @@ void TScript::HelpProc(TScriptProcParams * Parameters)
     {
       if (!Description.IsEmpty())
       {
-        Output += FORMAT(L"%-8s %s\n", (Command, Description));
+        Output += FORMAT(L"%-8s %s\n", Command, Description);
       }
       Index++;
     }

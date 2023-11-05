@@ -239,7 +239,7 @@ UnicodeString GetS3ConfigValue(
           TJSONObject * ProfileData = dynamic_cast<TJSONObject *>(ProfileDataValue.get());
           if (ProfileData == nullptr)
           {
-            throw new Exception(FORMAT(L"Unexpected response: %s", (ProfileDataStr.SubString(1, 1000))));
+            throw new Exception(FORMAT(L"Unexpected response: %s", ProfileDataStr.SubString(1, 1000)));
           }
           TJSONValue * CodeValue = ProfileData->Values[L"Code"];
           if (CodeValue == nullptr)
@@ -249,7 +249,7 @@ UnicodeString GetS3ConfigValue(
           UnicodeString Code = CodeValue->Value();
           if (!SameText(Code, L"Success"))
           {
-            throw new Exception(FORMAT(L"Received non-success code: %s", (Code)));
+            throw new Exception(FORMAT(L"Received non-success code: %s", Code));
           }
           TJSONValue * ExpirationValue = ProfileData->Values[L"Expiration"];
           if (ExpirationValue == nullptr)
@@ -284,7 +284,7 @@ UnicodeString GetS3ConfigValue(
     if (I != S3Credentials.end())
     {
       Result = I->second;
-      ASource = FORMAT(L"meta-data/%s", (S3SecurityProfile));
+      ASource = FORMAT(L"meta-data/%s", S3SecurityProfile);
     }
   }
 

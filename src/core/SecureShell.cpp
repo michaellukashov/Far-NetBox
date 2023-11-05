@@ -1870,7 +1870,7 @@ void TSecureShell::CheckConnection(int Message)
     }
     else
     {
-      LogEvent(FORMAT(L"Ignoring closed connection: %s", (Str)));
+      LogEvent(FORMAT(L"Ignoring closed connection: %s", Str));
     }
   }
 }
@@ -2479,7 +2479,7 @@ bool TSecureShell::VerifyCachedHostKey(
       if (GetConfiguration()->ActualLogProtocol >= 1)
       {
         UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
-        LogEvent(FORMAT(L"Host key does not match cached key %s", (FormattedKey)));
+        LogEvent(FORMAT(L"Host key does not match cached key %s", FormattedKey));
       }
       else
       {
@@ -2603,7 +2603,7 @@ void TSecureShell::VerifyHostKey(
         }
         else
         {
-          LogEvent(FORMAT(L"Host key does not match configured key fingerprint %s", (ExpectedKey)));
+          LogEvent(FORMAT(L"Host key does not match configured key fingerprint %s", ExpectedKey));
         }
       }
 
@@ -2624,7 +2624,7 @@ void TSecureShell::VerifyHostKey(
           throw Exception(UnicodeString());
         }
         GetConfiguration()->Usage->Inc(L"HostKeyNewAccepted");
-        LogEvent(FORMAT(L"Warning: Stored new host key to %s - This should occur only on the first connection", (StorageSource)));
+        LogEvent(FORMAT(L"Warning: Stored new host key to %s - This should occur only on the first connection", StorageSource));
         Result = true;
       }
       catch (Exception & E)

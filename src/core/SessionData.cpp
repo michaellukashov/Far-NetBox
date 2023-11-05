@@ -5582,7 +5582,7 @@ void TStoredSessionList::ImportFromFilezilla(
 
 UnicodeString FormatKnownHostName(const UnicodeString & HostName, int PortNumber)
 {
-  return FORMAT(L"%s:%d", (HostName, PortNumber));
+  return FORMAT(L"%s:%d", HostName, PortNumber);
 }
 
 void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
@@ -5653,9 +5653,9 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
           const struct ssh_keyalg * Algorithm;
           UnicodeString Key = ParseOpenSshPubLine(Line, Algorithm);
           UnicodeString KeyKey =
-            FORMAT(L"%s@%d:%s", (Algorithm->cache_id, SessionData->PortNumber, HostNameStr));
+            FORMAT(L"%s@%d:%s", Algorithm->cache_id, SessionData->PortNumber, HostNameStr);
           UnicodeString HostKey =
-            FORMAT(L"%s:%s=%s", (Algorithm->ssh_id, KeyKey, Key));
+            FORMAT(L"%s:%s=%s", Algorithm->ssh_id, KeyKey, Key);
           UnicodeString HostKeyList = SessionData->HostKey;
           AddToList(HostKeyList, HostKey, L";");
           SessionData->HostKey = HostKeyList;

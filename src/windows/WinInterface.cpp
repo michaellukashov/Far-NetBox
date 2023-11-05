@@ -694,7 +694,7 @@ uint32_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   DebugCheck(ExceptionMessageFormatted(E, Message));
   if (!MessageFormat.IsEmpty())
   {
-    Message = FORMAT(MessageFormat, (UnformatMessage(Message)));
+    Message = FORMAT(MessageFormat, UnformatMessage(Message));
   }
 
   HelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
@@ -1081,7 +1081,7 @@ UnicodeString TCustomCommandPromptsDialog::HistoryKey(int Index)
   {
     Result = IntToStr(Index);
   }
-  Result = FORMAT(L"%s_%s", (FCustomCommandName, Result));
+  Result = FORMAT(L"%s_%s", FCustomCommandName, Result);
   Result = CustomWinConfiguration->GetValidHistoryKey(Result);
   return L"CustomCommandParam_" + Result;
 }
@@ -1494,12 +1494,12 @@ void ClickToolbarItem(TTBCustomItem * Item, bool PositionCursor)
 
 UnicodeString DumpCallstackEventName(int ProcessId)
 {
-  return FORMAT(DUMPCALLSTACK_EVENT, (ProcessId));
+  return FORMAT(DUMPCALLSTACK_EVENT, ProcessId);
 }
 
 UnicodeString DumpCallstackFileName(int ProcessId)
 {
-  UnicodeString FileName = FORMAT(L"%s.txt", (DumpCallstackEventName(ProcessId)));
+  UnicodeString FileName = FORMAT(L"%s.txt", DumpCallstackEventName(ProcessId));
   UnicodeString Result = TPath::Combine(SystemTemporaryDirectory(), FileName);
   return Result;
 }

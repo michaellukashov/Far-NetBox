@@ -4079,7 +4079,7 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
 
     if (DebugAlwaysTrue(Part >= 0))
     {
-      Result = FORMAT(LoadStrPart(TIME_RELATIVE, Part), (abs(Num)));
+      Result = FORMAT(LoadStrPart(TIME_RELATIVE, Part), abs(Num));
     }
     else
     {
@@ -4490,11 +4490,11 @@ UnicodeString RtfText(const UnicodeString Text, bool Rtf)
       wchar_t Ch = Result[Index];
       if ((Ch == L'\\') || (Ch == L'{') || (Ch == L'}'))
       {
-        Replacement = FORMAT(L"\\%s", (Ch));
+        Replacement = FORMAT(L"\\%s", Ch);
       }
       else if (Ch >= 0x0080)
       {
-        Replacement = FORMAT(L"\\u%d?", (int(Ch)));
+        Replacement = FORMAT(L"\\u%d?", int(Ch));
       }
 
       if (!Replacement.IsEmpty())

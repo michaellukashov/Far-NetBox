@@ -893,12 +893,12 @@ bool TextFromClipboard(UnicodeString & Text, bool Trim)
       int Len = (Size / sizeof(*AText)) - 1;
       if (Len > Limit)
       {
-        ErrorContext = FORMAT(L"substring(%d,%d)", (int(Size), Len));
+        ErrorContext = FORMAT(L"substring(%d,%d)", int(Size), Len);
         Text = UnicodeString(AText, Limit);
       }
       else
       {
-        ErrorContext = FORMAT(L"string(%d,%d)", (int(Size), Len));
+        ErrorContext = FORMAT(L"string(%d,%d)", int(Size), Len);
         Text = AText;
       }
       if (Trim)
@@ -1321,7 +1321,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
   {
     if (!InputDialog(
           LoadStr(PASSPHRASE_TITLE),
-          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), (Comment)),
+          FORMAT(LoadStr(PROMPT_KEY_PASSPHRASE), Comment),
           Passphrase, HELP_NONE, nullptr, false, nullptr, false))
     {
       Abort();

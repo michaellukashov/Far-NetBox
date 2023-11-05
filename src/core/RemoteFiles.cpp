@@ -470,15 +470,15 @@ UnicodeString ModificationStr(TDateTime DateTime,
       return L"";
 
     case mfMDY:
-      return FORMAT(L"%3s %2d %2d", (EngShortMonthNames[Month-1], Day, Year));
+      return FORMAT(L"%3s %2d %2d", EngShortMonthNames[Month-1], Day, Year);
 
     case mfMDHM:
       return FORMAT(L"%3s %2d %2d:%2.2d",
-        (EngShortMonthNames[Month-1], Day, Hour, Min));
+        EngShortMonthNames[Month-1], Day, Hour, Min);
 
     case mfYMDHM:
       return FORMAT(L"%3s %2d %2d:%2.2d %4d",
-        (EngShortMonthNames[Month-1], Day, Hour, Min, Year));
+        EngShortMonthNames[Month-1], Day, Hour, Min, Year);
 
     default:
       DebugFail();
@@ -486,7 +486,7 @@ UnicodeString ModificationStr(TDateTime DateTime,
 
     case mfFull:
       return FORMAT(L"%3s %2d %2d:%2.2d:%2.2d %4d",
-        (EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year));
+        EngShortMonthNames[Month-1], Day, Hour, Min, Sec, Year);
   }
 }
 

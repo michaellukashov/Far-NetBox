@@ -278,7 +278,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
                 FMTLOAD(DISCONNECT_ON_COMPLETION, Manager->Count - 1) :
                 LoadStr(EXIT_ON_COMPLETION);
             // Remove the leading "%s\n\n" (not to change the translation originals - previously the error message was prepended)
-            MessageFormat = FORMAT(MessageFormat, (UnicodeString())).Trim();
+            MessageFormat = FORMAT(MessageFormat, UnicodeString()).Trim();
             MessageFormat = MainInstructions(MessageFormat) + L"\n\n%s";
             Result = FatalExceptionMessageDialog(E, qtInformation,
               MessageFormat,

@@ -616,13 +616,13 @@ void OpenSessionInPutty(TSessionData * SessionData)
       if (UsePuttyPwFile)
       {
         PipeCounter++;
-        UnicodeString PipeName = FORMAT(L"\\\\.\\PIPE\\WinSCPPuTTYPassword.%.8x.%.8x.%.4x", (GetCurrentProcessId(), PipeCounter, rand()));
+        UnicodeString PipeName = FORMAT(L"\\\\.\\PIPE\\WinSCPPuTTYPassword.%.8x.%.8x.%.4x", GetCurrentProcessId(), PipeCounter, rand());
         new TPuttyPasswordThread(Password, PipeName);
-        PasswordParam = FORMAT(L"-pwfile \"%s\"", (PipeName));
+        PasswordParam = FORMAT(L"-pwfile \"%s\"", PipeName);
       }
       else
       {
-        PasswordParam = FORMAT(L"-pw %s", (EscapePuttyCommandParam(Password)));
+        PasswordParam = FORMAT(L"-pw %s", EscapePuttyCommandParam(Password));
       }
       AddToList(PuttyParams, PasswordParam, L" ");
     }
@@ -2426,7 +2426,7 @@ void TNewRichEdit::CreateParams(TCreateParams & Params)
   // https://learn.microsoft.com/en-us/archive/blogs/murrays/richedit-versions
   if (FLibrary == 0)
   {
-    throw Exception(FORMAT(L"Cannot load %s", (RichEditModuleName)));
+    throw Exception(FORMAT(L"Cannot load %s", RichEditModuleName));
   }
 
   TCustomMemo::CreateParams(Params);
