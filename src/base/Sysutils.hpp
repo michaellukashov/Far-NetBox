@@ -653,17 +653,17 @@ public:
 class NB_CORE_EXPORT TPath : public TObject
 {
 public:
-  static UnicodeString Combine(const UnicodeString APath, const UnicodeString AFileName);
-  static bool IsDriveRooted(const UnicodeString APath) { return false; } // TODO: implement
+  static UnicodeString Combine(const UnicodeString & APath, const UnicodeString & AFileName);
+  static bool IsDriveRooted(const UnicodeString & /*APath*/) { return false; } // TODO: implement
 };
 
 int32_t Random(int32_t Max);
-UnicodeString ReadAllText(const UnicodeString FileName);
-void WriteAllText(const UnicodeString FileName, const UnicodeString Text);
+UnicodeString ReadAllText(const UnicodeString & FileName);
+void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text);
 
 extern UnicodeString EmptyStr;
 
-bool FileGetSymLinkTarget(const UnicodeString AFileName, UnicodeString & TargetName);
+bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName);
 
 NB_DEFINE_CLASS_ID(EDirectoryNotFoundException);
 class NB_CORE_EXPORT EDirectoryNotFoundException : public Exception

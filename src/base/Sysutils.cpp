@@ -1742,7 +1742,7 @@ TFormatSettings::TFormatSettings(LCID /*LCID*/) noexcept :
 {
 }
 
-UnicodeString TPath::Combine(const UnicodeString APath, const UnicodeString AFileName)
+UnicodeString TPath::Combine(const UnicodeString & APath, const UnicodeString & AFileName)
 {
   UnicodeString Result = ::IncludeTrailingBackslash(APath) + AFileName;
   return Result;
@@ -1816,8 +1816,7 @@ int32_t Random(int32_t Max)
   return (int32_t)((int64_t)rand() / (std::numeric_limits<int>::max() / Max));
 }
 
-// TODO: implement
-UnicodeString ReadAllText(const UnicodeString FileName)
+UnicodeString ReadAllText(const UnicodeString & FileName)
 {
   UnicodeString Result;
   DWORD m_LastError = ERROR_SUCCESS;
@@ -1839,7 +1838,7 @@ UnicodeString ReadAllText(const UnicodeString FileName)
   return Result;
 }
 
-void WriteAllText(const UnicodeString FileName, const UnicodeString Text)
+void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text)
 {
   FILE *file = base::LocalOpenFileForWriting(FileName);
   if (file)
@@ -1851,7 +1850,7 @@ void WriteAllText(const UnicodeString FileName, const UnicodeString Text)
   }
 }
 
-static bool TryStringToGUID(const UnicodeString &S, GUID &Guid)
+static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
 {
   bool e;
   const char* p;
@@ -1911,7 +1910,7 @@ static bool TryStringToGUID(const UnicodeString &S, GUID &Guid)
   return e;
 }
 
-bool FileGetSymLinkTarget(const UnicodeString AFileName, UnicodeString & TargetName)
+bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName)
 {
 
     struct TUnicodeSymLinkRec

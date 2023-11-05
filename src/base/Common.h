@@ -230,7 +230,7 @@ struct NB_CORE_EXPORT TSearchRecChecked : public TSearchRecSmart
 {
   UnicodeString Path;
   UnicodeString Dir;
-  bool Opened;
+  bool Opened{false};
   UnicodeString GetFilePath() const;
 };
 struct NB_CORE_EXPORT TSearchRecOwned : public TSearchRecChecked
