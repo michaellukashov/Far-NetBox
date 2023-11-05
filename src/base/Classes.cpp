@@ -1330,13 +1330,13 @@ int64_t TStream::GetSize() const
   return Result;
 }
 
-void TStream::SetPosition(const int64_t Pos)
+void TStream::SetPosition(int64_t Pos)
 {
   const auto Res = Seek(Pos, TSeekOrigin::soBeginning);
   DebugAssert(Res == Pos);
 }
 
-static void ReadError(UnicodeString Name)
+static void ReadError(const UnicodeString & Name)
 {
   throw Exception(FORMAT("InvalidRegType: %s", Name)); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
@@ -1385,7 +1385,7 @@ int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
   return Result;
 }
 
-void THandleStream::SetSize(const int64_t NewSize)
+void THandleStream::SetSize(int64_t NewSize)
 {
   const auto res = Seek(NewSize, TSeekOrigin::soBeginning);
   DebugAssert(res == NewSize);
@@ -1548,7 +1548,7 @@ void TMemoryStream::Clear()
   FPosition = 0;
 }
 
-void TMemoryStream::SetSize(const int64_t NewSize)
+void TMemoryStream::SetSize(int64_t NewSize)
 {
   const int64_t OldPosition = FPosition;
   SetCapacity(NewSize);

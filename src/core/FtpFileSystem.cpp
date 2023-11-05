@@ -4496,8 +4496,8 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   }
 }
 
-bool TFTPFileSystem::HandleListData(const wchar_t *Path,
-  const TListDataEntry *Entries, uint32_t Count)
+bool TFTPFileSystem::HandleListData(const wchar_t * Path,
+  const TListDataEntry * Entries, uint32_t Count)
 {
   if (!FActive)
   {
@@ -4530,11 +4530,11 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
           int32_t PermissionsLen = nb::StrLength(Entry->Permissions);
           if (PermissionsLen >= 10)
           {
-            File->GetRights()->SetText(Entry->Permissions + 1);
+            File->GetRightsNotConst()->SetText(Entry->Permissions + 1);
           }
           else if ((PermissionsLen == 3) || (PermissionsLen == 4))
           {
-            File->GetRights()->SetOctal(Entry->Permissions);
+            File->GetRightsNotConst()->SetOctal(Entry->Permissions);
           }
         }
         catch (...)

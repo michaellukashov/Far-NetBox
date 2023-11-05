@@ -117,9 +117,9 @@ private:
   TRemoteFile * FLinkedFile{nullptr};
   TRemoteFile * FLinkedByFile{nullptr};
   UnicodeString FLinkTo;
-  TRights *FRights{nullptr};
+  TRights * FRights{nullptr};
   UnicodeString FHumanRights;
-  TTerminal *FTerminal{nullptr};
+  const TTerminal * FTerminal{nullptr};
   wchar_t FType{0};
   bool FCyclicLink{false};
   UnicodeString FFullFileName;
@@ -133,14 +133,14 @@ public:
   bool GetIsDirectory() const;
   const TRemoteFile *GetLinkedFile() const;
   UnicodeString GetModificationStr() const;
-  void SetModification(const TDateTime Value);
-  void SetListingStr(UnicodeString Value);
+  void SetModification(const TDateTime & Value);
+  void SetListingStr(const UnicodeString & Value);
   UnicodeString GetListingStr() const;
   UnicodeString GetRightsStr() const;
   wchar_t GetType() const;
   void SetType(wchar_t AType);
-  void SetTerminal(TTerminal *Value);
-  void SetRights(TRights *Value);
+  void SetTerminal(const TTerminal * Value);
+  void SetRights(const TRights * Value);
   UnicodeString GetFullFileName() const;
   bool GetHaveFullFileName() const;
   int32_t GetIconIndex() const;
@@ -179,7 +179,7 @@ public:
   __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
   __property UnicodeString RightsStr = { read = GetRightsStr };
   __property __int64 Size = { read = GetSize, write = FSize };
-  RWProperty<int64_t> Size{nb::bind(&TRemoteFile::GetSize, this), nb::bind(&TRemoteFile::SetSize, this)};
+  RWProperty3<int64_t> Size{nb::bind(&TRemoteFile::GetSize, this), nb::bind(&TRemoteFile::SetSize, this)};
   __property __int64 CalculatedSize = { read = FCalculatedSize, write = FCalculatedSize };
   RWProperty2<int64_t> CalculatedSize{&FCalculatedSize};
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
@@ -208,12 +208,12 @@ public:
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
   RWProperty<UnicodeString> ListingStr{nb::bind(&TRemoteFile::GetListingStr, this), nb::bind(&TRemoteFile::SetListingStr, this)};
   __property TRights *Rights = { read = FRights, write = SetRights };
-  RWProperty<TRights *> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
+  RWProperty1<TRights> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
-  RWProperty<TTerminal *> Terminal{nb::bind(&TRemoteFile::GetTerminal, this), nb::bind(&TRemoteFile::SetTerminal, this)};
+  RWProperty1<TTerminal> Terminal{nb::bind(&TRemoteFile::GetTerminal, this), nb::bind(&TRemoteFile::SetTerminal, this)};
   __property wchar_t Type = { read = GetType, write = SetType };
-  RWProperty<wchar_t> Type{nb::bind(&TRemoteFile::GetType, this), nb::bind(&TRemoteFile::SetType, this)};
+  RWProperty3<wchar_t> Type{nb::bind(&TRemoteFile::GetType, this), nb::bind(&TRemoteFile::SetType, this)};
   __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
   RWProperty<UnicodeString> FullFileName{nb::bind(&TRemoteFile::GetFullFileName, this), nb::bind(&TRemoteFile::SetFullFileName, this)};
   __property bool HaveFullFileName  = { read = GetHaveFullFileName };
@@ -233,31 +233,33 @@ public:
   ROProperty<bool> IsEncrypted{nb::bind(&TRemoteFile::GetIsEncrypted, this)};
 
   TRemoteFileList *GetDirectory() const { return FDirectory; }
-  void SetDirectory(TRemoteFileList *Value) { FDirectory = Value; }
+  void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
   void SetSize(int64_t Value) { FSize = Value; }
   const TRemoteToken &GetFileOwner() const { return FOwner; }
   TRemoteToken &GetFileOwner() { return FOwner; }
-  void SetFileOwner(const TRemoteToken &Value) { FOwner = Value; }
+  void SetFileOwner(const TRemoteToken & Value) { FOwner = Value; }
   const TRemoteToken &GetFileGroup() const { return FGroup; }
   TRemoteToken &GetFileGroup() { return FGroup; }
-  void SetFileGroup(const TRemoteToken &Value) { FGroup = Value; }
+  void SetFileGroup(const TRemoteToken & Value) { FGroup = Value; }
   UnicodeString GetFileName() const { return FFileName; }
-  void SetFileName(const UnicodeString Value) { FFileName = Value; }
+  void SetFileName(const UnicodeString & Value) { FFileName = Value; }
   UnicodeString GetDisplayName() const { return FDisplayName; }
   void SetDisplayName(const UnicodeString Value) { FDisplayName = Value; }
   TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
-  void SetModificationFmt(TModificationFmt Value) { FModificationFmt = Value; }
+  void SetModificationFmt(const TModificationFmt & Value) { FModificationFmt = Value; }
   TDateTime GetLastAccess() const { return FLastAccess; }
-  void SetLastAccess(const TDateTime &Value) { FLastAccess = Value; }
+  void SetLastAccess(const TDateTime & Value) { FLastAccess = Value; }
   bool GetIsSymLink() const { return FIsSymLink; }
   UnicodeString GetLinkTo() const { return FLinkTo; }
-  void SetLinkTo(UnicodeString Value) { FLinkTo = Value; }
-  TRights *GetRights() const { return FRights; }
+  void SetLinkTo(const UnicodeString & Value) { FLinkTo = Value; }
+  const TRights * GetRights() const { return FRights; }
+  TRights * GetRightsNotConst() { return FRights; }
   UnicodeString GetHumanRights() const { return FHumanRights; }
   void SetHumanRights(const UnicodeString Value) { FHumanRights = Value; }
-  TTerminal *GetTerminal() const { return FTerminal; }
-  void SetFullFileName(const UnicodeString Value) { FFullFileName = Value; }
+  const TTerminal * GetTerminal() const { return FTerminal; }
+  TTerminal * GetTerminalNotConst() { return const_cast<TTerminal *>(FTerminal); }
+  void SetFullFileName(const UnicodeString & Value) { FFullFileName = Value; }
 
 private:
   void Init();
@@ -304,7 +306,7 @@ protected:
   TDateTime FTimestamp;
 public:
   TRemoteFile * GetFile(Integer Index) const;
-  virtual void SetDirectory(const UnicodeString Value);
+  virtual void SetDirectory(const UnicodeString & Value);
   UnicodeString GetFullDirectory() const;
   Boolean GetIsRoot() const;
   TRemoteFile * GetParentDirectory();
@@ -359,7 +361,7 @@ private:
   TRemoteFile * FParentDirectory{nullptr};
   TRemoteFile * FThisDirectory{nullptr};
 public:
-  virtual void SetDirectory(const UnicodeString Value) override;
+  virtual void SetDirectory(const UnicodeString & Value) override;
   Boolean GetLoaded() const;
   void SetIncludeParentDirectory(Boolean Value);
   void SetIncludeThisDirectory(Boolean Value);
@@ -531,7 +533,7 @@ public:
   UnicodeString GetChmodStr(int Directory) const;
 
   __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
-  RWPropertySimple<bool> AllowUndef{&FAllowUndef, nb::bind(&TRights::SetAllowUndef, this)};
+  RWPropertySimple1<bool> AllowUndef{&FAllowUndef, nb::bind(&TRights::SetAllowUndef, this)};
   __property bool IsUndef = { read = GetIsUndef };
   ROProperty<bool> IsUndef{nb::bind(&TRights::GetIsUndef, this)};
   __property UnicodeString ModeStr = { read = GetModeStr };
@@ -563,10 +565,10 @@ private:
 public:
   bool GetIsUndef() const;
   UnicodeString GetModeStr() const;
-  void SetNumber(uint16_t Value);
+  void SetNumber(const uint16_t & Value);
   UnicodeString GetText() const;
-  void SetText(const UnicodeString Value);
-  void SetOctal(const UnicodeString AValue);
+  void SetText(const UnicodeString & Value);
+  void SetOctal(const UnicodeString & AValue);
   uint16_t GetNumber() const;
   uint16_t GetNumberSet() const { return FSet; }
   uint16_t GetNumberUnset() const { return FUnset; }

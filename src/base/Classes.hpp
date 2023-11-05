@@ -622,11 +622,11 @@ public:
 public:
   int64_t GetPosition() const;
   virtual int64_t GetSize() const;
-  virtual void SetSize(const int64_t NewSize) = 0;
-  void SetPosition(const int64_t Pos);
+  virtual void SetSize(int64_t NewSize) = 0;
+  void SetPosition(int64_t Pos);
 
-  RWProperty<int64_t> Position{nb::bind(&TStream::GetPosition, this), nb::bind(&TStream::SetPosition, this)};
-  RWProperty<int64_t> Size{nb::bind(&TStream::GetSize, this), nb::bind(&TStream::SetSize, this)};
+  RWProperty3<int64_t> Size{nb::bind(&TStream::GetSize, this), nb::bind(&TStream::SetSize, this)};
+  RWProperty3<int64_t> Position{nb::bind(&TStream::GetPosition, this), nb::bind(&TStream::SetPosition, this)};
 };
 
 class NB_CORE_EXPORT THandleStream : public TStream
@@ -644,7 +644,7 @@ public:
   HANDLE GetHandle() const { return FHandle; }
 
 protected:
-  virtual void SetSize(const int64_t NewSize) override;
+  virtual void SetSize(int64_t NewSize) override;
 
 protected:
   HANDLE FHandle{};
@@ -699,13 +699,13 @@ public:
   void SaveToFile(UnicodeString AFileName);
 
   void Clear();
-  void LoadFromStream(TStream *Stream);
-  __removed void LoadFromFile(UnicodeString AFileName);
+  void LoadFromStream(TStream * Stream);
+  __removed void LoadFromFile(const UnicodeString & AFileName);
   virtual int64_t GetSize() const override { return FSize; }
-  virtual void SetSize(const int64_t NewSize) override;
-  virtual int64_t Write(const void *Buffer, int64_t Count) override;
+  virtual void SetSize(int64_t NewSize) override;
+  virtual int64_t Write(const void * Buffer, int64_t Count) override;
 
-  void *GetMemory() const { return FMemory; }
+  void * GetMemory() const { return FMemory; }
 
 protected:
   void SetPointer(void * Ptr, int64_t ASize);

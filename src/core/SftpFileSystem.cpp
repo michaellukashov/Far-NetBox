@@ -691,7 +691,7 @@ public:
     return GetString(Utf);
   }
 
-  void GetFile(TRemoteFile *AFile, int32_t Version, TDSTMode DSTMode, TAutoSwitch &Utf, bool SignedTS, bool Complete)
+  void GetFile(TRemoteFile * AFile, int32_t Version, TDSTMode DSTMode, TAutoSwitch &Utf, bool SignedTS, bool Complete)
   {
     DebugAssert(AFile);
     UnicodeString ListingStr;
@@ -860,7 +860,7 @@ public:
       wchar_t Type = FILETYPE_DEFAULT;
       if (FLAGSET(Flags, SSH_FILEXFER_ATTR_PERMISSIONS))
       {
-        AFile->GetRights()->SetNumber(static_cast<uint16_t>(Permissions & TRights::rfAllSpecials));
+        AFile->GetRightsNotConst()->SetNumber(static_cast<uint16_t>(Permissions & TRights::rfAllSpecials));
         if (FLAGSET(Permissions, TRights::rfDirectory))
         {
           Type = FILETYPE_DIRECTORY;

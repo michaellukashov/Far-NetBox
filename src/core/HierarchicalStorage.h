@@ -75,7 +75,7 @@ public:
   __property UnicodeString CurrentSubKey  = { read = GetCurrentSubKey };
   ROProperty<UnicodeString> CurrentSubKey{nb::bind(&THierarchicalStorage::GetCurrentSubKey, this)};
   __property TStorageAccessMode AccessMode  = { read = FAccessMode, write = SetAccessMode };
-  RWProperty<TStorageAccessMode> AccessMode{nb::bind(&THierarchicalStorage::GetAccessMode, this), nb::bind(&THierarchicalStorage::SetAccessMode, this) };
+  RWProperty3<TStorageAccessMode> AccessMode{nb::bind(&THierarchicalStorage::GetAccessMode, this), nb::bind(&THierarchicalStorage::SetAccessMode, this) };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
   bool& Explicit{FExplicit};
   __property bool ForceSave = { read = FForceSave, write = FForceSave };

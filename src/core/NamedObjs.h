@@ -20,7 +20,7 @@ public:
   const bool& Hidden{FHidden};
 
   UnicodeString GetName() const { return FName; }
-  void SetName(const UnicodeString Value);
+  void SetName(const UnicodeString & Value);
   bool GetHidden() const { return FHidden; }
 
   explicit TNamedObject() noexcept : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}

@@ -88,15 +88,15 @@ private:
   TTransferInEvent FOnTransferIn;
 
 public:
-  void SetLocalInvalidChars(const UnicodeString Value);
+  void SetLocalInvalidChars(const UnicodeString & Value);
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString AFileName) const;
   void DoGetInfoStr(UnicodeString Separator, int32_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString ALink, UnicodeString & ScriptArgs
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const;
-  TStrings *GetTransferSkipList() const;
-  void SetTransferSkipList(TStrings *Value);
+  const TStrings * GetTransferSkipList() const;
+  void SetTransferSkipList(const TStrings *Value);
 
 public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType) noexcept;
@@ -136,7 +136,7 @@ public:
   __property bool PreserveReadOnly = { read = FPreserveReadOnly, write = FPreserveReadOnly };
   bool& PreserveReadOnly{FPreserveReadOnly};
   __property bool PreserveTime = { read = FPreserveTime, write = FPreserveTime };
-  RWProperty<bool> PreserveTime{nb::bind(&TCopyParamType::GetPreserveTime, this), nb::bind(&TCopyParamType::SetPreserveTime, this)};
+  RWProperty3<bool> PreserveTime{nb::bind(&TCopyParamType::GetPreserveTime, this), nb::bind(&TCopyParamType::SetPreserveTime, this)};
   __property bool PreserveTimeDirs = { read = FPreserveTimeDirs, write = FPreserveTimeDirs };
   bool& PreserveTimeDirs{FPreserveTimeDirs};
   __property TRights Rights = { read = FRights, write = FRights };
@@ -158,7 +158,7 @@ public:
   __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
   wchar_t& InvalidCharsReplacement{FInvalidCharsReplacement};
   __property bool ReplaceInvalidChars = { read = GetReplaceInvalidChars, write = SetReplaceInvalidChars };
-  RWProperty<bool> ReplaceInvalidChars{nb::bind(&TCopyParamType::GetReplaceInvalidChars, this), nb::bind(&TCopyParamType::SetReplaceInvalidChars, this)};
+  RWProperty3<bool> ReplaceInvalidChars{nb::bind(&TCopyParamType::GetReplaceInvalidChars, this), nb::bind(&TCopyParamType::SetReplaceInvalidChars, this)};
   __property UnicodeString LocalInvalidChars = { read = FLocalInvalidChars, write = SetLocalInvalidChars };
   RWProperty<UnicodeString> LocalInvalidChars{nb::bind(&TCopyParamType::GetLocalInvalidChars, this), nb::bind(&TCopyParamType::SetLocalInvalidChars, this)};
   __property bool CalculateSize = { read = FCalculateSize, write = FCalculateSize };
@@ -168,7 +168,7 @@ public:
   __property TFileMasks IncludeFileMask = { read = FIncludeFileMask, write = FIncludeFileMask };
   TFileMasks& IncludeFileMask{FIncludeFileMask};
   __property TStrings * TransferSkipList = { read = GetTransferSkipList, write = SetTransferSkipList };
-  RWProperty<TStrings *>TransferSkipList{nb::bind(&TCopyParamType::GetTransferSkipList, this), nb::bind(&TCopyParamType::SetTransferSkipList, this)};
+  RWProperty1<TStrings>TransferSkipList{nb::bind(&TCopyParamType::GetTransferSkipList, this), nb::bind(&TCopyParamType::SetTransferSkipList, this)};
   __property UnicodeString TransferResumeFile = { read = FTransferResumeFile, write = FTransferResumeFile };
   UnicodeString& TransferResumeFile{FTransferResumeFile};
   __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };

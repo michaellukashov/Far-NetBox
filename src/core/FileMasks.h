@@ -49,10 +49,10 @@ public:
   bool operator==(const TFileMasks &rhm) const;
   bool operator==(const UnicodeString & rhs) const;
 
-  void SetMask(const UnicodeString Mask);
+  void SetMask(const UnicodeString & Mask);
 
   bool MatchesFileName(const UnicodeString & FileName, bool Directory = false, const TParams * Params = nullptr) const;
-  bool Matches(const UnicodeString FileName, bool Local, bool Directory,
+  bool Matches(const UnicodeString & FileName, bool Local, bool Directory,
     const TParams * Params = nullptr) const;
   bool Matches(const UnicodeString FileName, bool Local, bool Directory,
     const TParams * Params, bool RecurseInclude, bool & ImplicitMatch) const;
@@ -113,8 +113,8 @@ private:
   mutable TStrings *FMasksStr[4]{};
 
 private:
-  void SetStr(const UnicodeString Value, bool SingleMask);
-  void SetMasks(const UnicodeString Value);
+  void SetStr(const UnicodeString & Value, bool SingleMask);
+  void SetMasks(const UnicodeString & Value);
   void CreateMaskMask(
     const UnicodeString Mask, int32_t Start, int32_t End, bool Ex, TMask::TKind & MaskKind, Masks::TMask *& MaskMask);
   void CreateMask(const UnicodeString MaskStr, int32_t MaskStart,

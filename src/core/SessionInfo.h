@@ -382,7 +382,7 @@ public:
   __property bool Enabled = { read = FEnabled, write = SetEnabled };
 
   const UnicodeString& CurrentFileName{FCurrentFileName};
-  RWProperty<bool> Enabled{nb::bind(&TActionLog::GetEnabled, this), nb::bind(&TActionLog::SetEnabled, this)};
+  RWProperty3<bool> Enabled{nb::bind(&TActionLog::GetEnabled, this), nb::bind(&TActionLog::SetEnabled, this)};
   UnicodeString GetCurrentFileName() const { return FCurrentFileName; }
   bool GetEnabled() const { return FEnabled; }
 

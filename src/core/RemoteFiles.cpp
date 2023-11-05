@@ -1100,7 +1100,7 @@ void TRemoteFile::ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt Modif
   }
 }
 
-void TRemoteFile::SetModification(const TDateTime Value)
+void TRemoteFile::SetModification(const TDateTime & Value)
 {
   if (FModification != Value)
   {
@@ -1124,7 +1124,7 @@ UnicodeString TRemoteFile::GetExtension() const
   return base::UnixExtractFileExt(FFileName);
 }
 
-void TRemoteFile::SetRights(TRights *Value)
+void TRemoteFile::SetRights(const TRights * Value)
 {
   FRights->Assign(Value);
 }
@@ -1136,7 +1136,7 @@ UnicodeString TRemoteFile::GetRightsStr() const
   return FRights->GetUnknown() ? GetHumanRights() : FRights->GetText();
 }
 
-void TRemoteFile::SetListingStr(const UnicodeString Value)
+void TRemoteFile::SetListingStr(const UnicodeString & Value)
 {
   // Value stored in 'Value' can be used for error message
   UnicodeString Line = Value;
@@ -1176,10 +1176,10 @@ void TRemoteFile::SetListingStr(const UnicodeString Value)
 
     // Rights string may contain special permission attributes (S,t, ...)
     TODO("maybe no longer necessary, once we can handle the special permissions");
-    GetRights()->SetAllowUndef(True);
+    GetRightsNotConst()->SetAllowUndef(True);
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
-    GetRights()->SetText(Line.SubString(1, 9));
+    GetRightsNotConst()->SetText(Line.SubString(1, 9));
     Line.Delete(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
@@ -1551,16 +1551,16 @@ void TRemoteFile::FindLinkedFile()
   else
   {
     DebugAssert(GetTerminal()->GetResolvingSymlinks());
-    GetTerminal()->SetExceptionOnFail(true);
+    GetTerminalNotConst()->SetExceptionOnFail(true);
     try
     {
       try__finally
       {
-        GetTerminal()->ReadSymlink(this, FLinkedFile);
+        GetTerminalNotConst()->ReadSymlink(this, FLinkedFile);
       },
       __finally
       {
-        GetTerminal()->SetExceptionOnFail(false);
+        GetTerminalNotConst()->SetExceptionOnFail(false);
       } end_try__finally
     }
     catch (Exception &E)
@@ -1569,7 +1569,7 @@ void TRemoteFile::FindLinkedFile()
       {
         throw;
       }
-      GetTerminal()->GetLog()->AddException(&E);
+      GetTerminalNotConst()->GetLog()->AddException(&E);
     }
   }
 }
@@ -1646,7 +1646,7 @@ int32_t TRemoteFile::GetAttr() const
   return Result;
 }
 
-void TRemoteFile::SetTerminal(TTerminal *Value)
+void TRemoteFile::SetTerminal(const TTerminal * Value)
 {
   FTerminal = Value;
   if (FLinkedFile)
@@ -1749,7 +1749,7 @@ void TRemoteFileList::Reset()
   TObjectList::Clear();
 }
 
-void TRemoteFileList::SetDirectory(const UnicodeString Value)
+void TRemoteFileList::SetDirectory(const UnicodeString & Value)
 {
   FDirectory = base::UnixExcludeTrailingBackslash(Value);
 }
@@ -1835,7 +1835,7 @@ void TRemoteDirectory::Reset()
   TRemoteFileList::Reset();
 }
 
-void TRemoteDirectory::SetDirectory(const UnicodeString Value)
+void TRemoteDirectory::SetDirectory(const UnicodeString & Value)
 {
   TRemoteFileList::SetDirectory(Value);
 }
@@ -2449,7 +2449,7 @@ void TRights::SetAllowUndef(bool Value)
   }
 }
 
-void TRights::SetText(const UnicodeString Value)
+void TRights::SetText(const UnicodeString & Value)
 {
   if (Value != GetText())
   {
@@ -2572,7 +2572,7 @@ UnicodeString TRights::GetText() const
   }
 }
 
-void TRights::SetOctal(const UnicodeString AValue)
+void TRights::SetOctal(const UnicodeString & AValue)
 {
   UnicodeString Value(AValue);
   if (Value.Length() == 3)
@@ -2631,7 +2631,7 @@ UnicodeString TRights::GetOctal() const
   return Result;
 }
 
-void TRights::SetNumber(uint16_t Value)
+void TRights::SetNumber(const uint16_t & Value)
 {
   if ((FSet != Value) || ((FSet | FUnset) != rfAllSpecials))
   {

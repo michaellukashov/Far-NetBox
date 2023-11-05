@@ -2727,7 +2727,7 @@ void TTerminal::ClearCaches()
   FFoldersScannedForEncryptedFiles.clear();
 }
 
-void TTerminal::ClearCachedFileList(UnicodeString APath,
+void TTerminal::ClearCachedFileList(const UnicodeString & APath,
   bool SubDirs)
 {
   FDirectoryCache->ClearFileList(APath, SubDirs);
@@ -2779,7 +2779,7 @@ TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString APath, TDateT
   return Result.release();
 }
 
-void TTerminal::TerminalSetCurrentDirectory(UnicodeString AValue)
+void TTerminal::TerminalSetCurrentDirectory(const UnicodeString & AValue)
 {
   DebugAssert(FFileSystem);
   if (AValue != FFileSystem->RemoteCurrentDirectory)

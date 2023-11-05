@@ -300,12 +300,12 @@ public:
   const TRemoteTokenList * GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
   const TRemoteTokenList * GetUsers() const { return const_cast<TTerminal *>(this)->GetUsers(); }
   const TRemoteTokenList * GetMembership() const { return const_cast<TTerminal *>(this)->GetMembership(); }
-  void TerminalSetCurrentDirectory(UnicodeString AValue);
+  void TerminalSetCurrentDirectory(const UnicodeString & AValue);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(int32_t /*TFSCommand*/ ACmd);
   UnicodeString TerminalGetUserName() const;
   bool GetAreCachesEmpty() const;
-  void ClearCachedFileList(const UnicodeString APath, bool SubDirs);
+  void ClearCachedFileList(const UnicodeString & APath, bool SubDirs);
   void AddCachedFileList(TRemoteFileList *FileList);
   bool GetCommandSessionOpened() const;
   TTerminal * GetCommandSession();
@@ -730,7 +730,7 @@ public:
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
   RWProperty<UnicodeString> CurrentDirectory{nb::bind(&TTerminal::RemoteGetCurrentDirectory, this), nb::bind(&TTerminal::TerminalSetCurrentDirectory, this)};
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
-  RWProperty<bool> ExceptionOnFail{nb::bind(&TTerminal::GetExceptionOnFail, this), nb::bind(&TTerminal::SetExceptionOnFail, this)};
+  RWProperty3<bool> ExceptionOnFail{nb::bind(&TTerminal::GetExceptionOnFail, this), nb::bind(&TTerminal::SetExceptionOnFail, this)};
   __property TRemoteDirectory * Files = { read = FFiles };
   __property TNotifyEvent OnChangeDirectory = { read = FOnChangeDirectory, write = FOnChangeDirectory };
   __property TReadDirectoryEvent OnReadDirectory = { read = FOnReadDirectory, write = FOnReadDirectory };

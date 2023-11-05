@@ -454,7 +454,7 @@ bool TFileMasks::DoMatches(
   return Result;
 }
 
-bool TFileMasks::Matches(const UnicodeString FileName, bool Local,
+bool TFileMasks::Matches(const UnicodeString & FileName, bool Local,
   bool Directory, const TParams * Params) const
 {
   bool ImplicitMatch;
@@ -772,7 +772,7 @@ bool TFileMasks::MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask,
   return Result;
 }
 
-void TFileMasks::SetMasks(const UnicodeString Value)
+void TFileMasks::SetMasks(const UnicodeString & Value)
 {
   if (FStr != Value)
   {
@@ -780,12 +780,12 @@ void TFileMasks::SetMasks(const UnicodeString Value)
   }
 }
 
-void TFileMasks::SetMask(const UnicodeString Mask)
+void TFileMasks::SetMask(const UnicodeString & Mask)
 {
   SetStr(Mask, true);
 }
 
-void TFileMasks::SetStr(const UnicodeString Str, bool SingleMask)
+void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
 {
   FAnyRelative = false;
   UnicodeString Backup = FStr;

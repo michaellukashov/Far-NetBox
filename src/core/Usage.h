@@ -30,7 +30,7 @@ public:
   static int32_t CalculateCounterSize(int64_t Size);
 
   __property bool Collect = { read = FCollect, write = SetCollect };
-  RWProperty<bool> Collect{nb::bind(&TUsage::GetCollect, this), nb::bind(&TUsage::SetCollect, this)};
+  RWProperty3<bool> Collect{nb::bind(&TUsage::GetCollect, this), nb::bind(&TUsage::SetCollect, this)};
 
 private:
   using TCounters = nb::map_t<UnicodeString, int32_t>;

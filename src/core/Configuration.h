@@ -176,14 +176,14 @@ public:
   UnicodeString GetPuttySessionsSubKey() const;
   void SetRandomSeedFile(UnicodeString Value);
   UnicodeString GetRandomSeedFileName() const;
-  void SetPuttyRegistryStorageKey(UnicodeString Value);
+  void SetPuttyRegistryStorageKey(const UnicodeString & Value);
   UnicodeString GetSshHostKeysSubKey() const;
   UnicodeString GetRootKeyStr() const;
   UnicodeString GetConfigurationSubKey() const;
   TEOLType GetLocalEOLType() const;
   void SetLogging(bool Value);
   bool GetLogging() const;
-  void SetLogFileName(UnicodeString Value);
+  void SetLogFileName(const UnicodeString & Value);
   UnicodeString GetLogFileName() const;
   bool GetLogToFile() const;
   void SetLogFileAppend(bool Value);
@@ -204,8 +204,8 @@ public:
   UnicodeString GetIniFileStorageNameForReadingWriting() const;
   UnicodeString GetIniFileStorageNameForReading();
   UnicodeString GetIniFileStorageName(bool ReadingOnly) const;
-  void SetOptionsStorage(TStrings * Value);
-  TStrings *GetOptionsStorage();
+  void SetOptionsStorage(const TStrings * Value);
+  const TStrings * GetOptionsStorage() const;
   UnicodeString GetFileInfoString(const UnicodeString & Key) const;
   void SetSessionReopenAuto(int32_t Value);
   void SetSessionReopenBackground(int32_t Value);
@@ -341,8 +341,8 @@ public:
   THierarchicalStorage *CreateConfigStorage();
   THierarchicalStorage * CreateConfigRegistryStorage();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
-  void TemporaryLogging(const UnicodeString ALogFileName);
-  void TemporaryActionsLogging(const UnicodeString ALogFileName);
+  void TemporaryLogging(const UnicodeString & ALogFileName);
+  void TemporaryActionsLogging(const UnicodeString & ALogFileName);
   void TemporaryLogProtocol(int32_t ALogProtocol);
   void TemporaryLogSensitive(bool ALogSensitive);
   void TemporaryLogMaxSize(int64_t ALogMaxSize);
@@ -375,7 +375,7 @@ public:
   __property TUsage *Usage = { read = FUsage };
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
-  RWProperty<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
+  RWProperty3<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
   __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
   __property UnicodeString PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
   __property UnicodeString PuttySessionsKey  = { read=DoGetPuttySessionsKey };
@@ -411,7 +411,7 @@ public:
   __property UnicodeString CompanyName = { read = GetCompanyName };
   __property bool IsUnofficial = { read = GetIsUnofficial };
   __property bool Logging  = { read = FLogging, write = SetLogging };
-  RWProperty<bool> Logging{nb::bind(&TConfiguration::GetLogging, this), nb::bind(&TConfiguration::SetLogging, this)};
+  RWProperty3<bool> Logging{nb::bind(&TConfiguration::GetLogging, this), nb::bind(&TConfiguration::SetLogging, this)};
   __property UnicodeString LogFileName  = { read = FLogFileName, write = SetLogFileName };
   __property bool LogToFile  = { read = GetLogToFile };
   ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
@@ -420,7 +420,7 @@ public:
   __property int64_t LogMaxSize  = { read = FLogMaxSize, write = SetLogMaxSize };
   __property int LogMaxCount  = { read = FLogMaxCount, write = SetLogMaxCount };
   __property int LogProtocol  = { read = FLogProtocol, write = SetLogProtocol };
-  RWProperty<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
+  RWProperty3<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
   __property int ActualLogProtocol  = { read = FActualLogProtocol };
   ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read = FLogActions, write = SetLogActions };
@@ -455,7 +455,7 @@ public:
   int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
   __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
   __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
-  RWPropertySimple<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
+  RWPropertySimple1<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
   __property int ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
   int32_t& ParallelTransferThreshold{FParallelTransferThreshold};
   __property int KeyVersion = { read = FKeyVersion, write = FKeyVersion };
@@ -480,7 +480,7 @@ public:
   __property UnicodeString IniFileStorageName = { read=GetIniFileStorageNameForReadingWriting };
   __property UnicodeString IniFileStorageNameForReading = { read=GetIniFileStorageNameForReading };
   __property TStrings * OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
-  RWProperty<TStrings*> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
+  RWProperty1<TStrings> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
   __property bool Persistent = { read = GetPersistent };
   ROProperty<bool> Persistent{nb::bind(&TConfiguration::GetPersistent, this)};
   __property bool ForceSave = { read = FForceSave, write = FForceSave };

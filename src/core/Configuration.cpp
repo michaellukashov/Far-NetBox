@@ -1624,7 +1624,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly) const
   return Result;
 }
 
-void TConfiguration::SetOptionsStorage(TStrings * Value)
+void TConfiguration::SetOptionsStorage(const TStrings * Value)
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
   if (FOptionsStorage.get() == nullptr)
@@ -1634,7 +1634,7 @@ void TConfiguration::SetOptionsStorage(TStrings * Value)
   FOptionsStorage->AddStrings(Value);
 }
 
-TStrings * TConfiguration::GetOptionsStorage()
+const TStrings * TConfiguration::GetOptionsStorage() const
 {
   return FOptionsStorage.get();
 }
@@ -2050,7 +2050,7 @@ void TConfiguration::SetParallelDurationThreshold(int32_t Value)
   SET_CONFIG_PROPERTY(ParallelDurationThreshold);
 }
 
-void TConfiguration::SetPuttyRegistryStorageKey(UnicodeString Value)
+void TConfiguration::SetPuttyRegistryStorageKey(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY_EX(PuttyRegistryStorageKey,
     RefreshPuttySshHostCAList());
@@ -2071,7 +2071,7 @@ void TConfiguration::SetCollectUsage(bool Value)
   FUsage->SetCollect(Value);
 }
 
-void TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
+void TConfiguration::TemporaryLogging(const UnicodeString & ALogFileName)
 {
   if (SameText(ExtractFileExt(ALogFileName), ".xml"))
   {
@@ -2085,7 +2085,7 @@ void TConfiguration::TemporaryLogging(const UnicodeString ALogFileName)
   }
 }
 
-void TConfiguration::TemporaryActionsLogging(const UnicodeString ALogFileName)
+void TConfiguration::TemporaryActionsLogging(const UnicodeString & ALogFileName)
 {
   FLogActions = true;
   FActionsLogFileName = ALogFileName;
@@ -2130,7 +2130,7 @@ bool TConfiguration::GetLogging() const
   return FPermanentLogging;
 }
 
-void TConfiguration::SetLogFileName(UnicodeString Value)
+void TConfiguration::SetLogFileName(const UnicodeString & Value)
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
   if (GetLogFileName() != Value)

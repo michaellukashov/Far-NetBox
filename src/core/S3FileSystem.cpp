@@ -1803,8 +1803,8 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
       AddToList(HumanRights, L"+", Delimiter);
     }
 
-    File->Rights->Number = Permissions;
-    File->Rights->SetTextOverride(HumanRights);
+    const_cast<TRemoteFile *>(File)->GetRightsNotConst()->Number = Permissions;
+    const_cast<TRemoteFile *>(File)->GetRightsNotConst()->SetTextOverride(HumanRights);
     Result = true;
   }
 }

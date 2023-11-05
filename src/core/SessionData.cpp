@@ -2953,7 +2953,7 @@ UnicodeString TSessionData::GetSiteKey() const
   return FormatSiteKey(GetHostNameExpanded(), GetPortNumber());
 }
 
-void TSessionData::SetHostName(UnicodeString AValue)
+void TSessionData::SetHostName(const UnicodeString & AValue)
 {
   if (FHostName != AValue)
   {
@@ -3003,12 +3003,12 @@ void TSessionData::SetPortNumber(int32_t value)
   SET_SESSION_PROPERTY(PortNumber);
 }
 
-void TSessionData::SetShell(UnicodeString value)
+void TSessionData::SetShell(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(Shell);
 }
 
-void TSessionData::SetSftpServer(UnicodeString value)
+void TSessionData::SetSftpServer(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(SftpServer);
 }
@@ -3018,7 +3018,7 @@ void TSessionData::SetClearAliases(bool value)
   SET_SESSION_PROPERTY(ClearAliases);
 }
 
-void TSessionData::SetListingCommand(UnicodeString value)
+void TSessionData::SetListingCommand(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(ListingCommand);
 }
@@ -3033,7 +3033,7 @@ void TSessionData::SetUnsetNationalVars(bool value)
   SET_SESSION_PROPERTY(UnsetNationalVars);
 }
 
-void TSessionData::SessionSetUserName(UnicodeString value)
+void TSessionData::SessionSetUserName(const UnicodeString & value)
 {
   // Avoid password recryption (what may popup master password prompt)
   if (FUserName != value)
@@ -3080,7 +3080,7 @@ UnicodeString TSessionData::GetUserNameSource() const
   return Result;
 }
 
-void TSessionData::SetPassword(UnicodeString AValue)
+void TSessionData::SetPassword(const UnicodeString & AValue)
 {
   RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(Password);
@@ -3091,7 +3091,7 @@ UnicodeString TSessionData::GetPassword() const
   return DecryptPassword(FPassword, GetSessionPasswordEncryptionKey());
 }
 
-void TSessionData::SetNewPassword(UnicodeString AValue)
+void TSessionData::SetNewPassword(const UnicodeString & AValue)
 {
   RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(NewPassword);
@@ -3287,7 +3287,7 @@ void TSessionData::SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const Unic
   }
 }
 
-void TSessionData::SetCipherList(UnicodeString Value)
+void TSessionData::SetCipherList(const UnicodeString & Value)
 {
   SetAlgoList(FCiphers, DefaultCipherList, CipherNames, CIPHER_COUNT, cipWarn, Value);
 }
@@ -3314,7 +3314,7 @@ TKex TSessionData::GetKex(int32_t Index) const
   return FKex[Index];
 }
 
-void TSessionData::SetKexList(UnicodeString Value)
+void TSessionData::SetKexList(const UnicodeString & Value)
 {
   SetAlgoList(FKex, DefaultKexList, KexNames, KEX_COUNT, kexWarn, Value);
 }
@@ -3341,7 +3341,7 @@ THostKey TSessionData::GetHostKeys(int32_t Index) const
   return FHostKeys[Index];
 }
 
-void TSessionData::SetHostKeyList(UnicodeString Value)
+void TSessionData::SetHostKeyList(const UnicodeString & Value)
 {
   SetAlgoList(FHostKeys, DefaultHostKeyList, HostKeyNames, HOSTKEY_COUNT, hkWarn, Value);
 }
@@ -3373,7 +3373,7 @@ TGssLib TSessionData::GetGssLib(int32_t Index) const
   return FGssLib[Index];
 }
 
-void TSessionData::SetGssLibList(UnicodeString Value)
+void TSessionData::SetGssLibList(const UnicodeString & Value)
 {
   SetAlgoList(FGssLib, DefaultGssLibList, GssLibNames, GSSLIB_COUNT, TGssLib(-1), Value);
 }
@@ -3388,12 +3388,12 @@ UnicodeString TSessionData::GetGssLibList() const
   return Result;
 }
 
-void TSessionData::SetGssLibCustom(UnicodeString value)
+void TSessionData::SetGssLibCustom(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(GssLibCustom);
 }
 
-void TSessionData::SetPublicKeyFile(UnicodeString Value)
+void TSessionData::SetPublicKeyFile(const UnicodeString & Value)
 {
   if (FPublicKeyFile != Value)
   {
@@ -3409,7 +3409,7 @@ void TSessionData::SetPublicKeyFile(UnicodeString Value)
   }
 }
 
-void TSessionData::SetDetachedCertificate(UnicodeString value)
+void TSessionData::SetDetachedCertificate(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(DetachedCertificate);
 }
@@ -3426,7 +3426,7 @@ UnicodeString TSessionData::ResolvePublicKeyFile()
   return Result;
 }
 
-void TSessionData::SetPassphrase(UnicodeString AValue)
+void TSessionData::SetPassphrase(const UnicodeString & AValue)
 {
   RawByteString value = EncryptPassword(AValue, GetPublicKeyFile());
   SET_SESSION_PROPERTY(Passphrase);
@@ -3437,7 +3437,7 @@ UnicodeString TSessionData::GetPassphrase() const
   return DecryptPassword(FPassphrase, GetPublicKeyFile());
 }
 
-void TSessionData::SetReturnVar(UnicodeString value)
+void TSessionData::SetReturnVar(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(ReturnVar);
 }
@@ -3477,7 +3477,7 @@ void TSessionData::SetTimeout(int32_t value)
   SET_SESSION_PROPERTY(Timeout);
 }
 
-void TSessionData::SetFSProtocol(TFSProtocol value)
+void TSessionData::SetFSProtocol(const TFSProtocol & value)
 {
   SET_SESSION_PROPERTY(FSProtocol);
 }
@@ -3522,7 +3522,7 @@ bool TSessionData::GetDefaultShell() const
   return GetShell().IsEmpty();
 }
 
-void TSessionData::SetPuttyProtocol(UnicodeString value)
+void TSessionData::SetPuttyProtocol(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(PuttyProtocol);
 }
@@ -3550,12 +3550,12 @@ void TSessionData::SetPingType(TPingType value)
   SET_SESSION_PROPERTY(PingType);
 }
 
-void TSessionData::SetAddressFamily(TAddressFamily value)
+void TSessionData::SetAddressFamily(const TAddressFamily & value)
 {
   SET_SESSION_PROPERTY(AddressFamily);
 }
 
-void TSessionData::SetRekeyData(UnicodeString value)
+void TSessionData::SetRekeyData(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(RekeyData);
 }
@@ -4293,12 +4293,12 @@ void TSessionData::SetTimeDifferenceAuto(bool value)
   SET_SESSION_PROPERTY(TimeDifferenceAuto);
 }
 
-void TSessionData::SetLocalDirectory(UnicodeString value)
+void TSessionData::SetLocalDirectory(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(LocalDirectory);
 }
 
-void TSessionData::SetOtherLocalDirectory(UnicodeString value)
+void TSessionData::SetOtherLocalDirectory(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(OtherLocalDirectory);
 }
@@ -4308,7 +4308,7 @@ UnicodeString TSessionData::GetLocalDirectoryExpanded() const
   return ExpandFileName(::ExpandEnvironmentVariables(LocalDirectory()));
 }
 
-void TSessionData::SetRemoteDirectory(UnicodeString value)
+void TSessionData::SetRemoteDirectory(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(RemoteDirectory);
 }
@@ -4393,12 +4393,12 @@ void TSessionData::SetSendBuf(int value)
   SET_SESSION_PROPERTY(SendBuf);
 }
 
-void TSessionData::SetSourceAddress(const UnicodeString value)
+void TSessionData::SetSourceAddress(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(SourceAddress);
 }
 
-void TSessionData::SetProtocolFeatures(const UnicodeString value)
+void TSessionData::SetProtocolFeatures(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(ProtocolFeatures);
 }
@@ -4425,12 +4425,12 @@ void TSessionData::SetProxyPort(int32_t value)
   SET_SESSION_PROPERTY(ProxyPort);
 }
 
-void TSessionData::SetProxyUsername(UnicodeString value)
+void TSessionData::SetProxyUsername(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(ProxyUsername);
 }
 
-void TSessionData::SetProxyPassword(UnicodeString AValue)
+void TSessionData::SetProxyPassword(const UnicodeString & AValue)
 {
   RawByteString value = EncryptPassword(AValue, GetProxyUsername() + GetProxyHost());
   SET_SESSION_PROPERTY(ProxyPassword);
@@ -4639,12 +4639,12 @@ void TSessionData::FromURI(UnicodeString ProxyURI,
     ProxyMethod = pmHTTP; // default Value
 }
 
-void TSessionData::SetProxyTelnetCommand(UnicodeString value)
+void TSessionData::SetProxyTelnetCommand(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(ProxyTelnetCommand);
 }
 
-void TSessionData::SetProxyLocalCommand(UnicodeString value)
+void TSessionData::SetProxyLocalCommand(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(ProxyLocalCommand);
 }
@@ -4748,7 +4748,7 @@ void TSessionData::SetTunnel(bool value)
   SET_SESSION_PROPERTY(Tunnel);
 }
 
-void TSessionData::SetTunnelHostName(UnicodeString value)
+void TSessionData::SetTunnelHostName(const UnicodeString & value)
 {
   if (FTunnelHostName != value)
   {
@@ -4775,7 +4775,7 @@ void TSessionData::SetTunnelPortNumber(int32_t value)
   SET_SESSION_PROPERTY(TunnelPortNumber);
 }
 
-void TSessionData::SetTunnelUserName(UnicodeString value)
+void TSessionData::SetTunnelUserName(const UnicodeString & value)
 {
   // Avoid password recryption (what may popup master password prompt)
   if (FTunnelUserName != value)
@@ -4788,7 +4788,7 @@ void TSessionData::SetTunnelUserName(UnicodeString value)
   }
 }
 
-void TSessionData::SetTunnelPassword(UnicodeString AValue)
+void TSessionData::SetTunnelPassword(const UnicodeString & AValue)
 {
   RawByteString value = EncryptPassword(AValue, GetTunnelUserName() + GetTunnelHostName());
   SET_SESSION_PROPERTY(TunnelPassword);
@@ -4799,7 +4799,7 @@ UnicodeString TSessionData::GetTunnelPassword() const
   return DecryptPassword(FTunnelPassword, GetTunnelUserName() + GetTunnelHostName());
 }
 
-void TSessionData::SetTunnelPassphrase(UnicodeString AValue)
+void TSessionData::SetTunnelPassphrase(const UnicodeString & AValue)
 {
   RawByteString value = EncryptPassword(AValue, FTunnelPublicKeyFile);
   SET_SESSION_PROPERTY(TunnelPassphrase);
@@ -4810,7 +4810,7 @@ UnicodeString TSessionData::GetTunnelPassphrase() const
   return DecryptPassword(FTunnelPassphrase, FTunnelPublicKeyFile);
 }
 
-void TSessionData::SetTunnelPublicKeyFile(UnicodeString value)
+void TSessionData::SetTunnelPublicKeyFile(const UnicodeString & value)
 {
   if (FTunnelPublicKeyFile != value)
   {
@@ -4836,7 +4836,7 @@ bool TSessionData::GetTunnelAutoassignLocalPortNumber() const
   return (FTunnelLocalPortNumber <= 0);
 }
 
-void TSessionData::SetTunnelPortFwd(UnicodeString value)
+void TSessionData::SetTunnelPortFwd(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(TunnelPortFwd);
 }
@@ -4901,7 +4901,7 @@ void TSessionData::SetMaxTlsVersion(TTlsVersion value)
   SET_SESSION_PROPERTY(MaxTlsVersion);
 }
 
-void TSessionData::SetLogicalHostName(UnicodeString value)
+void TSessionData::SetLogicalHostName(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(LogicalHostName);
 }
@@ -4931,7 +4931,7 @@ void TSessionData::SetSslSessionReuse(bool value)
   SET_SESSION_PROPERTY(SslSessionReuse);
 }
 
-void TSessionData::SetTlsCertificateFile(UnicodeString value)
+void TSessionData::SetTlsCertificateFile(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(TlsCertificateFile);
 }
@@ -4946,17 +4946,17 @@ void TSessionData::SetInternalEditorEncoding(int32_t value)
   SET_SESSION_PROPERTY(InternalEditorEncoding);
 }
 
-void TSessionData::SetS3DefaultRegion(UnicodeString value)
+void TSessionData::SetS3DefaultRegion(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(S3DefaultRegion);
 }
 
-void TSessionData::SetS3SessionToken(UnicodeString value)
+void TSessionData::SetS3SessionToken(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(S3SessionToken);
 }
 
-void TSessionData::SetS3Profile(UnicodeString value)
+void TSessionData::SetS3Profile(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(S3Profile);
 }
@@ -4981,27 +4981,27 @@ void TSessionData::SetIsWorkspace(bool value)
   SET_SESSION_PROPERTY(IsWorkspace);
 }
 
-void TSessionData::SetLink(UnicodeString value)
+void TSessionData::SetLink(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(Link);
 }
 
-void TSessionData::SetNameOverride(UnicodeString value)
+void TSessionData::SetNameOverride(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(NameOverride);
 }
 
-void TSessionData::SetHostKey(UnicodeString value)
+void TSessionData::SetHostKey(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(HostKey);
 }
 
-void TSessionData::SetNote(UnicodeString value)
+void TSessionData::SetNote(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(Note);
 }
 
-void TSessionData::SetWinTitle(UnicodeString value)
+void TSessionData::SetWinTitle(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(WinTitle);
 }
@@ -5031,7 +5031,7 @@ UnicodeString TSessionData::GetEncryptKey() const
   return DecryptPassword(FEncryptKey, GetSessionPasswordEncryptionKey());
 }
 
-void TSessionData::SetEncryptKey(UnicodeString AValue)
+void TSessionData::SetEncryptKey(const UnicodeString & AValue)
 {
   RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(EncryptKey);

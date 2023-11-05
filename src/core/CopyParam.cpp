@@ -618,7 +618,7 @@ TCopyParamType &TCopyParamType::operator=(const TCopyParamType &rhs)
   return *this;
 }
 
-void TCopyParamType::SetLocalInvalidChars(const UnicodeString Value)
+void TCopyParamType::SetLocalInvalidChars(const UnicodeString & Value)
 {
   if (Value != GetLocalInvalidChars())
   {
@@ -893,12 +893,12 @@ bool TCopyParamType::ResumeTransfer(const UnicodeString AFileName) const
     DebugAlwaysTrue(!FTransferResumeFile.IsEmpty());
 }
 
-TStrings *TCopyParamType::GetTransferSkipList() const
+const TStrings * TCopyParamType::GetTransferSkipList() const
 {
   return FTransferSkipList.get();
 }
 
-void TCopyParamType::SetTransferSkipList(TStrings *Value)
+void TCopyParamType::SetTransferSkipList(const TStrings * Value)
 {
   if ((Value == nullptr) || (Value->GetCount() == 0))
   {
