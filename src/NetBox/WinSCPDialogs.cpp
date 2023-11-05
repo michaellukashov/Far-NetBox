@@ -4920,7 +4920,7 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties &Properties) const
 
 bool TPropertiesDialog::Execute(TRemoteProperties *Properties)
 {
-  TValidProperties Valid;
+  TValidProperties<TValidProperty> Valid;
   if (Properties->Valid.Contains(vpRights) && FAllowedChanges & cpMode)
   {
     Valid << vpRights;

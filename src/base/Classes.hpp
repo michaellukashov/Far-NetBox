@@ -813,8 +813,49 @@ private:
 
 struct TTimeStamp
 {
-  int Time{0}; // Number of milliseconds since midnight
-  int Date{0}; // One plus number of days since 1/1/0001
+  int32_t Time{0}; // Number of milliseconds since midnight
+  int32_t Date{0}; // One plus number of days since 1/1/0001
+};
+
+template <class PropType>
+class NB_CORE_EXPORT TValidProperties // : public TObject
+{
+  CUSTOM_MEM_ALLOCATION_IMPL
+public:
+  TValidProperties() = default;
+  void Clear()
+  {
+    FValue = 0;
+  }
+  bool Contains(PropType Value) const
+  {
+    return (FValue & Value) != 0;
+  }
+  bool operator==(const TValidProperties &rhs) const
+  {
+    return FValue == rhs.FValue;
+  }
+  bool operator!=(const TValidProperties &rhs) const
+  {
+    return !(operator==(rhs));
+  }
+  TValidProperties &operator<<(const PropType Value)
+  {
+    FValue |= Value;
+    return *this;
+  }
+  TValidProperties &operator>>(const PropType Value)
+  {
+    FValue &= ~(nb::ToInt64(Value));
+    return *this;
+  }
+  bool Empty() const
+  {
+    return FValue == 0;
+  }
+
+private:
+  int64_t FValue{0};
 };
 
 // FIXME

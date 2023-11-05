@@ -583,61 +583,8 @@ public:
   bool GetUnknown() const { return FUnknown; }
 };
 
-//enum TValidProperty { vpRights, vpGroup, vpOwner, vpModification, vpLastAccess, vpEncrypt };
-//typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
-enum TValidProperty
-{
-  vpRights = 0x1,
-  vpGroup = 0x2,
-  vpOwner = 0x4,
-  vpModification = 0x8,
-  vpLastAccess = 0x10,
-  vpEncrypt = 0x20,
-};
+enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20 };
 
-// FIXME
-class NB_CORE_EXPORT TValidProperties // : public TObject
-{
-  CUSTOM_MEM_ALLOCATION_IMPL
-public:
-  TValidProperties() = default;
-  void Clear()
-  {
-    FValue = 0;
-  }
-  bool Contains(TValidProperty Value) const
-  {
-    return (FValue & Value) != 0;
-  }
-  bool operator==(const TValidProperties &rhs) const
-  {
-    return FValue == rhs.FValue;
-  }
-  bool operator!=(const TValidProperties &rhs) const
-  {
-    return !(operator==(rhs));
-  }
-  TValidProperties &operator<<(const TValidProperty Value)
-  {
-    FValue |= Value;
-    return *this;
-  }
-  TValidProperties &operator>>(const TValidProperty Value)
-  {
-    FValue &= ~(nb::ToInt64(Value));
-    return *this;
-  }
-  bool Empty() const
-  {
-    return FValue == 0;
-  }
-
-private:
-  int64_t FValue{0};
-};
-
-#if 0
-#endif // #if 0
 NB_DEFINE_CLASS_ID(TRemoteProperties);
 class TRemoteProperties : public TObject
 {
@@ -645,7 +592,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteProperties); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteProperties) || TObject::is(Kind); }
 public:
-  TValidProperties Valid;
+  TValidProperties<TValidProperty> Valid;
   TRights Rights;
   TRemoteToken Group;
   TRemoteToken Owner;

@@ -9210,7 +9210,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
       SshFolderRights.Number = TRights::rfUserRead | TRights::rfUserWrite | TRights::rfUserExec;
       TRemoteProperties SshFolderProperties;
       SshFolderProperties.Rights = SshFolderRights;
-      SshFolderProperties.Valid = TValidProperties() << vpRights;
+      SshFolderProperties.Valid = TValidProperties<TValidProperty>() << vpRights;
 
       LogEvent(FORMAT(L"Trying to create \"%s\" folder with permissions %s...", OpensshFolderName, SshFolderRights.Octal));
       RemoteCreateDirectory(SshFolderAbsolutePath, &SshFolderProperties);
