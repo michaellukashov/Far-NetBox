@@ -70,6 +70,9 @@ using Boolean = bool;
 #ifndef Word
 using Word = WORD;
 #endif
+#ifndef Cardinal
+using Cardinal = uint32_t;
+#endif
 
 #define NullToEmptyA(s) ((s) ? (s) : "")
 #define NullToEmpty(s) ((s) ? (s) : L"")
