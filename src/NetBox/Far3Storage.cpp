@@ -6,7 +6,7 @@
 #include "TextsCore.h"
 
 
-TFar3Storage::TFar3Storage(UnicodeString AStorage,
+TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
   const GUID &Guid, FARAPISETTINGSCONTROL SettingsControl) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FPluginSettings(Guid, SettingsControl)
@@ -59,7 +59,7 @@ int32_t TFar3Storage::OpenSubKeyInternal(int32_t Root, UnicodeString SubKey, boo
   return NewRoot;
 }
 
-bool TFar3Storage::DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate)
+bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
   int OldRoot = FRoot;
   int Root = FRoot;
@@ -97,7 +97,7 @@ void TFar3Storage::DoCloseSubKey()
   }
 }
 
-void TFar3Storage::DoDeleteSubKey(const UnicodeString SubKey)
+void TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
 {
   UnicodeString K;
   if (FKeyHistory.size() == 0)
@@ -143,7 +143,7 @@ void TFar3Storage::DoGetValueNames(TStrings *Strings)
   }
 }
 
-bool TFar3Storage::DoDeleteValue(const UnicodeString Name)
+bool TFar3Storage::DoDeleteValue(const UnicodeString & Name)
 {
   return FPluginSettings.DeleteValue(FRoot, Name.c_str());
 }
@@ -154,7 +154,7 @@ size_t TFar3Storage::DoBinaryDataSize(const UnicodeString & Name)
   return Result;
 }
 
-bool TFar3Storage::DoKeyExists(const UnicodeString SubKey, bool ForceAnsi)
+bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   DebugUsedParam(ForceAnsi);
   // Error(SNotImplemented, 3011);
@@ -163,7 +163,7 @@ bool TFar3Storage::DoKeyExists(const UnicodeString SubKey, bool ForceAnsi)
   return Result;
 }
 
-bool TFar3Storage::DoValueExists(const UnicodeString Value)
+bool TFar3Storage::DoValueExists(const UnicodeString & Value)
 {
   bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;

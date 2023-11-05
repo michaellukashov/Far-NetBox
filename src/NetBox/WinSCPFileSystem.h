@@ -100,15 +100,15 @@ protected:
   void Disconnect();
   void SaveSession();
 
-  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
-    UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &AFormat,
-    UnicodeString &PanelTitle, TFarPanelModes *PanelModes, intptr_t &StartPanelMode,
-    OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
-    UnicodeString &ShortcutData) override;
-  virtual bool GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES OpMode) override;
+  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
+    UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & AFormat,
+    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
+    OPENPANELINFO_SORTMODES & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
+    UnicodeString & ShortcutData) override;
+  virtual bool GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES OpMode) override;
   virtual bool ProcessKeyEx(int32_t Key, uint32_t ControlState) override;
-  virtual bool SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode) override;
-  virtual int32_t MakeDirectoryEx(UnicodeString &Name, OPERATION_MODES OpMode) override;
+  virtual bool SetDirectoryEx(const UnicodeString & ADir, OPERATION_MODES OpMode) override;
+  virtual int32_t MakeDirectoryEx(const UnicodeString & AName, OPERATION_MODES OpMode) override;
   virtual bool DeleteFilesEx(TObjectList *PanelItems, OPERATION_MODES OpMode) override;
   virtual int32_t GetFilesEx(TObjectList *PanelItems, bool Move,
     UnicodeString &DestPath, OPERATION_MODES OpMode) override;
@@ -234,39 +234,39 @@ protected:
 
 private:
   bool TerminalCheckForEsc();
-  void TerminalClose(TObject *Sender);
-  void TerminalUpdateStatus(TTerminal *Terminal, bool Active);
-  void TerminalChangeDirectory(TObject *Sender);
-  void TerminalReadDirectory(TObject *Sender, bool ReloadOnly);
-  void TerminalStartReadDirectory(TObject *Sender);
-  void TerminalReadDirectoryProgress(TObject *Sender, int32_t Progress,
-    int32_t ResolvedLinks, bool &Cancel);
+  void TerminalClose(TObject * Sender);
+  void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
+  void TerminalChangeDirectory(TObject * Sender);
+  void TerminalReadDirectory(TObject * Sender, bool ReloadOnly);
+  void TerminalStartReadDirectory(TObject * Sender);
+  void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress,
+    int32_t ResolvedLinks, bool & Cancel);
   void TerminalInformation(TTerminal *Terminal,
-    const UnicodeString AStr, bool Status, int32_t Phase, const UnicodeString &Additional);
+    const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
   void TerminalQueryUser(TObject *Sender,
-    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-    const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void *Arg);
-  void TerminalPromptUser(TTerminal *Terminal,
-    TPromptKind Kind, const UnicodeString AName, const UnicodeString AInstructions,
-    TStrings *Prompts, TStrings *Results, bool &AResult,
-    void *Arg);
-  void TerminalDisplayBanner(TTerminal *Terminal,
-    const UnicodeString ASessionName, const UnicodeString ABanner, bool &NeverShowAgain,
+    const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
+    const TQueryParams * AParams, uint32_t & Answer, TQueryType Type, void * Arg);
+  void TerminalPromptUser(TTerminal * Terminal,
+    TPromptKind Kind, const UnicodeString & AName, const UnicodeString & AInstructions,
+    TStrings * Prompts, TStrings * Results, bool & AResult,
+    void * Arg);
+  void TerminalDisplayBanner(TTerminal * Terminal,
+    const UnicodeString & ASessionName, const UnicodeString & ABanner, bool &NeverShowAgain,
     int32_t Options, uint32_t & AParams);
-  void TerminalShowExtendedException(TTerminal *Terminal,
-    Exception *E, void *Arg);
-  void TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, int32_t& Deleted);
-  HANDLE TerminalCreateLocalFile(const UnicodeString ALocalFileName,
+  void TerminalShowExtendedException(TTerminal * Terminal,
+    Exception * E, void * Arg);
+  void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative, int32_t& Deleted);
+  HANDLE TerminalCreateLocalFile(const UnicodeString & ALocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
-  DWORD TerminalGetLocalFileAttributes(const UnicodeString ALocalFileName) const;
-  bool TerminalSetLocalFileAttributes(const UnicodeString ALocalFileName, DWORD FileAttributes);
-  bool TerminalMoveLocalFile(const UnicodeString ALocalFileName, const UnicodeString ANewLocalFileName, DWORD Flags);
-  bool TerminalRemoveLocalDirectory(const UnicodeString ALocalDirName);
-  bool TerminalCreateLocalDirectory(const UnicodeString ALocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
+  DWORD TerminalGetLocalFileAttributes(const UnicodeString & ALocalFileName) const;
+  bool TerminalSetLocalFileAttributes(const UnicodeString & ALocalFileName, DWORD FileAttributes);
+  bool TerminalMoveLocalFile(const UnicodeString & ALocalFileName, const UnicodeString & ANewLocalFileName, DWORD Flags);
+  bool TerminalRemoveLocalDirectory(const UnicodeString & ALocalDirName);
+  bool TerminalCreateLocalDirectory(const UnicodeString & ALocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
   void OperationProgress(
     TFileOperationProgressType &ProgressData);
   void OperationFinished(TFileOperation Operation,
-    TOperationSide Side, bool DragDrop, const UnicodeString AFileName, bool Success,
+    TOperationSide Side, bool DragDrop, const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation &DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType &ProgressData);
   TStrings *CreateFileList(TObjectList *PanelItems,
@@ -282,15 +282,15 @@ private:
   void TerminalSynchronizeDirectory(const UnicodeString &LocalDirectory,
     const UnicodeString &RemoteDirectory, bool & Continue, bool Collect, const TSynchronizeOptions *SynchronizeOptions);
   void DoSynchronize(TSynchronizeController * Sender,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
     TSynchronizeChecklist ** Checklist, TSynchronizeOptions * Options, bool Full);
   void DoSynchronizeInvalid(TSynchronizeController * Sender,
-    const UnicodeString Directory, UnicodeString ErrorStr);
+    const UnicodeString & Directory, const UnicodeString & ErrorStr);
   void DoSynchronizeTooManyDirectories(TSynchronizeController * Sender,
     int32_t & MaxDirectories);
-  void Synchronize(UnicodeString LocalDirectory,
-    const UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
+  void Synchronize(const UnicodeString & LocalDirectory,
+    const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType & CopyParam, int32_t Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
   void SynchronizeSessionLog(const UnicodeString & Message);

@@ -74,19 +74,19 @@ public:
 public:
   explicit TSessionUI(TObjectClassId Kind) noexcept : TObject(Kind) {}
   virtual ~TSessionUI() = default;
-  virtual void Information(const UnicodeString AStr, bool Status) = 0;
-  virtual uint32_t QueryUser(const UnicodeString AQuery,
-    TStrings *MoreMessages, uint32_t Answers, const TQueryParams *Params,
+  virtual void Information(const UnicodeString & AStr, bool Status) = 0;
+  virtual uint32_t QueryUser(const UnicodeString & AQuery,
+    TStrings * MoreMessages, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
-  virtual uint32_t QueryUserException(const UnicodeString AQuery,
+  virtual uint32_t QueryUserException(const UnicodeString & AQuery,
     Exception *E, uint32_t Answers, const TQueryParams *Params,
     TQueryType QueryType = qtConfirmation) = 0;
   virtual bool PromptUser(TSessionData *Data, TPromptKind Kind,
-    UnicodeString AName, UnicodeString AInstructions, TStrings *Prompts,
+    const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts,
     TStrings * Results) = 0;
-  virtual void DisplayBanner(const UnicodeString ABanner) = 0;
-  virtual void FatalError(Exception *E, UnicodeString AMsg, UnicodeString AHelpKeyword = "") = 0;
-  virtual void HandleExtendedException(Exception *E) = 0;
+  virtual void DisplayBanner(const UnicodeString & ABanner) = 0;
+  virtual void FatalError(Exception * E, const UnicodeString & AMsg, const UnicodeString & AHelpKeyword = "") = 0;
+  virtual void HandleExtendedException(Exception * E) = 0;
   virtual void Closed() = 0;
   virtual void ProcessGUI() = 0;
 };

@@ -15,13 +15,13 @@ public:
 
 protected:
   void SetAccessModeProtected(TStorageAccessMode Value) override;
-  bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) override;
-  bool DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate) override;
+  bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
+  bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate) override;
   void DoCloseSubKey() override;
-  void DoDeleteSubKey(const UnicodeString SubKey) override;
-  void DoGetSubKeyNames(TStrings *Strings) override;
-  bool DoValueExists(const UnicodeString Value) override;
-  bool DoDeleteValue(const UnicodeString Name) override;
+  void DoDeleteSubKey(const UnicodeString & SubKey) override;
+  void DoGetSubKeyNames(TStrings * Strings) override;
+  bool DoValueExists(const UnicodeString & Value) override;
+  bool DoDeleteValue(const UnicodeString & Name) override;
   size_t DoBinaryDataSize(const UnicodeString & Name) override;
 
   void DoWriteBool(const UnicodeString & Name, bool Value) override;

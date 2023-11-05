@@ -4651,16 +4651,16 @@ class TPropertiesDialog : public TFarDialog
 {
   NB_DISABLE_COPY(TPropertiesDialog)
 public:
-  explicit TPropertiesDialog(TCustomFarPlugin *AFarPlugin, TStrings *AFileList,
-    UnicodeString Directory,
-    const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
+  explicit TPropertiesDialog(TCustomFarPlugin * AFarPlugin, TStrings * AFileList,
+    const UnicodeString & Directory,
+    const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     int32_t AllowedChanges);
 
-  bool Execute(TRemoteProperties *Properties);
+  bool Execute(TRemoteProperties * Properties);
 
 protected:
   virtual void Change() override;
-  void UpdateProperties(TRemoteProperties &Properties) const;
+  void UpdateProperties(TRemoteProperties & Properties) const;
 
 private:
   bool FAnyDirectories;
@@ -4675,8 +4675,8 @@ private:
   TFarButton *OkButton;
 };
 
-TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin *AFarPlugin,
-  TStrings *AFileList, const UnicodeString /*Directory*/,
+TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
+  TStrings * AFileList, const UnicodeString & /*Directory*/,
   const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
   int32_t AAllowedChanges) :
   TFarDialog(AFarPlugin),
@@ -5878,7 +5878,7 @@ typedef void (__closure *TFeedFileSystemData)
 (TObject *Control, int Label, AnsiString Value);
 #endif // #if 0
 using TFeedFileSystemDataEvent = nb::FastDelegate3<void,
-  TObject * /*Control*/, int32_t /*Label*/, UnicodeString /*Value*/>;
+  TObject * /*Control*/, int32_t /*Label*/, const UnicodeString & /*Value*/>;
 
 class TLabelList;
 class TFileSystemInfoDialog : TTabbedDialog
@@ -5905,9 +5905,9 @@ protected:
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
   UnicodeString SpaceStr(int64_t Bytes) const;
-  void ControlsAddItem(TObject *AControl, int32_t Label, const UnicodeString Value);
-  void CalculateMaxLenAddItem(TObject *AControl, int32_t Label, const UnicodeString Value) const;
-  void ClipboardAddItem(TObject *AControl, int32_t Label, const UnicodeString Value);
+  void ControlsAddItem(TObject * AControl, int32_t Label, const UnicodeString & Value);
+  void CalculateMaxLenAddItem(TObject * AControl, int32_t Label, const UnicodeString & Value) const;
+  void ClipboardAddItem(TObject * AControl, int32_t Label, const UnicodeString & Value);
   void FeedControls();
   void UpdateControls();
   TLabelList *CreateLabelArray(int32_t Count);
@@ -6172,7 +6172,7 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
 }
 
 void TFileSystemInfoDialog::ControlsAddItem(TObject *AControl,
-  int32_t Label, const UnicodeString Value)
+  int32_t Label, const UnicodeString & Value)
 {
   if (FLastFeededControl != AControl)
   {
@@ -6218,8 +6218,8 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject *AControl,
   }
 }
 
-void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject *AControl,
-  int32_t Label, UnicodeString) const
+void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
+  int32_t Label, const UnicodeString &) const
 {
   TLabelList *List = dyn_cast<TLabelList>(AControl);
   if (List != nullptr)
@@ -6232,8 +6232,8 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject *AControl,
   }
 }
 
-void TFileSystemInfoDialog::ClipboardAddItem(TObject *AControl,
-  int32_t Label, const UnicodeString Value)
+void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
+  int32_t Label, const UnicodeString & Value)
 {
   TFarDialogItem *Control = dyn_cast<TFarDialogItem>(AControl);
   // check for Enabled instead of Visible, as Visible is false
@@ -7806,9 +7806,9 @@ protected:
   TSynchronizeParamType GetParams() const;
   void DoAbort(TObject *Sender, bool Close);
   void DoLog(TSynchronizeController *Controller,
-    TSynchronizeLogEntry Entry, const UnicodeString Message);
-  void DoSynchronizeThreads(TObject *Sender, TThreadMethod Slot);
-  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2) override;
+    TSynchronizeLogEntry Entry, const UnicodeString & Message);
+  void DoSynchronizeThreads(TObject * Sender, TThreadMethod Slot);
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
   virtual bool CloseQuery() override;
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode) override;
   TCopyParamType GetCopyParams() const;
@@ -8093,7 +8093,7 @@ void TSynchronizeDialog::DoAbort(TObject * /*Sender*/, bool Close)
 }
 
 void TSynchronizeDialog::DoLog(TSynchronizeController * /*Controller*/,
-  TSynchronizeLogEntry /*Entry*/, const UnicodeString /*Message*/)
+  TSynchronizeLogEntry /*Entry*/, const UnicodeString & /*Message*/)
 {
   // void
 }

@@ -561,23 +561,23 @@ private:
   void TerminalReopenEvent(TObject *Sender);
 
   void TerminalInformation(
-    TTerminal *Terminal, const UnicodeString AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
-  void TerminalQueryUser(TObject *Sender,
-    const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-    const TQueryParams *Params, uint32_t &Answer, TQueryType Type, void *Arg);
+    TTerminal *Terminal, const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
+  void TerminalQueryUser(TObject * Sender,
+    const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
+    const TQueryParams * Params, uint32_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
-    const UnicodeString AName, const UnicodeString AInstructions,
-    TStrings *Prompts, TStrings *Results, bool &Result, void *Arg);
-  void TerminalShowExtendedException(TTerminal *Terminal,
-    Exception *E, void *Arg);
-  void TerminalDisplayBanner(TTerminal *Terminal,
-    const UnicodeString SessionName, const UnicodeString Banner,
-    bool &NeverShowAgain, int32_t Options, uint32_t &Params);
-  void TerminalChangeDirectory(TObject *Sender);
-  void TerminalReadDirectory(TObject *Sender, Boolean ReloadOnly);
-  void TerminalStartReadDirectory(TObject *Sender);
-  void TerminalReadDirectoryProgress(TObject *Sender, int32_t Progress, int32_t ResolvedLinks, bool &Cancel);
-  void TerminalInitializeLog(TObject *Sender);
+    const UnicodeString & AName, const UnicodeString & AInstructions,
+    TStrings * Prompts, TStrings * Results, bool &Result, void *Arg);
+  void TerminalShowExtendedException(TTerminal * Terminal,
+    Exception * E, void * Arg);
+  void TerminalDisplayBanner(TTerminal * Terminal,
+    const UnicodeString & SessionName, const UnicodeString & Banner,
+    bool & NeverShowAgain, int32_t Options, uint32_t & Params);
+  void TerminalChangeDirectory(TObject * Sender);
+  void TerminalReadDirectory(TObject * Sender, Boolean ReloadOnly);
+  void TerminalStartReadDirectory(TObject * Sender);
+  void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
+  void TerminalInitializeLog(TObject * Sender);
 };
 
 enum TQueueFileState { qfsQueued = 0, qfsProcessed = 1 };

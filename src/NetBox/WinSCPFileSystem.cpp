@@ -1376,8 +1376,8 @@ void TWinSCPFileSystem::ApplyCommand()
   }
 }
 
-void TWinSCPFileSystem::Synchronize(UnicodeString LocalDirectory,
-  UnicodeString RemoteDirectory, TTerminal::TSynchronizeMode Mode,
+void TWinSCPFileSystem::Synchronize(const UnicodeString & LocalDirectory,
+  const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
   const TCopyParamType &CopyParam, int32_t Params, TSynchronizeChecklist **AChecklist,
   TSynchronizeOptions *Options)
 {
@@ -1651,10 +1651,10 @@ void TWinSCPFileSystem::Synchronize()
 }
 
 void TWinSCPFileSystem::DoSynchronize(
-  TSynchronizeController * /*Sender*/, UnicodeString LocalDirectory,
-  UnicodeString RemoteDirectory, const TCopyParamType &CopyParam,
-  const TSynchronizeParamType &Params, TSynchronizeChecklist **Checklist,
-  TSynchronizeOptions *Options, bool Full)
+  TSynchronizeController * /*Sender*/, const UnicodeString & LocalDirectory,
+  const UnicodeString & RemoteDirectory, const TCopyParamType & CopyParam,
+  const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
+  TSynchronizeOptions * Options, bool Full)
 {
   try
   {
@@ -1685,8 +1685,8 @@ void TWinSCPFileSystem::DoSynchronize(
 }
 
 void TWinSCPFileSystem::DoSynchronizeInvalid(
-  TSynchronizeController * /*Sender*/, UnicodeString Directory,
-  UnicodeString /*ErrorStr*/)
+  TSynchronizeController * /*Sender*/, const UnicodeString & Directory,
+  const UnicodeString & /*ErrorStr*/)
 {
   UnicodeString Message;
   if (!Directory.IsEmpty())
@@ -2163,7 +2163,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPath)
   return Result;
 }
 
-bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode)
+bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MODES OpMode)
 {
   if (!IsSessionList() && !Connected())
   {
@@ -2173,7 +2173,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode
   // workaround to ignore "change to root directory" command issued by FAR,
   // before file is opened for viewing/editing from "find file" dialog
   // when plugin uses UNIX style paths
-  if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (Dir == L"\\"))
+  if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (ADir == L"\\"))
   {
     if (FSavedFindFolder.IsEmpty())
     {
@@ -2195,7 +2195,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode
 
   if (IsSessionList())
   {
-    FSessionsFolder = base::AbsolutePath(ROOTDIRECTORY + FSessionsFolder, Dir);
+    FSessionsFolder = base::AbsolutePath(ROOTDIRECTORY + FSessionsFolder, ADir);
     DebugAssert(FSessionsFolder[1] == L'/');
     FSessionsFolder.Delete(1, 1);
     FNewSessionsFolder.Clear();
@@ -2227,18 +2227,18 @@ bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode
         }
         FNoProgress = false;
       };
-      if (Dir == L"\\")
+      if (ADir == L"\\")
       {
         FTerminal->RemoteChangeDirectory(ROOTDIRECTORY);
       }
-      else if ((Dir == PARENTDIRECTORY) && (FTerminal->RemoteGetCurrentDirectory() == ROOTDIRECTORY))
+      else if ((ADir == PARENTDIRECTORY) && (FTerminal->RemoteGetCurrentDirectory() == ROOTDIRECTORY))
       {
         // ClosePanel();
         Disconnect();
       }
       else
       {
-        FTerminal->RemoteChangeDirectory(Dir);
+        FTerminal->RemoteChangeDirectory(ADir);
         FCurrentDirectoryWasChanged = true;
       }
     }
@@ -2319,8 +2319,9 @@ bool TWinSCPFileSystem::SetDirectoryEx(UnicodeString Dir, OPERATION_MODES OpMode
   return true;
 }
 
-int32_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString &Name, OPERATION_MODES OpMode)
+int32_t TWinSCPFileSystem::MakeDirectoryEx(const UnicodeString & AName, OPERATION_MODES OpMode)
 {
+  UnicodeString Name = AName;
   if (Connected())
   {
     DebugAssert(!(OpMode & OPM_SILENT) || !Name.IsEmpty());
@@ -3089,7 +3090,7 @@ void TWinSCPFileSystem::LogAuthentication(
 }
 
 void TWinSCPFileSystem::TerminalInformation(
-  TTerminal *Terminal, UnicodeString AStr, bool /*Status*/, int32_t Phase, const UnicodeString & Additional)
+  TTerminal * Terminal, const UnicodeString & AStr, bool /*Status*/, int32_t Phase, const UnicodeString & /*Additional*/)
 {
   if (Phase != 0)
   {
@@ -3184,7 +3185,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
   }
 }
 
-void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Alternative, int32_t& Deleted)
+void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative, int32_t& Deleted)
 {
   bool ToRecycleBin = FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), NBSS_DELETETORECYCLEBIN) != Alternative;
   if (ToRecycleBin || !GetWinSCPPlugin()->GetSystemFunctions())
@@ -3200,7 +3201,7 @@ void TWinSCPFileSystem::TerminalDeleteLocalFile(UnicodeString AFileName, bool Al
   }
 }
 
-HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString ALocalFileName,
+HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString & ALocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
@@ -3214,7 +3215,7 @@ HANDLE TWinSCPFileSystem::TerminalCreateLocalFile(const UnicodeString ALocalFile
   }
 }
 
-DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString ALocalFileName) const
+DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString & ALocalFileName) const
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
@@ -3226,7 +3227,7 @@ DWORD TWinSCPFileSystem::TerminalGetLocalFileAttributes(const UnicodeString ALoc
   }
 }
 
-bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString ALocalFileName, DWORD FileAttributes)
+bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString & ALocalFileName, DWORD FileAttributes)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
@@ -3238,7 +3239,7 @@ bool TWinSCPFileSystem::TerminalSetLocalFileAttributes(const UnicodeString ALoca
   }
 }
 
-bool TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString ALocalFileName, const UnicodeString ANewLocalFileName, DWORD Flags)
+bool TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString & ALocalFileName, const UnicodeString & ANewLocalFileName, DWORD Flags)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
@@ -3250,7 +3251,7 @@ bool TWinSCPFileSystem::TerminalMoveLocalFile(const UnicodeString ALocalFileName
   }
 }
 
-bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString ALocalDirName)
+bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString & ALocalDirName)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
@@ -3261,7 +3262,7 @@ bool TWinSCPFileSystem::TerminalRemoveLocalDirectory(const UnicodeString ALocalD
     return GetWinSCPPlugin()->RemoveLocalDirectory(ALocalDirName);
   }
 }
-bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString ALocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & ALocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
@@ -3294,8 +3295,8 @@ uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
 }
 
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString AQuery, TStrings *MoreMessages, uint32_t Answers,
-  const TQueryParams *AParams, uint32_t &Answer, TQueryType Type, void * /*Arg*/)
+  const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
+  const TQueryParams * AParams, uint32_t &Answer, TQueryType Type, void * /*Arg*/)
 {
   TMessageParams Params(nullptr);
   UnicodeString Query = AQuery;
@@ -3321,9 +3322,9 @@ void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,
   Answer = MoreMessageDialog(Query, MoreMessages, Type, Answers, &Params);
 }
 
-void TWinSCPFileSystem::TerminalPromptUser(TTerminal *Terminal,
-  TPromptKind Kind, const UnicodeString AName, const UnicodeString AInstructions,
-  TStrings *Prompts, TStrings *Results, bool &AResult,
+void TWinSCPFileSystem::TerminalPromptUser(TTerminal * Terminal,
+  TPromptKind Kind, const UnicodeString & AName, const UnicodeString & AInstructions,
+  TStrings * Prompts, TStrings * Results, bool & AResult,
   void * /*Arg*/)
 {
   if (Kind == pkPrompt)
@@ -3347,20 +3348,20 @@ void TWinSCPFileSystem::TerminalPromptUser(TTerminal *Terminal,
 }
 
 void TWinSCPFileSystem::TerminalDisplayBanner(
-  TTerminal * /*Terminal*/, const UnicodeString ASessionName,
-  const UnicodeString ABanner, bool &NeverShowAgain, int32_t Options, uint32_t & /*Params*/)
+  TTerminal * /*Terminal*/, const UnicodeString & ASessionName,
+  const UnicodeString & ABanner, bool & NeverShowAgain, int32_t Options, uint32_t & /*Params*/)
 {
   BannerDialog(ASessionName, ABanner, NeverShowAgain, Options);
 }
 
 void TWinSCPFileSystem::TerminalShowExtendedException(
-  TTerminal * /*Terminal*/, Exception *E, void * /*Arg*/)
+  TTerminal * /*Terminal*/, Exception * E, void * /*Arg*/)
 {
   GetWinSCPPlugin()->ShowExtendedException(E);
 }
 
 void TWinSCPFileSystem::OperationProgress(
-  TFileOperationProgressType &ProgressData)
+  TFileOperationProgressType & ProgressData)
 {
   if (FNoProgress)
   {
@@ -3387,7 +3388,7 @@ void TWinSCPFileSystem::OperationProgress(
 }
 
 void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
-  TOperationSide Side, bool /*Temp*/, const UnicodeString AFileName, bool Success,
+  TOperationSide Side, bool /*Temp*/, const UnicodeString & AFileName, bool Success,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
   DebugUsedParam(Side);

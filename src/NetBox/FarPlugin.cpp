@@ -2205,12 +2205,12 @@ bool TCustomFarFileSystem::ProcessPanelEventEx(intptr_t /*Event*/, void * /*Para
   return false;
 }
 
-bool TCustomFarFileSystem::SetDirectoryEx(UnicodeString /*Dir*/, OPERATION_MODES /*OpMode*/)
+bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /*Dir*/, OPERATION_MODES /*OpMode*/)
 {
   return false;
 }
 
-int32_t TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /*Name*/, OPERATION_MODES /*OpMode*/)
+int32_t TCustomFarFileSystem::MakeDirectoryEx(const UnicodeString & /*Name*/, OPERATION_MODES /*OpMode*/)
 {
   return -1;
 }

@@ -27,7 +27,7 @@ using TFileOperationProgressEvent = nb::FastDelegate1<void,
   TFileOperationProgressType & /*ProgressData*/>;
 using TFileOperationFinishedEvent = nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
-  UnicodeString /*FileName*/, bool /*Success*/,
+  const UnicodeString & /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/>;
 
 class TFileOperationStatistics : public TObject

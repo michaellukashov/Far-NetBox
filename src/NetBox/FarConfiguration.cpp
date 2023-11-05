@@ -76,7 +76,7 @@ void TFarConfiguration::Default()
   FBookmarks->Clear();
 }
 
-THierarchicalStorage *TFarConfiguration::CreateScpStorage(bool &SessionList)
+THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool & SessionList)
 {
   return TGUIConfiguration::CreateScpStorage(SessionList);
   return FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : nullptr;

@@ -219,7 +219,7 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey(UnicodeString(), CanCreate);
 }
 
-UnicodeString THierarchicalStorage::MungeKeyName(const UnicodeString Key)
+UnicodeString THierarchicalStorage::MungeKeyName(const UnicodeString & Key)
 {
   UnicodeString Result = MungeStr(Key, GetForceAnsi(), false);
   // if there's already ANSI-munged subkey, keep ANSI munging
@@ -604,7 +604,7 @@ bool THierarchicalStorage::ReadBool(const UnicodeString Name, bool Default)
   }
 }
 
-int32_t THierarchicalStorage::ReadInteger(const UnicodeString Name, int32_t Default)
+int32_t THierarchicalStorage::ReadInteger(const UnicodeString &  Name, int32_t Default)
 {
   return ReadIntegerWithMapping(Name, Default, nullptr);
 }
@@ -621,7 +621,7 @@ int32_t THierarchicalStorage::ReadIntegerWithMapping(const UnicodeString & Name,
   }
 }
 
-int64_t THierarchicalStorage::ReadInt64(const UnicodeString Name, int64_t Default)
+int64_t THierarchicalStorage::ReadInt64(const UnicodeString & Name, int64_t Default)
 {
   if (CanRead())
   {
@@ -823,7 +823,7 @@ void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString Name, con
   WriteString(Name, AnsiToString(Value));
 }
 
-UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString S)
+UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString & S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -836,7 +836,7 @@ UnicodeString THierarchicalStorage::IncludeTrailingBackslash(const UnicodeString
   }
 }
 
-UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString S)
+UnicodeString THierarchicalStorage::ExcludeTrailingBackslash(const UnicodeString & S)
 {
   // expanded from ?: as it caused memory leaks
   if (S.IsEmpty())
@@ -939,7 +939,7 @@ void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
   }
 }
 
-bool TRegistryStorage::DoOpenSubKey(const UnicodeString SubKey, bool CanCreate)
+bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate)
 {
   UnicodeString PrevPath;
   bool WasOpened = (FRegistry->GetCurrentKey() != nullptr);
@@ -967,7 +967,7 @@ void TRegistryStorage::DoCloseSubKey()
   }
 }
 
-void TRegistryStorage::DoDeleteSubKey(const UnicodeString SubKey)
+void TRegistryStorage::DoDeleteSubKey(const UnicodeString & SubKey)
 {
   UnicodeString K;
   if (FKeyHistory.empty())
@@ -992,19 +992,19 @@ void TRegistryStorage::DoGetValueNames(TStrings *Strings)
   FRegistry->GetValueNames(Strings);
 }
 
-bool TRegistryStorage::DoDeleteValue(const UnicodeString Name)
+bool TRegistryStorage::DoDeleteValue(const UnicodeString & Name)
 {
   return FRegistry->DeleteValue(Name);
 }
 
-bool TRegistryStorage::DoKeyExists(const UnicodeString SubKey, bool AForceAnsi)
+bool TRegistryStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi)
 {
   UnicodeString Key = MungeStr(SubKey, AForceAnsi, false);
   bool Result = FRegistry->KeyExists(Key);
   return Result;
 }
 
-bool TRegistryStorage::DoValueExists(const UnicodeString Value)
+bool TRegistryStorage::DoValueExists(const UnicodeString & Value)
 {
   bool Result = FRegistry->ValueExists(Value);
   return Result;

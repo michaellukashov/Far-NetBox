@@ -42,9 +42,9 @@ public:
   bool ReadBool(UnicodeString Name, bool Default);
   template<typename T>
   typename T ReadEnum(
-    const UnicodeString Name, const T Default, const TIntMapping & Mapping = TIntMapping());
-  int32_t ReadInteger(const UnicodeString Name, int32_t Default);
-  int64_t ReadInt64(const UnicodeString Name, int64_t Default);
+    const UnicodeString & Name, const T Default, const TIntMapping & Mapping = TIntMapping());
+  int32_t ReadInteger(const UnicodeString & Name, int32_t Default);
+  int64_t ReadInt64(const UnicodeString & Name, int64_t Default);
 
   TDateTime ReadDateTime(const UnicodeString Name, TDateTime Default);
 
@@ -124,17 +124,17 @@ protected:
   UnicodeString GetCurrentSubKey() const;
   UnicodeString GetCurrentSubKeyMunged() const;
   virtual void SetAccessModeProtected(TStorageAccessMode Value);
-  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi) = 0;
-  virtual bool DoValueExists(const UnicodeString Value) = 0;
-  static UnicodeString IncludeTrailingBackslash(const UnicodeString S);
-  static UnicodeString ExcludeTrailingBackslash(const UnicodeString S);
-  virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate) = 0;
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) = 0;
+  virtual bool DoValueExists(const UnicodeString & Value) = 0;
+  static UnicodeString IncludeTrailingBackslash(const UnicodeString & S);
+  static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
+  virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   virtual void DoCloseSubKey() = 0;
-  UnicodeString MungeKeyName(const UnicodeString Key);
+  UnicodeString MungeKeyName(const UnicodeString & Key);
   virtual UnicodeString GetSource() const = 0;
   virtual bool GetTemporary() const;
-  virtual void DoDeleteSubKey(const UnicodeString SubKey) = 0;
-  virtual bool DoDeleteValue(const UnicodeString Name) = 0;
+  virtual void DoDeleteSubKey(const UnicodeString & SubKey) = 0;
+  virtual bool DoDeleteValue(const UnicodeString & Name) = 0;
 
   virtual void DoGetSubKeyNames(TStrings * Strings) = 0;
   virtual void DoGetValueNames(TStrings * Strings) = 0;
@@ -171,7 +171,7 @@ extern TIntMapping AutoSwitchMapping;
 extern TIntMapping AutoSwitchReversedMapping;
 
 template<typename T>
-T THierarchicalStorage::ReadEnum(const UnicodeString Name, const T Default, const TIntMapping & Mapping)
+T THierarchicalStorage::ReadEnum(const UnicodeString & Name, const T Default, const TIntMapping & Mapping)
 {
   const TIntMapping * AMapping = (Mapping.empty()) ? nullptr : &Mapping;
   return T(ReadIntegerWithMapping(Name, (int32_t)(Default), AMapping));
@@ -194,17 +194,17 @@ public:
   virtual void SetAccessMode(TStorageAccessMode value);
 
 protected:
-  virtual bool DoKeyExists(const UnicodeString SubKey, bool ForceAnsi);
-  virtual bool DoValueExists(const UnicodeString Value) override;
-  virtual bool DoOpenSubKey(const UnicodeString SubKey, bool CanCreate);
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
+  virtual bool DoValueExists(const UnicodeString & Value) override;
+  virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
   virtual void DoCloseSubKey() override;
   virtual UnicodeString GetSource() const override;
   virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
-  virtual void DoDeleteSubKey(const UnicodeString SubKey) override;
-  virtual bool DoDeleteValue(const UnicodeString Name) override;
+  virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
+  virtual bool DoDeleteValue(const UnicodeString & Name) override;
 
   virtual void DoGetSubKeyNames(TStrings * Strings);
-  virtual void DoGetValueNames(TStrings* Strings);
+  virtual void DoGetValueNames(TStrings * Strings);
 
   virtual void DoWriteBool(const UnicodeString & Name, bool Value) override;
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;

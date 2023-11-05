@@ -10,22 +10,22 @@
 class TFar3Storage : public THierarchicalStorage
 {
 public:
-  explicit TFar3Storage(UnicodeString AStorage,
+  explicit TFar3Storage(const UnicodeString & AStorage,
     const GUID &Guid, FARAPISETTINGSCONTROL SettingsControl);
   virtual ~TFar3Storage();
 
   bool Copy(TFar3Storage *Storage);
 
   virtual void DoCloseSubKey() override;
-  virtual void DoDeleteSubKey(const UnicodeString SubKey) override;
-  virtual void DoGetSubKeyNames(TStrings *Strings) override;
-  virtual bool DoValueExists(const UnicodeString Value) override;
-  virtual bool DoDeleteValue(const UnicodeString Name) override;
+  virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
+  virtual void DoGetSubKeyNames(TStrings * Strings) override;
+  virtual bool DoValueExists(const UnicodeString & Value) override;
+  virtual bool DoDeleteValue(const UnicodeString & Name) override;
 //  virtual size_t DoBinaryDataSize(const UnicodeString Name) const override;
   virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
 
-  virtual bool DoKeyExists(UnicodeString SubKey, bool ForceAnsi) override;
-  virtual bool DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate) override;
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
+  virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate) override;
   virtual UnicodeString GetSource() const override;
 //  virtual UnicodeString GetSource() override;
 //  virtual void DoGetSubKeyNames(TStrings *Strings) override;

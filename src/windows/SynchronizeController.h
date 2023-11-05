@@ -21,20 +21,20 @@ using TSynchronizeThreadsEvent = nb::FastDelegate2<void,
 enum TSynchronizeLogEntry { slScan, slStart, slChange, slUpload, slDelete, slDirChange, slContinuedError, };
 using TSynchronizeLogEvent = nb::FastDelegate3<void,
   TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
-  UnicodeString /*Message*/>;
+  const UnicodeString & /*Message*/>;
 using TSynchronizeStartStopEvent = nb::FastDelegate8<void,
   TObject * /*Sender*/, bool /*Start*/, const TSynchronizeParamType & /*Params*/,
   const TCopyParamType & /*CopyParam*/, TSynchronizeOptions * /*Options*/,
   TSynchronizeAbortEvent /*OnAbort*/, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
   TSynchronizeLogEvent /*OnSynchronizeLog*/>;
 using TSynchronizeEvent = nb::FastDelegate8<void,
-  TSynchronizeController * /*Sender*/, UnicodeString /*LocalDirectory*/,
-  UnicodeString /*RemoteDirectory*/, const TCopyParamType & /*CopyParam*/,
+  TSynchronizeController * /*Sender*/, const UnicodeString & /*LocalDirectory*/,
+  const UnicodeString & /*RemoteDirectory*/, const TCopyParamType & /*CopyParam*/,
   const TSynchronizeParamType & /*Params*/, TSynchronizeChecklist ** /*Checklist*/,
   TSynchronizeOptions * /*Options*/, bool /*Full*/>;
 using TSynchronizeInvalidEvent = nb::FastDelegate3<void,
-  TSynchronizeController * /*Sender*/, UnicodeString /*Directory*/,
-  UnicodeString /*ErrorStr*/>;
+  TSynchronizeController * /*Sender*/, const UnicodeString & /*Directory*/,
+  const UnicodeString & /*ErrorStr*/>;
 using TSynchronizeTooManyDirectoriesEvent = nb::FastDelegate2<void,
   TSynchronizeController * /*Sender*/,
   int32_t & /*MaxDirectories*/>;

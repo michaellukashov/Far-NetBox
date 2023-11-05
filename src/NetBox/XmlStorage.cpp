@@ -122,7 +122,7 @@ void TXmlStorage::SetAccessModeProtected(TStorageAccessMode Value)
   }
 }
 
-bool TXmlStorage::DoKeyExists(const UnicodeString SubKey, bool /*ForceAnsi*/)
+bool TXmlStorage::DoKeyExists(const UnicodeString & SubKey, bool /*ForceAnsi*/)
 {
   UnicodeString K = PuttyMungeStr(SubKey);
   const tinyxml2::XMLElement *Element = FindChildElement(AnsiString(K));
@@ -130,7 +130,7 @@ bool TXmlStorage::DoKeyExists(const UnicodeString SubKey, bool /*ForceAnsi*/)
   return Result;
 }
 
-bool TXmlStorage::DoOpenSubKey(const UnicodeString MungedSubKey, bool CanCreate)
+bool TXmlStorage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
   tinyxml2::XMLElement *OldCurrentElement = FCurrentElement;
   tinyxml2::XMLElement *Element = nullptr;
@@ -176,7 +176,7 @@ void TXmlStorage::DoCloseSubKey()
   }
 }
 
-void TXmlStorage::DoDeleteSubKey(const UnicodeString SubKey)
+void TXmlStorage::DoDeleteSubKey(const UnicodeString & SubKey)
 {
   tinyxml2::XMLElement *Element = FindElement(SubKey);
   if (Element != nullptr)
@@ -201,7 +201,7 @@ void TXmlStorage::DoGetValueNames(TStrings * /*Strings*/)
   // FRegistry->GetValueNames(Strings);
 }
 
-bool TXmlStorage::DoDeleteValue(const UnicodeString Name)
+bool TXmlStorage::DoDeleteValue(const UnicodeString & Name)
 {
   bool Result = false;
   tinyxml2::XMLElement *Element = FindElement(Name);
@@ -293,7 +293,7 @@ UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement *Element) const
   return Result;
 }
 
-bool TXmlStorage::DoValueExists(const UnicodeString Value)
+bool TXmlStorage::DoValueExists(const UnicodeString & Value)
 {
   bool Result = false;
   tinyxml2::XMLElement *Element = FindElement(Value);
