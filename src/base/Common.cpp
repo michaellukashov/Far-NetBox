@@ -2250,7 +2250,7 @@ UnicodeString GetOSInfo()
 
 UnicodeString GetEnvironmentInfo()
 {
-  UnicodeString Result; // = FORMAT("WinSCP %s (OS %s)", GetConfiguration()->GetVersionStr(), GetOSInfo());
+  UnicodeString Result; //TODO: = FORMAT("WinSCP %s (OS %s)", GetConfiguration()->GetVersionStr(), GetOSInfo());
   return Result;
 }
 

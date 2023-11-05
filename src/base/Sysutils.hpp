@@ -658,6 +658,7 @@ public:
 };
 
 int32_t Random(int32_t Max);
+// TODO: TFile::ReadAllText TFile::WriteAllText
 UnicodeString ReadAllText(const UnicodeString & FileName);
 void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text);
 
