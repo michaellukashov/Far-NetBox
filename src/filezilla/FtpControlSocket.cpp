@@ -737,7 +737,8 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       ftp_capabilities_t cap = m_serverCapabilities.GetCapabilityString(opts_mlst_command);
       if (cap == unknown)
       {
-        std::transform(facts.begin(), facts.end(), facts.begin(), ::towlower);
+        std::transform(facts.begin(), facts.end(), facts.begin(), ::tolower);
+
         bool had_unset = false;
         std::string opts_facts;
         // Create a list of all facts understood by both FZ and the server.
@@ -1690,7 +1691,7 @@ void CFtpControlSocket::FtpCommand(LPCTSTR pCommand)
   Send(pCommand);
 }
 
-bool CFtpControlSocket::UsingMlsd()
+bool CFtpControlSocket::UsingMlsd() const
 {
   return
     // 0 = on, 1 = off, 2 = auto
@@ -1699,12 +1700,12 @@ bool CFtpControlSocket::UsingMlsd()
      (m_serverCapabilities.GetCapability(mlsd_command) == yes));
 }
 
-bool CFtpControlSocket::UsingUtf8()
+bool CFtpControlSocket::UsingUtf8() const
 {
   return m_bUTF8;
 }
 
-std::string CFtpControlSocket::GetTlsVersionStr()
+std::string CFtpControlSocket::GetTlsVersionStr() const
 {
   if (m_pSslLayer != nullptr)
   {
@@ -1716,7 +1717,7 @@ std::string CFtpControlSocket::GetTlsVersionStr()
   }
 }
 
-std::string CFtpControlSocket::GetCipherName()
+std::string CFtpControlSocket::GetCipherName() const
 {
   if (m_pSslLayer != nullptr)
   {

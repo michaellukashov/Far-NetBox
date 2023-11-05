@@ -70,7 +70,7 @@ DWORD CMainThread::ExitInstance()
   return 1;
 }
 
-BOOL CMainThread::IsConnected()
+BOOL CMainThread::IsConnected() const
 {
   BOOL bConnected;
   ECS;
@@ -188,7 +188,7 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
   return TRUE;
 }
 
-BOOL CMainThread::IsBusy()
+BOOL CMainThread::IsBusy() const
 {
   BOOL bBusy;
   ECS;
@@ -287,7 +287,7 @@ void CMainThread::SetCurrentPath(CServerPath path)
   return;
 }
 
-bool CMainThread::UsingMlsd()
+bool CMainThread::UsingMlsd() const
 {
   if (!IsConnected())
     return false;
@@ -301,14 +301,14 @@ bool CMainThread::UsingUtf8()
   return m_pControlSocket->UsingUtf8();
 }
 
-std::string CMainThread::GetTlsVersionStr()
+std::string CMainThread::GetTlsVersionStr() const
 {
   if (!IsConnected())
     return std::string();
   return m_pControlSocket->GetTlsVersionStr();
 }
 
-std::string CMainThread::GetCipherName()
+std::string CMainThread::GetCipherName() const
 {
   if (!IsConnected())
     return std::string();

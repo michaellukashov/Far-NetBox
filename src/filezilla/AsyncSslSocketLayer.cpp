@@ -1606,12 +1606,12 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
   return TRUE;
 }
 
-std::string CAsyncSslSocketLayer::GetTlsVersionStr()
+std::string CAsyncSslSocketLayer::GetTlsVersionStr() const
 {
   return m_TlsVersionStr;
 }
 
-std::string CAsyncSslSocketLayer::GetCipherName()
+std::string CAsyncSslSocketLayer::GetCipherName() const
 {
   return m_CipherName;
 }

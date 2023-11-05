@@ -277,18 +277,18 @@ public:
 
   int SetCurrentPath(CServerPath path);
   int GetCurrentPath(CServerPath & path);
-  bool UsingMlsd();
-  bool UsingUtf8();
-  std::string GetTlsVersionStr();
-  std::string GetCipherName();
+  bool UsingMlsd() const;
+  bool UsingUtf8() const;
+  std::string GetTlsVersionStr() const;
+  std::string GetCipherName() const;
 
 protected:
-  CMainThread * m_pMainThread;
-  unsigned int m_nInternalMessageID;
-  BOOL m_bInitialized;
+  CMainThread * m_pMainThread{nullptr};
+  unsigned int m_nInternalMessageID{0};
+  BOOL m_bInitialized{FALSE};
 
   void Destroy();
-  int IsBusy();
+  int IsBusy() const;
   int IsConnected() const;
 };
 

@@ -29,17 +29,17 @@ CUSTOM_MEM_ALLOCATION_IMPL
 struct TListDataEntry
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  const wchar_t * Name;
-  const wchar_t * Permissions;
-  const wchar_t * HumanPerm;
-  const wchar_t * OwnerGroup; // deprecated, to be replaced with Owner/Group
-  const wchar_t * Owner;
-  const wchar_t * Group;
-  int64_t Size;
-  bool Dir;
-  bool Link;
+  const wchar_t * Name{nullptr};
+  const wchar_t * Permissions{nullptr};
+  const wchar_t * HumanPerm{nullptr};
+  const wchar_t * OwnerGroup{nullptr}; // deprecated, to be replaced with Owner/Group
+  const wchar_t * Owner{nullptr};
+  const wchar_t * Group{nullptr};
+  int64_t Size{0};
+  bool Dir{false};
+  bool Link{false};
   TRemoteFileTime Time;
-  const wchar_t * LinkTarget;
+  const wchar_t * LinkTarget{nullptr};
 };
 
 struct TFtpsCertificateData
@@ -48,14 +48,14 @@ CUSTOM_MEM_ALLOCATION_IMPL
   struct TContact
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    const wchar_t * Organization;
-    const wchar_t * Unit;
-    const wchar_t * CommonName;
-    const wchar_t * Mail;
-    const wchar_t * Country;
-    const wchar_t * StateProvince;
-    const wchar_t * Town;
-    const wchar_t * Other;
+    const wchar_t * Organization{nullptr};
+    const wchar_t * Unit{nullptr};
+    const wchar_t * CommonName{nullptr};
+    const wchar_t * Mail{nullptr};
+    const wchar_t * Country{nullptr};
+    const wchar_t * StateProvince{nullptr};
+    const wchar_t * Town{nullptr};
+    const wchar_t * Other{nullptr};
   };
 
   TContact Subject;
@@ -64,35 +64,35 @@ CUSTOM_MEM_ALLOCATION_IMPL
   struct TValidityTime
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    int Year;
-    int Month;
-    int Day;
-    int Hour;
-    int Min;
-    int Sec;
+    int Year{0};
+    int Month{0};
+    int Day{0};
+    int Hour{0};
+    int Min{0};
+    int Sec{0};
   };
 
   TValidityTime ValidFrom;
   TValidityTime ValidUntil;
 
-  const wchar_t * SubjectAltName;
+  const wchar_t * SubjectAltName{nullptr};
 
-  const uint8_t * HashSha1;
+  const uint8_t * HashSha1{nullptr};
   static const size_t HashSha1Len = 20;
-  const uint8_t * HashSha256;
+  const uint8_t * HashSha256{nullptr};
   static const size_t HashSha256Len = 32;
 
-  const uint8_t * Certificate;
-  size_t CertificateLen;
+  const uint8_t * Certificate{nullptr};
+  size_t CertificateLen{0};
 
-  int VerificationResult;
-  int VerificationDepth;
+  int VerificationResult{0};
+  int VerificationDepth{0};
 };
 
 struct TNeedPassRequestData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-    wchar_t * Password;
+wchar_t * Password{nullptr};
 };
 
 class t_server;
@@ -175,10 +175,10 @@ public:
   bool SetCurrentPath(const wchar_t * APath);
   bool GetCurrentPath(wchar_t * APath, size_t MaxLen);
 
-  bool UsingMlsd();
-  bool UsingUtf8();
-  std::string GetTlsVersionStr();
-  std::string GetCipherName();
+  bool UsingMlsd() const;
+  bool UsingUtf8() const;
+  std::string GetTlsVersionStr() const;
+  std::string GetCipherName() const;
 
   bool Cancel();
 
@@ -303,7 +303,7 @@ protected:
     {}
     ftp_capabilities_t cap;
     std::string option;
-    int number;
+    int number{0};
   };
 
   mutable nb::map_t<ftp_capability_names_t, t_cap> FCapabilityMap;

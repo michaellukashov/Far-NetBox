@@ -143,8 +143,8 @@ public:
 
   void SetNotifyReply(int nID, int nCode, int result);
   BOOL GetPeerCertificateData(t_SslCertData & SslCertData, LPCTSTR & Error);
-  std::string GetTlsVersionStr();
-  std::string GetCipherName();
+  std::string GetTlsVersionStr() const;
+  std::string GetCipherName() const;
   void SetClientCertificate(X509 * Certificate, EVP_PKEY * PrivateKey);
 
   bool IsUsingSSL();
@@ -230,25 +230,25 @@ private:
   BIO* m_sslbio; // The data to encrypt / the decrypted data has to go though this bio
 
   // Send buffer
-  char* m_pNetworkSendBuffer;
-  int m_nNetworkSendBufferLen;
-  int m_nNetworkSendBufferMaxLen;
+  char* m_pNetworkSendBuffer{nullptr};
+  int m_nNetworkSendBufferLen{0};
+  int m_nNetworkSendBufferMaxLen{0};
 
-  char* m_pRetrySendBuffer;
-  int m_nRetrySendBufferLen;
+  char* m_pRetrySendBuffer{nullptr};
+  int m_nRetrySendBufferLen{0};
 
-  bool m_mayTriggerRead;
-  bool m_mayTriggerWrite;
-  bool m_mayTriggerReadUp;
-  bool m_mayTriggerWriteUp;
+  bool m_mayTriggerRead{false};
+  bool m_mayTriggerWrite{false};
+  bool m_mayTriggerReadUp{false};
+  bool m_mayTriggerWriteUp{false};
 
-  bool m_onCloseCalled;
+  bool m_onCloseCalled{false};
 
   std::string m_TlsVersionStr;
   std::string m_CipherName;
 
-  X509 * FCertificate;
-  EVP_PKEY * FPrivateKey;
+  X509 * FCertificate{nullptr};
+  EVP_PKEY * FPrivateKey{nullptr};
 };
 
 #define SSL_INFO 0

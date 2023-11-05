@@ -83,10 +83,10 @@ public:
   // Other servers return "550 No files found."
   bool IsMisleadingListResponse();
 
-  bool UsingMlsd();
-  bool UsingUtf8();
-  std::string GetTlsVersionStr();
-  std::string GetCipherName();
+  bool UsingMlsd() const;
+  bool UsingUtf8() const;
+  std::string GetTlsVersionStr() const;
+  std::string GetCipherName() const;
   bool HandleSize(int code, int64_t & size);
   bool HandleMdtm(int code, t_directory::t_direntry::t_date & date);
   void TransferHandleListError();

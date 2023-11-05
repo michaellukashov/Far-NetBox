@@ -26,10 +26,10 @@ public:
   void SetWorkingDir(t_directory * pWorkingDir);
   BOOL GetWorkingDir(t_directory * pWorkingDir);
   void SendDirectoryListing(t_directory * pDirectoryToSend);
-  bool UsingMlsd();
+  bool UsingMlsd() const;
   bool UsingUtf8();
-  std::string GetTlsVersionStr();
-  std::string GetCipherName();
+  std::string GetTlsVersionStr() const;
+  std::string GetCipherName() const;
   t_command m_LastCommand;
   void SetCurrentPath(CServerPath path);
   void Quit();
@@ -41,11 +41,11 @@ public:
   void SetBusy(BOOL bBusy);
   BOOL LastOperationSuccessful();
   void Command(const t_command & command);
-  BOOL IsBusy();
-  CFileZillaTools * m_pTools;
-  BOOL m_bBusy;
-  unsigned int m_nInternalMessageID;
-  BOOL IsConnected();
+  BOOL IsBusy() const;
+  CFileZillaTools * m_pTools{nullptr};
+  BOOL m_bBusy{FALSE};
+  unsigned int m_nInternalMessageID{0};
+  BOOL IsConnected() const;
   int64_t GetAsyncRequestID() const;
   int64_t GetNextAsyncRequestID();
   virtual int OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam);
@@ -58,20 +58,20 @@ protected:
   DWORD Run();
   static DWORD WINAPI ThreadProc(LPVOID lpParameter);
 
-  CCriticalSectionWrapper m_CriticalSection;
+  mutable CCriticalSectionWrapper m_CriticalSection;
 
-  CFtpControlSocket * m_pControlSocket;
-  int64_t m_nAsyncRequestID;
+  CFtpControlSocket * m_pControlSocket{nullptr};
+  int64_t m_nAsyncRequestID{0};
   void OnTimer(WPARAM wParam, LPARAM lParam);
 
 protected:
-  t_directory * m_pWorkingDir;
+  t_directory * m_pWorkingDir{nullptr};
   rde::map<int, int> m_Options;
-  BOOL m_bQuit;
-  t_command * m_pPostKeepAliveCommand;
+  BOOL m_bQuit{FALSE};
+  t_command * m_pPostKeepAliveCommand{nullptr};
   CServerPath m_CurrentPath;
-  UINT_PTR m_nTimerID;
+  UINT_PTR m_nTimerID{0};
   virtual ~CMainThread();
-  bool m_Started;
+  bool m_Started{false};
 };
 

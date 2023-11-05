@@ -575,22 +575,22 @@ inline bool TFileZillaIntf::Check(int32_t ReturnCode,
   }
 }
 
-bool TFileZillaIntf::UsingMlsd()
+bool TFileZillaIntf::UsingMlsd() const
 {
   return FFileZillaApi->UsingMlsd();
 }
 
-bool TFileZillaIntf::UsingUtf8()
+bool TFileZillaIntf::UsingUtf8() const
 {
   return FFileZillaApi->UsingUtf8();
 }
 
-std::string TFileZillaIntf::GetTlsVersionStr()
+std::string TFileZillaIntf::GetTlsVersionStr() const
 {
   return FFileZillaApi->GetTlsVersionStr();
 }
 
-std::string TFileZillaIntf::GetCipherName()
+std::string TFileZillaIntf::GetCipherName() const
 {
   return FFileZillaApi->GetCipherName();
 }
