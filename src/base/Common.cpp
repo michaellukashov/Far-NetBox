@@ -2052,7 +2052,7 @@ UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
   return BytesToHex(reinterpret_cast<const uint8_t *>(&Ch), sizeof(Ch), UpperCase);
 }
 
-RawByteString HexToBytes(const UnicodeString Hex)
+RawByteString HexToBytes(const UnicodeString & Hex)
 {
   UnicodeString Digits = "0123456789ABCDEF";
   RawByteString Result;
@@ -2077,7 +2077,7 @@ RawByteString HexToBytes(const UnicodeString Hex)
   return Result;
 }
 
-uint8_t HexToByte(const UnicodeString Hex)
+uint8_t HexToByte(const UnicodeString & Hex)
 {
   static UnicodeString Digits = "0123456789ABCDEF";
   DebugAssert(Hex.Length() == 2);
@@ -2742,7 +2742,7 @@ constexpr wchar_t MegaSize = L'M';
 constexpr wchar_t GigaSize = L'G';
 
 // Keep consistent with parse_blocksize
-bool TryStrToSize(UnicodeString ASizeStr, int64_t &ASize)
+bool TryStrToSize(const UnicodeString & ASizeStr, int64_t &ASize)
 {
   UnicodeString SizeStr = ASizeStr;
   int32_t Index = 0;
@@ -3237,7 +3237,7 @@ int32_t TimeToMinutes(const TDateTime &T)
 }
 
 static bool DoRecursiveDeleteFile(
-  const UnicodeString AFileName, bool ToRecycleBin, UnicodeString &AErrorPath, int32_t& Deleted)
+  const UnicodeString & AFileName, bool ToRecycleBin, UnicodeString & AErrorPath, int32_t& Deleted)
 {
   bool Result;
   Deleted = 0;
@@ -3352,7 +3352,7 @@ static bool DoRecursiveDeleteFile(
   return Result;
 }
 
-bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin)
+bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath; // unused
   int32_t Deleted;
@@ -3360,7 +3360,7 @@ bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin)
   return Result;
 }
 
-int32_t RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin)
+int32_t RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath;
   int32_t Deleted;
@@ -3371,7 +3371,7 @@ int32_t RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycle
   return Deleted;
 }
 
-void DeleteFileChecked(const UnicodeString AFileName)
+void DeleteFileChecked(const UnicodeString & AFileName)
 {
   if (!::SysUtulsRemoveFile(ApiPath(AFileName)))
   {
@@ -3511,7 +3511,7 @@ UnicodeString LoadStrPart(int32_t Ident, int32_t Part)
   return Result;
 }
 
-UnicodeString DecodeUrlChars(UnicodeString Url)
+UnicodeString DecodeUrlChars(const UnicodeString & Url)
 {
   UnicodeString S = Url;
 
@@ -3549,7 +3549,7 @@ UnicodeString DecodeUrlChars(UnicodeString Url)
   return S;
 }
 
-UnicodeString DoEncodeUrl(UnicodeString S, const UnicodeString DoNotEncode)
+UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & DoNotEncode)
 {
   UnicodeString Result = S;
 
@@ -3580,21 +3580,22 @@ UnicodeString DoEncodeUrl(UnicodeString S, const UnicodeString DoNotEncode)
   return Result;
 }
 
-UnicodeString EncodeUrlString(UnicodeString S)
+UnicodeString EncodeUrlString(const UnicodeString & S)
 {
   return DoEncodeUrl(S, UnicodeString());
 }
 
-UnicodeString EncodeUrlPath(UnicodeString S)
+UnicodeString EncodeUrlPath(const UnicodeString & S)
 {
   return DoEncodeUrl(S, L"/");
 }
 
-UnicodeString AppendUrlParams(UnicodeString AURL, UnicodeString Params)
+UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params)
 {
   // see also TWebHelpSystem::ShowHelp
   const wchar_t FragmentSeparator = L'#';
-  UnicodeString URL = ::CutToChar(AURL, FragmentSeparator, false);
+  UnicodeString URL = AURL;
+  URL = ::CutToChar(URL, FragmentSeparator, false);
 
   if (URL.Pos("?") == 0)
   {
@@ -3607,12 +3608,12 @@ UnicodeString AppendUrlParams(UnicodeString AURL, UnicodeString Params)
 
   URL += Params;
 
-  AddToList(URL, URL, FragmentSeparator);
+  AddToList(URL, AURL, FragmentSeparator);
 
   return URL;
 }
 
-UnicodeString ExtractFileNameFromUrl(const UnicodeString Url)
+UnicodeString ExtractFileNameFromUrl(const UnicodeString & Url)
 {
   UnicodeString Result = Url;
   int32_t P = Result.Pos("?");
@@ -3628,14 +3629,14 @@ UnicodeString ExtractFileNameFromUrl(const UnicodeString Url)
   return Result;
 }
 
-UnicodeString EscapeHotkey(const UnicodeString Caption)
+UnicodeString EscapeHotkey(const UnicodeString & Caption)
 {
   return ReplaceStr(Caption, L"&", L"&&");
 }
 
 // duplicated in console's Main.cpp
-static bool DoCutToken(UnicodeString &AStr, UnicodeString &AToken,
-  UnicodeString *ARawToken, UnicodeString *ASeparator, bool EscapeQuotesInQuotesOnly)
+static bool DoCutToken(UnicodeString & AStr, UnicodeString & AToken,
+  UnicodeString * ARawToken, UnicodeString * ASeparator, bool EscapeQuotesInQuotesOnly)
 {
   bool Result;
 
@@ -3713,19 +3714,19 @@ static bool DoCutToken(UnicodeString &AStr, UnicodeString &AToken,
   return Result;
 }
 
-bool CutToken(UnicodeString &AStr, UnicodeString &AToken,
-  UnicodeString *ARawToken, UnicodeString *ASeparator)
+bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
+  UnicodeString * ARawToken, UnicodeString * ASeparator)
 {
   return DoCutToken(AStr, AToken, ARawToken, ASeparator, false);
 }
 
-bool CutTokenEx(UnicodeString &Str, UnicodeString &Token,
-  UnicodeString *RawToken, UnicodeString *Separator)
+bool CutTokenEx(UnicodeString & Str, UnicodeString & Token,
+  UnicodeString * RawToken, UnicodeString * Separator)
 {
   return DoCutToken(Str, Token, RawToken, Separator, true);
 }
 
-void AddToList(UnicodeString &List, const UnicodeString Value, const UnicodeString Delimiter)
+void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter)
 {
   if (!Value.IsEmpty())
   {

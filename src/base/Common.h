@@ -120,33 +120,33 @@ NB_CORE_EXPORT UnicodeString ByteToHex(uint8_t B, bool UpperCase = true);
 NB_CORE_EXPORT UnicodeString BytesToHex(const uint8_t *B, uint32_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
 NB_CORE_EXPORT UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase = true, wchar_t Separator = L'\0');
 NB_CORE_EXPORT UnicodeString CharToHex(wchar_t Ch, bool UpperCase = true);
-NB_CORE_EXPORT RawByteString HexToBytes(const UnicodeString Hex);
-NB_CORE_EXPORT uint8_t HexToByte(const UnicodeString Hex);
+NB_CORE_EXPORT RawByteString HexToBytes(const UnicodeString & Hex);
+NB_CORE_EXPORT uint8_t HexToByte(const UnicodeString & Hex);
 NB_CORE_EXPORT bool IsLowerCaseLetter(wchar_t Ch);
 NB_CORE_EXPORT bool IsUpperCaseLetter(wchar_t Ch);
 NB_CORE_EXPORT bool IsLetter(wchar_t Ch);
 NB_CORE_EXPORT bool IsDigit(wchar_t Ch);
 NB_CORE_EXPORT bool IsHex(wchar_t Ch);
-NB_CORE_EXPORT UnicodeString DecodeUrlChars(UnicodeString S);
-NB_CORE_EXPORT UnicodeString EncodeUrlString(UnicodeString S);
-NB_CORE_EXPORT UnicodeString EncodeUrlPath(UnicodeString S);
-NB_CORE_EXPORT UnicodeString AppendUrlParams(UnicodeString AURL, UnicodeString Params);
-NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(const UnicodeString Url);
-NB_CORE_EXPORT bool RecursiveDeleteFile(const UnicodeString AFileName, bool ToRecycleBin = false);
-NB_CORE_EXPORT int32_t RecursiveDeleteFileChecked(const UnicodeString AFileName, bool ToRecycleBin);
-NB_CORE_EXPORT void DeleteFileChecked(const UnicodeString AFileName);
+NB_CORE_EXPORT UnicodeString DecodeUrlChars(const UnicodeString & S);
+NB_CORE_EXPORT UnicodeString EncodeUrlString(const UnicodeString & S);
+NB_CORE_EXPORT UnicodeString EncodeUrlPath(const UnicodeString & S);
+NB_CORE_EXPORT UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params);
+NB_CORE_EXPORT UnicodeString ExtractFileNameFromUrl(const UnicodeString & Url);
+NB_CORE_EXPORT bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin = false);
+NB_CORE_EXPORT int32_t RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecycleBin);
+NB_CORE_EXPORT void DeleteFileChecked(const UnicodeString & AFileName);
 NB_CORE_EXPORT uint32_t CancelAnswer(uint32_t Answers);
 NB_CORE_EXPORT uint32_t AbortAnswer(uint32_t Answers);
 NB_CORE_EXPORT uint32_t ContinueAnswer(uint32_t Answers);
 NB_CORE_EXPORT UnicodeString LoadStr(int32_t Ident, uint32_t MaxLength = 0);
 NB_CORE_EXPORT UnicodeString LoadStrFrom(HINSTANCE Module, int32_t Ident);
 NB_CORE_EXPORT UnicodeString LoadStrPart(int32_t Ident, int32_t Part);
-NB_CORE_EXPORT UnicodeString EscapeHotkey(const UnicodeString Caption);
-NB_CORE_EXPORT bool CutToken(UnicodeString &AStr, UnicodeString &AToken,
-  UnicodeString *ARawToken = nullptr, UnicodeString *ASeparator = nullptr);
-NB_CORE_EXPORT bool CutTokenEx(UnicodeString &Str, UnicodeString &Token,
-  UnicodeString *RawToken = nullptr, UnicodeString *Separator = nullptr);
-NB_CORE_EXPORT void AddToList(UnicodeString &List, const UnicodeString Value, const UnicodeString Delimiter);
+NB_CORE_EXPORT UnicodeString EscapeHotkey(const UnicodeString & Caption);
+NB_CORE_EXPORT bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
+  UnicodeString * ARawToken = nullptr, UnicodeString * ASeparator = nullptr);
+NB_CORE_EXPORT bool CutTokenEx(UnicodeString & Str, UnicodeString & Token,
+  UnicodeString * RawToken = nullptr, UnicodeString * Separator = nullptr);
+NB_CORE_EXPORT void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 void AddToShellFileListCommandLine(UnicodeString & List, const UnicodeString & Value);
 bool IsWinVista();
 bool IsWin7();
@@ -160,14 +160,14 @@ UnicodeString GetPackageName();
 bool IsOfficialPackage();
 __removed TLibModule * FindModule(void * Instance);
 NB_CORE_EXPORT int64_t Round(double Number);
-NB_CORE_EXPORT bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime &DateTime, bool Add);
-NB_CORE_EXPORT bool TryStrToDateTimeStandard(const UnicodeString & S, TDateTime &Value);
-NB_CORE_EXPORT bool TryStrToSize(UnicodeString ASizeStr, int64_t & ASize);
+NB_CORE_EXPORT bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, bool Add);
+NB_CORE_EXPORT bool TryStrToDateTimeStandard(const UnicodeString & S, TDateTime & Value);
+NB_CORE_EXPORT bool TryStrToSize(const UnicodeString & ASizeStr, int64_t & ASize);
 NB_CORE_EXPORT UnicodeString SizeToStr(int64_t ASize);
 NB_CORE_EXPORT LCID GetDefaultLCID();
 NB_CORE_EXPORT UnicodeString DefaultEncodingName();
 NB_CORE_EXPORT UnicodeString WindowsProductName();
-NB_CORE_EXPORT bool GetWindowsProductType(DWORD &Type);
+NB_CORE_EXPORT bool GetWindowsProductType(DWORD & Type);
 NB_CORE_EXPORT int GetWindowsBuild();
 NB_CORE_EXPORT UnicodeString WindowsVersion();
 NB_CORE_EXPORT UnicodeString WindowsVersionLong();
@@ -195,7 +195,7 @@ NB_CORE_EXPORT void ParseCertificate(const UnicodeString & Path,
 NB_CORE_EXPORT bool IsHttpUrl(const UnicodeString & S);
 NB_CORE_EXPORT bool IsHttpOrHttpsUrl(const UnicodeString & S);
 NB_CORE_EXPORT UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & Protocol);
-NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString & AFileName, TStrings *Lines, bool FallbackToAnsi = false);
+NB_CORE_EXPORT void LoadScriptFromFile(const UnicodeString & AFileName, TStrings * Lines, bool FallbackToAnsi = false);
 NB_CORE_EXPORT UnicodeString StripEllipsis(const UnicodeString & S);
 NB_CORE_EXPORT UnicodeString GetFileMimeType(const UnicodeString & AFileName);
 NB_CORE_EXPORT bool IsRealFile(const UnicodeString & AFileName);
@@ -259,7 +259,7 @@ NB_CORE_EXPORT bool UsesDaylightHack();
 NB_CORE_EXPORT TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day);
 NB_CORE_EXPORT TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec);
 NB_CORE_EXPORT double DSTDifferenceForTime(const TDateTime & DateTime);
-NB_CORE_EXPORT TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME &SystemTime);
+NB_CORE_EXPORT TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime);
 NB_CORE_EXPORT TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode);
 NB_CORE_EXPORT TDateTime ConvertTimestampToUTC(const TDateTime & DateTime);
 NB_CORE_EXPORT TDateTime ConvertTimestampFromUTC(const TDateTime & DateTime);
@@ -269,7 +269,7 @@ NB_CORE_EXPORT void UnifyDateTimePrecision(TDateTime & DateTime1, TDateTime & Da
 NB_CORE_EXPORT TDateTime FileTimeToDateTime(const FILETIME & FileTime);
 NB_CORE_EXPORT int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode);
-NB_CORE_EXPORT int64_t ConvertTimestampToUnixSafe(const FILETIME &FileTime,
+NB_CORE_EXPORT int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode);
 NB_CORE_EXPORT UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format);
 NB_CORE_EXPORT UnicodeString StandardTimestamp(const TDateTime & DateTime);
@@ -599,8 +599,8 @@ constexpr int32_t qpIgnoreAbort          = 0x08;
 constexpr int32_t qpWaitInBatch          = 0x10;
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
-NB_CORE_EXPORT bool CompareFileName(UnicodeString APath1, UnicodeString APath2);
-NB_CORE_EXPORT bool ComparePaths(UnicodeString APath1, UnicodeString APath2);
+NB_CORE_EXPORT bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2);
+NB_CORE_EXPORT bool ComparePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 
 // from RemoteFiles
 namespace base {
@@ -627,14 +627,14 @@ NB_CORE_EXPORT UnicodeString AbsolutePath(const UnicodeString & Base, const Unic
 NB_CORE_EXPORT UnicodeString FromUnixPath(const UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString ToUnixPath(const UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString MinimizeName(const UnicodeString & AFileName, int32_t MaxLen, bool Unix);
-NB_CORE_EXPORT UnicodeString MakeFileList(const TStrings *AFileList);
-NB_CORE_EXPORT TDateTime ReduceDateTimePrecision(const TDateTime &ADateTime,
+NB_CORE_EXPORT UnicodeString MakeFileList(const TStrings * AFileList);
+NB_CORE_EXPORT TDateTime ReduceDateTimePrecision(const TDateTime & ADateTime,
   TModificationFmt Precision);
 NB_CORE_EXPORT TModificationFmt LessDateTimePrecision(
   TModificationFmt Precision1, TModificationFmt Precision2);
-NB_CORE_EXPORT UnicodeString UserModificationStr(const TDateTime &DateTime,
+NB_CORE_EXPORT UnicodeString UserModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
-NB_CORE_EXPORT UnicodeString ModificationStr(const TDateTime &DateTime,
+NB_CORE_EXPORT UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
 int32_t GetPartialFileExtLen(const UnicodeString & FileName);
 NB_CORE_EXPORT int32_t FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
