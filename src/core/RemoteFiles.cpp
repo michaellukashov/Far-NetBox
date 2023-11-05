@@ -1951,7 +1951,7 @@ bool TRemoteDirectoryCache::GetIsEmptyPrivate() const
   return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 
-bool TRemoteDirectoryCache::HasFileList(const UnicodeString Directory) const
+bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory) const
 {
   TGuard Guard(FSection); nb::used(Guard);
 
@@ -1959,8 +1959,8 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString Directory) const
   return (Index >= 0);
 }
 
-bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString Directory,
-  const TDateTime &Timestamp) const
+bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
+  const TDateTime & Timestamp) const
 {
   TGuard Guard(FSection); nb::used(Guard);
 
@@ -1976,8 +1976,8 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString Directory,
   return (Index >= 0);
 }
 
-bool TRemoteDirectoryCache::GetFileList(const UnicodeString Directory,
-  TRemoteFileList *FileList) const
+bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
+  TRemoteFileList * FileList) const
 {
   TGuard Guard(FSection); nb::used(Guard);
 
@@ -2008,7 +2008,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList *FileList)
   }
 }
 
-void TRemoteDirectoryCache::ClearFileList(const UnicodeString ADirectory, bool SubDirs)
+void TRemoteDirectoryCache::ClearFileList(const UnicodeString & ADirectory, bool SubDirs)
 {
   TGuard Guard(FSection); nb::used(Guard);
   DoClearFileList(ADirectory, SubDirs);
@@ -2061,8 +2061,8 @@ bool TRemoteDirectoryChangesCache::GetIsEmptyPrivate() const
   return (const_cast<TRemoteDirectoryChangesCache *>(this)->GetCount() == 0);
 }
 
-void TRemoteDirectoryChangesCache::SetValue(const UnicodeString Name,
-  const UnicodeString Value)
+void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
+  const UnicodeString & Value)
 {
   int32_t Index = IndexOfName(Name);
   if (Index >= 0)
@@ -2072,7 +2072,7 @@ void TRemoteDirectoryChangesCache::SetValue(const UnicodeString Name,
   TStringList::SetValue(Name, Value);
 }
 
-UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString Name)
+UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString & Name)
 {
   UnicodeString Value = TStringList::GetValue(Name);
   TStringList::SetValue(Name, Value);
@@ -2080,8 +2080,8 @@ UnicodeString TRemoteDirectoryChangesCache::GetValue(const UnicodeString Name)
 }
 
 void TRemoteDirectoryChangesCache::AddDirectoryChange(
-  const UnicodeString SourceDir, const UnicodeString Change,
-  const UnicodeString TargetDir)
+  const UnicodeString & SourceDir, const UnicodeString & Change,
+  const UnicodeString & TargetDir)
 {
   DebugAssert(!TargetDir.IsEmpty());
   SetValue(TargetDir, L"//");
@@ -2096,7 +2096,7 @@ void TRemoteDirectoryChangesCache::AddDirectoryChange(
 }
 
 void TRemoteDirectoryChangesCache::ClearDirectoryChange(
-  UnicodeString SourceDir)
+  const UnicodeString & SourceDir)
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -2109,7 +2109,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChange(
 }
 
 void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
-  UnicodeString TargetDir)
+  const UnicodeString & TargetDir)
 {
   UnicodeString Key;
   // hack to clear at least local sym-link change in case symlink is deleted
@@ -2130,7 +2130,7 @@ void TRemoteDirectoryChangesCache::ClearDirectoryChangeTarget(
 }
 
 bool TRemoteDirectoryChangesCache::GetDirectoryChange(
-  const UnicodeString SourceDir, const UnicodeString Change, UnicodeString &TargetDir) const
+  const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & TargetDir) const
 {
   UnicodeString Key = TTerminal::ExpandFileName(Change, SourceDir);
   bool Result = (IndexOfName(Key) >= 0);
@@ -2187,7 +2187,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString &Data) const
   }
 }
 
-void TRemoteDirectoryChangesCache::Deserialize(const UnicodeString Data)
+void TRemoteDirectoryChangesCache::Deserialize(const UnicodeString & Data)
 {
   if (Data.IsEmpty())
   {
@@ -2200,7 +2200,7 @@ void TRemoteDirectoryChangesCache::Deserialize(const UnicodeString Data)
 }
 
 bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
-  const UnicodeString SourceDir, const UnicodeString Change, UnicodeString &Key)
+  const UnicodeString & SourceDir, const UnicodeString & Change, UnicodeString & Key)
 {
   bool Result = !Change.IsEmpty();
   if (Result)

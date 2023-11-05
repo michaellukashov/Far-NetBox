@@ -304,7 +304,7 @@ protected:
   TDateTime FTimestamp;
 public:
   TRemoteFile * GetFile(Integer Index) const;
-  virtual void SetDirectory(UnicodeString Value);
+  virtual void SetDirectory(const UnicodeString Value);
   UnicodeString GetFullDirectory() const;
   Boolean GetIsRoot() const;
   TRemoteFile * GetParentDirectory();
@@ -355,9 +355,9 @@ public:
 private:
   Boolean FIncludeParentDirectory{false};
   Boolean FIncludeThisDirectory{false};
-  TTerminal *FTerminal{nullptr};
-  TRemoteFile *FParentDirectory{nullptr};
-  TRemoteFile *FThisDirectory{nullptr};
+  TTerminal * FTerminal{nullptr};
+  TRemoteFile * FParentDirectory{nullptr};
+  TRemoteFile * FThisDirectory{nullptr};
 public:
   virtual void SetDirectory(const UnicodeString Value) override;
   Boolean GetLoaded() const;
@@ -366,10 +366,10 @@ public:
   void ReleaseRelativeDirectories();
 public:
   TRemoteDirectory() = delete;
-  explicit TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template = nullptr) noexcept;
+  explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr) noexcept;
   virtual ~TRemoteDirectory() noexcept;
-  virtual void AddFile(TRemoteFile *AFile) override;
-  virtual void DuplicateTo(TRemoteFileList *Copy) const override;
+  virtual void AddFile(TRemoteFile * AFile) override;
+  virtual void DuplicateTo(TRemoteFileList * Copy) const override;
   virtual void Reset() override;
 
   __property TTerminal * Terminal = { read = FTerminal, write = FTerminal };
@@ -379,13 +379,13 @@ public:
   __property TRemoteFile * ParentDirectory = { read = FParentDirectory };
   __property TRemoteFile * ThisDirectory = { read = FThisDirectory };
 
-  TTerminal *GetTerminal() const { return FTerminal; }
-  void SetTerminal(TTerminal *Value) { FTerminal = Value; }
+  TTerminal * GetTerminal() const { return FTerminal; }
+  void SetTerminal(TTerminal * Value) { FTerminal = Value; }
   Boolean GetIncludeParentDirectory() const { return FIncludeParentDirectory; }
   Boolean GetIncludeThisDirectory() const { return FIncludeThisDirectory; }
-  TRemoteFile *GetParentDirectory() const { return FParentDirectory; }
-  TRemoteFile *GetThisDirectory() const { return FThisDirectory; }
-  TStrings *GetSelectedFiles() const;
+  TRemoteFile * GetParentDirectory() const { return FParentDirectory; }
+  TRemoteFile * GetThisDirectory() const { return FThisDirectory; }
+  TStrings * GetSelectedFiles() const;
 };
 
 class TRemoteDirectoryCache : private TStringList
@@ -395,12 +395,12 @@ class TRemoteDirectoryCache : private TStringList
 public:
   TRemoteDirectoryCache() noexcept;
   virtual ~TRemoteDirectoryCache() noexcept;
-  bool HasFileList(const UnicodeString Directory) const;
-  bool HasNewerFileList(const UnicodeString Directory, const TDateTime &Timestamp) const;
-  bool GetFileList(const UnicodeString Directory,
-    TRemoteFileList *FileList) const;
-  void AddFileList(TRemoteFileList *FileList);
-  void ClearFileList(UnicodeString Directory, bool SubDirs);
+  bool HasFileList(const UnicodeString & Directory) const;
+  bool HasNewerFileList(const UnicodeString & Directory, const TDateTime & Timestamp) const;
+  bool GetFileList(const UnicodeString & Directory,
+    TRemoteFileList * FileList) const;
+  void AddFileList(TRemoteFileList * FileList);
+  void ClearFileList(const UnicodeString & Directory, bool SubDirs);
   void Clear();
 
   __property bool IsEmpty = { read = GetIsEmpty };
@@ -423,27 +423,27 @@ public:
   explicit TRemoteDirectoryChangesCache(int32_t MaxSize) noexcept;
   virtual ~TRemoteDirectoryChangesCache() = default;
 
-  void AddDirectoryChange(const UnicodeString SourceDir,
-    const UnicodeString Change, const UnicodeString TargetDir);
-  void ClearDirectoryChange(UnicodeString SourceDir);
-  void ClearDirectoryChangeTarget(UnicodeString TargetDir);
-  bool GetDirectoryChange(const UnicodeString SourceDir,
-    const UnicodeString Change, UnicodeString &TargetDir) const;
+  void AddDirectoryChange(const UnicodeString & SourceDir,
+    const UnicodeString & Change, const UnicodeString & TargetDir);
+  void ClearDirectoryChange(const UnicodeString & SourceDir);
+  void ClearDirectoryChangeTarget(const UnicodeString & TargetDir);
+  bool GetDirectoryChange(const UnicodeString & SourceDir,
+    const UnicodeString & Change, UnicodeString & TargetDir) const;
   void Clear();
 
   void Serialize(UnicodeString & Data) const;
-  void Deserialize(const UnicodeString Data);
+  void Deserialize(const UnicodeString & Data);
 
   __property bool IsEmpty = { read = GetIsEmpty };
   bool GetIsEmpty() const { return GetIsEmptyPrivate(); }
 
 private:
-  static bool DirectoryChangeKey(const UnicodeString SourceDir,
-    const UnicodeString Change, UnicodeString &Key);
+  static bool DirectoryChangeKey(const UnicodeString & SourceDir,
+    const UnicodeString & AChange, UnicodeString & Key);
   bool GetIsEmptyPrivate() const;
-  void SetValue(const UnicodeString Name, const UnicodeString Value);
-  UnicodeString GetValue(const UnicodeString Name) const { return TStringList::GetValue(Name); }
-  UnicodeString GetValue(const UnicodeString Name);
+  void SetValue(const UnicodeString & Name, const UnicodeString & Value);
+  UnicodeString GetValue(const UnicodeString & Name) const { return TStringList::GetValue(Name); }
+  UnicodeString GetValue(const UnicodeString & Name);
 
   int32_t FMaxSize{0};
 };
@@ -499,7 +499,7 @@ public:
   static unsigned short CalculatePermissions(TRightGroup Group, TRightLevel Level, TRightLevel Level2 = rlNone, TRightLevel Level3 = rlNone);
 
   TRights() noexcept;
-  TRights(const TRights &Source) noexcept;
+  TRights(const TRights & Source) noexcept;
   explicit TRights(uint16_t ANumber) noexcept;
   void Assign(const TRights *Source);
   void AddExecute();
@@ -507,24 +507,24 @@ public:
   TRights Combine(const TRights & Other) const;
   void SetTextOverride(const UnicodeString & value);
 
-  bool operator==(const TRights &rhr) const;
-  bool operator==(uint16_t rhr) const;
-  bool operator==(TFlag rhr) const;
-  bool operator!=(const TRights &rhr) const;
-  bool operator!=(const TFlag rhr) const;
-  TRights &operator=(const TRights &rhr);
-  TRights &operator=(uint16_t rhr);
-  TRights operator~() const;
-  TRights operator&(uint16_t rhr) const;
-  TRights operator&(const TRights &rhr) const;
-  TRights operator&(TFlag rhr) const;
-  TRights &operator&=(uint16_t rhr);
-  TRights &operator&=(const TRights &rhr);
-  TRights &operator&=(TFlag rhr);
-  TRights operator|(uint16_t rhr) const;
-  TRights operator|(const TRights &rhr) const;
-  TRights &operator|=(uint16_t rhr);
-  TRights &operator|=(const TRights &rhr);
+  bool operator ==(const TRights & rhr) const;
+  bool operator ==(uint16_t rhr) const;
+  bool operator ==(TFlag rhr) const;
+  bool operator !=(const TRights & rhr) const;
+  bool operator !=(const TFlag rhr) const;
+  TRights & operator =(const TRights & rhr);
+  TRights & operator =(uint16_t rhr);
+  TRights operator ~() const;
+  TRights operator &(uint16_t rhr) const;
+  TRights operator &(const TRights &rhr) const;
+  TRights operator &(TFlag rhr) const;
+  TRights & operator &=(uint16_t rhr);
+  TRights & operator &=(const TRights &rhr);
+  TRights & operator &=(TFlag rhr);
+  TRights operator |(uint16_t rhr) const;
+  TRights operator |(const TRights &rhr) const;
+  TRights & operator |=(uint16_t rhr);
+  TRights & operator|=(const TRights &rhr);
   operator uint16_t() const;
   operator uint32_t() const;
 
@@ -603,22 +603,22 @@ public:
   bool AddXToDirectories{false};
 
   TRemoteProperties();
-  TRemoteProperties(const TRemoteProperties &rhp);
-  bool operator==(const TRemoteProperties &rhp) const;
-  bool operator!=(const TRemoteProperties &rhp) const;
+  TRemoteProperties(const TRemoteProperties & rhp);
+  bool operator ==(const TRemoteProperties & rhp) const;
+  bool operator !=(const TRemoteProperties & rhp) const;
   void Default();
-  void Load(THierarchicalStorage *Storage);
-  void Save(THierarchicalStorage *Storage) const;
+  void Load(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage * Storage) const;
 
-  static TRemoteProperties CommonProperties(TStrings *AFileList);
+  static TRemoteProperties CommonProperties(TStrings * AFileList);
   static TRemoteProperties ChangedProperties(
-    const TRemoteProperties &OriginalProperties, TRemoteProperties &NewProperties);
+    const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties);
 
 public:
   TRemoteProperties &operator=(const TRemoteProperties &other);
 };
 
-enum TChecklistAction {
+enum TChecklistAction { //renamed from enum TSynchronizeChecklist::TAction
   saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
 
 class TSynchronizeChecklist;
@@ -673,8 +673,8 @@ class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
   friend class TTerminal;
 
 public:
-  //enum TAction {
-  //  saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+  __removed enum TAction { renamed to TChecklistAction
+  __removed saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
   static const int32_t ActionCount = saDeleteLocal;
 
 #if 0
@@ -718,14 +718,14 @@ public:
   };
 #endif // #if 0
 
-  typedef nb::vector_t<const TChecklistItem*> TItemList;
+  using TItemList = nb::vector_t<const TChecklistItem *>;
 
   TSynchronizeChecklist() noexcept;
   ~TSynchronizeChecklist() noexcept;
 
-  void Update(const TChecklistItem *Item, bool Check, TChecklistAction Action);
+  void Update(const TChecklistItem * Item, bool Check, TChecklistAction Action);
   void UpdateDirectorySize(const TChecklistItem * Item, int64_t Size);
-  void Delete(const TChecklistItem* Item);
+  void Delete(const TChecklistItem * Item);
 
   static TChecklistAction Reverse(TChecklistAction Action);
   static bool IsItemSizeIrrelevant(TChecklistAction Action);
@@ -740,7 +740,7 @@ protected:
   __removed TSynchronizeChecklist() noexcept;
 
   void Sort();
-  void Add(TChecklistItem *Item);
+  void Add(TChecklistItem * Item);
 
 public:
   void SetMasks(UnicodeString Value);
@@ -752,7 +752,7 @@ public:
 private:
   std::unique_ptr<TList> FList;
 
-  static int32_t Compare(const void *AItem1, const void *AItem2);
+  static int32_t Compare(const void * AItem1, const void * AItem2);
 };
 
 class TFileOperationProgressType;
@@ -762,7 +762,7 @@ class TSynchronizeProgress
 public:
   explicit TSynchronizeProgress(const TSynchronizeChecklist * Checklist) noexcept;
 
-  void ItemProcessed(const TChecklistItem* ChecklistItem);
+  void ItemProcessed(const TChecklistItem * ChecklistItem);
   int32_t Progress(const TFileOperationProgressType * CurrentItemOperationProgress) const;
   TDateTime TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 
@@ -771,12 +771,13 @@ private:
   mutable int64_t FTotalSize{-1};
   int64_t FProcessedSize{0};
 
-  int64_t ItemSize(const TChecklistItem* ChecklistItem) const;
+  int64_t ItemSize(const TChecklistItem * ChecklistItem) const;
   int64_t GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 };
 
-// moved to Common.h
 #if 0
+// moved to Common.h
+
 bool IsUnixStyleWindowsPath(const UnicodeString & Path);
 bool UnixIsAbsolutePath(const UnicodeString & Path);
 UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path);
