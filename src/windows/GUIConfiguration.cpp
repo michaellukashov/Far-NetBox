@@ -683,8 +683,8 @@ void TGUIConfiguration::UpdateStaticUsage()
     KEY3(Integer,  SessionReopenAutoIdle); \
   ); \
 
-    __removed KEY3(Integer, UsePuttyPwFile); \
-    __removed KEY(String,   BeepSound); \
+    __removed KEY3(Integer, UsePuttyPwFile);
+    __removed KEY(String,   BeepSound);
 
 bool TGUIConfiguration::DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults)
 {

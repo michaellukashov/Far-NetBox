@@ -5489,12 +5489,12 @@ void TSFTPFileSystem::DirectorySunk(
   if (CopyParam->GetPreserveTime() && CopyParam->GetPreserveTimeDirs())
   {
     // FILE_FLAG_BACKUP_SEMANTICS is needed to "open" directory
-    HANDLE LocalHandle =
+    HANDLE LocalFileHandle =
       CreateFile(
         ApiPath(ADestFullName).data(), GENERIC_WRITE, FILE_SHARE_WRITE, nullptr, OPEN_EXISTING,
         FILE_FLAG_BACKUP_SEMANTICS, nullptr);
 
-    if (LocalHandle == INVALID_HANDLE_VALUE)
+    if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
       int SetFileTimeError = GetLastError();
       FTerminal->LogEvent(
@@ -5502,8 +5502,8 @@ void TSFTPFileSystem::DirectorySunk(
     }
     else
     {
-      FTerminal->UpdateTargetTime(LocalHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
-      SAFE_CLOSE_HANDLE(LocalHandle);
+      FTerminal->UpdateTargetTime(LocalFileHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
     }
   }
 }
@@ -5931,7 +5931,7 @@ void TSFTPFileSystem::Sink(
   },
   __finally
   {
-    if (LocalHandle)
+    if (LocalFileHandle)
     {
       SAFE_CLOSE_HANDLE(LocalFileHandle);
     }
