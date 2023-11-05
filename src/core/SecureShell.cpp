@@ -735,7 +735,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
     { "HTTP proxy authentication", PROXY_AUTH_TITLE },
   };
 
-  int Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), AName);
+  int32_t Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), AName);
 
   TPromptKind PromptKind;
   if (Index == 0) // username
@@ -781,8 +781,8 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
 
 
 bool TSecureShell::PromptUser(bool /*ToServer*/,
-  UnicodeString AName, bool /*NameRequired*/,
-  UnicodeString AInstructions, bool InstructionsRequired,
+  const UnicodeString & AName, bool /*NameRequired*/,
+  const UnicodeString & AInstructions, bool InstructionsRequired,
   TStrings * Prompts, TStrings * Results)
 {
   // there can be zero prompts!
@@ -1260,7 +1260,7 @@ UnicodeString TSecureShell::ReceiveLine()
   return Result;
 }
 
-UnicodeString TSecureShell::ConvertInput(const RawByteString Input, uint32_t CodePage) const
+UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uint32_t CodePage) const
 {
   UnicodeString Result;
   if (GetUtfStrings())
@@ -1438,7 +1438,7 @@ void TSecureShell::SendLine(const UnicodeString & Line)
   Send(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length());
 }
 
-int TSecureShell::TranslatePuttyMessage(
+int32_t TSecureShell::TranslatePuttyMessage(
   const TPuttyTranslation *Translation, int32_t Count, UnicodeString &Message,
   UnicodeString *HelpKeyword) const
 {
@@ -1482,7 +1482,7 @@ int TSecureShell::TranslatePuttyMessage(
   return Result;
 }
 
-int TSecureShell::TranslateAuthenticationMessage(
+int32_t TSecureShell::TranslateAuthenticationMessage(
   UnicodeString & Message, UnicodeString * HelpKeyword)
 {
   static const TPuttyTranslation Translation[] = {
@@ -1499,7 +1499,7 @@ int TSecureShell::TranslateAuthenticationMessage(
     { "Server refused our key", AUTH_TRANSL_KEY_REFUSED, HELP_AUTH_TRANSL_KEY_REFUSED },
   };
 
-  int Result = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
+  int32_t Result = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
 
   if ((Result == 2) || (Result == 3) || (Result == 4))
   {
@@ -1573,7 +1573,7 @@ void TSecureShell::CaptureOutput(TLogLineType Type,
   FLog->Add(Type, Line);
 }
 
-int TSecureShell::TranslateErrorMessage(
+int32_t TSecureShell::TranslateErrorMessage(
   UnicodeString &Message, UnicodeString *HelpKeyword)
 {
   static const TPuttyTranslation Translation[] = {
@@ -1587,7 +1587,7 @@ int TSecureShell::TranslateErrorMessage(
     { "Incoming packet was garbled on decryption", NET_TRANSL_PACKET_GARBLED, HELP_NET_TRANSL_PACKET_GARBLED },
   };
 
-  int Index = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
+  int32_t Index = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
 
   if ((Index == 0) || (Index == 1) || (Index == 2) || (Index == 3))
   {
@@ -1599,7 +1599,7 @@ int TSecureShell::TranslateErrorMessage(
   return Index;
 }
 
-void TSecureShell::PuttyFatalError(UnicodeString AError)
+void TSecureShell::PuttyFatalError(const UnicodeString & AError)
 {
   UnicodeString Error = AError;
   UnicodeString HelpKeyword;
@@ -1614,7 +1614,7 @@ void TSecureShell::PuttyFatalError(UnicodeString AError)
   }
 }
 
-void TSecureShell::FatalError(UnicodeString Error, UnicodeString HelpKeyword)
+void TSecureShell::FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword)
 {
   FUI->FatalError(nullptr, Error, HelpKeyword);
 }
@@ -2275,10 +2275,11 @@ uint32_t TSecureShell::MaxPacketSize() const
   return winscp_query(FBackendHandle, WINSCP_QUERY_REMMAXPKT);
 }
 
-UnicodeString TSecureShell::FormatKeyStr(UnicodeString KeyStr) const
+UnicodeString TSecureShell::FormatKeyStr(const UnicodeString & AKeyStr) const
 {
-  int Index = 1;
-  int Digits = 0;
+  UnicodeString KeyStr = AKeyStr;
+  int32_t Index = 1;
+  int32_t Digits = 0;
   while (Index <= KeyStr.Length())
   {
     if (IsHex(KeyStr[Index]))
@@ -2512,9 +2513,9 @@ void TSecureShell::ParseFingerprint(const UnicodeString & Fingerprint, UnicodeSt
 }
 
 void TSecureShell::VerifyHostKey(
-  const UnicodeString AHost, int32_t Port, const UnicodeString KeyType, const UnicodeString KeyStr,
+  const UnicodeString & AHost, int32_t Port, const UnicodeString & KeyType, const UnicodeString & KeyStr,
   const UnicodeString & AFingerprintSHA256, const UnicodeString & AFingerprintMD5,
-  bool IsCertificate, int CACount, bool AlreadyVerified)
+  bool IsCertificate, int32_t CACount, bool AlreadyVerified)
 {
   if (GetConfiguration()->ActualLogProtocol >= 1)
   {
@@ -2854,7 +2855,7 @@ void TSecureShell::VerifyHostKey(
   GetConfiguration()->RememberLastFingerprint(FSessionData->GetSiteKey(), SshFingerprintType, FingerprintSHA256);
 }
 
-bool TSecureShell::HaveHostKey(UnicodeString AHost, int32_t Port, UnicodeString KeyType)
+bool TSecureShell::HaveHostKey(const UnicodeString & AHost, int32_t Port, const UnicodeString & KeyType)
 {
   // Return true, if we have any host key fingerprint of a particular type
 
@@ -2887,7 +2888,7 @@ bool TSecureShell::HaveHostKey(UnicodeString AHost, int32_t Port, UnicodeString 
   return Result;
 }
 
-void TSecureShell::AskAlg(UnicodeString AAlgType, UnicodeString AlgName)
+void TSecureShell::AskAlg(const UnicodeString & AAlgType, const UnicodeString & AlgName)
 {
   // beware of changing order
   static const TPuttyTranslation AlgTranslation[] = {
@@ -2910,7 +2911,7 @@ void TSecureShell::AskAlg(UnicodeString AAlgType, UnicodeString AlgName)
   }
 }
 
-void TSecureShell::DisplayBanner(const UnicodeString Banner)
+void TSecureShell::DisplayBanner(const UnicodeString & Banner)
 {
   // Since 0.77 PuTTY calls this again with CRLF if the actual banner does not end with one.
   if (!Banner.Trim().IsEmpty())

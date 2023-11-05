@@ -94,7 +94,7 @@ private:
 public:
   void Init();
   void SetActive(bool Value);
-  void CheckConnection(int Message = -1);
+  void CheckConnection(int32_t Message = -1);
   void WaitForData();
   void Discard();
   void FreeBackend();
@@ -112,12 +112,12 @@ public:
   void UpdateSessionInfo() const;
   bool GetReady() const;
   void DispatchSendBuffer(int32_t BufSize);
-  void SendBuffer(uint32_t &Result);
+  void SendBuffer(uint32_t & Result);
   uint32_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
   void TimeoutAbort(unsigned int Answer);
   bool TryFtp();
-  UnicodeString ConvertInput(const RawByteString Input, uint32_t CodePage = CP_ACP) const;
-  void GetRealHost(UnicodeString &Host, int32_t &Port) const;
+  UnicodeString ConvertInput(const RawByteString & Input, uint32_t CodePage = CP_ACP) const;
+  void GetRealHost(UnicodeString & Host, int32_t & Port) const;
   UnicodeString RetrieveHostKey(const UnicodeString & Host, int32_t Port, const UnicodeString & KeyType);
   bool HaveAcceptNewHostKeyPolicy() const;
   THierarchicalStorage * GetHostKeyStorage();
@@ -131,16 +131,16 @@ protected:
   TCaptureOutputEvent FOnCaptureOutput;
 
   void GotHostKey();
-  int TranslatePuttyMessage(const TPuttyTranslation *Translation,
-    int32_t Count, UnicodeString &Message, UnicodeString *HelpKeyword = nullptr) const;
-  int TranslateAuthenticationMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
-  int TranslateErrorMessage(UnicodeString &Message, UnicodeString *HelpKeyword = nullptr);
+  int32_t TranslatePuttyMessage(const TPuttyTranslation * Translation,
+    int32_t Count, UnicodeString & Message, UnicodeString * HelpKeyword = nullptr) const;
+  int32_t TranslateAuthenticationMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
+  int32_t TranslateErrorMessage(UnicodeString & Message, UnicodeString * HelpKeyword = nullptr);
   void AddStdErrorLine(const UnicodeString & AStr);
   void LogEvent(const UnicodeString & AStr);
-  void FatalError(UnicodeString Error, UnicodeString HelpKeyword = "");
-  UnicodeString FormatKeyStr(UnicodeString AKeyStr) const;
+  void FatalError(const UnicodeString & Error, const UnicodeString & HelpKeyword = "");
+  UnicodeString FormatKeyStr(const UnicodeString & AKeyStr) const;
   void ParseFingerprint(const UnicodeString & Fingerprint, UnicodeString & SignKeyType, UnicodeString & Hash);
-  static Conf *StoreToConfig(TSessionData *Data, bool Simple);
+  static Conf * StoreToConfig(TSessionData * Data, bool Simple);
 
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
@@ -173,23 +173,23 @@ public:
   // interface to PuTTY core
   void UpdateSocket(SOCKET Value, bool Enable);
   void UpdatePortFwdSocket(SOCKET Value, bool Enable);
-  void PuttyFatalError(UnicodeString AError);
+  void PuttyFatalError(const UnicodeString & AError);
   TPromptKind IdentifyPromptKind(UnicodeString & AName) const;
   bool PromptUser(bool ToServer,
-    UnicodeString AName, bool NameRequired,
-    UnicodeString AInstructions, bool InstructionsRequired,
+    const UnicodeString & AName, bool NameRequired,
+    const UnicodeString & AInstructions, bool InstructionsRequired,
     TStrings * Prompts, TStrings *Results);
   void FromBackend(const uint8_t * Data, size_t Length);
   void CWrite(const char * Data, size_t Length);
   void AddStdError(const uint8_t * Data, size_t Length);
   const UnicodeString & GetStdError() const;
   void VerifyHostKey(
-    const UnicodeString AHost, int32_t Port, const UnicodeString AKeyType, const UnicodeString AKeyStr,
+    const UnicodeString & AHost, int32_t Port, const UnicodeString & AKeyType, const UnicodeString & AKeyStr,
     const UnicodeString & FingerprintSHA256, const UnicodeString & FingerprintMD5,
-    bool IsCertificate, int CACount, bool AlreadyVerified);
-  bool HaveHostKey(UnicodeString AHost, int32_t Port, const UnicodeString KeyType);
-  void AskAlg(UnicodeString AAlgType, UnicodeString AlgName);
-  void DisplayBanner(const UnicodeString Banner);
+    bool IsCertificate, int32_t CACount, bool AlreadyVerified);
+  bool HaveHostKey(const UnicodeString & AHost, int32_t Port, const UnicodeString & KeyType);
+  void AskAlg(const UnicodeString & AAlgType, const UnicodeString & AlgName);
+  void DisplayBanner(const UnicodeString & Banner);
   void PuttyLogEvent(const char * AStr);
   UnicodeString ConvertFromPutty(const char * Str, int32_t Length) const;
   struct callback_set * GetCallbackSet();
