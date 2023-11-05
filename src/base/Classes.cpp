@@ -30,22 +30,6 @@ extern "C" {
 } // extern "C"
 #endif
 
-void Abort()
-{
-  throw EAbort("");
-}
-
-void Error(int32_t Id, int32_t ErrorId)
-{
-  UnicodeString Msg = FMTLOAD(Id, ErrorId);
-  throw ExtException(static_cast<Exception *>(nullptr), Msg);
-}
-
-void ThrowNotImplemented(int32_t ErrorId)
-{
-  Error(SNotImplemented, ErrorId);
-}
-
 TPersistent::TPersistent(TObjectClassId Kind) :
   TObject(Kind)
 {

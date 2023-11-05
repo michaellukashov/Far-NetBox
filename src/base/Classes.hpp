@@ -61,10 +61,6 @@ class Exception;
 using TThreadMethod = nb::FastDelegate0<void>;
 using TNotifyEvent = nb::FastDelegate1<void, TObject * /*Sender*/>;
 
-NB_CORE_EXPORT void Abort();
-NB_CORE_EXPORT void Error(int32_t Id, int32_t ErrorId);
-NB_CORE_EXPORT void ThrowNotImplemented(int32_t ErrorId);
-
 enum class TObjectClassId {};
 #define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr const TObjectClassId OBJECT_CLASS_ ## CLASS_ID = static_cast<TObjectClassId>(nb::counter_id())
 

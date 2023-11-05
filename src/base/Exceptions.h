@@ -269,9 +269,26 @@ public:
   }
 };
 
+inline void Abort()
+{
+  throw EAbort("");
+}
+
+inline void Error(int32_t Id, int32_t ErrorId)
+{
+  UnicodeString Msg = FMTLOAD(Id, ErrorId);
+  throw ExtException(static_cast<Exception *>(nullptr), Msg);
+}
+
+inline void ThrowNotImplemented(int32_t ErrorId)
+{
+  Error(SNotImplemented, ErrorId);
+}
+
 NB_CORE_EXPORT Exception *CloneException(Exception *E);
 NB_CORE_EXPORT void RethrowException(Exception *E);
 NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception* E);
 NB_CORE_EXPORT UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const UnicodeString SecondaryHelpKeyword);
 NB_CORE_EXPORT bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword);
 UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString NewContext);
+
