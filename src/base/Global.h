@@ -84,7 +84,7 @@ extern "C" NB_CORE_EXPORT void DoTrace(const wchar_t *SourceFile, const wchar_t 
   uint32_t Line, const wchar_t *Message);
 NB_CORE_EXPORT void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
   uint32_t Line, const wchar_t *AFormat, fmt::ArgList args);
-FMT_VARIADIC_W(void, DoTraceFmt, const wchar_t *, const wchar_t *, uintptr_t, const wchar_t *)
+FMT_VARIADIC_W(void, DoTraceFmt, const wchar_t *, const wchar_t *, uint32_t, const wchar_t *)
 
 #ifdef TRACE_IN_MEMORY
 NB_CORE_EXPORT void TraceDumpToFile();

@@ -55,7 +55,7 @@ TUnguard::~TUnguard() noexcept
 
 static HANDLE TraceFile = nullptr;
 bool IsTracing = false;
-const uint32_t CallstackTlsOff = static_cast<uintptr_t>(-1);
+const uint32_t CallstackTlsOff = static_cast<uint32_t>(-1);
 uint32_t CallstackTls = CallstackTlsOff;
 TCriticalSection *TracingCriticalSection = nullptr;
 

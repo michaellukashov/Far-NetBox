@@ -129,7 +129,7 @@ protected:
   UnicodeString FHomeDirectory;
   AnsiString FEOL;
   std::unique_ptr<TList> FPacketReservations;
-  nb::vector_t<uintptr_t> FPacketNumbers;
+  nb::vector_t<uint32_t> FPacketNumbers;
   SSH_FXP_TYPE FPreviousLoggedPacket{0};
   int32_t FNotLoggedWritePackets{0}, FNotLoggedReadPackets{0}, FNotLoggedStatusPackets{0}, FNotLoggedDataPackets{0};
   rde::set<uint32_t> FNotLoggedRequests;

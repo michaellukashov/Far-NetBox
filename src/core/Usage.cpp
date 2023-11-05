@@ -335,5 +335,5 @@ void TUsage::Serialize(
 int32_t TUsage::CalculateCounterSize(int64_t Size)
 {
   constexpr int32_t SizeCounterFactor = 10 * 1024;
-  return (intptr_t)((Size <= 0) ? 0 : (Size < SizeCounterFactor ? 1 : Size / SizeCounterFactor));
+  return (int32_t)((Size <= 0) ? 0 : (Size < SizeCounterFactor ? 1 : Size / SizeCounterFactor));
 }

@@ -87,7 +87,7 @@ public:
 private:
   using TTokens = nb::vector_t<TRemoteToken>;
   using TNameMap = nb::map_t<UnicodeString, size_t>;
-  using TIDMap = nb::map_t<intptr_t, size_t>;
+  using TIDMap = nb::map_t<int32_t, size_t>;
   TTokens FTokens;
   mutable TNameMap FNameMap;
   mutable TIDMap FIDMap;

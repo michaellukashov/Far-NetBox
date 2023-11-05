@@ -401,7 +401,7 @@ void TCopyParamType::DoGetInfoStr(
 
   if (GetCPSLimit() > 0)
   {
-    int32_t LimitKB = intptr_t(GetCPSLimit() / 1024);
+    int32_t LimitKB = int32_t(GetCPSLimit() / 1024);
     if (ADD(FMTLOAD(COPY_INFO_CPS_LIMIT2, LimitKB), cpaIncludeMaskOnly))
     {
 #if 0

@@ -1570,7 +1570,7 @@ public:
   {
     void *Token{nullptr};
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_DATA, asEOF, &Token);
-    BlockSize = reinterpret_cast<uintptr_t>(Token);
+    BlockSize = reinterpret_cast<uint32_t>(Token);
     return Result;
   }
 
