@@ -95,7 +95,7 @@ private:
   bool FTotalSizeSet{false};
   bool FSuspended{false};
   bool FRestored{false};
-  TFileOperationProgressType *FParent{nullptr};
+  TFileOperationProgressType * FParent{nullptr};
 
   // when it was last time suspended (to calculate suspend time in Resume())
   uint64_t FSuspendTime{0};
@@ -210,10 +210,10 @@ public:
   TFileOperationProgressType() noexcept;
   explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
-    TFileOperationProgressType *Parent = nullptr) noexcept;
+    TFileOperationProgressType * Parent = nullptr) noexcept;
   virtual ~TFileOperationProgressType() noexcept;
-  void Assign(const TFileOperationProgressType &Other);
-  void AssignButKeepSuspendState(const TFileOperationProgressType &Other);
+  void Assign(const TFileOperationProgressType & Other);
+  void AssignButKeepSuspendState(const TFileOperationProgressType & Other);
   void AddLocallyUsed(int64_t ASize);
   void AddTransferred(int64_t ASize, bool AddToTotals = true);
   void AddResumed(int64_t ASize);

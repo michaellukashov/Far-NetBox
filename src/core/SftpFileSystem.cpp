@@ -1566,7 +1566,7 @@ public:
     InitRequest(Packet, Offset, MissingLen);
   }
 
-  bool ReceivePacket(TSFTPPacket *Packet, uint32_t &BlockSize)
+  bool ReceivePacket(TSFTPPacket * Packet, uint32_t & BlockSize)
   {
     void *Token{nullptr};
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_DATA, asEOF, &Token);
