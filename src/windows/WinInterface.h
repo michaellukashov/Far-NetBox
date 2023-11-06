@@ -142,22 +142,22 @@ void InitializeWinHelp();
 void FinalizeWinHelp();
 
 // windows\WinInterface.cpp
-uint32_t MessageDialog(const UnicodeString Msg, TQueryType Type,
-  uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uint32_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
+  uint32_t Answers, const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 uint32_t MessageDialog(int32_t Ident, TQueryType Type,
-  uint32_t Answers, UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
-uint32_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages = L"");
+  uint32_t Answers, const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+uint32_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages = L"");
 
-uint32_t MoreMessageDialog(const UnicodeString Message,
+uint32_t MoreMessageDialog(const UnicodeString & Message,
   TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
-    UnicodeString HelpKeyword, const TMessageParams * Params = nullptr);
+  const UnicodeString & HelpKeyword, const TMessageParams * Params = nullptr);
 
 uint32_t ExceptionMessageDialog(Exception * E, TQueryType Type,
-  const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
-  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+  const UnicodeString & MessageFormat = L"", uint32_t Answers = qaOK,
+  const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 uint32_t FatalExceptionMessageDialog(
-  Exception * E, TQueryType Type, const UnicodeString MessageFormat = L"", uint32_t Answers = qaOK,
-  UnicodeString HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
+  Exception * E, TQueryType Type, const UnicodeString & MessageFormat = L"", uint32_t Answers = qaOK,
+  const UnicodeString & HelpKeyword = HELP_NONE, const TMessageParams * Params = nullptr);
 
 // forms\Custom.cpp
 TSessionData * DoSaveSession(TSessionData * SessionData,
@@ -353,18 +353,18 @@ using TCalculateSizeEvent = nb::FastDelegate4<void,
   TStrings * /*FileList*/, int64_t & /*Size*/, TCalculateSizeStats & /*Stats*/,
   bool & /*Close*/>;
 using TCalculatedChecksumCallbackEvent = nb::FastDelegate3<void,
-  UnicodeString /*FileName*/, UnicodeString /*Alg*/,
-  UnicodeString /*Hash*/>;
+  const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/,
+  const UnicodeString & /*Hash*/>;
 using TCalculateChecksumEvent = nb::FastDelegate4<void,
-  UnicodeString /*Alg*/, TStrings * /*FileList*/,
+  const UnicodeString & /*Alg*/, TStrings * /*FileList*/,
   TCalculatedChecksumCallbackEvent /*OnCalculatedChecksum*/,
   bool & /*Close*/>;
 
 bool DoPropertiesDialog(TStrings * FileList,
-    const UnicodeString Directory, const TRemoteTokenList * GroupList,
+    const UnicodeString & Directory, const TRemoteTokenList * GroupList,
     const TRemoteTokenList * UserList, TStrings * ChecksumAlgs,
     TRemoteProperties * Properties,
-    int AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
+    int32_t AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
     TCalculateChecksumEvent OnCalculateChecksum);
 
 using TDirectoryExistsEvent = nb::FastDelegate4<bool, void * /*Session*/, const UnicodeString & /*Directory*/>;
@@ -398,10 +398,10 @@ using TGetSynchronizeOptionsEvent = nb::FastDelegate2<void,
   int32_t /*Params*/,
   TSynchronizeOptions & /*Options*/>;
 using TSynchronizeSessionLogEvent = nb::FastDelegate1<void,
-  UnicodeString /*Message*/>;
+  const UnicodeString & /*Message*/>;
 using TFeedSynchronizeErrorEvent = nb::FastDelegate4<void,
-  UnicodeString /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
-  UnicodeString /*HelpKeyword*/>;
+  const UnicodeString & /*Message*/, TStrings * /*MoreMessages*/, TQueryType /*Type*/,
+  const UnicodeString & /*HelpKeyword*/>;
 using TSynchronizeInNewWindowEvent = nb::FastDelegate4<void,
   const TSynchronizeParamType & /*Params*/, const TCopyParamType * /*CopyParams*/>;
 
@@ -422,7 +422,7 @@ constexpr int32_t fsoDisableTimestamp = 0x01;
 constexpr int32_t fsoDoNotUsePresets =  0x02;
 constexpr int32_t fsoAllowSelectedOnly = 0x04;
 using TFullSynchronizeInNewWindowEvent = nb::FastDelegate5<void,
-  TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/, UnicodeString /*LocalDirectory*/, UnicodeString /*RemoteDirectory*/,
+  TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/, const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
    const TCopyParamType * /*CopyParams*/>;
 bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, int32_t & Params,
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
@@ -452,12 +452,12 @@ using TFullSynchronizeEvent = nb::FastDelegate3<void,
 using TSynchronizeChecklistCalculateSizeEvent = nb::FastDelegate3<void,
   TSynchronizeChecklist * /*Checklist*/, const TSynchronizeChecklist::TItemList & /*Items*/, void * /*Token*/>;
 using TSynchronizeMoveEvent = nb::FastDelegate4<void,
-  TOperationSide /*Side*/, UnicodeString /*FileName*/, UnicodeString /*NewFileName*/, TRemoteFile * /*RemoteFile*/>;
+  TOperationSide /*Side*/, const UnicodeString & /*FileName*/, const UnicodeString & /*NewFileName*/, TRemoteFile * /*RemoteFile*/>;
 using TSynchronizeBrowseEvent = nb::FastDelegate3<void,
   TOperationSide /*Side*/, TChecklistAction /*Action*/, const TChecklistItem * /*Item*/>;
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TTerminal::TSynchronizeMode Mode, int32_t Params,
-  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
   TCustomCommandMenuEvent OnCustomCommandMenu, TFullSynchronizeEvent OnSynchronize,
   TSynchronizeChecklistCalculateSizeEvent OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent OnSynchronizeMove,
   TSynchronizeBrowseEvent OnSynchronizeBrowse, void * Token);
@@ -490,12 +490,8 @@ bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
 struct TSpaceAvailable;
 struct TFileSystemInfo;
 struct TSessionInfo;
-#if 0
-typedef void (__closure *TGetSpaceAvailable)
-  (const UnicodeString Path, TSpaceAvailable & ASpaceAvailable, bool & Close);
-#endif // #if 0
 using TGetSpaceAvailableEvent = nb::FastDelegate3<void,
-  UnicodeString /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
+  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
   bool & /*Close*/>;
 
 void DoFileSystemInfoDialog(
@@ -540,13 +536,13 @@ bool DoEditorPreferencesDialog(TEditorData * Editor,
 
 // forms\Find.cpp
 using TFindEvent = nb::FastDelegate5<void,
-  TTerminal * /*Terminal*/, UnicodeString /*Directory*/, const TFileMasks & /*FileMask*/,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, const TFileMasks & /*FileMask*/,
   TFileFoundEvent /*OnFileFound*/,
   TFindingFileEvent /*OnFindingFile*/>;
 using TFocusFileEvent = nb::FastDelegate2<void,
-  TTerminal * /*Terminal*/, UnicodeString /*Path*/>;
+  TTerminal * /*Terminal*/, const UnicodeString & /*Path*/>;
 using TFileOperationFinished2Event = nb::FastDelegate3<void,
-  TOperationSide /*Side*/, UnicodeString /*FileName*/, bool /*Success*/>;
+  TOperationSide /*Side*/, const UnicodeString & /*FileName*/, bool /*Success*/>;
 using TFileListOperationEvent = nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, TStrings * /*FileList*/, TFileOperationFinished2Event /*OnFileOperationFinished*/>;
 
@@ -670,10 +666,10 @@ public:
     TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) noexcept;
 
 protected:
-  virtual void Prompt(int32_t Index, const UnicodeString Prompt,
-    UnicodeString &Value) const override;
+  virtual void Prompt(int32_t Index, const UnicodeString & Prompt,
+    UnicodeString & Value) const override;
   virtual void Execute(const UnicodeString & Command,
-    UnicodeString &Value) const override;
+    UnicodeString & Value) const override;
   virtual void PatternHint(int32_t Index, const UnicodeString & Pattern) override;
 
 private:

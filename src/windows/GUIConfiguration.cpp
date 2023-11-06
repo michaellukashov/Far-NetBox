@@ -156,8 +156,8 @@ bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
 }
 #undef C
 
-bool TCopyParamRule::Match(const UnicodeString Mask,
-  const UnicodeString Value, bool Path, bool Local, int32_t ForceDirectoryMasks) const
+bool TCopyParamRule::Match(const UnicodeString & Mask,
+  const UnicodeString & Value, bool Path, bool Local, int32_t ForceDirectoryMasks) const
 {
   bool Result;
   if (Mask.IsEmpty())
@@ -221,7 +221,7 @@ TCopyParamRule &TCopyParamRule::operator=(const TCopyParamRule &other)
 }
 
 
-UnicodeString TCopyParamRule::GetInfoStr(UnicodeString Separator) const
+UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
 {
   UnicodeString Result;
 #define ADD(FMT, ELEM) \
@@ -273,7 +273,7 @@ void TCopyParamList::Modify()
   FModified = true;
 }
 //---------------------------------------------------------------------
-void TCopyParamList::ValidateName(UnicodeString Name)
+void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
   {
@@ -320,7 +320,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
   return Result;
 }
 
-int32_t TCopyParamList::IndexOfName(const UnicodeString Name) const
+int32_t TCopyParamList::IndexOfName(const UnicodeString & Name) const
 {
   return FNames->IndexOf(Name);
 }
@@ -347,7 +347,7 @@ void TCopyParamList::Clear()
   FNames->Clear();
 }
 
-void TCopyParamList::Add(const UnicodeString Name,
+void TCopyParamList::Add(const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   Insert(GetCount(), Name, CopyParam, Rule);
@@ -364,7 +364,7 @@ void TCopyParamList::Insert(int32_t Index, const UnicodeString Name,
   Modify();
 }
 
-void TCopyParamList::Change(int32_t Index, const UnicodeString Name,
+void TCopyParamList::Change(int32_t Index, const UnicodeString & Name,
   TCopyParamType * CopyParam, TCopyParamRule * Rule)
 {
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
@@ -857,7 +857,7 @@ void TGUIConfiguration::Saved()
 }
 
 
-UnicodeString TGUIConfiguration::GetTranslationModule(const UnicodeString Path) const
+UnicodeString TGUIConfiguration::GetTranslationModule(const UnicodeString & Path) const
 {
   UnicodeString SubPath = AddTranslationsSubFolder(Path);
   UnicodeString Result;
@@ -873,7 +873,7 @@ UnicodeString TGUIConfiguration::GetTranslationModule(const UnicodeString Path) 
   return Result;
 }
 
-UnicodeString TGUIConfiguration::AddTranslationsSubFolder(const UnicodeString Path) const
+UnicodeString TGUIConfiguration::AddTranslationsSubFolder(const UnicodeString & Path) const
 {
   return
     IncludeTrailingBackslash(IncludeTrailingBackslash(ExtractFilePath(Path)) + TranslationsSubFolder) +
@@ -1106,7 +1106,7 @@ UnicodeString TGUIConfiguration::AppliedLocaleVersion()
   return Result;
 }
 
-void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, const UnicodeString LocaleModuleName)
+void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, const UnicodeString & LocaleModuleName)
 {
   FAppliedLocale = AppliedLocale;
   FLocaleModuleName = LocaleModuleName;
@@ -1160,7 +1160,7 @@ void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
   DefaultLocalized();
 }
 
-void TGUIConfiguration::FindLocales(const UnicodeString LocalesMask, TStrings * Exts, UnicodeString & LocalesExts)
+void TGUIConfiguration::FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts)
 {
   int FindAttrs = faReadOnly | faArchive;
 
@@ -1380,7 +1380,7 @@ void TGUIConfiguration::SetCopyParamIndex(int32_t Value)
   SetCopyParamCurrent(Name);
 }
 
-void TGUIConfiguration::SetCopyParamCurrent(UnicodeString Value)
+void TGUIConfiguration::SetCopyParamCurrent(const UnicodeString & Value)
 {
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
@@ -1390,7 +1390,7 @@ TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam() const
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(UnicodeString Name) const
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
 {
   TGUICopyParamType Result = FDefaultCopyParam;
   if (!Name.IsEmpty())
@@ -1412,13 +1412,13 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(UnicodeString Name) cons
   return Result;
 }
 
-bool TGUIConfiguration::GetHasCopyParamPreset(UnicodeString Name) const
+bool TGUIConfiguration::GetHasCopyParamPreset(const UnicodeString & Name) const
 {
   return Name.IsEmpty() || (FCopyParamList->IndexOfName(Name) >= 0);
 }
 
 void TGUIConfiguration::SetNewDirectoryProperties(
-  const TRemoteProperties &Value)
+  const TRemoteProperties & Value)
 {
   SET_CONFIG_PROPERTY(NewDirectoryProperties);
 }
@@ -1490,7 +1490,7 @@ UnicodeString TGUIConfiguration::GetPuttyPath() const
   return FPuttyPath;
 }
 
-void TGUIConfiguration::SetPuttyPath(UnicodeString Value)
+void TGUIConfiguration::SetPuttyPath(const UnicodeString & Value)
 {
   FPuttyPath = Value;
 }
@@ -1505,7 +1505,7 @@ UnicodeString TGUIConfiguration::GetPuttySession() const
   return FPuttySession;
 }
 
-void TGUIConfiguration::SetPuttySession(UnicodeString Value)
+void TGUIConfiguration::SetPuttySession(const UnicodeString & Value)
 {
   FPuttySession = Value;
 }
@@ -1520,7 +1520,7 @@ UnicodeString TGUIConfiguration::GetChecksumAlg() const
   return FChecksumAlg;
 }
 
-void TGUIConfiguration::SetChecksumAlg(UnicodeString Value)
+void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 {
   FChecksumAlg = Value;
 }

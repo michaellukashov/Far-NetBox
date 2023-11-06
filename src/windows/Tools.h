@@ -67,11 +67,11 @@ void BrowseForExecutable(TComboBox * Control, UnicodeString Title,
 bool FontDialog(TFont * Font);
 #endif // #if 0
 
-NB_CORE_EXPORT bool SaveDialog(UnicodeString Title, UnicodeString Filter,
-  UnicodeString DefaultExt, UnicodeString & FileName);
-NB_CORE_EXPORT bool AutodetectProxy(UnicodeString & HostName, int32_t& PortNumber);
+NB_CORE_EXPORT bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
+  const UnicodeString & DefaultExt, UnicodeString & FileName);
+NB_CORE_EXPORT bool AutodetectProxy(UnicodeString & HostName, int32_t & PortNumber);
 NB_CORE_EXPORT bool IsWin64();
-NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
+NB_CORE_EXPORT void CopyToClipboard(const UnicodeString & Text);
 NB_CORE_EXPORT void CopyToClipboard(TStrings * Strings);
 NB_CORE_EXPORT void ShutDownWindows();
 NB_CORE_EXPORT void SuspendWindows();

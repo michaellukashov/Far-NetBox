@@ -1092,8 +1092,8 @@ bool FontDialog(TFont * Font)
 }
 #endif // #if 0
 
-bool SaveDialog(UnicodeString Title, UnicodeString Filter,
-  UnicodeString DefaultExt, UnicodeString & FileName)
+bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
+  const UnicodeString & DefaultExt, UnicodeString & FileName)
 {
   TODO("implement");
   bool Result = false;
