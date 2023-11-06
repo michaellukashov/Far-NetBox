@@ -3005,9 +3005,9 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
   return FORMAT("%d.%d.%d", NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH);
 }
 
-bool TGlobalFunctions::InputDialog(const UnicodeString ACaption, const UnicodeString APrompt,
-  UnicodeString &Value, const UnicodeString HelpKeyword,
-  TStrings *History, bool PathInput,
+bool TGlobalFunctions::InputDialog(const UnicodeString & ACaption, const UnicodeString & APrompt,
+  UnicodeString & Value, const UnicodeString & HelpKeyword,
+  TStrings * History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo)
 {
   DebugUsedParam(HelpKeyword);
@@ -3016,12 +3016,12 @@ bool TGlobalFunctions::InputDialog(const UnicodeString ACaption, const UnicodeSt
   DebugUsedParam(OnInitialize);
   DebugUsedParam(Echo);
 
-  TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
   return WinSCPPlugin->InputBox(ACaption, APrompt, Value, 0);
 }
 
-uint32_t TGlobalFunctions::MoreMessageDialog(const UnicodeString AMessage, TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams *Params)
+uint32_t TGlobalFunctions::MoreMessageDialog(const UnicodeString & AMessage, TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams * Params)
 {
-  TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
   return WinSCPPlugin->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
 }

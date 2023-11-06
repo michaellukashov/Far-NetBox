@@ -1182,8 +1182,8 @@ public:
   bool Execute(TStrings *Results);
 
 private:
-  void ShowPromptClick(TFarButton *Sender, bool &Close);
-  void GenerateLabel(const UnicodeString ACaption, bool &Truncated);
+  void ShowPromptClick(TFarButton * Sender, bool & Close);
+  void GenerateLabel(const UnicodeString & ACaption, bool &Truncated);
   TFarEdit *GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
     UnicodeString Instructions, const TStrings *Prompts, bool &Truncated);
@@ -1259,7 +1259,7 @@ TPasswordDialog::~TPasswordDialog()
 //  SAFE_DESTROY(FEdits);
 }
 
-void TPasswordDialog::GenerateLabel(const UnicodeString ACaption,
+void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
   bool &Truncated)
 {
   UnicodeString Caption = ACaption;
@@ -1371,10 +1371,10 @@ bool TPasswordDialog::Execute(TStrings *Results)
   return Result;
 }
 
-bool TWinSCPFileSystem::PasswordDialog(TSessionData *SessionData,
-  TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions,
-  TStrings *Prompts,
-  TStrings *Results, bool StoredCredentialsTried)
+bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
+  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions,
+  TStrings * Prompts,
+  TStrings * Results, bool StoredCredentialsTried)
 {
   std::unique_ptr<TPasswordDialog> Dialog(std::make_unique<TPasswordDialog>(FPlugin, SessionData->GetName(),
       Kind, Name, Instructions, Prompts, StoredCredentialsTried));
@@ -1382,8 +1382,8 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData *SessionData,
   return Result;
 }
 
-bool TWinSCPFileSystem::BannerDialog(const UnicodeString SessionName,
-  UnicodeString Banner, bool &NeverShowAgain, int32_t Options)
+bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
+  const UnicodeString & Banner, bool & NeverShowAgain, int32_t Options)
 {
   std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(FPlugin));
   TWinSCPDialog *Dialog = DialogPtr.get();
@@ -6416,8 +6416,8 @@ bool TFileSystemInfoDialog::SpaceAvailableSupported() const
 }
 
 void TWinSCPFileSystem::FileSystemInfoDialog(
-  const TSessionInfo &SessionInfo, const TFileSystemInfo &FileSystemInfo,
-  UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
+  const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
+  const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
 {
   std::unique_ptr<TFileSystemInfoDialog> Dialog(std::make_unique<TFileSystemInfoDialog>(FPlugin, OnGetSpaceAvailable));
   Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
@@ -7773,8 +7773,8 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist *Checklist)
 }
 
 bool TWinSCPFileSystem::SynchronizeChecklistDialog(
-  TSynchronizeChecklist *Checklist, TTerminal::TSynchronizeMode Mode, int32_t Params,
-  UnicodeString LocalDirectory, const UnicodeString RemoteDirectory)
+  TSynchronizeChecklist * Checklist, TTerminal::TSynchronizeMode Mode, int32_t Params,
+  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory)
 {
   std::unique_ptr<TSynchronizeChecklistDialog> Dialog(std::make_unique<TSynchronizeChecklistDialog>(
       FPlugin, Mode, Params, LocalDirectory, RemoteDirectory));

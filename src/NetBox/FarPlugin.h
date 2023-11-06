@@ -594,12 +594,12 @@ public:
   UnicodeString GetMsg(int32_t Id) const override;
   UnicodeString GetCurrDirectory() const override;
   UnicodeString GetStrVersionNumber() const override;
-  bool InputDialog(const UnicodeString ACaption,
-    const UnicodeString APrompt, UnicodeString &Value, const UnicodeString HelpKeyword,
-    TStrings *History, bool PathInput,
+  bool InputDialog(const UnicodeString & ACaption,
+    const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
+    TStrings * History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
-  uint32_t MoreMessageDialog(const UnicodeString AMessage,
-    TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
+  uint32_t MoreMessageDialog(const UnicodeString & AMessage,
+    TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) override;
 };
 

@@ -183,14 +183,14 @@ protected:
     const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
   bool RemoteTransferDialog(TStrings *AFileList, UnicodeString &Target,
     UnicodeString &FileMask, bool Move);
-  bool RenameFileDialog(TRemoteFile *AFile, UnicodeString &NewName);
-  uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
+  bool RenameFileDialog(TRemoteFile *AFile , UnicodeString & NewName);
+  uint32_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uint32_t Answers, const TMessageParams *AParams = nullptr);
   bool PasswordDialog(TSessionData *SessionData,
-    TPromptKind Kind, const UnicodeString Name, const UnicodeString Instructions, TStrings *Prompts,
-    TStrings *Results, bool StoredCredentialsTried);
-  bool BannerDialog(const UnicodeString SessionName, const UnicodeString Banner,
-    bool &NeverShowAgain, int32_t Options);
+    TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
+    TStrings * Results, bool StoredCredentialsTried);
+  bool BannerDialog(const UnicodeString & SessionName, const UnicodeString & Banner,
+    bool & NeverShowAgain, int32_t Options);
   bool CreateDirectoryDialog(UnicodeString &Directory,
     TRemoteProperties *Properties, bool &SaveSettings);
   bool QueueDialog(TTerminalQueueStatus *Status, bool ClosingPlugin);
@@ -235,7 +235,7 @@ protected:
 private:
   bool TerminalCheckForEsc();
   void TerminalClose(TObject * Sender);
-  void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
+  // void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
   void TerminalChangeDirectory(TObject * Sender);
   void TerminalReadDirectory(TObject * Sender, bool ReloadOnly);
   void TerminalStartReadDirectory(TObject * Sender);
@@ -277,10 +277,10 @@ private:
   TStrings *CreateFocusedFileList(TOperationSide Side,
     TFarPanelInfo **APanelInfo = nullptr);
   void CustomCommandGetParamValue(
-    const UnicodeString AName, UnicodeString &Value);
-  void HandleErrorList(TStringList *& ErrorList);
-  void TerminalSynchronizeDirectory(const UnicodeString &LocalDirectory,
-    const UnicodeString &RemoteDirectory, bool & Continue, bool Collect, const TSynchronizeOptions *SynchronizeOptions);
+    const UnicodeString & AName, UnicodeString & Value);
+  // void HandleErrorList(TStringList *& ErrorList);
+  void TerminalSynchronizeDirectory(const UnicodeString & LocalDirectory,
+    const UnicodeString & RemoteDirectory, bool & Continue, bool Collect, const TSynchronizeOptions * SynchronizeOptions);
   void DoSynchronize(TSynchronizeController * Sender,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
@@ -293,17 +293,17 @@ private:
     const UnicodeString & RemoteDirectory, TTerminal::TSynchronizeMode Mode,
     const TCopyParamType & CopyParam, int32_t Params, TSynchronizeChecklist ** Checklist,
     TSynchronizeOptions * Options);
-  void SynchronizeSessionLog(const UnicodeString & Message);
+  //void SynchronizeSessionLog(const UnicodeString & Message);
   void GetSynchronizeOptions(int32_t Params, TSynchronizeOptions & Options);
   void QueueListUpdate(TTerminalQueue *Queue);
-  void QueueItemUpdate(TTerminalQueue *Queue, TQueueItem *Item);
-  void QueueEvent(TTerminalQueue *Queue, TQueueEvent Event);
-  void GetSpaceAvailable(const UnicodeString APath,
+  void QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
+  void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
+  void GetSpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable &ASpaceAvailable, bool &Close);
-  void QueueAddItem(TQueueItem *Item);
-  UnicodeString GetFileNameHash(const UnicodeString AFileName) const;
-  int32_t GetFilesRemote(TObjectList *PanelItems, bool Move,
-    UnicodeString &DestPath, OPERATION_MODES OpMode);
+  void QueueAddItem(TQueueItem * Item);
+  UnicodeString GetFileNameHash(const UnicodeString & AFileName) const;
+  int32_t GetFilesRemote(TObjectList * PanelItems, bool Move,
+    UnicodeString & DestPath, OPERATION_MODES OpMode);
 
 private:
   TTerminalQueue *GetQueue();

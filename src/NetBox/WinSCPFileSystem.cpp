@@ -200,12 +200,12 @@ void TRemoteFilePanelItem::SetKeyBarTitles(TFarKeyBarTitles *KeyBarTitles)
 class TFarInteractiveCustomCommand : public TInteractiveCustomCommand
 {
 public:
-  TFarInteractiveCustomCommand(TCustomFarPlugin *Plugin,
-    TCustomCommand *ChildCustomCommand);
+  TFarInteractiveCustomCommand(TCustomFarPlugin * Plugin,
+    TCustomCommand * ChildCustomCommand);
 
 protected:
-  virtual void Prompt(int32_t Index, const UnicodeString APrompt,
-    UnicodeString &Value) const override;
+  virtual void Prompt(int32_t Index, const UnicodeString & APrompt,
+    UnicodeString & Value) const override;
 
 private:
   TCustomFarPlugin *FPlugin;
@@ -218,8 +218,8 @@ TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   FPlugin = Plugin;
 }
 
-void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString APrompt,
-  UnicodeString &Value) const
+void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString & APrompt,
+  UnicodeString & Value) const
 {
   UnicodeString Prompt = APrompt;
   if (Prompt.IsEmpty())
@@ -239,7 +239,7 @@ NB_DEFINE_CLASS_ID(TKeepAliveThread);
 class TKeepAliveThread : public TSimpleThread
 {
 public:
-  explicit TKeepAliveThread(TWinSCPFileSystem *FileSystem, const TDateTime &Interval) noexcept;
+  explicit TKeepAliveThread(TWinSCPFileSystem * FileSystem, const TDateTime & Interval) noexcept;
   virtual ~TKeepAliveThread() = default;
 
   void InitKeepaliveThread();
@@ -247,7 +247,7 @@ public:
   virtual void Terminate() override;
 
 private:
-  TWinSCPFileSystem *FFileSystem{nullptr};
+  TWinSCPFileSystem * FFileSystem{nullptr};
   TDateTime FInterval;
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
@@ -853,7 +853,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
   return Result;
 }
 
-bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString Command)
+bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
 {
   if (FTerminal->AllowedAnyCommand(Command) &&
     EnsureCommandSessionFallback(fcAnyCommand))
@@ -1732,7 +1732,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
 }
 
 void TWinSCPFileSystem::CustomCommandGetParamValue(
-  const UnicodeString AName, UnicodeString &Value)
+  const UnicodeString & AName, UnicodeString & Value)
 {
   UnicodeString Name = AName;
   if (Name.IsEmpty())
@@ -1870,7 +1870,7 @@ void TWinSCPFileSystem::FileProperties()
   }
 }
 
-void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString Token, bool Separate)
+void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString & Token, bool Separate)
 {
   UnicodeString Token2 = Token;
   if (!Token2.IsEmpty())
@@ -1992,8 +1992,8 @@ void TWinSCPFileSystem::CopyFullFileNamesToClipboard()
   GetWinSCPPlugin()->FarCopyToClipboard(FileNames.get());
 }
 
-void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString APath,
-  TSpaceAvailable &ASpaceAvailable, bool &Close)
+void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
+  TSpaceAvailable & ASpaceAvailable, bool & Close)
 {
   // terminal can be already closed (e.g. dropped connection)
   if ((GetTerminal() != nullptr) && GetTerminal()->GetIsCapable(fcCheckingSpaceAvailable))
@@ -2122,7 +2122,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
   }
 }
 
-bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString NewPath)
+bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
 {
   bool Result;
   TFarPanelInfo **AnotherPanel = GetAnotherPanelInfo();
@@ -3055,7 +3055,7 @@ void TWinSCPFileSystem::TerminalClose(TObject * /*Sender*/)
 }
 
 void TWinSCPFileSystem::LogAuthentication(
-  TTerminal *Terminal, const UnicodeString Msg)
+  TTerminal * Terminal, const UnicodeString & Msg)
 {
   DebugAssert(FAuthenticationLog != nullptr);
   if (!FAuthenticationLog)
@@ -3274,8 +3274,8 @@ bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & ALoca
   }
 }
 
-uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString Str,
-  TStrings *MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams *AParams)
+uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
+  TStrings * MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams * AParams)
 {
   TMessageParams Params(nullptr);
 
@@ -3762,8 +3762,8 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType &Progress
 }
 
 void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
-  const UnicodeString AFileName, const UnicodeString RealFileName,
-  UnicodeString &DestPath)
+  const UnicodeString & AFileName, const UnicodeString & RealFileName,
+  UnicodeString & DestPath)
 {
   DebugAssert(FFileList == nullptr);
   FFileList = std::make_unique<TStringList>();
@@ -4018,8 +4018,8 @@ void TWinSCPFileSystem::MultipleEdit()
   }
 }
 
-void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
-  UnicodeString AFileName, TRemoteFile *AFile)
+void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
+  const UnicodeString & AFileName, TRemoteFile * AFile)
 {
   DebugAssert(AFile);
   TEditHistory EditHistory;
@@ -4206,12 +4206,12 @@ void TWinSCPFileSystem::ShowLog()
   GetWinSCPPlugin()->Viewer(Log->GetLogFileName(), Log->GetLogFileName(), VF_NONMODAL);
 }
 
-UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString AFileName) const
+UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName) const
 {
   RawByteString Result;
   char *Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(AFileName.c_str()), nb::ToInt(AFileName.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(AFileName.data()), nb::ToInt(AFileName.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }
