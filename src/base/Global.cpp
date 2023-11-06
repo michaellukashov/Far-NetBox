@@ -27,7 +27,7 @@ UnicodeString NormalizeString(const UnicodeString & S)
 
 // TGuard
 
-TGuard::TGuard(const TCriticalSection &ACriticalSection) noexcept :
+TGuard::TGuard(const TCriticalSection & ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Enter();
@@ -40,7 +40,7 @@ TGuard::~TGuard() noexcept
 
 // TUnguard
 
-TUnguard::TUnguard(TCriticalSection &ACriticalSection) noexcept :
+TUnguard::TUnguard(TCriticalSection & ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();

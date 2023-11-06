@@ -183,17 +183,17 @@ public:
   void *operator[](int32_t Index) const;
   virtual void *GetItem(int32_t Index) const { return FList[Index]; }
   virtual void *GetItem(int32_t Index) { return FList[Index]; }
-  void SetItem(int32_t Index, void *Item);
-  int32_t Add(void *Value);
-  void *Extract(void *Item);
-  int32_t Remove(void *Item);
+  void SetItem(int32_t Index, void * Item);
+  int32_t Add(void * Value);
+  void *Extract(void * Item);
+  int32_t Remove(void * Item);
   virtual void Move(int32_t CurIndex, int32_t NewIndex);
   virtual void Delete(int32_t Index);
-  void Insert(int32_t Index, void *Item);
-  int32_t IndexOf(const void *Value) const;
+  void Insert(int32_t Index, void * Item);
+  int32_t IndexOf(const void * Value) const;
   virtual void Clear();
   void Sort(CompareFunc Func);
-  virtual void Notify(void *Ptr, TListNotification Action);
+  virtual void Notify(void * Ptr, TListNotification Action);
   virtual void Sort();
 
   int32_t GetCount() const;

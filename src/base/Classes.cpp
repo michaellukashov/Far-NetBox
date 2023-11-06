@@ -114,14 +114,14 @@ void TList::SetItem(int32_t Index, void *Item)
   FList[Index] = Item;
 }
 
-int32_t TList::Add(void *Value)
+int32_t TList::Add(void * Value)
 {
   const int32_t Result = nb::ToIntPtr(FList.size());
   FList.push_back(Value);
   return Result;
 }
 
-void *TList::Extract(void *Item)
+void * TList::Extract(void * Item)
 {
   if (Remove(Item) != nb::NPOS)
   {
