@@ -431,12 +431,12 @@ void TStrings::SetDelimitedText(UnicodeString Value)
   }
 }
 
-int32_t TStrings::CompareStrings(UnicodeString S1, UnicodeString S2) const
+int32_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
 {
   return ::AnsiCompareText(S1, S2);
 }
 
-void TStrings::Assign(const TPersistent *Source)
+void TStrings::Assign(const TPersistent * Source)
 {
   const TStrings *Strings = dyn_cast<TStrings>(Source);
   if (Strings != nullptr)
@@ -501,12 +501,12 @@ UnicodeString TStrings::GetTextStr() const
   return Result;
 }
 
-void TStrings::SetText(UnicodeString Text)
+void TStrings::SetText(const UnicodeString & Text)
 {
   SetTextStr(Text);
 }
 
-void TStrings::SetCommaText(UnicodeString Value)
+void TStrings::SetCommaText(const UnicodeString & Value)
 {
   SetDelimiter(L',');
   SetQuoteChar(L'"');
@@ -536,13 +536,13 @@ void TStrings::SetUpdateState(bool Updating)
   (void)Updating;
 }
 
-int32_t TStrings::AddObject(UnicodeString S, TObject *AObject)
+int32_t TStrings::AddObject(const UnicodeString & S, TObject * AObject)
 {
   const int32_t Result = Add(S, AObject);
   return Result;
 }
 
-void TStrings::InsertObject(int32_t Index, UnicodeString Key, TObject *AObject)
+void TStrings::InsertObject(int32_t Index, const UnicodeString & Key, TObject * AObject)
 {
   Insert(Index, Key, AObject);
 }
@@ -563,7 +563,7 @@ bool TStrings::Equals(const TStrings *Value) const
   return true;
 }
 
-void TStrings::SetString(int32_t Index, UnicodeString S)
+void TStrings::SetString(int32_t Index, const UnicodeString & S)
 {
   TObject *TempObject = GetObj(Index);
   Delete(Index);
@@ -591,7 +591,7 @@ void TStrings::Move(int32_t CurIndex, int32_t NewIndex)
   }
 }
 
-int32_t TStrings::IndexOf(UnicodeString S) const
+int32_t TStrings::IndexOf(const UnicodeString & S) const
 {
   for (int32_t Result = 0; Result < GetCount(); Result++)
   {
@@ -603,7 +603,7 @@ int32_t TStrings::IndexOf(UnicodeString S) const
   return nb::NPOS;
 }
 
-int32_t TStrings::IndexOfName(UnicodeString Name) const
+int32_t TStrings::IndexOfName(const UnicodeString & Name) const
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -622,12 +622,12 @@ UnicodeString TStrings::GetName(int32_t Index) const
   return ExtractName(GetString(Index));
 }
 
-void TStrings::SetName(int32_t /*Index*/, UnicodeString /*Value*/)
+void TStrings::SetName(int32_t /*Index*/, const UnicodeString & /*Value*/)
 {
   ThrowNotImplemented(2012);
 }
 
-UnicodeString TStrings::ExtractName(UnicodeString S) const
+UnicodeString TStrings::ExtractName(const UnicodeString & S) const
 {
   UnicodeString Result = S;
   const int32_t P = ::AnsiPos(Result, L'=');
@@ -642,7 +642,7 @@ UnicodeString TStrings::ExtractName(UnicodeString S) const
   return Result;
 }
 
-UnicodeString TStrings::GetValue(UnicodeString Name) const
+UnicodeString TStrings::GetValue(const UnicodeString & Name) const
 {
   UnicodeString Result;
   const int32_t Index = IndexOfName(Name);
@@ -653,7 +653,7 @@ UnicodeString TStrings::GetValue(UnicodeString Name) const
   return Result;
 }
 
-void TStrings::SetValue(UnicodeString Name, UnicodeString Value)
+void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
 {
   int32_t Index = IndexOfName(Name);
   if (!Value.IsEmpty())
@@ -729,12 +729,12 @@ int32_t TStringList::GetCount() const
   return nb::ToIntPtr(FStrings.size());
 }
 
-int32_t TStringList::Add(UnicodeString S)
+int32_t TStringList::Add(const UnicodeString & S)
 {
   return AddObject(S, nullptr);
 }
 
-int32_t TStringList::AddObject(UnicodeString S, TObject *AObject)
+int32_t TStringList::AddObject(const UnicodeString & S, TObject *AObject)
 {
   int32_t Result = 0;
   if (!GetSorted())
@@ -766,7 +766,7 @@ int32_t TStringList::AddObject(UnicodeString S, TObject *AObject)
   return Result;
 }
 
-bool TStringList::Find(UnicodeString S, int32_t &Index) const
+bool TStringList::Find(const UnicodeString & S, int32_t &Index) const
 {
   bool Result = false;
   int32_t L = 0;
@@ -796,7 +796,7 @@ bool TStringList::Find(UnicodeString S, int32_t &Index) const
   return Result;
 }
 
-int32_t TStringList::IndexOf(UnicodeString S) const
+int32_t TStringList::IndexOf(const UnicodeString & S) const
 {
   int32_t Result = nb::NPOS;
   if (!GetSorted())
@@ -813,7 +813,7 @@ int32_t TStringList::IndexOf(UnicodeString S) const
   return Result;
 }
 
-void TStringList::SetString(int32_t Index, UnicodeString S)
+void TStringList::SetString(int32_t Index, const UnicodeString & S)
 {
   if (GetSorted())
   {
@@ -847,7 +847,7 @@ void TStringList::Delete(int32_t Index)
   Changed();
 }
 
-void TStringList::InsertObject(int32_t Index, UnicodeString Key, TObject *AObject)
+void TStringList::InsertObject(int32_t Index, const UnicodeString & Key, TObject *AObject)
 {
   if (GetSorted())
   {
@@ -860,7 +860,7 @@ void TStringList::InsertObject(int32_t Index, UnicodeString Key, TObject *AObjec
   InsertItem(Index, Key, AObject);
 }
 
-void TStringList::InsertItem(int32_t Index, UnicodeString S, TObject *AObject)
+void TStringList::InsertItem(int32_t Index, const UnicodeString & S, TObject *AObject)
 {
   if ((Index == nb::NPOS) || (Index > GetCount()))
   {
@@ -880,7 +880,7 @@ void TStringList::InsertItem(int32_t Index, UnicodeString S, TObject *AObject)
   Changed();
 }
 
-const UnicodeString &TStringList::GetStringRef(int32_t Index) const
+const UnicodeString & TStringList::GetStringRef(int32_t Index) const
 {
   if ((Index == nb::NPOS) || (Index > nb::ToIntPtr(FStrings.size())))
   {
@@ -893,7 +893,7 @@ const UnicodeString &TStringList::GetStringRef(int32_t Index) const
   return FStrings[Index];
 }
 
-const UnicodeString &TStringList::GetString(int32_t Index) const
+const UnicodeString & TStringList::GetString(int32_t Index) const
 {
   return GetStringRef(Index);
 }
@@ -927,7 +927,7 @@ void TStringList::SetSorted(bool Value)
   }
 }
 
-void TStringList::LoadFromFile(UnicodeString AFileName)
+void TStringList::LoadFromFile(const UnicodeString & AFileName)
 {
   HANDLE FileHandle = ::CreateFile(AFileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
   if (FileHandle != INVALID_HANDLE_VALUE)
@@ -983,7 +983,7 @@ void TStringList::Changed()
   }
 }
 
-void TStringList::Insert(int32_t Index, UnicodeString S, TObject *AObject)
+void TStringList::Insert(int32_t Index, const UnicodeString & S, TObject * AObject)
 {
   InsertItem(Index, S, AObject);
 }
@@ -1064,7 +1064,7 @@ void TStringList::ExchangeItems(int32_t Index1, int32_t Index2)
   }
 }
 
-int32_t TStringList::CompareStrings(UnicodeString S1, UnicodeString S2) const
+int32_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
 {
   if (GetCaseSensitive())
   {
@@ -1518,7 +1518,7 @@ void TMemoryStream::SaveToStream(TStream *Stream)
   }
 }
 
-void TMemoryStream::SaveToFile(UnicodeString /*AFileName*/)
+void TMemoryStream::SaveToFile(const UnicodeString & /*AFileName*/)
 {
   // TFileStream Stream(FileName, fmCreate);
   // SaveToStream(Stream);
@@ -2149,7 +2149,7 @@ TGlobals::TGlobals() noexcept
   InitPlatformId();
 }
 
-void TGlobals::SetupDbgHandles(UnicodeString DbgFileName)
+void TGlobals::SetupDbgHandles(const UnicodeString & DbgFileName)
 {
   if (!DbgFileName.IsEmpty() && DbgFileName != "-")
   {

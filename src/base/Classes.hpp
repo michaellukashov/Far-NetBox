@@ -256,19 +256,19 @@ public:
   virtual void BeginUpdate();
   virtual void EndUpdate();
   virtual void SetUpdateState(bool Updating);
-  virtual int32_t AddObject(UnicodeString S, TObject *AObject);
-  virtual void InsertObject(int32_t Index, UnicodeString Key, TObject *AObject);
-  virtual int32_t CompareStrings(UnicodeString S1, UnicodeString S2) const;
+  virtual int32_t AddObject(const UnicodeString & S, TObject * AObject);
+  virtual void InsertObject(int32_t Index, const UnicodeString & Key, TObject * AObject);
+  virtual int32_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const;
   virtual int32_t GetCount() const = 0;
-  virtual void Insert(int32_t Index, UnicodeString AString, TObject *AObject = nullptr) = 0;
+  virtual void Insert(int32_t Index, const UnicodeString & AString, TObject * AObject = nullptr) = 0;
   bool Equals(const TStrings *Value) const;
   virtual void Move(int32_t CurIndex, int32_t NewIndex) override;
-  virtual int32_t IndexOf(UnicodeString S) const;
-  virtual int32_t IndexOfName(UnicodeString Name) const;
-  UnicodeString ExtractName(UnicodeString S) const;
-  void AddStrings(const TStrings *Strings);
+  virtual int32_t IndexOf(const UnicodeString & S) const;
+  virtual int32_t IndexOfName(const UnicodeString & Name) const;
+  UnicodeString ExtractName(const UnicodeString & S) const;
+  void AddStrings(const TStrings * Strings);
   void Append(UnicodeString Value);
-  void SaveToStream(TStream *Stream) const;
+  void SaveToStream(TStream * Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
   void SetDelimiter(wchar_t Value) { FDelimiter = Value; }
   void SetStrictDelimiter(bool Value) { FStrictDelimiter = Value; }
@@ -288,17 +288,17 @@ public:
   void SetDuplicates(TDuplicatesEnum Value);
   wchar_t GetNameValueSeparator() const { return FDelimiter; }
   UnicodeString GetCommaText() const;
-  void SetCommaText(UnicodeString Value);
+  void SetCommaText(const UnicodeString & Value);
   virtual UnicodeString GetText() const;
-  virtual void SetText(UnicodeString Text);
+  virtual void SetText(const UnicodeString & Text);
   virtual const UnicodeString &GetStringRef(int32_t Index) const = 0;
   virtual const UnicodeString &GetString(int32_t Index) const = 0;
   virtual UnicodeString GetString(int32_t Index) = 0;
-  virtual void SetString(int32_t Index, UnicodeString S) = 0;
+  virtual void SetString(int32_t Index, const UnicodeString & S) = 0;
   UnicodeString GetName(int32_t Index) const;
-  void SetName(int32_t Index, UnicodeString Value);
-  UnicodeString GetValue(UnicodeString Name) const;
-  void SetValue(UnicodeString Name, UnicodeString Value);
+  void SetName(int32_t Index, const UnicodeString & Value);
+  UnicodeString GetValue(const UnicodeString & Name) const;
+  void SetValue(const UnicodeString & Name, const UnicodeString & Value);
   UnicodeString GetValueFromIndex(int32_t Index) const;
 
   ROProperty<UnicodeString> Text{nb::bind(&TStrings::GetText, this)};
@@ -333,41 +333,41 @@ public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
   virtual ~TStringList() override = default;
 
-  int32_t Add(UnicodeString S);
-  virtual int32_t AddObject(UnicodeString S, TObject *AObject) override;
-  void LoadFromFile(UnicodeString AFileName);
+  int32_t Add(const UnicodeString & S);
+  virtual int32_t AddObject(const UnicodeString & S, TObject *AObject) override;
+  void LoadFromFile(const UnicodeString & AFileName);
   TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent GetOnChanging() const { return FOnChanging; }
   void SetOnChanging(TNotifyEvent OnChanging) { FOnChanging = OnChanging; }
-  void InsertItem(int32_t Index, UnicodeString S, TObject *AObject);
+  void InsertItem(int32_t Index, const UnicodeString & S, TObject * AObject);
   void QuickSort(int32_t L, int32_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent *Source) override;
-  virtual bool Find(UnicodeString S, int32_t &Index) const;
-  virtual int32_t IndexOf(UnicodeString S) const override;
+  virtual bool Find(const UnicodeString & S, int32_t &Index) const;
+  virtual int32_t IndexOf(const UnicodeString & S) const override;
   virtual void Delete(int32_t Index) override;
-  virtual void InsertObject(int32_t Index, UnicodeString Key, TObject *AObject) override;
+  virtual void InsertObject(int32_t Index, const UnicodeString & Key, TObject * AObject) override;
   virtual void Sort() override;
   virtual void CustomSort(TStringListSortCompare ACompareFunc);
 
   virtual void SetUpdateState(bool Updating) override;
   virtual void Changing();
   virtual void Changed() override;
-  virtual void Insert(int32_t Index, UnicodeString S, TObject *AObject = nullptr) override;
-  virtual int32_t CompareStrings(UnicodeString S1, UnicodeString S2) const override;
+  virtual void Insert(int32_t Index, const UnicodeString & S, TObject * AObject = nullptr) override;
+  virtual int32_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const override;
   virtual int32_t GetCount() const override;
 
 public:
-  virtual void SetObj(int32_t Index, TObject *AObject) override;
+  virtual void SetObj(int32_t Index, TObject * AObject) override;
   virtual bool GetSorted() const override { return FSorted; }
   virtual void SetSorted(bool Value) override;
   virtual bool GetCaseSensitive() const override { return FCaseSensitive; }
   virtual void SetCaseSensitive(bool Value) override;
-  virtual const UnicodeString &GetStringRef(int32_t Index) const override;
-  virtual const UnicodeString &GetString(int32_t Index) const override;
+  virtual const UnicodeString & GetStringRef(int32_t Index) const override;
+  virtual const UnicodeString & GetString(int32_t Index) const override;
   virtual UnicodeString GetString(int32_t Index) override;
-  virtual void SetString(int32_t Index, UnicodeString S) override;
+  virtual void SetString(int32_t Index, const UnicodeString & S) override;
 
 private:
   TNotifyEvent FOnChange;
@@ -689,10 +689,10 @@ class NB_CORE_EXPORT TMemoryStream : public TStream
 public:
   TMemoryStream() noexcept;
   virtual ~TMemoryStream() noexcept;
-  virtual int64_t Read(void *Buffer, int64_t Count) override;
+  virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
-  void SaveToStream(TStream *Stream);
-  void SaveToFile(UnicodeString AFileName);
+  void SaveToStream(TStream * Stream);
+  void SaveToFile(const UnicodeString & AFileName);
 
   void Clear();
   void LoadFromStream(TStream * Stream);
@@ -705,7 +705,7 @@ public:
 
 protected:
   void SetPointer(void * Ptr, int64_t ASize);
-  virtual void *Realloc(int64_t &NewCapacity);
+  virtual void *Realloc(int64_t & NewCapacity);
   int64_t GetCapacity() const { return FCapacity; }
 
 private:
@@ -912,13 +912,13 @@ public:
   virtual UnicodeString GetMsg(int32_t Id) const = 0;
   virtual UnicodeString GetCurrDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
-  virtual void SetupDbgHandles(UnicodeString DbgFileName) = 0;
-  virtual bool InputDialog(UnicodeString ACaption,
-    UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
-    TStrings *History, bool PathInput,
+  virtual void SetupDbgHandles(const UnicodeString & DbgFileName) = 0;
+  virtual bool InputDialog(const UnicodeString & ACaption,
+    const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
+    TStrings * History, bool PathInput,
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
-  virtual uint32_t MoreMessageDialog(UnicodeString AMessage,
-    TStrings *MoreMessages, TQueryType Type, uint32_t Answers,
+  virtual uint32_t MoreMessageDialog(const UnicodeString & AMessage,
+    TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams *Params) = 0;
 };
 
@@ -928,7 +928,7 @@ public:
   TGlobals() noexcept;
   virtual ~TGlobals() = default;
 
-  virtual void SetupDbgHandles(UnicodeString DbgFileName) override;
+  virtual void SetupDbgHandles(const UnicodeString & DbgFileName) override;
 
 public:
   wchar_t Win32CSDVersion[128]{};
