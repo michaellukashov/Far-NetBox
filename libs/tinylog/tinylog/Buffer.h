@@ -28,7 +28,7 @@ private:
   Buffer(const Buffer&);
   Buffer& operator=(const Buffer&);
 
-  char* data_{nullptr};
+  char * data_{nullptr};
   uint64_t size_{0};
   uint64_t capacity_{0};
 };

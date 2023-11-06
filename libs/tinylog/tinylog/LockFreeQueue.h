@@ -19,11 +19,11 @@ public:
 
   ~LockFreeQueue() = default;
 
-  void Push(std::string& data);
+  void Push(std::string & data);
 
-  int32_t Pop(std::string& data);
+  int32_t Pop(std::string & data);
 
 private:
-  Node* head_{nullptr};
-  Node* tail_{nullptr};
+  Node * head_{nullptr};
+  Node * tail_{nullptr};
 };

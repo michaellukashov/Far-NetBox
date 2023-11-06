@@ -87,7 +87,7 @@ static void *atomic_exchange_acq_rel_ptr(void **p, void *xchg)
 #if defined(WIN64)
   return (void *)_InterlockedExchange64((int64_t volatile *)p, (int64_t)xchg);
 #else
-  return (void *)InterlockedExchange((int64_t volatile *)p, (int64_t)xchg);
+  return (void *)InterlockedExchange((LONG volatile *)p, (LONG)xchg);
 #endif
 }
 

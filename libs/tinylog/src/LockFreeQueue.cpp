@@ -8,23 +8,26 @@
 #define interlockedcompareexchange InterlockedCompareExchange
 #define interlockedexchange InterlockedExchange
 
-//#define CAS(ptr, old_value, new_value) __sync_val_compare_and_swap(ptr, old_value, new_value)
+#if defined(WIN64)
 #define CAS(ptr, old_value, new_value) interlockedcompareexchange((uint64_t volatile *)ptr, (uint64_t)new_value, (uint64_t)old_value)
+#else
+#define CAS(ptr, old_value, new_value) interlockedcompareexchange((ULONG volatile *)ptr, (ULONG)new_value, (ULONG)old_value)
+#endif
 
 LockFreeQueue::LockFreeQueue()
 {
-  Node* dumb = new Node();
+  Node * dumb = new Node();
   dumb->next_ = nullptr;
   head_ = tail_ = dumb;
 }
 
-void LockFreeQueue::Push(std::string& data)
+void LockFreeQueue::Push(std::string & data)
 {
-  Node* new_node = new Node();
+  Node * new_node = new Node();
   new_node->data_ = data;
   new_node->next_ = nullptr;
-  Node* tail;
-  Node* next;
+  Node * tail;
+  Node * next;
 
   while(true)
   {
@@ -51,7 +54,7 @@ void LockFreeQueue::Push(std::string& data)
   CAS(&tail_, tail, new_node);
 }
 
-int32_t LockFreeQueue::Pop(std::string& data)
+int32_t LockFreeQueue::Pop(std::string & data)
 {
   Node* head;
   Node* tail;

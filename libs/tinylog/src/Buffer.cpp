@@ -95,12 +95,12 @@ void Buffer::Clear()
   size_ = 0;
 }
 
-size_t Buffer::Size() const
+uint64_t Buffer::Size() const
 {
   return size_;
 }
 
-size_t Buffer::Capacity() const
+uint64_t Buffer::Capacity() const
 {
   return capacity_;
 }
