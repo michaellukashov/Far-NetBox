@@ -30,11 +30,11 @@ class NB_CORE_EXPORT TGuard
   NB_DISABLE_COPY(TGuard)
 public:
   TGuard() = delete;
-  explicit TGuard(const TCriticalSection &ACriticalSection) noexcept;
+  explicit TGuard(const TCriticalSection & ACriticalSection) noexcept;
   ~TGuard() noexcept;
 
 private:
-  const TCriticalSection &FCriticalSection;
+  const TCriticalSection & FCriticalSection;
 };
 
 class NB_CORE_EXPORT TUnguard
@@ -43,7 +43,7 @@ class NB_CORE_EXPORT TUnguard
   NB_DISABLE_COPY(TUnguard)
 public:
   TUnguard() = delete;
-  explicit TUnguard(TCriticalSection &ACriticalSection) noexcept;
+  explicit TUnguard(TCriticalSection & ACriticalSection) noexcept;
   ~TUnguard() noexcept;
 
 private:

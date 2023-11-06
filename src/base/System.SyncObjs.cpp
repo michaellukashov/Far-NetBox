@@ -30,7 +30,7 @@ void TCriticalSection::Enter() const
   ::EnterCriticalSection(&FSection);
   ++FAcquired;
 //  DEBUG_PRINTF("FAcquired: %d", FAcquired);
-  if (FAcquired == 3)
+  if (FAcquired == 3) // for debugging
   {
     TINYLOG_TRACE(g_tinylog) << repr("FAcquired: %d", FAcquired);
     tinylog::StackWalker sw;

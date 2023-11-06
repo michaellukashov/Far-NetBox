@@ -137,9 +137,9 @@ bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
     (Kind != pkPassphrase);
 }
 
-TConfiguration *GetConfiguration()
+TConfiguration * GetConfiguration()
 {
-  static TConfiguration *Configuration = nullptr;
+  static TConfiguration * Configuration = nullptr;
   if (Configuration == nullptr)
   {
     Configuration = CreateConfiguration();
