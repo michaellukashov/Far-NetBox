@@ -1100,7 +1100,7 @@ TInteractiveCustomCommand::TInteractiveCustomCommand(
 }
 
 void TInteractiveCustomCommand::Prompt(
-  int32_t /*Index*/, const UnicodeString /*Prompt*/, UnicodeString &Value) const
+  int32_t /*Index*/, const UnicodeString & /*Prompt*/, UnicodeString & Value) const
 {
   Value.Clear();
 }

@@ -175,10 +175,10 @@ class TTerminal;
 class TRemoteFile;
 
 using TFileFoundEvent = nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, const UnicodeString /*FileName*/, const TRemoteFile * /*File*/,
+  TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
   bool & /*Cancel*/>;
 using TFindingFileEvent = nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, const UnicodeString /*ADirectory*/, bool & /*Cancel*/>;
+  TTerminal * /*Terminal*/, const UnicodeString & /*ADirectory*/, bool & /*Cancel*/>;
 
 class NB_CORE_EXPORT TOperationVisualizer
 {

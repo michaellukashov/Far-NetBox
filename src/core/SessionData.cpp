@@ -2180,7 +2180,7 @@ inline void MoveStr(UnicodeString &Source, UnicodeString *Dest, int32_t Count)
 }
 
 bool TSessionData::DoIsProtocolUrl(
-  const UnicodeString Url, const UnicodeString Protocol, int32_t & ProtocolLen)
+  const UnicodeString & Url, const UnicodeString & Protocol, int32_t & ProtocolLen)
 {
   bool Result = ::SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
   if (Result)
@@ -2191,7 +2191,7 @@ bool TSessionData::DoIsProtocolUrl(
 }
 
 bool TSessionData::IsProtocolUrl(
-  const UnicodeString Url, const UnicodeString Protocol, int32_t & ProtocolLen)
+  const UnicodeString & Url, const UnicodeString & Protocol, int32_t & ProtocolLen)
 {
   return
     DoIsProtocolUrl(Url, Protocol, ProtocolLen) ||
@@ -2220,12 +2220,12 @@ bool TSessionData::IsSensitiveOption(const UnicodeString & Option, const Unicode
   return Result;
 }
 
-bool TSessionData::IsOptionWithParameters(const UnicodeString Option)
+bool TSessionData::IsOptionWithParameters(const UnicodeString & Option)
 {
   return SameText(Option, RawSettingsOption);
 }
 
-bool TSessionData::MaskPasswordInOptionParameter(const UnicodeString AOption, UnicodeString &AParam)
+bool TSessionData::MaskPasswordInOptionParameter(const UnicodeString & AOption, UnicodeString & AParam)
 {
   bool Result = false;
   if (SameText(AOption, RawSettingsOption))
@@ -2848,12 +2848,12 @@ void TSessionData::ExpandEnvironmentVariables()
   DetachedCertificate = ::ExpandEnvironmentVariables(DetachedCertificate);
 }
 
-void TSessionData::ValidatePath(const UnicodeString /*APath*/)
+void TSessionData::ValidatePath(const UnicodeString & /*APath*/)
 {
   // noop
 }
 
-void TSessionData::ValidateName(const UnicodeString Name)
+void TSessionData::ValidateName(const UnicodeString & Name)
 {
   // keep consistent with MakeValidName
   if (Name.LastDelimiter(L"/") > 0)
@@ -2862,23 +2862,23 @@ void TSessionData::ValidateName(const UnicodeString Name)
   }
 }
 
-UnicodeString TSessionData::MakeValidName(const UnicodeString Name)
+UnicodeString TSessionData::MakeValidName(const UnicodeString & Name)
 {
   // keep consistent with ValidateName
   return ReplaceStr(Name, L"/", L"\\");
 }
 
-RawByteString TSessionData::EncryptPassword(const UnicodeString Password, UnicodeString Key)
+RawByteString TSessionData::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
   return GetConfiguration()->EncryptPassword(Password, Key);
 }
 
-RawByteString TSessionData::StronglyRecryptPassword(const RawByteString APassword, UnicodeString AKey)
+RawByteString TSessionData::StronglyRecryptPassword(const RawByteString & APassword, const UnicodeString & AKey)
 {
   return GetConfiguration()->StronglyRecryptPassword(APassword, AKey);
 }
 
-UnicodeString TSessionData::DecryptPassword(const RawByteString APassword, UnicodeString AKey)
+UnicodeString TSessionData::DecryptPassword(const RawByteString & APassword, const UnicodeString & AKey)
 {
   UnicodeString Result;
   try
@@ -2943,7 +2943,7 @@ UnicodeString TSessionData::GetStorageKey() const
   return GetSessionName();
 }
 
-UnicodeString TSessionData::FormatSiteKey(UnicodeString HostName, int32_t PortNumber)
+UnicodeString TSessionData::FormatSiteKey(const UnicodeString & HostName, int32_t PortNumber)
 {
   return FORMAT("%s:%d", HostName, nb::ToInt(PortNumber));
 }
@@ -3885,7 +3885,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
 __removed UnicodeString ScriptCommandOpenLink = ScriptCommandLink("open");
 
 void TSessionData::AddSwitch(
-  UnicodeString &Result, UnicodeString Name, bool Rtf)
+  UnicodeString & Result, const UnicodeString & Name, bool Rtf)
 {
 #if 0
   Result += RtfSwitch(Name, ScriptCommandOpenLink, Rtf);
@@ -5063,7 +5063,7 @@ UnicodeString TSessionData::GetInfoTip() const
   }
 }
 
-UnicodeString TSessionData::ExtractLocalName(UnicodeString Name)
+UnicodeString TSessionData::ExtractLocalName(const UnicodeString & Name)
 {
   UnicodeString Result = Name;
   int32_t P = Result.LastDelimiter(L"/");
@@ -5088,7 +5088,7 @@ UnicodeString TSessionData::GetLocalName() const
   return Result;
 }
 
-UnicodeString TSessionData::ExtractFolderName(UnicodeString Name)
+UnicodeString TSessionData::ExtractFolderName(const UnicodeString & Name)
 {
   UnicodeString Result;
   int32_t P = Name.LastDelimiter(L"/");
@@ -5110,7 +5110,7 @@ UnicodeString TSessionData::GetFolderName() const
 }
 
 UnicodeString TSessionData::ComposePath(
-  const UnicodeString APath, const UnicodeString Name)
+  const UnicodeString & APath, const UnicodeString & Name)
 {
   return base::UnixIncludeTrailingBackslash(APath) + Name;
 }
@@ -5547,7 +5547,7 @@ void TStoredSessionList::ImportLevelFromFilezilla(
 #endif // #if 0
 
 void TStoredSessionList::ImportFromFilezilla(
-  const UnicodeString /*FileName*/, const UnicodeString /*ConfigurationFileName*/)
+  const UnicodeString & /*FileName*/, const UnicodeString & /*ConfigurationFileName*/)
 {
   ThrowNotImplemented(3004);
 #if 0
@@ -5721,7 +5721,7 @@ void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
   }
 }
 
-void TStoredSessionList::Export(const UnicodeString /*AFileName*/)
+void TStoredSessionList::Export(const UnicodeString & /*AFileName*/)
 {
   ThrowNotImplemented(3003);
 #if 0

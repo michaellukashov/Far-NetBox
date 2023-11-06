@@ -144,7 +144,7 @@ bool IsEffectiveFileNameMask(const UnicodeString AMask);
 UnicodeString DelimitFileNameMask(UnicodeString AMask);
 
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
-  int32_t /*Index*/, UnicodeString /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
+  int32_t /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
    bool & /*LastPass*/>;
 
 class NB_CORE_EXPORT TCustomCommand : public TObject
@@ -188,7 +188,7 @@ public:
   explicit TInteractiveCustomCommand(TCustomCommand *ChildCustomCommand) noexcept;
 
 protected:
-  virtual void Prompt(int32_t Index, const UnicodeString Prompt,
+  virtual void Prompt(int32_t Index, const UnicodeString & Prompt,
     UnicodeString & Value) const;
   virtual void Execute(const UnicodeString & Command,
     UnicodeString & Value) const;

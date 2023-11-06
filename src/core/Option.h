@@ -5,7 +5,7 @@
 
 enum TOptionType { otParam, otSwitch };
 
-using TLogOptionEvent = nb::FastDelegate1<void, UnicodeString /*LogStr*/>;
+using TLogOptionEvent = nb::FastDelegate1<void, const UnicodeString & /*LogStr*/>;
 
 class NB_CORE_EXPORT TOptions : public TObject
 {

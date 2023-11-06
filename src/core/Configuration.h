@@ -315,8 +315,8 @@ public:
   UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly) const;
   UnicodeString GetDefaultIniFileExportPath() const;
   UnicodeString GetIniFileParamValue() const;
-  void Export(const UnicodeString AFileName);
-  void Import(const UnicodeString AFileName);
+  void Export(const UnicodeString & AFileName);
+  void Import(const UnicodeString & AFileName);
   void CleanupConfiguration();
   void CleanupIniFile();
   void CleanupCaches();

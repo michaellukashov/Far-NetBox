@@ -512,12 +512,12 @@ public:
   void CopyNonCoreData(TSessionData * SourceData);
   UnicodeString GetNormalizedPuttyProtocol() const;
   void ReadPasswordsFromFiles();
-  static RawByteString EncryptPassword(const UnicodeString Password, UnicodeString Key);
-  static UnicodeString DecryptPassword(const RawByteString Password, UnicodeString Key);
-  static RawByteString StronglyRecryptPassword(const RawByteString Password, UnicodeString Key);
-  static bool DoIsProtocolUrl(const UnicodeString AUrl, const UnicodeString AProtocol, int32_t & ProtocolLen);
-  static bool IsProtocolUrl(const UnicodeString AUrl, const UnicodeString Protocol, int32_t & ProtocolLen);
-  static void AddSwitch(UnicodeString & Result, const UnicodeString Name, bool Rtf);
+  static RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
+  static UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  static RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  static bool DoIsProtocolUrl(const UnicodeString & AUrl, const UnicodeString & AProtocol, int32_t & ProtocolLen);
+  static bool IsProtocolUrl(const UnicodeString & AUrl, const UnicodeString & Protocol, int32_t & ProtocolLen);
+  static void AddSwitch(UnicodeString & Result, const UnicodeString & Name, bool Rtf);
   static void AddSwitch(
     UnicodeString &Result, const UnicodeString Name, const UnicodeString Value, bool Rtf);
   static void AddSwitch(UnicodeString &Result, const UnicodeString AName, int32_t Value, bool Rtf);
@@ -601,16 +601,16 @@ public:
   __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
-  static void ValidatePath(const UnicodeString Path);
-  static void ValidateName(const UnicodeString Name);
-  static UnicodeString MakeValidName(const UnicodeString Name);
-  static UnicodeString ExtractLocalName(const UnicodeString Name);
-  static UnicodeString ExtractFolderName(const UnicodeString Name);
-  static UnicodeString ComposePath(const UnicodeString Path, const UnicodeString Name);
+  static void ValidatePath(const UnicodeString & Path);
+  static void ValidateName(const UnicodeString & Name);
+  static UnicodeString MakeValidName(const UnicodeString & Name);
+  static UnicodeString ExtractLocalName(const UnicodeString & Name);
+  static UnicodeString ExtractFolderName(const UnicodeString & Name);
+  static UnicodeString ComposePath(const UnicodeString & Path, const UnicodeString & Name);
   static bool IsSensitiveOption(const UnicodeString & Option, const UnicodeString & Value);
-  static bool IsOptionWithParameters(const UnicodeString Option);
-  static bool MaskPasswordInOptionParameter(const UnicodeString Option, UnicodeString & Param);
-  static UnicodeString FormatSiteKey(const UnicodeString HostName, int32_t PortNumber);
+  static bool IsOptionWithParameters(const UnicodeString & Option);
+  static bool MaskPasswordInOptionParameter(const UnicodeString & Option, UnicodeString & Param);
+  static UnicodeString FormatSiteKey(const UnicodeString & HostName, int32_t PortNumber);
   static TStrings * GetAllOptionNames(bool PuttyExport);
 
   __property UnicodeString HostName  = { read = FHostName, write = SetHostName };
@@ -1065,10 +1065,10 @@ public:
   void Reload();
   void Save(bool All, bool Explicit);
   void Saved();
-  void ImportFromFilezilla(const UnicodeString FileName, const UnicodeString ConfigurationFileName);
+  void ImportFromFilezilla(const UnicodeString & FileName, const UnicodeString & ConfigurationFileName);
   void ImportFromKnownHosts(TStrings * Lines);
   void ImportFromOpenssh(TStrings * Lines);
-  void Export(const UnicodeString FileName);
+  void Export(const UnicodeString & FileName);
   void Load(THierarchicalStorage * Storage, bool AsModified = false,
     bool UseDefaults = false, bool PuttyImport = false);
   void Save(THierarchicalStorage * Storage, bool All = false);

@@ -13,7 +13,7 @@ class THttp;
 using THttpDownloadEvent = nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/>;
 using THttpErrorEvent = nb::FastDelegate3<void,
-  THttp * /*Sender*/, int /*Status*/, UnicodeString /*Message*/>;
+  THttp * /*Sender*/, int /*Status*/, const UnicodeString & /*Message*/>;
 
 extern const int32_t BasicHttpResponseLimit;
 

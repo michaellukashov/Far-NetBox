@@ -178,7 +178,7 @@ public:
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void TransferOnDirectory(
-    const UnicodeString /*ADirectory*/, const TCopyParamType * /*CopyParam*/, int32_t /*AParams*/) {}
+    const UnicodeString & /*ADirectory*/, const TCopyParamType * /*CopyParam*/, int32_t /*AParams*/) {}
   virtual void Source(
     TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
     const TCopyParamType * CopyParam, int32_t AParams,

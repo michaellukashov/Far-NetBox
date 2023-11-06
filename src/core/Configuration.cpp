@@ -549,7 +549,7 @@ void TConfiguration::SaveCustomIniFileStorageName()
 #endif // #if 0
 }
 
-void TConfiguration::Export(const UnicodeString /*AFileName*/)
+void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 {
   ThrowNotImplemented(3004);
 #if 0
@@ -584,7 +584,7 @@ void TConfiguration::Export(const UnicodeString /*AFileName*/)
 #endif // #if 0
 }
 
-void TConfiguration::Import(const UnicodeString /*AFileName*/)
+void TConfiguration::Import(const UnicodeString & /*AFileName*/)
 {
   ThrowNotImplemented(3005);
 #if 0

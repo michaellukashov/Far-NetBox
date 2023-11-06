@@ -118,9 +118,9 @@ UnicodeString TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, i
 #endif // #if 0
 
 void TCopyParamType::DoGetInfoStr(
-  UnicodeString Separator, int32_t Options,
-  UnicodeString &Result, bool &SomeAttrIncluded,
-  const UnicodeString /*ALink*/, UnicodeString &/*ScriptArgs*/) const //*TAssemblyLanguage Language, UnicodeString & AssemblyCode) const
+  const UnicodeString & Separator, int32_t Options,
+  UnicodeString & Result, bool &SomeAttrIncluded,
+  const UnicodeString & /*ALink*/, UnicodeString & /*ScriptArgs*/) const //*TAssemblyLanguage Language, UnicodeString & AssemblyCode) const
 {
   TCopyParamType Defaults;
   TCopyParamType ScriptNonDefaults;

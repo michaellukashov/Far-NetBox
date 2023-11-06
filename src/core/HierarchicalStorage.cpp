@@ -2015,7 +2015,7 @@ void TOptionsIniFile::UpdateFile()
   }
 }
 
-void TOptionsIniFile::ReadSections(const UnicodeString /*Section*/, TStrings * /*Strings*/)
+void TOptionsIniFile::ReadSections(const UnicodeString & /*Section*/, TStrings * /*Strings*/)
 {
   NotImplemented();
 }

@@ -92,8 +92,8 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString AFileName) const;
-  void DoGetInfoStr(UnicodeString Separator, int32_t Options,
-    UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString ALink, UnicodeString & ScriptArgs
+  void DoGetInfoStr(const UnicodeString & Separator, int32_t Options,
+    UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString & ALink, UnicodeString & ScriptArgs
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const;
   const TStrings * GetTransferSkipList() const;
   void SetTransferSkipList(const TStrings *Value);
