@@ -117,86 +117,86 @@ public:
   virtual void Initialize();
   virtual void Finalize();
 
-  virtual void SetStartupInfo(const struct PluginStartupInfo *Info);
+  virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
   virtual const struct PluginStartupInfo *GetPluginStartupInfo() const { return &FStartupInfo; }
   virtual void ExitFAR();
-  virtual void GetPluginInfo(struct PluginInfo *Info);
-  virtual int32_t Configure(const struct ConfigureInfo *Info);
-  virtual void *OpenPlugin(const struct OpenInfo *Info);
+  virtual void GetPluginInfo(struct PluginInfo * Info);
+  virtual int32_t Configure(const struct ConfigureInfo * Info);
+  virtual void *OpenPlugin(const struct OpenInfo * Info);
   virtual void ClosePanel(void *Plugin);
-  virtual void GetOpenPanelInfo(struct OpenPanelInfo *Info);
-  virtual int32_t GetFindData(struct GetFindDataInfo *Info);
-  virtual void FreeFindData(const struct FreeFindDataInfo *Info);
-  virtual int32_t ProcessHostFile(const struct ProcessHostFileInfo *Info);
-  virtual int32_t ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
-  virtual int32_t ProcessPanelEvent(const struct ProcessPanelEventInfo *Info);
-  virtual int32_t SetDirectory(const struct SetDirectoryInfo *Info);
-  virtual int32_t MakeDirectory(struct MakeDirectoryInfo *Info);
-  virtual int32_t DeleteFiles(const struct DeleteFilesInfo *Info);
-  virtual int32_t GetFiles(struct GetFilesInfo *Info);
-  virtual int32_t PutFiles(const struct PutFilesInfo *Info);
-  virtual int32_t ProcessEditorEvent(const struct ProcessEditorEventInfo *Info);
-  virtual int32_t ProcessEditorInput(const struct ProcessEditorInputInfo *Info);
+  virtual void GetOpenPanelInfo(struct OpenPanelInfo * Info);
+  virtual int32_t GetFindData(struct GetFindDataInfo * Info);
+  virtual void FreeFindData(const struct FreeFindDataInfo * Info);
+  virtual intptr_t ProcessHostFile(const struct ProcessHostFileInfo * Info);
+  virtual intptr_t ProcessPanelInput(const struct ProcessPanelInputInfo * Info);
+  virtual intptr_t ProcessPanelEvent(const struct ProcessPanelEventInfo * Info);
+  virtual intptr_t SetDirectory(const struct SetDirectoryInfo * Info);
+  virtual intptr_t MakeDirectory(struct MakeDirectoryInfo * Info);
+  virtual intptr_t DeleteFiles(const struct DeleteFilesInfo * Info);
+  virtual intptr_t GetFiles(struct GetFilesInfo * Info);
+  virtual intptr_t PutFiles(const struct PutFilesInfo * Info);
+  virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo * Info);
+  virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo * Info);
   virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0);
 
-  static wchar_t *DuplicateStr(const UnicodeString Str, bool AllowEmpty = false);
-  int32_t Message(uint32_t Flags, UnicodeString Title,
-    const UnicodeString Message, TStrings *Buttons = nullptr,
-    TFarMessageParams *Params = nullptr);
+  static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
+  int32_t Message(uint32_t Flags, const UnicodeString & Title,
+    const UnicodeString & Message, TStrings * Buttons = nullptr,
+    TFarMessageParams * Params = nullptr);
   int32_t MaxMessageLines() const;
   int32_t MaxMenuItemLength() const;
-  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString Title,
-    const UnicodeString Bottom, TStrings *Items);
-  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString Title,
-    const UnicodeString Bottom, TStrings *Items,
-    const FarKey *BreakKeys, intptr_t & BreakCode);
-  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString Title,
-    UnicodeString Bottom, const FarMenuItem *Items, size_t Count,
-    const FarKey *BreakKeys, intptr_t & BreakCode);
-  bool InputBox(const UnicodeString Title, const UnicodeString Prompt,
-    UnicodeString &Text, PLUGINPANELITEMFLAGS Flags, UnicodeString HistoryName = L"",
+  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
+    const UnicodeString & Bottom, TStrings * Items);
+  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
+    const UnicodeString & Bottom, TStrings * Items,
+    const FarKey * BreakKeys, intptr_t & BreakCode);
+  intptr_t Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
+    const UnicodeString & Bottom, const FarMenuItem * Items, size_t Count,
+    const FarKey * BreakKeys, intptr_t & BreakCode);
+  bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
+    UnicodeString & Text, PLUGINPANELITEMFLAGS Flags, const UnicodeString & HistoryName = L"",
     int32_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
   virtual UnicodeString GetMsg(int32_t MsgId) const;
   void SaveScreen(HANDLE &Screen);
   void RestoreScreen(HANDLE &Screen);
   bool CheckForEsc() const;
-  bool Viewer(UnicodeString AFileName, UnicodeString Title, VIEWER_FLAGS Flags);
-  bool Editor(UnicodeString AFileName, UnicodeString Title, EDITOR_FLAGS Flags);
-  int32_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void *Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
-  int32_t FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int32_t Param1, void *Param2 = nullptr) const;
-  int32_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int32_t Param1, void *Param2) const;
-  int32_t GetFarSystemSettings() const;
-  void Text(int X, int Y, int Color, const UnicodeString Str);
+  bool Viewer(const UnicodeString & AFileName, const UnicodeString & Title, VIEWER_FLAGS Flags);
+  bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, EDITOR_FLAGS Flags);
+  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+  intptr_t FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int32_t Param1, void * Param2 = nullptr) const;
+  intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int32_t Param1, void * Param2) const;
+  intptr_t GetFarSystemSettings() const;
+  void Text(int X, int Y, int Color, const UnicodeString & Str);
   void FlushText();
-  void FarWriteConsole(const UnicodeString Str);
-  void FarCopyToClipboard(const UnicodeString Str);
-  void FarCopyToClipboard(const TStrings *Strings);
+  void FarWriteConsole(const UnicodeString & Str);
+  void FarCopyToClipboard(const UnicodeString & Str);
+  void FarCopyToClipboard(const TStrings * Strings);
   int32_t GetFarVersion() const;
-  UnicodeString FormatFarVersion(VersionInfo &Info) const;
+  UnicodeString FormatFarVersion(VersionInfo & Info) const;
   UnicodeString GetTemporaryDir() const;
-  int32_t InputRecordToKey(const INPUT_RECORD *Rec);
+  intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
   TFarEditorInfo *EditorInfo();
 
-  void ShowConsoleTitle(const UnicodeString Title);
+  void ShowConsoleTitle(const UnicodeString & Title);
   void ClearConsoleTitle();
-  void UpdateConsoleTitle(const UnicodeString Title);
-  void UpdateConsoleTitleProgress(short Progress);
-  void ShowTerminalScreen(UnicodeString Command);
+  void UpdateConsoleTitle(const UnicodeString & Title);
+  void UpdateConsoleTitleProgress(int16_t Progress);
+  void ShowTerminalScreen(const UnicodeString & Command);
   void SaveTerminalScreen();
-  void ScrollTerminalScreen(int Rows);
-  TPoint TerminalInfo(TPoint *Size = nullptr, TPoint *Cursor = nullptr) const;
+  void ScrollTerminalScreen(int32_t Rows);
+  TPoint TerminalInfo(TPoint * Size = nullptr, TPoint * Cursor = nullptr) const;
   uint32_t ConsoleWindowState() const;
   void ToggleVideoMode();
 
-  TCustomFarFileSystem *GetPanelFileSystem(bool Another = false,
+  TCustomFarFileSystem * GetPanelFileSystem(bool Another = false,
     HANDLE Plugin = INVALID_HANDLE_VALUE);
 
   virtual UnicodeString GetModuleName() const;
-  TFarDialog *GetTopDialog() const { return FTopDialog; }
+  TFarDialog * GetTopDialog() const { return FTopDialog; }
   HINSTANCE GetHandle() const { return FHandle; }
   uint32_t GetFarThreadId() const { return FFarThreadId; }
-  const FarStandardFunctions &GetFarStandardFunctions() const { return FFarStandardFunctions; }
-  const struct PluginStartupInfo *GetStartupInfo() const { return &FStartupInfo; }
+  const FarStandardFunctions & GetFarStandardFunctions() const { return FFarStandardFunctions; }
+  const struct PluginStartupInfo * GetStartupInfo() const { return &FStartupInfo; }
 
 protected:
   TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
@@ -216,23 +216,23 @@ protected:
   TPoint FNormalConsoleSize;
 
   virtual bool HandlesFunction(THandlesFunction Function) const;
-  virtual void GetPluginInfoEx(PLUGIN_FLAGS &Flags,
-    TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
-    TStrings *PluginConfigStrings, TStrings *CommandPrefixes) = 0;
-  virtual TCustomFarFileSystem *OpenPluginEx(OPENFROM OpenFrom, int32_t Item) = 0;
-  virtual bool ConfigureEx(const GUID *Guid) = 0;
-  virtual int32_t ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info) = 0;
-  virtual int32_t ProcessEditorInputEx(const INPUT_RECORD *Rec) = 0;
-  virtual void HandleFileSystemException(TCustomFarFileSystem *FarFileSystem,
-    Exception *E, OPERATION_MODES OpMode = 0);
+  virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags,
+    TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
+    TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
+  virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, int32_t Item) = 0;
+  virtual bool ConfigureEx(const GUID * Guid) = 0;
+  virtual int32_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info) = 0;
+  virtual int32_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
+  virtual void HandleFileSystemException(TCustomFarFileSystem * FarFileSystem,
+    Exception * E, OPERATION_MODES OpMode = 0);
   void ResetCachedInfo();
-  int32_t MaxLength(TStrings *Strings) const;
+  int32_t MaxLength(TStrings * Strings) const;
   int32_t FarMessage(uint32_t Flags,
-    const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
-    TFarMessageParams *Params);
+    const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
+    TFarMessageParams * Params);
   int32_t DialogMessage(uint32_t Flags,
-    const UnicodeString Title, const UnicodeString Message, TStrings *Buttons,
-    TFarMessageParams *Params);
+    const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
+    TFarMessageParams * Params);
   void InvalidateOpenPanelInfo();
 
   const TCriticalSection &GetCriticalSection() const { return FCriticalSection; }
@@ -243,7 +243,7 @@ public:
 #endif
 private:
   void UpdateProgress(int32_t State, int32_t Progress) const;
-  __int64 GetSystemSetting(HANDLE &Settings, const wchar_t *Name) const;
+  int64_t GetSystemSetting(HANDLE & Settings, const wchar_t * Name) const;
 
 private:
   PluginInfo FPluginInfo{};
@@ -264,7 +264,7 @@ private:
       lhs.right == rhs.right &&
       lhs.bottom == rhs.bottom;
   }
-  void CloseFileSystem(TCustomFarFileSystem *FileSystem);
+  void CloseFileSystem(TCustomFarFileSystem * FileSystem);
 };
 
 NB_DEFINE_CLASS_ID(TCustomFarFileSystem);
@@ -274,42 +274,42 @@ class TCustomFarFileSystem : public TObject
   friend class TCustomFarPlugin;
   NB_DISABLE_COPY(TCustomFarFileSystem)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFarFileSystem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
 public:
-  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin *APlugin) noexcept;
+  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin) noexcept;
   virtual ~TCustomFarFileSystem() noexcept;
   void Init();
 
-  void GetOpenPanelInfo(struct OpenPanelInfo *Info);
-  int32_t GetFindData(struct GetFindDataInfo *Info);
-  void FreeFindData(const struct FreeFindDataInfo *Info);
-  int32_t ProcessHostFile(const struct ProcessHostFileInfo *Info);
-  int32_t ProcessPanelInput(const struct ProcessPanelInputInfo *Info);
-  bool ProcessPanelEvent(intptr_t Event, void *Param);
-  int32_t SetDirectory(const struct SetDirectoryInfo *Info);
-  int32_t MakeDirectory(struct MakeDirectoryInfo *Info);
-  int32_t DeleteFiles(const struct DeleteFilesInfo *Info);
-  int32_t GetFiles(struct GetFilesInfo *Info);
-  int32_t PutFiles(const struct PutFilesInfo *Info);
+  void GetOpenPanelInfo(struct OpenPanelInfo * Info);
+  int32_t GetFindData(struct GetFindDataInfo * Info);
+  void FreeFindData(const struct FreeFindDataInfo * Info);
+  int32_t ProcessHostFile(const struct ProcessHostFileInfo * Info);
+  int32_t ProcessPanelInput(const struct ProcessPanelInputInfo * Info);
+  bool ProcessPanelEvent(intptr_t Event, void * Param);
+  int32_t SetDirectory(const struct SetDirectoryInfo * Info);
+  int32_t MakeDirectory(struct MakeDirectoryInfo * Info);
+  int32_t DeleteFiles(const struct DeleteFilesInfo * Info);
+  int32_t GetFiles(struct GetFilesInfo * Info);
+  int32_t PutFiles(const struct PutFilesInfo * Info);
   virtual void Close();
 
 protected:
   virtual UnicodeString GetCurrDirectory() const = 0;
 
 protected:
-  TCustomFarPlugin *FPlugin{nullptr};
+  TCustomFarPlugin * FPlugin{nullptr};
   bool FClosed{false};
 
-  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS &Flags,
-    UnicodeString &HostFile, UnicodeString &CurDir, UnicodeString &Format,
-    UnicodeString &PanelTitle, TFarPanelModes *PanelModes, intptr_t &StartPanelMode,
-    OPENPANELINFO_SORTMODES &StartSortMode, bool &StartSortOrder, TFarKeyBarTitles *KeyBarTitles,
-    UnicodeString &ShortcutData) = 0;
-  virtual bool GetFindDataEx(TObjectList *PanelItems, OPERATION_MODES OpMode) = 0;
-  virtual bool ProcessHostFileEx(TObjectList *PanelItems, OPERATION_MODES OpMode);
+  virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
+    UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
+    UnicodeString & PanelTitle, TFarPanelModes * PanelModes, intptr_t & StartPanelMode,
+    OPENPANELINFO_SORTMODES & StartSortMode, bool & StartSortOrder, TFarKeyBarTitles * KeyBarTitles,
+    UnicodeString & ShortcutData) = 0;
+  virtual bool GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES OpMode) = 0;
+  virtual bool ProcessHostFileEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual bool ProcessKeyEx(int32_t Key, uint32_t ControlState);
-  virtual bool ProcessPanelEventEx(intptr_t Event, void *Param);
+  virtual bool ProcessPanelEventEx(intptr_t Event, void * Param);
   virtual bool SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODES OpMode);
   virtual int32_t MakeDirectoryEx(const UnicodeString & Name, OPERATION_MODES OpMode);
   virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
@@ -318,49 +318,49 @@ protected:
   virtual int32_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
 
   void ResetCachedInfo();
-  int32_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void *Param2);
-  int32_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void *Param2, HANDLE Plugin);
+  int32_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2);
+  int32_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2, HANDLE Plugin);
   bool UpdatePanel(bool ClearSelection = false, bool Another = false);
   void RedrawPanel(bool Another = false);
   void ClosePanel();
   UnicodeString GetMsg(int32_t MsgId) const;
-  TCustomFarFileSystem *GetOppositeFileSystem();
+  TCustomFarFileSystem * GetOppositeFileSystem();
   bool IsActiveFileSystem() const;
   bool IsLeft() const;
   bool IsRight() const;
 
-  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0);
+  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
 
-  TFarPanelInfo *const *GetPanelInfo() const { return GetPanelInfo(0); }
-  TFarPanelInfo **GetPanelInfo() { return GetPanelInfo(0); }
-  TFarPanelInfo *const *GetAnotherPanelInfo() const { return GetPanelInfo(1); }
-  TFarPanelInfo **GetAnotherPanelInfo() { return GetPanelInfo(1); }
-  const TCriticalSection &GetCriticalSection() const { return FCriticalSection; }
-  TCriticalSection &GetCriticalSection() { return FCriticalSection; }
+  TFarPanelInfo * const * GetPanelInfo() const { return GetPanelInfo(0); }
+  TFarPanelInfo ** GetPanelInfo() { return GetPanelInfo(0); }
+  TFarPanelInfo * const * GetAnotherPanelInfo() const { return GetPanelInfo(1); }
+  TFarPanelInfo ** GetAnotherPanelInfo() { return GetPanelInfo(1); }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
+  TCriticalSection & GetCriticalSection() { return FCriticalSection; }
   bool GetOpenPanelInfoValid() const { return FOpenPanelInfoValid; }
 
 protected:
   TCriticalSection FCriticalSection;
   void InvalidateOpenPanelInfo();
-  TCustomFarFileSystem *GetOwnerFileSystem() { return FOwnerFileSystem; }
-  void SetOwnerFileSystem(TCustomFarFileSystem *Value) { FOwnerFileSystem = Value; }
+  TCustomFarFileSystem * GetOwnerFileSystem() { return FOwnerFileSystem; }
+  void SetOwnerFileSystem(TCustomFarFileSystem * Value) { FOwnerFileSystem = Value; }
 
 private:
   UnicodeString FNameStr;
   UnicodeString FDestPathStr;
   OpenPanelInfo FOpenPanelInfo{};
   bool FOpenPanelInfoValid{false};
-  TCustomFarFileSystem *FOwnerFileSystem{nullptr};
-  TFarPanelInfo *FPanelInfo[2]{};
+  TCustomFarFileSystem * FOwnerFileSystem{nullptr};
+  TFarPanelInfo * FPanelInfo[2]{};
   static uint32_t FInstances;
 
-  void ClearOpenPanelInfo(OpenPanelInfo &Info);
-  TObjectList *CreatePanelItemList(struct PluginPanelItem *PanelItem, int32_t ItemsNumber);
-  TFarPanelInfo *const *GetPanelInfo(int32_t Another) const;
-  TFarPanelInfo **GetPanelInfo(int32_t Another);
+  void ClearOpenPanelInfo(OpenPanelInfo & Info);
+  TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem, int32_t ItemsNumber);
+  TFarPanelInfo * const * GetPanelInfo(int32_t Another) const;
+  TFarPanelInfo ** GetPanelInfo(int32_t Another);
 };
 
-constexpr int32_t PANEL_MODES_COUNT = 10;
+constexpr const int32_t PANEL_MODES_COUNT = 10;
 class TFarPanelModes final : public TObject
 {
   friend class TCustomFarFileSystem;
@@ -368,20 +368,20 @@ public:
   TFarPanelModes() noexcept;
   virtual ~TFarPanelModes() noexcept;
 
-  void SetPanelMode(size_t Mode, const UnicodeString ColumnTypes = UnicodeString(),
-    const UnicodeString ColumnWidths = UnicodeString(), TStrings *ColumnTitles = nullptr,
+  void SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes = UnicodeString(),
+    const UnicodeString & ColumnWidths = UnicodeString(), TStrings * ColumnTitles = nullptr,
     bool FullScreen = false, bool DetailedStatus = true, bool AlignExtensions = true,
-    bool CaseConversion = true, const UnicodeString StatusColumnTypes = UnicodeString(),
-    const UnicodeString StatusColumnWidths = UnicodeString());
+    bool CaseConversion = true, const UnicodeString & StatusColumnTypes = UnicodeString(),
+    const UnicodeString & StatusColumnWidths = UnicodeString());
 
 private:
   PanelMode FPanelModes[PANEL_MODES_COUNT]{};
   bool FReferenced{false};
 
-  void FillOpenPanelInfo(struct OpenPanelInfo *Info);
-  void SetFlag(PANELMODE_FLAGS &Flags, bool Value, PANELMODE_FLAGS Flag);
+  void FillOpenPanelInfo(struct OpenPanelInfo * Info);
+  void SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAGS Flag);
   static void ClearPanelMode(PanelMode &Mode);
-  static int32_t CommaCount(const UnicodeString ColumnTypes);
+  static int32_t CommaCount(const UnicodeString & ColumnTypes);
 };
 
 class TFarKeyBarTitles final : public TObject
@@ -401,7 +401,7 @@ private:
   KeyBarTitles FKeyBarTitles{};
   bool FReferenced{false};
 
-  void FillOpenPanelInfo(struct OpenPanelInfo *Info);
+  void FillOpenPanelInfo(struct OpenPanelInfo * Info);
   static void ClearKeyBarTitles(KeyBarTitles &Titles);
 };
 
@@ -557,7 +557,7 @@ class TFarEditorInfo : public TObject
   NB_DISABLE_COPY(TFarEditorInfo)
 public:
   TFarEditorInfo() = delete;
-  explicit TFarEditorInfo(EditorInfo *Info) noexcept;
+  explicit TFarEditorInfo(EditorInfo * Info) noexcept;
   ~TFarEditorInfo() noexcept;
 
   int32_t GetEditorID() const;
@@ -600,6 +600,6 @@ public:
     TInputDialogInitializeEvent OnInitialize, bool Echo) override;
   uint32_t MoreMessageDialog(const UnicodeString & AMessage,
     TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
-    const TMessageParams *Params) override;
+    const TMessageParams * Params) override;
 };
 

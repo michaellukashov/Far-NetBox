@@ -10,7 +10,7 @@
 #include "FarInterface.h"
 
 void AnswerNameAndCaption(
-  uint32_t Answer, UnicodeString &Name, UnicodeString &Caption)
+  uint32_t Answer, UnicodeString & Name, UnicodeString & Caption)
 {
 }
 

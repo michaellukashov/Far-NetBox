@@ -33,35 +33,35 @@ __removed #include <typeinfo>
 #define PASSWORDSFROMFILES_SWITCH L"passwordsfromfiles"
 extern const wchar_t * TransferModeNames[];
 extern const int TransferModeNamesCount;
-extern const wchar_t *ToggleNames[];
+extern const wchar_t * ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
 
 #if defined(FARPLUGIN)
-NB_CORE_EXPORT TConfiguration *CreateConfiguration();
+NB_CORE_EXPORT TConfiguration * CreateConfiguration();
 class TOptions;
-NB_CORE_EXPORT TOptions *GetGlobalOptions();
+NB_CORE_EXPORT TOptions * GetGlobalOptions();
 #endif // FARPLUGIN
 
-NB_CORE_EXPORT void ShowExtendedException(Exception *E);
-NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages);
-__removed void IgnoreException(const std::type_info &ExceptionType);
+NB_CORE_EXPORT void ShowExtendedException(Exception * E);
+NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+__removed void IgnoreException(const std::type_info & ExceptionType);
 __removed UnicodeString GetExceptionDebugInfo();
 
 NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
 NB_CORE_EXPORT void *BusyStart();
-NB_CORE_EXPORT void BusyEnd(void *Token);
+NB_CORE_EXPORT void BusyEnd(void * Token);
 NB_CORE_EXPORT static const uint32_t GUIUpdateInterval = 100;
 NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
 void SystemRequired();
 NB_CORE_EXPORT UnicodeString GetAppNameString();
 NB_CORE_EXPORT UnicodeString GetSshVersionString();
-NB_CORE_EXPORT void CopyToClipboard(UnicodeString Text);
-NB_CORE_EXPORT HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
-  /*TThreadFunc ThreadFunc,*/ void *Parameter, DWORD CreationFlags,
+NB_CORE_EXPORT void CopyToClipboard(const UnicodeString & AText);
+NB_CORE_EXPORT HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
+  /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
   TThreadID &ThreadId);
-NB_CORE_EXPORT bool TextFromClipboard(UnicodeString &Text, bool Trim);
+NB_CORE_EXPORT bool TextFromClipboard(UnicodeString & Text, bool Trim);
 
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
@@ -129,9 +129,9 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
 {
 //  TQueryParams() noexcept = delete;
   explicit TQueryParams(uint32_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE) noexcept;
-  explicit TQueryParams(const TQueryParams &Source) noexcept;
+  explicit TQueryParams(const TQueryParams & Source) noexcept;
 
-  void Assign(const TQueryParams &Source);
+  void Assign(const TQueryParams & Source);
 
   const TQueryButtonAlias *Aliases{nullptr};
   uint32_t AliasesCount{0};
@@ -169,7 +169,7 @@ enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02, };
 
 NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
 NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts);
-NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts);
+NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 void AnswerNameAndCaption(uint32_t Answer, UnicodeString & Name, UnicodeString & Caption);
 class TTerminal;
 class TRemoteFile;

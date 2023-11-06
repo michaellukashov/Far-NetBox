@@ -23,7 +23,7 @@ struct VS_VERSION_INFO_STRUCT32
   WCHAR szKey[1];
 };
 
-static uint32_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uint32_t DataSize, void *Data)
+static uint32_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uint32_t DataSize, void * Data)
 {
   uint32_t Len = 0;
 
@@ -93,7 +93,7 @@ static uint32_t VERSION_GetFileVersionInfo_PE(const wchar_t *FileName, uint32_t 
   return Len;
 }
 
-static uint32_t GetFileVersionInfoSizeFix(const wchar_t *FileName, DWORD *AHandle)
+static uint32_t GetFileVersionInfoSizeFix(const wchar_t * FileName, DWORD * AHandle)
 {
   uint32_t Len;
   if (IsWin7())
@@ -114,14 +114,14 @@ static uint32_t GetFileVersionInfoSizeFix(const wchar_t *FileName, DWORD *AHandl
   return Len;
 }
 
-bool GetFileVersionInfoFix(const wchar_t *FileName, DWORD Handle,
-  uint32_t DataSize, void *Data)
+bool GetFileVersionInfoFix(const wchar_t * FileName, DWORD Handle,
+  uint32_t DataSize, void * Data)
 {
   bool Result;
 
   if (IsWin7())
   {
-    VS_VERSION_INFO_STRUCT32 *VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
+    VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
 
     uint32_t Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
 
@@ -140,7 +140,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, DWORD Handle,
   }
   else
   {
-    Result = ::GetFileVersionInfo(FileName, Handle, nb::ToDWord(DataSize), Data) != 0;
+    Result = ::GetFileVersionInfo(FileName, Handle, nb::ToDWord(DataSize), Data) != FALSE;
   }
 
   return Result;
@@ -150,7 +150,7 @@ bool GetFileVersionInfoFix(const wchar_t *FileName, DWORD Handle,
 void * CreateFileInfo(const UnicodeString & AFileName)
 {
   DWORD Handle;
-  void *Result = nullptr;
+  void * Result = nullptr;
   // Get file version info block size
   uint32_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
@@ -168,7 +168,7 @@ void * CreateFileInfo(const UnicodeString & AFileName)
 }
 
 // Free file version info block memory
-void FreeFileInfo(void *FileInfo)
+void FreeFileInfo(void * FileInfo)
 {
   if (FileInfo)
     nb_free(FileInfo);
