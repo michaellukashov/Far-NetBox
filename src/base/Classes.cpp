@@ -130,7 +130,7 @@ void * TList::Extract(void * Item)
   return nullptr;
 }
 
-int32_t TList::Remove(void *Item)
+int32_t TList::Remove(void * Item)
 {
   const int32_t Result = IndexOf(Item);
   if (Result != nb::NPOS)

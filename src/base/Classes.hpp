@@ -144,7 +144,7 @@ NB_DEFINE_CLASS_ID(TPersistent);
 class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
@@ -171,7 +171,7 @@ NB_DEFINE_CLASS_ID(TList);
 class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TList); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
 public:
   TList();
@@ -181,11 +181,11 @@ public:
   template<class T>
   T *GetAs(int32_t Index) const { return cast_to<T>(GetItem(Index)); }
   void *operator[](int32_t Index) const;
-  virtual void *GetItem(int32_t Index) const { return FList[Index]; }
-  virtual void *GetItem(int32_t Index) { return FList[Index]; }
+  virtual void * GetItem(int32_t Index) const { return FList[Index]; }
+  virtual void * GetItem(int32_t Index) { return FList[Index]; }
   void SetItem(int32_t Index, void * Item);
   int32_t Add(void * Value);
-  void *Extract(void * Item);
+  void * Extract(void * Item);
   int32_t Remove(void * Item);
   virtual void Move(int32_t CurIndex, int32_t NewIndex);
   virtual void Delete(int32_t Index);
@@ -220,12 +220,12 @@ public:
   RWProperty2<bool> OwnsObjects{&FOwnsObjects};
 
   template<class T>
-  T *GetAs(int32_t Index) const { return dyn_cast<T>(GetObj(Index)); }
-  TObject *operator[](int32_t Index) const;
-  TObject *GetObj(int32_t Index) const;
+  T * GetAs(int32_t Index) const { return dyn_cast<T>(GetObj(Index)); }
+  TObject * operator[](int32_t Index) const;
+  TObject * GetObj(int32_t Index) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
-  virtual void Notify(void *Ptr, TListNotification Action) override;
+  virtual void Notify(void * Ptr, TListNotification Action) override;
 
 private:
   bool FOwnsObjects{true};

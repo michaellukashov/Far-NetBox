@@ -238,7 +238,7 @@ bool ExceptionFullMessage(Exception *E, UnicodeString &Message)
   return Result;
 }
 
-UnicodeString GetExceptionHelpKeyword(const Exception *E)
+UnicodeString GetExceptionHelpKeyword(const Exception * E)
 {
   UnicodeString HelpKeyword;
   const ExtException *ExtE = dyn_cast<ExtException>(E);
@@ -258,7 +258,7 @@ UnicodeString GetExceptionHelpKeyword(const Exception *E)
   return HelpKeyword;
 }
 
-UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const UnicodeString SecondaryHelpKeyword)
+UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword)
 {
   if (!PrimaryHelpKeyword.IsEmpty() &&
       !IsInternalErrorHelpKeyword(SecondaryHelpKeyword))
@@ -270,7 +270,7 @@ UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const Uni
   return SecondaryHelpKeyword;
 }
 
-bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword)
+bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword)
 {
 #if defined(FARPLUGIN)
   return
@@ -280,41 +280,41 @@ bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword)
 #endif // FARPLUGIN
 }
 
-ExtException::ExtException(const Exception *E) :
+ExtException::ExtException(const Exception * E) :
   Exception(OBJECT_CLASS_ExtException, L"")
 {
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(TObjectClassId Kind, const Exception *E) :
+ExtException::ExtException(TObjectClassId Kind, const Exception * E) :
   Exception(Kind, L"")
 {
   AddMoreMessages(E);
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
+ExtException::ExtException(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
 
-ExtException::ExtException(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
+ExtException::ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   Exception(Kind, Msg)
 {
   AddMoreMessages(E);
   FHelpKeyword = MergeHelpKeyword(HelpKeyword, GetExceptionHelpKeyword(E));
 }
 
-ExtException::ExtException(TObjectClassId Kind, Exception *E, int32_t Ident, const UnicodeString HelpKeyword) :
+ExtException::ExtException(TObjectClassId Kind, Exception * E, int32_t Ident, const UnicodeString & HelpKeyword) :
   Exception(Kind, E, Ident),
   FHelpKeyword(HelpKeyword)
 {
 }
 
-ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception *E, const UnicodeString HelpKeyword) :
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword) :
   Exception(Kind, L"")
 {
   // "copy exception"
@@ -338,8 +338,8 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const E
   FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
 }
 
-ExtException::ExtException(const UnicodeString Msg, const UnicodeString MoreMessages,
-  const UnicodeString HelpKeyword) :
+ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
+  const UnicodeString & HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
   FHelpKeyword(std::move(HelpKeyword))
 {
@@ -349,8 +349,8 @@ ExtException::ExtException(const UnicodeString Msg, const UnicodeString MoreMess
   }
 }
 
-ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages,
-  const UnicodeString HelpKeyword) :
+ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages,
+  const UnicodeString & HelpKeyword) :
   Exception(Kind, Msg),
   FHelpKeyword(HelpKeyword)
 {
@@ -360,8 +360,8 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString Msg, const U
   }
 }
 
-ExtException::ExtException(const UnicodeString Msg, TStrings *MoreMessages,
-  bool Own, const UnicodeString HelpKeyword) :
+ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
+  bool Own, const UnicodeString & HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
   FHelpKeyword(HelpKeyword)
 {
@@ -461,29 +461,29 @@ EOSExtException::EOSExtException() :
 {
 }
 
-EOSExtException::EOSExtException(const UnicodeString Msg) :
+EOSExtException::EOSExtException(const UnicodeString & Msg) :
   ExtException(OBJECT_CLASS_EOSExtException, Msg, LastSysErrorMessage())
 {
 }
 
-EOSExtException::EOSExtException(const UnicodeString Msg, int32_t LastError) :
+EOSExtException::EOSExtException(const UnicodeString & Msg, int32_t LastError) :
   ExtException(OBJECT_CLASS_EOSExtException, Msg, SysErrorMessageForError(LastError))
 {
 }
 
-EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString Msg, int32_t LastError) :
+EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int32_t LastError) :
   ExtException(Kind, Msg, SysErrorMessageForError(LastError))
 {
 }
 
-EFatal::EFatal(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
+EFatal::EFatal(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(OBJECT_CLASS_EFatal, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
   Init(E);
 }
 
-EFatal::EFatal(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword) :
+EFatal::EFatal(TObjectClassId Kind, const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(Kind, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
@@ -499,7 +499,7 @@ void EFatal::Init(const Exception *E)
   }
 }
 
-ECRTExtException::ECRTExtException(const UnicodeString Msg) :
+ECRTExtException::ECRTExtException(const UnicodeString & Msg) :
   EOSExtException(OBJECT_CLASS_ECRTExtException, Msg, errno)
 {
 }
@@ -590,7 +590,7 @@ void RethrowException(Exception *E)
   }
 }
 
-UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString NewContext)
+UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString & NewContext)
 {
   UnicodeString MainMessage;
   UnicodeString Context = E.Message;

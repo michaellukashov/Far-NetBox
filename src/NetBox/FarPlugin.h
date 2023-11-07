@@ -395,7 +395,7 @@ public:
   void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
     int32_t FunctionKeyStart, int32_t FunctionKeyEnd = 0);
   void SetKeyBarTitle(TFarShiftStatus ShiftStatus, int32_t FunctionKey,
-    UnicodeString Title);
+    const UnicodeString & Title);
 
 private:
   KeyBarTitles FKeyBarTitles{};
@@ -417,11 +417,11 @@ protected:
   explicit TCustomFarPanelItem(TObjectClassId Kind) noexcept : TObject(Kind) {}
   virtual ~TCustomFarPanelItem() = default;
   virtual void GetData(
-    PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t &Size,
-    uintptr_t &FileAttributes,
-    TDateTime &LastWriteTime, TDateTime &LastAccess,
-    uintptr_t &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) = 0;
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
+    uintptr_t & FileAttributes,
+    TDateTime & LastWriteTime, TDateTime & LastAccess,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) = 0;
   virtual UnicodeString GetCustomColumnData(size_t Column);
 
   void FillPanelItem(struct PluginPanelItem *PanelItem);
@@ -465,7 +465,7 @@ NB_DEFINE_CLASS_ID(THintPanelItem);
 class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
-  explicit THintPanelItem(const UnicodeString AHint) noexcept;
+  explicit THintPanelItem(const UnicodeString & AHint) noexcept;
   virtual ~THintPanelItem() = default;
 
 protected:
@@ -510,9 +510,9 @@ public:
   UnicodeString GetCurrDirectory() const;
 
   void ApplySelection();
-  TFarPanelItem *FindFileName(const UnicodeString AFileName) const;
-  const TFarPanelItem *FindUserData(const void *UserData) const;
-  TFarPanelItem *FindUserData(const void *UserData);
+  TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
+  const TFarPanelItem * FindUserData(const void * UserData) const;
+  TFarPanelItem * FindUserData(const void *UserData);
 
 private:
   gsl::owner<PanelInfo *> FPanelInfo{nullptr};
@@ -530,7 +530,7 @@ public:
   explicit TFarMenuItems() noexcept;
   virtual ~TFarMenuItems() = default;
   void AddSeparator(bool Visible = true);
-  virtual int32_t Add(UnicodeString Text, bool Visible = true);
+  virtual int32_t Add(const UnicodeString & Text, bool Visible = true);
 
   void Clear() override;
   void Delete(int32_t Index) override;

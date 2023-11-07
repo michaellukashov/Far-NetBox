@@ -26,26 +26,26 @@ public:
 public:
   ExtException() = default;
   virtual ~ExtException() noexcept;
-  explicit ExtException(const Exception *E);
-  explicit ExtException(TObjectClassId Kind, const Exception *E);
-  explicit ExtException(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
-  // explicit ExtException(const ExtException *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(TObjectClassId Kind, Exception *E, int32_t Ident, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(const Exception * E);
+  explicit ExtException(TObjectClassId Kind, const Exception * E);
+  explicit ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  // explicit ExtException(const ExtException *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, Exception * E, int32_t Ident, const UnicodeString & HelpKeyword = L"");
   // "copy the exception", just append message to the end
-  explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const Exception *E, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = L"");
-  explicit ExtException(const UnicodeString Msg, TStrings *MoreMessages, bool Own, const UnicodeString HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, TStrings *MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   __property TStrings* MoreMessages = {read=FMoreMessages};
   __property UnicodeString HelpKeyword = {read=FHelpKeyword};
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit ExtException(const UnicodeString Msg) : Exception(OBJECT_CLASS_ExtException, Msg) {}
-  explicit ExtException(TObjectClassId Kind, const UnicodeString Msg) : Exception(Kind, Msg) {}
+  explicit ExtException(const UnicodeString & Msg) : Exception(OBJECT_CLASS_ExtException, Msg) {}
+  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg) : Exception(Kind, Msg) {}
   explicit ExtException(TObjectClassId Kind, int32_t Ident) : Exception(Kind, Ident) {}
-  explicit ExtException(TObjectClassId Kind, const UnicodeString Msg, int32_t AHelpContext) : Exception(Kind, Msg, AHelpContext) {}
+  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) : Exception(Kind, Msg, AHelpContext) {}
 
   ExtException(const ExtException& E) : Exception(OBJECT_CLASS_ExtException, L""), FHelpKeyword(E.FHelpKeyword)
   {
@@ -77,26 +77,26 @@ private:
     static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    explicit inline NAME(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
       BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
     { \
     } \
-    explicit inline NAME(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : \
+    explicit inline NAME(TObjectClassId Kind, const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
       BASE(Kind, E, Msg, HelpKeyword) \
     { \
     } \
-    inline NAME(TObjectClassId Kind, const UnicodeString Msg, const UnicodeString MoreMessages, const UnicodeString HelpKeyword = UnicodeString()) : \
+    inline NAME(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString()) : \
       BASE(Kind, Msg, MoreMessages, HelpKeyword) \
     { \
     } \
     virtual inline ~NAME(void) \
     { \
     } \
-    explicit inline NAME(TObjectClassId Kind, const UnicodeString Msg, int32_t AHelpContext) : \
+    explicit inline NAME(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) : \
       BASE(Kind, Msg, AHelpContext) \
     { \
     } \
-    explicit inline NAME(const UnicodeString Msg, int32_t AHelpContext) : \
+    explicit inline NAME(const UnicodeString & Msg, int32_t AHelpContext) : \
       BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) \
     { \
     } \
@@ -139,9 +139,9 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EOSExtException) || ExtException::is(Kind); }
 public:
   explicit EOSExtException();
-  explicit EOSExtException(const UnicodeString Msg);
-  explicit EOSExtException(const UnicodeString Msg, int32_t LastError);
-  explicit EOSExtException(TObjectClassId Kind, const UnicodeString Msg, int32_t LastError);
+  explicit EOSExtException(const UnicodeString & Msg);
+  explicit EOSExtException(const UnicodeString & Msg, int32_t LastError);
+  explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int32_t LastError);
 };
 
 NB_DEFINE_CLASS_ID(ECRTExtException);
@@ -152,7 +152,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECRTExtException) || EOSExtException::is(Kind); }
 public:
   ECRTExtException() = default;
-  explicit ECRTExtException(const UnicodeString Msg);
+  explicit ECRTExtException(const UnicodeString & Msg);
 };
 
 NB_DEFINE_CLASS_ID(EFatal);
@@ -163,8 +163,8 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFatal) || ExtException::is(Kind); }
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
-  explicit EFatal(TObjectClassId Kind, const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"");
+  explicit EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
 
   __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
 
@@ -186,7 +186,7 @@ private:
     static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    explicit inline NAME(const Exception *E, const UnicodeString Msg, const UnicodeString HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
+    explicit inline NAME(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException *Clone() const override { return new NAME(this, L""); } \
   };
 
@@ -202,8 +202,8 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ESshTerminate) || EFatal::is(Kind); }
 public:
   explicit inline ESshTerminate(
-    const Exception *E, const UnicodeString Msg, TOnceDoneOperation AOperation,
-    const UnicodeString ATargetLocalPath, const UnicodeString ADestLocalFileName) :
+    const Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation,
+    const UnicodeString & ATargetLocalPath, const UnicodeString & ADestLocalFileName) :
     EFatal(OBJECT_CLASS_ESshTerminate, E, Msg),
     Operation(AOperation),
     TargetLocalPath(ATargetLocalPath),
@@ -237,7 +237,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EStreamError) || Exception::is(Kind); }
 public:
   using ExtException::ExtException;
-  explicit EStreamError(UnicodeString Msg) :
+  explicit EStreamError(const UnicodeString & Msg) :
       ExtException(OBJECT_CLASS_EStreamError, static_cast<const Exception *>(nullptr), Msg)
   {
   }
@@ -250,7 +250,7 @@ public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFCreateError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFCreateError) || Exception::is(Kind); }
 public:
-  explicit EFCreateError(UnicodeString Msg) :
+  explicit EFCreateError(const UnicodeString & Msg) :
       EStreamError(OBJECT_CLASS_EFCreateError, static_cast<const Exception *>(nullptr), Msg)
   {
   }
@@ -263,7 +263,7 @@ public:
   static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFOpenError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFOpenError) || Exception::is(Kind); }
 public:
-  explicit EFOpenError(UnicodeString Msg) :
+  explicit EFOpenError(const UnicodeString & Msg) :
       EStreamError(OBJECT_CLASS_EFOpenError, static_cast<const Exception *>(nullptr), Msg)
   {
   }
@@ -285,10 +285,10 @@ inline void ThrowNotImplemented(int32_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
-NB_CORE_EXPORT Exception *CloneException(Exception *E);
-NB_CORE_EXPORT void RethrowException(Exception *E);
-NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception* E);
-NB_CORE_EXPORT UnicodeString MergeHelpKeyword(const UnicodeString PrimaryHelpKeyword, const UnicodeString SecondaryHelpKeyword);
-NB_CORE_EXPORT bool IsInternalErrorHelpKeyword(const UnicodeString HelpKeyword);
-UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString NewContext);
+NB_CORE_EXPORT Exception * CloneException(Exception * E);
+NB_CORE_EXPORT void RethrowException(Exception * E);
+NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception * E);
+NB_CORE_EXPORT UnicodeString MergeHelpKeyword(const UnicodeString & PrimaryHelpKeyword, const UnicodeString & SecondaryHelpKeyword);
+NB_CORE_EXPORT bool IsInternalErrorHelpKeyword(const UnicodeString & HelpKeyword);
+UnicodeString AddContextToExceptionMessage(const Exception & E, const UnicodeString & NewContext);
 

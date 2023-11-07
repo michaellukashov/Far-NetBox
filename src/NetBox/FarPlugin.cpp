@@ -2397,7 +2397,7 @@ void TFarKeyBarTitles::ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
 }
 
 void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
-  int32_t FunctionKey, const UnicodeString Title)
+  int32_t FunctionKey, const UnicodeString & Title)
 {
   DebugAssert(FunctionKey >= 1 && FunctionKey <= 12);
   int shift = nb::ToInt(ShiftStatus);
@@ -2568,14 +2568,14 @@ bool TFarPanelItem::GetIsFile() const
   return (GetFileAttrs() & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
-THintPanelItem::THintPanelItem(const UnicodeString AHint) noexcept :
+THintPanelItem::THintPanelItem(const UnicodeString & AHint) noexcept :
   TCustomFarPanelItem(OBJECT_CLASS_THintPanelItem),
   FHint(AHint)
 {
 }
 
 void THintPanelItem::GetData(
-  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString &AFileName, int64_t & /*Size*/,
+  PLUGINPANELITEMFLAGS & /*Flags*/, UnicodeString & AFileName, int64_t & /*Size*/,
   uintptr_t & /*FileAttributes*/,
   TDateTime & /*LastWriteTime*/, TDateTime & /*LastAccess*/,
   uintptr_t & /*NumberOfLinks*/, UnicodeString & /*Description*/,
@@ -2657,9 +2657,9 @@ TObjectList *TFarPanelInfo::GetItems()
   return FItems;
 }
 
-TFarPanelItem *TFarPanelInfo::FindFileName(const UnicodeString AFileName) const
+TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) const
 {
-  const TObjectList *Items = FItems;
+  const TObjectList * Items = FItems;
   if (!Items)
     Items = GetItems();
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
@@ -2673,17 +2673,17 @@ TFarPanelItem *TFarPanelInfo::FindFileName(const UnicodeString AFileName) const
   return nullptr;
 }
 
-const TFarPanelItem *TFarPanelInfo::FindUserData(const void *UserData) const
+const TFarPanelItem *TFarPanelInfo::FindUserData(const void * UserData) const
 {
   return const_cast<TFarPanelInfo *>(this)->FindUserData(UserData);
 }
 
-TFarPanelItem *TFarPanelInfo::FindUserData(const void *UserData)
+TFarPanelItem *TFarPanelInfo::FindUserData(const void * UserData)
 {
-  TObjectList *Items = GetItems();
+  TObjectList * Items = GetItems();
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem *PanelItem = Items->GetAs<TFarPanelItem>(Index);
+    TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;
@@ -2699,9 +2699,9 @@ void TFarPanelInfo::ApplySelection()
   FOwner->FarControl(FCTL_SETSELECTION, 0, reinterpret_cast<void *>(FPanelInfo));
 }
 
-TFarPanelItem *TFarPanelInfo::GetFocusedItem() const
+TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
 {
-  const TObjectList *Items = FItems;
+  const TObjectList * Items = FItems;
   if (!Items)
     Items = GetItems();
   int32_t Index = GetFocusedIndex();
@@ -2833,7 +2833,7 @@ void TFarMenuItems::SetObj(int32_t Index, TObject *AObject)
   }
 }
 
-int32_t TFarMenuItems::Add(const UnicodeString Text, bool Visible)
+int32_t TFarMenuItems::Add(const UnicodeString & Text, bool Visible)
 {
   int32_t Result = TStringList::Add(Text);
   if (!Visible)
