@@ -424,7 +424,7 @@ protected:
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) = 0;
   virtual UnicodeString GetCustomColumnData(size_t Column);
 
-  void FillPanelItem(struct PluginPanelItem *PanelItem);
+  void FillPanelItem(struct PluginPanelItem * PanelItem);
 };
 
 NB_DEFINE_CLASS_ID(TFarPanelItem);
@@ -436,7 +436,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItem) || TCustomFarPanelItem::is(Kind); }
 public:
   TFarPanelItem() = delete;
-  explicit TFarPanelItem(PluginPanelItem *APanelItem, bool OwnsItem) noexcept;
+  explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem) noexcept;
   virtual ~TFarPanelItem() noexcept;
 
   PLUGINPANELITEMFLAGS GetFlags() const;
@@ -453,11 +453,11 @@ protected:
   bool FOwnsItem{false};
 
   virtual void GetData(
-    PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t &Size,
-    uintptr_t &FileAttributes,
-    TDateTime &LastWriteTime, TDateTime &LastAccess,
-    uintptr_t &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) override;
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
+    uintptr_t & FileAttributes,
+    TDateTime & LastWriteTime, TDateTime & LastAccess,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) override;
   UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
@@ -470,11 +470,11 @@ public:
 
 protected:
   virtual void GetData(
-    PLUGINPANELITEMFLAGS &Flags, UnicodeString &AFileName, int64_t &Size,
-    uintptr_t &FileAttributes,
-    TDateTime &LastWriteTime, TDateTime &LastAccess,
-    uintptr_t &NumberOfLinks, UnicodeString &Description,
-    UnicodeString &Owner, void *&UserData, size_t &CustomColumnNumber) override;
+    PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
+    uintptr_t & FileAttributes,
+    TDateTime & LastWriteTime, TDateTime & LastAccess,
+    uintptr_t & NumberOfLinks, UnicodeString & Description,
+    UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) override;
 
 private:
   UnicodeString FHint;
@@ -493,14 +493,14 @@ class TFarPanelInfo : public TObject
   NB_DISABLE_COPY(TFarPanelInfo)
 public:
   TFarPanelInfo() = delete;
-  explicit TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner) noexcept;
+  explicit TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner) noexcept;
   virtual ~TFarPanelInfo() noexcept;
 
-  const TObjectList *GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
-  TObjectList *GetItems();
+  const TObjectList * GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
+  TObjectList * GetItems();
   int32_t GetItemCount() const;
-  TFarPanelItem *GetFocusedItem() const;
-  void SetFocusedItem(const TFarPanelItem *Value);
+  TFarPanelItem * GetFocusedItem() const;
+  void SetFocusedItem(const TFarPanelItem * Value);
   int32_t GetFocusedIndex() const;
   void SetFocusedIndex(int32_t Value);
   int32_t GetSelectedCount(bool CountCurrentItem = false) const;
@@ -512,7 +512,7 @@ public:
   void ApplySelection();
   TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
   const TFarPanelItem * FindUserData(const void * UserData) const;
-  TFarPanelItem * FindUserData(const void *UserData);
+  TFarPanelItem * FindUserData(const void * UserData);
 
 private:
   gsl::owner<PanelInfo *> FPanelInfo{nullptr};

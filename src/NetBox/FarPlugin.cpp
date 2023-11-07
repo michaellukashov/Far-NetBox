@@ -1865,7 +1865,7 @@ TCustomFarFileSystem::~TCustomFarFileSystem() noexcept
   ClearOpenPanelInfo(FOpenPanelInfo);
 }
 
-void TCustomFarFileSystem::HandleException(Exception *E, OPERATION_MODES OpMode)
+void TCustomFarFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   DEBUG_PRINTF("before FPlugin->HandleException");
   FPlugin->HandleException(E, OpMode);
@@ -1881,7 +1881,7 @@ void TCustomFarFileSystem::InvalidateOpenPanelInfo()
   FOpenPanelInfoValid = false;
 }
 
-void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo &Info)
+void TCustomFarFileSystem::ClearOpenPanelInfo(OpenPanelInfo & Info)
 {
   if (Info.StructSize)
   {
@@ -2584,7 +2584,7 @@ void THintPanelItem::GetData(
   AFileName = FHint;
 }
 
-TFarPanelInfo::TFarPanelInfo(PanelInfo *APanelInfo, TCustomFarFileSystem *AOwner) noexcept :
+TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner) noexcept :
   TObject(),
   FPanelInfo(APanelInfo),
   FItems(nullptr),
