@@ -358,7 +358,7 @@ void TCustomFarPlugin::CloseFileSystem(TCustomFarFileSystem * FileSystem)
     FileSystem->Close();
   }
   CloseFileSystem(FileSystem->GetOwnerFileSystem());
-  SAFE_DESTROY(FileSystem);
+  //SAFE_DESTROY(FileSystem);
 #ifdef USE_DLMALLOC
   // dlmalloc_trim(0); // 64 * 1024);
 #endif
@@ -1861,6 +1861,7 @@ void TCustomFarFileSystem::Init()
 TCustomFarFileSystem::~TCustomFarFileSystem() noexcept
 {
   FInstances--;
+  TINYLOG_TRACE(g_tinylog) << repr("C %d", FInstances);
   ResetCachedInfo();
   ClearOpenPanelInfo(FOpenPanelInfo);
 }
