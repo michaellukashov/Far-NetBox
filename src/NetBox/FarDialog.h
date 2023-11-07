@@ -53,7 +53,7 @@ public:
   TRect GetBounds() const { return FBounds; }
   TRect GetClientRect() const;
   UnicodeString GetHelpTopic() const { return FHelpTopic; }
-  void SetHelpTopic(const UnicodeString Value);
+  void SetHelpTopic(const UnicodeString & Value);
   FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
   void SetFlags(const FARDIALOGITEMFLAGS Value);
   bool GetCentered() const;
@@ -66,7 +66,7 @@ public:
   int32_t GetHeight() const;
   void SetHeight(int32_t Value);
   UnicodeString GetCaption() const;
-  void SetCaption(const UnicodeString Value);
+  void SetCaption(const UnicodeString & Value);
   HANDLE GetHandle() const { return FHandle; }
   TFarButton *GetDefaultButton() const { return FDefaultButton; }
   TFarBox *GetBorderBox() const { return FBorderBox; }
@@ -261,8 +261,8 @@ public:
   void SetItem(int32_t Value) { FItem = Value; }
 
 public:
-  virtual void SetDataInternal(const UnicodeString Value);
-  void UpdateData(const UnicodeString Value);
+  virtual void SetDataInternal(const UnicodeString & Value);
+  void UpdateData(const UnicodeString & Value);
   void UpdateSelected(int32_t Value);
 
   bool GetFlag(FARDIALOGITEMFLAGS Index) const;
@@ -291,17 +291,17 @@ protected:
   void SetCenterGroup(bool Value) { SetFlag(DIF_CENTERGROUP, Value); }
   virtual UnicodeString GetData() const;
   virtual UnicodeString GetData();
-  virtual void SetData(const UnicodeString Value);
+  virtual void SetData(const UnicodeString & Value);
   FARDIALOGITEMTYPES GetType() const;
   void SetType(FARDIALOGITEMTYPES Value);
   int32_t GetItem() const { return FItem; }
   int32_t GetSelected() const;
   void SetSelected(int32_t Value);
-  TFarDialogContainer *GetContainer() const { return FContainer; }
+  TFarDialogContainer * GetContainer() const { return FContainer; }
   void SetContainer(TFarDialogContainer *Value);
   bool GetChecked() const;
   void SetChecked(bool Value);
-  void SetBounds(const TRect &Value);
+  void SetBounds(const TRect & Value);
   FARDIALOGITEMFLAGS GetFlags() const;
   void SetFlags(FARDIALOGITEMFLAGS Value);
   void UpdateFlags(FARDIALOGITEMFLAGS Value);
@@ -360,7 +360,7 @@ public:
   explicit TFarBox(TFarDialog *ADialog) noexcept;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual bool GetDouble() const { return GetAlterType(DI_DOUBLEBOX); }
   virtual void SetDouble(bool Value) { SetAlterType(DI_DOUBLEBOX, Value); }
 };
@@ -388,7 +388,7 @@ public:
   virtual ~TFarButton() = default;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual int32_t GetModalResult() const { return FResult; }
   virtual int32_t GetResult() const { return FResult; }
   virtual void SetResult(int32_t Value) { FResult = Value; }
@@ -404,7 +404,7 @@ public:
   virtual void SetOnClick(TFarButtonClickEvent Value) { FOnClick = Value; }
 
 protected:
-  virtual void SetDataInternal(const UnicodeString AValue) override;
+  virtual void SetDataInternal(const UnicodeString & AValue) override;
   virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual bool HotKey(char HotKey) override;
 
@@ -428,7 +428,7 @@ public:
   explicit TFarCheckBox(TFarDialog *ADialog) noexcept;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   bool GetAllowGrayed() const { return GetFlag(DIF_3STATE); }
   void SetAllowGrayed(bool Value) { SetFlag(DIF_3STATE, Value); }
   virtual TFarAllowChangeEvent GetOnAllowChange() const { return FOnAllowChange; }
@@ -442,19 +442,19 @@ protected:
   TFarAllowChangeEvent FOnAllowChange;
   virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual bool GetIsEmpty() const override;
-  virtual void SetData(const UnicodeString Value) override;
+  virtual void SetData(const UnicodeString & Value) override;
 };
 
 NB_DEFINE_CLASS_ID(TFarRadioButton);
 class TFarRadioButton : public TFarDialogItem
 {
 public:
-  explicit TFarRadioButton(TFarDialog *ADialog) noexcept;
+  explicit TFarRadioButton(TFarDialog * ADialog) noexcept;
 
   bool GetChecked() const { return TFarDialogItem::GetChecked(); }
   void SetChecked(bool Value) { TFarDialogItem::SetChecked(Value); }
   virtual UnicodeString GetCaption() const { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual TFarAllowChangeEvent GetOnAllowChange() const { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent Value) { FOnAllowChange = Value; }
 
@@ -462,7 +462,7 @@ protected:
   TFarAllowChangeEvent FOnAllowChange;
   virtual int32_t ItemProc(int32_t Msg, void *Param) override;
   virtual bool GetIsEmpty() const override;
-  virtual void SetData(UnicodeString Value) override;
+  virtual void SetData(const UnicodeString & Value) override;
 };
 
 NB_DEFINE_CLASS_ID(TFarEdit);
@@ -475,7 +475,7 @@ public:
   explicit TFarEdit(TFarDialog *ADialog) noexcept;
 
   virtual UnicodeString GetText() const { return GetData(); }
-  virtual void SetText(const UnicodeString Value) { SetData(Value); }
+  virtual void SetText(const UnicodeString & Value) { SetData(Value); }
   int32_t GetAsInteger() const;
   void SetAsInteger(int32_t Value);
   virtual bool GetPassword() const { return GetAlterType(DI_PSWEDIT); }
@@ -483,9 +483,9 @@ public:
   virtual bool GetFixed() const { return GetAlterType(DI_FIXEDIT); }
   virtual void SetFixed(bool Value) { SetAlterType(DI_FIXEDIT, Value); }
   virtual UnicodeString GetMask() const { return GetHistoryMask(1); }
-  virtual void SetMask(const UnicodeString Value) { SetHistoryMask(1, Value); }
+  virtual void SetMask(const UnicodeString & Value) { SetHistoryMask(1, Value); }
   virtual UnicodeString GetHistory() const { return GetHistoryMask(0); }
-  virtual void SetHistory(const UnicodeString Value) { SetHistoryMask(0, Value); }
+  virtual void SetHistory(const UnicodeString & Value) { SetHistoryMask(0, Value); }
   bool GetExpandEnvVars() const { return GetFlag(DIF_EDITEXPAND); }
   void SetExpandEnvVars(bool Value) { SetFlag(DIF_EDITEXPAND, Value); }
   bool GetAutoSelect() const { return GetFlag(DIF_SELECTONENTRY); }
@@ -499,19 +499,19 @@ protected:
 
 private:
   UnicodeString GetHistoryMask(size_t Index) const;
-  void SetHistoryMask(size_t Index, const UnicodeString Value);
+  void SetHistoryMask(size_t Index, const UnicodeString & Value);
 };
 
 NB_DEFINE_CLASS_ID(TFarSeparator);
 class TFarSeparator : public TFarDialogItem
 {
 public:
-  explicit TFarSeparator(TFarDialog *ADialog) noexcept;
+  explicit TFarSeparator(TFarDialog * ADialog) noexcept;
 
   bool GetDouble() const;
   void SetDouble(bool Value);
   virtual UnicodeString GetCaption() { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   void SetPosition(int32_t Value);
   int32_t GetPosition() const;
 
@@ -529,14 +529,14 @@ public:
   explicit TFarText(TFarDialog *ADialog) noexcept;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
-  virtual void SetCaption(const UnicodeString Value) { SetData(Value); }
+  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   bool GetCenterGroup() const { return TFarDialogItem::GetCenterGroup(); }
   void SetCenterGroup(bool Value) { TFarDialogItem::SetCenterGroup(Value); }
   char GetColor() const { return TFarDialogItem::GetColor(0); }
   void SetColor(char Value) { TFarDialogItem::SetColor(0, Value); }
 
 protected:
-  virtual void SetData(const UnicodeString Value) override;
+  virtual void SetData(const UnicodeString & Value) override;
 };
 
 class TFarListBox;
@@ -581,14 +581,14 @@ protected:
   virtual void Init();
   void UpdatePosition(int32_t Position);
   int32_t GetPosition() const;
-  virtual void Put(int32_t Index, const UnicodeString Str);
+  virtual void Put(int32_t Index, const UnicodeString & Str);
   void SetCurPos(int32_t Position, int32_t TopIndex);
   void UpdateItem(int32_t Index);
 
-  FarList *GetListItems() const { return FListItems; }
-  FarList *GetListItems() { return FListItems; }
-  TFarDialogItem *GetDialogItem() const { return FDialogItem; }
-  TFarDialogItem *GetDialogItem() { return FDialogItem; }
+  FarList * GetListItems() const { return FListItems; }
+  FarList * GetListItems() { return FListItems; }
+  TFarDialogItem * GetDialogItem() const { return FDialogItem; }
+  TFarDialogItem * GetDialogItem() { return FDialogItem; }
 
 private:
   FarList *FListItems{nullptr};
@@ -662,7 +662,7 @@ public:
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
   TFarList *GetItems() const { return FList.get(); }
   virtual UnicodeString GetText() const { return GetData(); }
-  virtual void SetText(const UnicodeString Value) { SetData(Value); }
+  virtual void SetText(const UnicodeString & Value) { SetData(Value); }
   bool GetAutoSelect() const { return GetFlag(DIF_SELECTONENTRY); }
   void SetAutoSelect(bool Value) { SetFlag(DIF_SELECTONENTRY, Value); }
   bool GetDropDownList() const { return GetFlag(DIF_DROPDOWNLIST); }

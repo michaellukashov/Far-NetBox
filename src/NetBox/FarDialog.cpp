@@ -140,7 +140,7 @@ TPoint TFarDialog::GetMaxSize() const
   return P;
 }
 
-void TFarDialog::SetHelpTopic(UnicodeString Value)
+void TFarDialog::SetHelpTopic(const UnicodeString & Value)
 {
   if (FHelpTopic != Value)
   {
@@ -220,7 +220,7 @@ int32_t TFarDialog::GetHeight() const
   return GetSize().y;
 }
 
-void TFarDialog::SetCaption(UnicodeString Value)
+void TFarDialog::SetCaption(const UnicodeString & Value)
 {
   if (GetCaption() != Value)
   {
@@ -1143,7 +1143,7 @@ FARDIALOGITEMFLAGS TFarDialogItem::GetFlags() const
   return GetDialogItem()->Flags;
 }
 
-void TFarDialogItem::SetDataInternal(UnicodeString Value)
+void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
   if (GetDialog()->GetHandle())
@@ -1156,7 +1156,7 @@ void TFarDialogItem::SetDataInternal(UnicodeString Value)
   DialogChange();
 }
 
-void TFarDialogItem::SetData(UnicodeString Value)
+void TFarDialogItem::SetData(const UnicodeString & Value)
 {
   if (GetData() != Value)
   {
@@ -1164,7 +1164,7 @@ void TFarDialogItem::SetData(UnicodeString Value)
   }
 }
 
-void TFarDialogItem::UpdateData(UnicodeString Value)
+void TFarDialogItem::UpdateData(const UnicodeString & Value)
 {
   UnicodeString FarData = Value.c_str();
   nb_free(GetDialogItem()->Data);
@@ -1742,7 +1742,7 @@ TFarButton::TFarButton(TObjectClassId Kind, TFarDialog *ADialog) noexcept :
 {
 }
 
-void TFarButton::SetDataInternal(UnicodeString AValue)
+void TFarButton::SetDataInternal(const UnicodeString & AValue)
 {
   UnicodeString Value;
   switch (FBrackets)
@@ -1913,7 +1913,7 @@ bool TFarCheckBox::GetIsEmpty() const
   return GetChecked() != BSTATE_CHECKED;
 }
 
-void TFarCheckBox::SetData(UnicodeString Value)
+void TFarCheckBox::SetData(const UnicodeString & Value)
 {
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
@@ -1954,7 +1954,7 @@ bool TFarRadioButton::GetIsEmpty() const
   return !GetChecked();
 }
 
-void TFarRadioButton::SetData(UnicodeString Value)
+void TFarRadioButton::SetData(const UnicodeString & Value)
 {
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
@@ -1995,7 +1995,7 @@ UnicodeString TFarEdit::GetHistoryMask(size_t Index) const
   return Result;
 }
 
-void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString Value)
+void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString & Value)
 {
   if (GetHistoryMask(Index) != Value)
   {
@@ -2097,7 +2097,7 @@ TFarText::TFarText(TFarDialog *ADialog) noexcept :
 {
 }
 
-void TFarText::SetData(UnicodeString Value)
+void TFarText::SetData(const UnicodeString & Value)
 {
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
@@ -2154,7 +2154,7 @@ void TFarList::UpdateItem(int32_t Index)
   GetDialogItem()->SendDialogMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
 }
 
-void TFarList::Put(int32_t Index, const UnicodeString Str)
+void TFarList::Put(int32_t Index, const UnicodeString & Str)
 {
   if ((GetDialogItem() != nullptr) && GetDialogItem()->GetDialog()->GetHandle())
   {
