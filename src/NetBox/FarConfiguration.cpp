@@ -32,7 +32,7 @@ TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) noexcept :
   FFarConfirmations(-1)
 {
 //  TFarConfiguration::Default();
-  CacheFarSettings();
+  //CacheFarSettings();
 }
 
 TFarConfiguration::~TFarConfiguration() noexcept
@@ -86,6 +86,12 @@ void TFarConfiguration::Saved()
 {
   TGUIConfiguration::Saved();
   FBookmarks->ModifyAll(false);
+}
+
+void TFarConfiguration::ConfigurationInit()
+{
+  TGUIConfiguration::ConfigurationInit();
+  CacheFarSettings();
 }
 
 // duplicated from core\configuration.cpp

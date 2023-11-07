@@ -83,6 +83,7 @@ public:
 
 public:
   virtual UnicodeString TemporaryDir(bool Mask = false) const override { return ""; }
+
 protected:
   virtual bool GetConfirmOverwriting() const override;
   virtual void SetConfirmOverwriting(bool Value) override;
@@ -92,6 +93,7 @@ protected:
 
   virtual UnicodeString ModuleFileName() const override;
   virtual void Saved() override;
+  void ConfigurationInit() override;
 
 private:
   intptr_t GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const;
@@ -101,7 +103,7 @@ private:
 private:
   TCustomFarPlugin * FFarPlugin{nullptr};
   std::unique_ptr<TBookmarks> FBookmarks;
-  int32_t FFarConfirmations{0};
+  intptr_t FFarConfirmations{0};
   bool FConfirmOverwritingOverride{false};
   bool FConfirmSynchronizedBrowsing{false};
   bool FForceInheritance{false};
@@ -129,7 +131,7 @@ private:
   UnicodeString FStatusColumnWidthsDetailed;
 
 private:
-  int32_t FarConfirmations() const;
+  intptr_t FarConfirmations() const;
 };
 
 NB_CORE_EXPORT TFarConfiguration *GetFarConfiguration();
