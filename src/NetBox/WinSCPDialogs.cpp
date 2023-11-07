@@ -3423,7 +3423,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
       CipherListBox->GetItems()->EndUpdate();
     };
     CipherListBox->GetItems()->Clear();
-    DebugAssert(NB_CIPHER_NAME_WARN + CIPHER_COUNT - 1 == NB_CIPHER_NAME_CHACHA20);
+    DebugAssert(NB_CIPHER_NAME_WARN + CIPHER_COUNT - 1 == NB_CIPHER_NAME_AESGCM);
     for (int32_t Index2 = 0; Index2 < CIPHER_COUNT; ++Index2)
     {
       TObject *Obj = as_object(nb::ToPtr(SessionData->GetCipher(Index2)));
@@ -3445,7 +3445,7 @@ bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Acti
       KexListBox->GetItems()->EndUpdate();
     };
     KexListBox->GetItems()->Clear();
-    DebugAssert(NB_KEX_NAME_WARN + KEX_COUNT - 1 == NB_KEX_NAME_ECDH);
+    DebugAssert(NB_KEX_NAME_WARN + KEX_COUNT - 1 == NB_KEX_NAME_NTRU_HYBRID);
     for (int32_t Index3 = 0; Index3 < KEX_COUNT; ++Index3)
     {
       KexListBox->GetItems()->AddObject(
