@@ -18,8 +18,8 @@ TCriticalSection::~TCriticalSection() noexcept
   if (FAcquired > 0)
   {
     TINYLOG_TRACE(g_tinylog) << repr("FAcquired: %d", FAcquired);
-    tinylog::StackWalker sw;
-    sw.ShowCallstack();
+//    tinylog::StackWalker sw;
+//    sw.ShowCallstack();
   }
   DebugAssert(FAcquired == 0);
   DeleteCriticalSection(&FSection);
@@ -33,8 +33,8 @@ void TCriticalSection::Enter() const
   if (FAcquired == 3) // for debugging
   {
     TINYLOG_TRACE(g_tinylog) << repr("FAcquired: %d", FAcquired);
-    tinylog::StackWalker sw;
-    sw.ShowCallstack();
+//    tinylog::StackWalker sw;
+//    sw.ShowCallstack();
   }
 }
 
@@ -46,7 +46,7 @@ void TCriticalSection::Leave() const
   if (FAcquired == 2)
   {
     TINYLOG_TRACE(g_tinylog) << repr("FAcquired: %d", FAcquired);
-    tinylog::StackWalker sw;
-    sw.ShowCallstack();
+//    tinylog::StackWalker sw;
+//    sw.ShowCallstack();
   }
 }
