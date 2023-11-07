@@ -156,7 +156,7 @@ protected:
   void ToggleSynchronizeBrowsing();
   bool IsSynchronizedBrowsing() const;
   bool PropertiesDialog(TStrings * AFileList,
-    UnicodeString Directory,
+    const UnicodeString & Directory,
     const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
     TRemoteProperties * Properties, int32_t AllowedChanges);
   bool ExecuteCommand(const UnicodeString & Command);

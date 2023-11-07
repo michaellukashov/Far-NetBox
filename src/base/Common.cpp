@@ -2726,7 +2726,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, 
   return Result;
 }
 
-bool TryStrToDateTimeStandard(const UnicodeString & S, TDateTime &Value)
+bool TryStrToDateTimeStandard(const UnicodeString & S, TDateTime & Value)
 {
   TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
   FormatSettings.DateSeparator = L'-';

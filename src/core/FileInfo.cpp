@@ -174,8 +174,8 @@ void FreeFileInfo(void * FileInfo)
     nb_free(FileInfo);
 }
 
-typedef TTranslation TTranslations[65536];
-typedef TTranslation *PTranslations;
+using TTranslations = TTranslation[65536];
+using PTranslations = TTranslation *;
 
 // Return pointer to fixed file version info
 PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
@@ -194,9 +194,9 @@ PVSFixedFileInfo GetFixedFileInfo(void * FileInfo)
 // Return number of available file version info translations
 uint32_t GetTranslationCount(void * FileInfo)
 {
-  PTranslations P;
-  UINT Len;
-  if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
+  PTranslations P{nullptr};
+  UINT Len{0};
+  if (FileInfo && !::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
   {
     throw Exception("File info translations not available");
   }
@@ -207,9 +207,9 @@ uint32_t GetTranslationCount(void * FileInfo)
 TTranslation GetTranslation(void * FileInfo, uint32_t I)
 {
   PTranslations P = nullptr;
-  UINT Len;
+  UINT Len{0};
 
-  if (!::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
+  if (FileInfo && !::VerQueryValue(FileInfo, L"\\VarFileInfo\\Translation", reinterpret_cast<void **>(&P), &Len))
   {
     throw Exception("File info translations not available");
   }
@@ -270,11 +270,12 @@ int32_t ZeroBuildNumber(int32_t CompoundVersion)
   return (CompoundVersion / 10000 * 10000);
 }
 
-int32_t StrToCompoundVersion(UnicodeString S)
+int32_t StrToCompoundVersion(const UnicodeString & AStr)
 {
-  int32_t MajorVer = nb::Min(StrToIntPtr(CutToChar(S, L'.', false)), 99);
-  int32_t MinorVer = nb::Min(StrToIntPtr(CutToChar(S, L'.', false)), (int32_t)99);
-  int32_t Release = S.IsEmpty() ? 0 : nb::Min(StrToIntPtr(CutToChar(S, L'.', false)), (int32_t)99);
+  UnicodeString Str = AStr;
+  int32_t MajorVer = nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), 99);
+  int32_t MinorVer = nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), (int32_t)99);
+  int32_t Release = Str.IsEmpty() ? 0 : nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), (int32_t)99);
   return CalculateCompoundVersion(MajorVer, MinorVer, Release);
 }
 

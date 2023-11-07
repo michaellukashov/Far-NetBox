@@ -4965,13 +4965,13 @@ bool TPropertiesDialog::Execute(TRemoteProperties *Properties)
   return Result;
 }
 
-bool TWinSCPFileSystem::PropertiesDialog(TStrings *AFileList,
-  UnicodeString Directory,
-  const TRemoteTokenList *GroupList, const TRemoteTokenList *UserList,
-  TRemoteProperties *Properties, int32_t AllowedChanges)
+bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
+  const UnicodeString & ADirectory,
+  const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
+  TRemoteProperties * Properties, int32_t AllowedChanges)
 {
   std::unique_ptr<TPropertiesDialog> Dialog(std::make_unique<TPropertiesDialog>(FPlugin, AFileList,
-      Directory, GroupList, UserList, AllowedChanges));
+      ADirectory, GroupList, UserList, AllowedChanges));
   bool Result = Dialog->Execute(Properties);
   return Result;
 }
@@ -5735,7 +5735,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   return Result;
 }
 
-bool TWinSCPPlugin::CopyParamDialog(const UnicodeString Caption,
+bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
   TCopyParamType &CopyParam, uint32_t CopyParamAttrs)
 {
   std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(this));
@@ -6743,8 +6743,8 @@ bool TApplyCommandDialog::Execute(UnicodeString &Command, int32_t &Params)
   return Result;
 }
 
-bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString &Command,
-  int32_t &Params) const
+bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
+  int32_t & Params) const
 {
   std::unique_ptr<TApplyCommandDialog> Dialog(std::make_unique<TApplyCommandDialog>(FPlugin));
   bool Result = Dialog->Execute(Command, Params);

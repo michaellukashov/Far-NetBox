@@ -136,7 +136,7 @@ public:
   void Clear();
   void Add(const UnicodeString & Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
-  void Insert(int32_t Index, const UnicodeString Name,
+  void Insert(int32_t Index, const UnicodeString & Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
   void Change(int32_t Index, const UnicodeString & Name,
     TCopyParamType * CopyParam, TCopyParamRule * Rule);
@@ -238,7 +238,7 @@ public:
   HANDLE GetResourceModule();
   void SetResourceModule(HINSTANCE Instance);
   TObjectList * GetLocales();
-  void AddLocale(LCID Locale, const UnicodeString Name);
+  void AddLocale(LCID Locale, const UnicodeString & Name);
   void FreeResourceModule(HANDLE Instance);
   void SetDefaultCopyParam(const TGUICopyParamType & Value);
   virtual bool GetRememberPassword() const override;

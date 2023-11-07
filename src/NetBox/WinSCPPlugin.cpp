@@ -823,39 +823,39 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString Str,
   return Result;
 }
 
-void TWinSCPPlugin::DeleteLocalFile(UnicodeString LocalFileName)
+void TWinSCPPlugin::DeleteLocalFile(const UnicodeString & LocalFileName)
 {
   GetSystemFunctions()->DeleteFile(LocalFileName.c_str());
 }
 
-HANDLE TWinSCPPlugin::CreateLocalFile(UnicodeString LocalFileName,
+HANDLE TWinSCPPlugin::CreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   return GetSystemFunctions()->CreateFile(LocalFileName.c_str(), DesiredAccess,
       ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, 0);
 }
 
-DWORD TWinSCPPlugin::GetLocalFileAttributes(UnicodeString LocalFileName) const
+DWORD TWinSCPPlugin::GetLocalFileAttributes(const UnicodeString & LocalFileName) const
 {
   return GetSystemFunctions()->GetFileAttributes(LocalFileName.c_str());
 }
 
-bool TWinSCPPlugin::SetLocalFileAttributes(UnicodeString LocalFileName, DWORD FileAttributes)
+bool TWinSCPPlugin::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes)
 {
   return GetSystemFunctions()->SetFileAttributes(LocalFileName.c_str(), FileAttributes) != FALSE;
 }
 
-bool TWinSCPPlugin::MoveLocalFile(UnicodeString LocalFileName, UnicodeString NewLocalFileName, DWORD Flags)
+bool TWinSCPPlugin::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
 {
   return GetSystemFunctions()->MoveFileEx(LocalFileName.c_str(), NewLocalFileName.c_str(), Flags) != FALSE;
 }
 
-bool TWinSCPPlugin::RemoveLocalDirectory(UnicodeString LocalDirName)
+bool TWinSCPPlugin::RemoveLocalDirectory(const UnicodeString & LocalDirName)
 {
   return GetSystemFunctions()->RemoveDirectory(LocalDirName.c_str()) != FALSE;
 }
 
-bool TWinSCPPlugin::CreateLocalDirectory(UnicodeString LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool TWinSCPPlugin::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return GetSystemFunctions()->CreateDirectory(LocalDirName.c_str(), SecurityAttributes) != FALSE;
 }

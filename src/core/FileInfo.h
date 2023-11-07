@@ -32,7 +32,7 @@ NB_CORE_EXPORT UnicodeString GetFileInfoString(void * FileInfo,
 NB_CORE_EXPORT int32_t CalculateCompoundVersion(int32_t MajorVer, int32_t MinorVer, int32_t Release = 0);
 int32_t ZeroBuildNumber(int32_t CompoundVersion);
 
-NB_CORE_EXPORT int32_t StrToCompoundVersion(UnicodeString AStr);
+NB_CORE_EXPORT int32_t StrToCompoundVersion(const UnicodeString & AStr);
 
 NB_CORE_EXPORT int32_t CompareVersion(const UnicodeString & V1, const UnicodeString & V2);
 

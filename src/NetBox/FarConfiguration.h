@@ -42,7 +42,7 @@ public:
   bool GetPluginsMenuCommands() const { return FPluginsMenuCommands; }
   void SetPluginsMenuCommands(bool Value) { FPluginsMenuCommands = Value; }
   UnicodeString GetCommandPrefixes() const { return FCommandPrefixes; }
-  void SetCommandPrefixes(UnicodeString Value) { FCommandPrefixes = Value; }
+  void SetCommandPrefixes(const UnicodeString & Value) { FCommandPrefixes = Value; }
   bool GetSessionNameInTitle() const { return FSessionNameInTitle; }
   void SetSessionNameInTitle(bool Value) { FSessionNameInTitle = Value; }
 
@@ -51,13 +51,13 @@ public:
   bool GetFullScreenDetailed() const { return FFullScreenDetailed; }
   void SetFullScreenDetailed(bool Value) { FFullScreenDetailed = Value; }
   UnicodeString GetColumnTypesDetailed() const { return FColumnTypesDetailed; }
-  void SetColumnTypesDetailed(UnicodeString Value) { FColumnTypesDetailed = Value; }
+  void SetColumnTypesDetailed(const UnicodeString & Value) { FColumnTypesDetailed = Value; }
   UnicodeString GetColumnWidthsDetailed() const { return FColumnWidthsDetailed; }
-  void SetColumnWidthsDetailed(UnicodeString Value) { FColumnWidthsDetailed = Value; }
+  void SetColumnWidthsDetailed(const UnicodeString & Value) { FColumnWidthsDetailed = Value; }
   UnicodeString GetStatusColumnTypesDetailed() const { return FStatusColumnTypesDetailed; }
-  void SetStatusColumnTypesDetailed(UnicodeString Value) { FStatusColumnTypesDetailed = Value; }
+  void SetStatusColumnTypesDetailed(const UnicodeString & Value) { FStatusColumnTypesDetailed = Value; }
   UnicodeString GetStatusColumnWidthsDetailed() const { return FStatusColumnWidthsDetailed; }
-  void SetStatusColumnWidthsDetailed(UnicodeString Value) { FStatusColumnWidthsDetailed = Value; }
+  void SetStatusColumnWidthsDetailed(const UnicodeString & Value) { FStatusColumnWidthsDetailed = Value; }
   bool GetEditorDownloadDefaultMode() const { return FEditorDownloadDefaultMode; }
   void SetEditorDownloadDefaultMode(bool Value) { FEditorDownloadDefaultMode = Value; }
   bool GetEditorUploadSameOptions() const { return FEditorUploadSameOptions; }
@@ -70,16 +70,16 @@ public:
   void SetQueueBeep(bool Value) { FQueueBeep = Value; }
 
   UnicodeString GetApplyCommandCommand() const { return FApplyCommandCommand; }
-  void SetApplyCommandCommand(UnicodeString Value) { FApplyCommandCommand = Value; }
+  void SetApplyCommandCommand(const UnicodeString & Value) { FApplyCommandCommand = Value; }
   int32_t GetApplyCommandParams() const { return FApplyCommandParams; }
   void SetApplyCommandParams(int32_t Value) { FApplyCommandParams = Value; }
 
   UnicodeString GetPageantPath() const { return FPageantPath; }
-  void SetPageantPath(UnicodeString Value) { FPageantPath = Value; }
+  void SetPageantPath(const UnicodeString & Value) { FPageantPath = Value; }
   UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
-  void SetPuttygenPath(UnicodeString Value) { FPuttygenPath = Value; }
-  TBookmarkList *GetBookmarks(UnicodeString Key);
-  void SetBookmarks(UnicodeString Key, TBookmarkList *Value);
+  void SetPuttygenPath(const UnicodeString & Value) { FPuttygenPath = Value; }
+  TBookmarkList * GetBookmarks(const UnicodeString & Key);
+  void SetBookmarks(const UnicodeString & Key, TBookmarkList *Value);
 
 public:
   virtual UnicodeString TemporaryDir(bool Mask = false) const override { return ""; }
