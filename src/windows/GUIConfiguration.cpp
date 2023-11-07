@@ -963,19 +963,19 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
 LCID TGUIConfiguration::InternalLocale()
 {
-  LCID Result;
-  if (GetTranslationCount(GetApplicationInfo()) > 0)
+  LCID Result{0};
+  void * FileInfo = GetApplicationInfo();
+  if (FileInfo && GetTranslationCount(FileInfo) > 0)
   {
     TTranslation Translation;
-    void *FileInfo = GetApplicationInfo();
     Translation = GetTranslation(FileInfo, 0);
     Result = MAKELANGID(PRIMARYLANGID(Translation.Language), SUBLANG_DEFAULT);
-    nb_free(FileInfo);
+    FreeFileInfo(FileInfo);
   }
   else
   {
-    DebugFail();
-    Result = 0;
+    //DebugFail();
+    Result = GetDefaultLCID();
   }
   return Result;
 }
