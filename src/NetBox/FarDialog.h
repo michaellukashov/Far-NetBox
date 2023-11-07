@@ -313,12 +313,12 @@ protected:
 
   virtual void Detach();
   void DialogResized();
-  int32_t SendDialogMessage(int32_t Msg, void *Param);
-  int32_t SendDialogMessage(int32_t Msg, int32_t Param1, void *Param2);
-  virtual int32_t ItemProc(int32_t Msg, void *Param);
-  int32_t DefaultItemProc(int32_t Msg, void *Param);
-  int32_t DefaultDialogProc(int32_t Msg, int32_t Param1, void *Param2);
-  virtual int32_t FailItemProc(int32_t Msg, void *Param);
+  int32_t SendDialogMessage(int32_t Msg, void * Param);
+  int32_t SendDialogMessage(int32_t Msg, int32_t Param1, void * Param2);
+  virtual int32_t ItemProc(int32_t Msg, void * Param);
+  int32_t DefaultItemProc(int32_t Msg, void * Param);
+  int32_t DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param2);
+  virtual int32_t FailItemProc(int32_t Msg, void * Param);
   virtual void Change();
   void DialogChange();
   bool GetAlterType(FARDIALOGITEMTYPES Index) const;

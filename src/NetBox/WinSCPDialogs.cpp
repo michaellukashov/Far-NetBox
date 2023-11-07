@@ -27,22 +27,22 @@ enum TButtonResult
 {
   brCancel = -1,
   brOK = 1,
-  brConnect
+  brConnect = 2
 };
 
 class TWinSCPDialog : public TFarDialog
 {
 public:
-  explicit TWinSCPDialog(TCustomFarPlugin *AFarPlugin);
+  explicit TWinSCPDialog(TCustomFarPlugin * AFarPlugin);
 
-  void AddStandardButtons(int Shift = 0, bool ButtonsOnly = false);
+  void AddStandardButtons(int32_t Shift = 0, bool ButtonsOnly = false);
 
-  TFarSeparator *ButtonSeparator;
-  TFarButton *OkButton;
-  TFarButton *CancelButton;
+  TFarSeparator * ButtonSeparator;
+  TFarButton * OkButton;
+  TFarButton * CancelButton;
 };
 
-TWinSCPDialog::TWinSCPDialog(TCustomFarPlugin *AFarPlugin) :
+TWinSCPDialog::TWinSCPDialog(TCustomFarPlugin * AFarPlugin) :
   TFarDialog(AFarPlugin),
   ButtonSeparator(nullptr),
   OkButton(nullptr),
@@ -50,7 +50,7 @@ TWinSCPDialog::TWinSCPDialog(TCustomFarPlugin *AFarPlugin) :
 {
 }
 
-void TWinSCPDialog::AddStandardButtons(int Shift, bool ButtonsOnly)
+void TWinSCPDialog::AddStandardButtons(int32_t Shift, bool ButtonsOnly)
 {
   if (!ButtonsOnly)
   {
@@ -3159,7 +3159,7 @@ void TSessionDialog::UpdateControls()
   TunnelTab->SetEnabled(InternalSshProtocol);
 }
 
-bool TSessionDialog::Execute(TSessionData *SessionData, TSessionActionEnum &Action)
+bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
 {
   int Captions[] =
   {

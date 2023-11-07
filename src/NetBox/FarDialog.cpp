@@ -701,7 +701,7 @@ int32_t TFarDialog::ShowModal()
 {
   FResult = -1;
 
-  TFarDialog *PrevTopDialog = GetFarPlugin()->FTopDialog;
+  TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;
   {
@@ -735,7 +735,7 @@ int32_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton *Button = dyn_cast<TFarButton>(GetItem(BResult));
+      TFarButton * Button = dyn_cast<TFarButton>(GetItem(BResult));
       assert(Button);
       // correct result should be already set by TFarButton
       assert(FResult == Button->GetResult());
@@ -2000,7 +2000,7 @@ void TFarEdit::SetHistoryMask(size_t Index, const UnicodeString Value)
   if (GetHistoryMask(Index) != Value)
   {
     assert(!GetDialog()->GetHandle());
-    FarDialogItem *Item = GetDialogItem();
+    FarDialogItem * Item = GetDialogItem();
     // assert(&GetDialogItem()->Mask == &GetDialogItem()->History);
 
     nb_free(Item->Mask);

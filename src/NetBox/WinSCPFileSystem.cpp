@@ -2378,18 +2378,18 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(const UnicodeString & AName, OPERATIO
   }
 }
 
-void TWinSCPFileSystem::DeleteSession(TSessionData *Data, void * /*AParam*/)
+void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*AParam*/)
 {
   Data->Remove();
   StoredSessions->Remove(Data);
 }
 
-void TWinSCPFileSystem::ProcessSessions(TObjectList *PanelItems,
-  TProcessSessionEvent ProcessSession, void *AParam)
+void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
+  TProcessSessionEvent ProcessSession, void * AParam)
 {
   for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
-    TFarPanelItem *PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
+    TFarPanelItem * PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
     DebugAssert(PanelItem);
     if (PanelItem->GetIsFile())
     {
@@ -2412,7 +2412,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList *PanelItems,
       int32_t Index2 = 0;
       while (Index2 < StoredSessions->GetCount())
       {
-        TSessionData *Data = StoredSessions->GetSession(Index2);
+        TSessionData * Data = StoredSessions->GetSession(Index2);
         if (Data->GetName().SubString(1, Folder.Length()) == Folder)
         {
           ProcessSession(Data, AParam);
@@ -2428,7 +2428,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList *PanelItems,
   }
 }
 
-bool TWinSCPFileSystem::DeleteFilesEx(TObjectList *PanelItems, OPERATION_MODES OpMode)
+bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode)
 {
   if (Connected())
   {
