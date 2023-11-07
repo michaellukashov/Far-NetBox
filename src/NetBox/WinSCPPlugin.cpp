@@ -13,9 +13,9 @@
 #include "FarConfiguration.h"
 #include "XmlStorage.h"
 
-TCustomFarPlugin *CreateFarPlugin(HINSTANCE HInst)
+TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
-  TCustomFarPlugin *Result = new TWinSCPPlugin(HInst);
+  TCustomFarPlugin * Result = new TWinSCPPlugin(HInst);
   Result->Initialize();
   return Result;
 }
@@ -27,21 +27,21 @@ void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
   SAFE_DESTROY(Plugin);
 }
 
-static UnicodeString GetDbgPath(const char *env) noexcept
+static UnicodeString GetDbgPath(const char * env) noexcept
 {
-  const char *path = getenv(env);
+  const char * path = getenv(env);
   if (path)
   {
-    UnicodeString s;
+    UnicodeString Str;
     if (*path == '~')
     {
       const char *home = getenv("HOME");
-      s = home ? home : getenv("TEMP");
-      s += path + 1;
+      Str = home ? home : getenv("TEMP");
+      Str += path + 1;
     } else
-      s = path;
+      Str = path;
 
-    UnicodeString DbgLogFileName = StripPathQuotes(::ExpandEnvironmentVariables(s));
+    UnicodeString DbgLogFileName = StripPathQuotes(::ExpandEnvironmentVariables(Str));
     return DbgLogFileName;
   }
 
@@ -83,7 +83,7 @@ VersionInfo TWinSCPPlugin::GetMinFarVersion() const
   return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
 }
 
-void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
+void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
   try
   {
@@ -95,13 +95,13 @@ void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo *Info)
   }
 }
 
-void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS &Flags,
-  TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
-  TStrings *PluginConfigStrings, TStrings *CommandPrefixes)
+void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
+  TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
+  TStrings * PluginConfigStrings, TStrings * CommandPrefixes)
 {
   CoreInitializeOnce();
   Flags = PF_FULLCMDLINE;
-  TFarConfiguration *FarConfiguration = GetFarConfiguration();
+  TFarConfiguration * FarConfiguration = GetFarConfiguration();
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(NB_PLUGIN_NAME),
@@ -227,7 +227,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   return Change;
 }
 
-int32_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo *Info)
+int32_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info)
 {
   // for performance reasons, do not pass the event to file systems on redraw
   if ((Info->Event != EE_REDRAW) || GetFarConfiguration()->GetEditorUploadOnSave() ||
@@ -375,8 +375,8 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, int32_t Ite
   return FileSystem.release();
 }
 
-void TWinSCPPlugin::ParseCommandLine(UnicodeString &CommandLine,
-  TOptions *Options)
+void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
+  TOptions * Options)
 {
   UnicodeString CmdLine = CommandLine;
   int32_t Index = 1;

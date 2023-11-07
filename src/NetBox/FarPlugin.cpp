@@ -66,7 +66,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   // SAFE_DESTROY(FOpenedPlugins);
   for (int32_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
-    TObject *Object = FSavedTitles->GetObj(Index);
+    TObject * Object = FSavedTitles->GetObj(Index);
     SAFE_DESTROY(Object);
   }
   // SAFE_DESTROY(FSavedTitles);
@@ -2970,7 +2970,7 @@ UnicodeString TGlobalFunctions::GetMsg(int32_t Id) const
 #endif // #if 0
   // map Id to PluginString value
   int32_t PluginStringId = Id;
-  const TFarPluginStrings *CurFarPluginStrings = &FarPluginStrings[0];
+  const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
   while (CurFarPluginStrings && CurFarPluginStrings->Id)
   {
     if (CurFarPluginStrings->Id == Id)

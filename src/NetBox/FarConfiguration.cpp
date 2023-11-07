@@ -25,7 +25,7 @@ enum NetBoxConfirmationsSettings
   // NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
 
-TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) noexcept :
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
   FBookmarks(std::make_unique<TBookmarks>()),
@@ -261,7 +261,7 @@ void TFarConfiguration::CacheFarSettings()
   FFarConfirmations = GetConfirmationsSettings();
 }
 
-int32_t TFarConfiguration::FarConfirmations() const
+intptr_t TFarConfiguration::FarConfirmations() const
 {
   if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThreadId()))
   {
@@ -321,7 +321,7 @@ TBookmarkList *TFarConfiguration::GetBookmarks(const UnicodeString & Key)
   return FBookmarks->GetBookmarks(Key);
 }
 
-TFarConfiguration *GetFarConfiguration()
+TFarConfiguration * GetFarConfiguration()
 {
   return dyn_cast<TFarConfiguration>(GetConfiguration());
 }

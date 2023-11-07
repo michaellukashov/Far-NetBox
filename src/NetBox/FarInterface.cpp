@@ -10,9 +10,9 @@
 #include "FarDialog.h"
 #include "FarInterface.h"
 
-TConfiguration *CreateConfiguration()
+TConfiguration * CreateConfiguration()
 {
-  TConfiguration *Result = new TFarConfiguration(FarPlugin);
+  TConfiguration * Result = new TFarConfiguration(FarPlugin);
   Result->ConfigurationInit();
   Result->Default();
   return Result;

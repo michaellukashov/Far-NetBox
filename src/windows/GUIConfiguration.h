@@ -163,8 +163,8 @@ private:
 
 public:
   int32_t GetCount() const;
-  const TCopyParamRule *GetRule(int32_t Index) const;
-  const TCopyParamType *GetCopyParam(int32_t Index) const;
+  const TCopyParamRule * GetRule(int32_t Index) const;
+  const TCopyParamType * GetCopyParam(int32_t Index) const;
   UnicodeString GetName(int32_t Index) const;
   TStrings *GetNameList() const;
   bool GetAnyRule() const;

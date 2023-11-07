@@ -1154,7 +1154,7 @@ void TWinSCPFileSystem::ApplyCommand()
   std::unique_ptr<TStrings> FileList(CreateSelectedFileList(osRemote, PanelInfo));
   if (FileList != nullptr)
   {
-    TFarConfiguration *FarConfiguration = GetFarConfiguration();
+    TFarConfiguration * FarConfiguration = GetFarConfiguration();
     int32_t Params = FarConfiguration->GetApplyCommandParams();
     UnicodeString Command = FarConfiguration->GetApplyCommandCommand();
     if (ApplyCommandDialog(Command, Params))

@@ -620,7 +620,7 @@ void TGUIConfiguration::DefaultLocalized()
     // obsolete translations)
     if (!LoadStr(COPY_PARAM_PRESET_ASCII).IsEmpty())
     {
-      TCopyParamType *CopyParam{nullptr};
+      TCopyParamType * CopyParam{nullptr};
 
       CopyParam = new TCopyParamType(FDefaultCopyParam);
       CopyParam->SetTransferMode(tmAscii);

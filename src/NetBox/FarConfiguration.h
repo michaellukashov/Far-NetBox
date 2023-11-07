@@ -12,7 +12,7 @@ class TFarConfiguration : public TGUIConfiguration
 {
   NB_DISABLE_COPY(TFarConfiguration)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
 public:
   TFarConfiguration() = delete;
@@ -22,12 +22,12 @@ public:
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
   virtual void Default() override;
-  virtual THierarchicalStorage *CreateScpStorage(bool &SessionList) override;
+  virtual THierarchicalStorage * CreateScpStorage(bool & SessionList) override;
   void CacheFarSettings();
 
-  const TCustomFarPlugin *GetPlugin() const { return FFarPlugin; }
-  TCustomFarPlugin *GetPlugin() { return FFarPlugin; }
-  void SetPlugin(TCustomFarPlugin *Value);
+  const TCustomFarPlugin * GetPlugin() const { return FFarPlugin; }
+  TCustomFarPlugin * GetPlugin() { return FFarPlugin; }
+  void SetPlugin(TCustomFarPlugin * Value);
   bool GetConfirmOverwritingOverride() const { return FConfirmOverwritingOverride; }
   void SetConfirmOverwritingOverride(bool Value) { FConfirmOverwritingOverride = Value; }
   bool GetConfirmDeleting() const;
@@ -94,12 +94,12 @@ protected:
   virtual void Saved() override;
 
 private:
-  intptr_t GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t *Name) const;
-  intptr_t GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name) const;
+  intptr_t GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const;
+  intptr_t GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const;
   intptr_t GetConfirmationsSettings() const;
 
 private:
-  TCustomFarPlugin *FFarPlugin{nullptr};
+  TCustomFarPlugin * FFarPlugin{nullptr};
   std::unique_ptr<TBookmarks> FBookmarks;
   int32_t FFarConfirmations{0};
   bool FConfirmOverwritingOverride{false};

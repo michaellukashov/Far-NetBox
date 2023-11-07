@@ -585,7 +585,7 @@ public:
   ~TFarPluginEnvGuard() noexcept;
 };
 
-extern TCustomFarPlugin *FarPlugin;
+extern TCustomFarPlugin * FarPlugin;
 
 class TGlobalFunctions : public TGlobals
 {
