@@ -197,18 +197,18 @@ public:
     const TRemoteFile * AFile, int32_t AParams,
     TRmSessionAction & Action) = 0;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile *AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) = 0;
+    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
   virtual UnicodeString GetHomeDirectory();
   virtual bool IsCapable(int32_t Capability) const = 0;
   virtual void LookupUsersGroups() = 0;
   virtual void ReadCurrentDirectory() = 0;
-  virtual void ReadDirectory(TRemoteFileList *FileList) = 0;
-  virtual void ReadFile(const UnicodeString AFileName,
-    TRemoteFile *&File) = 0;
-  virtual void ReadSymlink(TRemoteFile *SymLinkFile,
-    TRemoteFile *&File) = 0;
+  virtual void ReadDirectory(TRemoteFileList * FileList) = 0;
+  virtual void ReadFile(const UnicodeString & AFileName,
+    TRemoteFile *& File) = 0;
+  virtual void ReadSymlink(TRemoteFile * SymLinkFile,
+    TRemoteFile *& File) = 0;
   virtual void RemoteRenameFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) = 0;
   virtual void RemoteCopyFile(
@@ -235,7 +235,7 @@ protected:
 
   TCustomFileSystem() = delete;
   explicit TCustomFileSystem(TObjectClassId Kind) noexcept : TObject(Kind) {}
-  explicit TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) noexcept;
+  explicit TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept;
   virtual UnicodeString RemoteGetCurrentDirectory() const = 0;
 
   UnicodeString CreateTargetDirectory(

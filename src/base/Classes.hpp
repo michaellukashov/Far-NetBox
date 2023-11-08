@@ -280,7 +280,7 @@ public:
   virtual void Assign(const TPersistent *Source) override;
 
 public:
-  virtual void SetObj(int32_t Index, TObject *AObject) = 0;
+  virtual void SetObj(int32_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
   virtual bool GetCaseSensitive() const = 0;
@@ -291,8 +291,8 @@ public:
   void SetCommaText(const UnicodeString & Value);
   virtual UnicodeString GetText() const;
   virtual void SetText(const UnicodeString & Text);
-  virtual const UnicodeString &GetStringRef(int32_t Index) const = 0;
-  virtual const UnicodeString &GetString(int32_t Index) const = 0;
+  virtual const UnicodeString & GetStringRef(int32_t Index) const = 0;
+  virtual const UnicodeString & GetString(int32_t Index) const = 0;
   virtual UnicodeString GetString(int32_t Index) = 0;
   virtual void SetString(int32_t Index, const UnicodeString & S) = 0;
   UnicodeString GetName(int32_t Index) const;

@@ -2595,7 +2595,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString AFileName,
   }
 }
 
-void TFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
+void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& AFile)
 {
   if (FForceReadSymlink && DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty()) && DebugAlwaysTrue(SymlinkFile->GetHaveFullFileName()))

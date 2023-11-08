@@ -95,11 +95,11 @@ public:
   virtual bool IsCapable(int32_t Capability) const override;
   virtual void LookupUsersGroups() override;
   virtual void ReadCurrentDirectory() override;
-  virtual void ReadDirectory(TRemoteFileList *FileList) override;
-  virtual void ReadFile(const UnicodeString AFileName,
-    TRemoteFile *&AFile) override;
-  virtual void ReadSymlink(TRemoteFile *ASymlinkFile,
-    TRemoteFile *&AFile) override;
+  virtual void ReadDirectory(TRemoteFileList * FileList) override;
+  virtual void ReadFile(const UnicodeString & AFileName,
+    TRemoteFile *& AFile) override;
+  virtual void ReadSymlink(TRemoteFile * ASymlinkFile,
+    TRemoteFile *& AFile) override;
   virtual void RemoteRenameFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual void RemoteCopyFile(
@@ -113,8 +113,8 @@ public:
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
-  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile *AFile) override;
-  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile *AFile) override;
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
   virtual void ClearCaches() override;
 

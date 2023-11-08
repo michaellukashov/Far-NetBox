@@ -73,9 +73,9 @@ public:
   virtual void LookupUsersGroups() override;
   virtual void ReadCurrentDirectory() override;
   virtual void ReadDirectory(TRemoteFileList *FileList) override;
-  virtual void ReadFile(const UnicodeString AFileName,
+  virtual void ReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile) override;
-  virtual void ReadSymlink(TRemoteFile *ASymlinkFile,
+  virtual void ReadSymlink(TRemoteFile * ASymlinkFile,
     TRemoteFile *& AFile) override;
   virtual void RemoteRenameFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
@@ -92,7 +92,7 @@ public:
   virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
-  virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
   virtual void ClearCaches() override;
 
 protected:
@@ -122,12 +122,12 @@ private:
 
   void DetectUtf();
   void ClearAliases();
-  void ClearAlias(const UnicodeString Alias);
-  void CustomReadFile(const UnicodeString AFileName,
+  void ClearAlias(const UnicodeString & Alias);
+  void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   void DetectReturnVar();
-  bool IsLastLine(UnicodeString &Line);
-  static bool IsTotalListingLine(const UnicodeString ALine);
+  bool IsLastLine(UnicodeString & Line);
+  static bool IsTotalListingLine(const UnicodeString & ALine);
   void EnsureLocation();
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)

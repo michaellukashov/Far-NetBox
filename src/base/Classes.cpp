@@ -945,7 +945,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
   }
 }
 
-void TStringList::SetObj(int32_t Index, TObject *AObject)
+void TStringList::SetObj(int32_t Index, TObject * AObject)
 {
   if ((Index == nb::NPOS) || (Index >= TObjectList::GetCount()))
   {

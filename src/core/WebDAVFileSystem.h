@@ -72,7 +72,7 @@ public:
   virtual void ReadDirectory(TRemoteFileList * AFileList) override;
   virtual void ReadFile(const UnicodeString AFileName,
     TRemoteFile *& AFile) override;
-  virtual void ReadSymlink(TRemoteFile *SymlinkFile,
+  virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& AFile) override;
   virtual void RemoteRenameFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;

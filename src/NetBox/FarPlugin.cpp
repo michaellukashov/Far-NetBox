@@ -2816,7 +2816,7 @@ void TFarMenuItems::Delete(int32_t Index)
   TStringList::Delete(Index);
 }
 
-void TFarMenuItems::SetObj(int32_t Index, TObject *AObject)
+void TFarMenuItems::SetObj(int32_t Index, TObject * AObject)
 {
   TStringList::SetObj(Index, AObject);
   bool Focused = (reinterpret_cast<uintptr_t>(AObject) & MIF_SEPARATOR) != 0;
