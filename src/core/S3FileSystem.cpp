@@ -1332,7 +1332,7 @@ void TS3FileSystem::DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFil
   }
 }
 
-void TS3FileSystem::ReadFile(const UnicodeString AFileName,
+void TS3FileSystem::ReadFile(const UnicodeString & AFileName,
   TRemoteFile *& File)
 {
   TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);

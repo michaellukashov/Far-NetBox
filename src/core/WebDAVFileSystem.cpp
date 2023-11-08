@@ -277,7 +277,7 @@ void TWebDAVFileSystem::OpenUrl(const UnicodeString & Url)
   }
 }
 
-void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString &CorrectedUrl, UnicodeString AUrl)
+void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString & CorrectedUrl, const UnicodeString & AUrl)
 {
   UnicodeString Url = AUrl;
   std::unique_ptr<TStringList> AttemptedUrls(CreateSortedStringList());
@@ -760,7 +760,7 @@ UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile *AFile) const
   return Result;
 }
 
-void TWebDAVFileSystem::TryOpenDirectory(UnicodeString ADirectory)
+void TWebDAVFileSystem::TryOpenDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString Directory = DirectoryPath(ADirectory);
   FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", Directory));
@@ -869,8 +869,8 @@ void TWebDAVFileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   DebugFail();
 }
 
-void TWebDAVFileSystem::ReadFile(const UnicodeString AFileName,
-  TRemoteFile *&AFile)
+void TWebDAVFileSystem::ReadFile(const UnicodeString & AFileName,
+  TRemoteFile *& AFile)
 {
   CustomReadFile(AFileName, AFile, nullptr);
 }
@@ -911,8 +911,8 @@ const char * TWebDAVFileSystem::GetNeonProp(
   return ne_propset_value(Results, &Prop);
 }
 
-void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile *AFile,
-  const UnicodeString APath, const ne_prop_result_set *Results)
+void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
+  const UnicodeString & APath, const ne_prop_result_set * Results)
 {
   AFile->SetFullFileName(base::UnixExcludeTrailingBackslash(APath));
   // Some servers do not use DAV:collection tag, but indicate the folder by trailing slash only.

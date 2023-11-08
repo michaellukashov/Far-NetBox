@@ -106,7 +106,7 @@ public:
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString & APath,
-    TSpaceAvailable &ASpaceAvailable) override;
+    TSpaceAvailable & ASpaceAvailable) override;
   virtual const TSessionInfo & GetSessionInfo() const override;
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) override;
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;

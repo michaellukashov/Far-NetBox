@@ -3901,8 +3901,8 @@ void TSFTPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
     base::UnixExtractFileName(SymlinkFile->GetLinkTo()));
 }
 
-void TSFTPFileSystem::ReadFile(const UnicodeString AFileName,
-  TRemoteFile *&AFile)
+void TSFTPFileSystem::ReadFile(const UnicodeString & AFileName,
+  TRemoteFile *& AFile)
 {
   CustomReadFile(AFileName, AFile, SSH_FXP_LSTAT);
 }

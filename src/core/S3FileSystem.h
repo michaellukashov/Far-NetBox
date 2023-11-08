@@ -102,18 +102,18 @@ public:
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual void RemoteCopyFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
-  virtual TStrings *GetFixedPaths() const override;
+  virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable) override;
-  virtual const TSessionInfo &GetSessionInfo() const override;
-  virtual const TFileSystemInfo &GetFileSystemInfo(bool Retrieve) override;
+  virtual const TSessionInfo & GetSessionInfo() const override;
+  virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) override;
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
-  virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
-  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile *AFile) override;
-  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile *AFile) override;
-  virtual void UpdateFromMain(TCustomFileSystem *MainFileSystem) override;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs) override;
+  virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
+  virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
+  virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
   virtual void ClearCaches() override;
 
   virtual void Init(void *) override;

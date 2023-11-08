@@ -132,33 +132,33 @@ private:
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
 
-  __removed void ExecCommand(TFSCommand Cmd, const TVarRec *args = nullptr, int size = 0, int Params = -1);
+  __removed void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr, int size = 0, int Params = -1);
   void InvalidOutputError(const UnicodeString & Command);
-  void ReadCommandOutput(int32_t Params, const UnicodeString *Cmd = nullptr);
-  void SCPResponse(bool *GotLastLine = nullptr);
-  void SCPDirectorySource(const UnicodeString ADirectoryName,
-    const UnicodeString ATargetDir, const TCopyParamType *CopyParam, int32_t Params,
-    TFileOperationProgressType *OperationProgress, int32_t Level);
-  void SCPError(const UnicodeString Message, bool Fatal);
-  void SCPSendError(const UnicodeString Message, bool Fatal);
-  void SCPSink(const UnicodeString ATargetDir,
-    const UnicodeString AFileName, const UnicodeString ASourceDir,
-    const TCopyParamType *CopyParam, bool &Success,
+  void ReadCommandOutput(int32_t Params, const UnicodeString * Cmd = nullptr);
+  void SCPResponse(bool * GotLastLine = nullptr);
+  void SCPDirectorySource(const UnicodeString & ADirectoryName,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t Params,
+    TFileOperationProgressType * OperationProgress, int32_t Level);
+  void SCPError(const UnicodeString & Message, bool Fatal);
+  void SCPSendError(const UnicodeString & Message, bool Fatal);
+  void SCPSink(const UnicodeString & ATargetDir,
+    const UnicodeString & AFileName, const UnicodeString & ASourceDir,
+    const TCopyParamType * CopyParam, bool &Success,
     TFileOperationProgressType *OperationProgress, int32_t AParams, int32_t Level);
-  void SCPSource(const UnicodeString AFileName,
-    const UnicodeString TargetDir, const TCopyParamType *CopyParam, int32_t AParams,
+  void SCPSource(const UnicodeString & AFileName,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, int32_t Level);
   void SendCommand(const UnicodeString & Cmd, bool NoEnsureLocation = false);
   void SkipFirstLine();
   void SkipStartupMessage();
   void UnsetNationalVars();
-  TRemoteFile * CreateRemoteFile(const UnicodeString ListingStr,
+  TRemoteFile * CreateRemoteFile(const UnicodeString & ListingStr,
     TRemoteFile * LinkedByFile = nullptr);
   void CaptureOutput(const UnicodeString & AddedLine, TCaptureOutputType OutputType);
-  void ChangeFileToken(const UnicodeString DelimitedName,
-    const TRemoteToken &Token, TFSCommand Cmd, const UnicodeString RecursiveStr);
+  void ChangeFileToken(const UnicodeString & DelimitedName,
+    const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr);
   uint32_t ConfirmOverwrite(
-    const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName,
+    const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     TOperationSide Side,
     const TOverwriteFileParams *FileParams, const TCopyParamType * CopyParam,
     int32_t Params, TFileOperationProgressType *OperationProgress);
@@ -168,7 +168,7 @@ private:
     TCalculatedChecksumEvent OnCalculatedChecksum, TChecksumSessionAction & Action, TFileOperationProgressType * OperationProgress,
     bool FirstLevel, const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Checksum);
 
-  static bool RemoveLastLine(UnicodeString &Line,
-    int32_t &ReturnCode, UnicodeString ALastLine = "");
+  static bool RemoveLastLine(UnicodeString & Line,
+    int32_t & ReturnCode, const UnicodeString & ALastLine = "");
 };
 

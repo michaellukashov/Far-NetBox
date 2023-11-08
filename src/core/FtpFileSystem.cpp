@@ -2495,7 +2495,7 @@ bool TFTPFileSystem::SupportsReadingFile() const
     (SupportsCommand(MdtmCommand) && SupportsCommand(SizeCommand));
 }
 
-void TFTPFileSystem::ReadFile(const UnicodeString AFileName,
+void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile)
 {
   AFile = nullptr;

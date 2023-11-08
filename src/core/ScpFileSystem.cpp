@@ -97,7 +97,7 @@ public:
   FMT_VARIADIC_W(UnicodeString, FullCommand, TFSCommand)
 
   __removed UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size);
-  static UnicodeString ExtractCommand(UnicodeString ACommand);
+  static UnicodeString ExtractCommand(const UnicodeString & ACommand);
   __property int MaxLines[TFSCommand Cmd]  = { read = GetMaxLines};
   __property int MinLines[TFSCommand Cmd]  = { read = GetMinLines };
   __property bool ModifiesFiles[TFSCommand Cmd]  = { read = GetModifiesFiles };
@@ -111,8 +111,8 @@ public:
   __property UnicodeString ReturnVar  = { read = GetReturnVar, write = FReturnVar };
 
   TSessionData *GetSessionData() const { return FSessionData; }
-  void SetSessionData(TSessionData *Value) { FSessionData = Value; }
-  void SetReturnVar(UnicodeString Value) { FReturnVar = Value; }
+  void SetSessionData(TSessionData * Value) { FSessionData = Value; }
+  void SetReturnVar(const UnicodeString & Value) { FReturnVar = Value; }
 };
 //===========================================================================
 constexpr int32_t NationalVarCount = 12;
@@ -289,7 +289,7 @@ UnicodeString TCommandSet::GetReturnVar() const
   return UnicodeString(L'$') + GetSessionData()->GetReturnVar();
 }
 
-UnicodeString TCommandSet::ExtractCommand(UnicodeString ACommand)
+UnicodeString TCommandSet::ExtractCommand(const UnicodeString & ACommand)
 {
   UnicodeString Command = ACommand;
   int32_t P = Command.Pos(L" ");
@@ -565,7 +565,7 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
   FProcessingCommand = true;
 }
 
-bool TSCPFileSystem::IsTotalListingLine(const UnicodeString Line)
+bool TSCPFileSystem::IsTotalListingLine(const UnicodeString & Line)
 {
   // On some hosts there is not "total" but "totalt". What's the reason??
   // see mail from "Jan Wiklund (SysOp)" <jan@park.se>
@@ -573,7 +573,7 @@ bool TSCPFileSystem::IsTotalListingLine(const UnicodeString Line)
 }
 
 bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
-    int32_t & ReturnCode, UnicodeString ALastLine)
+    int32_t & ReturnCode, const UnicodeString & ALastLine)
 {
   UnicodeString LastLine = ALastLine;
   bool IsLastLine = false;
@@ -602,7 +602,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
   return IsLastLine;
 }
 
-bool TSCPFileSystem::IsLastLine(UnicodeString &Line)
+bool TSCPFileSystem::IsLastLine(UnicodeString & Line)
 {
   bool Result = false;
   try
@@ -926,7 +926,7 @@ void TSCPFileSystem::DetectReturnVar()
   }
 }
 
-void TSCPFileSystem::ClearAlias(UnicodeString Alias)
+void TSCPFileSystem::ClearAlias(const UnicodeString & Alias)
 {
   if (!Alias.IsEmpty())
   {
@@ -1178,20 +1178,20 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
   while (Again);
 }
 
-void TSCPFileSystem::ReadSymlink(TRemoteFile *SymlinkFile,
+void TSCPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& AFile)
 {
   CustomReadFile(SymlinkFile->GetLinkTo(), AFile, SymlinkFile);
 }
 
-void TSCPFileSystem::ReadFile(const UnicodeString AFileName,
+void TSCPFileSystem::ReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile)
 {
   CustomReadFile(AFileName, AFile, nullptr);
 }
 
 TRemoteFile * TSCPFileSystem::CreateRemoteFile(
-  const UnicodeString ListingStr, TRemoteFile * LinkedByFile)
+  const UnicodeString & ListingStr, TRemoteFile * LinkedByFile)
 {
   std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(LinkedByFile));
   try__catch
@@ -1210,8 +1210,8 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   return File.release();
 }
 
-void TSCPFileSystem::CustomReadFile(UnicodeString AFileName,
-  TRemoteFile *&File, TRemoteFile *ALinkedByFile)
+void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
+  TRemoteFile *& File, TRemoteFile * ALinkedByFile)
 {
   File = nullptr;
   int32_t Params = ecDefault |
@@ -1287,8 +1287,8 @@ void TSCPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
     Symbolic ? L"-s" : L"", DelimitStr(APointTo), DelimitStr(AFileName));
 }
 
-void TSCPFileSystem::ChangeFileToken(const UnicodeString DelimitedName,
-  const TRemoteToken &Token, TFSCommand Cmd, const UnicodeString RecursiveStr)
+void TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
+  const TRemoteToken & Token, TFSCommand Cmd, const UnicodeString & RecursiveStr)
 {
   UnicodeString Str;
   if (Token.GetIDValid())
@@ -1633,8 +1633,8 @@ void TSCPFileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
 // transfer protocol
 
 uint32_t TSCPFileSystem::ConfirmOverwrite(
-  const UnicodeString ASourceFullFileName, const UnicodeString ATargetFileName, TOperationSide Side,
-  const TOverwriteFileParams *FileParams, const TCopyParamType * CopyParam,
+  const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName, TOperationSide Side,
+  const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   int32_t Params, TFileOperationProgressType * OperationProgress)
 {
   TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
@@ -1968,8 +1968,8 @@ void TSCPFileSystem::Source(
   DebugFail();
 }
 
-void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
-  const UnicodeString TargetDir, const TCopyParamType * CopyParam, int32_t AParams,
+void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int32_t AParams,
   TFileOperationProgressType * OperationProgress, int32_t Level)
 {
   UnicodeString RealFileName = AFileName;
@@ -2244,8 +2244,8 @@ void TSCPFileSystem::SCPSource(const UnicodeString AFileName,
   FTerminal->LogEvent(FORMAT("Copying \"%s\" to remote directory finished.", AFileName));
 }
 
-void TSCPFileSystem::SCPDirectorySource(const UnicodeString DirectoryName,
-  const UnicodeString TargetDir, const TCopyParamType * CopyParam, int32_t Params,
+void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
+  const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int32_t Params,
   TFileOperationProgressType * OperationProgress, int32_t Level)
 {
   DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
@@ -2502,13 +2502,13 @@ void TSCPFileSystem::Sink(
   DebugFail();
 }
 
-void TSCPFileSystem::SCPError(const UnicodeString Message, bool Fatal)
+void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
 {
   SCPSendError(Message, Fatal);
   throw EScpFileSkipped(nullptr, Message);
 }
 
-void TSCPFileSystem::SCPSendError(const UnicodeString Message, bool Fatal)
+void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 {
   uint8_t ErrorLevel = static_cast<uint8_t>(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT("Sending SCP error (%d) to remote side:",
@@ -2519,8 +2519,8 @@ void TSCPFileSystem::SCPSendError(const UnicodeString Message, bool Fatal)
   FSecureShell->SendLine(FORMAT("scp: error: %s", Message));
 }
 
-void TSCPFileSystem::SCPSink(const UnicodeString TargetDir,
-  const UnicodeString AFileName, const UnicodeString SourceDir,
+void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
+  const UnicodeString & AFileName, const UnicodeString & SourceDir,
   const TCopyParamType * CopyParam, bool & Success,
   TFileOperationProgressType * OperationProgress, int32_t Params,
   int32_t Level)
