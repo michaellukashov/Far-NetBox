@@ -11,12 +11,12 @@
 #include <farcolor.hpp>
 #pragma warning(pop)
 
-inline TRect Rect(int Left, int Top, int Right, int Bottom)
+inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
 {
   return TRect(Left, Top, Right, Bottom);
 }
 
-TFarDialog::TFarDialog(TCustomFarPlugin *AFarPlugin) noexcept :
+TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) noexcept :
   TObject(OBJECT_CLASS_TFarDialog),
   FFarPlugin(AFarPlugin),
   FBounds(-1, -1, 40, 10),
