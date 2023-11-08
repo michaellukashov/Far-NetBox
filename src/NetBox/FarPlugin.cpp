@@ -70,6 +70,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
     SAFE_DESTROY(Object);
   }
   // SAFE_DESTROY(FSavedTitles);
+  // TODO: CloseFileSystem(FarFileSystem);
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
