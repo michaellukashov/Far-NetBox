@@ -711,12 +711,12 @@ void TS3FileSystem::LibS3Deinitialize()
   S3_deinitialize();
 }
 
-UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString AKey)
+UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString & AKey)
 {
   return AKey + L"/";
 }
 
-void TS3FileSystem::ParsePath(UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey)
+void TS3FileSystem::ParsePath(const UnicodeString & APath, UnicodeString & BucketName, UnicodeString & AKey)
 {
   UnicodeString Path = APath;
   if (DebugAlwaysTrue(Path.SubString(1, 1) == L"/"))
@@ -754,7 +754,7 @@ struct TLibS3ListBucketCallbackData : TLibS3CallbackData
   bool IsTruncated;
 };
 
-TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString ABucketName, const UnicodeString Prefix)
+TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucketName, const UnicodeString & Prefix)
 {
   TLibS3BucketContext Result;
 
@@ -1021,7 +1021,7 @@ void TS3FileSystem::AnnounceFileListOperation()
   // noop
 }
 
-void TS3FileSystem::TryOpenDirectory(const UnicodeString ADirectory)
+void TS3FileSystem::TryOpenDirectory(const UnicodeString & ADirectory)
 {
   FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", ADirectory));
   std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
@@ -1171,7 +1171,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
 }
 
 void TS3FileSystem::DoListBucket(
-  const UnicodeString APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext & BucketContext,
+  const UnicodeString & APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext & BucketContext,
   TLibS3ListBucketCallbackData & Data)
 {
   S3ListBucketHandler ListBucketHandler = { CreateResponseHandler(), &LibS3ListBucketCallback };
@@ -1203,7 +1203,7 @@ bool TS3FileSystem::IsGoogleCloud() const
 }
 
 void TS3FileSystem::ReadDirectoryInternal(
-  const UnicodeString APath, TRemoteFileList *FileList, int32_t MaxKeys, const UnicodeString AFileName)
+  const UnicodeString & APath, TRemoteFileList * FileList, int32_t MaxKeys, const UnicodeString & AFileName)
 {
   UnicodeString Path = base::UnixExcludeTrailingBackslash(GetAbsolutePath(APath, false));
   int32_t AMaxKeys = (MaxKeys == -1) ? 1 : MaxKeys;

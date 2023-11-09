@@ -9,7 +9,7 @@
 class NB_CORE_EXPORT EFileMasksException : public Exception
 {
 public:
-  explicit EFileMasksException(UnicodeString AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept;
+  explicit EFileMasksException(const UnicodeString & AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept;
   int32_t ErrorStart{0};
   int32_t ErrorLen{0};
 };
@@ -138,10 +138,10 @@ private:
     bool RecurseInclude, bool & ImplicitMatch) const;
 };
 
-UnicodeString MaskFileName(UnicodeString AFileName, const UnicodeString Mask);
-bool IsFileNameMask(const UnicodeString AMask);
-bool IsEffectiveFileNameMask(const UnicodeString AMask);
-UnicodeString DelimitFileNameMask(UnicodeString AMask);
+UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask);
+bool IsFileNameMask(const UnicodeString & AMask);
+bool IsEffectiveFileNameMask(const UnicodeString & AMask);
+UnicodeString DelimitFileNameMask(const UnicodeString & AMask);
 
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
   int32_t /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,

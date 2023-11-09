@@ -796,7 +796,7 @@ void TRemoteTokenList::AddUnique(const TRemoteToken &Token)
   }
 }
 
-bool TRemoteTokenList::Exists(UnicodeString Name) const
+bool TRemoteTokenList::Exists(const UnicodeString & Name) const
 {
   // We should make use of SameUserName
   return (FNameMap.find(Name) != FNameMap.end());
@@ -813,7 +813,7 @@ const TRemoteToken *TRemoteTokenList::Find(uint32_t ID) const
   return Result;
 }
 
-const TRemoteToken *TRemoteTokenList::Find(UnicodeString Name) const
+const TRemoteToken *TRemoteTokenList::Find(const UnicodeString & Name) const
 {
   TNameMap::const_iterator it = FNameMap.find(Name);
   const TRemoteToken *Result = nullptr;
@@ -824,7 +824,7 @@ const TRemoteToken *TRemoteTokenList::Find(UnicodeString Name) const
   return Result;
 }
 
-void TRemoteTokenList::Log(TTerminal *Terminal, const wchar_t *Title)
+void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t *Title)
 {
   if (!FTokens.empty())
   {
@@ -2014,7 +2014,7 @@ void TRemoteDirectoryCache::ClearFileList(const UnicodeString & ADirectory, bool
   DoClearFileList(ADirectory, SubDirs);
 }
 
-void TRemoteDirectoryCache::DoClearFileList(const UnicodeString ADirectory, bool SubDirs)
+void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & ADirectory, bool SubDirs)
 {
   UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
   int32_t Index = IndexOf(Directory);
@@ -2159,7 +2159,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
   return Result;
 }
 
-void TRemoteDirectoryChangesCache::Serialize(UnicodeString &Data) const
+void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
 {
   Data = L"A";
   int32_t ACount = GetCount();

@@ -17,12 +17,12 @@ static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::m
 typedef nb::set_t<UnicodeString> TIgnoredExceptions;
 static TIgnoredExceptions IgnoredExceptions;
 
-static UnicodeString NormalizeClassName(const UnicodeString ClassName)
+static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
 {
   return ReplaceStr(ClassName, L".", L"::").LowerCase();
 }
 
-void IgnoreException(const std::type_info &ExceptionType)
+void IgnoreException(const std::type_info & ExceptionType)
 {
   TGuard Guard(*IgnoredExceptionsCriticalSection.get()); nb::used(Guard);
   // We should better use type_index as a key, instead of a class name,

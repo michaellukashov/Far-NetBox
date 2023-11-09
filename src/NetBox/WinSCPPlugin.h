@@ -22,10 +22,10 @@ public:
   virtual VersionInfo GetMinFarVersion() const override;
 
   virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0) override;
-  uint32_t MoreMessageDialog(const UnicodeString Str, TStrings *MoreMessages,
+  uint32_t MoreMessageDialog(const UnicodeString & Str, TStrings *MoreMessages,
     TQueryType Type, uint32_t Answers, const TMessageParams *Params = nullptr);
-  void ShowExtendedException(Exception *E);
-  bool CopyParamCustomDialog(TCopyParamType &CopyParam,
+  void ShowExtendedException(Exception * E);
+  bool CopyParamCustomDialog(TCopyParamType & CopyParam,
     int32_t CopyParamAttrs);
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info) override;
 

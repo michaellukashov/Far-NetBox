@@ -4358,7 +4358,7 @@ TUsableCopyParamAttrs  TTerminal::UsableCopyParamAttrs(int32_t Params) const
   return Result;
 }
 
-bool TTerminal::IsRecycledFile(UnicodeString AFileName)
+bool TTerminal::IsRecycledFile(const UnicodeString & AFileName)
 {
   bool Result = !GetSessionData()->GetRecycleBinPath().IsEmpty();
   if (Result)
@@ -6245,7 +6245,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   return Checklist.release();
 }
 
-static void AddFlagName(UnicodeString &ParamsStr, int32_t &Params, int32_t Param, UnicodeString Name)
+static void AddFlagName(UnicodeString & ParamsStr, int32_t & Params, int32_t Param, const UnicodeString & Name)
 {
   if (FLAGSET(Params, Param))
   {
@@ -6697,17 +6697,17 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
               LocalData->MatchingRemoteFileFile = AFile->Duplicate();
               LogEvent(FORMAT("Local file %s is modified comparing to remote file %s",
                 FormatFileDetailsForLog(UnicodeString(LocalData->Info.Directory) + UnicodeString(LocalData->Info.FileName),
-                   LocalData->Info.Modification, LocalData->Info.Size),
-                 FormatFileDetailsForLog(FullRemoteFileName,
-                   AFile->GetModification(), AFile->GetSize(), AFile->LinkedFile)));
+                  LocalData->Info.Modification, LocalData->Info.Size),
+                FormatFileDetailsForLog(FullRemoteFileName,
+                  AFile->GetModification(), AFile->GetSize(), AFile->LinkedFile)));
             }
 
             if (Modified)
             {
               LogEvent(FORMAT("Remote file %s is modified comparing to local file %s",
                 FormatFileDetailsForLog(FullRemoteFileName, AFile->GetModification(), AFile->GetSize(), AFile->LinkedFile),
-                 FormatFileDetailsForLog(UnicodeString(LocalData->Info.Directory) + UnicodeString(LocalData->Info.FileName),
-                   LocalData->Info.Modification, LocalData->Info.Size)));
+                  FormatFileDetailsForLog(UnicodeString(LocalData->Info.Directory) + UnicodeString(LocalData->Info.FileName),
+                    LocalData->Info.Modification, LocalData->Info.Size)));
             }
           }
           else if (FLAGCLEAR(Data->Params, spNoRecurse))
@@ -9004,7 +9004,7 @@ bool TTerminal::CanRecurseToDirectory(const TRemoteFile * AFile) const
   return !AFile->GetIsSymLink() || FSessionData->GetFollowDirectorySymlinks();
 }
 
-typename TTerminal::TEncryptedFileNames::const_iterator TTerminal::GetEncryptedFileName(UnicodeString APath)
+typename TTerminal::TEncryptedFileNames::const_iterator TTerminal::GetEncryptedFileName(const UnicodeString & APath)
 {
   UnicodeString FileDir = base::UnixExtractFileDir(APath);
 

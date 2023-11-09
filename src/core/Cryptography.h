@@ -5,18 +5,18 @@
 
 void CryptographyInitialize();
 void CryptographyFinalize();
-RawByteString ScramblePassword(UnicodeString Password);
-bool UnscramblePassword(RawByteString Scrambled, UnicodeString Password);
-void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
+RawByteString ScramblePassword(const UnicodeString & Password);
+bool UnscramblePassword(const RawByteString & Scrambled, const UnicodeString & Password);
+void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   RawByteString &Output);
-bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString &Output);
-void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier);
-bool AES256Verify(UnicodeString Input, RawByteString Verifier);
-int32_t IsValidPassword(UnicodeString Password);
+bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+  RawByteString & Output);
+void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier);
+bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier);
+int32_t IsValidPassword(const UnicodeString & Password);
 int32_t PasswordMaxLength();
 RawByteString GenerateEncryptKey();
-void ValidateEncryptKey(const RawByteString AKey);
+void ValidateEncryptKey(const RawByteString & AKey);
 
 class TFileBuffer;
 typedef void AESContext;
@@ -24,10 +24,10 @@ typedef void AESContext;
 class TEncryption : public TObject
 {
 public:
-  explicit TEncryption(const RawByteString AKey) noexcept;
+  explicit TEncryption(const RawByteString & AKey) noexcept;
   virtual ~TEncryption(); //noexcept(false); //throw(std::runtime_error);
 
-  static bool IsEncryptedFileName(const UnicodeString AFileName);
+  static bool IsEncryptedFileName(const UnicodeString & AFileName);
 
   void Encrypt(TFileBuffer & Buffer, bool Last);
   void Decrypt(TFileBuffer & Buffer);
@@ -47,7 +47,7 @@ private:
   bool FOutputtedHeader{false};
   AESContext * FContext{nullptr};
 
-  void Init(const RawByteString AKey, const RawByteString ASalt);
+  void Init(const RawByteString & AKey, const RawByteString & ASalt);
   void Aes(char * Buffer, int32_t Size);
   void Aes(RawByteString & Buffer);
   void Aes(TFileBuffer & Buffer, bool Last);

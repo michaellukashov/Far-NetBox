@@ -42,9 +42,9 @@ public:
   RWProperty2<UnicodeString> Certificate{&FCertificate};
 
   UnicodeString GetURL() const { return FURL; }
-  void SetURL(UnicodeString Value) { FURL = Value; }
+  void SetURL(const UnicodeString & Value) { FURL = Value; }
   UnicodeString GetProxyHost() const { return FProxyHost; }
-  void SetProxyHost(UnicodeString Value) { FProxyHost = Value; }
+  void SetProxyHost(const UnicodeString & Value) { FProxyHost = Value; }
   int32_t GetProxyPort() const { return FProxyPort; }
   void SetProxyPort(int32_t Value) { FProxyPort = Value; }
   TStrings *GetRequestHeaders() const { return FRequestHeaders.get(); }

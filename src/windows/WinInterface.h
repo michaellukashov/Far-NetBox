@@ -170,7 +170,7 @@ bool DoSaveWorkspaceDialog(UnicodeString & WorkspaceName,
   bool & CreateShortcut, bool & EnableAutoSave);
 class TShortCuts;
 bool DoShortCutDialog(TShortCut & ShortCut,
-  const TShortCuts & ShortCuts, UnicodeString HelpKeyword);
+  const TShortCuts & ShortCuts, const UnicodeString & HelpKeyword);
 #if 0
 bool DoCustomCommandOptionsDialog(
   const TCustomCommandType * Command, TStrings * CustomCommandOptions, TShortCut * ShortCut, uint32_t Flags,
@@ -186,7 +186,7 @@ bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword);
 
 // windows\WinMain.cpp
 int Execute();
-void GetLoginData(UnicodeString SessionName, TOptions * Options,
+void GetLoginData(const UnicodeString & SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, /*TForm * LinkedForm,*/ int32_t Flags = 0);
 int32_t GetCommandLineParseUrlFlags(TProgramParams * Params);
 
@@ -264,7 +264,7 @@ bool DoCopyLocalDialog(bool Move, int Options, UnicodeString & TargetDirectory, 
 
 // forms\CreateDirectory.cpp
 bool DoCreateDirectoryDialog(UnicodeString & Directory,
-  TRemoteProperties * Properties, int AllowedChanges, bool & SaveSettings);
+  TRemoteProperties * Properties, int32_t AllowedChanges, bool & SaveSettings);
 
 // forms\ImportSessions.cpp
 bool DoImportSessionsDialog(TList * Imported);

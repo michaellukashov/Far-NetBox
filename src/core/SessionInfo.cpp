@@ -276,7 +276,7 @@ public:
     Parameter(L"command", Command);
   }
 
-  void AddOutput(UnicodeString Output, bool StdError)
+  void AddOutput(const UnicodeString & Output, bool StdError)
   {
     const wchar_t *Name = (StdError ? L"erroroutput" : L"output");
     int32_t Index = FNames->IndexOf(Name);

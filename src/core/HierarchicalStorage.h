@@ -37,36 +37,36 @@ public:
   virtual void ReadValues(TStrings *Strings, bool MaintainKeys = false);
   virtual void WriteValues(TStrings *Strings, bool MaintainKeys = false);
   virtual void ClearValues();
-  bool DeleteValue(const UnicodeString Name);
+  bool DeleteValue(const UnicodeString & Name);
 
-  bool ReadBool(UnicodeString Name, bool Default);
+  bool ReadBool(const UnicodeString & Name, bool Default);
   template<typename T>
   typename T ReadEnum(
     const UnicodeString & Name, const T Default, const TIntMapping & Mapping = TIntMapping());
   int32_t ReadInteger(const UnicodeString & Name, int32_t Default);
   int64_t ReadInt64(const UnicodeString & Name, int64_t Default);
 
-  TDateTime ReadDateTime(const UnicodeString Name, TDateTime Default);
+  TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
 
-  double ReadFloat(const UnicodeString Name, double Default);
+  double ReadFloat(const UnicodeString & Name, double Default);
   UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
-  size_t ReadBinaryData(const UnicodeString Name, void *Buffer, size_t Size);
+  size_t ReadBinaryData(const UnicodeString & Name, void *Buffer, size_t Size);
 
   virtual UnicodeString ReadString(const UnicodeString & Name, const UnicodeString & Default);
   RawByteString ReadBinaryData(const UnicodeString & Name);
   RawByteString ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default);
 
-  void WriteBool(const UnicodeString Name, bool Value);
-  void WriteStringRaw(const UnicodeString Name, const UnicodeString Value);
-  void WriteInteger(const UnicodeString Name, int32_t Value);
-  void WriteInt64(const UnicodeString Name, int64_t Value);
-  void WriteDateTime(const UnicodeString Name, const TDateTime Value);
-  void WriteFloat(const UnicodeString Name, double Value);
-  void WriteBinaryData(const UnicodeString Name, const void *Buffer, size_t Size);
+  void WriteBool(const UnicodeString & Name, bool Value);
+  void WriteStringRaw(const UnicodeString Name, const UnicodeString & Value);
+  void WriteInteger(const UnicodeString & Name, int32_t Value);
+  void WriteInt64(const UnicodeString & Name, int64_t Value);
+  void WriteDateTime(const UnicodeString & Name, const TDateTime Value);
+  void WriteFloat(const UnicodeString & Name, double Value);
+  void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
 
-  void WriteString(const UnicodeString Name, const UnicodeString Value);
-  void WriteBinaryData(const UnicodeString Name, const RawByteString Value);
-  void WriteBinaryDataAsString(const UnicodeString Name, const RawByteString Value);
+  void WriteString(const UnicodeString & Name, const UnicodeString & Value);
+  void WriteBinaryData(const UnicodeString & Name, const RawByteString & Value);
+  void WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value);
 
   virtual void Flush();
 
@@ -319,7 +319,7 @@ protected:
 
 #endif // #if 0
 
-NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString Str);
-NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString Str);
-NB_CORE_EXPORT AnsiString PuttyStr(const UnicodeString Str);
+NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString & Str);
+NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString & Str);
+NB_CORE_EXPORT AnsiString PuttyStr(const UnicodeString & Str);
 TIntMapping CreateIntMappingFromEnumNames(const UnicodeString & Names);

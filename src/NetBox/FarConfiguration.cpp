@@ -316,7 +316,7 @@ UnicodeString TFarConfiguration::ModuleFileName() const
 }
 
 void TFarConfiguration::SetBookmarks(const UnicodeString & Key,
-  TBookmarkList *Value)
+  TBookmarkList * Value)
 {
   FBookmarks->SetBookmarks(Key, Value);
   Changed();

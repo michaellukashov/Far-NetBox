@@ -136,13 +136,13 @@ DWORD CNBFile::LoadFile(const wchar_t *fileName, nb::vector_t<char> &fileContent
   return f.LastError();
 }
 
-void FarWrapText(const UnicodeString Text, TStrings *Result, intptr_t MaxWidth)
+void FarWrapText(const UnicodeString & Text, TStrings * Result, int32_t MaxWidth)
 {
   size_t TabSize = 8;
   TStringList Lines;
   Lines.SetText(Text);
   TStringList WrappedLines;
-  for (intptr_t Index = 0; Index < Lines.GetCount(); ++Index)
+  for (int32_t Index = 0; Index < Lines.GetCount(); ++Index)
   {
     UnicodeString WrappedLine = Lines.GetString(Index);
     if (!WrappedLine.IsEmpty())

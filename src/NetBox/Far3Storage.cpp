@@ -225,7 +225,7 @@ UnicodeString TFar3Storage::DoReadStringRaw(const UnicodeString & Name, const Un
 }
 
 size_t TFar3Storage::DoReadBinaryData(const UnicodeString & Name,
-  void *Buffer, size_t Size)
+  void * Buffer, size_t Size)
 {
   return FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size);
 }
@@ -251,7 +251,7 @@ void TFar3Storage::DoWriteInt64(const UnicodeString & Name, int64_t Value)
 }
 
 void TFar3Storage::DoWriteBinaryData(const UnicodeString & Name,
-  const void *Buffer, size_t Size)
+  const void * Buffer, size_t Size)
 {
   FPluginSettings.Set(FRoot, Name.c_str(), Buffer, Size);
 }

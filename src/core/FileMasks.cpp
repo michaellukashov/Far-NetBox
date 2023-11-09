@@ -24,7 +24,7 @@ EFileMasksException::EFileMasksException(
 {
 }
 
-static UnicodeString MaskFilePart(const UnicodeString Part, const UnicodeString Mask, bool& Masked)
+static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool& Masked)
 {
   UnicodeString Result;
   int32_t RestStart = 1;
@@ -72,7 +72,7 @@ static UnicodeString MaskFilePart(const UnicodeString Part, const UnicodeString 
   return Result;
 }
 
-UnicodeString MaskFileName(UnicodeString AFileName, const UnicodeString Mask)
+UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString & Mask)
 {
   UnicodeString FileName = AFileName;
   if (IsEffectiveFileNameMask(Mask))
@@ -105,7 +105,7 @@ UnicodeString MaskFileName(UnicodeString AFileName, const UnicodeString Mask)
   return FileName;
 }
 
-bool IsFileNameMask(const UnicodeString AMask)
+bool IsFileNameMask(const UnicodeString & AMask)
 {
   bool Result = AMask.IsEmpty(); // empty mask is the same as *
   if (!Result)
@@ -115,12 +115,12 @@ bool IsFileNameMask(const UnicodeString AMask)
   return Result;
 }
 
-bool IsEffectiveFileNameMask(const UnicodeString AMask)
+bool IsEffectiveFileNameMask(const UnicodeString & AMask)
 {
   return !AMask.IsEmpty() && (AMask != L"*") && (AMask != L"*.*");
 }
 
-UnicodeString DelimitFileNameMask(UnicodeString AMask)
+UnicodeString DelimitFileNameMask(const UnicodeString & AMask)
 {
   UnicodeString Mask = AMask;
   for (int32_t Index = 1; Index <= Mask.Length(); ++Index)
@@ -747,7 +747,7 @@ TStrings *TFileMasks::GetMasksStr(int32_t Index) const
   return FMasksStr[Index];
 }
 
-void TFileMasks::TrimEx(UnicodeString &Str, int32_t &Start, int32_t &End)
+void TFileMasks::TrimEx(UnicodeString & Str, int32_t & Start, int32_t & End)
 {
   UnicodeString Buf = ::TrimLeft(Str);
   Start += Str.Length() - Buf.Length();
@@ -1033,7 +1033,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
   return Result;
 }
 
-void TCustomCommand::DelimitReplacement(UnicodeString &Replacement, wchar_t Quote)
+void TCustomCommand::DelimitReplacement(UnicodeString & Replacement, wchar_t Quote)
 {
   Replacement = DelimitStr(Replacement, Quote);
 }

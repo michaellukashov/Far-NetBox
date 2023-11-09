@@ -134,7 +134,7 @@ public:
   int32_t GetTab() const { return FTab; }
   void SetTab(int32_t Value) { FTab = Value; }
   UnicodeString GetTabName() const { return FTabName; }
-  void SetTabName(UnicodeString Value);
+  void SetTabName(const UnicodeString & Value);
 
 private:
   UnicodeString FTabName;
@@ -273,7 +273,7 @@ TTabButton::TTabButton(TTabbedDialog *Dialog) :
   SetOnClick(nb::bind(&TTabbedDialog::TabButtonClick, Dialog));
 }
 
-void TTabButton::SetTabName(UnicodeString Value)
+void TTabButton::SetTabName(const UnicodeString & Value)
 {
   if (FTabName != Value)
   {
@@ -989,19 +989,19 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
 class TAboutDialog : public TFarDialog
 {
 public:
-  explicit TAboutDialog(TCustomFarPlugin *AFarPlugin);
+  explicit TAboutDialog(TCustomFarPlugin * AFarPlugin);
 
 private:
   void UrlButtonClick(TFarButton *Sender, bool &Close);
   void UrlTextClick(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 };
 
-UnicodeString ReplaceCopyright(const UnicodeString S)
+UnicodeString ReplaceCopyright(const UnicodeString & S)
 {
   return ::StringReplaceAll(S, L"©", L"(c)");
 }
 
-TAboutDialog::TAboutDialog(TCustomFarPlugin *AFarPlugin) :
+TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarDialog(AFarPlugin)
 {
   // UnicodeString ProductName = GetConfiguration()->GetFileInfoString("ProductName");
@@ -1485,7 +1485,7 @@ private:
   TFtps IndexToFtps(int32_t Index) const;
   TFtps GetFtps() const;
   TLoginType IndexToLoginType(int32_t Index) const;
-  bool VerifyKey(UnicodeString AFileName, bool TypeOnly);
+  bool VerifyKey(const UnicodeString & AFileName, bool TypeOnly);
   void PrevTabClick(TFarButton * /*Sender*/, bool &Close);
   void NextTabClick(TFarButton * /*Sender*/, bool &Close);
   void CipherButtonClick(TFarButton *Sender, bool &Close);
@@ -4022,7 +4022,7 @@ TLoginType TSessionDialog::IndexToLoginType(int32_t Index) const
   return Result;
 }
 
-bool TSessionDialog::VerifyKey(UnicodeString AFileName, bool /*TypeOnly*/)
+bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool /*TypeOnly*/)
 {
   bool Result = false;
 
@@ -5451,36 +5451,36 @@ class TCopyDialog final : TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  explicit TCopyDialog(TCustomFarPlugin *AFarPlugin,
-    bool ToRemote, bool Move, const TStrings *AFileList, int32_t Options, int32_t CopyParamAttrs) noexcept;
+  explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
+    bool ToRemote, bool Move, const TStrings * AFileList, int32_t Options, int32_t CopyParamAttrs) noexcept;
 
-  bool Execute(UnicodeString &TargetDirectory, TGUICopyParamType *Params);
+  bool Execute(UnicodeString & TargetDirectory, TGUICopyParamType * Params);
 
 protected:
   virtual bool CloseQuery() override;
   virtual void Change() override;
   void CustomCopyParam();
 
-  void CopyParamListerClick(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
-  void TransferSettingsButtonClick(TFarButton *Sender, bool &Close);
+  void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
+  void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
 
 private:
-  TFarEdit *DirectoryEdit{nullptr};
-  TFarLister *CopyParamLister{nullptr};
-  TFarCheckBox *NewerOnlyCheck{nullptr};
-  TFarCheckBox *SaveSettingsCheck{nullptr};
-  TFarCheckBox *QueueCheck{nullptr};
-  TFarCheckBox *QueueNoConfirmationCheck{nullptr};
+  TFarEdit * DirectoryEdit{nullptr};
+  TFarLister * CopyParamLister{nullptr};
+  TFarCheckBox * NewerOnlyCheck{nullptr};
+  TFarCheckBox * SaveSettingsCheck{nullptr};
+  TFarCheckBox * QueueCheck{nullptr};
+  TFarCheckBox * QueueNoConfirmationCheck{nullptr};
 
-  const TStrings *FFileList{nullptr};
+  const TStrings * FFileList{nullptr};
   int32_t FOptions{0};
   int32_t FCopyParamAttrs{0};
   TGUICopyParamType FCopyParams;
   bool FToRemote{false};
 };
 
-TCopyDialog::TCopyDialog(TCustomFarPlugin *AFarPlugin,
-  bool ToRemote, bool Move, const TStrings *AFileList,
+TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
+  bool ToRemote, bool Move, const TStrings * AFileList,
   int32_t Options, int32_t CopyParamAttrs) noexcept :
   TFarDialog(AFarPlugin),
   DirectoryEdit(nullptr),
@@ -5583,8 +5583,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin *AFarPlugin,
   Button->SetCenterGroup(true);
 }
 
-bool TCopyDialog::Execute(UnicodeString &TargetDirectory,
-  TGUICopyParamType *Params)
+bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
+  TGUICopyParamType * Params)
 {
   FCopyParams.Assign(Params);
 
@@ -5776,20 +5776,20 @@ class TLinkDialog : TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  explicit TLinkDialog(TCustomFarPlugin *AFarPlugin,
+  explicit TLinkDialog(TCustomFarPlugin * AFarPlugin,
     bool Edit, bool AllowSymbolic);
 
-  bool Execute(UnicodeString &AFileName, UnicodeString &PointTo,
-    bool &Symbolic);
+  bool Execute(UnicodeString & AFileName, UnicodeString & PointTo,
+    bool & Symbolic);
 
 protected:
   virtual void Change() override;
 
 private:
-  TFarEdit *FileNameEdit;
-  TFarEdit *PointToEdit;
-  TFarCheckBox *SymbolicCheck;
-  TFarButton *OkButton;
+  TFarEdit * FileNameEdit{nullptr};
+  TFarEdit * PointToEdit{nullptr};
+  TFarCheckBox * SymbolicCheck{nullptr};
+  TFarButton * OkButton{nullptr};
 };
 
 TLinkDialog::TLinkDialog(TCustomFarPlugin *AFarPlugin,
@@ -5848,8 +5848,8 @@ void TLinkDialog::Change()
   }
 }
 
-bool TLinkDialog::Execute(UnicodeString &AFileName, UnicodeString &PointTo,
-  bool &Symbolic)
+bool TLinkDialog::Execute(UnicodeString & AFileName, UnicodeString & PointTo,
+  bool & Symbolic)
 {
   FileNameEdit->SetText(AFileName);
   PointToEdit->SetText(PointTo);
@@ -5865,8 +5865,8 @@ bool TLinkDialog::Execute(UnicodeString &AFileName, UnicodeString &PointTo,
   return Result;
 }
 
-bool TWinSCPFileSystem::LinkDialog(UnicodeString &AFileName,
-  UnicodeString &PointTo, bool &Symbolic, bool Edit, bool AllowSymbolic)
+bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
+  UnicodeString & PointTo, bool & Symbolic, bool Edit, bool AllowSymbolic)
 {
   std::unique_ptr<TLinkDialog> Dialog(std::make_unique<TLinkDialog>(FPlugin, Edit, AllowSymbolic));
   bool Result = Dialog->Execute(AFileName, PointTo, Symbolic);
@@ -6587,32 +6587,32 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 class TApplyCommandDialog : public TWinSCPDialog
 {
 public:
-  explicit TApplyCommandDialog(TCustomFarPlugin *AFarPlugin);
+  explicit TApplyCommandDialog(TCustomFarPlugin * AFarPlugin);
 
-  bool Execute(UnicodeString &Command, int32_t &Params);
+  bool Execute(UnicodeString & Command, int32_t & Params);
 
 protected:
   virtual void Change() override;
 
 private:
-  int32_t FParams;
+  int32_t FParams{0};
 
-  TFarEdit *CommandEdit;
-  TFarText *LocalHintText;
-  TFarRadioButton *RemoteCommandButton;
-  TFarRadioButton *LocalCommandButton;
-  TFarCheckBox *ApplyToDirectoriesCheck;
-  TFarCheckBox *RecursiveCheck;
-  TFarCheckBox *ShowResultsCheck;
-  TFarCheckBox *CopyResultsCheck;
+  TFarEdit * CommandEdit{nullptr};
+  TFarText * LocalHintText{nullptr};
+  TFarRadioButton * RemoteCommandButton{nullptr};
+  TFarRadioButton * LocalCommandButton{nullptr};
+  TFarCheckBox * ApplyToDirectoriesCheck{nullptr};
+  TFarCheckBox * RecursiveCheck{nullptr};
+  TFarCheckBox * ShowResultsCheck{nullptr};
+  TFarCheckBox * CopyResultsCheck{nullptr};
 
   UnicodeString FPrompt;
-  TFarEdit *PasswordEdit;
-  TFarEdit *NormalEdit;
-  TFarCheckBox *HideTypingCheck;
+  TFarEdit * PasswordEdit{nullptr};
+  TFarEdit * NormalEdit{nullptr};
+  TFarCheckBox * HideTypingCheck{nullptr};
 };
 
-TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin *AFarPlugin) :
+TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin * AFarPlugin) :
   TWinSCPDialog(AFarPlugin),
   FParams(0),
   PasswordEdit(nullptr),
@@ -6717,7 +6717,7 @@ void TApplyCommandDialog::Change()
   }
 }
 
-bool TApplyCommandDialog::Execute(UnicodeString &Command, int32_t &Params)
+bool TApplyCommandDialog::Execute(UnicodeString & Command, int32_t & Params)
 {
   CommandEdit->SetText(Command);
   FParams = Params;
@@ -7183,17 +7183,17 @@ class TSynchronizeChecklistDialog : public TWinSCPDialog
 {
 public:
   explicit TSynchronizeChecklistDialog(
-    TCustomFarPlugin *AFarPlugin, TTerminal::TSynchronizeMode Mode, int32_t Params,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory);
+    TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode Mode, int32_t Params,
+    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
 
   virtual bool Execute(TSynchronizeChecklist *Checklist);
 
 protected:
-  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2) override;
-  virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode) override;
-  void CheckAllButtonClick(TFarButton *Sender, bool &Close);
-  void VideoModeButtonClick(TFarButton *Sender, bool &Close);
-  void ListBoxClick(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
+  void CheckAllButtonClick(TFarButton * Sender, bool & Close);
+  void VideoModeButtonClick(TFarButton * Sender, bool & Close);
+  void ListBoxClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 
 private:
   TFarText *Header{nullptr};
@@ -7218,15 +7218,15 @@ private:
   void RefreshChecklist(bool Scroll);
   void UpdateControls();
   void CheckAll(bool Check);
-  UnicodeString ItemLine(const TChecklistItem *ChecklistItem);
-  void AddColumn(UnicodeString &List, const UnicodeString Value, size_t Column,
+  UnicodeString ItemLine(const TChecklistItem * ChecklistItem);
+  void AddColumn(UnicodeString & List, const UnicodeString & Value, size_t Column,
     bool AHeader = false);
   UnicodeString FormatSize(int64_t Size, int Column);
 };
 
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
-  TCustomFarPlugin *AFarPlugin, TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/,
-  UnicodeString LocalDirectory, const UnicodeString RemoteDirectory) :
+  TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/,
+  const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory) :
   TWinSCPDialog(AFarPlugin),
   FChecklist(nullptr),
   FLocalDirectory(LocalDirectory),
@@ -7280,8 +7280,8 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   ListBox->SetFocus();
 }
 
-void TSynchronizeChecklistDialog::AddColumn(UnicodeString &List,
-  UnicodeString Value, size_t Column, bool AHeader)
+void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
+  const UnicodeString & Value, size_t Column, bool AHeader)
 {
   wchar_t Separator = L'|'; // '\xB3';
   int32_t Len = Value.Length();
@@ -7442,7 +7442,7 @@ UnicodeString TSynchronizeChecklistDialog::FormatSize(
   return Result;
 }
 
-UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem *ChecklistItem)
+UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * ChecklistItem)
 {
   UnicodeString Line;
 
@@ -8280,8 +8280,8 @@ protected:
   bool UpdateQueue();
   void LoadQueue();
   void RefreshQueue();
-  bool FillQueueItemLine(UnicodeString &Line,
-    TQueueItemProxy *QueueItem, size_t Index);
+  bool FillQueueItemLine(UnicodeString & Line,
+    TQueueItemProxy * QueueItem, int32_t Index);
   bool QueueItemNeedsFrequentRefresh(TQueueItemProxy *QueueItem);
   void UpdateControls();
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode) override;
@@ -8625,8 +8625,8 @@ void TQueueDialog::LoadQueue()
   QueueListBox->SetItems(List.get());
 }
 
-bool TQueueDialog::FillQueueItemLine(UnicodeString &Line,
-  TQueueItemProxy *QueueItem, size_t Index)
+bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
+  TQueueItemProxy * QueueItem, int32_t Index)
 {
   int PathMaxLen = 49;
 
@@ -8771,15 +8771,15 @@ bool TQueueDialog::Execute(TTerminalQueueStatus *Status)
 }
 
 bool TWinSCPFileSystem::QueueDialog(
-  TTerminalQueueStatus *Status, bool ClosingPlugin)
+  TTerminalQueueStatus * Status, bool ClosingPlugin)
 {
   std::unique_ptr<TQueueDialog> Dialog(std::make_unique<TQueueDialog>(FPlugin, this, ClosingPlugin));
   bool Result = Dialog->Execute(Status);
   return Result;
 }
 
-bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString &Directory,
-  TRemoteProperties *Properties, bool &SaveSettings)
+bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
+  TRemoteProperties * Properties, bool & SaveSettings)
 {
   std::unique_ptr<TWinSCPDialog> Dialog(std::make_unique<TWinSCPDialog>(FPlugin));
 

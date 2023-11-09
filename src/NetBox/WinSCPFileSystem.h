@@ -192,7 +192,7 @@ protected:
   bool BannerDialog(const UnicodeString & SessionName, const UnicodeString & Banner,
     bool & NeverShowAgain, int32_t Options);
   bool CreateDirectoryDialog(UnicodeString & Directory,
-    TRemoteProperties * Properties, bool &SaveSettings);
+    TRemoteProperties * Properties, bool & SaveSettings);
   bool QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
   bool SynchronizeDialog(TSynchronizeParamType & Params,
     const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,

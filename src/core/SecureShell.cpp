@@ -175,7 +175,7 @@ const TSessionInfo &TSecureShell::GetSessionInfo() const
   return FSessionInfo;
 }
 
-void TSecureShell::GetHostKeyFingerprint(UnicodeString &SHA256, UnicodeString &MD5) const
+void TSecureShell::GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const
 {
   SHA256 = FSessionInfo.HostKeyFingerprintSHA256;
   MD5 = FSessionInfo.HostKeyFingerprintMD5;

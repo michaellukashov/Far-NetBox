@@ -398,7 +398,7 @@ RawByteString GenerateEncryptKey()
   return Result;
 }
 
-void ValidateEncryptKey(const RawByteString AKey)
+void ValidateEncryptKey(const RawByteString & AKey)
 {
   int Len = KEY_LENGTH(PASSWORD_MANAGER_AES_MODE);
   if (AKey.Length() != Len)
@@ -427,8 +427,8 @@ void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Passwor
   fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac)), &aes);
 }
 
-void AES256EncryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString &Output)
+void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+  RawByteString & Output)
 {
   RawByteString Salt;
   RawByteString Encrypted;
@@ -456,8 +456,8 @@ bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
   return (Mac2 == Mac);
 }
 
-bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
-  RawByteString &Output)
+bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+  RawByteString & Output)
 {
   bool Result =
     Input.Length() > SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + MAC_LENGTH(PASSWORD_MANAGER_AES_MODE);
@@ -475,7 +475,7 @@ bool AES256DecryptWithMAC(RawByteString Input, UnicodeString Password,
   return Result;
 }
 
-void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier)
+void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
 {
   RawByteString Salt;
   RawByteString Dummy;
@@ -488,7 +488,7 @@ void AES256CreateVerifier(UnicodeString Input, RawByteString &Verifier)
   Verifier = Salt + Dummy + Mac;
 }
 
-bool AES256Verify(UnicodeString Input, RawByteString Verifier)
+bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
 {
   int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   RawByteString Salt = Verifier.SubString(1, SaltLength);
@@ -527,7 +527,7 @@ static uint8_t SScrambleTable[256] =
 uint8_t *ScrambleTable{nullptr};
 uint8_t *UnscrambleTable{nullptr};
 
-RawByteString ScramblePassword(UnicodeString Password)
+RawByteString ScramblePassword(const UnicodeString & Password)
 {
   #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
@@ -561,7 +561,7 @@ RawByteString ScramblePassword(UnicodeString Password)
   return Result;
 }
 
-bool UnscramblePassword(RawByteString Scrambled, UnicodeString &Password)
+bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Password)
 {
   RawByteString LocalScrambled = Scrambled;
   char *S = ToChar(LocalScrambled);
@@ -629,7 +629,7 @@ int32_t PasswordMaxLength()
   return 128;
 }
 
-int32_t IsValidPassword(UnicodeString Password)
+int32_t IsValidPassword(const UnicodeString & Password)
 {
   if (Password.IsEmpty() || (Password.Length() > PasswordMaxLength()))
   {
@@ -665,7 +665,7 @@ int32_t IsValidPassword(UnicodeString Password)
 }
 
 
-TEncryption::TEncryption(const RawByteString AKey) noexcept
+TEncryption::TEncryption(const RawByteString & AKey) noexcept
 {
   FKey = AKey;
   FOutputtedHeader = false;
@@ -863,7 +863,7 @@ UnicodeString TEncryption::DecryptFileName(const UnicodeString & AFileName)
   return Result;
 }
 
-bool TEncryption::IsEncryptedFileName(const UnicodeString AFileName)
+bool TEncryption::IsEncryptedFileName(const UnicodeString & AFileName)
 {
   return EndsStr(AesCtrExt, AFileName);
 }

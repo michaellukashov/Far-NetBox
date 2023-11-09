@@ -78,17 +78,17 @@ AnsiString PuttyStr(const UnicodeString Str)
   return AnsiString(Str);
 }
 
-UnicodeString PuttyMungeStr(const UnicodeString Str)
+UnicodeString PuttyMungeStr(const UnicodeString & Str)
 {
   return MungeStr(Str, true, false);
 }
 
-UnicodeString PuttyUnMungeStr(UnicodeString Str)
+UnicodeString PuttyUnMungeStr(const UnicodeString & Str)
 {
   return UnMungeStr(Str);
 }
 
-UnicodeString MungeIniName(const UnicodeString Str)
+UnicodeString MungeIniName(const UnicodeString & Str)
 {
   int P = Str.Pos(L"=");
   // make this fast for now
@@ -458,7 +458,7 @@ bool THierarchicalStorage::HasSubKeys()
   return Result;
 }
 
-bool THierarchicalStorage::DeleteValue(const UnicodeString Name)
+bool THierarchicalStorage::DeleteValue(const UnicodeString & Name)
 {
   if (CanWrite())
   {
@@ -592,7 +592,7 @@ void THierarchicalStorage::GetValueNames(TStrings * Strings)
   }
 }
 
-bool THierarchicalStorage::ReadBool(const UnicodeString Name, bool Default)
+bool THierarchicalStorage::ReadBool(const UnicodeString & Name, bool Default)
 {
   if (CanRead())
   {
@@ -604,7 +604,7 @@ bool THierarchicalStorage::ReadBool(const UnicodeString Name, bool Default)
   }
 }
 
-int32_t THierarchicalStorage::ReadInteger(const UnicodeString &  Name, int32_t Default)
+int32_t THierarchicalStorage::ReadInteger(const UnicodeString & Name, int32_t Default)
 {
   return ReadIntegerWithMapping(Name, Default, nullptr);
 }
@@ -633,7 +633,7 @@ int64_t THierarchicalStorage::ReadInt64(const UnicodeString & Name, int64_t Defa
   }
 }
 
-TDateTime THierarchicalStorage::ReadDateTime(const UnicodeString Name, TDateTime Default)
+TDateTime THierarchicalStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
 {
   if (CanRead())
   {
@@ -645,7 +645,7 @@ TDateTime THierarchicalStorage::ReadDateTime(const UnicodeString Name, TDateTime
   }
 }
 
-double THierarchicalStorage::ReadFloat(const UnicodeString Name, double Default)
+double THierarchicalStorage::ReadFloat(const UnicodeString & Name, double Default)
 {
   if (CanRead())
   {
@@ -669,7 +669,7 @@ UnicodeString THierarchicalStorage::ReadStringRaw(const UnicodeString & Name, co
   }
 }
 
-size_t THierarchicalStorage::ReadBinaryData(const UnicodeString Name, void * Buffer, size_t Size)
+size_t THierarchicalStorage::ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size)
 {
   if (CanRead())
   {
@@ -740,7 +740,7 @@ bool THierarchicalStorage::CanWrite()
   return HasAccess(hsaWrite);
 }
 
-void THierarchicalStorage::WriteBool(const UnicodeString Name, bool Value)
+void THierarchicalStorage::WriteBool(const UnicodeString & Name, bool Value)
 {
   if (CanWrite())
   {
@@ -748,7 +748,7 @@ void THierarchicalStorage::WriteBool(const UnicodeString Name, bool Value)
   }
 }
 
-void THierarchicalStorage::WriteStringRaw(const UnicodeString Name, const UnicodeString Value)
+void THierarchicalStorage::WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value)
 {
   if (CanWrite())
   {
@@ -756,7 +756,7 @@ void THierarchicalStorage::WriteStringRaw(const UnicodeString Name, const Unicod
   }
 }
 
-void THierarchicalStorage::WriteInteger(const UnicodeString Name, int32_t Value)
+void THierarchicalStorage::WriteInteger(const UnicodeString & Name, int32_t Value)
 {
   if (CanWrite())
   {
@@ -764,7 +764,7 @@ void THierarchicalStorage::WriteInteger(const UnicodeString Name, int32_t Value)
   }
 }
 
-void THierarchicalStorage::WriteInt64(const UnicodeString Name, int64_t Value)
+void THierarchicalStorage::WriteInt64(const UnicodeString & Name, int64_t Value)
 {
   if (CanWrite())
   {
@@ -772,7 +772,7 @@ void THierarchicalStorage::WriteInt64(const UnicodeString Name, int64_t Value)
   }
 }
 
-void THierarchicalStorage::WriteDateTime(const UnicodeString Name, TDateTime Value)
+void THierarchicalStorage::WriteDateTime(const UnicodeString & Name, TDateTime Value)
 {
   if (CanWrite())
   {
@@ -781,7 +781,7 @@ void THierarchicalStorage::WriteDateTime(const UnicodeString Name, TDateTime Val
   }
 }
 
-void THierarchicalStorage::WriteFloat(const UnicodeString Name, double Value)
+void THierarchicalStorage::WriteFloat(const UnicodeString & Name, double Value)
 {
   if (CanWrite())
   {
@@ -790,7 +790,7 @@ void THierarchicalStorage::WriteFloat(const UnicodeString Name, double Value)
   }
 }
 
-void THierarchicalStorage::WriteString(const UnicodeString Name, const UnicodeString Value)
+void THierarchicalStorage::WriteString(const UnicodeString & Name, const UnicodeString & Value)
 {
   if (MungeStringValues)
   {
@@ -802,7 +802,7 @@ void THierarchicalStorage::WriteString(const UnicodeString Name, const UnicodeSt
   }
 }
 
-void THierarchicalStorage::WriteBinaryData(const UnicodeString Name, const void * Buffer, size_t Size)
+void THierarchicalStorage::WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size)
 {
   if (CanWrite())
   {
@@ -810,12 +810,12 @@ void THierarchicalStorage::WriteBinaryData(const UnicodeString Name, const void 
   }
 }
 
-void THierarchicalStorage::WriteBinaryData(const UnicodeString Name, const RawByteString Value)
+void THierarchicalStorage::WriteBinaryData(const UnicodeString & Name, const RawByteString & Value)
 {
   WriteBinaryData(Name, Value.c_str(), Value.Length());
 }
 
-void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString Name, const RawByteString Value)
+void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value)
 {
   // This should be exactly the same operation as calling WriteString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS

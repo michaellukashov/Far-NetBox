@@ -1897,7 +1897,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
   return ImportSessionList.release();
 }
 
-void TConfiguration::SetRandomSeedFile(UnicodeString Value)
+void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 {
   if (GetRandomSeedFile() != Value)
   {
@@ -2147,7 +2147,7 @@ UnicodeString  TConfiguration::GetLogFileName() const
   return FPermanentLogFileName;
 }
 
-void TConfiguration::SetActionsLogFileName(UnicodeString Value)
+void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
   if (GetActionsLogFileName() != Value)

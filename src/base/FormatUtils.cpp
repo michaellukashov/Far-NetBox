@@ -5,14 +5,14 @@
 
 namespace nb {
 
-UnicodeString Format(const UnicodeString fmt, fmt::ArgList args)
+UnicodeString Format(const UnicodeString & fmt, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
   w.write(fmt.data(), args);
   return UnicodeString(w.data(), ToIntPtr(w.size()));
 }
 
-UnicodeString Sprintf(const UnicodeString fmt, fmt::ArgList args)
+UnicodeString Sprintf(const UnicodeString & fmt, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
   fmt::printf(w, fmt.data(), args);

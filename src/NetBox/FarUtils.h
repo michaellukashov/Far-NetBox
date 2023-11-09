@@ -2,7 +2,7 @@
 
 #include <vcl.h>
 
-void FarWrapText(UnicodeString Text, TStrings *Result, intptr_t MaxWidth);
+void FarWrapText(const UnicodeString & Text, TStrings * Result, int32_t MaxWidth);
 
 /**
  * File read/write wrapper

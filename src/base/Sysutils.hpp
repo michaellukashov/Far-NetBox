@@ -237,13 +237,13 @@ NB_CORE_EXPORT UnicodeString DateTimeToString(const TDateTime & DateTime);
 NB_CORE_EXPORT uint32_t DayOfWeek(const TDateTime & DateTime);
 
 NB_CORE_EXPORT TDateTime Date();
-NB_CORE_EXPORT void DecodeDate(const TDateTime &DateTime, uint16_t &Year,
-  uint16_t &Month, uint16_t &Day);
-NB_CORE_EXPORT void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
-  uint16_t &Min, uint16_t &Sec, uint16_t &MSec);
+NB_CORE_EXPORT void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
+  uint16_t & Month, uint16_t & Day);
+NB_CORE_EXPORT void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
+  uint16_t & Min, uint16_t & Sec, uint16_t & MSec);
 
-NB_CORE_EXPORT UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime &ADateTime);
-NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime);
+NB_CORE_EXPORT UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateTime);
+NB_CORE_EXPORT TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime);
 
 NB_CORE_EXPORT TDateTime EncodeDate(uint16_t Year, uint16_t Month, uint16_t Day);
 NB_CORE_EXPORT TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec);

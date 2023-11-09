@@ -75,7 +75,7 @@ NB_CORE_EXPORT UnicodeString RemoveMainInstructionsTag(const UnicodeString & S);
 NB_CORE_EXPORT UnicodeString UnformatMessage(const UnicodeString & S);
 NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 NB_CORE_EXPORT UnicodeString RemoveEmptyLines(const UnicodeString & S);
-bool IsNumber(const UnicodeString Str);
+bool IsNumber(const UnicodeString & Str);
 extern const wchar_t NormalizedFingerprintSeparator;
 UnicodeString EncodeStrToBase64(const RawByteString & Str);
 RawByteString DecodeBase64ToStr(const UnicodeString & Str);
@@ -319,8 +319,8 @@ UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf = true);
 UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf = true);
-UnicodeString RtfEscapeParam(UnicodeString Param, bool PowerShellEscape);
-UnicodeString RtfRemoveHyperlinks(const UnicodeString Text);
+UnicodeString RtfEscapeParam(const UnicodeString & Param, bool PowerShellEscape);
+UnicodeString RtfRemoveHyperlinks(const UnicodeString & Text);
 UnicodeString ScriptCommandLink(const UnicodeString & Command);
 UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value);
 UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S);

@@ -72,17 +72,17 @@ public:
 class NB_CORE_EXPORT TRemoteTokenList : public TObject
 {
 public:
-  TRemoteTokenList *Duplicate() const;
+  TRemoteTokenList * Duplicate() const;
   void Clear();
-  void Add(const TRemoteToken &Token);
-  void AddUnique(const TRemoteToken &Token);
-  bool Exists(UnicodeString Name) const;
-  const TRemoteToken *Find(uint32_t ID) const;
-  const TRemoteToken *Find(UnicodeString Name) const;
-  void Log(TTerminal *Terminal, const wchar_t *Title);
+  void Add(const TRemoteToken & Token);
+  void AddUnique(const TRemoteToken & Token);
+  bool Exists(const UnicodeString & Name) const;
+  const TRemoteToken * Find(uint32_t ID) const;
+  const TRemoteToken * Find(const UnicodeString & Name) const;
+  void Log(TTerminal * Terminal, const wchar_t *Title);
 
   int32_t GetCount() const;
-  const TRemoteToken *Token(int32_t Index) const;
+  const TRemoteToken * Token(int32_t Index) const;
 
 private:
   using TTokens = nb::vector_t<TRemoteToken>;
@@ -414,7 +414,7 @@ protected:
 private:
   TCriticalSection FSection;
   bool GetIsEmptyPrivate() const;
-  void DoClearFileList(UnicodeString Directory, bool SubDirs);
+  void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
 };
 
 class TRemoteDirectoryChangesCache : private TStringList
@@ -745,11 +745,11 @@ protected:
   void Add(TChecklistItem * Item);
 
 public:
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString & Value);
 
   int32_t GetCount() const;
   int32_t GetCheckedCount() const;
-  const TChecklistItem *GetItem(int32_t Index) const;
+  const TChecklistItem * GetItem(int32_t Index) const;
 
 private:
   std::unique_ptr<TList> FList;

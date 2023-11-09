@@ -950,7 +950,7 @@ UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
   return Result;
 }
 
-void TFTPFileSystem::EnsureLocation(const UnicodeString ADirectory, bool Log)
+void TFTPFileSystem::EnsureLocation(const UnicodeString & ADirectory, bool Log)
 {
   UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
   if (!base::UnixSamePath(GetActualCurrentDirectory(), Directory))
@@ -1396,7 +1396,7 @@ bool TFTPFileSystem::UsingHashCommandChecksum(const UnicodeString & Alg) const
 }
 
 bool TFTPFileSystem::ConfirmOverwrite(
-  const UnicodeString ASourceFullFileName, UnicodeString & ATargetFileName,
+  const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
   TOverwriteMode & OverwriteMode, TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   int32_t Params, bool AutoResume)
@@ -1602,10 +1602,10 @@ void TFTPFileSystem::FileTransferProgress(int64_t TransferSize,
   DoFileTransferProgress(TransferSize, Bytes);
 }
 
-void TFTPFileSystem::FileTransfer(const UnicodeString AFileName,
-  const UnicodeString LocalFile, const UnicodeString RemoteFile,
-  const UnicodeString RemotePath, bool Get, int64_t Size, int32_t Type,
-  TFileTransferData &UserData, TFileOperationProgressType *OperationProgress)
+void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
+  const UnicodeString & LocalFile, const UnicodeString & RemoteFile,
+  const UnicodeString & RemotePath, bool Get, int64_t Size, int32_t Type,
+  TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
   FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
     FMTLOAD(TRANSFER_ERROR, AFileName), "",
@@ -2448,7 +2448,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
   }
 }
 
-void TFTPFileSystem::DoReadFile(const UnicodeString AFileName,
+void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -3480,7 +3480,7 @@ void TFTPFileSystem::StoreLastResponse(const UnicodeString Text)
   }
 }
 
-void TFTPFileSystem::HandleReplyStatus(UnicodeString Response)
+void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 {
   int64_t Code = 0;
 
@@ -4049,7 +4049,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
   }
 }
 
-static UnicodeString FormatContactList(UnicodeString Entry1, UnicodeString Entry2)
+static UnicodeString FormatContactList(const UnicodeString & Entry1, const UnicodeString & Entry2)
 {
   if (!Entry1.IsEmpty() && !Entry2.IsEmpty())
   {
@@ -4109,7 +4109,7 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime &Vali
   return dt;
 }
 
-static bool VerifyNameMask(UnicodeString AName, UnicodeString AMask)
+static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AMask)
 {
   bool Result = true;
   UnicodeString Name = AName;
@@ -4703,7 +4703,7 @@ bool TFTPFileSystem::CheckError(int32_t ReturnCode, const wchar_t *Context)
   return false;
 }
 
-bool TFTPFileSystem::Unquote(UnicodeString &Str)
+bool TFTPFileSystem::Unquote(UnicodeString & Str)
 {
   enum
   {

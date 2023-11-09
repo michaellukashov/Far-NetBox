@@ -401,7 +401,7 @@ public:
   void SetGssLibList(const UnicodeString & value);
   UnicodeString GetGssLibList() const;
   void SetProxyMethod(TProxyMethod value);
-  void SetProxyHost(UnicodeString value);
+  void SetProxyHost(const UnicodeString & value);
   void SetProxyPort(int32_t value);
   void SetProxyUsername(const UnicodeString & value);
   void SetProxyPassword(const UnicodeString & value);
@@ -414,9 +414,9 @@ public:
   void SetBug(TSshBug Bug, TAutoSwitch value);
   TAutoSwitch GetBug(TSshBug Bug) const;
   UnicodeString GetSessionKey() const;
-  void SetPuttySettings(UnicodeString value);
-  void SetCustomParam1(UnicodeString value);
-  void SetCustomParam2(UnicodeString value);
+  void SetPuttySettings(const UnicodeString & value);
+  void SetCustomParam1(const UnicodeString & value);
+  void SetCustomParam2(const UnicodeString & value);
   void SetResolveSymlinks(bool value);
   void SetFollowDirectorySymlinks(bool value);
   void SetSFTPDownloadQueue(int32_t value);
@@ -440,8 +440,8 @@ public:
   void SetDSTMode(TDSTMode value);
   void SetDeleteToRecycleBin(bool value);
   void SetOverwrittenToRecycleBin(bool value);
-  void SetRecycleBinPath(UnicodeString value);
-  void SetPostLoginCommands(UnicodeString value);
+  void SetRecycleBinPath(const UnicodeString & value);
+  void SetPostLoginCommands(const UnicodeString & value);
   void SetAddressFamily(const TAddressFamily & value);
   void SetRekeyData(const UnicodeString & value);
   void SetRekeyTime(uint32_t value);
@@ -458,11 +458,11 @@ public:
   void SetTunnelPortFwd(const UnicodeString & value);
   void SetTunnelLocalPortNumber(int32_t value);
   bool GetTunnelAutoassignLocalPortNumber() const;
-  void SetTunnelHostKey(UnicodeString value);
+  void SetTunnelHostKey(const UnicodeString & value);
   void SetFtpPasvMode(bool value);
   void SetFtpForcePasvIp(TAutoSwitch value);
   void SetFtpUseMlsd(TAutoSwitch value);
-  void SetFtpAccount(UnicodeString value);
+  void SetFtpAccount(const UnicodeString & value);
   void SetFtpPingInterval(int32_t value);
   void SetFtpPingType(TPingType value);
   void SetFtpTransferActiveImmediately(TAutoSwitch value);
@@ -519,8 +519,8 @@ public:
   static bool IsProtocolUrl(const UnicodeString & AUrl, const UnicodeString & Protocol, int32_t & ProtocolLen);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & Name, bool Rtf);
   static void AddSwitch(
-    UnicodeString &Result, const UnicodeString Name, const UnicodeString Value, bool Rtf);
-  static void AddSwitch(UnicodeString &Result, const UnicodeString AName, int32_t Value, bool Rtf);
+    UnicodeString &Result, const UnicodeString & Name, const UnicodeString & Value, bool Rtf);
+  static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, int32_t Value, bool Rtf);
 #if 0
   static void AddAssemblyProperty(
     UnicodeString &Result, TAssemblyLanguage Language,
@@ -549,7 +549,7 @@ public:
 
 public:
   TSessionData() = delete;
-  explicit TSessionData(UnicodeString aName) noexcept;
+  explicit TSessionData(const UnicodeString & AName) noexcept;
   virtual ~TSessionData() noexcept;
   TSessionData * Clone() const;
   void Default();
@@ -561,7 +561,7 @@ public:
   __removed void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode);
   void ImportFromOpenssh(TStrings * Lines);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
-    const TSessionData *Default = nullptr);
+    const TSessionData * Default = nullptr);
   void SaveRecryptedPasswords(THierarchicalStorage * Storage);
   void RecryptPasswords();
   bool HasPassword() const;
@@ -576,7 +576,7 @@ public:
   void CopyData(const TSessionData * Source);
   void CopyDataNoRecrypt(const TSessionData * SourceData);
   void CopyDirectoriesStateData(TSessionData * SourceData);
-  bool ParseUrl(UnicodeString Url, TOptions * Options,
+  bool ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * AStoredSessions, bool &DefaultsOnly,
     UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString *MaskedUrl, int32_t Flags);
   TStrings * SaveToOptions(const TSessionData * Default, bool SaveName, bool PuttyExport);
@@ -896,7 +896,7 @@ public:
   bool GetTimeDifferenceAuto() const { return FTimeDifferenceAuto; }
   UnicodeString GetNote() const { return FNote; }
   UnicodeString GetProtocolStr() const;
-  void SetProtocolStr(UnicodeString Value);
+  void SetProtocolStr(const UnicodeString & Value);
 
   UnicodeString GetHostName() const { return FHostName; }
   int32_t GetPortNumber() const { return FPortNumber; }
@@ -981,7 +981,7 @@ public:
   UnicodeString GetPostLoginCommands() const { return FPostLoginCommands; }
   TAddressFamily GetAddressFamily() const { return FAddressFamily; }
   UnicodeString GetCodePage() const { return FCodePage; }
-  void SetCodePage(UnicodeString Value);
+  void SetCodePage(const UnicodeString & Value);
   uint32_t GetCodePageAsNumber() const;
   UnicodeString GetRekeyData() const { return FRekeyData; }
   uint32_t GetRekeyTime() const { return FRekeyTime; }
@@ -1024,21 +1024,21 @@ public:
   void SetNumberOfRetries(int32_t Value) { FNumberOfRetries = Value; }
   uint32_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uint32_t Value) { FSessionVersion = Value; }
-  void RemoveProtocolPrefix(UnicodeString &HostName) const;
-  static void AddSwitchValue(UnicodeString &Result, UnicodeString Name, UnicodeString Value);
+  void RemoveProtocolPrefix(UnicodeString & HostName) const;
+  static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
 
 private:
   uint32_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
   TFSProtocol TranslateFSProtocolNumber(int32_t FSProtocol);
-  TFSProtocol TranslateFSProtocol(UnicodeString ProtocolID) const;
+  TFSProtocol TranslateFSProtocol(const UnicodeString & ProtocolID) const;
   TFtps TranslateFtpEncryptionNumber(int32_t FtpEncryption) const;
 
   TProxyMethod GetSystemProxyMethod() const;
   void PrepareProxyData() const;
   void ParseIEProxyConfig() const;
-  void FromURI(UnicodeString ProxyURI,
-    UnicodeString &ProxyUrl, int32_t &ProxyPort, TProxyMethod &ProxyMethod) const;
-  void AdjustHostName(UnicodeString &HostName, UnicodeString Prefix) const;
+  void FromURI(const UnicodeString & ProxyURI,
+    UnicodeString & ProxyUrl, int32_t & ProxyPort, TProxyMethod & ProxyMethod) const;
+  void AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const;
 
 private:
   int32_t FSFTPMinPacketSize{0};
@@ -1082,14 +1082,14 @@ public:
   void UpdateStaticUsage();
   int32_t IndexOf(TSessionData * Data) const;
   const TSessionData * FindSame(TSessionData * Data);
-  TSessionData * NewSession(UnicodeString SessionName, TSessionData * Session);
-  void NewWorkspace(const UnicodeString Name, TList * DataList);
+  TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
+  void NewWorkspace(const UnicodeString & Name, TList * DataList);
   bool GetIsFolder(const UnicodeString & Name) const;
   bool GetIsWorkspace(const UnicodeString & Name) const;
   bool IsFolderOrWorkspace(const UnicodeString & Name) const;
-  TSessionData * ParseUrl(UnicodeString Url, TOptions * Options, bool & DefaultsOnly,
+  TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
     UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr, int32_t Flags = 0);
-  bool IsUrl(UnicodeString Url);
+  bool IsUrl(const UnicodeString & Url);
   bool CanOpen(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
@@ -1114,7 +1114,7 @@ public:
   const TSessionData * GetDefaultSettingsConst() const { return FDefaultSettings.get(); }
   TSessionData *GetDefaultSettings() { return FDefaultSettings.get(); }
   void SetDefaultSettings(const TSessionData * Value);
-  const TSessionData *GetSessionByName(UnicodeString SessionName) const;
+  const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
 private:
   std::unique_ptr<TSessionData> FDefaultSettings;
   bool FReadOnly{false};
@@ -1144,7 +1144,7 @@ NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString IP);
 NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
 
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
-NB_CORE_EXPORT uint32_t GetCodePageAsNumber(UnicodeString CodePage);
+NB_CORE_EXPORT uint32_t GetCodePageAsNumber(const UnicodeString & CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
 
 //template<int s> struct CheckSizeT;

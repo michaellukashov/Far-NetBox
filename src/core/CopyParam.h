@@ -238,7 +238,7 @@ public:
   bool GetClearArchive() const { return FClearArchive; }
   void SetClearArchive(bool Value) { FClearArchive = Value; }
   UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }
-  void SetTransferResumeFile(UnicodeString Value) { FTransferResumeFile = Value; }
+  void SetTransferResumeFile(const UnicodeString & Value) { FTransferResumeFile = Value; }
   bool GetRemoveCtrlZ() const { return FRemoveCtrlZ; }
   void SetRemoveCtrlZ(bool Value) { FRemoveCtrlZ = Value; }
   bool GetRemoveBOM() const { return FRemoveBOM; }

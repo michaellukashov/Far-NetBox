@@ -517,8 +517,8 @@ public:
   static TTimeSpan FromMilliseconds(double Value);
   static TTimeSpan FromTicks(int64_t Value);
   static TTimeSpan Subtract(const TDateTime D1, const TDateTime D2);
-  static TTimeSpan Parse(const UnicodeString S);
-  static bool TryParse(const UnicodeString S, const TTimeSpan &Value);
+  static TTimeSpan Parse(const UnicodeString & S);
+  static bool TryParse(const UnicodeString & S, const TTimeSpan & Value);
   static TTimeSpan Add(const TTimeSpan Left, const TTimeSpan Right);
   static TDateTime Add(const TTimeSpan Left, const TDateTime Right);
   static TDateTime Add(const TDateTime Left, const TTimeSpan Right);

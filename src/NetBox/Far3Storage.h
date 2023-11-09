@@ -21,7 +21,7 @@ public:
   virtual void DoGetSubKeyNames(TStrings * Strings) override;
   virtual bool DoValueExists(const UnicodeString & Value) override;
   virtual bool DoDeleteValue(const UnicodeString & Name) override;
-//  virtual size_t DoBinaryDataSize(const UnicodeString Name) const override;
+//  virtual size_t DoBinaryDataSize(const UnicodeString & Name) const override;
   virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
 
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;

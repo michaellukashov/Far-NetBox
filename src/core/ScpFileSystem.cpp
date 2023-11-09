@@ -573,7 +573,7 @@ bool TSCPFileSystem::IsTotalListingLine(const UnicodeString & Line)
 }
 
 bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
-    int32_t & ReturnCode, const UnicodeString & ALastLine)
+  int32_t & ReturnCode, const UnicodeString & ALastLine)
 {
   UnicodeString LastLine = ALastLine;
   bool IsLastLine = false;

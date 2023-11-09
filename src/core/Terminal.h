@@ -574,7 +574,7 @@ protected:
 
   UnicodeString EncryptFileName(const UnicodeString & APath, bool EncryptNewFiles);
   UnicodeString DecryptFileName(const UnicodeString & APath, bool DecryptFullPath, bool DontCache);
-  typename TEncryptedFileNames::const_iterator GetEncryptedFileName(const UnicodeString APath);
+  typename TEncryptedFileNames::const_iterator GetEncryptedFileName(const UnicodeString & APath);
   bool IsFileEncrypted(const UnicodeString & APath, bool EncryptNewFiles = false);
 
   __property TFileOperationProgressType *OperationProgress = { read = FOperationProgress };
@@ -628,7 +628,7 @@ public:
     const TRemoteFile * AFile = nullptr, void * AParams = nullptr);
   bool RemoteDeleteFiles(TStrings * AFilesToDelete, int32_t Params = 0);
   bool DeleteLocalFiles(TStrings * AFileList, int32_t Params = 0);
-  bool IsRecycledFile(UnicodeString AFileName);
+  bool IsRecycledFile(const UnicodeString & AFileName);
   void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & ACommand, int32_t AParams,
@@ -772,7 +772,7 @@ public:
 
   bool IsThisOrChild(TTerminal *Terminal) const;
   bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
-  void SetMasks(UnicodeString Value);
+  void SetMasks(const UnicodeString & Value);
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime &Modification);
@@ -842,11 +842,11 @@ public:
   TNotifyEvent GetOnClose() const { return FOnClose; }
   void SetOnClose(TNotifyEvent Value) { FOnClose = Value; }
   int32_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
-  void SetRememberedPassword(UnicodeString Value) { FRememberedPassword = Value; }
-  void SetRememberedTunnelPassword(UnicodeString Value) { FRememberedTunnelPassword = Value; }
-  void SetTunnelPassword(UnicodeString Value) { FRememberedTunnelPassword = Value; }
-  TCustomFileSystem *GetFileSystem() const { return FFileSystem.get(); }
-  TCustomFileSystem *GetFileSystem() { return FFileSystem.get(); }
+  void SetRememberedPassword(const UnicodeString & Value) { FRememberedPassword = Value; }
+  void SetRememberedTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
+  void SetTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
+  TCustomFileSystem * GetFileSystem() const { return FFileSystem.get(); }
+  TCustomFileSystem * GetFileSystem() { return FFileSystem.get(); }
 
   HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);

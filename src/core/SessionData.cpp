@@ -140,7 +140,7 @@ static bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & D
   return Result;
 }
 //--- TSessionData ----------------------------------------------------
-TSessionData::TSessionData(UnicodeString AName) noexcept :
+TSessionData::TSessionData(const UnicodeString & AName) noexcept :
   TNamedObject(OBJECT_CLASS_TSessionData, AName)
 {
   Default();
@@ -2169,7 +2169,7 @@ void TSessionData::CacheHostKeyIfNotCached()
   }
 }
 
-inline void MoveStr(UnicodeString &Source, UnicodeString *Dest, int32_t Count)
+inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, int32_t Count)
 {
   if (Dest != nullptr)
   {
@@ -2292,8 +2292,8 @@ static bool IsDomainOrSubdomain(const UnicodeString & FullDomain, const UnicodeS
     EndsText(L"." + Domain, FullDomain);
 }
 
-bool TSessionData::ParseUrl(UnicodeString Url, TOptions *Options,
-  TStoredSessionList *AStoredSessions, bool &DefaultsOnly, UnicodeString *AFileName,
+bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
+  TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl, int32_t Flags)
 {
   bool ProtocolDefined = true;
@@ -3893,7 +3893,7 @@ void TSessionData::AddSwitch(
 }
 
 void TSessionData::AddSwitch(
-  UnicodeString &Result, UnicodeString AName, UnicodeString Value, bool Rtf)
+  UnicodeString & Result, const UnicodeString & AName, const UnicodeString & Value, bool Rtf)
 {
 #if 0
   Result += RtfSwitch(Name, ScriptCommandOpenLink, Value, Rtf);
@@ -3901,7 +3901,7 @@ void TSessionData::AddSwitch(
 }
 
 void TSessionData::AddSwitch(
-  UnicodeString &Result, UnicodeString AName, int32_t Value,  bool Rtf)
+  UnicodeString & Result, const UnicodeString & AName, int32_t Value, bool Rtf)
 {
 #if 0
   Result += RtfSwitch(Name, ScriptCommandOpenLink, Value, Rtf);
@@ -4363,12 +4363,12 @@ void TSessionData::SetOverwrittenToRecycleBin(bool value)
   SET_SESSION_PROPERTY(OverwrittenToRecycleBin);
 }
 
-void TSessionData::SetRecycleBinPath(UnicodeString value)
+void TSessionData::SetRecycleBinPath(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(RecycleBinPath);
 }
 
-void TSessionData::SetPostLoginCommands(UnicodeString value)
+void TSessionData::SetPostLoginCommands(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(PostLoginCommands);
 }
@@ -4415,7 +4415,7 @@ void TSessionData::SetProxyMethod(TProxyMethod value)
   SET_SESSION_PROPERTY(ProxyMethod);
 }
 
-void TSessionData::SetProxyHost(UnicodeString value)
+void TSessionData::SetProxyHost(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(ProxyHost);
 }
@@ -4595,8 +4595,8 @@ void TSessionData::ParseIEProxyConfig() const
   FIEProxyConfig->ProxyMethod = ProxyMethod;
 }
 
-void TSessionData::FromURI(UnicodeString ProxyURI,
-  UnicodeString &ProxyUrl, int32_t &ProxyPort, TProxyMethod &ProxyMethod) const
+void TSessionData::FromURI(const UnicodeString & ProxyURI,
+  UnicodeString & ProxyUrl, int32_t & ProxyPort, TProxyMethod & ProxyMethod) const
 {
   ProxyUrl.Clear();
   ProxyPort = 0;
@@ -4676,17 +4676,17 @@ TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
   return FBugs[Bug];
 }
 
-void TSessionData::SetPuttySettings(UnicodeString value)
+void TSessionData::SetPuttySettings(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(PuttySettings);
 }
 
-void TSessionData::SetCustomParam1(UnicodeString value)
+void TSessionData::SetCustomParam1(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(CustomParam1);
 }
 
-void TSessionData::SetCustomParam2(UnicodeString value)
+void TSessionData::SetCustomParam2(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(CustomParam2);
 }
@@ -4841,7 +4841,7 @@ void TSessionData::SetTunnelPortFwd(const UnicodeString & value)
   SET_SESSION_PROPERTY(TunnelPortFwd);
 }
 
-void TSessionData::SetTunnelHostKey(UnicodeString value)
+void TSessionData::SetTunnelHostKey(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(TunnelHostKey);
 }
@@ -4861,7 +4861,7 @@ void TSessionData::SetFtpUseMlsd(TAutoSwitch value)
   SET_SESSION_PROPERTY(FtpUseMlsd);
 }
 
-void TSessionData::SetFtpAccount(UnicodeString value)
+void TSessionData::SetFtpAccount(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(FtpAccount);
 }
@@ -5168,13 +5168,13 @@ uint32_t TSessionData::GetCodePageAsNumber() const
   return FCodePageAsNumber;
 }
 
-void TSessionData::SetCodePage(UnicodeString value)
+void TSessionData::SetCodePage(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(CodePage);
   FCodePageAsNumber = 0;
 }
 
-void TSessionData::AdjustHostName(UnicodeString &HostName, UnicodeString Prefix) const
+void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const
 {
   UnicodeString FullPrefix = Prefix + ProtocolSeparator;
   if (::LowerCase(HostName.SubString(1, FullPrefix.Length())) == FullPrefix)
@@ -5183,7 +5183,7 @@ void TSessionData::AdjustHostName(UnicodeString &HostName, UnicodeString Prefix)
   }
 }
 
-void TSessionData::RemoveProtocolPrefix(UnicodeString &HostName) const
+void TSessionData::RemoveProtocolPrefix(UnicodeString & HostName) const
 {
   AdjustHostName(HostName, ScpProtocol);
   AdjustHostName(HostName, SftpProtocol);
@@ -5228,7 +5228,7 @@ TFSProtocol TSessionData::TranslateFSProtocolNumber(int32_t AFSProtocol)
   return Result;
 }
 
-TFSProtocol TSessionData::TranslateFSProtocol(UnicodeString ProtocolID) const
+TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID) const
 {
   // Find protocol by string id
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
@@ -6250,7 +6250,7 @@ TStrings *TStoredSessionList::GetWorkspaces() const
 }
 
 void TStoredSessionList::NewWorkspace(
-  UnicodeString Name, TList *DataList)
+  const UnicodeString & Name, TList * DataList)
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -6287,8 +6287,8 @@ bool TStoredSessionList::HasAnyWorkspace() const
   return Result;
 }
 
-TSessionData *TStoredSessionList::ParseUrl(UnicodeString Url,
-  TOptions *Options, bool &DefaultsOnly, UnicodeString *AFileName,
+TSessionData *TStoredSessionList::ParseUrl(const UnicodeString & Url,
+  TOptions * Options, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl, int32_t Flags)
 {
   std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(""));
@@ -6304,7 +6304,7 @@ TSessionData *TStoredSessionList::ParseUrl(UnicodeString Url,
   return Data.release();
 }
 
-bool TStoredSessionList::IsUrl(UnicodeString Url)
+bool TStoredSessionList::IsUrl(const UnicodeString & Url)
 {
   bool DefaultsOnly;
   bool ProtocolDefined = false;
@@ -6354,7 +6354,7 @@ bool TStoredSessionList::CanOpen(TSessionData *Data)
   return (Data != nullptr) && Data->CanOpen;
 }
 
-const TSessionData *TStoredSessionList::GetSessionByName(UnicodeString SessionName) const
+const TSessionData *TStoredSessionList::GetSessionByName(const UnicodeString & SessionName) const
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -6529,7 +6529,7 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
   return true;
 }
 
-uint32_t GetCodePageAsNumber(UnicodeString CodePage)
+uint32_t GetCodePageAsNumber(const UnicodeString & CodePage)
 {
   uint32_t codePage = _wtoi(CodePage.c_str());
   return nb::ToUIntPtr(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);

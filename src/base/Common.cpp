@@ -1110,7 +1110,7 @@ UnicodeString RemoveEmptyLines(const UnicodeString & S)
       L"\n \n", L"\n");
 }
 
-bool IsNumber(const UnicodeString Str)
+bool IsNumber(const UnicodeString & Str)
 {
   bool Result = (Str.Length() > 0);
   for (int32_t Index = 1; (Index < Str.Length()) && Result; Index++)
@@ -1690,7 +1690,7 @@ enum PATH_PREFIX_TYPE
   PPT_LONG_UNICODE_UNC,   //Found \\?\UNC\ prefix
 };
 
-static int32_t PathRootLength(const UnicodeString APath)
+static int32_t PathRootLength(const UnicodeString & APath)
 {
   // Correction for PathSkipRoot API
 
@@ -1703,7 +1703,7 @@ static int32_t PathRootLength(const UnicodeString APath)
   return (Buffer != nullptr) ? (Buffer - Result.c_str()) : -1;
 }
 
-static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString APath)
+static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & APath)
 {
   // Correction for PathIsRelative API
 
@@ -1714,7 +1714,7 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString AP
   return ::PathIsRelative(Result.c_str()) != FALSE;
 }
 
-static int32_t GetOffsetAfterPathRoot(const UnicodeString APath, PATH_PREFIX_TYPE &PrefixType)
+static int32_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_TYPE & PrefixType)
 {
   // Checks if 'pPath' begins with the drive, share, prefix, etc
   // EXAMPLES:
@@ -1863,7 +1863,7 @@ static int32_t GetOffsetAfterPathRoot(const UnicodeString APath, PATH_PREFIX_TYP
   return Result;
 }
 
-UnicodeString MakeUnicodeLargePath(const UnicodeString APath)
+UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
 {
   // Convert path from 'into a larger Unicode path, that allows up to 32,767 character length
   UnicodeString Path = APath;
@@ -3028,7 +3028,7 @@ TDateTime AdjustDateTimeFromUnix(const TDateTime & ADateTime, TDSTMode DSTMode)
   return DateTime;
 }
 
-UnicodeString FixedLenDateTimeFormat(const UnicodeString Format)
+UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
 {
   UnicodeString Result = Format;
   bool AsIs = false;
@@ -4261,7 +4261,7 @@ static bool IsTlsPassphraseError(int Error, bool HasPassphrase)
   return Result;
 }
 
-static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString Path, bool HasPassphrase)
+static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString & Path, bool HasPassphrase)
 {
   unsigned long Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
@@ -4478,7 +4478,7 @@ UnicodeString RtfColor(int Index)
   return FORMAT(L"\\cf%d", (Index));
 }
 
-UnicodeString RtfText(const UnicodeString Text, bool Rtf)
+UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
 {
   UnicodeString Result = Text;
   if (Rtf)

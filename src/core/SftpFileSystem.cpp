@@ -918,7 +918,7 @@ public:
     }
   }
 
-  void LoadFromFile(UnicodeString AFileName)
+  void LoadFromFile(const UnicodeString & AFileName)
   {
     std::unique_ptr<TStringList> DumpLines(std::make_unique<TStringList>());
     RawByteString Dump;

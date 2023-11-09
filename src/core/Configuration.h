@@ -174,7 +174,7 @@ public:
   UnicodeString GetStoredSessionsSubKey() const;
   UnicodeString DoGetPuttySessionsKey() const;
   UnicodeString GetPuttySessionsSubKey() const;
-  void SetRandomSeedFile(UnicodeString Value);
+  void SetRandomSeedFile(const UnicodeString & Value);
   UnicodeString GetRandomSeedFileName() const;
   void SetPuttyRegistryStorageKey(const UnicodeString & Value);
   UnicodeString GetSshHostKeysSubKey() const;
@@ -195,7 +195,7 @@ public:
   void SetLogProtocol(int32_t Value);
   void SetLogActions(bool Value);
   bool GetLogActions() const;
-  void SetActionsLogFileName(UnicodeString Value);
+  void SetActionsLogFileName(const UnicodeString & Value);
   UnicodeString GetPermanentActionsLogFileName() const;
   UnicodeString GetActionsLogFileName() const;
   UnicodeString GetDefaultLogFileName() const;

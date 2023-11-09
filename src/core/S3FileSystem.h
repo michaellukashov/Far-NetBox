@@ -150,21 +150,21 @@ protected:
   void CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOnConnectError = false);
   static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);
   void RequestInit(TLibS3CallbackData &Data);
-  void TryOpenDirectory(const UnicodeString ADirectory);
-  void ReadDirectoryInternal(const UnicodeString APath, TRemoteFileList *FileList, int32_t MaxKeys, const UnicodeString AFileName);
-  void ParsePath(const UnicodeString APath, UnicodeString &BucketName, UnicodeString &AKey);
-  TRemoteToken MakeRemoteToken(const char *OwnerId, const char *OwnerDisplayName);
-  TLibS3BucketContext GetBucketContext(const UnicodeString ABucketName, const UnicodeString Prefix);
+  void TryOpenDirectory(const UnicodeString & ADirectory);
+  void ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList *FileList, int32_t MaxKeys, const UnicodeString AFileName);
+  void ParsePath(const UnicodeString & APath, UnicodeString & BucketName, UnicodeString & AKey);
+  TRemoteToken MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName);
+  TLibS3BucketContext GetBucketContext(const UnicodeString & ABucketName, const UnicodeString & Prefix);
   void DoListBucket(
-    const UnicodeString APrefix, TRemoteFileList *FileList, int32_t MaxKeys, const TLibS3BucketContext &BucketContext,
+    const UnicodeString & APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext &BucketContext,
     TLibS3ListBucketCallbackData &Data);
-  UnicodeString GetFolderKey(const UnicodeString AKey);
+  UnicodeString GetFolderKey(const UnicodeString & AKey);
   void HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry);
-  void DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFile);
+  void DoReadFile(const UnicodeString & AFileName, TRemoteFile *&AFile);
   void ConfirmOverwrite(
-    const UnicodeString ASourceFullFileName, UnicodeString &ATargetFileName,
-    TFileOperationProgressType *OperationProgress, const TOverwriteFileParams *FileParams,
-    const TCopyParamType *CopyParam, int32_t AParams);
+    const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
+    TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
+    const TCopyParamType * CopyParam, int32_t AParams);
   int PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDataCallbackData &Data);
   S3Status GetObjectData(int BufferSize, const char *Buffer, TLibS3GetObjectDataCallbackData &Data);
   bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &Data);

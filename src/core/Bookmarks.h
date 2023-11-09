@@ -31,9 +31,9 @@ private:
   static std::string_view Keys[];
 
 public:
-  TBookmarkList *GetBookmarks(UnicodeString AIndex);
-  void SetBookmarks(UnicodeString AIndex, TBookmarkList *Value);
-  TBookmarkList *GetSharedBookmarks();
+  TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
+  void SetBookmarks(const UnicodeString & AIndex, TBookmarkList *Value);
+  TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList *Value);
 
 private:
@@ -56,17 +56,17 @@ public:
   virtual ~TBookmarkList() noexcept;
 
   void Clear();
-  void Add(TBookmark *Bookmark);
-  void Insert(int32_t Index, TBookmark *Bookmark);
-  void InsertBefore(TBookmark *BeforeBookmark, TBookmark *Bookmark);
-  void MoveTo(TBookmark *ToBookmark, TBookmark *Bookmark, bool Before);
-  void Delete(TBookmark *&Bookmark);
-  TBookmark *FindByName(const UnicodeString Node, const UnicodeString Name) const;
-  TBookmark *FindByShortCut(const TShortCut &ShortCut);
-  virtual void Assign(const TPersistent *Source) override;
-  void LoadOptions(THierarchicalStorage *Storage);
-  void SaveOptions(THierarchicalStorage *Storage) const;
-  void ShortCuts(TShortCuts &ShortCuts);
+  void Add(TBookmark * Bookmark);
+  void Insert(int32_t Index, TBookmark * Bookmark);
+  void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
+  void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
+  void Delete(TBookmark *& Bookmark);
+  TBookmark *FindByName(const UnicodeString & Node, const UnicodeString & Name) const;
+  TBookmark *FindByShortCut(const TShortCut & ShortCut);
+  virtual void Assign(const TPersistent * Source) override;
+  void LoadOptions(THierarchicalStorage * Storage);
+  void SaveOptions(THierarchicalStorage * Storage) const;
+  void ShortCuts(TShortCuts & ShortCuts);
 
   __property int Count = { read = GetCount };
   ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
@@ -74,7 +74,7 @@ public:
   __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 
 protected:
-  int32_t IndexOf(TBookmark *Bookmark) const;
+  int32_t IndexOf(TBookmark * Bookmark) const;
   void KeyChanged(int32_t Index);
 
   __property bool Modified = { read = FModified, write = FModified };
@@ -89,9 +89,9 @@ private:
 
 public:
   int32_t GetCount() const;
-  TBookmark *GetBookmarks(int32_t AIndex);
-  bool GetNodeOpened(UnicodeString AIndex) const;
-  void SetNodeOpened(UnicodeString AIndex, bool Value);
+  TBookmark * GetBookmarks(int32_t AIndex);
+  bool GetNodeOpened(const UnicodeString & AIndex) const;
+  void SetNodeOpened(const UnicodeString & AIndex, bool Value);
 };
 
 NB_DEFINE_CLASS_ID(TBookmark);
@@ -136,11 +136,11 @@ public:
   UnicodeString GetNode() const { return FNode; }
   TShortCut GetShortCut() const { return FShortCut; }
 
-  void SetName(const UnicodeString Value);
-  void SetLocal(const UnicodeString Value);
-  void SetRemote(const UnicodeString Value);
-  void SetNode(const UnicodeString Value);
-  void SetShortCut(const TShortCut &Value);
+  void SetName(const UnicodeString & Value);
+  void SetLocal(const UnicodeString & Value);
+  void SetRemote(const UnicodeString & Value);
+  void SetNode(const UnicodeString & Value);
+  void SetShortCut(const TShortCut & Value);
   UnicodeString GetKey() const;
 
 private:

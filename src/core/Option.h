@@ -13,20 +13,20 @@ public:
   TOptions() noexcept;
   TOptions(const TOptions & Source);
 
-  void Add(const UnicodeString Value);
+  void Add(const UnicodeString & Value);
   void Parse(const UnicodeString & CmdLine);
 
-  bool FindSwitch(const UnicodeString Switch);
-  bool FindSwitch(const UnicodeString Switch, UnicodeString & Value);
-  bool FindSwitch(const UnicodeString Switch, UnicodeString & Value, bool & ValueSet);
-  bool FindSwitch(const UnicodeString Switch, TStrings * Params,
+  bool FindSwitch(const UnicodeString & Switch);
+  bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
+  bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value, bool & ValueSet);
+  bool FindSwitch(const UnicodeString & Switch, TStrings * Params,
     int32_t ParamsMax = -1);
-  bool FindSwitchCaseSensitive(const UnicodeString Switch);
-  bool FindSwitchCaseSensitive(const UnicodeString Switch, TStrings * Params,
+  bool FindSwitchCaseSensitive(const UnicodeString & Switch);
+  bool FindSwitchCaseSensitive(const UnicodeString & Switch, TStrings * Params,
     int32_t ParamsMax = -1);
-  UnicodeString SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");
-  bool SwitchValue(const UnicodeString Switch, bool Default);
-  bool SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence);
+  UnicodeString SwitchValue(const UnicodeString & Switch, const UnicodeString & Default = L"");
+  bool SwitchValue(const UnicodeString & Switch, bool Default);
+  bool SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
   bool UnusedSwitch(UnicodeString & Switch) const;
   bool WasSwitchAdded(UnicodeString & Switch, UnicodeString & Value, wchar_t & SwitchMark) const;
   UnicodeString ConsumeParam();

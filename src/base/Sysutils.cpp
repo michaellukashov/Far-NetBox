@@ -843,7 +843,7 @@ UnicodeString TranslateExceptionMessage(Exception *E)
   return UnicodeString();
 }
 
-void AppendWChar(UnicodeString &Str, const wchar_t Ch)
+void AppendWChar(UnicodeString & Str, const wchar_t Ch)
 {
   if (!Str.IsEmpty() && Str[Str.Length()] != Ch)
   {
@@ -1471,14 +1471,14 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
   return Result;
 }
 
-static TDateTime ComposeDateTime(const TDateTime &Date, const TDateTime &Time)
+static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
 {
   TDateTime Result = TDateTime(Date);
   Result += Time;
   return Result;
 }
 
-TDateTime SystemTimeToDateTime(const SYSTEMTIME &SystemTime)
+TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 {
   TDateTime Result = ComposeDateTime(EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay),
       EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));

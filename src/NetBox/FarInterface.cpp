@@ -85,7 +85,7 @@ void CopyToClipboard(const UnicodeString & AText)
 
 //from windows/GUITools.cpp
 template <class TEditControl>
-void ValidateMaskEditT(const UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int32_t ForceDirectoryMasks)
 {
   DebugAssert(Edit != nullptr);
   TFileMasks Masks(ForceDirectoryMasks);

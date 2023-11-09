@@ -10,8 +10,8 @@ static const char *CONST_SESSION_NODE = "Session";
 static const char *CONST_VERSION_ATTR = "version";
 static const char *CONST_NAME_ATTR = "name";
 
-TXmlStorage::TXmlStorage(const UnicodeString AStorage,
-  const UnicodeString StoredSessionsSubKey) noexcept :
+TXmlStorage::TXmlStorage(const UnicodeString & AStorage,
+  const UnicodeString & StoredSessionsSubKey) noexcept :
   THierarchicalStorage(::ExcludeTrailingBackslash(AStorage)),
   FStoredSessionsSubKey(StoredSessionsSubKey)
 {
@@ -213,7 +213,7 @@ bool TXmlStorage::DoDeleteValue(const UnicodeString & Name)
   return Result;
 }
 
-void TXmlStorage::RemoveIfExists(const UnicodeString Name)
+void TXmlStorage::RemoveIfExists(const UnicodeString & Name)
 {
   tinyxml2::XMLElement *Element = FindElement(Name);
   if (Element != nullptr)
@@ -222,7 +222,7 @@ void TXmlStorage::RemoveIfExists(const UnicodeString Name)
   }
 }
 
-void TXmlStorage::AddNewElement(const UnicodeString Name, const UnicodeString Value)
+void TXmlStorage::AddNewElement(const UnicodeString & Name, const UnicodeString & Value)
 {
   AnsiString StrName(Name);
   AnsiString StrValue(Value);
@@ -231,7 +231,7 @@ void TXmlStorage::AddNewElement(const UnicodeString Name, const UnicodeString Va
   FCurrentElement->LinkEndChild(Element);
 }
 
-UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString Name) const
+UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name) const
 {
   tinyxml2::XMLElement *Element = FindElement(Name);
   if (!Element)
@@ -245,7 +245,7 @@ UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString Name) const
   return ToUnicodeString(Element->GetText());
 }
 
-tinyxml2::XMLElement *TXmlStorage::FindElement(const UnicodeString Name) const
+tinyxml2::XMLElement *TXmlStorage::FindElement(const UnicodeString & Name) const
 {
   for (const tinyxml2::XMLElement *Element = FCurrentElement->FirstChildElement();
     Element != nullptr; Element = Element->NextSiblingElement())
@@ -259,7 +259,7 @@ tinyxml2::XMLElement *TXmlStorage::FindElement(const UnicodeString Name) const
   return nullptr;
 }
 
-tinyxml2::XMLElement *TXmlStorage::FindChildElement(AnsiString SubKey) const
+tinyxml2::XMLElement *TXmlStorage::FindChildElement(const AnsiString & SubKey) const
 {
   tinyxml2::XMLElement *Result = nullptr;
   // DebugAssert(FCurrentElement);

@@ -649,7 +649,7 @@ class TFarComboBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarComboBox)
 public:
-  explicit TFarComboBox(TFarDialog *ADialog) noexcept;
+  explicit TFarComboBox(TFarDialog * ADialog) noexcept;
   virtual ~TFarComboBox() noexcept;
 
   void ResizeToFitContent();

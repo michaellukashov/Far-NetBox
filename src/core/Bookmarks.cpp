@@ -232,7 +232,7 @@ void TBookmarks::ModifyAll(bool Modify)
   }
 }
 
-TBookmarkList *TBookmarks::GetBookmarks(UnicodeString AIndex)
+TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
 {
   int32_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
@@ -242,7 +242,7 @@ TBookmarkList *TBookmarks::GetBookmarks(UnicodeString AIndex)
   return nullptr;
 }
 
-void TBookmarks::SetBookmarks(UnicodeString AIndex, TBookmarkList *Value)
+void TBookmarks::SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value)
 {
   int32_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
@@ -403,7 +403,7 @@ void TBookmarkList::KeyChanged(int32_t Index)
   FBookmarks->SetString(Index, Bookmark->GetKey());
 }
 
-TBookmark *TBookmarkList::FindByName(UnicodeString Node, UnicodeString Name) const
+TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, UnicodeString Name) const
 {
   int32_t Index = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name));
   TBookmark *Bookmark = ((Index >= 0) ? FBookmarks->GetAs<TBookmark>(Index) : nullptr);
@@ -435,12 +435,12 @@ TBookmark *TBookmarkList::GetBookmarks(int32_t AIndex)
   return Bookmark;
 }
 
-bool TBookmarkList::GetNodeOpened(UnicodeString AIndex) const
+bool TBookmarkList::GetNodeOpened(const UnicodeString & AIndex) const
 {
   return (FOpenedNodes->IndexOf(AIndex) >= 0);
 }
 
-void TBookmarkList::SetNodeOpened(UnicodeString AIndex, bool Value)
+void TBookmarkList::SetNodeOpened(const UnicodeString & AIndex, bool Value)
 {
   int32_t Index = FOpenedNodes->IndexOf(AIndex);
   if ((Index >= 0) != Value)
@@ -492,7 +492,7 @@ void TBookmark::Assign(const TPersistent *Source)
   }
 }
 
-void TBookmark::SetName(UnicodeString Value)
+void TBookmark::SetName(const UnicodeString & Value)
 {
   if (GetName() != Value)
   {
@@ -511,7 +511,7 @@ void TBookmark::SetName(UnicodeString Value)
   }
 }
 
-void TBookmark::SetLocal(UnicodeString Value)
+void TBookmark::SetLocal(const UnicodeString & Value)
 {
   if (GetLocal() != Value)
   {
@@ -520,7 +520,7 @@ void TBookmark::SetLocal(UnicodeString Value)
   }
 }
 
-void TBookmark::SetRemote(UnicodeString Value)
+void TBookmark::SetRemote(const UnicodeString & Value)
 {
   if (GetRemote() != Value)
   {
@@ -529,7 +529,7 @@ void TBookmark::SetRemote(UnicodeString Value)
   }
 }
 
-void TBookmark::SetNode(UnicodeString Value)
+void TBookmark::SetNode(const UnicodeString & Value)
 {
   if (GetNode() != Value)
   {
@@ -560,7 +560,7 @@ void TBookmark::Modify(int32_t OldIndex)
   }
 }
 
-UnicodeString TBookmark::BookmarkKey(UnicodeString Node, UnicodeString Name)
+UnicodeString TBookmark::BookmarkKey(const UnicodeString & Node, const UnicodeString & Name)
 {
   return FORMAT("%s\1%s", Node, Name);
 }

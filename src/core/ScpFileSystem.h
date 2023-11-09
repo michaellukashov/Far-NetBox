@@ -160,7 +160,7 @@ private:
   uint32_t ConfirmOverwrite(
     const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     TOperationSide Side,
-    const TOverwriteFileParams *FileParams, const TCopyParamType * CopyParam,
+    const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     int32_t Params, TFileOperationProgressType *OperationProgress);
   UnicodeString ParseFileChecksum(
     const UnicodeString & Line, const UnicodeString & FileName, const UnicodeString & Command);
