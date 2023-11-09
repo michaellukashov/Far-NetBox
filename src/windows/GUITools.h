@@ -91,10 +91,11 @@ public:
   bool HasLocalFileName(const UnicodeString & ACommand) const;
 
 protected:
-  virtual int32_t PatternLen(const UnicodeString & Command, int32_t Index) const;
+  virtual int32_t PatternLen(const UnicodeString & Command, int32_t Index) const override;
   virtual bool PatternReplacement(int32_t Index, const UnicodeString & Pattern,
-    const UnicodeString & Replacement, bool & Delimit) const;
-  virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
+    UnicodeString & Replacement, bool & Delimit) const override;
+  virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote) override;
+
 
 private:
   UnicodeString FLocalPath;

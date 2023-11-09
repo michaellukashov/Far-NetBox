@@ -526,7 +526,7 @@ Masks::TMask * TFileMasks::DoCreateMaskMask(const UnicodeString & Str)
 }
 
 void TFileMasks::CreateMaskMask(
-  const UnicodeString Mask, int32_t Start, int32_t End, bool Ex, TMask::TKind & MaskKind, Masks::TMask *& MaskMask)
+  const UnicodeString & Mask, int32_t Start, int32_t End, bool Ex, TMask::TKind & MaskKind, Masks::TMask *& MaskMask)
 {
   try
   {
@@ -548,22 +548,23 @@ void TFileMasks::CreateMaskMask(
   }
 }
 
-UnicodeString TFileMasks::MakeDirectoryMask(UnicodeString Str)
+UnicodeString TFileMasks::MakeDirectoryMask(const UnicodeString & AStr)
 {
-  DebugAssert(!Str.IsEmpty());
-  if (Str.IsEmpty() || !Str.IsDelimiter(DirectoryMaskDelimiters, Str.Length()))
+  UnicodeString Result = AStr;
+  DebugAssert(!Result.IsEmpty());
+  if (Result.IsEmpty() || !Result.IsDelimiter(DirectoryMaskDelimiters, Result.Length()))
   {
-    int32_t D = Str.LastDelimiter(DirectoryMaskDelimiters);
+    int32_t D = Result.LastDelimiter(DirectoryMaskDelimiters);
     // if there's any [back]slash anywhere in str,
     // add the same [back]slash at the end, otherwise add slash
-    wchar_t Delimiter = (D > 0) ? Str[D] : DirectoryMaskDelimiters[1];
-    Str += Delimiter;
+    wchar_t Delimiter = (D > 0) ? Result[D] : DirectoryMaskDelimiters[1];
+    Result += Delimiter;
   }
-  return Str;
+  return Result;
 }
 
 void TFileMasks::CreateMask(
-  const UnicodeString MaskStr, int32_t MaskStart, int32_t /*MaskEnd*/, bool Include)
+  const UnicodeString & MaskStr, int32_t MaskStart, int32_t /*MaskEnd*/, bool Include)
 {
   bool Directory = false; // shut up
   TMask Mask;
@@ -754,7 +755,7 @@ void TFileMasks::TrimEx(UnicodeString &Str, int32_t &Start, int32_t &End)
   End -= Buf.Length() - Str.Length();
 }
 
-bool TFileMasks::MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString Str)
+bool TFileMasks::MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString & Str)
 {
   bool Result;
   if (MaskKind == TMask::TKind::Any)
@@ -1154,7 +1155,7 @@ bool TInteractiveCustomCommand::IsPromptPattern(const UnicodeString & Pattern) c
 }
 
 void TInteractiveCustomCommand::ParsePromptPattern(
-  const UnicodeString Pattern, UnicodeString &Prompt, UnicodeString &Default, bool &Delimit) const
+  const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const
 {
   int32_t Pos = Pattern.SubString(3, Pattern.Length() - 2).Pos(L"?");
   if (Pos > 0)
@@ -1224,7 +1225,7 @@ TCustomCommandData::TCustomCommandData(TSessionData * SessionData)
 }
 
 TCustomCommandData::TCustomCommandData(
-  TSessionData * SessionData, const UnicodeString UserName, const UnicodeString Password) noexcept
+  TSessionData * SessionData, const UnicodeString & UserName, const UnicodeString & Password) noexcept
 {
   Init(SessionData, UserName, Password, UnicodeString());
 }
@@ -1239,8 +1240,8 @@ void TCustomCommandData::Init(TSessionData * ASessionData)
 }
 
 void TCustomCommandData::Init(
-  TSessionData * ASessionData, const UnicodeString AUserName,
-  const UnicodeString APassword, const UnicodeString AHostKey)
+  TSessionData * ASessionData, const UnicodeString & AUserName,
+  const UnicodeString & APassword, const UnicodeString & AHostKey)
 {
   Init(ASessionData);
   FSessionData->UserName = AUserName;

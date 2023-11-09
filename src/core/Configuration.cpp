@@ -982,7 +982,7 @@ void TConfiguration::CleanupConfiguration()
   }
 }
 
-bool TConfiguration::RegistryPathExists(const UnicodeString RegistryPath) const
+bool TConfiguration::RegistryPathExists(const UnicodeString & RegistryPath) const
 {
   std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(GetRegistryStorageKey()));
   Registry->Init();

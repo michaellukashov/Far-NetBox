@@ -663,7 +663,7 @@ class TWinInteractiveCustomCommand : public TInteractiveCustomCommand
 {
 public:
   TWinInteractiveCustomCommand(
-    TCustomCommand * ChildCustomCommand, const UnicodeString CustomCommandName, const UnicodeString HelpKeyword) noexcept;
+    TCustomCommand * ChildCustomCommand, const UnicodeString & CustomCommandName, const UnicodeString & HelpKeyword) noexcept;
 
 protected:
   virtual void Prompt(int32_t Index, const UnicodeString & Prompt,
@@ -733,15 +733,15 @@ class TConsole
 {
 public:
   virtual ~TConsole() = default;
-  virtual void Print(UnicodeString Str, bool FromBeginning = false, bool Error = false) = 0;
+  virtual void Print(const UnicodeString & Str, bool FromBeginning = false, bool Error = false) = 0;
   void PrintLine(const UnicodeString & Str = UnicodeString(), bool Error = false);
   virtual bool Input(UnicodeString & Str, bool Echo, uint32_t Timer) = 0;
   virtual int Choice(
-    UnicodeString Options, int32_t Cancel, int32_t Break, int32_t Continue, int32_t Timeouted, bool Timeouting, uint32_t Timer,
-    UnicodeString Message) = 0;
+    const UnicodeString & Options, int32_t Cancel, int32_t Break, int32_t Continue, int32_t Timeouted, bool Timeouting, uint32_t Timer,
+    const UnicodeString & Message) = 0;
   virtual bool HasFlag(TConsoleFlag Flag) const = 0;
   virtual bool PendingAbort() = 0;
-  virtual void SetTitle(UnicodeString Title) = 0;
+  virtual void SetTitle(const UnicodeString & Title) = 0;
   virtual void WaitBeforeExit() = 0;
   // virtual void Progress(TScriptProgress & Progress) = 0;
   virtual void TransferOut(const unsigned char * Data, size_t Len) = 0;

@@ -108,7 +108,7 @@ private:
     UnicodeString UserStr;
   };
 
-  typedef nb::vector_t<TMask> TMasks;
+  using TMasks = nb::vector_t<TMask>;
   TMasks FMasks[4];
   mutable TStrings *FMasksStr[4]{};
 
@@ -116,21 +116,21 @@ private:
   void SetStr(const UnicodeString & Value, bool SingleMask);
   void SetMasks(const UnicodeString & Value);
   void CreateMaskMask(
-    const UnicodeString Mask, int32_t Start, int32_t End, bool Ex, TMask::TKind & MaskKind, Masks::TMask *& MaskMask);
-  void CreateMask(const UnicodeString MaskStr, int32_t MaskStart,
+    const UnicodeString & Mask, int32_t Start, int32_t End, bool Ex, TMask::TKind & MaskKind, Masks::TMask *& MaskMask);
+  void CreateMask(const UnicodeString & MaskStr, int32_t MaskStart,
     int32_t MaskEnd, bool Include);
-  TStrings *GetMasksStr(int32_t Index) const;
-  static UnicodeString MakeDirectoryMask(UnicodeString AStr);
+  TStrings * GetMasksStr(int32_t Index) const;
+  static UnicodeString MakeDirectoryMask(const UnicodeString & AStr);
   inline void Init();
   void DoInit(bool Delete);
   void DoCopy(const TFileMasks & Source);
   void Clear();
-  static void Clear(TMasks &Masks);
-  static void TrimEx(UnicodeString &Str, int32_t &Start, int32_t &End);
+  static void Clear(TMasks & Masks);
+  static void TrimEx(UnicodeString & Str, int32_t & Start, int32_t & End);
   static bool MatchesMasks(
     const UnicodeString AFileName, bool Local, bool Directory,
     const UnicodeString APath, const TParams * Params, const TMasks & Masks, bool Recurse);
-  static bool MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString Str);
+  static bool MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString & Str);
   static Masks::TMask * DoCreateMaskMask(const UnicodeString & Str);
   void ThrowError(int32_t Start, int32_t End) const;
   bool DoMatches(
@@ -176,7 +176,7 @@ protected:
   virtual int32_t PatternLen(const UnicodeString & Command, int32_t Index) const = 0;
   virtual void PatternHint(int32_t Index, const UnicodeString & Pattern);
   virtual bool PatternReplacement(int32_t Index, const UnicodeString & Pattern,
-    UnicodeString &Replacement, bool & Delimit) const = 0;
+    UnicodeString & Replacement, bool & Delimit) const = 0;
   virtual void DelimitReplacement(UnicodeString & Replacement, wchar_t Quote);
 };
 
@@ -185,7 +185,7 @@ class NB_CORE_EXPORT TInteractiveCustomCommand : public TCustomCommand
   NB_DISABLE_COPY(TInteractiveCustomCommand)
 public:
   TInteractiveCustomCommand() = delete;
-  explicit TInteractiveCustomCommand(TCustomCommand *ChildCustomCommand) noexcept;
+  explicit TInteractiveCustomCommand(TCustomCommand * ChildCustomCommand) noexcept;
 
 protected:
   virtual void Prompt(int32_t Index, const UnicodeString & Prompt,
@@ -196,11 +196,11 @@ protected:
   virtual bool PatternReplacement(int32_t Index, const UnicodeString & Pattern,
     UnicodeString & Replacement, bool & Delimit) const override;
   void ParsePromptPattern(
-    const UnicodeString Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const;
+    const UnicodeString & Pattern, UnicodeString & Prompt, UnicodeString & Default, bool & Delimit) const;
   bool IsPromptPattern(const UnicodeString & Pattern) const;
 
 private:
-  TCustomCommand *FChildCustomCommand{nullptr};
+  TCustomCommand * FChildCustomCommand{nullptr};
 };
 
 class TSessionData;
@@ -208,16 +208,16 @@ struct NB_CORE_EXPORT TCustomCommandData : public TObject
 {
 public:
   TCustomCommandData() noexcept;
-  explicit TCustomCommandData(const TCustomCommandData &Data) noexcept;
-  explicit TCustomCommandData(TTerminal *Terminal) noexcept;
+  explicit TCustomCommandData(const TCustomCommandData & Data) noexcept;
+  explicit TCustomCommandData(TTerminal * Terminal) noexcept;
   explicit TCustomCommandData(TSessionData * SessionData);
   explicit TCustomCommandData(
-    TSessionData *SessionData, const UnicodeString AUserName,
-    const UnicodeString APassword) noexcept;
+    TSessionData * SessionData, const UnicodeString & AUserName,
+    const UnicodeString & APassword) noexcept;
 
   __property TSessionData *SessionData = { read = GetSessionData };
   ROProperty<TSessionData *> SessionData{nb::bind(&TCustomCommandData::GetSessionData, this)};
-  TSessionData *GetSessionData() const { return GetSessionDataPrivate(); }
+  TSessionData * GetSessionData() const { return GetSessionDataPrivate(); }
 
   TCustomCommandData &operator=(const TCustomCommandData &Data);
 
@@ -225,10 +225,10 @@ private:
   std::unique_ptr<TSessionData> FSessionData;
   void Init(TSessionData * ASessionData);
   void Init(
-    TSessionData *ASessionData, const UnicodeString AUserName,
-    const UnicodeString APassword, const UnicodeString AHostKey);
+    TSessionData * ASessionData, const UnicodeString & AUserName,
+    const UnicodeString & APassword, const UnicodeString & AHostKey);
 
-  TSessionData *GetSessionDataPrivate() const;
+  TSessionData * GetSessionDataPrivate() const;
 };
 
 class NB_CORE_EXPORT TFileCustomCommand : public TCustomCommand
@@ -263,6 +263,6 @@ private:
   UnicodeString FFileList;
 };
 
-typedef TFileCustomCommand TRemoteCustomCommand;
+using TRemoteCustomCommand = TFileCustomCommand;
 extern UnicodeString FileMasksDelimiters;
 

@@ -1798,10 +1798,9 @@ int32_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, int32_t I
 }
 
 bool TLocalCustomCommand::PatternReplacement(
-  int32_t Index, const UnicodeString & Pattern, const UnicodeString & AReplacement, bool & Delimit) const
+  int32_t Index, const UnicodeString & Pattern, UnicodeString & Replacement, bool & Delimit) const
 {
   bool Result;
-  UnicodeString Replacement = AReplacement;
   if (Pattern == L"!\\")
   {
     // When used as "!\" in an argument to PowerShell, the trailing \ would escape the ",

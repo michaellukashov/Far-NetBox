@@ -353,18 +353,18 @@ public:
   UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString & AFileName) const;
   UnicodeString GetFileMimeType(const UnicodeString & AFileName) const;
-  bool RegistryPathExists(const UnicodeString RegistryPath) const;
+  bool RegistryPathExists(const UnicodeString & RegistryPath) const;
   bool HasLocalPortNumberLimits() const;
   virtual UnicodeString TemporaryDir(bool Mask = false) const = 0;
   UnicodeString GetVersionStrHuman();
 
-  TStoredSessionList *SelectFilezillaSessionsForImport(
-    TStoredSessionList *Sessions, UnicodeString &Error);
-  bool AnyFilezillaSessionForImport(TStoredSessionList *Sessions);
+  TStoredSessionList * SelectFilezillaSessionsForImport(
+    TStoredSessionList * Sessions, UnicodeString & Error);
+  bool AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
+  TStoredSessionList * SelectKnownHostsSessionsForImport(
+    TStoredSessionList * Sessions, UnicodeString & Error);
   TStoredSessionList *SelectKnownHostsSessionsForImport(
-    TStoredSessionList *Sessions, UnicodeString &Error);
-  TStoredSessionList *SelectKnownHostsSessionsForImport(
-    TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error);
+    TStrings * Lines, TStoredSessionList *Sessions, UnicodeString & Error);
   TStoredSessionList * SelectOpensshSessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
   UnicodeString GetPuttySessionsKey(const UnicodeString & RootKey) const;
   void RefreshPuttySshHostCAList();
