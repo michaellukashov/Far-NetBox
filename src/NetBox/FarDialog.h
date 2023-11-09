@@ -103,10 +103,10 @@ protected:
   TObjectList * GetItems() { return FItems.get(); }
   void Add(TFarDialogItem * DialogItem);
   void Add(TFarDialogContainer * Container);
-  int32_t SendDlgMessage(int32_t Msg, int32_t Param1, void * Param2);
+  intptr_t SendDlgMessage(int32_t Msg, int32_t Param1, void * Param2);
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
-  int32_t DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param2);
+  intptr_t DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param2);
   virtual bool MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual void Change();

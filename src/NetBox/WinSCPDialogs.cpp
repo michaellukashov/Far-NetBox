@@ -37,9 +37,9 @@ public:
 
   void AddStandardButtons(int32_t Shift = 0, bool ButtonsOnly = false);
 
-  TFarSeparator * ButtonSeparator;
-  TFarButton * OkButton;
-  TFarButton * CancelButton;
+  TFarSeparator * ButtonSeparator{nullptr};
+  TFarButton * OkButton{nullptr};
+  TFarButton * CancelButton{nullptr};
 };
 
 TWinSCPDialog::TWinSCPDialog(TCustomFarPlugin * AFarPlugin) :

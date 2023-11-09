@@ -549,7 +549,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
   return Result;
 }
 
-int32_t TFarDialog::DefaultDialogProc(int32_t Msg, int32_t Param1, void *Param2)
+intptr_t TFarDialog::DefaultDialogProc(int32_t Msg, int32_t Param1, void *Param2)
 {
   if (GetHandle())
   {
@@ -561,7 +561,7 @@ int32_t TFarDialog::DefaultDialogProc(int32_t Msg, int32_t Param1, void *Param2)
 
 intptr_t TFarDialog::FailDialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
 {
-  int32_t Result;
+  intptr_t Result;
   switch (Msg)
   {
   case DN_CLOSE:
@@ -801,7 +801,7 @@ void TFarDialog::Change()
   }
 }
 
-int32_t TFarDialog::SendDlgMessage(int32_t Msg, int32_t Param1, void *Param2)
+intptr_t TFarDialog::SendDlgMessage(int32_t Msg, int32_t Param1, void * Param2)
 {
   if (GetHandle())
   {
