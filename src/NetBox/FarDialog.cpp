@@ -2407,9 +2407,9 @@ void TFarList::Init()
   UpdatePosition(GetSelectedInt(true));
 }
 
-int32_t TFarList::ItemProc(int32_t Msg, void *Param)
+int32_t TFarList::ItemProc(int32_t Msg, void * Param)
 {
-  TFarDialogItem *DialogItem = GetDialogItem();
+  TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
   if (Msg == DN_LISTCHANGE)
   {
@@ -2427,7 +2427,7 @@ int32_t TFarList::ItemProc(int32_t Msg, void *Param)
   return 0;
 }
 
-TFarListBox::TFarListBox(TFarDialog *ADialog) noexcept :
+TFarListBox::TFarListBox(TFarDialog * ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarListBox, ADialog, DI_LISTBOX),
   FAutoSelect(asOnlyFocus),
   FDenyClose(false)
@@ -2441,7 +2441,7 @@ TFarListBox::~TFarListBox() noexcept
 //  SAFE_DESTROY(FList);
 }
 
-int32_t TFarListBox::ItemProc(int32_t Msg, void *Param)
+int32_t TFarListBox::ItemProc(int32_t Msg, void * Param)
 {
   int32_t Result = 0;
   if (Msg == DN_CONTROLINPUT)
@@ -2488,12 +2488,12 @@ void TFarListBox::UpdateMouseReaction()
   SendDialogMessage(DIF_LISTTRACKMOUSE, reinterpret_cast<void *>(GetAutoSelect()));
 }
 
-void TFarListBox::SetItems(TStrings *Value)
+void TFarListBox::SetItems(TStrings * Value)
 {
   FList->Assign(Value);
 }
 
-void TFarListBox::SetList(TFarList *Value)
+void TFarListBox::SetList(TFarList * Value)
 {
   SetItems(Value);
 }
@@ -2543,7 +2543,7 @@ void TFarComboBox::Init()
   GetItems()->Init();
 }
 
-TFarLister::TFarLister(TFarDialog *ADialog) noexcept :
+TFarLister::TFarLister(TFarDialog * ADialog) noexcept :
   TFarDialogItem(OBJECT_CLASS_TFarLister, ADialog, DI_USERCONTROL),
   FItems(std::make_unique<TStringList>()),
   FTopIndex(0)
@@ -2579,12 +2579,12 @@ void TFarLister::SetTopIndex(int32_t Value)
   }
 }
 
-TStrings *TFarLister::GetItems() const
+TStrings * TFarLister::GetItems() const
 {
   return FItems.get();
 }
 
-void TFarLister::SetItems(const TStrings *Value)
+void TFarLister::SetItems(const TStrings * Value)
 {
   if (!FItems->Equals(Value))
   {

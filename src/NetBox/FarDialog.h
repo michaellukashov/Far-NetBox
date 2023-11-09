@@ -405,7 +405,7 @@ public:
 
 protected:
   virtual void SetDataInternal(const UnicodeString & AValue) override;
-  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
+  virtual int32_t ItemProc(int32_t Msg, void * Param) override;
   virtual bool HotKey(char HotKey) override;
 
 private:
@@ -425,7 +425,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarCheckBox); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarCheckBox) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarCheckBox(TFarDialog *ADialog) noexcept;
+  explicit TFarCheckBox(TFarDialog * ADialog) noexcept;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
@@ -472,7 +472,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarEdit); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarEdit) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarEdit(TFarDialog *ADialog) noexcept;
+  explicit TFarEdit(TFarDialog * ADialog) noexcept;
 
   virtual UnicodeString GetText() const { return GetData(); }
   virtual void SetText(const UnicodeString & Value) { SetData(Value); }
@@ -526,7 +526,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarText); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarText) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarText(TFarDialog *ADialog) noexcept;
+  explicit TFarText(TFarDialog * ADialog) noexcept;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
@@ -554,10 +554,10 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarList) || TStringList::is(Kind); }
 public:
-  explicit TFarList(TFarDialogItem *ADialogItem = nullptr) noexcept;
+  explicit TFarList(TFarDialogItem * ADialogItem = nullptr) noexcept;
   virtual ~TFarList() noexcept;
 
-  virtual void Assign(const TPersistent *Source) override;
+  virtual void Assign(const TPersistent * Source) override;
 
   int32_t GetSelected() const;
   void SetSelected(int32_t Value);
@@ -577,7 +577,7 @@ public:
 
 protected:
   virtual void Changed() override;
-  virtual int32_t ItemProc(int32_t Msg, void *Param);
+  virtual int32_t ItemProc(int32_t Msg, void * Param);
   virtual void Init();
   void UpdatePosition(int32_t Position);
   int32_t GetPosition() const;
