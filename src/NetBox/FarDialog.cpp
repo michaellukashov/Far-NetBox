@@ -1313,9 +1313,9 @@ bool TFarDialogItem::GetIsEmpty() const
   return GetData().IsEmpty();
 }
 
-int32_t TFarDialogItem::FailItemProc(int32_t Msg, void *Param)
+intptr_t TFarDialogItem::FailItemProc(int32_t Msg, void *Param)
 {
-  int32_t Result;
+  intptr_t Result;
   switch (Msg)
   {
   case DN_KILLFOCUS:
@@ -1329,9 +1329,9 @@ int32_t TFarDialogItem::FailItemProc(int32_t Msg, void *Param)
   return Result;
 }
 
-int32_t TFarDialogItem::ItemProc(int32_t Msg, void *Param)
+intptr_t TFarDialogItem::ItemProc(int32_t Msg, void * Param)
 {
-  LONG_PTR Result = 0;
+  intptr_t Result = 0;
   bool Handled = false;
 
   if (Msg == DN_GOTFOCUS)
@@ -1380,7 +1380,7 @@ void TFarDialogItem::DoExit()
   }
 }
 
-int32_t TFarDialogItem::DefaultItemProc(int32_t Msg, void *Param)
+intptr_t TFarDialogItem::DefaultItemProc(int32_t Msg, void * Param)
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
@@ -1391,7 +1391,7 @@ int32_t TFarDialogItem::DefaultItemProc(int32_t Msg, void *Param)
   return 0;
 }
 
-int32_t TFarDialogItem::DefaultDialogProc(int32_t Msg, int32_t Param1, void *Param2)
+intptr_t TFarDialogItem::DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param2)
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
@@ -1444,12 +1444,12 @@ void TFarDialogItem::DialogChange()
   Dlg->Change();
 }
 
-int32_t TFarDialogItem::SendDialogMessage(int32_t Msg, int32_t Param1, void *Param2)
+intptr_t TFarDialogItem::SendDialogMessage(int32_t Msg, int32_t Param1, void *Param2)
 {
   return GetDialog()->SendDlgMessage(Msg, Param1, Param2);
 }
 
-int32_t TFarDialogItem::SendDialogMessage(int32_t Msg, void *Param)
+intptr_t TFarDialogItem::SendDialogMessage(int32_t Msg, void *Param)
 {
   return GetDialog()->SendDlgMessage(Msg, GetItem(), Param);
 }
@@ -1839,7 +1839,7 @@ void TFarButton::SetBrackets(TFarButtonBrackets Value)
   }
 }
 
-int32_t TFarButton::ItemProc(int32_t Msg, void *Param)
+intptr_t TFarButton::ItemProc(int32_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1890,7 +1890,7 @@ TFarCheckBox::TFarCheckBox(TFarDialog *ADialog) noexcept :
 {
 }
 
-int32_t TFarCheckBox::ItemProc(int32_t Msg, void *Param)
+intptr_t TFarCheckBox::ItemProc(int32_t Msg, void *Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1928,7 +1928,7 @@ TFarRadioButton::TFarRadioButton(TFarDialog *ADialog) noexcept :
 {
 }
 
-int32_t TFarRadioButton::ItemProc(int32_t Msg, void *Param)
+intptr_t TFarRadioButton::ItemProc(int32_t Msg, void *Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1976,7 +1976,7 @@ void TFarEdit::Detach()
   TFarDialogItem::Detach();
 }
 
-int32_t TFarEdit::ItemProc(int32_t Msg, void *Param)
+intptr_t TFarEdit::ItemProc(int32_t Msg, void *Param)
 {
   if (Msg == DN_EDITCHANGE)
   {
@@ -2441,7 +2441,7 @@ TFarListBox::~TFarListBox() noexcept
 //  SAFE_DESTROY(FList);
 }
 
-int32_t TFarListBox::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarListBox::ItemProc(int32_t Msg, void * Param)
 {
   int32_t Result = 0;
   if (Msg == DN_CONTROLINPUT)
@@ -2521,7 +2521,7 @@ void TFarComboBox::ResizeToFitContent()
   SetWidth(FList->GetMaxLength());
 }
 
-int32_t TFarComboBox::ItemProc(int32_t Msg, void *Param)
+intptr_t TFarComboBox::ItemProc(int32_t Msg, void *Param)
 {
   if (Msg == DN_EDITCHANGE)
   {
@@ -2598,9 +2598,9 @@ void TFarLister::DoFocus()
   TODO("hide cursor");
 }
 
-int32_t TFarLister::ItemProc(int32_t Msg, void *Param)
+intptr_t TFarLister::ItemProc(int32_t Msg, void * Param)
 {
-  int32_t Result = 0;
+  intptr_t Result = 0;
 
   if (Msg == DN_DRAWDLGITEM)
   {
@@ -2653,7 +2653,7 @@ int32_t TFarLister::ItemProc(int32_t Msg, void *Param)
     INPUT_RECORD *Rec = reinterpret_cast<INPUT_RECORD *>(Param);
     if (Rec->EventType == KEY_EVENT)
     {
-      KEY_EVENT_RECORD *KeyEvent = &Rec->Event.KeyEvent;
+      KEY_EVENT_RECORD * KeyEvent = &Rec->Event.KeyEvent;
 
       int32_t NewTopIndex = GetTopIndex();
 

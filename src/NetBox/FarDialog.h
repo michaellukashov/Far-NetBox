@@ -313,12 +313,12 @@ protected:
 
   virtual void Detach();
   void DialogResized();
-  int32_t SendDialogMessage(int32_t Msg, void * Param);
-  int32_t SendDialogMessage(int32_t Msg, int32_t Param1, void * Param2);
-  virtual int32_t ItemProc(int32_t Msg, void * Param);
-  int32_t DefaultItemProc(int32_t Msg, void * Param);
-  int32_t DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param2);
-  virtual int32_t FailItemProc(int32_t Msg, void * Param);
+  intptr_t SendDialogMessage(int32_t Msg, void * Param);
+  intptr_t SendDialogMessage(int32_t Msg, int32_t Param1, void * Param2);
+  virtual intptr_t ItemProc(int32_t Msg, void * Param);
+  intptr_t DefaultItemProc(int32_t Msg, void * Param);
+  intptr_t DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param2);
+  virtual intptr_t FailItemProc(int32_t Msg, void * Param);
   virtual void Change();
   void DialogChange();
   bool GetAlterType(FARDIALOGITEMTYPES Index) const;
@@ -405,7 +405,7 @@ public:
 
 protected:
   virtual void SetDataInternal(const UnicodeString & AValue) override;
-  virtual int32_t ItemProc(int32_t Msg, void * Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void * Param) override;
   virtual bool HotKey(char HotKey) override;
 
 private:
@@ -440,7 +440,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
   virtual bool GetIsEmpty() const override;
   virtual void SetData(const UnicodeString & Value) override;
 };
@@ -460,7 +460,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
   virtual bool GetIsEmpty() const override;
   virtual void SetData(const UnicodeString & Value) override;
 };
@@ -494,7 +494,7 @@ public:
   void SetReadOnly(bool Value) { SetFlag(DIF_READONLY, Value); }
 
 protected:
-  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
   virtual void Detach() override;
 
 private:
@@ -631,7 +631,7 @@ public:
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
 protected:
-  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
   virtual void Init() override;
   virtual bool CloseQuery() override;
 
@@ -671,7 +671,7 @@ public:
   void SetItemIndex(int32_t Index) { FList->SetSelected(Index); }
 
 protected:
-  virtual int32_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
   virtual void Init() override;
 
 private:
@@ -694,7 +694,7 @@ public:
   bool GetScrollBar() const;
 
 protected:
-  virtual int32_t ItemProc(int32_t Msg, void * Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void * Param) override;
   virtual void DoFocus() override;
 
 private:
