@@ -238,16 +238,16 @@ int32_t TFarDialog::GetItemCount() const
   return FItems->GetCount();
 }
 
-int32_t TFarDialog::GetItem(TFarDialogItem *Item) const
+int32_t TFarDialog::GetItem(TFarDialogItem * Item) const
 {
   if (!Item)
     return -1;
   return Item->GetItem();
 }
 
-TFarDialogItem *TFarDialog::GetItem(int32_t Index) const
+TFarDialogItem * TFarDialog::GetItem(int32_t Index) const
 {
-  TFarDialogItem *DialogItem = nullptr;
+  TFarDialogItem * DialogItem = nullptr;
   if (GetItemCount())
   {
     assert(Index >= 0 && Index < FItems->GetCount());
@@ -257,7 +257,7 @@ TFarDialogItem *TFarDialog::GetItem(int32_t Index) const
   return DialogItem;
 }
 
-void TFarDialog::Add(TFarDialogItem *DialogItem)
+void TFarDialog::Add(TFarDialogItem * DialogItem)
 {
   TRect R = GetClientRect();
   int32_t Left, Top;
@@ -267,7 +267,7 @@ void TFarDialog::Add(TFarDialogItem *DialogItem)
 
   if (FDialogItemsCapacity == GetItems()->GetCount())
   {
-    int DialogItemsDelta = 10;
+    int32_t DialogItemsDelta = 10;
     FarDialogItem *NewDialogItems;
     NewDialogItems = nb::calloc<FarDialogItem *>(GetItems()->GetCount() + DialogItemsDelta, sizeof(FarDialogItem));
     if (FDialogItems)
@@ -611,7 +611,7 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD *Event)
   return Result;
 }
 
-bool TFarDialog::Key(TFarDialogItem *Item, LONG_PTR KeyCode)
+bool TFarDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
   if (FOnKey)
@@ -647,9 +647,9 @@ bool TFarDialog::HotKey(uint32_t Key, uint32_t ControlState) const
   return Result;
 }
 
-TFarDialogItem *TFarDialog::ItemAt(int32_t X, int32_t Y)
+TFarDialogItem * TFarDialog::ItemAt(int32_t X, int32_t Y)
 {
-  TFarDialogItem *Result = nullptr;
+  TFarDialogItem * Result = nullptr;
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TRect Bounds = GetItem(Index)->GetActualBounds();
@@ -717,7 +717,7 @@ int32_t TFarDialog::ShowModal()
     assert(GetDefaultButton()->GetDefault());
 
     UnicodeString HelpTopic = GetHelpTopic();
-    int32_t BResult;
+    intptr_t BResult{0};
 
     {
       TFarEnvGuard Guard; nb::used(Guard);
@@ -1764,7 +1764,7 @@ void TFarButton::SetDataInternal(const UnicodeString & AValue)
 
   if ((GetLeft() >= 0) || (GetRight() >= 0))
   {
-    int Margin = 0;
+    int32_t Margin = 0;
     switch (FBrackets)
     {
     case brNone:

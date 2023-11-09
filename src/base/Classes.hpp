@@ -96,7 +96,7 @@ struct TPoint
   int32_t x{0};
   int32_t y{0};
   TPoint() = default;
-  TPoint(int32_t ax, int32_t ay) noexcept : x(ax), y(ay) {}
+  explicit TPoint(int32_t ax, int32_t ay) noexcept : x(ax), y(ay) {}
 };
 
 struct TRect
@@ -108,7 +108,7 @@ struct TRect
   int32_t Width() const { return Right - Left; }
   int32_t Height() const { return Bottom - Top; }
   TRect() = default;
-  TRect(int32_t left, int32_t top, int32_t right, int32_t bottom) noexcept :
+  explicit TRect(int32_t left, int32_t top, int32_t right, int32_t bottom) noexcept :
     Left(left),
     Top(top),
     Right(right),
@@ -150,12 +150,12 @@ public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
   virtual ~TPersistent() override = default;
-  virtual void Assign(const TPersistent *Source);
-  virtual TPersistent *GetOwner();
+  virtual void Assign(const TPersistent * Source);
+  virtual TPersistent * GetOwner();
 protected:
-  virtual void AssignTo(TPersistent *Dest) const;
+  virtual void AssignTo(TPersistent * Dest) const;
 private:
-  void AssignError(const TPersistent *Source);
+  void AssignError(const TPersistent * Source);
 };
 
 enum TListNotification
@@ -165,7 +165,7 @@ enum TListNotification
   lnDeleted,
 };
 
-typedef int32_t (CompareFunc)(const void *Item1, const void *Item2);
+typedef int32_t (CompareFunc)(const void * Item1, const void * Item2);
 
 NB_DEFINE_CLASS_ID(TList);
 class NB_CORE_EXPORT TList : public TPersistent
