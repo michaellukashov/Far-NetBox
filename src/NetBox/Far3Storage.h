@@ -49,7 +49,7 @@ public:
 
 private:
   UnicodeString GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }
-  int32_t OpenSubKeyInternal(int32_t Root, UnicodeString SubKey, bool CanCreate);
+  int32_t OpenSubKeyInternal(int32_t Root, const UnicodeString & SubKey, bool CanCreate);
 
 private:
   size_t FRoot{0};

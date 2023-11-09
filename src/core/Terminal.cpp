@@ -32,10 +32,10 @@
 #endif
 
 ///* TODO : Better user interface (query to user) */
-void FileOperationLoopCustom(TTerminal *Terminal,
-  TFileOperationProgressType *OperationProgress,
-  uint32_t Flags, UnicodeString Message,
-  UnicodeString HelpKeyword,
+void FileOperationLoopCustom(TTerminal * Terminal,
+  TFileOperationProgressType * OperationProgress,
+  uint32_t Flags, const UnicodeString & Message,
+  const UnicodeString & HelpKeyword,
   std::function<void()> Operation)
 {
   bool DoRepeat;

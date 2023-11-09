@@ -124,16 +124,16 @@ constexpr uint32_t folRetryOnFatal = 0x02;
 
 #endif // #if 0
 
-inline void ThrowSkipFile(Exception *Exception, UnicodeString Message)
+inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
   throw ESkipFile(Exception, Message);
 }
 inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
-NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal *Terminal,
-  TFileOperationProgressType *OperationProgress,
-  uint32_t Flags, UnicodeString Message,
-  UnicodeString HelpKeyword,
+NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
+  TFileOperationProgressType * OperationProgress,
+  uint32_t Flags, const UnicodeString & Message,
+  const UnicodeString & HelpKeyword,
   std::function<void()> Operation);
 
 

@@ -565,7 +565,7 @@ UnicodeString GetToolbarsLayoutStr(TControl * OwnerControl)
   return Result;
 }
 
-void LoadToolbarsLayoutStr(TControl * OwnerControl, UnicodeString LayoutStr)
+void LoadToolbarsLayoutStr(TControl * OwnerControl, const UnicodeString & LayoutStr)
 {
   TStrings * Storage = CommaTextToStringList(LayoutStr);
   try

@@ -1574,7 +1574,7 @@ void TSecureShell::CaptureOutput(TLogLineType Type,
 }
 
 int32_t TSecureShell::TranslateErrorMessage(
-  UnicodeString &Message, UnicodeString *HelpKeyword)
+  UnicodeString & Message, UnicodeString * HelpKeyword)
 {
   static const TPuttyTranslation Translation[] = {
     { "Remote side unexpectedly closed network connection", UNEXPECTED_CLOSE_ERROR, HELP_UNEXPECTED_CLOSE_ERROR },

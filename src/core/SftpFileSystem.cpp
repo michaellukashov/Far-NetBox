@@ -5509,7 +5509,7 @@ void TSFTPFileSystem::DirectorySunk(
 }
 
 void TSFTPFileSystem::WriteLocalFile(
-  const TCopyParamType * CopyParam, TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString ALocalFileName,
+  const TCopyParamType * CopyParam, TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString & ALocalFileName,
   TFileOperationProgressType * OperationProgress)
 {
   if (!CopyParam->FOnTransferOut.empty())

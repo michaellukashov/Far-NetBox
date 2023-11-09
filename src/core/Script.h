@@ -163,7 +163,7 @@ protected:
   void StatProc(TScriptProcParams * Parameters);
   void ChecksumProc(TScriptProcParams * Parameters);
 
-  void OptionImpl(UnicodeString OptionName, UnicodeString ValueName);
+  void OptionImpl(const UnicodeString & OptionName, const UnicodeString & ValueName);
   void SynchronizeDirectories(TScriptProcParams * Parameters,
     UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory, int FirstParam);
   virtual bool HandleExtendedException(Exception * E,

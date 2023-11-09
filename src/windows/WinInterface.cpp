@@ -215,7 +215,7 @@ static TCheckBox * FindNeverAskAgainCheck(TForm * Dialog)
 }
 
 TForm * CreateMessageDialogEx(const UnicodeString & Msg,
-  TStrings * MoreMessages, TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword,
+  TStrings * MoreMessages, TQueryType Type, uint32_t Answers, const UnicodeString & HelpKeyword,
   const TMessageParams * Params, TButton *& TimeoutButton)
 {
   TMsgDlgType DlgType;
@@ -493,7 +493,7 @@ friend void MenuPopup(TObject * Sender, const TPoint & MousePos, bool & Handled)
 
 // Merge with CreateMessageDialogEx
 TForm * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * MoreMessages,
-  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
+  TQueryType Type, uint32_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   std::unique_ptr<TForm> Dialog;
   UnicodeString AMessage = Message;
@@ -542,7 +542,7 @@ TForm * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * More
 }
 
 uint32_t MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages,
-  TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
+  TQueryType Type, uint32_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
   uint32_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
@@ -849,7 +849,7 @@ const int cpiGenerateCode = -5;
 const int cpiSavePreset = -6;
 
 void CopyParamListPopup(TRect Rect, TPopupMenu * Menu,
-  const TCopyParamType & Param, UnicodeString Preset, TNotifyEvent OnClick,
+  const TCopyParamType & Param, const UnicodeString & Preset, TNotifyEvent OnClick,
   int Options, int CopyParamAttrs, bool SaveSettings)
 {
   Menu->Items->Clear();

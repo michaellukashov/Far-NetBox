@@ -126,7 +126,7 @@ bool CheckXmlLogParam(TProgramParams * Params);
 #if 0
 UnicodeString GetToolbarKey(const UnicodeString & ToolbarName);
 UnicodeString GetToolbarsLayoutStr(TControl * OwnerControl);
-void LoadToolbarsLayoutStr(TControl * OwnerControl, UnicodeString LayoutStr);
+void LoadToolbarsLayoutStr(TControl * OwnerControl, const UnicodeString & LayoutStr);
 
 namespace Tb2item { class TTBCustomItem; }
 namespace Tbx { class TTBXSeparatorItem; }

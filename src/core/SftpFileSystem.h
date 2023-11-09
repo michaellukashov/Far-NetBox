@@ -219,7 +219,7 @@ protected:
   void Progress(TFileOperationProgressType * OperationProgress);
   void AddPathString(TSFTPPacket & Packet, const UnicodeString & Value, bool EncryptNewFiles = false);
   void WriteLocalFile(
-    const TCopyParamType * CopyParam, TStream * FileStream, TFileBuffer & BlockBuf, UnicodeString ALocalFileName,
+    const TCopyParamType * CopyParam, TStream * FileStream, TFileBuffer & BlockBuf, const UnicodeString & ALocalFileName,
     TFileOperationProgressType * OperationProgress);
   bool DoesFileLookLikeSymLink(TRemoteFile * File) const;
   void DoCloseRemoteIfOpened(const RawByteString & Handle);

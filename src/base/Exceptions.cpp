@@ -32,7 +32,7 @@ void IgnoreException(const std::type_info & ExceptionType)
 #endif // #if 0
 
 static bool WellKnownException(
-  const Exception *E, UnicodeString *AMessage, const wchar_t **ACounterName, Exception **AClone, bool Rethrow)
+  const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
 {
   UnicodeString Message;
   const wchar_t *CounterName = nullptr;

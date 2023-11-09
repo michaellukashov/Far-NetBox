@@ -176,7 +176,7 @@ UnicodeString GetListViewStr(TListView * ListView)
   return Result;
 }
 
-void LoadListViewStr(TListView * ListView, UnicodeString ALayoutStr)
+void LoadListViewStr(TListView * ListView, const UnicodeString & ALayoutStr)
 {
   UnicodeString LayoutStr = CutToChar(ALayoutStr, L';', true);
   int PixelsPerInch = LoadPixelsPerInch(CutToChar(ALayoutStr, L';', true), ListView);
@@ -468,7 +468,7 @@ static void DoExecuteProcessAndReadOutput(
 }
 
 void ExecuteProcessChecked(
-  const UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString * Output)
+  const UnicodeString Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
 {
   if (Output == nullptr)
   {
@@ -481,7 +481,7 @@ void ExecuteProcessChecked(
 }
 
 void ExecuteProcessCheckedAndWait(
-  const UnicodeString Command, const UnicodeString HelpKeyword, UnicodeString * Output)
+  const UnicodeString Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
 {
   if (Output == nullptr)
   {
@@ -637,7 +637,7 @@ IShellLink * CreateAppDesktopShortCut(
 }
 
 IShellLink * CreateDesktopSessionShortCut(
-  const UnicodeString & SessionName, UnicodeString Name,
+  const UnicodeString & SessionName, const UnicodeString & Name,
   const UnicodeString & AdditionalParams, int SpecialFolder, int IconIndex,
   bool Return)
 {
@@ -995,7 +995,7 @@ UnicodeString ReadResource(const UnicodeString & ResName)
 #if 0
 
 template <class T>
-void BrowseForExecutableT(T * Control, UnicodeString Title,
+void BrowseForExecutableT(T * Control, const UnicodeString & Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape)
 {
   UnicodeString Executable, Program, Params, Dir;
@@ -1057,14 +1057,14 @@ void BrowseForExecutableT(T * Control, UnicodeString Title,
   }
 }
 
-void BrowseForExecutable(TEdit * Control, UnicodeString Title,
-  UnicodeString Filter, bool FileNameCommand, bool Escape)
+void BrowseForExecutable(TEdit * Control, const UnicodeString & Title,
+  const UnicodeString & Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }
 
-void BrowseForExecutable(TComboBox * Control, UnicodeString Title,
-  UnicodeString Filter, bool FileNameCommand, bool Escape)
+void BrowseForExecutable(TComboBox * Control, const UnicodeString & Title,
+  const UnicodeString & Filter, bool FileNameCommand, bool Escape)
 {
   BrowseForExecutableT(Control, Title, Filter, FileNameCommand, Escape);
 }

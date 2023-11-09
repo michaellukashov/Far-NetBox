@@ -45,7 +45,7 @@ UnicodeString TFar3Storage::GetSource() const
 //  THierarchicalStorage::SetAccessMode(Value);
 //}
 
-int32_t TFar3Storage::OpenSubKeyInternal(int32_t Root, UnicodeString SubKey, bool CanCreate)
+int32_t TFar3Storage::OpenSubKeyInternal(int32_t Root, const UnicodeString & SubKey, bool CanCreate)
 {
   int32_t NewRoot = 0;
   if (CanCreate)

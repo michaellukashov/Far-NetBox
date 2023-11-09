@@ -668,8 +668,8 @@ public:
   void CheckDefaultTranslation();
   const TEditorPreferences * DefaultEditorForFile(
     const UnicodeString FileName, bool Local, const TFileMasks::TParams & MaskParams);
-  virtual UnicodeString DecryptPassword(RawByteString Password, UnicodeString Key);
-  virtual RawByteString StronglyRecryptPassword(RawByteString Password, UnicodeString Key);
+  virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   void SetMasterPassword(UnicodeString value);
   void ChangeMasterPassword(UnicodeString value, TStrings * RecryptPasswordErrors);
   bool ValidateMasterPassword(UnicodeString value);

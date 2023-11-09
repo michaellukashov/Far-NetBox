@@ -37,7 +37,7 @@ public:
   void SetSharedBookmarks(TBookmarkList *Value);
 
 private:
-  void LoadLevel(THierarchicalStorage *Storage, const UnicodeString Key,
+  void LoadLevel(THierarchicalStorage *Storage, const UnicodeString & Key,
     int32_t AIndex, TBookmarkList *BookmarkList);
 };
 

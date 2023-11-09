@@ -1433,7 +1433,7 @@ void TSessionData::Save(THierarchicalStorage *Storage,
 }
 
 #if 0
-UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString Name, UnicodeString Default)
+UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default)
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
   UnicodeString Result;
@@ -2124,7 +2124,7 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage *Storage)
   }
 }
 
-void TSessionData::Remove(THierarchicalStorage * Storage, const UnicodeString Name)
+void TSessionData::Remove(THierarchicalStorage * Storage, const UnicodeString & Name)
 {
   Storage->RecursiveDeleteSubKey(Name);
 }
@@ -3187,7 +3187,7 @@ TCipher TSessionData::GetCipher(int32_t Index) const
 
 template <class AlgoT>
 void TSessionData::SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const UnicodeString *Names,
-  int32_t Count, AlgoT WarnAlgo, UnicodeString AValue)
+  int32_t Count, AlgoT WarnAlgo, const UnicodeString & AValue)
 {
   UnicodeString Value = AValue;
 

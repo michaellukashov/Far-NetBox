@@ -542,8 +542,8 @@ public:
   bool HasS3AutoCredentials() const;
   template<class AlgoT>
   void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
-    int32_t Count, AlgoT WarnAlgo, UnicodeString AValue);
-  static void Remove(THierarchicalStorage * Storage, const UnicodeString Name);
+    int32_t Count, AlgoT WarnAlgo, const UnicodeString & AValue);
+  static void Remove(THierarchicalStorage * Storage, const UnicodeString & Name);
 
   __property UnicodeString InternalStorageKey = { read = GetInternalStorageKey };
 
@@ -1088,7 +1088,7 @@ public:
   bool GetIsWorkspace(const UnicodeString & Name) const;
   bool IsFolderOrWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
-    UnicodeString *AFileName = nullptr, bool *AProtocolDefined = nullptr, UnicodeString *MaskedUrl = nullptr, int32_t Flags = 0);
+    UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr, int32_t Flags = 0);
   bool IsUrl(const UnicodeString & Url);
   bool CanOpen(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);

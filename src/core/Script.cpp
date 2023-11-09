@@ -60,7 +60,7 @@ public:
   static int FindCommand(TStrings * Commands, const UnicodeString Command,
     UnicodeString * Matches = nullptr);
   static int FindCommand(const wchar_t ** Commands, size_t Count,
-    const UnicodeString Command, UnicodeString * Matches = nullptr);
+    const UnicodeString & Command, UnicodeString * Matches = nullptr);
 
   static void CheckParams(TOptions * Parameters, bool Switches);
 
@@ -176,7 +176,7 @@ bool TScriptCommands::Enumerate(int Index,
 }
 
 int TScriptCommands::FindCommand(TStrings * Commands,
-  const UnicodeString Command, UnicodeString * Matches)
+  const UnicodeString & Command, UnicodeString * Matches)
 {
   int Result = Commands->IndexOf(Command);
 
@@ -216,7 +216,7 @@ int TScriptCommands::FindCommand(TStrings * Commands,
 }
 
 int TScriptCommands::FindCommand(const wchar_t ** Commands, size_t Count,
-  const UnicodeString Command, UnicodeString * Matches)
+  const UnicodeString & Command, UnicodeString * Matches)
 {
   int Result;
   TStringList * Strings = new TStringList;
@@ -1607,7 +1607,7 @@ TTransferMode TScript::ParseTransferModeName(UnicodeString Name)
   return (TTransferMode)Value;
 }
 
-void TScript::OptionImpl(UnicodeString OptionName, UnicodeString ValueName)
+void TScript::OptionImpl(const UnicodeString & OptionName, const UnicodeString & ValueName)
 {
   enum { Echo, Batch, Confirm, Transfer, SynchDelete, Exclude, Include, ReconnectTime, FailOnNoMatch };
   static const wchar_t * Names[] = { L"echo", L"batch", L"confirm", L"transfer",
@@ -2286,7 +2286,7 @@ void TManagementScript::TerminalInformation(
 }
 
 void TManagementScript::TerminalPromptUser(TTerminal * ATerminal,
-  TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
+  TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompts,
   TStrings * Results, bool & Result, void * Arg)
 {
   // When authentication using stored password fails,

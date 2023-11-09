@@ -24,11 +24,11 @@ void UseSystemSettingsPre(TCustomForm * Control);
 void UseSystemSettingsPost(TCustomForm * Control);
 void UseSystemSettings(TCustomForm * Control);
 void ResetSystemSettings(TCustomForm * Control);
-void LinkLabel(TStaticText * StaticText, UnicodeString Url = L"",
+void LinkLabel(TStaticText * StaticText, const UnicodeString & Url = L"",
   TNotifyEvent OnEnter = nullptr);
 void LinkActionLabel(TStaticText * StaticText);
 void LinkAppLabel(TStaticText * StaticText);
-void HintLabel(TStaticText * StaticText, UnicodeString Hint = L"");
+void HintLabel(TStaticText * StaticText, const UnicodeString & Hint = L"");
 void HotTrackLabel(TLabel * Label);
 void SetLabelHintPopup(TLabel * Label, const UnicodeString & Hint);
 bool HasLabelHintPopup(TControl * Control, const UnicodeString & HintStr);

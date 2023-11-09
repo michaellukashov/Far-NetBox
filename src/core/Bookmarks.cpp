@@ -77,8 +77,8 @@ void TBookmarks::Load(THierarchicalStorage *Storage)
   ModifyAll(false);
 }
 
-void TBookmarks::LoadLevel(THierarchicalStorage *Storage, UnicodeString Key,
-  int32_t AIndex, TBookmarkList *BookmarkList)
+void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
+  int32_t AIndex, TBookmarkList * BookmarkList)
 {
   std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   try__finally

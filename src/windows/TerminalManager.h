@@ -150,7 +150,7 @@ private:
     const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
     const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal,
-    TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompt,
+    TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompt,
     TStrings * Results, bool & Result, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
     UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,

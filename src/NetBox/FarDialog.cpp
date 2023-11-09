@@ -1682,7 +1682,7 @@ bool TFarDialogItem::MouseMove(int32_t /*X*/, int32_t /*Y*/,
   return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(&Rec)) != 0;
 }
 
-void TFarDialogItem::Text(int32_t X, int32_t Y, const FarColor &Color, UnicodeString Str)
+void TFarDialogItem::Text(int32_t X, int32_t Y, const FarColor &Color, const UnicodeString & Str)
 {
   TFarEnvGuard Guard; nb::used(Guard);
   GetPluginStartupInfo()->Text(
