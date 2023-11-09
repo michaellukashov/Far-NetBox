@@ -72,8 +72,8 @@ public:
   TFarBox * GetBorderBox() const { return FBorderBox; }
   int32_t GetType(TFarDialogItem * Item) const;
   int32_t GetItem(TFarDialogItem * Item) const;
-  TFarDialogItem *GetItem(int32_t Index) const;
-  TFarDialogItem *GetControl(int32_t Index) const { return GetItem(Index); }
+  TFarDialogItem * GetItem(int32_t Index) const;
+  TFarDialogItem * GetControl(int32_t Index) const { return GetItem(Index); }
   int32_t GetItemCount() const;
   int32_t GetControlCount() const { return GetItemCount(); }
   TItemPosition GetNextItemPosition() const { return FNextItemPosition; }
@@ -82,7 +82,7 @@ public:
   void SetDefaultGroup(int32_t Value) { FDefaultGroup = Value; }
   int32_t GetTag() const { return FTag; }
   void SetTag(int32_t Value) { FTag = Value; }
-  TFarDialogItem *GetItemFocused() const { return FItemFocused; }
+  TFarDialogItem * GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(TFarDialogItem *Value);
   int32_t GetResult() const { return FResult; }
   TPoint GetMaxSize() const;
@@ -113,24 +113,24 @@ protected:
   virtual void Init();
   virtual bool CloseQuery();
   UnicodeString GetMsg(int32_t MsgId) const;
-  void GetNextItemPosition(int32_t &Left, int32_t &Top);
+  void GetNextItemPosition(int32_t & Left, int32_t & Top);
   void RefreshBounds();
   virtual void Idle();
   void BreakSynchronize();
   void Synchronize(TThreadMethod Method);
-  void Close(TFarButton *Button);
-  void ProcessGroup(int32_t Group, TFarProcessGroupEvent Callback, void *Arg);
-  void ShowItem(TFarDialogItem *Item, void *Arg);
-  void EnableItem(TFarDialogItem *Item, void *Arg);
+  void Close(TFarButton * Button);
+  void ProcessGroup(int32_t Group, TFarProcessGroupEvent Callback, void * Arg);
+  void ShowItem(TFarDialogItem * Item, void * Arg);
+  void EnableItem(TFarDialogItem * Item, void * Arg);
   bool ChangesLocked() const;
-  TFarDialogItem *ItemAt(int32_t X, int32_t Y);
+  TFarDialogItem * ItemAt(int32_t X, int32_t Y);
 
-  static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void *Param2);
+  static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
 
-  virtual void SetBounds(const TRect &Value);
+  virtual void SetBounds(const TRect & Value);
 
 private:
-  mutable TCustomFarPlugin *FFarPlugin{nullptr};
+  mutable TCustomFarPlugin * FFarPlugin{nullptr};
   TRect FBounds{};
   FARDIALOGITEMFLAGS FFlags;
   UnicodeString FHelpTopic;
@@ -138,14 +138,14 @@ private:
   std::unique_ptr<TObjectList> FItems;
   std::unique_ptr<TObjectList> FContainers;
   HANDLE FHandle{nullptr};
-  TFarButton *FDefaultButton{nullptr};
-  TFarBox *FBorderBox{nullptr};
+  TFarButton * FDefaultButton{nullptr};
+  TFarBox * FBorderBox{nullptr};
   TItemPosition FNextItemPosition{};
   int32_t FDefaultGroup{0};
   int32_t FTag{0};
-  TFarDialogItem *FItemFocused{nullptr};
+  TFarDialogItem * FItemFocused{nullptr};
   TFarKeyEvent FOnKey;
-  FarDialogItem *FDialogItems{nullptr};
+  FarDialogItem * FDialogItems{nullptr};
   int32_t FDialogItemsCapacity{0};
   int32_t FChangesLocked{0};
   bool FChangesPending{false};
@@ -162,7 +162,7 @@ class TFarDialogContainer : public TObject
   friend class TFarDialogItem;
   NB_DISABLE_COPY(TFarDialogContainer)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialogContainer); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialogContainer); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogContainer) || TObject::is(Kind); }
 public:
   int32_t GetLeft() const { return FLeft; }
@@ -176,14 +176,14 @@ public:
 
 protected:
   TFarDialogContainer() = delete;
-  explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog *ADialog) noexcept;
+  explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog) noexcept;
   virtual ~TFarDialogContainer() noexcept;
 
-  TFarDialog *GetDialog() const { return FDialog; }
-  TFarDialog *GetDialog() { return FDialog; }
+  TFarDialog * GetDialog() const { return FDialog; }
+  TFarDialog * GetDialog() { return FDialog; }
 
-  void Add(TFarDialogItem *Item);
-  void Remove(TFarDialogItem *Item);
+  void Add(TFarDialogItem * Item);
+  void Remove(TFarDialogItem * Item);
   virtual void Change();
   UnicodeString GetMsg(int32_t MsgId) const;
 
@@ -191,7 +191,7 @@ private:
   int32_t FLeft{0};
   int32_t FTop{0};
   std::unique_ptr<TObjectList> FItems;
-  TFarDialog *FDialog{nullptr};
+  TFarDialog * FDialog{nullptr};
   bool FEnabled{false};
 };
 
@@ -226,11 +226,11 @@ public:
   bool GetEnabled() const { return FEnabled; }
   void SetEnabled(bool Value);
   bool GetIsEnabled() const { return FIsEnabled; }
-  TFarDialogItem *GetEnabledFollow() const { return FEnabledFollow; }
+  TFarDialogItem * GetEnabledFollow() const { return FEnabledFollow; }
   void SetEnabledFollow(TFarDialogItem * Value);
-  TFarDialogItem *GetEnabledDependency() const { return FEnabledDependency; }
+  TFarDialogItem * GetEnabledDependency() const { return FEnabledDependency; }
   void SetEnabledDependency(TFarDialogItem * Value);
-  TFarDialogItem *GetEnabledDependencyNegative() const { return FEnabledDependencyNegative; }
+  TFarDialogItem * GetEnabledDependencyNegative() const { return FEnabledDependencyNegative; }
   void SetEnabledDependencyNegative(TFarDialogItem * Value);
   virtual bool GetIsEmpty() const;
   int32_t GetGroup() const { return FGroup; }
