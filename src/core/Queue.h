@@ -227,7 +227,7 @@ public:
 
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
-  void SetMasks(const UnicodeString Value);
+  void SetMasks(const UnicodeString & Value);
 
 protected:
   TStatus FStatus{qsPending};
@@ -295,10 +295,10 @@ public:
   TQueueItem::TInfo *GetInfo() const { return FInfo.get(); }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
-  void *GetUserData() const { return FUserData; }
-  void *GetUserData() { return FUserData; }
-  void SetUserData(void *Value) { FUserData = Value; }
-  void SetMasks(const UnicodeString Value);
+  void * GetUserData() const { return FUserData; }
+  void * GetUserData() { return FUserData; }
+  void SetUserData(void * Value) { FUserData = Value; }
+  void SetMasks(const UnicodeString & Value);
 
 private:
   std::unique_ptr<TFileOperationProgressType> FProgressData;

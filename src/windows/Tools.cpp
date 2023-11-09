@@ -513,7 +513,7 @@ void ExecuteSelf(const UnicodeString & Params)
   ExecuteShellChecked(Application->ExeName, Params);
 }
 
-void ExecuteNewInstance(const UnicodeString Param, const UnicodeString AdditionalParams)
+void ExecuteNewInstance(const UnicodeString & Param, const UnicodeString & AdditionalParams)
 {
   UnicodeString Arg;
   if (!Param.IsEmpty())
@@ -795,7 +795,7 @@ void OpenFolderInExplorer(const UnicodeString & Path)
   }
 }
 
-void OpenFileInExplorer(const UnicodeString Path)
+void OpenFileInExplorer(const UnicodeString & Path)
 {
   PCIDLIST_ABSOLUTE Folder = ILCreateFromPathW(ApiPath(Path).c_str());
   SHOpenFolderAndSelectItems(Folder, 0, nullptr, 0);
@@ -954,8 +954,8 @@ static bool GetResource(
   return Result;
 }
 
-bool DumpResourceToFile(const UnicodeString ResName,
-  const UnicodeString FileName)
+bool DumpResourceToFile(const UnicodeString & ResName,
+  const UnicodeString & FileName)
 {
   void * Content;
   unsigned long Size;
@@ -978,7 +978,7 @@ bool DumpResourceToFile(const UnicodeString ResName,
   return Result;
 }
 
-UnicodeString ReadResource(const UnicodeString ResName)
+UnicodeString ReadResource(const UnicodeString & ResName)
 {
   void * Content;
   unsigned long Size;

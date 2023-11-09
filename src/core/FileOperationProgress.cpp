@@ -336,7 +336,7 @@ void TFileOperationProgressType::DoProgress()
   FOnProgress(*this);
 }
 
-void TFileOperationProgressType::Finish(const UnicodeString AFileName,
+void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
   bool Success, TOnceDoneOperation &OnceDoneOperation)
 {
   DebugAssert(FInProgress);
@@ -384,7 +384,7 @@ void TFileOperationProgressType::Succeeded(int32_t Count)
   }
 }
 
-void TFileOperationProgressType::SetFile(const UnicodeString AFileName, bool AFileInProgress)
+void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool AFileInProgress)
 {
   UnicodeString FileName = AFileName;
   FFullFileName = AFileName;

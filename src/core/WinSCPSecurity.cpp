@@ -37,7 +37,7 @@ uint8_t SimpleDecryptNextChar(RawByteString &Str)
   return 0x00;
 }
 
-RawByteString EncryptPassword(const UnicodeString UnicodePassword, const UnicodeString UnicodeKey, Integer /* Algorithm */)
+RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const UnicodeString & UnicodeKey, Integer /* Algorithm */)
 {
   UTF8String Password = UTF8String(UnicodePassword);
   UTF8String Key = UTF8String(UnicodeKey);
@@ -74,10 +74,11 @@ RawByteString EncryptPassword(const UnicodeString UnicodePassword, const Unicode
   return Result;
 }
 
-UnicodeString DecryptPassword(RawByteString Password, const UnicodeString UnicodeKey, Integer /*Algorithm*/)
+UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeString & UnicodeKey, Integer /*Algorithm*/)
 {
   uint8_t Length;
 
+  RawByteString Password = APassword;
   uint8_t Flag = SimpleDecryptNextChar(Password);
   if (Flag == PWALG_SIMPLE_FLAG)
   {
@@ -124,7 +125,7 @@ UnicodeString DecryptPassword(RawByteString Password, const UnicodeString Unicod
   return UnicodeString(Result);
 }
 
-RawByteString SetExternalEncryptedPassword(RawByteString Password)
+RawByteString SetExternalEncryptedPassword(const RawByteString & Password)
 {
   RawByteString Result;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG));
@@ -133,8 +134,9 @@ RawByteString SetExternalEncryptedPassword(RawByteString Password)
   return Result;
 }
 
-bool GetExternalEncryptedPassword(RawByteString Encrypted, RawByteString &Password)
+bool GetExternalEncryptedPassword(const RawByteString & AEncrypted, RawByteString & Password)
 {
+  RawByteString Encrypted = AEncrypted;
   bool Result =
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_FLAG) &&
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_EXTERNAL);

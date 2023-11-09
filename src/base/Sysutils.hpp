@@ -207,7 +207,7 @@ public:
 
 NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter = L'/');
-UnicodeString ExtractFileDrive(const UnicodeString  & FileName);
+UnicodeString ExtractFileDrive(const UnicodeString & FileName);
 NB_CORE_EXPORT UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter = L'/');
 NB_CORE_EXPORT UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter = L'/');
 NB_CORE_EXPORT UnicodeString ExpandFileName(const UnicodeString & AFileName);

@@ -864,7 +864,7 @@ bool SpecialFolderLocation(int32_t PathID, UnicodeString & APath)
   return false;
 }
 
-UnicodeString UniqTempDir(const UnicodeString BaseDir, const UnicodeString Identity,
+UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & Identity,
   bool Mask)
 {
   DebugAssert(!BaseDir.IsEmpty());

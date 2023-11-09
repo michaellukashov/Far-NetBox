@@ -2292,10 +2292,11 @@ static bool IsDomainOrSubdomain(const UnicodeString & FullDomain, const UnicodeS
     EndsText(L"." + Domain, FullDomain);
 }
 
-bool TSessionData::ParseUrl(const UnicodeString & Url, TOptions * Options,
+bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   TStoredSessionList * AStoredSessions, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl, int32_t Flags)
 {
+  UnicodeString Url = AUrl;
   bool ProtocolDefined = true;
   bool PortNumberDefined = false;
   TFSProtocol AFSProtocol = fsSCPonly;
@@ -3740,7 +3741,7 @@ static UnicodeString StripIP6LiteralBrackets(const UnicodeString & HostName)
   return Result;
 }
 
-bool IsIPv6Literal(const UnicodeString HostName)
+bool IsIPv6Literal(const UnicodeString & HostName)
 {
   UnicodeString Buf = HostName;
   if (HasIP6LiteralBrackets(Buf))
@@ -3769,7 +3770,7 @@ bool IsIPv6Literal(const UnicodeString HostName)
   return Result;
 }
 
-UnicodeString EscapeIPv6Literal(const UnicodeString IP)
+UnicodeString EscapeIPv6Literal(const UnicodeString & IP)
 {
   UnicodeString Result = IP;
   if (!HasIP6LiteralBrackets(Result))
@@ -5969,10 +5970,10 @@ int32_t TStoredSessionList::IndexOf(TSessionData *Data) const
   return -1;
 }
 
-TSessionData *TStoredSessionList::NewSession(
-  UnicodeString SessionName, TSessionData *Session)
+TSessionData * TStoredSessionList::NewSession(
+  const UnicodeString & SessionName, TSessionData * Session)
 {
-  TSessionData *DuplicateSession = dyn_cast<TSessionData>(FindByName(SessionName));
+  TSessionData * DuplicateSession = dyn_cast<TSessionData>(FindByName(SessionName));
   if (!DuplicateSession)
   {
     std::unique_ptr<TSessionData> DuplicateSession = std::make_unique<TSessionData>("");

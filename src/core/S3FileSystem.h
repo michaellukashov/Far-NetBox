@@ -151,7 +151,7 @@ protected:
   static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);
   void RequestInit(TLibS3CallbackData &Data);
   void TryOpenDirectory(const UnicodeString & ADirectory);
-  void ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList *FileList, int32_t MaxKeys, const UnicodeString AFileName);
+  void ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * FileList, int32_t MaxKeys, const UnicodeString & AFileName);
   void ParsePath(const UnicodeString & APath, UnicodeString & BucketName, UnicodeString & AKey);
   TRemoteToken MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName);
   TLibS3BucketContext GetBucketContext(const UnicodeString & ABucketName, const UnicodeString & Prefix);

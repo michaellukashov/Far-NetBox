@@ -44,7 +44,7 @@ int32_t TNamedObject::Compare(const TNamedObject *Other) const
   return Result;
 }
 
-bool TNamedObject::IsSameName(const UnicodeString AName) const
+bool TNamedObject::IsSameName(const UnicodeString & AName) const
 {
   return (GetName().CompareIC(AName) == 0);
 }
@@ -155,12 +155,12 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
   }
 }
 
-const TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName) const
+const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName) const
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(AName);
 }
 
-TNamedObject * TNamedObjectList::FindByName(const UnicodeString AName)
+TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName)
 {
   // This should/can be optimized when list is sorted
   for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)

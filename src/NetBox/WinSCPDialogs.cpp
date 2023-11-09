@@ -102,7 +102,7 @@ class TTabbedDialog : public TWinSCPDialog
 {
   friend class TTabButton;
 public:
-  explicit TTabbedDialog(TCustomFarPlugin *AFarPlugin, int32_t TabCount) noexcept;
+  explicit TTabbedDialog(TCustomFarPlugin * AFarPlugin, int32_t TabCount) noexcept;
   virtual ~TTabbedDialog() = default;
 
   int32_t GetTab() const { return FTab; }
@@ -110,8 +110,8 @@ public:
 protected:
   void HideTabs();
   virtual void SelectTab(int32_t Tab);
-  void TabButtonClick(TFarButton *Sender, bool &Close);
-  virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode) override;
+  void TabButtonClick(TFarButton * Sender, bool &Close);
+  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
   virtual UnicodeString GetTabName(int32_t Tab) const;
   TTabButton *GetTabButton(int32_t Tab) const;
   int32_t GetTabCount() const { return FTabCount; }
@@ -129,19 +129,19 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTabButton); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTabButton) || TFarButton::is(Kind); }
 public:
-  explicit TTabButton(TTabbedDialog *Dialog);
+  explicit TTabButton(TTabbedDialog * Dialog);
 
   int32_t GetTab() const { return FTab; }
   void SetTab(int32_t Value) { FTab = Value; }
   UnicodeString GetTabName() const { return FTabName; }
-  void SetTabName(const UnicodeString & Value);
+  void SetTabName(const UnicodeString & AValue);
 
 private:
   UnicodeString FTabName;
   int32_t FTab{0};
 };
 
-TTabbedDialog::TTabbedDialog(TCustomFarPlugin *AFarPlugin, int32_t TabCount) noexcept :
+TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int32_t TabCount) noexcept :
   TWinSCPDialog(AFarPlugin),
   FTab(0),
   FTabCount(TabCount)
@@ -273,10 +273,11 @@ TTabButton::TTabButton(TTabbedDialog *Dialog) :
   SetOnClick(nb::bind(&TTabbedDialog::TabButtonClick, Dialog));
 }
 
-void TTabButton::SetTabName(const UnicodeString & Value)
+void TTabButton::SetTabName(const UnicodeString & AValue)
 {
-  if (FTabName != Value)
+  if (FTabName != AValue)
   {
+    UnicodeString Value = AValue;
     UnicodeString C;
     int32_t P = ::Pos(Value, L"|");
     if (P > 0)
@@ -302,7 +303,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
 
-  TFarCheckBox *DisksMenuCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
   DisksMenuCheck->SetCaption(GetMsg(NB_CONFIG_DISKS_MENU));
 
   Dialog->SetNextItemPosition(ipNewLine);

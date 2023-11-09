@@ -864,7 +864,7 @@ void TFTPFileSystem::CollectUsage()
   }
 }
 
-void TFTPFileSystem::DummyReadDirectory(const UnicodeString ADirectory)
+void TFTPFileSystem::DummyReadDirectory(const UnicodeString & ADirectory)
 {
   std::unique_ptr<TRemoteDirectory> Files(std::make_unique<TRemoteDirectory>(FTerminal));
   try
@@ -2359,7 +2359,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
 }
 
 void TFTPFileSystem::AutoDetectTimeDifference(
-  const UnicodeString ADirectory, const TCopyParamType *CopyParam, int32_t Params)
+  const UnicodeString & ADirectory, const TCopyParamType * CopyParam, int32_t Params)
 {
   if (NeedAutoDetectTimeDifference() &&
       // do we need FTimeDifference for the operation?
@@ -3471,7 +3471,7 @@ void TFTPFileSystem::SetLastCode(int32_t Code)
   FLastCodeClass = (Code / 100);
 }
 
-void TFTPFileSystem::StoreLastResponse(const UnicodeString Text)
+void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
 {
   FLastResponse->Add(Text);
   if (FLastCodeClass >= 4)
@@ -4189,7 +4189,7 @@ bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData &Data)
   return Result;
 }
 
-static bool IsIPAddress(const UnicodeString AHostName)
+static bool IsIPAddress(const UnicodeString & AHostName)
 {
   bool IPv4 = true;
   bool IPv6 = true;

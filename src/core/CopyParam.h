@@ -91,7 +91,7 @@ public:
   void SetLocalInvalidChars(const UnicodeString & Value);
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
-  UnicodeString RestoreChars(const UnicodeString AFileName) const;
+  UnicodeString RestoreChars(const UnicodeString & AFileName) const;
   void DoGetInfoStr(const UnicodeString & Separator, int32_t Options,
     UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString & ALink, UnicodeString & ScriptArgs
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const;
@@ -100,19 +100,19 @@ public:
 
 public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType) noexcept;
-  TCopyParamType(const TCopyParamType &Source) noexcept;
+  TCopyParamType(const TCopyParamType & Source) noexcept;
   virtual ~TCopyParamType() noexcept;
-  TCopyParamType &operator=(const TCopyParamType &rhs);
-  virtual void Assign(const TCopyParamType *Source);
+  TCopyParamType &operator=(const TCopyParamType & rhs);
+  virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
-  UnicodeString ChangeFileName(const UnicodeString AFileName,
+  UnicodeString ChangeFileName(const UnicodeString & AFileName,
     TOperationSide Side, bool FirstLevel) const;
-  DWORD LocalFileAttrs(const TRights &Rights) const;
+  DWORD LocalFileAttrs(const TRights & Rights) const;
   TRights RemoteFileRights(uint32_t Attrs) const;
-  bool UseAsciiTransfer(const UnicodeString AFileName, TOperationSide Side,
-    const TFileMasks::TParams &Params) const;
+  bool UseAsciiTransfer(const UnicodeString & AFileName, TOperationSide Side,
+    const TFileMasks::TParams & Params) const;
   bool AllowResume(int64_t Size, const UnicodeString & FileName) const;
-  bool ResumeTransfer(const UnicodeString AFileName) const;
+  bool ResumeTransfer(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalPath(const UnicodeString & APath) const;
   bool AllowAnyTransfer() const;
@@ -231,7 +231,7 @@ public:
   bool GetCalculateSize() const { return FCalculateSize; }
   void SetCalculateSize(bool Value) { FCalculateSize = Value; }
   UnicodeString GetFileMask() const { return FFileMask; }
-  void SetFileMask(const UnicodeString Value) { FFileMask = Value; }
+  void SetFileMask(const UnicodeString & Value) { FFileMask = Value; }
   const TFileMasks &GetIncludeFileMask() const { return FIncludeFileMask; }
   TFileMasks &GetIncludeFileMask() { return FIncludeFileMask; }
   void SetIncludeFileMask(const TFileMasks &Value) { FIncludeFileMask = Value; }
@@ -250,9 +250,9 @@ public:
 
 };
 
-NB_CORE_EXPORT uint32_t GetSpeedLimit(const UnicodeString Text);
+NB_CORE_EXPORT uint32_t GetSpeedLimit(const UnicodeString & Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uint32_t Limit);
-NB_CORE_EXPORT void CopySpeedLimits(TStrings *Source, TStrings *Dest);
+NB_CORE_EXPORT void CopySpeedLimits(TStrings * Source, TStrings * Dest);
 NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);
 extern const uint32_t MinSpeed;
 extern const uint32_t MaxSpeed;

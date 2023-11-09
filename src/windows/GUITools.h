@@ -29,10 +29,10 @@ bool CopyCommandToClipboard(const UnicodeString & Command);
 bool DoesSessionExistInPutty(const UnicodeString & StorageKey);
 bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName);
 void OpenSessionInPutty(TSessionData * SessionData);
-NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString APuttyPath,
+NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString & APuttyPath,
   TSessionData * SessionData);
 NB_CORE_EXPORT bool SpecialFolderLocation(int32_t APathID, UnicodeString & APath);
-NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString ABaseDir,
+NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString & ABaseDir,
   const UnicodeString Identity, bool Mask = false);
 
 #if 0

@@ -85,8 +85,8 @@ class TLoopDetector : public TObject
 {
 public:
   TLoopDetector() noexcept;
-  void RecordVisitedDirectory(const UnicodeString Directory);
-  bool IsUnvisitedDirectory(const UnicodeString Directory);
+  void RecordVisitedDirectory(const UnicodeString & Directory);
+  bool IsUnvisitedDirectory(const UnicodeString & Directory);
 
 private:
   std::unique_ptr<TStringList> FVisitedDirectories;
@@ -97,13 +97,13 @@ TLoopDetector::TLoopDetector() noexcept
   FVisitedDirectories.reset(CreateSortedStringList());
 }
 
-void TLoopDetector::RecordVisitedDirectory(const UnicodeString ADirectory)
+void TLoopDetector::RecordVisitedDirectory(const UnicodeString & ADirectory)
 {
   UnicodeString VisitedDirectory = ::ExcludeTrailingBackslash(ADirectory);
   FVisitedDirectories->Add(VisitedDirectory);
 }
 
-bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString Directory)
+bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 {
   bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
 
@@ -696,7 +696,7 @@ void TCollectedFileList::Deleting(int32_t Index)
   delete FList[Index].Object;
 }
 
-int32_t TCollectedFileList::Add(const UnicodeString FileName, TObject * Object, bool Dir)
+int32_t TCollectedFileList::Add(const UnicodeString & FileName, TObject * Object, bool Dir)
 {
   TFileData Data;
   Data.FileName = FileName;
@@ -5496,7 +5496,7 @@ bool TTerminal::GetCommandSessionOpened() const
     (FCommandSession->GetStatus() == ssOpened);
 }
 
-TTerminal * TTerminal::CreateSecondarySession(const UnicodeString Name, TSessionData * ASessionData)
+TTerminal * TTerminal::CreateSecondarySession(const UnicodeString & Name, TSessionData * ASessionData)
 {
   std::unique_ptr<TSecondaryTerminal> Result(std::make_unique<TSecondaryTerminal>(this));
   Result->Init(ASessionData, FConfiguration, Name, ActionLog);
@@ -5800,7 +5800,7 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   return Result;
 }
 
-void TTerminal::TerminalOpenLocalFile(const UnicodeString ATargetFileName,
+void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
   DWORD Access, DWORD *AAttrs, HANDLE *AHandle, int64_t *ACTime,
   int64_t *AMTime, int64_t *AATime, int64_t *ASize,
   bool TryWriteReadOnly)

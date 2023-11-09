@@ -457,7 +457,7 @@ static inline void GetToolbarKey(const UnicodeString & ToolbarName,
   }
 }
 
-static int ToolbarReadInt(const UnicodeString ToolbarName,
+static int ToolbarReadInt(const UnicodeString & ToolbarName,
   const UnicodeString Value, const int Default, const void * ExtraData)
 {
   int Result;

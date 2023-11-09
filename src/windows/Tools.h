@@ -57,12 +57,12 @@ NB_CORE_EXPORT HANDLE OpenTextFromClipboard(const wchar_t *& Text);
 NB_CORE_EXPORT void CloseTextFromClipboard(HANDLE Handle);
 #if 0
 void ExitActiveControl(TForm * Form);
-UnicodeString ReadResource(const UnicodeString ResName);
-bool DumpResourceToFile(const UnicodeString ResName,
-  const UnicodeString FileName);
+UnicodeString ReadResource(const UnicodeString & ResName);
+bool DumpResourceToFile(const UnicodeString & ResName,
+  const UnicodeString & FileName);
 void BrowseForExecutable(TEdit * Control, UnicodeString Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape);
-void BrowseForExecutable(TComboBox * Control, UnicodeString Title,
+void BrowseForExecutable(TComboBox * Control, UnicodeString & Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape);
 bool FontDialog(TFont * Font);
 #endif // #if 0

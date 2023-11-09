@@ -410,7 +410,7 @@ protected:
     }
   }
 
-  void Parameter(const UnicodeString Name, const UnicodeString Value = "")
+  void Parameter(const UnicodeString & Name, const UnicodeString & Value = "")
   {
     FNames->Add(Name);
     FValues->Add(Value);
@@ -545,7 +545,7 @@ TFileSessionAction::TFileSessionAction(
   SetFileName(AFileName);
 }
 
-void TFileSessionAction::SetFileName(const UnicodeString AFileName)
+void TFileSessionAction::SetFileName(const UnicodeString & AFileName)
 {
   if (FRecord != nullptr)
   {

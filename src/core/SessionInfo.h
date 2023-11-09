@@ -135,7 +135,7 @@ public:
   explicit TFileSessionAction(TActionLog * Log, TLogAction Action) noexcept;
   explicit TFileSessionAction(TActionLog * Log, TLogAction Action, const UnicodeString & AFileName) noexcept;
 
-  void SetFileName(const UnicodeString AFileName);
+  void SetFileName(const UnicodeString & AFileName);
 };
 
 class NB_CORE_EXPORT TFileLocationSessionAction : public TFileSessionAction

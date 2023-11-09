@@ -52,7 +52,7 @@ public:
   ROProperty<UnicodeString> DisplayText{nb::bind(&TRemoteToken::GetDisplayText, this)};
 
   UnicodeString GetName() const { return FName; }
-  void SetName(const UnicodeString Value) { FName = Value; }
+  void SetName(const UnicodeString & Value) { FName = Value; }
   int32_t GetID() const { return FID; }
   bool GetIDValid() const { return FIDValid; }
 
@@ -244,7 +244,7 @@ public:
   UnicodeString GetFileName() const { return FFileName; }
   void SetFileName(const UnicodeString & Value) { FFileName = Value; }
   UnicodeString GetDisplayName() const { return FDisplayName; }
-  void SetDisplayName(const UnicodeString Value) { FDisplayName = Value; }
+  void SetDisplayName(const UnicodeString & Value) { FDisplayName = Value; }
   TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
   void SetModificationFmt(const TModificationFmt & Value) { FModificationFmt = Value; }
@@ -256,7 +256,7 @@ public:
   const TRights * GetRights() const { return FRights; }
   TRights * GetRightsNotConst() { return FRights; }
   UnicodeString GetHumanRights() const { return FHumanRights; }
-  void SetHumanRights(const UnicodeString Value) { FHumanRights = Value; }
+  void SetHumanRights(const UnicodeString & Value) { FHumanRights = Value; }
   const TTerminal * GetTerminal() const { return FTerminal; }
   TTerminal * GetTerminalNotConst() { return const_cast<TTerminal *>(FTerminal); }
   void SetFullFileName(const UnicodeString & Value) { FFullFileName = Value; }
@@ -318,7 +318,7 @@ public:
   explicit TRemoteFileList(TObjectClassId Kind) noexcept;
   virtual ~TRemoteFileList() noexcept { TRemoteFileList::Reset(); }
   virtual void Reset();
-  TRemoteFile *FindFile(const UnicodeString AFileName) const;
+  TRemoteFile *FindFile(const UnicodeString & AFileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void AddFile(TRemoteFile * AFile);
 

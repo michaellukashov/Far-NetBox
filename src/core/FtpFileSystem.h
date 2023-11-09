@@ -195,16 +195,16 @@ protected:
   void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime &Source,
     TDateTime &DateTime, TModificationFmt &ModificationFmt) const;
   void SetLastCode(int32_t Code);
-  void StoreLastResponse(const UnicodeString Text);
-  void SetCPSLimit(TFileOperationProgressType *OperationProgress);
-  bool VerifyCertificateHostName(const TFtpsCertificateData &Data);
+  void StoreLastResponse(const UnicodeString & Text);
+  void SetCPSLimit(TFileOperationProgressType * OperationProgress);
+  bool VerifyCertificateHostName(const TFtpsCertificateData & Data);
   bool SupportsReadingFile() const;
-  void AutoDetectTimeDifference(TRemoteFileList *FileList);
-  void AutoDetectTimeDifference(const UnicodeString ADirectory, const TCopyParamType *CopyParam, int32_t AParams);
+  void AutoDetectTimeDifference(TRemoteFileList * FileList);
+  void AutoDetectTimeDifference(const UnicodeString & ADirectory, const TCopyParamType * CopyParam, int32_t AParams);
   void ApplyTimeDifference(TRemoteFile *File);
   void ApplyTimeDifference(
     const UnicodeString FileName, TDateTime &Modification, TModificationFmt &ModificationFmt);
-  void DummyReadDirectory(const UnicodeString ADirectory);
+  void DummyReadDirectory(const UnicodeString & ADirectory);
   bool IsEmptyFileList(TRemoteFileList *FileList) const;
   void CheckTimeDifference();
   bool NeedAutoDetectTimeDifference() const;

@@ -45,9 +45,9 @@ protected:
   UnicodeString FSwitchMarks;
   UnicodeString FSwitchValueDelimiters;
 
-  bool FindSwitch(const UnicodeString Switch,
+  bool FindSwitch(const UnicodeString & Switch,
     UnicodeString &Value, int32_t &ParamsStart, int32_t &ParamsCount, bool CaseSensitive, bool &ValueSet);
-  bool DoFindSwitch(const UnicodeString Switch, TStrings *Params,
+  bool DoFindSwitch(const UnicodeString & Switch, TStrings *Params,
     int32_t ParamsMax, bool CaseInsensitive);
   void ParamsProcessed(int32_t Position, int32_t Count);
 

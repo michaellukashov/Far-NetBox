@@ -53,7 +53,7 @@ public:
     int Description, int Help, TCommandProc Proc,
     int MinParams, int MaxParams, bool Switches);
 
-  bool Info(const UnicodeString Command,
+  bool Info(const UnicodeString & Command,
     UnicodeString * Description, UnicodeString * Help);
   bool Enumerate(int Index,
     UnicodeString * Command, UnicodeString * Description, UnicodeString * Help);

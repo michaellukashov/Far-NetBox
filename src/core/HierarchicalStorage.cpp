@@ -24,7 +24,7 @@ __removed #pragma package(smart_init)
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch(...) { }
 
-UnicodeString MungeStr(const UnicodeString Str, bool ForceAnsi, bool Value)
+UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi, bool Value)
 {
   RawByteString Source;
   if (ForceAnsi)
@@ -51,7 +51,7 @@ UnicodeString MungeStr(const UnicodeString Str, bool ForceAnsi, bool Value)
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
 
-UnicodeString UnMungeStr(const UnicodeString Str)
+UnicodeString UnMungeStr(const UnicodeString & Str)
 {
   // Str should contain ASCII characters only
   RawByteString Source = AnsiString(Str);
@@ -73,7 +73,7 @@ UnicodeString UnMungeStr(const UnicodeString Str)
   return Result;
 }
 
-AnsiString PuttyStr(const UnicodeString Str)
+AnsiString PuttyStr(const UnicodeString & Str)
 {
   return AnsiString(Str);
 }
@@ -102,7 +102,7 @@ UnicodeString MungeIniName(const UnicodeString & Str)
   }
 }
 
-UnicodeString UnMungeIniName(const UnicodeString Str)
+UnicodeString UnMungeIniName(const UnicodeString & Str)
 {
   int P = Str.Pos(L"%3D");
   // make this fast for now
@@ -159,7 +159,7 @@ TIntMapping BoolMapping = CreateIntMapping(L"on", true, L"off", false);
 UnicodeString AccessValueName(L"Access");
 UnicodeString DefaultAccessString(L"inherit");
 
-THierarchicalStorage::THierarchicalStorage(const UnicodeString AStorage) noexcept :
+THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) noexcept :
   FStorage(AStorage)
 {
   SetAccessMode(smRead);
@@ -424,7 +424,7 @@ void THierarchicalStorage::ClearSubKeys()
   }
 }
 
-void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString Key)
+void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 {
   bool CanWriteParent = CanWrite();
   if (OpenSubKey(Key, false))
@@ -470,7 +470,7 @@ bool THierarchicalStorage::DeleteValue(const UnicodeString & Name)
   }
 }
 
-bool THierarchicalStorage::KeyExists(const UnicodeString SubKey)
+bool THierarchicalStorage::KeyExists(const UnicodeString & SubKey)
 {
   if (CanRead())
   {
@@ -482,7 +482,7 @@ bool THierarchicalStorage::KeyExists(const UnicodeString SubKey)
   }
 }
 
-bool THierarchicalStorage::ValueExists(const UnicodeString Value)
+bool THierarchicalStorage::ValueExists(const UnicodeString & Value)
 {
   if (CanRead())
   {
@@ -854,14 +854,14 @@ bool THierarchicalStorage::GetTemporary() const
   return false;
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const UnicodeString AStorage) noexcept:
+TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) noexcept:
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   FWowMode = 0;
   Init();
 }
 
-TRegistryStorage::TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
+TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   FWowMode = WowMode;

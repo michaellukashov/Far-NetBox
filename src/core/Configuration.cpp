@@ -779,7 +779,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   CopyAllStringsInSubKey(Source, Target, HttpsCertificateStorageKey);
 }
 
-void TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
+void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
@@ -799,7 +799,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString SessionKey,
   }) end_try__finally
 }
 
-void TConfiguration::SaveDirectoryChangesCache(const UnicodeString SessionKey,
+void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
@@ -903,7 +903,7 @@ void TConfiguration::RememberLastFingerprint(const UnicodeString & ASiteKey, con
   }
 }
 
-UnicodeString TConfiguration::GetLastFingerprint(const UnicodeString ASiteKey, const UnicodeString AFingerprintType)
+UnicodeString TConfiguration::GetLastFingerprint(const UnicodeString & ASiteKey, const UnicodeString & AFingerprintType)
 {
   UnicodeString Result;
 
@@ -1094,7 +1094,7 @@ void TConfiguration::DontSave()
   FDontSave = true;
 }
 
-RawByteString TConfiguration::EncryptPassword(const UnicodeString Password, const UnicodeString Key)
+RawByteString TConfiguration::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
 {
   if (Password.IsEmpty())
   {
@@ -1106,7 +1106,7 @@ RawByteString TConfiguration::EncryptPassword(const UnicodeString Password, cons
   }
 }
 
-UnicodeString TConfiguration::DecryptPassword(const RawByteString Password, const UnicodeString Key)
+UnicodeString TConfiguration::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
   if (Password.IsEmpty())
   {
@@ -1506,7 +1506,7 @@ void TConfiguration::SetNulStorage()
   FStorage = stNul;
 }
 
-void TConfiguration::SetExplicitIniFileStorageName(const UnicodeString FileName)
+void TConfiguration::SetExplicitIniFileStorageName(const UnicodeString & FileName)
 {
   FIniFileStorageName = FileName;
   FStorage = stIniFile;
@@ -1674,7 +1674,7 @@ UnicodeString TConfiguration::GetRootKeyStr() const
   return RootKeyToStr(HKEY_CURRENT_USER);
 }
 
-void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString ACustomIniFileStorageName)
+void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACustomIniFileStorageName)
 {
   if ((FStorage != AStorage) ||
       ((FStorage == stIniFile) && !FIniFileStorageName.IsEmpty()) ||
@@ -1728,7 +1728,7 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString ACustomI
   }
 }
 
-void TConfiguration::ScheduleCustomIniFileStorageUse(const UnicodeString ACustomIniFileStorageName)
+void TConfiguration::ScheduleCustomIniFileStorageUse(const UnicodeString & ACustomIniFileStorageName)
 {
   FStorage = stIniFile;
   FCustomIniFileStorageName = ACustomIniFileStorageName;

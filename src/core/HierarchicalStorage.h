@@ -17,7 +17,7 @@ friend class TCustomIniFileStorage;
 
 public:
   THierarchicalStorage() = delete;
-  explicit THierarchicalStorage(const UnicodeString AStorage) noexcept;
+  explicit THierarchicalStorage(const UnicodeString & AStorage) noexcept;
   virtual ~THierarchicalStorage() noexcept;
   virtual void Init() {}
   void ConfigureForPutty();
@@ -28,14 +28,14 @@ public:
   bool OpenSubKeyPath(const UnicodeString & KeyPath, bool CanCreate);
   void CloseSubKeyPath();
   void GetSubKeyNames(TStrings * Strings);
-  void GetValueNames(TStrings *Strings);
+  void GetValueNames(TStrings * Strings);
   bool HasSubKeys();
-  bool KeyExists(const UnicodeString SubKey);
-  bool ValueExists(const UnicodeString Value);
-  virtual void RecursiveDeleteSubKey(const UnicodeString Key);
+  bool KeyExists(const UnicodeString & SubKey);
+  bool ValueExists(const UnicodeString & Value);
+  virtual void RecursiveDeleteSubKey(const UnicodeString & Key);
   virtual void ClearSubKeys();
-  virtual void ReadValues(TStrings *Strings, bool MaintainKeys = false);
-  virtual void WriteValues(TStrings *Strings, bool MaintainKeys = false);
+  virtual void ReadValues(TStrings * Strings, bool MaintainKeys = false);
+  virtual void WriteValues(TStrings * Strings, bool MaintainKeys = false);
   virtual void ClearValues();
   bool DeleteValue(const UnicodeString & Name);
 
@@ -57,7 +57,7 @@ public:
   RawByteString ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default);
 
   void WriteBool(const UnicodeString & Name, bool Value);
-  void WriteStringRaw(const UnicodeString Name, const UnicodeString & Value);
+  void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   void WriteInteger(const UnicodeString & Name, int32_t Value);
   void WriteInt64(const UnicodeString & Name, int64_t Value);
   void WriteDateTime(const UnicodeString & Name, const TDateTime Value);
@@ -182,8 +182,8 @@ class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
   NB_DISABLE_COPY(TRegistryStorage)
 public:
   TRegistryStorage() = delete;
-  explicit TRegistryStorage(const UnicodeString AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
-  explicit TRegistryStorage(const UnicodeString AStorage) noexcept;
+  explicit TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
+  explicit TRegistryStorage(const UnicodeString & AStorage) noexcept;
   virtual ~TRegistryStorage() noexcept;
 
   bool Copy(TRegistryStorage *Storage);

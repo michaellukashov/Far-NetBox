@@ -24,7 +24,7 @@ public:
   ~THttp() noexcept;
 
   void Get();
-  void Post(const UnicodeString Request);
+  void Post(const UnicodeString & Request);
   bool IsCertificateError() const;
 
   __property UnicodeString URL = { read = FURL, write = FURL };

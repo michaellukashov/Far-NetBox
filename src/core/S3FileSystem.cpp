@@ -1316,7 +1316,7 @@ void TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   DebugFail();
 }
 
-void TS3FileSystem::DoReadFile(const UnicodeString AFileName, TRemoteFile *&AFile)
+void TS3FileSystem::DoReadFile(const UnicodeString & AFileName, TRemoteFile *&AFile)
 {
   UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
   std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
@@ -1864,8 +1864,8 @@ void TS3FileSystem::CopyToRemote(
 }
 
 void TS3FileSystem::ConfirmOverwrite(
-  const UnicodeString ASourceFullFileName, UnicodeString & ATargetFileName,
-  TFileOperationProgressType * OperationProgress, const TOverwriteFileParams *FileParams,
+  const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
+  TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
   const TCopyParamType * CopyParam, int32_t AParams)
 {
   uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;

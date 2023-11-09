@@ -919,7 +919,7 @@ void UnicodeString::ThrowIfOutOfRange(int32_t Idx) const
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
-UnicodeString operator+(const wchar_t lhs, UnicodeString rhs)
+UnicodeString operator+(const wchar_t lhs, const UnicodeString & rhs)
 {
   return UnicodeString(&lhs, 1) + rhs;
 }
@@ -929,17 +929,17 @@ UnicodeString operator+(const UnicodeString & lhs, const wchar_t rhs)
   return lhs + UnicodeString(rhs);
 }
 
-UnicodeString operator+(const wchar_t *lhs, UnicodeString rhs)
+UnicodeString operator+(const wchar_t * lhs, const UnicodeString & rhs)
 {
   return UnicodeString(lhs) + rhs;
 }
 
-UnicodeString operator+(const UnicodeString & lhs, const wchar_t *rhs)
+UnicodeString operator+(const UnicodeString & lhs, const wchar_t * rhs)
 {
   return lhs + UnicodeString(rhs);
 }
 
-UnicodeString operator+(const UnicodeString & lhs, const char *rhs)
+UnicodeString operator+(const UnicodeString & lhs, const char * rhs)
 {
   return lhs + UnicodeString(rhs);
 }

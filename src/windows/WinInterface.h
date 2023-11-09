@@ -199,8 +199,8 @@ struct TInputDialogData
 typedef void (__closure *TInputDialogInitialize)
   (TObject * Sender, TInputDialogData * Data);
 #endif // #if 0
-bool InputDialog(const UnicodeString ACaption,
-  const UnicodeString APrompt, UnicodeString & Value, UnicodeString HelpKeyword = HELP_NONE,
+bool InputDialog(const UnicodeString & ACaption,
+  const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
   TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true, int32_t Width = 275);
 
@@ -472,7 +472,7 @@ typedef nb::FastDelegate2<void,
   TObject * /*Sender* /, bool /*Forced*/> TFileClosedEvent;
 typedef nb::FastDelegate2<void,
   TObject * /*Sender* /, bool & /*Modified*/> TAnyModifiedEvent;
-TForm * ShowEditorForm(const UnicodeString FileName, TForm * ParentForm,
+TForm * ShowEditorForm(const UnicodeString & FileName, TForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
   TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
   const UnicodeString Caption, bool StandaloneEditor, TColor Color, int32_t InternalEditorEncodingOverride,
@@ -508,7 +508,7 @@ TForm * CreateMoreMessageDialog(const UnicodeString & Msg,
   const UnicodeString & ImageName, const UnicodeString & NeverAskAgainCaption,
   const UnicodeString & MoreMessagesUrl, TSize MoreMessagesSize,
   const UnicodeString & CustomCaption);
-TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
+TForm * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * MoreMessages,
   TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params);
 uint32_t ExecuteMessageDialog(TForm * Dialog, uint32_t Answers, const TMessageParams * Params);
 void InsertPanelToMessageDialog(TCustomForm * Form, TPanel * Panel);

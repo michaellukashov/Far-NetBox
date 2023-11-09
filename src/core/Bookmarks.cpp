@@ -403,7 +403,7 @@ void TBookmarkList::KeyChanged(int32_t Index)
   FBookmarks->SetString(Index, Bookmark->GetKey());
 }
 
-TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, UnicodeString Name) const
+TBookmark * TBookmarkList::FindByName(const UnicodeString & Node, const UnicodeString & Name) const
 {
   int32_t Index = FBookmarks->IndexOf(TBookmark::BookmarkKey(Node, Name));
   TBookmark *Bookmark = ((Index >= 0) ? FBookmarks->GetAs<TBookmark>(Index) : nullptr);

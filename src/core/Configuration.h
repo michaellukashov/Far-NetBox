@@ -308,9 +308,9 @@ public:
   void Load(THierarchicalStorage *Storage);
   void Save();
   void SaveExplicit();
-  void MoveStorage(TStorage AStorage, const UnicodeString ACustomIniFileStorageName);
-  void ScheduleCustomIniFileStorageUse(const UnicodeString ACustomIniFileStorageName);
-  void SetExplicitIniFileStorageName(const UnicodeString FileName);
+  void MoveStorage(TStorage AStorage, const UnicodeString & ACustomIniFileStorageName);
+  void ScheduleCustomIniFileStorageUse(const UnicodeString & ACustomIniFileStorageName);
+  void SetExplicitIniFileStorageName(const UnicodeString & FileName);
   void SetNulStorage();
   UnicodeString GetAutomaticIniFileStorageName(bool ReadingOnly) const;
   UnicodeString GetDefaultIniFileExportPath() const;
@@ -325,10 +325,10 @@ public:
   void BeginUpdate();
   void EndUpdate();
   void DontSave();
-  void LoadDirectoryChangesCache(const UnicodeString SessionKey,
-    TRemoteDirectoryChangesCache *DirectoryChangesCache);
-  void SaveDirectoryChangesCache(const UnicodeString SessionKey,
-    TRemoteDirectoryChangesCache *DirectoryChangesCache);
+  void LoadDirectoryChangesCache(const UnicodeString & SessionKey,
+    TRemoteDirectoryChangesCache * DirectoryChangesCache);
+  void SaveDirectoryChangesCache(const UnicodeString & SessionKey,
+    TRemoteDirectoryChangesCache * DirectoryChangesCache);
   TStrings * LoadDirectoryStatisticsCache(
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
   void SaveDirectoryStatisticsCache(
@@ -337,8 +337,8 @@ public:
   void NeverShowBanner(const UnicodeString & ASessionKey, const UnicodeString & ABanner);
   void SetBannerParams(const UnicodeString & ASessionKey, uint32_t AParams);
   void RememberLastFingerprint(const UnicodeString & ASiteKey, const UnicodeString & AFingerprintType, const UnicodeString & AFingerprint);
-  UnicodeString GetLastFingerprint(const UnicodeString SiteKey, const UnicodeString FingerprintType);
-  THierarchicalStorage *CreateConfigStorage();
+  UnicodeString GetLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
+  THierarchicalStorage * CreateConfigStorage();
   THierarchicalStorage * CreateConfigRegistryStorage();
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString & ALogFileName);
@@ -347,8 +347,8 @@ public:
   void TemporaryLogSensitive(bool ALogSensitive);
   void TemporaryLogMaxSize(int64_t ALogMaxSize);
   void TemporaryLogMaxCount(int32_t ALogMaxCount);
-  virtual RawByteString EncryptPassword(const UnicodeString Password, const UnicodeString Key);
-  virtual UnicodeString DecryptPassword(const RawByteString Password, const UnicodeString Key);
+  virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
+  virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
   UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString & AFileName) const;

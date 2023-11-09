@@ -357,34 +357,34 @@ public:
     AddCardinal(nb::ToUInt32(Value & 0xFFFFFFFF));
   }
 
-  void AddData(const void *Data, int32_t ALength)
+  void AddData(const void * Data, int32_t ALength)
   {
     AddCardinal(ALength);
     Add(Data, ALength);
   }
 
-  void AddStringW(const UnicodeString ValueW)
+  void AddStringW(const UnicodeString & ValueW)
   {
     AddString(::W2MB(ValueW.c_str(), static_cast<UINT>(FCodePage)).c_str());
   }
 
-  void AddString(const RawByteString Value)
+  void AddString(const RawByteString & Value)
   {
     AddCardinal(nb::ToUInt32(Value.Length()));
     Add(Value.c_str(), Value.Length());
   }
 
-  void AddUtfString(const UTF8String Value)
+  void AddUtfString(const UTF8String & Value)
   {
     AddString(Value);
   }
 
-  void AddUtfString(const UnicodeString Value)
+  void AddUtfString(const UnicodeString & Value)
   {
     AddUtfString(UTF8String(Value));
   }
 
-  void AddString(const UnicodeString Value, TAutoSwitch /*Utf*/)
+  void AddString(const UnicodeString & Value, TAutoSwitch /*Utf*/)
   {
     AddStringW(Value);
 #if 0
@@ -401,7 +401,7 @@ public:
   }
 
   // now purposeless alias to AddString
-  inline void AddPathString(const UnicodeString Value, TAutoSwitch Utf)
+  inline void AddPathString(const UnicodeString & Value, TAutoSwitch Utf)
   {
     AddString(Value, Utf);
   }
@@ -1641,9 +1641,9 @@ public:
 //    SAFE_DESTROY(FStream);
   }
 
-  bool Init(const UnicodeString AFileName,
+  bool Init(const UnicodeString & AFileName,
     HANDLE AFile, TTransferInEvent OnTransferIn, TFileOperationProgressType *AOperationProgress,
-    const RawByteString AHandle, int64_t ATransferred,
+    const RawByteString & AHandle, int64_t ATransferred,
     int32_t ConvertParams)
   {
     FFileName = AFileName;
@@ -2913,7 +2913,7 @@ SSH_FX_TYPE TSFTPFileSystem::SendPacketAndReceiveResponse(
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath)
+UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath)
 {
   if (FTerminal->SessionData->FSFTPRealPath == asOff)
   {
@@ -2992,7 +2992,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath)
   return UnicodeString();
 }
 
-UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath, const UnicodeString ABaseDir)
+UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath, const UnicodeString & ABaseDir)
 {
   UnicodeString Path;
 
@@ -3020,7 +3020,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString APath, const Unic
   return GetRealPath(Path);
 }
 
-UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString APath) const
+UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
 {
   TODO("improve (handle .. etc.)");
   if (base::UnixIsAbsolutePath(APath) ||
@@ -3031,7 +3031,7 @@ UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString APath) const
   return base::AbsolutePath(FCurrentDirectory, APath);
 }
 
-UnicodeString TSFTPFileSystem::Canonify(const UnicodeString APath)
+UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
 {
   // inspired by canonify() from PSFTP.C
   UnicodeString Result;
@@ -3123,9 +3123,9 @@ void TSFTPFileSystem::LoadFile(TRemoteFile *AFile, TSFTPPacket *Packet,
   Packet->GetFile(AFile, FVersion, FTerminal->SessionData->GetDSTMode(), FUtfStrings, FSignedTS, Complete);
 }
 
-TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket *Packet,
-  TRemoteFile *ALinkedByFile, const UnicodeString AFileName,
-  TRemoteFileList *TempFileList, bool Complete)
+TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
+  TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
+  TRemoteFileList * TempFileList, bool Complete)
 {
   std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(ALinkedByFile));
   try__catch
@@ -3907,7 +3907,7 @@ void TSFTPFileSystem::ReadFile(const UnicodeString & AFileName,
   CustomReadFile(AFileName, AFile, SSH_FXP_LSTAT);
 }
 
-bool TSFTPFileSystem::RemoteFileExists(const UnicodeString FullPath,
+bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
   TRemoteFile ** AFile)
 {
   bool Result;
@@ -3950,8 +3950,8 @@ void TSFTPFileSystem::SendCustomReadFile(TSFTPPacket *Packet,
   ReserveResponse(Packet, Response);
 }
 
-void TSFTPFileSystem::CustomReadFile(const UnicodeString AFileName,
-  TRemoteFile *&AFile, SSH_FXP_TYPE Type, TRemoteFile *ALinkedByFile,
+void TSFTPFileSystem::CustomReadFile(const UnicodeString & AFileName,
+  TRemoteFile *& AFile, SSH_FXP_TYPE Type, TRemoteFile * ALinkedByFile,
   SSH_FX_TYPE AllowStatus)
 {
   SSH_FILEXFER_ATTR_TYPE Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |

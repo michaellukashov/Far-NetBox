@@ -17,7 +17,7 @@ static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1
 static UnicodeString MaskSymbols = L"?*[";
 
 EFileMasksException::EFileMasksException(
-    UnicodeString AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept :
+    const UnicodeString & AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept :
   Exception(AMessage),
   ErrorStart(AErrorStart),
   ErrorLen(AErrorLen)
@@ -146,7 +146,7 @@ UnicodeString TFileMasks::TParams::ToString() const
 }
 
 
-bool TFileMasks::IsMask(const UnicodeString Mask)
+bool TFileMasks::IsMask(const UnicodeString & Mask)
 {
   return (Mask.LastDelimiter(MaskSymbols) > 0);
 }
@@ -169,7 +169,7 @@ UnicodeString TFileMasks::EscapeMask(const UnicodeString & S)
   return Result;
 }
 
-UnicodeString TFileMasks::NormalizeMask(const UnicodeString Mask, const UnicodeString AAnyMask)
+UnicodeString TFileMasks::NormalizeMask(const UnicodeString & Mask, const UnicodeString & AAnyMask)
 {
   if (!IsEffectiveFileNameMask(Mask))
   {
@@ -265,7 +265,7 @@ TFileMasks::TFileMasks(const TFileMasks &Source) noexcept
   DoCopy(Source);
 }
 
-TFileMasks::TFileMasks(const UnicodeString AMasks) noexcept
+TFileMasks::TFileMasks(const UnicodeString & AMasks) noexcept
 {
   Init();
   SetStr(AMasks, false);
@@ -461,7 +461,7 @@ bool TFileMasks::Matches(const UnicodeString & FileName, bool Local,
   return Matches(FileName, Local, Directory, Params, true, ImplicitMatch);
 }
 
-bool TFileMasks::Matches(const UnicodeString FileName, bool Local,
+bool TFileMasks::Matches(const UnicodeString & FileName, bool Local,
   bool Directory, const TParams * Params, bool RecurseInclude, bool & ImplicitMatch) const
 {
   bool Result;
@@ -880,7 +880,7 @@ void TFileMasks::SetRoots(const UnicodeString & LocalRoot, TStrings * RemoteFile
 const wchar_t TCustomCommand::NoQuote = L'\0';
 const UnicodeString TCustomCommand::Quotes = L"\"'";
 
-UnicodeString TCustomCommand::Escape(const UnicodeString S)
+UnicodeString TCustomCommand::Escape(const UnicodeString & S)
 {
   return ReplaceStr(S, L"!", L"!!");
 }

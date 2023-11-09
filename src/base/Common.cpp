@@ -4522,17 +4522,17 @@ UnicodeString RtfColorItalicText(int Color, const UnicodeString Text)
   return RtfColor(Color) + L"\\i " + RtfText(Text) + L"\\i0" + RtfColor(0) + L" ";
 }
 
-UnicodeString RtfOverrideColorText(const UnicodeString Text)
+UnicodeString RtfOverrideColorText(const UnicodeString & Text)
 {
   return RtfColorText(1, Text);
 }
 
-UnicodeString RtfKeyword(const UnicodeString Text)
+UnicodeString RtfKeyword(const UnicodeString & Text)
 {
   return RtfColorText(5, Text);
 }
 
-UnicodeString RtfParameter(const UnicodeString Text)
+UnicodeString RtfParameter(const UnicodeString & Text)
 {
   return RtfColorText(6, Text);
 }

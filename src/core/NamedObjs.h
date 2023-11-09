@@ -28,14 +28,14 @@ public:
   explicit TNamedObject(TObjectClassId Kind, const UnicodeString AName) noexcept;
   virtual ~TNamedObject() = default;
 
-  bool IsSameName(const UnicodeString AName) const;
+  bool IsSameName(const UnicodeString & AName) const;
   virtual int32_t Compare(const TNamedObject *Other) const;
   void MakeUniqueIn(TNamedObjectList *List);
 private:
   UnicodeString FName;
   bool FHidden{false};
 
-  __removed void SetName(const UnicodeString value);
+  __removed void SetName(const UnicodeString & value);
 };
 
 NB_DEFINE_CLASS_ID(TNamedObjectList);
@@ -64,8 +64,8 @@ public:
   int32_t Add(TObject *AObject);
   virtual const TNamedObject * AtObject(int32_t Index) const;
   virtual TNamedObject * AtObject(int32_t Index);
-  const TNamedObject * FindByName(const UnicodeString AName) const;
-  TNamedObject * FindByName(const UnicodeString Name);
+  const TNamedObject * FindByName(const UnicodeString & AName) const;
+  TNamedObject * FindByName(const UnicodeString & Name);
   __property int Count = { read = GetCount };
   __property int CountIncludingHidden = { read = GetCountIncludingHidden };
 };

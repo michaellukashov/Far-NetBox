@@ -74,7 +74,7 @@ void TUsage::Load(THierarchicalStorage * Storage)
 }
 
 void TUsage::Load(THierarchicalStorage * Storage,
-  const UnicodeString AName, TCounters & Counters)
+  const UnicodeString & AName, TCounters & Counters)
 {
   if (Storage->OpenSubKey(AName, false))
   {
@@ -111,7 +111,7 @@ void TUsage::Save(THierarchicalStorage * Storage) const
 }
 
 void TUsage::Save(THierarchicalStorage * Storage,
-  const UnicodeString AName, const TCounters & Counters) const
+  const UnicodeString & AName, const TCounters & Counters) const
 {
   if (Storage->OpenSubKey(AName, true))
   {
@@ -126,7 +126,7 @@ void TUsage::Save(THierarchicalStorage * Storage,
   }
 }
 
-void TUsage::Set(const UnicodeString AKey, const UnicodeString AValue)
+void TUsage::Set(const UnicodeString & AKey, const UnicodeString & AValue)
 {
   if (FCollect)
   {
@@ -135,17 +135,17 @@ void TUsage::Set(const UnicodeString AKey, const UnicodeString AValue)
   }
 }
 
-void TUsage::Set(const UnicodeString AKey, int32_t Value)
+void TUsage::Set(const UnicodeString & AKey, int32_t Value)
 {
   Set(AKey, IntToStr(Value));
 }
 
-void TUsage::Set(const UnicodeString AKey, bool Value)
+void TUsage::Set(const UnicodeString & AKey, bool Value)
 {
   Set(AKey, int32_t(Value ? 1 : 0));
 }
 
-UnicodeString TUsage::Get(const UnicodeString AKey) const
+UnicodeString TUsage::Get(const UnicodeString & AKey) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
   UnicodeString Result = FValues->GetValue(AKey);
@@ -196,7 +196,7 @@ void TUsage::UpdateCurrentVersion()
   Set("CurrentVersion", CompoundVersion);
 }
 
-void TUsage::ResetValue(const UnicodeString AKey)
+void TUsage::ResetValue(const UnicodeString & AKey)
 {
   int32_t Index = FValues->IndexOfName(AKey);
   if (Index >= 0)
@@ -212,7 +212,7 @@ void TUsage::ResetLastExceptions()
   ResetValue(LastUpdateExceptionCounter);
 }
 
-int32_t TUsage::Inc(const UnicodeString AKey, int32_t Increment)
+int32_t TUsage::Inc(const UnicodeString & AKey, int32_t Increment)
 {
   int Result;
   if (FCollect)
@@ -228,7 +228,7 @@ int32_t TUsage::Inc(const UnicodeString AKey, int32_t Increment)
   return Result;
 }
 
-int32_t TUsage::Inc(const UnicodeString AKey, TCounters & Counters, int32_t Increment)
+int32_t TUsage::Inc(const UnicodeString & AKey, TCounters & Counters, int32_t Increment)
 {
   int Result;
   TCounters::iterator i = Counters.find(AKey);
@@ -245,7 +245,7 @@ int32_t TUsage::Inc(const UnicodeString AKey, TCounters & Counters, int32_t Incr
   return Result;
 }
 
-void TUsage::SetMax(const UnicodeString AKey, int32_t Value)
+void TUsage::SetMax(const UnicodeString & AKey, int32_t Value)
 {
   if (FCollect)
   {
@@ -255,7 +255,7 @@ void TUsage::SetMax(const UnicodeString AKey, int32_t Value)
   }
 }
 
-void TUsage::SetMax(const UnicodeString AKey, int32_t Value,
+void TUsage::SetMax(const UnicodeString & AKey, int32_t Value,
   TCounters & Counters)
 {
   TCounters::iterator i = Counters.find(AKey);
@@ -291,7 +291,7 @@ void TUsage::SetCollect(bool Value)
   }
 }
 
-UnicodeString TUsage::Serialize(const UnicodeString ADelimiter, const UnicodeString AFilter) const
+UnicodeString TUsage::Serialize(const UnicodeString & ADelimiter, const UnicodeString & AFilter) const
 {
   TGuard Guard(*FCriticalSection); nb::used(Guard);
   UnicodeString Result;
@@ -309,8 +309,8 @@ UnicodeString TUsage::Serialize(const UnicodeString ADelimiter, const UnicodeStr
 }
 
 void TUsage::Serialize(
-  UnicodeString & List, const UnicodeString AName, const TCounters & Counters,
-  const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const
+  UnicodeString & List, const UnicodeString & AName, const TCounters & Counters,
+  const UnicodeString & ADelimiter, const UnicodeString & AFilterUpper) const
 {
   TCounters::const_iterator i = Counters.begin();
   while (i != Counters.end())
@@ -321,8 +321,8 @@ void TUsage::Serialize(
 }
 
 void TUsage::Serialize(
-  UnicodeString & AList, const UnicodeString AName, const UnicodeString AValue,
-  const UnicodeString ADelimiter, const UnicodeString AFilterUpper) const
+  UnicodeString & AList, const UnicodeString & AName, const UnicodeString & AValue,
+  const UnicodeString & ADelimiter, const UnicodeString & AFilterUpper) const
 {
   if (AFilterUpper.IsEmpty() ||
       (UpperCase(AName).Pos(AFilterUpper) > 0) ||

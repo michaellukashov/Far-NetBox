@@ -165,7 +165,7 @@ void THttp::Get()
   SendRequest("GET", UnicodeString());
 }
 
-void THttp::Post(const UnicodeString Request)
+void THttp::Post(const UnicodeString & Request)
 {
   SendRequest("POST", Request);
 }

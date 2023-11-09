@@ -1784,7 +1784,7 @@ int64_t TRemoteFileList::GetTotalSize() const
   return Result;
 }
 
-TRemoteFile *TRemoteFileList::FindFile(const UnicodeString AFileName) const
+TRemoteFile *TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {

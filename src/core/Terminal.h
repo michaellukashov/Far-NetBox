@@ -366,15 +366,15 @@ protected:
     TProcessFileEvent CallBackFunc, void * AParam = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
   bool DeleteContentsIfDirectory(
-    const UnicodeString & AFileName, const TRemoteFile *AFile, int32_t AParams, TRmSessionAction &Action);
+    const UnicodeString & AFileName, const TRemoteFile * AFile, int32_t AParams, TRmSessionAction & Action);
   void AnnounceFileListOperation();
-  void ReadDirectory(TRemoteFileList *AFileList);
-  void CustomReadDirectory(TRemoteFileList *AFileList);
+  void ReadDirectory(TRemoteFileList * AFileList);
+  void CustomReadDirectory(TRemoteFileList * AFileList);
   void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
   bool TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
     TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
-  void TerminalOpenLocalFile(const UnicodeString ATargetFileName, DWORD Access,
+  void TerminalOpenLocalFile(const UnicodeString & ATargetFileName, DWORD Access,
     DWORD * AAttrs, HANDLE * AHandle, int64_t * ACTime, int64_t * AMTime,
     int64_t * AATime, int64_t * ASize, bool TryWriteReadOnly = true);
   void TerminalOpenLocalFile(
@@ -695,7 +695,7 @@ public:
   void FatalAbort();
   void ReflectSettings() const;
   void CollectUsage();
-  TTerminal * CreateSecondarySession(const UnicodeString Name, TSessionData * SessionData);
+  TTerminal * CreateSecondarySession(const UnicodeString & Name, TSessionData * SessionData);
   void FillSessionDataForCode(TSessionData * SessionData) const;
   void UpdateSessionCredentials(TSessionData * Data);
   UnicodeString UploadPublicKey(const UnicodeString & FileName);
@@ -1053,7 +1053,7 @@ public:
 public:
   TCollectedFileList() noexcept;
   virtual ~TCollectedFileList();
-  int32_t Add(const UnicodeString AFileName, TObject * Object, bool Dir);
+  int32_t Add(const UnicodeString & AFileName, TObject * Object, bool Dir);
   void DidNotRecurse(int32_t Index);
   void Delete(int32_t Index);
 

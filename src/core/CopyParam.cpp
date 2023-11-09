@@ -645,7 +645,7 @@ UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString & AFileName
   return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LOCAL_INVALID_CHARS);
 }
 
-UnicodeString TCopyParamType::RestoreChars(const UnicodeString AFileName) const
+UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) const
 {
   UnicodeString FileName = AFileName;
   if (GetInvalidCharsReplacement() == TokenReplacement)
@@ -702,7 +702,7 @@ UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString & APath) const
   return Result;
 }
 
-UnicodeString TCopyParamType::ChangeFileName(const UnicodeString AFileName,
+UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & AFileName,
   TOperationSide Side, bool FirstLevel) const
 {
   UnicodeString FileName = AFileName;
@@ -745,8 +745,8 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString AFileName,
   return FileName;
 }
 
-bool TCopyParamType::UseAsciiTransfer(const UnicodeString AFileName,
-  TOperationSide Side, const TFileMasks::TParams &Params) const
+bool TCopyParamType::UseAsciiTransfer(const UnicodeString & AFileName,
+  TOperationSide Side, const TFileMasks::TParams & Params) const
 {
   switch (GetTransferMode())
   {
@@ -885,7 +885,7 @@ bool TCopyParamType::SkipTransfer(
   return Result;
 }
 
-bool TCopyParamType::ResumeTransfer(const UnicodeString AFileName) const
+bool TCopyParamType::ResumeTransfer(const UnicodeString & AFileName) const
 {
   // Returning true has the same effect as cpResume
   return
@@ -1076,7 +1076,7 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 const uint32_t MinSpeed = 8 * 1024;
 const uint32_t MaxSpeed = 8 * 1024 * 1024;
 
-static bool TryGetSpeedLimit(const UnicodeString Text, uint32_t &Speed)
+static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t &Speed)
 {
   bool Result;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
@@ -1096,7 +1096,7 @@ static bool TryGetSpeedLimit(const UnicodeString Text, uint32_t &Speed)
   return Result;
 }
 
-uint32_t GetSpeedLimit(const UnicodeString Text)
+uint32_t GetSpeedLimit(const UnicodeString & Text)
 {
   uint32_t Speed = 0;
   if (!TryGetSpeedLimit(Text, Speed))

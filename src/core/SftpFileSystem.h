@@ -150,27 +150,27 @@ protected:
   std::unique_ptr<TStringList> FChecksumAlgs;
   std::unique_ptr<TStringList> FChecksumSftpAlgs;
 
-  void SendCustomReadFile(TSFTPPacket *Packet, TSFTPPacket *Response,
+  void SendCustomReadFile(TSFTPPacket * Packet, TSFTPPacket * Response,
     uint32_t Flags);
-  void CustomReadFile(const UnicodeString AFileName,
-    TRemoteFile *&AFile, SSH_FXP_TYPE Type, TRemoteFile *ALinkedByFile = nullptr,
+  void CustomReadFile(const UnicodeString & AFileName,
+    TRemoteFile *& AFile, SSH_FXP_TYPE Type, TRemoteFile * ALinkedByFile = nullptr,
     SSH_FX_TYPE AllowStatus = -1);
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
-  SSH_FX_TYPE GotStatusPacket(TSFTPPacket *Packet, SSH_FX_TYPE AllowStatus, bool DoNotForceLog);
-  bool RemoteFileExists(const UnicodeString AFullPath, TRemoteFile **AFile = nullptr);
-  TRemoteFile * LoadFile(TSFTPPacket *Packet,
-    TRemoteFile *ALinkedByFile, const UnicodeString AFileName,
-    TRemoteFileList *TempFileList = nullptr, bool Complete = true);
-  void LoadFile(TRemoteFile *AFile, TSFTPPacket *Packet,
+  SSH_FX_TYPE GotStatusPacket(TSFTPPacket * Packet, SSH_FX_TYPE AllowStatus, bool DoNotForceLog);
+  bool RemoteFileExists(const UnicodeString & AFullPath, TRemoteFile ** AFile = nullptr);
+  TRemoteFile * LoadFile(TSFTPPacket * Packet,
+    TRemoteFile * ALinkedByFile, const UnicodeString & AFileName,
+    TRemoteFileList * TempFileList = nullptr, bool Complete = true);
+  void LoadFile(TRemoteFile * AFile, TSFTPPacket * Packet,
     bool Complete = true);
-  UnicodeString LocalCanonify(const UnicodeString APath) const;
-  UnicodeString Canonify(const UnicodeString APath);
-  UnicodeString GetRealPath(const UnicodeString APath);
-  UnicodeString GetRealPath(const UnicodeString APath, const UnicodeString ABaseDir);
-  void ReserveResponse(const TSFTPPacket *Packet,
-    TSFTPPacket *Response);
-  SSH_FX_TYPE ReceivePacket(TSFTPPacket *Packet, SSH_FXP_TYPE ExpectedType = -1,
+  UnicodeString LocalCanonify(const UnicodeString & APath) const;
+  UnicodeString Canonify(const UnicodeString & APath);
+  UnicodeString GetRealPath(const UnicodeString & APath);
+  UnicodeString GetRealPath(const UnicodeString & APath, const UnicodeString & ABaseDir);
+  void ReserveResponse(const TSFTPPacket * Packet,
+    TSFTPPacket * Response);
+  SSH_FX_TYPE ReceivePacket(TSFTPPacket * Packet, SSH_FXP_TYPE ExpectedType = -1,
     SSH_FX_TYPE AllowStatus = -1, bool TryOnly = false);
   bool PeekPacket();
   void RemoveReservation(int32_t Reservation);

@@ -173,7 +173,7 @@ private:
     bool Temp, const UnicodeString & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData);
-  void DeleteLocalFile(const UnicodeString FileName, bool Alternative, int & Deleted);
+  void DeleteLocalFile(const UnicodeString & FileName, bool Alternative, int & Deleted);
   void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
   TAuthenticateForm * MakeAuthenticateForm(TTerminal * Terminal);
   void MasterPasswordPrompt();

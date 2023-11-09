@@ -214,7 +214,7 @@ static TCheckBox * FindNeverAskAgainCheck(TForm * Dialog)
   return DebugNotNull(dynamic_cast<TCheckBox *>(Dialog->FindComponent(L"NeverAskAgainCheck")));
 }
 
-TForm * CreateMessageDialogEx(const UnicodeString Msg,
+TForm * CreateMessageDialogEx(const UnicodeString & Msg,
   TStrings * MoreMessages, TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword,
   const TMessageParams * Params, TButton *& TimeoutButton)
 {
@@ -492,7 +492,7 @@ friend void MenuPopup(TObject * Sender, const TPoint & MousePos, bool & Handled)
 };
 
 // Merge with CreateMessageDialogEx
-TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMessages,
+TForm * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * MoreMessages,
   TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   std::unique_ptr<TForm> Dialog;
@@ -541,7 +541,7 @@ TForm * CreateMoreMessageDialogEx(const UnicodeString Message, TStrings * MoreMe
   return Dialog.release();
 }
 
-uint32_t MoreMessageDialog(const UnicodeString Message, TStrings * MoreMessages,
+uint32_t MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages,
   TQueryType Type, uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
 {
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
@@ -549,13 +549,13 @@ uint32_t MoreMessageDialog(const UnicodeString Message, TStrings * MoreMessages,
   return Result;
 }
 
-uint32_t MessageDialog(const UnicodeString Msg, TQueryType Type,
-  uint32_t Answers, UnicodeString HelpKeyword, const TMessageParams * Params)
+uint32_t MessageDialog(const UnicodeString & Msg, TQueryType Type,
+  uint32_t Answers, UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
   return MoreMessageDialog(Msg, nullptr, Type, Answers, HelpKeyword, Params);
 }
 
-uint32_t SimpleErrorDialog(const UnicodeString Msg, const UnicodeString MoreMessages)
+uint32_t SimpleErrorDialog(const UnicodeString & Msg, const UnicodeString & MoreMessages)
 {
   uint32_t Result;
   TStrings * More = nullptr;
@@ -1894,9 +1894,9 @@ void ::TTrayIcon::SetHint(UnicodeString value)
 }
 #endif // #if 0
 
-bool InputDialog(const UnicodeString ACaption,
-  const UnicodeString APrompt, UnicodeString &Value, UnicodeString HelpKeyword,
-  TStrings *History, bool PathInput,
+bool InputDialog(const UnicodeString & ACaption,
+  const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
+  TStrings * History, bool PathInput,
   TInputDialogInitializeEvent OnInitialize, bool Echo, int32_t Width)
 {
   bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,

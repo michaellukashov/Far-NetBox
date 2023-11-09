@@ -61,8 +61,8 @@ public:
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
   void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
   void Delete(TBookmark *& Bookmark);
-  TBookmark *FindByName(const UnicodeString & Node, const UnicodeString & Name) const;
-  TBookmark *FindByShortCut(const TShortCut & ShortCut);
+  TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name) const;
+  TBookmark * FindByShortCut(const TShortCut & ShortCut);
   virtual void Assign(const TPersistent * Source) override;
   void LoadOptions(THierarchicalStorage * Storage);
   void SaveOptions(THierarchicalStorage * Storage) const;
@@ -118,7 +118,7 @@ public:
 protected:
   TBookmarkList *FOwner{nullptr};
 
-  static UnicodeString BookmarkKey(const UnicodeString Node, const UnicodeString Name);
+  static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
   __property UnicodeString Key = { read = GetKey };
   ROProperty<UnicodeString> Key{nb::bind(&TBookmark::GetKey, this)};
 

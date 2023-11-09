@@ -31,22 +31,22 @@ public:
     UnicodeString ToString() const;
   };
 
-  static bool IsMask(const UnicodeString Mask);
+  static bool IsMask(const UnicodeString & Mask);
   static UnicodeString EscapeMask(const UnicodeString & S);
-  static UnicodeString NormalizeMask(const UnicodeString Mask, const UnicodeString AnyMask = L"");
+  static UnicodeString NormalizeMask(const UnicodeString & Mask, const UnicodeString & AnyMask = L"");
   static UnicodeString ComposeMaskStr(
-    TStrings *IncludeFileMasksStr, TStrings *ExcludeFileMasksStr,
-    TStrings *IncludeDirectoryMasksStr, TStrings *ExcludeDirectoryMasksStr);
-  static UnicodeString ComposeMaskStr(TStrings *MasksStr, bool Directory);
+    TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
+    TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr);
+  static UnicodeString ComposeMaskStr(TStrings * MasksStr, bool Directory);
 
   TFileMasks() noexcept;
   explicit TFileMasks(int32_t ForceDirectoryMasks) noexcept;
-  TFileMasks(const TFileMasks &Source) noexcept;
-  explicit TFileMasks(const UnicodeString AMasks) noexcept;
+  TFileMasks(const TFileMasks & Source) noexcept;
+  explicit TFileMasks(const UnicodeString & AMasks) noexcept;
   virtual ~TFileMasks() noexcept;
   TFileMasks &operator=(const TFileMasks &rhm);
   TFileMasks &operator=(const UnicodeString & rhs);
-  bool operator==(const TFileMasks &rhm) const;
+  bool operator==(const TFileMasks & rhm) const;
   bool operator==(const UnicodeString & rhs) const;
 
   void SetMask(const UnicodeString & Mask);
@@ -54,7 +54,7 @@ public:
   bool MatchesFileName(const UnicodeString & FileName, bool Directory = false, const TParams * Params = nullptr) const;
   bool Matches(const UnicodeString & FileName, bool Local, bool Directory,
     const TParams * Params = nullptr) const;
-  bool Matches(const UnicodeString FileName, bool Local, bool Directory,
+  bool Matches(const UnicodeString & FileName, bool Local, bool Directory,
     const TParams * Params, bool RecurseInclude, bool & ImplicitMatch) const;
 
   void SetRoots(const UnicodeString & LocalRoot, const UnicodeString & RemoteRoot);
@@ -160,7 +160,7 @@ public:
   virtual void Validate(const UnicodeString & Command);
   bool HasAnyPatterns(const UnicodeString & Command) const;
 
-  static UnicodeString Escape(const UnicodeString S);
+  static UnicodeString Escape(const UnicodeString & S);
 
 protected:
   static const wchar_t NoQuote;

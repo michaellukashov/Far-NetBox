@@ -1139,8 +1139,8 @@ private:
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TDateTime Started, TSessionData * SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
-NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString HostName);
-NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString IP);
+NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString & HostName);
+NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString & IP);
 NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
 
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);

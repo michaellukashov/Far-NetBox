@@ -74,7 +74,7 @@ private:
   int FDefaultFixedWidthFontSize;
 
   void SetInterface(TInterface value);
-  void SetHistory(const UnicodeString Index, TStrings * value);
+  void SetHistory(const UnicodeString & Index, TStrings * value);
   TStrings * GetHistory(const UnicodeString Index);
   void SetSynchronizeChecklist(TSynchronizeChecklistConfiguration value);
   void SetFindFile(TFindFileConfiguration value);
