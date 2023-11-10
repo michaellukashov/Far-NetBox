@@ -962,8 +962,8 @@ public:
 public:
   TCalculateSizeParams() noexcept;
   int32_t Params{0};
-  const TCopyParamType *CopyParam{nullptr};
-  TCalculateSizeStats *Stats{nullptr};
+  const TCopyParamType * CopyParam{nullptr};
+  TCalculateSizeStats * Stats{nullptr};
   bool AllowDirs{true};
   bool UseCache{false};
   TCollectedFileList * Files{nullptr};
@@ -971,21 +971,6 @@ public:
   int64_t Size{0};
   bool Result{true};
 };
-
-#if 0
-moved to FileSystems.h
-struct TOverwriteFileParams
-{
-  TOverwriteFileParams();
-
-  int64_t SourceSize;
-  int64_t DestSize;
-  TDateTime SourceTimestamp;
-  TDateTime DestTimestamp;
-  TModificationFmt SourcePrecision;
-  TModificationFmt DestPrecision;
-};
-#endif
 
 using TDateTimes = nb::vector_t<TDateTime>;
 
@@ -1010,7 +995,7 @@ public:
   TSynchronizeOptions() noexcept;
   ~TSynchronizeOptions() noexcept;
 
-  TStringList *Filter{nullptr};
+  TStringList * Filter{nullptr};
   int32_t Files{0};
 
   bool FilterFind(const UnicodeString & AFileName) const;

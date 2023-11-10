@@ -111,15 +111,15 @@ public:
   }
   UnicodeString FileName;
   UnicodeString RemoteFileName;
-  TFileOperationProgressType *OperationProgress{nullptr};
-  const TCopyParamType *CopyParam{nullptr};
+  TFileOperationProgressType * OperationProgress{nullptr};
+  const TCopyParamType * CopyParam{nullptr};
   int32_t Params{0};
   bool Resume{false};
   bool Resuming{false};
   TOverwriteMode OverwriteMode{};
   int64_t DestFileSize{0}; // output
   RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams *FileParams{nullptr};
+  TOverwriteFileParams * FileParams{nullptr};
   bool Confirmed{false};
   bool DontRecycle{false};
   bool Recycled{false};
@@ -190,7 +190,7 @@ public:
     const UnicodeString & AFileName, const TRemoteFile * AFile,
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t AAttrs,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
-    uint32_t AFlags, TDownloadSessionAction& Action) = 0;
+    uint32_t AFlags, TDownloadSessionAction & Action) = 0;
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) = 0;
   virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) = 0;
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,

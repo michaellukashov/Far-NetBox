@@ -1446,7 +1446,7 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
     Options.Filter->SetCaseSensitive(false);
     Options.Filter->SetDuplicates(dupAccept);
 
-    TFarPanelInfo **PanelInfo = GetPanelInfo();
+    TFarPanelInfo ** PanelInfo = GetPanelInfo();
     if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount() > 0)
     {
       CreateFileList((*PanelInfo)->GetItems(), osRemote, true, "", true, Options.Filter);
@@ -2836,7 +2836,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
     APanelInfo = this->GetPanelInfo();
   }
 
-  TStrings *Result = nullptr;
+  TStrings * Result = nullptr;
   const TFarPanelItem *Focused = APanelInfo && *APanelInfo ? (*APanelInfo)->GetFocusedItem() : nullptr;
   if (Focused && !Focused->GetIsParentDirectory())
   {
@@ -2880,7 +2880,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
   FileList->SetDuplicates(dupAccept);
 
-  TFarPanelItem *PanelItem;
+  TFarPanelItem * PanelItem;
   TObject *Data = nullptr;
   for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {

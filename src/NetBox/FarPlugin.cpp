@@ -1053,7 +1053,7 @@ int32_t TCustomFarPlugin::FarMessage(uint32_t Flags,
     FullMessage += L"\n\x01\n";
   }
 
-  TStringList *MessageLines = new TStringList();
+  TStringList * MessageLines = new TStringList();
   std::unique_ptr<TStrings> MessageLinesPtr(MessageLines);
   MessageLines->Add(Title);
   FarWrapText(FullMessage, MessageLines, MaxMessageWidth);
