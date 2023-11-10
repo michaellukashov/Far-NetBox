@@ -1470,11 +1470,13 @@ class TSFTPAsynchronousQueue : public TSFTPQueue
 {
 public:
   TSFTPAsynchronousQueue() = delete;
-  explicit TSFTPAsynchronousQueue(TSFTPFileSystem *AFileSystem, uint32_t CodePage) noexcept : TSFTPQueue(AFileSystem, CodePage)
+  // #pragma option push -vi- // WORKAROUND for internal compiler errors
+  explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept : TSFTPQueue(AFileSystem, CodePage)
   {
     FFileSystem->FSecureShell->RegisterReceiveHandler(nb::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this));
     FReceiveHandlerRegistered = true;
   }
+  // #pragma option pop
 
   virtual ~TSFTPAsynchronousQueue() noexcept
   {
@@ -1524,6 +1526,7 @@ protected:
     return true;
   }
 
+  // #pragma option push -vi- // See pragma at constructor
   void UnregisterReceiveHandler()
   {
     if (FReceiveHandlerRegistered)
@@ -1532,6 +1535,7 @@ protected:
       FFileSystem->FSecureShell->UnregisterReceiveHandler(nb::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this));
     }
   }
+  // #pragma option pop
 
 private:
   bool FReceiveHandlerRegistered{false};
@@ -1542,14 +1546,14 @@ class TSFTPDownloadQueue : public TSFTPFixedLenQueue
   NB_DISABLE_COPY(TSFTPDownloadQueue)
 public:
   TSFTPDownloadQueue() = delete;
-  explicit TSFTPDownloadQueue(TSFTPFileSystem *AFileSystem, uint32_t CodePage) noexcept :
+  explicit TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept :
     TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
   }
   virtual ~TSFTPDownloadQueue() = default;
 
   bool Init(
-    int32_t QueueLen, const RawByteString AHandle, int64_t Offset, int64_t PartSize, TFileOperationProgressType * AOperationProgress)
+    int32_t QueueLen, const RawByteString & AHandle, int64_t Offset, int64_t PartSize, TFileOperationProgressType * AOperationProgress)
   {
     FHandle = AHandle;
     FOffset = Offset;
@@ -1561,14 +1565,14 @@ public:
   }
 
   void InitFillGapRequest(int64_t Offset, uint32_t MissingLen,
-    TSFTPPacket *Packet)
+    TSFTPPacket * Packet)
   {
     InitRequest(Packet, Offset, MissingLen);
   }
 
   bool ReceivePacket(TSFTPPacket * Packet, uint32_t & BlockSize)
   {
-    void *Token{nullptr};
+    void * Token{nullptr};
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_DATA, asEOF, &Token);
     BlockSize = reinterpret_cast<uint32_t>(Token);
     return Result;
@@ -1597,7 +1601,7 @@ protected:
     return Result;
   }
 
-  void InitRequest(TSFTPPacket *Request, int64_t Offset,
+  void InitRequest(TSFTPPacket * Request, int64_t Offset,
     uint32_t Size) const
   {
     Request->ChangeType(SSH_FXP_READ);
@@ -1606,13 +1610,13 @@ protected:
     Request->AddCardinal(Size);
   }
 
-  virtual bool End(TSFTPPacket *Response) override
+  virtual bool End(TSFTPPacket * Response) override
   {
     return (Response->GetType() != SSH_FXP_DATA);
   }
 
 private:
-  TFileOperationProgressType *OperationProgress{nullptr};
+  TFileOperationProgressType * OperationProgress{nullptr};
   int64_t FOffset{0};
   int64_t FTransferred{0};
   int64_t FPartSize{0};
@@ -1678,7 +1682,7 @@ protected:
     if (Result)
     {
       bool Last;
-      if (FOnTransferIn != nullptr)
+      if (FOnTransferIn)
       {
         size_t Read = BlockBuf.LoadFromIn(FOnTransferIn, FTerminal, BlockSize);
         Last = (Read < BlockSize);

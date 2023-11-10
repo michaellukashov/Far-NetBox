@@ -280,11 +280,11 @@ static UnicodeString GetTime(TFileOperationProgressType * ProgressData)
   UnicodeString Result;
   if (ProgressData->TotalSizeSet)
   {
-    Result = FormatDateTimeSpan(Configuration->TimeFormat, ProgressData->TotalTimeLeft());
+    Result = FormatDateTimeSpan(ProgressData->TotalTimeLeft());
   }
   else
   {
-    Result = FormatDateTimeSpan(Configuration->TimeFormat, ProgressData->TimeElapsed());
+    Result = FormatDateTimeSpan(ProgressData->TimeElapsed());
   }
   return Result;
 }
@@ -354,7 +354,7 @@ void TQueueController::FillQueueViewItem(TListItem * Item,
     DebugAssert(!Detail && Info->Primary);
     State = 8;
 
-    if ((ProgressData != NULL) && (QueueItem->Status != TQueueItem::qsDone))
+    if ((ProgressData != nullptr) && (QueueItem->Status != TQueueItem::qsDone))
     {
       Values[0] = ProgressData->FileName;
 

@@ -37,6 +37,7 @@ NB_CORE_EXPORT UnicodeString KeyTypeFromFingerprint(const UnicodeString & AFinge
 NB_CORE_EXPORT UnicodeString GetPuTTYVersion();
 
 NB_CORE_EXPORT UnicodeString Sha256(const char * Data, size_t Size);
+UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg);
 
 UnicodeString ParseOpenSshPubLine(const UnicodeString & ALine, const struct ssh_keyalg *& Algorithm);
 void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & PublicKey, UnicodeString & Fingerprint);

@@ -71,8 +71,8 @@ struct NB_CORE_EXPORT TMessageParams : public TObject
 public:
   explicit TMessageParams(uint32_t AParams) noexcept;
   explicit TMessageParams(const TQueryParams * AParams) noexcept;
-  void Assign(const TMessageParams *AParams);
-  void Assign(const TQueryParams *AParams);
+  void Assign(const TMessageParams * AParams);
+  void Assign(const TQueryParams * AParams);
 
   const TQueryButtonAlias *Aliases{nullptr};
   uint32_t AliasesCount{0};
@@ -374,7 +374,8 @@ enum TDirectRemoteCopy { drcDisallow, drcAllow, drcConfirmCommandSession, drcCon
 bool DoRemoteCopyDialog(
   TStrings * Sessions, TStrings * Directories,
   TDirectRemoteCopy AllowDirectCopy, bool Multi, void *& Session, UnicodeString & Target, UnicodeString & FileMask,
-  bool & DirectCopy, void * CurrentSession, TDirectoryExistsEvent OnDirectoryExists);
+  bool & DirectCopy, void * CurrentSession, TDirectoryExistsEvent OnDirectoryExists,
+  bool TargetConfirmed);
 
 #if 0
 // forms\SelectMask.cpp
@@ -390,10 +391,6 @@ bool DoEditMaskDialog(TFileMasks & Mask);
 constexpr int soDoNotUsePresets =  0x01;
 constexpr int soNoMinimize =       0x02;
 constexpr int soAllowSelectedOnly = 0x04;
-#if 0
-typedef void (__closure *TGetSynchronizeOptionsEvent)
-  (int Params, TSynchronizeOptions & Options);
-#endif // #if 0
 using TGetSynchronizeOptionsEvent = nb::FastDelegate2<void,
   int32_t /*Params*/,
   TSynchronizeOptions & /*Options*/>;
@@ -421,6 +418,7 @@ __removed enum TSynchronizeMode { smRemote, smLocal, smBoth };
 constexpr int32_t fsoDisableTimestamp = 0x01;
 constexpr int32_t fsoDoNotUsePresets =  0x02;
 constexpr int32_t fsoAllowSelectedOnly = 0x04;
+constexpr int32_t fsoDisableByChecksum = 0x08;
 using TFullSynchronizeInNewWindowEvent = nb::FastDelegate5<void,
   TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/, const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
    const TCopyParamType * /*CopyParams*/>;
@@ -432,17 +430,6 @@ bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, int32_t & Param
 
 // forms\SynchronizeChecklist.cpp
 class TSynchronizeChecklist;
-#if 0
-typedef void (__closure *TCustomCommandMenuEvent)
-  (TAction * Action, TStrings * LocalFileList, TStrings * RemoteFileList);
-typedef void (__closure *TFullSynchronizeEvent)(
-  void * Token, TProcessedSynchronizationChecklistItem OnProcessedItem,
-  TUpdatedSynchronizationChecklistItems OnUpdatedSynchronizationChecklistItems);
-typedef void (__closure *TSynchronizeChecklistCalculateSize)
-  (TSynchronizeChecklist * Checklist, const TSynchronizeChecklist::TItemList & Items, void * Token);
-typedef void (__closure *TSynchronizeMoveEvent)(
-  TOperationSide Side, const UnicodeString & FileName, const UnicodeString & NewFileName, TRemoteFile * RemoteFile);
-#endif // #if 0
 using TCustomCommandMenuEvent = nb::FastDelegate3<void,
   void * /*Action*/, TStrings * /*LocalFileList*/,
   TStrings * /*RemoteFileList*/>;
@@ -464,23 +451,21 @@ bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
 
 // forms\Editor.cpp
 #if 0
+
 typedef void (__closure *TFileClosedEvent)
   (TObject * Sender, bool Forced);
 typedef void (__closure *TAnyModifiedEvent)
   (TObject * Sender, bool & Modified);
-typedef nb::FastDelegate2<void,
-  TObject * /*Sender* /, bool /*Forced*/> TFileClosedEvent;
-typedef nb::FastDelegate2<void,
-  TObject * /*Sender* /, bool & /*Modified*/> TAnyModifiedEvent;
-TForm * ShowEditorForm(const UnicodeString & FileName, TForm * ParentForm,
+TForm * ShowEditorForm(const UnicodeString FileName, TForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
   TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
-  const UnicodeString Caption, bool StandaloneEditor, TColor Color, int32_t InternalEditorEncodingOverride,
+  const UnicodeString Caption, bool StandaloneEditor, TColor Color, int InternalEditorEncodingOverride,
   bool NewFile);
 void ReconfigureEditorForm(TForm * Form);
 void EditorFormFileUploadComplete(TForm * Form);
 void EditorFormFileSave(TForm * Form);
 bool IsEditorFormModified(TForm * Form);
+
 #endif // #if 0
 
 bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
@@ -491,8 +476,7 @@ struct TSpaceAvailable;
 struct TFileSystemInfo;
 struct TSessionInfo;
 using TGetSpaceAvailableEvent = nb::FastDelegate3<void,
-  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/,
-  bool & /*Close*/>;
+  const UnicodeString & /*Path*/, TSpaceAvailable & /*ASpaceAvailable*/, bool & /*Close*/>;
 
 void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
@@ -537,8 +521,7 @@ bool DoEditorPreferencesDialog(TEditorData * Editor,
 // forms\Find.cpp
 using TFindEvent = nb::FastDelegate5<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, const TFileMasks & /*FileMask*/,
-  TFileFoundEvent /*OnFileFound*/,
-  TFindingFileEvent /*OnFindingFile*/>;
+  TFileFoundEvent /*OnFileFound*/, TFindingFileEvent /*OnFindingFile*/>;
 using TFocusFileEvent = nb::FastDelegate2<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Path*/>;
 using TFileOperationFinished2Event = nb::FastDelegate3<void,
@@ -558,7 +541,7 @@ void DoGenerateUrlDialog(TSessionData * Data, TStrings * Paths);
 enum TFilesSelected { fsList, fsAll };
 void DoGenerateTransferCodeDialog(
   bool ToRemote, bool Move, int CopyParamAttrs, TSessionData * Data, TFilesSelected FilesSelected,
-  TStrings * FileList, const UnicodeString Path, const TCopyParamType & CopyParam);
+  TStrings * FileList, const UnicodeString & Path, const TCopyParamType & CopyParam);
 
 void CopyParamListButton(TButton * Button);
 const int cplNone =             0x00;

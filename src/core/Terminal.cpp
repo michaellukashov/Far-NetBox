@@ -23,6 +23,7 @@
 #include "Queue.h"
 #include "Cryptography.h"
 #include "NeonIntf.h"
+#include <PuttyTools.h>
 #include <openssl/pkcs12.h>
 #include <openssl/err.h>
 #include <algorithm>
@@ -4472,12 +4473,12 @@ void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
   }
   else
   {
-    DoDeleteFile(FileName, AFile, Params);
+    DoDeleteFile(FFileSystem, FileName, AFile, Params);
   }
 }
 
-void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, int32_t Params)
+void TTerminal::DoDeleteFile(
+  TCustomFileSystem * FileSystem, const UnicodeString & AFileName, const TRemoteFile * AFile, int32_t Params)
 {
   LogEvent(FORMAT(L"Deleting file \"%s\".", AFileName));
   FileModified(AFile, AFileName, true);
@@ -4488,15 +4489,15 @@ void TTerminal::DoDeleteFile(const UnicodeString & AFileName,
     TRmSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true));
     try
     {
-      DebugAssert(FFileSystem);
+      DebugAssert(FileSystem != nullptr);
       // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
-      FFileSystem->RemoteDeleteFile(AFileName, AFile, Params, Action);
+      FileSystem->RemoteDeleteFile(AFileName, AFile, Params, Action);
       if ((OperationProgress != nullptr) && (OperationProgress->Operation() == foDelete))
       {
         OperationProgress->Succeeded();
       }
     }
-    catch (Exception &E)
+    catch (Exception & E)
     {
       RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName));
     }
@@ -4520,7 +4521,7 @@ bool TTerminal::RemoteDeleteFiles(TStrings * AFilesToDelete, int32_t Params)
 }
 
 void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
-  const TRemoteFile * /*AFile*/, void *Params)
+  const TRemoteFile * /*AFile*/, void * Params)
 {
   StartOperationWithFile(AFileName, foDelete);
   int32_t Deleted;
@@ -4538,7 +4539,7 @@ void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
   }
 }
 
-bool TTerminal::DeleteLocalFiles(TStrings *AFileList, int32_t Params)
+bool TTerminal::DeleteLocalFiles(TStrings * AFileList, int32_t Params)
 {
   return ProcessFiles(AFileList, foDelete, nb::bind(&TTerminal::DeleteLocalFile, this), &Params, osLocal);
 }
@@ -5132,6 +5133,26 @@ bool TTerminal::DoRenameOrCopyFile(
     BeginTransaction();
     try__finally
     {
+      TCustomFileSystem * FileSystem;
+      if (!Rename)
+      {
+        if (GetIsCapable(fcSecondaryShell) &&
+            File->IsDirectory &&
+            (FCommandSession != nullptr)) // Won't be in scripting, there we let it fail later
+        {
+          PrepareCommandSession();
+          FileSystem = FCommandSession->FFileSystem;
+        }
+        else
+        {
+          FileSystem = GetFileSystemForCapability(fcRemoteCopy);
+        }
+      }
+      else
+      {
+        FileSystem = FFileSystem;
+      }
+
       if (!GetIsCapable(fcMoveOverExistingFile) && !DontOverwrite)
       {
         if (!ExistenceKnown)
@@ -5141,7 +5162,7 @@ bool TTerminal::DoRenameOrCopyFile(
 
         if (DuplicateFile.get() != nullptr)
         {
-          DoDeleteFile(AbsoluteNewName, DuplicateFile.get(), 0);
+          DoDeleteFile(FileSystem, AbsoluteNewName, DuplicateFile.get(), 0);
         }
       }
 
@@ -5149,13 +5170,13 @@ bool TTerminal::DoRenameOrCopyFile(
       do
       {
         UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
-        DebugAssert(FFileSystem != nullptr);
+        DebugAssert(FileSystem != nullptr);
         if (Rename)
         {
           TMvSessionAction Action(ActionLog, AbsoluteFileName, AbsoluteNewName);
           try
           {
-            FFileSystem->RemoteRenameFile(FileName, File, NewName, !DontOverwrite);
+            FileSystem->RemoteRenameFile(FileName, File, NewName, !DontOverwrite);
           }
           catch (Exception & E)
           {
@@ -5168,18 +5189,6 @@ bool TTerminal::DoRenameOrCopyFile(
           TCpSessionAction Action(ActionLog, AbsoluteFileName, AbsoluteNewName);
           try
           {
-            bool CopyDirsOnSecondarySession = GetIsCapable(fcSecondaryShell);
-            TCustomFileSystem * FileSystem;
-            if (CopyDirsOnSecondarySession && File->IsDirectory &&
-                (FCommandSession != nullptr)) // Won't be in scripting, there we let it fail later
-            {
-              PrepareCommandSession();
-              FileSystem = FCommandSession->GetFileSystem();
-            }
-            else
-            {
-              FileSystem = GetFileSystemForCapability(fcRemoteCopy);
-            }
             FileSystem->RemoteCopyFile(FileName, File, NewName, !DontOverwrite);
           }
           catch (Exception & E)
@@ -6289,6 +6298,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(int32_t Params)
   AddFlagName(ParamsStr, Params, spTimestamp, L"Timestamp");
   AddFlagName(ParamsStr, Params, spNotByTime, L"NotByTime");
   AddFlagName(ParamsStr, Params, spBySize, L"BySize");
+  AddFlagName(ParamsStr, Params, spByChecksum, L"ByChecksum");
   AddFlagName(ParamsStr, Params, spCaseSensitive, L"CaseSensitive");
   AddFlagName(ParamsStr, Params, spSelectedOnly, L"*SelectedOnly"); // GUI only
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
@@ -6578,6 +6588,55 @@ bool TTerminal::IsEmptyRemoteDirectory(
   return Params.Result && (Stats.Files == 0);
 }
 
+void TTerminal::CollectCalculatedChecksum(
+  const UnicodeString & DebugUsedArg(FileName), const UnicodeString & DebugUsedArg(Alg), const UnicodeString & Hash)
+{
+  DebugAssert(FCollectedCalculatedChecksum.IsEmpty());
+  FCollectedCalculatedChecksum = Hash;
+}
+//---------------------------------------------------------------------------
+bool TTerminal::SameFileChecksum(const UnicodeString & LocalFileName, const TRemoteFile * File)
+{
+  UnicodeString DefaultAlg = Sha256ChecksumAlg;
+  UnicodeString Algs =
+    DefaultStr(Configuration->SynchronizationChecksumAlgs, DefaultAlg + L"," + Sha1ChecksumAlg);
+  std::unique_ptr<TStrings> SupportedAlgs(CreateSortedStringList());
+  GetSupportedChecksumAlgs(SupportedAlgs.get());
+  UnicodeString Alg;
+  while (Alg.IsEmpty() && !Algs.IsEmpty())
+  {
+    UnicodeString A = CutToChar(Algs, L',', true);
+
+    if (SupportedAlgs->IndexOf(A) >= 0)
+    {
+      Alg = A;
+    }
+  }
+
+  if (Alg.IsEmpty())
+  {
+    Alg = DefaultAlg;
+  }
+
+  std::unique_ptr<TStrings> FileList(new TStringList());
+  FileList->AddObject(File->FullFileName, File);
+  DebugAssert(FCollectedCalculatedChecksum.IsEmpty());
+  FCollectedCalculatedChecksum = EmptyStr;
+  CalculateFilesChecksum(Alg, FileList.get(), CollectCalculatedChecksum);
+  UnicodeString RemoteChecksum = FCollectedCalculatedChecksum;
+  FCollectedCalculatedChecksum = EmptyStr;
+
+  UnicodeString LocalChecksum;
+  FILE_OPERATION_LOOP_BEGIN
+  {
+    std::unique_ptr<THandleStream> Stream(TSafeHandleStream::CreateFromFile(LocalFileName, fmOpenRead | fmShareDenyWrite));
+    LocalChecksum = CalculateFileChecksum(Stream.get(), Alg);
+  }
+  FILE_OPERATION_LOOP_END(FMTLOAD(CHECKSUM_ERROR, (LocalFileName)));
+
+  return SameText(RemoteChecksum, LocalChecksum);
+}
+
 void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
@@ -6622,10 +6681,11 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
         New = (LocalIndex < 0);
         if (!New)
         {
-          TSynchronizeFileData *LocalData =
+          TSynchronizeFileData * LocalData =
           Data->LocalFileList->GetAs<TSynchronizeFileData>(LocalIndex);
 
           LocalData->New = false;
+          UnicodeString FullLocalFileName = LocalData->Info.Directory + LocalData->Info.FileName;
 
           if (AFile->GetIsDirectory() != LocalData->IsDirectory)
           {
@@ -6686,6 +6746,14 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
               Modified = true;
               LocalModified = true;
             }
+            else if (FLAGSET(Data->Params, spByChecksum) &&
+                     FLAGCLEAR(Data->Params, spTimestamp) &&
+                     !SameFileChecksum(FullLocalFileName, File) &&
+                     FLAGCLEAR(Data->Params, spTimestamp))
+            {
+              Modified = true;
+              LocalModified = true;
+            }
 
             if (LocalModified)
             {
@@ -6696,25 +6764,21 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
               // not for sync itself
               LocalData->MatchingRemoteFileFile = AFile->Duplicate();
               LogEvent(FORMAT("Local file %s is modified comparing to remote file %s",
-                FormatFileDetailsForLog(UnicodeString(LocalData->Info.Directory) + UnicodeString(LocalData->Info.FileName),
-                  LocalData->Info.Modification, LocalData->Info.Size),
-                FormatFileDetailsForLog(FullRemoteFileName,
-                  AFile->GetModification(), AFile->GetSize(), AFile->LinkedFile)));
+                FormatFileDetailsForLog(FullLocalFileName, LocalData->Info.Modification, LocalData->Info.Size),
+                  FormatFileDetailsForLog(FullRemoteFileName, File->Modification, File->Size, File->LinkedFile)));
             }
 
             if (Modified)
             {
               LogEvent(FORMAT("Remote file %s is modified comparing to local file %s",
                 FormatFileDetailsForLog(FullRemoteFileName, AFile->GetModification(), AFile->GetSize(), AFile->LinkedFile),
-                  FormatFileDetailsForLog(UnicodeString(LocalData->Info.Directory) + UnicodeString(LocalData->Info.FileName),
-                    LocalData->Info.Modification, LocalData->Info.Size)));
+                  FormatFileDetailsForLog(FullLocalFileName, LocalData->Info.Modification, LocalData->Info.Size)));
             }
           }
           else if (FLAGCLEAR(Data->Params, spNoRecurse))
           {
             DoSynchronizeCollectDirectory(
-              Data->LocalDirectory + LocalData->Info.FileName,
-              Data->RemoteDirectory + AFile->GetFileName(),
+              FullLocalFileName, FullRemoteFileName,
               Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
               Data->Options, (Data->Flags & ~sfFirstLevel),
               Data->Checklist);

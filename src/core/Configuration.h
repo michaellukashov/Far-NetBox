@@ -17,8 +17,8 @@
 
 #define CONST_DEFAULT_NUMBER_OF_RETRIES 2
 
-extern const wchar_t *AutoSwitchNames;
-extern const wchar_t *NotAutoSwitchNames;
+extern const wchar_t * AutoSwitchNames;
+extern const wchar_t * NotAutoSwitchNames;
 enum TAutoSwitch { asOn, asOff, asAuto }; // Has to match PuTTY FORCE_ON, FORCE_OFF, AUTO
 
 enum TFtpEncryptionSwitch_219
@@ -154,6 +154,7 @@ private:
   std::unique_ptr<TSshHostCAList> FPuttySshHostCAList;
   bool FSshHostCAsFromPuTTY{false};
   int32_t FHttpsCertificateValidation{0};
+  UnicodeString FSynchronizationChecksumAlgs;
 
   bool FDisablePasswordStoring{false};
   bool FForceBanners{false};
@@ -468,6 +469,8 @@ public:
   __property bool SshHostCAsFromPuTTY = { read = FSshHostCAsFromPuTTY, write = FSshHostCAsFromPuTTY };
   __property int HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };
   int32_t& HttpsCertificateValidation{FHttpsCertificateValidation};
+  __property UnicodeString SynchronizationChecksumAlgs = { read = FSynchronizationChecksumAlgs, write = FSynchronizationChecksumAlgs };
+  UnicodeString& SynchronizationChecksumAlgs{FSynchronizationChecksumAlgs};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetConfigurationTimeFormat, this)};

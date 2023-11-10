@@ -869,7 +869,7 @@ uint64_t TFileOperationProgressType::CPS() const
   return nb::ToUInt64(GetCPS());
 }
 
-inline static unsigned int CalculateCPS(int64_t Transferred, uint32_t MSecElapsed)
+inline static uint32_t CalculateCPS(int64_t Transferred, uint32_t MSecElapsed)
 {
   uint32_t Result;
   if (MSecElapsed == 0)
@@ -878,7 +878,7 @@ inline static unsigned int CalculateCPS(int64_t Transferred, uint32_t MSecElapse
   }
   else
   {
-    Result = (unsigned int)(Transferred * MSecsPerSec / MSecElapsed);
+    Result = (uint32_t)(Transferred * MSecsPerSec / MSecElapsed);
   }
   return Result;
 }
@@ -992,7 +992,8 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
     Time = TimeElapsed();
     TimeLabel = "Elapsed";
   }
-  UnicodeString TimeStr = FormatDateTimeSpan(GetConfiguration()->TimeFormat(), Time);
+  UnicodeString TimeStr = FormatDateTimeSpan(Time);
+
   uint32_t ACPS;
   if (!Done)
   {
@@ -1000,7 +1001,7 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
   }
   else
   {
-    unsigned int Elapsed = TimeToMSec(TimeElapsed());
+    uint32_t Elapsed = TimeToMSec(TimeElapsed());
     ACPS = CalculateCPS(TotalTransferred, Elapsed);
   }
   UnicodeString CPSStr = FormatSize(ACPS);

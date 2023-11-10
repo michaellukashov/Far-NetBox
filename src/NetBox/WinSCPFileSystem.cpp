@@ -1587,7 +1587,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
         ProgressWidth - RemoteLabel.Length(), true) + L"\n";
     Message += StartTimeLabel + FSynchronizationStart.GetTimeString(false) + L"\n";
     Message += TimeElapsedLabel +
-      FormatDateTimeSpan(GetConfiguration()->TimeFormat(), TDateTime(Now() - FSynchronizationStart)) + L"\n";
+      FormatDateTimeSpan(TDateTime(Now() - FSynchronizationStart)) + L"\n";
 
     GetWinSCPPlugin()->Message(0, (Collect ? ProgressTitleCompare : ProgressTitle), Message);
 
@@ -3507,7 +3507,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
     {
       Message2 = L"\1\n";
 
-      UnicodeString Value = FormatDateTimeSpan(GetConfiguration()->TimeFormat(), ProgressData.TimeElapsed());
+      UnicodeString Value = FormatDateTimeSpan(ProgressData.TimeElapsed());
       UnicodeString StatusLine = TimeElapsedLabel +
         StringOfChar(L' ', ProgressWidth / 2 - 1 - TimeElapsedLabel.Length() - Value.Length()) +
         Value + L"  ";
@@ -3515,7 +3515,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       UnicodeString LabelText;
       if (ProgressData.GetTotalSizeSet())
       {
-        Value = FormatDateTimeSpan(GetConfiguration()->TimeFormat(), ProgressData.TotalTimeLeft());
+        Value = FormatDateTimeSpan(ProgressData.TotalTimeLeft());
         LabelText = TimeLeftLabel;
       }
       else

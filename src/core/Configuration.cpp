@@ -256,6 +256,7 @@ void TConfiguration::Default()
   RefreshPuttySshHostCAList();
   FSshHostCAsFromPuTTY = false;
   FHttpsCertificateValidation = 0;
+  FSynchronizationChecksumAlgs = EmptyStr;
   CollectUsage = FDefaultCollectUsage;
 
   FLogging = false;
@@ -426,6 +427,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY4(Integer,  KeyVersion); \
     KEY4(Bool,     SshHostCAsFromPuTTY); \
     KEY4(Integer,  HttpsCertificateValidation); \
+    KEY5(String,   SynchronizationChecksumAlgs); \
     KEY(Bool,     CollectUsage); \
     KEY3(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
     KEY5(String,   CertificateStorage); \

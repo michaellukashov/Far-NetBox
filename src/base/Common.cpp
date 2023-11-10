@@ -3966,16 +3966,25 @@ UnicodeString FormatSize(int64_t ASize)
   return FormatNumber(ASize);
 }
 
-UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime DateTime)
+UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
 {
   UnicodeString Result;
-  if (nb::ToInt64(DateTime) > 0)
+  if ((0 <= DateTime) && (DateTime <= MaxDateTime))
   {
-    Result = Int64ToStr(nb::ToInt64(DateTime)) + L", ";
+    TTimeStamp TimeStamp = DateTimeToTimeStamp(DateTime);
+    int Days = TimeStamp.Date - DateDelta;
+    if (abs(Days) >= 4)
+    {
+      Result = FMTLOAD(DAYS_SPAN, (Days));
+    }
+    else
+    {
+      unsigned short Hour, Min, Sec, Dummy;
+      DecodeTime(DateTime, Hour, Min, Sec, Dummy);
+      int TotalHours = static_cast<int>(Hour) + (Days * HoursPerDay);
+      Result = FORMAT(L"%d%s%.2d%s%.2d", TotalHours, FormatSettings.TimeSeparator, Min, FormatSettings.TimeSeparator, Sec);
+    }
   }
-  // days are decremented, because when there are too many of them,
-  // "integer overflow" error occurs
-  Result += FormatDateTime(TimeFormat, DateTime - TDateTime(nb::ToDouble(nb::ToInt64(DateTime))));
   return Result;
 }
 
@@ -4197,7 +4206,13 @@ static UnicodeString NormalizeIdent(const UnicodeString & AIdent)
   return Ident;
 }
 
-UnicodeString FindIdent(const UnicodeString & Ident, TStrings *Idents)
+bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2)
+{
+  const UnicodeString Dash(L"-");
+  return SameText(ReplaceStr(Ident1, Dash, EmptyStr), ReplaceStr(Ident2, Dash, EmptyStr));
+}
+
+UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
 {
   UnicodeString NormalizedIdent(NormalizeIdent(Ident));
   for (int32_t Index = 0; Index < Idents->GetCount(); Index++)

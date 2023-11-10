@@ -185,7 +185,8 @@ NB_CORE_EXPORT TFormatSettings GetEngFormatSettings();
 NB_CORE_EXPORT int32_t ParseShortEngMonthName(const UnicodeString & MonthStr);
 // The defaults are equal to defaults of TStringList class (except for Sorted)
 NB_CORE_EXPORT TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
-NB_CORE_EXPORT UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
+UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
+bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
 NB_CORE_EXPORT void CheckCertificate(const UnicodeString & Path);
 typedef struct x509_st X509;
 typedef struct evp_pkey_st EVP_PKEY;
@@ -282,11 +283,12 @@ NB_CORE_EXPORT int32_t CompareFileTime(const TDateTime & T1, const TDateTime & T
 NB_CORE_EXPORT int32_t TimeToMSec(const TDateTime & T);
 NB_CORE_EXPORT int32_t TimeToSeconds(const TDateTime & T);
 NB_CORE_EXPORT int32_t TimeToMinutes(const TDateTime & T);
-NB_CORE_EXPORT UnicodeString FormatDateTimeSpan(const UnicodeString & TimeFormat, TDateTime DateTime);
+UnicodeString FormatDateTimeSpan(const TDateTime & DateTime);
 UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen, bool DateOnly);
 NB_CORE_EXPORT TStrings * TlsCipherList();
 
 #if 0
+
 template<class MethodT>
 MethodT MakeMethod(void * Data, void * Code)
 {
@@ -351,6 +353,7 @@ UnicodeString AssemblyNewClassInstanceEnd(TAssemblyLanguage Language, bool Inlin
 UnicodeString AssemblyAddRawSettings(
   TAssemblyLanguage Language, TStrings * RawSettings, const UnicodeString & ClassName,
   const UnicodeString & MethodName);
+
 #endif // if 0
 
 #pragma warning(push)

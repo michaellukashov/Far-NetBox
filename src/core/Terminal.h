@@ -192,6 +192,7 @@ public:
   static constexpr int32_t spSelectedOnly = 0x800; // not used by core
   static constexpr int32_t spMirror = 0x1000;
   static constexpr int32_t spCaseSensitive = 0x2000;
+  static constexpr int32_t spByChecksum = 0x4000; // cannot be combined with spTimestamp and smBoth
   static constexpr int32_t spDefault = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
 
 private:
@@ -290,6 +291,7 @@ private:
   RawByteString FEncryptKey;
   TFileOperationProgressType::TPersistence * FOperationProgressPersistence{nullptr};
   TOnceDoneOperation FOperationProgressOnceDoneOperation{odoIdle};
+  UnicodeString FCollectedCalculatedChecksum;
 
 public:
   void CommandError(Exception * E, const UnicodeString & AMsg);
@@ -333,8 +335,8 @@ protected:
   void DoReadDirectoryProgress(int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
   void DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt);
-  void DoDeleteFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
-    int32_t Params);
+  void DoDeleteFile(
+    TCustomFileSystem * FileSystem, const UnicodeString & AFileName, const TRemoteFile * AFile, int32_t Params);
   void DoCustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent);
   bool DoRenameOrCopyFile(
@@ -355,7 +357,7 @@ protected:
     const UnicodeString & AFileName, bool ClearDirectoryChange = false);
   int32_t FileOperationLoop(TFileOperationEvent CallBackFunc,
     TFileOperationProgressType * OperationProgress, uint32_t AFlags,
-    const UnicodeString & Message, void *Param1 = nullptr, void *Param2 = nullptr);
+    const UnicodeString & Message, void * Param1 = nullptr, void * Param2 = nullptr);
   bool GetIsCapableProtected(TFSCapability Capability) const;
   bool ProcessFiles(TStrings * AFileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
@@ -388,12 +390,13 @@ protected:
   void DoCalculateFileSize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParam);
   bool DoCalculateDirectorySize(const UnicodeString & AFileName, TCalculateSizeParams * Params);
-  void CalculateLocalFileSize(const UnicodeString & AFileName, const TSearchRecSmart & Rec, /*int64_t*/ void * Size);
+  void CalculateLocalFileSize(
+    const UnicodeString & AFileName, const TSearchRecSmart & Rec, /*int64_t*/ void * Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, int32_t Params,
     TFileOperationProgressType * OperationProgress, bool Special) const;
   bool CheckRemoteFile(
-    const UnicodeString & AFileName, const TCopyParamType *CopyParam,
+    const UnicodeString & AFileName, const TCopyParamType * CopyParam,
     int32_t Params, TFileOperationProgressType * OperationProgress) const;
   uint32_t ConfirmFileOverwrite(
     const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
@@ -416,10 +419,13 @@ protected:
   bool IsEmptyRemoteDirectory(
     const TRemoteFile * File, const TCopyParamType * CopyParam, bool DisallowTemporaryTransferFiles);
   void DoSynchronizeCollectFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, /*TSynchronizeData* */void * Param);
+    const TRemoteFile * AFile, /*TSynchronizeData* */ void * Param);
   void SynchronizeCollectFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TSynchronizeData* */ void * Param);
-  void SynchronizeRemoteTimestamp(const UnicodeString & AFileName,
+  bool SameFileChecksum(const UnicodeString & LocalFileName, const TRemoteFile * File);
+  void CollectCalculatedChecksum(
+    const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+  void SynchronizeRemoteTimestamp(const UnicodeString & FileName,
     const TRemoteFile * AFile, void * Param);
   void SynchronizeLocalTimestamp(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * Param);
@@ -638,8 +644,8 @@ public:
   void HomeDirectory();
   UnicodeString GetHomeDirectory();
   void ChangeFileProperties(const UnicodeString & AFileName,
-    const TRemoteFile *AFile, /*const TRemoteProperties*/ void *Properties);
-  void ChangeFilesProperties(TStrings *AFileList,
+    const TRemoteFile * AFile, /*const TRemoteProperties*/ void *Properties);
+  void ChangeFilesProperties(TStrings * AFileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * AFileList);
   void TerminalError(const UnicodeString & Msg);
@@ -690,7 +696,7 @@ public:
   TUsableCopyParamAttrs UsableCopyParamAttrs(int32_t AParams) const;
   bool ContinueReopen(TDateTime Start) const;
   bool QueryReopen(Exception * E, int32_t AParams,
-    TFileOperationProgressType *OperationProgress);
+    TFileOperationProgressType * OperationProgress);
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
   void ReflectSettings() const;
