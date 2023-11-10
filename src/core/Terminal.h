@@ -1011,7 +1011,7 @@ public:
   ~TSynchronizeOptions() noexcept;
 
   TStringList *Filter{nullptr};
-  int Files{0};
+  int32_t Files{0};
 
   bool FilterFind(const UnicodeString & AFileName) const;
   bool MatchesFilter(const UnicodeString & AFileName) const;

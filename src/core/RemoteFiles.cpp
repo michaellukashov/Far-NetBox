@@ -2289,7 +2289,7 @@ TRights::TFlag TRights::CalculateFlag(TRightGroup Group, TRightLevel Level)
 
 unsigned short TRights::CalculatePermissions(TRightGroup Group, TRightLevel Level, TRightLevel Level2, TRightLevel Level3)
 {
-  unsigned int Permissions = CalculateFlag(Group, Level);
+  uint32_t Permissions = CalculateFlag(Group, Level);
   if (Level2 != rlNone)
   {
     Permissions |= CalculateFlag(Group, Level2);

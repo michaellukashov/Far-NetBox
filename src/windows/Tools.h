@@ -51,7 +51,7 @@ void OpenFileInExplorer(const UnicodeString & Path);
 void OpenFolderInExplorer(const UnicodeString & Path);
 void ShowHelp(const UnicodeString & HelpKeyword);
 #endif // #if 0
-NB_CORE_EXPORT bool IsFormatInClipboard(unsigned int Format);
+NB_CORE_EXPORT bool IsFormatInClipboard(uint32_t Format);
 NB_CORE_EXPORT bool NonEmptyTextFromClipboard(UnicodeString & Text);
 NB_CORE_EXPORT HANDLE OpenTextFromClipboard(const wchar_t *& Text);
 NB_CORE_EXPORT void CloseTextFromClipboard(HANDLE Handle);

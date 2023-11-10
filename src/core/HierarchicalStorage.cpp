@@ -1615,7 +1615,7 @@ UnicodeString TCustomIniFileStorage::DoReadRootAccessString()
 
 uint32_t TCustomIniFileStorage::GetCurrentAccess()
 {
-  unsigned int Result;
+  uint32_t Result;
   // The way THierarchicalStorage::OpenSubKey is implemented, the access will be zero for non-existing keys in
   // configuration overrides => delegating access handling to the master storage (which still should read overriden access keys)
   if (FMasterStorage.get() != NULL)

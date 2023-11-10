@@ -5081,8 +5081,8 @@ bool TTerminal::DoRenameOrCopyFile(
       }
       TQueryParams Params(qpNeverAskAgainCheck);
       UnicodeString Question = FORMAT(QuestionFmt, NewName);
-      unsigned int Answers = qaYes | qaNo | FLAGMASK(OperationProgress != nullptr, qaCancel) | FLAGMASK(IsBatchOperation, qaYesToAll | qaNoToAll);
-      unsigned int Answer = QueryUser(Question, nullptr, Answers, &Params, QueryType);
+      uint32_t Answers = qaYes | qaNo | FLAGMASK(OperationProgress != nullptr, qaCancel) | FLAGMASK(IsBatchOperation, qaYesToAll | qaNoToAll);
+      uint32_t Answer = QueryUser(Question, nullptr, Answers, &Params, QueryType);
       switch (Answer)
       {
         case qaNeverAskAgain:
@@ -8165,7 +8165,7 @@ void TTerminal::CheckParallelFileTransfer(
             FileParams.DestTimestamp = UnixToDateTime(MTime, SessionData->DSTMode);
             int Answers = qaYes | qaNo | qaCancel;
             TQueryParams QueryParams(qpNeverAskAgainCheck);
-            unsigned int Answer =
+            uint32_t Answer =
               ConfirmFileOverwrite(
                 ParallelFileName, TargetFileName, &FileParams, Answers, &QueryParams, osRemote,
                 CopyParam, Params, OperationProgress, EmptyStr);
@@ -8480,7 +8480,7 @@ struct TSinkFileParams
   int Params;
   TFileOperationProgressType * OperationProgress;
   bool Skipped;
-  unsigned int Flags;
+  uint32_t Flags;
 };
 
 #endif //if 0

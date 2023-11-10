@@ -117,10 +117,10 @@ private:
   TAuthenticateForm * FAuthenticateForm{nullptr};
   TCriticalSection * FQueueSection{nullptr};
   DWORD FMainThread{0};
-  int FPendingConfigurationChange{0};
+  int32_t FPendingConfigurationChange{0};
   std::unique_ptr<TCriticalSection> FChangeSection;
   std::vector<std::pair<TTerminalQueue *, TQueueEvent> > FQueueEvents;
-  unsigned int FTaskbarButtonCreatedMessage{0};
+  uint32_t FTaskbarButtonCreatedMessage{0};
   ITaskbarList3 * FTaskbarList{nullptr};
   int FAuthenticating{0};
   void * FBusyToken{nullptr};
@@ -147,14 +147,14 @@ private:
   void ConfigurationChange(TObject * Sender);
   void TerminalUpdateStatus(TTerminal * Terminal, bool Active);
   void TerminalQueryUser(TObject * Sender,
-    const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
-    const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * Arg);
+    const UnicodeString & Query, TStrings * MoreMessages, uint32_t Answers,
+    const TQueryParams * Params, uint32_t & Answer, TQueryType Type, void * Arg);
   void TerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompt,
     TStrings * Results, bool & Result, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
     UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
-    int Options, unsigned int & Params);
+    int Options, uint32_t & Params);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void TerminalReadDirectoryProgress(TObject * Sender, int Progress,
@@ -200,7 +200,7 @@ private:
   TManagedTerminal * GetSession(int Index);
   bool IsUpdating();
   bool SupportedSession(TSessionData * Data);
-  void TerminalFatalExceptionTimer(unsigned int & Result);
+  void TerminalFatalExceptionTimer(uint32_t & Result);
 };
 
 #endif

@@ -2094,13 +2094,13 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
 
     try__finally
     {
-      unsigned int Timeout = MSec;
+      uint32_t Timeout = MSec;
 
-      unsigned int WaitResult;
+      uint32_t WaitResult;
       do
       {
         CheckConnection();
-        unsigned int TimeoutStep = std::min(GUIUpdateInterval, Timeout);
+        uint32_t TimeoutStep = std::min(GUIUpdateInterval, Timeout);
         if (toplevel_callback_pending(GetCallbackSet()))
         {
           TimeoutStep = 0;
@@ -2118,9 +2118,9 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         FUI->ProcessGUI();
         // run_toplevel_callbacks can cause processing of pending raw data, so:
         // 1) Check for changes in our pending buffer - wait criteria in Receive()
-        int PrevDataLen = (-static_cast<int>(OutLen) + static_cast<int>(PendLen));
+        int32_t PrevDataLen = (-static_cast<int>(OutLen) + static_cast<int>(PendLen));
         // 2) Changes in session state - wait criteria in Init()
-        unsigned int HadMainChannel = winscp_query(FBackendHandle, WINSCP_QUERY_MAIN_CHANNEL);
+        uint32_t HadMainChannel = winscp_query(FBackendHandle, WINSCP_QUERY_MAIN_CHANNEL);
         if (run_toplevel_callbacks(GetCallbackSet()) &&
             (((-static_cast<int>(OutLen) + static_cast<int>(PendLen)) > PrevDataLen) ||
              (HadMainChannel != winscp_query(FBackendHandle, WINSCP_QUERY_MAIN_CHANNEL))))
@@ -2797,7 +2797,7 @@ void TSecureShell::VerifyHostKey(
           AddToList(Message, LoadStr(SCRIPTING_USE_HOSTKEY), Para);
         }
 
-        unsigned int R =
+        uint32_t R =
           FUI->QueryUser(Message, nullptr, Answers, &Params, qtWarning);
         UnicodeString StoreKeyStr = KeyStr;
 

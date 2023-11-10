@@ -813,7 +813,7 @@ void ShowHelp(const UnicodeString & AHelpKeyword)
 }
 #endif // #if 0
 
-bool IsFormatInClipboard(unsigned int Format)
+bool IsFormatInClipboard(uint32_t Format)
 {
   bool Result = OpenClipboard(0);
   if (Result)

@@ -359,7 +359,7 @@ bool TPuttyPasswordThread::Finished()
 
 void TPuttyPasswordThread::DoSleep(int & Timeout)
 {
-  unsigned int Step = 50;
+  uint32_t Step = 50;
   Sleep(Step);
   Timeout -= Step;
   if (Timeout <= 0)
@@ -443,7 +443,7 @@ UnicodeString FindPuttyPath()
   return Program;
 }
 
-unsigned int PipeCounter = 0;
+uint32_t PipeCounter = 0;
 
 void OpenSessionInPutty(TSessionData * SessionData)
 {
@@ -596,7 +596,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
         if (SameText(base::ExtractFileName(Program), OriginalPuttyExecutable))
         {
           uint32_t Version = -1; //TODO: GetFileVersion(Program);
-          if (Version != static_cast<unsigned int>(-1))
+          if (Version != static_cast<uint32_t>(-1))
           {
             int MajorVersion = HIWORD(Version);
             int MinorVersion = LOWORD(Version);

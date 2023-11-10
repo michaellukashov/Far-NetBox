@@ -1135,8 +1135,8 @@ void TTerminalManager::DeleteLocalFile(const UnicodeString FileName, bool Altern
 }
 
 void TTerminalManager::TerminalQueryUser(TObject * Sender,
-  const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
-  const TQueryParams * Params, unsigned int & Answer, TQueryType Type, void * /*Arg*/)
+  const UnicodeString & Query, TStrings * MoreMessages, uint32_t Answers,
+  const TQueryParams * Params, uint32_t & Answer, TQueryType Type, void * /*Arg*/)
 {
   UnicodeString HelpKeyword;
   TMessageParams MessageParams(Params);
@@ -2017,7 +2017,7 @@ bool TTerminalManager::ScheduleTerminalReconnnect(TTerminal * Terminal)
   return Result;
 }
 
-void TTerminalManager::TerminalFatalExceptionTimer(unsigned int & Result)
+void TTerminalManager::TerminalFatalExceptionTimer(uint32_t & Result)
 {
   if (FTerminalReconnnecteScheduled)
   {

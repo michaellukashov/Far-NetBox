@@ -90,7 +90,7 @@ protected:
   void SetBuffers();
 
   LARGE_INTEGER m_LastUpdateTime{};
-  unsigned int m_LastSendBufferUpdate{0};
+  uint32_t m_LastSendBufferUpdate{0};
   DWORD m_SendBuf{0};
 
 #ifndef MPEXT_NO_ZLIB

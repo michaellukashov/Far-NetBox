@@ -545,7 +545,7 @@ void CTransferSocket::OnSend(int nErrorCode)
 
   if (m_SendBuf > 0)
   {
-    unsigned int Ticks = GetTickCount();
+    uint32_t Ticks = GetTickCount();
     if (Ticks - m_LastSendBufferUpdate >= 1000)
     {
       DWORD BufferLen = 0;
