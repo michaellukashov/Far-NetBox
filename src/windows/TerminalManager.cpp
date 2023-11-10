@@ -1291,7 +1291,7 @@ void TTerminalManager::TerminalShowExtendedException(
 static TDateTime DirectoryReadingProgressDelay(0, 0, 1, 500);
 
 void TTerminalManager::TerminalReadDirectoryProgress(
-  TObject * /*Sender*/, int Progress, int ResolvedLinks, bool & Cancel)
+  TObject * /*Sender*/, int Progress, int32_t ResolvedLinks, bool & Cancel)
 {
   if (Progress == 0)
   {
@@ -1376,7 +1376,7 @@ void TTerminalManager::AuthenticatingDone()
 }
 
 void TTerminalManager::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & Str, bool DebugUsedArg(Status), int Phase, const UnicodeString & Additional)
+  TTerminal * Terminal, const UnicodeString & Str, bool DebugUsedArg(Status), int32_t Phase, const UnicodeString & Additional)
 {
   if (ScpExplorer != nullptr)
   {

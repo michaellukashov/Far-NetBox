@@ -112,7 +112,7 @@ class NB_CORE_EXPORT TLocaleInfo : public TObject
 public:
   LCID Locale{};
   UnicodeString Name;
-  int Completeness{0};
+  int32_t Completeness{0};
 };
 
 class NB_CORE_EXPORT TCopyParamList : public TObject
@@ -262,7 +262,7 @@ public:
   UnicodeString GetTranslationModule(const UnicodeString & Path) const;
   UnicodeString AddTranslationsSubFolder(const UnicodeString & Path) const;
   void FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts);
-  virtual int GetResourceModuleCompleteness(HINSTANCE Module);
+  virtual int32_t GetResourceModuleCompleteness(HINSTANCE Module);
   virtual bool IsTranslationComplete(HINSTANCE Module);
   static int32_t LocalesCompare(void * Item1, void * Item2);
   LCID InternalLocale();

@@ -122,13 +122,13 @@ private:
   std::vector<std::pair<TTerminalQueue *, TQueueEvent> > FQueueEvents;
   uint32_t FTaskbarButtonCreatedMessage{0};
   ITaskbarList3 * FTaskbarList{nullptr};
-  int FAuthenticating{0};
+  int32_t FAuthenticating{0};
   void * FBusyToken{nullptr};
   bool FAuthenticationCancelled{false};
   std::unique_ptr<TApplicationEvents> FApplicationsEvents;
   bool FKeepAuthenticateForm{false};
-  int FUpdating{0};
-  int FMaxSessions{0};
+  int32_t FUpdating{0};
+  int32_t FMaxSessions{0};
 
   bool ConnectActiveTerminalImpl(bool Reopen);
   bool ConnectActiveTerminal();
@@ -153,14 +153,14 @@ private:
     TPromptKind Kind, const UnicodeString & Name, const UnicodeString & Instructions, TStrings * Prompt,
     TStrings * Results, bool & Result, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
-    UnicodeString SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
-    int Options, uint32_t & Params);
+    const UnicodeString & SessionName, const UnicodeString & Banner, bool & NeverShowAgain,
+    int32_t Options, uint32_t & Params);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void TerminalReadDirectoryProgress(TObject * Sender, int Progress,
-    int ResolvedLinks, bool & Cancel);
+  void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress,
+    int32_t ResolvedLinks, bool & Cancel);
   void TerminalInformation(
-    TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase, const UnicodeString & Additional);
+    TTerminal * Terminal, const UnicodeString & Str, bool Status, int32_t Phase, const UnicodeString & Additional);
   void TerminalCustomCommand(TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
   void FreeAll();
   void SessionReady();
@@ -173,7 +173,7 @@ private:
     bool Temp, const UnicodeString & FileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData);
-  void DeleteLocalFile(const UnicodeString & FileName, bool Alternative, int & Deleted);
+  void DeleteLocalFile(const UnicodeString & FileName, bool Alternative, int32_t & Deleted);
   void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
   TAuthenticateForm * MakeAuthenticateForm(TTerminal * Terminal);
   void MasterPasswordPrompt();
@@ -197,7 +197,7 @@ private:
   void CloseAutheticateForm();
   void AuthenticatingDone();
   TManagedTerminal * CreateManagedTerminal(TSessionData * Data);
-  TManagedTerminal * GetSession(int Index);
+  TManagedTerminal * GetSession(int32_t Index);
   bool IsUpdating();
   bool SupportedSession(TSessionData * Data);
   void TerminalFatalExceptionTimer(uint32_t & Result);

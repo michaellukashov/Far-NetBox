@@ -47,7 +47,7 @@ TEncodeType DetectUTF8Encoding(const uint8_t *str, int32_t len)
   const uint8_t *buf = str;
   const uint8_t *endbuf = buf + len;
   uint8_t byte2mask = 0x00;
-  int trailing = 0; // trailing (continuation) bytes to follow
+  int32_t trailing = 0; // trailing (continuation) bytes to follow
 
   while (buf != endbuf)
   {

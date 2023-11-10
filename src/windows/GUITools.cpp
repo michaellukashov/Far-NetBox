@@ -262,7 +262,7 @@ void TPuttyCleanupThread::Execute()
 
         if (FTimer < Now())
         {
-          for (int Index = 0; Index < Sessions->Count; Index++)
+          for (int32_t Index = 0; Index < Sessions->Count; Index++)
           {
             UnicodeString SessionName = Sessions->Strings[Index];
             Storage->RecursiveDeleteSubKey(SessionName);
@@ -321,7 +321,7 @@ private:
   HANDLE FPipe;
   AnsiString FPassword;
 
-  void DoSleep(int & Timeout);
+  void DoSleep(int32_t & Timeout);
 };
 
 TPuttyPasswordThread::TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName) :
@@ -357,7 +357,7 @@ bool TPuttyPasswordThread::Finished()
   return true;
 }
 
-void TPuttyPasswordThread::DoSleep(int & Timeout)
+void TPuttyPasswordThread::DoSleep(int32_t & Timeout)
 {
   uint32_t Step = 50;
   Sleep(Step);
@@ -371,7 +371,7 @@ void TPuttyPasswordThread::DoSleep(int & Timeout)
 void TPuttyPasswordThread::Execute()
 {
   AppLog(L"Waiting for PuTTY to connect to password pipe");
-  int Timeout = MSecsPerSec * SecsPerMin;
+  int32_t Timeout = MSecsPerSec * SecsPerMin;
   while (Timeout > 0)
   {
     if (ConnectNamedPipe(FPipe, nullptr))
@@ -380,11 +380,11 @@ void TPuttyPasswordThread::Execute()
     }
     else
     {
-      int Error = GetLastError();
+      int32_t Error = GetLastError();
       if (Error == ERROR_PIPE_CONNECTED)
       {
         AppLog(L"PuTTY has connected to password pipe");
-        int Pos = 0;
+        int32_t Pos = 0;
         while ((Timeout > 0) && (Pos < FPassword.Length()))
         {
           DWORD Written = 0;
@@ -492,7 +492,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
         std::unique_ptr<TStoredSessionList> HostKeySessionList(std::make_unique<TStoredSessionList>());
         HostKeySessionList->SetOwnsObjects(false);
         HostKeySessionList->Add(SessionData);
-        int Imported = TStoredSessionList::ImportHostKeys(SourceHostKeyStorage.get(), TargetHostKeyStorage.get(), HostKeySessionList.get(), false);
+        int32_t Imported = TStoredSessionList::ImportHostKeys(SourceHostKeyStorage.get(), TargetHostKeyStorage.get(), HostKeySessionList.get(), false);
         AppLogFmt(L"Imported host keys: %d", Imported);
       }
 
@@ -554,7 +554,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
         UnicodeString SessionName;
 
         UnicodeString PuttySession = GetGUIConfiguration()->PuttySession;
-        int Uniq = 1;
+        int32_t Uniq = 1;
         while (DoesSessionExistInPutty(PuttySession))
         {
           Uniq++;
@@ -598,8 +598,8 @@ void OpenSessionInPutty(TSessionData * SessionData)
           uint32_t Version = -1; //TODO: GetFileVersion(Program);
           if (Version != static_cast<uint32_t>(-1))
           {
-            int MajorVersion = HIWORD(Version);
-            int MinorVersion = LOWORD(Version);
+            int32_t MajorVersion = HIWORD(Version);
+            int32_t MinorVersion = LOWORD(Version);
             if (CalculateCompoundVersion(MajorVersion, MinorVersion) >= CalculateCompoundVersion(0, 77))
             {
               UsePuttyPwFile = true;

@@ -1040,7 +1040,7 @@ public:
   bool Execute(TUnicodeStringVector & Values);
 
 private:
-  UnicodeString HistoryKey(int Index);
+  UnicodeString HistoryKey(int32_t Index);
 
   std::vector<THistoryComboBox *> FEdits;
   TUnicodeStringVector FPrompts;
@@ -1492,12 +1492,12 @@ void ClickToolbarItem(TTBCustomItem * Item, bool PositionCursor)
 }
 
 
-UnicodeString DumpCallstackEventName(int ProcessId)
+UnicodeString DumpCallstackEventName(int32_t ProcessId)
 {
   return FORMAT(DUMPCALLSTACK_EVENT, ProcessId);
 }
 
-UnicodeString DumpCallstackFileName(int ProcessId)
+UnicodeString DumpCallstackFileName(int32_t ProcessId)
 {
   UnicodeString FileName = FORMAT(L"%s.txt", DumpCallstackEventName(ProcessId));
   UnicodeString Result = TPath::Combine(SystemTemporaryDirectory(), FileName);

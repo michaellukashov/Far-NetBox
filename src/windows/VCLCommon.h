@@ -62,8 +62,8 @@ void SetCorrectFormParent(TForm * Form);
 void InvokeHelp(TWinControl * Control);
 void FixFormIcons(TForm * Form);
 Forms::TMonitor *  FormMonitor(TCustomForm * Form);
-int GetLastMonitor();
-void SetLastMonitor(int MonitorNum);
+int32_t GetLastMonitor();
+void SetLastMonitor(int32_t MonitorNum);
 TForm * _SafeFormCreate(TMetaClass * FormClass, TComponent * Owner);
 template<class FormType>
 FormType * SafeFormCreate(TComponent * Owner = nullptr)

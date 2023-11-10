@@ -156,7 +156,7 @@ UnicodeString TFileMasks::EscapeMask(const UnicodeString & S)
   UnicodeString Result = S;
   if (Result.LastDelimiter(MaskSymbols) > 0) // optimization
   {
-    for (int Index = 1; Index < Result.Length(); Index++)
+    for (int32_t Index = 1; Index < Result.Length(); Index++)
     {
       if (MaskSymbols.Pos(Result[Index]) > 0)
       {

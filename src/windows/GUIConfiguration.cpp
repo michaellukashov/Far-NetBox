@@ -805,7 +805,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   if (LoadCopyParam(Storage, &FDefaultCopyParam))
   try__finally
   {
-    int CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
+    int32_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
     FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {
@@ -1006,7 +1006,7 @@ UnicodeString TGUIConfiguration::GetAppliedLocaleHex() const
   return IntToHex(uint64_t(GetAppliedLocale()), 4);
 }
 
-int TGUIConfiguration::GetResourceModuleCompleteness(HINSTANCE /*Module*/)
+int32_t TGUIConfiguration::GetResourceModuleCompleteness(HINSTANCE /*Module*/)
 {
   return 100;
 }
@@ -1162,7 +1162,7 @@ void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
 
 void TGUIConfiguration::FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts)
 {
-  int FindAttrs = faReadOnly | faArchive;
+  int32_t FindAttrs = faReadOnly | faArchive;
 
   TSearchRecOwned SearchRec;
   bool Found = (FindFirstUnchecked(LocalesMask, static_cast<DWORD>(FindAttrs), SearchRec) == 0);

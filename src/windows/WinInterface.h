@@ -185,7 +185,7 @@ bool DoMasterPasswordDialog();
 bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword);
 
 // windows\WinMain.cpp
-int Execute();
+int32_t Execute();
 void GetLoginData(const UnicodeString & SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, /*TForm * LinkedForm,*/ int32_t Flags = 0);
 int32_t GetCommandLineParseUrlFlags(TProgramParams * Params);
@@ -606,8 +606,8 @@ bool IsCustomShortCut(TShortCut ShortCut);
 TShortCut NormalizeCustomShortCut(TShortCut ShortCut);
 #endif // #if 0
 
-UnicodeString DumpCallstackEventName(int ProcessId);
-UnicodeString DumpCallstackFileName(int ProcessId);
+UnicodeString DumpCallstackEventName(int32_t ProcessId);
+UnicodeString DumpCallstackFileName(int32_t ProcessId);
 
 void CheckConfigurationForceSave();
 void InterfaceStarted();
