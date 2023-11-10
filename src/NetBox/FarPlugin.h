@@ -26,7 +26,7 @@ class TFarMessageDialog;
 class TFarEditorInfo;
 class TFarPluginGuard;
 
-constexpr int MaxMessageWidth = 64;
+constexpr int32_t MaxMessageWidth = 64;
 
 enum TFarShiftStatus
 {
@@ -46,19 +46,10 @@ enum THandlesFunction
   hfProcessPanelEvent
 };
 
-#if 0
-typedef void __fastcall (__closure *TFarInputBoxValidateEvent)(AnsiString &Text);
-#endif // #if 0
 using TFarInputBoxValidateEvent = nb::FastDelegate1<void, UnicodeString & /*Text*/>;
-#if 0
-typedef void (__closure *TFarMessageTimerEvent)(unsigned int &Result);
-#endif // #if 0
 using TFarMessageTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
-#if 0
-typedef void (__closure *TFarMessageClickEvent)(void *Token, int Result, bool &Close);
-#endif // #if 0
 using TFarMessageClickEvent = nb::FastDelegate3<void, void * /*Token*/,
-        uint32_t /*Result*/, bool & /*Close*/>;
+  uint32_t /*Result*/, bool & /*Close*/>;
 
 struct TFarMessageParams : public TObject
 {
@@ -118,7 +109,7 @@ public:
   virtual void Finalize();
 
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info);
-  virtual const struct PluginStartupInfo *GetPluginStartupInfo() const { return &FStartupInfo; }
+  virtual const struct PluginStartupInfo * GetPluginStartupInfo() const { return &FStartupInfo; }
   virtual void ExitFAR();
   virtual void GetPluginInfo(struct PluginInfo * Info);
   virtual int32_t Configure(const struct ConfigureInfo * Info);

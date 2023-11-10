@@ -119,9 +119,6 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
   static TQueryButtonAlias CreateIgnoreAsRenameGrouppedWithNo();
 };
 
-#if 0
-typedef void (__closure *TQueryParamsTimerEvent)(unsigned int & Result);
-#endif // #if 0
 using TQueryParamsTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
 __removed enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 

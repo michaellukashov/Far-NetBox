@@ -6594,7 +6594,7 @@ void TTerminal::CollectCalculatedChecksum(
   DebugAssert(FCollectedCalculatedChecksum.IsEmpty());
   FCollectedCalculatedChecksum = Hash;
 }
-//---------------------------------------------------------------------------
+
 bool TTerminal::SameFileChecksum(const UnicodeString & LocalFileName, const TRemoteFile * File)
 {
   UnicodeString DefaultAlg = Sha256ChecksumAlg;
