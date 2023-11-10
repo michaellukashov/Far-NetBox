@@ -4473,7 +4473,7 @@ void TTerminal::RemoteDeleteFile(const UnicodeString & AFileName,
   }
   else
   {
-    DoDeleteFile(FFileSystem, FileName, AFile, Params);
+    DoDeleteFile(FFileSystem.get(), FileName, AFile, Params);
   }
 }
 
@@ -5141,7 +5141,7 @@ bool TTerminal::DoRenameOrCopyFile(
             (FCommandSession != nullptr)) // Won't be in scripting, there we let it fail later
         {
           PrepareCommandSession();
-          FileSystem = FCommandSession->FFileSystem;
+          FileSystem = FCommandSession->FFileSystem.get();
         }
         else
         {
@@ -5150,7 +5150,7 @@ bool TTerminal::DoRenameOrCopyFile(
       }
       else
       {
-        FileSystem = FFileSystem;
+        FileSystem = FFileSystem.get();
       }
 
       if (!GetIsCapable(fcMoveOverExistingFile) && !DontOverwrite)
@@ -6618,21 +6618,24 @@ bool TTerminal::SameFileChecksum(const UnicodeString & LocalFileName, const TRem
     Alg = DefaultAlg;
   }
 
-  std::unique_ptr<TStrings> FileList(new TStringList());
+  std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
   FileList->AddObject(File->FullFileName, File);
   DebugAssert(FCollectedCalculatedChecksum.IsEmpty());
   FCollectedCalculatedChecksum = EmptyStr;
-  CalculateFilesChecksum(Alg, FileList.get(), CollectCalculatedChecksum);
+  CalculateFilesChecksum(Alg, FileList.get(), nb::bind(&TTerminal::CollectCalculatedChecksum, this));
   UnicodeString RemoteChecksum = FCollectedCalculatedChecksum;
   FCollectedCalculatedChecksum = EmptyStr;
 
   UnicodeString LocalChecksum;
-  FILE_OPERATION_LOOP_BEGIN
+  __removed FILE_OPERATION_LOOP_BEGIN
+  FileOperationLoopCustom(this, OperationProgress, folNone,
+  FMTLOAD(CHECKSUM_ERROR, LocalFileName), "",
+  [&]()
   {
     std::unique_ptr<THandleStream> Stream(TSafeHandleStream::CreateFromFile(LocalFileName, fmOpenRead | fmShareDenyWrite));
     LocalChecksum = CalculateFileChecksum(Stream.get(), Alg);
-  }
-  FILE_OPERATION_LOOP_END(FMTLOAD(CHECKSUM_ERROR, (LocalFileName)));
+  });
+  __removed FILE_OPERATION_LOOP_END(FMTLOAD(CHECKSUM_ERROR, (LocalFileName)));
 
   return SameText(RemoteChecksum, LocalChecksum);
 }
@@ -6748,7 +6751,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
             }
             else if (FLAGSET(Data->Params, spByChecksum) &&
                      FLAGCLEAR(Data->Params, spTimestamp) &&
-                     !SameFileChecksum(FullLocalFileName, File) &&
+                     !SameFileChecksum(FullLocalFileName, AFile) &&
                      FLAGCLEAR(Data->Params, spTimestamp))
             {
               Modified = true;
@@ -6765,14 +6768,14 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
               LocalData->MatchingRemoteFileFile = AFile->Duplicate();
               LogEvent(FORMAT("Local file %s is modified comparing to remote file %s",
                 FormatFileDetailsForLog(FullLocalFileName, LocalData->Info.Modification, LocalData->Info.Size),
-                  FormatFileDetailsForLog(FullRemoteFileName, File->Modification, File->Size, File->LinkedFile)));
+                FormatFileDetailsForLog(FullRemoteFileName, AFile->Modification, AFile->Size, AFile->LinkedFile)));
             }
 
             if (Modified)
             {
               LogEvent(FORMAT("Remote file %s is modified comparing to local file %s",
                 FormatFileDetailsForLog(FullRemoteFileName, AFile->GetModification(), AFile->GetSize(), AFile->LinkedFile),
-                  FormatFileDetailsForLog(FullLocalFileName, LocalData->Info.Modification, LocalData->Info.Size)));
+                FormatFileDetailsForLog(FullLocalFileName, LocalData->Info.Modification, LocalData->Info.Size)));
             }
           }
           else if (FLAGCLEAR(Data->Params, spNoRecurse))

@@ -3968,6 +3968,7 @@ UnicodeString FormatSize(int64_t ASize)
 
 UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
 {
+  TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
   UnicodeString Result;
   if ((0 <= DateTime) && (DateTime <= MaxDateTime))
   {

@@ -250,18 +250,18 @@ public:
   TStrings() noexcept;
   explicit TStrings(TObjectClassId Kind) noexcept;
   virtual ~TStrings() = default;
-  int32_t Add(const UnicodeString & S, TObject * AObject = nullptr);
+  int32_t Add(const UnicodeString & S, const TObject * AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
   virtual void BeginUpdate();
   virtual void EndUpdate();
   virtual void SetUpdateState(bool Updating);
-  virtual int32_t AddObject(const UnicodeString & S, TObject * AObject);
+  virtual int32_t AddObject(const UnicodeString & S, const TObject * AObject);
   virtual void InsertObject(int32_t Index, const UnicodeString & Key, TObject * AObject);
   virtual int32_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const;
   virtual int32_t GetCount() const = 0;
-  virtual void Insert(int32_t Index, const UnicodeString & AString, TObject * AObject = nullptr) = 0;
-  bool Equals(const TStrings *Value) const;
+  virtual void Insert(int32_t Index, const UnicodeString & AString, const TObject * AObject = nullptr) = 0;
+  bool Equals(const TStrings * Value) const;
   virtual void Move(int32_t CurIndex, int32_t NewIndex) override;
   virtual int32_t IndexOf(const UnicodeString & S) const;
   virtual int32_t IndexOfName(const UnicodeString & Name) const;
@@ -334,13 +334,13 @@ public:
   virtual ~TStringList() override = default;
 
   int32_t Add(const UnicodeString & S);
-  virtual int32_t AddObject(const UnicodeString & S, TObject *AObject) override;
+  virtual int32_t AddObject(const UnicodeString & S, const TObject * AObject) override;
   void LoadFromFile(const UnicodeString & AFileName);
   TNotifyEvent GetOnChange() const { return FOnChange; }
   void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
   TNotifyEvent GetOnChanging() const { return FOnChanging; }
   void SetOnChanging(TNotifyEvent OnChanging) { FOnChanging = OnChanging; }
-  void InsertItem(int32_t Index, const UnicodeString & S, TObject * AObject);
+  void InsertItem(int32_t Index, const UnicodeString & S, const TObject * AObject);
   void QuickSort(int32_t L, int32_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent *Source) override;
@@ -354,7 +354,7 @@ public:
   virtual void SetUpdateState(bool Updating) override;
   virtual void Changing();
   virtual void Changed() override;
-  virtual void Insert(int32_t Index, const UnicodeString & S, TObject * AObject = nullptr) override;
+  virtual void Insert(int32_t Index, const UnicodeString & S, const TObject * AObject = nullptr) override;
   virtual int32_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const override;
   virtual int32_t GetCount() const override;
 
@@ -452,8 +452,11 @@ private:
   double FValue{0.0};
 };
 
+//MinDateTime: TDateTime =  -693593.0;     { 01/01/0001 12:00:00.000 AM }
+//MaxDateTime: TDateTime =  2958465.99999; { 12/31/9999 11:59:59.999 PM }
 //#define MinDateTime TDateTime(-657434.0)
 constexpr const double MinDateTime = -657434.0;
+constexpr const double MaxDateTime = 2958465.99999;
 
 // TODO: move to DateUtils.hpp
 NB_CORE_EXPORT TDateTime Now();

@@ -459,7 +459,7 @@ void TStrings::Assign(const TPersistent * Source)
   }
 }
 
-int32_t TStrings::Add(const UnicodeString & S, TObject * AObject)
+int32_t TStrings::Add(const UnicodeString & S, const TObject * AObject)
 {
   const int32_t Result = GetCount();
   Insert(Result, S, AObject);
@@ -537,7 +537,7 @@ void TStrings::SetUpdateState(bool Updating)
   (void)Updating;
 }
 
-int32_t TStrings::AddObject(const UnicodeString & S, TObject * AObject)
+int32_t TStrings::AddObject(const UnicodeString & S, const TObject * AObject)
 {
   const int32_t Result = Add(S, AObject);
   return Result;
@@ -735,7 +735,7 @@ int32_t TStringList::Add(const UnicodeString & S)
   return AddObject(S, nullptr);
 }
 
-int32_t TStringList::AddObject(const UnicodeString & S, TObject *AObject)
+int32_t TStringList::AddObject(const UnicodeString & S, const TObject * AObject)
 {
   int32_t Result = 0;
   if (!GetSorted())
@@ -861,7 +861,7 @@ void TStringList::InsertObject(int32_t Index, const UnicodeString & Key, TObject
   InsertItem(Index, Key, AObject);
 }
 
-void TStringList::InsertItem(int32_t Index, const UnicodeString & S, TObject *AObject)
+void TStringList::InsertItem(int32_t Index, const UnicodeString & S, const TObject * AObject)
 {
   if ((Index == nb::NPOS) || (Index > GetCount()))
   {
@@ -871,12 +871,12 @@ void TStringList::InsertItem(int32_t Index, const UnicodeString & S, TObject *AO
   if (Index == GetCount())
   {
     FStrings.push_back(S);
-    TObjectList::Add(AObject);
+    TObjectList::Add((void *)AObject);
   }
   else
   {
     FStrings.insert(FStrings.begin() + Index, S);
-    TObjectList::Insert(Index, AObject);
+    TObjectList::Insert(Index, (void *)AObject);
   }
   Changed();
 }
@@ -984,7 +984,7 @@ void TStringList::Changed()
   }
 }
 
-void TStringList::Insert(int32_t Index, const UnicodeString & S, TObject * AObject)
+void TStringList::Insert(int32_t Index, const UnicodeString & S, const TObject * AObject)
 {
   InsertItem(Index, S, AObject);
 }
