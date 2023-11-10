@@ -400,13 +400,13 @@ inline constexpr void ignore_result(const T&)
 template <class T>
 struct add_const
 {
-  typedef T const type;
+  using type = T const;
 };
 
 template <class T> struct
 add_const<T&>
 {
-  typedef T& type;
+  using type = T&;
 };
 
 template <class T> using add_const_t = typename add_const<T>::type;

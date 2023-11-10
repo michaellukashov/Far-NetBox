@@ -126,7 +126,7 @@ struct MakeOtherType { using Type = T; };
 
 #define NB_SPECIALIZE_MAKE_T(T, U) \
   template <> \
-  struct MakeOtherType<T> { typedef U Type; }
+  struct MakeOtherType<T> { using Type = U; }
 
 NB_SPECIALIZE_MAKE_T(DWORD, size_t);
 NB_SPECIALIZE_MAKE_T(int, size_t);

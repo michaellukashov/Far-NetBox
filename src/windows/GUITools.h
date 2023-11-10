@@ -7,9 +7,6 @@
 
 class TSessionData;
 
-#if 0
-typedef void (__closure *TProcessMessagesEvent)();
-#endif // #if 0
 using TProcessMessagesEvent = nb::FastDelegate0<void>;
 
 void GUIFinalize();
