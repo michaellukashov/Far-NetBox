@@ -1109,10 +1109,10 @@ public:
   static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
   static void SelectKnownHostsForSelectedSessions(TStoredSessionList * KnownHosts, TStoredSessionList * Sessions);
 
-  const TSessionData *GetSession(int32_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
-  TSessionData *GetSession(int32_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
+  const TSessionData * GetSession(int32_t Index) const { return dyn_cast<TSessionData>(AtObject(Index)); }
+  TSessionData * GetSession(int32_t Index) { return dyn_cast<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettingsConst() const { return FDefaultSettings.get(); }
-  TSessionData *GetDefaultSettings() { return FDefaultSettings.get(); }
+  TSessionData * GetDefaultSettings() { return FDefaultSettings.get(); }
   void SetDefaultSettings(const TSessionData * Value);
   const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
 private:
