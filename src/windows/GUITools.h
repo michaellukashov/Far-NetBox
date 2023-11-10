@@ -33,7 +33,7 @@ NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString & APuttyPath,
   TSessionData * SessionData);
 NB_CORE_EXPORT bool SpecialFolderLocation(int32_t APathID, UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString & ABaseDir,
-  const UnicodeString Identity, bool Mask = false);
+  const UnicodeString & Identity, bool Mask = false);
 
 #if 0
 

@@ -1129,7 +1129,7 @@ void TTerminalManager::UpdateTaskbarList()
   ScpExplorer->UpdateTaskbarList(FTaskbarList);
 }
 
-void TTerminalManager::DeleteLocalFile(const UnicodeString FileName, bool Alternative, int & Deleted)
+void TTerminalManager::DeleteLocalFile(const UnicodeString & FileName, bool Alternative, int32_t & Deleted)
 {
   Deleted = RecursiveDeleteFileChecked(FileName, (WinConfiguration->DeleteToRecycleBin != Alternative));
 }
@@ -1252,8 +1252,8 @@ void TTerminalManager::TerminalPromptUser(
 }
 
 void TTerminalManager::TerminalDisplayBanner(
-  TTerminal * Terminal, UnicodeString SessionName,
-  const UnicodeString & Banner, bool & NeverShowAgain, int Options, unsigned int & Params)
+  TTerminal * Terminal, const UnicodeString & SessionName,
+  const UnicodeString & Banner, bool & NeverShowAgain, int32_t Options, uint32_t & Params)
 {
   DebugAssert(FAuthenticateForm != nullptr);
   TAuthenticateForm * AuthenticateForm = FAuthenticateForm;
