@@ -50,7 +50,7 @@ public:
 
   double ReadFloat(const UnicodeString & Name, double Default);
   UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
-  size_t ReadBinaryData(const UnicodeString & Name, void *Buffer, size_t Size);
+  size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
 
   virtual UnicodeString ReadString(const UnicodeString & Name, const UnicodeString & Default);
   RawByteString ReadBinaryData(const UnicodeString & Name);

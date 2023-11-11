@@ -34,7 +34,7 @@ public:
   void LogOptions(TLogOptionEvent OnEnumOption);
 
   __property int ParamCount = { read = FParamCount };
-  __property UnicodeString Param[int Index] = { read = GetParam };
+//  __property UnicodeString Param[int Index] = { read = GetParam };
   __property bool Empty = { read = GetEmpty };
 
   int32_t GetParamCount() const { return FParamCount; }

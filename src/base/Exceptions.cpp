@@ -182,33 +182,33 @@ static bool ExceptionMessage(const Exception *E, bool /*Count*/,
   return Result;
 }
 
-bool IsInternalException(const Exception *E)
+bool IsInternalException(const Exception * E)
 {
   // see also InternalError in ExceptionMessage
   return WellKnownException(E, nullptr, nullptr, nullptr, false);
 }
 
-bool ExceptionMessage(const Exception *E, UnicodeString &Message)
+bool ExceptionMessage(const Exception * E, UnicodeString & Message)
 {
   bool InternalError;
   return ExceptionMessage(E, true, false, Message, InternalError);
 }
 
-bool ExceptionMessageFormatted(const Exception *E, UnicodeString &Message)
+bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message)
 {
   bool InternalError;
   return ExceptionMessage(E, true, true, Message, InternalError);
 }
 
-bool ShouldDisplayException(Exception *E)
+bool ShouldDisplayException(Exception * E)
 {
   UnicodeString Message;
   return ExceptionMessageFormatted(E, Message);
 }
 
-TStrings *ExceptionToMoreMessages(Exception *E)
+TStrings * ExceptionToMoreMessages(Exception * E)
 {
-  TStrings *Result = nullptr;
+  TStrings * Result = nullptr;
   UnicodeString Message;
   if (ExceptionMessage(E, Message))
   {
@@ -223,7 +223,7 @@ TStrings *ExceptionToMoreMessages(Exception *E)
   return Result;
 }
 
-bool ExceptionFullMessage(Exception *E, UnicodeString &Message)
+bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
 {
   const bool Result = ExceptionMessage(E, Message);
   if (Result)

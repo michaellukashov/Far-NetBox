@@ -3433,7 +3433,7 @@ uint32_t TTerminal::ConfirmFileOverwrite(
   return Result;
 }
 
-void TTerminal::FileModified(const TRemoteFile *AFile,
+void TTerminal::FileModified(const TRemoteFile * AFile,
   const UnicodeString & AFileName, bool ClearDirectoryChange)
 {
   UnicodeString ParentDirectory;
@@ -3772,7 +3772,7 @@ UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * AFile) const
        AFile->GetAttr());
 }
 
-void TTerminal::LogRemoteFile(TRemoteFile *AFile)
+void TTerminal::LogRemoteFile(TRemoteFile * AFile)
 {
   // optimization
   if (GetLog()->GetLogging() && AFile)
@@ -4005,7 +4005,7 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirec
 }
 
 bool TTerminal::DeleteContentsIfDirectory(
-  const UnicodeString & AFileName, const TRemoteFile *AFile, int32_t AParams, TRmSessionAction &Action)
+  const UnicodeString & AFileName, const TRemoteFile * AFile, int32_t AParams, TRmSessionAction & Action)
 {
   bool Dir = (AFile != nullptr) && AFile->GetIsDirectory() && CanRecurseToDirectory(AFile);
 
@@ -5648,7 +5648,7 @@ void TTerminal::AnyCommand(const UnicodeString & Command,
 }
 
 void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
-  TCaptureOutputEvent OutputEvent, TCallSessionAction *Action)
+  TCaptureOutputEvent OutputEvent, TCallSessionAction * Action)
 {
   DebugAssert(FFileSystem);
   try
@@ -5810,8 +5810,8 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
 }
 
 void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
-  DWORD Access, DWORD *AAttrs, HANDLE *AHandle, int64_t *ACTime,
-  int64_t *AMTime, int64_t *AATime, int64_t *ASize,
+  DWORD Access, DWORD * AAttrs, HANDLE * AHandle, int64_t * ACTime,
+  int64_t * AMTime, int64_t * AATime, int64_t * ASize,
   bool TryWriteReadOnly)
 {
   DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
@@ -7293,7 +7293,7 @@ void TTerminal::LockFile(const UnicodeString & AFileName,
   ReactOnCommand(fsLock);
 }
 
-void TTerminal::DoLockFile(const UnicodeString & AFileName, const TRemoteFile *AFile)
+void TTerminal::DoLockFile(const UnicodeString & AFileName, const TRemoteFile * AFile)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -7578,7 +7578,7 @@ void TTerminal::LogTotalTransferDetails(
 {
   if (FLog->GetLogging())
   {
-    UnicodeString TargetSide = ((OperationProgress->GetSide() == osLocal) ? L"remote" : L"local");
+    UnicodeString TargetSide = (OperationProgress->GetSide() == osLocal) ? L"remote" : L"local";
     UnicodeString S =
       FORMAT(
         "Copying %d files/directories to %s directory \"%s\"",
@@ -7985,7 +7985,7 @@ void TTerminal::SelectTransferMode(
 {
   bool AsciiTransfer = UseAsciiTransfer(ABaseFileName, Side, CopyParam, MaskParams);
   OperationProgress->SetAsciiTransfer(AsciiTransfer);
-  UnicodeString ModeName = (OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary");
+  UnicodeString ModeName = OperationProgress->AsciiTransfer ? L"Ascii" : L"Binary";
   LogEvent(0, FORMAT("%s transfer mode selected.", ModeName));
 }
 
@@ -9505,11 +9505,11 @@ bool TTerminal::CheckForEsc() const
   return (FOperationProgress && FOperationProgress->GetCancel() == csCancel);
 }
 
-bool TTerminal::IsThisOrChild(TTerminal *Terminal) const
+bool TTerminal::IsThisOrChild(TTerminal * ATerminal) const
 {
   return
-    (this == Terminal) ||
-    ((FCommandSession != nullptr) && (FCommandSession == Terminal));
+    (this == ATerminal) ||
+    ((FCommandSession != nullptr) && (FCommandSession == ATerminal));
 }
 
 
@@ -9668,8 +9668,8 @@ void TLocalFileHandle::Close()
 UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
 {
   UnicodeString Result;
-  const TSessionInfo &SessionInfo = Terminal->GetSessionInfo();
-  const TSessionData *SessionData = Terminal->GetSessionData();
+  const TSessionInfo & SessionInfo = Terminal->GetSessionInfo();
+  const TSessionData * SessionData = Terminal->GetSessionData();
   UnicodeString Protocol = SessionInfo.ProtocolBaseName;
   UnicodeString HostName = SessionData->GetHostNameExpanded();
   UnicodeString UserName = SessionData->GetUserNameExpanded();

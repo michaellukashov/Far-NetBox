@@ -54,12 +54,12 @@ AnsiString::AnsiString(const UTF8String &Str) :
 {
 }
 
-AnsiString::AnsiString(const RawByteString &Str) :
+AnsiString::AnsiString(const RawByteString & Str) :
   Data(Str.c_str(), nb::ToInt(Str.Length()))
 {
 }
 
-char *AnsiString::SetLength(int32_t nLength)
+char * AnsiString::SetLength(int32_t nLength)
 {
   return Data.GetBufferSetLength(nb::ToInt(nLength));
 }
@@ -86,12 +86,12 @@ void AnsiString::Init(const char *Str, int32_t Length)
   Data = string_t(Str, nb::ToInt(Length));
 }
 
-void AnsiString::Init(const unsigned char *Str, int32_t Length)
+void AnsiString::Init(const unsigned char * Str, int32_t Length)
 {
   Data = string_t(reinterpret_cast<const char *>(Str), nb::ToInt(Length));
 }
 
-int32_t AnsiString::Pos(const AnsiString &Str) const
+int32_t AnsiString::Pos(const AnsiString & Str) const
 {
   return static_cast<int32_t>(Data.Find(Str.c_str())) + 1;
 }

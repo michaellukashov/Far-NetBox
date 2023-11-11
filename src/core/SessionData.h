@@ -558,7 +558,7 @@ public:
   void Load(THierarchicalStorage * Storage, bool PuttyImport);
   void ApplyRawSettings(TStrings * RawSettings, bool Unsafe);
   void ApplyRawSettings(THierarchicalStorage * Storage, bool Unsafe, bool RespectDisablePasswordStoring);
-  __removed void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode);
+  __removed void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
   void ImportFromOpenssh(TStrings * Lines);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = nullptr);
@@ -577,8 +577,8 @@ public:
   void CopyDataNoRecrypt(const TSessionData * SourceData);
   void CopyDirectoriesStateData(TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
-    TStoredSessionList * AStoredSessions, bool &DefaultsOnly,
-    UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString *MaskedUrl, int32_t Flags);
+    TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
+    UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl, int32_t Flags);
   TStrings * SaveToOptions(const TSessionData * Default, bool SaveName, bool PuttyExport);
   void ConfigureTunnel(int32_t PortNumber);
   void RollbackTunnel();
@@ -1131,7 +1131,7 @@ private:
   const TSessionData * GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData *Data, const UnicodeString & Name);
-  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode);
+  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
   void DoGetFolderOrWorkspace(const UnicodeString & Name, TList * List, bool NoRecrypt);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
@@ -1143,7 +1143,7 @@ NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString & HostName);
 NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString & IP);
 NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
 
-NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx);
+NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
 NB_CORE_EXPORT uint32_t GetCodePageAsNumber(const UnicodeString & CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
 

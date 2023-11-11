@@ -1450,7 +1450,7 @@ UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString &
   return Result;
 }
 
-int32_t TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString Name, int Default)
+int32_t TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default)
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
   int32_t Result;
@@ -2403,7 +2403,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       // this can be optimized as the list is sorted
       for (Integer Index = 0; Index < AStoredSessions->GetCountIncludingHidden(); ++Index)
       {
-        TSessionData *AData = AStoredSessions->GetAs<TSessionData>(Index);
+        TSessionData * AData = AStoredSessions->GetAs<TSessionData>(Index);
         if (!AData->GetIsWorkspace())
         {
           bool Match = false;
@@ -3186,7 +3186,7 @@ TCipher TSessionData::GetCipher(int32_t Index) const
 }
 
 template <class AlgoT>
-void TSessionData::SetAlgoList(AlgoT *List, const AlgoT *DefaultList, const UnicodeString *Names,
+void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
   int32_t Count, AlgoT WarnAlgo, const UnicodeString & AValue)
 {
   UnicodeString Value = AValue;
@@ -6511,7 +6511,7 @@ int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
   return Result;
 }
 
-bool GetCodePageInfo(UINT CodePage, CPINFOEX &CodePageInfoEx)
+bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
 {
   if (!GetCPInfoEx(CodePage, 0, &CodePageInfoEx))
   {

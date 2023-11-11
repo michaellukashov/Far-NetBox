@@ -656,7 +656,7 @@ struct callback_set * TSecureShell::GetCallbackSet()
   return FCallbackSet.get();
 }
 
-UnicodeString TSecureShell::ConvertFromPutty(const char *Str, int32_t Length) const
+UnicodeString TSecureShell::ConvertFromPutty(const char * Str, int32_t Length) const
 {
   int32_t BomLength = NBChTraitsCRT<char>::SafeStringLen(WINSCP_BOM);
   if ((Length >= BomLength) &&
@@ -1439,8 +1439,8 @@ void TSecureShell::SendLine(const UnicodeString & Line)
 }
 
 int32_t TSecureShell::TranslatePuttyMessage(
-  const TPuttyTranslation *Translation, int32_t Count, UnicodeString &Message,
-  UnicodeString *HelpKeyword) const
+  const TPuttyTranslation * Translation, int32_t Count, UnicodeString & Message,
+  UnicodeString * HelpKeyword) const
 {
   int Result = -1;
   for (int32_t Index = 0; Index < Count; ++Index)

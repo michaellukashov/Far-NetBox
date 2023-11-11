@@ -387,7 +387,7 @@ protected:
     FLog->RecordPendingActions();
   }
 
-  const wchar_t *ActionName() const
+  const wchar_t * ActionName() const
   {
     switch (FAction)
     {
@@ -417,7 +417,7 @@ protected:
   }
 
 #if 0
-  void RecordFile(const UnicodeString AIndent, TRemoteFile *AFile, bool IncludeFileName)
+  void RecordFile(const UnicodeString AIndent, TRemoteFile * AFile, bool IncludeFileName)
   {
     FLog->AddIndented(AIndent + L"<file>");
     FLog->AddIndented(AIndent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(AFile->FileName))));
@@ -724,7 +724,7 @@ TStatSessionAction::TStatSessionAction(TActionLog * Log, const UnicodeString & A
 {
 }
 
-void TStatSessionAction::File(TRemoteFile *AFile)
+void TStatSessionAction::File(TRemoteFile * AFile)
 {
   if (FRecord != nullptr)
   {
@@ -780,7 +780,7 @@ TFileSystemInfo::TFileSystemInfo() noexcept
 }
 
 
-static FILE *LocalOpenLogFile(const UnicodeString & LogFileName, TDateTime Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
+static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, TDateTime Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
 {
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
   FILE *Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
@@ -1759,7 +1759,7 @@ void TActionLog::OpenLogFile()
   }
 }
 
-void TActionLog::AddPendingAction(TSessionActionRecord *Action)
+void TActionLog::AddPendingAction(TSessionActionRecord * Action)
 {
   FPendingActions->Add(Action);
 }

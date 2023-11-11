@@ -314,7 +314,7 @@ UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * S
 const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
 const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
 
-TS3FileSystem::TS3FileSystem(TTerminal *ATerminal) noexcept :
+TS3FileSystem::TS3FileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TS3FileSystem, ATerminal),
   FActive(false),
   FResponseIgnore(false)
@@ -1948,7 +1948,7 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &D
   return Result;
 }
 
-int TS3FileSystem::PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDataCallbackData &Data)
+int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData &Data)
 {
   int Result;
 
@@ -1958,7 +1958,7 @@ int TS3FileSystem::PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDa
   }
   else
   {
-    TFileOperationProgressType *OperationProgress = Data.OperationProgress;
+    TFileOperationProgressType * OperationProgress = Data.OperationProgress;
     try
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,

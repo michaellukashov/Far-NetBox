@@ -90,7 +90,7 @@ UnicodeString StripPathQuotes(const UnicodeString & Path);
 NB_CORE_EXPORT UnicodeString AddQuotes(const UnicodeString & AStr);
 NB_CORE_EXPORT UnicodeString AddPathQuotes(const UnicodeString & APath);
 NB_CORE_EXPORT void SplitCommand(const UnicodeString & ACommand, UnicodeString & Program,
-  UnicodeString &Params, UnicodeString &Dir);
+  UnicodeString & Params, UnicodeString & Dir);
 NB_CORE_EXPORT UnicodeString ValidLocalFileName(const UnicodeString & AFileName);
 NB_CORE_EXPORT UnicodeString ValidLocalFileName(
   const UnicodeString & AFileName, wchar_t AInvalidCharsReplacement,
@@ -117,7 +117,7 @@ NB_CORE_EXPORT bool IsReservedName(const UnicodeString & AFileName);
 NB_CORE_EXPORT UnicodeString ApiPath(const UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString DisplayableStr(const RawByteString & Str);
 NB_CORE_EXPORT UnicodeString ByteToHex(uint8_t B, bool UpperCase = true);
-NB_CORE_EXPORT UnicodeString BytesToHex(const uint8_t *B, uint32_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
+NB_CORE_EXPORT UnicodeString BytesToHex(const uint8_t * B, uint32_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
 NB_CORE_EXPORT UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase = true, wchar_t Separator = L'\0');
 NB_CORE_EXPORT UnicodeString CharToHex(wchar_t Ch, bool UpperCase = true);
 NB_CORE_EXPORT RawByteString HexToBytes(const UnicodeString & Hex);
@@ -621,8 +621,8 @@ UnicodeString ExtractShortName(const UnicodeString & Path, bool Unix);
 NB_CORE_EXPORT UnicodeString UnixExtractFileExt(const UnicodeString & APath);
 NB_CORE_EXPORT Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2);
 NB_CORE_EXPORT bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild);
-NB_CORE_EXPORT bool ExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
-NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings *AFiles, UnicodeString &APath);
+NB_CORE_EXPORT bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath);
+NB_CORE_EXPORT bool UnixExtractCommonPath(const TStrings * AFiles, UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix = false);
 NB_CORE_EXPORT bool IsUnixRootPath(const UnicodeString & APath);
 NB_CORE_EXPORT bool IsUnixHiddenFile(const UnicodeString & AFileName);

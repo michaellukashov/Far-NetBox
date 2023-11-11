@@ -239,8 +239,8 @@ protected:
   virtual UnicodeString RemoteGetCurrentDirectory() const = 0;
 
   UnicodeString CreateTargetDirectory(
-    IN UnicodeString AFileName,
-    IN UnicodeString ADirectory,
-    IN const TCopyParamType *CopyParam);
+    IN const UnicodeString & AFileName,
+    IN const UnicodeString & ADirectory,
+    IN const TCopyParamType * CopyParam);
 };
 

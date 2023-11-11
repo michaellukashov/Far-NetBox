@@ -105,7 +105,7 @@ public:
 public:
   TBookmark() noexcept;
 
-  virtual void Assign(const TPersistent *Source) override;
+  virtual void Assign(const TPersistent * Source) override;
 
   UnicodeString GetSideDirectory(TOperationSide Side) const;
 

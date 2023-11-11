@@ -6,14 +6,14 @@
 #include <SysInit.hpp>
 #include <System.hpp>
 
-NB_CORE_EXPORT bool ShouldDisplayException(Exception *E);
-NB_CORE_EXPORT bool ExceptionMessage(const Exception *E, UnicodeString &Message);
-NB_CORE_EXPORT bool ExceptionMessageFormatted(const Exception *E, UnicodeString &Message);
-NB_CORE_EXPORT bool ExceptionFullMessage(Exception *E, UnicodeString &Message);
+NB_CORE_EXPORT bool ShouldDisplayException(Exception * E);
+NB_CORE_EXPORT bool ExceptionMessage(const Exception * E, UnicodeString & Message);
+NB_CORE_EXPORT bool ExceptionMessageFormatted(const Exception * E, UnicodeString & Message);
+NB_CORE_EXPORT bool ExceptionFullMessage(Exception * E, UnicodeString & Message);
 NB_CORE_EXPORT UnicodeString SysErrorMessageForError(int32_t LastError);
 NB_CORE_EXPORT UnicodeString LastSysErrorMessage();
-NB_CORE_EXPORT TStrings * ExceptionToMoreMessages(Exception *E);
-NB_CORE_EXPORT bool IsInternalException(const Exception *E);
+NB_CORE_EXPORT TStrings * ExceptionToMoreMessages(Exception * E);
+NB_CORE_EXPORT bool IsInternalException(const Exception * E);
 
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoSuspend, odoShutDown };
 

@@ -851,7 +851,7 @@ const TRemoteToken *TRemoteTokenList::Token(int32_t Index) const
 }
 
 
-TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile) noexcept :
+TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) noexcept :
   TPersistent(Kind),
   FModificationFmt(mfFull),
   FLinkedByFile(ALinkedByFile),
@@ -862,7 +862,7 @@ TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile) noexce
   FLinkedByFile = ALinkedByFile;
 }
 
-TRemoteFile::TRemoteFile(TRemoteFile *ALinkedByFile) noexcept :
+TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) noexcept :
   TPersistent(OBJECT_CLASS_TRemoteFile)
 {
   Init();
@@ -1678,7 +1678,7 @@ void TRemoteDirectoryFile::Init()
 }
 
 
-TRemoteParentDirectory::TRemoteParentDirectory(TTerminal *ATerminal) noexcept :
+TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) noexcept :
   TRemoteDirectoryFile(OBJECT_CLASS_TRemoteParentDirectory)
 {
   SetFileName(PARENTDIRECTORY);
@@ -1700,7 +1700,7 @@ TRemoteFileList::TRemoteFileList(TObjectClassId Kind) noexcept :
   SetOwnsObjects(true);
 }
 
-void TRemoteFileList::AddFile(TRemoteFile *AFile)
+void TRemoteFileList::AddFile(TRemoteFile * AFile)
 {
   if (AFile)
   {
@@ -1796,7 +1796,7 @@ TRemoteFile *TRemoteFileList::FindFile(const UnicodeString & AFileName) const
   return nullptr;
 }
 //=== TRemoteDirectory ------------------------------------------------------
-TRemoteDirectory::TRemoteDirectory(TTerminal *ATerminal, TRemoteDirectory *Template) noexcept :
+TRemoteDirectory::TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template) noexcept :
   TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
   FTerminal(ATerminal)
 {
@@ -1840,7 +1840,7 @@ void TRemoteDirectory::SetDirectory(const UnicodeString & Value)
   TRemoteFileList::SetDirectory(Value);
 }
 
-void TRemoteDirectory::AddFile(TRemoteFile *AFile)
+void TRemoteDirectory::AddFile(TRemoteFile * AFile)
 {
   if (AFile->GetIsThisDirectory())
   {
@@ -2916,7 +2916,7 @@ bool TRemoteProperties::operator!=(const TRemoteProperties &rhp) const
   return !(*this == rhp);
 }
 
-TRemoteProperties TRemoteProperties::CommonProperties(TStrings *AFileList)
+TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
 {
   TODO("Modification and LastAccess");
   TRemoteProperties CommonProperties;

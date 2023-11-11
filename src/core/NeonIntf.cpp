@@ -213,10 +213,10 @@ void CheckNeonStatus(ne_session * Session, int32_t NeonStatus,
   }
 }
 
-UnicodeString GetNeonRedirectUrl(ne_session *Session)
+UnicodeString GetNeonRedirectUrl(ne_session * Session)
 {
-  const ne_uri *RedirectUri = ne_redirect_location(Session);
-  char *RedirectUriStr = ne_uri_unparse(RedirectUri);
+  const ne_uri * RedirectUri = ne_redirect_location(Session);
+  char * RedirectUriStr = ne_uri_unparse(RedirectUri);
   UnicodeString Result = StrFromNeon(RedirectUriStr);
   ne_free(RedirectUriStr);
   return Result;
@@ -305,7 +305,7 @@ bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert
   // We can accept only unknown certificate authority.
   if (FLAGSET(Failures, NE_SSL_UNTRUSTED))
   {
-    unsigned char *Certificate = nullptr;
+    unsigned char * Certificate = nullptr;
     size_t CertificateLen = ne_unbase64(AsciiCert.c_str(), &Certificate);
 
     if (CertificateLen > 0)
@@ -526,7 +526,7 @@ void RetrieveNeonCertificateData(
   Data.ValidUntil = UnixToDateTime(ValidUntil, dstmWin);
 }
 
-UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data)
+UnicodeString CertificateVerificationMessage(const TNeonCertificateData & Data)
 {
   return
     FORMAT("Verifying certificate for \"%s\" with fingerprint %s and %2.2X failures",

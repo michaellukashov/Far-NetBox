@@ -80,10 +80,10 @@ NB_CORE_EXPORT void CleanupTracing();
 NB_CORE_EXPORT extern bool IsTracing;
 NB_CORE_EXPORT extern const uint32_t CallstackTlsOff;
 NB_CORE_EXPORT extern uint32_t CallstackTls;
-extern "C" NB_CORE_EXPORT void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
-  uint32_t Line, const wchar_t *Message);
-NB_CORE_EXPORT void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
-  uint32_t Line, const wchar_t *AFormat, fmt::ArgList args);
+extern "C" NB_CORE_EXPORT void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
+  uint32_t Line, const wchar_t * Message);
+NB_CORE_EXPORT void DoTraceFmt(const wchar_t * SourceFile, const wchar_t *Func,
+  uint32_t Line, const wchar_t * AFormat, fmt::ArgList args);
 FMT_VARIADIC_W(void, DoTraceFmt, const wchar_t *, const wchar_t *, uint32_t, const wchar_t *)
 
 #ifdef TRACE_IN_MEMORY

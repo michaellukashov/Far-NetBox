@@ -160,8 +160,8 @@ protected:
   void FindLinkedFile();
 
 public:
-  explicit TRemoteFile(TRemoteFile *ALinkedByFile = nullptr) noexcept;
-  explicit TRemoteFile(TObjectClassId Kind, TRemoteFile *ALinkedByFile = nullptr) noexcept;
+  explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr) noexcept;
+  explicit TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile = nullptr) noexcept;
   virtual ~TRemoteFile() noexcept;
   TRemoteFile *Duplicate(bool Standalone = true) const;
 
@@ -286,7 +286,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteParentDirectory) || TRemoteDirectoryFile::is(Kind); }
 public:
   TRemoteParentDirectory() = delete;
-  explicit TRemoteParentDirectory(TTerminal *ATerminal) noexcept;
+  explicit TRemoteParentDirectory(TTerminal * ATerminal) noexcept;
   virtual ~TRemoteParentDirectory() = default;
 };
 
@@ -327,7 +327,7 @@ public:
 
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
-  __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
+//  __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
   ROIndexedProperty<TRemoteFile *> Files{nb::bind(&TRemoteFileList::GetFile, this)};
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
   ROProperty<UnicodeString> FullDirectory{nb::bind(&TRemoteFileList::GetFullDirectory, this)};

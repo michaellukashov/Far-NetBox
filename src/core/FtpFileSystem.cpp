@@ -255,11 +255,9 @@ private:
   bool FIgnoreFileList{false};
 };
 
-TFTPFileSystem::TFTPFileSystem(TTerminal *ATerminal) noexcept :
+TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TFTPFileSystem, ATerminal),
   FFileZillaIntf(nullptr),
-  __removed FQueueCriticalSection(new TCriticalSection),
-  __removed FTransferStatusCriticalSection(new TCriticalSection),
   FQueue(std::make_unique<TMessageQueue>()),
   FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FFileSystemInfoValid(false),
@@ -1194,7 +1192,7 @@ bool TFTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
   return false;
 }
 
-UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg, TRemoteFile * File)
+UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg, TRemoteFile * AFile)
 {
   // Overview of server supporting various hash commands is at:
   // https://datatracker.ietf.org/doc/html/draft-bryan-ftpext-hash-02#appendix-B
@@ -1220,7 +1218,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg,
     }
   }
 
-  UnicodeString FileName = File->GetFullFileName();
+  UnicodeString FileName = AFile->GetFullFileName();
   // FTP way is not to quote.
   // But as Serv-U, GlobalSCAPE and possibly others allow
   // additional parameters (SP ER range), they need to quote file name.
@@ -1860,7 +1858,7 @@ void TFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
 }
 
 void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
-  const TRemoteFile * AFile, int32_t Params, TRmSessionAction &Action)
+  const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action)
 {
   UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
@@ -1902,8 +1900,8 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   }
 }
 
-void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*FileName*/,
-  const TRemoteFile * /*File*/, const UnicodeString & /*Command*/, int32_t /*Params*/,
+void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
+  const TRemoteFile * /*AFile*/, const UnicodeString & /*ACommand*/, int32_t /*AParams*/,
   TCaptureOutputEvent /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
@@ -2133,7 +2131,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   }
 }
 
-void TFTPFileSystem::DoReadDirectory(TRemoteFileList *AFileList)
+void TFTPFileSystem::DoReadDirectory(TRemoteFileList * AFileList)
 {
   UnicodeString Directory;
   if (!EnsureLocationWhenWorkFromCwd(AFileList->Directory()))
@@ -2210,12 +2208,12 @@ void TFTPFileSystem::ApplyTimeDifference(
 }
 
 bool TFTPFileSystem::LookupUploadModificationTime(
-  const UnicodeString FileName, TDateTime &Modification, TModificationFmt ModificationFmt)
+  const UnicodeString & AFileName, TDateTime & Modification, TModificationFmt ModificationFmt)
 {
   bool Result = false;
   if (ModificationFmt != mfFull)
   {
-    UnicodeString AbsPath = GetAbsolutePath(FileName, false);
+    UnicodeString AbsPath = GetAbsolutePath(AFileName, false);
     TUploadedTimes::iterator Iterator = FUploadedTimes.find(AbsPath);
     if (Iterator != FUploadedTimes.end())
     {
@@ -2227,7 +2225,7 @@ bool TFTPFileSystem::LookupUploadModificationTime(
         {
           FTerminal->LogEvent(
             FORMAT("Enriching modification time of \"%s\" from [%s] to [%s]",
-                   FileName, StandardTimestamp(Modification), StandardTimestamp(UploadModification)));
+                   AFileName, StandardTimestamp(Modification), StandardTimestamp(UploadModification)));
         }
         Modification = UploadModification;
         Result = true;
@@ -2238,7 +2236,7 @@ bool TFTPFileSystem::LookupUploadModificationTime(
         {
           FTerminal->LogEvent(
             FORMAT("Remembered modification time [%s]/[%s] of \"%s\" is obsolete, keeping [%s]",
-                   StandardTimestamp(UploadModification), StandardTimestamp(UploadModificationReduced), FileName, StandardTimestamp(Modification)));
+                   StandardTimestamp(UploadModification), StandardTimestamp(UploadModificationReduced), AFileName, StandardTimestamp(Modification)));
         }
         FUploadedTimes.erase(AbsPath);
       }
@@ -3776,7 +3774,7 @@ void TFTPFileSystem::HandleFeatReply()
   }
 }
 
-bool TFTPFileSystem::HandleStatus(const wchar_t *AStatus, int Type)
+bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
 {
   TLogLineType LogType = static_cast<TLogLineType>(-1);
   UnicodeString Status(AStatus);
@@ -3915,12 +3913,12 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 }
 
 bool TFTPFileSystem::HandleAsyncRequestOverwrite(
-  wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
-  const wchar_t *Path1, const wchar_t *Path2,
+  wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
+  const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool /*HasLocalTime*/, const TRemoteFileTime &RemoteTime, void *AUserData,
-  HANDLE &ALocalFileHandle,
-  int &RequestResult)
+  bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
+  HANDLE & ALocalFileHandle,
+  int & RequestResult)
 {
   if (!FActive)
   {
@@ -4058,7 +4056,7 @@ static UnicodeString FormatContactList(const UnicodeString & Entry1, const Unico
   return Entry1 + Entry2;
 }
 
-UnicodeString FormatContact(const TFtpsCertificateData::TContact &Contact)
+UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
 {
   UnicodeString Result =
     FORMAT(LoadStrPart(VERIFY_CERT_CONTACT, 1),
@@ -4083,7 +4081,7 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact &Contact)
   return Result;
 }
 
-UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime &ValidityTime)
+UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
 {
 #if 0
   return FormatDateTime(L"ddddd tt",
@@ -4141,7 +4139,7 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
   return Result;
 }
 
-bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData &Data)
+bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data)
 {
   UnicodeString HostName = FTerminal->GetSessionData()->GetHostNameExpanded();
 
@@ -4773,7 +4771,7 @@ void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void *UserData) co
   FTerminal->UpdateTargetTime(AHandle, Data->Modification, dstmUnix);
 }
 
-bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t *AFileName, struct tm &Time)
+bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * AFileName, struct tm & Time)
 {
   bool Result;
   try
@@ -4832,7 +4830,7 @@ void TFTPFileSystem::RegisterChecksumAlgCommand(const UnicodeString & Alg, const
   FChecksumCommands->Add(Command);
 }
 
-void TFTPFileSystem::GetSupportedChecksumAlgs(TStrings *Algs)
+void TFTPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
 {
   for (int32_t Index = 0; Index < FHashAlgs->GetCount(); Index++)
   {

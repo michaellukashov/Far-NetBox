@@ -228,8 +228,8 @@ UnicodeString TFileMasks::ComposeMaskStr(
 }
 
 UnicodeString TFileMasks::ComposeMaskStr(
-  TStrings *IncludeFileMasksStr, TStrings *ExcludeFileMasksStr,
-  TStrings *IncludeDirectoryMasksStr, TStrings *ExcludeDirectoryMasksStr)
+  TStrings * IncludeFileMasksStr, TStrings * ExcludeFileMasksStr,
+  TStrings * IncludeDirectoryMasksStr, TStrings * ExcludeDirectoryMasksStr)
 {
   UnicodeString IncludeMasks = ComposeMaskStr(IncludeFileMasksStr, false);
   AddToList(IncludeMasks, ComposeMaskStr(IncludeDirectoryMasksStr, true), FileMasksDelimiterStr);
@@ -1044,7 +1044,7 @@ void TCustomCommand::Validate(const UnicodeString & Command)
 }
 
 void TCustomCommand::CustomValidate(const UnicodeString & Command,
-  void *Arg)
+  void * Arg)
 {
   int32_t Index = 1;
 
@@ -1405,7 +1405,7 @@ void TFileCustomCommand::Validate(const UnicodeString & Command)
 }
 
 void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
-  int32_t Index, int32_t /*Len*/, wchar_t PatternCmd, void *Arg)
+  int32_t Index, int32_t /*Len*/, wchar_t PatternCmd, void * Arg)
 {
   int32_t *Found = static_cast<int32_t *>(Arg);
 

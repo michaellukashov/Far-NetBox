@@ -17,7 +17,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSCPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   TSCPFileSystem() = delete;
-  explicit TSCPFileSystem(TTerminal *ATerminal) noexcept;
+  explicit TSCPFileSystem(TTerminal * ATerminal) noexcept;
   virtual ~TSCPFileSystem() noexcept;
 
   void Init(void * /*TSecureShell * */) override;
@@ -43,14 +43,14 @@ public:
   virtual void CalculateFilesChecksum(
     const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
-  virtual void CopyToLocal(TStrings *AFilesToCopy,
+  virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * ACopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation) override;
-  virtual void CopyToRemote(TStrings *AFilesToCopy,
-    const UnicodeString & ATargetDir, const TCopyParamType *CopyParam,
+    TOnceDoneOperation & OnceDoneOperation) override;
+  virtual void CopyToRemote(TStrings * AFilesToCopy,
+    const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
-    TOnceDoneOperation &OnceDoneOperation) override;
+    TOnceDoneOperation & OnceDoneOperation) override;
   virtual void Source(
     TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
     const TCopyParamType * CopyParam, int32_t AParams,
@@ -89,7 +89,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
-  virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs) override;
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
@@ -103,7 +103,7 @@ protected:
 
   TStrings *GetOutput() const { return FOutput.get(); }
   int32_t GetReturnCode() const { return FReturnCode; }
-  UnicodeString InitOptionsStr(const TCopyParamType *CopyParam) const;
+  UnicodeString InitOptionsStr(const TCopyParamType * CopyParam) const;
 
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 

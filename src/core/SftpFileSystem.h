@@ -58,16 +58,16 @@ public:
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const TRemoteProperties * AProperties,
     TChmodSessionAction & Action) override;
-  virtual bool LoadFilesProperties(TStrings *AFileList) override;
+  virtual bool LoadFilesProperties(TStrings * AFileList) override;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg);
   virtual void CalculateFilesChecksum(
-    const UnicodeString & Alg, TStrings *AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
-  virtual void CopyToLocal(TStrings *AFilesToCopy,
+  virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
-  virtual void CopyToRemote(TStrings *AFilesToCopy,
+  virtual void CopyToRemote(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * ACopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
@@ -86,7 +86,7 @@ public:
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
-    const TRemoteFile *AFile, int32_t Params, TRmSessionAction &Action) override;
+    const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action) override;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
@@ -112,7 +112,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
-  virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs) override;
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
@@ -174,12 +174,12 @@ protected:
     SSH_FX_TYPE AllowStatus = -1, bool TryOnly = false);
   bool PeekPacket();
   void RemoveReservation(int32_t Reservation);
-  void SendPacket(const TSFTPPacket *Packet);
-  SSH_FX_TYPE ReceiveResponse(const TSFTPPacket *Packet,
-    TSFTPPacket *AResponse, SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1, bool TryOnly = false);
-  SSH_FX_TYPE SendPacketAndReceiveResponse(const TSFTPPacket *Packet,
-    TSFTPPacket *Response, SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1);
-  void UnreserveResponse(TSFTPPacket *Response);
+  void SendPacket(const TSFTPPacket * Packet);
+  SSH_FX_TYPE ReceiveResponse(const TSFTPPacket * Packet,
+    TSFTPPacket * AResponse, SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1, bool TryOnly = false);
+  SSH_FX_TYPE SendPacketAndReceiveResponse(const TSFTPPacket * Packet,
+    TSFTPPacket * Response, SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1);
+  void UnreserveResponse(TSFTPPacket * Response);
   void LogPacket(const TSFTPPacket * Packet, TLogLineType Type);
   void TryOpenDirectory(const UnicodeString & ADirectory);
   bool SupportsExtension(const UnicodeString & AExtension) const;

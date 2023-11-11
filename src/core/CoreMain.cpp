@@ -70,7 +70,7 @@ TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
   return Result;
 }
 
-TQueryParams::TQueryParams(uint32_t AParams, const UnicodeString AHelpKeyword) noexcept :
+TQueryParams::TQueryParams(uint32_t AParams, const UnicodeString & AHelpKeyword) noexcept :
   Aliases(nullptr),
   AliasesCount(0),
   Params(AParams),
@@ -87,14 +87,14 @@ TQueryParams::TQueryParams(uint32_t AParams, const UnicodeString AHelpKeyword) n
   TimeoutResponse = 0;
 }
 
-TQueryParams::TQueryParams(const TQueryParams & Source) noexcept
+TQueryParams::TQueryParams(const TQueryParams & ASource) noexcept
 {
-  Assign(Source);
+  Assign(ASource);
 }
 
-void TQueryParams::Assign(const TQueryParams & Source)
+void TQueryParams::Assign(const TQueryParams & ASource)
 {
-  *this = Source;
+  *this = ASource;
 }
 
 TQueryParams &TQueryParams::operator=(const TQueryParams &other)

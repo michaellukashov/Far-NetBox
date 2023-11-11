@@ -79,8 +79,8 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamRule) || TObject::is(Kind); }
 public:
   explicit TCopyParamRule() noexcept;
-  explicit TCopyParamRule(const TCopyParamRuleData &Data) noexcept;
-  explicit TCopyParamRule(const TCopyParamRule &Source) noexcept;
+  explicit TCopyParamRule(const TCopyParamRuleData & Data) noexcept;
+  explicit TCopyParamRule(const TCopyParamRule & Source) noexcept;
 
   bool Matches(const TCopyParamRuleData & Value) const;
   void Load(THierarchicalStorage * Storage);
@@ -166,7 +166,7 @@ public:
   const TCopyParamRule * GetRule(int32_t Index) const;
   const TCopyParamType * GetCopyParam(int32_t Index) const;
   UnicodeString GetName(int32_t Index) const;
-  TStrings *GetNameList() const;
+  TStrings * GetNameList() const;
   bool GetAnyRule() const;
 
   bool GetModified() const { return FModified; }

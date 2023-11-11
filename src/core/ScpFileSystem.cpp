@@ -84,7 +84,7 @@ public:
 
 public:
   TCommandSet() = delete;
-  explicit TCommandSet(TSessionData *ASessionData);
+  explicit TCommandSet(TSessionData * ASessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
   __removed UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int size);
@@ -98,14 +98,14 @@ public:
 
   __removed UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int size);
   static UnicodeString ExtractCommand(const UnicodeString & ACommand);
-  __property int MaxLines[TFSCommand Cmd]  = { read = GetMaxLines};
-  __property int MinLines[TFSCommand Cmd]  = { read = GetMinLines };
-  __property bool ModifiesFiles[TFSCommand Cmd]  = { read = GetModifiesFiles };
-  __property bool ChangesDirectory[TFSCommand Cmd]  = { read = GetChangesDirectory };
-  __property bool OneLineCommand[TFSCommand Cmd]  = { read = GetOneLineCommand };
-  __property UnicodeString Commands[TFSCommand Cmd]  = { read = GetCommands, write = SetCommands };
-  __property UnicodeString FirstLine = { read = GetFirstLine };
-  __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
+//  __property int MaxLines[TFSCommand Cmd]  = { read = GetMaxLines};
+//  __property int MinLines[TFSCommand Cmd]  = { read = GetMinLines };
+//  __property bool ModifiesFiles[TFSCommand Cmd]  = { read = GetModifiesFiles };
+//  __property bool ChangesDirectory[TFSCommand Cmd]  = { read = GetChangesDirectory };
+//  __property bool OneLineCommand[TFSCommand Cmd]  = { read = GetOneLineCommand };
+//  __property UnicodeString Commands[TFSCommand Cmd]  = { read = GetCommands, write = SetCommands };
+//  __property UnicodeString FirstLine = { read = GetFirstLine };
+//  __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
   __property UnicodeString LastLine  = { read = GetLastLine };
   __property TSessionData *SessionData  = { read = FSessionData, write = FSessionData };
   __property UnicodeString ReturnVar  = { read = GetReturnVar, write = FReturnVar };
@@ -157,7 +157,7 @@ const TCommandType DefaultCommandSet[ShellCommandCount] =
 #undef F
 #undef T
 
-TCommandSet::TCommandSet(TSessionData *ASessionData) :
+TCommandSet::TCommandSet(TSessionData * ASessionData) :
   FSessionData(ASessionData),
   FReturnVar(L"")
 {
@@ -316,7 +316,7 @@ TStrings * TCommandSet::CreateCommandList() const
   return CommandList.release();
 }
 //===========================================================================
-TSCPFileSystem::TSCPFileSystem(TTerminal *ATerminal) noexcept :
+TSCPFileSystem::TSCPFileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TSCPFileSystem, ATerminal)
 {
 }
@@ -1791,7 +1791,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
       !OperationProgress->GetCancel(); ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile *File1 = AFilesToCopy->GetAs<TRemoteFile>(IFile);
+      TRemoteFile * File1 = AFilesToCopy->GetAs<TRemoteFile>(IFile);
       UnicodeString RealFileName = File1 ? File1->GetFileName() : FileName;
       bool CanProceed = false;
 
@@ -2384,7 +2384,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
       !OperationProgress->GetCancel(); ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile *File = AFilesToCopy->GetAs<TRemoteFile>(IFile);
+      TRemoteFile * File = AFilesToCopy->GetAs<TRemoteFile>(IFile);
       DebugAssert(File);
 
       try
@@ -2982,7 +2982,7 @@ void TSCPFileSystem::ClearCaches()
   // noop
 }
 
-UnicodeString TSCPFileSystem::InitOptionsStr(const TCopyParamType *CopyParam) const
+UnicodeString TSCPFileSystem::InitOptionsStr(const TCopyParamType * CopyParam) const
 {
   UnicodeString Options;
   if (CopyParam->GetPreserveRights() || CopyParam->GetPreserveTime())

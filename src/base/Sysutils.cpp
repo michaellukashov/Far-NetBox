@@ -11,13 +11,13 @@
 #include <Sysutils.hpp>
 #include <nbutils.h>
 
-UnicodeString MB2W(const char *src, const UINT cp)
+UnicodeString MB2W(const char * src, const UINT cp)
 {
   UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
   return Result;
 }
 
-AnsiString W2MB(const wchar_t *src, const UINT cp)
+AnsiString W2MB(const wchar_t * src, const UINT cp)
 {
   AnsiString Result(src, NBChTraitsCRT<wchar_t>::SafeStringLen(src), cp);
   return Result;
@@ -830,7 +830,7 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
   return Result;
 }
 
-UnicodeString TranslateExceptionMessage(Exception *E)
+UnicodeString TranslateExceptionMessage(Exception * E)
 {
   if (E)
   {

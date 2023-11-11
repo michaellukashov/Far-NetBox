@@ -125,12 +125,12 @@ __removed enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
 //  TQueryParams() noexcept = delete;
-  explicit TQueryParams(uint32_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE) noexcept;
-  explicit TQueryParams(const TQueryParams & Source) noexcept;
+  explicit TQueryParams(uint32_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE) noexcept;
+  explicit TQueryParams(const TQueryParams & ASource) noexcept;
 
   void Assign(const TQueryParams & Source);
 
-  const TQueryButtonAlias *Aliases{nullptr};
+  const TQueryButtonAlias * Aliases{nullptr};
   uint32_t AliasesCount{0};
   uint32_t Params{0};
   uint32_t Timer{0};

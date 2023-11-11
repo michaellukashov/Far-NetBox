@@ -9,7 +9,7 @@
 
 __removed #pragma package(smart_init)
 
-TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal *ATerminal) noexcept :
+TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept :
   TObject(Kind),
   FTerminal(ATerminal)
 {
@@ -24,8 +24,8 @@ TCustomFileSystem::~TCustomFileSystem() noexcept
 }
 
 UnicodeString TCustomFileSystem::CreateTargetDirectory(
-  IN UnicodeString AFileName,
-  IN UnicodeString ADirectory,
+  IN const UnicodeString & AFileName,
+  IN const UnicodeString & ADirectory,
   IN const TCopyParamType *CopyParam)
 {
   UnicodeString Result = ADirectory;

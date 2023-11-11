@@ -171,7 +171,7 @@ protected:
   bool FindPattern(const UnicodeString & Command, wchar_t PatternCmd) const;
 
   virtual void ValidatePattern(const UnicodeString & Command,
-    int32_t Index, int32_t Len, wchar_t PatternCmd, void *Arg);
+    int32_t Index, int32_t Len, wchar_t PatternCmd, void * Arg);
 
   virtual int32_t PatternLen(const UnicodeString & Command, int32_t Index) const = 0;
   virtual void PatternHint(int32_t Index, const UnicodeString & Pattern);

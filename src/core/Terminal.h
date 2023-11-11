@@ -501,8 +501,8 @@ protected:
     TTransferSessionAction & Action);
   void LogTotalTransferDetails(
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-    TFileOperationProgressType * OperationProgress, bool Parallel, TStrings *AFiles);
-  void LogTotalTransferDone(TFileOperationProgressType *OperationProgress);
+    TFileOperationProgressType * OperationProgress, bool Parallel, TStrings * AFiles);
+  void LogTotalTransferDone(TFileOperationProgressType * OperationProgress);
   virtual TTerminal * GetPrimaryTerminal();
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
@@ -593,7 +593,7 @@ protected:
 
 public:
   explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal) noexcept;
-  void Init(TSessionData *ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog = nullptr);
+  void Init(TSessionData * ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog = nullptr);
   virtual ~TTerminal() noexcept;
   void Open();
   void Close();
@@ -776,14 +776,14 @@ public:
   __property TNotifyEvent OnClose = { read = FOnClose, write = FOnClose };
   __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 
-  bool IsThisOrChild(TTerminal *Terminal) const;
+  bool IsThisOrChild(TTerminal * ATerminal) const;
   bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
   void SetMasks(const UnicodeString & Value);
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
-    const TDateTime &Modification);
+    const TDateTime & Modification);
   void SetLocalFileTime(const UnicodeString & LocalFileName,
-    FILETIME *AcTime, FILETIME *WrTime);
+    FILETIME * AcTime, FILETIME * WrTime);
   DWORD GetLocalFileAttributes(const UnicodeString & LocalFileName) const;
   bool SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
   bool MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);
@@ -868,7 +868,7 @@ private:
   void InternalDoTryOpen();
   void InitFileSystem();
 
-  void AfterMoveFiles(TStrings *AFileList);
+  void AfterMoveFiles(TStrings * AFileList);
 };
 
 NB_DEFINE_CLASS_ID(TSecondaryTerminal);
@@ -908,7 +908,7 @@ class NB_CORE_EXPORT TTerminalList : public TObjectList
 {
   NB_DISABLE_COPY(TTerminalList)
 public:
-  explicit TTerminalList(TConfiguration *AConfiguration) noexcept;
+  explicit TTerminalList(TConfiguration * AConfiguration) noexcept;
   virtual ~TTerminalList() noexcept;
 
   virtual TTerminal * NewTerminal(TSessionData *Data);
@@ -919,7 +919,7 @@ public:
   __property TTerminal *Terminals[int Index]  = { read = GetTerminal };
 
 protected:
-  virtual TTerminal * CreateTerminal(TSessionData *Data);
+  virtual TTerminal * CreateTerminal(TSessionData * Data);
 
 private:
   TConfiguration *FConfiguration{nullptr};
@@ -948,7 +948,7 @@ struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
   int32_t Files{0};
   int32_t Directories{0};
   int32_t SymLinks{0};
-  TStrings *FoundFiles{nullptr};
+  TStrings * FoundFiles{nullptr};
   TCalculatedSizes * CalculatedSizes{nullptr};
 };
 
@@ -1112,10 +1112,10 @@ public:
   const bool& IsParallelFileTransfer{FIsParallelFileTransfer};
 
   TOperationSide GetSide() const { return FSide; }
-  const TCopyParamType *GetCopyParam() const { return FCopyParam; }
+  const TCopyParamType * GetCopyParam() const { return FCopyParam; }
   int32_t GetParams() const { return FParams; }
   UnicodeString GetTargetDir() const { return FTargetDir; }
-  TFileOperationProgressType *GetMainOperationProgress() const { return FMainOperationProgress; }
+  TFileOperationProgressType * GetMainOperationProgress() const { return FMainOperationProgress; }
   UnicodeString GetMainName() const { return FMainName; }
 
 private:
@@ -1144,9 +1144,9 @@ private:
   bool FIsParallelFileTransfer{false};
   int64_t FParallelFileSize{0};
   int64_t FParallelFileOffset{0};
-  int FParallelFileCount{0};
+  int32_t FParallelFileCount{0};
   UnicodeString FParallelFileTargetName;
-  typedef std::vector<int64_t> TParallelFileOffsets;
+  using TParallelFileOffsets = std::vector<int64_t> ;
   TParallelFileOffsets FParallelFileOffsets;
   rde::vector<bool> FParallelFileDones;
   bool FParallelFileMerging{false};
@@ -1182,7 +1182,7 @@ public:
   TSearchRecSmart SearchRec;
 };
 
-NB_CORE_EXPORT UnicodeString GetSessionUrl(const TTerminal *Terminal, bool WithUserName = false);
+NB_CORE_EXPORT UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName = false);
 
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated

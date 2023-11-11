@@ -225,14 +225,14 @@ public:
   int32_t Length() const { return Data.GetLength(); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  char *SetLength(int32_t nLength);
+  char * SetLength(int32_t nLength);
   inline AnsiString &Delete(int32_t Index, int32_t Count);
-  AnsiString &Clear();
-  AnsiString &Insert(const char *Str, int32_t Pos);
+  AnsiString & Clear();
+  AnsiString & Insert(const char * Str, int32_t Pos);
   AnsiString SubString(int32_t Pos) const;
   AnsiString SubString(int32_t Pos, int32_t Len) const;
 
-  int32_t Pos(const AnsiString &Str) const;
+  int32_t Pos(const AnsiString & Str) const;
   int32_t Pos(char Ch) const;
 
   char operator[](int32_t Idx) const;

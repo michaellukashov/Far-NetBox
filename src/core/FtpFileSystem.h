@@ -28,7 +28,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   TFTPFileSystem() = delete;
-  explicit TFTPFileSystem(TTerminal *ATerminal) noexcept;
+  explicit TFTPFileSystem(TTerminal * ATerminal) noexcept;
   virtual ~TFTPFileSystem() noexcept;
   void Init(void *) override;
 
@@ -45,9 +45,9 @@ public:
   virtual void CachedChangeDirectory(const UnicodeString & ADirectory) override;
   virtual void AnnounceFileListOperation() override;
   virtual void ChangeFileProperties(const UnicodeString & AFileName,
-    const TRemoteFile *AFile, const TRemoteProperties *Properties,
-    TChmodSessionAction &Action) override;
-  virtual bool LoadFilesProperties(TStrings *AFileList) override;
+    const TRemoteFile * AFile, const TRemoteProperties * Properties,
+    TChmodSessionAction & Action) override;
+  virtual bool LoadFilesProperties(TStrings * AFileList) override;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg) override;
   void CalculateFilesChecksum(
     const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
@@ -77,7 +77,7 @@ public:
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action) override;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile *AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
+    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(int32_t Capability) const override;
@@ -100,7 +100,7 @@ public:
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
   virtual UnicodeString RemoteGetUserName() const override;
-  virtual void GetSupportedChecksumAlgs(TStrings *Algs) override;
+  virtual void GetSupportedChecksumAlgs(TStrings * Algs) override;
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
@@ -161,7 +161,7 @@ protected:
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(int32_t ReturnCode, const wchar_t * Context);
   void PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const;
-  bool GetFileModificationTimeInUtc(const wchar_t * AFileName, struct tm &Time);
+  bool GetFileModificationTimeInUtc(const wchar_t * AFileName, struct tm & Time);
   void EnsureLocation(const UnicodeString & ADirectory, bool Log);
   void EnsureLocation();
   bool EnsureLocationWhenWorkFromCwd(const UnicodeString & Directory);

@@ -1814,13 +1814,13 @@ class TOptionsIniFile : public TCustomIniFile
 public:
   TOptionsIniFile(TStrings * Options, TWriteMode WriteMode, const UnicodeString & RootKey);
 
-  virtual UnicodeString ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default);
-  virtual void WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value);
-  virtual void ReadSection(const UnicodeString Section, TStrings * Strings);
-  virtual void ReadSections(TStrings* Strings);
-  virtual void ReadSectionValues(const UnicodeString Section, TStrings* Strings);
-  virtual void EraseSection(const UnicodeString Section);
-  virtual void DeleteKey(const UnicodeString Section, const UnicodeString Ident);
+  virtual UnicodeString ReadString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Default);
+  virtual void WriteString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Value);
+  virtual void ReadSection(const UnicodeString & Section, TStrings * Strings);
+  virtual void ReadSections(TStrings * Strings);
+  virtual void ReadSectionValues(const UnicodeString & Section, TStrings* Strings);
+  virtual void EraseSection(const UnicodeString & Section);
+  virtual void DeleteKey(const UnicodeString & Section, const UnicodeString & Ident);
   virtual void UpdateFile();
   // Hoisted overload
   void ReadSections(const UnicodeString Section, TStrings* Strings);

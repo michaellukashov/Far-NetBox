@@ -111,7 +111,7 @@ void TNamedObjectList::AlphaSort()
   Recount();
 }
 
-int32_t TNamedObjectList::Add(TObject *AObject)
+int32_t TNamedObjectList::Add(TObject * AObject)
 {
   int32_t Result;
   TAutoFlag ControlledAddFlag(FControlledAdd); nb::used(ControlledAddFlag);

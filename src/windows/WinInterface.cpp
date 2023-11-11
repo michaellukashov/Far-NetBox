@@ -59,7 +59,7 @@ TMessageParams::TMessageParams(const TQueryParams * AParams) noexcept
   Assign(AParams);
 }
 
-void TMessageParams::Assign(const TMessageParams *AParams)
+void TMessageParams::Assign(const TMessageParams * AParams)
 {
   Reset();
 

@@ -77,8 +77,8 @@ std::unique_ptr<TCriticalSection> TracesInMemoryListsSection;
 // Map to DirectTrace(MESSAGE) to enable tracing of in-memory tracing
 #define MemoryTracingTrace(MESSAGE)
 
-inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t *SourceFile,
-  const wchar_t *Func, int32_t Line, const wchar_t *Message)
+inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t * SourceFile,
+  const wchar_t * Func, int32_t Line, const wchar_t * Message)
 {
   const UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);
   const wchar_t *Slash = wcsrchr(SourceFile, L'\\');
@@ -92,14 +92,14 @@ inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t
   return Buffer;
 }
 
-inline static void WriteTraceBuffer(const char *Buffer, size_t Length)
+inline static void WriteTraceBuffer(const char * Buffer, size_t Length)
 {
   DWORD Written;
   ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
 }
 
-inline static void DoDirectTrace(DWORD Thread, const wchar_t *SourceFile,
-  const wchar_t *Func, int32_t Line, const wchar_t *Message)
+inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
+  const wchar_t * Func, int32_t Line, const wchar_t * Message)
 {
   UTF8String Buf = TraceFormat(Now(), Thread, SourceFile, Func, Line, Message);
   WriteTraceBuffer(Buf.c_str(), Buf.Length());
@@ -198,8 +198,8 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
   }
 }
 
-void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
-  uint32_t Line, const wchar_t *AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t *Func,
+  uint32_t Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
 {
   DoTrace(SourceFile, Func, Line, AFormat);
 }
@@ -312,8 +312,8 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
 #endif // TRACE_IN_MEMORY
 }
 
-void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
-  uint32_t Line, const wchar_t *AFormat, fmt::ArgList args)
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  uint32_t Line, const wchar_t * AFormat, fmt::ArgList args)
 {
   DebugAssert(IsTracing);
 

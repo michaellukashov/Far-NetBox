@@ -74,7 +74,7 @@ public:
   void Assign(const TMessageParams * AParams);
   void Assign(const TQueryParams * AParams);
 
-  const TQueryButtonAlias *Aliases{nullptr};
+  const TQueryButtonAlias * Aliases{nullptr};
   uint32_t AliasesCount{0};
   uint32_t Flags{0};
   uint32_t Params{0};

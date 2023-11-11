@@ -250,7 +250,7 @@ public:
   TStatSessionAction() = delete;
   explicit TStatSessionAction(TActionLog * Log, const UnicodeString & AFileName) noexcept;
 
-  void File(TRemoteFile *AFile);
+  void File(TRemoteFile * AFile);
 };
 
 class NB_CORE_EXPORT TChecksumSessionAction : public TFileSessionAction
@@ -336,8 +336,8 @@ private:
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   int64_t FCurrentFileSize{0};
-  TSessionUI *FUI{nullptr};
-  TSessionData *FSessionData{nullptr};
+  TSessionUI * FUI{nullptr};
+  TSessionData * FSessionData{nullptr};
   TDateTime FStarted;
   UnicodeString FName;
   bool FClosed{false};

@@ -198,9 +198,9 @@ NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString & SingleItemF
   const UnicodeString & MultiItemsFormat, int32_t Count, const UnicodeString & FirstItem);
 NB_CORE_EXPORT UnicodeString GetPersonalFolder();
 NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, const TStrings *Items);
+  const UnicodeString & MultiItemsFormat, const TStrings * Items);
 NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFilesFormat, const TStrings *AFiles, bool Remote);
+  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);
 NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
   const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);
 

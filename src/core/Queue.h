@@ -86,12 +86,12 @@ class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
   friend class TParallelTransferQueueItem;
   NB_DISABLE_COPY(TTerminalQueue)
 public:
-  explicit TTerminalQueue(TTerminal *ATerminal, TConfiguration *AConfiguration) noexcept;
+  explicit TTerminalQueue(TTerminal * ATerminal, TConfiguration * AConfiguration) noexcept;
   virtual ~TTerminalQueue() noexcept;
   void InitTerminalQueue();
 
-  void AddItem(TQueueItem *Item);
-  TTerminalQueueStatus *CreateStatus(TTerminalQueueStatus *&Current);
+  void AddItem(TQueueItem * Item);
+  TTerminalQueueStatus * CreateStatus(TTerminalQueueStatus *& Current);
   void Idle();
 
   __property bool IsEmpty = { read = GetIsEmpty };
@@ -136,8 +136,8 @@ protected:
   TQueueItemUpdateEvent FOnQueueItemUpdate;
   TQueueListUpdateEvent FOnListUpdate;
   TQueueEventEvent FOnEvent;
-  TTerminal *FTerminal{nullptr};
-  TConfiguration *FConfiguration{nullptr};
+  TTerminal * FTerminal{nullptr};
+  TConfiguration * FConfiguration{nullptr};
   std::unique_ptr<TSessionData> FSessionData;
   std::unique_ptr<TList> FItems;
   std::unique_ptr<TList> FDoneItems;
@@ -154,19 +154,19 @@ protected:
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
 
-  static TQueueItem *GetItem(TList *List, int32_t Index);
-  TQueueItem *GetItem(int32_t Index) const;
-  void FreeItemsList(TList *List) const;
+  static TQueueItem * GetItem(TList * List, int32_t Index);
+  TQueueItem * GetItem(int32_t Index) const;
+  void FreeItemsList(TList * List) const;
   void UpdateStatusForList(
-    TTerminalQueueStatus *Status, TList *List, TTerminalQueueStatus *Current);
-  bool ItemGetData(TQueueItem *Item, TQueueItemProxy *Proxy, TQueueFileList * FileList);
-  bool ItemProcessUserAction(TQueueItem *Item, void *Arg);
-  bool ItemMove(TQueueItem *Item, TQueueItem *BeforeItem);
-  bool ItemExecuteNow(TQueueItem *Item);
-  bool ItemDelete(TQueueItem *Item);
-  bool ItemPause(TQueueItem *Item, bool Pause);
-  bool ItemSetCPSLimit(TQueueItem *Item, int32_t CPSLimit) const;
-  bool ItemGetCPSLimit(TQueueItem *Item, int32_t &CPSLimit) const;
+    TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
+  bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy, TQueueFileList * FileList);
+  bool ItemProcessUserAction(TQueueItem * Item, void * Arg);
+  bool ItemMove(TQueueItem * Item, TQueueItem * BeforeItem);
+  bool ItemExecuteNow(TQueueItem * Item);
+  bool ItemDelete(TQueueItem * Item);
+  bool ItemPause(TQueueItem * Item, bool Pause);
+  bool ItemSetCPSLimit(TQueueItem * Item, int32_t CPSLimit) const;
+  bool ItemGetCPSLimit(TQueueItem * Item, int32_t & CPSLimit) const;
 
   void RetryItem(TQueueItem *Item);
   void DeleteItem(TQueueItem *Item, bool CanKeep);
@@ -392,11 +392,11 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TLocatedQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocatedQueueItem) || TQueueItem::is(Kind); }
 protected:
-  explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal *Terminal) noexcept;
-  TLocatedQueueItem(const TLocatedQueueItem &Source) noexcept;
+  explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) noexcept;
+  TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept;
   virtual ~TLocatedQueueItem() = default;
 
-  virtual void DoExecute(TTerminal *Terminal) override;
+  virtual void DoExecute(TTerminal * Terminal) override;
   virtual UnicodeString GetStartupDirectory() const override;
 
 private:
@@ -411,9 +411,9 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTransferQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
-  explicit TTransferQueueItem(TObjectClassId Kind, TTerminal *Terminal,
-    const TStrings *AFilesToCopy, const UnicodeString TargetDir,
-    const TCopyParamType *CopyParam, int32_t Params, TOperationSide Side,
+  explicit TTransferQueueItem(TObjectClassId Kind, TTerminal * ATerminal,
+    const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
+    const TCopyParamType * CopyParam, int32_t Params, TOperationSide Side,
     bool SingleFile, bool Parallel) noexcept;
   virtual ~TTransferQueueItem() noexcept;
 
@@ -427,15 +427,15 @@ protected:
   std::unique_ptr<TParallelOperation> FParallelOperation;
 
   virtual int32_t DefaultCPSLimit() const override;
-  virtual void DoExecute(TTerminal *Terminal) override;
-  virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) = 0;
+  virtual void DoExecute(TTerminal * ATerminal) override;
+  virtual void DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation) = 0;
   virtual void ProgressUpdated() override;
   virtual TQueueItem * CreateParallelOperation() override;
   virtual bool UpdateFileList(TQueueFileList * FileList) override;
 
 public:
-  TParallelOperation *GetParallelOperation() const { return FParallelOperation.get(); }
-  TParallelOperation *GetParallelOperation() { return FParallelOperation.get(); }
+  TParallelOperation * GetParallelOperation() const { return FParallelOperation.get(); }
+  TParallelOperation * GetParallelOperation() { return FParallelOperation.get(); }
 };
 
 NB_DEFINE_CLASS_ID(TUploadQueueItem);
@@ -445,13 +445,13 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TUploadQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TUploadQueueItem) || TTransferQueueItem::is(Kind); }
 public:
-  explicit TUploadQueueItem(TTerminal *Terminal,
-    const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
-    const TCopyParamType *CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
+  explicit TUploadQueueItem(TTerminal * ATerminal,
+    const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
+    const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
   virtual ~TUploadQueueItem() = default;
 
 protected:
-  virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
+  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) override;
 };
 
 NB_DEFINE_CLASS_ID(TDownloadQueueItem);
@@ -461,13 +461,13 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TDownloadQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDownloadQueueItem) || TTransferQueueItem::is(Kind); }
 public:
-  explicit TDownloadQueueItem(TTerminal *Terminal,
-    const TStrings *AFilesToCopy, const UnicodeString ATargetDir,
-    const TCopyParamType *CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
+  explicit TDownloadQueueItem(TTerminal * ATerminal,
+    const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
+    const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
   virtual ~TDownloadQueueItem() = default;
 
 protected:
-  virtual void DoTransferExecute(TTerminal *Terminal, TParallelOperation *ParallelOperation) override;
+  virtual void DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation) override;
 };
 
 NB_DEFINE_CLASS_ID(TDeleteQueueItem);
@@ -565,9 +565,9 @@ private:
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
     const TQueryParams * Params, uint32_t & Answer, TQueryType Type, void * Arg);
-  void TerminalPromptUser(TTerminal *Terminal, TPromptKind Kind,
+  void TerminalPromptUser(TTerminal * ATerminal, TPromptKind Kind,
     const UnicodeString & AName, const UnicodeString & AInstructions,
-    TStrings * Prompts, TStrings * Results, bool &Result, void *Arg);
+    TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,

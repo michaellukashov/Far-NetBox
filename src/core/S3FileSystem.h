@@ -42,7 +42,7 @@ public:
 
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 public:
-  explicit TS3FileSystem(TTerminal *ATerminal) noexcept;
+  explicit TS3FileSystem(TTerminal * ATerminal) noexcept;
   ~TS3FileSystem() noexcept override;
 
   virtual void Open() override;
@@ -67,7 +67,7 @@ public:
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
-  virtual void CopyToRemote(TStrings *AFilesToCopy,
+  virtual void CopyToRemote(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
@@ -165,9 +165,9 @@ protected:
     const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
     TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam, int32_t AParams);
-  int PutObjectData(int BufferSize, char *Buffer, TLibS3PutObjectDataCallbackData &Data);
-  S3Status GetObjectData(int BufferSize, const char *Buffer, TLibS3GetObjectDataCallbackData &Data);
-  bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &Data);
+  int32_t PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
+  S3Status GetObjectData(int32_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
+  bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data);
   bool IsGoogleCloud() const;
   void LoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, void * Param);
   bool DoLoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, TS3FileProperties & Properties);

@@ -61,7 +61,7 @@ public:
 
   explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList) noexcept;
   void AlphaSort();
-  int32_t Add(TObject *AObject);
+  int32_t Add(TObject * AObject);
   virtual const TNamedObject * AtObject(int32_t Index) const;
   virtual TNamedObject * AtObject(int32_t Index);
   const TNamedObject * FindByName(const UnicodeString & AName) const;
