@@ -109,7 +109,7 @@ protected:
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     int32_t Params);
-  void CheckStatus(int NeonStatus);
+  void CheckStatus(int32_t NeonStatus);
   struct TSessionContext;
   void CheckStatus(TSessionContext * SessionContext, int32_t NeonStatus);
   void ClearNeonError();
@@ -118,22 +118,22 @@ protected:
   void ParsePropResultSet(TRemoteFile * AFile,
     const UnicodeString & APath, const ne_prop_result_set_s * Results);
   void TryOpenDirectory(const UnicodeString & ADirectory);
-  static int NeonBodyReader(void * UserData, const char * Buf , size_t Len);
+  static int32_t NeonBodyReader(void * UserData, const char * Buf , size_t Len);
   static void NeonPreSend(ne_request * Request, void * UserData, ne_buffer * Header);
-  static int NeonBodyAccepter(void * UserData, ne_request * Request, const ne_status * Status);
+  static int32_t NeonBodyAccepter(void * UserData, ne_request * Request, const ne_status * Status);
   static void NeonCreateRequest(ne_request * Request, void * UserData, const char * Method, const char * Uri);
-  static int NeonRequestAuth(void * UserData, const char * Realm, int Attempt, char * UserName, char * Password);
+  static int32_t NeonRequestAuth(void * UserData, const char * Realm, int32_t Attempt, char * UserName, char * Password);
   TSessionContext * NeonOpen(const UnicodeString & Url, UTF8String & Path, UTF8String & Query);
   void NeonClientOpenSessionInternal(UnicodeString & CorrectedUrl, const UnicodeString & Url);
   static void NeonNotifier(void * UserData, ne_session_status Status, const ne_session_status_info * StatusInfo);
   static ssize_t NeonUploadBodyProvider(void * UserData, char * Buffer, size_t BufLen);
-  static int NeonPostSend(ne_request * Req, void * UserData, const ne_status * Status);
+  static int32_t NeonPostSend(ne_request * Req, void * UserData, const ne_status * Status);
   static void NeonPostHeaders(ne_request * Req, void * UserData, const ne_status * Status);
   void ExchangeCapabilities(const char * APath, UnicodeString & CorrectedUrl);
-  static int DoNeonServerSSLCallback(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate, bool Aux);
-  static int NeonServerSSLCallbackMain(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
-  static int NeonServerSSLCallbackAux(void * UserData, int Failures, const struct ne_ssl_certificate_s * Certificate);
-  static void NeonProvideClientCert(void * UserData, ne_session * Sess, const ne_ssl_dname * const * DNames, int DNCount);
+  static int32_t DoNeonServerSSLCallback(void * UserData, int32_t Failures, const struct ne_ssl_certificate_s * Certificate, bool Aux);
+  static int32_t NeonServerSSLCallbackMain(void * UserData, int32_t Failures, const struct ne_ssl_certificate_s * Certificate);
+  static int32_t NeonServerSSLCallbackAux(void * UserData, int32_t Failures, const struct ne_ssl_certificate_s * Certificate);
+  static void NeonProvideClientCert(void * UserData, ne_session * Sess, const ne_ssl_dname * const * DNames, int32_t DNCount);
   void CloseNeonSession();
   bool CancelTransfer();
   UnicodeString GetNeonError() const;
@@ -197,9 +197,9 @@ private:
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;
   UnicodeString ParsePathFromUrl(const UnicodeString & Url) const;
-  int ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList);
-  int RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
-  int CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
+  int32_t ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList);
+  int32_t RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
+  int32_t CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
   bool IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const;
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * AFile) const;
