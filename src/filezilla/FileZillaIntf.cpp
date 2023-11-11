@@ -303,7 +303,7 @@ void TFileZillaIntf::SetDebugLevel(TLogLevel Level)
 
 bool TFileZillaIntf::FZPostMessage(WPARAM wParam, LPARAM lParam)
 {
-  unsigned int MessageID = FZ_MSG_ID(wParam);
+  uint32_t MessageID = FZ_MSG_ID(wParam);
   TMessageType Type;
   switch (MessageID)
   {
@@ -362,7 +362,7 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
   bool Result = false;
 
   CString a;
-  unsigned int MessageID = FZ_MSG_ID(wParam);
+  uint32_t MessageID = FZ_MSG_ID(wParam);
 
   switch (MessageID)
   {

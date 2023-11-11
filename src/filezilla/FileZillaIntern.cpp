@@ -17,7 +17,7 @@ TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) noexcept :
 bool TFileZillaIntern::FZPostMessage(WPARAM wParam, LPARAM lParam) const
 {
   bool Result;
-  unsigned int MessageID = FZ_MSG_ID(wParam);
+  uint32_t MessageID = FZ_MSG_ID(wParam);
 
   switch (MessageID)
   {

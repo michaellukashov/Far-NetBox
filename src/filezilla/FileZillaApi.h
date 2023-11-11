@@ -284,7 +284,7 @@ public:
 
 protected:
   CMainThread * m_pMainThread{nullptr};
-  unsigned int m_nInternalMessageID{0};
+  uint32_t m_nInternalMessageID{0};
   BOOL m_bInitialized{FALSE};
 
   void Destroy();
