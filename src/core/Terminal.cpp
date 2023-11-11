@@ -1191,7 +1191,7 @@ int32_t TParallelOperation::GetNext(
           FParallelFileTargetName = OnlyFileName;
         }
         DebugAssert(FParallelFileTargetName == OnlyFileName);
-        int Index = FParallelFileCount;
+        int32_t Index = FParallelFileCount;
         UnicodeString PartFileName = GetPartPrefix(OnlyFileName) + IntToStr(Index);
         FParallelFileCount++;
         FParallelFileOffsets.push_back(CustomCopyParam->PartOffset);

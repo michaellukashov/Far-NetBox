@@ -1418,10 +1418,10 @@ void TSCPFileSystem::CalculateFilesChecksum(
   FTerminal->CalculateSubFoldersChecksum(Alg, FileList, OnCalculatedChecksum, OperationProgress, FirstLevel);
 
   TStrings * AlgDefs = FTerminal->GetShellChecksumAlgDefs();
-  int AlgIndex = AlgDefs->IndexOfName(Alg);
+  int32_t AlgIndex = AlgDefs->IndexOfName(Alg);
   UnicodeString AlgCommand = (AlgIndex >= 0) ? AlgDefs->GetValueFromIndex(AlgIndex) : Alg;
 
-  int Index = 0;
+  int32_t Index = 0;
   while ((Index < FileList->Count) && !OperationProgress->Cancel)
   {
     std::unique_ptr<TStrings> BatchFileList(std::make_unique<TStringList>());

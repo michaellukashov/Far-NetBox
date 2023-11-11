@@ -1468,7 +1468,7 @@ int32_t TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name,
 
 _di_IXMLNode TSessionData::FindSettingsNode(_di_IXMLNode Node, const UnicodeString & Name)
 {
-  for (int Index = 0; Index < Node->ChildNodes->Count; Index++)
+  for (int32_t Index = 0; Index < Node->ChildNodes->Count; Index++)
   {
     _di_IXMLNode ChildNode = Node->ChildNodes->Get(Index);
     if (ChildNode->NodeName == L"Setting")
@@ -3748,9 +3748,9 @@ bool IsIPv6Literal(const UnicodeString & HostName)
   {
     Buf = StripIP6LiteralBrackets(Buf);
   }
-  int Colons = 0;
+  int32_t Colons = 0;
   bool Result = true;
-  for (int Index = 1; Result && (Index <= Buf.Length()); Index++)
+  for (int32_t Index = 1; Result && (Index <= Buf.Length()); Index++)
   {
     wchar_t C = Buf[Index];
     if (C == L'%')
@@ -3850,7 +3850,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
     if (FLAGSET(Flags, sufRawSettings))
     {
       std::unique_ptr<TStrings> RawSettings(GetRawSettingsForUrl());
-      for (int Index = 0; Index < RawSettings->Count; Index++)
+      for (int32_t Index = 0; Index < RawSettings->Count; Index++)
       {
         Url +=
           UnicodeString(UrlParamSeparator) +
@@ -5697,7 +5697,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
 void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
 {
   std::unique_ptr<TStrings> Hosts(CreateSortedStringList());
-  for (int Index = 0; Index < Lines->Count; Index++)
+  for (int32_t Index = 0; Index < Lines->Count; Index++)
   {
     UnicodeString Line = Lines->GetString(Index);
     UnicodeString Directive, Value;
@@ -6038,13 +6038,13 @@ int32_t TStoredSessionList::ImportHostKeys(
     SourceStorage->GetValueNames(KeyList.get());
 
     DebugAssert(Sessions != nullptr);
-    for (int Index = 0; Index < Sessions->Count; Index++)
+    for (int32_t Index = 0; Index < Sessions->Count; Index++)
     {
       TSessionData * Session = Sessions->GetSession(Index);
       if (!OnlySelected || Session->Selected)
       {
         UnicodeString HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", Session->PortNumber, Session->HostNameExpanded));
-        for (int KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
+        for (int32_t KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
         {
           UnicodeString KeyName = KeyList->GetString(KeyIndex);
           if (EndsText(HostKeyName, KeyName))
@@ -6098,7 +6098,7 @@ void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList *Sessions)
 void TStoredSessionList::SelectKnownHostsForSelectedSessions(
   TStoredSessionList * KnownHosts, TStoredSessionList * Sessions)
 {
-  for (int SessionIndex = 0; SessionIndex < Sessions->Count; SessionIndex++)
+  for (int32_t SessionIndex = 0; SessionIndex < Sessions->Count; SessionIndex++)
   {
     TSessionData * Session = Sessions->GetSession(SessionIndex);
     if (Session->FSelected)

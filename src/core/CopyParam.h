@@ -124,7 +124,7 @@ public:
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
   UnicodeString GetInfoStr(const UnicodeString & Separator, int32_t Attrs) const;
   bool AnyUsableCopyParam(int32_t Attrs) const;
-  UnicodeString GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link) const;
+  UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
   UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */int Attrs) const;
 
   bool operator==(const TCopyParamType &rhp) const;

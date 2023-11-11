@@ -42,7 +42,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
 UnicodeString ParseOpenSshPubLine(const UnicodeString & ALine, const struct ssh_keyalg *& Algorithm);
 void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & PublicKey, UnicodeString & Fingerprint);
 bool IsCertificateValidityExpressionValid(
-  const UnicodeString & Str, UnicodeString & Error, int & ErrorStart, int & ErrorLen);
+  const UnicodeString & Str, UnicodeString & Error, int32_t & ErrorStart, int32_t & ErrorLen);
 
 UnicodeString GetKeyTypeHuman(const UnicodeString & AKeyType);
 

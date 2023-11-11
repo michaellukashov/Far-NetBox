@@ -456,7 +456,7 @@ void TFTPFileSystem::Open()
   UnicodeString Password = Data->GetPassword();
   UnicodeString Account = Data->GetFtpAccount();
   UnicodeString Path = Data->GetRemoteDirectory();
-  int ServerType = 0;
+  int32_t ServerType = 0;
   switch (Data->GetFtps())
   {
     case ftpsNone:
@@ -3774,7 +3774,7 @@ void TFTPFileSystem::HandleFeatReply()
   }
 }
 
-bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int Type)
+bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int32_t Type)
 {
   TLogLineType LogType = static_cast<TLogLineType>(-1);
   UnicodeString Status(AStatus);

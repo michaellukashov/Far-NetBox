@@ -1043,7 +1043,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
       conf_set_filename(conf, CONF_ssh_gss_custom, filename);
       filename_free(filename);
       List = ssh_gss_setup(conf, nullptr);
-      for (int Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
+      for (int32_t Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
       {
         ssh_gss_library * library = &List->libraries[Index];
         Ssh_gss_ctx ctx;
@@ -1303,7 +1303,7 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
 }
 
 bool IsCertificateValidityExpressionValid(
-  const UnicodeString & Str, UnicodeString & Error, int & ErrorStart, int & ErrorLen)
+  const UnicodeString & Str, UnicodeString & Error, int32_t & ErrorStart, int32_t & ErrorLen)
 {
   char * ErrorMsg;
   ptrlen ErrorLoc;
@@ -1332,7 +1332,7 @@ bool IsOpenSSH(const UnicodeString & SshImplementation)
 // Same order as DefaultCipherList
 struct TCipherGroup
 {
-  int CipherGroup;
+  int32_t CipherGroup;
   const ssh2_ciphers * Cipher;
 };
 TCipherGroup Ciphers[] =
@@ -1352,7 +1352,7 @@ TStrings * SshCipherList()
   for (uint32_t Index = 0; Index < LENOF(Ciphers); Index++)
   {
     const ssh2_ciphers * Cipher = Ciphers[Index].Cipher;
-    for (int Index2 = 0; Index2 < Cipher->nciphers; Index2++)
+    for (int32_t Index2 = 0; Index2 < Cipher->nciphers; Index2++)
     {
       UnicodeString Name = UnicodeString(Cipher->list[Index2]->ssh2_id);
       Result->Add(Name);
@@ -1368,7 +1368,7 @@ int GetCipherGroup(const ssh_cipher * TheCipher)
   {
     TCipherGroup & CipherGroup = Ciphers[Index];
     const ssh2_ciphers * Cipher = CipherGroup.Cipher;
-    for (int Index2 = 0; Index2 < Cipher->nciphers; Index2++)
+    for (int32_t Index2 = 0; Index2 < Cipher->nciphers; Index2++)
     {
       if (strcmp(TheCipher->vt->ssh2_id, Cipher->list[Index2]->ssh2_id) == 0)
       {
@@ -1391,7 +1391,7 @@ TStrings * SshKexList()
     &ssh_rsa_kex, &ssh_diffiehellman_group1 };
   for (uint32_t Index = 0; Index < LENOF(Kexes); Index++)
   {
-    for (int Index2 = 0; Index2 < Kexes[Index]->nkexes; Index2++)
+    for (int32_t Index2 = 0; Index2 < Kexes[Index]->nkexes; Index2++)
     {
       UnicodeString Name = UnicodeString(Kexes[Index]->list[Index2]->name);
       Result->Add(Name);
@@ -1419,7 +1419,7 @@ int HostKeyToPutty(THostKey HostKey)
 TStrings * SshHostKeyList()
 {
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
-  for (int DefaultIndex = 0; DefaultIndex < HOSTKEY_COUNT; DefaultIndex++)
+  for (int32_t DefaultIndex = 0; DefaultIndex < HOSTKEY_COUNT; DefaultIndex++)
   {
     int Type = HostKeyToPutty(DefaultHostKeyList[DefaultIndex]);
     cp_ssh_keyalg * SignKeys;
@@ -1515,7 +1515,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
     Settings->Add(Setting);
   }
 
-  for (int Index = 0; Index < Settings->Count; Index++)
+  for (int32_t Index = 0; Index < Settings->Count; Index++)
   {
     UnicodeString Name = Settings->GetName(Index);
     TPuttyRegistryTypes::const_iterator IType = PuttyRegistryTypes.find(Name);

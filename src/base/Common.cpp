@@ -5162,7 +5162,7 @@ static UnicodeString GetProcessName(DWORD ProcessId)
 
 UnicodeString ParentProcessName;
 
-UnicodeString GetAncestorProcessName(int Levels)
+UnicodeString GetAncestorProcessName(int32_t Levels)
 {
   UnicodeString Result;
   ThrowNotImplemented(3038);

@@ -111,7 +111,7 @@ protected:
     int32_t Params);
   void CheckStatus(int NeonStatus);
   struct TSessionContext;
-  void CheckStatus(TSessionContext * SessionContext, int NeonStatus);
+  void CheckStatus(TSessionContext * SessionContext, int32_t NeonStatus);
   void ClearNeonError();
   static void NeonPropsResult(
     void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);

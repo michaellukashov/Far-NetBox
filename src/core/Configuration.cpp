@@ -48,7 +48,7 @@ const UnicodeString BannersKey(L"Banners");
 const UnicodeString OpensshFolderName(L".ssh");
 const UnicodeString OpensshAuthorizedKeysFileName(L"authorized_keys");
 
-const int BelowNormalLogLevels = 1;
+const int32_t BelowNormalLogLevels = 1;
 
 
 TSshHostCA::TSshHostCA()

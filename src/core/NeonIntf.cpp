@@ -299,7 +299,7 @@ AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate)
   return Result;
 }
 
-bool NeonWindowsValidateCertificate(int & Failures, const AnsiString & AsciiCert, UnicodeString & Error)
+bool NeonWindowsValidateCertificate(int32_t & Failures, const AnsiString & AsciiCert, UnicodeString & Error)
 {
   bool Result = false;
   // We can accept only unknown certificate authority.
@@ -344,9 +344,9 @@ bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, Unico
   return Result;
 }
 
-UnicodeString NeonCertificateFailuresErrorStr(int Failures, const UnicodeString & AHostName)
+UnicodeString NeonCertificateFailuresErrorStr(int32_t Failures, const UnicodeString & AHostName)
 {
-  int FailuresToList = Failures;
+  int32_t FailuresToList = Failures;
 
   UnicodeString Result;
   if (FLAGSET(FailuresToList, NE_SSL_NOTYETVALID))

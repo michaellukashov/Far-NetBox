@@ -141,7 +141,7 @@ protected:
   bool KeepWaitingForReply(uint32_t & ReplyToAwait, bool WantLastCode) const;
   inline bool NoFinalLastCode() const;
 
-  bool HandleStatus(const wchar_t * AStatus, int Type);
+  bool HandleStatus(const wchar_t * AStatus, int32_t Type);
   bool HandleAsyncRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,

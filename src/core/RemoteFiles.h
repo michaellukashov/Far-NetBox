@@ -530,7 +530,7 @@ public:
   operator uint16_t() const;
   operator uint32_t() const;
 
-  UnicodeString GetChmodStr(int Directory) const;
+  UnicodeString GetChmodStr(int32_t Directory) const;
 
   __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
   RWPropertySimple1<bool> AllowUndef{&FAllowUndef, nb::bind(&TRights::SetAllowUndef, this)};

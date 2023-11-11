@@ -297,7 +297,7 @@ UnicodeString TUsage::Serialize(const UnicodeString & ADelimiter, const UnicodeS
   UnicodeString Result;
 
   UnicodeString FilterUpper = UpperCase(AFilter);
-  for (int Index = 0; Index < FValues->Count; Index++)
+  for (int32_t Index = 0; Index < FValues->Count; Index++)
   {
     Serialize(Result, FValues->GetName(Index), FValues->GetValueFromIndex(Index), ADelimiter, FilterUpper);
   }

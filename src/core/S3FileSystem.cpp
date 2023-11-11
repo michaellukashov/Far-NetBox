@@ -1950,7 +1950,7 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &D
 
 int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData &Data)
 {
-  int Result;
+  int32_t Result;
 
   if (ShouldCancelTransfer(Data))
   {
