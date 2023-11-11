@@ -120,7 +120,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
 }
 
 void TSynchronizeController::SynchronizeChange(
-  TObject * /*Sender*/, const UnicodeString Directory, bool & SubdirsChanged)
+  TObject * /*Sender*/, const UnicodeString & Directory, bool & SubdirsChanged)
 {
   try
   {
@@ -206,7 +206,7 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
 }
 
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-  const UnicodeString AFileName)
+  const UnicodeString & AFileName)
 {
   TSynchronizeLogEntry Entry;
   UnicodeString Message;
@@ -230,7 +230,7 @@ void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
 }
 
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
-  const UnicodeString Message)
+  const UnicodeString & Message)
 {
   if (FSynchronizeLog != nullptr)
   {
@@ -239,7 +239,7 @@ void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
 }
 
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  const UnicodeString DirectoryName, bool & Add)
+  const UnicodeString & DirectoryName, bool & Add)
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
@@ -261,7 +261,7 @@ void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
 }
 
 void TSynchronizeController::SynchronizeInvalid(
-  TObject * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
+  TObject * /*Sender*/, const UnicodeString & Directory, const UnicodeString & ErrorStr)
 {
   if (FOnSynchronizeInvalid != nullptr)
   {
@@ -286,10 +286,10 @@ void TSynchronizeController::SynchronizeDirectoriesChange(
   SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));
 }
 
-void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString Message)
+void LogSynchronizeEvent(TTerminal * ATerminal, const UnicodeString & Message)
 {
-  if (Terminal != nullptr)
+  if (ATerminal != nullptr)
   {
-    Terminal->LogEvent(FORMAT("Keep up to date: %s", Message));
+    ATerminal->LogEvent(FORMAT("Keep up to date: %s", Message));
   }
 }

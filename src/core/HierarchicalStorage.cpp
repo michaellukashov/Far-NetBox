@@ -1823,7 +1823,7 @@ public:
   virtual void DeleteKey(const UnicodeString & Section, const UnicodeString & Ident);
   virtual void UpdateFile();
   // Hoisted overload
-  void ReadSections(const UnicodeString Section, TStrings* Strings);
+  void ReadSections(const UnicodeString & Section, TStrings * Strings);
   // Ntb, we can implement ValueExists more efficiently than the TCustomIniFile.ValueExists
 
 private:
@@ -1894,7 +1894,7 @@ UnicodeString TOptionsIniFile::FormatKey(const UnicodeString & Section, const Un
   return Result;
 }
 
-UnicodeString TOptionsIniFile::ReadString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Default)
+UnicodeString TOptionsIniFile::ReadString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Default)
 {
   UnicodeString Value;
   if (!AllowSection(Section))

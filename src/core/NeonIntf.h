@@ -55,11 +55,11 @@ void NeonInitialize();
 void NeonFinalize();
 void RequireNeon(TTerminal *Terminal);
 void RetrieveNeonCertificateData(
-  int Failures, const ne_ssl_certificate *Certificate, TNeonCertificateData &Data);
-UnicodeString CertificateVerificationMessage(const TNeonCertificateData &Data);
-UnicodeString CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName);
+  int Failures, const ne_ssl_certificate *Certificate, TNeonCertificateData & Data);
+UnicodeString CertificateVerificationMessage(const TNeonCertificateData & Data);
+UnicodeString CertificateSummary(const TNeonCertificateData & Data, const UnicodeString & AHostName);
 struct TSessionInfo;
 UnicodeString NeonTlsSessionInfo(
-  ne_session *Session, TSessionInfo & FSessionInfo, UnicodeString &TlsVersionStr);
-void SetupSsl(ssl_st *Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion);
+  ne_session * Session, TSessionInfo & FSessionInfo, UnicodeString & TlsVersionStr);
+void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion);
 

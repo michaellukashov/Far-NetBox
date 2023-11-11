@@ -576,11 +576,11 @@ public:
   virtual ~TSHFileInfo() noexcept;
 
   //get the image's index in the system's image list
-  int GetFileIconIndex(UnicodeString StrFileName, BOOL bSmallIcon) const;
+  int GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const;
   int GetDirIconIndex(BOOL bSmallIcon);
 
   //get file type
-  UnicodeString GetFileType(UnicodeString StrFileName);
+  UnicodeString GetFileType(const UnicodeString & StrFileName);
 
 private:
   TGetFileInfo FGetFileInfo;

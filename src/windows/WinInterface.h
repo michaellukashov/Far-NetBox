@@ -226,7 +226,7 @@ void DoCleanupDialogIfAnyDataAndWanted();
 
 // forms\Console.cpp
 void DoConsoleDialog(TTerminal * Terminal,
-    const UnicodeString Command = "", const TStrings * Log = nullptr);
+    const UnicodeString & Command = "", const TStrings * Log = nullptr);
 
 // forms\Copy.cpp
 constexpr int32_t coTemp                = 0x001;
@@ -456,7 +456,7 @@ typedef void (__closure *TFileClosedEvent)
   (TObject * Sender, bool Forced);
 typedef void (__closure *TAnyModifiedEvent)
   (TObject * Sender, bool & Modified);
-TForm * ShowEditorForm(const UnicodeString FileName, TForm * ParentForm,
+TForm * ShowEditorForm(const UnicodeString & FileName, TForm * ParentForm,
   TNotifyEvent OnFileChanged, TNotifyEvent OnFileReload, TFileClosedEvent OnClose,
   TNotifyEvent OnSaveAll, TAnyModifiedEvent OnAnyModified,
   const UnicodeString Caption, bool StandaloneEditor, TColor Color, int InternalEditorEncodingOverride,
@@ -480,7 +480,7 @@ using TGetSpaceAvailableEvent = nb::FastDelegate3<void,
 
 void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  UnicodeString SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
+  const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
 
 //moved to FarInterface.h
 #if 0
@@ -671,7 +671,7 @@ public:
   TTrayIcon(uint32_t Id);
   ~TTrayIcon();
 
-  void PopupBalloon(UnicodeString Title, const UnicodeString & Str,
+  void PopupBalloon(const UnicodeString & Title, const UnicodeString & Str,
     TQueryType QueryType, uint32_t Timeout, TNotifyEvent OnBalloonClick,
     TObject * BalloonUserData);
   void CancelBalloon();
@@ -695,7 +695,7 @@ private:
   void WndProc(TMessage & Message);
   void SetVisible(bool value);
   UnicodeString GetHint();
-  void SetHint(UnicodeString value);
+  void SetHint(const UnicodeString & value);
   void BalloonCancelled();
 };
 #endif // #if 0

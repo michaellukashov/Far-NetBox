@@ -244,7 +244,7 @@ public:
   void SetTotalSize(int64_t ASize);
   void Start(TFileOperation AOperation, TOperationSide ASide, int32_t ACount);
   void Start(TFileOperation AOperation,
-    TOperationSide ASide, int32_t ACount, bool ATemp, const UnicodeString ADirectory,
+    TOperationSide ASide, int32_t ACount, bool ATemp, const UnicodeString & ADirectory,
     uint64_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation);
   void Stop();
   void SetDone();

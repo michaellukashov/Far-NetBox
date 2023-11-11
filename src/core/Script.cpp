@@ -57,7 +57,7 @@ public:
     UnicodeString * Description, UnicodeString * Help);
   bool Enumerate(int Index,
     UnicodeString * Command, UnicodeString * Description, UnicodeString * Help);
-  static int FindCommand(TStrings * Commands, const UnicodeString Command,
+  static int FindCommand(TStrings * Commands, const UnicodeString & Command,
     UnicodeString * Matches = nullptr);
   static int FindCommand(const wchar_t ** Commands, size_t Count,
     const UnicodeString & Command, UnicodeString * Matches = nullptr);
@@ -126,7 +126,7 @@ void TScriptCommands::Register(const wchar_t * Command,
   Register(Command, ADescription, AHelp, Proc, MinParams, MaxParams, Switches);
 }
 
-bool TScriptCommands::Info(const UnicodeString Command,
+bool TScriptCommands::Info(const UnicodeString & Command,
   UnicodeString * Description, UnicodeString * Help)
 {
   int Index = FindCommand(this, Command);
@@ -495,7 +495,7 @@ void TScript::StartInteractive()
   FSessionReopenTimeout = FInteractiveSessionReopenTimeout;
 }
 
-void TScript::Command(UnicodeString Cmd)
+void TScript::Command(const UnicodeString & Cmd)
 {
   try
   {
@@ -892,7 +892,7 @@ void TScript::ConnectTerminal(TTerminal * ATerminal)
   ATerminal->Open();
 }
 
-void TScript::Print(const UnicodeString Str, bool Error)
+void TScript::Print(const UnicodeString & Str, bool Error)
 {
   if (FOnPrint != nullptr)
   {
@@ -900,7 +900,7 @@ void TScript::Print(const UnicodeString Str, bool Error)
   }
 }
 
-void TScript::PrintLine(const UnicodeString Str, bool Error, TTerminal * ATerminal)
+void TScript::PrintLine(const UnicodeString & Str, bool Error, TTerminal * ATerminal)
 {
   Log(llOutput, Str, ATerminal);
   Print(Str + L"\n", Error);
@@ -1593,7 +1593,7 @@ void TScript::PutProc(TScriptProcParams * Parameters)
   }
 }
 
-TTransferMode TScript::ParseTransferModeName(UnicodeString Name)
+TTransferMode TScript::ParseTransferModeName(const UnicodeString & Name)
 {
   DebugAssert((tmBinary == 0) && (tmAscii == 1) && (tmAutomatic == 2));
 
@@ -2114,7 +2114,7 @@ void TScript::SynchronizeProc(TScriptProcParams * Parameters)
   }
 }
 
-void TScript::Synchronize(const UnicodeString LocalDirectory,
+void TScript::Synchronize(const UnicodeString & LocalDirectory,
   const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
   int SynchronizeParams, TSynchronizeChecklist ** Checklist)
 {
@@ -2256,7 +2256,7 @@ void TManagementScript::FreeTerminal(TTerminal * ATerminal)
   FTerminalList->FreeTerminal(ATerminal);
 }
 
-void TManagementScript::Input(const UnicodeString Prompt,
+void TManagementScript::Input(const UnicodeString & Prompt,
   UnicodeString & Str, bool AllowEmpty)
 {
   do
@@ -2274,7 +2274,7 @@ void TManagementScript::Input(const UnicodeString Prompt,
   while (Str.Trim().IsEmpty() && !AllowEmpty);
 }
 
-void TManagementScript::PrintProgress(bool First, const UnicodeString Str)
+void TManagementScript::PrintProgress(bool First, const UnicodeString & Str)
 {
   if (FOnPrintProgress != nullptr)
   {
@@ -2539,7 +2539,7 @@ void TManagementScript::TerminalInitializeLog(TObject * Sender)
   }
 }
 
-TTerminal * TManagementScript::FindSession(const UnicodeString Index)
+TTerminal * TManagementScript::FindSession(const UnicodeString & Index)
 {
   int i = StrToIntDef(Index, -1);
 

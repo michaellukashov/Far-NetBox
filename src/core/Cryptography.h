@@ -8,7 +8,7 @@ void CryptographyFinalize();
 RawByteString ScramblePassword(const UnicodeString & Password);
 bool UnscramblePassword(const RawByteString & Scrambled, const UnicodeString & Password);
 void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
-  RawByteString &Output);
+  RawByteString & Output);
 bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   RawByteString & Output);
 void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier);

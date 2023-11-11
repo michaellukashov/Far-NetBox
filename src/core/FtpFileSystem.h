@@ -133,8 +133,8 @@ protected:
   void PoolForFatalNonCommandReply();
   void GotNonCommandReply(uint32_t Reply);
   UnicodeString GotReply(uint32_t Reply, uint32_t Flags = 0,
-    UnicodeString Error = "", uint32_t *Code = nullptr,
-    TStrings **Response = nullptr);
+    const UnicodeString & Error = "", uint32_t * Code = nullptr,
+    TStrings ** Response = nullptr);
   void ResetReply();
   void HandleReplyStatus(const UnicodeString & Response);
   void DoWaitForReply(uint32_t & ReplyToAwait, bool WantLastCode);
@@ -203,14 +203,14 @@ protected:
   void AutoDetectTimeDifference(const UnicodeString & ADirectory, const TCopyParamType * CopyParam, int32_t AParams);
   void ApplyTimeDifference(TRemoteFile *File);
   void ApplyTimeDifference(
-    const UnicodeString FileName, TDateTime &Modification, TModificationFmt &ModificationFmt);
+    const UnicodeString & FileName, TDateTime &Modification, TModificationFmt &ModificationFmt);
   void DummyReadDirectory(const UnicodeString & ADirectory);
   bool IsEmptyFileList(TRemoteFileList *FileList) const;
   void CheckTimeDifference();
   bool NeedAutoDetectTimeDifference() const;
   bool LookupUploadModificationTime(
-    const UnicodeString FileName, TDateTime &Modification, TModificationFmt ModificationFmt);
-  UnicodeString DoCalculateFileChecksum(const UnicodeString & Alg, TRemoteFile * File);
+    const UnicodeString & AFileName, TDateTime & Modification, TModificationFmt ModificationFmt);
+  UnicodeString DoCalculateFileChecksum(const UnicodeString & Alg, TRemoteFile * AFile);
   bool UsingHashCommandChecksum(const UnicodeString & Alg) const;
   void HandleFeatReply();
   void ResetFeatures();

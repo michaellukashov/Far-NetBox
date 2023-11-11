@@ -1059,7 +1059,7 @@ bool IsEligibleForApplyingTabs(
   return Result;
 }
 
-static int CalculateWidthByLength(UnicodeString Text, void * /*Arg*/)
+static int CalculateWidthByLength(const UnicodeString & Text, void * /*Arg*/)
 {
   return Text.Length();
 }

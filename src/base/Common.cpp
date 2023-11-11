@@ -4528,12 +4528,12 @@ UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
   return Result;
 }
 
-UnicodeString RtfColorText(int Color, const UnicodeString Text)
+UnicodeString RtfColorText(int Color, const UnicodeString & Text)
 {
   return RtfColor(Color) + L" " + RtfText(Text) + RtfColor(0) + L" ";
 }
 
-UnicodeString RtfColorItalicText(int Color, const UnicodeString Text)
+UnicodeString RtfColorItalicText(int Color, const UnicodeString & Text)
 {
   return RtfColor(Color) + L"\\i " + RtfText(Text) + L"\\i0" + RtfColor(0) + L" ";
 }
@@ -4598,7 +4598,7 @@ UnicodeString RtfSwitch(
   return RtfSwitchValue(Name, Link, RtfText(IntToStr(Value), Rtf), Rtf);
 }
 
-UnicodeString RtfRemoveHyperlinks(UnicodeString Text)
+UnicodeString RtfRemoveHyperlinks(const UnicodeString & Text)
 {
   // Remove all tags HYPERLINK "https://www.example.com".
   // See also RtfEscapeParam
@@ -4620,7 +4620,7 @@ UnicodeString RtfRemoveHyperlinks(UnicodeString Text)
   return Text;
 }
 
-UnicodeString RtfEscapeParam(UnicodeString Param, bool PowerShellEscape)
+UnicodeString RtfEscapeParam(const UnicodeString & Param, bool PowerShellEscape)
 {
   const UnicodeString Quote(L"\"");
   UnicodeString Escape(Quote);
@@ -4685,7 +4685,7 @@ UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeStrin
   return RtfCodeComment(Prefix + L" " + Text) + RtfPara;
 }
 
-UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S)
+UnicodeString AssemblyString(TAssemblyLanguage Language, const UnicodeString & S)
 {
   switch (Language)
   {
@@ -5002,7 +5002,7 @@ UnicodeString AssemblyAddRawSettings(
   return Result;
 }
 
-void LoadScriptFromFile(UnicodeString FileName, TStrings * Lines, bool FallbackToAnsi)
+void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines, bool FallbackToAnsi)
 {
   std::unique_ptr<TFileStream> Stream(std::make_unique<TFileStream>(ApiPath(FileName), fmOpenRead | fmShareDenyWrite));
 

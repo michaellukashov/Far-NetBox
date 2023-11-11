@@ -458,7 +458,7 @@ protected:
   void DoLockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   void DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile);
   void OperationFinish(
-    TFileOperationProgressType * Progress, const void * Item, const UnicodeString AFileName,
+    TFileOperationProgressType * Progress, const void * Item, const UnicodeString & AFileName,
     bool Success, TOnceDoneOperation & OnceDoneOperation);
   void OperationStart(
     TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, int32_t Count);
@@ -497,7 +497,7 @@ protected:
     const UnicodeString & AFileName, TDateTime AModification, int64_t Size, const TRemoteFile * LinkedFile = nullptr) const;
   void LogFileDetails(const UnicodeString & FileName, TDateTime Modification, int64_t Size, const TRemoteFile * LinkedFile = nullptr);
   void LogFileDone(
-    TFileOperationProgressType * OperationProgress, const UnicodeString DestFileName,
+    TFileOperationProgressType * OperationProgress, const UnicodeString & DestFileName,
     TTransferSessionAction & Action);
   void LogTotalTransferDetails(
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
@@ -1083,7 +1083,7 @@ public:
 
   void Init(
     TStrings * AFiles, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * MainOperationProgress, const UnicodeString AMainName,
+    TFileOperationProgressType * MainOperationProgress, const UnicodeString & AMainName,
     int64_t ParallelFileSize);
 
   bool IsInitialized() const;
@@ -1095,7 +1095,7 @@ public:
     TTerminal * Terminal, UnicodeString & AFileName, TObject *& Object, UnicodeString & ATargetDir, bool & Dir,
     bool & Recursed, TCopyParamType *& CustomCopyParam);
   void Done(
-    const UnicodeString AFileName, bool Dir, bool Success, const UnicodeString & TargetDir,
+    const UnicodeString & AFileName, bool Dir, bool Success, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, TTerminal * Terminal);
   bool UpdateFileList(TQueueFileList * UpdateFileList);
 

@@ -62,7 +62,7 @@ NB_CORE_EXPORT UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Tri
 NB_CORE_EXPORT UnicodeString CopyToChars(const UnicodeString & Str, int32_t & From, const UnicodeString & Chs, bool Trim,
   wchar_t * Delimiter = nullptr, bool DoubleDelimiterEscapes = false);
 NB_CORE_EXPORT UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim);
-NB_CORE_EXPORT UnicodeString RemoveSuffix(const UnicodeString & Str, const UnicodeString Suffix, bool RemoveNumbersAfterSuffix = false);
+NB_CORE_EXPORT UnicodeString RemoveSuffix(const UnicodeString & Str, const UnicodeString & Suffix, bool RemoveNumbersAfterSuffix = false);
 UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote = L'"');
 UnicodeString MidStr(const UnicodeString & Text, int Start);
 UnicodeString ShellQuoteStr(const UnicodeString & Str);
@@ -325,7 +325,7 @@ UnicodeString RtfEscapeParam(const UnicodeString & Param, bool PowerShellEscape)
 UnicodeString RtfRemoveHyperlinks(const UnicodeString & Text);
 UnicodeString ScriptCommandLink(const UnicodeString & Command);
 UnicodeString AssemblyBoolean(TAssemblyLanguage Language, bool Value);
-UnicodeString AssemblyString(TAssemblyLanguage Language, UnicodeString S);
+UnicodeString AssemblyString(TAssemblyLanguage Language, const UnicodeString & S);
 UnicodeString AssemblyCommentLine(TAssemblyLanguage Language, const UnicodeString & Text);
 UnicodeString AssemblyPropertyRaw(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,

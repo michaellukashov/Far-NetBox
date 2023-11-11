@@ -812,7 +812,7 @@ UnicodeString UserModificationStr(TDateTime DateTime,
 UnicodeString ModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
 int GetPartialFileExtLen(const UnicodeString & FileName);
-int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs = 0,
+int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = 0,
   UnicodeString * TypeName = nullptr);
 bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
 UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bool Unix);

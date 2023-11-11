@@ -458,7 +458,7 @@ static inline void GetToolbarKey(const UnicodeString & ToolbarName,
 }
 
 static int ToolbarReadInt(const UnicodeString & ToolbarName,
-  const UnicodeString Value, const int Default, const void * ExtraData)
+  const UnicodeString & Value, const int Default, const void * ExtraData)
 {
   int Result;
   if (Value == L"Rev")
@@ -504,7 +504,7 @@ static int ToolbarReadInt(const UnicodeString & ToolbarName,
   return Result;
 }
 
-static UnicodeString ToolbarReadString(const UnicodeString ToolbarName,
+static UnicodeString ToolbarReadString(const UnicodeString & ToolbarName,
   const UnicodeString Value, const UnicodeString Default, const void * ExtraData)
 {
   UnicodeString Result;

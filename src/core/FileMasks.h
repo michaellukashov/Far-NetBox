@@ -128,8 +128,8 @@ private:
   static void Clear(TMasks & Masks);
   static void TrimEx(UnicodeString & Str, int32_t & Start, int32_t & End);
   static bool MatchesMasks(
-    const UnicodeString AFileName, bool Local, bool Directory,
-    const UnicodeString APath, const TParams * Params, const TMasks & Masks, bool Recurse);
+    const UnicodeString & AFileName, bool Local, bool Directory,
+    const UnicodeString & APath, const TParams * Params, const TMasks & Masks, bool Recurse);
   static bool MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString & Str);
   static Masks::TMask * DoCreateMaskMask(const UnicodeString & Str);
   void ThrowError(int32_t Start, int32_t End) const;

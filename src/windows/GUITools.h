@@ -148,8 +148,8 @@ class TScreenTipHintWindow : public THintWindow
 {
 public:
   TScreenTipHintWindow(TComponent * Owner);
-  virtual TRect CalcHintRect(int MaxWidth, const UnicodeString AHint, void * AData);
-  virtual void ActivateHintData(const TRect & Rect, const UnicodeString AHint, void * AData);
+  virtual TRect CalcHintRect(int MaxWidth, const UnicodeString & AHint, void * AData);
+  virtual void ActivateHintData(const TRect & Rect, const UnicodeString & AHint, void * AData);
 
   static void CalcHintTextRect(TControl * Control, TCanvas * Canvas, TRect & Rect, const UnicodeString & Hint);
 
@@ -222,7 +222,7 @@ protected:
 // an inline method without a compiler warning, which we cannot suppress in a macro.
 // And having the implementation in a real code (not macro) also allows us to debug the code.
 void FindComponentClass(
-  void * Data, TReader * Reader, const UnicodeString ClassName, TComponentClass & ComponentClass);
+  void * Data, TReader * Reader, const UnicodeString & ClassName, TComponentClass & ComponentClass);
 #define INTERFACE_HOOK_CUSTOM(PARENT) \
   protected: \
     virtual void ReadState(TReader * Reader) \

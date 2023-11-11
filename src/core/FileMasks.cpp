@@ -332,8 +332,8 @@ void TFileMasks::Clear(TMasks & Masks)
 }
 
 bool TFileMasks::MatchesMasks(
-  const UnicodeString FileName, bool Local, bool Directory,
-  const UnicodeString Path, const TParams * Params, const TMasks & Masks, bool Recurse)
+  const UnicodeString & FileName, bool Local, bool Directory,
+  const UnicodeString & Path, const TParams * Params, const TMasks & Masks, bool Recurse)
 {
   bool Result = false;
 

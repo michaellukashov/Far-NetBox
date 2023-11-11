@@ -2196,7 +2196,7 @@ void TFTPFileSystem::ApplyTimeDifference(TRemoteFile *File)
 }
 
 void TFTPFileSystem::ApplyTimeDifference(
-  const UnicodeString FileName, TDateTime &Modification, TModificationFmt &ModificationFmt)
+  const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt)
 {
   CheckTimeDifference();
   TRemoteFile::ShiftTimeInSeconds(Modification, ModificationFmt, FTimeDifference);
@@ -3234,7 +3234,7 @@ void TFTPFileSystem::Disconnect()
 }
 
 UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
-  UnicodeString AError, uint32_t *Code, TStrings **Response)
+  const UnicodeString & AError, uint32_t * Code, TStrings ** Response)
 {
   UnicodeString Result;
   UnicodeString Error = AError;

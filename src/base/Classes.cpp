@@ -1167,7 +1167,7 @@ TSHFileInfo::~TSHFileInfo()
   FSHFileInfoLoader.Unload();
 }
 
-int TSHFileInfo::GetFileIconIndex(UnicodeString StrFileName, BOOL bSmallIcon) const
+int TSHFileInfo::GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const
 {
   SHFILEINFO sfi = {};
 
@@ -1220,7 +1220,7 @@ int TSHFileInfo::GetDirIconIndex(BOOL bSmallIcon)
   return sfi.iIcon;
 }
 
-UnicodeString TSHFileInfo::GetFileType(UnicodeString StrFileName)
+UnicodeString TSHFileInfo::GetFileType(const UnicodeString & StrFileName)
 {
   SHFILEINFO sfi;
 

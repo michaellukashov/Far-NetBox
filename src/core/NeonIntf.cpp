@@ -533,7 +533,7 @@ UnicodeString CertificateVerificationMessage(const TNeonCertificateData & Data)
            Data.Subject, Data.FingerprintSHA256, Data.Failures);
 }
 
-UnicodeString CertificateSummary(const TNeonCertificateData &Data, const UnicodeString AHostName)
+UnicodeString CertificateSummary(const TNeonCertificateData & Data, const UnicodeString & AHostName)
 {
   UnicodeString Summary;
   if (Data.Failures == 0)

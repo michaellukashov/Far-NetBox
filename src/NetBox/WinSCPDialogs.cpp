@@ -1176,29 +1176,29 @@ class TPasswordDialog : public TFarDialog
 {
 public:
   explicit TPasswordDialog(TCustomFarPlugin *AFarPlugin,
-    const UnicodeString SessionName, TPromptKind Kind, const UnicodeString Name,
-    const UnicodeString Instructions, const TStrings *Prompts,
+    const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
+    const UnicodeString & Instructions, const TStrings * Prompts,
     bool StoredCredentialsTried) noexcept;
   virtual ~TPasswordDialog() noexcept;
-  bool Execute(TStrings *Results);
+  bool Execute(TStrings * Results);
 
 private:
   void ShowPromptClick(TFarButton * Sender, bool & Close);
-  void GenerateLabel(const UnicodeString & ACaption, bool &Truncated);
-  TFarEdit *GenerateEdit(bool Echo);
+  void GenerateLabel(const UnicodeString & ACaption, bool & Truncated);
+  TFarEdit * GenerateEdit(bool Echo);
   void GeneratePrompt(bool ShowSavePassword,
-    UnicodeString Instructions, const TStrings *Prompts, bool &Truncated);
+    const UnicodeString & Instructions, const TStrings * Prompts, bool & Truncated);
 
 private:
-  TSessionData *FSessionData{nullptr};
+  TSessionData * FSessionData{nullptr};
   UnicodeString FPrompt;
   std::unique_ptr<TList> FEdits;
-  TFarCheckBox *SavePasswordCheck{nullptr};
+  TFarCheckBox * SavePasswordCheck{nullptr};
 };
 
-TPasswordDialog::TPasswordDialog(TCustomFarPlugin *AFarPlugin,
-  const UnicodeString SessionName, TPromptKind Kind, const UnicodeString Name,
-  const UnicodeString Instructions, const TStrings *Prompts,
+TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
+  const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
+  const UnicodeString & Instructions, const TStrings * Prompts,
   bool /*StoredCredentialsTried*/) noexcept :
   TFarDialog(AFarPlugin),
   FSessionData(nullptr),
@@ -1282,15 +1282,15 @@ void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
   Result->SetCaption(Caption);
 }
 
-TFarEdit *TPasswordDialog::GenerateEdit(bool Echo)
+TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
 {
-  TFarEdit *Result = new TFarEdit(this);
+  TFarEdit * Result = new TFarEdit(this);
   Result->SetPassword(!Echo);
   return Result;
 }
 
 void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
-  UnicodeString Instructions, const TStrings *Prompts, bool &Truncated)
+  const UnicodeString & Instructions, const TStrings * Prompts, bool &Truncated)
 {
   FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
@@ -5897,8 +5897,8 @@ public:
   explicit TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
     TGetSpaceAvailableEvent OnGetSpaceAvailable) noexcept;
   virtual ~TFileSystemInfoDialog() noexcept;
-  void Execute(const TSessionInfo &SessionInfo,
-    const TFileSystemInfo &FileSystemInfo, const UnicodeString SpaceAvailablePath);
+  void Execute(const TSessionInfo & SessionInfo,
+    const TFileSystemInfo & FileSystemInfo, const UnicodeString & SpaceAvailablePath);
 
 protected:
   void Feed(TFeedFileSystemDataEvent AddItem);
@@ -6319,8 +6319,8 @@ void TFileSystemInfoDialog::SelectTab(int32_t Tab)
 }
 
 void TFileSystemInfoDialog::Execute(
-  const TSessionInfo &SessionInfo, const TFileSystemInfo &FileSystemInfo,
-  UnicodeString SpaceAvailablePath)
+  const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
+  const UnicodeString & SpaceAvailablePath)
 {
   FFileSystemInfo = FileSystemInfo;
   FSessionInfo = SessionInfo;

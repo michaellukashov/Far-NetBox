@@ -299,7 +299,7 @@ public:
 
   void SetParent(TSessionLog * AParent, const UnicodeString & AName);
 
-  void Add(TLogLineType Type, const UnicodeString ALine);
+  void Add(TLogLineType Type, const UnicodeString & ALine);
   void AddSystemInfo();
   void AddStartupInfo();
   void AddException(Exception * E);

@@ -185,7 +185,7 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
 
 void TFileOperationProgressType::Start(TFileOperation AOperation,
   TOperationSide ASide, int32_t ACount, bool ATemp,
-  const UnicodeString ADirectory, uint64_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation)
+  const UnicodeString & ADirectory, uint64_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation)
 {
 
   {

@@ -407,7 +407,7 @@ void ValidateEncryptKey(const RawByteString & AKey)
   }
 }
 
-void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString Password,
+void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString & Password,
   RawByteString &Salt, RawByteString &Output, RawByteString &Mac)
 {
   fcrypt_ctx aes;
@@ -437,8 +437,8 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   Output = Salt + Encrypted + Mac;
 }
 
-bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString Password,
-  const RawByteString Salt, RawByteString &Output, RawByteString Mac)
+bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString & Password,
+  const RawByteString & Salt, RawByteString & Output, const RawByteString & Mac)
 {
   fcrypt_ctx aes;
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));

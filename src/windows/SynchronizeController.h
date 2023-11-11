@@ -60,7 +60,7 @@ public:
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);
-  void LogOperation(TSynchronizeOperation Operation, const UnicodeString AFileName);
+  void LogOperation(TSynchronizeOperation Operation, const UnicodeString & AFileName);
 
 private:
   TSynchronizeEvent FOnSynchronize;
@@ -74,17 +74,17 @@ private:
   TSynchronizeLogEvent FSynchronizeLog;
   TCopyParamType FCopyParam;
 
-  void SynchronizeChange(TObject * Sender, const UnicodeString Directory,
+  void SynchronizeChange(TObject * Sender, const UnicodeString & Directory,
     bool & SubdirsChanged);
   void SynchronizeAbort(bool Close);
-  void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString Message);
-  void SynchronizeInvalid(TObject * Sender, const UnicodeString Directory,
-    const UnicodeString ErrorStr);
-  void SynchronizeFilter(TObject * Sender, const UnicodeString DirectoryName,
+  void SynchronizeLog(TSynchronizeLogEntry Entry, const UnicodeString & Message);
+  void SynchronizeInvalid(TObject * Sender, const UnicodeString & Directory,
+    const UnicodeString & ErrorStr);
+  void SynchronizeFilter(TObject * Sender, const UnicodeString & DirectoryName,
     bool & Add);
   void SynchronizeTooManyDirectories(TObject * Sender, int32_t & MaxDirectories);
   void SynchronizeDirectoriesChange(TObject * Sender, int32_t Directories);
 };
 
-void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString Message);
+void LogSynchronizeEvent(TTerminal * Terminal, const UnicodeString & Message);
 

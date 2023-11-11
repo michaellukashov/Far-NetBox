@@ -37,7 +37,7 @@ void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront = true, bool T
 void HideAsModal(TForm * Form, void *& Storage);
 bool ReleaseAsModal(TForm * Form, void *& Storage);
 bool IsMainFormLike(TCustomForm * Form);
-bool SelectDirectory(UnicodeString & Path, const UnicodeString Prompt,
+bool SelectDirectory(UnicodeString & Path, const UnicodeString & Prompt,
   bool PreserveFileName);
 void SelectDirectoryForEdit(THistoryComboBox * Edit);
 enum TListViewCheckAll { caCheck, caUncheck, caToggle };

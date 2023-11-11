@@ -417,7 +417,7 @@ protected:
   }
 
 #if 0
-  void RecordFile(const UnicodeString AIndent, TRemoteFile * AFile, bool IncludeFileName)
+  void RecordFile(const UnicodeString & AIndent, TRemoteFile * AFile, bool IncludeFileName)
   {
     FLog->AddIndented(AIndent + L"<file>");
     FLog->AddIndented(AIndent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(AFile->FileName))));
@@ -936,7 +936,7 @@ void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & ALine,
   }
 }
 
-void TSessionLog::Add(TLogLineType Type, const UnicodeString ALine)
+void TSessionLog::Add(TLogLineType Type, const UnicodeString & ALine)
 {
   DebugAssert(FConfiguration);
   if (GetLogging())

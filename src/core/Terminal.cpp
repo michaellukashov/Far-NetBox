@@ -770,7 +770,7 @@ TParallelOperation::TParallelOperation(TOperationSide Side) noexcept
 
 void TParallelOperation::Init(
   TStrings * AFileList, const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int32_t Params,
-  TFileOperationProgressType * MainOperationProgress, const UnicodeString MainName,
+  TFileOperationProgressType * MainOperationProgress, const UnicodeString & MainName,
   int64_t ParallelFileSize)
 {
   DebugAssert(FFileList == nullptr);
@@ -865,7 +865,7 @@ void TParallelOperation::WaitFor()
 }
 
 void TParallelOperation::Done(
-  const UnicodeString FileName, bool Dir, bool Success, const UnicodeString & TargetDir,
+  const UnicodeString & FileName, bool Dir, bool Success, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, TTerminal * Terminal)
 {
   if (Dir)
@@ -3808,7 +3808,7 @@ void TTerminal::LogFileDetails(const UnicodeString & AFileName, TDateTime AModif
 }
 
 void TTerminal::LogFileDone(
-  TFileOperationProgressType * OperationProgress, const UnicodeString DestFileName,
+  TFileOperationProgressType * OperationProgress, const UnicodeString & DestFileName,
   TTransferSessionAction & Action)
 {
   if (FDestFileName.IsEmpty())
@@ -4172,7 +4172,7 @@ void TTerminal::AnnounceFileListOperation()
 }
 
 void TTerminal::OperationFinish(
-  TFileOperationProgressType * Progress, const void * /*Item*/, const UnicodeString AFileName,
+  TFileOperationProgressType * Progress, const void * /*Item*/, const UnicodeString & AFileName,
   bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   Progress->Finish(AFileName, Success, OnceDoneOperation);

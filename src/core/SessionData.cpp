@@ -6368,7 +6368,7 @@ const TSessionData *TStoredSessionList::GetSessionByName(const UnicodeString & S
   return nullptr;
 }
 #if 0
-void TStoredSessionList::Load(UnicodeString AKey, bool UseDefaults)
+void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
 {
   std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(AKey));
   Storage->Init();

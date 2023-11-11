@@ -468,7 +468,7 @@ static void DoExecuteProcessAndReadOutput(
 }
 
 void ExecuteProcessChecked(
-  const UnicodeString Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
+  const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
 {
   if (Output == nullptr)
   {
@@ -481,7 +481,7 @@ void ExecuteProcessChecked(
 }
 
 void ExecuteProcessCheckedAndWait(
-  const UnicodeString Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
+  const UnicodeString & Command, const UnicodeString & HelpKeyword, UnicodeString * Output)
 {
   if (Output == nullptr)
   {
@@ -925,7 +925,7 @@ bool NonEmptyTextFromClipboard(UnicodeString & Text)
 }
 
 static bool GetResource(
-  const UnicodeString ResName, void *& Content, unsigned long & Size)
+  const UnicodeString & ResName, void *& Content, unsigned long & Size)
 {
   HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
     MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
@@ -1152,7 +1152,7 @@ bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
 
 #if 0
 
-void CopyToClipboard(UnicodeString Text)
+void CopyToClipboard(const UnicodeString & Text)
 {
   HANDLE Data;
   void * DataPtr;

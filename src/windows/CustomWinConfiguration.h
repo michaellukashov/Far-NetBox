@@ -75,7 +75,7 @@ private:
 
   void SetInterface(TInterface value);
   void SetHistory(const UnicodeString & Index, TStrings * value);
-  TStrings * GetHistory(const UnicodeString Index);
+  TStrings * GetHistory(const UnicodeString & Index);
   void SetSynchronizeChecklist(TSynchronizeChecklistConfiguration value);
   void SetFindFile(TFindFileConfiguration value);
   void SetConsoleWin(TConsoleWinConfiguration value);

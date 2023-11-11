@@ -512,7 +512,7 @@ int GetPartialFileExtLen(const UnicodeString & FileName)
   return Result;
 }
 
-int FakeFileImageIndex(UnicodeString FileName, unsigned long Attrs,
+int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
   UnicodeString * TypeName)
 {
   Attrs |= FILE_ATTRIBUTE_NORMAL;
