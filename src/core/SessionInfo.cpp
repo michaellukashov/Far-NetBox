@@ -1138,7 +1138,7 @@ UnicodeString TSessionLog::GetCmdLineLog(TConfiguration * AConfiguration)
 template <typename T>
 UnicodeString EnumName(T Value, const UnicodeString & ANames)
 {
-  int32_t N = intptr_t(Value);
+  int32_t N = nb::ToInt32(Value);
   UnicodeString Names = ANames;
   do
   {
