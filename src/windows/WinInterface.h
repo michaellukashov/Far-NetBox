@@ -634,8 +634,9 @@ struct TCopyDataMessage
 
 class TWinInteractiveCustomCommand : public TInteractiveCustomCommand
 {
+  TWinInteractiveCustomCommand() = delete;
 public:
-  TWinInteractiveCustomCommand(
+  explicit TWinInteractiveCustomCommand(
     TCustomCommand * ChildCustomCommand, const UnicodeString & CustomCommandName, const UnicodeString & HelpKeyword) noexcept;
 
 protected:
@@ -653,6 +654,7 @@ private:
   TUnicodeStringVector FValues;
   UnicodeString FHelpKeyword;
 };
+
 #if 0
 
 class TTrayIcon
@@ -722,7 +724,7 @@ public:
   virtual UnicodeString FinalLogMessage() = 0;
 };
 
-int HandleException(TConsole * Console, Exception & E);
+int32_t HandleException(TConsole * Console, Exception & E);
 
 enum { RESULT_SUCCESS = 0, RESULT_ANY_ERROR = 1 };
 
