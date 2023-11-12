@@ -200,10 +200,11 @@ public:
   void SetCount(int32_t NewCount);
 
   ROProperty<int32_t> Count{nb::bind(&TList::GetCount, this)};
-//  ROIndexedProperty<void *> Items{nb::bind(&TList::GetItem, this)};
+  ROIndexedProperty<void *> Items{nb::bind(&TList::GetItems, this)};
 
 private:
   nb::vector_t<void *> FList;
+  void * GetItems(int32_t Index) const { return FList[Index]; }
 };
 
 NB_DEFINE_CLASS_ID(TObjectList);
