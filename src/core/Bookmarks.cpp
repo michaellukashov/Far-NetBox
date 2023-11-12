@@ -195,7 +195,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 
                       case 2:
                         DebugAssert(Bookmark->GetShortCut() != 0);
-                        Storage->WriteInteger(Bookmark->GetName(), static_cast<int>(Bookmark->GetShortCut()));
+                        Storage->WriteInteger(Bookmark->GetName(), nb::ToInt32(Bookmark->GetShortCut()));
                         break;
                     }
 

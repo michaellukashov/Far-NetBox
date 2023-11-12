@@ -696,7 +696,7 @@ TEncryption::~TEncryption() // noexcept(false) // throw(std::runtime_error)
 
 void TEncryption::SetSalt()
 {
-  aes_iv(FContext, reinterpret_cast<const void *>(&FSalt[0]));
+  aes_iv(FContext, nb::ToPtr(&FSalt[0]));
 }
 
 void TEncryption::NeedSalt()

@@ -1648,9 +1648,9 @@ int32_t MonthsBetween(const TDateTime& ANow, const TDateTime& AThen)
 int32_t DaysBetween(const TDateTime& ANow, const TDateTime& AThen)
 {
   if (ANow > AThen) {
-    return static_cast<int>(std::trunc(std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond));
+    return nb::ToInt32(std::trunc(std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond));
   } else {
-    return static_cast<int>(std::trunc(std::abs(DateTimeDiff(AThen, ANow)) + HalfMilliSecond));
+    return nb::ToInt32(std::trunc(std::abs(DateTimeDiff(AThen, ANow)) + HalfMilliSecond));
   }
 }
 
@@ -1813,7 +1813,7 @@ int64_t MilliSecondOfTheYear(const TDateTime &AValue)
 
 int32_t Random(int32_t Max)
 {
-  return (int32_t)((int64_t)rand() / (std::numeric_limits<int>::max() / Max));
+  return nb::ToInt32(nb::ToInt64(rand()) / (std::numeric_limits<int>::max() / Max));
 }
 
 UnicodeString ReadAllText(const UnicodeString & FileName)

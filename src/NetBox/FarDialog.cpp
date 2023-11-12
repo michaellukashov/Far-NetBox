@@ -120,8 +120,8 @@ TPoint TFarDialog::GetClientSize() const
   if (FBorderBox)
   {
     TRect R = FBorderBox->GetActualBounds();
-    S.x = static_cast<int>(R.Width()) + 1;
-    S.y = static_cast<int>(R.Height()) + 1;
+    S.x = nb::ToInt32(R.Width()) + 1;
+    S.y = nb::ToInt32(R.Height()) + 1;
     S.x -= S.x > 4 ? 4 : S.x;
     S.y -= S.y > 2 ? 2 : S.y;
   }
@@ -179,7 +179,7 @@ TPoint TFarDialog::GetSize() const
 {
   if (GetCentered())
   {
-    return TPoint(static_cast<int>(GetBounds().Right), static_cast<int>(GetBounds().Bottom));
+    return TPoint(nb::ToInt32(GetBounds().Right), nb::ToInt32(GetBounds().Bottom));
   }
   return TPoint(nb::ToInt(GetBounds().Width() + 1), nb::ToInt(GetBounds().Height() + 1));
 }

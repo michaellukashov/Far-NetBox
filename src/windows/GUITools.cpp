@@ -2039,7 +2039,7 @@ void TFrameAnimation::Start()
     if (FTimer == nullptr)
     {
       FTimer = new TTimer(GetParentForm(FPaintBox));
-      FTimer->Interval = static_cast<int>(GUIUpdateInterval);
+      FTimer->Interval = nb::ToInt32(GUIUpdateInterval);
       FTimer->OnTimer = Timer;
     }
     else

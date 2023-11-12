@@ -3930,7 +3930,7 @@ UnicodeString WindowsProductName()
 
 int32_t GetWindowsBuild()
 {
-  return static_cast<int>(GetWindowsVersion().dwBuildNumber);
+  return nb::ToInt32(GetWindowsVersion().dwBuildNumber);
 }
 
 UnicodeString WindowsVersion()

@@ -2429,11 +2429,11 @@ void TManagementScript::TerminalOperationProgress(
         UnicodeString TransferredSizeStr;
         if (ProgressData.TransferredSize < 1024)
         {
-          TransferredSizeStr = FORMAT("%d B", (static_cast<int>(ProgressData.TransferredSize)));
+          TransferredSizeStr = FORMAT("%d B", (nb::ToInt32(ProgressData.TransferredSize)));
         }
         else
         {
-          TransferredSizeStr = FORMAT("%d KB", (static_cast<int>(ProgressData.TransferredSize / 1024)));
+          TransferredSizeStr = FORMAT("%d KB", (nb::ToInt32(ProgressData.TransferredSize / 1024)));
         }
 
         UnicodeString ProgressMessage = FORMAT(L"%-*s | %14s | %6.1f KB/s | %-6.6s | %3d%%",

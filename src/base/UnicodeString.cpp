@@ -98,7 +98,7 @@ int32_t AnsiString::Pos(const AnsiString & Str) const
 
 int32_t AnsiString::Pos(char Ch) const
 {
-  return static_cast<int32_t>(Data.Find(Ch)) + 1;
+  return nb::ToInt32(Data.Find(Ch)) + 1;
 }
 
 char AnsiString::operator[](int32_t Idx) const

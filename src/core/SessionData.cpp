@@ -786,7 +786,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   // Make sure we only ever use methods supported by TOptionsStorage
   // (implemented by TOptionsIniFile)
 
-  SetPortNumber(Storage->ReadInteger("PortNumber", static_cast<int>(GetPortNumber())));
+  SetPortNumber(Storage->ReadInteger("PortNumber", nb::ToInt32(GetPortNumber())));
   SessionSetUserName(Storage->ReadString("UserName", SessionGetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
   SetHostName(Storage->ReadString("HostName", GetHostName()));
@@ -817,14 +817,14 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
     PingIntervalSecs = Storage->ReadInteger("PingIntervalSec", GetPingInterval() % SecsPerMin);
   }
   SetPingInterval(
-    Storage->ReadInteger("PingInterval", static_cast<int>(GetPingInterval()) / SecsPerMin) * SecsPerMin +
+    Storage->ReadInteger("PingInterval", nb::ToInt32(GetPingInterval()) / SecsPerMin) * SecsPerMin +
     PingIntervalSecs);
   if (GetPingInterval() == 0)
   {
     SetPingInterval(30);
   }
   SetPingType(static_cast<TPingType>(Storage->ReadInteger("PingType", GetPingType())));
-  SetTimeout(Storage->ReadInteger("Timeout", static_cast<int>(GetTimeout())));
+  SetTimeout(Storage->ReadInteger("Timeout", nb::ToInt32(GetTimeout())));
   SetTryAgent(Storage->ReadBool("TryAgent", GetTryAgent()));
   SetAgentFwd(Storage->ReadBool("AgentFwd", GetAgentFwd()));
   SetAuthKI(Storage->ReadBool("AuthKI", GetAuthKI()));
@@ -857,7 +857,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetAddressFamily(static_cast<TAddressFamily>
     (Storage->ReadInteger("AddressFamily", GetAddressFamily())));
   SetRekeyData(Storage->ReadString("RekeyBytes", GetRekeyData()));
-  SetRekeyTime(Storage->ReadInteger("RekeyTime", static_cast<int>(GetRekeyTime())));
+  SetRekeyTime(Storage->ReadInteger("RekeyTime", nb::ToInt32(GetRekeyTime())));
 
   FSProtocol = (TFSProtocol)Storage->ReadInteger(L"FSProtocol", FSProtocol);
   LocalDirectory = Storage->ReadString(L"LocalDirectory", LocalDirectory);
@@ -918,7 +918,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   {
     SetTcpNoDelay(Storage->ReadBool("TcpNoDelay", GetTcpNoDelay()));
   }
-  SetSendBuf(Storage->ReadInteger("SendBuf", Storage->ReadInteger("SshSendBuf", static_cast<int>(GetSendBuf()))));
+  SetSendBuf(Storage->ReadInteger("SendBuf", Storage->ReadInteger("SshSendBuf", nb::ToInt32(GetSendBuf()))));
   FSourceAddress = Storage->ReadString(L"SourceAddress", FSourceAddress);
   FProtocolFeatures = Storage->ReadString(L"ProtocolFeatures", FProtocolFeatures);
   SetSshSimple(Storage->ReadBool("SshSimple", GetSshSimple()));
@@ -974,20 +974,20 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   READ_SFTP_BUG(SignedTS);
   #undef READ_SFTP_BUG
 
-  SetSFTPMaxVersion(Storage->ReadInteger("SFTPMaxVersion", static_cast<int>(GetSFTPMaxVersion())));
-  SetSFTPMinPacketSize(Storage->ReadInteger("SFTPMinPacketSize", static_cast<int>(GetSFTPMinPacketSize())));
-  SetSFTPMaxPacketSize(Storage->ReadInteger("SFTPMaxPacketSize", static_cast<int>(GetSFTPMaxPacketSize())));
-  SetSFTPDownloadQueue(Storage->ReadInteger("SFTPDownloadQueue", static_cast<int>(GetSFTPDownloadQueue())));
-  SetSFTPUploadQueue(Storage->ReadInteger("SFTPUploadQueue", static_cast<int>(GetSFTPUploadQueue())));
-  SetSFTPListingQueue(Storage->ReadInteger("SFTPListingQueue", static_cast<int>(GetSFTPListingQueue())));
+  SetSFTPMaxVersion(Storage->ReadInteger("SFTPMaxVersion", nb::ToInt32(GetSFTPMaxVersion())));
+  SetSFTPMinPacketSize(Storage->ReadInteger("SFTPMinPacketSize", nb::ToInt32(GetSFTPMinPacketSize())));
+  SetSFTPMaxPacketSize(Storage->ReadInteger("SFTPMaxPacketSize", nb::ToInt32(GetSFTPMaxPacketSize())));
+  SetSFTPDownloadQueue(Storage->ReadInteger("SFTPDownloadQueue", nb::ToInt32(GetSFTPDownloadQueue())));
+  SetSFTPUploadQueue(Storage->ReadInteger("SFTPUploadQueue", nb::ToInt32(GetSFTPUploadQueue())));
+  SetSFTPListingQueue(Storage->ReadInteger("SFTPListingQueue", nb::ToInt32(GetSFTPListingQueue())));
   FSFTPRealPath = Storage->ReadEnum(L"SFTPRealPath", FSFTPRealPath, AutoSwitchMapping);
 
-  SetColor(Storage->ReadInteger("Color", static_cast<int>(GetColor())));
+  SetColor(Storage->ReadInteger("Color", nb::ToInt32(GetColor())));
 
   SetPuttyProtocol(Storage->ReadString("Protocol", GetPuttyProtocol()));
 
   SetTunnel(Storage->ReadBool("Tunnel", GetTunnel()));
-  SetTunnelPortNumber(Storage->ReadInteger("TunnelPortNumber", static_cast<int>(GetTunnelPortNumber())));
+  SetTunnelPortNumber(Storage->ReadInteger("TunnelPortNumber", nb::ToInt32(GetTunnelPortNumber())));
   SetTunnelUserName(Storage->ReadString("TunnelUserName", GetTunnelUserName()));
   // must be loaded after TunnelUserName,
   // because TunnelHostName may be in format user@host
@@ -1003,7 +1003,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   {
     LOAD_PASSWORD(TunnelPassphrase, L"TunnelPassphrasePlain");
   }
-  SetTunnelLocalPortNumber(Storage->ReadInteger("TunnelLocalPortNumber", static_cast<int>(GetTunnelLocalPortNumber())));
+  SetTunnelLocalPortNumber(Storage->ReadInteger("TunnelLocalPortNumber", nb::ToInt32(GetTunnelLocalPortNumber())));
   SetTunnelHostKey(Storage->ReadString("TunnelHostKey", GetTunnelHostKey()));
 
   // Ftp prefix
@@ -1013,7 +1013,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FFtpForcePasvIp = Storage->ReadEnum(L"FtpForcePasvIp2", FFtpForcePasvIp, AutoSwitchMapping);
   FFtpUseMlsd = Storage->ReadEnum(L"FtpUseMlsd", FFtpUseMlsd, AutoSwitchMapping);
   SetFtpAccount(Storage->ReadString("FtpAccount", GetFtpAccount()));
-  SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", static_cast<int>(GetFtpPingInterval())));
+  SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", nb::ToInt32(GetFtpPingInterval())));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger("FtpPingType", GetFtpPingType())));
   SetFtpTransferActiveImmediately(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately())));
   FFtpTransferActiveImmediately = Storage->ReadEnum(L"FtpTransferActiveImmediately2", FFtpTransferActiveImmediately, AutoSwitchMapping);
@@ -1025,7 +1025,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetSslSessionReuse(Storage->ReadBool("SslSessionReuse", GetSslSessionReuse()));
   SetTlsCertificateFile(Storage->ReadString("TlsCertificateFile", GetTlsCertificateFile()));
 
-  SetFtpProxyLogonType(Storage->ReadInteger("FtpProxyLogonType", static_cast<int>(GetFtpProxyLogonType())));
+  SetFtpProxyLogonType(Storage->ReadInteger("FtpProxyLogonType", nb::ToInt32(GetFtpProxyLogonType())));
 
   SetMinTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MinTlsVersion", GetMinTlsVersion())));
   SetMaxTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MaxTlsVersion", GetMaxTlsVersion())));

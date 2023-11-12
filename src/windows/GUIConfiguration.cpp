@@ -736,7 +736,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
     }
     else if (All || FCopyParamList->GetModified())
     {
-      Storage->WriteInteger("CopyParamList", static_cast<int>(FCopyParamList->GetCount()));
+      Storage->WriteInteger("CopyParamList", nb::ToInt32(FCopyParamList->GetCount()));
       FCopyParamList->Save(Storage);
     }
   },

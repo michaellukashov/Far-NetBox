@@ -1236,7 +1236,7 @@ void TS3FileSystem::ReadDirectoryInternal(
 
       S3_list_service(
         FLibS3Protocol, FAccessKeyId.c_str(), FSecretAccessKey.c_str(), FSecurityToken, (FHostName + FPortSuffix).c_str(),
-        StrToS3(FAuthRegion), static_cast<int>(AMaxKeys), FRequestContext, FTimeout, &ListServiceHandler, &Data);
+        StrToS3(FAuthRegion), nb::ToInt32(AMaxKeys), FRequestContext, FTimeout, &ListServiceHandler, &Data);
 
       HandleNonBucketStatus(Data, Retry);
     }
@@ -2095,8 +2095,8 @@ void TS3FileSystem::Source(
       0
     };
 
-  int Parts = std::min(S3MaxMultiPartChunks, std::max(1, static_cast<int>((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
-  int ChunkSize = std::max(S3MinMultiPartChunkSize, static_cast<int>((AHandle.Size + Parts - 1) / Parts));
+  int Parts = std::min(S3MaxMultiPartChunks, std::max(1, nb::ToInt32((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
+  int ChunkSize = std::max(S3MinMultiPartChunkSize, nb::ToInt32((AHandle.Size + Parts - 1) / Parts));
   DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > nb::ToInt64(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
 
   bool Multipart = (Parts > 1);
@@ -2164,7 +2164,7 @@ void TS3FileSystem::Source(
           S3PutObjectHandler UploadPartHandler =
             { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
             int64_t Remaining = Stream->Size() - Stream->Position();
-          int RemainingInt = static_cast<int>(std::min(static_cast<int64_t>(std::numeric_limits<int>::max()), Remaining));
+          int RemainingInt = nb::ToInt32(std::min(nb::ToInt64(std::numeric_limits<int>::max()), Remaining));
           int PartLength = std::min(ChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(

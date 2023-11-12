@@ -192,9 +192,9 @@ static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
     TButton * Button = dynamic_cast<TButton *>(Dialog->Controls[ii]);
     if (Button != nullptr)
     {
-      if ((Button->ModalResult != 0) && (Button->ModalResult != static_cast<int>(qaCancel)))
+      if ((Button->ModalResult != 0) && (Button->ModalResult != nb::ToInt32(qaCancel)))
       {
-        Button->Enabled = !CheckBox->Checked || (Button->ModalResult == static_cast<int>(PositiveAnswer));
+        Button->Enabled = !CheckBox->Checked || (Button->ModalResult == nb::ToInt32(PositiveAnswer));
       }
 
       if (Button->DropDownMenu != nullptr)
