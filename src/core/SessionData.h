@@ -309,6 +309,7 @@ public:
   UnicodeString GetHostNameExpanded() const;
   UnicodeString GetHostNameSource() const;
   void SetPortNumber(int32_t value);
+  void SetUserName(const UnicodeString & value);
   UnicodeString GetUserNameExpanded() const;
   UnicodeString GetUserNameSource() const;
   void SetPassword(const UnicodeString & value);
@@ -497,13 +498,13 @@ public:
   UnicodeString GetSource() const;
   void DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword, bool Unsafe, bool RespectDisablePasswordStoring);
   void DoSave(THierarchicalStorage * Storage,
-    bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords);
+    bool PuttyExport, const TSessionData * Default, bool DoNotEncryptPasswords);
 #if 0
-  UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString Name, const UnicodeString Default);
-  int ReadXmlNode(_di_IXMLNode Node, const UnicodeString Name, int Default);
-  _di_IXMLNode FindSettingsNode(_di_IXMLNode Node, const UnicodeString Name);
-  UnicodeString ReadSettingsNode(_di_IXMLNode Node, const UnicodeString Name, const UnicodeString Default);
-  int ReadSettingsNode(_di_IXMLNode Node, const UnicodeString Name, int Default);
+  UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
+  int32_t ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int32_t Default);
+  _di_IXMLNode FindSettingsNode(_di_IXMLNode Node, const UnicodeString & Name);
+  UnicodeString ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
+  int32_t ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, int32_t Default);
 #endif // #if 0
   bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties, bool Decrypted) const;
   UnicodeString GetNameWithoutHiddenPrefix() const;
@@ -519,22 +520,22 @@ public:
   static bool IsProtocolUrl(const UnicodeString & AUrl, const UnicodeString & Protocol, int32_t & ProtocolLen);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & Name, bool Rtf);
   static void AddSwitch(
-    UnicodeString &Result, const UnicodeString & Name, const UnicodeString & Value, bool Rtf);
+    UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value, bool Rtf);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, int32_t Value, bool Rtf);
 #if 0
   static void AddAssemblyProperty(
-    UnicodeString &Result, TAssemblyLanguage Language,
-    const UnicodeString &Name, const UnicodeString &Value);
+    UnicodeString & Result, TAssemblyLanguage Language,
+    const UnicodeString & Name, const UnicodeString & Value);
   static void AddAssemblyProperty(
-    UnicodeString &Result, TAssemblyLanguage Language,
-    const UnicodeString &Name, const UnicodeString &Type,
-    const UnicodeString &Member);
+    UnicodeString & Result, TAssemblyLanguage Language,
+    const UnicodeString & Name, const UnicodeString & Type,
+    const UnicodeString & Member);
   static void AddAssemblyProperty(
-    UnicodeString &Result, TAssemblyLanguage Language,
-    const UnicodeString &Name, int Value);
+    UnicodeString & Result, TAssemblyLanguage Language,
+    const UnicodeString & Name, int32_t Value);
   void AddAssemblyProperty(
-    UnicodeString &Result, TAssemblyLanguage Language,
-    const UnicodeString &Name, bool Value);
+    UnicodeString & Result, TAssemblyLanguage Language,
+    const UnicodeString & Name, bool Value);
 #endif // #if 0
   TStrings * SaveToOptions(const TSessionData * Default);
   TStrings * GetRawSettingsForUrl();
@@ -613,42 +614,42 @@ public:
   static UnicodeString FormatSiteKey(const UnicodeString & HostName, int32_t PortNumber);
   static TStrings * GetAllOptionNames(bool PuttyExport);
 
-  __property UnicodeString HostName  = { read = FHostName, write = SetHostName };
+  __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   RWProperty<UnicodeString> HostName{nb::bind(&TSessionData::GetHostName, this), nb::bind(&TSessionData::SetHostName, this)};
-  __property UnicodeString HostNameExpanded  = { read = GetHostNameExpanded };
+  __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };
   ROProperty<UnicodeString> HostNameExpanded{nb::bind(&TSessionData::GetHostNameExpanded, this)};
   __property UnicodeString HostNameSource = { read=GetHostNameSource };
   ROProperty<UnicodeString> HostNameSource{nb::bind(&TSessionData::GetHostNameSource, this)};
-  __property int PortNumber = { read = FPortNumber, write = SetPortNumber };
+  __property int32_t PortNumber  = { read=FPortNumber, write=SetPortNumber };
   RWProperty3<int32_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
-  __property UnicodeString UserName = { read = FUserName, write = SessionSetUserName };
+  __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
   RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::SessionGetUserName, this), nb::bind(&TSessionData::SessionSetUserName, this)};
-  __property UnicodeString UserNameExpanded  = { read = GetUserNameExpanded };
+  __property UnicodeString UserNameExpanded  = { read=GetUserNameExpanded };
   __property UnicodeString UserNameSource  = { read=GetUserNameSource };
-  __property UnicodeString Password  = { read = GetPassword, write = SetPassword };
+  __property UnicodeString Password  = { read=GetPassword, write=SetPassword };
   RWProperty<UnicodeString> Password{nb::bind(&TSessionData::GetPassword, this), nb::bind(&TSessionData::SetPassword, this)};
-  __property UnicodeString NewPassword  = { read = GetNewPassword, write = SetNewPassword };
+  __property UnicodeString NewPassword  = { read=GetNewPassword, write=SetNewPassword };
   RWPropertySimple<UnicodeString> NewPassword{&FNewPassword, nb::bind(&TSessionData::SetNewPassword, this)};
-  __property bool ChangePassword  = { read = FChangePassword, write = SetChangePassword };
+  __property bool ChangePassword  = { read=FChangePassword, write=SetChangePassword };
   RWPropertySimple1<bool> ChangePassword{&FChangePassword, nb::bind(&TSessionData::SetChangePassword, this)};
-  __property int PingInterval  = { read = FPingInterval, write = SetPingInterval };
+  __property int32_t PingInterval  = { read=FPingInterval, write=SetPingInterval };
   RWPropertySimple1<int32_t> PingInterval{&FPingInterval, nb::bind(&TSessionData::SetPingInterval, this)};
-  __property bool TryAgent  = { read = FTryAgent, write = SetTryAgent };
+  __property bool TryAgent  = { read=FTryAgent, write=SetTryAgent };
   RWProperty3<bool> TryAgent{nb::bind(&TSessionData::GetTryAgent, this), nb::bind(&TSessionData::SetTryAgent, this)};
-  __property bool AgentFwd  = { read = FAgentFwd, write = SetAgentFwd };
+  __property bool AgentFwd  = { read=FAgentFwd, write=SetAgentFwd };
   RWProperty3<bool> AgentFwd{nb::bind(&TSessionData::GetAgentFwd, this), nb::bind(&TSessionData::SetAgentFwd, this)};
   __property UnicodeString ListingCommand = { read = FListingCommand, write = SetListingCommand };
   __property bool AuthKI  = { read = FAuthKI, write = SetAuthKI };
   RWPropertySimple1<bool> AuthKI{&FAuthKI, nb::bind(&TSessionData::SetAuthKI, this)};
-  __property bool AuthKIPassword  = { read = FAuthKIPassword, write = SetAuthKIPassword };
-  __property bool AuthGSSAPI  = { read = FAuthGSSAPI, write = SetAuthGSSAPI };
+  __property bool AuthKIPassword  = { read=FAuthKIPassword, write=SetAuthKIPassword };
+  __property bool AuthGSSAPI  = { read=FAuthGSSAPI, write=SetAuthGSSAPI };
   RWPropertySimple1<bool> AuthGSSAPI{&FAuthGSSAPI, nb::bind(&TSessionData::SetAuthGSSAPI, this)};
   __property bool AuthGSSAPIKEX  = { read=FAuthGSSAPIKEX, write=SetAuthGSSAPIKEX };
   RWPropertySimple1<bool> AuthGSSAPIKEX{&FAuthGSSAPIKEX, nb::bind(&TSessionData::SetAuthGSSAPIKEX, this)};
-  __property bool GSSAPIFwdTGT = { read = FGSSAPIFwdTGT, write = SetGSSAPIFwdTGT };
-  __property bool ChangeUsername  = { read = FChangeUsername, write = SetChangeUsername };
+  __property bool GSSAPIFwdTGT = { read=FGSSAPIFwdTGT, write=SetGSSAPIFwdTGT };
+  __property bool ChangeUsername  = { read=FChangeUsername, write=SetChangeUsername };
   RWPropertySimple1<bool> ChangeUsername{&FChangeUsername, nb::bind(&TSessionData::SetChangeUsername, this)};
-  __property bool Compression  = { read = FCompression, write = SetCompression };
+  __property bool Compression  = { read=FCompression, write=SetCompression };
   RWProperty3<bool> Compression{nb::bind(&TSessionData::GetCompression, this), nb::bind(&TSessionData::SetCompression, this)};
   __property bool UsesSsh = { read = GetUsesSsh };
   __property bool Ssh2DES  = { read = FSsh2DES, write = SetSsh2DES };
@@ -772,10 +773,10 @@ public:
   RWPropertySimple1<bool> ResolveSymlinks{&FResolveSymlinks, nb::bind(&TSessionData::SetResolveSymlinks, this)};
   __property bool FollowDirectorySymlinks = { read = FFollowDirectorySymlinks, write = SetFollowDirectorySymlinks };
   RWPropertySimple1<bool> FollowDirectorySymlinks{&FFollowDirectorySymlinks, nb::bind(&TSessionData::SetFollowDirectorySymlinks, this)};
-  __property int SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
-  __property int SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
-  __property int SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
-  __property int SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
+  __property int32_t SFTPDownloadQueue = { read = FSFTPDownloadQueue, write = SetSFTPDownloadQueue };
+  __property int32_t SFTPUploadQueue = { read = FSFTPUploadQueue, write = SetSFTPUploadQueue };
+  __property int32_t SFTPListingQueue = { read = FSFTPListingQueue, write = SetSFTPListingQueue };
+  __property int32_t SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
   __property uint32_t SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
   __property TAutoSwitch SFTPRealPath = { read = FSFTPRealPath, write = SetSFTPRealPath };
   __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read = GetSFTPBug, write = SetSFTPBug };
@@ -799,7 +800,7 @@ public:
   RWPropertySimple<UnicodeString> RekeyData{&FRekeyData, nb::bind(&TSessionData::SetRekeyData, this)};
   __property uint32_t RekeyTime = { read = FRekeyTime, write = SetRekeyTime };
   RWPropertySimple1<uint32_t> RekeyTime{&FRekeyTime, nb::bind(&TSessionData::SetRekeyTime, this)};
-  __property int Color = { read = FColor, write = SetColor };
+  __property int32_t Color = { read = FColor, write = SetColor };
   __property bool Tunnel = { read = FTunnel, write = SetTunnel };
   RWPropertySimple1<bool> Tunnel{&FTunnel, nb::bind(&TSessionData::SetTunnel, this)};
   __property UnicodeString TunnelHostName = { read = FTunnelHostName, write = SetTunnelHostName };
@@ -815,14 +816,14 @@ public:
   __property UnicodeString TunnelPassphrase = { read = GetTunnelPassphrase, write = SetTunnelPassphrase };
   RWProperty<UnicodeString> TunnelPassphrase{nb::bind(&TSessionData::GetTunnelPassphrase, this), nb::bind(&TSessionData::SetTunnelPassphrase, this)};
   __property bool TunnelAutoassignLocalPortNumber = { read = GetTunnelAutoassignLocalPortNumber };
-  __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
+  __property int32_t TunnelLocalPortNumber = { read = FTunnelLocalPortNumber, write = SetTunnelLocalPortNumber };
   __property UnicodeString TunnelPortFwd = { read = FTunnelPortFwd, write = SetTunnelPortFwd };
   __property UnicodeString TunnelHostKey = { read = FTunnelHostKey, write = SetTunnelHostKey };
   __property bool FtpPasvMode = { read = FFtpPasvMode, write = SetFtpPasvMode };
   __property TAutoSwitch FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
   __property TAutoSwitch FtpUseMlsd = { read = FFtpUseMlsd, write = SetFtpUseMlsd };
   __property UnicodeString FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
-  __property int FtpPingInterval  = { read = FFtpPingInterval, write = SetFtpPingInterval };
+  __property int32_t FtpPingInterval  = { read = FFtpPingInterval, write = SetFtpPingInterval };
   __property TDateTime FtpPingIntervalDT  = { read = GetFtpPingIntervalDT };
   __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
   __property TAutoSwitch FtpTransferActiveImmediately = { read = FFtpTransferActiveImmediately, write = SetFtpTransferActiveImmediately };
@@ -835,7 +836,7 @@ public:
   __property UnicodeString LogicalHostName = { read = FLogicalHostName, write = SetLogicalHostName };
   RWProperty<UnicodeString> LogicalHostName{nb::bind(&TSessionData::GetLogicalHostName, this), nb::bind(&TSessionData::SetLogicalHostName, this)};
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
-  __property int InternalEditorEncoding = { read = FInternalEditorEncoding, write = SetInternalEditorEncoding };
+  __property int32_t InternalEditorEncoding = { read = FInternalEditorEncoding, write = SetInternalEditorEncoding };
   RWPropertySimple1<int32_t> InternalEditorEncoding{&FInternalEditorEncoding, nb::bind(&TSessionData::SetInternalEditorEncoding, this)};
   __property UnicodeString S3DefaultRegion = { read = FS3DefaultRegion, write = SetS3DefaultRegion };
   RWProperty<UnicodeString> S3DefaultRegion{nb::bind(&TSessionData::GetS3DefaultRegion, this), nb::bind(&TSessionData::SetS3DefaultRegion, this)};
@@ -872,7 +873,7 @@ public:
   ROProperty<UnicodeString> SiteKey{nb::bind(&TSessionData::GetSiteKey, this)};
   __property UnicodeString OrigHostName = { read = FOrigHostName };
   const UnicodeString& OrigHostName{FOrigHostName};
-  __property int OrigPortNumber = { read = FOrigPortNumber };
+  __property int32_t OrigPortNumber = { read = FOrigPortNumber };
   const int32_t& OrigPortNumber{FOrigPortNumber};
   __property UnicodeString LocalName = { read = GetLocalName };
   ROProperty<UnicodeString> LocalName{nb::bind(&TSessionData::GetLocalName, this)};
@@ -1075,7 +1076,7 @@ public:
   void SelectAll(bool Select);
   void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
-  TSessionData * AtSession(int Index)
+  TSessionData * AtSession(int32_t Index)
     { return static_cast<TSessionData *>(AtObject(Index)); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
@@ -1095,10 +1096,10 @@ public:
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
   TStrings * GetWorkspaces() const;
   bool HasAnyWorkspace() const;
-  TSessionData * SaveWorkspaceData(TSessionData * Data, int Index);
+  TSessionData * SaveWorkspaceData(TSessionData * Data, int32_t Index);
   virtual ~TStoredSessionList() noexcept;
-  __property TSessionData *Sessions[int Index]  = { read = AtSession };
-  __property TSessionData *DefaultSettings  = { read = FDefaultSettings, write = SetDefaultSettings };
+  __property TSessionData * Sessions[int32_t Index]  = { read=AtSession };
+  __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
   RWProperty1<TSessionData> DefaultSettings{nb::bind(&TStoredSessionList::GetDefaultSettingsConst, this), nb::bind(&TStoredSessionList::SetDefaultSettings, this)};
 
   static int32_t ImportHostKeys(
@@ -1115,22 +1116,23 @@ public:
   TSessionData * GetDefaultSettings() { return FDefaultSettings.get(); }
   void SetDefaultSettings(const TSessionData * Value);
   const TSessionData * GetSessionByName(const UnicodeString & SessionName) const;
+
 private:
   std::unique_ptr<TSessionData> FDefaultSettings;
   bool FReadOnly{false};
   std::unique_ptr<TStrings> FPendingRemovals;
   __removed void SetDefaultSettings(TSessionData * value);
   void DoSave(THierarchicalStorage * Storage, bool All,
-    bool RecryptPasswordOnly, TStrings *RecryptPasswordErrors);
+    bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly,
-    TStrings *RecryptPasswordErrors);
+    TStrings * RecryptPasswordErrors);
   void DoSave(THierarchicalStorage * Storage,
-    TSessionData *Data, bool All, bool RecryptPasswordOnly,
-    TSessionData *FactoryDefaults);
+    TSessionData * Data, bool All, bool RecryptPasswordOnly,
+    TSessionData * FactoryDefaults);
   TSessionData * ResolveWorkspaceData(TSessionData * Data);
   const TSessionData * GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
-    TSessionData *Data, const UnicodeString & Name);
+    TSessionData * Data, const UnicodeString & Name);
   __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
   void DoGetFolderOrWorkspace(const UnicodeString & Name, TList * List, bool NoRecrypt);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();

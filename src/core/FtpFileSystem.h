@@ -70,8 +70,8 @@ public:
   virtual void Sink(
     const UnicodeString & AFileName, const TRemoteFile * AFile,
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
-    const TCopyParamType *CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress,
-    uint32_t AFlags, TDownloadSessionAction &Action);
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress,
+    uint32_t AFlags, TDownloadSessionAction & Action);
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
@@ -89,7 +89,7 @@ public:
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,
     TRemoteFile *& AFile) override;
   virtual void RemoteRenameFile(
-   const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
+    const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual void RemoteCopyFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
@@ -150,9 +150,9 @@ protected:
     HANDLE & ALocalFileHandle,
     int & RequestResult);
   bool HandleAsyncRequestVerifyCertificate(
-    const TFtpsCertificateData & Data, int & RequestResult);
+    const TFtpsCertificateData & Data, int32_t & RequestResult);
   bool HandleAsyncRequestNeedPass(
-    struct TNeedPassRequestData & Data, int & RequestResult) const;
+    struct TNeedPassRequestData & Data, int32_t & RequestResult) const;
   bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uint32_t Count);
   bool HandleTransferStatus(bool Valid, int64_t TransferSize,
@@ -192,8 +192,8 @@ protected:
     int64_t Size, int32_t Type, TFileTransferData & UserData,
     TFileOperationProgressType * OperationProgress);
   TDateTime ConvertLocalTimestamp(time_t Time);
-  void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime &Source,
-    TDateTime &DateTime, TModificationFmt &ModificationFmt) const;
+  void RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source,
+    TDateTime & DateTime, TModificationFmt & ModificationFmt) const;
   void SetLastCode(int32_t Code);
   void StoreLastResponse(const UnicodeString & Text);
   void SetCPSLimit(TFileOperationProgressType * OperationProgress);
@@ -201,11 +201,11 @@ protected:
   bool SupportsReadingFile() const;
   void AutoDetectTimeDifference(TRemoteFileList * FileList);
   void AutoDetectTimeDifference(const UnicodeString & ADirectory, const TCopyParamType * CopyParam, int32_t AParams);
-  void ApplyTimeDifference(TRemoteFile *File);
+  void ApplyTimeDifference(TRemoteFile * File);
   void ApplyTimeDifference(
-    const UnicodeString & FileName, TDateTime &Modification, TModificationFmt &ModificationFmt);
+    const UnicodeString & FileName, TDateTime & Modification, TModificationFmt &ModificationFmt);
   void DummyReadDirectory(const UnicodeString & ADirectory);
-  bool IsEmptyFileList(TRemoteFileList *FileList) const;
+  bool IsEmptyFileList(TRemoteFileList * FileList) const;
   void CheckTimeDifference();
   bool NeedAutoDetectTimeDifference() const;
   bool LookupUploadModificationTime(
@@ -234,7 +234,7 @@ private:
     FEAT
   };
 
-  mutable TFileZillaIntf *FFileZillaIntf{nullptr};
+  mutable TFileZillaIntf * FFileZillaIntf{nullptr};
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
   std::unique_ptr<TMessageQueue> FQueue{nullptr};
@@ -297,8 +297,8 @@ private:
   TUploadedTimes FUploadedTimes{};
   bool FSupportsAnyChecksumFeature{false};
   UnicodeString FLastCommandSent;
-  X509 *FCertificate{nullptr};
-  EVP_PKEY *FPrivateKey{nullptr};
+  X509 * FCertificate{nullptr};
+  EVP_PKEY * FPrivateKey{nullptr};
   bool FTransferActiveImmediately{false};
   bool FWindowsServer{false};
   int64_t FBytesAvailable{0};

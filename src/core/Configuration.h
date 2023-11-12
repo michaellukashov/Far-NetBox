@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <rdestl/vector.h>
+// #include <set>
+// #include <list>
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
@@ -93,7 +95,7 @@ private:
   int32_t FUpdating{0};
   TNotifyEvent FOnChange;
 
-  mutable void *FApplicationInfo{nullptr};
+  mutable void * FApplicationInfo{nullptr};
   std::unique_ptr<TUsage> FUsage;
   bool FLogging{false};
   bool FPermanentLogging{false};
@@ -171,7 +173,7 @@ public:
   UnicodeString GetFileProductVersion() const;
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
-  UnicodeString GetFileVersion(TVSFixedFileInfo *Info) const;
+  UnicodeString GetFileVersion(TVSFixedFileInfo * Info) const;
   UnicodeString GetStoredSessionsSubKey() const;
   UnicodeString DoGetPuttySessionsKey() const;
   UnicodeString GetPuttySessionsSubKey() const;
@@ -232,7 +234,7 @@ public:
   void SetLocalPortNumberMin(int32_t Value);
   void SetLocalPortNumberMax(int32_t Value);
   void SetQueueTransfersLimit(int32_t Value);
-  TSshHostCAList * GetSshHostCAList() const;
+  const TSshHostCAList * GetSshHostCAList() const;
   void SetSshHostCAList(const TSshHostCAList * Value);
   const TSshHostCAList * GetPuttySshHostCAList();
   const TSshHostCAList * GetActiveSshHostCAList();
@@ -290,14 +292,14 @@ public:
   UnicodeString GetFileProductName(const UnicodeString & AFileName) const;
   UnicodeString GetFileCompanyName(const UnicodeString & AFileName) const;
 
-  __property bool PermanentLogging  = { read = GetLogging, write = SetLogging };
-  __property UnicodeString PermanentLogFileName  = { read = GetLogFileName, write = SetLogFileName };
-  __property bool PermanentLogActions  = { read = GetLogActions, write = SetLogActions };
-  __property UnicodeString PermanentActionsLogFileName  = { read = GetPermanentActionsLogFileName, write = SetActionsLogFileName };
-  __property int PermanentLogProtocol  = { read = FPermanentLogProtocol, write = SetLogProtocol };
-  __property bool PermanentLogSensitive  = { read = FPermanentLogSensitive, write = SetLogSensitive };
-  __property int64_t PermanentLogMaxSize  = { read = GetLogMaxSize, write = SetLogMaxSize };
-  __property int PermanentLogMaxCount  = { read = GetLogMaxCount, write = SetLogMaxCount };
+  __property bool PermanentLogging  = { read=GetLogging, write=SetLogging };
+  __property UnicodeString PermanentLogFileName  = { read=GetLogFileName, write=SetLogFileName };
+  __property bool PermanentLogActions  = { read=GetLogActions, write=SetLogActions };
+  __property UnicodeString PermanentActionsLogFileName  = { read=GetPermanentActionsLogFileName, write=SetActionsLogFileName };
+  __property int32_t PermanentLogProtocol  = { read=FPermanentLogProtocol, write=SetLogProtocol };
+  __property bool PermanentLogSensitive  = { read=FPermanentLogSensitive, write=SetLogSensitive };
+  __property int64_t PermanentLogMaxSize  = { read=GetLogMaxSize, write=SetLogMaxSize };
+  __property int32_t PermanentLogMaxCount  = { read=GetLogMaxCount, write=SetLogMaxCount };
 
 public:
   TConfiguration() = delete;
@@ -306,7 +308,7 @@ public:
   virtual void ConfigurationInit();
   virtual void Default();
   virtual void UpdateStaticUsage();
-  void Load(THierarchicalStorage *Storage);
+  void Load(THierarchicalStorage * Storage);
   void Save();
   void SaveExplicit();
   void MoveStorage(TStorage AStorage, const UnicodeString & ACustomIniFileStorageName);
@@ -371,9 +373,9 @@ public:
   void RefreshPuttySshHostCAList();
 
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read = GetFixedApplicationInfo };
-  __property void *ApplicationInfo  = { read = GetApplicationInfo };
+  __property void * ApplicationInfo  = { read = GetApplicationInfo };
   ROProperty<void *> ApplicationInfo{nb::bind(&TConfiguration::GetApplicationInfo, this)};
-  __property TUsage *Usage = { read = FUsage };
+  __property TUsage * Usage = { read = FUsage };
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   RWProperty3<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
@@ -404,7 +406,7 @@ public:
   ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
   __property UnicodeString Version = { read = GetVersion };
   ROProperty<UnicodeString> Version {nb::bind(&TConfiguration::GetVersion, this)};
-  __property int CompoundVersion = { read = GetCompoundVersion };
+  __property int32_t CompoundVersion = { read = GetCompoundVersion };
   ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
   __property UnicodeString ProductVersion = { read = GetProductVersion };
   ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
@@ -419,8 +421,8 @@ public:
   __property bool LogFileAppend  = { read = FLogFileAppend, write = SetLogFileAppend };
   __property bool LogSensitive  = { read = FLogSensitive, write = SetLogSensitive };
   __property int64_t LogMaxSize  = { read = FLogMaxSize, write = SetLogMaxSize };
-  __property int LogMaxCount  = { read = FLogMaxCount, write = SetLogMaxCount };
-  __property int LogProtocol  = { read = FLogProtocol, write = SetLogProtocol };
+  __property int32_t LogMaxCount  = { read = FLogMaxCount, write = SetLogMaxCount };
+  __property int32_t LogProtocol  = { read = FLogProtocol, write = SetLogProtocol };
   RWProperty3<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
   __property int ActualLogProtocol  = { read = FActualLogProtocol };
   ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
@@ -433,13 +435,13 @@ public:
   __property bool ConfirmResume = { read = GetConfirmResume, write = SetConfirmResume};
   __property bool AutoReadDirectoryAfterOp = { read = GetAutoReadDirectoryAfterOp, write = SetAutoReadDirectoryAfterOp};
   __property bool RememberPassword = { read = GetRememberPassword };
-  __property int SessionReopenAuto = { read = FSessionReopenAuto, write = SetSessionReopenAuto };
-  __property int SessionReopenBackground = { read = FSessionReopenBackground, write = SetSessionReopenBackground };
-  __property int SessionReopenTimeout = { read = FSessionReopenTimeout, write = SetSessionReopenTimeout };
-  __property int SessionReopenAutoStall = { read = FSessionReopenAutoStall, write = SetSessionReopenAutoStall };
-  __property int TunnelLocalPortNumberLow = { read = FTunnelLocalPortNumberLow, write = SetTunnelLocalPortNumberLow };
-  __property int TunnelLocalPortNumberHigh = { read = FTunnelLocalPortNumberHigh, write = SetTunnelLocalPortNumberHigh };
-  __property int CacheDirectoryChangesMaxSize = { read = FCacheDirectoryChangesMaxSize, write = SetCacheDirectoryChangesMaxSize };
+  __property int32_t SessionReopenAuto = { read = FSessionReopenAuto, write = SetSessionReopenAuto };
+  __property int32_t SessionReopenBackground = { read = FSessionReopenBackground, write = SetSessionReopenBackground };
+  __property int32_t SessionReopenTimeout = { read = FSessionReopenTimeout, write = SetSessionReopenTimeout };
+  __property int32_t SessionReopenAutoStall = { read = FSessionReopenAutoStall, write = SetSessionReopenAutoStall };
+  __property int32_t TunnelLocalPortNumberLow = { read = FTunnelLocalPortNumberLow, write = SetTunnelLocalPortNumberLow };
+  __property int32_t TunnelLocalPortNumberHigh = { read = FTunnelLocalPortNumberHigh, write = SetTunnelLocalPortNumberHigh };
+  __property int32_t CacheDirectoryChangesMaxSize = { read = FCacheDirectoryChangesMaxSize, write = SetCacheDirectoryChangesMaxSize };
   __property bool ShowFtpWelcomeMessage = { read = FShowFtpWelcomeMessage, write = SetShowFtpWelcomeMessage };
   __property UnicodeString ExternalIpAddress = { read = FExternalIpAddress, write = SetExternalIpAddress };
   __property UnicodeString CertificateStorage = { read = FCertificateStorage, write = SetCertificateStorage };
@@ -447,19 +449,19 @@ public:
   ROProperty<UnicodeString> CertificateStorageExpanded{nb::bind(&TConfiguration::GetCertificateStorageExpanded, this)};
   __property UnicodeString AWSMetadataService = { read = FAWSMetadataService, write = SetAWSMetadataService };
   __property UnicodeString ChecksumCommands = { read = FChecksumCommands };
-  __property int LocalPortNumberMin = { read = FLocalPortNumberMin, write = SetLocalPortNumberMin };
-  __property int LocalPortNumberMax = { read = FLocalPortNumberMax, write = SetLocalPortNumberMax };
+  __property int32_t LocalPortNumberMin = { read = FLocalPortNumberMin, write = SetLocalPortNumberMin };
+  __property int32_t LocalPortNumberMax = { read = FLocalPortNumberMax, write = SetLocalPortNumberMax };
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
-  __property int ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
+  __property int32_t ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
-  __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
+  __property int32_t DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
   int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
-  __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
-  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
+  __property int32_t ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
+  __property int32_t QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
   RWPropertySimple1<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
-  __property int ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
+  __property int32_t ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
   int32_t& ParallelTransferThreshold{FParallelTransferThreshold};
-  __property int KeyVersion = { read = FKeyVersion, write = FKeyVersion };
+  __property int32_t KeyVersion = { read = FKeyVersion, write = FKeyVersion };
   int32_t& KeyVersion{FKeyVersion};
   __property TSshHostCAList * SshHostCAList = { read = GetSshHostCAList, write = SetSshHostCAList };
   __property TSshHostCAList * PuttySshHostCAList = { read = GetPuttySshHostCAList };
@@ -467,21 +469,21 @@ public:
   __property TSshHostCAList * ActiveSshHostCAList = { read = GetActiveSshHostCAList };
 //  ROProperty<TSshHostCAList *> ActiveSshHostCAList{nb::bind(&TConfiguration::GetActiveSshHostCAList, this)};
   __property bool SshHostCAsFromPuTTY = { read = FSshHostCAsFromPuTTY, write = FSshHostCAsFromPuTTY };
-  __property int HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };
+  __property int32_t HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };
   int32_t& HttpsCertificateValidation{FHttpsCertificateValidation};
   __property UnicodeString SynchronizationChecksumAlgs = { read = FSynchronizationChecksumAlgs, write = FSynchronizationChecksumAlgs };
   UnicodeString& SynchronizationChecksumAlgs{FSynchronizationChecksumAlgs};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
   ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetConfigurationTimeFormat, this)};
-  __property TStorage Storage  = { read = GetStorage };
+  __property TStorage Storage  = { read=GetStorage };
   ROProperty<TStorage> Storage{nb::bind(&TConfiguration::GetStorage, this)};
-  __property UnicodeString RegistryStorageKey  = { read = GetRegistryStorageKey };
+  __property UnicodeString RegistryStorageKey  = { read=GetRegistryStorageKey };
   ROProperty<UnicodeString> RegistryStorageKey{nb::bind(&TConfiguration::GetRegistryStorageKey, this)};
   __property UnicodeString CustomIniFileStorageName  = { read = FCustomIniFileStorageName };
   __property UnicodeString ExplicitIniFileStorageName  = { read=FIniFileStorageName };
-  __property UnicodeString IniFileStorageName = { read=GetIniFileStorageNameForReadingWriting };
-  __property UnicodeString IniFileStorageNameForReading = { read=GetIniFileStorageNameForReading };
+  __property UnicodeString IniFileStorageName  = { read=GetIniFileStorageNameForReadingWriting };
+  __property UnicodeString IniFileStorageNameForReading  = { read=GetIniFileStorageNameForReading };
   __property TStrings * OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
   RWProperty1<TStrings> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
   __property bool Persistent = { read = GetPersistent };

@@ -328,7 +328,7 @@ THierarchicalStorage * TConfiguration::CreateConfigRegistryStorage()
 THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
-  THierarchicalStorage *Result = nullptr;
+  THierarchicalStorage * Result = nullptr;
   if (GetStorage() == stRegistry)
   {
     Result = CreateConfigRegistryStorage();
@@ -789,7 +789,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   {
     Storage->SetAccessMode(smRead);
     if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
-      Storage->OpenSubKey(CDCacheKey, false) &&
+        Storage->OpenSubKey(CDCacheKey, false) &&
         Storage->ValueExists(SessionKey))
     {
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
@@ -1138,14 +1138,12 @@ TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo() const
 
 int32_t TConfiguration::GetCompoundVersion() const
 {
-  TVSFixedFileInfo *FileInfo = GetFixedApplicationInfo();
-  if (FileInfo)
-  {
-    return CalculateCompoundVersion(
-      HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
-      HIWORD(FileInfo->dwFileVersionLS));
-  }
-  return 0;
+  TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
+  if (!FileInfo)
+    return 0;
+  return CalculateCompoundVersion(
+    HIWORD(FileInfo->dwFileVersionMS), LOWORD(FileInfo->dwFileVersionMS),
+    HIWORD(FileInfo->dwFileVersionLS));
 }
 
 UnicodeString TConfiguration::ModuleFileName() const
@@ -1398,28 +1396,6 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info) const
   return Result;
 }
 
-UnicodeString TConfiguration::GetProductVersion() const
-{
-  TGuard Guard(FCriticalSection); nb::used(Guard);
-  UnicodeString Result;
-  try
-  {
-    TVSFixedFileInfo *FixedApplicationInfo = GetFixedApplicationInfo();
-    if (FixedApplicationInfo)
-    {
-      Result = FormatVersion(
-        HIWORD(FixedApplicationInfo->dwFileVersionMS),
-        LOWORD(FixedApplicationInfo->dwFileVersionMS),
-        HIWORD(FixedApplicationInfo->dwFileVersionLS));
-    }
-  }
-  catch (Exception &E)
-  {
-    throw ExtException(&E, "Can't get application version");
-  }
-  return Result;
-}
-
 UnicodeString TConfiguration::GetVersion() const
 {
   return GetFileVersion(GetFixedApplicationInfo());
@@ -1431,7 +1407,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   TGuard Guard(FCriticalSection); nb::used(Guard);
 
   UnicodeString Result;
-  void *Info = GetFileApplicationInfo(AFileName);
+  void * Info = GetFileApplicationInfo(AFileName);
   try__finally
   {
     if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
@@ -2143,12 +2119,6 @@ void TConfiguration::SetLogFileName(const UnicodeString & Value)
   }
 }
 
-UnicodeString  TConfiguration::GetLogFileName() const
-{
-  TGuard Guard(FCriticalSection); nb::used(Guard);
-  return FPermanentLogFileName;
-}
-
 void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
@@ -2361,7 +2331,7 @@ void TConfiguration::SetQueueTransfersLimit(int32_t Value)
   SET_CONFIG_PROPERTY2(QueueTransfersLimit);
 }
 
-TSshHostCAList * TConfiguration::GetSshHostCAList() const
+const TSshHostCAList * TConfiguration::GetSshHostCAList() const
 {
   return FSshHostCAList.get();
 }
@@ -2398,11 +2368,6 @@ bool TConfiguration::GetPersistent() const
   return (FStorage != stNul) && !FDontSave;
 }
 
-void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int32_t Value)
-{
-  SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
-}
-
 void TShortCuts::Add(const TShortCut &ShortCut)
 {
   FShortCuts.push_back(ShortCut);
@@ -2413,3 +2378,37 @@ bool TShortCuts::Has(const TShortCut &ShortCut) const
   nb::vector_t<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
   return (it != FShortCuts.end());
 }
+//---------------------------------------------------------------------------
+void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int32_t Value)
+{
+  SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
+}
+
+UnicodeString  TConfiguration::GetLogFileName() const
+{
+  TGuard Guard(FCriticalSection); nb::used(Guard);
+  return FPermanentLogFileName;
+}
+
+UnicodeString TConfiguration::GetProductVersion() const
+{
+  TGuard Guard(FCriticalSection); nb::used(Guard);
+  UnicodeString Result;
+  try
+  {
+    TVSFixedFileInfo *FixedApplicationInfo = GetFixedApplicationInfo();
+    if (FixedApplicationInfo)
+    {
+      Result = FormatVersion(
+        HIWORD(FixedApplicationInfo->dwFileVersionMS),
+        LOWORD(FixedApplicationInfo->dwFileVersionMS),
+        HIWORD(FixedApplicationInfo->dwFileVersionLS));
+    }
+  }
+  catch (Exception &E)
+  {
+    throw ExtException(&E, "Can't get application version");
+  }
+  return Result;
+}
+

@@ -1,4 +1,5 @@
-﻿#include <vcl.h>
+﻿
+#include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
@@ -7,6 +8,8 @@
 #include "FileMasks.h"
 
 #include "TextsCore.h"
+#include "RemoteFiles.h"
+#include "PuttyTools.h"
 #include "Terminal.h"
 
 const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
@@ -22,6 +25,8 @@ EFileMasksException::EFileMasksException(
   ErrorStart(AErrorStart),
   ErrorLen(AErrorLen)
 {
+  // ErrorStart = AErrorStart;
+  // ErrorLen = AErrorLen;
 }
 
 static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool& Masked)
@@ -33,40 +38,40 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
   {
     switch (Mask[Index])
     {
-    case L'\\':
-      if (!Delim)
-      {
-        Delim = true;
-        Masked = false;
-        break;
-      }
-
-    case L'*':
-      if (!Delim)
-      {
-        Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
-        RestStart = Part.Length() + 1;
-        Masked = true;
-        break;
-      }
-
-    case L'?':
-      if (!Delim)
-      {
-        if (RestStart <= Part.Length())
+      case L'\\':
+        if (!Delim)
         {
-          Result += Part[RestStart];
-          RestStart++;
+          Delim = true;
+          Masked = false;
+          break;
         }
-        Masked = true;
-        break;
-      }
 
-    default:
-      Result += Mask[Index];
-      RestStart++;
-      Delim = false;
-      break;
+      case L'*':
+        if (!Delim)
+        {
+          Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
+          RestStart = Part.Length() + 1;
+          Masked = true;
+          break;
+        }
+
+      case L'?':
+        if (!Delim)
+        {
+          if (RestStart <= Part.Length())
+          {
+            Result += Part[RestStart];
+            RestStart++;
+          }
+          Masked = true;
+          break;
+        }
+
+      default:
+        Result += Mask[Index];
+        RestStart++;
+        Delim = false;
+        break;
     }
   }
   return Result;
@@ -117,7 +122,7 @@ bool IsFileNameMask(const UnicodeString & AMask)
 
 bool IsEffectiveFileNameMask(const UnicodeString & AMask)
 {
-  return !AMask.IsEmpty() && (AMask != L"*") && (AMask != L"*.*");
+  return !AMask.IsEmpty() && (AMask != L"*") && (AMask != AnyMask);
 }
 
 UnicodeString DelimitFileNameMask(const UnicodeString & AMask)
@@ -352,34 +357,34 @@ bool TFileMasks::MatchesMasks(
 
       switch (Mask.HighSizeMask)
       {
-      case TMask::None:
-        Result = true;
-        break;
+        case TMask::None:
+          Result = true;
+          break;
 
-      case TMask::Open:
-        Result = HasSize && (Params->Size < Mask.HighSize);
-        break;
+        case TMask::Open:
+          Result = HasSize && (Params->Size < Mask.HighSize);
+          break;
 
-      case TMask::Close:
-        Result = HasSize && (Params->Size <= Mask.HighSize);
-        break;
+        case TMask::Close:
+          Result = HasSize && (Params->Size <= Mask.HighSize);
+          break;
       }
 
       if (Result)
       {
         switch (Mask.LowSizeMask)
         {
-        case TMask::None:
-          Result = true;
-          break;
+          case TMask::None:
+            Result = true;
+            break;
 
-        case TMask::Open:
-          Result = HasSize && (Params->Size > Mask.LowSize);
-          break;
+          case TMask::Open:
+            Result = HasSize && (Params->Size > Mask.LowSize);
+            break;
 
-        case TMask::Close:
-          Result = HasSize && (Params->Size >= Mask.LowSize); //-V595
-          break;
+          case TMask::Close:
+            Result = HasSize && (Params->Size >= Mask.LowSize); //-V595
+            break;
         }
       }
 
@@ -389,17 +394,17 @@ bool TFileMasks::MatchesMasks(
       {
         switch (Mask.HighModificationMask)
         {
-        case TMask::None:
-          Result = true;
-          break;
+          case TMask::None:
+            Result = true;
+            break;
 
-        case TMask::Open:
-          Result = HasModification && (Params->Modification < Mask.HighModification);
-          break;
+          case TMask::Open:
+            Result = HasModification && (Params->Modification < Mask.HighModification);
+            break;
 
-        case TMask::Close:
-          Result = HasModification && (Params->Modification <= Mask.HighModification);
-          break;
+          case TMask::Close:
+            Result = HasModification && (Params->Modification <= Mask.HighModification);
+            break;
         }
       }
 
@@ -407,17 +412,17 @@ bool TFileMasks::MatchesMasks(
       {
         switch (Mask.LowModificationMask)
         {
-        case TMask::None:
-          Result = true;
-          break;
+          case TMask::None:
+            Result = true;
+            break;
 
-        case TMask::Open:
-          Result = HasModification && (Params->Modification > Mask.LowModification);
-          break;
+          case TMask::Open:
+            Result = HasModification && (Params->Modification > Mask.LowModification);
+            break;
 
-        case TMask::Close:
-          Result = HasModification && (Params->Modification >= Mask.LowModification);
-          break;
+          case TMask::Close:
+            Result = HasModification && (Params->Modification >= Mask.LowModification);
+            break;
         }
       }
     }
@@ -612,9 +617,9 @@ void TFileMasks::CreateMask(
       TDateTime Modification;
       int64_t DummySize;
       if ((!TryStrToInt64(PartStr, DummySize) && TryStrToDateTimeStandard(PartStr, Modification)) ||
-        TryRelativeStrToDateTime(PartStr, Modification, false))
+          TryRelativeStrToDateTime(PartStr, Modification, false))
       {
-        TMask::TMaskBoundary &ModificationMask =
+        TMask::TMaskBoundary & ModificationMask =
           (Low ? Mask.LowModificationMask : Mask.HighModificationMask);
 
         if ((ModificationMask != TMask::None) || Directory)
@@ -628,8 +633,8 @@ void TFileMasks::CreateMask(
       }
       else
       {
-        TMask::TMaskBoundary &SizeMask = (Low ? Mask.LowSizeMask : Mask.HighSizeMask);
-        int64_t &Size = (Low ? Mask.LowSize : Mask.HighSize);
+        TMask::TMaskBoundary & SizeMask = (Low ? Mask.LowSizeMask : Mask.HighSizeMask);
+        int64_t & Size = (Low ? Mask.LowSize : Mask.HighSize);
 
         if ((SizeMask != TMask::None) || Directory)
         {
@@ -731,7 +736,7 @@ void TFileMasks::CreateMask(
   FMasks[MASK_INDEX(Directory, Include)].push_back(Mask);
 }
 
-TStrings *TFileMasks::GetMasksStr(int32_t Index) const
+TStrings * TFileMasks::GetMasksStr(int32_t Index) const
 {
   if (FMasksStr[Index] == nullptr)
   {
@@ -1249,7 +1254,7 @@ void TCustomCommandData::Init(
   FSessionData->HostKey = AHostKey;
 }
 
-TCustomCommandData &TCustomCommandData::operator=(const TCustomCommandData & Data)
+TCustomCommandData & TCustomCommandData::operator=(const TCustomCommandData & Data)
 {
   DebugAssert(Data.SessionData != nullptr);
   FSessionData.reset(new TSessionData(L""));
@@ -1257,7 +1262,7 @@ TCustomCommandData &TCustomCommandData::operator=(const TCustomCommandData & Dat
   return *this;
 }
 
-TSessionData *TCustomCommandData::GetSessionDataPrivate() const
+TSessionData * TCustomCommandData::GetSessionDataPrivate() const
 {
   return FSessionData.get();
 }
@@ -1316,7 +1321,7 @@ bool TFileCustomCommand::PatternReplacement(
 {
   // keep consistent with TSessionLog::OpenLogFile
 
-  TSessionData *SessionData = FData.GetSessionData();
+  TSessionData * SessionData = FData.GetSessionData();
 
   if (::SameText(Pattern, L"!s"))
   {
@@ -1407,7 +1412,7 @@ void TFileCustomCommand::Validate(const UnicodeString & Command)
 void TFileCustomCommand::ValidatePattern(const UnicodeString & Command,
   int32_t Index, int32_t /*Len*/, wchar_t PatternCmd, void * Arg)
 {
-  int32_t *Found = static_cast<int32_t *>(Arg);
+  int32_t * Found = static_cast<int32_t *>(Arg);
 
   DebugAssert(Index > 0);
 

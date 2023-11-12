@@ -86,13 +86,13 @@ public:
 public:
   Exception() = default;
   explicit Exception(TObjectClassId Kind, const wchar_t * Msg) noexcept;
-  explicit Exception(const wchar_t *Msg) noexcept;
+  explicit Exception(const wchar_t * Msg) noexcept;
   explicit Exception(TObjectClassId Kind, const UnicodeString & Msg) noexcept;
   explicit Exception(const UnicodeString & Msg) noexcept;
-  explicit Exception(TObjectClassId Kind, Exception *E) noexcept;
-  explicit Exception(TObjectClassId Kind, std::exception *E) noexcept;
+  explicit Exception(TObjectClassId Kind, Exception * E) noexcept;
+  explicit Exception(TObjectClassId Kind, std::exception * E) noexcept;
   explicit Exception(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) noexcept;
-  explicit Exception(TObjectClassId Kind, Exception *E, int32_t Ident) noexcept;
+  explicit Exception(TObjectClassId Kind, Exception * E, int32_t Ident) noexcept;
   explicit Exception(TObjectClassId Kind, int32_t Ident) noexcept;
   virtual ~Exception() = default;
 

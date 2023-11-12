@@ -64,7 +64,7 @@ NB_CORE_EXPORT UnicodeString CopyToChars(const UnicodeString & Str, int32_t & Fr
 NB_CORE_EXPORT UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim);
 NB_CORE_EXPORT UnicodeString RemoveSuffix(const UnicodeString & Str, const UnicodeString & Suffix, bool RemoveNumbersAfterSuffix = false);
 UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote = L'"');
-UnicodeString MidStr(const UnicodeString & Text, int Start);
+UnicodeString MidStr(const UnicodeString & Text, int32_t Start);
 UnicodeString ShellQuoteStr(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString ExceptionLogString(Exception * E);
 NB_CORE_EXPORT UnicodeString MainInstructions(const UnicodeString & S);
@@ -111,7 +111,7 @@ UnicodeString GetCanonicalPath(const UnicodeString & Path);
 NB_CORE_EXPORT bool IsPathToSameFile(const UnicodeString & APath1, const UnicodeString & APath2);
 NB_CORE_EXPORT int32_t CompareLogicalText(
   const UnicodeString & S1, const UnicodeString & S2, bool NaturalOrderNumericalSorting);
-int CompareNumber(int64_t Value1, int64_t Value2);
+int32_t CompareNumber(int64_t Value1, int64_t Value2);
 NB_CORE_EXPORT bool ContainsTextSemiCaseSensitive(const UnicodeString & Text, const UnicodeString & SubText);
 NB_CORE_EXPORT bool IsReservedName(const UnicodeString & AFileName);
 NB_CORE_EXPORT UnicodeString ApiPath(const UnicodeString & APath);
@@ -168,7 +168,7 @@ NB_CORE_EXPORT LCID GetDefaultLCID();
 NB_CORE_EXPORT UnicodeString DefaultEncodingName();
 NB_CORE_EXPORT UnicodeString WindowsProductName();
 NB_CORE_EXPORT bool GetWindowsProductType(DWORD & Type);
-NB_CORE_EXPORT int GetWindowsBuild();
+NB_CORE_EXPORT int32_t GetWindowsBuild();
 NB_CORE_EXPORT UnicodeString WindowsVersion();
 NB_CORE_EXPORT UnicodeString WindowsVersionLong();
 NB_CORE_EXPORT bool IsDirectoryWriteable(const UnicodeString & APath);
@@ -203,7 +203,7 @@ NB_CORE_EXPORT bool IsRealFile(const UnicodeString & AFileName);
 NB_CORE_EXPORT UnicodeString GetOSInfo();
 NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, const UnicodeString & Value);
-UnicodeString GetAncestorProcessName(int Levels = 1);
+UnicodeString GetAncestorProcessName(int32_t Levels = 1);
 UnicodeString GetAncestorProcessNames();
 void NotImplemented();
 UnicodeString GetDividerLine();
@@ -305,10 +305,10 @@ extern const UnicodeString SessionClassName;
 extern const UnicodeString TransferOptionsClassName;
 
 UnicodeString RtfText(const UnicodeString & Text, bool Rtf = true);
-UnicodeString RtfColor(int Index);
+UnicodeString RtfColor(int32_t Index);
 UnicodeString RtfOverrideColorText(const UnicodeString & Text);
-UnicodeString RtfColorItalicText(int Color, const UnicodeString & Text);
-UnicodeString RtfColorText(int Color, const UnicodeString & Text);
+UnicodeString RtfColorItalicText(int32_t Color, const UnicodeString & Text);
+UnicodeString RtfColorText(int32_t Color, const UnicodeString & Text);
 UnicodeString RtfKeyword(const UnicodeString & Text);
 UnicodeString RtfParameter(const UnicodeString & Text);
 UnicodeString RtfString(const UnicodeString & Text);
@@ -320,7 +320,7 @@ UnicodeString RtfSwitchValue(
 UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, const UnicodeString & Value, bool Rtf = true);
 UnicodeString RtfSwitch(
-  const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf = true);
+  const UnicodeString & Name, const UnicodeString & Link, int32_t Value, bool Rtf = true);
 UnicodeString RtfEscapeParam(const UnicodeString & Param, bool PowerShellEscape);
 UnicodeString RtfRemoveHyperlinks(const UnicodeString & Text);
 UnicodeString ScriptCommandLink(const UnicodeString & Command);

@@ -554,13 +554,13 @@ int32_t FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs
   }
   // this should be somewhere else, probably in TUnixDirView,
   // as the "partial" overlay is added there too
-  int PartialFileExtLen = GetPartialFileExtLen(FileName);
+  int32_t PartialFileExtLen = GetPartialFileExtLen(FileName);
   if (GetPartialFileExtLen(FileName) > 0)
   {
     FileName.SetLength(FileName.Length() - PartialFileExtLen);
   }
 
-  int Icon;
+  int32_t Icon;
   if (SHGetFileInfo(FileName.c_str(),
         Attrs, &SHFileInfo, sizeof(SHFileInfo),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
@@ -702,7 +702,7 @@ UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C)
 }
 
 template <typename T>
-void DoPackStr(T &Str)
+void DoPackStr(T & Str)
 {
   // Following will free unnecessary bytes
   Str = Str.c_str();
@@ -759,7 +759,7 @@ UnicodeString AnsiToString(const RawByteString & S)
   return UnicodeString(AnsiString(S));
 }
 
-UnicodeString AnsiToString(const char *S, size_t Len)
+UnicodeString AnsiToString(const char * S, size_t Len)
 {
   return UnicodeString(AnsiString(S, Len));
 }
@@ -905,7 +905,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, int32_t & From, const Unico
 
 UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim)
 {
-  int From = 1;
+  int32_t From = 1;
   return CopyToChars(Str, From, UnicodeString(Ch), Trim);
 }
 
@@ -939,7 +939,7 @@ UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote)
     }
   }
   UnicodeString Result(Str);
-  for (int i = 1; i <= Result.Length(); i++)
+  for (int32_t i = 1; i <= Result.Length(); i++)
   {
     if (Result.IsDelimiter(SpecialChars, i))
     {
@@ -954,7 +954,7 @@ UnicodeString DelimitStr(const UnicodeString & Str, wchar_t Quote)
   return Result;
 }
 
-UnicodeString MidStr(const UnicodeString & Text, int Start)
+UnicodeString MidStr(const UnicodeString & Text, int32_t Start)
 {
   return Text.SubString(Start, Text.Length() - Start + 1);
 }
@@ -966,15 +966,15 @@ UnicodeString ShellQuoteStr(const UnicodeString & Str)
   return QuoteStr + DelimitStr(Str, Quote) + QuoteStr;
 }
 
-UnicodeString ExceptionLogString(Exception *E)
+UnicodeString ExceptionLogString(Exception * E)
 {
   DebugAssert(E);
   if (isa<Exception>(E))
   {
-    UnicodeString Msg = FORMAT("%s", UnicodeString(E->what()));
+    UnicodeString Msg = FORMAT("%s", E->Message);
     if (isa<ExtException>(E))
     {
-      TStrings *MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
+      TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
@@ -1601,7 +1601,7 @@ int32_t CompareLogicalText(
 {
   // Keep in sync with CompareLogicalTextPas
 
-  int Result;
+  int32_t Result;
   if (NaturalOrderNumericalSorting)
   {
     Result = StrCmpLogicalW(S1.c_str(), S2.c_str());
@@ -1618,9 +1618,9 @@ int32_t CompareLogicalText(
   return Result;
 }
 
-int CompareNumber(int64_t Value1, int64_t Value2)
+int32_t CompareNumber(int64_t Value1, int64_t Value2)
 {
-  int Result;
+  int32_t Result;
   if (Value1 < Value2)
   {
     Result = -1;
@@ -1892,7 +1892,7 @@ UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
             // Get current root path
             UnicodeString CurrentDir = GetCurrentDir();
             PATH_PREFIX_TYPE PrefixType2; // unused
-            int Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
+            int32_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
             if (Following > 0)
             {
               AddPrefix = true;
@@ -2282,8 +2282,8 @@ DWORD FileGetAttrFix(const UnicodeString & AFileName)
 {
   // Already called with ApiPath
 
-  int Result;
-  int Tries = 2;
+  int32_t Result;
+  int32_t Tries = 2;
   do
   {
     // WORKAROUND:
@@ -3323,7 +3323,7 @@ static bool DoRecursiveDeleteFile(
     {
       Data.fFlags |= FOF_ALLOWUNDO;
     }
-    int ErrorCode = ::SHFileOperation(&Data);
+    int32_t ErrorCode = ::SHFileOperation(&Data);
     Result = (ErrorCode == 0);
     if (!Result)
     {
@@ -3475,7 +3475,7 @@ static UnicodeString DoLoadStrFrom(HINSTANCE Module, int32_t Ident, uint32_t Max
 {
   UnicodeString Result;
   Result.SetLength(static_cast<int32_t>(MaxLength));
-  const int Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(MaxLength));
+  const int32_t Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(MaxLength));
   Result.SetLength(Length);
 
   return Result;
@@ -3781,7 +3781,7 @@ static OSVERSIONINFO GetWindowsVersion()
   return Result;
 }
 
-bool IsWin10Build(unsigned int BuildNumber)
+bool IsWin10Build(uint32_t BuildNumber)
 {
   // It might be enough to check the dwBuildNumber, as we do in TWinConfiguration::IsDDExtBroken()
   OSVERSIONINFO OSVersionInfo = GetWindowsVersion();
@@ -3805,7 +3805,7 @@ bool IsWine()
     (::GetProcAddress(NtDll, "wine_get_version") != nullptr);
 }
 
-int GIsUWP = -1;
+int32_t GIsUWP = -1;
 UnicodeString GPackageName;
 
 static void NeedUWPData()
@@ -3920,7 +3920,7 @@ UnicodeString WindowsProductName()
   return Result;
 }
 
-int GetWindowsBuild()
+int32_t GetWindowsBuild()
 {
   return static_cast<int>(GetWindowsVersion().dwBuildNumber);
 }
@@ -3973,7 +3973,7 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
   if ((0 <= DateTime) && (DateTime <= MaxDateTime))
   {
     TTimeStamp TimeStamp = DateTimeToTimeStamp(DateTime);
-    int Days = TimeStamp.Date - DateDelta;
+    int32_t Days = TimeStamp.Date - DateDelta;
     if (abs(Days) >= 4)
     {
       Result = FMTLOAD(DAYS_SPAN, (Days));
@@ -3982,7 +3982,7 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
     {
       unsigned short Hour, Min, Sec, Dummy;
       DecodeTime(DateTime, Hour, Min, Sec, Dummy);
-      int TotalHours = static_cast<int>(Hour) + (Days * HoursPerDay);
+      int32_t TotalHours = nb::ToInt32(Hour) + (Days * HoursPerDay);
       Result = FORMAT(L"%d%s%.2d%s%.2d", TotalHours, FormatSettings.TimeSeparator, Min, FormatSettings.TimeSeparator, Sec);
     }
   }
@@ -4226,7 +4226,7 @@ UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
   return Ident;
 }
 
-static UnicodeString GetTlsErrorStr(int Err)
+static UnicodeString GetTlsErrorStr(int32_t Err)
 {
   char Buffer[512];
   ERR_error_string(Err, Buffer);
@@ -4239,7 +4239,7 @@ static FILE * OpenCertificate(const UnicodeString & Path)
   FILE * Result = _wfopen(ApiPath(Path).c_str(), L"rb");
   if (Result == nullptr)
   {
-    int Error = errno;
+    int32_t Error = errno;
     throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path)), Error);
   }
 
@@ -4251,7 +4251,7 @@ struct TPemPasswordCallbackData
   UnicodeString *Passphrase;
 };
 
-static int PemPasswordCallback(char * Buf, int ASize, int /*RWFlag*/, void *UserData)
+static int32_t PemPasswordCallback(char * Buf, int32_t ASize, int32_t /*RWFlag*/, void * UserData)
 {
   TPemPasswordCallbackData & Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
@@ -4261,10 +4261,10 @@ static int PemPasswordCallback(char * Buf, int ASize, int /*RWFlag*/, void *User
   return nb::ToInt(NBChTraitsCRT<char>::SafeStringLen(Buf));
 }
 
-static bool IsTlsPassphraseError(int Error, bool HasPassphrase)
+static bool IsTlsPassphraseError(int32_t Error, bool HasPassphrase)
 {
-  int ErrorLib = ERR_GET_LIB(Error);
-  int ErrorReason = ERR_GET_REASON(Error);
+  int32_t ErrorLib = ERR_GET_LIB(Error);
+  int32_t ErrorReason = ERR_GET_REASON(Error);
 
   bool Result =
     ((ErrorLib == ERR_LIB_PKCS12) &&
@@ -4489,7 +4489,7 @@ const UnicodeString RtfHyperlinkField(TraceInitStr(L"HYPERLINK"));
 const UnicodeString RtfHyperlinkFieldPrefix(TraceInitStr(RtfHyperlinkField + L" \""));
 const UnicodeString RtfHyperlinkFieldSuffix(TraceInitStr(L"\" "));
 
-UnicodeString RtfColor(int Index)
+UnicodeString RtfColor(int32_t Index)
 {
   return FORMAT(L"\\cf%d", (Index));
 }
@@ -4499,7 +4499,7 @@ UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
   UnicodeString Result = Text;
   if (Rtf)
   {
-    int Index = 1;
+    int32_t Index = 1;
     while (Index <= Result.Length())
     {
       UnicodeString Replacement;
@@ -4528,12 +4528,12 @@ UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
   return Result;
 }
 
-UnicodeString RtfColorText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorText(int32_t Color, const UnicodeString & Text)
 {
   return RtfColor(Color) + L" " + RtfText(Text) + RtfColor(0) + L" ";
 }
 
-UnicodeString RtfColorItalicText(int Color, const UnicodeString & Text)
+UnicodeString RtfColorItalicText(int32_t Color, const UnicodeString & Text)
 {
   return RtfColor(Color) + L"\\i " + RtfText(Text) + L"\\i0" + RtfColor(0) + L" ";
 }
@@ -4593,7 +4593,7 @@ UnicodeString RtfSwitch(
   return RtfSwitchValue(Name, Link, RtfText(FORMAT("\"%s\"", (EscapeParam(Value))), Rtf), Rtf);
 }
 UnicodeString RtfSwitch(
-  const UnicodeString & Name, const UnicodeString & Link, int Value, bool Rtf)
+  const UnicodeString & Name, const UnicodeString & Link, int32_t Value, bool Rtf)
 {
   return RtfSwitchValue(Name, Link, RtfText(IntToStr(Value), Rtf), Rtf);
 }
@@ -4602,12 +4602,12 @@ UnicodeString RtfRemoveHyperlinks(const UnicodeString & Text)
 {
   // Remove all tags HYPERLINK "https://www.example.com".
   // See also RtfEscapeParam
-  int Index = 1;
-  int P;
+  int32_t Index = 1;
+  int32_t P;
   while ((P = PosEx(RtfHyperlinkFieldPrefix, Text, Index)) > 0)
   {
-    int Index2 = P + RtfHyperlinkFieldPrefix.Length();
-    int P2 = PosEx(RtfHyperlinkFieldSuffix, Text, Index2);
+    int32_t Index2 = P + RtfHyperlinkFieldPrefix.Length();
+    int32_t P2 = PosEx(RtfHyperlinkFieldSuffix, Text, Index2);
     if (P2 > 0)
     {
       Text.Delete(P, P2 - P + RtfHyperlinkFieldSuffix.Length());
@@ -4630,10 +4630,10 @@ UnicodeString RtfEscapeParam(const UnicodeString & Param, bool PowerShellEscape)
   }
   // Equivalent of EscapeParam, except that it does not double quotes in HYPERLINK.
   // See also RtfRemoveHyperlinks.
-  int Index = 1;
+  int32_t Index = 1;
   while (true)
   {
-    int P1 = PosEx(Quote, Param, Index);
+    int32_t P1 = PosEx(Quote, Param, Index);
     if (P1 == 0)
     {
       // no more quotes
@@ -4641,8 +4641,8 @@ UnicodeString RtfEscapeParam(const UnicodeString & Param, bool PowerShellEscape)
     }
     else
     {
-      int P2 = PosEx(RtfHyperlinkFieldPrefix, Param, Index);
-      int P3;
+      int32_t P2 = PosEx(RtfHyperlinkFieldPrefix, Param, Index);
+      int32_t P3;
       if ((P2 > 0) && (P2 < P1) && ((P3 = PosEx(RtfHyperlinkFieldSuffix, Param, P2)) > 0))
       {
         // skip HYPERLINK
@@ -4818,7 +4818,7 @@ UnicodeString AssemblyProperty(
 
 UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName,
-  const UnicodeString & Name, int Value, bool Inline)
+  const UnicodeString & Name, int32_t Value, bool Inline)
 {
   return AssemblyPropertyRaw(Language, ClassName, Name, IntToStr(Value), Inline);
 }
@@ -4989,7 +4989,7 @@ UnicodeString AssemblyAddRawSettings(
   const UnicodeString & MethodName)
 {
   UnicodeString Result;
-  for (int Index = 0; Index < RawSettings->Count; Index++)
+  for (int32_t Index = 0; Index < RawSettings->Count; Index++)
   {
     UnicodeString Name = RawSettings->Names[Index];
     UnicodeString Value = RawSettings->ValueFromIndex[Index];
@@ -5009,8 +5009,8 @@ void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines, bool F
   // Simple stream reading, to make it work with named pipes too, not only with physical files
   TBytes Buffer;
   Buffer.Length = 10*1024;
-  int Read;
-  int Offset = 0;
+  int32_t Read;
+  int32_t Offset = 0;
   do
   {
     Read = Stream->Read(Buffer, Offset, Buffer.Length - Offset);
@@ -5024,7 +5024,7 @@ void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines, bool F
   Buffer.Length = Offset;
 
   TEncoding * Encoding = nullptr;
-  int PreambleSize = TEncoding::GetBufferEncoding(Buffer, Encoding, TEncoding::UTF8);
+  int32_t PreambleSize = TEncoding::GetBufferEncoding(Buffer, Encoding, TEncoding::UTF8);
   UnicodeString S;
   try
   {
@@ -5080,7 +5080,7 @@ TStrings * TlsCipherList()
   SSL_CTX * Ctx = SSL_CTX_new(Method);
   SSL * Ssl = SSL_new(Ctx);
 
-  int Index = 0;
+  int32_t Index = 0;
   const char * CipherName;
   do
   {
@@ -5100,7 +5100,7 @@ void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, c
 {
   if (Value.IsEmpty())
   {
-    int Index = Strings->IndexOfName(Name);
+    int32_t Index = Strings->IndexOfName(Name);
     if (Index < 0)
     {
       Index = Strings->Add(L"");
@@ -5193,7 +5193,7 @@ UnicodeString GetAncestorProcessName(int32_t Levels)
         TProcesses::const_iterator I = std::find(Processes.begin(), Processes.end(), ProcessId);
         if (I != Processes.end())
         {
-          int Index = I - Processes.begin();
+          int32_t Index = I - Processes.begin();
           AddToList(Result, FORMAT(L"cycle-%d", (Index)), Sep);
           ProcessId = 0;
         }

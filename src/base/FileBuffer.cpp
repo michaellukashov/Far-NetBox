@@ -1,5 +1,6 @@
 
 #include <vcl.h>
+// #pragma hdrstop
 
 #include <Common.h>
 #include <FileBuffer.h>
@@ -27,6 +28,10 @@ char * EOLToStr(TEOLType EOLType)
 TFileBuffer::TFileBuffer() noexcept :
   FMemory(std::make_unique<TMemoryStream>())
 {
+#if defined(__BORLANDC__)
+  FMemory = new TMemoryStream();
+  FSize = 0;
+#endif
 }
 
 TFileBuffer::~TFileBuffer() noexcept
@@ -249,7 +254,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 
 void TFileBuffer::WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len)
 {
-  OnTransferOut(Sender, reinterpret_cast<const unsigned char *>(GetPointer()), Len);
+  OnTransferOut(Sender, reinterpret_cast<const uint8_t *>(GetPointer()), Len);
   FMemory->Seek(Len, TSeekOrigin::soCurrent);
 }
 
@@ -277,9 +282,9 @@ TSafeHandleStream::~TSafeHandleStream()
   SAFE_DESTROY(FSource);
 }
 
-int64_t TSafeHandleStream::Read(void * Buffer, int Count)
+int64_t TSafeHandleStream::Read(void * Buffer, int64_t Count)
 {
-  int Result = FileRead(FHandle, Buffer, Count);
+  int64_t Result = FileRead(FHandle, Buffer, Count);
   if (Result == -1)
   {
     RaiseLastOSError();
@@ -289,7 +294,7 @@ int64_t TSafeHandleStream::Read(void * Buffer, int Count)
 
 int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
 {
-  int Result = FileWrite(FHandle, Buffer, Count);
+  int64_t Result = FileWrite(FHandle, Buffer, Count);
   if (Result == -1)
   {
     RaiseLastOSError();
@@ -297,10 +302,10 @@ int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
   return Result;
 }
 
-int TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count)
+int64_t TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int Offset, int64_t Count)
 {
   // This is invoked for example via CopyFrom from TParallelOperation::Done
-  int Result = FileRead(FHandle, Buffer, Offset, Count);
+  int64_t Result = FileRead(FHandle, Buffer, Offset, Count);
   if (Result == -1)
   {
     RaiseLastOSError();
@@ -308,7 +313,7 @@ int TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int Offse
   return Result;
 }
 
-int TSafeHandleStream::Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count)
+int64_t TSafeHandleStream::Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count)
 {
   // This is invoked for example by TIniFileStorage::Flush or via CopyFrom from TParallelOperation::Done
   int Result = FileWrite(FHandle, Buffer, Offset, Count);

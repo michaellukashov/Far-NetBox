@@ -1,5 +1,6 @@
-﻿
-#pragma once
+﻿#pragma once
+
+
 
 #include <ne_uri.h>
 #include <ne_utils.h>
@@ -54,7 +55,8 @@ public:
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
-  virtual void Source(TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
+  virtual void Source(
+    TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
     const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, uint32_t AFlags,
     TUploadSessionAction & Action, bool & ChildError) override;

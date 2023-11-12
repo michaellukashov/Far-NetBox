@@ -1,3 +1,4 @@
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -26,7 +27,7 @@ TCustomFileSystem::~TCustomFileSystem() noexcept
 UnicodeString TCustomFileSystem::CreateTargetDirectory(
   IN const UnicodeString & AFileName,
   IN const UnicodeString & ADirectory,
-  IN const TCopyParamType *CopyParam)
+  IN const TCopyParamType * CopyParam)
 {
   UnicodeString Result = ADirectory;
   UnicodeString DestFileName = CopyParam->ChangeFileName(base::UnixExtractFileName(AFileName),

@@ -120,7 +120,7 @@ public:
 
   UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 protected:
-  TSecureShell *FSecureShell{nullptr};
+  TSecureShell * FSecureShell{nullptr};
   TFileSystemInfo FFileSystemInfo{};
   bool FFileSystemInfoValid{false};
   int32_t FVersion{0};
@@ -201,11 +201,11 @@ protected:
     const UnicodeString & AFileName, TFileOperationProgressType * OperationProgress,
     bool TransferFinished, bool Request, TSFTPPacket * Packet);
   void SFTPConfirmOverwrite(const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
-    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress,
-    TOverwriteMode &OverwriteMode, const TOverwriteFileParams * FileParams);
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
+    TOverwriteMode & OverwriteMode, const TOverwriteFileParams * FileParams);
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
-  char *GetEOL() const;
+  char * GetEOL() const;
   void BusyStart();
   void BusyEnd();
   uint32_t TransferBlockSize(

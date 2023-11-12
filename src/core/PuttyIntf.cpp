@@ -171,13 +171,13 @@ extern "C" const char * do_select(Plug * plug, SOCKET skt, bool enable)
 static size_t output(Seat * seat, SeatOutputType type, const void * data, size_t len)
 {
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
-  if (static_cast<int>(static_cast<char>(type)) == -1)
+  if (nb::ToInt32(static_cast<char>(type)) == -1)
   {
     SecureShell->CWrite(reinterpret_cast<const char *>(data), len);
   }
   else if (type != SEAT_OUTPUT_STDERR)
   {
-    SecureShell->FromBackend(reinterpret_cast<const unsigned char *>(data), len);
+    SecureShell->FromBackend(reinterpret_cast<const uint8_t *>(data), len);
   }
   else
   {
@@ -230,7 +230,7 @@ static SeatPromptResult get_userpass_input(Seat * seat, prompts_t * p)
     if (SecureShell->PromptUser(p->to_server, Name, p->name_reqd,
           Instructions, p->instr_reqd, Prompts.get(), Results.get()))
     {
-      for (int32_t Index = 0; Index < int(p->n_prompts); Index++)
+      for (int32_t Index = 0; Index < nb::ToInt32(p->n_prompts); Index++)
       {
         prompt_t * Prompt = p->prompts[Index];
         RawByteString S;
@@ -267,10 +267,10 @@ static void connection_fatal(Seat * seat, const char * message)
   SecureShell->PuttyFatalError(UnicodeString(AnsiString(message)));
 }
 
-SeatPromptResult confirm_ssh_host_key(Seat * seat, const char * host, int port, const char * keytype,
+SeatPromptResult confirm_ssh_host_key(Seat * seat, const char * host, int32_t port, const char * keytype,
   char * keystr, SeatDialogText *, HelpCtx,
   void (*DebugUsedArg(callback))(void *ctx, SeatPromptResult result), void * DebugUsedArg(ctx),
-  char **key_fingerprints, bool is_certificate, int ca_count, bool already_verified)
+  char **key_fingerprints, bool is_certificate, int32_t ca_count, bool already_verified)
 {
   UnicodeString FingerprintSHA256, FingerprintMD5;
   if (key_fingerprints[SSH_FPTYPE_SHA256] != nullptr)
@@ -289,7 +289,7 @@ SeatPromptResult confirm_ssh_host_key(Seat * seat, const char * host, int port, 
   return SPR_OK;
 }
 
-bool have_ssh_host_key(Seat * seat, const char * hostname, int port,
+bool have_ssh_host_key(Seat * seat, const char * hostname, int32_t port,
   const char * keytype)
 {
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
@@ -336,7 +336,7 @@ size_t banner(Seat * seat, const void * data, size_t len)
   return 0; // PuTTY never uses the value
 }
 
-uintmax_t strtoumax_(const char *nptr, char **endptr, int base)
+uintmax_t strtoumax_(const char *nptr, char **endptr, int32_t base)
 {
   if (DebugAlwaysFalse(endptr != nullptr) ||
       DebugAlwaysFalse(base != 10))
@@ -379,7 +379,7 @@ void ldisc_echoedit_update(Ldisc * /*handle*/)
   DebugFail();
 }
 
-unsigned long schedule_timer(int ticks, timer_fn_t /*fn*/, void * /*ctx*/)
+uint32_t schedule_timer(int32_t ticks, timer_fn_t /*fn*/, void * /*ctx*/)
 {
   return ticks + GetTickCount();
 }
@@ -467,15 +467,15 @@ ScpSeat::ScpSeat(TSecureShell * ASecureShell)
 static TCriticalSection PuttyRegistrySection;
 enum TPuttyRegistryMode { prmPass, prmRedirect, prmCollect, prmFail };
 static TPuttyRegistryMode PuttyRegistryMode = prmRedirect;
-typedef rde::map<UnicodeString, unsigned long> TPuttyRegistryTypes;
+using TPuttyRegistryTypes = rde::map<UnicodeString, uint32_t>;
 TPuttyRegistryTypes PuttyRegistryTypes;
 HKEY RandSeedFileStorage = reinterpret_cast<HKEY>(1);
 
-int reg_override_winscp()
+int32_t reg_override_winscp()
 {
   return (PuttyRegistryMode != prmPass);
 }
-//---------------------------------------------------------------------------
+
 HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
 {
   HKEY Result;
@@ -505,7 +505,7 @@ HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
       SubKey += UnicodeString(UTF8String(Path));
     }
 
-    int PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
+    int32_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
     DebugAssert(SubKey.SubString(1, PuttyKeyLen) == OriginalPuttyRegistryStorageKey);
     UnicodeString RegKey = SubKey.SubString(PuttyKeyLen + 1, SubKey.Length() - PuttyKeyLen);
     if (!RegKey.IsEmpty())
@@ -1032,7 +1032,7 @@ UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & C
 
 bool HasGSSAPI(const UnicodeString & CustomPath)
 {
-  static int has = -1;
+  static int32_t has = -1;
   if (has < 0)
   {
     Conf * conf = conf_new();
@@ -1134,7 +1134,7 @@ UnicodeString GetPuTTYVersion()
   // "Development snapshot 2015-12-22.51465fa"
   UnicodeString Result = get_putty_version();
   // Skip "Release", "Pre-release", "Development snapshot"
-  int P = Result.LastDelimiter(L" ");
+  int32_t P = Result.LastDelimiter(L" ");
   Result.Delete(1, P);
   return Result;
 }
@@ -1171,7 +1171,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
   ssh_hash * Hash = ssh_hash_new(HashAlg);
   try__finally
   {
-    const int BlockSize = 32 * 1024;
+    const int32_t BlockSize = 32 * 1024;
     TFileBuffer Buffer;
     DWORD Read;
     do
@@ -1361,7 +1361,7 @@ TStrings * SshCipherList()
   return Result.release();
 }
 
-int GetCipherGroup(const ssh_cipher * TheCipher)
+int32_t GetCipherGroup(const ssh_cipher * TheCipher)
 {
   DebugAssert(strlen(TheCipher->vt->ssh2_id) > 0);
   for (uint32_t Index = 0; Index < LENOF(Ciphers); Index++)
@@ -1421,7 +1421,7 @@ TStrings * SshHostKeyList()
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   for (int32_t DefaultIndex = 0; DefaultIndex < HOSTKEY_COUNT; DefaultIndex++)
   {
-    int Type = HostKeyToPutty(DefaultHostKeyList[DefaultIndex]);
+    int32_t Type = HostKeyToPutty(DefaultHostKeyList[DefaultIndex]);
     cp_ssh_keyalg * SignKeys;
     int32_t Count;
     get_hostkey_algs(Type, &Count, &SignKeys);
@@ -1522,7 +1522,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
     if (IType != PuttyRegistryTypes.end())
     {
       UnicodeString Value = Settings->GetValueFromIndex(Index);
-      int I;
+      int32_t I{0};
       if (IType->second == REG_SZ)
       {
         Storage->WriteStringRaw(Name, Value);

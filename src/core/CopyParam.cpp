@@ -1,4 +1,5 @@
-﻿#include <vcl.h>
+﻿
+#include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
@@ -8,8 +9,8 @@
 #include "TextsCore.h"
 #include "Interface.h"
 
-const wchar_t *TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
-const int TransferModeNamesCount = _countof(TransferModeNames);
+const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
+const int32_t TransferModeNamesCount = _countof(TransferModeNames);
 
 TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept :
   TObject(Kind)
@@ -91,7 +92,7 @@ bool TCopyParamType::AnyUsableCopyParam(int32_t Attrs) const
   return SomeAttrIncluded;
 }
 
-UnicodeString TCopyParamType::GenerateTransferCommandArgs(int Attrs, const UnicodeString & Link) const
+UnicodeString TCopyParamType::GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
@@ -169,9 +170,9 @@ void TCopyParamType::DoGetInfoStr(
 
 #if 0
       ScriptArgs += RtfSwitchValue(TRANSFER_SWITCH, Link, TransferModeNames[TransferMode]);
-      const wchar_t *TransferModeMembers[] = { L"Binary", L"Ascii", L"Automatic" };
+      const wchar_t * TransferModeMembers[] = { L"Binary", L"Ascii", L"Automatic" };
       AssemblyCode += AssemblyProperty(
-          Language, TransferOptionsClassName, L"TransferMode", L"TransferMode", TransferModeMembers[TransferMode], false);
+        Language, TransferOptionsClassName, L"TransferMode", L"TransferMode", TransferModeMembers[TransferMode], false);
       if (AsciiFileMaskDiffers)
       {
         ScriptNonDefaults.AsciiFileMask = AsciiFileMask;
@@ -201,7 +202,7 @@ void TCopyParamType::DoGetInfoStr(
 
   if (InvalidCharsReplacement != Defaults.InvalidCharsReplacement)
   {
-    int Except = cpaIncludeMaskOnly;
+    int32_t Except = cpaIncludeMaskOnly;
     if (GetInvalidCharsReplacement() == NoReplacement)
     {
       ADD(LoadStr(COPY_INFO_DONT_REPLACE_INV_CHARS), Except);
@@ -215,10 +216,10 @@ void TCopyParamType::DoGetInfoStr(
   }
 
   if ((GetPreserveRights() != Defaults.GetPreserveRights()) ||
-    (GetPreserveRights() &&
-      ((GetRights() != Defaults.GetRights()) || (GetAddXToDirectories() != Defaults.GetAddXToDirectories()))))
+      (GetPreserveRights() &&
+       ((GetRights() != Defaults.GetRights()) || (GetAddXToDirectories() != Defaults.GetAddXToDirectories()))))
   {
-    const int Except = cpaIncludeMaskOnly | cpaNoRights;
+    const int32_t Except = cpaIncludeMaskOnly | cpaNoRights;
     if (DebugAlwaysTrue(GetPreserveRights()))
     {
       UnicodeString RightsStr = GetRights().GetText();
@@ -259,7 +260,7 @@ void TCopyParamType::DoGetInfoStr(
     bool AddPreserveTime = false;
     UnicodeString Str = LoadStr(GetPreserveTime() ? COPY_INFO_TIMESTAMP : COPY_INFO_DONT_PRESERVE_TIME);
 
-    const int ExceptDirs = cpaNoPreserveTimeDirs;
+    const int32_t ExceptDirs = cpaNoPreserveTimeDirs;
     if (APreserveTimeDirs != Defaults.GetPreserveTimeDirs())
     {
       if (DebugAlwaysTrue(GetPreserveTimeDirs()))
@@ -273,7 +274,7 @@ void TCopyParamType::DoGetInfoStr(
       ADD("", ExceptDirs);
     }
 
-    const int Except = cpaIncludeMaskOnly | cpaNoPreserveTime;
+    const int32_t Except = cpaIncludeMaskOnly | cpaNoPreserveTime;
     if (GetPreserveTime() != Defaults.GetPreserveTime())
     {
       if (FLAGCLEAR(Options, Except))
@@ -294,12 +295,12 @@ void TCopyParamType::DoGetInfoStr(
       {
         if (GetPreserveTimeDirs() && FLAGCLEAR(Options, ExceptDirs))
         {
-          //ScriptArgs += RtfSwitchValue(PRESERVETIME_SWITCH, Link, PRESERVETIMEDIRS_SWITCH_VALUE);
+          // ScriptArgs += RtfSwitchValue(PRESERVETIME_SWITCH, Link, PRESERVETIMEDIRS_SWITCH_VALUE);
           CodeNonDefaults.PreserveTimeDirs = PreserveTimeDirs;
         }
         else
         {
-          //ScriptArgs += RtfSwitch(PRESERVETIME_SWITCH, Link);
+          // ScriptArgs += RtfSwitch(PRESERVETIME_SWITCH, Link);
         }
       }
       else
@@ -461,26 +462,26 @@ void TCopyParamType::DoGetInfoStr(
 
   bool ResumeThresholdDiffers = ((GetResumeSupport() == rsSmart) && (GetResumeThreshold() != Defaults.GetResumeThreshold()));
   if (((GetResumeSupport() != Defaults.GetResumeSupport()) || ResumeThresholdDiffers) &&
-    (GetTransferMode() != tmAscii) && FLAGCLEAR(Options, cpaNoResumeSupport))
+      (GetTransferMode() != tmAscii) && FLAGCLEAR(Options, cpaNoResumeSupport))
   {
     UnicodeString Value;
     UnicodeString CodeState;
     int32_t ResumeThresholdKB = nb::ToIntPtr(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
-    case rsOff:
-      Value = ToggleNames[ToggleOff];
-      CodeState = "Off";
-      break;
+      case rsOff:
+        Value = ToggleNames[ToggleOff];
+        CodeState = L"Off";
+        break;
 
-    case rsOn:
-      Value = ToggleNames[ToggleOn];
-      CodeState = "On";
-      break;
+      case rsOn:
+        Value = ToggleNames[ToggleOn];
+        CodeState = L"On";
+        break;
 
-    case rsSmart:
-      Value = IntToStr(ResumeThresholdKB);
-      break;
+      case rsSmart:
+        Value = IntToStr(ResumeThresholdKB);
+        break;
     }
 //    ScriptArgs += RtfSwitchValue(RESUMESUPPORT_SWITCH, Link, Value);
 
@@ -612,7 +613,7 @@ void TCopyParamType::Assign(const TCopyParamType *Source)
 #undef COPY
 }
 
-TCopyParamType &TCopyParamType::operator=(const TCopyParamType &rhs)
+TCopyParamType & TCopyParamType::operator=(const TCopyParamType & rhs)
 {
   Assign(&rhs);
   return *this;
@@ -650,7 +651,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
   UnicodeString FileName = AFileName;
   if (GetInvalidCharsReplacement() == TokenReplacement)
   {
-    wchar_t *InvalidChar = ToWChar(FileName);
+    wchar_t * InvalidChar = ToWChar(FileName);
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != nullptr)
     {
       int32_t Index = InvalidChar - FileName.c_str() + 1;
@@ -659,16 +660,16 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
         UnicodeString Hex = FileName.SubString(Index + 1, 2);
         wchar_t Char = static_cast<wchar_t>(HexToByte(Hex));
         if ((Char != L'\0') &&
-          ((FTokenizibleChars.Pos(Char) > 0) ||
-            (((Char == L' ') || (Char == L'.')) && (Index == FileName.Length() - 2))))
+            ((FTokenizibleChars.Pos(Char) > 0) ||
+             (((Char == L' ') || (Char == L'.')) && (Index == FileName.Length() - 2))))
         {
           FileName[Index] = Char;
           FileName.Delete(Index + 1, 2);
           InvalidChar = ToWChar(FileName) + Index;
         }
         else if ((Hex == L"00") &&
-          ((Index == FileName.Length() - 2) || (FileName[Index + 3] == L'.')) &&
-          IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
+                 ((Index == FileName.Length() - 2) || (FileName[Index + 3] == L'.')) &&
+                 IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
         {
           FileName.Delete(Index, 3);
           InvalidChar = ToWChar(FileName) + Index - 1;
@@ -712,27 +713,27 @@ UnicodeString TCopyParamType::ChangeFileName(const UnicodeString & AFileName,
   }
   switch (GetFileNameCase())
   {
-  case ncUpperCase:
-    FileName = FileName.UpperCase();
-    break;
-  case ncLowerCase:
-    FileName = FileName.LowerCase();
-    break;
-  case ncFirstUpperCase:
-    FileName = FileName.SubString(1, 1).UpperCase() +
-      FileName.SubString(2, FileName.Length() - 1).LowerCase();
-    break;
-  case ncLowerCaseShort:
-    if ((FileName.Length() <= 12) && (FileName.Pos(L".") <= 9) &&
-      (FileName == FileName.UpperCase()))
-    {
+    case ncUpperCase:
+      FileName = FileName.UpperCase();
+      break;
+    case ncLowerCase:
       FileName = FileName.LowerCase();
-    }
-    break;
-  case ncNoChange:
-  default:
-    /*nothing*/
-    break;
+      break;
+    case ncFirstUpperCase:
+      FileName = FileName.SubString(1, 1).UpperCase() +
+        FileName.SubString(2, FileName.Length() - 1).LowerCase();
+      break;
+    case ncLowerCaseShort:
+      if ((FileName.Length() <= 12) && (FileName.Pos(L".") <= 9) &&
+          (FileName == FileName.UpperCase()))
+      {
+        FileName = FileName.LowerCase();
+      }
+      break;
+    case ncNoChange:
+    default:
+      /*nothing*/
+      break;
   }
   if (Side == osRemote)
   {
@@ -750,16 +751,16 @@ bool TCopyParamType::UseAsciiTransfer(const UnicodeString & AFileName,
 {
   switch (GetTransferMode())
   {
-  case tmBinary:
-    return false;
-  case tmAscii:
-    return true;
-  case tmAutomatic:
-    return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
-        false, &Params);
-  default:
-    DebugFail();
-    return false;
+    case tmBinary:
+      return false;
+    case tmAscii:
+      return true;
+    case tmAutomatic:
+      return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
+          false, &Params);
+    default:
+      DebugFail();
+      return false;
   }
 }
 
@@ -829,17 +830,17 @@ bool TCopyParamType::AllowResume(int64_t Size, const UnicodeString & FileName) c
   }
   else
   {
-  switch (GetResumeSupport())
+    switch (GetResumeSupport())
     {
-  case rsOn:
-    return true;
-  case rsOff:
-    return false;
-  case rsSmart:
-    return (Size >= GetResumeThreshold());
-  default:
-    DebugFail();
-    return false;
+      case rsOn:
+        return true;
+      case rsOff:
+        return false;
+      case rsSmart:
+        return (Size >= GetResumeThreshold());
+      default:
+        DebugFail();
+       return false;
     }
   }
   return Result;
@@ -1076,7 +1077,7 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 const uint32_t MinSpeed = 8 * 1024;
 const uint32_t MaxSpeed = 8 * 1024 * 1024;
 
-static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t &Speed)
+static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t & Speed)
 {
   bool Result;
   if (AnsiSameText(Text, LoadStr(SPEED_UNLIMITED)))
@@ -1115,12 +1116,12 @@ UnicodeString SetSpeedLimit(uint32_t Limit)
   }
   else
   {
-    Text = ::IntToStr(Limit / 1024);
+    Text = ::IntToStr(nb::ToInt32(Limit / 1024));
   }
   return Text;
 }
 
-void CopySpeedLimits(TStrings *Source, TStrings *Dest)
+void CopySpeedLimits(TStrings * Source, TStrings * Dest)
 {
   std::unique_ptr<TStringList> Temp(std::make_unique<TStringList>());
 

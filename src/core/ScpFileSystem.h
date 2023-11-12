@@ -98,10 +98,10 @@ public:
 protected:
   __property TStrings * Output = { read = FOutput.get() };
   ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
-  __property int ReturnCode = { read = FReturnCode };
+  __property int32_t ReturnCode = { read = FReturnCode };
   ROProperty2<int32_t> ReturnCode{&FReturnCode};
 
-  TStrings *GetOutput() const { return FOutput.get(); }
+  TStrings * GetOutput() const { return FOutput.get(); }
   int32_t GetReturnCode() const { return FReturnCode; }
   UnicodeString InitOptionsStr(const TCopyParamType * CopyParam) const;
 
@@ -116,7 +116,7 @@ private:
   int32_t FReturnCode{0};
   UnicodeString FCachedDirectoryChange;
   bool FProcessingCommand{false};
-  int FLsFullTime{asAuto};
+  int32_t FLsFullTime{asAuto};
   TCaptureOutputEvent FOnCaptureOutput;
   bool FScpFatalError{false};
 
@@ -129,10 +129,10 @@ private:
   bool IsLastLine(UnicodeString & Line);
   static bool IsTotalListingLine(const UnicodeString & ALine);
   void EnsureLocation();
+  // void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
+  //  int32_t size = 0, int32_t Params = -1);
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
-
-  __removed void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr, int size = 0, int Params = -1);
   void InvalidOutputError(const UnicodeString & Command);
   void ReadCommandOutput(int32_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);
@@ -143,8 +143,8 @@ private:
   void SCPSendError(const UnicodeString & Message, bool Fatal);
   void SCPSink(const UnicodeString & ATargetDir,
     const UnicodeString & AFileName, const UnicodeString & ASourceDir,
-    const TCopyParamType * CopyParam, bool &Success,
-    TFileOperationProgressType *OperationProgress, int32_t AParams, int32_t Level);
+    const TCopyParamType * CopyParam, bool & Success,
+    TFileOperationProgressType * OperationProgress, int32_t AParams, int32_t Level);
   void SCPSource(const UnicodeString & AFileName,
     const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, int32_t Level);
@@ -161,7 +161,7 @@ private:
     const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     TOperationSide Side,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
-    int32_t Params, TFileOperationProgressType *OperationProgress);
+    int32_t Params, TFileOperationProgressType * OperationProgress);
   UnicodeString ParseFileChecksum(
     const UnicodeString & Line, const UnicodeString & FileName, const UnicodeString & Command);
   void ProcessFileChecksum(

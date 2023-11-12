@@ -54,7 +54,7 @@ bool IsOpenSSH(const UnicodeString & SshImplementation);
 
 TStrings * SshCipherList();
 TStrings * SshKexList();
-int HostKeyToPutty(THostKey HostKey);
+int32_t HostKeyToPutty(THostKey HostKey);
 TStrings * SshHostKeyList();
 TStrings * SshMacList();
 

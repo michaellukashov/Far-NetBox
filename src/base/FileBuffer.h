@@ -38,12 +38,12 @@ public:
   ROProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this)};
   __property char * Data = { read=GetData };
   ROProperty<char *> Data{nb::bind(&TFileBuffer::GetData, this)};
-  __property int Size = { read=FSize, write=SetSize };
+  __property int32_t Size = { read=FSize, write=SetSize };
   RWProperty3<int64_t> Size{nb::bind(&TFileBuffer::GetSize, this), nb::bind(&TFileBuffer::SetSize, this)};
 
 private:
   std::unique_ptr<TMemoryStream> FMemory;
-  // int FSize;
+  // int32_t FSize;
 
 public:
   TMemoryStream * GetMemory() const { return FMemory.get(); }
@@ -63,14 +63,14 @@ moved to Classes.h
 class TSafeHandleStream : public THandleStream
 {
 public:
-  TSafeHandleStream(int AHandle);
+  TSafeHandleStream(int32_t AHandle);
   TSafeHandleStream(THandleStream * Source, bool Own);
-  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, unsigned short Mode);
+  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, uint16_t Mode);
   virtual ~TSafeHandleStream();
-  virtual int Read(void * Buffer, int Count);
-  virtual int Write(const void * Buffer, int Count);
-  virtual int Read(System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
-  virtual int Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count);
+  virtual int32_t Read(void * Buffer, int32_t Count);
+  virtual int32_t Write(const void * Buffer, int32_t Count);
+  virtual int32_t Read(System::DynamicArray<System::Byte> Buffer, int32_t Offset, int32_t Count);
+  virtual int32_t Write(const System::DynamicArray<System::Byte> Buffer, int32_t Offset, int32_t Count);
 private:
   THandleStream * FSource;
   bool FOwned;
