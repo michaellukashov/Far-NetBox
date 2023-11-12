@@ -18,10 +18,10 @@ TConfiguration * CreateConfiguration()
   return Result;
 }
 
-void ShowExtendedException(Exception *E)
+void ShowExtendedException(Exception * E)
 {
   DebugAssert(FarPlugin != nullptr);
-  TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
   DebugAssert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }
@@ -48,7 +48,7 @@ UnicodeString GetSshVersionString()
 
 static DWORD WINAPI threadstartroutine(void * Parameter)
 {
-  TSimpleThread *SimpleThread = cast_to<TSimpleThread>(Parameter);
+  TSimpleThread * SimpleThread = cast_to<TSimpleThread>(Parameter);
   return TSimpleThread::ThreadProc(SimpleThread);
 }
 
@@ -93,7 +93,7 @@ void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int32_t 
   {
     Masks = Mask;
   }
-  catch (EFileMasksException &E)
+  catch (EFileMasksException & E)
   {
     ShowExtendedException(&E);
     Edit->SetFocus();
@@ -105,12 +105,12 @@ void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int32_t 
   }
 }
 
-void ValidateMaskEdit(TFarComboBox *Edit)
+void ValidateMaskEdit(TFarComboBox * Edit)
 {
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
 
-void ValidateMaskEdit(TFarEdit *Edit)
+void ValidateMaskEdit(TFarEdit * Edit)
 {
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }

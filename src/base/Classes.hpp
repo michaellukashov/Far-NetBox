@@ -179,8 +179,8 @@ public:
   virtual ~TList() override;
 
   template<class T>
-  T *GetAs(int32_t Index) const { return cast_to<T>(GetItem(Index)); }
-  void *operator[](int32_t Index) const;
+  T * GetAs(int32_t Index) const { return cast_to<T>(GetItem(Index)); }
+  void * operator[](int32_t Index) const;
   virtual void * GetItem(int32_t Index) const { return FList[Index]; }
   virtual void * GetItem(int32_t Index) { return FList[Index]; }
   void SetItem(int32_t Index, void * Item);
