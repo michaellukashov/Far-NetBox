@@ -162,10 +162,7 @@ protected:
   bool ExecuteCommand(const UnicodeString & Command);
   void TerminalCaptureLog(const UnicodeString & AddedLine, TCaptureOutputType OutputEvent);
   bool CopyDialog(bool ToRemote, bool Move, const TStrings * AFileList,
-    int32_t Options,
-    int32_t CopyParamAttrs,
-    UnicodeString & TargetDirectory,
-    TGUICopyParamType * Params);
+    int32_t Options, int32_t CopyParamAttrs, UnicodeString & TargetDirectory, TGUICopyParamType * Params);
   bool LinkDialog(UnicodeString & AFileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
@@ -205,7 +202,7 @@ protected:
   void ClearCaches();
   void OpenSessionInPutty();
   void QueueShow(bool ClosingPlugin);
-  TTerminalQueueStatus *ProcessQueue(bool Hidden);
+  TTerminalQueueStatus * ProcessQueue(bool Hidden);
   bool EnsureCommandSessionFallback(TFSCapability Capability);
   void ConnectTerminal(TTerminal * Terminal);
   void TemporarilyDownloadFiles(TStrings * AFileList,
@@ -241,7 +238,7 @@ private:
   void TerminalStartReadDirectory(TObject * Sender);
   void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress,
     int32_t ResolvedLinks, bool & Cancel);
-  void TerminalInformation(TTerminal *Terminal,
+  void TerminalInformation(TTerminal * Terminal,
     const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
@@ -251,11 +248,11 @@ private:
     TStrings * Prompts, TStrings * Results, bool & AResult,
     void * Arg);
   void TerminalDisplayBanner(TTerminal * Terminal,
-    const UnicodeString & ASessionName, const UnicodeString & ABanner, bool &NeverShowAgain,
+    const UnicodeString & ASessionName, const UnicodeString & ABanner, bool & NeverShowAgain,
     int32_t Options, uint32_t & AParams);
   void TerminalShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative, int32_t& Deleted);
+  void TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative, int32_t & Deleted);
   HANDLE TerminalCreateLocalFile(const UnicodeString & ALocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
   DWORD TerminalGetLocalFileAttributes(const UnicodeString & ALocalFileName) const;

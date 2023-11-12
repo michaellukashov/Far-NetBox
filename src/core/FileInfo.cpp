@@ -239,8 +239,8 @@ UnicodeString GetFileInfoString(void * FileInfo,
   TTranslation Translation, const UnicodeString & StringName, bool AllowEmpty)
 {
   UnicodeString Result;
-  wchar_t *P;
-  UINT Len;
+  wchar_t * P{nullptr};
+  UINT Len{0};
 
   UnicodeString SubBlock =
     UnicodeString(L"\\StringFileInfo\\") + IntToHex(Translation.Language, 4) + IntToHex(Translation.CharSet, 4) + L"\\" + StringName;

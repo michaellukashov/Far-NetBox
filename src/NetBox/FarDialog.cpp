@@ -333,7 +333,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
   TFarPluginEnvGuard Guard; nb::used(Guard);
 
   static rde::map<HANDLE, void *> Dialogs;
-  TFarDialog *Dialog = nullptr;
+  TFarDialog * Dialog = nullptr;
   LONG_PTR Result = 0;
   if (Msg == DN_INITDIALOG)
   {
@@ -1024,7 +1024,7 @@ TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, FARDIAL
 
 TFarDialogItem::~TFarDialogItem() noexcept
 {
-  TFarDialog *Dlg = GetDialog();
+  TFarDialog * Dlg = GetDialog();
   assert(!Dlg);
   if (Dlg)
   {
@@ -1032,14 +1032,14 @@ TFarDialogItem::~TFarDialogItem() noexcept
   }
 }
 
-const FarDialogItem *TFarDialogItem::GetDialogItem() const
+const FarDialogItem * TFarDialogItem::GetDialogItem() const
 {
   return const_cast<TFarDialogItem *>(this)->GetDialogItem();
 }
 
-FarDialogItem *TFarDialogItem::GetDialogItem()
+FarDialogItem * TFarDialogItem::GetDialogItem()
 {
-  TFarDialog *Dlg = GetDialog();
+  TFarDialog * Dlg = GetDialog();
   assert(Dlg);
   return &Dlg->FDialogItems[GetItem()];
 }
@@ -1067,7 +1067,7 @@ void TFarDialogItem::DialogResized()
 void TFarDialogItem::ResetBounds()
 {
   TRect B = FBounds;
-  FarDialogItem *DItem = GetDialogItem();
+  FarDialogItem * DItem = GetDialogItem();
   nb::used(B);
   nb::used(DItem);
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
@@ -1109,7 +1109,7 @@ void TFarDialogItem::SetColor(int32_t Index, char Value)
   }
 }
 
-const struct PluginStartupInfo *TFarDialogItem::GetPluginStartupInfo() const
+const struct PluginStartupInfo * TFarDialogItem::GetPluginStartupInfo() const
 {
   return GetDialog()->GetFarPlugin()->GetPluginStartupInfo();
 }
@@ -1439,7 +1439,7 @@ void TFarDialogItem::UpdateEnabled()
 
 void TFarDialogItem::DialogChange()
 {
-  TFarDialog *Dlg = GetDialog();
+  TFarDialog * Dlg = GetDialog();
   assert(Dlg);
   Dlg->Change();
 }
@@ -1593,7 +1593,7 @@ bool TFarDialogItem::Focused() const
 void TFarDialogItem::UpdateFocused(bool Value)
 {
   SetFocused(Value);
-  TFarDialog *Dlg = GetDialog();
+  TFarDialog * Dlg = GetDialog();
   assert(Dlg);
   Dlg->SetItemFocused(Value ? this : nullptr);
 }
@@ -2239,7 +2239,7 @@ void TFarList::Changed()
 
 void TFarList::SetSelected(int32_t Value)
 {
-  TFarDialogItem *DialogItem = GetDialogItem();
+  TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
   if (GetSelectedInt(false) != Value)
   {
@@ -2274,9 +2274,9 @@ void TFarList::UpdatePosition(int32_t Position)
 
 void TFarList::SetCurPos(int32_t Position, int32_t TopIndex)
 {
-  TFarDialogItem *DialogItem = GetDialogItem();
+  TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
-  TFarDialog *Dlg = DialogItem->GetDialog();
+  TFarDialog * Dlg = DialogItem->GetDialog();
   assert(Dlg);
   assert(Dlg->GetHandle());
   DebugUsedParam(Dlg);
@@ -2297,7 +2297,7 @@ void TFarList::SetTopIndex(int32_t Value)
 
 int32_t TFarList::GetPosition() const
 {
-  TFarDialogItem *DialogItem = GetDialogItem();
+  TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
   return DialogItem->SendDialogMessage(DM_LISTGETCURPOS, nullptr);
 }
@@ -2310,7 +2310,7 @@ int32_t TFarList::GetTopIndex() const
     FarListPos ListPos;
     nb::ClearStruct(ListPos);
     ListPos.StructSize = sizeof(FarListPos);
-    TFarDialogItem *DialogItem = GetDialogItem();
+    TFarDialogItem * DialogItem = GetDialogItem();
     assert(DialogItem != nullptr);
     DialogItem->SendDialogMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
     Result = nb::ToIntPtr(ListPos.TopPos);
@@ -2333,7 +2333,7 @@ int32_t TFarList::GetMaxLength() const
 
 int32_t TFarList::GetVisibleCount() const
 {
-  TFarDialogItem *DialogItem = GetDialogItem();
+  TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
   return DialogItem ? DialogItem->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2) : 0;
 }
@@ -2341,7 +2341,7 @@ int32_t TFarList::GetVisibleCount() const
 int32_t TFarList::GetSelectedInt(bool Init) const
 {
   int32_t Result = nb::NPOS;
-  TFarDialogItem *DialogItem = GetDialogItem();
+  TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
   if (GetCount() == 0)
   {
