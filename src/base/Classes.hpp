@@ -165,7 +165,7 @@ enum TListNotification
   lnDeleted,
 };
 
-typedef int32_t (CompareFunc)(const void * Item1, const void * Item2);
+using CompareFunc = int32_t (const void * Item1, const void * Item2);
 
 NB_DEFINE_CLASS_ID(TList);
 class NB_CORE_EXPORT TList : public TPersistent
