@@ -5,7 +5,7 @@
 
 #include "FarUtils.h"
 
-bool CNBFile::OpenWrite(const wchar_t *fileName)
+bool CNBFile::OpenWrite(const wchar_t * fileName)
 {
   DebugAssert(m_File == INVALID_HANDLE_VALUE);
   DebugAssert(fileName);
@@ -19,7 +19,7 @@ bool CNBFile::OpenWrite(const wchar_t *fileName)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::OpenRead(const wchar_t *fileName)
+bool CNBFile::OpenRead(const wchar_t * fileName)
 {
   DebugAssert(m_File == INVALID_HANDLE_VALUE);
   DebugAssert(fileName);
@@ -33,7 +33,7 @@ bool CNBFile::OpenRead(const wchar_t *fileName)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::Read(void *buff, size_t &buffSize)
+bool CNBFile::Read(void * buff, size_t & buffSize)
 {
   DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
@@ -51,7 +51,7 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::Write(const void *buff, const size_t buffSize)
+bool CNBFile::Write(const void * buff, const size_t buffSize)
 {
   DebugAssert(m_File != INVALID_HANDLE_VALUE);
   m_LastError = ERROR_SUCCESS;
@@ -92,7 +92,7 @@ DWORD CNBFile::LastError() const
   return m_LastError;
 }
 
-DWORD CNBFile::SaveFile(const wchar_t *fileName, const nb::vector_t<char> &fileContent)
+DWORD CNBFile::SaveFile(const wchar_t * fileName, const nb::vector_t<char> & fileContent)
 {
   CNBFile f;
   if (f.OpenWrite(fileName) && !fileContent.empty())
@@ -102,7 +102,7 @@ DWORD CNBFile::SaveFile(const wchar_t *fileName, const nb::vector_t<char> &fileC
   return f.LastError();
 }
 
-DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
+DWORD CNBFile::SaveFile(const wchar_t * fileName, const char * fileContent)
 {
   DebugAssert(fileContent);
   CNBFile f;
@@ -113,7 +113,7 @@ DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
   return f.LastError();
 }
 
-DWORD CNBFile::LoadFile(const wchar_t *fileName, nb::vector_t<char> &fileContent)
+DWORD CNBFile::LoadFile(const wchar_t * fileName, nb::vector_t<char> & fileContent)
 {
   fileContent.clear();
 
