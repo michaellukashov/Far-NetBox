@@ -58,8 +58,8 @@ private:
 #define DebugCheck(p)    (p)
 #define DebugFail()      (void)0
 #else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
-NB_CORE_EXPORT void DoAssert(const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber);
-NB_CORE_EXPORT extern "C" void DoAssertC(char *Message, char *Filename, int LineNumber);
+NB_CORE_EXPORT void DoAssert(const wchar_t * Message, const wchar_t * Filename, int32_t LineNumber);
+NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_t LineNumber);
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(NB_TEXT(#p), NB_TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)

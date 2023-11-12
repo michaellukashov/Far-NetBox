@@ -29,13 +29,13 @@ public:
   char *SetLength(int32_t nLength);
   UTF8String &Delete(int32_t Index, int32_t Count);
   UTF8String &Insert(wchar_t Ch, int32_t Pos);
-  UTF8String &Insert(const wchar_t *Str, int32_t Pos);
+  UTF8String &Insert(const wchar_t * Str, int32_t Pos);
   UTF8String SubString(int32_t Pos) const;
   UTF8String SubString(int32_t Pos, int32_t Len) const;
 
   int32_t Pos(char Ch) const;
 
-  int vprintf(const char *Format, va_list ArgList);
+  int32_t vprintf(const char *Format, va_list ArgList);
 
   void Unique() {}
 
@@ -47,20 +47,20 @@ public:
   UTF8String &operator=(const wchar_t *lpwszData);
   UTF8String &operator=(wchar_t chData);
 
-  UTF8String operator+(const UTF8String &rhs) const;
-  UTF8String operator+(const RawByteString &rhs) const;
-  UTF8String operator+(const char *rhs) const;
-  UTF8String &operator+=(const UTF8String &rhs);
-  UTF8String &operator+=(const RawByteString &rhs);
+  UTF8String operator+(const UTF8String & rhs) const;
+  UTF8String operator+(const RawByteString & rhs) const;
+  UTF8String operator+(const char * rhs) const;
+  UTF8String &operator+=(const UTF8String & rhs);
+  UTF8String &operator+=(const RawByteString & rhs);
   UTF8String &operator+=(char Ch);
   UTF8String &operator+=(const char *rhs);
 
-  NB_CORE_EXPORT friend bool operator==(const UTF8String &lhs, const UTF8String &rhs);
-  NB_CORE_EXPORT friend bool operator!=(const UTF8String &lhs, const UTF8String &rhs);
+  NB_CORE_EXPORT friend bool operator==(const UTF8String & lhs, const UTF8String & rhs);
+  NB_CORE_EXPORT friend bool operator!=(const UTF8String & lhs, const UTF8String & rhs);
 
 private:
-  void Init(const wchar_t *Str, int32_t Length);
-  void Init(const char *Str, int32_t Length);
+  void Init(const wchar_t * Str, int32_t Length);
+  void Init(const char * Str, int32_t Length);
 
   typedef CMStringA string_t;
   string_t Data;
@@ -71,13 +71,13 @@ class NB_CORE_EXPORT UnicodeString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() = default;
-  UnicodeString(const wchar_t *Str);
-  UnicodeString(const wchar_t *Str, int32_t Length);
+  UnicodeString(const wchar_t * Str);
+  UnicodeString(const wchar_t * Str, int32_t Length);
   UnicodeString(wchar_t Src);
-  UnicodeString(const char *Str, int32_t Length);
-  UnicodeString(const char *Str, int32_t Length, int CodePage);
-  UnicodeString(const char *Str);
-  UnicodeString(int32_t Length, wchar_t Ch) : Data(Ch, static_cast<int>(Length)) {}
+  UnicodeString(const char * Str, int32_t Length);
+  UnicodeString(const char * Str, int32_t Length, int32_t CodePage);
+  UnicodeString(const char * Str);
+  UnicodeString(int32_t Length, wchar_t Ch) : Data(Ch, nb::ToInt32(Length)) {}
 
   UnicodeString(const UnicodeString &Str);
   explicit UnicodeString(const UTF8String &Str);
@@ -109,24 +109,24 @@ public:
   int32_t CompareIC(const UnicodeString & Str) const;
   int32_t ToIntPtr() const;
   int32_t FindFirstOf(wchar_t Ch) const;
-  int32_t FindFirstOf(const wchar_t *Str, size_t Offset = 0) const;
+  int32_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const;
 //  int32_t FindFirstNotOf(const wchar_t * Str) const { return (int32_t)Data.find_first_not_of(Str); }
 
-  UnicodeString &Replace(int32_t Pos, int32_t Len, const wchar_t *Str, int32_t DataLen);
+  UnicodeString &Replace(int32_t Pos, int32_t Len, const wchar_t * Str, int32_t DataLen);
   UnicodeString &Replace(int32_t Pos, int32_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
-  UnicodeString &Replace(int32_t Pos, int32_t Len, const wchar_t *Str);
+  UnicodeString &Replace(int32_t Pos, int32_t Len, const wchar_t * Str);
   UnicodeString &Replace(int32_t Pos, int32_t Len, wchar_t Ch) { return Replace(Pos, Len, &Ch, 1); }
   UnicodeString &Replace(int32_t Pos, wchar_t Ch) { return Replace(Pos, 1, &Ch, 1); }
 
-  UnicodeString &Append(const wchar_t *Str, int32_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
+  UnicodeString &Append(const wchar_t * Str, int32_t StrLen) { return Replace(GetLength(), 0, Str, StrLen); }
   UnicodeString &Append(const UnicodeString & Str) { return Append(Str.c_str(), Str.GetLength()); }
-  UnicodeString &Append(const wchar_t *Str);
+  UnicodeString &Append(const wchar_t * Str);
   UnicodeString &Append(const wchar_t Ch) { return Append(&Ch, 1); }
-  UnicodeString &Append(const char *lpszAdd, UINT CodePage = CP_OEMCP);
+  UnicodeString &Append(const char *lpszAdd, int32_t CodePage = CP_OEMCP);
 
-  UnicodeString &Insert(int32_t Pos, const wchar_t *Str, int32_t StrLen);
+  UnicodeString &Insert(int32_t Pos, const wchar_t * Str, int32_t StrLen);
   UnicodeString &Insert(int32_t Pos, const UnicodeString & Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
-  UnicodeString &Insert(const wchar_t *Str, int32_t Pos);
+  UnicodeString &Insert(const wchar_t * Str, int32_t Pos);
   UnicodeString &Insert(const wchar_t Ch, int32_t Pos) { return Insert(Pos, &Ch, 1); }
   UnicodeString &Insert(const UnicodeString & Str, int32_t Pos) { return Insert(Pos, Str); }
 
@@ -191,8 +191,8 @@ public:
   wchar_t &operator[](int32_t Idx);
 
 private:
-  void Init(const wchar_t *Str, int32_t Length);
-  void Init(const char *Str, int32_t Length, int CodePage);
+  void Init(const wchar_t * Str, int32_t Length);
+  void Init(const char * Str, int32_t Length, int32_t CodePage);
   void ThrowIfOutOfRange(int32_t Idx) const;
 
   typedef CMStringW wstring_t;
@@ -207,14 +207,14 @@ class NB_CORE_EXPORT AnsiString
 public:
   AnsiString() = default;
   AnsiString(const AnsiString & rhs);
-  AnsiString(int32_t Length, char Ch) : Data(Ch, static_cast<int>(Length)) {}
-  explicit AnsiString(const wchar_t *Str);
-  explicit AnsiString(const wchar_t *Str, int32_t Length);
-  explicit AnsiString(const wchar_t *Str, int32_t Length, int CodePage);
+  AnsiString(int32_t Length, char Ch) : Data(Ch, nb::ToInt32(Length)) {}
+  explicit AnsiString(const wchar_t * Str);
+  explicit AnsiString(const wchar_t * Str, int32_t Length);
+  explicit AnsiString(const wchar_t * Str, int32_t Length, int32_t CodePage);
   AnsiString(const char * Str);
-  explicit AnsiString(const char *Str, int32_t Length);
-  explicit AnsiString(const unsigned char *Str);
-  explicit AnsiString(const unsigned char *Str, int32_t Length);
+  explicit AnsiString(const char * Str, int32_t Length);
+  explicit AnsiString(const unsigned char * Str);
+  explicit AnsiString(const unsigned char * Str, int32_t Length);
   explicit AnsiString(const UnicodeString & Str);
   explicit AnsiString(const UTF8String & Str);
   explicit AnsiString(const RawByteString & Str);
@@ -238,9 +238,9 @@ public:
   char operator[](int32_t Idx) const;
   char &operator[](int32_t Idx);
 
-  AnsiString &Append(const char *Str, int32_t StrLen);
+  AnsiString &Append(const char * Str, int32_t StrLen);
   AnsiString &Append(const AnsiString &Str);
-  AnsiString &Append(const char *Str);
+  AnsiString &Append(const char * Str);
   AnsiString &Append(char Ch);
 
   void Unique() {}
@@ -290,12 +290,12 @@ class NB_CORE_EXPORT RawByteString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() = default;
-  explicit RawByteString(const wchar_t *Str);
-  explicit RawByteString(const wchar_t *Str, int32_t Length);
-  RawByteString(const char *Str);
-  explicit RawByteString(const char *Str, int32_t Length);
-  explicit RawByteString(const unsigned char *Str);
-  explicit RawByteString(const unsigned char *Str, int32_t Length);
+  explicit RawByteString(const wchar_t * Str);
+  explicit RawByteString(const wchar_t * Str, int32_t Length);
+  RawByteString(const char * Str);
+  explicit RawByteString(const char * Str, int32_t Length);
+  explicit RawByteString(const unsigned char * Str);
+  explicit RawByteString(const unsigned char * Str, int32_t Length);
   RawByteString(const UnicodeString & Str);
   RawByteString(const RawByteString &Str);
   RawByteString(const AnsiString &Str);
@@ -312,14 +312,14 @@ public:
   char * SetLength(int32_t nLength);
   RawByteString &Clear() { SetLength(0); return *this; }
   RawByteString &Delete(int32_t Index, int32_t Count);
-  RawByteString &Insert(const char *Str, int32_t Pos);
+  RawByteString &Insert(const char * Str, int32_t Pos);
   RawByteString SubString(int32_t Pos) const;
   RawByteString SubString(int32_t Pos, int32_t Len) const;
 
   int32_t Pos(wchar_t Ch) const;
-  int32_t Pos(const wchar_t *Str) const;
+  int32_t Pos(const wchar_t * Str) const;
   int32_t Pos(char Ch) const;
-  int32_t Pos(const char *Str) const;
+  int32_t Pos(const char * Str) const;
 
   unsigned char operator[](int32_t Idx) const;
   unsigned char &operator[](int32_t Idx);
@@ -338,22 +338,22 @@ public:
   RawByteString &operator=(const wchar_t * lpwszData);
   RawByteString &operator=(wchar_t chData);
 
-  RawByteString operator+(const RawByteString &rhs) const;
+  RawByteString operator+(const RawByteString & rhs) const;
 
-  RawByteString &operator+=(const RawByteString &rhs);
+  RawByteString &operator+=(const RawByteString & rhs);
   RawByteString &operator+=(const char Ch);
 
-  bool operator==(const char *rhs) const
+  bool operator==(const char * rhs) const
   { return Data == rhs; }
-  inline friend bool operator==(RawByteString &lhs, RawByteString &rhs)
+  inline friend bool operator==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }
-  inline friend bool operator!=(RawByteString &lhs, RawByteString &rhs)
+  inline friend bool operator!=(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data != rhs.Data; }
 
 private:
-  void Init(const wchar_t *Str, int32_t Length);
-  void Init(const char *Str, int32_t Length);
-  void Init(const unsigned char *Str, int32_t Length);
+  void Init(const wchar_t * Str, int32_t Length);
+  void Init(const char * Str, int32_t Length);
+  void Init(const unsigned char * Str, int32_t Length);
   void ThrowIfOutOfRange(int32_t Idx) const;
 
   typedef CMStringT<unsigned char, NBChTraitsCRT<unsigned char>> rawstring_t;
