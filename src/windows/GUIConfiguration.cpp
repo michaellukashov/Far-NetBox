@@ -23,7 +23,7 @@ const int32_t ccRemoteFiles = ccUser << 3;
 const int32_t ccShowResultsInMsgBox = ccUser << 4;
 const int32_t ccSet = 0x80000000;
 
-constexpr uint32_t AdditionaLanguageMask = 0xFFFFFF00;
+constexpr const uint32_t AdditionaLanguageMask = 0xFFFFFF00;
 static UnicodeString AdditionaLanguagePrefix("XX");
 static UnicodeString TranslationsSubFolder("Translations");
 
@@ -51,7 +51,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
 
-  const TGUICopyParamType *GUISource = dyn_cast<TGUICopyParamType>(Source);
+  const TGUICopyParamType * GUISource = dyn_cast<TGUICopyParamType>(Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -214,7 +214,7 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.IsEmpty();
 }
 
-TCopyParamRule &TCopyParamRule::operator=(const TCopyParamRule &other)
+TCopyParamRule &TCopyParamRule::operator=(const TCopyParamRule & other)
 {
   SetData(other.FData);
   return *this;
@@ -266,13 +266,13 @@ void TCopyParamList::Reset()
   FNameList.reset();
   FModified = false;
 }
-//---------------------------------------------------------------------
+
 void TCopyParamList::Modify()
 {
   FNameList.reset();
   FModified = true;
 }
-//---------------------------------------------------------------------
+
 void TCopyParamList::ValidateName(const UnicodeString & Name)
 {
   if (Name.LastDelimiter(FInvalidChars) > 0)
@@ -1437,7 +1437,7 @@ void TGUIConfiguration::SetQueueKeepDoneItemsFor(int32_t Value)
 {
   SET_CONFIG_PROPERTY(QueueKeepDoneItemsFor);
 }
-//---------------------------------------------------------------------
+
 TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   const UnicodeString & RootKey, const UnicodeString & Source, TStoredSessionList * Sessions, UnicodeString & AError)
 {
@@ -1469,7 +1469,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
 
   return ImportSessionList.release();
 }
-//---------------------------------------------------------------------
+
 bool TGUIConfiguration::AnyPuttySessionForImport(TStoredSessionList * ASessions)
 {
   try

@@ -46,7 +46,7 @@ void ValidateMaskEdit(TEdit * Edit);
 void ValidateMaskEdit(TMemo * Edit, bool Directory);
 bool IsWinSCPUrl(const UnicodeString & Url);
 UnicodeString SecureUrl(const UnicodeString & Url);
-void OpenBrowser(UnicodeString URL);
+void OpenBrowser(const UnicodeString & URL);
 void OpenFileInExplorer(const UnicodeString & Path);
 void OpenFolderInExplorer(const UnicodeString & Path);
 void ShowHelp(const UnicodeString & HelpKeyword);

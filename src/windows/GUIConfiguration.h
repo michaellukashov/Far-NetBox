@@ -15,10 +15,10 @@ extern const int32_t ccSet;
 extern const int32_t ccRemoteFiles;
 extern const int32_t ccShowResultsInMsgBox;
 
-constexpr int32_t soRecurse =         0x01;
-constexpr int32_t soSynchronize =     0x02;
-constexpr int32_t soSynchronizeAsk =  0x04;
-constexpr int32_t soContinueOnError = 0x08;
+constexpr const int32_t soRecurse =         0x01;
+constexpr const int32_t soSynchronize =     0x02;
+constexpr const int32_t soSynchronizeAsk =  0x04;
+constexpr const int32_t soContinueOnError = 0x08;
 
 NB_DEFINE_CLASS_ID(TGUICopyParamType);
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
@@ -271,6 +271,7 @@ public:
   LCID GetLocaleSafe() const { return GetLocale(); }
   void SetInitialLocale(LCID Value);
   void ConfigurationInit() override;
+
 public:
   TGUIConfiguration() = delete;
   explicit TGUIConfiguration(TObjectClassId Kind) noexcept;
@@ -328,7 +329,7 @@ public:
   __property UnicodeString CopyParamCurrent = { read = FCopyParamCurrent, write = SetCopyParamCurrent };
   __property int CopyParamIndex = { read = GetCopyParamIndex, write = SetCopyParamIndex };
   __property TGUICopyParamType CurrentCopyParam = { read = GetCurrentCopyParam };
-//  __property TGUICopyParamType CopyParamPreset[UnicodeString Name] = { read = GetCopyParamPreset };
+  // __property TGUICopyParamType CopyParamPreset[UnicodeString Name] = { read = GetCopyParamPreset };
   // __property bool HasCopyParamPreset[UnicodeString Name] = { read = GetHasCopyParamPreset };
   __property TRemoteProperties NewDirectoryProperties = { read = FNewDirectoryProperties, write = SetNewDirectoryProperties };
   __property int KeepUpToDateChangeDelay = { read = FKeepUpToDateChangeDelay, write = FKeepUpToDateChangeDelay };

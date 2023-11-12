@@ -596,7 +596,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
         if (SameText(base::ExtractFileName(Program), OriginalPuttyExecutable))
         {
           uint32_t Version = -1; //TODO: GetFileVersion(Program);
-          if (Version != static_cast<uint32_t>(-1))
+          if (Version != nb::ToUInt32(-1))
           {
             int32_t MajorVersion = HIWORD(Version);
             int32_t MinorVersion = LOWORD(Version);

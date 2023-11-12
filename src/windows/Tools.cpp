@@ -460,7 +460,7 @@ static void DoExecuteProcessAndReadOutput(
       }
       else
       {
-        UnicodeString Message = MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, static_cast<int>(ExitCode)));
+        UnicodeString Message = MainInstructions(FMTLOAD(COMMAND_FAILED_CODEONLY, nb::ToInt32(ExitCode)));
         throw ExtException(Message, Output, HelpKeyword);
       }
     }
@@ -925,7 +925,7 @@ bool NonEmptyTextFromClipboard(UnicodeString & Text)
 }
 
 static bool GetResource(
-  const UnicodeString & ResName, void *& Content, unsigned long & Size)
+  const UnicodeString & ResName, void *& Content, uint32_t & Size)
 {
   HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
     MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
@@ -958,7 +958,7 @@ bool DumpResourceToFile(const UnicodeString & ResName,
   const UnicodeString & FileName)
 {
   void * Content;
-  unsigned long Size;
+  uint32_t Size;
   bool Result = GetResource(ResName, Content, Size);
 
   if (Result)
@@ -981,7 +981,7 @@ bool DumpResourceToFile(const UnicodeString & ResName,
 UnicodeString ReadResource(const UnicodeString & ResName)
 {
   void * Content;
-  unsigned long Size;
+  uint32_t Size;
   UnicodeString Result;
 
   if (GetResource(ResName, Content, Size))
@@ -1122,6 +1122,7 @@ bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
   {
     delete Dialog;
   }
+
   TSaveDialog * Dialog = new TSaveDialog(Application);
   try
   {
