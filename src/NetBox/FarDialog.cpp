@@ -78,12 +78,12 @@ void TFarDialog::SetBounds(const TRect &Value)
       if (GetHandle())
       {
         COORD Coord;
-        Coord.X = static_cast<short int>(GetSize().x);
-        Coord.Y = static_cast<short int>(GetSize().y);
-        SendDlgMessage(DM_RESIZEDIALOG, 0, reinterpret_cast<void *>(&Coord));
-        Coord.X = static_cast<short int>(FBounds.Left);
-        Coord.Y = static_cast<short int>(FBounds.Top);
-        SendDlgMessage(DM_MOVEDIALOG, nb::ToInt(true), reinterpret_cast<void *>(&Coord));
+        Coord.X = static_cast<int16_t>(GetSize().x);
+        Coord.Y = static_cast<int16_t>(GetSize().y);
+        SendDlgMessage(DM_RESIZEDIALOG, 0, nb::ToPtr(&Coord));
+        Coord.X = static_cast<int16_t>(FBounds.Left);
+        Coord.Y = static_cast<int16_t>(FBounds.Top);
+        SendDlgMessage(DM_MOVEDIALOG, nb::ToInt(true), nb::ToPtr(&Coord));
       }
       for (int32_t Index = 0; Index < GetItemCount(); ++Index)
       {
@@ -1087,11 +1087,11 @@ void TFarDialogItem::UpdateBounds()
   {
     TRect B = GetActualBounds();
     SMALL_RECT Rect;
-    Rect.Left = static_cast<short int>(B.Left);
-    Rect.Top = static_cast<short int>(B.Top);
-    Rect.Right = static_cast<short int>(B.Right);
-    Rect.Bottom = static_cast<short int>(B.Bottom);
-    SendDialogMessage(DM_SETITEMPOSITION, reinterpret_cast<void *>(&Rect));
+    Rect.Left = static_cast<int16_t>(B.Left);
+    Rect.Top = static_cast<int16_t>(B.Top);
+    Rect.Right = static_cast<int16_t>(B.Right);
+    Rect.Bottom = static_cast<int16_t>(B.Bottom);
+    SendDialogMessage(DM_SETITEMPOSITION, nb::ToPtr(&Rect));
   }
 }
 
