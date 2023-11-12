@@ -1845,7 +1845,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin *AFarPlugin, TSessionActionEnum 
   UserNameLabel = new TFarText(this);
   UserNameLabel->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
   UserNameLabel->SetWidth(20);
-  UserNameLabel->SetVisible(true);
+  // UserNameLabel->SetVisible(true);
 
   SetNextItemPosition(ipSame);
   S3AccessKeyIDLabel = new TFarText(this);
@@ -3012,16 +3012,14 @@ void TSessionDialog::UpdateControls()
 
   if (S3Protocol)
   {
-
   }
   else
   {
-
   }
-  UserNameLabel->SetVisible(!S3Protocol);
-  UserNameEdit->SetVisible(!S3Protocol);
-  PasswordLabel->SetVisible(!S3Protocol);
-  PasswordEdit->SetVisible(!S3Protocol);
+  // UserNameLabel->SetVisible(!S3Protocol);
+  // UserNameEdit->SetVisible(!S3Protocol);
+  // PasswordLabel->SetVisible(!S3Protocol);
+  // PasswordEdit->SetVisible(!S3Protocol);
   S3AccessKeyIDLabel->SetVisible(S3Protocol);
   S3AccessKeyIDEdit->SetVisible(S3Protocol);
   S3SecretAccessKeyLabel->SetVisible(S3Protocol);
