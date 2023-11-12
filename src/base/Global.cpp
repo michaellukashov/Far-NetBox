@@ -323,16 +323,16 @@ void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 
-void DoAssert(const wchar_t * Message, const wchar_t * Filename, uint32_t LineNumber)
+void DoAssert(const wchar_t * Message, const wchar_t * Filename, int32_t LineNumber)
 {
   if (IsTracing)
   {
     DoTrace(Filename, L"assert", LineNumber, Message);
   }
-  _wassert(Message, Filename, static_cast<unsigned int>(LineNumber));
+  _wassert(Message, Filename, static_cast<uint32_t>(LineNumber));
 }
 
-NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int LineNumber)
+NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_t LineNumber)
 {
   DoTrace(UnicodeString(Filename).c_str(), L"assert", LineNumber, UnicodeString(Message).c_str());
   _wassert(UnicodeString(Message).c_str(), UnicodeString(Filename).c_str(), static_cast<unsigned int>(LineNumber));

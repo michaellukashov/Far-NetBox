@@ -647,7 +647,7 @@ protected:
 
 private:
   UnicodeString FCustomCommandName;
-  rde::map<int, size_t> FIndexes;
+  rde::map<int32_t, size_t> FIndexes;
   TUnicodeStringVector FPrompts;
   TUnicodeStringVector FDefaults;
   TUnicodeStringVector FValues;

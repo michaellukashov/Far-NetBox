@@ -697,9 +697,9 @@ int32_t UnicodeString::FindFirstOf(const wchar_t * Str, size_t Offset) const
 {
   if (!Str || !*Str)
     return nb::NPOS;
-  // int Length = wstring_t::StringLength(Str);
+  // int32_t Length = wstring_t::StringLength(Str);
   wstring_t str = Data.Mid(nb::ToInt(Offset));
-  int Res = str.FindOneOf(Str);
+  int32_t Res = str.FindOneOf(Str);
   if (Res != -1)
     return Res + Offset;
   return nb::NPOS;
@@ -724,7 +724,7 @@ UnicodeString &UnicodeString::Append(const wchar_t * Str)
   return Append(Str, wstring_t::StringLength(Str));
 }
 
-UnicodeString &UnicodeString::Append(const char * lpszAdd, UINT CodePage)
+UnicodeString &UnicodeString::Append(const char * lpszAdd, int32_t CodePage)
 {
   Data.Append(wstring_t(lpszAdd, wstring_t::StringLength(lpszAdd), CodePage));
   return *this;

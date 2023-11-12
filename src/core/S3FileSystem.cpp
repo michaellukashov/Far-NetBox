@@ -433,7 +433,7 @@ void TS3FileSystem::Open()
 
   FHostName = UTF8String(Data->HostNameExpanded);
   FPortSuffix = UTF8String();
-  int ADefaultPort = FTerminal->SessionData->GetDefaultPort();
+  int32_t ADefaultPort = FTerminal->SessionData->GetDefaultPort();
   DebugAssert((ADefaultPort == HTTPSPortNumber) || (ADefaultPort == HTTPPortNumber));
   if (FTerminal->SessionData->PortNumber != ADefaultPort)
   {
@@ -519,7 +519,7 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /*Session*/)
   SetupSsl(Ssl, FTerminal->GetSessionData()->GetMinTlsVersion(), FTerminal->GetSessionData()->GetMaxTlsVersion());
 }
 
-int TS3FileSystem::LibS3SslCallback(int Failures, const ne_ssl_certificate_s *Certificate, void *CallbackData)
+int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certificate_s *Certificate, void *CallbackData)
 {
   TNeonCertificateData Data;
   RetrieveNeonCertificateData(Failures, Certificate, Data);
@@ -598,7 +598,7 @@ void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3Error
     if (Error->extraDetailsCount)
     {
       UnicodeString ExtraDetails;
-      for (int I = 0; I < Error->extraDetailsCount; I++)
+      for (int32_t I = 0; I < Error->extraDetailsCount; I++)
       {
         UnicodeString DetailName = StrFromS3(Error->extraDetails[I].name);
         UnicodeString DetailValue = StrFromS3(Error->extraDetails[I].value);
@@ -747,11 +747,11 @@ struct TLibS3BucketContext : S3BucketContext
 
 struct TLibS3ListBucketCallbackData : TLibS3CallbackData
 {
-  TRemoteFileList * FileList;
-  bool Any;
-  int KeyCount;
+    TRemoteFileList * FileList{nullptr};
+  bool Any{false};
+  int32_t KeyCount{0};
   UTF8String NextMarker;
-  bool IsTruncated;
+  bool IsTruncated{false};
 };
 
 TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucketName, const UnicodeString & Prefix)
@@ -1089,8 +1089,8 @@ S3Status TS3FileSystem::LibS3ListServiceCallback(
 }
 
 S3Status TS3FileSystem::LibS3ListBucketCallback(
-  int IsTruncated, const char *NextMarker, int ContentsCount, const S3ListBucketContent *Contents,
-  int CommonPrefixesCount, const char **CommonPrefixes, void *CallbackData)
+  int32_t IsTruncated, const char * NextMarker, int32_t ContentsCount, const S3ListBucketContent * Contents,
+  int32_t CommonPrefixesCount, const char ** CommonPrefixes, void * CallbackData)
 {
   TLibS3ListBucketCallbackData &Data = *static_cast<TLibS3ListBucketCallbackData *>(CallbackData);
 
@@ -1113,17 +1113,17 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
       File->SetType(FILETYPE_DEFAULT);
       // File->SetModification(UnixToDateTime(Content->lastModified, dstmWin));
       #define ISO8601_FORMAT "%04d-%02d-%02dT%02d:%02d:%02d"
-      int Year = 0;
-      int Month = 0;
-      int Day = 0;
-      int Hour = 0;
-      int Min = 0;
-      int Sec = 0;
+      int32_t Year = 0;
+      int32_t Month = 0;
+      int32_t Day = 0;
+      int32_t Hour = 0;
+      int32_t Min = 0;
+      int32_t Sec = 0;
       // The libs3's parseIso8601Time uses mktime, so returns a local time, which we would have to complicatedly restore,
       // Doing own parting instead as it's easier.
       // Might be replaced with ISO8601ToDate.
       // Keep is sync with WebDAV.
-      int Filled =
+      int32_t Filled =
         sscanf(Content->lastModifiedStr, ISO8601_FORMAT, &Year, &Month, &Day, &Hour, &Min, &Sec);
       if (Filled == 6)
       {
@@ -1516,10 +1516,10 @@ void TS3FileSystem::RemoteCreateLink(const UnicodeString & FileName,
 
 struct TS3FileProperties
 {
-  char OwnerId[S3_MAX_GRANTEE_USER_ID_SIZE];
-  char OwnerDisplayName[S3_MAX_GRANTEE_DISPLAY_NAME_SIZE];
-  int AclGrantCount;
-  S3AclGrant AclGrants[S3_MAX_ACL_GRANT_COUNT];
+  char OwnerId[S3_MAX_GRANTEE_USER_ID_SIZE]{};
+  char OwnerDisplayName[S3_MAX_GRANTEE_DISPLAY_NAME_SIZE]{};
+  int32_t AclGrantCount{0};
+  S3AclGrant AclGrants[S3_MAX_ACL_GRANT_COUNT]{};
 };
 
 static TRights::TRightLevel S3PermissionToRightLevel(S3Permission Permission)
@@ -1608,8 +1608,8 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
     {
       TAclGrantsVector NewAclGrants;
 
-      unsigned short Permissions = File->Rights->Combine(Properties->Rights);
-      for (int GroupI = TRights::rgFirst; GroupI <= TRights::rgLast; GroupI++)
+      uint16_t Permissions = File->Rights->Combine(Properties->Rights);
+      for (int32_t GroupI = TRights::rgFirst; GroupI <= TRights::rgLast; GroupI++)
       {
         TRights::TRightGroup Group = static_cast<TRights::TRightGroup>(GroupI);
         S3AclGrant NewAclGrant;
@@ -1649,7 +1649,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
       DebugAssert(Permissions == 0);
 
       // Preserve unrecognized permissions
-      for (int Index = 0; Index < FileProperties.AclGrantCount; Index++)
+      for (int32_t Index = 0; Index < FileProperties.AclGrantCount; Index++)
       {
         S3AclGrant & AclGrant = FileProperties.AclGrants[Index];
         unsigned short Permission = AclGrantToPermissions(AclGrant, FileProperties);
@@ -1741,7 +1741,7 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
   {
     bool AdditionalRights;
     unsigned short Permissions = 0;
-    for (int Index = 0; Index < Properties.AclGrantCount; Index++)
+    for (int32_t Index = 0; Index < Properties.AclGrantCount; Index++)
     {
       S3AclGrant & AclGrant = Properties.AclGrants[Index];
       unsigned short Permission = AclGrantToPermissions(AclGrant, Properties);
@@ -1757,7 +1757,7 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
 
     UnicodeString Delimiter(L",");
     UnicodeString HumanRights;
-    for (int GroupI = TRights::rgFirst; GroupI <= TRights::rgLast; GroupI++)
+    for (int32_t GroupI = TRights::rgFirst; GroupI <= TRights::rgLast; GroupI++)
     {
       TRights::TRightGroup Group = static_cast<TRights::TRightGroup>(GroupI);
       #define RIGHT_LEVEL_SET(LEVEL) FLAGSET(Permissions, TRights::CalculateFlag(Group, TRights::LEVEL))
@@ -1924,7 +1924,7 @@ struct TLibS3PutObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
   RawByteString ETag;
 };
 
-int TS3FileSystem::LibS3PutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData)
+int32_t TS3FileSystem::LibS3PutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData)
 {
   TLibS3PutObjectDataCallbackData & Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
@@ -1999,7 +1999,7 @@ S3Status TS3FileSystem::LibS3MultipartInitialCallback(const char * UploadId, voi
 struct TLibS3MultipartCommitPutObjectDataCallbackData : TLibS3CallbackData
 {
   RawByteString Message;
-  int Remaining;
+  int32_t Remaining{0};
 };
 
 S3Status TS3FileSystem::LibS3MultipartResponsePropertiesCallback(
@@ -2014,11 +2014,11 @@ S3Status TS3FileSystem::LibS3MultipartResponsePropertiesCallback(
   return Result;
 }
 
-int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData)
+int32_t TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData)
 {
-  TLibS3MultipartCommitPutObjectDataCallbackData &Data =
+  TLibS3MultipartCommitPutObjectDataCallbackData & Data =
     *static_cast<TLibS3MultipartCommitPutObjectDataCallbackData *>(CallbackData);
-  int Result = 0;
+  int32_t Result = 0;
   if (Data.Remaining > 0)
   {
     Result = std::min(BufferSize, Data.Remaining);
@@ -2095,8 +2095,8 @@ void TS3FileSystem::Source(
       0
     };
 
-  int Parts = std::min(S3MaxMultiPartChunks, std::max(1, nb::ToInt32((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
-  int ChunkSize = std::max(S3MinMultiPartChunkSize, nb::ToInt32((AHandle.Size + Parts - 1) / Parts));
+  int32_t Parts = std::min(S3MaxMultiPartChunks, std::max(1, nb::ToInt32((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
+  int32_t ChunkSize = std::max(S3MinMultiPartChunkSize, nb::ToInt32((AHandle.Size + Parts - 1) / Parts));
   DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > nb::ToInt64(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
 
   bool Multipart = (Parts > 1);
@@ -2163,9 +2163,9 @@ void TS3FileSystem::Source(
         {
           S3PutObjectHandler UploadPartHandler =
             { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
-            int64_t Remaining = Stream->Size() - Stream->Position();
-          int RemainingInt = nb::ToInt32(std::min(nb::ToInt64(std::numeric_limits<int>::max()), Remaining));
-          int PartLength = std::min(ChunkSize, RemainingInt);
+          int64_t Remaining = Stream->Size() - Stream->Position();
+          int32_t RemainingInt = nb::ToInt32(std::min(nb::ToInt64(std::numeric_limits<int>::max()), Remaining));
+          int32_t PartLength = std::min(ChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
             &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, nb::ToInt(Part), MultipartUploadId.c_str(),
