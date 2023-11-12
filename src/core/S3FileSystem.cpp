@@ -355,7 +355,7 @@ void TS3FileSystem::Open()
 
   FTerminal->Information(LoadStr(STATUS_CONNECT), true);
 
-  TSessionData *Data = FTerminal->GetSessionData();
+  TSessionData * Data = FTerminal->GetSessionData();
 
   FSessionInfo.LoginTime = Now();
   FSessionInfo.CertificateVerifiedManually = false;
@@ -557,9 +557,9 @@ S3Status TS3FileSystem::LibS3ResponsePropertiesCallback(const S3ResponseProperti
   return S3StatusOK;
 }
 
-void TS3FileSystem::LibS3ResponseDataCallback(const char *Data, size_t Size, void *CallbackData)
+void TS3FileSystem::LibS3ResponseDataCallback(const char * Data, size_t Size, void * CallbackData)
 {
-  TS3FileSystem *FileSystem = static_cast<TS3FileSystem *>(CallbackData);
+  TS3FileSystem * FileSystem = static_cast<TS3FileSystem *>(CallbackData);
   if (FileSystem->FTerminal->GetLog()->GetLogging() && !FileSystem->FResponseIgnore)
   {
     UnicodeString Content = UnicodeString(UTF8String(Data, static_cast<int32_t>(Size))).Trim();
@@ -1924,7 +1924,7 @@ struct TLibS3PutObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
   RawByteString ETag;
 };
 
-int TS3FileSystem::LibS3PutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData)
+int TS3FileSystem::LibS3PutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData)
 {
   TLibS3PutObjectDataCallbackData & Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
@@ -1987,7 +1987,7 @@ struct TLibS3MultipartInitialCallbackData : TLibS3CallbackData
   RawByteString UploadId;
 };
 
-S3Status TS3FileSystem::LibS3MultipartInitialCallback(const char *UploadId, void *CallbackData)
+S3Status TS3FileSystem::LibS3MultipartInitialCallback(const char * UploadId, void * CallbackData)
 {
   TLibS3MultipartInitialCallbackData &Data = *static_cast<TLibS3MultipartInitialCallbackData *>(CallbackData);
 
@@ -2014,7 +2014,7 @@ S3Status TS3FileSystem::LibS3MultipartResponsePropertiesCallback(
   return Result;
 }
 
-int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData)
+int TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData)
 {
   TLibS3MultipartCommitPutObjectDataCallbackData &Data =
     *static_cast<TLibS3MultipartCommitPutObjectDataCallbackData *>(CallbackData);
@@ -2097,7 +2097,7 @@ void TS3FileSystem::Source(
 
   int Parts = std::min(S3MaxMultiPartChunks, std::max(1, static_cast<int>((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
   int ChunkSize = std::max(S3MinMultiPartChunkSize, static_cast<int>((AHandle.Size + Parts - 1) / Parts));
-  DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > static_cast<__int64>(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
+  DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > nb::ToInt64(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
 
   bool Multipart = (Parts > 1);
 
@@ -2273,14 +2273,14 @@ struct TLibS3GetObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
 {
 };
 
-S3Status TS3FileSystem::LibS3GetObjectDataCallback(int BufferSize, const char *Buffer, void *CallbackData)
+S3Status TS3FileSystem::LibS3GetObjectDataCallback(int32_t BufferSize, const char * Buffer, void * CallbackData)
 {
-  TLibS3GetObjectDataCallbackData &Data = *static_cast<TLibS3GetObjectDataCallbackData *>(CallbackData);
+  TLibS3GetObjectDataCallbackData & Data = *static_cast<TLibS3GetObjectDataCallbackData *>(CallbackData);
 
   return Data.FileSystem->GetObjectData(BufferSize, Buffer, Data);
 }
 
-S3Status TS3FileSystem::GetObjectData(int BufferSize, const char *Buffer, TLibS3GetObjectDataCallbackData &Data)
+S3Status TS3FileSystem::GetObjectData(int32_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data)
 {
   S3Status Result = S3StatusOK;
 

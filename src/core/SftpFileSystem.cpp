@@ -1584,7 +1584,7 @@ protected:
     uint32_t BlockSize = FFileSystem->DownloadBlockSize(OperationProgress);
     if (FPartSize >= 0)
     {
-      __int64 Remaining = (FOffset + FPartSize) - FTransferred;
+      int64_t Remaining = (FOffset + FPartSize) - FTransferred;
       if (Remaining < BlockSize)
       {
         // It's lower, so the cast is safe
@@ -2010,7 +2010,7 @@ struct TOpenRemoteFileParams
   bool Resume;
   bool Resuming;
   TOverwriteMode OverwriteMode;
-  __int64 DestFileSize; // output
+  int64_t DestFileSize; // output
   RawByteString RemoteFileHandle; // output
   TOverwriteFileParams * FileParams;
   bool Confirmed;
@@ -3487,7 +3487,7 @@ void TSFTPFileSystem::DoStartup()
       TSFTPPacket Packet(SSH_FXP_EXTENDED);
       Packet.AddString(SFTP_EXT_LIMITS);
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
-      uint32_t MaxPacketSize = std::min(static_cast<__int64>(std::numeric_limits<unsigned long>::max()), Packet.GetInt64());
+      uint32_t MaxPacketSize = std::min(nb::ToInt64(std::numeric_limits<unsigned long>::max()), Packet.GetInt64());
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to server's limit of %d + %d bytes",
         (static_cast<int32_t>(MaxPacketSize), static_cast<int32_t>(PacketPayload))));
       FMaxPacketSize = MaxPacketSize + PacketPayload;

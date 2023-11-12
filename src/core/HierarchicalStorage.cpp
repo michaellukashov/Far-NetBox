@@ -90,7 +90,7 @@ UnicodeString PuttyUnMungeStr(const UnicodeString & Str)
 
 UnicodeString MungeIniName(const UnicodeString & Str)
 {
-  int P = Str.Pos(L"=");
+  int32_t P = Str.Pos(L"=");
   // make this fast for now
   if (P > 0)
   {
@@ -104,7 +104,7 @@ UnicodeString MungeIniName(const UnicodeString & Str)
 
 UnicodeString UnMungeIniName(const UnicodeString & Str)
 {
-  int P = Str.Pos(L"%3D");
+  int32_t P = Str.Pos(L"%3D");
   // make this fast for now
   if (P > 0)
   {
@@ -162,6 +162,7 @@ UnicodeString DefaultAccessString(L"inherit");
 THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) noexcept :
   FStorage(AStorage)
 {
+  // FStorage = AStorage;
   SetAccessMode(smRead);
   SetExplicit(false);
   ForceSave = false;
@@ -892,9 +893,9 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   while ((Index < Names->Count()) && Result)
   {
     UnicodeString Name = MungeStr(Names->GetString(Index), ForceAnsi, false);
-    unsigned long Size = Buffer.size();
-    unsigned long Type;
-    int RegResult;
+    DWORD Size = Buffer.size();
+    DWORD Type;
+    int32_t RegResult;
     do
     {
       RegResult = RegQueryValueEx(Registry->GetCurrentKey(), Name.c_str(), nullptr, &Type, &Buffer[0], &Size);
@@ -987,7 +988,7 @@ void TRegistryStorage::DoGetSubKeyNames(TStrings * Strings)
   }
 }
 
-void TRegistryStorage::DoGetValueNames(TStrings *Strings)
+void TRegistryStorage::DoGetValueNames(TStrings * Strings)
 {
   FRegistry->GetValueNames(Strings);
 }
@@ -1084,12 +1085,12 @@ void TRegistryStorage::DoWriteStringRaw(const UnicodeString & Name, const Unicod
   WRITE_REGISTRY(WriteString);
 }
 
-void TRegistryStorage::DoWriteInteger(const UnicodeString & Name, int Value)
+void TRegistryStorage::DoWriteInteger(const UnicodeString & Name, int32_t Value)
 {
   WRITE_REGISTRY(WriteInteger);
 }
 
-void TRegistryStorage::DoWriteInt64(const UnicodeString & Name, __int64 Value)
+void TRegistryStorage::DoWriteInt64(const UnicodeString & Name, int64_t Value)
 {
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
@@ -1100,7 +1101,7 @@ void TRegistryStorage::DoWriteBinaryData(const UnicodeString & Name, const void 
   {
     FRegistry->WriteBinaryData(Name, const_cast<void *>(Buffer), Size);
   }
-  catch (...)
+  catch(...)
   {
   }
 }
@@ -1160,7 +1161,7 @@ bool TCustomIniFileStorage::DoKeyExistsInternal(const UnicodeString & SubKey)
   UnicodeString NewKey = ExcludeTrailingBackslash(CurrentSubKey + SubKey);
   if (FSections->Count > 0)
   {
-    int Index = -1;
+    int32_t Index = -1;
     Result = FSections->Find(NewKey, Index);
     if (!Result &&
         (Index < FSections->Count) &&
@@ -1270,7 +1271,7 @@ void TCustomIniFileStorage::DoGetSubKeyNames(TStrings * Strings)
     FMasterStorage->GetSubKeyNames(Strings);
   }
   CacheSections();
-  for (int i = 0; i < FSections->Count; i++)
+  for (int32_t i = 0; i < FSections->Count; i++)
   {
     UnicodeString Section = FSections->Strings[i];
     if (AnsiCompareText(CurrentSubKey,
@@ -1278,7 +1279,7 @@ void TCustomIniFileStorage::DoGetSubKeyNames(TStrings * Strings)
     {
       UnicodeString SubSection = Section.SubString(CurrentSubKey.Length() + 1,
         Section.Length() - CurrentSubKey.Length());
-      int P = SubSection.Pos(L"\\");
+      int32_t P = SubSection.Pos(L"\\");
       if (P)
       {
         SubSection.SetLength(P - 1);
@@ -1298,7 +1299,7 @@ void TCustomIniFileStorage::DoGetValueNames(TStrings * Strings)
     FMasterStorage->GetValueNames(Strings);
   }
   FIniFile->ReadSection(CurrentSection, Strings);
-  for (int Index = 0; Index < Strings->Count; Index++)
+  for (int32_t Index = 0; Index < Strings->Count; Index++)
   {
     Strings->Strings[Index] = UnMungeIniName(Strings->Strings[Index]);
   }
@@ -1367,15 +1368,15 @@ bool TCustomIniFileStorage::DoReadBool(const UnicodeString & Name, bool Default)
   }
   else
   {
-    int IntDefault = int(Default);
-    int Int = DoReadIntegerWithMapping(Name, IntDefault, &BoolMapping);
+    int32_t IntDefault = int(Default);
+    int32_t Int = DoReadIntegerWithMapping(Name, IntDefault, &BoolMapping);
     return (Int != 0);
   }
 }
 
-int TCustomIniFileStorage::DoReadIntegerWithMapping(const UnicodeString & Name, int Default, const TIntMapping * Mapping)
+int32_t TCustomIniFileStorage::DoReadIntegerWithMapping(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping)
 {
-  int Result;
+  int32_t Result;
   bool ReadAsInteger = true;
   UnicodeString MungedName = MungeIniName(Name);
   if (Mapping != nullptr) // optimization
@@ -1400,9 +1401,9 @@ int TCustomIniFileStorage::DoReadIntegerWithMapping(const UnicodeString & Name, 
   return Result;
 }
 
-int TCustomIniFileStorage::DoReadInteger(const UnicodeString & Name, int Default, const TIntMapping * Mapping)
+int32_t TCustomIniFileStorage::DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping)
 {
-  int Result;
+  int32_t Result;
   if (HandleReadByMasterStorage(Name))
   {
     Result = FMasterStorage->ReadIntegerWithMapping(Name, Default, Mapping);
@@ -1414,9 +1415,9 @@ int TCustomIniFileStorage::DoReadInteger(const UnicodeString & Name, int Default
   return Result;
 }
 
-__int64 TCustomIniFileStorage::DoReadInt64(const UnicodeString & Name, __int64 Default)
+int64_t TCustomIniFileStorage::DoReadInt64(const UnicodeString & Name, int64_t Default)
 {
-  __int64 Result;
+  int64_t Result;
   if (HandleReadByMasterStorage(Name))
   {
     Result = FMasterStorage->ReadInt64(Name, Default);
@@ -1555,7 +1556,7 @@ void TCustomIniFileStorage::DoWriteBool(const UnicodeString & Name, bool Value)
   FIniFile->WriteBool(CurrentSection, MungeIniName(Name), Value);
 }
 
-void TCustomIniFileStorage::DoWriteInteger(const UnicodeString & Name, int Value)
+void TCustomIniFileStorage::DoWriteInteger(const UnicodeString & Name, int32_t Value)
 {
   if (HandleByMasterStorage())
   {
@@ -1565,7 +1566,7 @@ void TCustomIniFileStorage::DoWriteInteger(const UnicodeString & Name, int Value
   FIniFile->WriteInteger(CurrentSection, MungeIniName(Name), Value);
 }
 
-void TCustomIniFileStorage::DoWriteInt64(const UnicodeString & Name, __int64 Value)
+void TCustomIniFileStorage::DoWriteInt64(const UnicodeString & Name, int64_t Value)
 {
   if (HandleByMasterStorage())
   {
@@ -1589,7 +1590,7 @@ void TCustomIniFileStorage::DoWriteStringRaw(const UnicodeString & Name, const U
   DoWriteStringRawInternal(Name, Value);
 }
 
-void TCustomIniFileStorage::DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int Size)
+void TCustomIniFileStorage::DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size)
 {
   if (HandleByMasterStorage())
   {
@@ -1618,7 +1619,7 @@ uint32_t TCustomIniFileStorage::GetCurrentAccess()
   uint32_t Result;
   // The way THierarchicalStorage::OpenSubKey is implemented, the access will be zero for non-existing keys in
   // configuration overrides => delegating access handling to the master storage (which still should read overriden access keys)
-  if (FMasterStorage.get() != NULL)
+  if (FMasterStorage.get() != nullptr)
   {
     Result = FMasterStorage->GetCurrentAccess();
   }
@@ -1628,7 +1629,7 @@ uint32_t TCustomIniFileStorage::GetCurrentAccess()
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TCustomIniFileStorage::HasAccess(uint32_t Access)
 {
   bool Result;
@@ -1671,7 +1672,7 @@ TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage, TCustomIniFile 
   }
   else
   {
-    FOriginal = NULL;
+    FOriginal = nullptr;
   }
   ApplyOverrides();
 }
@@ -1692,7 +1693,7 @@ void TIniFileStorage::Flush()
     dynamic_cast<TMemIniFile *>(FIniFile)->GetStrings(Strings.get());
     if (!Strings->Equals(Original.get()))
     {
-      int Attr;
+      int32_t Attr;
       // preserve attributes (especially hidden)
       bool Exists = FileExists(ApiPath(Storage));
       if (Exists)
@@ -1710,9 +1711,9 @@ void TIniFileStorage::Flush()
       }
 
       HANDLE Handle;
-      int Error;
+      int32_t Error;
       bool Retry;
-      int Trying = 0;
+      int32_t Trying = 0;
       do
       {
         Error = 0;
@@ -1725,7 +1726,7 @@ void TIniFileStorage::Flush()
         Retry = (Error == ERROR_SHARING_VIOLATION) && (Trying < 2000);
         if (Retry)
         {
-          const int Step = 100;
+          const int32_t Step = 100;
           Sleep(Step);
           Trying += Step;
         }
@@ -1744,7 +1745,7 @@ void TIniFileStorage::Flush()
       {
         try
         {
-          std::unique_ptr<TStream> Stream(new TSafeHandleStream(int(Handle)));
+          std::unique_ptr<TStream> Stream(new TSafeHandleStream(nb::ToInt32(Handle)));
           try
           {
             Strings->SaveToStream(Stream.get());
@@ -1773,7 +1774,7 @@ void TIniFileStorage::ApplyOverrides()
   UnicodeString OverridesKey = IncludeTrailingBackslash(L"Override");
 
   CacheSections();
-  for (int i = 0; i < FSections->Count; i++)
+  for (int32_t i = 0; i < FSections->Count; i++)
   {
     UnicodeString Section = FSections->Strings[i];
 
@@ -1789,7 +1790,7 @@ void TIniFileStorage::ApplyOverrides()
       {
         FIniFile->ReadSection(Section, Names);
 
-        for (int ii = 0; ii < Names->Count; ii++)
+        for (int32_t ii = 0; ii < Names->Count; ii++)
         {
           UnicodeString Name = Names->Strings[ii];
           UnicodeString Value = FIniFile->ReadString(Section, Name, L"");
@@ -1905,7 +1906,7 @@ UnicodeString TOptionsIniFile::ReadString(const UnicodeString & Section, const U
   {
     UnicodeString Name = FormatKey(Section, Ident);
 
-    int Index = FOptions->IndexOfName(Name);
+    int32_t Index = FOptions->IndexOfName(Name);
     if (Index >= 0)
     {
       Value = FOptions->ValueFromIndex[Index];
@@ -1938,7 +1939,7 @@ void TOptionsIniFile::ReadSection(const UnicodeString Section, TStrings * String
     Strings->BeginUpdate();
     try
     {
-      for (int Index = 0; Index < FOptions->Count; Index++)
+      for (int32_t Index = 0; Index < FOptions->Count; Index++)
       {
         UnicodeString Name = FOptions->Names[Index];
         if (SameText(Name.SubString(1, SectionPrefix.Length()), SectionPrefix) &&
@@ -1959,10 +1960,10 @@ void TOptionsIniFile::ReadSections(TStrings * Strings)
 {
   std::unique_ptr<TStringList> Sections(CreateSortedStringList());
 
-  for (int Index = 0; Index < FOptions->Count; Index++)
+  for (int32_t Index = 0; Index < FOptions->Count; Index++)
   {
     UnicodeString Name = FOptions->Names[Index];
-    int P = LastDelimiter(PathDelim, Name);
+    int32_t P = LastDelimiter(PathDelim, Name);
     if (P > 0)
     {
       UnicodeString Section = Name.SubString(1, P - 1);
@@ -1973,7 +1974,7 @@ void TOptionsIniFile::ReadSections(TStrings * Strings)
     }
   }
 
-  for (int Index = 0; Index < Sections->Count; Index++)
+  for (int32_t Index = 0; Index < Sections->Count; Index++)
   {
     Strings->Add(FRootKey + Sections->Strings[Index]);
   }
@@ -1999,7 +2000,7 @@ void TOptionsIniFile::DeleteKey(const UnicodeString Section, const UnicodeString
   {
     UnicodeString Name = FormatKey(Section, Ident);
 
-    int Index = FOptions->IndexOfName(Name);
+    int32_t Index = FOptions->IndexOfName(Name);
     if (Index >= 0)
     {
       FOptions->Delete(Index);

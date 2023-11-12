@@ -32,7 +32,7 @@ __removed #include <typeinfo>
 #define PRIVATEKEY_SWITCH L"privatekey"
 #define PASSWORDSFROMFILES_SWITCH L"passwordsfromfiles"
 extern const wchar_t * TransferModeNames[];
-extern const int TransferModeNamesCount;
+extern const int32_t TransferModeNamesCount;
 extern const wchar_t * ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
 
@@ -49,7 +49,7 @@ __removed UnicodeString GetExceptionDebugInfo();
 
 NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
-NB_CORE_EXPORT void *BusyStart();
+NB_CORE_EXPORT void * BusyStart();
 NB_CORE_EXPORT void BusyEnd(void * Token);
 NB_CORE_EXPORT static const uint32_t GUIUpdateInterval = 100;
 NB_CORE_EXPORT void SetNoGUI();
@@ -60,7 +60,7 @@ NB_CORE_EXPORT UnicodeString GetSshVersionString();
 NB_CORE_EXPORT void CopyToClipboard(const UnicodeString & AText);
 NB_CORE_EXPORT HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
-  TThreadID &ThreadId);
+  TThreadID & ThreadId);
 NB_CORE_EXPORT bool TextFromClipboard(UnicodeString & Text, bool Trim);
 
 NB_CORE_EXPORT void WinInitialize();
@@ -69,31 +69,32 @@ NB_CORE_EXPORT void WinFinalize();
 #if 0
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
-const unsigned int qaYes =      0x00000001;
+const uint32_t qaYes =      0x00000001;
 // MessageDlg relies that answer do not conflict with mrCancel (=0x2)
-const unsigned int qaNo =       0x00000004;
-const unsigned int qaOK =       0x00000008;
-const unsigned int qaCancel =   0x00000010;
-const unsigned int qaYesToAll = 0x00000020;
-const unsigned int qaNoToAll =  0x00000040;
-const unsigned int qaAbort =    0x00000080;
-const unsigned int qaRetry =    0x00000100;
-const unsigned int qaIgnore =   0x00000200;
-const unsigned int qaSkip =     0x00000400;
-const unsigned int qaAll =      0x00000800;
-const unsigned int qaHelp =     0x00001000;
-const unsigned int qaReport =   0x00002000;
+const uint32_t qaNo =       0x00000004;
+const uint32_t qaOK =       0x00000008;
+const uint32_t qaCancel =   0x00000010;
+const uint32_t qaYesToAll = 0x00000020;
+const uint32_t qaNoToAll =  0x00000040;
+const uint32_t qaAbort =    0x00000080;
+const uint32_t qaRetry =    0x00000100;
+const uint32_t qaIgnore =   0x00000200;
+const uint32_t qaSkip =     0x00000400;
+const uint32_t qaAll =      0x00000800;
+const uint32_t qaHelp =     0x00001000;
+const uint32_t qaReport =   0x00002000;
 
-const unsigned int qaFirst = qaYes;
-const unsigned int qaLast = qaReport;
+const uint32_t qaFirst = qaYes;
+const uint32_t qaLast = qaReport;
 
-const unsigned int qaNeverAskAgain = 0x00010000;
+const uint32_t qaNeverAskAgain = 0x00010000;
 
-const int qpFatalAbort =           0x01;
-const int qpNeverAskAgainCheck =   0x02;
-const int qpAllowContinueOnError = 0x04;
-const int qpIgnoreAbort =          0x08;
-const int qpWaitInBatch =          0x10;
+const int32_t qpFatalAbort =           0x01;
+const int32_t qpNeverAskAgainCheck =   0x02;
+const int32_t qpAllowContinueOnError = 0x04;
+const int32_t qpIgnoreAbort =          0x08;
+const int32_t qpWaitInBatch =          0x10;
+
 #endif // #if 0
 
 using TButtonSubmitEvent = nb::FastDelegate2<void,
@@ -106,7 +107,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
   uint32_t Button{0};
   UnicodeString Alias;
   TButtonSubmitEvent OnSubmit;
-  int GroupWith{0};
+  int32_t GroupWith{0};
   bool Default{false};
   TShiftStateFlag GrouppedShiftState{ssShift};
   bool ElevationRequired{false};

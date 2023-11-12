@@ -683,8 +683,8 @@ using namespace Sysutils;
 
 namespace base {
 
-FILE *LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append = false);
-bool WriteAndFlush(FILE *file, void const *data, size_t size);
+FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append = false);
+bool WriteAndFlush(FILE * file, void const * data, size_t size);
 
 bool FileExists(const UnicodeString & AFileName);
 bool FileExistsFix(const UnicodeString & Path);

@@ -440,7 +440,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void * Param) override;
   virtual bool GetIsEmpty() const override;
   virtual void SetData(const UnicodeString & Value) override;
 };
@@ -460,7 +460,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void * Param) override;
   virtual bool GetIsEmpty() const override;
   virtual void SetData(const UnicodeString & Value) override;
 };
@@ -494,7 +494,7 @@ public:
   void SetReadOnly(bool Value) { SetFlag(DIF_READONLY, Value); }
 
 protected:
-  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void * Param) override;
   virtual void Detach() override;
 
 private:
@@ -631,7 +631,7 @@ public:
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
 protected:
-  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void * Param) override;
   virtual void Init() override;
   virtual bool CloseQuery() override;
 
@@ -671,7 +671,7 @@ public:
   void SetItemIndex(int32_t Index) { FList->SetSelected(Index); }
 
 protected:
-  virtual intptr_t ItemProc(int32_t Msg, void *Param) override;
+  virtual intptr_t ItemProc(int32_t Msg, void * Param) override;
   virtual void Init() override;
 
 private:

@@ -1967,7 +1967,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList *FileList = GetAs<TRemoteFileList>(Index);
+    TRemoteFileList * FileList = GetAs<TRemoteFileList>(Index);
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1991,7 +1991,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   return Result;
 }
 
-void TRemoteDirectoryCache::AddFileList(TRemoteFileList *FileList)
+void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 {
   DebugAssert(FileList);
   if (FileList)
@@ -2247,13 +2247,13 @@ TRights::TRights(uint16_t ANumber) noexcept
   Number = ANumber;
 }
 
-TRights::TRights(const TRights &Source) noexcept
+TRights::TRights(const TRights & Source) noexcept
 {
   Assign(&Source);
 }
 
 
-void TRights::Assign(const TRights *Source)
+void TRights::Assign(const TRights * Source)
 {
   FAllowUndef = Source->GetAllowUndef();
   FSet = Source->FSet;
@@ -3326,7 +3326,7 @@ int32_t TSynchronizeProgress::Progress(const TFileOperationProgressType * Curren
   }
   else
   {
-    __int64 Processed = GetProcessed(CurrentItemOperationProgress);
+    int64_t Processed = GetProcessed(CurrentItemOperationProgress);
     if (FTotalSize > 0)
     {
       Result = (Processed * 100) / FTotalSize;

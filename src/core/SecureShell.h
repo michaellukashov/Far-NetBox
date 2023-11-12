@@ -124,7 +124,7 @@ public:
   bool VerifyCachedHostKey(
     const UnicodeString & StoredKeys, const UnicodeString & KeyStr, const UnicodeString & FingerprintMD5, const UnicodeString & FingerprintSHA256);
   UnicodeString StoreHostKey(
-    const UnicodeString & Host, int Port, const UnicodeString & KeyType, const UnicodeString & KeyStr);
+    const UnicodeString & Host, int32_t Port, const UnicodeString & KeyType, const UnicodeString & KeyStr);
   bool HasLocalProxy() const;
 
 protected:
@@ -144,21 +144,21 @@ protected:
 
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
-    TSessionLog *Log, TConfiguration *Configuration) noexcept;
+    TSessionLog * Log, TConfiguration * Configuration) noexcept;
   virtual ~TSecureShell() noexcept;
   void Open();
   void Close();
   void KeepAlive();
-  int32_t Receive(uint8_t *Buf, int32_t Length);
+  int32_t Receive(uint8_t * Buf, int32_t Length);
   bool Peek(uint8_t *& Buf, int32_t Length) const;
   UnicodeString ReceiveLine();
-  void Send(const uint8_t *Buf, int32_t Length);
+  void Send(const uint8_t * Buf, int32_t Length);
   void SendSpecial(int32_t Code);
   void Idle(uint32_t MSec = 0);
   void SendLine(const UnicodeString & Line);
   void SendNull();
 
-  const TSessionInfo &GetSessionInfo() const;
+  const TSessionInfo & GetSessionInfo() const;
   void GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString & MD5) const;
   bool SshFallbackCmd() const;
   uint32_t MaxPacketSize() const;
@@ -178,7 +178,7 @@ public:
   bool PromptUser(bool ToServer,
     const UnicodeString & AName, bool NameRequired,
     const UnicodeString & AInstructions, bool InstructionsRequired,
-    TStrings * Prompts, TStrings *Results);
+    TStrings * Prompts, TStrings * Results);
   void FromBackend(const uint8_t * Data, size_t Length);
   void CWrite(const char * Data, size_t Length);
   void AddStdError(const uint8_t * Data, size_t Length);

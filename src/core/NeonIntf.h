@@ -25,7 +25,7 @@ struct TNeonCertificateData
   UnicodeString FingerprintSHA256;
   AnsiString AsciiCert;
 
-  int Failures{0};
+  int32_t Failures{0};
 };
 
 void NeonParseUrl(const UnicodeString & Url, ne_uri & uri);
@@ -39,23 +39,23 @@ void CheckNeonStatus(ne_session * Session, int32_t NeonStatus,
   const UnicodeString & AHostName, const UnicodeString & CustomError = L"");
 UnicodeString GetNeonRedirectUrl(ne_session * Session);
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls);
-typedef void (*TNeonTlsInit)(struct ssl_st *Ssl, ne_session *Session);
+typedef void (* TNeonTlsInit)(struct ssl_st * Ssl, ne_session * Session);
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal * Terminal);
 void InitNeonTls(
   ne_session * Session, TNeonTlsInit OnNeonTlsInit, ne_ssl_verify_fn VerifyCallback, void * VerifyContext,
   TTerminal * Terminal);
-AnsiString NeonExportCertificate(const ne_ssl_certificate *Certificate);
+AnsiString NeonExportCertificate(const ne_ssl_certificate * Certificate);
 bool NeonWindowsValidateCertificate(int32_t & Failures, const AnsiString & AsciiCert, UnicodeString & Error);
 bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData & Data, UnicodeString & Message);
 UnicodeString NeonCertificateFailuresErrorStr(int32_t Failures, const UnicodeString & HostName);
 void UpdateNeonDebugMask();
-void RegisterForNeonDebug(TTerminal *Terminal);
-void UnregisterFromNeonDebug(TTerminal *Terminal);
+void RegisterForNeonDebug(TTerminal * Terminal);
+void UnregisterFromNeonDebug(TTerminal * Terminal);
 void NeonInitialize();
 void NeonFinalize();
-void RequireNeon(TTerminal *Terminal);
+void RequireNeon(TTerminal * Terminal);
 void RetrieveNeonCertificateData(
-  int Failures, const ne_ssl_certificate *Certificate, TNeonCertificateData & Data);
+  int32_t Failures, const ne_ssl_certificate * Certificate, TNeonCertificateData & Data);
 UnicodeString CertificateVerificationMessage(const TNeonCertificateData & Data);
 UnicodeString CertificateSummary(const TNeonCertificateData & Data, const UnicodeString & AHostName);
 struct TSessionInfo;

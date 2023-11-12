@@ -2395,7 +2395,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     // lookup stored session even if protocol was defined
     // (this allows setting for example default username for host
     // by creating stored session named by host)
-    TSessionData *Data = nullptr;
+    TSessionData * Data = nullptr;
     // When using to paste URL on Login dialog, we do not want to lookup the stored sites
     if ((StoredSessions != nullptr) &&
         (!ProtocolDefined || FLAGSET(Flags, pufAllowStoredSiteWithProtocol)))
@@ -5407,9 +5407,9 @@ void TStoredSessionList::Reload()
   }
 }
 
-void TStoredSessionList::DoSave(THierarchicalStorage *Storage,
-  TSessionData *Data, bool All, bool RecryptPasswordOnly,
-  TSessionData *FactoryDefaults)
+void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
+  TSessionData * Data, bool All, bool RecryptPasswordOnly,
+  TSessionData * FactoryDefaults)
 {
   if (All || Data->GetModified())
   {
@@ -5465,13 +5465,13 @@ void TStoredSessionList::DoSave(THierarchicalStorage *Storage,
   }) end_try__finally
 }
 
-void TStoredSessionList::Save(THierarchicalStorage *Storage, bool All)
+void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
 {
   DoSave(Storage, All, false, nullptr);
 }
 
 void TStoredSessionList::DoSave(bool All, bool Explicit,
-  bool RecryptPasswordOnly, TStrings *RecryptPasswordErrors)
+  bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
   bool SessionList = true;
   std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
@@ -5774,7 +5774,7 @@ void TStoredSessionList::Import(TStoredSessionList *From,
 }
 
 void TStoredSessionList::SelectSessionsToImport(
-  TStoredSessionList *Dest, bool SSHOnly)
+  TStoredSessionList * Dest, bool SSHOnly)
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -5947,9 +5947,9 @@ void TStoredSessionList::UpdateStaticUsage()
 #endif // #if 0
 }
 
-const TSessionData *TStoredSessionList::FindSame(TSessionData *Data)
+const TSessionData *TStoredSessionList::FindSame(TSessionData * Data)
 {
-  const TSessionData *Result = nullptr;
+  const TSessionData * Result = nullptr;
   if (!(Data->GetHidden() || Data->GetName().IsEmpty())) // || Data->GetIsWorkspace())
   {
     const TNamedObject *Obj = FindByName(Data->GetName());
@@ -5958,7 +5958,7 @@ const TSessionData *TStoredSessionList::FindSame(TSessionData *Data)
   return Result;
 }
 
-int32_t TStoredSessionList::IndexOf(TSessionData *Data) const
+int32_t TStoredSessionList::IndexOf(TSessionData * Data) const
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -6177,8 +6177,8 @@ void TStoredSessionList::DoGetFolderOrWorkspace(const UnicodeString & Name, TLis
 {
   for (int32_t Index = 0; (Index < Count); Index++)
   {
-    TSessionData *RawData = GetSession(Index);
-    TSessionData *Data =
+    TSessionData * RawData = GetSession(Index);
+    TSessionData * Data =
       CheckIsInFolderOrWorkspaceAndResolve(RawData, Name);
 
     if (Data != nullptr)
@@ -6240,7 +6240,7 @@ TStrings *TStoredSessionList::GetWorkspaces() const
 
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
-    const TSessionData *Data = GetSession(Index);
+    const TSessionData * Data = GetSession(Index);
     if (Data->GetIsWorkspace())
     {
       Result->Add(Data->GetFolderName());
@@ -6255,7 +6255,7 @@ void TStoredSessionList::NewWorkspace(
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
-    TSessionData *Data = GetSession(Index);
+    TSessionData * Data = GetSession(Index);
     if (Data->IsInFolderOrWorkspace(Name))
     {
       FPendingRemovals->Add(Data->Name);
@@ -6266,7 +6266,7 @@ void TStoredSessionList::NewWorkspace(
 
   for (int32_t Index = 0; Index < DataList->GetCount(); ++Index)
   {
-    TSessionData *Data = DataList->GetAs<TSessionData>(Index);
+    TSessionData * Data = DataList->GetAs<TSessionData>(Index);
 
     std::unique_ptr<TSessionData> Data2 = std::make_unique<TSessionData>("");
     Data2->Assign(Data);
@@ -6282,7 +6282,7 @@ bool TStoredSessionList::HasAnyWorkspace() const
   bool Result = false;
   for (int32_t Index = 0; !Result && (Index < GetCount()); ++Index)
   {
-    const TSessionData *Data = GetSession(Index);
+    const TSessionData * Data = GetSession(Index);
     Result = Data->GetIsWorkspace();
   }
   return Result;
@@ -6314,7 +6314,7 @@ bool TStoredSessionList::IsUrl(const UnicodeString & Url)
   return Result;
 }
 
-TSessionData *TStoredSessionList::ResolveWorkspaceData(TSessionData *Data)
+TSessionData * TStoredSessionList::ResolveWorkspaceData(TSessionData * Data)
 {
   if (!Data->GetLink().IsEmpty())
   {

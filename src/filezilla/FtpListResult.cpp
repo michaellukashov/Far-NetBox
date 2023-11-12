@@ -1328,7 +1328,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   const char *prevstr = 0;
   int prevstrlen = 0;
 
-  __int64 tmp = 0;
+  int64_t tmp = 0;
   //rde::map<CString, int>::const_iterator iter;
   while (str && !ParseSize(str, tokenlen, tmp) && !IsNumeric(skipped, skippedlen))
   {

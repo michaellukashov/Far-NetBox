@@ -169,7 +169,7 @@ struct TUpdatesData
   UnicodeString NewsUrl;
   TSize NewsSize;
   UnicodeString DownloadUrl;
-  __int64 DownloadSize;
+  int64_t DownloadSize;
   UnicodeString DownloadSha256;
   UnicodeString AuthenticationError;
   bool OpenGettingStarted;

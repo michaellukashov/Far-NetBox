@@ -175,23 +175,23 @@ protected:
   bool ParsePathForPropertiesRequests(
     const UnicodeString & Path, const TRemoteFile * File, UnicodeString & BucketName, UnicodeString & Key);
 
-  static TS3FileSystem *GetFileSystem(void *CallbackData);
-  static void LibS3SessionCallback(ne_session_s *Session, void *CallbackData);
-  static S3Status LibS3ResponsePropertiesCallback(const S3ResponseProperties *Properties, void *CallbackData);
-  static void LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails *Error, void *CallbackData);
-  static int LibS3SslCallback(int Failures, const ne_ssl_certificate_s *Certificate, void *CallbackData);
-  static void LibS3ResponseDataCallback(const char *Data, size_t Size, void *CallbackData);
+  static TS3FileSystem *GetFileSystem(void * CallbackData);
+  static void LibS3SessionCallback(ne_session_s * Session, void * CallbackData);
+  static S3Status LibS3ResponsePropertiesCallback(const S3ResponseProperties * Properties, void * CallbackData);
+  static void LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails * Error, void * CallbackData);
+  static int LibS3SslCallback(int Failures, const ne_ssl_certificate_s * Certificate, void * CallbackData);
+  static void LibS3ResponseDataCallback(const char * Data, size_t Size, void * CallbackData);
   static S3Status LibS3ListServiceCallback(
-    const char *OwnerId, const char *OwnerDisplayName, const char *BucketName,
+    const char * OwnerId, const char * OwnerDisplayName, const char * BucketName,
     int64_t CreationDate, void *CallbackData);
   static S3Status LibS3ListBucketCallback(
-    int IsTruncated, const char *NextMarker, int ContentsCount, const S3ListBucketContent *Contents,
-    int CommonPrefixesCount, const char **CommonPrefixes, void *CallbackData);
-  static int LibS3PutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData);
-  static S3Status LibS3MultipartInitialCallback(const char *UploadId, void *CallbackData);
-  static int LibS3MultipartCommitPutObjectDataCallback(int BufferSize, char *Buffer, void *CallbackData);
-  static S3Status LibS3MultipartResponsePropertiesCallback(const S3ResponseProperties *Properties, void *CallbackData);
-  static S3Status LibS3GetObjectDataCallback(int BufferSize, const char *Buffer, void *CallbackData);
+    int IsTruncated, const char * NextMarker, int32_t ContentsCount, const S3ListBucketContent * Contents,
+    int CommonPrefixesCount, const char ** CommonPrefixes, void * CallbackData);
+  static int LibS3PutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData);
+  static S3Status LibS3MultipartInitialCallback(const char * UploadId, void * CallbackData);
+  static int LibS3MultipartCommitPutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData);
+  static S3Status LibS3MultipartResponsePropertiesCallback(const S3ResponseProperties * Properties, void * CallbackData);
+  static S3Status LibS3GetObjectDataCallback(int32_t BufferSize, const char * Buffer, void * CallbackData);
 
   static const int32_t S3MinMultiPartChunkSize;
   static const int32_t S3MaxMultiPartChunks;

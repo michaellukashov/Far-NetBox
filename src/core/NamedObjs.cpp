@@ -4,7 +4,6 @@
 
 #include <Common.h>
 #include <Sysutils.hpp>
-
 #include "NamedObjs.h"
 
 __removed #pragma package(smart_init)
@@ -26,7 +25,7 @@ void TNamedObject::SetName(const UnicodeString & Value)
   FName = Value;
 }
 
-int32_t TNamedObject::Compare(const TNamedObject *Other) const
+int32_t TNamedObject::Compare(const TNamedObject * Other) const
 {
   int32_t Result;
   if (GetHidden() && !Other->GetHidden())
@@ -57,7 +56,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
     while (List->FindByName(GetName()))
     {
       int64_t N = 0;
-      int32_t P;
+      int32_t P = 0;
       // If name already contains number parenthesis remove it (and remember it)
       UnicodeString Name = GetName();
       if ((Name[Name.Length()] == L')') && ((P = Name.LastDelimiter(L'(')) > 0))
@@ -68,7 +67,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
-        catch (Exception &/*E*/)
+        catch (Exception &)
         {
           N = 0;
         }
@@ -83,6 +82,9 @@ const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) noexcept :
   TObjectList(Kind)
 {
+  FAutoSort = True;
+  FHiddenCount = 0;
+  FControlledAdd = false;
 }
 
 const TNamedObject * TNamedObjectList::AtObject(int32_t Index) const
@@ -115,7 +117,7 @@ int32_t TNamedObjectList::Add(TObject * AObject)
 {
   int32_t Result;
   TAutoFlag ControlledAddFlag(FControlledAdd); nb::used(ControlledAddFlag);
-  TNamedObject *NamedObject = static_cast<TNamedObject *>(AObject);
+  TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),
   // keep the hidden objects in front, so that HiddenCount is correct
   if (!FAutoSort && NamedObject->GetHidden())
@@ -135,7 +137,7 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
 {
   if (Action == lnDeleted)
   {
-    TNamedObject *NamedObject = static_cast<TNamedObject *>(Ptr);
+    TNamedObject * NamedObject = static_cast<TNamedObject *>(Ptr);
     if (NamedObject->GetHidden() && (FHiddenCount >= 0))
     {
       FHiddenCount--;
@@ -166,7 +168,7 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName)
   for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
     // Not using AtObject as we iterate even hidden objects here
-    TNamedObject *NamedObject = static_cast<TNamedObject *>(GetObj(Index));
+    TNamedObject * NamedObject = static_cast<TNamedObject *>(GetObj(Index));
     if (NamedObject->IsSameName(AName))
     {
       return NamedObject;

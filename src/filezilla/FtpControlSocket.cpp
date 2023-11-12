@@ -3484,7 +3484,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
       break;
     case FILETRANSFER_NOLIST_SIZE:
       {
-        __int64 size;
+        int64_t size;
         if (HandleSize(code, size))
         {
           DebugAssert(!pData->pFileSize);
@@ -4528,7 +4528,7 @@ bool CFtpControlSocket::HandleMdtm(int code, t_directory::t_direntry::t_date & d
   return result;
 }
 
-bool CFtpControlSocket::HandleSize(int code, __int64 & size)
+bool CFtpControlSocket::HandleSize(int code, int64_t & size)
 {
   bool result = false;
   if (code == 2)
@@ -5114,7 +5114,7 @@ int CFtpControlSocket::CheckOverwriteFile()
       }
       END_CATCH_ALL;
       BOOL bRemoteFileExists = FALSE;
-      __int64 remotesize = -1;
+      int64_t remotesize = -1;
       t_directory::t_direntry::t_date remotetime;
       if (m_pDirectoryListing)
       {
@@ -6032,8 +6032,8 @@ _int64 CFtpControlSocket::GetAbleToUDSize( bool &beenWaiting, CTime &curTime, _i
       ableToRead = 0;
 
     curLimit = GetSpeedLimit(direction, curTime);
-    __int64 nMax = curLimit / m_InstanceList[direction].size();
-    _int64 nLeft = 0;
+    int64_t nMax = curLimit / m_InstanceList[direction].size();
+    int64_t nLeft = 0;
     int nCount = 0;
     nb::list_t<t_ActiveList>::iterator iter2;
     for (iter2 = m_InstanceList[direction].begin(); iter2 != m_InstanceList[direction].end(); iter2++)

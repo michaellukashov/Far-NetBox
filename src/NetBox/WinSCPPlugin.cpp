@@ -605,7 +605,7 @@ public:
     nb::ClearArray(Buttons);
   }
 
-  const TMessageParams *Params{nullptr};
+  const TMessageParams * Params{nullptr};
   uint32_t Buttons[15 + 1]{};
   uint32_t ButtonCount{0};
 };

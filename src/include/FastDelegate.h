@@ -842,7 +842,7 @@ public:
     m_pthis = horrible_cast<GenericClass*>(function_to_bind);
     // MSVC, SunC++ and DMC accept the following (non-standard) code:
 //    m_pthis = static_cast<GenericClass *>(static_cast<void *>(function_to_bind));
-    // BCC32, Comeau and DMC accept this method. MSVC7.1 needs __int64 instead of long
+    // BCC32, Comeau and DMC accept this method. MSVC7.1 needs int64_t instead of long
 //    m_pthis = reinterpret_cast<GenericClass *>(reinterpret_cast<long>(function_to_bind));
   }
   // ******** EVIL, EVIL CODE! *******

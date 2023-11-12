@@ -922,7 +922,7 @@ public:
     TInputDialogInitializeEvent OnInitialize, bool Echo) = 0;
   virtual uint32_t MoreMessageDialog(const UnicodeString & AMessage,
     TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
-    const TMessageParams *Params) = 0;
+    const TMessageParams * Params) = 0;
 };
 
 class NB_CORE_EXPORT TGlobals : public TGlobalsIntf, public TObject

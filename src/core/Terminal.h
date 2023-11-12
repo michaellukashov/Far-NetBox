@@ -911,8 +911,8 @@ public:
   explicit TTerminalList(TConfiguration * AConfiguration) noexcept;
   virtual ~TTerminalList() noexcept;
 
-  virtual TTerminal * NewTerminal(TSessionData *Data);
-  virtual void FreeTerminal(TTerminal *Terminal);
+  virtual TTerminal * NewTerminal(TSessionData * Data);
+  virtual void FreeTerminal(TTerminal * Terminal);
   void FreeAndNullTerminal(TTerminal *& Terminal);
   void RecryptPasswords();
 

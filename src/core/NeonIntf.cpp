@@ -57,12 +57,12 @@ struct TProxyAuthData
   UnicodeString Password;
 };
 
-static int NeonProxyAuth(
-  void *UserData, const char * /*Realm*/, int Attempt, char *UserName, char *Password)
+static int32_t NeonProxyAuth(
+  void * UserData, const char * /*Realm*/, int32_t Attempt, char * UserName, char * Password)
 {
-  TProxyAuthData *ProxyAuthData = static_cast<TProxyAuthData *>(UserData);
+  TProxyAuthData * ProxyAuthData = static_cast<TProxyAuthData *>(UserData);
 
-  int Result;
+  int32_t Result;
   // no point trying too many times as we always return the same credentials
   // (maybe just one would be enough)
   if (Attempt >= 2)
@@ -79,7 +79,7 @@ static int NeonProxyAuth(
   return Result;
 }
 
-ne_session * CreateNeonSession(const ne_uri &uri)
+ne_session * CreateNeonSession(const ne_uri & uri)
 {
   return ne_session_create(uri.scheme, uri.host, uri.port);
 }
@@ -100,7 +100,7 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const Unico
 
       if (!AProxyUsername.IsEmpty())
       {
-        TProxyAuthData *ProxyAuthData = new TProxyAuthData();
+        TProxyAuthData * ProxyAuthData = new TProxyAuthData();
         ProxyAuthData->UserName = AProxyUsername;
         ProxyAuthData->Password = AProxyPassword;
         ne_set_session_private(Session, SESSION_PROXY_AUTH_KEY, ProxyAuthData);
@@ -125,9 +125,9 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const Unico
   }
 }
 
-void DestroyNeonSession(ne_session *Session)
+void DestroyNeonSession(ne_session * Session)
 {
-  TProxyAuthData *ProxyAuthData =
+  TProxyAuthData * ProxyAuthData =
     static_cast<TProxyAuthData *>(ne_get_session_private(Session, SESSION_PROXY_AUTH_KEY));
   if (ProxyAuthData != nullptr)
   {
@@ -191,7 +191,7 @@ void CheckNeonStatus(ne_session * Session, int32_t NeonStatus,
 
         case NE_REDIRECT:
           {
-            char *Uri = ne_uri_unparse(ne_redirect_location(Session));
+            char * Uri = ne_uri_unparse(ne_redirect_location(Session));
             Error = FMTLOAD(REQUEST_REDIRECTED, Uri);
             ne_free(Uri);
           }
@@ -246,9 +246,11 @@ extern "C"
 
 void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 {
-  // void * Code = ne_get_session_private(Session, SESSION_TLS_INIT_KEY);
-  // void * Data = ne_get_session_private(Session, SESSION_TLS_INIT_DATA_KEY);
-  //TNeonTlsInit OnNeonTlsInit = MakeMethod<TNeonTlsInit>(Data, Code);
+#if defined(__BORLANDC__)
+  void * Code = ne_get_session_private(Session, SESSION_TLS_INIT_KEY);
+  void * Data = ne_get_session_private(Session, SESSION_TLS_INIT_DATA_KEY);
+  TNeonTlsInit OnNeonTlsInit = MakeMethod<TNeonTlsInit>(Data, Code);
+ #endif
   TNeonTlsInit OnNeonTlsInit =
     reinterpret_cast<TNeonTlsInit>(ne_get_session_private(Session, SESSION_TLS_INIT_KEY));
   if (DebugAlwaysTrue(OnNeonTlsInit != nullptr))
@@ -272,7 +274,7 @@ void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal 
   }
 
   // As the OnNeonTlsInit always only calls SetupSsl, we can simplify this with one shared implementation
-#if 0
+#if defined(__BORLANDC__)
   TMethod & Method = *(TMethod*)&OnNeonTlsInit;
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
   ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
@@ -305,7 +307,7 @@ bool NeonWindowsValidateCertificate(int32_t & Failures, const AnsiString & Ascii
   // We can accept only unknown certificate authority.
   if (FLAGSET(Failures, NE_SSL_UNTRUSTED))
   {
-    unsigned char * Certificate = nullptr;
+    uint8_t * Certificate = nullptr;
     size_t CertificateLen = ne_unbase64(AsciiCert.c_str(), &Certificate);
 
     if (CertificateLen > 0)
@@ -389,7 +391,7 @@ static nb::set_t<TTerminal *> NeonTerminals;
 extern "C"
 {
 
-void ne_debug(void *Context, int Channel, const char *Format, ...)
+void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
 {
   bool DoLog;
 
@@ -433,10 +435,10 @@ void ne_debug(void *Context, int Channel, const char *Format, ...)
     {
       // Note that this gets called for THttp sessions too.
       // It does no harm atm.
-      TTerminal *Terminal = nullptr;
+      TTerminal * Terminal = nullptr;
       if (Context != nullptr)
       {
-        ne_session *Session = static_cast<ne_session *>(Context);
+        ne_session * Session = static_cast<ne_session *>(Context);
 
         Terminal =
           static_cast<TTerminal *>(ne_get_session_private(Session, SESSION_TERMINAL_KEY));
@@ -461,20 +463,20 @@ void ne_debug(void *Context, int Channel, const char *Format, ...)
 
 } // extern "C"
 
-void RegisterForNeonDebug(TTerminal *Terminal)
+void RegisterForNeonDebug(TTerminal * Terminal)
 {
   TGuard Guard(*DebugSection.get()); nb::used(Guard);
   NeonTerminals.insert(Terminal);
 }
 
-void UnregisterFromNeonDebug(TTerminal *Terminal)
+void UnregisterFromNeonDebug(TTerminal * Terminal)
 {
   TGuard Guard(*DebugSection.get()); nb::used(Guard);
   NeonTerminals.erase(Terminal);
 }
 
 void RetrieveNeonCertificateData(
-  int Failures, const ne_ssl_certificate *Certificate, TNeonCertificateData &Data)
+  int32_t Failures, const ne_ssl_certificate * Certificate, TNeonCertificateData & Data)
 {
   UnicodeString Unknown(L"<unknown>");
   char FingerprintSHA1[NE_SSL_DIGESTLEN];
@@ -499,7 +501,7 @@ void RetrieveNeonCertificateData(
     if (DebugAlwaysTrue(Buf.Length() > 2) &&
         DebugAlwaysTrue((Buf.Length() % 2) == 0))
     {
-      for (int Index = 3; Index < Buf.Length(); Index += 3)
+      for (int32_t Index = 3; Index < Buf.Length(); Index += 3)
       {
         Buf.Insert(L":", Index);
       }
@@ -558,12 +560,12 @@ UnicodeString CertificateSummary(const TNeonCertificateData & Data, const Unicod
 }
 
 UnicodeString NeonTlsSessionInfo(
-  ne_session *Session, TSessionInfo &SessionInfo, UnicodeString &TlsVersionStr)
+  ne_session * Session, TSessionInfo & SessionInfo, UnicodeString & TlsVersionStr)
 {
   TlsVersionStr = StrFromNeon(ne_ssl_get_version(Session));
   AddToList(SessionInfo.SecurityProtocolName, TlsVersionStr, ", ");
 
-  char *Buf = ne_ssl_get_cipher(Session);
+  char * Buf = ne_ssl_get_cipher(Session);
   UnicodeString Cipher = StrFromNeon(Buf);
   ne_free(Buf);
   SessionInfo.CSCipher = Cipher;

@@ -148,7 +148,7 @@ bool TOptions::GetEmpty() const
 }
 
 bool TOptions::FindSwitch(const UnicodeString & Switch,
-  UnicodeString & Value, int32_t &ParamsStart, int32_t &ParamsCount, bool CaseSensitive, bool &ValueSet)
+  UnicodeString & Value, int32_t & ParamsStart, int32_t & ParamsCount, bool CaseSensitive, bool &ValueSet)
 {
   ParamsStart = 0;
   ValueSet = false;

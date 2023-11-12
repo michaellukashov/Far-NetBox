@@ -438,7 +438,7 @@ void TFTPFileSystem::Open()
     })
   }
 
-  TSessionData *Data = FTerminal->GetSessionData();
+  TSessionData * Data = FTerminal->GetSessionData();
 
   FWindowsServer = false;
   FMVS = false;
@@ -2780,7 +2780,7 @@ UnicodeString TFTPFileSystem::RemoteGetCurrentDirectory() const
 
 const wchar_t * TFTPFileSystem::GetOption(int32_t OptionID) const
 {
-  TSessionData *Data = FTerminal->GetSessionData();
+  TSessionData * Data = FTerminal->GetSessionData();
 
   switch (OptionID)
   {
@@ -2822,7 +2822,7 @@ const wchar_t * TFTPFileSystem::GetOption(int32_t OptionID) const
 
 int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
 {
-  TSessionData *Data = FTerminal->GetSessionData();
+  TSessionData * Data = FTerminal->GetSessionData();
   int32_t Result;
   TProxyMethod method;
 
@@ -4766,7 +4766,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void *UserData) const
 {
-  TFileTransferData *Data = cast_to<TFileTransferData>(UserData);
+  TFileTransferData * Data = cast_to<TFileTransferData>(UserData);
   DebugAssert(Data->CopyParam->FOnTransferOut.empty());
   FTerminal->UpdateTargetTime(AHandle, Data->Modification, dstmUnix);
 }

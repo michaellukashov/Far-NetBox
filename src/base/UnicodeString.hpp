@@ -21,8 +21,8 @@ public:
   ~UTF8String() = default;
 
   operator const char *() const { return this->c_str(); }
-  const char *c_str() const { return Data.c_str(); }
-  const char *data() const { return Data.c_str(); }
+  const char * c_str() const { return Data.c_str(); }
+  const char * data() const { return Data.c_str(); }
   int32_t Length() const { return Data.GetLength(); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
@@ -85,8 +85,8 @@ public:
 
   ~UnicodeString() = default;
 
-  const wchar_t *c_str() const { return Data.c_str(); }
-  const wchar_t *data() const { return Data.c_str(); }
+  const wchar_t * c_str() const { return Data.c_str(); }
+  const wchar_t * data() const { return Data.c_str(); }
   int32_t Length() const { return Data.GetLength(); }
   int32_t GetLength() const { return Length(); }
   int32_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
@@ -220,8 +220,8 @@ public:
   explicit AnsiString(const RawByteString & Str);
   ~AnsiString() = default;
 
-  const char *c_str() const { return Data.c_str(); }
-  const char *data() const { return Data.c_str(); }
+  const char * c_str() const { return Data.c_str(); }
+  const char * data() const { return Data.c_str(); }
   int32_t Length() const { return Data.GetLength(); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
@@ -304,12 +304,12 @@ public:
 
   operator const char *() const { return this->c_str(); }
   operator UnicodeString() const;
-  const char *c_str() const { return Data.c_str(); }
-  const char *data() const { return Data.c_str(); }
+  const char * c_str() const { return Data.c_str(); }
+  const char * data() const { return Data.c_str(); }
   int32_t Length() const { return Data.GetLength(); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  char *SetLength(int32_t nLength);
+  char * SetLength(int32_t nLength);
   RawByteString &Clear() { SetLength(0); return *this; }
   RawByteString &Delete(int32_t Index, int32_t Count);
   RawByteString &Insert(const char *Str, int32_t Pos);

@@ -153,7 +153,7 @@ public:
   bool& IgnorePermErrors{FIgnorePermErrors};
   __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
   TResumeSupport& ResumeSupport{FResumeSupport};
-  __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
+  __property int64_t ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
   int64_t& ResumeThreshold{FResumeThreshold};
   __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
   wchar_t& InvalidCharsReplacement{FInvalidCharsReplacement};
@@ -187,11 +187,11 @@ public:
   bool& ExcludeHiddenFiles{FExcludeHiddenFiles};
   __property bool ExcludeEmptyDirectories = { read = FExcludeEmptyDirectories, write = FExcludeEmptyDirectories };
   bool& ExcludeEmptyDirectories{FExcludeEmptyDirectories};
-  __property __int64 Size = { read = FSize, write = FSize };
+  __property int64_t Size = { read = FSize, write = FSize };
   int64_t& Size{FSize};
-  __property __int64 PartSize = { read = FPartSize, write = FPartSize };
+  __property int64_t PartSize = { read = FPartSize, write = FPartSize };
   int64_t& PartSize{FPartSize};
-  __property __int64 PartOffset = { read = FPartOffset, write = FPartOffset };
+  __property int64_t PartOffset = { read = FPartOffset, write = FPartOffset };
   int64_t& PartOffset{FPartOffset};
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
   TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};

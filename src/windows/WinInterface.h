@@ -339,16 +339,6 @@ constexpr int32_t cpMode =  0x01;
 constexpr int32_t cpOwner = 0x02;
 constexpr int32_t cpGroup = 0x04;
 constexpr int32_t cpAcl =   0x08;
-#if 0
-typedef void (__closure *TCalculateSizeEvent)
-  (TStrings * FileList, __int64 & Size, TCalculateSizeStats & Stats,
-   bool & Close);
-typedef void (__closure *TCalculatedChecksumCallbackEvent)(
-  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
-typedef void (__closure *TCalculateChecksumEvent)
-  (const UnicodeString & Alg, TStrings * FileList,
-   TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
-#endif // #if 0
 using TCalculateSizeEvent = nb::FastDelegate4<void,
   TStrings * /*FileList*/, int64_t & /*Size*/, TCalculateSizeStats & /*Stats*/,
   bool & /*Close*/>;

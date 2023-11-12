@@ -45,9 +45,7 @@ public:
     const UnicodeString & Name, const T Default, const TIntMapping & Mapping = TIntMapping());
   int32_t ReadInteger(const UnicodeString & Name, int32_t Default);
   int64_t ReadInt64(const UnicodeString & Name, int64_t Default);
-
   TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
-
   double ReadFloat(const UnicodeString & Name, double Default);
   UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
   size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
@@ -174,7 +172,7 @@ template<typename T>
 T THierarchicalStorage::ReadEnum(const UnicodeString & Name, const T Default, const TIntMapping & Mapping)
 {
   const TIntMapping * AMapping = (Mapping.empty()) ? nullptr : &Mapping;
-  return T(ReadIntegerWithMapping(Name, (int32_t)(Default), AMapping));
+  return T(ReadIntegerWithMapping(Name, nb::ToInt32(Default), AMapping));
 }
 
 class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
@@ -186,7 +184,7 @@ public:
   explicit TRegistryStorage(const UnicodeString & AStorage) noexcept;
   virtual ~TRegistryStorage() noexcept;
 
-  bool Copy(TRegistryStorage *Storage);
+  bool Copy(TRegistryStorage * Storage);
 
 public:
   int32_t GetFailed() const { return FFailed; }
@@ -246,13 +244,13 @@ private:
   inline bool HandleReadByMasterStorage(const UnicodeString & Name);
   inline bool DoValueExistsInternal(const UnicodeString & Value);
   void DoWriteStringRawInternal(const UnicodeString & Name, const UnicodeString & Value);
-  int DoReadIntegerWithMapping(const UnicodeString & Name, int Default, const TIntMapping * Mapping);
+  int32_t DoReadIntegerWithMapping(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping);
 
 protected:
   TCustomIniFile * FIniFile;
   std::unique_ptr<TStringList> FSections;
   std::unique_ptr<THierarchicalStorage> FMasterStorage;
-  int FMasterStorageOpenFailures;
+  int32_t FMasterStorageOpenFailures;
   bool FOpeningSubKey;
 
   __property UnicodeString CurrentSection = { read = GetCurrentSection };
@@ -271,13 +269,13 @@ protected:
 
   virtual void DoWriteBool(const UnicodeString & Name, bool Value);
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
-  virtual void DoWriteInteger(const UnicodeString & Name, int Value);
-  virtual void DoWriteInt64(const UnicodeString & Name, __int64 Value);
+  virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value);
+  virtual void DoWriteInt64(const UnicodeString & Name, int32_t Value);
   virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int Size);
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default);
-  virtual int DoReadInteger(const UnicodeString & Name, int Default, const TIntMapping * Mapping);
-  virtual __int64 DoReadInt64(const UnicodeString & Name, __int64 Default);
+  virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping);
+  virtual int32_t DoReadInt64(const UnicodeString & Name, int32_t Default);
   virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default);
   virtual double DoReadFloat(const UnicodeString & Name, double Default);
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);

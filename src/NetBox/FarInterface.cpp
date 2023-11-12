@@ -46,15 +46,15 @@ UnicodeString GetSshVersionString()
   return FORMAT("NetBox-FAR-release-%s", GetConfiguration()->GetProductVersion());
 }
 
-DWORD WINAPI threadstartroutine(void *Parameter)
+static DWORD WINAPI threadstartroutine(void * Parameter)
 {
   TSimpleThread *SimpleThread = cast_to<TSimpleThread>(Parameter);
   return TSimpleThread::ThreadProc(SimpleThread);
 }
 
-HANDLE BeginThread(void *SecurityAttributes, DWORD StackSize,
-  void *Parameter, DWORD CreationFlags,
-  DWORD &ThreadId)
+HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
+  void * Parameter, DWORD CreationFlags,
+  DWORD & ThreadId)
 {
   HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
       nb::ToSizeT(StackSize),
@@ -69,9 +69,9 @@ void EndThread(DWORD ExitCode)
   ::ExitThread(ExitCode);
 }
 
-HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
-  void *Parameter, DWORD CreationFlags,
-  TThreadID &ThreadId)
+HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
+  void * Parameter, DWORD CreationFlags,
+  TThreadID & ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, Parameter,
       CreationFlags, ThreadId);

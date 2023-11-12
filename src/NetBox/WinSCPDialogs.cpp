@@ -5724,11 +5724,11 @@ void TCopyDialog::CustomCopyParam()
 }
 
 bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
-  bool Move, const TStrings *AFileList,
+  bool Move, const TStrings * AFileList,
   int32_t Options,
   int32_t CopyParamAttrs,
-  UnicodeString &TargetDirectory,
-  TGUICopyParamType *Params)
+  UnicodeString & TargetDirectory,
+  TGUICopyParamType * Params)
 {
   std::unique_ptr<TCopyDialog> Dialog(std::make_unique<TCopyDialog>(FPlugin, ToRemote,
       Move, AFileList, Options, CopyParamAttrs));
@@ -6765,10 +6765,10 @@ public:
 protected:
   virtual bool CloseQuery() override;
   virtual void Change() override;
-  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2) override;
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
 
-  void TransferSettingsButtonClick(TFarButton *Sender, bool &Close);
-  void CopyParamListerClick(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
+  void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
+  void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
 
   int32_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
@@ -7094,7 +7094,7 @@ bool TFullSynchronizeDialog::CloseQuery()
   return CanClose;
 }
 
-intptr_t TFullSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
+intptr_t TFullSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -7610,7 +7610,7 @@ void TSynchronizeChecklistDialog::UpdateControls()
   UncheckAllButton->SetEnabled(FChecked > 0);
 }
 
-intptr_t TSynchronizeChecklistDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
+intptr_t TSynchronizeChecklistDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (Msg == DN_RESIZECONSOLE)
   {
@@ -8061,7 +8061,7 @@ void TSynchronizeDialog::DoSynchronizeThreads(TObject * /*Sender*/,
   }
 }
 
-intptr_t TSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void *Param2)
+intptr_t TSynchronizeDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (FAbort)
   {

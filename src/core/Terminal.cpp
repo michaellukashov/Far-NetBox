@@ -1183,7 +1183,7 @@ int32_t TParallelOperation::GetNext(
       {
         CustomCopyParam = new TCopyParamType(*FCopyParam);
         CustomCopyParam->PartOffset = FParallelFileOffset;
-        __int64 Remaining = FParallelFileSize - CustomCopyParam->PartOffset;
+        int64_t Remaining = FParallelFileSize - CustomCopyParam->PartOffset;
         CustomCopyParam->PartSize = FParallelFileSize / GetConfiguration()->QueueTransfersLimit();
         DebugAssert(!OnlyFileName.IsEmpty());
         if (FParallelFileTargetName.IsEmpty())
@@ -3820,7 +3820,7 @@ void TTerminal::LogFileDone(
     FMultipleDestinationFiles = true;
   }
 
-  __int64 Size = OperationProgress->TransferredSize;
+  int64_t Size = OperationProgress->TransferredSize;
   // optimization
   if (GetLog()->GetLogging())
   {
@@ -4547,7 +4547,7 @@ bool TTerminal::DeleteLocalFiles(TStrings * AFileList, int32_t Params)
 void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
-  TCustomCommandParams *Params = cast_to<TCustomCommandParams>(AParams);
+  TCustomCommandParams * Params = cast_to<TCustomCommandParams>(AParams);
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
   {
@@ -8129,7 +8129,7 @@ void TTerminal::Source(
 
 void TTerminal::CheckParallelFileTransfer(
   const UnicodeString & TargetDir, TStringList * Files, const TCopyParamType * CopyParam, int32_t Params,
-  UnicodeString & ParallelFileName, __int64 & ParallelFileSize, TFileOperationProgressType * OperationProgress)
+  UnicodeString & ParallelFileName, int64_t & ParallelFileSize, TFileOperationProgressType * OperationProgress)
 {
   if ((Configuration->ParallelTransferThreshold > 0) &&
       FFileSystem->IsCapable(fcParallelFileTransfers))
@@ -8140,7 +8140,7 @@ void TTerminal::CheckParallelFileTransfer(
       TRemoteFile * File = static_cast<TRemoteFile *>(ParallelObject);
       const TRemoteFile * UltimateFile = File->Resolve();
       if ((UltimateFile == File) && // not tested with symlinks
-          (UltimateFile->Size >= static_cast<__int64>(Configuration->ParallelTransferThreshold) * 1024))
+          (UltimateFile->Size >= nb::ToInt64(Configuration->ParallelTransferThreshold) * 1024))
       {
         UnicodeString BaseFileName = GetBaseFileName(ParallelFileName);
         TFileMasks::TParams MaskParams;
@@ -8157,7 +8157,7 @@ void TTerminal::CheckParallelFileTransfer(
             TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
 
             TOverwriteFileParams FileParams;
-            __int64 MTime;
+            int64_t MTime;
             TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &FileParams.DestSize, false);
             FileParams.SourceSize = ParallelFileSize;
             FileParams.SourceTimestamp = UltimateFile->Modification;
@@ -8280,7 +8280,7 @@ bool TTerminal::CopyToLocal(
           if (Parallel)
           {
             UnicodeString ParallelFileName;
-            __int64 ParallelFileSize = -1;
+            int64_t ParallelFileSize = -1;
             CheckParallelFileTransfer(ATargetDir, Files.get(), CopyParam, AParams, ParallelFileName, ParallelFileSize, &OperationProgress);
 
             if (OperationProgress.Cancel == csContinue)

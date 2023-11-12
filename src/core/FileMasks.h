@@ -44,10 +44,10 @@ public:
   TFileMasks(const TFileMasks & Source) noexcept;
   explicit TFileMasks(const UnicodeString & AMasks) noexcept;
   virtual ~TFileMasks() noexcept;
-  TFileMasks &operator=(const TFileMasks &rhm);
-  TFileMasks &operator=(const UnicodeString & rhs);
-  bool operator==(const TFileMasks & rhm) const;
-  bool operator==(const UnicodeString & rhs) const;
+  TFileMasks & operator =(const TFileMasks & rhm);
+  TFileMasks & operator =(const UnicodeString & rhs);
+  bool operator ==(const TFileMasks & rhm) const;
+  bool operator ==(const UnicodeString & rhs) const;
 
   void SetMask(const UnicodeString & Mask);
 
@@ -66,10 +66,10 @@ public:
   __property bool NoImplicitMatchWithDirExcludeMask = { read = FNoImplicitMatchWithDirExcludeMask, write = FNoImplicitMatchWithDirExcludeMask };
   __property bool AllDirsAreImplicitlyIncluded = { read = FAllDirsAreImplicitlyIncluded, write = FAllDirsAreImplicitlyIncluded };
 
-  __property TStrings *IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
-  __property TStrings *ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
-  __property TStrings *IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
-  __property TStrings *ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
+  __property TStrings * IncludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, true) };
+  __property TStrings * ExcludeFileMasksStr = { read = GetMasksStr, index = MASK_INDEX(false, false) };
+  __property TStrings * IncludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, true) };
+  __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
 
 private:
   int32_t FForceDirectoryMasks{0};
@@ -203,6 +203,7 @@ private:
   TCustomCommand * FChildCustomCommand{nullptr};
 };
 
+class TTerminal;
 class TSessionData;
 struct NB_CORE_EXPORT TCustomCommandData : public TObject
 {
@@ -215,11 +216,11 @@ public:
     TSessionData * SessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword) noexcept;
 
-  __property TSessionData *SessionData = { read = GetSessionData };
+  __property TSessionData * SessionData = { read = GetSessionData };
   ROProperty<TSessionData *> SessionData{nb::bind(&TCustomCommandData::GetSessionData, this)};
   TSessionData * GetSessionData() const { return GetSessionDataPrivate(); }
 
-  TCustomCommandData &operator=(const TCustomCommandData &Data);
+  TCustomCommandData &operator=(const TCustomCommandData & Data);
 
 private:
   std::unique_ptr<TSessionData> FSessionData;

@@ -61,7 +61,7 @@ TFileOperationProgressType::TFileOperationProgressType() noexcept
 
 TFileOperationProgressType::TFileOperationProgressType(
   TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
-  TFileOperationProgressType *Parent) noexcept :
+  TFileOperationProgressType * Parent) noexcept :
   FParent(Parent),
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished)
@@ -290,7 +290,7 @@ int32_t TFileOperationProgressType::TransferProgress() const
   int32_t Result;
   if (FTransferSize)
   {
-    Result = nb::ToIntPtr((FTransferredSize * 100) / FTransferSize);
+    Result = nb::ToInt((FTransferredSize * 100) / FTransferSize);
   }
   else
   {
@@ -306,7 +306,7 @@ int32_t TFileOperationProgressType::TotalTransferProgress() const
   int32_t Result;
   if (FTotalSize > 0)
   {
-    Result = nb::ToIntPtr(((GetTotalTransferred() - FTotalTransferBase + FTotalSkipped) * 100) / FTotalSize);
+    Result = nb::ToInt(((GetTotalTransferred() - FTotalTransferBase + FTotalSkipped) * 100) / FTotalSize);
   }
   else
   {
@@ -337,7 +337,7 @@ void TFileOperationProgressType::DoProgress()
 }
 
 void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
-  bool Success, TOnceDoneOperation &OnceDoneOperation)
+  bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   DebugAssert(FInProgress);
 

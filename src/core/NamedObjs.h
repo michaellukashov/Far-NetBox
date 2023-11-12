@@ -18,19 +18,19 @@ public:
   RWProperty<UnicodeString> Name{nb::bind(&TNamedObject::GetName, this), nb::bind(&TNamedObject::SetName, this)};
   __property bool Hidden = { read = FHidden };
   const bool& Hidden{FHidden};
+  explicit TNamedObject() noexcept : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value);
   bool GetHidden() const { return FHidden; }
 
-  explicit TNamedObject() noexcept : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
   explicit TNamedObject(TObjectClassId Kind) noexcept : TPersistent(Kind), FHidden(false) {}
   explicit TNamedObject(TObjectClassId Kind, const UnicodeString & AName) noexcept;
   virtual ~TNamedObject() = default;
 
   bool IsSameName(const UnicodeString & AName) const;
-  virtual int32_t Compare(const TNamedObject *Other) const;
-  void MakeUniqueIn(TNamedObjectList *List);
+  virtual int32_t Compare(const TNamedObject * Other) const;
+  void MakeUniqueIn(TNamedObjectList * List);
 private:
   UnicodeString FName;
   bool FHidden{false};
@@ -66,9 +66,9 @@ public:
   virtual TNamedObject * AtObject(int32_t Index);
   const TNamedObject * FindByName(const UnicodeString & AName) const;
   TNamedObject * FindByName(const UnicodeString & Name);
-  __property int Count = { read = GetCount };
-  __property int CountIncludingHidden = { read = GetCountIncludingHidden };
+  __property int32_t Count = { read = GetCount };
+  __property int32_t CountIncludingHidden = { read = GetCountIncludingHidden };
 };
 
-int32_t NamedObjectSortProc(const void *Item1, const void *Item2);
+int32_t NamedObjectSortProc(const void * Item1, const void * Item2);
 

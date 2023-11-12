@@ -1618,7 +1618,7 @@ int32_t CompareLogicalText(
   return Result;
 }
 
-int CompareNumber(__int64 Value1, __int64 Value2)
+int CompareNumber(int64_t Value1, int64_t Value2)
 {
   int Result;
   if (Value1 < Value2)
@@ -2609,7 +2609,7 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
   TDateTime Result = TDateTime(UnixDateDelta + (nb::ToDouble(TimeStamp) / SecsPerDay));
-  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(Result));
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
 
   if (Params->DaylightHack)
   {
@@ -2822,12 +2822,12 @@ static int64_t DateTimeToUnix(const TDateTime &DateTime)
     CurrentParams->CurrentDifferenceSec;
 }
 
-FILETIME DateTimeToFileTime(const TDateTime &DateTime,
+FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   TDSTMode /*DSTMode*/)
 {
   int64_t UnixTimeStamp = ::DateTimeToUnix(DateTime);
 
-  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   if (!Params->DaylightHack)
   {
     // We should probably use reversed code of FileTimeToDateTime here instead of custom implementation
@@ -2897,7 +2897,7 @@ int64_t ConvertTimestampToUnix(const FILETIME &FileTime,
       FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
       FileTimeToSystemTime(&LocalFileTime, &SystemTime);
       const TDateTime DateTime = SystemTimeToDateTimeVerbose(SystemTime);
-      const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
+      const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
       Result += (IsDateInDST(DateTime) ?
         Params->DaylightDifferenceSec : Params->StandardDifferenceSec);
 
@@ -2926,11 +2926,11 @@ int64_t ConvertTimestampToUnix(const FILETIME &FileTime,
   return Result;
 }
 
-TDateTime ConvertTimestampToUTC(const TDateTime &ADateTime)
+TDateTime ConvertTimestampToUTC(const TDateTime & ADateTime)
 {
   TDateTime DateTime = ADateTime;
 
-  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   DateTime += DSTDifferenceForTime(DateTime);
   DateTime += Params->BaseDifference;
 
@@ -2976,10 +2976,10 @@ int64_t ConvertTimestampToUnixSafe(const FILETIME &FileTime,
   return Result;
 }
 
-double DSTDifferenceForTime(const TDateTime &DateTime)
+double DSTDifferenceForTime(const TDateTime & DateTime)
 {
   double Result;
-  const TDateTimeParams *Params = GetDateTimeParams(DecodeYear(DateTime));
+  const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(DateTime));
   if (IsDateInDST(DateTime))
   {
     Result = Params->DaylightDifference;
@@ -4253,7 +4253,7 @@ struct TPemPasswordCallbackData
 
 static int PemPasswordCallback(char * Buf, int ASize, int /*RWFlag*/, void *UserData)
 {
-  TPemPasswordCallbackData &Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
+  TPemPasswordCallbackData & Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
   strncpy(Buf, UtfPassphrase.c_str(), static_cast<size_t>(ASize));
   Shred(UtfPassphrase);

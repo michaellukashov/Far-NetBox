@@ -1843,7 +1843,7 @@ void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text)
   FILE *file = base::LocalOpenFileForWriting(FileName);
   if (file)
   {
-    void const *data = static_cast<void const *>(Text.data());
+    void const * data = static_cast<void const *>(Text.data());
     size_t size = Text.GetLength();
     base::WriteAndFlush(file, data, size);
     fclose(file);
@@ -2086,7 +2086,7 @@ FILE *LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
   return Result;
 }
 
-bool WriteAndFlush(FILE *file, void const *data, size_t size)
+bool WriteAndFlush(FILE * file, void const * data, size_t size)
 {
   assert(file);
   assert(data);

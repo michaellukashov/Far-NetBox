@@ -276,7 +276,7 @@ bool TFileZillaIntf::ListFile(const wchar_t * FileName, const wchar_t * APath)
 
 bool TFileZillaIntf::FileTransfer(
   const wchar_t * LocalFile, const wchar_t * RemoteFile,
-  const wchar_t * RemotePath, bool Get, __int64 Size, int Type, void * UserData,
+  const wchar_t * RemotePath, bool Get, int64_t Size, int32_t Type, void * UserData,
   TTransferOutEvent OnTransferOut, TTransferInEvent OnTransferIn)
 {
   t_transferfile Transfer;

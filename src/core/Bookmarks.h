@@ -17,8 +17,8 @@ public:
   TBookmarks() noexcept;
   virtual ~TBookmarks() noexcept;
 
-  void Load(THierarchicalStorage *Storage);
-  void Save(THierarchicalStorage *Storage, bool All);
+  void Load(THierarchicalStorage * Storage);
+  void Save(THierarchicalStorage * Storage, bool All);
   void ModifyAll(bool Modify);
   void Clear();
 
@@ -26,7 +26,7 @@ public:
   __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
 
 private:
-  TStringList *FBookmarkLists;
+  TStringList * FBookmarkLists;
   UnicodeString FSharedKey;
   static std::string_view Keys[];
 
@@ -34,11 +34,11 @@ public:
   TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
   void SetBookmarks(const UnicodeString & AIndex, TBookmarkList *Value);
   TBookmarkList * GetSharedBookmarks();
-  void SetSharedBookmarks(TBookmarkList *Value);
+  void SetSharedBookmarks(TBookmarkList * Value);
 
 private:
-  void LoadLevel(THierarchicalStorage *Storage, const UnicodeString & Key,
-    int32_t AIndex, TBookmarkList *BookmarkList);
+  void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
+    int32_t AIndex, TBookmarkList * BookmarkList);
 };
 
 class TBookmark;
@@ -68,9 +68,9 @@ public:
   void SaveOptions(THierarchicalStorage * Storage) const;
   void ShortCuts(TShortCuts & ShortCuts);
 
-  __property int Count = { read = GetCount };
+  __property int32_t Count = { read = GetCount };
   ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
-  __property TBookmark * Bookmarks[int Index] = { read = GetBookmarks };
+  __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
   __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 
 protected:
@@ -116,7 +116,7 @@ public:
   __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
 
 protected:
-  TBookmarkList *FOwner{nullptr};
+  TBookmarkList * FOwner{nullptr};
 
   static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
   __property UnicodeString Key = { read = GetKey };
