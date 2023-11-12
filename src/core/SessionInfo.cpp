@@ -114,8 +114,8 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 }
 
 
-__removed #pragma warn -inl
 NB_DEFINE_CLASS_ID(TSessionActionRecord);
+// #pragma warn -inl
 class TSessionActionRecord : public TObject
 {
 public:
@@ -139,6 +139,13 @@ public:
 
   ~TSessionActionRecord()
   {
+#if defined(__BORLANDC__)
+    delete FErrorMessages;
+    delete FNames;
+    delete FValues;
+    delete FFileList;
+    delete FFile;
+#endif
     SAFE_DESTROY(FErrorMessages);
 //    SAFE_DESTROY(FNames);
 //    SAFE_DESTROY(FValues);
@@ -278,7 +285,7 @@ public:
 
   void AddOutput(const UnicodeString & Output, bool StdError)
   {
-    const wchar_t *Name = (StdError ? L"erroroutput" : L"output");
+    const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
     int32_t Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
@@ -510,7 +517,7 @@ void TSessionAction::Rollback(Exception * E)
 {
   if (FRecord != nullptr)
   {
-    TSessionActionRecord *Record = FRecord;
+    TSessionActionRecord * Record = FRecord;
     FRecord = nullptr;
     Record->Rollback(E);
   }
@@ -520,7 +527,7 @@ void TSessionAction::Cancel()
 {
   if (FRecord != nullptr)
   {
-    TSessionActionRecord *Record = FRecord;
+    TSessionActionRecord * Record = FRecord;
     FRecord = nullptr;
     FCancelled = true;
     Record->Cancel();
@@ -580,7 +587,7 @@ TTransferSessionAction::TTransferSessionAction(TActionLog * Log, TLogAction Acti
 {
 }
 
-void TTransferSessionAction::Size(__int64 Size)
+void TTransferSessionAction::Size(int64_t Size)
 {
   if (FRecord != nullptr)
   {
@@ -621,7 +628,7 @@ TChmodSessionAction::TChmodSessionAction(
   Rights(ARights);
 }
 
-void TChmodSessionAction::Rights(const TRights &Rights)
+void TChmodSessionAction::Rights(const TRights & Rights)
 {
   if (FRecord != nullptr)
   {
@@ -692,7 +699,7 @@ void TCallSessionAction::AddOutput(const UnicodeString & Output, bool StdError)
   }
 }
 
-void TCallSessionAction::ExitCode(int ExitCode)
+void TCallSessionAction::ExitCode(int32_t ExitCode)
 {
   if (FRecord != nullptr)
   {
@@ -710,7 +717,7 @@ TLsSessionAction::TLsSessionAction(TActionLog * Log,
   }
 }
 
-void TLsSessionAction::FileList(TRemoteFileList *FileList)
+void TLsSessionAction::FileList(TRemoteFileList * FileList)
 {
   if (FRecord != nullptr)
   {
@@ -782,8 +789,9 @@ TFileSystemInfo::TFileSystemInfo() noexcept
 
 static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, TDateTime Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
 {
+  // FILE * Result;
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
-  FILE *Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
+  FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
   if (Result != nullptr)
   {
     setvbuf(Result, nullptr, _IONBF, BUFSIZ);
@@ -797,7 +805,7 @@ static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, TDateTime Star
 }
 
 
-constexpr wchar_t *LogLineMarks = L"<>!.*";
+constexpr wchar_t * LogLineMarks = L"<>!.*";
 TSessionLog::TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
   TConfiguration * Configuration) noexcept :
   FConfiguration(Configuration),
@@ -810,6 +818,19 @@ TSessionLog::TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * Sess
   FStarted(Started),
   FClosed(false)
 {
+#if defined(__BORLANDC__)
+  FCriticalSection = new TCriticalSection;
+  FLogging = false;
+  FConfiguration = Configuration;
+  FParent = nullptr;
+  FUI = UI;
+  FSessionData = SessionData;
+  FStarted = Started;
+  FFile = nullptr;
+  FCurrentLogFileName = L"";
+  FCurrentFileName = L"";
+  FClosed = false;
+#endif
 }
 
 TSessionLog::~TSessionLog() noexcept
@@ -849,7 +870,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
       for (int32_t Index = 1; Index <= UtfLine.Length(); Index++)
       {
         if ((UtfLine[Index] == '\n') &&
-            (UtfLine[Index - 1] != '\r'))
+            ((Index == 1) || (UtfLine[Index - 1] != '\r')))
         {
           UtfLine.Insert(L'\r', Index);
         }
@@ -920,6 +941,7 @@ void TSessionLog::CheckSize(int64_t Addition)
 }
 
 void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & ALine,
+  // void (__closure *f)(TLogLineType Type, const UnicodeString & Line))
   TDoAddLogEvent Event)
 {
   UnicodeString Prefix;
@@ -1024,8 +1046,9 @@ void TSessionLog::OpenLogFile()
   try
   {
     DebugAssert(FLogger == nullptr);
+    DebugAssert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
-    FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
+    FILE * file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
     FLogger = std::make_unique<tinylog::TinyLog>();
     FLogger->file(file);
     TSearchRec SearchRec;
@@ -1038,7 +1061,7 @@ void TSessionLog::OpenLogFile()
       FCurrentFileSize = 0;
     }
   }
-  catch (Exception &E)
+  catch (Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName.Clear();
@@ -1048,7 +1071,7 @@ void TSessionLog::OpenLogFile()
     {
       throw ExtException(&E, MainInstructions(LoadStr(LOG_GEN_ERROR)));
     }
-    catch (Exception &E2)
+    catch (Exception & E2)
     {
       AddException(&E2);
       // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
@@ -1076,7 +1099,7 @@ void TSessionLog::AddStartupInfo()
 
 void TSessionLog::AddStartupInfo(bool System)
 {
-  TSessionData *Data = (System ? nullptr : FSessionData);
+  TSessionData * Data = (System ? nullptr : FSessionData);
   if (GetLogging())
   {
     if (FParent != nullptr)
@@ -1210,7 +1233,7 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
   ADF(L"Log level: %s", LogStr);
   ADF(L"Local account: %s", UserName);
   ADF(L"Working directory: %s", GetCurrentDir());
-  ADF(L"Process ID: %d", int(GetCurrentProcessId()));
+  ADF(L"Process ID: %d", nb::ToInt32(GetCurrentProcessId()));
   ADF(L"Ancestor processes: %s", GetAncestorProcessNames());
   // This logs even passwords, contrary to a session log.
   // GetCmdLineLog requires master password, but we do not know it yet atm.
@@ -1515,8 +1538,8 @@ void TSessionLog::AddSeparator()
 }
 
 
-TActionLog::TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
-  TConfiguration *Configuration) noexcept :
+TActionLog::TActionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
+  TConfiguration * Configuration) noexcept :
   FConfiguration(Configuration),
   FLogging(false),
   FLogger(nullptr),
@@ -1534,16 +1557,17 @@ TActionLog::TActionLog(TSessionUI *UI, TDateTime Started, TSessionData *SessionD
   Init(UI, Started, SessionData, Configuration);
 }
 
-TActionLog::TActionLog(TDateTime Started, TConfiguration *Configuration) noexcept
+TActionLog::TActionLog(TDateTime Started, TConfiguration * Configuration) noexcept
 {
   Init(nullptr, Started, nullptr, Configuration);
   // not associated with session, so no need to waiting for anything
   ReflectSettings();
 }
 
-void TActionLog::Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionData,
-  TConfiguration *Configuration)
+void TActionLog::Init(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
+  TConfiguration * Configuration)
 {
+  // FCriticalSection = new TCriticalSection;
   FConfiguration = Configuration;
   FUI = UI;
   FSessionData = SessionData;
@@ -1563,10 +1587,11 @@ void TActionLog::Init(TSessionUI *UI, TDateTime Started, TSessionData *SessionDa
 TActionLog::~TActionLog() noexcept
 {
   DebugAssert(FPendingActions->GetCount() == 0);
-//  SAFE_DESTROY(FPendingActions);
+  // delete FPendingActions;
   FClosed = true;
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
+  // delete FCriticalSection;
 }
 
 void TActionLog::Add(const UnicodeString & Line)
@@ -1591,6 +1616,8 @@ void TActionLog::Add(const UnicodeString & Line)
         {
           throw ECRTExtException("");
         }
+        #ifdef _DEBUG
+        #endif
         Written =
           FLogger->Write("\n", 1);
         if (Written != 1)
@@ -1710,6 +1737,10 @@ void TActionLog::CloseLogFile()
 {
   if (FLogger != nullptr)
   {
+#if defined(__BORLANDC__)
+    fclose((FILE *)FFile);
+    FFile = nullptr;
+#endif
     FLogger.reset();
   }
   FCurrentLogFileName.Clear();
@@ -1726,7 +1757,7 @@ void TActionLog::OpenLogFile()
     DebugAssert(FConfiguration != nullptr);
     DebugAssert(FLogger == nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
-    FILE *file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
+    FILE * file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
     FLogger = std::make_unique<tinylog::TinyLog>();
     FLogger->file(file);
   }
@@ -1746,7 +1777,7 @@ void TActionLog::OpenLogFile()
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Exception &E2)
+      catch (Exception & E2)
       {
         if (FUI != nullptr)
         {
@@ -1779,7 +1810,7 @@ void TActionLog::BeginGroup(const UnicodeString & Name)
   FInGroup = true;
   DebugAssert(FIndent == L"  ");
   AddIndented(FORMAT("<group name=\"%s\" start=\"%s\">",
-      XmlAttributeEscape(Name), StandardTimestamp()));
+    XmlAttributeEscape(Name), StandardTimestamp()));
   FIndent = L"    ";
 }
 

@@ -3,9 +3,8 @@
 #pragma hdrstop
 
 #include <limits>
-#include <Common.h>
 #include <WinCrypt.h>
-
+#include <Common.h>
 #include "WinSCPSecurity.h"
 
 //#pragma package(smart_init)
@@ -47,7 +46,7 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
   if (!::RandSeed) { ::Randomize(); ::RandSeed = 1; }
   Password = Key + Password;
   Result += SimpleEncryptChar((uint8_t)PWALG_SIMPLE_FLAG); // Flag
-  int Len = Password.Length();
+  int32_t Len = Password.Length();
   if (Len > std::numeric_limits<uint8_t>::max())
   {
     Result += SimpleEncryptChar((uint8_t)PWALG_SIMPLE_INTERNAL2);
@@ -76,9 +75,8 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
 
 UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeString & UnicodeKey, Integer /*Algorithm*/)
 {
-  uint8_t Length;
-
   RawByteString Password = APassword;
+  int32_t Length;
   uint8_t Flag = SimpleDecryptNextChar(Password);
   if (Flag == PWALG_SIMPLE_FLAG)
   {
@@ -89,7 +87,7 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
     }
     else if (Version == PWALG_SIMPLE_INTERNAL2)
     {
-      Length = (int(SimpleDecryptNextChar(Password)) << 8) + SimpleDecryptNextChar(Password);
+      Length = (nb::ToInt32(SimpleDecryptNextChar(Password)) << 8) + SimpleDecryptNextChar(Password);
     }
     else
     {
@@ -105,7 +103,7 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   if (Length >= 0)
   {
     Password.Delete(1, ((Integer)SimpleDecryptNextChar(Password))*2);
-    for (int Index = 0; Index < Length; Index++)
+    for (int32_t Index = 0; Index < Length; Index++)
     {
       Result += (char)SimpleDecryptNextChar(Password);
     }
@@ -147,12 +145,12 @@ bool GetExternalEncryptedPassword(const RawByteString & AEncrypted, RawByteStrin
   return Result;
 }
 
-bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeString &Error)
+bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, UnicodeString & Error)
 {
   bool Result = false;
 
   // Parse the certificate into a context.
-  const CERT_CONTEXT *CertContext =
+  const CERT_CONTEXT * CertContext =
     CertCreateCertificateContext(
       X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, nb::ToDWord(Len));
 
@@ -172,9 +170,8 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
       reinterpret_cast<const char *>(&ChainConfig);
     // The hExclusiveRoot and hExclusiveTrustedPeople were added in Windows 7.
     // The CertGetCertificateChain fails with E_INVALIDARG when we include them to ChainConfig.cbSize.
-    // DebugAssert(ChainConfigSize == 40);
-    // DebugAssert(ChainConfigSize == sizeof(CERT_CHAIN_ENGINE_CONFIG) - sizeof(ChainConfig.hExclusiveRoot) - sizeof(ChainConfig.hExclusiveTrustedPeople));
-    ChainConfig.cbSize = ChainConfigSize;*/
+    DebugAssert(ChainConfigSize == 40);
+    DebugAssert(ChainConfigSize == sizeof(CERT_CHAIN_ENGINE_CONFIG) - sizeof(ChainConfig.hExclusiveRoot) - sizeof(ChainConfig.hExclusiveTrustedPeople));*/
     ChainConfig.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
     ChainConfig.hRestrictedRoot = nullptr;
     ChainConfig.hRestrictedTrust = nullptr;
@@ -188,13 +185,21 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
 
     HCERTCHAINENGINE ChainEngine;
     bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine) != FALSE;
-    if (ChainEngineResult)
+    if (!ChainEngineResult)
     {
-      const CERT_CHAIN_CONTEXT *ChainContext = nullptr;
-      if (CertGetCertificateChain(ChainEngine, CertContext, nullptr, nullptr, &ChainPara,
+      Error = L"Cannot create certificate chain engine";
+    }
+    else
+    {
+      const CERT_CHAIN_CONTEXT * ChainContext = nullptr;
+      if (!CertGetCertificateChain(ChainEngine, CertContext, nullptr, nullptr, &ChainPara,
             CERT_CHAIN_CACHE_END_CERT |
             CERT_CHAIN_REVOCATION_CHECK_CHAIN_EXCLUDE_ROOT,
             nullptr, &ChainContext))
+      {
+        Error = L"Cannot get certificate chain";
+      }
+      else
       {
         CERT_CHAIN_POLICY_PARA PolicyPara;
 
@@ -205,15 +210,19 @@ bool WindowsValidateCertificate(const uint8_t *Certificate, size_t Len, UnicodeS
         CERT_CHAIN_POLICY_STATUS PolicyStatus;
         PolicyStatus.cbSize = sizeof(PolicyStatus);
 
-        if (CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL,
-              ChainContext, &PolicyPara, &PolicyStatus))
+        if (!CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL, ChainContext, &PolicyPara, &PolicyStatus))
         {
+          Error = L"Cannot verify certificate chain policy";
+        }
+        else
+        {
+          int32_t PolicyError = PolicyStatus.dwError;
           // Windows thinks the certificate is valid.
-          Result = (PolicyStatus.dwError == S_OK);
+          Result = (PolicyError == S_OK);
           if (!Result)
           {
-            Error = FORMAT("Error: %x, Chain index: %d, Element index: %d",
-               PolicyStatus.dwError, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
+            UnicodeString ErrorStr = SysErrorMessage(PolicyError);
+            Error = FORMAT(L"Error: %x (%s), Chain index: %d, Element index: %d", PolicyError, ErrorStr, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
           }
         }
 

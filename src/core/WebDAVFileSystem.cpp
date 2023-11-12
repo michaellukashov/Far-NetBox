@@ -169,7 +169,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) noexcept :
   FHasTrailingSlash(false),
   FSessionContext(nullptr),
   FNeonLockStore(nullptr),
-  FNeonLockStoreSection(),
+  FNeonLockStoreSection(), //(new TCriticalSection()),
   FUploading(false),
   FDownloading(false),
   FInitialHandshake(false),
@@ -333,9 +333,9 @@ void TWebDAVFileSystem::InitSession(TSessionContext * SessionContext, ne_session
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FTerminal);
 
-  ne_set_read_timeout(Session, nb::ToInt(Data->GetTimeout()));
+  ne_set_read_timeout(Session, nb::ToInt32(Data->GetTimeout()));
 
-  ne_set_connect_timeout(Session, nb::ToInt(Data->GetTimeout()));
+  ne_set_connect_timeout(Session, nb::ToInt32(Data->GetTimeout()));
 
   ne_set_session_private(Session, SESSION_CONTEXT_KEY, SessionContext);
 
@@ -448,7 +448,7 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
       UnicodeString Str;
       uint32_t Capability = 0x01;
       uint32_t Capabilities = FCapabilities;
-      while (Capabilities != 0)
+      while (Capabilities > 0)
       {
         if (FLAGSET(Capabilities, Capability))
         {
@@ -483,6 +483,10 @@ void TWebDAVFileSystem::CloseNeonSession()
 {
   if (FSessionContext.get() != nullptr)
   {
+#if defined(__BORLANDC__)
+    delete FSessionContext;
+    FSessionContext = nullptr;
+#endif
     FSessionContext.reset();
   }
 }
@@ -743,11 +747,12 @@ void TWebDAVFileSystem::HomeDirectory()
 
 UnicodeString TWebDAVFileSystem::DirectoryPath(const UnicodeString & APath) const
 {
+  UnicodeString Path = APath;
   if (FHasTrailingSlash)
   {
-    return base::UnixIncludeTrailingBackslash(APath);
+    Path = base::UnixIncludeTrailingBackslash(APath);
   }
-  return APath;
+  return Path;
 }
 
 UnicodeString TWebDAVFileSystem::FilePath(const TRemoteFile * AFile) const
@@ -821,7 +826,7 @@ int32_t TWebDAVFileSystem::ReadDirectoryInternal(
   return Result;
 }
 
-bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString &APath) const
+bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const
 {
   bool Result = (NeonStatus == NE_REDIRECT);
   if (Result)
@@ -929,7 +934,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   const char * CreationDate = GetNeonProp(Results, PROP_CREATIONDATE);
   const char * Modified = LastModified ? LastModified : CreationDate;
   // We've seen a server (t=24891) that does not set "getlastmodified" for the "this" folder entry.
-  if (Modified != nullptr)
+  if (LastModified != nullptr)
   {
     char WeekDay[4] = { L'\0' };
     int32_t Year = 0;
@@ -941,7 +946,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     #define RFC1123_FORMAT "%3s, %02d %3s %4d %02d:%02d:%02d GMT"
     // Keep is sync with S3
     int32_t Filled =
-      sscanf(Modified, RFC1123_FORMAT, WeekDay, &Day, MonthStr, &Year, &Hour, &Min, &Sec);
+      sscanf(LastModified, RFC1123_FORMAT, WeekDay, &Day, MonthStr, &Year, &Hour, &Min, &Sec);
     // we need at least a complete date
     if (Filled >= 4)
     {
@@ -949,8 +954,8 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
       if (Month >= 1)
       {
         TDateTime Modification =
-          EncodeDateVerbose(static_cast<unsigned short>(Year), static_cast<unsigned short>(Month), static_cast<unsigned short>(Day)) +
-          EncodeTimeVerbose(static_cast<unsigned short>(Hour), static_cast<unsigned short>(Min), static_cast<unsigned short>(Sec), 0);
+          EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
+          EncodeTimeVerbose(static_cast<uint16_t>(Hour), static_cast<uint16_t>(Min), static_cast<uint16_t>(Sec), 0);
         AFile->SetModification(ConvertTimestampFromUTC(Modification));
         // Should use mfYMDHM or mfMDY when appropriate according to Filled
         AFile->SetModificationFmt(mfFull);
@@ -1330,7 +1335,7 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
 void TWebDAVFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam,
   int32_t Params, TFileOperationProgressType * OperationProgress,
-  TOnceDoneOperation &OnceDoneOperation)
+  TOnceDoneOperation & OnceDoneOperation)
 {
   if (!AFilesToCopy)
     return;
@@ -1767,7 +1772,8 @@ int32_t TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, siz
   return Result;
 }
 
-void TWebDAVFileSystem::Sink(const UnicodeString & AFileName, const TRemoteFile * AFile,
+void TWebDAVFileSystem::Sink(
+  const UnicodeString & AFileName, const TRemoteFile * AFile,
   const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
   const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
   uint32_t /*AFlags*/, TDownloadSessionAction & Action)
@@ -1913,7 +1919,7 @@ int32_t TWebDAVFileSystem::NeonServerSSLCallbackAux(void * UserData, int32_t Fai
 }
 
 void TWebDAVFileSystem::NeonProvideClientCert(void * UserData, ne_session * Sess,
-  const ne_ssl_dname *const * /*DNames*/, int32_t /*DNCount*/)
+  const ne_ssl_dname * const * /*DNames*/, int32_t /*DNCount*/)
 {
   TWebDAVFileSystem * FileSystem = static_cast<TSessionContext *>(UserData)->FileSystem;
 
@@ -2032,8 +2038,8 @@ void TWebDAVFileSystem::NeonNotifier(void * UserData, ne_session_status Status, 
   // We particularly have to filter out response to "put" request,
   // handling that would reset the upload progress back to low number (response is small).
   if (((FileSystem->FUploading && (Status == ne_status_sending)) ||
-      (FileSystem->FDownloading && (Status == ne_status_recving))) &&
-    DebugAlwaysTrue(OperationProgress != nullptr))
+       (FileSystem->FDownloading && (Status == ne_status_recving))) &&
+      DebugAlwaysTrue(OperationProgress != nullptr))
   {
     int64_t Progress = StatusInfo->sr.progress;
     int64_t Diff = Progress - OperationProgress->GetTransferredSize();

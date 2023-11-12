@@ -2,16 +2,15 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <ne_request.h>
-#include <openssl/ssl.h>
-
 #include "Http.h"
 #include "NeonIntf.h"
 #include "Exceptions.h"
 #include "CoreMain.h"
+#include "ne_request.h"
 #include "TextsCore.h"
+#include <openssl/ssl.h>
 
-const int32_t BasicHttpResponseLimit = 100 * 1024;
+//constexpr const int32_t BasicHttpResponseLimit = 100 * 1024;
 
 THttp::THttp() noexcept :
   FResponseHeaders(std::make_unique<TStringList>())
@@ -20,7 +19,7 @@ THttp::THttp() noexcept :
   FOnDownload = nullptr;
   FOnError = nullptr;
   FResponseLimit = -1;
-#if 0
+#if defined(__BORLANDC__)
   FRequestHeaders = nullptr;
   FResponseHeaders = new TStringList();
 #endif
@@ -28,8 +27,9 @@ THttp::THttp() noexcept :
 
 THttp::~THttp() noexcept
 {
-  __removed SAFE_DESTROY(FResponseHeaders);
-  __removed SAFE_DESTROY(FRequestHeaders);
+#if defined(__BORLANDC__)
+  delete FResponseHeaders;
+#endif
 }
 
 void THttp::SendRequest(const char * Method, const UnicodeString & Request)
@@ -71,7 +71,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     FCertificateError.SetLength(0);
     FException.reset(nullptr);
 
-    ne_session_s *NeonSession = CreateNeonSession(uri);
+    ne_session_s * NeonSession = CreateNeonSession(uri);
     try__finally
     {
       TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
@@ -84,7 +84,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
         ne_ssl_trust_default_ca(NeonSession);
       }
 
-      ne_request_s *NeonRequest = ne_request_create(NeonSession, Method, StrToNeon(Uri));
+      ne_request_s * NeonRequest = ne_request_create(NeonSession, Method, StrToNeon(Uri));
       try__finally
       {
         if (FRequestHeaders != nullptr)
@@ -128,7 +128,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           const ne_status *NeonStatus = ne_get_status(NeonRequest);
           if (NeonStatus->klass != 2)
           {
-            int StatusCode = NeonStatus->code;
+            int32_t StatusCode = NeonStatus->code;
             UnicodeString Message = StrFromNeon(NeonStatus->reason_phrase);
             if (GetOnError() != nullptr)
             {
@@ -137,9 +137,9 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
             throw Exception(FMTLOAD(HTTP_ERROR2, StatusCode, Message, FHostName));
           }
 
-          void *Cursor = nullptr;
-          const char *HeaderName;
-          const char *HeaderValue;
+          void * Cursor = nullptr;
+          const char * HeaderName;
+          const char * HeaderValue;
           while ((Cursor = ne_response_header_iterate(NeonRequest, Cursor, &HeaderName, &HeaderValue)) != nullptr)
           {
             FResponseHeaders->SetValue(StrFromNeon(HeaderName), StrFromNeon(HeaderValue));
@@ -176,7 +176,7 @@ UnicodeString THttp::GetResponse() const
   return UnicodeString(UtfResponse);
 }
 
-int THttp::NeonBodyReaderImpl(const char *Buf, size_t Len)
+int32_t THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
 {
   bool Result = true;
   if ((FResponseLimit < 0) ||
@@ -210,9 +210,9 @@ int THttp::NeonBodyReaderImpl(const char *Buf, size_t Len)
   return Result ? 0 : 1;
 }
 
-int THttp::NeonBodyReader(void *UserData, const char *Buf, size_t Len)
+int32_t THttp::NeonBodyReader(void * UserData, const char * Buf, size_t Len)
 {
-  THttp *Http = static_cast<THttp *>(UserData);
+  THttp * Http = static_cast<THttp *>(UserData);
   return Http->NeonBodyReaderImpl(Buf, Len);
 }
 
@@ -221,20 +221,20 @@ int64_t THttp::GetResponseLength() const
   return FResponse.Length();
 }
 
-void THttp::InitSslSession(ssl_st *Ssl, ne_session * /*Session*/)
+void THttp::InitSslSession(ssl_st * Ssl, ne_session * /*Session*/)
 {
   SetupSsl(Ssl, tls12, tls12);
 }
 
-int THttp::NeonServerSSLCallback(void *UserData, int Failures, const ne_ssl_certificate *Certificate)
+int32_t THttp::NeonServerSSLCallback(void * UserData, int32_t Failures, const ne_ssl_certificate * Certificate)
 {
-  THttp *Http = static_cast<THttp *>(UserData);
+  THttp * Http = static_cast<THttp *>(UserData);
   return Http->NeonServerSSLCallbackImpl(Failures, Certificate);
 }
 
 enum { hcvNoWindows = 0x01, hcvNoKnown = 0x02 };
 
-int THttp::NeonServerSSLCallbackImpl(int Failures, const ne_ssl_certificate * ACertificate)
+int32_t THttp::NeonServerSSLCallbackImpl(int32_t Failures, const ne_ssl_certificate * ACertificate)
 {
   AnsiString AsciiCert = NeonExportCertificate(ACertificate);
 

@@ -31,7 +31,7 @@ protected:
   virtual bool Finished();
 
 public:
-  static int ThreadProc(void *Thread);
+  static int32_t ThreadProc(void * Thread);
 };
 
 NB_DEFINE_CLASS_ID(TSignalThread);
@@ -97,7 +97,7 @@ public:
   __property bool IsEmpty = { read = GetIsEmpty };
   __property int32_t TransfersLimit = { read = FTransfersLimit, write = SetTransfersLimit };
   __property int32_t KeepDoneItemsFor = { read = FKeepDoneItemsFor, write = SetKeepDoneItemsFor };
-  __property int ParallelDurationThreshold = { read = GetParallelDurationThreshold };
+  __property int32_t ParallelDurationThreshold = { read = GetParallelDurationThreshold };
   __property bool Enabled = { read = FEnabled, write = SetEnabled };
   __property TQueryUserEvent OnQueryUser = { read = FOnQueryUser, write = FOnQueryUser };
   __property TPromptUserEvent OnPromptUser = { read = FOnPromptUser, write = FOnPromptUser };
@@ -168,16 +168,16 @@ protected:
   bool ItemSetCPSLimit(TQueueItem * Item, int32_t CPSLimit) const;
   bool ItemGetCPSLimit(TQueueItem * Item, int32_t & CPSLimit) const;
 
-  void RetryItem(TQueueItem *Item);
-  void DeleteItem(TQueueItem *Item, bool CanKeep);
+  void RetryItem(TQueueItem * Item);
+  void DeleteItem(TQueueItem * Item, bool CanKeep);
 
   virtual bool WaitForEvent() override;
   virtual void ProcessEvent() override;
-  void TerminalFinished(TTerminalItem *TerminalItem);
-  bool TerminalFree(TTerminalItem *TerminalItem);
+  void TerminalFinished(TTerminalItem * TerminalItem);
+  bool TerminalFree(TTerminalItem * TerminalItem);
   int32_t GetParallelDurationThreshold() const;
 
-  void DoQueueItemUpdate(TQueueItem *Item);
+  void DoQueueItemUpdate(TQueueItem * Item);
   void DoListUpdate();
   void DoEvent(TQueueEvent Event);
 
@@ -187,7 +187,7 @@ public:
   void SetEnabled(bool Value);
   bool GetIsEmpty() const;
 
-  bool TryAddParallelOperation(TQueueItem *Item, bool Force);
+  bool TryAddParallelOperation(TQueueItem * Item, bool Force);
   bool ContinueParallelOperation() const;
 };
 
@@ -217,7 +217,7 @@ public:
     UnicodeString ModifiedRemote;
     bool SingleFile{false};
     bool Primary{false};
-    void *GroupToken{nullptr};
+    void * GroupToken{nullptr};
   };
 
   static bool IsUserActionStatus(TQueueItem::TStatus Status);
@@ -232,10 +232,10 @@ public:
 protected:
   TStatus FStatus{qsPending};
   TCriticalSection FSection;
-  TTerminalItem *FTerminalItem{nullptr};
+  TTerminalItem * FTerminalItem{nullptr};
   gsl::owner<TFileOperationProgressType*> FProgressData{nullptr};
   std::unique_ptr<TQueueItem::TInfo> FInfo;
-  TTerminalQueue *FQueue{nullptr};
+  TTerminalQueue * FQueue{nullptr};
   HANDLE FCompleteEvent{INVALID_HANDLE_VALUE};
   int32_t FCPSLimit{nb::ToIntPtr(-1)};
   TDateTime FDoneAt{};
@@ -246,10 +246,10 @@ protected:
 public:
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
-  void Execute(TTerminalItem *TerminalItem);
-  virtual void DoExecute(TTerminal *Terminal) = 0;
-  void SetProgress(TFileOperationProgressType &ProgressData);
-  void GetData(TQueueItemProxy *Proxy) const;
+  void Execute(TTerminalItem * TerminalItem);
+  virtual void DoExecute(TTerminal * Terminal) = 0;
+  void SetProgress(TFileOperationProgressType & ProgressData);
+  void GetData(TQueueItemProxy * Proxy) const;
   virtual bool UpdateFileList(TQueueFileList * FileList);
   void SetCPSLimit(int32_t CPSLimit);
   int32_t GetCPSLimit() const;
@@ -257,7 +257,7 @@ protected:
   virtual int32_t DefaultCPSLimit() const;
   virtual UnicodeString GetStartupDirectory() const = 0;
   virtual void ProgressUpdated();
-  virtual TQueueItem *CreateParallelOperation();
+  virtual TQueueItem * CreateParallelOperation();
   virtual bool Complete();
 };
 
@@ -282,15 +282,15 @@ public:
   bool Pause();
   bool Resume();
   bool SetCPSLimit(int32_t CPSLimit);
-  bool GetCPSLimit(int32_t &CPSLimit) const;
+  bool GetCPSLimit(int32_t & CPSLimit) const;
 
-  __property TFileOperationProgressType *ProgressData = { read = GetProgressData };
+  __property TFileOperationProgressType * ProgressData = { read = GetProgressData };
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
-  __property TQueueItem::TInfo *Info = { read = FInfo };
+  __property TQueueItem::TInfo * Info = { read = FInfo };
   __property TQueueItem::TStatus Status = { read = FStatus };
   __property bool ProcessingUserAction = { read = FProcessingUserAction };
-  __property int Index = { read = GetIndex };
-  __property void *UserData = { read = FUserData, write = FUserData };
+  __property int32_t Index = { read = GetIndex };
+  __property void * UserData = { read = FUserData, write = FUserData };
 
   TQueueItem::TInfo *GetInfo() const { return FInfo.get(); }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
@@ -303,18 +303,18 @@ public:
 private:
   std::unique_ptr<TFileOperationProgressType> FProgressData;
   TQueueItem::TStatus FStatus{TQueueItem::qsPending};
-  TTerminalQueue *FQueue{nullptr};
-  TQueueItem *FQueueItem{nullptr};
-  TTerminalQueueStatus *FQueueStatus{nullptr};
+  TTerminalQueue * FQueue{nullptr};
+  TQueueItem * FQueueItem{nullptr};
+  TTerminalQueueStatus * FQueueStatus{nullptr};
   std::unique_ptr<TQueueItem::TInfo> FInfo;
   bool FProcessingUserAction{false};
-  void *FUserData{nullptr};
+  void * FUserData{nullptr};
 
-  explicit TQueueItemProxy(TTerminalQueue *Queue, TQueueItem *QueueItem) noexcept;
+  explicit TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem) noexcept;
   virtual ~TQueueItemProxy() noexcept;
 public:
   int32_t GetIndex() const;
-  TFileOperationProgressType *GetProgressData() const;
+  TFileOperationProgressType * GetProgressData() const;
   int64_t GetTotalTransferred() const;
 };
 
@@ -327,15 +327,15 @@ public:
   TTerminalQueueStatus() noexcept;
   virtual ~TTerminalQueueStatus() noexcept;
 
-  TQueueItemProxy *FindByQueueItem(TQueueItem *QueueItem);
+  TQueueItemProxy * FindByQueueItem(TQueueItem *QueueItem);
 
-  __property int Count = { read = GetCount };
-  __property int DoneCount = { read = FDoneCount };
-  __property int ActiveCount = { read = GetActiveCount };
-  __property int DoneAndActiveCount = { read = GetDoneAndActiveCount };
-  __property int ActivePrimaryCount = { read = GetActivePrimaryCount };
-  __property int ActiveAndPendingPrimaryCount = { read = GetActiveAndPendingPrimaryCount };
-  __property TQueueItemProxy * Items[int Index] = { read = GetItem };
+  __property int32_t Count = { read = GetCount };
+  __property int32_t DoneCount = { read = FDoneCount };
+  __property int32_t ActiveCount = { read = GetActiveCount };
+  __property int32_t DoneAndActiveCount = { read = GetDoneAndActiveCount };
+  __property int32_t ActivePrimaryCount = { read = GetActivePrimaryCount };
+  __property int32_t ActiveAndPendingPrimaryCount = { read = GetActiveAndPendingPrimaryCount };
+  __property TQueueItemProxy * Items[int32_t Index] = { read = GetItem };
 
   bool IsOnlyOneActiveAndNoPending() const;
 
@@ -344,8 +344,8 @@ public:
 protected:
   __removed TTerminalQueueStatus() noexcept;
 
-  void Add(TQueueItemProxy *ItemProxy);
-  void Delete(TQueueItemProxy *ItemProxy);
+  void Add(TQueueItemProxy * temProxy);
+  void Delete(TQueueItemProxy * ItemProxy);
   void ResetStats() const;
   void NeedStats() const;
 
@@ -362,10 +362,11 @@ public:
   int32_t GetDoneAndActiveCount() const;
   int32_t GetActivePrimaryCount() const;
   int32_t GetActiveAndPendingPrimaryCount() const;
-  int32_t GetDoneCount() const { return FDoneCount; }
-  void SetDoneCount(int32_t Value);
   TQueueItemProxy * GetItem(int32_t Index);
   TQueueItemProxy * GetItem(int32_t Index) const;
+public:
+  int32_t GetDoneCount() const { return FDoneCount; }
+  void SetDoneCount(int32_t Value);
 };
 
 NB_DEFINE_CLASS_ID(TBootstrapQueueItem);
@@ -420,7 +421,7 @@ public:
 protected:
   std::unique_ptr<TStrings> FFilesToCopy;
   UnicodeString FTargetDir;
-  TCopyParamType *FCopyParam{nullptr};
+  TCopyParamType * FCopyParam{nullptr};
   int32_t FParams{0};
   bool FParallel{false};
   DWORD FLastParallelOperationAdded{false};
@@ -494,7 +495,7 @@ class NB_CORE_EXPORT TTerminalThread : public TSignalThread
   NB_DISABLE_COPY(TTerminalThread)
 public:
   TTerminalThread() = delete;
-  explicit TTerminalThread(TTerminal *Terminal) noexcept;
+  explicit TTerminalThread(TTerminal * Terminal) noexcept;
   void InitTerminalThread();
   virtual ~TTerminalThread() noexcept;
 
@@ -518,7 +519,7 @@ protected:
   virtual bool Finished() override;
 
 private:
-  TTerminal *FTerminal{nullptr};
+  TTerminal * FTerminal{nullptr};
 
   TInformationEvent FOnInformation{nullptr};
   TQueryUserEvent FOnQueryUser{nullptr};
@@ -535,10 +536,10 @@ private:
 
   TNotifyEvent FAction{nullptr};
   HANDLE FActionEvent{nullptr};
-  TUserAction *FUserAction{nullptr};
+  TUserAction * FUserAction{nullptr};
 
-  Exception *FException{nullptr};
-  Exception *FIdleException{nullptr};
+  Exception * FException{nullptr};
+  Exception * FIdleException{nullptr};
   bool FCancel{false};
   TDateTime FCancelAfter;
   bool FAbandoned{false};
@@ -549,19 +550,19 @@ private:
   DWORD FMainThread{0};
   TCriticalSection FSection;
 
-  void WaitForUserAction(TUserAction *UserAction);
+  void WaitForUserAction(TUserAction * UserAction);
   void RunAction(TNotifyEvent Action);
 
-  static void SaveException(Exception &E, Exception *&Exception);
-  static void Rethrow(Exception *&AException);
+  static void SaveException(Exception & E, Exception *& Exception);
+  static void Rethrow(Exception *& AException);
   void FatalAbort();
   void CheckCancel();
 
-  void TerminalOpenEvent(TObject *Sender);
-  void TerminalReopenEvent(TObject *Sender);
+  void TerminalOpenEvent(TObject * Sender);
+  void TerminalReopenEvent(TObject * Sender);
 
   void TerminalInformation(
-    TTerminal *Terminal, const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
+    TTerminal * Terminal, const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
     const TQueryParams * Params, uint32_t & Answer, TQueryType Type, void * Arg);
@@ -596,6 +597,6 @@ public:
 private:
   std::unique_ptr<TStrings> FList;
   TParallelOperation * FLastParallelOperation;
-  int FLastParallelOperationVersion;
+  int32_t FLastParallelOperationVersion;
 };
 
