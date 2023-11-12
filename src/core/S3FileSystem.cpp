@@ -1587,7 +1587,7 @@ static void AddAclGrant(
     S3AclGrant AclGrant(AclGrantTemplate);
     AclGrant.permission = Permission;
     AclGrants.push_back(AclGrant);
-    Permissions -= static_cast<short int>(Flag);
+    Permissions -= static_cast<int16_t>(Flag);
   }
 }
 

@@ -273,9 +273,9 @@ int32_t ZeroBuildNumber(int32_t CompoundVersion)
 int32_t StrToCompoundVersion(const UnicodeString & AStr)
 {
   UnicodeString Str = AStr;
-  int32_t MajorVer = nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), 99);
-  int32_t MinorVer = nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), (int32_t)99);
-  int32_t Release = Str.IsEmpty() ? 0 : nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), (int32_t)99);
+  int32_t MajorVer = nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), nb::ToInt32(99));
+  int32_t MinorVer = nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), nb::ToInt32(99);
+  int32_t Release = Str.IsEmpty() ? 0 : nb::Min(StrToIntPtr(CutToChar(Str, L'.', false)), nb::ToInt32(99));
   return CalculateCompoundVersion(MajorVer, MinorVer, Release);
 }
 
