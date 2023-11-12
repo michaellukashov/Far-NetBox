@@ -15,10 +15,12 @@
 //#include <CoreMain.h>
 #include <System.IOUtils.hpp>
 #include <cmath>
+#include <shlobj.h>
 #include <limits>
 #include <algorithm>
 #include <rdestl/map.h>
 #include <rdestl/vector.h>
+#include <psapi.h>
 #include <CoreMain.h>
 #include <SessionInfo.h>
 #include <Soap.EncdDecd.hpp>
@@ -1550,11 +1552,13 @@ UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
   const int32_t Size = 1024;
 
   Buf.SetLength(Size);
+  Buf.Unique();
   const int32_t Len = ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), nb::ToDWord(Size));
 
   if (Len > Size)
   {
     Buf.SetLength(Len);
+    Buf.Unique();
     ::ExpandEnvironmentStringsW(Str.c_str(), const_cast<LPWSTR>(Buf.c_str()), nb::ToDWord(Len));
   }
 
@@ -2028,7 +2032,7 @@ UnicodeString ByteToHex(uint8_t B, bool UpperCase)
   return Result;
 }
 
-UnicodeString BytesToHex(const uint8_t *B, uint32_t Length, bool UpperCase, wchar_t Separator)
+UnicodeString BytesToHex(const uint8_t * B, uint32_t Length, bool UpperCase, wchar_t Separator)
 {
   UnicodeString Result;
   for (uint32_t Index = 0; Index < Length; ++Index)
@@ -2357,7 +2361,7 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   return Result;
 }
 
-TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME &SystemTime)
+TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
 {
   try
   {
@@ -2532,7 +2536,7 @@ static const TDateTimeParams *GetDateTimeParams(uint16_t Year)
   return Result;
 }
 
-static void EncodeDSTMargin(const SYSTEMTIME &Date, uint16_t Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result)
 {
   if (Date.wYear == 0)
@@ -2606,7 +2610,7 @@ bool UsesDaylightHack()
 
 TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
-  DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
+  DebugAssert(nb::ToInt32(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
   TDateTime Result = TDateTime(UnixDateDelta + (nb::ToDouble(TimeStamp) / SecsPerDay));
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
@@ -2683,7 +2687,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, 
       DateTime = IncSecond(DateTime, Number);
       if (Start)
       {
-        DateTime = IncMilliSecond(DateTime, -static_cast<int>(MilliSecondOfTheSecond(DateTime)));
+        DateTime = IncMilliSecond(DateTime, -nb::ToInt32(MilliSecondOfTheSecond(DateTime)));
       }
     }
     else if (S == "N")
@@ -2691,7 +2695,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, 
       DateTime = IncMinute(DateTime, Number);
       if (Start)
       {
-        DateTime = IncMilliSecond(DateTime, -static_cast<int>(MilliSecondOfTheMinute(DateTime)));
+        DateTime = IncMilliSecond(DateTime, -nb::ToInt32(MilliSecondOfTheMinute(DateTime)));
       }
     }
     else if (S == "H")
@@ -2699,7 +2703,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, 
       DateTime = IncHour(DateTime, Number);
       if (Start)
       {
-        DateTime = IncMilliSecond(DateTime, -static_cast<int>(MilliSecondOfTheHour(DateTime)));
+        DateTime = IncMilliSecond(DateTime, -nb::ToInt32(MilliSecondOfTheHour(DateTime)));
       }
     }
     else if (S == "D")
@@ -2707,7 +2711,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, 
       DateTime = IncDay(DateTime, Number);
       if (Start)
       {
-        DateTime = IncMilliSecond(DateTime, -static_cast<int>(MilliSecondOfTheDay(DateTime)));
+        DateTime = IncMilliSecond(DateTime, -nb::ToInt32(MilliSecondOfTheDay(DateTime)));
       }
     }
     else if (S == "Y")
@@ -2814,7 +2818,7 @@ UnicodeString SizeToStr(int64_t ASize)
 
 static int64_t DateTimeToUnix(const TDateTime &DateTime)
 {
-  const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
+  const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
   DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
@@ -2853,7 +2857,7 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   return Result;
 }
 
-TDateTime FileTimeToDateTime(const FILETIME &FileTime)
+TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
   TDateTime Result;
@@ -2883,7 +2887,7 @@ TDateTime FileTimeToDateTime(const FILETIME &FileTime)
   return Result;
 }
 
-int64_t ConvertTimestampToUnix(const FILETIME &FileTime,
+int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
   NB_STATIC_ASSERT(sizeof(FILETIME) == sizeof(int64_t), "ConvertTimestampToUnix: unexpected FILETIME size");
@@ -3151,8 +3155,9 @@ bool AdjustClockForDSTEnabled()
         DynamicDaylightTimeDisabled = Registry->ReadBool("DisableAutoDaylightTimeSet");
       }
     }
+    // delete Registry;
   }
-  catch (...)
+  catch(...)
   {
     DEBUG_PRINTF("AdjustClockForDSTEnabled: error");
   }
@@ -3173,7 +3178,7 @@ UnicodeString StandardDatestamp()
 #endif
 }
 
-UnicodeString StandardTimestamp(const TDateTime &DateTime)
+UnicodeString StandardTimestamp(const TDateTime & DateTime)
 {
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
@@ -3193,7 +3198,7 @@ UnicodeString StandardTimestamp()
 }
 
 static TDateTime TwoSeconds(0, 0, 2, 0);
-int32_t CompareFileTime(const TDateTime &T1, const TDateTime &T2)
+int32_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
 {
   const TDateTime TwoSeconds(0, 0, 2, 0);
   // "FAT" time precision
@@ -3221,17 +3226,17 @@ int32_t CompareFileTime(const TDateTime &T1, const TDateTime &T2)
   return Result;
 }
 
-int32_t TimeToMSec(const TDateTime &T)
+int32_t TimeToMSec(const TDateTime & T)
 {
   return int(Round(double(T) * double(MSecsPerDay)));
 }
 
-int32_t TimeToSeconds(const TDateTime &T)
+int32_t TimeToSeconds(const TDateTime & T)
 {
   return TimeToMSec(T) / MSecsPerSec;
 }
 
-int32_t TimeToMinutes(const TDateTime &T)
+int32_t TimeToMinutes(const TDateTime & T)
 {
   return TimeToSeconds(T) / SecsPerMin;
 }
@@ -3451,6 +3456,7 @@ uint32_t ContinueAnswer(uint32_t Answers)
 }
 
 #if 0
+
 TLibModule * FindModule(void * Instance)
 {
   TLibModule * CurModule;
@@ -3469,12 +3475,13 @@ TLibModule * FindModule(void * Instance)
   }
   return CurModule;
 }
+
 #endif // if 0
 
 static UnicodeString DoLoadStrFrom(HINSTANCE Module, int32_t Ident, uint32_t MaxLength)
 {
   UnicodeString Result;
-  Result.SetLength(static_cast<int32_t>(MaxLength));
+  Result.SetLength(nb::ToInt32(MaxLength));
   const int32_t Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(MaxLength));
   Result.SetLength(Length);
 
@@ -3912,6 +3919,7 @@ UnicodeString WindowsProductName()
     {
       Result = Registry->ReadString("ProductName");
     }
+    // delete Registry;
   }
   catch(...)
   {
@@ -3928,7 +3936,7 @@ int32_t GetWindowsBuild()
 UnicodeString WindowsVersion()
 {
   OSVERSIONINFO OSVersionInfo = GetWindowsVersion();
-  UnicodeString Result = FORMAT("%d.%d.%d", int(OSVersionInfo.dwMajorVersion), int(OSVersionInfo.dwMinorVersion), int(OSVersionInfo.dwBuildNumber));
+  UnicodeString Result = FORMAT("%d.%d.%d", nb::ToInt32(OSVersionInfo.dwMajorVersion), nb::ToInt32(OSVersionInfo.dwMinorVersion), nb::ToInt32(OSVersionInfo.dwBuildNumber));
   return Result;
 }
 
@@ -3943,7 +3951,7 @@ bool IsDirectoryWriteable(const UnicodeString & APath)
 {
   UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(APath) +
-    FORMAT("wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()), int(GetCurrentProcessId()));
+    FORMAT("wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()), nb::ToInt32(GetCurrentProcessId()));
   HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
     CREATE_NEW, FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE, nullptr);
   const bool Result = (LocalFileHandle != INVALID_HANDLE_VALUE);
@@ -4041,7 +4049,7 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
         }
         else
         {
-          Num = static_cast<int32_t>(HoursBetween(ANow, AThen));
+          Num = nb::ToInt32(HoursBetween(ANow, AThen));
           if (Num > 1)
           {
             Part = 10;
@@ -4052,7 +4060,7 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
           }
           else
           {
-            Num = static_cast<int32_t>(MinutesBetween(ANow, AThen));
+            Num = nb::ToInt32(MinutesBetween(ANow, AThen));
             if (Num > 1)
             {
               Part = 8;
@@ -4063,7 +4071,7 @@ UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen
             }
             else
             {
-              Num = static_cast<int>(SecondsBetween(ANow, AThen));
+              Num = nb::ToInt32(SecondsBetween(ANow, AThen));
               if (Num > 1)
               {
                 Part = 6;
@@ -4104,7 +4112,7 @@ UnicodeString ExtractFileBaseName(const UnicodeString & APath)
   return ChangeFileExt(base::ExtractFileName(APath, false), L"");
 }
 
-TStringList *TextToStringList(const UnicodeString & Text)
+TStringList * TextToStringList(const UnicodeString & Text)
 {
   std::unique_ptr<TStringList> List(std::make_unique<TStringList>());
   List->SetText(Text);
@@ -4255,7 +4263,7 @@ static int32_t PemPasswordCallback(char * Buf, int32_t ASize, int32_t /*RWFlag*/
 {
   TPemPasswordCallbackData & Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
-  strncpy(Buf, UtfPassphrase.c_str(), static_cast<size_t>(ASize));
+  strncpy(Buf, UtfPassphrase.c_str(), nb::ToSizeT(ASize));
   Shred(UtfPassphrase);
   Buf[ASize - 1] = '\0';
   return nb::ToInt(NBChTraitsCRT<char>::SafeStringLen(Buf));
@@ -4279,7 +4287,7 @@ static bool IsTlsPassphraseError(int32_t Error, bool HasPassphrase)
 
 static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString & Path, bool HasPassphrase)
 {
-  unsigned long Error = ERR_get_error();
+  uint32_t Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
   {
     throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path)), GetTlsErrorStr(Error));
@@ -4406,7 +4414,7 @@ void ParseCertificate(const UnicodeString & Path,
 
               if (Certificate == nullptr)
               {
-                uint32_t DERError = ERR_get_error();
+                int32_t DERError = ERR_get_error();
 
                 UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath));
                 UnicodeString MoreMessages =

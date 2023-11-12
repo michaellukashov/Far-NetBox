@@ -1,5 +1,6 @@
 
 #include <vcl.h>
+// #pragma hdrstop
 
 #include <Common.h>
 #include <StrUtils.hpp>
@@ -13,8 +14,9 @@
 __removed #pragma package(smart_init)
 
 #if 0
+
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
-typedef nb::set_t<UnicodeString> TIgnoredExceptions;
+using TIgnoredExceptions = nb::set_t<UnicodeString>;
 static TIgnoredExceptions IgnoredExceptions;
 
 static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
@@ -29,6 +31,7 @@ void IgnoreException(const std::type_info & ExceptionType)
   // but type_index is not available in 32-bit version of STL in XE6.
   IgnoredExceptions.insert(NormalizeClassName(UnicodeString(AnsiString(ExceptionType.name()))));
 }
+
 #endif // #if 0
 
 static bool WellKnownException(
@@ -76,12 +79,12 @@ static bool WellKnownException(
   // EIntError and EMathError are EExternal
   // EClassNotFound is EFilerError
   else if ((dyn_cast<EListError>(E) != nullptr) ||
-    (dyn_cast<EStringListError>(E) != nullptr) ||
-    (dyn_cast<EIntError>(E) != nullptr) ||
-    (dyn_cast<EMathError>(E) != nullptr) ||
-    (dyn_cast<EVariantError>(E) != nullptr) ||
-    (dyn_cast<EInvalidOperation>(E) != nullptr))
-    (dyn_cast<EFilerError *>(E) != nullptr))
+           (dyn_cast<EStringListError>(E) != nullptr) ||
+           (dyn_cast<EIntError>(E) != nullptr) ||
+           (dyn_cast<EMathError>(E) != nullptr) ||
+           (dyn_cast<EVariantError>(E) != nullptr) ||
+           (dyn_cast<EInvalidOperation>(E) != nullptr))
+           (dyn_cast<EFilerError *>(E) != nullptr))
   {
     if (Rethrow)
     {
@@ -136,8 +139,8 @@ static bool WellKnownException(
   return Result;
 }
 
-static bool ExceptionMessage(const Exception *E, bool /*Count*/,
-  bool Formatted, UnicodeString &Message, bool &InternalError)
+static bool ExceptionMessage(const Exception * E, bool /*Count*/,
+  bool Formatted, UnicodeString & Message, bool & InternalError)
 {
   bool Result = true;
   const wchar_t *CounterName = nullptr;
@@ -376,7 +379,7 @@ ExtException::ExtException(const UnicodeString & Msg, TStrings * MoreMessages,
   }
 }
 
-void ExtException::AddMoreMessages(const Exception *E)
+void ExtException::AddMoreMessages(const Exception * E)
 {
   if (E != nullptr)
   {
@@ -425,7 +428,7 @@ ExtException::~ExtException() noexcept
   SAFE_DESTROY(FMoreMessages);
 }
 
-ExtException *ExtException::CloneFrom(const Exception *E)
+ExtException *ExtException::CloneFrom(const Exception * E)
 {
   return new ExtException(E, L"");
 }
@@ -476,21 +479,21 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg,
 {
 }
 
-EFatal::EFatal(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(OBJECT_CLASS_EFatal, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
   Init(E);
 }
 
-EFatal::EFatal(TObjectClassId Kind, const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+EFatal::EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(Kind, Msg, E, HelpKeyword),
   FReopenQueried(false)
 {
   Init(E);
 }
 
-void EFatal::Init(const Exception *E)
+void EFatal::Init(const Exception * E)
 {
   const EFatal *F = dyn_cast<EFatal>(E);
   if (F != nullptr)
@@ -528,11 +531,11 @@ ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(OBJECT_CLASS_ECallbackGuardA
 {
 }
 
-Exception *CloneException(Exception *E)
+Exception * CloneException(Exception * E)
 {
-  Exception *Result;
+  Exception * Result;
   // this list has to be in sync with ExceptionMessage
-  ExtException *Ext = dyn_cast<ExtException>(E);
+  ExtException * Ext = dyn_cast<ExtException>(E);
   if (Ext != nullptr)
   {
     Result = Ext->Clone();
@@ -565,7 +568,7 @@ Exception *CloneException(Exception *E)
   return Result;
 }
 
-void RethrowException(Exception *E)
+void RethrowException(Exception * E)
 {
   // this list has to be in sync with ExceptionMessage
   if (isa<ExtException>(E))

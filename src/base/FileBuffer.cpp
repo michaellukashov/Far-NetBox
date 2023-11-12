@@ -13,15 +13,15 @@ char * EOLToStr(TEOLType EOLType)
 {
   switch (EOLType)
   {
-  case eolLF:
-    return const_cast<char *>("\n");
-  case eolCRLF:
-    return const_cast<char *>("\r\n");
-  case eolCR:
-    return const_cast<char *>("\r");
-  default:
-    DebugFail();
-    return const_cast<char *>("");
+    case eolLF:
+      return const_cast<char *>("\n");
+    case eolCRLF:
+      return const_cast<char *>("\r\n");
+    case eolCR:
+      return const_cast<char *>("\r");
+    default:
+      DebugFail();
+      return const_cast<char *>("");
   }
 }
 
@@ -246,7 +246,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
     const int64_t res = FMemory->Seek(Len, TSeekOrigin::soCurrent);
     DebugAssert(res >= Len);
   }
-  catch (EWriteError &)
+  catch(EWriteError &)
   {
     ::RaiseLastOSError();
   }
@@ -272,7 +272,7 @@ TSafeHandleStream::TSafeHandleStream(THandleStream * Source, bool Own) :
   FSource = Own ? Source : nullptr;
 }
 
-TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, unsigned short Mode)
+TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, uint16_t Mode)
 {
   return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
 }

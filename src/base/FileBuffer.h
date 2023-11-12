@@ -46,15 +46,17 @@ private:
   // int32_t FSize;
 
 public:
+  int64_t GetSize() const { return FMemory->GetSize(); }
+  void SetPosition(int64_t Value);
   TMemoryStream * GetMemory() const { return FMemory.get(); }
   void SetMemory(TMemoryStream * value);
+
+public:
   char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }
   char * GetPointer() const { return GetData() + GetPosition(); }
   void NeedSpace(int64_t Size);
-  int64_t GetSize() const { return FMemory->GetSize(); }
   void SetSize(int64_t Value);
-  int32_t GetPosition() const { return nb::ToInt(FMemory->Position); }
-  void SetPosition(int64_t Value);
+  int64_t GetPosition() const { return nb::ToInt64(FMemory->Position); }
   void ProcessRead(DWORD Len, DWORD Result);
 };
 
