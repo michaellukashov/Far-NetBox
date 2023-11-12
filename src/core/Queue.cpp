@@ -1768,7 +1768,7 @@ void TQueueItem::SetProgress(
     // wait until the real transfer operation starts
     if ((FCPSLimit >= 0) && ProgressData.IsTransfer())
     {
-      ProgressData.SetCPSLimit(static_cast<uint32_t>(FCPSLimit));
+      ProgressData.SetCPSLimit(nb::ToUInt32(FCPSLimit));
       FCPSLimit = -1;
     }
 

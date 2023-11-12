@@ -2174,7 +2174,7 @@ void TS3FileSystem::Source(
         else
         {
           S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), LibS3PutObjectDataCallback };
-          S3_put_object(&BucketContext, StrToS3(Key), static_cast<uint64_t>(AHandle.Size), &PutProperties, FRequestContext, FTimeout, &PutObjectHandler, &Data);
+          S3_put_object(&BucketContext, StrToS3(Key), nb::ToUInt64(AHandle.Size), &PutProperties, FRequestContext, FTimeout, &PutObjectHandler, &Data);
         }
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.
@@ -2375,7 +2375,7 @@ void TS3FileSystem::Sink(
         TAutoFlag ResponseIgnoreSwitch(FResponseIgnore); nb::used(ResponseIgnoreSwitch);
         S3GetObjectHandler GetObjectHandler = { CreateResponseHandler(), LibS3GetObjectDataCallback };
         S3_get_object(
-          &BucketContext, StrToS3(Key), nullptr, static_cast<uint64_t>(Stream->Position()), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
+          &BucketContext, StrToS3(Key), nullptr, nb::ToUInt64(Stream->Position()), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.
         if (Data.Exception.get() == nullptr)

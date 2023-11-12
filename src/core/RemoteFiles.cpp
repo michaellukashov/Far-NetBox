@@ -2298,7 +2298,7 @@ unsigned short TRights::CalculatePermissions(TRightGroup Group, TRightLevel Leve
   {
     Permissions |= CalculateFlag(Group, Level3);
   }
-  unsigned short Result = static_cast<unsigned short>(Permissions);
+  unsigned short Result = static_cast<uint16_t>(Permissions);
   DebugAssert((Permissions - Result) == 0);
   return Result;
 }

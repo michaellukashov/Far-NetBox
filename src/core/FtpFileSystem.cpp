@@ -2984,7 +2984,7 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
         {
           TransferSize = FTerminal->OperationProgress->TransferSize - FTerminal->OperationProgress->TransferredSize;
         }
-        Result = static_cast<int32_t>(static_cast<uint32_t>(TransferSize & std::numeric_limits<uint32_t>::max()));
+        Result = nb::ToInt32(nb::ToUInt32(TransferSize & std::numeric_limits<uint32_t>::max()));
       }
       break;
 

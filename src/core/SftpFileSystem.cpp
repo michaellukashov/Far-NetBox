@@ -2409,7 +2409,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(
         int32_t MaxPacketSizeRounded = TEncryption::RoundToBlockDown(MaxPacketSize);
         if (MaxPacketSizeRounded > 0)
         {
-          MaxPacketSize = static_cast<uint32_t>(MaxPacketSizeRounded);
+          MaxPacketSize = nb::ToUInt32(MaxPacketSizeRounded);
         }
         Result = MaxPacketSize;
       }
