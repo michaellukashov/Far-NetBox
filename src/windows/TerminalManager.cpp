@@ -1019,7 +1019,7 @@ bool TTerminalManager::HandleMouseWheel(WPARAM WParam, LPARAM LParam)
     if (Control != nullptr)
     {
       TCustomForm * Form = GetParentForm(Control);
-      // Only case we expect the parent form to be nullptr is on the Find/Replace dialog,
+      // Only case we expect the parent form to be NULL is on the Find/Replace dialog,
       // which is owned by VCL's internal TRedirectorWindow.
       DebugAssert((Form != nullptr) || (Control->ClassName() == L"TRedirectorWindow"));
       if (Form != nullptr)
@@ -1178,7 +1178,7 @@ void TTerminalManager::AuthenticateFormCancel(TObject * Sender)
   if (ManagedTerminal != nullptr)
   {
     TTerminalThread * TerminalThread = ManagedTerminal->TerminalThread;
-    // can be nullptr for reconnects from transfers
+    // can be NULL for reconnects from transfers
     if ((TerminalThread != nullptr) && !TerminalThread->Cancelling)
     {
       Form->Log(LoadStr(AUTH_CANCELLING));
@@ -1291,7 +1291,7 @@ void TTerminalManager::TerminalShowExtendedException(
 static TDateTime DirectoryReadingProgressDelay(0, 0, 1, 500);
 
 void TTerminalManager::TerminalReadDirectoryProgress(
-  TObject * /*Sender*/, int Progress, int32_t ResolvedLinks, bool & Cancel)
+  TObject * /*Sender*/, int32_t Progress, int32_t ResolvedLinks, bool & Cancel)
 {
   if (Progress == 0)
   {
@@ -1604,7 +1604,7 @@ void TTerminalManager::OpenInPutty()
   TSessionData * Data = nullptr;
   try
   {
-    // Is nullptr on the first session when called from ConnectActiveTerminal()
+    // Is NULL on the first session when called from ConnectActiveTerminal()
     // due to WinConfiguration->AutoOpenInPutty
     if (ScpExplorer != nullptr)
     {

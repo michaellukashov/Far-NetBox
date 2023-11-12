@@ -144,11 +144,11 @@ public:
   void Delete(int32_t Index);
   int32_t IndexOfName(const UnicodeString & Name) const;
 
-  __property int Count = { read = GetCount };
+  __property int32_t Count = { read = GetCount };
   ROProperty<int32_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
-//  __property UnicodeString Names[int Index] = { read = GetName };
-//  __property const TCopyParamRule * Rules[int Index] = { read = GetRule };
-//  __property const TCopyParamType * CopyParams[int Index] = { read = GetCopyParam };
+//  __property UnicodeString Names[int32_t Index] = { read = GetName };
+//  __property const TCopyParamRule * Rules[int32_t Index] = { read = GetRule };
+//  __property const TCopyParamType * CopyParams[int32_t Index] = { read = GetCopyParam };
   __property bool Modified = { read = FModified };
   __property TStrings * NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };
@@ -292,14 +292,14 @@ public:
 
   __property bool ContinueOnError = { read = FContinueOnError, write = FContinueOnError };
   __property bool ConfirmCommandSession = { read = FConfirmCommandSession, write = FConfirmCommandSession };
-  __property int SynchronizeParams = { read = FSynchronizeParams, write = FSynchronizeParams };
-  __property int SynchronizeOptions = { read = FSynchronizeOptions, write = FSynchronizeOptions };
-  __property int SynchronizeModeAuto = { read = FSynchronizeModeAuto, write = FSynchronizeModeAuto };
-  __property int SynchronizeMode = { read = FSynchronizeMode, write = FSynchronizeMode };
-  __property int MaxWatchDirectories = { read = FMaxWatchDirectories, write = FMaxWatchDirectories };
+  __property int32_t SynchronizeParams = { read = FSynchronizeParams, write = FSynchronizeParams };
+  __property int32_t SynchronizeOptions = { read = FSynchronizeOptions, write = FSynchronizeOptions };
+  __property int32_t SynchronizeModeAuto = { read = FSynchronizeModeAuto, write = FSynchronizeModeAuto };
+  __property int32_t SynchronizeMode = { read = FSynchronizeMode, write = FSynchronizeMode };
+  __property int32_t MaxWatchDirectories = { read = FMaxWatchDirectories, write = FMaxWatchDirectories };
   __property bool QueueBootstrap = { read = FQueueBootstrap, write = SetQueueBootstrap };
   __property bool QueueKeepDoneItems = { read = FQueueKeepDoneItems, write = SetQueueKeepDoneItems };
-  __property int QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
+  __property int32_t QueueKeepDoneItemsFor = { read = FQueueKeepDoneItemsFor, write = SetQueueKeepDoneItemsFor };
   __property bool QueueAutoPopup = { read = FQueueAutoPopup, write = FQueueAutoPopup };
   __property bool SessionRememberPassword = { read = FSessionRememberPassword, write = FSessionRememberPassword };
   bool& SessionRememberPassword{FSessionRememberPassword};
@@ -327,14 +327,14 @@ public:
   __property UnicodeString BeepSound = { read = FBeepSound, write = FBeepSound };
   __property const TCopyParamList * CopyParamList = { read = GetCopyParamList, write = SetCopyParamList };
   __property UnicodeString CopyParamCurrent = { read = FCopyParamCurrent, write = SetCopyParamCurrent };
-  __property int CopyParamIndex = { read = GetCopyParamIndex, write = SetCopyParamIndex };
+  __property int32_t CopyParamIndex = { read = GetCopyParamIndex, write = SetCopyParamIndex };
   __property TGUICopyParamType CurrentCopyParam = { read = GetCurrentCopyParam };
   // __property TGUICopyParamType CopyParamPreset[UnicodeString Name] = { read = GetCopyParamPreset };
   // __property bool HasCopyParamPreset[UnicodeString Name] = { read = GetHasCopyParamPreset };
   __property TRemoteProperties NewDirectoryProperties = { read = FNewDirectoryProperties, write = SetNewDirectoryProperties };
-  __property int KeepUpToDateChangeDelay = { read = FKeepUpToDateChangeDelay, write = FKeepUpToDateChangeDelay };
+  __property int32_t KeepUpToDateChangeDelay = { read = FKeepUpToDateChangeDelay, write = FKeepUpToDateChangeDelay };
   __property UnicodeString ChecksumAlg = { read = FChecksumAlg, write = FChecksumAlg };
-  __property int SessionReopenAutoIdle = { read = FSessionReopenAutoIdle, write = FSessionReopenAutoIdle };
+  __property int32_t SessionReopenAutoIdle = { read = FSessionReopenAutoIdle, write = FSessionReopenAutoIdle };
   __property bool CanApplyLocaleImmediately = { read = GetCanApplyLocaleImmediately };
   __property LCID AppliedLocale = { read = FAppliedLocale };
 
