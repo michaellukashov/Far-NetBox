@@ -874,7 +874,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
           RedrawPanel(true);
         }
       };
-      FarControl(FCTL_SETCMDLINE, 0, reinterpret_cast<void *>(L""));
+      FarControl(FCTL_SETCMDLINE, 0, nb::ToPtr(L""));
       TWinSCPPlugin *WinSCPPlugin = GetWinSCPPlugin();
       WinSCPPlugin->ShowConsoleTitle(Command);
       {

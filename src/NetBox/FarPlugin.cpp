@@ -217,7 +217,7 @@ RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
   PanelInfo Info;
   nb::ClearStruct(Info);
   Info.StructSize = sizeof(PanelInfo);
-  FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(&Info), PanelHandle);
+  FarControl(FCTL_GETPANELINFO, 0, nb::ToPtr(&Info), PanelHandle);
 
   RECT Bounds;
   nb::ClearStruct(Bounds);
@@ -2126,7 +2126,7 @@ TFarPanelInfo **TCustomFarFileSystem::GetPanelInfo(int32_t Another)
   {
     PanelInfo * Info = nb::calloc<PanelInfo *>(1, sizeof(PanelInfo));
     Info->StructSize = sizeof(PanelInfo);
-    bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, reinterpret_cast<void *>(Info),
+    bool Res = (FPlugin->FarControl(FCTL_GETPANELINFO, 0, nb::ToPtr(Info),
           !bAnother ? PANEL_ACTIVE : PANEL_PASSIVE) > 0);
     if (!Res)
     {
@@ -2620,7 +2620,7 @@ int32_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
   {
     int32_t size = FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, nullptr);
     PluginPanelItem *ppi = nb::calloc<PluginPanelItem *>(1, size);
-    FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, reinterpret_cast<void *>(ppi));
+    FOwner->FarControl(FCTL_GETSELECTEDPANELITEM, 0, nb::ToPtr(ppi));
     if ((ppi->Flags & PPIF_SELECTED) == 0)
     {
       Count = 0;
@@ -2698,7 +2698,7 @@ void TFarPanelInfo::ApplySelection()
 {
   // for "another panel info", there's no owner
   DebugAssert(FOwner != nullptr);
-  FOwner->FarControl(FCTL_SETSELECTION, 0, reinterpret_cast<void *>(FPanelInfo));
+  FOwner->FarControl(FCTL_SETSELECTION, 0, nb::ToPtr(FPanelInfo));
 }
 
 TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
@@ -2743,7 +2743,7 @@ void TFarPanelInfo::SetFocusedIndex(int32_t Value)
     PanelInfo.StructSize = sizeof(PanelRedrawInfo);
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
     PanelInfo.TopPanelItem = FPanelInfo->TopPanelItem;
-    FOwner->FarControl(FCTL_REDRAWPANEL, 0, reinterpret_cast<void *>(&PanelInfo));
+    FOwner->FarControl(FCTL_REDRAWPANEL, 0, nb::ToPtr(&PanelInfo));
   }
 }
 

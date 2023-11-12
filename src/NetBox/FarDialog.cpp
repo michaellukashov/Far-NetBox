@@ -678,7 +678,7 @@ bool TFarDialog::CloseQuery()
 void TFarDialog::RefreshBounds()
 {
   SMALL_RECT Rect = {0};
-  SendDlgMessage(DM_GETDLGRECT, 0, reinterpret_cast<void *>(&Rect));
+  SendDlgMessage(DM_GETDLGRECT, 0, nb::ToPtr(&Rect));
   FBounds.Left = Rect.Left;
   FBounds.Top = Rect.Top;
   FBounds.Right = Rect.Right;
@@ -729,7 +729,7 @@ int32_t TFarDialog::ShowModal()
           HelpTopic.c_str(), FDialogItems,
           GetItemCount(), 0, GetFlags(),
           DialogProcGeneral,
-          reinterpret_cast<void *>(this));
+          nb::ToPtr(this));
       BResult = Info.DialogRun(Handle);
     }
 
@@ -1247,21 +1247,21 @@ void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool Value)
     case DIF_DISABLE:
       if (GetDialog()->GetHandle())
       {
-        SendDialogMessage(DM_ENABLE, reinterpret_cast<void *>(!Value));
+        SendDialogMessage(DM_ENABLE, nb::ToPtr(!Value));
       }
       break;
 
     case DIF_HIDDEN:
       if (GetDialog()->GetHandle())
       {
-        SendDialogMessage(DM_SHOWITEM, reinterpret_cast<void *>(!Value));
+        SendDialogMessage(DM_SHOWITEM, nb::ToPtr(!Value));
       }
       break;
 
     case DIF_3STATE:
       if (GetDialog()->GetHandle())
       {
-        SendDialogMessage(DM_SET3STATE, reinterpret_cast<void *>(Value));
+        SendDialogMessage(DM_SET3STATE, nb::ToPtr(Value));
       }
       break;
     }
@@ -1460,7 +1460,7 @@ void TFarDialogItem::SetSelected(int32_t Value)
   {
     if (GetDialog()->GetHandle())
     {
-      SendDialogMessage(DM_SETCHECK, reinterpret_cast<void *>(Value));
+      SendDialogMessage(DM_SETCHECK, nb::ToPtr(Value));
     }
     UpdateSelected(Value);
   }
@@ -1627,7 +1627,7 @@ void TFarDialogItem::Init()
     nb::ClearStruct(Rect);
 
     // at least for "text" item, returned item size is not correct (on 1.70 final)
-    SendDialogMessage(DM_GETITEMPOSITION, reinterpret_cast<void *>(&Rect));
+    SendDialogMessage(DM_GETITEMPOSITION, nb::ToPtr(&Rect));
 
     TRect B = GetBounds();
     B.Left = Rect.Left;
@@ -1679,7 +1679,7 @@ bool TFarDialogItem::MouseMove(int32_t /*X*/, int32_t /*Y*/,
   INPUT_RECORD Rec = {0};
   Rec.EventType = MOUSE_EVENT;
   memmove(&Rec.Event.MouseEvent, Event, sizeof(*Event));
-  return DefaultDialogProc(DN_INPUT, 0, reinterpret_cast<void *>(&Rec)) != 0;
+  return DefaultDialogProc(DN_INPUT, 0, nb::ToPtr(&Rec)) != 0;
 }
 
 void TFarDialogItem::Text(int32_t X, int32_t Y, const FarColor &Color, const UnicodeString & Str)
@@ -2151,7 +2151,7 @@ void TFarList::UpdateItem(int32_t Index)
   nb::ClearStruct(ListUpdate);
   ListUpdate.StructSize = sizeof(FarListUpdate);
   ListUpdate.Item = *ListItem;
-  GetDialogItem()->SendDialogMessage(DM_LISTUPDATE, reinterpret_cast<void *>(&ListUpdate));
+  GetDialogItem()->SendDialogMessage(DM_LISTUPDATE, nb::ToPtr(&ListUpdate));
 }
 
 void TFarList::Put(int32_t Index, const UnicodeString & Str)
@@ -2226,7 +2226,7 @@ void TFarList::Changed()
       {
         GetDialogItem()->GetDialog()->UnlockChanges();
       };
-      GetDialogItem()->SendDialogMessage(DM_LISTSET, reinterpret_cast<void *>(FListItems));
+      GetDialogItem()->SendDialogMessage(DM_LISTSET, nb::ToPtr(FListItems));
       if (PrevTopIndex + GetDialogItem()->GetHeight() > GetCount())
       {
         PrevTopIndex = GetCount() > GetDialogItem()->GetHeight() ? GetCount() - GetDialogItem()->GetHeight() : 0;
@@ -2284,7 +2284,7 @@ void TFarList::SetCurPos(int32_t Position, int32_t TopIndex)
   ListPos.StructSize = sizeof(FarListPos);
   ListPos.SelectPos = Position;
   ListPos.TopPos = TopIndex;
-  DialogItem->SendDialogMessage(DM_LISTSETCURPOS, reinterpret_cast<void *>(&ListPos));
+  DialogItem->SendDialogMessage(DM_LISTSETCURPOS, nb::ToPtr(&ListPos));
 }
 
 void TFarList::SetTopIndex(int32_t Value)
@@ -2312,7 +2312,7 @@ int32_t TFarList::GetTopIndex() const
     ListPos.StructSize = sizeof(FarListPos);
     TFarDialogItem * DialogItem = GetDialogItem();
     assert(DialogItem != nullptr);
-    DialogItem->SendDialogMessage(DM_LISTGETCURPOS, reinterpret_cast<void *>(&ListPos));
+    DialogItem->SendDialogMessage(DM_LISTGETCURPOS, nb::ToPtr(&ListPos));
     Result = nb::ToIntPtr(ListPos.TopPos);
   }
   return Result;
@@ -2485,7 +2485,7 @@ void TFarListBox::SetAutoSelect(TFarListBoxAutoSelect Value)
 
 void TFarListBox::UpdateMouseReaction()
 {
-  SendDialogMessage(DIF_LISTTRACKMOUSE, reinterpret_cast<void *>(GetAutoSelect()));
+  SendDialogMessage(DIF_LISTTRACKMOUSE, nb::ToPtr(GetAutoSelect()));
 }
 
 void TFarListBox::SetItems(TStrings * Value)

@@ -178,7 +178,7 @@ TDateTime TFar3Storage::DoReadDateTime(const UnicodeString & Name, TDateTime Def
 {
   TDateTime Result;
   double Val = 0.0;
-  void *Value = reinterpret_cast<void *>(&Val);
+  void * Value = nb::ToPtr(&Val);
   size_t Sz = sizeof(Val);
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
@@ -195,7 +195,7 @@ double TFar3Storage::DoReadFloat(const UnicodeString & Name, double Default)
 {
   double Result = 0.0;
   double Val = 0.0;
-  void *Value = reinterpret_cast<void *>(&Val);
+  void * Value = nb::ToPtr(&Val);
   size_t Sz = sizeof(Val);
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
