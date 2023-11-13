@@ -269,8 +269,7 @@ public:
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
   static bool IsTransferOperation(TFileOperation Operation);
-
-  TFileOperationProgressType(const TFileOperationProgressType&) = default;
+  TFileOperationProgressType(const TFileOperationProgressType& rhs) { operator=(rhs); }
   TFileOperationProgressType& operator=(const TFileOperationProgressType&);
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
