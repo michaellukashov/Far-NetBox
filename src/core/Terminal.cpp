@@ -5507,8 +5507,8 @@ bool TTerminal::GetCommandSessionOpened() const
 
 TTerminal * TTerminal::CreateSecondarySession(const UnicodeString & Name, TSessionData * ASessionData)
 {
-  std::unique_ptr<TSecondaryTerminal> Result(std::make_unique<TSecondaryTerminal>(this));
-  Result->Init(ASessionData, FConfiguration, Name, ActionLog);
+  std::unique_ptr<TSecondaryTerminal> Result(std::make_unique<TSecondaryTerminal>());
+  Result->Init(this, ASessionData, FConfiguration, Name, ActionLog);
 
   Result->SetAutoReadDirectory(false);
 
@@ -9513,22 +9513,16 @@ bool TTerminal::IsThisOrChild(TTerminal * ATerminal) const
 }
 
 
-TSecondaryTerminal::TSecondaryTerminal(TTerminal * MainTerminal) noexcept :
-  TTerminal(OBJECT_CLASS_TSecondaryTerminal),
-  FMainTerminal(MainTerminal)
-{
-}
-
-TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal) noexcept :
-  TTerminal(Kind),
-  FMainTerminal(MainTerminal)
+TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind) noexcept :
+  TTerminal(Kind)
 {
 }
 
 void TSecondaryTerminal::Init(
-  TSessionData * ASessionData, TConfiguration * AConfiguration,
+  TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration,
   const UnicodeString & AName, TActionLog * ActionLog)
 {
+  FMainTerminal = MainTerminal;
   TTerminal::Init(ASessionData, AConfiguration, ActionLog);
   GetLog()->SetParent(FMainTerminal->GetLog(), AName);
   GetSessionData()->NonPersistent();

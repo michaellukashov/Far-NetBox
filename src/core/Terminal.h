@@ -308,7 +308,7 @@ public:
   UnicodeString TerminalGetUserName() const;
   bool GetAreCachesEmpty() const;
   void ClearCachedFileList(const UnicodeString & APath, bool SubDirs);
-  void AddCachedFileList(TRemoteFileList *FileList);
+  void AddCachedFileList(TRemoteFileList * FileList);
   bool GetCommandSessionOpened() const;
   TTerminal * GetCommandSession();
   bool GetResolvingSymlinks() const;
@@ -400,7 +400,7 @@ protected:
     int32_t Params, TFileOperationProgressType * OperationProgress) const;
   uint32_t ConfirmFileOverwrite(
     const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
-    const TOverwriteFileParams * FileParams, uint32_t Answers, TQueryParams *QueryParams,
+    const TOverwriteFileParams * FileParams, uint32_t Answers, TQueryParams * QueryParams,
     TOperationSide Side, const TCopyParamType * CopyParam, int32_t Params,
     TFileOperationProgressType * OperationProgress, const UnicodeString & AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirectory,
@@ -474,7 +474,7 @@ protected:
     Exception * E, uint32_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) override;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts, TStrings *Results) override;
+    const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts, TStrings * Results) override;
   virtual void DisplayBanner(const UnicodeString & ABanner) override;
   virtual void Closed() override;
   virtual void ProcessGUI() override;
@@ -483,7 +483,7 @@ protected:
   bool IsListenerFree(uint32_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
-    const UnicodeString & AFileName, bool Success, TOnceDoneOperation &OnceDoneOperation);
+    const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * OperationProgress, Exception * E = nullptr);
   void DoAnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent OutputEvent,
@@ -537,7 +537,7 @@ protected:
   void Source(
     const UnicodeString & AFileName, const TSearchRecSmart * SearchRec,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * OperationProgress, uint32_t AFlags, TUploadSessionAction &Action, bool & ChildError);
+    TFileOperationProgressType * OperationProgress, uint32_t AFlags, TUploadSessionAction & Action, bool & ChildError);
   void DirectorySource(
     const UnicodeString & ADirectoryName, const UnicodeString & ATargetDir, const UnicodeString & ADestDirectoryName,
     uint32_t Attrs, const TCopyParamType * CopyParam, int32_t AParams,
@@ -583,7 +583,7 @@ protected:
   typename TEncryptedFileNames::const_iterator GetEncryptedFileName(const UnicodeString & APath);
   bool IsFileEncrypted(const UnicodeString & APath, bool EncryptNewFiles = false);
 
-  __property TFileOperationProgressType *OperationProgress = { read = FOperationProgress };
+  __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
   TFileOperationProgressType*& OperationProgress{FOperationProgress};
 
   const TFileOperationProgressType *GetOperationProgress() const { return FOperationProgress; }
@@ -613,7 +613,7 @@ public:
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);
-  TRemoteFileList * ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks &Mask);
+  TRemoteFileList * ReadDirectoryListing(const UnicodeString & Directory, const TFileMasks & Mask);
   TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
   TRemoteFile * ReadFileListing(const UnicodeString & APath);
   TRemoteFile * ReadFile(const UnicodeString & AFileName);
@@ -626,7 +626,7 @@ public:
   bool CopyToRemote(
     TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TParallelOperation * ParallelOperation);
-  int32_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType *OperationProgress);
+  int32_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * OperationProgress);
   void LogParallelTransfer(TParallelOperation * ParallelOperation);
   void RemoteCreateDirectory(const UnicodeString & ADirName, const TRemoteProperties * Properties = nullptr);
   void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
@@ -644,7 +644,7 @@ public:
   void HomeDirectory();
   UnicodeString GetHomeDirectory();
   void ChangeFileProperties(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, /*const TRemoteProperties*/ void *Properties);
+    const TRemoteFile * AFile, /* const TRemoteProperties */ void * Properties);
   void ChangeFilesProperties(TStrings * AFileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * AFileList);
@@ -659,7 +659,8 @@ public:
     TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite);
   void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool TerminalCopyFiles(TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite);
+  bool TerminalCopyFiles(
+    TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite);
   bool CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalculateSizeParams & Params);
   bool CalculateLocalFilesSize(TStrings * FileList, int64_t & Size,
     const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files, TCalculatedSizes * CalculatedSizes);
@@ -669,7 +670,7 @@ public:
   TSynchronizeChecklist * SynchronizeCollect(const UnicodeString & LocalDirectory,
     const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int32_t AParams,
-    TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions *Options);
+    TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void SynchronizeApply(
     TSynchronizeChecklist * Checklist,
     const TCopyParamType * CopyParam, int32_t AParams,
@@ -880,11 +881,10 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecondaryTerminal) || TTerminal::is(Kind); }
 public:
   TSecondaryTerminal() noexcept : TTerminal(OBJECT_CLASS_TSecondaryTerminal) {}
-  explicit TSecondaryTerminal(TTerminal * MainTerminal) noexcept;
-  explicit TSecondaryTerminal(TObjectClassId Kind, TTerminal * MainTerminal) noexcept;
+  explicit TSecondaryTerminal(TObjectClassId Kind) noexcept;
   virtual ~TSecondaryTerminal() = default;
   void Init(
-    TSessionData * ASessionData, TConfiguration * AConfiguration,
+    TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration,
     const UnicodeString & Name, TActionLog * ActionLog);
 
   void UpdateFromMain();
@@ -916,13 +916,13 @@ public:
   void FreeAndNullTerminal(TTerminal *& Terminal);
   void RecryptPasswords();
 
-  __property TTerminal *Terminals[int32_t Index]  = { read = GetTerminal };
+  __property TTerminal * Terminals[int32_t Index]  = { read = GetTerminal };
 
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
 
 private:
-  TConfiguration *FConfiguration{nullptr};
+  TConfiguration * FConfiguration{nullptr};
 
 public:
   TTerminal * GetTerminal(int32_t Index);
@@ -956,6 +956,7 @@ NB_DEFINE_CLASS_ID(TCalculateSizeParams);
 struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
 friend class TTerminal;
+
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCalculateSizeParams); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCalculateSizeParams) || TObject::is(Kind); }
@@ -966,6 +967,7 @@ public:
   TCalculateSizeStats * Stats{nullptr};
   bool AllowDirs{true};
   bool UseCache{false};
+//private:
   TCollectedFileList * Files{nullptr};
   UnicodeString LastDirPath;
   int64_t Size{0};
@@ -1132,12 +1134,12 @@ private:
   using TDirectories = nb::map_t<UnicodeString, TDirectoryData>;
   TDirectories FDirectories;
   UnicodeString FTargetDir;
-  const TCopyParamType *FCopyParam{nullptr};
+  const TCopyParamType * FCopyParam{nullptr};
   int32_t FParams{0};
   bool FProbablyEmpty{false};
   int32_t FClients{0};
   std::unique_ptr<TCriticalSection> FSection;
-  TFileOperationProgressType *FMainOperationProgress{nullptr};
+  TFileOperationProgressType * FMainOperationProgress{nullptr};
   TOperationSide FSide{osLocal};
   UnicodeString FMainName;
   int32_t FVersion{0};
@@ -1207,7 +1209,7 @@ public:
       FAction.AddOutput(Str, true);
       break;
     case cotExitCode:
-      FAction.ExitCode(nb::ToInt(::StrToInt64(Str)));
+      FAction.ExitCode(nb::ToInt32(::StrToInt64(Str)));
       return;
     }
 
@@ -1218,7 +1220,7 @@ public:
   }
 
 private:
-  TCallSessionAction &FAction;
+  TCallSessionAction & FAction;
   TCaptureOutputEvent FOutputEvent;
 };
 

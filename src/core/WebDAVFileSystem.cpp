@@ -425,7 +425,7 @@ UnicodeString TWebDAVFileSystem::GetRedirectUrl() const
   return Result;
 }
 
-void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &CorrectedUrl)
+void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString & CorrectedUrl)
 {
   ClearNeonError();
 
@@ -1205,7 +1205,7 @@ void TWebDAVFileSystem::CalculateFilesChecksum(
 }
 
 void TWebDAVFileSystem::ConfirmOverwrite(
-  const UnicodeString & ASourceFullFileName, UnicodeString &ATargetFileName,
+  const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
   TFileOperationProgressType * OperationProgress,
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   int32_t Params)

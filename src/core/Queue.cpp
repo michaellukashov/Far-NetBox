@@ -1252,30 +1252,30 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBackgroundTerminal) || TSecondaryTerminal::is(Kind); }
 
 public:
-  explicit TBackgroundTerminal(TTerminal * AMainTerminal) noexcept;
+  explicit TBackgroundTerminal() noexcept;
   virtual ~TBackgroundTerminal() = default;
 
   void Init(
-    TSessionData * ASessionData, TConfiguration * Configuration,
+    TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * Configuration,
     TTerminalItem * AItem, const UnicodeString & AName);
 
 protected:
   bool DoQueryReopen(Exception *E) override;
 
 private:
-  TTerminalItem *FItem{nullptr};
+  TTerminalItem * FItem{nullptr};
 };
 
-TBackgroundTerminal::TBackgroundTerminal(TTerminal * MainTerminal) noexcept :
-  TSecondaryTerminal(OBJECT_CLASS_TBackgroundTerminal, MainTerminal)
+TBackgroundTerminal::TBackgroundTerminal() noexcept :
+  TSecondaryTerminal(OBJECT_CLASS_TBackgroundTerminal)
 {
 }
 
 void TBackgroundTerminal::Init(
-  TSessionData * ASessionData, TConfiguration * AConfiguration, TTerminalItem * AItem,
+  TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration, TTerminalItem * AItem,
   const UnicodeString & AName)
 {
-  TSecondaryTerminal::Init(ASessionData, AConfiguration, AName, nullptr);
+  TSecondaryTerminal::Init(MainTerminal, ASessionData, AConfiguration, AName, nullptr);
   FItem = AItem;
   GetActionLog()->Enabled = false;
 }
@@ -1308,10 +1308,10 @@ void TTerminalItem::InitTerminalItem(int32_t Index)
 {
   TSignalThread::InitSignalThread(true);
 
-  std::unique_ptr<TBackgroundTerminal> Terminal(std::make_unique<TBackgroundTerminal>(FQueue->FTerminal));
+  std::unique_ptr<TBackgroundTerminal> Terminal(std::make_unique<TBackgroundTerminal>());
   try__catch
   {
-    Terminal->Init(FQueue->FSessionData.get(), FQueue->FConfiguration, this, FORMAT("Background %d", Index));
+    Terminal->Init(FQueue->FTerminal, FQueue->FSessionData.get(), FQueue->FConfiguration, this, FORMAT("Background %d", Index));
     Terminal->SetUseBusyCursor(false);
 
     Terminal->SetOnQueryUser(nb::bind(&TTerminalItem::TerminalQueryUser, this));

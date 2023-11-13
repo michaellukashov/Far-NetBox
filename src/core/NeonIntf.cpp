@@ -44,7 +44,7 @@ void NeonParseUrl(const UnicodeString & Url, ne_uri &uri)
   }
 }
 
-bool IsTlsUri(const ne_uri &uri)
+bool IsTlsUri(const ne_uri & uri)
 {
   return SameText(StrFromNeon(uri.scheme), HttpsProtocol);
 }
@@ -85,7 +85,7 @@ ne_session * CreateNeonSession(const ne_uri & uri)
 }
 
 void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const UnicodeString & AProxyHost,
-  int32_t ProxyPort, const UnicodeString & AProxyUsername, const UnicodeString & AProxyPassword, TTerminal *Terminal)
+  int32_t ProxyPort, const UnicodeString & AProxyUsername, const UnicodeString & AProxyPassword, TTerminal * Terminal)
 {
   if (ProxyMethod != ::pmNone)
   {
@@ -326,7 +326,7 @@ bool NeonWindowsValidateCertificate(int32_t & Failures, const AnsiString & Ascii
   return Result;
 }
 
-bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData &Data, UnicodeString & AMessage)
+bool NeonWindowsValidateCertificateWithMessage(TNeonCertificateData & Data, UnicodeString & AMessage)
 {
   bool Result;
   UnicodeString WindowsCertificateError;
