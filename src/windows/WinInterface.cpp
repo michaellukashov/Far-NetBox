@@ -45,7 +45,7 @@ void FormHelp(TCustomForm * Form)
 }
 #endif // #if 0
 
-HINSTANCE HInstance = 0;
+HINSTANCE HInstance{nullptr};
 
 TMessageParams::TMessageParams(uint32_t AParams) noexcept
 {

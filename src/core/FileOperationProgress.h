@@ -303,7 +303,7 @@ class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject
   NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:
   TSuspendFileOperationProgress() = default;
-  explicit TSuspendFileOperationProgress(TFileOperationProgressType *OperationProgress) noexcept :
+  explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress) noexcept :
     FOperationProgress(OperationProgress)
   {
     // FOperationProgress = OperationProgress;
@@ -322,6 +322,6 @@ public:
   }
 
 private:
-  TFileOperationProgressType *FOperationProgress{nullptr};
+  TFileOperationProgressType * FOperationProgress{nullptr};
 };
 
