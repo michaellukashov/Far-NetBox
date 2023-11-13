@@ -313,7 +313,7 @@ public:
     }
   }
 
-  virtual ~TSuspendFileOperationProgress() noexcept
+  virtual ~TSuspendFileOperationProgress() noexcept override
   {
     if (FOperationProgress != nullptr)
     {
