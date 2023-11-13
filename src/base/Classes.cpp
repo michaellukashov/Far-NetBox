@@ -288,7 +288,7 @@ TObject *TObjectList::GetObj(int32_t Index) const
   return as_object(TList::GetItem(Index));
 }
 
-void TObjectList::Notify(void *Ptr, TListNotification Action)
+void TObjectList::Notify(void * Ptr, TListNotification Action)
 {
   if (GetOwnsObjects())
   {
@@ -1585,13 +1585,13 @@ void *TMemoryStream::Realloc(int64_t &NewCapacity)
   return Result;
 }
 
-void TMemoryStream::SetPointer(void *Ptr, int64_t ASize)
+void TMemoryStream::SetPointer(void * Ptr, int64_t ASize)
 {
   FMemory = Ptr;
   FSize = ASize;
 }
 
-int64_t TMemoryStream::Write(const void *Buffer, int64_t Count)
+int64_t TMemoryStream::Write(const void * Buffer, int64_t Count)
 {
   int64_t Result = 0;
   if ((FPosition >= 0) && (Count >= 0))

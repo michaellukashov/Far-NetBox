@@ -321,12 +321,12 @@ protected:
 };
 
 class TStringList;
-typedef int32_t (TStringListSortCompare)(TStringList *List, int32_t Index1, int32_t Index2);
+typedef int32_t (TStringListSortCompare)(TStringList * List, int32_t Index1, int32_t Index2);
 
 NB_DEFINE_CLASS_ID(TStringList);
 class NB_CORE_EXPORT TStringList : public TStrings
 {
-  friend int32_t StringListCompareStrings(TStringList *List, int32_t Index1, int32_t Index2);
+  friend int32_t StringListCompareStrings(TStringList * List, int32_t Index1, int32_t Index2);
 public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
@@ -393,9 +393,9 @@ public:
   explicit TDateTime(double Value) noexcept : FValue(Value) {}
   explicit TDateTime(uint16_t Hour,
     uint16_t Min, uint16_t Sec, uint16_t MSec = 0);
-  TDateTime(const TDateTime &rhs) noexcept : FValue(rhs.FValue) {}
+  TDateTime(const TDateTime & rhs) noexcept : FValue(rhs.FValue) {}
   double GetValue() const { return operator double(); }
-  TDateTime &operator=(const TDateTime &rhs)
+  TDateTime & operator=(const TDateTime & rhs)
   {
     FValue = rhs.FValue;
     return *this;
@@ -404,51 +404,51 @@ public:
   {
     return FValue;
   }
-  TDateTime &operator+(const TDateTime &rhs)
+  TDateTime & operator+(const TDateTime & rhs)
   {
     FValue += rhs.FValue;
     return *this;
   }
-  TDateTime &operator+=(const TDateTime &rhs)
+  TDateTime & operator+=(const TDateTime & rhs)
   {
     FValue += rhs.FValue;
     return *this;
   }
-  TDateTime &operator+=(double val)
+  TDateTime & operator+=(double val)
   {
     FValue += val;
     return *this;
   }
-  TDateTime &operator-(const TDateTime &rhs)
+  TDateTime & operator-(const TDateTime & rhs)
   {
     FValue -= rhs.FValue;
     return *this;
   }
-  TDateTime &operator-=(const TDateTime &rhs)
+  TDateTime & operator-=(const TDateTime & rhs)
   {
     FValue -= rhs.FValue;
     return *this;
   }
-  TDateTime &operator-=(double val)
+  TDateTime & operator-=(double val)
   {
     FValue -= val;
     return *this;
   }
-  TDateTime &operator=(double Value)
+  TDateTime & operator=(double Value)
   {
     FValue = Value;
     return *this;
   }
-  bool operator==(const TDateTime &rhs) const;
-  bool operator!=(const TDateTime &rhs) const
+  bool operator ==(const TDateTime & rhs) const;
+  bool operator !=(const TDateTime & rhs) const
   {
     return !(operator==(rhs));
   }
   UnicodeString GetDateString() const;
   UnicodeString GetTimeString(bool Short) const;
-  UnicodeString FormatString(const wchar_t *fmt) const;
-  void DecodeDate(uint16_t &Y, uint16_t &M, uint16_t &D) const;
-  void DecodeTime(uint16_t &H, uint16_t &N, uint16_t &S, uint16_t &MS) const;
+  UnicodeString FormatString(const wchar_t * fmt) const;
+  void DecodeDate(uint16_t & Y, uint16_t & M, uint16_t & D) const;
+  void DecodeTime(uint16_t & H, uint16_t & N, uint16_t & S, uint16_t & MS) const;
 private:
   double FValue{0.0};
 };
@@ -671,7 +671,7 @@ public:
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
 private:
-  THandleStream * FSource{nullptr};
+  THandleStream * FSource{nullptr}; // TODO: use gsl::owner
   bool FOwned{false};
 };
 

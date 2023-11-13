@@ -47,7 +47,7 @@ public:
 public:
   int32_t GetCount() const;
   int32_t GetCountIncludingHidden() const;
-  virtual void Notify(void *Ptr, TListNotification Action) override;
+  virtual void Notify(void * Ptr, TListNotification Action) override;
 protected:
   int32_t FHiddenCount{0};
   bool FAutoSort{true};
