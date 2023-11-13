@@ -281,8 +281,8 @@ protected:
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 
-  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, FARDIALOGITEMTYPES AType);
-  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, uint32_t AType) noexcept;
+  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, FARDIALOGITEMTYPES AType);
+  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, uint32_t AType) noexcept;
   virtual ~TFarDialogItem() noexcept;
 
   const FarDialogItem *GetDialogItem() const;
@@ -336,16 +336,16 @@ protected:
   virtual bool HotKey(char HotKey);
 
 private:
-  const struct PluginStartupInfo *GetPluginStartupInfo() const;
+  const struct PluginStartupInfo * GetPluginStartupInfo() const;
 
 
 private:
-  TFarDialog *FDialog{nullptr};
+  TFarDialog * FDialog{nullptr};
   TRect FBounds{};
-  TFarDialogItem *FEnabledFollow{nullptr};
-  TFarDialogItem *FEnabledDependency{nullptr};
-  TFarDialogItem *FEnabledDependencyNegative{nullptr};
-  TFarDialogContainer *FContainer{nullptr};
+  TFarDialogItem * FEnabledFollow{nullptr};
+  TFarDialogItem * FEnabledDependency{nullptr};
+  TFarDialogItem * FEnabledDependencyNegative{nullptr};
+  TFarDialogContainer * FContainer{nullptr};
   int32_t FItem{0};
   uint32_t FColors{0};
   uint32_t FColorMask{0};
@@ -357,7 +357,7 @@ NB_DEFINE_CLASS_ID(TFarBox);
 class TFarBox : public TFarDialogItem
 {
 public:
-  explicit TFarBox(TFarDialog *ADialog) noexcept;
+  explicit TFarBox(TFarDialog * ADialog) noexcept;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
@@ -383,8 +383,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarButton); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarButton) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarButton(TFarDialog *ADialog) noexcept;
-  explicit TFarButton(TObjectClassId Kind, TFarDialog *ADialog) noexcept;
+  explicit TFarButton(TFarDialog * ADialog) noexcept;
+  explicit TFarButton(TObjectClassId Kind, TFarDialog * ADialog) noexcept;
   virtual ~TFarButton() = default;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
@@ -611,7 +611,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarListBox); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarListBox) || TFarDialogItem::is(Kind); }
 public:
-  explicit TFarListBox(TFarDialog *ADialog) noexcept;
+  explicit TFarListBox(TFarDialog * ADialog) noexcept;
   virtual ~TFarListBox() noexcept;
 
   void SetItems(TStrings *Value);
