@@ -22,7 +22,7 @@ CRITICAL_SECTION putty_section;
 bool SaveRandomSeed;
 bool HadRandomSeed;
 char appname_[50]{};
-const char *const appname = appname_;
+const char * const appname = appname_;
 extern "C" const bool share_can_be_downstream = false;
 extern "C" const bool share_can_be_upstream = false;
 THierarchicalStorage * PuttyStorage = nullptr;
