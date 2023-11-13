@@ -32,51 +32,6 @@
 #include <WinSock2.h>
 #endif
 
-///* TODO : Better user interface (query to user) */
-void FileOperationLoopCustom(TTerminal * Terminal,
-  TFileOperationProgressType * OperationProgress,
-  uint32_t Flags, const UnicodeString & Message,
-  const UnicodeString & HelpKeyword,
-  std::function<void()> Operation)
-{
-  bool DoRepeat;
-  do
-  {
-    DoRepeat = false;
-    try
-    {
-      Operation();
-    }
-    catch (EAbort &)
-    {
-      throw;
-    }
-    catch (ESkipFile &)
-    {
-      throw;
-    }
-    catch (EFatal &)
-    {
-      throw;
-    }
-    catch (EFileNotFoundError &)
-    {
-      throw;
-    }
-    catch (EOSError &)
-    {
-      throw;
-    }
-    catch (Exception &E)
-    {
-      Terminal->FileOperationLoopQuery(
-        E, OperationProgress, Message, Flags & folAllowSkip, "", HelpKeyword);
-      DoRepeat = true;
-    }
-  }
-  while (DoRepeat);
-}
-
 __removed #pragma package(smart_init)
 
 __removed #define FILE_OPERATION_LOOP_TERMINAL this
@@ -1711,13 +1666,6 @@ void TTerminal::InitFileSystem()
 #if defined(NO_FILEZILLA)
     LogEvent("FTP protocol is not supported by this build.");
     FatalError(nullptr, "FTP is not supported");
-#else
-    FFSProtocol = cfsFTPS;
-    FFileSystem = std::make_unique<TFTPFileSystem>(this);
-    FFileSystem->Init(nullptr);
-    FFileSystem->Open();
-    GetLog()->AddSeparator();
-    LogEvent("Using FTPS protocol.");
 #endif
   }
   else if (FSProtocol == fsWebDAV)
@@ -7773,7 +7721,7 @@ void TTerminal::DoCopyToRemote(
             DirectoryModified(FullTargetDir + FileNameOnly, true);
           }
         }
-        SourceRobust(FileName, SearchRec, FullTargetDir, CopyParam, AParams, OperationProgress, FLAGSET(AParams, cpFirstLevel) ? (AFlags | tfFirstLevel) : AFlags);
+        SourceRobust(FileName, SearchRec, FullTargetDir, CopyParam, AParams, OperationProgress, AFlags | tfFirstLevel);
         Success = true;
       }
       catch (ESkipFile &E)
@@ -8072,7 +8020,7 @@ void TTerminal::Source(
   }
 
   TLocalFileHandle Handle;
-  if (!CopyParam->FOnTransferIn)
+  if (CopyParam->FOnTransferIn.empty())
   {
     TerminalOpenLocalFile(AFileName, GENERIC_READ, Handle);
   }
@@ -8095,7 +8043,7 @@ void TTerminal::Source(
   }
   else
   {
-    if (CopyParam->FOnTransferIn)
+    if (!CopyParam->FOnTransferIn.empty())
     {
       LogEvent(FORMAT(L"Streaming \"%s\" to remote directory started.", AFileName));
     }
@@ -8380,7 +8328,7 @@ void TTerminal::DoCopyToLocal(
       try
       {
         UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
-        SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, AParams, OperationProgress, FLAGSET(AParams, cpFirstLevel) ? (AFlags | tfFirstLevel) : AFlags);
+        SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, AParams, OperationProgress, AFlags | tfFirstLevel);
         Success = true;
       }
       catch (ESkipFile &E)
@@ -9679,3 +9627,47 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
   return Result;
 }
 
+///* TODO : Better user interface (query to user) */
+void FileOperationLoopCustom(TTerminal * Terminal,
+  TFileOperationProgressType * OperationProgress,
+  uint32_t Flags, const UnicodeString & Message,
+  const UnicodeString & HelpKeyword,
+  std::function<void()> Operation)
+{
+  bool DoRepeat;
+  do
+  {
+    DoRepeat = false;
+    try
+    {
+      Operation();
+    }
+    catch(EAbort &)
+    {
+      throw;
+    }
+    catch (ESkipFile &)
+    {
+      throw;
+    }
+    catch (EFatal &)
+    {
+      throw;
+    }
+    catch (EFileNotFoundError &)
+    {
+      throw;
+    }
+    catch (EOSError &)
+    {
+      throw;
+    }
+    catch (Exception &E)
+    {
+      Terminal->FileOperationLoopQuery(
+        E, OperationProgress, Message, Flags & folAllowSkip, "", HelpKeyword);
+      DoRepeat = true;
+    }
+  }
+  while (DoRepeat);
+}

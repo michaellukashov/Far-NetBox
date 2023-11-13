@@ -2562,8 +2562,8 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     {
       // these parameters are known only after transfer dialog
       Params |=
-        FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
-        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+        FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation);
+        // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly)
       QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList.get(),
           DestPath, &CopyParam, Params, false, false));
       Confirmed = false;
@@ -2590,8 +2590,8 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     FPanelItems = PanelItems;
     // these parameters are known only after transfer dialog
     Params |=
-      FLAGMASK(EditView, cpTemporary) |
-      FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+      FLAGMASK(EditView, cpTemporary);
+      // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
     FTerminal->CopyToLocal(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
     Result = 1;
   }
@@ -2686,8 +2686,8 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
     {
       // these parameters are known only after transfer dialog
       Params |=
-        FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation) |
-        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+        FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation);
+        // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       QueueAddItem(new TUploadQueueItem(FTerminal, FFileList.get(),
           DestPath, &CopyParam, Params, false, false));
       Confirmed = false;
@@ -2709,8 +2709,8 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
       // these parameters are known only after transfer dialog
       Params |=
         FLAGMASK(!Ask, cpNoConfirmation) |
-        FLAGMASK(Edit, cpTemporary) |
-        FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
+        FLAGMASK(Edit, cpTemporary);
+        // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       FTerminal->CopyToRemote(FFileList.get(), DestPath, &CopyParam, Params, nullptr);
     }
   }

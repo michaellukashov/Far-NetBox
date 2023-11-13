@@ -124,20 +124,7 @@ constexpr uint32_t folRetryOnFatal = 0x02;
 
 #endif // #if 0
 
-inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
-{
-  throw ESkipFile(Exception, Message);
-}
-inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
-
-NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
-  TFileOperationProgressType * OperationProgress,
-  uint32_t Flags, const UnicodeString & Message,
-  const UnicodeString & HelpKeyword,
-  std::function<void()> Operation);
-
-
-enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsFTPS, cfsWebDAV, cfsS3 };
+enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsWebDAV, cfsS3 }; //cfsFTPS, 
 
 constexpr int32_t cpDelete = 0x01;
 constexpr int32_t cpTemporary = 0x04;
@@ -145,8 +132,8 @@ constexpr int32_t cpNoConfirmation = 0x08;
 constexpr int32_t cpAppend = 0x20;
 constexpr int32_t cpResume = 0x40;
 constexpr int32_t cpNoRecurse = 0x80;
-constexpr int32_t cpNewerOnly = 0x100;
-constexpr int32_t cpFirstLevel = 0x200;
+//constexpr int32_t cpNewerOnly = 0x100;
+//constexpr int32_t cpFirstLevel = 0x200;
 
 constexpr int32_t ccApplyToDirectories = 0x01;
 constexpr int32_t ccRecursive = 0x02;
@@ -1225,3 +1212,15 @@ private:
 };
 
 #pragma warning(pop)
+
+inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
+{
+  throw ESkipFile(Exception, Message);
+}
+inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
+
+NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
+  TFileOperationProgressType * OperationProgress,
+  uint32_t Flags, const UnicodeString & Message,
+  const UnicodeString & HelpKeyword,
+  std::function<void()> Operation);
