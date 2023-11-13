@@ -97,8 +97,8 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     DebugAssert(FStartupInfo.Message != nullptr);
 
     nb::ClearStruct(FFarStandardFunctions);
-    size_t FSFOffset = (static_cast<const char *>(reinterpret_cast<const void *>(&Info->FSF)) -
-        static_cast<const char *>(reinterpret_cast<const void *>(Info)));
+    size_t FSFOffset = (static_cast<const char *>(nb::ToPtr(&Info->FSF)) -
+        static_cast<const char *>(nb::ToPtr(Info)));
     if (nb::ToSizeT(Info->StructSize) > FSFOffset)
     {
       memmove(&FFarStandardFunctions, Info->FSF,
