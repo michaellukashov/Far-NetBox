@@ -540,11 +540,11 @@ public:
   ROProperty<UnicodeString> ModeStr{nb::bind(&TRights::GetModeStr, this)};
   __property UnicodeString Octal = { read = GetOctal, write = SetOctal };
   RWProperty<UnicodeString> Octal{nb::bind(&TRights::GetOctal, this), nb::bind(&TRights::SetOctal, this)};
-  __property unsigned short Number = { read = GetNumber, write = SetNumber };
+  __property uint16_t Number = { read = GetNumber, write = SetNumber };
   RWProperty<uint16_t> Number{nb::bind(&TRights::GetNumber, this), nb::bind(&TRights::SetNumber, this)};
-  __property unsigned short NumberSet = { read = FSet };
+  __property uint16_t NumberSet = { read = FSet };
   ROProperty2<uint16_t> NumberSet{&FSet};
-  __property unsigned short NumberUnset = { read = FUnset };
+  __property uint16_t NumberUnset = { read = FUnset };
   ROProperty2<uint16_t> NumberUnset{&FUnset};
   __property unsigned long NumberDecadic = { read = GetNumberDecadic };
   __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };

@@ -405,7 +405,7 @@ TDateTime ReduceDateTimePrecision(TDateTime DateTime,
   }
   else if (Precision != mfFull)
   {
-    unsigned short Y, M, D, H, N, S, MS;
+    uint16_t Y, M, D, H, N, S, MS;
 
     DecodeDate(DateTime, Y, M, D);
     DecodeTime(DateTime, H, N, S, MS);
@@ -2287,7 +2287,7 @@ TRights::TFlag TRights::CalculateFlag(TRightGroup Group, TRightLevel Level)
   return RightToFlag(CalculateRight(Group, Level));
 }
 
-unsigned short TRights::CalculatePermissions(TRightGroup Group, TRightLevel Level, TRightLevel Level2, TRightLevel Level3)
+uint16_t TRights::CalculatePermissions(TRightGroup Group, TRightLevel Level, TRightLevel Level2, TRightLevel Level3)
 {
   uint32_t Permissions = CalculateFlag(Group, Level);
   if (Level2 != rlNone)
@@ -2298,7 +2298,7 @@ unsigned short TRights::CalculatePermissions(TRightGroup Group, TRightLevel Leve
   {
     Permissions |= CalculateFlag(Group, Level3);
   }
-  unsigned short Result = static_cast<uint16_t>(Permissions);
+  uint16_t Result = static_cast<uint16_t>(Permissions);
   DebugAssert((Permissions - Result) == 0);
   return Result;
 }
@@ -2853,7 +2853,7 @@ TRights TRights::Combine(const TRights & Other) const
 {
   TRights Result = (*this);
   Result |= Other.NumberSet;
-  Result &= (unsigned short)~Other.NumberUnset;
+  Result &= static_cast<uint16_t>(~Other.NumberUnset);
   return Result;
 }
 //=== TRemoteProperties -------------------------------------------------------

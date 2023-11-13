@@ -3988,7 +3988,7 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
     }
     else
     {
-      unsigned short Hour, Min, Sec, Dummy;
+      uint16_t Hour, Min, Sec, Dummy;
       DecodeTime(DateTime, Hour, Min, Sec, Dummy);
       int32_t TotalHours = nb::ToInt32(Hour) + (Days * HoursPerDay);
       Result = FORMAT(L"%d%s%.2d%s%.2d", TotalHours, FormatSettings.TimeSeparator, Min, FormatSettings.TimeSeparator, Sec);

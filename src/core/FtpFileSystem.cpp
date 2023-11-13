@@ -4453,19 +4453,19 @@ bool TFTPFileSystem::HandleAsyncRequestNeedPass(
   }
 }
 
-void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime &Source, TDateTime &DateTime, TModificationFmt &ModificationFmt) const
+void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source, TDateTime & DateTime, TModificationFmt &ModificationFmt) const
 {
   // ModificationFmt must be set after Modification
   if (Source.HasDate)
   {
     DateTime =
-      EncodeDateVerbose(Source.Year, Source.Month,
-        Source.Day);
+      EncodeDateVerbose(static_cast<uint16_t>(Source.Year), static_cast<uint16_t>(Source.Month),
+        static_cast<uint16_t>(Source.Day));
     if (Source.HasTime)
     {
-      DateTime = DateTime +
-        EncodeTimeVerbose((unsigned short)Source.Hour, (unsigned short)Source.Minute,
-          (unsigned short)Source.Second, 0);
+      DateTime = DateTime + 
+        EncodeTimeVerbose(static_cast<uint16_t>(Source.Hour), static_cast<uint16_t>(Source.Minute),
+          static_cast<uint16_t>(Source.Second), 0);
       ModificationFmt = Source.HasSeconds ? mfFull : (Source.HasYear ? mfYMDHM : mfMDHM);
 
       // With IIS, the Utc should be false only for MDTM

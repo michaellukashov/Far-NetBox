@@ -171,7 +171,7 @@ protected:
   bool IsGoogleCloud() const;
   void LoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, void * Param);
   bool DoLoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, TS3FileProperties & Properties);
-  unsigned short AclGrantToPermissions(S3AclGrant & AclGrant, const TS3FileProperties & Properties);
+  uint16_t AclGrantToPermissions(S3AclGrant & AclGrant, const TS3FileProperties & Properties);
   bool ParsePathForPropertiesRequests(
     const UnicodeString & Path, const TRemoteFile * File, UnicodeString & BucketName, UnicodeString & Key);
 

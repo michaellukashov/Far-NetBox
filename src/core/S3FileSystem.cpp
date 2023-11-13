@@ -1128,8 +1128,8 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
       if (Filled == 6)
       {
         TDateTime Modification =
-          EncodeDateVerbose((unsigned short)Year, (unsigned short)Month, (unsigned short)Day) +
-          EncodeTimeVerbose((unsigned short)Hour, (unsigned short)Min, (unsigned short)Sec, 0);
+          EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
+          EncodeTimeVerbose(static_cast<uint16_t>(Hour), static_cast<uint16_t>(Min), static_cast<uint16_t>(Sec), 0);
         File->Modification = ConvertTimestampFromUTC(Modification);
         File->SetModificationFmt(mfFull);
       }
@@ -1577,7 +1577,7 @@ bool TS3FileSystem::DoLoadFileProperties(
 
 typedef std::vector<S3AclGrant> TAclGrantsVector;
 static void AddAclGrant(
-  TRights::TRightGroup Group, unsigned short & Permissions, TAclGrantsVector & AclGrants,
+  TRights::TRightGroup Group, uint16_t & Permissions, TAclGrantsVector & AclGrants,
   const S3AclGrant & AclGrantTemplate, S3Permission Permission)
 {
   TRights::TRightLevel Level = S3PermissionToRightLevel(Permission);
@@ -1682,7 +1682,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
   DebugAssert(ValidProperties.Empty());
 }
 
-unsigned short TS3FileSystem::AclGrantToPermissions(S3AclGrant & AclGrant, const TS3FileProperties & Properties)
+uint16_t TS3FileSystem::AclGrantToPermissions(S3AclGrant & AclGrant, const TS3FileProperties & Properties)
 {
   TRights::TRightGroup RightGroup = static_cast<TRights::TRightGroup>(-1);
   if (AclGrant.granteeType == S3GranteeTypeCanonicalUser)
@@ -1704,7 +1704,7 @@ unsigned short TS3FileSystem::AclGrantToPermissions(S3AclGrant & AclGrant, const
   {
     RightGroup = TRights::rgS3AllUsers;
   }
-  unsigned short Result;
+  uint16_t Result;
   if (RightGroup < 0)
   {
     Result = 0;
@@ -1740,11 +1740,11 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
   if (Result)
   {
     bool AdditionalRights;
-    unsigned short Permissions = 0;
+    uint16_t Permissions = 0;
     for (int32_t Index = 0; Index < Properties.AclGrantCount; Index++)
     {
       S3AclGrant & AclGrant = Properties.AclGrants[Index];
-      unsigned short Permission = AclGrantToPermissions(AclGrant, Properties);
+      uint16_t Permission = AclGrantToPermissions(AclGrant, Properties);
       if (Permission == 0)
       {
         AdditionalRights = true;
