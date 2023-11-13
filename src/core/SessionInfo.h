@@ -113,7 +113,7 @@ class NB_CORE_EXPORT TSessionAction
   NB_DISABLE_COPY(TSessionAction)
   TSessionAction() = delete;
 public:
-  explicit TSessionAction(TActionLog *Log, TLogAction Action) noexcept;
+  explicit TSessionAction(TActionLog * Log, TLogAction Action) noexcept;
   virtual ~TSessionAction() noexcept;
 
   void Restart();
@@ -168,7 +168,7 @@ class NB_CORE_EXPORT TDownloadSessionAction : public TTransferSessionAction
 {
   TDownloadSessionAction() = delete;
 public:
-  explicit TDownloadSessionAction(TActionLog *Log) noexcept;
+  explicit TDownloadSessionAction(TActionLog * Log) noexcept;
 };
 
 class TRights;
@@ -240,7 +240,7 @@ class NB_CORE_EXPORT TLsSessionAction : public TSessionAction
 {
   TLsSessionAction() = delete;
 public:
-  explicit TLsSessionAction(TActionLog *Log, const UnicodeString & Destination) noexcept;
+  explicit TLsSessionAction(TActionLog * Log, const UnicodeString & Destination) noexcept;
 
   void FileList(TRemoteFileList * FileList);
 };
@@ -267,7 +267,7 @@ class NB_CORE_EXPORT TCwdSessionAction : public TSessionAction
 {
   TCwdSessionAction() = delete;
 public:
-  explicit TCwdSessionAction(TActionLog *Log, const UnicodeString & Path) noexcept;
+  explicit TCwdSessionAction(TActionLog * Log, const UnicodeString & Path) noexcept;
 };
 
 class TDifferenceSessionAction : public TSessionAction
@@ -400,7 +400,7 @@ private:
   TConfiguration * FConfiguration{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
-  void * FFile{nullptr};
+  void * FFile{nullptr}; //TODO: use gsl::owner
   std::unique_ptr<tinylog::TinyLog> FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
@@ -435,7 +435,7 @@ public:
 
 private:
   UnicodeString FPath;
-  void * FFile{nullptr};
+  void * FFile{nullptr}; // TODO: use gsl:owner
   bool FLogging{false};
   std::unique_ptr<TCriticalSection> FCriticalSection;
 };

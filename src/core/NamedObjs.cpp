@@ -87,11 +87,6 @@ TNamedObjectList::TNamedObjectList(TObjectClassId Kind) noexcept :
   FControlledAdd = false;
 }
 
-const TNamedObject * TNamedObjectList::AtObject(int32_t Index) const
-{
-  return const_cast<TNamedObjectList *>(this)->AtObject(Index);
-}
-
 TNamedObject * TNamedObjectList::AtObject(int32_t Index)
 {
   return GetAs<TNamedObject>(Index + FHiddenCount);
@@ -157,11 +152,6 @@ void TNamedObjectList::Notify(void *Ptr, TListNotification Action)
   }
 }
 
-const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName) const
-{
-  return const_cast<TNamedObjectList *>(this)->FindByName(AName);
-}
-
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName)
 {
   // This should/can be optimized when list is sorted
@@ -187,4 +177,14 @@ int32_t TNamedObjectList::GetCountIncludingHidden() const
 {
   DebugAssert(FHiddenCount >= 0);
   return TObjectList::GetCount();
+}
+
+const TNamedObject * TNamedObjectList::AtObject(int32_t Index) const
+{
+  return const_cast<TNamedObjectList *>(this)->AtObject(Index);
+}
+
+const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName) const
+{
+  return const_cast<TNamedObjectList *>(this)->FindByName(AName);
 }

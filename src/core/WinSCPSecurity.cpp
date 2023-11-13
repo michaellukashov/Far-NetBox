@@ -58,15 +58,15 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
     Result += SimpleEncryptChar((uint8_t)PWALG_SIMPLE_INTERNAL);
     Result += SimpleEncryptChar((uint8_t)Len);
   }
-  int DataLen =
+  int32_t DataLen =
     (Result.Length() / 2) +
     1 + // Shift
     Password.Length();
-  int Shift = (DataLen < PWALG_SIMPLE_MAXLEN) ? random(PWALG_SIMPLE_MAXLEN - DataLen) : 0;
+  int32_t Shift = (DataLen < PWALG_SIMPLE_MAXLEN) ? random(PWALG_SIMPLE_MAXLEN - DataLen) : 0;
   Result += SimpleEncryptChar((uint8_t)Shift);
-  for (int Index = 0; Index < Shift; Index++)
-    Result += SimpleEncryptChar((uint8_t)random(256));
-  for (int Index = 0; Index < Password.Length(); Index++)
+  for (int32_t Index = 0; Index < Shift; Index++)
+    Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
+  for (int32_t Index = 0; Index < Password.Length(); Index++)
     Result += SimpleEncryptChar(Password.c_str()[Index]);
   while (Result.Length() < PWALG_SIMPLE_MAXLEN * 2)
     Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
@@ -126,8 +126,8 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
 RawByteString SetExternalEncryptedPassword(const RawByteString & Password)
 {
   RawByteString Result;
-  Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG));
-  Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_EXTERNAL));
+  Result += SimpleEncryptChar(PWALG_SIMPLE_FLAG);
+  Result += SimpleEncryptChar(PWALG_SIMPLE_EXTERNAL);
   Result += UTF8String(BytesToHex(reinterpret_cast<const uint8_t *>(Password.c_str()), Password.Length()));
   return Result;
 }
