@@ -116,13 +116,14 @@ constexpr uint32_t folRetryOnFatal = 0x02;
       } \
     } while (DoRepeat); \
   }
+#endif
+
+#define FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, HELPKEYWORD) });
 
 #define FILE_OPERATION_LOOP_END_EX(MESSAGE, FLAGS) \
   FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, L"")
 #define FILE_OPERATION_LOOP_END(MESSAGE) \
   FILE_OPERATION_LOOP_END_EX(MESSAGE, folAllowSkip)
-
-#endif // #if 0
 
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsWebDAV, cfsS3 }; //cfsFTPS, 
 
