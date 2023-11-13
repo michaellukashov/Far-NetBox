@@ -515,7 +515,7 @@ protected:
   bool ConfirmCertificate(
     TSessionInfo & SessionInfo, int32_t AFailures, const UnicodeString & ACertificateStorageKey, bool CanRemember);
   bool VerifyOrConfirmHttpCertificate(
-    const UnicodeString & AHostName, int APortNumber, const TNeonCertificateData & Data, bool CanRemember,
+    const UnicodeString & AHostName, int32_t APortNumber, const TNeonCertificateData & Data, bool CanRemember,
     TSessionInfo & SessionInfo);
   void CollectTlsUsage(const UnicodeString & TlsVersionStr);
   bool LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey);
@@ -774,7 +774,7 @@ public:
   __property TInformationEvent OnInformation = { read = FOnInformation, write = FOnInformation };
   __property TCustomCommandEvent OnCustomCommand = { read = FOnCustomCommand, write = FOnCustomCommand };
   __property TNotifyEvent OnClose = { read = FOnClose, write = FOnClose };
-  __property int TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
+  __property int32_t TunnelLocalPortNumber = { read = FTunnelLocalPortNumber };
 
   bool IsThisOrChild(TTerminal * ATerminal) const;
   bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
@@ -916,7 +916,7 @@ public:
   void FreeAndNullTerminal(TTerminal *& Terminal);
   void RecryptPasswords();
 
-  __property TTerminal *Terminals[int Index]  = { read = GetTerminal };
+  __property TTerminal *Terminals[int32_t Index]  = { read = GetTerminal };
 
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
@@ -1104,7 +1104,7 @@ public:
   static UnicodeString GetPartPrefix(const UnicodeString & FileName);
   __property TOperationSide Side = { read = FSide };
   __property const TCopyParamType * CopyParam = { read = FCopyParam };
-  __property int Params = { read = FParams };
+  __property int32_t Params = { read = FParams };
   __property UnicodeString TargetDir = { read = FTargetDir };
   __property TFileOperationProgressType * MainOperationProgress = { read = FMainOperationProgress };
   __property UnicodeString MainName = { read = FMainName };

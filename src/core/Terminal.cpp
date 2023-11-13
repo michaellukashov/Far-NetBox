@@ -4958,7 +4958,7 @@ void TTerminal::CalculateSubFoldersChecksum(
   // recurse into subdirectories only if we have callback function
   if (OnCalculatedChecksum)
   {
-    int Index = 0;
+    int32_t Index = 0;
     TOnceDoneOperation OnceDoneOperation; // unused
     while ((Index < FileList->Count) && !OperationProgress->Cancel)
     {
@@ -5701,7 +5701,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
     if (!Done)
     {
       // save the error, otherwise it gets overwritten by call to FileExists
-      int LastError = ::GetLastError();
+      int32_t LastError = ::GetLastError();
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       if (base::FileExists(ApiPath(AFileName)) &&
         (((LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName))) & (faReadOnly | faHidden)) != 0))
@@ -6872,7 +6872,7 @@ void TTerminal::SynchronizeApply(
     SyncCopyParam.CalculateSize = false;
 
     TSynchronizeChecklist::TItemList Items;
-    for (int Index = 0; Index < Checklist->Count; Index++)
+    for (int32_t Index = 0; Index < Checklist->Count; Index++)
     {
       const TChecklistItem* ChecklistItem = Checklist->GetItem(Index);
       // TSynchronizeChecklistDialog relies on us not to update a size of an item that had size already
@@ -6900,7 +6900,7 @@ void TTerminal::SynchronizeApply(
 
   try__finally
   {
-    int Index = 0;
+    int32_t Index = 0;
     while (Index < Checklist->Count)
     {
       const TChecklistItem* ChecklistItem = Checklist->GetItem(Index);
@@ -7141,7 +7141,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*AFileName*/,
     FILETIME WrTime = ::DateTimeToFileTime(ChecklistItem->Remote.Modification,
       SessionData->GetDSTMode());
     bool Result = ::SetFileTime(Handle, nullptr, nullptr, &WrTime) != FALSE;
-    int Error = ::GetLastError();
+    int32_t Error = ::GetLastError();
     ::CloseHandle(Handle);
     if (!Result)
     {
@@ -7662,7 +7662,7 @@ bool TTerminal::CopyToRemote(
 #if 0
         if (Configuration->Usage->Collect)
         {
-          int CounterSize = TUsage::CalculateCounterSize(Size);
+          int32_t CounterSize = TUsage::CalculateCounterSize(Size);
           Configuration->Usage->Inc("Uploads");
           Configuration->Usage->Inc("UploadedBytes", CounterSize);
           Configuration->Usage->SetMax(L"MaxUploadSize", CounterSize);
@@ -7711,7 +7711,7 @@ bool TTerminal::CopyToRemote(
 #if 0
       if (CollectingUsage)
       {
-        int CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
+        int32_t CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
         Configuration->Usage->Inc("UploadTime", CounterTime);
         Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
       }
@@ -8163,7 +8163,7 @@ void TTerminal::CheckParallelFileTransfer(
             FileParams.SourceTimestamp = UltimateFile->Modification;
             FileParams.SourcePrecision = UltimateFile->ModificationFmt;
             FileParams.DestTimestamp = UnixToDateTime(MTime, SessionData->DSTMode);
-            int Answers = qaYes | qaNo | qaCancel;
+            int32_t Answers = qaYes | qaNo | qaCancel;
             TQueryParams QueryParams(qpNeverAskAgainCheck);
             uint32_t Answer =
               ConfirmFileOverwrite(
@@ -8477,7 +8477,7 @@ struct TSinkFileParams
 {
   UnicodeString TargetDir;
   const TCopyParamType * CopyParam;
-  int Params;
+  int32_t Params;
   TFileOperationProgressType * OperationProgress;
   bool Skipped;
   uint32_t Flags;
@@ -8649,7 +8649,7 @@ void TTerminal::UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode
   FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);
   if (!::SetFileTime(Handle, nullptr, nullptr, &WrTime))
   {
-    int Error = GetLastError();
+    int32_t Error = GetLastError();
     LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s", ::SysErrorMessageForError(Error)));
   }
 }
@@ -8907,7 +8907,7 @@ void TTerminal::CacheCertificate(
 
 // Shared implementation for WebDAV and S3
 bool TTerminal::VerifyOrConfirmHttpCertificate(
-  const UnicodeString & AHostName, int APortNumber, const TNeonCertificateData & AData, bool CanRemember,
+  const UnicodeString & AHostName, int32_t APortNumber, const TNeonCertificateData & AData, bool CanRemember,
   TSessionInfo & SessionInfo)
 {
   TNeonCertificateData Data = AData;
@@ -9267,13 +9267,13 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
       AuthorizedKeys = ReadAllText(TemporaryAuthorizedKeysFile);
 
       std::unique_ptr<TStrings> AuthorizedKeysLines(TextToStringList(AuthorizedKeys));
-      int P = Line.Pos(L" ");
+      int32_t P = Line.Pos(L" ");
       if (DebugAlwaysTrue(P > 0))
       {
         P = PosEx(L" ", Line, P + 1);
       }
       UnicodeString Prefix = Line.SubString(1, P); // including the space
-      for (int Index = 0; Index < AuthorizedKeysLines->Count; Index++)
+      for (int32_t Index = 0; Index < AuthorizedKeysLines->Count; Index++)
       {
         if (::StartsStr(Prefix, AuthorizedKeysLines->GetString(Index)))
         {
@@ -9341,7 +9341,7 @@ UnicodeString TTerminal::CutFeature(UnicodeString & Buf)
   if (Buf.SubString(1, 1) == L"\"")
   {
     Buf.Delete(1, 1);
-    int P = Buf.Pos(L"\",");
+    int32_t P = Buf.Pos(L"\",");
     if (P == 0)
     {
       Result = Buf;
@@ -9401,7 +9401,7 @@ TStrings * TTerminal::ProcessFeatures(TStrings * Features)
       }
     }
 
-    for (int Index = 0; Index < Features->Count; Index++)
+    for (int32_t Index = 0; Index < Features->Count; Index++)
     {
       UnicodeString Feature = Features->Strings[Index];
       if (DeleteFeatures->IndexOf(Feature) < 0)
