@@ -780,7 +780,7 @@ public:
   void WriteInteger(const UnicodeString & Name, int32_t Value);
   void WriteInt64(const UnicodeString & Name, int64_t Value);
   void WriteBinaryData(const UnicodeString & Name,
-    const void * Buffer, size_t BufSize);
+    const void * Buffer, int32_t BufSize);
 private:
   void ChangeKey(HKEY Value, const UnicodeString & APath);
   HKEY GetBaseKey(bool Relative) const;

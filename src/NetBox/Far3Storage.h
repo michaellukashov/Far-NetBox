@@ -37,7 +37,7 @@ public:
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
   virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
   virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
-  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) override;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size) override;
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default) override;
   virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;
@@ -45,7 +45,7 @@ public:
   virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) override;
   virtual double DoReadFloat(const UnicodeString & Name, double Default) override;
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
-  virtual size_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) override;
+  virtual int32_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size) override;
 
 private:
   UnicodeString GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }

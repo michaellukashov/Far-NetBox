@@ -670,7 +670,7 @@ UnicodeString THierarchicalStorage::ReadStringRaw(const UnicodeString & Name, co
   }
 }
 
-size_t THierarchicalStorage::ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size)
+int32_t THierarchicalStorage::ReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size)
 {
   if (CanRead())
   {
@@ -803,7 +803,7 @@ void THierarchicalStorage::WriteString(const UnicodeString & Name, const Unicode
   }
 }
 
-void THierarchicalStorage::WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size)
+void THierarchicalStorage::WriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size)
 {
   if (CanWrite())
   {
@@ -1054,9 +1054,9 @@ UnicodeString TRegistryStorage::DoReadStringRaw(const UnicodeString & Name, cons
   READ_REGISTRY(ReadString);
 }
 
-size_t TRegistryStorage::DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size)
+int32_t TRegistryStorage::DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size)
 {
-  size_t Result;
+  int32_t Result;
   if (FRegistry->ValueExists(Name))
   {
     try
@@ -1095,7 +1095,7 @@ void TRegistryStorage::DoWriteInt64(const UnicodeString & Name, int64_t Value)
   WriteBinaryData(Name, &Value, sizeof(Value));
 }
 
-void TRegistryStorage::DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size)
+void TRegistryStorage::DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size)
 {
   try
   {

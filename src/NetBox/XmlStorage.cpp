@@ -358,11 +358,11 @@ UnicodeString TXmlStorage::DoReadStringRaw(const UnicodeString & Name, const Uni
   return Result.IsEmpty() ? Default : Result;
 }
 
-size_t TXmlStorage::DoReadBinaryData(const UnicodeString & /*Name*/,
-  void * /*Buffer*/, size_t /*Size*/)
+int32_t TXmlStorage::DoReadBinaryData(const UnicodeString & /*Name*/,
+  void * /*Buffer*/, int32_t /*Size*/)
 {
   ThrowNotImplemented(3028);
-  size_t Result = 0;
+  int32_t Result = 0;
   return Result;
 }
 
@@ -396,7 +396,7 @@ void TXmlStorage::DoWriteStringRaw(const UnicodeString & Name, const UnicodeStri
 }
 
 void TXmlStorage::DoWriteBinaryData(const UnicodeString & Name,
-  const void * Buffer, size_t Size)
+  const void * Buffer, int32_t Size)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));
