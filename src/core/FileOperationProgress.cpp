@@ -8,7 +8,7 @@
 #include "CoreMain.h"
 #include "Interface.h"
 
-constexpr uint64_t TRANSFER_BUF_SIZE = (32 * 1024);
+constexpr const uint64_t TRANSFER_BUF_SIZE = 32 * 1024;
 
 TFileOperationStatistics::TFileOperationStatistics() noexcept
 {
@@ -90,7 +90,7 @@ void TFileOperationProgressType::Init()
   FPersistence.Side = osCurrent; // = undefined value
 }
 
-void TFileOperationProgressType::Assign(const TFileOperationProgressType &Other)
+void TFileOperationProgressType::Assign(const TFileOperationProgressType & Other)
 {
   TValueRestorer<TCriticalSection *> SectionRestorer(FSection); nb::used(SectionRestorer);
   TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(FUserSelectionsSection); nb::used(UserSelectionsSectionRestorer);
@@ -100,7 +100,7 @@ void TFileOperationProgressType::Assign(const TFileOperationProgressType &Other)
   *this = Other;
 }
 
-void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType &Other)
+void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType & Other)
 {
   TGuard Guard(*FSection); nb::used(Guard);
   TValueRestorer<uint64_t> SuspendTimeRestorer(FSuspendTime); nb::used(SuspendTimeRestorer);
@@ -1035,7 +1035,7 @@ bool TFileOperationProgressType::IsTransfer() const
   return IsTransferOperation(Operation);
 }
 
-TFileOperationProgressType&TFileOperationProgressType::operator=(const TFileOperationProgressType& rhs)
+TFileOperationProgressType & TFileOperationProgressType::operator=(const TFileOperationProgressType & rhs)
 {
   FFileName = rhs.FFileName;
   FFullFileName = rhs.FFullFileName;

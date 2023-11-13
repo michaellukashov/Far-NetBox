@@ -44,8 +44,8 @@ public:
   friend class TFileOperationProgressType;
   public:
     TPersistence() noexcept;
-    TPersistence(const TPersistence&) = default;
-    TPersistence& operator=(const TPersistence&) = default;
+    TPersistence(const TPersistence &) = default;
+    TPersistence& operator=(const TPersistence &) = default;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
     TFileOperationStatistics * Statistics{FStatistics};
 
@@ -109,6 +109,7 @@ private:
   bool FCounterSet{false};
   bool FSkipToAll{false};
   uint64_t FCPSLimit{0};
+
 public:
   int64_t GetTotalTransferred() const;
   int64_t GetOperationTransferred() const;
@@ -269,8 +270,8 @@ public:
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
   static bool IsTransferOperation(TFileOperation Operation);
-  TFileOperationProgressType(const TFileOperationProgressType& rhs) { operator=(rhs); }
-  TFileOperationProgressType& operator=(const TFileOperationProgressType&);
+  TFileOperationProgressType(const TFileOperationProgressType & rhs) { operator=(rhs); }
+  TFileOperationProgressType & operator=(const TFileOperationProgressType &);
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
   UnicodeString GetFileName() const { return FFileName; }
