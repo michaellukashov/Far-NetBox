@@ -43,7 +43,7 @@ public:
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 public:
   explicit TS3FileSystem(TTerminal * ATerminal) noexcept;
-  ~TS3FileSystem() noexcept override;
+  virtual ~TS3FileSystem() noexcept override;
 
   virtual void Open() override;
   virtual void Close() override;
@@ -80,7 +80,7 @@ public:
     const UnicodeString & AFileName, const TRemoteFile * AFile,
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
-    uint32_t AFlags, TDownloadSessionAction &Action) override;
+    uint32_t AFlags, TDownloadSessionAction & Action) override;
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
@@ -131,7 +131,7 @@ protected:
   UTF8String FHostName;
   UTF8String FPortSuffix;
   int32_t FTimeout{0};
-  S3RequestContext *FRequestContext{nullptr};
+  S3RequestContext * FRequestContext{nullptr};
   _S3Protocol FLibS3Protocol{};
   ne_session_s * FNeonSession{nullptr};
   UnicodeString FTlsVersionStr;
@@ -145,11 +145,11 @@ protected:
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
   void LibS3Deinitialize();
-  bool VerifyCertificate(TNeonCertificateData &Data);
+  bool VerifyCertificate(TNeonCertificateData & Data);
   void CollectTLSSessionInfo();
-  void CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOnConnectError = false);
-  static void InitSslSession(ssl_st *Ssl, ne_session_s *Session);
-  void RequestInit(TLibS3CallbackData &Data);
+  void CheckLibS3Error(const TLibS3CallbackData & Data, bool FatalOnConnectError = false);
+  static void InitSslSession(ssl_st * Ssl, ne_session_s * Session);
+  void RequestInit(TLibS3CallbackData & Data);
   void TryOpenDirectory(const UnicodeString & ADirectory);
   void ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * FileList, int32_t MaxKeys, const UnicodeString & AFileName);
   void ParsePath(const UnicodeString & APath, UnicodeString & BucketName, UnicodeString & AKey);
@@ -157,10 +157,10 @@ protected:
   TLibS3BucketContext GetBucketContext(const UnicodeString & ABucketName, const UnicodeString & Prefix);
   void DoListBucket(
     const UnicodeString & APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext &BucketContext,
-    TLibS3ListBucketCallbackData &Data);
+    TLibS3ListBucketCallbackData & Data);
   UnicodeString GetFolderKey(const UnicodeString & AKey);
   void HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry);
-  void DoReadFile(const UnicodeString & AFileName, TRemoteFile *&AFile);
+  void DoReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);
   void ConfirmOverwrite(
     const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
     TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,

@@ -129,7 +129,7 @@ TStrings * GetS3Profiles()
   if (S3ConfigFile.get() != nullptr)
   {
     S3ConfigFile->ReadSections(Result.get());
-    int Index = 0;
+    int32_t Index = 0;
     while (Index < Result->Count)
     {
       UnicodeString Section = Result->Strings[Index];
@@ -297,22 +297,22 @@ UnicodeString GetS3ConfigValue(
 
 UnicodeString S3EnvUserName(const UnicodeString & Profile, UnicodeString * Source)
 {
-  return GetS3ConfigValue(Profile, AccessKeyId, Source);
+  return GetS3ConfigValue(Profile, AWS_ACCESS_KEY_ID, L"AccessKeyId", Source);
 }
 
 UnicodeString S3EnvPassword(const UnicodeString & Profile, UnicodeString * Source)
 {
-  return GetS3ConfigValue(Profile, SecretAccessKey, Source);
+  return GetS3ConfigValue(Profile, AWS_SECRET_ACCESS_KEY, L"SecretAccessKey", Source);
 }
 
 UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * Source)
 {
-  return GetS3ConfigValue(Profile, Token, Source);
+  return GetS3ConfigValue(Profile, AWS_SESSION_TOKEN, L"Token", Source);
 }
 #endif //if 0
 
-const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
-const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
+constexpr const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
+constexpr const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
 
 TS3FileSystem::TS3FileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TS3FileSystem, ATerminal),
@@ -464,7 +464,7 @@ void TS3FileSystem::Open()
     }
     TryOpenDirectory(Path);
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     LibS3Deinitialize();
     FTerminal->Closed();
@@ -519,11 +519,11 @@ void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /*Session*/)
   SetupSsl(Ssl, FTerminal->GetSessionData()->GetMinTlsVersion(), FTerminal->GetSessionData()->GetMaxTlsVersion());
 }
 
-int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certificate_s *Certificate, void *CallbackData)
+int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certificate_s * Certificate, void *CallbackData)
 {
   TNeonCertificateData Data;
   RetrieveNeonCertificateData(Failures, Certificate, Data);
-  TS3FileSystem *FileSystem = static_cast<TS3FileSystem *>(CallbackData);
+  TS3FileSystem * FileSystem = static_cast<TS3FileSystem *>(CallbackData);
   return FileSystem->VerifyCertificate(Data) ? NE_OK : NE_ERROR;
 }
 
@@ -567,11 +567,11 @@ void TS3FileSystem::LibS3ResponseDataCallback(const char * Data, size_t Size, vo
   }
 }
 
-void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails *Error, void *CallbackData)
+void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails * Error, void * CallbackData)
 {
-  TLibS3CallbackData &Data = *static_cast<TLibS3CallbackData *>(CallbackData);
+  TLibS3CallbackData & Data = *static_cast<TLibS3CallbackData *>(CallbackData);
 
-  TS3FileSystem *FileSystem = Data.FileSystem;
+  TS3FileSystem * FileSystem = Data.FileSystem;
   Data.Status = Status;
   Data.RegionDetail = L"";
   Data.EndpointDetail = L"";
@@ -628,13 +628,13 @@ void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3Error
   }
 }
 
-void TS3FileSystem::RequestInit(TLibS3CallbackData &Data)
+void TS3FileSystem::RequestInit(TLibS3CallbackData & Data)
 {
   Data.FileSystem = this;
   FResponse = L"";
 }
 
-void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData &Data, bool FatalOnConnectError)
+void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData & Data, bool FatalOnConnectError)
 {
   if (Data.Status != S3StatusOK)
   {
@@ -724,6 +724,7 @@ void TS3FileSystem::ParsePath(const UnicodeString & APath, UnicodeString & Bucke
     Path.Delete(1, 1);
   }
   int32_t P = Path.Pos(L"/");
+  // UnicodeString Result;
   if (P == 0)
   {
     BucketName = Path;
@@ -747,7 +748,7 @@ struct TLibS3BucketContext : S3BucketContext
 
 struct TLibS3ListBucketCallbackData : TLibS3CallbackData
 {
-    TRemoteFileList * FileList{nullptr};
+  TRemoteFileList * FileList{nullptr};
   bool Any{false};
   int32_t KeyCount{0};
   UTF8String NextMarker;
@@ -762,7 +763,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
   bool Retry = false;
   do
   {
-    TRegions::iterator I = FRegions.find(ABucketName);
+    TRegions::const_iterator I = FRegions.find(ABucketName);
     UnicodeString Region;
     if (I != FRegions.end())
     {
@@ -880,12 +881,12 @@ void TS3FileSystem::CollectUsage()
   // noop
 }
 
-const TSessionInfo &TS3FileSystem::GetSessionInfo() const
+const TSessionInfo & TS3FileSystem::GetSessionInfo() const
 {
   return FSessionInfo;
 }
 
-const TFileSystemInfo &TS3FileSystem::GetFileSystemInfo(bool /*Retrieve*/)
+const TFileSystemInfo & TS3FileSystem::GetFileSystemInfo(bool /*Retrieve*/)
 {
   return FFileSystemInfo;
 }
@@ -1025,7 +1026,7 @@ void TS3FileSystem::TryOpenDirectory(const UnicodeString & ADirectory)
 {
   FTerminal->LogEvent(FORMAT("Trying to open directory \"%s\".", ADirectory));
   std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
-  ReadDirectoryInternal(ADirectory, FileList.get(), 1, UnicodeString());
+  ReadDirectoryInternal(ADirectory, FileList.get(), -1, UnicodeString());
 }
 
 void TS3FileSystem::ChangeDirectory(const UnicodeString & ADirectory)
@@ -1044,7 +1045,7 @@ void TS3FileSystem::CachedChangeDirectory(const UnicodeString & Directory)
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
 
-TRemoteToken TS3FileSystem::MakeRemoteToken(const char *OwnerId, const char *OwnerDisplayName)
+TRemoteToken TS3FileSystem::MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName)
 {
   TRemoteToken Result;
   Result.SetName(StrFromS3(OwnerDisplayName));
@@ -1059,15 +1060,15 @@ struct TLibS3ListServiceCallbackData : TLibS3CallbackData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 
-  TRemoteFileList *FileList{nullptr};
+  TRemoteFileList * FileList{nullptr};
   UnicodeString FileName; // filter for buckets
 };
 
 S3Status TS3FileSystem::LibS3ListServiceCallback(
-  const char *OwnerId, const char *OwnerDisplayName, const char *BucketName,
-  int64_t /*CreationDate*/, void *CallbackData)
+  const char * OwnerId, const char * OwnerDisplayName, const char * BucketName,
+  int64_t /*CreationDate*/, void * CallbackData)
 {
-  TLibS3ListServiceCallbackData &Data = *static_cast<TLibS3ListServiceCallbackData *>(CallbackData);
+  TLibS3ListServiceCallbackData & Data = *static_cast<TLibS3ListServiceCallbackData *>(CallbackData);
 
   UnicodeString FileName = StrFromS3(BucketName);
   if (Data.FileName.IsEmpty() || (Data.FileName == FileName))
@@ -1092,7 +1093,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
   int32_t IsTruncated, const char * NextMarker, int32_t ContentsCount, const S3ListBucketContent * Contents,
   int32_t CommonPrefixesCount, const char ** CommonPrefixes, void * CallbackData)
 {
-  TLibS3ListBucketCallbackData &Data = *static_cast<TLibS3ListBucketCallbackData *>(CallbackData);
+  TLibS3ListBucketCallbackData & Data = *static_cast<TLibS3ListBucketCallbackData *>(CallbackData);
 
   Data.IsTruncated = IsTruncated != 0;
   // This is being called in chunks, not once for all data in a response.
@@ -1321,7 +1322,7 @@ void TS3FileSystem::DoReadFile(const UnicodeString & AFileName, TRemoteFile *& A
   UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
   std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
   ReadDirectoryInternal(base::UnixExtractFileDir(AFileName), FileList.get(), 1, FileNameOnly);
-  TRemoteFile *File = FileList->FindFile(FileNameOnly);
+  TRemoteFile * File = FileList->FindFile(FileNameOnly);
   if (File != nullptr)
   {
     AFile = File->Duplicate();
@@ -1628,7 +1629,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
         {
           NewAclGrant.granteeType = S3GranteeTypeAllUsers;
         }
-        unsigned short AllGroupPermissions =
+        uint16_t AllGroupPermissions =
           TRights::CalculatePermissions(Group, TRights::rlS3Read, TRights::rlS3ReadACP, TRights::rlS3WriteACP);
         if (FLAGSET(Permissions, AllGroupPermissions))
         {
@@ -1652,7 +1653,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
       for (int32_t Index = 0; Index < FileProperties.AclGrantCount; Index++)
       {
         S3AclGrant & AclGrant = FileProperties.AclGrants[Index];
-        unsigned short Permission = AclGrantToPermissions(AclGrant, FileProperties);
+        uint16_t Permission = AclGrantToPermissions(AclGrant, FileProperties);
         if (Permission == 0)
         {
           NewAclGrants.push_back(AclGrant);
@@ -1912,8 +1913,8 @@ struct TLibS3TransferObjectDataCallbackData : TLibS3CallbackData
   CUSTOM_MEM_ALLOCATION_IMPL
 
   UnicodeString FileName;
-  TStream * Stream;
-  TFileOperationProgressType *OperationProgress;
+  TStream * Stream{nullptr};
+  TFileOperationProgressType * OperationProgress{nullptr};
   std::unique_ptr<Exception> Exception;
 };
 
@@ -1972,7 +1973,7 @@ int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3Pu
       OperationProgress->ThrottleToCPSLimit(Result);
       OperationProgress->AddTransferred(Result);
     }
-    catch (Exception &E)
+    catch(Exception & E)
     {
       Data.Exception.reset(CloneException(&E));
       Result = -1;
@@ -2003,11 +2004,11 @@ struct TLibS3MultipartCommitPutObjectDataCallbackData : TLibS3CallbackData
 };
 
 S3Status TS3FileSystem::LibS3MultipartResponsePropertiesCallback(
-  const S3ResponseProperties *Properties, void *CallbackData)
+  const S3ResponseProperties * Properties, void * CallbackData)
 {
   S3Status Result = LibS3ResponsePropertiesCallback(Properties, CallbackData);
 
-  TLibS3PutObjectDataCallbackData &Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
+  TLibS3PutObjectDataCallbackData & Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
   Data.ETag = Properties->eTag;
 
@@ -2032,11 +2033,11 @@ void TS3FileSystem::Source(
   TLocalFileHandle & AHandle, const UnicodeString & TargetDir, UnicodeString & ADestFileName,
   const TCopyParamType * CopyParam, int32_t Params,
   TFileOperationProgressType * OperationProgress, uint32_t /*Flags*/,
-  TUploadSessionAction &Action, bool & /*ChildError*/)
+  TUploadSessionAction & Action, bool & /*ChildError*/)
 {
   UnicodeString DestFullName = TargetDir + ADestFileName;
 
-  TRemoteFile *RemoteFile = nullptr;
+  TRemoteFile * RemoteFile = nullptr;
   try
   {
     // Should not throw on non-existing file by purpose (mainly not to get an exception while debugging)
@@ -2233,7 +2234,7 @@ void TS3FileSystem::Source(
       MultipartUploadId = RawByteString();
     }
   }
-  catch (Exception &/*E*/)
+  catch(Exception &)
   {
     if (!MultipartUploadId.IsEmpty())
     {
@@ -2290,7 +2291,7 @@ S3Status TS3FileSystem::GetObjectData(int32_t BufferSize, const char * Buffer, T
   }
   else
   {
-    TFileOperationProgressType *OperationProgress = Data.OperationProgress;
+    TFileOperationProgressType * OperationProgress = Data.OperationProgress;
     try
     {
       FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
@@ -2304,7 +2305,7 @@ S3Status TS3FileSystem::GetObjectData(int32_t BufferSize, const char * Buffer, T
       OperationProgress->ThrottleToCPSLimit(BufferSize);
       OperationProgress->AddTransferred(BufferSize);
     }
-    catch (Exception &E)
+    catch(Exception & E)
     {
       Data.Exception.reset(CloneException(&E));
       Result = S3StatusAbortedByCallback;
