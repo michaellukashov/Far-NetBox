@@ -48,7 +48,7 @@ public:
   TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
   double ReadFloat(const UnicodeString & Name, double Default);
   UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
-  size_t ReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size);
+  int32_t ReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size);
 
   virtual UnicodeString ReadString(const UnicodeString & Name, const UnicodeString & Default);
   RawByteString ReadBinaryData(const UnicodeString & Name);
@@ -61,7 +61,6 @@ public:
   void WriteDateTime(const UnicodeString & Name, const TDateTime Value);
   void WriteFloat(const UnicodeString & Name, double Value);
   void WriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size);
-
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);
   void WriteBinaryData(const UnicodeString & Name, const RawByteString & Value);
   void WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value);
@@ -70,9 +69,9 @@ public:
 
   __property UnicodeString Storage  = { read = FStorage };
   ROProperty<UnicodeString> Storage{nb::bind(&THierarchicalStorage::GetStorage, this)};
-  __property UnicodeString CurrentSubKey  = { read = GetCurrentSubKey };
+  __property UnicodeString CurrentSubKey = { read = GetCurrentSubKey };
   ROProperty<UnicodeString> CurrentSubKey{nb::bind(&THierarchicalStorage::GetCurrentSubKey, this)};
-  __property TStorageAccessMode AccessMode  = { read = FAccessMode, write = SetAccessMode };
+  __property TStorageAccessMode AccessMode = { read = FAccessMode, write = SetAccessMode };
   RWProperty3<TStorageAccessMode> AccessMode{nb::bind(&THierarchicalStorage::GetAccessMode, this), nb::bind(&THierarchicalStorage::SetAccessMode, this) };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
   bool& Explicit{FExplicit};

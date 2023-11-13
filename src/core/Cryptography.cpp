@@ -59,9 +59,9 @@ __removed #include <Soap.EncdDecd.hpp>
 #define sha1_hash(buf, len, ctx)  put_data(ctx, buf, len)
 #define sha1_end(dig, ctx)        ssh_hash_final(ctx, dig); ctx = nullptr
 
-constexpr int IN_BLOCK_LENGTH     = 64;
-constexpr int OUT_BLOCK_LENGTH    = 20;
-constexpr int HMAC_IN_DATA        = 0xffffffff;
+constexpr const int32_t IN_BLOCK_LENGTH     = 64;
+constexpr const int32_t OUT_BLOCK_LENGTH    = 20;
+constexpr const int32_t HMAC_IN_DATA        = 0xffffffff;
 
 struct hmac_ctx
 {
@@ -133,7 +133,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
         memset(cx->key + cx->klen, 0, IN_BLOCK_LENGTH - cx->klen);
 
         /* xor ipad into key value  */
-        for(int i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
+        for(int32_t i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
             ((unsigned long*)cx->key)[i] ^= 0x36363636;
 
         /* and start hash operation */
@@ -175,7 +175,7 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
         mac[i] = dig[i];
 }
 
-constexpr int BLOCK_SIZE  = 16;
+constexpr const int32_t BLOCK_SIZE  = 16;
 
 void aes_set_encrypt_key(const unsigned char in_key[], unsigned int klen, void * cx)
 {
@@ -184,7 +184,7 @@ void aes_set_encrypt_key(const unsigned char in_key[], unsigned int klen, void *
 
 void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], void * cx)
 {
-  int Index;
+  int32_t Index;
   memmove(out_blk, in_blk, BLOCK_SIZE);
   for (Index = 0; Index < 4; Index++)
   {
@@ -532,11 +532,11 @@ RawByteString ScramblePassword(const UnicodeString & Password)
   #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
   int32_t Len = UtfPassword.Length();
-  char *Buf = nb::chcalloc(Len + SCRAMBLE_LENGTH_EXTENSION);
+  char * Buf = nb::chcalloc(Len + SCRAMBLE_LENGTH_EXTENSION);
   int32_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
   for (int32_t Index = 0; Index < Padding; ++Index)
   {
-    int P = 0;
+    int32_t P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
     {
       P = nb::ToInt(nb::ToDouble(rand()) / (nb::ToDouble(RAND_MAX) / 256.0));
@@ -547,7 +547,7 @@ RawByteString ScramblePassword(const UnicodeString & Password)
   Buf[Padding + 1] = static_cast<char>('0' + ((Len / 10) % 10));
   Buf[Padding + 2] = static_cast<char>('0' + ((Len / 100) % 10));
   strcpy_s(Buf + Padding + 3, UtfPassword.Length(), ToChar(UtfPassword));
-  char *S = Buf;
+  char * S = Buf;
   int Last = 31;
   while (*S != '\0')
   {
@@ -564,7 +564,7 @@ RawByteString ScramblePassword(const UnicodeString & Password)
 bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Password)
 {
   RawByteString LocalScrambled = Scrambled;
-  char *S = ToChar(LocalScrambled);
+  char * S = ToChar(LocalScrambled);
   int Last = 31;
   while (*S != '\0')
   {
@@ -637,11 +637,11 @@ int32_t IsValidPassword(const UnicodeString & Password)
   }
   else
   {
-    int A = 0;
-    int B = 0;
-    int C = 0;
-    int D = 0;
-    for (int Index = 1; Index <= Password.Length(); Index++)
+    int32_t A = 0;
+    int32_t B = 0;
+    int32_t C = 0;
+    int32_t D = 0;
+    for (int32_t Index = 1; Index <= Password.Length(); Index++)
     {
       if (IsLowerCaseLetter(Password[Index]))
       {
@@ -708,8 +708,8 @@ void TEncryption::NeedSalt()
   }
 }
 
-constexpr int AesBlock = 16;
-constexpr int AesBlockMask = 0x0F;
+constexpr const int32_t AesBlock = 16;
+constexpr const int32_t AesBlockMask = 0x0F;
 UnicodeString AesCtrExt(L".aesctr.enc");
 RawByteString AesCtrMagic("aesctr.........."); // 16 bytes fixed [to match AES block size], even for future algos
 

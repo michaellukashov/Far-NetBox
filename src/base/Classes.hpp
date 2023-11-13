@@ -577,8 +577,8 @@ public:
   virtual ~TSHFileInfo() noexcept;
 
   //get the image's index in the system's image list
-  int GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const;
-  int GetDirIconIndex(BOOL bSmallIcon);
+  int32_t GetFileIconIndex(const UnicodeString & StrFileName, BOOL bSmallIcon) const;
+  int32_t GetDirIconIndex(BOOL bSmallIcon);
 
   //get file type
   UnicodeString GetFileType(const UnicodeString & StrFileName);
@@ -612,10 +612,10 @@ class NB_CORE_EXPORT TStream : public TObject
 public:
   TStream() = default;
   virtual ~TStream() = default;
-  virtual int64_t Read(void *Buffer, int64_t Count) = 0;
-  virtual int64_t Write(const void *Buffer, int64_t Count) = 0;
+  virtual int64_t Read(void * Buffer, int64_t Count) = 0;
+  virtual int64_t Write(const void * Buffer, int64_t Count) = 0;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const = 0;
-  void ReadBuffer(void *Buffer, int64_t Count);
+  void ReadBuffer(void * Buffer, int64_t Count);
   void WriteBuffer(const void * Buffer, int64_t Count);
   int64_t CopyFrom(TStream * Source, int64_t Count);
 
@@ -636,8 +636,8 @@ public:
   using TStream::TStream;
   explicit THandleStream(HANDLE AHandle) noexcept;
   virtual ~THandleStream() = default;
-  virtual int64_t Read(void *Buffer, int64_t Count) override;
-  virtual int64_t Write(const void *Buffer, int64_t Count) override;
+  virtual int64_t Read(void * Buffer, int64_t Count) override;
+  virtual int64_t Write(const void * Buffer, int64_t Count) override;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   ROProperty<HANDLE> Handle{nb::bind(&THandleStream::GetHandle, this)};
 
@@ -769,7 +769,7 @@ public:
   UnicodeString ReadString(const UnicodeString & Name) const;
   UnicodeString ReadStringRaw(const UnicodeString & Name) const;
   size_t ReadBinaryData(const UnicodeString & Name,
-    void *Buffer, size_t BufSize) const;
+    void * Buffer, size_t BufSize) const;
 
   void WriteBool(const UnicodeString & Name, bool Value);
   void WriteDateTime(const UnicodeString & Name, const TDateTime &Value);
@@ -780,16 +780,16 @@ public:
   void WriteInteger(const UnicodeString & Name, int32_t Value);
   void WriteInt64(const UnicodeString & Name, int64_t Value);
   void WriteBinaryData(const UnicodeString & Name,
-    const void *Buffer, size_t BufSize);
+    const void * Buffer, size_t BufSize);
 private:
   void ChangeKey(HKEY Value, const UnicodeString & APath);
   HKEY GetBaseKey(bool Relative) const;
   HKEY GetKey(const UnicodeString & AKey) const;
   void SetCurrentKey(HKEY Value) { FCurrentKey = Value; }
   bool GetKeyInfo(TRegKeyInfo & Value) const;
-  int GetData(const UnicodeString & Name, void * Buffer,
+  int32_t GetData(const UnicodeString & Name, void * Buffer,
     int32_t ABufSize, TRegDataType & RegData) const;
-  void PutData(const UnicodeString & Name, const void *Buffer,
+  void PutData(const UnicodeString & Name, const void * Buffer,
     int32_t ABufSize, TRegDataType RegData);
 
 public:

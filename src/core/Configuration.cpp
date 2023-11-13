@@ -825,7 +825,7 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
 UnicodeString TConfiguration::BannerHash(const UnicodeString & ABanner) const
 {
   RawByteString Result;
-  char *Buf = Result.SetLength(16);
+  char * Buf = Result.SetLength(16);
   md5checksum(
     reinterpret_cast<const char *>(ABanner.c_str()), nb::ToInt(ABanner.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
@@ -1338,9 +1338,9 @@ UnicodeString TConfiguration::GetProductVersionStr() const
 #if 0
     UnicodeString BuildDate = __DATE__;
     UnicodeString MonthStr = CutToChar(BuildDate, L' ', true);
-    int Month = ParseShortEngMonthName(MonthStr);
-    int Day = StrToInt64(CutToChar(BuildDate, L' ', true));
-    int Year = StrToInt64(Trim(BuildDate));
+    int32_t Month = ParseShortEngMonthName(MonthStr);
+    int32_t Day = StrToInt64(CutToChar(BuildDate, L' ', true));
+    int32_t Year = StrToInt64(Trim(BuildDate));
     UnicodeString DateStr = FORMAT("%d-%2.2d-%2.2d", Year, Month, Day);
     AddToList(BuildStr, DateStr, L" ");
 #endif

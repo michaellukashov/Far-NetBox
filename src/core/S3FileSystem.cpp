@@ -1183,7 +1183,7 @@ void TS3FileSystem::DoListBucket(
 
   S3_list_bucket(
     &BucketContext, StrToS3(APrefix), StrToS3(Data.NextMarker),
-    LibS3Delimiter.c_str(), nb::ToInt(MaxKeys), FRequestContext, FTimeout, &ListBucketHandler, &Data);
+    LibS3Delimiter.c_str(), nb::ToInt32(MaxKeys), FRequestContext, FTimeout, &ListBucketHandler, &Data);
 }
 
 void TS3FileSystem::HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry)
@@ -1316,7 +1316,7 @@ void TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
   DebugFail();
 }
 
-void TS3FileSystem::DoReadFile(const UnicodeString & AFileName, TRemoteFile *&AFile)
+void TS3FileSystem::DoReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile)
 {
   UnicodeString FileNameOnly = base::UnixExtractFileName(AFileName);
   std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());

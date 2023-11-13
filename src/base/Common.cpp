@@ -644,7 +644,7 @@ UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
   const int32_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
   if (Len > 0)
   {
-    wchar_t *Buffer = Result.SetLength(Len - 1);
+    wchar_t * Buffer = Result.SetLength(Len - 1);
     ::GetEnvironmentVariableW(AEnvVarName.c_str(), reinterpret_cast<LPWSTR>(Buffer), nb::ToDWord(Len));
   }
   return Result;
@@ -683,8 +683,8 @@ const UnicodeString OfficialPackage(TraceInitStr(L"MartinPikryl.WinSCP_tvv458r3h
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  wchar_t *Buffer = ToWChar(Result);
-  for (wchar_t *Ch = Buffer; Ch && *Ch; ++Ch)
+  wchar_t * Buffer = ToWChar(Result);
+  for (wchar_t * Ch = Buffer; Ch && *Ch; ++Ch)
     if (*Ch == A)
     {
       *Ch = B;

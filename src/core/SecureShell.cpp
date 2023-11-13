@@ -1238,7 +1238,7 @@ UnicodeString TSecureShell::ReceiveLine()
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
       int32_t PrevLen = Line.Length();
-      char *Buf = Line.SetLength(PrevLen + Index);
+      char * Buf = Line.SetLength(PrevLen + Index);
       Receive(reinterpret_cast<uint8_t *>(Buf + PrevLen), Index);
     }
 

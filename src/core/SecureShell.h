@@ -108,7 +108,7 @@ public:
   void HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
   bool ProcessNetworkEvents(SOCKET Socket);
   bool EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
-    WSANETWORKEVENTS *Events);
+    WSANETWORKEVENTS * Events);
   void UpdateSessionInfo() const;
   bool GetReady() const;
   void DispatchSendBuffer(int32_t BufSize);

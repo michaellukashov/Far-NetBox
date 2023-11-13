@@ -146,7 +146,7 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
   UnicodeString HelpKeyword;
 
 public:
-  TQueryParams &operator=(const TQueryParams &other);
+  TQueryParams &operator=(const TQueryParams & other);
 };
 
 enum TPromptKind
@@ -163,10 +163,10 @@ enum TPromptKind
   pkProxyAuth
 };
 
-enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02, };
+enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02 };
 
 NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
-NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts);
+NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
 NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 void AnswerNameAndCaption(uint32_t Answer, UnicodeString & Name, UnicodeString & Caption);
 class TTerminal;

@@ -30,7 +30,7 @@ protected:
 //  void DoWriteDateTime(const UnicodeString & Name, TDateTime Value) override;
 //  void DoWriteFloat(const UnicodeString & Name, double Value) override;
   void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
-  void DoWriteBinaryData(const UnicodeString & Name, const void *Buffer, size_t Size) override;
+  void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, size_t Size) override;
 
   bool DoReadBool(const UnicodeString & Name, bool Default) override;
   int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;
@@ -38,7 +38,7 @@ protected:
   TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) override;
   double DoReadFloat(const UnicodeString & Name, double Default) override;
   UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
-  size_t DoReadBinaryData(const UnicodeString & Name, void *Buffer, size_t Size) override;
+  size_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, size_t Size) override;
 
   void DoGetValueNames(TStrings *Strings) override;
 

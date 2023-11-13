@@ -396,7 +396,7 @@ void TXmlStorage::DoWriteStringRaw(const UnicodeString & Name, const UnicodeStri
 }
 
 void TXmlStorage::DoWriteBinaryData(const UnicodeString & Name,
-  const void *Buffer, size_t Size)
+  const void * Buffer, size_t Size)
 {
   RemoveIfExists(Name);
   AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));

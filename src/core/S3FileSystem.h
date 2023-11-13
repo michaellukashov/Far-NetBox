@@ -175,7 +175,7 @@ protected:
   bool ParsePathForPropertiesRequests(
     const UnicodeString & Path, const TRemoteFile * File, UnicodeString & BucketName, UnicodeString & Key);
 
-  static TS3FileSystem *GetFileSystem(void * CallbackData);
+  static TS3FileSystem * GetFileSystem(void * CallbackData);
   static void LibS3SessionCallback(ne_session_s * Session, void * CallbackData);
   static S3Status LibS3ResponsePropertiesCallback(const S3ResponseProperties * Properties, void * CallbackData);
   static void LibS3ResponseCompleteCallback(S3Status Status, const S3ErrorDetails * Error, void * CallbackData);
@@ -183,7 +183,7 @@ protected:
   static void LibS3ResponseDataCallback(const char * Data, size_t Size, void * CallbackData);
   static S3Status LibS3ListServiceCallback(
     const char * OwnerId, const char * OwnerDisplayName, const char * BucketName,
-    int64_t CreationDate, void *CallbackData);
+    int64_t CreationDate, void * CallbackData);
   static S3Status LibS3ListBucketCallback(
     int32_t IsTruncated, const char * NextMarker, int32_t ContentsCount, const S3ListBucketContent * Contents,
     int32_t CommonPrefixesCount, const char ** CommonPrefixes, void * CallbackData);

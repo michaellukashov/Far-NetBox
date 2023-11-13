@@ -44,8 +44,8 @@ int32_t __cdecl StrCmpNN(const wchar_t *s1, int32_t n1, const wchar_t *s2, int32
 
 TEncodeType DetectUTF8Encoding(const uint8_t *str, int32_t len)
 {
-  const uint8_t *buf = str;
-  const uint8_t *endbuf = buf + len;
+  const uint8_t * buf = str;
+  const uint8_t * endbuf = buf + len;
   uint8_t byte2mask = 0x00;
   int32_t trailing = 0; // trailing (continuation) bytes to follow
 

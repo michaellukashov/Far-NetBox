@@ -157,7 +157,7 @@ public:
   intptr_t FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int32_t Param1, void * Param2 = nullptr) const;
   intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int32_t Param1, void * Param2) const;
   intptr_t GetFarSystemSettings() const;
-  void Text(int X, int Y, int Color, const UnicodeString & Str);
+  void Text(int32_t X, int32_t Y, int32_t Color, const UnicodeString & Str);
   void FlushText();
   void FarWriteConsole(const UnicodeString & Str);
   void FarCopyToClipboard(const UnicodeString & Str);

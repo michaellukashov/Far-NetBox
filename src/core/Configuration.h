@@ -424,7 +424,7 @@ public:
   __property int32_t LogMaxCount  = { read = FLogMaxCount, write = SetLogMaxCount };
   __property int32_t LogProtocol  = { read = FLogProtocol, write = SetLogProtocol };
   RWProperty3<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
-  __property int ActualLogProtocol  = { read = FActualLogProtocol };
+  __property int32_t ActualLogProtocol  = { read = FActualLogProtocol };
   ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read = FLogActions, write = SetLogActions };
   __property bool LogActionsRequired  = { read = FLogActionsRequired, write = FLogActionsRequired };

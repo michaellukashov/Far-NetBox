@@ -827,9 +827,9 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     MoreMessagesSeparator = new TFarSeparator(this);
   }
 
-  int ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
-  int ButtonLines = 1;
-  TFarButton *Button = nullptr;
+  int32_t ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
+  int32_t ButtonLines = 1;
+  TFarButton * Button = nullptr;
   FTimeoutButton = nullptr;
   for (uint32_t Index = 0; Index < nb::ToUIntPtr(Buttons->GetCount()); ++Index)
   {
@@ -897,8 +897,8 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 
   TRect rect = GetClientRect();
   TPoint S(
-    nb::ToInt(rect.Left + MaxLen - rect.Right),
-    nb::ToInt(rect.Top + MessageLines->GetCount() +
+    nb::ToInt32(rect.Left + MaxLen - rect.Right),
+    nb::ToInt32(rect.Top + MessageLines->GetCount() +
       (FParams->MoreMessages != nullptr ? 1 : 0) + ButtonLines +
       (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
       (-(rect.Bottom + 1))));
@@ -1246,7 +1246,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
   return (Result != 0);
 }
 
-void TCustomFarPlugin::Text(int X, int Y, int Color, const UnicodeString & Str)
+void TCustomFarPlugin::Text(int32_t X, int32_t Y, int32_t Color, const UnicodeString & Str)
 {
   TFarEnvGuard Guard; nb::used(Guard);
   FarColor color = {};
@@ -1289,7 +1289,7 @@ void TCustomFarPlugin::FarCopyToClipboard(const TStrings * Strings)
   }
 }
 
-TPoint TCustomFarPlugin::TerminalInfo(TPoint *Size, TPoint *Cursor) const
+TPoint TCustomFarPlugin::TerminalInfo(TPoint * Size, TPoint * Cursor) const
 {
   CONSOLE_SCREEN_BUFFER_INFO BufferInfo;
   nb::ClearStruct(BufferInfo);
@@ -1411,7 +1411,7 @@ void TCustomFarPlugin::ShowTerminalScreen(const UnicodeString & Command)
   if (Size.y >= 2)
   {
     // clean menu keybar area before command output
-    int Y = Size.y - 2;
+    int32_t Y = Size.y - 2;
     // if any panel is visible -- clear all screen (don't scroll panel)
     {
       PanelInfo Info;
@@ -2402,7 +2402,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   int32_t FunctionKey, const UnicodeString & Title)
 {
   DebugAssert(FunctionKey >= 1 && FunctionKey <= 12);
-  int shift = nb::ToInt(ShiftStatus);
+  int32_t shift = nb::ToInt(ShiftStatus);
   DebugAssert(shift >= 0 && shift < 7);
   KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
   if (Labels[FunctionKey - 1].Key.VirtualKeyCode)
@@ -2911,7 +2911,7 @@ UnicodeString TFarEditorInfo::GetFileName()
   int32_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, nullptr);
   if (BuffLen)
   {
-    wchar_t *Buffer = Result.SetLength(BuffLen + 1);
+    wchar_t * Buffer = Result.SetLength(BuffLen + 1);
     FarPlugin->FarEditorControl(ECTL_GETFILENAME, BuffLen, Buffer);
   }
   PackStr(Result);
