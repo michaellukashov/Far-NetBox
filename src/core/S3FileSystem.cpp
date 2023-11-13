@@ -123,7 +123,7 @@ static void NeedS3Config()
 TStrings * GetS3Profiles()
 {
   NeedS3Config();
-  // S3 allegedly treats the section case-sensitivelly, but our GetS3ConfigValue (ReadString) does not,
+  // S3 allegedly treats the section case-sensitively, but our GetS3ConfigValue (ReadString) does not,
   // so consistently we return case-insensitive list.
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   if (S3ConfigFile.get() != nullptr)
