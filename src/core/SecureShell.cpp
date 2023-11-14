@@ -1109,8 +1109,8 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
     if (PendSize < PendLen + Len)
     {
       PendSize = PendLen + Len + 4096;
-      Pending = (uint8_t *)
-        (Pending ? srealloc(Pending, PendSize) : smalloc(PendSize));
+      Pending = nb::ToUInt8Ptr(
+        (Pending ? srealloc(Pending, PendSize) : smalloc(PendSize)));
       if (!Pending) FatalError(L"Out of memory");
     }
     memmove(Pending + PendLen, p, Len);
@@ -1239,7 +1239,7 @@ UnicodeString TSecureShell::ReceiveLine()
       EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
       int32_t PrevLen = Line.Length();
       char * Buf = Line.SetLength(PrevLen + Index);
-      Receive(reinterpret_cast<uint8_t *>(Buf + PrevLen), Index);
+      Receive(nb::ToUInt8Ptr(Buf + PrevLen), Index);
     }
 
     // If buffer don't contain end-of-line character
@@ -1440,7 +1440,7 @@ void TSecureShell::SendLine(const UnicodeString & Line)
   Str += "\n";
 
   // FLog->Add(llInput, Line);
-  Send(reinterpret_cast<const uint8_t *>(Str.c_str()), Str.Length());
+  Send(nb::ToUInt8Ptr(Str.c_str()), Str.Length());
 }
 
 int32_t TSecureShell::TranslatePuttyMessage(
