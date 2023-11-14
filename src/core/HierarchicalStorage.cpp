@@ -720,7 +720,7 @@ RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString & Name)
   size_t Size = BinaryDataSize(Name);
   RawByteString Value;
   Value.SetLength(Size);
-  ReadBinaryData(Name, (void *)Value.c_str(), Size);
+  ReadBinaryData(Name, nb::ToPtr(Value.c_str()), Size);
   return Value;
 }
 
