@@ -400,7 +400,7 @@ private:
   TConfiguration * FConfiguration{nullptr};
   TCriticalSection FCriticalSection;
   bool FLogging{false};
-  void * FFile{nullptr}; //TODO: use gsl::owner
+  gsl::owner<void *> FFile{nullptr};
   std::unique_ptr<tinylog::TinyLog> FLogger;
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;

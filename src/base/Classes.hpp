@@ -671,7 +671,7 @@ public:
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
 private:
-  THandleStream * FSource{nullptr}; // TODO: use gsl::owner
+  gsl::owner<THandleStream *> FSource{nullptr};
   bool FOwned{false};
 };
 
@@ -709,14 +709,14 @@ public:
 
 protected:
   void SetPointer(void * Ptr, int64_t ASize);
-  virtual void *Realloc(int64_t & NewCapacity);
+  virtual void * Realloc(int64_t & NewCapacity);
   int64_t GetCapacity() const { return FCapacity; }
 
 private:
   void SetCapacity(int64_t NewCapacity);
 
 private:
-  void * FMemory{nullptr};
+  gsl::owner<void *> FMemory{nullptr};
   int64_t FSize{0};
   mutable int64_t FPosition{0};
   int64_t FCapacity{0};

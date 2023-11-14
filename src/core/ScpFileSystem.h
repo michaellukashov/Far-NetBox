@@ -108,7 +108,7 @@ protected:
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
 private:
-  gsl::owner<TSecureShell*> FSecureShell{nullptr};
+  gsl::owner<TSecureShell *> FSecureShell{nullptr};
   std::unique_ptr<TCommandSet> FCommandSet;
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;

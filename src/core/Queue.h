@@ -233,7 +233,7 @@ protected:
   TStatus FStatus{qsPending};
   TCriticalSection FSection;
   TTerminalItem * FTerminalItem{nullptr};
-  gsl::owner<TFileOperationProgressType*> FProgressData{nullptr};
+  gsl::owner<TFileOperationProgressType *> FProgressData{nullptr};
   std::unique_ptr<TQueueItem::TInfo> FInfo;
   TTerminalQueue * FQueue{nullptr};
   HANDLE FCompleteEvent{INVALID_HANDLE_VALUE};
