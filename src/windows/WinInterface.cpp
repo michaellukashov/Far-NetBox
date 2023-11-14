@@ -796,7 +796,7 @@ void BusyEnd(void * Token)
 
 static DWORD MainThread = 0;
 static TDateTime LastGUIUpdate{};
-static double GUIUpdateIntervalFrac = static_cast<double>(OneSecond/1000*GUIUpdateInterval);  // 1/5 sec
+constexpr const double GUIUpdateIntervalFrac = static_cast<double>(OneSecond / 1000 * GUIUpdateInterval);  // 1/5 sec
 static bool NoGUI = false;
 
 void SetNoGUI()

@@ -94,7 +94,7 @@ NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t *Msg);
 
 #define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
-inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber)
+inline bool DoAlwaysTrue(bool Value, const wchar_t * Message, const wchar_t * Filename, uint32_t LineNumber)
 {
   if (!Value)
   {
@@ -103,7 +103,7 @@ inline bool DoAlwaysTrue(bool Value, const wchar_t *Message, const wchar_t *File
   return Value;
 }
 
-inline bool DoAlwaysFalse(bool Value, const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber)
+inline bool DoAlwaysFalse(bool Value, const wchar_t * Message, const wchar_t * Filename, uint32_t LineNumber)
 {
   if (Value)
   {
@@ -113,7 +113,7 @@ inline bool DoAlwaysFalse(bool Value, const wchar_t *Message, const wchar_t *Fil
 }
 
 template<typename T>
-inline T *DoCheckNotNull(T *p, const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber)
+inline T * DoCheckNotNull(T * p, const wchar_t * Message, const wchar_t * Filename, uint32_t LineNumber)
 {
   if (p == nullptr)
   {
