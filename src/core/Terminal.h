@@ -732,7 +732,7 @@ public:
   __property TNotifyEvent OnStartReadDirectory = { read = FOnStartReadDirectory, write = FOnStartReadDirectory };
   __property TReadDirectoryProgressEvent OnReadDirectoryProgress = { read = FOnReadDirectoryProgress, write = FOnReadDirectoryProgress };
   __property TDeleteLocalFileEvent OnDeleteLocalFile = { read = FOnDeleteLocalFile, write = FOnDeleteLocalFile };
-  TDeleteLocalFileEvent &OnDeleteLocalFile{FOnDeleteLocalFile};
+  TDeleteLocalFileEvent & OnDeleteLocalFile{FOnDeleteLocalFile};
   __property TNotifyEvent OnInitializeLog = { read = FOnInitializeLog, write = FOnInitializeLog };
   __property const TRemoteTokenList * Groups = { read = GetGroups };
   __property const TRemoteTokenList * Users = { read = GetUsers };
