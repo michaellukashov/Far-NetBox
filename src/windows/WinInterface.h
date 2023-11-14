@@ -719,8 +719,8 @@ public:
   virtual void SetTitle(const UnicodeString & Title) = 0;
   virtual void WaitBeforeExit() = 0;
   // virtual void Progress(TScriptProgress & Progress) = 0;
-  virtual void TransferOut(const unsigned char * Data, size_t Len) = 0;
-  virtual size_t TransferIn(unsigned char * Data, size_t Len) = 0;
+  virtual void TransferOut(const uint8_t * Data, size_t Len) = 0;
+  virtual size_t TransferIn(uint8_t * Data, size_t Len) = 0;
   virtual UnicodeString FinalLogMessage() = 0;
 };
 
