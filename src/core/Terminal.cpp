@@ -126,6 +126,7 @@ TSynchronizeOptions::~TSynchronizeOptions() noexcept
 
 bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName) const
 {
+  // int32_t FoundIndex;
   bool Result = true;
   if (Filter)
   {
@@ -176,7 +177,8 @@ private:
 
 TTunnelThread::TTunnelThread(TSecureShell * SecureShell) noexcept :
   TSimpleThread(OBJECT_CLASS_TTunnelThread),
-  FSecureShell(SecureShell)
+  FSecureShell(SecureShell),
+  FTerminated(false)
 {
 }
 
@@ -1342,12 +1344,12 @@ TTerminal::~TTerminal() noexcept
   {
     FActionLog.release();
   }
-//  SAFE_DESTROY_EX(TActionLog, FActionLog);
-//  SAFE_DESTROY(FFiles);
-//  SAFE_DESTROY_EX(TRemoteDirectoryCache, FDirectoryCache);
-//  SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
-//  SAFE_DESTROY(FSessionData);
-//  SAFE_DESTROY(FOldFiles);
+#if defined(__BORLANDC__)
+  delete FFiles;
+  delete FDirectoryCache;
+  delete FDirectoryChangesCache;
+  SAFE_DESTROY(FSessionData);
+#endif
 }
 
 void TTerminal::Idle()
@@ -1582,7 +1584,7 @@ void TTerminal::InternalTryOpen()
     DoInformation(LoadStr(STATUS_READY), true);
     FStatus = ssOpened;
   }
-  catch (...)
+  catch(...)
   {
     // rollback
     if (FDirectoryChangesCache != nullptr)
@@ -1742,6 +1744,7 @@ void TTerminal::InitFileSystem()
     },
     __finally
     {
+      // delete FSecureShell;
       FSecureShell = nullptr;
     } end_try__finally
   }
@@ -1755,6 +1758,7 @@ bool TTerminal::IsListenerFree(uint32_t PortNumber) const
   {
     SOCKADDR_IN Address{};
 
+    // memset(&Address, 0, sizeof(Address));
     nb::ClearStruct(Address);
     Address.sin_family = AF_INET;
     Address.sin_port = htons(static_cast<short>(PortNumber));
@@ -4008,6 +4012,7 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
     {
       UnicodeString Directory = base::UnixIncludeTrailingBackslash(ADirName);
 
+      // TRemoteFile * File;
       for (int32_t Index = 0; Index < FileList->GetCount(); ++Index)
       {
         TRemoteFile * File = FileList->GetFile(Index);
@@ -4272,12 +4277,12 @@ TStrings * TTerminal::GetFixedPaths() const
   return FFileSystem ? FFileSystem->GetFixedPaths() : nullptr;
 }
 
-bool  TTerminal::GetResolvingSymlinks() const
+bool TTerminal::GetResolvingSymlinks() const
 {
   return GetSessionData()->GetResolveSymlinks() && GetIsCapable(fcResolveSymlink);
 }
 
-TUsableCopyParamAttrs  TTerminal::UsableCopyParamAttrs(int32_t Params) const
+TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(int32_t Params) const
 {
   TUsableCopyParamAttrs Result;
   Result.General =
@@ -4757,9 +4762,9 @@ void TTerminal::DoCalculateFileSize(const UnicodeString & AFileName,
 void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * AParam)
 {
+  UnicodeString FileName = AFileName;
   DebugAssert(AParam);
   DebugAssert(AFile);
-  UnicodeString FileName = AFileName;
   TCalculateSizeParams * Params = cast_to<TCalculateSizeParams>(AParam);
   Expects(Params != nullptr);
   if (FileName.IsEmpty())
@@ -4902,7 +4907,7 @@ void TTerminal::CalculateSubFoldersChecksum(
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
   // recurse into subdirectories only if we have callback function
-  if (OnCalculatedChecksum)
+  if (!OnCalculatedChecksum.empty())
   {
     int32_t Index = 0;
     TOnceDoneOperation OnceDoneOperation; // unused
@@ -5585,7 +5590,7 @@ void TTerminal::AnyCommand(const UnicodeString & Command,
     TCallSessionAction & FAction;
     TCaptureOutputEvent FOutputEvent;
   };
-#pragma warn .inl
+  #pragma warn .inl
 #endif // #if 0
 
   TCallSessionAction Action(GetActionLog(), Command, RemoteGetCurrentDirectory());
@@ -5664,6 +5669,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
             else if ((OperationProgress->GetBatchOverwrite() != boAll) && !NoConfirmation)
             {
               uint32_t Answer;
+
               {
                 TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
                 Answer = QueryUser(
@@ -5917,7 +5923,7 @@ bool TTerminal::AllowLocalFileTransfer(
     TSearchRecSmart ASearchRec;
     if (SearchRec == nullptr)
     {
-      if (CopyParam->FOnTransferIn)
+      if (!CopyParam->FOnTransferIn.empty())
       {
         ASearchRec.Clear();
       }
@@ -6201,18 +6207,18 @@ UnicodeString TTerminal::SynchronizeModeStr(TSynchronizeMode Mode)
   UnicodeString ModeStr;
   switch (Mode)
   {
-  case smRemote:
-    ModeStr = L"Remote";
-    break;
-  case smLocal:
-    ModeStr = L"Local";
-    break;
-  case smBoth:
-    ModeStr = L"Both";
-    break;
-  default:
-    ModeStr = L"Unknown";
-    break;
+    case smRemote:
+      ModeStr = L"Remote";
+      break;
+    case smLocal:
+      ModeStr = L"Local";
+      break;
+    case smBoth:
+      ModeStr = L"Both";
+      break;
+    default:
+      ModeStr = L"Unknown";
+      break;
   }
   return ModeStr;
 }
@@ -6477,6 +6483,18 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
   },
   __finally
   {
+#if defined(__BORLANDC__)
+    if (Data.LocalFileList != nullptr)
+    {
+      for (int32_t Index = 0; Index < Data.LocalFileList->Count; Index++)
+      {
+        TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData*>
+          (Data.LocalFileList->Objects[Index]);
+        delete FileData;
+      }
+      delete Data.LocalFileList;
+    }
+#endif
     Data.DeleteLocalFileList();
   } end_try__finally
 }
@@ -6572,7 +6590,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
   TSynchronizeData * Data = cast_to<TSynchronizeData>(Param);
   Expects(Data != nullptr);
 
-  // Can be nullptr in scripting
+  // Can be NULL in scripting
   if (Data->Options != nullptr)
   {
     Data->Options->Files++;
@@ -6800,7 +6818,7 @@ void TTerminal::SynchronizeApply(
     TSynchronizeChecklist::TItemList Items;
     for (int32_t Index = 0; Index < Checklist->Count; Index++)
     {
-      const TChecklistItem* ChecklistItem = Checklist->GetItem(Index);
+      const TChecklistItem * ChecklistItem = Checklist->GetItem(Index);
       // TSynchronizeChecklistDialog relies on us not to update a size of an item that had size already
       // See TSynchronizeChecklistDialog::UpdatedSynchronizationChecklistItems
       if (ChecklistItem->Checked && !TSynchronizeChecklist::IsItemSizeIrrelevant(ChecklistItem->Action) &&
@@ -6829,7 +6847,7 @@ void TTerminal::SynchronizeApply(
     int32_t Index = 0;
     while (Index < Checklist->Count)
     {
-      const TChecklistItem* ChecklistItem = Checklist->GetItem(Index);
+      const TChecklistItem * ChecklistItem = Checklist->GetItem(Index);
       if (ChecklistItem->Checked)
       {
         if (!SamePaths(Data.LocalDirectory, ChecklistItem->Local.Directory) ||
@@ -7034,7 +7052,7 @@ void TTerminal::SynchronizeChecklistCalculateSize(
 void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
   bool Collect)
 {
-  if (Data.OnSynchronizeDirectory)
+  if (!Data.OnSynchronizeDirectory.empty())
   {
     bool Continue = true;
     Data.OnSynchronizeDirectory(
@@ -7511,7 +7529,7 @@ void TTerminal::LogTotalTransferDetails(
       int32_t Count = 0;
       for (int32_t Index = 0; Index < AFiles->GetCount(); ++Index)
       {
-        TCollectedFileList *FileList = dyn_cast<TCollectedFileList>(AFiles->GetObj(Index));
+        TCollectedFileList * FileList = dyn_cast<TCollectedFileList>(AFiles->GetObj(Index));
         Count += FileList->GetCount();
       }
       S += FORMAT(" - in parallel, with %d total files", Count);
@@ -7540,7 +7558,7 @@ bool TTerminal::CopyToRemote(
   bool Result = false;
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  if ((CopyParam->FOnTransferIn) && !FFileSystem->IsCapable(fcTransferIn))
+  if ((!CopyParam->FOnTransferIn.empty()) && !FFileSystem->IsCapable(fcTransferIn))
   {
     throw Exception(LoadStr(NOTSUPPORTED));
   }
@@ -7723,7 +7741,7 @@ void TTerminal::SourceRobust(
 {
   TUploadSessionAction Action(GetActionLog());
   bool * AFileTransferAny = FLAGSET(AFlags, tfUseFileTransferAny) ? &FFileTransferAny : nullptr;
-  bool CanRetry = (!CopyParam->FOnTransferIn);
+  bool CanRetry = (CopyParam->FOnTransferIn.empty());
   TRobustOperationLoop RobustLoop(this, OperationProgress, AFileTransferAny, CanRetry);
 
   do
@@ -7972,7 +7990,7 @@ void TTerminal::Source(
   TFileOperationProgressType * OperationProgress, uint32_t AFlags, TUploadSessionAction & Action, bool & ChildError)
 {
   UnicodeString ActionFileName = AFileName;
-  if (!CopyParam->FOnTransferIn)
+  if (CopyParam->FOnTransferIn.empty())
   {
     ActionFileName = ::ExpandUNCFileName(ActionFileName);
   }
@@ -8109,7 +8127,7 @@ bool TTerminal::CopyToLocal(
   DebugAssert(AFilesToCopy != nullptr);
   TOnceDoneOperation OnceDoneOperation = odoIdle;
 
-  if ((CopyParam->FOnTransferOut) && !FFileSystem->IsCapable(fcTransferOut))
+  if ((!CopyParam->FOnTransferOut.empty()) && !FFileSystem->IsCapable(fcTransferOut))
   {
     throw Exception(LoadStr(NOTSUPPORTED));
   }
@@ -8128,7 +8146,7 @@ bool TTerminal::CopyToLocal(
     std::unique_ptr<TStringList> Files;
     bool ACanParallel =
       CanParallel(CopyParam, AParams, ParallelOperation) &&
-      DebugAlwaysTrue(!CopyParam->FOnTransferOut);
+      DebugAlwaysTrue(CopyParam->FOnTransferOut.empty());
     if (ACanParallel)
     {
       Files = std::make_unique<TStringList>();
@@ -8322,7 +8340,7 @@ void TTerminal::SinkRobust(
   try__finally
   {
     bool * FileTransferAny = FLAGSET(AFlags, tfUseFileTransferAny) ? &FFileTransferAny : nullptr;
-    bool CanRetry = (!CopyParam->FOnTransferOut);
+    bool CanRetry = (!CopyParam->FOnTransferOut.empty());
     TRobustOperationLoop RobustLoop(this, OperationProgress, FileTransferAny);
     bool Sunk = false;
 
@@ -8378,7 +8396,7 @@ void TTerminal::SinkRobust(
   __finally
   {
     // Once we issue <download> we must terminate the data stream
-    if (Action.IsValid() && (CopyParam->FOnTransferOut) && DebugAlwaysTrue(GetIsCapable(fcTransferOut)))
+    if (Action.IsValid() && (!CopyParam->FOnTransferOut.empty()) && DebugAlwaysTrue(GetIsCapable(fcTransferOut)))
     {
       CopyParam->FOnTransferOut(this, nullptr, 0);
     }
@@ -8478,7 +8496,7 @@ void TTerminal::Sink(
   }
   else
   {
-    if (CopyParam->FOnTransferOut)
+    if (!CopyParam->FOnTransferOut.empty())
     {
       LogEvent(FORMAT(L"Streaming \"%s\" to local machine started.", AFileName));
     }
@@ -9173,7 +9191,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
       LogEvent(FORMAT(L"Downloading current \"%s\" file...", OpensshAuthorizedKeysFileName));
       CopyToLocal(Files.get(), TemporaryDir, &CopyParam, cpNoConfirmation, nullptr);
       // Overload with Encoding parameter work incorrectly, when used on a file without BOM
-      AuthorizedKeys = ReadAllText(TemporaryAuthorizedKeysFile);
+      AuthorizedKeys = /*TFile::*/ReadAllText(TemporaryAuthorizedKeysFile);
 
       std::unique_ptr<TStrings> AuthorizedKeysLines(TextToStringList(AuthorizedKeys));
       int32_t P = Line.Pos(L" ");
@@ -9455,7 +9473,7 @@ void TSecondaryTerminal::UpdateFromMain()
   }
 }
 
-void TSecondaryTerminal::DirectoryLoaded(TRemoteFileList *FileList)
+void TSecondaryTerminal::DirectoryLoaded(TRemoteFileList * FileList)
 {
   FMainTerminal->DirectoryLoaded(FileList);
   DebugAssert(FileList != nullptr);
@@ -9487,7 +9505,7 @@ TTerminalList::~TTerminalList() noexcept
 
 TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 {
-  TTerminal *Result = new TTerminal();
+  TTerminal * Result = new TTerminal();
   Result->Init(Data, FConfiguration);
   return Result;
 }
@@ -9507,7 +9525,7 @@ void TTerminalList::FreeTerminal(TTerminal * Terminal)
 
 void TTerminalList::FreeAndNullTerminal(TTerminal *& Terminal)
 {
-  TTerminal *T = Terminal;
+  TTerminal * T = Terminal;
   Terminal = nullptr;
   FreeTerminal(T);
 }
