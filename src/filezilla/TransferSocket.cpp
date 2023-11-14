@@ -1110,7 +1110,7 @@ void CTransferSocket::WriteData(const char * buffer, int len)
 {
   if (m_OnTransferOut != nullptr)
   {
-    m_OnTransferOut(nullptr, (const uint8_t *)m_pBuffer, len);
+    m_OnTransferOut(nullptr, reinterpret_cast<const uint8_t *>(m_pBuffer), len);
   }
   else
   {
@@ -1123,7 +1123,7 @@ int CTransferSocket::ReadData(char * buffer, int len)
   int result;
   if (m_OnTransferIn != nullptr)
   {
-    result = m_OnTransferIn(nullptr, (uint8_t *)buffer, len);
+    result = m_OnTransferIn(nullptr, reinterpret_cast<const uint8_t *>(buffer), len);
   }
   else
   {
