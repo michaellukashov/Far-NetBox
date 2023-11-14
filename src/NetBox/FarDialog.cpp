@@ -1531,7 +1531,7 @@ int32_t TFarDialogItem::GetCoordinate(int32_t Index) const
 {
   static_assert(sizeof(TRect) == sizeof(int32_t) * 4);
   TRect R = GetBounds();
-  int32_t *D = reinterpret_cast<int32_t *>(&R);
+  int32_t * D = reinterpret_cast<int32_t *>(&R);
   D += Index;
   return nb::ToInt32(*D);
 }
@@ -1581,8 +1581,8 @@ bool TFarDialogItem::CanFocus() const
   FARDIALOGITEMTYPES Type = GetType();
   return GetVisible() && GetEnabled() && GetTabStop() &&
     (Type == DI_EDIT || Type == DI_PSWEDIT || Type == DI_FIXEDIT ||
-      Type == DI_BUTTON || Type == DI_CHECKBOX || Type == DI_RADIOBUTTON ||
-      Type == DI_COMBOBOX || Type == DI_LISTBOX || Type == DI_USERCONTROL);
+     Type == DI_BUTTON || Type == DI_CHECKBOX || Type == DI_RADIOBUTTON ||
+     Type == DI_COMBOBOX || Type == DI_LISTBOX || Type == DI_USERCONTROL);
 }
 
 bool TFarDialogItem::Focused() const
