@@ -3252,7 +3252,7 @@ uint32_t TTerminal::ConfirmFileOverwrite(
 
     if (BatchOverwrite != boNo)
     {
-      LogEvent(1, FORMAT(L"Batch operation mode [%d] is effective", int(BatchOverwrite)));
+      LogEvent(1, FORMAT(L"Batch operation mode [%d] is effective", nb::ToInt32(BatchOverwrite)));
     }
     else
     {
@@ -3713,7 +3713,7 @@ UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * AFile) const
 {
   return
     FORMAT("%s;%s;%lld;%s;%d;%s;%s;%s;%d",
-       AFile->GetFileName(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()), int(AFile->GetModificationFmt()),
+       AFile->GetFileName(), AFile->GetType(), AFile->GetSize(), StandardTimestamp(AFile->GetModification()), nb::ToInt32(AFile->GetModificationFmt()),
        AFile->GetFileOwner().GetLogText(), AFile->GetFileGroup().GetLogText(), AFile->GetRights()->GetText(),
        AFile->GetAttr());
 }
@@ -6237,7 +6237,7 @@ UnicodeString TTerminal::SynchronizeParamsStr(int32_t Params)
   AddFlagName(ParamsStr, Params, spMirror, L"Mirror");
   if (Params > 0)
   {
-    AddToList(ParamsStr, FORMAT("0x%x", nb::ToInt(Params)), L", ");
+    AddToList(ParamsStr, FORMAT("0x%x", nb::ToInt32(Params)), L", ");
   }
   return ParamsStr;
 }
@@ -6329,7 +6329,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
 
   LogEvent(FORMAT("Collecting synchronization list for local directory '%s' and remote directory '%s', "
     "mode = %s, params = 0x%x (%s), file mask = '%s'", ALocalDirectory, ARemoteDirectory,
-    SynchronizeModeStr(Mode), int(AParams), SynchronizeParamsStr(AParams), CopyParam->GetIncludeFileMask().Masks()));
+    SynchronizeModeStr(Mode), nb::ToInt32(AParams), SynchronizeParamsStr(AParams), CopyParam->GetIncludeFileMask().Masks()));
 
   if (FLAGCLEAR(AParams, spDelayProgress))
   {
@@ -6840,7 +6840,7 @@ void TTerminal::SynchronizeApply(
 
           LogEvent(
             FORMAT("Synchronizing local directory '%s' with remote directory '%s', params = 0x%x (%s)",
-              Data.LocalDirectory, Data.RemoteDirectory, int(Params), SynchronizeParamsStr(Params)));
+              Data.LocalDirectory, Data.RemoteDirectory, nb::ToInt32(Params), SynchronizeParamsStr(Params)));
 
           DoSynchronizeProgress(Data, false);
         }

@@ -2946,7 +2946,7 @@ UnicodeString TSessionData::GetStorageKey() const
 
 UnicodeString TSessionData::FormatSiteKey(const UnicodeString & HostName, int32_t PortNumber)
 {
-  return FORMAT("%s:%d", HostName, nb::ToInt(PortNumber));
+  return FORMAT("%s:%d", HostName, nb::ToInt32(PortNumber));
 }
 
 UnicodeString TSessionData::GetSiteKey() const
@@ -6416,7 +6416,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TDateTim
           break;
 
         case 'p':
-          Replacement = ::Int64ToStr(nb::ToInt(::GetCurrentProcessId()));
+          Replacement = ::Int64ToStr(nb::ToInt32(::GetCurrentProcessId()));
           break;
 
         case L'@':

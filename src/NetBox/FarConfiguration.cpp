@@ -160,7 +160,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
 #undef KEY2
 #undef KEY
 #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
-#define KEY2(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt(Get##VAR())))
+#define KEY2(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt32(Get##VAR())))
   REGCONFIG(false);
 #undef KEY2
 #undef KEY

@@ -445,12 +445,12 @@ UnicodeString UTF8ToString(const char * Str, int32_t Len)
     return UnicodeString(L"");
   }
 
-  const int32_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt(Len), nullptr, 0);
+  const int32_t reqLength = ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt32(Len), nullptr, 0);
   UnicodeString Result;
   if (reqLength)
   {
     Result.SetLength(reqLength);
-    ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt(Len), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(reqLength));
+    ::MultiByteToWideChar(CP_UTF8, 0, Str, nb::ToInt32(Len), const_cast<LPWSTR>(Result.c_str()), nb::ToInt32(reqLength));
     Result.SetLength(Result.Length() - 1); //remove NULL character
   }
   return Result;
@@ -493,8 +493,8 @@ TTimeStamp DateTimeToTimeStamp(const TDateTime &DateTime)
   TTimeStamp Result{};
   double intpart;
   const double fractpart = modf(DateTime, &intpart);
-  Result.Time = nb::ToInt(fractpart * MSecsPerDay + 0.5);
-  Result.Date = nb::ToInt(intpart + DateDelta);
+  Result.Time = nb::ToInt32(fractpart * MSecsPerDay + 0.5);
+  Result.Date = nb::ToInt32(intpart + DateDelta);
   return Result;
 }
 
@@ -962,7 +962,7 @@ UnicodeString SysErrorMessage(int32_t ErrorCode)
 {
   wchar_t Buffer[255];
   int32_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt(ErrorCode), 0,
+      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt32(ErrorCode), 0,
       static_cast<LPTSTR>(Buffer),
       _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
@@ -1201,7 +1201,7 @@ uint32_t HexToIntPtr(const UnicodeString & Hex, uint32_t MinChars)
       break;
     }
 
-    Result = (Result * 16) + (nb::ToInt(A) - 1);
+    Result = (Result * 16) + (nb::ToInt32(A) - 1);
 
     ++Index;
   }

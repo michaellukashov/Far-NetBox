@@ -449,8 +449,8 @@ void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
 {
 #define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
 #define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
-#define KEYEX3(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(Get ## VAR()))
-#define KEYEX4(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(F ## VAR))
+#define KEYEX3(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(Get ## VAR()))
+#define KEYEX4(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(F ## VAR))
 #define KEYEX5(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
   REGCONFIG(true);
 #undef KEYEX5
@@ -631,8 +631,8 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
 {
 #define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
 #define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
-#define KEYEX3(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(Get ## VAR())))
-#define KEYEX4(TYPE, NAME, VAR) F ## VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt(F ## VAR))
+#define KEYEX3(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(Get ## VAR())))
+#define KEYEX4(TYPE, NAME, VAR) F ## VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(F ## VAR))
 #define KEYEX5(TYPE, NAME, VAR) F ## VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
   REGCONFIG(false);
 #undef KEYEX5
@@ -827,7 +827,7 @@ UnicodeString TConfiguration::BannerHash(const UnicodeString & ABanner) const
   RawByteString Result;
   char * Buf = Result.SetLength(16);
   md5checksum(
-    reinterpret_cast<const char *>(ABanner.c_str()), nb::ToInt(ABanner.Length() * sizeof(wchar_t)),
+    reinterpret_cast<const char *>(ABanner.c_str()), nb::ToInt32(ABanner.Length() * sizeof(wchar_t)),
     reinterpret_cast<uint8_t *>(Buf));
   return BytesToHex(Result);
 }

@@ -650,7 +650,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
   ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
   ResumeThresholdEdit->SetAsInteger(
-    nb::ToInt(CopyParam.GetResumeThreshold() / 1024));
+    nb::ToInt32(CopyParam.GetResumeThreshold() / 1024));
 
   SessionReopenAutoCheck->SetChecked((GetConfiguration()->GetSessionReopenAuto() > 0));
   SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
@@ -1272,7 +1272,7 @@ void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
   }
   FPrompt += Caption;
 
-  if (GetSize().x - 10 < nb::ToInt(Caption.Length()))
+  if (GetSize().x - 10 < nb::ToInt32(Caption.Length()))
   {
     Caption.SetLength(GetSize().x - 10 - 4);
     Caption += L" ...";
@@ -1295,7 +1295,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
-  int x = nb::ToInt(Instructions.Length());
+  int32_t x = nb::ToInt32(Instructions.Length());
   if (S.x < x)
   {
     S.x = x;
@@ -1307,7 +1307,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   for (int32_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
-    int l = nb::ToInt(Prompts->GetString(Index).Length());
+    int32_t l = nb::ToInt32(Prompts->GetString(Index).Length());
     if (S.x < l)
     {
       S.x = l;
@@ -5748,7 +5748,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
   TCopyParamsContainer *CopyParamsContainer = new TCopyParamsContainer(
     Dialog, 0, CopyParamAttrs);
 
-  Dialog->SetSize(TPoint(78, 2 + nb::ToInt(CopyParamsContainer->GetHeight()) + 3));
+  Dialog->SetSize(TPoint(78, 2 + nb::ToInt32(CopyParamsContainer->GetHeight()) + 3));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
@@ -6034,7 +6034,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin *AFarPlugin,
   SetNextItemPosition(ipRight);
 
   SpaceAvailablePathEdit = new TFarEdit(this);
-  SpaceAvailablePathEdit->SetRight(-(nb::ToInt(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
+  SpaceAvailablePathEdit->SetRight(-(nb::ToInt32(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
 
   TFarButton *Button = new TFarButton(this);
   Button->SetCaption(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE));
@@ -7380,7 +7380,7 @@ void TSynchronizeChecklistDialog::AdaptSize()
     if (Ratio[Index] >= 0)
     {
       double W = nb::ToDouble(Ratio[Index]) * (Width - FixedRatio) / TotalRatio;
-      FWidths[Index] = nb::ToInt(floor(W));
+      FWidths[Index] = nb::ToInt32(floor(W));
       Temp[Index] = W - FWidths[Index];
     }
     else

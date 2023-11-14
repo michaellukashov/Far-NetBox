@@ -306,7 +306,7 @@ int32_t TFileOperationProgressType::TotalTransferProgress() const
   int32_t Result;
   if (FTotalSize > 0)
   {
-    Result = nb::ToInt(((GetTotalTransferred() - FTotalTransferBase + FTotalSkipped) * 100) / FTotalSize);
+    Result = nb::ToInt32(((GetTotalTransferred() - FTotalTransferBase + FTotalSkipped) * 100) / FTotalSize);
   }
   else
   {

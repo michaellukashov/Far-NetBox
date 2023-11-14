@@ -716,7 +716,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
 
 UnicodeString TRemoteToken::GetLogText() const
 {
-  return FORMAT("\"%s\" [%d]", FName, nb::ToInt(FID));
+  return FORMAT("\"%s\" [%d]", FName, nb::ToInt32(FID));
 }
 
 
@@ -1095,7 +1095,7 @@ void TRemoteFile::ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt Modif
 {
   if ((Seconds != 0) && GetIsTimeShiftingApplicable(ModificationFmt))
   {
-    DebugAssert(int(DateTime) != 0);
+    DebugAssert(nb::ToInt(DateTime) != 0);
     DateTime = IncSecond(DateTime, Seconds);
   }
 }

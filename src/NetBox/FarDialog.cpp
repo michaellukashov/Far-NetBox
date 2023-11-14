@@ -83,7 +83,7 @@ void TFarDialog::SetBounds(const TRect & Value)
         SendDlgMessage(DM_RESIZEDIALOG, 0, nb::ToPtr(&Coord));
         Coord.X = static_cast<int16_t>(FBounds.Left);
         Coord.Y = static_cast<int16_t>(FBounds.Top);
-        SendDlgMessage(DM_MOVEDIALOG, nb::ToInt(true), nb::ToPtr(&Coord));
+        SendDlgMessage(DM_MOVEDIALOG, nb::ToInt32(true), nb::ToPtr(&Coord));
       }
       for (int32_t Index = 0; Index < GetItemCount(); ++Index)
       {
@@ -181,7 +181,7 @@ TPoint TFarDialog::GetSize() const
   {
     return TPoint(nb::ToInt32(GetBounds().Right), nb::ToInt32(GetBounds().Bottom));
   }
-  return TPoint(nb::ToInt(GetBounds().Width() + 1), nb::ToInt(GetBounds().Height() + 1));
+  return TPoint(nb::ToInt32(GetBounds().Width() + 1), nb::ToInt32(GetBounds().Height() + 1));
 }
 
 void TFarDialog::SetSize(TPoint Value)
@@ -202,7 +202,7 @@ void TFarDialog::SetSize(TPoint Value)
 
 void TFarDialog::SetWidth(int32_t Value)
 {
-  SetSize(TPoint(nb::ToInt(Value), nb::ToInt(GetHeight())));
+  SetSize(TPoint(nb::ToInt32(Value), nb::ToInt32(GetHeight())));
 }
 
 int32_t TFarDialog::GetWidth() const
@@ -212,7 +212,7 @@ int32_t TFarDialog::GetWidth() const
 
 void TFarDialog::SetHeight(int32_t Value)
 {
-  SetSize(TPoint(nb::ToInt(GetWidth()), nb::ToInt(Value)));
+  SetSize(TPoint(nb::ToInt32(GetWidth()), nb::ToInt32(Value)));
 }
 
 int32_t TFarDialog::GetHeight() const
@@ -262,8 +262,8 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
   TRect R = GetClientRect();
   int32_t Left, Top;
   GetNextItemPosition(Left, Top);
-  R.Left = nb::ToInt(Left);
-  R.Top = nb::ToInt(Top);
+  R.Left = nb::ToInt32(Left);
+  R.Top = nb::ToInt32(Top);
 
   if (FDialogItemsCapacity == GetItems()->GetCount())
   {
@@ -554,7 +554,7 @@ intptr_t TFarDialog::DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param
   if (GetHandle())
   {
     TFarEnvGuard Guard; nb::used(Guard);
-    return GetFarPlugin()->GetPluginStartupInfo()->DefDlgProc(GetHandle(), Msg, nb::ToInt(Param1), Param2);
+    return GetFarPlugin()->GetPluginStartupInfo()->DefDlgProc(GetHandle(), Msg, nb::ToInt32(Param1), Param2);
   }
   return 0;
 }
@@ -653,8 +653,8 @@ TFarDialogItem * TFarDialog::ItemAt(int32_t X, int32_t Y)
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TRect Bounds = GetItem(Index)->GetActualBounds();
-    if ((Bounds.Left <= nb::ToInt(X)) && (nb::ToInt(X) <= Bounds.Right) &&
-      (Bounds.Top <= nb::ToInt(Y)) && (nb::ToInt(Y) <= Bounds.Bottom))
+    if ((Bounds.Left <= nb::ToInt32(X)) && (nb::ToInt32(X) <= Bounds.Right) &&
+      (Bounds.Top <= nb::ToInt32(Y)) && (nb::ToInt32(Y) <= Bounds.Bottom))
     {
       Result = GetItem(Index);
     }
@@ -1071,7 +1071,7 @@ void TFarDialogItem::ResetBounds()
   nb::used(B);
   nb::used(DItem);
 #define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
-    (GetContainer() ? nb::ToInt(GetContainer()->CB) : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
+    (GetContainer() ? nb::ToInt32(GetContainer()->CB) : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
   BOUND(X1, Left, x, GetLeft());
   BOUND(Y1, Top, y, GetTop());
   BOUND(X2, Right, x, GetLeft());
@@ -1386,7 +1386,7 @@ intptr_t TFarDialogItem::DefaultItemProc(int32_t Msg, void * Param)
   {
     TFarEnvGuard Guard; nb::used(Guard);
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
-        Msg, nb::ToInt(GetItem()), Param);
+        Msg, nb::ToInt32(GetItem()), Param);
   }
   return 0;
 }
@@ -1397,7 +1397,7 @@ intptr_t TFarDialogItem::DefaultDialogProc(int32_t Msg, int32_t Param1, void * P
   {
     TFarEnvGuard Guard; nb::used(Guard);
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
-        Msg, nb::ToInt(Param1), Param2);
+        Msg, nb::ToInt32(Param1), Param2);
   }
   return 0;
 }
@@ -1470,7 +1470,7 @@ void TFarDialogItem::UpdateSelected(int32_t Value)
 {
   if (GetSelected() != Value)
   {
-    GetDialogItem()->Selected = nb::ToInt(Value);
+    GetDialogItem()->Selected = nb::ToInt32(Value);
     DialogChange();
   }
 }
@@ -1504,10 +1504,10 @@ void TFarDialogItem::Move(int32_t DeltaX, int32_t DeltaY)
 {
   TRect R = GetBounds();
 
-  R.Left += nb::ToInt(DeltaX);
-  R.Right += nb::ToInt(DeltaX);
-  R.Top += nb::ToInt(DeltaY);
-  R.Bottom += nb::ToInt(DeltaY);
+  R.Left += nb::ToInt32(DeltaX);
+  R.Right += nb::ToInt32(DeltaX);
+  R.Top += nb::ToInt32(DeltaY);
+  R.Bottom += nb::ToInt32(DeltaY);
 
   SetBounds(R);
 }
@@ -1541,12 +1541,12 @@ void TFarDialogItem::SetWidth(int32_t Value)
   TRect R = GetBounds();
   if (R.Left >= 0)
   {
-    R.Right = R.Left + nb::ToInt(Value - 1);
+    R.Right = R.Left + nb::ToInt32(Value - 1);
   }
   else
   {
     assert(R.Right < 0);
-    R.Left = R.Right - nb::ToInt(Value + 1);
+    R.Left = R.Right - nb::ToInt32(Value + 1);
   }
   SetBounds(R);
 }
@@ -1561,12 +1561,12 @@ void TFarDialogItem::SetHeight(int32_t Value)
   TRect R = GetBounds();
   if (R.Top >= 0)
   {
-    R.Bottom = nb::ToInt(R.Top + Value - 1);
+    R.Bottom = nb::ToInt32(R.Top + Value - 1);
   }
   else
   {
     assert(R.Bottom < 0);
-    R.Top = nb::ToInt(R.Bottom - Value + 1);
+    R.Top = nb::ToInt32(R.Bottom - Value + 1);
   }
   SetBounds(R);
 }
@@ -1655,8 +1655,8 @@ TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD *Event)
   else
   {
     Result = TPoint(
-        nb::ToInt(Event->dwMousePosition.X - GetDialog()->GetBounds().Left - GetLeft()),
-        nb::ToInt(Event->dwMousePosition.Y - GetDialog()->GetBounds().Top - GetTop()));
+        nb::ToInt32(Event->dwMousePosition.X - GetDialog()->GetBounds().Left - GetLeft()),
+        nb::ToInt32(Event->dwMousePosition.Y - GetDialog()->GetBounds().Top - GetTop()));
   }
   return Result;
 }
@@ -1686,8 +1686,8 @@ void TFarDialogItem::Text(int32_t X, int32_t Y, const FarColor &Color, const Uni
 {
   TFarEnvGuard Guard; nb::used(Guard);
   GetPluginStartupInfo()->Text(
-    nb::ToInt(GetDialog()->GetBounds().Left + GetLeft() + X),
-    nb::ToInt(GetDialog()->GetBounds().Top + GetTop() + Y),
+    nb::ToInt32(GetDialog()->GetBounds().Left + GetLeft() + X),
+    nb::ToInt32(GetDialog()->GetBounds().Top + GetTop() + Y),
     &Color, Str.c_str());
 }
 
@@ -2082,8 +2082,8 @@ bool TFarSeparator::GetDouble() const
 void TFarSeparator::SetPosition(int32_t Value)
 {
   TRect R = GetBounds();
-  R.Top = nb::ToInt(Value);
-  R.Bottom = nb::ToInt(Value);
+  R.Top = nb::ToInt32(Value);
+  R.Bottom = nb::ToInt32(Value);
   SetBounds(R);
 }
 
@@ -2213,7 +2213,7 @@ void TFarList::Changed()
         nb_free(Items[Index].Text);
       }
       nb_free(Items);
-      FListItems->ItemsNumber = nb::ToInt(GetCount());
+      FListItems->ItemsNumber = nb::ToInt32(GetCount());
     }
     for (int32_t Index = 0; Index < GetCount(); ++Index)
     {
@@ -2744,16 +2744,16 @@ intptr_t TFarLister::ItemProc(int32_t Msg, void * Param)
       {
         int32_t NewTopIndex = GetTopIndex();
 
-        if (((P.x == nb::ToInt(GetWidth()) - 1) && (P.y == 0)) ||
-          ((P.x < nb::ToInt(GetWidth() - 1)) && (P.y < nb::ToInt(GetHeight() / 2))))
+        if (((P.x == nb::ToInt32(GetWidth()) - 1) && (P.y == 0)) ||
+          ((P.x < nb::ToInt32(GetWidth() - 1)) && (P.y < nb::ToInt32(GetHeight() / 2))))
         {
           if (NewTopIndex > 0)
           {
             --NewTopIndex;
           }
         }
-        else if (((P.x == GetWidth() - 1) && (P.y == nb::ToInt(GetHeight() - 1))) ||
-          ((P.x < GetWidth() - 1) && (P.y >= nb::ToInt(GetHeight() / 2))))
+        else if (((P.x == GetWidth() - 1) && (P.y == nb::ToInt32(GetHeight() - 1))) ||
+          ((P.x < GetWidth() - 1) && (P.y >= nb::ToInt32(GetHeight() / 2))))
         {
           if (NewTopIndex < GetItems()->GetCount() - GetHeight())
           {
@@ -2763,7 +2763,7 @@ intptr_t TFarLister::ItemProc(int32_t Msg, void * Param)
         else
         {
           assert(P.x == GetWidth() - 1);
-          assert((P.y > 0) && (P.y < nb::ToInt(GetHeight() - 1)));
+          assert((P.y > 0) && (P.y < nb::ToInt32(GetHeight() - 1)));
           NewTopIndex = nb::ToInt32(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
         }
 

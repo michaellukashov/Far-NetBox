@@ -192,7 +192,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   // user-configurable settings
   conf_set_str(conf, CONF_host, AnsiString(Data->GetHostNameExpanded()).c_str());
   conf_set_str(conf, CONF_username, UTF8String(Data->GetUserNameExpanded()).c_str());
-  conf_set_int(conf, CONF_port, nb::ToInt(Data->GetPortNumber()));
+  conf_set_int(conf, CONF_port, nb::ToInt32(Data->GetPortNumber()));
   conf_set_int(conf, CONF_protocol, PROT_SSH);
   conf_set_bool(conf, CONF_change_password, Data->GetChangePassword());
   // always set 0, as we will handle keepalives ourselves to avoid
@@ -203,7 +203,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_bool (conf, CONF_agentfwd, Data->GetAgentFwd());
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
-  conf_set_int(conf, CONF_ssh_rekey_time, nb::ToInt(Data->GetRekeyTime()));
+  conf_set_int(conf, CONF_ssh_rekey_time, nb::ToInt32(Data->GetRekeyTime()));
 
   DebugAssert(CIPHER_MAX == CIPHER_COUNT);
   for (int32_t c = 0; c < CIPHER_COUNT; c++)
@@ -396,8 +396,8 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     }
   }
 
-  conf_set_int(conf, CONF_connect_timeout, nb::ToInt(Data->GetTimeout() * MSecsPerSec));
-  conf_set_int(conf, CONF_sndbuf, nb::ToInt(Data->GetSendBuf()));
+  conf_set_int(conf, CONF_connect_timeout, nb::ToInt32(Data->GetTimeout() * MSecsPerSec));
+  conf_set_int(conf, CONF_sndbuf, nb::ToInt32(Data->GetSendBuf()));
   conf_set_str(conf, CONF_srcaddr, AnsiString(Data->FSourceAddress).c_str());
 
   // permanent settings
@@ -457,7 +457,7 @@ void TSecureShell::Open()
     {
       FLogCtx = log_init(FLogPolicy, conf);
       InitError = backend_init(&ssh_backend, FSeat, &FBackendHandle, FLogCtx, conf,
-        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), nb::ToInt(FSessionData->GetPortNumber()), &RealHost,
+        AnsiString(FSessionData->GetHostNameExpanded()).c_str(), nb::ToInt32(FSessionData->GetPortNumber()), &RealHost,
         FSessionData->GetTcpNoDelay() ? 1 : 0,
         conf_get_bool(conf, CONF_tcp_keepalives));
     },
@@ -1196,7 +1196,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, int32_t Len)
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 1)
         {
-          LogEvent(FORMAT("Waiting for another %u bytes", nb::ToInt(OutLen)));
+          LogEvent(FORMAT("Waiting for another %u bytes", nb::ToInt32(OutLen)));
         }
         WaitForData();
       }
@@ -1214,7 +1214,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, int32_t Len)
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT("Read %d bytes (%d pending)",
-        nb::ToInt(Len), nb::ToInt(PendLen)));
+        nb::ToInt32(Len), nb::ToInt32(PendLen)));
   }
   return Len;
 }
@@ -1400,11 +1400,11 @@ void TSecureShell::DispatchSendBuffer(int32_t BufSize)
 void TSecureShell::Send(const uint8_t * Buf, int32_t Length)
 {
   CheckConnection();
-  backend_send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), nb::ToInt(Length));
+  backend_send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), nb::ToInt32(Length));
   int32_t BufSize = backend_sendbuffer(FBackendHandle);
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
-    LogEvent(FORMAT("Sent %d bytes", nb::ToInt(Length)));
+    LogEvent(FORMAT("Sent %d bytes", nb::ToInt32(Length)));
     LogEvent(FORMAT("There are %u bytes remaining in the send buffer", BufSize));
   }
   FLastDataSent = Now();
@@ -1458,7 +1458,7 @@ int32_t TSecureShell::TranslatePuttyMessage(
       if (strcmp(AnsiMessage.c_str(), Original) == 0)
       {
         Message = LoadStr(Translation[Index].Translation);
-        Result = nb::ToInt(Index);
+        Result = nb::ToInt32(Index);
         break;
       }
     }
@@ -1473,7 +1473,7 @@ int32_t TSecureShell::TranslatePuttyMessage(
       {
         Message = FMTLOAD(Translation[Index].Translation,
           Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight());
-        Result = nb::ToInt(Index);
+        Result = nb::ToInt32(Index);
         break;
       }
     }
@@ -1648,14 +1648,14 @@ void TSecureShell::SocketEventSelect(SOCKET Socket, HANDLE Event, bool Enable)
 
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT("Selecting events %d for socket %d", nb::ToInt(Events), nb::ToInt(Socket)));
+    LogEvent(FORMAT("Selecting events %d for socket %d", nb::ToInt32(Events), nb::ToInt32(Socket)));
   }
 
   if (::WSAEventSelect(Socket, static_cast<WSAEVENT>(Event), Events) == SOCKET_ERROR)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT("Error selecting events %d for socket %d", nb::ToInt(Events), nb::ToInt(Socket)));
+      LogEvent(FORMAT("Error selecting events %d for socket %d", nb::ToInt32(Events), nb::ToInt32(Socket)));
     }
 
     if (Enable)
@@ -1715,7 +1715,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Enable)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT("Updating forwarding socket %d (%d)", nb::ToInt(value), nb::ToInt(Enable)));
+      LogEvent(FORMAT("Updating forwarding socket %d (%d)", nb::ToInt32(value), nb::ToInt32(Enable)));
     }
 
     SocketEventSelect(value, FSocketEvent, Enable);
@@ -2000,7 +2000,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   if (GetConfiguration()->GetActualLogProtocol() >= 2)
   {
-    LogEvent(FORMAT("Enumerating network events for socket %d", nb::ToInt(Socket)));
+    LogEvent(FORMAT("Enumerating network events for socket %d", nb::ToInt32(Socket)));
   }
 
   // see winplink.c
@@ -2022,14 +2022,14 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
       LogEvent(FORMAT("Enumerated %d network events making %d cumulative events for socket %d",
-        nb::ToInt32(AEvents.lNetworkEvents), nb::ToInt(Events.lNetworkEvents), nb::ToInt(Socket)));
+        nb::ToInt32(AEvents.lNetworkEvents), nb::ToInt32(Events.lNetworkEvents), nb::ToInt32(Socket)));
     }
   }
   else
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT("Error enumerating network events for socket %d", nb::ToInt(Socket)));
+      LogEvent(FORMAT("Error enumerating network events for socket %d", nb::ToInt32(Socket)));
     }
   }
 
@@ -2230,7 +2230,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         DebugAssert(OutBuffLen == sizeof(BufferLen));
         if (FSendBuf < nb::ToInt32(BufferLen))
         {
-          LogEvent(FORMAT("Increasing send buffer from %d to %d", FSendBuf, nb::ToInt(BufferLen)));
+          LogEvent(FORMAT("Increasing send buffer from %d to %d", FSendBuf, nb::ToInt32(BufferLen)));
           FSendBuf = BufferLen;
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }

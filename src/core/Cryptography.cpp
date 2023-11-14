@@ -568,7 +568,7 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
   int Last = 31;
   while (*S != '\0')
   {
-    int X = nb::ToInt(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
+    int X = nb::ToInt32(UnscrambleTable[static_cast<uint8_t>(*S)]) - 1 - (Last % 255);
     if (X <= 0)
     {
       X += 255;

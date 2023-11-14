@@ -791,7 +791,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       CaseC[GetFileNameCase()],
       CharToHex(GetInvalidCharsReplacement()),
       ResumeC[GetResumeSupport()],
-      nb::ToInt(GetResumeThreshold()),
+      nb::ToInt32(GetResumeThreshold()),
       BooleanToEngStr(GetCalculateSize()),
       GetFileMask()) +
     FORMAT(
@@ -928,7 +928,7 @@ void TCopyParamType::Load(THierarchicalStorage *Storage)
   SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger("ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64("ResumeThreshold", GetResumeThreshold()));
   SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger("ReplaceInvalidChars",
-        nb::ToInt(GetInvalidCharsReplacement()))));
+        nb::ToInt32(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString("LocalInvalidChars", GetLocalInvalidChars()));
   SetCalculateSize(Storage->ReadBool("CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists("IncludeFileMask"))

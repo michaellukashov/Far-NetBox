@@ -893,12 +893,12 @@ bool TextFromClipboard(UnicodeString & Text, bool Trim)
       int Len = (Size / sizeof(*AText)) - 1;
       if (Len > Limit)
       {
-        ErrorContext = FORMAT(L"substring(%d,%d)", int(Size), Len);
+        ErrorContext = FORMAT(L"substring(%d,%d)", nb::ToInt32(Size), Len);
         Text = UnicodeString(AText, Limit);
       }
       else
       {
-        ErrorContext = FORMAT(L"string(%d,%d)", int(Size), Len);
+        ErrorContext = FORMAT(L"string(%d,%d)", nb::ToInt32(Size), Len);
         Text = AText;
       }
       if (Trim)

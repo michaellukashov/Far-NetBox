@@ -1368,7 +1368,7 @@ bool TCustomIniFileStorage::DoReadBool(const UnicodeString & Name, bool Default)
   }
   else
   {
-    int32_t IntDefault = int(Default);
+    int32_t IntDefault = nb::ToInt32(Default);
     int32_t Int = DoReadIntegerWithMapping(Name, IntDefault, &BoolMapping);
     return (Int != 0);
   }

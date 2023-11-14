@@ -714,8 +714,8 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 #undef KEY4
 #define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
 #define KEY2(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), NAME)
-#define KEY3(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt(Get ## NAME()))
-#define KEY4(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt(NAME))
+#define KEY3(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt32(Get ## NAME()))
+#define KEY4(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt32(NAME))
   REGCONFIG(true);
 #undef KEY4
 #undef KEY3
@@ -796,7 +796,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
 #define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
 #define KEY2(TYPE, NAME) NAME = Storage->Read ## TYPE(PropertyToKey(#NAME), NAME)
 #define KEY3(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt(Get ## NAME())))
-#define KEY4(TYPE, NAME) NAME = Storage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt(NAME))
+#define KEY4(TYPE, NAME) NAME = Storage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt32(NAME))
   REGCONFIG(false);
 #undef KEY
 #undef KEYEX
@@ -945,7 +945,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 
   if (!NewInstance && !Internal)
   {
-    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, nb::ToInt(ALocale)));
+    throw Exception(FMTLOAD(LOCALE_LOAD_ERROR, nb::ToInt32(ALocale)));
   }
   else
   {

@@ -2342,7 +2342,7 @@ TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
   }
   catch (EConvertError &E)
   {
-    throw EConvertError(FORMAT("%s [%04u-%02u-%02u]", E.Message, int(Year), int(Month), int(Day)));
+    throw EConvertError(FORMAT("%s [%04u-%02u-%02u]", E.Message, nb::ToInt32(Year), nb::ToInt32(Month), nb::ToInt32(Day)));
   }
   return Result;
 }
@@ -2356,7 +2356,7 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   }
   catch (EConvertError &E)
   {
-    throw EConvertError(FORMAT("%s [%02u:%02u:%02u.%04u]", E.Message, int(Hour), int(Min), int(Sec), int(MSec)));
+    throw EConvertError(FORMAT("%s [%02u:%02u:%02u.%04u]", E.Message, nb::ToInt32(Hour), nb::ToInt32(Min), nb::ToInt32(Sec), nb::ToInt32(MSec)));
   }
   return Result;
 }
@@ -2370,7 +2370,7 @@ TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
   }
   catch (EConvertError &E)
   {
-    throw EConvertError(FORMAT("%s [%d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%3.3d]", E.Message, int(SystemTime.wYear), int(SystemTime.wMonth), int(SystemTime.wDay), int(SystemTime.wHour), int(SystemTime.wMinute), int(SystemTime.wSecond), int(SystemTime.wMilliseconds)));
+    throw EConvertError(FORMAT("%s [%d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%3.3d]", E.Message, nb::ToInt32(SystemTime.wYear), nb::ToInt32(SystemTime.wMonth), nb::ToInt32(SystemTime.wDay), nb::ToInt32(SystemTime.wHour), nb::ToInt32(SystemTime.wMinute), nb::ToInt32(SystemTime.wSecond), nb::ToInt32(SystemTime.wMilliseconds)));
   }
 }
 
@@ -2820,7 +2820,7 @@ static int64_t DateTimeToUnix(const TDateTime &DateTime)
 {
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
-  DebugAssert(int(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
+  DebugAssert(nb::ToInt32(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
 
   return Round(nb::ToDouble(DateTime - UnixDateDelta) * SecsPerDay) +
     CurrentParams->CurrentDifferenceSec;
@@ -3228,7 +3228,7 @@ int32_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
 
 int32_t TimeToMSec(const TDateTime & T)
 {
-  return int(Round(double(T) * double(MSecsPerDay)));
+  return nb::ToInt32(Round(double(T) * double(MSecsPerDay)));
 }
 
 int32_t TimeToSeconds(const TDateTime & T)
@@ -3482,7 +3482,7 @@ static UnicodeString DoLoadStrFrom(HINSTANCE Module, int32_t Ident, uint32_t Max
 {
   UnicodeString Result;
   Result.SetLength(nb::ToInt32(MaxLength));
-  const int32_t Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), nb::ToInt(MaxLength));
+  const int32_t Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), nb::ToInt32(MaxLength));
   Result.SetLength(Length);
 
   return Result;
@@ -4163,7 +4163,7 @@ UnicodeString FormatVersion(int32_t MajorVersion, int32_t MinorVersion, int32_t 
 {
   return
     FORMAT("%d.%d.%d",
-      nb::ToInt(MajorVersion), nb::ToInt(MinorVersion), nb::ToInt(Release));
+      nb::ToInt32(MajorVersion), nb::ToInt32(MinorVersion), nb::ToInt32(Release));
 }
 
 TFormatSettings GetEngFormatSettings()
@@ -4266,7 +4266,7 @@ static int32_t PemPasswordCallback(char * Buf, int32_t ASize, int32_t /*RWFlag*/
   strncpy(Buf, UtfPassphrase.c_str(), nb::ToSizeT(ASize));
   Shred(UtfPassphrase);
   Buf[ASize - 1] = '\0';
-  return nb::ToInt(NBChTraitsCRT<char>::SafeStringLen(Buf));
+  return nb::ToInt32(NBChTraitsCRT<char>::SafeStringLen(Buf));
 }
 
 static bool IsTlsPassphraseError(int32_t Error, bool HasPassphrase)

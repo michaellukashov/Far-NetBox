@@ -1964,7 +1964,7 @@ int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3Pu
     {
       FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(READ_ERROR, Data.FileName), "")
       {
-        Result = nb::ToInt(Data.Stream->Read(Buffer, BufferSize));
+        Result = nb::ToInt32(Data.Stream->Read(Buffer, BufferSize));
       }
       FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, Data.FileName));
 
@@ -2159,11 +2159,11 @@ void TS3FileSystem::Source(
           S3PutObjectHandler UploadPartHandler =
             { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
           int64_t Remaining = Stream->Size() - Stream->Position();
-          int32_t RemainingInt = nb::ToInt32(std::min(nb::ToInt64(std::numeric_limits<int>::max()), Remaining));
+          int32_t RemainingInt = nb::ToInt32(std::min(nb::ToInt64(std::numeric_limits<int32_t>::max()), Remaining));
           int32_t PartLength = std::min(ChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
-            &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, nb::ToInt(Part), MultipartUploadId.c_str(),
+            &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, nb::ToInt32(Part), MultipartUploadId.c_str(),
             PartLength, FRequestContext, FTimeout, &Data);
         }
         else
@@ -2208,7 +2208,7 @@ void TS3FileSystem::Source(
       {
         RequestInit(MultipartCommitPutObjectDataCallbackData);
 
-        MultipartCommitPutObjectDataCallbackData.Remaining = nb::ToInt(MultipartCommitPutObjectDataCallbackData.Message.Length());
+        MultipartCommitPutObjectDataCallbackData.Remaining = nb::ToInt32(MultipartCommitPutObjectDataCallbackData.Message.Length());
 
         S3MultipartCommitHandler MultipartCommitHandler =
           { CreateResponseHandler(), &LibS3MultipartCommitPutObjectDataCallback, nullptr };

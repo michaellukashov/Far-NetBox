@@ -568,11 +568,11 @@ void TFTPFileSystem::Open()
     TAutoFlag OpeningFlag(FOpening); nb::used(OpeningFlag);
 
     FActive = FFileZillaIntf->Connect(
-      HostName.c_str(), nb::ToInt(Data->GetPortNumber()), UserName.c_str(),
+      HostName.c_str(), nb::ToInt32(Data->GetPortNumber()), UserName.c_str(),
       Password.c_str(), Account.c_str(), Path.c_str(),
-      ServerType, nb::ToInt(Pasv), nb::ToInt(TimeZoneOffset), UTF8, Data->FFtpForcePasvIp,
-      nb::ToInt(Data->GetFtpUseMlsd()), FCertificate, FPrivateKey,
-      nb::ToInt(CodePage), nb::ToInt(Data->GetFtpDupFF()), nb::ToInt(Data->GetFtpUndupFF()));
+      ServerType, nb::ToInt32(Pasv), nb::ToInt32(TimeZoneOffset), UTF8, Data->FFtpForcePasvIp,
+      nb::ToInt32(Data->GetFtpUseMlsd()), FCertificate, FPrivateKey,
+      nb::ToInt32(CodePage), nb::ToInt32(Data->GetFtpDupFF()), nb::ToInt32(Data->GetFtpUndupFF()));
 
     DebugAssert(FActive);
 
@@ -1609,7 +1609,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   {
     FFileZillaIntf->FileTransfer(
       ApiPath(LocalFile).c_str(), RemoteFile.c_str(), RemotePath.c_str(),
-      Get, Size, nb::ToInt(Type), &UserData, UserData.CopyParam->FOnTransferOut, UserData.CopyParam->FOnTransferIn);
+      Get, Size, nb::ToInt32(Type), &UserData, UserData.CopyParam->FOnTransferOut, UserData.CopyParam->FOnTransferIn);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     uint32_t Reply = WaitForCommandReply();
@@ -3265,7 +3265,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
            TFileZillaIntf::REPLY_IDLE | TFileZillaIntf::REPLY_NOTINITIALIZED |
            TFileZillaIntf::REPLY_ALREADYINIZIALIZED))
     {
-      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", nb::ToInt(Reply))));
+      FTerminal->FatalError(nullptr, FMTLOAD(INTERNAL_ERROR, "ftp#2", FORMAT("0x%x", nb::ToInt32(Reply))));
     }
     else
     {
@@ -3928,7 +3928,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
     if (UserData.OverwriteResult >= 0)
     {
       // on retry, use the same answer as on the first attempt
-      RequestResult = nb::ToInt(UserData.OverwriteResult);
+      RequestResult = nb::ToInt32(UserData.OverwriteResult);
     }
     else if ((!UserData.CopyParam->FOnTransferOut.empty()) || (!UserData.CopyParam->FOnTransferIn.empty()))
     {
@@ -4590,11 +4590,11 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       {
         __removed delete File;
         UnicodeString TmStr = FORMAT("%d/%d/%d/%d", int(Entry->Time.HasTime),
-            int(Entry->Time.HasYear), int(Entry->Time.HasSeconds), int(Entry->Time.HasDate));
+            nb::ToInt32(Entry->Time.HasYear), nb::ToInt32(Entry->Time.HasSeconds), nb::ToInt32(Entry->Time.HasDate));
         UnicodeString EntryData =
           FORMAT("%s/%s/%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%s",
             Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
-             int(Entry->Dir), int(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
+             nb::ToInt32(Entry->Dir), nb::ToInt32(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
              Entry->Time.Hour, Entry->Time.Minute, TmStr);
         throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData), HELP_LIST_LINE_ERROR);
       }
@@ -4640,7 +4640,7 @@ bool TFTPFileSystem::HandleReply(int32_t Command, uint32_t Reply)
   {
     if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", nb::ToInt(Reply), Command));
+      FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", nb::ToInt32(Reply), Command));
     }
 
     // reply with Command 0 is not associated with current operation

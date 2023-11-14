@@ -717,7 +717,7 @@ public:
       static wchar_t * Types = const_cast<wchar_t *>(L"U-DLSUOCBF");
       if (FXType > static_cast<uint8_t>(nb::StrLength(Types)))
       {
-        throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, nb::ToInt(FXType)));
+        throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, nb::ToInt32(FXType)));
       }
       AFile->SetType(Types[FXType]);
     }
@@ -1129,7 +1129,7 @@ public:
       TYPE_CASE(SSH_FXP_EXTENDED);
       TYPE_CASE(SSH_FXP_EXTENDED_REPLY);
       default:
-        return FORMAT("Unknown message (%d)", nb::ToInt(GetType()));
+        return FORMAT("Unknown message (%d)", nb::ToInt32(GetType()));
     }
   }
 
@@ -1156,7 +1156,7 @@ private:
   {
     if (Size > GetRemainingLength())
     {
-      throw Exception(FMTLOAD(SFTP_PACKET_ERROR, nb::ToInt(FPosition), nb::ToInt(Size), nb::ToInt(FLength)));
+      throw Exception(FMTLOAD(SFTP_PACKET_ERROR, nb::ToInt32(FPosition), nb::ToInt32(Size), nb::ToInt32(FLength)));
     }
   }
 
@@ -1717,7 +1717,7 @@ protected:
         if (FFileSystem->FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
         {
           FFileSystem->FTerminal->LogEvent(FORMAT("Write request offset: %d, len: %d",
-            int(FTransferred), int(BlockBuf.GetSize())));
+            nb::ToInt32(FTransferred), nb::ToInt32(BlockBuf.GetSize())));
         }
 
         if (FEncryption != nullptr)
@@ -2619,7 +2619,7 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
         (FTerminal->Configuration->ActualLogProtocol >= 0))
     {
       FTerminal->GetLog()->Add(llOutput, FORMAT("Status code: %d, Message: %d, Server: %s, Language: %s ",
-        nb::ToInt(Code), nb::ToInt(Packet->GetMessageNumber()), ServerMessage, LanguageTag));
+        nb::ToInt32(Code), nb::ToInt32(Packet->GetMessageNumber()), ServerMessage, LanguageTag));
     }
     if (!LanguageTag.IsEmpty())
     {
@@ -2681,7 +2681,7 @@ int32_t TSFTPFileSystem::PacketLength(uint8_t * LenBuf, SSH_FXP_TYPE ExpectedTyp
   if (Length > SFTP_MAX_PACKET_LEN)
   {
     UnicodeString Message = FMTLOAD(SFTP_PACKET_TOO_BIG,
-      int(Length), SFTP_MAX_PACKET_LEN);
+      nb::ToInt32(Length), SFTP_MAX_PACKET_LEN);
     if (ExpectedType == SSH_FXP_VERSION)
     {
       RawByteString LenString(reinterpret_cast<char *>(LenBuf), 4);
@@ -2830,7 +2830,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       }
       else if (ExpectedType != Packet->GetType())
       {
-        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, nb::ToInt(Packet->GetType())));
+        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, nb::ToInt32(Packet->GetType())));
       }
     }
   }
@@ -2892,7 +2892,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceiveResponse(
     if (MessageNumber != Response->GetMessageNumber())
     {
       FTerminal->FatalError(nullptr, FMTLOAD(SFTP_MESSAGE_NUMBER,
-        nb::ToInt(Response->GetMessageNumber()), nb::ToInt(MessageNumber)));
+        nb::ToInt32(Response->GetMessageNumber()), nb::ToInt32(MessageNumber)));
     }
   },
   __finally
@@ -3273,13 +3273,13 @@ void TSFTPFileSystem::DoStartup()
             "  Attribute mask: %x, Attribute bits: %x, Open flags: %x\n"
             "  Access mask: %x, Open block vector: %x, Block vector: %x, Max read size: %d\n",
             ExtensionName,
-             int(FSupport->AttributeMask),
-             int(FSupport->AttributeBits),
-             int(FSupport->OpenFlags),
-             int(FSupport->AccessMask),
-             int(FSupport->OpenBlockVector),
-             int(FSupport->BlockVector),
-             int(FSupport->MaxReadSize)));
+             nb::ToInt32(FSupport->AttributeMask),
+             nb::ToInt32(FSupport->AttributeBits),
+             nb::ToInt32(FSupport->OpenFlags),
+             nb::ToInt32(FSupport->AccessMask),
+             nb::ToInt32(FSupport->OpenBlockVector),
+             nb::ToInt32(FSupport->BlockVector),
+             nb::ToInt32(FSupport->MaxReadSize)));
           FTerminal->LogEvent(FORMAT("  Attribute extensions (%d)\n", FSupport->AttribExtensions->GetCount()));
           for (int32_t Index = 0; Index < FSupport->AttribExtensions->GetCount(); ++Index)
           {
@@ -3302,7 +3302,7 @@ void TSFTPFileSystem::DoStartup()
         UnicodeString ProductVersion(VendorIdStruct.GetAnsiString());
         int64_t ProductBuildNumber = VendorIdStruct.GetInt64();
         FTerminal->LogEvent(FORMAT("Server software: %s %s (%d) by %s",
-          ProductName, ProductVersion, int(ProductBuildNumber), VendorName));
+          ProductName, ProductVersion, nb::ToInt32(ProductBuildNumber), VendorName));
       }
       else if (ExtensionName == SFTP_EXT_FSROOTS)
       {
@@ -3323,7 +3323,7 @@ void TSFTPFileSystem::DoStartup()
             {
               uint8_t Drive = RootsPacket.GetByte();
               uint8_t MaybeType = RootsPacket.GetByte();
-              FTerminal->LogEvent(FORMAT("  %s: (type %d)", static_cast<char>(Drive), nb::ToInt(MaybeType)));
+              FTerminal->LogEvent(FORMAT("  %s: (type %d)", static_cast<char>(Drive), nb::ToInt32(MaybeType)));
               FFixedPaths->Add(FORMAT("%s:", static_cast<char>(Drive)));
             }
           }
@@ -3502,7 +3502,7 @@ void TSFTPFileSystem::DoStartup()
     {
       FMaxPacketSize = PacketPayload + (32 * 1024);
       FTerminal->LogEvent(FORMAT("Limiting packet size to Momentum sftp-server limit of %d bytes",
-        int(FMaxPacketSize)));
+        nb::ToInt32(FMaxPacketSize)));
     }
   }
 
@@ -3777,7 +3777,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, nb::ToInt(Response.GetType())));
+        FTerminal->FatalError(nullptr, FMTLOAD(SFTP_INVALID_TYPE, nb::ToInt32(Response.GetType())));
       }
     }
     while (!isEOF);
@@ -5722,7 +5722,7 @@ void TSFTPFileSystem::Sink(
       {
         TSFTPPacket DataPacket(FCodePage);
 
-        int32_t QueueLen = int(OperationProgress->TransferSize / DownloadBlockSize(OperationProgress)) + 1;
+        int32_t QueueLen = nb::ToInt32(OperationProgress->TransferSize / DownloadBlockSize(OperationProgress)) + 1;
         if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
             (QueueLen < 0))
         {
@@ -5780,7 +5780,7 @@ void TSFTPFileSystem::Sink(
               // file has some special file size.
               FTerminal->LogEvent(FORMAT(
                 "Received incomplete data packet before end of file, offset: %s, size: %d, requested: %d",
-                ::Int64ToStr(OperationProgress->GetTransferredSize()), int(DataLen), int(BlockSize)));
+                ::Int64ToStr(OperationProgress->GetTransferredSize()), nb::ToInt32(DataLen), nb::ToInt32(BlockSize)));
               FTerminal->TerminalError(nullptr, LoadStr(SFTP_INCOMPLETE_BEFORE_EOF));
             }
 

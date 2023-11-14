@@ -305,7 +305,7 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
             if (DebugAlwaysTrue(Manager->ActiveTerminal != nullptr) &&
                 ((Configuration->SessionReopenTimeout == 0) ||
                  ((double)Manager->ActiveTerminal->ReopenStart == 0) ||
-                 (int(double(Now() - Manager->ActiveTerminal->ReopenStart) * MSecsPerDay) < Configuration->SessionReopenTimeout)))
+                 (nb::ToInt32(double(Now() - Manager->ActiveTerminal->ReopenStart) * MSecsPerDay) < Configuration->SessionReopenTimeout)))
             {
               Params.Timeout = GUIConfiguration->SessionReopenAutoIdle;
               Params.TimeoutAnswer = qaRetry;

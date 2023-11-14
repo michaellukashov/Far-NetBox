@@ -843,7 +843,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
       (FParams->TimeoutButton == nb::ToUIntPtr(Index)))
     {
       FTimeoutButtonCaption = Caption;
-      Caption = FORMAT(FParams->TimeoutStr, Caption, nb::ToInt(FParams->Timeout / 1000));
+      Caption = FORMAT(FParams->TimeoutStr, Caption, nb::ToInt32(FParams->Timeout / 1000));
       FTimeoutButton = Button;
     }
     Button->SetCaption(FORMAT(" %s ", Caption));
@@ -918,7 +918,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     DebugAssert(MoreMessagesSeparator != nullptr);
     MoreMessagesSeparator->SetPosition(
       MoreMessagesLister->GetTop() + MoreMessagesLister->GetHeight());
-    S.y += nb::ToInt(MoreMessagesLister->GetHeight()) + 1;
+    S.y += nb::ToInt32(MoreMessagesLister->GetHeight()) + 1;
   }
   SetSize(S);
 }
@@ -958,7 +958,7 @@ void TFarMessageDialog::Idle()
     {
       UnicodeString Caption =
         FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
-            FTimeoutButtonCaption, nb::ToInt((FParams->Timeout - Running) / 1000)));
+            FTimeoutButtonCaption, nb::ToInt32((FParams->Timeout - Running) / 1000)));
       int32_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
       Caption += ::StringOfChar(L' ', sz);
       FTimeoutButton->SetCaption(Caption);
@@ -1082,8 +1082,8 @@ int32_t TCustomFarPlugin::FarMessage(uint32_t Flags,
 
   TFarEnvGuard Guard; nb::used(Guard);
   int32_t Result = static_cast<intptr_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
-        Flags | FMSG_LEFTALIGN, nullptr, Items, nb::ToInt(MessageLines->GetCount()),
-        nb::ToInt(Buttons->GetCount())));
+        Flags | FMSG_LEFTALIGN, nullptr, Items, nb::ToInt32(MessageLines->GetCount()),
+        nb::ToInt32(Buttons->GetCount())));
 
   return Result;
 }
@@ -1217,7 +1217,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
           HistoryName.c_str(),
           Text.c_str(),
           ToWChar(DestText),
-          nb::ToInt(MaxLen),
+          nb::ToInt32(MaxLen),
           nullptr,
           FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
     }
@@ -1604,7 +1604,7 @@ UnicodeString TCustomFarPlugin::GetMsg(int32_t MsgId) const
   if (FStartupInfo.GetMsg)
   try
   {
-    Result = FStartupInfo.GetMsg(&MainGuid, nb::ToInt(MsgId));
+    Result = FStartupInfo.GetMsg(&MainGuid, nb::ToInt32(MsgId));
   }
   catch(...)
   {
@@ -2402,7 +2402,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   int32_t FunctionKey, const UnicodeString & Title)
 {
   DebugAssert(FunctionKey >= 1 && FunctionKey <= 12);
-  int32_t shift = nb::ToInt(ShiftStatus);
+  int32_t shift = nb::ToInt32(ShiftStatus);
   DebugAssert(shift >= 0 && shift < 7);
   KeyBarLabel *Labels = &FKeyBarTitles.Labels[shift * 12];
   if (Labels[FunctionKey - 1].Key.VirtualKeyCode)
@@ -2737,7 +2737,7 @@ void TFarPanelInfo::SetFocusedIndex(int32_t Value)
   if (GetFocusedIndex() != Value)
   {
     DebugAssert(Value != nb::NPOS && Value < nb::ToIntPtr(FPanelInfo->ItemsNumber));
-    FPanelInfo->CurrentItem = nb::ToInt(Value);
+    FPanelInfo->CurrentItem = nb::ToInt32(Value);
     PanelRedrawInfo PanelInfo;
     nb::ClearStruct(PanelInfo);
     PanelInfo.StructSize = sizeof(PanelRedrawInfo);
@@ -2964,7 +2964,7 @@ UnicodeString TGlobalFunctions::GetMsg(int32_t Id) const
 #if 0
   HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
   int32_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
-      nb::ToWChar(Fmt), nb::ToInt(Fmt.GetLength()));
+      nb::ToWChar(Fmt), nb::ToInt32(Fmt.GetLength()));
   if (!Length)
   {
     DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
@@ -2992,7 +2992,7 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   int32_t Length;
   if (FarPlugin)
   {
-    Length = nb::ToInt(FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(nb::ToDWord(Path.Length()), ToWChar(Path)) - 1);
+    Length = nb::ToInt32(FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(nb::ToDWord(Path.Length()), ToWChar(Path)) - 1);
   }
   else
   {

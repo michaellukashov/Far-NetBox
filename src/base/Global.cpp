@@ -88,7 +88,7 @@ inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t
   }
   UTF8String Buffer =
     UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
-        TimeString, int(Thread), SourceFile, Line, Func, Message));
+        TimeString, nb::ToInt32(Thread), SourceFile, Line, Func, Message));
   return Buffer;
 }
 
@@ -242,9 +242,9 @@ void TraceDumpToFile()
 
       TimeString =
         FormatDateTime(TimestampFormat,
-          IncMilliSecond(N, -ToInt(Ticks - i->Ticks)));
+          IncMilliSecond(N, -nb::ToInt32(Ticks - i->Ticks)));
       Buffer = UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
-            TimeString, int(i->Thread), SourceFile,
+            TimeString, nb::ToInt32(i->Thread), SourceFile,
             i->Line, i->Func, i->Message));
       WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, nullptr);
 #else
@@ -287,7 +287,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
     SourceFile = Slash + 1;
   }
   UTF8String Buffer = UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
-        TimeString, int(::GetCurrentThreadId()), SourceFile,
+        TimeString, nb::ToInt32(::GetCurrentThreadId()), SourceFile,
         Line, Func, Message));
 #ifdef TRACE_IN_MEMORY
   if (TracingCriticalSection != nullptr)
