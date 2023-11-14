@@ -56,6 +56,6 @@ private:
   mutable PluginSettings FPluginSettings;
   rde::vector<int32_t> FSubKeyIds;
 
-  void Init();
+  virtual void Init() override;
 };
 

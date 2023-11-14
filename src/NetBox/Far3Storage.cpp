@@ -11,11 +11,11 @@ TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FPluginSettings(Guid, SettingsControl)
 {
-  Init();
 }
 
 void TFar3Storage::Init()
 {
+  THierarchicalStorage::Init();
   FRoot = 0;
 }
 
@@ -112,7 +112,7 @@ void TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
   }
 }
 
-void TFar3Storage::DoGetSubKeyNames(TStrings *Strings)
+void TFar3Storage::DoGetSubKeyNames(TStrings * Strings)
 {
   FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, 0};
   Settings.Root = FRoot;
@@ -128,7 +128,7 @@ void TFar3Storage::DoGetSubKeyNames(TStrings *Strings)
   }
 }
 
-void TFar3Storage::DoGetValueNames(TStrings *Strings)
+void TFar3Storage::DoGetValueNames(TStrings * Strings)
 {
   Strings->Clear();
   FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, 0};
