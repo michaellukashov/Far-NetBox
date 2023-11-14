@@ -78,8 +78,10 @@ void TFarConfiguration::Default()
 
 THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool & SessionList)
 {
-  return TGUIConfiguration::CreateScpStorage(SessionList);
-  return FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : nullptr;
+  THierarchicalStorage * Storage = TGUIConfiguration::CreateScpStorage(SessionList);
+  //THierarchicalStorage * Storage = FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : nullptr;
+  Storage->Init();
+  return Storage;
 }
 
 void TFarConfiguration::Saved()
