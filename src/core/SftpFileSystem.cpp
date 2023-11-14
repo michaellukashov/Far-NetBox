@@ -5076,7 +5076,7 @@ void TSFTPFileSystem::Source(
     }
     FILE_OPERATION_LOOP_END_CUSTOM(
       FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-      (UnixExtractFileName(OpenParams.RemoteFileName), DestFileName)),
+        (UnixExtractFileName(OpenParams.RemoteFileName), DestFileName)),
       folAllowSkip, HELP_RENAME_AFTER_RESUME_ERROR);
   }
 

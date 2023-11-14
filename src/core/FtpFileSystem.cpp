@@ -1543,7 +1543,7 @@ void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
 void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
   int64_t Bytes)
 {
-  TFileOperationProgressType *OperationProgress = FTerminal->GetOperationProgress();
+  TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
 
   OperationProgress->SetTransferSize(TransferSize);
 
@@ -3937,7 +3937,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
     }
     else
     {
-      TFileOperationProgressType *OperationProgress = FTerminal->GetOperationProgress();
+      TFileOperationProgressType * OperationProgress = FTerminal->GetOperationProgress();
       UnicodeString TargetFileName = FileName1;
       DebugAssert(UserData.FileName == TargetFileName);
 

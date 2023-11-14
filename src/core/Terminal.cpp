@@ -5742,6 +5742,7 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   DebugAssert(OperationProgress);
   DebugAssert(AHandle);
   bool Result = true;
+
   FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(CREATE_FILE_ERROR, ATargetFileName), "")
   {
     Result = DoCreateLocalFile(ATargetFileName, OperationProgress, AHandle, NoConfirmation);
@@ -5758,7 +5759,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
 {
   DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-  TFileOperationProgressType *OperationProgress = GetOperationProgress();
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
   FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(FILE_NOT_EXISTS, ATargetFileName), "")
   {
@@ -7049,15 +7050,14 @@ void TTerminal::DoSynchronizeProgress(const TSynchronizeData & Data,
 void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, void * /*Param*/)
 {
-  const TChecklistItem *ChecklistItem =
+  const TChecklistItem * ChecklistItem =
     reinterpret_cast<const TChecklistItem *>(AFile);
 
   UnicodeString LocalFile =
     ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
-    ChecklistItem->Local.FileName;
+      ChecklistItem->Local.FileName;
   FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(CANT_SET_ATTRS, LocalFile), "")
   {
-    // this->SetLocalFileTime(LocalFile, ChecklistItem->Remote.Modification);
     HANDLE Handle;
     this->TerminalOpenLocalFile(LocalFile, GENERIC_WRITE, nullptr, &Handle,
       nullptr, nullptr, nullptr, nullptr);
@@ -7936,17 +7936,16 @@ void TTerminal::DoRenameLocalFileForce(const UnicodeString & OldName, const Unic
     DoDeleteLocalFile(NewName);
   }
 
-  __removed FILE_OPERATION_LOOP_BEGIN
   FILE_OPERATION_LOOP_BEGIN(this, FOperationProgress, folNone, FMTLOAD(RENAME_FILE_ERROR, OldName, NewName), "")
   {
-    THROWOSIFFALSE(SysUtulsRenameFile(ApiPath(OldName), ApiPath(NewName)));
+    THROWOSIFFALSE(base::RenameFile(ApiPath(OldName), ApiPath(NewName)));
   }
   FILE_OPERATION_LOOP_END(FMTLOAD(RENAME_FILE_ERROR, OldName, NewName));
 }
 
 void TTerminal::UpdateSource(const TLocalFileHandle & AHandle, const TCopyParamType * CopyParam, int32_t AParams)
 {
-  TFileOperationProgressType *OperationProgress = GetOperationProgress();
+  TFileOperationProgressType * OperationProgress = GetOperationProgress();
   // TODO: Delete also read-only files.
   if (FLAGSET(AParams, cpDelete))
   {
@@ -7959,7 +7958,6 @@ void TTerminal::UpdateSource(const TLocalFileHandle & AHandle, const TCopyParamT
   }
   else if (CopyParam->ClearArchive && FLAGSET(AHandle.Attrs, faArchive))
   {
-    __removed FILE_OPERATION_LOOP_BEGIN
     FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folNone, FMTLOAD(CANT_SET_ATTRS, AHandle.FileName), "")
     {
       THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(AHandle.FileName), (AHandle.Attrs & ~faArchive)) == 0);
@@ -8509,7 +8507,7 @@ void TTerminal::Sink(
 
     int32_t Attrs = 0;
     UnicodeString LogFileName;
-    if (CopyParam->FOnTransferOut)
+    if (!CopyParam->FOnTransferOut.empty())
     {
       Attrs = -1;
       LogFileName = L"-";
