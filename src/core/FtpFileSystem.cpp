@@ -38,45 +38,45 @@ class TFileZillaImpl final : public TFileZillaIntf
 {
 public:
   TFileZillaImpl() = delete;
-  explicit TFileZillaImpl(TFTPFileSystem *FileSystem) noexcept;
+  explicit TFileZillaImpl(TFTPFileSystem * FileSystem) noexcept;
   virtual ~TFileZillaImpl() = default;
 
-  virtual const wchar_t *Option(int32_t OptionID) const override;
+  virtual const wchar_t * Option(int32_t OptionID) const override;
   virtual int32_t OptionVal(int32_t OptionID) const override;
 
 protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) override;
 
-  virtual bool HandleStatus(const wchar_t *Status, int Type) override;
+  virtual bool HandleStatus(const wchar_t * Status, int Type) override;
   virtual bool HandleAsyncRequestOverwrite(
-    wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
-    const wchar_t *Path1, const wchar_t *Path2,
+    wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
+    const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
-    bool HasLocalTime, const TRemoteFileTime &RemoteTime, void *UserData,
-    HANDLE &LocalFileHandle, int &RequestResult) override;
+    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
+    HANDLE & LocalFileHandle, int32_t & RequestResult) override;
   virtual bool HandleAsyncRequestVerifyCertificate(
-    const TFtpsCertificateData &Data, int &RequestResult) override;
+    const TFtpsCertificateData & Data, int32_t & RequestResult) override;
   virtual bool HandleAsyncRequestNeedPass(
-    struct TNeedPassRequestData &Data, int &RequestResult) override;
-  virtual bool HandleListData(const wchar_t *Path, const TListDataEntry *Entries,
+    struct TNeedPassRequestData & Data, int32_t & RequestResult) override;
+  virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uint32_t Count) override;
   virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
     int64_t Bytes, bool FileTransfer) override;
   virtual bool HandleReply(int32_t Command, uint32_t Reply) override;
-  virtual bool HandleCapabilities(TFTPServerCapabilities *ServerCapabilities) override;
-  virtual bool CheckError(int32_t ReturnCode, const wchar_t *Context) override;
+  virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) override;
+  virtual bool CheckError(int32_t ReturnCode, const wchar_t * Context) override;
 
-  virtual void PreserveDownloadFileTime(HANDLE AHandle, void *UserData) override;
-  virtual bool GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time) override;
-  virtual wchar_t *LastSysErrorMessage() const override;
+  virtual void PreserveDownloadFileTime(HANDLE AHandle, void * UserData) override;
+  virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time) override;
+  virtual wchar_t * LastSysErrorMessage() const override;
   virtual std::wstring GetClientString() const override;
   virtual void SetupSsl(ssl_st * Ssl);
 
 private:
-  TFTPFileSystem *FFileSystem{nullptr};
+  TFTPFileSystem * FFileSystem{nullptr};
 };
 
-TFileZillaImpl::TFileZillaImpl(TFTPFileSystem *FileSystem) noexcept :
+TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) noexcept :
   TFileZillaIntf(),
   FFileSystem(FileSystem)
 {
@@ -97,18 +97,18 @@ bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lPar
   return FFileSystem->FTPPostMessage(Type, wParam, lParam);
 }
 
-bool TFileZillaImpl::HandleStatus(const wchar_t *Status, int Type)
+bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
 {
   return FFileSystem->HandleStatus(Status, Type);
 }
 
 bool TFileZillaImpl::HandleAsyncRequestOverwrite(
-  wchar_t *FileName1, size_t FileName1Len, const wchar_t *FileName2,
-  const wchar_t *Path1, const wchar_t *Path2,
+  wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
+  const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool HasLocalTime, const TRemoteFileTime &RemoteTime, void *UserData,
+  bool HasLocalTime, const TRemoteFileTime &RemoteTime, void * UserData,
   HANDLE &LocalFileHandle,
-  int &RequestResult)
+  int32_t &RequestResult)
 {
   return FFileSystem->HandleAsyncRequestOverwrite(
     FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
@@ -116,19 +116,19 @@ bool TFileZillaImpl::HandleAsyncRequestOverwrite(
 }
 
 bool TFileZillaImpl::HandleAsyncRequestVerifyCertificate(
-  const TFtpsCertificateData &Data, int &RequestResult)
+  const TFtpsCertificateData &Data, int32_t &RequestResult)
 {
   return FFileSystem->HandleAsyncRequestVerifyCertificate(Data, RequestResult);
 }
 
 bool TFileZillaImpl::HandleAsyncRequestNeedPass(
-  struct TNeedPassRequestData &Data, int &RequestResult)
+  struct TNeedPassRequestData & Data, int32_t & RequestResult)
 {
   return FFileSystem->HandleAsyncRequestNeedPass(Data, RequestResult);
 }
 
-bool TFileZillaImpl::HandleListData(const wchar_t *Path,
-  const TListDataEntry *Entries, uint32_t Count)
+bool TFileZillaImpl::HandleListData(const wchar_t * Path,
+  const TListDataEntry * Entries, uint32_t Count)
 {
   return FFileSystem->HandleListData(Path, Entries, Count);
 }
@@ -144,22 +144,22 @@ bool TFileZillaImpl::HandleReply(int32_t Command, uint32_t Reply)
   return FFileSystem->HandleReply(Command, Reply);
 }
 
-bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities *ServerCapabilities)
+bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities * ServerCapabilities)
 {
   return FFileSystem->HandleCapabilities(ServerCapabilities);
 }
 
-bool TFileZillaImpl::CheckError(int32_t ReturnCode, const wchar_t *Context)
+bool TFileZillaImpl::CheckError(int32_t ReturnCode, const wchar_t * Context)
 {
   return FFileSystem->CheckError(ReturnCode, Context);
 }
 
-void TFileZillaImpl::PreserveDownloadFileTime(HANDLE AHandle, void *UserData)
+void TFileZillaImpl::PreserveDownloadFileTime(HANDLE AHandle, void * UserData)
 {
   return FFileSystem->PreserveDownloadFileTime(AHandle, UserData);
 }
 
-bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t *FileName, struct tm &Time)
+bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time)
 {
   return FFileSystem->GetFileModificationTimeInUtc(FileName, Time);
 }
@@ -233,7 +233,7 @@ class TFTPFileListHelper final : public TObject
 {
   NB_DISABLE_COPY(TFTPFileListHelper)
 public:
-  explicit TFTPFileListHelper(TFTPFileSystem *FileSystem, TRemoteFileList *FileList,
+  explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,
       bool IgnoreFileList) noexcept :
     FFileSystem(FileSystem),
     FFileList(FFileSystem->FFileList),
@@ -250,8 +250,8 @@ public:
   }
 
 private:
-  TFTPFileSystem *FFileSystem{nullptr};
-  TRemoteFileList *FFileList{nullptr};
+  TFTPFileSystem * FFileSystem{nullptr};
+  TRemoteFileList * FFileList{nullptr};
   bool FIgnoreFileList{false};
 };
 
@@ -1134,7 +1134,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
       if (AFile == nullptr)
       {
-        TRemoteFile *File = nullptr;
+        TRemoteFile * File = nullptr;
         ReadFile(FileName, File);
         OwnedFile.reset(File);
         AFile = File;
@@ -1321,7 +1321,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
   int32_t Index1 = 0;
   while ((Index1 < FileList->GetCount()) && !OperationProgress->GetCancel())
   {
-    TRemoteFile *File = FileList->GetAs<TRemoteFile>(Index1);
+    TRemoteFile * File = FileList->GetAs<TRemoteFile>(Index1);
     DebugAssert(File != nullptr);
 
     if (File && !File->GetIsDirectory())
@@ -1745,7 +1745,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   FTerminal->DoCopyToRemote(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfUseFileTransferAny, OnceDoneOperation);
 }
 
-bool TFTPFileSystem::CanTransferSkipList(int32_t Params, uint32_t Flags, const TCopyParamType *CopyParam) const
+bool TFTPFileSystem::CanTransferSkipList(int32_t Params, uint32_t Flags, const TCopyParamType * CopyParam) const
 {
   bool Result =
     (!CopyParam->FOnTransferIn.empty()) ||
@@ -2065,7 +2065,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
     SendCommand(Command);
 
     uint32_t Code = 0;
-    TStrings *Response = nullptr;
+    TStrings * Response = nullptr;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, "", &Code, &Response);
 
     std::unique_ptr<TStrings> ResponsePtr(Response);
@@ -2180,7 +2180,7 @@ void TFTPFileSystem::CheckTimeDifference()
   }
 }
 
-void TFTPFileSystem::ApplyTimeDifference(TRemoteFile *File)
+void TFTPFileSystem::ApplyTimeDifference(TRemoteFile * File)
 {
   DebugAssert(File->GetModification() == File->GetLastAccess());
   File->ShiftTimeInSeconds(FTimeDifference);
@@ -2252,7 +2252,7 @@ bool TFTPFileSystem::NeedAutoDetectTimeDifference() const
     !FFileZillaIntf->UsingMlsd() && SupportsReadingFile();
 }
 
-bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList *FileList) const
+bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList) const
 {
   return
     // (note that it's actually never empty here, there's always at least parent directory,
@@ -2261,7 +2261,7 @@ bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList *FileList) const
     ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory());
 }
 
-void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
+void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
 {
   if (NeedAutoDetectTimeDifference())
   {
@@ -2269,7 +2269,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
 
     for (int32_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile *File = FileList->GetFile(Index);
+      TRemoteFile * File = FileList->GetFile(Index);
       // For directories, we do not do MDTM in ReadFile
       // (it should not be problem to use them otherwise).
       // We are also not interested in files with day precision only.
@@ -2279,7 +2279,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList *FileList)
         std::unique_ptr<TRemoteFile> UtcFilePtr;
         try
         {
-          TRemoteFile *UtcFile = nullptr;
+          TRemoteFile * UtcFile = nullptr;
           ReadFile(File->GetFullFileName(), UtcFile);
           UtcFilePtr.reset(UtcFile);
         }
@@ -2368,7 +2368,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(
   }
 }
 
-void TFTPFileSystem::ReadDirectory(TRemoteFileList *FileList)
+void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
@@ -2470,7 +2470,7 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
     FFileZillaIntf->ListFile(FileNameOnly.c_str(), FilePath.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-    TRemoteFile *File = FileList->FindFile(FileNameOnly.c_str());
+    TRemoteFile * File = FileList->FindFile(FileNameOnly.c_str());
     if (File != nullptr)
     {
       AFile = File->Duplicate();
@@ -2532,7 +2532,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
         FTerminal->LogEvent(L"VMS versioned file detected, asking for all revisions");
         FVMSAllRevisions = true;
       }
-      TRemoteFile *File = nullptr;
+      TRemoteFile * File = nullptr;
       // FZAPI does not have efficient way to read properties of one file.
       // In case we need properties of set of files from the same directory,
       // cache the file list for future
@@ -2685,7 +2685,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
     // XQUOTA is global not path-specific
     UnicodeString Command = XQuotaCommand;
     SendCommand(Command);
-    TStrings *Response = nullptr;
+    TStrings * Response = nullptr;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", nullptr, &Response);
     std::unique_ptr<TStrings> ResponseOwner(Response);
 
@@ -3882,7 +3882,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
   int64_t Timestamp;
-  tm *Tm = gmtime(&Time);  // localtime(&Time);
+  tm * Tm = gmtime(&Time);  // localtime(&Time);
   if (Tm != nullptr)
   {
     SYSTEMTIME SystemTime;
@@ -3916,7 +3916,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
   int64_t Size1, int64_t Size2, time_t LocalTime,
   bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
   HANDLE & ALocalFileHandle,
-  int & RequestResult)
+  int32_t & RequestResult)
 {
   if (!FActive)
   {
@@ -4212,7 +4212,7 @@ static bool IsIPAddress(const UnicodeString & AHostName)
 }
 
 bool TFTPFileSystem::HandleAsyncRequestVerifyCertificate(
-  const TFtpsCertificateData &Data, int &RequestResult)
+  const TFtpsCertificateData & Data, int32_t & RequestResult)
 {
   if (!FActive)
   {
@@ -4407,7 +4407,7 @@ bool TFTPFileSystem::HandleAsyncRequestVerifyCertificate(
 }
 
 bool TFTPFileSystem::HandleAsyncRequestNeedPass(
-  struct TNeedPassRequestData &Data, int &RequestResult) const
+  struct TNeedPassRequestData & Data, int32_t & RequestResult) const
 {
   if (!FActive)
   {
@@ -4514,7 +4514,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
     for (uint32_t Index = 0; Index < Count; ++Index)
     {
-      const TListDataEntry *Entry = &Entries[Index];
+      const TListDataEntry * Entry = &Entries[Index];
       std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>());
       try
       {
@@ -4543,7 +4543,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         // deprecated, to be replaced with Owner/Group
         if (nb::StrLength(Entry->OwnerGroup) > 0)
         {
-          const wchar_t *Space = wcschr(Entry->OwnerGroup, L' ');
+          const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
           if (Space != nullptr)
           {
             File->GetFileOwner().SetName(UnicodeString(Entry->OwnerGroup, Space - Entry->OwnerGroup));
@@ -4661,7 +4661,7 @@ bool TFTPFileSystem::HandleReply(int32_t Command, uint32_t Reply)
 }
 
 bool TFTPFileSystem::HandleCapabilities(
-  TFTPServerCapabilities *ServerCapabilities)
+  TFTPServerCapabilities * ServerCapabilities)
 {
   FServerCapabilities->Assign(ServerCapabilities);
   FFileSystemInfoValid = false;

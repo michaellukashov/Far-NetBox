@@ -17,7 +17,7 @@
 __removed #pragma package(smart_init)
 
 __removed TConfiguration * Configuration = nullptr;
-TStoredSessionList *StoredSessions = nullptr;
+TStoredSessionList * StoredSessions = nullptr;
 TApplicationLog * ApplicationLog = nullptr;
 bool AnySession = false;
 
@@ -152,7 +152,7 @@ void DeleteConfiguration()
   static bool ConfigurationDeleted = false;
   if (!ConfigurationDeleted)
   {
-    TConfiguration *Conf = GetConfiguration();
+    TConfiguration * Conf = GetConfiguration();
     SAFE_DESTROY(Conf);
     ConfigurationDeleted = true;
   }

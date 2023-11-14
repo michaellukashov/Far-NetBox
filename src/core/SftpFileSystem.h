@@ -34,7 +34,7 @@ friend class TSFTPLoadFilesPropertiesQueue;
 friend class TSFTPCalculateFilesChecksumQueue;
 friend class TSFTPBusy;
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPFileSystem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   TSFTPFileSystem() = delete;
@@ -189,7 +189,7 @@ protected:
 
   void SFTPSource(const UnicodeString & AFileName,
     const TRemoteFile * AFile,
-    const UnicodeString & TargetDir, const TCopyParamType *CopyParam, int32_t Params,
+    const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int32_t Params,
     TOpenRemoteFileParams & OpenParams,
     TOverwriteFileParams & FileParams,
     TFileOperationProgressType * OperationProgress, uint32_t Flags,
@@ -226,6 +226,6 @@ protected:
   void NoPacketReservations();
 
 private:
-  const TSessionData *GetSessionData() const;
+  const TSessionData * GetSessionData() const;
 };
 

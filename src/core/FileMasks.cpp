@@ -931,7 +931,7 @@ void TCustomCommand::GetToken(
   else
   {
     PatternCmd = TEXT_TOKEN;
-    const wchar_t *NextPattern = wcschr(Ptr, L'!');
+    const wchar_t * NextPattern = wcschr(Ptr, L'!');
     if (NextPattern == nullptr)
     {
       Len = Command.Length() - Index + 1;

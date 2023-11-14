@@ -86,7 +86,7 @@ class NB_CORE_EXPORT TConfiguration : public TObject
   friend class TFTPFileSystem;
   friend class TSFTPFileSystem;
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
 private:
   bool FDontSave{false};
@@ -166,7 +166,7 @@ private:
 public:
   virtual UnicodeString GetProductVersion() const;
   virtual UnicodeString GetProductVersionStr() const;
-  TVSFixedFileInfo *GetFixedApplicationInfo() const;
+  TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
   virtual UnicodeString GetVersionStr() const;
   virtual UnicodeString GetVersion() const;
@@ -287,7 +287,7 @@ public:
 
   UnicodeString GetFileFileInfoString(const UnicodeString & AKey,
     const UnicodeString & AFileName, bool AllowEmpty = false) const;
-  void *GetFileApplicationInfo(const UnicodeString & AFileName) const;
+  void * GetFileApplicationInfo(const UnicodeString & AFileName) const;
   UnicodeString GetFileProductVersion(const UnicodeString & AFileName) const;
   UnicodeString GetFileProductName(const UnicodeString & AFileName) const;
   UnicodeString GetFileCompanyName(const UnicodeString & AFileName) const;

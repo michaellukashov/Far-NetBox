@@ -148,7 +148,7 @@ class NB_CORE_EXPORT TSessionData : public TNamedObject
   friend class TS3FileSystem;
   NB_DISABLE_COPY(TSessionData)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
   friend class TTerminal;
   friend class TSecureShell;
@@ -1053,7 +1053,7 @@ private:
   int32_t FNumberOfRetries{0};
   uint32_t FSessionVersion{0};
 
-  mutable TIEProxyConfig *FIEProxyConfig{nullptr};
+  mutable TIEProxyConfig * FIEProxyConfig{nullptr};
 };
 
 NB_DEFINE_CLASS_ID(TStoredSessionList);
@@ -1077,7 +1077,7 @@ public:
   void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
   TSessionData * AtSession(int32_t Index)
-    { return static_cast<TSessionData *>(AtObject(Index)); }
+  { return static_cast<TSessionData *>(AtObject(Index)); }
   void SelectSessionsToImport(TStoredSessionList * Dest, bool SSHOnly);
   void Cleanup();
   void UpdateStaticUsage();

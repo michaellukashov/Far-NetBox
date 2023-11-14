@@ -48,7 +48,7 @@ friend class TTerminal;
 friend class TFTPFileSystem;
 friend class TSFTPFileSystem;
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamType) || TObject::is(Kind); }
 private:
   TFileMasks FAsciiFileMask;
@@ -96,7 +96,7 @@ public:
     UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString & ALink, UnicodeString & ScriptArgs
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const;
   const TStrings * GetTransferSkipList() const;
-  void SetTransferSkipList(const TStrings *Value);
+  void SetTransferSkipList(const TStrings * Value);
 
 public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType) noexcept;
@@ -120,12 +120,12 @@ public:
     bool Directory, const TFileMasks::TParams & Params, bool Hidden) const;
   bool SkipTransfer(const UnicodeString & AFileName, bool Directory) const;
 
-  virtual void Load(THierarchicalStorage *Storage);
+  virtual void Load(THierarchicalStorage * Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
   UnicodeString GetInfoStr(const UnicodeString & Separator, int32_t Attrs) const;
   bool AnyUsableCopyParam(int32_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
-  UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */int Attrs) const;
+  UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ int32_t Attrs) const;
 
   bool operator==(const TCopyParamType &rhp) const;
 

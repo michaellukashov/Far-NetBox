@@ -47,10 +47,10 @@ public:
   void SetProxyHost(const UnicodeString & Value) { FProxyHost = Value; }
   int32_t GetProxyPort() const { return FProxyPort; }
   void SetProxyPort(int32_t Value) { FProxyPort = Value; }
-  TStrings *GetRequestHeaders() const { return FRequestHeaders.get(); }
-  void SetRequestHeaders(TStrings *Value) { FRequestHeaders.reset(Value); }
+  TStrings * GetRequestHeaders() const { return FRequestHeaders.get(); }
+  void SetRequestHeaders(TStrings * Value) { FRequestHeaders.reset(Value); }
   RawByteString GetResponseRaw() const { return FResponse; }
-  TStrings *GetResponseHeaders() const { return FResponseHeaders.get(); }
+  TStrings * GetResponseHeaders() const { return FResponseHeaders.get(); }
   int64_t GetResponseLimit() const { return FResponseLimit; }
   void SetResponseLimit(int64_t Value) { FResponseLimit = Value; }
   THttpDownloadEvent GetOnDownload() const { return FOnDownload; }

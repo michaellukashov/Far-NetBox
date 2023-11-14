@@ -670,7 +670,7 @@ NB_DEFINE_CLASS_ID(EDirectoryNotFoundException);
 class NB_CORE_EXPORT EDirectoryNotFoundException : public Exception
 {
 public:
-  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EDirectoryNotFoundException); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EDirectoryNotFoundException); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EDirectoryNotFoundException) || Exception::is(Kind); }
 public:
   explicit EDirectoryNotFoundException(const UnicodeString & What) noexcept : Exception(OBJECT_CLASS_EDirectoryNotFoundException, What) {}

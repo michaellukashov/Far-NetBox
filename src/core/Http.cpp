@@ -125,7 +125,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           Retry = false;
           CheckNeonStatus(NeonSession, Status, FHostName, FCertificateError);
 
-          const ne_status *NeonStatus = ne_get_status(NeonRequest);
+          const ne_status * NeonStatus = ne_get_status(NeonRequest);
           if (NeonStatus->klass != 2)
           {
             int32_t StatusCode = NeonStatus->code;

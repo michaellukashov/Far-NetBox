@@ -98,7 +98,7 @@ class NB_CORE_EXPORT TRemoteFile : public TPersistent
 {
   NB_DISABLE_COPY(TRemoteFile)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFile); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteFile); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFile) || TPersistent::is(Kind); }
 private:
   TRemoteFileList * FDirectory{nullptr};
@@ -163,7 +163,7 @@ public:
   explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr) noexcept;
   explicit TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile = nullptr) noexcept;
   virtual ~TRemoteFile() noexcept;
-  TRemoteFile *Duplicate(bool Standalone = true) const;
+  TRemoteFile * Duplicate(bool Standalone = true) const;
 
   void ShiftTimeInSeconds(int64_t Seconds);
   bool GetIsTimeShiftingApplicable() const;
@@ -207,7 +207,7 @@ public:
   UnicodeString& LinkTo{FLinkTo};
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
   RWProperty<UnicodeString> ListingStr{nb::bind(&TRemoteFile::GetListingStr, this), nb::bind(&TRemoteFile::SetListingStr, this)};
-  __property TRights *Rights = { read = FRights, write = SetRights };
+  __property TRights * Rights = { read = FRights, write = SetRights };
   RWProperty1<TRights> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
@@ -232,7 +232,7 @@ public:
   __property bool IsEncrypted  = { read = FIsEncrypted };
   ROProperty<bool> IsEncrypted{nb::bind(&TRemoteFile::GetIsEncrypted, this)};
 
-  TRemoteFileList *GetDirectory() const { return FDirectory; }
+  TRemoteFileList * GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
   void SetSize(int64_t Value) { FSize = Value; }
   const TRemoteToken &GetFileOwner() const { return FOwner; }
@@ -269,7 +269,7 @@ NB_DEFINE_CLASS_ID(TRemoteDirectoryFile);
 class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectoryFile); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectoryFile); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectoryFile) || TRemoteFile::is(Kind); }
 public:
   TRemoteDirectoryFile() noexcept;
@@ -282,7 +282,7 @@ NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
 class NB_CORE_EXPORT TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteParentDirectory); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteParentDirectory); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteParentDirectory) || TRemoteDirectoryFile::is(Kind); }
 public:
   TRemoteParentDirectory() = delete;
@@ -299,7 +299,7 @@ class NB_CORE_EXPORT TRemoteFileList : public TObjectList
   friend class TWebDAVFileSystem;
   friend class TS3FileSystem;
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteFileList); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteFileList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFileList) || TObjectList::is(Kind); }
 protected:
   UnicodeString FDirectory;
@@ -318,7 +318,7 @@ public:
   explicit TRemoteFileList(TObjectClassId Kind) noexcept;
   virtual ~TRemoteFileList() noexcept { TRemoteFileList::Reset(); }
   virtual void Reset();
-  TRemoteFile *FindFile(const UnicodeString & AFileName) const;
+  TRemoteFile * FindFile(const UnicodeString & AFileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void AddFile(TRemoteFile * AFile);
 
@@ -352,7 +352,7 @@ class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
   friend class TWebDAVFileSystem;
   NB_DISABLE_COPY(TRemoteDirectory)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectory); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectory); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectory) || TRemoteFileList::is(Kind); }
   TRemoteDirectory() = delete;
 private:
@@ -591,7 +591,7 @@ NB_DEFINE_CLASS_ID(TRemoteProperties);
 class TRemoteProperties : public TObject
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TRemoteProperties); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteProperties); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteProperties) || TObject::is(Kind); }
 public:
   TValidProperties<TValidProperty> Valid;
@@ -631,7 +631,7 @@ class NB_CORE_EXPORT TChecklistItem : public TObject
   friend class TSynchronizeChecklist;
   NB_DISABLE_COPY(TChecklistItem)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TChecklistItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TChecklistItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
 public:
 
@@ -650,7 +650,7 @@ public:
   TFileInfo Remote;
   int32_t ImageIndex{-1};
   bool Checked{true};
-  TRemoteFile *RemoteFile{nullptr};
+  TRemoteFile * RemoteFile{nullptr};
 
   const UnicodeString& GetFileName() const;
   bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }

@@ -4,7 +4,7 @@
 #include <Common.h>
 #include "SessionInfo.h"
 
-//extern TConfiguration *Configuration;
+//extern TConfiguration * Configuration;
 NB_CORE_EXPORT extern TStoredSessionList * StoredSessions;
 extern bool AnySession;
 extern TApplicationLog * ApplicationLog;

@@ -1122,7 +1122,7 @@ RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString & Pass
   return Password;
 }
 
-TVSFixedFileInfo *TConfiguration::GetFixedApplicationInfo() const
+TVSFixedFileInfo * TConfiguration::GetFixedApplicationInfo() const
 {
   TVSFixedFileInfo * Result{nullptr};
   try
@@ -1309,7 +1309,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   TGuard Guard(FCriticalSection); nb::used(Guard);
   try
   {
-    TVSFixedFileInfo *FixedApplicationInfo = GetFixedApplicationInfo();
+    TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
 #if 0
     return FMTLOAD(VERSION,
       HIWORD(Info->dwFileVersionMS),
@@ -1823,7 +1823,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
 }
 
 TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
-  TStrings *Lines, TStoredSessionList *Sessions, UnicodeString &Error)
+  TStrings * Lines, TStoredSessionList * Sessions, UnicodeString &Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(CreateSessionsForImport(Sessions));
 
@@ -2396,7 +2396,7 @@ UnicodeString TConfiguration::GetProductVersion() const
   UnicodeString Result;
   try
   {
-    TVSFixedFileInfo *FixedApplicationInfo = GetFixedApplicationInfo();
+    TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
     if (FixedApplicationInfo)
     {
       Result = FormatVersion(

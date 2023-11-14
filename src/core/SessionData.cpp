@@ -155,7 +155,7 @@ TSessionData::~TSessionData() noexcept
   }
 }
 
-int32_t TSessionData::Compare(const TNamedObject *Other) const
+int32_t TSessionData::Compare(const TNamedObject * Other) const
 {
   int32_t Result;
   // To avoid using CompareLogicalText on hex names of sessions in workspace.
@@ -173,7 +173,7 @@ int32_t TSessionData::Compare(const TNamedObject *Other) const
   return Result;
 }
 
-TSessionData *TSessionData::Clone() const
+TSessionData * TSessionData::Clone() const
 {
   std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(""));
   Data->Assign(this);
@@ -570,11 +570,11 @@ void TSessionData::NonPersistent()
   PROPERTY(Link); \
   PROPERTY(NameOverride);
 
-void TSessionData::Assign(const TPersistent *Source)
+void TSessionData::Assign(const TPersistent * Source)
 {
   if (Source && isa<TSessionData>(Source))
   {
-    TSessionData *SourceData = dyn_cast<TSessionData>(const_cast<TPersistent *>(Source));
+    TSessionData * SourceData = dyn_cast<TSessionData>(const_cast<TPersistent *>(Source));
     // Master password prompt shows implicitly here, when cloning the session data for a new terminal
     CopyData(SourceData);
     FSource = SourceData->FSource;
@@ -668,14 +668,14 @@ bool TSessionData::HasStateData() const
     (GetColor() != 0);
 }
 
-void TSessionData::CopyStateData(TSessionData *SourceData)
+void TSessionData::CopyStateData(TSessionData * SourceData)
 {
   // Keep in sync with TCustomScpExplorerForm::UpdateSessionData.
   CopyDirectoriesStateData(SourceData);
   SetColor(SourceData->GetColor());
 }
 
-void TSessionData::CopyNonCoreData(TSessionData *SourceData)
+void TSessionData::CopyNonCoreData(TSessionData * SourceData)
 {
   CopyStateData(SourceData);
   SetUpdateDirectories(SourceData->GetUpdateDirectories());
@@ -1114,8 +1114,8 @@ void TSessionData::Load(THierarchicalStorage * Storage, bool PuttyImport)
   FSource = ssStored;
 }
 
-void TSessionData::DoSave(THierarchicalStorage *Storage,
-  bool PuttyExport, const TSessionData *Default, bool DoNotEncryptPasswords)
+void TSessionData::DoSave(THierarchicalStorage * Storage,
+  bool PuttyExport, const TSessionData * Default, bool DoNotEncryptPasswords)
 {
   nb::used(Default);
   // Same as in TCopyParamType::Save
@@ -1421,8 +1421,8 @@ TStrings * TSessionData::SaveToOptions(const TSessionData * Default, bool SaveNa
   return nullptr;
 }
 
-void TSessionData::Save(THierarchicalStorage *Storage,
-  bool PuttyExport, const TSessionData *Default)
+void TSessionData::Save(THierarchicalStorage * Storage,
+  bool PuttyExport, const TSessionData * Default)
 {
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
@@ -2107,7 +2107,7 @@ UnicodeString TSessionData::GetSource() const
   }
 }
 
-void TSessionData::SaveRecryptedPasswords(THierarchicalStorage *Storage)
+void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
 {
   if (Storage->OpenSubKey(GetInternalStorageKey(), true))
   {
@@ -4475,7 +4475,7 @@ UnicodeString TSessionData::GetProxyPassword() const
   return DecryptPassword(FProxyPassword, GetProxyUsername() + GetProxyHost());
 }
 
-static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *IEProxyConfig)
+static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConfig)
 {
   DebugAssert(IEProxyConfig);
   if (IEProxyConfig->lpszAutoConfigUrl)
@@ -5302,7 +5302,7 @@ TStoredSessionList::~TStoredSessionList() noexcept
   }
 }
 
-void TStoredSessionList::Load(THierarchicalStorage *Storage,
+void TStoredSessionList::Load(THierarchicalStorage * Storage,
   bool AsModified, bool UseDefaults, bool PuttyImport)
 {
   std::unique_ptr<TStringList> SubKeys(std::make_unique<TStringList>());
@@ -5331,7 +5331,7 @@ void TStoredSessionList::Load(THierarchicalStorage *Storage,
 
       if (ValidName)
       {
-        TSessionData *SessionData = nullptr;
+        TSessionData * SessionData = nullptr;
         if (SessionName == FDefaultSettings->GetName())
         {
           SessionData = FDefaultSettings.get();
@@ -5424,8 +5424,8 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   }
 }
 
-void TStoredSessionList::DoSave(THierarchicalStorage *Storage,
-  bool All, bool RecryptPasswordOnly, TStrings *RecryptPasswordErrors)
+void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
+  bool All, bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors)
 {
   std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   try__finally
@@ -5439,7 +5439,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage *Storage,
     DoSave(Storage, FDefaultSettings.get(), All, RecryptPasswordOnly, FactoryDefaults.get());
     for (int32_t Index = 0; Index < GetCountIncludingHidden(); Index++)
     {
-      TSessionData *SessionData = GetAs<TSessionData>(Index);
+      TSessionData * SessionData = GetAs<TSessionData>(Index);
       try
       {
         DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
@@ -5497,7 +5497,7 @@ void TStoredSessionList::Save(bool All, bool Explicit)
   DoSave(All, Explicit, false, nullptr);
 }
 
-void TStoredSessionList::RecryptPasswords(TStrings *RecryptPasswordErrors)
+void TStoredSessionList::RecryptPasswords(TStrings * RecryptPasswordErrors)
 {
   DoSave(true, true, true, RecryptPasswordErrors);
 }
@@ -5586,7 +5586,7 @@ UnicodeString FormatKnownHostName(const UnicodeString & HostName, int PortNumber
   return FORMAT(L"%s:%d", HostName, PortNumber);
 }
 
-void TStoredSessionList::ImportFromKnownHosts(TStrings *Lines)
+void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> HostKeyStorage(GetConfiguration()->CreateScpStorage(SessionList));
@@ -5751,14 +5751,14 @@ void TStoredSessionList::SelectAll(bool Select)
   }
 }
 
-void TStoredSessionList::Import(TStoredSessionList *From,
-  bool OnlySelected, TList *Imported)
+void TStoredSessionList::Import(TStoredSessionList * From,
+  bool OnlySelected, TList * Imported)
 {
   for (int32_t Index = 0; Index < From->GetCount(); ++Index)
   {
     if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
-      TSessionData *Session = new TSessionData("");
+      TSessionData * Session = new TSessionData("");
       Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
@@ -5947,12 +5947,12 @@ void TStoredSessionList::UpdateStaticUsage()
 #endif // #if 0
 }
 
-const TSessionData *TStoredSessionList::FindSame(TSessionData * Data)
+const TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
 {
   const TSessionData * Result = nullptr;
   if (!(Data->GetHidden() || Data->GetName().IsEmpty())) // || Data->GetIsWorkspace())
   {
-    const TNamedObject *Obj = FindByName(Data->GetName());
+    const TNamedObject * Obj = FindByName(Data->GetName());
     Result = dyn_cast<TSessionData>(Obj);
   }
   return Result;
@@ -5994,7 +5994,7 @@ TSessionData * TStoredSessionList::NewSession(
   return DuplicateSession;
 }
 
-void TStoredSessionList::SetDefaultSettings(const TSessionData *Value)
+void TStoredSessionList::SetDefaultSettings(const TSessionData * Value)
 {
   DebugAssert(FDefaultSettings);
   if (FDefaultSettings.get() != Value)
@@ -6011,14 +6011,14 @@ void TStoredSessionList::SetDefaultSettings(const TSessionData *Value)
   }
 }
 
-bool TStoredSessionList::OpenHostKeysSubKey(THierarchicalStorage *Storage, bool CanCreate)
+bool TStoredSessionList::OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate)
 {
   return
     Storage->OpenRootKey(CanCreate) &&
     Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
 }
 
-THierarchicalStorage *TStoredSessionList::CreateHostKeysStorageForWriting()
+THierarchicalStorage * TStoredSessionList::CreateHostKeysStorageForWriting()
 {
   bool SessionList = false;
   std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
@@ -6070,14 +6070,14 @@ void TStoredSessionList::ImportHostKeys(
   ImportHostKeys(SourceStorage.get(), TargetStorage.get(), Sessions, OnlySelected);
 }
 
-void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList *Sessions)
+void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList * Sessions)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateHostKeysStorageForWriting());
   if (OpenHostKeysSubKey(Storage.get(), true))
   {
     for (int32_t Index = 0; Index < Sessions->GetCount(); ++Index)
     {
-      TSessionData *Session = Sessions->GetSession(Index);
+      TSessionData * Session = Sessions->GetSession(Index);
       if (Session->GetSelected())
       {
         UnicodeString Algs;
@@ -6219,7 +6219,7 @@ void TStoredSessionList::DoGetFolderOrWorkspace(const UnicodeString & Name, TLis
   }
 }
 
-TStrings *TStoredSessionList::GetFolderOrWorkspaceList(
+TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
   const UnicodeString & Name)
 {
   std::unique_ptr<TObjectList> DataList(new TObjectList());
@@ -6234,7 +6234,7 @@ TStrings *TStoredSessionList::GetFolderOrWorkspaceList(
   return Result.release();
 }
 
-TStrings *TStoredSessionList::GetWorkspaces() const
+TStrings * TStoredSessionList::GetWorkspaces() const
 {
   std::unique_ptr<TStringList> Result(CreateSortedStringList());
 
@@ -6288,7 +6288,7 @@ bool TStoredSessionList::HasAnyWorkspace() const
   return Result;
 }
 
-TSessionData *TStoredSessionList::ParseUrl(const UnicodeString & Url,
+TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
   TOptions * Options, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl, int32_t Flags)
 {
@@ -6331,7 +6331,7 @@ TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int In
 {
   std::unique_ptr<TSessionData> Result(std::make_unique<TSessionData>(""));
 
-  const TSessionData *SameData = StoredSessions->FindSame(Data);
+  const TSessionData * SameData = StoredSessions->FindSame(Data);
   if (SameData != nullptr)
   {
     Result->CopyStateData(Data);
@@ -6349,17 +6349,17 @@ TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int In
   return Result.release();
 }
 
-bool TStoredSessionList::CanOpen(TSessionData *Data)
+bool TStoredSessionList::CanOpen(TSessionData * Data)
 {
   Data = ResolveWorkspaceData(Data);
   return (Data != nullptr) && Data->CanOpen;
 }
 
-const TSessionData *TStoredSessionList::GetSessionByName(const UnicodeString & SessionName) const
+const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & SessionName) const
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
-    const TSessionData *SessionData = GetSession(Index);
+    const TSessionData * SessionData = GetSession(Index);
     if (SessionData->GetName() == SessionName)
     {
       return SessionData;

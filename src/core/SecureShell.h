@@ -37,8 +37,8 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecureShell) || TObject::is(Kind); }
 
-  mutable const uint32_t *FMinPacketSize{nullptr};
-  mutable const uint32_t *FMaxPacketSize{nullptr};
+  mutable const uint32_t * FMinPacketSize{nullptr};
+  mutable const uint32_t * FMaxPacketSize{nullptr};
   //uint32_t MinPacketSize() const;
 private:
   SOCKET FSocket{INVALID_SOCKET};

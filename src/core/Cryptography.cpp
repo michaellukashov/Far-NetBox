@@ -107,7 +107,7 @@ static void hmac_sha1_key(const uint8_t key[], uint32_t key_len, hmac_ctx cx[1])
             sha1_hash(cx->key, cx->klen, cx->ctx);
         }
 
-        sha1_hash(const_cast<unsigned char *>(key), key_len, cx->ctx);       /* hash long key data into hash */
+        sha1_hash(const_cast<uint8_t *>(key), key_len, cx->ctx);       /* hash long key data into hash */
     }
     else                                        /* otherwise store key data     */
         libmemcpy_memcpy(cx->key + cx->klen, key, key_len);
@@ -524,8 +524,8 @@ static uint8_t SScrambleTable[256] =
   206, 222, 188, 152, 210, 243, 96, 41, 86, 180, 101, 177, 166, 141, 212, 116
 };
 
-uint8_t *ScrambleTable{nullptr};
-uint8_t *UnscrambleTable{nullptr};
+uint8_t * ScrambleTable{nullptr};
+uint8_t * UnscrambleTable{nullptr};
 
 RawByteString ScramblePassword(const UnicodeString & Password)
 {
@@ -673,7 +673,7 @@ TEncryption::TEncryption(const RawByteString & AKey) noexcept
   {
     DebugAssert(FKey.Length() == KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
     FContext = aes_make_context();
-    aes_set_encrypt_key(reinterpret_cast<unsigned char *>(&FKey[0]), (int)FKey.Length(), FContext);
+    aes_set_encrypt_key(reinterpret_cast<uint8_t *>(&FKey[0]), (int)FKey.Length(), FContext);
   }
   else
   {
@@ -728,10 +728,10 @@ int32_t TEncryption::RoundToBlockDown(int32_t Size)
   return Size - (Size % BLOCK_SIZE);
 }
 
-void TEncryption::Aes(char * Buffer, int Size)
+void TEncryption::Aes(char * Buffer, int32_t Size)
 {
   DebugAssert(!FSalt.IsEmpty());
-  call_aes_sdctr(reinterpret_cast<unsigned char*>(Buffer), (int)Size, FContext);
+  call_aes_sdctr(reinterpret_cast<uint8_t *>(Buffer), (int)Size, FContext);
 }
 
 void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
@@ -820,7 +820,7 @@ void TEncryption::Aes(RawByteString& Buffer)
 {
   int32_t Size = Buffer.Length();
   Buffer.SetLength(RoundToBlock(Buffer.Length()));
-  Aes((char*)&Buffer[0], Buffer.Length());
+  Aes(reinterpret_cast<char *>(&Buffer[0]), Buffer.Length());
   Buffer.SetLength(Size);
 }
 

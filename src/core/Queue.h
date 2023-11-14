@@ -9,7 +9,7 @@ class NB_CORE_EXPORT TSimpleThread : public TObject
 {
   NB_DISABLE_COPY(TSimpleThread)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSimpleThread); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSimpleThread); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSimpleThread) || TObject::is(Kind); }
 public:
   explicit TSimpleThread(TObjectClassId Kind) noexcept;
@@ -39,7 +39,7 @@ class NB_CORE_EXPORT TSignalThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TSignalThread)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSignalThread); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSignalThread); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSignalThread) || TSimpleThread::is(Kind); }
 public:
   virtual void Start() override;
@@ -199,7 +199,7 @@ class NB_CORE_EXPORT TQueueItem : public TObject
   friend class TParallelTransferQueueItem;
   NB_DISABLE_COPY(TQueueItem)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TQueueItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TQueueItem) || TObject::is(Kind); }
 
 public:
@@ -269,14 +269,14 @@ class NB_CORE_EXPORT TQueueItemProxy : public TObject
   friend class TTerminalQueue;
   NB_DISABLE_COPY(TQueueItemProxy)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TQueueItemProxy); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TQueueItemProxy); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TQueueItemProxy) || TObject::is(Kind); }
 public:
   bool Update();
   bool UpdateFileList(TQueueFileList * FileList);
   bool ProcessUserAction();
   bool Move(bool Sooner);
-  bool Move(TQueueItemProxy *BeforeItem);
+  bool Move(TQueueItemProxy * BeforeItem);
   bool ExecuteNow();
   bool Delete();
   bool Pause();
@@ -292,7 +292,7 @@ public:
   __property int32_t Index = { read = GetIndex };
   __property void * UserData = { read = FUserData, write = FUserData };
 
-  TQueueItem::TInfo *GetInfo() const { return FInfo.get(); }
+  TQueueItem::TInfo * GetInfo() const { return FInfo.get(); }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
   void * GetUserData() const { return FUserData; }
@@ -327,7 +327,7 @@ public:
   TTerminalQueueStatus() noexcept;
   virtual ~TTerminalQueueStatus() noexcept;
 
-  TQueueItemProxy * FindByQueueItem(TQueueItem *QueueItem);
+  TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
 
   __property int32_t Count = { read = GetCount };
   __property int32_t DoneCount = { read = FDoneCount };
@@ -373,7 +373,7 @@ NB_DEFINE_CLASS_ID(TBootstrapQueueItem);
 class TBootstrapQueueItem : public TQueueItem
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBootstrapQueueItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBootstrapQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBootstrapQueueItem) || TQueueItem::is(Kind); }
 public:
   TBootstrapQueueItem() noexcept;
@@ -390,7 +390,7 @@ NB_DEFINE_CLASS_ID(TLocatedQueueItem);
 class NB_CORE_EXPORT TLocatedQueueItem : public TQueueItem
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TLocatedQueueItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocatedQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocatedQueueItem) || TQueueItem::is(Kind); }
 protected:
   explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) noexcept;
@@ -409,7 +409,7 @@ class NB_CORE_EXPORT TTransferQueueItem : public TLocatedQueueItem
 {
   NB_DISABLE_COPY(TTransferQueueItem)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTransferQueueItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTransferQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTransferQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
   explicit TTransferQueueItem(TObjectClassId Kind, TTerminal * ATerminal,
@@ -443,7 +443,7 @@ NB_DEFINE_CLASS_ID(TUploadQueueItem);
 class NB_CORE_EXPORT TUploadQueueItem : public TTransferQueueItem
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TUploadQueueItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TUploadQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TUploadQueueItem) || TTransferQueueItem::is(Kind); }
 public:
   explicit TUploadQueueItem(TTerminal * ATerminal,
@@ -459,7 +459,7 @@ NB_DEFINE_CLASS_ID(TDownloadQueueItem);
 class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TDownloadQueueItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TDownloadQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDownloadQueueItem) || TTransferQueueItem::is(Kind); }
 public:
   explicit TDownloadQueueItem(TTerminal * ATerminal,
@@ -475,7 +475,7 @@ NB_DEFINE_CLASS_ID(TDeleteQueueItem);
 class TDeleteQueueItem : public TLocatedQueueItem
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TDeleteQueueItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TDeleteQueueItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDeleteQueueItem) || TQueueItem::is(Kind); }
 public:
   explicit TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept;

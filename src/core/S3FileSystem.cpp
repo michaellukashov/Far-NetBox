@@ -491,12 +491,12 @@ struct TLibS3CallbackData
   UnicodeString ErrorDetails;
 };
 
-TS3FileSystem * TS3FileSystem::GetFileSystem(void *CallbackData)
+TS3FileSystem * TS3FileSystem::GetFileSystem(void * CallbackData)
 {
   return static_cast<TLibS3CallbackData *>(CallbackData)->FileSystem;
 }
 
-void TS3FileSystem::LibS3SessionCallback(ne_session_s *Session, void *CallbackData)
+void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * CallbackData)
 {
   TS3FileSystem * FileSystem = static_cast<TS3FileSystem *>(CallbackData);
   TSessionData * Data = FileSystem->FTerminal->GetSessionData();
@@ -1844,7 +1844,7 @@ void TS3FileSystem::AnyCommand(const UnicodeString & /*ACommand*/,
   DebugFail();
 }
 
-TStrings *TS3FileSystem::GetFixedPaths() const
+TStrings * TS3FileSystem::GetFixedPaths() const
 {
   return nullptr;
 }
@@ -2430,9 +2430,9 @@ UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString & APath, bool L
   return static_cast<const TS3FileSystem *>(this)->GetAbsolutePath(APath, Local);
 }
 
-void TS3FileSystem::InitSslSession(ssl_st *Ssl, ne_session *Session)
+void TS3FileSystem::InitSslSession(ssl_st * Ssl, ne_session * Session)
 {
-  TS3FileSystem *FileSystem =
+  TS3FileSystem * FileSystem =
     static_cast<TS3FileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
   FileSystem->InitSslSessionImpl(Ssl, Session);
 }

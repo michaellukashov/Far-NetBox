@@ -64,13 +64,13 @@ char * AnsiString::SetLength(int32_t nLength)
   return Data.GetBufferSetLength(nb::ToInt32(nLength));
 }
 
-AnsiString &AnsiString::Delete(int32_t Index, int32_t Count)
+AnsiString & AnsiString::Delete(int32_t Index, int32_t Count)
 {
   Data.Delete(nb::ToInt32(Index) - 1, nb::ToInt32(Count));
   return *this;
 }
 
-AnsiString &AnsiString::Clear()
+AnsiString & AnsiString::Clear()
 {
   Data.Empty();
   return *this;
@@ -113,29 +113,29 @@ char &AnsiString::operator[](int32_t Idx)
   return Data.GetBuffer()[Idx - 1];
 }
 
-AnsiString &AnsiString::Append(const char * Str, int32_t StrLen)
+AnsiString & AnsiString::Append(const char * Str, int32_t StrLen)
 {
   Data.Append(Str, nb::ToInt32(StrLen));
   return *this;
 }
 
-AnsiString &AnsiString::Append(const AnsiString &Str)
+AnsiString & AnsiString::Append(const AnsiString & Str)
 {
   return Append(Str.c_str(), Str.GetLength());
 }
 
-AnsiString &AnsiString::Append(const char * Str)
+AnsiString & AnsiString::Append(const char * Str)
 {
   return Append(Str, string_t::StringLength(Str));
 }
 
-AnsiString &AnsiString::Append(const char Ch)
+AnsiString & AnsiString::Append(const char Ch)
 {
   Data.AppendChar(Ch);
   return *this;
 }
 
-AnsiString &AnsiString::Insert(const char * Str, int32_t Pos)
+AnsiString & AnsiString::Insert(const char * Str, int32_t Pos)
 {
   Data.Insert(nb::ToInt32(Pos) - 1, Str);
   return *this;
@@ -153,13 +153,13 @@ AnsiString AnsiString::SubString(int32_t Pos, int32_t Len) const
   return AnsiString(Str.c_str(), Str.GetLength());
 }
 
-AnsiString &AnsiString::operator=(const UnicodeString & StrCopy)
+AnsiString & AnsiString::operator=(const UnicodeString & StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-AnsiString &AnsiString::operator=(const AnsiString &StrCopy)
+AnsiString & AnsiString::operator=(const AnsiString & StrCopy)
 {
   if (*this != StrCopy)
   {
@@ -168,37 +168,37 @@ AnsiString &AnsiString::operator=(const AnsiString &StrCopy)
   return *this;
 }
 
-AnsiString &AnsiString::operator=(const UTF8String &StrCopy)
+AnsiString & AnsiString::operator=(const UTF8String & StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-AnsiString &AnsiString::operator=(const char * Str)
+AnsiString & AnsiString::operator=(const char * Str)
 {
   Init(Str, string_t::StringLength(Str));
   return *this;
 }
 
-AnsiString &AnsiString::operator=(const wchar_t * Str)
+AnsiString & AnsiString::operator=(const wchar_t * Str)
 {
   Init(Str, CMStringW::StringLength(Str));
   return *this;
 }
 
-AnsiString &AnsiString::operator+=(const AnsiString &rhs)
+AnsiString & AnsiString::operator+=(const AnsiString & rhs)
 {
   Data.Append(rhs.c_str(), nb::ToInt32(rhs.Length()));
   return *this;
 }
 
-AnsiString &AnsiString::operator+=(const char Ch)
+AnsiString & AnsiString::operator+=(const char Ch)
 {
   Data.AppendChar(Ch);
   return *this;
 }
 
-AnsiString &AnsiString::operator+=(const char *rhs)
+AnsiString & AnsiString::operator+=(const char * rhs)
 {
   Data.Append(rhs);
   return *this;
@@ -296,18 +296,18 @@ int32_t RawByteString::Pos(const char * Str) const
   return Data.Find(reinterpret_cast<const char *>(Str)) + 1;
 }
 
-char *RawByteString::SetLength(int32_t nLength)
+char * RawByteString::SetLength(int32_t nLength)
 {
   return Data.GetBufferSetLength(nb::ToInt32(nLength));
 }
 
-RawByteString &RawByteString::Delete(int32_t Index, int32_t Count)
+RawByteString & RawByteString::Delete(int32_t Index, int32_t Count)
 {
   Data.Delete(nb::ToInt32(Index) - 1, nb::ToInt32(Count));
   return *this;
 }
 
-RawByteString &RawByteString::Insert(const char * Str, int32_t Pos)
+RawByteString & RawByteString::Insert(const char * Str, int32_t Pos)
 {
   Data.Insert(nb::ToInt32(Pos) - 1, static_cast<const char *>(Str));
   return *this;
@@ -365,31 +365,31 @@ RawByteString &RawByteString::operator=(const UnicodeString & StrCopy)
   return *this;
 }
 
-RawByteString &RawByteString::operator=(const RawByteString &StrCopy)
+RawByteString & RawByteString::operator=(const RawByteString & StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-RawByteString &RawByteString::operator=(const AnsiString &StrCopy)
+RawByteString & RawByteString::operator=(const AnsiString & StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-RawByteString &RawByteString::operator=(const UTF8String &StrCopy)
+RawByteString & RawByteString::operator=(const UTF8String & StrCopy)
 {
   Init(StrCopy.c_str(), StrCopy.Length());
   return *this;
 }
 
-RawByteString &RawByteString::operator=(const char *lpszData)
+RawByteString & RawByteString::operator=(const char * lpszData)
 {
   Init(lpszData, rawstring_t::StringLength(lpszData));
   return *this;
 }
 
-RawByteString &RawByteString::operator=(const wchar_t *lpwszData)
+RawByteString & RawByteString::operator=(const wchar_t * lpwszData)
 {
   Init(lpwszData, CMStringW::StringLength(lpwszData));
   return *this;
@@ -454,12 +454,12 @@ void UTF8String::Init(const char * Str, int32_t Length)
   Data = string_t(Str, nb::ToInt32(Length));
 }
 
-char *UTF8String::SetLength(int32_t nLength)
+char * UTF8String::SetLength(int32_t nLength)
 {
   return Data.GetBufferSetLength(nb::ToInt32(nLength));
 }
 
-UTF8String &UTF8String::Delete(int32_t Index, int32_t Count)
+UTF8String & UTF8String::Delete(int32_t Index, int32_t Count)
 {
   Data.Delete(nb::ToInt32(Index) - 1, nb::ToInt32(Count));
   return *this;
@@ -478,14 +478,14 @@ int32_t UTF8String::vprintf(const char * Format, va_list ArgList)
   return Size;
 }
 
-UTF8String &UTF8String::Insert(wchar_t Ch, int32_t Pos)
+UTF8String & UTF8String::Insert(wchar_t Ch, int32_t Pos)
 {
   UTF8String UTF8(&Ch, 1);
   Data.Insert(nb::ToInt32(Pos) - 1, UTF8.c_str());
   return *this;
 }
 
-UTF8String &UTF8String::Insert(const wchar_t * Str, int32_t Pos)
+UTF8String & UTF8String::Insert(const wchar_t * Str, int32_t Pos)
 {
   UTF8String UTF8(Str);
   Data.Insert(nb::ToInt32(Pos) - 1, UTF8.c_str());
@@ -522,52 +522,52 @@ UTF8String &UTF8String::operator=(const RawByteString &StrCopy)
   return *this;
 }
 
-UTF8String &UTF8String::operator=(const char *lpszData)
+UTF8String & UTF8String::operator=(const char * lpszData)
 {
   Init(lpszData, string_t::StringLength(lpszData));
   return *this;
 }
 
-UTF8String &UTF8String::operator=(const wchar_t *lpwszData)
+UTF8String & UTF8String::operator=(const wchar_t * lpwszData)
 {
   Init(lpwszData, string_t::StringLength(lpwszData));
   return *this;
 }
 
-UTF8String UTF8String::operator+(const UTF8String &rhs) const
+UTF8String UTF8String::operator+(const UTF8String & rhs) const
 {
   string_t Result(Data);
   Result += rhs.Data;
   return UTF8String(Result);
 }
 
-UTF8String UTF8String::operator+(const char *rhs) const
+UTF8String UTF8String::operator+(const char * rhs) const
 {
   string_t Result(Data);
   Result += rhs;
   return UTF8String(Result);
 }
 
-UTF8String &UTF8String::operator+=(const UTF8String &rhs)
+UTF8String & UTF8String::operator+=(const UTF8String &rhs)
 {
   Data.Append(rhs.Data.c_str(), nb::ToInt32(rhs.Length()));
   return *this;
 }
 
-UTF8String &UTF8String::operator+=(const RawByteString &rhs)
+UTF8String & UTF8String::operator+=(const RawByteString &rhs)
 {
   UTF8String s(rhs.c_str(), rhs.Length());
   Data.Append(s.Data.c_str(), nb::ToInt32(s.Length()));
   return *this;
 }
 
-UTF8String &UTF8String::operator+=(const char Ch)
+UTF8String & UTF8String::operator+=(const char Ch)
 {
   Data.AppendChar(Ch);
   return *this;
 }
 
-UTF8String &UTF8String::operator+=(const char *rhs)
+UTF8String & UTF8String::operator+=(const char * rhs)
 {
   Data.Append(rhs);
   return *this;
@@ -638,7 +638,7 @@ void UnicodeString::Init(const char * Str, int32_t Length, int32_t CodePage)
   Data = wstring_t(Str, nb::ToInt32(Length), CodePage);
 }
 
-wchar_t *UnicodeString::SetLength(int32_t nLength)
+wchar_t * UnicodeString::SetLength(int32_t nLength)
 {
   return Data.GetBufferSetLength(nb::ToInt32(nLength));
 }
@@ -870,7 +870,7 @@ UnicodeString & UnicodeString::operator+=(const UnicodeString & rhs)
   return *this;
 }
 
-UnicodeString & UnicodeString::operator+=(const wchar_t *rhs)
+UnicodeString & UnicodeString::operator+=(const wchar_t * rhs)
 {
   Data.Append(rhs);
   return *this;
@@ -944,7 +944,7 @@ UnicodeString operator+(const UnicodeString & lhs, const char * rhs)
   return lhs + UnicodeString(rhs);
 }
 
-bool operator==(const UnicodeString & lhs, const wchar_t *rhs)
+bool operator==(const UnicodeString & lhs, const wchar_t * rhs)
 {
   return wcscmp(lhs.Data.c_str(), NullToEmpty(rhs)) == 0;
 }
@@ -954,12 +954,12 @@ bool operator==(const wchar_t *lhs, const UnicodeString & rhs)
   return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) == 0;
 }
 
-bool operator!=(const UnicodeString & lhs, const wchar_t *rhs)
+bool operator!=(const UnicodeString & lhs, const wchar_t * rhs)
 {
   return wcscmp(lhs.Data.c_str(), NullToEmpty(rhs)) != 0;
 }
 
-bool operator!=(const wchar_t *lhs, const UnicodeString & rhs)
+bool operator!=(const wchar_t * lhs, const UnicodeString & rhs)
 {
   return wcscmp(NullToEmpty(lhs), rhs.Data.c_str()) != 0;
 }

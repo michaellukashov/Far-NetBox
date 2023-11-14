@@ -24,7 +24,7 @@ class NB_CORE_EXPORT TFTPFileSystem final : public TCustomFileSystem
   friend class TFTPFileListHelper;
   NB_DISABLE_COPY(TFTPFileSystem)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFTPFileSystem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFTPFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFTPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   TFTPFileSystem() = delete;

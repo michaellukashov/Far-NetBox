@@ -1198,7 +1198,7 @@ class TSFTPQueuePacket : public TSFTPPacket
 {
   NB_DISABLE_COPY(TSFTPQueuePacket)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueuePacket); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueuePacket); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueuePacket) || TSFTPPacket::is(Kind); }
 public:
   TSFTPQueuePacket() = delete;
@@ -1217,7 +1217,7 @@ class TSFTPQueue : public TObject
 {
   NB_DISABLE_COPY(TSFTPQueue)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueue); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueue); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueue) || TObject::is(Kind); }
 public:
   TSFTPQueue() = delete;

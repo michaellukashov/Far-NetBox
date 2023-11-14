@@ -119,7 +119,7 @@ NB_DEFINE_CLASS_ID(TSessionActionRecord);
 class TSessionActionRecord : public TObject
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSessionActionRecord); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionActionRecord); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionActionRecord) || TObject::is(Kind); }
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
@@ -477,7 +477,7 @@ private:
   std::unique_ptr<TStrings> FNames{nullptr};
   std::unique_ptr<TStrings> FValues{nullptr};
   TRemoteFileList * FFileList{nullptr};
-  TRemoteFile *FFile{nullptr};
+  TRemoteFile * FFile{nullptr};
 };
 __removed #pragma warn .inl
 

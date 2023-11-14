@@ -156,11 +156,11 @@ class TTunnelThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TTunnelThread)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TTunnelThread); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTunnelThread); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTunnelThread) || TSimpleThread::is(Kind); }
 public:
   TTunnelThread() = delete;
-  explicit TTunnelThread(TSecureShell *SecureShell) noexcept;
+  explicit TTunnelThread(TSecureShell * SecureShell) noexcept;
   virtual ~TTunnelThread() noexcept;
   virtual void InitTunnelThread();
 
@@ -170,7 +170,7 @@ protected:
   virtual void Execute() override;
 
 private:
-  TSecureShell *FSecureShell{nullptr};
+  TSecureShell * FSecureShell{nullptr};
   bool FTerminated{false};
 };
 
@@ -223,7 +223,7 @@ class TTunnelUI : public TSessionUI
   NB_DISABLE_COPY(TTunnelUI)
 public:
   TTunnelUI() = delete;
-  explicit TTunnelUI(TTerminal *Terminal) noexcept;
+  explicit TTunnelUI(TTerminal * Terminal) noexcept;
   virtual ~TTunnelUI() = default;
 
   virtual void Information(const UnicodeString & AStr, bool Status) override;
@@ -234,20 +234,20 @@ public:
     Exception * E, uint32_t Answers, const TQueryParams * Params,
     TQueryType QueryType) override;
   virtual bool PromptUser(TSessionData * Data, TPromptKind Kind,
-    const UnicodeString & AName, const UnicodeString & AInstructions, TStrings *Prompts,
-    TStrings *Results) override;
+    const UnicodeString & AName, const UnicodeString & AInstructions, TStrings * Prompts,
+    TStrings * Results) override;
   virtual void DisplayBanner(const UnicodeString & Banner) override;
   virtual void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext) override;
-  virtual void HandleExtendedException(Exception *E) override;
+  virtual void HandleExtendedException(Exception * E) override;
   virtual void Closed() override;
   virtual void ProcessGUI() override;
 
 private:
-  TTerminal *FTerminal{nullptr};
+  TTerminal * FTerminal{nullptr};
   uint32_t FTerminalThreadID{0};
 };
 
-TTunnelUI::TTunnelUI(TTerminal *Terminal) noexcept :
+TTunnelUI::TTunnelUI(TTerminal * Terminal) noexcept :
   TSessionUI(OBJECT_CLASS_TTunnelUI),
   FTerminal(Terminal)
 {
@@ -327,7 +327,7 @@ void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const Unico
   throw ESshFatal(E, Msg, HelpContext);
 }
 
-void TTunnelUI::HandleExtendedException(Exception *E)
+void TTunnelUI::HandleExtendedException(Exception * E)
 {
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
@@ -359,8 +359,8 @@ public:
   void Dismiss();
 
 private:
-  ExtException *FFatalError{nullptr};
-  TTerminal *FTerminal{nullptr};
+  ExtException * FFatalError{nullptr};
+  TTerminal * FTerminal{nullptr};
   bool FGuarding{false};
 };
 
@@ -542,7 +542,7 @@ private:
   void DoError(Exception & E, TSessionAction * Action, const UnicodeString & Message);
 };
 
-TRetryOperationLoop::TRetryOperationLoop(TTerminal *Terminal) noexcept
+TRetryOperationLoop::TRetryOperationLoop(TTerminal * Terminal) noexcept
 {
   FTerminal = Terminal;
   FRetry = false;
@@ -988,7 +988,7 @@ void TParallelOperation::Done(
   }
 }
 
-bool TParallelOperation::CheckEnd(TCollectedFileList *Files)
+bool TParallelOperation::CheckEnd(TCollectedFileList * Files)
 {
   bool Result = (FIndex >= Files->GetCount());
   if (Result)
@@ -2242,7 +2242,7 @@ void TTerminal::HandleExtendedException(Exception * E)
   }
 }
 
-void TTerminal::ShowExtendedException(Exception *E)
+void TTerminal::ShowExtendedException(Exception * E)
 {
   GetLog()->AddException(E);
   if (GetOnShowExtendedException() != nullptr)
@@ -3446,7 +3446,7 @@ void TTerminal::DirectoryModified(const UnicodeString & APath, bool SubDirs)
   }
 }
 
-void TTerminal::DirectoryLoaded(TRemoteFileList *FileList)
+void TTerminal::DirectoryLoaded(TRemoteFileList * FileList)
 {
   AddCachedFileList(FileList);
 }
@@ -3491,7 +3491,7 @@ void TTerminal::EnsureNonExistence(const UnicodeString & AFileName)
   if ((base::UnixExtractFileDir(AFileName).IsEmpty()) &&
       base::UnixSamePath(RemoteGetCurrentDirectory(), FFiles->GetDirectory()))
   {
-    TRemoteFile *File = FFiles->FindFile(AFileName);
+    TRemoteFile * File = FFiles->FindFile(AFileName);
     if (File)
     {
       if (File->GetIsDirectory())
@@ -3869,7 +3869,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & ADirecto
 
 TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
 {
-  TRemoteFile *File = nullptr;
+  TRemoteFile * File = nullptr;
   TRetryOperationLoop RetryLoop(this);
   do
   {
@@ -4010,7 +4010,7 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
 
       for (int32_t Index = 0; Index < FileList->GetCount(); ++Index)
       {
-        TRemoteFile *File = FileList->GetFile(Index);
+        TRemoteFile * File = FileList->GetFile(Index);
         if (IsRealFile(File->FileName))
         {
           CallBackFunc(Directory + File->GetFileName(), File, AParam);

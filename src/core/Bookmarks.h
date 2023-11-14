@@ -32,7 +32,7 @@ private:
 
 public:
   TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
-  void SetBookmarks(const UnicodeString & AIndex, TBookmarkList *Value);
+  void SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * Value);
 
@@ -49,7 +49,7 @@ class NB_CORE_EXPORT TBookmarkList : public TPersistent
   friend class TBookmark;
   NB_DISABLE_COPY(TBookmarkList)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBookmarkList); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBookmarkList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmarkList) || TPersistent::is(Kind); }
 public:
   explicit TBookmarkList() noexcept;
@@ -100,7 +100,7 @@ class NB_CORE_EXPORT TBookmark : public TPersistent
   friend class TBookmarkList;
   NB_DISABLE_COPY(TBookmark)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TBookmark); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBookmark); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmark) || TPersistent::is(Kind); }
 public:
   TBookmark() noexcept;

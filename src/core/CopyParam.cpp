@@ -120,7 +120,7 @@ UnicodeString TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, i
 
 void TCopyParamType::DoGetInfoStr(
   const UnicodeString & Separator, int32_t Options,
-  UnicodeString & Result, bool &SomeAttrIncluded,
+  UnicodeString & Result, bool & SomeAttrIncluded,
   const UnicodeString & /*ALink*/, UnicodeString & /*ScriptArgs*/) const //*TAssemblyLanguage Language, UnicodeString & AssemblyCode) const
 {
   TCopyParamType Defaults;
@@ -568,7 +568,7 @@ void TCopyParamType::DoGetInfoStr(
 #undef ADD
 }
 
-void TCopyParamType::Assign(const TCopyParamType *Source)
+void TCopyParamType::Assign(const TCopyParamType * Source)
 {
   DebugAssert(Source != nullptr);
   if (!Source)
@@ -913,7 +913,7 @@ void TCopyParamType::SetTransferSkipList(const TStrings * Value)
   }
 }
 
-void TCopyParamType::Load(THierarchicalStorage *Storage)
+void TCopyParamType::Load(THierarchicalStorage * Storage)
 {
   SetAddXToDirectories(Storage->ReadBool("AddXToDirectories", GetAddXToDirectories()));
   GetAsciiFileMask().Masks(Storage->ReadString("Masks", GetAsciiFileMask().Masks()));

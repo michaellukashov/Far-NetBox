@@ -599,7 +599,7 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) noexcept :
 {
 }
 
-TRemoteToken::TRemoteToken(const TRemoteToken &rhs) noexcept :
+TRemoteToken::TRemoteToken(const TRemoteToken & rhs) noexcept :
   FName(rhs.FName),
   FID(rhs.FID),
   FIDValid(rhs.FIDValid)
@@ -612,7 +612,7 @@ void TRemoteToken::Clear()
   FIDValid = false;
 }
 
-bool TRemoteToken::operator==(const TRemoteToken &rhs) const
+bool TRemoteToken::operator ==(const TRemoteToken & rhs) const
 {
   return
     (FName == rhs.FName) &&
@@ -620,12 +620,12 @@ bool TRemoteToken::operator==(const TRemoteToken &rhs) const
     (!FIDValid || (FID == rhs.FID));
 }
 
-bool TRemoteToken::operator!=(const TRemoteToken &rhs) const
+bool TRemoteToken::operator !=(const TRemoteToken & rhs) const
 {
   return !(*this == rhs);
 }
 
-TRemoteToken &TRemoteToken::operator=(const TRemoteToken &rhs)
+TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rhs)
 {
   if (this != &rhs)
   {
@@ -720,7 +720,7 @@ UnicodeString TRemoteToken::GetLogText() const
 }
 
 
-TRemoteTokenList *TRemoteTokenList::Duplicate() const
+TRemoteTokenList * TRemoteTokenList::Duplicate() const
 {
   std::unique_ptr<TRemoteTokenList> Result(std::make_unique<TRemoteTokenList>());
   try__catch
@@ -802,7 +802,7 @@ bool TRemoteTokenList::Exists(const UnicodeString & Name) const
   return (FNameMap.find(Name) != FNameMap.end());
 }
 
-const TRemoteToken *TRemoteTokenList::Find(uint32_t ID) const
+const TRemoteToken * TRemoteTokenList::Find(uint32_t ID) const
 {
   TIDMap::const_iterator it = FIDMap.find(ID);
   const TRemoteToken *Result = nullptr;
@@ -813,7 +813,7 @@ const TRemoteToken *TRemoteTokenList::Find(uint32_t ID) const
   return Result;
 }
 
-const TRemoteToken *TRemoteTokenList::Find(const UnicodeString & Name) const
+const TRemoteToken * TRemoteTokenList::Find(const UnicodeString & Name) const
 {
   TNameMap::const_iterator it = FNameMap.find(Name);
   const TRemoteToken *Result = nullptr;
@@ -824,7 +824,7 @@ const TRemoteToken *TRemoteTokenList::Find(const UnicodeString & Name) const
   return Result;
 }
 
-void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t *Title)
+void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
 {
   if (!FTokens.empty())
   {
@@ -845,7 +845,7 @@ int32_t TRemoteTokenList::GetCount() const
   return nb::ToIntPtr(FTokens.size());
 }
 
-const TRemoteToken *TRemoteTokenList::Token(int32_t Index) const
+const TRemoteToken * TRemoteTokenList::Token(int32_t Index) const
 {
   return &FTokens[Index];
 }
@@ -877,7 +877,7 @@ TRemoteFile::~TRemoteFile() noexcept
   SAFE_DESTROY(FLinkedFile);
 }
 
-TRemoteFile *TRemoteFile::Duplicate(bool Standalone) const
+TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
   std::unique_ptr<TRemoteFile> Result(std::make_unique<TRemoteFile>());
   try__catch
@@ -1060,7 +1060,7 @@ void TRemoteFile::SetType(wchar_t AType)
   FIsSymLink = (::UpCase(FType) == FILETYPE_SYMLINK);
 }
 
-const TRemoteFile *TRemoteFile::GetLinkedFile() const
+const TRemoteFile * TRemoteFile::GetLinkedFile() const
 {
   // do not call FindLinkedFile as it would be called repeatedly for broken symlinks
   return FLinkedFile;
@@ -1524,7 +1524,7 @@ void TRemoteFile::FindLinkedFile()
   if (!GetLinkTo().IsEmpty())
   {
     // check for cyclic link
-    TRemoteFile *LinkedBy = FLinkedByFile;
+    TRemoteFile * LinkedBy = FLinkedByFile;
     while (LinkedBy)
     {
       if (LinkedBy->GetLinkTo() == GetLinkTo())
@@ -1541,7 +1541,7 @@ void TRemoteFile::FindLinkedFile()
 
   if (FCyclicLink)
   {
-    TRemoteFile *LinkedBy = FLinkedByFile;
+    TRemoteFile * LinkedBy = FLinkedByFile;
     while (LinkedBy)
     {
       LinkedBy->FCyclicLink = true;
@@ -1731,12 +1731,12 @@ bool TRemoteFileList::AnyDirectory(TStrings * List)
   return Result;
 }
 
-void TRemoteFileList::DuplicateTo(TRemoteFileList *Copy) const
+void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
 {
   Copy->Reset();
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
-    TRemoteFile *File = GetFile(Index);
+    TRemoteFile * File = GetFile(Index);
     Copy->AddFile(File->Duplicate(false));
   }
   Copy->FDirectory = GetDirectory();
@@ -1759,7 +1759,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
   return base::UnixIncludeTrailingBackslash(GetDirectory());
 }
 
-TRemoteFile *TRemoteFileList::GetFile(Integer Index) const
+TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
   return GetAs<TRemoteFile>(Index);
 }
@@ -1784,7 +1784,7 @@ int64_t TRemoteFileList::GetTotalSize() const
   return Result;
 }
 
-TRemoteFile *TRemoteFileList::FindFile(const UnicodeString & AFileName) const
+TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
@@ -1859,7 +1859,7 @@ void TRemoteDirectory::AddFile(TRemoteFile * AFile)
   AFile->SetTerminal(GetTerminal());
 }
 
-void TRemoteDirectory::DuplicateTo(TRemoteFileList *Copy) const
+void TRemoteDirectory::DuplicateTo(TRemoteFileList * Copy) const
 {
   TRemoteFileList::DuplicateTo(Copy);
   if (GetThisDirectory() && !GetIncludeThisDirectory())
@@ -1933,7 +1933,7 @@ void TRemoteDirectoryCache::Clear()
   {
     for (int32_t Index = 0; Index < GetCount(); ++Index)
     {
-      TRemoteFileList *List = GetAs<TRemoteFileList>(Index);
+      TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
       SAFE_DESTROY(List);
       SetObj(Index, nullptr);
     }
@@ -2039,7 +2039,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & ADirectory, bo
 
 void TRemoteDirectoryCache::Delete(int32_t Index)
 {
-  TRemoteFileList *List = GetAs<TRemoteFileList>(Index);
+  TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
   SAFE_DESTROY(List);
   TStringList::Delete(Index);
 }
@@ -2922,7 +2922,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
   TRemoteProperties CommonProperties;
   for (int32_t Index = 0; Index < AFileList->GetCount(); ++Index)
   {
-    TRemoteFile *File = AFileList->GetAs<TRemoteFile>(Index);
+    TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
     DebugAssert(File);
     if (!Index)
     {
@@ -3004,7 +3004,7 @@ TRemoteProperties &TRemoteProperties::operator=(const TRemoteProperties &other)
   return *this;
 }
 
-void TRemoteProperties::Load(THierarchicalStorage *Storage)
+void TRemoteProperties::Load(THierarchicalStorage * Storage)
 {
   uint8_t Buf[sizeof(Valid)];
   if (nb::ToSizeT(Storage->ReadBinaryData("Valid", &Buf, sizeof(Buf))) == sizeof(Buf))
@@ -3020,7 +3020,7 @@ void TRemoteProperties::Load(THierarchicalStorage *Storage)
   // TODO
 }
 
-void TRemoteProperties::Save(THierarchicalStorage *Storage) const
+void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 {
   Storage->WriteBinaryData(UnicodeString(L"Valid"),
     static_cast<const void *>(&Valid), sizeof(Valid));
@@ -3103,9 +3103,9 @@ TSynchronizeChecklist::TSynchronizeChecklist() noexcept :
 
 TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
 {
-  for (int Index = 0; Index < FList->Count; Index++)
+  for (int32_t Index = 0; Index < FList->Count; Index++)
   {
-    TChecklistItem *Item = FList->GetAs<TChecklistItem>(Index);
+    TChecklistItem * Item = FList->GetAs<TChecklistItem>(Index);
     SAFE_DESTROY(Item);
   }
 //  delete FList;
@@ -3118,8 +3118,8 @@ void TSynchronizeChecklist::Add(TChecklistItem* Item)
 
 int32_t TSynchronizeChecklist::Compare(const void * AItem1, const void * AItem2)
 {
-  const TChecklistItem *Item1 = cast_to<TChecklistItem>(AItem1);
-  const TChecklistItem *Item2 = cast_to<TChecklistItem>(AItem2);
+  const TChecklistItem * Item1 = cast_to<TChecklistItem>(AItem1);
+  const TChecklistItem * Item2 = cast_to<TChecklistItem>(AItem2);
 
   int32_t Result;
   if (!Item1->Local.Directory.IsEmpty())
@@ -3168,11 +3168,11 @@ const TChecklistItem * TSynchronizeChecklist::GetItem(int32_t Index) const
   return FList->GetAs<TChecklistItem>(Index);
 }
 
-void TSynchronizeChecklist::Update(const TChecklistItem *Item, bool Check, TChecklistAction Action)
+void TSynchronizeChecklist::Update(const TChecklistItem * Item, bool Check, TChecklistAction Action)
 {
   // TSynchronizeChecklist owns non-const items so it can manipulate them freely,
   // const_cast here is just an optimization
-  TChecklistItem *MutableItem = const_cast<TChecklistItem *>(Item);
+  TChecklistItem * MutableItem = const_cast<TChecklistItem *>(Item);
   DebugAssert(FList->IndexOf(MutableItem) >= 0);
   MutableItem->Checked = Check;
   MutableItem->Action = Action;
@@ -3181,7 +3181,7 @@ void TSynchronizeChecklist::Update(const TChecklistItem *Item, bool Check, TChec
 void TSynchronizeChecklist::Delete(const TChecklistItem * Item)
 {
   // See comment in Update()
-  TChecklistItem* MutableItem = const_cast<TChecklistItem*>(Item);
+  TChecklistItem * MutableItem = const_cast<TChecklistItem *>(Item);
   FList->Extract(MutableItem);
   SAFE_DESTROY(MutableItem);
 }
@@ -3189,7 +3189,7 @@ void TSynchronizeChecklist::Delete(const TChecklistItem * Item)
 void TSynchronizeChecklist::UpdateDirectorySize(const TChecklistItem* Item, int64_t Size)
 {
   // See comment in Update
-  TChecklistItem* MutableItem = const_cast<TChecklistItem*>(Item);
+  TChecklistItem * MutableItem = const_cast<TChecklistItem *>(Item);
   DebugAssert(FList->IndexOf(MutableItem) >= 0);
   if (DebugAlwaysTrue(Item->IsDirectory))
   {
@@ -3269,7 +3269,7 @@ int64_t TSynchronizeProgress::ItemSize(const TChecklistItem * ChecklistItem) con
   {
     case TChecklistAction::saDeleteRemote:
     case TChecklistAction::saDeleteLocal:
-      Result = ChecklistItem->IsDirectory ? 1024*1024 : 100*1024;
+      Result = ChecklistItem->IsDirectory ? 1024 * 1024 : 100 * 1024;
       break;
 
     default:
@@ -3280,7 +3280,7 @@ int64_t TSynchronizeProgress::ItemSize(const TChecklistItem * ChecklistItem) con
       else
       {
         DebugAssert(ChecklistItem->IsDirectory);
-        Result = 1024*1024;
+        Result = 1024 * 1024;
       }
       break;
   }

@@ -51,8 +51,8 @@ static uint32_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uint32_t
         {
           try__finally
           {
-            VS_VERSION_INFO_STRUCT32 *VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
-            const VS_FIXEDFILEINFO *FixedInfo =
+            VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(LockResource(Mem));
+            const VS_FIXEDFILEINFO * FixedInfo =
               reinterpret_cast<VS_FIXEDFILEINFO *>(DWORD_ALIGN(VersionInfo, VersionInfo->szKey + nb::StrLength(VersionInfo->szKey) + 1));
 
             if (FixedInfo->dwSignature != VS_FFI_SIGNATURE)
@@ -244,7 +244,7 @@ UnicodeString GetFileInfoString(void * FileInfo,
 
   UnicodeString SubBlock =
     UnicodeString(L"\\StringFileInfo\\") + IntToHex(Translation.Language, 4) + IntToHex(Translation.CharSet, 4) + L"\\" + StringName;
-  if (!VerQueryValue(FileInfo, SubBlock.c_str(), (void**)&P, &Len))
+  if (!VerQueryValue(FileInfo, SubBlock.c_str(), (void **)&P, &Len))
   {
     if (!AllowEmpty)
     {

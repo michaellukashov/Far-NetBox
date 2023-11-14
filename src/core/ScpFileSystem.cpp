@@ -1047,7 +1047,7 @@ void TSCPFileSystem::CachedChangeDirectory(const UnicodeString & Directory)
   FCachedDirectoryChange = base::UnixExcludeTrailingBackslash(Directory);
 }
 
-void TSCPFileSystem::ReadDirectory(TRemoteFileList *FileList)
+void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   DebugAssert(FileList);
   // emptying file list moved before command execution
@@ -1442,7 +1442,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
         BatchSize += File->Size;
         if (!FileListCommandLineBak.IsEmpty() &&
             ((FileListCommandLine.Length() > 2048) ||
-             (BatchSize > 1024*1024*1024)))
+             (BatchSize > 1024 * 1024 * 1024)))
         {
           FileListCommandLine = FileListCommandLineBak;
           break;

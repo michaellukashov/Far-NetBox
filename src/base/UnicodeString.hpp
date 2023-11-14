@@ -26,34 +26,34 @@ public:
   int32_t Length() const { return Data.GetLength(); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
-  char *SetLength(int32_t nLength);
-  UTF8String &Delete(int32_t Index, int32_t Count);
-  UTF8String &Insert(wchar_t Ch, int32_t Pos);
-  UTF8String &Insert(const wchar_t * Str, int32_t Pos);
+  char * SetLength(int32_t nLength);
+  UTF8String & Delete(int32_t Index, int32_t Count);
+  UTF8String & Insert(wchar_t Ch, int32_t Pos);
+  UTF8String & Insert(const wchar_t * Str, int32_t Pos);
   UTF8String SubString(int32_t Pos) const;
   UTF8String SubString(int32_t Pos, int32_t Len) const;
 
   int32_t Pos(char Ch) const;
 
-  int32_t vprintf(const char *Format, va_list ArgList);
+  int32_t vprintf(const char * Format, va_list ArgList);
 
   void Unique() {}
 
 public:
-  UTF8String &operator=(const UnicodeString & StrCopy);
-  UTF8String &operator=(const UTF8String & StrCopy);
-  UTF8String &operator=(const RawByteString & StrCopy);
-  UTF8String &operator=(const char * lpszData);
-  UTF8String &operator=(const wchar_t *lpwszData);
-  UTF8String &operator=(wchar_t chData);
+  UTF8String & operator =(const UnicodeString & StrCopy);
+  UTF8String & operator =(const UTF8String & StrCopy);
+  UTF8String & operator =(const RawByteString & StrCopy);
+  UTF8String & operator =(const char * lpszData);
+  UTF8String & operator =(const wchar_t * lpwszData);
+  UTF8String & operator =(wchar_t chData);
 
   UTF8String operator+(const UTF8String & rhs) const;
   UTF8String operator+(const RawByteString & rhs) const;
   UTF8String operator+(const char * rhs) const;
-  UTF8String &operator+=(const UTF8String & rhs);
-  UTF8String &operator+=(const RawByteString & rhs);
-  UTF8String &operator+=(char Ch);
-  UTF8String &operator+=(const char *rhs);
+  UTF8String & operator+=(const UTF8String & rhs);
+  UTF8String & operator+=(const RawByteString & rhs);
+  UTF8String & operator+=(char Ch);
+  UTF8String & operator+=(const char * rhs);
 
   NB_CORE_EXPORT friend bool operator==(const UTF8String & lhs, const UTF8String & rhs);
   NB_CORE_EXPORT friend bool operator!=(const UTF8String & lhs, const UTF8String & rhs);
@@ -91,7 +91,7 @@ public:
   int32_t GetLength() const { return Length(); }
   int32_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
-  wchar_t *SetLength(int32_t nLength);
+  wchar_t * SetLength(int32_t nLength);
   UnicodeString &Delete(int32_t Index, int32_t Count);
   UnicodeString &Clear() { Data.Empty(); return *this; }
 
@@ -122,7 +122,7 @@ public:
   UnicodeString &Append(const UnicodeString & Str) { return Append(Str.c_str(), Str.GetLength()); }
   UnicodeString &Append(const wchar_t * Str);
   UnicodeString &Append(const wchar_t Ch) { return Append(&Ch, 1); }
-  UnicodeString &Append(const char *lpszAdd, int32_t CodePage = CP_OEMCP);
+  UnicodeString &Append(const char * lpszAdd, int32_t CodePage = CP_OEMCP);
 
   UnicodeString &Insert(int32_t Pos, const wchar_t * Str, int32_t StrLen);
   UnicodeString &Insert(int32_t Pos, const UnicodeString & Str) { return Insert(Pos, Str.c_str(), Str.Length()); }
@@ -168,15 +168,15 @@ public:
   NB_CORE_EXPORT friend UnicodeString operator+(wchar_t lhs, const UnicodeString & rhs);
   NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString & lhs, wchar_t rhs);
   NB_CORE_EXPORT friend UnicodeString operator+(const wchar_t *lhs, const UnicodeString & rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString & lhs, const wchar_t *rhs);
-  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString & lhs, const char *rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString & lhs, const wchar_t * rhs);
+  NB_CORE_EXPORT friend UnicodeString operator+(const UnicodeString & lhs, const char * rhs);
 
   UnicodeString &operator+=(const UnicodeString & rhs);
-  UnicodeString &operator+=(const wchar_t *rhs);
-  UnicodeString &operator+=(const UTF8String &rhs);
-  UnicodeString &operator+=(const RawByteString &rhs);
+  UnicodeString &operator+=(const wchar_t * rhs);
+  UnicodeString &operator+=(const UTF8String & rhs);
+  UnicodeString &operator+=(const RawByteString & rhs);
   UnicodeString &operator+=(char Ch);
-  UnicodeString &operator+=(const char *Ch);
+  UnicodeString &operator+=(const char * Ch);
   UnicodeString &operator+=(wchar_t Ch);
 
   bool operator==(const UnicodeString & Str) const { return Data == Str.Data; }
@@ -259,20 +259,20 @@ public:
 
   AnsiString &operator+=(const AnsiString & rhs);
   AnsiString &operator+=(char Ch);
-  AnsiString &operator+=(const char *rhs);
+  AnsiString &operator+=(const char * rhs);
 
   inline friend bool operator==(const AnsiString &lhs, const AnsiString &rhs)
   { return lhs.Data == rhs.Data; }
-  inline friend bool operator!=(const AnsiString &lhs, const AnsiString &rhs)
+  inline friend bool operator!=(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data != rhs.Data; }
 
-  inline friend bool operator==(const AnsiString &lhs, const char *rhs)
+  inline friend bool operator==(const AnsiString & lhs, const char * rhs)
   { return lhs.Data == rhs; }
-  inline friend bool operator==(const char *lhs, const AnsiString &rhs)
+  inline friend bool operator==(const char * lhs, const AnsiString & rhs)
   { return lhs == rhs.Data; }
-  inline friend bool operator!=(const AnsiString &lhs, const char *rhs)
+  inline friend bool operator!=(const AnsiString & lhs, const char * rhs)
   { return lhs.Data != rhs; }
-  inline friend bool operator!=(const char *lhs, const AnsiString &rhs)
+  inline friend bool operator!=(const char * lhs, const AnsiString & rhs)
   { return lhs != rhs.Data; }
 
 private:
@@ -310,9 +310,9 @@ public:
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(int32_t nLength);
-  RawByteString &Clear() { SetLength(0); return *this; }
-  RawByteString &Delete(int32_t Index, int32_t Count);
-  RawByteString &Insert(const char * Str, int32_t Pos);
+  RawByteString & Clear() { SetLength(0); return *this; }
+  RawByteString & Delete(int32_t Index, int32_t Count);
+  RawByteString & Insert(const char * Str, int32_t Pos);
   RawByteString SubString(int32_t Pos) const;
   RawByteString SubString(int32_t Pos, int32_t Len) const;
 
@@ -394,6 +394,6 @@ inline bool operator>(const S &lhs, const S &rhs)
 // utility functions
 
 template <class StringClass>
-inline char *ToChar(StringClass &a) { return const_cast<char *>(a.c_str()); }
+inline char * ToChar(StringClass &a) { return const_cast<char *>(a.c_str()); }
 template <class StringClass>
-inline wchar_t *ToWChar(StringClass &a) { return const_cast<wchar_t *>(a.c_str()); }
+inline wchar_t * ToWChar(StringClass &a) { return const_cast<wchar_t *>(a.c_str()); }

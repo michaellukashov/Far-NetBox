@@ -110,7 +110,7 @@ private:
 
   using TMasks = nb::vector_t<TMask>;
   TMasks FMasks[4];
-  mutable TStrings *FMasksStr[4]{};
+  mutable TStrings * FMasksStr[4]{};
 
 private:
   void SetStr(const UnicodeString & Value, bool SingleMask);

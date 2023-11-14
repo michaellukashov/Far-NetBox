@@ -93,9 +93,9 @@ using TCreateLocalDirectoryEvent = nb::FastDelegate2<bool,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/>;
 using TCheckForEscEvent = nb::FastDelegate0<bool>;
 
-constexpr uint32_t folNone = 0x00;
-constexpr uint32_t folAllowSkip = 0x01;
-constexpr uint32_t folRetryOnFatal = 0x02;
+constexpr const uint32_t folNone = 0x00;
+constexpr const uint32_t folAllowSkip = 0x01;
+constexpr const uint32_t folRetryOnFatal = 0x02;
 
 #if 0
 
