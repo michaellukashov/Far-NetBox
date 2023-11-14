@@ -4704,7 +4704,7 @@ void TTerminal::ChangeFilesProperties(TStrings * AFileList,
   FUseBusyCursor = false;
 
   AnnounceFileListOperation();
-  ProcessFiles(AFileList, foSetProperties, nb::bind(&TTerminal::ChangeFileProperties, this), const_cast<void *>(static_cast<const void *>(Properties)));
+  ProcessFiles(AFileList, foSetProperties, nb::bind(&TTerminal::ChangeFileProperties, this), const_cast<void *>(nb::ToPtr(Properties)));
 }
 
 bool TTerminal::LoadFilesProperties(TStrings * AFileList)
