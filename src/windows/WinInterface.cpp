@@ -601,9 +601,11 @@ static TStrings * StackInfoListToStrings(
 }
 #endif // #if 0
 
+#if 0
 static std::unique_ptr<TCriticalSection> StackTraceCriticalSection(TraceInitPtr(new TCriticalSection()));
 using TStackTraceMap = rde::map<DWORD, TStrings *>;
 static TStackTraceMap StackTraceMap;
+#endif
 
 UnicodeString GetExceptionDebugInfo()
 {
