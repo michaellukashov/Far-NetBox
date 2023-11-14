@@ -356,7 +356,7 @@ RawByteString RawByteString::TrimRight() const
 unsigned char &RawByteString::operator[](int32_t Idx)
 {
   ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return reinterpret_cast<unsigned char*>(Data.GetBuffer())[Idx - 1];
+  return nb::ToUInt8Ptr(Data.GetBuffer())[Idx - 1];
 }
 
 RawByteString &RawByteString::operator=(const UnicodeString & StrCopy)

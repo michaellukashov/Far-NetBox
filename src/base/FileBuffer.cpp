@@ -103,7 +103,7 @@ DWORD TFileBuffer::LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, i
   FMemory->Seek(0, TSeekOrigin::soBeginning);
   DebugAssert(GetPosition() == 0);
   NeedSpace(Len);
-  size_t Result = OnTransferIn(Sender, reinterpret_cast<unsigned char *>(GetPointer()), Len);
+  size_t Result = OnTransferIn(Sender, nb::ToUInt8Ptr(GetPointer()), Len);
   ProcessRead(Len, Result);
   return Result;
 }

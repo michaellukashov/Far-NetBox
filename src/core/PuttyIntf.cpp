@@ -1189,7 +1189,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
   {
     RawByteString Buf;
     Buf.SetLength(ssh_hash_alg(Hash)->hlen);
-    ssh_hash_final(Hash, reinterpret_cast<unsigned char *>((void *)Buf.c_str()));
+    ssh_hash_final(Hash, nb::ToUInt8Ptr(nb::ToPtr(Buf.c_str())));
     Result = BytesToHex(Buf);
   } end_try__finally
 

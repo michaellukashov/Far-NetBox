@@ -647,8 +647,8 @@ void CAsyncSslSocketLayer::SetSession(SSL_SESSION * Session)
   if (m_sessionid != nullptr)
   {
     m_sessionidSerializedLen = i2d_SSL_SESSION(m_sessionid, nullptr);
-    m_sessionidSerialized = reinterpret_cast<unsigned char *>(nb::chcalloc(m_sessionidSerializedLen));
-    unsigned char * P = m_sessionidSerialized;
+    m_sessionidSerialized = nb::ToUInt8Ptr(nb::chcalloc(m_sessionidSerializedLen));
+    uint8_t * P = m_sessionidSerialized;
     i2d_SSL_SESSION(m_sessionid, &P);
   }
 }
