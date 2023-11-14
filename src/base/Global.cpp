@@ -68,7 +68,7 @@ TTracesInMemory *CurrentTracesInMemory = nullptr;
 TTracesInMemoryList WriteTracesInMemory;
 TTracesInMemoryList ReadTracesInMemory;
 #define TracesInMemorySecond() (GetTickCount() % 1000)
-int CurrentTracesInMemorySecond = -1;
+int32_t CurrentTracesInMemorySecond = -1;
 std::unique_ptr<TCriticalSection> CurrentTracesInMemorySection;
 std::unique_ptr<TCriticalSection> TracesInMemoryListsSection;
 
@@ -133,7 +133,7 @@ struct TTraceInMemory
   DWORD Thread;
   const wchar_t *SourceFile;
   const wchar_t *Func;
-  int Line;
+  int32_t Line;
   const wchar_t *Message;
 #else
   UTF8String Message;
@@ -142,7 +142,7 @@ struct TTraceInMemory
 typedef nb::vector_t<TTraceInMemory> TTracesInMemory;
 TTracesInMemory TracesInMemory;
 
-int TraceThreadProc(void *)
+int32_t TraceThreadProc(void *)
 {
   Trace(L">");
   try
@@ -199,7 +199,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
 }
 
 void DoTraceFmt(const wchar_t * SourceFile, const wchar_t *Func,
-  uint32_t Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
+  uint32_t Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int32_t /*Args_Size*/)
 {
   DoTrace(SourceFile, Func, Line, AFormat);
 }
@@ -273,8 +273,8 @@ void TraceInMemoryCallback(const wchar_t *Msg)
 
 #ifndef TRACE_IN_MEMORY_NO_FORMATTING
 
-void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
-  uint32_t Line, const wchar_t *Message)
+void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
+  uint32_t Line, const wchar_t * Message)
 {
   DebugAssert(IsTracing);
 

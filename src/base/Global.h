@@ -50,7 +50,6 @@ private:
   TCriticalSection &FCriticalSection;
 };
 
-
 //#include <assert.h>
 #define ACCESS_VIOLATION_TEST { (*((int32_t*)nullptr)) = 0; }
 #if !defined(_DEBUG) || defined(DESIGN_ONLY)
@@ -91,8 +90,6 @@ NB_CORE_EXPORT void TraceDumpToFile();
 NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t *Msg);
 
 #endif // TRACE_IN_MEMORY
-
-#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
 
 inline bool DoAlwaysTrue(bool Value, const wchar_t * Message, const wchar_t * Filename, uint32_t LineNumber)
 {
