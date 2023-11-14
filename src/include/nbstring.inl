@@ -780,7 +780,7 @@ int CMStringT<BaseType, StringTraits>::Insert(int iIndex, XCHAR ch)
   PXSTR pszBuffer = this->GetBuffer(nNewLength);
 
   // move existing bytes down
-  nbstr_memcpy(pszBuffer + iIndex + 1, pszBuffer + iIndex, (nNewLength - iIndex)*sizeof(XCHAR));
+  nbstr_memcpy(pszBuffer + iIndex + 1, pszBuffer + iIndex, (nNewLength - iIndex) * sizeof(XCHAR));
   pszBuffer[iIndex] = ch;
 
   this->ReleaseBufferSetLength(nNewLength);
@@ -806,7 +806,7 @@ int CMStringT<BaseType, StringTraits>::Insert(int iIndex, PCXSTR psz)
 
     PXSTR pszBuffer = this->GetBuffer(nNewLength);
     // move existing bytes down
-    nbstr_memcpy(pszBuffer + iIndex + nInsertLength, pszBuffer + iIndex, (nNewLength - iIndex - nInsertLength + 1)*sizeof(XCHAR));
+    nbstr_memcpy(pszBuffer + iIndex + nInsertLength, pszBuffer + iIndex, (nNewLength - iIndex - nInsertLength + 1) * sizeof(XCHAR));
     nbstr_memcpy(pszBuffer + iIndex, psz, nInsertLength * sizeof(XCHAR));
     this->ReleaseBufferSetLength(nNewLength);
   }

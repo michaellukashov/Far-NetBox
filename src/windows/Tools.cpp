@@ -839,7 +839,7 @@ HANDLE OpenTextFromClipboard(const wchar_t *& Text)
       if (Result != nullptr)
       {
         ErrorContext = L"lock";
-        Text = static_cast<const wchar_t*>(GlobalLock(Result));
+        Text = static_cast<const wchar_t *>(GlobalLock(Result));
       }
       else
       {
@@ -887,7 +887,7 @@ bool TextFromClipboard(UnicodeString & Text, bool Trim)
     {
       // For all current uses (URL pasting, key/fingerprint pasting, known_hosts pasting, "more messages" copying,
       // permissions pasting), 64KB is large enough.
-      const int Limit = 64*1024;
+      constexpr const int32_t Limit = 64 * 1024;
       ErrorContext = L"size";
       size_t Size = GlobalSize(Handle);
       int Len = (Size / sizeof(*AText)) - 1;

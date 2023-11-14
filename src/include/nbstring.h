@@ -811,15 +811,15 @@ public:
   explicit CMStringT(const XCHAR *pszSrc);
   CMStringT(CMStringDataFormat, const XCHAR *pszFormat, ...);
 
-  CMStringT(const YCHAR *pszSrc);
-  CMStringT(const unsigned char *pszSrc);
+  CMStringT(const YCHAR * pszSrc);
+  CMStringT(const unsigned char * pszSrc);
 
   CMStringT(char ch, int nLength = 1);
   CMStringT(wchar_t ch, int nLength = 1);
 
-  CMStringT(const XCHAR *pch, int nLength);
-  CMStringT(const YCHAR *pch, int nLength);
-  CMStringT(const YCHAR *pch, int nLength, int CodePage);
+  CMStringT(const XCHAR * pch, int nLength);
+  CMStringT(const YCHAR * pch, int nLength);
+  CMStringT(const YCHAR * pch, int nLength, int CodePage);
 
   // Destructor
   ~CMStringT();
@@ -829,7 +829,7 @@ public:
   CMStringT &operator=(const CMStringT &strSrc);
   CMStringT &operator=(PCXSTR pszSrc);
   CMStringT &operator=(PCYSTR pszSrc);
-  CMStringT &operator=(const unsigned char *pszSrc);
+  CMStringT &operator=(const unsigned char * pszSrc);
   CMStringT &operator=(char ch);
   CMStringT &operator=(wchar_t ch);
 

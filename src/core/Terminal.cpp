@@ -5166,7 +5166,7 @@ bool TTerminal::DoMoveFile(const UnicodeString & FileName, const TRemoteFile * F
 {
   StartOperationWithFile(FileName, foRemoteMove, foDelete);
   DebugAssert(Param != nullptr);
-  const TMoveFileParams & Params = *static_cast<const TMoveFileParams*>(Param);
+  const TMoveFileParams & Params = *static_cast<const TMoveFileParams *>(Param);
   UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(FileName), Params.FileMask);
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", FileName, NewName));
@@ -6145,8 +6145,8 @@ public:
   TSynchronizeOptions * Options{nullptr};
   int32_t Flags{0};
   TStringList * LocalFileList{nullptr};
-  const TCopyParamType *CopyParam{nullptr};
-  TSynchronizeChecklist *Checklist{nullptr};
+  const TCopyParamType * CopyParam{nullptr};
+  TSynchronizeChecklist * Checklist{nullptr};
 
   void DeleteLocalFileList()
   {
@@ -6394,7 +6394,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
       ProcessDirectory(ARemoteDirectory, nb::bind(&TTerminal::SynchronizeCollectFile, this), &Data,
         FLAGSET(AParams, spUseCache));
 
-      TSynchronizeFileData *FileData;
+      TSynchronizeFileData * FileData;
       for (int32_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
         FileData = Data.LocalFileList->GetAs<TSynchronizeFileData>
@@ -8991,7 +8991,7 @@ typename TTerminal::TEncryptedFileNames::const_iterator TTerminal::GetEncryptedF
     {
       delete DoReadDirectoryListing(FileDir, true);
     }
-    catch (Exception & /*E*/)
+    catch (Exception &)
     {
       if (!Active)
       {

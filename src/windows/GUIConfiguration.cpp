@@ -289,8 +289,8 @@ TCopyParamList & TCopyParamList::operator=(const TCopyParamList & rhl)
 
   for (int32_t Index = 0; Index < rhl.GetCount(); ++Index)
   {
-    TCopyParamType *CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
-    TCopyParamRule *Rule = nullptr;
+    TCopyParamType * CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
+    TCopyParamRule * Rule = nullptr;
     if (rhl.GetRule(Index) != nullptr)
     {
       Rule = new TCopyParamRule(*rhl.GetRule(Index));
@@ -474,8 +474,8 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
     {
       try__finally
       {
-        const TCopyParamType *CopyParam = GetCopyParam(Index);
-        const TCopyParamRule *Rule = GetRule(Index);
+        const TCopyParamType * CopyParam = GetCopyParam(Index);
+        const TCopyParamRule * Rule = GetRule(Index);
 
         Storage->WriteString("Name", GetName(Index));
         CopyParam->Save(Storage);

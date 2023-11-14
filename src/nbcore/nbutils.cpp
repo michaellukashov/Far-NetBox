@@ -6,8 +6,8 @@
 
 namespace nb {
 
-int32_t __cdecl StrLength(const wchar_t *str) { return wcslen(NullToEmpty(str)); }
-int32_t __cdecl StrLength(const char *str) { return strlen(NullToEmptyA(str)); }
+int32_t __cdecl StrLength(const wchar_t * str) { return wcslen(NullToEmpty(str)); }
+int32_t __cdecl StrLength(const char * str) { return strlen(NullToEmptyA(str)); }
 
 wchar_t __cdecl Upper(wchar_t Ch)
 {
@@ -26,17 +26,17 @@ int32_t __cdecl StrCmpNNI(const wchar_t * s1, int32_t n1, const wchar_t * s2, in
   return ::CompareString(0, NORM_IGNORECASE | NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, ToInt32(n1), s2, ToInt32(n2)) - 2;
 }
 
-int32_t __cdecl StrLIComp(const wchar_t *s1, const wchar_t *s2, int32_t n)
+int32_t __cdecl StrLIComp(const wchar_t * s1, const wchar_t * s2, int32_t n)
 {
   return StrCmpNNI(s1, n, s2, n);
 }
 
-int32_t __cdecl FarStrCmpI(const wchar_t *s1, const wchar_t *s2)
+int32_t __cdecl FarStrCmpI(const wchar_t * s1, const wchar_t * s2)
 {
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
 
-int32_t __cdecl StrCmpNN(const wchar_t *s1, int32_t n1, const wchar_t *s2, int32_t n2)
+int32_t __cdecl StrCmpNN(const wchar_t * s1, int32_t n1, const wchar_t * s2, int32_t n2)
 {
   return ::CompareString(0, NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, ToInt32(n1), s2, ToInt32(n2)) - 2;
 }

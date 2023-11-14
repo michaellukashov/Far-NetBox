@@ -146,10 +146,10 @@ inline typename MakeOtherType<Int>::Type ToSizeT(Int Value)
 }
 
 template<typename T>
-inline void ClearStruct(T &s) { ::ZeroMemory(&s, sizeof(s)); }
+inline void ClearStruct(T & s) { ::ZeroMemory(&s, sizeof(s)); }
 
 template<typename T>
-inline void ClearStruct(T *s) { T dont_instantiate_this_template_with_pointers = s; }
+inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers = s; }
 
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { ::ZeroMemory(a, sizeof(a[0]) * N); }

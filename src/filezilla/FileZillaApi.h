@@ -11,7 +11,7 @@
 #include "ApiLog.h"
 
 #define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params) \
-  typedef rettype (WINAPI *t_##name) params; \
+  typedef rettype (WINAPI * t_##name) params; \
   linkage t_##name p_##name
 #define STR1(x) #x
 #define STR(x) STR1(x)
@@ -22,9 +22,9 @@
 
 #ifndef NO_IPV6
 DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
-  (const char *nodename, const char *servname,
-   const struct addrinfo *hints, struct addrinfo **res));
-DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo *res));
+  (const char * nodename, const char * servname,
+   const struct addrinfo * hints, struct addrinfo ** res));
+DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo * res));
 DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
   (const struct sockaddr FAR * sa, socklen_t salen,
    char FAR * host, size_t hostlen, char FAR * serv,

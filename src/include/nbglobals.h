@@ -39,7 +39,7 @@ void nb_free(const T* ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(p
 #define nb_realloc(ptr, size) ::realloc(ptr, size)
 
 template<typename T>
-void nb_free(const T *ptr) { ::free(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
+void nb_free(const T * ptr) { ::free(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
 
 #else //!defined(__cplusplus)
 
@@ -77,12 +77,12 @@ inline T calloc(size_t count, size_t size) { return static_cast<T>(nb_calloc(cou
 template<typename T>
 inline T realloc(T ptr, size_t size) { return static_cast<T>(nb_realloc(ptr, size)); }
 
-inline char* chcalloc(size_t size) { return calloc<char *>(1, size); }
-inline wchar_t* wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * sizeof(wchar_t)); }
+inline char * chcalloc(size_t size) { return calloc<char *>(1, size); }
+inline wchar_t * wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * sizeof(wchar_t)); }
 
-inline void* operator_new(size_t size)
+inline void * operator_new(size_t size)
 {
-  void* p = nb::calloc<void *>(1, size);
+  void * p = nb::calloc<void *>(1, size);
   /*if (!p)
   {
     static std::bad_alloc badalloc;
@@ -92,7 +92,7 @@ inline void* operator_new(size_t size)
 }
 
 template<typename T>
-inline T* operator_new(size_t size) { return static_cast<T*>(operator_new(size)); }
+inline T * operator_new(size_t size) { return static_cast<T *>(operator_new(size)); }
 
 inline void operator_delete(void* p)
 {
@@ -234,11 +234,11 @@ constexpr const int32_t NPOS  = static_cast<int32_t>(-1);
 
 namespace nballoc {
 
-inline void destruct(char*)
+inline void destruct(char *)
 {
 }
 
-inline void destruct(wchar_t*)
+inline void destruct(wchar_t *)
 {
 }
 
@@ -256,8 +256,8 @@ template<>
 struct custom_nballocator_t<void>
 {
 public:
-  using pointer = void*;
-  using const_pointer = const void*;
+  using pointer = void *;
+  using const_pointer = const void *;
   // reference to void members are impossible.
   using value_type = void;
 
@@ -354,8 +354,8 @@ bool CheckStructSize(const T* s) { return s && (s->StructSize >= sizeof(T)); }
 // from Global.h
 #define NB__TEXT(quote) L##quote      // r_winnt
 #define NB_TEXT(quote) NB__TEXT(quote)
-extern void DoAssert(const wchar_t *Message, const wchar_t *Filename, uint32_t LineNumber);
-extern "C" void DoAssertC(char *Message, char *Filename, int LineNumber);
+extern void DoAssert(const wchar_t * Message, const wchar_t * Filename, uint32_t LineNumber);
+extern "C" void DoAssertC(char * Message, char * Filename, int LineNumber);
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(NB_TEXT(#p), NB_TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 

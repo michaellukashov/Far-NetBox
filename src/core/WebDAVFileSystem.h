@@ -22,7 +22,7 @@ class TWebDAVFileSystem final : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TWebDAVFileSystem)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TWebDAVFileSystem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWebDAVFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWebDAVFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   explicit TWebDAVFileSystem(TTerminal * ATerminal) noexcept;
@@ -149,7 +149,7 @@ protected:
   void NeonAddAuthentication(TSessionContext * SessionContext, bool UseNegotiate);
   void HttpAuthenticationFailed(TSessionContext * SessionContext);
 
-  void InitSslSessionImpl(ssl_st *Ssl) const;
+  void InitSslSessionImpl(ssl_st * Ssl) const;
 private:
   TFileSystemInfo FFileSystemInfo{};
   UnicodeString FCurrentDirectory;

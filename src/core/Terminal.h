@@ -791,14 +791,14 @@ public:
   bool RemoveLocalDirectory(const UnicodeString & LocalDirName);
   bool CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes);
 
-  TSessionData *GetSessionData() const { return FSessionData.get(); }
-  TSessionLog *GetLogConst() const { return FLog.get(); }
-  TSessionLog *GetLog() { return FLog.get(); }
-  TActionLog *GetActionLog() const { return FActionLog.get(); }
-  const TConfiguration *GetConfigurationConst() const { return FConfiguration; }
-  TConfiguration *GetConfiguration() { return FConfiguration; }
+  TSessionData * GetSessionData() const { return FSessionData.get(); }
+  TSessionLog * GetLogConst() const { return FLog.get(); }
+  TSessionLog * GetLog() { return FLog.get(); }
+  TActionLog * GetActionLog() const { return FActionLog.get(); }
+  const TConfiguration * GetConfigurationConst() const { return FConfiguration; }
+  TConfiguration * GetConfiguration() { return FConfiguration; }
   TSessionStatus GetStatus() const { return FStatus; }
-  TRemoteDirectory *GetFiles() const { return FFiles.get(); }
+  TRemoteDirectory * GetFiles() const { return FFiles.get(); }
   TNotifyEvent GetOnChangeDirectory() const { return FOnChangeDirectory; }
   void SetOnChangeDirectory(TNotifyEvent Value) { FOnChangeDirectory = Value; }
   TReadDirectoryEvent GetOnReadDirectory() const { return FOnReadDirectory; }

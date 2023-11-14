@@ -102,7 +102,7 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   UTF8String Result;
   if (Length >= 0)
   {
-    Password.Delete(1, ((Integer)SimpleDecryptNextChar(Password))*2);
+    Password.Delete(1, ((Integer)SimpleDecryptNextChar(Password)) * 2);
     for (int32_t Index = 0; Index < Length; Index++)
     {
       Result += (char)SimpleDecryptNextChar(Password);

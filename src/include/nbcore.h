@@ -376,48 +376,48 @@ NB_CORE_DLL(char *)  nbcore_u2a(const wchar_t *src);
 ///////////////////////////////////////////////////////////////////////////////
 // threads
 
-typedef void (__cdecl *pThreadFunc)(void *);
-typedef unsigned (__stdcall *pThreadFuncEx)(void *);
-typedef unsigned (__cdecl *pThreadFuncOwner)(void *owner, void *param);
+typedef void (__cdecl * pThreadFunc)(void *);
+typedef unsigned (__stdcall * pThreadFuncEx)(void *);
+typedef unsigned (__cdecl * pThreadFuncOwner)(void * owner, void * param);
 
 #if defined( __cplusplus )
-NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void *pOwner = nullptr);
+NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void * pOwner = nullptr);
 #else
-NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void *pOwner);
+NB_CORE_DLL(intptr_t) Thread_Push(HINSTANCE hInst, void * pOwner);
 #endif
 NB_CORE_DLL(intptr_t) Thread_Pop();
 NB_CORE_DLL(void)     Thread_Wait();
 
 #if defined( __cplusplus )
-NB_CORE_DLL(HANDLE) nbcore_forkthread(pThreadFunc aFunc, void *arg = nullptr);
-NB_CORE_DLL(HANDLE) nbcore_forkthreadex(pThreadFuncEx aFunc, void *arg = nullptr, unsigned *pThreadID = nullptr);
-NB_CORE_DLL(HANDLE) nbcore_forkthreadowner(pThreadFuncOwner aFunc, void *owner, void *arg = nullptr, unsigned *pThreadID = nullptr);
+NB_CORE_DLL(HANDLE) nbcore_forkthread(pThreadFunc aFunc, void * arg = nullptr);
+NB_CORE_DLL(HANDLE) nbcore_forkthreadex(pThreadFuncEx aFunc, void * arg = nullptr, unsigned * pThreadID = nullptr);
+NB_CORE_DLL(HANDLE) nbcore_forkthreadowner(pThreadFuncOwner aFunc, void * owner, void * arg = nullptr, unsigned * pThreadID = nullptr);
 #else
-NB_CORE_DLL(HANDLE) nbcore_forkthread(pThreadFunc aFunc, void *arg);
-NB_CORE_DLL(HANDLE) nbcore_forkthreadex(pThreadFuncEx aFunc, void *arg, unsigned *pThreadID);
-NB_CORE_DLL(HANDLE) nbcore_forkthreadowner(pThreadFuncOwner aFunc, void *owner, void *arg, unsigned *pThreadID);
+NB_CORE_DLL(HANDLE) nbcore_forkthread(pThreadFunc aFunc, void * arg);
+NB_CORE_DLL(HANDLE) nbcore_forkthreadex(pThreadFuncEx aFunc, void * arg, unsigned * pThreadID);
+NB_CORE_DLL(HANDLE) nbcore_forkthreadowner(pThreadFuncOwner aFunc, void * owner, void * arg, unsigned * pThreadID);
 #endif
 
-NB_CORE_DLL(void) Thread_SetName(const char *szThreadName);
+NB_CORE_DLL(void) Thread_SetName(const char * szThreadName);
 
-NB_CORE_DLL(void) KillObjectThreads(void *pObject);
+NB_CORE_DLL(void) KillObjectThreads(void * pObject);
 
 ///////////////////////////////////////////////////////////////////////////////
 // utf8 interface
 
-NB_CORE_DLL(char *) Utf8Decode(char *str, wchar_t **ucs2);
-NB_CORE_DLL(char *) Utf8DecodeCP(char *str, int codepage, wchar_t **ucs2);
-NB_CORE_DLL(int)   Utf8toUcs2(const char *src, size_t srclen, wchar_t *dst, size_t dstlen); // returns 0 on error
+NB_CORE_DLL(char *) Utf8Decode(char * str, wchar_t ** ucs2);
+NB_CORE_DLL(char *) Utf8DecodeCP(char * str, int codepage, wchar_t ** ucs2);
+NB_CORE_DLL(int)   Utf8toUcs2(const char * src, size_t srclen, wchar_t * dst, size_t dstlen); // returns 0 on error
 
-NB_CORE_DLL(wchar_t *) Utf8DecodeW(const char *str);
+NB_CORE_DLL(wchar_t *) Utf8DecodeW(const char * str);
 
-NB_CORE_DLL(char *) Utf8Encode(const char *str);
-NB_CORE_DLL(char *) Utf8EncodeCP(const char *src, int codepage);
+NB_CORE_DLL(char *) Utf8Encode(const char * str);
+NB_CORE_DLL(char *) Utf8EncodeCP(const char * src, int codepage);
 
-NB_CORE_DLL(char *) Utf8EncodeW(const wchar_t *str);
-NB_CORE_DLL(int)   Ucs2toUtf8Len(const wchar_t *src);
+NB_CORE_DLL(char *) Utf8EncodeW(const wchar_t * str);
+NB_CORE_DLL(int)   Ucs2toUtf8Len(const wchar_t * src);
 
-NB_CORE_DLL(BOOL)  Utf8CheckString(const char *str);
+NB_CORE_DLL(BOOL)  Utf8CheckString(const char * str);
 
 #define nbcore_utf8decode(A, B)      Utf8Decode(A, B)
 #define nbcore_utf8decodecp(A, B, C) Utf8DecodeCP(A, B, C)
@@ -427,9 +427,9 @@ NB_CORE_DLL(BOOL)  Utf8CheckString(const char *str);
 #define nbcore_utf8encodeW(A)        Utf8EncodeW(A)
 #define nbcore_utf8lenW(A)           Ucs2toUtf8Len(A)
 
-__forceinline char *nbcore_utf8decodeA(const char *src)
+__forceinline char * nbcore_utf8decodeA(const char * src)
 {
-  char *tmp = nbcore_strdup(src);
+  char * tmp = nbcore_strdup(src);
   nbcore_utf8decode(tmp, nullptr);
   return tmp;
 }
@@ -448,7 +448,7 @@ NB_CORE_DLL(BOOL) IsWorkstationLocked();
 NB_CORE_DLL(BOOL) IsScreenSaverRunning();
 NB_CORE_DLL(BOOL) IsTerminalDisconnected();
 
-NB_CORE_DLL(BOOL) GetOSDisplayString(wchar_t *buf, size_t bufSize);
+NB_CORE_DLL(BOOL) GetOSDisplayString(wchar_t * buf, size_t bufSize);
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // retrieves the hLangpack of a plugin by its HINSTANCE
@@ -464,7 +464,7 @@ NB_CORE_DLL(void) UnloadCoreModule();
 } // extern "C"
 
 template <size_t _Size>
-inline int nbcore_snprintf(char(&buffer)[_Size], const char *fmt, ...)
+inline int nbcore_snprintf(char(&buffer)[_Size], const char * fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
@@ -474,7 +474,7 @@ inline int nbcore_snprintf(char(&buffer)[_Size], const char *fmt, ...)
 }
 
 template <size_t _Size>
-inline int nbcore_snwprintf(wchar_t(&buffer)[_Size], const wchar_t *fmt, ...)
+inline int nbcore_snwprintf(wchar_t(&buffer)[_Size], const wchar_t * fmt, ...)
 {
   va_list args;
   va_start(args, fmt);
@@ -484,13 +484,13 @@ inline int nbcore_snwprintf(wchar_t(&buffer)[_Size], const wchar_t *fmt, ...)
 }
 
 template <size_t _Size>
-inline int nbcore_vsnprintf(char(&buffer)[_Size], const char *fmt, va_list va)
+inline int nbcore_vsnprintf(char(&buffer)[_Size], const char * fmt, va_list va)
 {
   return nbcore_vsnprintf(buffer, _Size, fmt, va);
 }
 
 template <size_t _Size>
-inline int nbcore_vsnwprintf(wchar_t(&buffer)[_Size], const wchar_t *fmt, va_list va)
+inline int nbcore_vsnwprintf(wchar_t(&buffer)[_Size], const wchar_t * fmt, va_list va)
 {
   return nbcore_vsnwprintf(buffer, _Size, fmt, va);
 }
