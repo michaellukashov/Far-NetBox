@@ -123,6 +123,9 @@ inline constexpr void * ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(
 inline constexpr uint8_t *
 ToUInt8Ptr(void * a) { return static_cast<uint8_t *>(a); }
 
+inline constexpr const uint8_t *
+ToUInt8Ptr(const void * a) { return static_cast<const uint8_t *>(a); }
+
 // MakeOtherType<T>::Type gives an other type corresponding to integer type T.
 template <typename T>
 struct MakeOtherType { using Type = T; };

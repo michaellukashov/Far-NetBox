@@ -1123,7 +1123,7 @@ int CTransferSocket::ReadData(char * buffer, int len)
   int result;
   if (m_OnTransferIn != nullptr)
   {
-    result = m_OnTransferIn(nullptr, reinterpret_cast<const uint8_t *>(buffer), len);
+    result = m_OnTransferIn(nullptr, nb::ToUInt8Ptr(buffer), len);
   }
   else
   {
