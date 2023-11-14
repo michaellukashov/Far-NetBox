@@ -214,7 +214,7 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.IsEmpty();
 }
 
-TCopyParamRule &TCopyParamRule::operator=(const TCopyParamRule & other)
+TCopyParamRule & TCopyParamRule::operator=(const TCopyParamRule & other)
 {
   SetData(other.FData);
   return *this;
@@ -881,7 +881,7 @@ UnicodeString TGUIConfiguration::AddTranslationsSubFolder(const UnicodeString & 
 }
 
 HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
-  UnicodeString &AFileName)
+  UnicodeString & AFileName)
 {
   UnicodeString LibraryFileName;
   HINSTANCE NewInstance = nullptr;

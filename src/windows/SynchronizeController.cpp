@@ -272,7 +272,7 @@ void TSynchronizeController::SynchronizeInvalid(
 }
 
 void TSynchronizeController::SynchronizeTooManyDirectories(
-  TObject * /*Sender*/, int32_t &MaxDirectories)
+  TObject * /*Sender*/, int32_t & MaxDirectories)
 {
   if (FOnTooManyDirectories != nullptr)
   {

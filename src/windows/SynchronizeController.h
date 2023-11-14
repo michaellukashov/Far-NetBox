@@ -56,7 +56,7 @@ public:
   virtual ~TSynchronizeController() noexcept;
 
   void StartStop(TObject * Sender, bool Start,
-    const TSynchronizeParamType & Params, const TCopyParamType &CopyParam,
+    const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
     TSynchronizeOptions * Options,
     TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent OnSynchronizeThreads,
     TSynchronizeLogEvent OnSynchronizeLog);

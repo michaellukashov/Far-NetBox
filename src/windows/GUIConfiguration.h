@@ -30,7 +30,7 @@ public:
 public:
   TGUICopyParamType() noexcept;
   TGUICopyParamType(const TCopyParamType & Source) noexcept;
-  explicit TGUICopyParamType(const TGUICopyParamType &Source) noexcept;
+  explicit TGUICopyParamType(const TGUICopyParamType & Source) noexcept;
 
   virtual void Load(THierarchicalStorage * Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
@@ -374,13 +374,13 @@ public:
   void SetPuttySession(const UnicodeString & Value);
   TDateTime GetIgnoreCancelBeforeFinish() const { return FIgnoreCancelBeforeFinish; }
   void SetIgnoreCancelBeforeFinish(const TDateTime &Value) { FIgnoreCancelBeforeFinish = Value; }
-  TGUICopyParamType &GetDefaultCopyParam() { return FDefaultCopyParam; }
+  TGUICopyParamType & GetDefaultCopyParam() { return FDefaultCopyParam; }
   bool GetBeepOnFinish() const { return FBeepOnFinish; }
   void SetBeepOnFinish(bool Value) { FBeepOnFinish = Value; }
   TDateTime GetBeepOnFinishAfter() const { return FBeepOnFinishAfter; }
   void SetBeepOnFinishAfter(const TDateTime &Value) { FBeepOnFinishAfter = Value; }
   UnicodeString GetCopyParamCurrent() const;
-  const TRemoteProperties &GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
+  const TRemoteProperties & GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
   int32_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }
   void SetKeepUpToDateChangeDelay(int32_t Value) { FKeepUpToDateChangeDelay = Value; }
   UnicodeString GetChecksumAlg() const;
