@@ -52,7 +52,7 @@ private:
 
 
 //#include <assert.h>
-#define ACCESS_VIOLATION_TEST { (*((int*)nullptr)) = 0; }
+#define ACCESS_VIOLATION_TEST { (*((int32_t*)nullptr)) = 0; }
 #if !defined(_DEBUG) || defined(DESIGN_ONLY)
 #define DebugAssert(p)   (void)(p)
 #define DebugCheck(p)    (p)
