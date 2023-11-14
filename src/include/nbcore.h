@@ -198,10 +198,10 @@ typedef struct nbcore_md5_state_s
   uint8_t   buf[64];  /* accumulate block */
 } nbcore_md5_state_t;
 
-NB_CORE_DLL(void) nbcore_md5_init(nbcore_md5_state_t *pms);
-NB_CORE_DLL(void) nbcore_md5_append(nbcore_md5_state_t *pms, const uint8_t *data, size_t nbytes);
-NB_CORE_DLL(void) nbcore_md5_finish(nbcore_md5_state_t *pms, uint8_t digest[16]);
-NB_CORE_DLL(void) nbcore_md5_hash(const uint8_t *data, size_t len, uint8_t digest[16]);
+NB_CORE_DLL(void) nbcore_md5_init(nbcore_md5_state_t * pms);
+NB_CORE_DLL(void) nbcore_md5_append(nbcore_md5_state_t * pms, const uint8_t * data, size_t nbytes);
+NB_CORE_DLL(void) nbcore_md5_finish(nbcore_md5_state_t * pms, uint8_t digest[16]);
+NB_CORE_DLL(void) nbcore_md5_hash(const uint8_t * data, size_t len, uint8_t digest[16]);
 
 ///////////////////////////////////////////////////////////////////////////////
 // memory functions
@@ -279,12 +279,12 @@ typedef struct nbcore_sha1_ctx_
   uint32_t sizeHi, sizeLo;
 } nbcore_sha1_ctx;
 
-NB_CORE_DLL(void) nbcore_sha1_init(nbcore_sha1_ctx *ctx);
-NB_CORE_DLL(void) nbcore_sha1_append(nbcore_sha1_ctx *ctx, const uint8_t *dataIn, size_t len);
-NB_CORE_DLL(void) nbcore_sha1_finish(nbcore_sha1_ctx *ctx, uint8_t hashout[NB_SHA1_HASH_SIZE]);
-NB_CORE_DLL(void) nbcore_sha1_hash(uint8_t *dataIn, size_t len, uint8_t hashout[NB_SHA1_HASH_SIZE]);
+NB_CORE_DLL(void) nbcore_sha1_init(nbcore_sha1_ctx * ctx);
+NB_CORE_DLL(void) nbcore_sha1_append(nbcore_sha1_ctx * ctx, const uint8_t * dataIn, size_t len);
+NB_CORE_DLL(void) nbcore_sha1_finish(nbcore_sha1_ctx * ctx, uint8_t hashout[NB_SHA1_HASH_SIZE]);
+NB_CORE_DLL(void) nbcore_sha1_hash(uint8_t * dataIn, size_t len, uint8_t hashout[NB_SHA1_HASH_SIZE]);
 
-NB_CORE_DLL(void) nbcore_hmac_sha1(uint8_t hashout[NB_SHA1_HASH_SIZE], const uint8_t *key, size_t keylen, const uint8_t *text, size_t textlen);
+NB_CORE_DLL(void) nbcore_hmac_sha1(uint8_t hashout[NB_SHA1_HASH_SIZE], const uint8_t * key, size_t keylen, const uint8_t * text, size_t textlen);
 
 ///////////////////////////////////////////////////////////////////////////////
 // sha256 functions
@@ -304,7 +304,7 @@ NB_CORE_DLL(void) nbcore_sha256_write(SHA256_CONTEXT *ctx, const void *dataIn, s
 NB_CORE_DLL(void) nbcore_sha256_final(SHA256_CONTEXT *ctx, uint8_t hashout[NB_SHA256_HASH_SIZE]);
 NB_CORE_DLL(void) nbcore_sha256_hash(const void *dataIn, size_t len, uint8_t hashout[NB_SHA256_HASH_SIZE]);
 
-NB_CORE_DLL(void) nbcore_hmac_sha256(uint8_t hashout[NB_SHA256_HASH_SIZE], const uint8_t *key, size_t keylen, const uint8_t *text, size_t textlen);
+NB_CORE_DLL(void) nbcore_hmac_sha256(uint8_t hashout[NB_SHA256_HASH_SIZE], const uint8_t * key, size_t keylen, const uint8_t * text, size_t textlen);
 
 ///////////////////////////////////////////////////////////////////////////////
 // strings

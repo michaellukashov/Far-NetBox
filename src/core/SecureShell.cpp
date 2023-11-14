@@ -1089,7 +1089,7 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
 
   // Following is taken from scp.c from_backend() and modified
 
-  const uint8_t *p = Data;
+  const uint8_t * p = Data;
   unsigned Len = Length;
 
   // with event-select mechanism we can now receive data even before we
