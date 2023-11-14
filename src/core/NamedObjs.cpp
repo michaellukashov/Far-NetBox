@@ -48,7 +48,7 @@ bool TNamedObject::IsSameName(const UnicodeString & AName) const
   return (GetName().CompareIC(AName) == 0);
 }
 
-void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
+void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
 {
   // This object can't be item of list, it would create infinite loop
   if (List && (List->IndexOf(this) == -1))
@@ -67,7 +67,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList *List)
           Name.Delete(P, Name.Length() - P + 1);
           SetName(Name.TrimRight());
         }
-        catch (Exception &)
+        catch(Exception &)
         {
           N = 0;
         }

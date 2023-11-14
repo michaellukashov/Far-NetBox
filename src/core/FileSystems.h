@@ -24,9 +24,9 @@ enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
   fsLock };
 
-constexpr int32_t dfNoRecursive = 0x01;
-constexpr int32_t dfAlternative = 0x02;
-constexpr int32_t dfForceDelete = 0x04;
+constexpr const int32_t dfNoRecursive = 0x01;
+constexpr const int32_t dfAlternative = 0x02;
+constexpr const int32_t dfForceDelete = 0x04;
 
 enum TOverwriteMode { omOverwrite, omAppend, omResume, omComplete };
 
@@ -39,9 +39,9 @@ public:
 public:
   TSinkFileParams() noexcept : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
   UnicodeString TargetDir;
-  const TCopyParamType *CopyParam{nullptr};
+  const TCopyParamType * CopyParam{nullptr};
   int32_t Params{0};
-  TFileOperationProgressType *OperationProgress{nullptr};
+  TFileOperationProgressType * OperationProgress{nullptr};
   bool Skipped{false};
   uint32_t Flags{0};
 };
@@ -147,7 +147,7 @@ public:
   static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCustomFileSystem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFileSystem) || TObject::is(Kind); }
 public:
-  ~TCustomFileSystem() noexcept override;
+  virtual ~TCustomFileSystem() noexcept override;
 
   virtual void Open() = 0;
   virtual void Close() = 0;

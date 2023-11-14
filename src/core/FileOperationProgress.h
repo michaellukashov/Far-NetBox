@@ -140,7 +140,7 @@ public:
   // on what side if operation being processed (local/remote), source of copy
   __property TOperationSide Side = { read = GetSide };
   ROProperty<TOperationSide> Side{nb::bind(&TFileOperationProgressType::GetSide, this)};
-  __property int Count =  { read = FCount };
+  __property int32_t Count =  { read = FCount };
   ROProperty<int32_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
   __property UnicodeString FileName =  { read = FFileName };
   const UnicodeString& FileName{FFileName};
@@ -185,14 +185,14 @@ public:
   ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
   __property int64_t TotalSize = { read = GetTotalSize };
   ROProperty<int64_t> TotalSize{nb::bind(&TFileOperationProgressType::GetTotalSize, this)};
-  __property int FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
+  __property int32_t FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
   __property TOnceDoneOperation InitialOnceDoneOperation = { read = FInitialOnceDoneOperation };
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
   ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
   __property bool SkipToAll = { read = GetSkipToAll };
   ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
-  __property unsigned long CPSLimit = { read = GetCPSLimit };
+  __property uint32_t CPSLimit = { read = GetCPSLimit };
   ROProperty<uint64_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };

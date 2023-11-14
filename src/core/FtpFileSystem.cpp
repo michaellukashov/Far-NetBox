@@ -1584,7 +1584,7 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
   }
 }
 
-void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType *OperationProgress)
+void TFTPFileSystem::SetCPSLimit(TFileOperationProgressType * OperationProgress)
 {
   // Any reason we use separate field instead of directly using OperationProgress->CPSLimit?
   // Maybe thread-safety?

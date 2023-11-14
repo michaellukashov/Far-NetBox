@@ -1261,10 +1261,10 @@ TPasswordDialog::~TPasswordDialog()
 }
 
 void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
-  bool &Truncated)
+  bool & Truncated)
 {
   UnicodeString Caption = ACaption;
-  TFarText *Result = new TFarText(this);
+  TFarText * Result = new TFarText(this);
 
   if (!FPrompt.IsEmpty())
   {
@@ -1290,7 +1290,7 @@ TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
 }
 
 void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
-  const UnicodeString & Instructions, const TStrings * Prompts, bool &Truncated)
+  const UnicodeString & Instructions, const TStrings * Prompts, bool & Truncated)
 {
   FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);

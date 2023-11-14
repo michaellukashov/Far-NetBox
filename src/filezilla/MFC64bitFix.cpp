@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "MFC64bitFix.h"
 
-int64_t GetLength64(CFile &file)
+int64_t GetLength64(CFile & file)
 {
   DWORD low;
   DWORD high;
@@ -11,7 +11,7 @@ int64_t GetLength64(CFile &file)
   return size;
 }
 
-BOOL GetLength64(CString filename, _int64 &size)
+BOOL GetLength64(CString filename, _int64 & size)
 {
   WIN32_FIND_DATA findFileData;
   HANDLE hFind = FindFirstFile(filename, &findFileData);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector.h>
+#include <rdestl/vector.h>
 
 #include <Classes.hpp>
 #include "HierarchicalStorage.h"
@@ -11,10 +11,10 @@ class TFar3Storage : public THierarchicalStorage
 {
 public:
   explicit TFar3Storage(const UnicodeString & AStorage,
-    const GUID &Guid, FARAPISETTINGSCONTROL SettingsControl);
+    const GUID & Guid, FARAPISETTINGSCONTROL SettingsControl);
   virtual ~TFar3Storage();
 
-  bool Copy(TFar3Storage *Storage);
+  bool Copy(TFar3Storage * Storage);
 
   virtual void DoCloseSubKey() override;
   virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;

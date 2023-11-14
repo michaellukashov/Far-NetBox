@@ -584,12 +584,12 @@ protected:
   bool IsFileEncrypted(const UnicodeString & APath, bool EncryptNewFiles = false);
 
   __property TFileOperationProgressType * OperationProgress = { read=FOperationProgress };
-  TFileOperationProgressType*& OperationProgress{FOperationProgress};
+  TFileOperationProgressType *& OperationProgress{FOperationProgress};
 
-  const TFileOperationProgressType *GetOperationProgress() const { return FOperationProgress; }
-  TFileOperationProgressType *GetOperationProgress() { return FOperationProgress; }
-  void SetOperationProgress(TFileOperationProgressType *OperationProgress) { FOperationProgress = OperationProgress; }
-  virtual const TTerminal *GetPasswordSource() const { return this; }
+  const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
+  TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
+  void SetOperationProgress(TFileOperationProgressType * OperationProgress) { FOperationProgress = OperationProgress; }
+  virtual const TTerminal * GetPasswordSource() const { return this; }
 
 public:
   explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal) noexcept;

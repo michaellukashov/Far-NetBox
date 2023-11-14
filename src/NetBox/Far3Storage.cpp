@@ -7,7 +7,7 @@
 
 
 TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
-  const GUID &Guid, FARAPISETTINGSCONTROL SettingsControl) :
+  const GUID & Guid, FARAPISETTINGSCONTROL SettingsControl) :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
   FPluginSettings(Guid, SettingsControl)
 {
@@ -61,8 +61,8 @@ int32_t TFar3Storage::OpenSubKeyInternal(int32_t Root, const UnicodeString & Sub
 
 bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
-  int OldRoot = FRoot;
-  int Root = FRoot;
+  int32_t OldRoot = FRoot;
+  int32_t Root = FRoot;
   bool Result = true;
   {
     UnicodeString subKey = MungedSubKey;

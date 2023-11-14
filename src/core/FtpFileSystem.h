@@ -70,7 +70,7 @@ public:
   virtual void Sink(
     const UnicodeString & AFileName, const TRemoteFile * AFile,
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
-    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType *OperationProgress,
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action);
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
@@ -111,7 +111,7 @@ protected:
 
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
-  const wchar_t *GetOption(int32_t OptionID) const;
+  const wchar_t * GetOption(int32_t OptionID) const;
   int32_t GetOptionVal(int32_t OptionID) const;
 
   enum
@@ -203,7 +203,7 @@ protected:
   void AutoDetectTimeDifference(const UnicodeString & ADirectory, const TCopyParamType * CopyParam, int32_t AParams);
   void ApplyTimeDifference(TRemoteFile * File);
   void ApplyTimeDifference(
-    const UnicodeString & FileName, TDateTime & Modification, TModificationFmt &ModificationFmt);
+    const UnicodeString & FileName, TDateTime & Modification, TModificationFmt & ModificationFmt);
   void DummyReadDirectory(const UnicodeString & ADirectory);
   bool IsEmptyFileList(TRemoteFileList * FileList) const;
   void CheckTimeDifference();

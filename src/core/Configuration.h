@@ -260,7 +260,7 @@ public:
   bool CopySubKey(THierarchicalStorage * Source, THierarchicalStorage * Target, const UnicodeString & Name);
   UnicodeString BannerHash(const UnicodeString & Banner) const;
   void SetBannerData(const UnicodeString & ASessionKey, const UnicodeString & ABannerHash, uint32_t AParams);
-  void GetBannerData(const UnicodeString & ASessionKey, UnicodeString & ABannerHash, uint32_t &AParams);
+  void GetBannerData(const UnicodeString & ASessionKey, UnicodeString & ABannerHash, uint32_t & AParams);
   static UnicodeString PropertyToKey(const UnicodeString & Property);
   void DoSave(THierarchicalStorage * AStorage, bool All);
   virtual void DoSave(bool All, bool Explicit);
@@ -366,14 +366,14 @@ public:
   bool AnyFilezillaSessionForImport(TStoredSessionList * Sessions);
   TStoredSessionList * SelectKnownHostsSessionsForImport(
     TStoredSessionList * Sessions, UnicodeString & Error);
-  TStoredSessionList *SelectKnownHostsSessionsForImport(
-    TStrings * Lines, TStoredSessionList *Sessions, UnicodeString & Error);
+  TStoredSessionList * SelectKnownHostsSessionsForImport(
+    TStrings * Lines, TStoredSessionList * Sessions, UnicodeString & Error);
   TStoredSessionList * SelectOpensshSessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
   UnicodeString GetPuttySessionsKey(const UnicodeString & RootKey) const;
   void RefreshPuttySshHostCAList();
 
   __property TVSFixedFileInfo *FixedApplicationInfo  = { read = GetFixedApplicationInfo };
-  __property void * ApplicationInfo  = { read = GetApplicationInfo };
+  __property void * ApplicationInfo  = { read=GetApplicationInfo };
   ROProperty<void *> ApplicationInfo{nb::bind(&TConfiguration::GetApplicationInfo, this)};
   __property TUsage * Usage = { read = FUsage };
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
@@ -387,6 +387,8 @@ public:
   __property UnicodeString RandomSeedFileName  = { read=GetRandomSeedFileName };
   __property UnicodeString SshHostKeysSubKey  = { read=GetSshHostKeysSubKey };
   __property UnicodeString RootKeyStr  = { read=GetRootKeyStr };
+  __property UnicodeString ConfigurationSubKey  = { read=GetConfigurationSubKey };
+  __property TEOLType LocalEOLType = { read = GetLocalEOLType };
   ROProperty<UnicodeString> StoredSessionsSubKey{nb::bind(&TConfiguration::GetStoredSessionsSubKey, this)};
   __property UnicodeString PuttyRegistryStorageKey  = { read = FPuttyRegistryStorageKey, write = SetPuttyRegistryStorageKey };
   RWProperty<UnicodeString> PuttyRegistryStorageKey{nb::bind(&TConfiguration::GetPuttyRegistryStorageKey, this), nb::bind(&TConfiguration::SetPuttyRegistryStorageKey, this)};
@@ -402,34 +404,35 @@ public:
   ROProperty<UnicodeString> ConfigurationSubKey{nb::bind(&TConfiguration::GetConfigurationSubKey, this)};
   __property TEOLType LocalEOLType = { read = GetLocalEOLType };
   ROProperty<TEOLType> LocalEOLType{nb::bind(&TConfiguration::GetLocalEOLType, this)};
+  __property UnicodeString VersionStr = { read=GetVersionStr };
   __property UnicodeString VersionStr = { read = GetVersionStr };
   ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
-  __property UnicodeString Version = { read = GetVersion };
+  __property UnicodeString Version = { read=GetVersion };
   ROProperty<UnicodeString> Version {nb::bind(&TConfiguration::GetVersion, this)};
-  __property int32_t CompoundVersion = { read = GetCompoundVersion };
+  __property int32_t CompoundVersion = { read=GetCompoundVersion };
   ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
-  __property UnicodeString ProductVersion = { read = GetProductVersion };
+  __property UnicodeString ProductVersion = { read=GetProductVersion };
   ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
-  __property UnicodeString ProductName = { read = GetProductName };
-  __property UnicodeString CompanyName = { read = GetCompanyName };
+  __property UnicodeString ProductName = { read=GetProductName };
+  __property UnicodeString CompanyName = { read=GetCompanyName };
   __property bool IsUnofficial = { read = GetIsUnofficial };
-  __property bool Logging  = { read = FLogging, write = SetLogging };
+  __property bool Logging  = { read=FLogging, write=SetLogging };
   RWProperty3<bool> Logging{nb::bind(&TConfiguration::GetLogging, this), nb::bind(&TConfiguration::SetLogging, this)};
-  __property UnicodeString LogFileName  = { read = FLogFileName, write = SetLogFileName };
-  __property bool LogToFile  = { read = GetLogToFile };
+  __property UnicodeString LogFileName  = { read=FLogFileName, write=SetLogFileName };
+  __property bool LogToFile  = { read=GetLogToFile };
   ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
-  __property bool LogFileAppend  = { read = FLogFileAppend, write = SetLogFileAppend };
-  __property bool LogSensitive  = { read = FLogSensitive, write = SetLogSensitive };
-  __property int64_t LogMaxSize  = { read = FLogMaxSize, write = SetLogMaxSize };
-  __property int32_t LogMaxCount  = { read = FLogMaxCount, write = SetLogMaxCount };
-  __property int32_t LogProtocol  = { read = FLogProtocol, write = SetLogProtocol };
+  __property bool LogFileAppend  = { read=FLogFileAppend, write=SetLogFileAppend };
+  __property bool LogSensitive  = { read=FLogSensitive, write=SetLogSensitive };
+  __property int64_t LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
+  __property int32_t LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
+  __property int32_t LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   RWProperty3<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
-  __property int32_t ActualLogProtocol  = { read = FActualLogProtocol };
+  __property int32_t ActualLogProtocol  = { read=FActualLogProtocol };
   ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
-  __property bool LogActions  = { read = FLogActions, write = SetLogActions };
-  __property bool LogActionsRequired  = { read = FLogActionsRequired, write = FLogActionsRequired };
-  __property UnicodeString ActionsLogFileName  = { read = GetActionsLogFileName, write = SetActionsLogFileName };
-  __property UnicodeString DefaultLogFileName  = { read = GetDefaultLogFileName };
+  __property bool LogActions  = { read=FLogActions, write=SetLogActions };
+  __property bool LogActionsRequired  = { read=FLogActionsRequired, write=FLogActionsRequired };
+  __property UnicodeString ActionsLogFileName  = { read=GetActionsLogFileName, write=SetActionsLogFileName };
+  __property UnicodeString DefaultLogFileName  = { read=GetDefaultLogFileName };
   __property TNotifyEvent OnChange = { read = FOnChange, write = FOnChange };
   __property bool ConfirmOverwriting = { read = GetConfirmOverwriting, write = SetConfirmOverwriting};
   __property bool ConfirmResume = { read = GetConfirmResume, write = SetConfirmResume};
@@ -480,7 +483,7 @@ public:
   ROProperty<TStorage> Storage{nb::bind(&TConfiguration::GetStorage, this)};
   __property UnicodeString RegistryStorageKey  = { read=GetRegistryStorageKey };
   ROProperty<UnicodeString> RegistryStorageKey{nb::bind(&TConfiguration::GetRegistryStorageKey, this)};
-  __property UnicodeString CustomIniFileStorageName  = { read = FCustomIniFileStorageName };
+  __property UnicodeString CustomIniFileStorageName  = { read=FCustomIniFileStorageName };
   __property UnicodeString ExplicitIniFileStorageName  = { read=FIniFileStorageName };
   __property UnicodeString IniFileStorageName  = { read=GetIniFileStorageNameForReadingWriting };
   __property UnicodeString IniFileStorageNameForReading  = { read=GetIniFileStorageNameForReading };

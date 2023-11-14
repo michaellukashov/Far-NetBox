@@ -3193,7 +3193,7 @@ TBatchOverwrite TTerminal::EffectiveBatchOverwrite(
 }
 
 bool TTerminal::CheckRemoteFile(
-  const UnicodeString & AFileName, const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType *OperationProgress) const
+  const UnicodeString & AFileName, const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * OperationProgress) const
 {
   bool Result;
   OperationProgress->LockUserSelections();
@@ -7462,7 +7462,7 @@ bool TTerminal::CanParallel(
     (!CopyParam->GetPreserveTime() || !CopyParam->GetPreserveTimeDirs());
 }
 
-void TTerminal::CopyParallel(TParallelOperation *ParallelOperation, TFileOperationProgressType *OperationProgress)
+void TTerminal::CopyParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * OperationProgress)
 {
   try__finally
   {
