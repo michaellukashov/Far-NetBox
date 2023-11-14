@@ -1689,13 +1689,11 @@ protected:
       }
       else
       {
-        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-          FMTLOAD(READ_ERROR, FFileName), "",
-        [&]()
+        FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(READ_ERROR, FFileName), "")
         {
           BlockBuf.LoadStream(FStream.get(), BlockSize, false);
-        });
-        __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, FFileName));
+        }
+        FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, FFileName));
         Last = (FStream->Position >= FStream->Size);
       }
 
@@ -5053,10 +5051,7 @@ void TSFTPFileSystem::Source(
   {
     if (DestFileExists)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(DELETE_ON_RESUME_ERROR, base::UnixExtractFileName(DestFullName),
-        DestFullName), "",
-      [&]()
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(DELETE_ON_RESUME_ERROR, base::UnixExtractFileName(DestFullName), DestFullName), "")
       {
         if (GetSessionData()->GetOverwrittenToRecycleBin() &&
             !GetSessionData()->GetRecycleBinPath().IsEmpty())
@@ -5067,26 +5062,22 @@ void TSFTPFileSystem::Source(
         {
           DoDeleteFile(DestFullName, SSH_FXP_REMOVE);
         }
-      });
-      __removed FILE_OPERATION_LOOP_END(
-      __removed   FMTLOAD(DELETE_ON_RESUME_ERROR,
-      __removed     (UnixExtractFileName(DestFullName), DestFullName)));
+      }
+      FILE_OPERATION_LOOP_END(
+        FMTLOAD(DELETE_ON_RESUME_ERROR,
+          (UnixExtractFileName(DestFullName), DestFullName)));
     }
 
     // originally this was before CLOSE (last __finally statement),
     // on VShell it failed
-    FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-      FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-        base::UnixExtractFileName(OpenParams.RemoteFileName), ADestFileName),
-      HELP_RENAME_AFTER_RESUME_ERROR,
-    [&]()
+    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(RENAME_AFTER_RESUME_ERROR, base::UnixExtractFileName(OpenParams.RemoteFileName), ADestFileName), HELP_RENAME_AFTER_RESUME_ERROR)
     {
       this->RemoteRenameFile(OpenParams.RemoteFileName, nullptr, ADestFileName, false);
-    });
-    __removed FILE_OPERATION_LOOP_END_CUSTOM(
-    __removed   FMTLOAD(RENAME_AFTER_RESUME_ERROR,
-    __removed     (UnixExtractFileName(OpenParams.RemoteFileName), DestFileName)),
-    __removed   folAllowSkip, HELP_RENAME_AFTER_RESUME_ERROR);
+    }
+    FILE_OPERATION_LOOP_END_CUSTOM(
+      FMTLOAD(RENAME_AFTER_RESUME_ERROR,
+      (UnixExtractFileName(OpenParams.RemoteFileName), DestFileName)),
+      folAllowSkip, HELP_RENAME_AFTER_RESUME_ERROR);
   }
 
   if (SetProperties)
@@ -5116,10 +5107,7 @@ void TSFTPFileSystem::Source(
         SendPacket(&PropertiesRequest);
       }
       bool Resend = false;
-      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(PRESERVE_TIME_PERM_ERROR3, ADestFileName),
-        HELP_PRESERVE_TIME_PERM_ERROR,
-      [&]()
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(PRESERVE_TIME_PERM_ERROR3, ADestFileName), HELP_PRESERVE_TIME_PERM_ERROR)
       {
         try
         {
@@ -5150,10 +5138,10 @@ void TSFTPFileSystem::Source(
             throw;
           }
         }
-      });
-      __removed FILE_OPERATION_LOOP_END_CUSTOM(
-      __removed   FMTLOAD(PRESERVE_TIME_PERM_ERROR3, DestFileName),
-      __removed   folAllowSkip, HELP_PRESERVE_TIME_PERM_ERROR);
+      }
+      FILE_OPERATION_LOOP_END_CUSTOM(
+        FMTLOAD(PRESERVE_TIME_PERM_ERROR3, DestFileName),
+        folAllowSkip, HELP_PRESERVE_TIME_PERM_ERROR);
     }
     catch(Exception & E)
     {
@@ -5445,9 +5433,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
   bool TransferFinished, bool Request, TSFTPPacket * Packet)
 {
   // Moving this out of SFTPSource() fixed external exception 0xC0000029 error
-  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-    FMTLOAD(SFTP_CLOSE_FILE_ERROR, AFileName), "",
-  [&]()
+  FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(SFTP_CLOSE_FILE_ERROR, AFileName), "")
   {
     try
     {
@@ -5474,8 +5460,8 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
         throw;
       }
     }
-  });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_CLOSE_FILE_ERROR, FileName));
+  }
+  FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_CLOSE_FILE_ERROR, FileName));
 }
 
 void TSFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
@@ -5522,13 +5508,11 @@ void TSFTPFileSystem::WriteLocalFile(
   }
   else
   {
-    FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-      FMTLOAD(WRITE_ERROR, ALocalFileName), "",
-    [&]()
+    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip,  FMTLOAD(WRITE_ERROR, ALocalFileName), "")
     {
       BlockBuf.WriteToStream(FileStream, BlockBuf.Size);
-    });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, ALocalFileName));
+    }
+    FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, ALocalFileName));
   }
 
   OperationProgress->AddLocallyUsed(BlockBuf.Size);
@@ -5610,9 +5594,7 @@ void TSFTPFileSystem::Sink(
     // first open source file, not to loose the destination file,
     // if we cannot open the source one in the first place
     FTerminal->LogEvent("Opening remote file.");
-    FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-      FMTLOAD(SFTP_OPEN_FILE_ERROR, AFileName), "",
-    [&]()
+    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(SFTP_OPEN_FILE_ERROR, AFileName), "")
     {
       SSH_FXF_TYPE OpenType = SSH_FXF_READ;
       if ((FVersion >= 4) && OperationProgress->GetAsciiTransfer())
@@ -5621,8 +5603,8 @@ void TSFTPFileSystem::Sink(
       }
       RemoteHandle = SFTPOpenRemoteFile(AFileName, OpenType);
       OperationProgress->Progress();
-    });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_OPEN_FILE_ERROR, AFileName));
+    }
+    FILE_OPERATION_LOOP_END(FMTLOAD(SFTP_OPEN_FILE_ERROR, AFileName));
 
     FILETIME AcTime;
     nb::ClearStruct(AcTime);
@@ -5913,18 +5895,15 @@ void TSFTPFileSystem::Sink(
       if (ResumeAllowed)
       {
         // See also DoRenameLocalFileForce
-        FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-          FMTLOAD(RENAME_AFTER_RESUME_ERROR, base::ExtractFileName(DestPartialFullName, true), ADestFileName),
-          "",
-        [&]()
+        FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(RENAME_AFTER_RESUME_ERROR, base::ExtractFileName(DestPartialFullName, true), ADestFileName), "")
         {
           if (::SysUtulsFileExists(ApiPath(DestFullName)))
           {
             DeleteFileChecked(DestFullName);
           }
           THROWOSIFFALSE(::SysUtulsRenameFile(ApiPath(DestPartialFullName), ApiPath(DestFullName)));
-        });
-        __removed FILE_OPERATION_LOOP_END(FMTLOAD(RENAME_AFTER_RESUME_ERROR, ExtractFileName(DestPartialFullName), ADestFileName));
+        }
+        FILE_OPERATION_LOOP_END(FMTLOAD(RENAME_AFTER_RESUME_ERROR, ExtractFileName(DestPartialFullName), ADestFileName));
       }
 
       DeleteLocalFile = false;

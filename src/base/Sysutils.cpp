@@ -2146,6 +2146,11 @@ bool FileExistsFix(const UnicodeString & Path)
   return Result;
 }
 
+bool RenameFile(const UnicodeString & From, const UnicodeString & To)
+{
+  return ::SysUtulsRenameFile(From, To);
+}
+
 bool DirectoryExists(const UnicodeString & ADir)
 {
   return ::SysUtulsDirectoryExists(ApiPath(ADir));

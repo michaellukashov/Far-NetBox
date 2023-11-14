@@ -118,6 +118,18 @@ constexpr uint32_t folRetryOnFatal = 0x02;
   }
 #endif
 
+NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
+  TFileOperationProgressType * OperationProgress,
+  uint32_t Flags, const UnicodeString & Message,
+  const UnicodeString & HelpKeyword,
+  std::function<void()> Operation);
+
+#define FILE_OPERATION_LOOP_BEGIN(TERMINAL, OPERATION_PROGRESS, FLAGS, MESSAGE, HELPKEYWORD) \
+  FileOperationLoopCustom((TERMINAL), (OPERATION_PROGRESS), (FLAGS), \
+    (MESSAGE), HELPKEYWORD, \
+  [&]() \
+
+
 #define FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, HELPKEYWORD) );
 
 #define FILE_OPERATION_LOOP_END_EX(MESSAGE, FLAGS) \
@@ -1218,10 +1230,5 @@ inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
 {
   throw ESkipFile(Exception, Message);
 }
-inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }
 
-NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
-  TFileOperationProgressType * OperationProgress,
-  uint32_t Flags, const UnicodeString & Message,
-  const UnicodeString & HelpKeyword,
-  std::function<void()> Operation);
+inline void ThrowSkipFileNull() { ThrowSkipFile(nullptr, L""); }

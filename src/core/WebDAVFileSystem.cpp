@@ -1395,9 +1395,7 @@ void TWebDAVFileSystem::Source(
 
     FUploadMimeType = GetConfiguration()->GetFileMimeType(ADestFileName);
 
-    FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-      FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
-    [&]()
+    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
     {
       ::SetFilePointer(AHandle.Handle, 0, nullptr, FILE_BEGIN);
 
@@ -1411,8 +1409,8 @@ void TWebDAVFileSystem::Source(
 
       ClearNeonError();
       CheckStatus(ne_put(FSessionContext->NeonSession, PathToNeon(DestFullName), FD));
-    });
-    __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, AHandle.FileName));
+    }
+    FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, AHandle.FileName));
 
     if (CopyParam->GetPreserveTime())
     {
@@ -1797,9 +1795,7 @@ void TWebDAVFileSystem::Sink(
   UnicodeString ExpandedDestFullName = ::ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
-  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-    FMTLOAD(TRANSFER_ERROR, AFileName), "",
-  [&]()
+  FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AFileName), "")
   {
     HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
         GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
@@ -1867,8 +1863,8 @@ void TWebDAVFileSystem::Sink(
         FTerminal->DoDeleteLocalFile(DestFullName);
       }
     } end_try__finally
-  });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
+  }
+  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
 
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }

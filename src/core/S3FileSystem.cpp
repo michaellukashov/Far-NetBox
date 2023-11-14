@@ -1962,13 +1962,11 @@ int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3Pu
     TFileOperationProgressType * OperationProgress = Data.OperationProgress;
     try
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(READ_ERROR, Data.FileName), "",
-      [&]()
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(READ_ERROR, Data.FileName), "")
       {
         Result = nb::ToInt(Data.Stream->Read(Buffer, BufferSize));
-      });
-      __removed FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, Data.FileName));
+      }
+      FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, Data.FileName));
 
       OperationProgress->ThrottleToCPSLimit(Result);
       OperationProgress->AddTransferred(Result);
@@ -2109,9 +2107,7 @@ void TS3FileSystem::Source(
   {
     FTerminal->LogEvent(FORMAT("Initiating multipart upload (%d parts - chunk size %s)", Parts, IntToStr(ChunkSize)));
 
-    FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-      FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
-    [&]()
+    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
     {
       TLibS3MultipartInitialCallbackData Data;
       RequestInit(Data);
@@ -2123,8 +2119,8 @@ void TS3FileSystem::Source(
       CheckLibS3Error(Data, true);
 
       MultipartUploadId = Data.UploadId;
-    });
-    __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AHandle.FileName), (folAllowSkip | folRetryOnFatal));
+    }
+    FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AHandle.FileName), (folAllowSkip | folRetryOnFatal));
 
     FTerminal->LogEvent(FORMAT("Initiated multipart upload (%s - %d parts)", UnicodeString(MultipartUploadId), Parts));
 
@@ -2141,9 +2137,7 @@ void TS3FileSystem::Source(
 
     for (int32_t Part = 1; Part <= Parts; Part++)
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
-      [&]()
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
       {
         DebugAssert(Stream->Position() == OperationProgress->TransferredSize);
 
@@ -2192,8 +2186,8 @@ void TS3FileSystem::Source(
             FORMAT("  <Part><PartNumber>%d</PartNumber><ETag>%s</ETag></Part>\n", Part, Data.ETag.c_str());
           MultipartCommitPutObjectDataCallbackData.Message += PartCommitTag;
         }
-      });
-      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AHandle.FileName), (folAllowSkip | folRetryOnFatal));
+      }
+      FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AHandle.FileName), (folAllowSkip | folRetryOnFatal));
 
       if (Data.Exception.get() != nullptr)
       {
@@ -2210,9 +2204,7 @@ void TS3FileSystem::Source(
       FTerminal->LogEvent(FORMAT("Committing multipart upload (%s - %d parts)", UnicodeString(MultipartUploadId), Parts));
       FTerminal->LogEvent(UnicodeString(MultipartCommitPutObjectDataCallbackData.Message));
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "",
-      [&]()
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
       {
         RequestInit(MultipartCommitPutObjectDataCallbackData);
 
@@ -2227,8 +2219,8 @@ void TS3FileSystem::Source(
           FRequestContext, FTimeout, &MultipartCommitPutObjectDataCallbackData);
 
         CheckLibS3Error(MultipartCommitPutObjectDataCallbackData, true);
-      });
-      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AHandle.FileName), (folAllowSkip | folRetryOnFatal));
+      }
+      FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AHandle.FileName), (folAllowSkip | folRetryOnFatal));
 
       // to skip abort, in case we ever add any code before the catch, that can throw
       MultipartUploadId = RawByteString();
@@ -2294,13 +2286,11 @@ S3Status TS3FileSystem::GetObjectData(int32_t BufferSize, const char * Buffer, T
     TFileOperationProgressType * OperationProgress = Data.OperationProgress;
     try
     {
-      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(WRITE_ERROR, Data.FileName), "",
-      [&]()
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(WRITE_ERROR, Data.FileName), "")
       {
         Data.Stream->Write(Buffer, BufferSize);
-      });
-      __removed FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, Data.FileName));
+      }
+      FILE_OPERATION_LOOP_END(FMTLOAD(WRITE_ERROR, Data.FileName));
 
       OperationProgress->ThrottleToCPSLimit(BufferSize);
       OperationProgress->AddTransferred(BufferSize);
@@ -2345,9 +2335,7 @@ void TS3FileSystem::Sink(
   UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
-  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-    FMTLOAD(TRANSFER_ERROR, AFileName), "",
-  [&]()
+  FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AFileName), "")
   {
     HANDLE LocalFileHandle;
     if (!FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress, &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
@@ -2363,9 +2351,7 @@ void TS3FileSystem::Sink(
     {
       TLibS3GetObjectDataCallbackData Data;
 
-      FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-        FMTLOAD(TRANSFER_ERROR, AFileName), "",
-      [&]()
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AFileName), "")
       {
         RequestInit(Data);
         Data.FileName = AFileName;
@@ -2383,8 +2369,8 @@ void TS3FileSystem::Sink(
         {
           CheckLibS3Error(Data, true);
         }
-      });
-      __removed FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AFileName), (folAllowSkip | folRetryOnFatal));
+      }
+      FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AFileName), (folAllowSkip | folRetryOnFatal));
 
       if (Data.Exception.get() != nullptr)
       {
@@ -2407,8 +2393,8 @@ void TS3FileSystem::Sink(
         FTerminal->DoDeleteLocalFile(DestFullName);
        }
     } end_try__finally
-  });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
+  }
+  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
 
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }

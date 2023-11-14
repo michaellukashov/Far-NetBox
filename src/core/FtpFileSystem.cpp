@@ -1605,9 +1605,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   const UnicodeString & RemotePath, bool Get, int64_t Size, int32_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
-  FileOperationLoopCustom(FTerminal, OperationProgress, folAllowSkip,
-    FMTLOAD(TRANSFER_ERROR, AFileName), "",
-  [&]()
+  FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AFileName), "")
   {
     FFileZillaIntf->FileTransfer(
       ApiPath(LocalFile).c_str(), RemoteFile.c_str(), RemotePath.c_str(),
@@ -1616,8 +1614,8 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
     // command (when checking for existence of the remote file)
     uint32_t Reply = WaitForCommandReply();
     GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
-  });
-  __removed FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
+  }
+  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
 
   switch (FFileTransferAbort)
   {
