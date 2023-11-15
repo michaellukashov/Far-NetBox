@@ -130,7 +130,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           {
             int32_t StatusCode = NeonStatus->code;
             UnicodeString Message = StrFromNeon(NeonStatus->reason_phrase);
-            if (GetOnError() != nullptr)
+            if (!GetOnError().empty())
             {
               GetOnError()(this, StatusCode, Message);
             }

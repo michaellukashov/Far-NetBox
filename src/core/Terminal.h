@@ -1213,7 +1213,7 @@ public:
       return;
     }
 
-    if (FOutputEvent != nullptr)
+    if (!FOutputEvent.empty())
     {
       FOutputEvent(Str, OutputType);
     }

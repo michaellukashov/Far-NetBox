@@ -678,7 +678,7 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
         (FReturnCode > 1) ||
         ((FReturnCode == 1) && FLAGCLEAR(Params, coIgnoreWarnings));
 
-      if (FOnCaptureOutput != nullptr)
+      if (!FOnCaptureOutput.empty())
       {
         FOnCaptureOutput(::Int64ToStr(GetReturnCode()), cotExitCode);
       }
@@ -1593,7 +1593,7 @@ void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, TCaptureOutp
       !RemoveLastLine(Line, ReturnCode) ||
       !Line.IsEmpty())
   {
-    DebugAssert(FOnCaptureOutput != nullptr);
+    DebugAssert(!FOnCaptureOutput.empty());
     FOnCaptureOutput(Line, OutputType);
   }
 }

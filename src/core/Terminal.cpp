@@ -2063,7 +2063,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       Prompts->SetObj(0, ToObj(nb::ToIntPtr(Prompts->GetObj(0)) | pupRemember));
     }
 
-    if (GetOnPromptUser() != nullptr)
+    if (!GetOnPromptUser().empty())
     {
       TCallbackGuard Guard(this);
       try
@@ -2226,7 +2226,7 @@ void TTerminal::DisplayBanner(const UnicodeString & ABanner)
 void TTerminal::HandleExtendedException(Exception * E)
 {
   GetLog()->AddException(E);
-  if (GetOnShowExtendedException() != nullptr)
+  if (!GetOnShowExtendedException().empty())
   {
     TCallbackGuard Guard(this);
     try
@@ -2249,7 +2249,7 @@ void TTerminal::HandleExtendedException(Exception * E)
 void TTerminal::ShowExtendedException(Exception * E)
 {
   GetLog()->AddException(E);
-  if (GetOnShowExtendedException() != nullptr)
+  if (!GetOnShowExtendedException().empty())
   {
     GetOnShowExtendedException()(this, E, nullptr);
   }
@@ -2299,7 +2299,7 @@ void TTerminal::DoProgress(TFileOperationProgressType & ProgressData)
     FFileTransferAny = true;
   }
 
-  if (GetOnProgress() != nullptr)
+  if (!GetOnProgress().empty())
   {
     TCallbackGuard Guard(this);
     try
@@ -2320,7 +2320,7 @@ void TTerminal::DoProgress(TFileOperationProgressType & ProgressData)
 void TTerminal::DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
   const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
-  if (GetOnFinished() != nullptr)
+  if (!GetOnFinished().empty())
   {
     TCallbackGuard Guard(this);
     try
@@ -6829,7 +6829,7 @@ void TTerminal::SynchronizeApply(
     }
 
     SynchronizeChecklistCalculateSize(Checklist, Items, &SyncCopyParam);
-    if (OnUpdatedSynchronizationChecklistItems != nullptr)
+    if (!OnUpdatedSynchronizationChecklistItems.empty())
     {
       OnUpdatedSynchronizationChecklistItems(Items);
     }
@@ -6931,7 +6931,7 @@ void TTerminal::SynchronizeApply(
           Abort();
         }
 
-        if (OnProcessedItem != nullptr)
+        if (!OnProcessedItem.empty())
         {
           OnProcessedItem(Token, ChecklistItem);
         }

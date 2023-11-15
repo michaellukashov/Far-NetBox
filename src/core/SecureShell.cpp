@@ -1117,7 +1117,7 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
     PendLen += Len;
   }
 
-  if (FOnReceive != nullptr)
+  if (!FOnReceive.empty())
   {
     if (!FFrozen)
     {
@@ -1572,7 +1572,7 @@ void TSecureShell::ClearStdError()
 void TSecureShell::CaptureOutput(TLogLineType Type,
   const UnicodeString & Line)
 {
-  if (FOnCaptureOutput != nullptr)
+  if (!FOnCaptureOutput.empty())
   {
     FOnCaptureOutput(Line, (Type == llStdError) ? cotError : cotOutput);
   }

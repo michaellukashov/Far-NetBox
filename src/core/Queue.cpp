@@ -50,7 +50,7 @@ public:
 
   virtual void Execute(void * /*Arg*/) override
   {
-    if (OnNotify != nullptr)
+    if (!OnNotify.empty())
     {
       OnNotify(Sender);
     }
@@ -71,7 +71,7 @@ public:
 
   virtual void Execute(void * /*Arg*/) override
   {
-    if (OnInformation != nullptr)
+    if (!OnInformation.empty())
     {
       OnInformation(Terminal, Str, Status, Phase, Additional);
     }
@@ -103,7 +103,7 @@ public:
 
   virtual void Execute(void * Arg) override
   {
-    if (OnQueryUser != nullptr)
+    if (!OnQueryUser.empty())
     {
       OnQueryUser(Sender, Query, MoreMessages, Answers, Params, Answer, Type, Arg);
     }
@@ -132,7 +132,7 @@ public:
 
   virtual void Execute(void * Arg) override
   {
-    if (OnPromptUser != nullptr)
+    if (!OnPromptUser.empty())
     {
       OnPromptUser(Terminal, Kind, Name, Instructions, Prompts, Results, Result, Arg);
     }
@@ -159,7 +159,7 @@ public:
 
   void Execute(void * Arg) override
   {
-    if (OnShowExtendedException != nullptr)
+    if (!OnShowExtendedException.empty())
     {
       OnShowExtendedException(Terminal, E, Arg);
     }
@@ -181,7 +181,7 @@ public:
 
   virtual void Execute(void * /*Arg*/) override
   {
-    if (OnDisplayBanner != nullptr)
+    if (!OnDisplayBanner.empty())
     {
       OnDisplayBanner(Terminal, SessionName, Banner, NeverShowAgain, Options, Params);
     }
@@ -1134,7 +1134,7 @@ void TTerminalQueue::ProcessEvent()
 
 void TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
 {
-  if (GetOnQueueItemUpdate() != nullptr)
+  if (!GetOnQueueItemUpdate().empty())
   {
     GetOnQueueItemUpdate()(this, Item);
   }
@@ -1142,7 +1142,7 @@ void TTerminalQueue::DoQueueItemUpdate(TQueueItem * Item)
 
 void TTerminalQueue::DoListUpdate()
 {
-  if (GetOnListUpdate() != nullptr)
+  if (!GetOnListUpdate().empty())
   {
     GetOnListUpdate()(this);
   }
@@ -1150,7 +1150,7 @@ void TTerminalQueue::DoListUpdate()
 
 void TTerminalQueue::DoEvent(TQueueEvent Event)
 {
-  if (GetOnEvent() != nullptr)
+  if (!GetOnEvent().empty())
   {
     GetOnEvent()(this, Event);
   }
@@ -2981,7 +2981,7 @@ void TTerminalThread::TerminalQueryUser(TObject * Sender,
 
 void TTerminalThread::TerminalInitializeLog(TObject * Sender)
 {
-  if (FOnInitializeLog != nullptr)
+  if (!FOnInitializeLog.empty())
   {
     // never used, so not tested either
     DebugFail();
