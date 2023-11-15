@@ -6695,8 +6695,8 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
             }
             else if (FLAGSET(Data->Params, spByChecksum) &&
                      FLAGCLEAR(Data->Params, spTimestamp) &&
-                     !SameFileChecksum(FullLocalFileName, AFile) &&
-                     FLAGCLEAR(Data->Params, spTimestamp))
+                     !SameFileChecksum(FullLocalFileName, AFile));
+                     //&& FLAGCLEAR(Data->Params, spTimestamp)) ??
             {
               Modified = true;
               LocalModified = true;
