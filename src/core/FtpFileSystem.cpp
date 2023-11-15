@@ -29,10 +29,10 @@ __removed #pragma package(smart_init)
 
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-constexpr int DummyCodeClass = 8;
-constexpr int DummyTimeoutCode = 801;
-constexpr int DummyCancelCode = 802;
-constexpr int DummyDisconnectCode = 803;
+constexpr const int32_t DummyCodeClass = 8;
+constexpr const int32_t DummyTimeoutCode = 801;
+constexpr const int32_t DummyCancelCode = 802;
+constexpr const int32_t DummyDisconnectCode = 803;
 
 class TFileZillaImpl final : public TFileZillaIntf
 {
