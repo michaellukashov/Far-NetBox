@@ -106,9 +106,9 @@ bool TFileZillaImpl::HandleAsyncRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
   const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool HasLocalTime, const TRemoteFileTime &RemoteTime, void * UserData,
-  HANDLE &LocalFileHandle,
-  int32_t &RequestResult)
+  bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
+  HANDLE & LocalFileHandle,
+  int32_t & RequestResult)
 {
   return FFileSystem->HandleAsyncRequestOverwrite(
     FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
@@ -116,7 +116,7 @@ bool TFileZillaImpl::HandleAsyncRequestOverwrite(
 }
 
 bool TFileZillaImpl::HandleAsyncRequestVerifyCertificate(
-  const TFtpsCertificateData &Data, int32_t &RequestResult)
+  const TFtpsCertificateData & Data, int32_t & RequestResult)
 {
   return FFileSystem->HandleAsyncRequestVerifyCertificate(Data, RequestResult);
 }

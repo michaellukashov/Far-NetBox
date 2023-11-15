@@ -226,9 +226,9 @@ protected:
     HANDLE & LocalFileHandle,
     int & RequestResult) = 0;
   virtual bool HandleAsyncRequestVerifyCertificate(
-    const TFtpsCertificateData & Data, int & RequestResult) = 0;
+    const TFtpsCertificateData & Data, int32_t & RequestResult) = 0;
   virtual bool HandleAsyncRequestNeedPass(
-    struct TNeedPassRequestData & Data, int & RequestResult) = 0;
+    struct TNeedPassRequestData & Data, int32_t & RequestResult) = 0;
   virtual bool HandleListData(const wchar_t * Path, const TListDataEntry * Entries,
     uint32_t Count) = 0;
   virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,

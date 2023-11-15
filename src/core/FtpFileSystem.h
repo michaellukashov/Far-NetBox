@@ -148,7 +148,7 @@ protected:
     int64_t Size1, int64_t Size2, time_t LocalTime,
     bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * AUserData,
     HANDLE & ALocalFileHandle,
-    int & RequestResult);
+    int32_t & RequestResult);
   bool HandleAsyncRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int32_t & RequestResult);
   bool HandleAsyncRequestNeedPass(
