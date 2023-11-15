@@ -243,7 +243,7 @@ public:
     FFileSystem->FIgnoreFileList = IgnoreFileList;
   }
 
-  virtual ~TFTPFileListHelper() noexcept
+  virtual ~TFTPFileListHelper() noexcept override
   {
     FFileSystem->FFileList = FFileList;
     FFileSystem->FIgnoreFileList = FIgnoreFileList;
