@@ -708,7 +708,7 @@ int32_t TFarDialog::ShowModal()
     SCOPE_EXIT
     {
       GetFarPlugin()->FTopDialog = PrevTopDialog;
-      if (Handle != INVALID_HANDLE_VALUE)
+      if (CheckHandle(Handle))
       {
         GetFarPlugin()->GetPluginStartupInfo()->DialogFree(Handle);
       }

@@ -2003,7 +2003,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   else
   {
     UnicodeString AbsoluteFileName = FTerminal->GetAbsolutePath(TargetDir + DestFileName, false);
-    DebugAssert(LocalFileHandle.Handle != INVALID_HANDLE_VALUE);
+    DebugAssert(CheckHandle(LocalFileHandle.Handle));
     DebugAssert(LocalFileHandle.Handle);
     std::unique_ptr<TStream> Stream(std::make_unique<TSafeHandleStream>(static_cast<THandle>(LocalFileHandle.Handle)));
 

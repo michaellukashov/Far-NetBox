@@ -421,7 +421,7 @@ void TSignalThread::Start()
 
 void TSignalThread::TriggerEvent() const
 {
-  if (FEvent && FEvent != INVALID_HANDLE_VALUE)
+  if (CheckHandle(FEvent))
   {
     ::SetEvent(FEvent);
   }
@@ -660,7 +660,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
       TGuard Guard(FItemsSection); nb::used(Guard);
 
       // does this need to be within guard?
-      Monitored = (Item->GetCompleteEvent() != INVALID_HANDLE_VALUE);
+      Monitored = CheckHandle(Item->GetCompleteEvent());
       int32_t Index = FItems->Remove(Item);
       DebugAssert(Index < FItemsInProcess);
       DebugUsedParam(Index);
@@ -682,7 +682,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
       Index = 0;
       while (EmptyButMonitored && (Index < FItems->GetCount()))
       {
-        EmptyButMonitored = (GetItem(FItems.get(), Index)->GetCompleteEvent() != INVALID_HANDLE_VALUE);
+        EmptyButMonitored = CheckHandle(GetItem(FItems.get(), Index)->GetCompleteEvent());
         ++Index;
       }
       Empty = (FItems->GetCount() == 0);
@@ -1713,7 +1713,7 @@ bool TQueueItem::Complete()
 {
   TGuard Guard(FSection); nb::used(Guard);
 
-  if (FCompleteEvent != INVALID_HANDLE_VALUE)
+  if (CheckHandle(FCompleteEvent))
   {
     ::SetEvent(FCompleteEvent);
     FCompleteEvent = INVALID_HANDLE_VALUE;

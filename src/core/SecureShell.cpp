@@ -1779,7 +1779,7 @@ void TSecureShell::FreeBackend()
       FCallbackSet->handlewaits_tree_real = nullptr;
     }
 
-    if (FCallbackSet->ready_event != INVALID_HANDLE_VALUE)
+    if (CheckHandle(FCallbackSet->ready_event))
     {
       CloseHandle(FCallbackSet->ready_event);
       FCallbackSet->ready_event = INVALID_HANDLE_VALUE;

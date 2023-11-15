@@ -2771,7 +2771,7 @@ TFarPanelType TFarPanelInfo::GetType() const
 
 bool TFarPanelInfo::GetIsPlugin() const
 {
-  return ((FPanelInfo->PluginHandle != INVALID_HANDLE_VALUE) && (FPanelInfo->PluginHandle != nullptr));
+  return CheckHandle(FPanelInfo->PluginHandle);
 }
 
 UnicodeString TFarPanelInfo::GetCurrDirectory() const

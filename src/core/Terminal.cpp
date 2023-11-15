@@ -5648,7 +5648,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
   {
     *AHandle = this->TerminalCreateLocalFile(ApiPath(AFileName),
       DesiredAccess, ShareMode, CreationDisposition, FlagsAndAttributes);
-    Done = (*AHandle != INVALID_HANDLE_VALUE);
+    Done = CheckHandle(*AHandle);
     if (!Done)
     {
       // save the error, otherwise it gets overwritten by call to FileExists

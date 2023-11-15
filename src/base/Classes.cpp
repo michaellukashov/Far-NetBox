@@ -931,7 +931,7 @@ void TStringList::SetSorted(bool Value)
 void TStringList::LoadFromFile(const UnicodeString & AFileName)
 {
   HANDLE FileHandle = ::CreateFile(AFileName.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
-  if (FileHandle != INVALID_HANDLE_VALUE)
+  if (CheckHandle(FileHandle))
   {
     TSafeHandleStream Stream(FileHandle);
     const int64_t Size = Stream.GetSize();

@@ -35,7 +35,7 @@ bool CNBFile::OpenRead(const wchar_t * fileName)
 
 bool CNBFile::Read(void * buff, size_t & buffSize)
 {
-  DebugAssert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(CheckHandle(m_File));
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesRead = nb::ToDWord(buffSize);
@@ -53,7 +53,7 @@ bool CNBFile::Read(void * buff, size_t & buffSize)
 
 bool CNBFile::Write(const void * buff, const size_t buffSize)
 {
-  DebugAssert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(CheckHandle(m_File));
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesWritten;
@@ -66,7 +66,7 @@ bool CNBFile::Write(const void * buff, const size_t buffSize)
 
 int64_t CNBFile::GetFileSize() const
 {
-  DebugAssert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(CheckHandle(m_File));
   m_LastError = ERROR_SUCCESS;
 
   LARGE_INTEGER fileSize;
@@ -80,7 +80,7 @@ int64_t CNBFile::GetFileSize() const
 
 void CNBFile::Close()
 {
-  if (m_File != INVALID_HANDLE_VALUE)
+  if (CheckHandle(m_File))
   {
     SAFE_CLOSE_HANDLE(m_File);
     m_File = INVALID_HANDLE_VALUE;

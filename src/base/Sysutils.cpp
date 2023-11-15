@@ -602,7 +602,7 @@ void SysUtulsFileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 {
   WIN32_FIND_DATA FindData;
   const HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
-  if (LocalFileHandle != INVALID_HANDLE_VALUE)
+  if (CheckHandle(LocalFileHandle))
   {
     ATimestamp =
       UnixToDateTime(
@@ -1830,7 +1830,7 @@ UnicodeString ReadAllText(const UnicodeString & FileName)
 
   if (m_LastError != ERROR_SUCCESS)
     Result.Clear();
-  if (m_File != INVALID_HANDLE_VALUE)
+  if (CheckHandle(m_File))
   {
     SAFE_CLOSE_HANDLE(m_File);
     m_File = INVALID_HANDLE_VALUE;
@@ -1984,7 +1984,7 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     TUnicodeSymLinkRec SymLinkRec;
 
     HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, 0);
-    if (HFile != INVALID_HANDLE_VALUE)
+    if (CheckHandle(HFile))
     {
       try
       {
@@ -2162,7 +2162,7 @@ DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRe
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
   Rec.FindHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &Rec.FindData);
   DWORD Result;
-  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
+  if (CheckHandle(Rec.FindHandle))
   {
     Result = FindMatchingFile(Rec);
     if (Result != ERROR_SUCCESS)
@@ -2190,7 +2190,7 @@ DWORD FindNext(TSearchRec &Rec)
 DWORD FindClose(TSearchRec &Rec)
 {
   DWORD Result = 0;
-  if (Rec.FindHandle != INVALID_HANDLE_VALUE)
+  if (CheckHandle(Rec.FindHandle))
   {
     Result = FALSE != ::FindClose(Rec.FindHandle);
     Rec.FindHandle = INVALID_HANDLE_VALUE;

@@ -677,6 +677,11 @@ public:
   explicit EDirectoryNotFoundException(TObjectClassId Kind, const UnicodeString & What) noexcept : Exception(Kind, What) {}
 };
 
+inline bool CheckHandle(HANDLE AFileHandle)
+{
+  return (AFileHandle != nullptr) && (AFileHandle != INVALID_HANDLE_VALUE);
+}
+
 } // namespace Sysutils
 
 using namespace Sysutils;
