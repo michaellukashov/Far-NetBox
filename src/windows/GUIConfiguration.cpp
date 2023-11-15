@@ -653,8 +653,8 @@ void TGUIConfiguration::UpdateStaticUsage()
 // duplicated from core\configuration.cpp
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
-    { SCOPE_EXIT { Storage->CloseSubKeyPath(); }; { BLOCK } }
+  if (AStorage->OpenSubKeyPath(KEY, CANCREATE)) \
+    { SCOPE_EXIT { AStorage->CloseSubKeyPath(); }; { BLOCK } }
 #undef REGCONFIG
 
 #define REGCONFIG(CANCREATE) \
@@ -696,9 +696,9 @@ bool TGUIConfiguration::DoSaveCopyParam(THierarchicalStorage * Storage, const TC
   return Result;
 }
 
-void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
+void TGUIConfiguration::SaveData(THierarchicalStorage * AStorage, bool All)
 {
-  TConfiguration::SaveData(Storage, All);
+  TConfiguration::SaveData(AStorage, All);
 
   // duplicated from core\configuration.cpp
 #undef LASTELEM
@@ -706,16 +706,16 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #undef KEYEX
 #undef KEYEX2
-#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
-#define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
+#define KEYEX(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
+#define KEYEX2(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
 #undef KEY
 #undef KEY2
 #undef KEY3
 #undef KEY4
-#define KEY(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
-#define KEY2(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), NAME)
-#define KEY3(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt32(Get ## NAME()))
-#define KEY4(TYPE, NAME) Storage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt32(NAME))
+#define KEY(TYPE, NAME) AStorage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
+#define KEY2(TYPE, NAME) AStorage->Write ## TYPE(PropertyToKey(#NAME), NAME)
+#define KEY3(TYPE, NAME) AStorage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt32(Get ## NAME()))
+#define KEY4(TYPE, NAME) AStorage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt32(NAME))
   REGCONFIG(true);
 #undef KEY4
 #undef KEY3
@@ -724,51 +724,51 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 #undef KEYEX2
 #undef KEYEX
 
-  if (DoSaveCopyParam(Storage, &FDefaultCopyParam, nullptr))
+  if (DoSaveCopyParam(AStorage, &FDefaultCopyParam, nullptr))
   try__finally
   {
-    FDefaultCopyParam.Save(Storage);
+    FDefaultCopyParam.Save(AStorage);
 
     if (FCopyParamListDefaults)
     {
       DebugAssert(!FCopyParamList->GetModified());
-      Storage->WriteInteger("CopyParamList", -1);
+      AStorage->WriteInteger("CopyParamList", -1);
     }
     else if (All || FCopyParamList->GetModified())
     {
-      Storage->WriteInteger("CopyParamList", nb::ToInt32(FCopyParamList->GetCount()));
-      FCopyParamList->Save(Storage);
+      AStorage->WriteInteger("CopyParamList", nb::ToInt32(FCopyParamList->GetCount()));
+      FCopyParamList->Save(AStorage);
     }
   },
   __finally
   {
-    Storage->CloseSubKeyPath();
+    AStorage->CloseSubKeyPath();
   } end_try__finally
 
-  if (Storage->OpenSubKeyPath("Interface\\NewDirectory2", true))
+  if (AStorage->OpenSubKeyPath("Interface\\NewDirectory2", true))
   try__finally
   {
-    FNewDirectoryProperties.Save(Storage);
+    FNewDirectoryProperties.Save(AStorage);
   },
   __finally
   {
-    Storage->CloseSubKeyPath();
+    AStorage->CloseSubKeyPath();
   } end_try__finally
 }
 
-bool TGUIConfiguration::LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam)
+bool TGUIConfiguration::LoadCopyParam(THierarchicalStorage * AStorage, TCopyParamType * CopyParam)
 {
   bool Result =
-    Storage->OpenSubKeyPath(L"Interface\\CopyParam", false);
+    AStorage->OpenSubKeyPath(L"Interface\\CopyParam", false);
   if (Result)
   {
     try
     {
-      CopyParam->Load(Storage);
+      CopyParam->Load(AStorage);
     }
     catch (...)
     {
-      Storage->CloseSubKeyPath();
+      AStorage->CloseSubKeyPath();
       throw;
     }
   }
@@ -780,37 +780,37 @@ void TGUIConfiguration::LoadDefaultCopyParam(THierarchicalStorage * Storage)
   FDefaultCopyParam.Load(Storage);
 }
 
-void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
+void TGUIConfiguration::LoadData(THierarchicalStorage * AStorage)
 {
-  TConfiguration::LoadData(Storage);
+  TConfiguration::LoadData(AStorage);
 
   // duplicated from core\configuration.cpp
 #undef KEYEX
 #undef KEYEX2
-#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
-#define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
+#define KEYEX(TYPE, NAME, VAR) Set ## VAR(AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
+#define KEYEX2(TYPE, NAME, VAR) VAR = AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
 #undef KEY
 #undef KEY2
 #undef KEY3
 #undef KEY4
-#define KEY(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
-#define KEY2(TYPE, NAME) NAME = Storage->Read ## TYPE(PropertyToKey(#NAME), NAME)
-#define KEY3(TYPE, NAME) Set ## NAME(Storage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt(Get ## NAME())))
-#define KEY4(TYPE, NAME) NAME = Storage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt32(NAME))
+#define KEY(TYPE, NAME) Set ## NAME(AStorage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
+#define KEY2(TYPE, NAME) NAME = AStorage->Read ## TYPE(PropertyToKey(#NAME), NAME)
+#define KEY3(TYPE, NAME) Set ## NAME(AStorage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt(Get ## NAME())))
+#define KEY4(TYPE, NAME) NAME = AStorage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt32(NAME))
   REGCONFIG(false);
 #undef KEY
 #undef KEYEX
 
   // FDefaultCopyParam must be loaded before eventual setting defaults for CopyParamList
-  if (LoadCopyParam(Storage, &FDefaultCopyParam))
+  if (LoadCopyParam(AStorage, &FDefaultCopyParam))
   try__finally
   {
-    int32_t CopyParamListCount = Storage->ReadInteger(L"CopyParamList", -1);
+    int32_t CopyParamListCount = AStorage->ReadInteger(L"CopyParamList", -1);
     FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {
       FCopyParamList->Clear();
-      FCopyParamList->Load(Storage, CopyParamListCount);
+      FCopyParamList->Load(AStorage, CopyParamListCount);
     }
     else if (FCopyParamList->GetModified())
     {
@@ -821,7 +821,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
   },
   __finally
   {
-    Storage->CloseSubKeyPath();
+    AStorage->CloseSubKeyPath();
   } end_try__finally
 
   // Make it compatible with versions prior to 3.7.1 that have not saved PuttyPath
@@ -838,14 +838,14 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * Storage)
     FPuttyPath = FormatCommand(FPuttyPath, L"");
   }
 
-  if (Storage->OpenSubKeyPath("Interface\\NewDirectory2", false))
+  if (AStorage->OpenSubKeyPath("Interface\\NewDirectory2", false))
   try__finally
   {
-    FNewDirectoryProperties.Load(Storage);
+    FNewDirectoryProperties.Load(AStorage);
   },
   __finally
   {
-    Storage->CloseSubKeyPath();
+    AStorage->CloseSubKeyPath();
   } end_try__finally
 }
 
