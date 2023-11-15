@@ -289,7 +289,7 @@ TConfiguration::~TConfiguration() noexcept
   DebugAssert(!FUpdating);
   if (FApplicationInfo)
   {
-    FreeFileInfo(FApplicationInfo);
+    // FreeFileInfo(FApplicationInfo); TODO: check
     FApplicationInfo = nullptr;
   }
   __removed delete FCriticalSection;
