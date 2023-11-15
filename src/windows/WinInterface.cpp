@@ -147,12 +147,13 @@ void TMessageParams::Reset()
   CustomCaption = L"";
 }
 
+#if 0
+
 static bool IsPositiveAnswer(uint32_t Answer)
 {
   return (Answer == qaYes) || (Answer == qaOK) || (Answer == qaYesToAll);
 }
 
-#if 0
 static void NeverAskAgainCheckClick(void * /*Data*/, TObject * Sender)
 {
   TCheckBox * CheckBox = dynamic_cast<TCheckBox *>(Sender);
