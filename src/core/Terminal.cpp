@@ -6963,7 +6963,7 @@ void TTerminal::SynchronizeChecklistCalculateSize(
 
   for (size_t Index = 0; Index < Items.size(); Index++)
   {
-    const TChecklistItem* ChecklistItem = Items[Index];
+    const TChecklistItem * ChecklistItem = Items[Index];
     if (ChecklistItem->IsDirectory)
     {
       if (ChecklistItem->IsRemoteOnly())

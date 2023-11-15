@@ -12,7 +12,7 @@ const TColor LinkColor = clBlue;
 
 void FixListColumnWidth(TListView * TListView, int Index);
 void AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrinkIndex = -1);
-void EnableControl(TControl* Control, bool Enable);
+void EnableControl(TControl * Control, bool Enable);
 void ReadOnlyControl(TControl * Control, bool ReadOnly = true);
 void ReadOnlyAndEnabledControl(TControl * Control, bool ReadOnly, bool Enabled);
 int CalculateCheckBoxWidth(TControl * Control, const UnicodeString & Caption);

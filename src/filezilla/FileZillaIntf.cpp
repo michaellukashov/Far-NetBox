@@ -222,37 +222,37 @@ bool TFileZillaIntf::CustomCommand(const wchar_t * Command)
   return Check(FFileZillaApi->CustomCommand(Command), L"customcommand");
 }
 
-bool TFileZillaIntf::MakeDir(const wchar_t* APath)
+bool TFileZillaIntf::MakeDir(const wchar_t * APath)
 {
   DebugAssert(FFileZillaApi != nullptr);
   CServerPath Path(APath, false);
   return Check(FFileZillaApi->MakeDir(Path), L"makedir");
 }
 
-bool TFileZillaIntf::Chmod(int Value, const wchar_t* FileName,
-  const wchar_t* APath)
+bool TFileZillaIntf::Chmod(int Value, const wchar_t * FileName,
+  const wchar_t * APath)
 {
   DebugAssert(FFileZillaApi != nullptr);
   CServerPath Path(APath, false);
   return Check(FFileZillaApi->Chmod(Value, FileName, Path), L"chmod");
 }
 
-bool TFileZillaIntf::Delete(const wchar_t* FileName, const wchar_t* APath, bool FileNameOnly)
+bool TFileZillaIntf::Delete(const wchar_t * FileName, const wchar_t * APath, bool FileNameOnly)
 {
   DebugAssert(FFileZillaApi != nullptr);
   CServerPath Path(APath, false);
   return Check(FFileZillaApi->Delete(FileName, Path, FileNameOnly), L"delete");
 }
 
-bool TFileZillaIntf::RemoveDir(const wchar_t* FileName, const wchar_t* APath)
+bool TFileZillaIntf::RemoveDir(const wchar_t * FileName, const wchar_t * APath)
 {
   DebugAssert(FFileZillaApi != nullptr);
   CServerPath Path(APath, false);
   return Check(FFileZillaApi->RemoveDir(FileName, Path), L"removedir");
 }
 
-bool TFileZillaIntf::Rename(const wchar_t* OldName,
-  const wchar_t* NewName, const wchar_t* APath, const wchar_t* ANewPath)
+bool TFileZillaIntf::Rename(const wchar_t * OldName,
+  const wchar_t * NewName, const wchar_t * APath, const wchar_t * ANewPath)
 {
   DebugAssert(FFileZillaApi != nullptr);
   CServerPath Path(APath, false);

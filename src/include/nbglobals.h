@@ -18,7 +18,7 @@
 #define nb_realloc(ptr, size) ::dlrealloc(ptr, size)
 
 template<typename T>
-void nb_free(const T* ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
+void nb_free(const T * ptr) { ::dlfree(reinterpret_cast<void *>(const_cast<T *>(ptr))); }
 
 #else //!defined(__cplusplus)
 
@@ -94,7 +94,7 @@ inline void * operator_new(size_t size)
 template<typename T>
 inline T * operator_new(size_t size) { return static_cast<T *>(operator_new(size)); }
 
-inline void operator_delete(void* p)
+inline void operator_delete(void * p)
 {
   nb_free(p);
 }
@@ -243,7 +243,7 @@ inline void destruct(wchar_t *)
 }
 
 template<typename T>
-inline void destruct(T* t) { t->~T(); }
+inline void destruct(T * t) { t->~T(); }
 
 } // namespace nballoc
 
@@ -299,7 +299,7 @@ struct custom_nballocator_t
   static pointer address(reference x) { return &x; }
   static const_pointer address(const_reference x) { return &x; }
 
-  pointer allocate(size_type s, void const* = nullptr)
+  pointer allocate(size_type s, void const * = nullptr)
   {
     if (0 == s)
       return nullptr;
@@ -346,10 +346,10 @@ inline bool operator!=(const custom_nballocator_t<T>&, const custom_nballocator_
 }
 
 template<typename T>
-bool CheckNullOrStructSize(const T* s) { return !s || (s->StructSize >= sizeof(T)); }
+bool CheckNullOrStructSize(const T * s) { return !s || (s->StructSize >= sizeof(T)); }
 
 template<typename T>
-bool CheckStructSize(const T* s) { return s && (s->StructSize >= sizeof(T)); }
+bool CheckStructSize(const T * s) { return s && (s->StructSize >= sizeof(T)); }
 
 // from Global.h
 #define NB__TEXT(quote) L##quote      // r_winnt

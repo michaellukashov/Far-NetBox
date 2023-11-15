@@ -671,8 +671,8 @@ static const wchar_t *
 NextWord(const wchar_t *Input)
 {
   static UnicodeString Buffer;
-  wchar_t *pBuffer = Buffer.SetLength(1024);
-  static const wchar_t *text = nullptr;
+  wchar_t * pBuffer = Buffer.SetLength(1024);
+  static const wchar_t * text = nullptr;
 
   wchar_t *endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
 
@@ -1853,7 +1853,7 @@ void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text)
 static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
 {
   bool e;
-  const char* p;
+  const char * p;
 
   auto rb = [&p, &e]() -> unsigned char
   {
@@ -1976,7 +1976,7 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     const UnicodeString CGlobalPrefix = L"\\\\?\\";
 
     HANDLE HFile, Handle;
-    TReparseDataBuffer* PBuffer = nullptr;
+    TReparseDataBuffer * PBuffer = nullptr;
     DWORD BytesReturned;
     GUID guid;
 

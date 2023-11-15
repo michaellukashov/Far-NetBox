@@ -195,12 +195,12 @@ public:
 
   bool CustomCommand(const wchar_t * Command);
 
-  bool MakeDir(const wchar_t* APath);
-  bool Chmod(int Value, const wchar_t* FileName, const wchar_t* APath);
-  bool Delete(const wchar_t* FileName, const wchar_t* APath, bool FileNameOnly);
-  bool RemoveDir(const wchar_t* FileName, const wchar_t* APath);
-  bool Rename(const wchar_t* OldName, const wchar_t* NewName,
-    const wchar_t* APath, const wchar_t* ANewPath);
+  bool MakeDir(const wchar_t * APath);
+  bool Chmod(int Value, const wchar_t * FileName, const wchar_t * APath);
+  bool Delete(const wchar_t * FileName, const wchar_t * APath, bool FileNameOnly);
+  bool RemoveDir(const wchar_t * FileName, const wchar_t * APath);
+  bool Rename(const wchar_t * OldName, const wchar_t * NewName,
+    const wchar_t * APath, const wchar_t * ANewPath);
 
   bool FileTransfer(
     const wchar_t * LocalFile, const wchar_t * RemoteFile,

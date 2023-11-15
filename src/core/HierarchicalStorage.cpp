@@ -1819,7 +1819,7 @@ public:
   virtual void WriteString(const UnicodeString & Section, const UnicodeString & Ident, const UnicodeString & Value);
   virtual void ReadSection(const UnicodeString & Section, TStrings * Strings);
   virtual void ReadSections(TStrings * Strings);
-  virtual void ReadSectionValues(const UnicodeString & Section, TStrings* Strings);
+  virtual void ReadSectionValues(const UnicodeString & Section, TStrings * Strings);
   virtual void EraseSection(const UnicodeString & Section);
   virtual void DeleteKey(const UnicodeString & Section, const UnicodeString & Ident);
   virtual void UpdateFile();

@@ -3111,7 +3111,7 @@ TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
 //  delete FList;
 }
 
-void TSynchronizeChecklist::Add(TChecklistItem* Item)
+void TSynchronizeChecklist::Add(TChecklistItem * Item)
 {
   FList->Add(Item);
 }
@@ -3186,7 +3186,7 @@ void TSynchronizeChecklist::Delete(const TChecklistItem * Item)
   SAFE_DESTROY(MutableItem);
 }
 
-void TSynchronizeChecklist::UpdateDirectorySize(const TChecklistItem* Item, int64_t Size)
+void TSynchronizeChecklist::UpdateDirectorySize(const TChecklistItem * Item, int64_t Size)
 {
   // See comment in Update
   TChecklistItem * MutableItem = const_cast<TChecklistItem *>(Item);

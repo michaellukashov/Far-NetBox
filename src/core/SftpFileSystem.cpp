@@ -1363,7 +1363,7 @@ public:
 protected:
   std::unique_ptr<TList> FRequests{nullptr};
   std::unique_ptr<TList> FResponses{nullptr};
-  TSFTPFileSystem* FFileSystem{nullptr};
+  TSFTPFileSystem * FFileSystem{nullptr};
   uint32_t FCodePage{0};
 
 #if 0

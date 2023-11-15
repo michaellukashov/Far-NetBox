@@ -5202,7 +5202,7 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
   if (m_Operation.nOpState != FILETRANSFER_WAIT)
     return;
 
-  CFileTransferData* pTransferData = reinterpret_cast<CFileTransferData*>(m_Operation.pData);
+  CFileTransferData * pTransferData = reinterpret_cast<CFileTransferData*>(m_Operation.pData);
   if (!pTransferData)
     return;
 

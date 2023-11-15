@@ -396,7 +396,7 @@ public:
   RWProperty1(RWProperty1&&) = default;
   RWProperty1& operator=(const RWProperty1&) = default;
   RWProperty1& operator=(RWProperty1&&) = default;
-  constexpr const T* operator()() const
+  constexpr const T * operator()() const
   {
     Expects(_getter);
     return _getter();
@@ -406,7 +406,7 @@ public:
     Expects(_getter);
     return _getter();
   }
-  constexpr const T* operator->() const
+  constexpr const T * operator->() const
   {
     return _getter();
   }
@@ -416,17 +416,17 @@ public:
     Expects(_setter);
     _setter(Value);
   }
-  void operator=(T* Value)
+  void operator=(T * Value)
   {
     Expects(_setter);
     _setter(Value);
   }
-  constexpr bool operator==(T* Value) const
+  constexpr bool operator==(T * Value) const
   {
     Expects(_getter);
     return _getter() == Value;
   }
-  friend bool inline operator==(const RWProperty1 &lhs, const RWProperty1 &rhs)
+  friend bool inline operator==(const RWProperty1 & lhs, const RWProperty1 & rhs)
   {
     Expects(lhs._getter);
     return (lhs._getter == rhs._getter) && (lhs._setter == rhs._setter);
