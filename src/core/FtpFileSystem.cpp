@@ -998,7 +998,7 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
   // current directory for the server
   EnsureLocation();
 
-  DebugAssert(FOnCaptureOutput == nullptr);
+  DebugAssert(FOnCaptureOutput.empty());
   FOnCaptureOutput = OutputEvent;
   try__finally
   {

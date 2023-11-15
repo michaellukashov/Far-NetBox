@@ -7172,7 +7172,7 @@ void TTerminal::DoFilesFind(const UnicodeString & ADirectory, TFilesFindParams &
   Params.OnFindingFile(this, ADirectory, Params.Cancel);
   if (!Params.Cancel)
   {
-    DebugAssert(FOnFindingFile == nullptr);
+    DebugAssert(FOnFindingFile.empty());
     // ideally we should set the handler only around actually reading
     // of the directory listing, so we at least reset the handler in
     // FileFind

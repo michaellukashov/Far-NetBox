@@ -1065,7 +1065,7 @@ void TSecureShell::CWrite(const char * Data, size_t Length)
 
 void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
 {
-  DebugAssert(FOnReceive == nullptr);
+  DebugAssert(FOnReceive.empty());
   FOnReceive = Handler;
 }
 

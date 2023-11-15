@@ -2984,8 +2984,8 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
     DebugAssert(!m_Operation.nOpMode);
     DebugAssert(!m_Operation.pData);
 
-    if ((transferfile->OnTransferOut == nullptr) &&
-        (transferfile->OnTransferIn == nullptr))
+    if ((transferfile->OnTransferOut.empty()) &&
+        (transferfile->OnTransferIn.empty()))
     {
       CString str;
       str.Format(transferfile->get?IDS_STATUSMSG_DOWNLOADSTART:IDS_STATUSMSG_UPLOADSTART,
@@ -4550,7 +4550,7 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
   if (GetOptionVal(OPTION_PRESERVEDOWNLOADFILETIME) &&
       m_pDataFile &&
       pData->transferfile.get &&
-      DebugAlwaysTrue(pData->transferfile.OnTransferOut == nullptr))
+      DebugAlwaysTrue(pData->transferfile.OnTransferOut.empty()))
   {
     m_pTools->PreserveDownloadFileTime(
       (HANDLE)m_pDataFile->m_hFile, reinterpret_cast<void *>(pData->transferfile.nUserData));
@@ -4559,7 +4559,7 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
       GetOptionVal(OPTION_MPEXT_PRESERVEUPLOADFILETIME) && preserveFileTimeForUploads &&
       ((m_serverCapabilities.GetCapability(mfmt_command) == yes) ||
        (m_serverCapabilities.GetCapability(mdtm_command) == yes)) &&
-      DebugAlwaysTrue(pData->transferfile.OnTransferIn == nullptr))
+      DebugAlwaysTrue(pData->transferfile.OnTransferIn.empty()))
   {
     CString filename =
       pData->transferfile.remotepath.FormatFilename(pData->transferfile.remotefile, !pData->bUseAbsolutePaths);
@@ -5032,7 +5032,7 @@ int CFtpControlSocket::CheckOverwriteFileAndCreateTarget()
   if (!nReplyError)
   {
     CFileTransferData * pData = static_cast<CFileTransferData *>(m_Operation.pData);
-    if (pData->transferfile.get && (pData->transferfile.OnTransferOut == nullptr))
+    if (pData->transferfile.get && (pData->transferfile.OnTransferOut.empty()))
     {
       CString path = pData->transferfile.localfile;
       if (path.ReverseFind(L'\\') != -1)
