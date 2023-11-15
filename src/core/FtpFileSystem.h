@@ -29,7 +29,7 @@ public:
 public:
   TFTPFileSystem() = delete;
   explicit TFTPFileSystem(TTerminal * ATerminal) noexcept;
-  virtual ~TFTPFileSystem() noexcept;
+  virtual ~TFTPFileSystem() noexcept override;
   void Init(void *) override;
 
   virtual void Open() override;
@@ -49,15 +49,15 @@ public:
     TChmodSessionAction & Action) override;
   virtual bool LoadFilesProperties(TStrings * AFileList) override;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg) override;
-  void CalculateFilesChecksum(
+  virtual void CalculateFilesChecksum(
     const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
-    TFileOperationProgressType * OperationProgress, bool FirstLevel);
+    TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int32_t Params, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
   virtual void TransferOnDirectory(
-    const UnicodeString & ADirectory, const TCopyParamType * CopyParam, int32_t AParams);
+    const UnicodeString & ADirectory, const TCopyParamType * CopyParam, int32_t AParams) override;
   virtual void CopyToRemote(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
     int32_t AParams, TFileOperationProgressType * OperationProgress,
@@ -66,12 +66,12 @@ public:
     TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
     const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, uint32_t AFlags,
-    TUploadSessionAction & Action, bool & ChildError);
+    TUploadSessionAction & Action, bool & ChildError) override;
   virtual void Sink(
     const UnicodeString & AFileName, const TRemoteFile * AFile,
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
-    uint32_t AFlags, TDownloadSessionAction & Action);
+    uint32_t AFlags, TDownloadSessionAction & Action) override;
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
