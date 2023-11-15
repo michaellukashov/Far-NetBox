@@ -481,7 +481,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
       &LocalCustomCommand, L"PuTTY", UnicodeString());
 
     UnicodeString Params =
-      LocalCustomCommand.Complete(InteractiveCustomCommand.Complete(Params, false), true);
+      LocalCustomCommand.Complete(InteractiveCustomCommand.Complete(AParams, false), true);
     UnicodeString PuttyParams;
     AppLogFmt(L"Expanded params: %s", AParams);
 
