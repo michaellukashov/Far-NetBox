@@ -1240,7 +1240,7 @@ void TFarDialogItem::SetFlag(FARDIALOGITEMFLAGS Index, bool Value)
 
     FARDIALOGITEMFLAGS F = GetFlags();
     FARDIALOGITEMFLAGS Flag = Index & 0xFFFFFFFFFFFFFF00ULL;
-    bool ToHandle = Value;
+    bool ToHandle = true; //Value;
 
     switch (Flag)
     {
