@@ -306,7 +306,7 @@ NB_DEFINE_CLASS_ID(TPuttyPasswordThread);
 class TPuttyPasswordThread : public TSimpleThread
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TPuttyPasswordThread); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyPasswordThread); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyPasswordThread) || TObject::is(Kind); }
 public:
   TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName);

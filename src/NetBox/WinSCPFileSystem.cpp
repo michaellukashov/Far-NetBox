@@ -1193,7 +1193,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
             if (FLAGSET(Params, ccCopyResults))
             {
-              DebugAssert(FCapturedLog == nullptr);
+              DebugAssert(FCapturedLog.get() == nullptr);
               FCapturedLog = std::make_unique<TStringList>();
               OutputEvent = nb::bind(&TWinSCPFileSystem::TerminalCaptureLog, this);
             }
@@ -2877,7 +2877,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TOperationSide Side, bool SelectedOnly, const UnicodeString & Directory, bool FileNameOnly,
   TStrings * AFileList)
 {
-  std::unique_ptr<TStrings> FileList(AFileList == nullptr ? new TStringList() : AFileList);
+  std::unique_ptr<TStrings> FileList((AFileList == nullptr) ? new TStringList() : AFileList);
   FileList->SetDuplicates(dupAccept);
 
   TFarPanelItem * PanelItem;
@@ -3097,7 +3097,7 @@ void TWinSCPFileSystem::TerminalInformation(
     TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
     if (sts == ssOpening || sts == ssOpened)
     {
-      bool new_log = FAuthenticationLog == nullptr;
+      bool new_log = (FAuthenticationLog == nullptr);
       if (new_log)
       {
         FAuthenticationLog = std::make_unique<TStringList>();

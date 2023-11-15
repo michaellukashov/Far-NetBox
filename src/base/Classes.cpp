@@ -1843,7 +1843,7 @@ bool TRegistry::KeyExists(const UnicodeString & SubKey) const
   {
     ::RegCloseKey(TempKey);
   }
-  const bool Result = TempKey != nullptr;
+  const bool Result = (TempKey != nullptr);
   return Result;
 }
 

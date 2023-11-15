@@ -2075,9 +2075,9 @@ void TSFTPFileSystem::NoPacketReservations()
 {
   // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
   // (typically to SSH_FXP_CLOSE)
-  for (int32_t i = 0; i < FPacketReservations->Count; i++)
+  for (int32_t I = 0; I < FPacketReservations->Count; I++)
   {
-    DebugAssert(FPacketReservations->GetItem(i) == nullptr);
+    DebugAssert(FPacketReservations->GetItem(I) == nullptr);
   }
 }
 
@@ -5438,7 +5438,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
     try
     {
       TSFTPPacket CloseRequest(FCodePage);
-      TSFTPPacket * P = (Packet == nullptr ? &CloseRequest : Packet);
+      TSFTPPacket * P = (Packet == nullptr) ? &CloseRequest : Packet;
 
       if (Request)
       {
@@ -5669,14 +5669,14 @@ void TSFTPFileSystem::Sink(
         if (LocalFileHandle)
         {
           SAFE_CLOSE_HANDLE(LocalFileHandle);
-          LocalFileHandle = nullptr;
+          LocalFileHandle = INVALID_HANDLE_VALUE;
         }
       }
       else
       {
         // is NULL when overwriting read-only file, so following will
         // probably fail anyway
-        if (LocalFileHandle == nullptr)
+        if ((LocalFileHandle == INVALID_HANDLE_VALUE) || (LocalFileHandle == nullptr))
         {
           FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE, nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
         }

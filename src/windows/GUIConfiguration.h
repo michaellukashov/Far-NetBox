@@ -183,7 +183,7 @@ class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
   NB_DISABLE_COPY(TGUIConfiguration)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUIConfiguration); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TGUIConfiguration); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TGUIConfiguration) || TConfiguration::is(Kind); }
 private:
   std::unique_ptr<TObjectList> FLocales;
