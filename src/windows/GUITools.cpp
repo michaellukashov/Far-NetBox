@@ -311,6 +311,7 @@ public:
 public:
   TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName);
   virtual ~TPuttyPasswordThread();
+  void InitPuttyPasswordThread();
 
 protected:
   virtual void Execute();
@@ -336,7 +337,6 @@ TPuttyPasswordThread::TPuttyPasswordThread(const UnicodeString & Password, const
     throw EOSExtException(L"Cannot create password pipe");
   }
   FPassword = AnsiString(Password);
-  Start();
 }
 
 TPuttyPasswordThread::~TPuttyPasswordThread()
@@ -345,6 +345,12 @@ TPuttyPasswordThread::~TPuttyPasswordThread()
   AppLog(L"Disconnecting and closing password pipe");
   DisconnectNamedPipe(FPipe);
   CloseHandle(FPipe);
+}
+
+void TPuttyPasswordThread::InitPuttyPasswordThread()
+{
+  TSimpleThread::InitSimpleThread();
+  Start();
 }
 
 void TPuttyPasswordThread::Terminate()
@@ -617,7 +623,8 @@ void OpenSessionInPutty(TSessionData * SessionData)
       {
         PipeCounter++;
         UnicodeString PipeName = FORMAT(L"\\\\.\\PIPE\\WinSCPPuTTYPassword.%.8x.%.8x.%.4x", GetCurrentProcessId(), PipeCounter, rand());
-        new TPuttyPasswordThread(Password, PipeName);
+        TPuttyPasswordThread * Thread = new TPuttyPasswordThread(Password, PipeName);
+        Thread->InitPuttyPasswordThread();
         PasswordParam = FORMAT(L"-pwfile \"%s\"", PipeName);
       }
       else
