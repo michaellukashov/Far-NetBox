@@ -282,7 +282,6 @@ protected:
   TFarMouseClickEvent FOnMouseClick;
 
   explicit TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, FARDIALOGITEMTYPES AType);
-  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, uint32_t AType) noexcept;
   virtual ~TFarDialogItem() noexcept;
 
   const FarDialogItem *GetDialogItem() const;
