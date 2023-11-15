@@ -1256,6 +1256,8 @@ void TCustomCommandData::Init(
 
 TCustomCommandData & TCustomCommandData::operator=(const TCustomCommandData & Data)
 {
+  if (this == &Data)
+    return *this;
   DebugAssert(Data.SessionData != nullptr);
   FSessionData.reset(new TSessionData(L""));
   FSessionData->Assign(Data.SessionData);
