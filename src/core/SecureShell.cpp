@@ -227,7 +227,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   DebugAssert(KEX_MAX == KEX_COUNT);
   for (int32_t k = 0; k < KEX_COUNT; k++)
   {
-    int pkex;
+    int32_t pkex;
     switch (Data->GetKex(k)) {
       case kexWarn: pkex = KEX_WARN; break;
       case kexDHGroup1: pkex = KEX_DHGROUP1; break;
@@ -1447,7 +1447,7 @@ int32_t TSecureShell::TranslatePuttyMessage(
   const TPuttyTranslation * Translation, int32_t Count, UnicodeString & Message,
   UnicodeString * HelpKeyword) const
 {
-  int Result = -1;
+  int32_t Result = -1;
   for (int32_t Index = 0; Index < Count; ++Index)
   {
     const char * Original = Translation[Index].Original;
