@@ -80,6 +80,7 @@ const UnicodeString UrlRawSettingsParamNamePrefix("x-");
 const UnicodeString PassphraseOption("passphrase");
 const UnicodeString RawSettingsOption("rawsettings");
 const UnicodeString S3HostName(S3LibDefaultHostName());
+const UnicodeString S3GoogleCloudHostName(L"storage.googleapis.com");
 const UnicodeString OpensshHostDirective(L"Host");
 const uint32_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
 const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
@@ -313,6 +314,7 @@ void TSessionData::DefaultSettings()
   FS3UrlStyle = s3usVirtualHost;
   FS3MaxKeys = asAuto;
   FS3CredentialsEnv = false;
+  FS3RequesterPays = false;
 
   // SFTP
   SetSftpServer("");
@@ -505,6 +507,7 @@ void TSessionData::NonPersistent()
   PROPERTY2(S3UrlStyle); \
   PROPERTY2(S3MaxKeys); \
   PROPERTY2(S3CredentialsEnv); \
+  PROPERTY2(S3RequesterPays); \
   \
   PROPERTY(ProxyMethod); \
   PROPERTY(ProxyHost); \
@@ -912,6 +915,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FS3UrlStyle = (TS3UrlStyle)Storage->ReadInteger(L"S3UrlStyle", FS3UrlStyle);
   FS3MaxKeys = Storage->ReadEnum(L"S3MaxKeys", FS3MaxKeys, AutoSwitchMapping);
   FS3CredentialsEnv = Storage->ReadBool(L"S3CredentialsEnv", FS3CredentialsEnv);
+  FS3RequesterPays = Storage->ReadBool(L"S3RequesterPays", FS3RequesterPays);
 
   // PuTTY defaults to TcpNoDelay, but the psftp/pscp ignores this preference, and always set this to off (what is our default too)
   if (!PuttyImport)
@@ -1271,6 +1275,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA3(Integer, S3UrlStyle);
     WRITE_DATA3(Integer, S3MaxKeys);
     WRITE_DATA3(Bool, S3CredentialsEnv);
+    WRITE_DATA3(Bool, S3RequesterPays);
     WRITE_DATA(Integer, SendBuf);
     WRITE_DATA4(String, SourceAddress);
     WRITE_DATA4(String, ProtocolFeatures);
@@ -1450,7 +1455,7 @@ UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString &
   return Result;
 }
 
-int32_t TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int Default)
+int32_t TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int32_t Default)
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
   int32_t Result;
@@ -1501,10 +1506,10 @@ UnicodeString TSessionData::ReadSettingsNode(_di_IXMLNode Node, const UnicodeStr
   return Result;
 }
 
-int TSessionData::ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, int Default)
+int32_t TSessionData::ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, int32_t Default)
 {
   _di_IXMLNode TheNode = FindSettingsNode(Node, Name);
-  int Result;
+  int32_t Result;
   if (TheNode != nullptr)
   {
     Result = StrToIntDef(TheNode->Text.Trim(), Default);
@@ -1596,7 +1601,7 @@ void TSessionData::ImportFromFilezilla(
   }
   else if (SettingsNode != nullptr)
   {
-    int PasvMode = ReadSettingsNode(SettingsNode, L"Use Pasv mode", 1);
+    int32_t PasvMode = ReadSettingsNode(SettingsNode, L"Use Pasv mode", 1);
     FtpPasvMode = (PasvMode != 0);
   }
 
@@ -2280,16 +2285,10 @@ void TSessionData::MaskPasswords()
   {
     EncryptKey = PasswordMask;
   }
+  if (!Passphrase().IsEmpty())
   {
     SetPassphrase(PasswordMask);
   }
-}
-
-static bool IsDomainOrSubdomain(const UnicodeString & FullDomain, const UnicodeString & Domain)
-{
-  return
-    SameText(FullDomain, Domain) ||
-    EndsText(L"." + Domain, FullDomain);
 }
 
 bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
@@ -2514,7 +2513,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       // expanded from ?: operator, as it caused strange "access violation" errors
       if (!HostInfo.IsEmpty())
       {
-        int APortNumber = ::StrToIntDef(DecodeUrlChars(HostInfo), -1);
+        int32_t APortNumber = ::StrToIntDef(DecodeUrlChars(HostInfo), -1);
         if ((APortNumber > 0) && (APortNumber <= 65535))
         {
           PortNumber = APortNumber;
@@ -2526,7 +2525,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         if ((AFSProtocol == fsWebDAV) &&
             (IsDomainOrSubdomain(HostName, S3LibDefaultHostName()) ||
              IsDomainOrSubdomain(HostName, L"digitaloceanspaces.com") ||
-             IsDomainOrSubdomain(HostName, L"storage.googleapis.com") ||
+             IsDomainOrSubdomain(HostName, S3GoogleCloudHostName) ||
              IsDomainOrSubdomain(HostName, L"r2.cloudflarestorage.com")))
         {
           AFSProtocol = fsS3;
@@ -4028,7 +4027,7 @@ void TSessionData::AddAssemblyProperty(
 
 void TSessionData::AddAssemblyProperty(
   UnicodeString & Result, TAssemblyLanguage Language,
-  const UnicodeString & Name, int Value)
+  const UnicodeString & Name, int32_t Value)
 {
   Result += AssemblyProperty(Language, SessionOptionsClassName, Name, Value, false);
 }
@@ -4041,7 +4040,7 @@ void TSessionData::AddAssemblyProperty(
 }
 
 void TSessionData::GenerateAssemblyCode(
-  TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent)
+  TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int32_t & Indent)
 {
   std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
   std::unique_ptr<TSessionData> SessionData(Clone());
@@ -4112,7 +4111,7 @@ void TSessionData::GenerateAssemblyCode(
     AddAssemblyProperty(Head, Language, L"HostName", HostName);
     SessionData->HostName = FactoryDefaults->HostName;
   }
-  int ADefaultPort = DefaultPort(FSProtocol, Ftps);
+  int32_t ADefaultPort = DefaultPort(FSProtocol, Ftps);
   if (SessionData->PortNumber != ADefaultPort)
   {
     AddAssemblyProperty(Head, Language, L"PortNumber", PortNumber);
@@ -4389,7 +4388,7 @@ void TSessionData::SetTcpNoDelay(bool value)
   SET_SESSION_PROPERTY(TcpNoDelay);
 }
 
-void TSessionData::SetSendBuf(int value)
+void TSessionData::SetSendBuf(int32_t value)
 {
   SET_SESSION_PROPERTY(SendBuf);
 }
@@ -4977,6 +4976,11 @@ void TSessionData::SetS3CredentialsEnv(bool value)
   SET_SESSION_PROPERTY(S3CredentialsEnv);
 }
 
+void TSessionData::SetS3RequesterPays(bool value)
+{
+  SET_SESSION_PROPERTY(S3RequesterPays);
+}
+
 void TSessionData::SetIsWorkspace(bool value)
 {
   SET_SESSION_PROPERTY(IsWorkspace);
@@ -5515,7 +5519,7 @@ void TStoredSessionList::Saved()
 void TStoredSessionList::ImportLevelFromFilezilla(
   _di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode)
 {
-  for (int Index = 0; Index < Node->ChildNodes->Count; Index++)
+  for (int32_t Index = 0; Index < Node->ChildNodes->Count; Index++)
   {
     _di_IXMLNode ChildNode = Node->ChildNodes->Get(Index);
     if (ChildNode->NodeName == L"Server")
@@ -5529,7 +5533,7 @@ void TStoredSessionList::ImportLevelFromFilezilla(
     {
       UnicodeString Name;
 
-      for (int Index = 0; Index < ChildNode->ChildNodes->Count; Index++)
+      for (int32_t Index = 0; Index < ChildNode->ChildNodes->Count; Index++)
       {
         _di_IXMLNode PossibleTextMode = ChildNode->ChildNodes->Get(Index);
         if (PossibleTextMode->NodeType == ntText)
@@ -5581,7 +5585,7 @@ void TStoredSessionList::ImportFromFilezilla(
 #endif // #if 0
 }
 
-UnicodeString FormatKnownHostName(const UnicodeString & HostName, int PortNumber)
+UnicodeString FormatKnownHostName(const UnicodeString & HostName, int32_t PortNumber)
 {
   return FORMAT(L"%s:%d", HostName, PortNumber);
 }
@@ -5618,7 +5622,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
             HostNameStr.SetLength(P - 1);
           }
           P = Pos(L':', HostNameStr);
-          int PortNumber = -1;
+          int32_t PortNumber = -1;
           if (P > 0)
           {
             UnicodeString PortNumberStr = HostNameStr.SubString(P + 1, HostNameStr.Length() - P);
@@ -5821,7 +5825,7 @@ void TStoredSessionList::UpdateStaticUsage()
   int32_t FTP = 0;
   int32_t FTPS = 0;
   int32_t WebDAV = 0;
-  int S3 = 0;
+  int32_t S3 = 0;
   int32_t Password = 0;
   int32_t Advanced = 0;
   int32_t Color = 0;
@@ -6327,7 +6331,7 @@ TSessionData * TStoredSessionList::ResolveWorkspaceData(TSessionData * Data)
   return Data;
 }
 
-TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int Index)
+TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int32_t Index)
 {
   std::unique_ptr<TSessionData> Result(std::make_unique<TSessionData>(""));
 

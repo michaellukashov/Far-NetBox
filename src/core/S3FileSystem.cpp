@@ -454,6 +454,8 @@ void TS3FileSystem::Open()
     FTerminal->LogEvent(L"Google Cloud detected.");
   }
 
+  S3_set_request_context_requester_pays(FRequestContext, FTerminal->SessionData->FS3RequesterPays);
+
   FActive = false;
   try
   {
@@ -514,7 +516,7 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
   FileSystem->FNeonSession = Session;
 }
 
-void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /*Session*/)
+void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session * Session */)
 {
   SetupSsl(Ssl, FTerminal->GetSessionData()->GetMinTlsVersion(), FTerminal->GetSessionData()->GetMaxTlsVersion());
 }
@@ -878,7 +880,14 @@ bool TS3FileSystem::GetActive() const
 
 void TS3FileSystem::CollectUsage()
 {
-  // noop
+  if (IsDomainOrSubdomain(FTerminal->SessionData->HostNameExpanded, S3HostName))
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsS3Amazon");
+  }
+  else
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsS3Other");
+  }
 }
 
 const TSessionInfo & TS3FileSystem::GetSessionInfo() const
@@ -1200,7 +1209,7 @@ void TS3FileSystem::HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retr
 
 bool TS3FileSystem::IsGoogleCloud() const
 {
-  return SameText(L"storage.googleapis.com", FTerminal->SessionData->HostNameExpanded);
+  return SameText(S3GoogleCloudHostName, FTerminal->SessionData->HostNameExpanded);
 }
 
 void TS3FileSystem::ReadDirectoryInternal(

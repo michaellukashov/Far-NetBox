@@ -3636,6 +3636,12 @@ UnicodeString ExtractFileNameFromUrl(const UnicodeString & Url)
   return Result;
 }
 
+bool IsDomainOrSubdomain(const UnicodeString & FullDomain, const UnicodeString & Domain)
+{
+  return
+    SameText(FullDomain, Domain) ||
+    EndsText(L"." + Domain, FullDomain);
+}
 UnicodeString EscapeHotkey(const UnicodeString & Caption)
 {
   return ReplaceStr(Caption, L"&", L"&&");
