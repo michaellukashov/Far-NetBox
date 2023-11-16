@@ -85,12 +85,13 @@ typedef rde::map<UnicodeString, UnicodeString> TS3Credentials;
 TS3Credentials S3Credentials;
 
 #if 0
+
 static void NeedS3Config()
 {
   TGuard Guard(*LibS3Section.get());
   if (S3Profile.IsEmpty())
   {
-      S3Profile = base::GetEnvVariable(AWS_PROFILE);
+    S3Profile = base::GetEnvVariable(AWS_PROFILE);
     if (S3Profile.IsEmpty())
     {
       S3Profile = AWS_PROFILE_DEFAULT;
@@ -309,6 +310,7 @@ UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * S
 {
   return GetS3ConfigValue(Profile, AWS_SESSION_TOKEN, L"Token", Source);
 }
+
 #endif //if 0
 
 constexpr const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
@@ -1167,7 +1169,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
     {
       std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
       File->SetTerminal(Data.FileSystem->FTerminal);
-      File->SetFileName(base::UnixExtractFileName(base::UnixExcludeTrailingBackslash(StrFromS3(CommonPrefixes[Index]))));
+      File->SetFileName(FileName);
       File->SetType(FILETYPE_DIRECTORY);
       File->SetModificationFmt(mfNone);
       if (Terminal->IsValidFile(File.get()))
@@ -1997,7 +1999,7 @@ struct TLibS3MultipartInitialCallbackData : TLibS3CallbackData
 
 S3Status TS3FileSystem::LibS3MultipartInitialCallback(const char * UploadId, void * CallbackData)
 {
-  TLibS3MultipartInitialCallbackData &Data = *static_cast<TLibS3MultipartInitialCallbackData *>(CallbackData);
+  TLibS3MultipartInitialCallbackData & Data = *static_cast<TLibS3MultipartInitialCallbackData *>(CallbackData);
 
   Data.UploadId = UploadId;
 
@@ -2116,7 +2118,7 @@ void TS3FileSystem::Source(
   {
     FTerminal->LogEvent(FORMAT("Initiating multipart upload (%d parts - chunk size %s)", Parts, IntToStr(ChunkSize)));
 
-    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
+    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
     {
       TLibS3MultipartInitialCallbackData Data;
       RequestInit(Data);
@@ -2146,7 +2148,7 @@ void TS3FileSystem::Source(
 
     for (int32_t Part = 1; Part <= Parts; Part++)
     {
-      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
       {
         DebugAssert(Stream->Position() == OperationProgress->TransferredSize);
 

@@ -29,7 +29,12 @@ TQueryButtonAlias::TQueryButtonAlias() noexcept :
   GrouppedShiftState(ssShift),
   ElevationRequired(false)
 {
+#if defined(__BORLANDC__)
+  OnSubmit = nullptr;
+  GroupWith = -1;
+  ElevationRequired = false;
   MenuButton = false;
+#endif
 }
 
 TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGrouppedWithYes()
@@ -84,7 +89,21 @@ TQueryParams::TQueryParams(uint32_t AParams, const UnicodeString & AHelpKeyword)
   NoBatchAnswers(0),
   HelpKeyword(AHelpKeyword)
 {
+#if defined(__BORLANDC__)
+  Params = AParams;
+  Aliases = nullptr;
+  AliasesCount = 0;
+  Timer = 0;
+  TimerEvent = nullptr;
+  TimerMessage = L"";
+  TimerAnswers = 0;
+  TimerQueryType = static_cast<TQueryType>(-1);
+  Timeout = 0;
+  TimeoutAnswer = 0;
   TimeoutResponse = 0;
+  NoBatchAnswers = 0;
+  HelpKeyword = AHelpKeyword;
+#endif
 }
 
 TQueryParams::TQueryParams(const TQueryParams & ASource) noexcept
@@ -181,7 +200,7 @@ void CoreLoad()
   {
     GetConfiguration()->Load(ConfigStorage);
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     ShowExtendedException(&E);
   }
@@ -198,7 +217,7 @@ void CoreLoad()
       StoredSessions->Load(SessionsStorage.get());
     }
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     ShowExtendedException(&E);
   }
@@ -239,7 +258,10 @@ void CoreFinalize()
   PuttyFinalize();
 
   SAFE_DESTROY(StoredSessions);
+  StoredSessions = nullptr;
   DeleteConfiguration();
+  // delete Configuration;
+  // Configuration = nullptr;
 
   CryptographyFinalize();
   WinFinalize();
@@ -265,8 +287,7 @@ void CoreUpdateFinalStaticUsage()
 
 
 TOperationVisualizer::TOperationVisualizer(bool UseBusyCursor) noexcept :
-  FUseBusyCursor(UseBusyCursor),
-  FToken(nullptr)
+  FUseBusyCursor(UseBusyCursor)
 {
   if (FUseBusyCursor)
   {
@@ -283,8 +304,7 @@ TOperationVisualizer::~TOperationVisualizer() noexcept
 }
 
 
-TInstantOperationVisualizer::TInstantOperationVisualizer() noexcept :
-  TOperationVisualizer(true),
+TInstantOperationVisualizer::TInstantOperationVisualizer() noexcept : TOperationVisualizer(true),
   FStart(Now())
 {
 }

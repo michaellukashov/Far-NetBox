@@ -362,13 +362,6 @@ void TSessionData::DefaultSettings()
   SetSslSessionReuse(true);
   SetTlsCertificateFile("");
 
-  SetFtpProxyLogonType(0); // none
-
-  FPuttySettings = UnicodeString();
-
-  SetCustomParam1("");
-  SetCustomParam2("");
-
 #if 0
   IsWorkspace = false;
   Link = L"";
@@ -387,6 +380,13 @@ void TSessionData::DefaultSettings()
   FNumberOfRetries = 0;
   FSessionVersion = ::StrToVersionNumber(GetGlobals()->GetStrVersionNumber());
   // add also to TSessionLog::AddStartupInfo()
+
+  SetFtpProxyLogonType(0); // none
+
+  FPuttySettings = UnicodeString();
+
+  SetCustomParam1("");
+  SetCustomParam2("");
 }
 
 void TSessionData::Default()
@@ -427,6 +427,7 @@ void TSessionData::NonPersistent()
   PROPERTY2(OtherLocalDirectory); \
   PROPERTY(RemoteDirectory); \
   PROPERTY2(RequireDirectories);
+
 #if 0
  PROPERTY(UserName); \
   PROPERTY(Color); \
@@ -1438,6 +1439,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
 }
 
 #if 0
+
 UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default)
 {
   _di_IXMLNode TheNode = Node->ChildNodes->FindNode(Name);
@@ -1489,7 +1491,7 @@ _di_IXMLNode TSessionData::FindSettingsNode(_di_IXMLNode Node, const UnicodeStri
   return nullptr;
 }
 
-UnicodeString TSessionData::ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, UnicodeString & Default)
+UnicodeString TSessionData::ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default)
 {
   _di_IXMLNode TheNode = FindSettingsNode(Node, Name);
   UnicodeString Result;
@@ -1523,7 +1525,7 @@ int32_t TSessionData::ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & 
 }
 
 void TSessionData::ImportFromFilezilla(
-  _di_IXMLNode Node, const UnicodeString Path, _di_IXMLNode SettingsNode)
+  _di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode)
 {
   Name = UnixIncludeTrailingBackslash(Path) + MakeValidName(ReadXmlNode(Node, L"Name", Name));
   HostName = ReadXmlNode(Node, L"Host", HostName);
@@ -1533,24 +1535,24 @@ void TSessionData::ImportFromFilezilla(
   // ServerProtocol enum
   switch (AProtocol)
   {
-  case 0: // FTP
-  default: // UNKNOWN, HTTP, HTTPS, INSECURE_FTP
-    FSProtocol = fsFTP;
-    break;
+    case 0: // FTP
+    default: // UNKNOWN, HTTP, HTTPS, INSECURE_FTP
+      FSProtocol = fsFTP;
+      break;
 
-  case 1: // SFTP
-    FSProtocol = fsSFTP;
-    break;
+    case 1: // SFTP
+      FSProtocol = fsSFTP;
+      break;
 
-  case 3: // FTPS
-    FSProtocol = fsFTP;
-    Ftps = ftpsImplicit;
-    break;
+    case 3: // FTPS
+      FSProtocol = fsFTP;
+      Ftps = ftpsImplicit;
+      break;
 
-  case 4: // FTPES
-    FSProtocol = fsFTP;
-    Ftps = ftpsExplicitTls;
-    break;
+    case 4: // FTPES
+      FSProtocol = fsFTP;
+      Ftps = ftpsExplicitTls;
+      break;
   }
 
   // LogonType enum
@@ -1664,24 +1666,24 @@ void TSessionData::ImportFromFilezilla(
       {
         switch (FtpProxyType)
         {
-        case 1:
-          FtpProxyLogonType = 2;
-          break;
-        case 2:
-          FtpProxyLogonType = 1;
-          break;
-        case 3:
-          FtpProxyLogonType = 3;
-          break;
-        case 4:
-          // custom
-          // TODO: map known sequences to our enumeration
-          FtpProxyLogonType = 0;
-          break;
-        default:
-          DebugFail();
-          FtpProxyLogonType = 0;
-          break;
+          case 1:
+            FtpProxyLogonType = 2;
+            break;
+          case 2:
+            FtpProxyLogonType = 1;
+            break;
+          case 3:
+            FtpProxyLogonType = 3;
+            break;
+          case 4:
+            // custom
+            // TODO: map known sequences to our enumeration
+            FtpProxyLogonType = 0;
+            break;
+          default:
+            DebugFail();
+            FtpProxyLogonType = 0;
+            break;
         }
 
         ProxyHost = ReadSettingsNode(SettingsNode, L"FTP Proxy host", ProxyHost);
@@ -1696,26 +1698,26 @@ void TSessionData::ImportFromFilezilla(
         {
           switch (ProxyType)
           {
-          case 0:
-            ProxyMethod = ::pmNone;
-            break;
+            case 0:
+              ProxyMethod = ::pmNone;
+              break;
 
-          case 1:
-            ProxyMethod = pmHTTP;
-            break;
+            case 1:
+              ProxyMethod = pmHTTP;
+              break;
 
-          case 2:
-            ProxyMethod = pmSocks5;
-            break;
+            case 2:
+              ProxyMethod = pmSocks5;
+              break;
 
-          case 3:
-            ProxyMethod = pmSocks4;
-            break;
+            case 3:
+              ProxyMethod = pmSocks4;
+              break;
 
-          default:
-            DebugFail();
-            ProxyMethod = ::pmNone;
-            break;
+            default:
+              DebugFail();
+              ProxyMethod = ::pmNone;
+              break;
           }
 
           ProxyHost = ReadSettingsNode(SettingsNode, L"Proxy host", ProxyHost);
@@ -1728,6 +1730,7 @@ void TSessionData::ImportFromFilezilla(
   }
 
 }
+
 #endif // #if 0
 
 bool OpensshBoolValue(const UnicodeString & Value)
@@ -2018,7 +2021,7 @@ static UnicodeString ReadPasswordFromFile(const UnicodeString & FileName)
   if (!FileName.IsEmpty())
   {
     TGuard Guard(*PasswordFilesCacheSection.get());
-    TPasswordFilesCache::iterator I = PasswordFilesCache.find(FileName);
+    TPasswordFilesCache::const_iterator I = PasswordFilesCache.find(FileName);
     if (I != PasswordFilesCache.end())
     {
       Result = I->second;
@@ -2097,18 +2100,18 @@ UnicodeString TSessionData::GetSource() const
 {
   switch (FSource)
   {
-  case ::ssNone:
-    return L"Ad-Hoc site";
+    case ::ssNone:
+      return L"Ad-Hoc site";
 
-  case ssStored:
-    return L"Site";
+    case ssStored:
+      return L"Site";
 
-  case ssStoredModified:
-    return L"Modified site";
+    case ssStoredModified:
+      return L"Modified site";
 
-  default:
-    DebugFail();
-    return L"";
+    default:
+      DebugFail();
+      return L"";
   }
 }
 
@@ -2523,7 +2526,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       else if (ProtocolDefined)
       {
         if ((AFSProtocol == fsWebDAV) &&
-            (IsDomainOrSubdomain(HostName, S3LibDefaultHostName()) ||
+            (IsDomainOrSubdomain(HostName, S3HostName) ||
              IsDomainOrSubdomain(HostName, L"digitaloceanspaces.com") ||
              IsDomainOrSubdomain(HostName, S3GoogleCloudHostName) ||
              IsDomainOrSubdomain(HostName, L"r2.cloudflarestorage.com")))
@@ -3184,7 +3187,7 @@ TCipher TSessionData::GetCipher(int32_t Index) const
   return FCiphers[Index];
 }
 
-template <class AlgoT>
+template<class AlgoT>
 void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
   int32_t Count, AlgoT WarnAlgo, const UnicodeString & AValue)
 {
@@ -3537,7 +3540,7 @@ void TSessionData::SetPingIntervalDT(TDateTime Value)
   uint16_t hour, min, sec, msec;
 
   Value.DecodeTime(hour, min, sec, msec);
-  SetPingInterval(hour * SecsPerHour + min * SecsPerMin + sec);
+  SetPingInterval(nb::ToInt32(hour) * SecsPerHour + nb::ToInt32(min) * SecsPerMin + sec);
 }
 
 TDateTime TSessionData::GetPingIntervalDT() const
@@ -3676,7 +3679,7 @@ UnicodeString TSessionData::GetProtocolUrl(bool HttpForWebDAV) const
       }
       else
       {
-      Url = FtpProtocol;
+        Url = FtpProtocol;
       }
       break;
 
@@ -5057,9 +5060,9 @@ UnicodeString TSessionData::GetInfoTip() const
   if (GetUsesSsh())
   {
     return FMTLOAD(SESSION_INFO_TIP2,
-       GetHostName(), SessionGetUserName(),
-       (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
-       GetFSProtocolStr());
+      GetHostName(), SessionGetUserName(),
+      (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
+      GetFSProtocolStr());
   }
   else
   {
@@ -5283,6 +5286,11 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(int32_t FtpEncryption) const
 TStoredSessionList::TStoredSessionList() noexcept :
   TNamedObjectList(OBJECT_CLASS_TStoredSessionList), FReadOnly(false)
 {
+#if defined(__BORLANDC__)
+  DebugAssert(Configuration);
+  FDefaultSettings = new TSessionData(DefaultName);
+  FPendingRemovals.reset(new TStringList());
+#endif
 }
 
 TStoredSessionList::TStoredSessionList(bool AReadOnly) noexcept :
@@ -5357,7 +5365,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 
         if ((SessionData != FDefaultSettings.get()) || !UseDefaults)
         {
-          if (!SessionData)
+          if (SessionData == nullptr)
           {
             SessionData = new TSessionData(L"");
             if (UseDefaults)
@@ -5448,11 +5456,11 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
       {
         DoSave(Storage, SessionData, All, RecryptPasswordOnly, FactoryDefaults.get());
       }
-      catch (Exception &E)
+      catch(Exception & E)
       {
         UnicodeString Message;
         if (RecryptPasswordOnly && DebugAlwaysTrue(RecryptPasswordErrors != nullptr) &&
-          ExceptionMessage(&E, Message))
+            ExceptionMessage(&E, Message))
         {
           RecryptPasswordErrors->Add(FORMAT("%s: %s", SessionData->GetSessionName(), Message));
         }
@@ -5516,6 +5524,7 @@ void TStoredSessionList::Saved()
 }
 
 #if 0
+
 void TStoredSessionList::ImportLevelFromFilezilla(
   _di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode)
 {
@@ -5549,6 +5558,7 @@ void TStoredSessionList::ImportLevelFromFilezilla(
     }
   }
 }
+
 #endif // #if 0
 
 void TStoredSessionList::ImportFromFilezilla(
@@ -5825,6 +5835,7 @@ void TStoredSessionList::UpdateStaticUsage()
   int32_t FTP = 0;
   int32_t FTPS = 0;
   int32_t WebDAV = 0;
+  int32_t WebDAVS = 0;
   int32_t S3 = 0;
   int32_t Password = 0;
   int32_t Advanced = 0;
@@ -5837,7 +5848,7 @@ void TStoredSessionList::UpdateStaticUsage()
   std::unique_ptr<TStringList> DifferentAdvancedProperties(CreateSortedStringList());
   for (int32_t Index = 0; Index < Count; Index++)
   {
-    TSessionData *Data = Sessions[Index];
+    TSessionData * Data = Sessions[Index];
     if (Data->IsWorkspace)
     {
       Workspaces = true;

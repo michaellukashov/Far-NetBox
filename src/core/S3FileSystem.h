@@ -156,7 +156,7 @@ protected:
   TRemoteToken MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName);
   TLibS3BucketContext GetBucketContext(const UnicodeString & ABucketName, const UnicodeString & Prefix);
   void DoListBucket(
-    const UnicodeString & APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext &BucketContext,
+    const UnicodeString & APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext & BucketContext,
     TLibS3ListBucketCallbackData & Data);
   UnicodeString GetFolderKey(const UnicodeString & AKey);
   void HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry);

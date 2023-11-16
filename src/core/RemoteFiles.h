@@ -7,14 +7,13 @@
 #include <Sysutils.hpp>
 #include <Common.h>
 
-// moved to Common.h
-// enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
+// enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull }; // moved to Common.h
 
-#define SYMLINKSTR L" -> "
-#define ROOTDIRECTORY L"/"
-#define FILETYPE_DEFAULT L'-'
-#define FILETYPE_SYMLINK L'L'
-#define FILETYPE_DIRECTORY L'D'
+constexpr const wchar_t * SYMLINKSTR = L" -> ";
+//constexpr const wchar_t * ROOTDIRECTORY = L"/"; // defined in sysutils.hpp
+constexpr const wchar_t FILETYPE_DEFAULT = L'-';
+constexpr const wchar_t FILETYPE_SYMLINK = L'L';
+constexpr const wchar_t FILETYPE_DIRECTORY = L'D';
 extern const UnicodeString PartialExt;
 
 class TTerminal;
@@ -172,7 +171,7 @@ public:
   const TRemoteFile * Resolve() const;
 
   static bool GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt);
-  static void ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt ModificationFmt, int64_t Seconds);
+  static void ShiftTimeInSeconds(TDateTime & DateTime, TModificationFmt ModificationFmt, int64_t Seconds);
 
   __property int32_t Attr = { read = GetAttr };
   __property bool BrokenLink = { read = GetBrokenLink };
@@ -225,9 +224,9 @@ public:
   ROProperty<bool> IsParentDirectory{nb::bind(&TRemoteFile::GetIsParentDirectory, this)};
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
   ROProperty<bool> IsThisDirectory{nb::bind(&TRemoteFile::GetIsThisDirectory, this)};
-  __property bool IsInaccesibleDirectory  = { read = GetIsInaccesibleDirectory };
+  __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
   ROProperty<bool> IsInaccesibleDirectory{nb::bind(&TRemoteFile::GetIsInaccesibleDirectory, this)};
-  __property UnicodeString Extension  = { read = GetExtension };
+  __property UnicodeString Extension  = { read=GetExtension };
   ROProperty<UnicodeString> Extension{nb::bind(&TRemoteFile::GetExtension, this)};
   __property bool IsEncrypted  = { read = FIsEncrypted };
   ROProperty<bool> IsEncrypted{nb::bind(&TRemoteFile::GetIsEncrypted, this)};
@@ -235,11 +234,11 @@ public:
   TRemoteFileList * GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
   void SetSize(int64_t Value) { FSize = Value; }
-  const TRemoteToken &GetFileOwner() const { return FOwner; }
-  TRemoteToken &GetFileOwner() { return FOwner; }
+  const TRemoteToken & GetFileOwner() const { return FOwner; }
+  TRemoteToken & GetFileOwner() { return FOwner; }
   void SetFileOwner(const TRemoteToken & Value) { FOwner = Value; }
-  const TRemoteToken &GetFileGroup() const { return FGroup; }
-  TRemoteToken &GetFileGroup() { return FGroup; }
+  const TRemoteToken & GetFileGroup() const { return FGroup; }
+  TRemoteToken & GetFileGroup() { return FGroup; }
   void SetFileGroup(const TRemoteToken & Value) { FGroup = Value; }
   UnicodeString GetFileName() const { return FFileName; }
   void SetFileName(const UnicodeString & Value) { FFileName = Value; }
@@ -327,7 +326,7 @@ public:
 
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
-//  __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
+  __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
   ROIndexedProperty<TRemoteFile *> Files{nb::bind(&TRemoteFileList::GetFile, this)};
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
   ROProperty<UnicodeString> FullDirectory{nb::bind(&TRemoteFileList::GetFullDirectory, this)};
@@ -546,7 +545,7 @@ public:
   ROProperty2<uint16_t> NumberSet{&FSet};
   __property uint16_t NumberUnset = { read = FUnset };
   ROProperty2<uint16_t> NumberUnset{&FUnset};
-  __property unsigned long NumberDecadic = { read = GetNumberDecadic };
+  __property uint32_t NumberDecadic = { read = GetNumberDecadic };
   __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
   __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
   __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
@@ -675,8 +674,8 @@ class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
   friend class TTerminal;
 
 public:
-  __removed enum TAction { renamed to TChecklistAction
-  __removed saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+  /*enum TAction { // renamed to TChecklistAction
+    saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };*/
   static const int32_t ActionCount = saDeleteLocal;
 
 #if 0
@@ -734,9 +733,9 @@ public:
 
   __property int32_t Count = { read = GetCount };
   ROProperty<int32_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
-  __property int CheckedCount = { read = GetCheckedCount };
+  __property int32_t CheckedCount = { read = GetCheckedCount };
   ROProperty<int32_t> CheckedCount{nb::bind(&TSynchronizeChecklist::GetCheckedCount, this)};
-  __property const TItem * Item[int Index] = { read = GetItem };
+  __property const TItem * Item[int32_t Index] = { read = GetItem };
 
 protected:
   __removed TSynchronizeChecklist() noexcept;
@@ -801,7 +800,7 @@ bool IsUnixHiddenFile(const UnicodeString & Path);
 UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Path);
 UnicodeString FromUnixPath(const UnicodeString & Path);
 UnicodeString ToUnixPath(const UnicodeString & Path);
-UnicodeString MinimizeName(const UnicodeString & FileName, int MaxLen, bool Unix);
+UnicodeString MinimizeName(const UnicodeString & FileName, int32_t MaxLen, bool Unix);
 UnicodeString MakeFileList(TStrings * FileList);
 TDateTime ReduceDateTimePrecision(TDateTime DateTime,
   TModificationFmt Precision);
@@ -811,8 +810,8 @@ UnicodeString UserModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
 UnicodeString ModificationStr(TDateTime DateTime,
   TModificationFmt Precision);
-int GetPartialFileExtLen(const UnicodeString & FileName);
-int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs = 0,
+int32_t GetPartialFileExtLen(const UnicodeString & FileName);
+int32_t FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs = 0,
   UnicodeString * TypeName = nullptr);
 bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
 UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bool Unix);

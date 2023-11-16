@@ -15,8 +15,9 @@
 #include "TextsCore.h"
 #include "HelpCore.h"
 #include "Cryptography.h"
-// moved to Common.cpp
+
 #if 0
+// moved to Common.cpp
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
 
 const UnicodeString PartialExt(L".filepart");
@@ -87,7 +88,7 @@ bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild
 
 UnicodeString UnixExtractFileDir(const UnicodeString & Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  int32_t Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -102,7 +103,7 @@ UnicodeString UnixExtractFileDir(const UnicodeString & Path)
 // must return trailing backslash
 UnicodeString UnixExtractFilePath(const UnicodeString & Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  int32_t Pos = Path.LastDelimiter(L'/');
   // it used to return Path when no slash was found
   if (Pos > 0)
   {
@@ -116,7 +117,7 @@ UnicodeString UnixExtractFilePath(const UnicodeString & Path)
 
 UnicodeString UnixExtractFileName(const UnicodeString & Path)
 {
-  int Pos = Path.LastDelimiter(L'/');
+  int32_t Pos = Path.LastDelimiter(L'/');
   UnicodeString Result;
   if (Pos > 0)
   {
@@ -132,7 +133,7 @@ UnicodeString UnixExtractFileName(const UnicodeString & Path)
 UnicodeString UnixExtractFileExt(const UnicodeString & Path)
 {
   UnicodeString FileName = UnixExtractFileName(Path);
-  int Pos = FileName.LastDelimiter(L".");
+  int32_t Pos = FileName.LastDelimiter(L".");
   return (Pos > 0) ? Path.SubString(Pos, Path.Length() - Pos + 1) : UnicodeString();
 }
 
@@ -166,12 +167,12 @@ bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
   bool Result = !Path.IsEmpty();
   if (Result)
   {
-    for (int Index = 1; Index < Files->Count; Index++)
+    for (int32_t Index = 1; Index < Files->Count; Index++)
     {
       while (!Path.IsEmpty() &&
         (Files->Strings[Index].SubString(1, Path.Length()) != Path))
       {
-        int PrevLen = Path.Length();
+        int32_t PrevLen = Path.Length();
         Path = ExtractFilePath(ExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
@@ -185,7 +186,7 @@ bool ExtractCommonPath(TStrings * Files, UnicodeString & Path)
   return Result;
 }
 
-static UnicodeString GetFileListItemPath(TStrings * Files, int Index)
+static UnicodeString GetFileListItemPath(TStrings * Files, int32_t Index)
 {
   UnicodeString Result;
   if (Files->Objects[Index] != nullptr)
@@ -207,12 +208,12 @@ bool UnixExtractCommonPath(TStrings * Files, UnicodeString & Path)
   bool Result = !Path.IsEmpty();
   if (Result)
   {
-    for (int Index = 1; Index < Files->Count; Index++)
+    for (int32_t Index = 1; Index < Files->Count; Index++)
     {
       while (!Path.IsEmpty() &&
         (GetFileListItemPath(Files, Index).SubString(1, Path.Length()) != Path))
       {
-        int PrevLen = Path.Length();
+        int32_t PrevLen = Path.Length();
         Path = UnixExtractFilePath(UnixExcludeTrailingBackslash(Path));
         if (Path.Length() == PrevLen)
         {
@@ -252,7 +253,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
   {
     Result = UnixIncludeTrailingBackslash(
       UnixIncludeTrailingBackslash(Base) + Path);
-    int P;
+    int32_t P;
     while ((P = Result.Pos(L"/../")) > 0)
     {
       // special case, "/../" => "/"
@@ -262,7 +263,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
       }
       else
       {
-        int P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
+        int32_t P2 = Result.SubString(1, P-1).LastDelimiter(L"/");
         DebugAssert(P2 > 0);
         Result.Delete(P2, P - P2 + 3);
       }
@@ -289,7 +290,7 @@ UnicodeString ToUnixPath(const UnicodeString & Path)
 static void CutFirstDirectory(UnicodeString & S, bool Unix)
 {
   bool Root;
-  int P;
+  int32_t P;
   UnicodeString Sep = Unix ? L"/" : L"\\";
   if (S == Sep)
   {
@@ -327,7 +328,7 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
   }
 }
 
-UnicodeString MinimizeName(const UnicodeString & FileName, int MaxLen, bool Unix)
+UnicodeString MinimizeName(const UnicodeString & FileName, int32_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name, Result;
   UnicodeString Sep = Unix ? L"/" : L"\\";
@@ -335,7 +336,7 @@ UnicodeString MinimizeName(const UnicodeString & FileName, int MaxLen, bool Unix
   Result = FileName;
   if (Unix)
   {
-    int P = Result.LastDelimiter(L"/");
+    int32_t P = Result.LastDelimiter(L"/");
     if (P)
     {
       Dir = Result.SubString(1, P);
@@ -386,7 +387,7 @@ UnicodeString MinimizeName(const UnicodeString & FileName, int MaxLen, bool Unix
 UnicodeString MakeFileList(TStrings * FileList)
 {
   UnicodeString Result;
-  for (int Index = 0; Index < FileList->Count; Index++)
+  for (int32_t Index = 0; Index < FileList->Count; Index++)
   {
     UnicodeString FileName = FileList->Strings[Index];
     // currently this is used for local file only, so no delimiting is done
@@ -490,16 +491,16 @@ UnicodeString ModificationStr(TDateTime DateTime,
   }
 }
 
-int GetPartialFileExtLen(const UnicodeString & FileName)
+int32_t GetPartialFileExtLen(const UnicodeString & FileName)
 {
-  int Result = 0;
+  int32_t Result = 0;
   if (EndsText(PartialExt, FileName))
   {
     Result = PartialExt.Length();
   }
   else
   {
-    int P = FileName.LastDelimiter(L".");
+    int32_t P = FileName.LastDelimiter(L".");
     if ((P > 0) && (P < FileName.Length()))
     {
       if (IsNumber(MidStr(FileName, P + 1)) &&
@@ -512,7 +513,7 @@ int GetPartialFileExtLen(const UnicodeString & FileName)
   return Result;
 }
 
-int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
+int32_t FakeFileImageIndex(UnicodeString FileName, uint32_t Attrs,
   UnicodeString * TypeName)
 {
   Attrs |= FILE_ATTRIBUTE_NORMAL;
@@ -527,13 +528,13 @@ int FakeFileImageIndex(const UnicodeString & FileName, unsigned long Attrs,
   }
   // this should be somewhere else, probably in TUnixDirView,
   // as the "partial" overlay is added there too
-  int PartialFileExtLen = GetPartialFileExtLen(FileName);
+  int32_t PartialFileExtLen = GetPartialFileExtLen(FileName);
   if (GetPartialFileExtLen(FileName) > 0)
   {
     FileName.SetLength(FileName.Length() - PartialFileExtLen);
   }
 
-  int Icon;
+  int32_t Icon;
   if (SHGetFileInfo(FileName.c_str(),
         Attrs, &SHFileInfo, sizeof(SHFileInfo),
         SHGFI_SYSICONINDEX | SHGFI_USEFILEATTRIBUTES | SHGFI_TYPENAME) != 0)
@@ -583,6 +584,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bo
   }
   return FMTLOAD(MULTI_FILES_TO_ONE, Name, Dir, Path);
 }
+
 #endif // if 0
 
 
@@ -636,7 +638,7 @@ TRemoteToken & TRemoteToken::operator =(const TRemoteToken & rhs)
   return *this;
 }
 
-int32_t TRemoteToken::Compare(const TRemoteToken &rhs) const
+int32_t TRemoteToken::Compare(const TRemoteToken & rhs) const
 {
   int32_t Result;
   if (!FName.IsEmpty())
@@ -747,22 +749,22 @@ void TRemoteTokenList::Clear()
   FIDMap.clear();
 }
 
-void TRemoteTokenList::Add(const TRemoteToken &Token)
+void TRemoteTokenList::Add(const TRemoteToken & Token)
 {
   FTokens.push_back(Token);
   if (Token.GetIDValid())
   {
     // std::pair<TIDMap::iterator, bool> Position =
-    FIDMap.insert(TIDMap::value_type(Token.GetID(), FTokens.size() - 1));
+      FIDMap.insert(TIDMap::value_type(Token.GetID(), FTokens.size() - 1));
   }
   if (Token.GetNameValid())
   {
     // std::pair<TNameMap::iterator, bool> Position =
-    FNameMap.insert(TNameMap::value_type(Token.GetName(), FTokens.size() - 1));
+      FNameMap.insert(TNameMap::value_type(Token.GetName(), FTokens.size() - 1));
   }
 }
 
-void TRemoteTokenList::AddUnique(const TRemoteToken &Token)
+void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
 {
   if (Token.GetIDValid())
   {
@@ -805,7 +807,7 @@ bool TRemoteTokenList::Exists(const UnicodeString & Name) const
 const TRemoteToken * TRemoteTokenList::Find(uint32_t ID) const
 {
   TIDMap::const_iterator it = FIDMap.find(ID);
-  const TRemoteToken *Result = nullptr;
+  const TRemoteToken * Result = nullptr;
   if (it != FIDMap.end())
   {
     Result = &FTokens[(*it).second];
@@ -816,7 +818,7 @@ const TRemoteToken * TRemoteTokenList::Find(uint32_t ID) const
 const TRemoteToken * TRemoteTokenList::Find(const UnicodeString & Name) const
 {
   TNameMap::const_iterator it = FNameMap.find(Name);
-  const TRemoteToken *Result = nullptr;
+  const TRemoteToken * Result = nullptr;
   if (it != FNameMap.end())
   {
     Result = &FTokens[(*it).second];
@@ -989,17 +991,17 @@ Boolean TRemoteFile::GetIsHidden() const
   bool Result;
   switch (FIsHidden)
   {
-  case 0:
-    Result = false;
-    break;
+    case 0:
+      Result = false;
+      break;
 
-  case 1:
-    Result = true;
-    break;
+    case 1:
+      Result = true;
+      break;
 
-  default:
-    Result = base::IsUnixHiddenFile(GetFileName());
-    break;
+    default:
+      Result = base::IsUnixHiddenFile(GetFileName());
+      break;
   }
 
   return Result;
@@ -1046,6 +1048,7 @@ Boolean TRemoteFile::GetIsInaccesibleDirectory() const
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
           (base::SameUserName(GetTerminal()->TerminalGetUserName(), GetFileOwner().GetName()))));
   }
+    // else Result = False;
   return Result;
 }
 
@@ -1091,7 +1094,7 @@ void TRemoteFile::ShiftTimeInSeconds(int64_t Seconds)
   ShiftTimeInSeconds(FLastAccess, GetModificationFmt(), Seconds);
 }
 
-void TRemoteFile::ShiftTimeInSeconds(TDateTime &DateTime, TModificationFmt ModificationFmt, int64_t Seconds)
+void TRemoteFile::ShiftTimeInSeconds(TDateTime & DateTime, TModificationFmt ModificationFmt, int64_t Seconds)
 {
   if ((Seconds != 0) && GetIsTimeShiftingApplicable(ModificationFmt))
   {
@@ -1242,6 +1245,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     // Do not read modification time and filename (test close to the end of this block) if it is already set.
     if (::IsZero(FModification.GetValue()) == 0)
     {
+      // bool FullTime = false;
+      // bool DayMonthFormat = false;
       Word Year = 0, Month = 0, Day = 0, Hour = 0, Min = 0, Sec = 0;
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
       ::DecodeDate(::Date(), CurrYear, CurrMonth, CurrDay);
@@ -1259,8 +1264,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       {
         bool DayMonthFormat = false;
         // format yyyy-mm-dd hh:mm:ss.ms ? // example: 2017-07-27 10:44:52.404136754 +0300 .
-        int Y, M, D;
-        int Filled =
+        int32_t Y, M, D;
+        int32_t Filled =
           swscanf(Col.c_str(), L"%04d-%02d-%02d", &Y, &M, &D);
         if (Filled == 3)
         {
@@ -1268,7 +1273,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           Month = nb::ToWord(M);
           Day = nb::ToWord(D);
           GetCol();
-          int H, Mn, S, MS;
+          int32_t H, Mn, S, MS;
           Filled = swscanf(Col.c_str(), L"%02d:%02d:%02d.%d", &H, &Mn, &S, &MS);
           if (Filled == 4)
           {
@@ -1485,6 +1490,9 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         FFileName = base::UnixExtractFileName(::Trim(Line));
       }
     }
+
+    #undef GETNCOL
+    #undef GETCOL
   }
   catch (Exception &E)
   {
@@ -1563,7 +1571,7 @@ void TRemoteFile::FindLinkedFile()
         GetTerminalNotConst()->SetExceptionOnFail(false);
       } end_try__finally
     }
-    catch (Exception &E)
+    catch(Exception & E)
     {
       if (isa<EFatal>(&E))
       {
@@ -1594,10 +1602,10 @@ UnicodeString TRemoteFile::GetListingStr() const
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return FORMAT("%s%s %3s %-8s %-8s %9s %-12s %s%s",
-      GetType(), GetRights()->GetText(), ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
-      ::Int64ToStr(GetSize()),  // explicitly using size even for directories
-      GetModificationStr(), GetFileName(),
-      LinkPart);
+    GetType(), GetRights()->GetText(), ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
+    ::Int64ToStr(GetSize()),  // explicitly using size even for directories
+    GetModificationStr(), GetFileName(),
+    LinkPart);
 }
 
 UnicodeString TRemoteFile::GetFullFileName() const
@@ -1800,6 +1808,8 @@ TRemoteDirectory::TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Tem
   TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
   FTerminal(ATerminal)
 {
+  FThisDirectory = nullptr;
+  FParentDirectory = nullptr;
   if (Template == nullptr)
   {
     FIncludeThisDirectory = false;
@@ -1822,10 +1832,12 @@ void TRemoteDirectory::ReleaseRelativeDirectories()
   if ((GetThisDirectory() != nullptr) && !GetIncludeThisDirectory())
   {
     SAFE_DESTROY(FThisDirectory);
+    FThisDirectory = nullptr;
   }
   if ((GetParentDirectory() != nullptr) && !GetIncludeParentDirectory())
   {
     SAFE_DESTROY(FParentDirectory);
+    FParentDirectory = nullptr;
   }
 }
 
@@ -1852,7 +1864,7 @@ void TRemoteDirectory::AddFile(TRemoteFile * AFile)
   }
 
   if ((!AFile->GetIsThisDirectory() || GetIncludeThisDirectory()) &&
-    (!AFile->GetIsParentDirectory() || GetIncludeParentDirectory()))
+      (!AFile->GetIsParentDirectory() || GetIncludeParentDirectory()))
   {
     TRemoteFileList::AddFile(AFile);
   }
@@ -1923,6 +1935,10 @@ TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept
 TRemoteDirectoryCache::~TRemoteDirectoryCache() noexcept
 {
   TRemoteDirectoryCache::Clear();
+#if defined(__BORLANDC__)
+  Clear();
+  delete FSection;
+#endif
 }
 
 void TRemoteDirectoryCache::Clear()
@@ -1994,11 +2010,12 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
 void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 {
   DebugAssert(FileList);
-  if (FileList)
-  {
-    std::unique_ptr<TRemoteFileList> Copy = std::make_unique<TRemoteFileList>();
-    FileList->DuplicateTo(Copy.get());
+  if (!FileList)
+    return;
+  std::unique_ptr<TRemoteFileList> Copy = std::make_unique<TRemoteFileList>();
+  FileList->DuplicateTo(Copy.get());
 
+  {
     TGuard Guard(FSection); nb::used(Guard);
 
     // file list cannot be cached already with only one thread, but it can be
@@ -2046,6 +2063,7 @@ void TRemoteDirectoryCache::Delete(int32_t Index)
 
 
 TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(int32_t MaxSize) noexcept :
+  TStringList(),
   FMaxSize(MaxSize)
 {
   SetCaseSensitive(true);
@@ -2264,7 +2282,7 @@ void TRights::Assign(const TRights * Source)
 
 TRights::TRight TRights::CalculateRight(TRightGroup Group, TRightLevel Level)
 {
-  int Result;
+  int32_t Result;
   if (Level == rlSpecial)
   {
     Result = rrUserIDExec + Group;
@@ -2307,7 +2325,7 @@ bool TRights::operator ==(const TRights & rhr) const
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
   {
-    for (int Right = rrFirst; Right <= rrLast; Right++)
+    for (int32_t Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
             rhr.GetRightUndef(static_cast<TRight>(Right)))
@@ -2323,17 +2341,17 @@ bool TRights::operator ==(const TRights & rhr) const
   }
 }
 
-bool TRights::operator==(uint16_t rhr) const
+bool TRights::operator ==(uint16_t rhr) const
 {
   return (GetNumber() == rhr);
 }
 
-bool TRights::operator==(TFlag rhr) const
+bool TRights::operator ==(TFlag rhr) const
 {
   return (GetNumber() == static_cast<uint16_t>(rhr));
 }
 
-bool TRights::operator!=(const TRights &rhr) const
+bool TRights::operator !=(const TRights & rhr) const
 {
   return !(*this == rhr);
 }
@@ -2343,32 +2361,32 @@ bool TRights::operator!=(TFlag rhr) const
   return !(*this == rhr);
 }
 
-TRights &TRights::operator=(uint16_t rhr)
+TRights & TRights::operator =(uint16_t rhr)
 {
   SetNumber(rhr);
   return *this;
 }
 
-TRights &TRights::operator=(const TRights &rhr)
+TRights &TRights::operator =(const TRights & rhr)
 {
   Assign(&rhr);
   return *this;
 }
 
-TRights TRights::operator~() const
+TRights TRights::operator ~() const
 {
   TRights Result(static_cast<uint16_t>(~GetNumber()));
   return Result;
 }
 
-TRights TRights::operator&(uint16_t rhr) const
+TRights TRights::operator &(uint16_t rhr) const
 {
   TRights Result(*this);
   Result &= rhr;
   return Result;
 }
 
-TRights TRights::operator&(const TRights &rhr) const
+TRights TRights::operator &(const TRights & rhr) const
 {
   TRights Result(*this);
   Result &= rhr;
@@ -2382,11 +2400,11 @@ TRights TRights::operator&(TFlag rhr) const
   return Result;
 }
 
-TRights &TRights::operator&=(const TRights &rhr)
+TRights &TRights::operator&=(const TRights &  rhr)
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
   {
-    for (int Right = rrFirst; Right <= rrLast; Right++)
+    for (int32_t Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
             rhr.GetRightUndef(static_cast<TRight>(Right)))
@@ -2402,39 +2420,39 @@ TRights &TRights::operator&=(const TRights &rhr)
   return *this;
 }
 
-TRights &TRights::operator&=(uint16_t rhr)
+TRights & TRights::operator &=(uint16_t rhr)
 {
   SetNumber(GetNumber() & rhr);
   return *this;
 }
 
-TRights &TRights::operator&=(TFlag rhr)
+TRights & TRights::operator &=(TFlag rhr)
 {
   SetNumber(GetNumber() & static_cast<uint16_t>(rhr));
   return *this;
 }
 
-TRights TRights::operator|(const TRights &rhr) const
+TRights TRights::operator  |(const TRights &rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
   return Result;
 }
 
-TRights TRights::operator|(uint16_t rhr) const
+TRights TRights::operator |(uint16_t rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
   return Result;
 }
 
-TRights &TRights::operator|=(const TRights &rhr)
+TRights & TRights::operator |=(const TRights & rhr)
 {
   SetNumber(GetNumber() | rhr.GetNumber());
   return *this;
 }
 
-TRights &TRights::operator|=(uint16_t rhr)
+TRights & TRights::operator |=(uint16_t rhr)
 {
   SetNumber(GetNumber() | rhr);
   return *this;
@@ -2463,7 +2481,7 @@ void TRights::SetText(const UnicodeString & Value)
     FSet = 0;
     FUnset = 0;
     int32_t Flag = 00001;
-    int ExtendedFlag = 01000; //-V536
+    int32_t ExtendedFlag = 01000; //-V536
     bool KeepText = false;
     for (int32_t Index = TextLen; Index >= 1; Index--)
     {
@@ -2529,14 +2547,14 @@ UnicodeString TRights::GetText() const
     UnicodeString Result(TextLen, 0);
 
     int32_t Flag = 00001;
-    int ExtendedFlag = 01000; //-V536
+    int32_t ExtendedFlag = 01000; //-V536
     bool ExtendedPos = true;
     wchar_t Symbol;
     int32_t Index = TextLen;
     while (Index >= 1)
     {
       if (ExtendedPos &&
-        ((FSet & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag)))
+          ((FSet & (Flag | ExtendedFlag)) == (Flag | ExtendedFlag)))
       {
         Symbol = CombinedSymbols[Index - 1];
       }
@@ -2811,7 +2829,7 @@ UnicodeString TRights::GetModeStr() const
 
 void TRights::AddExecute()
 {
-  for (int Group = 0; Group < 3; Group++)
+  for (int32_t Group = 0; Group < 3; Group++)
   {
     if ((GetRightUndef(static_cast<TRight>(rrUserRead + (Group * 3))) == rsYes) ||
         (GetRightUndef(static_cast<TRight>(rrUserWrite + (Group * 3))) == rsYes))
@@ -2891,7 +2909,7 @@ void TRemoteProperties::Default()
   Encrypt = false;
 }
 
-bool TRemoteProperties::operator==(const TRemoteProperties &rhp) const
+bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
 {
   bool Result = (Valid == rhp.Valid && Recursive == rhp.Recursive);
 
@@ -2911,7 +2929,7 @@ bool TRemoteProperties::operator==(const TRemoteProperties &rhp) const
   return Result;
 }
 
-bool TRemoteProperties::operator!=(const TRemoteProperties &rhp) const
+bool TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
 {
   return !(*this == rhp);
 }
@@ -2991,7 +3009,7 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
   return NewProperties;
 }
 
-TRemoteProperties &TRemoteProperties::operator=(const TRemoteProperties &other)
+TRemoteProperties &TRemoteProperties::operator =(const TRemoteProperties & other)
 {
   Valid = other.Valid;
   Rights = other.Rights;
@@ -3153,7 +3171,7 @@ int32_t TSynchronizeChecklist::GetCount() const
 int32_t TSynchronizeChecklist::GetCheckedCount() const
 {
   int32_t Result = 0;
-  for (int Index = 0; (Index < Count); Index++)
+  for (int32_t Index = 0; (Index < Count); Index++)
   {
     if (GetItem(Index)->Checked)
     {
@@ -3184,6 +3202,7 @@ void TSynchronizeChecklist::Delete(const TChecklistItem * Item)
   TChecklistItem * MutableItem = const_cast<TChecklistItem *>(Item);
   FList->Extract(MutableItem);
   SAFE_DESTROY(MutableItem);
+  // delete Item;
 }
 
 void TSynchronizeChecklist::UpdateDirectorySize(const TChecklistItem * Item, int64_t Size)

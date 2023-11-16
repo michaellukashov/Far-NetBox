@@ -13,7 +13,7 @@
 enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour, cipChaCha20, cipAESGCM, cipCount };
 #define CIPHER_COUNT (cipCount)
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
-enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6, fsS3 = 7, };
+enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6, fsS3 = 7 };
 #define FSPROTOCOL_COUNT (fsS3+1)
 extern const wchar_t * ProxyMethodNames;
 enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd };
@@ -48,7 +48,7 @@ enum TSessionUrlFlags
   sufHttpForWebDAV = 0x20,
   sufSession = sufUserName | sufPassword | sufHostKey,
   sufComplete = sufSession | sufRawSettings,
-  sufOpen = sufUserName | sufPassword,
+  sufOpen = sufUserName | sufPassword
 };
 enum TParseUrlFlags
 {
@@ -111,7 +111,6 @@ NB_CORE_EXPORT extern const UnicodeString UrlSaveParamName;
 NB_CORE_EXPORT extern const UnicodeString PassphraseOption;
 NB_CORE_EXPORT extern const UnicodeString S3HostName;
 extern const UnicodeString S3GoogleCloudHostName;
-
 class TStoredSessionList;
 class TSecondaryTerminal;
 class TFileZillaImpl;
@@ -146,7 +145,6 @@ private:
   int32_t FPortNumber{0};
   UnicodeString FUserName;
   RawByteString FPassword;
-  //RawByteString FNewPassword;
   UnicodeString FNewPassword;
   bool FChangePassword{false};
   int32_t FPingInterval{0};
@@ -662,8 +660,8 @@ public:
   RWProperty<TFSProtocol> FSProtocol{nb::bind(&TSessionData::GetFSProtocol, this), nb::bind(&TSessionData::SetFSProtocol, this)};
   __property UnicodeString FSProtocolStr  = { read=GetFSProtocolStr };
   ROProperty<UnicodeString> FSProtocolStr{nb::bind(&TSessionData::GetFSProtocolStr, this)};
-  __property bool Modified  = { read = FModified, write = FModified };
-  __property bool CanLogin  = { read = GetCanLogin };
+  __property bool Modified  = { read=FModified, write=FModified };
+  __property bool CanLogin  = { read=GetCanLogin };
   __property bool CanOpen = { read=GetCanOpen };
   ROProperty<bool> CanOpen{nb::bind(&TSessionData::GetCanOpen, this)};
   __property bool IsLocalBrowser = { read=GetIsLocalBrowser };
@@ -721,13 +719,13 @@ public:
   __property UnicodeString Shell = { read = FShell, write = SetShell };
   RWPropertySimple<UnicodeString> Shell{&FShell, nb::bind(&TSessionData::SetShell, this)};
   __property UnicodeString SftpServer = { read = FSftpServer, write = SetSftpServer };
-  __property int Timeout = { read = FTimeout, write = SetTimeout };
+  __property int32_t Timeout = { read = FTimeout, write = SetTimeout };
   RWPropertySimple1<int32_t> Timeout{&FTimeout, nb::bind(&TSessionData::SetTimeout, this)};
   __property TDateTime TimeoutDT = { read = GetTimeoutDT };
   __property bool UnsetNationalVars = { read = FUnsetNationalVars, write = SetUnsetNationalVars };
-  __property bool IgnoreLsWarnings = { read = FIgnoreLsWarnings, write = SetIgnoreLsWarnings };
+  __property bool IgnoreLsWarnings  = { read = FIgnoreLsWarnings, write = SetIgnoreLsWarnings };
   __property bool TcpNoDelay  = { read = FTcpNoDelay, write = SetTcpNoDelay };
-  __property int SendBuf  = { read = FSendBuf, write = SetSendBuf };
+  __property int32_t SendBuf  = { read = FSendBuf, write = SetSendBuf };
   __property UnicodeString SourceAddress = { read=FSourceAddress, write=SetSourceAddress };
   RWPropertySimple<UnicodeString> SourceAddress{&FSourceAddress, nb::bind(&TSessionData::SetSourceAddress, this)};
   __property UnicodeString ProtocolFeatures = { read=FProtocolFeatures, write=SetProtocolFeatures };
@@ -811,8 +809,8 @@ public:
   __property TAutoSwitch FtpForcePasvIp = { read = FFtpForcePasvIp, write = SetFtpForcePasvIp };
   __property TAutoSwitch FtpUseMlsd = { read = FFtpUseMlsd, write = SetFtpUseMlsd };
   __property UnicodeString FtpAccount = { read = FFtpAccount, write = SetFtpAccount };
-  __property int32_t FtpPingInterval  = { read = FFtpPingInterval, write = SetFtpPingInterval };
-  __property TDateTime FtpPingIntervalDT  = { read = GetFtpPingIntervalDT };
+  __property int32_t FtpPingInterval  = { read=FFtpPingInterval, write=SetFtpPingInterval };
+  __property TDateTime FtpPingIntervalDT  = { read=GetFtpPingIntervalDT };
   __property TPingType FtpPingType = { read = FFtpPingType, write = SetFtpPingType };
   __property TAutoSwitch FtpTransferActiveImmediately = { read = FFtpTransferActiveImmediately, write = SetFtpTransferActiveImmediately };
   __property TFtps Ftps = { read = FFtps, write = SetFtps };
@@ -1128,8 +1126,8 @@ private:
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
 
-constexpr int32_t SFTPMinVersion = 0;
-constexpr int32_t SFTPMaxVersion = 6;
+constexpr const int32_t SFTPMinVersion = 0;
+constexpr const int32_t SFTPMaxVersion = 6;
 
 struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
@@ -1143,6 +1141,13 @@ struct NB_CORE_EXPORT TIEProxyConfig : public TObject
   TProxyMethod ProxyMethod{pmNone};
 };
 
+NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
+NB_CORE_EXPORT uint32_t GetCodePageAsNumber(const UnicodeString & CodePage);
+NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
+
+//template<int s> struct CheckSizeT;
+//CheckSizeT<sizeof(TSessionData)> checkSize;
+
 NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TDateTime Started, TSessionData * SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
@@ -1150,10 +1155,4 @@ NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString & HostName);
 NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString & IP);
 NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
 
-NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
-NB_CORE_EXPORT uint32_t GetCodePageAsNumber(const UnicodeString & CodePage);
-NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
-
-//template<int s> struct CheckSizeT;
-//CheckSizeT<sizeof(TSessionData)> checkSize;
 
