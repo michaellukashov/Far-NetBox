@@ -202,7 +202,7 @@ static int neon_header_func(void * userdata, ne_request * NeonRequest, const ne_
 
 
 // WINSCP (neon)
-static ssize_t neon_read_func(void * userdata, char * buf, size_t len)
+static int neon_read_func(void * userdata, char * buf, size_t len)
 {
     Request *request = (Request *) userdata;
 
@@ -346,6 +346,7 @@ static S3Status append_amz_header(RequestComputedValues *values,
 // to be the count of the total number of x-amz- headers thus created).
 static S3Status compose_amz_headers(const RequestParams *params,
                                     int forceUnsignedPayload,
+                                    int requesterPays, // WINSCP
                                     RequestComputedValues *values)
 {
     const S3PutProperties *properties = params->putProperties;
@@ -425,6 +426,16 @@ static S3Status compose_amz_headers(const RequestParams *params,
     if (params->bucketContext.securityToken) {
         append_amz_header(values, 0, "x-amz-security-token",
                           params->bucketContext.securityToken);
+    }
+
+    // WINSCP
+    if (requesterPays
+        && (params->httpRequestType == HttpRequestTypeDELETE
+            || params->httpRequestType == HttpRequestTypeGET
+            || params->httpRequestType == HttpRequestTypeHEAD
+            || params->httpRequestType == HttpRequestTypePOST
+            || params->httpRequestType == HttpRequestTypePUT)) {
+        append_amz_header(values, 0, "x-amz-request-payer", "requester");
     }
 
     if (!forceUnsignedPayload
@@ -854,7 +865,7 @@ static void sort_query_string(const char *queryString, char *result,
     }
 #undef append
 
-    nb_free(params);
+    nb_free(params); // WINSCP (heap allocation)
     nb_free(buf);
 }
 
@@ -1057,7 +1068,8 @@ static S3Status compose_auth_header(const RequestParams *params,
          finalSignature, NULL);
 #endif
     nb_free(stringToSign); // WINSCP (heap allocation)
-    nb_free(accessKey);
+    nb_free(accessKey); // WINSCP
+    nb_free(stringToSign); // WINSCP
 
     len = 0;
     size = sizeof(values->requestSignatureHex); // WINSCP
@@ -1519,7 +1531,8 @@ void request_api_deinitialize()
 
 static S3Status setup_request(const RequestParams *params,
                               RequestComputedValues *computed,
-                              int forceUnsignedPayload)
+                              int forceUnsignedPayload,
+                              int requesterPays) // WINSCP
 {
     S3Status status;
 
@@ -1550,7 +1563,7 @@ static S3Status setup_request(const RequestParams *params,
              "%Y%m%dT%H%M%SZ", &gmt);
 
     // Compose the amz headers
-    if ((status = compose_amz_headers(params, forceUnsignedPayload, computed))
+    if ((status = compose_amz_headers(params, forceUnsignedPayload, requesterPays, computed)) // WINSCP
         != S3StatusOK) {
         return status;
     }
@@ -1604,7 +1617,7 @@ void request_perform(const RequestParams *params, S3RequestContext *context)
     // These will hold the computed values
     RequestComputedValues computed;
 
-    if ((status = setup_request(params, &computed, 0)) != S3StatusOK) {
+    if ((status = setup_request(params, &computed, 0, context->requesterPays)) != S3StatusOK) { // WINSCP
         return_status(status);
     }
 
