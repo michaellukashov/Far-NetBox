@@ -2227,6 +2227,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
         }
         FNoProgress = false;
       };
+      DebugAssert(FTerminal);
       if (ADir == L"\\")
       {
         FTerminal->RemoteChangeDirectory(ROOTDIRECTORY);
