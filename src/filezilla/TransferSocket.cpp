@@ -8,11 +8,11 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
-constexpr int32_t BUFSIZE = 16 * 1024;
+constexpr const int32_t BUFSIZE = 16 * 1024;
 
-constexpr int STATE_WAITING = 0;
-constexpr int STATE_STARTING = 1;
-constexpr int STATE_STARTED = 2;
+constexpr const int32_t STATE_WAITING = 0;
+constexpr const int32_t STATE_STARTING = 1;
+constexpr const int32_t STATE_STARTED = 2;
 
 #ifndef SIO_IDEAL_SEND_BACKLOG_QUERY
 #define SIO_IDEAL_SEND_BACKLOG_QUERY   _IOR('t', 123, ULONG)
