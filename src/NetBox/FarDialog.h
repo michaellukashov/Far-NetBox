@@ -40,7 +40,7 @@ class TFarDialog : public TObject
   friend class TFarListBox;
   NB_DISABLE_COPY(TFarDialog)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialog) || TObject::is(Kind); }
 public:
   explicit TFarDialog(TCustomFarPlugin * AFarPlugin) noexcept;
@@ -206,7 +206,7 @@ class TFarDialogItem : public TObject
   friend class TFarList;
   NB_DISABLE_COPY(TFarDialogItem)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarDialogItem); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialogItem); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogItem) || TObject::is(Kind); }
 public:
   TRect GetBounds() const { return FBounds; }
@@ -284,8 +284,8 @@ protected:
   explicit TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, FARDIALOGITEMTYPES AType);
   virtual ~TFarDialogItem() noexcept override;
 
-  const FarDialogItem *GetDialogItem() const;
-  FarDialogItem *GetDialogItem();
+  const FarDialogItem * GetDialogItem() const;
+  FarDialogItem * GetDialogItem();
   bool GetCenterGroup() const { return GetFlag(DIF_CENTERGROUP); }
   void SetCenterGroup(bool Value) { SetFlag(DIF_CENTERGROUP, Value); }
   virtual UnicodeString GetData() const;
@@ -306,7 +306,7 @@ protected:
   void UpdateFlags(FARDIALOGITEMFLAGS Value);
   int32_t GetCoordinate(int32_t Index) const;
   void SetCoordinate(int32_t Index, int32_t Value);
-  TFarDialogItem *GetPrevItem() const;
+  TFarDialogItem * GetPrevItem() const;
   void UpdateFocused(bool Value);
   void UpdateEnabled();
 
@@ -379,7 +379,7 @@ NB_DEFINE_CLASS_ID(TFarButton);
 class TFarButton : public TFarDialogItem
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarButton); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarButton); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarButton) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarButton(TFarDialog * ADialog) noexcept;
@@ -421,7 +421,7 @@ class TFarCheckBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarCheckBox)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarCheckBox); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarCheckBox); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarCheckBox) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarCheckBox(TFarDialog * ADialog) noexcept;
@@ -468,7 +468,7 @@ NB_DEFINE_CLASS_ID(TFarEdit);
 class TFarEdit : public TFarDialogItem
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarEdit); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarEdit); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarEdit) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarEdit(TFarDialog * ADialog) noexcept;
@@ -522,7 +522,7 @@ NB_DEFINE_CLASS_ID(TFarText);
 class TFarText : public TFarDialogItem
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarText); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarText); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarText) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarText(TFarDialog * ADialog) noexcept;
@@ -550,7 +550,7 @@ class TFarList : public TStringList
   friend class TFarComboBox;
   NB_DISABLE_COPY(TFarList)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarList); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarList) || TStringList::is(Kind); }
 public:
   explicit TFarList(TFarDialogItem * ADialogItem = nullptr) noexcept;
@@ -607,7 +607,7 @@ class TFarListBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarListBox)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFarListBox); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarListBox); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarListBox) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
@@ -623,8 +623,8 @@ public:
   void SetNoBox(bool Value) { SetFlag(DIF_LISTNOBOX, Value); }
   bool GetWrapMode() const { return GetFlag(DIF_LISTWRAPMODE); }
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
-  TFarList *GetItems() const { return FList.get(); }
-  TFarList *GetItems() { return FList.get(); }
+  TFarList * GetItems() const { return FList.get(); }
+  TFarList * GetItems() { return FList.get(); }
   void SetList(TFarList *Value);
   TFarListBoxAutoSelect GetAutoSelect() { return FAutoSelect; }
   void SetAutoSelect(TFarListBoxAutoSelect Value);
@@ -659,7 +659,7 @@ public:
   void SetAutoHighlight(bool Value) { SetFlag(DIF_LISTAUTOHIGHLIGHT, Value); }
   bool GetWrapMode() const { return GetFlag(DIF_LISTWRAPMODE); }
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
-  TFarList *GetItems() const { return FList.get(); }
+  TFarList * GetItems() const { return FList.get(); }
   virtual UnicodeString GetText() const { return GetData(); }
   virtual void SetText(const UnicodeString & Value) { SetData(Value); }
   bool GetAutoSelect() const { return GetFlag(DIF_SELECTONENTRY); }

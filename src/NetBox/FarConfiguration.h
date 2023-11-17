@@ -79,7 +79,7 @@ public:
   UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
   void SetPuttygenPath(const UnicodeString & Value) { FPuttygenPath = Value; }
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
-  void SetBookmarks(const UnicodeString & Key, TBookmarkList *Value);
+  void SetBookmarks(const UnicodeString & Key, TBookmarkList * Value);
 
 public:
   virtual UnicodeString TemporaryDir(bool Mask = false) const override { return ""; }
@@ -88,8 +88,8 @@ protected:
   virtual bool GetConfirmOverwriting() const override;
   virtual void SetConfirmOverwriting(bool Value) override;
 
-  virtual void SaveData(THierarchicalStorage *Storage, bool All) override;
-  virtual void LoadData(THierarchicalStorage *Storage) override;
+  virtual void SaveData(THierarchicalStorage * Storage, bool All) override;
+  virtual void LoadData(THierarchicalStorage * Storage) override;
 
   virtual UnicodeString ModuleFileName() const override;
   virtual void Saved() override;
@@ -134,4 +134,4 @@ private:
   intptr_t FarConfirmations() const;
 };
 
-NB_CORE_EXPORT TFarConfiguration *GetFarConfiguration();
+NB_CORE_EXPORT TFarConfiguration * GetFarConfiguration();

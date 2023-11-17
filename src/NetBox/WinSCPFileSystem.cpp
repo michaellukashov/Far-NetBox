@@ -3291,7 +3291,7 @@ uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
   }
 
   return GetWinSCPPlugin()->MoreMessageDialog(Str, MoreMessages, Type,
-      Answers, &Params);
+    Answers, &Params);
 }
 
 void TWinSCPFileSystem::TerminalQueryUser(TObject * /*Sender*/,

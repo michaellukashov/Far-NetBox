@@ -133,7 +133,7 @@ void TFarConfiguration::ConfigurationInit()
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   )
 
-void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
+void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
 
@@ -154,7 +154,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
   }
 }
 
-void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
+void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   TGUIConfiguration::LoadData(Storage);
 
@@ -195,7 +195,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
   TGUIConfiguration::DoSave(All, Explicit);
 }
 
-void TFarConfiguration::SetPlugin(TCustomFarPlugin *Value)
+void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
 {
   if (GetPlugin() != Value)
   {
@@ -204,7 +204,7 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin *Value)
   }
 }
 
-intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t *Name) const
+intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const
 {
   intptr_t Result = 0;
   FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
@@ -221,7 +221,7 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
   return Result;
 }
 
-intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t *Name) const
+intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t * Name) const
 {
   FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
   if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
@@ -324,7 +324,7 @@ void TFarConfiguration::SetBookmarks(const UnicodeString & Key,
   Changed();
 }
 
-TBookmarkList *TFarConfiguration::GetBookmarks(const UnicodeString & Key)
+TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }

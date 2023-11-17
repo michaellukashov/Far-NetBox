@@ -9,15 +9,15 @@
 #include <rtlconsts.h>
 #include <FileBuffer.h>
 
-static TGlobals *GlobalFunctions = nullptr;
+static TGlobals * GlobalFunctions = nullptr;
 
-TGlobals *GetGlobals()
+TGlobals * GetGlobals()
 {
   DebugAssert(GlobalFunctions != nullptr);
   return GlobalFunctions;
 }
 
-void SetGlobals(TGlobals *Value)
+void SetGlobals(TGlobals * Value)
 {
   DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
   GlobalFunctions = Value;
@@ -26,7 +26,7 @@ void SetGlobals(TGlobals *Value)
 #if (_MSC_VER >= 1900)
 
 extern "C" {
-  FILE *__iob_func = nullptr;
+  FILE * __iob_func = nullptr;
 } // extern "C"
 #endif
 
@@ -35,7 +35,7 @@ TPersistent::TPersistent(TObjectClassId Kind) :
 {
 }
 
-void TPersistent::Assign(const TPersistent *Source)
+void TPersistent::Assign(const TPersistent * Source)
 {
   if (Source != nullptr)
   {
@@ -47,17 +47,17 @@ void TPersistent::Assign(const TPersistent *Source)
   }
 }
 
-void TPersistent::AssignTo(TPersistent *Dest) const
+void TPersistent::AssignTo(TPersistent * Dest) const
 {
   Dest->AssignError(this);
 }
 
-TPersistent *TPersistent::GetOwner()
+TPersistent * TPersistent::GetOwner()
 {
   return nullptr;
 }
 
-void TPersistent::AssignError(const TPersistent *Source)
+void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
   throw Exception("Cannot assign");
@@ -100,12 +100,12 @@ void TList::SetCount(int32_t NewCount)
   FList.resize(NewCount);
 }
 
-void *TList::operator[](int32_t Index) const
+void * TList::operator[](int32_t Index) const
 {
   return FList[Index];
 }
 
-void TList::SetItem(int32_t Index, void *Item)
+void TList::SetItem(int32_t Index, void * Item)
 {
   if ((Index == nb::NPOS) || (Index >= nb::ToIntPtr(FList.size())))
   {
@@ -148,7 +148,7 @@ void TList::Move(int32_t CurIndex, int32_t NewIndex)
     {
       Error(SListIndexError, NewIndex);
     }
-    void *Item = GetItem(CurIndex);
+    void * Item = GetItem(CurIndex);
     FList[CurIndex] = nullptr;
     Delete(CurIndex);
     Insert(NewIndex, nullptr);
@@ -162,7 +162,7 @@ void TList::Delete(int32_t Index)
   {
     Error(SListIndexError, Index);
   }
-  void *Temp = GetItem(Index);
+  void * Temp = GetItem(Index);
   FList.erase(FList.begin() + Index);
   if (Temp != nullptr)
   {
@@ -170,7 +170,7 @@ void TList::Delete(int32_t Index)
   }
 }
 
-void TList::Insert(int32_t Index, void *Item)
+void TList::Insert(int32_t Index, void * Item)
 {
   if ((Index == nb::NPOS) || (Index > nb::ToIntPtr(FList.size())))
   {
@@ -186,7 +186,7 @@ void TList::Insert(int32_t Index, void *Item)
   }
 }
 
-int32_t TList::IndexOf(const void *Value) const
+int32_t TList::IndexOf(const void * Value) const
 {
   int32_t Result = 0;
   while ((Result < nb::ToIntPtr(FList.size())) && (FList[Result] != Value))
@@ -213,7 +213,7 @@ void QuickSort(nb::vector_t<void *> &SortList, int32_t L, int32_t R,
   {
     Index = L;
     int32_t J = R;
-    void *P = SortList[(L + R) >> 1];
+    void * P = SortList[(L + R) >> 1];
     do
     {
       while (SCompare(SortList[Index], P) < 0)
@@ -224,7 +224,7 @@ void QuickSort(nb::vector_t<void *> &SortList, int32_t L, int32_t R,
       {
         if (Index != J)
         {
-          void *T = SortList[Index];
+          void * T = SortList[Index];
           SortList[Index] = SortList[J];
           SortList[J] = T;
         }
@@ -274,12 +274,12 @@ TObjectList::~TObjectList()
   TList::Clear();
 }
 
-TObject *TObjectList::operator[](int32_t Index) const
+TObject * TObjectList::operator[](int32_t Index) const
 {
   return as_object(TList::operator[](Index));
 }
 
-TObject *TObjectList::GetObj(int32_t Index) const
+TObject * TObjectList::GetObj(int32_t Index) const
 {
   if ((Index == nb::NPOS) || (Index >= GetCount()))
   {
@@ -324,12 +324,12 @@ void TStrings::SetTextStr(const UnicodeString & Text)
     EndUpdate();
   };
   Clear();
-  const wchar_t *P = Text.c_str();
+  const wchar_t * P = Text.c_str();
   // if (P != nullptr)
   {
     while (*P != 0x00)
     {
-      const wchar_t *Start = P;
+      const wchar_t * Start = P;
       while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
       {
         P++;
@@ -439,7 +439,7 @@ int32_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString &
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings *Strings = dyn_cast<TStrings>(Source);
+  const TStrings * Strings = dyn_cast<TStrings>(Source);
   if (Strings != nullptr)
   {
     BeginUpdate();
@@ -548,7 +548,7 @@ void TStrings::InsertObject(int32_t Index, const UnicodeString & Key, TObject * 
   Insert(Index, Key, AObject);
 }
 
-bool TStrings::Equals(const TStrings *Value) const
+bool TStrings::Equals(const TStrings * Value) const
 {
   if (GetCount() != Value->GetCount())
   {
@@ -1057,7 +1057,7 @@ void TStringList::ExchangeItems(int32_t Index1, int32_t Index2)
       SetOwnsObjects(Owns);
     };
     UnicodeString SItem1 = FStrings[Index1];
-    TObject *OItem1 = TObjectList::GetObj(Index1);
+    TObject * OItem1 = TObjectList::GetObj(Index1);
     FStrings[Index1] = FStrings[Index2];
     TObjectList::SetItem(Index1, TObjectList::GetObj(Index2));
     FStrings[Index2] = SItem1;
@@ -1105,7 +1105,7 @@ UnicodeString TDateTime::GetTimeString(bool Short) const
   return Result;
 }
 
-UnicodeString TDateTime::FormatString(const wchar_t *fmt) const
+UnicodeString TDateTime::FormatString(const wchar_t * fmt) const
 {
   (void)fmt;
   uint16_t H, N, S, MS;
@@ -1511,7 +1511,7 @@ int64_t TMemoryStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
   return Result;
 }
 
-void TMemoryStream::SaveToStream(TStream *Stream)
+void TMemoryStream::SaveToStream(TStream * Stream)
 {
   if (FSize != 0)
   {
@@ -1716,7 +1716,7 @@ void TRegistry::SetRootKey(HKEY ARootKey)
   }
 }
 
-void TRegistry::GetValueNames(TStrings *Names) const
+void TRegistry::GetValueNames(TStrings * Names) const
 {
   Names->Clear();
   TRegKeyInfo Info{};
@@ -1733,7 +1733,7 @@ void TRegistry::GetValueNames(TStrings *Names) const
   }
 }
 
-void TRegistry::GetKeyNames(TStrings *Names) const
+void TRegistry::GetKeyNames(TStrings * Names) const
 {
   Names->Clear();
   TRegKeyInfo Info{};
