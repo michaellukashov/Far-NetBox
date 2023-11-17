@@ -195,7 +195,7 @@ private:
   bool FEnabled{false};
 };
 
-constexpr int32_t DIF_INVERSE = 0x00000001UL;
+constexpr const int32_t DIF_INVERSE = 0x00000001UL;
 
 NB_DEFINE_CLASS_ID(TFarDialogItem);
 class TFarDialogItem : public TObject
