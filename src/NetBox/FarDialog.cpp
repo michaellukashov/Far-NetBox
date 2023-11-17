@@ -1362,7 +1362,7 @@ intptr_t TFarDialogItem::ItemProc(int32_t Msg, void * Param)
 
   if (Msg == DN_CTLCOLORDLGITEM && FColorMask)
   {
-    Result &= ~static_cast<LONG_PTR>(FColorMask);
+    Result &= ~static_cast<intptr_t>(FColorMask);
     Result |= (FColors & FColorMask);
   }
   return Result;
