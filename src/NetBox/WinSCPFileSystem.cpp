@@ -3286,7 +3286,7 @@ uint32_t TWinSCPFileSystem::MoreMessageDialog(const UnicodeString & Str,
     {
       Params.Assign(AParams);
     }
-    AParams = &Params;
+    // AParams = &Params;
     Params.Flags |= FMSG_WARNING;
   }
 
