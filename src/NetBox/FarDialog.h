@@ -286,20 +286,20 @@ protected:
 
   const FarDialogItem * GetDialogItem() const;
   FarDialogItem * GetDialogItem();
-  bool GetCenterGroup() const { return GetFlag(DIF_CENTERGROUP); }
-  void SetCenterGroup(bool Value) { SetFlag(DIF_CENTERGROUP, Value); }
+  virtual bool GetCenterGroup() const { return GetFlag(DIF_CENTERGROUP); }
+  virtual void SetCenterGroup(bool Value) { SetFlag(DIF_CENTERGROUP, Value); }
   virtual UnicodeString GetData() const;
   virtual UnicodeString GetData();
   virtual void SetData(const UnicodeString & Value);
   FARDIALOGITEMTYPES GetType() const;
   void SetType(FARDIALOGITEMTYPES Value);
   int32_t GetItem() const { return FItem; }
-  int32_t GetSelected() const;
-  void SetSelected(int32_t Value);
+  virtual int32_t GetSelected() const;
+  virtual void SetSelected(int32_t Value);
   TFarDialogContainer * GetContainer() const { return FContainer; }
   void SetContainer(TFarDialogContainer *Value);
-  bool GetChecked() const;
-  void SetChecked(bool Value);
+  virtual bool GetChecked() const;
+  virtual void SetChecked(bool Value);
   void SetBounds(const TRect & Value);
   FARDIALOGITEMFLAGS GetFlags() const;
   void SetFlags(FARDIALOGITEMFLAGS Value);
@@ -397,8 +397,8 @@ public:
   void SetDefault(bool Value);
   TFarButtonBrackets GetBrackets() const { return FBrackets; }
   void SetBrackets(TFarButtonBrackets Value);
-  bool GetCenterGroup() const { return TFarDialogItem::GetCenterGroup(); }
-  void SetCenterGroup(bool Value) { TFarDialogItem::SetCenterGroup(Value); }
+  virtual bool GetCenterGroup() const override { return TFarDialogItem::GetCenterGroup(); }
+  virtual void SetCenterGroup(bool Value) override { TFarDialogItem::SetCenterGroup(Value); }
   virtual TFarButtonClickEvent GetOnClick() const { return FOnClick; }
   virtual void SetOnClick(TFarButtonClickEvent Value) { FOnClick = Value; }
 
@@ -432,10 +432,10 @@ public:
   void SetAllowGrayed(bool Value) { SetFlag(DIF_3STATE, Value); }
   virtual TFarAllowChangeEvent GetOnAllowChange() const { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent Value) { FOnAllowChange = Value; }
-  bool GetChecked() const { return TFarDialogItem::GetChecked(); }
-  void SetChecked(bool Value) { TFarDialogItem::SetChecked(Value); }
-  int32_t GetSelected() const { return TFarDialogItem::GetSelected(); }
-  void SetSelected(int32_t Value) { TFarDialogItem::SetSelected(Value); }
+  virtual bool GetChecked() const override { return TFarDialogItem::GetChecked(); }
+  virtual void SetChecked(bool Value) override { TFarDialogItem::SetChecked(Value); }
+  virtual int32_t GetSelected() const override { return TFarDialogItem::GetSelected(); }
+  virtual void SetSelected(int32_t Value) override { TFarDialogItem::SetSelected(Value); }
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
@@ -450,8 +450,8 @@ class TFarRadioButton : public TFarDialogItem
 public:
   explicit TFarRadioButton(TFarDialog * ADialog) noexcept;
 
-  bool GetChecked() const { return TFarDialogItem::GetChecked(); }
-  void SetChecked(bool Value) { TFarDialogItem::SetChecked(Value); }
+  virtual bool GetChecked() const override { return TFarDialogItem::GetChecked(); }
+  virtual void SetChecked(bool Value) override { TFarDialogItem::SetChecked(Value); }
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual TFarAllowChangeEvent GetOnAllowChange() const { return FOnAllowChange; }
@@ -529,8 +529,8 @@ public:
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
-  bool GetCenterGroup() const { return TFarDialogItem::GetCenterGroup(); }
-  void SetCenterGroup(bool Value) { TFarDialogItem::SetCenterGroup(Value); }
+  virtual bool GetCenterGroup() const override { return TFarDialogItem::GetCenterGroup(); }
+  virtual void SetCenterGroup(bool Value) override { TFarDialogItem::SetCenterGroup(Value); }
   char GetColor() const { return TFarDialogItem::GetColor(0); }
   void SetColor(char Value) { TFarDialogItem::SetColor(0, Value); }
 
