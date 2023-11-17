@@ -1017,7 +1017,7 @@ TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, FARDIA
   FIsEnabled(true)
 {
   assert(ADialog);
-  //GetDialog()->Add(this);
+  GetDialog()->Add(this);
 
   GetDialogItem()->Type = AType;
 }
@@ -1621,7 +1621,7 @@ void TFarDialogItem::SetFocus()
 
 void TFarDialogItem::Init()
 {
-  GetDialog()->Add(this);
+  // GetDialog()->Add(this);
   if (GetFlag(DIF_CENTERGROUP))
   {
     SMALL_RECT Rect;
