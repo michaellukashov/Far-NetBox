@@ -4090,10 +4090,12 @@ bool TSessionDialog::CloseQuery()
 
   if (CanClose && (GetResult() != brCancel))
   {
-    CanClose =
+    // TODO: check only if PrivateKeyEdit and TunnelPrivateKeyEdit were edited
+    /*CanClose =
       VerifyKey(PrivateKeyEdit->GetText(), false) &&
       // for tunnel key do not check SSH version as it is not configurable
-      VerifyKey(TunnelPrivateKeyEdit->GetText(), true);
+      VerifyKey(TunnelPrivateKeyEdit->GetText(), true);*/
+    DEBUG_PRINTF("CanClose2: %d", CanClose);
   }
 
   if (CanClose && !PasswordEdit->GetText().IsEmpty() &&
