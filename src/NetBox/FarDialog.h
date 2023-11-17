@@ -44,7 +44,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialog) || TObject::is(Kind); }
 public:
   explicit TFarDialog(TCustomFarPlugin * AFarPlugin) noexcept;
-  virtual ~TFarDialog() noexcept;
+  virtual ~TFarDialog() noexcept override;
 
   int32_t ShowModal();
   void ShowGroup(int32_t Group, bool Show);
@@ -177,7 +177,7 @@ public:
 protected:
   TFarDialogContainer() = delete;
   explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog) noexcept;
-  virtual ~TFarDialogContainer() noexcept;
+  virtual ~TFarDialogContainer() noexcept override;
 
   TFarDialog * GetDialog() const { return FDialog; }
   TFarDialog * GetDialog() { return FDialog; }
@@ -282,7 +282,7 @@ protected:
   TFarMouseClickEvent FOnMouseClick;
 
   explicit TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, FARDIALOGITEMTYPES AType);
-  virtual ~TFarDialogItem() noexcept;
+  virtual ~TFarDialogItem() noexcept override;
 
   const FarDialogItem *GetDialogItem() const;
   FarDialogItem *GetDialogItem();
@@ -554,7 +554,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarList) || TStringList::is(Kind); }
 public:
   explicit TFarList(TFarDialogItem * ADialogItem = nullptr) noexcept;
-  virtual ~TFarList() noexcept;
+  virtual ~TFarList() noexcept override;
 
   virtual void Assign(const TPersistent * Source) override;
 
@@ -611,7 +611,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarListBox) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
-  virtual ~TFarListBox() noexcept;
+  virtual ~TFarListBox() noexcept override;
 
   void SetItems(TStrings *Value);
 
@@ -649,7 +649,7 @@ class TFarComboBox : public TFarDialogItem
   NB_DISABLE_COPY(TFarComboBox)
 public:
   explicit TFarComboBox(TFarDialog * ADialog) noexcept;
-  virtual ~TFarComboBox() noexcept;
+  virtual ~TFarComboBox() noexcept override;
 
   void ResizeToFitContent();
 
@@ -684,7 +684,7 @@ class TFarLister : public TFarDialogItem
 public:
   TFarLister() = delete;
   explicit TFarLister(TFarDialog * ADialog) noexcept;
-  virtual ~TFarLister() noexcept;
+  virtual ~TFarLister() noexcept override;
 
   TStrings * GetItems() const;
   void SetItems(const TStrings * Value);
