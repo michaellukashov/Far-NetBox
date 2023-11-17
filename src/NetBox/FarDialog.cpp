@@ -334,7 +334,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
 
   static rde::map<HANDLE, void *> Dialogs;
   TFarDialog * Dialog = nullptr;
-  LONG_PTR Result = 0;
+  intptr_t Result = 0;
   if (Msg == DN_INITDIALOG)
   {
     assert(Dialogs.find(Handle) == Dialogs.end());
@@ -359,7 +359,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
 
   if (Dialog != nullptr)
   {
-    Result = Dialog->DialogProc(Msg, nb::ToIntPtr(Param1), Param2);
+    Result = Dialog->DialogProc(Msg, Param1, Param2);
   }
 
   if ((Msg == DN_CLOSE) && Result)
@@ -431,8 +431,8 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 
         if (!Result && (Msg == DN_CONTROLINPUT))
         {
-          INPUT_RECORD *Rec = reinterpret_cast<INPUT_RECORD *>(Param2);
-          const KEY_EVENT_RECORD &Event = Rec->Event.KeyEvent;
+          INPUT_RECORD * Rec = reinterpret_cast<INPUT_RECORD *>(Param2);
+          const KEY_EVENT_RECORD & Event = Rec->Event.KeyEvent;
           Result = Key(Item, static_cast<long>(Event.wVirtualKeyCode | (Event.dwControlKeyState << 16)));
         }
         Handled = true;
@@ -2447,8 +2447,8 @@ intptr_t TFarListBox::ItemProc(int32_t Msg, void * Param)
   int32_t Result = 0;
   if (Msg == DN_CONTROLINPUT)
   {
-    const INPUT_RECORD *Rec = static_cast<const INPUT_RECORD *>(Param);
-    const KEY_EVENT_RECORD &Event = Rec->Event.KeyEvent;
+    const INPUT_RECORD * Rec = static_cast<const INPUT_RECORD *>(Param);
+    const KEY_EVENT_RECORD & Event = Rec->Event.KeyEvent;
     if (GetDialog()->HotKey(Event.wVirtualKeyCode, Event.dwControlKeyState))
     {
       Result = 1;
@@ -2651,7 +2651,7 @@ intptr_t TFarLister::ItemProc(int32_t Msg, void * Param)
   else if (Msg == DN_CONTROLINPUT)
   {
     Result = 1;
-    INPUT_RECORD *Rec = reinterpret_cast<INPUT_RECORD *>(Param);
+    INPUT_RECORD * Rec = reinterpret_cast<INPUT_RECORD *>(Param);
     if (Rec->EventType == KEY_EVENT)
     {
       KEY_EVENT_RECORD * KeyEvent = &Rec->Event.KeyEvent;
