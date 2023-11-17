@@ -2032,7 +2032,7 @@ int32_t TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int32_t BufferS
   if (Data.Remaining > 0)
   {
     Result = std::min(BufferSize, Data.Remaining);
-    libmemcpy_memcpy(Buffer, Data.Message.c_str() + Data.Message.Length() - Data.Remaining, static_cast<size_t>(Result));
+    libmemcpy_memcpy(Buffer, Data.Message.c_str() + Data.Message.Length() - Data.Remaining, nb::ToSizeT(Result));
     Data.Remaining -= Result;
   }
   return Result;

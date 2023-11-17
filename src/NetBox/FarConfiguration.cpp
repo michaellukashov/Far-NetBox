@@ -211,7 +211,7 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
   HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
   if (Settings)
   {
-    FarSettingsItem item = {sizeof(FarSettingsItem), static_cast<size_t>(Root), Name, FST_UNKNOWN, {0} };
+    FarSettingsItem item = {sizeof(FarSettingsItem), nb::ToSizeT((int32_t)Root), Name, FST_UNKNOWN, {0} };
     if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
     {
       Result = static_cast<intptr_t>(item.Number);

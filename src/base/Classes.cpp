@@ -1266,7 +1266,7 @@ int64_t TStream::CopyFrom(TStream * Source, int64_t Count)
   {
     BufferSize = Count; // do not allocate more than needed
   }
-  void * Buffer = nb::calloc<void *>(1, static_cast<::size_t>(BufferSize));
+  void * Buffer = nb::calloc<void *>(1, nb::ToSizeT(BufferSize));
   try__finally
   {
     int64_t I = 0;
@@ -1484,7 +1484,7 @@ int64_t TMemoryStream::Read(void * Buffer, int64_t Count)
       {
         Result = Count;
       }
-      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, static_cast<::size_t>(Result));
+      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, nb::ToSizeT(Result));
       FPosition += Result;
       return Result;
     }
@@ -1570,11 +1570,11 @@ void * TMemoryStream::Realloc(int64_t & NewCapacity)
     {
       if (FCapacity == 0)
       {
-        Result = nb::calloc<void *>(1, static_cast<::size_t>(NewCapacity));
+        Result = nb::calloc<void *>(1, nb::ToSizeT(NewCapacity));
       }
       else
       {
-        Result = nb::realloc<void *>(FMemory, static_cast<::size_t>(NewCapacity));
+        Result = nb::realloc<void *>(FMemory, nb::ToSizeT(NewCapacity));
       }
       if (Result == nullptr)
       {
@@ -1608,7 +1608,7 @@ int64_t TMemoryStream::Write(const void * Buffer, int64_t Count)
         FSize = Pos;
       }
       memmove(static_cast<char *>(FMemory) + FPosition,
-        Buffer, static_cast<::size_t>(Count));
+        Buffer, nb::ToSizeT(Count));
       FPosition = Pos;
       Result = Count;
     }
@@ -1990,7 +1990,7 @@ UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name) const
   TRegDataInfo Info{};
   if (GetDataInfo(Name, Info))
   {
-    Result = static_cast<::size_t>(Info.DataSize);
+    Result = nb::ToSizeT(Info.DataSize);
     TRegDataType RegData = Info.RegData;
     if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
     {

@@ -1153,7 +1153,7 @@ int32_t TParallelOperation::GetNext(
         FParallelFileCount++;
         FParallelFileOffsets.push_back(CustomCopyParam->PartOffset);
         FParallelFileDones.push_back(false);
-        DebugAssert(FParallelFileOffsets.size() == static_cast<size_t>(FParallelFileCount));
+        DebugAssert(FParallelFileOffsets.size() == nb::ToSizeT(FParallelFileCount));
         CustomCopyParam->FileMask = DelimitFileNameMask(PartFileName);
         if ((CustomCopyParam->PartSize >= Remaining) ||
             (Remaining - CustomCopyParam->PartSize < CustomCopyParam->PartSize / 10))
