@@ -703,7 +703,7 @@ UnicodeString THierarchicalStorage::ReadString(const UnicodeString & Name, const
   return Result;
 }
 
-size_t THierarchicalStorage::BinaryDataSize(const UnicodeString & Name)
+int32_t THierarchicalStorage::BinaryDataSize(const UnicodeString & Name)
 {
   if (CanRead())
   {
@@ -1011,9 +1011,9 @@ bool TRegistryStorage::DoValueExists(const UnicodeString & Value)
   return Result;
 }
 
-size_t TRegistryStorage::DoBinaryDataSize(const UnicodeString & Name)
+int32_t TRegistryStorage::DoBinaryDataSize(const UnicodeString & Name)
 {
-  size_t Result = FRegistry->GetDataSize(Name);
+  const int32_t Result = FRegistry->GetDataSize(Name);
   return Result;
 }
 

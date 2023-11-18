@@ -152,11 +152,11 @@ protected:
   virtual double DoReadFloat(const UnicodeString & Name, double Default) = 0;
   virtual int32_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size) = 0;
 
-  virtual size_t DoBinaryDataSize(const UnicodeString & Name) = 0;
+  virtual int32_t DoBinaryDataSize(const UnicodeString & Name) = 0;
 
   virtual UnicodeString DoReadRootAccessString();
 
-  size_t BinaryDataSize(const UnicodeString & Name);
+  int32_t BinaryDataSize(const UnicodeString & Name);
   UnicodeString ReadAccessString();
   uint32_t ReadAccess(uint32_t CurrentAccess);
   virtual bool HasAccess(uint32_t Access);
@@ -189,7 +189,6 @@ public:
 public:
   int32_t GetFailed() const { return FFailed; }
   void SetFailed(int32_t Value) { FFailed = Value; }
-  virtual void SetAccessMode(TStorageAccessMode value);
 
 protected:
   virtual void SetAccessModeProtected(TStorageAccessMode value) override;
@@ -198,7 +197,7 @@ protected:
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) override;
   virtual void DoCloseSubKey() override;
   virtual UnicodeString GetSource() const override;
-  virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
+  virtual int32_t DoBinaryDataSize(const UnicodeString & Name) override;
   virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
   virtual bool DoDeleteValue(const UnicodeString & Name) override;
 

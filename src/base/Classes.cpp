@@ -486,7 +486,7 @@ UnicodeString TStrings::GetTextStr() const
   for (int32_t Index = 0; Index < Count; ++Index)
   {
     UnicodeString S = GetString(Index);
-    ::size_t L = S.Length() * sizeof(wchar_t);
+    int32_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
       memmove(P, S.c_str(), L);
@@ -1877,17 +1877,17 @@ TRegDataType TRegistry::GetDataType(const UnicodeString & ValueName) const
   return Result;
 }
 
-DWORD TRegistry::GetDataSize(const UnicodeString & ValueName) const
+int32_t TRegistry::GetDataSize(const UnicodeString & ValueName) const
 {
-  DWORD Result{};
+  int32_t Result{0};
   TRegDataInfo Info{};
   if (GetDataInfo(ValueName, Info))
   {
-    Result = Info.DataSize;
+    Result = nb::ToInt32(Info.DataSize);
   }
   else
   {
-    Result = nb::ToDWord(-1);
+    Result = nb::ToInt32(-1);
   }
   return Result;
 }
@@ -1981,18 +1981,18 @@ UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name) const
   return Result;
 }
 
-::size_t TRegistry::ReadBinaryData(const UnicodeString & Name,
-  void * Buffer, ::size_t BufSize) const
+int32_t TRegistry::ReadBinaryData(const UnicodeString & Name,
+  void * Buffer, int32_t BufSize) const
 {
-  ::size_t Result{};
+  int32_t Result{};
   TRegDataInfo Info{};
   if (GetDataInfo(Name, Info))
   {
-    Result = nb::ToSizeT(Info.DataSize);
+    Result = nb::ToInt32(Info.DataSize);
     TRegDataType RegData = Info.RegData;
     if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
     {
-      const size_t res = GetData(Name, Buffer, Result, RegData);
+      const int32_t res = GetData(Name, Buffer, Result, RegData);
       DebugAssert(res == Result);
     }
     else

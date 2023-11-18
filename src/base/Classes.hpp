@@ -759,7 +759,7 @@ public:
   bool ValueExists(const UnicodeString & Value) const;
   bool GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const;
   TRegDataType GetDataType(const UnicodeString & ValueName) const;
-  DWORD GetDataSize(const UnicodeString & ValueName) const;
+  int32_t GetDataSize(const UnicodeString & ValueName) const;
   bool ReadBool(const UnicodeString & Name) const;
   TDateTime ReadDateTime(const UnicodeString & Name) const;
   double ReadFloat(const UnicodeString & Name) const;
@@ -768,8 +768,8 @@ public:
   int64_t ReadInt64(const UnicodeString & Name) const;
   UnicodeString ReadString(const UnicodeString & Name) const;
   UnicodeString ReadStringRaw(const UnicodeString & Name) const;
-  size_t ReadBinaryData(const UnicodeString & Name,
-    void * Buffer, size_t BufSize) const;
+  int32_t ReadBinaryData(const UnicodeString & Name,
+    void * Buffer, int32_t BufSize) const;
 
   void WriteBool(const UnicodeString & Name, bool Value);
   void WriteDateTime(const UnicodeString & Name, const TDateTime &Value);
