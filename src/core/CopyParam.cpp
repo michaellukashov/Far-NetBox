@@ -402,7 +402,7 @@ void TCopyParamType::DoGetInfoStr(
 
   if (GetCPSLimit() > 0)
   {
-    int32_t LimitKB = int32_t(GetCPSLimit() / 1024);
+    const int32_t LimitKB = nb::ToInt32(GetCPSLimit() / 1024);
     if (ADD(FMTLOAD(COPY_INFO_CPS_LIMIT2, LimitKB), cpaIncludeMaskOnly))
     {
 #if 0
@@ -654,7 +654,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
     wchar_t * InvalidChar = ToWChar(FileName);
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != nullptr)
     {
-      int32_t Index = InvalidChar - FileName.c_str() + 1;
+      const int32_t Index = InvalidChar - FileName.c_str() + 1;
       if (FileName.Length() >= Index + 2)
       {
         UnicodeString Hex = FileName.SubString(Index + 1, 2);
@@ -774,9 +774,9 @@ TRights TCopyParamType::RemoteFileRights(uint32_t Attrs) const
 
 UnicodeString TCopyParamType::GetLogStr() const
 {
-  wchar_t CaseC[] = L"NULFS";
-  wchar_t ModeC[] = L"BAM";
-  wchar_t ResumeC[] = L"YSN";
+  const wchar_t CaseC[] = L"NULFS";
+  const wchar_t ModeC[] = L"BAM";
+  const wchar_t ResumeC[] = L"YSN";
   // OpenArray (ARRAYOFCONST) supports only up to 19 arguments, so we had to split it
   return
     FORMAT(
@@ -937,10 +937,10 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
   }
   else if (Storage->ValueExists("ExcludeFileMask"))
   {
-    UnicodeString ExcludeFileMask = Storage->ReadString("ExcludeFileMask", UnicodeString());
+    const UnicodeString ExcludeFileMask = Storage->ReadString("ExcludeFileMask", UnicodeString());
     if (!ExcludeFileMask.IsEmpty())
     {
-      bool NegativeExclude = Storage->ReadBool("NegativeExclude", false);
+      const bool NegativeExclude = Storage->ReadBool("NegativeExclude", false);
       if (NegativeExclude)
       {
         GetIncludeFileMask().Masks(ExcludeFileMask);
@@ -1130,7 +1130,7 @@ void CopySpeedLimits(TStrings * Source, TStrings * Dest)
   {
     UnicodeString Text = Source->GetString(Index);
     uint32_t Speed;
-    bool Valid = TryGetSpeedLimit(Text, Speed);
+    const bool Valid = TryGetSpeedLimit(Text, Speed);
     if ((!Valid || (Speed == 0)) && !Unlimited)
     {
       Temp->Add(LoadStr(SPEED_UNLIMITED));

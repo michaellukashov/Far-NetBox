@@ -213,7 +213,7 @@ void QuickSort(nb::vector_t<void *> &SortList, int32_t L, int32_t R,
   {
     Index = L;
     int32_t J = R;
-    void * P = SortList[(L + R) >> 1];
+    const void * P = SortList[(L + R) >> 1];
     do
     {
       while (SCompare(SortList[Index], P) < 0)
@@ -352,8 +352,8 @@ void TStrings::SetTextStr(const UnicodeString & Text)
 
 UnicodeString TStrings::GetCommaText() const
 {
-  wchar_t LOldDelimiter = GetDelimiter();
-  wchar_t LOldQuoteChar = GetQuoteChar();
+  const wchar_t LOldDelimiter = GetDelimiter();
+  const wchar_t LOldQuoteChar = GetQuoteChar();
   FDelimiter = L',';
   FQuoteChar = L'"';
   SCOPE_EXIT
@@ -423,7 +423,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   };
   Clear();
   nb::vector_t<UnicodeString> Lines;
-  UnicodeString Delimiter(UnicodeString(GetDelimiter()) + L'\n');
+  const UnicodeString Delimiter(UnicodeString(GetDelimiter()) + L'\n');
   tokenize(Value, Lines, Delimiter, true);
   for (const auto& Line: Lines)
 
@@ -585,7 +585,7 @@ void TStrings::Move(int32_t CurIndex, int32_t NewIndex)
     {
       EndUpdate();
     };
-    UnicodeString TempString = GetString(CurIndex);
+    const UnicodeString TempString = GetString(CurIndex);
     TObject * TempObject = GetObj(CurIndex);
     Delete(CurIndex);
     InsertObject(NewIndex, TempString, TempObject);
@@ -676,7 +676,7 @@ void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
 
 UnicodeString TStrings::GetValueFromIndex(int32_t Index) const
 {
-  UnicodeString Name = GetName(Index);
+  const UnicodeString Name = GetName(Index);
   UnicodeString Result = GetValue(Name);
   return Result;
 }
@@ -1794,7 +1794,7 @@ bool TRegistry::OpenKey(const UnicodeString & AKey, bool CanCreate)
 bool TRegistry::DeleteKey(const UnicodeString & AKey)
 {
   const bool Relative = IsRelative(AKey);
-  HKEY OldKey = GetCurrentKey();
+  const HKEY OldKey = GetCurrentKey();
   HKEY DeleteKey = GetKey(AKey);
   if (DeleteKey != nullptr)
   {
@@ -1832,13 +1832,13 @@ bool TRegistry::DeleteValue(const UnicodeString & Value) const
 
 bool TRegistry::KeyExists(const UnicodeString & SubKey) const
 {
-  uint32_t OldAccess = FAccess;
+  const uint32_t OldAccess = FAccess;
   SCOPE_EXIT
   {
     FAccess = OldAccess;
   };
   FAccess = STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS;
-  HKEY TempKey = GetKey(SubKey);
+  const HKEY TempKey = GetKey(SubKey);
   if (TempKey != nullptr)
   {
     ::RegCloseKey(TempKey);
@@ -2020,7 +2020,7 @@ int32_t TRegistry::GetData(const UnicodeString & Name, void * Buffer,
     throw Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
   RegData = DataTypeToRegData(DataType);
-  int32_t Result = nb::ToInt32(BufSize);
+  const int32_t Result = nb::ToInt32(BufSize);
   return Result;
 }
 
@@ -2042,7 +2042,7 @@ void TRegistry::WriteBool(const UnicodeString & Name, bool Value)
 
 void TRegistry::WriteDateTime(const UnicodeString & Name, const TDateTime &Value)
 {
-  double Val = Value.GetValue();
+  const double Val = Value.GetValue();
   PutData(Name, &Val, sizeof(double), rdBinary);
 }
 
@@ -2068,7 +2068,7 @@ void TRegistry::WriteIntPtr(const UnicodeString & Name, intptr_t Value)
 
 void TRegistry::WriteInteger(const UnicodeString & Name, int32_t Value)
 {
-  DWORD Val = nb::ToDWord(Value);
+  const DWORD Val = nb::ToDWord(Value);
   PutData(Name, &Val, sizeof(Val), rdInteger);
 }
 

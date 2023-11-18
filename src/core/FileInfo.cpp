@@ -123,7 +123,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, DWORD Handle,
   {
     VS_VERSION_INFO_STRUCT32 * VersionInfo = static_cast<VS_VERSION_INFO_STRUCT32 *>(Data);
 
-    uint32_t Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
+    const uint32_t Len = VERSION_GetFileVersionInfo_PE(FileName, DataSize, Data);
 
     Result = (Len != 0);
     if (Result)

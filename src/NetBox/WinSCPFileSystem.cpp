@@ -452,7 +452,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       }
 
       TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
-      bool ResolveSymlinks = GetSessionData()->GetResolveSymlinks();
+      const bool ResolveSymlinks = GetSessionData()->GetResolveSymlinks();
       for (int32_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
@@ -512,7 +512,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       {
         UnicodeString Name = SessionName.SubString(
             Folder.Length() + 1, SessionName.Length() - Folder.Length());
-        int32_t Slash = Name.Pos(L'/');
+        const int32_t Slash = Name.Pos(L'/');
         if (Slash > 0)
         {
           Name.SetLength(Slash - 1);
@@ -627,7 +627,7 @@ void TWinSCPFileSystem::FocusSession(const TSessionData * Data)
 
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
-  bool NewData = !Data;
+  const bool NewData = !Data;
   bool FillInConnect = !Edit && Data && !Data->GetCanLogin();
   if (NewData || FillInConnect)
   {
@@ -690,7 +690,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
         }
         else if (FillInConnect && OrigData)
         {
-          UnicodeString OrigName = OrigData->GetName();
+          const UnicodeString OrigName = OrigData->GetName();
           OrigData->Assign(Data);
           OrigData->SetName(OrigName);
         }
@@ -1557,12 +1557,12 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
   bool & Continue, bool Collect, const TSynchronizeOptions * SynchronizeOptions)
 {
   static uint32_t LastTicks;
-  uint32_t Ticks = ::GetTickCount();
+  const uint32_t Ticks = ::GetTickCount();
   if ((LastTicks == 0) || (Ticks - LastTicks > 500))
   {
     LastTicks = Ticks;
 
-    static const int32_t ProgressWidth = 48;
+    constexpr const int32_t ProgressWidth = 48;
     static UnicodeString ProgressTitle;
     static UnicodeString ProgressTitleCompare;
     static UnicodeString LocalLabel;
@@ -1608,7 +1608,7 @@ void TWinSCPFileSystem::Synchronize()
   TSynchronizeParamType Params;
   Params.LocalDirectory = (*AnotherPanel)->GetCurrDirectory();
   Params.RemoteDirectory = FTerminal->RemoteGetCurrentDirectory();
-  int32_t UnusedParams = (GetGUIConfiguration()->GetSynchronizeParams() &
+  const int32_t UnusedParams = (GetGUIConfiguration()->GetSynchronizeParams() &
       (TTerminal::spPreviewChanges | TTerminal::spTimestamp |
         TTerminal::spNotByTime | TTerminal::spBySize));
   Params.Params = GetGUIConfiguration()->GetSynchronizeParams() & ~UnusedParams;
@@ -1712,7 +1712,7 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
   {
     TMessageParams Params(nullptr);
     Params.Params = qpNeverAskAgainCheck;
-    uint32_t Result = MoreMessageDialog(
+    const uint32_t Result = MoreMessageDialog(
         FORMAT(GetMsg(NB_TOO_MANY_WATCH_DIRECTORIES), MaxDirectories, MaxDirectories), nullptr,
         qtConfirmation, qaYes | qaNo, &Params);
 
@@ -3879,7 +3879,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int32_t Event, void * /* Param */)
 
         if (!FLastMultipleEditFile.IsEmpty())
         {
-          bool IsLastMultipleEditFile = ::AnsiSameText(base::FromUnixPath(FLastMultipleEditFile), base::FromUnixPath(Info->GetFileName()));
+          const bool IsLastMultipleEditFile = ::AnsiSameText(base::FromUnixPath(FLastMultipleEditFile), base::FromUnixPath(Info->GetFileName()));
           DebugAssert(IsLastMultipleEditFile);
           if (IsLastMultipleEditFile)
           {
@@ -4175,8 +4175,8 @@ void TWinSCPFileSystem::EditHistory()
   const FarKey BreakKeys[] = {{ VK_F4, 0 }, { 0 }};
 
   intptr_t BreakCode = 0;
-  int32_t Result = GetWinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-      GetMsg(NB_MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
+  const int32_t Result = GetWinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+                                                 GetMsg(NB_MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
 
   if ((Result >= 0) && (Result < nb::ToInt32(FEditHistories.size())))
   {
