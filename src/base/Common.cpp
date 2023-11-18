@@ -4196,11 +4196,11 @@ int32_t ParseShortEngMonthName(const UnicodeString & MonthStr)
 
 TStringList * CreateSortedStringList(bool CaseSensitive, TDuplicatesEnum Duplicates)
 {
-  TStringList * Result = new TStringList();
+  std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
   Result->SetCaseSensitive(CaseSensitive);
   Result->SetSorted(true);
   Result->SetDuplicates(Duplicates);
-  return Result;
+  return Result.release();
 }
 
 static UnicodeString NormalizeIdent(const UnicodeString & AIdent)
