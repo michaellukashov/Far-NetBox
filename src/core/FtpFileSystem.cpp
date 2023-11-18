@@ -166,7 +166,7 @@ bool TFileZillaImpl::GetFileModificationTimeInUtc(const wchar_t * FileName, stru
 
 wchar_t * TFileZillaImpl::LastSysErrorMessage() const
 {
-  return _wcsdup(::LastSysErrorMessage().c_str());
+  return nbcore_wstrdup(::LastSysErrorMessage().c_str());
 }
 
 std::wstring TFileZillaImpl::GetClientString() const
