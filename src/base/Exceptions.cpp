@@ -143,7 +143,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
   bool Formatted, UnicodeString & Message, bool & InternalError)
 {
   bool Result = true;
-  const wchar_t *CounterName = nullptr;
+  const wchar_t * CounterName = nullptr;
   InternalError = false; // see also IsInternalException
 
   // this list has to be in sync with CloneException
@@ -244,7 +244,7 @@ bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
 UnicodeString GetExceptionHelpKeyword(const Exception * E)
 {
   UnicodeString HelpKeyword;
-  const ExtException *ExtE = dyn_cast<ExtException>(E);
+  const ExtException * ExtE = dyn_cast<ExtException>(E);
   UnicodeString Message; // not used
   bool InternalError = false;
   if (ExtE != nullptr)
@@ -297,7 +297,7 @@ ExtException::ExtException(TObjectClassId Kind, const Exception * E) :
   FHelpKeyword = GetExceptionHelpKeyword(E);
 }
 
-ExtException::ExtException(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
+ExtException::ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg)
 {
   AddMoreMessages(E);
@@ -388,7 +388,7 @@ void ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages = new TStringList();
     }
 
-    const ExtException *ExtE = dyn_cast<ExtException>(E);
+    const ExtException * ExtE = dyn_cast<ExtException>(E);
     if (ExtE != nullptr)
     {
       if (ExtE->GetMoreMessages() != nullptr)
@@ -428,12 +428,12 @@ ExtException::~ExtException() noexcept
   SAFE_DESTROY(FMoreMessages);
 }
 
-ExtException *ExtException::CloneFrom(const Exception * E)
+ExtException * ExtException::CloneFrom(const Exception * E)
 {
   return new ExtException(E, L"");
 }
 
-ExtException *ExtException::Clone() const
+ExtException * ExtException::Clone() const
 {
   return CloneFrom(this);
 }
@@ -495,7 +495,7 @@ EFatal::EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & M
 
 void EFatal::Init(const Exception * E)
 {
-  const EFatal *F = dyn_cast<EFatal>(E);
+  const EFatal * F = dyn_cast<EFatal>(E);
   if (F != nullptr)
   {
     FReopenQueried = F->GetReopenQueried();
@@ -507,7 +507,7 @@ ECRTExtException::ECRTExtException(const UnicodeString & Msg) :
 {
 }
 
-ExtException *EFatal::Clone() const
+ExtException * EFatal::Clone() const
 {
   return new EFatal(OBJECT_CLASS_EFatal, this, L"");
 }
@@ -517,7 +517,7 @@ void EFatal::Rethrow()
   throw EFatal(this, L"");
 }
 
-ExtException *ESshTerminate::Clone() const
+ExtException * ESshTerminate::Clone() const
 {
   return new ESshTerminate(this, L"", Operation, TargetLocalPath, DestLocalFileName);
 }
@@ -533,7 +533,7 @@ ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(OBJECT_CLASS_ECallbackGuardA
 
 Exception * CloneException(Exception * E)
 {
-  Exception * Result;
+  Exception * Result{nullptr};
   // this list has to be in sync with ExceptionMessage
   ExtException * Ext = dyn_cast<ExtException>(E);
   if (Ext != nullptr)

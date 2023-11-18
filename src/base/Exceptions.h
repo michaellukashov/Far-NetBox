@@ -21,7 +21,7 @@ NB_DEFINE_CLASS_ID(ExtException);
 class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
-  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ExtException); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
   ExtException() = default;
@@ -47,11 +47,12 @@ public:
   explicit ExtException(TObjectClassId Kind, int32_t Ident) : Exception(Kind, Ident) {}
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) : Exception(Kind, Msg, AHelpContext) {}
 
-  ExtException(const ExtException& E) : Exception(OBJECT_CLASS_ExtException, L""), FHelpKeyword(E.FHelpKeyword)
+  ExtException(const ExtException & E) : Exception(OBJECT_CLASS_ExtException, L""), FHelpKeyword(E.FHelpKeyword)
   {
     AddMoreMessages(&E);
   }
-  ExtException &operator=(const ExtException &rhs)
+
+  ExtException & operator =(const ExtException & rhs)
   {
     FHelpKeyword = rhs.FHelpKeyword;
     Message = rhs.Message;
@@ -59,7 +60,7 @@ public:
     return *this;
   }
 
-  static ExtException * CloneFrom(const Exception *E);
+  static ExtException * CloneFrom(const Exception * E);
 
   virtual ExtException * Clone() const;
   virtual void Rethrow();
@@ -74,7 +75,7 @@ private:
 
 #define EXT_EXCEPTION_METHODS(NAME, BASE) \
   public: \
-    static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
+    static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit inline NAME(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
@@ -168,14 +169,14 @@ public:
 
   __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
 
-  virtual ExtException *Clone() const override;
+  virtual ExtException * Clone() const override;
   virtual void Rethrow() override;
 
   bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 private:
-  void Init(const Exception *E);
-  bool FReopenQueried;
+  void Init(const Exception * E);
+  bool FReopenQueried{false};
 };
 
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
@@ -183,11 +184,11 @@ private:
   class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
-    static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
+    static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    explicit inline NAME(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
-    virtual ExtException *Clone() const override { return new NAME(this, L""); } \
+    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
+    virtual ExtException * Clone() const override { return new NAME(this, L""); } \
   };
 
 DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
@@ -198,7 +199,7 @@ NB_DEFINE_CLASS_ID(ESshTerminate);
 class NB_CORE_EXPORT ESshTerminate : public EFatal
 {
 public:
-  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ESshTerminate); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ESshTerminate); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ESshTerminate) || EFatal::is(Kind); }
 public:
   explicit inline ESshTerminate(
@@ -211,7 +212,7 @@ public:
   {
   }
 
-  virtual ExtException *Clone() const override;
+  virtual ExtException * Clone() const override;
   virtual void Rethrow() override;
 
   TOnceDoneOperation Operation;
@@ -223,7 +224,7 @@ NB_DEFINE_CLASS_ID(ECallbackGuardAbort);
 class NB_CORE_EXPORT ECallbackGuardAbort : public EAbort
 {
 public:
-  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECallbackGuardAbort) || EAbort::is(Kind); }
 public:
   ECallbackGuardAbort();
@@ -233,7 +234,7 @@ NB_DEFINE_CLASS_ID(EStreamError);
 class EStreamError : public ExtException
 {
 public:
-  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EStreamError); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EStreamError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EStreamError) || Exception::is(Kind); }
 public:
   using ExtException::ExtException;
@@ -247,7 +248,7 @@ NB_DEFINE_CLASS_ID(EFCreateError);
 class NB_CORE_EXPORT EFCreateError : public EStreamError
 {
 public:
-  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFCreateError); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFCreateError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFCreateError) || Exception::is(Kind); }
 public:
   explicit EFCreateError(const UnicodeString & Msg) :
@@ -260,7 +261,7 @@ NB_DEFINE_CLASS_ID(EFOpenError);
 class NB_CORE_EXPORT EFOpenError : public EStreamError
 {
 public:
-  static bool classof(const Exception *Obj) { return Obj->is(OBJECT_CLASS_EFOpenError); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFOpenError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFOpenError) || Exception::is(Kind); }
 public:
   explicit EFOpenError(const UnicodeString & Msg) :
