@@ -58,9 +58,10 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   GetGlobals()->SetupDbgHandles(DbgFileName);
   // setup tinylog
   g_tinylog.level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
-  FILE *logFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
+  FILE * logFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
   g_tinylog.file(logFile);
-  IC();
+  // TODO: icecream::ic.output(logFile);
+  // IC();
 #endif //ifndef NDEBUG
 }
 
