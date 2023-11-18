@@ -52,7 +52,7 @@ NB_CORE_EXPORT void Shred(UTF8String & Str);
 NB_CORE_EXPORT void Shred(AnsiString & Str);
 NB_CORE_EXPORT void Shred(RawByteString & Str);
 NB_CORE_EXPORT UnicodeString AnsiToString(const RawByteString & S);
-NB_CORE_EXPORT UnicodeString AnsiToString(const char * S, size_t Len);
+NB_CORE_EXPORT UnicodeString AnsiToString(const char * S, int32_t Len);
 NB_CORE_EXPORT UnicodeString MakeValidFileName(const UnicodeString & AFileName);
 NB_CORE_EXPORT UnicodeString RootKeyToStr(HKEY RootKey);
 NB_CORE_EXPORT UnicodeString BooleanToStr(bool B);
