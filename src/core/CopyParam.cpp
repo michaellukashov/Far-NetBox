@@ -1074,8 +1074,8 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 #undef C2
 #undef C
 
-constexpr const uint32_t MinSpeed = 8 * 1024;
-constexpr const uint32_t MaxSpeed = 8 * 1024 * 1024;
+const uint32_t MinSpeed = 8 * 1024;
+const uint32_t MaxSpeed = 8 * 1024 * 1024;
 
 static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t & Speed)
 {
