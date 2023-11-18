@@ -12,7 +12,7 @@ class TFar3Storage : public THierarchicalStorage
 public:
   explicit TFar3Storage(const UnicodeString & AStorage,
     const GUID & Guid, FARAPISETTINGSCONTROL SettingsControl);
-  virtual ~TFar3Storage() noexcept override;
+  virtual ~TFar3Storage() noexcept override = default;
 
   bool Copy(TFar3Storage * Storage);
 
@@ -27,7 +27,6 @@ public:
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
   virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate) override;
   virtual UnicodeString GetSource() const override;
-//  virtual UnicodeString GetSource() override;
 //  virtual void DoGetSubKeyNames(TStrings *Strings) override;
   virtual void DoGetValueNames(TStrings *Strings) override;
 
@@ -49,7 +48,7 @@ public:
 
 private:
   UnicodeString GetFullCurrentSubKey() const { return /* GetStorage() + */ GetCurrentSubKey(); }
-  int32_t OpenSubKeyInternal(int32_t Root, const UnicodeString & SubKey, bool CanCreate);
+  size_t OpenSubKeyInternal(size_t Root, const UnicodeString & SubKey, bool CanCreate);
 
 private:
   size_t FRoot{0};

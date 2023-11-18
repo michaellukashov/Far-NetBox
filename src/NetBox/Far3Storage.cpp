@@ -3,7 +3,7 @@
 #include <Exceptions.h>
 #include <PuttyIntf.h>
 #include "Far3Storage.h"
-#include "TextsCore.h"
+//#include "TextsCore.h"
 
 
 TFar3Storage::TFar3Storage(const UnicodeString & AStorage,
@@ -19,8 +19,6 @@ void TFar3Storage::Init()
   FRoot = 0;
 }
 
-TFar3Storage::~TFar3Storage() = default;
-
 bool TFar3Storage::Copy(TFar3Storage * /*Storage*/)
 {
   Error(SNotImplemented, 3014);
@@ -33,19 +31,9 @@ UnicodeString TFar3Storage::GetSource() const
   return GetStorage();
 }
 
-//UnicodeString TFar3Storage::GetSource()
-//{
-//  return GetStorage();
-//}
-
-//void TFar3Storage::SetAccessMode(TStorageAccessMode Value)
-//{
-//  THierarchicalStorage::SetAccessMode(Value);
-//}
-
-int32_t TFar3Storage::OpenSubKeyInternal(int32_t Root, const UnicodeString & SubKey, bool CanCreate)
+size_t TFar3Storage::OpenSubKeyInternal(size_t Root, const UnicodeString & SubKey, bool CanCreate)
 {
-  int32_t NewRoot = 0;
+  size_t NewRoot = 0;
   if (CanCreate)
   {
     NewRoot = FPluginSettings.CreateSubKey(Root, SubKey.c_str());
@@ -82,9 +70,9 @@ bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCrea
 
 void TFar3Storage::DoCloseSubKey()
 {
-  THierarchicalStorage::CloseSubKey();
+  // THierarchicalStorage::DoCloseSubKey();
   // DebugAssert(FKeyHistory->GetCount() == FSubKeyIds.size() - 1);
-  if (FKeyHistory.size() && FSubKeyIds.size())
+  if (!FKeyHistory.empty() && !FSubKeyIds.empty())
   {
     FRoot = FSubKeyIds.back();
     FSubKeyIds.pop_back();
@@ -98,7 +86,7 @@ void TFar3Storage::DoCloseSubKey()
 void TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
 {
   UnicodeString K;
-  if (FKeyHistory.size() == 0)
+  if (FKeyHistory.empty())
   {
     K = GetFullCurrentSubKey();
     FRoot = FPluginSettings.OpenSubKey(FRoot, K.c_str());
