@@ -1720,10 +1720,9 @@ void TRegistry::GetValueNames(TStrings * Names) const
 {
   Names->Clear();
   TRegKeyInfo Info{};
-  UnicodeString S;
   if (GetKeyInfo(Info))
   {
-    S.SetLength(Info.MaxValueLen + 1);
+    UnicodeString S(Info.MaxValueLen + 1);
     for (DWORD Index = 0; Index < Info.NumValues; Index++)
     {
       DWORD Len = Info.MaxValueLen + 1;
@@ -1737,7 +1736,6 @@ void TRegistry::GetKeyNames(TStrings * Names) const
 {
   Names->Clear();
   TRegKeyInfo Info{};
-  UnicodeString S;
   if (GetKeyInfo(Info))
   {
     S.SetLength(nb::ToIntPtr(Info.MaxSubKeyLen) + 1);
