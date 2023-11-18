@@ -2671,7 +2671,7 @@ void TSecureShell::VerifyHostKey(
         UnicodeString CancelButton = LoadStr(Vcl_Consts_SMsgDlgCancel);
         UnicodeString UpdateButton = LoadStr(UPDATE_KEY_BUTTON);
         UnicodeString AddButton = LoadStr(ADD_KEY_BUTTON);
-        int32_t Answers;
+        int32_t Answers{0};
         rde::vector<TQueryButtonAlias> Aliases;
 
         TQueryButtonAlias CopyAlias;
