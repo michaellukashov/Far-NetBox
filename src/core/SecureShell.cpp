@@ -2722,7 +2722,7 @@ void TSecureShell::VerifyHostKey(
         Params.NoBatchAnswers = qaYes | qaNo | qaRetry | qaIgnore | qaOK;
         Params.HelpKeyword = (Unknown ? HELP_UNKNOWN_KEY : HELP_DIFFERENT_KEY);
         Params.Aliases = &Aliases[0];
-        Params.AliasesCount = Aliases.size();
+        Params.AliasesCount = nb::ToInt32(Aliases.size());
 
         UnicodeString NewLine = L"\n";
         UnicodeString Para = NewLine + NewLine;
