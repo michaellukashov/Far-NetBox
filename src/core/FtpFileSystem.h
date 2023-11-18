@@ -182,7 +182,7 @@ protected:
   void ReadDirectoryProgress(int64_t Bytes);
   void ResetFileTransfer();
   void DoFileTransferProgress(int64_t TransferSize, int64_t Bytes);
-  void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
   void ResetCaches();
   // void CaptureOutput(const UnicodeString & AStr);
   void DoReadDirectory(TRemoteFileList * AFileList);
