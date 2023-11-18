@@ -392,7 +392,7 @@ void THierarchicalStorage::CloseSubKey()
 {
   if (FKeyHistory.empty())
   {
-    throw Exception(UnicodeString());
+    throw Exception("CloseSubKey: empty history");
   }
 
   DebugAssert(FKeyHistory.back().Levels == 1);
