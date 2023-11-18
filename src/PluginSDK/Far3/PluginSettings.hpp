@@ -5,12 +5,12 @@
 
 class PluginSettings
 {
-  HANDLE handle;
-  FARAPISETTINGSCONTROL SettingsControl;
+  HANDLE handle{INVALID_HANDLE_VALUE};
+  FARAPISETTINGSCONTROL SettingsControl{};
 
 public:
 
-  PluginSettings(const GUID &guid, FARAPISETTINGSCONTROL SettingsControl)
+  PluginSettings(const GUID & guid, FARAPISETTINGSCONTROL SettingsControl)
   {
     this->SettingsControl = SettingsControl;
     handle = INVALID_HANDLE_VALUE;
@@ -25,17 +25,17 @@ public:
     SettingsControl(handle,SCTL_FREE,0,0);
   }
 
-  int CreateSubKey(size_t Root, const wchar_t *Name)
+  intptr_t CreateSubKey(size_t Root, const wchar_t *Name)
   {
     FarSettingsValue value={sizeof(FarSettingsValue),Root,Name};
-    return (int)SettingsControl(handle,SCTL_CREATESUBKEY,0,&value);
+    return SettingsControl(handle,SCTL_CREATESUBKEY,0,&value);
   }
 
-  int OpenSubKey(size_t Root, const wchar_t *Name)
+  intptr_t OpenSubKey(size_t Root, const wchar_t *Name)
   {
     // DEBUG_PRINTF(L"handle = %d, Name = %s", (int)handle, Name);
     FarSettingsValue value={sizeof(FarSettingsValue),Root,Name};
-    int Result = (int)SettingsControl(handle,SCTL_OPENSUBKEY,0,&value);
+    intptr_t Result = SettingsControl(handle,SCTL_OPENSUBKEY,0,&value);
     // DEBUG_PRINTF(L"Result = %d", Result);
     return Result;
   }
@@ -52,7 +52,7 @@ public:
     return SettingsControl(handle,SCTL_DELETE,0,&value) ? true : false;
   }
 
-  const wchar_t *Get(size_t Root, const wchar_t *Name, const wchar_t *Default)
+  const wchar_t * Get(size_t Root, const wchar_t *Name, const wchar_t *Default)
   {
     FarSettingsItem item={sizeof(FarSettingsItem),Root,Name,FST_STRING};
     if (SettingsControl(handle,SCTL_GET,0,&item))
@@ -67,7 +67,7 @@ public:
     lstrcpyn(Value, Get(Root,Name,Default), (int)Size);
   }
 
-  unsigned __int64 Get(size_t Root, const wchar_t *Name, unsigned __int64 Default)
+  uint64_t Get(size_t Root, const wchar_t *Name, uint64_t Default)
   {
     FarSettingsItem item={sizeof(FarSettingsItem),Root,Name,FST_QWORD};
     if (SettingsControl(handle,SCTL_GET,0,&item))
@@ -77,10 +77,10 @@ public:
     return Default;
   }
 
-  __int64      Get(size_t Root, const wchar_t *Name, __int64 Default) { return (__int64)Get(Root,Name,(unsigned __int64)Default); }
-  int          Get(size_t Root, const wchar_t *Name, int Default)  { return (int)Get(Root,Name,(unsigned __int64)Default); }
-  unsigned int Get(size_t Root, const wchar_t *Name, unsigned int Default) { return (unsigned int)Get(Root,Name,(unsigned __int64)Default); }
-  DWORD        Get(size_t Root, const wchar_t *Name, DWORD Default) { return (DWORD)Get(Root,Name,(unsigned __int64)Default); }
+  int64_t      Get(size_t Root, const wchar_t *Name, int64_t Default) { return (__int64)Get(Root,Name,(uint64_t)Default); }
+  int          Get(size_t Root, const wchar_t *Name, int Default)  { return (int)Get(Root,Name,(uint64_t)Default); }
+  unsigned int Get(size_t Root, const wchar_t *Name, unsigned int Default) { return (unsigned int)Get(Root,Name,(uint64_t)Default); }
+  DWORD        Get(size_t Root, const wchar_t *Name, DWORD Default) { return (DWORD)Get(Root,Name,(uint64_t)Default); }
   bool         Get(size_t Root, const wchar_t *Name, bool Default) { return Get(Root,Name,Default?1ull:0ull)?true:false; }
 
   size_t Get(size_t Root, const wchar_t *Name, void *Value, size_t Size)
