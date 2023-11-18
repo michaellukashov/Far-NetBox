@@ -550,7 +550,7 @@ public:
   }
 
 private:
-  typedef rde::vector<T> TEventHandlers;
+  using TEventHandlers = rde::vector<T>;
   TEventHandlers FEventHandlers;
 
   typename TEventHandlers::iterator Find(T EventHandler)
