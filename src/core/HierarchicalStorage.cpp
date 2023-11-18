@@ -922,7 +922,7 @@ UnicodeString TRegistryStorage::GetSource() const
   return RootKeyToStr(FRegistry->RootKey) + L"\\" + Storage;
 }
 
-void TRegistryStorage::SetAccessMode(TStorageAccessMode value)
+void TRegistryStorage::SetAccessModeProtected(TStorageAccessMode value)
 {
   THierarchicalStorage::SetAccessMode(value);
   if (FRegistry)

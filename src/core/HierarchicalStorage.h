@@ -18,7 +18,7 @@ friend class TCustomIniFileStorage;
 public:
   THierarchicalStorage() = delete;
   explicit THierarchicalStorage(const UnicodeString & AStorage) noexcept;
-  virtual ~THierarchicalStorage() noexcept;
+  virtual ~THierarchicalStorage() noexcept override;
   virtual void Init() {}
   void ConfigureForPutty();
   bool OpenRootKey(bool CanCreate);
@@ -182,7 +182,7 @@ public:
   TRegistryStorage() = delete;
   explicit TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
   explicit TRegistryStorage(const UnicodeString & AStorage) noexcept;
-  virtual ~TRegistryStorage() noexcept;
+  virtual ~TRegistryStorage() noexcept override;
 
   bool Copy(TRegistryStorage * Storage);
 
@@ -192,17 +192,18 @@ public:
   virtual void SetAccessMode(TStorageAccessMode value);
 
 protected:
-  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
+  virtual void SetAccessModeProtected(TStorageAccessMode value) override;
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
   virtual bool DoValueExists(const UnicodeString & Value) override;
-  virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
+  virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) override;
   virtual void DoCloseSubKey() override;
   virtual UnicodeString GetSource() const override;
   virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
   virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
   virtual bool DoDeleteValue(const UnicodeString & Name) override;
 
-  virtual void DoGetSubKeyNames(TStrings * Strings);
-  virtual void DoGetValueNames(TStrings * Strings);
+  virtual void DoGetSubKeyNames(TStrings * Strings) override;
+  virtual void DoGetValueNames(TStrings * Strings) override;
 
   virtual void DoWriteBool(const UnicodeString & Name, bool Value) override;
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;

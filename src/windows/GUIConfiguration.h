@@ -122,7 +122,7 @@ public:
   explicit TCopyParamList() noexcept;
   // explicit TCopyParamList(const TCopyParamList & other) noexcept;
 
-  virtual ~TCopyParamList() noexcept;
+  virtual ~TCopyParamList() noexcept override;
   int32_t Find(const TCopyParamRuleData & Value) const;
 
   void Load(THierarchicalStorage * Storage, int32_t Count);
@@ -269,13 +269,15 @@ public:
   bool DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults);
 
   LCID GetLocaleSafe() const { return GetLocale(); }
-  void SetInitialLocale(LCID Value);
-  void ConfigurationInit() override;
+  // void SetInitialLocale(LCID Value);
+  virtual void ConfigurationInit() override;
+  virtual TStorage GetStorage() const override;
+  virtual THierarchicalStorage * CreateScpStorage(bool & SessionList) override;
 
 public:
   TGUIConfiguration() = delete;
   explicit TGUIConfiguration(TObjectClassId Kind) noexcept;
-  virtual ~TGUIConfiguration() noexcept;
+  virtual ~TGUIConfiguration() noexcept override;
   virtual void Default() override;
   virtual void UpdateStaticUsage() override;
   bool LoadCopyParam(THierarchicalStorage * Storage, TCopyParamType * CopyParam);
