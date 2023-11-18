@@ -13,6 +13,7 @@
 #endif
 
 #include <rdestl/map.h>
+#include <rdestl/vector.h>
 #include <StrUtils.hpp>
 #include <NeonIntf.h>
 #include <SessionData.h>
@@ -1587,7 +1588,7 @@ bool TS3FileSystem::DoLoadFileProperties(
   return Result;
 }
 
-typedef std::vector<S3AclGrant> TAclGrantsVector;
+using TAclGrantsVector = rde::vector<S3AclGrant>;
 static void AddAclGrant(
   TRights::TRightGroup Group, uint16_t & Permissions, TAclGrantsVector & AclGrants,
   const S3AclGrant & AclGrantTemplate, S3Permission Permission)
