@@ -1524,7 +1524,7 @@ void TTerminal::Open()
     },
     __finally
     {
-      // This does not make it through, if terminal thread is abandonded,
+      // This does not make it through, if terminal thread is abandoned,
       // see also TTerminalManager::DoConnectTerminal
       DoInformation("", true, 0);
     } end_try__finally
@@ -1934,10 +1934,10 @@ void TTerminal::Reopen(int32_t Params)
   {
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
-    // Not sure why we are suspeding the transaction in the first place,
-    // but definitelly when set while connecting auto loaded workspace session, it causes loading the directory twice.
+    // Not sure why we are suspending the transaction in the first place,
+    // but definitely when set while connecting auto loaded workspace session, it causes loading the directory twice.
     // (when reconnecting lost connection, it's usually prevented by cached directory)
-    // Preventing that by suspeding transaction only when there is one.
+    // Preventing that by suspending transaction only when there is one.
     FSuspendTransaction = (FInTransaction > 0);
     /*if (InTransaction())
       EndTransaction();
@@ -3328,19 +3328,19 @@ uint32_t TTerminal::ConfirmFileOverwrite(
     switch (BatchOverwrite)
     {
       case boAll:
-        LogEvent(1, L"Overwritting all files");
+        LogEvent(1, L"Overwriting all files");
         Result = qaYes;
         break;
 
       case boNone:
-        LogEvent(1, L"Not overwritting any file");
+        LogEvent(1, L"Not overwriting any file");
         Result = qaNo;
         break;
 
       case boOlder:
         if (FileParams == nullptr)
         {
-          LogEvent(1, L"Not overwritting due to lack of file information");
+          LogEvent(1, L"Not overwriting due to lack of file information");
           Result = qaNo;
         }
         else
@@ -4292,7 +4292,7 @@ TUsableCopyParamAttrs TTerminal::UsableCopyParamAttrs(int32_t Params) const
     FLAGMASK(FLAGSET(Params, cpDelete), cpaNoClearArchive) |
     FLAGMASK(!GetIsCapable(fcIgnorePermErrors), cpaNoIgnorePermErrors) |
     // the following three are never supported for download,
-    // so when they are not suppored for upload too,
+    // so when they are not supported for upload too,
     // set them in General flags, so that they do not get enabled on
     // Synchronize dialog.
     FLAGMASK(!GetIsCapable(fcModeChangingUpload), cpaNoRights) |
@@ -5294,9 +5294,9 @@ void TTerminal::RemoteCreateDirectory(const UnicodeString & ADirName, const TRem
   bool Encrypt = Properties->Valid.Contains(vpEncrypt) && Properties->Encrypt;
   DoCreateDirectory(ADirName, Encrypt);
 
-  TValidProperties RemainingPropeties = Properties->Valid;
-  RemainingPropeties >> vpEncrypt;
-  if (!RemainingPropeties.Empty() &&
+  TValidProperties RemainingProperties = Properties->Valid;
+  RemainingProperties >> vpEncrypt;
+  if (!RemainingProperties.Empty() &&
       (GetIsCapable(fcModeChanging) || GetIsCapable(fcOwnerChanging) || GetIsCapable(fcGroupChanging)))
   {
     DoChangeFileProperties(ADirName, nullptr, Properties);
@@ -7872,7 +7872,7 @@ void TTerminal::DirectorySource(
     CreateTargetDirectory(DestFullName, Attrs, CopyParam);
   }
 
-  // Paralell transfers (cpNoRecurse) won't be allowed if any of these are set anyway (see CanParallel).
+  // Parallel transfers (cpNoRecurse) won't be allowed if any of these are set anyway (see CanParallel).
   // Exception is ClearArchive, which is does not prevent parallel transfer, but is silently ignored for directories.
   if (DoRecurse && !OperationProgress->GetCancel())
   {
@@ -7913,7 +7913,7 @@ bool TTerminal::UseAsciiTransfer(
   return
       GetIsCapable(fcTextMode) &&
     CopyParam->UseAsciiTransfer(BaseFileName, Side, MaskParams) &&
-    // Used either before PartSize is set (to check that file is to be transfered in binary mode, hence allows parallel file transfer),
+    // Used either before PartSize is set (to check that file is to be transferred in binary mode, hence allows parallel file transfer),
     // or later during parallel transfer (which never happens for ascii mode).
     DebugAlwaysTrue(CopyParam->PartSize < 0);
 }

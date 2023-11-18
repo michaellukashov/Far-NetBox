@@ -4933,10 +4933,10 @@ UnicodeString AssemblyNewClassInstanceStart(
       break;
 
     case alVBNET:
-      // Historically we use Dim .. With instead of object initilizer.
+      // Historically we use Dim .. With instead of object initializer.
       // But for inline use, we have to use object initialize.
-      // We should consistently always use object initilizers.
-      // Unfortunatelly VB.NET object initializer (contrary to C#) does not allow trailing comma.
+      // We should consistently always use object initializer.
+      // Unfortunately VB.NET object initializer (contrary to C#) does not allow trailing comma.
       Result += SpaceOrPara + RtfKeyword(L"With");
       if (Inline)
       {
