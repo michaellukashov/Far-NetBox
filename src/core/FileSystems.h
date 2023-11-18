@@ -188,7 +188,7 @@ public:
     const UnicodeString & /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/) {}
   virtual void Sink(
     const UnicodeString & AFileName, const TRemoteFile * AFile,
-    const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t AAttrs,
+    const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) = 0;
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) = 0;
