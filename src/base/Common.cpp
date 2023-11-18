@@ -628,12 +628,12 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   else if (Bytes < nb::ToInt64(100 * 1024 * 1024))
   {
     // Result = FormatFloat(L"#,##0 \"KB\"", Bytes / 1024);
-    Result = FORMAT("%.0f KB", nb::ToDouble(Bytes / 1024.0));
+    Result = FORMAT("%.0f KB", nb::ToDouble(Bytes) / 1024.0);
   }
   else
   {
     // Result = FormatFloat(L"#,##0 \"MiB\"", Bytes / (1024*1024));
-    Result = FORMAT("%.0f MiB", nb::ToDouble(Bytes / (1024 * 1024.0)));
+    Result = FORMAT("%.0f MiB", nb::ToDouble(Bytes) / (1024 * 1024.0));
   }
   return Result;
 }
