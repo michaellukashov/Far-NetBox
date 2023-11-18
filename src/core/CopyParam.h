@@ -14,27 +14,27 @@ enum TTransferMode { tmBinary, tmAscii, tmAutomatic };
 enum TResumeSupport { rsOn, rsSmart, rsOff };
 
 class THierarchicalStorage;
-constexpr int32_t cpaIncludeMaskOnly = 0x01;
-constexpr int32_t cpaNoTransferMode  = 0x02;
-constexpr int32_t cpaNoIncludeMask   = 0x04;
-constexpr int32_t cpaNoClearArchive  = 0x08;
-constexpr int32_t cpaNoPreserveTime  = 0x10;
-constexpr int32_t cpaNoRights        = 0x20;
-constexpr int32_t cpaNoPreserveReadOnly = 0x40;
-constexpr int32_t cpaNoIgnorePermErrors = 0x80;
-constexpr int32_t cpaNoNewerOnly        = 0x100;
-constexpr int32_t cpaNoRemoveCtrlZ      = 0x200;
-constexpr int32_t cpaNoRemoveBOM        = 0x400;
-constexpr int32_t cpaNoPreserveTimeDirs = 0x800;
-constexpr int32_t cpaNoResumeSupport    = 0x1000;
-constexpr int32_t cpaNoEncryptNewFiles  = 0x2000;
-constexpr int32_t cpaNoCalculateSize    = 0x4000;
+constexpr const int32_t cpaIncludeMaskOnly = 0x01;
+constexpr const int32_t cpaNoTransferMode  = 0x02;
+constexpr const int32_t cpaNoIncludeMask   = 0x04;
+constexpr const int32_t cpaNoClearArchive  = 0x08;
+constexpr const int32_t cpaNoPreserveTime  = 0x10;
+constexpr const int32_t cpaNoRights        = 0x20;
+constexpr const int32_t cpaNoPreserveReadOnly = 0x40;
+constexpr const int32_t cpaNoIgnorePermErrors = 0x80;
+constexpr const int32_t cpaNoNewerOnly        = 0x100;
+constexpr const int32_t cpaNoRemoveCtrlZ      = 0x200;
+constexpr const int32_t cpaNoRemoveBOM        = 0x400;
+constexpr const int32_t cpaNoPreserveTimeDirs = 0x800;
+constexpr const int32_t cpaNoResumeSupport    = 0x1000;
+constexpr const int32_t cpaNoEncryptNewFiles  = 0x2000;
+constexpr const int32_t cpaNoCalculateSize    = 0x4000;
 
 struct TUsableCopyParamAttrs
 {
-  int General{0};
-  int Upload{0};
-  int Download{0};
+  int32_t General{0};
+  int32_t Upload{0};
+  int32_t Download{0};
 };
 
 class TTerminal;
@@ -61,7 +61,7 @@ private:
   bool FAddXToDirectories{false};
   bool FPreserveRights{false};
   bool FIgnorePermErrors{false};
-  TResumeSupport FResumeSupport;
+  TResumeSupport FResumeSupport{rsOn};
   int64_t FResumeThreshold{0};
   __removed UnicodeString GetLogStr() const;
   wchar_t FInvalidCharsReplacement{};
@@ -83,7 +83,7 @@ private:
   int64_t FSize{0};
   int64_t FPartOffset{0};
   int64_t FPartSize{0};
-  TOnceDoneOperation FOnceDoneOperation;
+  TOnceDoneOperation FOnceDoneOperation{odoIdle};
   TTransferOutEvent FOnTransferOut;
   TTransferInEvent FOnTransferIn;
 
@@ -102,7 +102,7 @@ public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType) noexcept;
   TCopyParamType(const TCopyParamType & Source) noexcept;
   virtual ~TCopyParamType() noexcept;
-  TCopyParamType &operator=(const TCopyParamType & rhs);
+  TCopyParamType & operator =(const TCopyParamType & rhs);
   virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
   UnicodeString ChangeFileName(const UnicodeString & AFileName,
@@ -127,7 +127,7 @@ public:
   UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
   UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ int32_t Attrs) const;
 
-  bool operator==(const TCopyParamType &rhp) const;
+  bool operator ==(const TCopyParamType &rhp) const;
 
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
   TFileMasks& AsciiFileMask{FAsciiFileMask};
