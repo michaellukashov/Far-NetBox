@@ -204,8 +204,8 @@ private:
 
 public:
   ROIndexedProperty() = delete;
-  explicit ROIndexedProperty(const TGetValueFunctor &Getter) noexcept
-      : _getter(Getter)
+  explicit ROIndexedProperty(TGetValueFunctor Getter) noexcept
+      : _getter(std::move(Getter))
   {
     Expects(_getter != nullptr);
   }
