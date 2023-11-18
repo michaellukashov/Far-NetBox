@@ -893,7 +893,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   while ((Index < Names->Count()) && Result)
   {
     UnicodeString Name = MungeStr(Names->GetString(Index), ForceAnsi, false);
-    DWORD Size = Buffer.size();
+    DWORD Size = nb::ToUInt32(Buffer.size());
     DWORD Type;
     int32_t RegResult;
     do

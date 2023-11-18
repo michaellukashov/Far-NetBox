@@ -6547,7 +6547,7 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
 uint32_t GetCodePageAsNumber(const UnicodeString & CodePage)
 {
   uint32_t codePage = _wtoi(CodePage.c_str());
-  return nb::ToUIntPtr(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
+  return nb::ToUInt32(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
 }
 
 UnicodeString GetCodePageAsString(uint32_t CodePage)
