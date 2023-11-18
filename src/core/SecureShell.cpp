@@ -2668,7 +2668,7 @@ void TSecureShell::VerifyHostKey(
 
         UnicodeString AcceptButton = LoadStr(HOSTKEY_ACCEPT_BUTTON);
         UnicodeString OnceButton = LoadStr(HOSTKEY_ONCE_BUTTON);
-        UnicodeString CancelButton = Vcl_Consts_SMsgDlgCancel;
+        UnicodeString CancelButton = LoadStr(Vcl_Consts_SMsgDlgCancel);
         UnicodeString UpdateButton = LoadStr(UPDATE_KEY_BUTTON);
         UnicodeString AddButton = LoadStr(ADD_KEY_BUTTON);
         int32_t Answers;

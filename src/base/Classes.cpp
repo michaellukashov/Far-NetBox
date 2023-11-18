@@ -423,7 +423,7 @@ void TStrings::SetDelimitedText(const UnicodeString & Value)
   };
   Clear();
   nb::vector_t<UnicodeString> Lines;
-  const UnicodeString Delimiter(UnicodeString(GetDelimiter()) + L'\n');
+  const UnicodeString Delimiter(UnicodeString(1, GetDelimiter()) + L'\n');
   tokenize(Value, Lines, Delimiter, true);
   for (const auto& Line: Lines)
 

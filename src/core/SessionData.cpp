@@ -3844,8 +3844,8 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
       DebugAssert(S2 == S2); // There should be nothing left for encoding
 
       Url +=
-        UnicodeString(UrlParamSeparator) + UrlHostKeyParamName +
-        UnicodeString(UrlParamValueSeparator) + S2;
+        UnicodeString(1, UrlParamSeparator) + UrlHostKeyParamName +
+        UnicodeString(1, UrlParamValueSeparator) + S2;
     }
 
 #if 0
@@ -5619,18 +5619,18 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
       Line = Trim(Line);
       if (IsValidOpensshLine(Line))
       {
-        int32_t P = Pos(L' ', Line);
+        int32_t P = Pos(UnicodeString(1, L' '), Line);
         if (P > 0)
         {
           UnicodeString HostNameStr = Line.SubString(1, P - 1);
           Line = Line.SubString(P + 1, Line.Length() - P);
 
-          P = Pos(L',', HostNameStr);
+          P = Pos(UnicodeString(1, L','), HostNameStr);
           if (P > 0)
           {
             HostNameStr.SetLength(P - 1);
           }
-          P = Pos(L':', HostNameStr);
+          P = Pos(UnicodeString(1, L':'), HostNameStr);
           int32_t PortNumber = -1;
           if (P > 0)
           {

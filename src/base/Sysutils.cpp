@@ -1011,7 +1011,7 @@ const UnicodeString AllowDriveSeparators = ":";
 
 bool CharInSet(const wchar_t Ch, const UnicodeString & S)
 {
-  int32_t Index = ::Pos(S, Ch);
+  int32_t Index = S.Pos(Ch);
   return Index > 0;
 }
 

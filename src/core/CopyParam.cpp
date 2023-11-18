@@ -948,7 +948,7 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
       // convert at least simple cases to new format
       else if (ExcludeFileMask.Pos(IncludeExcludeFileMasksDelimiter) == 0)
       {
-        GetIncludeFileMask().Masks(UnicodeString(IncludeExcludeFileMasksDelimiter) + ExcludeFileMask);
+        GetIncludeFileMask().Masks(UnicodeString(1, IncludeExcludeFileMasksDelimiter) + ExcludeFileMask);
       }
     }
   }

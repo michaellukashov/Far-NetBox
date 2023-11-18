@@ -111,7 +111,7 @@ bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild
 
 UnicodeString UnixExtractFileDir(const UnicodeString & APath)
 {
-  const int32_t Pos = APath.LastDelimiter(L'/');
+  const int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/'));
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -126,7 +126,7 @@ UnicodeString UnixExtractFileDir(const UnicodeString & APath)
 // must return trailing backslash
 UnicodeString UnixExtractFilePath(const UnicodeString & APath)
 {
-  const int32_t Pos = APath.LastDelimiter(L'/');
+  const int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/'));
   // it used to return Path when no slash was found
   if (Pos > 0)
   {
@@ -137,7 +137,7 @@ UnicodeString UnixExtractFilePath(const UnicodeString & APath)
 
 UnicodeString UnixExtractFileName(const UnicodeString & APath)
 {
-  int32_t Pos = APath.LastDelimiter(L'/');
+  int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/'));
   UnicodeString Result;
   if (Pos > 0)
   {
@@ -908,7 +908,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, int32_t & From, const Unico
 UnicodeString CopyToChar(const UnicodeString & Str, wchar_t Ch, bool Trim)
 {
   int32_t From = 1;
-  return CopyToChars(Str, From, UnicodeString(Ch), Trim);
+  return CopyToChars(Str, From, UnicodeString(1, Ch), Trim);
 }
 
 UnicodeString RemoveSuffix(const UnicodeString & Str, const UnicodeString & Suffix, bool RemoveNumbersAfterSuffix)
@@ -964,7 +964,7 @@ UnicodeString MidStr(const UnicodeString & Text, int32_t Start)
 UnicodeString ShellQuoteStr(const UnicodeString & Str)
 {
   wchar_t Quote = L'"';
-  UnicodeString QuoteStr(Quote);
+  UnicodeString QuoteStr(1, Quote);
   return QuoteStr + DelimitStr(Str, Quote) + QuoteStr;
 }
 
@@ -3615,7 +3615,7 @@ UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & 
 
   URL += Params;
 
-  AddToList(URL, AURL, FragmentSeparator);
+  AddToList(URL, AURL, UnicodeString(1, FragmentSeparator));
 
   return URL;
 }

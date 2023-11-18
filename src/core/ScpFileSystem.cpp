@@ -280,13 +280,13 @@ UnicodeString TCommandSet::GetReturnVar() const
   DebugAssert(GetSessionData());
   if (!FReturnVar.IsEmpty())
   {
-    return UnicodeString(L'$') + FReturnVar;
+    return UnicodeString(1, L'$') + FReturnVar;
   }
   if (GetSessionData()->GetDetectReturnVar())
   {
-    return L'0';
+    return UnicodeString(1, L'0');
   }
-  return UnicodeString(L'$') + GetSessionData()->GetReturnVar();
+  return UnicodeString(1, L'$') + GetSessionData()->GetReturnVar();
 }
 
 UnicodeString TCommandSet::ExtractCommand(const UnicodeString & ACommand)

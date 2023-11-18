@@ -603,10 +603,10 @@ UnicodeString::UnicodeString(const wchar_t * Str, int32_t Length) :
 {
 }
 
-UnicodeString::UnicodeString(const wchar_t Src) :
+/*UnicodeString::UnicodeString(const wchar_t Src) :
   Data(&Src, 1)
 {
-}
+}*/
 
 UnicodeString::UnicodeString(const char * Str, int32_t Length) :
   Data(Str, nb::ToInt32(Length))
@@ -926,7 +926,7 @@ UnicodeString operator +(const wchar_t lhs, const UnicodeString & rhs)
 
 UnicodeString operator +(const UnicodeString & lhs, const wchar_t rhs)
 {
-  return lhs + UnicodeString(rhs);
+  return lhs + UnicodeString(1, rhs);
 }
 
 UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs)

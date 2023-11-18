@@ -16,7 +16,7 @@ const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
 UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
-static UnicodeString FileMasksDelimiterStr = UnicodeString(FileMasksDelimiters[1]) + L' ';
+static UnicodeString FileMasksDelimiterStr = UnicodeString(1, FileMasksDelimiters[1]) + L' ';
 static UnicodeString MaskSymbols = L"?*[";
 
 EFileMasksException::EFileMasksException(
@@ -248,7 +248,7 @@ UnicodeString TFileMasks::ComposeMaskStr(
     {
       Result += L' ';
     }
-    Result += UnicodeString(IncludeExcludeFileMasksDelimiter) + L' ' + ExcludeMasks;
+    Result += UnicodeString(1, IncludeExcludeFileMasksDelimiter) + L' ' + ExcludeMasks;
   }
   return Result;
 }

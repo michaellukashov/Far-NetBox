@@ -865,7 +865,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
     if (FLogger != nullptr)
     {
       UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
-      UTF8String UtfLine = UTF8String(UnicodeString(LogLineMarks[Type]) + Timestamp + TrimRight(ALine)) + "\r\n";
+      UTF8String UtfLine = UTF8String(UnicodeString(1, LogLineMarks[Type]) + Timestamp + TrimRight(ALine)) + "\r\n";
 #if 0
       for (int32_t Index = 1; Index <= UtfLine.Length(); Index++)
       {

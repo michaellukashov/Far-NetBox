@@ -73,7 +73,7 @@ public:
   UnicodeString() = default;
   UnicodeString(const wchar_t * Str);
   UnicodeString(const wchar_t * Str, int32_t Length);
-  UnicodeString(wchar_t Src);
+  explicit UnicodeString(wchar_t Src) = delete;
   UnicodeString(const char * Str, int32_t Length);
   UnicodeString(const char * Str, int32_t Length, int32_t CodePage);
   UnicodeString(const char * Str);

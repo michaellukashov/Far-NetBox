@@ -89,7 +89,7 @@ void TOptions::Add(const UnicodeString & Value)
       Option.Type = otSwitch;
       Option.Name = Value.SubString(2, Index - 2);
       Option.Value = Value.SubString(Index + 1, Value.Length());
-      if ((ValueDelimiter == ArrayValueDelimiter) && EndsStr(ArrayValueEnd, Option.Value))
+      if ((ValueDelimiter == ArrayValueDelimiter) && EndsStr(UnicodeString(1, ArrayValueEnd), Option.Value))
       {
         Option.Value.SetLength(Option.Value.Length() - 1);
       }
