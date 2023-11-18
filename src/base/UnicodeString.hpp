@@ -110,7 +110,7 @@ public:
   int32_t CompareIC(const UnicodeString & Str) const;
   int32_t ToIntPtr() const;
   int32_t FindFirstOf(wchar_t Ch) const;
-  int32_t FindFirstOf(const wchar_t * Str, size_t Offset = 0) const;
+  int32_t FindFirstOf(const wchar_t * Str, int32_t Offset = 0) const;
 //  int32_t FindFirstNotOf(const wchar_t * Str) const { return (int32_t)Data.find_first_not_of(Str); }
 
   UnicodeString & Replace(int32_t Pos, int32_t Len, const wchar_t * Str, int32_t DataLen);
