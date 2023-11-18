@@ -59,8 +59,8 @@ int32_t TFar3Storage::OpenSubKeyInternal(int32_t Root, const UnicodeString & Sub
 
 bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
-  int32_t OldRoot = FRoot;
-  int32_t Root = FRoot;
+  size_t OldRoot = FRoot;
+  size_t Root = FRoot;
   bool Result = true;
   {
     UnicodeString subKey = MungedSubKey;
