@@ -47,18 +47,17 @@ size_t TFar3Storage::OpenSubKeyInternal(size_t Root, const UnicodeString & SubKe
 
 bool TFar3Storage::DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate)
 {
-  size_t OldRoot = FRoot;
+  const size_t OldRoot = FRoot;
   size_t Root = FRoot;
-  bool Result = true;
+  UnicodeString SubKey = MungedSubKey; //  MungedSubKey.IsEmpty() ? FStorage : MungedSubKey;
+  bool Result = !SubKey.IsEmpty();
   {
-    UnicodeString SubKey = MungedSubKey;
-    DebugAssert(SubKey.IsEmpty() || (SubKey[SubKey.Length()] != '\\'));
-    CutToChar(subKey, L'\\', false);
+    // DebugAssert(SubKey.IsEmpty() || (SubKey[SubKey.Length()] == '\\'));
     while (!SubKey.IsEmpty())
     {
       Root = OpenSubKeyInternal(Root, CutToChar(SubKey, L'\\', false), CanCreate);
       Result &= Root != 0;
-    }
+    } 
     if (Result)
     {
       FSubKeyIds.push_back(OldRoot);
