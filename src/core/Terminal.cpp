@@ -2492,7 +2492,7 @@ bool TTerminal::ContinueReopen(TDateTime Start) const
 {
   return
     (FConfiguration->GetSessionReopenTimeout() == 0) ||
-    (int32_t(double(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout());
+    (nb::ToInt32(nb::ToDouble(Now() - Start) * MSecsPerDay) < FConfiguration->GetSessionReopenTimeout());
 }
 
 bool TTerminal::QueryReopen(Exception * E, int32_t AParams,
