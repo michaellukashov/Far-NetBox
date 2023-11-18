@@ -566,15 +566,15 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   }
 }
 
-void TWinSCPPlugin::ShowExtendedException(Exception *E)
+void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
     if (isa<EAbort>(E))
     {
-      TQueryType Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
+      const TQueryType Type = isa<ESshTerminate>(E) ? qtInformation : qtError;
 
-      TStrings *MoreMessages = nullptr;
+      TStrings * MoreMessages = nullptr;
       if (isa<ExtException>(E))
       {
         MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
