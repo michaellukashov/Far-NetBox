@@ -1,4 +1,4 @@
-#include <Classes.hpp>
+﻿#include <Classes.hpp>
 #include <Common.h>
 #include <Exceptions.h>
 #include <PuttyIntf.h>
@@ -24,7 +24,7 @@ TFar3Storage::~TFar3Storage() = default;
 bool TFar3Storage::Copy(TFar3Storage * /*Storage*/)
 {
   Error(SNotImplemented, 3014);
-  bool Result = true;
+  const bool Result = true;
   return Result;
 }
 
@@ -103,7 +103,7 @@ void TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
     K = GetFullCurrentSubKey();
     FRoot = FPluginSettings.OpenSubKey(FRoot, K.c_str());
   }
-  intptr_t Root = FPluginSettings.OpenSubKey(FRoot, MungeKeyName(SubKey).c_str());
+  const size_t Root = FPluginSettings.OpenSubKey(FRoot, MungeKeyName(SubKey).c_str());
   if (Root != 0)
   {
     FPluginSettings.DeleteSubKey(Root);
@@ -148,7 +148,7 @@ bool TFar3Storage::DoDeleteValue(const UnicodeString & Name)
 
 int32_t TFar3Storage::DoBinaryDataSize(const UnicodeString & Name)
 {
-  int32_t Result = nb::ToInt32(FPluginSettings.BinaryDataSize(FRoot, Name.c_str()));
+  const int32_t Result = nb::ToInt32(FPluginSettings.BinaryDataSize(FRoot, Name.c_str()));
   return Result;
 }
 
@@ -156,14 +156,14 @@ bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   DebugUsedParam(ForceAnsi);
   // Error(SNotImplemented, 3011);
-  UnicodeString K = PuttyMungeStr(SubKey);
-  bool Result = FPluginSettings.ValueExists(FRoot, K.c_str());
+  const UnicodeString K = PuttyMungeStr(SubKey);
+  const bool Result = FPluginSettings.ValueExists(FRoot, K.c_str());
   return Result;
 }
 
 bool TFar3Storage::DoValueExists(const UnicodeString & Value)
 {
-  bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
+  const bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;
 }
 
@@ -177,7 +177,7 @@ TDateTime TFar3Storage::DoReadDateTime(const UnicodeString & Name, TDateTime Def
   TDateTime Result;
   double Val = 0.0;
   void * Value = nb::ToPtr(&Val);
-  size_t Sz = sizeof(Val);
+  const size_t Sz = sizeof(Val);
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
     Result = Val;

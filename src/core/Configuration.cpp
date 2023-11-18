@@ -705,7 +705,7 @@ UnicodeString TConfiguration::LoadCustomIniFileStorageName()
 void TConfiguration::Load(THierarchicalStorage * Storage)
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
-  TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
+  const TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
   try__finally
   {
     Storage->SetAccessMode(smRead);
