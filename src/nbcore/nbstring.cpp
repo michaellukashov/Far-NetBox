@@ -63,7 +63,8 @@ NB_CORE_DLL(CMStringData *) nbstr_realloc(CMStringData *pData, int nChars, int n
 
 NB_CORE_DLL(void *) nbstr_memcpy(void *pDst, void const *pSrc, int nSize)
 {
-  libmemcpy_memcpy(pDst, pSrc, (size_t)nSize);
+  //libmemcpy_memcpy(pDst, pSrc, (size_t)nSize);
+  memmove(pDst, pSrc, (size_t)nSize);
   return pDst;
 }
 
