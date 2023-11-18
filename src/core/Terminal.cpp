@@ -3102,7 +3102,7 @@ uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
     else
     {
       TQueryParams Params(qpAllowContinueOnError, AHelpKeyword);
-      TQueryButtonAlias Aliases[1];
+      TQueryButtonAlias Aliases[1]{};
       if (CanSkip)
       {
         Aliases[0].Button = qaAll;
@@ -4475,7 +4475,7 @@ void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
   const TRemoteFile * /*AFile*/, void * Params)
 {
   StartOperationWithFile(AFileName, foDelete);
-  int32_t Deleted;
+  int32_t Deleted{0};
   if (OnDeleteLocalFile.empty())
   {
     Deleted = RecursiveDeleteFileChecked(AFileName, false);
