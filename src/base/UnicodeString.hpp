@@ -79,9 +79,9 @@ public:
   UnicodeString(const char * Str);
   explicit UnicodeString(int32_t Length, wchar_t Ch = 0) : Data(Ch, nb::ToInt32(Length)) {}
 
-  UnicodeString(const UnicodeString &Str);
-  explicit UnicodeString(const UTF8String &Str);
-  explicit UnicodeString(const AnsiString &Str);
+  UnicodeString(const UnicodeString & Str);
+  explicit UnicodeString(const UTF8String & Str);
+  explicit UnicodeString(const AnsiString & Str);
 
   ~UnicodeString() = default;
 

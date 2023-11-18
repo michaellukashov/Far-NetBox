@@ -36,7 +36,7 @@ public:
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = L"");
-  explicit ExtException(const UnicodeString & Msg, TStrings *MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
+  explicit ExtException(const UnicodeString & Msg, TStrings * MoreMessages, bool Own, const UnicodeString & HelpKeyword = L"");
   __property TStrings * MoreMessages = {read=FMoreMessages};
   __property UnicodeString HelpKeyword = {read=FHelpKeyword};
   TStrings * GetMoreMessages() const { return FMoreMessages; }
