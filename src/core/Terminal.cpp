@@ -6114,7 +6114,7 @@ NB_DEFINE_CLASS_ID(TSynchronizeFileData);
 struct TSynchronizeFileData : public TObject
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeFileData); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeFileData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeFileData) || TObject::is(Kind); }
 public:
   TSynchronizeFileData() :
@@ -6138,7 +6138,7 @@ NB_DEFINE_CLASS_ID(TSynchronizeData);
 struct TSynchronizeData : public TObject
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeData); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeData); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeData) || TObject::is(Kind); }
 public:
   TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData) {}
@@ -7095,7 +7095,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*AFileName*/,
 void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, void * /*Param*/)
 {
-  const TChecklistItem *ChecklistItem =
+  const TChecklistItem * ChecklistItem =
     reinterpret_cast<const TChecklistItem *>(AFile);
 
   TRemoteProperties Properties;

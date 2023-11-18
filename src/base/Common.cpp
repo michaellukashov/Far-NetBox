@@ -4262,7 +4262,7 @@ static FILE * OpenCertificate(const UnicodeString & Path)
 
 struct TPemPasswordCallbackData
 {
-  UnicodeString *Passphrase;
+  UnicodeString * Passphrase{nullptr};
 };
 
 static int32_t PemPasswordCallback(char * Buf, int32_t ASize, int32_t /*RWFlag*/, void * UserData)
