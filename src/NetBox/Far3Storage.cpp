@@ -99,7 +99,7 @@ void TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
 
 void TFar3Storage::DoGetSubKeyNames(TStrings * Strings)
 {
-  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, 0};
+  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, nullptr};
   Settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(Settings))
   {
@@ -116,7 +116,7 @@ void TFar3Storage::DoGetSubKeyNames(TStrings * Strings)
 void TFar3Storage::DoGetValueNames(TStrings * Strings)
 {
   Strings->Clear();
-  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, 0};
+  FarSettingsEnum Settings = {sizeof(FarSettingsEnum), 0, 0, nullptr};
   Settings.Root = FRoot;
   if (FPluginSettings.GetSubKeyNames(Settings))
   {
