@@ -362,8 +362,8 @@ protected:
   bool ProcessFiles(TStrings * AFileList, TFileOperation Operation,
     TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
-  bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-    TProcessFileEventEx ProcessFile, void * AParam = nullptr, TOperationSide Side = osRemote);
+  // bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
+  //  TProcessFileEventEx ProcessFile, void * AParam = nullptr, TOperationSide Side = osRemote);
   void ProcessDirectory(const UnicodeString & ADirName,
     TProcessFileEvent CallBackFunc, void * AParam = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
@@ -779,7 +779,6 @@ public:
 
   bool IsThisOrChild(TTerminal * ATerminal) const;
   bool GetIsCapable(TFSCapability Capability) const { return GetIsCapableProtected(Capability); }
-  void SetMasks(const UnicodeString & Value);
 
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime & Modification);
@@ -869,7 +868,7 @@ private:
   void InternalDoTryOpen();
   void InitFileSystem();
 
-  void AfterMoveFiles(TStrings * AFileList);
+  // void AfterMoveFiles(TStrings * AFileList);
 };
 
 NB_DEFINE_CLASS_ID(TSecondaryTerminal);
@@ -1000,7 +999,7 @@ public:
   TStringList * Filter{nullptr};
   int32_t Files{0};
 
-  bool FilterFind(const UnicodeString & AFileName) const;
+  // bool FilterFind(const UnicodeString & AFileName) const;
   bool MatchesFilter(const UnicodeString & AFileName) const;
 };
 
