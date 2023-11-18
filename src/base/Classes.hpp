@@ -395,7 +395,7 @@ public:
     uint16_t Min, uint16_t Sec, uint16_t MSec = 0);
   TDateTime(const TDateTime & rhs) noexcept : FValue(rhs.FValue) {}
   double GetValue() const { return operator double(); }
-  TDateTime & operator=(const TDateTime & rhs)
+  TDateTime & operator =(const TDateTime & rhs)
   {
     FValue = rhs.FValue;
     return *this;
@@ -404,37 +404,37 @@ public:
   {
     return FValue;
   }
-  TDateTime & operator+(const TDateTime & rhs)
+  TDateTime & operator +(const TDateTime & rhs)
   {
     FValue += rhs.FValue;
     return *this;
   }
-  TDateTime & operator+=(const TDateTime & rhs)
+  TDateTime & operator +=(const TDateTime & rhs)
   {
     FValue += rhs.FValue;
     return *this;
   }
-  TDateTime & operator+=(double val)
+  TDateTime & operator +=(double val)
   {
     FValue += val;
     return *this;
   }
-  TDateTime & operator-(const TDateTime & rhs)
+  TDateTime & operator -(const TDateTime & rhs)
   {
     FValue -= rhs.FValue;
     return *this;
   }
-  TDateTime & operator-=(const TDateTime & rhs)
+  TDateTime & operator -=(const TDateTime & rhs)
   {
     FValue -= rhs.FValue;
     return *this;
   }
-  TDateTime & operator-=(double val)
+  TDateTime & operator -=(double val)
   {
     FValue -= val;
     return *this;
   }
-  TDateTime & operator=(double Value)
+  TDateTime & operator =(double Value)
   {
     FValue = Value;
     return *this;
@@ -484,19 +484,19 @@ private:
   static const int64_t FMaxValue = 0x7FFFFFFFFFFFFFFF;
   static const int64_t FZero = 0;
 private:
-  double MillisecondsPerTick = 0.0001;
-  double SecondsPerTick = 1e-07;
-  double MinutesPerTick = 1.6666666666666667E-09;
-  double HoursPerTick = 2.7777777777777777E-11;
-  double DaysPerTick = 1.1574074074074074E-12;
-  int32_t MillisPerSecond = 1000;
-  int32_t MillisPerMinute = 60 * MillisPerSecond;
-  int32_t MillisPerHour = 60 * MillisPerMinute;
-  int32_t MillisPerDay = 24 * MillisPerHour;
-  int64_t MaxSeconds = 922337203685;
-  int64_t MinSeconds = -922337203685;
-  int64_t MaxMilliseconds = 922337203685477;
-  int64_t MinMilliseconds = -922337203685477;
+  const double MillisecondsPerTick = 0.0001;
+  const double SecondsPerTick = 1e-07;
+  const double MinutesPerTick = 1.6666666666666667E-09;
+  const double HoursPerTick = 2.7777777777777777E-11;
+  const double DaysPerTick = 1.1574074074074074E-12;
+  const int32_t MillisPerSecond = 1000;
+  const int32_t MillisPerMinute = 60 * MillisPerSecond;
+  const int32_t MillisPerHour = 60 * MillisPerMinute;
+  const int32_t MillisPerDay = 24 * MillisPerHour;
+  const int64_t MaxSeconds = 922337203685;
+  const int64_t MinSeconds = -922337203685;
+  const int64_t MaxMilliseconds = 922337203685477;
+  const int64_t MinMilliseconds = -922337203685477;
 public:
   static const int32_t TicksPerMillisecond = 10000;
   static const int64_t TicksPerSecond = 1000 * int64_t(TicksPerMillisecond);
@@ -534,12 +534,12 @@ public:
   static bool GreaterThanOrEqual(const TTimeSpan Left, const TTimeSpan Right);
   static bool LessThan(const TTimeSpan Left, const TTimeSpan Right);
   static bool LessThanOrEqual(const TTimeSpan Left, const TTimeSpan Right) { return Left.FTicks <= Right.FTicks; }
-  bool operator==(const TTimeSpan &rhs) const { return TTimeSpan::Equal(*this, rhs); }
-  bool operator!=(const TTimeSpan &rhs) const { return TTimeSpan::NotEqual(*this, rhs); }
-  bool operator>(const TTimeSpan &rhs) const { return TTimeSpan::GreaterThan(*this, rhs); }
-  bool operator>=(const TTimeSpan &rhs) const { return TTimeSpan::GreaterThanOrEqual(*this, rhs); }
-  bool operator<(const TTimeSpan &rhs) const { return TTimeSpan::LessThan(*this, rhs); }
-  bool operator<=(const TTimeSpan &rhs) const { return TTimeSpan::LessThanOrEqual(*this, rhs); }
+  bool operator ==(const TTimeSpan & rhs) const { return TTimeSpan::Equal(*this, rhs); }
+  bool operator !=(const TTimeSpan & rhs) const { return TTimeSpan::NotEqual(*this, rhs); }
+  bool operator >(const TTimeSpan & rhs) const { return TTimeSpan::GreaterThan(*this, rhs); }
+  bool operator >=(const TTimeSpan & rhs) const { return TTimeSpan::GreaterThanOrEqual(*this, rhs); }
+  bool operator <(const TTimeSpan & rhs) const { return TTimeSpan::LessThan(*this, rhs); }
+  bool operator <=(const TTimeSpan & rhs) const { return TTimeSpan::LessThanOrEqual(*this, rhs); }
   static TTimeSpan Negative(const TTimeSpan Value);
   static TTimeSpan Positive(const TTimeSpan Value);
   static UnicodeString Implicit(const TTimeSpan Value);
@@ -831,20 +831,20 @@ public:
   {
     return (FValue & Value) != 0;
   }
-  bool operator==(const TValidProperties &rhs) const
+  bool operator ==(const TValidProperties &rhs) const
   {
     return FValue == rhs.FValue;
   }
-  bool operator!=(const TValidProperties &rhs) const
+  bool operator !=(const TValidProperties &rhs) const
   {
     return !(operator==(rhs));
   }
-  TValidProperties &operator<<(const PropType Value)
+  TValidProperties & operator <<(const PropType Value)
   {
     FValue |= Value;
     return *this;
   }
-  TValidProperties &operator>>(const PropType Value)
+  TValidProperties & operator >>(const PropType Value)
   {
     FValue &= ~(nb::ToInt64(Value));
     return *this;
@@ -865,8 +865,8 @@ public:
   explicit TShortCut() = default;
   explicit TShortCut(int32_t Value) noexcept;
   operator int32_t() const;
-  bool operator<(const TShortCut &rhs) const;
-  int32_t Compare(const TShortCut &rhs) const { return FValue - rhs.FValue; }
+  bool operator <(const TShortCut & rhs) const;
+  int32_t Compare(const TShortCut & rhs) const { return FValue - rhs.FValue; }
 
 private:
   int32_t FValue{0};
