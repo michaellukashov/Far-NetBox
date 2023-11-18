@@ -1751,7 +1751,7 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
   Result = DoLoadFileProperties(AFileName, File, Properties);
   if (Result)
   {
-    bool AdditionalRights;
+    bool AdditionalRights{false};
     uint16_t Permissions = 0;
     for (int32_t Index = 0; Index < Properties.AclGrantCount; Index++)
     {

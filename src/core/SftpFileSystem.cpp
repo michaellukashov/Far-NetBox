@@ -2717,7 +2717,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
 
   SSH_FX_TYPE Result = SSH_FX_OK;
   int32_t Reservation = FPacketReservations->IndexOf(Packet);
-  bool NotLogged;
+  bool NotLogged{false};
 
   if ((Reservation < 0) || (Packet->GetCapacity() == 0))
   {

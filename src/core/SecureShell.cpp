@@ -2418,7 +2418,7 @@ struct TPasteKeyHandler
   UnicodeString KeyStr;
   UnicodeString FingerprintMD5;
   UnicodeString FingerprintSHA256;
-  TSessionUI * UI;
+  TSessionUI * UI{nullptr};
 
   void Paste(TObject * Sender, uint32_t & Answer);
 };
