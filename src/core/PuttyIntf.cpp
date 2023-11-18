@@ -878,8 +878,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     if (!ppk_loadpub_s(BinarySource_UPCAST(CertLoadedFile), &AlgorithmName,
                        BinarySink_UPCAST(Pub), &CommentStr, &ErrorStr))
     {
-      UnicodeString Error = ErrorStr;
-      throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, CertificateFileName), Error);
+      throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, CertificateFileName), UnicodeString(ErrorStr));
     }
     sfree(CommentStr);
   },
