@@ -1756,7 +1756,7 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
     for (int32_t Index = 0; Index < Properties.AclGrantCount; Index++)
     {
       S3AclGrant & AclGrant = Properties.AclGrants[Index];
-      uint16_t Permission = AclGrantToPermissions(AclGrant, Properties);
+      const uint16_t Permission = AclGrantToPermissions(AclGrant, Properties);
       if (Permission == 0)
       {
         AdditionalRights = true;
@@ -1767,16 +1767,16 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
       }
     }
 
-    UnicodeString Delimiter(L",");
+    const UnicodeString Delimiter(L",");
     UnicodeString HumanRights;
     for (int32_t GroupI = TRights::rgFirst; GroupI <= TRights::rgLast; GroupI++)
     {
       TRights::TRightGroup Group = static_cast<TRights::TRightGroup>(GroupI);
       #define RIGHT_LEVEL_SET(LEVEL) FLAGSET(Permissions, TRights::CalculateFlag(Group, TRights::LEVEL))
-      bool ReadRight = RIGHT_LEVEL_SET(rlS3Read);
-      bool WriteRight = DebugAlwaysFalse(RIGHT_LEVEL_SET(rlS3Write));
-      bool ReadACPRight = RIGHT_LEVEL_SET(rlS3ReadACP);
-      bool WriteACPRight = RIGHT_LEVEL_SET(rlS3WriteACP);
+      const bool ReadRight = RIGHT_LEVEL_SET(rlS3Read);
+      const bool WriteRight = DebugAlwaysFalse(RIGHT_LEVEL_SET(rlS3Write));
+      const bool ReadACPRight = RIGHT_LEVEL_SET(rlS3ReadACP);
+      const bool WriteACPRight = RIGHT_LEVEL_SET(rlS3WriteACP);
       UnicodeString Desc;
       if (ReadRight && ReadACPRight && WriteACPRight)
       {
@@ -1880,7 +1880,7 @@ void TS3FileSystem::ConfirmOverwrite(
   TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
   const TCopyParamType * CopyParam, int32_t AParams)
 {
-  uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
+  const uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
   nb::vector_t<TQueryButtonAlias> Aliases;
   Aliases.push_back(TQueryButtonAlias::CreateYesToAllGrouppedWithYes());
   Aliases.push_back(TQueryButtonAlias::CreateNoToAllGrouppedWithNo());
@@ -1945,7 +1945,7 @@ int32_t TS3FileSystem::LibS3PutObjectDataCallback(int32_t BufferSize, char * Buf
 
 bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &Data)
 {
-  bool Result = (Data.OperationProgress->GetCancel() != csContinue);
+  const bool Result = (Data.OperationProgress->GetCancel() != csContinue);
   if (Result)
   {
     if (Data.OperationProgress->ClearCancelFile())

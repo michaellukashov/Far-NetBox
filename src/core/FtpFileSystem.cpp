@@ -1399,10 +1399,10 @@ bool TFTPFileSystem::ConfirmOverwrite(
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   int32_t Params, bool AutoResume)
 {
-  bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
-  bool DestIsSmaller = (FileParams != nullptr) && (FileParams->DestSize < FileParams->SourceSize);
-  bool DestIsSame = (FileParams != nullptr) && (FileParams->DestSize == FileParams->SourceSize);
-  bool CanResume =
+  const bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
+  const bool DestIsSmaller = (FileParams != nullptr) && (FileParams->DestSize < FileParams->SourceSize);
+  const bool DestIsSame = (FileParams != nullptr) && (FileParams->DestSize == FileParams->SourceSize);
+  const bool CanResume =
     !OperationProgress->GetAsciiTransfer() &&
     // when resuming transfer after interrupted connection,
     // do nothing (dummy resume) when the files has the same size.
@@ -1523,8 +1523,8 @@ void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  int32_t Progress = nb::ToIntPtr(Bytes / 80);
-  DWORD Ticks = GetTickCount();
+  const int32_t Progress = nb::ToIntPtr(Bytes / 80);
+  const DWORD Ticks = GetTickCount();
   if ((Ticks - FLastReadDirectoryProgress >= 100) &&
       // Cannot call OnReadDirectoryProgress with 0 as it would unmatch the "starting" and "ending" signals for disabling the window
       (Progress > 0))
@@ -1557,7 +1557,7 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
     FFileTransferResumed = 0;
   }
 
-  int64_t Diff = Bytes - OperationProgress->GetTransferredSize();
+  const int64_t Diff = Bytes - OperationProgress->GetTransferredSize();
   if (DebugAlwaysTrue(Diff >= 0))
   {
     OperationProgress->AddTransferred(Diff);
@@ -1612,7 +1612,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
       Get, Size, nb::ToInt32(Type), &UserData, UserData.CopyParam->FOnTransferOut, UserData.CopyParam->FOnTransferIn);
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
-    uint32_t Reply = WaitForCommandReply();
+    const uint32_t Reply = WaitForCommandReply();
     GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
   }
   FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
@@ -1679,10 +1679,10 @@ void TFTPFileSystem::Sink(
 
   UnicodeString DestFullName = TargetDir + DestFileName;
   UnicodeString FilePath = RemoteExtractFilePath(AFileName);
-  uint32_t TransferType = (OperationProgress->GetAsciiTransfer() ? 1 : 2);
+  const int32_t TransferType = (OperationProgress->GetAsciiTransfer() ? 1 : 2);
 
   UnicodeString FileName;
-  UnicodeString OnlyFileName = base::UnixExtractFileName(FileName);
+  const UnicodeString OnlyFileName = base::UnixExtractFileName(FileName);
   if (EnsureLocationWhenWorkFromCwd(FilePath))
   {
     FileName = OnlyFileName;
@@ -1718,7 +1718,7 @@ void TFTPFileSystem::Sink(
     Attrs = FileGetAttrFix(ApiPath(DestFullName));
   }
 
-  UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
+  const UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
   if (CopyParam->FOnTransferOut.empty())
@@ -1747,7 +1747,7 @@ void TFTPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
 bool TFTPFileSystem::CanTransferSkipList(int32_t Params, uint32_t Flags, const TCopyParamType * CopyParam) const
 {
-  bool Result =
+  const bool Result =
     (!CopyParam->FOnTransferIn.empty()) ||
     (FLAGSET(Params, cpNoConfirmation) &&
      // cpAppend is not supported with FTP
@@ -1773,7 +1773,7 @@ void TFTPFileSystem::Source(
 
   TFileTransferData UserData;
 
-  uint32_t TransferType = (OperationProgress->GetAsciiTransfer() ? 1 : 2);
+  const int32_t TransferType = (OperationProgress->GetAsciiTransfer() ? 1 : 2);
 
   EnsureLocationWhenWorkFromCwd(TargetDir);
 
