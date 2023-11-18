@@ -1148,7 +1148,7 @@ private:
   int64_t FParallelFileOffset{0};
   int32_t FParallelFileCount{0};
   UnicodeString FParallelFileTargetName;
-  using TParallelFileOffsets = std::vector<int64_t> ;
+  using TParallelFileOffsets = rde::vector<int64_t> ;
   TParallelFileOffsets FParallelFileOffsets;
   rde::vector<bool> FParallelFileDones;
   bool FParallelFileMerging{false};

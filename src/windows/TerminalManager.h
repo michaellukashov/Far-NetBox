@@ -119,7 +119,7 @@ private:
   DWORD FMainThread{0};
   int32_t FPendingConfigurationChange{0};
   std::unique_ptr<TCriticalSection> FChangeSection;
-  std::vector<std::pair<TTerminalQueue *, TQueueEvent> > FQueueEvents;
+  rde::vector<std::pair<TTerminalQueue *, TQueueEvent> > FQueueEvents;
   uint32_t FTaskbarButtonCreatedMessage{0};
   ITaskbarList3 * FTaskbarList{nullptr};
   int32_t FAuthenticating{0};
