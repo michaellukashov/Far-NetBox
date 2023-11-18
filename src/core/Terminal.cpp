@@ -9563,7 +9563,7 @@ TLocalFileHandle::~TLocalFileHandle() noexcept
 
 void TLocalFileHandle::Release()
 {
-  if (Handle != 0)
+  if (CheckHandle(Handle))
   {
     Close();
   }
@@ -9571,9 +9571,9 @@ void TLocalFileHandle::Release()
 
 void TLocalFileHandle::Dismiss()
 {
-  if (DebugAlwaysTrue(Handle != 0))
+  if (DebugAlwaysTrue(CheckHandle(Handle)))
   {
-    Handle = 0;
+    Handle = INVALID_HANDLE_VALUE;
   }
 }
 
