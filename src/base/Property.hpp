@@ -137,10 +137,10 @@ private:
   TGetValueFunctor _getter;
 public:
   ROProperty() = delete;
-  explicit ROProperty(const TGetValueFunctor &Getter) noexcept :
-    _getter(Getter)
+  explicit ROProperty(TGetValueFunctor&& Getter) noexcept :
+    _getter(std::move(Getter))
   {
-    Expects(_getter != nullptr);
+    Expects(!_getter.empty());
   }
   ROProperty(const ROProperty&) = default;
   ROProperty(ROProperty&&) noexcept = default;
@@ -207,7 +207,7 @@ public:
   explicit ROIndexedProperty(TGetValueFunctor&& Getter) noexcept
     : _getter(std::move(Getter))
   {
-    Expects(_getter != nullptr);
+    Expects(!_getter.empty());
   }
   ROIndexedProperty(const ROIndexedProperty&) = default;
   ROIndexedProperty(ROIndexedProperty&&) noexcept = default;
@@ -306,12 +306,12 @@ private:
   TSetValueFunctor _setter;
 public:
   RWProperty() = delete;
-  explicit RWProperty(const TGetValueFunctor &Getter, const TSetValueFunctor &Setter) noexcept :
-    _getter(Getter),
-    _setter(Setter)
+  explicit RWProperty(TGetValueFunctor&& Getter, TSetValueFunctor&& Setter) noexcept :
+    _getter(std::move(Getter)),
+    _setter(std::move(Setter))
   {
-    Expects(_getter != nullptr);
-    Expects(_setter != nullptr);
+    Expects(!_getter.empty());
+    Expects(!_setter.empty());
   }
   RWProperty(const RWProperty&) = default;
   RWProperty(RWProperty&&) noexcept = default;
@@ -385,12 +385,12 @@ private:
   TSetValueFunctor _setter;
 public:
   RWProperty1() = delete;
-  explicit RWProperty1(const TGetValueFunctor &Getter, const TSetValueFunctor &Setter) noexcept :
-    _getter(Getter),
-    _setter(Setter)
+  explicit RWProperty1(TGetValueFunctor&& Getter, TSetValueFunctor&& Setter) noexcept :
+    _getter(std::move(Getter)),
+    _setter(std::move(Setter))
   {
-    Expects(_getter != nullptr);
-    Expects(_setter != nullptr);
+    Expects(!_getter.empty());
+    Expects(!_setter.empty());
   }
   RWProperty1(const RWProperty1&) = default;
   RWProperty1(RWProperty1&&) noexcept = default;
@@ -526,12 +526,12 @@ private:
   TSetValueFunctor _setter;
 public:
   RWProperty3() = delete;
-  explicit RWProperty3(const TGetValueFunctor &Getter, const TSetValueFunctor &Setter) noexcept :
-    _getter(Getter),
-    _setter(Setter)
+  explicit RWProperty3(TGetValueFunctor&& Getter, TSetValueFunctor&& Setter) noexcept :
+    _getter(std::move(Getter)),
+    _setter(std::move(Setter))
   {
-    Expects(_getter != nullptr);
-    Expects(_setter != nullptr);
+    Expects(!_getter.empty());
+    Expects(!_setter.empty());
   }
   RWProperty3(const RWProperty3&) = default;
   RWProperty3(RWProperty3&&) noexcept = default;
@@ -595,12 +595,12 @@ private:
   TSetValueFunctor _setter;
 public:
   RWPropertySimple() = delete;
-  explicit RWPropertySimple(T *Value, const TSetValueFunctor &Setter) noexcept :
+  explicit RWPropertySimple(T *Value, TSetValueFunctor&& Setter) noexcept :
     _value(Value),
-    _setter(Setter)
+    _setter(std::move(Setter))
   {
     Expects(_value != nullptr);
-    Expects(_setter != nullptr);
+    Expects(!_setter.empty());
   }
   RWPropertySimple(const RWPropertySimple&) = default;
   RWPropertySimple(RWPropertySimple&&) noexcept = default;
@@ -673,12 +673,12 @@ private:
   TSetValueFunctor _setter;
 public:
   RWPropertySimple1() = delete;
-  explicit RWPropertySimple1(T * Value, const TSetValueFunctor &Setter) noexcept :
+  explicit RWPropertySimple1(T * Value, TSetValueFunctor&& Setter) noexcept :
     _value(Value),
-    _setter(Setter)
+    _setter(std::move(Setter))
   {
     Expects(_value != nullptr);
-    Expects(_setter != nullptr);
+    Expects(!_setter.empty());
   }
   RWPropertySimple1(const RWPropertySimple1&) = default;
   RWPropertySimple1(RWPropertySimple1&&) noexcept = default;
