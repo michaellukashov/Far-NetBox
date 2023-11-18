@@ -77,7 +77,8 @@ public:
   UnicodeString(const char * Str, int32_t Length);
   UnicodeString(const char * Str, int32_t Length, int32_t CodePage);
   UnicodeString(const char * Str);
-  explicit UnicodeString(int32_t Length, wchar_t Ch = 0) : Data(Ch, Length) {}
+  explicit UnicodeString(int32_t Length) = delete;
+  explicit UnicodeString(int32_t Length, wchar_t Ch) : Data(Ch, Length) {}
 
   UnicodeString(const UnicodeString & Str);
   explicit UnicodeString(const UTF8String & Str);

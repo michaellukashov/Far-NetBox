@@ -1724,13 +1724,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   ScpTab = dyn_cast<TTabButton>(GetItem(Index1));
 
   PrevTab = new TTabButton(this);
-  PrevTab->SetTabName(UnicodeString('\x11'));
+  PrevTab->SetTabName(UnicodeString(1, '\x11'));
   PrevTab->SetBrackets(brNone);
   PrevTab->SetCenterGroup(false);
   PrevTab->SetOnClick(nb::bind(&TSessionDialog::PrevTabClick, this));
 
   NextTab = new TTabButton(this);
-  NextTab->SetTabName(UnicodeString('\x10'));
+  NextTab->SetTabName(UnicodeString(1, '\x10'));
   NextTab->SetBrackets(brNone);
   NextTab->SetCenterGroup(false);
   NextTab->SetOnClick(nb::bind(&TSessionDialog::NextTabClick, this));
