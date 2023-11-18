@@ -9,40 +9,40 @@ class TXmlStorage : public THierarchicalStorage
 public:
   explicit TXmlStorage(const UnicodeString & AStorage, const UnicodeString & StoredSessionsSubKey) noexcept;
   void Init() override;
-  virtual ~TXmlStorage() noexcept;
+  ~TXmlStorage() noexcept override;
 
   bool Copy(TXmlStorage *Storage);
 
 protected:
-  void SetAccessModeProtected(TStorageAccessMode Value) override;
-  bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
-  bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate) override;
-  void DoCloseSubKey() override;
-  void DoDeleteSubKey(const UnicodeString & SubKey) override;
-  void DoGetSubKeyNames(TStrings * Strings) override;
-  bool DoValueExists(const UnicodeString & Value) override;
-  bool DoDeleteValue(const UnicodeString & Name) override;
-  size_t DoBinaryDataSize(const UnicodeString & Name) override;
+  virtual void SetAccessModeProtected(TStorageAccessMode Value) override;
+  virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
+  virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate) override;
+  virtual void DoCloseSubKey() override;
+  virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
+  virtual void DoGetSubKeyNames(TStrings * Strings) override;
+  virtual bool DoValueExists(const UnicodeString & Value) override;
+  virtual bool DoDeleteValue(const UnicodeString & Name) override;
+  virtual int32_t DoBinaryDataSize(const UnicodeString & Name) override;
 
-  void DoWriteBool(const UnicodeString & Name, bool Value) override;
-  void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
-  void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
+  virtual void DoWriteBool(const UnicodeString & Name, bool Value) override;
+  virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
+  virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
 //  void DoWriteDateTime(const UnicodeString & Name, TDateTime Value) override;
 //  void DoWriteFloat(const UnicodeString & Name, double Value) override;
-  void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
-  void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size) override;
+  virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size) override;
 
-  bool DoReadBool(const UnicodeString & Name, bool Default) override;
-  int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;
-  int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) override;
-  TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) override;
-  double DoReadFloat(const UnicodeString & Name, double Default) override;
-  UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
-  int32_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size) override;
+  virtual bool DoReadBool(const UnicodeString & Name, bool Default) override;
+  virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;
+  virtual int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) override;
+  virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) override;
+  virtual double DoReadFloat(const UnicodeString & Name, double Default) override;
+  virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
+  virtual int32_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size) override;
 
-  void DoGetValueNames(TStrings *Strings) override;
+  virtual void DoGetValueNames(TStrings *Strings) override;
 
-  UnicodeString GetSource() const override;
+  virtual UnicodeString GetSource() const override;
   UnicodeString GetSource();
 
 protected:
