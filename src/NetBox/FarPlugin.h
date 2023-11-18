@@ -545,6 +545,7 @@ private:
 
 class TFarEditorInfo : public TObject
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TFarEditorInfo)
 public:
   TFarEditorInfo() = delete;
