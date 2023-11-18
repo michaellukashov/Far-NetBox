@@ -101,7 +101,7 @@ void TWinSCPPlugin::GetPluginInfoEx(PLUGIN_FLAGS & Flags,
 {
   CoreInitializeOnce();
   Flags = PF_FULLCMDLINE;
-  TFarConfiguration * FarConfiguration = GetFarConfiguration();
+  const TFarConfiguration * FarConfiguration = GetFarConfiguration();
   if (FarConfiguration->GetDisksMenu())
   {
     DiskMenuStrings->AddObject(GetMsg(NB_PLUGIN_NAME),

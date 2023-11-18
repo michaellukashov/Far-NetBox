@@ -850,7 +850,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     }
   }
 
-  UTF8String UtfCertificateFileName = UTF8String(CertificateFileName);
+  const UTF8String UtfCertificateFileName = UTF8String(CertificateFileName);
   Filename * CertFilename = filename_from_str(UtfCertificateFileName.c_str());
 
   LoadedFile * CertLoadedFile;
