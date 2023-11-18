@@ -1484,7 +1484,7 @@ int64_t TMemoryStream::Read(void * Buffer, int64_t Count)
       {
         Result = Count;
       }
-      memmove(Buffer, reinterpret_cast<char *>(FMemory) + FPosition, nb::ToSizeT(Result));
+      memmove(Buffer, static_cast<char *>(FMemory) + FPosition, nb::ToSizeT(Result));
       FPosition += Result;
       return Result;
     }
@@ -2015,7 +2015,7 @@ int32_t TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   DWORD DataType = REG_NONE;
   DWORD BufSize = nb::ToDWord(ABufSize);
   if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
-      reinterpret_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
+      static_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
   {
     throw Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
@@ -2029,7 +2029,7 @@ void TRegistry::PutData(const UnicodeString & Name, const void * Buffer,
 {
   const DWORD DataType = RegDataToDataType(RegData);
   if (::RegSetValueEx(GetCurrentKey(), Name.c_str(), 0, DataType,
-      reinterpret_cast<const BYTE *>(Buffer), nb::ToDWord(ABufSize)) != ERROR_SUCCESS)
+      static_cast<const BYTE *>(Buffer), nb::ToDWord(ABufSize)) != ERROR_SUCCESS)
   {
     throw Exception("RegSetValueEx failed"); // ERegistryException(); // FIXME .CreateResFmt(SRegSetDataFailed, Name.c_str());
   }
