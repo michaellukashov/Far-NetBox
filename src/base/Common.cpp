@@ -355,7 +355,7 @@ static void CutFirstDirectory(UnicodeString & S, bool Unix)
 UnicodeString MinimizeName(const UnicodeString & AFileName, int32_t MaxLen, bool Unix)
 {
   UnicodeString Drive, Dir, Name;
-  UnicodeString Sep = Unix ? SLASH : BACKSLASH;
+  const UnicodeString Sep = Unix ? SLASH : BACKSLASH;
 
   UnicodeString Result = AFileName;
   if (Unix)
@@ -527,7 +527,7 @@ int32_t GetPartialFileExtLen(const UnicodeString & FileName)
   }
   else
   {
-    int32_t P = FileName.LastDelimiter(L".");
+    const int32_t P = FileName.LastDelimiter(L".");
     if ((P > 0) && (P < FileName.Length()))
     {
       if (IsNumber(MidStr(FileName, P + 1)) &&
@@ -590,8 +590,8 @@ int32_t FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs
 bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2)
 {
   // Bitvise reports file owner as "user@host", but we login with "user" only.
-  UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
-  UnicodeString AUserName2 = CopyToChar(UserName2, L'@', true);
+  const UnicodeString AUserName1 = CopyToChar(UserName1, L'@', true);
+  const UnicodeString AUserName2 = CopyToChar(UserName2, L'@', true);
   return ::SameText(AUserName1, AUserName2);
 }
 
@@ -4229,7 +4229,7 @@ bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2)
 
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
 {
-  UnicodeString NormalizedIdent(NormalizeIdent(Ident));
+  const UnicodeString NormalizedIdent(NormalizeIdent(Ident));
   for (int32_t Index = 0; Index < Idents->GetCount(); Index++)
   {
     if (SameText(NormalizedIdent, NormalizeIdent(Idents->GetString(Index))))
@@ -4253,7 +4253,7 @@ static FILE * OpenCertificate(const UnicodeString & Path)
   FILE * Result = _wfopen(ApiPath(Path).c_str(), L"rb");
   if (Result == nullptr)
   {
-    int32_t Error = errno;
+    const int32_t Error = errno;
     throw EOSExtException(MainInstructions(FMTLOAD(CERTIFICATE_OPEN_ERROR, Path)), Error);
   }
 
@@ -4277,10 +4277,10 @@ static int32_t PemPasswordCallback(char * Buf, int32_t ASize, int32_t /*RWFlag*/
 
 static bool IsTlsPassphraseError(int32_t Error, bool HasPassphrase)
 {
-  int32_t ErrorLib = ERR_GET_LIB(Error);
-  int32_t ErrorReason = ERR_GET_REASON(Error);
+  const int32_t ErrorLib = ERR_GET_LIB(Error);
+  const int32_t ErrorReason = ERR_GET_REASON(Error);
 
-  bool Result =
+  const bool Result =
     ((ErrorLib == ERR_LIB_PKCS12) &&
      (ErrorReason == PKCS12_R_MAC_VERIFY_FAILURE)) ||
     ((ErrorLib == ERR_LIB_PEM) &&
@@ -4293,7 +4293,7 @@ static bool IsTlsPassphraseError(int32_t Error, bool HasPassphrase)
 
 static void ThrowTlsCertificateErrorIgnorePassphraseErrors(const UnicodeString & Path, bool HasPassphrase)
 {
-  uint32_t Error = ERR_get_error();
+  const uint32_t Error = ERR_get_error();
   if (!IsTlsPassphraseError(Error, HasPassphrase))
   {
     throw ExtException(MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, Path)), GetTlsErrorStr(Error));
@@ -4320,7 +4320,7 @@ void ParseCertificate(const UnicodeString & Path,
 
   if (Pkcs12 != nullptr)
   {
-    UTF8String PassphraseUtf(Passphrase);
+    const UTF8String PassphraseUtf(Passphrase);
 
     bool Result =
       (PKCS12_parse(Pkcs12, PassphraseUtf.c_str(), &PrivateKey, &Certificate, nullptr) == 1);
@@ -4380,7 +4380,7 @@ void ParseCertificate(const UnicodeString & Path,
 
       if (Certificate == nullptr)
       {
-        uint32_t Error = ERR_get_error();
+        const uint32_t Error = ERR_get_error();
         // unlikely
         if (IsTlsPassphraseError(Error, HasPassphrase))
         {
@@ -4409,7 +4409,7 @@ void ParseCertificate(const UnicodeString & Path,
 
             if (Certificate == nullptr)
             {
-              uint32_t Base64Error = ERR_get_error();
+              const uint32_t Base64Error = ERR_get_error();
 
               File = OpenCertificate(CertificatePath);
               // Binary DER-encoded certificate
@@ -4420,10 +4420,10 @@ void ParseCertificate(const UnicodeString & Path,
 
               if (Certificate == nullptr)
               {
-                int32_t DERError = ERR_get_error();
+                const int32_t DERError = ERR_get_error();
 
-                UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath));
-                UnicodeString MoreMessages =
+                const UnicodeString Message = MainInstructions(FMTLOAD(CERTIFICATE_READ_ERROR, CertificatePath));
+                const UnicodeString MoreMessages =
                   FORMAT("Base64: %s\nDER: %s", GetTlsErrorStr(Base64Error), GetTlsErrorStr(DERError));
                 throw ExtException(Message, MoreMessages);
               }
@@ -5092,7 +5092,7 @@ TStrings * TlsCipherList()
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   const SSL_METHOD * Method = DTLS_client_method();
   SSL_CTX * Ctx = SSL_CTX_new(Method);
-  SSL * Ssl = SSL_new(Ctx);
+  const SSL * Ssl = SSL_new(Ctx);
 
   int32_t Index = 0;
   const char * CipherName;
@@ -5119,7 +5119,7 @@ void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, c
     {
       Index = Strings->Add(L"");
     }
-    UnicodeString Line = Name + Strings->GetNameValueSeparator();
+    const UnicodeString Line = Name + Strings->GetNameValueSeparator();
     Strings->SetString(Index, Line);
   }
   else
