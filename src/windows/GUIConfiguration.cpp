@@ -543,6 +543,7 @@ bool TCopyParamList::GetAnyRule() const
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) noexcept : TConfiguration(Kind)
 {
   FLocale = 0;
+  FStorage = stFar3Storage;
   __removed SetAppliedLocale(InternalLocale(), UnicodeString());
   FLocales = std::make_unique<TObjectList>();
   FLastLocalesExts = L"*";
@@ -561,6 +562,16 @@ void TGUIConfiguration::ConfigurationInit()
   SetAppliedLocale(InternalLocale(), UnicodeString());
   CoreSetResourceModule(GetResourceModule());
   TConfiguration::ConfigurationInit();
+}
+
+TStorage TGUIConfiguration::GetStorage() const
+{
+  return stFar3Storage;
+}
+
+THierarchicalStorage * TGUIConfiguration::CreateScpStorage(bool & SessionList)
+{
+  return TConfiguration::CreateScpStorage(SessionList);
 }
 
 void TGUIConfiguration::Default()
