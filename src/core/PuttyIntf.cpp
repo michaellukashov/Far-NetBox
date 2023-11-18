@@ -836,7 +836,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
   struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
 
   TKeyType Type = GetKeyType(CertificateFileName);
-  int Error = errno;
+  int32_t Error = errno;
   if ((Type != SSH_KEYTYPE_SSH2_PUBLIC_RFC4716) &&
       (Type != SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH))
   {
@@ -861,7 +861,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     if (CertLoadedFile == nullptr)
     {
       // not capturing errno, as this in unlikely file access error, after we have passed KeyType above
-      throw ExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, CertificateFileName), Error);
+      throw EOSExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, CertificateFileName), Error);
     }
   },
   __finally
