@@ -100,7 +100,7 @@ void TList::SetCount(int32_t NewCount)
   FList.resize(NewCount);
 }
 
-void * TList::operator[](int32_t Index) const
+void * TList::operator [](int32_t Index) const
 {
   return FList[Index];
 }
@@ -274,7 +274,7 @@ TObjectList::~TObjectList()
   TList::Clear();
 }
 
-TObject * TObjectList::operator[](int32_t Index) const
+TObject * TObjectList::operator [](int32_t Index) const
 {
   return as_object(TList::operator[](Index));
 }
@@ -1080,7 +1080,7 @@ TDateTime::TDateTime(uint16_t Hour,
   FValue = ::EncodeTimeVerbose(Hour, Min, Sec, MSec);
 }
 
-bool TDateTime::operator==(const TDateTime &rhs) const
+bool TDateTime::operator ==(const TDateTime & rhs) const
 {
   return ::IsZero(FValue - rhs.FValue);
 }
@@ -1114,14 +1114,12 @@ UnicodeString TDateTime::FormatString(const wchar_t * fmt) const
   return Result;
 }
 
-void TDateTime::DecodeDate(uint16_t &Y,
-  uint16_t &M, uint16_t &D) const
+void TDateTime::DecodeDate(uint16_t & Y, uint16_t & M, uint16_t & D) const
 {
   ::DecodeDate(*this, Y, M, D);
 }
 
-void TDateTime::DecodeTime(uint16_t &H,
-  uint16_t &N, uint16_t &S, uint16_t &MS) const
+void TDateTime::DecodeTime(uint16_t & H, uint16_t & N, uint16_t & S, uint16_t & MS) const
 {
   ::DecodeTime(*this, H, N, S, MS);
 }
@@ -1135,7 +1133,7 @@ TDateTime Now()
   return Result;
 }
 
-TDateTime SpanOfNowAndThen(const TDateTime &ANow, const TDateTime &AThen)
+TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen)
 {
   TDateTime Result;
   if (ANow < AThen)
@@ -2130,7 +2128,7 @@ TShortCut::operator int32_t() const
   return FValue;
 }
 
-bool TShortCut::operator<(const TShortCut & rhs) const
+bool TShortCut::operator <(const TShortCut & rhs) const
 {
   return FValue < rhs.FValue;
 }

@@ -149,7 +149,7 @@ public:
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
-  virtual ~TPersistent() override = default;
+  virtual ~TPersistent() noexcept override = default;
   virtual void Assign(const TPersistent * Source);
   virtual TPersistent * GetOwner();
 protected:
@@ -176,7 +176,7 @@ public:
 public:
   TList();
   explicit TList(TObjectClassId Kind);
-  virtual ~TList() override;
+  virtual ~TList() noexcept override;
 
   template<class T>
   T * GetAs(int32_t Index) const { return cast_to<T>(GetItem(Index)); }
@@ -216,7 +216,7 @@ public:
 public:
   TObjectList();
   explicit TObjectList(TObjectClassId Kind);
-  virtual ~TObjectList() override;
+  virtual ~TObjectList() noexcept override;
 
   RWProperty2<bool> OwnsObjects{&FOwnsObjects};
 
@@ -278,7 +278,7 @@ public:
   UnicodeString GetDelimitedText() const;
   void SetDelimitedText(const UnicodeString & Value);
   int32_t GetUpdateCount() const { return FUpdateCount; }
-  virtual void Assign(const TPersistent *Source) override;
+  virtual void Assign(const TPersistent * Source) override;
 
 public:
   virtual void SetObj(int32_t Index, TObject * AObject) = 0;
@@ -332,7 +332,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
-  virtual ~TStringList() override = default;
+  virtual ~TStringList() noexcept override = default;
 
   int32_t Add(const UnicodeString & S);
   virtual int32_t AddObject(const UnicodeString & S, const TObject * AObject) override;
@@ -344,8 +344,8 @@ public:
   void InsertItem(int32_t Index, const UnicodeString & S, const TObject * AObject);
   void QuickSort(int32_t L, int32_t R, TStringListSortCompare SCompare);
 
-  virtual void Assign(const TPersistent *Source) override;
-  virtual bool Find(const UnicodeString & S, int32_t &Index) const;
+  virtual void Assign(const TPersistent * Source) override;
+  virtual bool Find(const UnicodeString & S, int32_t & Index) const;
   virtual int32_t IndexOf(const UnicodeString & S) const override;
   virtual void Delete(int32_t Index) override;
   virtual void InsertObject(int32_t Index, const UnicodeString & Key, TObject * AObject) override;
