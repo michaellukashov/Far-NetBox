@@ -260,7 +260,7 @@ public:
 
   void Size(int64_t Size)
   {
-    Parameter(L"size", Size);
+    Parameter(L"size", Int64ToStr(Size));
   }
 
   void Rights(const TRights & Rights)
