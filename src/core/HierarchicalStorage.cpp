@@ -859,21 +859,20 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) noexcept:
   THierarchicalStorage(IncludeTrailingBackslash(AStorage))
 {
   FWowMode = 0;
-  Init();
 }
 
 TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
+  THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
+  FRegistry(std::make_unique<TRegistry>())
 {
   FWowMode = WowMode;
-  Init();
+  FRegistry->Access = KEY_READ | FWowMode;
   FRegistry->RootKey = ARootKey;
 }
 
 void TRegistryStorage::Init()
 {
-  FRegistry = std::make_unique<TRegistry>();
-  FRegistry->Access = KEY_READ | FWowMode;
+  THierarchicalStorage::Init();
 }
 
 TRegistryStorage::~TRegistryStorage() noexcept
