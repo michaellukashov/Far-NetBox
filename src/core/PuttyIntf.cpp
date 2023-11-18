@@ -49,7 +49,7 @@ void PuttyInitialize()
   {
     AppLog(L"Random seed file exists");
   }
-  // make sure random generator is initialised, so random_save_seed()
+  // make sure random generator is initialized, so random_save_seed()
   // in destructor can proceed
   random_ref();
 
