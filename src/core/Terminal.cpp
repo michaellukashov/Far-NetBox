@@ -1605,7 +1605,7 @@ void TTerminal::InternalTryOpen()
       // Particularly to prevent reusing a wrong client certificate passphrase
       // in the next login attempt
       FRememberedPassword = UnicodeString();
-      FRememberedPasswordKind = TPromptKind(-1);
+      FRememberedPasswordKind = static_cast<TPromptKind>(-1);
       FRememberedTunnelPassword = UnicodeString();
     }
     throw;
@@ -4482,7 +4482,7 @@ void TTerminal::DeleteLocalFile(const UnicodeString & AFileName,
   }
   else
   {
-    OnDeleteLocalFile(AFileName, FLAGSET(*((int32_t *)Params), dfAlternative), Deleted);
+    OnDeleteLocalFile(AFileName, FLAGSET(*(static_cast<int32_t*>(Params)), dfAlternative), Deleted);
   }
   if (DebugAlwaysTrue((OperationProgress != nullptr) && (OperationProgress->Operation() == foDelete)))
   {
