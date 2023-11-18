@@ -508,7 +508,7 @@ void TSecureShell::Open()
   DebugAssert(!FSessionInfo.SshImplementation.IsEmpty());
   FOpened = true;
 
-  UnicodeString SshImplementation = GetSessionInfo().SshImplementation;
+  const UnicodeString SshImplementation = GetSessionInfo().SshImplementation;
   if (IsOpenSSH(SshImplementation))
   {
     FSshImplementation = sshiOpenSSH;
@@ -562,11 +562,11 @@ bool TSecureShell::TryFtp()
     {
       LogEvent("Knocking FTP port.");
 
-      SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
+      const SOCKET Socket = socket(AF_INET, SOCK_STREAM, 0);
       Result = (Socket != INVALID_SOCKET);
       if (Result)
       {
-        LPHOSTENT HostEntry = gethostbyname(AnsiString(FSessionData->GetHostNameExpanded()).c_str());
+        const LPHOSTENT HostEntry = gethostbyname(AnsiString(FSessionData->GetHostNameExpanded()).c_str());
         Result = (HostEntry != nullptr);
         if (Result)
         {
@@ -660,7 +660,7 @@ struct callback_set * TSecureShell::GetCallbackSet()
 
 UnicodeString TSecureShell::ConvertFromPutty(const char * Str, int32_t Length) const
 {
-  int32_t BomLength = NBChTraitsCRT<char>::SafeStringLen(WINSCP_BOM);
+  const int32_t BomLength = NBChTraitsCRT<char>::SafeStringLen(WINSCP_BOM);
   if ((Length >= BomLength) &&
       (strncmp(Str, WINSCP_BOM, BomLength) == 0))
   {
@@ -702,7 +702,7 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
     else
     {
       FLastTunnelError = RightStr(Str, Str.Length() - ForwardingFailureMsg.Length());
-      UnicodeString Prefix(L": ");
+      const UnicodeString Prefix(L": ");
       if (StartsStr(Prefix, FLastTunnelError))
       {
         FLastTunnelError.Delete(1, Prefix.Length());
@@ -792,7 +792,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   DebugAssert(Results->GetCount() == Prompts->GetCount());
 
   UnicodeString Name = AName;
-  TPromptKind PromptKind = IdentifyPromptKind(Name);
+  const TPromptKind PromptKind = IdentifyPromptKind(Name);
 
   const TPuttyTranslation * InstructionTranslation = nullptr;
   const TPuttyTranslation * PromptTranslation = nullptr;
@@ -2868,7 +2868,7 @@ bool TSecureShell::HaveHostKey(const UnicodeString & AHost, int32_t Port, const 
   UnicodeString Host = AHost;
   GetRealHost(Host, Port);
 
-  UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
+  const UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
   bool Result = !StoredKeys.IsEmpty();
 
   if (!FSessionData->GetHostKey().IsEmpty())
@@ -2908,11 +2908,11 @@ void TSecureShell::AskAlg(const UnicodeString & AAlgType, const UnicodeString & 
   UnicodeString AlgType = AAlgType;
   TranslatePuttyMessage(AlgTranslation, _countof(AlgTranslation), AlgType);
 
-  UnicodeString Msg = FMTLOAD(ALG_BELOW_TRESHOLD, AlgType, AlgName);
+  const UnicodeString Msg = FMTLOAD(ALG_BELOW_TRESHOLD, AlgType, AlgName);
 
   if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
-    UnicodeString Error = FMTLOAD(ALG_NOT_VERIFIED, AlgType, AlgName);
+    const UnicodeString Error = FMTLOAD(ALG_NOT_VERIFIED, AlgType, AlgName);
     FUI->FatalError(nullptr, Error);
   }
 }
