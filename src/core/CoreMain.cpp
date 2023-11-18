@@ -311,9 +311,9 @@ TInstantOperationVisualizer::TInstantOperationVisualizer() noexcept : TOperation
 
 TInstantOperationVisualizer::~TInstantOperationVisualizer() noexcept
 {
-  TDateTime Time = Now();
-  int64_t Duration = MilliSecondsBetween(Time, FStart);
-  const int64_t MinDuration = 250;
+  const TDateTime Time = Now();
+  const int64_t Duration = MilliSecondsBetween(Time, FStart);
+  constexpr int64_t MinDuration = 250;
   if (Duration < MinDuration)
   {
     Sleep(nb::ToUInt32(MinDuration - Duration));

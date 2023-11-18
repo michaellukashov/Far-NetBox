@@ -950,7 +950,7 @@ bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate
     DebugAssert(SamePaths(PrevPath, Storage() + GetCurrentSubKeyMunged()));
     FRegistry->CloseKey();
   }
-  UnicodeString K = ExcludeTrailingBackslash(Storage() + CurrentSubKey() + SubKey);
+  const UnicodeString K = ExcludeTrailingBackslash(Storage() + CurrentSubKey() + SubKey);
   bool Result = FRegistry->OpenKey(K, CanCreate);
   if (!Result && WasOpened)
   {
@@ -1000,14 +1000,14 @@ bool TRegistryStorage::DoDeleteValue(const UnicodeString & Name)
 
 bool TRegistryStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi)
 {
-  UnicodeString Key = MungeStr(SubKey, AForceAnsi, false);
+  const UnicodeString Key = MungeStr(SubKey, AForceAnsi, false);
   bool Result = FRegistry->KeyExists(Key);
   return Result;
 }
 
 bool TRegistryStorage::DoValueExists(const UnicodeString & Value)
 {
-  bool Result = FRegistry->ValueExists(Value);
+  const bool Result = FRegistry->ValueExists(Value);
   return Result;
 }
 

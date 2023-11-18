@@ -48,7 +48,7 @@ public:
   virtual int32_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size) override;
 
 private:
-  UnicodeString GetFullCurrentSubKey() { return /* GetStorage() + */ GetCurrentSubKey(); }
+  UnicodeString GetFullCurrentSubKey() const { return /* GetStorage() + */ GetCurrentSubKey(); }
   int32_t OpenSubKeyInternal(int32_t Root, const UnicodeString & SubKey, bool CanCreate);
 
 private:

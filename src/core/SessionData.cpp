@@ -1085,7 +1085,7 @@ void TSessionData::Load(THierarchicalStorage * Storage, bool PuttyImport)
 
   if (RewritePassword)
   {
-    TStorageAccessMode AccessMode = Storage->GetAccessMode();
+    const TStorageAccessMode AccessMode = Storage->GetAccessMode();
     Storage->SetAccessMode(smReadWrite);
 
     try
