@@ -125,8 +125,8 @@ protected:
   void SetVerifyCertResult(int nResult, t_SslCertData * pData);
   void ResetOperation(int nSuccessful = -1);
   void ResetTransferSocket(int Error);
-  int OpenTransferFile(CFileTransferData * pData);
-  int ActivateTransferSocket(CFileTransferData * pData);
+  int32_t OpenTransferFile(CFileTransferData * pData);
+  int32_t ActivateTransferSocket(CFileTransferData * pData);
   void CancelTransferResume(CFileTransferData * pData);
 
   virtual void DoClose(int nError = 0);

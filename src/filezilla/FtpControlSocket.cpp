@@ -2667,7 +2667,7 @@ void CFtpControlSocket::ResetTransferSocket(int Error)
   }
 }
 
-int CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
+int32_t CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
 {
   int nReplyError = 0;
   bool res;
@@ -2720,7 +2720,7 @@ int CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
   return nReplyError;
 }
 
-int CFtpControlSocket::ActivateTransferSocket(CFileTransferData * pData)
+int32_t CFtpControlSocket::ActivateTransferSocket(CFileTransferData * pData)
 {
   int nReplyError = 0;
   if (pData->transferfile.get && (m_pDataFile == NULL))
@@ -2740,7 +2740,7 @@ void CFtpControlSocket::CancelTransferResume(CFileTransferData * pData)
   pData->transferdata.bResume = FALSE;
 }
 
-void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFinish/*=FALSE*/,int nError/*=0*/)
+void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL bFinish/*=FALSE*/, int32_t nError/*=0*/)
 {
   USES_CONVERSION;
 
@@ -2925,7 +2925,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile *transferfile/*=0*/,BOOL bFi
         return;
       }
 
-      int num=0;
+      int32_t num=0;
       pData->pDirectoryListing=new t_directory;
       pData->pDirectoryListing->direntry=m_pTransferSocket->m_pListResult->getList(num);
       pData->pDirectoryListing->num=num;
