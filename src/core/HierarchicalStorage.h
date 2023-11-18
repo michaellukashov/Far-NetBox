@@ -180,8 +180,8 @@ class NB_CORE_EXPORT TRegistryStorage : public THierarchicalStorage
   NB_DISABLE_COPY(TRegistryStorage)
 public:
   TRegistryStorage() = delete;
-  explicit TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
   explicit TRegistryStorage(const UnicodeString & AStorage) noexcept;
+  explicit TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey, REGSAM WowMode = 0) noexcept;
   virtual ~TRegistryStorage() noexcept override;
 
   bool Copy(TRegistryStorage * Storage);

@@ -855,17 +855,15 @@ bool THierarchicalStorage::GetTemporary() const
   return false;
 }
 //===========================================================================
-TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) noexcept:
-  THierarchicalStorage(IncludeTrailingBackslash(AStorage))
+TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage) noexcept : TRegistryStorage(AStorage, HKEY_LOCAL_MACHINE, 0)
 {
-  FWowMode = 0;
 }
 
 TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey, REGSAM WowMode) noexcept :
   THierarchicalStorage(IncludeTrailingBackslash(AStorage)),
-  FRegistry(std::make_unique<TRegistry>())
+  FRegistry(std::make_unique<TRegistry>()),
+  FWowMode(WowMode)
 {
-  FWowMode = WowMode;
   FRegistry->Access = KEY_READ | FWowMode;
   FRegistry->RootKey = ARootKey;
 }
