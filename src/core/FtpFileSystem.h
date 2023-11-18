@@ -107,7 +107,7 @@ public:
   virtual void ClearCaches() override;
 
 protected:
-  __removed enum TOverwriteMode { omOverwrite, omResume, omComplete }; // moved to FileSystems.h
+  // enum TOverwriteMode { omOverwrite, omResume, omComplete }; // moved to FileSystems.h
 
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
 
