@@ -5771,15 +5771,15 @@ void TStoredSessionList::Import(TStoredSessionList * From,
   {
     if (!OnlySelected || From->GetSession(Index)->GetSelected())
     {
-      TSessionData * Session = new TSessionData("");
+      std::unique_ptr<TSessionData> Session(std::make_unique<TSessionData>(""));
       Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
-      Add(Session);
       if (Imported != nullptr)
       {
-        Imported->Add(Session);
+        Imported->Add(Session.get());
       }
+      Add(Session.release());
     }
   }
   // only modified, explicit
