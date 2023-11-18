@@ -594,7 +594,7 @@ protected:
 public:
   explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal) noexcept;
   void Init(TSessionData * ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog = nullptr);
-  virtual ~TTerminal() noexcept;
+  virtual ~TTerminal() noexcept override;
   void Open();
   void Close();
   void FingerprintScan(UnicodeString & SHA256, UnicodeString & SHA1, UnicodeString & MD5);
@@ -882,7 +882,7 @@ public:
 public:
   TSecondaryTerminal() noexcept : TTerminal(OBJECT_CLASS_TSecondaryTerminal) {}
   explicit TSecondaryTerminal(TObjectClassId Kind) noexcept;
-  virtual ~TSecondaryTerminal() = default;
+  virtual ~TSecondaryTerminal() noexcept override = default;
   void Init(
     TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration,
     const UnicodeString & Name, TActionLog * ActionLog);
@@ -909,7 +909,7 @@ class NB_CORE_EXPORT TTerminalList : public TObjectList
   NB_DISABLE_COPY(TTerminalList)
 public:
   explicit TTerminalList(TConfiguration * AConfiguration) noexcept;
-  virtual ~TTerminalList() noexcept;
+  virtual ~TTerminalList() noexcept override;
 
   virtual TTerminal * NewTerminal(TSessionData * Data);
   virtual void FreeTerminal(TTerminal * Terminal);
@@ -995,7 +995,7 @@ struct NB_CORE_EXPORT TSynchronizeOptions : public TObject
   NB_DISABLE_COPY(TSynchronizeOptions)
 public:
   TSynchronizeOptions() noexcept;
-  ~TSynchronizeOptions() noexcept;
+  virtual ~TSynchronizeOptions() noexcept override;
 
   TStringList * Filter{nullptr};
   int32_t Files{0};
@@ -1022,7 +1022,7 @@ class NB_CORE_EXPORT TRobustOperationLoop : public TObject
 public:
   TRobustOperationLoop() = delete;
   explicit TRobustOperationLoop(TTerminal * Terminal, TFileOperationProgressType * OperationProgress, bool * AnyTransfer = nullptr, bool CanRetry = true) noexcept;
-  virtual ~TRobustOperationLoop() noexcept;
+  virtual ~TRobustOperationLoop() noexcept override;
   bool TryReopen(Exception & E);
   bool ShouldRetry() const;
   bool Retry();
@@ -1045,7 +1045,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCollectedFileList) || TObject::is(Kind); }
 public:
   TCollectedFileList() noexcept;
-  virtual ~TCollectedFileList();
+  virtual ~TCollectedFileList() noexcept override; 
   int32_t Add(const UnicodeString & AFileName, TObject * Object, bool Dir);
   void DidNotRecurse(int32_t Index);
   void Delete(int32_t Index);
@@ -1081,7 +1081,7 @@ class TParallelOperation : public TObject
 public:
   TParallelOperation() = delete;
   explicit TParallelOperation(TOperationSide Side) noexcept;
-  virtual ~TParallelOperation() noexcept;
+  virtual ~TParallelOperation() noexcept override;
 
   void Init(
     TStrings * AFiles, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
