@@ -93,10 +93,10 @@ public:
   __property TCopyParamRuleData Data = { read = FData, write = FData };
   __property bool IsEmpty = { read = GetEmpty };
   TCopyParamRuleData GetData() const { return FData; }
-  void SetData(const TCopyParamRuleData &Value) { FData = Value; }
+  void SetData(const TCopyParamRuleData & Value) { FData = Value; }
 
 public:
-  TCopyParamRule &operator=(const TCopyParamRule &other);
+  TCopyParamRule & operator =(const TCopyParamRule & other);
 
 private:
   TCopyParamRuleData FData;
@@ -120,7 +120,7 @@ class NB_CORE_EXPORT TCopyParamList : public TObject
 friend class TGUIConfiguration;
 public:
   explicit TCopyParamList() noexcept;
-  explicit TCopyParamList(const TCopyParamList & other) noexcept;
+  // explicit TCopyParamList(const TCopyParamList & other) noexcept;
 
   virtual ~TCopyParamList() noexcept;
   int32_t Find(const TCopyParamRuleData & Value) const;
@@ -130,8 +130,8 @@ public:
 
   static void ValidateName(const UnicodeString & Name);
 
-  TCopyParamList & operator=(const TCopyParamList & rhl);
-  bool operator==(const TCopyParamList & rhl) const;
+  TCopyParamList & operator =(const TCopyParamList & rhl);
+  bool operator ==(const TCopyParamList & rhl) const;
 
   void Clear();
   void Add(const UnicodeString & Name,
@@ -364,8 +364,8 @@ public:
   UnicodeString GetPuttyPath() const;
   void SetPuttyPath(const UnicodeString & Value);
   UnicodeString GetDefaultPuttyPath() const;
-  UnicodeString GetPSftpPath() const;
-  void SetPSftpPath(const UnicodeString & Value);
+  // UnicodeString GetPSftpPath() const;
+  // void SetPSftpPath(const UnicodeString & Value);
   bool GetPuttyPassword() const { return FPuttyPassword; }
   void SetPuttyPassword(bool Value) { FPuttyPassword = Value; }
   bool GetTelnetForFtpInPutty() const { return FTelnetForFtpInPutty; }
@@ -373,12 +373,12 @@ public:
   UnicodeString GetPuttySession() const;
   void SetPuttySession(const UnicodeString & Value);
   TDateTime GetIgnoreCancelBeforeFinish() const { return FIgnoreCancelBeforeFinish; }
-  void SetIgnoreCancelBeforeFinish(const TDateTime &Value) { FIgnoreCancelBeforeFinish = Value; }
+  void SetIgnoreCancelBeforeFinish(const TDateTime & Value) { FIgnoreCancelBeforeFinish = Value; }
   TGUICopyParamType & GetDefaultCopyParam() { return FDefaultCopyParam; }
   bool GetBeepOnFinish() const { return FBeepOnFinish; }
   void SetBeepOnFinish(bool Value) { FBeepOnFinish = Value; }
   TDateTime GetBeepOnFinishAfter() const { return FBeepOnFinishAfter; }
-  void SetBeepOnFinishAfter(const TDateTime &Value) { FBeepOnFinishAfter = Value; }
+  void SetBeepOnFinishAfter(const TDateTime & Value) { FBeepOnFinishAfter = Value; }
   UnicodeString GetCopyParamCurrent() const;
   const TRemoteProperties & GetNewDirectoryProperties() const { return FNewDirectoryProperties; }
   int32_t GetKeepUpToDateChangeDelay() const { return FKeepUpToDateChangeDelay; }

@@ -97,6 +97,7 @@ public:
 
   UnicodeString GetSourceConst() const { return GetSource(); }
   void SetAccessMode(TStorageAccessMode Value) { SetAccessModeProtected(Value); }
+
 protected:
   enum THierarchicalStorageAccess { hsaRead = 0x01, hsaWrite = 0x02 };
   struct TKeyEntry

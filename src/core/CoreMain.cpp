@@ -116,7 +116,7 @@ void TQueryParams::Assign(const TQueryParams & ASource)
   *this = ASource;
 }
 
-TQueryParams &TQueryParams::operator=(const TQueryParams &other)
+TQueryParams & TQueryParams::operator =(const TQueryParams &other)
 {
   Params = other.Params;
   Aliases = other.Aliases;

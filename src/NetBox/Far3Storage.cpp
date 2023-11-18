@@ -19,9 +19,7 @@ void TFar3Storage::Init()
   FRoot = 0;
 }
 
-TFar3Storage::~TFar3Storage()
-{
-}
+TFar3Storage::~TFar3Storage() = default;
 
 bool TFar3Storage::Copy(TFar3Storage * /*Storage*/)
 {
