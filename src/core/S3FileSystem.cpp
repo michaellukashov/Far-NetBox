@@ -531,7 +531,7 @@ int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certifica
   return FileSystem->VerifyCertificate(Data) ? NE_OK : NE_ERROR;
 }
 
-bool TS3FileSystem::VerifyCertificate(TNeonCertificateData &Data)
+bool TS3FileSystem::VerifyCertificate(TNeonCertificateData & Data)
 {
   bool Result =
     FTerminal->VerifyOrConfirmHttpCertificate(
@@ -1943,7 +1943,7 @@ int32_t TS3FileSystem::LibS3PutObjectDataCallback(int32_t BufferSize, char * Buf
   return Data.FileSystem->PutObjectData(BufferSize, Buffer, Data);
 }
 
-bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &Data)
+bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data)
 {
   const bool Result = (Data.OperationProgress->GetCancel() != csContinue);
   if (Result)
@@ -1960,7 +1960,7 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData &D
   return Result;
 }
 
-int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData &Data)
+int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
 {
   int32_t Result;
 

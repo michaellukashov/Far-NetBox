@@ -811,7 +811,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       AsciiFileMask.Masks);
 }
 
-DWORD TCopyParamType::LocalFileAttrs(const TRights &Rights) const
+DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const
 {
   DWORD Result = 0;
   if (GetPreserveReadOnly() && !Rights.GetRight(TRights::rrUserWrite))
@@ -879,7 +879,7 @@ bool TCopyParamType::SkipTransfer(
   // we deliberately do not filter directories, as path is added to resume list
   // when a transfer of file or directory is started,
   // so for directories we need to recurse and check every single file
-  if (!Directory && FTransferSkipList.get() != nullptr)
+  if (!Directory && (FTransferSkipList.get() != nullptr))
   {
     Result = (FTransferSkipList->IndexOf(AFileName) >= 0);
   }

@@ -4181,7 +4181,7 @@ void TWinSCPFileSystem::EditHistory()
   if ((Result >= 0) && (Result < nb::ToInt32(FEditHistories.size())))
   {
     TRemoteFile * File = nullptr;
-    const TEditHistory &EditHistory = FEditHistories[Result];
+    const TEditHistory & EditHistory = FEditHistories[Result];
     UnicodeString FullFileName =
       base::UnixIncludeTrailingBackslash(EditHistory.Directory) + EditHistory.FileName;
     File = FTerminal->ReadFile(FullFileName);

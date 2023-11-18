@@ -2132,12 +2132,12 @@ TShortCut::operator int32_t() const
   return FValue;
 }
 
-bool TShortCut::operator<(const TShortCut &rhs) const
+bool TShortCut::operator<(const TShortCut & rhs) const
 {
   return FValue < rhs.FValue;
 }
 
-void GetLocaleFormatSettings(int32_t LCID, TFormatSettings &FormatSettings)
+void GetLocaleFormatSettings(int32_t LCID, TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;
