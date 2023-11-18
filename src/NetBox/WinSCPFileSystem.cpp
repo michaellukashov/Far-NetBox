@@ -3894,7 +3894,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int32_t Event, void * /* Param */)
             FMultipleEdits[Info->GetEditorID()] = MultipleEdit;
             if (FLastMultipleEditReadOnly)
             {
-              EditorSetParameter Parameter;
+              EditorSetParameter Parameter{};
               nb::ClearStruct(Parameter);
               Parameter.StructSize = sizeof(EditorSetParameter);
               Parameter.Type = ESPT_LOCKMODE;
@@ -4096,7 +4096,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     int32_t Pos = 0;
     while (Pos < WindowCount)
     {
-      WindowInfo Window;
+      WindowInfo Window{};
       nb::ClearStruct(Window);
       Window.StructSize = sizeof(WindowInfo);
       Window.Pos = Pos;

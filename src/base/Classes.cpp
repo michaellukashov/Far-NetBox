@@ -1933,7 +1933,7 @@ intptr_t TRegistry::ReadIntPtr(const UnicodeString & Name) const
 
 int32_t TRegistry::ReadInteger(const UnicodeString & Name) const
 {
-  DWORD Result = 0;
+  DWORD Result{0};
   TRegDataType RegData = rdUnknown;
   const int32_t res = GetData(Name, &Result, sizeof(Result), RegData);
   DebugAssert(res == sizeof(Result));
@@ -2167,7 +2167,7 @@ void TGlobals::SetupDbgHandles(const UnicodeString & DbgFileName)
 
 void TGlobals::InitPlatformId()
 {
-  OSVERSIONINFO OSVersionInfo;
+  OSVERSIONINFO OSVersionInfo{};
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
   if (::GetVersionEx(&OSVersionInfo) != FALSE)
   {

@@ -280,9 +280,9 @@ private:
   bool FAwaitingProgress{false};
   TCaptureOutputEvent FOnCaptureOutput;
   UnicodeString FUserName;
-  TAutoSwitch FListAll;
+  TAutoSwitch FListAll{asAuto};
   bool FDoListAll{false};
-  TAutoSwitch FWorkFromCwd;
+  TAutoSwitch FWorkFromCwd{asAuto};
   std::unique_ptr<TFTPServerCapabilities> FServerCapabilities;
   TDateTime FLastDataSent{};
   bool FAnyTransferSucceeded{false};
