@@ -4006,7 +4006,7 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
   }
 
   // skip if directory listing fails and user selects "skip"
-  if (FileList.get())
+  if (FileList)
   {
     try__finally
     {
@@ -4114,7 +4114,7 @@ TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName)
 bool TTerminal::FileExists(const UnicodeString & FileName)
 {
   std::unique_ptr<TRemoteFile> File(TryReadFile(FileName));
-  return (File.get() != nullptr);
+  return (File != nullptr);
 }
 
 void TTerminal::AnnounceFileListOperation()
@@ -4923,7 +4923,7 @@ void TTerminal::CalculateSubFoldersChecksum(
         OperationProgress->SetFile(File->FileName);
         std::unique_ptr<TRemoteFileList> SubFiles(CustomReadDirectoryListing(File->FullFileName, false));
 
-        if (SubFiles.get() != nullptr)
+        if (SubFiles != nullptr)
         {
           std::unique_ptr<TStrings> SubFileList(std::make_unique<TStringList>());
           bool Success = false;
@@ -5016,7 +5016,7 @@ bool TTerminal::DoRenameOrCopyFile(
     DuplicateFile.reset(TryReadFile(AbsoluteNewName));
     ExistenceKnown = true;
 
-    if (DuplicateFile.get() != nullptr)
+    if (DuplicateFile != nullptr)
     {
       UnicodeString QuestionFmt;
       TQueryType QueryType;
@@ -5111,7 +5111,7 @@ bool TTerminal::DoRenameOrCopyFile(
           DuplicateFile.reset(TryReadFile(AbsoluteNewName));
         }
 
-        if (DuplicateFile.get() != nullptr)
+        if (DuplicateFile != nullptr)
         {
           DoDeleteFile(FileSystem, AbsoluteNewName, DuplicateFile.get(), 0);
         }
@@ -7318,7 +7318,7 @@ const TFileSystemInfo & TTerminal::GetFileSystemInfo(bool Retrieve)
 
 TStrings * TTerminal::GetShellChecksumAlgDefs()
 {
-  if (FShellChecksumAlgDefs.get() == nullptr)
+  if (FShellChecksumAlgDefs == nullptr)
   {
     UnicodeString ChecksumCommandsDef = Configuration->FChecksumCommands;
     if (ChecksumCommandsDef.IsEmpty())
@@ -9155,7 +9155,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
     UnicodeString SshFolderAbsolutePath = base::UnixIncludeTrailingBackslash(GetHomeDirectory()) + OpensshFolderName;
     bool WrongRights = false;
     std::unique_ptr<TRemoteFile> SshFolderFile(CheckRights(L"Folder", SshFolderAbsolutePath, WrongRights));
-    if (SshFolderFile.get() == nullptr)
+    if (SshFolderFile == nullptr)
     {
       TRights SshFolderRights;
       SshFolderRights.Number = TRights::rfUserRead | TRights::rfUserWrite | TRights::rfUserExec;
@@ -9183,7 +9183,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
 
     UnicodeString AuthorizedKeys;
     std::unique_ptr<TRemoteFile> AuthorizedKeysFileFile(CheckRights(L"File", AuthorizedKeysFileAbsolutePath, WrongRights));
-    if (AuthorizedKeysFileFile.get() != nullptr)
+    if (AuthorizedKeysFileFile != nullptr)
     {
       AuthorizedKeysFileFile->FullFileName = AuthorizedKeysFileAbsolutePath;
       std::unique_ptr<TStrings> Files(std::make_unique<TStringList>());
