@@ -109,7 +109,7 @@ protected:
 
   UnicodeString FStorage;
   nb::vector_t<TKeyEntry> FKeyHistory;
-  TStorageAccessMode FAccessMode;
+  TStorageAccessMode FAccessMode{smRead};
   bool FExplicit{false};
   bool FForceSave{false};
   bool FMungeStringValues{false};
