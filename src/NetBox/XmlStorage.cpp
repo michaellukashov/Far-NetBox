@@ -304,10 +304,10 @@ bool TXmlStorage::DoValueExists(const UnicodeString & Value)
   return Result;
 }
 
-size_t TXmlStorage::DoBinaryDataSize(const UnicodeString & /*Name*/)
+int32_t TXmlStorage::DoBinaryDataSize(const UnicodeString & /*Name*/)
 {
   ThrowNotImplemented(3026);
-  size_t Result = 0; // FRegistry->GetDataSize(Name);
+  int32_t Result = 0; // FRegistry->GetDataSize(Name);
   return Result;
 }
 

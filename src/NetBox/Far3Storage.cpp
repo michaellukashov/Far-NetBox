@@ -146,9 +146,9 @@ bool TFar3Storage::DoDeleteValue(const UnicodeString & Name)
   return FPluginSettings.DeleteValue(FRoot, Name.c_str());
 }
 
-size_t TFar3Storage::DoBinaryDataSize(const UnicodeString & Name)
+int32_t TFar3Storage::DoBinaryDataSize(const UnicodeString & Name)
 {
-  size_t Result = FPluginSettings.BinaryDataSize(FRoot, Name.c_str());
+  int32_t Result = nb::ToInt32(FPluginSettings.BinaryDataSize(FRoot, Name.c_str()));
   return Result;
 }
 

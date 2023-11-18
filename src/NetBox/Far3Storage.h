@@ -22,7 +22,7 @@ public:
   virtual bool DoValueExists(const UnicodeString & Value) override;
   virtual bool DoDeleteValue(const UnicodeString & Name) override;
 //  virtual size_t DoBinaryDataSize(const UnicodeString & Name) const override;
-  virtual size_t DoBinaryDataSize(const UnicodeString & Name) override;
+  virtual int32_t DoBinaryDataSize(const UnicodeString & Name) override;
 
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
   virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate) override;
