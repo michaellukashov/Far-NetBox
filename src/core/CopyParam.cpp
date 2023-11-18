@@ -801,7 +801,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       BooleanToEngStr(GetClearArchive()),
       BooleanToEngStr(GetRemoveCtrlZ()),
       BooleanToEngStr(GetRemoveBOM()),
-      uint32_t(GetCPSLimit()),
+      nb::ToInt32(GetCPSLimit()),
       BooleanToEngStr(GetNewerOnly()),
       BooleanToEngStr(EncryptNewFiles),
       BooleanToEngStr(ExcludeHiddenFiles),
@@ -1091,7 +1091,7 @@ static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t & Speed)
     Result = TryStrToInt64(Text, SSpeed) && (SSpeed >= 0);
     if (Result)
     {
-      Speed = nb::ToUIntPtr(SSpeed * 1024);
+      Speed = nb::ToInt64(SSpeed * 1024);
     }
   }
   return Result;

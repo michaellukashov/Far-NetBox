@@ -80,7 +80,7 @@ TList::~TList() noexcept
 
 int32_t TList::GetCount() const
 {
-  return nb::ToIntPtr(FList.size());
+  return nb::ToInt32(FList.size());
 }
 
 void TList::SetCount(int32_t NewCount)
@@ -89,9 +89,9 @@ void TList::SetCount(int32_t NewCount)
   {
     Error(SListCountError, NewCount);
   }
-  if (NewCount <= nb::ToIntPtr(FList.size()))
+  if (NewCount <= nb::ToInt32(FList.size()))
   {
-    const int32_t sz = FList.size();
+    const int32_t sz = nb::ToInt32(FList.size());
     for (int32_t Index = sz - 1; (Index != nb::NPOS) && (Index >= NewCount); Index--)
     {
       Delete(Index);
@@ -107,7 +107,7 @@ void * TList::operator[](int32_t Index) const
 
 void TList::SetItem(int32_t Index, void * Item)
 {
-  if ((Index == nb::NPOS) || (Index >= nb::ToIntPtr(FList.size())))
+  if ((Index == nb::NPOS) || (Index >= nb::ToInt32(FList.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -116,7 +116,7 @@ void TList::SetItem(int32_t Index, void * Item)
 
 int32_t TList::Add(void * Value)
 {
-  const int32_t Result = nb::ToIntPtr(FList.size());
+  const int32_t Result = nb::ToInt32(FList.size());
   FList.push_back(Value);
   return Result;
 }
@@ -144,7 +144,7 @@ void TList::Move(int32_t CurIndex, int32_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
-    if ((NewIndex == nb::NPOS) || (NewIndex >= nb::ToIntPtr(FList.size())))
+    if ((NewIndex == nb::NPOS) || (NewIndex >= nb::ToInt32(FList.size())))
     {
       Error(SListIndexError, NewIndex);
     }
@@ -158,7 +158,7 @@ void TList::Move(int32_t CurIndex, int32_t NewIndex)
 
 void TList::Delete(int32_t Index)
 {
-  if ((Index == nb::NPOS) || (Index >= nb::ToIntPtr(FList.size())))
+  if ((Index == nb::NPOS) || (Index >= nb::ToInt32(FList.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -172,11 +172,11 @@ void TList::Delete(int32_t Index)
 
 void TList::Insert(int32_t Index, void * Item)
 {
-  if ((Index == nb::NPOS) || (Index > nb::ToIntPtr(FList.size())))
+  if ((Index == nb::NPOS) || (Index > nb::ToInt32(FList.size())))
   {
     Error(SListIndexError, Index);
   }
-  if (Index <= nb::ToIntPtr(FList.size()))
+  if (Index <= nb::ToInt32(FList.size()))
   {
     FList.insert(Index, 1, Item);
   }
@@ -189,11 +189,11 @@ void TList::Insert(int32_t Index, void * Item)
 int32_t TList::IndexOf(const void * Value) const
 {
   int32_t Result = 0;
-  while ((Result < nb::ToIntPtr(FList.size())) && (FList[Result] != Value))
+  while ((Result < nb::ToInt32(FList.size())) && (FList[Result] != Value))
   {
     Result++;
   }
-  if (Result == nb::ToIntPtr(FList.size()))
+  if (Result == nb::ToInt32(FList.size()))
   {
     Result = nb::NPOS;
   }
@@ -335,7 +335,7 @@ void TStrings::SetTextStr(const UnicodeString & Text)
         P++;
       }
       UnicodeString S;
-      S.SetLength(P - Start);
+      S.SetLength(nb::ToInt32(P - Start));
       memmove(ToWChar(S), Start, (P - Start) * sizeof(wchar_t));
       Add(S);
       if (*P == 0x0D)
@@ -726,8 +726,8 @@ void TStringList::Assign(const TPersistent * Source)
 
 int32_t TStringList::GetCount() const
 {
-  DebugAssert(nb::ToIntPtr(FStrings.size()) == TObjectList::GetCount());
-  return nb::ToIntPtr(FStrings.size());
+  DebugAssert(nb::ToInt32(FStrings.size()) == TObjectList::GetCount());
+  return nb::ToInt32(FStrings.size());
 }
 
 int32_t TStringList::Add(const UnicodeString & S)
@@ -820,12 +820,12 @@ void TStringList::SetString(int32_t Index, const UnicodeString & S)
   {
     Error(SSortedListError, 0);
   }
-  if ((Index == nb::NPOS) || (Index > nb::ToIntPtr(FStrings.size())))
+  if ((Index == nb::NPOS) || (Index > nb::ToInt32(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
   Changing();
-  if (Index < nb::ToIntPtr(FStrings.size()))
+  if (Index < nb::ToInt32(FStrings.size()))
   {
     FStrings[Index] = S;
   }
@@ -838,7 +838,7 @@ void TStringList::SetString(int32_t Index, const UnicodeString & S)
 
 void TStringList::Delete(int32_t Index)
 {
-  if ((Index == nb::NPOS) || (Index >= nb::ToIntPtr(FStrings.size())))
+  if ((Index == nb::NPOS) || (Index >= nb::ToInt32(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
@@ -883,11 +883,11 @@ void TStringList::InsertItem(int32_t Index, const UnicodeString & S, const TObje
 
 const UnicodeString & TStringList::GetStringRef(int32_t Index) const
 {
-  if ((Index == nb::NPOS) || (Index > nb::ToIntPtr(FStrings.size())))
+  if ((Index == nb::NPOS) || (Index > nb::ToInt32(FStrings.size())))
   {
     Error(SListIndexError, Index);
   }
-  if (Index == nb::ToIntPtr(FStrings.size()))
+  if (Index == nb::ToInt32(FStrings.size()))
   {
     const_cast<TStringList *>(this)->InsertItem(Index, UnicodeString(), nullptr);
   }
@@ -940,7 +940,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
     bool ConvertToken = false;
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
     SAFE_CLOSE_HANDLE(FileHandle);
-    UnicodeString Str(FileBuffer.Data(), nb::ToIntPtr(FileBuffer.Size()));
+    UnicodeString Str(FileBuffer.Data(), nb::ToInt32(FileBuffer.Size()));
     SetTextStr(Str);
   }
 }
@@ -1738,7 +1738,7 @@ void TRegistry::GetKeyNames(TStrings * Names) const
   TRegKeyInfo Info{};
   if (GetKeyInfo(Info))
   {
-    S.SetLength(nb::ToIntPtr(Info.MaxSubKeyLen) + 1);
+    UnicodeString S(nb::ToInt32(Info.MaxSubKeyLen) + 1);
     for (DWORD Index = 0; Index < Info.NumSubKeys; Index++)
     {
       DWORD Len = Info.MaxSubKeyLen + 1;
@@ -1807,7 +1807,7 @@ bool TRegistry::DeleteKey(const UnicodeString & AKey)
     {
       UnicodeString KeyName;
       KeyName.SetLength(Info.MaxSubKeyLen + 1);
-      for (int32_t Index = nb::ToIntPtr(Info.NumSubKeys) - 1; Index >= 0; Index--)
+      for (int32_t Index = nb::ToInt32(Info.NumSubKeys) - 1; Index >= 0; Index--)
       {
         DWORD Len = Info.MaxSubKeyLen + 1;
         if (RegEnumKeyEx(DeleteKey, nb::ToDWord(Index), &KeyName[1], &Len,
