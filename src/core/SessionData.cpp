@@ -5283,8 +5283,7 @@ TFtps TSessionData::TranslateFtpEncryptionNumber(int32_t FtpEncryption) const
 }
 
 //=== TStoredSessionList ----------------------------------------------
-TStoredSessionList::TStoredSessionList() noexcept :
-  TNamedObjectList(OBJECT_CLASS_TStoredSessionList), FReadOnly(false)
+TStoredSessionList::TStoredSessionList() noexcept : TStoredSessionList(false)
 {
 #if defined(__BORLANDC__)
   DebugAssert(Configuration);
