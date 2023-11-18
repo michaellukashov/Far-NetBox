@@ -68,7 +68,7 @@ protected:
   void AddMoreMessages(const Exception * E);
 
 private:
-  TStrings * FMoreMessages{nullptr};
+  gsl::owner<TStrings *> FMoreMessages{nullptr};
   UnicodeString FHelpKeyword;
 };
 

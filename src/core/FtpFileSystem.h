@@ -234,7 +234,7 @@ private:
     FEAT
   };
 
-  mutable TFileZillaIntf * FFileZillaIntf{nullptr};
+  mutable gsl::owner<TFileZillaIntf *> FFileZillaIntf{nullptr};
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
   std::unique_ptr<TMessageQueue> FQueue{nullptr};
@@ -262,8 +262,8 @@ private:
   UnicodeString FCurrentDirectory;
   bool FReadCurrentDirectory{false};
   UnicodeString FHomeDirectory;
-  TRemoteFileList * FFileList{nullptr};
-  TRemoteFileList * FFileListCache{nullptr};
+  gsl::owner<TRemoteFileList *> FFileList{nullptr};
+  gsl::owner<TRemoteFileList *> FFileListCache{nullptr};
   UnicodeString FFileListCachePath;
   UnicodeString FWelcomeMessage;
   bool FActive{false};
@@ -297,8 +297,8 @@ private:
   TUploadedTimes FUploadedTimes{};
   bool FSupportsAnyChecksumFeature{false};
   UnicodeString FLastCommandSent;
-  X509 * FCertificate{nullptr};
-  EVP_PKEY * FPrivateKey{nullptr};
+  gsl::owner<X509 *> FCertificate{nullptr};
+  gsl::owner<EVP_PKEY *> FPrivateKey{nullptr};
   bool FTransferActiveImmediately{false};
   bool FWindowsServer{false};
   int64_t FBytesAvailable{0};
