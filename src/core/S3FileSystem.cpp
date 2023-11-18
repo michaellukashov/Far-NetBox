@@ -1887,7 +1887,7 @@ void TS3FileSystem::ConfirmOverwrite(
 
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = &Aliases[0];
-  QueryParams.AliasesCount = Aliases.size();
+  QueryParams.AliasesCount = nb::ToUInt32(Aliases.size());
 
   uint32_t Answer;
 
