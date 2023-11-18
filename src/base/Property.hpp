@@ -143,9 +143,9 @@ public:
     Expects(_getter != nullptr);
   }
   ROProperty(const ROProperty&) = default;
-  ROProperty(ROProperty&&) = default;
+  ROProperty(ROProperty&&) noexcept = default;
   ROProperty& operator=(const ROProperty&) = default;
-  ROProperty& operator=(ROProperty&&) = default;
+  ROProperty& operator=(ROProperty&&) noexcept = default;
 //  ROProperty(const T& in) : data(in) {}
 //  ROProperty(T&& in) : data(std::forward<T>(in)) {}
   constexpr T operator()() const
@@ -204,15 +204,15 @@ private:
 
 public:
   ROIndexedProperty() = delete;
-  explicit ROIndexedProperty(TGetValueFunctor Getter) noexcept
-      : _getter(std::move(Getter))
+  explicit ROIndexedProperty(TGetValueFunctor&& Getter) noexcept
+    : _getter(std::move(Getter))
   {
     Expects(_getter != nullptr);
   }
   ROIndexedProperty(const ROIndexedProperty&) = default;
-  ROIndexedProperty(ROIndexedProperty&&) = default;
+  ROIndexedProperty(ROIndexedProperty&&) noexcept = default;
   ROIndexedProperty& operator=(const ROIndexedProperty&) = default;
-  ROIndexedProperty& operator=(ROIndexedProperty&&) = default;
+  ROIndexedProperty& operator=(ROIndexedProperty&&) noexcept = default;
   constexpr T operator[](int32_t Index)
   {
     Expects(_getter);
@@ -241,9 +241,9 @@ public:
     Expects(_value != nullptr);
   }
   ROProperty2(const ROProperty2&) = default;
-  ROProperty2(ROProperty2&&) = default;
+  ROProperty2(ROProperty2&&) noexcept = default;
   ROProperty2& operator=(const ROProperty2&) = default;
-  ROProperty2& operator=(ROProperty2&&) = default;
+  ROProperty2& operator=(ROProperty2&&) noexcept = default;
   constexpr T operator()() const
   {
     Expects(_value);
@@ -314,9 +314,9 @@ public:
     Expects(_setter != nullptr);
   }
   RWProperty(const RWProperty&) = default;
-  RWProperty(RWProperty&&) = default;
+  RWProperty(RWProperty&&) noexcept = default;
   RWProperty& operator=(const RWProperty&) = default;
-  RWProperty& operator=(RWProperty&&) = default;
+  RWProperty& operator=(RWProperty&&) noexcept = default;
 //  RWProperty(const T& in) : data(in) {}
 //  RWProperty(T&& in) : data(std::forward<T>(in)) {}
 //  T const& get() const {
@@ -393,9 +393,9 @@ public:
     Expects(_setter != nullptr);
   }
   RWProperty1(const RWProperty1&) = default;
-  RWProperty1(RWProperty1&&) = default;
+  RWProperty1(RWProperty1&&) noexcept = default;
   RWProperty1& operator=(const RWProperty1&) = default;
-  RWProperty1& operator=(RWProperty1&&) = default;
+  RWProperty1& operator=(RWProperty1&&) noexcept = default;
   constexpr const T * operator()() const
   {
     Expects(_getter);
@@ -453,9 +453,9 @@ public:
     Expects(_value != nullptr);
   }
   RWProperty2(const RWProperty2&) = default;
-  RWProperty2(RWProperty2&&) = default;
+  RWProperty2(RWProperty2&&) noexcept = default;
   RWProperty2& operator=(const RWProperty2&) = default;
-  RWProperty2& operator=(RWProperty2&&) = default;
+  RWProperty2& operator=(RWProperty2&&) noexcept = default;
   constexpr T operator()() const
   {
     Expects(_value);
@@ -534,9 +534,9 @@ public:
     Expects(_setter != nullptr);
   }
   RWProperty3(const RWProperty3&) = default;
-  RWProperty3(RWProperty3&&) = default;
+  RWProperty3(RWProperty3&&) noexcept = default;
   RWProperty3& operator=(const RWProperty3&) = default;
-  RWProperty3& operator=(RWProperty3&&) = default;
+  RWProperty3& operator=(RWProperty3&&) noexcept = default;
 
   constexpr T operator()() const
   {
@@ -603,9 +603,9 @@ public:
     Expects(_setter != nullptr);
   }
   RWPropertySimple(const RWPropertySimple&) = default;
-  RWPropertySimple(RWPropertySimple&&) = default;
+  RWPropertySimple(RWPropertySimple&&) noexcept = default;
   RWPropertySimple& operator=(const RWPropertySimple&) = default;
-  RWPropertySimple& operator=(RWPropertySimple&&) = default;
+  RWPropertySimple& operator=(RWPropertySimple&&) noexcept = default;
   constexpr T operator()() const
   {
     Expects(_value);
@@ -681,9 +681,9 @@ public:
     Expects(_setter != nullptr);
   }
   RWPropertySimple1(const RWPropertySimple1&) = default;
-  RWPropertySimple1(RWPropertySimple1&&) = default;
+  RWPropertySimple1(RWPropertySimple1&&) noexcept = default;
   RWPropertySimple1& operator=(const RWPropertySimple1&) = default;
-  RWPropertySimple1& operator=(RWPropertySimple1&&) = default;
+  RWPropertySimple1& operator=(RWPropertySimple1&&) noexcept = default;
   constexpr T operator()() const
   {
     Expects(_value);
