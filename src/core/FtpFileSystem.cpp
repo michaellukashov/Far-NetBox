@@ -1651,7 +1651,7 @@ void TFTPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
 UnicodeString TFTPFileSystem::RemoteExtractFilePath(const UnicodeString & Path)
 {
   UnicodeString Result;
-  // If the path ends with a slash, FZAPI CServerPath contructor does not identify the path as VMS.
+  // If the path ends with a slash, FZAPI CServerPath constructor does not identify the path as VMS.
   // It is probably ok to use UnixExtractFileDir for all paths passed to FZAPI,
   // but for now, we limit the impact of the change to VMS.
   if (FVMS)
