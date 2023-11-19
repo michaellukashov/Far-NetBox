@@ -3894,7 +3894,7 @@ int32_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * 
 {
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TObject * Obj = Items->GetObj(Index);
+    TObject * Obj = Items->Get(Index);
     TProxyMethod Method = ToProxyMethod(nb::ToUIntPtr(Obj));
     if (Method == ProxyMethod)
       return Index;
@@ -3907,7 +3907,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(int32_t Index, TFarList * Items)
   TProxyMethod Result = pmNone;
   if (Index >= 0 && Index < Items->GetCount())
   {
-    TObject * Obj = Items->GetObj(Index);
+    TObject * Obj = Items->Get(Index);
     Result = ToProxyMethod(nb::ToUIntPtr(Obj));
   }
   return Result;
@@ -8375,7 +8375,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   if (GetQueueItems()->GetSelected() != nb::NPOS)
   {
     TQueueItemProxy * QueueItem = dyn_cast<TQueueItemProxy>(
-        GetQueueItems()->GetObj(GetQueueItems()->GetSelected()));
+        GetQueueItems()->Get(GetQueueItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
     {
@@ -8467,7 +8467,7 @@ void TQueueDialog::UpdateControls()
   if (GetQueueItems()->GetSelected() >= 0)
   {
     QueueItem = dyn_cast<TQueueItemProxy>(
-        GetQueueItems()->GetObj(GetQueueItems()->GetSelected()));
+        GetQueueItems()->Get(GetQueueItems()->GetSelected()));
   }
 
   if ((QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
@@ -8574,7 +8574,7 @@ void TQueueDialog::RefreshQueue()
       (Index < TopIndex + QueueListBox->GetHeight()))
     {
       QueueItem = dyn_cast<TQueueItemProxy>(
-          GetQueueItems()->GetObj(Index));
+          GetQueueItems()->Get(Index));
       DebugAssert(QueueItem != nullptr);
       if ((PrevQueueItem != nullptr) && (QueueItem != PrevQueueItem))
       {
