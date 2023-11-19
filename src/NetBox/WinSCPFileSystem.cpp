@@ -308,7 +308,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if ((GetTerminal() != nullptr) && isa<EFatal>(E))
   {
-    bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
+    const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
     if (Reopen)
     {
       UpdatePanel();
@@ -398,10 +398,10 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     // leaved subdirectory is not focused, when entering parent directory.
     HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
     CurDir = FTerminal->RemoteGetCurrentDirectory();
-    UnicodeString SessionName = GetSessionData()->GetLocalName();
+    const UnicodeString SessionName = GetSessionData()->GetLocalName();
     AFormat = FORMAT("netbox:%s", SessionName);
-    UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
-    UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
+    const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
+    const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
     if (GetFarConfiguration()->GetSessionNameInTitle())
     {
       PanelTitle = FORMAT(" %s:%s ", SessionName, CurDir);
