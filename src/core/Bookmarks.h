@@ -15,7 +15,7 @@ class NB_CORE_EXPORT TBookmarks : public TObject
   NB_DISABLE_COPY(TBookmarks)
 public:
   TBookmarks() noexcept;
-  virtual ~TBookmarks() noexcept;
+  virtual ~TBookmarks() noexcept override;
 
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage, bool All);
@@ -53,7 +53,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TBookmarkList) || TPersistent::is(Kind); }
 public:
   explicit TBookmarkList() noexcept;
-  virtual ~TBookmarkList() noexcept;
+  virtual ~TBookmarkList() noexcept override;
 
   void Clear();
   void Add(TBookmark * Bookmark);

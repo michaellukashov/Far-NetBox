@@ -250,7 +250,7 @@ public:
 public:
   TStrings() noexcept;
   explicit TStrings(TObjectClassId Kind) noexcept;
-  virtual ~TStrings() = default;
+  virtual ~TStrings() noexcept override = default;
   int32_t Add(const UnicodeString & S, const TObject * AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
   virtual void SetTextStr(const UnicodeString & Text);
@@ -611,7 +611,7 @@ class NB_CORE_EXPORT TStream : public TObject
 {
 public:
   TStream() = default;
-  virtual ~TStream() = default;
+  virtual ~TStream() noexcept override = default;
   virtual int64_t Read(void * Buffer, int64_t Count) = 0;
   virtual int64_t Write(const void * Buffer, int64_t Count) = 0;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const = 0;
@@ -635,7 +635,7 @@ class NB_CORE_EXPORT THandleStream : public TStream
 public:
   using TStream::TStream;
   explicit THandleStream(HANDLE AHandle) noexcept;
-  virtual ~THandleStream() = default;
+  virtual ~THandleStream() noexcept override = default;
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
@@ -655,7 +655,7 @@ class TFileStream : public THandleStream
 public:
   explicit TFileStream(const UnicodeString & AFileName, uint16_t Mode);
   //explicit TFileStream(const UnicodeString & AFileName, uint16_t Mode, uint32_t Rights);
-  ~TFileStream();
+  virtual ~TFileStream() noexcept override;
   UnicodeString GetFileName() const { return FFileName; }
 private:
   UnicodeString FFileName;
@@ -667,7 +667,7 @@ public:
   explicit TSafeHandleStream(THandle AHandle) noexcept;
   TSafeHandleStream(THandleStream * Source, bool Own);
   static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, uint16_t Mode);
-  virtual ~TSafeHandleStream();
+  virtual ~TSafeHandleStream() noexcept override;
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
 private:
@@ -692,7 +692,7 @@ class NB_CORE_EXPORT TMemoryStream : public TStream
   NB_DISABLE_COPY(TMemoryStream)
 public:
   TMemoryStream() noexcept;
-  virtual ~TMemoryStream() noexcept;
+  virtual ~TMemoryStream() noexcept override;
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream * Stream);
@@ -930,7 +930,7 @@ class NB_CORE_EXPORT TGlobals : public TGlobalsIntf, public TObject
 {
 public:
   TGlobals() noexcept;
-  virtual ~TGlobals() = default;
+  virtual ~TGlobals() noexcept override = default;
 
   virtual void SetupDbgHandles(const UnicodeString & DbgFileName) override;
 
