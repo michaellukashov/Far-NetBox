@@ -27,12 +27,19 @@
 #define THISDIRECTORY L"."
 
 extern const UnicodeString AnyMask;
-extern const wchar_t EngShortMonthNames[12][4];
-__removed extern const char Bom[3];
+//extern const wchar_t EngShortMonthNames[12][4];
+constexpr const wchar_t EngShortMonthNames[12][4] =
+{
+  L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
+  L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
+};
+
+// extern const char Bom[3];
 #define CONST_BOM "\xEF\xBB\xBF"
-extern const wchar_t TokenPrefix;
-extern const wchar_t NoReplacement;
-extern const wchar_t TokenReplacement;
+constexpr const char * Bom = CONST_BOM;
+constexpr const wchar_t TokenPrefix = L'%';
+constexpr const wchar_t NoReplacement = wchar_t(0);
+constexpr const wchar_t TokenReplacement = wchar_t(1);
 extern const UnicodeString LocalInvalidChars;
 extern const UnicodeString PasswordMask;
 extern const UnicodeString Ellipsis;
@@ -76,7 +83,7 @@ NB_CORE_EXPORT UnicodeString UnformatMessage(const UnicodeString & S);
 NB_CORE_EXPORT UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S);
 NB_CORE_EXPORT UnicodeString RemoveEmptyLines(const UnicodeString & S);
 bool IsNumber(const UnicodeString & Str);
-extern const wchar_t NormalizedFingerprintSeparator;
+constexpr const wchar_t NormalizedFingerprintSeparator = L'-';
 UnicodeString EncodeStrToBase64(const RawByteString & Str);
 RawByteString DecodeBase64ToStr(const UnicodeString & Str);
 UnicodeString Base64ToUrlSafe(const UnicodeString & S);
@@ -249,7 +256,7 @@ NB_CORE_EXPORT void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 NB_CORE_EXPORT DWORD FileGetAttrFix(const UnicodeString & AFileName);
 
-extern const wchar_t * DSTModeNames;
+constexpr const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 enum TDSTMode
 {
   dstmWin  = 0, //

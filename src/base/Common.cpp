@@ -660,19 +660,19 @@ UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 
 //#pragma package(smart_init)
 
-const wchar_t * DSTModeNames = L"Win;Unix;Keep";
+// const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
 
 const UnicodeString AnyMask = L"*.*";
-const wchar_t EngShortMonthNames[12][4] =
-{
-  L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
-  L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
-};
-const char Bom[4] = "\xEF\xBB\xBF";
-const wchar_t TokenPrefix = L'%';
-const wchar_t NoReplacement = wchar_t(0);
-const wchar_t TokenReplacement = wchar_t(1);
+//const wchar_t EngShortMonthNames[12][4] =
+//{
+//  L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
+//  L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
+//};
+// const char * Bom = "\xEF\xBB\xBF";
+//const wchar_t TokenPrefix = L'%';
+//const wchar_t NoReplacement = wchar_t(0);
+//const wchar_t TokenReplacement = wchar_t(1);
 // Note similar list in MakeValidFileName
 const UnicodeString LocalInvalidChars(TraceInitStr(L"/\\:*?\"<>|"));
 const UnicodeString PasswordMask(TraceInitStr(L"***"));
@@ -1154,7 +1154,7 @@ UnicodeString Base64ToUrlSafe(const UnicodeString & S)
   return Result;
 }
 
-const wchar_t NormalizedFingerprintSeparator = L'-';
+// const wchar_t NormalizedFingerprintSeparator = L'-';
 
 UnicodeString MD5ToUrlSafe(const UnicodeString & S)
 {
@@ -1453,7 +1453,7 @@ UnicodeString FormatCommand(const UnicodeString & AProgram, const UnicodeString 
   return Program + Params;
 }
 
-const wchar_t ShellCommandFileNamePattern[] = L"!.!";
+constexpr wchar_t ShellCommandFileNamePattern[] = L"!.!";
 
 void ReformatFileNameCommand(UnicodeString & ACommand)
 {
@@ -1549,7 +1549,7 @@ UnicodeString StringsToParams(TStrings * Strings)
 UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str)
 {
   UnicodeString Buf;
-  const int32_t Size = 1024;
+  constexpr int32_t Size = 1024;
 
   Buf.SetLength(Size);
   Buf.Unique();
@@ -2225,7 +2225,7 @@ DWORD FindNextChecked(TSearchRecChecked & F)
 
 bool FileSearchRec(const UnicodeString & AFileName, TSearchRec &Rec)
 {
-  const DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+  constexpr DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   const bool Result = (base::FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
   if (Result)
   {
@@ -3600,7 +3600,7 @@ UnicodeString EncodeUrlPath(const UnicodeString & S)
 UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params)
 {
   // see also TWebHelpSystem::ShowHelp
-  const wchar_t FragmentSeparator = L'#';
+  constexpr wchar_t FragmentSeparator = L'#';
   UnicodeString URL = AURL;
   URL = ::CutToChar(URL, FragmentSeparator, false);
 
