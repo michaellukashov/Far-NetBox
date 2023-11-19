@@ -844,7 +844,7 @@ void TRemoteTokenList::Log(TTerminal * Terminal, const wchar_t * Title)
 
 int32_t TRemoteTokenList::GetCount() const
 {
-  return nb::ToIntPtr(FTokens.size());
+  return nb::ToInt32(FTokens.size());
 }
 
 const TRemoteToken * TRemoteTokenList::Token(int32_t Index) const
@@ -3364,7 +3364,7 @@ TDateTime TSynchronizeProgress::TimeLeft(const TFileOperationProgressType * Curr
   const int64_t Processed = GetProcessed(CurrentItemOperationProgress);
   if (Processed > 0)
   {
-    Result = TDateTime(double(Now() - CurrentItemOperationProgress->StartTime) / Processed * (FTotalSize - Processed));
+    Result = TDateTime(nb::ToDouble((Now() - CurrentItemOperationProgress->StartTime)) / Processed * (FTotalSize - Processed));
   }
   return Result;
 }
