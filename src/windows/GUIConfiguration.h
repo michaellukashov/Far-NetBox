@@ -24,7 +24,7 @@ NB_DEFINE_CLASS_ID(TGUICopyParamType);
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TGUICopyParamType); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TGUICopyParamType); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TGUICopyParamType) || TCopyParamType::is(Kind); }
   virtual ~TGUICopyParamType() = default;
 public:
@@ -75,7 +75,7 @@ NB_DEFINE_CLASS_ID(TCopyParamRule);
 class NB_CORE_EXPORT TCopyParamRule : public TObject
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TCopyParamRule); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamRule); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamRule) || TObject::is(Kind); }
 public:
   explicit TCopyParamRule() noexcept;

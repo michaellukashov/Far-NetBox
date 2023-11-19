@@ -76,7 +76,7 @@ NB_DEFINE_CLASS_ID(TMoveFileParams);
 struct TMoveFileParams : public TObject
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMoveFileParams) || TObject::is(Kind); }
 public:
   TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams) {}
@@ -89,7 +89,7 @@ NB_DEFINE_CLASS_ID(TFilesFindParams);
 struct TFilesFindParams : public TObject
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFilesFindParams) || TObject::is(Kind); }
 public:
   TFilesFindParams() : TObject(OBJECT_CLASS_TFilesFindParams) {}

@@ -40,8 +40,9 @@ struct TPuttyTranslation
 
 struct ScpLogPolicy : public LogPolicy
 {
-  TSecureShell * SecureShell;
-  struct Seat * Seat;
+  CUSTOM_MEM_ALLOCATION_IMPL
+  TSecureShell * SecureShell{nullptr};
+  struct Seat * Seat{nullptr};
 };
 
 Seat * get_log_seat(LogContext * logctx)

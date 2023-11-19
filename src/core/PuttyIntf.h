@@ -40,9 +40,10 @@ int32_t GetCipherGroup(const ssh_cipher * TheCipher);
 class TSecureShell;
 struct ScpSeat : public Seat
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   TSecureShell * SecureShell{nullptr};
 
-  ScpSeat(TSecureShell * SecureShell);
+  explicit ScpSeat(TSecureShell * SecureShell);
 };
 
 extern THierarchicalStorage * PuttyStorage;

@@ -34,7 +34,7 @@ class TSecureShell : public TObject
   friend class TSFTPFileSystem;
   NB_DISABLE_COPY(TSecureShell)
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecureShell) || TObject::is(Kind); }
 
   mutable const uint32_t * FMinPacketSize{nullptr};

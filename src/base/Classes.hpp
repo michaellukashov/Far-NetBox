@@ -211,7 +211,7 @@ NB_DEFINE_CLASS_ID(TObjectList);
 class NB_CORE_EXPORT TObjectList : public TList
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 public:
   TObjectList();
@@ -245,7 +245,7 @@ NB_DEFINE_CLASS_ID(TStrings);
 class NB_CORE_EXPORT TStrings : public TObjectList
 {
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStrings); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStrings); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
 public:
   TStrings() noexcept;
@@ -328,7 +328,7 @@ class NB_CORE_EXPORT TStringList : public TStrings
 {
   friend int32_t StringListCompareStrings(TStringList * List, int32_t Index1, int32_t Index2);
 public:
-  static bool classof(const TObject *Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
