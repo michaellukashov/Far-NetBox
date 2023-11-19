@@ -158,7 +158,7 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName)
   for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)
   {
     // Not using AtObject as we iterate even hidden objects here
-    TNamedObject * NamedObject = static_cast<TNamedObject *>(GetObj(Index));
+    TNamedObject * NamedObject = GetAs<TNamedObject>(Index);
     if (NamedObject->IsSameName(AName))
     {
       return NamedObject;
