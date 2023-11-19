@@ -401,7 +401,7 @@ void ExtException::AddMoreMessages(const Exception * E)
     ExceptionMessageFormatted(E, Msg);
 
     // new exception does not have own message, this is in fact duplication of
-    // the exception data, but the exception class may being changed
+    // the exception data, but the exception class may be changed
     if (Message.IsEmpty())
     {
       Message = Msg;
