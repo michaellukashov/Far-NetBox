@@ -1238,7 +1238,7 @@ UnicodeString TSecureShell::ReceiveLine()
         ++Index;
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
-      int32_t PrevLen = Line.Length();
+      const int32_t PrevLen = Line.Length();
       char * Buf = Line.SetLength(PrevLen + Index);
       Receive(nb::ToUInt8Ptr(Buf + PrevLen), Index);
     }
@@ -1373,7 +1373,7 @@ void TSecureShell::DispatchSendBuffer(int32_t BufSize)
     if (Now() - Start > FSessionData->GetTimeoutDT())
     {
       LogEvent("Waiting for dispatching send buffer timed out, asking user what to do.");
-      uint32_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
+      const uint32_t Answer = TimeoutPrompt(nb::bind(&TSecureShell::SendBuffer, this));
       switch (Answer)
       {
         case qaRetry:
@@ -2078,7 +2078,7 @@ bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
   WSANETWORKEVENTS Events;
   nb::ClearStruct(Events);
-  bool Result = EnumNetworkEvents(Socket, Events);
+  const bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);
   return Result;
 }

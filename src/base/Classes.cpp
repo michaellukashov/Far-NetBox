@@ -476,7 +476,7 @@ UnicodeString TStrings::GetTextStr() const
   UnicodeString Result;
   const int32_t Count = GetCount();
   int32_t Size = 0;
-  UnicodeString LB(L"\r\n");
+  const UnicodeString LB(L"\r\n");
   for (int32_t Index = 0; Index < Count; ++Index)
   {
     Size += GetString(Index).Length() + LB.Length();
@@ -940,7 +940,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
     bool ConvertToken = false;
     FileBuffer.Convert(eolCRLF, eolCRLF, cpRemoveCtrlZ | cpRemoveBOM, ConvertToken);
     SAFE_CLOSE_HANDLE(FileHandle);
-    UnicodeString Str(FileBuffer.Data(), nb::ToInt32(FileBuffer.Size()));
+    const UnicodeString Str(FileBuffer.Data(), nb::ToInt32(FileBuffer.Size()));
     SetTextStr(Str);
   }
 }
@@ -1049,14 +1049,14 @@ void TStringList::QuickSort(int32_t L, int32_t R, TStringListSortCompare SCompar
 
 void TStringList::ExchangeItems(int32_t Index1, int32_t Index2)
 {
-  bool Owns = GetOwnsObjects();
+  const bool Owns = GetOwnsObjects();
   SetOwnsObjects(false);
   {
     SCOPE_EXIT
     {
       SetOwnsObjects(Owns);
     };
-    UnicodeString SItem1 = FStrings[Index1];
+    const UnicodeString SItem1 = FStrings[Index1];
     TObject * OItem1 = TObjectList::GetObj(Index1);
     FStrings[Index1] = FStrings[Index2];
     TObjectList::SetItem(Index1, TObjectList::GetObj(Index2));
@@ -1791,7 +1791,7 @@ bool TRegistry::DeleteKey(const UnicodeString & AKey)
 {
   const bool Relative = IsRelative(AKey);
   const HKEY OldKey = GetCurrentKey();
-  HKEY DeleteKey = GetKey(AKey);
+  const HKEY DeleteKey = GetKey(AKey);
   if (DeleteKey != nullptr)
   {
     SCOPE_EXIT
