@@ -1243,7 +1243,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     // Do not read modification time and filename (test close to the end of this block) if it is already set.
     // if (::IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
     // Do not read modification time and filename (test close to the end of this block) if it is already set.
-    if (::IsZero(FModification.GetValue()) == 0)
+    if (::IsZero(FModification.GetValue()))
     {
       // bool FullTime = false;
       // bool DayMonthFormat = false;
