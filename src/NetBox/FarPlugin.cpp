@@ -2659,7 +2659,7 @@ TObjectList * TFarPanelInfo::GetItems()
   return FItems;
 }
 
-TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) const
+const TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) const
 {
   const TObjectList * Items = FItems;
   if (!Items)
@@ -2701,7 +2701,7 @@ void TFarPanelInfo::ApplySelection()
   FOwner->FarControl(FCTL_SETSELECTION, 0, nb::ToPtr(FPanelInfo));
 }
 
-TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
+const TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
 {
   const TObjectList * Items = FItems;
   if (!Items)
