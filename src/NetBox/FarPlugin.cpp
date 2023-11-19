@@ -66,7 +66,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   // SAFE_DESTROY(FOpenedPlugins);
   for (int32_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
-    TObject * Object = FSavedTitles->GetObj(Index);
+    TObject * Object = FSavedTitles->Get(Index);
     SAFE_DESTROY(Object);
   }
   // SAFE_DESTROY(FSavedTitles);
@@ -1504,7 +1504,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   if (FSavedTitles->GetCount() > 0)
   {
     UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
-    TObject * Object = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
+    TObject * Object = FSavedTitles->Get(FSavedTitles->GetCount() - 1);
     TConsoleTitleParam * Param = dyn_cast<TConsoleTitleParam>(Object);
     if (Param->Own)
     {
@@ -1520,7 +1520,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
       UpdateProgress(TBPS_NOPROGRESS, 0);
     }
     {
-      TObject * Obj = FSavedTitles->GetObj(FSavedTitles->GetCount() - 1);
+      TObject * Obj = FSavedTitles->Get(FSavedTitles->GetCount() - 1);
       SAFE_DESTROY(Obj);
     }
     FSavedTitles->Delete(FSavedTitles->GetCount() - 1);
