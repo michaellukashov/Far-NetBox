@@ -1019,7 +1019,7 @@ bool TParallelOperation::GetOnlyFile(TStrings * FileList, UnicodeString & FileNa
 
 TCollectedFileList * TParallelOperation::GetFileList(TStrings * FileList, int32_t Index)
 {
-  return DebugNotNull(dynamic_cast<TCollectedFileList *>(FileList->GetObj(Index)));
+  return DebugNotNull(FileList->GetAs<TCollectedFileList>(Index));
 }
 
 TCollectedFileList * TParallelOperation::GetFileList(int32_t Index)
