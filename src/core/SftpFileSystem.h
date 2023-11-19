@@ -39,10 +39,10 @@ public:
 public:
   TSFTPFileSystem() = delete;
   explicit TSFTPFileSystem(TTerminal * ATerminal) noexcept;
-  virtual ~TSFTPFileSystem() noexcept;
+  virtual ~TSFTPFileSystem() noexcept override;
 
-  void Init(void * Data /*TSecureShell* */) override;
-  void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
+  virtual void Init(void * Data /*TSecureShell* */) override;
+  virtual void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 
   virtual void Open() override;
   virtual void Close() override;
@@ -59,7 +59,7 @@ public:
     const TRemoteFile * AFile, const TRemoteProperties * AProperties,
     TChmodSessionAction & Action) override;
   virtual bool LoadFilesProperties(TStrings * AFileList) override;
-  virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg);
+  virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg) override;
   virtual void CalculateFilesChecksum(
     const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
@@ -118,7 +118,7 @@ public:
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
   virtual void ClearCaches() override;
 
-  UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 protected:
   TSecureShell * FSecureShell{nullptr};
   TFileSystemInfo FFileSystemInfo{};

@@ -73,7 +73,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionUI) || TObject::is(Kind); }
 public:
   explicit TSessionUI(TObjectClassId Kind) noexcept : TObject(Kind) {}
-  virtual ~TSessionUI() = default;
+  virtual ~TSessionUI() noexcept override = default;
   virtual void Information(const UnicodeString & AStr, bool Status) = 0;
   virtual uint32_t QueryUser(const UnicodeString & AQuery,
     TStrings * MoreMessages, uint32_t Answers, const TQueryParams * Params,
@@ -366,7 +366,7 @@ public:
     TConfiguration * Configuration) noexcept;
   // For fatal failures for .NET assembly
   explicit TActionLog(TDateTime Started, TConfiguration * Configuration) noexcept;
-  virtual ~TActionLog() noexcept;
+  virtual ~TActionLog() noexcept override;
 
   void ReflectSettings();
   void AddFailure(Exception * E);

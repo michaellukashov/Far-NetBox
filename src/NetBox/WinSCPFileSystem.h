@@ -90,7 +90,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPFileSystem) || TCustomFarFileSystem::is(Kind); }
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin) noexcept;
-  virtual ~TWinSCPFileSystem() noexcept;
+  virtual ~TWinSCPFileSystem() noexcept override;
   void Init(TSecureShell * SecureShell);
 
   virtual void Close() override;

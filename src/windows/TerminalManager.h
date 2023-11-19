@@ -19,7 +19,7 @@ class TManagedTerminal : public TTerminal
 {
 public:
   TManagedTerminal(TSessionData * SessionData, TConfiguration * Configuration);
-  virtual ~TManagedTerminal();
+  virtual ~TManagedTerminal() override;
 
   bool LocalBrowser{false};
   TSessionData * StateData{nullptr};
@@ -46,13 +46,13 @@ public:
   static void DestroyInstance();
 
   TTerminalManager();
-  ~TTerminalManager();
+  virtual ~TTerminalManager() override;
 
   TManagedTerminal * NewManagedTerminal(TSessionData * Data);
   TManagedTerminal * NewLocalBrowser(
     const UnicodeString & LocalDirectory = UnicodeString(), const UnicodeString & OtherLocalDirectory = UnicodeString());
   TManagedTerminal * NewSessions(TList * DataList);
-  virtual void FreeTerminal(TTerminal * Terminal);
+  virtual void FreeTerminal(TTerminal * Terminal) override;
   void Move(TTerminal * Source, TTerminal * Target);
   void DisconnectActiveTerminalIfPermanentFreeOtherwise();
   void DisconnectActiveTerminal();
@@ -95,9 +95,9 @@ public:
   __property bool Updating = { read = IsUpdating };
 
 protected:
-  virtual TTerminal * CreateTerminal(TSessionData * Data);
+  virtual TTerminal * CreateTerminal(TSessionData * Data) override;
   void DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool AdHoc);
-  virtual TTerminal * NewTerminal(TSessionData * Data);
+  virtual TTerminal * NewTerminal(TSessionData * Data) override;
 
 private:
   static TTerminalManager * FInstance;

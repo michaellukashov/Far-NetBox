@@ -25,7 +25,7 @@ public:
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ExtException) || Exception::is(Kind); }
 public:
   ExtException() = default;
-  virtual ~ExtException() noexcept;
+  virtual ~ExtException() noexcept override;
   explicit ExtException(const Exception * E);
   explicit ExtException(TObjectClassId Kind, const Exception * E);
   explicit ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
@@ -90,7 +90,7 @@ private:
       BASE(Kind, Msg, MoreMessages, HelpKeyword) \
     { \
     } \
-    virtual inline ~NAME(void) \
+    virtual inline ~NAME(void) override \
     { \
     } \
     explicit inline NAME(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) : \
