@@ -2666,7 +2666,7 @@ TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileName) con
     Items = GetItems();
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
+    const TFarPanelItem * PanelItem = Items->As<TFarPanelItem>(Index);
     if (PanelItem->GetFileName() == AFileName)
     {
       return PanelItem;
