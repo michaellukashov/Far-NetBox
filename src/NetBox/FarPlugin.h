@@ -490,7 +490,7 @@ public:
   const TObjectList * GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
   TObjectList * GetItems();
   int32_t GetItemCount() const;
-  TFarPanelItem * GetFocusedItem() const;
+  const TFarPanelItem * GetFocusedItem() const;
   void SetFocusedItem(const TFarPanelItem * Value);
   int32_t GetFocusedIndex() const;
   void SetFocusedIndex(int32_t Value);
@@ -501,7 +501,7 @@ public:
   UnicodeString GetCurrDirectory() const;
 
   void ApplySelection();
-  TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
+  const TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
   const TFarPanelItem * FindUserData(const void * UserData) const;
   TFarPanelItem * FindUserData(const void * UserData);
 
