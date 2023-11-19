@@ -303,6 +303,7 @@ public:
 protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
+
 public:
   TRemoteFile * GetFile(Integer Index) const;
   virtual void SetDirectory(const UnicodeString & Value);
@@ -326,7 +327,7 @@ public:
 
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
-  __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
+  // __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
   ROIndexedProperty<TRemoteFile *> Files{nb::bind(&TRemoteFileList::GetFile, this)};
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
   ROProperty<UnicodeString> FullDirectory{nb::bind(&TRemoteFileList::GetFullDirectory, this)};
@@ -350,16 +351,19 @@ class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
   friend class TSFTPFileSystem;
   friend class TWebDAVFileSystem;
   NB_DISABLE_COPY(TRemoteDirectory)
+
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectory); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectory) || TRemoteFileList::is(Kind); }
   TRemoteDirectory() = delete;
+
 private:
   Boolean FIncludeParentDirectory{false};
   Boolean FIncludeThisDirectory{false};
   TTerminal * FTerminal{nullptr};
   TRemoteFile * FParentDirectory{nullptr};
   TRemoteFile * FThisDirectory{nullptr};
+
 public:
   virtual void SetDirectory(const UnicodeString & Value) override;
   Boolean GetLoaded() const;
