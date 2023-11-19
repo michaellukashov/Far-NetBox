@@ -966,7 +966,7 @@ void TFarDialogContainer::Remove(TFarDialogItem * Item)
 
 void TFarDialogContainer::SetPosition(int32_t AIndex, int32_t Value)
 {
-  int32_t &Position = AIndex ? FTop : FLeft;
+  int32_t & Position = AIndex ? FTop : FLeft;
   if (Position != Value)
   {
     Position = Value;
