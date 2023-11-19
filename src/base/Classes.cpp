@@ -2171,7 +2171,7 @@ void TGlobals::InitPlatformId()
     Win32MajorVersion = OSVersionInfo.dwMajorVersion;
     Win32MinorVersion = OSVersionInfo.dwMinorVersion;
     Win32BuildNumber = OSVersionInfo.dwBuildNumber;
-    libmemcpy_memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
+    nbstr_memcpy(Win32CSDVersion, OSVersionInfo.szCSDVersion, sizeof(OSVersionInfo.szCSDVersion));
   }
 }
 
