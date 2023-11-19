@@ -1229,7 +1229,7 @@ UnicodeString TSecureShell::ReceiveLine()
     // If there is any buffer of received chars
     if (PendLen > 0)
     {
-      uint32_t Index = 0;
+      int32_t Index = 0;
       // Repeat until we walk thru whole buffer or reach end-of-line
       while ((Index < PendLen) && (!Index || (Pending[Index - 1] != '\n')))
       {
