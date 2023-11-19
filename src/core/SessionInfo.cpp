@@ -1842,7 +1842,6 @@ TApplicationLog::TApplicationLog()
 {
   FFile = nullptr;
   FLogging = false;
-  FCriticalSection = std::make_unique<TCriticalSection>();
 }
 
 TApplicationLog::~TApplicationLog()
@@ -1881,7 +1880,7 @@ void TApplicationLog::Log(const UnicodeString & S)
     UnicodeString Line = FORMAT(L"[%s] [%x] %s\r\n", Timestamp, nb::ToInt(GetCurrentThreadId()), S);
     UTF8String UtfLine = UTF8String(Line);
     int32_t Writting = UtfLine.Length();
-    TGuard Guard(*FCriticalSection.get()); nb::used(Guard);
+    TGuard Guard(FCriticalSection); nb::used(Guard);
     fwrite(UtfLine.c_str(), 1, Writting, static_cast<FILE *>(FFile));
   }
 }
