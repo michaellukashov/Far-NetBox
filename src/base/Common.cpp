@@ -2132,7 +2132,7 @@ void TSearchRecSmart::Clear()
   Attr = 0;
   Name = TFileName();
   ExcludeAttr = 0;
-  FindHandle = 0;
+  FindHandle = INVALID_HANDLE_VALUE;
   memset(&FindData, 0, sizeof(FindData));
   FLastWriteTimeSource.dwLowDateTime = 0;
   FLastWriteTimeSource.dwHighDateTime = 0;
@@ -3831,7 +3831,7 @@ static void NeedUWPData()
     HINSTANCE const Kernel32 = ::GetModuleHandle(L"kernel32.dll");
     typedef LONG (WINAPI * GetCurrentPackageFamilyNameProc)(UINT32 * /*packageFamilyNameLength*/, PWSTR /*packageFamilyName*/);
     GetCurrentPackageFamilyNameProc GetCurrentPackageFamilyName =
-      (GetCurrentPackageFamilyNameProc)::GetProcAddress(Kernel32, "GetCurrentPackageFamilyName");
+      reinterpret_cast<GetCurrentPackageFamilyNameProc>(::GetProcAddress(Kernel32, "GetCurrentPackageFamilyName"));
     UINT32 NameLen = 0;
     if ((GetCurrentPackageFamilyName != nullptr) &&
         (GetCurrentPackageFamilyName(&NameLen, nullptr) == ERROR_INSUFFICIENT_BUFFER))
@@ -4309,13 +4309,13 @@ void ParseCertificate(const UnicodeString & Path,
   WrongPassphrase = false;
   const bool HasPassphrase = !Passphrase.IsEmpty();
 
-  FILE * File;
+  // FILE * File;
 
   // Inspired by neon's ne_ssl_clicert_read
-  File = OpenCertificate(Path);
+  FILE* File = OpenCertificate(Path);
   // openssl pkcs12 -inkey cert.pem -in cert.crt -export -out cert.pfx
   // Binary file
-  PKCS12 *Pkcs12 = d2i_PKCS12_fp(File, nullptr);
+  PKCS12 * Pkcs12 = d2i_PKCS12_fp(File, nullptr);
   fclose(File);
 
   if (Pkcs12 != nullptr)
