@@ -1181,7 +1181,7 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
 #define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
 #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
 
-void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPaswords)
+void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPasswords)
 {
   ADSTR(GetEnvironmentInfo());
   //THierarchicalStorage * Storage = AConfiguration->CreateConfigStorage();
@@ -1238,7 +1238,7 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
   // This logs even passwords, contrary to a session log.
   // GetCmdLineLog requires master password, but we do not know it yet atm.
   UnicodeString ACmdLine;
-  if (DoNotMaskPaswords)
+  if (DoNotMaskPasswords)
   {
     ACmdLine = ""; // CmdLine;
   }

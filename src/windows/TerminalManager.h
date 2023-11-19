@@ -104,7 +104,7 @@ private:
   TCustomScpExplorerForm * FScpExplorer{nullptr};
   TManagedTerminal * FActiveSession{nullptr};
   TManagedTerminal * FTerminalWithFatalExceptionTimer;
-  bool FTerminalReconnnecteScheduled;
+  bool FTerminalReconnectScheduled;
   TTerminal * FLocalTerminal{nullptr};
   bool FDestroying{false};
   TTerminalPendingAction FTerminalPendingAction;
@@ -194,7 +194,7 @@ private:
   void DoConfigurationChange();
   bool ShouldDisplayQueueStatusOnAppTitle();
   void SetupTerminal(TTerminal * Terminal);
-  void CloseAutheticateForm();
+  void CloseAuthenticateForm();
   void AuthenticatingDone();
   TManagedTerminal * CreateManagedTerminal(TSessionData * Data);
   TManagedTerminal * GetSession(int32_t Index);

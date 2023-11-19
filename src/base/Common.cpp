@@ -1614,7 +1614,7 @@ int32_t CompareLogicalText(
   {
     Result = lstrcmpi(S1.c_str(), S2.c_str());
   }
-  // For deterministics results
+  // For deterministic results
   if (Result == 0)
   {
     Result = lstrcmp(S1.c_str(), S2.c_str());
