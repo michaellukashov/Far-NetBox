@@ -768,7 +768,7 @@ void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
 {
   if (Token.GetIDValid())
   {
-    TIDMap::const_iterator it = FIDMap.find(Token.GetID());
+    const TIDMap::const_iterator it = FIDMap.find(Token.GetID());
     if (it != FIDMap.end())
     {
       // is present already.
@@ -782,7 +782,7 @@ void TRemoteTokenList::AddUnique(const TRemoteToken & Token)
   }
   else if (Token.GetNameValid())
   {
-    TNameMap::const_iterator it = FNameMap.find(Token.GetName());
+    const TNameMap::const_iterator it = FNameMap.find(Token.GetName());
     if (it != FNameMap.end())
     {
       // is present already.
@@ -806,7 +806,7 @@ bool TRemoteTokenList::Exists(const UnicodeString & Name) const
 
 const TRemoteToken * TRemoteTokenList::Find(uint32_t ID) const
 {
-  TIDMap::const_iterator it = FIDMap.find(ID);
+  const TIDMap::const_iterator it = FIDMap.find(ID);
   const TRemoteToken * Result = nullptr;
   if (it != FIDMap.end())
   {
@@ -817,7 +817,7 @@ const TRemoteToken * TRemoteTokenList::Find(uint32_t ID) const
 
 const TRemoteToken * TRemoteTokenList::Find(const UnicodeString & Name) const
 {
-  TNameMap::const_iterator it = FNameMap.find(Name);
+  const TNameMap::const_iterator it = FNameMap.find(Name);
   const TRemoteToken * Result = nullptr;
   if (it != FNameMap.end())
   {
@@ -1158,7 +1158,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     {
       if (Line.IsEmpty())
         throw Exception("");
-      int32_t P = Line.Pos(L' ');
+      const int32_t P = Line.Pos(L' ');
       if (P)
       {
         Col = Line;
@@ -1475,7 +1475,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         FLinkTo.Clear();
         if (GetIsSymLink())
         {
-          int32_t P = Line.Pos(SYMLINKSTR);
+          const int32_t P = Line.Pos(SYMLINKSTR);
           if (P)
           {
             FLinkTo = Line.SubString(
@@ -1532,7 +1532,7 @@ void TRemoteFile::FindLinkedFile()
   if (!GetLinkTo().IsEmpty())
   {
     // check for cyclic link
-    TRemoteFile * LinkedBy = FLinkedByFile;
+    const TRemoteFile * LinkedBy = FLinkedByFile;
     while (LinkedBy)
     {
       if (LinkedBy->GetLinkTo() == GetLinkTo())
@@ -1723,7 +1723,7 @@ TStrings * TRemoteFileList::CloneStrings(TStrings * List)
   Result->OwnsObjects = true;
   for (int32_t Index = 0; Index < List->Count; Index++)
   {
-    TRemoteFile * File = List->GetAs<TRemoteFile>(Index);
+    const TRemoteFile * File = List->GetAs<TRemoteFile>(Index);
     Result->AddObject(List->Strings[Index], File->Duplicate(true));
   }
   return Result.release();
@@ -1744,7 +1744,7 @@ void TRemoteFileList::DuplicateTo(TRemoteFileList * Copy) const
   Copy->Reset();
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
-    TRemoteFile * File = GetFile(Index);
+    const TRemoteFile * File = GetFile(Index);
     Copy->AddFile(File->Duplicate(false));
   }
   Copy->FDirectory = GetDirectory();
@@ -1971,7 +1971,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory) const
 {
   TGuard Guard(FSection); nb::used(Guard);
 
-  int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
+  const int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
 }
 
@@ -1983,7 +1983,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    TRemoteFileList * FileList = GetAs<TRemoteFileList>(Index);
+    const TRemoteFileList * FileList = GetAs<TRemoteFileList>(Index);
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -1997,8 +1997,8 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
 {
   TGuard Guard(FSection); nb::used(Guard);
 
-  int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
-  bool Result = (Index >= 0);
+  const int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
+  const bool Result = (Index >= 0);
   if (Result)
   {
     DebugAssert(GetObj(Index) != nullptr);
@@ -2033,7 +2033,7 @@ void TRemoteDirectoryCache::ClearFileList(const UnicodeString & ADirectory, bool
 
 void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & ADirectory, bool SubDirs)
 {
-  UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
+  const UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
   int32_t Index = IndexOf(Directory);
   if (Index >= 0)
   {
@@ -2041,7 +2041,7 @@ void TRemoteDirectoryCache::DoClearFileList(const UnicodeString & ADirectory, bo
   }
   if (SubDirs)
   {
-    UnicodeString DirectoryWithSlash = base::UnixIncludeTrailingBackslash(Directory); // optimization
+    const UnicodeString DirectoryWithSlash = base::UnixIncludeTrailingBackslash(Directory); // optimization
     Index = GetCount() - 1;
     while (Index >= 0)
     {
@@ -2082,7 +2082,7 @@ bool TRemoteDirectoryChangesCache::GetIsEmptyPrivate() const
 void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
   const UnicodeString & Value)
 {
-  int32_t Index = IndexOfName(Name);
+  const int32_t Index = IndexOfName(Name);
   if (Index >= 0)
   {
     Delete(Index);
@@ -2166,7 +2166,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
     Result = DirectoryChangeKey(SourceDir, Change, Key);
     if (Result)
     {
-      UnicodeString Directory = GetValue(Key);
+      const UnicodeString Directory = GetValue(Key);
       Result = !Directory.IsEmpty();
       if (Result)
       {
@@ -2180,7 +2180,7 @@ bool TRemoteDirectoryChangesCache::GetDirectoryChange(
 void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
 {
   Data = L"A";
-  int32_t ACount = GetCount();
+  const int32_t ACount = GetCount();
   if (ACount > FMaxSize)
   {
     std::unique_ptr<TStrings> Limited(std::make_unique<TStringList>());
@@ -2223,7 +2223,7 @@ bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
   bool Result = !Change.IsEmpty();
   if (Result)
   {
-    bool Absolute = base::UnixIsAbsolutePath(Change);
+    const bool Absolute = base::UnixIsAbsolutePath(Change);
     Result = !SourceDir.IsEmpty() || Absolute;
     if (Result)
     {
@@ -2316,7 +2316,7 @@ uint16_t TRights::CalculatePermissions(TRightGroup Group, TRightLevel Level, TRi
   {
     Permissions |= CalculateFlag(Group, Level3);
   }
-  uint16_t Result = static_cast<uint16_t>(Permissions);
+  const uint16_t Result = static_cast<uint16_t>(Permissions);
   DebugAssert((Permissions - Result) == 0);
   return Result;
 }
@@ -2626,8 +2626,8 @@ void TRights::SetOctal(const UnicodeString & AValue)
 
 uint32_t TRights::GetNumberDecadic() const
 {
-  uint32_t N = GetNumberSet(); // used to be "Number"
-  uint32_t Result =
+  const uint32_t N = GetNumberSet(); // used to be "Number"
+  const uint32_t Result =
       ((N & 07000) / 01000 * 1000) +
       ((N & 00700) /  0100 *  100) +
       ((N & 00070) /   010 *   10) +
@@ -2639,7 +2639,7 @@ uint32_t TRights::GetNumberDecadic() const
 UnicodeString TRights::GetOctal() const
 {
   UnicodeString Result;
-  uint16_t N = GetNumberSet(); // used to be "Number"
+  const uint16_t N = GetNumberSet(); // used to be "Number"
   Result.SetLength(4);
   Result[1] = static_cast<wchar_t>(L'0' + ((N & 07000) >> 9));
   Result[2] = static_cast<wchar_t>(L'0' + ((N & 00700) >> 6));
@@ -2673,7 +2673,7 @@ void TRights::SetRight(TRight Right, bool Value)
 
 bool TRights::GetRight(TRight Right) const
 {
-  TState State = GetRightUndef(Right);
+  const TState State = GetRightUndef(Right);
   DebugAssert(State != rsUndef);
   return (State == rsYes);
 }
@@ -2684,7 +2684,7 @@ void TRights::SetRightUndef(TRight Right, TState Value)
   {
     DebugAssert((Value != rsUndef) || GetAllowUndef());
 
-    TFlag Flag = RightToFlag(Right);
+    const TFlag Flag = RightToFlag(Right);
 
     switch (Value)
     {
@@ -2712,7 +2712,7 @@ void TRights::SetRightUndef(TRight Right, TState Value)
 
 TRights::TState TRights::GetRightUndef(TRight Right) const
 {
-  TFlag Flag = RightToFlag(Right);
+  const TFlag Flag = RightToFlag(Right);
   TState Result;
 
   if ((FSet & Flag) != 0)
@@ -3332,7 +3332,7 @@ int64_t TSynchronizeProgress::GetProcessed(const TFileOperationProgressType * Cu
   }
 
   // For (single-item-)delete operation, this should return 0
-  int64_t CurrentItemProcessedSize = CurrentItemOperationProgress->GetOperationTransferred();
+  const int64_t CurrentItemProcessedSize = CurrentItemOperationProgress->GetOperationTransferred();
   return (FProcessedSize + CurrentItemProcessedSize);
 }
 
@@ -3345,7 +3345,7 @@ int32_t TSynchronizeProgress::Progress(const TFileOperationProgressType * Curren
   }
   else
   {
-    int64_t Processed = GetProcessed(CurrentItemOperationProgress);
+    const int64_t Processed = GetProcessed(CurrentItemOperationProgress);
     if (FTotalSize > 0)
     {
       Result = (Processed * 100) / FTotalSize;
@@ -3361,7 +3361,7 @@ int32_t TSynchronizeProgress::Progress(const TFileOperationProgressType * Curren
 TDateTime TSynchronizeProgress::TimeLeft(const TFileOperationProgressType * CurrentItemOperationProgress) const
 {
   TDateTime Result;
-  int64_t Processed = GetProcessed(CurrentItemOperationProgress);
+  const int64_t Processed = GetProcessed(CurrentItemOperationProgress);
   if (Processed > 0)
   {
     Result = TDateTime(double(Now() - CurrentItemOperationProgress->StartTime) / Processed * (FTotalSize - Processed));
