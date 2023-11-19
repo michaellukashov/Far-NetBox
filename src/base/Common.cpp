@@ -1138,7 +1138,7 @@ RawByteString DecodeBase64ToStr(const UnicodeString & Str)
   TBytes Bytes = DecodeBase64(Str);
   // This might be the same as TEncoding::ASCII->GetString.
   // const_cast: The operator[] const is (badly?) implemented to return by value
-  return RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), Bytes.size());
+  return RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), nb::ToInt32(Bytes.size()));
 }
 
 UnicodeString Base64ToUrlSafe(const UnicodeString & S)
@@ -2189,7 +2189,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
       (Result != ERROR_FILE_NOT_FOUND) &&
       (Result != ERROR_NO_MORE_FILES))
   {
-    throw EOSExtException(FMTLOAD(FIND_FILE_ERROR, APath), Result);
+    throw EOSExtException(FMTLOAD(FIND_FILE_ERROR, APath), nb::ToInt32(Result));
   }
   return Result;
 }
@@ -4183,7 +4183,7 @@ int32_t IndexStr(const UnicodeString & AText, const UnicodeString (&AValues)[N])
   for(size_t i = 0; i < N; i++)
   {
    if (AValues[i] == AText)
-       return i;
+       return nb::ToInt32(i);
   }
   return -1;
 }
