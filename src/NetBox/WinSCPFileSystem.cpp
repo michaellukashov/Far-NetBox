@@ -2062,7 +2062,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
   UnicodeString Directory = FTerminal->RemoteGetCurrentDirectory();
   const UnicodeString SessionKey = GetSessionData()->GetSessionKey();
 
-  TBookmarkList *CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
+  TBookmarkList * CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
   if (CurrentBookmarkList != nullptr)
   {
     BookmarkList->Assign(CurrentBookmarkList);
@@ -2070,7 +2070,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 
   if (Add)
   {
-    TBookmark *Bookmark = new TBookmark();
+    TBookmark * Bookmark = new TBookmark();
     Bookmark->SetRemote(Directory);
     Bookmark->SetName(Directory);
     BookmarkList->Add(Bookmark);
@@ -3927,7 +3927,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int32_t Event, void * /* Param */)
       const TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
       if (it != FMultipleEdits.end())
       {
-        TMultipleEdit &ed = it->second;
+        TMultipleEdit & ed = it->second;
         if (ed.PendingSave)
         {
           UploadFromEditor(true, Info->GetFileName(), ed.FileTitle, ed.Directory);
