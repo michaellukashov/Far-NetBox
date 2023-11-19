@@ -2710,7 +2710,7 @@ const TFarPanelItem * TFarPanelInfo::GetFocusedItem() const
   if (Items->GetCount() > 0)
   {
     DebugAssert(Index < Items->GetCount());
-    return Items->GetAs<TFarPanelItem>(Index);
+    return Items->As<TFarPanelItem>(Index);
   }
   return nullptr;
 }
