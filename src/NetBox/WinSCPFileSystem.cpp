@@ -491,10 +491,12 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
     Result = true;
     DebugAssert(StoredSessions);
     bool SessionList = true;
-    std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
-    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
     {
-      StoredSessions->Load(Storage.get());
+      std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
+      if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
+      {
+          StoredSessions->Load(Storage.get());
+      }
     }
     UnicodeString Folder = FSessionsFolder;
     if (!FSessionsFolder.IsEmpty())
