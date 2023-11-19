@@ -2961,15 +2961,11 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 
 UnicodeString TGlobalFunctions::GetMsg(int32_t Id) const
 {
-#if 0
-  HINSTANCE hInstance = GetGlobalFunctions()->GetInstanceHandle();
-  int32_t Length = ::LoadString(hInstance, static_cast<UINT>(Id),
-      nb::ToWChar(Fmt), nb::ToInt32(Fmt.GetLength()));
-  if (!Length)
-  {
-    DEBUG_PRINTF(L"Unknown resource string id: %d\n", Id);
-  }
-#endif // #if 0
+  const HINSTANCE hInstance = GetInstanceHandle();
+  UnicodeString Result = ::LoadStrFrom(hInstance, Id);
+  if (!Result.IsEmpty())
+    return Result;
+
   // map Id to PluginString value
   int32_t PluginStringId = Id;
   const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
