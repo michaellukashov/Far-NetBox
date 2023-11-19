@@ -27,7 +27,7 @@ __removed #pragma package(smart_init)
 
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
 
-const wchar_t HostKeyDelimiter = L';';
+constexpr const wchar_t HostKeyDelimiter = L';';
 static std::unique_ptr<TCriticalSection> PuttyStorageSection(TraceInitPtr(new TCriticalSection()));
 
 struct TPuttyTranslation
