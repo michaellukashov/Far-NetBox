@@ -104,8 +104,8 @@ Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2)
 
 bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild)
 {
-  UnicodeString Parent = base::UnixIncludeTrailingBackslash(AParent);
-  UnicodeString Child = base::UnixIncludeTrailingBackslash(AChild);
+  const UnicodeString Parent = base::UnixIncludeTrailingBackslash(AParent);
+  const UnicodeString Child = base::UnixIncludeTrailingBackslash(AChild);
   return (Child.SubString(1, Parent.Length()) == Parent);
 }
 
@@ -137,7 +137,7 @@ UnicodeString UnixExtractFilePath(const UnicodeString & APath)
 
 UnicodeString UnixExtractFileName(const UnicodeString & APath)
 {
-  int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/'));
+  const int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/'));
   UnicodeString Result;
   if (Pos > 0)
   {
@@ -162,8 +162,8 @@ UnicodeString ExtractShortName(const UnicodeString & Path, bool Unix)
 
 UnicodeString UnixExtractFileExt(const UnicodeString & APath)
 {
-  UnicodeString FileName = UnixExtractFileName(APath);
-  int32_t Pos = FileName.LastDelimiter(L".");
+  const UnicodeString FileName = UnixExtractFileName(APath);
+  const int32_t Pos = FileName.LastDelimiter(L".");
   if (Pos > 0)
     return APath.SubString(Pos, APath.Length() - Pos + 1);
   else
@@ -963,8 +963,8 @@ UnicodeString MidStr(const UnicodeString & Text, int32_t Start)
 
 UnicodeString ShellQuoteStr(const UnicodeString & Str)
 {
-  wchar_t Quote = L'"';
-  UnicodeString QuoteStr(1, Quote);
+  const wchar_t Quote = L'"';
+  const UnicodeString QuoteStr(1, Quote);
   return QuoteStr + DelimitStr(Str, Quote) + QuoteStr;
 }
 
@@ -976,7 +976,7 @@ UnicodeString ExceptionLogString(Exception * E)
     UnicodeString Msg = FORMAT("%s", E->Message);
     if (isa<ExtException>(E))
     {
-      TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
+      const TStrings * MoreMessages = dyn_cast<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +
@@ -999,7 +999,7 @@ UnicodeString ExceptionLogString(Exception * E)
 
 UnicodeString MainInstructions(const UnicodeString & S)
 {
-  UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
+  const UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
   return MainMsgTag + S + MainMsgTag;
 }
 
@@ -1031,7 +1031,7 @@ UnicodeString MainInstructionsFirstParagraph(const UnicodeString & S)
 bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions)
 {
   bool Result = false;
-  UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
+  const UnicodeString MainMsgTag = LoadStr(MAIN_MSG_TAG);
   if (::StartsStr(MainMsgTag, S))
   {
     const int32_t EndTagPos =
@@ -1053,7 +1053,7 @@ bool ExtractMainInstructions(UnicodeString & S, UnicodeString & MainInstructions
 static int32_t FindInteractiveMsgStart(const UnicodeString & S)
 {
   int32_t Result = 0;
-  UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
+  const UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
   if (EndsStr(InteractiveMsgTag, S) &&
       (S.Length() >= 2 * InteractiveMsgTag.Length()))
   {
@@ -1097,7 +1097,7 @@ UnicodeString RemoveInteractiveMsgTag(const UnicodeString & S)
   const int32_t InteractiveMsgStart = FindInteractiveMsgStart(Result);
   if (InteractiveMsgStart > 0)
   {
-    UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
+    const UnicodeString InteractiveMsgTag = LoadStr(INTERACTIVE_MSG_TAG);
     Result.Delete(InteractiveMsgStart, InteractiveMsgTag.Length());
     Result.Delete(Result.Length() - InteractiveMsgTag.Length() + 1, InteractiveMsgTag.Length());
   }
@@ -1117,7 +1117,7 @@ bool IsNumber(const UnicodeString & Str)
   bool Result = (Str.Length() > 0);
   for (int32_t Index = 1; (Index < Str.Length()) && Result; Index++)
   {
-    wchar_t C = Str[Index];
+    const wchar_t C = Str[Index];
     if ((C < L'0') || (C > L'9'))
     {
       Result = false;
@@ -1204,7 +1204,7 @@ static UnicodeString GetWineHomeFolder()
 {
   UnicodeString Result;
 
-  UnicodeString WineHostHome = base::GetEnvVariable(L"WINE_HOST_HOME");
+  const UnicodeString WineHostHome = base::GetEnvVariable(L"WINE_HOST_HOME");
   if (!WineHostHome.IsEmpty())
   {
     Result = L"Z:" + base::FromUnixPath(WineHostHome);
@@ -1212,7 +1212,7 @@ static UnicodeString GetWineHomeFolder()
   else
   {
     // Should we use WinAPI GetUserName() instead?
-    UnicodeString UserName = base::GetEnvVariable(L"USERNAME");
+    const UnicodeString UserName = base::GetEnvVariable(L"USERNAME");
     if (!UserName.IsEmpty())
     {
       Result = L"Z:\\home\\" + UserName;
@@ -1233,7 +1233,7 @@ UnicodeString GetPersonalFolder()
 
   if (IsWine())
   {
-    UnicodeString WineHome = GetWineHomeFolder();
+    const UnicodeString WineHome = GetWineHomeFolder();
 
     if (!WineHome.IsEmpty())
     {
@@ -1241,7 +1241,7 @@ UnicodeString GetPersonalFolder()
       Result = WineHome;
 
       // but try to go deeper to "Documents"
-      UnicodeString WineDocuments =
+      const UnicodeString WineDocuments =
         IncludeTrailingBackslash(WineHome) + "Documents";
       if (base::DirectoryExists(WineDocuments))
       {
@@ -1258,11 +1258,11 @@ UnicodeString GetDesktopFolder()
 
   if (IsWine())
   {
-    UnicodeString WineHome = GetWineHomeFolder();
+    const UnicodeString WineHome = GetWineHomeFolder();
 
     if (!WineHome.IsEmpty())
     {
-      UnicodeString WineDesktop =
+      const UnicodeString WineDesktop =
         IncludeTrailingBackslash(WineHome) + L"Desktop";
       if (base::DirectoryExists(WineHome))
       {
@@ -1297,7 +1297,7 @@ UnicodeString AddQuotes(const UnicodeString & AStr)
 
 UnicodeString AddPathQuotes(const UnicodeString & APath)
 {
-  UnicodeString Result = StripPathQuotes(APath);
+  const UnicodeString Result = StripPathQuotes(APath);
   return AddQuotes(Result);
 }
 
@@ -1587,10 +1587,10 @@ UnicodeString GetCanonicalPath(const UnicodeString & Path)
 
 bool IsPathToSameFile(const UnicodeString & Path1, const UnicodeString & Path2)
 {
-  UnicodeString CanonicalPath1 = GetCanonicalPath(Path1);
-  UnicodeString CanonicalPath2 = GetCanonicalPath(Path2);
+  const UnicodeString CanonicalPath1 = GetCanonicalPath(Path1);
+  const UnicodeString CanonicalPath2 = GetCanonicalPath(Path2);
 
-  bool Result = SameText(CanonicalPath1, CanonicalPath2);
+  const bool Result = SameText(CanonicalPath1, CanonicalPath2);
   return Result;
 }
 
@@ -1699,7 +1699,7 @@ static int32_t PathRootLength(const UnicodeString & APath)
   // Correction for PathSkipRoot API
 
   // Replace all /'s with \'s because PathSkipRoot can't handle /'s
-  UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
+  const UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
 
   // Now call the API
   const LPCTSTR Buffer = ::PathSkipRoot(Result.c_str());
@@ -1712,7 +1712,7 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & 
   // Correction for PathIsRelative API
 
   // Replace all /'s with \'s because PathIsRelative can't handle /'s
-  UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
+  const UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
 
   //Now call the API
   return ::PathIsRelative(Result.c_str()) != FALSE;
@@ -1896,7 +1896,7 @@ UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
             // Get current root path
             UnicodeString CurrentDir = GetCurrentDir();
             PATH_PREFIX_TYPE PrefixType2; // unused
-            int32_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
+            const int32_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
             if (Following > 0)
             {
               AddPrefix = true;
@@ -1940,7 +1940,7 @@ UnicodeString ApiPath(const UnicodeString & APath)
 {
   UnicodeString Path = APath;
 
-  UnicodeString Drive = ExtractFileDrive(Path);
+  const UnicodeString Drive = ExtractFileDrive(Path);
   // This may match even a path like "C:" or "\\server\\share", but we do not really care
   if (Drive.IsEmpty() || (Path.SubString(Drive.Length() + 1, 1) != L"\\"))
   {
@@ -2021,8 +2021,8 @@ UnicodeString DisplayableStr(const RawByteString & Str)
 
 UnicodeString ByteToHex(uint8_t B, bool UpperCase)
 {
-  UnicodeString UpperDigits = "0123456789ABCDEF";
-  UnicodeString LowerDigits = "0123456789abcdef";
+  const UnicodeString UpperDigits = "0123456789ABCDEF";
+  const UnicodeString LowerDigits = "0123456789abcdef";
 
   const wchar_t * Digits = (UpperCase ? UpperDigits.c_str() : LowerDigits.c_str());
   UnicodeString Result;
@@ -2058,7 +2058,7 @@ UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 
 RawByteString HexToBytes(const UnicodeString & Hex)
 {
-  UnicodeString Digits = "0123456789ABCDEF";
+  const UnicodeString Digits = "0123456789ABCDEF";
   RawByteString Result;
   const int32_t L = Hex.Length();
   if (L % 2 == 0)
@@ -2198,7 +2198,7 @@ DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSea
 {
   F.Path = APath;
   F.Dir = ExtractFilePath(APath);
-  DWORD Result = base::FindFirst(ApiPath(APath), LocalFileAttrs, F);
+  const DWORD Result = base::FindFirst(ApiPath(APath), LocalFileAttrs, F);
   F.Opened = (Result == 0);
   return Result;
 }
@@ -2642,8 +2642,8 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 
 int64_t Round(double Number)
 {
-  double Floor = floor(Number);
-  double Ceil = ceil(Number);
+  const double Floor = floor(Number);
+  const double Ceil = ceil(Number);
   return nb::ToInt64(((Number - Floor) > (Ceil - Number)) ? Ceil : Floor);
 }
 
@@ -2664,7 +2664,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, 
   {
     ++Index;
   }
-  UnicodeString NumberStr = S.SubString(1, Index - 1);
+  const UnicodeString NumberStr = S.SubString(1, Index - 1);
   int64_t Number = 0;
   bool Result = TryStrToInt64(NumberStr, Number);
   if (Result)
@@ -2675,7 +2675,7 @@ bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, 
     }
     S.Delete(1, Index - 1);
     S = S.Trim().UpperCase();
-    bool Start = (S.Length() == 2) && (S[2] == L'S');
+    const bool Start = (S.Length() == 2) && (S[2] == L'S');
     if (Start)
     {
       S.SetLength(S.Length() - 1);
@@ -3085,7 +3085,7 @@ UnicodeString FixedLenDateTimeFormat(const UnicodeString & Format)
 
 UnicodeString FormatTimeZone(int32_t Sec)
 {
-  TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
+  const TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;
   if ((Span.Seconds == 0) && (Span.Minutes == 0))
   {
@@ -3169,7 +3169,7 @@ UnicodeString StandardDatestamp()
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd", ConvertTimestampToUTC(Now()));
 #else
-  TDateTime DT = ::ConvertTimestampToUTC(Now());
+  const TDateTime DT = ::ConvertTimestampToUTC(Now());
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
@@ -3183,7 +3183,7 @@ UnicodeString StandardTimestamp(const TDateTime & DateTime)
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
 #else
-  TDateTime DT = ::ConvertTimestampToUTC(DateTime);
+  const TDateTime DT = ::ConvertTimestampToUTC(DateTime);
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
@@ -3247,7 +3247,7 @@ static bool DoRecursiveDeleteFile(
   bool Result;
   Deleted = 0;
 
-  UnicodeString ErrorPath = AFileName;
+  const UnicodeString ErrorPath = AFileName;
 
   if (!ToRecycleBin)
   {
@@ -3361,7 +3361,7 @@ bool RecursiveDeleteFile(const UnicodeString & AFileName, bool ToRecycleBin)
 {
   UnicodeString ErrorPath; // unused
   int32_t Deleted;
-  bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath, Deleted);
+  const bool Result = DoRecursiveDeleteFile(AFileName, ToRecycleBin, ErrorPath, Deleted);
   return Result;
 }
 
@@ -3755,7 +3755,7 @@ void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeS
 
 void AddToShellFileListCommandLine(UnicodeString & List, const UnicodeString & Value)
 {
-  UnicodeString Arg = ShellQuoteStr(Value);
+  const UnicodeString Arg = ShellQuoteStr(Value);
   AddToList(List, Arg, L" ");
 }
 
@@ -3894,7 +3894,7 @@ UnicodeString DefaultEncodingName()
 bool GetWindowsProductType(DWORD &Type)
 {
   bool Result;
-  HINSTANCE Kernel32 = ::GetModuleHandle(L"kernel32.dll");
+  const HINSTANCE Kernel32 = ::GetModuleHandle(L"kernel32.dll");
   typedef BOOL (WINAPI * TGetProductInfo)(DWORD, DWORD, DWORD, DWORD, PDWORD);
   TGetProductInfo GetProductInfo =
       reinterpret_cast<TGetProductInfo>(::GetProcAddress(Kernel32, "GetProductInfo"));
@@ -3941,7 +3941,7 @@ int32_t GetWindowsBuild()
 
 UnicodeString WindowsVersion()
 {
-  OSVERSIONINFO OSVersionInfo = GetWindowsVersion();
+  const OSVERSIONINFO OSVersionInfo = GetWindowsVersion();
   UnicodeString Result = FORMAT("%d.%d.%d", nb::ToInt32(OSVersionInfo.dwMajorVersion), nb::ToInt32(OSVersionInfo.dwMinorVersion), nb::ToInt32(OSVersionInfo.dwBuildNumber));
   return Result;
 }
@@ -3955,7 +3955,7 @@ UnicodeString WindowsVersionLong()
 
 bool IsDirectoryWriteable(const UnicodeString & APath)
 {
-  UnicodeString FileName =
+  const UnicodeString FileName =
     ::IncludeTrailingPathDelimiter(APath) +
     FORMAT("wscp_%s_%d.tmp", FormatDateTime(L"nnzzz", Now()), nb::ToInt32(GetCurrentProcessId()));
   HANDLE LocalFileHandle = ::CreateFile(ApiPath(FileName).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr,
@@ -3982,12 +3982,12 @@ UnicodeString FormatSize(int64_t ASize)
 
 UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
 {
-  TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
+  const TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
   UnicodeString Result;
   if ((0 <= DateTime) && (DateTime <= MaxDateTime))
   {
-    TTimeStamp TimeStamp = DateTimeToTimeStamp(DateTime);
-    int32_t Days = TimeStamp.Date - DateDelta;
+    const TTimeStamp TimeStamp = DateTimeToTimeStamp(DateTime);
+    const int32_t Days = TimeStamp.Date - DateDelta;
     if (abs(Days) >= 4)
     {
       Result = FMTLOAD(DAYS_SPAN, (Days));
@@ -3996,7 +3996,7 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
     {
       uint16_t Hour, Min, Sec, Dummy;
       DecodeTime(DateTime, Hour, Min, Sec, Dummy);
-      int32_t TotalHours = nb::ToInt32(Hour) + (Days * HoursPerDay);
+      const int32_t TotalHours = nb::ToInt32(Hour) + (Days * HoursPerDay);
       Result = FORMAT(L"%d%s%.2d%s%.2d", TotalHours, FormatSettings.TimeSeparator, Min, FormatSettings.TimeSeparator, Sec);
     }
   }
@@ -4307,7 +4307,7 @@ void ParseCertificate(const UnicodeString & Path,
   Certificate = nullptr;
   PrivateKey = nullptr;
   WrongPassphrase = false;
-  bool HasPassphrase = !Passphrase.IsEmpty();
+  const bool HasPassphrase = !Passphrase.IsEmpty();
 
   FILE * File;
 
@@ -4322,7 +4322,7 @@ void ParseCertificate(const UnicodeString & Path,
   {
     const UTF8String PassphraseUtf(Passphrase);
 
-    bool Result =
+    const bool Result =
       (PKCS12_parse(Pkcs12, PassphraseUtf.c_str(), &PrivateKey, &Certificate, nullptr) == 1);
     PKCS12_free(Pkcs12);
 
