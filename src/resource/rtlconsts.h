@@ -118,4 +118,4 @@
 
 #define SCannotOpenClipboard 2110
 
-#define Vcl_Consts_SMsgDlgCancel 65468
+#define Vcl_Consts_SMsgDlgCancel 3120
