@@ -1769,7 +1769,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return GetAs<TRemoteFile>(Index);
+  return const_cast<TRemoteFile *>(As<TRemoteFile>(Index));
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
@@ -1983,7 +1983,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
   {
-    const TRemoteFileList * FileList = GetAs<TRemoteFileList>(Index);
+    const TRemoteFileList * FileList = As<TRemoteFileList>(Index);
     if (FileList->GetTimestamp() <= Timestamp)
     {
       Index = -1;
@@ -2002,7 +2002,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   if (Result)
   {
     DebugAssert(GetObj(Index) != nullptr);
-    GetAs<TRemoteFileList>(Index)->DuplicateTo(FileList);
+    As<TRemoteFileList>(Index)->DuplicateTo(FileList);
   }
   return Result;
 }
