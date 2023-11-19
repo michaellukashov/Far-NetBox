@@ -485,7 +485,7 @@ class TFarPanelInfo : public TObject
 public:
   TFarPanelInfo() = delete;
   explicit TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner) noexcept;
-  virtual ~TFarPanelInfo() noexcept;
+  virtual ~TFarPanelInfo() noexcept override;
 
   const TObjectList * GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
   TObjectList * GetItems();
