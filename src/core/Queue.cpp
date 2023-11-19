@@ -2257,7 +2257,7 @@ TTransferQueueItem::~TTransferQueueItem() noexcept
 {
   for (int32_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
-    TObject * Object = FFilesToCopy->GetObj(Index);
+    TObject * Object = FFilesToCopy->Get(Index);
     SAFE_DESTROY(Object);
   }
   // delete FFilesToCopy;
