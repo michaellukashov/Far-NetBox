@@ -116,10 +116,10 @@ public:
 };
 //===========================================================================
 constexpr int32_t NationalVarCount = 12;
-const char NationalVars[NationalVarCount][15] =
+constexpr const char NationalVars[NationalVarCount][15] =
   {"LANG", "LANGUAGE", "LC_CTYPE", "LC_COLLATE", "LC_MONETARY", "LC_NUMERIC",
   "LC_TIME", "LC_MESSAGES", "LC_ALL", "HUMAN_BLOCKS", "BLOCK_SIZE", "LS_BLOCK_SIZE" };
-const char FullTimeOption[] = "--full-time";
+constexpr const char FullTimeOption[] = "--full-time";
 
 #define F false
 #define T true
@@ -1443,7 +1443,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
         BatchSize += File->Size;
         if (!FileListCommandLineBak.IsEmpty() &&
             ((FileListCommandLine.Length() > 2048) ||
-             (BatchSize > 1024 * 1024 * 1024)))
+             (BatchSize > (1024 * 1024 * 1024))))
         {
           FileListCommandLine = FileListCommandLineBak;
           break;
@@ -1479,7 +1479,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
           BatchChecksums->Add(Checksum);
         }
       }
-      catch (Exception & E)
+      catch (Exception &)
       {
         if (!FTerminal->Active)
         {
