@@ -339,7 +339,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
   {
     assert(Dialogs.find(Handle) == Dialogs.end());
     Dialogs[Handle] = Param2;
-    Dialog = dyn_cast<TFarDialog>(as_object(Param2));
+    Dialog = cast_to<TFarDialog>(Param2);
     Dialog->FHandle = Handle;
   }
   else
@@ -353,7 +353,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
     }
     else
     {
-      Dialog = dyn_cast<TFarDialog>(as_object(Dialogs[Handle]));
+      Dialog = cast_to<TFarDialog>(Dialogs[Handle]);
     }
   }
 
