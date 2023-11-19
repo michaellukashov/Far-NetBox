@@ -368,7 +368,7 @@ public:
   void ReleaseRelativeDirectories();
 public:
   explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr) noexcept;
-  virtual ~TRemoteDirectory() noexcept;
+  virtual ~TRemoteDirectory() noexcept override;
   virtual void AddFile(TRemoteFile * AFile) override;
   virtual void DuplicateTo(TRemoteFileList * Copy) const override;
   virtual void Reset() override;
