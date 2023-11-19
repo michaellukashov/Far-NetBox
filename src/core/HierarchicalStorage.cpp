@@ -885,7 +885,7 @@ bool TRegistryStorage::Copy(TRegistryStorage * Storage)
   bool Result = true;
   std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   Registry->GetValueNames(Names.get());
-  rde::vector<uint8_t> Buffer(1024);
+  nb::vector_t<uint8_t> Buffer(1024);
   int32_t Index = 0;
   while ((Index < Names->Count()) && Result)
   {

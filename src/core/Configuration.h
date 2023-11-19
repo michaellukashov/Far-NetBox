@@ -48,7 +48,7 @@ public:
   bool PermitRsaSha256{false};
   bool PermitRsaSha512{false};
 
-  using TList = rde::vector<TSshHostCA>;
+  using TList = nb::vector_t<TSshHostCA>;
 };
 
 class TSshHostCAList

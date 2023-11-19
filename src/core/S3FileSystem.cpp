@@ -1588,7 +1588,7 @@ bool TS3FileSystem::DoLoadFileProperties(
   return Result;
 }
 
-using TAclGrantsVector = rde::vector<S3AclGrant>;
+using TAclGrantsVector = nb::vector_t<S3AclGrant>;
 static void AddAclGrant(
   TRights::TRightGroup Group, uint16_t & Permissions, TAclGrantsVector & AclGrants,
   const S3AclGrant & AclGrantTemplate, S3Permission Permission)

@@ -2456,7 +2456,7 @@ void TSFTPFileSystem::Progress(TFileOperationProgressType * OperationProgress)
 
 void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
 {
-  rde::vector<UnicodeString> NotLogged;
+  nb::vector_t<UnicodeString> NotLogged;
   #define ADD_NOT_LOGGED(V, N) \
     if (FNotLogged##V##Packets > 0) \
     { \

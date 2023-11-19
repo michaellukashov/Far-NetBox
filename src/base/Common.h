@@ -557,7 +557,7 @@ public:
   }
 
 private:
-  using TEventHandlers = rde::vector<T>;
+  using TEventHandlers = nb::vector_t<T>;
   TEventHandlers FEventHandlers;
 
   typename TEventHandlers::iterator Find(T EventHandler)

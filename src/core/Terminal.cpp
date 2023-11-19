@@ -1777,7 +1777,7 @@ void TTerminal::SetupTunnelLocalPortNumber()
   if (FTunnelLocalPortNumber == 0)
   {
     // Randomizing the port selection to reduce a chance of conflicts.
-    rde::vector<int32_t> Ports;
+    nb::vector_t<int32_t> Ports;
     for (int32_t Port = GetConfiguration()->FTunnelLocalPortNumberLow; Port <= GetConfiguration()->FTunnelLocalPortNumberHigh; Port++)
     {
       Ports.push_back(Port);

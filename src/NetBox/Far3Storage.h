@@ -53,7 +53,7 @@ private:
 private:
   size_t FRoot{0};
   mutable PluginSettings FPluginSettings;
-  rde::vector<size_t> FSubKeyIds;
+  nb::vector_t<size_t> FSubKeyIds;
 
   virtual void Init() override;
 };

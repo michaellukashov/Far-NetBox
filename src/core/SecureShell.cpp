@@ -2672,7 +2672,7 @@ void TSecureShell::VerifyHostKey(
         UnicodeString UpdateButton = LoadStr(UPDATE_KEY_BUTTON);
         UnicodeString AddButton = LoadStr(ADD_KEY_BUTTON);
         int32_t Answers{0};
-        rde::vector<TQueryButtonAlias> Aliases;
+        nb::vector_t<TQueryButtonAlias> Aliases;
 
         TQueryButtonAlias CopyAlias;
         CopyAlias.Button = qaRetry;
