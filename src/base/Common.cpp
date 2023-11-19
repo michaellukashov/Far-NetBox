@@ -3480,8 +3480,7 @@ TLibModule * FindModule(void * Instance)
 
 static UnicodeString DoLoadStrFrom(HINSTANCE Module, int32_t Ident, uint32_t MaxLength)
 {
-  UnicodeString Result;
-  Result.SetLength(nb::ToInt32(MaxLength));
+  UnicodeString Result(nb::ToInt32(MaxLength), 0);
   const int32_t Length = ::LoadStringW(Module, static_cast<UINT>(Ident), const_cast<LPWSTR>(Result.c_str()), nb::ToInt32(MaxLength));
   Result.SetLength(Length);
 
@@ -3498,11 +3497,6 @@ UnicodeString LoadStr(int32_t Ident, uint32_t /*MaxLength*/)
 {
   UnicodeString Result = GetGlobals()->GetMsg(Ident);
   return Result;
-#if 0
-  TLibModule * MainModule = FindModule(HInstance);
-  DebugAssert(MainModule != nullptr);
-  return DoLoadStrFrom((HINSTANCE)MainModule->ResInstance, Ident, MaxLength);
-#endif // if 0
 }
 
 UnicodeString LoadStrPart(int32_t Ident, int32_t Part)
