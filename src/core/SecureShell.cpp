@@ -2844,15 +2844,15 @@ void TSecureShell::VerifyHostKey(
           Message = LoadStr(KEY_NOT_VERIFIED);
         }
 
-        Exception * E = new Exception(MainInstructions(Message));
+        std::unique_ptr<Exception> E(std::make_unique<Exception>(MainInstructions(Message)));
         try__finally
         {
-          FUI->FatalError(E, FMTLOAD(HOSTKEY, FingerprintSHA256));
+          FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, FingerprintSHA256));
         },
-        __finally
-        {
+        __finally__removed
+        ({
           delete E;
-        } end_try__finally
+        }) end_try__finally
       }
     }
   }
