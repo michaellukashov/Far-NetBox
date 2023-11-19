@@ -240,7 +240,7 @@ class TKeepAliveThread : public TSimpleThread
 {
 public:
   explicit TKeepAliveThread(TWinSCPFileSystem * FileSystem, const TDateTime & Interval) noexcept;
-  virtual ~TKeepAliveThread() = default;
+  virtual ~TKeepAliveThread() noexcept override = default;
 
   void InitKeepaliveThread();
   virtual void Execute() override;
