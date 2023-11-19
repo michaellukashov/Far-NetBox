@@ -3311,7 +3311,7 @@ static bool DoRecursiveDeleteFile(
   {
     SHFILEOPSTRUCT Data;
 
-    __removed memset(&Data, 0, sizeof(Data));
+    // memset(&Data, 0, sizeof(Data));
     nb::ClearStruct(Data);
     Data.hwnd = nullptr;
     Data.wFunc = FO_DELETE;
@@ -3786,7 +3786,7 @@ bool IsWin10()
 static OSVERSIONINFO GetWindowsVersion()
 {
   OSVERSIONINFO Result;
-  memset(&Result, 0, sizeof(Result));
+  nb::ClearStruct(Result);
   Result.dwOSVersionInfoSize = sizeof(Result);
   // Cannot use the VCL Win32MajorVersion+Win32MinorVersion+Win32BuildNumber as
   // on Windows 10 due to some hacking in InitPlatformId, the Win32BuildNumber is lost
