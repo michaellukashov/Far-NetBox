@@ -1494,7 +1494,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     #undef GETNCOL
     #undef GETCOL
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, Value), HELP_LIST_LINE_ERROR);
   }
