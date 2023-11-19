@@ -2181,8 +2181,7 @@ TTimeSpan::TTimeSpan(int64_t ATicks) : FTicks(ATicks)
 
 TTimeSpan TTimeSpan::FromSeconds(double Value)
 {
-  TTimeSpan Result(0);
-  Result.FTicks = round(Value * TicksPerSecond);
+  TTimeSpan Result(round(Value * TicksPerSecond));
   return Result;
 }
 
