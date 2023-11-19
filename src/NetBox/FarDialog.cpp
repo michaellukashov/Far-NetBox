@@ -972,7 +972,7 @@ void TFarDialogContainer::SetPosition(int32_t AIndex, int32_t Value)
     Position = Value;
     for (int32_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      dyn_cast<TFarDialogItem>((*FItems)[Index])->DialogResized();
+      FItems->GetAs<TFarDialogItem>(Index)->DialogResized();
     }
   }
 }
