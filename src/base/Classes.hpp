@@ -180,7 +180,7 @@ public:
 
   template<class T>
   T * GetAs(int32_t Index) const { return cast_to<T>(GetItem(Index)); }
-  void * operator[](int32_t Index) const;
+  void * operator [](int32_t Index) const;
   virtual void * GetItem(int32_t Index) const { return FList[Index]; }
   virtual void * GetItem(int32_t Index) { return FList[Index]; }
   void SetItem(int32_t Index, void * Item);
@@ -222,7 +222,7 @@ public:
 
   template<class T>
   T * GetAs(int32_t Index) const { return dyn_cast<T>(GetObj(Index)); }
-  TObject * operator[](int32_t Index) const;
+  TObject * operator [](int32_t Index) const;
   TObject * GetObj(int32_t Index) const;
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
@@ -382,7 +382,7 @@ private:
 
 private:
   TStringList(const TStringList &) = delete;
-  TStringList &operator=(const TStringList &) = delete;
+  TStringList & operator =(const TStringList &) = delete;
 };
 
 /// TDateTime: number of days since 12/30/1899
@@ -468,16 +468,16 @@ class TTimeSpan
 {
 private:
   int64_t GetTicks() const { return FTicks; }
-  int32_t GetDays() const { return FTicks / TicksPerDay; }
+  int32_t GetDays() const { return  nb::ToInt32(FTicks / TicksPerDay); }
   int32_t GetHours() const { return (FTicks / TicksPerHour) % HoursPerDay; }
   int32_t GetMinutes() const { return (FTicks / TicksPerMinute) % MinsPerHour; }
   int32_t GetSeconds() const { return (FTicks / TicksPerSecond) % SecsPerMin; }
   int32_t GetMilliseconds() const { return (FTicks / TicksPerMillisecond) % MillisPerSecond; }
-  double GetTotalDays() const { return (double)FTicks / TicksPerDay; }
-  double GetTotalHours() const { return (double)FTicks / TicksPerHour; }
-  double GetTotalMinutes() const { return (double)FTicks / TicksPerMinute; }
-  double GetTotalSeconds() const { return (double)FTicks / TicksPerSecond; }
-  double GetTotalMilliseconds() const { return (double)FTicks / TicksPerMillisecond; }
+  double GetTotalDays() const { return nb::ToDouble(FTicks / TicksPerDay); }
+  double GetTotalHours() const { return nb::ToDouble(FTicks / TicksPerHour); }
+  double GetTotalMinutes() const { return nb::ToDouble(FTicks / TicksPerMinute); }
+  double GetTotalSeconds() const { return nb::ToDouble(FTicks / TicksPerSecond); }
+  double GetTotalMilliseconds() const { return nb::ToDouble(FTicks / TicksPerMillisecond); }
   static TTimeSpan GetScaledInterval(double Value, int32_t Scale);
 private:
   static const int64_t FMinValue = -9223372036854775808;
@@ -748,9 +748,9 @@ class NB_CORE_EXPORT TRegistry final : public TObject
   NB_DISABLE_COPY(TRegistry)
 public:
   TRegistry() noexcept;
-  ~TRegistry() noexcept;
-  void GetValueNames(TStrings *Names) const;
-  void GetKeyNames(TStrings *Names) const;
+  virtual ~TRegistry() noexcept override;
+  void GetValueNames(TStrings * Names) const;
+  void GetKeyNames(TStrings * Names) const;
   void CloseKey();
   bool OpenKey(const UnicodeString & AKey, bool CanCreate);
   bool DeleteKey(const UnicodeString & AKey);
@@ -961,7 +961,7 @@ public:
 
   ~TGlobalsIntfInitializer()
   {
-    TGlobalsIntf *Intf = GetGlobals();
+    TGlobalsIntf * Intf = GetGlobals();
     delete Intf;
     ::SetGlobals(nullptr);
   }
