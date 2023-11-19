@@ -37,8 +37,8 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecureShell) || TObject::is(Kind); }
 
-  mutable const uint32_t * FMinPacketSize{nullptr};
-  mutable const uint32_t * FMaxPacketSize{nullptr};
+  mutable gsl::owner<const uint32_t *> FMinPacketSize{nullptr};
+  mutable gsl::owner<const uint32_t *> FMaxPacketSize{nullptr};
   //uint32_t MinPacketSize() const;
 private:
   SOCKET FSocket{INVALID_SOCKET};
@@ -50,7 +50,7 @@ private:
   mutable TSessionInfo FSessionInfo{};
   mutable bool FSessionInfoValid{false};
   TDateTime FLastDataSent{};
-  Backend * FBackendHandle{nullptr};
+  gsl::owner<Backend *> FBackendHandle{nullptr};
   TNotifyEvent FOnReceive{nullptr};
   bool FFrozen{false};
   bool FDataWhileFrozen{false};
@@ -86,9 +86,9 @@ private:
   DWORD FLastSendBufferUpdate{0};
   int32_t FSendBuf{0};
   std::unique_ptr<callback_set> FCallbackSet;
-  ScpLogPolicy * FLogPolicy{nullptr};
-  ScpSeat * FSeat{nullptr};
-  LogContext * FLogCtx{nullptr};
+  std::unique_ptr<ScpLogPolicy> FLogPolicy{nullptr};
+  std::unique_ptr<ScpSeat> FSeat{nullptr};
+  gsl::owner<LogContext *> FLogCtx{nullptr};
   rde::set<UnicodeString> FLoggedKnownHostKeys;
 
 public:

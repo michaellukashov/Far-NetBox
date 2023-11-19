@@ -431,7 +431,7 @@ public:
 
 private:
   UnicodeString FPath;
-  void * FFile{nullptr}; // TODO: use gsl:owner
+  gsl::owner<void *> FFile{nullptr};
   bool FLogging{false};
   std::unique_ptr<TCriticalSection> FCriticalSection;
 };

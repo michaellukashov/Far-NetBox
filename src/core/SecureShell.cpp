@@ -130,10 +130,8 @@ void TSecureShell::ResetConnection()
   FStoredPasswordTriedForKI = false;
   FStoredPassphraseTried = false;
   FAuthenticationCancelled = false;
-  delete FLogPolicy;
-  FLogPolicy = nullptr;
-  delete FSeat;
-  FSeat = nullptr;
+  FLogPolicy.reset();
+  FSeat.reset();
   if (FLogCtx != nullptr)
   {
     log_free(FLogCtx);
@@ -449,15 +447,15 @@ void TSecureShell::Open()
     const char * InitError{nullptr};
     Conf * conf = StoreToConfig(FSessionData, GetSimple());
     FSendBuf = FSessionData->GetSendBuf();
-    FSeat = new ScpSeat(this);
-    FLogPolicy = new ScpLogPolicy();
+    FSeat = std::make_unique<ScpSeat>(this);
+    FLogPolicy = std::make_unique<ScpLogPolicy>();
     FLogPolicy->vt = &ScpLogPolicyVTable;
     FLogPolicy->SecureShell = this;
-    FLogPolicy->Seat = FSeat;
+    FLogPolicy->Seat = FSeat.get();
     try__finally
     {
-      FLogCtx = log_init(FLogPolicy, conf);
-      InitError = backend_init(&ssh_backend, FSeat, &FBackendHandle, FLogCtx, conf,
+      FLogCtx = log_init(FLogPolicy.get(), conf);
+      InitError = backend_init(&ssh_backend, FSeat.get(), &FBackendHandle, FLogCtx, conf,
         AnsiString(FSessionData->GetHostNameExpanded()).c_str(), nb::ToInt32(FSessionData->GetPortNumber()), &RealHost,
         FSessionData->GetTcpNoDelay() ? 1 : 0,
         conf_get_bool(conf, CONF_tcp_keepalives));
@@ -2579,7 +2577,7 @@ void TSecureShell::VerifyHostKey(
       {
         AcceptNew = false;
       }
-      else if (have_any_ssh2_hostkey(FSeat, AnsiString(Host).c_str(), Port))
+      else if (have_any_ssh2_hostkey(FSeat.get(), AnsiString(Host).c_str(), Port))
       {
         LogEvent(L"Host key not found in the cache, but other key types found, cannot accept new key");
         AcceptNew = false;

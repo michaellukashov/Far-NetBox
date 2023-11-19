@@ -307,8 +307,8 @@ private:
   TTerminalQueueStatus * GetQueueStatus();
 
 private:
-  TTerminal * FTerminal{nullptr};
-  TTerminalQueue * FQueue{nullptr};
+  gsl::owner<TTerminal *> FTerminal{nullptr};
+  gsl::owner<TTerminalQueue *> FQueue{nullptr};
   TTerminalQueueStatus * FQueueStatus{nullptr};
   TCriticalSection FQueueStatusSection;
   TQueueEvent FQueueEvent{qeEmpty};
@@ -317,7 +317,7 @@ private:
   HANDLE FAuthenticationSaveScreenHandle{nullptr};
   TDateTime FSynchronizationStart;
   std::unique_ptr<TStrings> FFileList;
-  TList * FPanelItems{nullptr};
+  gsl::owner<TList *> FPanelItems{nullptr};
   UnicodeString FSavedFindFolder;
   UnicodeString FOriginalEditFile;
   UnicodeString FLastEditFile;
@@ -326,8 +326,8 @@ private:
   UnicodeString FLastMultipleEditDirectory;
   int32_t FLastEditorID{-1};
   TGUICopyParamType FLastEditCopyParam{};
-  TKeepAliveThread * FKeepaliveThread{nullptr};
-  TSynchronizeController * FSynchronizeController{nullptr};
+  gsl::owner<TKeepAliveThread *> FKeepaliveThread{nullptr};
+  gsl::owner<TSynchronizeController *> FSynchronizeController{nullptr};
   std::unique_ptr<TStrings> FCapturedLog;
   std::unique_ptr<TStrings> FAuthenticationLog;
   using TMultipleEdits = nb::map_t<int32_t, TMultipleEdit>;
