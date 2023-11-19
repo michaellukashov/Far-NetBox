@@ -2881,10 +2881,10 @@ TRemoteProperties::TRemoteProperties() :
   Default();
 }
 
-TRemoteProperties::TRemoteProperties(const TRemoteProperties &rhp) :
+TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
   TObject(OBJECT_CLASS_TRemoteProperties),
-  Valid(rhp.Valid),
   Recursive(rhp.Recursive),
+  Valid(rhp.Valid),
   Rights(rhp.Rights),
   AddXToDirectories(rhp.AddXToDirectories),
   Group(rhp.Group),
