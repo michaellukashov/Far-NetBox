@@ -2026,7 +2026,8 @@ TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) noexcept :
 
 void TSFTPFileSystem::Init(void * Data /* TSecureShell*/)
 {
-  FSecureShell = cast_to<TSecureShell>(Data);
+  DebugAssert(Data);
+  FSecureShell = static_cast<TSecureShell *>(Data);
   DebugAssert(FSecureShell);
   FFileSystemInfoValid = false;
   FVersion = nb::NPOS;
