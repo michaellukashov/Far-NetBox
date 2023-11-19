@@ -630,7 +630,7 @@ void TWinSCPFileSystem::FocusSession(const TSessionData * Data)
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
   const bool NewData = !Data;
-  bool FillInConnect = !Edit && Data && !Data->GetCanLogin();
+  const bool FillInConnect = !Edit && Data && !Data->GetCanLogin();
   if (NewData || FillInConnect)
   {
     Data = new TSessionData(L"");
@@ -738,7 +738,7 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
   {
     if (Event == FE_COMMAND)
     {
-      UnicodeString Command = static_cast<wchar_t *>(Param);
+      const UnicodeString Command = static_cast<wchar_t *>(Param);
       if (!::Trim(Command).IsEmpty() &&
         (::LowerCase(Command.SubString(1, 3)) != L"cd "))
       {
@@ -828,7 +828,7 @@ bool TWinSCPFileSystem::EnsureCommandSessionFallback(TFSCapability Capability)
     {
       TMessageParams Params(nullptr);
       Params.Params = qpNeverAskAgainCheck;
-      uint32_t Answer = MoreMessageDialog(
+      const uint32_t Answer = MoreMessageDialog(
           FORMAT(GetMsg(NB_PERFORM_ON_COMMAND_SESSION),
             FTerminal->GetFileSystemInfo().ProtocolName,
             FTerminal->GetFileSystemInfo().ProtocolName),
@@ -1055,12 +1055,12 @@ void TWinSCPFileSystem::RemoteCreateLink()
   RequireCapability(fcSymbolicLink);
 
   bool Edit = false;
-  TRemoteFile * File = nullptr;
+  const TRemoteFile * File = nullptr;
   UnicodeString FileName;
   UnicodeString PointTo;
   bool SymbolicLink = true;
 
-  TFarPanelInfo *const * PanelInfo = GetPanelInfo();
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
   if (Focused && Focused->GetUserData())
   {
@@ -1477,8 +1477,8 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   bool SaveSettings = false;
 
   TGUICopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
-  TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
-  int32_t Options =
+  const TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
+  const int32_t Options =
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
     FLAGMASK(SynchronizeAllowSelectedOnly(), fsoAllowSelectedOnly);
   if (FullSynchronizeDialog(Mode, Params, LocalDirectory, RemoteDirectory,
@@ -1637,8 +1637,8 @@ void TWinSCPFileSystem::Synchronize()
     };
     bool SaveSettings = false;
     TCopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
-    DWORD CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
-    uint32_t Options =
+    const DWORD CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
+    const uint32_t Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
     if (SynchronizeDialog(Params, &CopyParam,
         nb::bind(&TSynchronizeController::StartStop, &Controller),
@@ -1790,7 +1790,7 @@ void TWinSCPFileSystem::TransferFiles(bool Move)
 
 void TWinSCPFileSystem::RenameFile()
 {
-  TFarPanelInfo *const * PanelInfo = GetPanelInfo();
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
   DebugAssert(Focused != nullptr);
 
@@ -1836,7 +1836,7 @@ void TWinSCPFileSystem::FileProperties()
 
     if (Cont)
     {
-      TRemoteProperties CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
+      const TRemoteProperties CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
 
       int32_t Flags = 0;
       if (FTerminal->GetIsCapable(fcModeChanging))
@@ -1950,7 +1950,7 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 
 UnicodeString TWinSCPFileSystem::GetFullFilePath(const TRemoteFile * AFile) const
 {
-  UnicodeString SessionUrl = GetSessionUrl(FTerminal, true);
+  const UnicodeString SessionUrl = GetSessionUrl(FTerminal, true);
   UnicodeString Result = FORMAT("%s%s", SessionUrl, AFile->GetFullFileName());
   return Result;
 }
@@ -2019,7 +2019,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
 void TWinSCPFileSystem::ShowInformation()
 {
   const TSessionInfo &SessionInfo = GetTerminal()->GetSessionInfo();
-  TFileSystemInfo FileSystemInfo = GetTerminal()->GetFileSystemInfo();
+  const TFileSystemInfo FileSystemInfo = GetTerminal()->GetFileSystemInfo();
   TGetSpaceAvailableEvent OnGetSpaceAvailable;
   if (GetTerminal()->GetIsCapable(fcCheckingSpaceAvailable))
   {
@@ -2060,7 +2060,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
 {
   std::unique_ptr<TBookmarkList> BookmarkList(std::make_unique<TBookmarkList>());
   UnicodeString Directory = FTerminal->RemoteGetCurrentDirectory();
-  UnicodeString SessionKey = GetSessionData()->GetSessionKey();
+  const UnicodeString SessionKey = GetSessionData()->GetSessionKey();
 
   TBookmarkList *CurrentBookmarkList = GetFarConfiguration()->GetBookmarks(SessionKey);
   if (CurrentBookmarkList != nullptr)
@@ -2077,7 +2077,7 @@ void TWinSCPFileSystem::OpenDirectory(bool Add)
     GetFarConfiguration()->SetBookmarks(SessionKey, BookmarkList.get());
   }
 
-  bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList.get());
+  const bool Result = OpenDirectoryDialog(Add, Directory, BookmarkList.get());
 
   GetFarConfiguration()->SetBookmarks(SessionKey, BookmarkList.get());
   GetConfiguration()->Save();
@@ -2112,7 +2112,7 @@ void TWinSCPFileSystem::ToggleSynchronizeBrowsing()
 
   if (GetFarConfiguration()->GetConfirmSynchronizedBrowsing())
   {
-    UnicodeString Message = FSynchronisingBrowse ?
+    const UnicodeString Message = FSynchronisingBrowse ?
       GetMsg(NB_SYNCHRONIZE_BROWSING_ON) : GetMsg(NB_SYNCHRONIZE_BROWSING_OFF);
     TMessageParams Params(nullptr);
     Params.Params = qpNeverAskAgainCheck;
@@ -2128,9 +2128,9 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
 {
   bool Result;
   TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
-  UnicodeString OldPath = AnotherPanel && *AnotherPanel ? (*AnotherPanel)->GetCurrDirectory() : "";
+  const UnicodeString OldPath = AnotherPanel && *AnotherPanel ? (*AnotherPanel)->GetCurrDirectory() : "";
   // IncludeTrailingBackslash to expand C: to C:\.
-  UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
+  const UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   FarPanelDirectory fpd;
   nb::ClearStruct(fpd);
   fpd.StructSize = sizeof(fpd);
@@ -2205,8 +2205,8 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
   else
   {
     DebugAssert(!FNoProgress);
-    bool Normal = FLAGCLEAR(OpMode, OPM_FIND | OPM_SILENT);
-    UnicodeString PrevPath = FTerminal ? FTerminal->RemoteGetCurrentDirectory() : "";
+    const bool Normal = FLAGCLEAR(OpMode, OPM_FIND | OPM_SILENT);
+    const UnicodeString PrevPath = FTerminal ? FTerminal->RemoteGetCurrentDirectory() : "";
     FNoProgress = !Normal;
     if (!FNoProgress)
     {
@@ -2258,7 +2258,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
       {
         try
         {
-          UnicodeString RemotePath = base::UnixIncludeTrailingBackslash(FTerminal->RemoteGetCurrentDirectory());
+          const UnicodeString RemotePath = base::UnixIncludeTrailingBackslash(FTerminal->RemoteGetCurrentDirectory());
           UnicodeString FullPrevPath = base::UnixIncludeTrailingBackslash(PrevPath);
           UnicodeString LocalPath;
           if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath && AnotherPanel)
@@ -2443,7 +2443,7 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES 
       FFileList.reset();
     };
     UnicodeString Query;
-    bool Recycle = GetSessionData()->GetDeleteToRecycleBin() &&
+    const bool Recycle = GetSessionData()->GetDeleteToRecycleBin() &&
       !FTerminal->IsRecycledFile(FFileList->GetString(0));  //-V522
     if (PanelItems->GetCount() > 1)
     {
@@ -2505,7 +2505,7 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
   }
   else if (IsSessionList())
   {
-    UnicodeString Title = GetMsg(NB_EXPORT_SESSION_TITLE);
+    const UnicodeString Title = GetMsg(NB_EXPORT_SESSION_TITLE);
     UnicodeString Prompt;
     if (PanelItems->GetCount() == 1)
     {
@@ -2534,7 +2534,7 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
   UnicodeString & DestPath, OPERATION_MODES OpMode)
 {
   int32_t Result = -1;
-  bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
+  const bool EditView = (OpMode & (OPM_EDIT | OPM_VIEW)) != 0;
   bool Confirmed =
     (OpMode & OPM_SILENT) &&
     (!EditView || GetFarConfiguration()->GetEditorDownloadDefaultMode());
@@ -2551,11 +2551,11 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
 
   if (!Confirmed)
   {
-    int32_t CopyParamAttrs =
+    const int32_t CopyParamAttrs =
       GetTerminal()->UsableCopyParamAttrs(Params).Download;
-    ; // FLAGMASK(EditView, cpaNoExcludeMask);
+      // | FLAGMASK(EditView, cpaNoExcludeMask);
 
-    uint32_t Options =
+    const uint32_t Options =
       FLAGMASK(EditView, coTempTransfer | coDisableNewerOnly);
     Confirmed = CopyDialog(false, Move, FFileList.get(),
         Options, CopyParamAttrs,
@@ -2673,12 +2673,12 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
 
   if (!Confirmed)
   {
-    int32_t CopyParamAttrs =
+    const int32_t CopyParamAttrs =
       GetTerminal()->UsableCopyParamAttrs(Params).Upload |
       FLAGMASK(Edit, cpaNoClearArchive);
     // heuristics: do not ask for target directory when uploaded file
     // was downloaded in edit mode
-    uint32_t Options =
+    const uint32_t Options =
       FLAGMASK(Edit, coTempTransfer) |
       FLAGMASK(Edit || !GetTerminal()->GetIsCapable(fcNewerOnlyUpload), coDisableNewerOnly);
     Confirmed = CopyDialog(true, Move, FFileList.get(),
@@ -2796,7 +2796,7 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
 bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
   OPERATION_MODES OpMode)
 {
-  bool Result = (OpMode & OPM_SILENT) ||
+  const bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(NB_IMPORT_SESSIONS_PROMPT), nullptr,
         qtConfirmation, qaYes | qaNo) == qaYes);
 
@@ -2866,7 +2866,7 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(TOperationSide Side, TFarPa
   TStrings * Result{nullptr};
   if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount() > 0)
   {
-    UnicodeString CurrDirectory = Connected() ? FTerminal->RemoteGetCurrentDirectory() : (*PanelInfo)->GetCurrDirectory();
+    const UnicodeString CurrDirectory = Connected() ? FTerminal->RemoteGetCurrentDirectory() : (*PanelInfo)->GetCurrDirectory();
     Result = CreateFileList((*PanelInfo)->GetItems(), Side, true, CurrDirectory);
   }
   else
@@ -3065,8 +3065,8 @@ void TWinSCPFileSystem::LogAuthentication(
     return;
   FAuthenticationLog->Add(Msg);
   std::unique_ptr<TStringList> AuthenticationLogLines(std::make_unique<TStringList>());
-  int32_t Width = 42;
-  int32_t Height = 11;
+  const int32_t Width = 42;
+  const int32_t Height = 11;
   FarWrapText(::TrimRight(FAuthenticationLog->GetText()), AuthenticationLogLines.get(), Width);
   int32_t Count;
   UnicodeString Message;
@@ -3097,10 +3097,10 @@ void TWinSCPFileSystem::TerminalInformation(
 {
   if (Phase != 0)
   {
-    TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
+    const TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
     if (sts == ssOpening || sts == ssOpened)
     {
-      bool new_log = (FAuthenticationLog == nullptr);
+      const bool new_log = (FAuthenticationLog == nullptr);
       if (new_log)
       {
         FAuthenticationLog = std::make_unique<TStringList>();
@@ -3128,8 +3128,8 @@ void TWinSCPFileSystem::TerminalChangeDirectory(TObject * /*Sender*/)
 {
   if (!FNoProgress)
   {
-    UnicodeString Directory = FTerminal->RemoteGetCurrentDirectory();
-    int32_t Index = FPathHistory->IndexOf(Directory);
+    const UnicodeString Directory = FTerminal->RemoteGetCurrentDirectory();
+    const int32_t Index = FPathHistory->IndexOf(Directory);
     if (Index >= 0)
     {
       FPathHistory->Delete(Index);
@@ -3190,7 +3190,7 @@ void TWinSCPFileSystem::TerminalReadDirectory(TObject * /*Sender*/,
 
 void TWinSCPFileSystem::TerminalDeleteLocalFile(const UnicodeString & AFileName, bool Alternative, int32_t & Deleted)
 {
-  bool ToRecycleBin = FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), NBSS_DELETETORECYCLEBIN) != Alternative;
+  const bool ToRecycleBin = FLAGSET(GetWinSCPPlugin()->GetFarSystemSettings(), NBSS_DELETETORECYCLEBIN) != Alternative;
   if (ToRecycleBin || !GetWinSCPPlugin()->GetSystemFunctions())
   {
     if (!RecursiveDeleteFile(AFileName, ToRecycleBin))
@@ -3420,7 +3420,7 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
     {
       DebugAssert(FFileList);
       DebugAssert(FPanelItems->GetCount() == FFileList->GetCount());
-      int32_t Index = FFileList->IndexOf(AFileName);
+      const int32_t Index = FFileList->IndexOf(AFileName);
       DebugAssert(Index >= 0);
       PanelItem = cast_to<TFarPanelItem>(FPanelItems->GetItem(Index));
     }
@@ -3452,8 +3452,8 @@ void TWinSCPFileSystem::ShowOperationProgress(
   TFileOperationProgressType & ProgressData, bool Force)
 {
   static uint32_t LastTicks;
-  uint32_t Ticks = ::GetTickCount();
-  short percents = static_cast<short>(ProgressData.OverallProgress());
+  const uint32_t Ticks = ::GetTickCount();
+  uint16_t percents = static_cast<uint16_t>(ProgressData.OverallProgress());
   if (Ticks - LastTicks > 500 || Force)
   {
     LastTicks = Ticks;
@@ -3483,12 +3483,12 @@ void TWinSCPFileSystem::ShowOperationProgress(
       TimeLeftLabel = GetMsg(NB_TIME_LEFT_LABEL);
     }
 
-    bool TransferOperation =
+    const bool TransferOperation =
       ((ProgressData.GetOperation() == foCopy) || (ProgressData.GetOperation() == foMove));
 
     UnicodeString ProgressBarCurrentFile;
     UnicodeString Message2;
-    UnicodeString Title = GetMsg(Captions[nb::ToInt32(ProgressData.GetOperation() - 1)]);
+    const UnicodeString Title = GetMsg(Captions[nb::ToInt32(ProgressData.GetOperation() - 1)]);
     UnicodeString FileName = ProgressData.GetFileName();
     // for upload from temporary directory,
     // do not show source directory
@@ -3505,7 +3505,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       Message1 += TargetDirLabel + base::MinimizeName(ProgressData.GetDirectory(),
           ProgressWidth - TargetDirLabel.Length(), ProgressData.GetSide() == osLocal) + L"\n";
     }
-    UnicodeString ProgressBarTotal = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + L"\n";
+    const UnicodeString ProgressBarTotal = ProgressBar(ProgressData.OverallProgress(), ProgressWidth) + L"\n";
     if (TransferOperation)
     {
       Message2 = L"\1\n";
@@ -3542,7 +3542,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       Message2 += StatusLine + L"\n";
       ProgressBarCurrentFile = ProgressBar(ProgressData.TransferProgress(), ProgressWidth) + L"\n";
     }
-    UnicodeString Message =
+    const UnicodeString Message =
       Message1 + ProgressBarCurrentFile + Message2 + ProgressBarTotal;
     GetWinSCPPlugin()->Message(0, Title, Message, nullptr, nullptr);
 
@@ -3579,7 +3579,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
   if (FQueue == nullptr)
     return Result;
 
-  TTerminalQueueStatus * QueueStatus = GetQueueStatus();
+  const TTerminalQueueStatus * QueueStatus = GetQueueStatus();
   DebugAssert(QueueStatus != nullptr);
   FarPlugin->UpdateProgress(QueueStatus->GetCount() > 0 ? TBPS_INDETERMINATE : TBPS_NOPROGRESS, 0);
 
@@ -3771,7 +3771,7 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
   DebugAssert(FFileList == nullptr);
   FFileList = std::make_unique<TStringList>();
   DebugAssert(FTerminal->GetAutoReadDirectory());
-  bool PrevAutoReadDirectory = FTerminal->GetAutoReadDirectory();
+  const bool PrevAutoReadDirectory = FTerminal->GetAutoReadDirectory();
   if (NoReload)
   {
     FTerminal->SetAutoReadDirectory(false);
@@ -3797,13 +3797,13 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
   std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
   if (Info != nullptr)
   {
-    bool NativeEdit =
+    const bool NativeEdit =
       (FLastEditorID >= 0) &&
       (FLastEditorID == Info->GetEditorID()) &&
       !FLastEditFile.IsEmpty();
 
-    TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
-    bool MultipleEdit = (it != FMultipleEdits.end());
+    const TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
+    const bool MultipleEdit = (it != FMultipleEdits.end());
 
     if (NativeEdit || MultipleEdit)
     {
@@ -3843,14 +3843,14 @@ void TWinSCPFileSystem::ProcessEditorEvent(int32_t Event, void * /* Param */)
     // to default FAR text, not to ours (see EE_SAVE). Hence we periodically
     // reset the title.
     static uint32_t LastTicks = 0;
-    uint32_t Ticks = ::GetTickCount();
+    const uint32_t Ticks = ::GetTickCount();
     if ((LastTicks == 0) || (Ticks - LastTicks > 500))
     {
       LastTicks = Ticks;
       std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
       if (Info != nullptr)
       {
-        TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
+        TMultipleEdits::const_iterator it = FMultipleEdits.find(Info->GetEditorID());
         if (it != FMultipleEdits.end())
         {
           UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(it->second.Directory) +
@@ -3924,7 +3924,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(int32_t Event, void * /* Param */)
         FLastEditorID = -1;
       }
 
-      TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
+      const TMultipleEdits::iterator it = FMultipleEdits.find(Info->GetEditorID());
       if (it != FMultipleEdits.end())
       {
         TMultipleEdit &ed = it->second;
@@ -4029,17 +4029,17 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   EditHistory.Directory = Directory;
   EditHistory.FileName = AFileName;
 
-  TEditHistories::iterator it_h = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
+  const TEditHistories::iterator it_h = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
   if (it_h != FEditHistories.end())
   {
     FEditHistories.erase(it_h);
   }
   FEditHistories.push_back(EditHistory);
 
-  UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(Directory) + AFileName;
+  const UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(Directory) + AFileName;
 
   std::unique_ptr<TRemoteFile> FileDuplicate(AFile ? AFile->Duplicate() : new TRemoteFile());
-  UnicodeString NewFileName = AFileName; // FullFileName;
+  const UnicodeString NewFileName = AFileName; // FullFileName;
   FileDuplicate->SetFileName(NewFileName);
 
   TMultipleEdits::iterator it_e = FMultipleEdits.begin();
@@ -4094,7 +4094,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   {
     DebugAssert(it_e != FMultipleEdits.end());
 
-    intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
+    const intptr_t WindowCount = FarPlugin->FarAdvControl(ACTL_GETWINDOWCOUNT, 0);
     int32_t Pos = 0;
     while (Pos < WindowCount)
     {
@@ -4140,7 +4140,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       FileList->AddObject(FullFileName, FileDuplicate.get());
       TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
     }
-    UnicodeString ValidLocalFileName = CopyParam.ValidLocalFileName(NewFileName);
+    const UnicodeString ValidLocalFileName = CopyParam.ValidLocalFileName(NewFileName);
     FLastMultipleEditFile = ::IncludeTrailingBackslash(TempDir) + ValidLocalFileName;
     FLastMultipleEditFileTitle = AFileName;
     FLastMultipleEditDirectory = Directory;
@@ -4184,7 +4184,7 @@ void TWinSCPFileSystem::EditHistory()
   {
     TRemoteFile * File = nullptr;
     const TEditHistory & EditHistory = FEditHistories[Result];
-    UnicodeString FullFileName =
+    const UnicodeString FullFileName =
       base::UnixIncludeTrailingBackslash(EditHistory.Directory) + EditHistory.FileName;
     File = FTerminal->ReadFile(FullFileName);
     std::unique_ptr<TRemoteFile> FilePtr(File);
