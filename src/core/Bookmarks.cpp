@@ -27,7 +27,7 @@ void TBookmarks::Clear()
 {
   for (int32_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
   {
-    TObject * Object = FBookmarkLists->GetObj(Index);
+    TObject * Object = FBookmarkLists->Get(Index);
     SAFE_DESTROY(Object);
   }
   FBookmarkLists->Clear();
@@ -300,7 +300,7 @@ void TBookmarkList::Clear()
 {
   for (int32_t Index = 0; Index < FBookmarks->GetCount(); ++Index)
   {
-    TObject * Object = FBookmarks->GetObj(Index);
+    TObject * Object = FBookmarks->Get(Index);
     SAFE_DESTROY(Object);
   }
   FBookmarks->Clear();

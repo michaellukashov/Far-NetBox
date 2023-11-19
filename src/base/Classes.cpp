@@ -566,7 +566,7 @@ bool TStrings::Equals(const TStrings * Value) const
 
 void TStrings::SetString(int32_t Index, const UnicodeString & S)
 {
-  TObject * TempObject = GetObj(Index);
+  TObject * TempObject = Get(Index);
   Delete(Index);
   InsertObject(Index, S, TempObject);
 }
@@ -586,7 +586,7 @@ void TStrings::Move(int32_t CurIndex, int32_t NewIndex)
       EndUpdate();
     };
     const UnicodeString TempString = GetString(CurIndex);
-    TObject * TempObject = GetObj(CurIndex);
+    TObject * TempObject = Get(CurIndex);
     Delete(CurIndex);
     InsertObject(NewIndex, TempString, TempObject);
   }
@@ -1057,9 +1057,9 @@ void TStringList::ExchangeItems(int32_t Index1, int32_t Index2)
       SetOwnsObjects(Owns);
     };
     const UnicodeString SItem1 = FStrings[Index1];
-    TObject * OItem1 = TObjectList::GetObj(Index1);
+    TObject * OItem1 = TObjectList::Get(Index1);
     FStrings[Index1] = FStrings[Index2];
-    TObjectList::SetItem(Index1, TObjectList::GetObj(Index2));
+    TObjectList::SetItem(Index1, TObjectList::Get(Index2));
     FStrings[Index2] = SItem1;
     TObjectList::SetItem(Index2, OItem1);
   }
