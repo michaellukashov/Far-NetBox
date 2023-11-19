@@ -98,7 +98,7 @@ class NB_CORE_EXPORT TRemoteFile : public TPersistent
   NB_DISABLE_COPY(TRemoteFile)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteFile); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFile) || TPersistent::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFile) || TPersistent::is(Kind); }
 private:
   TRemoteFileList * FDirectory{nullptr};
   TRemoteToken FOwner;
