@@ -74,20 +74,21 @@ public:
 public:
   TObject() noexcept : FKind(OBJECT_CLASS_TObject) {}
   explicit TObject(TObjectClassId Kind) noexcept : FKind(Kind) {}
-  virtual ~TObject() = default;
+  virtual ~TObject() noexcept = default;
   virtual void Changed() {}
 private:
-  TObjectClassId FKind{};
+  TObjectClassId FKind{0};
 };
 
-template<class O, class T>
-inline O as_object(T p) { return static_cast<O>(p); }
-inline TObject * as_object(void * p) { return as_object<TObject *, void *>(p); }
-inline const TObject * as_object(const void * p) { return as_object<const TObject *, const void *>(p); }
-template<class O, class T>
-inline O * cast_to(T p) { return dyn_cast<O>(as_object(p)); }
-template<class O> inline O * cast_to(void * p) { return cast_to<O, void *>(p); }
-template<class O> inline const O * cast_to(const void * p) { return cast_to<const O, const void *>(p); }
+template<class O>
+inline const O as_object(const void * p) { return dyn_cast<const O, const TObject>(p); }
+//template<class O>
+//inline O as_object(void * p) { return dyn_cast<O, TObject>(static_cast<TObject *>(p)); }
+//template<class O, class T>
+template<class O> inline O * cast_to(void * p) { return dyn_cast<O, TObject>(static_cast<TObject *>(p)); }
+template<class O> inline const O * cast_to(const void * p) { return dyn_cast<const O, const TObject>(static_cast<const TObject *>(p)); }
+//inline O * cast_to(T p) { return rtti::dyn_cast_or_null<O, TObject>(static_cast<TObject *>(p)); }
+//template<class O> inline O * cast_to(void * p) { return cast_to<O, TObject>(static_cast<TObject *>(p)); }
 template <class T>
 inline TObject * ToObj(const T & a) { return reinterpret_cast<TObject *>(nb::ToSizeT(a)); }
 
@@ -145,7 +146,7 @@ class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
@@ -179,7 +180,7 @@ public:
   virtual ~TList() noexcept override;
 
   template<class T>
-  T * GetAs(int32_t Index) const { return cast_to<T>(GetItem(Index)); }
+  T * GetAs(int32_t Index) const { return cast_to<T>(FList[Index]); }
   void * operator [](int32_t Index) const;
   virtual void * GetItem(int32_t Index) const { return FList[Index]; }
   virtual void * GetItem(int32_t Index) { return FList[Index]; }
@@ -221,9 +222,12 @@ public:
   RWProperty2<bool> OwnsObjects{&FOwnsObjects};
 
   template<class T>
-  T * GetAs(int32_t Index) const { return dyn_cast<T>(GetObj(Index)); }
-  TObject * operator [](int32_t Index) const;
-  TObject * GetObj(int32_t Index) const;
+  T * GetAs(int32_t Index) { return cast_to<T>(Get(Index)); }
+  template<class T>
+  const T * As(int32_t Index) const { return cast_to<T>(GetObj(Index)); }
+  const TObject * operator [](int32_t Index) const;
+  const TObject * GetObj(int32_t Index) const;
+  TObject * Get(int32_t Index) { return cast_to<TObject>(const_cast<TObject *>(GetObj(Index))); }
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Notify(void * Ptr, TListNotification Action) override;

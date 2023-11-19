@@ -274,18 +274,18 @@ TObjectList::~TObjectList()
   TList::Clear();
 }
 
-TObject * TObjectList::operator [](int32_t Index) const
+const TObject * TObjectList::operator [](int32_t Index) const
 {
-  return as_object(TList::operator[](Index));
+  return cast_to<const TObject>(TList::operator[](Index));
 }
 
-TObject * TObjectList::GetObj(int32_t Index) const
+const TObject * TObjectList::GetObj(int32_t Index) const
 {
   if ((Index == nb::NPOS) || (Index >= GetCount()))
   {
     Error(SListIndexError, Index);
   }
-  return as_object(TList::GetItem(Index));
+  return TList::GetAs<TObject>(Index);
 }
 
 void TObjectList::Notify(void * Ptr, TListNotification Action)
@@ -294,7 +294,7 @@ void TObjectList::Notify(void * Ptr, TListNotification Action)
   {
     if (Action == lnDeleted)
     {
-      delete as_object(Ptr);
+      delete cast_to<TObject>(Ptr);
     }
   }
   TList::Notify(Ptr, Action);
