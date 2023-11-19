@@ -1452,7 +1452,7 @@ void TTerminal::ResetConnection()
   FRememberedPasswordTried = false;
   FRememberedTunnelPasswordTried = false;
 
-  if (FDirectoryChangesCache.get() != nullptr)
+  if (FDirectoryChangesCache != nullptr)
   {
 //    delete FDirectoryChangesCache;
     FDirectoryChangesCache.reset();
@@ -1667,7 +1667,7 @@ void TTerminal::InitFileSystem()
     GetLog()->AddSeparator();
     LogEvent("Using WebDAV protocol.");
   }
-  else if (GetSessionData()->GetFSProtocol() == fsS3)
+  else if (FSProtocol == fsS3)
   {
     FFSProtocol = cfsS3;
     FFileSystem = std::make_unique<TS3FileSystem>(this);
@@ -1733,7 +1733,7 @@ void TTerminal::InitFileSystem()
     __finally
     {
       // delete FSecureShell;
-      FSecureShell = nullptr;
+      FSecureShell.reset();
     } end_try__finally
   }
 }
@@ -1941,10 +1941,10 @@ void TTerminal::Reopen(int32_t Params)
     // only peek, we may not be connected at all atm,
     // so make sure we do not try retrieving current directory from the server
     // (particularly with FTP)
-    UnicodeString ACurrentDirectory = PeekCurrentDirectory();
-    if (!ACurrentDirectory.IsEmpty())
+    const UnicodeString CurrentDirectoryPeeked = CurrentDirectory();
+    if (!CurrentDirectoryPeeked.IsEmpty())
     {
-      GetSessionData()->SetRemoteDirectory(ACurrentDirectory);
+      GetSessionData()->SetRemoteDirectory(CurrentDirectoryPeeked);
     }
     if (GetSessionData()->GetFSProtocol() == fsSFTP)
     {
