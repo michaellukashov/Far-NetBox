@@ -2823,13 +2823,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 void TSessionDialog::FtpProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType)
 {
   FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    as_object(nb::ToPtr(ProxyType)));
+    cast_to<TObject>(nb::ToPtr(ProxyType)));
 }
 
 void TSessionDialog::SshProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType)
 {
   SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    as_object(nb::ToPtr(ProxyType)));
+    cast_to<TObject>(nb::ToPtr(ProxyType)));
 }
 
 TSessionDialog::~TSessionDialog() noexcept
@@ -3425,7 +3425,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     DebugAssert(NB_CIPHER_NAME_WARN + CIPHER_COUNT - 1 == NB_CIPHER_NAME_AESGCM);
     for (int32_t Index2 = 0; Index2 < CIPHER_COUNT; ++Index2)
     {
-      TObject * Obj = as_object(nb::ToPtr(SessionData->GetCipher(Index2)));
+      TObject * Obj = cast_to<TObject>(nb::ToPtr(SessionData->GetCipher(Index2)));
       CipherListBox->GetItems()->AddObject(
         GetMsg(NB_CIPHER_NAME_WARN + nb::ToUIntPtr(SessionData->GetCipher(Index2))),
         Obj);
@@ -3449,7 +3449,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       KexListBox->GetItems()->AddObject(
         GetMsg(NB_KEX_NAME_WARN + nb::ToUIntPtr(SessionData->GetKex(Index3))),
-        as_object(nb::ToPtr(SessionData->GetKex(Index3))));
+        cast_to<TObject>(nb::ToPtr(SessionData->GetKex(Index3))));
     }
   }
 
@@ -3764,7 +3764,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (int32_t Index5 = 0; Index5 < CIPHER_COUNT; ++Index5)
     {
-      TObject * Obj = as_object(CipherListBox->GetItems()->GetObj(Index5));
+      TObject * Obj = cast_to<TObject>(CipherListBox->GetItems()->Get(Index5));
       SessionData->SetCipher(Index5, static_cast<TCipher>(nb::ToUIntPtr(Obj)));
     }
 
@@ -4279,7 +4279,7 @@ void TSessionDialog::FillCodePageEdit()
 {
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    as_object(nb::ToPtr(nb::ToUIntPtr(65001))));
+    cast_to<TObject>(nb::ToPtr(nb::ToUIntPtr(65001))));
   CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
@@ -4292,7 +4292,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      as_object(nb::ToPtr(nb::ToUIntPtr(cpInfoEx.CodePage))));
+      cast_to<TObject>(nb::ToPtr(nb::ToUIntPtr(cpInfoEx.CodePage))));
   }
 }
 
