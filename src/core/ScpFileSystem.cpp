@@ -1298,7 +1298,7 @@ void TSCPFileSystem::ChangeFileToken(const UnicodeString & DelimitedName,
   UnicodeString Str;
   if (Token.GetIDValid())
   {
-    Str = nb::ToInt32(Token.GetID());
+    Str = IntToStr(nb::ToInt32(Token.GetID()));
   }
   else if (Token.GetNameValid())
   {
@@ -2021,7 +2021,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     if (LocalFileHandle.Size > 512*1024*1024)
     {
       OperationProgress->SetAsciiTransfer(false);
-      FTerminal->LogEvent(FORMAT(L"Binary transfer mode selected as the file is too large (%s) to be uploaded in Ascii mode using SCP protocol.", IntToStr(LocalFileHandle.Size)));
+      FTerminal->LogEvent(FORMAT(L"Binary transfer mode selected as the file is too large (%s) to be uploaded in Ascii mode using SCP protocol.", Int64ToStr(LocalFileHandle.Size)));
     }
     else
     {
