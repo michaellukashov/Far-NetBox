@@ -1474,8 +1474,8 @@ public:
   {
   }
 
-  short Progress;
-  short Own;
+  uint16_t Progress{0};
+  uint16_t Own{0};
 };
 
 void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
