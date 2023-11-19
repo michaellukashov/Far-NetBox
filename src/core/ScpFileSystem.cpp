@@ -601,7 +601,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
       IsLastLine = true;
       Line.SetLength(Pos - 1);
     }
-    ReturnCode = nb::ToIntPtr(Code);
+    ReturnCode = nb::ToInt32(Code);
   }
   return IsLastLine;
 }
@@ -637,7 +637,7 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
     {
       // UnicodeString Line;
       bool IsLast = false;
-      uint32_t Total = 0;
+      int32_t Total = 0;
       // #55: fixed so, even when last line of command output does not
       // contain CR/LF, we can recognize last line
       do
@@ -2018,7 +2018,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     OperationProgress->SetTransferSize(OperationProgress->GetLocalSize());
     OperationProgress->SetTransferringFile(false);
 
-    if (LocalFileHandle.Size > 512*1024*1024)
+    if (LocalFileHandle.Size > (512*1024*1024))
     {
       OperationProgress->SetAsciiTransfer(false);
       FTerminal->LogEvent(FORMAT(L"Binary transfer mode selected as the file is too large (%s) to be uploaded in Ascii mode using SCP protocol.", Int64ToStr(LocalFileHandle.Size)));
