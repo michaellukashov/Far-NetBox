@@ -316,10 +316,6 @@ public:
   UnicodeString GetName() const { return FName; }
   UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
   bool LogToFile() const { return LogToFileProtected(); }
-  UnicodeString GetLine(int32_t Index) const;
-  TLogLineType GetType(int32_t Index) const;
-  void DeleteUnnecessary();
-  void StateChange();
 
 protected:
   void CloseLogFile();

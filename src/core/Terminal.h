@@ -249,7 +249,7 @@ private:
   TTerminal * FCommandSession{nullptr};
   bool FAutoReadDirectory{true};
   bool FReadingCurrentDirectory{false};
-  bool * FClosedOnCompletion{nullptr};
+  gsl::owner<bool *> FClosedOnCompletion{nullptr};
   TSessionStatus FStatus{ssClosed};
   int32_t FOpening{0};
   RawByteString FRememberedPassword;

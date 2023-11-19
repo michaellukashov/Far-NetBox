@@ -91,7 +91,7 @@ public:
   __property int ActiveSessionIndex = { read = GetActiveSessionIndex, write = SetActiveSessionIndex };
   __property TStrings * SessionList = { read = GetSessionList };
   __property TTerminal * LocalTerminal = { read = FLocalTerminal };
-  __property TManagedTerminal * Sessions[int Index]  = { read = GetSession };
+  // __property TManagedTerminal * Sessions[int Index]  = { read = GetSession };
   __property bool Updating = { read = IsUpdating };
 
 protected:
@@ -135,7 +135,7 @@ private:
   TTerminalQueue * NewQueue(TTerminal * Terminal);
   void SetScpExplorer(TCustomScpExplorerForm * value);
   void UpdateScpExplorer();
-  void UpdateScpExplorer(TManagedTerminal * Session, TTerminalQueue * Queue);
+  // void UpdateScpExplorer(TManagedTerminal * Session, TTerminalQueue * Queue);
   void DoSetActiveSession(TManagedTerminal * value, bool AutoReconnect, bool LastTerminalClosed);
   void SetActiveSession(TManagedTerminal * value);
   TManagedTerminal * GetActiveTerminal();

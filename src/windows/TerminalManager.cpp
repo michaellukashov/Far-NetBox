@@ -438,7 +438,7 @@ bool TTerminalManager::ConnectActiveTerminalImpl(bool Reopen)
     Result = false;
     try
     {
-      DebugAssert(ActiveTerminal);
+      DebugAssert(!ActiveTerminal.empty());
 
       DoConnectTerminal(ActiveTerminal, Reopen, false);
 
@@ -697,7 +697,7 @@ void TTerminalManager::FreeTerminal(TTerminal * Terminal)
     delete Queue;
     delete Terminal;
 
-    DoTerminalListChanged();
+    DoSessionListChanged();
   }
 }
 
@@ -759,6 +759,7 @@ void TTerminalManager::DoSetActiveSession(TManagedTerminal * value, bool AutoRec
     {
       NonVisualDataModule->StartBusy();
     }
+    void * Focus = nullptr;
     try
     {
       // here used to be call to TCustomScpExporer::UpdateSessionData (now UpdateSession)
@@ -768,6 +769,7 @@ void TTerminalManager::DoSetActiveSession(TManagedTerminal * value, bool AutoRec
       FActiveSession = value;
       if (ScpExplorer)
       {
+        Focus = ScpExplorer->SaveFocus();
         if ((ActiveSession != nullptr) &&
             ((ActiveSession->Status == ssOpened) || ActiveSession->Disconnected || ActiveSession->LocalBrowser))
         {
@@ -851,6 +853,10 @@ void TTerminalManager::DoSetActiveSession(TManagedTerminal * value, bool AutoRec
       if (NonVisualDataModule != nullptr)
       {
         NonVisualDataModule->EndBusy();
+      }
+      if ((Focus != nullptr) && DebugAlwaysTrue(ScpExplorer != nullptr))
+      {
+        ScpExplorer->RestoreFocus(Focus);
       }
     }
   }
@@ -1798,7 +1804,7 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
       // the session may not exist anymore
       if (Index >= 0)
       {
-        TManagedTerminal * Terminal = Terminals[Index];
+        TManagedTerminal * Terminal = Sessions[Index];
         // we can hardly have a queue event without explorer
         DebugAssert(ScpExplorer != nullptr);
         if (ScpExplorer != nullptr)

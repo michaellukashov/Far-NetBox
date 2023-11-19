@@ -1265,19 +1265,11 @@ void TTerminal::Init(TSessionData * ASessionData, TConfiguration * AConfiguratio
   FOnProgress = nullptr;
   FOnFinished = nullptr;
   FOnDeleteLocalFile = nullptr;
-  FOnCreateLocalFile = nullptr;
-  FOnGetLocalFileAttributes = nullptr;
-  FOnSetLocalFileAttributes = nullptr;
-  FOnMoveLocalFile = nullptr;
-  FOnRemoveLocalDirectory = nullptr;
-  FOnCreateLocalDirectory = nullptr;
   FOnReadDirectoryProgress = nullptr;
   FOnQueryUser = nullptr;
   FOnPromptUser = nullptr;
   FOnDisplayBanner = nullptr;
   FOnShowExtendedException = nullptr;
-  FOperationProgressPersistence = nullptr;
-  FOperationProgressOnceDoneOperation = odoIdle;
   FOnInformation = nullptr;
   FOnCustomCommand = nullptr;
   FOnClose = nullptr;
@@ -1304,10 +1296,6 @@ void TTerminal::Init(TSessionData * ASessionData, TConfiguration * AConfiguratio
   FNesting = 0;
   FRememberedPasswordKind = TPromptKind(-1);
   FSecondaryTerminals = 0;
-  FCollectFileSystemUsage = false;
-  FSuspendTransaction = false;
-  FOperationProgress = nullptr;
-  FClosedOnCompletion = nullptr;
 }
 
 TTerminal::~TTerminal() noexcept
@@ -1466,7 +1454,7 @@ void TTerminal::ResetConnection()
 
   if (FDirectoryChangesCache.get() != nullptr)
   {
-//    SAFE_DESTROY_EX(TRemoteDirectoryChangesCache, FDirectoryChangesCache);
+//    delete FDirectoryChangesCache;
     FDirectoryChangesCache.reset();
   }
 
@@ -1533,7 +1521,7 @@ void TTerminal::Open()
   {
     throw;
   }
-  catch(Exception &E)
+  catch(Exception & E)
   {
     LogEvent(FORMAT("Got error: \"%s\"", E.Message));
     // any exception while opening session is fatal
@@ -2512,7 +2500,7 @@ bool TTerminal::QueryReopen(Exception * E, int32_t AParams,
         Reopen(AParams);
         FSessionData->SetNumberOfRetries(0);
       }
-      catch (Exception & E2)
+      catch(Exception & E2)
       {
         if (!GetActive())
         {
@@ -3011,7 +2999,7 @@ void TTerminal::SetExceptionOnFail(bool Value)
 
 bool TTerminal::GetExceptionOnFail() const
 {
-  return static_cast<bool>(FExceptionOnFail > 0);
+  return FExceptionOnFail > 0;
 }
 
 void TTerminal::FatalAbort()
@@ -5623,10 +5611,6 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     {
       RollbackAction(*Action, nullptr, &E);
     }
-//    if (GetExceptionOnFail() || isa<EFatal>(&E))
-//    {
-//      throw;
-//    }
     if (ExceptionOnFail || (isa<EFatal>(&E))) throw;
       else HandleExtendedException(&E);
   }
@@ -5653,6 +5637,7 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
     {
       // save the error, otherwise it gets overwritten by call to FileExists
       const int32_t LastError = ::GetLastError();
+      // int32_t FileAttr;
       DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
       if (base::FileExists(ApiPath(AFileName)) &&
         (((LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName))) & (faReadOnly | faHidden)) != 0))
@@ -6509,7 +6494,6 @@ void TTerminal::SynchronizeCollectFile(const UnicodeString & AFileName,
   catch(ESkipFile & E)
   {
     TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
-    nb::used(Suspend);
     if (!HandleException(&E))
     {
       throw;
