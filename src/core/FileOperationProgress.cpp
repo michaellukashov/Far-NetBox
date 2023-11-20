@@ -354,7 +354,7 @@ void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
 
 void TFileOperationProgressType::Succeeded(int32_t Count)
 {
-  if (FPersistence.Statistics != nullptr)
+  if (false) // FPersistence.Statistics != nullptr)
   {
     if (IsTransfer())
     {
