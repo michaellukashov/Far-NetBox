@@ -2745,8 +2745,9 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         FSecureShell->Receive(Packet->GetData(), Length);
         Packet->DataUpdated(Length);
 
-        bool ResponseToNotLoggedRequest = FNotLoggedRequests.find(Packet->MessageNumber()) != FNotLoggedRequests.end();
-        FNotLoggedRequests.erase(Packet->MessageNumber());
+        const bool ResponseToNotLoggedRequest = FNotLoggedRequests.find(Packet->MessageNumber()) != FNotLoggedRequests.end();
+        if (ResponseToNotLoggedRequest)
+          FNotLoggedRequests.erase(Packet->MessageNumber());
         if (FTerminal->Log->Logging && (FTerminal->Configuration->ActualLogProtocol >= 0))
         {
           if (!ResponseToNotLoggedRequest ||
