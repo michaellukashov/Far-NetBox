@@ -791,7 +791,7 @@ protected:
   virtual void SetSize(int64_t NewSize) override;
 
 protected:
-  HANDLE FHandle{};
+  HANDLE FHandle{nullptr};
 };
 
 class TFileStream : public THandleStream
