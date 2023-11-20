@@ -5702,15 +5702,15 @@ void TSFTPFileSystem::Sink(
     if (CopyParam->FOnTransferOut.empty())
     {
       // if not already opened (resume, append...), create new empty file
-      if (!LocalFileHandle)
+      if (!CheckHandle(LocalFileHandle))
       {
         if (!FTerminal->TerminalCreateLocalFile(LocalFileName, OperationProgress,
-               &LocalFileHandle, FLAGSET(AParams, cpNoConfirmation)))
+             &LocalFileHandle, FLAGSET(AParams, cpNoConfirmation)))
         {
           throw ESkipFile();
         }
       }
-      DebugAssert(LocalFileHandle);
+      DebugAssert(CheckHandle(LocalFileHandle));
 
       DeleteLocalFile = true;
 
