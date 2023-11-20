@@ -161,7 +161,7 @@ protected:
 public:
   explicit TRemoteFile(TRemoteFile * ALinkedByFile = nullptr) noexcept;
   explicit TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile = nullptr) noexcept;
-  virtual ~TRemoteFile() noexcept;
+  virtual ~TRemoteFile() noexcept override;
   TRemoteFile * Duplicate(bool Standalone = true) const;
 
   void ShiftTimeInSeconds(int64_t Seconds);
@@ -269,12 +269,12 @@ class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectoryFile); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectoryFile) || TRemoteFile::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectoryFile) || TRemoteFile::is(Kind); }
 public:
   TRemoteDirectoryFile() noexcept;
   explicit TRemoteDirectoryFile(TObjectClassId Kind) noexcept;
+  virtual ~TRemoteDirectoryFile() noexcept override = default;
   void Init();
-  virtual ~TRemoteDirectoryFile() = default;
 };
 
 NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
@@ -282,11 +282,11 @@ class NB_CORE_EXPORT TRemoteParentDirectory : public TRemoteDirectoryFile
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteParentDirectory); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteParentDirectory) || TRemoteDirectoryFile::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteParentDirectory) || TRemoteDirectoryFile::is(Kind); }
 public:
   TRemoteParentDirectory() = delete;
   explicit TRemoteParentDirectory(TTerminal * ATerminal) noexcept;
-  virtual ~TRemoteParentDirectory() = default;
+  virtual ~TRemoteParentDirectory() noexcept override = default;
 };
 
 NB_DEFINE_CLASS_ID(TRemoteFileList);
@@ -299,7 +299,7 @@ class NB_CORE_EXPORT TRemoteFileList : public TObjectList
   friend class TS3FileSystem;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteFileList); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFileList) || TObjectList::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteFileList) || TObjectList::is(Kind); }
 protected:
   UnicodeString FDirectory;
   TDateTime FTimestamp;
@@ -316,7 +316,7 @@ public:
 public:
   TRemoteFileList() noexcept;
   explicit TRemoteFileList(TObjectClassId Kind) noexcept;
-  virtual ~TRemoteFileList() noexcept { TRemoteFileList::Reset(); }
+  virtual ~TRemoteFileList() noexcept override { TRemoteFileList::Reset(); }
   virtual void Reset();
   TRemoteFile * FindFile(const UnicodeString & AFileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
@@ -354,7 +354,7 @@ class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
 
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteDirectory); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectory) || TRemoteFileList::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDirectory) || TRemoteFileList::is(Kind); }
   TRemoteDirectory() = delete;
 
 private:
@@ -399,7 +399,7 @@ class TRemoteDirectoryCache : private TStringList
   NB_DISABLE_COPY(TRemoteDirectoryCache)
 public:
   TRemoteDirectoryCache() noexcept;
-  virtual ~TRemoteDirectoryCache() noexcept;
+  virtual ~TRemoteDirectoryCache() noexcept override;
   bool HasFileList(const UnicodeString & Directory) const;
   bool HasNewerFileList(const UnicodeString & Directory, const TDateTime & Timestamp) const;
   bool GetFileList(const UnicodeString & Directory,
@@ -426,7 +426,7 @@ class TRemoteDirectoryChangesCache : private TStringList
   TRemoteDirectoryChangesCache() = delete;
 public:
   explicit TRemoteDirectoryChangesCache(int32_t MaxSize) noexcept;
-  virtual ~TRemoteDirectoryChangesCache() = default;
+  virtual ~TRemoteDirectoryChangesCache() noexcept override = default;
 
   void AddDirectoryChange(const UnicodeString & SourceDir,
     const UnicodeString & Change, const UnicodeString & TargetDir);
@@ -595,7 +595,7 @@ class TRemoteProperties : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteProperties); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteProperties) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteProperties) || TObject::is(Kind); }
 public:
   TValidProperties<TValidProperty> Valid;
   TRights Rights;
@@ -635,7 +635,7 @@ class NB_CORE_EXPORT TChecklistItem : public TObject
   NB_DISABLE_COPY(TChecklistItem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TChecklistItem); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TChecklistItem) || TObject::is(Kind); }
 public:
 
   struct NB_CORE_EXPORT TFileInfo : public TObject
