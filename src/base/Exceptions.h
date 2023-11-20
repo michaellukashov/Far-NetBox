@@ -277,7 +277,7 @@ inline void Abort()
 
 inline void Error(int32_t Id, int32_t ErrorId)
 {
-  UnicodeString Msg = FMTLOAD(Id, ErrorId);
+  const UnicodeString Msg = FMTLOAD(Id, ErrorId);
   throw ExtException(static_cast<Exception *>(nullptr), Msg);
 }
 
