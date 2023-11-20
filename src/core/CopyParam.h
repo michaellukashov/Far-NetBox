@@ -49,7 +49,7 @@ friend class TFTPFileSystem;
 friend class TSFTPFileSystem;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamType); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamType) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamType) || TObject::is(Kind); }
 private:
   TFileMasks FAsciiFileMask;
   TFileNameCase FFileNameCase{};

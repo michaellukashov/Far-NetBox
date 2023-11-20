@@ -135,7 +135,7 @@ class NB_CORE_EXPORT TSessionData : public TNamedObject
   NB_DISABLE_COPY(TSessionData)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
   friend class TTerminal;
   friend class TSecureShell;
   friend class TSessionLog;

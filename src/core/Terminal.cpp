@@ -77,7 +77,7 @@ struct TMoveFileParams : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMoveFileParams) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMoveFileParams) || TObject::is(Kind); }
 public:
   TMoveFileParams() : TObject(OBJECT_CLASS_TMoveFileParams) {}
   UnicodeString Target;
@@ -90,7 +90,7 @@ struct TFilesFindParams : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFilesFindParams) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFilesFindParams) || TObject::is(Kind); }
 public:
   TFilesFindParams() : TObject(OBJECT_CLASS_TFilesFindParams) {}
 
@@ -158,7 +158,7 @@ class TTunnelThread : public TSimpleThread
   NB_DISABLE_COPY(TTunnelThread)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTunnelThread); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTunnelThread) || TSimpleThread::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTunnelThread) || TSimpleThread::is(Kind); }
 public:
   TTunnelThread() = delete;
   explicit TTunnelThread(TSecureShell * SecureShell) noexcept;
@@ -6100,7 +6100,7 @@ struct TSynchronizeFileData : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeFileData); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeFileData) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeFileData) || TObject::is(Kind); }
 public:
   TSynchronizeFileData() :
     TObject(OBJECT_CLASS_TSynchronizeFileData)
@@ -6124,7 +6124,7 @@ struct TSynchronizeData : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeData); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeData) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSynchronizeData) || TObject::is(Kind); }
 public:
   TSynchronizeData() : TObject(OBJECT_CLASS_TSynchronizeData) {}
 

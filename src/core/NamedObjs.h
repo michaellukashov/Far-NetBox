@@ -12,7 +12,7 @@ class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TNamedObject); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObject) || TPersistent::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObject) || TPersistent::is(Kind); }
 public:
   __property UnicodeString Name = { read = FName, write = SetName };
   RWProperty<UnicodeString> Name{nb::bind(&TNamedObject::GetName, this), nb::bind(&TNamedObject::SetName, this)};
@@ -43,7 +43,7 @@ class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
   virtual int32_t GetCount() const override;
   int32_t GetCountIncludingHidden() const;

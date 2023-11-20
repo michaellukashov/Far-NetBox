@@ -120,7 +120,7 @@ class TSessionActionRecord : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionActionRecord); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionActionRecord) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionActionRecord) || TObject::is(Kind); }
 public:
   explicit TSessionActionRecord(TActionLog * Log, TLogAction Action) :
     TObject(OBJECT_CLASS_TSessionActionRecord),

@@ -14,7 +14,7 @@ class NB_CORE_EXPORT TSCPFileSystem final : public TCustomFileSystem
   NB_DISABLE_COPY(TSCPFileSystem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSCPFileSystem); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSCPFileSystem) || TCustomFileSystem::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSCPFileSystem) || TCustomFileSystem::is(Kind); }
 public:
   TSCPFileSystem() = delete;
   explicit TSCPFileSystem(TTerminal * ATerminal) noexcept;

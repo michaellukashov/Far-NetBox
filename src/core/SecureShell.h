@@ -35,7 +35,7 @@ class TSecureShell : public TObject
   NB_DISABLE_COPY(TSecureShell)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecureShell) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecureShell) || TObject::is(Kind); }
 
   mutable gsl::owner<const uint32_t *> FMinPacketSize{nullptr};
   mutable gsl::owner<const uint32_t *> FMaxPacketSize{nullptr};

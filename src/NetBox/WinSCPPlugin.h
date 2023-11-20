@@ -14,11 +14,11 @@ class TWinSCPPlugin : public TCustomFarPlugin
   friend class TWinSCPFileSystem;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWinSCPPlugin); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPPlugin) || TCustomFarPlugin::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPPlugin) || TCustomFarPlugin::is(Kind); }
   TWinSCPPlugin() = delete;
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst) noexcept;
-  virtual ~TWinSCPPlugin() noexcept;
+  virtual ~TWinSCPPlugin() noexcept override;
   virtual VersionInfo GetMinFarVersion() const override;
 
   virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0) override;

@@ -170,7 +170,7 @@ class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
 public:
   TList() : TPersistent(OBJECT_CLASS_TList) {}
   explicit TList(TObjectClassId Kind) : TPersistent(Kind) {}
@@ -317,7 +317,7 @@ class NB_CORE_EXPORT TObjectList : public TList<TObject>
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 public:
   TObjectList();
   explicit TObjectList(TObjectClassId Kind);
@@ -354,7 +354,7 @@ class NB_CORE_EXPORT TStrings : public TObjectList
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStrings); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
 public:
   TStrings() noexcept;
   explicit TStrings(TObjectClassId Kind) noexcept;
@@ -473,7 +473,7 @@ class NB_CORE_EXPORT TStringList : public TStrings
   friend int32_t StringListCompareStrings(TStringList * List, int32_t Index1, int32_t Index2);
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
   explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
   virtual ~TStringList() noexcept override = default;

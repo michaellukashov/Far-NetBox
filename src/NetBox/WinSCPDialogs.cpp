@@ -127,7 +127,7 @@ class TTabButton : public TFarButton
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTabButton); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTabButton) || TFarButton::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTabButton) || TFarButton::is(Kind); }
 public:
   explicit TTabButton(TTabbedDialog * Dialog);
 
@@ -4323,7 +4323,7 @@ class TRightsContainer : public TFarDialogContainer
   NB_DISABLE_COPY(TRightsContainer)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRightsContainer); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRightsContainer) || TFarDialogContainer::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRightsContainer) || TFarDialogContainer::is(Kind); }
 public:
   explicit TRightsContainer(TFarDialog * ADialog, bool AAnyDirectories,
     bool ShowButtons, bool ShowSpecials,
@@ -4982,7 +4982,7 @@ class TCopyParamsContainer : public TFarDialogContainer
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamsContainer); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamsContainer) || TFarDialogContainer::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamsContainer) || TFarDialogContainer::is(Kind); }
 public:
   explicit TCopyParamsContainer(TFarDialog * ADialog,
     int32_t Options, int32_t CopyParamAttrs) noexcept;
@@ -5945,7 +5945,7 @@ class TLabelList : public TList<>
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLabelList); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLabelList) || TList::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLabelList) || TList::is(Kind); }
 public:
   explicit TLabelList() noexcept :
     TList<>(OBJECT_CLASS_TLabelList),

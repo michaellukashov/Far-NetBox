@@ -87,7 +87,7 @@ class TWinSCPFileSystem : public TCustomFarFileSystem
   NB_DISABLE_COPY(TWinSCPFileSystem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWinSCPFileSystem); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPFileSystem) || TCustomFarFileSystem::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPFileSystem) || TCustomFarFileSystem::is(Kind); }
 public:
   explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin) noexcept;
   virtual ~TWinSCPFileSystem() noexcept override;

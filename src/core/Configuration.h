@@ -87,7 +87,7 @@ class NB_CORE_EXPORT TConfiguration : public TObject
   friend class TSFTPFileSystem;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TConfiguration); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConfiguration) || TObject::is(Kind); }
 private:
   bool FDontSave{false};
   bool FForceSave{false};

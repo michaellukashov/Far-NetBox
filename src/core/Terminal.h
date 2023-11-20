@@ -174,7 +174,7 @@ class NB_CORE_EXPORT TTerminal : /*public TObject,*/ public TSessionUI
   NB_DISABLE_COPY(TTerminal)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TTerminal); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminal) || TSessionUI::is(Kind); }
+  virtual   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminal) || TSessionUI::is(Kind); }
 public:
   // TScript::SynchronizeProc relies on the order
   enum TSynchronizeMode { smRemote, smLocal, smBoth };
@@ -877,7 +877,7 @@ class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
   NB_DISABLE_COPY(TSecondaryTerminal)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSecondaryTerminal); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecondaryTerminal) || TTerminal::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSecondaryTerminal) || TTerminal::is(Kind); }
 public:
   TSecondaryTerminal() noexcept : TTerminal(OBJECT_CLASS_TSecondaryTerminal) {}
   explicit TSecondaryTerminal(TObjectClassId Kind) noexcept;
@@ -932,7 +932,7 @@ struct NB_CORE_EXPORT TCustomCommandParams : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomCommandParams); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomCommandParams) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomCommandParams) || TObject::is(Kind); }
 public:
   TCustomCommandParams() : TObject(OBJECT_CLASS_TCustomCommandParams) {}
   UnicodeString Command;
@@ -958,7 +958,7 @@ friend class TTerminal;
 
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCalculateSizeParams); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCalculateSizeParams) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCalculateSizeParams) || TObject::is(Kind); }
 public:
   TCalculateSizeParams() noexcept;
   int32_t Params{0};
@@ -980,7 +980,7 @@ struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMakeLocalFileListParams); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMakeLocalFileListParams) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMakeLocalFileListParams) || TObject::is(Kind); }
 public:
   TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams) {}
   TStrings * FileList{nullptr};
@@ -1041,7 +1041,7 @@ class TCollectedFileList : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCollectedFileList); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCollectedFileList) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCollectedFileList) || TObject::is(Kind); }
 public:
   TCollectedFileList() noexcept;
   virtual ~TCollectedFileList() noexcept override; 

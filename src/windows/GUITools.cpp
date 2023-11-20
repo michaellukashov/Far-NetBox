@@ -167,7 +167,7 @@ class TPuttyCleanupThread : public TSimpleThread
 {
 public:
     static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyCleanupThread); }
-    bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TObject::is(Kind); }
+    virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TObject::is(Kind); }
 public:
   TPuttyCleanupThread() noexcept:
     TSimpleThread(OBJECT_CLASS_TPuttyCleanupThread)
@@ -307,7 +307,7 @@ class TPuttyPasswordThread : public TSimpleThread
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyPasswordThread); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyPasswordThread) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyPasswordThread) || TObject::is(Kind); }
 public:
   TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName);
   virtual ~TPuttyPasswordThread();

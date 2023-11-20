@@ -13,11 +13,11 @@ class TFarConfiguration : public TGUIConfiguration
   NB_DISABLE_COPY(TFarConfiguration)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarConfiguration); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
 public:
   TFarConfiguration() = delete;
   explicit TFarConfiguration(TCustomFarPlugin * APlugin) noexcept;
-  virtual ~TFarConfiguration() noexcept;
+  virtual ~TFarConfiguration() noexcept override;
 
   virtual void Load();
   virtual void Save(bool All, bool Explicit);
