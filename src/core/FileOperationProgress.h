@@ -45,7 +45,7 @@ public:
   public:
     TPersistence() noexcept;
     TPersistence(const TPersistence &) = default;
-    TPersistence& operator=(const TPersistence &) = default;
+    TPersistence & operator=(const TPersistence &) = default;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
     TFileOperationStatistics * Statistics{FStatistics};
 
@@ -205,7 +205,7 @@ public:
   explicit TFileOperationProgressType(
     TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
     TFileOperationProgressType * Parent = nullptr) noexcept;
-  virtual ~TFileOperationProgressType() noexcept;
+  virtual ~TFileOperationProgressType() noexcept override;
   void Assign(const TFileOperationProgressType & Other);
   void AssignButKeepSuspendState(const TFileOperationProgressType & Other);
   void AddLocallyUsed(int64_t ASize);
