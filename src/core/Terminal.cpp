@@ -6808,7 +6808,7 @@ void TTerminal::SynchronizeApply(
       if (ChecklistItem->Checked && !TSynchronizeChecklist::IsItemSizeIrrelevant(ChecklistItem->Action) &&
           !ChecklistItem->HasSize() && DebugAlwaysTrue(ChecklistItem->IsDirectory))
       {
-        Items.push_back(ChecklistItem);
+        Items.Add((TChecklistItem *)ChecklistItem);
       }
     }
 
@@ -6945,7 +6945,7 @@ void TTerminal::SynchronizeChecklistCalculateSize(
   std::unique_ptr<TStrings> RemoteFileList(std::make_unique<TStringList>());
   std::unique_ptr<TStrings> LocalFileList(std::make_unique<TStringList>());
 
-  for (size_t Index = 0; Index < Items.size(); Index++)
+  for (int32_t Index = 0; Index < Items.Count(); Index++)
   {
     const TChecklistItem * ChecklistItem = Items[Index];
     if (ChecklistItem->IsDirectory)
@@ -6993,7 +6993,7 @@ void TTerminal::SynchronizeChecklistCalculateSize(
     size_t LocalIndex = 0;
     size_t RemoteIndex = 0;
 
-    for (size_t Index = 0; Index < Items.size(); Index++)
+    for (int32_t Index = 0; Index < Items.Count(); Index++)
     {
       const TChecklistItem * ChecklistItem = Items[Index];
       if (ChecklistItem->IsDirectory)

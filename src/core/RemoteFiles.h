@@ -723,7 +723,7 @@ public:
   };
 #endif // #if 0
 
-  using TItemList = nb::vector_t<const TChecklistItem *>;
+  using TItemList = TList<TChecklistItem>;
 
   TSynchronizeChecklist() noexcept;
   ~TSynchronizeChecklist() noexcept;
@@ -755,7 +755,7 @@ public:
   const TChecklistItem * GetItem(int32_t Index) const;
 
 private:
-  std::unique_ptr<TList> FList;
+  std::unique_ptr<TItemList> FList;
 
   static int32_t Compare(const void * AItem1, const void * AItem2);
 };

@@ -155,8 +155,8 @@ public:
 
 private:
   static UnicodeString FInvalidChars;
-  std::unique_ptr<TList> FRules;
-  std::unique_ptr<TList> FCopyParams;
+  std::unique_ptr<TList<>> FRules;
+  std::unique_ptr<TList<>> FCopyParams;
   std::unique_ptr<TStrings> FNames;
   mutable std::unique_ptr<TStrings> FNameList;
   bool FModified{false};

@@ -3115,15 +3115,15 @@ int64_t TChecklistItem::GetSize(TChecklistAction AAction) const
 
 
 TSynchronizeChecklist::TSynchronizeChecklist() noexcept :
-  FList(std::make_unique<TList>())
+  FList(std::make_unique<TItemList>())
 {
 }
 
 TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
 {
-  for (int32_t Index = 0; Index < FList->Count; Index++)
+  for (int32_t Index = 0; Index < FList->Count(); Index++)
   {
-    TChecklistItem * Item = FList->GetAs<TChecklistItem>(Index);
+    TChecklistItem * Item = FList->GetItem(Index);
     SAFE_DESTROY(Item);
   }
 //  delete FList;

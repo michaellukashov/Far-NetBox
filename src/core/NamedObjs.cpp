@@ -128,7 +128,7 @@ int32_t TNamedObjectList::Add(TObject * AObject)
   return Result;
 }
 
-void TNamedObjectList::Notify(void * Ptr, TListNotification Action)
+void TNamedObjectList::Notify(TObject * Ptr, TListNotification Action)
 {
   if (Action == lnDeleted)
   {

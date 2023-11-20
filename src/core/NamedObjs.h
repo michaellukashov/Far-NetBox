@@ -45,9 +45,9 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TNamedObjectList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
-  int32_t GetCount() const;
+  virtual int32_t GetCount() const override;
   int32_t GetCountIncludingHidden() const;
-  virtual void Notify(void * Ptr, TListNotification Action) override;
+  virtual void Notify(TObject * Ptr, TListNotification Action) override;
 protected:
   int32_t FHiddenCount{0};
   bool FAutoSort{true};

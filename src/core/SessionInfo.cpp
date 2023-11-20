@@ -1545,7 +1545,7 @@ TActionLog::TActionLog(TSessionUI * UI, TDateTime Started, TSessionData * Sessio
   FLogger(nullptr),
   FUI(UI),
   FSessionData(SessionData),
-  FPendingActions(std::make_unique<TList>()),
+  FPendingActions(std::make_unique<TList<>>()),
   FIndent(L"  "),
   FFailed(false),
   FClosed(false),

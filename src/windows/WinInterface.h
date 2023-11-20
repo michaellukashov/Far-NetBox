@@ -267,13 +267,13 @@ bool DoCreateDirectoryDialog(UnicodeString & Directory,
   TRemoteProperties * Properties, int32_t AllowedChanges, bool & SaveSettings);
 
 // forms\ImportSessions.cpp
-bool DoImportSessionsDialog(TList * Imported);
+bool DoImportSessionsDialog(TList<> * Imported);
 
 // forms\License.cpp
 enum TLicense { lcNoLicense = -1, lcWinScp, lcExpat };
 void DoLicenseDialog(TLicense License);
 
-bool DoLoginDialog(TList * DataList); //, TForm * LinkedForm);
+bool DoLoginDialog(TList<> * DataList); //, TForm * LinkedForm);
 
   // forms\SiteAdvanced.cpp
 bool DoSiteAdvancedDialog(TSessionData * SessionData);
