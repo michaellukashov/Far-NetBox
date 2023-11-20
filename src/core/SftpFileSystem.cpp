@@ -3961,7 +3961,7 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & AFileName,
     SSH_FILEXFER_ATTR_ACCESSTIME | SSH_FILEXFER_ATTR_MODIFYTIME |
     SSH_FILEXFER_ATTR_OWNERGROUP;
   TSFTPPacket Packet(Type, FCodePage);
-  UnicodeString FullName = LocalCanonify(AFileName);
+  const UnicodeString FullName = LocalCanonify(AFileName);
   AddPathString(Packet, FullName);
   SendCustomReadFile(&Packet, &Packet, Flags);
   ReceiveResponse(&Packet, &Packet, SSH_FXP_ATTRS, AllowStatus);
