@@ -1769,7 +1769,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return const_cast<TRemoteFile *>(As<TRemoteFile>(Index));
+  return static_cast<TRemoteFile *>(GetItem(Index));
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
