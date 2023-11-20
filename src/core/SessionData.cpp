@@ -1746,7 +1746,7 @@ UnicodeString CutOpensshToken(UnicodeString & S)
   int32_t P = 1;
   while (P <= S.Length())
   {
-    wchar_t C = S[P];
+    const wchar_t C = S[P];
     if ((C == L'\\') &&
         (P < S.Length()) &&
         ((S[P + 1] == L'\'') ||
@@ -2021,7 +2021,7 @@ static UnicodeString ReadPasswordFromFile(const UnicodeString & FileName)
   if (!FileName.IsEmpty())
   {
     TGuard Guard(*PasswordFilesCacheSection.get());
-    TPasswordFilesCache::const_iterator I = PasswordFilesCache.find(FileName);
+    const TPasswordFilesCache::const_iterator I = PasswordFilesCache.find(FileName);
     if (I != PasswordFilesCache.end())
     {
       Result = I->second;
@@ -2157,7 +2157,7 @@ void TSessionData::Remove()
 
 void TSessionData::CacheHostKeyIfNotCached()
 {
-  UnicodeString KeyType = KeyTypeFromFingerprint(GetHostKey());
+  const UnicodeString KeyType = KeyTypeFromFingerprint(GetHostKey());
 
   // Should allow importing to INI file as ImportHostKeys
   UnicodeString TargetKey = GetConfiguration()->GetRegistryStorageKey() + L"\\" + GetConfiguration()->GetSshHostKeysSubKey();
@@ -2190,7 +2190,7 @@ inline void MoveStr(UnicodeString & Source, UnicodeString * Dest, int32_t Count)
 bool TSessionData::DoIsProtocolUrl(
   const UnicodeString & Url, const UnicodeString & Protocol, int32_t & ProtocolLen)
 {
-  bool Result = ::SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
+  const bool Result = ::SameText(Url.SubString(1, Protocol.Length() + 1), Protocol + L":");
   if (Result)
   {
     ProtocolLen = Protocol.Length() + 1;
@@ -2238,11 +2238,11 @@ bool TSessionData::MaskPasswordInOptionParameter(const UnicodeString & AOption, 
   bool Result = false;
   if (SameText(AOption, RawSettingsOption))
   {
-    int32_t P = AParam.Pos(L"=");
+    const int32_t P = AParam.Pos(L"=");
     if (P > 0)
     {
       // TStrings.IndexOfName does not trim
-      UnicodeString Key = AParam.SubString(1, P - 1);
+      const UnicodeString Key = AParam.SubString(1, P - 1);
 
       if (SameText(Key, L"ProxyPassword") ||
           SameText(Key, L"ProxyPasswordEnc") ||
