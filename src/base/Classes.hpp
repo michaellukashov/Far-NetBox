@@ -169,7 +169,7 @@ enum TListNotification
   lnDeleted,
 };
 
-using CompareFunc = int32_t (const void * Item1, const void * Item2);
+using CompareFunc = int32_t (const TObject * Item1, const TObject * Item2);
 
 NB_DEFINE_CLASS_ID(TList);
 template<class O = TObject>
@@ -444,7 +444,7 @@ void QuickSort(nb::vector_t<O *> & SortList, int32_t L, int32_t R,
   {
     Index = L;
     int32_t J = R;
-    const void * P = SortList[(L + R) >> 1];
+    const TObject * P = SortList[(L + R) >> 1];
     do
     {
       while (SCompare(SortList[Index], P) < 0)

@@ -8,7 +8,7 @@
 
 __removed #pragma package(smart_init)
 
-static int32_t NamedObjectSortProc(const void * Item1, const void * Item2)
+int32_t NamedObjectSortProc(const TObject * Item1, const TObject * Item2)
 {
   return cast_to<TNamedObject>(Item1)->Compare(cast_to<TNamedObject>(Item2));
 }

@@ -70,5 +70,5 @@ public:
   __property int32_t CountIncludingHidden = { read = GetCountIncludingHidden };
 };
 
-int32_t NamedObjectSortProc(const void * Item1, const void * Item2);
+int32_t NamedObjectSortProc(const TObject * Item1, const TObject * Item2);
 
