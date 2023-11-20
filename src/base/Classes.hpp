@@ -159,6 +159,9 @@ private:
   void AssignError(const TPersistent * Source);
 };
 
+void Error(int32_t Id, int32_t ErrorId);
+void ThrowNotImplemented(int32_t ErrorId);
+
 enum TListNotification
 {
   lnAdded,
@@ -169,47 +172,155 @@ enum TListNotification
 using CompareFunc = int32_t (const void * Item1, const void * Item2);
 
 NB_DEFINE_CLASS_ID(TList);
+template<class O = TObject>
 class NB_CORE_EXPORT TList : public TPersistent
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
   bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
 public:
-  TList();
-  explicit TList(TObjectClassId Kind);
-  virtual ~TList() noexcept override;
+  TList() : TPersistent(OBJECT_CLASS_TList) {}
+  explicit TList(TObjectClassId Kind) : TPersistent(Kind) {}
+  virtual ~TList() noexcept override { TList::Clear(); }
 
   template<class T>
   T * GetAs(int32_t Index) const { return cast_to<T>(FList[Index]); }
-  void * operator [](int32_t Index) const;
-  virtual void * GetItem(int32_t Index) const { return FList[Index]; }
-  virtual void * GetItem(int32_t Index) { return FList[Index]; }
-  void SetItem(int32_t Index, void * Item);
-  int32_t Add(void * Value);
-  void * Extract(void * Item);
-  int32_t Remove(void * Item);
-  virtual void Move(int32_t CurIndex, int32_t NewIndex);
-  virtual void Delete(int32_t Index);
-  void Insert(int32_t Index, void * Item);
-  int32_t IndexOf(const void * Value) const;
-  virtual void Clear();
-  void Sort(CompareFunc Func);
-  virtual void Notify(void * Ptr, TListNotification Action);
-  virtual void Sort();
+  virtual const O * operator [](int32_t Index) const { return FList[Index]; }
+  virtual O * GetItem(int32_t Index) const { return FList[Index]; }
+  virtual O * GetItem(int32_t Index) { return FList[Index]; }
+  void SetItem(int32_t Index, O * Item)
+  {
+    if ((Index == nb::NPOS) || (Index >= nb::ToInt32(FList.size())))
+    {
+      Error(SListIndexError, Index);
+    }
+    FList[Index] = Item;
+  }
+  int32_t Add(O * Value)
+  {
+    const int32_t Result = nb::ToInt32(FList.size());
+    FList.push_back(Value);
+    return Result;
+  }
 
-  int32_t GetCount() const;
-  void SetCount(int32_t NewCount);
+  O * Extract(O * Item)
+  {
+    if (Remove(Item) != nb::NPOS)
+    {
+      return Item;
+    }
+    return nullptr;
+  }
+  int32_t Remove(O * Item)
+  {
+    const int32_t Result = IndexOf(Item);
+    if (Result != nb::NPOS)
+    {
+      Delete(Result);
+    }
+    return Result;
+  }
+
+  virtual void Move(int32_t CurIndex, int32_t NewIndex)
+  {
+    if (CurIndex != NewIndex)
+    {
+      if ((NewIndex == nb::NPOS) || (NewIndex >= nb::ToInt32(FList.size())))
+      {
+        Error(SListIndexError, NewIndex);
+      }
+      O * Item = GetItem(CurIndex);
+      FList[CurIndex] = nullptr;
+      Delete(CurIndex);
+      Insert(NewIndex, nullptr);
+      FList[NewIndex] = Item;
+    }
+  }
+
+  virtual void Delete(int32_t Index)
+  {
+    if ((Index == nb::NPOS) || (Index >= nb::ToInt32(FList.size())))
+    {
+      Error(SListIndexError, Index);
+    }
+    O * Temp = GetItem(Index);
+    FList.erase(FList.begin() + Index);
+    if (Temp != nullptr)
+    {
+      Notify(Temp, lnDeleted);
+    }
+  }
+
+  void Insert(int32_t Index, O * Item)
+  {
+    if ((Index == nb::NPOS) || (Index > nb::ToInt32(FList.size())))
+    {
+      Error(SListIndexError, Index);
+    }
+    if (Index <= nb::ToInt32(FList.size()))
+    {
+      FList.insert(Index, 1, Item);
+    }
+    if (Item != nullptr)
+    {
+      Notify(Item, lnAdded);
+    }
+  }
+
+  int32_t IndexOf(const O * Value) const
+  {
+    int32_t Result = 0;
+    while ((Result < nb::ToInt32(FList.size())) && (FList[Result] != Value))
+    {
+      Result++;
+    }
+    if (Result == nb::ToInt32(FList.size()))
+    {
+      Result = nb::NPOS;
+    }
+    return Result;
+  }
+
+  virtual void Clear() { SetCount(0); }
+  void Sort(CompareFunc Func)
+  {
+    if (GetCount() > 1)
+    {
+      QuickSort(FList, 0, GetCount() - 1, Func);
+    }
+  }
+
+  virtual void Notify(O * Ptr, TListNotification Action) {}
+  virtual void Sort() { ThrowNotImplemented(15); }
+
+  virtual int32_t GetCount() const { return nb::ToInt32(FList.size()); }
+  void SetCount(int32_t NewCount)
+  {
+    if (NewCount == nb::NPOS)
+    {
+      Error(SListCountError, NewCount);
+    }
+    if (NewCount <= nb::ToInt32(FList.size()))
+    {
+      const int32_t sz = nb::ToInt32(FList.size());
+      for (int32_t Index = sz - 1; (Index != nb::NPOS) && (Index >= NewCount); Index--)
+      {
+        Delete(Index);
+      }
+    }
+    FList.resize(NewCount);
+  }
 
   ROProperty<int32_t> Count{nb::bind(&TList::GetCount, this)};
-  ROIndexedProperty<void *> Items{nb::bind(&TList::GetItems, this)};
+  ROIndexedProperty<O *> Items{nb::bind(&TList::GetItems, this)};
 
 private:
-  nb::vector_t<void *> FList;
-  void * GetItems(int32_t Index) const { return FList[Index]; }
+  nb::vector_t<O *> FList;
+  O * GetItems(int32_t Index) const { return FList[Index]; }
 };
 
 NB_DEFINE_CLASS_ID(TObjectList);
-class NB_CORE_EXPORT TObjectList : public TList
+class NB_CORE_EXPORT TObjectList : public TList<TObject>
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
@@ -225,12 +336,12 @@ public:
   T * GetAs(int32_t Index) { return cast_to<T>(Get(Index)); }
   template<class T>
   const T * As(int32_t Index) const { return cast_to<T>(GetObj(Index)); }
-  const TObject * operator [](int32_t Index) const;
+  virtual const TObject * operator [](int32_t Index) const override;
   const TObject * GetObj(int32_t Index) const;
   TObject * Get(int32_t Index) { return cast_to<TObject>(const_cast<TObject *>(GetObj(Index))); }
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
-  virtual void Notify(void * Ptr, TListNotification Action) override;
+  virtual void Notify(TObject * Ptr, TListNotification Action) override;
 
 private:
   bool FOwnsObjects{true};
@@ -323,6 +434,42 @@ protected:
   mutable wchar_t FQuoteChar{};
   int32_t FUpdateCount{0};
 };
+
+template<typename O = TObject>
+void QuickSort(nb::vector_t<O *> & SortList, int32_t L, int32_t R,
+  CompareFunc SCompare)
+{
+  int32_t Index;
+  do
+  {
+    Index = L;
+    int32_t J = R;
+    const void * P = SortList[(L + R) >> 1];
+    do
+    {
+      while (SCompare(SortList[Index], P) < 0)
+        Index++;
+      while (SCompare(SortList[J], P) > 0)
+        J--;
+      if (Index <= J)
+      {
+        if (Index != J)
+        {
+          O * T = SortList[Index];
+          SortList[Index] = SortList[J];
+          SortList[J] = T;
+        }
+        Index--;
+        J--;
+      }
+    }
+    while (Index > J);
+    if (L < J)
+      QuickSort(SortList, L, J, SCompare);
+    L = Index;
+  }
+  while (Index >= R);
+}
 
 class TStringList;
 typedef int32_t (TStringListSortCompare)(TStringList * List, int32_t Index1, int32_t Index2);

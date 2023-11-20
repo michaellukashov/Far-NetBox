@@ -63,203 +63,6 @@ void TPersistent::AssignError(const TPersistent * Source)
   throw Exception("Cannot assign");
 }
 
-TList::TList() :
-  TPersistent(OBJECT_CLASS_TList)
-{
-}
-
-TList::TList(TObjectClassId Kind) :
-  TPersistent(Kind)
-{
-}
-
-TList::~TList() noexcept
-{
-  TList::Clear();
-}
-
-int32_t TList::GetCount() const
-{
-  return nb::ToInt32(FList.size());
-}
-
-void TList::SetCount(int32_t NewCount)
-{
-  if (NewCount == nb::NPOS)
-  {
-    Error(SListCountError, NewCount);
-  }
-  if (NewCount <= nb::ToInt32(FList.size()))
-  {
-    const int32_t sz = nb::ToInt32(FList.size());
-    for (int32_t Index = sz - 1; (Index != nb::NPOS) && (Index >= NewCount); Index--)
-    {
-      Delete(Index);
-    }
-  }
-  FList.resize(NewCount);
-}
-
-void * TList::operator [](int32_t Index) const
-{
-  return FList[Index];
-}
-
-void TList::SetItem(int32_t Index, void * Item)
-{
-  if ((Index == nb::NPOS) || (Index >= nb::ToInt32(FList.size())))
-  {
-    Error(SListIndexError, Index);
-  }
-  FList[Index] = Item;
-}
-
-int32_t TList::Add(void * Value)
-{
-  const int32_t Result = nb::ToInt32(FList.size());
-  FList.push_back(Value);
-  return Result;
-}
-
-void * TList::Extract(void * Item)
-{
-  if (Remove(Item) != nb::NPOS)
-  {
-    return Item;
-  }
-  return nullptr;
-}
-
-int32_t TList::Remove(void * Item)
-{
-  const int32_t Result = IndexOf(Item);
-  if (Result != nb::NPOS)
-  {
-    Delete(Result);
-  }
-  return Result;
-}
-
-void TList::Move(int32_t CurIndex, int32_t NewIndex)
-{
-  if (CurIndex != NewIndex)
-  {
-    if ((NewIndex == nb::NPOS) || (NewIndex >= nb::ToInt32(FList.size())))
-    {
-      Error(SListIndexError, NewIndex);
-    }
-    void * Item = GetItem(CurIndex);
-    FList[CurIndex] = nullptr;
-    Delete(CurIndex);
-    Insert(NewIndex, nullptr);
-    FList[NewIndex] = Item;
-  }
-}
-
-void TList::Delete(int32_t Index)
-{
-  if ((Index == nb::NPOS) || (Index >= nb::ToInt32(FList.size())))
-  {
-    Error(SListIndexError, Index);
-  }
-  void * Temp = GetItem(Index);
-  FList.erase(FList.begin() + Index);
-  if (Temp != nullptr)
-  {
-    Notify(Temp, lnDeleted);
-  }
-}
-
-void TList::Insert(int32_t Index, void * Item)
-{
-  if ((Index == nb::NPOS) || (Index > nb::ToInt32(FList.size())))
-  {
-    Error(SListIndexError, Index);
-  }
-  if (Index <= nb::ToInt32(FList.size()))
-  {
-    FList.insert(Index, 1, Item);
-  }
-  if (Item != nullptr)
-  {
-    Notify(Item, lnAdded);
-  }
-}
-
-int32_t TList::IndexOf(const void * Value) const
-{
-  int32_t Result = 0;
-  while ((Result < nb::ToInt32(FList.size())) && (FList[Result] != Value))
-  {
-    Result++;
-  }
-  if (Result == nb::ToInt32(FList.size()))
-  {
-    Result = nb::NPOS;
-  }
-  return Result;
-}
-
-void TList::Clear()
-{
-  SetCount(0);
-}
-
-void QuickSort(nb::vector_t<void *> &SortList, int32_t L, int32_t R,
-  CompareFunc SCompare)
-{
-  int32_t Index;
-  do
-  {
-    Index = L;
-    int32_t J = R;
-    const void * P = SortList[(L + R) >> 1];
-    do
-    {
-      while (SCompare(SortList[Index], P) < 0)
-        Index++;
-      while (SCompare(SortList[J], P) > 0)
-        J--;
-      if (Index <= J)
-      {
-        if (Index != J)
-        {
-          void * T = SortList[Index];
-          SortList[Index] = SortList[J];
-          SortList[J] = T;
-        }
-        Index--;
-        J--;
-      }
-    }
-    while (Index > J);
-    if (L < J)
-      QuickSort(SortList, L, J, SCompare);
-    L = Index;
-  }
-  while (Index >= R);
-}
-
-void TList::Sort(CompareFunc Func)
-{
-  if (GetCount() > 1)
-  {
-    QuickSort(FList, 0, GetCount() - 1, Func);
-  }
-}
-
-void TList::Notify(void * /*Ptr*/, TListNotification /*Action*/)
-{
-}
-
-void TList::Sort()
-{
-  // if (FList.size() > 1)
-  // QuickSort(FList, 0, GetCount() - 1, Compare);
-  ThrowNotImplemented(15);
-}
-
-
 TObjectList::TObjectList() : TList(OBJECT_CLASS_TObjectList)
 {
 }
@@ -288,7 +91,7 @@ const TObject * TObjectList::GetObj(int32_t Index) const
   return TList::GetAs<TObject>(Index);
 }
 
-void TObjectList::Notify(void * Ptr, TListNotification Action)
+void TObjectList::Notify(TObject * Ptr, TListNotification Action)
 {
   if (GetOwnsObjects())
   {
@@ -871,12 +674,12 @@ void TStringList::InsertItem(int32_t Index, const UnicodeString & S, const TObje
   if (Index == GetCount())
   {
     FStrings.push_back(S);
-    TObjectList::Add(nb::ToPtr(AObject));
+    TObjectList::Add((TObject *)AObject);
   }
   else
   {
     FStrings.insert(FStrings.begin() + Index, S);
-    TObjectList::Insert(Index, nb::ToPtr(AObject));
+    TObjectList::Insert(Index, (TObject *)AObject);
   }
   Changed();
 }
