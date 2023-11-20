@@ -4486,7 +4486,7 @@ bool TTerminal::DeleteLocalFiles(TStrings * AFileList, int32_t Params)
 void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, void * AParams)
 {
-  TCustomCommandParams * Params = cast_to<TCustomCommandParams>(AParams);
+  TCustomCommandParams * Params = static_cast<TCustomCommandParams *>(AParams);
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
   {
@@ -4612,7 +4612,7 @@ bool TTerminal::DoOnCustomCommand(const UnicodeString & Command)
 void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*const TRemoteProperties*/ void * Properties)
 {
-  TRemoteProperties * RProperties = cast_to<TRemoteProperties>(Properties);
+  TRemoteProperties * RProperties = static_cast<TRemoteProperties *>(Properties);
   DebugAssert(RProperties && !RProperties->Valid.Empty());
   UnicodeString LocalFileName = AFileName;
   if (AFileName.IsEmpty() && AFile)
@@ -4722,7 +4722,7 @@ void TTerminal::DoCalculateFileSize(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * AParam)
 {
   // This is called for top-level entries only
-  TCalculateSizeParams * AParams = cast_to<TCalculateSizeParams>(AParam);
+  TCalculateSizeParams * AParams = static_cast<TCalculateSizeParams *>(AParam);
   Expects(AParams && AParams->Stats);
 
   if (AParams->Stats->FoundFiles != nullptr)
@@ -4753,7 +4753,7 @@ void TTerminal::CalculateFileSize(const UnicodeString & AFileName,
   UnicodeString FileName = AFileName;
   DebugAssert(AParam);
   DebugAssert(AFile);
-  TCalculateSizeParams * Params = cast_to<TCalculateSizeParams>(AParam);
+  TCalculateSizeParams * Params = static_cast<TCalculateSizeParams *>(AParam);
   Expects(Params != nullptr);
   if (FileName.IsEmpty())
   {
@@ -5252,7 +5252,7 @@ void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
 {
   StartOperationWithFile(AFileName, foRemoteCopy);
   DebugAssert(Param != nullptr);
-  const TMoveFileParams & Params = *cast_to<TMoveFileParams>(Param);
+  const TMoveFileParams & Params = *static_cast<TMoveFileParams *>(Param);
   const UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
   LogEvent(FORMAT("Copying file \"%s\" to \"%s\".", AFileName, NewName));
@@ -5948,7 +5948,7 @@ bool TTerminal::AllowLocalFileTransfer(
 void TTerminal::MakeLocalFileList(
   const UnicodeString & AFileName, const TSearchRecSmart & Rec, void * Param)
 {
-  TMakeLocalFileListParams & Params = *cast_to<TMakeLocalFileListParams>(Param);
+  TMakeLocalFileListParams & Params = *static_cast<TMakeLocalFileListParams *>(Param);
   Expects(Params.FileList != nullptr);
 
   if (Rec.IsDirectory() && Params.Recursive)
@@ -5969,7 +5969,7 @@ void TTerminal::MakeLocalFileList(
 void TTerminal::CalculateLocalFileSize(
   const UnicodeString & AFileName, const TSearchRecSmart & Rec, /*TCalculateSizeParams*/ void * AParams)
 {
-  TCalculateSizeParams * Params = cast_to<TCalculateSizeParams>(AParams);
+  TCalculateSizeParams * Params = static_cast<TCalculateSizeParams *>(AParams);
   Expects(Params != nullptr);
 
   if (!TryStartOperationWithFile(AFileName, foCalculateSize))
@@ -6571,7 +6571,7 @@ bool TTerminal::SameFileChecksum(const UnicodeString & LocalFileName, const TRem
 void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
-  TSynchronizeData * Data = cast_to<TSynchronizeData>(Param);
+  TSynchronizeData * Data = static_cast<TSynchronizeData *>(Param);
   Expects(Data != nullptr);
 
   // Can be NULL in scripting
@@ -7100,7 +7100,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
 
   DebugAssert(Param);
   DebugAssert(AFile);
-  TFilesFindParams * AParams = cast_to<TFilesFindParams>(Param);
+  TFilesFindParams * AParams = static_cast<TFilesFindParams *>(Param);
 
   if (!AParams->Cancel)
   {
@@ -8567,7 +8567,7 @@ void TTerminal::UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode
 
 void TTerminal::SinkFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * AParam)
 {
-  TSinkFileParams * Params = cast_to<TSinkFileParams>(AParam);
+  TSinkFileParams * Params = static_cast<TSinkFileParams *>(AParam);
   DebugAssert(Params->OperationProgress != nullptr);
   try
   {

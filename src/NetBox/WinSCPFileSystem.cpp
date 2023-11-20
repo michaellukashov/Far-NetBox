@@ -914,7 +914,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
     TSessionData * Data = nullptr;
     if ((Focused != nullptr) && Focused->GetIsFile() && Focused->GetUserData())
     {
-      Data = cast_to<TSessionData>(Focused->GetUserData());
+      Data = static_cast<TSessionData *>(Focused->GetUserData());
     }
 
     if ((Key == 'F') && (ControlState & CTRLMASK))
@@ -1064,7 +1064,7 @@ void TWinSCPFileSystem::RemoteCreateLink()
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
   if (Focused && Focused->GetUserData())
   {
-    File = cast_to<TRemoteFile>(Focused->GetUserData());
+    File = static_cast<TRemoteFile *>(Focused->GetUserData());
 
     if (File)
     {
@@ -1798,7 +1798,7 @@ void TWinSCPFileSystem::RenameFile()
   {
     RequireCapability(fcRename);
 
-    TRemoteFile * File = cast_to<TRemoteFile>(Focused->GetUserData());
+    TRemoteFile * File = static_cast<TRemoteFile *>(Focused->GetUserData());
     UnicodeString NewName = File->GetFileName();
     if (RenameFileDialog(File, NewName))
     {
@@ -1898,7 +1898,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 
   if (Focused != nullptr)
   {
-    TSessionData * SessionData = cast_to<TSessionData>(Focused->GetUserData());
+    TSessionData * SessionData = static_cast<TSessionData *>(Focused->GetUserData());
     UnicodeString Name;
     if (SessionData != nullptr)
     {
@@ -2398,7 +2398,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
     {
       if (PanelItem->GetUserData() != nullptr)
       {
-        ProcessSession(cast_to<TSessionData>(PanelItem->GetUserData()), AParam);
+        ProcessSession(static_cast<TSessionData *>(PanelItem->GetUserData()), AParam);
         PanelItem->SetSelected(false);
       }
       else
@@ -2850,7 +2850,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
     {
       FileName = ::IncludeTrailingBackslash((*APanelInfo)->GetCurrDirectory()) + FileName;
     }
-    Result->AddObject(FileName, cast_to<TObject>(Focused->GetUserData()));
+    Result->AddObject(FileName, static_cast<TObject *>(Focused->GetUserData()));
   }
   return Result;
 }
@@ -2895,7 +2895,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       UnicodeString FileName = PanelItem->GetFileName();
       if (Side == osRemote)
       {
-        Data = cast_to<TRemoteFile>(PanelItem->GetUserData());
+        Data = static_cast<TRemoteFile *>(PanelItem->GetUserData());
         DebugAssert(Data);
       }
       if (Side == osLocal)

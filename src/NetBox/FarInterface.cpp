@@ -48,7 +48,7 @@ UnicodeString GetSshVersionString()
 
 static DWORD WINAPI threadstartroutine(void * Parameter)
 {
-  TSimpleThread * SimpleThread = cast_to<TSimpleThread>(Parameter);
+  TSimpleThread * SimpleThread = static_cast<TSimpleThread *>(Parameter);
   return TSimpleThread::ThreadProc(SimpleThread);
 }
 
