@@ -174,6 +174,7 @@ private:
   uint32_t FCapabilities{0};
   struct TSessionContext
   {
+    CUSTOM_MEM_ALLOCATION_IMPL
     TSessionContext() = default;
     ~TSessionContext();
     TWebDAVFileSystem * FileSystem{nullptr};

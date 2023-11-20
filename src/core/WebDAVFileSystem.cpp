@@ -169,7 +169,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) noexcept :
   FHasTrailingSlash(false),
   FSessionContext(nullptr),
   FNeonLockStore(nullptr),
-  FNeonLockStoreSection(), //(new TCriticalSection()),
+  FNeonLockStoreSection(),
   FUploading(false),
   FDownloading(false),
   FInitialHandshake(false),
@@ -338,6 +338,7 @@ void TWebDAVFileSystem::InitSession(TSessionContext * SessionContext, ne_session
   ne_set_connect_timeout(Session, nb::ToInt32(Data->GetTimeout()));
 
   ne_set_session_private(Session, SESSION_CONTEXT_KEY, SessionContext);
+  ne_set_session_private(Session, SESSION_FS_KEY, this);
 
   // Allow ^-escaping in OneDrive
   ne_set_session_flag(Session, NE_SESSFLAG_LIBERAL_ESCAPING, Data->FWebDavLiberalEscaping || FOneDrive);
@@ -348,7 +349,7 @@ TWebDAVFileSystem::TSessionContext * TWebDAVFileSystem::NeonOpen(const UnicodeSt
   ne_uri uri;
   NeonParseUrl(Url, uri);
 
-  std::unique_ptr<TSessionContext> Result(new TSessionContext());
+  std::unique_ptr<TSessionContext> Result(std::make_unique<TSessionContext>());
   Result->FileSystem = this;
   Result->HostName = StrFromNeon(uri.host);
   Result->PortNumber = uri.port;
