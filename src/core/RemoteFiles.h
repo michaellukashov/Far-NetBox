@@ -551,8 +551,8 @@ public:
   ROProperty2<uint16_t> NumberUnset{&FUnset};
   __property uint32_t NumberDecadic = { read = GetNumberDecadic };
   __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
-  __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
-  __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
+  // __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
+  // __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
   __property UnicodeString Text = { read = GetText, write = SetText };
   RWProperty<UnicodeString> Text{nb::bind(&TRights::GetText, this), nb::bind(&TRights::SetText, this)};
   __property bool Unknown = { read = FUnknown };
@@ -742,7 +742,7 @@ public:
   // __property const TItem * Item[int32_t Index] = { read = GetItem };
 
 protected:
-  __removed TSynchronizeChecklist() noexcept;
+  // TSynchronizeChecklist() noexcept;
 
   void Sort();
   void Add(TChecklistItem * Item);
