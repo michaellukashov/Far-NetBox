@@ -99,7 +99,7 @@ class TCustomFarPlugin : public TObject
   NB_DISABLE_COPY(TCustomFarPlugin)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
   TCustomFarPlugin() = delete;
 public:
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept;
@@ -266,10 +266,10 @@ class TCustomFarFileSystem : public TObject
   NB_DISABLE_COPY(TCustomFarFileSystem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarFileSystem); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
 public:
   explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin) noexcept;
-  virtual ~TCustomFarFileSystem() noexcept;
+  virtual ~TCustomFarFileSystem() noexcept override;
   void Init();
 
   void GetOpenPanelInfo(struct OpenPanelInfo * Info);
@@ -402,11 +402,11 @@ class TCustomFarPanelItem : public TObject
   friend class TCustomFarFileSystem;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPanelItem); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPanelItem) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPanelItem) || TObject::is(Kind); }
 protected:
   TCustomFarPanelItem() = delete;
   explicit TCustomFarPanelItem(TObjectClassId Kind) noexcept : TObject(Kind) {}
-  virtual ~TCustomFarPanelItem() = default;
+  virtual ~TCustomFarPanelItem() override = default;
   virtual void GetData(
     PLUGINPANELITEMFLAGS & Flags, UnicodeString & AFileName, int64_t & Size,
     uintptr_t & FileAttributes,
@@ -424,7 +424,7 @@ class TFarPanelItem final : public TCustomFarPanelItem
   NB_DISABLE_COPY(TFarPanelItem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItem); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItem) || TCustomFarPanelItem::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItem) || TCustomFarPanelItem::is(Kind); }
 public:
   TFarPanelItem() = delete;
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem) noexcept;
@@ -516,10 +516,10 @@ class TFarMenuItems : public TStringList
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarMenuItems); }
-  bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMenuItems) || TStringList::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarMenuItems) || TStringList::is(Kind); }
 public:
   explicit TFarMenuItems() noexcept;
-  virtual ~TFarMenuItems() = default;
+  virtual ~TFarMenuItems() override = default;
   void AddSeparator(bool Visible = true);
   virtual int32_t Add(const UnicodeString & Text, bool Visible = true);
 

@@ -537,7 +537,7 @@ public:
 public:
   TSessionData() = delete;
   explicit TSessionData(const UnicodeString & AName) noexcept;
-  virtual ~TSessionData() noexcept;
+  virtual ~TSessionData() noexcept override;
   TSessionData * Clone() const;
   void Default();
   void DefaultSettings();
