@@ -642,10 +642,10 @@ public:
   RWPropertySimple1<bool> Ssh2DES{&FSsh2DES, nb::bind(&TSessionData::SetSsh2DES, this)};
   __property bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
   RWPropertySimple1<bool> SshNoUserAuth{&FSshNoUserAuth, nb::bind(&TSessionData::SetSshNoUserAuth, this)};
-  __property TCipher Cipher[int32_t Index] = { read=GetCipher, write=SetCipher };
-  __property TKex Kex[int32_t Index] = { read=GetKex, write=SetKex };
-  __property THostKey HostKeys[int32_t Index] = { read=GetHostKeys, write=SetHostKeys };
-  __property TGssLib GssLib[int32_t Index] = { read=GetGssLib, write=SetGssLib };
+  // __property TCipher Cipher[int32_t Index] = { read=GetCipher, write=SetCipher };
+  // __property TKex Kex[int32_t Index] = { read=GetKex, write=SetKex };
+  // __property THostKey HostKeys[int32_t Index] = { read=GetHostKeys, write=SetHostKeys };
+  // __property TGssLib GssLib[int32_t Index] = { read=GetGssLib, write=SetGssLib };
   __property UnicodeString GssLibCustom = { read=FGssLibCustom, write=SetGssLibCustom };
   RWPropertySimple<UnicodeString> GssLibCustom{&FGssLibCustom, nb::bind(&TSessionData::SetGssLibCustom, this)};
   __property UnicodeString PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
@@ -750,7 +750,7 @@ public:
   __property TAutoSwitch ProxyDNS  = { read=FProxyDNS, write=SetProxyDNS };
   __property bool ProxyLocalhost  = { read=FProxyLocalhost, write=SetProxyLocalhost };
   __property int32_t FtpProxyLogonType  = { read=FFtpProxyLogonType, write=SetFtpProxyLogonType };
-  __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
+  // __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
   __property UnicodeString PuttySettings = { read = FPuttySettings, write = SetPuttySettings };
   __property UnicodeString CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
   __property UnicodeString CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
@@ -765,7 +765,7 @@ public:
   __property int32_t SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
   __property uint32_t SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
   __property TAutoSwitch SFTPRealPath = { read = FSFTPRealPath, write = SetSFTPRealPath };
-  __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
+  // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
   __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
   __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
   __property TAutoSwitch FtpHost = { read = FFtpHost, write = SetFtpHost };
