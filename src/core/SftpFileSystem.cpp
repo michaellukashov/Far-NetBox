@@ -1827,7 +1827,7 @@ public:
   {
     void * Token{nullptr};
     bool Result = TSFTPFixedLenQueue::ReceivePacket(Packet, SSH_FXP_ATTRS, asAll, &Token);
-    File = cast_to<TRemoteFile>(Token);
+    File = static_cast<TRemoteFile *>(Token);
     return Result;
   }
 
@@ -1916,7 +1916,7 @@ public:
     },
     __finally
     {
-       AFile = cast_to<TRemoteFile>(Token);
+       AFile = static_cast<TRemoteFile *>(Token);
     } end_try__finally
     return Result;
   }
@@ -5222,7 +5222,7 @@ RawByteString TSFTPFileSystem::SFTPOpenRemoteFile(
 
 int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
 {
-  TOpenRemoteFileParams * OpenParams = cast_to<TOpenRemoteFileParams>(AOpenParams);
+  TOpenRemoteFileParams * OpenParams = static_cast<TOpenRemoteFileParams *>(AOpenParams);
   DebugAssert(OpenParams);
   TFileOperationProgressType * OperationProgress = OpenParams->OperationProgress;
 
