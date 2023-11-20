@@ -85,8 +85,8 @@ inline const O as_object(const void * p) { return dyn_cast<const O, const TObjec
 //template<class O>
 //inline O as_object(void * p) { return dyn_cast<O, TObject>(static_cast<TObject *>(p)); }
 //template<class O, class T>
-template<class O> inline O * cast_to(void * p) { return dyn_cast<O, TObject>(static_cast<TObject *>(p)); }
-template<class O> inline const O * cast_to(const void * p) { return dyn_cast<const O, const TObject>(static_cast<const TObject *>(p)); }
+template<class O> inline O * cast_to(TObject * p) { return dyn_cast<O, TObject>(p); }
+template<class O> inline const O * cast_to(const TObject * p) { return dyn_cast<const O, const TObject>(p); }
 //inline O * cast_to(T p) { return rtti::dyn_cast_or_null<O, TObject>(static_cast<TObject *>(p)); }
 //template<class O> inline O * cast_to(void * p) { return cast_to<O, TObject>(static_cast<TObject *>(p)); }
 template <class T>
