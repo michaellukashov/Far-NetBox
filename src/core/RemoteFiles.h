@@ -739,7 +739,7 @@ public:
   ROProperty<int32_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
   __property int32_t CheckedCount = { read = GetCheckedCount };
   ROProperty<int32_t> CheckedCount{nb::bind(&TSynchronizeChecklist::GetCheckedCount, this)};
-  __property const TItem * Item[int32_t Index] = { read = GetItem };
+  // __property const TItem * Item[int32_t Index] = { read = GetItem };
 
 protected:
   __removed TSynchronizeChecklist() noexcept;

@@ -786,7 +786,7 @@ void TFarDialog::Change()
     std::unique_ptr<TList<TFarDialogContainer>> NotifiedContainers(std::make_unique<TList<TFarDialogContainer>>());
     for (int32_t Index = 0; Index < GetItemCount(); ++Index)
     {
-      TFarDialogItem *DItem = GetItem(Index);
+      TFarDialogItem * DItem = GetItem(Index);
       DItem->Change();
       if (DItem->GetContainer() && NotifiedContainers->IndexOf(DItem->GetContainer()) == nb::NPOS)
       {

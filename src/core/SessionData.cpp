@@ -2003,7 +2003,7 @@ void TSessionData::RecryptPasswords()
   SetPassword(GetPassword());
   SetNewPassword(GetNewPassword());
   SetProxyPassword(GetProxyPassword());
-  FTunnelPassword = FTunnelPassword; // TODO: SetTunnelPassword(GetTunnelPassword)
+  // FTunnelPassword = FTunnelPassword; // TODO: SetTunnelPassword(GetTunnelPassword)
   SetTunnelPassword(GetTunnelPassword());
   SetPassphrase(GetPassphrase());
   SetEncryptKey(GetEncryptKey());
