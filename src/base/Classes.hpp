@@ -338,7 +338,7 @@ public:
   const T * As(int32_t Index) const { return cast_to<T>(GetObj(Index)); }
   virtual const TObject * operator [](int32_t Index) const override;
   const TObject * GetObj(int32_t Index) const;
-  TObject * Get(int32_t Index) { return cast_to<TObject>(const_cast<TObject *>(GetObj(Index))); }
+  TObject * Get(int32_t Index) { return const_cast<TObject *>(GetObj(Index)); }
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Notify(TObject * Ptr, TListNotification Action) override;
