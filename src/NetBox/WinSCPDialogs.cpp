@@ -3473,7 +3473,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 #undef TRISTATE
 
   int32_t Button = ShowModal();
-  bool Result = (Button == brOK || Button == brConnect);
+  const bool Result = (Button == brOK || Button == brConnect);
   if (Result)
   {
     if (Button == brConnect)
