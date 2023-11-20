@@ -5916,7 +5916,7 @@ void TSFTPFileSystem::Sink(
   },
   __finally
   {
-    if (LocalFileHandle)
+    if (CheckHandle(LocalFileHandle))
     {
       SAFE_CLOSE_HANDLE(LocalFileHandle);
     }
