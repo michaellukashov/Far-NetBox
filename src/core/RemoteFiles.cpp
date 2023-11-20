@@ -875,8 +875,8 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) noexcept :
 
 TRemoteFile::~TRemoteFile() noexcept
 {
-  SAFE_DESTROY(FRights);
-  SAFE_DESTROY(FLinkedFile);
+  // SAFE_DESTROY(FRights);
+  // SAFE_DESTROY(FLinkedFile);
 }
 
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
@@ -886,10 +886,10 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
   {
     if (FLinkedFile)
     {
-      Result->FLinkedFile = FLinkedFile->Duplicate(true);
+      Result->FLinkedFile.reset(FLinkedFile->Duplicate(true));
       Result->FLinkedFile->FLinkedByFile = Result.get();
     }
-    Result->SetRights(FRights);
+    Result->SetRights(FRights.get());
 #define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
     COPY_FP(Terminal);
     COPY_FP(Owner);
@@ -950,7 +950,7 @@ void TRemoteFile::Init()
   FModificationFmt = mfFull;
   FLinkedFile = nullptr;
   FLinkedByFile = nullptr;
-  FRights = new TRights();
+  FRights = std::make_unique<TRights>();
   FTerminal = nullptr;
   FSize = 0;
   FINodeBlocks = 0;
@@ -1066,7 +1066,7 @@ void TRemoteFile::SetType(wchar_t AType)
 const TRemoteFile * TRemoteFile::GetLinkedFile() const
 {
   // do not call FindLinkedFile as it would be called repeatedly for broken symlinks
-  return FLinkedFile;
+  return FLinkedFile.get();
 }
 
 bool TRemoteFile::GetBrokenLink() const
@@ -1524,7 +1524,7 @@ void TRemoteFile::FindLinkedFile()
 
   if (FLinkedFile)
   {
-    SAFE_DESTROY(FLinkedFile);
+    FLinkedFile.reset();
   }
   FLinkedFile = nullptr;
 
@@ -1564,7 +1564,9 @@ void TRemoteFile::FindLinkedFile()
     {
       try__finally
       {
-        GetTerminalNotConst()->ReadSymlink(this, FLinkedFile);
+        TRemoteFile * File{nullptr};
+        GetTerminalNotConst()->ReadSymlink(this, File);
+        FLinkedFile.reset(File);
       },
       __finally
       {

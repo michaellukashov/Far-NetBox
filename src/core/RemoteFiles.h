@@ -113,10 +113,10 @@ private:
   TRemoteToken FGroup{};
   int32_t FIconIndex{0};
   bool FIsSymLink{false};
-  TRemoteFile * FLinkedFile{nullptr};
+  std::unique_ptr<TRemoteFile> FLinkedFile{nullptr};
   TRemoteFile * FLinkedByFile{nullptr};
   UnicodeString FLinkTo;
-  TRights * FRights{nullptr};
+  std::unique_ptr<TRights> FRights{nullptr};
   UnicodeString FHumanRights;
   const TTerminal * FTerminal{nullptr};
   wchar_t FType{0};
@@ -252,8 +252,8 @@ public:
   bool GetIsSymLink() const { return FIsSymLink; }
   UnicodeString GetLinkTo() const { return FLinkTo; }
   void SetLinkTo(const UnicodeString & Value) { FLinkTo = Value; }
-  const TRights * GetRights() const { return FRights; }
-  TRights * GetRightsNotConst() { return FRights; }
+  const TRights * GetRights() const { return FRights.get(); }
+  TRights * GetRightsNotConst() { return FRights.get(); }
   UnicodeString GetHumanRights() const { return FHumanRights; }
   void SetHumanRights(const UnicodeString & Value) { FHumanRights = Value; }
   const TTerminal * GetTerminal() const { return FTerminal; }
