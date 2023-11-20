@@ -863,7 +863,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetRekeyData(Storage->ReadString("RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger("RekeyTime", nb::ToInt32(GetRekeyTime())));
 
-  SetFSProtocol(TranslateFSProtocol(Storage->ReadString("FSProtocol", GetFSProtocolStr())));
+  FSProtocol = TranslateFSProtocol(Storage->ReadString("FSProtocol", GetFSProtocolStr()));
   LocalDirectory = Storage->ReadString(L"LocalDirectory", LocalDirectory);
   OtherLocalDirectory = Storage->ReadString(L"OtherLocalDirectory", OtherLocalDirectory);
   RemoteDirectory = Storage->ReadString(L"RemoteDirectory", RemoteDirectory);
