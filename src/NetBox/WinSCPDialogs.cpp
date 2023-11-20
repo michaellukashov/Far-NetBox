@@ -4313,7 +4313,7 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   TSessionActionEnum & Action)
 {
   std::unique_ptr<TSessionDialog> Dialog(std::make_unique<TSessionDialog>(FPlugin, Action));
-  bool Result = Dialog->Execute(SessionData, Action);
+  const bool Result = Dialog->Execute(SessionData, Action);
   return Result;
 }
 
