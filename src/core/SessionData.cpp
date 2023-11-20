@@ -1825,7 +1825,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
           {
             if (Negated)
             {
-              // Skip even if matched by other possitive patterns
+              // Skip even if matched by other positive patterns
               SkippingSection = true;
               break;
             }
