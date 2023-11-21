@@ -1898,7 +1898,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 
   if (Focused != nullptr)
   {
-    TSessionData * SessionData = static_cast<TSessionData *>(Focused->GetUserData());
+    const TSessionData * SessionData = static_cast<TSessionData *>(Focused->GetUserData());
     UnicodeString Name;
     if (SessionData != nullptr)
     {
@@ -1925,7 +1925,7 @@ void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
   {
     if (!Focused->GetIsParentDirectory())
     {
-      const TRemoteFile * File = reinterpret_cast<const TRemoteFile *>(Focused->GetUserData());
+      const TRemoteFile * File = static_cast<const TRemoteFile *>(Focused->GetUserData());
       if (File != nullptr)
       {
         UnicodeString Path;
