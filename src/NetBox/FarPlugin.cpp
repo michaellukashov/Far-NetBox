@@ -851,7 +851,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(nb::ToInt32(Buttons->GetObj(Index)));
+    Button->SetTag(nb::ToIntPtr(Buttons->GetObj(Index)));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1153,7 +1153,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   int32_t Count = 0;
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    uint32_t Flags2 = nb::ToUInt32(Items->GetObj(Index));
+    uint32_t Flags2 = nb::ToUInt32(nb::ToUIntPtr(Items->GetObj(Index)));
     if (FLAGCLEAR(Flags2, MIF_HIDDEN))
     {
       nb::ClearStruct(MenuItems[Count]);
@@ -2821,7 +2821,7 @@ void TFarMenuItems::Delete(int32_t Index)
 void TFarMenuItems::SetObj(int32_t Index, TObject * AObject)
 {
   TStringList::SetObj(Index, AObject);
-  const bool Focused = (nb::ToUIntPtr((AObject) & MIF_SEPARATOR) != 0;
+  const bool Focused = (nb::ToUIntPtr(AObject) & MIF_SEPARATOR) != 0;
   if ((Index == GetItemFocused()) && !Focused)
   {
     FItemFocused = nb::NPOS;
@@ -2873,7 +2873,7 @@ void TFarMenuItems::SetFlag(int32_t Index, uint32_t Flag, bool Value)
 {
   if (GetFlag(Index, Flag) != Value)
   {
-    uint32_t F = nb::ToUInt32(GetObj(Index));
+    uint32_t F = nb::ToUInt32(nb::ToUIntPtr(GetObj(Index)));
     if (Value)
     {
       F |= Flag;
@@ -2888,7 +2888,7 @@ void TFarMenuItems::SetFlag(int32_t Index, uint32_t Flag, bool Value)
 
 bool TFarMenuItems::GetFlag(int32_t Index, uint32_t Flag) const
 {
-  return (reinterpret_cast<uintptr_t>(GetObj(Index)) & Flag) > 0;
+  return (nb::ToUIntPtr(GetObj(Index)) & Flag) > 0;
 }
 
 TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) noexcept :
