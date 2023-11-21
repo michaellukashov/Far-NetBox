@@ -368,7 +368,6 @@ public:
   virtual int32_t AddObject(const UnicodeString & S, const TObject * AObject);
   virtual void InsertObject(int32_t Index, const UnicodeString & Key, TObject * AObject);
   virtual int32_t CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const;
-  virtual int32_t GetCount() const = 0;
   virtual void Insert(int32_t Index, const UnicodeString & AString, const TObject * AObject = nullptr) = 0;
   bool Equals(const TStrings * Value) const;
   virtual void Move(int32_t CurIndex, int32_t NewIndex) override;
@@ -597,11 +596,8 @@ private:
   double FValue{0.0};
 };
 
-//MinDateTime: TDateTime =  -693593.0;     { 01/01/0001 12:00:00.000 AM }
-//MaxDateTime: TDateTime =  2958465.99999; { 12/31/9999 11:59:59.999 PM }
-//#define MinDateTime TDateTime(-657434.0)
-constexpr const double MinDateTime = -657434.0;
-constexpr const double MaxDateTime = 2958465.99999;
+constexpr const double MinDateTime = -657434.0;     // { 01 / 01 / 0001 12:00 : 00.000 AM }
+constexpr const double MaxDateTime = 2958465.99999; // { 12 / 31 / 9999 11:59 : 59.999 PM }
 
 // TODO: move to DateUtils.hpp
 NB_CORE_EXPORT TDateTime Now();
@@ -624,9 +620,9 @@ private:
   double GetTotalMilliseconds() const { return nb::ToDouble(FTicks / TicksPerMillisecond); }
   static TTimeSpan GetScaledInterval(double Value, int32_t Scale);
 private:
-  static const int64_t FMinValue = -9223372036854775808;
-  static const int64_t FMaxValue = 0x7FFFFFFFFFFFFFFF;
-  static const int64_t FZero = 0;
+  static constexpr int64_t FMinValue = -9223372036854775808;
+  static constexpr int64_t FMaxValue = 0x7FFFFFFFFFFFFFFF;
+  static constexpr int64_t FZero = 0;
 private:
   const double MillisecondsPerTick = 0.0001;
   const double SecondsPerTick = 1e-07;
@@ -642,11 +638,11 @@ private:
   const int64_t MaxMilliseconds = 922337203685477;
   const int64_t MinMilliseconds = -922337203685477;
 public:
-  static const int32_t TicksPerMillisecond = 10000;
-  static const int64_t TicksPerSecond = 1000 * int64_t(TicksPerMillisecond);
-  static const int64_t TicksPerMinute = 60 * int64_t(TicksPerSecond);
-  static const int64_t TicksPerHour = 60 * int64_t(TicksPerMinute);
-  static const int64_t TicksPerDay = 24 * TicksPerHour;
+  static constexpr int32_t TicksPerMillisecond = 10000;
+  static constexpr int64_t TicksPerSecond = 1000 * nb::ToInt64(TicksPerMillisecond);
+  static constexpr int64_t TicksPerMinute = 60 * nb::ToInt64(TicksPerSecond);
+  static constexpr int64_t TicksPerHour = 60 * nb::ToInt64(TicksPerMinute);
+  static constexpr int64_t TicksPerDay = 24 * TicksPerHour;
 public:
   explicit TTimeSpan(int64_t ATicks);
   explicit TTimeSpan(int32_t Hours, int32_t Minutes, int32_t Seconds);
@@ -844,7 +840,7 @@ public:
 
   void Clear();
   void LoadFromStream(TStream * Stream);
-  __removed void LoadFromFile(const UnicodeString & AFileName);
+  // void LoadFromFile(const UnicodeString & AFileName);
   virtual int64_t GetSize() const override { return FSize; }
   virtual void SetSize(int64_t NewSize) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
