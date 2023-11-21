@@ -90,7 +90,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     ResetCachedInfo();
     nb::ClearStruct(FStartupInfo);
     memmove(&FStartupInfo, Info,
-      Info->StructSize >= nb::ToIntPtr(sizeof(FStartupInfo)) ?
+      Info->StructSize >= nb::ToSizeT(sizeof(FStartupInfo)) ?
       sizeof(FStartupInfo) : nb::ToSizeT(Info->StructSize));
     // the minimum we really need
     DebugAssert(FStartupInfo.GetMsg != nullptr);
