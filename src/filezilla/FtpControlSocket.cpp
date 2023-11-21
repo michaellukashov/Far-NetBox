@@ -6140,17 +6140,17 @@ CString CFtpControlSocket::ConvertDomainName(CString domain)
   USES_CONVERSION;
 
   LPCWSTR buffer = T2CW(domain);
-
-  char *utf8 = nb::chcalloc(nb::StrLength(buffer) * 2 + 2);
-  if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, (int)(nb::StrLength(buffer) * 2 + 2), 0, 0))
+  int32_t sz = nb::StrLength(buffer) * 2 + 2;
+  char *utf8 = nb::chcalloc(sz);
+  if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, sz, 0, 0))
   {
     nb_free(utf8);
     LogMessage(FZ_LOG_WARNING, L"Could not convert domain name");
     return domain;
   }
 
-  char *output = 0;
-  output = strdup(utf8);
+  char *output = nb::chcalloc(sz);
+  strcpy_s(output, sz, utf8);
   nb_free(utf8);
 
   CString result = A2T(output);
