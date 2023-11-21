@@ -1143,7 +1143,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   const FarKey * BreakKeys, intptr_t & BreakCode)
 {
   DebugAssert(Items && Items->GetCount());
-  intptr_t Result;
+  intptr_t Result{0};
   FarMenuItem * MenuItems = nb::calloc<FarMenuItem *>(1 + Items->GetCount(), sizeof(FarMenuItem));
   SCOPE_EXIT
   {
@@ -1559,7 +1559,7 @@ void TCustomFarPlugin::UpdateProgress(int32_t State, int32_t Progress) const
   FarAdvControl(ACTL_SETPROGRESSSTATE, State, nullptr);
   if (State == TBPS_NORMAL)
   {
-    ProgressValue pv;
+    ProgressValue pv{};
     pv.StructSize = sizeof(ProgressValue);
     pv.Completed = Progress < 0 ? 0 : Progress > 100 ? 100 : Progress;
     pv.Total = 100;
@@ -1667,10 +1667,10 @@ void TCustomFarPlugin::ResetCachedInfo()
 
 int64_t TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Name) const
 {
-  FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
-  if (FStartupInfo.SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+  FarSettingsItem Item = {sizeof(FarSettingsItem), FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
+  if (FStartupInfo.SettingsControl(Settings, SCTL_GET, 0, &Item) && FST_QWORD == Item.Type)
   {
-    return item.Number;
+    return Item.Number;
   }
   return 0;
 }
@@ -1778,7 +1778,7 @@ int32_t TCustomFarPlugin::GetFarVersion() const
   return FFarVersion;
 }
 
-UnicodeString TCustomFarPlugin::FormatFarVersion(VersionInfo &Info) const
+UnicodeString TCustomFarPlugin::FormatFarVersion(VersionInfo & Info) const
 {
   return FORMAT("%d.%d.%d", Info.Major, Info.Minor, Info.Build);
 }
@@ -2360,10 +2360,11 @@ TFarKeyBarTitles::TFarKeyBarTitles() noexcept :
   FReferenced(false)
 {
   nb::ClearStruct(FKeyBarTitles);
-  FKeyBarTitles.CountLabels = 7 * 12;
+  constexpr size_t CountLabels = 7 * 12;
+  FKeyBarTitles.CountLabels = CountLabels;
   FKeyBarTitles.Labels = static_cast<KeyBarLabel *>(
-      nb_malloc(sizeof(KeyBarLabel) * 7 * 12));
-  memset(FKeyBarTitles.Labels, 0, sizeof(KeyBarLabel) * 7 * 12);
+      nb_malloc(sizeof(KeyBarLabel) * CountLabels));
+  memset(FKeyBarTitles.Labels, 0, sizeof(KeyBarLabel) * CountLabels);
 }
 
 TFarKeyBarTitles::~TFarKeyBarTitles() noexcept
@@ -2647,7 +2648,7 @@ TObjectList * TFarPanelInfo::GetItems()
       TODO("move to common function");
       const int32_t Size = FOwner->FarControl(FCTL_GETPANELITEM, Index, nullptr);
       PluginPanelItem * ppi = nb::calloc<PluginPanelItem *>(1, Size);
-      FarGetPluginPanelItem gppi;
+      FarGetPluginPanelItem gppi{};
       nb::ClearStruct(gppi);
       gppi.StructSize = sizeof(FarGetPluginPanelItem);
       gppi.Size = Size;
