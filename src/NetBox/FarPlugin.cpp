@@ -711,13 +711,13 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
 
 int32_t TCustomFarPlugin::MaxMessageLines() const
 {
-  return nb::ToIntPtr(TerminalInfo().y - 5);
+  return nb::ToInt32(TerminalInfo().y - 5);
 }
 
 int32_t TCustomFarPlugin::MaxMenuItemLength() const
 {
   // got from maximal length of path in FAR's folders history
-  return nb::ToIntPtr(TerminalInfo().x - 13);
+  return nb::ToInt32(TerminalInfo().x - 13);
 }
 
 int32_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
@@ -851,7 +851,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(nb::ToIntPtr(Buttons->GetObj(Index)));
+    Button->SetTag(nb::ToInt32(Buttons->GetObj(Index)));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -873,7 +873,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 
     if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
     {
-      MaxLen = nb::ToIntPtr(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
+      MaxLen = nb::ToInt32(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
     }
 
     SetNextItemPosition(ipRight);
@@ -887,7 +887,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 
     if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
     {
-      MaxLen = nb::ToIntPtr(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
+      MaxLen = nb::ToInt32(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
     }
   }
   else
@@ -905,7 +905,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 
   if (FParams->MoreMessages != nullptr)
   {
-    int32_t MoreMessageHeight = nb::ToIntPtr(GetFarPlugin()->TerminalInfo().y - S.y - 1);
+    int32_t MoreMessageHeight = nb::ToInt32(GetFarPlugin()->TerminalInfo().y - S.y - 1);
     DebugAssert(MoreMessagesLister != nullptr);
     if (MoreMessageHeight > MoreMessagesLister->GetItems()->GetCount())
     {
@@ -2256,7 +2256,7 @@ TFarPanelModes::~TFarPanelModes() noexcept
 {
   if (!FReferenced)
   {
-    for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FPanelModes)); ++Index)
+    for (int32_t Index = 0; Index < nb::ToInt32(_countof(FPanelModes)); ++Index)
     {
       ClearPanelMode(FPanelModes[Index]);
     }
@@ -2603,7 +2603,7 @@ TFarPanelInfo::~TFarPanelInfo() noexcept
 
 int32_t TFarPanelInfo::GetItemCount() const
 {
-  return nb::ToIntPtr(FPanelInfo->ItemsNumber);
+  return nb::ToInt32(FPanelInfo->ItemsNumber);
 }
 
 TRect TFarPanelInfo::GetBounds() const
@@ -2614,7 +2614,7 @@ TRect TFarPanelInfo::GetBounds() const
 
 int32_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
 {
-  int32_t Count = nb::ToIntPtr(FPanelInfo->SelectedItemsNumber);
+  int32_t Count = nb::ToInt32(FPanelInfo->SelectedItemsNumber);
 
   if ((Count == 1) && FOwner && !CountCurrentItem)
   {
@@ -2727,7 +2727,7 @@ void TFarPanelInfo::SetFocusedItem(const TFarPanelItem * Value)
 
 int32_t TFarPanelInfo::GetFocusedIndex() const
 {
-  return nb::ToIntPtr(FPanelInfo->CurrentItem);
+  return nb::ToInt32(FPanelInfo->CurrentItem);
 }
 
 void TFarPanelInfo::SetFocusedIndex(int32_t Value)
@@ -2736,7 +2736,7 @@ void TFarPanelInfo::SetFocusedIndex(int32_t Value)
   DebugAssert(FOwner != nullptr);
   if (GetFocusedIndex() != Value)
   {
-    DebugAssert(Value != nb::NPOS && Value < nb::ToIntPtr(FPanelInfo->ItemsNumber));
+    DebugAssert(Value != nb::NPOS && Value < nb::ToInt32(FPanelInfo->ItemsNumber));
     FPanelInfo->CurrentItem = nb::ToInt32(Value);
     PanelRedrawInfo PanelInfo;
     nb::ClearStruct(PanelInfo);
@@ -2902,7 +2902,7 @@ TFarEditorInfo::~TFarEditorInfo() noexcept
 
 int32_t TFarEditorInfo::GetEditorID() const
 {
-  return nb::ToIntPtr(FEditorInfo->EditorID);
+  return nb::ToInt32(FEditorInfo->EditorID);
 }
 
 UnicodeString TFarEditorInfo::GetFileName()
