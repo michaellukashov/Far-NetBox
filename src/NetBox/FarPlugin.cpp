@@ -1474,7 +1474,7 @@ public:
   {
   }
 
-  uint16_t Progress{0};
+  int16_t Progress{0};
   uint16_t Own{0};
 };
 

@@ -240,7 +240,7 @@ private:
   PluginInfo FPluginInfo{};
   std::unique_ptr<TStringList> FSavedTitles;
   UnicodeString FCurrentTitle;
-  uint16_t FCurrentProgress{0};
+  int16_t FCurrentProgress{0};
 
   void ClearPluginInfo(PluginInfo &Info) const;
   void UpdateCurrentConsoleTitle();
