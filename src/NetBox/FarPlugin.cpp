@@ -1153,7 +1153,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   int32_t Count = 0;
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    uint32_t Flags2 = reinterpret_cast<uintptr_t>(Items->GetObj(Index));
+    uint32_t Flags2 = nb::ToUInt32(Items->GetObj(Index));
     if (FLAGCLEAR(Flags2, MIF_HIDDEN))
     {
       nb::ClearStruct(MenuItems[Count]);
@@ -2557,7 +2557,7 @@ void TFarPanelItem::SetSelected(bool Value)
 
 uint32_t TFarPanelItem::GetFileAttrs() const
 {
-  return static_cast<uintptr_t>(FPanelItem->FileAttributes);
+  return nb::ToUInt32(FPanelItem->FileAttributes);
 }
 
 bool TFarPanelItem::GetIsParentDirectory() const
@@ -2872,7 +2872,7 @@ void TFarMenuItems::SetFlag(int32_t Index, uint32_t Flag, bool Value)
 {
   if (GetFlag(Index, Flag) != Value)
   {
-    uint32_t F = reinterpret_cast<uintptr_t>(GetObj(Index));
+    uint32_t F = nb::ToUInt32(GetObj(Index));
     if (Value)
     {
       F |= Flag;
