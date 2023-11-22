@@ -27,8 +27,6 @@ protected:
   virtual void DoWriteBool(const UnicodeString & Name, bool Value) override;
   virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
   virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
-//  void DoWriteDateTime(const UnicodeString & Name, TDateTime Value) override;
-//  void DoWriteFloat(const UnicodeString & Name, double Value) override;
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
   virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size) override;
 
