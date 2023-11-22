@@ -1975,7 +1975,7 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     const UnicodeString CVolumePrefix = L"Volume";
     const UnicodeString CGlobalPrefix = L"\\\\?\\";
 
-    HANDLE HFile, Handle;
+    HANDLE HFile;
     TReparseDataBuffer * PBuffer = nullptr;
     DWORD BytesReturned;
     GUID guid;
