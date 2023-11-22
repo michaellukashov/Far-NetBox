@@ -753,7 +753,7 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus *& Curr
       UpdateStatusForList(Status.get(), FDoneItems.get(), Current);
       Status->SetDoneCount(Status->GetCount());
       UpdateStatusForList(Status.get(), FItems.get(), Current);
-    },
+    }
     __finally
     {
       if (Current != nullptr)
@@ -1520,7 +1520,7 @@ bool TTerminalItem::WaitForUserAction(
     FQueue->DoEvent(qePendingUserAction);
 
     Result = !FTerminated && WaitForEvent() && !FCancel;
-  },
+  }
   __finally
   {
     FUserAction = nullptr;
@@ -1646,7 +1646,7 @@ void TTerminalItem::OperationProgress(
       FItem->SetStatus(TQueueItem::qsPaused);
 
       WaitForEvent();
-    },
+    }
     __finally
     {
       FItem->SetStatus(PrevStatus);
@@ -1961,7 +1961,7 @@ bool TQueueItemProxy::ProcessUserAction()
   try__finally
   {
     Result = FQueue->ItemProcessUserAction(FQueueItem, nullptr);
-  },
+  }
   __finally
   {
     FProcessingUserAction = false;
@@ -2278,7 +2278,7 @@ void TTransferQueueItem::DoExecute(TTerminal * ATerminal)
   try__finally
   {
     DoTransferExecute(ATerminal, FParallelOperation.get());
-  },
+  }
   __finally
   {
     FParallelOperation->WaitFor();
@@ -2457,7 +2457,7 @@ void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
       }
     }
     while (Continue);
-  },
+  }
   __finally
   {
     OperationProgress.Stop();
@@ -2739,7 +2739,7 @@ void TTerminalThread::RunAction(TNotifyEvent Action)
       {
         Rethrow(FException);
       }
-    },
+    }
     __finally
     {
       FAction = nullptr;
@@ -2802,7 +2802,7 @@ void TTerminalThread::Rethrow(Exception *& AException)
     try__finally
     {
       RethrowException(AException);
-    },
+    }
     __finally
     {
       SAFE_DESTROY_EX(Exception, AException);
@@ -2919,7 +2919,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
         // and rethrown)
         Rethrow(FIdleException);
       }
-    },
+    }
     __finally
     {
       FUserAction = PrevUserAction;

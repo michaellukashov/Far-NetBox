@@ -926,7 +926,7 @@ public:
     {
       DumpLines->LoadFromFile(AFileName);
       Dump = RawByteString(AnsiString(DumpLines->GetText()));
-    },
+    }
     __finally__removed
     ({
       delete DumpLines;
@@ -1345,7 +1345,7 @@ public:
           SendRequests();
         }
       }
-    },
+    }
     __finally__removed
     ({
       delete Request;
@@ -1913,7 +1913,7 @@ public:
     try__finally
     {
       Result = TSFTPFixedLenQueue::ReceivePacket(APacket, SSH_FXP_EXTENDED_REPLY, asNo, &Token);
-    },
+    }
     __finally
     {
        AFile = static_cast<TRemoteFile *>(Token);
@@ -2521,7 +2521,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
       }
     }
     FSecureShell->Send(Packet->GetSendData(), Packet->GetSendLength());
-  },
+  }
   __finally
   {
     this->BusyEnd();
@@ -2896,7 +2896,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceiveResponse(
       FTerminal->FatalError(nullptr, FMTLOAD(SFTP_MESSAGE_NUMBER,
         nb::ToInt32(Response->GetMessageNumber()), nb::ToInt32(MessageNumber)));
     }
-  },
+  }
   __finally
   {
     if (!AResponse)
@@ -3803,7 +3803,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           try__finally
           {
             File = FTerminal->ReadFile(base::UnixCombinePaths(FileList->GetDirectory(), PARENTDIRECTORY));
-          },
+          }
           __finally
           {
             FTerminal->SetExceptionOnFail(false);
@@ -3846,7 +3846,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         FileList->AddFile(new TRemoteParentDirectory(FTerminal));
       }
     }
-  },
+  }
   __finally
   {
     if (FTerminal->GetActive())
@@ -4079,7 +4079,7 @@ void TSFTPFileSystem::RemoteCopyFile(
       Packet.AddString(DestRemoteHandle);
       Packet.AddInt64(0);
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
-    },
+    }
     __finally
     {
       if (FTerminal->Active)
@@ -4254,7 +4254,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     AddPathString(Packet, RealFileName);
     Packet.AddProperties(&Properties, *File->GetRights(), File->GetIsDirectory(), FVersion, FUtfStrings, &Action);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
-  },
+  }
   __finally__removed
   ({
     delete File;
@@ -4300,7 +4300,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
         }
         while (Next);
       }
-    },
+    }
     __finally
     {
       Queue.DisposeSafe();
@@ -4379,7 +4379,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
             Next = false;
           }
 
-        },
+        }
         __finally
         {
           if (FirstLevel && File)
@@ -4395,7 +4395,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
       }
       while (Next);
     }
-  },
+  }
   __finally
   {
     Queue.DisposeSafe();
@@ -4632,7 +4632,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
             break;
         }
       }
-    },
+    }
     __finally
     {
       OperationProgress->UnlockUserSelections();
@@ -5012,7 +5012,7 @@ void TSFTPFileSystem::Source(
       }
       // No error so far, processes pending responses and throw on first error
       Queue.DisposeSafeWithErrorHandling();
-    },
+    }
     __finally
     {
       // Either queue is empty now (noop call then),
@@ -5022,7 +5022,7 @@ void TSFTPFileSystem::Source(
 
     TransferFinished = true;
     // queue is discarded here
-  },
+  }
   __finally
   {
     if (FTerminal->GetActive())
@@ -5875,7 +5875,7 @@ void TSFTPFileSystem::Sink(
             WriteLocalFile(CopyParam, FileStream, BlockBuf, LocalFileName, OperationProgress);
           }
         }
-      },
+      }
       __finally
       {
         Queue.DisposeSafe();
@@ -5913,7 +5913,7 @@ void TSFTPFileSystem::Sink(
       FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
     }
 
-  },
+  }
   __finally
   {
     if (CheckHandle(LocalFileHandle))

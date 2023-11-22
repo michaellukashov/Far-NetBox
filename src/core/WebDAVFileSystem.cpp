@@ -818,7 +818,7 @@ int32_t TWebDAVFileSystem::ReadDirectoryInternal(
   try__finally
   {
     Result = ne_propfind_allprop(PropFindHandler, NeonPropsResult, &Data);
-  },
+  }
   __finally
   {
     ne_lock_discovery_free(DiscoveryContext);
@@ -1470,7 +1470,7 @@ void TWebDAVFileSystem::Source(
         throw;
       }
     }
-  },
+  }
   __finally
   {
     if (FD >= 0)
@@ -1845,7 +1845,7 @@ void TWebDAVFileSystem::Sink(
       {
         FTerminal->UpdateTargetTime(LocalFileHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
       }
-    },
+    }
     __finally
     {
       if (FD >= 0)
@@ -2107,7 +2107,7 @@ void TWebDAVFileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRem
     }
     // ownership passed
     Lock = nullptr;
-  },
+  }
   __finally
   {
     if (Lock != nullptr)
@@ -2213,7 +2213,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
 
       DiscardLock(Path);
     }
-  },
+  }
   __finally
   {
     ne_lock_destroy(Lock);

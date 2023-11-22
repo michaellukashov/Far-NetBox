@@ -2124,7 +2124,7 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
       RecryptPasswords();
 
       SavePasswords(Storage, false, false, false);
-    },
+    }
     __finally
     {
       Storage->CloseSubKey();
@@ -2148,7 +2148,7 @@ void TSessionData::Remove()
     {
       Remove(Storage.get(), GetInternalStorageKey());
     }
-  },
+  }
   __finally__removed
   ({
     delete Storage;
@@ -5395,7 +5395,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
         }
       }
     }
-  },
+  }
   __finally
   {
     FAutoSort = true;
@@ -5469,7 +5469,7 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
         }
       }
     }
-  },
+  }
   __finally__removed
   ({
     delete FactoryDefaults;
@@ -5494,7 +5494,7 @@ void TStoredSessionList::DoSave(bool All, bool Explicit,
     {
       DoSave(Storage.get(), All, RecryptPasswordOnly, RecryptPasswordErrors);
     }
-  },
+  }
   __finally__removed
   ({
     delete Storage;
@@ -5814,7 +5814,7 @@ void TStoredSessionList::Cleanup()
       {
         Storage->RecursiveDeleteSubKey(GetConfiguration()->GetStoredSessionsSubKey());
       }
-    },
+    }
     __finally__removed
     ({
       delete Storage;

@@ -62,7 +62,7 @@ void TUsage::Load(THierarchicalStorage * Storage)
         Set(Name, Storage->ReadString(Name, ""));
       }
       Storage->CloseSubKey();
-    },
+    }
     __finally__removed
     ({
       delete Names;
@@ -88,7 +88,7 @@ void TUsage::Load(THierarchicalStorage * Storage,
         Counters[Name] = Storage->ReadInteger(Name, 0);
       }
       Storage->CloseSubKey();
-    },
+    }
     __finally__removed
     ({
       delete Names;

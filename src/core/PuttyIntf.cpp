@@ -250,7 +250,7 @@ static SeatPromptResult get_userpass_input(Seat * seat, prompts_t * p)
     {
       Result = SPR_USER_ABORT;
     }
-  },
+  }
   __finally__removed
   ({
     delete Prompts;
@@ -724,7 +724,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
         Result = false;
         break;
     }
-  },
+  }
   __finally
   {
     filename_free(KeyFile);
@@ -769,7 +769,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
         DebugFail();
         break;
     }
-  },
+  }
   __finally
   {
     Shred(AnsiPassphrase);
@@ -863,7 +863,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
       // not capturing errno, as this in unlikely file access error, after we have passed KeyType above
       throw EOSExtException(FMTLOAD(CERTIFICATE_UNOPENABLE, CertificateFileName), Error);
     }
-  },
+  }
   __finally
   {
     filename_free(CertFilename);
@@ -881,7 +881,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
       throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, CertificateFileName), UnicodeString(ErrorStr));
     }
     sfree(CommentStr);
-  },
+  }
   __finally
   {
     lf_free(CertLoadedFile);
@@ -926,7 +926,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
 
     ssh_key_free(Ssh2Key->key);
     Ssh2Key->key = NewKey;
-  },
+  }
   __finally
   {
     strbuf_free(Pub);
@@ -965,7 +965,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
         DebugFail();
         break;
     }
-  },
+  }
   __finally
   {
     filename_free(KeyFile);
@@ -1010,7 +1010,7 @@ RawByteString LoadPublicKey(
     sfree(CommentStr);
     Result = StrBufToString(PublicKeyBuf);
     strbuf_free(PublicKeyBuf);
-  },
+  }
   __finally
   {
     filename_free(KeyFile);
@@ -1051,7 +1051,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
           ((library->acquire_cred(library, &ctx, nullptr) == SSH_GSS_OK) &&
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
       }
-    },
+    }
     __finally
     {
       ssh_gss_cleanup(List);
@@ -1104,7 +1104,7 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
         return;
       }
     }
-  },
+  }
   __finally
   {
     sfree(SignKeys);
@@ -1183,7 +1183,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
       }
     }
     while (Read > 0);
-  },
+  }
   __finally
   {
     RawByteString Buf;
@@ -1229,7 +1229,7 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_k
       Result = UnicodeString(FmtKey);
       sfree(FmtKey);
       Algorithm->freekey(Key);
-    },
+    }
     __finally
     {
       strbuf_free(PubBlobBuf);
@@ -1294,7 +1294,7 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
     ssh_key_free(Key);
 
     PublicKey = StrBufToString(Blob);
-  },
+  }
   __finally
   {
     strbuf_free(Blob);
@@ -1432,7 +1432,7 @@ TStrings * SshHostKeyList()
         UnicodeString Name = UnicodeString(SignKey->ssh_id);
         Result->Add(Name);
       }
-    },
+    }
     __finally
     {
       sfree(SignKeys);
@@ -1499,7 +1499,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
     {
       do_defaults(nullptr, conf);
       save_settings(nullptr, conf);
-    },
+    }
     __finally
     {
       conf_free(conf);
@@ -1554,7 +1554,7 @@ void SavePuttyDefaults(const UnicodeString & Name)
     PuttyDefaults(conf);
     AnsiString PuttyName = PuttyStr(Name);
     save_settings(PuttyName.c_str(), conf);
-  },
+  }
   __finally
   {
     conf_free(conf);

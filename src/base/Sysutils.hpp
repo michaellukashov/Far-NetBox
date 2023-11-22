@@ -548,13 +548,13 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
 #define try__removed
 #define try__catch
 #define catch__removed(BLOCK)
-#define __finally__removed(BLOCK) [](){}
+#define __finally__removed(BLOCK) ,[](){}
 
 #define try__finally \
   { volatile const auto ANONYMOUS_VARIABLE(try_finally) = detail::make_try_finally([&]()
 
 #define __finally \
-  [&]() // lambda body here
+  ,[&]() // lambda body here
 
 #define end_try__finally ); }
 

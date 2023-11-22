@@ -1567,7 +1567,7 @@ void TRemoteFile::FindLinkedFile()
         TRemoteFile * File{nullptr};
         GetTerminalNotConst()->ReadSymlink(this, File);
         FLinkedFile.reset(File);
-      },
+      }
       __finally
       {
         GetTerminalNotConst()->SetExceptionOnFail(false);
@@ -1955,7 +1955,7 @@ void TRemoteDirectoryCache::Clear()
       SAFE_DESTROY(List);
       SetObj(Index, nullptr);
     }
-  },
+  }
   __finally
   {
     TStringList::Clear();
@@ -2195,7 +2195,7 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
         ++Index;
       }
       Data += Limited->GetText();
-    },
+    }
     __finally__removed
     ({
       delete Limited;

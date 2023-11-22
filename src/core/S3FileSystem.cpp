@@ -1829,7 +1829,7 @@ bool TS3FileSystem::LoadFilesProperties(TStrings * FileList)
   try__finally
   {
     FTerminal->ProcessFiles(FileList, foGetProperties, nb::bind(&TS3FileSystem::LoadFileProperties, this), &Result);
-  },
+  }
   __finally
   {
     FTerminal->EndTransaction();
@@ -2395,7 +2395,7 @@ void TS3FileSystem::Sink(
       {
         FTerminal->UpdateTargetTime(LocalFileHandle, AFile->Modification(), FTerminal->SessionData->GetDSTMode());
       }
-    },
+    }
     __finally
     {
        SAFE_CLOSE_HANDLE(LocalFileHandle);

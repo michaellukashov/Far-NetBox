@@ -400,7 +400,7 @@ const TFileSystemInfo & TSCPFileSystem::GetFileSystemInfo(bool Retrieve)
           throw;
         }
       }
-    },
+    }
     __finally
     {
       FTerminal->SetExceptionOnFail(false);
@@ -709,7 +709,7 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
         }
       }
     }
-  },
+  }
   __finally
   {
     FProcessingCommand = false;
@@ -954,7 +954,7 @@ void TSCPFileSystem::ClearAliases()
       {
         ClearAlias(CommandList->GetString(Index));
       }
-    },
+    }
     __finally__removed
     ({
       delete CommandList;
@@ -1113,7 +1113,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
               }
             }
           }
-        },
+        }
         __finally__removed
         ({
           delete OutputCopy;
@@ -1531,7 +1531,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
               }
               const UnicodeString Line = Output->Strings[0];
               Checksum = ParseFileChecksum(Line, FileName, Command);
-            },
+            }
             __finally
             {
               ProcessFileChecksum(OnCalculatedChecksum, Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
@@ -1616,7 +1616,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
       (FTerminal->SessionData->GetExitCode1IsError() ? ecIgnoreStdErr : ecIgnoreWarnings);
 
     ExecCommand(fsAnyCommand, Params, Command);
-  },
+  }
   __finally
   {
     FOnCaptureOutput = nullptr;
@@ -1931,7 +1931,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
       }
     }
     Failed = false;
-  },
+  }
   __finally
   {
     // Tell remote side, that we're done.
@@ -2348,7 +2348,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
         FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, DirectoryName));
       }
     }
-  },
+  }
   __finally
   {
     if (FTerminal->GetActive())
@@ -2423,7 +2423,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
                 FTerminal->RemoteDeleteFile(FileName, File);
               }
               FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_FILE_ERROR, FileName));
-            },
+            }
             __finally
             {
               FTerminal->SetExceptionOnFail(false);
@@ -2459,7 +2459,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
         throw;
       }
     }
-  },
+  }
   __finally
   {
     // In case that copying doesn't cause fatal error (ie. connection is
@@ -2883,7 +2883,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
               {
                 FTerminal->UpdateTargetTime(LocalFileHandle, FileData.Modification, FTerminal->GetSessionData()->GetDSTMode());
               }
-            },
+            }
             __finally
             {
              SAFE_CLOSE_HANDLE(LocalFileHandle);

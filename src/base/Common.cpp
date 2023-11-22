@@ -4425,7 +4425,7 @@ void ParseCertificate(const UnicodeString & Path,
           }
         }
       }
-    },
+    }
     __finally
     {
       // We loaded private key, but failed to load certificate, discard the certificate

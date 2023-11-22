@@ -459,7 +459,7 @@ void TSecureShell::Open()
         AnsiString(FSessionData->GetHostNameExpanded()).c_str(), nb::ToInt32(FSessionData->GetPortNumber()), &RealHost,
         FSessionData->GetTcpNoDelay() ? 1 : 0,
         conf_get_bool(conf, CONF_tcp_keepalives));
-    },
+    }
     __finally
     {
       conf_free(conf);
@@ -1129,7 +1129,7 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
           FOnReceive(nullptr);
         }
         while (FDataWhileFrozen);
-      },
+      }
       __finally
       {
         FFrozen = false;
@@ -1204,7 +1204,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, int32_t Len)
 #if 0
       if (Len <= 0) { FatalError(LoadStr(LOST_CONNECTION)); }
 #endif // #if 0
-    },
+    }
     __finally
     {
       OutPtr = nullptr;
@@ -1313,7 +1313,7 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     }
     Answer = FUI->QueryUser(MainInstructions(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout())),
       nullptr, qaRetry | qaAbort, &Params);
-  },
+  }
   __finally
   {
     FWaiting--;
@@ -2194,7 +2194,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
 
         MSec = 0;
       }
-    },
+    }
     __finally
     {
       if (WaitList != nullptr)
@@ -2848,7 +2848,7 @@ void TSecureShell::VerifyHostKey(
         try__finally
         {
           FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, FingerprintSHA256));
-        },
+        }
         __finally__removed
         ({
           delete E;

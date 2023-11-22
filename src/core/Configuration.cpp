@@ -218,7 +218,7 @@ void TConfiguration::Default()
       LoadAdmin(AdminStorage.get());
       AdminStorage->CloseSubKey();
     }
-  },
+  }
   __finally__removed
   ({
     delete AdminStorage;
@@ -510,7 +510,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
     // all configuration is properly transferred to the master storage
     bool ConfigAll = All || Storage->Temporary;
     DoSave(Storage.get(), ConfigAll);
-  },
+  }
   __finally__removed
   ({
     delete Storage;
@@ -710,7 +710,7 @@ void TConfiguration::Load(THierarchicalStorage * Storage)
   {
     Storage->SetAccessMode(smRead);
     LoadFrom(Storage);
-  },
+  }
   __finally
   {
     Storage->SetAccessMode(StorageAccessMode);
@@ -794,7 +794,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
     {
       DirectoryChangesCache->Deserialize(Storage->ReadBinaryData(SessionKey));
     }
-  },
+  }
   __finally__removed
   ({
     delete Storage;
@@ -815,7 +815,7 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
       DirectoryChangesCache->Serialize(Data);
       Storage->WriteBinaryData(SessionKey, Data);
     }
-  },
+  }
   __finally__removed
   ({
     delete Storage;
@@ -1368,7 +1368,7 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString & AFileName) co
   try__finally
   {
     Result = GetFileVersion(GetFixedFileInfo(FileInfo));
-  },
+  }
   __finally
   {
     FreeFileInfo(FileInfo);
@@ -1428,7 +1428,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
     {
       DebugAssert(!AFileName.IsEmpty());
     }
-  },
+  }
   __finally
   {
     if (!AFileName.IsEmpty() && Info)
@@ -1680,7 +1680,7 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACusto
         // copy before save as it removes the ini file,
         // when switching from ini to registry
         CopyData(SourceStorage.get(), TargetStorage.get());
-      },
+      }
       __finally__removed
       ({
         delete SourceStorage;

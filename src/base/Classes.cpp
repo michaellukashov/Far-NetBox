@@ -1094,7 +1094,7 @@ int64_t TStream::CopyFrom(TStream * Source, int64_t Count)
         Result += I;
       }
     }
-  },
+  }
   __finally
   {
     nb_free(Buffer);

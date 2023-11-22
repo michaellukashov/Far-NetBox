@@ -1006,7 +1006,7 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
     SendCommand(Command);
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
-  },
+  }
   __finally
   {
     FOnCaptureOutput = nullptr;
@@ -1175,7 +1175,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
       FFileZillaIntf->Chmod(Rights.GetNumberDecadic(), FileNameOnly.c_str(), FilePath.c_str());
 
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
-    },
+    }
     __finally__removed
     ({
       delete OwnedFile;
@@ -1343,7 +1343,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
           }
           Action.Checksum(Alg, Checksum);
           Success = true;
-        },
+        }
         __finally
         {
           if (FirstLevel)
@@ -1924,7 +1924,7 @@ void TFTPFileSystem::DoStartup()
         GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_3XX_CODE);
       }
     }
-  },
+  }
   __finally__removed
   ({
     delete PostLoginCommands;
@@ -2122,7 +2122,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
       {
         throw Exception(FMTLOAD(FTP_RESPONSE_ERROR, Command, Response->GetText()));
       }
-    },
+    }
     __finally__removed
     ({
       delete Response;
@@ -2478,7 +2478,7 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
     }
 
     FLastDataSent = Now();
-  },
+  }
   __finally__removed
   ({
     delete FileList;
@@ -3050,7 +3050,7 @@ void TFTPFileSystem::DiscardMessages()
   try__finally
   {
     while (ProcessMessage());
-  },
+  }
   __finally
   {
     FReply = 0;
@@ -3092,7 +3092,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
     {
     }
     Reply = FReply;
-  },
+  }
   __finally
   {
     FReply = 0;
@@ -3182,7 +3182,7 @@ uint32_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
     DoWaitForReply(ReplyToAwait, WantLastCode);
 
     Reply = ReplyToAwait;
-  },
+  }
   __finally
   {
     FReply = 0;
@@ -3414,7 +3414,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
         try__finally
         {
           FTerminal->FatalError(E.get(), L"");
-        },
+        }
         __finally__removed
         ({
           delete E;
@@ -3448,7 +3448,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
 //      SAFE_DESTROY(FLastErrorResponse);
       FLastErrorResponse = std::make_unique<TStringList>();
     }
-  },
+  }
   __finally
   {
     ResetReply();

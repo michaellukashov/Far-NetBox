@@ -1189,7 +1189,7 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
   try__finally
   {
     ADF(L"Configuration: %s", Storage->Source());
-  },
+  }
   __finally__removed
   ({
     delete Storage;
@@ -1679,7 +1679,7 @@ void TActionLog::AddFailure(Exception * E)
     try__finally
     {
       AddFailure(Messages.get());
-    },
+    }
     __finally__removed
     ({
       delete Messages;

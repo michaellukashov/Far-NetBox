@@ -73,14 +73,14 @@ static uint32_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uint32_t
                 }
               }
             }
-          },
+          }
           __finally
           {
             ::FreeResource(Mem);
           } end_try__finally
         }
       }
-    },
+    }
     __finally
     {
       if (NeedFree)

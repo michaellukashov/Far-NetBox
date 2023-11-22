@@ -145,12 +145,12 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
             FResponseHeaders->SetValue(StrFromNeon(HeaderName), StrFromNeon(HeaderValue));
           }
         }
-      },
+      }
       __finally
       {
         ne_request_destroy(NeonRequest);
       } end_try__finally
-    },
+    }
     __finally
     {
       DestroyNeonSession(NeonSession);

@@ -180,7 +180,7 @@ void TSynchronizeController::SynchronizeChange(
           {
             SubdirsChanged = false;
           }
-        },
+        }
         __finally__removed
         ({
           delete Checklist;

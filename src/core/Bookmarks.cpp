@@ -67,7 +67,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
             Storage->CloseSubKey();
           }
         }
-      },
+      }
       __finally__removed
       ({
         delete BookmarkKeys;
@@ -149,7 +149,7 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
         Storage->CloseSubKey();
       }
     }
-  },
+  }
   __finally__removed
   ({
     delete Names;

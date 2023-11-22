@@ -278,7 +278,7 @@ void TPuttyCleanupThread::Execute()
       }
     }
     while (Continue);
-  },
+  }
   __finally
   {
     TGuard Guard(*FSection.get());

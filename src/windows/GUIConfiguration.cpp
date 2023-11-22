@@ -444,7 +444,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int32_t ACount)
             Rule = std::make_unique<TCopyParamRule>();
             Rule->Load(Storage);
           }
-        },
+        }
         __finally
         {
           Storage->CloseSubKey();
@@ -484,7 +484,7 @@ void TCopyParamList::Save(THierarchicalStorage * Storage) const
         {
           Rule->Save(Storage);
         }
-      },
+      }
       __finally
       {
         Storage->CloseSubKey();
@@ -750,7 +750,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * AStorage, bool All)
       AStorage->WriteInteger("CopyParamList", nb::ToInt32(FCopyParamList->GetCount()));
       FCopyParamList->Save(AStorage);
     }
-  },
+  }
   __finally
   {
     AStorage->CloseSubKeyPath();
@@ -760,7 +760,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * AStorage, bool All)
   try__finally
   {
     FNewDirectoryProperties.Save(AStorage);
-  },
+  }
   __finally
   {
     AStorage->CloseSubKeyPath();
@@ -829,7 +829,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * AStorage)
       FCopyParamListDefaults = false;
     }
     FCopyParamList->Reset();
-  },
+  }
   __finally
   {
     AStorage->CloseSubKeyPath();
@@ -853,7 +853,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * AStorage)
   try__finally
   {
     FNewDirectoryProperties.Load(AStorage);
-  },
+  }
   __finally
   {
     AStorage->CloseSubKeyPath();
@@ -1205,7 +1205,7 @@ void TGUIConfiguration::AddLocale(LCID Locale, const UnicodeString & Name)
     try__finally
     {
       LocaleInfo->Completeness = GetResourceModuleCompleteness(Module);
-    },
+    }
     __finally
     {
       FreeResourceModule(Module);
