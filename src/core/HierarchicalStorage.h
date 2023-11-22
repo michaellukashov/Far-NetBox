@@ -186,10 +186,6 @@ public:
 
   bool Copy(TRegistryStorage * Storage);
 
-public:
-  int32_t GetFailed() const { return FFailed; }
-  void SetFailed(int32_t Value) { FFailed = Value; }
-
 protected:
   virtual void SetAccessModeProtected(TStorageAccessMode value) override;
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
@@ -225,6 +221,8 @@ private:
 
 public:
   virtual void Init() override;
+  int32_t GetFailed() const { return FFailed; }
+  void SetFailed(int32_t Value) { FFailed = Value; }
 };
 
 #if 0

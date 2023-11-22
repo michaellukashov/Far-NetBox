@@ -4452,7 +4452,7 @@ bool TFTPFileSystem::HandleAsyncRequestNeedPass(
   }
 }
 
-void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source, TDateTime & DateTime, TModificationFmt &ModificationFmt) const
+void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime & Source, TDateTime & DateTime, TModificationFmt & ModificationFmt) const
 {
   // ModificationFmt must be set after Modification
   if (Source.HasDate)
@@ -4669,7 +4669,7 @@ bool TFTPFileSystem::HandleCapabilities(
   return true;
 }
 
-bool TFTPFileSystem::CheckError(int32_t ReturnCode, const wchar_t *Context)
+bool TFTPFileSystem::CheckError(int32_t ReturnCode, const wchar_t * Context)
 {
   // we do not expect any FZAPI call to fail as it generally can fail only due to:
   // - invalid parameters
@@ -4763,7 +4763,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   return (State == STATE_DONE);
 }
 
-void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void *UserData) const
+void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const
 {
   TFileTransferData * Data = static_cast<TFileTransferData *>(UserData);
   DebugAssert(Data->CopyParam->FOnTransferOut.empty());

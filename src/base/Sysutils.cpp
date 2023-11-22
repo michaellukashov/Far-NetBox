@@ -1323,9 +1323,9 @@ void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
   MSec = static_cast<uint16_t>(MS);
 }
 
-static bool TryEncodeDate(uint16_t Year, uint16_t Month, uint16_t Day, TDateTime &Date)
+static bool TryEncodeDate(uint16_t Year, uint16_t Month, uint16_t Day, TDateTime & Date)
 {
-  const TDayTable *DayTable = &MonthDays[IsLeapYear(nb::ToWord(Year))];
+  const TDayTable * DayTable = &MonthDays[IsLeapYear(nb::ToWord(Year))];
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
     (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
