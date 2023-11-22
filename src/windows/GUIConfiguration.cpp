@@ -27,7 +27,7 @@ constexpr const uint32_t AdditionaLanguageMask = 0xFFFFFF00;
 static const UnicodeString AdditionaLanguagePrefix("XX");
 static const UnicodeString TranslationsSubFolder("Translations");
 
-__removed TGUIConfiguration * GUIConfiguration = nullptr;
+// TGUIConfiguration * GUIConfiguration = nullptr;
 
 TGUICopyParamType::TGUICopyParamType() noexcept
   : TCopyParamType(OBJECT_CLASS_TGUICopyParamType)
@@ -312,7 +312,7 @@ bool TCopyParamList::operator==(const TCopyParamList & rhl) const
     while ((Index < GetCount()) && Result)
     {
       Result =
-       (GetName(Index) == rhl.GetName(Index)) &&
+        (GetName(Index) == rhl.GetName(Index)) &&
         CompareItem(Index, rhl.GetCopyParam(Index), rhl.GetRule(Index));
       ++Index;
     }
@@ -544,17 +544,17 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) noexcept : TConfigurat
 {
   FLocale = 0;
   FStorage = stFar3Storage;
-  __removed SetAppliedLocale(InternalLocale(), UnicodeString());
+  // SetAppliedLocale(InternalLocale(), UnicodeString());
   FLocales = std::make_unique<TObjectList>();
   FLastLocalesExts = L"*";
   FCopyParamList = std::make_unique<TCopyParamList>();
-  __removed CoreSetResourceModule(GetResourceModule());
+  // CoreSetResourceModule(GetResourceModule());
 }
 
 TGUIConfiguration::~TGUIConfiguration() noexcept
 {
-  __removed delete FLocales;
-  __removed delete FCopyParamList;
+  // delete FLocales;
+  // delete FCopyParamList;
 }
 
 void TGUIConfiguration::ConfigurationInit()
