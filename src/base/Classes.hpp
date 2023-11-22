@@ -305,11 +305,11 @@ public:
   }
 
   ROProperty<int32_t> Count{nb::bind(&TList::GetCount, this)};
-  ROIndexedProperty<O *> Items{nb::bind(&TList::GetItems, this)};
+  ROIndexedProperty<O *> Items{nb::bind(&TList::GetItemPrivate, this)};
 
 private:
   nb::vector_t<O *> FList;
-  O * GetItems(int32_t Index) const { return FList[Index]; }
+  O * GetItemPrivate(int32_t Index) const { return FList[Index]; }
 };
 
 NB_DEFINE_CLASS_ID(TObjectList);
