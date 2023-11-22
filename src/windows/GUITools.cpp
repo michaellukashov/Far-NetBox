@@ -63,7 +63,7 @@ bool FindFile(UnicodeString & Path)
     {
       UnicodeString Path64 =
         ProgramFiles64 + Path.SubString(ProgramFiles32.Length() + 1, Path.Length() - ProgramFiles32.Length());
-      if (::SysUtulsFileExists(ApiPath(Path64)))
+      if (base::FileExists(ApiPath(Path64)))
       {
         Path = Path64;
         Result = true;

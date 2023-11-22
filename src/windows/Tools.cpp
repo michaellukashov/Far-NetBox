@@ -1298,7 +1298,7 @@ UnicodeString AddMatchingKeyCertificate(TPrivateKey * PrivateKey, const UnicodeS
   CertificateFileName += L"-cert.pub";
 
   UnicodeString Result;
-  if (::SysUtulsFileExists(CertificateFileName))
+  if (base::FileExists(CertificateFileName))
   {
     try
     {

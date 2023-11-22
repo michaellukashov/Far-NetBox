@@ -914,7 +914,7 @@ void TSessionLog::CheckSize(int64_t Addition)
 
     int32_t Index = 0;
 
-    while (::SysUtulsFileExists(LogPartFileName(BaseName, Index + 1)))
+    while (base::FileExists(LogPartFileName(BaseName, Index + 1)))
     {
       Index++;
     }

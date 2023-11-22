@@ -1059,7 +1059,7 @@ void TConfiguration::CleanupRandomSeedFile()
   try
   {
     DontSaveRandomSeed();
-    if (::SysUtulsFileExists(ApiPath(GetRandomSeedFileName())))
+    if (base::FileExists(ApiPath(GetRandomSeedFileName())))
     {
       DeleteFileChecked(GetRandomSeedFileName());
     }
@@ -1075,7 +1075,7 @@ void TConfiguration::CleanupIniFile()
 #if 0
   try
   {
-    if (SysUtulsFileExists(ApiPath(IniFileStorageNameForReading)))
+    if (base::FileExists(ApiPath(IniFileStorageNameForReading)))
     {
       DeleteFileChecked(IniFileStorageNameForReading);
     }
@@ -1515,7 +1515,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) c
   UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
 
   UnicodeString IniPath;
-  if (::SysUtulsFileExists(ApiPath(ProgramIniPath)))
+  if (base::FileExists(ApiPath(ProgramIniPath)))
   {
     IniPath = ProgramIniPath;
   }
@@ -1524,7 +1524,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) c
     UnicodeString AppDataIniPath =
       IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
       base::ExtractFileName(ProgramIniPath, false);
-    if (::SysUtulsFileExists(ApiPath(AppDataIniPath)))
+    if (base::FileExists(ApiPath(AppDataIniPath)))
     {
       IniPath = AppDataIniPath;
     }
@@ -1560,7 +1560,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) c
   }
 
   if (!FVirtualIniFileStorageName.IsEmpty() &&
-      ::SysUtulsFileExists(ApiPath(FVirtualIniFileStorageName)))
+      base::FileExists(ApiPath(FVirtualIniFileStorageName)))
   {
     return FVirtualIniFileStorageName;
   }
@@ -1753,7 +1753,7 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   UnicodeString FilezillaSiteManagerFile = TPath::Combine(AppDataPath, L"FileZilla\\sitemanager.xml");
   UnicodeString FilezillaConfigurationFile = TPath::Combine(AppDataPath, L"FileZilla\\filezilla.xml");
 
-  if (::SysUtulsFileExists(ApiPath(FilezillaSiteManagerFile)))
+  if (base::FileExists(ApiPath(FilezillaSiteManagerFile)))
   {
     ImportSessionList->ImportFromFilezilla(FilezillaSiteManagerFile, FilezillaConfigurationFile);
 
@@ -1803,7 +1803,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
 
   try
   {
-    if (::SysUtulsFileExists(ApiPath(KnownHostsFile)))
+    if (base::FileExists(ApiPath(KnownHostsFile)))
     {
       std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
       // LoadScriptFromFile(KnownHostsFile, Lines.get(), true);
@@ -1847,7 +1847,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
 
   try
   {
-    if (::SysUtulsFileExists(ApiPath(ConfigFile)))
+    if (base::FileExists(ApiPath(ConfigFile)))
     {
       std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
       // LoadScriptFromFile(ConfigFile, Lines.get(), true);
@@ -1891,7 +1891,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 
     if (!PrevRandomSeedFileName.IsEmpty() &&
         (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-        ::SysUtulsFileExists(ApiPath(PrevRandomSeedFileName)))
+        base::FileExists(ApiPath(PrevRandomSeedFileName)))
     {
       // ignore any error
       ::SysUtulsRemoveFile(ApiPath(PrevRandomSeedFileName));
@@ -2005,7 +2005,7 @@ UnicodeString TConfiguration::GetCertificateStorageExpanded() const
   if (Result.IsEmpty())
   {
     UnicodeString DefaultCertificateStorage = TPath::Combine(ExtractFilePath(ModuleFileName()), L"cacert.pem");
-    if (::SysUtulsFileExists(DefaultCertificateStorage))
+    if (base::FileExists(DefaultCertificateStorage))
     {
       Result = DefaultCertificateStorage;
     }

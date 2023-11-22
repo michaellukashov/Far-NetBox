@@ -5555,7 +5555,7 @@ void TSFTPFileSystem::Sink(
       LocalFileName = DestPartialFullName;
 
       FTerminal->LogEvent("Checking existence of partially transferred file.");
-      if (::SysUtulsFileExists(ApiPath(DestPartialFullName)))
+      if (base::FileExists(ApiPath(DestPartialFullName)))
       {
         FTerminal->LogEvent("Partially transferred file exists.");
         int64_t ResumeOffset;
@@ -5653,7 +5653,7 @@ void TSFTPFileSystem::Sink(
         DestPartialFullName = DestFullName + PartialExt;
         if (ResumeAllowed)
         {
-          if (::SysUtulsFileExists(ApiPath(DestPartialFullName)))
+          if (base::FileExists(ApiPath(DestPartialFullName)))
           {
             FTerminal->DoDeleteLocalFile(DestPartialFullName);
           }
@@ -5899,7 +5899,7 @@ void TSFTPFileSystem::Sink(
         // See also DoRenameLocalFileForce
         FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(RENAME_AFTER_RESUME_ERROR, base::ExtractFileName(DestPartialFullName, true), ADestFileName), "")
         {
-          if (::SysUtulsFileExists(ApiPath(DestFullName)))
+          if (base::FileExists(ApiPath(DestFullName)))
           {
             DeleteFileChecked(DestFullName);
           }

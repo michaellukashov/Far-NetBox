@@ -1778,7 +1778,7 @@ void TWebDAVFileSystem::Sink(
   uint32_t /*AFlags*/, TDownloadSessionAction & Action)
 {
   UnicodeString DestFullName = ATargetDir + ADestFileName;
-  if (::SysUtulsFileExists(ApiPath(DestFullName)))
+  if (base::FileExists(ApiPath(DestFullName)))
   {
     int64_t Size;
     int64_t MTime;

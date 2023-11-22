@@ -44,7 +44,7 @@ void PuttyInitialize()
 
   InitializeCriticalSection(&putty_section);
 
-  HadRandomSeed = SysUtulsFileExists(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
+  HadRandomSeed = base::FileExists(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
   if (HadRandomSeed)
   {
     AppLog(L"Random seed file exists");
@@ -100,7 +100,7 @@ bool RandomSeedExists()
 {
   return
     !DeleteRandomSeedOnExit() &&
-    SysUtulsFileExists(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
+    base::FileExists(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
 }
 
 TSecureShell * GetSeatSecureShell(Seat * seat)

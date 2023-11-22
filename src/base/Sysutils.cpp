@@ -589,7 +589,7 @@ UnicodeString SysUtulsFileSearch(const UnicodeString & AFileName, const UnicodeS
     }
     Result = ::IncludeTrailingBackslash(Result);
     Result = Result + AFileName;
-    if (!::SysUtulsFileExists(Result))
+    if (!base::FileExists(Result))
     {
       Result.Clear();
     }
@@ -663,7 +663,7 @@ bool SysUtulsForceDirectories(const UnicodeString & ADir)
 bool SysUtulsRemoveFile(const UnicodeString & AFileName)
 {
   ::DeleteFileW(ApiPath(AFileName).c_str());
-  return !::SysUtulsFileExists(AFileName);
+  return !base::FileExists(AFileName);
 }
 
 // Returns the next available word, ignoring whitespace
@@ -2119,7 +2119,7 @@ bool WriteAndFlush(FILE * file, void const * data, size_t size)
 
 bool FileExists(const UnicodeString & AFileName)
 {
-  return ::SysUtulsFileExists(ApiPath(AFileName));
+  return base::FileExists(ApiPath(AFileName));
 }
 
 bool DoExists(bool R, const UnicodeString & Path)
@@ -2142,7 +2142,7 @@ bool FileExistsFix(const UnicodeString & Path)
 {
   // WORKAROUND
   SetLastError(ERROR_SUCCESS);
-  bool Result = DoExists(::SysUtulsFileExists(ApiPath(Path)), Path);
+  bool Result = DoExists(base::FileExists(ApiPath(Path)), Path);
   return Result;
 }
 
