@@ -47,7 +47,7 @@ public:
 protected:
   virtual bool DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lParam) override;
 
-  virtual bool HandleStatus(const wchar_t * Status, int Type) override;
+  virtual bool HandleStatus(const wchar_t * Status, int32_t Type) override;
   virtual bool HandleAsyncRequestOverwrite(
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
@@ -97,7 +97,7 @@ bool TFileZillaImpl::DoPostMessage(TMessageType Type, WPARAM wParam, LPARAM lPar
   return FFileSystem->FTPPostMessage(Type, wParam, lParam);
 }
 
-bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int Type)
+bool TFileZillaImpl::HandleStatus(const wchar_t * Status, int32_t Type)
 {
   return FFileSystem->HandleStatus(Status, Type);
 }
@@ -210,9 +210,9 @@ struct TFileTransferData
   }
 
   UnicodeString FileName;
-  int Params;
+  int32_t Params;
   bool AutoResume;
-  int OverwriteResult;
+  int32_t OverwriteResult;
   const TCopyParamType * CopyParam;
   TDateTime Modification;
 };
@@ -488,7 +488,7 @@ void TFTPFileSystem::Open()
 
   int32_t TimeZoneOffset = Data->GetTimeDifferenceAuto() ? 0 : TimeToMinutes(Data->GetTimeDifference());
 
-  int UTF8;
+  int32_t UTF8;
   uint32_t CodePage = Data->GetCodePageAsNumber();
 
   switch (CodePage)
@@ -3353,7 +3353,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
         if (FAnyTransferSucceeded && (FLastError->Count > 0))
         {
           UnicodeString CantOpenTransferChannelMessage = LoadStr(IDS_ERRORMSG_CANTOPENTRANSFERCHANNEL);
-          int P = CantOpenTransferChannelMessage.Pos(L"%");
+          int32_t P = CantOpenTransferChannelMessage.Pos(L"%");
           if (DebugAlwaysTrue(P > 0))
           {
             CantOpenTransferChannelMessage.SetLength(P - 1);
@@ -3766,7 +3766,7 @@ void TFTPFileSystem::HandleFeatReply()
   {
     FLastResponse->Delete(0);
     FLastResponse->Delete(FLastResponse->Count - 1);
-    for (int Index = 0; Index < FLastResponse->Count; Index++)
+    for (int32_t Index = 0; Index < FLastResponse->Count; Index++)
     {
       FFeatures->Add(FLastResponse->Strings[Index].Trim());
     }
