@@ -53,7 +53,7 @@ UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi, bool Value)
 UnicodeString UnMungeStr(const UnicodeString & Str)
 {
   // Str should contain ASCII characters only
-  RawByteString Source = AnsiString(Str);
+  const RawByteString Source = AnsiString(Str);
   strbuf * sb = strbuf_new();
   unescape_registry_key(Source.c_str(), sb);
   RawByteString Dest(sb->s);
@@ -89,7 +89,7 @@ UnicodeString PuttyUnMungeStr(const UnicodeString & Str)
 
 UnicodeString MungeIniName(const UnicodeString & Str)
 {
-  int32_t P = Str.Pos(L"=");
+  const int32_t P = Str.Pos(L"=");
   // make this fast for now
   if (P > 0)
   {
@@ -103,7 +103,7 @@ UnicodeString MungeIniName(const UnicodeString & Str)
 
 UnicodeString UnMungeIniName(const UnicodeString & Str)
 {
-  int32_t P = Str.Pos(L"%3D");
+  const int32_t P = Str.Pos(L"%3D");
   // make this fast for now
   if (P > 0)
   {
@@ -337,7 +337,7 @@ bool THierarchicalStorage::OpenSubKeyPath(const UnicodeString & KeyPath, bool Ca
 
 bool THierarchicalStorage::OpenSubKey(const UnicodeString & ASubKey, bool CanCreate)
 {
-  UnicodeString MungedKey = MungeKeyName(ASubKey);
+  const UnicodeString MungedKey = MungeKeyName(ASubKey);
 
   bool Result;
   uint32_t InheritAccess;
@@ -426,7 +426,7 @@ void THierarchicalStorage::ClearSubKeys()
 
 void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
 {
-  bool CanWriteParent = CanWrite();
+  const bool CanWriteParent = CanWrite();
   if (OpenSubKey(Key, false))
   {
     ClearSubKeys();
@@ -439,7 +439,7 @@ void THierarchicalStorage::RecursiveDeleteSubKey(const UnicodeString & Key)
     }
 
     // Only if all subkeys were successfully deleted in ClearSubKeys
-    bool Delete = CanWriteParent && !HasSubKeys();
+    const bool Delete = CanWriteParent && !HasSubKeys();
 
     CloseSubKey();
 
@@ -454,7 +454,7 @@ bool THierarchicalStorage::HasSubKeys()
 {
   std::unique_ptr<TStrings> SubKeys(std::make_unique<TStringList>());
   GetSubKeyNames(SubKeys.get());
-  bool Result = (SubKeys->Count() > 0);
+  const bool Result = (SubKeys->Count() > 0);
   return Result;
 }
 
@@ -716,7 +716,7 @@ int32_t THierarchicalStorage::BinaryDataSize(const UnicodeString & Name)
 
 RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString & Name)
 {
-  size_t Size = BinaryDataSize(Name);
+  const int32_t Size = BinaryDataSize(Name);
   RawByteString Value;
   Value.SetLength(Size);
   ReadBinaryData(Name, nb::ToPtr(Value.c_str()), Size);
@@ -725,12 +725,12 @@ RawByteString THierarchicalStorage::ReadBinaryData(const UnicodeString & Name)
 
 RawByteString THierarchicalStorage::ReadStringAsBinaryData(const UnicodeString & Name, const RawByteString & Default)
 {
-  UnicodeString UnicodeDefault = AnsiToString(Default);
+  const UnicodeString UnicodeDefault = AnsiToString(Default);
   // This should be exactly the same operation as calling ReadString in
   // C++Builder 6 (non-Unicode) on Unicode-based OS
   // (conversion is done by Ansi layer of the OS)
-  UnicodeString String = ReadString(Name, UnicodeDefault);
-  AnsiString Ansi = AnsiString(String);
+  const UnicodeString String = ReadString(Name, UnicodeDefault);
+  const AnsiString Ansi = AnsiString(String);
   RawByteString Result = RawByteString(Ansi.c_str(), Ansi.Length());
   return Result;
 }
@@ -880,7 +880,7 @@ TRegistryStorage::~TRegistryStorage() noexcept
 // Used only in OpenSessionInPutty
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
 {
-  TRegistry * Registry = Storage->FRegistry.get();
+  const TRegistry * Registry = Storage->FRegistry.get();
   bool Result = true;
   std::unique_ptr<TStrings> Names(std::make_unique<TStringList>());
   Registry->GetValueNames(Names.get());
@@ -939,7 +939,7 @@ void TRegistryStorage::SetAccessModeProtected(TStorageAccessMode value)
 bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate)
 {
   UnicodeString PrevPath;
-  bool WasOpened = (FRegistry->GetCurrentKey() != nullptr);
+  const bool WasOpened = (FRegistry->GetCurrentKey() != nullptr);
   if (WasOpened)
   {
     PrevPath = FRegistry->GetCurrentPath();
@@ -947,7 +947,7 @@ bool TRegistryStorage::DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate
     FRegistry->CloseKey();
   }
   const UnicodeString K = ExcludeTrailingBackslash(Storage() + CurrentSubKey() + SubKey);
-  bool Result = FRegistry->OpenKey(K, CanCreate);
+  const bool Result = FRegistry->OpenKey(K, CanCreate);
   if (!Result && WasOpened)
   {
     FRegistry->OpenKey(PrevPath, false);
@@ -997,7 +997,7 @@ bool TRegistryStorage::DoDeleteValue(const UnicodeString & Name)
 bool TRegistryStorage::DoKeyExists(const UnicodeString & SubKey, bool AForceAnsi)
 {
   const UnicodeString Key = MungeStr(SubKey, AForceAnsi, false);
-  bool Result = FRegistry->KeyExists(Key);
+  const bool Result = FRegistry->KeyExists(Key);
   return Result;
 }
 

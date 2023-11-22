@@ -2528,7 +2528,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
   GetLog()->AddException(&E);
   uint32_t Answer{0};
   const bool AllowSkip = FLAGSET(AFlags, folAllowSkip);
-  bool SkipToAllPossible = AllowSkip && (OperationProgress != nullptr);
+  const bool SkipToAllPossible = AllowSkip && (OperationProgress != nullptr);
 
   if (SkipToAllPossible && OperationProgress->GetSkipToAll())
   {
