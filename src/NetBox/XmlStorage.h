@@ -11,7 +11,7 @@ public:
   virtual ~TXmlStorage() noexcept override;
   virtual void Init() override;
 
-  bool Copy(TXmlStorage *Storage);
+  bool Copy(TXmlStorage * Storage);
 
 protected:
   virtual void SetAccessModeProtected(TStorageAccessMode Value) override;
@@ -40,7 +40,7 @@ protected:
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
   virtual int32_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size) override;
 
-  virtual void DoGetValueNames(TStrings *Strings) override;
+  virtual void DoGetValueNames(TStrings * Strings) override;
 
   virtual UnicodeString GetSource() const override;
   UnicodeString GetSource();
@@ -57,15 +57,15 @@ private:
   void RemoveIfExists(const UnicodeString & Name);
   void AddNewElement(const UnicodeString & Name, const UnicodeString & Value);
   tinyxml2::XMLElement * FindChildElement(const AnsiString & SubKey) const;
-  UnicodeString GetValue(tinyxml2::XMLElement *Element) const;
+  UnicodeString GetValue(const tinyxml2::XMLElement  * Element) const;
 
   bool ReadXml();
   bool WriteXml() const;
 
 private:
-  tinyxml2::XMLDocument *FXmlDoc{nullptr};
+  std::unique_ptr<tinyxml2::XMLDocument> FXmlDoc;
   nb::vector_t<tinyxml2::XMLElement *> FSubElements;
-  tinyxml2::XMLElement *FCurrentElement{nullptr};
+  gsl::owner <tinyxml2::XMLElement *> FCurrentElement{nullptr};
   UnicodeString FStoredSessionsSubKey;
   mutable int32_t FFailed{0};
   bool FStoredSessionsOpened{false};

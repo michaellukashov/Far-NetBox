@@ -20,7 +20,7 @@ TXmlStorage::TXmlStorage(const UnicodeString & AStorage,
 void TXmlStorage::Init()
 {
   THierarchicalStorage::Init();
-  FXmlDoc = new tinyxml2::XMLDocument();
+  FXmlDoc = std::make_unique<tinyxml2::XMLDocument>();
 }
 
 TXmlStorage::~TXmlStorage() noexcept
@@ -29,7 +29,7 @@ TXmlStorage::~TXmlStorage() noexcept
   {
     WriteXml();
   }
-  SAFE_DESTROY_EX(tinyxml2::XMLDocument, FXmlDoc);
+  // SAFE_DESTROY_EX(tinyxml2::XMLDocument, FXmlDoc);
 }
 
 bool TXmlStorage::ReadXml()
@@ -278,7 +278,7 @@ tinyxml2::XMLElement *TXmlStorage::FindChildElement(const AnsiString & SubKey) c
   return Result;
 }
 
-UnicodeString TXmlStorage::GetValue(tinyxml2::XMLElement * Element) const
+UnicodeString TXmlStorage::GetValue(const tinyxml2::XMLElement * Element) const
 {
   DebugAssert(Element);
   UnicodeString Result;
