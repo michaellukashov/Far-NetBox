@@ -3257,7 +3257,7 @@ static bool DoRecursiveDeleteFile(
     {
       if (!InitialSearchRec.IsDirectory())
       {
-        Result = ::SysUtulsRemoveFile(ApiPath(AFileName));
+        Result = base::FileRemove(ApiPath(AFileName));
         if (Result)
         {
           Deleted++;
@@ -3282,7 +3282,7 @@ static bool DoRecursiveDeleteFile(
             }
             else
             {
-              Result = ::SysUtulsRemoveFile(ApiPath(FileName2));
+              Result = base::FileRemove(ApiPath(FileName2));
               if (!Result)
               {
                 AErrorPath = FileName2;
@@ -3378,7 +3378,7 @@ int32_t RecursiveDeleteFileChecked(const UnicodeString & AFileName, bool ToRecyc
 
 void DeleteFileChecked(const UnicodeString & AFileName)
 {
-  if (!::SysUtulsRemoveFile(ApiPath(AFileName)))
+  if (!base::FileRemove(ApiPath(AFileName)))
   {
     throw EOSExtException(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, AFileName));
   }

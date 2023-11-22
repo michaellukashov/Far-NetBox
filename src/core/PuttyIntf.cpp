@@ -80,7 +80,7 @@ void PuttyFinalize()
   if (DeleteRandomSeedOnExit())
   {
     AppLog(L"Deleting unwanted random seed file");
-    SysUtulsRemoveFile(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
+    base::FileRemove(ApiPath(GetConfiguration()->GetRandomSeedFileName()));
   }
 
   sk_cleanup();
