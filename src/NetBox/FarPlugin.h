@@ -103,7 +103,7 @@ public:
   TCustomFarPlugin() = delete;
 public:
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept;
-  virtual ~TCustomFarPlugin();
+  virtual ~TCustomFarPlugin() override;
   virtual VersionInfo GetMinFarVersion() const;
   virtual void Initialize();
   virtual void Finalize();
@@ -357,7 +357,7 @@ class TFarPanelModes final : public TObject
   friend class TCustomFarFileSystem;
 public:
   TFarPanelModes() noexcept;
-  virtual ~TFarPanelModes() noexcept;
+  virtual ~TFarPanelModes() noexcept override;
 
   void SetPanelMode(size_t Mode, const UnicodeString & ColumnTypes = UnicodeString(),
     const UnicodeString & ColumnWidths = UnicodeString(), TStrings * ColumnTitles = nullptr,
@@ -380,7 +380,7 @@ class TFarKeyBarTitles final : public TObject
   friend class TCustomFarFileSystem;
 public:
   TFarKeyBarTitles() noexcept;
-  virtual ~TFarKeyBarTitles() noexcept;
+  virtual ~TFarKeyBarTitles() noexcept override;
 
   void ClearFileKeyBarTitles();
   void ClearKeyBarTitle(TFarShiftStatus ShiftStatus,
@@ -428,7 +428,7 @@ public:
 public:
   TFarPanelItem() = delete;
   explicit TFarPanelItem(PluginPanelItem * APanelItem, bool OwnsItem) noexcept;
-  virtual ~TFarPanelItem() noexcept;
+  virtual ~TFarPanelItem() noexcept override;
 
   PLUGINPANELITEMFLAGS GetFlags() const;
   uint32_t GetFileAttrs() const;
@@ -457,7 +457,7 @@ class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
   explicit THintPanelItem(const UnicodeString & AHint) noexcept;
-  virtual ~THintPanelItem() = default;
+  virtual ~THintPanelItem() override = default;
 
 protected:
   virtual void GetData(
@@ -550,7 +550,7 @@ class TFarEditorInfo : public TObject
 public:
   TFarEditorInfo() = delete;
   explicit TFarEditorInfo(EditorInfo * Info) noexcept;
-  ~TFarEditorInfo() noexcept;
+  virtual ~TFarEditorInfo() noexcept override;
 
   int32_t GetEditorID() const;
   static UnicodeString GetFileName();
