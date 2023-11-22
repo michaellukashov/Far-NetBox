@@ -1548,7 +1548,8 @@ void TTerminal::InternalTryOpen()
         FSessionData->RollbackTunnel();
       }
     } end_try__finally
-
+    if (FFileSystem == nullptr)
+      return;
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
       DebugAssert(FDirectoryChangesCache.get() == nullptr);
@@ -1641,21 +1642,33 @@ void TTerminal::InternalDoTryOpen()
 void TTerminal::InitFileSystem()
 {
   DebugAssert(FFileSystem == nullptr);
-  TFSProtocol FSProtocol = GetSessionData()->GetFSProtocol();
+  const TFSProtocol FSProtocol = GetSessionData()->GetFSProtocol();
   if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() == ftpsNone))
   {
+#if defined(NO_FILEZILLA)
+    LogEvent("FTP protocol is not supported by this build.");
+    FatalError(nullptr, "FTP is not supported");
+#else
     FFSProtocol = cfsFTP;
     FFileSystem = std::make_unique<TFTPFileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
     GetLog()->AddSeparator();
     LogEvent("Using FTP protocol.");
+#endif
   }
   else if ((FSProtocol == fsFTP) && (GetSessionData()->GetFtps() != ftpsNone))
   {
 #if defined(NO_FILEZILLA)
-    LogEvent("FTP protocol is not supported by this build.");
-    FatalError(nullptr, "FTP is not supported");
+    LogEvent("FTPS protocol is not supported by this build.");
+    FatalError(nullptr, "FTPS is not supported");
+#else
+    // FFSProtocol = cfsFTPS;
+    FFileSystem = std::make_unique<TFTPFileSystem>(this);
+    FFileSystem->Init(nullptr);
+    FFileSystem->Open();
+    GetLog()->AddSeparator();
+    LogEvent("Using FTPS protocol.");
 #endif
   }
   else if (FSProtocol == fsWebDAV)
