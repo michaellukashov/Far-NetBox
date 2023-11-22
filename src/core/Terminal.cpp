@@ -2037,17 +2037,17 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
       // let's expect that the main session is already authenticated and its password
       // is not written after, so no locking is necessary
       // (no longer true, once the main session can be reconnected)
-      UnicodeString Password;
+      UnicodeString RememberedPassword;
       if (FTunnelOpening)
       {
-        Password = PrimaryTerminal->GetRememberedTunnelPassword();
+        RememberedPassword = PrimaryTerminal->GetRememberedTunnelPassword();
       }
       else
       {
-        Password = PrimaryTerminal->GetRememberedPassword();
+        RememberedPassword = PrimaryTerminal->GetRememberedPassword();
       }
       FRememberedPasswordUsed = true;
-      Results->SetString(0, Password);
+      Results->SetString(0, RememberedPassword);
       if (!Results->GetString(0).IsEmpty())
       {
         LogEvent("Using remembered password.");
