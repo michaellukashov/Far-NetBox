@@ -273,8 +273,8 @@ struct custom_nballocator_t
 {
   using size_type = size_t;
   using difference_type = ptrdiff_t;
-  using pointer = T*;
-  using const_pointer = const T*;
+  using pointer = T *;
+  using const_pointer = const T *;
   using reference = T&;
   using const_reference = const T&;
   using value_type = T;

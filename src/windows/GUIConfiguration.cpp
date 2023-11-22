@@ -1536,7 +1536,7 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
   FChecksumAlg = Value;
 }
 
-TGUIConfiguration *GetGUIConfiguration()
+TGUIConfiguration * GetGUIConfiguration()
 {
   return dyn_cast<TGUIConfiguration>(GetConfiguration());
 }
