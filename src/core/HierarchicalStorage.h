@@ -45,7 +45,7 @@ public:
     const UnicodeString & Name, const T Default, const TIntMapping & Mapping = TIntMapping());
   int32_t ReadInteger(const UnicodeString & Name, int32_t Default);
   int64_t ReadInt64(const UnicodeString & Name, int64_t Default);
-  TDateTime ReadDateTime(const UnicodeString & Name, TDateTime Default);
+  TDateTime ReadDateTime(const UnicodeString & Name, const TDateTime & Default);
   double ReadFloat(const UnicodeString & Name, double Default);
   UnicodeString ReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
   int32_t ReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size);
@@ -58,7 +58,7 @@ public:
   void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   void WriteInteger(const UnicodeString & Name, int32_t Value);
   void WriteInt64(const UnicodeString & Name, int64_t Value);
-  void WriteDateTime(const UnicodeString & Name, const TDateTime Value);
+  void WriteDateTime(const UnicodeString & Name, const TDateTime & Value);
   void WriteFloat(const UnicodeString & Name, double Value);
   void WriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size);
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);

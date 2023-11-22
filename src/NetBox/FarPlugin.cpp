@@ -214,7 +214,7 @@ wchar_t * TCustomFarPlugin::DuplicateStr(const UnicodeString & Str, bool AllowEm
 
 RECT TCustomFarPlugin::GetPanelBounds(HANDLE PanelHandle)
 {
-  PanelInfo Info;
+  PanelInfo Info{};
   nb::ClearStruct(Info);
   Info.StructSize = sizeof(PanelInfo);
   FarControl(FCTL_GETPANELINFO, 0, nb::ToPtr(&Info), PanelHandle);
@@ -235,11 +235,10 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
   const RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
   const RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
 
-  TCustomFarFileSystem * FarFileSystem{nullptr};
   int32_t Index{0};
   while (!Result && (Index < FOpenedPlugins->GetCount()))
   {
-    FarFileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
+    TCustomFarFileSystem * FarFileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
     DebugAssert(FarFileSystem);
     RECT Bounds = GetPanelBounds(FarFileSystem);
     if (Another && CompareRects(Bounds, PassivePanelBounds))

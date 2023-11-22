@@ -4,11 +4,11 @@
 #include "XmlStorage.h"
 #include "FarUtils.h"
 
-static const char *CONST_XML_VERSION21 = "2.1";
-static const char *CONST_ROOT_NODE = "NetBox";
-static const char *CONST_SESSION_NODE = "Session";
-static const char *CONST_VERSION_ATTR = "version";
-static const char *CONST_NAME_ATTR = "name";
+static const char * CONST_XML_VERSION21 = "2.1";
+static const char * CONST_ROOT_NODE = "NetBox";
+static const char * CONST_SESSION_NODE = "Session";
+static const char * CONST_VERSION_ATTR = "version";
+static const char * CONST_NAME_ATTR = "name";
 
 TXmlStorage::TXmlStorage(const UnicodeString & AStorage,
   const UnicodeString & StoredSessionsSubKey) noexcept :

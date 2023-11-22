@@ -12,9 +12,8 @@
 #include <Interface.h>
 #include <TextsCore.h>
 #include <StrUtils.hpp>
-#include <vector>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 // ValueExists test was probably added to avoid registry exceptions when debugging
 #define READ_REGISTRY(Method) \
@@ -634,7 +633,7 @@ int64_t THierarchicalStorage::ReadInt64(const UnicodeString & Name, int64_t Defa
   }
 }
 
-TDateTime THierarchicalStorage::ReadDateTime(const UnicodeString & Name, TDateTime Default)
+TDateTime THierarchicalStorage::ReadDateTime(const UnicodeString & Name, const TDateTime & Default)
 {
   if (CanRead())
   {
@@ -773,7 +772,7 @@ void THierarchicalStorage::WriteInt64(const UnicodeString & Name, int64_t Value)
   }
 }
 
-void THierarchicalStorage::WriteDateTime(const UnicodeString & Name, TDateTime Value)
+void THierarchicalStorage::WriteDateTime(const UnicodeString & Name, const TDateTime & Value)
 {
   if (CanWrite())
   {
