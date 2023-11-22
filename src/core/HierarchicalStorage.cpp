@@ -120,7 +120,7 @@ void AddIntMapping(TIntMapping & Mapping, const wchar_t * Name, const T & Value)
 {
   if (Name != nullptr)
   {
-    Mapping[UnicodeString(Name)] = (int32_t)Value;
+    Mapping[UnicodeString(Name)] = nb::ToInt32(Value);
   }
 }
 
