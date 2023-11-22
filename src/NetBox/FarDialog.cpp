@@ -2103,7 +2103,8 @@ void TFarText::SetData(const UnicodeString & Value)
   TFarDialogItem::SetData(Value);
   if (GetLeft() >= 0 || GetRight() >= 0)
   {
-    SetWidth(::StripHotkey(Value).Length());
+    // SetWidth(::StripHotkey(Value).Length());
+    SetWidth(Value.Length());
   }
 }
 
