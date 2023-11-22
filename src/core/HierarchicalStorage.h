@@ -268,12 +268,12 @@ protected:
   virtual void DoWriteBool(const UnicodeString & Name, bool Value);
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
   virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value);
-  virtual void DoWriteInt64(const UnicodeString & Name, int32_t Value);
-  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int Size);
+  virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value);
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size);
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default);
   virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping);
-  virtual int32_t DoReadInt64(const UnicodeString & Name, int32_t Default);
+  virtual int64_t DoReadInt64(const UnicodeString & Name, int64_t Default);
   virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default);
   virtual double DoReadFloat(const UnicodeString & Name, double Default);
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default);
