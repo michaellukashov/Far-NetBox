@@ -306,7 +306,7 @@ uint32_t THierarchicalStorage::GetCurrentAccess()
 bool THierarchicalStorage::OpenSubKeyPath(const UnicodeString & KeyPath, bool CanCreate)
 {
   DebugAssert(!KeyPath.IsEmpty() && (KeyPath[KeyPath.Length()] != L'\\'));
-  bool Result;
+  bool Result{false};
   UnicodeString Buf(KeyPath);
   int32_t Opens = 0;
   while (!Buf.IsEmpty())
@@ -339,9 +339,9 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & ASubKey, bool CanCre
 {
   const UnicodeString MungedKey = MungeKeyName(ASubKey);
 
-  bool Result;
-  uint32_t InheritAccess;
-  uint32_t Access;
+  bool Result{false};
+  uint32_t InheritAccess{0};
+  uint32_t Access{0};
   // For the first open, CanWrite > GetCurrentAccess > ReadAccess has a (needed) side effect of caching root access.
   if (!CanWrite() && CanCreate && !KeyExists(MungedKey))
   {
