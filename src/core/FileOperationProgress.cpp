@@ -1035,7 +1035,7 @@ bool TFileOperationProgressType::IsTransfer() const
   return IsTransferOperation(Operation);
 }
 
-TFileOperationProgressType & TFileOperationProgressType::operator=(const TFileOperationProgressType & rhs)
+TFileOperationProgressType & TFileOperationProgressType::operator =(const TFileOperationProgressType & rhs)
 {
   FFileName = rhs.FFileName;
   FFullFileName = rhs.FFullFileName;

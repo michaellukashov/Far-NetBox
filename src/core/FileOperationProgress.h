@@ -44,7 +44,7 @@ public:
   friend class TFileOperationProgressType;
   public:
     TPersistence() noexcept;
-    TPersistence(const TPersistence &) = default;
+    TPersistence(const TPersistence &) = delete;
     TPersistence & operator=(const TPersistence &) = default;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
     TFileOperationStatistics * Statistics{FStatistics};
@@ -270,7 +270,7 @@ public:
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
   static bool IsTransferOperation(TFileOperation Operation);
-  TFileOperationProgressType(const TFileOperationProgressType & rhs) { operator=(rhs); }
+  TFileOperationProgressType(const TFileOperationProgressType & rhs) { operator =(rhs); }
   TFileOperationProgressType & operator=(const TFileOperationProgressType &);
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
