@@ -289,7 +289,7 @@ private:
   TEncryptedFileNames FEncryptedFileNames;
   nb::set_t<UnicodeString> FFoldersScannedForEncryptedFiles;
   RawByteString FEncryptKey;
-  TFileOperationProgressType::TPersistence * FOperationProgressPersistence{nullptr};
+  gsl::owner<TFileOperationProgressType::TPersistence *> FOperationProgressPersistence{nullptr};
   TOnceDoneOperation FOperationProgressOnceDoneOperation{odoIdle};
   UnicodeString FCollectedCalculatedChecksum;
 
