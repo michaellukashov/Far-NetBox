@@ -189,7 +189,7 @@ public:
   NB_CORE_EXPORT friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
 
   wchar_t operator[](int32_t Idx) const;
-  wchar_t &operator[](int32_t Idx);
+  wchar_t & operator[](int32_t Idx);
 
 private:
   void Init(const wchar_t * Str, int32_t Length);
@@ -227,7 +227,7 @@ public:
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(int32_t nLength);
-  inline AnsiString &Delete(int32_t Index, int32_t Count);
+  inline AnsiString & Delete(int32_t Index, int32_t Count);
   AnsiString & Clear();
   AnsiString & Insert(const char * Str, int32_t Pos);
   AnsiString SubString(int32_t Pos) const;
@@ -240,7 +240,7 @@ public:
   char & operator [](int32_t Idx);
 
   AnsiString & Append(const char * Str, int32_t StrLen);
-  AnsiString & Append(const AnsiString &Str);
+  AnsiString & Append(const AnsiString & Str);
   AnsiString & Append(const char * Str);
   AnsiString & Append(char Ch);
 
@@ -256,13 +256,13 @@ public:
   AnsiString & operator =(wchar_t chData);
 
   AnsiString operator +(const UnicodeString & rhs) const;
-  AnsiString operator +(const AnsiString &rhs) const;
+  AnsiString operator +(const AnsiString & rhs) const;
 
   AnsiString & operator +=(const AnsiString & rhs);
   AnsiString & operator +=(char Ch);
   AnsiString & operator +=(const char * rhs);
 
-  inline friend bool operator ==(const AnsiString &lhs, const AnsiString &rhs)
+  inline friend bool operator ==(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data == rhs.Data; }
   inline friend bool operator !=(const AnsiString & lhs, const AnsiString & rhs)
   { return lhs.Data != rhs.Data; }
@@ -369,25 +369,25 @@ private:
 namespace rde {
 
 template<typename S>
-inline bool operator ==(const S &lhs, const S &rhs)
+inline bool operator ==(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) == 0;
 }
 
 template<typename S>
-inline bool operator !=(const S &lhs, const S &rhs)
+inline bool operator !=(const S & lhs, const S & rhs)
 {
   return !(lhs == rhs);
 }
 
 template<typename S>
-inline bool operator <(const S &lhs, const S &rhs)
+inline bool operator <(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) < 0;
 }
 
 template<typename S>
-inline bool operator >(const S &lhs, const S &rhs)
+inline bool operator >(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) > 0;
 }
@@ -397,6 +397,6 @@ inline bool operator >(const S &lhs, const S &rhs)
 // utility functions
 
 template <class StringClass>
-inline char * ToChar(StringClass &a) { return const_cast<char *>(a.c_str()); }
+inline char * ToChar(StringClass & a) { return const_cast<char *>(a.c_str()); }
 template <class StringClass>
-inline wchar_t * ToWChar(StringClass &a) { return const_cast<wchar_t *>(a.c_str()); }
+inline wchar_t * ToWChar(StringClass & a) { return const_cast<wchar_t *>(a.c_str()); }
