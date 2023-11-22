@@ -339,12 +339,12 @@ int32_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & St
   return 0;
 }
 
-int StringCmp(const wchar_t *S1, const wchar_t *S2)
+int32_t StringCmp(const wchar_t *S1, const wchar_t *S2)
 {
   return ::CompareString(0, SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
 
-int StringCmpI(const wchar_t *S1, const wchar_t *S2)
+int32_t StringCmpI(const wchar_t *S1, const wchar_t *S2)
 {
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
@@ -1244,11 +1244,11 @@ static bool DecodeDateFully(const TDateTime &DateTime,
   uint16_t &Year, uint16_t &Month, uint16_t &Day,
   uint16_t &DOW)
 {
-  static const int D1 = 365;
-  static const int D4 = D1 * 4 + 1;
-  static const int D100 = D4 * 25 - 1;
-  static const int D400 = D100 * 4 + 1;
-  int T = DateTimeToTimeStamp(DateTime).Date;
+  static const int32_t D1 = 365;
+  static const int32_t D4 = D1 * 4 + 1;
+  static const int32_t D100 = D4 * 25 - 1;
+  static const int32_t D400 = D100 * 4 + 1;
+  int32_t T = DateTimeToTimeStamp(DateTime).Date;
   if (T <= 0)
   {
     Year = 0;
@@ -1329,11 +1329,11 @@ static bool TryEncodeDate(uint16_t Year, uint16_t Month, uint16_t Day, TDateTime
   if ((Year >= 1) && (Year <= 9999) && (Month >= 1) && (Month <= 12) &&
     (Day >= 1) && (Day <= (*DayTable)[Month - 1]))
   {
-    for (int Index = 1; Index <= Month - 1; Index++)
+    for (int32_t Index = 1; Index <= Month - 1; Index++)
     {
       Day += (*DayTable)[Index - 1];
     }
-    const int Idx = Year - 1;
+    const int32_t Idx = Year - 1;
     Date = TDateTime(nb::ToDouble(Idx * 365 + Idx / 4 - Idx / 100 + Idx / 400 + Day - DateDelta));
     return true;
   }
@@ -1704,7 +1704,7 @@ uint32_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
 {
   uint32_t Result = 0;
   UnicodeString Version = VersionMumberStr;
-  int Shift = 16;
+  int32_t Shift = 16;
   while (!Version.IsEmpty())
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
@@ -1724,7 +1724,7 @@ UnicodeString VersionNumberToStr(uint32_t VersionNumber)
   return Result;
 }
 
-bool CheckWin32Version(int Major, int Minor)
+bool CheckWin32Version(int32_t Major, int32_t Minor)
 {
   return (GetGlobals()->Win32MajorVersion >= Major) && (GetGlobals()->Win32MinorVersion >= Minor);
 }

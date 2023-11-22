@@ -284,8 +284,8 @@ int32_t FindDelimiter(const UnicodeString & Delimiters, const UnicodeString & St
 NB_CORE_EXPORT UnicodeString UTF8ToString(const RawByteString & Str);
 NB_CORE_EXPORT UnicodeString UTF8ToString(const char * Str, int32_t Len);
 
-NB_CORE_EXPORT int StringCmp(const wchar_t * S1, const wchar_t * S2);
-NB_CORE_EXPORT int StringCmpI(const wchar_t * S1, const wchar_t * S2);
+NB_CORE_EXPORT int32_t StringCmp(const wchar_t * S1, const wchar_t * S2);
+NB_CORE_EXPORT int32_t StringCmpI(const wchar_t * S1, const wchar_t * S2);
 
 NB_CORE_EXPORT UnicodeString IntToStr(int32_t Value);
 NB_CORE_EXPORT UnicodeString UIntToStr(uint32_t Value);
