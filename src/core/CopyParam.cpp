@@ -418,7 +418,7 @@ void TCopyParamType::DoGetInfoStr(
     {
       if (ADD(StripHotkey(LoadStr(COPY_PARAM_NEWER_ONLY)), cpaIncludeMaskOnly | cpaNoNewerOnly))
       {
-//        ScriptArgs += RtfSwitch(NEWERONLY_SWICH, Link);
+//        ScriptArgs += RtfSwitch(NEWERONLY_SWITCH, Link);
         CodeNonDefaults.NewerOnly = NewerOnly;
       }
     }

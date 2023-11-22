@@ -1883,8 +1883,8 @@ void TS3FileSystem::ConfirmOverwrite(
 {
   const uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
   nb::vector_t<TQueryButtonAlias> Aliases;
-  Aliases.push_back(TQueryButtonAlias::CreateYesToAllGrouppedWithYes());
-  Aliases.push_back(TQueryButtonAlias::CreateNoToAllGrouppedWithNo());
+  Aliases.push_back(TQueryButtonAlias::CreateYesToAllGroupedWithYes());
+  Aliases.push_back(TQueryButtonAlias::CreateNoToAllGroupedWithNo());
 
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = &Aliases[0];

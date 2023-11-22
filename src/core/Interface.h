@@ -6,7 +6,7 @@
 #include "Configuration.h"
 #include "SessionData.h"
 #endif // FARPLUGIN
-__removed #include <typeinfo>
+// #include <typeinfo>
 #define HELP_NONE ""
 #define SCRIPT_SWITCH "script"
 #define COMMAND_SWITCH "Command"
@@ -22,8 +22,8 @@ __removed #include <typeinfo>
 #define TRANSFER_SWITCH L"transfer"
 #define FILEMASK_SWITCH L"filemask"
 #define RESUMESUPPORT_SWITCH L"resumesupport"
-#define NEWERONLY_SWICH L"neweronly"
-#define NONEWERONLY_SWICH L"noneweronly"
+#define NEWERONLY_SWITCH L"neweronly"
+#define NONEWERONLY_SWITCH L"noneweronly"
 #define DELETE_SWITCH L"delete"
 #define REFRESH_SWITCH L"refresh"
 #define RAWTRANSFERSETTINGS_SWITCH L"rawtransfersettings"
@@ -109,15 +109,15 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
   TButtonSubmitEvent OnSubmit;
   int32_t GroupWith{0};
   bool Default{false};
-  TShiftStateFlag GrouppedShiftState{ssShift};
+  TShiftStateFlag GroupedShiftState{ssShift};
   bool ElevationRequired{false};
   bool MenuButton{false};
   UnicodeString ActionAlias;
 
-  static TQueryButtonAlias CreateYesToAllGrouppedWithYes();
-  static TQueryButtonAlias CreateNoToAllGrouppedWithNo();
-  static TQueryButtonAlias CreateAllAsYesToNewerGrouppedWithYes();
-  static TQueryButtonAlias CreateIgnoreAsRenameGrouppedWithNo();
+  static TQueryButtonAlias CreateYesToAllGroupedWithYes();
+  static TQueryButtonAlias CreateNoToAllGroupedWithNo();
+  static TQueryButtonAlias CreateAllAsYesToNewerGroupedWithYes();
+  static TQueryButtonAlias CreateIgnoreAsRenameGroupedWithNo();
 };
 
 using TQueryParamsTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;

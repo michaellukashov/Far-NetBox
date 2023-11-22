@@ -4557,11 +4557,11 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
     Aliases[0].Button = qaRetry;
     Aliases[0].Alias = LoadStr(APPEND_BUTTON);
     Aliases[0].GroupWith = qaNo;
-    Aliases[0].GrouppedShiftState = ssAlt;
-    Aliases[1] = TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes();
-    Aliases[2] = TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo();
-    Aliases[3] = TQueryButtonAlias::CreateYesToAllGrouppedWithYes();
-    Aliases[4] = TQueryButtonAlias::CreateNoToAllGrouppedWithNo();
+    Aliases[0].GroupedShiftState = ssAlt;
+    Aliases[1] = TQueryButtonAlias::CreateAllAsYesToNewerGroupedWithYes();
+    Aliases[2] = TQueryButtonAlias::CreateIgnoreAsRenameGroupedWithNo();
+    Aliases[3] = TQueryButtonAlias::CreateYesToAllGroupedWithYes();
+    Aliases[4] = TQueryButtonAlias::CreateNoToAllGroupedWithNo();
     TQueryParams QueryParams(qpNeverAskAgainCheck);
     QueryParams.NoBatchAnswers = qaIgnore | qaRetry | qaAll;
     QueryParams.Aliases = Aliases;

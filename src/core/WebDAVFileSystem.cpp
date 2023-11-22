@@ -1214,9 +1214,9 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   // all = "yes to newer"
   uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
   TQueryButtonAlias Aliases[3];
-  Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes();
-  Aliases[1] = TQueryButtonAlias::CreateYesToAllGrouppedWithYes();
-  Aliases[2] = TQueryButtonAlias::CreateNoToAllGrouppedWithNo();
+  Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGroupedWithYes();
+  Aliases[1] = TQueryButtonAlias::CreateYesToAllGroupedWithYes();
+  Aliases[2] = TQueryButtonAlias::CreateNoToAllGroupedWithNo();
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = _countof(Aliases);

@@ -1645,9 +1645,9 @@ uint32_t TSCPFileSystem::ConfirmOverwrite(
   TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
 
   TQueryButtonAlias Aliases[3];
-  Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes();
-  Aliases[1] = TQueryButtonAlias::CreateYesToAllGrouppedWithYes();
-  Aliases[2] = TQueryButtonAlias::CreateNoToAllGrouppedWithNo();
+  Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGroupedWithYes();
+  Aliases[1] = TQueryButtonAlias::CreateYesToAllGroupedWithYes();
+  Aliases[2] = TQueryButtonAlias::CreateNoToAllGroupedWithNo();
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = Aliases;
   QueryParams.AliasesCount = _countof(Aliases);

@@ -26,7 +26,7 @@ TQueryButtonAlias::TQueryButtonAlias() noexcept :
   OnSubmit(nullptr),
   GroupWith(-1),
   Default(false),
-  GrouppedShiftState(ssShift),
+  GroupedShiftState(ssShift),
   ElevationRequired(false)
 {
 #if defined(__BORLANDC__)
@@ -37,41 +37,41 @@ TQueryButtonAlias::TQueryButtonAlias() noexcept :
 #endif
 }
 
-TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGrouppedWithYes()
+TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGroupedWithYes()
 {
   TQueryButtonAlias Result;
   Result.Button = qaYesToAll;
   Result.GroupWith = qaYes;
-  Result.GrouppedShiftState = ssShift;
+  Result.GroupedShiftState = ssShift;
   return Result;
 }
 
-TQueryButtonAlias TQueryButtonAlias::CreateNoToAllGrouppedWithNo()
+TQueryButtonAlias TQueryButtonAlias::CreateNoToAllGroupedWithNo()
 {
   TQueryButtonAlias Result;
   Result.Button = qaNoToAll;
   Result.GroupWith = qaNo;
-  Result.GrouppedShiftState = ssShift;
+  Result.GroupedShiftState = ssShift;
   return Result;
 }
 
-TQueryButtonAlias TQueryButtonAlias::CreateAllAsYesToNewerGrouppedWithYes()
+TQueryButtonAlias TQueryButtonAlias::CreateAllAsYesToNewerGroupedWithYes()
 {
   TQueryButtonAlias Result;
   Result.Button = qaAll;
   Result.Alias = LoadStr(YES_TO_NEWER_BUTTON);
   Result.GroupWith = qaYes;
-  Result.GrouppedShiftState = ssCtrl;
+  Result.GroupedShiftState = ssCtrl;
   return Result;
 }
 
-TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGrouppedWithNo()
+TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGroupedWithNo()
 {
   TQueryButtonAlias Result;
   Result.Button = qaIgnore;
   Result.Alias = LoadStr(RENAME_BUTTON);
   Result.GroupWith = qaNo;
-  Result.GrouppedShiftState = ssCtrl;
+  Result.GroupedShiftState = ssCtrl;
   return Result;
 }
 
