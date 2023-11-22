@@ -1549,7 +1549,10 @@ void TTerminal::InternalTryOpen()
       }
     } end_try__finally
     if (FFileSystem == nullptr)
+    {
+      // TODO: warn user
       return;
+    }
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
       DebugAssert(FDirectoryChangesCache.get() == nullptr);
@@ -3545,6 +3548,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
 
 void TTerminal::DoStartup()
 {
+  DebugAssert(FFileSystem != nullptr);
   LogEvent("Doing startup conversation with host.");
   BeginTransaction();
   try__finally
