@@ -234,7 +234,7 @@ private:
     FEAT
   };
 
-  mutable gsl::owner<TFileZillaIntf *> FFileZillaIntf{nullptr};
+  mutable std::unique_ptr<TFileZillaIntf> FFileZillaIntf{nullptr};
   TCriticalSection FQueueCriticalSection;
   TCriticalSection FTransferStatusCriticalSection;
   std::unique_ptr<TMessageQueue> FQueue{nullptr};

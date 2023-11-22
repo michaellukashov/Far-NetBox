@@ -353,7 +353,8 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
     DiscardMessages();
   }
 
-  SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
+  //SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
+  FFileZillaIntf.reset();
 
 #if 0
   delete FFileZillaIntf;
@@ -428,7 +429,7 @@ void TFTPFileSystem::Open()
       FileZillaImpl->SetDebugLevel(LogLevel);
 
       FileZillaImpl->Init();
-      FFileZillaIntf = FileZillaImpl.release();
+      FFileZillaIntf.reset(FileZillaImpl.release());
     }
     catch__removed
     ({
