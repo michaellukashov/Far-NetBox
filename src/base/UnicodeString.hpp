@@ -298,9 +298,11 @@ public:
   explicit RawByteString(const unsigned char * Str);
   explicit RawByteString(const unsigned char * Str, int32_t Length);
   RawByteString(const UnicodeString & Str);
-  RawByteString(const RawByteString &Str);
-  RawByteString(const AnsiString &Str);
-  RawByteString(const UTF8String &Str);
+  explicit RawByteString(int32_t Length) = delete;
+  explicit RawByteString(int32_t Length, unsigned char Ch) : Data(static_cast<char>(Ch), Length) {}
+  RawByteString(const RawByteString & Str);
+  RawByteString(const AnsiString & Str);
+  RawByteString(const UTF8String & Str);
   ~RawByteString() = default;
 
   operator const char *() const { return this->c_str(); }
