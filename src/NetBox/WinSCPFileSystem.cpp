@@ -2644,6 +2644,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   if (ExportStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), true))
   {
     ExportData->Save(ExportStorage.get(), false, FactoryDefaults.get());
+    ExportStorage->CloseSubKey();
   }
 }
 
