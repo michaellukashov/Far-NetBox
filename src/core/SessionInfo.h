@@ -292,7 +292,7 @@ friend class TSessionActionRecord;
   NB_DISABLE_COPY(TSessionLog)
 public:
   TSessionLog() = delete;
-  explicit TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
+  explicit TSessionLog(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
     TConfiguration * Configuration) noexcept;
   virtual ~TSessionLog() noexcept;
 
@@ -362,7 +362,7 @@ friend class TSessionActionRecord;
   NB_DISABLE_COPY(TActionLog)
 public:
   TActionLog() = delete;
-  explicit TActionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
+  explicit TActionLog(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
     TConfiguration * Configuration) noexcept;
   // For fatal failures for .NET assembly
   explicit TActionLog(TDateTime Started, TConfiguration * Configuration) noexcept;
@@ -389,7 +389,7 @@ protected:
   void Add(const UnicodeString & Line);
   void AddIndented(const UnicodeString & ALine);
   void AddMessages(const UnicodeString & Indent, TStrings * Messages);
-  void Init(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
+  void Init(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
     TConfiguration * Configuration);
 
 private:

@@ -1018,7 +1018,7 @@ bool TRegistryStorage::DoReadBool(const UnicodeString & Name, bool Default)
   READ_REGISTRY(ReadBool);
 }
 
-TDateTime TRegistryStorage::DoReadDateTime(const UnicodeString & Name, TDateTime Default)
+TDateTime TRegistryStorage::DoReadDateTime(const UnicodeString & Name, const TDateTime & Default)
 {
   // Internally does what would DoReadBinaryData do (like in DoReadInt64)
   READ_REGISTRY(ReadDateTime);

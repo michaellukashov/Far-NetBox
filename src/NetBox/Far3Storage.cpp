@@ -159,7 +159,7 @@ bool TFar3Storage::DoReadBool(const UnicodeString & Name, bool Default)
   return FPluginSettings.Get(FRoot, Name.c_str(), Default);
 }
 
-TDateTime TFar3Storage::DoReadDateTime(const UnicodeString & Name, TDateTime Default)
+TDateTime TFar3Storage::DoReadDateTime(const UnicodeString & Name, const TDateTime & Default)
 {
   TDateTime Result;
   double Val = 0.0;

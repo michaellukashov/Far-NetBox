@@ -1148,7 +1148,7 @@ NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
 //template<int s> struct CheckSizeT;
 //CheckSizeT<sizeof(TSessionData)> checkSize;
 
-NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, TDateTime Started, TSessionData * SessionData);
+NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData);
 NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
 NB_CORE_EXPORT int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString & HostName);

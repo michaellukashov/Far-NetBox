@@ -340,7 +340,7 @@ int64_t TXmlStorage::DoReadInt64(const UnicodeString & Name, int64_t Default)
   return ::StrToInt64Def(GetSubKeyText(Name), Default);
 }
 
-TDateTime TXmlStorage::DoReadDateTime(const UnicodeString & Name, TDateTime Default)
+TDateTime TXmlStorage::DoReadDateTime(const UnicodeString & Name, const TDateTime & Default)
 {
   const double Result = ReadFloat(Name, Default.GetValue());
   return TDateTime(Result);

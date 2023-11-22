@@ -2693,7 +2693,7 @@ void TTerminal::AddCachedFileList(TRemoteFileList * FileList)
   FDirectoryCache->AddFileList(FileList);
 }
 
-TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad)
+TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, const TDateTime & Timestamp, bool CanLoad)
 {
   std::unique_ptr<TRemoteFileList> Result;
   if (base::UnixSamePath(FFiles->GetDirectory(), APath))
@@ -3737,7 +3737,7 @@ void TTerminal::LogRemoteFile(TRemoteFile * AFile)
 }
 
 UnicodeString TTerminal::FormatFileDetailsForLog(
-  const UnicodeString & AFileName, TDateTime AModification, int64_t Size, const TRemoteFile * LinkedFile) const
+  const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size, const TRemoteFile * LinkedFile) const
 {
   UnicodeString Result;
   // optimization
@@ -3753,7 +3753,7 @@ UnicodeString TTerminal::FormatFileDetailsForLog(
   return Result;
 }
 
-void TTerminal::LogFileDetails(const UnicodeString & AFileName, TDateTime AModification, int64_t Size, const TRemoteFile * LinkedFile)
+void TTerminal::LogFileDetails(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size, const TRemoteFile * LinkedFile)
 {
   // optimization
   if (GetLog()->GetLogging())
@@ -8571,7 +8571,7 @@ void TTerminal::UpdateTargetAttrs(
   }
 }
 
-void TTerminal::UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode)
+void TTerminal::UpdateTargetTime(HANDLE Handle, const TDateTime & Modification, TDSTMode DSTMode)
 {
   LogEvent(FORMAT("Preserving timestamp [%s]", ::StandardTimestamp(Modification)));
   const FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);

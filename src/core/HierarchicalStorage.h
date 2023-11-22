@@ -148,7 +148,7 @@ protected:
   int32_t ReadIntegerWithMapping(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping);
   virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) = 0;
   virtual int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) = 0;
-  virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) = 0;
+  virtual TDateTime DoReadDateTime(const UnicodeString & Name, const TDateTime & Default) = 0;
   virtual double DoReadFloat(const UnicodeString & Name, double Default) = 0;
   virtual int32_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size) = 0;
 
@@ -209,7 +209,7 @@ protected:
   virtual bool DoReadBool(const UnicodeString & Name, bool Default) override;
   virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;
   virtual int64_t DoReadInt64(const UnicodeString & Name, int64_t Default) override;
-  virtual TDateTime DoReadDateTime(const UnicodeString & Name, TDateTime Default) override;
+  virtual TDateTime DoReadDateTime(const UnicodeString & Name, const TDateTime & Default) override;
   virtual double DoReadFloat(const UnicodeString & Name, double Default) override;
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) override;
   virtual int32_t DoReadBinaryData(const UnicodeString & Name, void * Buffer, int32_t Size) override;

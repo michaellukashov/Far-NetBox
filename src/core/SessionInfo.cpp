@@ -787,7 +787,7 @@ TFileSystemInfo::TFileSystemInfo() noexcept
 }
 
 
-static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, TDateTime Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
+static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
 {
   // FILE * Result;
   UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
@@ -806,7 +806,7 @@ static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, TDateTime Star
 
 
 constexpr wchar_t * LogLineMarks = L"<>!.*";
-TSessionLog::TSessionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
+TSessionLog::TSessionLog(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
   TConfiguration * Configuration) noexcept :
   FConfiguration(Configuration),
   FParent(nullptr),
@@ -1538,7 +1538,7 @@ void TSessionLog::AddSeparator()
 }
 
 
-TActionLog::TActionLog(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
+TActionLog::TActionLog(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
   TConfiguration * Configuration) noexcept :
   FConfiguration(Configuration),
   FLogging(false),
@@ -1564,7 +1564,7 @@ TActionLog::TActionLog(TDateTime Started, TConfiguration * Configuration) noexce
   ReflectSettings();
 }
 
-void TActionLog::Init(TSessionUI * UI, TDateTime Started, TSessionData * SessionData,
+void TActionLog::Init(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
   TConfiguration * Configuration)
 {
   // FCriticalSection = new TCriticalSection;

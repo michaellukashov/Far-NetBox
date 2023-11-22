@@ -494,8 +494,8 @@ protected:
   UnicodeString GetRemoteFileInfo(TRemoteFile * AFile) const;
   void LogRemoteFile(TRemoteFile * AFile);
   UnicodeString FormatFileDetailsForLog(
-    const UnicodeString & AFileName, TDateTime AModification, int64_t Size, const TRemoteFile * LinkedFile = nullptr) const;
-  void LogFileDetails(const UnicodeString & FileName, TDateTime Modification, int64_t Size, const TRemoteFile * LinkedFile = nullptr);
+    const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size, const TRemoteFile * LinkedFile = nullptr) const;
+  void LogFileDetails(const UnicodeString & FileName, const TDateTime & Modification, int64_t Size, const TRemoteFile * LinkedFile = nullptr);
   void LogFileDone(
     TFileOperationProgressType * OperationProgress, const UnicodeString & DestFileName,
     TTransferSessionAction & Action);
@@ -565,7 +565,7 @@ protected:
   void SinkFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void UpdateTargetAttrs(
     const UnicodeString & ADestFullName, const TRemoteFile * AFile, const TCopyParamType * CopyParam, int32_t Attrs);
-  void UpdateTargetTime(HANDLE Handle, TDateTime Modification, TDSTMode DSTMode);
+  void UpdateTargetTime(HANDLE Handle, const TDateTime & Modification, TDSTMode DSTMode);
   void CheckParallelFileTransfer(
     const UnicodeString & TargetDir, TStringList * Files, const TCopyParamType * CopyParam, int32_t Params,
     UnicodeString & ParallelFileName, int64_t & ParallelFileSize, TFileOperationProgressType * OperationProgress);
@@ -685,7 +685,7 @@ public:
   void SpaceAvailable(const UnicodeString & APath, TSpaceAvailable & ASpaceAvailable);
   void LockFiles(TStrings * AFileList);
   void UnlockFiles(TStrings * AFileList);
-  TRemoteFileList * DirectoryFileList(const UnicodeString & APath, TDateTime Timestamp, bool CanLoad);
+  TRemoteFileList * DirectoryFileList(const UnicodeString & APath, const TDateTime & Timestamp, bool CanLoad);
   void MakeLocalFileList(
     const UnicodeString & AFileName, const TSearchRecSmart & Rec, void * Param);
   bool FileOperationLoopQuery(Exception & E,
