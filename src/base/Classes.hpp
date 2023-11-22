@@ -108,7 +108,7 @@ struct TRect
     Right(right),
     Bottom(bottom)
   {}
-  bool operator==(const TRect &other) const
+  bool operator==(const TRect & other) const
   {
     return
       Left == other.Left &&
@@ -116,11 +116,11 @@ struct TRect
       Right == other.Right &&
       Bottom == other.Bottom;
   }
-  bool operator!=(const TRect &other) const
+  bool operator!=(const TRect & other) const
   {
     return !(operator==(other));
   }
-  bool operator==(const RECT &other) const
+  bool operator==(const RECT & other) const
   {
     return
       Left == other.left &&
@@ -128,7 +128,7 @@ struct TRect
       Right == other.right &&
       Bottom == other.bottom;
   }
-  bool operator!=(const RECT &other) const
+  bool operator!=(const RECT & other) const
   {
     return !(operator==(other));
   }
@@ -601,8 +601,8 @@ constexpr const double MaxDateTime = 2958465.99999; // { 12 / 31 / 9999 11:59 : 
 
 // TODO: move to DateUtils.hpp
 NB_CORE_EXPORT TDateTime Now();
-NB_CORE_EXPORT TDateTime SpanOfNowAndThen(const TDateTime &ANow, const TDateTime &AThen);
-NB_CORE_EXPORT double MilliSecondSpan(const TDateTime &ANow, const TDateTime &AThen);
+NB_CORE_EXPORT TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
 
 class TTimeSpan
 {
@@ -912,7 +912,7 @@ public:
     void * Buffer, int32_t BufSize) const;
 
   void WriteBool(const UnicodeString & Name, bool Value);
-  void WriteDateTime(const UnicodeString & Name, const TDateTime &Value);
+  void WriteDateTime(const UnicodeString & Name, const TDateTime & Value);
   void WriteFloat(const UnicodeString & Name, double Value);
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);
   void WriteStringRaw(const UnicodeString & Name, const UnicodeString & Value);
@@ -971,11 +971,11 @@ public:
   {
     return (FValue & Value) != 0;
   }
-  bool operator ==(const TValidProperties &rhs) const
+  bool operator ==(const TValidProperties & rhs) const
   {
     return FValue == rhs.FValue;
   }
-  bool operator !=(const TValidProperties &rhs) const
+  bool operator !=(const TValidProperties & rhs) const
   {
     return !(operator==(rhs));
   }

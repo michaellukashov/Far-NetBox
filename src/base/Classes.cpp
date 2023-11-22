@@ -946,7 +946,7 @@ TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen)
   return Result;
 }
 
-double MilliSecondSpan(const TDateTime &ANow, const TDateTime &AThen)
+double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen)
 {
   const double Result = MSecsPerDay * SpanOfNowAndThen(ANow, AThen);
   return Result;
@@ -1572,12 +1572,12 @@ bool TRegistry::OpenKey(const UnicodeString & AKey, bool CanCreate)
   if (!CanCreate || S.IsEmpty())
   {
     Result = ::RegOpenKeyEx(GetBaseKey(Relative), S.c_str(), 0,
-        FAccess, &TempKey) == ERROR_SUCCESS;
+      FAccess, &TempKey) == ERROR_SUCCESS;
   }
   else
   {
     Result = ::RegCreateKeyEx(GetBaseKey(Relative), S.c_str(), 0, nullptr,
-        REG_OPTION_NON_VOLATILE, FAccess, nullptr, &TempKey, nullptr) == ERROR_SUCCESS;
+      REG_OPTION_NON_VOLATILE, FAccess, nullptr, &TempKey, nullptr) == ERROR_SUCCESS;
   }
   if (Result)
   {
@@ -1653,12 +1653,12 @@ bool TRegistry::ValueExists(const UnicodeString & Value) const
   return Result;
 }
 
-bool TRegistry::GetDataInfo(const UnicodeString & ValueName, TRegDataInfo &Value) const
+bool TRegistry::GetDataInfo(const UnicodeString & ValueName, TRegDataInfo & Value) const
 {
   DWORD DataType;
   nb::ClearStruct(Value);
   const bool Result = (::RegQueryValueEx(GetCurrentKey(), ValueName.c_str(), nullptr, &DataType, nullptr,
-        &Value.DataSize) == ERROR_SUCCESS);
+    &Value.DataSize) == ERROR_SUCCESS);
   Value.RegData = DataTypeToRegData(DataType);
   return Result;
 }
@@ -1814,7 +1814,7 @@ int32_t TRegistry::GetData(const UnicodeString & Name, void * Buffer,
   DWORD DataType = REG_NONE;
   DWORD BufSize = nb::ToDWord(ABufSize);
   if (::RegQueryValueEx(GetCurrentKey(), Name.c_str(), nullptr, &DataType,
-      static_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
+    static_cast<BYTE *>(Buffer), &BufSize) != ERROR_SUCCESS)
   {
     throw Exception("RegQueryValueEx failed"); // FIXME ERegistryException.CreateResFmt(@SRegGetDataFailed, [Name]);
   }
@@ -1839,7 +1839,7 @@ void TRegistry::WriteBool(const UnicodeString & Name, bool Value)
   WriteInteger(Name, Value);
 }
 
-void TRegistry::WriteDateTime(const UnicodeString & Name, const TDateTime &Value)
+void TRegistry::WriteDateTime(const UnicodeString & Name, const TDateTime & Value)
 {
   const double Val = Value.GetValue();
   PutData(Name, &Val, sizeof(double), rdBinary);
@@ -1912,7 +1912,7 @@ HKEY TRegistry::GetKey(const UnicodeString & AKey) const
   return nullptr;
 }
 
-bool TRegistry::GetKeyInfo(TRegKeyInfo &Value) const
+bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
 {
   nb::ClearStruct(Value);
   const bool Result = ::RegQueryInfoKey(GetCurrentKey(), nullptr, nullptr, nullptr, &Value.NumSubKeys,
