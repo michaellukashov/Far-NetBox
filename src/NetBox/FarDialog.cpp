@@ -1541,7 +1541,7 @@ void TFarDialogItem::SetWidth(int32_t Value)
   TRect R = GetBounds();
   if (R.Left >= 0)
   {
-    R.Right = R.Left + nb::ToInt32(Value - 1);
+    R.Right = R.Left + Value - 1;
   }
   else
   {
