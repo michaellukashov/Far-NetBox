@@ -2129,13 +2129,12 @@ bool FileRemove(const UnicodeString & AFileName)
 
 bool DoExists(bool R, const UnicodeString & Path)
 {
-  int32_t Error;
   bool Result = R;
   if (!Result)
   {
-    Error = GetLastError();
-    if ((Error = ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
-       (Error = ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
+    int32_t Error = GetLastError();
+    if ((Error == ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
+       (Error == ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
     {
       Result = SysUtulsDirectoryExists(ApiPath(ExtractFileDir(Path)));
     }
