@@ -692,6 +692,7 @@ FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append = 
 bool WriteAndFlush(FILE * file, void const * data, size_t size);
 
 bool FileExists(const UnicodeString & AFileName);
+bool FileRemove(const UnicodeString & AFileName);
 bool FileExistsFix(const UnicodeString & Path);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
 bool DirectoryExists(const UnicodeString &ADir);

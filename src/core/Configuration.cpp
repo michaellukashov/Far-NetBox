@@ -1894,7 +1894,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
         base::FileExists(ApiPath(PrevRandomSeedFileName)))
     {
       // ignore any error
-      ::SysUtulsRemoveFile(ApiPath(PrevRandomSeedFileName));
+      base::FileRemove(ApiPath(PrevRandomSeedFileName));
     }
   }
 }
