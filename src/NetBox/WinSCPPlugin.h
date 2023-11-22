@@ -34,7 +34,7 @@ protected:
   virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags, TStrings * DiskMenuStrings,
     TStrings * PluginMenuStrings, TStrings * PluginConfigStrings,
     TStrings * CommandPrefixes) override;
-  virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, int32_t Item) override;
+  virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item) override;
   virtual bool ConfigureEx(const GUID * Guid) override;
   virtual int32_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info) override;
   virtual int32_t ProcessEditorInputEx(const INPUT_RECORD * Rec) override;

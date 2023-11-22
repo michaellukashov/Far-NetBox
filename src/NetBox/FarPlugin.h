@@ -210,7 +210,7 @@ protected:
   virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags,
     TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
     TStrings * PluginConfigStrings, TStrings * CommandPrefixes) = 0;
-  virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, int32_t Item) = 0;
+  virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item) = 0;
   virtual bool ConfigureEx(const GUID * Guid) = 0;
   virtual int32_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info) = 0;
   virtual int32_t ProcessEditorInputEx(const INPUT_RECORD * Rec) = 0;
