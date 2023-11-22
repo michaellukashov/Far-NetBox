@@ -2197,9 +2197,9 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
       Data += Limited->GetText();
     }
     __finally__removed
-    ({
-      delete Limited;
-    }) end_try__finally
+    {
+      // delete Limited;
+    } end_try__finally
   }
   else
   {

@@ -928,9 +928,9 @@ public:
       Dump = RawByteString(AnsiString(DumpLines->GetText()));
     }
     __finally__removed
-    ({
-      delete DumpLines;
-    }) end_try__finally
+    {
+      // delete DumpLines;
+    } end_try__finally
 
     SetCapacity(20 * 1024);
     uint8_t Byte[3];
@@ -1347,10 +1347,10 @@ public:
       }
     }
     __finally__removed
-    ({
-      delete Request;
-      delete Response;
-    }) end_try__finally
+    {
+      // delete Request;
+      // delete Response;
+    } end_try__finally
 
     return Result;
   }
@@ -4256,9 +4256,9 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
   }
   __finally__removed
-  ({
-    delete File;
-  }) end_try__finally
+  {
+    // delete File;
+  } end_try__finally
 }
 
 bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)

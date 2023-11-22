@@ -2150,9 +2150,9 @@ void TSessionData::Remove()
     }
   }
   __finally__removed
-  ({
-    delete Storage;
-  }) end_try__finally
+  {
+    // delete Storage;
+  } end_try__finally
 }
 
 void TSessionData::CacheHostKeyIfNotCached()
@@ -5471,9 +5471,9 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
     }
   }
   __finally__removed
-  ({
-    delete FactoryDefaults;
-  }) end_try__finally
+  {
+    // delete FactoryDefaults;
+  } end_try__finally
 }
 
 void TStoredSessionList::Save(THierarchicalStorage * Storage, bool All)
@@ -5496,9 +5496,9 @@ void TStoredSessionList::DoSave(bool All, bool Explicit,
     }
   }
   __finally__removed
-  ({
-    delete Storage;
-  }) end_try__finally
+  {
+    // delete Storage;
+  } end_try__finally
 
   Saved();
 }
@@ -5816,9 +5816,9 @@ void TStoredSessionList::Cleanup()
       }
     }
     __finally__removed
-    ({
-      delete Storage;
-    }) end_try__finally
+    {
+      // delete Storage;
+    } end_try__finally
   }
   catch (Exception & E)
   {

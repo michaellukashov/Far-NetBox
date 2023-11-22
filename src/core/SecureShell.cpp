@@ -2850,9 +2850,9 @@ void TSecureShell::VerifyHostKey(
           FUI->FatalError(E.get(), FMTLOAD(HOSTKEY, FingerprintSHA256));
         }
         __finally__removed
-        ({
-          delete E;
-        }) end_try__finally
+        {
+          // delete E;
+        } end_try__finally
       }
     }
   }

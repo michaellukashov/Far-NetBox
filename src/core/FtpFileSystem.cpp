@@ -1177,9 +1177,9 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
       GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
     }
     __finally__removed
-    ({
-      delete OwnedFile;
-    }) end_try__finally
+    {
+      // delete OwnedFile;
+    } end_try__finally
   }
   else
   {
@@ -1926,9 +1926,9 @@ void TFTPFileSystem::DoStartup()
     }
   }
   __finally__removed
-  ({
-    delete PostLoginCommands;
-  }) end_try__finally
+  {
+    // delete PostLoginCommands;
+  } end_try__finally
 
   if (SupportsCommand(CsidCommand))
   {
@@ -2124,9 +2124,9 @@ void TFTPFileSystem::ReadCurrentDirectory()
       }
     }
     __finally__removed
-    ({
-      delete Response;
-    }) end_try__finally
+    {
+      // delete Response;
+    } end_try__finally
   }
 }
 
@@ -2480,9 +2480,9 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
     FLastDataSent = Now();
   }
   __finally__removed
-  ({
-    delete FileList;
-  }) end_try__finally
+  {
+    // delete FileList;
+  } end_try__finally
 }
 
 bool TFTPFileSystem::SupportsReadingFile() const
@@ -3416,9 +3416,9 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
           FTerminal->FatalError(E.get(), L"");
         }
         __finally__removed
-        ({
-          delete E;
-        }) end_try__finally
+        {
+          // delete E;
+        } end_try__finally
       }
       else
       {

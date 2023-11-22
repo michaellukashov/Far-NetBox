@@ -252,10 +252,10 @@ static SeatPromptResult get_userpass_input(Seat * seat, prompts_t * p)
     }
   }
   __finally__removed
-  ({
-    delete Prompts;
-    delete Results;
-  }) end_try__finally
+  {
+    // delete Prompts;
+    // delete Results;
+  } end_try__finally
 
   return Result;
 }

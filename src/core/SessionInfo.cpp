@@ -1191,9 +1191,9 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
     ADF(L"Configuration: %s", Storage->Source());
   }
   __finally__removed
-  ({
-    delete Storage;
-  }) end_try__finally
+  {
+    // delete Storage;
+  } end_try__finally
 
   wchar_t UserName[UNLEN + 1];
   ULONG UserNameSize = LENOF(UserName);
@@ -1681,9 +1681,9 @@ void TActionLog::AddFailure(Exception * E)
       AddFailure(Messages.get());
     }
     __finally__removed
-    ({
-      delete Messages;
-    }) end_try__finally
+    {
+      // delete Messages;
+    } end_try__finally
   }
 }
 

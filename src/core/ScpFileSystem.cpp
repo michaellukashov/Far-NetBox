@@ -956,9 +956,9 @@ void TSCPFileSystem::ClearAliases()
       }
     }
     __finally__removed
-    ({
-      delete CommandList;
-    }) end_try__finally
+    {
+      // delete CommandList;
+    } end_try__finally
   }
   catch(Exception & E)
   {
@@ -1115,9 +1115,9 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
           }
         }
         __finally__removed
-        ({
-          delete OutputCopy;
-        }) end_try__finally
+        {
+          // delete OutputCopy;
+        } end_try__finally
       }
       else
       {

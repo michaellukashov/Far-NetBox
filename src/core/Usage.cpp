@@ -64,9 +64,9 @@ void TUsage::Load(THierarchicalStorage * Storage)
       Storage->CloseSubKey();
     }
     __finally__removed
-    ({
-      delete Names;
-    }) end_try__finally
+    {
+      // delete Names;
+    } end_try__finally
   }
 
   Load(Storage, "PeriodCounters", FPeriodCounters);
@@ -90,9 +90,9 @@ void TUsage::Load(THierarchicalStorage * Storage,
       Storage->CloseSubKey();
     }
     __finally__removed
-    ({
-      delete Names;
-    }) end_try__finally
+    {
+      // delete Names;
+    } end_try__finally
   }
 }
 

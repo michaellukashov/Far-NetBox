@@ -2002,10 +2002,10 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
     AResult = Results->GetString(0);
   }
   __finally__removed
-  ({
-    delete Prompts;
-    delete Results;
-  }) end_try__finally
+  {
+    // delete Prompts;
+    // delete Results;
+  } end_try__finally
   return Result;
 }
 
@@ -2181,9 +2181,9 @@ uint32_t TTerminal::QueryUserException(const UnicodeString & AQuery,
         Answers, &HelpKeywordOverrideParams, QueryType);
     }
     __finally__removed
-    ({
-      delete MoreMessages;
-    }) end_try__finally
+    {
+      // delete MoreMessages;
+    } end_try__finally
   }
   return Result;
 }
@@ -3091,9 +3091,9 @@ uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
       HandleExtendedException(&ECmd);
     }
     __finally__removed
-    ({
-      delete ECmd;
-    }) end_try__finally
+    {
+      // delete ECmd;
+    } end_try__finally
   }
   else
   {
@@ -4030,9 +4030,9 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
       }
     }
     __finally__removed
-    ({
-      delete FileList;
-    }) end_try__finally
+    {
+      // delete FileList;
+    } end_try__finally
   }
 }
 
@@ -6469,9 +6469,9 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
             }
           }
           __finally__removed
-          ({
-            delete ChecklistItem;
-          }) end_try__finally
+          {
+            // delete ChecklistItem;
+          } end_try__finally
         }
         else
         {
@@ -6778,9 +6778,9 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
       }
     }
     __finally__removed
-    ({
-      delete ChecklistItem;
-    }) end_try__finally
+    {
+      // delete ChecklistItem;
+    } end_try__finally
   }
   else
   {

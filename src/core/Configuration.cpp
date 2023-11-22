@@ -220,9 +220,9 @@ void TConfiguration::Default()
     }
   }
   __finally__removed
-  ({
-    delete AdminStorage;
-  }) end_try__finally
+  {
+    // delete AdminStorage;
+  } end_try__finally
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
   SetPuttyRegistryStorageKey(OriginalPuttyRegistryStorageKey);
@@ -512,9 +512,9 @@ void TConfiguration::DoSave(bool All, bool Explicit)
     DoSave(Storage.get(), ConfigAll);
   }
   __finally__removed
-  ({
-    delete Storage;
-  }) end_try__finally
+  {
+    // delete Storage;
+  } end_try__finally
 
   Saved();
 
@@ -796,9 +796,9 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
     }
   }
   __finally__removed
-  ({
-    delete Storage;
-  }) end_try__finally
+  {
+    // delete Storage;
+  } end_try__finally
 }
 
 void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
@@ -817,9 +817,9 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
     }
   }
   __finally__removed
-  ({
-    delete Storage;
-  }) end_try__finally
+  {
+    // delete Storage;
+  } end_try__finally
 }
 
 UnicodeString TConfiguration::BannerHash(const UnicodeString & ABanner) const
@@ -1682,10 +1682,10 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACusto
         CopyData(SourceStorage.get(), TargetStorage.get());
       }
       __finally__removed
-      ({
-        delete SourceStorage;
-        delete TargetStorage;
-      }) end_try__finally
+      {
+        // delete SourceStorage;
+        // delete TargetStorage;
+      } end_try__finally
 
       // save all and explicit,
       // this also removes an INI file, when switching to registry storage

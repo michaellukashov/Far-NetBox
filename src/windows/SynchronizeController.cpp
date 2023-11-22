@@ -182,9 +182,9 @@ void TSynchronizeController::SynchronizeChange(
           }
         }
         __finally__removed
-        ({
-          delete Checklist;
-        }) end_try__finally
+        {
+          // delete Checklist;
+        } end_try__finally
       }
     }
   }
