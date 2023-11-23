@@ -137,7 +137,7 @@ public:
     FLog->AddPendingAction(this);
   }
 
-  ~TSessionActionRecord()
+  ~TSessionActionRecord() override
   {
 #if defined(__BORLANDC__)
     delete FErrorMessages;
