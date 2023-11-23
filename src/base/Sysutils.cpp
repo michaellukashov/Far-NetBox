@@ -2082,7 +2082,7 @@ bool WriteAndFlush(FILE * file, void const * data, size_t size)
   size_t n_write = 0;
   while ((n_write = fwrite(data, 1, size - n_write, file)) != 0)
   {
-    if ((n_write < 0) && (errno != EINTR))
+    if ((static_cast<intptr_t>(n_write) < 0) && (errno != EINTR))
     {
       // error
       break;
@@ -2099,7 +2099,7 @@ bool WriteAndFlush(FILE * file, void const * data, size_t size)
   }
 
   // error
-  if (n_write < 0)
+  if (static_cast<intptr_t>(n_write) < 0)
     return false; // TODO: throw exception
 
   fflush(file);
