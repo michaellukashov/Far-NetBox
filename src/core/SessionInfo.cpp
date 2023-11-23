@@ -286,7 +286,7 @@ public:
   void AddOutput(const UnicodeString & Output, bool StdError)
   {
     const wchar_t * Name = (StdError ? L"erroroutput" : L"output");
-    int32_t Index = FNames->IndexOf(Name);
+    const int32_t Index = FNames->IndexOf(Name);
     if (Index >= 0)
     {
       FValues->SetString(Index, FValues->GetString(Index) + L"\r\n" + Output);
@@ -790,7 +790,7 @@ TFileSystemInfo::TFileSystemInfo() noexcept
 static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
 {
   // FILE * Result;
-  UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
+  const UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
   FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
   if (Result != nullptr)
   {
@@ -864,7 +864,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
 
     if (FLogger != nullptr)
     {
-      UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
+      const UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       UTF8String UtfLine = UTF8String(UnicodeString(1, LogLineMarks[Type]) + Timestamp + TrimRight(ALine)) + "\r\n";
 #if 0
       for (int32_t Index = 1; Index <= UtfLine.Length(); Index++)
@@ -876,7 +876,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
         }
       }
 #endif // #if 0
-      int32_t ToWrite = UtfLine.Length();
+      const int32_t ToWrite = UtfLine.Length();
       CheckSize(ToWrite);
       FCurrentFileSize += FLogger->Write(UtfLine.c_str(), ToWrite);
     }}
@@ -904,11 +904,11 @@ UnicodeString TSessionLog::LogPartFileName(const UnicodeString & BaseName, int32
 
 void TSessionLog::CheckSize(int64_t Addition)
 {
-  int64_t MaxSize = FConfiguration->GetLogMaxSize();
+  const int64_t MaxSize = FConfiguration->GetLogMaxSize();
   if ((MaxSize > 0) && (FCurrentFileSize + Addition >= MaxSize))
   {
     // Before we close it
-    UnicodeString BaseName = FCurrentFileName;
+    const UnicodeString BaseName = FCurrentFileName;
     CloseLogFile();
     FCurrentFileSize = 0;
 
@@ -919,7 +919,7 @@ void TSessionLog::CheckSize(int64_t Addition)
       Index++;
     }
 
-    int32_t MaxCount = FConfiguration->GetLogMaxCount();
+    const int32_t MaxCount = FConfiguration->GetLogMaxCount();
 
     do
     {
@@ -1506,7 +1506,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     }
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {
-      int32_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
+      const int32_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
       AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
     }
     ADSTR(TimeInfo);
@@ -1609,7 +1609,7 @@ void TActionLog::Add(const UnicodeString & Line)
     {
       try
       {
-        UTF8String UtfLine = UTF8String(Line);
+        const UTF8String UtfLine = UTF8String(Line);
         size_t Written =
           FLogger->Write(UtfLine.c_str(), UtfLine.Length());
         if (Written != nb::ToSizeT(UtfLine.Length()))
@@ -1700,7 +1700,7 @@ void TActionLog::ReflectSettings()
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
 
-  bool ALogging =
+  const bool ALogging =
     !FClosed && FConfiguration->GetLogActions() && GetEnabled();
 
   if (ALogging && !FLogging)

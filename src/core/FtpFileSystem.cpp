@@ -452,11 +452,11 @@ void TFTPFileSystem::Open()
   FSessionInfo.LoginTime = Now();
   FSessionInfo.CertificateVerifiedManually = false;
 
-  UnicodeString HostName = Data->GetHostNameExpanded();
+  const UnicodeString HostName = Data->GetHostNameExpanded();
   UnicodeString UserName = Data->GetUserNameExpanded();
   UnicodeString Password = Data->GetPassword();
-  UnicodeString Account = Data->GetFtpAccount();
-  UnicodeString Path = Data->GetRemoteDirectory();
+  const UnicodeString Account = Data->GetFtpAccount();
+  const UnicodeString Path = Data->GetRemoteDirectory();
   int32_t ServerType = 0;
   switch (Data->GetFtps())
   {
@@ -484,12 +484,12 @@ void TFTPFileSystem::Open()
       break;
   }
 
-  int32_t Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
+  const int32_t Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
 
-  int32_t TimeZoneOffset = Data->GetTimeDifferenceAuto() ? 0 : TimeToMinutes(Data->GetTimeDifference());
+  const int32_t TimeZoneOffset = Data->GetTimeDifferenceAuto() ? 0 : TimeToMinutes(Data->GetTimeDifference());
 
   int32_t UTF8;
-  uint32_t CodePage = Data->GetCodePageAsNumber();
+  const uint32_t CodePage = Data->GetCodePageAsNumber();
 
   switch (CodePage)
   {
@@ -708,7 +708,7 @@ void TFTPFileSystem::CollectUsage()
     }
   }
 
-  UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
+  const UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
   if (!TlsVersionStr.IsEmpty())
   {
     FTerminal->CollectTlsUsage(TlsVersionStr);
@@ -951,7 +951,7 @@ UnicodeString TFTPFileSystem::GetActualCurrentDirectory() const
 
 void TFTPFileSystem::EnsureLocation(const UnicodeString & ADirectory, bool Log)
 {
-  UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
+  const UnicodeString Directory = base::UnixExcludeTrailingBackslash(ADirectory);
   if (!base::UnixSamePath(GetActualCurrentDirectory(), Directory))
   {
     if (Log)
@@ -983,7 +983,7 @@ void TFTPFileSystem::EnsureLocation()
 
 bool TFTPFileSystem::EnsureLocationWhenWorkFromCwd(const UnicodeString & Directory)
 {
-  bool Result = (FWorkFromCwd == asOn);
+  const bool Result = (FWorkFromCwd == asOn);
   if (Result)
   {
     EnsureLocation(Directory, false);
@@ -1027,8 +1027,8 @@ bool TFTPFileSystem::DoQuit()
 {
   SendCommand("QUIT");
 
-  uint32_t Reply = WaitForCommandReply(true);
-  bool Result =
+  const uint32_t Reply = WaitForCommandReply(true);
+  const bool Result =
     FLAGSET(Reply, TFileZillaIntf::REPLY_OK) ||
     FLAGSET(Reply, TFileZillaIntf::REPLY_DISCONNECTED);
   return Result;
@@ -1036,7 +1036,7 @@ bool TFTPFileSystem::DoQuit()
 
 void TFTPFileSystem::SendCwd(const UnicodeString & Directory)
 {
-  UnicodeString Command = FORMAT(L"CWD %s", Directory);
+  const UnicodeString Command = FORMAT(L"CWD %s", Directory);
   SendCommand(Command);
 
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
@@ -1046,7 +1046,7 @@ void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 {
   if (FWorkFromCwd == asOn)
   {
-    UnicodeString ADirectory = base::UnixIncludeTrailingBackslash(GetAbsolutePath(Directory, false));
+    const UnicodeString ADirectory = base::UnixIncludeTrailingBackslash(GetAbsolutePath(Directory, false));
 
     UnicodeString Actual = base::UnixIncludeTrailingBackslash(GetActualCurrentDirectory());
     while (!base::UnixSamePath(Actual, ADirectory))
@@ -1055,7 +1055,7 @@ void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
       {
         UnicodeString SubDirectory = base::UnixExcludeTrailingBackslash(ADirectory);
         SubDirectory.Delete(1, Actual.Length());
-        int32_t P = SubDirectory.Pos(L'/');
+        const int32_t P = SubDirectory.Pos(L'/');
         if (P > 0)
         {
           SubDirectory.SetLength(P - 1);
@@ -1193,21 +1193,21 @@ bool TFTPFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
   return false;
 }
 
-UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg, TRemoteFile * AFile)
+UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg, const TRemoteFile * AFile)
 {
   // Overview of server supporting various hash commands is at:
   // https://datatracker.ietf.org/doc/html/draft-bryan-ftpext-hash-02#appendix-B
 
   UnicodeString CommandName;
 
-  bool UsingHashCommand = UsingHashCommandChecksum(Alg);
+  const bool UsingHashCommand = UsingHashCommandChecksum(Alg);
   if (UsingHashCommand)
   {
     CommandName = HashCommand;
   }
   else
   {
-    int32_t Index = FChecksumAlgs->IndexOf(Alg);
+    const int32_t Index = FChecksumAlgs->IndexOf(Alg);
     if (Index < 0)
     {
       DebugFail();
@@ -1243,7 +1243,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg,
     FileName = FORMAT("\"%s\"", FileName);
   }
 
-  UnicodeString Command = FORMAT("%s %s", CommandName, FileName);
+  const UnicodeString Command = FORMAT("%s %s", CommandName, FileName);
   SendCommand(Command);
   TStrings * Response;
   GotReply(WaitForCommandReply(), REPLY_2XX_CODE, EmptyStr, nullptr, &Response);
@@ -1267,7 +1267,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg,
     // skip alg
     CutToChar(Buf, L' ', true);
     // skip range
-    UnicodeString Range = CutToChar(Buf, L' ', true);
+    const UnicodeString Range = CutToChar(Buf, L' ', true);
     // This should be range (SP-EP), but if it does not conform to the format,
     // it's likely because the server uses version of the HASH spec
     // before draft-ietf-ftpext2-hash-01
@@ -1293,7 +1293,7 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg,
     // (implemented by Apache FtpServer).
     // Other commands (X<hash>) return the hash only.
     ResponseText = ResponseText.Trim();
-    int32_t P = ResponseText.LastDelimiter(L" ");
+    const int32_t P = ResponseText.LastDelimiter(L" ");
     if (P > 0)
     {
       ResponseText.Delete(1, P);
@@ -1335,7 +1335,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
         bool Success = false;
         try__finally
         {
-          UnicodeString Checksum = DoCalculateFileChecksum(Alg, File);
+          const UnicodeString Checksum = DoCalculateFileChecksum(Alg, File);
 
           if (OnCalculatedChecksum)
           {
@@ -1524,7 +1524,7 @@ void TFTPFileSystem::ReadDirectoryProgress(int64_t Bytes)
   // with FTP we do not know exactly how many entries we have received,
   // instead we know number of bytes received only.
   // so we report approximation based on average size of entry.
-  const int32_t Progress = nb::ToIntPtr(Bytes / 80);
+  const int32_t Progress = nb::ToInt32(Bytes / 80);
   const DWORD Ticks = GetTickCount();
   if ((Ticks - FLastReadDirectoryProgress >= 100) &&
       // Cannot call OnReadDirectoryProgress with 0 as it would unmatch the "starting" and "ending" signals for disabling the window
@@ -1797,7 +1797,7 @@ void TFTPFileSystem::Source(
       TargetDir, false, Handle.Size, TransferType, UserData, OperationProgress);
   }
 
-  UnicodeString DestFullName = TargetDir + UserData.FileName;
+  const UnicodeString DestFullName = TargetDir + UserData.FileName;
   // only now, we know the final destination
   Action.Destination(DestFullName);
 
@@ -1811,7 +1811,7 @@ void TFTPFileSystem::Source(
       ((FServerCapabilities->GetCapability(mfmt_command) == yes) ||
        ((FServerCapabilities->GetCapability(mdtm_command) == yes))))
   {
-    TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Handle.Modification); nb::used(TouchAction);
+    const TTouchSessionAction TouchAction(FTerminal->GetActionLog(), DestFullName, Handle.Modification); nb::used(TouchAction);
 
     if (!FFileZillaIntf->UsingMlsd())
     {
@@ -1830,7 +1830,7 @@ void TFTPFileSystem::Source(
 
 void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
-  UnicodeString DirName = GetAbsolutePath(ADirName, false);
+  const UnicodeString DirName = GetAbsolutePath(ADirName, false);
 
   {
     // ignore file list
@@ -1850,7 +1850,7 @@ void TFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
   {
     EnsureLocation();
 
-    UnicodeString Command = FORMAT("%s %s %s %s", SiteCommand, SymlinkSiteCommand, APointTo, AFileName);
+    const UnicodeString Command = FORMAT("%s %s %s %s", SiteCommand, SymlinkSiteCommand, APointTo, AFileName);
     SendCommand(Command);
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE);
   }
@@ -1859,11 +1859,11 @@ void TFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
 void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action)
 {
-  UnicodeString FileName = GetAbsolutePath(AFileName, false);
-  UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
-  UnicodeString FilePath = RemoteExtractFilePath(FileName);
+  const UnicodeString FileName = GetAbsolutePath(AFileName, false);
+  const UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
+  const UnicodeString FilePath = RemoteExtractFilePath(FileName);
 
-  bool Dir = FTerminal->DeleteContentsIfDirectory(FileName, AFile, Params, Action);
+  const bool Dir = FTerminal->DeleteContentsIfDirectory(FileName, AFile, Params, Action);
 
   {
     // ignore file list
@@ -1932,9 +1932,9 @@ void TFTPFileSystem::DoStartup()
 
   if (SupportsCommand(CsidCommand))
   {
-    UnicodeString NameFact = L"Name";
-    UnicodeString VersionFact = L"Version";
-    UnicodeString Command =
+    const UnicodeString NameFact = L"Name";
+    const UnicodeString VersionFact = L"Version";
+    const UnicodeString Command =
       FORMAT(L"%s %s=%s;%s=%s", CsidCommand, NameFact, GetAppNameString(), VersionFact, FTerminal->Configuration->Version);
     SendCommand(Command);
     TStrings * Response = nullptr;
@@ -2062,7 +2062,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   // directory anyway, see comments in EnsureLocation
   if (FReadCurrentDirectory || DebugAlwaysFalse(FCurrentDirectory.IsEmpty()))
   {
-    UnicodeString Command = "PWD";
+    const UnicodeString Command = "PWD";
     SendCommand(Command);
 
     uint32_t Code = 0;
@@ -2145,7 +2145,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * AFileList)
 
   FLastReadDirectoryProgress = 0;
 
-  TFTPFileListHelper Helper(this, AFileList, false); nb::used(Helper);
+  const TFTPFileListHelper Helper(this, AFileList, false); nb::used(Helper);
 
   // always specify path to list, do not attempt to list "current" dir as:
   // 1) List() lists again the last listed directory, not the current working directory
@@ -2212,12 +2212,12 @@ bool TFTPFileSystem::LookupUploadModificationTime(
   bool Result = false;
   if (ModificationFmt != mfFull)
   {
-    UnicodeString AbsPath = GetAbsolutePath(AFileName, false);
-    TUploadedTimes::iterator Iterator = FUploadedTimes.find(AbsPath);
+    const UnicodeString AbsPath = GetAbsolutePath(AFileName, false);
+    const TUploadedTimes::const_iterator Iterator = FUploadedTimes.find(AbsPath);
     if (Iterator != FUploadedTimes.end())
     {
-      TDateTime UploadModification = Iterator->second;
-      TDateTime UploadModificationReduced = base::ReduceDateTimePrecision(UploadModification, ModificationFmt);
+      const TDateTime UploadModification = Iterator->second;
+      const TDateTime UploadModificationReduced = base::ReduceDateTimePrecision(UploadModification, ModificationFmt);
       if (UploadModificationReduced == Modification)
       {
         if ((FTerminal->GetConfiguration()->GetActualLogProtocol() >= 2))
@@ -2253,7 +2253,7 @@ bool TFTPFileSystem::NeedAutoDetectTimeDifference() const
     !FFileZillaIntf->UsingMlsd() && SupportsReadingFile();
 }
 
-bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList) const
+bool TFTPFileSystem::IsEmptyFileList(const TRemoteFileList * FileList) const
 {
   return
     // (note that it's actually never empty here, there's always at least parent directory,
@@ -2262,7 +2262,7 @@ bool TFTPFileSystem::IsEmptyFileList(TRemoteFileList * FileList) const
     ((FileList->GetCount() == 1) && FileList->GetFile(0)->GetIsParentDirectory());
 }
 
-void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
+void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
 {
   if (NeedAutoDetectTimeDifference())
   {
@@ -2270,7 +2270,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
 
     for (int32_t Index = 0; Index < FileList->GetCount(); ++Index)
     {
-      TRemoteFile * File = FileList->GetFile(Index);
+      const TRemoteFile * File = FileList->GetFile(Index);
       // For directories, we do not do MDTM in ReadFile
       // (it should not be problem to use them otherwise).
       // We are also not interested in files with day precision only.
@@ -2322,7 +2322,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(TRemoteFileList * FileList)
           // and using LIST (no conversion, expecting the server uses the same timezone as the client).
           // Note that FormatTimeZone reverses the value.
           FTimeDifference = nb::ToInt64(SecsPerDay * (UtcModification - File->GetModification()));
-          double Hours = TTimeSpan::FromSeconds(FTimeDifference).TotalHours;
+          const double Hours = TTimeSpan::FromSeconds(FTimeDifference).TotalHours;
 
           UnicodeString FileLog =
             FORMAT("%s (Listing: %s, UTC: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
@@ -2448,7 +2448,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile)
 {
-  UnicodeString FileName = GetAbsolutePath(AFileName, false);
+  const UnicodeString FileName = GetAbsolutePath(AFileName, false);
   UnicodeString FileNameOnly;
   UnicodeString FilePath;
   if (base::IsUnixRootPath(FileName))
@@ -2467,11 +2467,11 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   {
     // Duplicate() call below would use this to compose FullFileName
     FileList->SetDirectory(FilePath);
-    TFTPFileListHelper Helper(this, FileList.get(), false); nb::used(Helper);
+    const TFTPFileListHelper Helper(this, FileList.get(), false); nb::used(Helper);
     FFileZillaIntf->ListFile(FileNameOnly.c_str(), FilePath.c_str());
 
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_ALLOW_CANCEL);
-    TRemoteFile * File = FileList->FindFile(FileNameOnly.c_str());
+    const TRemoteFile * File = FileList->FindFile(FileNameOnly.c_str());
     if (File != nullptr)
     {
       AFile = File->Duplicate();
@@ -2511,10 +2511,10 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
     }
     else
     {
-      UnicodeString Path = RemoteExtractFilePath(AFileName);
+      const UnicodeString Path = RemoteExtractFilePath(AFileName);
       UnicodeString NameOnly;
       int32_t P = 0;
-      bool MVSPath =
+      const bool MVSPath =
         FMVS && Path.IsEmpty() &&
         (AFileName.SubString(1, 1) == L"'") && (AFileName.SubString(AFileName.Length(), 1) == L"'") &&
         ((P = AFileName.Pos(L".")) > 0);
@@ -2599,8 +2599,8 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   {
     // When we get here from TFTPFileSystem::ReadFile, it's likely the second time ReadSymlink has been called for the link.
     // The first time getting to the later branch, so IsDirectory is true and hence FullFileName ends with a slash.
-    UnicodeString SymlinkDir = base::UnixExtractFileDir(base::UnixExcludeTrailingBackslash(SymlinkFile->FullFileName()));
-    UnicodeString LinkTo = base::AbsolutePath(SymlinkDir, SymlinkFile->LinkTo);
+    const UnicodeString SymlinkDir = base::UnixExtractFileDir(base::UnixExcludeTrailingBackslash(SymlinkFile->FullFileName()));
+    const UnicodeString LinkTo = base::AbsolutePath(SymlinkDir, SymlinkFile->LinkTo);
     ReadFile(LinkTo, AFile);
   }
   else
@@ -2621,13 +2621,13 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
 void TFTPFileSystem::RemoteRenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
-  UnicodeString FileName = GetAbsolutePath(AFileName, false);
-  UnicodeString NewName = GetAbsolutePath(ANewName, false);
+  const UnicodeString FileName = GetAbsolutePath(AFileName, false);
+  const UnicodeString NewName = GetAbsolutePath(ANewName, false);
 
-  UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
-  UnicodeString FilePathOnly = RemoteExtractFilePath(FileName);
-  UnicodeString NewNameOnly = base::UnixExtractFileName(NewName);
-  UnicodeString NewPathOnly = RemoteExtractFilePath(NewName);
+  const UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
+  const UnicodeString FilePathOnly = RemoteExtractFilePath(FileName);
+  const UnicodeString NewNameOnly = base::UnixExtractFileName(NewName);
+  const UnicodeString NewPathOnly = RemoteExtractFilePath(NewName);
 
   {
     // ignore file list
@@ -2684,7 +2684,7 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
     // 213 File and disk usage end
 
     // XQUOTA is global not path-specific
-    UnicodeString Command = XQuotaCommand;
+    const UnicodeString Command = XQuotaCommand;
     SendCommand(Command);
     TStrings * Response = nullptr;
     GotReply(WaitForCommandReply(), REPLY_2XX_CODE, L"", nullptr, &Response);
@@ -2715,9 +2715,9 @@ void TFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
   {
     // draft-peterson-streamlined-ftp-command-extensions-10
     // Implemented by Serv-U.
-    UnicodeString Command = FORMAT("%s %s", AvblCommand, APath);
+    const UnicodeString Command = FORMAT("%s %s", AvblCommand, APath);
     SendCommand(Command);
-    UnicodeString Response = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
+    const UnicodeString Response = GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE);
     ASpaceAvailable.UnusedBytesAvailableToUser = ::StrToInt64(Response);
   }
 }
@@ -2779,7 +2779,7 @@ UnicodeString TFTPFileSystem::RemoteGetCurrentDirectory() const
 
 const wchar_t * TFTPFileSystem::GetOption(int32_t OptionID) const
 {
-  TSessionData * Data = FTerminal->GetSessionData();
+  const TSessionData * Data = FTerminal->GetSessionData();
 
   switch (OptionID)
   {
@@ -3353,7 +3353,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
         if (FAnyTransferSucceeded && (FLastError->Count > 0))
         {
           UnicodeString CantOpenTransferChannelMessage = LoadStr(IDS_ERRORMSG_CANTOPENTRANSFERCHANNEL);
-          int32_t P = CantOpenTransferChannelMessage.Pos(L"%");
+          const int32_t P = CantOpenTransferChannelMessage.Pos(L"%");
           if (DebugAlwaysTrue(P > 0))
           {
             CantOpenTransferChannelMessage.SetLength(P - 1);
@@ -3522,7 +3522,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 
   // Partially duplicated in CFtpControlSocket::OnReceive
 
-  bool HasCodePrefix =
+  const bool HasCodePrefix =
     (Response.Length() >= 3) &&
     ::TryStrToInt64(Response.SubString(1, 3), Code) &&
     (Code >= 100) && (Code <= 599) &&
@@ -3709,7 +3709,7 @@ void TFTPFileSystem::ProcessFeatures()
 
   for (int32_t Index = 0; Index < Features->Count; Index++)
   {
-    UnicodeString Feature = Features->GetString(Index);
+    const UnicodeString Feature = Features->GetString(Index);
 
     UnicodeString Args = Feature;
     UnicodeString Command = CutToChar(Args, L' ', true);
@@ -3959,7 +3959,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
 
       TOverwriteMode OverwriteMode = omOverwrite;
       TOverwriteFileParams FileParams;
-      bool NoFileParams =
+      const bool NoFileParams =
         (Size1 < 0) || (LocalTime == 0) ||
         (Size2 < 0) || !RemoteTime.HasDate;
       if (!NoFileParams)
@@ -3968,7 +3968,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
         FileParams.DestSize = Size1;
 
         // Time is coming from LIST (not from MLSD or MDTM)
-        bool NeedApplyTimeDifference = !RemoteTime.Utc && DebugAlwaysTrue(!FFileZillaIntf->UsingMlsd());
+        const bool NeedApplyTimeDifference = !RemoteTime.Utc && DebugAlwaysTrue(!FFileZillaIntf->UsingMlsd());
 
         if (OperationProgress->GetSide() == osLocal)
         {
@@ -3990,8 +3990,8 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
         }
       }
 
-      bool AllowResume = UserData.CopyParam->AllowResume(FileParams.SourceSize, UnicodeString());
-      bool AutoResume = UserData.AutoResume && AllowResume;
+      const bool AllowResume = UserData.CopyParam->AllowResume(FileParams.SourceSize, UnicodeString());
+      const bool AutoResume = UserData.AutoResume && AllowResume;
       if (ConfirmOverwrite(SourceFullFileName, TargetFileName, OverwriteMode, OperationProgress,
             NoFileParams ? nullptr : &FileParams, UserData.CopyParam, UserData.Params, AutoResume))
       {
@@ -4093,7 +4093,7 @@ UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & Val
 #endif // #if 0
   TODO("use Sysutils::FormatDateTime");
   uint16_t Y, M, D, H, Mm, S, MS;
-  TDateTime DateTime =
+  const TDateTime DateTime =
     EncodeDateVerbose(
       static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
       static_cast<uint16_t>(ValidityTime.Day)) +
@@ -4140,9 +4140,9 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
 
 bool TFTPFileSystem::VerifyCertificateHostName(const TFtpsCertificateData & Data)
 {
-  UnicodeString HostName = FTerminal->GetSessionData()->GetHostNameExpanded();
+  const UnicodeString HostName = FTerminal->GetSessionData()->GetHostNameExpanded();
 
-  UnicodeString CommonName = Data.Subject.CommonName;
+  const UnicodeString CommonName = Data.Subject.CommonName;
   bool NoMask = CommonName.IsEmpty();
   bool Result = !NoMask && VerifyNameMask(HostName, CommonName);
   if (Result)
@@ -4194,7 +4194,7 @@ static bool IsIPAddress(const UnicodeString & AHostName)
 
   for (int32_t Index = 1; Index <= AHostName.Length(); Index++)
   {
-    wchar_t C = AHostName[Index];
+    const wchar_t C = AHostName[Index];
     if (!IsDigit(C) && (C != L'.'))
     {
       IPv4 = false;
@@ -4232,7 +4232,7 @@ bool TFTPFileSystem::HandleAsyncRequestVerifyCertificate(
     }
     else
     {
-      UnicodeString CertificateSubject = Data.Subject.Organization;
+      const UnicodeString CertificateSubject = Data.Subject.Organization;
       FTerminal->LogEvent(FORMAT(L"Verifying certificate for \"%s\" with fingerprint %s and %d failures", CertificateSubject, FSessionInfo.CertificateFingerprintSHA256, Data.VerificationResult));
 
       bool Trusted = false;
@@ -4313,8 +4313,8 @@ bool TFTPFileSystem::HandleAsyncRequestVerifyCertificate(
           break;
       }
 
-      bool IsHostNameIPAddress = IsIPAddress(FTerminal->GetSessionData()->GetHostNameExpanded());
-      bool CertificateHostNameVerified = !IsHostNameIPAddress && VerifyCertificateHostName(Data);
+      const bool IsHostNameIPAddress = IsIPAddress(FTerminal->GetSessionData()->GetHostNameExpanded());
+      const bool CertificateHostNameVerified = !IsHostNameIPAddress && VerifyCertificateHostName(Data);
 
       bool VerificationResult = Trusted;
 
@@ -4509,7 +4509,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
   else if (FFileList)
   {
     DebugAssert(FFileList != nullptr);
-    UnicodeString AbsPath = GetAbsolutePath(FFileList->GetDirectory(), false);
+    const UnicodeString AbsPath = GetAbsolutePath(FFileList->GetDirectory(), false);
     DebugAssert(FFileList->GetDirectory().IsEmpty() || base::UnixSamePath(AbsPath, Path));
     DebugUsedParam(Path);
 
@@ -4524,7 +4524,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         File->SetFileName(Entry->Name);
         try
         {
-          int32_t PermissionsLen = nb::StrLength(Entry->Permissions);
+          const int32_t PermissionsLen = nb::StrLength(Entry->Permissions);
           if (PermissionsLen >= 10)
           {
             File->GetRightsNotConst()->SetText(Entry->Permissions + 1);
@@ -4590,9 +4590,9 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       catch (Exception &E)
       {
         __removed delete File;
-        UnicodeString TmStr = FORMAT("%d/%d/%d/%d", int(Entry->Time.HasTime),
+        const UnicodeString TmStr = FORMAT("%d/%d/%d/%d", nb::ToInt32(Entry->Time.HasTime),
             nb::ToInt32(Entry->Time.HasYear), nb::ToInt32(Entry->Time.HasSeconds), nb::ToInt32(Entry->Time.HasDate));
-        UnicodeString EntryData =
+        const UnicodeString EntryData =
           FORMAT("%s/%s/%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%s",
             Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
              nb::ToInt32(Entry->Dir), nb::ToInt32(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
@@ -4765,7 +4765,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
 
 void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const
 {
-  TFileTransferData * Data = static_cast<TFileTransferData *>(UserData);
+  const TFileTransferData * Data = static_cast<TFileTransferData *>(UserData);
   DebugAssert(Data->CopyParam->FOnTransferOut.empty());
   FTerminal->UpdateTargetTime(AHandle, Data->Modification, dstmUnix);
 }
@@ -4791,7 +4791,7 @@ bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * AFileName, str
       }
       else
       {
-        TDateTime Modification = ::ConvertTimestampToUTC(::FileTimeToDateTime(MTime));
+        const TDateTime Modification = ::ConvertTimestampToUTC(::FileTimeToDateTime(MTime));
 
         uint16_t Year;
         uint16_t Month;

@@ -513,7 +513,7 @@ protected:
     const UnicodeString & SiteKey, const UnicodeString & FingerprintSHA1, const UnicodeString & FingerprintSHA256,
     int32_t Failures);
   bool ConfirmCertificate(
-    TSessionInfo & SessionInfo, int32_t AFailures, const UnicodeString & ACertificateStorageKey, bool CanRemember);
+    const TSessionInfo & SessionInfo, int32_t AFailures, const UnicodeString & ACertificateStorageKey, bool CanRemember);
   bool VerifyOrConfirmHttpCertificate(
     const UnicodeString & AHostName, int32_t APortNumber, const TNeonCertificateData & Data, bool CanRemember,
     TSessionInfo & SessionInfo);
@@ -783,7 +783,7 @@ public:
   void SetLocalFileTime(const UnicodeString & LocalFileName,
     const TDateTime & Modification);
   void SetLocalFileTime(const UnicodeString & LocalFileName,
-    FILETIME * AcTime, FILETIME * WrTime);
+    const FILETIME * AcTime, const FILETIME * WrTime);
   DWORD GetLocalFileAttributes(const UnicodeString & LocalFileName) const;
   bool SetLocalFileAttributes(const UnicodeString & LocalFileName, DWORD FileAttributes);
   bool MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags);

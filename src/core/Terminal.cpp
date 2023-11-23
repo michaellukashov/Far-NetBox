@@ -8070,7 +8070,7 @@ void TTerminal::CheckParallelFileTransfer(
     TObject * ParallelObject = nullptr;
     if (TParallelOperation::GetOnlyFile(Files, ParallelFileName, ParallelObject))
     {
-      TRemoteFile * File = static_cast<TRemoteFile *>(ParallelObject);
+      const TRemoteFile * File = static_cast<TRemoteFile *>(ParallelObject);
       const TRemoteFile * UltimateFile = File->Resolve();
       if ((UltimateFile == File) && // not tested with symlinks
           (UltimateFile->Size >= nb::ToInt64(Configuration->ParallelTransferThreshold) * 1024))
@@ -8087,7 +8087,7 @@ void TTerminal::CheckParallelFileTransfer(
 
           if (base::FileExists(ApiPath(DestFullName)))
           {
-            TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
+            const TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
 
             TOverwriteFileParams FileParams;
             int64_t MTime;
@@ -8318,7 +8318,7 @@ void TTerminal::DoCopyToLocal(
       }
       catch(ESkipFile & E)
       {
-        TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
+        const TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
         if (!HandleException(&E))
         {
           throw;
@@ -8596,7 +8596,7 @@ void TTerminal::SinkFile(const UnicodeString & AFileName, const TRemoteFile * AF
     Params->Skipped = true;
 
     {
-      TSuspendFileOperationProgress Suspend(Params->OperationProgress); nb::used(Suspend);
+      const TSuspendFileOperationProgress Suspend(Params->OperationProgress); nb::used(Suspend);
       if (!HandleException(&E))
       {
         throw;
@@ -8714,14 +8714,14 @@ bool TTerminal::VerifyCertificate(
   const UnicodeString CertificateDataSHA1 = FormatCertificateData(FingerprintSHA1, Failures);
   const UnicodeString CertificateDataSHA256 = FormatCertificateData(FingerprintSHA256, Failures);
 
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateConfigStorage());
+  const std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateConfigStorage());
   Storage->SetAccessMode(smRead);
 
   if (Storage->OpenSubKey(CertificateStorageKey, false))
   {
     if (Storage->ValueExists(SiteKey))
     {
-      UnicodeString CachedCertificateData = Storage->ReadString(SiteKey, "");
+      const UnicodeString CachedCertificateData = Storage->ReadString(SiteKey, "");
       if (SameChecksum(CertificateDataSHA1, CachedCertificateData, false) ||
           SameChecksum(CertificateDataSHA256, CachedCertificateData, false))
       {
@@ -8762,7 +8762,7 @@ bool TTerminal::VerifyCertificate(
 }
 
 bool TTerminal::ConfirmCertificate(
-  TSessionInfo & SessionInfo, int32_t Failures, const UnicodeString & CertificateStorageKey, bool CanRemember)
+  const TSessionInfo & SessionInfo, int32_t Failures, const UnicodeString & CertificateStorageKey, bool CanRemember)
 {
   TClipboardHandler ClipboardHandler;
   ClipboardHandler.Text =
@@ -9027,7 +9027,7 @@ typename TTerminal::TEncryptedFileNames::const_iterator TTerminal::GetEncryptedF
     FFoldersScannedForEncryptedFiles.insert(FileDir);
   }
 
-  TEncryptedFileNames::const_iterator Result = FEncryptedFileNames.find(APath);
+  const TEncryptedFileNames::const_iterator Result = FEncryptedFileNames.find(APath);
   return Result;
 }
 
@@ -9091,7 +9091,7 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString & Path, bool Decryp
       // Encryption.FreeContext();
     }
 
-    TEncryptedFileNames::const_iterator Iter = FEncryptedFileNames.find(Result);
+    const TEncryptedFileNames::const_iterator Iter = FEncryptedFileNames.find(Result);
     const bool NotCached = (Iter == FEncryptedFileNames.end());
     if (!DontCache && (Encrypted || NotCached))
     {
@@ -9352,7 +9352,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
 }
 
 void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
-  FILETIME * AcTime, FILETIME * WrTime)
+  const FILETIME * AcTime, const FILETIME * WrTime)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
   FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFileName), "",
