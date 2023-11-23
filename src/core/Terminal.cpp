@@ -9259,7 +9259,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
 bool TTerminal::IsValidFile(TRemoteFile * File) const
 {
   return
-    !File->FileName().IsEmpty() &&
+    File && !File->FileName().IsEmpty() &&
     (base::IsUnixRootPath(File->FileName()) || base::UnixExtractFileDir(File->FileName()).IsEmpty());
 }
 
