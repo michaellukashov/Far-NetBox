@@ -2335,7 +2335,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
           else if (fabs(Hours) >= 48)
           {
             FTimeDifference = 0;
-            LogMessage = FORMAT(L"Ignoring suspicious timezone difference of %s hours, detected using file %s", IntToStr(int64_t(Hours)), FileLog);
+            LogMessage = FORMAT(L"Ignoring suspicious timezone difference of %s hours, detected using file %s", IntToStr(nb::ToInt32(Hours)), FileLog);
           }
           else
           {
