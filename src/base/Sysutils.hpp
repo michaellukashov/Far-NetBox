@@ -366,7 +366,7 @@ struct NB_CORE_EXPORT TSearchRec : public TObject
   NB_DISABLE_COPY(TSearchRec)
 public:
   TSearchRec() = default;
-  void Assign(const TSearchRec& rhs)
+  void Assign(const TSearchRec & rhs)
   {
     Time = rhs.Time;
     Size = rhs.Size;

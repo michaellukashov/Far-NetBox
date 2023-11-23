@@ -47,7 +47,7 @@ public:
   ~TUnguard() noexcept;
 
 private:
-  TCriticalSection &FCriticalSection;
+  TCriticalSection & FCriticalSection;
 };
 
 //#include <assert.h>
