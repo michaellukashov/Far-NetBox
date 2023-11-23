@@ -32,13 +32,13 @@
 
 #endif
 
-constexpr const wchar_t * PARENTDIRECTORY = L"..";
-constexpr const wchar_t * THISDIRECTORY = L".";
-constexpr const wchar_t * ROOTDIRECTORY = L"/";
-constexpr const wchar_t * SLASH = L"/";
-constexpr const wchar_t * BACKSLASH = L"\\";
-constexpr const wchar_t * QUOTE = L"\'";
-constexpr const wchar_t * DOUBLEQUOTE = L"\"";
+//constexpr const wchar_t * PARENTDIRECTORY = L"..";
+//constexpr const wchar_t * THISDIRECTORY = L".";
+//constexpr const wchar_t * ROOTDIRECTORY = L"/";
+//constexpr const wchar_t * SLASH = L"/";
+//constexpr const wchar_t * BACKSLASH = L"\\";
+//constexpr const wchar_t * QUOTE = L"\'";
+//constexpr const wchar_t * DOUBLEQUOTE = L"\"";
 
 enum FileAttributesEnum
 {

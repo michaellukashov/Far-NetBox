@@ -663,7 +663,7 @@ UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 // const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
 
-const UnicodeString AnyMask = L"*.*";
+// const UnicodeString AnyMask = L"*.*";
 //const wchar_t EngShortMonthNames[12][4] =
 //{
 //  L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",

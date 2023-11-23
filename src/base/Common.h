@@ -23,10 +23,15 @@
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
 #endif // if 0
 
-#define PARENTDIRECTORY L".."
-#define THISDIRECTORY L"."
+constexpr const wchar_t * PARENTDIRECTORY = L"..";
+constexpr const wchar_t * THISDIRECTORY = L".";
+constexpr const wchar_t * ROOTDIRECTORY = L"/";
+constexpr const wchar_t * SLASH = L"/";
+constexpr const wchar_t * BACKSLASH = L"\\";
+constexpr const wchar_t * QUOTE = L"\'";
+constexpr const wchar_t * DOUBLEQUOTE = L"\"";
 
-extern const UnicodeString AnyMask;
+constexpr const wchar_t * AnyMask = L"*.*";
 //extern const wchar_t EngShortMonthNames[12][4];
 constexpr const wchar_t EngShortMonthNames[12][4] =
 {
