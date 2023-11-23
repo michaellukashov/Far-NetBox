@@ -178,7 +178,7 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
   }
   else
   {
-    return base::ExtractFileName(APath, Unix);
+    return Sysutils::ExtractFilename(APath, Backslash);
   }
 }
 

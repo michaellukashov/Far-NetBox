@@ -1061,7 +1061,7 @@ UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter)
 // "/foo/bar/baz" --> ""
 UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter)
 {
-  const UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
+  const UnicodeString FileName = Sysutils::ExtractFilename(APath, Delimiter);
   const int32_t N = FileName.RPos(L'.');
   if (N > 0)
   {
@@ -1080,7 +1080,7 @@ UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimite
 //
 UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter)
 {
-  const UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
+  const UnicodeString FileName = Sysutils::ExtractFilename(APath, Delimiter);
   if (FileName.RPos(L'.') > 1)
   {
     return ExtractDirectory(APath, Delimiter) +

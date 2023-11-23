@@ -2637,7 +2637,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   ExportData->Assign(Data);
   ExportData->SetModified(true);
   UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
-    ::ValidLocalFileName(::ExtractFilename(ExportData->GetName())) + ".netbox";
+    ::ValidLocalFileName(Sysutils::ExtractFilename(ExportData->GetName())) + ".netbox";
   std::unique_ptr<THierarchicalStorage> ExportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
   ExportStorage->Init();
   ExportStorage->SetAccessMode(smReadWrite);
