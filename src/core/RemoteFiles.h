@@ -723,7 +723,7 @@ public:
   };
 #endif // #if 0
 
-  using TItemList = TList<TChecklistItem>;
+  using TItemList = TListBase<TChecklistItem>;
 
   TSynchronizeChecklist() noexcept;
   ~TSynchronizeChecklist() noexcept;

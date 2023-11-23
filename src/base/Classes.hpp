@@ -164,17 +164,17 @@ enum TListNotification
 
 using CompareFunc = int32_t (const TObject * Item1, const TObject * Item2);
 
-NB_DEFINE_CLASS_ID(TList);
+NB_DEFINE_CLASS_ID(TListBase);
 template<class O = TObject>
-class NB_CORE_EXPORT TList : public TPersistent
+class NB_CORE_EXPORT TListBase : public TPersistent
 {
 public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TPersistent::is(Kind); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TListBase); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TListBase) || TPersistent::is(Kind); }
 public:
-  TList() : TPersistent(OBJECT_CLASS_TList) {}
-  explicit TList(TObjectClassId Kind) : TPersistent(Kind) {}
-  virtual ~TList() noexcept override { TList::Clear(); }
+  TListBase() : TPersistent(OBJECT_CLASS_TListBase) {}
+  explicit TListBase(TObjectClassId Kind) : TPersistent(Kind) {}
+  virtual ~TListBase() noexcept override { TListBase::Clear(); }
 
   template<class T>
   T * GetAs(int32_t Index) const { return cast_to<T>(FList[Index]); }
@@ -304,16 +304,28 @@ public:
     FList.resize(NewCount);
   }
 
-  ROProperty<int32_t> Count{nb::bind(&TList::GetCount, this)};
-  ROIndexedProperty<O *> Items{nb::bind(&TList::GetItemPrivate, this)};
+  ROProperty<int32_t> Count{nb::bind(&TListBase::GetCount, this)};
+  ROIndexedProperty<O *> Items{nb::bind(&TListBase::GetItemPrivate, this)};
 
 private:
   nb::vector_t<O *> FList;
   O * GetItemPrivate(int32_t Index) const { return FList[Index]; }
 };
 
+NB_DEFINE_CLASS_ID(TList);
+class NB_CORE_EXPORT TList : public TListBase<TObject>
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TListBase::is(Kind); }
+public:
+  TList() : TListBase(OBJECT_CLASS_TList) {}
+  explicit TList(TObjectClassId Kind) : TListBase(Kind) {}
+  virtual ~TList() noexcept override { TList::Clear(); }
+};
+
 NB_DEFINE_CLASS_ID(TObjectList);
-class NB_CORE_EXPORT TObjectList : public TList<TObject>
+class NB_CORE_EXPORT TObjectList : public TList
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }

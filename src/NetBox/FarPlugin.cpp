@@ -19,7 +19,7 @@ TCustomFarPlugin * FarPlugin = nullptr;
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
-  FOpenedPlugins(std::make_unique<TList<>>()),
+  FOpenedPlugins(std::make_unique<TList>()),
   FSavedTitles(std::make_unique<TStringList>())
 {
   FFarThreadId = GetCurrentThreadId();

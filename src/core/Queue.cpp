@@ -473,10 +473,10 @@ TTerminalQueue::TTerminalQueue(TTerminal * ATerminal,
   FTerminal(ATerminal),
   FConfiguration(AConfiguration),
   FSessionData(std::make_unique<TSessionData>(L"")),
-  FItems(std::make_unique<TList<>>()),
-  FDoneItems(std::make_unique<TList<>>()),
-  FTerminals(std::make_unique<TList<>>()),
-  FForcedItems(std::make_unique<TList<>>())
+  FItems(std::make_unique<TList>()),
+  FDoneItems(std::make_unique<TList>()),
+  FTerminals(std::make_unique<TList>()),
+  FForcedItems(std::make_unique<TList>())
 {
 }
 
@@ -537,7 +537,7 @@ TTerminalQueue::~TTerminalQueue() noexcept
 //  SAFE_DESTROY_EX(TSessionData, FSessionData);
 }
 
-void TTerminalQueue::FreeItemsList(TList<> * List) const
+void TTerminalQueue::FreeItemsList(TList * List) const
 {
   for (int32_t Index = 0; Index < List->GetCount(); ++Index)
   {
@@ -702,7 +702,7 @@ void TTerminalQueue::DeleteItem(TQueueItem * Item, bool CanKeep)
   }
 }
 
-TQueueItem * TTerminalQueue::GetItem(TList<> * List, int32_t Index)
+TQueueItem * TTerminalQueue::GetItem(TList * List, int32_t Index)
 {
   return List->GetAs<TQueueItem>(Index);
 }
@@ -713,7 +713,7 @@ TQueueItem * TTerminalQueue::GetItem(int32_t Index) const
 }
 
 void TTerminalQueue::UpdateStatusForList(
-  TTerminalQueueStatus * Status, TList<> * List, TTerminalQueueStatus * Current)
+  TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current)
 {
   for (int32_t Index = 0; Index < List->GetCount(); ++Index)
   {
@@ -1990,7 +1990,7 @@ int32_t TQueueItemProxy::GetIndex() const
 // TTerminalQueueStatus
 
 TTerminalQueueStatus::TTerminalQueueStatus() noexcept :
-  FList(std::make_unique<TList<>>())
+  FList(std::make_unique<TList>())
 {
   // FList = new TList();
   ResetStats();

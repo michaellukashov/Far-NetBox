@@ -194,7 +194,7 @@ protected:
   PluginStartupInfo FStartupInfo{};
   FarStandardFunctions FFarStandardFunctions{};
   HINSTANCE FHandle{};
-  std::unique_ptr<TList<>> FOpenedPlugins;
+  std::unique_ptr<TList> FOpenedPlugins;
   TFarDialog *FTopDialog{nullptr};
   HANDLE FConsoleInput{};
   HANDLE FConsoleOutput{};

@@ -1192,7 +1192,7 @@ private:
 private:
   gsl::owner<TSessionData *> FSessionData{nullptr};
   UnicodeString FPrompt;
-  std::unique_ptr<TList<>> FEdits;
+  std::unique_ptr<TList> FEdits;
   gsl::owner<TFarCheckBox *> SavePasswordCheck{nullptr};
 };
 
@@ -1202,7 +1202,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   bool /*StoredCredentialsTried*/) noexcept :
   TFarDialog(AFarPlugin),
   FSessionData(nullptr),
-  FEdits(std::make_unique<TList<>>()),
+  FEdits(std::make_unique<TList>()),
   SavePasswordCheck(nullptr)
 {
   bool ShowSavePassword = false;
@@ -5941,14 +5941,14 @@ private:
 };
 
 NB_DEFINE_CLASS_ID(TLabelList);
-class TLabelList : public TList<>
+class TLabelList : public TList
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLabelList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLabelList) || TList::is(Kind); }
 public:
   explicit TLabelList() noexcept :
-    TList<>(OBJECT_CLASS_TLabelList),
+    TList(OBJECT_CLASS_TLabelList),
     MaxLen(0)
   {
   }
@@ -6432,7 +6432,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
   {
     std::unique_ptr<TStrings> BookmarkPaths(std::make_unique<TStringList>());
     std::unique_ptr<TFarMenuItems> BookmarkItems(std::make_unique<TFarMenuItems>());
-    std::unique_ptr<TList<>> Bookmarks(std::make_unique<TList<>>());
+    std::unique_ptr<TList> Bookmarks(std::make_unique<TList>());
     intptr_t BookmarksOffset{0};
 
     int32_t MaxLength = FPlugin->MaxMenuItemLength();

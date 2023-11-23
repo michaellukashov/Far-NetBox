@@ -783,7 +783,7 @@ void TFarDialog::Change()
   }
   else
   {
-    std::unique_ptr<TList<TFarDialogContainer>> NotifiedContainers(std::make_unique<TList<TFarDialogContainer>>());
+    std::unique_ptr<TListBase<TFarDialogContainer>> NotifiedContainers(std::make_unique<TListBase<TFarDialogContainer>>());
     for (int32_t Index = 0; Index < GetItemCount(); ++Index)
     {
       TFarDialogItem * DItem = GetItem(Index);

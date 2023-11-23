@@ -245,8 +245,8 @@ TCopyParamList::TCopyParamList() noexcept
 
 void TCopyParamList::Init()
 {
-  FCopyParams = std::make_unique<TList<>>();
-  FRules = std::make_unique<TList<>>();
+  FCopyParams = std::make_unique<TList>();
+  FRules = std::make_unique<TList>();
   FNames = std::make_unique<TStringList>();
   FNameList = nullptr;
   FModified = false;

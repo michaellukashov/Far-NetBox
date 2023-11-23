@@ -1223,8 +1223,8 @@ public:
   TSFTPQueue() = delete;
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept :
     TObject(OBJECT_CLASS_TSFTPQueue),
-    FRequests(std::make_unique<TList<>>()),
-    FResponses(std::make_unique<TList<>>()),
+    FRequests(std::make_unique<TList>()),
+    FResponses(std::make_unique<TList>()),
     FFileSystem(AFileSystem),
     FCodePage(CodePage)
   {
@@ -1361,8 +1361,8 @@ public:
   }
 
 protected:
-  std::unique_ptr<TList<>> FRequests{nullptr};
-  std::unique_ptr<TList<>> FResponses{nullptr};
+  std::unique_ptr<TList> FRequests{nullptr};
+  std::unique_ptr<TList> FResponses{nullptr};
   TSFTPFileSystem * FFileSystem{nullptr};
   uint32_t FCodePage{0};
 
@@ -2031,7 +2031,7 @@ void TSFTPFileSystem::Init(void * Data /* TSecureShell*/)
   DebugAssert(FSecureShell);
   FFileSystemInfoValid = false;
   FVersion = nb::NPOS;
-  FPacketReservations = std::make_unique<TList<>>();
+  FPacketReservations = std::make_unique<TList>();
   ResetConnection();
   FBusy = 0;
   FAvoidBusy = false;

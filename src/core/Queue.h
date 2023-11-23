@@ -139,13 +139,13 @@ protected:
   TTerminal * FTerminal{nullptr};
   TConfiguration * FConfiguration{nullptr};
   std::unique_ptr<TSessionData> FSessionData;
-  std::unique_ptr<TList<>> FItems;
-  std::unique_ptr<TList<>> FDoneItems;
+  std::unique_ptr<TList> FItems;
+  std::unique_ptr<TList> FDoneItems;
   int32_t FItemsInProcess{0};
   TCriticalSection FItemsSection;
   int32_t FFreeTerminals{0};
-  std::unique_ptr<TList<>> FTerminals;
-  std::unique_ptr<TList<>> FForcedItems;
+  std::unique_ptr<TList> FTerminals;
+  std::unique_ptr<TList> FForcedItems;
   int32_t FTemporaryTerminals{0};
   int32_t FOverallTerminals{0};
   int32_t FTransfersLimit{2};
@@ -154,11 +154,11 @@ protected:
   TDateTime FIdleInterval;
   TDateTime FLastIdle;
 
-  static TQueueItem * GetItem(TList<> * List, int32_t Index);
+  static TQueueItem * GetItem(TList * List, int32_t Index);
   TQueueItem * GetItem(int32_t Index) const;
-  void FreeItemsList(TList<> * List) const;
+  void FreeItemsList(TList * List) const;
   void UpdateStatusForList(
-    TTerminalQueueStatus * Status, TList<> * List, TTerminalQueueStatus * Current);
+    TTerminalQueueStatus * Status, TList * List, TTerminalQueueStatus * Current);
   bool ItemGetData(TQueueItem * Item, TQueueItemProxy * Proxy, TQueueFileList * FileList);
   bool ItemProcessUserAction(TQueueItem * Item, void * Arg);
   bool ItemMove(TQueueItem * Item, TQueueItem * BeforeItem);
@@ -350,7 +350,7 @@ protected:
   void NeedStats() const;
 
 private:
-  std::unique_ptr<TList<>> FList;
+  std::unique_ptr<TList> FList;
   int32_t FDoneCount{0};
   mutable int32_t FActiveCount{0};
   mutable int32_t FActivePrimaryCount{0};

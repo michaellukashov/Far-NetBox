@@ -317,7 +317,7 @@ private:
   HANDLE FAuthenticationSaveScreenHandle{nullptr};
   TDateTime FSynchronizationStart;
   std::unique_ptr<TStrings> FFileList;
-  gsl::owner<TList<> *> FPanelItems{nullptr};
+  gsl::owner<TList *> FPanelItems{nullptr};
   UnicodeString FSavedFindFolder;
   UnicodeString FOriginalEditFile;
   UnicodeString FLastEditFile;
