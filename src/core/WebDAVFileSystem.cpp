@@ -590,7 +590,7 @@ UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bo
 {
   bool AddTrailingBackslash;
 
-  if (APath == L"/")
+  if (APath == ROOTDIRECTORY)
   {
     // does not really matter as path "/" is still "/" when absolute,
     // no slash needed

@@ -52,7 +52,7 @@ UnicodeString UnixIncludeTrailingBackslash(const UnicodeString & Path)
 UnicodeString UnixExcludeTrailingBackslash(const UnicodeString & Path, bool Simple)
 {
   if (Path.IsEmpty() ||
-      (Path == L"/") ||
+      (Path == ROOTDIRECTORY) ||
       !Path.IsDelimiter(L"/", Path.Length()) ||
       (!Simple && ((Path.Length() == 3) && IsUnixStyleWindowsPath(Path))))
   {
@@ -259,7 +259,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & Pat
       // special case, "/../" => "/"
       if (P == 1)
       {
-        Result = L"/";
+        Result = ROOTDIRECTORY;
       }
       else
       {

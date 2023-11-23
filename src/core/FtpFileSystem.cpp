@@ -2107,7 +2107,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
         {
           if ((Path.Length() > 0) && !base::UnixIsAbsolutePath(Path))
           {
-            Path = L"/" + Path;
+            Path = UnicodeString(ROOTDIRECTORY) + Path;
           }
           FCurrentDirectory = base::UnixExcludeTrailingBackslash(Path);
           FReadCurrentDirectory = false;

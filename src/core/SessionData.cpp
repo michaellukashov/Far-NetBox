@@ -1632,7 +1632,7 @@ void TSessionData::ImportFromFilezilla(
     {
       RemoteDir.Delete(1, PrefixSize);
     }
-    RemoteDirectory = L"/";
+    RemoteDirectory = ROOTDIRECTORY;
     while (!RemoteDir.IsEmpty())
     {
       int32_t SegmentSize = StrToIntDef(CutToChar(RemoteDir, L' ', false), 0);
@@ -3880,7 +3880,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
   {
     Url += L":" + IntToStr(PortNumber);
   }
-  Url += L"/";
+  Url += SLASH;
 
   return Url;
 }

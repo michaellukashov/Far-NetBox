@@ -724,7 +724,7 @@ UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString & AKey)
 void TS3FileSystem::ParsePath(const UnicodeString & APath, UnicodeString & BucketName, UnicodeString & AKey)
 {
   UnicodeString Path = APath;
-  if (DebugAlwaysTrue(Path.SubString(1, 1) == L"/"))
+  if (DebugAlwaysTrue(Path.SubString(1, 1) == SLASH))
   {
     Path.Delete(1, 1);
   }
