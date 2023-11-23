@@ -937,10 +937,10 @@ static DWORD FindMatchingFile(TSearchRec & Rec)
       return Result;
     }
   }
-  FileTimeToLocalFileTime(&Rec.FindData.ftLastWriteTime, reinterpret_cast<LPFILETIME>(&LocalFileTime));
+  ::FileTimeToLocalFileTime(&Rec.FindData.ftLastWriteTime, reinterpret_cast<LPFILETIME>(&LocalFileTime));
   WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
   WORD Lo = Rec.Time & 0xFFFF;
-  FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
+  ::FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
   Rec.Time = (nb::ToIntPtr(Hi) << 16) + Lo;
   Rec.Size = Rec.FindData.nFileSizeLow | (nb::ToInt64(Rec.FindData.nFileSizeHigh) << 32);
   Rec.Attr = Rec.FindData.dwFileAttributes;
@@ -960,7 +960,7 @@ bool Win32Check(bool RetVal)
 
 UnicodeString SysErrorMessage(int32_t ErrorCode)
 {
-  wchar_t Buffer[255];
+  wchar_t Buffer[255]{};
   int32_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
       FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt32(ErrorCode), 0,
       static_cast<LPTSTR>(Buffer),
