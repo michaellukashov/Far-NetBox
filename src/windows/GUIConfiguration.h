@@ -146,9 +146,9 @@ public:
 
   __property int32_t Count = { read = GetCount };
   ROProperty<int32_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
-//  __property UnicodeString Names[int32_t Index] = { read = GetName };
-//  __property const TCopyParamRule * Rules[int32_t Index] = { read = GetRule };
-//  __property const TCopyParamType * CopyParams[int32_t Index] = { read = GetCopyParam };
+  // __property UnicodeString Names[int32_t Index] = { read = GetName };
+  // __property const TCopyParamRule * Rules[int32_t Index] = { read = GetRule };
+  // __property const TCopyParamType * CopyParams[int32_t Index] = { read = GetCopyParam };
   __property bool Modified = { read = FModified };
   __property TStrings * NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };

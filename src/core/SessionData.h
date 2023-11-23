@@ -1085,8 +1085,8 @@ public:
   TStrings * GetWorkspaces() const;
   bool HasAnyWorkspace() const;
   TSessionData * SaveWorkspaceData(TSessionData * Data, int32_t Index);
-  virtual ~TStoredSessionList() noexcept;
-  __property TSessionData * Sessions[int32_t Index]  = { read=AtSession };
+  virtual ~TStoredSessionList() noexcept override;
+  // __property TSessionData * Sessions[int32_t Index]  = { read=AtSession };
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
   RWProperty1<TSessionData> DefaultSettings{nb::bind(&TStoredSessionList::GetDefaultSettingsConst, this), nb::bind(&TStoredSessionList::SetDefaultSettings, this)};
 

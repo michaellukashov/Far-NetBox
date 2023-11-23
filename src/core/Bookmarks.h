@@ -22,7 +22,7 @@ public:
   void ModifyAll(bool Modify);
   void Clear();
 
-  __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
+  // __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
   __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
 
 private:
@@ -70,8 +70,8 @@ public:
 
   __property int32_t Count = { read = GetCount };
   ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
-  __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
-  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+  // __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
+  // __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 
 protected:
   int32_t IndexOf(TBookmark * Bookmark) const;

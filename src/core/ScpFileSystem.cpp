@@ -98,14 +98,14 @@ public:
 
   __removed UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int32_t size);
   static UnicodeString ExtractCommand(const UnicodeString & ACommand);
-  __property int32_t MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
-  __property int32_t MinLines[TFSCommand Cmd]  = { read=GetMinLines };
-  __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
-  __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
-  __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
-  __property UnicodeString Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
-  __property UnicodeString FirstLine = { read = GetFirstLine };
-  __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
+  // __property int32_t MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
+  // __property int32_t MinLines[TFSCommand Cmd]  = { read=GetMinLines };
+  // __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
+  // __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
+  // __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
+  // __property UnicodeString Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
+  // __property UnicodeString FirstLine = { read = GetFirstLine };
+  // __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
   __property UnicodeString LastLine  = { read=GetLastLine };
   __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
   __property UnicodeString ReturnVar  = { read=GetReturnVar, write=FReturnVar };

@@ -756,7 +756,7 @@ public:
   bool& UseBusyCursor{FUseBusyCursor};
   __property UnicodeString UserName = { read=GetUserName };
   ROProperty<UnicodeString> UserName{nb::bind(&TTerminal::TerminalGetUserName, this)};
-  __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
+  // __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
   __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
   __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
   __property TTerminal * CommandSession = { read = GetCommandSession };
@@ -915,7 +915,7 @@ public:
   void FreeAndNullTerminal(TTerminal *& Terminal);
   void RecryptPasswords();
 
-  __property TTerminal * Terminals[int32_t Index]  = { read = GetTerminal };
+  // __property TTerminal * Terminals[int32_t Index]  = { read = GetTerminal };
 
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);

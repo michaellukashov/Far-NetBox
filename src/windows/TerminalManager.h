@@ -114,14 +114,14 @@ private:
   UnicodeString FProgressTitle;
   UnicodeString FForegroundProgressTitle;
   TDateTime FDirectoryReadingStart;
-  TAuthenticateForm * FAuthenticateForm{nullptr};
-  TCriticalSection * FQueueSection{nullptr};
+  // TAuthenticateForm * FAuthenticateForm{nullptr};
+  // TCriticalSection * FQueueSection{nullptr};
   DWORD FMainThread{0};
   int32_t FPendingConfigurationChange{0};
   std::unique_ptr<TCriticalSection> FChangeSection;
   nb::vector_t<std::pair<TTerminalQueue *, TQueueEvent> > FQueueEvents;
   uint32_t FTaskbarButtonCreatedMessage{0};
-  ITaskbarList3 * FTaskbarList{nullptr};
+  // ITaskbarList3 * FTaskbarList{nullptr};
   int32_t FAuthenticating{0};
   void * FBusyToken{nullptr};
   bool FAuthenticationCancelled{false};

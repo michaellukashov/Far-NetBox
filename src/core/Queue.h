@@ -335,7 +335,7 @@ public:
   __property int32_t DoneAndActiveCount = { read = GetDoneAndActiveCount };
   __property int32_t ActivePrimaryCount = { read = GetActivePrimaryCount };
   __property int32_t ActiveAndPendingPrimaryCount = { read = GetActiveAndPendingPrimaryCount };
-  __property TQueueItemProxy * Items[int32_t Index] = { read = GetItem };
+  // __property TQueueItemProxy * Items[int32_t Index] = { read = GetItem };
 
   bool IsOnlyOneActiveAndNoPending() const;
 
