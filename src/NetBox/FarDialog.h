@@ -87,8 +87,8 @@ public:
   int32_t GetResult() const { return FResult; }
   TPoint GetMaxSize() const;
 
-  TFarKeyEvent GetOnKey() const { return FOnKey; }
-  void SetOnKey(TFarKeyEvent Value) { FOnKey = Value; }
+  const TFarKeyEvent & GetOnKey() const { return FOnKey; }
+  void SetOnKey(TFarKeyEvent && Value) { FOnKey = std::move(Value); }
 
   void Redraw();
   void LockChanges();
@@ -246,10 +246,10 @@ public:
   const TFarDialog * GetOwner() const { return FDialog; }
   TFarDialog * GetOwner() { return FDialog; }
 
-  TNotifyEvent GetOnExit() const { return FOnExit; }
-  void SetOnExit(TNotifyEvent Value) { FOnExit = Value; }
-  TFarMouseClickEvent GetOnMouseClick() const { return FOnMouseClick; }
-  void SetOnMouseClick(TFarMouseClickEvent Value) { FOnMouseClick = Value; }
+  TNotifyEvent & GetOnExit() { return FOnExit; }
+  void SetOnExit(TNotifyEvent && Value) { FOnExit = std::move(Value); }
+  TFarMouseClickEvent & GetOnMouseClick() { return FOnMouseClick; }
+  void SetOnMouseClick(TFarMouseClickEvent && Value) { FOnMouseClick = std::move(Value); }
   bool GetFocused() const;
   void SetFocused(bool Value);
 
@@ -399,8 +399,8 @@ public:
   void SetBrackets(TFarButtonBrackets Value);
   virtual bool GetCenterGroup() const override { return TFarDialogItem::GetCenterGroup(); }
   virtual void SetCenterGroup(bool Value) override { TFarDialogItem::SetCenterGroup(Value); }
-  virtual TFarButtonClickEvent GetOnClick() const { return FOnClick; }
-  virtual void SetOnClick(TFarButtonClickEvent Value) { FOnClick = Value; }
+  virtual const TFarButtonClickEvent & GetOnClick() const { return FOnClick; }
+  virtual void SetOnClick(TFarButtonClickEvent && Value) { FOnClick = std::move(Value); }
 
 protected:
   virtual void SetDataInternal(const UnicodeString & AValue) override;
@@ -430,8 +430,8 @@ public:
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   bool GetAllowGrayed() const { return GetFlag(DIF_3STATE); }
   void SetAllowGrayed(bool Value) { SetFlag(DIF_3STATE, Value); }
-  virtual TFarAllowChangeEvent GetOnAllowChange() const { return FOnAllowChange; }
-  virtual void SetOnAllowChange(TFarAllowChangeEvent Value) { FOnAllowChange = Value; }
+  virtual const TFarAllowChangeEvent & GetOnAllowChange() const { return FOnAllowChange; }
+  virtual void SetOnAllowChange(TFarAllowChangeEvent && Value) { FOnAllowChange = std::move(Value); }
   virtual bool GetChecked() const override { return TFarDialogItem::GetChecked(); }
   virtual void SetChecked(bool Value) override { TFarDialogItem::SetChecked(Value); }
   virtual int32_t GetSelected() const override { return TFarDialogItem::GetSelected(); }
@@ -454,8 +454,8 @@ public:
   virtual void SetChecked(bool Value) override { TFarDialogItem::SetChecked(Value); }
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
-  virtual TFarAllowChangeEvent GetOnAllowChange() const { return FOnAllowChange; }
-  virtual void SetOnAllowChange(TFarAllowChangeEvent Value) { FOnAllowChange = Value; }
+  virtual const TFarAllowChangeEvent & GetOnAllowChange() const { return FOnAllowChange; }
+  virtual void SetOnAllowChange(TFarAllowChangeEvent && Value) { FOnAllowChange = std::move(Value); }
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;

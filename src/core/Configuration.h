@@ -519,8 +519,8 @@ public:
   int32_t GetActualLogProtocol() const { return FActualLogProtocol; }
   bool GetLogActionsRequired() const { return FLogActionsRequired; }
   int32_t GetLogWindowLines() const { return FLogWindowLines; }
-  TNotifyEvent GetOnChange() const { return FOnChange; }
-  void SetOnChange(TNotifyEvent Value) { FOnChange = Value; }
+  TNotifyEvent & GetOnChange() { return FOnChange; }
+  void SetOnChange(TNotifyEvent && Value) { FOnChange = std::move(Value); }
   int32_t GetSessionReopenAuto() const { return FSessionReopenAuto; }
   int32_t GetSessionReopenBackground() const { return FSessionReopenBackground; }
   int32_t GetSessionReopenTimeout() const { return FSessionReopenTimeout; }

@@ -205,8 +205,8 @@ public:
   __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };
 
   bool GetActive() const { return FActive; }
-  TCaptureOutputEvent GetOnCaptureOutput() const { return FOnCaptureOutput; }
-  void SetOnCaptureOutput(TCaptureOutputEvent Value) { FOnCaptureOutput = Value; }
+  const TCaptureOutputEvent & GetOnCaptureOutput() const { return FOnCaptureOutput; }
+  void SetOnCaptureOutput(TCaptureOutputEvent && Value) { FOnCaptureOutput = std::move(Value); }
   TDateTime GetLastDataSent() const { return FLastDataSent; }
   UnicodeString GetLastTunnelError() const { return FLastTunnelError; }
   UnicodeString ShellGetUserName() const { return FUserName; }

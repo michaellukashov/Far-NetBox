@@ -2614,16 +2614,16 @@ TTerminalThread::~TTerminalThread() noexcept
   DebugAssert(FTerminal->GetOnReadDirectoryProgress() == nb::bind(&TTerminalThread::TerminalReadDirectoryProgress, this));
   DebugAssert(FTerminal->GetOnInitializeLog() == nb::bind(&TTerminalThread::TerminalInitializeLog, this));
 
-  FTerminal->SetOnInformation(FOnInformation);
-  FTerminal->SetOnQueryUser(FOnQueryUser);
-  FTerminal->SetOnPromptUser(FOnPromptUser);
-  FTerminal->SetOnShowExtendedException(FOnShowExtendedException);
-  FTerminal->SetOnDisplayBanner(FOnDisplayBanner);
-  FTerminal->SetOnChangeDirectory(FOnChangeDirectory);
-  FTerminal->SetOnReadDirectory(FOnReadDirectory);
-  FTerminal->SetOnStartReadDirectory(FOnStartReadDirectory);
-  FTerminal->SetOnReadDirectoryProgress(FOnReadDirectoryProgress);
-  FTerminal->SetOnInitializeLog(FOnInitializeLog);
+  FTerminal->SetOnInformation(std::forward<TInformationEvent>(FOnInformation));
+  FTerminal->SetOnQueryUser(std::forward<TQueryUserEvent>(FOnQueryUser));
+  FTerminal->SetOnPromptUser(std::forward<TPromptUserEvent>(FOnPromptUser));
+  FTerminal->SetOnShowExtendedException(std::forward<TExtendedExceptionEvent>(FOnShowExtendedException));
+  FTerminal->SetOnDisplayBanner(std::forward<TDisplayBannerEvent>(FOnDisplayBanner));
+  FTerminal->SetOnChangeDirectory(std::forward<TNotifyEvent>(FOnChangeDirectory));
+  FTerminal->SetOnReadDirectory(std::forward<TReadDirectoryEvent>(FOnReadDirectory));
+  FTerminal->SetOnStartReadDirectory(std::forward<TNotifyEvent>(FOnStartReadDirectory));
+  FTerminal->SetOnReadDirectoryProgress(std::forward<TReadDirectoryProgressEvent>(FOnReadDirectoryProgress));
+  FTerminal->SetOnInitializeLog(std::forward<TNotifyEvent>(FOnInitializeLog));
 
   __removed delete FSection;
   if (FAbandoned)

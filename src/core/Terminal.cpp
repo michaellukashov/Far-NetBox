@@ -5470,13 +5470,13 @@ TTerminal * TTerminal::CreateSecondarySession(const UnicodeString & Name, TSessi
 
   Result->FExceptionOnFail = FExceptionOnFail;
 
-  Result->SetOnQueryUser(GetOnQueryUser());
-  Result->SetOnPromptUser(GetOnPromptUser());
-  Result->SetOnShowExtendedException(GetOnShowExtendedException());
-  Result->SetOnProgress(GetOnProgress());
-  Result->SetOnFinished(GetOnFinished());
-  Result->SetOnInformation(GetOnInformation());
-  Result->SetOnCustomCommand(GetOnCustomCommand());
+  Result->SetOnQueryUser(std::forward<TQueryUserEvent>(GetOnQueryUser()));
+  Result->SetOnPromptUser(std::forward<TPromptUserEvent>(GetOnPromptUser()));
+  Result->SetOnShowExtendedException(std::forward<TExtendedExceptionEvent>(GetOnShowExtendedException()));
+  Result->SetOnProgress(std::forward<TFileOperationProgressEvent>(GetOnProgress()));
+  Result->SetOnFinished(std::forward<TFileOperationFinishedEvent>(GetOnFinished()));
+  Result->SetOnInformation(std::forward<TInformationEvent>(GetOnInformation()));
+  Result->SetOnCustomCommand(std::forward<TCustomCommandEvent>(GetOnCustomCommand()));
   // do not copy OnDisplayBanner to avoid it being displayed
   return Result.release();
 }
@@ -5541,13 +5541,13 @@ TTerminal * TTerminal::GetCommandSession()
 
     CommandSession->FExceptionOnFail = FExceptionOnFail;
 
-    CommandSession->SetOnQueryUser(GetOnQueryUser());
-    CommandSession->SetOnPromptUser(GetOnPromptUser());
-    CommandSession->SetOnShowExtendedException(GetOnShowExtendedException());
-    CommandSession->SetOnProgress(GetOnProgress());
-    CommandSession->SetOnFinished(GetOnFinished());
-    CommandSession->SetOnInformation(GetOnInformation());
-    CommandSession->SetOnCustomCommand(GetOnCustomCommand());
+    CommandSession->SetOnQueryUser(std::forward<TQueryUserEvent>(GetOnQueryUser()));
+    CommandSession->SetOnPromptUser(std::forward<TPromptUserEvent>(GetOnPromptUser()));
+    CommandSession->SetOnShowExtendedException(std::forward<TExtendedExceptionEvent>(GetOnShowExtendedException()));
+    CommandSession->SetOnProgress(std::forward<TFileOperationProgressEvent>(GetOnProgress()));
+    CommandSession->SetOnFinished(std::forward<TFileOperationFinishedEvent>(GetOnFinished()));
+    CommandSession->SetOnInformation(std::forward<TInformationEvent>(GetOnInformation()));
+    CommandSession->SetOnCustomCommand(std::forward<TCustomCommandEvent>(GetOnCustomCommand()));
     // do not copy OnDisplayBanner to avoid it being displayed
     FCommandSession = CommandSession.release();
   }

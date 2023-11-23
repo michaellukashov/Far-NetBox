@@ -53,10 +53,10 @@ public:
   TStrings * GetResponseHeaders() const { return FResponseHeaders.get(); }
   int64_t GetResponseLimit() const { return FResponseLimit; }
   void SetResponseLimit(int64_t Value) { FResponseLimit = Value; }
-  THttpDownloadEvent GetOnDownload() const { return FOnDownload; }
-  void SetOnDownload(THttpDownloadEvent Value) { FOnDownload = Value; }
-  THttpErrorEvent GetOnError() const { return FOnError; }
-  void SetOnError(THttpErrorEvent Value) { FOnError = Value; }
+  const THttpDownloadEvent & GetOnDownload() const { return FOnDownload; }
+  void SetOnDownload(THttpDownloadEvent && Value) { FOnDownload = std::move(Value); }
+  const THttpErrorEvent & GetOnError() const { return FOnError; }
+  void SetOnError(THttpErrorEvent && Value) { FOnError = std::move(Value); }
 
 private:
   UnicodeString FURL;

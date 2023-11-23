@@ -492,10 +492,10 @@ public:
   int32_t Add(const UnicodeString & S);
   virtual int32_t AddObject(const UnicodeString & S, const TObject * AObject) override;
   void LoadFromFile(const UnicodeString & AFileName);
-  TNotifyEvent GetOnChange() const { return FOnChange; }
-  void SetOnChange(TNotifyEvent OnChange) { FOnChange = OnChange; }
-  TNotifyEvent GetOnChanging() const { return FOnChanging; }
-  void SetOnChanging(TNotifyEvent OnChanging) { FOnChanging = OnChanging; }
+  TNotifyEvent & GetOnChange() { return FOnChange; }
+  void SetOnChange(TNotifyEvent && OnChange) { FOnChange = std::move(OnChange); }
+  TNotifyEvent & GetOnChanging() { return FOnChanging; }
+  void SetOnChanging(TNotifyEvent && OnChanging) { FOnChanging = std::move(OnChanging); }
   void InsertItem(int32_t Index, const UnicodeString & S, const TObject * AObject);
   void QuickSort(int32_t L, int32_t R, TStringListSortCompare SCompare);
 

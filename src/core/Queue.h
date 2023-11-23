@@ -116,18 +116,18 @@ public:
   int32_t GetTransfersLimit() const { return FTransfersLimit; }
   int32_t GetKeepDoneItemsFor() const { return FKeepDoneItemsFor; }
   bool GetEnabled() const { return FEnabled; }
-  TQueryUserEvent GetOnQueryUser() const { return FOnQueryUser; }
-  void SetOnQueryUser(TQueryUserEvent Value) { FOnQueryUser = Value; }
-  TPromptUserEvent GetOnPromptUser() const { return FOnPromptUser; }
-  void SetOnPromptUser(TPromptUserEvent Value) { FOnPromptUser = Value; }
-  TExtendedExceptionEvent GetOnShowExtendedException() const { return FOnShowExtendedException; }
-  void SetOnShowExtendedException(TExtendedExceptionEvent Value) { FOnShowExtendedException = Value; }
-  TQueueListUpdateEvent GetOnListUpdate() const { return FOnListUpdate; }
-  void SetOnListUpdate(TQueueListUpdateEvent Value) { FOnListUpdate = Value; }
-  TQueueItemUpdateEvent GetOnQueueItemUpdate() const { return FOnQueueItemUpdate; }
-  void SetOnQueueItemUpdate(TQueueItemUpdateEvent Value) { FOnQueueItemUpdate = Value; }
-  TQueueEventEvent GetOnEvent() const { return FOnEvent; }
-  void SetOnEvent(TQueueEventEvent Value) { FOnEvent = Value; }
+  const TQueryUserEvent & GetOnQueryUser() const { return FOnQueryUser; }
+  void SetOnQueryUser(TQueryUserEvent && Value) { FOnQueryUser = std::move(Value); }
+  const TPromptUserEvent & GetOnPromptUser() const { return FOnPromptUser; }
+  void SetOnPromptUser(TPromptUserEvent && Value) { FOnPromptUser = std::move(Value); }
+  const TExtendedExceptionEvent & GetOnShowExtendedException() const { return FOnShowExtendedException; }
+  void SetOnShowExtendedException(TExtendedExceptionEvent && Value) { FOnShowExtendedException = std::move(Value); }
+  const TQueueListUpdateEvent & GetOnListUpdate() const { return FOnListUpdate; }
+  void SetOnListUpdate(TQueueListUpdateEvent && Value) { FOnListUpdate = std::move(Value); }
+  const TQueueItemUpdateEvent & GetOnQueueItemUpdate() const { return FOnQueueItemUpdate; }
+  void SetOnQueueItemUpdate(TQueueItemUpdateEvent && Value) { FOnQueueItemUpdate = std::move(Value); }
+  const TQueueEventEvent & GetOnEvent() const { return FOnEvent; }
+  void SetOnEvent(TQueueEventEvent && Value) { FOnEvent = std::move(Value); }
 
 protected:
   TQueryUserEvent FOnQueryUser;
@@ -510,8 +510,8 @@ public:
   __property bool Cancelling = { read = FCancel };
   __property bool AllowAbandon = { read = FAllowAbandon, write = FAllowAbandon };
 
-  TNotifyEvent GetOnIdle() const { return FOnIdle; }
-  void SetOnIdle(TNotifyEvent Value) { FOnIdle = Value; }
+  TNotifyEvent & GetOnIdle() { return FOnIdle; }
+  void SetOnIdle(TNotifyEvent && Value) { FOnIdle = std::move(Value); }
   bool GetCancelling() const { return FCancel; }
 
 protected:

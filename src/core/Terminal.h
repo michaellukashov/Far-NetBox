@@ -798,55 +798,55 @@ public:
   TConfiguration * GetConfiguration() { return FConfiguration; }
   TSessionStatus GetStatus() const { return FStatus; }
   TRemoteDirectory * GetFiles() const { return FFiles.get(); }
-  TNotifyEvent GetOnChangeDirectory() const { return FOnChangeDirectory; }
-  void SetOnChangeDirectory(TNotifyEvent Value) { FOnChangeDirectory = Value; }
-  TReadDirectoryEvent GetOnReadDirectory() const { return FOnReadDirectory; }
-  void SetOnReadDirectory(TReadDirectoryEvent Value) { FOnReadDirectory = Value; }
-  TNotifyEvent GetOnStartReadDirectory() const { return FOnStartReadDirectory; }
-  void SetOnStartReadDirectory(TNotifyEvent Value) { FOnStartReadDirectory = Value; }
-  TReadDirectoryProgressEvent GetOnReadDirectoryProgress() const { return FOnReadDirectoryProgress; }
-  void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent Value) { FOnReadDirectoryProgress = Value; }
-  TDeleteLocalFileEvent GetOnDeleteLocalFile() const { return FOnDeleteLocalFile; }
-  void SetOnDeleteLocalFile(TDeleteLocalFileEvent Value) { FOnDeleteLocalFile = Value; }
-  TNotifyEvent GetOnInitializeLog() const { return FOnInitializeLog; }
-  void SetOnInitializeLog(TNotifyEvent Value) { FOnInitializeLog = Value; }
-  TCreateLocalFileEvent GetOnCreateLocalFile() const { return FOnCreateLocalFile; }
-  void SetOnCreateLocalFile(TCreateLocalFileEvent Value) { FOnCreateLocalFile = Value; }
-  TGetLocalFileAttributesEvent GetOnGetLocalFileAttributes() const { return FOnGetLocalFileAttributes; }
-  void SetOnGetLocalFileAttributes(TGetLocalFileAttributesEvent Value) { FOnGetLocalFileAttributes = Value; }
-  TSetLocalFileAttributesEvent GetOnSetLocalFileAttributes() const { return FOnSetLocalFileAttributes; }
-  void SetOnSetLocalFileAttributes(TSetLocalFileAttributesEvent Value) { FOnSetLocalFileAttributes = Value; }
-  TMoveLocalFileEvent GetOnMoveLocalFile() const { return FOnMoveLocalFile; }
-  void SetOnMoveLocalFile(TMoveLocalFileEvent Value) { FOnMoveLocalFile = Value; }
-  TRemoveLocalDirectoryEvent GetOnRemoveLocalDirectory() const { return FOnRemoveLocalDirectory; }
-  void SetOnRemoveLocalDirectory(TRemoveLocalDirectoryEvent Value) { FOnRemoveLocalDirectory = Value; }
-  TCreateLocalDirectoryEvent GetOnCreateLocalDirectory() const { return FOnCreateLocalDirectory; }
-  void SetOnCreateLocalDirectory(TCreateLocalDirectoryEvent Value) { FOnCreateLocalDirectory = Value; }
-  TFileOperationProgressEvent GetOnProgress() const { return FOnProgress; }
-  void SetOnProgress(TFileOperationProgressEvent Value) { FOnProgress = Value; }
-  TFileOperationFinishedEvent GetOnFinished() const { return FOnFinished; }
-  void SetOnFinished(TFileOperationFinishedEvent Value) { FOnFinished = Value; }
+  TNotifyEvent & GetOnChangeDirectory() { return FOnChangeDirectory; }
+  void SetOnChangeDirectory(TNotifyEvent && Value) { FOnChangeDirectory = std::move(Value); }
+  TReadDirectoryEvent & GetOnReadDirectory() { return FOnReadDirectory; }
+  void SetOnReadDirectory(TReadDirectoryEvent && Value) { FOnReadDirectory = std::move(Value); }
+  TNotifyEvent & GetOnStartReadDirectory() { return FOnStartReadDirectory; }
+  void SetOnStartReadDirectory(TNotifyEvent && Value) { FOnStartReadDirectory = std::move(Value); }
+  TReadDirectoryProgressEvent & GetOnReadDirectoryProgress() { return FOnReadDirectoryProgress; }
+  void SetOnReadDirectoryProgress(TReadDirectoryProgressEvent && Value) { FOnReadDirectoryProgress = std::move(Value); }
+  TDeleteLocalFileEvent & GetOnDeleteLocalFile() { return FOnDeleteLocalFile; }
+  void SetOnDeleteLocalFile(TDeleteLocalFileEvent && Value) { FOnDeleteLocalFile = std::move(Value); }
+  TNotifyEvent & GetOnInitializeLog() { return FOnInitializeLog; }
+  void SetOnInitializeLog(TNotifyEvent && Value) { FOnInitializeLog = std::move(Value); }
+  TCreateLocalFileEvent & GetOnCreateLocalFile() { return FOnCreateLocalFile; }
+  void SetOnCreateLocalFile(TCreateLocalFileEvent && Value) { FOnCreateLocalFile = std::move(Value); }
+  const TGetLocalFileAttributesEvent & GetOnGetLocalFileAttributes() const { return FOnGetLocalFileAttributes; }
+  void SetOnGetLocalFileAttributes(TGetLocalFileAttributesEvent && Value) { FOnGetLocalFileAttributes = std::move(Value); }
+  TSetLocalFileAttributesEvent & GetOnSetLocalFileAttributes() { return FOnSetLocalFileAttributes; }
+  void SetOnSetLocalFileAttributes(TSetLocalFileAttributesEvent && Value) { FOnSetLocalFileAttributes = std::move(Value); }
+  TMoveLocalFileEvent & GetOnMoveLocalFile() { return FOnMoveLocalFile; }
+  void SetOnMoveLocalFile(TMoveLocalFileEvent && Value) { FOnMoveLocalFile = std::move(Value); }
+  TRemoveLocalDirectoryEvent & GetOnRemoveLocalDirectory() { return FOnRemoveLocalDirectory; }
+  void SetOnRemoveLocalDirectory(TRemoveLocalDirectoryEvent && Value) { FOnRemoveLocalDirectory = std::move(Value); }
+  TCreateLocalDirectoryEvent & GetOnCreateLocalDirectory() { return FOnCreateLocalDirectory; }
+  void SetOnCreateLocalDirectory(TCreateLocalDirectoryEvent && Value) { FOnCreateLocalDirectory = std::move(Value); }
+  TFileOperationProgressEvent & GetOnProgress() { return FOnProgress; }
+  void SetOnProgress(TFileOperationProgressEvent && Value) { FOnProgress = std::move(Value); }
+  TFileOperationFinishedEvent & GetOnFinished() { return FOnFinished; }
+  void SetOnFinished(TFileOperationFinishedEvent && Value) { FOnFinished = std::move(Value); }
   TCurrentFSProtocol GetFSProtocol() const { return FFSProtocol; }
   bool GetUseBusyCursor() const { return FUseBusyCursor; }
   void SetUseBusyCursor(bool Value) { FUseBusyCursor = Value; }
   bool GetAutoReadDirectory() const { return FAutoReadDirectory; }
   void SetAutoReadDirectory(bool Value) { FAutoReadDirectory = Value; }
-  TQueryUserEvent GetOnQueryUser() const { return FOnQueryUser; }
-  void SetOnQueryUser(TQueryUserEvent Value) { FOnQueryUser = Value; }
-  TPromptUserEvent GetOnPromptUser() const { return FOnPromptUser; }
-  void SetOnPromptUser(TPromptUserEvent Value) { FOnPromptUser = Value; }
-  TDisplayBannerEvent GetOnDisplayBanner() const { return FOnDisplayBanner; }
-  void SetOnDisplayBanner(TDisplayBannerEvent Value) { FOnDisplayBanner = Value; }
-  TExtendedExceptionEvent GetOnShowExtendedException() const { return FOnShowExtendedException; }
-  void SetOnShowExtendedException(TExtendedExceptionEvent Value) { FOnShowExtendedException = Value; }
-  TInformationEvent GetOnInformation() const { return FOnInformation; }
-  void SetOnInformation(TInformationEvent Value) { FOnInformation = Value; }
-  TCustomCommandEvent GetOnCustomCommand() const { return FOnCustomCommand; }
-  void SetOnCustomCommand(TCustomCommandEvent Value) { FOnCustomCommand = Value; }
-  TCheckForEscEvent GetOnCheckForEsc() const { return FOnCheckForEsc; }
-  void SetOnCheckForEsc(TCheckForEscEvent Value) { FOnCheckForEsc = Value; }
-  TNotifyEvent GetOnClose() const { return FOnClose; }
-  void SetOnClose(TNotifyEvent Value) { FOnClose = Value; }
+  TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
+  void SetOnQueryUser(TQueryUserEvent && Value) { FOnQueryUser = std::move(Value); }
+  TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
+  void SetOnPromptUser(TPromptUserEvent && Value) { FOnPromptUser = std::move(Value); }
+  TDisplayBannerEvent & GetOnDisplayBanner() { return FOnDisplayBanner; }
+  void SetOnDisplayBanner(TDisplayBannerEvent && Value) { FOnDisplayBanner = std::move(Value); }
+  TExtendedExceptionEvent & GetOnShowExtendedException() { return FOnShowExtendedException; }
+  void SetOnShowExtendedException(TExtendedExceptionEvent && Value) { FOnShowExtendedException = std::move(Value); }
+  TInformationEvent & GetOnInformation() { return FOnInformation; }
+  void SetOnInformation(TInformationEvent && Value) { FOnInformation = std::move(Value); }
+  TCustomCommandEvent & GetOnCustomCommand() { return FOnCustomCommand; }
+  void SetOnCustomCommand(TCustomCommandEvent && Value) { FOnCustomCommand = std::move(Value); }
+  TCheckForEscEvent & GetOnCheckForEsc() { return FOnCheckForEsc; }
+  void SetOnCheckForEsc(TCheckForEscEvent && Value) { FOnCheckForEsc = std::move(Value); }
+  TNotifyEvent & GetOnClose() { return FOnClose; }
+  void SetOnClose(TNotifyEvent && Value) { FOnClose = std::move(Value); }
   int32_t GetTunnelLocalPortNumber() const { return FTunnelLocalPortNumber; }
   void SetRememberedPassword(const UnicodeString & Value) { FRememberedPassword = Value; }
   void SetRememberedTunnelPassword(const UnicodeString & Value) { FRememberedTunnelPassword = Value; }
