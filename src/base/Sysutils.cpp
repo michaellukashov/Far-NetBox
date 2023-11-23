@@ -339,12 +339,12 @@ int32_t LastDelimiter(const UnicodeString & Delimiters, const UnicodeString & St
   return 0;
 }
 
-int32_t StringCmp(const wchar_t *S1, const wchar_t *S2)
+int32_t StringCmp(const wchar_t * S1, const wchar_t * S2)
 {
   return ::CompareString(0, SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
 
-int32_t StringCmpI(const wchar_t *S1, const wchar_t *S2)
+int32_t StringCmpI(const wchar_t * S1, const wchar_t * S2)
 {
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, S1, -1, S2, -1) - 2;
 }
@@ -488,7 +488,7 @@ bool IsZero(double Value)
   return fabs(Value) < std::numeric_limits<double>::epsilon();
 }
 
-TTimeStamp DateTimeToTimeStamp(const TDateTime &DateTime)
+TTimeStamp DateTimeToTimeStamp(const TDateTime & DateTime)
 {
   TTimeStamp Result{};
   double intpart{0.0};
@@ -668,7 +668,7 @@ bool SysUtulsRemoveFile(const UnicodeString & AFileName)
 
 // Returns the next available word, ignoring whitespace
 static const wchar_t *
-NextWord(const wchar_t *Input)
+NextWord(const wchar_t * Input)
 {
   static UnicodeString Buffer;
   wchar_t * pBuffer = Buffer.SetLength(1024);
@@ -925,7 +925,7 @@ UnicodeString ExpandUNCFileName(const UnicodeString & AFileName)
   return Result;
 }
 
-static DWORD FindMatchingFile(TSearchRec &Rec)
+static DWORD FindMatchingFile(TSearchRec & Rec)
 {
   TFileTime LocalFileTime{};
   DWORD Result;
@@ -1006,8 +1006,8 @@ UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter)
   return Result;
 }
 
-const UnicodeString AllowDirectorySeparators = "\\/";
-const UnicodeString AllowDriveSeparators = ":";
+constexpr const wchar_t * AllowDirectorySeparators = L"\\/";
+constexpr const wchar_t * AllowDriveSeparators = L":";
 
 bool CharInSet(const wchar_t Ch, const UnicodeString & S)
 {
@@ -1233,15 +1233,15 @@ static void ConvertError(int32_t ErrorID)
 }
 
 static void DivMod(const uint32_t Dividend, uint32_t Divisor,
-  uint32_t &Result, uint32_t &Remainder)
+  uint32_t & Result, uint32_t & Remainder)
 {
   Result = Dividend / Divisor;
   Remainder = Dividend % Divisor;
 }
 
-static bool DecodeDateFully(const TDateTime &DateTime,
-  uint16_t &Year, uint16_t &Month, uint16_t &Day,
-  uint16_t &DOW)
+static bool DecodeDateFully(const TDateTime & DateTime,
+  uint16_t & Year, uint16_t & Month, uint16_t & Day,
+  uint16_t & DOW)
 {
   constexpr int32_t D1 = 365;
   constexpr int32_t D4 = D1 * 4 + 1;
@@ -1283,7 +1283,7 @@ static bool DecodeDateFully(const TDateTime &DateTime,
   }
   Y += I;
   const bool Result = IsLeapYear(nb::ToWord(Y));
-  const TDayTable *DayTable = &MonthDays[Result];
+  const TDayTable * DayTable = &MonthDays[Result];
   uint32_t M = 1;
   while (true)
   {
@@ -1301,15 +1301,15 @@ static bool DecodeDateFully(const TDateTime &DateTime,
   return Result;
 }
 
-void DecodeDate(const TDateTime &DateTime, uint16_t &Year,
-  uint16_t &Month, uint16_t &Day)
+void DecodeDate(const TDateTime & DateTime, uint16_t & Year,
+  uint16_t & Month, uint16_t & Day)
 {
   uint16_t Dummy = 0;
   DecodeDateFully(DateTime, Year, Month, Day, Dummy);
 }
 
-void DecodeTime(const TDateTime &DateTime, uint16_t &Hour,
-  uint16_t &Min, uint16_t &Sec, uint16_t &MSec)
+void DecodeTime(const TDateTime & DateTime, uint16_t & Hour,
+  uint16_t & Min, uint16_t & Sec, uint16_t & MSec)
 {
   uint32_t MinCount, MSecCount;
   DivMod(DateTimeToTimeStamp(DateTime).Time, 60000, MinCount, MSecCount);
@@ -1350,7 +1350,7 @@ TDateTime EncodeDate(uint16_t Year, uint16_t Month, uint16_t Day)
 }
 
 static bool TryEncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, uint32_t MSec,
-  TDateTime &Time)
+  TDateTime & Time)
 {
   bool Result = false;
   if ((Hour < 24) && (Min < 60) && (Sec < 60) && (MSec < 1000))
@@ -1404,7 +1404,7 @@ UnicodeString DateTimeToString(const TDateTime & DateTime)
 // DayOfWeek returns the day of the week of the given date. The Result is an
 // integer between 1 and 7, corresponding to Sunday through Saturday.
 // This function is not ISO 8601 compliant, for that see the DateUtils unit.
-uint32_t DayOfWeek(const TDateTime &DateTime)
+uint32_t DayOfWeek(const TDateTime & DateTime)
 {
   return ::DateTimeToTimeStamp(DateTime).Date % 7 + 1;
 }
@@ -1509,7 +1509,7 @@ static void IncAMonth(Word &Year, Word &Month, Word &Day, Int64 NumberOfMonths =
     Year += nb::ToWord(Sign);
     Month += -12 * nb::ToWord(Sign);
   }
-  const TDayTable *DayTable = &MonthDays[IsLeapYear(Year)];
+  const TDayTable * DayTable = &MonthDays[IsLeapYear(Year)];
   if (Day > (*DayTable)[Month])
     Day = nb::ToWord(*DayTable[Month]);
 }
@@ -1639,12 +1639,12 @@ int32_t YearsBetween(const TDateTime & ANow, const TDateTime & AThen)
   return static_cast<int32_t>(result);
 }
 
-int32_t MonthsBetween(const TDateTime& ANow, const TDateTime& AThen)
+int32_t MonthsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
   return static_cast<int32_t>((std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) / ApproxDaysPerMonth);
 }
 
-int32_t DaysBetween(const TDateTime& ANow, const TDateTime& AThen)
+int32_t DaysBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
   if (ANow > AThen) {
     return nb::ToInt32(std::trunc(std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond));
@@ -1809,16 +1809,16 @@ int32_t Random(int32_t Max)
 UnicodeString ReadAllText(const UnicodeString & FileName)
 {
   UnicodeString Result;
-  DWORD m_LastError = ERROR_SUCCESS;
+  DWORD LastError = ERROR_SUCCESS;
 
   HANDLE FileHandle{INVALID_HANDLE_VALUE};
   FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
   if (FileHandle == INVALID_HANDLE_VALUE)
   {
-    m_LastError = ::GetLastError();
+    LastError = ::GetLastError();
   }
 
-  if (m_LastError != ERROR_SUCCESS)
+  if (LastError != ERROR_SUCCESS)
     Result.Clear();
   if (CheckHandle(FileHandle))
   {
@@ -2031,13 +2031,13 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
             }
             else
             {
-                SetLastError(ERROR_REPARSE_TAG_INVALID);
+                ::SetLastError(ERROR_REPARSE_TAG_INVALID);
                 Result = slrNoSymLink;
             }
           }
           else
           {
-            SetLastError(ERROR_REPARSE_TAG_INVALID);
+            ::SetLastError(ERROR_REPARSE_TAG_INVALID);
           }
 
           nb_free(PBuffer);
@@ -2045,11 +2045,11 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
       }
       catch (...)
       {
-        CloseHandle(HFile);
+        ::CloseHandle(HFile);
         throw;
       }
 
-      CloseHandle(HFile);
+      ::CloseHandle(HFile);
     }
 
     if (!SymLinkRec.TargetName.IsEmpty())
@@ -2134,8 +2134,8 @@ bool DoExists(bool R, const UnicodeString & Path)
 bool FileExistsFix(const UnicodeString & Path)
 {
   // WORKAROUND
-  SetLastError(ERROR_SUCCESS);
-  const bool Result = DoExists(base::FileExists(ApiPath(Path)), Path);
+  ::SetLastError(ERROR_SUCCESS);
+  const bool Result = DoExists(base::FileExists(Path), Path);
   return Result;
 }
 
@@ -2149,7 +2149,7 @@ bool DirectoryExists(const UnicodeString & ADir)
   return ::SysUtulsDirectoryExists(ApiPath(ADir));
 }
 
-DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
+DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)
 {
   constexpr DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
@@ -2170,7 +2170,7 @@ DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRe
   return Result;
 }
 
-DWORD FindNext(TSearchRec &Rec)
+DWORD FindNext(TSearchRec & Rec)
 {
   DWORD Result;
   if (::FindNextFileW(Rec.FindHandle, &Rec.FindData))
@@ -2180,7 +2180,7 @@ DWORD FindNext(TSearchRec &Rec)
   return Result;
 }
 
-DWORD FindClose(TSearchRec &Rec)
+DWORD FindClose(TSearchRec & Rec)
 {
   DWORD Result = 0;
   if (CheckHandle(Rec.FindHandle))

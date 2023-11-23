@@ -695,7 +695,7 @@ bool FileExists(const UnicodeString & AFileName);
 bool FileRemove(const UnicodeString & AFileName);
 bool FileExistsFix(const UnicodeString & Path);
 bool RenameFile(const UnicodeString & From, const UnicodeString & To);
-bool DirectoryExists(const UnicodeString &ADir);
+bool DirectoryExists(const UnicodeString & ADir);
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec);
 DWORD FindNext(TSearchRec & Rec);
 DWORD FindClose(TSearchRec & Rec);
