@@ -43,14 +43,14 @@ Exception::Exception(const UnicodeString & Msg) noexcept :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, const wchar_t *Msg) noexcept :
+Exception::Exception(TObjectClassId Kind, const wchar_t * Msg) noexcept :
   std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
 {
 }
 
-Exception::Exception(const wchar_t *Msg) noexcept :
+Exception::Exception(const wchar_t * Msg) noexcept :
   std::runtime_error(""),
   FKind(OBJECT_CLASS_Exception),
   Message(Msg)
@@ -201,9 +201,9 @@ bool TryStrToInt64(const UnicodeString & StrValue, int64_t & Value)
 bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value)
 {
   int64_t Val{0};
-  bool res = TryStrToInt64(StrValue, Val);
+  const bool Result = TryStrToInt64(StrValue, Val);
   Value = nb::ToInt32(Val);
-  return res;
+  return Result;
 }
 
 UnicodeString Trim(const UnicodeString & Str)
@@ -491,7 +491,7 @@ bool IsZero(double Value)
 TTimeStamp DateTimeToTimeStamp(const TDateTime &DateTime)
 {
   TTimeStamp Result{};
-  double intpart;
+  double intpart{0.0};
   const double fractpart = modf(DateTime, &intpart);
   Result.Time = nb::ToInt32(fractpart * MSecsPerDay + 0.5);
   Result.Date = nb::ToInt32(intpart + DateDelta);
@@ -1017,10 +1017,9 @@ bool CharInSet(const wchar_t Ch, const UnicodeString & S)
 
 UnicodeString ExtractFileDrive(const UnicodeString & FileName)
 {
-  int32_t i,l;
   UnicodeString Result;
-  l = FileName.Length();
-  if (l<2)
+  int32_t L = FileName.Length();
+  if (L < 2)
     return Result;
   if (CharInSet(FileName[2], AllowDriveSeparators))
   {
@@ -1029,18 +1028,18 @@ UnicodeString ExtractFileDrive(const UnicodeString & FileName)
   else if (CharInSet(FileName[1], AllowDirectorySeparators) &&
           CharInSet(FileName[2], AllowDirectorySeparators))
   {
-    i = 2;
+    int32_t I = 2;
     // skip share
-    while ((i<l) && !CharInSet(FileName[i+1], AllowDirectorySeparators))
+    while ((I < L) && !CharInSet(FileName[I + 1], AllowDirectorySeparators))
     {
-      i++;
+      I++;
     }
-    i++;
-   while ((i<l) && !CharInSet(FileName[i+1], AllowDirectorySeparators))
+    I++;
+   while ((I < L) && !CharInSet(FileName[I + 1], AllowDirectorySeparators))
     {
-      i++;
+      I++;
     }
-    Result = FileName.SubStr(0, i);
+    Result = FileName.SubStr(0, I);
   }
   return Result;
 }
@@ -1812,32 +1811,32 @@ UnicodeString ReadAllText(const UnicodeString & FileName)
   UnicodeString Result;
   DWORD m_LastError = ERROR_SUCCESS;
 
-  HANDLE m_File{INVALID_HANDLE_VALUE};
-  m_File = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-  if (m_File == INVALID_HANDLE_VALUE)
+  HANDLE FileHandle{INVALID_HANDLE_VALUE};
+  FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  if (FileHandle == INVALID_HANDLE_VALUE)
   {
     m_LastError = ::GetLastError();
   }
 
   if (m_LastError != ERROR_SUCCESS)
     Result.Clear();
-  if (CheckHandle(m_File))
+  if (CheckHandle(FileHandle))
   {
-    SAFE_CLOSE_HANDLE(m_File);
-    m_File = INVALID_HANDLE_VALUE;
+    SAFE_CLOSE_HANDLE(FileHandle);
+    FileHandle = INVALID_HANDLE_VALUE;
   }
   return Result;
 }
 
 void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text)
 {
-  FILE *file = base::LocalOpenFileForWriting(FileName);
-  if (file)
+  FILE * File = base::LocalOpenFileForWriting(FileName);
+  if (File)
   {
     void const * data = static_cast<void const *>(Text.data());
-    size_t size = Text.GetLength();
-    base::WriteAndFlush(file, data, size);
-    fclose(file);
+    const size_t size = Text.GetLength();
+    base::WriteAndFlush(File, data, size);
+    fclose(File);
   }
 }
 
@@ -1848,25 +1847,25 @@ static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
 
   auto rb = [&p, &e]() -> unsigned char
   {
-      unsigned char result;
-      if ((*p >= '0') && (*p <= '9'))
-      {
-          result = *p - '0';
-      }
-      else if ((*p >= 'a') && (*p <= 'f'))
-      {
-          result = *p - 'a' + 10;
-      }
-      else if ((*p >= 'A') && (*p <= 'F'))
-      {
-          result = *p - 'A' + 10;
-      }
-      else
-      {
-          e = false;
-      }
-      ++p;
-      return result;
+    unsigned char result{0};
+    if ((*p >= '0') && (*p <= '9'))
+    {
+        result = *p - '0';
+    }
+    else if ((*p >= 'a') && (*p <= 'f'))
+    {
+        result = *p - 'a' + 10;
+    }
+    else if ((*p >= 'A') && (*p <= 'F'))
+    {
+        result = *p - 'A' + 10;
+    }
+    else
+    {
+        e = false;
+    }
+    ++p;
+    return result;
   };
 
   auto nextChar = [&p, &e](char c) {
@@ -1966,7 +1965,6 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     const UnicodeString CVolumePrefix = L"Volume";
     const UnicodeString CGlobalPrefix = L"\\\\?\\";
 
-    HANDLE HFile;
     TReparseDataBuffer * PBuffer = nullptr;
     DWORD BytesReturned;
     GUID guid;
@@ -1974,7 +1972,7 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     TSymLinkResult Result = slrError;
     TUnicodeSymLinkRec SymLinkRec;
 
-    HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, 0);
+    HANDLE HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, nullptr);
     if (CheckHandle(HFile))
     {
       try
