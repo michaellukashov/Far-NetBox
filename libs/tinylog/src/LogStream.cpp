@@ -10,7 +10,7 @@
 
 namespace tinylog {
 
-LogStream::LogStream(FILE *file, pthread_mutex_t &mutex, pthread_cond_t &cond, bool &already_swap) :
+LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, bool & already_swap) :
   front_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
   back_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
 //  queue_(std::make_unique<LockFreeQueue>()),
@@ -31,7 +31,7 @@ LogStream::~LogStream()
   }
 }
 
-int64_t LogStream::Write(const char *data, int64_t ToWrite)
+int64_t LogStream::Write(const char * data, int64_t ToWrite)
 {
   return InternalWrite(data, ToWrite);
 }
@@ -91,9 +91,9 @@ void LogStream::SetFile(FILE * file)
   file_ = file;
 }
 
-int64_t LogStream::InternalWrite(const char *log_data, int64_t ToWrite)
+int64_t LogStream::InternalWrite(const char * log_data, int64_t ToWrite)
 {
-  int64_t Result = ToWrite;
+  const int64_t Result = ToWrite;
   UpdateBaseTime();
   // queue_->Push(log);
 
@@ -112,14 +112,14 @@ int64_t LogStream::InternalWrite(const char *log_data, int64_t ToWrite)
   return Result;
 }
 
-LogStream &LogStream::operator<<(const char *log_data)
+LogStream & LogStream::operator<<(const char * log_data)
 {
   InternalWrite(log_data, strlen(log_data));
 
   return *this;
 }
 
-LogStream& LogStream::operator<<(const std::string& ref_log)
+LogStream & LogStream::operator<<(const std::string & ref_log)
 {
   InternalWrite(ref_log.c_str(), ref_log.size());
 /*
@@ -142,23 +142,23 @@ LogStream& LogStream::operator<<(const std::string& ref_log)
 void LogStream::UpdateBaseTime()
 {
   struct timeval tv_now;
-  time_t now = time(nullptr);
-  tv_now.tv_sec = (long)now;
+  const time_t now = time(nullptr);
+  tv_now.tv_sec = static_cast<long>(now);
   tv_now.tv_usec = 0;
-  struct tm *tm = localtime(&now);
-  gettimeofday(&tv_now, NULL);
+  struct tm * tm = localtime(&now);
+  gettimeofday(&tv_now, nullptr);
 
   if (tv_now.tv_sec != tv_base_.tv_sec)
   {
-    int new_sec = tm_base_->tm_sec + int(tv_now.tv_sec - tv_base_.tv_sec);
+    const int new_sec = tm_base_->tm_sec + static_cast<int>(tv_now.tv_sec - tv_base_.tv_sec);
     if (new_sec >= 60)
     {
       tm_base_->tm_sec = new_sec % 60;
-      int new_min = tm_base_->tm_min + new_sec / 60;
+      const int new_min = tm_base_->tm_min + new_sec / 60;
       if (new_min >= 60)
       {
         tm_base_->tm_min = new_min % 60;
-        int new_hour = tm_base_->tm_hour + new_min / 60;
+        const int new_hour = tm_base_->tm_hour + new_min / 60;
         if (new_hour >= 24)
         {
           Utils::CurrentTime(&tv_now, &tm_base_);
