@@ -2339,7 +2339,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
           }
           else
           {
-            LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone(nb::ToIntPtr(FTimeDifference)), FileLog);
+            LogMessage = FORMAT("Timezone difference of %s detected using file %s", FormatTimeZone(nb::ToInt32(FTimeDifference)), FileLog);
           }
           FTerminal->LogEvent(LogMessage);
 
