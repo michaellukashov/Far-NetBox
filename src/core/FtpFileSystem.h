@@ -276,7 +276,7 @@ private:
   bool FFileTransferPreserveTime{false};
   bool FFileTransferRemoveBOM{false};
   bool FFileTransferNoList{false};
-  uint32_t FFileTransferCPSLimit;
+  uint64_t FFileTransferCPSLimit;
   bool FAwaitingProgress{false};
   TCaptureOutputEvent FOnCaptureOutput;
   UnicodeString FUserName;

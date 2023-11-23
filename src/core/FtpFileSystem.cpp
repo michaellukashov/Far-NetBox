@@ -1579,7 +1579,7 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
     FFileZillaIntf->Cancel();
   }
 
-  if (nb::ToUInt64(FFileTransferCPSLimit) != OperationProgress->GetCPSLimit())
+  if (FFileTransferCPSLimit != OperationProgress->GetCPSLimit())
   {
     SetCPSLimit(OperationProgress);
   }
@@ -2924,7 +2924,7 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
 
     case OPTION_SPEEDLIMIT_DOWNLOAD_VALUE:
     case OPTION_SPEEDLIMIT_UPLOAD_VALUE:
-      Result = nb::ToIntPtr((FFileTransferCPSLimit / 1024)); // FZAPI expects KB/s
+      Result = nb::ToInt32((FFileTransferCPSLimit / 1024)); // FZAPI expects KB/s
       break;
 
     case OPTION_MPEXT_SHOWHIDDEN:
