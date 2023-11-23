@@ -324,7 +324,7 @@ NB_CORE_EXPORT UnicodeString TranslateExceptionMessage(Exception * E);
 
 NB_CORE_EXPORT void AppendWChar(UnicodeString & Str, const wchar_t Ch);
 
-NB_CORE_EXPORT void AppendPathDelimiterW(UnicodeString & Str);
+NB_CORE_EXPORT void AppendPathDelimiter(UnicodeString & Str);
 
 NB_CORE_EXPORT UnicodeString ExpandEnvVars(const UnicodeString & Str);
 

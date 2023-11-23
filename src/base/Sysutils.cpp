@@ -851,7 +851,7 @@ void AppendWChar(UnicodeString & Str, const wchar_t Ch)
   }
 }
 
-void AppendPathDelimiterW(UnicodeString & Str)
+void AppendPathDelimiter(UnicodeString & Str)
 {
   if (!Str.IsEmpty() && (Str[Str.Length()] != Slash) && (Str[Str.Length()] != Backslash))
   {
