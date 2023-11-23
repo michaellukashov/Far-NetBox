@@ -29,7 +29,7 @@ const TDayTable MonthDays[] =
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
-Exception::Exception(TObjectClassId Kind, Exception *E) noexcept :
+Exception::Exception(TObjectClassId Kind, Exception * E) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind),
   Message(E ? E->Message : L"")
@@ -64,7 +64,7 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) noexcept :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, std::exception *E) noexcept :
+Exception::Exception(TObjectClassId Kind, std::exception * E) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
@@ -79,7 +79,7 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHe
   (void)AHelpContext;
 }
 
-Exception::Exception(TObjectClassId Kind, Exception *E, int32_t Ident) noexcept :
+Exception::Exception(TObjectClassId Kind, Exception * E, int32_t Ident) noexcept :
   std::runtime_error(E ? E->what() : ""),
   FKind(Kind)
 {
@@ -184,7 +184,7 @@ int64_t StrToInt64Def(const UnicodeString & Value, int64_t DefVal)
   return DefVal;
 }
 
-bool TryStrToInt64(const UnicodeString & StrValue, int64_t &Value)
+bool TryStrToInt64(const UnicodeString & StrValue, int64_t & Value)
 {
   bool Result = !StrValue.IsEmpty(); // && (StrValue.FindFirstNotOf(L"+-0123456789") == -1);
   if (Result)
@@ -198,7 +198,7 @@ bool TryStrToInt64(const UnicodeString & StrValue, int64_t &Value)
   return Result;
 }
 
-bool TryStrToInt(const UnicodeString & StrValue, int32_t &Value)
+bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value)
 {
   int64_t Val{0};
   bool res = TryStrToInt64(StrValue, Val);
