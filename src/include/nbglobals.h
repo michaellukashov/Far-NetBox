@@ -356,10 +356,10 @@ bool CheckStructSize(const T * s) { return s && (s->StructSize >= sizeof(T)); }
 #define NB_TEXT(quote) NB__TEXT(quote)
 extern void DoAssert(const wchar_t * Message, const wchar_t * Filename, uint32_t LineNumber);
 extern "C" void DoAssertC(char * Message, char * Filename, int LineNumber);
+#ifdef _DEBUG
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(NB_TEXT(#p), NB_TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 
-#ifdef _DEBUG
 #define SELF_TEST(code) \
 struct SelfTest {       \
   SelfTest() {          \

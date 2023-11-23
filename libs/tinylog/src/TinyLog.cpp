@@ -202,9 +202,11 @@ void TinyLog::Close()
   impl_->Close();
 }
 
+#if defined(_DEBUG)
+
 std::string TraceLogger::indent_;
 
-TraceLogger::TraceLogger(const char* fileName, const char* funcName, int32_t lineNumber) :
+TraceLogger::TraceLogger(const char * fileName, const char * funcName, int32_t lineNumber) :
   fileName_(tinylog::past_last_slash(fileName)),
   funcName_(funcName),
   lineNumber_(lineNumber)
@@ -220,6 +222,8 @@ TraceLogger::~TraceLogger()
   TINYLOG_TRACE(g_tinylog) << repr("%s [%10s    ] Leaving %s()", indent_, fileName_, funcName_);
   //  OutputDebugStringA(repr("%s [%s] Leaving %s()", indent_, fileName_, funcName_).c_str());
 }
+
+#endif //#if defined(_DEBUG)
 
 StackWalker::StackWalker(int options) : sw::StackWalker(options)
 {

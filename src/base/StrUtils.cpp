@@ -35,11 +35,14 @@ NB_CORE_EXPORT UnicodeString LeftStr(const UnicodeString & AStr, int32_t Len)
 NB_CORE_EXPORT UnicodeString EncodeBase64(const char * AStr, int32_t Len)
 {
   UnicodeString Result;
+  ThrowNotImplemented(3134);
   return Result;
 }
 
 NB_CORE_EXPORT TBytes DecodeBase64(const UnicodeString & AStr)
 {
-  nb::vector_t<uint8_t> Result;
-  return Result;
+  ThrowNotImplemented(3135);
+  // TBytes Result;
+  // return Result;
+  return TBytes();
 }
