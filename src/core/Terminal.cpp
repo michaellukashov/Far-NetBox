@@ -9574,15 +9574,15 @@ void TLocalFileHandle::Dismiss()
 {
   if (DebugAlwaysTrue(CheckHandle(Handle)))
   {
+    SAFE_CLOSE_HANDLE(Handle);
     Handle = INVALID_HANDLE_VALUE;
   }
 }
 
 void TLocalFileHandle::Close()
 {
-  __removed if (DebugAlwaysTrue(Handle != 0))
+  if (DebugAlwaysTrue(CheckHandle(Handle)))
   {
-    SAFE_CLOSE_HANDLE(Handle);
     Dismiss();
   }
 }
