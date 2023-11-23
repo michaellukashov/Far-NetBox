@@ -1433,10 +1433,10 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
   ADateTime.DecodeDate(Year, Month, Day);
   ADateTime.DecodeTime(Hour, Minutes, Seconds, Milliseconds);
 
-  if (Fmt == L"ddddd tt")
+  if (Fmt == L"dddddd tt")
   {
     /*
-    return FormatDateTime(L"ddddd tt",
+    return FormatDateTime(L"dddddd tt",
         EncodeDateVerbose(
             static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
             static_cast<uint16_t>(ValidityTime.Day)) +
