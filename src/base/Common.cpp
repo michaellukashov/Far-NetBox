@@ -184,7 +184,7 @@ UnicodeString ExtractFileName(const UnicodeString & APath, bool Unix)
 
 bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
 {
-  DebugAssert(AFiles->GetCount() > 0);
+  DebugAssert(AFiles && (AFiles->GetCount() > 0));
 
   APath = ::ExtractFilePath(AFiles->GetString(0));
   bool Result = !APath.IsEmpty();
