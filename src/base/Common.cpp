@@ -5173,8 +5173,9 @@ UnicodeString ParentProcessName;
 UnicodeString GetAncestorProcessName(int32_t Levels)
 {
   UnicodeString Result;
-  ThrowNotImplemented(3038);
+  // ThrowNotImplemented(3038);
 #if 0
+  // TODO: implement
   bool Parent = (Levels == 1);
   if (Parent && !ParentProcessName.IsEmpty())
   {
