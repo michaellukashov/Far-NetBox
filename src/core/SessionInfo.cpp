@@ -61,7 +61,7 @@ static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
       case L'\x1D':
       case L'\x1E':
       case L'\x1F':
-        Repl = L"#x" + ByteToHex((uint8_t)Str[Index]) + L";";
+        Repl = L"#x" + ByteToHex(static_cast<uint8_t>(Str[Index])) + L";";
         break;
 
       case L'&':
