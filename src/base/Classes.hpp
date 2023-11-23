@@ -236,7 +236,7 @@ public:
     {
       Error(SListIndexError, Index);
     }
-    O * Temp = GetItem(Index);
+    O * Temp = TListBase::GetItem(Index);
     FList.erase(FList.begin() + Index);
     if (Temp != nullptr)
     {
