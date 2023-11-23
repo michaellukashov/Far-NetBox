@@ -2064,7 +2064,7 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
 
 namespace base {
 
-FILE *LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
+FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
 {
   const UnicodeString NewFileName = StripPathQuotes(::ExpandEnvironmentVariables(LogFileName));
   FILE *Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
