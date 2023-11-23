@@ -1747,11 +1747,11 @@ UnicodeString CutOpensshToken(UnicodeString & S)
   while (P <= S.Length())
   {
     const wchar_t C = S[P];
-    if ((C == L'\\') &&
+    if ((C == Backslash) &&
         (P < S.Length()) &&
         ((S[P + 1] == L'\'') ||
          (S[P + 1] == L'\"') ||
-         (S[P + 1] == L'\\') ||
+         (S[P + 1] == Backslash) ||
          ((Quote == NoQuote) && S[P + 1] == L' ')))
     {
       Result += S[P + 1];
@@ -2626,7 +2626,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
 
     if (!RemoteDirectory().IsEmpty() && (RemoteDirectory() != ROOTDIRECTORY))
     {
-      if ((RemoteDirectory()[RemoteDirectory().Length()] != L'/') &&
+      if ((RemoteDirectory()[RemoteDirectory().Length()] != Slash) &&
           (AFileName != nullptr))
       {
         *AFileName = DecodeUrlChars(base::UnixExtractFileName(RemoteDirectory));

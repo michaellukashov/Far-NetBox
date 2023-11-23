@@ -692,13 +692,13 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPNonUTF8");
   }
-  if (!RemoteGetCurrentDirectory().IsEmpty() && (RemoteGetCurrentDirectory()[1] != L'/'))
+  if (!RemoteGetCurrentDirectory().IsEmpty() && (RemoteGetCurrentDirectory()[1] != Slash))
   {
     if (base::IsUnixStyleWindowsPath(RemoteGetCurrentDirectory()))
     {
       FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPWindowsPath");
     }
-    else if ((RemoteGetCurrentDirectory().Length() >= 3) && IsLetter(RemoteGetCurrentDirectory()[1]) && (RemoteGetCurrentDirectory()[2] == L':') && (RemoteGetCurrentDirectory()[3] == L'/'))
+    else if ((RemoteGetCurrentDirectory().Length() >= 3) && IsLetter(RemoteGetCurrentDirectory()[1]) && (RemoteGetCurrentDirectory()[2] == L':') && (RemoteGetCurrentDirectory()[3] == Slash))
     {
       FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPRealWindowsPath");
     }

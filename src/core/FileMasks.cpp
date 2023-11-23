@@ -38,7 +38,7 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
   {
     switch (Mask[Index])
     {
-      case L'\\':
+      case Backslash:
         if (!Delim)
         {
           Delim = true;
@@ -1166,7 +1166,7 @@ void TInteractiveCustomCommand::ParsePromptPattern(
   if (Pos > 0)
   {
     Default = Pattern.SubString(3 + Pos, Pattern.Length() - 3 - Pos);
-    if ((Pos > 1) && (Pattern[3 + Pos - 2] == L'\\'))
+    if ((Pos > 1) && (Pattern[3 + Pos - 2] == Backslash))
     {
       Delimit = false;
       Pos--;

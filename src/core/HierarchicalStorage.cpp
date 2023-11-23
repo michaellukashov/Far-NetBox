@@ -305,13 +305,13 @@ uint32_t THierarchicalStorage::GetCurrentAccess()
 
 bool THierarchicalStorage::OpenSubKeyPath(const UnicodeString & KeyPath, bool CanCreate)
 {
-  DebugAssert(!KeyPath.IsEmpty() && (KeyPath[KeyPath.Length()] != L'\\'));
+  DebugAssert(!KeyPath.IsEmpty() && (KeyPath[KeyPath.Length()] != Backslash));
   bool Result{false};
   UnicodeString Buf(KeyPath);
   int32_t Opens = 0;
   while (!Buf.IsEmpty())
   {
-    UnicodeString SubKey = CutToChar(Buf, L'\\', false);
+    UnicodeString SubKey = CutToChar(Buf, Backslash, false);
     Result = OpenSubKey(SubKey, CanCreate);
     if (Result)
     {

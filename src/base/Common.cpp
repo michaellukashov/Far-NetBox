@@ -44,13 +44,13 @@ namespace base { // from RemoteFiles.cpp
 
 bool IsUnixStyleWindowsPath(const UnicodeString & APath)
 {
-  return (APath.Length() >= 3) && IsLetter(APath[1]) && (APath[2] == L':') && (APath[3] == L'/');
+  return (APath.Length() >= 3) && IsLetter(APath[1]) && (APath[2] == L':') && (APath[3] == Slash);
 }
 
 bool UnixIsAbsolutePath(const UnicodeString & APath)
 {
   return
-    ((APath.Length() >= 1) && (APath[1] == L'/')) ||
+    ((APath.Length() >= 1) && (APath[1] == Slash)) ||
     // we need this for FTP only, but this is unfortunately used in a static context
     base::IsUnixStyleWindowsPath(APath);
 }
@@ -270,7 +270,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APa
   {
     Result = Base;
   }
-  else if (APath[1] == L'/')
+  else if (APath[1] == Slash)
   {
     Result = base::UnixExcludeTrailingBackslash(APath);
   }
@@ -1501,15 +1501,15 @@ UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam)
         Space = true;
         break;
 
-      case L'\\':
+      case Backslash:
         int32_t I2 = Index;
-        while ((I2 <= Param.Length()) && (Param[I2] == L'\\'))
+        while ((I2 <= Param.Length()) && (Param[I2] == Backslash))
         {
           I2++;
         }
         if ((I2 <= Param.Length()) && (Param[I2] == L'"'))
         {
-          while (Param[Index] == L'\\')
+          while (Param[Index] == Backslash)
           {
             Param.Insert(L"\\", Index);
             Index += 2;
@@ -1699,7 +1699,7 @@ static int32_t PathRootLength(const UnicodeString & APath)
   // Correction for PathSkipRoot API
 
   // Replace all /'s with \'s because PathSkipRoot can't handle /'s
-  const UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
+  const UnicodeString Result = ReplaceChar(APath, Slash, Backslash);
 
   // Now call the API
   const LPCTSTR Buffer = ::PathSkipRoot(Result.c_str());
@@ -1712,7 +1712,7 @@ static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & 
   // Correction for PathIsRelative API
 
   // Replace all /'s with \'s because PathIsRelative can't handle /'s
-  const UnicodeString Result = ReplaceChar(APath, L'/', L'\\');
+  const UnicodeString Result = ReplaceChar(APath, Slash, Backslash);
 
   //Now call the API
   return ::PathIsRelative(Result.c_str()) != FALSE;
@@ -1757,14 +1757,14 @@ static int32_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_T
     int32_t IndCheckUNC = -1;
 
     if ((Len >= 8) &&
-        (APath[1] == L'\\' || APath[1] == L'/') &&
-        (APath[2] == L'\\' || APath[2] == L'/') &&
+        (APath[1] == Backslash || APath[1] == Slash) &&
+        (APath[2] == Backslash || APath[2] == Slash) &&
         (APath[3] == L'?') &&
-        (APath[4] == L'\\' || APath[4] == L'/') &&
+        (APath[4] == Backslash || APath[4] == Slash) &&
         (APath[5] == L'U' || APath[5] == L'u') &&
         (APath[6] == L'N' || APath[6] == L'n') &&
         (APath[7] == L'C' || APath[7] == L'c') &&
-        (APath[8] == L'\\' || APath[8] == L'/'))
+        (APath[8] == Backslash || APath[8] == Slash))
     {
       // Found \\?\UNC\ prefix
       PrefixType = PPT_LONG_UNICODE_UNC;
@@ -1779,10 +1779,10 @@ static int32_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_T
       IndCheckUNC = 8;
     }
     else if ((Len >= 4) &&
-        (APath[1] == L'\\' || APath[1] == L'/') &&
-        (APath[2] == L'\\' || APath[2] == L'/') &&
-        (APath[3] == L'?') &&
-        (APath[4] == L'\\' || APath[4] == L'/'))
+             (APath[1] == Backslash || APath[1] == Slash) &&
+             (APath[2] == Backslash || APath[2] == Slash) &&
+             (APath[3] == L'?') &&
+             (APath[4] == Backslash || APath[4] == Slash))
     {
       // Found \\?\ prefix
       PrefixType = PPT_LONG_UNICODE;
@@ -1794,8 +1794,8 @@ static int32_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_T
       }
     }
     else if ((Len >= 2) &&
-        (APath[1] == L'\\' || APath[1] == L'/') &&
-        (APath[2] == L'\\' || APath[2] == L'/'))
+             (APath[1] == Backslash || APath[1] == Slash) &&
+             (APath[2] == Backslash || APath[2] == Slash))
     {
       // Check for UNC share later
       IndCheckUNC = 2;
@@ -1810,7 +1810,7 @@ static int32_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_T
         for (; Index <= Len; ++Index)
         {
           const TCHAR z = APath[Index];
-          if ((z == L'\\') || (z == L'/') || (Index >= Len))
+          if ((z == Backslash) || (z == Slash) || (Index >= Len))
           {
             ++Index;
             if (SkipSlashes == 1)
@@ -1889,7 +1889,7 @@ UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
           // First we need to check if its an absolute path relative to the root
           bool AddPrefix = true;
           if ((Path.Length() >= 1) &&
-              ((Path[1] == L'\\') || (Path[1] == L'/')))
+              ((Path[1] == Backslash) || (Path[1] == Slash)))
           {
             AddPrefix = FALSE;
 
@@ -1915,8 +1915,8 @@ UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
       case PPT_UNC:
         // First we need to remove the opening slashes for UNC share
         if ((Result.Length() >= 2) &&
-            ((Result[1] == L'\\') || (Result[1] == L'/')) &&
-            ((Result[2] == L'\\') || (Result[2] == L'/')))
+            ((Result[1] == Backslash) || (Result[1] == Slash)) &&
+            ((Result[2] == Backslash) || (Result[2] == Slash)))
         {
           Result = Result.SubString(3, Result.Length() - 2);
         }

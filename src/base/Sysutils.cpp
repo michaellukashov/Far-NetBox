@@ -853,9 +853,9 @@ void AppendWChar(UnicodeString & Str, const wchar_t Ch)
 
 void AppendPathDelimiterW(UnicodeString & Str)
 {
-  if (!Str.IsEmpty() && Str[Str.Length()] != L'/' && Str[Str.Length()] != L'\\')
+  if (!Str.IsEmpty() && (Str[Str.Length()] != Slash) && (Str[Str.Length()] != Backslash))
   {
-    Str += L"\\";
+    Str += BACKSLASH;
   }
 }
 
@@ -1095,8 +1095,8 @@ UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeStri
 UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
-  if ((Result.Length() > 0) && ((Result[Result.Length()] == L'/') ||
-      (Result[Result.Length()] == L'\\')))
+  if ((Result.Length() > 0) && ((Result[Result.Length()] == Slash) ||
+      (Result[Result.Length()] == Backslash)))
   {
     Result.SetLength(Result.Length() - 1);
   }
@@ -1107,9 +1107,9 @@ UnicodeString IncludeTrailingBackslash(const UnicodeString & Str)
 {
   UnicodeString Result = Str;
   const int32_t L = Result.Length();
-  if ((L == 0) || ((Result[L] != L'/') && (Result[L] != L'\\')))
+  if ((L == 0) || ((Result[L] != Slash) && (Result[L] != Backslash)))
   {
-    Result += L'\\';
+    Result += Backslash;
   }
   return Result;
 }
@@ -1487,7 +1487,7 @@ TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath)
 {
   UnicodeString Result = APath;
-  while (!Result.IsEmpty() && Result[1] == L'/')
+  while (!Result.IsEmpty() && (Result[1] == Slash))
   {
     Result.Delete(1, 1);
   }

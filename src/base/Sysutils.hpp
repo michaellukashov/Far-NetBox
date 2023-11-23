@@ -32,13 +32,8 @@
 
 #endif
 
-//constexpr const wchar_t * PARENTDIRECTORY = L"..";
-//constexpr const wchar_t * THISDIRECTORY = L".";
-//constexpr const wchar_t * ROOTDIRECTORY = L"/";
-//constexpr const wchar_t * SLASH = L"/";
-//constexpr const wchar_t * BACKSLASH = L"\\";
-//constexpr const wchar_t * QUOTE = L"\'";
-//constexpr const wchar_t * DOUBLEQUOTE = L"\"";
+constexpr const wchar_t Slash = L'/';
+constexpr const wchar_t Backslash = L'\\';
 
 enum FileAttributesEnum
 {
@@ -55,15 +50,15 @@ enum FileAttributesEnum
 #ifndef NDEBUG
 #if defined(_MSC_VER)
 #if (_MSC_VER >= 1900)
-#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
-#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(__FILEW__, '\\')), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
+#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(__FILEW__, Backslash), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(__FILEW__, Backslash)), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #else
-#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "TEXT(format) L"\n", ::ExtractFilename(__FILEW__, L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
-#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, '\\')), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
+#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "TEXT(format) L"\n", ::ExtractFilename(__FILEW__, Backslash), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: "format "\n", W2MB(::ExtractFilename(__FILEW__, Backslash)), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #endif
 #else
-#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(MB2W(__FILE__), L'\\'), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
-#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(MB2W(__FILE__), '\\')), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
+#define DEBUG_PRINTF(format, ...) OutputDebugStringW(nb::Sprintf(L"Plugin: [%s:%d] %s: " format L"\n", ::ExtractFilename(MB2W(__FILE__), Backslash), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
+#define DEBUG_PRINTFA(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format "\n", W2MB(::ExtractFilename(MB2W(__FILE__), Backslash)), __LINE__, __FUNCTION__, __VA_ARGS__).c_str())
 #endif
 #else
 #define DEBUG_PRINTF(format, ...)
@@ -206,12 +201,12 @@ public:
 };
 
 NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString & APath);
-NB_CORE_EXPORT UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter = Slash);
 UnicodeString ExtractFileDrive(const UnicodeString & FileName);
-NB_CORE_EXPORT UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter = L'/');
-NB_CORE_EXPORT UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter = Slash);
+NB_CORE_EXPORT UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter = Slash);
 NB_CORE_EXPORT UnicodeString ExpandFileName(const UnicodeString & AFileName);
-NB_CORE_EXPORT UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter = L'/');
+NB_CORE_EXPORT UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter = Slash);
 
 NB_CORE_EXPORT UnicodeString IncludeTrailingBackslash(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString ExcludeTrailingBackslash(const UnicodeString & Str);
@@ -336,7 +331,7 @@ NB_CORE_EXPORT UnicodeString ExpandEnvVars(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString StringOfChar(const wchar_t Ch, int32_t Len);
 
 NB_CORE_EXPORT UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
-  wchar_t Delimiter = L'/');
+  wchar_t Delimiter = Slash);
 NB_CORE_EXPORT UnicodeString ExtractFileExt(const UnicodeString & AFileName);
 NB_CORE_EXPORT UnicodeString ExpandUNCFileName(const UnicodeString & AFileName);
 

@@ -1789,7 +1789,7 @@ TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
 int32_t TLocalCustomCommand::PatternLen(const UnicodeString & Command, int32_t Index) const
 {
   int32_t Len;
-  if ((Index < Command.Length()) && (Command[Index + 1] == L'\\'))
+  if ((Index < Command.Length()) && (Command[Index + 1] == Backslash))
   {
     Len = 2;
   }

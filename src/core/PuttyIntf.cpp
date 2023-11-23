@@ -510,7 +510,7 @@ HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
     UnicodeString RegKey = SubKey.SubString(PuttyKeyLen + 1, SubKey.Length() - PuttyKeyLen);
     if (!RegKey.IsEmpty())
     {
-      DebugAssert(RegKey[1] == L'\\');
+      DebugAssert(RegKey[1] == Backslash);
       RegKey.Delete(1, 1);
     }
 

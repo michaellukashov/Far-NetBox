@@ -583,7 +583,7 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
       Name, 0) &&
     !Name.IsEmpty() && (Name != Data->GetName()))
   {
-    Name = ReplaceChar(Name, L'\\', L'/');
+    Name = ReplaceChar(Name, Backslash, Slash);
     const TNamedObject * EData = StoredSessions->FindByName(Name);
     if ((EData != nullptr) && (EData != Data))
     {
@@ -2198,7 +2198,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
   if (IsSessionList())
   {
     FSessionsFolder = base::AbsolutePath(ROOTDIRECTORY + FSessionsFolder, ADir);
-    DebugAssert(FSessionsFolder[1] == L'/');
+    DebugAssert(FSessionsFolder[1] == Slash);
     FSessionsFolder.Delete(1, 1);
     FNewSessionsFolder.Clear();
   }

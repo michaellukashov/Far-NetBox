@@ -5233,7 +5233,7 @@ bool TTerminal::TerminalMoveFiles(
             File->GetIsDirectory() &&
             ((CurrentDirectory().SubString(1, Str.Length()) == Str) &&
              ((Str.Length() == CurrentDirectory().Length()) ||
-              (CurrentDirectory()[Str.Length() + 1] == L'/'))))
+              (CurrentDirectory()[Str.Length() + 1] == Slash))))
         {
           PossiblyMoved = true;
         }

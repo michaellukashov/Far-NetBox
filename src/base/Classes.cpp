@@ -1419,7 +1419,7 @@ int64_t TMemoryStream::Write(const void * Buffer, int64_t Count)
 
 bool IsRelative(const UnicodeString & Value)
 {
-  return !(!Value.IsEmpty() && (Value[1] == L'\\'));
+  return !(!Value.IsEmpty() && (Value[1] == Backslash));
 }
 
 TRegDataType DataTypeToRegData(DWORD Value)
@@ -1583,7 +1583,7 @@ bool TRegistry::OpenKey(const UnicodeString & AKey, bool CanCreate)
   {
     if ((GetCurrentKey() != nullptr) && Relative)
     {
-      S = FCurrentPath + L'\\' + S;
+      S = FCurrentPath + Backslash + S;
     }
     ChangeKey(TempKey, S);
   }

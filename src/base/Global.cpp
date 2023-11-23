@@ -81,7 +81,7 @@ inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t
   const wchar_t * Func, int32_t Line, const wchar_t * Message)
 {
   const UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);
-  const wchar_t *Slash = wcsrchr(SourceFile, L'\\');
+  const wchar_t * Slash = wcsrchr(SourceFile, Backslash);
   if (Slash != nullptr)
   {
     SourceFile = Slash + 1;
@@ -281,7 +281,7 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   const UnicodeString TimeString;
   // DateTimeToString(TimeString, L"hh:mm:ss.zzz", Now());
   TODO("use Format");
-  const wchar_t *Slash = wcsrchr(SourceFile, L'\\');
+  const wchar_t * Slash = wcsrchr(SourceFile, Backslash);
   if (Slash != nullptr)
   {
     SourceFile = Slash + 1;

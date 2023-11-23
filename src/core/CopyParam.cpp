@@ -696,9 +696,9 @@ UnicodeString TCopyParamType::ValidLocalPath(const UnicodeString & APath) const
   {
     if (!Result.IsEmpty())
     {
-      Result += L"\\";
+      Result += BACKSLASH;
     }
-    Result += ValidLocalFileName(CutToChar(Path, L'\\', false));
+    Result += ValidLocalFileName(CutToChar(Path, Backslash, false));
   }
   return Result;
 }
