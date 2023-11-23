@@ -1524,13 +1524,13 @@ static void ReplaceTime(TDateTime &DateTime, const TDateTime &NewTime)
     DateTime = DateTime - Abs(Frac(NewTime));
 }
 
-TDateTime IncYear(const TDateTime &AValue, const Int64 ANumberOfYears)
+TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears)
 {
   TDateTime Result = IncMonth(AValue, ANumberOfYears * MonthsPerYear);
   return Result;
 }
 
-TDateTime IncMonth(const TDateTime &AValue, const Int64 NumberOfMonths)
+TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths)
 {
   Word Year, Month, Day;
   DecodeDate(AValue, Year, Month, Day);
@@ -1540,19 +1540,19 @@ TDateTime IncMonth(const TDateTime &AValue, const Int64 NumberOfMonths)
   return Result;
 }
 
-TDateTime IncWeek(const TDateTime &AValue, const Int64 ANumberOfWeeks)
+TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks)
 {
   TDateTime Result(AValue + ANumberOfWeeks * DaysPerWeek);
   return Result;
 }
 
-TDateTime IncDay(const TDateTime &AValue, const Int64 ANumberOfDays)
+TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays)
 {
   TDateTime Result(AValue + ANumberOfDays);
   return Result;
 }
 
-TDateTime IncHour(const TDateTime &AValue, const Int64 ANumberOfHours)
+TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1562,7 +1562,7 @@ TDateTime IncHour(const TDateTime &AValue, const Int64 ANumberOfHours)
   return Result;
 }
 
-TDateTime IncMinute(const TDateTime &AValue, const Int64 ANumberOfMinutes)
+TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1572,7 +1572,7 @@ TDateTime IncMinute(const TDateTime &AValue, const Int64 ANumberOfMinutes)
   return Result;
 }
 
-TDateTime IncSecond(const TDateTime &AValue, const Int64 ANumberOfSeconds)
+TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1582,7 +1582,7 @@ TDateTime IncSecond(const TDateTime &AValue, const Int64 ANumberOfSeconds)
   return Result;
 }
 
-TDateTime IncMilliSecond(const TDateTime &AValue, const Int64 ANumberOfMilliSeconds)
+TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds)
 {
   TDateTime Result;
   if (AValue > 0)
@@ -1659,18 +1659,18 @@ int64_t HoursBetween(const TDateTime & ANow, const TDateTime & AThen)
   return static_cast<int64_t>(std::trunc((std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) * HoursPerDay));
 }
 
-int64_t MinutesBetween(const TDateTime& ANow, const TDateTime& AThen)
+int64_t MinutesBetween(const TDateTime& ANow, const TDateTime & AThen)
 {
   return static_cast<int64_t>(std::trunc((std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) * MinsPerDay));
 }
 
-int64_t MilliSecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
+int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
   const double Result = floor(MilliSecondSpan(ANow, AThen));
   return nb::ToInt64(Result);
 }
 
-int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AThen)
+int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
   return MilliSecondsBetween(ANow, AThen);
 }
@@ -1760,7 +1760,7 @@ uint16_t MilliSecondOfTheSecond(const TDateTime & AValue)
   return MilliSecondOf(AValue);
 }
 
-int32_t MilliSecondOfTheMinute(const TDateTime &AValue)
+int32_t MilliSecondOfTheMinute(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
@@ -1768,7 +1768,7 @@ int32_t MilliSecondOfTheMinute(const TDateTime &AValue)
   return Result;
 }
 
-int32_t MilliSecondOfTheHour(const TDateTime &AValue)
+int32_t MilliSecondOfTheHour(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
@@ -1776,7 +1776,7 @@ int32_t MilliSecondOfTheHour(const TDateTime &AValue)
   return Result;
 }
 
-int32_t MilliSecondOfTheDay(const TDateTime &AValue)
+int32_t MilliSecondOfTheDay(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
@@ -1784,26 +1784,26 @@ int32_t MilliSecondOfTheDay(const TDateTime &AValue)
   return Result;
 }
 
-DWORD YearOf(const TDateTime &AValue)
+DWORD YearOf(const TDateTime & AValue)
 {
   uint16_t Year{0}, Month{0}, Day{0};
   DecodeDate(AValue, Year, Month, Day);
   return Year;
 }
 
-TDateTime StartOfTheYear(const TDateTime &AValue)
+TDateTime StartOfTheYear(const TDateTime & AValue)
 {
   TDateTime Result = EncodeDate(YearOf(AValue), 1, 1);
   return Result;
 }
 
-DWORD DayOfTheYear(const TDateTime &AValue)
+DWORD DayOfTheYear(const TDateTime & AValue)
 {
   DWORD Result = Trunc(AValue - StartOfTheYear(AValue)+1);
   return Result;
 }
 
-int64_t MilliSecondOfTheYear(const TDateTime &AValue)
+int64_t MilliSecondOfTheYear(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);

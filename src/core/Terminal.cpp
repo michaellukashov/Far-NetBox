@@ -9048,10 +9048,10 @@ UnicodeString TTerminal::EncryptFileName(const UnicodeString & APath, bool Encry
 
     if (!FileName.IsEmpty() && IsRealFile(FileName))
     {
-      TEncryptedFileNames::const_iterator I = GetEncryptedFileName(APath);
-      if (I != FEncryptedFileNames.end())
+      const TEncryptedFileNames::const_iterator it = GetEncryptedFileName(APath);
+      if (it != FEncryptedFileNames.end())
       {
-        FileName = I->second;
+        FileName = it->second;
       }
       else if (EncryptNewFiles)
       {

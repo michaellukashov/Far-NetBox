@@ -20,7 +20,7 @@
 #include "Script.h"
 #include <System.IOUtils.hpp>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
 {
@@ -479,7 +479,7 @@ private:
   TRemoteFileList * FFileList{nullptr};
   TRemoteFile * FFile{nullptr};
 };
-__removed #pragma warn .inl
+// #pragma warn .inl
 
 
 TSessionAction::TSessionAction(TActionLog * Log, TLogAction Action) noexcept
@@ -782,7 +782,7 @@ TSessionInfo::TSessionInfo() noexcept
 
 TFileSystemInfo::TFileSystemInfo() noexcept
 {
-  __removed memset(&IsCapable, false, sizeof(IsCapable));
+  // memset(&IsCapable, false, sizeof(IsCapable));
   nb::ClearArray(IsCapable);
 }
 
@@ -1306,8 +1306,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName(), Data->GetTunnelPortNumber());
         ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
           Data->FTunnelUserName,
-           LogSensitive(Data->GetTunnelPassword()),
-           LogSensitive(Data->FTunnelPublicKeyFile));
+          LogSensitive(Data->GetTunnelPassword()),
+          LogSensitive(Data->FTunnelPublicKeyFile));
         ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
       }
     }

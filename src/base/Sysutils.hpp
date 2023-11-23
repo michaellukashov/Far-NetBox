@@ -420,8 +420,8 @@ int32_t MonthsBetween(const TDateTime & ANow, const TDateTime & AThen);
 int32_t DaysBetween(const TDateTime & ANow, const TDateTime & AThen);
 int64_t HoursBetween(const TDateTime & ANow, const TDateTime & AThen);
 int64_t MinutesBetween(const TDateTime & ANow, const TDateTime & AThen);
-NB_CORE_EXPORT int64_t SecondsBetween(const TDateTime &ANow, const TDateTime &AThen);
-NB_CORE_EXPORT int64_t MilliSecondsBetween(const TDateTime &ANow, const TDateTime &AThen);
+NB_CORE_EXPORT int64_t SecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
+NB_CORE_EXPORT int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen);
 
 NB_CORE_EXPORT UnicodeString StripHotkey(const UnicodeString & AText);
 NB_CORE_EXPORT bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText);

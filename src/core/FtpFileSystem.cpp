@@ -3114,7 +3114,7 @@ bool TFTPFileSystem::NoFinalLastCode() const
   return (FLastCodeClass == 0) || (FLastCodeClass == 1);
 }
 
-bool TFTPFileSystem::KeepWaitingForReply(uint32_t &ReplyToAwait, bool WantLastCode) const
+bool TFTPFileSystem::KeepWaitingForReply(uint32_t & ReplyToAwait, bool WantLastCode) const
 {
   // To keep waiting,
   // non-command reply must be unset,
