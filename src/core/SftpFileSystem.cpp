@@ -5276,9 +5276,10 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
         try
         {
           OperationProgress->Progress();
-          TRemoteFile * AFile = nullptr;
+          TRemoteFile * LocalFile = nullptr;
           UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
-          ReadFile(RealFileName, AFile);
+          ReadFile(RealFileName, LocalFile);
+          File.reset(LocalFile);
           File->FullFileName = RealFileName;
           OpenParams->DestFileSize = File->GetSize(); // Resolve symlinks?
           if ((OpenParams->FileParams != nullptr) && (File != nullptr))
