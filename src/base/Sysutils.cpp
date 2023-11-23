@@ -149,7 +149,7 @@ int32_t StrToIntPtr(const UnicodeString & Value)
   int64_t Result = 0;
   if (TryStrToInt64(Value, Result))
   {
-    return nb::ToIntPtr(Result);
+    return nb::ToInt32(Result);
   }
   return 0;
 }
@@ -169,7 +169,7 @@ int32_t StrToIntDef(const UnicodeString & Value, int32_t DefVal)
   int64_t Result = DefVal;
   if (TryStrToInt64(Value, Result))
   {
-    return nb::ToIntPtr(Result);
+    return nb::ToInt32(Result);
   }
   return DefVal;
 }
@@ -202,7 +202,7 @@ bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value)
 {
   int64_t Val{0};
   bool res = TryStrToInt64(StrValue, Val);
-  Value = nb::ToIntPtr(Val);
+  Value = nb::ToInt32(Val);
   return res;
 }
 
