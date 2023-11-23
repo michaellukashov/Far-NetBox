@@ -1014,7 +1014,7 @@ void TGUIConfiguration::SetLocaleSafe(LCID Value)
 
 UnicodeString TGUIConfiguration::GetAppliedLocaleHex() const
 {
-  return IntToHex(uint64_t(GetAppliedLocale()), 4);
+  return IntToHex(nb::ToUInt32(GetAppliedLocale()), 4);
 }
 
 int32_t TGUIConfiguration::GetResourceModuleCompleteness(HINSTANCE /*Module*/)
