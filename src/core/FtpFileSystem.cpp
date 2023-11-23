@@ -3428,7 +3428,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
 
     if ((Code != nullptr) && (FLastCodeClass != DummyCodeClass))
     {
-      *Code = nb::ToUIntPtr(FLastCode);
+      *Code = nb::ToUInt32(FLastCode);
     }
 
     if (FLAGSET(Flags, REPLY_SINGLE_LINE))
@@ -3533,7 +3533,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     FMultiLineResponse = (Response.Length() >= 4) && (Response[4] == L'-');
     FLastResponse->Clear();
     FLastErrorResponse->Clear();
-    SetLastCode(nb::ToIntPtr(Code));
+    SetLastCode(nb::ToInt32(Code));
     if (Response.Length() >= 5)
     {
       StoreLastResponse(Response.SubString(5, Response.Length() - 4));
