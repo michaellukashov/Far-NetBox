@@ -2125,7 +2125,7 @@ bool DoExists(bool R, const UnicodeString & Path)
     if ((Error == ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
        (Error == ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
     {
-      Result = SysUtulsDirectoryExists(ApiPath(ExtractFileDir(Path)));
+      Result = ::SysUtulsDirectoryExists(ExtractFileDir(Path));
     }
   }
   return Result;
