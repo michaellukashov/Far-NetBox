@@ -1729,16 +1729,7 @@ bool CheckWin32Version(int32_t Major, int32_t Minor)
   return (GetGlobals()->Win32MajorVersion >= Major) && (GetGlobals()->Win32MinorVersion >= Minor);
 }
 
-TFormatSettings::TFormatSettings(LCID /*LCID*/) noexcept :
-  CurrencyFormat(0),
-  NegCurrFormat(0),
-  ThousandSeparator(0),
-  DecimalSeparator(0),
-  CurrencyDecimals(0),
-  DateSeparator(0),
-  TimeSeparator(0),
-  ListSeparator(0),
-  TwoDigitYearCenturyWindow(0)
+TFormatSettings::TFormatSettings(LCID /*LCID*/) noexcept
 {
 }
 
