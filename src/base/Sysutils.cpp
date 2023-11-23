@@ -1798,7 +1798,7 @@ int64_t MilliSecondOfTheYear(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
-  WORD Result = ((Min+(Hour+((int64_t(DayOfTheYear(AValue))-1)*24))*60)*60+Sec)*1000+MSec;
+  WORD Result = ((Min+(Hour+((nb::ToInt64(DayOfTheYear(AValue))-1)*24))*60)*60+Sec)*1000+MSec;
   return Result;
 }
 
