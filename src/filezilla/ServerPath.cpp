@@ -276,7 +276,7 @@ BOOL CServerPath::SetPath(CString &newpath, BOOL bIsFile /*=FALSE*/)
         path.TrimLeft( L"/" );
         if (bIsFile)
         {
-          if (path.Right(1)!= L"/" )
+          if (path.Right(1)!= L"/")
           {
             int rpos=path.ReverseFind(L'/');
             if (rpos==-1)
