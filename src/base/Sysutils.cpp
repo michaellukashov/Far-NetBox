@@ -423,7 +423,7 @@ UnicodeString RightStr(const UnicodeString & Str, int32_t ACount)
 
 int32_t PosEx(const UnicodeString & SubStr, const UnicodeString & Str, int32_t Offset)
 {
-  UnicodeString S = Str.SubString(Offset);
+  const UnicodeString S = Str.SubString(Offset);
   const int32_t Result = S.Pos(SubStr) + Offset;
   return Result;
 }
@@ -647,7 +647,7 @@ bool SysUtulsForceDirectories(const UnicodeString & ADir)
   {
     return false;
   }
-  UnicodeString Dir = ::ExcludeTrailingBackslash(ADir);
+  const UnicodeString Dir = ::ExcludeTrailingBackslash(ADir);
   if ((Dir.Length() < 3 + 4) || ::SysUtulsDirectoryExists(Dir)) // \\?\C:
   {
     return Result;
@@ -674,7 +674,7 @@ NextWord(const wchar_t *Input)
   wchar_t * pBuffer = Buffer.SetLength(1024);
   static const wchar_t * text = nullptr;
 
-  wchar_t *endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
+  const wchar_t * endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
 
   if (Input)
   {
@@ -1011,7 +1011,7 @@ const UnicodeString AllowDriveSeparators = ":";
 
 bool CharInSet(const wchar_t Ch, const UnicodeString & S)
 {
-  int32_t Index = S.Pos(Ch);
+  const int32_t Index = S.Pos(Ch);
   return Index > 0;
 }
 
@@ -1062,7 +1062,7 @@ UnicodeString ExtractFilename(const UnicodeString & APath, wchar_t Delimiter)
 // "/foo/bar/baz" --> ""
 UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimiter)
 {
-  UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
+  const UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
   const int32_t N = FileName.RPos(L'.');
   if (N > 0)
   {
@@ -1081,7 +1081,7 @@ UnicodeString ExtractFileExtension(const UnicodeString & APath, wchar_t Delimite
 //
 UnicodeString ChangeFileExtension(const UnicodeString & APath, const UnicodeString & Ext, wchar_t Delimiter)
 {
-  UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
+  const UnicodeString FileName = ::ExtractFilename(APath, Delimiter);
   if (FileName.RPos(L'.') > 1)
   {
     return ExtractDirectory(APath, Delimiter) +
@@ -1164,7 +1164,7 @@ UnicodeString StrToHex(const UnicodeString & Str, bool UpperCase, wchar_t Separa
 
 UnicodeString HexToStr(const UnicodeString & Hex)
 {
-  UnicodeString Digits = "0123456789ABCDEF";
+  const UnicodeString Digits = "0123456789ABCDEF";
   UnicodeString Result;
   const int32_t L = Hex.Length() - 1;
   if (L % 2 == 0)
@@ -1186,7 +1186,7 @@ UnicodeString HexToStr(const UnicodeString & Hex)
 
 uint32_t HexToIntPtr(const UnicodeString & Hex, uint32_t MinChars)
 {
-  UnicodeString Digits = "0123456789ABCDEF";
+  const UnicodeString Digits = "0123456789ABCDEF";
   uint32_t Result = 0;
   int32_t Index = 1;
   while (Index <= Hex.Length())
@@ -1244,10 +1244,10 @@ static bool DecodeDateFully(const TDateTime &DateTime,
   uint16_t &Year, uint16_t &Month, uint16_t &Day,
   uint16_t &DOW)
 {
-  static const int32_t D1 = 365;
-  static const int32_t D4 = D1 * 4 + 1;
-  static const int32_t D100 = D4 * 25 - 1;
-  static const int32_t D400 = D100 * 4 + 1;
+  constexpr int32_t D1 = 365;
+  constexpr int32_t D4 = D1 * 4 + 1;
+  constexpr int32_t D100 = D4 * 25 - 1;
+  constexpr int32_t D400 = D100 * 4 + 1;
   int32_t T = DateTimeToTimeStamp(DateTime).Date;
   if (T <= 0)
   {
@@ -1445,7 +1445,7 @@ UnicodeString FormatDateTime(const UnicodeString & Fmt, const TDateTime & ADateT
             static_cast<uint16_t>(ValidityTime.Sec), 0));
     */
     uint16_t Y, M, D, H, Mm, S, MS;
-    TDateTime DateTime =
+    const TDateTime DateTime =
       EncodeDateVerbose(Year, Month, Day) +
       EncodeTimeVerbose(Hour, Minutes, Seconds, Milliseconds);
     DateTime.DecodeDate(Y, M, D);
@@ -1608,8 +1608,8 @@ constexpr double ApproxDaysPerYear = 365.25;
 
 bool IsSameDay(const TDateTime & AValue, const TDateTime & ABasis)
 {
-  double D = AValue - floor(ABasis);
-  bool Result = (D >= 0) && (D < 1);
+  const double D = AValue - floor(ABasis);
+  const bool Result = (D >= 0) && (D < 1);
   return Result;
 }
 
@@ -1636,7 +1636,7 @@ TDateTime DateTimeDiff(const TDateTime & ANow, const TDateTime & AThen)
 
 int32_t YearsBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
-  double result = floor((abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) / ApproxDaysPerYear);
+  const double result = floor((abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) / ApproxDaysPerYear);
   return static_cast<int32_t>(result);
 }
 
@@ -1755,7 +1755,7 @@ int32_t MilliSecondOfTheMinute(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
-  int32_t Result = Sec*1000+MSec;
+  const int32_t Result = Sec*1000+MSec;
   return Result;
 }
 
@@ -1763,7 +1763,7 @@ int32_t MilliSecondOfTheHour(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
-  int32_t Result =(Min*60+Sec)*1000+MSec;
+  const int32_t Result =(Min*60+Sec)*1000+MSec;
   return Result;
 }
 
@@ -1771,7 +1771,7 @@ int32_t MilliSecondOfTheDay(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
-  int32_t Result = (((Hour*60)+Min)*60+Sec)*1000+MSec;
+  const int32_t Result = (((Hour*60)+Min)*60+Sec)*1000+MSec;
   return Result;
 }
 
@@ -1790,7 +1790,7 @@ TDateTime StartOfTheYear(const TDateTime & AValue)
 
 DWORD DayOfTheYear(const TDateTime & AValue)
 {
-  DWORD Result = Trunc(AValue - StartOfTheYear(AValue)+1);
+  const DWORD Result = Trunc(AValue - StartOfTheYear(AValue)+1);
   return Result;
 }
 
@@ -1798,7 +1798,7 @@ int64_t MilliSecondOfTheYear(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
-  WORD Result = ((Min+(Hour+((nb::ToInt64(DayOfTheYear(AValue))-1)*24))*60)*60+Sec)*1000+MSec;
+  const WORD Result = ((Min+(Hour+((nb::ToInt64(DayOfTheYear(AValue))-1)*24))*60)*60+Sec)*1000+MSec;
   return Result;
 }
 
@@ -1879,7 +1879,7 @@ static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
     return false;
 
   e = true;
-  AnsiString str(S.c_str());
+  const AnsiString str(S.c_str());
   p = str.c_str();
   nextChar('{');
   Guid.Data1 = (rb() << 28) | (rb() << 24) | (rb() << 20) | (rb() << 16) | (rb() << 12) | (rb() << 8) | (rb() << 4) | rb();
@@ -1961,8 +1961,8 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
       };
    };
 
-    const DWORD CShareAny = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-    const DWORD COpenReparse = FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS;
+    constexpr DWORD CShareAny = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+    constexpr DWORD COpenReparse = FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS;
     const UnicodeString CVolumePrefix = L"Volume";
     const UnicodeString CGlobalPrefix = L"\\\\?\\";
 
@@ -2068,7 +2068,7 @@ namespace base {
 
 FILE *LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
 {
-  UnicodeString NewFileName = StripPathQuotes(::ExpandEnvironmentVariables(LogFileName));
+  const UnicodeString NewFileName = StripPathQuotes(::ExpandEnvironmentVariables(LogFileName));
   FILE *Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
   if (Result != nullptr)
   {
@@ -2123,7 +2123,7 @@ bool DoExists(bool R, const UnicodeString & Path)
   bool Result = R;
   if (!Result)
   {
-    int32_t Error = GetLastError();
+    const int32_t Error = GetLastError();
     if ((Error == ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
        (Error == ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
     {
@@ -2137,7 +2137,7 @@ bool FileExistsFix(const UnicodeString & Path)
 {
   // WORKAROUND
   SetLastError(ERROR_SUCCESS);
-  bool Result = DoExists(base::FileExists(ApiPath(Path)), Path);
+  const bool Result = DoExists(base::FileExists(ApiPath(Path)), Path);
   return Result;
 }
 
@@ -2153,7 +2153,7 @@ bool DirectoryExists(const UnicodeString & ADir)
 
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec &Rec)
 {
-  const DWORD faSpecial = faHidden | faSysFile | faDirectory;
+  constexpr DWORD faSpecial = faHidden | faSysFile | faDirectory;
   Rec.ExcludeAttr = (~LocalFileAttrs) & faSpecial;
   Rec.FindHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &Rec.FindData);
   DWORD Result;
