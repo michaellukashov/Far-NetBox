@@ -40,14 +40,15 @@ constexpr const char * Bom = CONST_BOM;
 constexpr const wchar_t TokenPrefix = L'%';
 constexpr const wchar_t NoReplacement = wchar_t(0);
 constexpr const wchar_t TokenReplacement = wchar_t(1);
-extern const UnicodeString LocalInvalidChars;
-extern const UnicodeString PasswordMask;
-extern const UnicodeString Ellipsis;
-extern const UnicodeString TitleSeparator;
+constexpr const wchar_t * LocalInvalidChars = L"/\\:*?\"<>|";
+constexpr const wchar_t * PasswordMask = L"***";
+constexpr const wchar_t * Ellipsis = L"...";
+constexpr const wchar_t * TitleSeparator = L" \u2013 "; // En-Dash
+constexpr const wchar_t * OfficialPackage = L"MartinPikryl.WinSCP";
 
-extern const UnicodeString HttpProtocol;
-extern const UnicodeString HttpsProtocol;
-extern const UnicodeString ProtocolSeparator;
+constexpr const wchar_t * HttpProtocol = L"http";
+constexpr const wchar_t * HttpsProtocol = L"https";
+constexpr const wchar_t * ProtocolSeparator = L"://";
 
 NB_CORE_EXPORT UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B);
 NB_CORE_EXPORT UnicodeString DeleteChar(const UnicodeString & Str, wchar_t C);

@@ -674,11 +674,11 @@ const UnicodeString AnyMask = L"*.*";
 //const wchar_t NoReplacement = wchar_t(0);
 //const wchar_t TokenReplacement = wchar_t(1);
 // Note similar list in MakeValidFileName
-const UnicodeString LocalInvalidChars(TraceInitStr(L"/\\:*?\"<>|"));
-const UnicodeString PasswordMask(TraceInitStr(L"***"));
-const UnicodeString Ellipsis(TraceInitStr(L"..."));
-const UnicodeString TitleSeparator(TraceInitStr(L" \u2013 ")); // En-Dash
-const UnicodeString OfficialPackage(TraceInitStr(L"MartinPikryl.WinSCP_tvv458r3h9r5m"));
+// const UnicodeString LocalInvalidChars(TraceInitStr(L"/\\:*?\"<>|"));
+//const UnicodeString PasswordMask(TraceInitStr(L"***"));
+//const UnicodeString Ellipsis(TraceInitStr(L"..."));
+// const UnicodeString TitleSeparator(TraceInitStr(L" \u2013 ")); // En-Dash
+// const UnicodeString OfficialPackage(TraceInitStr(L"MartinPikryl.WinSCP_tvv458r3h9r5m"));
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
@@ -4464,27 +4464,27 @@ void CheckCertificate(const UnicodeString & Path)
   }
 }
 
-const UnicodeString HttpProtocol(L"http");
-const UnicodeString HttpsProtocol(L"https");
-const UnicodeString ProtocolSeparator(L"://");
+//const UnicodeString HttpProtocol(L"http");
+//const UnicodeString HttpsProtocol(L"https");
+//const UnicodeString ProtocolSeparator(L"://");
 
 bool IsHttpUrl(const UnicodeString & S)
 {
-  return StartsText(HttpProtocol + ProtocolSeparator, S);
+  return StartsText(UnicodeString(HttpProtocol) + ProtocolSeparator, S);
 }
 
 bool IsHttpOrHttpsUrl(const UnicodeString & S)
 {
   return
     IsHttpUrl(S) ||
-    StartsText(HttpsProtocol + ProtocolSeparator, S);
+    StartsText(UnicodeString(HttpsProtocol) + ProtocolSeparator, S);
 }
 
 UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & Protocol)
 {
   const int32_t P = S.Pos(ProtocolSeparator);
   DebugAssert(P > 0);
-  return Protocol + ProtocolSeparator + RightStr(S, S.Length() - P - ProtocolSeparator.Length() + 1);
+  return Protocol + ProtocolSeparator + RightStr(S, S.Length() - P - UnicodeString(ProtocolSeparator).Length() + 1);
 }
 
 #if 0
@@ -5058,9 +5058,9 @@ void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines, bool F
 UnicodeString StripEllipsis(const UnicodeString & S)
 {
   UnicodeString Result = S;
-  if (Result.SubString(Result.Length() - Ellipsis.Length() + 1, Ellipsis.Length()) == Ellipsis)
+  if (Result.SubString(Result.Length() - UnicodeString(Ellipsis).Length() + 1, UnicodeString(Ellipsis).Length()) == Ellipsis)
   {
-    Result.SetLength(Result.Length() - Ellipsis.Length());
+    Result.SetLength(Result.Length() - UnicodeString(Ellipsis).Length());
     Result = Result.TrimRight();
   }
   return Result;
