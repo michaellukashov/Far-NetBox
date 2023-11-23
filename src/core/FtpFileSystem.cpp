@@ -1806,7 +1806,7 @@ void TFTPFileSystem::Source(
   // Support for MDTM does not necessarily mean that the server supports
   // non-standard hack of setting timestamp using
   // MFMT-like (two argument) call to MDTM.
-  // IIS definitelly does.
+  // IIS definitely does.
   if (FFileTransferPreserveTime &&
       ((FServerCapabilities->GetCapability(mfmt_command) == yes) ||
        ((FServerCapabilities->GetCapability(mdtm_command) == yes))))
@@ -3141,7 +3141,7 @@ void TFTPFileSystem::DoWaitForReply(uint32_t &ReplyToAwait, bool WantLastCode)
       // i.e. in case two replies are posted get the first only.
       // e.g. when server closes the connection, but posts error message before,
       // sometime it happens that command (like download) fails because of the error
-      // and does not catch the disconnection. then asyncronous "disconnect reply"
+      // and does not catch the disconnection. then asynchronous "disconnect reply"
       // is posted immediately afterwards. leave detection of that to Idle()
       while (ProcessMessage() && KeepWaitingForReply(ReplyToAwait, WantLastCode));
     }
@@ -3633,7 +3633,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
         // (the ... can be "z/OS")
         // https://www.ibm.com/docs/en/zos/latest?topic=2rc-215-mvs-is-operating-system-this-server-ftp-server-is-running-name
         // FZPI has a different incompatible detection.
-        // MVS FTP servers have two separate MVS and Unix file systems cooexisting in the same session.
+        // MVS FTP servers have two separate MVS and Unix file systems coexisting in the same session.
         FMVS = (FSystem.SubString(1, 3) == L"MVS");
         if (FMVS)
         {
@@ -3722,7 +3722,7 @@ void TFTPFileSystem::ProcessFeatures()
     {
       // Serv-U lists all SITE commands in one line like:
       //  SITE PSWD;SET;ZONE;CHMOD;MSG;EXEC;HELP
-      // But ProFTPD lists them separatelly:
+      // But ProFTPD lists them separately:
       //  SITE UTIME
       //  SITE RMDIR
       //  SITE COPY
@@ -4646,7 +4646,7 @@ bool TFTPFileSystem::HandleReply(int32_t Command, uint32_t Reply)
 
     // reply with Command 0 is not associated with current operation
     // so do not treat is as a reply
-    // (it is typically used asyncronously to notify about disconnects)
+    // (it is typically used asynchronously to notify about disconnects)
     if (Command != 0)
     {
       DebugAssert(FCommandReply == 0);
