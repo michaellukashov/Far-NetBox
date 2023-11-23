@@ -942,7 +942,7 @@ static DWORD FindMatchingFile(TSearchRec &Rec)
   WORD Lo = Rec.Time & 0xFFFF;
   FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
   Rec.Time = (nb::ToIntPtr(Hi) << 16) + Lo;
-  Rec.Size = Rec.FindData.nFileSizeLow || nb::ToInt64(Rec.FindData.nFileSizeHigh) << 32;
+  Rec.Size = Rec.FindData.nFileSizeLow | (nb::ToInt64(Rec.FindData.nFileSizeHigh) << 32);
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
   Result = ERROR_SUCCESS;
