@@ -4083,7 +4083,7 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
 UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
 {
 #if 0
-  return FormatDateTime(L"ddddd tt",
+  return FormatDateTime(L"dddddd tt",
       EncodeDateVerbose(
         static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
         static_cast<uint16_t>(ValidityTime.Day)) +
