@@ -115,7 +115,7 @@ int32_t Buffer::Flush(FILE* file)
   size_t n_write = 0;
   while ((n_write = fwrite(data_, 1, size_ - n_write, file)) != 0)
   {
-    if ((n_write < 0) && (errno != EINTR))
+    if ((static_cast<intptr_t>(n_write) < 0) && (errno != EINTR))
     {
       // error
       break;
@@ -132,7 +132,7 @@ int32_t Buffer::Flush(FILE* file)
   }
 
   // error
-  if (n_write < 0)
+  if (static_cast<intptr_t>(n_write) < 0)
     return -1;
 
   fflush(file);
