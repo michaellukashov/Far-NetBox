@@ -8096,7 +8096,7 @@ void TTerminal::CheckParallelFileTransfer(
             FileParams.SourceTimestamp = UltimateFile->Modification;
             FileParams.SourcePrecision = UltimateFile->ModificationFmt;
             FileParams.DestTimestamp = UnixToDateTime(MTime, SessionData->DSTMode);
-            const int32_t Answers = qaYes | qaNo | qaCancel;
+            constexpr int32_t Answers = qaYes | qaNo | qaCancel;
             TQueryParams QueryParams(qpNeverAskAgainCheck);
             const uint32_t Answer =
               ConfirmFileOverwrite(
@@ -9113,7 +9113,7 @@ TRemoteFile * TTerminal::CheckRights(const UnicodeString & EntryType, const Unic
   {
     LogEvent(FORMAT(L"Checking %s \"%s\"...", LowerCase(EntryType), FileName));
     File.reset(ReadFile(FileName));
-    const int32_t ForbiddenRights = TRights::rfGroupWrite | TRights::rfOtherWrite;
+    constexpr int32_t ForbiddenRights = TRights::rfGroupWrite | TRights::rfOtherWrite;
     if ((File->Rights->Number & ForbiddenRights) != 0)
     {
       LogEvent(FORMAT(L"%s \"%s\" exists, but has incorrect permissions %s.", EntryType, FileName, File->Rights->Octal));
