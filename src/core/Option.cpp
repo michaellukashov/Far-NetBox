@@ -7,10 +7,10 @@
 #include "TextsCore.h"
 #include "System.StrUtils.hpp"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
-const wchar_t ArrayValueDelimiter = L'[';
-const wchar_t ArrayValueEnd = L']';
+constexpr const wchar_t ArrayValueDelimiter = L'[';
+constexpr const wchar_t ArrayValueEnd = L']';
 
 TOptions::TOptions() noexcept
 {
@@ -148,7 +148,7 @@ bool TOptions::GetEmpty() const
 }
 
 bool TOptions::FindSwitch(const UnicodeString & Switch,
-  UnicodeString & Value, int32_t & ParamsStart, int32_t & ParamsCount, bool CaseSensitive, bool &ValueSet)
+  UnicodeString & Value, int32_t & ParamsStart, int32_t & ParamsCount, bool CaseSensitive, bool & ValueSet)
 {
   ParamsStart = 0;
   ValueSet = false;
@@ -382,7 +382,7 @@ void TOptions::LogOptions(TLogOptionEvent && OnLogOption)
 {
   for (size_t Index = 0; Index < FOriginalOptions.size(); ++Index)
   {
-    const TOption &Option = FOriginalOptions[Index];
+    const TOption & Option = FOriginalOptions[Index];
     UnicodeString LogStr;
     switch (Option.Type)
     {
