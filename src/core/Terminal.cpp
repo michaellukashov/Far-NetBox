@@ -1294,7 +1294,7 @@ void TTerminal::Init(TSessionData * ASessionData, TConfiguration * AConfiguratio
   FTunnelOpening = false;
   FCallbackGuard = nullptr;
   FNesting = 0;
-  FRememberedPasswordKind = TPromptKind(-1);
+  FRememberedPasswordKind = static_cast<TPromptKind>(-1);
   FSecondaryTerminals = 0;
 }
 
