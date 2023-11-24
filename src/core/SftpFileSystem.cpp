@@ -985,16 +985,16 @@ public:
     return *this;
   }
 
-  __property unsigned int Length = { read = FLength };
-  __property unsigned int RemainingLength = { read = GetRemainingLength };
-  __property unsigned char * Data = { read = FData };
-  __property unsigned char * SendData = { read = GetSendData };
-  __property unsigned int SendLength = { read = GetSendLength };
-  __property unsigned int Capacity = { read = FCapacity, write = SetCapacity };
-  __property unsigned char Type = { read = FType };
+  __property uint32_t Length = { read = FLength };
+  __property uint32_t RemainingLength = { read = GetRemainingLength };
+  __property uint8_t * Data = { read = FData };
+  __property uint8_t * SendData = { read = GetSendData };
+  __property uint32_t SendLength = { read = GetSendLength };
+  __property uint32_t Capacity = { read = FCapacity, write = SetCapacity };
+  __property uint8_t Type = { read = FType };
   ROProperty2<SSH_FXP_TYPE> Type{&FType};
-  __property unsigned char RequestType = { read = GetRequestType };
-  __property unsigned int MessageNumber = { read = FMessageNumber, write = FMessageNumber };
+  __property uint8_t RequestType = { read = GetRequestType };
+  __property uint32_t MessageNumber = { read = FMessageNumber, write = FMessageNumber };
   RWProperty2<uint32_t> MessageNumber{&FMessageNumber};
   __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
   __property UnicodeString TypeName = { read = GetTypeName };
@@ -4318,13 +4318,13 @@ void TSFTPFileSystem::CalculateFilesChecksum(
 {
   FTerminal->CalculateSubFoldersChecksum(Alg, FileList, OnCalculatedChecksum, OperationProgress, FirstLevel);
 
-  static int CalculateFilesChecksumQueueLen = 5;
+  static int32_t CalculateFilesChecksumQueueLen = 5;
   TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
   TOnceDoneOperation OnceDoneOperation; // not used
   try__finally
   {
     UnicodeString SftpAlg;
-    int Index = FChecksumAlgs->IndexOf(Alg);
+    int32_t Index = FChecksumAlgs->IndexOf(Alg);
     if (Index >= 0)
     {
       SftpAlg = FChecksumSftpAlgs->Strings[Index];

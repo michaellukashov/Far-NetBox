@@ -40,7 +40,7 @@
 #include <System.JSON.hpp>
 #include <System.DateUtils.hpp>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 #define StrFromS3(S) StrFromNeon(S)
 #define StrToS3(S) StrToNeon(S)
@@ -48,7 +48,6 @@ __removed #pragma package(smart_init)
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
 constexpr const char * SESSION_FS_KEY = "filesystem";
-
 #define AWS_ACCESS_KEY_ID L"AWS_ACCESS_KEY_ID"
 #define AWS_SECRET_ACCESS_KEY L"AWS_SECRET_ACCESS_KEY"
 #define AWS_SESSION_TOKEN L"AWS_SESSION_TOKEN"
@@ -77,7 +76,7 @@ UnicodeString S3LibDefaultRegion()
 
 UnicodeString S3ConfigFileName;
 TDateTime S3ConfigTimestamp;
-__removed std::unique_ptr<TCustomIniFile> S3ConfigFile;
+// std::unique_ptr<TCustomIniFile> S3ConfigFile;
 UnicodeString S3Profile;
 bool S3SecurityProfileChecked = false;
 TDateTime S3CredentialsExpiration;
@@ -92,7 +91,7 @@ static void NeedS3Config()
   TGuard Guard(*LibS3Section.get());
   if (S3Profile.IsEmpty())
   {
-    S3Profile = base::GetEnvVariable(AWS_PROFILE);
+    S3Profile = base::GetEnvironmentVariable(AWS_PROFILE);
     if (S3Profile.IsEmpty())
     {
       S3Profile = AWS_PROFILE_DEFAULT;
@@ -101,7 +100,7 @@ static void NeedS3Config()
 
   if (S3ConfigFileName.IsEmpty())
   {
-    S3ConfigFileName = base::GetEnvVariable(AWS_CONFIG_FILE);
+    S3ConfigFileName = base::GetEnvironmentVariable(AWS_CONFIG_FILE);
     UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
     UnicodeString DefaultConfigFileName = IncludeTrailingBackslash(ProfilePath) + L".aws\\credentials";
     // "aws" cli really prefers the default location over location specified by AWS_CONFIG_FILE
@@ -174,7 +173,7 @@ UnicodeString GetS3ConfigValue(
   {
     if (Profile.IsEmpty())
     {
-      Result = base::GetEnvVariable(Name);
+      Result = base::GetEnvironmentVariable(Name);
     }
     if (!Result.IsEmpty())
     {
@@ -753,6 +752,7 @@ struct TLibS3BucketContext : S3BucketContext
 
 struct TLibS3ListBucketCallbackData : TLibS3CallbackData
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   TRemoteFileList * FileList{nullptr};
   bool Any{false};
   int32_t KeyCount{0};
@@ -1995,6 +1995,7 @@ int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3Pu
 
 struct TLibS3MultipartInitialCallbackData : TLibS3CallbackData
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   RawByteString UploadId;
 };
 
@@ -2009,6 +2010,7 @@ S3Status TS3FileSystem::LibS3MultipartInitialCallback(const char * UploadId, voi
 
 struct TLibS3MultipartCommitPutObjectDataCallbackData : TLibS3CallbackData
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   RawByteString Message;
   int32_t Remaining{0};
 };
@@ -2398,12 +2400,12 @@ void TS3FileSystem::Sink(
     }
     __finally
     {
-       SAFE_CLOSE_HANDLE(LocalFileHandle);
+      SAFE_CLOSE_HANDLE(LocalFileHandle);
 
-       if (DeleteLocalFile)
-       {
+      if (DeleteLocalFile)
+      {
         FTerminal->DoDeleteLocalFile(DestFullName);
-       }
+      }
     } end_try__finally
   }
   FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
