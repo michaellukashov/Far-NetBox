@@ -1110,7 +1110,7 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
     addrinfo hints;
     int error;
     BOOL ret;
-    char port[10];
+    char port[10]{};
 
     memset(&hints, 0, sizeof(addrinfo));
     hints.ai_family = m_SocketData.nFamily;
