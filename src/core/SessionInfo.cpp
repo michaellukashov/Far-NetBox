@@ -1178,8 +1178,8 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
 }
 //#define ADSTR(S) AddLogEntry(S)
 //#define ADF(S, F) ADSTR(FORMAT(S, F));
-#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
-#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this));
+#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this))
+#define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this))
 
 void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPasswords)
 {
@@ -1260,7 +1260,7 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
 
 #undef ADSTR
 //#define ADSTR(S) DoAdd(llMessage, S, DoAddToSelf);
-#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this));
+#define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this))
 
 void TSessionLog::DoAddStartupInfoEntry(const UnicodeString & S)
 {
