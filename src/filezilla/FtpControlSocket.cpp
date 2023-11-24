@@ -1525,7 +1525,7 @@ BOOL CFtpControlSocket::Send(CString str)
         m_sendBufferLen += sendLen - res;
       }
     }
-    delete [] utf8;
+    nb_free(utf8);
   }
   else
   {
@@ -6360,7 +6360,7 @@ CString CFtpControlSocket::GetReply()
       LPWSTR p1 = nb::wchcalloc(len + 1);
       MultiByteToWideChar(CP_UTF8, 0, line, -1 , (LPWSTR)p1, len + 1);
       CString reply = W2CT(p1);
-      delete [] p1;
+      nb_free(p1);
       return reply;
     }
   }
