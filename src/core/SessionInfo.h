@@ -418,6 +418,7 @@ public:
 
 class TApplicationLog
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   TApplicationLog();
   ~TApplicationLog();
