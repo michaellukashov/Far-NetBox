@@ -935,6 +935,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
   const char * CreationDate = GetNeonProp(Results, PROP_CREATIONDATE);
   const char * Modified = LastModified ? LastModified : CreationDate;
   // We've seen a server (t=24891) that does not set "getlastmodified" for the "this" folder entry.
+  AFile->ModificationFmt = mfNone; // fallback
   if (LastModified != nullptr)
   {
     char WeekDay[4] = { L'\0' };
@@ -961,14 +962,6 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
         // Should use mfYMDHM or mfMDY when appropriate according to Filled
         AFile->SetModificationFmt(mfFull);
       }
-      else
-      {
-        AFile->SetModificationFmt(mfNone);
-      }
-    }
-    else
-    {
-      AFile->SetModificationFmt(mfNone);
     }
   }
 
@@ -1843,7 +1836,8 @@ void TWebDAVFileSystem::Sink(
 
       if (CopyParam->GetPreserveTime())
       {
-        FTerminal->UpdateTargetTime(LocalFileHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
+        FTerminal->UpdateTargetTime(
+          LocalFileHandle, AFile->GetModification(), AFile->GetModificationFmt(), FTerminal->GetSessionData()->GetDSTMode());
       }
     }
     __finally

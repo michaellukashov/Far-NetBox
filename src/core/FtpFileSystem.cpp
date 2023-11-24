@@ -4767,7 +4767,7 @@ void TFTPFileSystem::PreserveDownloadFileTime(HANDLE AHandle, void * UserData) c
 {
   const TFileTransferData * Data = static_cast<TFileTransferData *>(UserData);
   DebugAssert(Data->CopyParam->FOnTransferOut.empty());
-  FTerminal->UpdateTargetTime(AHandle, Data->Modification, dstmUnix);
+  FTerminal->UpdateTargetTime(AHandle, Data->Modification, mfFull, dstmUnix);
 }
 
 bool TFTPFileSystem::GetFileModificationTimeInUtc(const wchar_t * AFileName, struct tm & Time)

@@ -565,7 +565,8 @@ protected:
   void SinkFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void UpdateTargetAttrs(
     const UnicodeString & ADestFullName, const TRemoteFile * AFile, const TCopyParamType * CopyParam, int32_t Attrs);
-  void UpdateTargetTime(HANDLE Handle, const TDateTime & Modification, TDSTMode DSTMode);
+  void UpdateTargetTime(
+    HANDLE Handle, const TDateTime & Modification, TModificationFmt ModificationFmt, TDSTMode DSTMode);
   void CheckParallelFileTransfer(
     const UnicodeString & TargetDir, TStringList * Files, const TCopyParamType * CopyParam, int32_t Params,
     UnicodeString & ParallelFileName, int64_t & ParallelFileSize, TFileOperationProgressType * OperationProgress);

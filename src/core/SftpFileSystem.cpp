@@ -5495,7 +5495,8 @@ void TSFTPFileSystem::DirectorySunk(
     }
     else
     {
-      FTerminal->UpdateTargetTime(LocalFileHandle, AFile->GetModification(), FTerminal->GetSessionData()->GetDSTMode());
+      FTerminal->UpdateTargetTime(
+        LocalFileHandle, AFile->GetModification(), AFile->GetModificationFmt(), FTerminal->GetSessionData()->GetDSTMode());
       SAFE_CLOSE_HANDLE(LocalFileHandle);
     }
   }
@@ -5620,6 +5621,7 @@ void TSFTPFileSystem::Sink(
     OperationProgress->Progress();
 
     TDateTime Modification = AFile->GetModification(); // fallback
+    TModificationFmt ModificationFmt = AFile->ModificationFmt;
     // ignore errors
     if (RemoteFilePacket.GetType() == SSH_FXP_ATTRS)
     {
@@ -5629,6 +5631,7 @@ void TSFTPFileSystem::Sink(
       if (File->GetModification() != TDateTime())
       {
         Modification = File->GetModification();
+        ModificationFmt = File->ModificationFmt;
       }
     }
 
@@ -5889,7 +5892,7 @@ void TSFTPFileSystem::Sink(
       DebugAssert(CheckHandle(LocalFileHandle));
       if (CopyParam->GetPreserveTime())
       {
-        FTerminal->UpdateTargetTime(LocalFileHandle, Modification, FTerminal->GetSessionData()->GetDSTMode());
+        FTerminal->UpdateTargetTime(LocalFileHandle, Modification, ModificationFmt, FTerminal->GetSessionData()->GetDSTMode());
       }
 
       SAFE_CLOSE_HANDLE(LocalFileHandle);

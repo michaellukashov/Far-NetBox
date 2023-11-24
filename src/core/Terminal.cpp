@@ -8571,14 +8571,22 @@ void TTerminal::UpdateTargetAttrs(
   }
 }
 
-void TTerminal::UpdateTargetTime(HANDLE Handle, const TDateTime & Modification, TDSTMode DSTMode)
+void TTerminal::UpdateTargetTime(
+  HANDLE Handle, const TDateTime & Modification, TModificationFmt ModificationFmt, TDSTMode DSTMode)
 {
-  LogEvent(FORMAT("Preserving timestamp [%s]", ::StandardTimestamp(Modification)));
-  const FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);
-  if (!::SetFileTime(Handle, nullptr, nullptr, &WrTime))
+  if (ModificationFmt == mfNone)
   {
-    const int32_t Error = ::GetLastError();
-    LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s", ::SysErrorMessageForError(Error)));
+    LogEvent(L"Timestamp not known");
+  }
+  else
+  {
+    LogEvent(FORMAT("Preserving timestamp [%s]", ::StandardTimestamp(Modification)));
+    const FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);
+    if (!::SetFileTime(Handle, nullptr, nullptr, &WrTime))
+    {
+      const int32_t Error = ::GetLastError();
+      LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s", ::SysErrorMessageForError(Error)));
+    }
   }
 }
 

@@ -635,6 +635,7 @@ void TWinConfiguration::Default()
   QueueTransferLimitMax = 9;
   HiContrast = false;
   EditorCheckNotModified = false;
+  SessionTabCaptionTruncation = true;
   FirstRun = StandardDatestamp();
 
   FEditor.Font.FontName = DefaultFixedWidthFontName;
@@ -1099,6 +1100,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Integer,  QueueTransferLimitMax); \
     KEY(Bool,     HiContrast); \
     KEY(Bool,     EditorCheckNotModified); \
+    KEY(Bool,     SessionTabCaptionTruncation); \
     KEY(String,   FirstRun); \
   ); \
   BLOCK("Interface\\Editor", CANCREATE, \
@@ -2804,6 +2806,11 @@ void TWinConfiguration::SetHiContrast(bool value)
 void TWinConfiguration::SetEditorCheckNotModified(bool value)
 {
   SET_CONFIG_PROPERTY(EditorCheckNotModified);
+}
+
+void TWinConfiguration::SetSessionTabCaptionTruncation(bool value)
+{
+  SET_CONFIG_PROPERTY(SessionTabCaptionTruncation);
 }
 
 void TWinConfiguration::SetFirstRun(const UnicodeString & value)

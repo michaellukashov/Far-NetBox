@@ -484,6 +484,7 @@ private:
   int FQueueTransferLimitMax;
   bool FHiContrast;
   bool FEditorCheckNotModified;
+  bool FSessionTabCaptionTruncation;
   UnicodeString FFirstRun;
   int FDontDecryptPasswords;
   int FMasterPasswordSession;
@@ -606,6 +607,7 @@ private:
   void SetQueueTransferLimitMax(int value);
   void SetHiContrast(bool value);
   void SetEditorCheckNotModified(bool value);
+  void SetSessionTabCaptionTruncation(bool value);
   void SetFirstRun(const UnicodeString & value);
   int GetLocaleCompletenessTreshold();
 
@@ -810,6 +812,7 @@ public:
   __property int QueueTransferLimitMax = { read = FQueueTransferLimitMax, write = SetQueueTransferLimitMax };
   __property bool HiContrast = { read = FHiContrast, write = SetHiContrast };
   __property bool EditorCheckNotModified = { read = FEditorCheckNotModified, write = SetEditorCheckNotModified };
+  __property bool SessionTabCaptionTruncation = { read = FSessionTabCaptionTruncation, write = SetSessionTabCaptionTruncation };
   __property UnicodeString FirstRun = { read = FFirstRun, write = SetFirstRun };
   __property LCID DefaultLocale = { read = FDefaultLocale };
   __property int LocaleCompletenessTreshold = { read = GetLocaleCompletenessTreshold };

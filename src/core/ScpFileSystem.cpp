@@ -2881,7 +2881,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
 
               if (FileData.SetTime && CopyParam->GetPreserveTime())
               {
-                FTerminal->UpdateTargetTime(LocalFileHandle, FileData.Modification, FTerminal->GetSessionData()->GetDSTMode());
+                FTerminal->UpdateTargetTime(LocalFileHandle, FileData.Modification, mfFull, FTerminal->GetSessionData()->GetDSTMode());
               }
             }
             __finally
