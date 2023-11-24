@@ -32,9 +32,9 @@
 #include <WinSock2.h>
 #endif
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
-__removed #define FILE_OPERATION_LOOP_TERMINAL this
+// #define FILE_OPERATION_LOOP_TERMINAL this
 
 
 class TLoopDetector : public TObject
@@ -104,19 +104,19 @@ public:
  
 TCalculateSizeStats::TCalculateSizeStats() noexcept
 {
-__removed memset(this, 0, sizeof(*this));
+  // memset(this, 0, sizeof(*this));
 }
 
 TCalculateSizeParams::TCalculateSizeParams() noexcept : TObject(OBJECT_CLASS_TCalculateSizeParams)
 {
-  __removed memset(this, 0, sizeof(*this));
+  // memset(this, 0, sizeof(*this));
   Result = true;
   AllowDirs = true;
 }
 
 TSynchronizeOptions::TSynchronizeOptions() noexcept
 {
-  __removed memset(this, 0, sizeof(*this));
+  // memset(this, 0, sizeof(*this));
 }
 
 TSynchronizeOptions::~TSynchronizeOptions() noexcept
@@ -138,7 +138,7 @@ bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName) const
 
 TSpaceAvailable::TSpaceAvailable()
 {
-__removed memset(this, 0, sizeof(*this));
+  // memset(this, 0, sizeof(*this));
 }
 
 #if 0
@@ -1315,7 +1315,7 @@ TTerminal::~TTerminal() noexcept
   SAFE_DESTROY(FCommandSession);
 
   if (GetSessionData()->GetCacheDirectoryChanges() && GetSessionData()->GetPreserveDirectoryChanges() &&
-      (FDirectoryChangesCache.get() != nullptr))
+      (FDirectoryChangesCache != nullptr))
   {
     FConfiguration->SaveDirectoryChangesCache(GetSessionData()->GetSessionKey(),
       FDirectoryChangesCache.get());
@@ -1352,7 +1352,7 @@ void TTerminal::Idle()
 
     if (FConfiguration->GetActualLogProtocol() >= 1)
     {
-      __removed LogEvent("Session upkeep");
+      // LogEvent("Session upkeep");
     }
 
     DebugAssert(FFileSystem != nullptr);
@@ -7596,7 +7596,7 @@ bool TTerminal::CopyToRemote(
       OperationProgress, (AParams & cpDelete ? foMove : foCopy), osLocal,
       AFilesToCopy->Count, AParams & cpTemporary, ATargetDir, CopyParam->CPSLimit, CopyParam->OnceDoneOperation);
 
-    __removed bool CollectingUsage = false;
+    // bool CollectingUsage = false;
     try__finally
     {
       if (CalculatedSize)

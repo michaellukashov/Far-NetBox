@@ -1674,7 +1674,7 @@ void TActionLog::AddFailure(TStrings * Messages)
 void TActionLog::AddFailure(Exception * E)
 {
   std::unique_ptr<TStrings> Messages(ExceptionToMoreMessages(E));
-  if (Messages.get() != nullptr)
+  if (Messages != nullptr)
   {
     try__finally
     {

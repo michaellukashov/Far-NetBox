@@ -482,7 +482,7 @@ TWebDAVFileSystem::TSessionContext::~TSessionContext()
 
 void TWebDAVFileSystem::CloseNeonSession()
 {
-  if (FSessionContext.get() != nullptr)
+  if (FSessionContext != nullptr)
   {
 #if defined(__BORLANDC__)
     delete FSessionContext;
