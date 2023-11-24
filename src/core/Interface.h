@@ -44,8 +44,8 @@ NB_CORE_EXPORT TOptions * GetGlobalOptions();
 
 NB_CORE_EXPORT void ShowExtendedException(Exception * E);
 NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
-__removed void IgnoreException(const std::type_info & ExceptionType);
-__removed UnicodeString GetExceptionDebugInfo();
+// void IgnoreException(const std::type_info & ExceptionType);
+// UnicodeString GetExceptionDebugInfo();
 
 NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
@@ -121,7 +121,7 @@ struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
 };
 
 using TQueryParamsTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
-__removed enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
+// enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {

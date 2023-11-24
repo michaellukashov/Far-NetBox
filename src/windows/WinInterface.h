@@ -218,7 +218,7 @@ struct TRegistration
 };
 void DoAboutDialog(TConfiguration * Configuration,
   bool AllowLicense, TRegistration * Registration);
-void DoAboutDialog(TConfiguration *Configuration);
+void DoAboutDialog(TConfiguration * Configuration);
 
 // forms\Cleanup.cpp
 bool DoCleanupDialog();

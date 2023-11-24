@@ -2018,7 +2018,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
 
 void TWinSCPFileSystem::ShowInformation()
 {
-  const TSessionInfo &SessionInfo = GetTerminal()->GetSessionInfo();
+  const TSessionInfo & SessionInfo = GetTerminal()->GetSessionInfo();
   const TFileSystemInfo FileSystemInfo = GetTerminal()->GetFileSystemInfo();
   TGetSpaceAvailableEvent OnGetSpaceAvailable;
   if (GetTerminal()->GetIsCapable(fcCheckingSpaceAvailable))
