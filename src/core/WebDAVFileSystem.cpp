@@ -1547,7 +1547,7 @@ void TWebDAVFileSystem::NeonPreSend(
       // all neon request types that use ne_add_request_header
       // use XML content-type, so it's text-based
       DebugAssert(AnsiContainsText(HeaderBuf, ContentTypeHeaderPrefix + NE_XML_MEDIA_TYPE));
-      FileSystem->FTerminal->GetLog()->Add(llInput, UnicodeString(UTF8String(Buffer, Size)));
+      FileSystem->FTerminal->GetLog()->Add(llInput, UnicodeString(UTF8String(Buffer, nb::ToInt32(Size))));
     }
   }
 
