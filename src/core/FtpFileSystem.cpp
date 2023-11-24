@@ -4641,7 +4641,7 @@ bool TFTPFileSystem::HandleReply(int32_t Command, int64_t Reply)
   {
     if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", nb::ToInt32(Reply), Command));
+      FTerminal->LogEvent(FORMAT("Got reply %x to the command %d", Reply, Command));
     }
 
     // reply with Command 0 is not associated with current operation
