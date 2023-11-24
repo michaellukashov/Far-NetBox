@@ -66,7 +66,8 @@ TConfiguration * CreateConfiguration()
 
 TOptions * GetGlobalOptions()
 {
-  return nullptr; // TProgramParams::Instance();
+  static TOptions Options;
+  return &Options; // TProgramParams::Instance();
 }
 
 #if 0
