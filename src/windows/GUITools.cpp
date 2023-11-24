@@ -386,7 +386,7 @@ void TPuttyPasswordThread::Execute()
     }
     else
     {
-      int32_t Error = GetLastError();
+      int32_t Error = ::GetLastError();
       if (Error == ERROR_PIPE_CONNECTED)
       {
         AppLog(L"PuTTY has connected to password pipe");

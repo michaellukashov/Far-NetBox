@@ -735,7 +735,7 @@ private:
     else
     {
       if (pSLM(hProcess, 0, szImg, szMod, baseAddr, size) == 0)
-        result = GetLastError();
+        result = ::GetLastError();
     }
     ULONGLONG fileVersion = 0;
     if ((m_parent != NULL) && (szImg != NULL))

@@ -36,9 +36,9 @@ public:
   }
 
   void level(Utils::LogLevel log_level);
-  void file(FILE *file) noexcept;
+  void file(FILE * file) noexcept;
   tinylog::Utils::LogLevel GetLogLevel() const;
-  LogStream &GetLogStream(const char *file_name, int32_t line_num, const char *func_name, tinylog::Utils::LogLevel log_level);
+  LogStream & GetLogStream(const char *file_name, int32_t line_num, const char *func_name, tinylog::Utils::LogLevel log_level);
 
   int64_t Write(const char * data, int64_t ToWrite);
   void Close();

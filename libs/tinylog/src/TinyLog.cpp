@@ -25,7 +25,7 @@ public:
   void SetFile(FILE *file) noexcept;
   void SetLogLevel(Utils::LogLevel log_level);
   Utils::LogLevel GetLogLevel() const;
-  LogStream &GetLogStream(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level);
+  LogStream & GetLogStream(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level);
 
   int64_t Write(const char *data, int64_t ToWrite);
   void Close();

@@ -5489,7 +5489,7 @@ void TSFTPFileSystem::DirectorySunk(
 
     if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
-      int SetFileTimeError = GetLastError();
+      const int32_t SetFileTimeError = ::GetLastError();
       FTerminal->LogEvent(
         FORMAT("Preserving directory timestamp failed, ignoring: %s", ::SysErrorMessageForError(SetFileTimeError)));
     }

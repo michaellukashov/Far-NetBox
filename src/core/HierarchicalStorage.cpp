@@ -1717,7 +1717,7 @@ void TIniFileStorage::Flush()
           CreateFile(ApiPath(Storage).c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, Attr, 0);
         if (Handle == INVALID_HANDLE_VALUE)
         {
-          Error = GetLastError();
+          Error = ::GetLastError();
         }
         Retry = (Error == ERROR_SHARING_VIOLATION) && (Trying < 2000);
         if (Retry)

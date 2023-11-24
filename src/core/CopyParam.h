@@ -198,10 +198,10 @@ public:
   __property TTransferOutEvent OnTransferOut = { read = FOnTransferOut, write = FOnTransferOut };
   __property TTransferInEvent OnTransferIn = { read = FOnTransferIn, write = FOnTransferIn };
 
-  const TFileMasks &GetAsciiFileMask() const { return FAsciiFileMask; }
-  TFileMasks &GetAsciiFileMask() { return FAsciiFileMask; }
-  void SetAsciiFileMask(const TFileMasks &Value) { FAsciiFileMask = Value; }
-  const TFileNameCase &GetFileNameCase() const { return FFileNameCase; }
+  const TFileMasks & GetAsciiFileMask() const { return FAsciiFileMask; }
+  TFileMasks & GetAsciiFileMask() { return FAsciiFileMask; }
+  void SetAsciiFileMask(const TFileMasks & Value) { FAsciiFileMask = Value; }
+  const TFileNameCase & GetFileNameCase() const { return FFileNameCase; }
   void SetFileNameCase(TFileNameCase Value) { FFileNameCase = Value; }
   bool GetPreserveReadOnly() const { return FPreserveReadOnly; }
   void SetPreserveReadOnly(bool Value) { FPreserveReadOnly = Value; }
@@ -209,9 +209,9 @@ public:
   void SetPreserveTime(bool Value) { FPreserveTime = Value; }
   bool GetPreserveTimeDirs() const { return FPreserveTimeDirs; }
   void SetPreserveTimeDirs(bool Value) { FPreserveTimeDirs = Value; }
-  const TRights &GetRights() const { return FRights; }
-  TRights &GetRights() { return FRights; }
-  void SetRights(const TRights &Value) { FRights.Assign(&Value); }
+  const TRights & GetRights() const { return FRights; }
+  TRights & GetRights() { return FRights; }
+  void SetRights(const TRights & Value) { FRights.Assign(&Value); }
   TTransferMode GetTransferMode() const { return FTransferMode; }
   void SetTransferMode(TTransferMode Value) { FTransferMode = Value; }
   UnicodeString GetLogStr() const;
@@ -232,9 +232,9 @@ public:
   void SetCalculateSize(bool Value) { FCalculateSize = Value; }
   UnicodeString GetFileMask() const { return FFileMask; }
   void SetFileMask(const UnicodeString & Value) { FFileMask = Value; }
-  const TFileMasks &GetIncludeFileMask() const { return FIncludeFileMask; }
-  TFileMasks &GetIncludeFileMask() { return FIncludeFileMask; }
-  void SetIncludeFileMask(const TFileMasks &Value) { FIncludeFileMask = Value; }
+  const TFileMasks & GetIncludeFileMask() const { return FIncludeFileMask; }
+  TFileMasks & GetIncludeFileMask() { return FIncludeFileMask; }
+  void SetIncludeFileMask(const TFileMasks & Value) { FIncludeFileMask = Value; }
   bool GetClearArchive() const { return FClearArchive; }
   void SetClearArchive(bool Value) { FClearArchive = Value; }
   UnicodeString GetTransferResumeFile() const { return FTransferResumeFile; }

@@ -226,7 +226,7 @@ protected:
     TFarMessageParams * Params);
   void InvalidateOpenPanelInfo();
 
-  const TCriticalSection &GetCriticalSection() const { return FCriticalSection; }
+  const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
 #ifdef NETBOX_DEBUG
 public:

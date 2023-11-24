@@ -8577,7 +8577,7 @@ void TTerminal::UpdateTargetTime(HANDLE Handle, const TDateTime & Modification, 
   const FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);
   if (!::SetFileTime(Handle, nullptr, nullptr, &WrTime))
   {
-    const int32_t Error = GetLastError();
+    const int32_t Error = ::GetLastError();
     LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s", ::SysErrorMessageForError(Error)));
   }
 }
