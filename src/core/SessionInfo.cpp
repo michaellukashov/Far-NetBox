@@ -1881,6 +1881,6 @@ void TApplicationLog::Log(const UnicodeString & S)
     const UTF8String UtfLine = UTF8String(Line);
     const int32_t Writing = UtfLine.Length();
     TGuard Guard(FCriticalSection); nb::used(Guard);
-    fwrite(UtfLine.c_str(), 1, Writting, static_cast<FILE *>(FFile));
+    fwrite(UtfLine.c_str(), 1, Writing, static_cast<FILE *>(FFile));
   }
 }

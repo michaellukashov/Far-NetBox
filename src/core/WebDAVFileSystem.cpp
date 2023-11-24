@@ -1228,7 +1228,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   switch (Answer)
   {
     case qaYes:
-    // Can happen when moving to background (and the server manages to commit the interrupeted foreground transfer).
+    // Can happen when moving to background (and the server manages to commit the interrupted foreground transfer).
     // WebDAV does not support resumable uploads.
     // Resumable downloads are not implemented.
     case qaRetry:
@@ -1446,7 +1446,7 @@ void TWebDAVFileSystem::Source(
           // The only server we found that supports this is TradeMicro SafeSync.
           // But it announces itself as "Server: Apache",
           // so it's not reliable to autodetect the support.
-          // Microsoft Office alegedly uses <Win32LastModifiedTime>
+          // Microsoft Office allegedly uses <Win32LastModifiedTime>
           // https://sabre.io/dav/clients/msoffice/
           // Carot DAV does that too. But we do not know what server does support this.
           TouchAction.Cancel();

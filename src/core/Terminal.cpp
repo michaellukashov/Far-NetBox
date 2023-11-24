@@ -840,7 +840,7 @@ void TParallelOperation::Done(
       else
       {
         // This is actually not useful at the moment, as when creating directory fails and "Skip" is pressed,
-        // the current code in CopyToRemote/CreateDirectory will behave as, if it succedded, so Successs will be true here.
+        // the current code in CopyToRemote/CreateDirectory will behave as, if it succeeded, so Success will be true here.
         FDirectories.erase(DirectoryIterator->first);
         if (FFileList->GetCount() > FListIndex)
         {
@@ -900,7 +900,7 @@ void TParallelOperation::Done(
 
             if (!FParallelFileMerging)
             {
-              // Once we obtain "merging" semaphor, we won't leave until everything is merged
+              // Once we obtain "merging" semaphore, we won't leave until everything is merged
               TAutoFlag MergingFlag(FParallelFileMerging); nb::used(MergingFlag);
 
               try
