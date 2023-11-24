@@ -1421,7 +1421,7 @@ void TWebDAVFileSystem::Source(
           FormatDateTime(L"ddd, d mmm yyyy hh:nn:ss 'GMT'", ModificationUTC, FormatSettings);
 #endif
         uint16_t Y, M, D, H, NN, S, MS;
-        const TDateTime DateTime = ModificationUTC;
+        const TDateTime & DateTime = ModificationUTC;
         DateTime.DecodeDate(Y, M, D);
         DateTime.DecodeTime(H, NN, S, MS);
         UnicodeString LastModified = FORMAT("%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
