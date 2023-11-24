@@ -2243,10 +2243,10 @@ bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
   return Result;
 }
 //=== TRights ---------------------------------------------------------------
-const wchar_t TRights::BasicSymbols[] = L"rwxrwxrwx";
-const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
-const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
-const wchar_t TRights::ModeGroups[] = L"ugo";
+// const wchar_t TRights::BasicSymbols[] = L"rwxrwxrwx";
+// const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
+// const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
+// const wchar_t TRights::ModeGroups[] = L"ugo";
 
 TRights::TRights() noexcept
 {

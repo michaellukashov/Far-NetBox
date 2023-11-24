@@ -461,11 +461,11 @@ public:
   static const wchar_t UnsetSymbol = L'-';
   // Used by Win32-OpenSSH for permissions that are not applicable on Windows.
   // See strmode() in contrib\win32\win32compat\misc.c
-  static const wchar_t UnsetSymbolWin = L'*';
-  static const wchar_t BasicSymbols[];
-  static const wchar_t CombinedSymbols[];
-  static const wchar_t ExtendedSymbols[];
-  static const wchar_t ModeGroups[];
+  static constexpr const wchar_t UnsetSymbolWin = L'*';
+  static constexpr const wchar_t BasicSymbols[] = L"rwxrwxrwx";
+  static constexpr const wchar_t CombinedSymbols[] = L"--s--s--t";
+  static constexpr const wchar_t ExtendedSymbols[] = L"--S--S--T";
+  static constexpr const wchar_t ModeGroups[] = L"ugo";
   enum TRightLevel {
     rlNone = -1,
     rlRead, rlWrite, rlExec, rlSpecial,
