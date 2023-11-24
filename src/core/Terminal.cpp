@@ -162,7 +162,7 @@ public:
 public:
   TTunnelThread() = delete;
   explicit TTunnelThread(TSecureShell * SecureShell) noexcept;
-  virtual ~TTunnelThread() noexcept;
+  virtual ~TTunnelThread() noexcept override;
   virtual void InitTunnelThread();
 
   virtual void Terminate() override;
@@ -226,7 +226,7 @@ class TTunnelUI : public TSessionUI
 public:
   TTunnelUI() = delete;
   explicit TTunnelUI(TTerminal * Terminal) noexcept;
-  virtual ~TTunnelUI() = default;
+  virtual ~TTunnelUI() override = default;
 
   virtual void Information(const UnicodeString & AStr, bool Status) override;
   virtual uint32_t QueryUser(const UnicodeString & AQuery,
@@ -353,7 +353,7 @@ class TCallbackGuard : public TObject
   NB_DISABLE_COPY(TCallbackGuard)
 public:
   explicit TCallbackGuard(TTerminal * ATerminal) noexcept;
-  virtual ~TCallbackGuard() noexcept;
+  virtual ~TCallbackGuard() noexcept override;
 
   void FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword);
   void Verify();
