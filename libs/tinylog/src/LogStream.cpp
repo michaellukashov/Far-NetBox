@@ -186,7 +186,7 @@ void LogStream::UpdateBaseTime()
   }
 }
 
-void LogStream::SetPrefix(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level)
+void LogStream::SetPrefix(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level)
 {
   file_name_ = tinylog::past_last_slash(file_name);
   line_  = line;

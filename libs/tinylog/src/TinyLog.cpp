@@ -22,20 +22,20 @@ public:
   explicit TinyLogImpl(FILE * file) noexcept;
   ~TinyLogImpl() noexcept;
 
-  void SetFile(FILE *file) noexcept;
+  void SetFile(FILE * file) noexcept;
   void SetLogLevel(Utils::LogLevel log_level);
   Utils::LogLevel GetLogLevel() const;
-  LogStream & GetLogStream(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level);
+  LogStream & GetLogStream(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level);
 
-  int64_t Write(const char *data, int64_t ToWrite);
+  int64_t Write(const char * data, int64_t ToWrite);
   void Close();
 
 private:
   TinyLogImpl(TinyLogImpl const &) = delete;
-  void operator=(TinyLogImpl const &) = delete;
+  void operator =(TinyLogImpl const &) = delete;
 
 private:
-  void SetPrefix(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level);
+  void SetPrefix(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level);
   static DWORD WINAPI ThreadFunc(void *pt_arg);
   int32_t MainLoop();
 
@@ -50,7 +50,7 @@ private:
   bool already_swap_{false};
 };
 
-TinyLogImpl::TinyLogImpl(FILE *file) noexcept :
+TinyLogImpl::TinyLogImpl(FILE * file) noexcept :
   log_level_(Utils::LEVEL_INFO),
   thrd_(INVALID_HANDLE_VALUE),
   ThreadId_(0),
@@ -60,7 +60,7 @@ TinyLogImpl::TinyLogImpl(FILE *file) noexcept :
   pthread_mutex_init(&mutex_, nullptr);
   pthread_cond_init(&cond_, nullptr);
   logstream_ = std::make_unique<LogStream>(file, mutex_, cond_, already_swap_);
-  void *Parameter = this;
+  void * Parameter = this;
 
   thrd_ = ::CreateThread(nullptr,
       0,
@@ -102,7 +102,7 @@ LogStream & TinyLogImpl::GetLogStream(const char * file_name, int32_t line, cons
   return *logstream_;
 }
 
-int64_t TinyLogImpl::Write(const char *data, int64_t ToWrite)
+int64_t TinyLogImpl::Write(const char * data, int64_t ToWrite)
 {
   return logstream_->Write(data, ToWrite);
 }
@@ -117,9 +117,9 @@ void TinyLogImpl::Close()
   }
 }
 
-DWORD WINAPI TinyLogImpl::ThreadFunc(void *pt_arg)
+DWORD WINAPI TinyLogImpl::ThreadFunc(void * pt_arg)
 {
-  TinyLogImpl *pt_tinylog = static_cast<TinyLogImpl *>(pt_arg);
+  TinyLogImpl * pt_tinylog = static_cast<TinyLogImpl *>(pt_arg);
   pt_tinylog->MainLoop();
 
   return 0;
@@ -161,7 +161,7 @@ TinyLog::TinyLog() noexcept :
 {
 }
 
-/*TinyLog::TinyLog(FILE *file) noexcept :
+/*TinyLog::TinyLog(FILE * file) noexcept :
   impl_(std::make_unique<TinyLogImpl>(file))
 {
   assert(file != nullptr);
@@ -186,13 +186,13 @@ Utils::LogLevel TinyLog::GetLogLevel() const
   return impl_->GetLogLevel();
 }
 
-LogStream &TinyLog::GetLogStream(const char *file_name, int32_t line_num, const char *func_name, Utils::LogLevel log_level)
+LogStream & TinyLog::GetLogStream(const char * file_name, int32_t line_num, const char * func_name, Utils::LogLevel log_level)
 {
   //impl_->SetPrefix(file_name, line_num, func_name, log_level);
   return impl_->GetLogStream(file_name, line_num, func_name, log_level);
 }
 
-int64_t TinyLog::Write(const char *data, int64_t ToWrite)
+int64_t TinyLog::Write(const char * data, int64_t ToWrite)
 {
   return impl_->Write(data, ToWrite);
 }

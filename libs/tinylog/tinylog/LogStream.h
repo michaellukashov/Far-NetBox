@@ -23,10 +23,10 @@ public:
 
   void SwapBuffer();
   void WriteBuffer();
-  void SetFile(FILE *file);
-  void SetPrefix(const char *file_name, int32_t line, const char *func_name, Utils::LogLevel log_level);
-  LogStream &operator<<(const std::string & log_data);
-  LogStream &operator<<(const char * log_data);
+  void SetFile(FILE * file);
+  void SetPrefix(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level);
+  LogStream & operator <<(const std::string & log_data);
+  LogStream & operator <<(const char * log_data);
   template<typename StringType>
   LogStream & operator <<(const StringType & log_data)
   {

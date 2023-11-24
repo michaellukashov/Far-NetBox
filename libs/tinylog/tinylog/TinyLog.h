@@ -29,7 +29,7 @@ public:
   // explicit TinyLog(FILE * file) noexcept;
   ~TinyLog() noexcept;
 
-  static auto instance() -> TinyLog&
+  static auto instance() -> TinyLog &
   {
     static TinyLog instance_;
     return instance_;
@@ -38,7 +38,7 @@ public:
   void level(Utils::LogLevel log_level);
   void file(FILE * file) noexcept;
   tinylog::Utils::LogLevel GetLogLevel() const;
-  LogStream & GetLogStream(const char *file_name, int32_t line_num, const char *func_name, tinylog::Utils::LogLevel log_level);
+  LogStream & GetLogStream(const char * file_name, int32_t line_num, const char * func_name, tinylog::Utils::LogLevel log_level);
 
   int64_t Write(const char * data, int64_t ToWrite);
   void Close();
@@ -50,7 +50,7 @@ private:
 
 private:
   TinyLog(TinyLog const &) = delete;
-  void operator=(TinyLog const &) = delete;
+  void operator =(TinyLog const &) = delete;
 };
 
 #ifndef NDEBUG
@@ -58,12 +58,12 @@ private:
 class TraceLogger
 {
 public:
-  explicit TraceLogger(const char* fileName, const char* funcName, int32_t lineNumber);
+  explicit TraceLogger(const char * fileName, const char * funcName, int32_t lineNumber);
   ~TraceLogger();
 
 private:
-  const char* fileName_{nullptr};
-  const char* funcName_{nullptr};
+  const char * fileName_{nullptr};
+  const char * funcName_{nullptr};
   const int32_t lineNumber_{0};
   static std::string indent_;
 };
@@ -126,13 +126,13 @@ protected:
   logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_FATAL)
 
 template<typename... Args>
-static inline std::string repr(const char *fmt, Args &&... args)
+static inline std::string repr(const char * fmt, Args &&... args)
 {
   return fmt::sprintf(fmt, std::forward<Args>(args)...);
 }
 
 template<class T>
-static inline std::string to_str(const T &t)
+static inline std::string to_str(const T & t)
 {
     std::ostringstream out;
     out << t;
