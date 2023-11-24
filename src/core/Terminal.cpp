@@ -55,13 +55,13 @@ TLoopDetector::TLoopDetector() noexcept
 
 void TLoopDetector::RecordVisitedDirectory(const UnicodeString & ADirectory)
 {
-  UnicodeString VisitedDirectory = ::ExcludeTrailingBackslash(ADirectory);
+  const UnicodeString VisitedDirectory = ::ExcludeTrailingBackslash(ADirectory);
   FVisitedDirectories->Add(VisitedDirectory);
 }
 
 bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 {
-  bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
+  const bool Result = (FVisitedDirectories->IndexOf(Directory) < 0);
 
   if (Result)
   {
@@ -431,7 +431,7 @@ void TCallbackGuard::Verify()
 
 bool TCallbackGuard::Verify(Exception * E)
 {
-  bool Result =
+  const bool Result =
     (dyn_cast<ECallbackGuardAbort>(E) != nullptr);
   if (Result)
   {
@@ -519,7 +519,7 @@ bool TRobustOperationLoop::ShouldRetry() const
 
 bool TRobustOperationLoop::Retry()
 {
-  bool Result = FRetry;
+  const bool Result = FRetry;
   FRetry = false;
   return Result;
 }
@@ -622,7 +622,7 @@ void TRetryOperationLoop::Error(Exception & E, TSessionAction & Action, const Un
 
 bool TRetryOperationLoop::Retry()
 {
-  bool Result = FRetry;
+  const bool Result = FRetry;
   FRetry = false;
   if (Result)
   {
@@ -891,10 +891,10 @@ void TParallelOperation::Done(
       {
         if (Success && DebugAlwaysTrue(FSide == osRemote))
         {
-          TParallelFileOffsets::const_iterator I = std::find(FParallelFileOffsets.begin(), FParallelFileOffsets.end(), CopyParam->PartOffset);
+          const TParallelFileOffsets::const_iterator I = std::find(FParallelFileOffsets.begin(), FParallelFileOffsets.end(), CopyParam->PartOffset);
           if (DebugAlwaysTrue(I != FParallelFileOffsets.end()))
           {
-            int32_t Index = I - FParallelFileOffsets.begin();
+            const int32_t Index = I - FParallelFileOffsets.begin();
             DebugAssert(!FParallelFileDones[Index]);
             FParallelFileDones[Index] = true;
 
@@ -905,9 +905,9 @@ void TParallelOperation::Done(
 
               try
               {
-                UnicodeString TargetName = TPath::Combine(TargetDir, FParallelFileTargetName);
-                UnicodeString TargetNamePartial = TargetName + PartialExt;
-                UnicodeString TargetNamePartialOnly = base::UnixExtractFileName(TargetNamePartial);
+                const UnicodeString TargetName = TPath::Combine(TargetDir, FParallelFileTargetName);
+                const UnicodeString TargetNamePartial = TargetName + PartialExt;
+                const UnicodeString TargetNamePartialOnly = base::UnixExtractFileName(TargetNamePartial);
 
                 while (true)
                 {
@@ -946,7 +946,7 @@ void TParallelOperation::Done(
                         std::unique_ptr<THandleStream> DestStream(TSafeHandleStream::CreateFromFile(TargetNamePartial, fmOpenWrite | fmShareDenyWrite));
                         HANDLE DestHandle = reinterpret_cast<HANDLE>(DestStream->Handle());
                         FILETIME WrTime;
-                        bool GotWrTime = GetFileTime(DestHandle, nullptr, nullptr, &WrTime);
+                        const bool GotWrTime = GetFileTime(DestHandle, nullptr, nullptr, &WrTime);
                         DestStream->Seek(0L, TSeekOrigin::soEnd);
                         DestStream->CopyFrom(SourceStream.get(), SourceStream->Size);
                         if (GotWrTime)
@@ -992,7 +992,7 @@ void TParallelOperation::Done(
 
 bool TParallelOperation::CheckEnd(TCollectedFileList * Files)
 {
-  bool Result = (FIndex >= Files->GetCount());
+  const bool Result = (FIndex >= Files->GetCount());
   if (Result)
   {
     FListIndex++;
@@ -1006,7 +1006,7 @@ bool TParallelOperation::GetOnlyFile(TStrings * FileList, UnicodeString & FileNa
   bool Result = (FileList->Count == 1);
   if (Result)
   {
-    TCollectedFileList * OnlyFileList = GetFileList(FileList, 0);
+    const TCollectedFileList * OnlyFileList = GetFileList(FileList, 0);
     Result = (OnlyFileList->GetCount() == 1) && !OnlyFileList->IsDir(0);
     if (Result)
     {
@@ -1060,7 +1060,7 @@ int32_t TParallelOperation::GetNext(
 
   if (Files != nullptr)
   {
-    UnicodeString RootPath = FFileList->GetString(FListIndex);
+    const UnicodeString RootPath = FFileList->GetString(FListIndex);
 
     FileName = Files->GetFileName(FIndex);
     Object = Files->GetObj(FIndex);
@@ -1085,7 +1085,7 @@ int32_t TParallelOperation::GetNext(
     }
     else
     {
-      TDirectories::const_iterator DirectoryIterator = FDirectories.find(DirPath);
+      const TDirectories::const_iterator DirectoryIterator = FDirectories.find(DirPath);
       if (DebugAlwaysFalse(DirectoryIterator == FDirectories.end()))
       {
         throw EInvalidOperation(L"Parent path not known");
@@ -1140,7 +1140,7 @@ int32_t TParallelOperation::GetNext(
       {
         CustomCopyParam = new TCopyParamType(*FCopyParam);
         CustomCopyParam->PartOffset = FParallelFileOffset;
-        int64_t Remaining = FParallelFileSize - CustomCopyParam->PartOffset;
+        const int64_t Remaining = FParallelFileSize - CustomCopyParam->PartOffset;
         CustomCopyParam->PartSize = FParallelFileSize / GetConfiguration()->QueueTransfersLimit();
         DebugAssert(!OnlyFileName.IsEmpty());
         if (FParallelFileTargetName.IsEmpty())
@@ -1148,8 +1148,8 @@ int32_t TParallelOperation::GetNext(
           FParallelFileTargetName = OnlyFileName;
         }
         DebugAssert(FParallelFileTargetName == OnlyFileName);
-        int32_t Index = FParallelFileCount;
-        UnicodeString PartFileName = GetPartPrefix(OnlyFileName) + IntToStr(Index);
+        const int32_t Index = FParallelFileCount;
+        const UnicodeString PartFileName = GetPartPrefix(OnlyFileName) + IntToStr(Index);
         FParallelFileCount++;
         FParallelFileOffsets.push_back(CustomCopyParam->PartOffset);
         FParallelFileDones.push_back(false);
@@ -1195,7 +1195,7 @@ bool TParallelOperation::UpdateFileList(TQueueFileList * UpdateFileList)
     (UpdateFileList->FLastParallelOperationVersion != FVersion);
 
   DebugAssert(FFileList->Count == 1);
-  TCollectedFileList * Files = GetFileList(0);
+  const TCollectedFileList * Files = GetFileList(0);
 
   if (!Result && (UpdateFileList->GetCount() != Files->GetCount()))
   {

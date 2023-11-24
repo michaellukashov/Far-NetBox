@@ -107,7 +107,7 @@ protected:
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) override;
   void ConfirmOverwrite(
-    const UnicodeString & ASourceFullFileName, UnicodeString & ADestFileName,
+    const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     TFileOperationProgressType * OperationProgress,
     const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
     int32_t Params);
