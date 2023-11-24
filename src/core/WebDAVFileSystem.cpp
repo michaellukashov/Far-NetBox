@@ -1084,7 +1084,7 @@ int32_t TWebDAVFileSystem::CustomReadFileInternal(const UnicodeString & AFileNam
   {
     AFile = File.release();
   }
-  return nb::ToIntPtr(Result);
+  return Result;
 }
 
 void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
