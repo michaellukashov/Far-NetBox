@@ -31,7 +31,7 @@ public:
   bool WasSwitchAdded(UnicodeString & Switch, UnicodeString & Value, wchar_t & SwitchMark) const;
   UnicodeString ConsumeParam();
 
-  void LogOptions(TLogOptionEvent OnEnumOption);
+  void LogOptions(TLogOptionEvent && OnEnumOption);
 
   __property int ParamCount = { read = FParamCount };
   // __property UnicodeString Param[int Index] = { read = GetParam };

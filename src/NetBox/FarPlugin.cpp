@@ -1196,7 +1196,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
 
 bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
   const UnicodeString & Prompt, UnicodeString & Text, PLUGINPANELITEMFLAGS Flags,
-  const UnicodeString & HistoryName, int32_t MaxLen, TFarInputBoxValidateEvent OnValidate)
+  const UnicodeString & HistoryName, int32_t MaxLen, TFarInputBoxValidateEvent && OnValidate)
 {
   bool Repeat;
   int32_t Result;
@@ -3006,7 +3006,7 @@ UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 bool TGlobalFunctions::InputDialog(const UnicodeString & ACaption, const UnicodeString & APrompt,
   UnicodeString & Value, const UnicodeString & HelpKeyword,
   TStrings * History, bool PathInput,
-  TInputDialogInitializeEvent OnInitialize, bool Echo)
+  TInputDialogInitializeEvent && OnInitialize, bool Echo)
 {
   DebugUsedParam(HelpKeyword);
   DebugUsedParam(History);

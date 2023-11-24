@@ -56,7 +56,7 @@ public:
 public:
   TFileTransferData() : TObject(OBJECT_CLASS_TFileTransferData) {}
   UnicodeString FileName;
-  const TCopyParamType * CopyParam{nullptr};
+  TCopyParamType * CopyParam{nullptr};
   TDateTime Modification{};
   int32_t Params{0};
   int32_t OverwriteResult{-1};
@@ -167,7 +167,7 @@ public:
   virtual bool LoadFilesProperties(TStrings * AFileList) = 0;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg);
   virtual void CalculateFilesChecksum(
-    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) = 0;
   virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,

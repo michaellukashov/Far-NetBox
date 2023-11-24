@@ -1181,7 +1181,7 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
 #define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this))
 #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this))
 
-void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPasswords)
+void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPasswords)
 {
   ADSTR(GetEnvironmentInfo());
   //THierarchicalStorage * Storage = AConfiguration->CreateConfigStorage();
@@ -1249,7 +1249,7 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration
   ADF(L"Command-line: %s", ACmdLine);
   if (AConfiguration->ActualLogProtocol >= 1)
   {
-    GetGlobalOptions()->LogOptions(AddLogEntry);
+    GetGlobalOptions()->LogOptions(std::forward<TAddLogEntryEvent>(OnAddLogEntry));
   }
   ADF(L"Time zone: %s", GetTimeZoneLogString());
   if (!AdjustClockForDSTEnabled())

@@ -205,7 +205,7 @@ public:
   bool FileTransfer(
     const wchar_t * LocalFile, const wchar_t * RemoteFile,
     const wchar_t * RemotePath, bool Get, int64_t Size, int32_t Type, void * UserData,
-    TTransferOutEvent OnTransferOut, TTransferInEvent OnTransferIn);
+    TTransferOutEvent && OnTransferOut, TTransferInEvent && OnTransferIn);
 
   virtual const wchar_t * Option(int32_t OptionID) const = 0;
   virtual int32_t OptionVal(int32_t OptionID) const = 0;

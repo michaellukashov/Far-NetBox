@@ -1838,7 +1838,7 @@ bool TS3FileSystem::LoadFilesProperties(TStrings * FileList)
 }
 
 void TS3FileSystem::CalculateFilesChecksum(
-  const UnicodeString & DebugUsedArg(Alg), TStrings * DebugUsedArg(FileList), TCalculatedChecksumEvent,
+  const UnicodeString & DebugUsedArg(Alg), TStrings * DebugUsedArg(FileList), TCalculatedChecksumEvent &&,
   TFileOperationProgressType *, bool DebugUsedArg(FirstLevel))
 {
   DebugFail();

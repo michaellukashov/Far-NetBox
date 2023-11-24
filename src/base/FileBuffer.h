@@ -30,9 +30,9 @@ public:
   void Delete(int64_t Index, int64_t Len);
   int64_t LoadStream(TStream * Stream, const int64_t Len, bool ForceLen);
   int64_t ReadStream(TStream * Stream, const int64_t Len, bool ForceLen);
-  DWORD LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, int64_t Len);
+  DWORD LoadFromIn(TTransferInEvent && OnTransferIn, TObject * Sender, int64_t Len);
   void WriteToStream(TStream * Stream, const int64_t Len);
-  void WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len);
+  void WriteToOut(TTransferOutEvent && OnTransferOut, TObject * Sender, const int64_t Len);
   void Reset();
   __property TMemoryStream * Memory  = { read=FMemory };
   ROProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this)};

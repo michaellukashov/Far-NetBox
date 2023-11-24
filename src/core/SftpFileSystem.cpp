@@ -1646,7 +1646,7 @@ public:
   }
 
   bool Init(const UnicodeString & AFileName,
-    HANDLE AFile, TTransferInEvent OnTransferIn, TFileOperationProgressType * AOperationProgress,
+    HANDLE AFile, TTransferInEvent && OnTransferIn, TFileOperationProgressType * AOperationProgress,
     const RawByteString & AHandle, int64_t ATransferred,
     int32_t ConvertParams)
   {
@@ -1684,7 +1684,7 @@ protected:
       bool Last;
       if (FOnTransferIn)
       {
-        size_t Read = BlockBuf.LoadFromIn(FOnTransferIn, FTerminal, BlockSize);
+        size_t Read = BlockBuf.LoadFromIn(std::forward<TTransferInEvent>(FOnTransferIn), FTerminal, BlockSize);
         Last = (Read < BlockSize);
       }
       else
@@ -4313,10 +4313,10 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
 }
 
 void TSFTPFileSystem::CalculateFilesChecksum(
-  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
-  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, OnCalculatedChecksum, OperationProgress, FirstLevel);
+  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, FirstLevel);
 
   static int32_t CalculateFilesChecksumQueueLen = 5;
   TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);
@@ -4978,7 +4978,7 @@ void TSFTPFileSystem::Source(
       int32_t ConvertParams =
         FLAGMASK(CopyParam->GetRemoveCtrlZ(), cpRemoveCtrlZ) |
         FLAGMASK(CopyParam->GetRemoveBOM(), cpRemoveBOM);
-      Queue.Init(AHandle.FileName, AHandle.Handle, CopyParam->FOnTransferIn, OperationProgress,
+      Queue.Init(AHandle.FileName, AHandle.Handle, std::move(const_cast<TCopyParamType * >(CopyParam)->FOnTransferIn), OperationProgress,
         OpenParams.RemoteFileHandle,
         DestWriteOffset + OperationProgress->GetTransferredSize(),
         ConvertParams);
@@ -5508,7 +5508,7 @@ void TSFTPFileSystem::WriteLocalFile(
 {
   if (!CopyParam->FOnTransferOut.empty())
   {
-    BlockBuf.WriteToOut(CopyParam->FOnTransferOut, FTerminal, BlockBuf.Size);
+    BlockBuf.WriteToOut(std::move(const_cast<TCopyParamType * >(CopyParam)->FOnTransferOut), FTerminal, BlockBuf.Size);
   }
   else
   {

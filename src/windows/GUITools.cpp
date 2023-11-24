@@ -819,7 +819,7 @@ bool ExecuteShell(const UnicodeString & Path, const UnicodeString & Params,
 }
 
 void ExecuteShellCheckedAndWait(const UnicodeString & Command,
-  TProcessMessagesEvent ProcessMessages)
+  TProcessMessagesEvent && OnProcessMessages)
 {
   UnicodeString Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
@@ -833,7 +833,7 @@ void ExecuteShellCheckedAndWait(const UnicodeString & Command,
   {
     if (ProcessHandle != nullptr) // only if command was copied to clipboard only
     {
-      if (ProcessMessages != nullptr)
+      if (OnProcessMessages != nullptr)
       {
         unsigned long WaitResult;
         do
@@ -844,7 +844,7 @@ void ExecuteShellCheckedAndWait(const UnicodeString & Command,
           {
             throw Exception(LoadStr(DOCUMENT_WAIT_ERROR));
           }
-          ProcessMessages();
+          OnProcessMessages();
         }
         while (WaitResult == WAIT_TIMEOUT);
       }

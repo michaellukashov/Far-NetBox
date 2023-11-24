@@ -2026,7 +2026,7 @@ void TWinSCPFileSystem::ShowInformation()
     OnGetSpaceAvailable = nb::bind(&TWinSCPFileSystem::GetSpaceAvailable, this);
   }
   FileSystemInfoDialog(SessionInfo, FileSystemInfo, GetTerminal()->RemoteGetCurrentDirectory(),
-    OnGetSpaceAvailable);
+    std::forward<TGetSpaceAvailableEvent>(OnGetSpaceAvailable));
 }
 
 bool TWinSCPFileSystem::AreCachesEmpty() const

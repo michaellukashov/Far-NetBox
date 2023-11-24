@@ -98,7 +98,7 @@ int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceL
   return ReadStream(Stream, Len, ForceLen);
 }
 
-DWORD TFileBuffer::LoadFromIn(TTransferInEvent OnTransferIn, TObject * Sender, int64_t Len)
+DWORD TFileBuffer::LoadFromIn(TTransferInEvent && OnTransferIn, TObject * Sender, int64_t Len)
 {
   FMemory->Seek(0, TSeekOrigin::soBeginning);
   DebugAssert(GetPosition() == 0);
@@ -252,7 +252,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
   }
 }
 
-void TFileBuffer::WriteToOut(TTransferOutEvent OnTransferOut, TObject * Sender, const int64_t Len)
+void TFileBuffer::WriteToOut(TTransferOutEvent && OnTransferOut, TObject * Sender, const int64_t Len)
 {
   OnTransferOut(Sender, reinterpret_cast<const uint8_t *>(GetPointer()), Len);
   FMemory->Seek(Len, TSeekOrigin::soCurrent);

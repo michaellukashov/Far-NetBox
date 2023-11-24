@@ -378,7 +378,7 @@ void TOptions::ParamsProcessed(int32_t ParamsStart, int32_t ParamsCount)
   }
 }
 
-void TOptions::LogOptions(TLogOptionEvent OnLogOption)
+void TOptions::LogOptions(TLogOptionEvent && OnLogOption)
 {
   for (size_t Index = 0; Index < FOriginalOptions.size(); ++Index)
   {

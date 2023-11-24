@@ -5891,7 +5891,7 @@ public:
   };
 
   explicit TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-    TGetSpaceAvailableEvent OnGetSpaceAvailable) noexcept;
+    TGetSpaceAvailableEvent && OnGetSpaceAvailable) noexcept;
   virtual ~TFileSystemInfoDialog() noexcept;
   void Execute(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, const UnicodeString & SpaceAvailablePath);
@@ -5957,7 +5957,7 @@ public:
 };
 
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-  TGetSpaceAvailableEvent OnGetSpaceAvailable) noexcept : TTabbedDialog(AFarPlugin, tabCount),
+  TGetSpaceAvailableEvent && OnGetSpaceAvailable) noexcept : TTabbedDialog(AFarPlugin, tabCount),
   FSpaceAvailableLoaded(false),
   FLastFeededControl(nullptr),
   FLastListItem(0),
@@ -6414,9 +6414,9 @@ bool TFileSystemInfoDialog::SpaceAvailableSupported() const
 
 void TWinSCPFileSystem::FileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable)
+  const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent && OnGetSpaceAvailable)
 {
-  std::unique_ptr<TFileSystemInfoDialog> Dialog(std::make_unique<TFileSystemInfoDialog>(FPlugin, OnGetSpaceAvailable));
+  std::unique_ptr<TFileSystemInfoDialog> Dialog(std::make_unique<TFileSystemInfoDialog>(FPlugin, std::forward<TGetSpaceAvailableEvent>(OnGetSpaceAvailable)));
   Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
 }
 
@@ -7784,8 +7784,8 @@ class TSynchronizeDialog : TFarDialog
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
-    TSynchronizeStartStopEvent OnStartStop,
-    int32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions);
+    TSynchronizeStartStopEvent && OnStartStop,
+    int32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions);
   virtual ~TSynchronizeDialog() noexcept;
 
   bool Execute(TSynchronizeParamType & Params,
@@ -7840,8 +7840,8 @@ private:
 };
 
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
-  TSynchronizeStartStopEvent OnStartStop,
-  int32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions) :
+  TSynchronizeStartStopEvent && OnStartStop,
+  int32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
   FSynchronizing = false;
@@ -8227,8 +8227,8 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
   bool & SaveSettings, uint32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
 {
-  std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(FPlugin, OnStartStop,
-      Options, CopyParamAttrs, OnGetOptions));
+  std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(FPlugin, std::forward<TSynchronizeStartStopEvent>(OnStartStop),
+    Options, CopyParamAttrs, std::forward<TGetSynchronizeOptionsEvent>(OnGetOptions)));
   bool Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   return Result;
 }

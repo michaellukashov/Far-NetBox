@@ -406,7 +406,7 @@ protected:
   void DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirectory,
     const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int32_t AParams,
-    TSynchronizeDirectoryEvent OnSynchronizeDirectory,
+    TSynchronizeDirectoryEvent && OnSynchronizeDirectory,
     TSynchronizeOptions * Options, int32_t AFlags, TSynchronizeChecklist * Checklist);
   bool LocalFindFirstLoop(const UnicodeString & ADirectory, TSearchRecChecked & SearchRec);
   bool LocalFindNextLoop(TSearchRecChecked & SearchRec);
@@ -573,7 +573,7 @@ protected:
   TRemoteFile * CheckRights(const UnicodeString & EntryType, const UnicodeString & FileName, bool & WrongRights);
   bool IsValidFile(TRemoteFile * File) const;
   void CalculateSubFoldersChecksum(
-    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel);
   void GetShellChecksumAlgs(TStrings * Algs);
   TStrings * GetShellChecksumAlgDefs();
@@ -666,23 +666,23 @@ public:
   bool CalculateLocalFilesSize(TStrings * FileList, int64_t & Size,
     const TCopyParamType * CopyParam, bool AllowDirs, TStrings * Files, TCalculatedSizes * CalculatedSizes);
   void CalculateFilesChecksum(
-    const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum);
+    const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent && OnCalculatedChecksum);
   void ClearCaches();
   TSynchronizeChecklist * SynchronizeCollect(const UnicodeString & LocalDirectory,
     const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int32_t AParams,
-    TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options);
+    TSynchronizeDirectoryEvent && OnSynchronizeDirectory, TSynchronizeOptions * Options);
   void SynchronizeApply(
     TSynchronizeChecklist * Checklist,
     const TCopyParamType * CopyParam, int32_t AParams,
-    TSynchronizeDirectoryEvent OnSynchronizeDirectory, TProcessedSynchronizationChecklistItem OnProcessedItem,
-    TUpdatedSynchronizationChecklistItems OnUpdatedSynchronizationChecklistItems, void * Token,
+    TSynchronizeDirectoryEvent && OnSynchronizeDirectory, TProcessedSynchronizationChecklistItem && OnProcessedItem,
+    TUpdatedSynchronizationChecklistItems && OnUpdatedSynchronizationChecklistItems, void * Token,
     TFileOperationStatistics * Statistics);
   void SynchronizeChecklistCalculateSize(
     TSynchronizeChecklist * Checklist, const TSynchronizeChecklist::TItemList & Items,
     const TCopyParamType * CopyParam);
   void FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
-    TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile);
+    TFileFoundEvent && OnFileFound, TFindingFileEvent && OnFindingFile);
   void SpaceAvailable(const UnicodeString & APath, TSpaceAvailable & ASpaceAvailable);
   void LockFiles(TStrings * AFileList);
   void UnlockFiles(TStrings * AFileList);

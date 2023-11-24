@@ -167,7 +167,7 @@ protected:
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, const UnicodeString & SpaceAvailablePath,
-    TGetSpaceAvailableEvent OnGetSpaceAvailable);
+    TGetSpaceAvailableEvent && OnGetSpaceAvailable);
   bool OpenDirectoryDialog(bool Add, UnicodeString & Directory,
     TBookmarkList * BookmarkList);
   bool ApplyCommandDialog(UnicodeString & Command, int32_t & Params) const;

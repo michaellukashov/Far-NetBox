@@ -1311,10 +1311,10 @@ UnicodeString TFTPFileSystem::DoCalculateFileChecksum(const UnicodeString & Alg,
 }
 
 void TFTPFileSystem::CalculateFilesChecksum(
-  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
-  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, OnCalculatedChecksum, OperationProgress, FirstLevel);
+  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, FirstLevel);
 
   int32_t Index = 0;
   TOnceDoneOperation OnceDoneOperation; // not used
@@ -1610,7 +1610,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   {
     FFileZillaIntf->FileTransfer(
       ApiPath(LocalFile).c_str(), RemoteFile.c_str(), RemotePath.c_str(),
-      Get, Size, nb::ToInt32(Type), &UserData, UserData.CopyParam->FOnTransferOut, UserData.CopyParam->FOnTransferIn);
+      Get, Size, nb::ToInt32(Type), &UserData, std::move(UserData.CopyParam->FOnTransferOut), std::move(UserData.CopyParam->FOnTransferIn));
     // we may actually catch response code of the listing
     // command (when checking for existence of the remote file)
     const uint32_t Reply = WaitForCommandReply();
@@ -1706,7 +1706,7 @@ void TFTPFileSystem::Sink(
     UserData.FileName = DestFileName;
     UserData.Params = Params;
     UserData.AutoResume = FLAGSET(AFlags, tfAutoResume);
-    UserData.CopyParam = CopyParam;
+    UserData.CopyParam = const_cast<TCopyParamType *>(CopyParam);
     UserData.Modification = File->GetModification();
     FileTransfer(FileName, DestFullName, OnlyFileName,
       FilePath, true, File->GetSize(), TransferType, UserData, OperationProgress);
@@ -1791,7 +1791,7 @@ void TFTPFileSystem::Source(
     UserData.FileName = ADestFileName;
     UserData.Params = Params;
     UserData.AutoResume = FLAGSET(Flags, tfAutoResume);
-    UserData.CopyParam = CopyParam;
+    UserData.CopyParam = const_cast<TCopyParamType *>(CopyParam);
     UserData.Modification = Handle.Modification;
     FileTransfer(Handle.FileName, Handle.FileName, ADestFileName,
       TargetDir, false, Handle.Size, TransferType, UserData, OperationProgress);

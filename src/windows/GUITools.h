@@ -19,8 +19,8 @@ NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString & APath, const Unico
 NB_CORE_EXPORT void ExecuteShellChecked(const UnicodeString & ACommand);
 NB_CORE_EXPORT bool ExecuteShell(const UnicodeString & APath, const UnicodeString & AParams,
   HANDLE & Handle);
-NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString & ACommand, TProcessMessagesEvent ProcessMessages);
-__removed TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uint32_t Filter, TFileChangedEvent OnChanged);
+NB_CORE_EXPORT void ExecuteShellCheckedAndWait(const UnicodeString & ACommand, TProcessMessagesEvent && OnProcessMessages);
+// TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uint32_t Filter, TFileChangedEvent OnChanged);
 extern bool DontCopyCommandToClipboard;
 bool CopyCommandToClipboard(const UnicodeString & Command);
 bool DoesSessionExistInPutty(const UnicodeString & StorageKey);

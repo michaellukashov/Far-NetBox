@@ -146,7 +146,7 @@ public:
     const FarKey * BreakKeys, intptr_t & BreakCode);
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
     UnicodeString & Text, PLUGINPANELITEMFLAGS Flags, const UnicodeString & HistoryName = L"",
-    int32_t MaxLen = 255, TFarInputBoxValidateEvent OnValidate = nullptr);
+    int32_t MaxLen = 255, TFarInputBoxValidateEvent && OnValidate = nullptr);
   virtual UnicodeString GetMsg(int32_t MsgId) const;
   void SaveScreen(HANDLE &Screen);
   void RestoreScreen(HANDLE &Screen);
@@ -589,7 +589,7 @@ public:
   bool InputDialog(const UnicodeString & ACaption,
     const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
     TStrings * History, bool PathInput,
-    TInputDialogInitializeEvent OnInitialize, bool Echo) override;
+    TInputDialogInitializeEvent && OnInitialize, bool Echo) override;
   uint32_t MoreMessageDialog(const UnicodeString & AMessage,
     TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams * Params) override;

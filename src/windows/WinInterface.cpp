@@ -1900,10 +1900,10 @@ void ::TTrayIcon::SetHint(UnicodeString value)
 bool InputDialog(const UnicodeString & ACaption,
   const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
   TStrings * History, bool PathInput,
-  TInputDialogInitializeEvent OnInitialize, bool Echo, int32_t Width)
+  TInputDialogInitializeEvent && OnInitialize, bool Echo, int32_t Width)
 {
   bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
-    History, PathInput, OnInitialize, Echo);
+    History, PathInput, std::forward<TInputDialogInitializeEvent>(OnInitialize), Echo);
   return Result;
 }
 

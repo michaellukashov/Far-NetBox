@@ -50,7 +50,7 @@ public:
   virtual bool LoadFilesProperties(TStrings * AFileList) override;
   virtual UnicodeString CalculateFilesChecksumInitialize(const UnicodeString & Alg) override;
   virtual void CalculateFilesChecksum(
-    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+    const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
     TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,

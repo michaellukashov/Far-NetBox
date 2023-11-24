@@ -320,7 +320,7 @@ public:
 protected:
   void CloseLogFile();
   bool LogToFileProtected() const;
-  void DoAddStartupInfo(TAddLogEntryEvent AddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPasswords);
+  void DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPasswords);
 
 private:
   TConfiguration * FConfiguration{nullptr};

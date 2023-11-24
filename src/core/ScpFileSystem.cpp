@@ -1397,7 +1397,7 @@ UnicodeString TSCPFileSystem::ParseFileChecksum(
 }
 
 void TSCPFileSystem::ProcessFileChecksum(
-  TCalculatedChecksumEvent OnCalculatedChecksum, TChecksumSessionAction & Action, TFileOperationProgressType * OperationProgress,
+  TCalculatedChecksumEvent && OnCalculatedChecksum, TChecksumSessionAction & Action, TFileOperationProgressType * OperationProgress,
   bool FirstLevel, const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Checksum)
 {
   const bool Success = !Checksum.IsEmpty();
@@ -1417,10 +1417,10 @@ void TSCPFileSystem::ProcessFileChecksum(
 }
 
 void TSCPFileSystem::CalculateFilesChecksum(
-  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
-  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, OnCalculatedChecksum, OperationProgress, FirstLevel);
+  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, FirstLevel);
 
   TStrings * AlgDefs = FTerminal->GetShellChecksumAlgDefs();
   const int32_t AlgIndex = AlgDefs->IndexOfName(Alg);
@@ -1502,7 +1502,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
           Action.SetFileName(File->FullFileName);
           OperationProgress->SetFile(FileName);
           UnicodeString Checksum = BatchChecksums->Strings[BatchIndex];
-          ProcessFileChecksum(OnCalculatedChecksum, Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
+          ProcessFileChecksum(std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
         }
       }
       else
@@ -1534,7 +1534,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
             }
             __finally
             {
-              ProcessFileChecksum(OnCalculatedChecksum, Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
+              ProcessFileChecksum(std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
             } end_try__finally
           }
           catch (Exception & E)

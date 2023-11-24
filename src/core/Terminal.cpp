@@ -4908,7 +4908,7 @@ bool TTerminal::CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalcul
 }
 
 void TTerminal::CalculateSubFoldersChecksum(
-  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent OnCalculatedChecksum,
+  const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
   // recurse into subdirectories only if we have callback function
@@ -4943,7 +4943,7 @@ void TTerminal::CalculateSubFoldersChecksum(
               SubFileList->AddObject(SubFileName, SubFile);
             }
 
-            FFileSystem->CalculateFilesChecksum(Alg, SubFileList.get(), OnCalculatedChecksum, OperationProgress, false);
+            FFileSystem->CalculateFilesChecksum(Alg, SubFileList.get(), std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, false);
 
             Success = true;
           }
@@ -4962,7 +4962,7 @@ void TTerminal::CalculateSubFoldersChecksum(
 }
 
 void TTerminal::CalculateFilesChecksum(
-  const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent OnCalculatedChecksum)
+  const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent && OnCalculatedChecksum)
 {
   TFileOperationProgressType Progress(nb::bind(&TTerminal::DoProgress, this), nb::bind(&TTerminal::DoFinished, this));
   OperationStart(Progress, foCalculateChecksum, osRemote, AFileList->Count);
@@ -4973,7 +4973,7 @@ void TTerminal::CalculateFilesChecksum(
 
     const UnicodeString NormalizedAlg = FileSystem->CalculateFilesChecksumInitialize(Alg);
 
-    FileSystem->CalculateFilesChecksum(NormalizedAlg, AFileList, OnCalculatedChecksum, &Progress, true);
+    FileSystem->CalculateFilesChecksum(NormalizedAlg, AFileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), &Progress, true);
   }
   __finally
   {
@@ -6173,7 +6173,7 @@ public:
 TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & LocalDirectory,
   const UnicodeString & RemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int32_t Params,
-  TSynchronizeDirectoryEvent OnSynchronizeDirectory,
+  TSynchronizeDirectoryEvent && OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
   TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor); nb::used(UseBusyCursorRestorer);
@@ -6183,7 +6183,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   try__catch
   {
     DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
-      CopyParam, Params, OnSynchronizeDirectory, Options, sfFirstLevel,
+      CopyParam, Params, std::forward<TSynchronizeDirectoryEvent>(OnSynchronizeDirectory), Options, sfFirstLevel,
       Checklist.get());
     Checklist->Sort();
   }
@@ -6319,7 +6319,7 @@ bool TTerminal::IsEmptyLocalDirectory(
 void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirectory,
   const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
   const TCopyParamType * CopyParam, int32_t AParams,
-  TSynchronizeDirectoryEvent OnSynchronizeDirectory, TSynchronizeOptions * Options,
+  TSynchronizeDirectoryEvent && OnSynchronizeDirectory, TSynchronizeOptions * Options,
   int32_t AFlags, TSynchronizeChecklist * Checklist)
 {
   TSynchronizeData Data;
@@ -6727,7 +6727,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
           {
             DoSynchronizeCollectDirectory(
               FullLocalFileName, FullRemoteFileName,
-              Data->Mode, Data->CopyParam, Data->Params, Data->OnSynchronizeDirectory,
+              Data->Mode, Data->CopyParam, Data->Params, std::forward<TSynchronizeDirectoryEvent>(Data->OnSynchronizeDirectory),
               Data->Options, (Data->Flags & ~sfFirstLevel),
               Data->Checklist);
           }
@@ -6792,8 +6792,8 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
 void TTerminal::SynchronizeApply(
   TSynchronizeChecklist * Checklist,
   const TCopyParamType * CopyParam, int32_t Params,
-  TSynchronizeDirectoryEvent OnSynchronizeDirectory, TProcessedSynchronizationChecklistItem OnProcessedItem,
-  TUpdatedSynchronizationChecklistItems OnUpdatedSynchronizationChecklistItems, void * Token,
+  TSynchronizeDirectoryEvent && OnSynchronizeDirectory, TProcessedSynchronizationChecklistItem && OnProcessedItem,
+  TUpdatedSynchronizationChecklistItems && OnUpdatedSynchronizationChecklistItems, void * Token,
   TFileOperationStatistics * Statistics)
 {
   TSynchronizeData Data;
@@ -7193,7 +7193,7 @@ void TTerminal::DoFilesFind(const UnicodeString & ADirectory, TFilesFindParams &
 }
 
 void TTerminal::FilesFind(const UnicodeString & ADirectory, const TFileMasks & FileMask,
-  TFileFoundEvent OnFileFound, TFindingFileEvent OnFindingFile)
+  TFileFoundEvent && OnFileFound, TFindingFileEvent && OnFindingFile)
 {
   TFilesFindParams Params;
   Params.FileMask = FileMask;

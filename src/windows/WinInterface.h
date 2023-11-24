@@ -202,7 +202,7 @@ typedef void (__closure *TInputDialogInitialize)
 bool InputDialog(const UnicodeString & ACaption,
   const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
-  TInputDialogInitializeEvent OnInitialize = nullptr, bool Echo = true, int32_t Width = 275);
+  TInputDialogInitializeEvent && OnInitialize = nullptr, bool Echo = true, int32_t Width = 275);
 
 // forms\About.cpp
 struct TRegistration
@@ -317,7 +317,7 @@ using TCustomCommandValidateEvent = nb::FastDelegate1<void,
 
 bool DoCustomCommandDialog(TCustomCommandType & Command,
   const TCustomCommandList * CustomCommandList,
-  TCustomCommandsMode Mode, int Options, TCustomCommandValidateEvent OnValidate,
+  TCustomCommandsMode Mode, int32_t Options, TCustomCommandValidateEvent && OnValidate,
   const TShortCuts * ShortCuts);
 
 // forms\CopyParamPreset.cpp
@@ -354,17 +354,17 @@ bool DoPropertiesDialog(TStrings * FileList,
     const UnicodeString & Directory, const TRemoteTokenList * GroupList,
     const TRemoteTokenList * UserList, TStrings * ChecksumAlgs,
     TRemoteProperties * Properties,
-    int32_t AllowedChanges, bool UserGroupByID, TCalculateSizeEvent OnCalculateSize,
-    TCalculateChecksumEvent OnCalculateChecksum);
+    int32_t AllowedChanges, bool UserGroupByID, TCalculateSizeEvent && OnCalculateSize,
+    TCalculateChecksumEvent && OnCalculateChecksum);
 
 using TDirectoryExistsEvent = nb::FastDelegate4<bool, void * /*Session*/, const UnicodeString & /*Directory*/>;
 bool DoRemoteMoveDialog(
-  bool Multi, UnicodeString & Target, UnicodeString & FileMask, TDirectoryExistsEvent OnDirectoryExists);
+  bool Multi, UnicodeString & Target, UnicodeString & FileMask, TDirectoryExistsEvent && OnDirectoryExists);
 enum TDirectRemoteCopy { drcDisallow, drcAllow, drcConfirmCommandSession, drcConfirmCommandSessionDirs };
 bool DoRemoteCopyDialog(
   TStrings * Sessions, TStrings * Directories,
   TDirectRemoteCopy AllowDirectCopy, bool Multi, void *& Session, UnicodeString & Target, UnicodeString & FileMask,
-  bool & DirectCopy, void * CurrentSession, TDirectoryExistsEvent OnDirectoryExists,
+  bool & DirectCopy, void * CurrentSession, TDirectoryExistsEvent && OnDirectoryExists,
   bool TargetConfirmed);
 
 #if 0
@@ -393,14 +393,14 @@ using TSynchronizeInNewWindowEvent = nb::FastDelegate4<void,
   const TSynchronizeParamType & /*Params*/, const TCopyParamType * /*CopyParams*/>;
 
 bool DoSynchronizeDialog(TSynchronizeParamType & Params,
-  const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
+  const TCopyParamType * CopyParams, TSynchronizeStartStopEvent && OnStartStop,
   bool & SaveSettings, int32_t Options, int32_t CopyParamAttrs,
-  TGetSynchronizeOptionsEvent OnGetOptions,
-  TSynchronizeSessionLogEvent OnSynchronizeSessionLog,
+  TGetSynchronizeOptionsEvent && OnGetOptions,
+  TSynchronizeSessionLogEvent && OnSynchronizeSessionLog,
   TFeedSynchronizeErrorEvent & OnFeedSynchronizeError,
   TNotifyEvent & OnSynchronizeAbort,
-  TSynchronizeInNewWindowEvent OnSynchronizeInNewWindow,
-  int AutoSubmit);
+  TSynchronizeInNewWindowEvent && OnSynchronizeInNewWindow,
+  int32_t AutoSubmit);
 
 // forms\FullSynchronize.cpp
 struct TUsableCopyParamAttrs;
@@ -416,7 +416,7 @@ bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, int32_t & Param
   UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
   TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode,
   int32_t Options, const TUsableCopyParamAttrs & CopyParamAttrs,
-  TFullSynchronizeInNewWindowEvent OnFullSynchronizeInNewWindow, int AutoSubmit);
+  TFullSynchronizeInNewWindowEvent && OnFullSynchronizeInNewWindow, int32_t AutoSubmit);
 
 // forms\SynchronizeChecklist.cpp
 class TSynchronizeChecklist;
@@ -435,9 +435,9 @@ using TSynchronizeBrowseEvent = nb::FastDelegate3<void,
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TTerminal::TSynchronizeMode Mode, int32_t Params,
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
-  TCustomCommandMenuEvent OnCustomCommandMenu, TFullSynchronizeEvent OnSynchronize,
-  TSynchronizeChecklistCalculateSizeEvent OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent OnSynchronizeMove,
-  TSynchronizeBrowseEvent OnSynchronizeBrowse, void * Token);
+  TCustomCommandMenuEvent && OnCustomCommandMenu, TFullSynchronizeEvent && OnSynchronize,
+  TSynchronizeChecklistCalculateSizeEvent && OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent && OnSynchronizeMove,
+  TSynchronizeBrowseEvent && OnSynchronizeBrowse, void * Token);
 
 // forms\Editor.cpp
 #if 0
@@ -470,7 +470,7 @@ using TGetSpaceAvailableEvent = nb::FastDelegate3<void,
 
 void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
-  const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent OnGetSpaceAvailable);
+  const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent && OnGetSpaceAvailable);
 
 //moved to FarInterface.h
 #if 0
