@@ -1429,7 +1429,9 @@ void TWebDAVFileSystem::Source(
         const UTF8String NeonLastModified(LastModified);
         // second element is "NULL-terminating"
         ne_proppatch_operation Operations[2];
-        memset(Operations, 0, sizeof(Operations));
+        //memset(Operations, 0, sizeof(Operations));
+        nb::ClearArray(Operations);
+
         ne_propname LastModifiedProp;
         LastModifiedProp.nspace = DAV_PROP_NAMESPACE;
         LastModifiedProp.name = PROP_LAST_MODIFIED;
@@ -1503,13 +1505,13 @@ void TWebDAVFileSystem::NeonPreSend(
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(SessionContext->FileSystem);
 
   SessionContext->AuthorizationProtocol = "";
-  UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
+  const UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
   const UnicodeString AuthorizationHeaderName("Authorization:");
   int32_t P = HeaderBuf.Pos(AuthorizationHeaderName);
   if (P > 0)
   {
     P += AuthorizationHeaderName.Length();
-    int32_t P2 = PosEx(L"\n", HeaderBuf, P);
+    const int32_t P2 = PosEx(L"\n", HeaderBuf, P);
     if (DebugAlwaysTrue(P2 > 0))
     {
       UnicodeString AuthorizationHeader = HeaderBuf.SubString(P, P2 - P).Trim();
