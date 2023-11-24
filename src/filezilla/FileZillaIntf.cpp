@@ -16,6 +16,10 @@ static HMODULE wship6_module = nullptr;
 
 __removed #pragma package(smart_init)
 
+t_getaddrinfo p_getaddrinfo{nullptr};
+t_freeaddrinfo p_freeaddrinfo{nullptr};
+t_getnameinfo p_getnameinfo{nullptr};
+
 void TFileZillaIntf::Initialize()
 {
 #ifndef NO_IPV6

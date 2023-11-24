@@ -12,7 +12,7 @@
 
 #define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params) \
   typedef rettype (WINAPI * t_##name) params; \
-  linkage t_##name p_##name
+  extern t_##name p_##name
 #define STR1(x) #x
 #define STR(x) STR1(x)
 #define GET_WINDOWS_FUNCTION_PP(module, name) \
