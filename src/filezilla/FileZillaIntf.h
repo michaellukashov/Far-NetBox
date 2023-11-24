@@ -233,7 +233,7 @@ protected:
     uint32_t Count) = 0;
   virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
     int64_t Bytes, bool FileTransfer) = 0;
-  virtual bool HandleReply(int32_t Command, uint32_t Reply) = 0;
+  virtual bool HandleReply(int32_t Command, int64_t Reply) = 0;
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) = 0;
   virtual bool CheckError(int32_t ReturnCode, const wchar_t * Context);
 

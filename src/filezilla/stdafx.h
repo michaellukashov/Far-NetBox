@@ -63,7 +63,7 @@ class t_ffam_statusmessage
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CString status;
-  int type{0};
+  int32_t type{0};
   BOOL post{FALSE};
 };
 

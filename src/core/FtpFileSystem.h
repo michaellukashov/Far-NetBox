@@ -157,7 +157,7 @@ protected:
     uint32_t Count);
   bool HandleTransferStatus(bool Valid, int64_t TransferSize,
     int64_t Bytes, bool FileTransfer);
-  bool HandleReply(int32_t Command, uint32_t Reply);
+  bool HandleReply(int32_t Command, int64_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(int32_t ReturnCode, const wchar_t * Context);
   void PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const;

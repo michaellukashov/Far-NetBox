@@ -62,7 +62,7 @@ protected:
     uint32_t Count) override;
   virtual bool HandleTransferStatus(bool Valid, int64_t TransferSize,
     int64_t Bytes, bool FileTransfer) override;
-  virtual bool HandleReply(int32_t Command, uint32_t Reply) override;
+  virtual bool HandleReply(int32_t Command, int64_t Reply) override;
   virtual bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities) override;
   virtual bool CheckError(int32_t ReturnCode, const wchar_t * Context) override;
 
@@ -139,7 +139,7 @@ bool TFileZillaImpl::HandleTransferStatus(bool Valid, int64_t TransferSize,
   return FFileSystem->HandleTransferStatus(Valid, TransferSize, Bytes, FileTransfer);
 }
 
-bool TFileZillaImpl::HandleReply(int32_t Command, uint32_t Reply)
+bool TFileZillaImpl::HandleReply(int32_t Command, int64_t Reply)
 {
   return FFileSystem->HandleReply(Command, Reply);
 }
@@ -4631,7 +4631,7 @@ bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,
   return true;
 }
 
-bool TFTPFileSystem::HandleReply(int32_t Command, uint32_t Reply)
+bool TFTPFileSystem::HandleReply(int32_t Command, int64_t Reply)
 {
   if (!FActive)
   {
