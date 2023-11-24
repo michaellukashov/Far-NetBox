@@ -7820,7 +7820,7 @@ private:
   TSynchronizeParamType FParams;
   TSynchronizeStartStopEvent FOnStartStop;
   int32_t FOptions{0};
-  TSynchronizeOptions * FSynchronizeOptions{nullptr};
+  gsl::owner<TSynchronizeOptions *> FSynchronizeOptions{nullptr};
   TCopyParamType FCopyParams;
   TGetSynchronizeOptionsEvent FOnGetOptions;
   int32_t FCopyParamAttrs{0};
