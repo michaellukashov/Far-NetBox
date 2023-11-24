@@ -1683,7 +1683,7 @@ void TFTPFileSystem::Sink(
   const int32_t TransferType = (OperationProgress->GetAsciiTransfer() ? 1 : 2);
 
   UnicodeString FileName;
-  const UnicodeString OnlyFileName = base::UnixExtractFileName(FileName);
+  const UnicodeString OnlyFileName = base::UnixExtractFileName(AFileName);
   if (EnsureLocationWhenWorkFromCwd(FilePath))
   {
     FileName = OnlyFileName;
