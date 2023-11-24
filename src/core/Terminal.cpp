@@ -927,7 +927,7 @@ void TParallelOperation::Done(
                     if ((CopyParam->PartSize >= 0) && (Terminal->OperationProgress->TransferredSize != CopyParam->PartSize))
                     {
                       UnicodeString TransferredSizeStr = IntToStr(Terminal->OperationProgress->TransferredSize);
-                      UnicodeString PartSizeStr = IntToStr(CopyParam->PartSize);
+                      UnicodeString PartSizeStr = Int64ToStr(CopyParam->PartSize);
                       UnicodeString Message =
                         FMTLOAD(INCONSISTENT_SIZE, TargetPartName, TransferredSizeStr, PartSizeStr);
                       Terminal->TerminalError(nullptr, Message);
