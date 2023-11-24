@@ -879,7 +879,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
       const int32_t ToWrite = UtfLine.Length();
       CheckSize(ToWrite);
       FCurrentFileSize += FLogger->Write(UtfLine.c_str(), ToWrite);
-      // FLogger->GetLogStream(filename, __LINE__, __func__, tinylog::Utils::LEVEL_TRACE) << UtfLine;
+      // FLogger->GetLogStream("", __LINE__, __func__, tinylog::Utils::LEVEL_TRACE) << UtfLine;
       // TINYLOG_TRACE(g_tinylog) << repr("FAcquired: %d", FAcquired);
     }}
     catch (...)
