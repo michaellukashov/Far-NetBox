@@ -942,7 +942,7 @@ void TSessionLog::CheckSize(int64_t Addition)
 
 void TSessionLog::DoAdd(TLogLineType AType, const UnicodeString & ALine,
   // void (__closure *f)(TLogLineType Type, const UnicodeString & Line))
-  TDoAddLogEvent Event)
+  TDoAddLogEvent && Event)
 {
   UnicodeString Prefix;
 

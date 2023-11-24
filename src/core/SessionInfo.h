@@ -341,7 +341,7 @@ private:
   void OpenLogFile();
   UnicodeString GetLogFileNamePrivate() const { return GetLogFileName(); }
   void DoAdd(TLogLineType AType, const UnicodeString & ALine,
-    TDoAddLogEvent Event);
+    TDoAddLogEvent && Event);
   // void (__closure *f)(TLogLineType Type, const UnicodeString & Line);
   void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
   void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
