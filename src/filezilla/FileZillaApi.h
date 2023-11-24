@@ -247,7 +247,7 @@ public:
   CFileZillaApi();
   virtual ~CFileZillaApi();
 
-  void SetDebugLevel(int nDebugLevel);
+  void SetDebugLevel(int32_t nDebugLevel);
 
   int CustomCommand(CString ACommand);
   int Delete(CString FileName, const CServerPath & path, bool filenameOnly);

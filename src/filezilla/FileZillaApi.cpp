@@ -489,7 +489,7 @@ int CFileZillaApi::Chmod(int nValue, CString FileName, const CServerPath & path 
   return m_pMainThread->LastOperationSuccessful()?FZ_REPLY_OK:FZ_REPLY_ERROR;
 }
 
-void CFileZillaApi::SetDebugLevel(int nDebugLevel)
+void CFileZillaApi::SetDebugLevel(int32_t nDebugLevel)
 {
   m_pMainThread->GetIntern()->SetDebugLevel(nDebugLevel);
 }

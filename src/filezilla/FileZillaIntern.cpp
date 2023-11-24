@@ -39,22 +39,22 @@ bool TFileZillaIntern::FZPostMessage(WPARAM wParam, LPARAM lParam) const
   return Result;
 }
 
-CString TFileZillaIntern::GetOption(int OptionID) const
+CString TFileZillaIntern::GetOption(int32_t OptionID) const
 {
   return FOwner->Option(OptionID);
 }
 
-int TFileZillaIntern::GetOptionVal(int OptionID) const
+int32_t TFileZillaIntern::GetOptionVal(int OptionID) const
 {
   return nb::ToInt32(FOwner->OptionVal(OptionID));
 }
 
-int TFileZillaIntern::GetDebugLevel() const
+int32_t TFileZillaIntern::GetDebugLevel() const
 {
   return FDebugLevel;
 }
 
-void TFileZillaIntern::SetDebugLevel(int DebugLevel)
+void TFileZillaIntern::SetDebugLevel(int32_t DebugLevel)
 {
   FDebugLevel = DebugLevel;
 }

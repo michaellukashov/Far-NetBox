@@ -13,16 +13,16 @@ public:
   explicit TFileZillaIntern(TFileZillaIntf * AOwner) noexcept;
 
   bool FZPostMessage(WPARAM wParam, LPARAM lParam) const;
-  CString GetOption(int OptionID) const;
-  int GetOptionVal(int OptionID) const;
+  CString GetOption(int32_t OptionID) const;
+  int32_t GetOptionVal(int32_t OptionID) const;
 
   inline const TFileZillaIntf * GetOwner() const { return FOwner; }
 
-  int GetDebugLevel() const;
-  void SetDebugLevel(int DebugLevel);
+  int32_t GetDebugLevel() const;
+  void SetDebugLevel(int32_t DebugLevel);
 
 protected:
   TFileZillaIntf * FOwner{nullptr};
-  int FDebugLevel{0};
+  int32_t FDebugLevel{0};
 };
 
