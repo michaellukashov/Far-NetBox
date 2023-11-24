@@ -1431,8 +1431,8 @@ void TWebDAVFileSystem::Source(
         ne_proppatch_operation Operations[2];
         //memset(Operations, 0, sizeof(Operations));
         nb::ClearArray(Operations);
-
         ne_propname LastModifiedProp;
+        nb::ClearStruct(LastModifiedProp);
         LastModifiedProp.nspace = DAV_PROP_NAMESPACE;
         LastModifiedProp.name = PROP_LAST_MODIFIED;
         Operations[0].name = &LastModifiedProp;
