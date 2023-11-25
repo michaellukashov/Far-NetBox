@@ -47,10 +47,10 @@ public:
   UTF8String & operator =(const RawByteString & StrCopy);
   UTF8String & operator =(const char * lpszData);
   UTF8String & operator =(const wchar_t * lpwszData);
-  UTF8String & operator =(wchar_t chData);
+  // UTF8String & operator =(wchar_t chData);
 
   UTF8String operator +(const UTF8String & rhs) const;
-  UTF8String operator +(const RawByteString & rhs) const;
+  // UTF8String operator +(const RawByteString & rhs) const;
   UTF8String operator +(const char * rhs) const;
   UTF8String & operator +=(const UTF8String & rhs);
   UTF8String & operator +=(const RawByteString & rhs);
@@ -164,9 +164,9 @@ public:
   UnicodeString & operator =(wchar_t Ch);
 
   UnicodeString operator +(const UnicodeString & rhs) const;
-  UnicodeString operator +(const RawByteString & rhs) const;
-  UnicodeString operator +(const AnsiString & rhs) const;
-  UnicodeString operator +(const UTF8String & rhs) const;
+  // UnicodeString operator +(const RawByteString & rhs) const;
+  // UnicodeString operator +(const AnsiString & rhs) const;
+  // UnicodeString operator +(const UTF8String & rhs) const;
 
   NB_CORE_EXPORT friend UnicodeString operator +(wchar_t lhs, const UnicodeString & rhs);
   NB_CORE_EXPORT friend UnicodeString operator +(const UnicodeString & lhs, wchar_t rhs);
@@ -176,7 +176,7 @@ public:
 
   UnicodeString & operator +=(const UnicodeString & rhs);
   UnicodeString & operator +=(const wchar_t * rhs);
-  UnicodeString & operator +=(const UTF8String & rhs);
+  // UnicodeString & operator +=(const UTF8String & rhs);
   UnicodeString & operator +=(const RawByteString & rhs);
   UnicodeString & operator +=(char Ch);
   UnicodeString & operator +=(const char * Ch);
@@ -250,15 +250,15 @@ public:
 
 public:
   AnsiString & operator =(const UnicodeString & StrCopy);
-  AnsiString & operator =(const RawByteString & StrCopy);
+  // AnsiString & operator =(const RawByteString & StrCopy);
   AnsiString & operator =(const AnsiString & StrCopy);
   AnsiString & operator =(const UTF8String & StrCopy);
   AnsiString & operator =(const char * Str);
   AnsiString & operator =(const wchar_t * Str);
-  AnsiString & operator =(wchar_t chData);
+  // AnsiString & operator =(wchar_t chData);
 
-  AnsiString operator +(const UnicodeString & rhs) const;
-  AnsiString operator +(const AnsiString & rhs) const;
+  // AnsiString operator +(const UnicodeString & rhs) const;
+  // AnsiString operator +(const AnsiString & rhs) const;
 
   AnsiString & operator +=(const AnsiString & rhs);
   AnsiString & operator +=(char Ch);
@@ -341,7 +341,7 @@ public:
   RawByteString & operator =(const UTF8String & StrCopy);
   RawByteString & operator =(const char * lpszData);
   RawByteString & operator =(const wchar_t * lpwszData);
-  RawByteString & operator =(wchar_t chData);
+  // RawByteString & operator =(wchar_t chData);
 
   RawByteString operator +(const RawByteString & rhs) const;
 
