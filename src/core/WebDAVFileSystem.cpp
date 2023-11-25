@@ -1205,7 +1205,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   int32_t Params)
 {
   // all = "yes to newer"
-  const uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
+  constexpr uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
   TQueryButtonAlias Aliases[3];
   Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGroupedWithYes();
   Aliases[1] = TQueryButtonAlias::CreateYesToAllGroupedWithYes();
@@ -1762,7 +1762,7 @@ int32_t TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, siz
     }
   }
 
-  int32_t Result = FileSystem->CancelTransfer() ? 1 : 0;
+  const int32_t Result = FileSystem->CancelTransfer() ? 1 : 0;
   return Result;
 }
 
