@@ -1194,6 +1194,7 @@ set(PUTTY_COMPILE_FLAGS
 if(MSVC)
 set(PUTTY_COMPILE_FLAGS ${PUTTY_COMPILE_FLAGS}
   -wd4996
+  -wd4068 # warning C4068: unknown pragma 'warn'
 )
 endif()
 
