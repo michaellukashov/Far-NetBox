@@ -1455,7 +1455,7 @@ void TWebDAVFileSystem::Source(
           CheckStatus(Status);
         }
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
         TouchAction.Rollback(&E);
         ChildError = true;

@@ -192,7 +192,7 @@ int32_t THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
       {
         FOnDownload(this, GetResponseLength(), Cancel);
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
         FException.reset(CloneException(&E));
         Result = false;
