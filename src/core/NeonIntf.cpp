@@ -430,12 +430,11 @@ void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
     int32_t Size{0};
     va_list Args;
     va_start(Args, Format);
-    AnsiString Str(32 * 1024, 0);
+    AnsiString Str(4 * 1024, 0);
     Size = vsnprintf_s(&Str[1], Str.Length(), _TRUNCATE, Format, Args);
     va_end(Args);
-    UTF8String UTFMessage(Str.data(), Size);
-
-    const UnicodeString Message = TrimRight(UnicodeString(UTFMessage.c_str(), UTFMessage.Length(), CP_ACP));
+    UTF8String UTFMessage(Str.data(), (Size == -1) ? 4 * 1024 : Size);
+    const UnicodeString Message = TrimRight(UnicodeString(UTFMessage.c_str(), UTFMessage.GetLength(), CP_ACP));
 
     // if (DoLog)
     {
