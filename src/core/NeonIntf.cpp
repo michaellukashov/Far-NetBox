@@ -26,7 +26,7 @@ extern "C"
 
 #define SESSION_PROXY_AUTH_KEY "proxyauth"
 #define SESSION_TLS_INIT_KEY "tlsinit"
-#define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
+// #define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
 #define SESSION_TERMINAL_KEY "terminal"
 
 void NeonParseUrl(const UnicodeString & Url, ne_uri &uri)
