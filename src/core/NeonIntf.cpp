@@ -91,7 +91,7 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const Unico
   {
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
-      enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
+      const enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
       ne_session_socks_proxy(Session, vers, StrToNeon(AProxyHost), nb::ToInt32(ProxyPort), StrToNeon(AProxyUsername), StrToNeon(AProxyPassword));
     }
     else if (!AProxyHost.IsEmpty())
@@ -263,7 +263,7 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal * Terminal)
 {
-  UnicodeString CertificateStorage = GetConfiguration()->CertificateStorageExpanded;
+  const UnicodeString CertificateStorage = GetConfiguration()->CertificateStorageExpanded;
   if (!CertificateStorage.IsEmpty())
   {
     ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
@@ -308,7 +308,7 @@ bool NeonWindowsValidateCertificate(int32_t & Failures, const AnsiString & Ascii
   if (FLAGSET(Failures, NE_SSL_UNTRUSTED))
   {
     uint8_t * Certificate = nullptr;
-    size_t CertificateLen = ne_unbase64(AsciiCert.c_str(), &Certificate);
+    const size_t CertificateLen = ne_unbase64(AsciiCert.c_str(), &Certificate);
 
     if (CertificateLen > 0)
     {
@@ -429,7 +429,7 @@ void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
     UTFMessage.vprintf(Format, Args);
     va_end(Args);
 
-    UnicodeString Message = TrimRight(UnicodeString(UTFMessage));
+    const UnicodeString Message = TrimRight(UnicodeString(UTFMessage));
 
     if (DoLog)
     {
@@ -478,8 +478,8 @@ void UnregisterFromNeonDebug(TTerminal * Terminal)
 void RetrieveNeonCertificateData(
   int32_t Failures, const ne_ssl_certificate * Certificate, TNeonCertificateData & Data)
 {
-  UnicodeString Unknown(L"<unknown>");
-  char FingerprintSHA1[NE_SSL_DIGESTLEN];
+  const UnicodeString Unknown(L"<unknown>");
+  char FingerprintSHA1[NE_SSL_DIGESTLEN]{};
   FingerprintSHA1[0] = '\0';
   if (DebugAlwaysFalse(ne_ssl_cert_digest(Certificate, FingerprintSHA1) != 0))
   {
@@ -547,7 +547,7 @@ UnicodeString CertificateSummary(const TNeonCertificateData & Data, const Unicod
     Summary = NeonCertificateFailuresErrorStr(Data.Failures, AHostName);
   }
 
-  UnicodeString ValidityTimeFormat = "ddddd tt";
+  const UnicodeString ValidityTimeFormat = "ddddd tt";
   return
     FMTLOAD(CERT_TEXT2,
       Data.Issuer + L"\n",
@@ -566,7 +566,7 @@ UnicodeString NeonTlsSessionInfo(
   AddToList(SessionInfo.SecurityProtocolName, TlsVersionStr, ", ");
 
   char * Buf = ne_ssl_get_cipher(Session);
-  UnicodeString Cipher = StrFromNeon(Buf);
+  const UnicodeString Cipher = StrFromNeon(Buf);
   ne_free(Buf);
   SessionInfo.CSCipher = Cipher;
   SessionInfo.SCCipher = Cipher;
@@ -579,7 +579,7 @@ void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion
 {
   MaxTlsVersion = static_cast<TTlsVersion>(std::max(MaxTlsVersion, tlsMin)); // the lowest currently supported version
   #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > VERSION) || (MaxTlsVersion < VERSION) ? FLAG : 0)
-  int32_t Options =
+  const int32_t Options =
     MASK_TLS_VERSION(tls10, SSL_OP_NO_TLSv1) |
     MASK_TLS_VERSION(tls11, SSL_OP_NO_TLSv1_1) |
     MASK_TLS_VERSION(tls12, SSL_OP_NO_TLSv1_2) |
