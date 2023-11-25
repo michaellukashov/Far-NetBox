@@ -64,7 +64,7 @@ private:
   void Init(const wchar_t * Str, int32_t Length);
   void Init(const char * Str, int32_t Length);
 
-  typedef CMStringA string_t;
+  using string_t = CMStringA;
   string_t Data;
 };
 
@@ -198,7 +198,7 @@ private:
   void Init(const char * Str, int32_t Length, int32_t CodePage);
   void ThrowIfOutOfRange(int32_t Idx) const;
 
-  typedef CMStringW wstring_t;
+  using wstring_t = CMStringW;
   wstring_t Data;
 };
 
@@ -284,7 +284,7 @@ private:
   void Init(const unsigned char * Str, int32_t Length);
   void ThrowIfOutOfRange(int32_t Idx) const;
 
-  typedef CMStringA string_t;
+  using string_t = CMStringA;
   string_t Data;
 };
 
@@ -361,7 +361,7 @@ private:
   void Init(const unsigned char * Str, int32_t Length);
   void ThrowIfOutOfRange(int32_t Idx) const;
 
-  typedef CMStringT<unsigned char, NBChTraitsCRT<unsigned char>> rawstring_t;
+  using rawstring_t = CMStringT<unsigned char, NBChTraitsCRT<unsigned char>>;
   rawstring_t Data;
 };
 
