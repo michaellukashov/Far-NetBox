@@ -579,7 +579,7 @@ void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion
 {
   MaxTlsVersion = static_cast<TTlsVersion>(std::max(MaxTlsVersion, tlsMin)); // the lowest currently supported version
   #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > VERSION) || (MaxTlsVersion < VERSION) ? FLAG : 0)
-  const int32_t Options =
+  const uint32_t Options =
     MASK_TLS_VERSION(tls10, SSL_OP_NO_TLSv1) |
     MASK_TLS_VERSION(tls11, SSL_OP_NO_TLSv1_1) |
     MASK_TLS_VERSION(tls12, SSL_OP_NO_TLSv1_2) |
