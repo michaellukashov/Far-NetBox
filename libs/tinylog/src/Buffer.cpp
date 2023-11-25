@@ -42,22 +42,24 @@ int32_t Buffer::TryAppend(struct tm * pt_time, int64_t u_sec, const char * file_
     return -1;
   }
 
-/*
-  char buff[256]{};
-  int n_append = sprintf_s(buff, sizeof(buff), "%d-%02d-%02d %02d:%02d:%02d.%.03ld %s %d %s %s %s\n",
-      tm_base_->tm_year + 1900, tm_base_->tm_mon + 1, tm_base_->tm_mday,
-      tm_base_->tm_hour, tm_base_->tm_min, tm_base_->tm_sec, (long)tv_base_.tv_usec / 1000,
-      file_name_, line_, func_name_, str_log_level_.c_str(),
+  int n_append = 0;
+  if (file_name && *file_name && line > 0 && func_name && *func_name && !str_log_level.empty())
+  {
+    n_append = sprintf_s(data_ + size_, capacity_ - size_,
+      "%d-%02d-%02d %02d:%02d:%02d.%.03d %10s:%3d %16s %10s %s\n",
+      pt_time->tm_year + 1900, pt_time->tm_mon + 1, pt_time->tm_mday,
+      pt_time->tm_hour, pt_time->tm_min, pt_time->tm_sec, static_cast<int>(u_sec / 1000),
+      file_name ? file_name : "", line, func_name ? func_name : "", str_log_level.c_str(),
       log_data);
-
-  std::string log(buff, n_append);
-*/
-  const int n_append = sprintf_s(data_ + size_, capacity_ - size_, "%d-%02d-%02d %02d:%02d:%02d.%.03ld %10s:%3d %16s %10s %s\n",
-                                 pt_time->tm_year + 1900, pt_time->tm_mon + 1, pt_time->tm_mday,
-                                 pt_time->tm_hour, pt_time->tm_min, pt_time->tm_sec, static_cast<long>(u_sec / 1000),
-                                 file_name ? file_name : "", line, func_name ? func_name : "", str_log_level.c_str(),
-                                 log_data);
-
+  }
+  else
+  {
+    n_append = sprintf_s(data_ + size_, capacity_ - size_,
+      "%d-%02d-%02d %02d:%02d:%02d.%.03d %s\n",
+      pt_time->tm_year + 1900, pt_time->tm_mon + 1, pt_time->tm_mday,
+      pt_time->tm_hour, pt_time->tm_min, pt_time->tm_sec, static_cast<int>(u_sec / 1000),
+      log_data);
+  }
   if (n_append > 0)
   {
     size_ += n_append;
