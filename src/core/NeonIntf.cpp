@@ -552,7 +552,7 @@ UnicodeString CertificateSummary(const TNeonCertificateData & Data, const Unicod
     Summary = NeonCertificateFailuresErrorStr(Data.Failures, AHostName);
   }
 
-  const UnicodeString ValidityTimeFormat = "ddddd tt";
+  const UnicodeString ValidityTimeFormat = "dddddd tt";
   return
     FMTLOAD(CERT_TEXT2,
       Data.Issuer + L"\n",
