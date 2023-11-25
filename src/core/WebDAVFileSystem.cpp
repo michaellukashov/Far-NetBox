@@ -38,13 +38,13 @@
 #include "SecureShell.h"
 #include "HelpCore.h"
 #include "CoreMain.h"
-#include "Security.h"
+#include "WinSCPSecurity.h"
 #include <StrUtils.hpp>
 #include <NeonIntf.h>
 
 // #pragma package(smart_init)
 
-__removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
+// #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
 constexpr const char * SESSION_FS_KEY = "filesystem";
 constexpr const char * SESSION_CONTEXT_KEY = "sessioncontext";
@@ -109,7 +109,7 @@ void NeonInitialize()
   // Though it fails on Wine on Debian VM, because of ne_sspi_init():
   // sspi: QuerySecurityPackageInfo [failed] [80090305].
   // sspi: Unable to get negotiate maximum packet size
-  int32_t NeonResult = ne_sock_init();
+  const int32_t NeonResult = ne_sock_init();
   if (NeonResult == 0)
   {
     NeonInitialized = true;
@@ -167,9 +167,7 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
-  FSessionContext(nullptr),
   FNeonLockStore(nullptr),
-  FNeonLockStoreSection(),
   FUploading(false),
   FDownloading(false),
   FInitialHandshake(false),
@@ -196,7 +194,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
     }
   }
 
-  __removed delete FNeonLockStoreSection;
+  // delete FNeonLockStoreSection;
 }
 
 void TWebDAVFileSystem::Open()
@@ -346,7 +344,7 @@ void TWebDAVFileSystem::InitSession(TSessionContext * SessionContext, ne_session
 
 TWebDAVFileSystem::TSessionContext * TWebDAVFileSystem::NeonOpen(const UnicodeString & Url, UTF8String & Path, UTF8String & Query)
 {
-  ne_uri uri;
+  ne_uri uri{};
   NeonParseUrl(Url, uri);
 
   std::unique_ptr<TSessionContext> Result(std::make_unique<TSessionContext>());
@@ -1429,7 +1427,6 @@ void TWebDAVFileSystem::Source(
         const UTF8String NeonLastModified(LastModified);
         // second element is "NULL-terminating"
         ne_proppatch_operation Operations[2];
-        //memset(Operations, 0, sizeof(Operations));
         nb::ClearArray(Operations);
         ne_propname LastModifiedProp;
         nb::ClearStruct(LastModifiedProp);
@@ -1541,7 +1538,7 @@ void TWebDAVFileSystem::NeonPreSend(
   if (FileSystem->FTerminal->GetLog()->GetLogging())
   {
     const char * Buffer{nullptr};
-    size_t Size;
+    size_t Size{0};
     if (ne_get_request_body_buffer(Request, &Buffer, &Size))
     {
       // all neon request types that use ne_add_request_header
@@ -1911,7 +1908,7 @@ int32_t TWebDAVFileSystem::NeonServerSSLCallbackAux(void * UserData, int32_t Fai
   return DoNeonServerSSLCallback(UserData, Failures, Certificate, true);
 }
 
-void TWebDAVFileSystem::NeonProvideClientCert(void * UserData, ne_session * Sess,
+void TWebDAVFileSystem::NeonProvideClientCert(void * UserData, ne_session * Session,
   const ne_ssl_dname * const * /*DNames*/, int32_t /*DNCount*/)
 {
   const TWebDAVFileSystem * FileSystem = static_cast<TSessionContext *>(UserData)->FileSystem;
@@ -1923,7 +1920,7 @@ void TWebDAVFileSystem::NeonProvideClientCert(void * UserData, ne_session * Sess
   if (FileSystem->FTerminal->LoadTlsCertificate(Certificate, PrivateKey))
   {
     ne_ssl_client_cert * NeonCertificate = ne_ssl_clicert_create(Certificate, PrivateKey);
-    ne_ssl_set_clicert(Sess, NeonCertificate);
+    ne_ssl_set_clicert(Session, NeonCertificate);
     ne_ssl_clicert_free(NeonCertificate);
   }
 }
@@ -2161,7 +2158,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
   struct ne_lock * Lock = ne_lock_create();
   try__finally
   {
-    RawByteString Path = PathToNeon(FilePath(AFile));
+    const RawByteString Path = PathToNeon(FilePath(AFile));
     RawByteString LockToken;
 
     struct ne_lock * Lock2 = nullptr;

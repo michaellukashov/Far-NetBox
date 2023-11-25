@@ -96,7 +96,6 @@ public:
 
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
-  void NeonDebug(const UnicodeString & AMessage);
 
 protected:
   virtual UnicodeString RemoteGetCurrentDirectory() const override;
@@ -135,7 +134,7 @@ protected:
   static int32_t DoNeonServerSSLCallback(void * UserData, int32_t Failures, const struct ne_ssl_certificate_s * Certificate, bool Aux);
   static int32_t NeonServerSSLCallbackMain(void * UserData, int32_t Failures, const struct ne_ssl_certificate_s * Certificate);
   static int32_t NeonServerSSLCallbackAux(void * UserData, int32_t Failures, const struct ne_ssl_certificate_s * Certificate);
-  static void NeonProvideClientCert(void * UserData, ne_session * Sess, const ne_ssl_dname * const * DNames, int32_t DNCount);
+  static void NeonProvideClientCert(void * UserData, ne_session * Session, const ne_ssl_dname * const * DNames, int32_t DNCount);
   void CloseNeonSession();
   bool CancelTransfer();
   UnicodeString GetNeonError() const;
