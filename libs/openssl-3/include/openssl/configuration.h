@@ -27,15 +27,12 @@ extern "C" {
  * OpenSSL was configured with the following options:
  */
 
-# ifndef OPENSSL_SYS_WIN32
-#  define OPENSSL_SYS_WIN32 1
+# ifndef OPENSSL_SYS_WIN64A
+#  define OPENSSL_SYS_WIN64A 1
 # endif
 # define OPENSSL_CONFIGURED_API 30100
 # ifndef OPENSSL_RAND_SEED_OS
 #  define OPENSSL_RAND_SEED_OS
-# endif
-# ifndef OPENSSL_THREADS
-#  define OPENSSL_THREADS
 # endif
 # ifndef OPENSSL_NO_ACVP_TESTS
 #  define OPENSSL_NO_ACVP_TESTS
@@ -55,10 +52,6 @@ extern "C" {
 # ifndef OPENSSL_NO_DEVCRYPTOENG
 #  define OPENSSL_NO_DEVCRYPTOENG
 # endif
-
-#define OPENSSL_SYS_WINDOWS
-#define OPENSSL_NO_TS
-
 # ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
 #  define OPENSSL_NO_EC_NISTP_64_GCC_128
 # endif
@@ -80,6 +73,9 @@ extern "C" {
 # ifndef OPENSSL_NO_KTLS
 #  define OPENSSL_NO_KTLS
 # endif
+# ifndef OPENSSL_NO_LOADERENG
+#  define OPENSSL_NO_LOADERENG
+# endif
 # ifndef OPENSSL_NO_MD2
 #  define OPENSSL_NO_MD2
 # endif
@@ -89,14 +85,8 @@ extern "C" {
 # ifndef OPENSSL_NO_RC5
 #  define OPENSSL_NO_RC5
 # endif
-# ifndef OPENSSL_NO_RFC3779
-#  define OPENSSL_NO_RFC3779
-# endif
 # ifndef OPENSSL_NO_SCTP
 #  define OPENSSL_NO_SCTP
-# endif
-# ifndef OPENSSL_NO_SSL_TRACE
-#  define OPENSSL_NO_SSL_TRACE
 # endif
 # ifndef OPENSSL_NO_SSL3
 #  define OPENSSL_NO_SSL3
@@ -113,47 +103,35 @@ extern "C" {
 # ifndef OPENSSL_NO_UNIT_TEST
 #  define OPENSSL_NO_UNIT_TEST
 # endif
+# ifndef OPENSSL_NO_UPLINK
+#  define OPENSSL_NO_UPLINK
+# endif
 # ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
 #  define OPENSSL_NO_WEAK_SSL_CIPHERS
 # endif
-# ifndef OPENSSL_NO_STATIC_ENGINE
-#  define OPENSSL_NO_STATIC_ENGINE
+# ifndef OPENSSL_NO_DYNAMIC_ENGINE
+#  define OPENSSL_NO_DYNAMIC_ENGINE
 # endif
 
 
 /* Generate 80386 code? */
 # undef I386_ONLY
 
-#define ENGINESDIR "C:\\Program Files (x86)\\OpenSSL\\lib\\engines-3"
-#define MODULESDIR "C:\\Program Files (x86)\\OpenSSL\\lib\\ossl-modules"
-#define OPENSSLDIR "C:\\Program Files (x86)\\Common Files\\SSL"
-
 /*
  * The following are cipher-specific, but are part of the public API.
  */
 # if !defined(OPENSSL_SYS_UEFI)
-#  define BN_LLONG
+#  undef BN_LLONG
 /* Only one for the following should be defined */
 #  undef SIXTY_FOUR_BIT_LONG
-#  undef SIXTY_FOUR_BIT
-#  define THIRTY_TWO_BIT
-#endif
+#  define SIXTY_FOUR_BIT
+#  undef THIRTY_TWO_BIT
+# endif
 
 # define RC4_INT unsigned int
-
-#define _setmode setmode
-#define _strdup strdup
 
 # ifdef  __cplusplus
 }
 # endif
-
-#ifndef _timeb 
-#define _timeb timeb 
-#endif 
- 
-#ifndef _ftime 
-#define _ftime ftime 
-#endif 
 
 #endif                          /* OPENSSL_CONFIGURATION_H */
