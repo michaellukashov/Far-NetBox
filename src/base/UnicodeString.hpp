@@ -17,6 +17,8 @@ public:
   explicit UTF8String(const wchar_t * Str, int32_t Length);
   explicit UTF8String(const char * Str, int32_t Length);
   explicit UTF8String(const char * Str);
+  explicit UTF8String(int32_t Length) = delete;
+  explicit UTF8String(int32_t Length, char Ch) : Data(Ch, Length) {}
 
   ~UTF8String() = default;
 

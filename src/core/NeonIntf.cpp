@@ -427,15 +427,17 @@ void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
   if (DoLog)
   #endif
   {
+    int32_t Size{0};
     va_list Args;
     va_start(Args, Format);
-    UTF8String UTFMessage;
-    UTFMessage.vprintf(Format, Args);
+    AnsiString Str(32 * 1024, 0);
+    Size = vsnprintf_s(&Str[1], Str.Length(), _TRUNCATE, Format, Args);
     va_end(Args);
+    UTF8String UTFMessage(Str.data(), Size);
 
-    const UnicodeString Message = TrimRight(UnicodeString(UTFMessage));
+    const UnicodeString Message = TrimRight(UnicodeString(UTFMessage.c_str(), UTFMessage.Length(), CP_ACP));
 
-    if (DoLog)
+    // if (DoLog)
     {
       // Note that this gets called for THttp sessions too.
       // It does no harm atm.
