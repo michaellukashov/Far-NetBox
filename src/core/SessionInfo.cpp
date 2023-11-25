@@ -978,7 +978,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & ALine)
         DoAdd(Type, ALine, nb::bind(&TSessionLog::DoAddToSelf, this));
       }
     }
-    catch (Exception &E)
+    catch(Exception & E)
     {
       // We failed logging, turn it off and notify user.
       FConfiguration->SetLogging(false);
@@ -986,7 +986,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & ALine)
       {
         throw ExtException(&E, MainInstructions(LoadStr(LOG_GEN_ERROR)));
       }
-      catch (Exception &E2)
+      catch(Exception & E2)
       {
         AddException(&E2);
         FUI->HandleExtendedException(&E2);
@@ -995,7 +995,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & ALine)
   }
 }
 
-void TSessionLog::AddException(Exception *E)
+void TSessionLog::AddException(Exception * E)
 {
   if (E != nullptr)
   {
@@ -1063,7 +1063,7 @@ void TSessionLog::OpenLogFile()
       FCurrentFileSize = 0;
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName.Clear();
@@ -1073,7 +1073,7 @@ void TSessionLog::OpenLogFile()
     {
       throw ExtException(&E, MainInstructions(LoadStr(LOG_GEN_ERROR)));
     }
-    catch (Exception & E2)
+    catch(Exception & E2)
     {
       AddException(&E2);
       // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
@@ -1627,7 +1627,7 @@ void TActionLog::Add(const UnicodeString & Line)
           throw ECRTExtException("");
         }
       }
-      catch (Exception &E)
+      catch(Exception & E)
       {
 //        FCriticalSection.Release();
 
@@ -1647,7 +1647,7 @@ void TActionLog::Add(const UnicodeString & Line)
             {
               throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
             }
-            catch (Exception &E2)
+            catch(Exception & E2)
             {
               if (FUI != nullptr)
               {
@@ -1763,7 +1763,7 @@ void TActionLog::OpenLogFile()
     FLogger = std::make_unique<tinylog::TinyLog>();
     FLogger->file(file);
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     // We failed logging to file, turn it off and notify user.
     FCurrentLogFileName.Clear();
@@ -1779,7 +1779,7 @@ void TActionLog::OpenLogFile()
       {
         throw ExtException(&E, LoadStr(LOG_GEN_ERROR));
       }
-      catch (Exception & E2)
+      catch(Exception & E2)
       {
         if (FUI != nullptr)
         {
