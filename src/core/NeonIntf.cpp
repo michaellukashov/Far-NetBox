@@ -264,6 +264,10 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal * Terminal)
 {
   const UnicodeString CertificateStorage = GetConfiguration()->CertificateStorageExpanded;
+  if (Terminal != nullptr)
+  {
+    Terminal->LogEvent(FORMAT(L"Check certificate store \"%s\"", CertificateStorage));
+  }
   if (!CertificateStorage.IsEmpty())
   {
     ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
