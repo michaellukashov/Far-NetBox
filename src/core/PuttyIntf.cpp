@@ -173,15 +173,15 @@ static size_t output(Seat * seat, SeatOutputType type, const void * data, size_t
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
   if (nb::ToInt32(static_cast<char>(type)) == -1)
   {
-    SecureShell->CWrite(reinterpret_cast<const char *>(data), len);
+    SecureShell->CWrite(static_cast<const char *>(data), len);
   }
   else if (type != SEAT_OUTPUT_STDERR)
   {
-    SecureShell->FromBackend(reinterpret_cast<const uint8_t *>(data), len);
+    SecureShell->FromBackend(static_cast<const uint8_t *>(data), len);
   }
   else
   {
-    SecureShell->AddStdError(reinterpret_cast<const uint8_t *>(data), len);
+    SecureShell->AddStdError(static_cast<const uint8_t *>(data), len);
   }
   return 0;
 }
@@ -694,7 +694,7 @@ TKeyType GetKeyType(const UnicodeString & FileName)
   DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
   const UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
-  TKeyType Result = (TKeyType)key_type(KeyFile);
+  TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
   filename_free(KeyFile);
   return Result;
 }
