@@ -55,10 +55,10 @@ void PuttyInitialize()
 
   sk_init();
 
-  AnsiString VersionString = AnsiString(GetSshVersionString());
+  const AnsiString VersionString = AnsiString(GetSshVersionString());
   DebugAssert(!VersionString.IsEmpty() && (nb::ToSizeT(VersionString.Length()) < _countof(sshver)));
   strcpy_s(sshver, sizeof(sshver), VersionString.c_str());
-  AnsiString AppName = AnsiString(GetAppNameString());
+  const AnsiString AppName = AnsiString(GetAppNameString());
   DebugAssert(!AppName.IsEmpty() && (nb::ToSizeT(AppName.Length()) < _countof(appname_)));
   strcpy_s(appname_, sizeof(appname_), AppName.c_str());
 }
@@ -121,7 +121,7 @@ TSecureShell * GetSecureShell(Plug * plug, bool & pfwd)
   {
     // If it is not SSH/PFwd plug, then it must be Proxy plug.
     // Get SSH/PFwd plug which it wraps.
-    ProxySocket * AProxySocket = get_proxy_plug_socket(plug);
+    const ProxySocket * AProxySocket = get_proxy_plug_socket(plug);
     plug = AProxySocket->plug;
   }
 
@@ -202,10 +202,10 @@ static SeatPromptResult get_userpass_input(Seat * seat, prompts_t * p)
   std::unique_ptr<TStrings> Results(std::make_unique<TStringList>());
   try__finally
   {
-    UnicodeString Name = UTF8ToString(p->name);
+    const UnicodeString Name = UTF8ToString(p->name);
     UnicodeString AName = Name;
-    TPromptKind PromptKind = SecureShell->IdentifyPromptKind(AName);
-    bool UTF8Prompt = (PromptKind != pkPassphrase);
+    const TPromptKind PromptKind = SecureShell->IdentifyPromptKind(AName);
+    const bool UTF8Prompt = (PromptKind != pkPassphrase);
 
     for (int32_t Index = 0; Index < (int32_t)(p->n_prompts); Index++)
     {
@@ -226,7 +226,7 @@ static SeatPromptResult get_userpass_input(Seat * seat, prompts_t * p)
       Results->Add(L"");
     }
 
-    UnicodeString Instructions = UTF8ToString(p->instruction);
+    const UnicodeString Instructions = UTF8ToString(p->instruction);
     if (SecureShell->PromptUser(p->to_server, Name, p->name_reqd,
           Instructions, p->instr_reqd, Prompts.get(), Results.get()))
     {
@@ -331,7 +331,7 @@ void old_keyfile_warning(void)
 size_t banner(Seat * seat, const void * data, size_t len)
 {
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
-  UnicodeString Banner(UTF8String(static_cast<const char *>(data), len));
+  const UnicodeString Banner(UTF8String(static_cast<const char *>(data), len));
   SecureShell->DisplayBanner(Banner);
   return 0; // PuTTY never uses the value
 }
@@ -412,7 +412,7 @@ void platform_get_x11_auth(struct X11Display * /*display*/, Conf * /*conf*/)
 // Based on PuTTY's settings.c
 char * get_remote_username(Conf * conf)
 {
-  char * username = conf_get_str(conf, CONF_username);
+  const char * username = conf_get_str(conf, CONF_username);
   char * result;
   if (*username)
   {
@@ -505,7 +505,7 @@ HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
       SubKey += UnicodeString(UTF8String(Path));
     }
 
-    int32_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
+    const int32_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
     DebugAssert(SubKey.SubString(1, PuttyKeyLen) == OriginalPuttyRegistryStorageKey);
     UnicodeString RegKey = SubKey.SubString(PuttyKeyLen + 1, SubKey.Length() - PuttyKeyLen);
     if (!RegKey.IsEmpty())
@@ -574,7 +574,7 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
   {
     DebugAssert(GetConfiguration() != nullptr);
 
-    UnicodeString ValueName = UTF8String(Name);
+    const UnicodeString ValueName = UTF8String(Name);
     bool Success;
     UnicodeString Value;
     if (Key == RandSeedFileStorage)
@@ -610,7 +610,7 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
     }
     else
     {
-      AnsiString ValueAnsi = AnsiString(Value);
+      const AnsiString ValueAnsi = AnsiString(Value);
       Result = snewn(ValueAnsi.Length() + 1, char);
       strcpy(Result, ValueAnsi.c_str());
     }
@@ -627,7 +627,7 @@ bool put_reg_dword_winscp(HKEY DebugUsedArg(Key), const char * Name, DWORD Debug
   bool Result;
   if (PuttyRegistryMode == prmCollect)
   {
-    UnicodeString ValueName = UTF8String(Name);
+    const UnicodeString ValueName = UTF8String(Name);
     PuttyRegistryTypes[ValueName] = REG_DWORD;
     Result = true;
   }
@@ -647,7 +647,7 @@ bool put_reg_dword_winscp(HKEY DebugUsedArg(Key), const char * Name, DWORD Debug
 
 bool put_reg_sz_winscp(HKEY Key, const char * Name, const char * Str)
 {
-  UnicodeString ValueName = UTF8String(Name);
+  const UnicodeString ValueName = UTF8String(Name);
   bool Result;
   if (PuttyRegistryMode == prmCollect)
   {
@@ -656,7 +656,7 @@ bool put_reg_sz_winscp(HKEY Key, const char * Name, const char * Str)
   }
   else if (PuttyRegistryMode == prmRedirect)
   {
-    UnicodeString Value = UTF8String(Str);
+    const UnicodeString Value = UTF8String(Str);
     DebugAssert(Key != RandSeedFileStorage);
     THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
     DebugAssert(Storage != nullptr);
@@ -692,7 +692,7 @@ TKeyType GetKeyType(const UnicodeString & FileName)
   DebugAssert(ktUnopenable == SSH_KEYTYPE_UNOPENABLE);
   DebugAssert(ktSSHCom == SSH_KEYTYPE_SSHCOM);
   DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
-  UTF8String UtfFileName = UTF8String(FileName);
+  const UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   TKeyType Result = (TKeyType)key_type(KeyFile);
   filename_free(KeyFile);
@@ -701,7 +701,7 @@ TKeyType GetKeyType(const UnicodeString & FileName)
 
 bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeString & Comment)
 {
-  UTF8String UtfFileName = UTF8String(FileName);
+  const UTF8String UtfFileName = UTF8String(FileName);
   bool Result;
   char * CommentStr = nullptr;
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
@@ -746,7 +746,7 @@ bool IsKeyEncrypted(TKeyType KeyType, const UnicodeString & FileName, UnicodeStr
 
 TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const UnicodeString & Passphrase, UnicodeString & Error)
 {
-  UTF8String UtfFileName = UTF8String(FileName);
+  const UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   struct ssh2_userkey * Ssh2Key = nullptr;
   const char * ErrorStr = nullptr;
@@ -824,7 +824,7 @@ UnicodeString TestKey(TKeyType KeyType, const UnicodeString & FileName)
 
 void ChangeKeyComment(TPrivateKey * PrivateKey, const UnicodeString & Comment)
 {
-  AnsiString AnsiComment(Comment);
+  const AnsiString AnsiComment(Comment);
   struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
   sfree(Ssh2Key->comment);
   Ssh2Key->comment = dupstr(AnsiComment.c_str());
@@ -835,8 +835,8 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
 {
   struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
 
-  TKeyType Type = GetKeyType(CertificateFileName);
-  int32_t Error = errno;
+  const TKeyType Type = GetKeyType(CertificateFileName);
+  const int32_t Error = errno;
   if ((Type != SSH_KEYTYPE_SSH2_PUBLIC_RFC4716) &&
       (Type != SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH))
   {
@@ -905,7 +905,7 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     ssh_key_public_blob(ssh_key_base_key(NewPubKey), BinarySink_UPCAST(NewBasePub));
     ssh_key_free(NewPubKey);
 
-    bool Match = ptrlen_eq_ptrlen(ptrlen_from_strbuf(OldBasePub), ptrlen_from_strbuf(NewBasePub));
+    const bool Match = ptrlen_eq_ptrlen(ptrlen_from_strbuf(OldBasePub), ptrlen_from_strbuf(NewBasePub));
     strbuf_free(OldBasePub);
     strbuf_free(NewBasePub);
 
@@ -937,13 +937,13 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
 void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
   const UnicodeString & Passphrase, TPrivateKey * PrivateKey)
 {
-  UTF8String UtfFileName = UTF8String(FileName);
+  const UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   try__finally
   {
     struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
     AnsiString AnsiPassphrase = AnsiString(Passphrase);
-    char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : ToChar(AnsiPassphrase));
+    const char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : ToChar(AnsiPassphrase));
     switch (KeyType)
     {
       case ktSSH2:
@@ -955,7 +955,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
           }
           if (!ppk_save_f(KeyFile, Ssh2Key, PassphrasePtr, &Params))
           {
-            int Error = errno;
+            const int32_t Error = errno;
             throw EOSExtException(FMTLOAD(KEY_SAVE_ERROR, FileName), Error);
           }
         }
@@ -989,7 +989,7 @@ RawByteString LoadPublicKey(
   const UnicodeString & FileName, UnicodeString & Algorithm, UnicodeString & Comment, bool & HasCertificate)
 {
   RawByteString Result;
-  UTF8String UtfFileName = UTF8String(FileName);
+  const UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
   try__finally
   {
@@ -999,7 +999,7 @@ RawByteString LoadPublicKey(
     strbuf * PublicKeyBuf = strbuf_new();
     if (!ppk_loadpub_f(KeyFile, &AlgorithmStr, BinarySink_UPCAST(PublicKeyBuf), &CommentStr, &ErrorStr))
     {
-      UnicodeString Error = UnicodeString(AnsiString(ErrorStr));
+      const UnicodeString Error = UnicodeString(AnsiString(ErrorStr));
       throw Exception(Error);
     }
     Algorithm = UnicodeString(AnsiString(AlgorithmStr));
@@ -1021,7 +1021,7 @@ RawByteString LoadPublicKey(
 UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment, bool & HasCertificate)
 {
   UnicodeString Algorithm;
-  RawByteString PublicKey = LoadPublicKey(FileName, Algorithm, Comment, HasCertificate);
+  const RawByteString PublicKey = LoadPublicKey(FileName, Algorithm, Comment, HasCertificate);
   UnicodeString PublicKeyBase64 = EncodeBase64(PublicKey.c_str(), PublicKey.Length());
   PublicKeyBase64 = ReplaceStr(PublicKeyBase64, L"\r", L"");
   PublicKeyBase64 = ReplaceStr(PublicKeyBase64, L"\n", L"");
@@ -1077,12 +1077,12 @@ static void DoNormalizeFingerprint(UnicodeString & Fingerprint, UnicodeString & 
   {
     for (int32_t Index = 0; Index < Count; Index++)
     {
-      cp_ssh_keyalg SignKey = SignKeys[Index];
+      const cp_ssh_keyalg SignKey = SignKeys[Index];
       UnicodeString Name = UnicodeString(SignKey->ssh_id);
       if (StartsStr(Name + L" ", Fingerprint))
       {
         UnicodeString Rest = Fingerprint.SubString(Name.Length() + 2, Fingerprint.Length() - Name.Length() - 1);
-        int Space = Rest.Pos(L" ");
+        const int32_t Space = Rest.Pos(L" ");
         // If not a number, it's an invalid input,
         // either something completely wrong, or it can be OpenSSH base64 public key,
         // that got here from TPasteKeyHandler::Paste
@@ -1133,7 +1133,7 @@ UnicodeString GetPuTTYVersion()
   // "Development snapshot 2015-12-22.51465fa"
   UnicodeString Result = get_putty_version();
   // Skip "Release", "Pre-release", "Development snapshot"
-  int32_t P = Result.LastDelimiter(L" ");
+  const int32_t P = Result.LastDelimiter(L" ");
   Result.Delete(1, P);
   return Result;
 }
@@ -1170,7 +1170,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
   ssh_hash * Hash = ssh_hash_new(HashAlg);
   try__finally
   {
-    const int32_t BlockSize = 32 * 1024;
+    constexpr int32_t BlockSize = 32 * 1024;
     TFileBuffer Buffer;
     DWORD Read;
     do
@@ -1197,7 +1197,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
 
 UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_keyalg *& Algorithm)
 {
-  UTF8String UtfLine = UTF8String(Line);
+  const UTF8String UtfLine = UTF8String(Line);
   char * AlgorithmName = nullptr;
   char * CommentPtr = nullptr;
   const char * ErrorStr = nullptr;
@@ -1219,7 +1219,7 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_k
         throw Exception(FMTLOAD(PUB_KEY_UNKNOWN, AlgorithmName));
       }
 
-      ptrlen PtrLen = { PubBlobBuf->s, PubBlobBuf->len };
+      const ptrlen PtrLen = { PubBlobBuf->s, PubBlobBuf->len };
       ssh_key * Key = Algorithm->new_pub(Algorithm, PtrLen);
       if (Key == nullptr)
       {
@@ -1243,8 +1243,8 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_k
 // Based on ca_refresh_pubkey_info
 void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & PublicKey, UnicodeString & Fingerprint)
 {
-  AnsiString AnsiStr = AnsiString(Str);
-  ptrlen Data = ptrlen_from_asciz(AnsiStr.c_str());
+  const AnsiString AnsiStr = AnsiString(Str);
+  const ptrlen Data = ptrlen_from_asciz(AnsiStr.c_str());
   strbuf * Blob = strbuf_new();
   try__finally
   {
@@ -1265,13 +1265,13 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
       }
     }
 
-    ptrlen AlgNamePtrLen = pubkey_blob_to_alg_name(ptrlen_from_strbuf(Blob));
+    const ptrlen AlgNamePtrLen = pubkey_blob_to_alg_name(ptrlen_from_strbuf(Blob));
     if (!AlgNamePtrLen.len)
     {
       throw Exception(LoadStr(SSH_HOST_CA_NO_KEY_TYPE));
     }
 
-    UnicodeString AlgName = UnicodeString(AnsiString(static_cast<const char *>(AlgNamePtrLen.ptr), AlgNamePtrLen.len));
+    const UnicodeString AlgName = UnicodeString(AnsiString(static_cast<const char *>(AlgNamePtrLen.ptr), AlgNamePtrLen.len));
     const ssh_keyalg * Alg = find_pubkey_alg_len(AlgNamePtrLen);
     if (Alg == nullptr)
     {
@@ -1306,9 +1306,9 @@ bool IsCertificateValidityExpressionValid(
 {
   char * ErrorMsg;
   ptrlen ErrorLoc;
-  AnsiString StrAnsi(Str);
+  const AnsiString StrAnsi(Str);
   const char * StrPtr = StrAnsi.c_str();
-  bool Result = cert_expr_valid(StrPtr, &ErrorMsg, &ErrorLoc);
+  const bool Result = cert_expr_valid(StrPtr, &ErrorMsg, &ErrorLoc);
   if (!Result)
   {
     Error = UnicodeString(ErrorMsg);
@@ -1365,7 +1365,7 @@ int32_t GetCipherGroup(const ssh_cipher * TheCipher)
   DebugAssert(strlen(TheCipher->vt->ssh2_id) > 0);
   for (uint32_t Index = 0; Index < LENOF(Ciphers); Index++)
   {
-    TCipherGroup & CipherGroup = Ciphers[Index];
+    const TCipherGroup & CipherGroup = Ciphers[Index];
     const ssh2_ciphers * Cipher = CipherGroup.Cipher;
     for (int32_t Index2 = 0; Index2 < Cipher->nciphers; Index2++)
     {
@@ -1420,7 +1420,7 @@ TStrings * SshHostKeyList()
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   for (int32_t DefaultIndex = 0; DefaultIndex < HOSTKEY_COUNT; DefaultIndex++)
   {
-    int32_t Type = HostKeyToPutty(DefaultHostKeyList[DefaultIndex]);
+    const int32_t Type = HostKeyToPutty(DefaultHostKeyList[DefaultIndex]);
     cp_ssh_keyalg * SignKeys;
     int32_t Count;
     get_hostkey_algs(Type, &Count, &SignKeys);
@@ -1428,7 +1428,7 @@ TStrings * SshHostKeyList()
     {
       for (int32_t Index = 0; Index < Count; Index++)
       {
-        cp_ssh_keyalg SignKey = SignKeys[Index];
+        const cp_ssh_keyalg SignKey = SignKeys[Index];
         UnicodeString Name = UnicodeString(SignKey->ssh_id);
         Result->Add(Name);
       }
@@ -1450,7 +1450,7 @@ TStrings * SshMacList()
 
   for (int32_t Index = 0; Index < Count; Index++)
   {
-    UnicodeString Name = UnicodeString(Macs[Index]->name);
+    const UnicodeString Name = UnicodeString(Macs[Index]->name);
     UnicodeString S = Name;
     UnicodeString ETMName = UnicodeString(Macs[Index]->etm_name);
     if (!ETMName.IsEmpty())
@@ -1552,7 +1552,7 @@ void SavePuttyDefaults(const UnicodeString & Name)
   try__finally
   {
     PuttyDefaults(conf);
-    AnsiString PuttyName = PuttyStr(Name);
+    const AnsiString PuttyName = PuttyStr(Name);
     save_settings(PuttyName.c_str(), conf);
   }
   __finally
@@ -1577,7 +1577,7 @@ host_ca_enum * enum_host_ca_start()
 bool enum_host_ca_next(host_ca_enum * Enum, strbuf * StrBuf)
 {
   const TSshHostCAList * SshHostCAList = GetConfiguration()->GetActiveSshHostCAList();
-  bool Result = (Enum->Index < SshHostCAList->GetCount());
+  const bool Result = (Enum->Index < SshHostCAList->GetCount());
   if (Result)
   {
     put_asciz(StrBuf, UTF8String(SshHostCAList->Get(Enum->Index)->Name).c_str());
@@ -1594,7 +1594,7 @@ void enum_host_ca_finish(host_ca_enum * Enum)
 host_ca * host_ca_load(const char * NameStr)
 {
   host_ca * Result = nullptr;
-  UnicodeString Name = UTF8String(NameStr);
+  const UnicodeString Name = UTF8String(NameStr);
   const TSshHostCA * SshHostCA = GetConfiguration()->GetActiveSshHostCAList()->Find(Name);
   if (DebugAlwaysTrue(SshHostCA != nullptr))
   {

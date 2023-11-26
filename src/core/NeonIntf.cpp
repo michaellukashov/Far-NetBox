@@ -60,7 +60,7 @@ struct TProxyAuthData
 static int32_t NeonProxyAuth(
   void * UserData, const char * /*Realm*/, int32_t Attempt, char * UserName, char * Password)
 {
-  TProxyAuthData * ProxyAuthData = static_cast<TProxyAuthData *>(UserData);
+  const TProxyAuthData * ProxyAuthData = static_cast<TProxyAuthData *>(UserData);
 
   int32_t Result;
   // no point trying too many times as we always return the same credentials
@@ -91,8 +91,8 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const Unico
   {
     if ((ProxyMethod == pmSocks4) || (ProxyMethod == pmSocks5))
     {
-      const enum ne_sock_sversion vers = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
-      ne_session_socks_proxy(Session, vers, StrToNeon(AProxyHost), nb::ToInt32(ProxyPort), StrToNeon(AProxyUsername), StrToNeon(AProxyPassword));
+      const enum ne_sock_sversion Version = (ProxyMethod == pmSocks4) ? NE_SOCK_SOCKSV4A : NE_SOCK_SOCKSV5;
+      ne_session_socks_proxy(Session, Version, StrToNeon(AProxyHost), nb::ToInt32(ProxyPort), StrToNeon(AProxyUsername), StrToNeon(AProxyPassword));
     }
     else if (!AProxyHost.IsEmpty())
     {
@@ -433,7 +433,7 @@ void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
     AnsiString Str(4 * 1024, 0);
     Size = vsnprintf_s(&Str[1], Str.Length(), _TRUNCATE, Format, Args);
     va_end(Args);
-    UTF8String UTFMessage(Str.data(), (Size == -1) ? 4 * 1024 : Size);
+    const UTF8String UTFMessage(Str.data(), (Size == -1) ? 4 * 1024 : Size);
     const UnicodeString Message = TrimRight(UnicodeString(UTFMessage.c_str(), UTFMessage.GetLength(), CP_ACP));
 
     // if (DoLog)

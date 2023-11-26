@@ -111,7 +111,7 @@ void TNamedObjectList::AlphaSort()
 int32_t TNamedObjectList::Add(TObject * AObject)
 {
   int32_t Result;
-  TAutoFlag ControlledAddFlag(FControlledAdd); nb::used(ControlledAddFlag);
+  const TAutoFlag ControlledAddFlag(FControlledAdd); nb::used(ControlledAddFlag);
   TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),
   // keep the hidden objects in front, so that HiddenCount is correct
