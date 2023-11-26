@@ -540,7 +540,7 @@ public:
 
       if (Properties->Valid.Contains(vpRights))
       {
-        Valid = (TValid)(Valid | valRights);
+        Valid = static_cast<TValid>(Valid | valRights);
         TRights Rights = TRights(BaseRights).Combine(Properties->Rights);
         if (IsDirectory && Properties->AddXToDirectories)
         {
