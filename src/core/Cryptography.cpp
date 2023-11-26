@@ -387,14 +387,14 @@ constexpr int PASSWORD_MANAGER_AES_MODE = 3;
 static void AES256Salt(RawByteString & Salt)
 {
   Salt.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  RAND_bytes(reinterpret_cast<unsigned char *>(&Salt[0]), (int)Salt.Length());
+  RAND_bytes(reinterpret_cast<unsigned char *>(&Salt[0]), nb::ToInt32(Salt.Length()));
 }
 
 RawByteString GenerateEncryptKey()
 {
   RawByteString Result;
   Result.SetLength(KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  RAND_bytes(reinterpret_cast<unsigned char *>(&Result[0]), (int)Result.Length());
+  RAND_bytes(reinterpret_cast<unsigned char *>(&Result[0]), nb::ToInt32(Result.Length()));
   return Result;
 }
 
@@ -673,7 +673,7 @@ TEncryption::TEncryption(const RawByteString & AKey) noexcept
   {
     DebugAssert(FKey.Length() == KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
     FContext = aes_make_context();
-    aes_set_encrypt_key(reinterpret_cast<uint8_t *>(&FKey[0]), (int)FKey.Length(), FContext);
+    aes_set_encrypt_key(reinterpret_cast<uint8_t *>(&FKey[0]), nb::ToInt32(FKey.Length()), FContext);
   }
   else
   {
@@ -731,7 +731,7 @@ int32_t TEncryption::RoundToBlockDown(int32_t Size)
 void TEncryption::Aes(char * Buffer, int32_t Size)
 {
   DebugAssert(!FSalt.IsEmpty());
-  call_aes_sdctr(reinterpret_cast<uint8_t *>(Buffer), (int)Size, FContext);
+  call_aes_sdctr(reinterpret_cast<uint8_t *>(Buffer), nb::ToInt32(Size), FContext);
 }
 
 void TEncryption::Aes(TFileBuffer & Buffer, bool Last)

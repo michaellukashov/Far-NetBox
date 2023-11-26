@@ -345,7 +345,7 @@ UnicodeString StoreForm(TCustomForm * Form)
       // we do not want WinSCP to start minimized next time (we cannot handle that anyway).
       // note that WindowState is wsNormal when window in minimized for some reason.
       // actually it is wsMinimized only when minimized by MSVDM
-      (int)(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
+      nb::ToInt32(Form->WindowState == wsMinimized ? wsNormal : Form->WindowState),
       SavePixelsPerInch(Form));
   return Result;
 }
@@ -788,8 +788,8 @@ void OpenBrowser(UnicodeString URL)
 
 void OpenFolderInExplorer(const UnicodeString & Path)
 {
-  if ((int)ShellExecute(Application->Handle, L"explore",
-      (wchar_t*)Path.data(), nullptr, nullptr, SW_SHOWNORMAL) <= 32)
+  if (nb::ToInt32(ShellExecute(Application->Handle, L"explore",
+      (wchar_t*)Path.data(), nullptr, nullptr, SW_SHOWNORMAL)) <= 32)
   {
     throw Exception(FMTLOAD(EXPLORE_LOCAL_DIR_ERROR, Path));
   }

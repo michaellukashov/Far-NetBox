@@ -119,7 +119,7 @@ void TUsage::Save(THierarchicalStorage * Storage,
     TCounters::const_iterator i = Counters.begin();
     while (i != Counters.end())
     {
-      Storage->WriteInteger(i->first, (int)i->second);
+      Storage->WriteInteger(i->first, nb::ToInt32(i->second));
       ++i;
     }
     Storage->CloseSubKey();
