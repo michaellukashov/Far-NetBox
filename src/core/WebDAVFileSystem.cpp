@@ -856,7 +856,7 @@ bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APat
 void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * AFileList)
 {
   UnicodeString Path = DirectoryPath(AFileList->GetDirectory());
-  TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
+  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
 
   int32_t NeonStatus = ReadDirectoryInternal(Path, AFileList);
   if (IsValidRedirect(NeonStatus, Path))
