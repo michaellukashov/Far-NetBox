@@ -162,7 +162,7 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
     /* set outer key value using opad and removing ipad */
     for(i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-        ((unsigned long*)cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+        reinterpret_cast<unsigned long*>(cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
 
     /* perform the outer hash operation */
     sha1_begin(cx->ctx);
