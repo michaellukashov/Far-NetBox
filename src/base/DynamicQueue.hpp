@@ -226,7 +226,7 @@ TX & DynamicQueue<TX>::operator[] (int i) {
 // Note: If your program has a graphical user interface (GUI) then you
 // must rewrite this function to produce a message box with the error message.
 template <typename TX>
-void DynamicQueue<TX>::Error(int e, int n) {
+void DynamicQueue<TX>::Error(int32_t e, int32_t n) {
    // Define error texts
    static const char * ErrorTexts[] = {
       "Unknown error",                 // 0
@@ -235,7 +235,7 @@ void DynamicQueue<TX>::Error(int e, int n) {
       "Memory allocation failed"       // 3
    };
    // Number of texts in ErrorTexts
-   const unsigned int NumErrorTexts = sizeof(ErrorTexts) / sizeof(*ErrorTexts);
+   constexpr uint32_t NumErrorTexts = sizeof(ErrorTexts) / sizeof(*ErrorTexts);
 
    // check that index is within range
    if (static_cast<uint32_t>(e) >= NumErrorTexts) e = 0;
