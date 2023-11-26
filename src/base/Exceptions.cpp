@@ -11,7 +11,7 @@
 #endif // FARPLUGIN
 #include "rtlconsts.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 #if 0
 
