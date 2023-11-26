@@ -18,7 +18,7 @@ TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept :
   TCopyParamType::Default();
 }
 
-TCopyParamType::TCopyParamType(const TCopyParamType &Source) noexcept :
+TCopyParamType::TCopyParamType(const TCopyParamType & Source) noexcept :
   TObject(OBJECT_CLASS_TCopyParamType)
 {
   TCopyParamType::Assign(&Source);
@@ -466,7 +466,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     UnicodeString Value;
     UnicodeString CodeState;
-    int32_t ResumeThresholdKB = nb::ToIntPtr(GetResumeThreshold() / 1024);
+    int32_t ResumeThresholdKB = nb::ToInt32(GetResumeThreshold() / 1024);
     switch (GetResumeSupport())
     {
       case rsOff:
@@ -852,7 +852,7 @@ bool TCopyParamType::AllowAnyTransfer() const
     GetIncludeFileMask().Masks().IsEmpty() &&
     !ExcludeHiddenFiles &&
     !ExcludeEmptyDirectories &&
-    ((FTransferSkipList.get() == nullptr) || (FTransferSkipList->Count == 0)) &&
+    ((FTransferSkipList == nullptr) || (FTransferSkipList->Count == 0)) &&
     FTransferResumeFile.IsEmpty();
 }
 
@@ -879,7 +879,7 @@ bool TCopyParamType::SkipTransfer(
   // we deliberately do not filter directories, as path is added to resume list
   // when a transfer of file or directory is started,
   // so for directories we need to recurse and check every single file
-  if (!Directory && (FTransferSkipList.get() != nullptr))
+  if (!Directory && (FTransferSkipList != nullptr))
   {
     Result = (FTransferSkipList->IndexOf(AFileName) >= 0);
   }
@@ -1091,7 +1091,7 @@ static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t & Speed)
     Result = TryStrToInt64(Text, SSpeed) && (SSpeed >= 0);
     if (Result)
     {
-      Speed = nb::ToInt64(SSpeed * 1024);
+      Speed = nb::ToUInt32(SSpeed * 1024);
     }
   }
   return Result;
