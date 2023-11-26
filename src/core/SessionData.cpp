@@ -2692,7 +2692,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     }
     if (Options->FindSwitch("timeout", Value))
     {
-      SetTimeout(nb::ToIntPtr(::StrToInt64(Value)));
+      SetTimeout(nb::ToInt32(::StrToInt64(Value)));
     }
     if (Options->FindSwitch("hostkey", Value) ||
         Options->FindSwitch("certificate", Value))
