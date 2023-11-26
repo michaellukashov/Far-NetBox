@@ -211,7 +211,7 @@ TX DynamicQueue<TX>::Get() {
 template <typename TX>
 TX & DynamicQueue<TX>::operator[] (int i) {
    // Access object at position i from tail
-   if ((unsigned int)i >= (unsigned int)NumEntries) {
+   if (static_cast<uint32_t>(i) >= static_cast<uint32_t>(NumEntries)) {
       // Index i does not exist
       Error(1, i);  i = 0;
    }
@@ -238,7 +238,7 @@ void DynamicQueue<TX>::Error(int e, int n) {
    const unsigned int NumErrorTexts = sizeof(ErrorTexts) / sizeof(*ErrorTexts);
 
    // check that index is within range
-   if ((unsigned int)e >= NumErrorTexts) e = 0;
+   if (static_cast<uint32_t>(e) >= NumErrorTexts) e = 0;
 
    // Replace this with your own error routine, possibly with a message box:
    // fprintf(stderr, "\nDynamicArray error: %s (%i)\n", ErrorTexts[e], n);
