@@ -13,7 +13,7 @@
 #include "Exceptions.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
-__removed #include <Soap.EncdDecd.hpp>
+// #include <Soap.EncdDecd.hpp>
 
 char sshver[50]{};
 extern const char commitid[] = "";
@@ -141,7 +141,7 @@ TSecureShell * GetSecureShell(Plug * plug, bool & pfwd)
 
 struct callback_set * get_callback_set(Plug * plug)
 {
-  bool pfwd;
+  bool pfwd{false};
   TSecureShell * SecureShell = GetSecureShell(plug, pfwd);
   return SecureShell->GetCallbackSet();
 }
@@ -154,7 +154,7 @@ struct callback_set * get_seat_callback_set(Seat * seat)
 
 extern "C" const char * do_select(Plug * plug, SOCKET skt, bool enable)
 {
-  bool pfwd;
+  bool pfwd{false};
   TSecureShell * SecureShell = GetSecureShell(plug, pfwd);
   if (!pfwd)
   {
@@ -207,7 +207,7 @@ static SeatPromptResult get_userpass_input(Seat * seat, prompts_t * p)
     const TPromptKind PromptKind = SecureShell->IdentifyPromptKind(AName);
     const bool UTF8Prompt = (PromptKind != pkPassphrase);
 
-    for (int32_t Index = 0; Index < (int32_t)(p->n_prompts); Index++)
+    for (int32_t Index = 0; Index < nb::ToInt32(p->n_prompts); Index++)
     {
       prompt_t * Prompt = p->prompts[Index];
       UnicodeString S;
@@ -336,7 +336,7 @@ size_t banner(Seat * seat, const void * data, size_t len)
   return 0; // PuTTY never uses the value
 }
 
-uintmax_t strtoumax_(const char *nptr, char **endptr, int32_t base)
+uintmax_t strtoumax_(const char * nptr, char ** endptr, int32_t base)
 {
   if (DebugAlwaysFalse(endptr != nullptr) ||
       DebugAlwaysFalse(base != 10))
@@ -485,7 +485,7 @@ HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
   }
   else if (PuttyRegistryMode == prmFail)
   {
-    Result = false;
+    Result = 0;
   }
   else if (PuttyRegistryMode == prmRedirect)
   {

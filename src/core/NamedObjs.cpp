@@ -6,7 +6,7 @@
 #include <Sysutils.hpp>
 #include "NamedObjs.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 int32_t NamedObjectSortProc(const TObject * Item1, const TObject * Item2)
 {
