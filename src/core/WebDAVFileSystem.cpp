@@ -287,7 +287,7 @@ void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString & CorrectedU
     FSessionInfo.SCCipher = EmptyStr;
 
     UTF8String Path, DiscardQuery;
-    DebugAssert(FSessionContext.get() == nullptr);
+    DebugAssert(FSessionContext == nullptr);
     FSessionContext.reset(NeonOpen(Url, Path, DiscardQuery));
 
     const bool Ssl = IsTlsSession(FSessionContext->NeonSession);

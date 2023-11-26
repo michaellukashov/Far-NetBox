@@ -793,7 +793,7 @@ void TParallelOperation::WaitFor()
 {
   // Even initialized?
   // Won't be, when parallel transfers were not possible (like when preserving of directory timestamps is enabled)
-  if (FSection.get() != nullptr)
+  if (FSection != nullptr)
   {
     bool Done;
 
@@ -1555,7 +1555,7 @@ void TTerminal::InternalTryOpen()
     }
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
-      DebugAssert(FDirectoryChangesCache.get() == nullptr);
+      DebugAssert(FDirectoryChangesCache == nullptr);
       FDirectoryChangesCache = std::make_unique<TRemoteDirectoryChangesCache>(
         FConfiguration->GetCacheDirectoryChangesMaxSize());
       if (GetSessionData()->GetPreserveDirectoryChanges())

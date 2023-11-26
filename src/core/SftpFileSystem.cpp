@@ -5147,11 +5147,11 @@ void TSFTPFileSystem::Source(
     }
     catch(Exception & E)
     {
-      if (TouchAction.get() != nullptr)
+      if (TouchAction != nullptr)
       {
         TouchAction->Rollback(&E);
       }
-      if (ChmodAction.get() != nullptr)
+      if (ChmodAction != nullptr)
       {
         ChmodAction->Rollback(&E);
       }
@@ -5332,8 +5332,8 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
             GetSessionData()->GetOverwrittenToRecycleBin() &&
             !FTerminal->GetSessionData()->GetRecycleBinPath().IsEmpty())
         {
-          bool IsSymLink = (File.get() != nullptr) && File->IsSymLink;
-          if (!IsSymLink && (File.get() != nullptr) && DoesFileLookLikeSymLink(File.get()) && IsCapable(fcResolveSymlink))
+          bool IsSymLink = (File != nullptr) && File->IsSymLink;
+          if (!IsSymLink && (File != nullptr) && DoesFileLookLikeSymLink(File.get()) && IsCapable(fcResolveSymlink))
           {
             FTerminal->LogEvent(L"Existing file looks like a symbolic link, checking if it really is.");
             try

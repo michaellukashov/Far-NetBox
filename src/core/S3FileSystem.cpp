@@ -127,7 +127,7 @@ TStrings * GetS3Profiles()
   // S3 allegedly treats the section case-sensitively, but our GetS3ConfigValue (ReadString) does not,
   // so consistently we return case-insensitive list.
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
-  if (S3ConfigFile.get() != nullptr)
+  if (S3ConfigFile != nullptr)
   {
     S3ConfigFile->ReadSections(Result.get());
     int32_t Index = 0;
@@ -184,7 +184,7 @@ UnicodeString GetS3ConfigValue(
     {
       NeedS3Config();
 
-      if (S3ConfigFile.get() != nullptr)
+      if (S3ConfigFile != nullptr)
       {
         UnicodeString AProfile = DefaultStr(Profile, S3Profile);
         // This is not consistent with AWS CLI.
@@ -2187,7 +2187,7 @@ void TS3FileSystem::Source(
         }
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.
-        if (Data.Exception.get() == nullptr)
+        if (Data.Exception == nullptr)
         {
           CheckLibS3Error(Data, true);
         }
@@ -2203,7 +2203,7 @@ void TS3FileSystem::Source(
       }
       FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AHandle.FileName), (folAllowSkip | folRetryOnFatal));
 
-      if (Data.Exception.get() != nullptr)
+      if (Data.Exception != nullptr)
       {
         RethrowException(Data.Exception.get());
       }
@@ -2379,14 +2379,14 @@ void TS3FileSystem::Sink(
           &BucketContext, StrToS3(Key), nullptr, nb::ToUInt64(Stream->Position()), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
 
         // The "exception" was already seen by the user, its presence mean an accepted abort of the operation.
-        if (Data.Exception.get() == nullptr)
+        if (Data.Exception == nullptr)
         {
           CheckLibS3Error(Data, true);
         }
       }
       FILE_OPERATION_LOOP_END_EX(FMTLOAD(TRANSFER_ERROR, AFileName), (folAllowSkip | folRetryOnFatal));
 
-      if (Data.Exception.get() != nullptr)
+      if (Data.Exception != nullptr)
       {
         RethrowException(Data.Exception.get());
       }

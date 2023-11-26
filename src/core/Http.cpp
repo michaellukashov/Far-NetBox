@@ -109,7 +109,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
 
         // Exception has precedence over status as status will always be NE_ERROR,
         // as we returned 1 from NeonBodyReader
-        if (FException.get() != nullptr)
+        if (FException != nullptr)
         {
           RethrowException(FException.get());
         }

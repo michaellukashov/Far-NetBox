@@ -11,7 +11,7 @@ std::unique_ptr<TProgramParams> ProgramParamsOwner;
 
 TProgramParams * TProgramParams::Instance()
 {
-  if (ProgramParamsOwner.get() == nullptr)
+  if (ProgramParamsOwner == nullptr)
   {
     ProgramParamsOwner = std::make_unique<TProgramParams>();
   }

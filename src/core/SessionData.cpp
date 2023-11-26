@@ -5679,7 +5679,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
             SessionData->Selected = true;
           }
 
-          if (SessionDataOwner.get() != nullptr)
+          if (SessionDataOwner != nullptr)
           {
             Add(SessionDataOwner.release());
           }

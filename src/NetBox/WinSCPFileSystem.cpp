@@ -1195,7 +1195,7 @@ void TWinSCPFileSystem::ApplyCommand()
 
             if (FLAGSET(Params, ccCopyResults))
             {
-              DebugAssert(FCapturedLog.get() == nullptr);
+              DebugAssert(FCapturedLog == nullptr);
               FCapturedLog = std::make_unique<TStringList>();
               OutputEvent = nb::bind(&TWinSCPFileSystem::TerminalCaptureLog, this);
             }

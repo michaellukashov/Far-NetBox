@@ -349,7 +349,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
     DebugAssert(false);
   }
 
-  if ((FOptionsStorage.get() != nullptr) && (FOptionsStorage->GetCount() > 0))
+  if ((FOptionsStorage != nullptr) && (FOptionsStorage->GetCount() > 0))
   {
     if (!SessionList)
     {
@@ -1605,7 +1605,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly) const
 void TConfiguration::SetOptionsStorage(const TStrings * Value)
 {
   TGuard Guard(FCriticalSection); nb::used(Guard);
-  if (FOptionsStorage.get() == nullptr)
+  if (FOptionsStorage == nullptr)
   {
     FOptionsStorage = std::make_unique<TStringList>();
   }
@@ -1938,7 +1938,7 @@ TStrings * TConfiguration::LoadDirectoryStatisticsCache(
 {
   std::unique_ptr<THierarchicalStorage> Storage(OpenDirectoryStatisticsCache(false));
   std::unique_ptr<TStringList> Result;
-  if (Storage.get() != nullptr)
+  if (Storage != nullptr)
   {
     UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);
     UnicodeString Buf = Storage->ReadString(Key, UnicodeString());
@@ -1955,7 +1955,7 @@ void TConfiguration::SaveDirectoryStatisticsCache(
   const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam, TStrings * DataList)
 {
   std::unique_ptr<THierarchicalStorage> Storage(OpenDirectoryStatisticsCache(true));
-  if (Storage.get() != nullptr)
+  if (Storage != nullptr)
   {
     UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);
     UnicodeString Buf = DataList->GetCommaText();
@@ -2343,7 +2343,7 @@ void TConfiguration::SetSshHostCAList(const TSshHostCAList * value)
 
 const TSshHostCAList * TConfiguration::GetPuttySshHostCAList()
 {
-  if (FPuttySshHostCAList.get() == nullptr)
+  if (FPuttySshHostCAList == nullptr)
   {
     std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(PuttyRegistryStorageKey));
     Storage->ConfigureForPutty();

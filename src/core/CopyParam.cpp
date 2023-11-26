@@ -397,7 +397,7 @@ void TCopyParamType::DoGetInfoStr(
     }
   }
 
-  DebugAssert(FTransferSkipList.get() == nullptr);
+  DebugAssert(FTransferSkipList == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
 
   if (GetCPSLimit() > 0)
@@ -807,7 +807,7 @@ UnicodeString TCopyParamType::GetLogStr() const
       BooleanToEngStr(ExcludeHiddenFiles),
       BooleanToEngStr(ExcludeEmptyDirectories),
       IncludeFileMask.Masks,
-      ((FTransferSkipList.get() != nullptr) ? FTransferSkipList->Count : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
+      ((FTransferSkipList != nullptr) ? FTransferSkipList->Count : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
       AsciiFileMask.Masks);
 }
 
@@ -1009,7 +1009,7 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA_EX(String, "IncludeFileMask", IncludeFileMask.Masks, );
   Storage->DeleteValue(L"ExcludeFileMask"); // obsolete
   Storage->DeleteValue(L"NegativeExclude"); // obsolete
-  DebugAssert(FTransferSkipList.get() == nullptr);
+  DebugAssert(FTransferSkipList == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
   WRITE_DATA(Bool, ClearArchive);
   WRITE_DATA(Bool, RemoveCtrlZ);
@@ -1030,13 +1030,13 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
 #define C(Property) (Get ## Property() == rhp.Get ## Property())
 #define C2(Property) (F##Property == rhp.F##Property)
 
-bool TCopyParamType::operator==(const TCopyParamType &rhp) const
+bool TCopyParamType::operator ==(const TCopyParamType & rhp) const
 {
-  DebugAssert(FTransferSkipList.get() == nullptr);
+  DebugAssert(FTransferSkipList == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
   DebugAssert(FOnTransferOut.empty());
   DebugAssert(FOnTransferIn.empty());
-  DebugAssert(rhp.FTransferSkipList.get() == nullptr);
+  DebugAssert(rhp.FTransferSkipList == nullptr);
   DebugAssert(rhp.FTransferResumeFile.IsEmpty());
   DebugAssert(rhp.FOnTransferOut.empty());
   DebugAssert(rhp.FOnTransferIn.empty());

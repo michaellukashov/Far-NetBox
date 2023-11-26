@@ -2072,7 +2072,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
     std::unique_ptr<TStrings> ResponsePtr(Response);
     try__finally
     {
-      DebugAssert(ResponsePtr.get() != nullptr);
+      DebugAssert(ResponsePtr != nullptr);
       bool Result = false;
 
       // The 257 is the only allowed 2XX code to "PWD"
@@ -3394,7 +3394,7 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
         throw;
       })
 
-      if (Error.IsEmpty() && (MoreMessages.get() != nullptr))
+      if (Error.IsEmpty() && (MoreMessages != nullptr))
       {
         DebugAssert(MoreMessages->GetCount() > 0);
         // bit too generic assigning of main instructions, let's see how it works

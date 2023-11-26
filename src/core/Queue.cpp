@@ -2297,7 +2297,7 @@ void TTransferQueueItem::ProgressUpdated()
 
     {
       TGuard Guard(FSection); nb::used(Guard);
-      DebugAssert(FParallelOperation.get() != nullptr);
+      DebugAssert(FParallelOperation != nullptr);
       // Won't be initialized, if the operation is not eligible for parallel transfers (like cpDelete).
       // We can probably move the check outside of the guard.
       if (FParallelOperation && FParallelOperation->IsInitialized())
@@ -2334,7 +2334,7 @@ void TTransferQueueItem::ProgressUpdated()
 
 TQueueItem * TTransferQueueItem::CreateParallelOperation()
 {
-  DebugAssert(FParallelOperation.get() != nullptr);
+  DebugAssert(FParallelOperation != nullptr);
 
   FParallelOperation->AddClient();
   DebugAssert(!FInfo->SingleFile || FParallelOperation->IsParallelFileTransfer);
@@ -2346,7 +2346,7 @@ bool TTransferQueueItem::UpdateFileList(TQueueFileList * FileList)
 {
   TGuard Guard(FSection);
   bool Result;
-  if ((FParallelOperation.get() != nullptr) && FParallelOperation->IsInitialized())
+  if ((FParallelOperation != nullptr) && FParallelOperation->IsInitialized())
   {
     Result = FParallelOperation->UpdateFileList(FileList);
   }

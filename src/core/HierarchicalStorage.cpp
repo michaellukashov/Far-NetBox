@@ -1128,7 +1128,7 @@ UnicodeString TCustomIniFileStorage::GetCurrentSection()
 
 void TCustomIniFileStorage::CacheSections()
 {
-  if (FSections.get() == nullptr)
+  if (FSections == nullptr)
   {
     FSections.reset(std::make_unique<TStringList>());
     FIniFile->ReadSections(FSections.get());
@@ -1143,7 +1143,7 @@ void TCustomIniFileStorage::ResetCache()
 
 void TCustomIniFileStorage::SetAccessMode(TStorageAccessMode value)
 {
-  if (FMasterStorage.get() != nullptr)
+  if (FMasterStorage != nullptr)
   {
     FMasterStorage->AccessMode = value;
   }
@@ -1189,7 +1189,7 @@ bool TCustomIniFileStorage::OpenSubKey(const UnicodeString & Key, bool CanCreate
     Result = THierarchicalStorage::OpenSubKey(Key, CanCreate);
   }
 
-  if (FMasterStorage.get() != nullptr)
+  if (FMasterStorage != nullptr)
   {
     if (FMasterStorageOpenFailures > 0)
     {
@@ -1225,7 +1225,7 @@ void TCustomIniFileStorage::CloseSubKey()
 {
   // What we are called to restore previous key from OpenSubKey,
   // when opening path component fails, the master storage was not involved yet
-  if (!FOpeningSubKey && (FMasterStorage.get() != nullptr))
+  if (!FOpeningSubKey && (FMasterStorage != nullptr))
   {
     if (FMasterStorageOpenFailures > 0)
     {
@@ -1335,7 +1335,7 @@ bool TCustomIniFileStorage::DoDeleteValue(const UnicodeString & Name)
 bool TCustomIniFileStorage::HandleByMasterStorage()
 {
   return
-    (FMasterStorage.get() != nullptr) &&
+    (FMasterStorage != nullptr) &&
     (FMasterStorageOpenFailures == 0);
 }
 
@@ -1615,7 +1615,7 @@ uint32_t TCustomIniFileStorage::GetCurrentAccess()
   uint32_t Result;
   // The way THierarchicalStorage::OpenSubKey is implemented, the access will be zero for non-existing keys in
   // configuration overrides => delegating access handling to the master storage (which still should read overriden access keys)
-  if (FMasterStorage.get() != nullptr)
+  if (FMasterStorage != nullptr)
   {
     Result = FMasterStorage->GetCurrentAccess();
   }
@@ -1675,7 +1675,7 @@ TIniFileStorage::TIniFileStorage(const UnicodeString & AStorage, TCustomIniFile 
 
 void TIniFileStorage::Flush()
 {
-  if (FMasterStorage.get() != nullptr)
+  if (FMasterStorage != nullptr)
   {
     FMasterStorage->Flush();
   }
