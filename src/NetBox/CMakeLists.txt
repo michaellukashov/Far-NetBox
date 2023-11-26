@@ -334,7 +334,7 @@ target_include_directories(ssleay32 SYSTEM BEFORE PRIVATE
   # ../../libs/openssl-3/providers/common/include
   # ../../libs/openssl-3/implementations/include
   ../../libs/openssl-3/crypto/modes
-  ../../libs/openssl-3/crypto/ec/curve448/arch_32
+  # ../../libs/openssl-3/crypto/ec/curve448/arch_32
   ../../libs/openssl-3/crypto/ec/curve448
   ../../libs/openssl-3
 )
@@ -366,15 +366,37 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   ../../libs/openssl-3/crypto/bn/rsaz-x86_64.asm
   ../../libs/openssl-3/crypto/modes/aesni-gcm-x86_64.asm
 )
-else()
+else() # if(x64)
 compile_asm_files(RESULT libeay32_obj_files ASM_FILES
-  ../../libs/openssl-3/crypto/sha/asm/sha1-586.asm
-  ../../libs/openssl-3/crypto/md5/asm/md5-586.asm
+  ../../libs/openssl-3/crypto/aes/libcrypto-lib-vpaes-x86.obj.asm
+  ../../libs/openssl-3/crypto/aes/libcrypto-lib-aesni-x86.obj.asm
+  ../../libs/openssl-3/crypto/aes/libcrypto-lib-aes-586.obj.asm
+  ../../libs/openssl-3/crypto/bf/libcrypto-lib-bf-586.obj.asm
+  ../../libs/openssl-3/crypto/bn/libcrypto-lib-x86-mont.obj.asm
+  ../../libs/openssl-3/crypto/bn/libcrypto-lib-x86-gf2m.obj.asm
+  # ../../libs/openssl-3/crypto/bn/libcrypto-lib-co-586.obj.asm
+  ../../libs/openssl-3/crypto/camellia/libcrypto-lib-cmll-x86.obj.asm
+  ../../libs/openssl-3/crypto/cast/libcrypto-lib-cast-586.obj.asm
+  ../../libs/openssl-3/crypto/chacha/libcrypto-lib-chacha-x86.obj.asm
+  ../../libs/openssl-3/crypto/des/libcrypto-lib-des-586.obj.asm
+  ../../libs/openssl-3/crypto/des/libcrypto-lib-crypt586.obj.asm
+  ../../libs/openssl-3/crypto/ec/libcrypto-lib-ecp_nistz256-x86.obj.asm
+  ../../libs/openssl-3/crypto/md5/libcrypto-lib-md5-586.obj.asm
+  # ../../libs/openssl-3/crypto/libcrypto-lib-x86cpuid.obj.asm
+  ../../libs/openssl-3/crypto/modes/libcrypto-lib-ghash-x86.obj.asm
+  ../../libs/openssl-3/crypto/poly1305/libcrypto-lib-poly1305-x86.obj.asm
+  ../../libs/openssl-3/crypto/rc4/libcrypto-lib-rc4-586.obj.asm
+  ../../libs/openssl-3/crypto/ripemd/libcrypto-lib-rmd-586.obj.asm
+  ../../libs/openssl-3/crypto/sha/libcrypto-lib-sha512-586.obj.asm
+  ../../libs/openssl-3/crypto/sha/libcrypto-lib-sha256-586.obj.asm
+  ../../libs/openssl-3/crypto/sha/libcrypto-lib-sha1-586.obj.asm
+  ../../libs/openssl-3/crypto/whrlpool/libcrypto-lib-wp-mmx.obj.asm
 )
-endif()
+endif() # if(x64)
+
 #message("libeay32_obj_files: ${libeay32_obj_files}")
 
-add_library(libeay32 STATIC
+set(libeay32_c_files
   ../../libs/openssl-3/crypto/cryptlib.c
   ../../libs/openssl-3/crypto/params.c
   ../../libs/openssl-3/crypto/params_from_text.c
@@ -482,8 +504,6 @@ add_library(libeay32 STATIC
   ../../libs/openssl-3/crypto/rc2/rc2_cbc.c
   ../../libs/openssl-3/crypto/rc2/rc2cfb64.c
   ../../libs/openssl-3/crypto/rc2/rc2ofb64.c
-  ../../libs/openssl-3/crypto/rc4/rc4_skey.c
-  ../../libs/openssl-3/crypto/rc4/rc4_enc.c
   ../../libs/openssl-3/crypto/idea/i_cbc.c
   ../../libs/openssl-3/crypto/idea/i_cfb64.c
   ../../libs/openssl-3/crypto/idea/i_ofb64.c
@@ -1044,9 +1064,6 @@ add_library(libeay32 STATIC
   ../../libs/openssl-3/crypto/http/http_err.c
   ../../libs/openssl-3/crypto/http/http_client.c
   ../../libs/openssl-3/crypto/http/http_lib.c
-  ../../libs/openssl-3/crypto/des/des_enc.c
-  ../../libs/openssl-3/crypto/bf/bf_enc.c
-  ../../libs/openssl-3/crypto/cast/c_enc.c
   ../../libs/openssl-3/crypto/crmf/crmf_err.c
   ../../libs/openssl-3/crypto/cmp/cmp_err.c
   ../../libs/openssl-3/crypto/cmp/cmp_util.c
@@ -1214,7 +1231,22 @@ add_library(libeay32 STATIC
   ../../libs/openssl-3/providers/implementations/encode_decode/endecoder_common.c
   ../../libs/openssl-3/providers/implementations/storemgmt/file_store.c
   ../../libs/openssl-3/providers/implementations/storemgmt/file_store_any2obj.c
+)
+
+if(x64)
+set(libeay32_c_files ${libeay32_c_files}
+  ../../libs/openssl-3/crypto/rc4/rc4_enc.c
+  ../../libs/openssl-3/crypto/rc4/rc4_skey.c
+  ../../libs/openssl-3/crypto/des/des_enc.c
+  ../../libs/openssl-3/crypto/cast/c_enc.c
+  ../../libs/openssl-3/crypto/bf/bf_enc.c
+)
+else() # if(x64)
+endif() #if(x64)
+
+add_library(libeay32 STATIC
   ${libeay32_obj_files}
+  ${libeay32_c_files}
 )
 
 target_compile_options(libeay32 PRIVATE
