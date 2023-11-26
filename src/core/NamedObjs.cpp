@@ -112,7 +112,7 @@ int32_t TNamedObjectList::Add(TObject * AObject)
 {
   int32_t Result;
   const TAutoFlag ControlledAddFlag(FControlledAdd); nb::used(ControlledAddFlag);
-  TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
+  const TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),
   // keep the hidden objects in front, so that HiddenCount is correct
   if (!FAutoSort && NamedObject->GetHidden())
@@ -132,7 +132,7 @@ void TNamedObjectList::Notify(TObject * Ptr, TListNotification Action)
 {
   if (Action == lnDeleted)
   {
-    TNamedObject * NamedObject = static_cast<TNamedObject *>(Ptr);
+    const TNamedObject * NamedObject = static_cast<TNamedObject *>(Ptr);
     if (NamedObject->GetHidden() && (FHiddenCount >= 0))
     {
       FHiddenCount--;

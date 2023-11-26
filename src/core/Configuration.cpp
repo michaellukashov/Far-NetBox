@@ -374,7 +374,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
 UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 {
   // no longer useful
-  int32_t P = Property.LastDelimiter(L".>");
+  const int32_t P = Property.LastDelimiter(L".>");
   UnicodeString Result = Property.SubString(P + 1, Property.Length() - P);
   if ((Result[1] == L'F') && (towupper(Result[2]) == Result[2]))
   {
@@ -854,7 +854,7 @@ bool TConfiguration::ShowBanner(
 {
   UnicodeString StoredBannerHash;
   GetBannerData(ASessionKey, StoredBannerHash, AParams);
-  bool Result = (StoredBannerHash != BannerHash(ABanner));
+  const bool Result = (StoredBannerHash != BannerHash(ABanner));
   return Result;
 }
 
@@ -900,7 +900,7 @@ void TConfiguration::RememberLastFingerprint(const UnicodeString & ASiteKey, con
   if (Storage->OpenSubKey(GetConfigurationSubKey(), true) &&
       Storage->OpenSubKey(LastFingerprintsStorageKey, true))
   {
-    UnicodeString FingerprintKey = FormatFingerprintKey(ASiteKey, AFingerprintType);
+    const UnicodeString FingerprintKey = FormatFingerprintKey(ASiteKey, AFingerprintType);
     Storage->WriteString(FingerprintKey, AFingerprint);
   }
 }
@@ -915,7 +915,7 @@ UnicodeString TConfiguration::GetLastFingerprint(const UnicodeString & ASiteKey,
   if (Storage->OpenSubKey(GetConfigurationSubKey(), false) &&
       Storage->OpenSubKey(LastFingerprintsStorageKey, false))
   {
-    UnicodeString FingerprintKey = FormatFingerprintKey(ASiteKey, AFingerprintType);
+    const UnicodeString FingerprintKey = FormatFingerprintKey(ASiteKey, AFingerprintType);
     Result = Storage->ReadString(FingerprintKey, "");
   }
   return Result;
@@ -988,8 +988,8 @@ bool TConfiguration::RegistryPathExists(const UnicodeString & RegistryPath) cons
 {
   std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(GetRegistryStorageKey()));
   Registry->Init();
-  UnicodeString ParentKey = ExtractFileDir(RegistryPath);
-  UnicodeString SubKey = base::ExtractFileName(RegistryPath, false);
+  const UnicodeString ParentKey = ExtractFileDir(RegistryPath);
+  const UnicodeString SubKey = base::ExtractFileName(RegistryPath, false);
   return
     Registry->OpenRootKey(false) &&
     (ParentKey.IsEmpty() ||
@@ -1005,7 +1005,7 @@ void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
   if (ParentKey.IsEmpty() ||
       Registry->OpenSubKeyPath(ParentKey, false))
   {
-    UnicodeString SubKey = base::ExtractFileName(RegistryPath, false);
+    const UnicodeString SubKey = base::ExtractFileName(RegistryPath, false);
     Registry->RecursiveDeleteSubKey(SubKey);
   }
 }
@@ -1138,7 +1138,7 @@ TVSFixedFileInfo * TConfiguration::GetFixedApplicationInfo() const
 
 int32_t TConfiguration::GetCompoundVersion() const
 {
-  TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
+  const TVSFixedFileInfo * FileInfo = GetFixedApplicationInfo();
   if (!FileInfo)
     return 0;
   return CalculateCompoundVersion(
@@ -1228,10 +1228,10 @@ bool TConfiguration::GetIsUnofficial() const
 static TDateTime GetBuildDate()
 {
   UnicodeString BuildDateStr = __DATE__;
-  UnicodeString MonthStr = CutToChar(BuildDateStr, L' ', true);
-  int32_t Month = ParseShortEngMonthName(MonthStr);
-  int32_t Day = StrToIntDef(CutToChar(BuildDateStr, L' ', true), 0);
-  int32_t Year = StrToIntDef(Trim(BuildDateStr), 0);
+  const UnicodeString MonthStr = CutToChar(BuildDateStr, L' ', true);
+  const int32_t Month = ParseShortEngMonthName(MonthStr);
+  const int32_t Day = StrToIntDef(CutToChar(BuildDateStr, L' ', true), 0);
+  const int32_t Year = StrToIntDef(Trim(BuildDateStr), 0);
   TDateTime Result = EncodeDateVerbose(static_cast<Word>(Year), static_cast<Word>(Month), static_cast<Word>(Day));
   return Result;
 }
@@ -1240,7 +1240,7 @@ UnicodeString TConfiguration::GetFullVersion() const
 {
   UnicodeString Result = GetVersion();
 
-  UnicodeString AReleaseType = GetReleaseType();
+  const UnicodeString AReleaseType = GetReleaseType();
   if (DebugAlwaysTrue(!AReleaseType.IsEmpty()) &&
       !SameText(AReleaseType, L"stable") &&
       !SameText(AReleaseType, L"development"))
@@ -1267,18 +1267,18 @@ UnicodeString TConfiguration::GetVersionStrHuman()
   TGuard Guard(FCriticalSection);
   try
   {
-    TDateTime BuildDate = GetBuildDate();
+    const TDateTime BuildDate = GetBuildDate();
 
     UnicodeString FullVersion = GetFullVersion();
 
     if (GetIsUnofficial())
     {
-      UnicodeString BuildStr = GetUnofficialBuildTag();
+      const UnicodeString BuildStr = GetUnofficialBuildTag();
       FullVersion += L" " + BuildStr;
     }
 
     UnicodeString DateStr;
-    TDateTime ANow = Now();
+    const TDateTime ANow = Now();
     if (BuildDate < ANow)
     {
       DateStr = FormatRelativeTime(ANow, BuildDate, true);
@@ -1309,7 +1309,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   TGuard Guard(FCriticalSection); nb::used(Guard);
   try
   {
-    TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
+    const TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
 #if 0
     return FMTLOAD(VERSION,
       HIWORD(Info->dwFileVersionMS),
@@ -1327,9 +1327,9 @@ UnicodeString TConfiguration::GetProductVersionStr() const
       BuildStr = GetUnofficialBuildTag();
     }
 
-    UnicodeString FullVersion = GetFullVersion();
+    const UnicodeString FullVersion = GetFullVersion();
 
-    WORD Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
+    const WORD Build = LOWORD(FixedApplicationInfo->dwFileVersionLS);
     if (Build > 0)
     {
       BuildStr += L" " + ::IntToStr(Build);
@@ -1412,7 +1412,7 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   {
     if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
     {
-      TTranslation Translation = GetTranslation(Info, 0);
+      const TTranslation Translation = GetTranslation(Info, 0);
       try
       {
         Result = ::GetFileInfoString(Info, Translation, AKey, AllowEmpty);
@@ -1451,7 +1451,7 @@ UnicodeString TConfiguration::GetFileMimeType(const UnicodeString & AFileName) c
 
   if (!GetMimeTypes().IsEmpty())
   {
-    UnicodeString FileNameOnly = base::ExtractFileName(AFileName, false);
+    const UnicodeString FileNameOnly = base::ExtractFileName(AFileName, false);
     UnicodeString AMimeTypes = GetMimeTypes();
     while (!Found && !AMimeTypes.IsEmpty())
     {
@@ -1492,8 +1492,8 @@ void TConfiguration::SetExplicitIniFileStorageName(const UnicodeString & FileNam
 
 UnicodeString TConfiguration::GetDefaultIniFileExportPath() const
 {
-  UnicodeString PersonalDirectory = GetPersonalFolder();
-  UnicodeString FileName = IncludeTrailingBackslash(PersonalDirectory) +
+  const UnicodeString PersonalDirectory = GetPersonalFolder();
+  const UnicodeString FileName = IncludeTrailingBackslash(PersonalDirectory) +
     base::ExtractFileName(ExpandEnvironmentVariables(GetIniFileStorageNameForReadingWriting()), false);
   return FileName;
 }
@@ -1512,7 +1512,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) c
 {
   UnicodeString ProgramPath = ""; // TODO: ParamStr(0);
 
-  UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
+  const UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
 
   UnicodeString IniPath;
   if (base::FileExists(ApiPath(ProgramIniPath)))
@@ -1521,7 +1521,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) c
   }
   else
   {
-    UnicodeString AppDataIniPath =
+    const UnicodeString AppDataIniPath =
       IncludeTrailingBackslash(GetShellFolderPath(CSIDL_APPDATA)) +
       base::ExtractFileName(ProgramIniPath, false);
     if (base::FileExists(ApiPath(AppDataIniPath)))
@@ -1533,7 +1533,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) c
       // avoid expensive test if we are interested in existing files only
       if (!ReadingOnly && (FProgramIniPathWritable < 0))
       {
-        UnicodeString ProgramDir = ::ExtractFilePath(ProgramPath);
+        const UnicodeString ProgramDir = ::ExtractFilePath(ProgramPath);
         FProgramIniPathWritable = IsDirectoryWriteable(ProgramDir) ? 1 : 0;
       }
 
@@ -1546,7 +1546,7 @@ UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) c
   if (FVirtualIniFileStorageName.IsEmpty() &&
       TPath::IsDriveRooted(IniPath))
   {
-    UnicodeString LocalAppDataPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
+    const UnicodeString LocalAppDataPath = GetShellFolderPath(CSIDL_LOCAL_APPDATA);
     // virtual store for non-system drives have a different virtual store,
     // do not bother about them
     if (TPath::IsDriveRooted(LocalAppDataPath) &&
@@ -1659,9 +1659,9 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACusto
       // Not expanding, as we want to allow change from explicit path to path with variables and vice versa
       !IsPathToSameFile(FCustomIniFileStorageName, ACustomIniFileStorageName))
   {
-    TStorage StorageBak = FStorage;
-    UnicodeString CustomIniFileStorageNameBak = FCustomIniFileStorageName;
-    UnicodeString IniFileStorageNameBak = FIniFileStorageName;
+    const TStorage StorageBak = FStorage;
+    const UnicodeString CustomIniFileStorageNameBak = FCustomIniFileStorageName;
+    const UnicodeString IniFileStorageNameBak = FIniFileStorageName;
     try
     {
       std::unique_ptr<THierarchicalStorage> SourceStorage(CreateConfigStorage());
@@ -1749,9 +1749,9 @@ TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(CreateSessionsForImport(Sessions));
 
-  UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
-  UnicodeString FilezillaSiteManagerFile = TPath::Combine(AppDataPath, L"FileZilla\\sitemanager.xml");
-  UnicodeString FilezillaConfigurationFile = TPath::Combine(AppDataPath, L"FileZilla\\filezilla.xml");
+  const UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
+  const UnicodeString FilezillaSiteManagerFile = TPath::Combine(AppDataPath, L"FileZilla\\sitemanager.xml");
+  const UnicodeString FilezillaConfigurationFile = TPath::Combine(AppDataPath, L"FileZilla\\filezilla.xml");
 
   if (base::FileExists(ApiPath(FilezillaSiteManagerFile)))
   {
@@ -1790,8 +1790,8 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
 
 static UnicodeString GetOpensshFolder()
 {
-  UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
-  UnicodeString Result = TPath::Combine(ProfilePath, OpensshFolderName);
+  const UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
+  const UnicodeString Result = TPath::Combine(ProfilePath, OpensshFolderName);
   return Result;
 }
 
@@ -1799,7 +1799,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   TStoredSessionList * Sessions, UnicodeString & Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(CreateSessionsForImport(Sessions));
-  UnicodeString KnownHostsFile = TPath::Combine(GetOpensshFolder(), L"known_hosts");
+  const UnicodeString KnownHostsFile = TPath::Combine(GetOpensshFolder(), L"known_hosts");
 
   try
   {
@@ -1843,7 +1843,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
   TStoredSessionList * Sessions, UnicodeString & Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(CreateSessionsForImport(Sessions));
-  UnicodeString ConfigFile = TPath::Combine(GetOpensshFolder(), L"config");
+  const UnicodeString ConfigFile = TPath::Combine(GetOpensshFolder(), L"config");
 
   try
   {
@@ -1879,7 +1879,7 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 {
   if (GetRandomSeedFile() != Value)
   {
-    UnicodeString PrevRandomSeedFileName = GetRandomSeedFileName();
+    const UnicodeString PrevRandomSeedFileName = GetRandomSeedFileName();
 
     FRandomSeedFile = Value;
 
@@ -1917,8 +1917,8 @@ UnicodeString TConfiguration::GetDirectoryStatisticsCacheKey(
   FilterCopyParam.Save(OptionsStorage.get(), &Defaults);
 
 #endif // if 0
-  UTF8String RawOptionsBuf(RawOptions->GetCommaText().LowerCase());
-  UnicodeString Result = Sha256(RawOptionsBuf.c_str(), RawOptionsBuf.Length());
+  const UTF8String RawOptionsBuf(RawOptions->GetCommaText().LowerCase());
+  const UnicodeString Result = Sha256(RawOptionsBuf.c_str(), RawOptionsBuf.Length());
   return Result;
 }
 
@@ -1940,8 +1940,8 @@ TStrings * TConfiguration::LoadDirectoryStatisticsCache(
   std::unique_ptr<TStringList> Result;
   if (Storage != nullptr)
   {
-    UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);
-    UnicodeString Buf = Storage->ReadString(Key, UnicodeString());
+    const UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);
+    const UnicodeString Buf = Storage->ReadString(Key, UnicodeString());
     Result.reset(CommaTextToStringList(Buf));
   }
   else
@@ -1957,8 +1957,8 @@ void TConfiguration::SaveDirectoryStatisticsCache(
   std::unique_ptr<THierarchicalStorage> Storage(OpenDirectoryStatisticsCache(true));
   if (Storage != nullptr)
   {
-    UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);
-    UnicodeString Buf = DataList->GetCommaText();
+    const UnicodeString Key = GetDirectoryStatisticsCacheKey(SessionKey, Path, CopyParam);
+    const UnicodeString Buf = DataList->GetCommaText();
     Storage->WriteString(Key, Buf);
   }
 }
@@ -2004,7 +2004,7 @@ UnicodeString TConfiguration::GetCertificateStorageExpanded() const
   UnicodeString Result = FCertificateStorage;
   if (Result.IsEmpty())
   {
-    UnicodeString DefaultCertificateStorage = TPath::Combine(ExtractFilePath(ModuleFileName()), L"cacert.pem");
+    const UnicodeString DefaultCertificateStorage = TPath::Combine(ExtractFilePath(ModuleFileName()), L"cacert.pem");
     if (base::FileExists(DefaultCertificateStorage))
     {
       Result = DefaultCertificateStorage;
@@ -2375,7 +2375,7 @@ void TShortCuts::Add(const TShortCut &ShortCut)
 
 bool TShortCuts::Has(const TShortCut &ShortCut) const
 {
-  nb::vector_t<TShortCut>::iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
+  const nb::vector_t<TShortCut>::const_iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
   return (it != FShortCuts.end());
 }
 //---------------------------------------------------------------------------
@@ -2396,7 +2396,7 @@ UnicodeString TConfiguration::GetProductVersion() const
   UnicodeString Result;
   try
   {
-    TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
+    const TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
     if (FixedApplicationInfo)
     {
       Result = FormatVersion(
