@@ -1676,14 +1676,14 @@ target_compile_definitions(expat PRIVATE
 
 set(ZLIB_SOURCES
   ../../libs/zlib/src/adler32.c
-  ../../libs/zlib/src/crc32.c
+  # ../../libs/zlib/src/crc32.c
   ../../libs/zlib/src/infback.c
   ../../libs/zlib/src/inffast.c
   ../../libs/zlib/src/inflate.c
   ../../libs/zlib/src/inftrees.c
   ../../libs/zlib/src/trees.c
   ../../libs/zlib/src/zutil.c
-  ../../libs/zlib/src/match.c
+  # ../../libs/zlib/src/match.c
   ../../libs/zlib/src/deflate.c
   ../../libs/zlib/src/deflate_slow.c
   ../../libs/zlib/src/deflate_medium.c
@@ -1710,6 +1710,7 @@ target_compile_definitions(zlib PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   -DUNALIGNED_OK -DZLIB_COMPAT
+  -DZLIB_INTERNAL=
 )
 
 #-------------------------------------------------------------------------------
