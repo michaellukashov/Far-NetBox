@@ -410,7 +410,7 @@ void ExecuteProcessAndReadOutput(const UnicodeString & Command, UnicodeString & 
     }
     __finally
     {
-      // If we do not close the handle here, the ReadFile below would get stuck once the app finishes writting,
+      // If we do not close the handle here, the ReadFile below would get stuck once the app finishes writing,
       // as it still sees that someone "can" write to the pipe.
       CloseHandle(PipeWrite);
     }
