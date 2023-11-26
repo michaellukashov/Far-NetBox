@@ -218,16 +218,16 @@ struct TFileTransferData
 };
 #endif // #if 0
 
-const UnicodeString SiteCommand(L"SITE");
-const UnicodeString SymlinkSiteCommand(L"SYMLINK");
-const UnicodeString CopySiteCommand(L"COPY");
-const UnicodeString HashCommand(L"HASH"); // Cerberos + FileZilla servers
-const UnicodeString AvblCommand(L"AVBL");
-const UnicodeString XQuotaCommand(L"XQUOTA");
-const UnicodeString MdtmCommand(L"MDTM");
-const UnicodeString SizeCommand(L"SIZE");
-const UnicodeString CsidCommand(L"CSID");
-const UnicodeString DirectoryHasBytesPrefix(L"226-Directory has");
+constexpr const wchar_t * SiteCommand = L"SITE";
+constexpr const wchar_t * SymlinkSiteCommand = L"SYMLINK";
+constexpr const wchar_t * CopySiteCommand = L"COPY";
+constexpr const wchar_t * HashCommand = L"HASH"; // Cerberos + FileZilla servers
+constexpr const wchar_t * AvblCommand = L"AVBL";
+constexpr const wchar_t * XQuotaCommand = L"XQUOTA";
+constexpr const wchar_t * MdtmCommand = L"MDTM";
+constexpr const wchar_t * SizeCommand = L"SIZE";
+constexpr const wchar_t * CsidCommand = L"CSID";
+constexpr const wchar_t * DirectoryHasBytesPrefix = L"226-Directory has";
 
 class TFTPFileListHelper final : public TObject
 {
@@ -3567,7 +3567,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
   if (::StartsStr(DirectoryHasBytesPrefix, Response))
   {
     UnicodeString Buf = Response;
-    Buf.Delete(1, DirectoryHasBytesPrefix.Length());
+    Buf.Delete(1, UnicodeString(DirectoryHasBytesPrefix).Length());
     Buf = Buf.TrimLeft();
     UnicodeString BytesStr = CutToChar(Buf, L' ', true);
     BytesStr = ReplaceStr(BytesStr, L",", L"");
