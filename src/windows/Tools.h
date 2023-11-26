@@ -3,10 +3,10 @@
 
 #include <comctrls.hpp>
 #include <WinInterface.h>
-__removed #include <HelpIntfs.hpp>
+// #include <HelpIntfs.hpp>
 #include <stdio.h>
 #include <SessionData.h>
-__removed #include <Vcl.Graphics.hpp>
+// #include <Vcl.Graphics.hpp>
 
 #if 0
 void CenterFormOn(TForm * Form, TControl * CenterOn);

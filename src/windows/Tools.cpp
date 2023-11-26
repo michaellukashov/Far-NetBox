@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-__removed #include <Consts.hpp>
+// #include <Consts.hpp>
 #include <shlobj.h>
 #include <stdio.h>
 #include <winhttp.h>
@@ -77,7 +77,7 @@ __removed #include <Consts.hpp>
 #undef HTTP_VERSION_INFO
 #undef LPHTTP_VERSION_INFO
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 TFontStyles IntToFontStyles(int value)
 {
@@ -815,7 +815,7 @@ void ShowHelp(const UnicodeString & AHelpKeyword)
 
 bool IsFormatInClipboard(uint32_t Format)
 {
-  bool Result = OpenClipboard(0);
+  bool Result = OpenClipboard(nullptr);
   if (Result)
   {
     Result = IsClipboardFormatAvailable(Format);
@@ -831,7 +831,7 @@ HANDLE OpenTextFromClipboard(const wchar_t *& Text)
   {
     HANDLE Result = nullptr;
     ErrorContext = L"open";
-    if (OpenClipboard(0))
+    if (OpenClipboard(nullptr))
     {
       // Check also for CF_TEXT?
       ErrorContext = L"getdata";
