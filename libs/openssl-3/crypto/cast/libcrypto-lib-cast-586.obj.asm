@@ -1,9 +1,9 @@
 
 %ifidn __OUTPUT_FORMAT__,obj
-section	code	use32 class=code align=256
+section	code	use32 class=code align=64
 %elifidn __OUTPUT_FORMAT__,win32
 $@feat.00 equ 1
-section	.text	code align=256
+section	.text	code align=64
 %else
 section	.text	code
 %endif
@@ -786,27 +786,15 @@ L$004encrypt_loop:
 	mov	edx,DWORD [4+esi]
 	xor	eax,ecx
 	xor	ebx,edx
-	; bswap eax
-	xchg	ah,al
-	ror	eax,16
-	xchg	ah,al
-	; bswap ebx
-	xchg	bh,bl
-	ror	ebx,16
-	xchg	bh,bl
+	bswap	eax
+	bswap	ebx
 	mov	DWORD [8+esp],eax
 	mov	DWORD [12+esp],ebx
 	call	L$_CAST_encrypt_begin
 	mov	eax,DWORD [8+esp]
 	mov	ebx,DWORD [12+esp]
-	; bswap eax
-	xchg	ah,al
-	ror	eax,16
-	xchg	ah,al
-	; bswap ebx
-	xchg	bh,bl
-	ror	ebx,16
-	xchg	bh,bl
+	bswap	eax
+	bswap	ebx
 	mov	DWORD [edi],eax
 	mov	DWORD [4+edi],ebx
 	add	esi,8
@@ -881,27 +869,15 @@ L$015ej1:
 L$012ejend:
 	xor	eax,ecx
 	xor	ebx,edx
-	; bswap eax
-	xchg	ah,al
-	ror	eax,16
-	xchg	ah,al
-	; bswap ebx
-	xchg	bh,bl
-	ror	ebx,16
-	xchg	bh,bl
+	bswap	eax
+	bswap	ebx
 	mov	DWORD [8+esp],eax
 	mov	DWORD [12+esp],ebx
 	call	L$_CAST_encrypt_begin
 	mov	eax,DWORD [8+esp]
 	mov	ebx,DWORD [12+esp]
-	; bswap eax
-	xchg	ah,al
-	ror	eax,16
-	xchg	ah,al
-	; bswap ebx
-	xchg	bh,bl
-	ror	ebx,16
-	xchg	bh,bl
+	bswap	eax
+	bswap	ebx
 	mov	DWORD [edi],eax
 	mov	DWORD [4+edi],ebx
 	jmp	NEAR L$005finish
@@ -913,27 +889,15 @@ L$002decrypt:
 L$017decrypt_loop:
 	mov	eax,DWORD [esi]
 	mov	ebx,DWORD [4+esi]
-	; bswap eax
-	xchg	ah,al
-	ror	eax,16
-	xchg	ah,al
-	; bswap ebx
-	xchg	bh,bl
-	ror	ebx,16
-	xchg	bh,bl
+	bswap	eax
+	bswap	ebx
 	mov	DWORD [8+esp],eax
 	mov	DWORD [12+esp],ebx
 	call	L$_CAST_decrypt_begin
 	mov	eax,DWORD [8+esp]
 	mov	ebx,DWORD [12+esp]
-	; bswap eax
-	xchg	ah,al
-	ror	eax,16
-	xchg	ah,al
-	; bswap ebx
-	xchg	bh,bl
-	ror	ebx,16
-	xchg	bh,bl
+	bswap	eax
+	bswap	ebx
 	mov	ecx,DWORD [16+esp]
 	mov	edx,DWORD [20+esp]
 	xor	ecx,eax
@@ -954,27 +918,15 @@ L$016decrypt_finish:
 	jz	NEAR L$005finish
 	mov	eax,DWORD [esi]
 	mov	ebx,DWORD [4+esi]
-	; bswap eax
-	xchg	ah,al
-	ror	eax,16
-	xchg	ah,al
-	; bswap ebx
-	xchg	bh,bl
-	ror	ebx,16
-	xchg	bh,bl
+	bswap	eax
+	bswap	ebx
 	mov	DWORD [8+esp],eax
 	mov	DWORD [12+esp],ebx
 	call	L$_CAST_decrypt_begin
 	mov	eax,DWORD [8+esp]
 	mov	ebx,DWORD [12+esp]
-	; bswap eax
-	xchg	ah,al
-	ror	eax,16
-	xchg	ah,al
-	; bswap ebx
-	xchg	bh,bl
-	ror	ebx,16
-	xchg	bh,bl
+	bswap	eax
+	bswap	ebx
 	mov	ecx,DWORD [16+esp]
 	mov	edx,DWORD [20+esp]
 	xor	ecx,eax
