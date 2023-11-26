@@ -11,7 +11,7 @@
 #include "FileBuffer.h"
 #include "TextsCore.h"
 #include <openssl\rand.h>
-__removed #include <Soap.EncdDecd.hpp>
+// #include <Soap.EncdDecd.hpp>
 #include <System.StrUtils.hpp>
 
 /*
