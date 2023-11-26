@@ -1018,7 +1018,7 @@ bool CharInSet(const wchar_t Ch, const UnicodeString & S)
 UnicodeString ExtractFileDrive(const UnicodeString & FileName)
 {
   UnicodeString Result;
-  int32_t L = FileName.Length();
+  const int32_t L = FileName.Length();
   if (L < 2)
     return Result;
   if (CharInSet(FileName[2], AllowDriveSeparators))
@@ -1972,7 +1972,7 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     TSymLinkResult Result = slrError;
     TUnicodeSymLinkRec SymLinkRec;
 
-    HANDLE HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, nullptr);
+    const HANDLE HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, nullptr);
     if (CheckHandle(HFile))
     {
       try

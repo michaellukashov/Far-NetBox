@@ -217,7 +217,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   {
     Result = new TStringList();
     Result->Add(Message);
-    ExtException *ExtE = dyn_cast<ExtException>(E);
+    const ExtException * ExtE = dyn_cast<ExtException>(E);
     if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
     {
       Result->AddStrings(ExtE->GetMoreMessages());
@@ -232,7 +232,7 @@ bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
   if (Result)
   {
     Message += L"\n";
-    ExtException *EE = dyn_cast<ExtException>(E);
+    const ExtException * EE = dyn_cast<ExtException>(E);
     if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
     {
       Message += EE->GetMoreMessages()->GetText() + L"\n";
