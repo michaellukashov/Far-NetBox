@@ -807,7 +807,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
       SET_SESSION_PROPERTY_FROM(PROP, A##PROP); \
     }
   #define LOAD_PASSWORD(PROP, PLAIN_NAME) LOAD_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), RewritePassword = true;)
-  bool LoadPasswords = !GetConfiguration()->GetDisablePasswordStoring() || !RespectDisablePasswordStoring;
+  const bool LoadPasswords = !GetConfiguration()->GetDisablePasswordStoring() || !RespectDisablePasswordStoring;
   if (LoadPasswords)
   {
     LOAD_PASSWORD(Password, L"PasswordPlain");
@@ -2968,7 +2968,7 @@ void TSessionData::SetHostName(const UnicodeString & AValue)
     // This is now hardly used as hostname is parsed directly on login dialog.
     // But can be used when importing sites from PuTTY, as it allows same format too.
     UnicodeString Value = AValue;
-    int32_t P = Value.LastDelimiter(L"@");
+    const int32_t P = Value.LastDelimiter(L"@");
     if (P > 0)
     {
       SessionSetUserName(Value.SubString(1, P - 1));
@@ -3571,13 +3571,13 @@ void TSessionData::SetRekeyTime(uint32_t value)
 UnicodeString TSessionData::GetDefaultSessionName() const
 {
   UnicodeString Result;
-  UnicodeString HostName = ::TrimLeft(GetHostName());
-  UnicodeString UserName = SessionGetUserName();
+  const UnicodeString HostName = ::TrimLeft(GetHostName());
+  const UnicodeString UserName = SessionGetUserName();
   if (IsLocalBrowser)
   {
     // See also TScpCommanderForm::GetLocalBrowserSessionTitle
-    UnicodeString Path1 = base::ExtractShortName(LocalDirectory, false);
-    UnicodeString Path2 = base::ExtractShortName(OtherLocalDirectory, false);
+    const UnicodeString Path1 = base::ExtractShortName(LocalDirectory, false);
+    const UnicodeString Path2 = base::ExtractShortName(OtherLocalDirectory, false);
     Result = Path1 + TitleSeparator + Path2;
   }
   else if (!HostName.IsEmpty() && !UserName.IsEmpty())
@@ -3754,7 +3754,7 @@ bool IsIPv6Literal(const UnicodeString & HostName)
   bool Result = true;
   for (int32_t Index = 1; Result && (Index <= Buf.Length()); Index++)
   {
-    wchar_t C = Buf[Index];
+    const wchar_t C = Buf[Index];
     if (C == L'%')
     {
       break;
@@ -3795,7 +3795,7 @@ TStrings * TSessionData::GetRawSettingsForUrl()
   SessionData->HostKey = FactoryDefaults->HostKey;
   SessionData->CopyNonCoreData(FactoryDefaults.get());
   // Cannot be decided in SaveToOptions as it does not have HostName and UserName, so it cannot calculate DefaultSessionName.
-  bool SaveName = HasSessionName() && (Name != DefaultSessionName);
+  const bool SaveName = HasSessionName() && (Name != DefaultSessionName);
   return SessionData->SaveToOptions(FactoryDefaults.get(), SaveName, false);
 }
 
@@ -3840,7 +3840,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
       }
       S = Base64ToUrlSafe(S); // Noop for MD5 (both in SSH host keys and TLS/SSL)
       S = MD5ToUrlSafe(S); // TLS/SSL fingerprints
-      UnicodeString S2 = EncodeUrlString(S);
+      const UnicodeString S2 = EncodeUrlString(S);
       DebugAssert(S2 == S2); // There should be nothing left for encoding
 
       Url +=
@@ -3865,7 +3865,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
     Url += "@";
   }
 
-  UnicodeString HostNameExpanded = GetHostNameExpanded();
+  const UnicodeString HostNameExpanded = GetHostNameExpanded();
   DebugAssert(!HostNameExpanded.IsEmpty());
   if (IsIPv6Literal(HostNameExpanded))
   {
@@ -4495,17 +4495,17 @@ void TSessionData::PrepareProxyData() const
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
     nb::ClearStruct(IEProxyConfig);
-    TLibraryLoader LibraryLoader("winhttp.dll", true);
+    const TLibraryLoader LibraryLoader("winhttp.dll", true);
     if (LibraryLoader.Loaded())
     {
       typedef BOOL (WINAPI * FWinHttpGetIEProxyConfigForCurrentUser)(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG *);
-      FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
+      const FWinHttpGetIEProxyConfigForCurrentUser GetIEProxyConfig = reinterpret_cast<FWinHttpGetIEProxyConfigForCurrentUser>(
           LibraryLoader.GetProcAddress("WinHttpGetIEProxyConfigForCurrentUser"));
       if (!GetIEProxyConfig)
         return;
       if (!GetIEProxyConfig(&IEProxyConfig))
       {
-        DWORD Err = ::GetLastError();
+        const DWORD Err = ::GetLastError();
         DEBUG_PRINTF("Error reading system proxy configuration, code: %x", Err);
         DebugUsedParam(Err);
       }
@@ -4614,7 +4614,7 @@ void TSessionData::FromURI(const UnicodeString & ProxyURI,
   Pos = ProxyUrl.Pos(L"://");
   if (Pos > 0)
   {
-    UnicodeString ProxyScheme = ProxyUrl.SubString(1, Pos - 1);
+    const UnicodeString ProxyScheme = ProxyUrl.SubString(1, Pos - 1);
     ProxyUrl = ProxyUrl.SubString(Pos + 3);
     if (ProxyScheme == L"socks4")
     {
@@ -5099,7 +5099,7 @@ UnicodeString TSessionData::GetLocalName() const
 UnicodeString TSessionData::ExtractFolderName(const UnicodeString & Name)
 {
   UnicodeString Result;
-  int32_t P = Name.LastDelimiter(L"/");
+  const int32_t P = Name.LastDelimiter(L"/");
   if (P > 0)
   {
     Result = Name.SubString(1, P - 1);
@@ -5184,7 +5184,7 @@ void TSessionData::SetCodePage(const UnicodeString & value)
 
 void TSessionData::AdjustHostName(UnicodeString & HostName, const UnicodeString & Prefix) const
 {
-  UnicodeString FullPrefix = Prefix + ProtocolSeparator;
+  const UnicodeString FullPrefix = Prefix + ProtocolSeparator;
   if (::LowerCase(HostName.SubString(1, FullPrefix.Length())) == FullPrefix)
   {
     HostName.Delete(1, FullPrefix.Length());
@@ -5322,7 +5322,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   {
     DebugAssert(FAutoSort);
     FAutoSort = false;
-    bool WasEmpty = (GetCount() == 0);
+    const bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());
 
@@ -6054,7 +6054,7 @@ int32_t TStoredSessionList::ImportHostKeys(
     DebugAssert(Sessions != nullptr);
     for (int32_t Index = 0; Index < Sessions->Count; Index++)
     {
-      TSessionData * Session = Sessions->GetSession(Index);
+      const TSessionData * Session = Sessions->GetSession(Index);
       if (!OnlySelected || Session->Selected)
       {
         UnicodeString HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", Session->PortNumber, Session->HostNameExpanded));
@@ -6091,7 +6091,7 @@ void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList * Sessions)
   {
     for (int32_t Index = 0; Index < Sessions->GetCount(); ++Index)
     {
-      TSessionData * Session = Sessions->GetSession(Index);
+      const TSessionData * Session = Sessions->GetSession(Index);
       if (Session->GetSelected())
       {
         UnicodeString Algs;
@@ -6136,7 +6136,7 @@ const TSessionData * TStoredSessionList::GetFirstFolderOrWorkspaceSession(const 
   const TSessionData * Result = nullptr;
   if (!Name.IsEmpty())
   {
-    UnicodeString NameWithSlash = base::UnixIncludeTrailingBackslash(Name); // optimization
+    const UnicodeString NameWithSlash = base::UnixIncludeTrailingBackslash(Name); // optimization
     for (int32_t Index = 0; (Result == nullptr) && (Index < Count); Index++)
     {
       if (GetSession(Index)->IsInFolderOrWorkspace(NameWithSlash))
@@ -6192,7 +6192,7 @@ void TStoredSessionList::DoGetFolderOrWorkspace(const UnicodeString & Name, TLis
   for (int32_t Index = 0; (Index < Count); Index++)
   {
     TSessionData * RawData = GetSession(Index);
-    TSessionData * Data =
+    const TSessionData * Data =
       CheckIsInFolderOrWorkspaceAndResolve(RawData, Name);
 
     if (Data != nullptr)
@@ -6324,7 +6324,7 @@ bool TStoredSessionList::IsUrl(const UnicodeString & Url)
   bool DefaultsOnly;
   bool ProtocolDefined = false;
   std::unique_ptr<TSessionData> ParsedData(ParseUrl(Url, nullptr, DefaultsOnly, nullptr, &ProtocolDefined));
-  bool Result = ProtocolDefined;
+  const bool Result = ProtocolDefined;
   return Result;
 }
 
@@ -6546,7 +6546,7 @@ bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
 
 uint32_t GetCodePageAsNumber(const UnicodeString & CodePage)
 {
-  uint32_t codePage = _wtoi(CodePage.c_str());
+  const uint32_t codePage = _wtoi(CodePage.c_str());
   return nb::ToUInt32(codePage == 0 ? CONST_DEFAULT_CODEPAGE : codePage);
 }
 
