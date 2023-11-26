@@ -254,6 +254,6 @@ NB_CORE_EXPORT uint32_t GetSpeedLimit(const UnicodeString & Text);
 NB_CORE_EXPORT UnicodeString SetSpeedLimit(uint32_t Limit);
 NB_CORE_EXPORT void CopySpeedLimits(TStrings * Source, TStrings * Dest);
 NB_CORE_EXPORT TOperationSide ReverseOperationSide(TOperationSide Side);
-extern const uint32_t MinSpeed;
-extern const uint32_t MaxSpeed;
+constexpr const uint32_t MinSpeed = 8 * 1024;
+constexpr const uint32_t MaxSpeed = 8 * 1024 * 1024;
 

@@ -31,8 +31,8 @@
 #define PASSWORD_SWITCH L"password"
 #define PRIVATEKEY_SWITCH L"privatekey"
 #define PASSWORDSFROMFILES_SWITCH L"passwordsfromfiles"
-extern const wchar_t * TransferModeNames[];
-extern const int32_t TransferModeNamesCount;
+constexpr const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
+constexpr const int32_t TransferModeNamesCount = _countof(TransferModeNames); 
 extern const wchar_t * ToggleNames[];
 enum TToggle { ToggleOff, ToggleOn };
 

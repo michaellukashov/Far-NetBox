@@ -9,8 +9,8 @@
 #include "TextsCore.h"
 #include "Interface.h"
 
-const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
-const int32_t TransferModeNamesCount = _countof(TransferModeNames);
+//const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
+//constexpr int32_t TransferModeNamesCount = _countof(TransferModeNames);
 
 TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept :
   TObject(Kind)
@@ -219,7 +219,7 @@ void TCopyParamType::DoGetInfoStr(
       (GetPreserveRights() &&
        ((GetRights() != Defaults.GetRights()) || (GetAddXToDirectories() != Defaults.GetAddXToDirectories()))))
   {
-    const int32_t Except = cpaIncludeMaskOnly | cpaNoRights;
+    constexpr int32_t Except = cpaIncludeMaskOnly | cpaNoRights;
     if (DebugAlwaysTrue(GetPreserveRights()))
     {
       UnicodeString RightsStr = GetRights().GetText();
@@ -260,7 +260,7 @@ void TCopyParamType::DoGetInfoStr(
     bool AddPreserveTime = false;
     UnicodeString Str = LoadStr(GetPreserveTime() ? COPY_INFO_TIMESTAMP : COPY_INFO_DONT_PRESERVE_TIME);
 
-    const int32_t ExceptDirs = cpaNoPreserveTimeDirs;
+    constexpr int32_t ExceptDirs = cpaNoPreserveTimeDirs;
     if (APreserveTimeDirs != Defaults.GetPreserveTimeDirs())
     {
       if (DebugAlwaysTrue(GetPreserveTimeDirs()))
@@ -274,7 +274,7 @@ void TCopyParamType::DoGetInfoStr(
       ADD("", ExceptDirs);
     }
 
-    const int32_t Except = cpaIncludeMaskOnly | cpaNoPreserveTime;
+    constexpr int32_t Except = cpaIncludeMaskOnly | cpaNoPreserveTime;
     if (GetPreserveTime() != Defaults.GetPreserveTime())
     {
       if (FLAGCLEAR(Options, Except))
@@ -774,9 +774,9 @@ TRights TCopyParamType::RemoteFileRights(uint32_t Attrs) const
 
 UnicodeString TCopyParamType::GetLogStr() const
 {
-  const wchar_t CaseC[] = L"NULFS";
-  const wchar_t ModeC[] = L"BAM";
-  const wchar_t ResumeC[] = L"YSN";
+  constexpr wchar_t CaseC[] = L"NULFS";
+  constexpr wchar_t ModeC[] = L"BAM";
+  constexpr wchar_t ResumeC[] = L"YSN";
   // OpenArray (ARRAYOFCONST) supports only up to 19 arguments, so we had to split it
   return
     FORMAT(
@@ -1074,8 +1074,8 @@ bool TCopyParamType::operator==(const TCopyParamType &rhp) const
 #undef C2
 #undef C
 
-const uint32_t MinSpeed = 8 * 1024;
-const uint32_t MaxSpeed = 8 * 1024 * 1024;
+// constexpr uint32_t MinSpeed = 8 * 1024;
+// constexpr uint32_t MaxSpeed = 8 * 1024 * 1024;
 
 static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t & Speed)
 {
