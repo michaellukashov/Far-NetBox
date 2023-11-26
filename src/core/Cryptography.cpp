@@ -274,10 +274,10 @@ static void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
         c3->CopyFrom(c2);
 
         /* enter additional data for 1st block into uu  */
-        uu[0] = (unsigned char)((i + 1) >> 24);
-        uu[1] = (unsigned char)((i + 1) >> 16);
-        uu[2] = (unsigned char)((i + 1) >> 8);
-        uu[3] = (unsigned char)(i + 1);
+        uu[0] = static_cast<unsigned char>((i + 1) >> 24);
+        uu[1] = static_cast<unsigned char>((i + 1) >> 16);
+        uu[2] = static_cast<unsigned char>((i + 1) >> 8);
+        uu[3] = static_cast<unsigned char>(i + 1);
 
         /* this is the key mixing iteration         */
         for(j = 0, k = 4; j < iter; ++j)
