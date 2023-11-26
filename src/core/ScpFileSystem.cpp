@@ -15,9 +15,9 @@
 
 //#include <stdio.h>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
-__removed #define FILE_OPERATION_LOOP_TERMINAL FTerminal
+// #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
 constexpr int32_t coRaiseExcept = 1;
 constexpr int32_t coExpectNoOutput = 2;
@@ -87,16 +87,16 @@ public:
   explicit TCommandSet(TSessionData * ASessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
-  __removed UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int32_t size);
+  // UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int32_t size);
   UnicodeString Command(TFSCommand Cmd, fmt::ArgList args);
   FMT_VARIADIC_W(UnicodeString, Command, TFSCommand)
 
-  __removed UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int32_t size);
+  // UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int32_t size);
   TStrings * CreateCommandList() const;
   UnicodeString FullCommand(TFSCommand Cmd, fmt::ArgList args);
   FMT_VARIADIC_W(UnicodeString, FullCommand, TFSCommand)
 
-  __removed UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int32_t size);
+  // UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int32_t size);
   static UnicodeString ExtractCommand(const UnicodeString & ACommand);
   // __property int32_t MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
   // __property int32_t MinLines[TFSCommand Cmd]  = { read=GetMinLines };
@@ -1759,8 +1759,8 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TargetDir);
 
   const UnicodeString Options = InitOptionsStr(CopyParam);
-  __removed if (CopyParam->PreserveRights) Options = L"-p";
-  __removed if (FTerminal->SessionData->Scp1Compatibility) Options += L" -1";
+  // if (CopyParam->PreserveRights) Options = L"-p";
+  // if (FTerminal->SessionData->Scp1Compatibility) Options += L" -1";
 
   FScpFatalError = false;
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
@@ -2273,7 +2273,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
 
   const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
 
-  __removed UnicodeString Buf;
+  // UnicodeString Buf;
 
   /* TODO 1: maybe send filetime */
 

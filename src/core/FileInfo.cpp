@@ -11,7 +11,7 @@
 #include "FileInfo.h"
 #include "FileBuffer.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 #define DWORD_ALIGN( base, ptr ) \
     ( (LPBYTE)(base) + ((((LPBYTE)(ptr) - (LPBYTE)(base)) + 3) & ~3) )

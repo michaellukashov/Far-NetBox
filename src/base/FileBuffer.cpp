@@ -5,7 +5,7 @@
 #include <Common.h>
 #include <FileBuffer.h>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 const wchar_t * EOLTypeNames = L"LF;CRLF;CR";
 

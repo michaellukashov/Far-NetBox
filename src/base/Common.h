@@ -172,7 +172,7 @@ NB_CORE_EXPORT bool IsWine();
 NB_CORE_EXPORT bool IsUWP();
 UnicodeString GetPackageName();
 bool IsOfficialPackage();
-__removed TLibModule * FindModule(void * Instance);
+// TLibModule * FindModule(void * Instance);
 NB_CORE_EXPORT int64_t Round(double Number);
 NB_CORE_EXPORT bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, bool Add);
 NB_CORE_EXPORT bool TryStrToDateTimeStandard(const UnicodeString & S, TDateTime & Value);
@@ -373,7 +373,7 @@ UnicodeString AssemblyAddRawSettings(
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
 
-__removed #include "Global.h"
+// #include "Global.h"
 
 template<class T>
 class TValueRestorer // : public TObject
@@ -449,7 +449,7 @@ public:
 };
 #pragma warning(pop)
 
-__removed #include <map>
+// #include <map>
 
 template<class T1, class T2>
 class BiDiMap

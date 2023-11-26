@@ -11,7 +11,7 @@
 
 #include <Global.h>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 const UnicodeString EmptyString(TraceInitStr(L"\1\1\1")); // magic
 

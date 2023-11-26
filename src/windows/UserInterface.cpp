@@ -2,8 +2,8 @@
 #include <vcl.h>
 #pragma hdrstop
 
-__removed #include "ScpCommander.h"
-__removed #include "ScpExplorer.h"
+// #include "ScpCommander.h"
+// #include "ScpExplorer.h"
 
 #include <CoreMain.h>
 #include <Common.h>
@@ -12,13 +12,13 @@ __removed #include "ScpExplorer.h"
 #include "ProgParams.h"
 #include "VCLCommon.h"
 #include "WinConfiguration.h"
-__removed #include "TerminalManager.h"
+// #include "TerminalManager.h"
 #include "TextsWin.h"
 #include "WinInterface.h"
-__removed #include "PasswordEdit.hpp"
+// #include "PasswordEdit.hpp"
 #include "ProgParams.h"
 #include "Tools.h"
-__removed #include "Custom.h"
+// #include "Custom.h"
 #include "HelpWin.h"
 #include <Math.hpp>
 #include <PasTools.hpp>

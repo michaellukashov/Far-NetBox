@@ -35,7 +35,7 @@ private:
   UnicodeString FName;
   bool FHidden{false};
 
-  __removed void SetName(const UnicodeString & value);
+  // void SetName(const UnicodeString & value);
 };
 
 NB_DEFINE_CLASS_ID(TNamedObjectList);

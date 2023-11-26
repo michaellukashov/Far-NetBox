@@ -12,7 +12,7 @@
 #include "TextsCore.h"
 #include "SynchronizeController.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,

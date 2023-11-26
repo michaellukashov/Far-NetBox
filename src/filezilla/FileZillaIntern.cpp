@@ -5,7 +5,7 @@
 #include "FileZillaIntf.h"
 #include "FileZillaApi.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) noexcept :
   // TObject(OBJECT_CLASS_TFileZillaIntern),

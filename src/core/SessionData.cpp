@@ -22,7 +22,7 @@
 #include "S3FileSystem.h"
 #include "FileMasks.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 #define SET_SESSION_PROPERTY_FROM(PROPERTY, FROM) \
   if (F##PROPERTY != FROM) { F##PROPERTY = FROM; Modify(); }
@@ -3885,7 +3885,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
   return Url;
 }
 
-__removed UnicodeString ScriptCommandOpenLink = ScriptCommandLink("open");
+// UnicodeString ScriptCommandOpenLink = ScriptCommandLink("open");
 
 void TSessionData::AddSwitch(
   UnicodeString & Result, const UnicodeString & Name, bool Rtf)
@@ -5400,8 +5400,8 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   {
     FAutoSort = true;
     AlphaSort();
-    __removed delete SubKeys;
-    __removed delete Loaded;
+    // delete SubKeys;
+    // delete Loaded;
   } end_try__finally
 }
 

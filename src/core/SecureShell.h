@@ -9,9 +9,9 @@
 #include "SessionInfo.h"
 
 #ifndef PuttyIntfH
-__removed struct Backend_vtable;
-__removed struct Backend;
-__removed struct Conf;
+// struct Backend_vtable;
+// struct Backend;
+// struct Conf;
 #endif
 
 struct _WSANETWORKEVENTS;

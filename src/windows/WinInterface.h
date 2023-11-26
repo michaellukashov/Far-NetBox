@@ -2,7 +2,7 @@
 #pragma once
 
 #include <Classes.hpp>
-__removed #include <Buttons.hpp>
+// #include <Buttons.hpp>
 #include <Interface.h>
 #include <WinConfiguration.h>
 #include <Terminal.h>
@@ -12,8 +12,8 @@ __removed #include <Buttons.hpp>
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #endif // FARPLUGIN
-__removed #include <Script.h>
-__removed #include "HistoryComboBox.hpp"
+// #include <Script.h>
+// #include "HistoryComboBox.hpp"
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
@@ -114,7 +114,7 @@ void FlashOnBackground();
 
 void TerminateApplication();
 void ShowExtendedExceptionEx(TTerminal * Terminal, Exception * E);
-__removed void FormHelp(TCustomForm * Form);
+// void FormHelp(TCustomForm * Form);
 void SearchHelp(const UnicodeString & Message);
 void MessageWithNoHelp(const UnicodeString & Message);
 
@@ -404,7 +404,7 @@ bool DoSynchronizeDialog(TSynchronizeParamType & Params,
 
 // forms\FullSynchronize.cpp
 struct TUsableCopyParamAttrs;
-__removed enum TSynchronizeMode { smRemote, smLocal, smBoth };
+// enum TSynchronizeMode { smRemote, smLocal, smBoth };
 constexpr int32_t fsoDisableTimestamp = 0x01;
 constexpr int32_t fsoDoNotUsePresets =  0x02;
 constexpr int32_t fsoAllowSelectedOnly = 0x04;
@@ -604,7 +604,7 @@ void InterfaceStarted();
 void InterfaceStartDontMeasure();
 void AddStartupSequence(const UnicodeString & Tag);
 
-__removed #define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
+// #define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
 
 struct TCopyDataMessage
 {

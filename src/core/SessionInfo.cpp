@@ -374,12 +374,12 @@ public:
     if (RecordLocal)
     {
       UnicodeString FileName = TPath::Combine(Item->Local.Directory, Item->Local.FileName);
-      __removed SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Local);
+      // SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Local);
     }
     if (RecordRemote)
     {
       UnicodeString FileName = base::UnixCombinePaths(Item->Remote.Directory, Item->Remote.FileName);
-      __removed SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Remote);
+      // SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Remote);
     }
   }
 
@@ -838,7 +838,7 @@ TSessionLog::~TSessionLog() noexcept
   FClosed = true;
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
-  __removed delete FCriticalSection;
+  // delete FCriticalSection;
 }
 
 void TSessionLog::SetParent(TSessionLog * AParent, const UnicodeString & AName)

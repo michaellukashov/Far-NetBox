@@ -14,19 +14,19 @@
 #include <HelpCore.h>
 #include <Interface.h>
 #include <VCLCommon.h>
-__removed #include <Glyphs.h>
+// #include <Glyphs.h>
 #include <PasTools.hpp>
 #include <DateUtils.hpp>
-__removed #include <Custom.h>
-__removed #include <HistoryComboBox.hpp>
+// #include <Custom.h>
+// #include <HistoryComboBox.hpp>
 
 #include "WinInterface.h"
 #include "GUITools.h"
-__removed #include "JclDebug.hpp"
-__removed #include "JclHookExcept.hpp"
+// #include "JclDebug.hpp"
+// #include "JclHookExcept.hpp"
 #include <System.IOUtils.hpp>
 #include <StrUtils.hpp>
-__removed #include <WinApi.h>
+// #include <WinApi.h>
 #include "Tools.h"
 //#include <Vcl.AppEvnts.hpp>
 #if 0
@@ -787,13 +787,13 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
 void * BusyStart()
 {
   void * Token = nullptr; // reinterpret_cast<void *>(Screen->Cursor);
-  __removed Screen->Cursor = crHourGlass;
+  // Screen->Cursor = crHourGlass;
   return Token;
 }
 
 void BusyEnd(void * Token)
 {
-  __removed Screen->Cursor = reinterpret_cast<TCursor>(Token);
+  // Screen->Cursor = reinterpret_cast<TCursor>(Token);
 }
 
 
@@ -1610,10 +1610,10 @@ void WinInitialize()
   }
 #endif // #if 0
 
-  __removed SetErrorMode(SEM_FAILCRITICALERRORS);
-  __removed OnApiPath = ApiPath;
+  // SetErrorMode(SEM_FAILCRITICALERRORS);
+  // OnApiPath = ApiPath;
   MainThread = GetCurrentThreadId();
-  __removed Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
+  // Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
 
 }
 

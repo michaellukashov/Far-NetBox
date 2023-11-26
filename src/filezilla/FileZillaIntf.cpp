@@ -14,7 +14,7 @@ static HMODULE winsock2_module = nullptr;
 static HMODULE wship6_module = nullptr;
 #endif // NO_IPV6
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 t_getaddrinfo p_getaddrinfo{nullptr};
 t_freeaddrinfo p_freeaddrinfo{nullptr};

@@ -342,7 +342,7 @@ public:
   bool UpdateFileList(TQueueItemProxy * ItemProxy, TQueueFileList * FileList);
 
 protected:
-  __removed TTerminalQueueStatus() noexcept;
+  // TTerminalQueueStatus() noexcept;
 
   void Add(TQueueItemProxy * temProxy);
   void Delete(TQueueItemProxy * ItemProxy);

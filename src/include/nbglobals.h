@@ -211,14 +211,6 @@ inline void operator_delete(void * p)
 #define NB_CONCATENATE_IMPL(s1, s2) s1 ## s2
 #define NB_CONCATENATE(s1, s2) NB_CONCATENATE_IMPL(s1, s2)
 #endif
-#ifdef _MSC_VER
-#define __removed NB_CONCATENATE(/, /)
-#else
-//#define PASTE2(a, b) a ## b
-//#define _PASTE2(a, b) PASTE2(a, b)
-//#define PASTE3(a, b, c) _PASTE2(PASTE2(a, b), c)
-#define __removed NB_CONCATENATE(/, /)
-#endif
 
 #undef __property
 #ifdef _MSC_VER

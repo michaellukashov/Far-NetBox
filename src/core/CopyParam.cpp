@@ -508,11 +508,11 @@ void TCopyParamType::DoGetInfoStr(
 
 #if 0
   std::unique_ptr<TStringList> RawOptions;
-  __removed std::unique_ptr<TOptionsStorage> OptionsStorage;
+  // std::unique_ptr<TOptionsStorage> OptionsStorage;
 
   RawOptions = std::make_unique<TStringList>();
-  __removed OptionsStorage = std::make_unique<TOptionsStorage>(RawOptions.get(), true);
-  __removed ScriptNonDefaults.Save(OptionsStorage.get(), &Defaults);
+  // OptionsStorage = std::make_unique<TOptionsStorage>(RawOptions.get(), true);
+  // ScriptNonDefaults.Save(OptionsStorage.get(), &Defaults);
 
   if (RawOptions->Count > 0)
   {

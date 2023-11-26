@@ -8,7 +8,7 @@
 
 #include "Queue.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 class TBackgroundTerminal;
 
@@ -2625,7 +2625,7 @@ TTerminalThread::~TTerminalThread() noexcept
   FTerminal->SetOnReadDirectoryProgress(std::forward<TReadDirectoryProgressEvent>(FOnReadDirectoryProgress));
   FTerminal->SetOnInitializeLog(std::forward<TNotifyEvent>(FOnInitializeLog));
 
-  __removed delete FSection;
+  // delete FSection;
   if (FAbandoned)
   {
     SAFE_DESTROY(FTerminal);

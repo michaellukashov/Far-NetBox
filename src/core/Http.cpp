@@ -96,7 +96,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           }
         }
 
-        __removed UTF8String RequestUtf;
+        // UTF8String RequestUtf;
         if (!Request.IsEmpty())
         {
           UTF8String RequestUtf = UTF8String(Request);

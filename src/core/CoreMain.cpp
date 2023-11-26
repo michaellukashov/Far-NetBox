@@ -14,9 +14,9 @@
 #include "TextsCore.h"
 // #include "WebDAVFileSystem.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
-__removed TConfiguration * Configuration = nullptr;
+// TConfiguration * Configuration = nullptr;
 TStoredSessionList * StoredSessions = nullptr;
 TApplicationLog * ApplicationLog = nullptr;
 bool AnySession = false;

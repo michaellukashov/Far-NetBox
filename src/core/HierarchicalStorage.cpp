@@ -874,7 +874,7 @@ void TRegistryStorage::Init()
 
 TRegistryStorage::~TRegistryStorage() noexcept
 {
-  __removed SAFE_DESTROY(FRegistry);
+  // SAFE_DESTROY(FRegistry);
 }
 
 // Used only in OpenSessionInPutty

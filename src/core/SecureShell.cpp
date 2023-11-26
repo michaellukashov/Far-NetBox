@@ -23,7 +23,7 @@
 #define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
 #endif
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
 
@@ -2063,9 +2063,9 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
         LogEvent(FORMAT("Handling network %s event on socket %d with error %d",
           EventTypes[Event].Desc, nb::ToInt32(Socket), Err));
       }
-      __removed #pragma option push -w-prc
+      // #pragma option push -w-prc
       LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
-      __removed #pragma option pop
+      // #pragma option pop
       select_result(static_cast<WPARAM>(Socket), SelectEvent);
       CheckConnection();
     }

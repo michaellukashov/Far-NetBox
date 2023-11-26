@@ -1,6 +1,6 @@
 ﻿
 #include <vcl.h>
-__removed #pragma hdrstop
+// #pragma hdrstop
 
 #include <Configuration.h>
 #include <CoreMain.h>
@@ -8,7 +8,7 @@ __removed #pragma hdrstop
 #include <Usage.h>
 #include <FileInfo.h>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 const UnicodeString LastInternalExceptionCounter("LastInternalException2");
 const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
@@ -26,8 +26,8 @@ TUsage::TUsage(TConfiguration * Configuration) noexcept :
 
 TUsage::~TUsage() noexcept
 {
-  __removed delete FValues;
-  __removed delete FCriticalSection;
+  // delete FValues;
+  // delete FCriticalSection;
 }
 
 void TUsage::Default()

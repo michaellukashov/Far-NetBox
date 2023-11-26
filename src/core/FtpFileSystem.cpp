@@ -25,7 +25,7 @@
 #include <openssl/x509_vfy.h>
 #include <limits>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
@@ -4589,7 +4589,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       }
       catch (Exception &E)
       {
-        __removed delete File;
+        // delete File;
         const UnicodeString TmStr = FORMAT("%d/%d/%d/%d", nb::ToInt32(Entry->Time.HasTime),
             nb::ToInt32(Entry->Time.HasYear), nb::ToInt32(Entry->Time.HasSeconds), nb::ToInt32(Entry->Time.HasDate));
         const UnicodeString EntryData =

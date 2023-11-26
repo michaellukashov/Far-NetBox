@@ -545,7 +545,7 @@ public:
   void Load(THierarchicalStorage * Storage, bool PuttyImport);
   void ApplyRawSettings(TStrings * RawSettings, bool Unsafe);
   void ApplyRawSettings(THierarchicalStorage * Storage, bool Unsafe, bool RespectDisablePasswordStoring);
-  __removed void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
+  // void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
   void ImportFromOpenssh(TStrings * Lines);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = nullptr);
@@ -585,7 +585,7 @@ public:
   UnicodeString GetSessionPasswordEncryptionKey() const;
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
-  __removed void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
+  // void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
   void LookupLastFingerprint();
   bool GetIsSecure() const;
   static void ValidatePath(const UnicodeString & Path);
@@ -1109,7 +1109,7 @@ private:
   std::unique_ptr<TSessionData> FDefaultSettings;
   bool FReadOnly{false};
   std::unique_ptr<TStrings> FPendingRemovals;
-  __removed void SetDefaultSettings(TSessionData * value);
+  // void SetDefaultSettings(TSessionData * value);
   void DoSave(THierarchicalStorage * Storage, bool All,
     bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly,
@@ -1121,7 +1121,7 @@ private:
   const TSessionData * GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData * Data, const UnicodeString & Name);
-  __removed void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
+  // void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
   void DoGetFolderOrWorkspace(const UnicodeString & Name, TList * List, bool NoRecrypt);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };

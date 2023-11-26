@@ -63,7 +63,7 @@ private:
   bool FIgnorePermErrors{false};
   TResumeSupport FResumeSupport{rsOn};
   int64_t FResumeThreshold{0};
-  __removed UnicodeString GetLogStr() const;
+  // UnicodeString GetLogStr() const;
   wchar_t FInvalidCharsReplacement{};
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;

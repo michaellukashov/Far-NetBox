@@ -8,7 +8,7 @@
 #include "RemoteFiles.h"
 #include "CopyParam.h"
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept :
   TObject(Kind),

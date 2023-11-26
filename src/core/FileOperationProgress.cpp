@@ -12,7 +12,7 @@ constexpr const uint64_t TRANSFER_BUF_SIZE = 32 * 1024;
 
 TFileOperationStatistics::TFileOperationStatistics() noexcept
 {
-  __removed memset(this, 0, sizeof(*this));
+  // memset(this, 0, sizeof(*this));
 }
 
 
@@ -436,7 +436,7 @@ void TFileOperationProgressType::SetSpeedCounters()
   if ((FCPSLimit > 0) && !FPersistence.CounterSet)
   {
     FPersistence.CounterSet = true;
-    __removed Configuration->Usage->Inc(L"SpeedLimitUses");
+    // Configuration->Usage->Inc(L"SpeedLimitUses");
   }
 }
 

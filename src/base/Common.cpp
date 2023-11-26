@@ -25,7 +25,7 @@
 #include <SessionInfo.h>
 #include <Soap.EncdDecd.hpp>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 

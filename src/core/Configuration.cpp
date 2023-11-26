@@ -19,7 +19,7 @@
 #include <System.StrUtils.hpp>
 #include <System.DateUtils.hpp>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
@@ -176,7 +176,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   FDontSave = false;
   FForceSave = false;
   FApplicationInfo = nullptr;
-  __removed FUsage = std::make_unique<TUsage>(this);
+  // FUsage = std::make_unique<TUsage>(this);
   FDefaultCollectUsage = false;
   FScripting = false;
   FSshHostCAList = std::make_unique<TSshHostCAList>();
@@ -292,8 +292,8 @@ TConfiguration::~TConfiguration() noexcept
     // FreeFileInfo(FApplicationInfo); TODO: check
     FApplicationInfo = nullptr;
   }
-  __removed delete FCriticalSection;
-  __removed delete FUsage;
+  // delete FCriticalSection;
+  // delete FUsage;
 }
 
 void TConfiguration::ConfigurationInit()
@@ -335,7 +335,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   }
   else if (GetStorage() == stNul)
   {
-    __removed Result = TIniFileStorage::CreateNul();
+    // Result = TIniFileStorage::CreateNul();
     ThrowNotImplemented(3005);
     DebugAssert(false);
   }
@@ -353,7 +353,7 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   {
     if (!SessionList)
     {
-      __removed Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
+      // Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
     }
     else
     {

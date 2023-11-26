@@ -14,7 +14,7 @@
 #include <CoreMain.h>
 #include <System.ShlObj.hpp>
 
-__removed #pragma package(smart_init)
+// #pragma package(smart_init)
 
 const int32_t ccLocal = ccUser;
 const int32_t ccShowResults = ccUser << 1;
@@ -131,7 +131,7 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data) noexcept :
   TObject(OBJECT_CLASS_TCopyParamRule),
   FData(Data)
 {
-  __removed FData = Data;
+  // FData = Data;
 }
 
 TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) noexcept :
@@ -255,10 +255,10 @@ void TCopyParamList::Init()
 TCopyParamList::~TCopyParamList() noexcept
 {
   Clear();
-  __removed delete FCopyParams;
-  __removed delete FRules;
-  __removed delete FNames;
-  __removed delete FNameList;
+  // delete FCopyParams;
+  // delete FRules;
+  // delete FNames;
+  // delete FNameList;
 }
 
 void TCopyParamList::Reset()
@@ -694,8 +694,8 @@ void TGUIConfiguration::UpdateStaticUsage()
     KEY3(Integer,  SessionReopenAutoIdle); \
   ); \
 
-    __removed KEY3(Integer, UsePuttyPwFile);
-    __removed KEY(String,   BeepSound);
+    // KEY3(Integer, UsePuttyPwFile);
+    // KEY(String,   BeepSound);
 
 bool TGUIConfiguration::DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults)
 {
@@ -901,7 +901,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
   DWORD PrimaryLang = PRIMARYLANGID(ALocale);
   if (!Internal)
   {
-    __removed UnicodeString Module;
+    // UnicodeString Module;
     UnicodeString LocaleName;
 
     UnicodeString Module = ModuleFileName();
@@ -1079,8 +1079,8 @@ void TGUIConfiguration::SetLocaleInternal(LCID Value, bool Safe, bool CompleteOn
 bool TGUIConfiguration::GetCanApplyLocaleImmediately() const
 {
   return true;
-    __removed (Screen->FormCount == 0) &&
-    __removed (Screen->DataModuleCount == 0);
+    // (Screen->FormCount == 0) &&
+    // (Screen->DataModuleCount == 0);
 }
 
 bool TGUIConfiguration::UsingInternalTranslation() const
