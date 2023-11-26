@@ -436,7 +436,7 @@ NB_CORE_EXPORT uint32_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(
 NB_CORE_EXPORT uint32_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2, 1, 10); }
 NB_CORE_EXPORT uint32_t inline GetVersionNumber2121() { return MAKEVERSIONNUMBER(2, 1, 21); }
 NB_CORE_EXPORT uint32_t inline GetCurrentVersionNumber() { return StrToVersionNumber(GetGlobals()->GetStrVersionNumber()); }
-bool CheckWin32Version(int Major, int Minor);
+bool CheckWin32Version(int32_t Major, int32_t Minor);
 
 
 #if defined(__MINGW32__) && (__MINGW_GCC_VERSION < 50100)

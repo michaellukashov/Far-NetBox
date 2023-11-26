@@ -106,7 +106,7 @@ UnicodeString TCopyParamType::GenerateTransferCommandArgs(int32_t Attrs, const U
 
 #if 0
 
-UnicodeString TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, int Attrs) const
+UnicodeString TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, int32_t Attrs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
@@ -139,7 +139,7 @@ void TCopyParamType::DoGetInfoStr(
   {
     // Adding Transfer type unconditionally
     bool FormatMask;
-    int Ident;
+    int32_t Ident;
     switch (GetTransferMode())
     {
       case tmBinary:

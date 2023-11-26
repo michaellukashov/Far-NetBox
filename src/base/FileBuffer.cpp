@@ -302,7 +302,7 @@ int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
   return Result;
 }
 
-int64_t TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int Offset, int64_t Count)
+int64_t TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int32_t Offset, int64_t Count)
 {
   // This is invoked for example via CopyFrom from TParallelOperation::Done
   int64_t Result = FileRead(FHandle, Buffer, Offset, Count);
@@ -313,10 +313,10 @@ int64_t TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int O
   return Result;
 }
 
-int64_t TSafeHandleStream::Write(const System::DynamicArray<System::Byte> Buffer, int Offset, int Count)
+int64_t TSafeHandleStream::Write(const System::DynamicArray<System::Byte> Buffer, int32_t Offset, int Count)
 {
   // This is invoked for example by TIniFileStorage::Flush or via CopyFrom from TParallelOperation::Done
-  int Result = FileWrite(FHandle, Buffer, Offset, Count);
+  int32_t Result = FileWrite(FHandle, Buffer, Offset, Count);
   if (Result == -1)
   {
     RaiseLastOSError();

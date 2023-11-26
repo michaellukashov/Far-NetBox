@@ -152,7 +152,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 /* compute and output the MAC value */
 static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 {   unsigned char dig[OUT_BLOCK_LENGTH];
-    unsigned int i;
+    uint32_t i;
 
     /* if no data has been entered perform a null data phase        */
     if(cx->klen != HMAC_IN_DATA)
@@ -177,7 +177,7 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
 constexpr const int32_t BLOCK_SIZE  = 16;
 
-void aes_set_encrypt_key(const unsigned char in_key[], unsigned int klen, void * cx)
+void aes_set_encrypt_key(const unsigned char in_key[], uint32_t klen, void * cx)
 {
   call_aes_setup(cx, const_cast<unsigned char *>(in_key), klen);
 }
@@ -219,9 +219,9 @@ typedef struct
     unsigned int    mode;                       /* File encryption mode   */
 } fcrypt_ctx;
 
-constexpr int MAX_KEY_LENGTH        = 32;
-constexpr int KEYING_ITERATIONS   = 1000;
-constexpr int PWD_VER_LENGTH         = 2;
+constexpr int32_t MAX_KEY_LENGTH = 32;
+constexpr int32_t KEYING_ITERATIONS = 1000;
+constexpr int32_t PWD_VER_LENGTH         = 2;
 
 /*
     Field lengths (in bytes) versus File Encryption Mode (0 < mode < 4)
@@ -400,7 +400,7 @@ RawByteString GenerateEncryptKey()
 
 void ValidateEncryptKey(const RawByteString & AKey)
 {
-  int Len = KEY_LENGTH(PASSWORD_MANAGER_AES_MODE);
+  int32_t Len = KEY_LENGTH(PASSWORD_MANAGER_AES_MODE);
   if (AKey.Length() != Len)
   {
     throw Exception(FMTLOAD(INVALID_ENCRYPT_KEY, L"AES-256", Len, Len * 2));
@@ -742,7 +742,7 @@ void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
     FOverflowBuffer.SetLength(0);
   }
 
-  int32_t Size;
+  int64_t Size;
   if (Last)
   {
     Size = Buffer.Size;
