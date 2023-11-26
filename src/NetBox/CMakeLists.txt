@@ -370,7 +370,7 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   # ../../libs/openssl-3/crypto/bn/libcrypto-lib-co-586.obj.asm
   ../../libs/openssl-3/crypto/camellia/libcrypto-lib-cmll-x86.obj.asm
   ../../libs/openssl-3/crypto/cast/libcrypto-lib-cast-586.obj.asm
-  ../../libs/openssl-3/crypto/chacha/libcrypto-lib-chacha-x86.obj.asm
+  # ../../libs/openssl-3/crypto/chacha/libcrypto-lib-chacha-x86.obj.asm
   ../../libs/openssl-3/crypto/des/libcrypto-lib-des-586.obj.asm
   ../../libs/openssl-3/crypto/des/libcrypto-lib-crypt586.obj.asm
   ../../libs/openssl-3/crypto/ec/libcrypto-lib-ecp_nistz256-x86.obj.asm
@@ -494,6 +494,8 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/rc2/rc2_cbc.c
   ../../libs/openssl-3/crypto/rc2/rc2cfb64.c
   ../../libs/openssl-3/crypto/rc2/rc2ofb64.c
+  # ../../libs/openssl-3/crypto/rc4/rc4_skey.c
+  # ../../libs/openssl-3/crypto/rc4/rc4_enc.c
   ../../libs/openssl-3/crypto/idea/i_cbc.c
   ../../libs/openssl-3/crypto/idea/i_cfb64.c
   ../../libs/openssl-3/crypto/idea/i_ofb64.c
@@ -977,6 +979,7 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/ec/curve448/scalar.c
   ../../libs/openssl-3/crypto/ec/curve448/curve448_tables.c
   ../../libs/openssl-3/crypto/ec/curve448/f_generic.c
+  # ../../libs/openssl-3/crypto/ec/curve448/arch_64/f_impl64.c
   ../../libs/openssl-3/crypto/ec/curve448/arch_32/f_impl.c
   ../../libs/openssl-3/crypto/ec/ecdsa_vrf.c
   ../../libs/openssl-3/crypto/ec/ec_ameth.c
@@ -1032,6 +1035,9 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/http/http_err.c
   ../../libs/openssl-3/crypto/http/http_client.c
   ../../libs/openssl-3/crypto/http/http_lib.c
+  # ../../libs/openssl-3/crypto/des/des_enc.c
+  # ../../libs/openssl-3/crypto/bf/bf_enc.c
+  # ../../libs/openssl-3/crypto/cast/c_enc.c
   ../../libs/openssl-3/crypto/crmf/crmf_err.c
   ../../libs/openssl-3/crypto/cmp/cmp_err.c
   ../../libs/openssl-3/crypto/cmp/cmp_util.c
@@ -1208,6 +1214,16 @@ set(libeay32_c_files ${libeay32_c_files}
   ../../libs/openssl-3/crypto/des/des_enc.c
   ../../libs/openssl-3/crypto/cast/c_enc.c
   ../../libs/openssl-3/crypto/bf/bf_enc.c
+  # ../../libs/openssl-3/crypto/ec/curve448/arch_64/f_impl64.c
+)
+else()
+set(libeay32_c_files ${libeay32_c_files}
+  # ../../libs/openssl-3/crypto/rc4/rc4_enc.c
+  # ../../libs/openssl-3/crypto/rc4/rc4_skey.c
+  # ../../libs/openssl-3/crypto/des/des_enc.c
+  # ../../libs/openssl-3/crypto/cast/c_enc.c
+  # ../../libs/openssl-3/crypto/bf/bf_enc.c
+  # ../../libs/openssl-3/crypto/ec/curve448/arch_32/f_impl.c
 )
 endif()
 
