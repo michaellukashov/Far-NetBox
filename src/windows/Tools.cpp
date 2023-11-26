@@ -881,16 +881,16 @@ bool TextFromClipboard(UnicodeString & Text, bool Trim)
   {
     const wchar_t * AText = nullptr;
     ErrorContext = L"open";
-    HANDLE Handle = OpenTextFromClipboard(AText);
-    bool Result = (Handle != nullptr);
+    const HANDLE Handle = OpenTextFromClipboard(AText);
+    const bool Result = (Handle != nullptr);
     if (Result)
     {
       // For all current uses (URL pasting, key/fingerprint pasting, known_hosts pasting, "more messages" copying,
       // permissions pasting), 64KB is large enough.
       constexpr const int32_t Limit = 64 * 1024;
       ErrorContext = L"size";
-      size_t Size = GlobalSize(Handle);
-      int Len = (Size / sizeof(*AText)) - 1;
+      const size_t Size = GlobalSize(Handle);
+      const int32_t Len = (Size / sizeof(*AText)) - 1;
       if (Len > Limit)
       {
         ErrorContext = FORMAT(L"substring(%d,%d)", nb::ToInt32(Size), Len);
@@ -927,9 +927,9 @@ bool NonEmptyTextFromClipboard(UnicodeString & Text)
 static bool GetResource(
   const UnicodeString & ResName, void *& Content, uint32_t & Size)
 {
-  HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
-    MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
-  bool Result = (Resource != nullptr);
+  const HRSRC Resource = FindResourceEx(HInstance, RT_RCDATA, ResName.c_str(),
+                                        MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL));
+  const bool Result = (Resource != nullptr);
   if (Result)
   {
     Size = SizeofResource(HInstance, Resource);
@@ -959,7 +959,7 @@ bool DumpResourceToFile(const UnicodeString & ResName,
 {
   void * Content;
   uint32_t Size;
-  bool Result = GetResource(ResName, Content, Size);
+  const bool Result = GetResource(ResName, Content, Size);
 
   if (Result)
   {
@@ -1290,7 +1290,7 @@ UnicodeString GetConvertedKeyFileName(const UnicodeString & FileName)
 UnicodeString AddMatchingKeyCertificate(TPrivateKey * PrivateKey, const UnicodeString & FileName)
 {
   UnicodeString CertificateFileName = FileName;
-  UnicodeString S = FORMAT(L".%s", PuttyKeyExt);
+  const UnicodeString S = FORMAT(L".%s", PuttyKeyExt);
   if (EndsText(S, CertificateFileName))
   {
     CertificateFileName.SetLength(CertificateFileName.Length() - S.Length());
@@ -1336,7 +1336,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     AppLogFmt(L"Loaded key from \"%s\".", FileName);
 
     UnicodeString CertificateMessage;
-    UnicodeString CertificateFileName = AddMatchingKeyCertificate(PrivateKey, FileName);
+    const UnicodeString CertificateFileName = AddMatchingKeyCertificate(PrivateKey, FileName);
     if (!CertificateFileName.IsEmpty())
     {
       AppLogFmt(L"Added certificate from auto-detected \"%s\".", CertificateFileName);
@@ -1353,7 +1353,7 @@ static void ConvertKey(UnicodeString & FileName, TKeyType Type)
     SaveKey(ktSSH2, FileName, Passphrase, PrivateKey);
     AppLogFmt(L"Saved converted key to \"%s\".", FileName);
 
-    UnicodeString Message =
+    const UnicodeString Message =
       MainInstructions(FMTLOAD(CONVERTKEY_SAVED, FileName)) +
       CertificateMessage;
     MessageDialog(Message, qtInformation, qaOK);
@@ -1370,9 +1370,9 @@ void DoVerifyKey(UnicodeString & FileName, bool Convert, UnicodeString & Message
   if (!FileName.Trim().IsEmpty())
   {
     FileName = ExpandEnvironmentVariables(FileName);
-    TKeyType Type = GetKeyType(FileName);
+    const TKeyType Type = GetKeyType(FileName);
     // reason _wfopen failed
-    int Error = errno;
+    const int32_t Error = errno;
     HelpKeyword = HELP_LOGIN_KEY_TYPE;
     UnicodeString PuttygenPath;
     switch (Type)
@@ -1381,13 +1381,13 @@ void DoVerifyKey(UnicodeString & FileName, bool Convert, UnicodeString & Message
       case ktOpenSSHNew:
       case ktSSHCom:
         {
-          UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
+          const UnicodeString TypeName = ((Type == ktOpenSSHPEM) || (Type == ktOpenSSHNew)) ? L"OpenSSH" : L"ssh.com";
           Message = FMTLOAD(KEY_TYPE_UNSUPPORTED2, FileName, TypeName);
 
           if (Convert)
           {
             GetConfiguration()->Usage->Inc(L"PrivateKeyConvertSuggestionsNative");
-            UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT4, TypeName, RemoveMainInstructionsTag(Message));
+            const UnicodeString ConvertMessage = FMTLOAD(KEY_TYPE_CONVERT4, TypeName, RemoveMainInstructionsTag(Message));
             Message = EmptyStr;
             if (MoreMessageDialog(ConvertMessage, nullptr, qtConfirmation, qaOK | qaCancel, HelpKeyword) == qaOK)
             {
@@ -1450,7 +1450,7 @@ static void DoVerifyKey(UnicodeString & FileName, bool Convert, bool CanIgnore)
   if (!Message.IsEmpty())
   {
     GetConfiguration()->Usage->Inc(L"PrivateKeySelectErrors");
-    uint32_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
+    const uint32_t Answers = (CanIgnore ? (qaIgnore | qaAbort) : qaOK);
     if (MoreMessageDialog(Message, MoreMessages.get(), qtWarning, Answers, HelpKeyword) != qaIgnore)
     {
       Abort();

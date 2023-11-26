@@ -171,7 +171,7 @@ void DynamicQueue<TX>::Put(const TX & obj) {
    if (NumEntries >= MaxNum) {
       // buffer too small or no buffer. Allocate more memory
       // Determine new size = 2 * current size + the number of objects that correspond to AllocateSpace
-      int NewSize = MaxNum * 2 + (AllocateSpace+sizeof(TX)-1)/sizeof(TX);
+      const int32_t NewSize = MaxNum * 2 + (AllocateSpace+sizeof(TX)-1)/sizeof(TX);
 
       ReAllocate(NewSize);
    }

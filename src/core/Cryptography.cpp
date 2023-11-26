@@ -416,7 +416,7 @@ void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString & Passw
     AES256Salt(Salt);
   }
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  UTF8String UtfPassword = UTF8String(Password);
+  const UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
     reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
@@ -442,7 +442,7 @@ bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString & Password,
 {
   fcrypt_ctx aes;
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  UTF8String UtfPassword = UTF8String(Password);
+  const UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
     reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
@@ -463,11 +463,11 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
     Input.Length() > SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + MAC_LENGTH(PASSWORD_MANAGER_AES_MODE);
   if (Result)
   {
-    RawByteString Salt = Input.SubString(1, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-    RawByteString Encrypted =
+    const RawByteString Salt = Input.SubString(1, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+    const RawByteString Encrypted =
       Input.SubString(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) + 1,
         Input.Length() - SALT_LENGTH(PASSWORD_MANAGER_AES_MODE) - MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
-    RawByteString Mac =
+    const RawByteString Mac =
       Input.SubString(Input.Length() - MAC_LENGTH(PASSWORD_MANAGER_AES_MODE) + 1,
         MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
     Result = AES256DecryptWithMAC(Encrypted, Password, Salt, Output, Mac);
@@ -490,9 +490,9 @@ void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
 
 bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
 {
-  int SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
+  const int32_t SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   RawByteString Salt = Verifier.SubString(1, SaltLength);
-  RawByteString Dummy = Verifier.SubString(SaltLength + 1, SaltLength);
+  const RawByteString Dummy = Verifier.SubString(SaltLength + 1, SaltLength);
   RawByteString Mac = Verifier.SubString(SaltLength + SaltLength + 1, MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
 
   RawByteString Encrypted;
@@ -531,9 +531,9 @@ RawByteString ScramblePassword(const UnicodeString & Password)
 {
   #define SCRAMBLE_LENGTH_EXTENSION 50
   UTF8String UtfPassword = UTF8String(Password);
-  int32_t Len = UtfPassword.Length();
+  const int32_t Len = UtfPassword.Length();
   char * Buf = nb::chcalloc(Len + SCRAMBLE_LENGTH_EXTENSION);
-  int32_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
+  const int32_t Padding = (((Len + 3) / 17) * 17 + 17) - 3 - Len;
   for (int32_t Index = 0; Index < Padding; ++Index)
   {
     int32_t P = 0;
@@ -586,8 +586,8 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
   bool Result = false;
   if (NBChTraitsCRT<char>::SafeStringLen(S) >= 3)
   {
-    int Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
-    int Total = (((Len + 3) / 17) * 17 + 17);
+    const int32_t Len = (S[0] - '0') + 10 * (S[1] - '0') + 100 * (S[2] - '0');
+    const int32_t Total = (((Len + 3) / 17) * 17 + 17);
     if ((Len >= 0) && (Total == LocalScrambled.Length()) && (Total - (S - LocalScrambled.c_str()) - 3 == Len))
     {
       LocalScrambled.Delete(1, LocalScrambled.Length() - Len);
@@ -715,7 +715,7 @@ RawByteString AesCtrMagic("aesctr.........."); // 16 bytes fixed [to match AES b
 
 int32_t TEncryption::RoundToBlock(int32_t Size)
 {
-  int32_t M = (Size % BLOCK_SIZE);
+  const int32_t M = (Size % BLOCK_SIZE);
   if (M != 0)
   {
     Size += (BLOCK_SIZE - M);
@@ -750,7 +750,7 @@ void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
   }
   else
   {
-    int32_t RoundedSize = RoundToBlockDown(Buffer.Size);
+    const int32_t RoundedSize = RoundToBlockDown(Buffer.Size);
     if (RoundedSize != Buffer.Size)
     {
       FOverflowBuffer += RawByteString(Buffer.Data + RoundedSize, Buffer.Size - RoundedSize);
@@ -773,7 +773,7 @@ void TEncryption::Encrypt(TFileBuffer & Buffer, bool Last)
   if (!FOutputtedHeader)
   {
     DebugAssert(AesCtrMagic.Length() == BLOCK_SIZE);
-    RawByteString Header = AesCtrMagic + FSalt;
+    const RawByteString Header = AesCtrMagic + FSalt;
     DebugAssert(Header.Length() == GetOverhead());
     Buffer.Insert(0, Header.c_str(), Header.Length());
     FOutputtedHeader = true;
@@ -784,7 +784,7 @@ void TEncryption::Decrypt(TFileBuffer & Buffer)
 {
   if (FInputHeader.Length() < GetOverhead())
   {
-    int32_t HeaderSize = std::min<int32_t>(GetOverhead() - FInputHeader.Length(), Buffer.Size());
+    const int32_t HeaderSize = std::min<int32_t>(GetOverhead() - FInputHeader.Length(), Buffer.Size());
     FInputHeader += RawByteString(Buffer.Data, HeaderSize);
     Buffer.Delete(0, HeaderSize);
 
@@ -808,7 +808,7 @@ void TEncryption::Decrypt(TFileBuffer & Buffer)
 
 bool TEncryption::DecryptEnd(TFileBuffer & Buffer)
 {
-  bool Result = !FOverflowBuffer.IsEmpty();
+  const bool Result = !FOverflowBuffer.IsEmpty();
   if (Result)
   {
     Aes(Buffer, true);
@@ -818,7 +818,7 @@ bool TEncryption::DecryptEnd(TFileBuffer & Buffer)
 
 void TEncryption::Aes(RawByteString& Buffer)
 {
-  int32_t Size = Buffer.Length();
+  const int32_t Size = Buffer.Length();
   Buffer.SetLength(RoundToBlock(Buffer.Length()));
   Aes(reinterpret_cast<char *>(&Buffer[0]), Buffer.Length());
   Buffer.SetLength(Size);
@@ -827,7 +827,7 @@ void TEncryption::Aes(RawByteString& Buffer)
 UnicodeString TEncryption::EncryptFileName(const UnicodeString & AFileName)
 {
   NeedSalt();
-  UTF8String FileNameUtf(AFileName);
+  const UTF8String FileNameUtf(AFileName);
   RawByteString Buffer(FileNameUtf);
   Aes(Buffer);
   Buffer = FSalt + Buffer;
@@ -849,7 +849,7 @@ UnicodeString TEncryption::DecryptFileName(const UnicodeString & AFileName)
     throw Exception("Not an encrypted file name");
   }
   UnicodeString Base64 = ReplaceChar(LeftStr(AFileName, AFileName.Length() - AesCtrExt.Length()), L'_', L'/');
-  int32_t Padding = 4 - (Base64.Length() % 4);
+  const int32_t Padding = 4 - (Base64.Length() % 4);
   if ((Padding > 0) && (Padding < 4))
   {
     Base64 += ::StringOfChar(L'=', Padding);
