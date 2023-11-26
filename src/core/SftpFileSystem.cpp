@@ -4066,7 +4066,7 @@ void TSFTPFileSystem::RemoteCopyFile(
     try__finally
     {
       SourceRemoteHandle = SFTPOpenRemoteFile(FileNameCanonical, SSH_FXF_READ, Encrypted, Size);
-      // SFTP_EXT_COPY_FILE does not allow overwritting existing files
+      // SFTP_EXT_COPY_FILE does not allow overwriting existing files
       // (the specification does not mandate it, but it is implemented like that both in ProFTPD and Bitvise).
       // So using SSH_FXF_EXCL for consistency.
       DestRemoteHandle = SFTPOpenRemoteFile(NewNameCanonical, SSH_FXF_WRITE | SSH_FXF_CREAT | SSH_FXF_EXCL, Encrypted, Size);
@@ -5016,7 +5016,7 @@ void TSFTPFileSystem::Source(
     __finally
     {
       // Either queue is empty now (noop call then),
-      // or some error occured (in that case, process remaining responses, ignoring other errors)
+      // or some error occurred (in that case, process remaining responses, ignoring other errors)
       Queue.DisposeSafe();
     } end_try__finally
 
@@ -5937,7 +5937,7 @@ void TSFTPFileSystem::Sink(
     }
 
     // if the transfer was finished, the file is usually closed already
-    // (except for special cases like SFTPv6 EOF indication or partial file downlaod)
+    // (except for special cases like SFTPv6 EOF indication or partial file download)
     if (FTerminal && FTerminal->GetActive() && !RemoteHandle.IsEmpty())
     {
       // do not wait for response
