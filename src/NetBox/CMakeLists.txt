@@ -334,14 +334,8 @@ target_include_directories(ssleay32 SYSTEM BEFORE PRIVATE
   # ../../libs/openssl-3/providers/common/include
   # ../../libs/openssl-3/implementations/include
   ../../libs/openssl-3/crypto/modes
-  # ../../libs/openssl-3/crypto/ec/curve448/arch_32
   ../../libs/openssl-3/crypto/ec/curve448
   ../../libs/openssl-3
-)
-
-set(libeay32_asm_files
-  ../../libs/openssl-3/crypto/des/asm/d_win32.asm
-  ../../libs/openssl-3/crypto/des/asm/y_win32.asm
 )
 
 set(libeay32_obj_files )
@@ -1236,7 +1230,6 @@ target_include_directories(libeay32 SYSTEM BEFORE PRIVATE
   ../../libs/openssl-3/providers/common/include
   ../../libs/openssl-3/providers/implementations/include
   ../../libs/openssl-3/crypto/modes
-  ../../libs/openssl-3/crypto/ec/curve448/arch_32
   ../../libs/openssl-3/crypto/ec/curve448
   ../../libs/openssl-3
 )
