@@ -1018,7 +1018,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   }
   UnicodeString LegalCopyright; // = GetConfiguration()->GetFileInfoString("LegalCopyright");
 
-  int Height = 15;
+  int32_t Height = 15;
 #ifndef NO_FILEZILLA
   Height += 2;
 #endif
@@ -1295,10 +1295,10 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   FEdits->Clear();
   TPoint S = TPoint(40, ShowSavePassword ? 1 : 0);
 
-  int32_t x = nb::ToInt32(Instructions.Length());
-  if (S.x < x)
+  const int32_t X = nb::ToInt32(Instructions.Length());
+  if (S.x < X)
   {
-    S.x = x;
+    S.x = X;
   }
   if (!Instructions.IsEmpty())
   {
@@ -1307,10 +1307,10 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 
   for (int32_t Index = 0; Index < Prompts->GetCount(); ++Index)
   {
-    int32_t l = nb::ToInt32(Prompts->GetString(Index).Length());
-    if (S.x < l)
+    const int32_t L = nb::ToInt32(Prompts->GetString(Index).Length());
+    if (S.x < L)
     {
-      S.x = l;
+      S.x = L;
     }
     S.y += 2;
   }
@@ -1352,7 +1352,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
     FEdits->GetAs<TFarEdit>(Index)->SetText(Results->GetString(Index));
   }
 
-  bool Result = (ShowModal() != brCancel);
+  const bool Result = (ShowModal() != brCancel);
   if (Result)
   {
     for (int32_t Index = 0; Index < FEdits->GetCount(); ++Index)
@@ -1379,7 +1379,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 {
   std::unique_ptr<TPasswordDialog> Dialog(std::make_unique<TPasswordDialog>(FPlugin, SessionData->GetName(),
       Kind, Name, Instructions, Prompts, StoredCredentialsTried));
-  bool Result = Dialog->Execute(Results);
+  const bool Result = Dialog->Execute(Results);
   return Result;
 }
 
@@ -1424,7 +1424,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
     Button->SetCenterGroup(true);
   }
 
-  bool Result = (Dialog->ShowModal() == brOK);
+  const bool Result = (Dialog->ShowModal() == brOK);
 
   if (Result)
   {
@@ -1459,7 +1459,7 @@ public:
   };
 
   explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) noexcept;
-  virtual ~TSessionDialog() noexcept;
+  virtual ~TSessionDialog() noexcept override;
 
   bool Execute(TSessionData * SessionData, TSessionActionEnum & Action);
 
@@ -1659,12 +1659,12 @@ private:
   BUG(DeriveKey2, NB_LOGIN_BUGS_DERIVE_KEY2, ); \
   BUG(RSAPad2, NB_LOGIN_BUGS_RSA_PAD2, ); \
   BUG(PKSessID2, NB_LOGIN_BUGS_PKSESSID2, ); \
-  BUG(Rekey2, NB_LOGIN_BUGS_REKEY2, );
+  BUG(Rekey2, NB_LOGIN_BUGS_REKEY2, )
 #define SFTP_BUGS() \
   BUG(Symlink, NB_LOGIN_SFTP_BUGS_SYMLINK, SFTP); \
-  BUG(SignedTS, NB_LOGIN_SFTP_BUGS_SIGNED_TS, SFTP);
+  BUG(SignedTS, NB_LOGIN_SFTP_BUGS_SIGNED_TS, SFTP)
 
-static const TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV, fsS3 };
+static constexpr TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV, fsS3 };
 
 TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) noexcept :
   TTabbedDialog(AFarPlugin, tabCount),
@@ -1704,7 +1704,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       COMBO->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_ON)); \
     } \
     Text->SetEnabledFollow(COMBO); \
-    SetNextItemPosition(ipNewLine);
+    SetNextItemPosition(ipNewLine)
 
   TRect CRect = GetClientRect();
 
@@ -1737,7 +1737,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   int32_t PWidth = PrevTab->GetWidth();
   int32_t NWidth = NextTab->GetWidth();
-  int R = S.x - 4;
+  int32_t R = S.x - 4;
   PrevTab->SetLeft(R - PWidth - NWidth - 2);
   PrevTab->SetWidth(PWidth);
   NextTab->SetLeft(R - NWidth - 1);
@@ -2250,7 +2250,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Text = new TFarText(this);
   Text->SetCaption(GetMsg(NB_LOGIN_FTP_POST_LOGIN_COMMANDS));
 
-  for (int32_t Index3 = 0; Index3 < nb::ToUIntPtr(_countof(PostLoginCommandsEdits)); ++Index3)
+  for (int32_t Index3 = 0; Index3 < nb::ToInt32(_countof(PostLoginCommandsEdits)); ++Index3)
   {
     TFarEdit * Edit = new TFarEdit(this);
     PostLoginCommandsEdits[Index3] = Edit;
@@ -2869,21 +2869,21 @@ static void AdjustRemoteDir(
   TFarEdit * RemoteDirectoryEdit)
 {
   UnicodeString Dir;
-  int32_t P = HostName.Pos(L'/');
+  const int32_t P = HostName.Pos(L'/');
   if (P > 0)
   {
     Dir = HostName.SubString(P, HostName.Length() - P + 1);
-    int32_t P2 = Dir.Pos(L':');
+    const int32_t P2 = Dir.Pos(L':');
     if (P2 > 0)
     {
-      UnicodeString Port = Dir.SubString(P2 + 1, Dir.Length() - P2);
+      const UnicodeString Port = Dir.SubString(P2 + 1, Dir.Length() - P2);
       Dir.SetLength(P2 - 1);
       if (Port.ToIntPtr())
         PortNumberEdit->SetAsInteger(Port.ToIntPtr());
     }
     HostName.SetLength(P - 1);
   }
-  UnicodeString RemoteDir = RemoteDirectoryEdit->GetText();
+  const UnicodeString RemoteDir = RemoteDirectoryEdit->GetText();
   if (RemoteDir.IsEmpty() && !Dir.IsEmpty())
   {
     RemoteDirectoryEdit->SetText(Dir);
@@ -2892,17 +2892,17 @@ static void AdjustRemoteDir(
 
 void TSessionDialog::TransferProtocolComboChange()
 {
-  TFtps Ftps = GetFtps();
+  const TFtps Ftps = GetFtps();
   // note that this modifies the session for good,
   // even if user cancels the dialog
   SavePing(FSessionData);
 
   FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
   FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
-  int32_t Port = PortNumberEdit->GetAsInteger();
+  const int32_t Port = PortNumberEdit->GetAsInteger();
 
   LoadPing(FSessionData);
-  TFSProtocol FSProtocol = GetFSProtocol();
+  const TFSProtocol FSProtocol = GetFSProtocol();
   if (FSProtocol == fsSFTPonly || FSProtocol == fsSCPonly)
   {
     if (Port == FtpPortNumber)
@@ -2962,7 +2962,7 @@ void TSessionDialog::TransferProtocolComboChange()
 
 bool TSessionDialog::IsSshProtocol(TFSProtocol FSProtocol) const
 {
-  bool Result =
+  const bool Result =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
 
   return Result;
@@ -2981,17 +2981,17 @@ bool TSessionDialog::IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const
 void TSessionDialog::UpdateControls()
 {
   TFSProtocol FSProtocol = GetFSProtocol();
-  TFtps Ftps = GetFtps();
-  bool InternalSshProtocol = IsSshProtocol(FSProtocol);
-  bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
-  bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
-  bool S3Protocol = (FSProtocol == fsS3);
-  bool lSshProtocol = InternalSshProtocol;
-  bool lSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
-  bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
-  bool lFtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
-  bool lFtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
-  bool LoginAnonymous = false;
+  const TFtps Ftps = GetFtps();
+  const bool InternalSshProtocol = IsSshProtocol(FSProtocol);
+  const bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
+  const bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
+  const bool S3Protocol = (FSProtocol == fsS3);
+  const bool lSshProtocol = InternalSshProtocol;
+  const bool lSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
+  const bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
+  const bool lFtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
+  const bool lFtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
+  const bool LoginAnonymous = false;
 
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
 
@@ -3000,7 +3000,7 @@ void TSessionDialog::UpdateControls()
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !S3Protocol);
-  bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
+  const bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
     (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
@@ -3055,7 +3055,7 @@ void TSessionDialog::UpdateControls()
   // Authentication tab
   AuthenticationTab->SetEnabled(lSshProtocol);
   SshNoUserAuthCheck->SetEnabled(!SshProt1onlyButton->GetChecked());
-  bool Authentication = !SshNoUserAuthCheck->GetEnabled() || !SshNoUserAuthCheck->GetChecked();
+  const bool Authentication = !SshNoUserAuthCheck->GetEnabled() || !SshNoUserAuthCheck->GetChecked();
   TryAgentCheck->SetEnabled(Authentication);
   AuthTISCheck->SetEnabled(Authentication && !SshProt2onlyButton->GetChecked());
   AuthKICheck->SetEnabled(Authentication && !SshProt1onlyButton->GetChecked());
@@ -3114,13 +3114,13 @@ void TSessionDialog::UpdateControls()
 
   // Connection/Proxy tab
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
+  const TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
   TFarComboBox * OtherProxyMethodCombo = GetOtherProxyMethodCombo();
   OtherProxyMethodCombo->SetVisible(false);
 
-  bool Proxy = (ProxyMethod != pmNone);
-  UnicodeString ProxyCommand =
+  const bool Proxy = (ProxyMethod != pmNone);
+  const UnicodeString ProxyCommand =
     (ProxyMethod == pmCmd) ?
     ProxyLocalCommandEdit->GetText() : ProxyTelnetCommandEdit->GetText();
   ProxyHostEdit->SetEnabled(Proxy && // (ProxyMethod != pmSystem) &&
@@ -3145,7 +3145,7 @@ void TSessionDialog::UpdateControls()
           (ProxyMethod == pmCmd)) &&
         ::AnsiContainsText(ProxyCommand, L"%pass")) /*||
       (ProxyMethod == pmSystem)*/));
-  bool ProxySettings = Proxy && lSshProtocol;
+  const bool ProxySettings = Proxy && lSshProtocol;
   ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethod == pmTelnet));
   ProxyLocalCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethod == pmCmd));
   ProxyLocalCommandLabel->SetVisible(ProxyLocalCommandEdit->GetVisible());
@@ -3160,7 +3160,7 @@ void TSessionDialog::UpdateControls()
 
 bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
 {
-  int Captions[] =
+  int32_t Captions[] =
   {
     NB_LOGIN_ADD,
     NB_LOGIN_EDIT,
@@ -3188,7 +3188,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   bool AllowScpFallback;
   TransferProtocolCombo->SetItemIndex(
-    nb::ToUIntPtr(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
+    nb::ToInt32(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
 
   // Directories tab
@@ -3264,7 +3264,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // SFTP tab
 
 #define TRISTATE(COMBO, PROP, MSG) \
-    COMBO->SetItemIndex(nb::ToUIntPtr(2 - SessionData->Get ## PROP))
+    COMBO->SetItemIndex(nb::ToInt32(2 - SessionData->Get ## PROP))
   SFTP_BUGS();
 
   if (SessionData->GetSftpServer().IsEmpty())
@@ -3275,17 +3275,17 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   {
     SftpServerEdit->SetText(SessionData->GetSftpServer());
   }
-  SFTPMaxVersionCombo->SetItemIndex(nb::ToUIntPtr(SessionData->GetSFTPMaxVersion()));
+  SFTPMaxVersionCombo->SetItemIndex(nb::ToInt32(SessionData->GetSFTPMaxVersion()));
   SFTPMinPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMinPacketSize());
   SFTPMaxPacketSizeEdit->SetAsInteger(SessionData->GetSFTPMaxPacketSize());
 
   // FTP tab
-  FtpUseMlsdCombo->SetItemIndex(nb::ToUIntPtr(2 - SessionData->GetFtpUseMlsd()));
+  FtpUseMlsdCombo->SetItemIndex(nb::ToInt32(2 - SessionData->GetFtpUseMlsd()));
   FtpAllowEmptyPasswordCheck->SetChecked(SessionData->GetFtpAllowEmptyPassword());
   std::unique_ptr<TStrings> PostLoginCommands(std::make_unique<TStringList>());
   PostLoginCommands->SetText(SessionData->GetPostLoginCommands());
   for (int32_t Index = 0; (Index < PostLoginCommands->GetCount()) &&
-    (Index < nb::ToUIntPtr(_countof(PostLoginCommandsEdits))); ++Index)
+    (Index < nb::ToInt32(_countof(PostLoginCommandsEdits))); ++Index)
   {
     PostLoginCommandsEdits[Index]->SetText(PostLoginCommands->GetString(Index));
   }
@@ -3427,7 +3427,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       TObject * Obj = static_cast<TObject *>(nb::ToPtr(SessionData->GetCipher(Index2)));
       CipherListBox->GetItems()->AddObject(
-        GetMsg(NB_CIPHER_NAME_WARN + nb::ToUIntPtr(SessionData->GetCipher(Index2))),
+        GetMsg(NB_CIPHER_NAME_WARN + nb::ToInt32(SessionData->GetCipher(Index2))),
         Obj);
     }
   }
@@ -3448,7 +3448,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     for (int32_t Index3 = 0; Index3 < KEX_COUNT; ++Index3)
     {
       KexListBox->GetItems()->AddObject(
-        GetMsg(NB_KEX_NAME_WARN + nb::ToUIntPtr(SessionData->GetKex(Index3))),
+        GetMsg(NB_KEX_NAME_WARN + nb::ToInt32(SessionData->GetKex(Index3))),
         static_cast<TObject *>(nb::ToPtr(SessionData->GetKex(Index3))));
     }
   }
@@ -3598,7 +3598,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     TODO("TlsCertificateFileEdit->GetText()");
     SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText());
     std::unique_ptr<TStrings> PostLoginCommands2(std::make_unique<TStringList>());
-    for (int32_t Index4 = 0; Index4 < nb::ToUIntPtr(_countof(PostLoginCommandsEdits)); ++Index4)
+    for (int32_t Index4 = 0; Index4 < nb::ToInt32(_countof(PostLoginCommandsEdits)); ++Index4)
     {
       UnicodeString Text = PostLoginCommandsEdits[Index4]->GetText();
       if (!Text.IsEmpty())
@@ -3811,7 +3811,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
 void TSessionDialog::LoadPing(TSessionData * SessionData)
 {
-  TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
+  const TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
       AllowScpFallbackCheck->GetChecked());
 
   switch ((FSProtocol == fsFTP) ? SessionData->GetFtpPingType() : SessionData->GetPingType())
@@ -3855,7 +3855,7 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
   {
     PingType = ptOff;
   }
-  TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
+  const TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
       AllowScpFallbackCheck->GetChecked());
   if (FSProtocol == fsFTP)
   {
@@ -3895,7 +3895,7 @@ int32_t TSessionDialog::ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * 
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TObject * Obj = Items->Get(Index);
-    TProxyMethod Method = ToProxyMethod(nb::ToUIntPtr(Obj));
+    const TProxyMethod Method = ToProxyMethod(nb::ToInt32(nb::ToUIntPtr(Obj)));
     if (Method == ProxyMethod)
       return Index;
   }
@@ -3942,7 +3942,7 @@ bool TSessionDialog::GetSupportedFtpProxyMethod(int32_t Method) const
 TProxyMethod TSessionDialog::GetProxyMethod() const
 {
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  TProxyMethod Result = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
+  const TProxyMethod Result = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
   return Result;
 }
 
@@ -3958,7 +3958,7 @@ int32_t TSessionDialog::GetFtpProxyLogonType() const
 
 TFtps TSessionDialog::IndexToFtps(int32_t Index) const
 {
-  bool InBounds = (Index != nb::NPOS) && (Index < FtpEncryptionCombo->GetItems()->GetCount());
+  const bool InBounds = (Index != nb::NPOS) && (Index < FtpEncryptionCombo->GetItems()->GetCount());
   DebugAssert(InBounds);
   TFtps Result = ftpsNone;
   if (InBounds)
@@ -3996,7 +3996,7 @@ TFtps TSessionDialog::GetFtps() const
 TFSProtocol TSessionDialog::IndexToFSProtocol(int32_t Index, bool AllowScpFallback) const
 {
   TFSProtocol Result = fsSFTP;
-  bool InBounds = (Index >= 0) && (Index < nb::ToUIntPtr(_countof(FSOrder)));
+  const bool InBounds = (Index >= 0) && (Index < nb::ToInt32(_countof(FSOrder)));
   DebugAssert(InBounds || (Index == -1));
   if (InBounds)
   {
@@ -4011,7 +4011,7 @@ TFSProtocol TSessionDialog::IndexToFSProtocol(int32_t Index, bool AllowScpFallba
 
 TLoginType TSessionDialog::IndexToLoginType(int32_t Index) const
 {
-  bool InBounds = (Index != nb::NPOS) && (Index <= ltNormal);
+  const bool InBounds = (Index != nb::NPOS) && (Index <= ltNormal);
   DebugAssert(InBounds);
   TLoginType Result = ltAnonymous;
   if (InBounds)
@@ -4134,8 +4134,8 @@ void TSessionDialog::SelectTab(int32_t Tab)
       break;
     }
   }
-  int32_t SelectedTabIndex = Index;
-  int32_t VisibleTabsCount = GetVisibleTabsCount(SelectedTabIndex, false);
+  const int32_t SelectedTabIndex = Index;
+  const int32_t VisibleTabsCount = GetVisibleTabsCount(SelectedTabIndex, false);
   if ((FFirstVisibleTabIndex < SelectedTabIndex - VisibleTabsCount) ||
     (SelectedTabIndex - VisibleTabsCount == 0))
   {
@@ -4159,8 +4159,8 @@ void TSessionDialog::NextTabClick(TFarButton * /*Sender*/, bool & Close)
 void TSessionDialog::ChangeTabs(int32_t FirstVisibleTabIndex)
 {
   // Calculate which tabs are visible
-  int32_t VisibleTabsCount = GetVisibleTabsCount(FirstVisibleTabIndex, true);
-  int32_t LastVisibleTabIndex = FirstVisibleTabIndex + VisibleTabsCount;
+  const int32_t VisibleTabsCount = GetVisibleTabsCount(FirstVisibleTabIndex, true);
+  const int32_t LastVisibleTabIndex = FirstVisibleTabIndex + VisibleTabsCount;
   // Change visibility
   for (int32_t Index = 0; Index < FirstVisibleTabIndex; ++Index)
   {
@@ -4171,7 +4171,7 @@ void TSessionDialog::ChangeTabs(int32_t FirstVisibleTabIndex)
   for (int32_t Index = FirstVisibleTabIndex; Index <= LastVisibleTabIndex; ++Index)
   {
     TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
-    int32_t Width = TabBtn->GetWidth();
+    const int32_t Width = TabBtn->GetWidth();
     TabBtn->SetLeft(LeftPos);
     TabBtn->SetWidth(Width);
     LeftPos += Width + 1;
@@ -4187,9 +4187,9 @@ void TSessionDialog::ChangeTabs(int32_t FirstVisibleTabIndex)
 int32_t TSessionDialog::GetVisibleTabsCount(int32_t TabIndex, bool Forward) const
 {
   int32_t Result = 0;
-  int32_t PWidth = PrevTab->GetWidth();
-  int32_t NWidth = NextTab->GetWidth();
-  int32_t DialogWidth = GetBorderBox()->GetWidth() - 2 - PWidth - NWidth - 2;
+  const int32_t PWidth = PrevTab->GetWidth();
+  const int32_t NWidth = NextTab->GetWidth();
+  const int32_t DialogWidth = GetBorderBox()->GetWidth() - 2 - PWidth - NWidth - 2;
   int32_t TabsWidth = 0;
   if (Forward)
   {
@@ -4198,7 +4198,7 @@ int32_t TSessionDialog::GetVisibleTabsCount(int32_t TabIndex, bool Forward) cons
       TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
       TTabButton * NextTabBtn = FTabs->GetAs<TTabButton>(Index + 1);
-      int32_t NextTabWidth = NextTabBtn->GetWidth() + 1;
+      const int32_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
       Result++;
@@ -4211,7 +4211,7 @@ int32_t TSessionDialog::GetVisibleTabsCount(int32_t TabIndex, bool Forward) cons
       TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
       TTabButton * PrevTabBtn = FTabs->GetAs<TTabButton>(Index - 1);
-      int32_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
+      const int32_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;
       Result++;
@@ -4224,8 +4224,8 @@ void TSessionDialog::CipherButtonClick(TFarButton * Sender, bool & Close)
 {
   if (Sender->GetEnabled())
   {
-    int32_t Source = CipherListBox->GetItems()->GetSelected();
-    int32_t Dest = Source + Sender->GetResult();
+    const int32_t Source = CipherListBox->GetItems()->GetSelected();
+    const int32_t Dest = Source + Sender->GetResult();
 
     CipherListBox->GetItems()->Move(Source, Dest);
     CipherListBox->GetItems()->SetSelected(Dest);
@@ -4238,8 +4238,8 @@ void TSessionDialog::KexButtonClick(TFarButton * Sender, bool & Close)
 {
   if (Sender->GetEnabled())
   {
-    int32_t Source = KexListBox->GetItems()->GetSelected();
-    int32_t Dest = Source + Sender->GetResult();
+    const int32_t Source = KexListBox->GetItems()->GetSelected();
+    const int32_t Dest = Source + Sender->GetResult();
 
     KexListBox->GetItems()->Move(Source, Dest);
     KexListBox->GetItems()->SetSelected(Dest);
@@ -4298,7 +4298,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
 
 int32_t TSessionDialog::AddTab(int32_t TabID, const wchar_t * TabCaption)
 {
-  TFarButtonBrackets TabBrackets = brNone; // brSpace; //
+  const TFarButtonBrackets TabBrackets = brNone; // brSpace; //
   TTabButton * Tab = new TTabButton(this);
   Tab->SetTabName(UnicodeString(TabCaption));
   Tab->SetTab(TabID);
@@ -4362,19 +4362,19 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 {
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  static int RowLabels[] =
+  static int32_t RowLabels[] =
   {
     NB_PROPERTIES_OWNER_RIGHTS,
     NB_PROPERTIES_GROUP_RIGHTS,
     NB_PROPERTIES_OTHERS_RIGHTS
   };
-  static int ColLabels[] =
+  static int32_t ColLabels[] =
   {
     NB_PROPERTIES_READ_RIGHTS,
     NB_PROPERTIES_WRITE_RIGHTS,
     NB_PROPERTIES_EXECUTE_RIGHTS
   };
-  static int SpecialLabels[] =
+  static int32_t SpecialLabels[] =
   {
     NB_PROPERTIES_SETUID_RIGHTS,
     NB_PROPERTIES_SETGID_RIGHTS,
@@ -4503,7 +4503,7 @@ void TRightsContainer::UpdateControls()
 {
   if (GetDialog()->GetHandle())
   {
-    TRights R = GetRights();
+    const TRights R = GetRights();
 
     if (FDirectoriesXCheck)
     {
@@ -4735,7 +4735,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetSize(TPoint(56, 19));
 
-    TRect CRect = GetClientRect();
+    const TRect CRect = GetClientRect();
 
     TFarText * Text = new TFarText(this);
     Text->SetCaption(GetMsg(NB_PROPERTIES_PROMPT));
@@ -4751,7 +4751,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     }
     else
     {
-      Text->SetCaption(base::MinimizeName(AFileList->GetString(0), nb::ToUIntPtr(GetClientSize().x), true));
+      Text->SetCaption(base::MinimizeName(AFileList->GetString(0), nb::ToInt32(GetClientSize().x), true));
     }
     TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
@@ -4870,7 +4870,7 @@ void TPropertiesDialog::Change()
       // when setting properties for one file only, allow undef state
       // only when the input right explicitly requires it or
       // when "recursive" is on (possible for directory only).
-      bool AllowUndef =
+      const bool AllowUndef =
         (FOrigProperties.Valid.Contains(vpRights) &&
           FOrigProperties.Rights.GetAllowUndef()) ||
         ((RecursiveCheck != nullptr) && (RecursiveCheck->GetChecked()));
@@ -4957,7 +4957,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
     RecursiveCheck->SetChecked(Properties->Recursive);
   }
 
-  bool Result = ShowModal() != brCancel;
+  const bool Result = ShowModal() != brCancel;
   if (Result)
   {
     *Properties = TRemoteProperties();
@@ -5494,7 +5494,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   FToRemote(ToRemote)
 {
   DebugAssert(FFileList);
-  const int32_t DlgLength = 78;
+  constexpr int32_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
 
   SetCaption(GetMsg(Move ? NB_MOVE_TITLE : NB_COPY_TITLE));
@@ -5508,12 +5508,12 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     }
     else
     {
-      UnicodeString PromptMsg = GetMsg(Move ? NB_MOVE_FILE_PROMPT : NB_COPY_FILE_PROMPT);
-      UnicodeString FileName = FFileList->GetString(0);
-      UnicodeString OnlyFileName = ToRemote ?
+      const UnicodeString PromptMsg = GetMsg(Move ? NB_MOVE_FILE_PROMPT : NB_COPY_FILE_PROMPT);
+      const UnicodeString FileName = FFileList->GetString(0);
+      const UnicodeString OnlyFileName = ToRemote ?
         base::ExtractFileName(FileName, false) :
         base::UnixExtractFileName(FileName);
-      UnicodeString MinimizedName = base::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
+      const UnicodeString MinimizedName = base::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg, MinimizedName);
     }
 
@@ -5594,7 +5594,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
     UnicodeString FileMask = Params->GetFileMask();
-    UnicodeString Directory = FToRemote ?
+    const UnicodeString Directory = FToRemote ?
       base::UnixIncludeTrailingBackslash(TargetDirectory) :
       ::IncludeTrailingBackslash(TargetDirectory);
     if (FFileList->GetCount() == 1)
@@ -5608,7 +5608,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
   }
 
-  bool Result = ShowModal() != brCancel;
+  const bool Result = ShowModal() != brCancel;
 
   if (Result)
   {
@@ -5653,13 +5653,13 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
 
 bool TCopyDialog::CloseQuery()
 {
-  bool CanClose = TFarDialog::CloseQuery();
+  const bool CanClose = TFarDialog::CloseQuery();
 
   if (CanClose && GetResult() >= 0)
   {
     if (!FToRemote && ((FOptions & coTempTransfer) == 0))
     {
-      UnicodeString Directory = ::ExtractFilePath(DirectoryEdit->GetText());
+      const UnicodeString Directory = ::ExtractFilePath(DirectoryEdit->GetText());
       if (!Directory.IsEmpty() && !::SysUtulsDirectoryExists(Directory))
       {
         TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
@@ -5690,7 +5690,7 @@ void TCopyDialog::Change()
 
   if (GetHandle())
   {
-    UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", FCopyParamAttrs);
+    const UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", FCopyParamAttrs);
     std::unique_ptr<TStrings> InfoStrLines(std::make_unique<TStringList>());
     FarWrapText(InfoStr, InfoStrLines.get(), GetBorderBox()->GetWidth() - 4);
     CopyParamLister->SetItems(InfoStrLines.get());
@@ -5732,7 +5732,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
 {
   std::unique_ptr<TCopyDialog> Dialog(std::make_unique<TCopyDialog>(FPlugin, ToRemote,
       Move, AFileList, Options, CopyParamAttrs));
-  bool Result = Dialog->Execute(TargetDirectory, Params);
+  const bool Result = Dialog->Execute(TargetDirectory, Params);
   return Result;
 }
 
@@ -5758,7 +5758,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
 
   CopyParamsContainer->SetParams(CopyParam);
 
-  bool Result = (Dialog->ShowModal() == brOK);
+  const bool Result = (Dialog->ShowModal() == brOK);
 
   if (Result)
   {
@@ -5797,7 +5797,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   bool Edit, bool AllowSymbolic) : TFarDialog(AFarPlugin)
 {
   SetSize(TPoint(76, 12));
-  TRect CRect = GetClientRect();
+  const TRect CRect = GetClientRect();
 
   SetCaption(GetMsg(Edit ? NB_STRING_LINK_EDIT_CAPTION : NB_STRING_LINK_ADD_CAPTION));
 
@@ -5856,7 +5856,7 @@ bool TLinkDialog::Execute(UnicodeString & AFileName, UnicodeString & PointTo,
   PointToEdit->SetText(PointTo);
   SymbolicCheck->SetChecked(Symbolic);
 
-  bool Result = ShowModal() != brCancel;
+  const bool Result = ShowModal() != brCancel;
   if (Result)
   {
     AFileName = FileNameEdit->GetText();
@@ -5870,7 +5870,7 @@ bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
   UnicodeString & PointTo, bool & Symbolic, bool Edit, bool AllowSymbolic)
 {
   std::unique_ptr<TLinkDialog> Dialog(std::make_unique<TLinkDialog>(FPlugin, Edit, AllowSymbolic));
-  bool Result = Dialog->Execute(AFileName, PointTo, Symbolic);
+  const bool Result = Dialog->Execute(AFileName, PointTo, Symbolic);
   return Result;
 }
 
@@ -5892,7 +5892,7 @@ public:
 
   explicit TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
     TGetSpaceAvailableEvent && OnGetSpaceAvailable) noexcept;
-  virtual ~TFileSystemInfoDialog() noexcept;
+  virtual ~TFileSystemInfoDialog() noexcept override;
   void Execute(const TSessionInfo & SessionInfo,
     const TFileSystemInfo & FileSystemInfo, const UnicodeString & SpaceAvailablePath);
 
@@ -5989,7 +5989,7 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   TFarSeparator * Separator = new TFarSeparator(this);
   Separator->SetCaption(GetMsg(NB_SERVER_INFORMATION_GROUP));
-  int32_t GroupTop = Separator->GetTop();
+  const int32_t GroupTop = Separator->GetTop();
 
   ServerLabels = CreateLabelArray(5);
 
@@ -6104,7 +6104,7 @@ UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
   else
   {
     Result = base::FormatBytes(Bytes);
-    UnicodeString SizeUnorderedStr = base::FormatBytes(Bytes, false);
+    const UnicodeString SizeUnorderedStr = base::FormatBytes(Bytes, false);
     if (Result != SizeUnorderedStr)
     {
       Result = FORMAT("%s (%s)", Result, SizeUnorderedStr);
@@ -6221,7 +6221,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
   TLabelList * List = dyn_cast<TLabelList>(AControl);
   if (List != nullptr)
   {
-    UnicodeString S = GetMsg(Label);
+    const UnicodeString S = GetMsg(Label);
     if (List->MaxLen < S.Length())
     {
       List->MaxLen = S.Length();
@@ -6334,7 +6334,7 @@ void TFileSystemInfoDialog::Execute(
 bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result;
-  WORD Key = KeyCode & 0xFFFF;
+  const WORD Key = KeyCode & 0xFFFF;
   // LONG_PTR ControlState = KeyCode >> 16;
   if ((Item == SpaceAvailablePathEdit) && (Key == VK_RETURN))
   {
@@ -6433,10 +6433,10 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     std::unique_ptr<TStrings> BookmarkPaths(std::make_unique<TStringList>());
     std::unique_ptr<TFarMenuItems> BookmarkItems(std::make_unique<TFarMenuItems>());
     std::unique_ptr<TList> Bookmarks(std::make_unique<TList>());
-    intptr_t BookmarksOffset{0};
+    int32_t BookmarksOffset{0};
 
-    int32_t MaxLength = FPlugin->MaxMenuItemLength();
-    int32_t MaxHistory = 40;
+    const int32_t MaxLength = FPlugin->MaxMenuItemLength();
+    const int32_t MaxHistory = 40;
     int32_t FirstHistory = 0;
 
     if (FPathHistory->GetCount() > MaxHistory)
@@ -6460,7 +6460,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       UnicodeString RemoteDirectory = Bookmark->GetRemote();
       if (!RemoteDirectory.IsEmpty() && (BookmarkDirectories->IndexOf(RemoteDirectory) == nb::NPOS))
       {
-        int32_t Pos = BookmarkDirectories->Add(RemoteDirectory);
+        const int32_t Pos = BookmarkDirectories->Add(RemoteDirectory);
         if (RemoteDirectory == Directory)
         {
           FirstItemFocused = Pos;
@@ -6524,7 +6524,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     Repeat = false;
     UnicodeString Caption = GetMsg(Add ? NB_OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
         NB_OPEN_DIRECTORY_BROWSE_CAPTION);
-    const FarKey BreakKeys[] =
+    constexpr FarKey BreakKeys[] =
     {
       { VK_DELETE, 0 },
       { VK_F8, 0 },
@@ -6684,7 +6684,7 @@ void TApplyCommandDialog::Change()
 
   if (GetHandle())
   {
-    bool RemoteCommand = RemoteCommandButton->GetChecked();
+    const bool RemoteCommand = RemoteCommandButton->GetChecked();
     bool AllowRecursive = true;
     bool AllowApplyToDirectories = true;
     try
@@ -6695,8 +6695,8 @@ void TApplyCommandDialog::Change()
         (RemoteCommand ? &RemoteCustomCommand : &LocalCustomCommand);
 
       TInteractiveCustomCommand InteractiveCustomCommand(FileCustomCommand);
-      UnicodeString Cmd = InteractiveCustomCommand.Complete(CommandEdit->GetText(), false);
-      bool FileCommand = FileCustomCommand->IsFileCommand(Cmd);
+      const UnicodeString Cmd = InteractiveCustomCommand.Complete(CommandEdit->GetText(), false);
+      const bool FileCommand = FileCustomCommand->IsFileCommand(Cmd);
       AllowRecursive = FileCommand && !FileCustomCommand->IsFileListCommand(Cmd);
       if (AllowRecursive && !RemoteCommand)
       {
@@ -6725,7 +6725,7 @@ bool TApplyCommandDialog::Execute(UnicodeString & Command, int32_t & Params)
   ShowResultsCheck->SetChecked(FLAGSET(Params, ccShowResults));
   CopyResultsCheck->SetChecked(FLAGSET(Params, ccCopyResults));
 
-  bool Result = (ShowModal() != brCancel);
+  const bool Result = (ShowModal() != brCancel);
   if (Result)
   {
     Command = CommandEdit->GetText();
@@ -6744,7 +6744,7 @@ bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
   int32_t & Params) const
 {
   std::unique_ptr<TApplyCommandDialog> Dialog(std::make_unique<TApplyCommandDialog>(FPlugin));
-  bool Result = Dialog->Execute(Command, Params);
+  const bool Result = Dialog->Execute(Command, Params);
   return Result;
 }
 
@@ -6929,7 +6929,7 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
 
 void TFullSynchronizeDialog::AdaptSize()
 {
-  bool ShowCopyParam = (FFullHeight <= GetMaxSize().y);
+  const bool ShowCopyParam = (FFullHeight <= GetMaxSize().y);
   if (ShowCopyParam != CopyParamLister->GetVisible())
   {
     ShowGroup(1, ShowCopyParam);
@@ -6965,7 +6965,7 @@ void TFullSynchronizeDialog::TransferSettingsButtonClick(
 }
 
 void TFullSynchronizeDialog::CopyParamListerClick(
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD *Event)
+  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * Event)
 {
   if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK))
   {
@@ -7027,7 +7027,7 @@ void TFullSynchronizeDialog::Change()
       }
     }
 
-    UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
+    const UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     std::unique_ptr<TStrings> InfoStrLines(std::make_unique<TStringList>());
     FarWrapText(InfoStr, InfoStrLines.get(), GetBorderBox()->GetWidth() - 4);
     CopyParamLister->SetItems(InfoStrLines.get());
@@ -7037,7 +7037,7 @@ void TFullSynchronizeDialog::Change()
 
 int32_t TFullSynchronizeDialog::ActualCopyParamAttrs() const
 {
-  intptr_t Result;
+  int32_t Result;
   if (SynchronizeTimestampsButton->GetChecked())
   {
     Result = cpaIncludeMaskOnly;
@@ -7132,7 +7132,7 @@ bool TFullSynchronizeDialog::Execute(TTerminal::TSynchronizeMode & Mode,
   FOrigMode = Mode;
   FCopyParams = *CopyParams;
 
-  bool Result = (ShowModal() == brOK);
+  const bool Result = (ShowModal() == brOK);
 
   if (Result)
   {
@@ -7171,8 +7171,8 @@ bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode
 {
   std::unique_ptr<TFullSynchronizeDialog> Dialog(std::make_unique<TFullSynchronizeDialog>(
       FPlugin, Options, CopyParamAttrs));
-  bool Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
-      CopyParams, SaveSettings, SaveMode);
+  const bool Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
+                                      CopyParams, SaveSettings, SaveMode);
   return Result;
 }
 
@@ -7202,15 +7202,15 @@ private:
   TSynchronizeChecklist * FChecklist{nullptr};
   UnicodeString FLocalDirectory;
   UnicodeString FRemoteDirectory;
-  static const int FColumns = 8;
-  int FWidths[FColumns]{};
+  static const int32_t FColumns = 8;
+  int32_t FWidths[FColumns]{};
   UnicodeString FActions[TSynchronizeChecklist::ActionCount];
   int32_t FScroll{0};
   bool FCanScrollRight{false};
   int32_t FChecked{0};
 
   void AdaptSize();
-  //int ColumnWidth(int32_t Index);
+  //int32_t ColumnWidth(int32_t Index);
   void LoadChecklist();
   void RefreshChecklist(bool Scroll);
   void UpdateControls();
@@ -7218,7 +7218,7 @@ private:
   UnicodeString ItemLine(const TChecklistItem * ChecklistItem);
   void AddColumn(UnicodeString & List, const UnicodeString & Value, size_t Column,
     bool AHeader = false);
-  UnicodeString FormatSize(int64_t Size, int Column);
+  UnicodeString FormatSize(int64_t Size, int32_t Column);
 };
 
 TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
@@ -7280,11 +7280,11 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
   const UnicodeString & Value, size_t Column, bool AHeader)
 {
-  wchar_t Separator = L'|'; // '\xB3';
-  int32_t Len = Value.Length();
-  int32_t Width = nb::ToUIntPtr(FWidths[Column]);
-  bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
-  bool LastCol = (Column == FColumns - 1);
+  constexpr wchar_t Separator = L'|'; // '\xB3';
+  const int32_t Len = Value.Length();
+  int32_t Width = nb::ToInt32(FWidths[Column]);
+  const bool Right = (Column == 2) || (Column == 3) || (Column == 6) || (Column == 7);
+  const bool LastCol = (Column == FColumns - 1);
   if (Len <= Width)
   {
     int32_t Added = 0;
@@ -7353,13 +7353,13 @@ void TSynchronizeChecklistDialog::AdaptSize()
       FarPlugin->ConsoleWindowState() == SW_SHOWMAXIMIZED ?
       NB_CHECKLIST_RESTORE : NB_CHECKLIST_MAXIMIZE));
 
-  static const int Ratio[FColumns] = {140, 100, 80, 150, -2, 100, 80, 150};
+  static const int32_t Ratio[FColumns] = {140, 100, 80, 150, -2, 100, 80, 150};
 
-  int32_t Width = ListBox->GetWidth() - 2 /*checkbox*/ - 1 /*scrollbar*/ - FColumns;
+  const int32_t Width = ListBox->GetWidth() - 2 /*checkbox*/ - 1 /*scrollbar*/ - FColumns;
   double Temp[FColumns];
 
-  int TotalRatio = 0;
-  int FixedRatio = 0;
+  int32_t TotalRatio = 0;
+  int32_t FixedRatio = 0;
   for (int32_t Index = 0; Index < FColumns; ++Index)
   {
     if (Ratio[Index] >= 0)
@@ -7413,9 +7413,9 @@ void TSynchronizeChecklistDialog::AdaptSize()
 }
 
 UnicodeString TSynchronizeChecklistDialog::FormatSize(
-  int64_t Size, int Column)
+  int64_t Size, int32_t Column)
 {
-  int32_t Width = nb::ToUIntPtr(FWidths[Column]);
+  int32_t Width = nb::ToInt32(FWidths[Column]);
   UnicodeString Result = FORMAT("%lu", Size);
 
   if (Result.Length() > Width)
@@ -7489,9 +7489,9 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
     }
   }
 
-  int32_t Action = nb::ToUIntPtr(ChecklistItem->Action - 1);
-  DebugAssert((Action != nb::NPOS) && (Action < nb::ToUIntPtr(_countof(FActions))));
-  if ((Action != nb::NPOS) && (Action < nb::ToUIntPtr(_countof(FActions))))
+  const int32_t Action = nb::ToInt32(ChecklistItem->Action - 1);
+  DebugAssert((Action != nb::NPOS) && (Action < nb::ToInt32(_countof(FActions))));
+  if ((Action != nb::NPOS) && (Action < nb::ToInt32(_countof(FActions))))
     AddColumn(Line, FActions[Action], 4);
 
   if (ChecklistItem->Action == saDeleteLocal)
@@ -7625,7 +7625,7 @@ void TSynchronizeChecklistDialog::CheckAll(bool Check)
     {
       List->EndUpdate();
     };
-    int32_t Count = List->GetCount();
+    const int32_t Count = List->GetCount();
     for (int32_t Index = 0; Index < Count; ++Index)
     {
       List->SetChecked(Index, Check);
@@ -7657,7 +7657,7 @@ void TSynchronizeChecklistDialog::VideoModeButtonClick(
 void TSynchronizeChecklistDialog::ListBoxClick(
   TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/)
 {
-  int32_t Index = ListBox->GetItems()->GetSelected();
+  const int32_t Index = ListBox->GetItems()->GetSelected();
   if (Index >= 0)
   {
     if (ListBox->GetItems()->GetChecked(Index))
@@ -7678,8 +7678,8 @@ void TSynchronizeChecklistDialog::ListBoxClick(
 bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
 {
   bool Result = false;
-  WORD Key = KeyCode & 0xFFFF;
-  LONG_PTR ControlState = KeyCode >> 16;
+  const WORD Key = KeyCode & 0xFFFF;
+  const LONG_PTR ControlState = KeyCode >> 16;
   if (ListBox->Focused())
   {
     if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
@@ -7691,7 +7691,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
     else if ((Key == VK_SPACE) || (Key == VK_INSERT) ||
       (Key == VK_ADD) || (Key == VK_SUBTRACT))
     {
-      int32_t Index = ListBox->GetItems()->GetSelected();
+      const int32_t Index = ListBox->GetItems()->GetSelected();
       if (Index >= 0)
       {
         if (ListBox->GetItems()->GetChecked(Index) && (Key != VK_ADD))
@@ -7753,12 +7753,12 @@ bool TSynchronizeChecklistDialog::Execute(TSynchronizeChecklist * Checklist)
 {
   FChecklist = Checklist;
   LoadChecklist();
-  bool Result = (ShowModal() == brOK);
+  const bool Result = (ShowModal() == brOK);
 
   if (Result)
   {
     TFarList * List = ListBox->GetItems();
-    int32_t Count = List->GetCount();
+    const int32_t Count = List->GetCount();
     for (int32_t Index = 0; Index < Count; ++Index)
     {
       TChecklistItem * ChecklistItem = List->GetAs<TChecklistItem>(Index);
@@ -7775,7 +7775,7 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
 {
   std::unique_ptr<TSynchronizeChecklistDialog> Dialog(std::make_unique<TSynchronizeChecklistDialog>(
       FPlugin, Mode, Params, LocalDirectory, RemoteDirectory));
-  bool Result = Dialog->Execute(Checklist);
+  const bool Result = Dialog->Execute(Checklist);
   return Result;
 }
 
@@ -7786,7 +7786,7 @@ public:
   explicit TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent && OnStartStop,
     int32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions);
-  virtual ~TSynchronizeDialog() noexcept;
+  virtual ~TSynchronizeDialog() noexcept override;
 
   bool Execute(TSynchronizeParamType & Params,
     const TCopyParamType * CopyParams, bool & SaveSettings);
@@ -8179,7 +8179,7 @@ void TSynchronizeDialog::Change()
   {
     UpdateControls();
 
-    UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
+    const UnicodeString InfoStr = FCopyParams.GetInfoStr(L"; ", ActualCopyParamAttrs());
     std::unique_ptr<TStrings> InfoStrLines(std::make_unique<TStringList>());
     FarWrapText(InfoStr, InfoStrLines.get(), GetBorderBox()->GetWidth() - 4);
     CopyParamLister->SetItems(InfoStrLines.get());
@@ -8190,7 +8190,7 @@ void TSynchronizeDialog::Change()
 bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
-  WORD Key = KeyCode & 0xFFFF;
+  const WORD Key = KeyCode & 0xFFFF;
   // LONG_PTR ControlState = KeyCode >> 16;
   if ((Key == VK_ESCAPE) && FSynchronizing)
   {
@@ -8229,14 +8229,14 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
 {
   std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(FPlugin, std::forward<TSynchronizeStartStopEvent>(OnStartStop),
     Options, CopyParamAttrs, std::forward<TGetSynchronizeOptionsEvent>(OnGetOptions)));
-  bool Result = Dialog->Execute(Params, CopyParams, SaveSettings);
+  const bool Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   return Result;
 }
 
 bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
   UnicodeString & Target, UnicodeString & FileMask, bool Move)
 {
-  UnicodeString Prompt = FileNameFormatString(
+  const UnicodeString Prompt = FileNameFormatString(
       GetMsg(Move ? NB_REMOTE_MOVE_FILE : NB_REMOTE_COPY_FILE),
       GetMsg(Move ? NB_REMOTE_MOVE_FILES : NB_REMOTE_COPY_FILES), AFileList, true);
 
@@ -8267,7 +8267,7 @@ class TQueueDialog : TFarDialog
 public:
   explicit TQueueDialog(TCustomFarPlugin * AFarPlugin,
     TWinSCPFileSystem * AFileSystem, bool ClosingPlugin) noexcept;
-  virtual ~TQueueDialog() = default;
+  virtual ~TQueueDialog() override = default;
 
   bool Execute(TTerminalQueueStatus * Status);
 
@@ -8319,7 +8319,7 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
 {
   SetSize(TPoint(80, 23));
   // TRect CRect = GetClientRect();
-  int32_t ListHeight = GetClientSize().y - 4;
+  const int32_t ListHeight = GetClientSize().y - 4;
 
   SetCaption(GetMsg(NB_QUEUE_TITLE));
 
@@ -8327,7 +8327,7 @@ TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
   Text->SetCaption(GetMsg(NB_QUEUE_HEADER));
 
   TFarSeparator * Separator = new TFarSeparator(this);
-  int32_t ListTop = Separator->GetBottom();
+  const int32_t ListTop = Separator->GetBottom();
 
   Separator = new TFarSeparator(this);
   Separator->Move(0, ListHeight);
@@ -8414,8 +8414,8 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
 {
   bool Result = false;
-  WORD Key = KeyCode & 0xFFFF;
-  LONG_PTR ControlState = KeyCode >> 16;
+  const WORD Key = KeyCode & 0xFFFF;
+  const LONG_PTR ControlState = KeyCode >> 16;
   if (QueueListBox->Focused())
   {
     TFarButton * DoButton = nullptr;
@@ -8533,7 +8533,7 @@ bool TQueueDialog::UpdateQueue()
 {
   DebugAssert(FFileSystem != nullptr);
   TTerminalQueueStatus * Status = FFileSystem->ProcessQueue(false);
-  bool Result = (Status != nullptr);
+  const bool Result = (Status != nullptr);
   if (Result)
   {
     FStatus = Status;
@@ -8556,7 +8556,7 @@ void TQueueDialog::RefreshQueue()
   if (GetQueueItems()->GetCount() > 0)
   {
     bool Change = false;
-    int32_t TopIndex = GetQueueItems()->GetTopIndex();
+    const int32_t TopIndex = GetQueueItems()->GetTopIndex();
     int32_t Index = TopIndex;
 
     int32_t ILine = 0;
@@ -8567,14 +8567,13 @@ void TQueueDialog::RefreshQueue()
       ILine++;
     }
 
-    TQueueItemProxy * PrevQueueItem = nullptr;
-    TQueueItemProxy * QueueItem;
+    const TQueueItemProxy * PrevQueueItem = nullptr;
     UnicodeString Line;
     while ((Index < GetQueueItems()->GetCount()) &&
       (Index < TopIndex + QueueListBox->GetHeight()))
     {
-      QueueItem = dyn_cast<TQueueItemProxy>(
-          GetQueueItems()->Get(Index));
+      TQueueItemProxy * QueueItem = dyn_cast<TQueueItemProxy>(
+        GetQueueItems()->Get(Index));
       DebugAssert(QueueItem != nullptr);
       if ((PrevQueueItem != nullptr) && (QueueItem != PrevQueueItem))
       {
@@ -8625,7 +8624,7 @@ void TQueueDialog::LoadQueue()
 bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
   TQueueItemProxy * QueueItem, int32_t Index)
 {
-  int PathMaxLen = 49;
+  constexpr int32_t PathMaxLen = 49;
 
   if ((Index > 2) ||
     ((Index == 2) && (QueueItem->GetStatus() == TQueueItem::qsPending)))
@@ -8662,7 +8661,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
     break;
   }
 
-  bool BlinkHide = QueueItemNeedsFrequentRefresh(QueueItem) &&
+  const bool BlinkHide = QueueItemNeedsFrequentRefresh(QueueItem) &&
     !QueueItem->GetProcessingUserAction() &&
     ((::GetTickCount() % 2000) >= 1000);
 
@@ -8670,7 +8669,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
   UnicodeString Direction;
   UnicodeString Values[2];
   TFileOperationProgressType * ProgressData = QueueItem->GetProgressData();
-  TQueueItem::TInfo * Info = QueueItem->GetInfo();
+  const TQueueItem::TInfo * Info = QueueItem->GetInfo();
 
   if (Index == 0)
   {
@@ -8763,7 +8762,7 @@ bool TQueueDialog::Execute(TTerminalQueueStatus * Status)
   UpdateQueue();
   LoadQueue();
 
-  bool Result = (ShowModal() != brCancel);
+  const bool Result = (ShowModal() != brCancel);
   return Result;
 }
 
@@ -8771,7 +8770,7 @@ bool TWinSCPFileSystem::QueueDialog(
   TTerminalQueueStatus * Status, bool ClosingPlugin)
 {
   std::unique_ptr<TQueueDialog> Dialog(std::make_unique<TQueueDialog>(FPlugin, this, ClosingPlugin));
-  bool Result = Dialog->Execute(Status);
+  const bool Result = Dialog->Execute(Status);
   return Result;
 }
 
@@ -8814,7 +8813,7 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
     RightsContainer->SetRights(Properties->Rights);
   }
 
-  bool Result = (Dialog->ShowModal() == brOK);
+  const bool Result = (Dialog->ShowModal() == brOK);
 
   if (Result)
   {
