@@ -904,7 +904,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
 
   FExitCode1IsError = Storage->ReadBool(L"ExitCode1IsError", FExitCode1IsError);
   FLookupUserGroups = Storage->ReadEnum(L"LookupUserGroups2", FLookupUserGroups, AutoSwitchMapping);
-  FEOLType = (TEOLType)Storage->ReadInteger(L"EOLType", FEOLType);
+  FEOLType = static_cast<TEOLType>(Storage->ReadInteger(L"EOLType", FEOLType));
   FTrimVMSVersions = Storage->ReadBool(L"TrimVMSVersions", FTrimVMSVersions);
   FVMSAllRevisions = Storage->ReadBool(L"VMSAllRevisions", FVMSAllRevisions);
   FNotUtf = Storage->ReadEnum(L"Utf", Storage->ReadEnum(L"SFTPUtfBug", FNotUtf), AutoSwitchReversedMapping);
@@ -913,7 +913,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FS3DefaultRegion = Storage->ReadString(L"S3DefaultRegion", FS3DefaultRegion);
   FS3SessionToken = Storage->ReadString(L"S3SessionToken", FS3SessionToken);
   S3Profile = Storage->ReadString(L"S3Profile", S3Profile);
-  FS3UrlStyle = (TS3UrlStyle)Storage->ReadInteger(L"S3UrlStyle", FS3UrlStyle);
+  FS3UrlStyle = static_cast<TS3UrlStyle>(Storage->ReadInteger(L"S3UrlStyle", FS3UrlStyle));
   FS3MaxKeys = Storage->ReadEnum(L"S3MaxKeys", FS3MaxKeys, AutoSwitchMapping);
   FS3CredentialsEnv = Storage->ReadBool(L"S3CredentialsEnv", FS3CredentialsEnv);
   FS3RequesterPays = Storage->ReadBool(L"S3RequesterPays", FS3RequesterPays);
@@ -3378,7 +3378,7 @@ TGssLib TSessionData::GetGssLib(int32_t Index) const
 
 void TSessionData::SetGssLibList(const UnicodeString & Value)
 {
-  SetAlgoList(FGssLib, DefaultGssLibList, GssLibNames, GSSLIB_COUNT, TGssLib(-1), Value);
+  SetAlgoList(FGssLib, DefaultGssLibList, GssLibNames, GSSLIB_COUNT, static_cast<TGssLib>(-1), Value);
 }
 
 UnicodeString TSessionData::GetGssLibList() const
