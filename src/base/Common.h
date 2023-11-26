@@ -351,7 +351,7 @@ UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name,
   const UnicodeString & Value, bool Inline);
 UnicodeString AssemblyProperty(
-  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, int Value, bool Inline);
+  TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, int32_t Value, bool Inline);
 UnicodeString AssemblyProperty(
   TAssemblyLanguage Language, const UnicodeString & ClassName, const UnicodeString & Name, bool Value, bool Inline);
 UnicodeString RtfLibraryMethod(const UnicodeString & ClassName, const UnicodeString & MethodName, bool Inpage);

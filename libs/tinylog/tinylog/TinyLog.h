@@ -93,7 +93,7 @@ private:
 class StackWalker : public sw::StackWalker
 {
 public:
-  explicit StackWalker(int options = StackWalker::RetrieveSymbol|StackWalker::RetrieveLine);
+  explicit StackWalker(int32_t options = StackWalker::RetrieveSymbol|StackWalker::RetrieveLine);
 protected:
   virtual void OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr) override;
   virtual std::string OnFormatEntry(CallstackEntry& entry) override;

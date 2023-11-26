@@ -46,7 +46,7 @@ private:
 //  std::unique_ptr<LockFreeQueue> queue_;
   FILE * file_{nullptr}; // TODO: use gsl::not_null
   const char * file_name_{nullptr}; // TODO: use gsl::not_null
-  int line_{0};
+  int32_t line_{0};
   const char * func_name_{nullptr};
   std::string str_log_level_;
   timeval tv_base_{};

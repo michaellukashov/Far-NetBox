@@ -6,7 +6,7 @@
 
 namespace Masks {
 
-static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode)
+static int32_t CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode)
 {
   for (;; ++str)
   {
@@ -76,7 +76,7 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
           break;
         }
 
-        int match = 0;
+        int32_t match = 0;
         wchar_t Rangec;
         while ((Rangec = nb::Upper(*pattern++)) != 0)
         {
@@ -118,7 +118,7 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
   }
 }
 
-int CmpName(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode)
+int32_t CmpName(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode)
 {
   if (!pattern || !str)
     return FALSE;

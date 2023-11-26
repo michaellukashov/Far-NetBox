@@ -59,11 +59,11 @@ class DynamicQueue
 public:
    DynamicQueue();                               // Constructor
    ~DynamicQueue();                              // Destructor
-   void Reserve(int num);                        // Allocate buffer for num objects
-   int GetNum(){return NumEntries;};             // Get number of objects stored
-   bool IsEmpty() {return GetNum() == 0; };             // Get number of objects stored
+   void Reserve(int32_t num);                        // Allocate buffer for num objects
+   int32_t GetNum() { return NumEntries; }             // Get number of objects stored
+   bool IsEmpty() {return GetNum() == 0; }             // Get number of objects stored
    inline bool empty() { return IsEmpty(); }
-   int GetMaxNum(){return MaxNum;};              // Get number of objects that can be stored without re-allocating memory
+   int32_t GetMaxNum() { return MaxNum; }              // Get number of objects that can be stored without re-allocating memory
    void Put(TX const & obj);                     // Add object to head of queue
    inline TX push_back(TX const & obj) { Put(obj); }
    TX Get();                                     // Take object out from tail of queue
@@ -77,14 +77,14 @@ public:
 private:
    TX * Buffer;                                  // Buffer containing data
    TX * OldBuffer;                               // Old buffer before re-allocation
-   int head;
-   int tail;
-   int MaxNum;                                   // Maximum number of objects that currently allocated buffer can contain
-   int NumEntries;                               // Number of objects stored
+   int32_t head;
+   int32_t tail;
+   int32_t MaxNum;                                   // Maximum number of objects that currently allocated buffer can contain
+   int32_t NumEntries;                               // Number of objects stored
    void ReAllocate(int num);                     // Increase size of memory buffer
    void Error(int e, int n);                     // Make fatal error message
-   DynamicQueue(DynamicQueue const&){}          // Make private copy constructor to prevent copying
-   void operator=(DynamicQueue const&){}      // Make private assignment operator to prevent copying
+   DynamicQueue(DynamicQueue const &) {}          // Make private copy constructor to prevent copying
+   void operator =(DynamicQueue const &) {}      // Make private assignment operator to prevent copying
 };
 
 
