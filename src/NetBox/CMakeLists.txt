@@ -360,13 +360,12 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   ../../libs/openssl-3/crypto/aes/aesni-sha1-x86_64.asm
   ../../libs/openssl-3/crypto/aes/aesni-sha256-x86_64.asm
   ../../libs/openssl-3/crypto/aes/aesni-x86_64.asm
-  # ../../libs/openssl-3/crypto/aes/asm/aes-ia64.S
   ../../libs/openssl-3/crypto/aes/bsaes-x86_64.asm
   ../../libs/openssl-3/crypto/aes/vpaes-x86_64.asm
   ../../libs/openssl-3/crypto/bn/rsaz-x86_64.asm
   ../../libs/openssl-3/crypto/modes/aesni-gcm-x86_64.asm
 )
-else() # if(x64)
+else()
 compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   ../../libs/openssl-3/crypto/aes/libcrypto-lib-vpaes-x86.obj.asm
   ../../libs/openssl-3/crypto/aes/libcrypto-lib-aesni-x86.obj.asm
@@ -392,7 +391,7 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   ../../libs/openssl-3/crypto/sha/libcrypto-lib-sha1-586.obj.asm
   ../../libs/openssl-3/crypto/whrlpool/libcrypto-lib-wp-mmx.obj.asm
 )
-endif() # if(x64)
+endif()
 
 #message("libeay32_obj_files: ${libeay32_obj_files}")
 
@@ -445,9 +444,6 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/core_algorithm.c
   ../../libs/openssl-3/crypto/core_namemap.c
   ../../libs/openssl-3/crypto/self_test_core.c
-  # ../../libs/openssl-3/crypto/mem_dbg.c
-  # ../../libs/openssl-3/crypto/ex_data.c
-  # ../../libs/openssl-3/crypto/o_fopen.c
   ../../libs/openssl-3/crypto/encode_decode/encoder_meth.c
   ../../libs/openssl-3/crypto/encode_decode/encoder_lib.c
   ../../libs/openssl-3/crypto/encode_decode/encoder_pkey.c
@@ -523,8 +519,6 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/aes/aes_ofb.c
   ../../libs/openssl-3/crypto/aes/aes_ige.c
   ../../libs/openssl-3/crypto/aes/aes_wrap.c
-  # ../../libs/openssl-3/crypto/aes/aes_core.c
-  # ../../libs/openssl-3/crypto/aes/aes_cbc.c
   ../../libs/openssl-3/crypto/bn/bn_add.c
   ../../libs/openssl-3/crypto/bn/bn_div.c
   ../../libs/openssl-3/crypto/bn/bn_exp.c
@@ -557,7 +551,6 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/bn/bn_srp.c
   ../../libs/openssl-3/crypto/bn/bn_conv.c
   ../../libs/openssl-3/crypto/bn/bn_rsa_fips186_4.c
-  # ../../libs/openssl-3/crypto/bn/rsa_sup_mul.c
   ../../libs/openssl-3/crypto/rsa/rsa_ossl.c
   ../../libs/openssl-3/crypto/rsa/rsa_gen.c
   ../../libs/openssl-3/crypto/rsa/rsa_lib.c
@@ -656,10 +649,6 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/rand/rand_meth.c
   ../../libs/openssl-3/crypto/rand/rand_pool.c
   ../../libs/openssl-3/crypto/rand/prov_seed.c
-  # ../../libs/openssl-3/crypto/rand/randfile.c
-  # ../../libs/openssl-3/crypto/err/err.c
-  # ../../libs/openssl-3/crypto/err/err_all.c
-  # ../../libs/openssl-3/crypto/err/err_prn.c
   ../../libs/openssl-3/crypto/err/err_blocks.c
   ../../libs/openssl-3/crypto/err/err.c
   ../../libs/openssl-3/crypto/err/err_all.c
@@ -741,16 +730,11 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/evp/p_dec.c
   ../../libs/openssl-3/crypto/evp/e_old.c
   ../../libs/openssl-3/crypto/evp/p_open.c
-  # ../../libs/openssl-3/crypto/evp/legacy_md2.c
   ../../libs/openssl-3/crypto/evp/legacy_md4.c
   ../../libs/openssl-3/crypto/evp/legacy_md5.c
   ../../libs/openssl-3/crypto/evp/legacy_md5_sha1.c
-  # ../../libs/openssl-3/crypto/evp/legacy_mdc2.c
   ../../libs/openssl-3/crypto/evp/legacy_blake2.c
-  # ../../libs/openssl-3/crypto/evp/legacy_wp.c
   ../../libs/openssl-3/crypto/evp/legacy_ripemd.c
-  # ../../libs/openssl-3/crypto/evp/e_seed.c
-  # ../../libs/openssl-3/crypto/evp/e_camellia.c
   ../../libs/openssl-3/crypto/asn1/a_object.c
   ../../libs/openssl-3/crypto/asn1/a_bitstr.c
   ../../libs/openssl-3/crypto/asn1/a_utctm.c
@@ -985,10 +969,6 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/ec/ecx_backend.c
   ../../libs/openssl-3/crypto/ec/ecdh_kdf.c
   ../../libs/openssl-3/crypto/ec/curve448/arch_64/f_impl64.c
-  # ../../libs/openssl-3/crypto/ec/curve448/arch_32/f_impl32.c
-  # ../../libs/openssl-3/crypto/ec/ecp_nistp224.c
-  # ../../libs/openssl-3/crypto/ec/ecp_nistp256.c
-  # ../../libs/openssl-3/crypto/ec/ecp_nistp521.c
   ../../libs/openssl-3/crypto/ec/ecp_nistputil.c
   ../../libs/openssl-3/crypto/ec/ecp_smpl.c
   ../../libs/openssl-3/crypto/ec/ecdh_ossl.c
@@ -1042,20 +1022,14 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/store/store_result.c
   ../../libs/openssl-3/crypto/store/store_strings.c
   ../../libs/openssl-3/crypto/store/store_meth.c
-  # ../../libs/openssl-3/crypto/store/loader_file.c
   ../../libs/openssl-3/crypto/aria/aria.c
   ../../libs/openssl-3/crypto/blake2/blake2b.c
   ../../libs/openssl-3/crypto/blake2/blake2s.c
   ../../libs/openssl-3/crypto/sm3/sm3.c
   ../../libs/openssl-3/crypto/sm3/legacy_sm3.c
-  # ../../libs/openssl-3/crypto/sm3/m_sm3.c
   ../../libs/openssl-3/crypto/sm4/sm4.c
   ../../libs/openssl-3/crypto/poly1305/poly1305.c
-  # ../../libs/openssl-3/crypto/poly1305/poly1305_ameth.c
-  # ../../libs/openssl-3/crypto/poly1305/poly1305_pmeth.c
   ../../libs/openssl-3/crypto/siphash/siphash.c
-  # ../../libs/openssl-3/crypto/siphash/siphash_ameth.c
-  # ../../libs/openssl-3/crypto/siphash/siphash_pmeth.c
   ../../libs/openssl-3/crypto/sm2/sm2_pmeth.c
   ../../libs/openssl-3/crypto/sm2/sm2_crypt.c
   ../../libs/openssl-3/crypto/sm2/sm2_sign.c
@@ -1241,8 +1215,7 @@ set(libeay32_c_files ${libeay32_c_files}
   ../../libs/openssl-3/crypto/cast/c_enc.c
   ../../libs/openssl-3/crypto/bf/bf_enc.c
 )
-else() # if(x64)
-endif() #if(x64)
+endif()
 
 add_library(libeay32 STATIC
   ${libeay32_obj_files}
