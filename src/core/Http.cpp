@@ -105,7 +105,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
 
         ne_add_response_body_reader(NeonRequest, ne_accept_2xx, NeonBodyReader, this);
 
-        int Status = ne_request_dispatch(NeonRequest);
+        int32_t Status = ne_request_dispatch(NeonRequest);
 
         // Exception has precedence over status as status will always be NE_ERROR,
         // as we returned 1 from NeonBodyReader
