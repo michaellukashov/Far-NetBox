@@ -1699,10 +1699,10 @@ bool StartsText(const UnicodeString & ASubText, const UnicodeString & AText)
   return AText.Pos(ASubText) == 1;
 }
 
-uint32_t StrToVersionNumber(const UnicodeString & VersionMumberStr)
+uint32_t StrToVersionNumber(const UnicodeString & VersionNumberStr)
 {
   uint32_t Result = 0;
-  UnicodeString Version = VersionMumberStr;
+  UnicodeString Version = VersionNumberStr;
   int32_t Shift = 16;
   while (!Version.IsEmpty())
   {

@@ -430,7 +430,7 @@ struct NB_CORE_EXPORT TVersionInfo
 };
 
 #define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))
-NB_CORE_EXPORT uint32_t StrToVersionNumber(const UnicodeString & VersionMumberStr);
+NB_CORE_EXPORT uint32_t StrToVersionNumber(const UnicodeString & VersionNumberStr);
 NB_CORE_EXPORT UnicodeString VersionNumberToStr(uint32_t VersionNumber);
 NB_CORE_EXPORT uint32_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2, 1, 9); }
 NB_CORE_EXPORT uint32_t inline GetVersionNumber2110() { return MAKEVERSIONNUMBER(2, 1, 10); }
