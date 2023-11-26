@@ -950,7 +950,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
 
   #define READ_BUG(BUG) \
     SetBug(sb##BUG, TAutoSwitch(2 - Storage->ReadInteger(MB_TEXT("Bug"#BUG), \
-      2 - GetBug(sb##BUG))));
+      2 - GetBug(sb##BUG))))
   READ_BUG(HMAC2);
   READ_BUG(DeriveKey2);
   READ_BUG(RSAPad2);
@@ -974,7 +974,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
     SetSftpServer(Storage->ReadString("SftpServer", GetSftpServer()));
   }
 #define READ_SFTP_BUG(BUG) \
-    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadEnum(MB_TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), AutoSwitchMapping)));
+    SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadEnum(MB_TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), AutoSwitchMapping)))
   READ_SFTP_BUG(Symlink);
   READ_SFTP_BUG(SignedTS);
   #undef READ_SFTP_BUG
