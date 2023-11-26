@@ -1625,7 +1625,8 @@ bool AutodetectProxy(UnicodeString & HostName, int32_t & PortNumber)
      it's available. */
   UnicodeString Proxy;
   WINHTTP_PROXY_INFO ProxyInfo;
-  memset(&ProxyInfo, 0, sizeof(ProxyInfo));
+  //memset(&ProxyInfo, 0, sizeof(ProxyInfo));
+  nb::ClearStruct(ProxyInfo);
   if (WinHttpGetDefaultProxyConfiguration(&ProxyInfo))
   {
     if (ProxyInfo.lpszProxy != nullptr)
