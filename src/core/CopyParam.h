@@ -111,7 +111,7 @@ public:
   TRights RemoteFileRights(uint32_t Attrs) const;
   bool UseAsciiTransfer(const UnicodeString & AFileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
-  bool AllowResume(int64_t Size, const UnicodeString & FileName) const;
+  bool AllowResume(const int64_t Size, const UnicodeString & FileName) const;
   bool ResumeTransfer(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalPath(const UnicodeString & APath) const;
