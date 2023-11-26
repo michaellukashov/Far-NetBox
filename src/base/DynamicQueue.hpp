@@ -138,9 +138,9 @@ void DynamicQueue<TX>::ReAllocate(int num) {
    // Note: ReAllocate leaves OldBuffer to be deleted by the calling function
    if (OldBuffer) nb_free(OldBuffer);            // Should not occur in single-threaded applications
 
-   TX * Buffer2 = 0;                             // New buffer
+   TX * Buffer2 = nullptr;                             // New buffer
    Buffer2 = static_cast<TX *>(nb_malloc(sizeof(TX) * num));                        // Allocate new buffer
-   if (Buffer2 == 0) {Error(3,num); return;}     // Error can't allocate
+   if (Buffer2 == nullptr) {Error(3,num); return;}     // Error can't allocate
    if (Buffer) {
       // A smaller buffer is previously allocated
       // Copy queue from old to new buffer
