@@ -235,7 +235,7 @@ class EStreamError : public ExtException
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EStreamError); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EStreamError) || Exception::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EStreamError) || ExtException::is(Kind); }
 public:
   using ExtException::ExtException;
   explicit EStreamError(const UnicodeString & Msg) :
@@ -249,7 +249,7 @@ class NB_CORE_EXPORT EFCreateError : public EStreamError
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFCreateError); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFCreateError) || Exception::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFCreateError) || EStreamError::is(Kind); }
 public:
   explicit EFCreateError(const UnicodeString & Msg) :
       EStreamError(OBJECT_CLASS_EFCreateError, static_cast<const Exception *>(nullptr), Msg)
@@ -262,7 +262,7 @@ class NB_CORE_EXPORT EFOpenError : public EStreamError
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFOpenError); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFOpenError) || Exception::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFOpenError) || EStreamError::is(Kind); }
 public:
   explicit EFOpenError(const UnicodeString & Msg) :
       EStreamError(OBJECT_CLASS_EFOpenError, static_cast<const Exception *>(nullptr), Msg)
