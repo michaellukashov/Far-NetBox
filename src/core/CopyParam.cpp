@@ -658,7 +658,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
       if (FileName.Length() >= Index + 2)
       {
         UnicodeString Hex = FileName.SubString(Index + 1, 2);
-        wchar_t Char = static_cast<wchar_t>(HexToByte(Hex));
+        const wchar_t Char = static_cast<wchar_t>(HexToByte(Hex));
         if ((Char != L'\0') &&
             ((FTokenizibleChars.Pos(Char) > 0) ||
              (((Char == L' ') || (Char == L'.')) && (Index == FileName.Length() - 2))))
