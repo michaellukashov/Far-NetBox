@@ -1045,8 +1045,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
       for (int32_t Index = 0; (has <= 0) && (Index < List->nlibraries); Index++)
       {
         ssh_gss_library * library = &List->libraries[Index];
-        Ssh_gss_ctx ctx;
-        memset(&ctx, 0, sizeof(ctx));
+        Ssh_gss_ctx ctx{};
         has =
           ((library->acquire_cred(library, &ctx, nullptr) == SSH_GSS_OK) &&
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
