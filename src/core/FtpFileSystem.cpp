@@ -3178,7 +3178,7 @@ uint32_t TFTPFileSystem::WaitForReply(bool Command, bool WantLastCode)
 
   try__finally
   {
-    uint32_t &ReplyToAwait = (Command ? FCommandReply : FReply);
+    uint32_t & ReplyToAwait = (Command ? FCommandReply : FReply);
     DoWaitForReply(ReplyToAwait, WantLastCode);
 
     Reply = ReplyToAwait;

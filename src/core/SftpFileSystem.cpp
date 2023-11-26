@@ -3542,9 +3542,9 @@ void TSFTPFileSystem::LookupUsersGroups()
   TSFTPPacket PacketOwners(SSH_FXP_EXTENDED, FCodePage);
   TSFTPPacket PacketGroups(SSH_FXP_EXTENDED, FCodePage);
 
-  TSFTPPacket *Packets[] = { &PacketOwners, &PacketGroups };
-  TRemoteTokenList *Lists[] = { FTerminal->GetUsers(), FTerminal->GetGroups() };
-  const wchar_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
+  TSFTPPacket * Packets[] = { &PacketOwners, &PacketGroups };
+  TRemoteTokenList * Lists[] = { FTerminal->GetUsers(), FTerminal->GetGroups() };
+  constexpr wchar_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
 
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(Packets)); ++Index)
   {
@@ -3958,7 +3958,7 @@ void TSFTPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile, SSH_FXP_TYPE Type, TRemoteFile * ALinkedByFile,
   SSH_FX_TYPE AllowStatus)
 {
-  const SSH_FILEXFER_ATTR_TYPE Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
+  constexpr SSH_FILEXFER_ATTR_TYPE Flags = SSH_FILEXFER_ATTR_SIZE | SSH_FILEXFER_ATTR_PERMISSIONS |
     SSH_FILEXFER_ATTR_ACCESSTIME | SSH_FILEXFER_ATTR_MODIFYTIME |
     SSH_FILEXFER_ATTR_OWNERGROUP;
   TSFTPPacket Packet(Type, FCodePage);
