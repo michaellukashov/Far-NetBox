@@ -219,7 +219,7 @@ static SeatPromptResult get_userpass_input(Seat * seat, prompts_t * p)
       {
         S = UnicodeString(AnsiString(Prompt->prompt));
       }
-      Prompts->AddObject(S, (TObject *)(FLAGMASK(Prompt->echo, pupEcho)));
+      Prompts->AddObject(S, reinterpret_cast<TObject*>((FLAGMASK(Prompt->echo, pupEcho))));
       // this fails, when new passwords do not match on change password prompt,
       // and putty retries the prompt
       DebugAssert(strlen(prompt_get_result_ref(Prompt)) == 0);
