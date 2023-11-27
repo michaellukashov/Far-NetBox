@@ -1409,11 +1409,11 @@ protected:
         Request.reset();
       }
     }
-    catch__removed
-    ({
-      delete Request;
-      throw;
-    })
+    __catch__removed
+    {
+      // delete Request;
+      // throw;
+    } end_try__catch
 
     if (Request != nullptr)
     {
@@ -3144,11 +3144,11 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
     LoadFile(File.get(), Packet, Complete);
     File->SetDirectory(nullptr);
   }
-  catch__removed
-  ({
-    delete File;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete File;
+    // throw;
+  } end_try__catch
   return File.release();
 }
 

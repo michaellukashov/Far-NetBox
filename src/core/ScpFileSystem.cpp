@@ -1206,11 +1206,11 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
     File->ShiftTimeInSeconds(TimeToSeconds(FTerminal->GetSessionData()->GetTimeDifference()));
     File->Complete();
   }
-  catch__removed
-  ({
-    delete File;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete File;
+    // throw;
+  } end_try__catch
 
   return File.release();
 }

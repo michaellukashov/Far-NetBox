@@ -762,11 +762,11 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus *& Curr
       }
     } end_try__finally
   }
-  catch__removed
-  ({
-    delete Status;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete Status;
+    // throw;
+  } end_try__catch
   return Status.release();
 }
 
@@ -1322,11 +1322,11 @@ void TTerminalItem::InitTerminalItem(int32_t Index)
 
     FTerminal = Terminal.release();
   }
-  catch__removed
-  ({
-    delete FTerminal;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete FTerminal;
+    // throw;
+  } end_try__catch
 
   Start();
 }

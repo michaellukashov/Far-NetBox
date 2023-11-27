@@ -430,7 +430,7 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int32_t ACount)
     UnicodeString Name = ::IntToStr(Index);
     std::unique_ptr<TCopyParamRule> Rule;
     std::unique_ptr<TCopyParamType> CopyParam(std::make_unique<TCopyParamType>());
-    try__removed
+    try__catch
     {
       if (Storage->OpenSubKey(Name, false))
       {
@@ -451,12 +451,12 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int32_t ACount)
         } end_try__finally
       }
     }
-    catch__removed
-    ({
-      delete CopyParam;
-      delete Rule;
-      throw;
-    })
+    __catch__removed
+    {
+      // delete CopyParam;
+      // delete Rule;
+      // throw;
+    } end_try__catch
 
     FCopyParams->Add(CopyParam.release());
     FRules->Add(Rule.release());

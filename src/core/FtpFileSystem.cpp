@@ -431,12 +431,12 @@ void TFTPFileSystem::Open()
       FileZillaImpl->Init();
       FFileZillaIntf.reset(FileZillaImpl.release());
     }
-    catch__removed
-    ({
-      delete FFileZillaIntf;
-      FFileZillaIntf = nullptr;
-      throw;
-    })
+    __catch__removed
+    {
+      // delete FFileZillaIntf;
+      // FFileZillaIntf = nullptr;
+      // throw;
+    } end_try__catch
   }
 
   TSessionData * Data = FTerminal->GetSessionData();
@@ -2553,11 +2553,11 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
         {
           ReadDirectory(FileListCache.get());
         }
-        catch__removed
-        ({
-          delete FileListCache;
-          throw;
-        })
+        __catch__removed
+        {
+          // delete FileListCache;
+          // throw;
+        } end_try__catch
         // set only after we successfully read the directory,
         // otherwise, when we reconnect from ReadDirectory,
         // the FFileListCache is reset from ResetCache.
@@ -3388,11 +3388,11 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
           MoreMessages.reset();
         }
       }
-      catch__removed
-      ({
-        delete MoreMessages;
-        throw;
-      })
+      __catch__removed
+      {
+        // delete MoreMessages;
+        // throw;
+      } end_try__catch
 
       if (Error.IsEmpty() && (MoreMessages != nullptr))
       {

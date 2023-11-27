@@ -734,11 +734,11 @@ TRemoteTokenList * TRemoteTokenList::Duplicate() const
       ++it;
     }
   }
-  catch__removed
-  ({
-    delete Result;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete Result;
+    // throw;
+  } end_try__catch
   return Result.release();
 }
 
@@ -916,11 +916,11 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FFullFileName = GetFullFileName();
     }
   }
-  catch__removed
-  ({
-    delete Result;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete Result;
+    // throw;
+  } end_try__catch
   return Result.release();
 }
 

@@ -6311,11 +6311,11 @@ TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
   {
     Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl, Flags);
   }
-  catch__removed
-  ({
-    delete Data;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete Data;
+    // throw;
+  } end_try__catch
   return Data.release();
 }
 

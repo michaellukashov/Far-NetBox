@@ -3951,11 +3951,11 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirec
       }
     }
   }
-  catch__removed
-  ({
-    delete FileList;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete FileList;
+    // throw;
+  } end_try__catch
   return FileList.release();
 }
 
@@ -6187,11 +6187,11 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
       Checklist.get());
     Checklist->Sort();
   }
-  catch__removed
-  ({
-    delete Checklist;
-    throw;
-  })
+  __catch__removed
+  {
+    // delete Checklist;
+    // throw;
+  } end_try__catch
   return Checklist.release();
 }
 
