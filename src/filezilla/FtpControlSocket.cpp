@@ -2116,7 +2116,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
         m_Operation.nOpState=LIST_CWD2;
       else
       {
-        m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);;
+        m_Operation.nOpState = NeedModeCommand() ? LIST_MODE : (NeedOptsCommand() ? LIST_OPTS : LIST_TYPE);
       }
     }
     else

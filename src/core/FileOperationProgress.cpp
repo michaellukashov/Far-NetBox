@@ -657,7 +657,7 @@ void TFileOperationProgressType::SetBatchOverwrite(TBatchOverwrite ABatchOverwri
   else
   {
     TGuard Guard(*FSection); nb::used(Guard); // not really needed
-    FPersistence.BatchOverwrite = ABatchOverwrite;;
+    FPersistence.BatchOverwrite = ABatchOverwrite;
   }
 }
 
