@@ -263,7 +263,7 @@ public:
 public:
   virtual void SetDataInternal(const UnicodeString & Value);
   void UpdateData(const UnicodeString & Value);
-  void UpdateSelected(int32_t Value);
+  void UpdateSelected(intptr_t Value);
 
   bool GetFlag(FARDIALOGITEMFLAGS Index) const;
   void SetFlag(FARDIALOGITEMFLAGS Index, bool Value);
@@ -294,7 +294,7 @@ protected:
   FARDIALOGITEMTYPES GetType() const;
   void SetType(FARDIALOGITEMTYPES Value);
   int32_t GetItem() const { return FItem; }
-  virtual int32_t GetSelected() const;
+  virtual intptr_t GetSelected() const;
   virtual void SetSelected(int32_t Value);
   TFarDialogContainer * GetContainer() const { return FContainer; }
   void SetContainer(TFarDialogContainer *Value);
@@ -434,7 +434,7 @@ public:
   virtual void SetOnAllowChange(TFarAllowChangeEvent && Value) { FOnAllowChange = std::move(Value); }
   virtual bool GetChecked() const override { return TFarDialogItem::GetChecked(); }
   virtual void SetChecked(bool Value) override { TFarDialogItem::SetChecked(Value); }
-  virtual int32_t GetSelected() const override { return TFarDialogItem::GetSelected(); }
+  virtual intptr_t GetSelected() const override { return TFarDialogItem::GetSelected(); }
   virtual void SetSelected(int32_t Value) override { TFarDialogItem::SetSelected(Value); }
 
 protected:
