@@ -52,11 +52,15 @@ private:
 
 //#include <assert.h>
 #define ACCESS_VIOLATION_TEST { (*((int32_t*)nullptr)) = 0; }
+
 #if !defined(_DEBUG) || defined(DESIGN_ONLY)
+
 #define DebugAssert(p)   (void)(p)
 #define DebugCheck(p)    (p)
 #define DebugFail()      (void)0
+
 #else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
+
 NB_CORE_EXPORT void DoAssert(const wchar_t * Message, const wchar_t * Filename, int32_t LineNumber);
 NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_t LineNumber);
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(NB_TEXT(#p), NB_TEXT(__FILE__), __LINE__))
@@ -73,6 +77,7 @@ NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_
 #define DebugUsedArg(p)
 
 #if defined(_DEBUG)
+
 NB_CORE_EXPORT void SetTraceFile(HANDLE ATraceFile);
 NB_CORE_EXPORT void CleanupTracing();
 #define TRACEENV "WINSCPTRACE"
@@ -86,6 +91,7 @@ NB_CORE_EXPORT void DoTraceFmt(const wchar_t * SourceFile, const wchar_t *Func,
 FMT_VARIADIC_W(void, DoTraceFmt, const wchar_t *, const wchar_t *, uint32_t, const wchar_t *)
 
 #ifdef TRACE_IN_MEMORY
+
 NB_CORE_EXPORT void TraceDumpToFile();
 NB_CORE_EXPORT void TraceInMemoryCallback(const wchar_t *Msg);
 
