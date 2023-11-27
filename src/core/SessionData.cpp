@@ -30,60 +30,10 @@
 #define SET_SESSION_PROPERTY(PROPERTY) \
   SET_SESSION_PROPERTY_FROM(PROPERTY, value)
 
-const wchar_t * PingTypeNames = L"Off;Null;Dummy";
-const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
+// constexpr const wchar_t * PingTypeNames = L"Off;Null;Dummy";
+// constexpr const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 TIntMapping ProxyMethodMapping = CreateIntMappingFromEnumNames(LowerCase(ProxyMethodNames));
-const wchar_t * DefaultName = L"Default Settings";
-const UnicodeString CipherNames[CIPHER_COUNT] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour", L"chacha20", "aesgcm"};
-const UnicodeString KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519"};
-const UnicodeString HostKeyNames[HOSTKEY_COUNT] = {L"WARN", L"rsa", L"dsa", L"ecdsa", L"ed25519", L"ed448"};
-const UnicodeString GssLibNames[GSSLIB_COUNT] = {L"gssapi32", L"sspi", L"custom"};
-// Update also order in SshCipherList()
-const TCipher DefaultCipherList[CIPHER_COUNT] =
-  { cipAES, cipChaCha20, cipAESGCM, cip3DES, cipWarn, cipDES, cipBlowfish, cipArcfour };
-// Update also order in SshKexList()
-const TKex DefaultKexList[KEX_COUNT] =
-  { kexNTRUHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
-const THostKey DefaultHostKeyList[HOSTKEY_COUNT] =
-  { hkED448, hkED25519, hkECDSA, hkRSA, hkDSA, hkWarn };
-const TGssLib DefaultGssLibList[GSSLIB_COUNT] =
-  { gssGssApi32, gssSspi, gssCustom };
-const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV", L"S3" };
-const int32_t SshPortNumber = 22;
-const int32_t FtpPortNumber = 21;
-const int32_t FtpsImplicitPortNumber = 990;
-const int32_t HTTPPortNumber = 80;
-const int32_t HTTPSPortNumber = 443;
-const int32_t TelnetPortNumber = 23;
-const int32_t DefaultSendBuf = 256 * 1024;
-const int32_t ProxyPortNumber = 80;
-const UnicodeString AnonymousUserName("anonymous");
-const UnicodeString AnonymousPassword("anonymous@example.com");
-const UnicodeString PuttySshProtocol("ssh");
-const UnicodeString PuttyTelnetProtocol("telnet");
-const UnicodeString SftpProtocol("sftp");
-const UnicodeString ScpProtocol("scp");
-const UnicodeString FtpProtocol("ftp");
-const UnicodeString FtpsProtocol("ftps");
-const UnicodeString FtpesProtocol("ftpes");
-const UnicodeString WebDAVProtocol("dav");
-const UnicodeString WebDAVSProtocol("davs");
-const UnicodeString S3Protocol("s3");
-const UnicodeString S3PlainProtocol(L"s3plain");
-const UnicodeString SshProtocol("ssh");
-const UnicodeString WinSCPProtocolPrefix("winscp-");
-const wchar_t UrlParamSeparator = L';';
-const wchar_t UrlParamValueSeparator = L'=';
-const UnicodeString UrlHostKeyParamName("fingerprint");
-const UnicodeString UrlSaveParamName("save");
-const UnicodeString UrlRawSettingsParamNamePrefix("x-");
-const UnicodeString PassphraseOption("passphrase");
-const UnicodeString RawSettingsOption("rawsettings");
-const UnicodeString S3HostName(S3LibDefaultHostName());
-const UnicodeString S3GoogleCloudHostName(L"storage.googleapis.com");
-const UnicodeString OpensshHostDirective(L"Host");
-const uint32_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
-const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
+constexpr const wchar_t * DefaultName = L"Default Settings";
 
 static TDateTime SecToDateTime(int32_t Sec)
 {
@@ -2550,7 +2500,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       while (!ConnectionParams.IsEmpty())
       {
         UnicodeString ConnectionParam = CutToChar(ConnectionParams, UrlParamSeparator, false);
-        UnicodeString ConnectionParamName = CutToChar(ConnectionParam, UrlParamValueSeparator, false);
+        const UnicodeString ConnectionParamName = CutToChar(ConnectionParam, UrlParamValueSeparator, false);
         if (::SameText(ConnectionParamName, UrlHostKeyParamName))
         {
           SetHostKey(DecodeUrlChars(ConnectionParam));
@@ -2558,7 +2508,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         }
         else if (StartsText(UrlRawSettingsParamNamePrefix, ConnectionParamName))
         {
-          UnicodeString AName = RightStr(ConnectionParamName, ConnectionParamName.Length() - UrlRawSettingsParamNamePrefix.Length());
+          UnicodeString AName = RightStr(ConnectionParamName, ConnectionParamName.Length() - UnicodeString(UrlRawSettingsParamNamePrefix).Length());
           AName = DecodeUrlChars(AName);
           UnicodeString Value = DecodeUrlChars(ConnectionParam);
           if (SameText(AName, L"Name"))
@@ -2584,7 +2534,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       SetPassword(DecodeUrlChars(UserInfo));
       if (HasPassword && Password().IsEmpty())
       {
-        Password = EmptyString;
+        Password = L""; //EmptyString;
       }
 
       UnicodeString RemoteDirectoryWithSessionParams = Url.SubString(PSlash, Url.Length() - PSlash + 1);
@@ -3188,7 +3138,7 @@ TCipher TSessionData::GetCipher(int32_t Index) const
 }
 
 template<class AlgoT>
-void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
+void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const wchar_t * const * Names,
   int32_t Count, AlgoT WarnAlgo, const UnicodeString & AValue)
 {
   UnicodeString Value = AValue;
@@ -3491,11 +3441,11 @@ UnicodeString TSessionData::GetFSProtocolStr() const
   DebugAssert(GetFSProtocol() >= 0);
   if (GetFSProtocol() < FSPROTOCOL_COUNT)
   {
-    Result = FSProtocolNames[GetFSProtocol()];
+    Result = UnicodeString(FSProtocolNames[GetFSProtocol()]);
   }
   // DebugAssert(!Result.IsEmpty());
   if (Result.IsEmpty())
-    Result = FSProtocolNames[CONST_DEFAULT_PROTOCOL];
+    Result = UnicodeString(FSProtocolNames[CONST_DEFAULT_PROTOCOL]);
   return Result;
 }
 
@@ -5242,7 +5192,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID) 
   TFSProtocol Result = static_cast<TFSProtocol>(-1);
   for (int32_t Index = 0; Index < FSPROTOCOL_COUNT; ++Index)
   {
-    if (FSProtocolNames[Index] == ProtocolID)
+    if (ProtocolID == FSProtocolNames[Index])
     {
       Result = static_cast<TFSProtocol>(Index);
       break;

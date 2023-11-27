@@ -43,7 +43,7 @@ private:
 
 public:
   bool GetCollect() const { return FCollect; }
-  void SetCollect(bool value);
+  void SetCollect(bool Value);
   void UpdateLastReport();
   void Load(THierarchicalStorage * Storage,
     const UnicodeString & AName, TCounters & Counters);
@@ -61,6 +61,6 @@ public:
   void ResetValue(const UnicodeString & AKey);
 };
 
-extern const UnicodeString LastInternalExceptionCounter;
-extern const UnicodeString LastUpdateExceptionCounter;
+constexpr const wchar_t * LastInternalExceptionCounter = L"LastInternalException2";
+constexpr const wchar_t * LastUpdateExceptionCounter = L"LastUpdateException";
 

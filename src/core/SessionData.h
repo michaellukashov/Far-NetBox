@@ -15,7 +15,7 @@ enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour, cipCha
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
 enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6, fsS3 = 7 };
 #define FSPROTOCOL_COUNT (fsS3+1)
-extern const wchar_t * ProxyMethodNames;
+constexpr const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd };
 enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGroup15, kexDHGroup16, kexDHGroup17, kexDHGroup18, kexDHGEx, kexRSA, kexECDH, kexNTRUHybrid, kexCount };
 #define KEX_COUNT (kexCount)
@@ -29,7 +29,7 @@ enum TSshBug { sbHMAC2, sbDeriveKey2, sbRSAPad2,
 #define BUG_COUNT (sbChanReq+1)
 enum TSftpBug { sbSymlink, sbSignedTS };
 #define SFTP_BUG_COUNT (sbSignedTS+1)
-extern const wchar_t * PingTypeNames;
+constexpr const wchar_t * PingTypeNames = L"Off;Null;Dummy";
 enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
 enum TAddressFamily { afAuto, afIPv4, afIPv6 };
 enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls };
@@ -72,45 +72,55 @@ enum TLoginType
   ltNormal = 1,
 };
 
-NB_CORE_EXPORT extern const UnicodeString CipherNames[CIPHER_COUNT];
-NB_CORE_EXPORT extern const UnicodeString KexNames[KEX_COUNT];
-NB_CORE_EXPORT extern const UnicodeString HostKeyNames[HOSTKEY_COUNT];
-NB_CORE_EXPORT extern const UnicodeString GssLibNames[GSSLIB_COUNT];
-NB_CORE_EXPORT extern const wchar_t SshProtList[][10];
-NB_CORE_EXPORT extern const TCipher DefaultCipherList[CIPHER_COUNT];
-NB_CORE_EXPORT extern const TKex DefaultKexList[KEX_COUNT];
-NB_CORE_EXPORT extern const THostKey DefaultHostKeyList[HOSTKEY_COUNT];
-NB_CORE_EXPORT extern const TGssLib DefaultGssLibList[GSSLIB_COUNT];
-NB_CORE_EXPORT extern const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16];
-NB_CORE_EXPORT extern const int32_t DefaultSendBuf;
-NB_CORE_EXPORT extern const UnicodeString AnonymousUserName;
-NB_CORE_EXPORT extern const UnicodeString AnonymousPassword;
-NB_CORE_EXPORT extern const int32_t SshPortNumber;
-NB_CORE_EXPORT extern const int32_t FtpPortNumber;
-NB_CORE_EXPORT extern const int32_t FtpsImplicitPortNumber;
-NB_CORE_EXPORT extern const int32_t HTTPPortNumber;
-NB_CORE_EXPORT extern const int32_t HTTPSPortNumber;
-NB_CORE_EXPORT extern const int32_t TelnetPortNumber;
-NB_CORE_EXPORT extern const int32_t ProxyPortNumber;
-NB_CORE_EXPORT extern const UnicodeString PuttySshProtocol;
-NB_CORE_EXPORT extern const UnicodeString PuttyTelnetProtocol;
-NB_CORE_EXPORT extern const UnicodeString SftpProtocol;
-NB_CORE_EXPORT extern const UnicodeString ScpProtocol;
-NB_CORE_EXPORT extern const UnicodeString FtpProtocol;
-NB_CORE_EXPORT extern const UnicodeString FtpsProtocol;
-NB_CORE_EXPORT extern const UnicodeString FtpesProtocol;
-NB_CORE_EXPORT extern const UnicodeString WebDAVProtocol;
-NB_CORE_EXPORT extern const UnicodeString WebDAVSProtocol;
-NB_CORE_EXPORT extern const UnicodeString S3Protocol;
-NB_CORE_EXPORT extern const UnicodeString SshProtocol;
-NB_CORE_EXPORT extern const UnicodeString WinSCPProtocolPrefix;
-NB_CORE_EXPORT extern const wchar_t UrlParamSeparator;
-NB_CORE_EXPORT extern const wchar_t UrlParamValueSeparator;
-NB_CORE_EXPORT extern const UnicodeString UrlHostKeyParamName;
-NB_CORE_EXPORT extern const UnicodeString UrlSaveParamName;
-NB_CORE_EXPORT extern const UnicodeString PassphraseOption;
-NB_CORE_EXPORT extern const UnicodeString S3HostName;
-extern const UnicodeString S3GoogleCloudHostName;
+constexpr const wchar_t * CipherNames[CIPHER_COUNT] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour", L"chacha20", L"aesgcm"};
+constexpr const wchar_t * KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519"};
+constexpr const wchar_t * HostKeyNames[HOSTKEY_COUNT] = {L"WARN", L"rsa", L"dsa", L"ecdsa", L"ed25519", L"ed448"};
+constexpr const wchar_t * GssLibNames[GSSLIB_COUNT] = {L"gssapi32", L"sspi", L"custom"};
+constexpr const TCipher DefaultCipherList[CIPHER_COUNT] =
+    { cipAES, cipChaCha20, cipAESGCM, cip3DES, cipWarn, cipDES, cipBlowfish, cipArcfour };
+// Update also order in SshKexList()
+constexpr const TKex DefaultKexList[KEX_COUNT] =
+    { kexNTRUHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
+constexpr const THostKey DefaultHostKeyList[HOSTKEY_COUNT] =
+    { hkED448, hkED25519, hkECDSA, hkRSA, hkDSA, hkWarn };
+constexpr const TGssLib DefaultGssLibList[GSSLIB_COUNT] =
+    { gssGssApi32, gssSspi, gssCustom };
+constexpr const wchar_t * FSProtocolNames[FSPROTOCOL_COUNT] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV", L"S3" };
+constexpr const wchar_t * AnonymousUserName = L"anonymous";
+constexpr const wchar_t * AnonymousPassword = L"anonymous@example.com";
+constexpr const int32_t SshPortNumber = 22;
+constexpr const int32_t FtpPortNumber = 21;
+constexpr const int32_t FtpsImplicitPortNumber = 990;
+constexpr const int32_t HTTPPortNumber = 80;
+constexpr const int32_t HTTPSPortNumber = 443;
+constexpr const int32_t TelnetPortNumber = 23;
+constexpr const int32_t DefaultSendBuf = 256 * 1024;
+constexpr const int32_t ProxyPortNumber = 80;
+constexpr const wchar_t * PuttySshProtocol = L"ssh";
+constexpr const wchar_t * PuttyTelnetProtocol = L"telnet";
+constexpr const wchar_t * SftpProtocol = L"sftp";
+constexpr const wchar_t * ScpProtocol = L"scp";
+constexpr const wchar_t * FtpProtocol = L"ftp";
+constexpr const wchar_t * FtpsProtocol = L"ftps";
+constexpr const wchar_t * FtpesProtocol = L"ftpes";
+constexpr const wchar_t * WebDAVProtocol = L"dav";
+constexpr const wchar_t * WebDAVSProtocol = L"davs";
+constexpr const wchar_t * S3Protocol = L"s3";
+constexpr const wchar_t * S3PlainProtocol = L"s3plain";
+constexpr const wchar_t * SshProtocol = L"ssh";
+constexpr const wchar_t * WinSCPProtocolPrefix = L"winscp-";
+constexpr const wchar_t UrlParamSeparator = L';';
+constexpr const wchar_t UrlParamValueSeparator = L'=';
+constexpr const wchar_t * UrlHostKeyParamName = L"fingerprint";
+constexpr const wchar_t * UrlSaveParamName = L"save";
+constexpr const wchar_t * UrlRawSettingsParamNamePrefix = L"x-";
+constexpr const wchar_t * PassphraseOption = L"passphrase";
+constexpr const wchar_t * RawSettingsOption = L"rawsettings";
+constexpr const wchar_t * S3HostName = L"s3.amazonaws.com"; //S3_DEFAULT_HOSTNAME;
+constexpr const wchar_t * S3GoogleCloudHostName = L"storage.googleapis.com";
+constexpr const wchar_t * OpensshHostDirective = L"Host";
+constexpr const uint32_t CONST_DEFAULT_CODEPAGE = CP_UTF8;
+constexpr const TFSProtocol CONST_DEFAULT_PROTOCOL = fsSFTP;
 class TStoredSessionList;
 class TSecondaryTerminal;
 class TFileZillaImpl;
@@ -528,7 +538,7 @@ public:
   void DoCopyData(const TSessionData * SourceData, bool NoRecrypt);
   bool HasS3AutoCredentials() const;
   template<class AlgoT>
-  void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const UnicodeString * Names,
+  void SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const wchar_t * const * Names,
     int32_t Count, AlgoT WarnAlgo, const UnicodeString & AValue);
   static void Remove(THierarchicalStorage * Storage, const UnicodeString & Name);
 

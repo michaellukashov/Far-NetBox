@@ -235,5 +235,5 @@ void FindComponentClass(
 
 #endif // #if 0
 
-NB_CORE_EXPORT extern const UnicodeString PageantTool;
-NB_CORE_EXPORT extern const UnicodeString PuttygenTool;
+constexpr const wchar_t * PageantTool = L"pageant.exe";
+constexpr const wchar_t * PuttygenTool = L"puttygen.exe";

@@ -13,12 +13,12 @@
 
 // #pragma package(smart_init)
 
-const UnicodeString EmptyString(TraceInitStr(L"\1\1\1")); // magic
+// const UnicodeString EmptyString(TraceInitStr(L"\1\1\1")); // magic
 
 UnicodeString NormalizeString(const UnicodeString & S)
 {
   UnicodeString Result = S;
-  if (Result == EmptyString)
+  if (Result == L"\1\1\1")
   {
     Result = UnicodeString();
   }

@@ -46,8 +46,8 @@
 
 //#pragma package(smart_init)
 
-const UnicodeString PageantTool = L"pageant.exe";
-const UnicodeString PuttygenTool = L"puttygen.exe";
+// const UnicodeString PageantTool = L"pageant.exe";
+// const UnicodeString PuttygenTool = L"puttygen.exe";
 
 bool FindFile(UnicodeString & Path)
 {

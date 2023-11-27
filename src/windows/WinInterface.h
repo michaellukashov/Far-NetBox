@@ -107,7 +107,7 @@ void ConfigureInterface();
 
 void DoProductLicense();
 
-extern const UnicodeString AppName;
+constexpr const wchar_t * AppName = L"WinSCP";
 
 void SetOnForeground(bool OnForeground);
 void FlashOnBackground();
@@ -473,7 +473,9 @@ void DoFileSystemInfoDialog(
   const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent && OnGetSpaceAvailable);
 
 //moved to FarInterface.h
+
 #if 0
+
 // forms\MessageDlg.cpp
 TForm * CreateMoreMessageDialog(const UnicodeString & Msg,
   TStrings * MoreMessages, TMsgDlgType DlgType, uint32_t Answers,
@@ -493,6 +495,7 @@ extern const UnicodeString MainMessageLabelName;
 extern const UnicodeString MessageLabelName;
 extern const UnicodeString YesButtonName;
 extern const UnicodeString OKButtonName;
+
 #endif // #if 0
 
 // windows\Console.cpp

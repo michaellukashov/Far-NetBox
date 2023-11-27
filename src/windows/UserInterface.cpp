@@ -28,7 +28,7 @@
 
 #pragma package(smart_init)
 
-const UnicodeString AppName = L"WinSCP";
+// const UnicodeString AppName = L"WinSCP";
 
 TConfiguration * CreateConfiguration()
 {

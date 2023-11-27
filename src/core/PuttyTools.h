@@ -24,7 +24,7 @@ NB_CORE_EXPORT void FreeKey(TPrivateKey * PrivateKey);
 RawByteString LoadPublicKey(
   const UnicodeString & FileName, UnicodeString & Algorithm, UnicodeString & Comment, bool & HasCertificate);
 UnicodeString GetPublicKeyLine(const UnicodeString & FileName, UnicodeString & Comment, bool & HasCertificate);
-//extern const UnicodeString PuttyKeyExt;
+// extern const UnicodeString PuttyKeyExt;
 
 NB_CORE_EXPORT bool HasGSSAPI(const UnicodeString & CustomPath);
 

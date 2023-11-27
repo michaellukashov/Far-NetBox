@@ -10,8 +10,8 @@
 
 // #pragma package(smart_init)
 
-const UnicodeString LastInternalExceptionCounter("LastInternalException2");
-const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
+// const UnicodeString LastInternalExceptionCounter("LastInternalException2");
+// const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
 
 TUsage::TUsage(TConfiguration * Configuration) noexcept :
   FCriticalSection(std::make_unique<TCriticalSection>()),

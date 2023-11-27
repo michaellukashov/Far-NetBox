@@ -20,7 +20,7 @@
 
 #include <System.SyncObjs.hpp>
 
-extern const UnicodeString EmptyString;
+// extern const UnicodeString EmptyString;
 
 UnicodeString NormalizeString(const UnicodeString & S);
 
