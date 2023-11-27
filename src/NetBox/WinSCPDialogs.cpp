@@ -656,7 +656,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
       (GetConfiguration()->GetSessionReopenAuto() / 1000) : 5));
   int32_t Value = GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries();
-  SessionReopenNumberOfRetriesEdit->SetAsInteger(Value < 0 || Value > 99 ?
+  SessionReopenNumberOfRetriesEdit->SetAsInteger(((Value < 0) || (Value > 99)) ?
     CONST_DEFAULT_NUMBER_OF_RETRIES : Value);
 
   bool Result = (Dialog->ShowModal() == brOK);
@@ -901,8 +901,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
 
   TFarConfiguration * FarConfiguration = GetFarConfiguration();
   ConfirmOverwritingCheck->SetSelected(!FarConfiguration->GetConfirmOverwritingOverride() ?
-    BSTATE_3STATE : (GetConfiguration()->GetConfirmOverwriting() ? BSTATE_CHECKED :
-      BSTATE_UNCHECKED));
+    BSTATE_3STATE : (GetConfiguration()->GetConfirmOverwriting() ? BSTATE_CHECKED : BSTATE_UNCHECKED));
   ConfirmCommandSessionCheck->SetChecked(GetGUIConfiguration()->GetConfirmCommandSession());
   ConfirmResumeCheck->SetChecked(GetGUIConfiguration()->GetConfirmResume());
   ConfirmSynchronizedBrowsingCheck->SetChecked(FarConfiguration->GetConfirmSynchronizedBrowsing());
