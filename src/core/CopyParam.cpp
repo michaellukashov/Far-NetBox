@@ -824,7 +824,7 @@ DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const
 bool TCopyParamType::AllowResume(const int64_t Size, const UnicodeString & FileName) const
 {
   bool Result;
-  if (FileName.Length() + PartialExt.Length() > 255) // it's a different limit than MAX_PATH
+  if (FileName.Length() + UnicodeString(PartialExt).Length() > 255) // it's a different limit than MAX_PATH
   {
     Result = false;
   }

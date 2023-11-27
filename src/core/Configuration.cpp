@@ -21,34 +21,34 @@
 
 // #pragma package(smart_init)
 
-const wchar_t * AutoSwitchNames = L"On;Off;Auto";
-const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
+// const wchar_t * AutoSwitchNames = L"On;Off;Auto";
+// const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 
 // See https://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
-const UnicodeString Sha1ChecksumAlg("sha-1");
-const UnicodeString Sha224ChecksumAlg("sha-224");
-const UnicodeString Sha256ChecksumAlg("sha-256");
-const UnicodeString Sha384ChecksumAlg("sha-384");
-const UnicodeString Sha512ChecksumAlg("sha-512");
-const UnicodeString Md5ChecksumAlg("md5");
-// Not defined by IANA
-const UnicodeString Crc32ChecksumAlg("crc32");
+//const UnicodeString Sha1ChecksumAlg("sha-1");
+//const UnicodeString Sha224ChecksumAlg("sha-224");
+//const UnicodeString Sha256ChecksumAlg("sha-256");
+//const UnicodeString Sha384ChecksumAlg("sha-384");
+//const UnicodeString Sha512ChecksumAlg("sha-512");
+//const UnicodeString Md5ChecksumAlg("md5");
+//// Not defined by IANA
+//const UnicodeString Crc32ChecksumAlg("crc32");
 
-const UnicodeString SshFingerprintType("ssh");
-const UnicodeString TlsFingerprintType("tls");
+//const UnicodeString SshFingerprintType("ssh");
+//const UnicodeString TlsFingerprintType("tls");
 
-const UnicodeString FtpsCertificateStorageKey(L"FtpsCertificates");
-const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
-const UnicodeString LastFingerprintsStorageKey(L"LastFingerprints");
-const UnicodeString DirectoryStatisticsCacheKey(L"DirectoryStatisticsCache");
-const UnicodeString SshHostCAsKey(L"SshHostCAs");
-const UnicodeString CDCacheKey(L"CDCache");
-const UnicodeString BannersKey(L"Banners");
+//const UnicodeString FtpsCertificateStorageKey(L"FtpsCertificates");
+//const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
+//const UnicodeString LastFingerprintsStorageKey(L"LastFingerprints");
+//const UnicodeString DirectoryStatisticsCacheKey(L"DirectoryStatisticsCache");
+//const UnicodeString SshHostCAsKey(L"SshHostCAs");
+//const UnicodeString CDCacheKey(L"CDCache");
+//const UnicodeString BannersKey(L"Banners");
 
-const UnicodeString OpensshFolderName(L".ssh");
-const UnicodeString OpensshAuthorizedKeysFileName(L"authorized_keys");
+//const UnicodeString OpensshFolderName(L".ssh");
+//const UnicodeString OpensshAuthorizedKeysFileName(L"authorized_keys");
 
-const int32_t BelowNormalLogLevels = 1;
+//const int32_t BelowNormalLogLevels = 1;
 
 
 TSshHostCA::TSshHostCA()

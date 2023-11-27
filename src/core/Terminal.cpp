@@ -7325,12 +7325,12 @@ TStrings * TTerminal::GetShellChecksumAlgDefs()
     if (ChecksumCommandsDef.IsEmpty())
     {
       const UnicodeString Delimiter(L",");
-      AddToList(ChecksumCommandsDef, Sha512ChecksumAlg + L"=sha512sum", Delimiter);
-      AddToList(ChecksumCommandsDef, Sha384ChecksumAlg + L"=sha384sum", Delimiter);
-      AddToList(ChecksumCommandsDef, Sha256ChecksumAlg + L"=sha256sum", Delimiter);
-      AddToList(ChecksumCommandsDef, Sha224ChecksumAlg + L"=sha224sum", Delimiter);
-      AddToList(ChecksumCommandsDef, Sha1ChecksumAlg + L"=sha1sum", Delimiter);
-      AddToList(ChecksumCommandsDef, Md5ChecksumAlg + L"=md5sums", Delimiter);
+      AddToList(ChecksumCommandsDef, UnicodeString(Sha512ChecksumAlg) + L"=sha512sum", Delimiter);
+      AddToList(ChecksumCommandsDef, UnicodeString(Sha384ChecksumAlg) + L"=sha384sum", Delimiter);
+      AddToList(ChecksumCommandsDef, UnicodeString(Sha256ChecksumAlg) + L"=sha256sum", Delimiter);
+      AddToList(ChecksumCommandsDef, UnicodeString(Sha224ChecksumAlg) + L"=sha224sum", Delimiter);
+      AddToList(ChecksumCommandsDef, UnicodeString(Sha1ChecksumAlg) + L"=sha1sum", Delimiter);
+      AddToList(ChecksumCommandsDef, UnicodeString(Md5ChecksumAlg) + L"=md5sums", Delimiter);
     }
 
     FShellChecksumAlgDefs.reset(CommaTextToStringList(ChecksumCommandsDef));

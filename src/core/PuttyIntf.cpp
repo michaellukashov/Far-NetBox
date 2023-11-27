@@ -32,11 +32,11 @@ extern "C"
 #include <windows/platform.h>
 //#include <winstuff.h>
 }
-const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
-const UnicodeString KittyRegistryStorageKey("Software\\9bis.com\\KiTTY");
-const UnicodeString OriginalPuttyExecutable("putty.exe");
-const UnicodeString KittyExecutable("kitty.exe");
-const UnicodeString PuttyKeyExt("ppk");
+//const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
+//const UnicodeString KittyRegistryStorageKey("Software\\9bis.com\\KiTTY");
+//const UnicodeString OriginalPuttyExecutable("putty.exe");
+//const UnicodeString KittyExecutable("kitty.exe");
+//const UnicodeString PuttyKeyExt("ppk");
 
 void PuttyInitialize()
 {
@@ -505,7 +505,7 @@ HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
       SubKey += UnicodeString(UTF8String(Path));
     }
 
-    const int32_t PuttyKeyLen = OriginalPuttyRegistryStorageKey.Length();
+    const int32_t PuttyKeyLen = UnicodeString(OriginalPuttyRegistryStorageKey).Length();
     DebugAssert(SubKey.SubString(1, PuttyKeyLen) == OriginalPuttyRegistryStorageKey);
     UnicodeString RegKey = SubKey.SubString(PuttyKeyLen + 1, SubKey.Length() - PuttyKeyLen);
     if (!RegKey.IsEmpty())

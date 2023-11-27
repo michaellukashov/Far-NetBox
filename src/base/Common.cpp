@@ -36,7 +36,7 @@
 #include "HelpCore.h"
 #include "Cryptography.h"
 
-const UnicodeString PartialExt(L".filepart");
+// const UnicodeString PartialExt(L".filepart");
 
 namespace base { // from RemoteFiles.cpp
 
@@ -523,7 +523,7 @@ int32_t GetPartialFileExtLen(const UnicodeString & FileName)
   int32_t Result = 0;
   if (EndsText(PartialExt, FileName))
   {
-    Result = PartialExt.Length();
+    Result = UnicodeString(PartialExt).Length();
   }
   else
   {
@@ -533,7 +533,7 @@ int32_t GetPartialFileExtLen(const UnicodeString & FileName)
       if (IsNumber(MidStr(FileName, P + 1)) &&
           EndsText(PartialExt, FileName.SubString(1, P - 1)))
       {
-        Result = PartialExt.Length() + (FileName.Length() - P + 1);
+        Result = UnicodeString(PartialExt).Length() + (FileName.Length() - P + 1);
       }
     }
   }

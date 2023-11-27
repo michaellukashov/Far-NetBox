@@ -14,7 +14,7 @@ constexpr const wchar_t * SYMLINKSTR = L" -> ";
 constexpr const wchar_t FILETYPE_DEFAULT = L'-';
 constexpr const wchar_t FILETYPE_SYMLINK = L'L';
 constexpr const wchar_t FILETYPE_DIRECTORY = L'D';
-extern const UnicodeString PartialExt;
+constexpr const wchar_t * PartialExt = L".filepart";
 
 class TTerminal;
 class TRights;

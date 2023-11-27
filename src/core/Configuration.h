@@ -17,10 +17,10 @@
 #define SET_CONFIG_PROPERTY2(PROPERTY) \
   SET_CONFIG_PROPERTY_EX2(PROPERTY, )
 
-#define CONST_DEFAULT_NUMBER_OF_RETRIES 2
+constexpr const int32_t CONST_DEFAULT_NUMBER_OF_RETRIES = 2;
 
-extern const wchar_t * AutoSwitchNames;
-extern const wchar_t * NotAutoSwitchNames;
+constexpr const wchar_t * AutoSwitchNames = L"On;Off;Auto";
+constexpr const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 enum TAutoSwitch { asOn, asOff, asAuto }; // Has to match PuTTY FORCE_ON, FORCE_OFF, AUTO
 
 enum TFtpEncryptionSwitch_219
@@ -550,27 +550,40 @@ private:
   nb::vector_t<TShortCut> FShortCuts;
 };
 
-NB_CORE_EXPORT extern const UnicodeString OriginalPuttyRegistryStorageKey;
-NB_CORE_EXPORT extern const UnicodeString KittyRegistryStorageKey;
-NB_CORE_EXPORT extern const UnicodeString OriginalPuttyExecutable;
-NB_CORE_EXPORT extern const UnicodeString KittyExecutable;
+extern "C"
+{
+#include <windows/platform.h>
+//#include <winstuff.h>
+}
 
-NB_CORE_EXPORT extern const UnicodeString Sha1ChecksumAlg;
-NB_CORE_EXPORT extern const UnicodeString Sha224ChecksumAlg;
-NB_CORE_EXPORT extern const UnicodeString Sha256ChecksumAlg;
-NB_CORE_EXPORT extern const UnicodeString Sha384ChecksumAlg;
-NB_CORE_EXPORT extern const UnicodeString Sha512ChecksumAlg;
-NB_CORE_EXPORT extern const UnicodeString Md5ChecksumAlg;
-NB_CORE_EXPORT extern const UnicodeString Crc32ChecksumAlg;
+constexpr const char * OriginalPuttyRegistryStorageKey = PUTTY_REG_POS;
+constexpr const char * KittyRegistryStorageKey = "Software\\9bis.com\\KiTTY";
+constexpr const char * OriginalPuttyExecutable = "putty.exe";
+constexpr const char * KittyExecutable = "kitty.exe";
+constexpr const char * PuttyKeyExt = "ppk";
 
-NB_CORE_EXPORT extern const UnicodeString SshFingerprintType;
-NB_CORE_EXPORT extern const UnicodeString TlsFingerprintType;
+constexpr const char * Sha1ChecksumAlg = "sha-1";
+constexpr const char * Sha224ChecksumAlg = "sha-224";
+constexpr const char * Sha256ChecksumAlg = "sha-256";
+constexpr const char * Sha384ChecksumAlg = "sha-384";
+constexpr const char * Sha512ChecksumAlg = "sha-512";
+constexpr const char * Md5ChecksumAlg = "md5";
+// Not defined by IANA
+constexpr const char * Crc32ChecksumAlg = "crc32";
 
-NB_CORE_EXPORT extern const UnicodeString FtpsCertificateStorageKey;
-extern const UnicodeString HttpsCertificateStorageKey;
+constexpr const char * SshFingerprintType = "ssh";
+constexpr const char * TlsFingerprintType = "tls";
 
-extern const int32_t BelowNormalLogLevels;
+constexpr const char * FtpsCertificateStorageKey = "FtpsCertificates";
+constexpr const char * HttpsCertificateStorageKey = "HttpsCertificates";
 
-extern const UnicodeString OpensshFolderName;
-extern const UnicodeString OpensshAuthorizedKeysFileName;
+constexpr const int32_t BelowNormalLogLevels = 1;
 
+constexpr const char * OpensshFolderName = ".ssh";
+constexpr const char * OpensshAuthorizedKeysFileName = "authorized_keys";
+
+constexpr const char * LastFingerprintsStorageKey = "LastFingerprints";
+constexpr const char * DirectoryStatisticsCacheKey = "DirectoryStatisticsCache";
+constexpr const char * SshHostCAsKey = "SshHostCAs";
+constexpr const char * CDCacheKey = "CDCache";
+constexpr const char * BannersKey = "Banners";

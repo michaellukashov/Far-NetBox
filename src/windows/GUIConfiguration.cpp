@@ -601,8 +601,8 @@ void TGUIConfiguration::Default()
 #if defined(_MSC_VER)
   SpecialFolderLocation(CSIDL_PROGRAM_FILES, ProgramsFolder);
 #endif // if defined(_MSC_VER)
-  FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + L"PuTTY\\" + OriginalPuttyExecutable;
-  FDefaultPuttyPath = L"%ProgramFiles%\\PuTTY\\" + OriginalPuttyExecutable;
+  FDefaultPuttyPathOnly = IncludeTrailingBackslash(ProgramsFolder) + "PuTTY\\" + OriginalPuttyExecutable;
+  FDefaultPuttyPath = UnicodeString("%ProgramFiles%\\PuTTY\\") + UnicodeString(OriginalPuttyExecutable);
   FPuttyPath = FormatCommand(FDefaultPuttyPath, L"");
   FUsePuttyPwFile = asAuto;
   FPuttyPassword = false;
