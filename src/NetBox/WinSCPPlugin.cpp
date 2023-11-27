@@ -288,13 +288,13 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t It
       FAROPENSHORTCUTFLAGS Flags = FOSF_NONE;
       if (OpenFrom == OPEN_SHORTCUT)
       {
-        OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
+        const OpenShortcutInfo * Info = reinterpret_cast<OpenShortcutInfo *>(Item);
         CommandLine = Info->ShortcutData;
         Flags = Info->Flags;
       }
       else
       {
-        OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
+        const OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
         CommandLine = Info->CommandLine;
       }
       if (OpenFrom == OPEN_SHORTCUT)
@@ -306,7 +306,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t It
           CommandLine.SetLength(P - 1);
         }
 
-        bool Another = !(Flags & FOSF_ACTIVE);
+        const bool Another = !(Flags & FOSF_ACTIVE);
         TWinSCPFileSystem *PanelSystem = dyn_cast<TWinSCPFileSystem>(GetPanelFileSystem());
 
         if (PanelSystem && PanelSystem->Connected() &&
@@ -344,7 +344,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t It
     }
     else if (OpenFrom == OPEN_ANALYSE)
     {
-      OpenAnalyseInfo * Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
+      const OpenAnalyseInfo * Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
       const wchar_t *XmlFileName = Info->Info->FileName;
       std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
 
