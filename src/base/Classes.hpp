@@ -71,11 +71,13 @@ class NB_CORE_EXPORT TObject
 public:
   static bool classof(const TObject * /*Obj*/) { return true; }
   virtual bool is(TObjectClassId Kind) const { return Kind == FKind; }
+
 public:
   TObject() noexcept : FKind(OBJECT_CLASS_TObject) {}
   explicit TObject(TObjectClassId Kind) noexcept : FKind(Kind) {}
   virtual ~TObject() noexcept = default;
   virtual void Changed() {}
+
 private:
   TObjectClassId FKind{0};
 };
@@ -108,6 +110,7 @@ struct TRect
     Right(right),
     Bottom(bottom)
   {}
+
   bool operator ==(const TRect & other) const
   {
     return
@@ -116,10 +119,12 @@ struct TRect
       Right == other.Right &&
       Bottom == other.Bottom;
   }
+
   bool operator !=(const TRect & other) const
   {
     return !(operator==(other));
   }
+
   bool operator ==(const RECT & other) const
   {
     return
@@ -140,14 +145,17 @@ class NB_CORE_EXPORT TPersistent : public TObject
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPersistent); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
+
 public:
   TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
   virtual ~TPersistent() noexcept override = default;
   virtual void Assign(const TPersistent * Source);
   virtual TPersistent * GetOwner();
+
 protected:
   virtual void AssignTo(TPersistent * Dest) const;
+
 private:
   void AssignError(const TPersistent * Source);
 };
@@ -171,6 +179,7 @@ class NB_CORE_EXPORT TListBase : public TPersistent
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TListBase); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TListBase) || TPersistent::is(Kind); }
+
 public:
   TListBase() : TPersistent(OBJECT_CLASS_TListBase) {}
   explicit TListBase(TObjectClassId Kind) : TPersistent(Kind) {}
@@ -318,6 +327,7 @@ class NB_CORE_EXPORT TList : public TListBase<TObject>
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TListBase::is(Kind); }
+
 public:
   TList() : TListBase(OBJECT_CLASS_TList) {}
   explicit TList(TObjectClassId Kind) : TListBase(Kind) {}
@@ -330,6 +340,7 @@ class NB_CORE_EXPORT TObjectList : public TList
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TObjectList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
+
 public:
   TObjectList();
   explicit TObjectList(TObjectClassId Kind);
@@ -435,7 +446,7 @@ protected:
   TDuplicatesEnum FDuplicates{dupAccept};
   mutable wchar_t FDelimiter{};
   bool FStrictDelimiter{false};
-  mutable wchar_t FQuoteChar{};
+  mutable wchar_t FQuoteChar{0};
   int32_t FUpdateCount{0};
 };
 
@@ -604,6 +615,7 @@ public:
   UnicodeString FormatString(const wchar_t * fmt) const;
   void DecodeDate(uint16_t & Y, uint16_t & M, uint16_t & D) const;
   void DecodeTime(uint16_t & H, uint16_t & N, uint16_t & S, uint16_t & MS) const;
+
 private:
   double FValue{0.0};
 };
@@ -635,6 +647,7 @@ private:
   static constexpr int64_t FMinValue = -9223372036854775808;
   static constexpr int64_t FMaxValue = 0x7FFFFFFFFFFFFFFF;
   static constexpr int64_t FZero = 0;
+
 private:
   const double MillisecondsPerTick = 0.0001;
   const double SecondsPerTick = 1e-07;
@@ -649,12 +662,14 @@ private:
   const int64_t MinSeconds = -922337203685;
   const int64_t MaxMilliseconds = 922337203685477;
   const int64_t MinMilliseconds = -922337203685477;
+
 public:
   static constexpr int32_t TicksPerMillisecond = 10000;
   static constexpr int64_t TicksPerSecond = 1000 * nb::ToInt64(TicksPerMillisecond);
   static constexpr int64_t TicksPerMinute = 60 * nb::ToInt64(TicksPerSecond);
   static constexpr int64_t TicksPerHour = 60 * nb::ToInt64(TicksPerMinute);
   static constexpr int64_t TicksPerDay = 24 * TicksPerHour;
+
 public:
   explicit TTimeSpan(int64_t ATicks);
   explicit TTimeSpan(int32_t Hours, int32_t Minutes, int32_t Seconds);
@@ -710,6 +725,7 @@ public:
   static TTimeSpan GetMinValue() { return TTimeSpan(FMinValue); }
   static TTimeSpan GetMaxValue() { return TTimeSpan(FMaxValue); }
   static TTimeSpan GetZero() { return TTimeSpan(FZero); }
+
 private:
   int64_t FTicks{0};
 };
@@ -809,6 +825,7 @@ public:
   //explicit TFileStream(const UnicodeString & AFileName, uint16_t Mode, uint32_t Rights);
   virtual ~TFileStream() noexcept override;
   UnicodeString GetFileName() const { return FFileName; }
+
 private:
   UnicodeString FFileName;
 };
