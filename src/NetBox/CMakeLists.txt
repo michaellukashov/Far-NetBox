@@ -2162,8 +2162,8 @@ set(NetBox_HEADERS
 
 set(NETBOX_SOURCES
 #  UnityBuildCore.cpp
-  ${Base_HEADERS}
-  ${Base_SOURCES}
+  # ${Base_HEADERS}
+  # ${Base_SOURCES}
 
   ${WinSCP_HEADERS}
   ${WinSCP_SOURCES}
@@ -2365,8 +2365,8 @@ endif(MSVC)
 #baselib
 
 add_library(baselib STATIC
-  ${Base_SOURCES}
   ${Base_HEADERS}
+  ${Base_SOURCES}
 )
 
 target_include_directories(baselib PRIVATE
@@ -2428,7 +2428,7 @@ target_include_directories(NetBox PRIVATE
 
 target_link_libraries(NetBox PRIVATE
   ${NETBOX_LIBRARIES}
-  # baselib
+  baselib
 )
 
 target_compile_options(NetBox PRIVATE
