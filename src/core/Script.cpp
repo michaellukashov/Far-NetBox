@@ -14,12 +14,10 @@
 #include "CoreMain.h"
 
 #pragma package(smart_init)
-#endif //if 0
 
 const wchar_t * ToggleNames[] = { L"off", L"on" };
 const UnicodeString InOutParam(TraceInitStr(L"-"));
 
-#if 0
 TScriptProcParams::TScriptProcParams(const UnicodeString & FullCommand, const UnicodeString & ParamsStr)
 {
   int P = FSwitchMarks.Pos(L"/");

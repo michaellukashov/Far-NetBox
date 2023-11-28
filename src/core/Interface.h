@@ -32,8 +32,8 @@
 #define PRIVATEKEY_SWITCH L"privatekey"
 #define PASSWORDSFROMFILES_SWITCH L"passwordsfromfiles"
 constexpr const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
-constexpr const int32_t TransferModeNamesCount = _countof(TransferModeNames); 
-extern const wchar_t * ToggleNames[];
+constexpr const int32_t TransferModeNamesCount = _countof(TransferModeNames);
+constexpr const wchar_t * ToggleNames[] = { L"off", L"on" };
 enum TToggle { ToggleOff, ToggleOn };
 
 #if defined(FARPLUGIN)
