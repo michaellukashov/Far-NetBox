@@ -12,7 +12,6 @@
 #include <Global.h>
 #include <StrUtils.hpp>
 #include <Sysutils.hpp>
-//#include <CoreMain.h>
 #include <System.IOUtils.hpp>
 #include <cmath>
 #include <shlobj.h>

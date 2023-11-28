@@ -1959,12 +1959,6 @@ set(Base_SOURCES
   ../base/StrUtils.cpp
   ../base/WideStrUtils.cpp
   ../base/LibraryLoader.cpp
-  ../base/Common.cpp
-  ../base/Exceptions.cpp
-  ../base/FileBuffer.cpp
-  ../base/Global.cpp
-  ../base/System.SyncObjs.cpp
-  ../base/FormatUtils.cpp
 )
 
 set(Base_HEADERS
@@ -2047,6 +2041,13 @@ set(Filezilla_SOURCES
 )
 
 set(WinSCP_SOURCES
+  ../base/Common.cpp
+  ../base/Exceptions.cpp
+  ../base/FileBuffer.cpp
+  ../base/Global.cpp
+  ../base/System.SyncObjs.cpp
+  ../base/FormatUtils.cpp
+
   ../core/RemoteFiles.cpp
   ../core/Terminal.cpp
   ../core/FileOperationProgress.cpp
@@ -2360,6 +2361,31 @@ set(NETBOX_LIBRARIES PRIVATE
 endif(BUILD_DEBUG)
 endif(MSVC)
 
+#-------------------------------------------------------------------------------
+#baselib
+
+add_library(baselib STATIC
+  ${Base_SOURCES}
+  ${Base_HEADERS}
+)
+
+target_include_directories(baselib PRIVATE
+  ../../libs
+  ../../libs/fmt
+  ../../libs/tinylog
+  ../include
+  ../base
+  ../resource
+  ../../libs/GSL/include
+)
+
+target_compile_definitions(baselib PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+)
+
+
 add_library(NetBox SHARED
   ${NETBOX_SOURCES}
 )
@@ -2402,6 +2428,7 @@ target_include_directories(NetBox PRIVATE
 
 target_link_libraries(NetBox PRIVATE
   ${NETBOX_LIBRARIES}
+  # baselib
 )
 
 target_compile_options(NetBox PRIVATE
