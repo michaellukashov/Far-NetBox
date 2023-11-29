@@ -1693,7 +1693,7 @@ intptr_t TCustomFarPlugin::GetFarSystemSettings() const
   return FFarSystemSettings;
 }
 
-intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2, HANDLE Plugin)
+intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin)
 {
   switch (Command)
   {
@@ -1714,14 +1714,14 @@ intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, int32_t Par
   return FStartupInfo.PanelControl(Plugin, Command, Param1, Param2);
 }
 
-intptr_t TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int32_t Param1, void * Param2) const
+intptr_t TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const
 {
   TFarEnvGuard Guard; nb::used(Guard);
   return FStartupInfo.AdvControl ?
     FStartupInfo.AdvControl(&MainGuid, Command, Param1, Param2) : 0;
 }
 
-intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int32_t Param1, void * Param2) const
+intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const
 {
   switch (Command)
   {
@@ -2136,12 +2136,12 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int32_t Another)
   return &FPanelInfo[bAnother];
 }
 
-int32_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2)
+int32_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
 {
   return FPlugin->FarControl(Command, Param1, Param2, this);
 }
 
-int32_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2, HANDLE Plugin)
+int32_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin)
 {
   return FPlugin->FarControl(Command, Param1, Param2, Plugin);
 }

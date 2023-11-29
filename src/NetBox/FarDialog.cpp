@@ -549,7 +549,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
   return Result;
 }
 
-intptr_t TFarDialog::DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param2)
+intptr_t TFarDialog::DefaultDialogProc(int32_t Msg, intptr_t Param1, void * Param2)
 {
   if (GetHandle())
   {
@@ -801,7 +801,7 @@ void TFarDialog::Change()
   }
 }
 
-intptr_t TFarDialog::SendDlgMessage(int32_t Msg, int32_t Param1, void * Param2)
+intptr_t TFarDialog::SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (GetHandle())
   {
@@ -1313,7 +1313,7 @@ bool TFarDialogItem::GetIsEmpty() const
   return GetData().IsEmpty();
 }
 
-intptr_t TFarDialogItem::FailItemProc(int32_t Msg, void * Param)
+intptr_t TFarDialogItem::FailItemProc(intptr_t Msg, void * Param)
 {
   intptr_t Result;
   switch (Msg)
@@ -1329,7 +1329,7 @@ intptr_t TFarDialogItem::FailItemProc(int32_t Msg, void * Param)
   return Result;
 }
 
-intptr_t TFarDialogItem::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarDialogItem::ItemProc(intptr_t Msg, void * Param)
 {
   intptr_t Result{0};
   bool Handled = false;
@@ -1380,7 +1380,7 @@ void TFarDialogItem::DoExit()
   }
 }
 
-intptr_t TFarDialogItem::DefaultItemProc(int32_t Msg, void * Param)
+intptr_t TFarDialogItem::DefaultItemProc(intptr_t Msg, void * Param)
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
@@ -1391,7 +1391,7 @@ intptr_t TFarDialogItem::DefaultItemProc(int32_t Msg, void * Param)
   return 0;
 }
 
-intptr_t TFarDialogItem::DefaultDialogProc(int32_t Msg, int32_t Param1, void * Param2)
+intptr_t TFarDialogItem::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
@@ -1444,12 +1444,12 @@ void TFarDialogItem::DialogChange()
   Dlg->Change();
 }
 
-intptr_t TFarDialogItem::SendDialogMessage(int32_t Msg, int32_t Param1, void * Param2)
+intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   return GetDialog()->SendDlgMessage(Msg, Param1, Param2);
 }
 
-intptr_t TFarDialogItem::SendDialogMessage(int32_t Msg, void * Param)
+intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, void * Param)
 {
   return GetDialog()->SendDlgMessage(Msg, GetItem(), Param);
 }
@@ -1840,7 +1840,7 @@ void TFarButton::SetBrackets(TFarButtonBrackets Value)
   }
 }
 
-intptr_t TFarButton::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarButton::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1891,7 +1891,7 @@ TFarCheckBox::TFarCheckBox(TFarDialog * ADialog) noexcept :
 {
 }
 
-intptr_t TFarCheckBox::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarCheckBox::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1929,7 +1929,7 @@ TFarRadioButton::TFarRadioButton(TFarDialog * ADialog) noexcept :
 {
 }
 
-intptr_t TFarRadioButton::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarRadioButton::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_BTNCLICK)
   {
@@ -1977,7 +1977,7 @@ void TFarEdit::Detach()
   TFarDialogItem::Detach();
 }
 
-intptr_t TFarEdit::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarEdit::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_EDITCHANGE)
   {
@@ -2443,9 +2443,9 @@ TFarListBox::~TFarListBox() noexcept
 //  SAFE_DESTROY(FList);
 }
 
-intptr_t TFarListBox::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarListBox::ItemProc(intptr_t Msg, void * Param)
 {
-  int32_t Result = 0;
+  intptr_t Result = 0;
   if (Msg == DN_CONTROLINPUT)
   {
     const INPUT_RECORD * Rec = static_cast<const INPUT_RECORD *>(Param);
@@ -2523,7 +2523,7 @@ void TFarComboBox::ResizeToFitContent()
   SetWidth(FList->GetMaxLength());
 }
 
-intptr_t TFarComboBox::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_EDITCHANGE)
   {
@@ -2600,7 +2600,7 @@ void TFarLister::DoFocus()
   TODO("hide cursor");
 }
 
-intptr_t TFarLister::ItemProc(int32_t Msg, void * Param)
+intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
 {
   intptr_t Result = 0;
 

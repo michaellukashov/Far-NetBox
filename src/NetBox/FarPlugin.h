@@ -153,9 +153,9 @@ public:
   bool CheckForEsc() const;
   bool Viewer(const UnicodeString & AFileName, const UnicodeString & Title, VIEWER_FLAGS Flags);
   bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, EDITOR_FLAGS Flags);
-  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
-  intptr_t FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, int32_t Param1, void * Param2 = nullptr) const;
-  intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int32_t Param1, void * Param2) const;
+  intptr_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin = INVALID_HANDLE_VALUE);
+  intptr_t FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2 = nullptr) const;
+  intptr_t FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const;
   intptr_t GetFarSystemSettings() const;
   void Text(int32_t X, int32_t Y, int32_t Color, const UnicodeString & Str);
   void FlushText();
@@ -309,8 +309,8 @@ protected:
   virtual int32_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
 
   void ResetCachedInfo();
-  int32_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2);
-  int32_t FarControl(FILE_CONTROL_COMMANDS Command, int32_t Param1, void * Param2, HANDLE Plugin);
+  int32_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2);
+  int32_t FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin);
   bool UpdatePanel(bool ClearSelection = false, bool Another = false);
   void RedrawPanel(bool Another = false);
   void ClosePanel();
