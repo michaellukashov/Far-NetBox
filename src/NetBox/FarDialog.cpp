@@ -2421,7 +2421,7 @@ int32_t TFarList::ItemProc(int32_t Msg, void * Param)
     }
     else
     {
-      int32_t param = reinterpret_cast<intptr_t>(Param);
+      const int32_t param = reinterpret_cast<const int32_t>(Param);
       assert(param >= 0 && param < GetCount());
       DialogItem->UpdateData(GetString(param));
     }
@@ -2527,7 +2527,7 @@ intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
 {
   if (Msg == DN_EDITCHANGE)
   {
-    UnicodeString Data = (reinterpret_cast<FarDialogItem *>(Param))->Data;
+    const UnicodeString Data = (static_cast<FarDialogItem *>(Param))->Data;
     nb_free(GetDialogItem()->Data);
     GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
   }
