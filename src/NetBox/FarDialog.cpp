@@ -2652,7 +2652,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
   else if (Msg == DN_CONTROLINPUT)
   {
     Result = 1;
-    INPUT_RECORD * Rec = reinterpret_cast<INPUT_RECORD *>(Param);
+    INPUT_RECORD * Rec = static_cast<INPUT_RECORD *>(Param);
     if (Rec->EventType == KEY_EVENT)
     {
       KEY_EVENT_RECORD * KeyEvent = &Rec->Event.KeyEvent;
@@ -2668,11 +2668,11 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
         }
         else
         {
-          INPUT_RECORD Rec = {0};
-          Rec.EventType = KEY_EVENT;
-          Rec.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
-          Rec.Event.KeyEvent.dwControlKeyState = SHIFT_PRESSED;
-          SendDialogMessage(DN_CONTROLINPUT, 1, nb::ToPtr(&Rec));
+          INPUT_RECORD Rec2 = {};
+          Rec2.EventType = KEY_EVENT;
+          Rec2.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
+          Rec2.Event.KeyEvent.dwControlKeyState = SHIFT_PRESSED;
+          SendDialogMessage(DN_CONTROLINPUT, 1, nb::ToPtr(&Rec2));
         }
       }
       else if ((Key == VK_DOWN) || (Key == VK_RIGHT))
@@ -2683,11 +2683,11 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
         }
         else
         {
-          INPUT_RECORD Rec = {0};
-          Rec.EventType = KEY_EVENT;
-          Rec.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
-          Rec.Event.KeyEvent.dwControlKeyState = 0;
-          SendDialogMessage(DN_CONTROLINPUT, 1, nb::ToPtr(&Rec));
+          INPUT_RECORD Rec2 = {};
+          Rec2.EventType = KEY_EVENT;
+          Rec2.Event.KeyEvent.wVirtualKeyCode = VK_TAB;
+          Rec2.Event.KeyEvent.dwControlKeyState = 0;
+          SendDialogMessage(DN_CONTROLINPUT, 1, nb::ToPtr(&Rec2));
         }
       }
       else if (Key == VK_PRIOR)
