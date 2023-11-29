@@ -197,7 +197,7 @@ public:
           FLog->AddIndented(L"  <files>");
           for (int32_t Index = 0; Index < FFileList->GetCount(); ++Index)
           {
-            TRemoteFile *File = FFileList->GetFile(Index);
+            TRemoteFile * File = FFileList->GetFile(Index);
             RecordFile(L"    ", File, true);
           }
           FLog->AddIndented(L"  </files>");

@@ -242,9 +242,10 @@ public:
   explicit TKeepAliveThread(TWinSCPFileSystem * FileSystem, const TDateTime & Interval) noexcept;
   virtual ~TKeepAliveThread() noexcept override = default;
 
-  void InitKeepaliveThread();
   virtual void Execute() override;
   virtual void Terminate() override;
+
+  void InitKeepaliveThread();
 
 private:
   TWinSCPFileSystem * FFileSystem{nullptr};

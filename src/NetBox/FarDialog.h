@@ -83,7 +83,7 @@ public:
   int32_t GetTag() const { return FTag; }
   void SetTag(int32_t Value) { FTag = Value; }
   TFarDialogItem * GetItemFocused() const { return FItemFocused; }
-  void SetItemFocused(TFarDialogItem *Value);
+  void SetItemFocused(TFarDialogItem * Value);
   int32_t GetResult() const { return FResult; }
   TPoint GetMaxSize() const;
 
@@ -297,7 +297,7 @@ protected:
   virtual intptr_t GetSelected() const;
   virtual void SetSelected(int32_t Value);
   TFarDialogContainer * GetContainer() const { return FContainer; }
-  void SetContainer(TFarDialogContainer *Value);
+  void SetContainer(TFarDialogContainer * Value);
   virtual bool GetChecked() const;
   virtual void SetChecked(bool Value);
   void SetBounds(const TRect & Value);
@@ -336,7 +336,6 @@ protected:
 
 private:
   const struct PluginStartupInfo * GetPluginStartupInfo() const;
-
 
 private:
   TFarDialog * FDialog{nullptr};
@@ -384,7 +383,7 @@ public:
 public:
   explicit TFarButton(TFarDialog * ADialog) noexcept;
   explicit TFarButton(TObjectClassId Kind, TFarDialog * ADialog) noexcept;
-  virtual ~TFarButton() = default;
+  virtual ~TFarButton() noexcept override = default;
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
@@ -613,7 +612,7 @@ public:
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
   virtual ~TFarListBox() noexcept override;
 
-  void SetItems(TStrings *Value);
+  void SetItems(TStrings * Value);
 
   bool GetNoAmpersand() const { return GetFlag(DIF_LISTNOAMPERSAND); }
   void SetNoAmpersand(bool Value) { SetFlag(DIF_LISTNOAMPERSAND, Value); }
@@ -625,7 +624,7 @@ public:
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
   TFarList * GetItems() const { return FList.get(); }
   TFarList * GetItems() { return FList.get(); }
-  void SetList(TFarList *Value);
+  void SetList(TFarList * Value);
   TFarListBoxAutoSelect GetAutoSelect() { return FAutoSelect; }
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 

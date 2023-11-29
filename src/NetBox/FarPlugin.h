@@ -195,7 +195,7 @@ protected:
   FarStandardFunctions FFarStandardFunctions{};
   HINSTANCE FHandle{};
   std::unique_ptr<TList> FOpenedPlugins;
-  TFarDialog *FTopDialog{nullptr};
+  TFarDialog * FTopDialog{nullptr};
   HANDLE FConsoleInput{};
   HANDLE FConsoleOutput{};
   mutable int32_t FFarVersion{0};
@@ -440,7 +440,7 @@ public:
   bool GetIsFile() const;
 
 protected:
-  PluginPanelItem *FPanelItem{nullptr};
+  PluginPanelItem * FPanelItem{nullptr};
   bool FOwnsItem{false};
 
   virtual void GetData(
@@ -507,8 +507,8 @@ public:
 
 private:
   gsl::owner<PanelInfo *> FPanelInfo{nullptr};
-  TObjectList *FItems{nullptr};
-  TCustomFarFileSystem *FOwner{nullptr};
+  TObjectList * FItems{nullptr};
+  TCustomFarFileSystem * FOwner{nullptr};
 };
 
 NB_DEFINE_CLASS_ID(TFarMenuItems);
