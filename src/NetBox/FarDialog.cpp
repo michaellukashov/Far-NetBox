@@ -267,7 +267,7 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
 
   if (FDialogItemsCapacity == GetItems()->GetCount())
   {
-    int32_t DialogItemsDelta = 10;
+    constexpr int32_t DialogItemsDelta = 10;
     FarDialogItem * NewDialogItems{nullptr};
     NewDialogItems = nb::calloc<FarDialogItem *>(GetItems()->GetCount() + DialogItemsDelta, sizeof(FarDialogItem));
     if (FDialogItems)
