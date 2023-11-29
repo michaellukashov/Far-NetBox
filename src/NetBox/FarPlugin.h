@@ -147,7 +147,7 @@ public:
   bool InputBox(const UnicodeString & Title, const UnicodeString & Prompt,
     UnicodeString & Text, PLUGINPANELITEMFLAGS Flags, const UnicodeString & HistoryName = L"",
     int32_t MaxLen = 255, TFarInputBoxValidateEvent && OnValidate = nullptr);
-  virtual UnicodeString GetMsg(int32_t MsgId) const;
+  virtual UnicodeString GetMsg(intptr_t MsgId) const;
   void SaveScreen(HANDLE &Screen);
   void RestoreScreen(HANDLE &Screen);
   bool CheckForEsc() const;
@@ -314,7 +314,7 @@ protected:
   bool UpdatePanel(bool ClearSelection = false, bool Another = false);
   void RedrawPanel(bool Another = false);
   void ClosePanel();
-  UnicodeString GetMsg(int32_t MsgId) const;
+  UnicodeString GetMsg(intptr_t MsgId) const;
   TCustomFarFileSystem * GetOppositeFileSystem();
   bool IsActiveFileSystem() const;
   bool IsLeft() const;

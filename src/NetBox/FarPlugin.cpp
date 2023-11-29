@@ -1596,7 +1596,7 @@ void TCustomFarPlugin::HandleException(Exception * E, OPERATION_MODES /*OpMode*/
   Message(FMSG_WARNING | FMSG_MB_OK, L"", E ? E->Message : L"");
 }
 
-UnicodeString TCustomFarPlugin::GetMsg(int32_t MsgId) const
+UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
   TFarEnvGuard Guard; nb::used(Guard);
   UnicodeString Result;
@@ -2165,7 +2165,7 @@ void TCustomFarFileSystem::ClosePanel()
   FarControl(FCTL_CLOSEPANEL, 0, nullptr);
 }
 
-UnicodeString TCustomFarFileSystem::GetMsg(int32_t MsgId) const
+UnicodeString TCustomFarFileSystem::GetMsg(intptr_t MsgId) const
 {
   return FPlugin->GetMsg(MsgId);
 }

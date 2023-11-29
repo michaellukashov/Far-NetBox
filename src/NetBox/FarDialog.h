@@ -106,13 +106,13 @@ protected:
   intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
-  intptr_t DefaultDialogProc(int32_t Msg, intptr_t Param1, void * Param2);
+  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual bool MouseEvent(MOUSE_EVENT_RECORD * Event);
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
   virtual void Change();
   virtual void Init();
   virtual bool CloseQuery();
-  UnicodeString GetMsg(int32_t MsgId) const;
+  UnicodeString GetMsg(intptr_t MsgId) const;
   void GetNextItemPosition(int32_t & Left, int32_t & Top);
   void RefreshBounds();
   virtual void Idle();
@@ -185,7 +185,7 @@ protected:
   void Add(TFarDialogItem * Item);
   void Remove(TFarDialogItem * Item);
   virtual void Change();
-  UnicodeString GetMsg(int32_t MsgId) const;
+  UnicodeString GetMsg(intptr_t MsgId) const;
 
 private:
   int32_t FLeft{0};
@@ -575,7 +575,7 @@ public:
 
 protected:
   virtual void Changed() override;
-  virtual int32_t ItemProc(int32_t Msg, void * Param);
+  virtual int32_t ItemProc(intptr_t Msg, void * Param);
   virtual void Init();
   void UpdatePosition(int32_t Position);
   int32_t GetPosition() const;

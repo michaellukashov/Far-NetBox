@@ -549,7 +549,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
   return Result;
 }
 
-intptr_t TFarDialog::DefaultDialogProc(int32_t Msg, intptr_t Param1, void * Param2)
+intptr_t TFarDialog::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 {
   if (GetHandle())
   {
@@ -876,7 +876,7 @@ void TFarDialog::SetItemFocused(TFarDialogItem * Value)
   }
 }
 
-UnicodeString TFarDialog::GetMsg(int32_t MsgId) const
+UnicodeString TFarDialog::GetMsg(intptr_t MsgId) const
 {
   return FFarPlugin->GetMsg(MsgId);
 }
@@ -940,7 +940,7 @@ TFarDialogContainer::~TFarDialogContainer() noexcept
 //  SAFE_DESTROY(FItems);
 }
 
-UnicodeString TFarDialogContainer::GetMsg(int32_t MsgId) const
+UnicodeString TFarDialogContainer::GetMsg(intptr_t MsgId) const
 {
   return GetDialog()->GetMsg(MsgId);
 }
@@ -2405,7 +2405,7 @@ void TFarList::Init()
   UpdatePosition(GetSelectedInt(true));
 }
 
-int32_t TFarList::ItemProc(int32_t Msg, void * Param)
+int32_t TFarList::ItemProc(intptr_t Msg, void * Param)
 {
   TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
@@ -2417,7 +2417,7 @@ int32_t TFarList::ItemProc(int32_t Msg, void * Param)
     }
     else
     {
-      const int32_t param = reinterpret_cast<const int32_t>(Param);
+      const int32_t param = nb::ToInt32(nb::ToIntPtr(Param));
       assert(param >= 0 && param < GetCount());
       DialogItem->UpdateData(GetString(param));
     }
