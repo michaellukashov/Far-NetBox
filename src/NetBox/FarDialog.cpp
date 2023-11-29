@@ -1727,11 +1727,7 @@ TFarBox::TFarBox(TFarDialog * ADialog) noexcept :
 {
 }
 
-TFarButton::TFarButton(TFarDialog * ADialog) noexcept :
-  TFarDialogItem(OBJECT_CLASS_TFarButton, ADialog, DI_BUTTON),
-  FResult(0),
-  FOnClick(nullptr),
-  FBrackets(brNormal)
+TFarButton::TFarButton(TFarDialog * ADialog) noexcept : TFarButton(OBJECT_CLASS_TFarButton, ADialog)
 {
 }
 
