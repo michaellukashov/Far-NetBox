@@ -2606,7 +2606,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
     int32_t ScrollBarPos = 0;
     if (GetItems()->GetCount() > GetHeight())
     {
-      ScrollBarPos = nb::ToInt32((static_cast<float>(GetHeight() - 3) * (static_cast<float>(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
+      ScrollBarPos = nb::ToInt32((nb::ToDouble(GetHeight() - 3) * (nb::ToDouble(FTopIndex) / (GetItems()->GetCount() - GetHeight())))) + 1;
     }
     int32_t DisplayWidth = GetWidth() - (AScrollBar ? 1 : 0);
     FarColor Color = GetDialog()->GetSystemColor(
@@ -2762,7 +2762,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
         {
           assert(P.x == GetWidth() - 1);
           assert((P.y > 0) && (P.y < nb::ToInt32(GetHeight() - 1)));
-          NewTopIndex = nb::ToInt32(ceil(static_cast<float>(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
+          NewTopIndex = nb::ToInt32(ceil(nb::ToDouble(P.y - 1) / (GetHeight() - 2) * (GetItems()->GetCount() - GetHeight() + 1)));
         }
 
         Result = 1;
