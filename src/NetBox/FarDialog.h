@@ -271,8 +271,8 @@ public:
   virtual void DoFocus();
   virtual void DoExit();
 
-  char GetColor(int32_t Index) const;
-  void SetColor(int32_t Index, char Value);
+  int8_t GetColor(int32_t Index) const;
+  void SetColor(int32_t Index, int8_t Value);
 
 protected:
   FARDIALOGITEMTYPES FDefaultType;

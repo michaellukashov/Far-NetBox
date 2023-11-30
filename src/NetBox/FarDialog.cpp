@@ -1095,16 +1095,16 @@ void TFarDialogItem::UpdateBounds()
   }
 }
 
-char TFarDialogItem::GetColor(int32_t Index) const
+int8_t TFarDialogItem::GetColor(int32_t Index) const
 {
-  return *((reinterpret_cast<const char *>(&FColors)) + Index);
+  return *((reinterpret_cast<const int8_t *>(&FColors)) + Index);
 }
 
-void TFarDialogItem::SetColor(int32_t Index, char Value)
+void TFarDialogItem::SetColor(int32_t Index, int8_t Value)
 {
   if (GetColor(Index) != Value)
   {
-    *((reinterpret_cast<char *>(&FColors)) + Index) = Value;
+    *((reinterpret_cast<int8_t *>(&FColors)) + Index) = Value;
     FColorMask |= (0xFF << (Index * 8));
   }
 }
