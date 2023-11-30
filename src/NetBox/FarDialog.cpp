@@ -119,7 +119,7 @@ TPoint TFarDialog::GetClientSize() const
   TPoint S;
   if (FBorderBox)
   {
-    TRect R = FBorderBox->GetActualBounds();
+    const TRect R = FBorderBox->GetActualBounds();
     S.x = nb::ToInt32(R.Width()) + 1;
     S.y = nb::ToInt32(R.Height()) + 1;
     S.x -= S.x > 4 ? 4 : S.x;
@@ -295,7 +295,7 @@ void TFarDialog::Add(TFarDialogContainer * Container)
 
 void TFarDialog::GetNextItemPosition(int32_t & Left, int32_t & Top)
 {
-  TRect R = GetClientRect();
+  const TRect R = GetClientRect();
   Left = R.Left;
   Top = R.Top;
 
@@ -1646,7 +1646,7 @@ bool TFarDialogItem::CloseQuery()
   return true;
 }
 
-TPoint TFarDialogItem::MouseClientPosition(MOUSE_EVENT_RECORD * Event)
+TPoint TFarDialogItem::MouseClientPosition(const MOUSE_EVENT_RECORD * Event)
 {
   TPoint Result;
   if (GetType() == DI_USERCONTROL)
@@ -1859,7 +1859,7 @@ intptr_t TFarButton::ItemProc(intptr_t Msg, void * Param)
 
 bool TFarButton::HotKey(char HotKey)
 {
-  UnicodeString Caption = GetCaption();
+  const UnicodeString Caption = GetCaption();
   const int32_t P = Caption.Pos(L'&');
   const bool Result =
     GetVisible() && GetEnabled() &&
@@ -2274,7 +2274,7 @@ void TFarList::SetCurPos(int32_t Position, int32_t TopIndex)
 {
   TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
-  TFarDialog * Dlg = DialogItem->GetDialog();
+  const TFarDialog * Dlg = DialogItem->GetDialog();
   assert(Dlg);
   assert(Dlg->GetHandle());
   DebugUsedParam(Dlg);
@@ -2331,7 +2331,7 @@ int32_t TFarList::GetMaxLength() const
 
 int32_t TFarList::GetVisibleCount() const
 {
-  TFarDialogItem * DialogItem = GetDialogItem();
+  const TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
   return DialogItem ? DialogItem->GetHeight() - (GetDialogItem()->GetFlag(DIF_LISTNOBOX) ? 0 : 2) : 0;
 }

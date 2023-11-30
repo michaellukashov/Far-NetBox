@@ -329,7 +329,7 @@ protected:
   virtual bool CloseQuery();
   virtual bool MouseMove(int32_t X, int32_t Y, MOUSE_EVENT_RECORD * Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD * Event);
-  TPoint MouseClientPosition(MOUSE_EVENT_RECORD * Event);
+  TPoint MouseClientPosition(const MOUSE_EVENT_RECORD * Event);
   void Text(int32_t X, int32_t Y, const FarColor & Color, const UnicodeString & Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
