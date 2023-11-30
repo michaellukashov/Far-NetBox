@@ -431,7 +431,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 
         if (!Result && (Msg == DN_CONTROLINPUT))
         {
-          INPUT_RECORD * Rec = reinterpret_cast<INPUT_RECORD *>(Param2);
+          INPUT_RECORD * Rec = static_cast<INPUT_RECORD *>(Param2);
           const KEY_EVENT_RECORD & Event = Rec->Event.KeyEvent;
           Result = Key(Item, static_cast<long>(Event.wVirtualKeyCode | (Event.dwControlKeyState << 16)));
         }
@@ -460,7 +460,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       break;
     case DN_INPUT:
       // case DN_MOUSEEVENT:
-      Result = MouseEvent(reinterpret_cast<MOUSE_EVENT_RECORD *>(Param2));
+      Result = MouseEvent(static_cast<MOUSE_EVENT_RECORD *>(Param2));
       Handled = true;
       break;
     }
