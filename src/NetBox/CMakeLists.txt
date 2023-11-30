@@ -15,14 +15,18 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug")
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
-#message("CMAKE_CL_64: ${CMAKE_CL_64}")
+# message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 if(MSVC)
-  set(CMAKE_CXX_FLAGS /MP) # Multi-processor compilation
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /Zi")
+  # /MP Multi-processor compilation
+  # /Zi Generate debug info
+
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
   set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
+# message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far3)
@@ -2497,8 +2501,8 @@ endif(OPT_DEBUG_BUILD)
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
 ucm_add_flags(CXX /EHsc)
-ucm_add_flags(CXX C /Zi CONFIG Debug)
-ucm_add_flags(CXX C /MP /Gy /Zi CONFIG Release)
+ucm_add_flags(CXX C CONFIG Debug)
+ucm_add_flags(CXX C /Gy CONFIG Release)
 #/Ob2 /GR
 ucm_add_flags(CXX C /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 #/O1 release min size
