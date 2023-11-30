@@ -49,7 +49,7 @@ ToIntPtr(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
-ToIntPtr(T a) { return (intptr_t)(a); }
+ToIntPtr(T a) { return reinterpret_cast<intptr_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_floating_point<T>::value, intptr_t>::type
@@ -65,7 +65,7 @@ ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_pointer<T>::value, uintptr_t>::type
-ToUIntPtr(T a) { return (uintptr_t)(a); }
+ToUIntPtr(T a) { return reinterpret_cast<uintptr_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_floating_point<T>::value, uintptr_t>::type
@@ -90,12 +90,12 @@ inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32
 ToInt32(float a) { return static_cast<int32_t>(a); }
 
 template <class T>
-inline constexpr typename std::is_convertible<T, int>::value
-ToInt(T a) { return static_cast<int>(a); }
+inline constexpr typename std::is_convertible<T, int32_t>::value
+ToInt(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
-inline constexpr int
-ToInt(T a) { return static_cast<int>(a); }
+inline constexpr int32_t
+ToInt(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr typename std::is_convertible<T, uint32_t>::value
