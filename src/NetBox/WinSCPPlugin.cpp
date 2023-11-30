@@ -27,19 +27,20 @@ void DestroyFarPlugin(TCustomFarPlugin *& Plugin)
   SAFE_DESTROY(Plugin);
 }
 
-static UnicodeString GetDbgPath(const char * env) noexcept
+static UnicodeString GetDbgPath(const char * Env) noexcept
 {
-  const char * path = getenv(env);
-  if (path)
+  const char * Path = getenv(Env);
+  if (Path)
   {
     UnicodeString Str;
-    if (*path == '~')
+    if (*Path == '~')
     {
-      const char *home = getenv("HOME");
-      Str = home ? home : getenv("TEMP");
-      Str += path + 1;
-    } else
-      Str = path;
+      const char * Home = getenv("HOME");
+      Str = Home ? Home : getenv("TEMP");
+      Str += Path + 1;
+    } else {
+      Str = Path;
+    }
 
     UnicodeString DbgLogFileName = StripPathQuotes(::ExpandEnvironmentVariables(Str));
     return DbgLogFileName;
