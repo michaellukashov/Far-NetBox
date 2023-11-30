@@ -77,7 +77,7 @@ void TFarDialog::SetBounds(const TRect & Value)
       FBounds = Value;
       if (GetHandle())
       {
-        COORD Coord;
+        COORD Coord{};
         Coord.X = static_cast<int16_t>(GetSize().x);
         Coord.Y = static_cast<int16_t>(GetSize().y);
         SendDlgMessage(DM_RESIZEDIALOG, 0, nb::ToPtr(&Coord));
@@ -421,7 +421,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         {
           Result = Item->ItemProc(Msg, Param2);
         }
-        catch (Exception &E)
+        catch(Exception & E)
         {
           Handled = true;
           DEBUG_PRINTF("before GetFarPlugin()->HandleException");
@@ -537,7 +537,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       Change();
     }
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before GetFarPlugin()->HandleException");
     GetFarPlugin()->HandleException(&E);
