@@ -2,6 +2,7 @@
 cmake_minimum_required(VERSION 3.15)
 
 set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
+set(OPT_DEBUG_BUILD OFF CACHE STRING "Build plugin for debug")
 
 project(NetBox)
 
@@ -15,6 +16,13 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 #message("CMAKE_CL_64: ${CMAKE_CL_64}")
+
+if(MSVC)
+  set(CMAKE_CXX_FLAGS /MP) # Multi-processor compilation
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+  set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+endif()
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far3)
@@ -38,19 +46,18 @@ set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 set(NETBOX_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
-if(NOT DEFINED BUILD_DIR OR BUILD_DIR STREQUAL "")
-string(REPLACE "/" "\\" BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
-endif()
-
 #-------------------------------------------------------------------------------
 
 include(CMakeParseArguments)
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
 #include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-#message("MSVC_VERSION: ${MSVC_VERSION}")
-#message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}")
+# message("CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+# message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}, CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+# message("NETBOX_OUTPUT_DIRECTORY: ${NETBOX_OUTPUT_DIRECTORY}, CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+# message("MSVC_VERSION: ${MSVC_VERSION}")
+# message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 
 #-------------------------------------------------------------------------------
 
@@ -2446,13 +2453,19 @@ target_compile_options(NetBox PRIVATE
   -D_CRTIMP=
 )
 
+if(OPT_DEBUG_BUILD)
+
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
+
+if(NOT DEFINED NETBOX_BUILD_DIR OR NETBOX_BUILD_DIR STREQUAL "")
+string(REPLACE "/" "\\" NETBOX_BUILD_DIR ${CMAKE_BINARY_DIR})
+endif()
 
 add_custom_target(create_plugin_dir)
 add_custom_command(TARGET create_plugin_dir POST_BUILD
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}" )
-  WORKING_DIRECTORY ${BUILD_DIR}
+  WORKING_DIRECTORY ${NETBOX_BUILD_DIR}
   VERBATIM
 )
 
@@ -2471,13 +2484,16 @@ foreach(DIST_FILE ${DIST_FILES})
 endforeach()
 
 add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND if exist "${CMAKE_CURRENT_BINARY_DIR}/NetBox.dll" ( ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_BINARY_DIR}/NetBox.dll" ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist "${CMAKE_CURRENT_BINARY_DIR}/NetBox.pdb" ( ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_BINARY_DIR}/NetBox.pdb" ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist "${CMAKE_CURRENT_BINARY_DIR}/NetBox.map" ( ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_BINARY_DIR}/NetBox.map" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ( ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ( ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ${NETBOX_PLUGIN_DIR} )
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ( ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${NETBOX_PLUGIN_DIR} )
 )
 
-add_dependencies(copy_to_plugin_dir create_plugin_dir )
-add_dependencies(NetBox copy_to_plugin_dir)
+add_dependencies(create_plugin_dir copy_to_plugin_dir)
+add_dependencies(copy_to_plugin_dir NetBox)
+
+endif(OPT_DEBUG_BUILD)
+
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
 ucm_add_flags(CXX /EHsc)
