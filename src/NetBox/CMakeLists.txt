@@ -47,7 +47,6 @@ else()
 endif()
 
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-set(NETBOX_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 
 #-------------------------------------------------------------------------------
@@ -2305,7 +2304,7 @@ if(NOT x64)
 # message("masm: ${MASM_EXECUTABLE}")
 set(ASM_OBJECTS)
 foreach(src vc_crt_fix)
-  set(ASM_SOURCE ${NETBOX_DIR}/${src}.asm)
+  set(ASM_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${src}.asm)
   set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
   set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
   add_custom_command(
@@ -2462,39 +2461,26 @@ if(OPT_DEBUG_BUILD)
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
-if(NOT DEFINED NETBOX_BUILD_DIR OR NETBOX_BUILD_DIR STREQUAL "")
-string(REPLACE "/" "\\" NETBOX_BUILD_DIR ${CMAKE_BINARY_DIR})
-endif()
-
-add_custom_target(create_plugin_dir)
-add_custom_command(TARGET create_plugin_dir POST_BUILD
-  COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ( ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}" )
-  WORKING_DIRECTORY ${NETBOX_BUILD_DIR}
-  VERBATIM
-)
-
 file(GLOB DIST_FILES
-  ${NETBOX_DIR}/*.lng
+  ${CMAKE_CURRENT_SOURCE_DIR}/*.lng
+)
+# message("DIST_FILES: ${DIST_FILES}")
+
+add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" "${NETBOX_PLUGIN_DIR}/"
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" "${NETBOX_PLUGIN_DIR}/"
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" "${NETBOX_PLUGIN_DIR}/"
 )
 
-add_custom_target(copy_to_plugin_dir)
-#message("NETBOX_DIR: ${NETBOX_DIR}")
-#message("DIST_FILES: ${DIST_FILES}")
 foreach(DIST_FILE ${DIST_FILES})
-  add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
-#    COMMAND echo DIST_FILE: ${DIST_FILE}
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
+  string(REPLACE "/" "\\" DIST_FILE ${DIST_FILE})
+  add_custom_command(TARGET NetBox POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DIST_FILE}" "${NETBOX_PLUGIN_DIR}"
+    VERBATIM
   )
 endforeach()
 
-add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ( ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ( ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ${NETBOX_PLUGIN_DIR} )
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ( ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${NETBOX_PLUGIN_DIR} )
-)
-
-add_dependencies(create_plugin_dir copy_to_plugin_dir)
-add_dependencies(copy_to_plugin_dir NetBox)
 
 endif(OPT_DEBUG_BUILD)
 
