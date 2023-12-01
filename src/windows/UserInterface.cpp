@@ -219,88 +219,88 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
   }
 
   TTerminalManager * Manager = TTerminalManager::Instance(false);
-  bool HookedDialog = false;
-  try
+  if (!DoNotDisplay)
   {
-    if (!DoNotDisplay)
+    ESshTerminate * Terminate = dynamic_cast<ESshTerminate*>(E);
+    bool CloseOnCompletion = (Terminate != nullptr);
+
+    bool ForActiveTerminal =
+      E->InheritsFrom(__classid(EFatal)) && (Terminal != nullptr) &&
+      (Manager != nullptr) && (Manager->ActiveTerminal == Terminal);
+
+    unsigned int Result;
+    if (CloseOnCompletion)
     {
-      ESshTerminate * Terminate = dynamic_cast<ESshTerminate*>(E);
-      bool CloseOnCompletion = (Terminate != nullptr);
-
-      bool ForActiveTerminal =
-        E->InheritsFrom(__classid(EFatal)) && (Terminal != nullptr) &&
-        (Manager != nullptr) && (Manager->ActiveTerminal == Terminal);
-
-      unsigned int Result;
-      if (CloseOnCompletion)
+      if (ForActiveTerminal)
       {
+        DebugAssert(!Terminal->Active);
+        Manager->DisconnectActiveTerminal();
+      }
+
+      if (Terminate->Operation == odoSuspend)
+      {
+        // suspend, so that exit prompt is shown only after windows resume
+        SuspendWindows();
+      }
+
+      DebugAssert(Show);
+      bool ConfirmExitOnCompletion =
+        CloseOnCompletion &&
+        ((Terminate->Operation == odoDisconnect) || (Terminate->Operation == odoSuspend)) &&
+        WinConfiguration->ConfirmExitOnCompletion;
+
+      if (ConfirmExitOnCompletion)
+      {
+        TMessageParams Params(mpNeverAskAgainCheck);
+        unsigned int Answers = 0;
+        TQueryButtonAlias Aliases[1];
+        TOpenLocalPathHandler OpenLocalPathHandler;
+        if (!Terminate->TargetLocalPath.IsEmpty() && !ForActiveTerminal)
+        {
+          OpenLocalPathHandler.LocalPath = Terminate->TargetLocalPath;
+          OpenLocalPathHandler.LocalFileName = Terminate->DestLocalFileName;
+
+          Aliases[0].Button = qaIgnore;
+          Aliases[0].Alias = LoadStr(OPEN_BUTTON);
+          Aliases[0].OnSubmit = OpenLocalPathHandler.Open;
+          Aliases[0].MenuButton = true;
+          Answers |= Aliases[0].Button;
+          Params.Aliases = Aliases;
+          Params.AliasesCount = LENOF(Aliases);
+        }
+
         if (ForActiveTerminal)
         {
-          DebugAssert(!Terminal->Active);
-          Manager->DisconnectActiveTerminal();
-        }
-
-        if (Terminate->Operation == odoSuspend)
-        {
-          // suspend, so that exit prompt is shown only after windows resume
-          SuspendWindows();
-        }
-
-        DebugAssert(Show);
-        bool ConfirmExitOnCompletion =
-          CloseOnCompletion &&
-          ((Terminate->Operation == odoDisconnect) || (Terminate->Operation == odoSuspend)) &&
-          WinConfiguration->ConfirmExitOnCompletion;
-
-        if (ConfirmExitOnCompletion)
-        {
-          TMessageParams Params(mpNeverAskAgainCheck);
-          unsigned int Answers = 0;
-          TQueryButtonAlias Aliases[1];
-          TOpenLocalPathHandler OpenLocalPathHandler;
-          if (!Terminate->TargetLocalPath.IsEmpty() && !ForActiveTerminal)
-          {
-            OpenLocalPathHandler.LocalPath = Terminate->TargetLocalPath;
-            OpenLocalPathHandler.LocalFileName = Terminate->DestLocalFileName;
-
-            Aliases[0].Button = qaIgnore;
-            Aliases[0].Alias = LoadStr(OPEN_BUTTON);
-            Aliases[0].OnSubmit = OpenLocalPathHandler.Open;
-            Aliases[0].MenuButton = true;
-            Answers |= Aliases[0].Button;
-            Params.Aliases = Aliases;
-            Params.AliasesCount = LENOF(Aliases);
-          }
-
-          if (ForActiveTerminal)
-          {
-            UnicodeString MessageFormat =
-              (Manager->Count > 1) ?
-                FMTLOAD(DISCONNECT_ON_COMPLETION, Manager->Count - 1) :
-                LoadStr(EXIT_ON_COMPLETION);
-            // Remove the leading "%s\n\n" (not to change the translation originals - previously the error message was prepended)
-            MessageFormat = FORMAT(MessageFormat, UnicodeString()).Trim();
-            MessageFormat = MainInstructions(MessageFormat) + L"\n\n%s";
-            Result = FatalExceptionMessageDialog(E, qtInformation,
-              MessageFormat,
-              Answers | qaYes | qaNo, HELP_NONE, &Params);
-          }
-          else
-          {
-            Result =
-              ExceptionMessageDialog(E, qtInformation, L"", Answers | qaOK, HELP_NONE, &Params);
-          }
+          UnicodeString MessageFormat =
+            (Manager->Count > 1) ?
+              FMTLOAD(DISCONNECT_ON_COMPLETION, (Manager->Count - 1)) :
+              LoadStr(EXIT_ON_COMPLETION);
+          // Remove the leading "%s\n\n" (not to change the translation originals - previously the error message was prepended)
+          MessageFormat = FORMAT(MessageFormat, (UnicodeString())).Trim();
+          MessageFormat = MainInstructions(MessageFormat) + L"\n\n%s";
+          Result = FatalExceptionMessageDialog(E, qtInformation,
+            MessageFormat,
+            Answers | qaYes | qaNo, HELP_NONE, &Params);
         }
         else
         {
-          Result = qaYes;
+          Result =
+            ExceptionMessageDialog(E, qtInformation, L"", Answers | qaOK, HELP_NONE, &Params);
         }
       }
       else
       {
-        if (Show)
+        Result = qaYes;
+      }
+    }
+    else
+    {
+      if (Show)
+      {
+        if (ForActiveTerminal)
         {
-          if (ForActiveTerminal)
+          bool HookedDialog = false;
+          try__finally
           {
             TMessageParams Params;
             if (DebugAlwaysTrue(Manager->ActiveTerminal != nullptr) &&
@@ -316,70 +316,70 @@ void ShowExtendedExceptionEx(TTerminal * Terminal,
 
             Result = FatalExceptionMessageDialog(E, qtError, EmptyStr, qaOK, EmptyStr, &Params);
           }
-          else
+          __finally
           {
-            Result = ExceptionMessageDialog(E, qtError);
-          }
+            if (HookedDialog)
+            {
+              Manager->UnhookFatalExceptionMessageDialog();
+            }
+          } end_try__finally
         }
         else
         {
-          Result = qaOK;
-        }
-      }
-
-      if (Result == qaNeverAskAgain)
-      {
-        DebugAssert(CloseOnCompletion);
-        Result = qaYes;
-        WinConfiguration->ConfirmExitOnCompletion = false;
-      }
-
-      if (Result == qaYes)
-      {
-        DebugAssert(CloseOnCompletion);
-        DebugAssert(Terminate != nullptr);
-        DebugAssert(Terminate->Operation != odoIdle);
-        TerminateApplication();
-
-        switch (Terminate->Operation)
-        {
-          case odoDisconnect:
-            break;
-
-          case odoSuspend:
-            // suspended before already
-            break;
-
-          case odoShutDown:
-            ShutDownWindows();
-            break;
-
-          default:
-            DebugFail();
-        }
-      }
-      else if (Result == qaRetry)
-      {
-        // qaRetry is used by FatalExceptionMessageDialog
-        if (DebugAlwaysTrue(ForActiveTerminal))
-        {
-          Manager->ReconnectActiveTerminal();
+          Result = ExceptionMessageDialog(E, qtError);
         }
       }
       else
       {
-        if (ForActiveTerminal)
-        {
-          Manager->DisconnectActiveTerminalIfPermanentFreeOtherwise();
-        }
+        Result = qaOK;
       }
     }
-  }
-  __finally
-  {
-    if (HookedDialog)
+
+    if (Result == qaNeverAskAgain)
     {
-      Manager->UnhookFatalExceptionMessageDialog();
+      DebugAssert(CloseOnCompletion);
+      Result = qaYes;
+      WinConfiguration->ConfirmExitOnCompletion = false;
+    }
+
+    if (Result == qaYes)
+    {
+      DebugAssert(CloseOnCompletion);
+      DebugAssert(Terminate != nullptr);
+      DebugAssert(Terminate->Operation != odoIdle);
+      TerminateApplication();
+
+      switch (Terminate->Operation)
+      {
+        case odoDisconnect:
+          break;
+
+        case odoSuspend:
+          // suspended before already
+          break;
+
+        case odoShutDown:
+          ShutDownWindows();
+          break;
+
+        default:
+          DebugFail();
+      }
+    }
+    else if (Result == qaRetry)
+    {
+      // qaRetry is used by FatalExceptionMessageDialog
+      if (DebugAlwaysTrue(ForActiveTerminal))
+      {
+        Manager->ReconnectActiveTerminal();
+      }
+    }
+    else
+    {
+      if (ForActiveTerminal)
+      {
+        Manager->DisconnectActiveTerminalIfPermanentFreeOtherwise();
+      }
     }
   }
 }
