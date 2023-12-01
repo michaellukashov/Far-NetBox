@@ -309,7 +309,7 @@ private:
 private:
   gsl::owner<TTerminal *> FTerminal{nullptr};
   gsl::owner<TTerminalQueue *> FQueue{nullptr};
-  TTerminalQueueStatus * FQueueStatus{nullptr};
+  gsl::owner<TTerminalQueueStatus *> FQueueStatus{nullptr};
   TCriticalSection FQueueStatusSection;
   TQueueEvent FQueueEvent{qeEmpty};
   HANDLE FProgressSaveScreenHandle{nullptr};
