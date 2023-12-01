@@ -68,7 +68,7 @@ void TCopyParamType::Default()
 }
 
 UnicodeString TCopyParamType::GetInfoStr(
-  const UnicodeString & Separator, int32_t Attrs) const
+  const UnicodeString & Separator, uint32_t Attrs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded{false};
@@ -80,7 +80,7 @@ UnicodeString TCopyParamType::GetInfoStr(
   return Result;
 }
 
-bool TCopyParamType::AnyUsableCopyParam(int32_t Attrs) const
+bool TCopyParamType::AnyUsableCopyParam(uint32_t Attrs) const
 {
   UnicodeString Result;
   bool SomeAttrIncluded;
@@ -119,7 +119,7 @@ UnicodeString TCopyParamType::GenerateAssemblyCode(TAssemblyLanguage Language, i
 #endif // #if 0
 
 void TCopyParamType::DoGetInfoStr(
-  const UnicodeString & Separator, int32_t Options,
+  const UnicodeString & Separator, uint32_t Attrs,
   UnicodeString & Result, bool & SomeAttrIncluded,
   const UnicodeString & /*ALink*/, UnicodeString & /*ScriptArgs*/) const //*TAssemblyLanguage Language, UnicodeString & AssemblyCode) const
 {
@@ -130,12 +130,12 @@ void TCopyParamType::DoGetInfoStr(
   bool SomeAttrExcluded = false;
   SomeAttrIncluded = false;
 #define ADD(STR, EXCEPT) \
-    FLAGCLEAR(Options, EXCEPT) ? (AddToList(Result, (STR), Separator), SomeAttrIncluded = true, true) : (SomeAttrExcluded = true, false)
+    FLAGCLEAR(Attrs, EXCEPT) ? (AddToList(Result, (STR), Separator), SomeAttrIncluded = true, true) : (SomeAttrExcluded = true, false)
 
   bool AsciiFileMaskDiffers = (GetTransferMode() == tmAutomatic) && !(GetAsciiFileMask() == Defaults.GetAsciiFileMask());
   bool TransferModeDiffers = ((GetTransferMode() != Defaults.GetTransferMode()) || AsciiFileMaskDiffers);
 
-  if (FLAGCLEAR(Options, cpaIncludeMaskOnly | cpaNoTransferMode))
+  if (FLAGCLEAR(Attrs, cpaIncludeMaskOnly | cpaNoTransferMode))
   {
     // Adding Transfer type unconditionally
     bool FormatMask;
@@ -208,7 +208,7 @@ void TCopyParamType::DoGetInfoStr(
       ADD(LoadStr(COPY_INFO_DONT_REPLACE_INV_CHARS), Except);
     }
 
-    if (FLAGCLEAR(Options, Except))
+    if (FLAGCLEAR(Attrs, Except))
     {
       ScriptNonDefaults.InvalidCharsReplacement = InvalidCharsReplacement;
       CodeNonDefaults.InvalidCharsReplacement = InvalidCharsReplacement;
@@ -230,7 +230,7 @@ void TCopyParamType::DoGetInfoStr(
       ADD(FORMAT(LoadStr(COPY_INFO_PERMISSIONS), RightsStr),
         Except);
 
-      if (FLAGCLEAR(Options, Except))
+      if (FLAGCLEAR(Attrs, Except))
       {
 #if 0
         ScriptArgs += RtfSwitchValue(PERMISSIONS_SWITCH, Link, Rights.Octal);
@@ -247,7 +247,7 @@ void TCopyParamType::DoGetInfoStr(
       }
     }
 
-    if ((GetAddXToDirectories() != Defaults.GetAddXToDirectories()) && FLAGCLEAR(Options, Except))
+    if ((GetAddXToDirectories() != Defaults.GetAddXToDirectories()) && FLAGCLEAR(Attrs, Except))
     {
       ScriptNonDefaults.AddXToDirectories = AddXToDirectories;
       CodeNonDefaults.AddXToDirectories = AddXToDirectories;
@@ -265,7 +265,7 @@ void TCopyParamType::DoGetInfoStr(
     {
       if (DebugAlwaysTrue(GetPreserveTimeDirs()))
       {
-        if (FLAGCLEAR(Options, ExceptDirs))
+        if (FLAGCLEAR(Attrs, ExceptDirs))
         {
           Str = FMTLOAD(COPY_INFO_PRESERVE_TIME_DIRS, Str);
           AddPreserveTime = true;
@@ -277,7 +277,7 @@ void TCopyParamType::DoGetInfoStr(
     constexpr int32_t Except = cpaIncludeMaskOnly | cpaNoPreserveTime;
     if (GetPreserveTime() != Defaults.GetPreserveTime())
     {
-      if (FLAGCLEAR(Options, Except))
+      if (FLAGCLEAR(Attrs, Except))
       {
         AddPreserveTime = true;
       }
@@ -289,11 +289,11 @@ void TCopyParamType::DoGetInfoStr(
       AddToList(Result, Str, Separator);
     }
 
-    if (FLAGCLEAR(Options, Except))
+    if (FLAGCLEAR(Attrs, Except))
     {
       if (GetPreserveTime())
       {
-        if (GetPreserveTimeDirs() && FLAGCLEAR(Options, ExceptDirs))
+        if (GetPreserveTimeDirs() && FLAGCLEAR(Attrs, ExceptDirs))
         {
           // ScriptArgs += RtfSwitchValue(PRESERVETIME_SWITCH, Link, PRESERVETIMEDIRS_SWITCH_VALUE);
           CodeNonDefaults.PreserveTimeDirs = PreserveTimeDirs;
@@ -462,7 +462,7 @@ void TCopyParamType::DoGetInfoStr(
 
   bool ResumeThresholdDiffers = ((GetResumeSupport() == rsSmart) && (GetResumeThreshold() != Defaults.GetResumeThreshold()));
   if (((GetResumeSupport() != Defaults.GetResumeSupport()) || ResumeThresholdDiffers) &&
-      (GetTransferMode() != tmAscii) && FLAGCLEAR(Options, cpaNoResumeSupport))
+      (GetTransferMode() != tmAscii) && FLAGCLEAR(Attrs, cpaNoResumeSupport))
   {
     UnicodeString Value;
     UnicodeString CodeState;

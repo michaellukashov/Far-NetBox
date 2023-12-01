@@ -162,7 +162,7 @@ protected:
   bool ExecuteCommand(const UnicodeString & Command);
   void TerminalCaptureLog(const UnicodeString & AddedLine, TCaptureOutputType OutputEvent);
   bool CopyDialog(bool ToRemote, bool Move, const TStrings * AFileList,
-    int32_t Options, int32_t CopyParamAttrs, UnicodeString & TargetDirectory, TGUICopyParamType * Params);
+    uint32_t Options, uint32_t CopyParamAttrs, UnicodeString & TargetDirectory, TGUICopyParamType * Params);
   bool LinkDialog(UnicodeString & AFileName, UnicodeString & PointTo, bool & Symbolic,
     bool Edit, bool AllowSymbolic);
   void FileSystemInfoDialog(const TSessionInfo & SessionInfo,

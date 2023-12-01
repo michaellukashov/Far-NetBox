@@ -4984,7 +4984,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCopyParamsContainer) || TFarDialogContainer::is(Kind); }
 public:
   explicit TCopyParamsContainer(TFarDialog * ADialog,
-    int32_t Options, int32_t CopyParamAttrs) noexcept;
+    uint32_t Options, uint32_t CopyParamAttrs) noexcept;
 
   void SetParams(const TCopyParamType & Value);
   TCopyParamType GetParams() const;
@@ -5018,13 +5018,13 @@ protected:
   void UpdateControls();
 
 private:
-  int32_t FOptions{0};
-  int32_t FCopyParamAttrs{0};
+  uint32_t FOptions{0};
+  uint32_t FCopyParamAttrs{0};
   TCopyParamType FParams;
 };
 
 TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
-  int32_t Options, int32_t CopyParamAttrs) noexcept :
+  uint32_t Options, uint32_t CopyParamAttrs) noexcept :
   TFarDialogContainer(OBJECT_CLASS_TCopyParamsContainer, ADialog),
   TMTextButton(nullptr),
   TMBinaryButton(nullptr),
@@ -5452,7 +5452,7 @@ class TCopyDialog final : TFarDialog
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   explicit TCopyDialog(TCustomFarPlugin * AFarPlugin,
-    bool ToRemote, bool Move, const TStrings * AFileList, int32_t Options, int32_t CopyParamAttrs) noexcept;
+    bool ToRemote, bool Move, const TStrings * AFileList, uint32_t Options, uint32_t CopyParamAttrs) noexcept;
 
   bool Execute(UnicodeString & TargetDirectory, TGUICopyParamType * Params);
 
@@ -5473,15 +5473,15 @@ private:
   TFarCheckBox * QueueNoConfirmationCheck{nullptr};
 
   const TStrings * FFileList{nullptr};
-  int32_t FOptions{0};
-  int32_t FCopyParamAttrs{0};
+  uint32_t FOptions{0};
+  uint32_t FCopyParamAttrs{0};
   TGUICopyParamType FCopyParams;
   bool FToRemote{false};
 };
 
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, const TStrings * AFileList,
-  int32_t Options, int32_t CopyParamAttrs) noexcept :
+  uint32_t Options, uint32_t CopyParamAttrs) noexcept :
   TFarDialog(AFarPlugin),
   DirectoryEdit(nullptr),
   NewerOnlyCheck(nullptr),
@@ -5724,8 +5724,8 @@ void TCopyDialog::CustomCopyParam()
 
 bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   bool Move, const TStrings * AFileList,
-  int32_t Options,
-  int32_t CopyParamAttrs,
+  uint32_t Options,
+  uint32_t CopyParamAttrs,
   UnicodeString & TargetDirectory,
   TGUICopyParamType * Params)
 {

@@ -92,7 +92,7 @@ public:
   bool GetReplaceInvalidChars() const;
   void SetReplaceInvalidChars(bool Value);
   UnicodeString RestoreChars(const UnicodeString & AFileName) const;
-  void DoGetInfoStr(const UnicodeString & Separator, int32_t Options,
+  void DoGetInfoStr(const UnicodeString & Separator, uint32_t Attrs,
     UnicodeString & Result, bool & SomeAttrIncluded, const UnicodeString & ALink, UnicodeString & ScriptArgs
     /*TAssemblyLanguage Language, UnicodeString & AssemblyCode*/) const;
   const TStrings * GetTransferSkipList() const;
@@ -122,8 +122,8 @@ public:
 
   virtual void Load(THierarchicalStorage * Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
-  UnicodeString GetInfoStr(const UnicodeString & Separator, int32_t Attrs) const;
-  bool AnyUsableCopyParam(int32_t Attrs) const;
+  UnicodeString GetInfoStr(const UnicodeString & Separator, uint32_t Attrs) const;
+  bool AnyUsableCopyParam(uint32_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
   UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ int32_t Attrs) const;
 
