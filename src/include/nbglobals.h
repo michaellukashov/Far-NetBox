@@ -278,13 +278,13 @@ struct custom_nballocator_t
   };
 
   custom_nballocator_t() = default;
-  custom_nballocator_t(const custom_nballocator_t&) = default;
-  custom_nballocator_t& operator=(const custom_nballocator_t&) = default;
-  custom_nballocator_t(custom_nballocator_t&&) = default;
-  custom_nballocator_t& operator=(custom_nballocator_t&&) = default;
+  custom_nballocator_t(const custom_nballocator_t &) = default;
+  custom_nballocator_t & operator =(const custom_nballocator_t &) = default;
+  custom_nballocator_t(custom_nballocator_t &&) = default;
+  custom_nballocator_t & operator =(custom_nballocator_t &&) = default;
 
   template<class U>
-  custom_nballocator_t(const custom_nballocator_t<U>&) noexcept {}
+  custom_nballocator_t(const custom_nballocator_t<U> &) noexcept {}
 
   ~custom_nballocator_t() = default;
 
@@ -326,13 +326,13 @@ struct custom_nballocator_t
 };
 
 template<typename T, typename U>
-inline bool operator==(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
+inline bool operator ==(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
 {
   return true;
 }
 
 template<typename T, typename U>
-inline bool operator!=(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
+inline bool operator !=(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
 {
   return false;
 }
@@ -364,10 +364,10 @@ struct SelfTest {       \
 
 #define NB_DISABLE_COPY(Class) \
 private: \
-  Class(Class&&) = default; \
-  Class& operator=(Class&&) = default; \
-  Class(const Class&) = delete; \
-  Class& operator=(const Class&) = delete;
+  Class(Class &&) = default; \
+  Class& operator =(Class &&) = default; \
+  Class(const Class &) = delete; \
+  Class& operator =(const Class &) = delete;
 
 template <typename T1>
 inline constexpr void used(const T1&)
