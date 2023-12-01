@@ -102,7 +102,7 @@ public:
   explicit TCopyParamType(TObjectClassId Kind = OBJECT_CLASS_TCopyParamType) noexcept;
   TCopyParamType(const TCopyParamType & Source) noexcept;
   virtual ~TCopyParamType() noexcept override;
-  TCopyParamType & operator =(const TCopyParamType & rhs);
+  virtual TCopyParamType & operator =(const TCopyParamType & rhs);
   virtual void Assign(const TCopyParamType * Source);
   virtual void Default();
   UnicodeString ChangeFileName(const UnicodeString & AFileName,
@@ -111,7 +111,7 @@ public:
   TRights RemoteFileRights(uint32_t Attrs) const;
   bool UseAsciiTransfer(const UnicodeString & AFileName, TOperationSide Side,
     const TFileMasks::TParams & Params) const;
-  bool AllowResume(const int64_t Size, const UnicodeString & FileName) const;
+  bool AllowResume(int64_t Size, const UnicodeString & FileName) const;
   bool ResumeTransfer(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalFileName(const UnicodeString & AFileName) const;
   UnicodeString ValidLocalPath(const UnicodeString & APath) const;
@@ -125,7 +125,7 @@ public:
   UnicodeString GetInfoStr(const UnicodeString & Separator, uint32_t Attrs) const;
   bool AnyUsableCopyParam(uint32_t Attrs) const;
   UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
-  UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ int32_t Attrs) const;
+  // UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ uint32_t Attrs) const;
 
   bool operator ==(const TCopyParamType &rhp) const;
 

@@ -5461,7 +5461,7 @@ protected:
   virtual void Change() override;
   void CustomCopyParam();
 
-  void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
+  void CopyParamListerClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
 
 private:
@@ -5705,7 +5705,7 @@ void TCopyDialog::TransferSettingsButtonClick(
 }
 
 void TCopyDialog::CopyParamListerClick(
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * Event)
+  TFarDialogItem * /*Item*/, const MOUSE_EVENT_RECORD * Event)
 {
   if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK))
   {

@@ -115,7 +115,7 @@ protected:
   virtual int32_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode) override;
   virtual bool ProcessPanelEventEx(intptr_t Event, void * Param) override;
 
-  void ProcessEditorEvent(int32_t Event, void * Param);
+  void ProcessEditorEvent(intptr_t Event, void * Param);
 
   virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0) override;
   void KeepaliveThreadCallback();

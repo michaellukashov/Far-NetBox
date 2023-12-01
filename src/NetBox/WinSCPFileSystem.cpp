@@ -309,8 +309,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if ((GetTerminal() != nullptr) && isa<EFatal>(E))
   {
-    const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
-    if (Reopen)
+    if (const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr))
     {
       UpdatePanel();
     }
@@ -515,8 +514,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       {
         UnicodeString Name = SessionName.SubString(
             Folder.Length() + 1, SessionName.Length() - Folder.Length());
-        const int32_t Slash = Name.Pos(L'/');
-        if (Slash > 0)
+        if (const int32_t Slash = Name.Pos(L'/'); Slash > 0)
         {
           Name.SetLength(Slash - 1);
           if (ChildPaths->IndexOf(Name) < 0)
@@ -1637,7 +1635,7 @@ void TWinSCPFileSystem::Synchronize()
       }
     };
     bool SaveSettings = false;
-    const TCopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+    const TCopyParamType CopyParam = static_cast<TCopyParamType>(GetGUIConfiguration()->GetDefaultCopyParam());
     const DWORD CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     const uint32_t Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
@@ -2132,7 +2130,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   const UnicodeString OldPath = AnotherPanel && *AnotherPanel ? (*AnotherPanel)->GetCurrDirectory() : "";
   // IncludeTrailingBackslash to expand C: to C:\.
   const UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
-  FarPanelDirectory fpd;
+  FarPanelDirectory fpd{};
   nb::ClearStruct(fpd);
   fpd.StructSize = sizeof(fpd);
   fpd.Name = LocalPath.c_str();
@@ -3831,7 +3829,7 @@ void TWinSCPFileSystem::UploadOnSave(bool NoReload)
   }
 }
 
-void TWinSCPFileSystem::ProcessEditorEvent(int32_t Event, void * /* Param */)
+void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
 {
   // EE_REDRAW is the first for optimization
   if (Event == EE_REDRAW)
@@ -4176,7 +4174,7 @@ void TWinSCPFileSystem::EditHistory()
   MenuItems->Add(L"");
   MenuItems->SetItemFocused(MenuItems->GetCount() - 1);
 
-  const FarKey BreakKeys[] = {{ VK_F4, 0 }, { 0 }};
+  constexpr FarKey BreakKeys[] = {{ VK_F4, 0 }, { 0 }};
 
   intptr_t BreakCode = 0;
   const int32_t Result = GetWinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
@@ -4184,11 +4182,10 @@ void TWinSCPFileSystem::EditHistory()
 
   if ((Result >= 0) && (Result < nb::ToInt32(FEditHistories.size())))
   {
-    TRemoteFile * File = nullptr;
     const TEditHistory & EditHistory = FEditHistories[Result];
     const UnicodeString FullFileName =
       base::UnixIncludeTrailingBackslash(EditHistory.Directory) + EditHistory.FileName;
-    File = FTerminal->ReadFile(FullFileName);
+    TRemoteFile * File = FTerminal->ReadFile(FullFileName);
     std::unique_ptr<TRemoteFile> FilePtr(File);
     DebugAssert(FilePtr.get());
     if (File && !File->GetHaveFullFileName())

@@ -36,7 +36,10 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
     if (*Path == '~')
     {
       const char * Home = getenv("HOME");
-      Str = Home ? Home : getenv("TEMP");
+      if (Home)
+        Str = Home;
+      else
+        Str = getenv("TEMP");
       Str += Path + 1;
     } else {
       Str = Path;
@@ -141,7 +144,7 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   MenuItems->AddSeparator();
   const int32_t MAbout = MenuItems->Add(GetMsg(NB_CONFIG_ABOUT));
 
-  int32_t Result;
+  intptr_t Result;
 
   do
   {
@@ -453,7 +456,7 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   MenuItems->SetDisabled(MPageant, !base::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPageantPath()))));
   MenuItems->SetDisabled(MPuttygen, !base::FileExists(::ExpandEnvVars(ExtractProgram(GetFarConfiguration()->GetPuttygenPath()))));
 
-  const int32_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), "", MenuItems.get());
+  const intptr_t Result = Menu(FMENU_WRAPMODE, GetMsg(NB_MENU_COMMANDS), "", MenuItems.get());
 
   if (Result >= 0)
   {
@@ -593,7 +596,7 @@ void TWinSCPPlugin::HandleException(Exception *E, OPERATION_MODES OpMode)
 }
 
 NB_DEFINE_CLASS_ID(TFarMessageData);
-struct TFarMessageData : public TObject
+struct TFarMessageData final : public TObject
 {
   NB_DISABLE_COPY(TFarMessageData)
 public:
@@ -610,10 +613,10 @@ public:
   uint32_t ButtonCount{0};
 };
 
-void TWinSCPPlugin::MessageClick(void *Token, uint32_t Result, bool & Close)
+void TWinSCPPlugin::MessageClick(void * Token, uint32_t Result, bool & Close)
 {
   DebugAssert(Token);
-  TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
+  const TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 
   DebugAssert(Result != nb::ToUInt32(-1) && Result < Data.ButtonCount);
 
@@ -760,8 +763,8 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     }
   }
 
-  constexpr int32_t MORE_BUTTON_ID = -2;
-  TFarMessageParams FarParams;
+  constexpr const int32_t MORE_BUTTON_ID = -2;
+  TFarMessageParams FarParams{};
 
   if (NeverAskAgainCheck)
   {
