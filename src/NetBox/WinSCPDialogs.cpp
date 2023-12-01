@@ -5877,7 +5877,7 @@ using TFeedFileSystemDataEvent = nb::FastDelegate3<void,
   TObject * /*Control*/, int32_t /*Label*/, const UnicodeString & /*Value*/>;
 
 class TLabelList;
-class TFileSystemInfoDialog : TTabbedDialog
+class TFileSystemInfoDialog final : TTabbedDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
