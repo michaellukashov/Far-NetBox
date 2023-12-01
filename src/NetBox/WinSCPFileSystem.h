@@ -193,7 +193,7 @@ protected:
   bool QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
   bool SynchronizeDialog(TSynchronizeParamType & Params,
     const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
-    bool & SaveSettings, uint32_t Options, int32_t CopyParamAttrs,
+    bool & SaveSettings, uint32_t Options, uint32_t CopyParamAttrs,
     TGetSynchronizeOptionsEvent OnGetOptions);
   bool SynchronizeAllowSelectedOnly();
   void RequireCapability(int32_t Capability);

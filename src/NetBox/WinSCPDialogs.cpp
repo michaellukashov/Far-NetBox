@@ -7784,7 +7784,7 @@ class TSynchronizeDialog : TFarDialog
 public:
   explicit TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
     TSynchronizeStartStopEvent && OnStartStop,
-    int32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions);
+    uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions);
   virtual ~TSynchronizeDialog() noexcept override;
 
   bool Execute(TSynchronizeParamType & Params,
@@ -7840,7 +7840,7 @@ private:
 
 TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   TSynchronizeStartStopEvent && OnStartStop,
-  int32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions) :
+  uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
   FSynchronizing = false;
@@ -8224,7 +8224,7 @@ int32_t TSynchronizeDialog::ActualCopyParamAttrs() const
 
 bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
-  bool & SaveSettings, uint32_t Options, int32_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
+  bool & SaveSettings, uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent OnGetOptions)
 {
   std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(FPlugin, std::forward<TSynchronizeStartStopEvent>(OnStartStop),
     Options, CopyParamAttrs, std::forward<TGetSynchronizeOptionsEvent>(OnGetOptions)));
