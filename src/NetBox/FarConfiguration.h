@@ -98,12 +98,12 @@ protected:
 private:
   intptr_t GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const;
   intptr_t GetConfirmationsSetting(HANDLE & Settings, const wchar_t * Name) const;
-  intptr_t GetConfirmationsSettings() const;
+  int32_t GetConfirmationsSettings() const;
 
 private:
   TCustomFarPlugin * FFarPlugin{nullptr};
   std::unique_ptr<TBookmarks> FBookmarks;
-  intptr_t FFarConfirmations{0};
+  int32_t FFarConfirmations{0};
   bool FConfirmOverwritingOverride{false};
   bool FConfirmSynchronizedBrowsing{false};
   bool FForceInheritance{false};
@@ -131,7 +131,7 @@ private:
   UnicodeString FStatusColumnWidthsDetailed;
 
 private:
-  intptr_t FarConfirmations() const;
+  int32_t FarConfirmations() const;
 };
 
 NB_CORE_EXPORT TFarConfiguration * GetFarConfiguration();
