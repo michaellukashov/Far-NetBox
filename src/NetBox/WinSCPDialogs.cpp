@@ -6763,7 +6763,7 @@ protected:
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
 
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
-  void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
+  void CopyParamListerClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
 
   int32_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
@@ -6964,7 +6964,7 @@ void TFullSynchronizeDialog::TransferSettingsButtonClick(
 }
 
 void TFullSynchronizeDialog::CopyParamListerClick(
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * Event)
+  TFarDialogItem * /*Item*/, const MOUSE_EVENT_RECORD * Event)
 {
   if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK))
   {
@@ -7189,7 +7189,7 @@ protected:
   virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
   void CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void VideoModeButtonClick(TFarButton * Sender, bool & Close);
-  void ListBoxClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
+  void ListBoxClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
 
 private:
   TFarText * Header{nullptr};
@@ -7654,7 +7654,7 @@ void TSynchronizeChecklistDialog::VideoModeButtonClick(
 }
 
 void TSynchronizeChecklistDialog::ListBoxClick(
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/)
+  TFarDialogItem * /*Item*/, const MOUSE_EVENT_RECORD * /*Event*/)
 {
   const int32_t Index = ListBox->GetItems()->GetSelected();
   if (Index >= 0)
@@ -7796,7 +7796,7 @@ protected:
   void StartButtonClick(TFarButton * Sender, bool & Close);
   void StopButtonClick(TFarButton * Sender, bool & Close);
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
-  void CopyParamListerClick(TFarDialogItem * Item, MOUSE_EVENT_RECORD * Event);
+  void CopyParamListerClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
   void Stop();
   void DoStartStop(bool Start, bool Synchronize);
   TSynchronizeParamType GetParams() const;
@@ -7961,7 +7961,7 @@ void TSynchronizeDialog::TransferSettingsButtonClick(
 }
 
 void TSynchronizeDialog::CopyParamListerClick(
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * Event)
+  TFarDialogItem * /*Item*/, const MOUSE_EVENT_RECORD * Event)
 {
   if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK))
   {

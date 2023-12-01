@@ -26,7 +26,7 @@ enum TItemPosition
 using TFarKeyEvent = nb::FastDelegate4<void,
   TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/>;
 using TFarMouseClickEvent = nb::FastDelegate2<void,
-  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/>;
+  TFarDialogItem * /*Item*/, const MOUSE_EVENT_RECORD * /*Event*/>;
 using TFarProcessGroupEvent = nb::FastDelegate2<void,
   TFarDialogItem * /*Item*/, void * /*Arg*/>;
 
