@@ -5926,9 +5926,9 @@ private:
   int32_t FLastListItem{0};
   UnicodeString FClipboard;
 
-  TLabelList * ServerLabels{nullptr};
-  TLabelList * ProtocolLabels{nullptr};
-  TLabelList * SpaceAvailableLabels{nullptr};
+  gsl::owner<TLabelList *> ServerLabels{nullptr};
+  gsl::owner<TLabelList *> ProtocolLabels{nullptr};
+  gsl::owner<TLabelList *> SpaceAvailableLabels{nullptr};
   TTabButton * SpaceAvailableTab{nullptr};
   TFarText * HostKeyFingerprintLabel{nullptr};
   TFarEdit * HostKeyFingerprintEdit{nullptr};
