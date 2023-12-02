@@ -1130,7 +1130,7 @@ public:
 
   ~TGlobalsIntfInitializer()
   {
-    TGlobalsIntf * Intf = GetGlobals();
+    const TGlobalsIntf * Intf = GetGlobals();
     delete Intf;
     ::SetGlobals(nullptr);
   }
