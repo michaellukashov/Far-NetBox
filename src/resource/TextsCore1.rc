@@ -270,7 +270,7 @@ BEGIN
   PROMPT_KEY_PASSPHRASE, "&Passphrase for key '%s':"
   CORE_PROMPT_FILE_OVERWRITE, "File '%s' already exists. Overwrite?"
   DIRECTORY_OVERWRITE, "Directory '%s' already exists. Overwrite?"
-  ALG_BELOW_TRESHOLD, "The first %s supported by the server is %s, which is below the configured warning threshold.\n\nDo you want to continue with this connection?"
+  ALG_BELOW_THRESHOLD, "The first %s supported by the server is %s, which is below the configured warning threshold.\n\nDo you want to continue with this connection?"
   CIPHER_TYPE_BOTH2, "cipher"
   CIPHER_TYPE_CS2, "client-to-server cipher"
   CIPHER_TYPE_SC2, "server-to-client cipher"

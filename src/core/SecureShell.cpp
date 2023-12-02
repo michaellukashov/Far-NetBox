@@ -2907,7 +2907,7 @@ void TSecureShell::AskAlg(const UnicodeString & AAlgType, const UnicodeString & 
   UnicodeString AlgType = AAlgType;
   TranslatePuttyMessage(AlgTranslation, _countof(AlgTranslation), AlgType);
 
-  const UnicodeString Msg = FMTLOAD(ALG_BELOW_TRESHOLD, AlgType, AlgName);
+  const UnicodeString Msg = FMTLOAD(ALG_BELOW_THRESHOLD, AlgType, AlgName);
 
   if (FUI->QueryUser(Msg, nullptr, qaYes | qaNo, nullptr, qtWarning) == qaNo)
   {
