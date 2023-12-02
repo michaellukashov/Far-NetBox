@@ -5205,7 +5205,6 @@ bool TTerminal::TerminalMoveFiles(
   BeginTransaction();
   try__finally
   {
-    // ON_SCOPE_EXIT(TTerminal::AfterMoveFiles, TStrings *, AFileList);
     Result = ProcessFiles(AFileList, foRemoteMove, nb::bind(&TTerminal::TerminalMoveFile, this), &Params);
   }
   __finally
