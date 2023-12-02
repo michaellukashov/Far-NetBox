@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2022 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2005-2021 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -9,6 +9,7 @@
 
 #include <openssl/bn.h>
 #include "crypto/bn_dh.h"
+#include "bn_local.h" // WINSCP
 
 #define COPY_BN(dst, src) (dst != NULL) ? BN_copy(dst, &src) : BN_dup(&src)
 

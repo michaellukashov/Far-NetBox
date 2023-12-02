@@ -29,14 +29,14 @@ DB	243,15,30,250
 
 	mov	eax,DWORD[240+rcx]
 	cmp	eax,9
-	je	NEAR $L$aes_128_ywEvvbCpwiEFxyr
+	je	NEAR $L$aes_128_0
 	cmp	eax,11
-	je	NEAR $L$aes_192_ywEvvbCpwiEFxyr
+	je	NEAR $L$aes_192_0
 	cmp	eax,13
-	je	NEAR $L$aes_256_ywEvvbCpwiEFxyr
-	jmp	NEAR $L$exit_aes_ywEvvbCpwiEFxyr
+	je	NEAR $L$aes_256_0
+	jmp	NEAR $L$exit_aes_0
 ALIGN	32
-$L$aes_128_ywEvvbCpwiEFxyr:
+$L$aes_128_0:
 	vpxorq	xmm16,xmm16,XMMWORD[rcx]
 
 	vaesenc	xmm16,xmm16,XMMWORD[16+rcx]
@@ -58,9 +58,9 @@ $L$aes_128_ywEvvbCpwiEFxyr:
 	vaesenc	xmm16,xmm16,XMMWORD[144+rcx]
 
 	vaesenclast	xmm16,xmm16,XMMWORD[160+rcx]
-	jmp	NEAR $L$exit_aes_ywEvvbCpwiEFxyr
+	jmp	NEAR $L$exit_aes_0
 ALIGN	32
-$L$aes_192_ywEvvbCpwiEFxyr:
+$L$aes_192_0:
 	vpxorq	xmm16,xmm16,XMMWORD[rcx]
 
 	vaesenc	xmm16,xmm16,XMMWORD[16+rcx]
@@ -86,9 +86,9 @@ $L$aes_192_ywEvvbCpwiEFxyr:
 	vaesenc	xmm16,xmm16,XMMWORD[176+rcx]
 
 	vaesenclast	xmm16,xmm16,XMMWORD[192+rcx]
-	jmp	NEAR $L$exit_aes_ywEvvbCpwiEFxyr
+	jmp	NEAR $L$exit_aes_0
 ALIGN	32
-$L$aes_256_ywEvvbCpwiEFxyr:
+$L$aes_256_0:
 	vpxorq	xmm16,xmm16,XMMWORD[rcx]
 
 	vaesenc	xmm16,xmm16,XMMWORD[16+rcx]
@@ -118,8 +118,8 @@ $L$aes_256_ywEvvbCpwiEFxyr:
 	vaesenc	xmm16,xmm16,XMMWORD[208+rcx]
 
 	vaesenclast	xmm16,xmm16,XMMWORD[224+rcx]
-	jmp	NEAR $L$exit_aes_ywEvvbCpwiEFxyr
-$L$exit_aes_ywEvvbCpwiEFxyr:
+	jmp	NEAR $L$exit_aes_0
+$L$exit_aes_0:
 
 	vpshufb	xmm16,xmm16,XMMWORD[SHUF_MASK]
 
@@ -378,14 +378,14 @@ $L$setiv_seh_prolog_end:
 	mov	r10,r8
 	mov	r11,r9
 	or	r11,r11
-	jz	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
+	jz	NEAR $L$_CALC_AAD_done_1
 
 	xor	rbx,rbx
 	vmovdqa64	zmm16,ZMMWORD[SHUF_MASK]
 
-$L$_get_AAD_loop48x16_ietuDqlqudzcgyf:
+$L$_get_AAD_loop48x16_1:
 	cmp	r11,768
-	jl	NEAR $L$_exit_AAD_loop48x16_ietuDqlqudzcgyf
+	jl	NEAR $L$_exit_AAD_loop48x16_1
 	vmovdqu64	zmm11,ZMMWORD[r10]
 	vmovdqu64	zmm3,ZMMWORD[64+r10]
 	vmovdqu64	zmm4,ZMMWORD[128+r10]
@@ -395,7 +395,7 @@ $L$_get_AAD_loop48x16_ietuDqlqudzcgyf:
 	vpshufb	zmm4,zmm4,zmm16
 	vpshufb	zmm5,zmm5,zmm16
 	test	rbx,rbx
-	jnz	NEAR $L$_skip_hkeys_precomputation_GphwjpulsgEmmsu
+	jnz	NEAR $L$_skip_hkeys_precomputation_2
 
 	vmovdqu64	zmm1,ZMMWORD[288+rdx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm1
@@ -651,7 +651,7 @@ $L$_get_AAD_loop48x16_ietuDqlqudzcgyf:
 	vpternlogq	zmm12,zmm13,zmm15,0x96
 
 	vmovdqu64	ZMMWORD[rsp],zmm12
-$L$_skip_hkeys_precomputation_GphwjpulsgEmmsu:
+$L$_skip_hkeys_precomputation_2:
 	mov	rbx,1
 	vpxorq	zmm11,zmm11,zmm2
 	vmovdqu64	zmm19,ZMMWORD[rsp]
@@ -785,15 +785,15 @@ $L$_skip_hkeys_precomputation_GphwjpulsgEmmsu:
 	vpternlogq	xmm2,xmm9,xmm6,0x96
 
 	sub	r11,768
-	je	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
+	je	NEAR $L$_CALC_AAD_done_1
 
 	add	r10,768
-	jmp	NEAR $L$_get_AAD_loop48x16_ietuDqlqudzcgyf
+	jmp	NEAR $L$_get_AAD_loop48x16_1
 
-$L$_exit_AAD_loop48x16_ietuDqlqudzcgyf:
+$L$_exit_AAD_loop48x16_1:
 
 	cmp	r11,512
-	jl	NEAR $L$_less_than_32x16_ietuDqlqudzcgyf
+	jl	NEAR $L$_less_than_32x16_1
 
 	vmovdqu64	zmm11,ZMMWORD[r10]
 	vmovdqu64	zmm3,ZMMWORD[64+r10]
@@ -804,7 +804,7 @@ $L$_exit_AAD_loop48x16_ietuDqlqudzcgyf:
 	vpshufb	zmm4,zmm4,zmm16
 	vpshufb	zmm5,zmm5,zmm16
 	test	rbx,rbx
-	jnz	NEAR $L$_skip_hkeys_precomputation_ccunfknvpfcGnmp
+	jnz	NEAR $L$_skip_hkeys_precomputation_3
 
 	vmovdqu64	zmm1,ZMMWORD[288+rdx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm1
@@ -940,7 +940,7 @@ $L$_exit_AAD_loop48x16_ietuDqlqudzcgyf:
 	vpternlogq	zmm12,zmm13,zmm15,0x96
 
 	vmovdqu64	ZMMWORD[256+rsp],zmm12
-$L$_skip_hkeys_precomputation_ccunfknvpfcGnmp:
+$L$_skip_hkeys_precomputation_3:
 	mov	rbx,1
 	vpxorq	zmm11,zmm11,zmm2
 	vmovdqu64	zmm19,ZMMWORD[256+rsp]
@@ -1037,14 +1037,14 @@ $L$_skip_hkeys_precomputation_ccunfknvpfcGnmp:
 	vpternlogq	xmm2,xmm9,xmm6,0x96
 
 	sub	r11,512
-	je	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
+	je	NEAR $L$_CALC_AAD_done_1
 
 	add	r10,512
-	jmp	NEAR $L$_less_than_16x16_ietuDqlqudzcgyf
+	jmp	NEAR $L$_less_than_16x16_1
 
-$L$_less_than_32x16_ietuDqlqudzcgyf:
+$L$_less_than_32x16_1:
 	cmp	r11,256
-	jl	NEAR $L$_less_than_16x16_ietuDqlqudzcgyf
+	jl	NEAR $L$_less_than_16x16_1
 
 	vmovdqu64	zmm11,ZMMWORD[r10]
 	vmovdqu64	zmm3,ZMMWORD[64+r10]
@@ -1112,11 +1112,11 @@ $L$_less_than_32x16_ietuDqlqudzcgyf:
 	vpternlogq	xmm2,xmm9,xmm6,0x96
 
 	sub	r11,256
-	je	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
+	je	NEAR $L$_CALC_AAD_done_1
 
 	add	r10,256
 
-$L$_less_than_16x16_ietuDqlqudzcgyf:
+$L$_less_than_16x16_1:
 
 	lea	r12,[byte64_len_to_mask_table]
 	lea	r12,[r11*8+r12]
@@ -1125,29 +1125,29 @@ $L$_less_than_16x16_ietuDqlqudzcgyf:
 	add	r11d,15
 	shr	r11d,4
 	cmp	r11d,2
-	jb	NEAR $L$_AAD_blocks_1_ietuDqlqudzcgyf
-	je	NEAR $L$_AAD_blocks_2_ietuDqlqudzcgyf
+	jb	NEAR $L$_AAD_blocks_1_1
+	je	NEAR $L$_AAD_blocks_2_1
 	cmp	r11d,4
-	jb	NEAR $L$_AAD_blocks_3_ietuDqlqudzcgyf
-	je	NEAR $L$_AAD_blocks_4_ietuDqlqudzcgyf
+	jb	NEAR $L$_AAD_blocks_3_1
+	je	NEAR $L$_AAD_blocks_4_1
 	cmp	r11d,6
-	jb	NEAR $L$_AAD_blocks_5_ietuDqlqudzcgyf
-	je	NEAR $L$_AAD_blocks_6_ietuDqlqudzcgyf
+	jb	NEAR $L$_AAD_blocks_5_1
+	je	NEAR $L$_AAD_blocks_6_1
 	cmp	r11d,8
-	jb	NEAR $L$_AAD_blocks_7_ietuDqlqudzcgyf
-	je	NEAR $L$_AAD_blocks_8_ietuDqlqudzcgyf
+	jb	NEAR $L$_AAD_blocks_7_1
+	je	NEAR $L$_AAD_blocks_8_1
 	cmp	r11d,10
-	jb	NEAR $L$_AAD_blocks_9_ietuDqlqudzcgyf
-	je	NEAR $L$_AAD_blocks_10_ietuDqlqudzcgyf
+	jb	NEAR $L$_AAD_blocks_9_1
+	je	NEAR $L$_AAD_blocks_10_1
 	cmp	r11d,12
-	jb	NEAR $L$_AAD_blocks_11_ietuDqlqudzcgyf
-	je	NEAR $L$_AAD_blocks_12_ietuDqlqudzcgyf
+	jb	NEAR $L$_AAD_blocks_11_1
+	je	NEAR $L$_AAD_blocks_12_1
 	cmp	r11d,14
-	jb	NEAR $L$_AAD_blocks_13_ietuDqlqudzcgyf
-	je	NEAR $L$_AAD_blocks_14_ietuDqlqudzcgyf
+	jb	NEAR $L$_AAD_blocks_13_1
+	je	NEAR $L$_AAD_blocks_14_1
 	cmp	r11d,15
-	je	NEAR $L$_AAD_blocks_15_ietuDqlqudzcgyf
-$L$_AAD_blocks_16_ietuDqlqudzcgyf:
+	je	NEAR $L$_AAD_blocks_15_1
+$L$_AAD_blocks_16_1:
 	sub	r12,1536
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1215,8 +1215,8 @@ $L$_AAD_blocks_16_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_15_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_15_1:
 	sub	r12,1536
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1286,8 +1286,8 @@ $L$_AAD_blocks_15_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_14_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_14_1:
 	sub	r12,1536
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1356,8 +1356,8 @@ $L$_AAD_blocks_14_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_13_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_13_1:
 	sub	r12,1536
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1426,8 +1426,8 @@ $L$_AAD_blocks_13_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_12_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_12_1:
 	sub	r12,1024
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1484,8 +1484,8 @@ $L$_AAD_blocks_12_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_11_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_11_1:
 	sub	r12,1024
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1548,8 +1548,8 @@ $L$_AAD_blocks_11_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_10_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_10_1:
 	sub	r12,1024
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1611,8 +1611,8 @@ $L$_AAD_blocks_10_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_9_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_9_1:
 	sub	r12,1024
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1674,8 +1674,8 @@ $L$_AAD_blocks_9_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_8_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_8_1:
 	sub	r12,512
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1725,8 +1725,8 @@ $L$_AAD_blocks_8_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_7_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_7_1:
 	sub	r12,512
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1778,8 +1778,8 @@ $L$_AAD_blocks_7_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_6_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_6_1:
 	sub	r12,512
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1830,8 +1830,8 @@ $L$_AAD_blocks_6_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_5_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_5_1:
 	sub	r12,512
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -1882,8 +1882,8 @@ $L$_AAD_blocks_5_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_4_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_4_1:
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11{k1}{z},[r10]
 	vpshufb	zmm11,zmm11,zmm16
@@ -1921,8 +1921,8 @@ $L$_AAD_blocks_4_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_3_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_3_1:
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11{k1}{z},[r10]
 	vpshufb	zmm11,zmm11,zmm16
@@ -1961,8 +1961,8 @@ $L$_AAD_blocks_3_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_2_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_2_1:
 	kmovq	k1,[r12]
 	vmovdqu8	ymm11{k1}{z},[r10]
 	vpshufb	ymm11,ymm11,ymm16
@@ -2000,8 +2000,8 @@ $L$_AAD_blocks_2_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_ietuDqlqudzcgyf
-$L$_AAD_blocks_1_ietuDqlqudzcgyf:
+	jmp	NEAR $L$_CALC_AAD_done_1
+$L$_AAD_blocks_1_1:
 	kmovq	k1,[r12]
 	vmovdqu8	xmm11{k1}{z},[r10]
 	vpshufb	xmm11,xmm11,xmm16
@@ -2039,7 +2039,7 @@ $L$_AAD_blocks_1_ietuDqlqudzcgyf:
 	vpslldq	xmm2,xmm2,4
 	vpternlogq	xmm2,xmm8,xmm1,0x96
 
-$L$_CALC_AAD_done_ietuDqlqudzcgyf:
+$L$_CALC_AAD_done_1:
 	mov	r10,r9
 	shl	r10,3
 	vmovq	xmm3,r10
@@ -2092,14 +2092,14 @@ skip_iv_len_12_init_IV:
 
 	mov	r10d,DWORD[240+rcx]
 	cmp	r10d,9
-	je	NEAR $L$aes_128_nlDCnlhrxGCApcE
+	je	NEAR $L$aes_128_4
 	cmp	r10d,11
-	je	NEAR $L$aes_192_nlDCnlhrxGCApcE
+	je	NEAR $L$aes_192_4
 	cmp	r10d,13
-	je	NEAR $L$aes_256_nlDCnlhrxGCApcE
-	jmp	NEAR $L$exit_aes_nlDCnlhrxGCApcE
+	je	NEAR $L$aes_256_4
+	jmp	NEAR $L$exit_aes_4
 ALIGN	32
-$L$aes_128_nlDCnlhrxGCApcE:
+$L$aes_128_4:
 	vpxorq	xmm1,xmm1,XMMWORD[rcx]
 
 	vaesenc	xmm1,xmm1,XMMWORD[16+rcx]
@@ -2121,9 +2121,9 @@ $L$aes_128_nlDCnlhrxGCApcE:
 	vaesenc	xmm1,xmm1,XMMWORD[144+rcx]
 
 	vaesenclast	xmm1,xmm1,XMMWORD[160+rcx]
-	jmp	NEAR $L$exit_aes_nlDCnlhrxGCApcE
+	jmp	NEAR $L$exit_aes_4
 ALIGN	32
-$L$aes_192_nlDCnlhrxGCApcE:
+$L$aes_192_4:
 	vpxorq	xmm1,xmm1,XMMWORD[rcx]
 
 	vaesenc	xmm1,xmm1,XMMWORD[16+rcx]
@@ -2149,9 +2149,9 @@ $L$aes_192_nlDCnlhrxGCApcE:
 	vaesenc	xmm1,xmm1,XMMWORD[176+rcx]
 
 	vaesenclast	xmm1,xmm1,XMMWORD[192+rcx]
-	jmp	NEAR $L$exit_aes_nlDCnlhrxGCApcE
+	jmp	NEAR $L$exit_aes_4
 ALIGN	32
-$L$aes_256_nlDCnlhrxGCApcE:
+$L$aes_256_4:
 	vpxorq	xmm1,xmm1,XMMWORD[rcx]
 
 	vaesenc	xmm1,xmm1,XMMWORD[16+rcx]
@@ -2181,8 +2181,8 @@ $L$aes_256_nlDCnlhrxGCApcE:
 	vaesenc	xmm1,xmm1,XMMWORD[208+rcx]
 
 	vaesenclast	xmm1,xmm1,XMMWORD[224+rcx]
-	jmp	NEAR $L$exit_aes_nlDCnlhrxGCApcE
-$L$exit_aes_nlDCnlhrxGCApcE:
+	jmp	NEAR $L$exit_aes_4
+$L$exit_aes_4:
 
 	vmovdqu	XMMWORD[32+rdx],xmm1
 
@@ -2190,7 +2190,7 @@ $L$exit_aes_nlDCnlhrxGCApcE:
 	vpshufb	xmm2,xmm2,XMMWORD[SHUF_MASK]
 	vmovdqu	XMMWORD[rdx],xmm2
 	cmp	r9,256
-	jbe	NEAR $L$skip_hkeys_cleanup_qtEDAopclEubdpy
+	jbe	NEAR $L$skip_hkeys_cleanup_5
 	vpxor	xmm0,xmm0,xmm0
 	vmovdqa64	ZMMWORD[rsp],zmm0
 	vmovdqa64	ZMMWORD[64+rsp],zmm0
@@ -2204,7 +2204,7 @@ $L$exit_aes_nlDCnlhrxGCApcE:
 	vmovdqa64	ZMMWORD[576+rsp],zmm0
 	vmovdqa64	ZMMWORD[640+rsp],zmm0
 	vmovdqa64	ZMMWORD[704+rsp],zmm0
-$L$skip_hkeys_cleanup_qtEDAopclEubdpy:
+$L$skip_hkeys_cleanup_5:
 	vzeroupper
 	vmovdqu	xmm15,XMMWORD[((-16))+rbp]
 	vmovdqu	xmm14,XMMWORD[((-32))+rbp]
@@ -2311,14 +2311,14 @@ $L$ghash_seh_prolog_end:
 	mov	r10,rdx
 	mov	r11,r8
 	or	r11,r11
-	jz	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
+	jz	NEAR $L$_CALC_AAD_done_6
 
 	xor	rbx,rbx
 	vmovdqa64	zmm16,ZMMWORD[SHUF_MASK]
 
-$L$_get_AAD_loop48x16_aplrvxDcAeldvEg:
+$L$_get_AAD_loop48x16_6:
 	cmp	r11,768
-	jl	NEAR $L$_exit_AAD_loop48x16_aplrvxDcAeldvEg
+	jl	NEAR $L$_exit_AAD_loop48x16_6
 	vmovdqu64	zmm11,ZMMWORD[r10]
 	vmovdqu64	zmm3,ZMMWORD[64+r10]
 	vmovdqu64	zmm4,ZMMWORD[128+r10]
@@ -2328,7 +2328,7 @@ $L$_get_AAD_loop48x16_aplrvxDcAeldvEg:
 	vpshufb	zmm4,zmm4,zmm16
 	vpshufb	zmm5,zmm5,zmm16
 	test	rbx,rbx
-	jnz	NEAR $L$_skip_hkeys_precomputation_BxhDFmixsaryCgu
+	jnz	NEAR $L$_skip_hkeys_precomputation_7
 
 	vmovdqu64	zmm1,ZMMWORD[288+rcx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm1
@@ -2584,7 +2584,7 @@ $L$_get_AAD_loop48x16_aplrvxDcAeldvEg:
 	vpternlogq	zmm12,zmm13,zmm15,0x96
 
 	vmovdqu64	ZMMWORD[rsp],zmm12
-$L$_skip_hkeys_precomputation_BxhDFmixsaryCgu:
+$L$_skip_hkeys_precomputation_7:
 	mov	rbx,1
 	vpxorq	zmm11,zmm11,zmm14
 	vmovdqu64	zmm19,ZMMWORD[rsp]
@@ -2718,15 +2718,15 @@ $L$_skip_hkeys_precomputation_BxhDFmixsaryCgu:
 	vpternlogq	xmm14,xmm9,xmm6,0x96
 
 	sub	r11,768
-	je	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
+	je	NEAR $L$_CALC_AAD_done_6
 
 	add	r10,768
-	jmp	NEAR $L$_get_AAD_loop48x16_aplrvxDcAeldvEg
+	jmp	NEAR $L$_get_AAD_loop48x16_6
 
-$L$_exit_AAD_loop48x16_aplrvxDcAeldvEg:
+$L$_exit_AAD_loop48x16_6:
 
 	cmp	r11,512
-	jl	NEAR $L$_less_than_32x16_aplrvxDcAeldvEg
+	jl	NEAR $L$_less_than_32x16_6
 
 	vmovdqu64	zmm11,ZMMWORD[r10]
 	vmovdqu64	zmm3,ZMMWORD[64+r10]
@@ -2737,7 +2737,7 @@ $L$_exit_AAD_loop48x16_aplrvxDcAeldvEg:
 	vpshufb	zmm4,zmm4,zmm16
 	vpshufb	zmm5,zmm5,zmm16
 	test	rbx,rbx
-	jnz	NEAR $L$_skip_hkeys_precomputation_jmyxltEvriuEbfD
+	jnz	NEAR $L$_skip_hkeys_precomputation_8
 
 	vmovdqu64	zmm1,ZMMWORD[288+rcx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm1
@@ -2873,7 +2873,7 @@ $L$_exit_AAD_loop48x16_aplrvxDcAeldvEg:
 	vpternlogq	zmm12,zmm13,zmm15,0x96
 
 	vmovdqu64	ZMMWORD[256+rsp],zmm12
-$L$_skip_hkeys_precomputation_jmyxltEvriuEbfD:
+$L$_skip_hkeys_precomputation_8:
 	mov	rbx,1
 	vpxorq	zmm11,zmm11,zmm14
 	vmovdqu64	zmm19,ZMMWORD[256+rsp]
@@ -2970,14 +2970,14 @@ $L$_skip_hkeys_precomputation_jmyxltEvriuEbfD:
 	vpternlogq	xmm14,xmm9,xmm6,0x96
 
 	sub	r11,512
-	je	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
+	je	NEAR $L$_CALC_AAD_done_6
 
 	add	r10,512
-	jmp	NEAR $L$_less_than_16x16_aplrvxDcAeldvEg
+	jmp	NEAR $L$_less_than_16x16_6
 
-$L$_less_than_32x16_aplrvxDcAeldvEg:
+$L$_less_than_32x16_6:
 	cmp	r11,256
-	jl	NEAR $L$_less_than_16x16_aplrvxDcAeldvEg
+	jl	NEAR $L$_less_than_16x16_6
 
 	vmovdqu64	zmm11,ZMMWORD[r10]
 	vmovdqu64	zmm3,ZMMWORD[64+r10]
@@ -3045,11 +3045,11 @@ $L$_less_than_32x16_aplrvxDcAeldvEg:
 	vpternlogq	xmm14,xmm9,xmm6,0x96
 
 	sub	r11,256
-	je	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
+	je	NEAR $L$_CALC_AAD_done_6
 
 	add	r10,256
 
-$L$_less_than_16x16_aplrvxDcAeldvEg:
+$L$_less_than_16x16_6:
 
 	lea	r12,[byte64_len_to_mask_table]
 	lea	r12,[r11*8+r12]
@@ -3058,29 +3058,29 @@ $L$_less_than_16x16_aplrvxDcAeldvEg:
 	add	r11d,15
 	shr	r11d,4
 	cmp	r11d,2
-	jb	NEAR $L$_AAD_blocks_1_aplrvxDcAeldvEg
-	je	NEAR $L$_AAD_blocks_2_aplrvxDcAeldvEg
+	jb	NEAR $L$_AAD_blocks_1_6
+	je	NEAR $L$_AAD_blocks_2_6
 	cmp	r11d,4
-	jb	NEAR $L$_AAD_blocks_3_aplrvxDcAeldvEg
-	je	NEAR $L$_AAD_blocks_4_aplrvxDcAeldvEg
+	jb	NEAR $L$_AAD_blocks_3_6
+	je	NEAR $L$_AAD_blocks_4_6
 	cmp	r11d,6
-	jb	NEAR $L$_AAD_blocks_5_aplrvxDcAeldvEg
-	je	NEAR $L$_AAD_blocks_6_aplrvxDcAeldvEg
+	jb	NEAR $L$_AAD_blocks_5_6
+	je	NEAR $L$_AAD_blocks_6_6
 	cmp	r11d,8
-	jb	NEAR $L$_AAD_blocks_7_aplrvxDcAeldvEg
-	je	NEAR $L$_AAD_blocks_8_aplrvxDcAeldvEg
+	jb	NEAR $L$_AAD_blocks_7_6
+	je	NEAR $L$_AAD_blocks_8_6
 	cmp	r11d,10
-	jb	NEAR $L$_AAD_blocks_9_aplrvxDcAeldvEg
-	je	NEAR $L$_AAD_blocks_10_aplrvxDcAeldvEg
+	jb	NEAR $L$_AAD_blocks_9_6
+	je	NEAR $L$_AAD_blocks_10_6
 	cmp	r11d,12
-	jb	NEAR $L$_AAD_blocks_11_aplrvxDcAeldvEg
-	je	NEAR $L$_AAD_blocks_12_aplrvxDcAeldvEg
+	jb	NEAR $L$_AAD_blocks_11_6
+	je	NEAR $L$_AAD_blocks_12_6
 	cmp	r11d,14
-	jb	NEAR $L$_AAD_blocks_13_aplrvxDcAeldvEg
-	je	NEAR $L$_AAD_blocks_14_aplrvxDcAeldvEg
+	jb	NEAR $L$_AAD_blocks_13_6
+	je	NEAR $L$_AAD_blocks_14_6
 	cmp	r11d,15
-	je	NEAR $L$_AAD_blocks_15_aplrvxDcAeldvEg
-$L$_AAD_blocks_16_aplrvxDcAeldvEg:
+	je	NEAR $L$_AAD_blocks_15_6
+$L$_AAD_blocks_16_6:
 	sub	r12,1536
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3148,8 +3148,8 @@ $L$_AAD_blocks_16_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_15_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_15_6:
 	sub	r12,1536
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3219,8 +3219,8 @@ $L$_AAD_blocks_15_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_14_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_14_6:
 	sub	r12,1536
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3289,8 +3289,8 @@ $L$_AAD_blocks_14_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_13_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_13_6:
 	sub	r12,1536
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3359,8 +3359,8 @@ $L$_AAD_blocks_13_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_12_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_12_6:
 	sub	r12,1024
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3417,8 +3417,8 @@ $L$_AAD_blocks_12_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_11_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_11_6:
 	sub	r12,1024
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3481,8 +3481,8 @@ $L$_AAD_blocks_11_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_10_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_10_6:
 	sub	r12,1024
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3544,8 +3544,8 @@ $L$_AAD_blocks_10_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_9_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_9_6:
 	sub	r12,1024
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3607,8 +3607,8 @@ $L$_AAD_blocks_9_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_8_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_8_6:
 	sub	r12,512
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3658,8 +3658,8 @@ $L$_AAD_blocks_8_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_7_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_7_6:
 	sub	r12,512
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3711,8 +3711,8 @@ $L$_AAD_blocks_7_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_6_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_6_6:
 	sub	r12,512
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3763,8 +3763,8 @@ $L$_AAD_blocks_6_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_5_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_5_6:
 	sub	r12,512
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11,ZMMWORD[r10]
@@ -3815,8 +3815,8 @@ $L$_AAD_blocks_5_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_4_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_4_6:
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11{k1}{z},[r10]
 	vpshufb	zmm11,zmm11,zmm16
@@ -3854,8 +3854,8 @@ $L$_AAD_blocks_4_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_3_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_3_6:
 	kmovq	k1,[r12]
 	vmovdqu8	zmm11{k1}{z},[r10]
 	vpshufb	zmm11,zmm11,zmm16
@@ -3894,8 +3894,8 @@ $L$_AAD_blocks_3_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_2_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_2_6:
 	kmovq	k1,[r12]
 	vmovdqu8	ymm11{k1}{z},[r10]
 	vpshufb	ymm11,ymm11,ymm16
@@ -3933,8 +3933,8 @@ $L$_AAD_blocks_2_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-	jmp	NEAR $L$_CALC_AAD_done_aplrvxDcAeldvEg
-$L$_AAD_blocks_1_aplrvxDcAeldvEg:
+	jmp	NEAR $L$_CALC_AAD_done_6
+$L$_AAD_blocks_1_6:
 	kmovq	k1,[r12]
 	vmovdqu8	xmm11{k1}{z},[r10]
 	vpshufb	xmm11,xmm11,xmm16
@@ -3972,10 +3972,10 @@ $L$_AAD_blocks_1_aplrvxDcAeldvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm8,xmm1,0x96
 
-$L$_CALC_AAD_done_aplrvxDcAeldvEg:
+$L$_CALC_AAD_done_6:
 	vmovdqu64	XMMWORD[64+rcx],xmm14
 	cmp	r8,256
-	jbe	NEAR $L$skip_hkeys_cleanup_qkBGwbnozGnxGjD
+	jbe	NEAR $L$skip_hkeys_cleanup_9
 	vpxor	xmm0,xmm0,xmm0
 	vmovdqa64	ZMMWORD[rsp],zmm0
 	vmovdqa64	ZMMWORD[64+rsp],zmm0
@@ -3989,7 +3989,7 @@ $L$_CALC_AAD_done_aplrvxDcAeldvEg:
 	vmovdqa64	ZMMWORD[576+rsp],zmm0
 	vmovdqa64	ZMMWORD[640+rsp],zmm0
 	vmovdqa64	ZMMWORD[704+rsp],zmm0
-$L$skip_hkeys_cleanup_qkBGwbnozGnxGjD:
+$L$skip_hkeys_cleanup_9:
 	vzeroupper
 	vmovdqu	xmm15,XMMWORD[((-16))+rbp]
 	vmovdqu	xmm14,XMMWORD[((-32))+rbp]
@@ -4106,13 +4106,13 @@ $L$encrypt_seh_prolog_end:
 ALIGN	32
 $L$aes_gcm_encrypt_128_avx512:
 	cmp	QWORD[112+rbp],0
-	je	NEAR $L$_enc_dec_done_pfCcdwlEiojmoCs
+	je	NEAR $L$_enc_dec_done_10
 	xor	r14,r14
 	vmovdqu64	xmm14,XMMWORD[64+rdx]
 
 	mov	r11,QWORD[r8]
 	or	r11,r11
-	je	NEAR $L$_partial_block_done_jFkAfkuscwCDeAu
+	je	NEAR $L$_partial_block_done_11
 	mov	r10d,16
 	lea	r12,[byte_len_to_mask_table]
 	cmp	QWORD[112+rbp],r10
@@ -4137,9 +4137,9 @@ $L$aes_gcm_encrypt_128_avx512:
 	mov	r13,QWORD[112+rbp]
 	add	r13,r11
 	sub	r13,16
-	jge	NEAR $L$_no_extra_mask_jFkAfkuscwCDeAu
+	jge	NEAR $L$_no_extra_mask_11
 	sub	r12,r13
-$L$_no_extra_mask_jFkAfkuscwCDeAu:
+$L$_no_extra_mask_11:
 
 
 
@@ -4149,7 +4149,7 @@ $L$_no_extra_mask_jFkAfkuscwCDeAu:
 	vpshufb	xmm3,xmm3,xmm5
 	vpxorq	xmm14,xmm14,xmm3
 	cmp	r13,0
-	jl	NEAR $L$_partial_incomplete_jFkAfkuscwCDeAu
+	jl	NEAR $L$_partial_incomplete_11
 
 	vpclmulqdq	xmm7,xmm14,xmm4,0x11
 	vpclmulqdq	xmm10,xmm14,xmm4,0x00
@@ -4184,14 +4184,14 @@ $L$_no_extra_mask_jFkAfkuscwCDeAu:
 	mov	r12,r11
 	mov	r11,16
 	sub	r11,r12
-	jmp	NEAR $L$_enc_dec_done_jFkAfkuscwCDeAu
+	jmp	NEAR $L$_enc_dec_done_11
 
-$L$_partial_incomplete_jFkAfkuscwCDeAu:
+$L$_partial_incomplete_11:
 	mov	r12,QWORD[112+rbp]
 	add	QWORD[r8],r12
 	mov	r11,QWORD[112+rbp]
 
-$L$_enc_dec_done_jFkAfkuscwCDeAu:
+$L$_enc_dec_done_11:
 
 
 	lea	r12,[byte_len_to_mask_table]
@@ -4202,13 +4202,13 @@ $L$_enc_dec_done_jFkAfkuscwCDeAu:
 	vpshufb	xmm3,xmm3,xmm5
 	mov	r12,QWORD[120+rbp]
 	vmovdqu8	XMMWORD[r12]{k1},xmm3
-$L$_partial_block_done_jFkAfkuscwCDeAu:
+$L$_partial_block_done_11:
 	vmovdqu64	xmm2,XMMWORD[rdx]
 	mov	r13,QWORD[112+rbp]
 	sub	r13,r11
-	je	NEAR $L$_enc_dec_done_pfCcdwlEiojmoCs
+	je	NEAR $L$_enc_dec_done_10
 	cmp	r13,256
-	jbe	NEAR $L$_message_below_equal_16_blocks_pfCcdwlEiojmoCs
+	jbe	NEAR $L$_message_below_equal_16_blocks_10
 
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vmovdqa64	zmm27,ZMMWORD[ddq_addbe_4444]
@@ -4228,13 +4228,13 @@ $L$_partial_block_done_jFkAfkuscwCDeAu:
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_GlczfEaedDDFear
+	jae	NEAR $L$_next_16_overflow_12
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_GlczfEaedDDFear
-$L$_next_16_overflow_GlczfEaedDDFear:
+	jmp	NEAR $L$_next_16_ok_12
+$L$_next_16_overflow_12:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -4245,7 +4245,7 @@ $L$_next_16_overflow_GlczfEaedDDFear:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_GlczfEaedDDFear:
+$L$_next_16_ok_12:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -4333,7 +4333,7 @@ $L$_next_16_ok_GlczfEaedDDFear:
 	vmovdqa64	ZMMWORD[896+rsp],zmm11
 	vmovdqa64	ZMMWORD[960+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_senDBnGkAnblgja
+	jnz	NEAR $L$_skip_hkeys_precomputation_13
 
 	vmovdqu64	zmm0,ZMMWORD[288+rdx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm0
@@ -4349,20 +4349,20 @@ $L$_next_16_ok_GlczfEaedDDFear:
 
 	vmovdqu64	zmm5,ZMMWORD[96+rdx]
 	vmovdqu64	ZMMWORD[512+rsp],zmm5
-$L$_skip_hkeys_precomputation_senDBnGkAnblgja:
+$L$_skip_hkeys_precomputation_13:
 	cmp	r13,512
-	jb	NEAR $L$_message_below_32_blocks_pfCcdwlEiojmoCs
+	jb	NEAR $L$_message_below_32_blocks_10
 
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_xeccGqkAdAamCeA
+	jae	NEAR $L$_next_16_overflow_14
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_xeccGqkAdAamCeA
-$L$_next_16_overflow_xeccGqkAdAamCeA:
+	jmp	NEAR $L$_next_16_ok_14
+$L$_next_16_overflow_14:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -4373,7 +4373,7 @@ $L$_next_16_overflow_xeccGqkAdAamCeA:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_xeccGqkAdAamCeA:
+$L$_next_16_ok_14:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -4461,7 +4461,7 @@ $L$_next_16_ok_xeccGqkAdAamCeA:
 	vmovdqa64	ZMMWORD[1152+rsp],zmm11
 	vmovdqa64	ZMMWORD[1216+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_hpmfgybminuzpyq
+	jnz	NEAR $L$_skip_hkeys_precomputation_15
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -4709,22 +4709,22 @@ $L$_next_16_ok_xeccGqkAdAamCeA:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[rsp],zmm5
-$L$_skip_hkeys_precomputation_hpmfgybminuzpyq:
+$L$_skip_hkeys_precomputation_15:
 	mov	r14,1
 	add	r11,512
 	sub	r13,512
 
 	cmp	r13,768
-	jb	NEAR $L$_no_more_big_nblocks_pfCcdwlEiojmoCs
-$L$_encrypt_big_nblocks_pfCcdwlEiojmoCs:
+	jb	NEAR $L$_no_more_big_nblocks_10
+$L$_encrypt_big_nblocks_10:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_lqapfovGemmsloq
+	jae	NEAR $L$_16_blocks_overflow_16
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_lqapfovGemmsloq
-$L$_16_blocks_overflow_lqapfovGemmsloq:
+	jmp	NEAR $L$_16_blocks_ok_16
+$L$_16_blocks_overflow_16:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -4735,7 +4735,7 @@ $L$_16_blocks_overflow_lqapfovGemmsloq:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_lqapfovGemmsloq:
+$L$_16_blocks_ok_16:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -4900,13 +4900,13 @@ $L$_16_blocks_ok_lqapfovGemmsloq:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_EtEnygsjkwoztkG
+	jae	NEAR $L$_16_blocks_overflow_17
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_EtEnygsjkwoztkG
-$L$_16_blocks_overflow_EtEnygsjkwoztkG:
+	jmp	NEAR $L$_16_blocks_ok_17
+$L$_16_blocks_overflow_17:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -4917,7 +4917,7 @@ $L$_16_blocks_overflow_EtEnygsjkwoztkG:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_EtEnygsjkwoztkG:
+$L$_16_blocks_ok_17:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -5082,13 +5082,13 @@ $L$_16_blocks_ok_EtEnygsjkwoztkG:
 	vmovdqa64	ZMMWORD[896+rsp],zmm4
 	vmovdqa64	ZMMWORD[960+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_xnyyvibpxtvtiCo
+	jae	NEAR $L$_16_blocks_overflow_18
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_xnyyvibpxtvtiCo
-$L$_16_blocks_overflow_xnyyvibpxtvtiCo:
+	jmp	NEAR $L$_16_blocks_ok_18
+$L$_16_blocks_overflow_18:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -5099,7 +5099,7 @@ $L$_16_blocks_overflow_xnyyvibpxtvtiCo:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_xnyyvibpxtvtiCo:
+$L$_16_blocks_ok_18:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm1,ZMMWORD[512+rsp]
@@ -5294,16 +5294,16 @@ $L$_16_blocks_ok_xnyyvibpxtvtiCo:
 	add	r11,768
 	sub	r13,768
 	cmp	r13,768
-	jae	NEAR $L$_encrypt_big_nblocks_pfCcdwlEiojmoCs
+	jae	NEAR $L$_encrypt_big_nblocks_10
 
-$L$_no_more_big_nblocks_pfCcdwlEiojmoCs:
+$L$_no_more_big_nblocks_10:
 
 	cmp	r13,512
-	jae	NEAR $L$_encrypt_32_blocks_pfCcdwlEiojmoCs
+	jae	NEAR $L$_encrypt_32_blocks_10
 
 	cmp	r13,256
-	jae	NEAR $L$_encrypt_16_blocks_pfCcdwlEiojmoCs
-$L$_encrypt_0_blocks_ghash_32_pfCcdwlEiojmoCs:
+	jae	NEAR $L$_encrypt_16_blocks_10
+$L$_encrypt_0_blocks_ghash_32_10:
 	mov	r10d,r13d
 	and	r10d,~15
 	mov	ebx,256
@@ -5346,61 +5346,61 @@ $L$_encrypt_0_blocks_ghash_32_pfCcdwlEiojmoCs:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_FCgqocmhxfsexnl
+	je	NEAR $L$_last_num_blocks_is_0_19
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_FCgqocmhxfsexnl
-	jb	NEAR $L$_last_num_blocks_is_7_1_FCgqocmhxfsexnl
+	je	NEAR $L$_last_num_blocks_is_8_19
+	jb	NEAR $L$_last_num_blocks_is_7_1_19
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_FCgqocmhxfsexnl
-	jb	NEAR $L$_last_num_blocks_is_11_9_FCgqocmhxfsexnl
+	je	NEAR $L$_last_num_blocks_is_12_19
+	jb	NEAR $L$_last_num_blocks_is_11_9_19
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_FCgqocmhxfsexnl
-	ja	NEAR $L$_last_num_blocks_is_16_FCgqocmhxfsexnl
+	je	NEAR $L$_last_num_blocks_is_15_19
+	ja	NEAR $L$_last_num_blocks_is_16_19
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_FCgqocmhxfsexnl
-	jmp	NEAR $L$_last_num_blocks_is_13_FCgqocmhxfsexnl
+	je	NEAR $L$_last_num_blocks_is_14_19
+	jmp	NEAR $L$_last_num_blocks_is_13_19
 
-$L$_last_num_blocks_is_11_9_FCgqocmhxfsexnl:
+$L$_last_num_blocks_is_11_9_19:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_FCgqocmhxfsexnl
-	ja	NEAR $L$_last_num_blocks_is_11_FCgqocmhxfsexnl
-	jmp	NEAR $L$_last_num_blocks_is_9_FCgqocmhxfsexnl
+	je	NEAR $L$_last_num_blocks_is_10_19
+	ja	NEAR $L$_last_num_blocks_is_11_19
+	jmp	NEAR $L$_last_num_blocks_is_9_19
 
-$L$_last_num_blocks_is_7_1_FCgqocmhxfsexnl:
+$L$_last_num_blocks_is_7_1_19:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_FCgqocmhxfsexnl
-	jb	NEAR $L$_last_num_blocks_is_3_1_FCgqocmhxfsexnl
+	je	NEAR $L$_last_num_blocks_is_4_19
+	jb	NEAR $L$_last_num_blocks_is_3_1_19
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_FCgqocmhxfsexnl
-	je	NEAR $L$_last_num_blocks_is_6_FCgqocmhxfsexnl
-	jmp	NEAR $L$_last_num_blocks_is_5_FCgqocmhxfsexnl
+	ja	NEAR $L$_last_num_blocks_is_7_19
+	je	NEAR $L$_last_num_blocks_is_6_19
+	jmp	NEAR $L$_last_num_blocks_is_5_19
 
-$L$_last_num_blocks_is_3_1_FCgqocmhxfsexnl:
+$L$_last_num_blocks_is_3_1_19:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_FCgqocmhxfsexnl
-	je	NEAR $L$_last_num_blocks_is_2_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_1_FCgqocmhxfsexnl:
+	ja	NEAR $L$_last_num_blocks_is_3_19
+	je	NEAR $L$_last_num_blocks_is_2_19
+$L$_last_num_blocks_is_1_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_FFjyctzxkECBpDh
+	jae	NEAR $L$_16_blocks_overflow_20
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_FFjyctzxkECBpDh
+	jmp	NEAR $L$_16_blocks_ok_20
 
-$L$_16_blocks_overflow_FFjyctzxkECBpDh:
+$L$_16_blocks_overflow_20:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_FFjyctzxkECBpDh:
+$L$_16_blocks_ok_20:
 
 
 
@@ -5484,7 +5484,7 @@ $L$_16_blocks_ok_FFjyctzxkECBpDh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BjkxtCegxijoiAg
+	jl	NEAR $L$_small_initial_partial_block_21
 
 
 
@@ -5528,8 +5528,8 @@ $L$_16_blocks_ok_FFjyctzxkECBpDh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BjkxtCegxijoiAg
-$L$_small_initial_partial_block_BjkxtCegxijoiAg:
+	jmp	NEAR $L$_small_initial_compute_done_21
+$L$_small_initial_partial_block_21:
 
 
 
@@ -5581,24 +5581,24 @@ $L$_small_initial_partial_block_BjkxtCegxijoiAg:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_BjkxtCegxijoiAg
-$L$_small_initial_compute_done_BjkxtCegxijoiAg:
-$L$_after_reduction_BjkxtCegxijoiAg:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_2_FCgqocmhxfsexnl:
+	jmp	NEAR $L$_after_reduction_21
+$L$_small_initial_compute_done_21:
+$L$_after_reduction_21:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_2_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_omGvfDrzzDppCGD
+	jae	NEAR $L$_16_blocks_overflow_22
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_omGvfDrzzDppCGD
+	jmp	NEAR $L$_16_blocks_ok_22
 
-$L$_16_blocks_overflow_omGvfDrzzDppCGD:
+$L$_16_blocks_overflow_22:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_omGvfDrzzDppCGD:
+$L$_16_blocks_ok_22:
 
 
 
@@ -5683,7 +5683,7 @@ $L$_16_blocks_ok_omGvfDrzzDppCGD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nvsgotonjrbpBgB
+	jl	NEAR $L$_small_initial_partial_block_23
 
 
 
@@ -5727,8 +5727,8 @@ $L$_16_blocks_ok_omGvfDrzzDppCGD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nvsgotonjrbpBgB
-$L$_small_initial_partial_block_nvsgotonjrbpBgB:
+	jmp	NEAR $L$_small_initial_compute_done_23
+$L$_small_initial_partial_block_23:
 
 
 
@@ -5775,27 +5775,27 @@ $L$_small_initial_partial_block_nvsgotonjrbpBgB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nvsgotonjrbpBgB:
+$L$_small_initial_compute_done_23:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nvsgotonjrbpBgB
+	je	NEAR $L$_after_reduction_23
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nvsgotonjrbpBgB:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_3_FCgqocmhxfsexnl:
+$L$_after_reduction_23:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_3_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_pvxnybhsbAwExtu
+	jae	NEAR $L$_16_blocks_overflow_24
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_pvxnybhsbAwExtu
+	jmp	NEAR $L$_16_blocks_ok_24
 
-$L$_16_blocks_overflow_pvxnybhsbAwExtu:
+$L$_16_blocks_overflow_24:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_pvxnybhsbAwExtu:
+$L$_16_blocks_ok_24:
 
 
 
@@ -5880,7 +5880,7 @@ $L$_16_blocks_ok_pvxnybhsbAwExtu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_khmhzBmbpfDlflc
+	jl	NEAR $L$_small_initial_partial_block_25
 
 
 
@@ -5925,8 +5925,8 @@ $L$_16_blocks_ok_pvxnybhsbAwExtu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_khmhzBmbpfDlflc
-$L$_small_initial_partial_block_khmhzBmbpfDlflc:
+	jmp	NEAR $L$_small_initial_compute_done_25
+$L$_small_initial_partial_block_25:
 
 
 
@@ -5973,27 +5973,27 @@ $L$_small_initial_partial_block_khmhzBmbpfDlflc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_khmhzBmbpfDlflc:
+$L$_small_initial_compute_done_25:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_khmhzBmbpfDlflc
+	je	NEAR $L$_after_reduction_25
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_khmhzBmbpfDlflc:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_4_FCgqocmhxfsexnl:
+$L$_after_reduction_25:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_4_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_fzmgkoyvcqnvxEG
+	jae	NEAR $L$_16_blocks_overflow_26
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_fzmgkoyvcqnvxEG
+	jmp	NEAR $L$_16_blocks_ok_26
 
-$L$_16_blocks_overflow_fzmgkoyvcqnvxEG:
+$L$_16_blocks_overflow_26:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_fzmgkoyvcqnvxEG:
+$L$_16_blocks_ok_26:
 
 
 
@@ -6078,7 +6078,7 @@ $L$_16_blocks_ok_fzmgkoyvcqnvxEG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_vkqzlxifpkzpDuu
+	jl	NEAR $L$_small_initial_partial_block_27
 
 
 
@@ -6123,8 +6123,8 @@ $L$_16_blocks_ok_fzmgkoyvcqnvxEG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_vkqzlxifpkzpDuu
-$L$_small_initial_partial_block_vkqzlxifpkzpDuu:
+	jmp	NEAR $L$_small_initial_compute_done_27
+$L$_small_initial_partial_block_27:
 
 
 
@@ -6172,32 +6172,32 @@ $L$_small_initial_partial_block_vkqzlxifpkzpDuu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_vkqzlxifpkzpDuu:
+$L$_small_initial_compute_done_27:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_vkqzlxifpkzpDuu
+	je	NEAR $L$_after_reduction_27
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_vkqzlxifpkzpDuu:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_5_FCgqocmhxfsexnl:
+$L$_after_reduction_27:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_5_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_oECkDtmncFozDtk
+	jae	NEAR $L$_16_blocks_overflow_28
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_oECkDtmncFozDtk
+	jmp	NEAR $L$_16_blocks_ok_28
 
-$L$_16_blocks_overflow_oECkDtmncFozDtk:
+$L$_16_blocks_overflow_28:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_oECkDtmncFozDtk:
+$L$_16_blocks_ok_28:
 
 
 
@@ -6297,7 +6297,7 @@ $L$_16_blocks_ok_oECkDtmncFozDtk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CguCnuoidbkGlCe
+	jl	NEAR $L$_small_initial_partial_block_29
 
 
 
@@ -6348,8 +6348,8 @@ $L$_16_blocks_ok_oECkDtmncFozDtk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CguCnuoidbkGlCe
-$L$_small_initial_partial_block_CguCnuoidbkGlCe:
+	jmp	NEAR $L$_small_initial_compute_done_29
+$L$_small_initial_partial_block_29:
 
 
 
@@ -6397,32 +6397,32 @@ $L$_small_initial_partial_block_CguCnuoidbkGlCe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_CguCnuoidbkGlCe:
+$L$_small_initial_compute_done_29:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_CguCnuoidbkGlCe
+	je	NEAR $L$_after_reduction_29
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_CguCnuoidbkGlCe:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_6_FCgqocmhxfsexnl:
+$L$_after_reduction_29:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_6_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_wihiBytnhswEBBG
+	jae	NEAR $L$_16_blocks_overflow_30
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_wihiBytnhswEBBG
+	jmp	NEAR $L$_16_blocks_ok_30
 
-$L$_16_blocks_overflow_wihiBytnhswEBBG:
+$L$_16_blocks_overflow_30:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_wihiBytnhswEBBG:
+$L$_16_blocks_ok_30:
 
 
 
@@ -6522,7 +6522,7 @@ $L$_16_blocks_ok_wihiBytnhswEBBG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wkEjaggwAGdqBfd
+	jl	NEAR $L$_small_initial_partial_block_31
 
 
 
@@ -6573,8 +6573,8 @@ $L$_16_blocks_ok_wihiBytnhswEBBG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wkEjaggwAGdqBfd
-$L$_small_initial_partial_block_wkEjaggwAGdqBfd:
+	jmp	NEAR $L$_small_initial_compute_done_31
+$L$_small_initial_partial_block_31:
 
 
 
@@ -6628,32 +6628,32 @@ $L$_small_initial_partial_block_wkEjaggwAGdqBfd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wkEjaggwAGdqBfd:
+$L$_small_initial_compute_done_31:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wkEjaggwAGdqBfd
+	je	NEAR $L$_after_reduction_31
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_wkEjaggwAGdqBfd:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_7_FCgqocmhxfsexnl:
+$L$_after_reduction_31:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_7_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_hElusazhfyntpGx
+	jae	NEAR $L$_16_blocks_overflow_32
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_hElusazhfyntpGx
+	jmp	NEAR $L$_16_blocks_ok_32
 
-$L$_16_blocks_overflow_hElusazhfyntpGx:
+$L$_16_blocks_overflow_32:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_hElusazhfyntpGx:
+$L$_16_blocks_ok_32:
 
 
 
@@ -6753,7 +6753,7 @@ $L$_16_blocks_ok_hElusazhfyntpGx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lrfuavwECiwaAyk
+	jl	NEAR $L$_small_initial_partial_block_33
 
 
 
@@ -6805,8 +6805,8 @@ $L$_16_blocks_ok_hElusazhfyntpGx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lrfuavwECiwaAyk
-$L$_small_initial_partial_block_lrfuavwECiwaAyk:
+	jmp	NEAR $L$_small_initial_compute_done_33
+$L$_small_initial_partial_block_33:
 
 
 
@@ -6860,32 +6860,32 @@ $L$_small_initial_partial_block_lrfuavwECiwaAyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lrfuavwECiwaAyk:
+$L$_small_initial_compute_done_33:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lrfuavwECiwaAyk
+	je	NEAR $L$_after_reduction_33
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lrfuavwECiwaAyk:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_8_FCgqocmhxfsexnl:
+$L$_after_reduction_33:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_8_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_xlviCsfskjDcfcv
+	jae	NEAR $L$_16_blocks_overflow_34
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_xlviCsfskjDcfcv
+	jmp	NEAR $L$_16_blocks_ok_34
 
-$L$_16_blocks_overflow_xlviCsfskjDcfcv:
+$L$_16_blocks_overflow_34:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_xlviCsfskjDcfcv:
+$L$_16_blocks_ok_34:
 
 
 
@@ -6985,7 +6985,7 @@ $L$_16_blocks_ok_xlviCsfskjDcfcv:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ilyaECymoDbxFgt
+	jl	NEAR $L$_small_initial_partial_block_35
 
 
 
@@ -7039,8 +7039,8 @@ $L$_16_blocks_ok_xlviCsfskjDcfcv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ilyaECymoDbxFgt
-$L$_small_initial_partial_block_ilyaECymoDbxFgt:
+	jmp	NEAR $L$_small_initial_compute_done_35
+$L$_small_initial_partial_block_35:
 
 
 
@@ -7095,26 +7095,26 @@ $L$_small_initial_partial_block_ilyaECymoDbxFgt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ilyaECymoDbxFgt:
+$L$_small_initial_compute_done_35:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ilyaECymoDbxFgt
+	je	NEAR $L$_after_reduction_35
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ilyaECymoDbxFgt:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_9_FCgqocmhxfsexnl:
+$L$_after_reduction_35:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_9_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_FCwvssEAwhGFzmC
+	jae	NEAR $L$_16_blocks_overflow_36
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_FCwvssEAwhGFzmC
+	jmp	NEAR $L$_16_blocks_ok_36
 
-$L$_16_blocks_overflow_FCwvssEAwhGFzmC:
+$L$_16_blocks_overflow_36:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -7123,7 +7123,7 @@ $L$_16_blocks_overflow_FCwvssEAwhGFzmC:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_FCwvssEAwhGFzmC:
+$L$_16_blocks_ok_36:
 
 
 
@@ -7238,7 +7238,7 @@ $L$_16_blocks_ok_FCwvssEAwhGFzmC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_bxfBmkpynyzbiGg
+	jl	NEAR $L$_small_initial_partial_block_37
 
 
 
@@ -7298,8 +7298,8 @@ $L$_16_blocks_ok_FCwvssEAwhGFzmC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_bxfBmkpynyzbiGg
-$L$_small_initial_partial_block_bxfBmkpynyzbiGg:
+	jmp	NEAR $L$_small_initial_compute_done_37
+$L$_small_initial_partial_block_37:
 
 
 
@@ -7356,26 +7356,26 @@ $L$_small_initial_partial_block_bxfBmkpynyzbiGg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_bxfBmkpynyzbiGg:
+$L$_small_initial_compute_done_37:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_bxfBmkpynyzbiGg
+	je	NEAR $L$_after_reduction_37
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_bxfBmkpynyzbiGg:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_10_FCgqocmhxfsexnl:
+$L$_after_reduction_37:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_10_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_vxqpflzgBpECrkf
+	jae	NEAR $L$_16_blocks_overflow_38
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_vxqpflzgBpECrkf
+	jmp	NEAR $L$_16_blocks_ok_38
 
-$L$_16_blocks_overflow_vxqpflzgBpECrkf:
+$L$_16_blocks_overflow_38:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -7384,7 +7384,7 @@ $L$_16_blocks_overflow_vxqpflzgBpECrkf:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_vxqpflzgBpECrkf:
+$L$_16_blocks_ok_38:
 
 
 
@@ -7499,7 +7499,7 @@ $L$_16_blocks_ok_vxqpflzgBpECrkf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oyBseDqkhjrCpii
+	jl	NEAR $L$_small_initial_partial_block_39
 
 
 
@@ -7559,8 +7559,8 @@ $L$_16_blocks_ok_vxqpflzgBpECrkf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oyBseDqkhjrCpii
-$L$_small_initial_partial_block_oyBseDqkhjrCpii:
+	jmp	NEAR $L$_small_initial_compute_done_39
+$L$_small_initial_partial_block_39:
 
 
 
@@ -7623,26 +7623,26 @@ $L$_small_initial_partial_block_oyBseDqkhjrCpii:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_oyBseDqkhjrCpii:
+$L$_small_initial_compute_done_39:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_oyBseDqkhjrCpii
+	je	NEAR $L$_after_reduction_39
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_oyBseDqkhjrCpii:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_11_FCgqocmhxfsexnl:
+$L$_after_reduction_39:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_11_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_FjsdmpiktszAuCC
+	jae	NEAR $L$_16_blocks_overflow_40
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FjsdmpiktszAuCC
+	jmp	NEAR $L$_16_blocks_ok_40
 
-$L$_16_blocks_overflow_FjsdmpiktszAuCC:
+$L$_16_blocks_overflow_40:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -7651,7 +7651,7 @@ $L$_16_blocks_overflow_FjsdmpiktszAuCC:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_FjsdmpiktszAuCC:
+$L$_16_blocks_ok_40:
 
 
 
@@ -7766,7 +7766,7 @@ $L$_16_blocks_ok_FjsdmpiktszAuCC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DouzAvbbFlnCrab
+	jl	NEAR $L$_small_initial_partial_block_41
 
 
 
@@ -7827,8 +7827,8 @@ $L$_16_blocks_ok_FjsdmpiktszAuCC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DouzAvbbFlnCrab
-$L$_small_initial_partial_block_DouzAvbbFlnCrab:
+	jmp	NEAR $L$_small_initial_compute_done_41
+$L$_small_initial_partial_block_41:
 
 
 
@@ -7891,26 +7891,26 @@ $L$_small_initial_partial_block_DouzAvbbFlnCrab:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DouzAvbbFlnCrab:
+$L$_small_initial_compute_done_41:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_DouzAvbbFlnCrab
+	je	NEAR $L$_after_reduction_41
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_DouzAvbbFlnCrab:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_12_FCgqocmhxfsexnl:
+$L$_after_reduction_41:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_12_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_kgBnsjyBiqByAAi
+	jae	NEAR $L$_16_blocks_overflow_42
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_kgBnsjyBiqByAAi
+	jmp	NEAR $L$_16_blocks_ok_42
 
-$L$_16_blocks_overflow_kgBnsjyBiqByAAi:
+$L$_16_blocks_overflow_42:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -7919,7 +7919,7 @@ $L$_16_blocks_overflow_kgBnsjyBiqByAAi:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_kgBnsjyBiqByAAi:
+$L$_16_blocks_ok_42:
 
 
 
@@ -8034,7 +8034,7 @@ $L$_16_blocks_ok_kgBnsjyBiqByAAi:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_bGnzqzuAqfuozGA
+	jl	NEAR $L$_small_initial_partial_block_43
 
 
 
@@ -8093,8 +8093,8 @@ $L$_16_blocks_ok_kgBnsjyBiqByAAi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_bGnzqzuAqfuozGA
-$L$_small_initial_partial_block_bGnzqzuAqfuozGA:
+	jmp	NEAR $L$_small_initial_compute_done_43
+$L$_small_initial_partial_block_43:
 
 
 
@@ -8158,27 +8158,27 @@ $L$_small_initial_partial_block_bGnzqzuAqfuozGA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_bGnzqzuAqfuozGA:
+$L$_small_initial_compute_done_43:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_bGnzqzuAqfuozGA
+	je	NEAR $L$_after_reduction_43
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_bGnzqzuAqfuozGA:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_13_FCgqocmhxfsexnl:
+$L$_after_reduction_43:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_13_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_wlbuftiFuDfpaBj
+	jae	NEAR $L$_16_blocks_overflow_44
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_wlbuftiFuDfpaBj
+	jmp	NEAR $L$_16_blocks_ok_44
 
-$L$_16_blocks_overflow_wlbuftiFuDfpaBj:
+$L$_16_blocks_overflow_44:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -8189,7 +8189,7 @@ $L$_16_blocks_overflow_wlbuftiFuDfpaBj:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_wlbuftiFuDfpaBj:
+$L$_16_blocks_ok_44:
 
 
 
@@ -8319,7 +8319,7 @@ $L$_16_blocks_ok_wlbuftiFuDfpaBj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BmfrkekrkmCAqbn
+	jl	NEAR $L$_small_initial_partial_block_45
 
 
 
@@ -8384,8 +8384,8 @@ $L$_16_blocks_ok_wlbuftiFuDfpaBj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BmfrkekrkmCAqbn
-$L$_small_initial_partial_block_BmfrkekrkmCAqbn:
+	jmp	NEAR $L$_small_initial_compute_done_45
+$L$_small_initial_partial_block_45:
 
 
 
@@ -8447,27 +8447,27 @@ $L$_small_initial_partial_block_BmfrkekrkmCAqbn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BmfrkekrkmCAqbn:
+$L$_small_initial_compute_done_45:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BmfrkekrkmCAqbn
+	je	NEAR $L$_after_reduction_45
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BmfrkekrkmCAqbn:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_14_FCgqocmhxfsexnl:
+$L$_after_reduction_45:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_14_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_yBbEudfFuyetkao
+	jae	NEAR $L$_16_blocks_overflow_46
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_yBbEudfFuyetkao
+	jmp	NEAR $L$_16_blocks_ok_46
 
-$L$_16_blocks_overflow_yBbEudfFuyetkao:
+$L$_16_blocks_overflow_46:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -8478,7 +8478,7 @@ $L$_16_blocks_overflow_yBbEudfFuyetkao:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_yBbEudfFuyetkao:
+$L$_16_blocks_ok_46:
 
 
 
@@ -8608,7 +8608,7 @@ $L$_16_blocks_ok_yBbEudfFuyetkao:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_adsjfwDkdnAGgss
+	jl	NEAR $L$_small_initial_partial_block_47
 
 
 
@@ -8673,8 +8673,8 @@ $L$_16_blocks_ok_yBbEudfFuyetkao:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_adsjfwDkdnAGgss
-$L$_small_initial_partial_block_adsjfwDkdnAGgss:
+	jmp	NEAR $L$_small_initial_compute_done_47
+$L$_small_initial_partial_block_47:
 
 
 
@@ -8742,27 +8742,27 @@ $L$_small_initial_partial_block_adsjfwDkdnAGgss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_adsjfwDkdnAGgss:
+$L$_small_initial_compute_done_47:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_adsjfwDkdnAGgss
+	je	NEAR $L$_after_reduction_47
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_adsjfwDkdnAGgss:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_15_FCgqocmhxfsexnl:
+$L$_after_reduction_47:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_15_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_bnqEGkxfrcirpkr
+	jae	NEAR $L$_16_blocks_overflow_48
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_bnqEGkxfrcirpkr
+	jmp	NEAR $L$_16_blocks_ok_48
 
-$L$_16_blocks_overflow_bnqEGkxfrcirpkr:
+$L$_16_blocks_overflow_48:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -8773,7 +8773,7 @@ $L$_16_blocks_overflow_bnqEGkxfrcirpkr:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_bnqEGkxfrcirpkr:
+$L$_16_blocks_ok_48:
 
 
 
@@ -8903,7 +8903,7 @@ $L$_16_blocks_ok_bnqEGkxfrcirpkr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xqbfsaFiygoulrC
+	jl	NEAR $L$_small_initial_partial_block_49
 
 
 
@@ -8969,8 +8969,8 @@ $L$_16_blocks_ok_bnqEGkxfrcirpkr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xqbfsaFiygoulrC
-$L$_small_initial_partial_block_xqbfsaFiygoulrC:
+	jmp	NEAR $L$_small_initial_compute_done_49
+$L$_small_initial_partial_block_49:
 
 
 
@@ -9038,27 +9038,27 @@ $L$_small_initial_partial_block_xqbfsaFiygoulrC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xqbfsaFiygoulrC:
+$L$_small_initial_compute_done_49:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xqbfsaFiygoulrC
+	je	NEAR $L$_after_reduction_49
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xqbfsaFiygoulrC:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_16_FCgqocmhxfsexnl:
+$L$_after_reduction_49:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_16_19:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_sjEeDaGpewkgvho
+	jae	NEAR $L$_16_blocks_overflow_50
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_sjEeDaGpewkgvho
+	jmp	NEAR $L$_16_blocks_ok_50
 
-$L$_16_blocks_overflow_sjEeDaGpewkgvho:
+$L$_16_blocks_overflow_50:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -9069,7 +9069,7 @@ $L$_16_blocks_overflow_sjEeDaGpewkgvho:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_sjEeDaGpewkgvho:
+$L$_16_blocks_ok_50:
 
 
 
@@ -9196,7 +9196,7 @@ $L$_16_blocks_ok_sjEeDaGpewkgvho:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_mEkspwgrbliiiki:
+$L$_small_initial_partial_block_51:
 
 
 
@@ -9265,11 +9265,11 @@ $L$_small_initial_partial_block_mEkspwgrbliiiki:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mEkspwgrbliiiki:
+$L$_small_initial_compute_done_51:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mEkspwgrbliiiki:
-	jmp	NEAR $L$_last_blocks_done_FCgqocmhxfsexnl
-$L$_last_num_blocks_is_0_FCgqocmhxfsexnl:
+$L$_after_reduction_51:
+	jmp	NEAR $L$_last_blocks_done_19
+$L$_last_num_blocks_is_0_19:
 	vmovdqa64	zmm13,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -9330,18 +9330,18 @@ $L$_last_num_blocks_is_0_FCgqocmhxfsexnl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_FCgqocmhxfsexnl:
+$L$_last_blocks_done_19:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_pfCcdwlEiojmoCs
-$L$_encrypt_32_blocks_pfCcdwlEiojmoCs:
+	jmp	NEAR $L$_ghash_done_10
+$L$_encrypt_32_blocks_10:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_DiycjyCygEhhAzl
+	jae	NEAR $L$_16_blocks_overflow_52
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_DiycjyCygEhhAzl
-$L$_16_blocks_overflow_DiycjyCygEhhAzl:
+	jmp	NEAR $L$_16_blocks_ok_52
+$L$_16_blocks_overflow_52:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -9352,7 +9352,7 @@ $L$_16_blocks_overflow_DiycjyCygEhhAzl:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_DiycjyCygEhhAzl:
+$L$_16_blocks_ok_52:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -9517,13 +9517,13 @@ $L$_16_blocks_ok_DiycjyCygEhhAzl:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_yGbzlrrwnnDijAh
+	jae	NEAR $L$_16_blocks_overflow_53
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_yGbzlrrwnnDijAh
-$L$_16_blocks_overflow_yGbzlrrwnnDijAh:
+	jmp	NEAR $L$_16_blocks_ok_53
+$L$_16_blocks_overflow_53:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -9534,7 +9534,7 @@ $L$_16_blocks_overflow_yGbzlrrwnnDijAh:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_yGbzlrrwnnDijAh:
+$L$_16_blocks_ok_53:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -9767,61 +9767,61 @@ $L$_16_blocks_ok_yGbzlrrwnnDijAh:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_iBCDeevmsEobxkd
+	je	NEAR $L$_last_num_blocks_is_0_54
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_iBCDeevmsEobxkd
-	jb	NEAR $L$_last_num_blocks_is_7_1_iBCDeevmsEobxkd
+	je	NEAR $L$_last_num_blocks_is_8_54
+	jb	NEAR $L$_last_num_blocks_is_7_1_54
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_iBCDeevmsEobxkd
-	jb	NEAR $L$_last_num_blocks_is_11_9_iBCDeevmsEobxkd
+	je	NEAR $L$_last_num_blocks_is_12_54
+	jb	NEAR $L$_last_num_blocks_is_11_9_54
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_iBCDeevmsEobxkd
-	ja	NEAR $L$_last_num_blocks_is_16_iBCDeevmsEobxkd
+	je	NEAR $L$_last_num_blocks_is_15_54
+	ja	NEAR $L$_last_num_blocks_is_16_54
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_iBCDeevmsEobxkd
-	jmp	NEAR $L$_last_num_blocks_is_13_iBCDeevmsEobxkd
+	je	NEAR $L$_last_num_blocks_is_14_54
+	jmp	NEAR $L$_last_num_blocks_is_13_54
 
-$L$_last_num_blocks_is_11_9_iBCDeevmsEobxkd:
+$L$_last_num_blocks_is_11_9_54:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_iBCDeevmsEobxkd
-	ja	NEAR $L$_last_num_blocks_is_11_iBCDeevmsEobxkd
-	jmp	NEAR $L$_last_num_blocks_is_9_iBCDeevmsEobxkd
+	je	NEAR $L$_last_num_blocks_is_10_54
+	ja	NEAR $L$_last_num_blocks_is_11_54
+	jmp	NEAR $L$_last_num_blocks_is_9_54
 
-$L$_last_num_blocks_is_7_1_iBCDeevmsEobxkd:
+$L$_last_num_blocks_is_7_1_54:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_iBCDeevmsEobxkd
-	jb	NEAR $L$_last_num_blocks_is_3_1_iBCDeevmsEobxkd
+	je	NEAR $L$_last_num_blocks_is_4_54
+	jb	NEAR $L$_last_num_blocks_is_3_1_54
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_iBCDeevmsEobxkd
-	je	NEAR $L$_last_num_blocks_is_6_iBCDeevmsEobxkd
-	jmp	NEAR $L$_last_num_blocks_is_5_iBCDeevmsEobxkd
+	ja	NEAR $L$_last_num_blocks_is_7_54
+	je	NEAR $L$_last_num_blocks_is_6_54
+	jmp	NEAR $L$_last_num_blocks_is_5_54
 
-$L$_last_num_blocks_is_3_1_iBCDeevmsEobxkd:
+$L$_last_num_blocks_is_3_1_54:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_iBCDeevmsEobxkd
-	je	NEAR $L$_last_num_blocks_is_2_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_1_iBCDeevmsEobxkd:
+	ja	NEAR $L$_last_num_blocks_is_3_54
+	je	NEAR $L$_last_num_blocks_is_2_54
+$L$_last_num_blocks_is_1_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_rasgbAmzvsyAAyx
+	jae	NEAR $L$_16_blocks_overflow_55
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_rasgbAmzvsyAAyx
+	jmp	NEAR $L$_16_blocks_ok_55
 
-$L$_16_blocks_overflow_rasgbAmzvsyAAyx:
+$L$_16_blocks_overflow_55:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_rasgbAmzvsyAAyx:
+$L$_16_blocks_ok_55:
 
 
 
@@ -9905,7 +9905,7 @@ $L$_16_blocks_ok_rasgbAmzvsyAAyx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_aBemzzmkoiCmqcl
+	jl	NEAR $L$_small_initial_partial_block_56
 
 
 
@@ -9949,8 +9949,8 @@ $L$_16_blocks_ok_rasgbAmzvsyAAyx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_aBemzzmkoiCmqcl
-$L$_small_initial_partial_block_aBemzzmkoiCmqcl:
+	jmp	NEAR $L$_small_initial_compute_done_56
+$L$_small_initial_partial_block_56:
 
 
 
@@ -10002,24 +10002,24 @@ $L$_small_initial_partial_block_aBemzzmkoiCmqcl:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_aBemzzmkoiCmqcl
-$L$_small_initial_compute_done_aBemzzmkoiCmqcl:
-$L$_after_reduction_aBemzzmkoiCmqcl:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_2_iBCDeevmsEobxkd:
+	jmp	NEAR $L$_after_reduction_56
+$L$_small_initial_compute_done_56:
+$L$_after_reduction_56:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_2_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_owdoxcwiuoquaxr
+	jae	NEAR $L$_16_blocks_overflow_57
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_owdoxcwiuoquaxr
+	jmp	NEAR $L$_16_blocks_ok_57
 
-$L$_16_blocks_overflow_owdoxcwiuoquaxr:
+$L$_16_blocks_overflow_57:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_owdoxcwiuoquaxr:
+$L$_16_blocks_ok_57:
 
 
 
@@ -10104,7 +10104,7 @@ $L$_16_blocks_ok_owdoxcwiuoquaxr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yppjvihhDqlrxwj
+	jl	NEAR $L$_small_initial_partial_block_58
 
 
 
@@ -10148,8 +10148,8 @@ $L$_16_blocks_ok_owdoxcwiuoquaxr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yppjvihhDqlrxwj
-$L$_small_initial_partial_block_yppjvihhDqlrxwj:
+	jmp	NEAR $L$_small_initial_compute_done_58
+$L$_small_initial_partial_block_58:
 
 
 
@@ -10196,27 +10196,27 @@ $L$_small_initial_partial_block_yppjvihhDqlrxwj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yppjvihhDqlrxwj:
+$L$_small_initial_compute_done_58:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yppjvihhDqlrxwj
+	je	NEAR $L$_after_reduction_58
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yppjvihhDqlrxwj:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_3_iBCDeevmsEobxkd:
+$L$_after_reduction_58:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_3_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_hEbDgqEbrbhBAxs
+	jae	NEAR $L$_16_blocks_overflow_59
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_hEbDgqEbrbhBAxs
+	jmp	NEAR $L$_16_blocks_ok_59
 
-$L$_16_blocks_overflow_hEbDgqEbrbhBAxs:
+$L$_16_blocks_overflow_59:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_hEbDgqEbrbhBAxs:
+$L$_16_blocks_ok_59:
 
 
 
@@ -10301,7 +10301,7 @@ $L$_16_blocks_ok_hEbDgqEbrbhBAxs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uCmfjifqAAkDDpt
+	jl	NEAR $L$_small_initial_partial_block_60
 
 
 
@@ -10346,8 +10346,8 @@ $L$_16_blocks_ok_hEbDgqEbrbhBAxs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uCmfjifqAAkDDpt
-$L$_small_initial_partial_block_uCmfjifqAAkDDpt:
+	jmp	NEAR $L$_small_initial_compute_done_60
+$L$_small_initial_partial_block_60:
 
 
 
@@ -10394,27 +10394,27 @@ $L$_small_initial_partial_block_uCmfjifqAAkDDpt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uCmfjifqAAkDDpt:
+$L$_small_initial_compute_done_60:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uCmfjifqAAkDDpt
+	je	NEAR $L$_after_reduction_60
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uCmfjifqAAkDDpt:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_4_iBCDeevmsEobxkd:
+$L$_after_reduction_60:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_4_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_ulAfhjGbvgAbtrs
+	jae	NEAR $L$_16_blocks_overflow_61
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_ulAfhjGbvgAbtrs
+	jmp	NEAR $L$_16_blocks_ok_61
 
-$L$_16_blocks_overflow_ulAfhjGbvgAbtrs:
+$L$_16_blocks_overflow_61:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_ulAfhjGbvgAbtrs:
+$L$_16_blocks_ok_61:
 
 
 
@@ -10499,7 +10499,7 @@ $L$_16_blocks_ok_ulAfhjGbvgAbtrs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DEpkhidhhbszvyh
+	jl	NEAR $L$_small_initial_partial_block_62
 
 
 
@@ -10544,8 +10544,8 @@ $L$_16_blocks_ok_ulAfhjGbvgAbtrs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DEpkhidhhbszvyh
-$L$_small_initial_partial_block_DEpkhidhhbszvyh:
+	jmp	NEAR $L$_small_initial_compute_done_62
+$L$_small_initial_partial_block_62:
 
 
 
@@ -10593,32 +10593,32 @@ $L$_small_initial_partial_block_DEpkhidhhbszvyh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DEpkhidhhbszvyh:
+$L$_small_initial_compute_done_62:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_DEpkhidhhbszvyh
+	je	NEAR $L$_after_reduction_62
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_DEpkhidhhbszvyh:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_5_iBCDeevmsEobxkd:
+$L$_after_reduction_62:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_5_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_BgydDalBotGcayA
+	jae	NEAR $L$_16_blocks_overflow_63
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_BgydDalBotGcayA
+	jmp	NEAR $L$_16_blocks_ok_63
 
-$L$_16_blocks_overflow_BgydDalBotGcayA:
+$L$_16_blocks_overflow_63:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_BgydDalBotGcayA:
+$L$_16_blocks_ok_63:
 
 
 
@@ -10718,7 +10718,7 @@ $L$_16_blocks_ok_BgydDalBotGcayA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xgefChjcpwptzvz
+	jl	NEAR $L$_small_initial_partial_block_64
 
 
 
@@ -10769,8 +10769,8 @@ $L$_16_blocks_ok_BgydDalBotGcayA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xgefChjcpwptzvz
-$L$_small_initial_partial_block_xgefChjcpwptzvz:
+	jmp	NEAR $L$_small_initial_compute_done_64
+$L$_small_initial_partial_block_64:
 
 
 
@@ -10818,32 +10818,32 @@ $L$_small_initial_partial_block_xgefChjcpwptzvz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xgefChjcpwptzvz:
+$L$_small_initial_compute_done_64:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xgefChjcpwptzvz
+	je	NEAR $L$_after_reduction_64
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xgefChjcpwptzvz:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_6_iBCDeevmsEobxkd:
+$L$_after_reduction_64:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_6_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_ikAreruwreyeiqq
+	jae	NEAR $L$_16_blocks_overflow_65
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ikAreruwreyeiqq
+	jmp	NEAR $L$_16_blocks_ok_65
 
-$L$_16_blocks_overflow_ikAreruwreyeiqq:
+$L$_16_blocks_overflow_65:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_ikAreruwreyeiqq:
+$L$_16_blocks_ok_65:
 
 
 
@@ -10943,7 +10943,7 @@ $L$_16_blocks_ok_ikAreruwreyeiqq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dDsfeuyDDecGnlj
+	jl	NEAR $L$_small_initial_partial_block_66
 
 
 
@@ -10994,8 +10994,8 @@ $L$_16_blocks_ok_ikAreruwreyeiqq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dDsfeuyDDecGnlj
-$L$_small_initial_partial_block_dDsfeuyDDecGnlj:
+	jmp	NEAR $L$_small_initial_compute_done_66
+$L$_small_initial_partial_block_66:
 
 
 
@@ -11049,32 +11049,32 @@ $L$_small_initial_partial_block_dDsfeuyDDecGnlj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dDsfeuyDDecGnlj:
+$L$_small_initial_compute_done_66:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dDsfeuyDDecGnlj
+	je	NEAR $L$_after_reduction_66
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dDsfeuyDDecGnlj:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_7_iBCDeevmsEobxkd:
+$L$_after_reduction_66:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_7_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_kpukijttugCkuyd
+	jae	NEAR $L$_16_blocks_overflow_67
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_kpukijttugCkuyd
+	jmp	NEAR $L$_16_blocks_ok_67
 
-$L$_16_blocks_overflow_kpukijttugCkuyd:
+$L$_16_blocks_overflow_67:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_kpukijttugCkuyd:
+$L$_16_blocks_ok_67:
 
 
 
@@ -11174,7 +11174,7 @@ $L$_16_blocks_ok_kpukijttugCkuyd:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tktcrddilBkfqiD
+	jl	NEAR $L$_small_initial_partial_block_68
 
 
 
@@ -11226,8 +11226,8 @@ $L$_16_blocks_ok_kpukijttugCkuyd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tktcrddilBkfqiD
-$L$_small_initial_partial_block_tktcrddilBkfqiD:
+	jmp	NEAR $L$_small_initial_compute_done_68
+$L$_small_initial_partial_block_68:
 
 
 
@@ -11281,32 +11281,32 @@ $L$_small_initial_partial_block_tktcrddilBkfqiD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tktcrddilBkfqiD:
+$L$_small_initial_compute_done_68:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tktcrddilBkfqiD
+	je	NEAR $L$_after_reduction_68
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tktcrddilBkfqiD:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_8_iBCDeevmsEobxkd:
+$L$_after_reduction_68:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_8_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_behFlekpedczvdw
+	jae	NEAR $L$_16_blocks_overflow_69
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_behFlekpedczvdw
+	jmp	NEAR $L$_16_blocks_ok_69
 
-$L$_16_blocks_overflow_behFlekpedczvdw:
+$L$_16_blocks_overflow_69:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_behFlekpedczvdw:
+$L$_16_blocks_ok_69:
 
 
 
@@ -11406,7 +11406,7 @@ $L$_16_blocks_ok_behFlekpedczvdw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dBcBudxAwurtryw
+	jl	NEAR $L$_small_initial_partial_block_70
 
 
 
@@ -11460,8 +11460,8 @@ $L$_16_blocks_ok_behFlekpedczvdw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dBcBudxAwurtryw
-$L$_small_initial_partial_block_dBcBudxAwurtryw:
+	jmp	NEAR $L$_small_initial_compute_done_70
+$L$_small_initial_partial_block_70:
 
 
 
@@ -11516,26 +11516,26 @@ $L$_small_initial_partial_block_dBcBudxAwurtryw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dBcBudxAwurtryw:
+$L$_small_initial_compute_done_70:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dBcBudxAwurtryw
+	je	NEAR $L$_after_reduction_70
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dBcBudxAwurtryw:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_9_iBCDeevmsEobxkd:
+$L$_after_reduction_70:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_9_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_nhcFeEGrporljnm
+	jae	NEAR $L$_16_blocks_overflow_71
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_nhcFeEGrporljnm
+	jmp	NEAR $L$_16_blocks_ok_71
 
-$L$_16_blocks_overflow_nhcFeEGrporljnm:
+$L$_16_blocks_overflow_71:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -11544,7 +11544,7 @@ $L$_16_blocks_overflow_nhcFeEGrporljnm:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_nhcFeEGrporljnm:
+$L$_16_blocks_ok_71:
 
 
 
@@ -11659,7 +11659,7 @@ $L$_16_blocks_ok_nhcFeEGrporljnm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tAedCwEldxAehip
+	jl	NEAR $L$_small_initial_partial_block_72
 
 
 
@@ -11719,8 +11719,8 @@ $L$_16_blocks_ok_nhcFeEGrporljnm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tAedCwEldxAehip
-$L$_small_initial_partial_block_tAedCwEldxAehip:
+	jmp	NEAR $L$_small_initial_compute_done_72
+$L$_small_initial_partial_block_72:
 
 
 
@@ -11777,26 +11777,26 @@ $L$_small_initial_partial_block_tAedCwEldxAehip:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tAedCwEldxAehip:
+$L$_small_initial_compute_done_72:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tAedCwEldxAehip
+	je	NEAR $L$_after_reduction_72
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tAedCwEldxAehip:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_10_iBCDeevmsEobxkd:
+$L$_after_reduction_72:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_10_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_wEAzBhFCsdCcpGn
+	jae	NEAR $L$_16_blocks_overflow_73
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_wEAzBhFCsdCcpGn
+	jmp	NEAR $L$_16_blocks_ok_73
 
-$L$_16_blocks_overflow_wEAzBhFCsdCcpGn:
+$L$_16_blocks_overflow_73:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -11805,7 +11805,7 @@ $L$_16_blocks_overflow_wEAzBhFCsdCcpGn:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_wEAzBhFCsdCcpGn:
+$L$_16_blocks_ok_73:
 
 
 
@@ -11920,7 +11920,7 @@ $L$_16_blocks_ok_wEAzBhFCsdCcpGn:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rqDtfjqtufjazds
+	jl	NEAR $L$_small_initial_partial_block_74
 
 
 
@@ -11980,8 +11980,8 @@ $L$_16_blocks_ok_wEAzBhFCsdCcpGn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rqDtfjqtufjazds
-$L$_small_initial_partial_block_rqDtfjqtufjazds:
+	jmp	NEAR $L$_small_initial_compute_done_74
+$L$_small_initial_partial_block_74:
 
 
 
@@ -12044,26 +12044,26 @@ $L$_small_initial_partial_block_rqDtfjqtufjazds:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rqDtfjqtufjazds:
+$L$_small_initial_compute_done_74:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rqDtfjqtufjazds
+	je	NEAR $L$_after_reduction_74
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rqDtfjqtufjazds:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_11_iBCDeevmsEobxkd:
+$L$_after_reduction_74:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_11_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_pqsxzteFGmFacmu
+	jae	NEAR $L$_16_blocks_overflow_75
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_pqsxzteFGmFacmu
+	jmp	NEAR $L$_16_blocks_ok_75
 
-$L$_16_blocks_overflow_pqsxzteFGmFacmu:
+$L$_16_blocks_overflow_75:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -12072,7 +12072,7 @@ $L$_16_blocks_overflow_pqsxzteFGmFacmu:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_pqsxzteFGmFacmu:
+$L$_16_blocks_ok_75:
 
 
 
@@ -12187,7 +12187,7 @@ $L$_16_blocks_ok_pqsxzteFGmFacmu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DaFgDtsDnrFBpqe
+	jl	NEAR $L$_small_initial_partial_block_76
 
 
 
@@ -12248,8 +12248,8 @@ $L$_16_blocks_ok_pqsxzteFGmFacmu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DaFgDtsDnrFBpqe
-$L$_small_initial_partial_block_DaFgDtsDnrFBpqe:
+	jmp	NEAR $L$_small_initial_compute_done_76
+$L$_small_initial_partial_block_76:
 
 
 
@@ -12312,26 +12312,26 @@ $L$_small_initial_partial_block_DaFgDtsDnrFBpqe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DaFgDtsDnrFBpqe:
+$L$_small_initial_compute_done_76:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_DaFgDtsDnrFBpqe
+	je	NEAR $L$_after_reduction_76
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_DaFgDtsDnrFBpqe:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_12_iBCDeevmsEobxkd:
+$L$_after_reduction_76:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_12_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_havpqavnDwsiynm
+	jae	NEAR $L$_16_blocks_overflow_77
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_havpqavnDwsiynm
+	jmp	NEAR $L$_16_blocks_ok_77
 
-$L$_16_blocks_overflow_havpqavnDwsiynm:
+$L$_16_blocks_overflow_77:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -12340,7 +12340,7 @@ $L$_16_blocks_overflow_havpqavnDwsiynm:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_havpqavnDwsiynm:
+$L$_16_blocks_ok_77:
 
 
 
@@ -12455,7 +12455,7 @@ $L$_16_blocks_ok_havpqavnDwsiynm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lrmvtDsByAvnCGg
+	jl	NEAR $L$_small_initial_partial_block_78
 
 
 
@@ -12514,8 +12514,8 @@ $L$_16_blocks_ok_havpqavnDwsiynm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lrmvtDsByAvnCGg
-$L$_small_initial_partial_block_lrmvtDsByAvnCGg:
+	jmp	NEAR $L$_small_initial_compute_done_78
+$L$_small_initial_partial_block_78:
 
 
 
@@ -12579,27 +12579,27 @@ $L$_small_initial_partial_block_lrmvtDsByAvnCGg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lrmvtDsByAvnCGg:
+$L$_small_initial_compute_done_78:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lrmvtDsByAvnCGg
+	je	NEAR $L$_after_reduction_78
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lrmvtDsByAvnCGg:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_13_iBCDeevmsEobxkd:
+$L$_after_reduction_78:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_13_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_CFregFDnDtDCFAa
+	jae	NEAR $L$_16_blocks_overflow_79
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_CFregFDnDtDCFAa
+	jmp	NEAR $L$_16_blocks_ok_79
 
-$L$_16_blocks_overflow_CFregFDnDtDCFAa:
+$L$_16_blocks_overflow_79:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -12610,7 +12610,7 @@ $L$_16_blocks_overflow_CFregFDnDtDCFAa:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_CFregFDnDtDCFAa:
+$L$_16_blocks_ok_79:
 
 
 
@@ -12740,7 +12740,7 @@ $L$_16_blocks_ok_CFregFDnDtDCFAa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wdfaGiwvqctsqwi
+	jl	NEAR $L$_small_initial_partial_block_80
 
 
 
@@ -12805,8 +12805,8 @@ $L$_16_blocks_ok_CFregFDnDtDCFAa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wdfaGiwvqctsqwi
-$L$_small_initial_partial_block_wdfaGiwvqctsqwi:
+	jmp	NEAR $L$_small_initial_compute_done_80
+$L$_small_initial_partial_block_80:
 
 
 
@@ -12868,27 +12868,27 @@ $L$_small_initial_partial_block_wdfaGiwvqctsqwi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wdfaGiwvqctsqwi:
+$L$_small_initial_compute_done_80:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wdfaGiwvqctsqwi
+	je	NEAR $L$_after_reduction_80
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_wdfaGiwvqctsqwi:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_14_iBCDeevmsEobxkd:
+$L$_after_reduction_80:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_14_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_pxBxGlaBfsskzgo
+	jae	NEAR $L$_16_blocks_overflow_81
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_pxBxGlaBfsskzgo
+	jmp	NEAR $L$_16_blocks_ok_81
 
-$L$_16_blocks_overflow_pxBxGlaBfsskzgo:
+$L$_16_blocks_overflow_81:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -12899,7 +12899,7 @@ $L$_16_blocks_overflow_pxBxGlaBfsskzgo:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_pxBxGlaBfsskzgo:
+$L$_16_blocks_ok_81:
 
 
 
@@ -13029,7 +13029,7 @@ $L$_16_blocks_ok_pxBxGlaBfsskzgo:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_bxvvuADzCmikmix
+	jl	NEAR $L$_small_initial_partial_block_82
 
 
 
@@ -13094,8 +13094,8 @@ $L$_16_blocks_ok_pxBxGlaBfsskzgo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_bxvvuADzCmikmix
-$L$_small_initial_partial_block_bxvvuADzCmikmix:
+	jmp	NEAR $L$_small_initial_compute_done_82
+$L$_small_initial_partial_block_82:
 
 
 
@@ -13163,27 +13163,27 @@ $L$_small_initial_partial_block_bxvvuADzCmikmix:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_bxvvuADzCmikmix:
+$L$_small_initial_compute_done_82:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_bxvvuADzCmikmix
+	je	NEAR $L$_after_reduction_82
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_bxvvuADzCmikmix:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_15_iBCDeevmsEobxkd:
+$L$_after_reduction_82:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_15_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_aEtmwztnmnbwfca
+	jae	NEAR $L$_16_blocks_overflow_83
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_aEtmwztnmnbwfca
+	jmp	NEAR $L$_16_blocks_ok_83
 
-$L$_16_blocks_overflow_aEtmwztnmnbwfca:
+$L$_16_blocks_overflow_83:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -13194,7 +13194,7 @@ $L$_16_blocks_overflow_aEtmwztnmnbwfca:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_aEtmwztnmnbwfca:
+$L$_16_blocks_ok_83:
 
 
 
@@ -13324,7 +13324,7 @@ $L$_16_blocks_ok_aEtmwztnmnbwfca:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tbyxcyDqbimFmdF
+	jl	NEAR $L$_small_initial_partial_block_84
 
 
 
@@ -13390,8 +13390,8 @@ $L$_16_blocks_ok_aEtmwztnmnbwfca:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tbyxcyDqbimFmdF
-$L$_small_initial_partial_block_tbyxcyDqbimFmdF:
+	jmp	NEAR $L$_small_initial_compute_done_84
+$L$_small_initial_partial_block_84:
 
 
 
@@ -13459,27 +13459,27 @@ $L$_small_initial_partial_block_tbyxcyDqbimFmdF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tbyxcyDqbimFmdF:
+$L$_small_initial_compute_done_84:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tbyxcyDqbimFmdF
+	je	NEAR $L$_after_reduction_84
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tbyxcyDqbimFmdF:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_16_iBCDeevmsEobxkd:
+$L$_after_reduction_84:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_16_54:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_AsDqagwjFAtzhnk
+	jae	NEAR $L$_16_blocks_overflow_85
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_AsDqagwjFAtzhnk
+	jmp	NEAR $L$_16_blocks_ok_85
 
-$L$_16_blocks_overflow_AsDqagwjFAtzhnk:
+$L$_16_blocks_overflow_85:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -13490,7 +13490,7 @@ $L$_16_blocks_overflow_AsDqagwjFAtzhnk:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_AsDqagwjFAtzhnk:
+$L$_16_blocks_ok_85:
 
 
 
@@ -13617,7 +13617,7 @@ $L$_16_blocks_ok_AsDqagwjFAtzhnk:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_gnsdBBpcvsqmrdr:
+$L$_small_initial_partial_block_86:
 
 
 
@@ -13686,11 +13686,11 @@ $L$_small_initial_partial_block_gnsdBBpcvsqmrdr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gnsdBBpcvsqmrdr:
+$L$_small_initial_compute_done_86:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_gnsdBBpcvsqmrdr:
-	jmp	NEAR $L$_last_blocks_done_iBCDeevmsEobxkd
-$L$_last_num_blocks_is_0_iBCDeevmsEobxkd:
+$L$_after_reduction_86:
+	jmp	NEAR $L$_last_blocks_done_54
+$L$_last_num_blocks_is_0_54:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -13752,18 +13752,18 @@ $L$_last_num_blocks_is_0_iBCDeevmsEobxkd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_iBCDeevmsEobxkd:
+$L$_last_blocks_done_54:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_pfCcdwlEiojmoCs
-$L$_encrypt_16_blocks_pfCcdwlEiojmoCs:
+	jmp	NEAR $L$_ghash_done_10
+$L$_encrypt_16_blocks_10:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_FwrqwuboBAqCirE
+	jae	NEAR $L$_16_blocks_overflow_87
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FwrqwuboBAqCirE
-$L$_16_blocks_overflow_FwrqwuboBAqCirE:
+	jmp	NEAR $L$_16_blocks_ok_87
+$L$_16_blocks_overflow_87:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -13774,7 +13774,7 @@ $L$_16_blocks_overflow_FwrqwuboBAqCirE:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_FwrqwuboBAqCirE:
+$L$_16_blocks_ok_87:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -13976,61 +13976,61 @@ $L$_16_blocks_ok_FwrqwuboBAqCirE:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_miskdxjijllgEsf
+	je	NEAR $L$_last_num_blocks_is_0_88
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_miskdxjijllgEsf
-	jb	NEAR $L$_last_num_blocks_is_7_1_miskdxjijllgEsf
+	je	NEAR $L$_last_num_blocks_is_8_88
+	jb	NEAR $L$_last_num_blocks_is_7_1_88
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_miskdxjijllgEsf
-	jb	NEAR $L$_last_num_blocks_is_11_9_miskdxjijllgEsf
+	je	NEAR $L$_last_num_blocks_is_12_88
+	jb	NEAR $L$_last_num_blocks_is_11_9_88
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_miskdxjijllgEsf
-	ja	NEAR $L$_last_num_blocks_is_16_miskdxjijllgEsf
+	je	NEAR $L$_last_num_blocks_is_15_88
+	ja	NEAR $L$_last_num_blocks_is_16_88
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_miskdxjijllgEsf
-	jmp	NEAR $L$_last_num_blocks_is_13_miskdxjijllgEsf
+	je	NEAR $L$_last_num_blocks_is_14_88
+	jmp	NEAR $L$_last_num_blocks_is_13_88
 
-$L$_last_num_blocks_is_11_9_miskdxjijllgEsf:
+$L$_last_num_blocks_is_11_9_88:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_miskdxjijllgEsf
-	ja	NEAR $L$_last_num_blocks_is_11_miskdxjijllgEsf
-	jmp	NEAR $L$_last_num_blocks_is_9_miskdxjijllgEsf
+	je	NEAR $L$_last_num_blocks_is_10_88
+	ja	NEAR $L$_last_num_blocks_is_11_88
+	jmp	NEAR $L$_last_num_blocks_is_9_88
 
-$L$_last_num_blocks_is_7_1_miskdxjijllgEsf:
+$L$_last_num_blocks_is_7_1_88:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_miskdxjijllgEsf
-	jb	NEAR $L$_last_num_blocks_is_3_1_miskdxjijllgEsf
+	je	NEAR $L$_last_num_blocks_is_4_88
+	jb	NEAR $L$_last_num_blocks_is_3_1_88
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_miskdxjijllgEsf
-	je	NEAR $L$_last_num_blocks_is_6_miskdxjijllgEsf
-	jmp	NEAR $L$_last_num_blocks_is_5_miskdxjijllgEsf
+	ja	NEAR $L$_last_num_blocks_is_7_88
+	je	NEAR $L$_last_num_blocks_is_6_88
+	jmp	NEAR $L$_last_num_blocks_is_5_88
 
-$L$_last_num_blocks_is_3_1_miskdxjijllgEsf:
+$L$_last_num_blocks_is_3_1_88:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_miskdxjijllgEsf
-	je	NEAR $L$_last_num_blocks_is_2_miskdxjijllgEsf
-$L$_last_num_blocks_is_1_miskdxjijllgEsf:
+	ja	NEAR $L$_last_num_blocks_is_3_88
+	je	NEAR $L$_last_num_blocks_is_2_88
+$L$_last_num_blocks_is_1_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_gvAjlniqmDwjeDr
+	jae	NEAR $L$_16_blocks_overflow_89
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_gvAjlniqmDwjeDr
+	jmp	NEAR $L$_16_blocks_ok_89
 
-$L$_16_blocks_overflow_gvAjlniqmDwjeDr:
+$L$_16_blocks_overflow_89:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_gvAjlniqmDwjeDr:
+$L$_16_blocks_ok_89:
 
 
 
@@ -14137,7 +14137,7 @@ $L$_16_blocks_ok_gvAjlniqmDwjeDr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DAsdsmCCuFdzGvG
+	jl	NEAR $L$_small_initial_partial_block_90
 
 
 
@@ -14179,8 +14179,8 @@ $L$_16_blocks_ok_gvAjlniqmDwjeDr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DAsdsmCCuFdzGvG
-$L$_small_initial_partial_block_DAsdsmCCuFdzGvG:
+	jmp	NEAR $L$_small_initial_compute_done_90
+$L$_small_initial_partial_block_90:
 
 
 
@@ -14204,24 +14204,24 @@ $L$_small_initial_partial_block_DAsdsmCCuFdzGvG:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_DAsdsmCCuFdzGvG
-$L$_small_initial_compute_done_DAsdsmCCuFdzGvG:
-$L$_after_reduction_DAsdsmCCuFdzGvG:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_2_miskdxjijllgEsf:
+	jmp	NEAR $L$_after_reduction_90
+$L$_small_initial_compute_done_90:
+$L$_after_reduction_90:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_2_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_ihErlwgFgriAeyq
+	jae	NEAR $L$_16_blocks_overflow_91
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_ihErlwgFgriAeyq
+	jmp	NEAR $L$_16_blocks_ok_91
 
-$L$_16_blocks_overflow_ihErlwgFgriAeyq:
+$L$_16_blocks_overflow_91:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_ihErlwgFgriAeyq:
+$L$_16_blocks_ok_91:
 
 
 
@@ -14329,7 +14329,7 @@ $L$_16_blocks_ok_ihErlwgFgriAeyq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_Dpdwavggfuwtoxa
+	jl	NEAR $L$_small_initial_partial_block_92
 
 
 
@@ -14371,8 +14371,8 @@ $L$_16_blocks_ok_ihErlwgFgriAeyq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_Dpdwavggfuwtoxa
-$L$_small_initial_partial_block_Dpdwavggfuwtoxa:
+	jmp	NEAR $L$_small_initial_compute_done_92
+$L$_small_initial_partial_block_92:
 
 
 
@@ -14417,27 +14417,27 @@ $L$_small_initial_partial_block_Dpdwavggfuwtoxa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_Dpdwavggfuwtoxa:
+$L$_small_initial_compute_done_92:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_Dpdwavggfuwtoxa
+	je	NEAR $L$_after_reduction_92
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_Dpdwavggfuwtoxa:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_3_miskdxjijllgEsf:
+$L$_after_reduction_92:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_3_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_yFGsvBpCCfolhat
+	jae	NEAR $L$_16_blocks_overflow_93
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_yFGsvBpCCfolhat
+	jmp	NEAR $L$_16_blocks_ok_93
 
-$L$_16_blocks_overflow_yFGsvBpCCfolhat:
+$L$_16_blocks_overflow_93:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_yFGsvBpCCfolhat:
+$L$_16_blocks_ok_93:
 
 
 
@@ -14545,7 +14545,7 @@ $L$_16_blocks_ok_yFGsvBpCCfolhat:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qumCqurnmhEBbpn
+	jl	NEAR $L$_small_initial_partial_block_94
 
 
 
@@ -14588,8 +14588,8 @@ $L$_16_blocks_ok_yFGsvBpCCfolhat:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qumCqurnmhEBbpn
-$L$_small_initial_partial_block_qumCqurnmhEBbpn:
+	jmp	NEAR $L$_small_initial_compute_done_94
+$L$_small_initial_partial_block_94:
 
 
 
@@ -14634,27 +14634,27 @@ $L$_small_initial_partial_block_qumCqurnmhEBbpn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qumCqurnmhEBbpn:
+$L$_small_initial_compute_done_94:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qumCqurnmhEBbpn
+	je	NEAR $L$_after_reduction_94
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qumCqurnmhEBbpn:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_4_miskdxjijllgEsf:
+$L$_after_reduction_94:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_4_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_auyrqsCtwlqczDk
+	jae	NEAR $L$_16_blocks_overflow_95
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_auyrqsCtwlqczDk
+	jmp	NEAR $L$_16_blocks_ok_95
 
-$L$_16_blocks_overflow_auyrqsCtwlqczDk:
+$L$_16_blocks_overflow_95:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_auyrqsCtwlqczDk:
+$L$_16_blocks_ok_95:
 
 
 
@@ -14762,7 +14762,7 @@ $L$_16_blocks_ok_auyrqsCtwlqczDk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DcCmAamzwwkFuCF
+	jl	NEAR $L$_small_initial_partial_block_96
 
 
 
@@ -14804,8 +14804,8 @@ $L$_16_blocks_ok_auyrqsCtwlqczDk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DcCmAamzwwkFuCF
-$L$_small_initial_partial_block_DcCmAamzwwkFuCF:
+	jmp	NEAR $L$_small_initial_compute_done_96
+$L$_small_initial_partial_block_96:
 
 
 
@@ -14851,32 +14851,32 @@ $L$_small_initial_partial_block_DcCmAamzwwkFuCF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DcCmAamzwwkFuCF:
+$L$_small_initial_compute_done_96:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_DcCmAamzwwkFuCF
+	je	NEAR $L$_after_reduction_96
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_DcCmAamzwwkFuCF:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_5_miskdxjijllgEsf:
+$L$_after_reduction_96:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_5_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_xdqmojxljDoaaBt
+	jae	NEAR $L$_16_blocks_overflow_97
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_xdqmojxljDoaaBt
+	jmp	NEAR $L$_16_blocks_ok_97
 
-$L$_16_blocks_overflow_xdqmojxljDoaaBt:
+$L$_16_blocks_overflow_97:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_xdqmojxljDoaaBt:
+$L$_16_blocks_ok_97:
 
 
 
@@ -14999,7 +14999,7 @@ $L$_16_blocks_ok_xdqmojxljDoaaBt:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FxzuniGyADzefcd
+	jl	NEAR $L$_small_initial_partial_block_98
 
 
 
@@ -15051,8 +15051,8 @@ $L$_16_blocks_ok_xdqmojxljDoaaBt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FxzuniGyADzefcd
-$L$_small_initial_partial_block_FxzuniGyADzefcd:
+	jmp	NEAR $L$_small_initial_compute_done_98
+$L$_small_initial_partial_block_98:
 
 
 
@@ -15097,32 +15097,32 @@ $L$_small_initial_partial_block_FxzuniGyADzefcd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FxzuniGyADzefcd:
+$L$_small_initial_compute_done_98:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FxzuniGyADzefcd
+	je	NEAR $L$_after_reduction_98
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FxzuniGyADzefcd:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_6_miskdxjijllgEsf:
+$L$_after_reduction_98:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_6_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_erzEBDwzzvCezlr
+	jae	NEAR $L$_16_blocks_overflow_99
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_erzEBDwzzvCezlr
+	jmp	NEAR $L$_16_blocks_ok_99
 
-$L$_16_blocks_overflow_erzEBDwzzvCezlr:
+$L$_16_blocks_overflow_99:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_erzEBDwzzvCezlr:
+$L$_16_blocks_ok_99:
 
 
 
@@ -15245,7 +15245,7 @@ $L$_16_blocks_ok_erzEBDwzzvCezlr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zmzzvtAxexoeguB
+	jl	NEAR $L$_small_initial_partial_block_100
 
 
 
@@ -15297,8 +15297,8 @@ $L$_16_blocks_ok_erzEBDwzzvCezlr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zmzzvtAxexoeguB
-$L$_small_initial_partial_block_zmzzvtAxexoeguB:
+	jmp	NEAR $L$_small_initial_compute_done_100
+$L$_small_initial_partial_block_100:
 
 
 
@@ -15353,32 +15353,32 @@ $L$_small_initial_partial_block_zmzzvtAxexoeguB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zmzzvtAxexoeguB:
+$L$_small_initial_compute_done_100:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zmzzvtAxexoeguB
+	je	NEAR $L$_after_reduction_100
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_zmzzvtAxexoeguB:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_7_miskdxjijllgEsf:
+$L$_after_reduction_100:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_7_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_ysjzeiGkChzcwwo
+	jae	NEAR $L$_16_blocks_overflow_101
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ysjzeiGkChzcwwo
+	jmp	NEAR $L$_16_blocks_ok_101
 
-$L$_16_blocks_overflow_ysjzeiGkChzcwwo:
+$L$_16_blocks_overflow_101:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_ysjzeiGkChzcwwo:
+$L$_16_blocks_ok_101:
 
 
 
@@ -15501,7 +15501,7 @@ $L$_16_blocks_ok_ysjzeiGkChzcwwo:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ivDBCxxmhacACBr
+	jl	NEAR $L$_small_initial_partial_block_102
 
 
 
@@ -15554,8 +15554,8 @@ $L$_16_blocks_ok_ysjzeiGkChzcwwo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ivDBCxxmhacACBr
-$L$_small_initial_partial_block_ivDBCxxmhacACBr:
+	jmp	NEAR $L$_small_initial_compute_done_102
+$L$_small_initial_partial_block_102:
 
 
 
@@ -15610,32 +15610,32 @@ $L$_small_initial_partial_block_ivDBCxxmhacACBr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ivDBCxxmhacACBr:
+$L$_small_initial_compute_done_102:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ivDBCxxmhacACBr
+	je	NEAR $L$_after_reduction_102
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ivDBCxxmhacACBr:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_8_miskdxjijllgEsf:
+$L$_after_reduction_102:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_8_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_FGpgoAGpArfyzkt
+	jae	NEAR $L$_16_blocks_overflow_103
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FGpgoAGpArfyzkt
+	jmp	NEAR $L$_16_blocks_ok_103
 
-$L$_16_blocks_overflow_FGpgoAGpArfyzkt:
+$L$_16_blocks_overflow_103:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_FGpgoAGpArfyzkt:
+$L$_16_blocks_ok_103:
 
 
 
@@ -15758,7 +15758,7 @@ $L$_16_blocks_ok_FGpgoAGpArfyzkt:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yudvkjluhalBDzf
+	jl	NEAR $L$_small_initial_partial_block_104
 
 
 
@@ -15809,8 +15809,8 @@ $L$_16_blocks_ok_FGpgoAGpArfyzkt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yudvkjluhalBDzf
-$L$_small_initial_partial_block_yudvkjluhalBDzf:
+	jmp	NEAR $L$_small_initial_compute_done_104
+$L$_small_initial_partial_block_104:
 
 
 
@@ -15866,26 +15866,26 @@ $L$_small_initial_partial_block_yudvkjluhalBDzf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yudvkjluhalBDzf:
+$L$_small_initial_compute_done_104:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yudvkjluhalBDzf
+	je	NEAR $L$_after_reduction_104
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yudvkjluhalBDzf:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_9_miskdxjijllgEsf:
+$L$_after_reduction_104:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_9_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_uomgmcbyvgfbtep
+	jae	NEAR $L$_16_blocks_overflow_105
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_uomgmcbyvgfbtep
+	jmp	NEAR $L$_16_blocks_ok_105
 
-$L$_16_blocks_overflow_uomgmcbyvgfbtep:
+$L$_16_blocks_overflow_105:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -15894,7 +15894,7 @@ $L$_16_blocks_overflow_uomgmcbyvgfbtep:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_uomgmcbyvgfbtep:
+$L$_16_blocks_ok_105:
 
 
 
@@ -16032,7 +16032,7 @@ $L$_16_blocks_ok_uomgmcbyvgfbtep:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_sEzdhshadGEFwcz
+	jl	NEAR $L$_small_initial_partial_block_106
 
 
 
@@ -16093,8 +16093,8 @@ $L$_16_blocks_ok_uomgmcbyvgfbtep:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_sEzdhshadGEFwcz
-$L$_small_initial_partial_block_sEzdhshadGEFwcz:
+	jmp	NEAR $L$_small_initial_compute_done_106
+$L$_small_initial_partial_block_106:
 
 
 
@@ -16148,26 +16148,26 @@ $L$_small_initial_partial_block_sEzdhshadGEFwcz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_sEzdhshadGEFwcz:
+$L$_small_initial_compute_done_106:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_sEzdhshadGEFwcz
+	je	NEAR $L$_after_reduction_106
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_sEzdhshadGEFwcz:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_10_miskdxjijllgEsf:
+$L$_after_reduction_106:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_10_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_GbiABhsyvDuxkcw
+	jae	NEAR $L$_16_blocks_overflow_107
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_GbiABhsyvDuxkcw
+	jmp	NEAR $L$_16_blocks_ok_107
 
-$L$_16_blocks_overflow_GbiABhsyvDuxkcw:
+$L$_16_blocks_overflow_107:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -16176,7 +16176,7 @@ $L$_16_blocks_overflow_GbiABhsyvDuxkcw:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_GbiABhsyvDuxkcw:
+$L$_16_blocks_ok_107:
 
 
 
@@ -16314,7 +16314,7 @@ $L$_16_blocks_ok_GbiABhsyvDuxkcw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kacxnFbhyBtAbfy
+	jl	NEAR $L$_small_initial_partial_block_108
 
 
 
@@ -16375,8 +16375,8 @@ $L$_16_blocks_ok_GbiABhsyvDuxkcw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kacxnFbhyBtAbfy
-$L$_small_initial_partial_block_kacxnFbhyBtAbfy:
+	jmp	NEAR $L$_small_initial_compute_done_108
+$L$_small_initial_partial_block_108:
 
 
 
@@ -16440,26 +16440,26 @@ $L$_small_initial_partial_block_kacxnFbhyBtAbfy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kacxnFbhyBtAbfy:
+$L$_small_initial_compute_done_108:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kacxnFbhyBtAbfy
+	je	NEAR $L$_after_reduction_108
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kacxnFbhyBtAbfy:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_11_miskdxjijllgEsf:
+$L$_after_reduction_108:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_11_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_qnrdEdGqxaqxmDB
+	jae	NEAR $L$_16_blocks_overflow_109
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_qnrdEdGqxaqxmDB
+	jmp	NEAR $L$_16_blocks_ok_109
 
-$L$_16_blocks_overflow_qnrdEdGqxaqxmDB:
+$L$_16_blocks_overflow_109:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -16468,7 +16468,7 @@ $L$_16_blocks_overflow_qnrdEdGqxaqxmDB:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_qnrdEdGqxaqxmDB:
+$L$_16_blocks_ok_109:
 
 
 
@@ -16606,7 +16606,7 @@ $L$_16_blocks_ok_qnrdEdGqxaqxmDB:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EjmrxbmylfjrrDx
+	jl	NEAR $L$_small_initial_partial_block_110
 
 
 
@@ -16668,8 +16668,8 @@ $L$_16_blocks_ok_qnrdEdGqxaqxmDB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EjmrxbmylfjrrDx
-$L$_small_initial_partial_block_EjmrxbmylfjrrDx:
+	jmp	NEAR $L$_small_initial_compute_done_110
+$L$_small_initial_partial_block_110:
 
 
 
@@ -16733,26 +16733,26 @@ $L$_small_initial_partial_block_EjmrxbmylfjrrDx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EjmrxbmylfjrrDx:
+$L$_small_initial_compute_done_110:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EjmrxbmylfjrrDx
+	je	NEAR $L$_after_reduction_110
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EjmrxbmylfjrrDx:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_12_miskdxjijllgEsf:
+$L$_after_reduction_110:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_12_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_cvvmjxmxDarqCFE
+	jae	NEAR $L$_16_blocks_overflow_111
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_cvvmjxmxDarqCFE
+	jmp	NEAR $L$_16_blocks_ok_111
 
-$L$_16_blocks_overflow_cvvmjxmxDarqCFE:
+$L$_16_blocks_overflow_111:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -16761,7 +16761,7 @@ $L$_16_blocks_overflow_cvvmjxmxDarqCFE:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_cvvmjxmxDarqCFE:
+$L$_16_blocks_ok_111:
 
 
 
@@ -16899,7 +16899,7 @@ $L$_16_blocks_ok_cvvmjxmxDarqCFE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dzuvFCygkfhqAqd
+	jl	NEAR $L$_small_initial_partial_block_112
 
 
 
@@ -16955,8 +16955,8 @@ $L$_16_blocks_ok_cvvmjxmxDarqCFE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dzuvFCygkfhqAqd
-$L$_small_initial_partial_block_dzuvFCygkfhqAqd:
+	jmp	NEAR $L$_small_initial_compute_done_112
+$L$_small_initial_partial_block_112:
 
 
 
@@ -17021,27 +17021,27 @@ $L$_small_initial_partial_block_dzuvFCygkfhqAqd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dzuvFCygkfhqAqd:
+$L$_small_initial_compute_done_112:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dzuvFCygkfhqAqd
+	je	NEAR $L$_after_reduction_112
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dzuvFCygkfhqAqd:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_13_miskdxjijllgEsf:
+$L$_after_reduction_112:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_13_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_aGDeqirDlsvBagk
+	jae	NEAR $L$_16_blocks_overflow_113
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_aGDeqirDlsvBagk
+	jmp	NEAR $L$_16_blocks_ok_113
 
-$L$_16_blocks_overflow_aGDeqirDlsvBagk:
+$L$_16_blocks_overflow_113:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -17052,7 +17052,7 @@ $L$_16_blocks_overflow_aGDeqirDlsvBagk:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_aGDeqirDlsvBagk:
+$L$_16_blocks_ok_113:
 
 
 
@@ -17205,7 +17205,7 @@ $L$_16_blocks_ok_aGDeqirDlsvBagk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_sbuhCEtawpqlgut
+	jl	NEAR $L$_small_initial_partial_block_114
 
 
 
@@ -17271,8 +17271,8 @@ $L$_16_blocks_ok_aGDeqirDlsvBagk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_sbuhCEtawpqlgut
-$L$_small_initial_partial_block_sbuhCEtawpqlgut:
+	jmp	NEAR $L$_small_initial_compute_done_114
+$L$_small_initial_partial_block_114:
 
 
 
@@ -17331,27 +17331,27 @@ $L$_small_initial_partial_block_sbuhCEtawpqlgut:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_sbuhCEtawpqlgut:
+$L$_small_initial_compute_done_114:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_sbuhCEtawpqlgut
+	je	NEAR $L$_after_reduction_114
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_sbuhCEtawpqlgut:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_14_miskdxjijllgEsf:
+$L$_after_reduction_114:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_14_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_ohfoBntzfbECroc
+	jae	NEAR $L$_16_blocks_overflow_115
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ohfoBntzfbECroc
+	jmp	NEAR $L$_16_blocks_ok_115
 
-$L$_16_blocks_overflow_ohfoBntzfbECroc:
+$L$_16_blocks_overflow_115:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -17362,7 +17362,7 @@ $L$_16_blocks_overflow_ohfoBntzfbECroc:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_ohfoBntzfbECroc:
+$L$_16_blocks_ok_115:
 
 
 
@@ -17515,7 +17515,7 @@ $L$_16_blocks_ok_ohfoBntzfbECroc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_duAhelpznxedppa
+	jl	NEAR $L$_small_initial_partial_block_116
 
 
 
@@ -17581,8 +17581,8 @@ $L$_16_blocks_ok_ohfoBntzfbECroc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_duAhelpznxedppa
-$L$_small_initial_partial_block_duAhelpznxedppa:
+	jmp	NEAR $L$_small_initial_compute_done_116
+$L$_small_initial_partial_block_116:
 
 
 
@@ -17651,27 +17651,27 @@ $L$_small_initial_partial_block_duAhelpznxedppa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_duAhelpznxedppa:
+$L$_small_initial_compute_done_116:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_duAhelpznxedppa
+	je	NEAR $L$_after_reduction_116
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_duAhelpznxedppa:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_15_miskdxjijllgEsf:
+$L$_after_reduction_116:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_15_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_BDegraxhvoEsfGb
+	jae	NEAR $L$_16_blocks_overflow_117
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_BDegraxhvoEsfGb
+	jmp	NEAR $L$_16_blocks_ok_117
 
-$L$_16_blocks_overflow_BDegraxhvoEsfGb:
+$L$_16_blocks_overflow_117:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -17682,7 +17682,7 @@ $L$_16_blocks_overflow_BDegraxhvoEsfGb:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_BDegraxhvoEsfGb:
+$L$_16_blocks_ok_117:
 
 
 
@@ -17835,7 +17835,7 @@ $L$_16_blocks_ok_BDegraxhvoEsfGb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yFuzcnwvymjzcBr
+	jl	NEAR $L$_small_initial_partial_block_118
 
 
 
@@ -17902,8 +17902,8 @@ $L$_16_blocks_ok_BDegraxhvoEsfGb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yFuzcnwvymjzcBr
-$L$_small_initial_partial_block_yFuzcnwvymjzcBr:
+	jmp	NEAR $L$_small_initial_compute_done_118
+$L$_small_initial_partial_block_118:
 
 
 
@@ -17972,27 +17972,27 @@ $L$_small_initial_partial_block_yFuzcnwvymjzcBr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yFuzcnwvymjzcBr:
+$L$_small_initial_compute_done_118:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yFuzcnwvymjzcBr
+	je	NEAR $L$_after_reduction_118
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yFuzcnwvymjzcBr:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_16_miskdxjijllgEsf:
+$L$_after_reduction_118:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_16_88:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_FychcmDymAynCht
+	jae	NEAR $L$_16_blocks_overflow_119
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FychcmDymAynCht
+	jmp	NEAR $L$_16_blocks_ok_119
 
-$L$_16_blocks_overflow_FychcmDymAynCht:
+$L$_16_blocks_overflow_119:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -18003,7 +18003,7 @@ $L$_16_blocks_overflow_FychcmDymAynCht:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_FychcmDymAynCht:
+$L$_16_blocks_ok_119:
 
 
 
@@ -18153,7 +18153,7 @@ $L$_16_blocks_ok_FychcmDymAynCht:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_mxtmdngpxzpyGsC:
+$L$_small_initial_partial_block_120:
 
 
 
@@ -18223,11 +18223,11 @@ $L$_small_initial_partial_block_mxtmdngpxzpyGsC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mxtmdngpxzpyGsC:
+$L$_small_initial_compute_done_120:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mxtmdngpxzpyGsC:
-	jmp	NEAR $L$_last_blocks_done_miskdxjijllgEsf
-$L$_last_num_blocks_is_0_miskdxjijllgEsf:
+$L$_after_reduction_120:
+	jmp	NEAR $L$_last_blocks_done_88
+$L$_last_num_blocks_is_0_88:
 	vmovdqa64	zmm13,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm12,ZMMWORD[512+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -18288,18 +18288,18 @@ $L$_last_num_blocks_is_0_miskdxjijllgEsf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_miskdxjijllgEsf:
+$L$_last_blocks_done_88:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_pfCcdwlEiojmoCs
+	jmp	NEAR $L$_ghash_done_10
 
-$L$_message_below_32_blocks_pfCcdwlEiojmoCs:
+$L$_message_below_32_blocks_10:
 
 
 	sub	r13,256
 	add	r11,256
 	mov	r10d,r13d
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_oaihemskpxveaAF
+	jnz	NEAR $L$_skip_hkeys_precomputation_121
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -18427,7 +18427,7 @@ $L$_message_below_32_blocks_pfCcdwlEiojmoCs:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[256+rsp],zmm5
-$L$_skip_hkeys_precomputation_oaihemskpxveaAF:
+$L$_skip_hkeys_precomputation_121:
 	mov	r14,1
 	and	r10d,~15
 	mov	ebx,512
@@ -18435,61 +18435,61 @@ $L$_skip_hkeys_precomputation_oaihemskpxveaAF:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_rcAsijgobfqregp
+	je	NEAR $L$_last_num_blocks_is_0_122
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_rcAsijgobfqregp
-	jb	NEAR $L$_last_num_blocks_is_7_1_rcAsijgobfqregp
+	je	NEAR $L$_last_num_blocks_is_8_122
+	jb	NEAR $L$_last_num_blocks_is_7_1_122
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_rcAsijgobfqregp
-	jb	NEAR $L$_last_num_blocks_is_11_9_rcAsijgobfqregp
+	je	NEAR $L$_last_num_blocks_is_12_122
+	jb	NEAR $L$_last_num_blocks_is_11_9_122
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_rcAsijgobfqregp
-	ja	NEAR $L$_last_num_blocks_is_16_rcAsijgobfqregp
+	je	NEAR $L$_last_num_blocks_is_15_122
+	ja	NEAR $L$_last_num_blocks_is_16_122
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_rcAsijgobfqregp
-	jmp	NEAR $L$_last_num_blocks_is_13_rcAsijgobfqregp
+	je	NEAR $L$_last_num_blocks_is_14_122
+	jmp	NEAR $L$_last_num_blocks_is_13_122
 
-$L$_last_num_blocks_is_11_9_rcAsijgobfqregp:
+$L$_last_num_blocks_is_11_9_122:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_rcAsijgobfqregp
-	ja	NEAR $L$_last_num_blocks_is_11_rcAsijgobfqregp
-	jmp	NEAR $L$_last_num_blocks_is_9_rcAsijgobfqregp
+	je	NEAR $L$_last_num_blocks_is_10_122
+	ja	NEAR $L$_last_num_blocks_is_11_122
+	jmp	NEAR $L$_last_num_blocks_is_9_122
 
-$L$_last_num_blocks_is_7_1_rcAsijgobfqregp:
+$L$_last_num_blocks_is_7_1_122:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_rcAsijgobfqregp
-	jb	NEAR $L$_last_num_blocks_is_3_1_rcAsijgobfqregp
+	je	NEAR $L$_last_num_blocks_is_4_122
+	jb	NEAR $L$_last_num_blocks_is_3_1_122
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_rcAsijgobfqregp
-	je	NEAR $L$_last_num_blocks_is_6_rcAsijgobfqregp
-	jmp	NEAR $L$_last_num_blocks_is_5_rcAsijgobfqregp
+	ja	NEAR $L$_last_num_blocks_is_7_122
+	je	NEAR $L$_last_num_blocks_is_6_122
+	jmp	NEAR $L$_last_num_blocks_is_5_122
 
-$L$_last_num_blocks_is_3_1_rcAsijgobfqregp:
+$L$_last_num_blocks_is_3_1_122:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_rcAsijgobfqregp
-	je	NEAR $L$_last_num_blocks_is_2_rcAsijgobfqregp
-$L$_last_num_blocks_is_1_rcAsijgobfqregp:
+	ja	NEAR $L$_last_num_blocks_is_3_122
+	je	NEAR $L$_last_num_blocks_is_2_122
+$L$_last_num_blocks_is_1_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_fwbzafkapcdyFDa
+	jae	NEAR $L$_16_blocks_overflow_123
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_fwbzafkapcdyFDa
+	jmp	NEAR $L$_16_blocks_ok_123
 
-$L$_16_blocks_overflow_fwbzafkapcdyFDa:
+$L$_16_blocks_overflow_123:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_fwbzafkapcdyFDa:
+$L$_16_blocks_ok_123:
 
 
 
@@ -18573,7 +18573,7 @@ $L$_16_blocks_ok_fwbzafkapcdyFDa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hdBrwrgghjChBpj
+	jl	NEAR $L$_small_initial_partial_block_124
 
 
 
@@ -18617,8 +18617,8 @@ $L$_16_blocks_ok_fwbzafkapcdyFDa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hdBrwrgghjChBpj
-$L$_small_initial_partial_block_hdBrwrgghjChBpj:
+	jmp	NEAR $L$_small_initial_compute_done_124
+$L$_small_initial_partial_block_124:
 
 
 
@@ -18670,24 +18670,24 @@ $L$_small_initial_partial_block_hdBrwrgghjChBpj:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_hdBrwrgghjChBpj
-$L$_small_initial_compute_done_hdBrwrgghjChBpj:
-$L$_after_reduction_hdBrwrgghjChBpj:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_2_rcAsijgobfqregp:
+	jmp	NEAR $L$_after_reduction_124
+$L$_small_initial_compute_done_124:
+$L$_after_reduction_124:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_2_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_gGAzmjAlqfmvhos
+	jae	NEAR $L$_16_blocks_overflow_125
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_gGAzmjAlqfmvhos
+	jmp	NEAR $L$_16_blocks_ok_125
 
-$L$_16_blocks_overflow_gGAzmjAlqfmvhos:
+$L$_16_blocks_overflow_125:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_gGAzmjAlqfmvhos:
+$L$_16_blocks_ok_125:
 
 
 
@@ -18772,7 +18772,7 @@ $L$_16_blocks_ok_gGAzmjAlqfmvhos:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AnADoFliFmsGCBE
+	jl	NEAR $L$_small_initial_partial_block_126
 
 
 
@@ -18816,8 +18816,8 @@ $L$_16_blocks_ok_gGAzmjAlqfmvhos:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AnADoFliFmsGCBE
-$L$_small_initial_partial_block_AnADoFliFmsGCBE:
+	jmp	NEAR $L$_small_initial_compute_done_126
+$L$_small_initial_partial_block_126:
 
 
 
@@ -18864,27 +18864,27 @@ $L$_small_initial_partial_block_AnADoFliFmsGCBE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AnADoFliFmsGCBE:
+$L$_small_initial_compute_done_126:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AnADoFliFmsGCBE
+	je	NEAR $L$_after_reduction_126
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AnADoFliFmsGCBE:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_3_rcAsijgobfqregp:
+$L$_after_reduction_126:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_3_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_vosyCgvwltsmqzb
+	jae	NEAR $L$_16_blocks_overflow_127
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_vosyCgvwltsmqzb
+	jmp	NEAR $L$_16_blocks_ok_127
 
-$L$_16_blocks_overflow_vosyCgvwltsmqzb:
+$L$_16_blocks_overflow_127:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_vosyCgvwltsmqzb:
+$L$_16_blocks_ok_127:
 
 
 
@@ -18969,7 +18969,7 @@ $L$_16_blocks_ok_vosyCgvwltsmqzb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CmzigepkCfhlAbp
+	jl	NEAR $L$_small_initial_partial_block_128
 
 
 
@@ -19014,8 +19014,8 @@ $L$_16_blocks_ok_vosyCgvwltsmqzb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CmzigepkCfhlAbp
-$L$_small_initial_partial_block_CmzigepkCfhlAbp:
+	jmp	NEAR $L$_small_initial_compute_done_128
+$L$_small_initial_partial_block_128:
 
 
 
@@ -19062,27 +19062,27 @@ $L$_small_initial_partial_block_CmzigepkCfhlAbp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_CmzigepkCfhlAbp:
+$L$_small_initial_compute_done_128:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_CmzigepkCfhlAbp
+	je	NEAR $L$_after_reduction_128
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_CmzigepkCfhlAbp:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_4_rcAsijgobfqregp:
+$L$_after_reduction_128:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_4_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_CtFczeehvxfahpF
+	jae	NEAR $L$_16_blocks_overflow_129
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_CtFczeehvxfahpF
+	jmp	NEAR $L$_16_blocks_ok_129
 
-$L$_16_blocks_overflow_CtFczeehvxfahpF:
+$L$_16_blocks_overflow_129:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_CtFczeehvxfahpF:
+$L$_16_blocks_ok_129:
 
 
 
@@ -19167,7 +19167,7 @@ $L$_16_blocks_ok_CtFczeehvxfahpF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EisqhanEtAvwfsf
+	jl	NEAR $L$_small_initial_partial_block_130
 
 
 
@@ -19212,8 +19212,8 @@ $L$_16_blocks_ok_CtFczeehvxfahpF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EisqhanEtAvwfsf
-$L$_small_initial_partial_block_EisqhanEtAvwfsf:
+	jmp	NEAR $L$_small_initial_compute_done_130
+$L$_small_initial_partial_block_130:
 
 
 
@@ -19261,32 +19261,32 @@ $L$_small_initial_partial_block_EisqhanEtAvwfsf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EisqhanEtAvwfsf:
+$L$_small_initial_compute_done_130:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EisqhanEtAvwfsf
+	je	NEAR $L$_after_reduction_130
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EisqhanEtAvwfsf:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_5_rcAsijgobfqregp:
+$L$_after_reduction_130:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_5_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_ibcAvcvrDmiyFpo
+	jae	NEAR $L$_16_blocks_overflow_131
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_ibcAvcvrDmiyFpo
+	jmp	NEAR $L$_16_blocks_ok_131
 
-$L$_16_blocks_overflow_ibcAvcvrDmiyFpo:
+$L$_16_blocks_overflow_131:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_ibcAvcvrDmiyFpo:
+$L$_16_blocks_ok_131:
 
 
 
@@ -19386,7 +19386,7 @@ $L$_16_blocks_ok_ibcAvcvrDmiyFpo:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_aBsiqmrBtyxEkBC
+	jl	NEAR $L$_small_initial_partial_block_132
 
 
 
@@ -19437,8 +19437,8 @@ $L$_16_blocks_ok_ibcAvcvrDmiyFpo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_aBsiqmrBtyxEkBC
-$L$_small_initial_partial_block_aBsiqmrBtyxEkBC:
+	jmp	NEAR $L$_small_initial_compute_done_132
+$L$_small_initial_partial_block_132:
 
 
 
@@ -19486,32 +19486,32 @@ $L$_small_initial_partial_block_aBsiqmrBtyxEkBC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_aBsiqmrBtyxEkBC:
+$L$_small_initial_compute_done_132:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_aBsiqmrBtyxEkBC
+	je	NEAR $L$_after_reduction_132
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_aBsiqmrBtyxEkBC:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_6_rcAsijgobfqregp:
+$L$_after_reduction_132:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_6_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_eqhEzjnkrvDFgmg
+	jae	NEAR $L$_16_blocks_overflow_133
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_eqhEzjnkrvDFgmg
+	jmp	NEAR $L$_16_blocks_ok_133
 
-$L$_16_blocks_overflow_eqhEzjnkrvDFgmg:
+$L$_16_blocks_overflow_133:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_eqhEzjnkrvDFgmg:
+$L$_16_blocks_ok_133:
 
 
 
@@ -19611,7 +19611,7 @@ $L$_16_blocks_ok_eqhEzjnkrvDFgmg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EFAvtCFnirlwlGz
+	jl	NEAR $L$_small_initial_partial_block_134
 
 
 
@@ -19662,8 +19662,8 @@ $L$_16_blocks_ok_eqhEzjnkrvDFgmg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EFAvtCFnirlwlGz
-$L$_small_initial_partial_block_EFAvtCFnirlwlGz:
+	jmp	NEAR $L$_small_initial_compute_done_134
+$L$_small_initial_partial_block_134:
 
 
 
@@ -19717,32 +19717,32 @@ $L$_small_initial_partial_block_EFAvtCFnirlwlGz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EFAvtCFnirlwlGz:
+$L$_small_initial_compute_done_134:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EFAvtCFnirlwlGz
+	je	NEAR $L$_after_reduction_134
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EFAvtCFnirlwlGz:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_7_rcAsijgobfqregp:
+$L$_after_reduction_134:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_7_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_cADvwijyxCguikm
+	jae	NEAR $L$_16_blocks_overflow_135
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_cADvwijyxCguikm
+	jmp	NEAR $L$_16_blocks_ok_135
 
-$L$_16_blocks_overflow_cADvwijyxCguikm:
+$L$_16_blocks_overflow_135:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_cADvwijyxCguikm:
+$L$_16_blocks_ok_135:
 
 
 
@@ -19842,7 +19842,7 @@ $L$_16_blocks_ok_cADvwijyxCguikm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_iqzpoqcplryFfFe
+	jl	NEAR $L$_small_initial_partial_block_136
 
 
 
@@ -19894,8 +19894,8 @@ $L$_16_blocks_ok_cADvwijyxCguikm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_iqzpoqcplryFfFe
-$L$_small_initial_partial_block_iqzpoqcplryFfFe:
+	jmp	NEAR $L$_small_initial_compute_done_136
+$L$_small_initial_partial_block_136:
 
 
 
@@ -19949,32 +19949,32 @@ $L$_small_initial_partial_block_iqzpoqcplryFfFe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_iqzpoqcplryFfFe:
+$L$_small_initial_compute_done_136:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_iqzpoqcplryFfFe
+	je	NEAR $L$_after_reduction_136
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_iqzpoqcplryFfFe:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_8_rcAsijgobfqregp:
+$L$_after_reduction_136:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_8_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_jlhBmlzEfEsaymr
+	jae	NEAR $L$_16_blocks_overflow_137
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_jlhBmlzEfEsaymr
+	jmp	NEAR $L$_16_blocks_ok_137
 
-$L$_16_blocks_overflow_jlhBmlzEfEsaymr:
+$L$_16_blocks_overflow_137:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_jlhBmlzEfEsaymr:
+$L$_16_blocks_ok_137:
 
 
 
@@ -20074,7 +20074,7 @@ $L$_16_blocks_ok_jlhBmlzEfEsaymr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AfmgBemsfttargq
+	jl	NEAR $L$_small_initial_partial_block_138
 
 
 
@@ -20128,8 +20128,8 @@ $L$_16_blocks_ok_jlhBmlzEfEsaymr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AfmgBemsfttargq
-$L$_small_initial_partial_block_AfmgBemsfttargq:
+	jmp	NEAR $L$_small_initial_compute_done_138
+$L$_small_initial_partial_block_138:
 
 
 
@@ -20184,26 +20184,26 @@ $L$_small_initial_partial_block_AfmgBemsfttargq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AfmgBemsfttargq:
+$L$_small_initial_compute_done_138:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AfmgBemsfttargq
+	je	NEAR $L$_after_reduction_138
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AfmgBemsfttargq:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_9_rcAsijgobfqregp:
+$L$_after_reduction_138:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_9_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_vFzdDGhoCngkwaf
+	jae	NEAR $L$_16_blocks_overflow_139
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_vFzdDGhoCngkwaf
+	jmp	NEAR $L$_16_blocks_ok_139
 
-$L$_16_blocks_overflow_vFzdDGhoCngkwaf:
+$L$_16_blocks_overflow_139:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -20212,7 +20212,7 @@ $L$_16_blocks_overflow_vFzdDGhoCngkwaf:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_vFzdDGhoCngkwaf:
+$L$_16_blocks_ok_139:
 
 
 
@@ -20327,7 +20327,7 @@ $L$_16_blocks_ok_vFzdDGhoCngkwaf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FlcqByznFqlbuiE
+	jl	NEAR $L$_small_initial_partial_block_140
 
 
 
@@ -20387,8 +20387,8 @@ $L$_16_blocks_ok_vFzdDGhoCngkwaf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FlcqByznFqlbuiE
-$L$_small_initial_partial_block_FlcqByznFqlbuiE:
+	jmp	NEAR $L$_small_initial_compute_done_140
+$L$_small_initial_partial_block_140:
 
 
 
@@ -20445,26 +20445,26 @@ $L$_small_initial_partial_block_FlcqByznFqlbuiE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FlcqByznFqlbuiE:
+$L$_small_initial_compute_done_140:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FlcqByznFqlbuiE
+	je	NEAR $L$_after_reduction_140
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FlcqByznFqlbuiE:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_10_rcAsijgobfqregp:
+$L$_after_reduction_140:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_10_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_CDpDvjazqCuyEBC
+	jae	NEAR $L$_16_blocks_overflow_141
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_CDpDvjazqCuyEBC
+	jmp	NEAR $L$_16_blocks_ok_141
 
-$L$_16_blocks_overflow_CDpDvjazqCuyEBC:
+$L$_16_blocks_overflow_141:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -20473,7 +20473,7 @@ $L$_16_blocks_overflow_CDpDvjazqCuyEBC:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_CDpDvjazqCuyEBC:
+$L$_16_blocks_ok_141:
 
 
 
@@ -20588,7 +20588,7 @@ $L$_16_blocks_ok_CDpDvjazqCuyEBC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FvbmhFElAuvdBrz
+	jl	NEAR $L$_small_initial_partial_block_142
 
 
 
@@ -20648,8 +20648,8 @@ $L$_16_blocks_ok_CDpDvjazqCuyEBC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FvbmhFElAuvdBrz
-$L$_small_initial_partial_block_FvbmhFElAuvdBrz:
+	jmp	NEAR $L$_small_initial_compute_done_142
+$L$_small_initial_partial_block_142:
 
 
 
@@ -20712,26 +20712,26 @@ $L$_small_initial_partial_block_FvbmhFElAuvdBrz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FvbmhFElAuvdBrz:
+$L$_small_initial_compute_done_142:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FvbmhFElAuvdBrz
+	je	NEAR $L$_after_reduction_142
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FvbmhFElAuvdBrz:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_11_rcAsijgobfqregp:
+$L$_after_reduction_142:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_11_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_GvmubqbFsknvmgb
+	jae	NEAR $L$_16_blocks_overflow_143
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_GvmubqbFsknvmgb
+	jmp	NEAR $L$_16_blocks_ok_143
 
-$L$_16_blocks_overflow_GvmubqbFsknvmgb:
+$L$_16_blocks_overflow_143:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -20740,7 +20740,7 @@ $L$_16_blocks_overflow_GvmubqbFsknvmgb:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_GvmubqbFsknvmgb:
+$L$_16_blocks_ok_143:
 
 
 
@@ -20855,7 +20855,7 @@ $L$_16_blocks_ok_GvmubqbFsknvmgb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_deFBqDonqjFkyyg
+	jl	NEAR $L$_small_initial_partial_block_144
 
 
 
@@ -20916,8 +20916,8 @@ $L$_16_blocks_ok_GvmubqbFsknvmgb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_deFBqDonqjFkyyg
-$L$_small_initial_partial_block_deFBqDonqjFkyyg:
+	jmp	NEAR $L$_small_initial_compute_done_144
+$L$_small_initial_partial_block_144:
 
 
 
@@ -20980,26 +20980,26 @@ $L$_small_initial_partial_block_deFBqDonqjFkyyg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_deFBqDonqjFkyyg:
+$L$_small_initial_compute_done_144:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_deFBqDonqjFkyyg
+	je	NEAR $L$_after_reduction_144
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_deFBqDonqjFkyyg:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_12_rcAsijgobfqregp:
+$L$_after_reduction_144:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_12_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_swgmorBgxzyaDyA
+	jae	NEAR $L$_16_blocks_overflow_145
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_swgmorBgxzyaDyA
+	jmp	NEAR $L$_16_blocks_ok_145
 
-$L$_16_blocks_overflow_swgmorBgxzyaDyA:
+$L$_16_blocks_overflow_145:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -21008,7 +21008,7 @@ $L$_16_blocks_overflow_swgmorBgxzyaDyA:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_swgmorBgxzyaDyA:
+$L$_16_blocks_ok_145:
 
 
 
@@ -21123,7 +21123,7 @@ $L$_16_blocks_ok_swgmorBgxzyaDyA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kvvyrvGvoBbwyzF
+	jl	NEAR $L$_small_initial_partial_block_146
 
 
 
@@ -21182,8 +21182,8 @@ $L$_16_blocks_ok_swgmorBgxzyaDyA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kvvyrvGvoBbwyzF
-$L$_small_initial_partial_block_kvvyrvGvoBbwyzF:
+	jmp	NEAR $L$_small_initial_compute_done_146
+$L$_small_initial_partial_block_146:
 
 
 
@@ -21247,27 +21247,27 @@ $L$_small_initial_partial_block_kvvyrvGvoBbwyzF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kvvyrvGvoBbwyzF:
+$L$_small_initial_compute_done_146:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kvvyrvGvoBbwyzF
+	je	NEAR $L$_after_reduction_146
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kvvyrvGvoBbwyzF:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_13_rcAsijgobfqregp:
+$L$_after_reduction_146:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_13_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_elcjstjlEjgwicy
+	jae	NEAR $L$_16_blocks_overflow_147
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_elcjstjlEjgwicy
+	jmp	NEAR $L$_16_blocks_ok_147
 
-$L$_16_blocks_overflow_elcjstjlEjgwicy:
+$L$_16_blocks_overflow_147:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -21278,7 +21278,7 @@ $L$_16_blocks_overflow_elcjstjlEjgwicy:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_elcjstjlEjgwicy:
+$L$_16_blocks_ok_147:
 
 
 
@@ -21408,7 +21408,7 @@ $L$_16_blocks_ok_elcjstjlEjgwicy:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dFuzsbudwhfvAve
+	jl	NEAR $L$_small_initial_partial_block_148
 
 
 
@@ -21473,8 +21473,8 @@ $L$_16_blocks_ok_elcjstjlEjgwicy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dFuzsbudwhfvAve
-$L$_small_initial_partial_block_dFuzsbudwhfvAve:
+	jmp	NEAR $L$_small_initial_compute_done_148
+$L$_small_initial_partial_block_148:
 
 
 
@@ -21536,27 +21536,27 @@ $L$_small_initial_partial_block_dFuzsbudwhfvAve:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dFuzsbudwhfvAve:
+$L$_small_initial_compute_done_148:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dFuzsbudwhfvAve
+	je	NEAR $L$_after_reduction_148
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dFuzsbudwhfvAve:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_14_rcAsijgobfqregp:
+$L$_after_reduction_148:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_14_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_lnetpGwggdoiqhD
+	jae	NEAR $L$_16_blocks_overflow_149
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_lnetpGwggdoiqhD
+	jmp	NEAR $L$_16_blocks_ok_149
 
-$L$_16_blocks_overflow_lnetpGwggdoiqhD:
+$L$_16_blocks_overflow_149:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -21567,7 +21567,7 @@ $L$_16_blocks_overflow_lnetpGwggdoiqhD:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_lnetpGwggdoiqhD:
+$L$_16_blocks_ok_149:
 
 
 
@@ -21697,7 +21697,7 @@ $L$_16_blocks_ok_lnetpGwggdoiqhD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qrmtrgokoydzomp
+	jl	NEAR $L$_small_initial_partial_block_150
 
 
 
@@ -21762,8 +21762,8 @@ $L$_16_blocks_ok_lnetpGwggdoiqhD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qrmtrgokoydzomp
-$L$_small_initial_partial_block_qrmtrgokoydzomp:
+	jmp	NEAR $L$_small_initial_compute_done_150
+$L$_small_initial_partial_block_150:
 
 
 
@@ -21831,27 +21831,27 @@ $L$_small_initial_partial_block_qrmtrgokoydzomp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qrmtrgokoydzomp:
+$L$_small_initial_compute_done_150:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qrmtrgokoydzomp
+	je	NEAR $L$_after_reduction_150
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qrmtrgokoydzomp:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_15_rcAsijgobfqregp:
+$L$_after_reduction_150:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_15_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_hgrykdFzDoDipjq
+	jae	NEAR $L$_16_blocks_overflow_151
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_hgrykdFzDoDipjq
+	jmp	NEAR $L$_16_blocks_ok_151
 
-$L$_16_blocks_overflow_hgrykdFzDoDipjq:
+$L$_16_blocks_overflow_151:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -21862,7 +21862,7 @@ $L$_16_blocks_overflow_hgrykdFzDoDipjq:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_hgrykdFzDoDipjq:
+$L$_16_blocks_ok_151:
 
 
 
@@ -21992,7 +21992,7 @@ $L$_16_blocks_ok_hgrykdFzDoDipjq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rlFCzzbrtmaaCoc
+	jl	NEAR $L$_small_initial_partial_block_152
 
 
 
@@ -22058,8 +22058,8 @@ $L$_16_blocks_ok_hgrykdFzDoDipjq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rlFCzzbrtmaaCoc
-$L$_small_initial_partial_block_rlFCzzbrtmaaCoc:
+	jmp	NEAR $L$_small_initial_compute_done_152
+$L$_small_initial_partial_block_152:
 
 
 
@@ -22127,27 +22127,27 @@ $L$_small_initial_partial_block_rlFCzzbrtmaaCoc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rlFCzzbrtmaaCoc:
+$L$_small_initial_compute_done_152:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rlFCzzbrtmaaCoc
+	je	NEAR $L$_after_reduction_152
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rlFCzzbrtmaaCoc:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_16_rcAsijgobfqregp:
+$L$_after_reduction_152:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_16_122:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_okqDjrdoqhuwexd
+	jae	NEAR $L$_16_blocks_overflow_153
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_okqDjrdoqhuwexd
+	jmp	NEAR $L$_16_blocks_ok_153
 
-$L$_16_blocks_overflow_okqDjrdoqhuwexd:
+$L$_16_blocks_overflow_153:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -22158,7 +22158,7 @@ $L$_16_blocks_overflow_okqDjrdoqhuwexd:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_okqDjrdoqhuwexd:
+$L$_16_blocks_ok_153:
 
 
 
@@ -22285,7 +22285,7 @@ $L$_16_blocks_ok_okqDjrdoqhuwexd:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_pCyjcDDFyjihBgB:
+$L$_small_initial_partial_block_154:
 
 
 
@@ -22354,11 +22354,11 @@ $L$_small_initial_partial_block_pCyjcDDFyjihBgB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_pCyjcDDFyjihBgB:
+$L$_small_initial_compute_done_154:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_pCyjcDDFyjihBgB:
-	jmp	NEAR $L$_last_blocks_done_rcAsijgobfqregp
-$L$_last_num_blocks_is_0_rcAsijgobfqregp:
+$L$_after_reduction_154:
+	jmp	NEAR $L$_last_blocks_done_122
+$L$_last_num_blocks_is_0_122:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -22420,65 +22420,65 @@ $L$_last_num_blocks_is_0_rcAsijgobfqregp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_rcAsijgobfqregp:
+$L$_last_blocks_done_122:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_pfCcdwlEiojmoCs
+	jmp	NEAR $L$_ghash_done_10
 
-$L$_message_below_equal_16_blocks_pfCcdwlEiojmoCs:
+$L$_message_below_equal_16_blocks_10:
 
 
 	mov	r12d,r13d
 	add	r12d,15
 	shr	r12d,4
 	cmp	r12,8
-	je	NEAR $L$_small_initial_num_blocks_is_8_zwtuppCyrqjxlmf
-	jl	NEAR $L$_small_initial_num_blocks_is_7_1_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_8_155
+	jl	NEAR $L$_small_initial_num_blocks_is_7_1_155
 
 
 	cmp	r12,12
-	je	NEAR $L$_small_initial_num_blocks_is_12_zwtuppCyrqjxlmf
-	jl	NEAR $L$_small_initial_num_blocks_is_11_9_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_12_155
+	jl	NEAR $L$_small_initial_num_blocks_is_11_9_155
 
 
 	cmp	r12,16
-	je	NEAR $L$_small_initial_num_blocks_is_16_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_16_155
 	cmp	r12,15
-	je	NEAR $L$_small_initial_num_blocks_is_15_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_15_155
 	cmp	r12,14
-	je	NEAR $L$_small_initial_num_blocks_is_14_zwtuppCyrqjxlmf
-	jmp	NEAR $L$_small_initial_num_blocks_is_13_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_14_155
+	jmp	NEAR $L$_small_initial_num_blocks_is_13_155
 
-$L$_small_initial_num_blocks_is_11_9_zwtuppCyrqjxlmf:
+$L$_small_initial_num_blocks_is_11_9_155:
 
 	cmp	r12,11
-	je	NEAR $L$_small_initial_num_blocks_is_11_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_11_155
 	cmp	r12,10
-	je	NEAR $L$_small_initial_num_blocks_is_10_zwtuppCyrqjxlmf
-	jmp	NEAR $L$_small_initial_num_blocks_is_9_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_10_155
+	jmp	NEAR $L$_small_initial_num_blocks_is_9_155
 
-$L$_small_initial_num_blocks_is_7_1_zwtuppCyrqjxlmf:
+$L$_small_initial_num_blocks_is_7_1_155:
 	cmp	r12,4
-	je	NEAR $L$_small_initial_num_blocks_is_4_zwtuppCyrqjxlmf
-	jl	NEAR $L$_small_initial_num_blocks_is_3_1_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_4_155
+	jl	NEAR $L$_small_initial_num_blocks_is_3_1_155
 
 	cmp	r12,7
-	je	NEAR $L$_small_initial_num_blocks_is_7_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_7_155
 	cmp	r12,6
-	je	NEAR $L$_small_initial_num_blocks_is_6_zwtuppCyrqjxlmf
-	jmp	NEAR $L$_small_initial_num_blocks_is_5_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_6_155
+	jmp	NEAR $L$_small_initial_num_blocks_is_5_155
 
-$L$_small_initial_num_blocks_is_3_1_zwtuppCyrqjxlmf:
+$L$_small_initial_num_blocks_is_3_1_155:
 
 	cmp	r12,3
-	je	NEAR $L$_small_initial_num_blocks_is_3_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_3_155
 	cmp	r12,2
-	je	NEAR $L$_small_initial_num_blocks_is_2_zwtuppCyrqjxlmf
+	je	NEAR $L$_small_initial_num_blocks_is_2_155
 
 
 
 
 
-$L$_small_initial_num_blocks_is_1_zwtuppCyrqjxlmf:
+$L$_small_initial_num_blocks_is_1_155:
 	vmovdqa64	xmm29,XMMWORD[SHUF_MASK]
 	vpaddd	xmm0,xmm2,XMMWORD[ONE]
 	lea	r10,[byte64_len_to_mask_table]
@@ -22519,7 +22519,7 @@ $L$_small_initial_num_blocks_is_1_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rtFskwAvldmpwiE
+	jl	NEAR $L$_small_initial_partial_block_156
 
 
 
@@ -22561,8 +22561,8 @@ $L$_small_initial_num_blocks_is_1_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rtFskwAvldmpwiE
-$L$_small_initial_partial_block_rtFskwAvldmpwiE:
+	jmp	NEAR $L$_small_initial_compute_done_156
+$L$_small_initial_partial_block_156:
 
 
 
@@ -22586,11 +22586,11 @@ $L$_small_initial_partial_block_rtFskwAvldmpwiE:
 
 	vpxorq	xmm14,xmm14,xmm13
 
-	jmp	NEAR $L$_after_reduction_rtFskwAvldmpwiE
-$L$_small_initial_compute_done_rtFskwAvldmpwiE:
-$L$_after_reduction_rtFskwAvldmpwiE:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_2_zwtuppCyrqjxlmf:
+	jmp	NEAR $L$_after_reduction_156
+$L$_small_initial_compute_done_156:
+$L$_after_reduction_156:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_2_155:
 	vmovdqa64	ymm29,YMMWORD[SHUF_MASK]
 	vshufi64x2	ymm0,ymm2,ymm2,0
 	vpaddd	ymm0,ymm0,YMMWORD[ddq_add_1234]
@@ -22633,7 +22633,7 @@ $L$_small_initial_num_blocks_is_2_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_pGeCsohhGuhrusp
+	jl	NEAR $L$_small_initial_partial_block_157
 
 
 
@@ -22675,8 +22675,8 @@ $L$_small_initial_num_blocks_is_2_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_pGeCsohhGuhrusp
-$L$_small_initial_partial_block_pGeCsohhGuhrusp:
+	jmp	NEAR $L$_small_initial_compute_done_157
+$L$_small_initial_partial_block_157:
 
 
 
@@ -22721,14 +22721,14 @@ $L$_small_initial_partial_block_pGeCsohhGuhrusp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_pGeCsohhGuhrusp:
+$L$_small_initial_compute_done_157:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_pGeCsohhGuhrusp
+	je	NEAR $L$_after_reduction_157
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_pGeCsohhGuhrusp:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_3_zwtuppCyrqjxlmf:
+$L$_after_reduction_157:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_3_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -22771,7 +22771,7 @@ $L$_small_initial_num_blocks_is_3_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DkwyAbFpFapmxix
+	jl	NEAR $L$_small_initial_partial_block_158
 
 
 
@@ -22814,8 +22814,8 @@ $L$_small_initial_num_blocks_is_3_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DkwyAbFpFapmxix
-$L$_small_initial_partial_block_DkwyAbFpFapmxix:
+	jmp	NEAR $L$_small_initial_compute_done_158
+$L$_small_initial_partial_block_158:
 
 
 
@@ -22860,14 +22860,14 @@ $L$_small_initial_partial_block_DkwyAbFpFapmxix:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DkwyAbFpFapmxix:
+$L$_small_initial_compute_done_158:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_DkwyAbFpFapmxix
+	je	NEAR $L$_after_reduction_158
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_DkwyAbFpFapmxix:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_4_zwtuppCyrqjxlmf:
+$L$_after_reduction_158:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_4_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -22910,7 +22910,7 @@ $L$_small_initial_num_blocks_is_4_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zDnwdnGaCyqtwtf
+	jl	NEAR $L$_small_initial_partial_block_159
 
 
 
@@ -22952,8 +22952,8 @@ $L$_small_initial_num_blocks_is_4_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zDnwdnGaCyqtwtf
-$L$_small_initial_partial_block_zDnwdnGaCyqtwtf:
+	jmp	NEAR $L$_small_initial_compute_done_159
+$L$_small_initial_partial_block_159:
 
 
 
@@ -22999,14 +22999,14 @@ $L$_small_initial_partial_block_zDnwdnGaCyqtwtf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zDnwdnGaCyqtwtf:
+$L$_small_initial_compute_done_159:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zDnwdnGaCyqtwtf
+	je	NEAR $L$_after_reduction_159
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_zDnwdnGaCyqtwtf:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_5_zwtuppCyrqjxlmf:
+$L$_after_reduction_159:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_5_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -23067,7 +23067,7 @@ $L$_small_initial_num_blocks_is_5_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hmysnudFFmBnacl
+	jl	NEAR $L$_small_initial_partial_block_160
 
 
 
@@ -23119,8 +23119,8 @@ $L$_small_initial_num_blocks_is_5_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hmysnudFFmBnacl
-$L$_small_initial_partial_block_hmysnudFFmBnacl:
+	jmp	NEAR $L$_small_initial_compute_done_160
+$L$_small_initial_partial_block_160:
 
 
 
@@ -23165,14 +23165,14 @@ $L$_small_initial_partial_block_hmysnudFFmBnacl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hmysnudFFmBnacl:
+$L$_small_initial_compute_done_160:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hmysnudFFmBnacl
+	je	NEAR $L$_after_reduction_160
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_hmysnudFFmBnacl:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_6_zwtuppCyrqjxlmf:
+$L$_after_reduction_160:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_6_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -23233,7 +23233,7 @@ $L$_small_initial_num_blocks_is_6_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AkGDnyozBhwpimd
+	jl	NEAR $L$_small_initial_partial_block_161
 
 
 
@@ -23285,8 +23285,8 @@ $L$_small_initial_num_blocks_is_6_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AkGDnyozBhwpimd
-$L$_small_initial_partial_block_AkGDnyozBhwpimd:
+	jmp	NEAR $L$_small_initial_compute_done_161
+$L$_small_initial_partial_block_161:
 
 
 
@@ -23341,14 +23341,14 @@ $L$_small_initial_partial_block_AkGDnyozBhwpimd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AkGDnyozBhwpimd:
+$L$_small_initial_compute_done_161:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AkGDnyozBhwpimd
+	je	NEAR $L$_after_reduction_161
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_AkGDnyozBhwpimd:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_7_zwtuppCyrqjxlmf:
+$L$_after_reduction_161:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_7_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -23409,7 +23409,7 @@ $L$_small_initial_num_blocks_is_7_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EDntnkyinrpClEx
+	jl	NEAR $L$_small_initial_partial_block_162
 
 
 
@@ -23462,8 +23462,8 @@ $L$_small_initial_num_blocks_is_7_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EDntnkyinrpClEx
-$L$_small_initial_partial_block_EDntnkyinrpClEx:
+	jmp	NEAR $L$_small_initial_compute_done_162
+$L$_small_initial_partial_block_162:
 
 
 
@@ -23518,14 +23518,14 @@ $L$_small_initial_partial_block_EDntnkyinrpClEx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EDntnkyinrpClEx:
+$L$_small_initial_compute_done_162:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EDntnkyinrpClEx
+	je	NEAR $L$_after_reduction_162
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_EDntnkyinrpClEx:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_8_zwtuppCyrqjxlmf:
+$L$_after_reduction_162:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_8_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -23586,7 +23586,7 @@ $L$_small_initial_num_blocks_is_8_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_znmEhfbAuhaBEzA
+	jl	NEAR $L$_small_initial_partial_block_163
 
 
 
@@ -23637,8 +23637,8 @@ $L$_small_initial_num_blocks_is_8_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_znmEhfbAuhaBEzA
-$L$_small_initial_partial_block_znmEhfbAuhaBEzA:
+	jmp	NEAR $L$_small_initial_compute_done_163
+$L$_small_initial_partial_block_163:
 
 
 
@@ -23694,14 +23694,14 @@ $L$_small_initial_partial_block_znmEhfbAuhaBEzA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_znmEhfbAuhaBEzA:
+$L$_small_initial_compute_done_163:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_znmEhfbAuhaBEzA
+	je	NEAR $L$_after_reduction_163
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_znmEhfbAuhaBEzA:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_9_zwtuppCyrqjxlmf:
+$L$_after_reduction_163:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_9_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -23779,7 +23779,7 @@ $L$_small_initial_num_blocks_is_9_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rBFimduAluolkyC
+	jl	NEAR $L$_small_initial_partial_block_164
 
 
 
@@ -23840,8 +23840,8 @@ $L$_small_initial_num_blocks_is_9_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rBFimduAluolkyC
-$L$_small_initial_partial_block_rBFimduAluolkyC:
+	jmp	NEAR $L$_small_initial_compute_done_164
+$L$_small_initial_partial_block_164:
 
 
 
@@ -23895,14 +23895,14 @@ $L$_small_initial_partial_block_rBFimduAluolkyC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rBFimduAluolkyC:
+$L$_small_initial_compute_done_164:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rBFimduAluolkyC
+	je	NEAR $L$_after_reduction_164
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_rBFimduAluolkyC:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_10_zwtuppCyrqjxlmf:
+$L$_after_reduction_164:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_10_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -23980,7 +23980,7 @@ $L$_small_initial_num_blocks_is_10_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rzFlDlxrFwBzrxg
+	jl	NEAR $L$_small_initial_partial_block_165
 
 
 
@@ -24041,8 +24041,8 @@ $L$_small_initial_num_blocks_is_10_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rzFlDlxrFwBzrxg
-$L$_small_initial_partial_block_rzFlDlxrFwBzrxg:
+	jmp	NEAR $L$_small_initial_compute_done_165
+$L$_small_initial_partial_block_165:
 
 
 
@@ -24106,14 +24106,14 @@ $L$_small_initial_partial_block_rzFlDlxrFwBzrxg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rzFlDlxrFwBzrxg:
+$L$_small_initial_compute_done_165:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rzFlDlxrFwBzrxg
+	je	NEAR $L$_after_reduction_165
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_rzFlDlxrFwBzrxg:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_11_zwtuppCyrqjxlmf:
+$L$_after_reduction_165:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_11_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -24191,7 +24191,7 @@ $L$_small_initial_num_blocks_is_11_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oDErgffAodzAqfk
+	jl	NEAR $L$_small_initial_partial_block_166
 
 
 
@@ -24253,8 +24253,8 @@ $L$_small_initial_num_blocks_is_11_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oDErgffAodzAqfk
-$L$_small_initial_partial_block_oDErgffAodzAqfk:
+	jmp	NEAR $L$_small_initial_compute_done_166
+$L$_small_initial_partial_block_166:
 
 
 
@@ -24318,14 +24318,14 @@ $L$_small_initial_partial_block_oDErgffAodzAqfk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_oDErgffAodzAqfk:
+$L$_small_initial_compute_done_166:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_oDErgffAodzAqfk
+	je	NEAR $L$_after_reduction_166
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_oDErgffAodzAqfk:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_12_zwtuppCyrqjxlmf:
+$L$_after_reduction_166:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_12_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -24403,7 +24403,7 @@ $L$_small_initial_num_blocks_is_12_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rtkpytgxrvsCFsy
+	jl	NEAR $L$_small_initial_partial_block_167
 
 
 
@@ -24459,8 +24459,8 @@ $L$_small_initial_num_blocks_is_12_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rtkpytgxrvsCFsy
-$L$_small_initial_partial_block_rtkpytgxrvsCFsy:
+	jmp	NEAR $L$_small_initial_compute_done_167
+$L$_small_initial_partial_block_167:
 
 
 
@@ -24525,14 +24525,14 @@ $L$_small_initial_partial_block_rtkpytgxrvsCFsy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rtkpytgxrvsCFsy:
+$L$_small_initial_compute_done_167:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rtkpytgxrvsCFsy
+	je	NEAR $L$_after_reduction_167
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_rtkpytgxrvsCFsy:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_13_zwtuppCyrqjxlmf:
+$L$_after_reduction_167:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_13_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -24627,7 +24627,7 @@ $L$_small_initial_num_blocks_is_13_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AftbspxDyaovdpB
+	jl	NEAR $L$_small_initial_partial_block_168
 
 
 
@@ -24693,8 +24693,8 @@ $L$_small_initial_num_blocks_is_13_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AftbspxDyaovdpB
-$L$_small_initial_partial_block_AftbspxDyaovdpB:
+	jmp	NEAR $L$_small_initial_compute_done_168
+$L$_small_initial_partial_block_168:
 
 
 
@@ -24753,14 +24753,14 @@ $L$_small_initial_partial_block_AftbspxDyaovdpB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AftbspxDyaovdpB:
+$L$_small_initial_compute_done_168:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AftbspxDyaovdpB
+	je	NEAR $L$_after_reduction_168
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_AftbspxDyaovdpB:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_14_zwtuppCyrqjxlmf:
+$L$_after_reduction_168:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_14_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -24855,7 +24855,7 @@ $L$_small_initial_num_blocks_is_14_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_vqrFesijcFfaEDA
+	jl	NEAR $L$_small_initial_partial_block_169
 
 
 
@@ -24921,8 +24921,8 @@ $L$_small_initial_num_blocks_is_14_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_vqrFesijcFfaEDA
-$L$_small_initial_partial_block_vqrFesijcFfaEDA:
+	jmp	NEAR $L$_small_initial_compute_done_169
+$L$_small_initial_partial_block_169:
 
 
 
@@ -24991,14 +24991,14 @@ $L$_small_initial_partial_block_vqrFesijcFfaEDA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_vqrFesijcFfaEDA:
+$L$_small_initial_compute_done_169:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_vqrFesijcFfaEDA
+	je	NEAR $L$_after_reduction_169
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_vqrFesijcFfaEDA:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_15_zwtuppCyrqjxlmf:
+$L$_after_reduction_169:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_15_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -25093,7 +25093,7 @@ $L$_small_initial_num_blocks_is_15_zwtuppCyrqjxlmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ChiDDFuFngohdgt
+	jl	NEAR $L$_small_initial_partial_block_170
 
 
 
@@ -25160,8 +25160,8 @@ $L$_small_initial_num_blocks_is_15_zwtuppCyrqjxlmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ChiDDFuFngohdgt
-$L$_small_initial_partial_block_ChiDDFuFngohdgt:
+	jmp	NEAR $L$_small_initial_compute_done_170
+$L$_small_initial_partial_block_170:
 
 
 
@@ -25230,14 +25230,14 @@ $L$_small_initial_partial_block_ChiDDFuFngohdgt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ChiDDFuFngohdgt:
+$L$_small_initial_compute_done_170:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ChiDDFuFngohdgt
+	je	NEAR $L$_after_reduction_170
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_ChiDDFuFngohdgt:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf
-$L$_small_initial_num_blocks_is_16_zwtuppCyrqjxlmf:
+$L$_after_reduction_170:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_155
+$L$_small_initial_num_blocks_is_16_155:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -25329,7 +25329,7 @@ $L$_small_initial_num_blocks_is_16_zwtuppCyrqjxlmf:
 	vpshufb	zmm11,zmm5,zmm29
 	vextracti32x4	xmm13,zmm11,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_gurxzhjyGdeeeDy:
+$L$_small_initial_partial_block_171:
 
 
 
@@ -25399,25 +25399,25 @@ $L$_small_initial_partial_block_gurxzhjyGdeeeDy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gurxzhjyGdeeeDy:
+$L$_small_initial_compute_done_171:
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_gurxzhjyGdeeeDy:
-$L$_small_initial_blocks_encrypted_zwtuppCyrqjxlmf:
-$L$_ghash_done_pfCcdwlEiojmoCs:
+$L$_after_reduction_171:
+$L$_small_initial_blocks_encrypted_155:
+$L$_ghash_done_10:
 	vmovdqu64	XMMWORD[rdx],xmm2
 	vmovdqu64	XMMWORD[64+rdx],xmm14
-$L$_enc_dec_done_pfCcdwlEiojmoCs:
+$L$_enc_dec_done_10:
 	jmp	NEAR $L$exit_gcm_encrypt
 ALIGN	32
 $L$aes_gcm_encrypt_192_avx512:
 	cmp	QWORD[112+rbp],0
-	je	NEAR $L$_enc_dec_done_hCBzfvrzwDadcCF
+	je	NEAR $L$_enc_dec_done_172
 	xor	r14,r14
 	vmovdqu64	xmm14,XMMWORD[64+rdx]
 
 	mov	r11,QWORD[r8]
 	or	r11,r11
-	je	NEAR $L$_partial_block_done_mgrhrdoifauzduq
+	je	NEAR $L$_partial_block_done_173
 	mov	r10d,16
 	lea	r12,[byte_len_to_mask_table]
 	cmp	QWORD[112+rbp],r10
@@ -25442,9 +25442,9 @@ $L$aes_gcm_encrypt_192_avx512:
 	mov	r13,QWORD[112+rbp]
 	add	r13,r11
 	sub	r13,16
-	jge	NEAR $L$_no_extra_mask_mgrhrdoifauzduq
+	jge	NEAR $L$_no_extra_mask_173
 	sub	r12,r13
-$L$_no_extra_mask_mgrhrdoifauzduq:
+$L$_no_extra_mask_173:
 
 
 
@@ -25454,7 +25454,7 @@ $L$_no_extra_mask_mgrhrdoifauzduq:
 	vpshufb	xmm3,xmm3,xmm5
 	vpxorq	xmm14,xmm14,xmm3
 	cmp	r13,0
-	jl	NEAR $L$_partial_incomplete_mgrhrdoifauzduq
+	jl	NEAR $L$_partial_incomplete_173
 
 	vpclmulqdq	xmm7,xmm14,xmm4,0x11
 	vpclmulqdq	xmm10,xmm14,xmm4,0x00
@@ -25489,14 +25489,14 @@ $L$_no_extra_mask_mgrhrdoifauzduq:
 	mov	r12,r11
 	mov	r11,16
 	sub	r11,r12
-	jmp	NEAR $L$_enc_dec_done_mgrhrdoifauzduq
+	jmp	NEAR $L$_enc_dec_done_173
 
-$L$_partial_incomplete_mgrhrdoifauzduq:
+$L$_partial_incomplete_173:
 	mov	r12,QWORD[112+rbp]
 	add	QWORD[r8],r12
 	mov	r11,QWORD[112+rbp]
 
-$L$_enc_dec_done_mgrhrdoifauzduq:
+$L$_enc_dec_done_173:
 
 
 	lea	r12,[byte_len_to_mask_table]
@@ -25507,13 +25507,13 @@ $L$_enc_dec_done_mgrhrdoifauzduq:
 	vpshufb	xmm3,xmm3,xmm5
 	mov	r12,QWORD[120+rbp]
 	vmovdqu8	XMMWORD[r12]{k1},xmm3
-$L$_partial_block_done_mgrhrdoifauzduq:
+$L$_partial_block_done_173:
 	vmovdqu64	xmm2,XMMWORD[rdx]
 	mov	r13,QWORD[112+rbp]
 	sub	r13,r11
-	je	NEAR $L$_enc_dec_done_hCBzfvrzwDadcCF
+	je	NEAR $L$_enc_dec_done_172
 	cmp	r13,256
-	jbe	NEAR $L$_message_below_equal_16_blocks_hCBzfvrzwDadcCF
+	jbe	NEAR $L$_message_below_equal_16_blocks_172
 
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vmovdqa64	zmm27,ZMMWORD[ddq_addbe_4444]
@@ -25533,13 +25533,13 @@ $L$_partial_block_done_mgrhrdoifauzduq:
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_BAvlvDogdmafFFm
+	jae	NEAR $L$_next_16_overflow_174
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_BAvlvDogdmafFFm
-$L$_next_16_overflow_BAvlvDogdmafFFm:
+	jmp	NEAR $L$_next_16_ok_174
+$L$_next_16_overflow_174:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -25550,7 +25550,7 @@ $L$_next_16_overflow_BAvlvDogdmafFFm:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_BAvlvDogdmafFFm:
+$L$_next_16_ok_174:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -25648,7 +25648,7 @@ $L$_next_16_ok_BAvlvDogdmafFFm:
 	vmovdqa64	ZMMWORD[896+rsp],zmm11
 	vmovdqa64	ZMMWORD[960+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_iaCCuCtdrsrGeEk
+	jnz	NEAR $L$_skip_hkeys_precomputation_175
 
 	vmovdqu64	zmm0,ZMMWORD[288+rdx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm0
@@ -25664,20 +25664,20 @@ $L$_next_16_ok_BAvlvDogdmafFFm:
 
 	vmovdqu64	zmm5,ZMMWORD[96+rdx]
 	vmovdqu64	ZMMWORD[512+rsp],zmm5
-$L$_skip_hkeys_precomputation_iaCCuCtdrsrGeEk:
+$L$_skip_hkeys_precomputation_175:
 	cmp	r13,512
-	jb	NEAR $L$_message_below_32_blocks_hCBzfvrzwDadcCF
+	jb	NEAR $L$_message_below_32_blocks_172
 
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_Gcjvkbrphusqnjv
+	jae	NEAR $L$_next_16_overflow_176
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_Gcjvkbrphusqnjv
-$L$_next_16_overflow_Gcjvkbrphusqnjv:
+	jmp	NEAR $L$_next_16_ok_176
+$L$_next_16_overflow_176:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -25688,7 +25688,7 @@ $L$_next_16_overflow_Gcjvkbrphusqnjv:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_Gcjvkbrphusqnjv:
+$L$_next_16_ok_176:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -25786,7 +25786,7 @@ $L$_next_16_ok_Gcjvkbrphusqnjv:
 	vmovdqa64	ZMMWORD[1152+rsp],zmm11
 	vmovdqa64	ZMMWORD[1216+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_gjylavstdbwfphn
+	jnz	NEAR $L$_skip_hkeys_precomputation_177
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -26034,22 +26034,22 @@ $L$_next_16_ok_Gcjvkbrphusqnjv:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[rsp],zmm5
-$L$_skip_hkeys_precomputation_gjylavstdbwfphn:
+$L$_skip_hkeys_precomputation_177:
 	mov	r14,1
 	add	r11,512
 	sub	r13,512
 
 	cmp	r13,768
-	jb	NEAR $L$_no_more_big_nblocks_hCBzfvrzwDadcCF
-$L$_encrypt_big_nblocks_hCBzfvrzwDadcCF:
+	jb	NEAR $L$_no_more_big_nblocks_172
+$L$_encrypt_big_nblocks_172:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_smqxysnFecAtDzB
+	jae	NEAR $L$_16_blocks_overflow_178
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_smqxysnFecAtDzB
-$L$_16_blocks_overflow_smqxysnFecAtDzB:
+	jmp	NEAR $L$_16_blocks_ok_178
+$L$_16_blocks_overflow_178:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -26060,7 +26060,7 @@ $L$_16_blocks_overflow_smqxysnFecAtDzB:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_smqxysnFecAtDzB:
+$L$_16_blocks_ok_178:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -26236,13 +26236,13 @@ $L$_16_blocks_ok_smqxysnFecAtDzB:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_cDijCgEwtwmqkkA
+	jae	NEAR $L$_16_blocks_overflow_179
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_cDijCgEwtwmqkkA
-$L$_16_blocks_overflow_cDijCgEwtwmqkkA:
+	jmp	NEAR $L$_16_blocks_ok_179
+$L$_16_blocks_overflow_179:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -26253,7 +26253,7 @@ $L$_16_blocks_overflow_cDijCgEwtwmqkkA:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_cDijCgEwtwmqkkA:
+$L$_16_blocks_ok_179:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -26429,13 +26429,13 @@ $L$_16_blocks_ok_cDijCgEwtwmqkkA:
 	vmovdqa64	ZMMWORD[896+rsp],zmm4
 	vmovdqa64	ZMMWORD[960+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_qwGFCmBAigzjyiB
+	jae	NEAR $L$_16_blocks_overflow_180
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_qwGFCmBAigzjyiB
-$L$_16_blocks_overflow_qwGFCmBAigzjyiB:
+	jmp	NEAR $L$_16_blocks_ok_180
+$L$_16_blocks_overflow_180:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -26446,7 +26446,7 @@ $L$_16_blocks_overflow_qwGFCmBAigzjyiB:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_qwGFCmBAigzjyiB:
+$L$_16_blocks_ok_180:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm1,ZMMWORD[512+rsp]
@@ -26652,16 +26652,16 @@ $L$_16_blocks_ok_qwGFCmBAigzjyiB:
 	add	r11,768
 	sub	r13,768
 	cmp	r13,768
-	jae	NEAR $L$_encrypt_big_nblocks_hCBzfvrzwDadcCF
+	jae	NEAR $L$_encrypt_big_nblocks_172
 
-$L$_no_more_big_nblocks_hCBzfvrzwDadcCF:
+$L$_no_more_big_nblocks_172:
 
 	cmp	r13,512
-	jae	NEAR $L$_encrypt_32_blocks_hCBzfvrzwDadcCF
+	jae	NEAR $L$_encrypt_32_blocks_172
 
 	cmp	r13,256
-	jae	NEAR $L$_encrypt_16_blocks_hCBzfvrzwDadcCF
-$L$_encrypt_0_blocks_ghash_32_hCBzfvrzwDadcCF:
+	jae	NEAR $L$_encrypt_16_blocks_172
+$L$_encrypt_0_blocks_ghash_32_172:
 	mov	r10d,r13d
 	and	r10d,~15
 	mov	ebx,256
@@ -26704,61 +26704,61 @@ $L$_encrypt_0_blocks_ghash_32_hCBzfvrzwDadcCF:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_xuoynzxCiEviakc
+	je	NEAR $L$_last_num_blocks_is_0_181
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_xuoynzxCiEviakc
-	jb	NEAR $L$_last_num_blocks_is_7_1_xuoynzxCiEviakc
+	je	NEAR $L$_last_num_blocks_is_8_181
+	jb	NEAR $L$_last_num_blocks_is_7_1_181
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_xuoynzxCiEviakc
-	jb	NEAR $L$_last_num_blocks_is_11_9_xuoynzxCiEviakc
+	je	NEAR $L$_last_num_blocks_is_12_181
+	jb	NEAR $L$_last_num_blocks_is_11_9_181
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_xuoynzxCiEviakc
-	ja	NEAR $L$_last_num_blocks_is_16_xuoynzxCiEviakc
+	je	NEAR $L$_last_num_blocks_is_15_181
+	ja	NEAR $L$_last_num_blocks_is_16_181
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_xuoynzxCiEviakc
-	jmp	NEAR $L$_last_num_blocks_is_13_xuoynzxCiEviakc
+	je	NEAR $L$_last_num_blocks_is_14_181
+	jmp	NEAR $L$_last_num_blocks_is_13_181
 
-$L$_last_num_blocks_is_11_9_xuoynzxCiEviakc:
+$L$_last_num_blocks_is_11_9_181:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_xuoynzxCiEviakc
-	ja	NEAR $L$_last_num_blocks_is_11_xuoynzxCiEviakc
-	jmp	NEAR $L$_last_num_blocks_is_9_xuoynzxCiEviakc
+	je	NEAR $L$_last_num_blocks_is_10_181
+	ja	NEAR $L$_last_num_blocks_is_11_181
+	jmp	NEAR $L$_last_num_blocks_is_9_181
 
-$L$_last_num_blocks_is_7_1_xuoynzxCiEviakc:
+$L$_last_num_blocks_is_7_1_181:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_xuoynzxCiEviakc
-	jb	NEAR $L$_last_num_blocks_is_3_1_xuoynzxCiEviakc
+	je	NEAR $L$_last_num_blocks_is_4_181
+	jb	NEAR $L$_last_num_blocks_is_3_1_181
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_xuoynzxCiEviakc
-	je	NEAR $L$_last_num_blocks_is_6_xuoynzxCiEviakc
-	jmp	NEAR $L$_last_num_blocks_is_5_xuoynzxCiEviakc
+	ja	NEAR $L$_last_num_blocks_is_7_181
+	je	NEAR $L$_last_num_blocks_is_6_181
+	jmp	NEAR $L$_last_num_blocks_is_5_181
 
-$L$_last_num_blocks_is_3_1_xuoynzxCiEviakc:
+$L$_last_num_blocks_is_3_1_181:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_xuoynzxCiEviakc
-	je	NEAR $L$_last_num_blocks_is_2_xuoynzxCiEviakc
-$L$_last_num_blocks_is_1_xuoynzxCiEviakc:
+	ja	NEAR $L$_last_num_blocks_is_3_181
+	je	NEAR $L$_last_num_blocks_is_2_181
+$L$_last_num_blocks_is_1_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_tqFFfeFbdcfsFsl
+	jae	NEAR $L$_16_blocks_overflow_182
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_tqFFfeFbdcfsFsl
+	jmp	NEAR $L$_16_blocks_ok_182
 
-$L$_16_blocks_overflow_tqFFfeFbdcfsFsl:
+$L$_16_blocks_overflow_182:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_tqFFfeFbdcfsFsl:
+$L$_16_blocks_ok_182:
 
 
 
@@ -26846,7 +26846,7 @@ $L$_16_blocks_ok_tqFFfeFbdcfsFsl:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uurtblrqkFmEbtm
+	jl	NEAR $L$_small_initial_partial_block_183
 
 
 
@@ -26890,8 +26890,8 @@ $L$_16_blocks_ok_tqFFfeFbdcfsFsl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uurtblrqkFmEbtm
-$L$_small_initial_partial_block_uurtblrqkFmEbtm:
+	jmp	NEAR $L$_small_initial_compute_done_183
+$L$_small_initial_partial_block_183:
 
 
 
@@ -26943,24 +26943,24 @@ $L$_small_initial_partial_block_uurtblrqkFmEbtm:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_uurtblrqkFmEbtm
-$L$_small_initial_compute_done_uurtblrqkFmEbtm:
-$L$_after_reduction_uurtblrqkFmEbtm:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_2_xuoynzxCiEviakc:
+	jmp	NEAR $L$_after_reduction_183
+$L$_small_initial_compute_done_183:
+$L$_after_reduction_183:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_2_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_FkynidvpjwBryhE
+	jae	NEAR $L$_16_blocks_overflow_184
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_FkynidvpjwBryhE
+	jmp	NEAR $L$_16_blocks_ok_184
 
-$L$_16_blocks_overflow_FkynidvpjwBryhE:
+$L$_16_blocks_overflow_184:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_FkynidvpjwBryhE:
+$L$_16_blocks_ok_184:
 
 
 
@@ -27049,7 +27049,7 @@ $L$_16_blocks_ok_FkynidvpjwBryhE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_pCdmFsjeEEljieq
+	jl	NEAR $L$_small_initial_partial_block_185
 
 
 
@@ -27093,8 +27093,8 @@ $L$_16_blocks_ok_FkynidvpjwBryhE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_pCdmFsjeEEljieq
-$L$_small_initial_partial_block_pCdmFsjeEEljieq:
+	jmp	NEAR $L$_small_initial_compute_done_185
+$L$_small_initial_partial_block_185:
 
 
 
@@ -27141,27 +27141,27 @@ $L$_small_initial_partial_block_pCdmFsjeEEljieq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_pCdmFsjeEEljieq:
+$L$_small_initial_compute_done_185:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_pCdmFsjeEEljieq
+	je	NEAR $L$_after_reduction_185
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_pCdmFsjeEEljieq:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_3_xuoynzxCiEviakc:
+$L$_after_reduction_185:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_3_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_mrehrECCDEkykuD
+	jae	NEAR $L$_16_blocks_overflow_186
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_mrehrECCDEkykuD
+	jmp	NEAR $L$_16_blocks_ok_186
 
-$L$_16_blocks_overflow_mrehrECCDEkykuD:
+$L$_16_blocks_overflow_186:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_mrehrECCDEkykuD:
+$L$_16_blocks_ok_186:
 
 
 
@@ -27250,7 +27250,7 @@ $L$_16_blocks_ok_mrehrECCDEkykuD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fpevhzadfjFsylv
+	jl	NEAR $L$_small_initial_partial_block_187
 
 
 
@@ -27295,8 +27295,8 @@ $L$_16_blocks_ok_mrehrECCDEkykuD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fpevhzadfjFsylv
-$L$_small_initial_partial_block_fpevhzadfjFsylv:
+	jmp	NEAR $L$_small_initial_compute_done_187
+$L$_small_initial_partial_block_187:
 
 
 
@@ -27343,27 +27343,27 @@ $L$_small_initial_partial_block_fpevhzadfjFsylv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fpevhzadfjFsylv:
+$L$_small_initial_compute_done_187:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fpevhzadfjFsylv
+	je	NEAR $L$_after_reduction_187
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fpevhzadfjFsylv:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_4_xuoynzxCiEviakc:
+$L$_after_reduction_187:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_4_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_iatwkwxdCsfkich
+	jae	NEAR $L$_16_blocks_overflow_188
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_iatwkwxdCsfkich
+	jmp	NEAR $L$_16_blocks_ok_188
 
-$L$_16_blocks_overflow_iatwkwxdCsfkich:
+$L$_16_blocks_overflow_188:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_iatwkwxdCsfkich:
+$L$_16_blocks_ok_188:
 
 
 
@@ -27452,7 +27452,7 @@ $L$_16_blocks_ok_iatwkwxdCsfkich:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wiztcgeinflpEww
+	jl	NEAR $L$_small_initial_partial_block_189
 
 
 
@@ -27497,8 +27497,8 @@ $L$_16_blocks_ok_iatwkwxdCsfkich:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wiztcgeinflpEww
-$L$_small_initial_partial_block_wiztcgeinflpEww:
+	jmp	NEAR $L$_small_initial_compute_done_189
+$L$_small_initial_partial_block_189:
 
 
 
@@ -27546,32 +27546,32 @@ $L$_small_initial_partial_block_wiztcgeinflpEww:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wiztcgeinflpEww:
+$L$_small_initial_compute_done_189:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wiztcgeinflpEww
+	je	NEAR $L$_after_reduction_189
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_wiztcgeinflpEww:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_5_xuoynzxCiEviakc:
+$L$_after_reduction_189:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_5_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_canixhrEcvhxErb
+	jae	NEAR $L$_16_blocks_overflow_190
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_canixhrEcvhxErb
+	jmp	NEAR $L$_16_blocks_ok_190
 
-$L$_16_blocks_overflow_canixhrEcvhxErb:
+$L$_16_blocks_overflow_190:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_canixhrEcvhxErb:
+$L$_16_blocks_ok_190:
 
 
 
@@ -27677,7 +27677,7 @@ $L$_16_blocks_ok_canixhrEcvhxErb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dusmhssFhriqcsv
+	jl	NEAR $L$_small_initial_partial_block_191
 
 
 
@@ -27728,8 +27728,8 @@ $L$_16_blocks_ok_canixhrEcvhxErb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dusmhssFhriqcsv
-$L$_small_initial_partial_block_dusmhssFhriqcsv:
+	jmp	NEAR $L$_small_initial_compute_done_191
+$L$_small_initial_partial_block_191:
 
 
 
@@ -27777,32 +27777,32 @@ $L$_small_initial_partial_block_dusmhssFhriqcsv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dusmhssFhriqcsv:
+$L$_small_initial_compute_done_191:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dusmhssFhriqcsv
+	je	NEAR $L$_after_reduction_191
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dusmhssFhriqcsv:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_6_xuoynzxCiEviakc:
+$L$_after_reduction_191:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_6_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_qnwCbbitkbfkwor
+	jae	NEAR $L$_16_blocks_overflow_192
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_qnwCbbitkbfkwor
+	jmp	NEAR $L$_16_blocks_ok_192
 
-$L$_16_blocks_overflow_qnwCbbitkbfkwor:
+$L$_16_blocks_overflow_192:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_qnwCbbitkbfkwor:
+$L$_16_blocks_ok_192:
 
 
 
@@ -27908,7 +27908,7 @@ $L$_16_blocks_ok_qnwCbbitkbfkwor:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xxkCrlFCGfxymuq
+	jl	NEAR $L$_small_initial_partial_block_193
 
 
 
@@ -27959,8 +27959,8 @@ $L$_16_blocks_ok_qnwCbbitkbfkwor:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xxkCrlFCGfxymuq
-$L$_small_initial_partial_block_xxkCrlFCGfxymuq:
+	jmp	NEAR $L$_small_initial_compute_done_193
+$L$_small_initial_partial_block_193:
 
 
 
@@ -28014,32 +28014,32 @@ $L$_small_initial_partial_block_xxkCrlFCGfxymuq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xxkCrlFCGfxymuq:
+$L$_small_initial_compute_done_193:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xxkCrlFCGfxymuq
+	je	NEAR $L$_after_reduction_193
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xxkCrlFCGfxymuq:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_7_xuoynzxCiEviakc:
+$L$_after_reduction_193:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_7_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_ahBonyyGwpzGlgx
+	jae	NEAR $L$_16_blocks_overflow_194
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ahBonyyGwpzGlgx
+	jmp	NEAR $L$_16_blocks_ok_194
 
-$L$_16_blocks_overflow_ahBonyyGwpzGlgx:
+$L$_16_blocks_overflow_194:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_ahBonyyGwpzGlgx:
+$L$_16_blocks_ok_194:
 
 
 
@@ -28145,7 +28145,7 @@ $L$_16_blocks_ok_ahBonyyGwpzGlgx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xyyDsdsezmGzfwy
+	jl	NEAR $L$_small_initial_partial_block_195
 
 
 
@@ -28197,8 +28197,8 @@ $L$_16_blocks_ok_ahBonyyGwpzGlgx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xyyDsdsezmGzfwy
-$L$_small_initial_partial_block_xyyDsdsezmGzfwy:
+	jmp	NEAR $L$_small_initial_compute_done_195
+$L$_small_initial_partial_block_195:
 
 
 
@@ -28252,32 +28252,32 @@ $L$_small_initial_partial_block_xyyDsdsezmGzfwy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xyyDsdsezmGzfwy:
+$L$_small_initial_compute_done_195:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xyyDsdsezmGzfwy
+	je	NEAR $L$_after_reduction_195
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xyyDsdsezmGzfwy:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_8_xuoynzxCiEviakc:
+$L$_after_reduction_195:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_8_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_pwbrqAnqAlvvzsF
+	jae	NEAR $L$_16_blocks_overflow_196
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_pwbrqAnqAlvvzsF
+	jmp	NEAR $L$_16_blocks_ok_196
 
-$L$_16_blocks_overflow_pwbrqAnqAlvvzsF:
+$L$_16_blocks_overflow_196:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_pwbrqAnqAlvvzsF:
+$L$_16_blocks_ok_196:
 
 
 
@@ -28383,7 +28383,7 @@ $L$_16_blocks_ok_pwbrqAnqAlvvzsF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ppmoFwbcCkmxpvi
+	jl	NEAR $L$_small_initial_partial_block_197
 
 
 
@@ -28437,8 +28437,8 @@ $L$_16_blocks_ok_pwbrqAnqAlvvzsF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ppmoFwbcCkmxpvi
-$L$_small_initial_partial_block_ppmoFwbcCkmxpvi:
+	jmp	NEAR $L$_small_initial_compute_done_197
+$L$_small_initial_partial_block_197:
 
 
 
@@ -28493,26 +28493,26 @@ $L$_small_initial_partial_block_ppmoFwbcCkmxpvi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ppmoFwbcCkmxpvi:
+$L$_small_initial_compute_done_197:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ppmoFwbcCkmxpvi
+	je	NEAR $L$_after_reduction_197
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ppmoFwbcCkmxpvi:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_9_xuoynzxCiEviakc:
+$L$_after_reduction_197:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_9_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_EpbaoEGnwrzcuvm
+	jae	NEAR $L$_16_blocks_overflow_198
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_EpbaoEGnwrzcuvm
+	jmp	NEAR $L$_16_blocks_ok_198
 
-$L$_16_blocks_overflow_EpbaoEGnwrzcuvm:
+$L$_16_blocks_overflow_198:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -28521,7 +28521,7 @@ $L$_16_blocks_overflow_EpbaoEGnwrzcuvm:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_EpbaoEGnwrzcuvm:
+$L$_16_blocks_ok_198:
 
 
 
@@ -28644,7 +28644,7 @@ $L$_16_blocks_ok_EpbaoEGnwrzcuvm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_cDasGEEwlFxxmoo
+	jl	NEAR $L$_small_initial_partial_block_199
 
 
 
@@ -28704,8 +28704,8 @@ $L$_16_blocks_ok_EpbaoEGnwrzcuvm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_cDasGEEwlFxxmoo
-$L$_small_initial_partial_block_cDasGEEwlFxxmoo:
+	jmp	NEAR $L$_small_initial_compute_done_199
+$L$_small_initial_partial_block_199:
 
 
 
@@ -28762,26 +28762,26 @@ $L$_small_initial_partial_block_cDasGEEwlFxxmoo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_cDasGEEwlFxxmoo:
+$L$_small_initial_compute_done_199:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_cDasGEEwlFxxmoo
+	je	NEAR $L$_after_reduction_199
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_cDasGEEwlFxxmoo:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_10_xuoynzxCiEviakc:
+$L$_after_reduction_199:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_10_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_ngBmnphAAobdwFG
+	jae	NEAR $L$_16_blocks_overflow_200
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ngBmnphAAobdwFG
+	jmp	NEAR $L$_16_blocks_ok_200
 
-$L$_16_blocks_overflow_ngBmnphAAobdwFG:
+$L$_16_blocks_overflow_200:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -28790,7 +28790,7 @@ $L$_16_blocks_overflow_ngBmnphAAobdwFG:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_ngBmnphAAobdwFG:
+$L$_16_blocks_ok_200:
 
 
 
@@ -28913,7 +28913,7 @@ $L$_16_blocks_ok_ngBmnphAAobdwFG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uhABqarxwmpxrfp
+	jl	NEAR $L$_small_initial_partial_block_201
 
 
 
@@ -28973,8 +28973,8 @@ $L$_16_blocks_ok_ngBmnphAAobdwFG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uhABqarxwmpxrfp
-$L$_small_initial_partial_block_uhABqarxwmpxrfp:
+	jmp	NEAR $L$_small_initial_compute_done_201
+$L$_small_initial_partial_block_201:
 
 
 
@@ -29037,26 +29037,26 @@ $L$_small_initial_partial_block_uhABqarxwmpxrfp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uhABqarxwmpxrfp:
+$L$_small_initial_compute_done_201:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uhABqarxwmpxrfp
+	je	NEAR $L$_after_reduction_201
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uhABqarxwmpxrfp:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_11_xuoynzxCiEviakc:
+$L$_after_reduction_201:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_11_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_yyuqqtvGEhgegrf
+	jae	NEAR $L$_16_blocks_overflow_202
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_yyuqqtvGEhgegrf
+	jmp	NEAR $L$_16_blocks_ok_202
 
-$L$_16_blocks_overflow_yyuqqtvGEhgegrf:
+$L$_16_blocks_overflow_202:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -29065,7 +29065,7 @@ $L$_16_blocks_overflow_yyuqqtvGEhgegrf:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_yyuqqtvGEhgegrf:
+$L$_16_blocks_ok_202:
 
 
 
@@ -29188,7 +29188,7 @@ $L$_16_blocks_ok_yyuqqtvGEhgegrf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hhhjaklDBEgChBg
+	jl	NEAR $L$_small_initial_partial_block_203
 
 
 
@@ -29249,8 +29249,8 @@ $L$_16_blocks_ok_yyuqqtvGEhgegrf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hhhjaklDBEgChBg
-$L$_small_initial_partial_block_hhhjaklDBEgChBg:
+	jmp	NEAR $L$_small_initial_compute_done_203
+$L$_small_initial_partial_block_203:
 
 
 
@@ -29313,26 +29313,26 @@ $L$_small_initial_partial_block_hhhjaklDBEgChBg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hhhjaklDBEgChBg:
+$L$_small_initial_compute_done_203:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hhhjaklDBEgChBg
+	je	NEAR $L$_after_reduction_203
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hhhjaklDBEgChBg:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_12_xuoynzxCiEviakc:
+$L$_after_reduction_203:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_12_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_itEuhpyEmEBkyow
+	jae	NEAR $L$_16_blocks_overflow_204
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_itEuhpyEmEBkyow
+	jmp	NEAR $L$_16_blocks_ok_204
 
-$L$_16_blocks_overflow_itEuhpyEmEBkyow:
+$L$_16_blocks_overflow_204:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -29341,7 +29341,7 @@ $L$_16_blocks_overflow_itEuhpyEmEBkyow:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_itEuhpyEmEBkyow:
+$L$_16_blocks_ok_204:
 
 
 
@@ -29464,7 +29464,7 @@ $L$_16_blocks_ok_itEuhpyEmEBkyow:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tmcEBteoFeGBvui
+	jl	NEAR $L$_small_initial_partial_block_205
 
 
 
@@ -29523,8 +29523,8 @@ $L$_16_blocks_ok_itEuhpyEmEBkyow:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tmcEBteoFeGBvui
-$L$_small_initial_partial_block_tmcEBteoFeGBvui:
+	jmp	NEAR $L$_small_initial_compute_done_205
+$L$_small_initial_partial_block_205:
 
 
 
@@ -29588,27 +29588,27 @@ $L$_small_initial_partial_block_tmcEBteoFeGBvui:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tmcEBteoFeGBvui:
+$L$_small_initial_compute_done_205:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tmcEBteoFeGBvui
+	je	NEAR $L$_after_reduction_205
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tmcEBteoFeGBvui:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_13_xuoynzxCiEviakc:
+$L$_after_reduction_205:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_13_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_eDsBdarEypcvtCz
+	jae	NEAR $L$_16_blocks_overflow_206
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_eDsBdarEypcvtCz
+	jmp	NEAR $L$_16_blocks_ok_206
 
-$L$_16_blocks_overflow_eDsBdarEypcvtCz:
+$L$_16_blocks_overflow_206:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -29619,7 +29619,7 @@ $L$_16_blocks_overflow_eDsBdarEypcvtCz:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_eDsBdarEypcvtCz:
+$L$_16_blocks_ok_206:
 
 
 
@@ -29759,7 +29759,7 @@ $L$_16_blocks_ok_eDsBdarEypcvtCz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EeECmqmhfegjllq
+	jl	NEAR $L$_small_initial_partial_block_207
 
 
 
@@ -29824,8 +29824,8 @@ $L$_16_blocks_ok_eDsBdarEypcvtCz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EeECmqmhfegjllq
-$L$_small_initial_partial_block_EeECmqmhfegjllq:
+	jmp	NEAR $L$_small_initial_compute_done_207
+$L$_small_initial_partial_block_207:
 
 
 
@@ -29887,27 +29887,27 @@ $L$_small_initial_partial_block_EeECmqmhfegjllq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EeECmqmhfegjllq:
+$L$_small_initial_compute_done_207:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EeECmqmhfegjllq
+	je	NEAR $L$_after_reduction_207
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EeECmqmhfegjllq:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_14_xuoynzxCiEviakc:
+$L$_after_reduction_207:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_14_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_zkEDhsiFqvarEcG
+	jae	NEAR $L$_16_blocks_overflow_208
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_zkEDhsiFqvarEcG
+	jmp	NEAR $L$_16_blocks_ok_208
 
-$L$_16_blocks_overflow_zkEDhsiFqvarEcG:
+$L$_16_blocks_overflow_208:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -29918,7 +29918,7 @@ $L$_16_blocks_overflow_zkEDhsiFqvarEcG:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_zkEDhsiFqvarEcG:
+$L$_16_blocks_ok_208:
 
 
 
@@ -30058,7 +30058,7 @@ $L$_16_blocks_ok_zkEDhsiFqvarEcG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yhzlneCGCkmeDGt
+	jl	NEAR $L$_small_initial_partial_block_209
 
 
 
@@ -30123,8 +30123,8 @@ $L$_16_blocks_ok_zkEDhsiFqvarEcG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yhzlneCGCkmeDGt
-$L$_small_initial_partial_block_yhzlneCGCkmeDGt:
+	jmp	NEAR $L$_small_initial_compute_done_209
+$L$_small_initial_partial_block_209:
 
 
 
@@ -30192,27 +30192,27 @@ $L$_small_initial_partial_block_yhzlneCGCkmeDGt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yhzlneCGCkmeDGt:
+$L$_small_initial_compute_done_209:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yhzlneCGCkmeDGt
+	je	NEAR $L$_after_reduction_209
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yhzlneCGCkmeDGt:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_15_xuoynzxCiEviakc:
+$L$_after_reduction_209:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_15_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_unqxvFofAsojBky
+	jae	NEAR $L$_16_blocks_overflow_210
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_unqxvFofAsojBky
+	jmp	NEAR $L$_16_blocks_ok_210
 
-$L$_16_blocks_overflow_unqxvFofAsojBky:
+$L$_16_blocks_overflow_210:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -30223,7 +30223,7 @@ $L$_16_blocks_overflow_unqxvFofAsojBky:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_unqxvFofAsojBky:
+$L$_16_blocks_ok_210:
 
 
 
@@ -30363,7 +30363,7 @@ $L$_16_blocks_ok_unqxvFofAsojBky:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kameEwtbhtrmiAt
+	jl	NEAR $L$_small_initial_partial_block_211
 
 
 
@@ -30429,8 +30429,8 @@ $L$_16_blocks_ok_unqxvFofAsojBky:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kameEwtbhtrmiAt
-$L$_small_initial_partial_block_kameEwtbhtrmiAt:
+	jmp	NEAR $L$_small_initial_compute_done_211
+$L$_small_initial_partial_block_211:
 
 
 
@@ -30498,27 +30498,27 @@ $L$_small_initial_partial_block_kameEwtbhtrmiAt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kameEwtbhtrmiAt:
+$L$_small_initial_compute_done_211:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kameEwtbhtrmiAt
+	je	NEAR $L$_after_reduction_211
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kameEwtbhtrmiAt:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_16_xuoynzxCiEviakc:
+$L$_after_reduction_211:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_16_181:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_ylloBsuulGbFguc
+	jae	NEAR $L$_16_blocks_overflow_212
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ylloBsuulGbFguc
+	jmp	NEAR $L$_16_blocks_ok_212
 
-$L$_16_blocks_overflow_ylloBsuulGbFguc:
+$L$_16_blocks_overflow_212:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -30529,7 +30529,7 @@ $L$_16_blocks_overflow_ylloBsuulGbFguc:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ylloBsuulGbFguc:
+$L$_16_blocks_ok_212:
 
 
 
@@ -30666,7 +30666,7 @@ $L$_16_blocks_ok_ylloBsuulGbFguc:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_qeqggjmbheobnsu:
+$L$_small_initial_partial_block_213:
 
 
 
@@ -30735,11 +30735,11 @@ $L$_small_initial_partial_block_qeqggjmbheobnsu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qeqggjmbheobnsu:
+$L$_small_initial_compute_done_213:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qeqggjmbheobnsu:
-	jmp	NEAR $L$_last_blocks_done_xuoynzxCiEviakc
-$L$_last_num_blocks_is_0_xuoynzxCiEviakc:
+$L$_after_reduction_213:
+	jmp	NEAR $L$_last_blocks_done_181
+$L$_last_num_blocks_is_0_181:
 	vmovdqa64	zmm13,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -30800,18 +30800,18 @@ $L$_last_num_blocks_is_0_xuoynzxCiEviakc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_xuoynzxCiEviakc:
+$L$_last_blocks_done_181:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_hCBzfvrzwDadcCF
-$L$_encrypt_32_blocks_hCBzfvrzwDadcCF:
+	jmp	NEAR $L$_ghash_done_172
+$L$_encrypt_32_blocks_172:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_molCnvpGekqfaeu
+	jae	NEAR $L$_16_blocks_overflow_214
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_molCnvpGekqfaeu
-$L$_16_blocks_overflow_molCnvpGekqfaeu:
+	jmp	NEAR $L$_16_blocks_ok_214
+$L$_16_blocks_overflow_214:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -30822,7 +30822,7 @@ $L$_16_blocks_overflow_molCnvpGekqfaeu:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_molCnvpGekqfaeu:
+$L$_16_blocks_ok_214:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -30998,13 +30998,13 @@ $L$_16_blocks_ok_molCnvpGekqfaeu:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_tpABneEctswyodt
+	jae	NEAR $L$_16_blocks_overflow_215
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_tpABneEctswyodt
-$L$_16_blocks_overflow_tpABneEctswyodt:
+	jmp	NEAR $L$_16_blocks_ok_215
+$L$_16_blocks_overflow_215:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -31015,7 +31015,7 @@ $L$_16_blocks_overflow_tpABneEctswyodt:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_tpABneEctswyodt:
+$L$_16_blocks_ok_215:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -31259,61 +31259,61 @@ $L$_16_blocks_ok_tpABneEctswyodt:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_ihddujhufbGhafb
+	je	NEAR $L$_last_num_blocks_is_0_216
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_ihddujhufbGhafb
-	jb	NEAR $L$_last_num_blocks_is_7_1_ihddujhufbGhafb
+	je	NEAR $L$_last_num_blocks_is_8_216
+	jb	NEAR $L$_last_num_blocks_is_7_1_216
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_ihddujhufbGhafb
-	jb	NEAR $L$_last_num_blocks_is_11_9_ihddujhufbGhafb
+	je	NEAR $L$_last_num_blocks_is_12_216
+	jb	NEAR $L$_last_num_blocks_is_11_9_216
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_ihddujhufbGhafb
-	ja	NEAR $L$_last_num_blocks_is_16_ihddujhufbGhafb
+	je	NEAR $L$_last_num_blocks_is_15_216
+	ja	NEAR $L$_last_num_blocks_is_16_216
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_ihddujhufbGhafb
-	jmp	NEAR $L$_last_num_blocks_is_13_ihddujhufbGhafb
+	je	NEAR $L$_last_num_blocks_is_14_216
+	jmp	NEAR $L$_last_num_blocks_is_13_216
 
-$L$_last_num_blocks_is_11_9_ihddujhufbGhafb:
+$L$_last_num_blocks_is_11_9_216:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_ihddujhufbGhafb
-	ja	NEAR $L$_last_num_blocks_is_11_ihddujhufbGhafb
-	jmp	NEAR $L$_last_num_blocks_is_9_ihddujhufbGhafb
+	je	NEAR $L$_last_num_blocks_is_10_216
+	ja	NEAR $L$_last_num_blocks_is_11_216
+	jmp	NEAR $L$_last_num_blocks_is_9_216
 
-$L$_last_num_blocks_is_7_1_ihddujhufbGhafb:
+$L$_last_num_blocks_is_7_1_216:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_ihddujhufbGhafb
-	jb	NEAR $L$_last_num_blocks_is_3_1_ihddujhufbGhafb
+	je	NEAR $L$_last_num_blocks_is_4_216
+	jb	NEAR $L$_last_num_blocks_is_3_1_216
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_ihddujhufbGhafb
-	je	NEAR $L$_last_num_blocks_is_6_ihddujhufbGhafb
-	jmp	NEAR $L$_last_num_blocks_is_5_ihddujhufbGhafb
+	ja	NEAR $L$_last_num_blocks_is_7_216
+	je	NEAR $L$_last_num_blocks_is_6_216
+	jmp	NEAR $L$_last_num_blocks_is_5_216
 
-$L$_last_num_blocks_is_3_1_ihddujhufbGhafb:
+$L$_last_num_blocks_is_3_1_216:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_ihddujhufbGhafb
-	je	NEAR $L$_last_num_blocks_is_2_ihddujhufbGhafb
-$L$_last_num_blocks_is_1_ihddujhufbGhafb:
+	ja	NEAR $L$_last_num_blocks_is_3_216
+	je	NEAR $L$_last_num_blocks_is_2_216
+$L$_last_num_blocks_is_1_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_totimiqfbGDuxFC
+	jae	NEAR $L$_16_blocks_overflow_217
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_totimiqfbGDuxFC
+	jmp	NEAR $L$_16_blocks_ok_217
 
-$L$_16_blocks_overflow_totimiqfbGDuxFC:
+$L$_16_blocks_overflow_217:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_totimiqfbGDuxFC:
+$L$_16_blocks_ok_217:
 
 
 
@@ -31401,7 +31401,7 @@ $L$_16_blocks_ok_totimiqfbGDuxFC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nhyiEitdjqizFAe
+	jl	NEAR $L$_small_initial_partial_block_218
 
 
 
@@ -31445,8 +31445,8 @@ $L$_16_blocks_ok_totimiqfbGDuxFC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nhyiEitdjqizFAe
-$L$_small_initial_partial_block_nhyiEitdjqizFAe:
+	jmp	NEAR $L$_small_initial_compute_done_218
+$L$_small_initial_partial_block_218:
 
 
 
@@ -31498,24 +31498,24 @@ $L$_small_initial_partial_block_nhyiEitdjqizFAe:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_nhyiEitdjqizFAe
-$L$_small_initial_compute_done_nhyiEitdjqizFAe:
-$L$_after_reduction_nhyiEitdjqizFAe:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_2_ihddujhufbGhafb:
+	jmp	NEAR $L$_after_reduction_218
+$L$_small_initial_compute_done_218:
+$L$_after_reduction_218:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_2_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_zDzskogiwpeomux
+	jae	NEAR $L$_16_blocks_overflow_219
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_zDzskogiwpeomux
+	jmp	NEAR $L$_16_blocks_ok_219
 
-$L$_16_blocks_overflow_zDzskogiwpeomux:
+$L$_16_blocks_overflow_219:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_zDzskogiwpeomux:
+$L$_16_blocks_ok_219:
 
 
 
@@ -31604,7 +31604,7 @@ $L$_16_blocks_ok_zDzskogiwpeomux:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lGyEEpAshBrdmBf
+	jl	NEAR $L$_small_initial_partial_block_220
 
 
 
@@ -31648,8 +31648,8 @@ $L$_16_blocks_ok_zDzskogiwpeomux:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lGyEEpAshBrdmBf
-$L$_small_initial_partial_block_lGyEEpAshBrdmBf:
+	jmp	NEAR $L$_small_initial_compute_done_220
+$L$_small_initial_partial_block_220:
 
 
 
@@ -31696,27 +31696,27 @@ $L$_small_initial_partial_block_lGyEEpAshBrdmBf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lGyEEpAshBrdmBf:
+$L$_small_initial_compute_done_220:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lGyEEpAshBrdmBf
+	je	NEAR $L$_after_reduction_220
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lGyEEpAshBrdmBf:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_3_ihddujhufbGhafb:
+$L$_after_reduction_220:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_3_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_jvnqkykgjfohbqm
+	jae	NEAR $L$_16_blocks_overflow_221
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_jvnqkykgjfohbqm
+	jmp	NEAR $L$_16_blocks_ok_221
 
-$L$_16_blocks_overflow_jvnqkykgjfohbqm:
+$L$_16_blocks_overflow_221:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_jvnqkykgjfohbqm:
+$L$_16_blocks_ok_221:
 
 
 
@@ -31805,7 +31805,7 @@ $L$_16_blocks_ok_jvnqkykgjfohbqm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_gwtBzAmkFrrfygs
+	jl	NEAR $L$_small_initial_partial_block_222
 
 
 
@@ -31850,8 +31850,8 @@ $L$_16_blocks_ok_jvnqkykgjfohbqm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_gwtBzAmkFrrfygs
-$L$_small_initial_partial_block_gwtBzAmkFrrfygs:
+	jmp	NEAR $L$_small_initial_compute_done_222
+$L$_small_initial_partial_block_222:
 
 
 
@@ -31898,27 +31898,27 @@ $L$_small_initial_partial_block_gwtBzAmkFrrfygs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gwtBzAmkFrrfygs:
+$L$_small_initial_compute_done_222:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_gwtBzAmkFrrfygs
+	je	NEAR $L$_after_reduction_222
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_gwtBzAmkFrrfygs:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_4_ihddujhufbGhafb:
+$L$_after_reduction_222:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_4_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_iaDtCpqAwEBDBin
+	jae	NEAR $L$_16_blocks_overflow_223
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_iaDtCpqAwEBDBin
+	jmp	NEAR $L$_16_blocks_ok_223
 
-$L$_16_blocks_overflow_iaDtCpqAwEBDBin:
+$L$_16_blocks_overflow_223:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_iaDtCpqAwEBDBin:
+$L$_16_blocks_ok_223:
 
 
 
@@ -32007,7 +32007,7 @@ $L$_16_blocks_ok_iaDtCpqAwEBDBin:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uvCuEuEdkmoaflc
+	jl	NEAR $L$_small_initial_partial_block_224
 
 
 
@@ -32052,8 +32052,8 @@ $L$_16_blocks_ok_iaDtCpqAwEBDBin:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uvCuEuEdkmoaflc
-$L$_small_initial_partial_block_uvCuEuEdkmoaflc:
+	jmp	NEAR $L$_small_initial_compute_done_224
+$L$_small_initial_partial_block_224:
 
 
 
@@ -32101,32 +32101,32 @@ $L$_small_initial_partial_block_uvCuEuEdkmoaflc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uvCuEuEdkmoaflc:
+$L$_small_initial_compute_done_224:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uvCuEuEdkmoaflc
+	je	NEAR $L$_after_reduction_224
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uvCuEuEdkmoaflc:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_5_ihddujhufbGhafb:
+$L$_after_reduction_224:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_5_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_htEfyvwCGDusops
+	jae	NEAR $L$_16_blocks_overflow_225
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_htEfyvwCGDusops
+	jmp	NEAR $L$_16_blocks_ok_225
 
-$L$_16_blocks_overflow_htEfyvwCGDusops:
+$L$_16_blocks_overflow_225:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_htEfyvwCGDusops:
+$L$_16_blocks_ok_225:
 
 
 
@@ -32232,7 +32232,7 @@ $L$_16_blocks_ok_htEfyvwCGDusops:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_quqjvolgBvaeuet
+	jl	NEAR $L$_small_initial_partial_block_226
 
 
 
@@ -32283,8 +32283,8 @@ $L$_16_blocks_ok_htEfyvwCGDusops:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_quqjvolgBvaeuet
-$L$_small_initial_partial_block_quqjvolgBvaeuet:
+	jmp	NEAR $L$_small_initial_compute_done_226
+$L$_small_initial_partial_block_226:
 
 
 
@@ -32332,32 +32332,32 @@ $L$_small_initial_partial_block_quqjvolgBvaeuet:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_quqjvolgBvaeuet:
+$L$_small_initial_compute_done_226:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_quqjvolgBvaeuet
+	je	NEAR $L$_after_reduction_226
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_quqjvolgBvaeuet:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_6_ihddujhufbGhafb:
+$L$_after_reduction_226:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_6_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_CkEtcgyjyFArjsB
+	jae	NEAR $L$_16_blocks_overflow_227
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_CkEtcgyjyFArjsB
+	jmp	NEAR $L$_16_blocks_ok_227
 
-$L$_16_blocks_overflow_CkEtcgyjyFArjsB:
+$L$_16_blocks_overflow_227:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_CkEtcgyjyFArjsB:
+$L$_16_blocks_ok_227:
 
 
 
@@ -32463,7 +32463,7 @@ $L$_16_blocks_ok_CkEtcgyjyFArjsB:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kiikzEupBBEnFEl
+	jl	NEAR $L$_small_initial_partial_block_228
 
 
 
@@ -32514,8 +32514,8 @@ $L$_16_blocks_ok_CkEtcgyjyFArjsB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kiikzEupBBEnFEl
-$L$_small_initial_partial_block_kiikzEupBBEnFEl:
+	jmp	NEAR $L$_small_initial_compute_done_228
+$L$_small_initial_partial_block_228:
 
 
 
@@ -32569,32 +32569,32 @@ $L$_small_initial_partial_block_kiikzEupBBEnFEl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kiikzEupBBEnFEl:
+$L$_small_initial_compute_done_228:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kiikzEupBBEnFEl
+	je	NEAR $L$_after_reduction_228
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kiikzEupBBEnFEl:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_7_ihddujhufbGhafb:
+$L$_after_reduction_228:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_7_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_emvnuBqEbgpncAh
+	jae	NEAR $L$_16_blocks_overflow_229
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_emvnuBqEbgpncAh
+	jmp	NEAR $L$_16_blocks_ok_229
 
-$L$_16_blocks_overflow_emvnuBqEbgpncAh:
+$L$_16_blocks_overflow_229:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_emvnuBqEbgpncAh:
+$L$_16_blocks_ok_229:
 
 
 
@@ -32700,7 +32700,7 @@ $L$_16_blocks_ok_emvnuBqEbgpncAh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FbqweoBGtnhbxks
+	jl	NEAR $L$_small_initial_partial_block_230
 
 
 
@@ -32752,8 +32752,8 @@ $L$_16_blocks_ok_emvnuBqEbgpncAh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FbqweoBGtnhbxks
-$L$_small_initial_partial_block_FbqweoBGtnhbxks:
+	jmp	NEAR $L$_small_initial_compute_done_230
+$L$_small_initial_partial_block_230:
 
 
 
@@ -32807,32 +32807,32 @@ $L$_small_initial_partial_block_FbqweoBGtnhbxks:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FbqweoBGtnhbxks:
+$L$_small_initial_compute_done_230:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FbqweoBGtnhbxks
+	je	NEAR $L$_after_reduction_230
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FbqweoBGtnhbxks:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_8_ihddujhufbGhafb:
+$L$_after_reduction_230:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_8_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_evApgzcaBFmrlcw
+	jae	NEAR $L$_16_blocks_overflow_231
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_evApgzcaBFmrlcw
+	jmp	NEAR $L$_16_blocks_ok_231
 
-$L$_16_blocks_overflow_evApgzcaBFmrlcw:
+$L$_16_blocks_overflow_231:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_evApgzcaBFmrlcw:
+$L$_16_blocks_ok_231:
 
 
 
@@ -32938,7 +32938,7 @@ $L$_16_blocks_ok_evApgzcaBFmrlcw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ageFlcumBgEFDAa
+	jl	NEAR $L$_small_initial_partial_block_232
 
 
 
@@ -32992,8 +32992,8 @@ $L$_16_blocks_ok_evApgzcaBFmrlcw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ageFlcumBgEFDAa
-$L$_small_initial_partial_block_ageFlcumBgEFDAa:
+	jmp	NEAR $L$_small_initial_compute_done_232
+$L$_small_initial_partial_block_232:
 
 
 
@@ -33048,26 +33048,26 @@ $L$_small_initial_partial_block_ageFlcumBgEFDAa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ageFlcumBgEFDAa:
+$L$_small_initial_compute_done_232:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ageFlcumBgEFDAa
+	je	NEAR $L$_after_reduction_232
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ageFlcumBgEFDAa:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_9_ihddujhufbGhafb:
+$L$_after_reduction_232:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_9_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_GzygshntorpokvF
+	jae	NEAR $L$_16_blocks_overflow_233
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_GzygshntorpokvF
+	jmp	NEAR $L$_16_blocks_ok_233
 
-$L$_16_blocks_overflow_GzygshntorpokvF:
+$L$_16_blocks_overflow_233:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -33076,7 +33076,7 @@ $L$_16_blocks_overflow_GzygshntorpokvF:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_GzygshntorpokvF:
+$L$_16_blocks_ok_233:
 
 
 
@@ -33199,7 +33199,7 @@ $L$_16_blocks_ok_GzygshntorpokvF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qpAxGiEqxikchBr
+	jl	NEAR $L$_small_initial_partial_block_234
 
 
 
@@ -33259,8 +33259,8 @@ $L$_16_blocks_ok_GzygshntorpokvF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qpAxGiEqxikchBr
-$L$_small_initial_partial_block_qpAxGiEqxikchBr:
+	jmp	NEAR $L$_small_initial_compute_done_234
+$L$_small_initial_partial_block_234:
 
 
 
@@ -33317,26 +33317,26 @@ $L$_small_initial_partial_block_qpAxGiEqxikchBr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qpAxGiEqxikchBr:
+$L$_small_initial_compute_done_234:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qpAxGiEqxikchBr
+	je	NEAR $L$_after_reduction_234
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qpAxGiEqxikchBr:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_10_ihddujhufbGhafb:
+$L$_after_reduction_234:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_10_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_yasDEoayolqhvha
+	jae	NEAR $L$_16_blocks_overflow_235
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_yasDEoayolqhvha
+	jmp	NEAR $L$_16_blocks_ok_235
 
-$L$_16_blocks_overflow_yasDEoayolqhvha:
+$L$_16_blocks_overflow_235:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -33345,7 +33345,7 @@ $L$_16_blocks_overflow_yasDEoayolqhvha:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_yasDEoayolqhvha:
+$L$_16_blocks_ok_235:
 
 
 
@@ -33468,7 +33468,7 @@ $L$_16_blocks_ok_yasDEoayolqhvha:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lnCxqDjCjoBDjxj
+	jl	NEAR $L$_small_initial_partial_block_236
 
 
 
@@ -33528,8 +33528,8 @@ $L$_16_blocks_ok_yasDEoayolqhvha:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lnCxqDjCjoBDjxj
-$L$_small_initial_partial_block_lnCxqDjCjoBDjxj:
+	jmp	NEAR $L$_small_initial_compute_done_236
+$L$_small_initial_partial_block_236:
 
 
 
@@ -33592,26 +33592,26 @@ $L$_small_initial_partial_block_lnCxqDjCjoBDjxj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lnCxqDjCjoBDjxj:
+$L$_small_initial_compute_done_236:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lnCxqDjCjoBDjxj
+	je	NEAR $L$_after_reduction_236
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lnCxqDjCjoBDjxj:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_11_ihddujhufbGhafb:
+$L$_after_reduction_236:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_11_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_pmyeDogovyfFEle
+	jae	NEAR $L$_16_blocks_overflow_237
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_pmyeDogovyfFEle
+	jmp	NEAR $L$_16_blocks_ok_237
 
-$L$_16_blocks_overflow_pmyeDogovyfFEle:
+$L$_16_blocks_overflow_237:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -33620,7 +33620,7 @@ $L$_16_blocks_overflow_pmyeDogovyfFEle:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_pmyeDogovyfFEle:
+$L$_16_blocks_ok_237:
 
 
 
@@ -33743,7 +33743,7 @@ $L$_16_blocks_ok_pmyeDogovyfFEle:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kbGkBbbCAthcaaD
+	jl	NEAR $L$_small_initial_partial_block_238
 
 
 
@@ -33804,8 +33804,8 @@ $L$_16_blocks_ok_pmyeDogovyfFEle:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kbGkBbbCAthcaaD
-$L$_small_initial_partial_block_kbGkBbbCAthcaaD:
+	jmp	NEAR $L$_small_initial_compute_done_238
+$L$_small_initial_partial_block_238:
 
 
 
@@ -33868,26 +33868,26 @@ $L$_small_initial_partial_block_kbGkBbbCAthcaaD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kbGkBbbCAthcaaD:
+$L$_small_initial_compute_done_238:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kbGkBbbCAthcaaD
+	je	NEAR $L$_after_reduction_238
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kbGkBbbCAthcaaD:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_12_ihddujhufbGhafb:
+$L$_after_reduction_238:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_12_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_nCbwrDroshvBujg
+	jae	NEAR $L$_16_blocks_overflow_239
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_nCbwrDroshvBujg
+	jmp	NEAR $L$_16_blocks_ok_239
 
-$L$_16_blocks_overflow_nCbwrDroshvBujg:
+$L$_16_blocks_overflow_239:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -33896,7 +33896,7 @@ $L$_16_blocks_overflow_nCbwrDroshvBujg:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_nCbwrDroshvBujg:
+$L$_16_blocks_ok_239:
 
 
 
@@ -34019,7 +34019,7 @@ $L$_16_blocks_ok_nCbwrDroshvBujg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wGsAxauuiysqcdi
+	jl	NEAR $L$_small_initial_partial_block_240
 
 
 
@@ -34078,8 +34078,8 @@ $L$_16_blocks_ok_nCbwrDroshvBujg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wGsAxauuiysqcdi
-$L$_small_initial_partial_block_wGsAxauuiysqcdi:
+	jmp	NEAR $L$_small_initial_compute_done_240
+$L$_small_initial_partial_block_240:
 
 
 
@@ -34143,27 +34143,27 @@ $L$_small_initial_partial_block_wGsAxauuiysqcdi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wGsAxauuiysqcdi:
+$L$_small_initial_compute_done_240:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wGsAxauuiysqcdi
+	je	NEAR $L$_after_reduction_240
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_wGsAxauuiysqcdi:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_13_ihddujhufbGhafb:
+$L$_after_reduction_240:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_13_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_hvCvkssqCqbfvle
+	jae	NEAR $L$_16_blocks_overflow_241
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_hvCvkssqCqbfvle
+	jmp	NEAR $L$_16_blocks_ok_241
 
-$L$_16_blocks_overflow_hvCvkssqCqbfvle:
+$L$_16_blocks_overflow_241:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -34174,7 +34174,7 @@ $L$_16_blocks_overflow_hvCvkssqCqbfvle:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_hvCvkssqCqbfvle:
+$L$_16_blocks_ok_241:
 
 
 
@@ -34314,7 +34314,7 @@ $L$_16_blocks_ok_hvCvkssqCqbfvle:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_megfvyxpbzkcwny
+	jl	NEAR $L$_small_initial_partial_block_242
 
 
 
@@ -34379,8 +34379,8 @@ $L$_16_blocks_ok_hvCvkssqCqbfvle:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_megfvyxpbzkcwny
-$L$_small_initial_partial_block_megfvyxpbzkcwny:
+	jmp	NEAR $L$_small_initial_compute_done_242
+$L$_small_initial_partial_block_242:
 
 
 
@@ -34442,27 +34442,27 @@ $L$_small_initial_partial_block_megfvyxpbzkcwny:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_megfvyxpbzkcwny:
+$L$_small_initial_compute_done_242:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_megfvyxpbzkcwny
+	je	NEAR $L$_after_reduction_242
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_megfvyxpbzkcwny:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_14_ihddujhufbGhafb:
+$L$_after_reduction_242:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_14_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_jeebGjwhepsmlrh
+	jae	NEAR $L$_16_blocks_overflow_243
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_jeebGjwhepsmlrh
+	jmp	NEAR $L$_16_blocks_ok_243
 
-$L$_16_blocks_overflow_jeebGjwhepsmlrh:
+$L$_16_blocks_overflow_243:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -34473,7 +34473,7 @@ $L$_16_blocks_overflow_jeebGjwhepsmlrh:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_jeebGjwhepsmlrh:
+$L$_16_blocks_ok_243:
 
 
 
@@ -34613,7 +34613,7 @@ $L$_16_blocks_ok_jeebGjwhepsmlrh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_mlyjuCptzlaxGwv
+	jl	NEAR $L$_small_initial_partial_block_244
 
 
 
@@ -34678,8 +34678,8 @@ $L$_16_blocks_ok_jeebGjwhepsmlrh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_mlyjuCptzlaxGwv
-$L$_small_initial_partial_block_mlyjuCptzlaxGwv:
+	jmp	NEAR $L$_small_initial_compute_done_244
+$L$_small_initial_partial_block_244:
 
 
 
@@ -34747,27 +34747,27 @@ $L$_small_initial_partial_block_mlyjuCptzlaxGwv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mlyjuCptzlaxGwv:
+$L$_small_initial_compute_done_244:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_mlyjuCptzlaxGwv
+	je	NEAR $L$_after_reduction_244
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mlyjuCptzlaxGwv:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_15_ihddujhufbGhafb:
+$L$_after_reduction_244:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_15_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_DGfwixkofntBAkF
+	jae	NEAR $L$_16_blocks_overflow_245
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_DGfwixkofntBAkF
+	jmp	NEAR $L$_16_blocks_ok_245
 
-$L$_16_blocks_overflow_DGfwixkofntBAkF:
+$L$_16_blocks_overflow_245:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -34778,7 +34778,7 @@ $L$_16_blocks_overflow_DGfwixkofntBAkF:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_DGfwixkofntBAkF:
+$L$_16_blocks_ok_245:
 
 
 
@@ -34918,7 +34918,7 @@ $L$_16_blocks_ok_DGfwixkofntBAkF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jAwawFuGAauCscC
+	jl	NEAR $L$_small_initial_partial_block_246
 
 
 
@@ -34984,8 +34984,8 @@ $L$_16_blocks_ok_DGfwixkofntBAkF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jAwawFuGAauCscC
-$L$_small_initial_partial_block_jAwawFuGAauCscC:
+	jmp	NEAR $L$_small_initial_compute_done_246
+$L$_small_initial_partial_block_246:
 
 
 
@@ -35053,27 +35053,27 @@ $L$_small_initial_partial_block_jAwawFuGAauCscC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jAwawFuGAauCscC:
+$L$_small_initial_compute_done_246:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jAwawFuGAauCscC
+	je	NEAR $L$_after_reduction_246
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_jAwawFuGAauCscC:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_16_ihddujhufbGhafb:
+$L$_after_reduction_246:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_16_216:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_iEzAEpdkjzmiyqC
+	jae	NEAR $L$_16_blocks_overflow_247
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_iEzAEpdkjzmiyqC
+	jmp	NEAR $L$_16_blocks_ok_247
 
-$L$_16_blocks_overflow_iEzAEpdkjzmiyqC:
+$L$_16_blocks_overflow_247:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -35084,7 +35084,7 @@ $L$_16_blocks_overflow_iEzAEpdkjzmiyqC:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_iEzAEpdkjzmiyqC:
+$L$_16_blocks_ok_247:
 
 
 
@@ -35221,7 +35221,7 @@ $L$_16_blocks_ok_iEzAEpdkjzmiyqC:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_DmFkqwwbafdkuxw:
+$L$_small_initial_partial_block_248:
 
 
 
@@ -35290,11 +35290,11 @@ $L$_small_initial_partial_block_DmFkqwwbafdkuxw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DmFkqwwbafdkuxw:
+$L$_small_initial_compute_done_248:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_DmFkqwwbafdkuxw:
-	jmp	NEAR $L$_last_blocks_done_ihddujhufbGhafb
-$L$_last_num_blocks_is_0_ihddujhufbGhafb:
+$L$_after_reduction_248:
+	jmp	NEAR $L$_last_blocks_done_216
+$L$_last_num_blocks_is_0_216:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -35356,18 +35356,18 @@ $L$_last_num_blocks_is_0_ihddujhufbGhafb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_ihddujhufbGhafb:
+$L$_last_blocks_done_216:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_hCBzfvrzwDadcCF
-$L$_encrypt_16_blocks_hCBzfvrzwDadcCF:
+	jmp	NEAR $L$_ghash_done_172
+$L$_encrypt_16_blocks_172:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_gldcEhfdcsthzru
+	jae	NEAR $L$_16_blocks_overflow_249
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_gldcEhfdcsthzru
-$L$_16_blocks_overflow_gldcEhfdcsthzru:
+	jmp	NEAR $L$_16_blocks_ok_249
+$L$_16_blocks_overflow_249:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -35378,7 +35378,7 @@ $L$_16_blocks_overflow_gldcEhfdcsthzru:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_gldcEhfdcsthzru:
+$L$_16_blocks_ok_249:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -35591,61 +35591,61 @@ $L$_16_blocks_ok_gldcEhfdcsthzru:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_lzxtAAucnnkcCBj
+	je	NEAR $L$_last_num_blocks_is_0_250
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_lzxtAAucnnkcCBj
-	jb	NEAR $L$_last_num_blocks_is_7_1_lzxtAAucnnkcCBj
+	je	NEAR $L$_last_num_blocks_is_8_250
+	jb	NEAR $L$_last_num_blocks_is_7_1_250
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_lzxtAAucnnkcCBj
-	jb	NEAR $L$_last_num_blocks_is_11_9_lzxtAAucnnkcCBj
+	je	NEAR $L$_last_num_blocks_is_12_250
+	jb	NEAR $L$_last_num_blocks_is_11_9_250
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_lzxtAAucnnkcCBj
-	ja	NEAR $L$_last_num_blocks_is_16_lzxtAAucnnkcCBj
+	je	NEAR $L$_last_num_blocks_is_15_250
+	ja	NEAR $L$_last_num_blocks_is_16_250
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_lzxtAAucnnkcCBj
-	jmp	NEAR $L$_last_num_blocks_is_13_lzxtAAucnnkcCBj
+	je	NEAR $L$_last_num_blocks_is_14_250
+	jmp	NEAR $L$_last_num_blocks_is_13_250
 
-$L$_last_num_blocks_is_11_9_lzxtAAucnnkcCBj:
+$L$_last_num_blocks_is_11_9_250:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_lzxtAAucnnkcCBj
-	ja	NEAR $L$_last_num_blocks_is_11_lzxtAAucnnkcCBj
-	jmp	NEAR $L$_last_num_blocks_is_9_lzxtAAucnnkcCBj
+	je	NEAR $L$_last_num_blocks_is_10_250
+	ja	NEAR $L$_last_num_blocks_is_11_250
+	jmp	NEAR $L$_last_num_blocks_is_9_250
 
-$L$_last_num_blocks_is_7_1_lzxtAAucnnkcCBj:
+$L$_last_num_blocks_is_7_1_250:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_lzxtAAucnnkcCBj
-	jb	NEAR $L$_last_num_blocks_is_3_1_lzxtAAucnnkcCBj
+	je	NEAR $L$_last_num_blocks_is_4_250
+	jb	NEAR $L$_last_num_blocks_is_3_1_250
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_lzxtAAucnnkcCBj
-	je	NEAR $L$_last_num_blocks_is_6_lzxtAAucnnkcCBj
-	jmp	NEAR $L$_last_num_blocks_is_5_lzxtAAucnnkcCBj
+	ja	NEAR $L$_last_num_blocks_is_7_250
+	je	NEAR $L$_last_num_blocks_is_6_250
+	jmp	NEAR $L$_last_num_blocks_is_5_250
 
-$L$_last_num_blocks_is_3_1_lzxtAAucnnkcCBj:
+$L$_last_num_blocks_is_3_1_250:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_lzxtAAucnnkcCBj
-	je	NEAR $L$_last_num_blocks_is_2_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_1_lzxtAAucnnkcCBj:
+	ja	NEAR $L$_last_num_blocks_is_3_250
+	je	NEAR $L$_last_num_blocks_is_2_250
+$L$_last_num_blocks_is_1_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_xukxAeqeAqlhDbr
+	jae	NEAR $L$_16_blocks_overflow_251
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_xukxAeqeAqlhDbr
+	jmp	NEAR $L$_16_blocks_ok_251
 
-$L$_16_blocks_overflow_xukxAeqeAqlhDbr:
+$L$_16_blocks_overflow_251:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_xukxAeqeAqlhDbr:
+$L$_16_blocks_ok_251:
 
 
 
@@ -35756,7 +35756,7 @@ $L$_16_blocks_ok_xukxAeqeAqlhDbr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FegBtCdczojkxib
+	jl	NEAR $L$_small_initial_partial_block_252
 
 
 
@@ -35798,8 +35798,8 @@ $L$_16_blocks_ok_xukxAeqeAqlhDbr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FegBtCdczojkxib
-$L$_small_initial_partial_block_FegBtCdczojkxib:
+	jmp	NEAR $L$_small_initial_compute_done_252
+$L$_small_initial_partial_block_252:
 
 
 
@@ -35823,24 +35823,24 @@ $L$_small_initial_partial_block_FegBtCdczojkxib:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_FegBtCdczojkxib
-$L$_small_initial_compute_done_FegBtCdczojkxib:
-$L$_after_reduction_FegBtCdczojkxib:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_2_lzxtAAucnnkcCBj:
+	jmp	NEAR $L$_after_reduction_252
+$L$_small_initial_compute_done_252:
+$L$_after_reduction_252:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_2_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_fexCzBEyuhhGDhs
+	jae	NEAR $L$_16_blocks_overflow_253
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_fexCzBEyuhhGDhs
+	jmp	NEAR $L$_16_blocks_ok_253
 
-$L$_16_blocks_overflow_fexCzBEyuhhGDhs:
+$L$_16_blocks_overflow_253:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_fexCzBEyuhhGDhs:
+$L$_16_blocks_ok_253:
 
 
 
@@ -35952,7 +35952,7 @@ $L$_16_blocks_ok_fexCzBEyuhhGDhs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_gFkltplyqwzqseF
+	jl	NEAR $L$_small_initial_partial_block_254
 
 
 
@@ -35994,8 +35994,8 @@ $L$_16_blocks_ok_fexCzBEyuhhGDhs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_gFkltplyqwzqseF
-$L$_small_initial_partial_block_gFkltplyqwzqseF:
+	jmp	NEAR $L$_small_initial_compute_done_254
+$L$_small_initial_partial_block_254:
 
 
 
@@ -36040,27 +36040,27 @@ $L$_small_initial_partial_block_gFkltplyqwzqseF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gFkltplyqwzqseF:
+$L$_small_initial_compute_done_254:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_gFkltplyqwzqseF
+	je	NEAR $L$_after_reduction_254
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_gFkltplyqwzqseF:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_3_lzxtAAucnnkcCBj:
+$L$_after_reduction_254:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_3_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_EacogwvdAnpsehi
+	jae	NEAR $L$_16_blocks_overflow_255
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_EacogwvdAnpsehi
+	jmp	NEAR $L$_16_blocks_ok_255
 
-$L$_16_blocks_overflow_EacogwvdAnpsehi:
+$L$_16_blocks_overflow_255:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_EacogwvdAnpsehi:
+$L$_16_blocks_ok_255:
 
 
 
@@ -36172,7 +36172,7 @@ $L$_16_blocks_ok_EacogwvdAnpsehi:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rkrpmkqfnlAdFts
+	jl	NEAR $L$_small_initial_partial_block_256
 
 
 
@@ -36215,8 +36215,8 @@ $L$_16_blocks_ok_EacogwvdAnpsehi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rkrpmkqfnlAdFts
-$L$_small_initial_partial_block_rkrpmkqfnlAdFts:
+	jmp	NEAR $L$_small_initial_compute_done_256
+$L$_small_initial_partial_block_256:
 
 
 
@@ -36261,27 +36261,27 @@ $L$_small_initial_partial_block_rkrpmkqfnlAdFts:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rkrpmkqfnlAdFts:
+$L$_small_initial_compute_done_256:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rkrpmkqfnlAdFts
+	je	NEAR $L$_after_reduction_256
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rkrpmkqfnlAdFts:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_4_lzxtAAucnnkcCBj:
+$L$_after_reduction_256:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_4_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_hECslgDmxDeivxB
+	jae	NEAR $L$_16_blocks_overflow_257
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_hECslgDmxDeivxB
+	jmp	NEAR $L$_16_blocks_ok_257
 
-$L$_16_blocks_overflow_hECslgDmxDeivxB:
+$L$_16_blocks_overflow_257:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_hECslgDmxDeivxB:
+$L$_16_blocks_ok_257:
 
 
 
@@ -36393,7 +36393,7 @@ $L$_16_blocks_ok_hECslgDmxDeivxB:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_smmqiCsCFnFCuAa
+	jl	NEAR $L$_small_initial_partial_block_258
 
 
 
@@ -36435,8 +36435,8 @@ $L$_16_blocks_ok_hECslgDmxDeivxB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_smmqiCsCFnFCuAa
-$L$_small_initial_partial_block_smmqiCsCFnFCuAa:
+	jmp	NEAR $L$_small_initial_compute_done_258
+$L$_small_initial_partial_block_258:
 
 
 
@@ -36482,32 +36482,32 @@ $L$_small_initial_partial_block_smmqiCsCFnFCuAa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_smmqiCsCFnFCuAa:
+$L$_small_initial_compute_done_258:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_smmqiCsCFnFCuAa
+	je	NEAR $L$_after_reduction_258
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_smmqiCsCFnFCuAa:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_5_lzxtAAucnnkcCBj:
+$L$_after_reduction_258:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_5_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_bEegBnkDkGFiyjg
+	jae	NEAR $L$_16_blocks_overflow_259
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_bEegBnkDkGFiyjg
+	jmp	NEAR $L$_16_blocks_ok_259
 
-$L$_16_blocks_overflow_bEegBnkDkGFiyjg:
+$L$_16_blocks_overflow_259:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_bEegBnkDkGFiyjg:
+$L$_16_blocks_ok_259:
 
 
 
@@ -36636,7 +36636,7 @@ $L$_16_blocks_ok_bEegBnkDkGFiyjg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BjpqkEdwtElxtlt
+	jl	NEAR $L$_small_initial_partial_block_260
 
 
 
@@ -36688,8 +36688,8 @@ $L$_16_blocks_ok_bEegBnkDkGFiyjg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BjpqkEdwtElxtlt
-$L$_small_initial_partial_block_BjpqkEdwtElxtlt:
+	jmp	NEAR $L$_small_initial_compute_done_260
+$L$_small_initial_partial_block_260:
 
 
 
@@ -36734,32 +36734,32 @@ $L$_small_initial_partial_block_BjpqkEdwtElxtlt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BjpqkEdwtElxtlt:
+$L$_small_initial_compute_done_260:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BjpqkEdwtElxtlt
+	je	NEAR $L$_after_reduction_260
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BjpqkEdwtElxtlt:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_6_lzxtAAucnnkcCBj:
+$L$_after_reduction_260:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_6_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_ypbDFEhCcClAFgk
+	jae	NEAR $L$_16_blocks_overflow_261
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ypbDFEhCcClAFgk
+	jmp	NEAR $L$_16_blocks_ok_261
 
-$L$_16_blocks_overflow_ypbDFEhCcClAFgk:
+$L$_16_blocks_overflow_261:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_ypbDFEhCcClAFgk:
+$L$_16_blocks_ok_261:
 
 
 
@@ -36888,7 +36888,7 @@ $L$_16_blocks_ok_ypbDFEhCcClAFgk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FBkooEkhekEpADb
+	jl	NEAR $L$_small_initial_partial_block_262
 
 
 
@@ -36940,8 +36940,8 @@ $L$_16_blocks_ok_ypbDFEhCcClAFgk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FBkooEkhekEpADb
-$L$_small_initial_partial_block_FBkooEkhekEpADb:
+	jmp	NEAR $L$_small_initial_compute_done_262
+$L$_small_initial_partial_block_262:
 
 
 
@@ -36996,32 +36996,32 @@ $L$_small_initial_partial_block_FBkooEkhekEpADb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FBkooEkhekEpADb:
+$L$_small_initial_compute_done_262:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FBkooEkhekEpADb
+	je	NEAR $L$_after_reduction_262
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FBkooEkhekEpADb:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_7_lzxtAAucnnkcCBj:
+$L$_after_reduction_262:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_7_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_ygFmznDciaBiukj
+	jae	NEAR $L$_16_blocks_overflow_263
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ygFmznDciaBiukj
+	jmp	NEAR $L$_16_blocks_ok_263
 
-$L$_16_blocks_overflow_ygFmznDciaBiukj:
+$L$_16_blocks_overflow_263:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_ygFmznDciaBiukj:
+$L$_16_blocks_ok_263:
 
 
 
@@ -37150,7 +37150,7 @@ $L$_16_blocks_ok_ygFmznDciaBiukj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hbmvGrBxDjAsEol
+	jl	NEAR $L$_small_initial_partial_block_264
 
 
 
@@ -37203,8 +37203,8 @@ $L$_16_blocks_ok_ygFmznDciaBiukj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hbmvGrBxDjAsEol
-$L$_small_initial_partial_block_hbmvGrBxDjAsEol:
+	jmp	NEAR $L$_small_initial_compute_done_264
+$L$_small_initial_partial_block_264:
 
 
 
@@ -37259,32 +37259,32 @@ $L$_small_initial_partial_block_hbmvGrBxDjAsEol:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hbmvGrBxDjAsEol:
+$L$_small_initial_compute_done_264:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hbmvGrBxDjAsEol
+	je	NEAR $L$_after_reduction_264
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hbmvGrBxDjAsEol:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_8_lzxtAAucnnkcCBj:
+$L$_after_reduction_264:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_8_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_gGfpixvnaCmCtjE
+	jae	NEAR $L$_16_blocks_overflow_265
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_gGfpixvnaCmCtjE
+	jmp	NEAR $L$_16_blocks_ok_265
 
-$L$_16_blocks_overflow_gGfpixvnaCmCtjE:
+$L$_16_blocks_overflow_265:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_gGfpixvnaCmCtjE:
+$L$_16_blocks_ok_265:
 
 
 
@@ -37413,7 +37413,7 @@ $L$_16_blocks_ok_gGfpixvnaCmCtjE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FrjstjnrmqitCwb
+	jl	NEAR $L$_small_initial_partial_block_266
 
 
 
@@ -37464,8 +37464,8 @@ $L$_16_blocks_ok_gGfpixvnaCmCtjE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FrjstjnrmqitCwb
-$L$_small_initial_partial_block_FrjstjnrmqitCwb:
+	jmp	NEAR $L$_small_initial_compute_done_266
+$L$_small_initial_partial_block_266:
 
 
 
@@ -37521,26 +37521,26 @@ $L$_small_initial_partial_block_FrjstjnrmqitCwb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FrjstjnrmqitCwb:
+$L$_small_initial_compute_done_266:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FrjstjnrmqitCwb
+	je	NEAR $L$_after_reduction_266
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FrjstjnrmqitCwb:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_9_lzxtAAucnnkcCBj:
+$L$_after_reduction_266:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_9_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_CAADpgbbkCpqjcF
+	jae	NEAR $L$_16_blocks_overflow_267
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_CAADpgbbkCpqjcF
+	jmp	NEAR $L$_16_blocks_ok_267
 
-$L$_16_blocks_overflow_CAADpgbbkCpqjcF:
+$L$_16_blocks_overflow_267:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -37549,7 +37549,7 @@ $L$_16_blocks_overflow_CAADpgbbkCpqjcF:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_CAADpgbbkCpqjcF:
+$L$_16_blocks_ok_267:
 
 
 
@@ -37695,7 +37695,7 @@ $L$_16_blocks_ok_CAADpgbbkCpqjcF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_spgkgkxlromfpCA
+	jl	NEAR $L$_small_initial_partial_block_268
 
 
 
@@ -37756,8 +37756,8 @@ $L$_16_blocks_ok_CAADpgbbkCpqjcF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_spgkgkxlromfpCA
-$L$_small_initial_partial_block_spgkgkxlromfpCA:
+	jmp	NEAR $L$_small_initial_compute_done_268
+$L$_small_initial_partial_block_268:
 
 
 
@@ -37811,26 +37811,26 @@ $L$_small_initial_partial_block_spgkgkxlromfpCA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_spgkgkxlromfpCA:
+$L$_small_initial_compute_done_268:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_spgkgkxlromfpCA
+	je	NEAR $L$_after_reduction_268
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_spgkgkxlromfpCA:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_10_lzxtAAucnnkcCBj:
+$L$_after_reduction_268:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_10_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_evhyjpGBqBmdrdD
+	jae	NEAR $L$_16_blocks_overflow_269
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_evhyjpGBqBmdrdD
+	jmp	NEAR $L$_16_blocks_ok_269
 
-$L$_16_blocks_overflow_evhyjpGBqBmdrdD:
+$L$_16_blocks_overflow_269:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -37839,7 +37839,7 @@ $L$_16_blocks_overflow_evhyjpGBqBmdrdD:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_evhyjpGBqBmdrdD:
+$L$_16_blocks_ok_269:
 
 
 
@@ -37985,7 +37985,7 @@ $L$_16_blocks_ok_evhyjpGBqBmdrdD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_Etniuflwcofavsx
+	jl	NEAR $L$_small_initial_partial_block_270
 
 
 
@@ -38046,8 +38046,8 @@ $L$_16_blocks_ok_evhyjpGBqBmdrdD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_Etniuflwcofavsx
-$L$_small_initial_partial_block_Etniuflwcofavsx:
+	jmp	NEAR $L$_small_initial_compute_done_270
+$L$_small_initial_partial_block_270:
 
 
 
@@ -38111,26 +38111,26 @@ $L$_small_initial_partial_block_Etniuflwcofavsx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_Etniuflwcofavsx:
+$L$_small_initial_compute_done_270:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_Etniuflwcofavsx
+	je	NEAR $L$_after_reduction_270
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_Etniuflwcofavsx:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_11_lzxtAAucnnkcCBj:
+$L$_after_reduction_270:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_11_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_GqxxhjbsuhwDdAh
+	jae	NEAR $L$_16_blocks_overflow_271
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_GqxxhjbsuhwDdAh
+	jmp	NEAR $L$_16_blocks_ok_271
 
-$L$_16_blocks_overflow_GqxxhjbsuhwDdAh:
+$L$_16_blocks_overflow_271:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -38139,7 +38139,7 @@ $L$_16_blocks_overflow_GqxxhjbsuhwDdAh:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_GqxxhjbsuhwDdAh:
+$L$_16_blocks_ok_271:
 
 
 
@@ -38285,7 +38285,7 @@ $L$_16_blocks_ok_GqxxhjbsuhwDdAh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_cloppiffEndqidj
+	jl	NEAR $L$_small_initial_partial_block_272
 
 
 
@@ -38347,8 +38347,8 @@ $L$_16_blocks_ok_GqxxhjbsuhwDdAh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_cloppiffEndqidj
-$L$_small_initial_partial_block_cloppiffEndqidj:
+	jmp	NEAR $L$_small_initial_compute_done_272
+$L$_small_initial_partial_block_272:
 
 
 
@@ -38412,26 +38412,26 @@ $L$_small_initial_partial_block_cloppiffEndqidj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_cloppiffEndqidj:
+$L$_small_initial_compute_done_272:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_cloppiffEndqidj
+	je	NEAR $L$_after_reduction_272
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_cloppiffEndqidj:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_12_lzxtAAucnnkcCBj:
+$L$_after_reduction_272:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_12_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_GnvFhvdrdDfxExA
+	jae	NEAR $L$_16_blocks_overflow_273
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_GnvFhvdrdDfxExA
+	jmp	NEAR $L$_16_blocks_ok_273
 
-$L$_16_blocks_overflow_GnvFhvdrdDfxExA:
+$L$_16_blocks_overflow_273:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -38440,7 +38440,7 @@ $L$_16_blocks_overflow_GnvFhvdrdDfxExA:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_GnvFhvdrdDfxExA:
+$L$_16_blocks_ok_273:
 
 
 
@@ -38586,7 +38586,7 @@ $L$_16_blocks_ok_GnvFhvdrdDfxExA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lEruaFeppnotqsz
+	jl	NEAR $L$_small_initial_partial_block_274
 
 
 
@@ -38642,8 +38642,8 @@ $L$_16_blocks_ok_GnvFhvdrdDfxExA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lEruaFeppnotqsz
-$L$_small_initial_partial_block_lEruaFeppnotqsz:
+	jmp	NEAR $L$_small_initial_compute_done_274
+$L$_small_initial_partial_block_274:
 
 
 
@@ -38708,27 +38708,27 @@ $L$_small_initial_partial_block_lEruaFeppnotqsz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lEruaFeppnotqsz:
+$L$_small_initial_compute_done_274:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lEruaFeppnotqsz
+	je	NEAR $L$_after_reduction_274
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lEruaFeppnotqsz:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_13_lzxtAAucnnkcCBj:
+$L$_after_reduction_274:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_13_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_udfpqGBkafBmAll
+	jae	NEAR $L$_16_blocks_overflow_275
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_udfpqGBkafBmAll
+	jmp	NEAR $L$_16_blocks_ok_275
 
-$L$_16_blocks_overflow_udfpqGBkafBmAll:
+$L$_16_blocks_overflow_275:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -38739,7 +38739,7 @@ $L$_16_blocks_overflow_udfpqGBkafBmAll:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_udfpqGBkafBmAll:
+$L$_16_blocks_ok_275:
 
 
 
@@ -38902,7 +38902,7 @@ $L$_16_blocks_ok_udfpqGBkafBmAll:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_Dbynfiksgelprfz
+	jl	NEAR $L$_small_initial_partial_block_276
 
 
 
@@ -38968,8 +38968,8 @@ $L$_16_blocks_ok_udfpqGBkafBmAll:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_Dbynfiksgelprfz
-$L$_small_initial_partial_block_Dbynfiksgelprfz:
+	jmp	NEAR $L$_small_initial_compute_done_276
+$L$_small_initial_partial_block_276:
 
 
 
@@ -39028,27 +39028,27 @@ $L$_small_initial_partial_block_Dbynfiksgelprfz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_Dbynfiksgelprfz:
+$L$_small_initial_compute_done_276:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_Dbynfiksgelprfz
+	je	NEAR $L$_after_reduction_276
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_Dbynfiksgelprfz:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_14_lzxtAAucnnkcCBj:
+$L$_after_reduction_276:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_14_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_BfDCoridzwCyxGD
+	jae	NEAR $L$_16_blocks_overflow_277
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_BfDCoridzwCyxGD
+	jmp	NEAR $L$_16_blocks_ok_277
 
-$L$_16_blocks_overflow_BfDCoridzwCyxGD:
+$L$_16_blocks_overflow_277:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -39059,7 +39059,7 @@ $L$_16_blocks_overflow_BfDCoridzwCyxGD:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_BfDCoridzwCyxGD:
+$L$_16_blocks_ok_277:
 
 
 
@@ -39222,7 +39222,7 @@ $L$_16_blocks_ok_BfDCoridzwCyxGD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_isiACBkDhuyyktu
+	jl	NEAR $L$_small_initial_partial_block_278
 
 
 
@@ -39288,8 +39288,8 @@ $L$_16_blocks_ok_BfDCoridzwCyxGD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_isiACBkDhuyyktu
-$L$_small_initial_partial_block_isiACBkDhuyyktu:
+	jmp	NEAR $L$_small_initial_compute_done_278
+$L$_small_initial_partial_block_278:
 
 
 
@@ -39358,27 +39358,27 @@ $L$_small_initial_partial_block_isiACBkDhuyyktu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_isiACBkDhuyyktu:
+$L$_small_initial_compute_done_278:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_isiACBkDhuyyktu
+	je	NEAR $L$_after_reduction_278
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_isiACBkDhuyyktu:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_15_lzxtAAucnnkcCBj:
+$L$_after_reduction_278:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_15_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_EooaAbujGmvqyDr
+	jae	NEAR $L$_16_blocks_overflow_279
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_EooaAbujGmvqyDr
+	jmp	NEAR $L$_16_blocks_ok_279
 
-$L$_16_blocks_overflow_EooaAbujGmvqyDr:
+$L$_16_blocks_overflow_279:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -39389,7 +39389,7 @@ $L$_16_blocks_overflow_EooaAbujGmvqyDr:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_EooaAbujGmvqyDr:
+$L$_16_blocks_ok_279:
 
 
 
@@ -39552,7 +39552,7 @@ $L$_16_blocks_ok_EooaAbujGmvqyDr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_shgqfirjipqxtFj
+	jl	NEAR $L$_small_initial_partial_block_280
 
 
 
@@ -39619,8 +39619,8 @@ $L$_16_blocks_ok_EooaAbujGmvqyDr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_shgqfirjipqxtFj
-$L$_small_initial_partial_block_shgqfirjipqxtFj:
+	jmp	NEAR $L$_small_initial_compute_done_280
+$L$_small_initial_partial_block_280:
 
 
 
@@ -39689,27 +39689,27 @@ $L$_small_initial_partial_block_shgqfirjipqxtFj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_shgqfirjipqxtFj:
+$L$_small_initial_compute_done_280:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_shgqfirjipqxtFj
+	je	NEAR $L$_after_reduction_280
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_shgqfirjipqxtFj:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_16_lzxtAAucnnkcCBj:
+$L$_after_reduction_280:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_16_250:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_vkakhtlyoylflrm
+	jae	NEAR $L$_16_blocks_overflow_281
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_vkakhtlyoylflrm
+	jmp	NEAR $L$_16_blocks_ok_281
 
-$L$_16_blocks_overflow_vkakhtlyoylflrm:
+$L$_16_blocks_overflow_281:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -39720,7 +39720,7 @@ $L$_16_blocks_overflow_vkakhtlyoylflrm:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_vkakhtlyoylflrm:
+$L$_16_blocks_ok_281:
 
 
 
@@ -39880,7 +39880,7 @@ $L$_16_blocks_ok_vkakhtlyoylflrm:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_kcybnpytugCBiyr:
+$L$_small_initial_partial_block_282:
 
 
 
@@ -39950,11 +39950,11 @@ $L$_small_initial_partial_block_kcybnpytugCBiyr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kcybnpytugCBiyr:
+$L$_small_initial_compute_done_282:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kcybnpytugCBiyr:
-	jmp	NEAR $L$_last_blocks_done_lzxtAAucnnkcCBj
-$L$_last_num_blocks_is_0_lzxtAAucnnkcCBj:
+$L$_after_reduction_282:
+	jmp	NEAR $L$_last_blocks_done_250
+$L$_last_num_blocks_is_0_250:
 	vmovdqa64	zmm13,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm12,ZMMWORD[512+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -40015,18 +40015,18 @@ $L$_last_num_blocks_is_0_lzxtAAucnnkcCBj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_lzxtAAucnnkcCBj:
+$L$_last_blocks_done_250:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_hCBzfvrzwDadcCF
+	jmp	NEAR $L$_ghash_done_172
 
-$L$_message_below_32_blocks_hCBzfvrzwDadcCF:
+$L$_message_below_32_blocks_172:
 
 
 	sub	r13,256
 	add	r11,256
 	mov	r10d,r13d
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_tpjzFrlcyCaookr
+	jnz	NEAR $L$_skip_hkeys_precomputation_283
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -40154,7 +40154,7 @@ $L$_message_below_32_blocks_hCBzfvrzwDadcCF:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[256+rsp],zmm5
-$L$_skip_hkeys_precomputation_tpjzFrlcyCaookr:
+$L$_skip_hkeys_precomputation_283:
 	mov	r14,1
 	and	r10d,~15
 	mov	ebx,512
@@ -40162,61 +40162,61 @@ $L$_skip_hkeys_precomputation_tpjzFrlcyCaookr:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_dFywfBkfGmcloqj
+	je	NEAR $L$_last_num_blocks_is_0_284
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_dFywfBkfGmcloqj
-	jb	NEAR $L$_last_num_blocks_is_7_1_dFywfBkfGmcloqj
+	je	NEAR $L$_last_num_blocks_is_8_284
+	jb	NEAR $L$_last_num_blocks_is_7_1_284
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_dFywfBkfGmcloqj
-	jb	NEAR $L$_last_num_blocks_is_11_9_dFywfBkfGmcloqj
+	je	NEAR $L$_last_num_blocks_is_12_284
+	jb	NEAR $L$_last_num_blocks_is_11_9_284
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_dFywfBkfGmcloqj
-	ja	NEAR $L$_last_num_blocks_is_16_dFywfBkfGmcloqj
+	je	NEAR $L$_last_num_blocks_is_15_284
+	ja	NEAR $L$_last_num_blocks_is_16_284
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_dFywfBkfGmcloqj
-	jmp	NEAR $L$_last_num_blocks_is_13_dFywfBkfGmcloqj
+	je	NEAR $L$_last_num_blocks_is_14_284
+	jmp	NEAR $L$_last_num_blocks_is_13_284
 
-$L$_last_num_blocks_is_11_9_dFywfBkfGmcloqj:
+$L$_last_num_blocks_is_11_9_284:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_dFywfBkfGmcloqj
-	ja	NEAR $L$_last_num_blocks_is_11_dFywfBkfGmcloqj
-	jmp	NEAR $L$_last_num_blocks_is_9_dFywfBkfGmcloqj
+	je	NEAR $L$_last_num_blocks_is_10_284
+	ja	NEAR $L$_last_num_blocks_is_11_284
+	jmp	NEAR $L$_last_num_blocks_is_9_284
 
-$L$_last_num_blocks_is_7_1_dFywfBkfGmcloqj:
+$L$_last_num_blocks_is_7_1_284:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_dFywfBkfGmcloqj
-	jb	NEAR $L$_last_num_blocks_is_3_1_dFywfBkfGmcloqj
+	je	NEAR $L$_last_num_blocks_is_4_284
+	jb	NEAR $L$_last_num_blocks_is_3_1_284
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_dFywfBkfGmcloqj
-	je	NEAR $L$_last_num_blocks_is_6_dFywfBkfGmcloqj
-	jmp	NEAR $L$_last_num_blocks_is_5_dFywfBkfGmcloqj
+	ja	NEAR $L$_last_num_blocks_is_7_284
+	je	NEAR $L$_last_num_blocks_is_6_284
+	jmp	NEAR $L$_last_num_blocks_is_5_284
 
-$L$_last_num_blocks_is_3_1_dFywfBkfGmcloqj:
+$L$_last_num_blocks_is_3_1_284:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_dFywfBkfGmcloqj
-	je	NEAR $L$_last_num_blocks_is_2_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_1_dFywfBkfGmcloqj:
+	ja	NEAR $L$_last_num_blocks_is_3_284
+	je	NEAR $L$_last_num_blocks_is_2_284
+$L$_last_num_blocks_is_1_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_bdkdpddzBtknpEb
+	jae	NEAR $L$_16_blocks_overflow_285
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_bdkdpddzBtknpEb
+	jmp	NEAR $L$_16_blocks_ok_285
 
-$L$_16_blocks_overflow_bdkdpddzBtknpEb:
+$L$_16_blocks_overflow_285:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_bdkdpddzBtknpEb:
+$L$_16_blocks_ok_285:
 
 
 
@@ -40304,7 +40304,7 @@ $L$_16_blocks_ok_bdkdpddzBtknpEb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_GhzzyczdEiyGfwD
+	jl	NEAR $L$_small_initial_partial_block_286
 
 
 
@@ -40348,8 +40348,8 @@ $L$_16_blocks_ok_bdkdpddzBtknpEb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_GhzzyczdEiyGfwD
-$L$_small_initial_partial_block_GhzzyczdEiyGfwD:
+	jmp	NEAR $L$_small_initial_compute_done_286
+$L$_small_initial_partial_block_286:
 
 
 
@@ -40401,24 +40401,24 @@ $L$_small_initial_partial_block_GhzzyczdEiyGfwD:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_GhzzyczdEiyGfwD
-$L$_small_initial_compute_done_GhzzyczdEiyGfwD:
-$L$_after_reduction_GhzzyczdEiyGfwD:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_2_dFywfBkfGmcloqj:
+	jmp	NEAR $L$_after_reduction_286
+$L$_small_initial_compute_done_286:
+$L$_after_reduction_286:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_2_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_aibxztekxedtvki
+	jae	NEAR $L$_16_blocks_overflow_287
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_aibxztekxedtvki
+	jmp	NEAR $L$_16_blocks_ok_287
 
-$L$_16_blocks_overflow_aibxztekxedtvki:
+$L$_16_blocks_overflow_287:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_aibxztekxedtvki:
+$L$_16_blocks_ok_287:
 
 
 
@@ -40507,7 +40507,7 @@ $L$_16_blocks_ok_aibxztekxedtvki:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_Gzyxrtjcfnzubwj
+	jl	NEAR $L$_small_initial_partial_block_288
 
 
 
@@ -40551,8 +40551,8 @@ $L$_16_blocks_ok_aibxztekxedtvki:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_Gzyxrtjcfnzubwj
-$L$_small_initial_partial_block_Gzyxrtjcfnzubwj:
+	jmp	NEAR $L$_small_initial_compute_done_288
+$L$_small_initial_partial_block_288:
 
 
 
@@ -40599,27 +40599,27 @@ $L$_small_initial_partial_block_Gzyxrtjcfnzubwj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_Gzyxrtjcfnzubwj:
+$L$_small_initial_compute_done_288:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_Gzyxrtjcfnzubwj
+	je	NEAR $L$_after_reduction_288
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_Gzyxrtjcfnzubwj:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_3_dFywfBkfGmcloqj:
+$L$_after_reduction_288:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_3_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_BgwkCwFvzupflvp
+	jae	NEAR $L$_16_blocks_overflow_289
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_BgwkCwFvzupflvp
+	jmp	NEAR $L$_16_blocks_ok_289
 
-$L$_16_blocks_overflow_BgwkCwFvzupflvp:
+$L$_16_blocks_overflow_289:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_BgwkCwFvzupflvp:
+$L$_16_blocks_ok_289:
 
 
 
@@ -40708,7 +40708,7 @@ $L$_16_blocks_ok_BgwkCwFvzupflvp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_bucywglymCjxueD
+	jl	NEAR $L$_small_initial_partial_block_290
 
 
 
@@ -40753,8 +40753,8 @@ $L$_16_blocks_ok_BgwkCwFvzupflvp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_bucywglymCjxueD
-$L$_small_initial_partial_block_bucywglymCjxueD:
+	jmp	NEAR $L$_small_initial_compute_done_290
+$L$_small_initial_partial_block_290:
 
 
 
@@ -40801,27 +40801,27 @@ $L$_small_initial_partial_block_bucywglymCjxueD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_bucywglymCjxueD:
+$L$_small_initial_compute_done_290:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_bucywglymCjxueD
+	je	NEAR $L$_after_reduction_290
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_bucywglymCjxueD:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_4_dFywfBkfGmcloqj:
+$L$_after_reduction_290:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_4_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_xjkFmesrfrthorx
+	jae	NEAR $L$_16_blocks_overflow_291
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_xjkFmesrfrthorx
+	jmp	NEAR $L$_16_blocks_ok_291
 
-$L$_16_blocks_overflow_xjkFmesrfrthorx:
+$L$_16_blocks_overflow_291:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_xjkFmesrfrthorx:
+$L$_16_blocks_ok_291:
 
 
 
@@ -40910,7 +40910,7 @@ $L$_16_blocks_ok_xjkFmesrfrthorx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FgDfuywqFujpGaE
+	jl	NEAR $L$_small_initial_partial_block_292
 
 
 
@@ -40955,8 +40955,8 @@ $L$_16_blocks_ok_xjkFmesrfrthorx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FgDfuywqFujpGaE
-$L$_small_initial_partial_block_FgDfuywqFujpGaE:
+	jmp	NEAR $L$_small_initial_compute_done_292
+$L$_small_initial_partial_block_292:
 
 
 
@@ -41004,32 +41004,32 @@ $L$_small_initial_partial_block_FgDfuywqFujpGaE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FgDfuywqFujpGaE:
+$L$_small_initial_compute_done_292:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FgDfuywqFujpGaE
+	je	NEAR $L$_after_reduction_292
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FgDfuywqFujpGaE:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_5_dFywfBkfGmcloqj:
+$L$_after_reduction_292:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_5_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_ojDhrsidnhnmxkx
+	jae	NEAR $L$_16_blocks_overflow_293
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_ojDhrsidnhnmxkx
+	jmp	NEAR $L$_16_blocks_ok_293
 
-$L$_16_blocks_overflow_ojDhrsidnhnmxkx:
+$L$_16_blocks_overflow_293:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_ojDhrsidnhnmxkx:
+$L$_16_blocks_ok_293:
 
 
 
@@ -41135,7 +41135,7 @@ $L$_16_blocks_ok_ojDhrsidnhnmxkx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_buuBiGtjmcEnBsa
+	jl	NEAR $L$_small_initial_partial_block_294
 
 
 
@@ -41186,8 +41186,8 @@ $L$_16_blocks_ok_ojDhrsidnhnmxkx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_buuBiGtjmcEnBsa
-$L$_small_initial_partial_block_buuBiGtjmcEnBsa:
+	jmp	NEAR $L$_small_initial_compute_done_294
+$L$_small_initial_partial_block_294:
 
 
 
@@ -41235,32 +41235,32 @@ $L$_small_initial_partial_block_buuBiGtjmcEnBsa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_buuBiGtjmcEnBsa:
+$L$_small_initial_compute_done_294:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_buuBiGtjmcEnBsa
+	je	NEAR $L$_after_reduction_294
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_buuBiGtjmcEnBsa:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_6_dFywfBkfGmcloqj:
+$L$_after_reduction_294:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_6_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_dzEilwmfhBrtgvg
+	jae	NEAR $L$_16_blocks_overflow_295
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_dzEilwmfhBrtgvg
+	jmp	NEAR $L$_16_blocks_ok_295
 
-$L$_16_blocks_overflow_dzEilwmfhBrtgvg:
+$L$_16_blocks_overflow_295:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_dzEilwmfhBrtgvg:
+$L$_16_blocks_ok_295:
 
 
 
@@ -41366,7 +41366,7 @@ $L$_16_blocks_ok_dzEilwmfhBrtgvg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_thdByqjfxbvvgBr
+	jl	NEAR $L$_small_initial_partial_block_296
 
 
 
@@ -41417,8 +41417,8 @@ $L$_16_blocks_ok_dzEilwmfhBrtgvg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_thdByqjfxbvvgBr
-$L$_small_initial_partial_block_thdByqjfxbvvgBr:
+	jmp	NEAR $L$_small_initial_compute_done_296
+$L$_small_initial_partial_block_296:
 
 
 
@@ -41472,32 +41472,32 @@ $L$_small_initial_partial_block_thdByqjfxbvvgBr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_thdByqjfxbvvgBr:
+$L$_small_initial_compute_done_296:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_thdByqjfxbvvgBr
+	je	NEAR $L$_after_reduction_296
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_thdByqjfxbvvgBr:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_7_dFywfBkfGmcloqj:
+$L$_after_reduction_296:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_7_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_dFzxztCqynpcCyC
+	jae	NEAR $L$_16_blocks_overflow_297
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_dFzxztCqynpcCyC
+	jmp	NEAR $L$_16_blocks_ok_297
 
-$L$_16_blocks_overflow_dFzxztCqynpcCyC:
+$L$_16_blocks_overflow_297:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_dFzxztCqynpcCyC:
+$L$_16_blocks_ok_297:
 
 
 
@@ -41603,7 +41603,7 @@ $L$_16_blocks_ok_dFzxztCqynpcCyC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CBgtrqDzsdafAkE
+	jl	NEAR $L$_small_initial_partial_block_298
 
 
 
@@ -41655,8 +41655,8 @@ $L$_16_blocks_ok_dFzxztCqynpcCyC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CBgtrqDzsdafAkE
-$L$_small_initial_partial_block_CBgtrqDzsdafAkE:
+	jmp	NEAR $L$_small_initial_compute_done_298
+$L$_small_initial_partial_block_298:
 
 
 
@@ -41710,32 +41710,32 @@ $L$_small_initial_partial_block_CBgtrqDzsdafAkE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_CBgtrqDzsdafAkE:
+$L$_small_initial_compute_done_298:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_CBgtrqDzsdafAkE
+	je	NEAR $L$_after_reduction_298
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_CBgtrqDzsdafAkE:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_8_dFywfBkfGmcloqj:
+$L$_after_reduction_298:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_8_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_gpdobFnzeasawDo
+	jae	NEAR $L$_16_blocks_overflow_299
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_gpdobFnzeasawDo
+	jmp	NEAR $L$_16_blocks_ok_299
 
-$L$_16_blocks_overflow_gpdobFnzeasawDo:
+$L$_16_blocks_overflow_299:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_gpdobFnzeasawDo:
+$L$_16_blocks_ok_299:
 
 
 
@@ -41841,7 +41841,7 @@ $L$_16_blocks_ok_gpdobFnzeasawDo:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_veeDGCDFxbmylCa
+	jl	NEAR $L$_small_initial_partial_block_300
 
 
 
@@ -41895,8 +41895,8 @@ $L$_16_blocks_ok_gpdobFnzeasawDo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_veeDGCDFxbmylCa
-$L$_small_initial_partial_block_veeDGCDFxbmylCa:
+	jmp	NEAR $L$_small_initial_compute_done_300
+$L$_small_initial_partial_block_300:
 
 
 
@@ -41951,26 +41951,26 @@ $L$_small_initial_partial_block_veeDGCDFxbmylCa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_veeDGCDFxbmylCa:
+$L$_small_initial_compute_done_300:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_veeDGCDFxbmylCa
+	je	NEAR $L$_after_reduction_300
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_veeDGCDFxbmylCa:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_9_dFywfBkfGmcloqj:
+$L$_after_reduction_300:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_9_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_htAjzlCyzCzFvEg
+	jae	NEAR $L$_16_blocks_overflow_301
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_htAjzlCyzCzFvEg
+	jmp	NEAR $L$_16_blocks_ok_301
 
-$L$_16_blocks_overflow_htAjzlCyzCzFvEg:
+$L$_16_blocks_overflow_301:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -41979,7 +41979,7 @@ $L$_16_blocks_overflow_htAjzlCyzCzFvEg:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_htAjzlCyzCzFvEg:
+$L$_16_blocks_ok_301:
 
 
 
@@ -42102,7 +42102,7 @@ $L$_16_blocks_ok_htAjzlCyzCzFvEg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FyumdxfijzzfzDA
+	jl	NEAR $L$_small_initial_partial_block_302
 
 
 
@@ -42162,8 +42162,8 @@ $L$_16_blocks_ok_htAjzlCyzCzFvEg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FyumdxfijzzfzDA
-$L$_small_initial_partial_block_FyumdxfijzzfzDA:
+	jmp	NEAR $L$_small_initial_compute_done_302
+$L$_small_initial_partial_block_302:
 
 
 
@@ -42220,26 +42220,26 @@ $L$_small_initial_partial_block_FyumdxfijzzfzDA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FyumdxfijzzfzDA:
+$L$_small_initial_compute_done_302:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FyumdxfijzzfzDA
+	je	NEAR $L$_after_reduction_302
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FyumdxfijzzfzDA:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_10_dFywfBkfGmcloqj:
+$L$_after_reduction_302:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_10_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_dsymbsjoBBccimk
+	jae	NEAR $L$_16_blocks_overflow_303
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_dsymbsjoBBccimk
+	jmp	NEAR $L$_16_blocks_ok_303
 
-$L$_16_blocks_overflow_dsymbsjoBBccimk:
+$L$_16_blocks_overflow_303:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -42248,7 +42248,7 @@ $L$_16_blocks_overflow_dsymbsjoBBccimk:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_dsymbsjoBBccimk:
+$L$_16_blocks_ok_303:
 
 
 
@@ -42371,7 +42371,7 @@ $L$_16_blocks_ok_dsymbsjoBBccimk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_thovjdADobmlvEk
+	jl	NEAR $L$_small_initial_partial_block_304
 
 
 
@@ -42431,8 +42431,8 @@ $L$_16_blocks_ok_dsymbsjoBBccimk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_thovjdADobmlvEk
-$L$_small_initial_partial_block_thovjdADobmlvEk:
+	jmp	NEAR $L$_small_initial_compute_done_304
+$L$_small_initial_partial_block_304:
 
 
 
@@ -42495,26 +42495,26 @@ $L$_small_initial_partial_block_thovjdADobmlvEk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_thovjdADobmlvEk:
+$L$_small_initial_compute_done_304:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_thovjdADobmlvEk
+	je	NEAR $L$_after_reduction_304
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_thovjdADobmlvEk:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_11_dFywfBkfGmcloqj:
+$L$_after_reduction_304:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_11_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_pfosmgmweusentq
+	jae	NEAR $L$_16_blocks_overflow_305
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_pfosmgmweusentq
+	jmp	NEAR $L$_16_blocks_ok_305
 
-$L$_16_blocks_overflow_pfosmgmweusentq:
+$L$_16_blocks_overflow_305:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -42523,7 +42523,7 @@ $L$_16_blocks_overflow_pfosmgmweusentq:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_pfosmgmweusentq:
+$L$_16_blocks_ok_305:
 
 
 
@@ -42646,7 +42646,7 @@ $L$_16_blocks_ok_pfosmgmweusentq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wvrtbkcdyAmkcvf
+	jl	NEAR $L$_small_initial_partial_block_306
 
 
 
@@ -42707,8 +42707,8 @@ $L$_16_blocks_ok_pfosmgmweusentq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wvrtbkcdyAmkcvf
-$L$_small_initial_partial_block_wvrtbkcdyAmkcvf:
+	jmp	NEAR $L$_small_initial_compute_done_306
+$L$_small_initial_partial_block_306:
 
 
 
@@ -42771,26 +42771,26 @@ $L$_small_initial_partial_block_wvrtbkcdyAmkcvf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wvrtbkcdyAmkcvf:
+$L$_small_initial_compute_done_306:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wvrtbkcdyAmkcvf
+	je	NEAR $L$_after_reduction_306
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_wvrtbkcdyAmkcvf:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_12_dFywfBkfGmcloqj:
+$L$_after_reduction_306:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_12_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_AxxrChzsBdfGxtC
+	jae	NEAR $L$_16_blocks_overflow_307
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_AxxrChzsBdfGxtC
+	jmp	NEAR $L$_16_blocks_ok_307
 
-$L$_16_blocks_overflow_AxxrChzsBdfGxtC:
+$L$_16_blocks_overflow_307:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -42799,7 +42799,7 @@ $L$_16_blocks_overflow_AxxrChzsBdfGxtC:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_AxxrChzsBdfGxtC:
+$L$_16_blocks_ok_307:
 
 
 
@@ -42922,7 +42922,7 @@ $L$_16_blocks_ok_AxxrChzsBdfGxtC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hnusdxjAjzcnpyr
+	jl	NEAR $L$_small_initial_partial_block_308
 
 
 
@@ -42981,8 +42981,8 @@ $L$_16_blocks_ok_AxxrChzsBdfGxtC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hnusdxjAjzcnpyr
-$L$_small_initial_partial_block_hnusdxjAjzcnpyr:
+	jmp	NEAR $L$_small_initial_compute_done_308
+$L$_small_initial_partial_block_308:
 
 
 
@@ -43046,27 +43046,27 @@ $L$_small_initial_partial_block_hnusdxjAjzcnpyr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hnusdxjAjzcnpyr:
+$L$_small_initial_compute_done_308:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hnusdxjAjzcnpyr
+	je	NEAR $L$_after_reduction_308
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hnusdxjAjzcnpyr:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_13_dFywfBkfGmcloqj:
+$L$_after_reduction_308:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_13_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_wzrEkzbuzjftcrD
+	jae	NEAR $L$_16_blocks_overflow_309
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_wzrEkzbuzjftcrD
+	jmp	NEAR $L$_16_blocks_ok_309
 
-$L$_16_blocks_overflow_wzrEkzbuzjftcrD:
+$L$_16_blocks_overflow_309:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -43077,7 +43077,7 @@ $L$_16_blocks_overflow_wzrEkzbuzjftcrD:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_wzrEkzbuzjftcrD:
+$L$_16_blocks_ok_309:
 
 
 
@@ -43217,7 +43217,7 @@ $L$_16_blocks_ok_wzrEkzbuzjftcrD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fneedlAeioFdync
+	jl	NEAR $L$_small_initial_partial_block_310
 
 
 
@@ -43282,8 +43282,8 @@ $L$_16_blocks_ok_wzrEkzbuzjftcrD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fneedlAeioFdync
-$L$_small_initial_partial_block_fneedlAeioFdync:
+	jmp	NEAR $L$_small_initial_compute_done_310
+$L$_small_initial_partial_block_310:
 
 
 
@@ -43345,27 +43345,27 @@ $L$_small_initial_partial_block_fneedlAeioFdync:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fneedlAeioFdync:
+$L$_small_initial_compute_done_310:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fneedlAeioFdync
+	je	NEAR $L$_after_reduction_310
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fneedlAeioFdync:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_14_dFywfBkfGmcloqj:
+$L$_after_reduction_310:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_14_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_poepbkvfkdtebqw
+	jae	NEAR $L$_16_blocks_overflow_311
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_poepbkvfkdtebqw
+	jmp	NEAR $L$_16_blocks_ok_311
 
-$L$_16_blocks_overflow_poepbkvfkdtebqw:
+$L$_16_blocks_overflow_311:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -43376,7 +43376,7 @@ $L$_16_blocks_overflow_poepbkvfkdtebqw:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_poepbkvfkdtebqw:
+$L$_16_blocks_ok_311:
 
 
 
@@ -43516,7 +43516,7 @@ $L$_16_blocks_ok_poepbkvfkdtebqw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hmhlikkpoklECac
+	jl	NEAR $L$_small_initial_partial_block_312
 
 
 
@@ -43581,8 +43581,8 @@ $L$_16_blocks_ok_poepbkvfkdtebqw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hmhlikkpoklECac
-$L$_small_initial_partial_block_hmhlikkpoklECac:
+	jmp	NEAR $L$_small_initial_compute_done_312
+$L$_small_initial_partial_block_312:
 
 
 
@@ -43650,27 +43650,27 @@ $L$_small_initial_partial_block_hmhlikkpoklECac:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hmhlikkpoklECac:
+$L$_small_initial_compute_done_312:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hmhlikkpoklECac
+	je	NEAR $L$_after_reduction_312
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hmhlikkpoklECac:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_15_dFywfBkfGmcloqj:
+$L$_after_reduction_312:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_15_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_DpBdtjghFFgfDbl
+	jae	NEAR $L$_16_blocks_overflow_313
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_DpBdtjghFFgfDbl
+	jmp	NEAR $L$_16_blocks_ok_313
 
-$L$_16_blocks_overflow_DpBdtjghFFgfDbl:
+$L$_16_blocks_overflow_313:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -43681,7 +43681,7 @@ $L$_16_blocks_overflow_DpBdtjghFFgfDbl:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_DpBdtjghFFgfDbl:
+$L$_16_blocks_ok_313:
 
 
 
@@ -43821,7 +43821,7 @@ $L$_16_blocks_ok_DpBdtjghFFgfDbl:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_trejtsFDonFCBrx
+	jl	NEAR $L$_small_initial_partial_block_314
 
 
 
@@ -43887,8 +43887,8 @@ $L$_16_blocks_ok_DpBdtjghFFgfDbl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_trejtsFDonFCBrx
-$L$_small_initial_partial_block_trejtsFDonFCBrx:
+	jmp	NEAR $L$_small_initial_compute_done_314
+$L$_small_initial_partial_block_314:
 
 
 
@@ -43956,27 +43956,27 @@ $L$_small_initial_partial_block_trejtsFDonFCBrx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_trejtsFDonFCBrx:
+$L$_small_initial_compute_done_314:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_trejtsFDonFCBrx
+	je	NEAR $L$_after_reduction_314
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_trejtsFDonFCBrx:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_16_dFywfBkfGmcloqj:
+$L$_after_reduction_314:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_16_284:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_eeapjqGBywhBxGG
+	jae	NEAR $L$_16_blocks_overflow_315
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_eeapjqGBywhBxGG
+	jmp	NEAR $L$_16_blocks_ok_315
 
-$L$_16_blocks_overflow_eeapjqGBywhBxGG:
+$L$_16_blocks_overflow_315:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -43987,7 +43987,7 @@ $L$_16_blocks_overflow_eeapjqGBywhBxGG:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_eeapjqGBywhBxGG:
+$L$_16_blocks_ok_315:
 
 
 
@@ -44124,7 +44124,7 @@ $L$_16_blocks_ok_eeapjqGBywhBxGG:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_qAbpyDnfoGxzgbd:
+$L$_small_initial_partial_block_316:
 
 
 
@@ -44193,11 +44193,11 @@ $L$_small_initial_partial_block_qAbpyDnfoGxzgbd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qAbpyDnfoGxzgbd:
+$L$_small_initial_compute_done_316:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qAbpyDnfoGxzgbd:
-	jmp	NEAR $L$_last_blocks_done_dFywfBkfGmcloqj
-$L$_last_num_blocks_is_0_dFywfBkfGmcloqj:
+$L$_after_reduction_316:
+	jmp	NEAR $L$_last_blocks_done_284
+$L$_last_num_blocks_is_0_284:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -44259,65 +44259,65 @@ $L$_last_num_blocks_is_0_dFywfBkfGmcloqj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_dFywfBkfGmcloqj:
+$L$_last_blocks_done_284:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_hCBzfvrzwDadcCF
+	jmp	NEAR $L$_ghash_done_172
 
-$L$_message_below_equal_16_blocks_hCBzfvrzwDadcCF:
+$L$_message_below_equal_16_blocks_172:
 
 
 	mov	r12d,r13d
 	add	r12d,15
 	shr	r12d,4
 	cmp	r12,8
-	je	NEAR $L$_small_initial_num_blocks_is_8_qjGjqhcfxdkmszc
-	jl	NEAR $L$_small_initial_num_blocks_is_7_1_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_8_317
+	jl	NEAR $L$_small_initial_num_blocks_is_7_1_317
 
 
 	cmp	r12,12
-	je	NEAR $L$_small_initial_num_blocks_is_12_qjGjqhcfxdkmszc
-	jl	NEAR $L$_small_initial_num_blocks_is_11_9_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_12_317
+	jl	NEAR $L$_small_initial_num_blocks_is_11_9_317
 
 
 	cmp	r12,16
-	je	NEAR $L$_small_initial_num_blocks_is_16_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_16_317
 	cmp	r12,15
-	je	NEAR $L$_small_initial_num_blocks_is_15_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_15_317
 	cmp	r12,14
-	je	NEAR $L$_small_initial_num_blocks_is_14_qjGjqhcfxdkmszc
-	jmp	NEAR $L$_small_initial_num_blocks_is_13_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_14_317
+	jmp	NEAR $L$_small_initial_num_blocks_is_13_317
 
-$L$_small_initial_num_blocks_is_11_9_qjGjqhcfxdkmszc:
+$L$_small_initial_num_blocks_is_11_9_317:
 
 	cmp	r12,11
-	je	NEAR $L$_small_initial_num_blocks_is_11_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_11_317
 	cmp	r12,10
-	je	NEAR $L$_small_initial_num_blocks_is_10_qjGjqhcfxdkmszc
-	jmp	NEAR $L$_small_initial_num_blocks_is_9_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_10_317
+	jmp	NEAR $L$_small_initial_num_blocks_is_9_317
 
-$L$_small_initial_num_blocks_is_7_1_qjGjqhcfxdkmszc:
+$L$_small_initial_num_blocks_is_7_1_317:
 	cmp	r12,4
-	je	NEAR $L$_small_initial_num_blocks_is_4_qjGjqhcfxdkmszc
-	jl	NEAR $L$_small_initial_num_blocks_is_3_1_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_4_317
+	jl	NEAR $L$_small_initial_num_blocks_is_3_1_317
 
 	cmp	r12,7
-	je	NEAR $L$_small_initial_num_blocks_is_7_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_7_317
 	cmp	r12,6
-	je	NEAR $L$_small_initial_num_blocks_is_6_qjGjqhcfxdkmszc
-	jmp	NEAR $L$_small_initial_num_blocks_is_5_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_6_317
+	jmp	NEAR $L$_small_initial_num_blocks_is_5_317
 
-$L$_small_initial_num_blocks_is_3_1_qjGjqhcfxdkmszc:
+$L$_small_initial_num_blocks_is_3_1_317:
 
 	cmp	r12,3
-	je	NEAR $L$_small_initial_num_blocks_is_3_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_3_317
 	cmp	r12,2
-	je	NEAR $L$_small_initial_num_blocks_is_2_qjGjqhcfxdkmszc
+	je	NEAR $L$_small_initial_num_blocks_is_2_317
 
 
 
 
 
-$L$_small_initial_num_blocks_is_1_qjGjqhcfxdkmszc:
+$L$_small_initial_num_blocks_is_1_317:
 	vmovdqa64	xmm29,XMMWORD[SHUF_MASK]
 	vpaddd	xmm0,xmm2,XMMWORD[ONE]
 	lea	r10,[byte64_len_to_mask_table]
@@ -44362,7 +44362,7 @@ $L$_small_initial_num_blocks_is_1_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kEozgnmnxgljjBi
+	jl	NEAR $L$_small_initial_partial_block_318
 
 
 
@@ -44404,8 +44404,8 @@ $L$_small_initial_num_blocks_is_1_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kEozgnmnxgljjBi
-$L$_small_initial_partial_block_kEozgnmnxgljjBi:
+	jmp	NEAR $L$_small_initial_compute_done_318
+$L$_small_initial_partial_block_318:
 
 
 
@@ -44429,11 +44429,11 @@ $L$_small_initial_partial_block_kEozgnmnxgljjBi:
 
 	vpxorq	xmm14,xmm14,xmm13
 
-	jmp	NEAR $L$_after_reduction_kEozgnmnxgljjBi
-$L$_small_initial_compute_done_kEozgnmnxgljjBi:
-$L$_after_reduction_kEozgnmnxgljjBi:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_2_qjGjqhcfxdkmszc:
+	jmp	NEAR $L$_after_reduction_318
+$L$_small_initial_compute_done_318:
+$L$_after_reduction_318:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_2_317:
 	vmovdqa64	ymm29,YMMWORD[SHUF_MASK]
 	vshufi64x2	ymm0,ymm2,ymm2,0
 	vpaddd	ymm0,ymm0,YMMWORD[ddq_add_1234]
@@ -44480,7 +44480,7 @@ $L$_small_initial_num_blocks_is_2_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CBEyycCDgfzpoza
+	jl	NEAR $L$_small_initial_partial_block_319
 
 
 
@@ -44522,8 +44522,8 @@ $L$_small_initial_num_blocks_is_2_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CBEyycCDgfzpoza
-$L$_small_initial_partial_block_CBEyycCDgfzpoza:
+	jmp	NEAR $L$_small_initial_compute_done_319
+$L$_small_initial_partial_block_319:
 
 
 
@@ -44568,14 +44568,14 @@ $L$_small_initial_partial_block_CBEyycCDgfzpoza:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_CBEyycCDgfzpoza:
+$L$_small_initial_compute_done_319:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_CBEyycCDgfzpoza
+	je	NEAR $L$_after_reduction_319
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_CBEyycCDgfzpoza:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_3_qjGjqhcfxdkmszc:
+$L$_after_reduction_319:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_3_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -44622,7 +44622,7 @@ $L$_small_initial_num_blocks_is_3_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qjgEkbEaGxnscve
+	jl	NEAR $L$_small_initial_partial_block_320
 
 
 
@@ -44665,8 +44665,8 @@ $L$_small_initial_num_blocks_is_3_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qjgEkbEaGxnscve
-$L$_small_initial_partial_block_qjgEkbEaGxnscve:
+	jmp	NEAR $L$_small_initial_compute_done_320
+$L$_small_initial_partial_block_320:
 
 
 
@@ -44711,14 +44711,14 @@ $L$_small_initial_partial_block_qjgEkbEaGxnscve:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qjgEkbEaGxnscve:
+$L$_small_initial_compute_done_320:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qjgEkbEaGxnscve
+	je	NEAR $L$_after_reduction_320
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_qjgEkbEaGxnscve:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_4_qjGjqhcfxdkmszc:
+$L$_after_reduction_320:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_4_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -44765,7 +44765,7 @@ $L$_small_initial_num_blocks_is_4_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FBhyCEiGwDfBAFv
+	jl	NEAR $L$_small_initial_partial_block_321
 
 
 
@@ -44807,8 +44807,8 @@ $L$_small_initial_num_blocks_is_4_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FBhyCEiGwDfBAFv
-$L$_small_initial_partial_block_FBhyCEiGwDfBAFv:
+	jmp	NEAR $L$_small_initial_compute_done_321
+$L$_small_initial_partial_block_321:
 
 
 
@@ -44854,14 +44854,14 @@ $L$_small_initial_partial_block_FBhyCEiGwDfBAFv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FBhyCEiGwDfBAFv:
+$L$_small_initial_compute_done_321:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FBhyCEiGwDfBAFv
+	je	NEAR $L$_after_reduction_321
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_FBhyCEiGwDfBAFv:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_5_qjGjqhcfxdkmszc:
+$L$_after_reduction_321:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_5_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -44928,7 +44928,7 @@ $L$_small_initial_num_blocks_is_5_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yyieErrhoBruiGe
+	jl	NEAR $L$_small_initial_partial_block_322
 
 
 
@@ -44980,8 +44980,8 @@ $L$_small_initial_num_blocks_is_5_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yyieErrhoBruiGe
-$L$_small_initial_partial_block_yyieErrhoBruiGe:
+	jmp	NEAR $L$_small_initial_compute_done_322
+$L$_small_initial_partial_block_322:
 
 
 
@@ -45026,14 +45026,14 @@ $L$_small_initial_partial_block_yyieErrhoBruiGe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yyieErrhoBruiGe:
+$L$_small_initial_compute_done_322:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yyieErrhoBruiGe
+	je	NEAR $L$_after_reduction_322
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_yyieErrhoBruiGe:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_6_qjGjqhcfxdkmszc:
+$L$_after_reduction_322:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_6_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -45100,7 +45100,7 @@ $L$_small_initial_num_blocks_is_6_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hzsFFpoByluqBtc
+	jl	NEAR $L$_small_initial_partial_block_323
 
 
 
@@ -45152,8 +45152,8 @@ $L$_small_initial_num_blocks_is_6_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hzsFFpoByluqBtc
-$L$_small_initial_partial_block_hzsFFpoByluqBtc:
+	jmp	NEAR $L$_small_initial_compute_done_323
+$L$_small_initial_partial_block_323:
 
 
 
@@ -45208,14 +45208,14 @@ $L$_small_initial_partial_block_hzsFFpoByluqBtc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hzsFFpoByluqBtc:
+$L$_small_initial_compute_done_323:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hzsFFpoByluqBtc
+	je	NEAR $L$_after_reduction_323
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_hzsFFpoByluqBtc:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_7_qjGjqhcfxdkmszc:
+$L$_after_reduction_323:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_7_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -45282,7 +45282,7 @@ $L$_small_initial_num_blocks_is_7_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nwaEjaDDkCibgcj
+	jl	NEAR $L$_small_initial_partial_block_324
 
 
 
@@ -45335,8 +45335,8 @@ $L$_small_initial_num_blocks_is_7_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nwaEjaDDkCibgcj
-$L$_small_initial_partial_block_nwaEjaDDkCibgcj:
+	jmp	NEAR $L$_small_initial_compute_done_324
+$L$_small_initial_partial_block_324:
 
 
 
@@ -45391,14 +45391,14 @@ $L$_small_initial_partial_block_nwaEjaDDkCibgcj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nwaEjaDDkCibgcj:
+$L$_small_initial_compute_done_324:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nwaEjaDDkCibgcj
+	je	NEAR $L$_after_reduction_324
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_nwaEjaDDkCibgcj:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_8_qjGjqhcfxdkmszc:
+$L$_after_reduction_324:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_8_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -45465,7 +45465,7 @@ $L$_small_initial_num_blocks_is_8_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jqqnbbqbCfrohEh
+	jl	NEAR $L$_small_initial_partial_block_325
 
 
 
@@ -45516,8 +45516,8 @@ $L$_small_initial_num_blocks_is_8_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jqqnbbqbCfrohEh
-$L$_small_initial_partial_block_jqqnbbqbCfrohEh:
+	jmp	NEAR $L$_small_initial_compute_done_325
+$L$_small_initial_partial_block_325:
 
 
 
@@ -45573,14 +45573,14 @@ $L$_small_initial_partial_block_jqqnbbqbCfrohEh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jqqnbbqbCfrohEh:
+$L$_small_initial_compute_done_325:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jqqnbbqbCfrohEh
+	je	NEAR $L$_after_reduction_325
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_jqqnbbqbCfrohEh:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_9_qjGjqhcfxdkmszc:
+$L$_after_reduction_325:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_9_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -45666,7 +45666,7 @@ $L$_small_initial_num_blocks_is_9_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oiszkyDfthAevxk
+	jl	NEAR $L$_small_initial_partial_block_326
 
 
 
@@ -45727,8 +45727,8 @@ $L$_small_initial_num_blocks_is_9_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oiszkyDfthAevxk
-$L$_small_initial_partial_block_oiszkyDfthAevxk:
+	jmp	NEAR $L$_small_initial_compute_done_326
+$L$_small_initial_partial_block_326:
 
 
 
@@ -45782,14 +45782,14 @@ $L$_small_initial_partial_block_oiszkyDfthAevxk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_oiszkyDfthAevxk:
+$L$_small_initial_compute_done_326:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_oiszkyDfthAevxk
+	je	NEAR $L$_after_reduction_326
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_oiszkyDfthAevxk:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_10_qjGjqhcfxdkmszc:
+$L$_after_reduction_326:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_10_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -45875,7 +45875,7 @@ $L$_small_initial_num_blocks_is_10_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_faAGaqggAbaEAxv
+	jl	NEAR $L$_small_initial_partial_block_327
 
 
 
@@ -45936,8 +45936,8 @@ $L$_small_initial_num_blocks_is_10_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_faAGaqggAbaEAxv
-$L$_small_initial_partial_block_faAGaqggAbaEAxv:
+	jmp	NEAR $L$_small_initial_compute_done_327
+$L$_small_initial_partial_block_327:
 
 
 
@@ -46001,14 +46001,14 @@ $L$_small_initial_partial_block_faAGaqggAbaEAxv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_faAGaqggAbaEAxv:
+$L$_small_initial_compute_done_327:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_faAGaqggAbaEAxv
+	je	NEAR $L$_after_reduction_327
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_faAGaqggAbaEAxv:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_11_qjGjqhcfxdkmszc:
+$L$_after_reduction_327:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_11_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -46094,7 +46094,7 @@ $L$_small_initial_num_blocks_is_11_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wmzgmAklxyvcpmr
+	jl	NEAR $L$_small_initial_partial_block_328
 
 
 
@@ -46156,8 +46156,8 @@ $L$_small_initial_num_blocks_is_11_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wmzgmAklxyvcpmr
-$L$_small_initial_partial_block_wmzgmAklxyvcpmr:
+	jmp	NEAR $L$_small_initial_compute_done_328
+$L$_small_initial_partial_block_328:
 
 
 
@@ -46221,14 +46221,14 @@ $L$_small_initial_partial_block_wmzgmAklxyvcpmr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wmzgmAklxyvcpmr:
+$L$_small_initial_compute_done_328:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wmzgmAklxyvcpmr
+	je	NEAR $L$_after_reduction_328
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_wmzgmAklxyvcpmr:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_12_qjGjqhcfxdkmszc:
+$L$_after_reduction_328:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_12_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -46314,7 +46314,7 @@ $L$_small_initial_num_blocks_is_12_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_GosmzkgAqtBEDaf
+	jl	NEAR $L$_small_initial_partial_block_329
 
 
 
@@ -46370,8 +46370,8 @@ $L$_small_initial_num_blocks_is_12_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_GosmzkgAqtBEDaf
-$L$_small_initial_partial_block_GosmzkgAqtBEDaf:
+	jmp	NEAR $L$_small_initial_compute_done_329
+$L$_small_initial_partial_block_329:
 
 
 
@@ -46436,14 +46436,14 @@ $L$_small_initial_partial_block_GosmzkgAqtBEDaf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_GosmzkgAqtBEDaf:
+$L$_small_initial_compute_done_329:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_GosmzkgAqtBEDaf
+	je	NEAR $L$_after_reduction_329
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_GosmzkgAqtBEDaf:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_13_qjGjqhcfxdkmszc:
+$L$_after_reduction_329:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_13_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -46548,7 +46548,7 @@ $L$_small_initial_num_blocks_is_13_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_akpkvunFiCCkDza
+	jl	NEAR $L$_small_initial_partial_block_330
 
 
 
@@ -46614,8 +46614,8 @@ $L$_small_initial_num_blocks_is_13_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_akpkvunFiCCkDza
-$L$_small_initial_partial_block_akpkvunFiCCkDza:
+	jmp	NEAR $L$_small_initial_compute_done_330
+$L$_small_initial_partial_block_330:
 
 
 
@@ -46674,14 +46674,14 @@ $L$_small_initial_partial_block_akpkvunFiCCkDza:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_akpkvunFiCCkDza:
+$L$_small_initial_compute_done_330:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_akpkvunFiCCkDza
+	je	NEAR $L$_after_reduction_330
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_akpkvunFiCCkDza:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_14_qjGjqhcfxdkmszc:
+$L$_after_reduction_330:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_14_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -46786,7 +46786,7 @@ $L$_small_initial_num_blocks_is_14_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_homAdddqzcapcyC
+	jl	NEAR $L$_small_initial_partial_block_331
 
 
 
@@ -46852,8 +46852,8 @@ $L$_small_initial_num_blocks_is_14_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_homAdddqzcapcyC
-$L$_small_initial_partial_block_homAdddqzcapcyC:
+	jmp	NEAR $L$_small_initial_compute_done_331
+$L$_small_initial_partial_block_331:
 
 
 
@@ -46922,14 +46922,14 @@ $L$_small_initial_partial_block_homAdddqzcapcyC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_homAdddqzcapcyC:
+$L$_small_initial_compute_done_331:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_homAdddqzcapcyC
+	je	NEAR $L$_after_reduction_331
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_homAdddqzcapcyC:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_15_qjGjqhcfxdkmszc:
+$L$_after_reduction_331:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_15_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -47034,7 +47034,7 @@ $L$_small_initial_num_blocks_is_15_qjGjqhcfxdkmszc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fkGejtoADBlGlkm
+	jl	NEAR $L$_small_initial_partial_block_332
 
 
 
@@ -47101,8 +47101,8 @@ $L$_small_initial_num_blocks_is_15_qjGjqhcfxdkmszc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fkGejtoADBlGlkm
-$L$_small_initial_partial_block_fkGejtoADBlGlkm:
+	jmp	NEAR $L$_small_initial_compute_done_332
+$L$_small_initial_partial_block_332:
 
 
 
@@ -47171,14 +47171,14 @@ $L$_small_initial_partial_block_fkGejtoADBlGlkm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fkGejtoADBlGlkm:
+$L$_small_initial_compute_done_332:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fkGejtoADBlGlkm
+	je	NEAR $L$_after_reduction_332
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_fkGejtoADBlGlkm:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc
-$L$_small_initial_num_blocks_is_16_qjGjqhcfxdkmszc:
+$L$_after_reduction_332:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_317
+$L$_small_initial_num_blocks_is_16_317:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -47280,7 +47280,7 @@ $L$_small_initial_num_blocks_is_16_qjGjqhcfxdkmszc:
 	vpshufb	zmm11,zmm5,zmm29
 	vextracti32x4	xmm13,zmm11,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_GiqjcxDbmAaFgcF:
+$L$_small_initial_partial_block_333:
 
 
 
@@ -47350,25 +47350,25 @@ $L$_small_initial_partial_block_GiqjcxDbmAaFgcF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_GiqjcxDbmAaFgcF:
+$L$_small_initial_compute_done_333:
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_GiqjcxDbmAaFgcF:
-$L$_small_initial_blocks_encrypted_qjGjqhcfxdkmszc:
-$L$_ghash_done_hCBzfvrzwDadcCF:
+$L$_after_reduction_333:
+$L$_small_initial_blocks_encrypted_317:
+$L$_ghash_done_172:
 	vmovdqu64	XMMWORD[rdx],xmm2
 	vmovdqu64	XMMWORD[64+rdx],xmm14
-$L$_enc_dec_done_hCBzfvrzwDadcCF:
+$L$_enc_dec_done_172:
 	jmp	NEAR $L$exit_gcm_encrypt
 ALIGN	32
 $L$aes_gcm_encrypt_256_avx512:
 	cmp	QWORD[112+rbp],0
-	je	NEAR $L$_enc_dec_done_GzunuFcqcAlgCge
+	je	NEAR $L$_enc_dec_done_334
 	xor	r14,r14
 	vmovdqu64	xmm14,XMMWORD[64+rdx]
 
 	mov	r11,QWORD[r8]
 	or	r11,r11
-	je	NEAR $L$_partial_block_done_wxFFwGuefepeDzg
+	je	NEAR $L$_partial_block_done_335
 	mov	r10d,16
 	lea	r12,[byte_len_to_mask_table]
 	cmp	QWORD[112+rbp],r10
@@ -47393,9 +47393,9 @@ $L$aes_gcm_encrypt_256_avx512:
 	mov	r13,QWORD[112+rbp]
 	add	r13,r11
 	sub	r13,16
-	jge	NEAR $L$_no_extra_mask_wxFFwGuefepeDzg
+	jge	NEAR $L$_no_extra_mask_335
 	sub	r12,r13
-$L$_no_extra_mask_wxFFwGuefepeDzg:
+$L$_no_extra_mask_335:
 
 
 
@@ -47405,7 +47405,7 @@ $L$_no_extra_mask_wxFFwGuefepeDzg:
 	vpshufb	xmm3,xmm3,xmm5
 	vpxorq	xmm14,xmm14,xmm3
 	cmp	r13,0
-	jl	NEAR $L$_partial_incomplete_wxFFwGuefepeDzg
+	jl	NEAR $L$_partial_incomplete_335
 
 	vpclmulqdq	xmm7,xmm14,xmm4,0x11
 	vpclmulqdq	xmm10,xmm14,xmm4,0x00
@@ -47440,14 +47440,14 @@ $L$_no_extra_mask_wxFFwGuefepeDzg:
 	mov	r12,r11
 	mov	r11,16
 	sub	r11,r12
-	jmp	NEAR $L$_enc_dec_done_wxFFwGuefepeDzg
+	jmp	NEAR $L$_enc_dec_done_335
 
-$L$_partial_incomplete_wxFFwGuefepeDzg:
+$L$_partial_incomplete_335:
 	mov	r12,QWORD[112+rbp]
 	add	QWORD[r8],r12
 	mov	r11,QWORD[112+rbp]
 
-$L$_enc_dec_done_wxFFwGuefepeDzg:
+$L$_enc_dec_done_335:
 
 
 	lea	r12,[byte_len_to_mask_table]
@@ -47458,13 +47458,13 @@ $L$_enc_dec_done_wxFFwGuefepeDzg:
 	vpshufb	xmm3,xmm3,xmm5
 	mov	r12,QWORD[120+rbp]
 	vmovdqu8	XMMWORD[r12]{k1},xmm3
-$L$_partial_block_done_wxFFwGuefepeDzg:
+$L$_partial_block_done_335:
 	vmovdqu64	xmm2,XMMWORD[rdx]
 	mov	r13,QWORD[112+rbp]
 	sub	r13,r11
-	je	NEAR $L$_enc_dec_done_GzunuFcqcAlgCge
+	je	NEAR $L$_enc_dec_done_334
 	cmp	r13,256
-	jbe	NEAR $L$_message_below_equal_16_blocks_GzunuFcqcAlgCge
+	jbe	NEAR $L$_message_below_equal_16_blocks_334
 
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vmovdqa64	zmm27,ZMMWORD[ddq_addbe_4444]
@@ -47484,13 +47484,13 @@ $L$_partial_block_done_wxFFwGuefepeDzg:
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_cFaxetDtwvmfDpG
+	jae	NEAR $L$_next_16_overflow_336
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_cFaxetDtwvmfDpG
-$L$_next_16_overflow_cFaxetDtwvmfDpG:
+	jmp	NEAR $L$_next_16_ok_336
+$L$_next_16_overflow_336:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -47501,7 +47501,7 @@ $L$_next_16_overflow_cFaxetDtwvmfDpG:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_cFaxetDtwvmfDpG:
+$L$_next_16_ok_336:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -47609,7 +47609,7 @@ $L$_next_16_ok_cFaxetDtwvmfDpG:
 	vmovdqa64	ZMMWORD[896+rsp],zmm11
 	vmovdqa64	ZMMWORD[960+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_lxngkhjFhtdxgzG
+	jnz	NEAR $L$_skip_hkeys_precomputation_337
 
 	vmovdqu64	zmm0,ZMMWORD[288+rdx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm0
@@ -47625,20 +47625,20 @@ $L$_next_16_ok_cFaxetDtwvmfDpG:
 
 	vmovdqu64	zmm5,ZMMWORD[96+rdx]
 	vmovdqu64	ZMMWORD[512+rsp],zmm5
-$L$_skip_hkeys_precomputation_lxngkhjFhtdxgzG:
+$L$_skip_hkeys_precomputation_337:
 	cmp	r13,512
-	jb	NEAR $L$_message_below_32_blocks_GzunuFcqcAlgCge
+	jb	NEAR $L$_message_below_32_blocks_334
 
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_ibgEnqcooykFgav
+	jae	NEAR $L$_next_16_overflow_338
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_ibgEnqcooykFgav
-$L$_next_16_overflow_ibgEnqcooykFgav:
+	jmp	NEAR $L$_next_16_ok_338
+$L$_next_16_overflow_338:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -47649,7 +47649,7 @@ $L$_next_16_overflow_ibgEnqcooykFgav:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_ibgEnqcooykFgav:
+$L$_next_16_ok_338:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -47757,7 +47757,7 @@ $L$_next_16_ok_ibgEnqcooykFgav:
 	vmovdqa64	ZMMWORD[1152+rsp],zmm11
 	vmovdqa64	ZMMWORD[1216+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_oqucBcoCqqBBaGg
+	jnz	NEAR $L$_skip_hkeys_precomputation_339
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -48005,22 +48005,22 @@ $L$_next_16_ok_ibgEnqcooykFgav:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[rsp],zmm5
-$L$_skip_hkeys_precomputation_oqucBcoCqqBBaGg:
+$L$_skip_hkeys_precomputation_339:
 	mov	r14,1
 	add	r11,512
 	sub	r13,512
 
 	cmp	r13,768
-	jb	NEAR $L$_no_more_big_nblocks_GzunuFcqcAlgCge
-$L$_encrypt_big_nblocks_GzunuFcqcAlgCge:
+	jb	NEAR $L$_no_more_big_nblocks_334
+$L$_encrypt_big_nblocks_334:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_xfppbDckmfrCjou
+	jae	NEAR $L$_16_blocks_overflow_340
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_xfppbDckmfrCjou
-$L$_16_blocks_overflow_xfppbDckmfrCjou:
+	jmp	NEAR $L$_16_blocks_ok_340
+$L$_16_blocks_overflow_340:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -48031,7 +48031,7 @@ $L$_16_blocks_overflow_xfppbDckmfrCjou:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_xfppbDckmfrCjou:
+$L$_16_blocks_ok_340:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -48219,13 +48219,13 @@ $L$_16_blocks_ok_xfppbDckmfrCjou:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_mfBbemdDezhbsdA
+	jae	NEAR $L$_16_blocks_overflow_341
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_mfBbemdDezhbsdA
-$L$_16_blocks_overflow_mfBbemdDezhbsdA:
+	jmp	NEAR $L$_16_blocks_ok_341
+$L$_16_blocks_overflow_341:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -48236,7 +48236,7 @@ $L$_16_blocks_overflow_mfBbemdDezhbsdA:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_mfBbemdDezhbsdA:
+$L$_16_blocks_ok_341:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -48424,13 +48424,13 @@ $L$_16_blocks_ok_mfBbemdDezhbsdA:
 	vmovdqa64	ZMMWORD[896+rsp],zmm4
 	vmovdqa64	ZMMWORD[960+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_CzolnphdeuBbEye
+	jae	NEAR $L$_16_blocks_overflow_342
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_CzolnphdeuBbEye
-$L$_16_blocks_overflow_CzolnphdeuBbEye:
+	jmp	NEAR $L$_16_blocks_ok_342
+$L$_16_blocks_overflow_342:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -48441,7 +48441,7 @@ $L$_16_blocks_overflow_CzolnphdeuBbEye:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_CzolnphdeuBbEye:
+$L$_16_blocks_ok_342:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm1,ZMMWORD[512+rsp]
@@ -48659,16 +48659,16 @@ $L$_16_blocks_ok_CzolnphdeuBbEye:
 	add	r11,768
 	sub	r13,768
 	cmp	r13,768
-	jae	NEAR $L$_encrypt_big_nblocks_GzunuFcqcAlgCge
+	jae	NEAR $L$_encrypt_big_nblocks_334
 
-$L$_no_more_big_nblocks_GzunuFcqcAlgCge:
+$L$_no_more_big_nblocks_334:
 
 	cmp	r13,512
-	jae	NEAR $L$_encrypt_32_blocks_GzunuFcqcAlgCge
+	jae	NEAR $L$_encrypt_32_blocks_334
 
 	cmp	r13,256
-	jae	NEAR $L$_encrypt_16_blocks_GzunuFcqcAlgCge
-$L$_encrypt_0_blocks_ghash_32_GzunuFcqcAlgCge:
+	jae	NEAR $L$_encrypt_16_blocks_334
+$L$_encrypt_0_blocks_ghash_32_334:
 	mov	r10d,r13d
 	and	r10d,~15
 	mov	ebx,256
@@ -48711,61 +48711,61 @@ $L$_encrypt_0_blocks_ghash_32_GzunuFcqcAlgCge:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_hckmhgEbCEfxGex
+	je	NEAR $L$_last_num_blocks_is_0_343
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_hckmhgEbCEfxGex
-	jb	NEAR $L$_last_num_blocks_is_7_1_hckmhgEbCEfxGex
+	je	NEAR $L$_last_num_blocks_is_8_343
+	jb	NEAR $L$_last_num_blocks_is_7_1_343
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_hckmhgEbCEfxGex
-	jb	NEAR $L$_last_num_blocks_is_11_9_hckmhgEbCEfxGex
+	je	NEAR $L$_last_num_blocks_is_12_343
+	jb	NEAR $L$_last_num_blocks_is_11_9_343
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_hckmhgEbCEfxGex
-	ja	NEAR $L$_last_num_blocks_is_16_hckmhgEbCEfxGex
+	je	NEAR $L$_last_num_blocks_is_15_343
+	ja	NEAR $L$_last_num_blocks_is_16_343
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_hckmhgEbCEfxGex
-	jmp	NEAR $L$_last_num_blocks_is_13_hckmhgEbCEfxGex
+	je	NEAR $L$_last_num_blocks_is_14_343
+	jmp	NEAR $L$_last_num_blocks_is_13_343
 
-$L$_last_num_blocks_is_11_9_hckmhgEbCEfxGex:
+$L$_last_num_blocks_is_11_9_343:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_hckmhgEbCEfxGex
-	ja	NEAR $L$_last_num_blocks_is_11_hckmhgEbCEfxGex
-	jmp	NEAR $L$_last_num_blocks_is_9_hckmhgEbCEfxGex
+	je	NEAR $L$_last_num_blocks_is_10_343
+	ja	NEAR $L$_last_num_blocks_is_11_343
+	jmp	NEAR $L$_last_num_blocks_is_9_343
 
-$L$_last_num_blocks_is_7_1_hckmhgEbCEfxGex:
+$L$_last_num_blocks_is_7_1_343:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_hckmhgEbCEfxGex
-	jb	NEAR $L$_last_num_blocks_is_3_1_hckmhgEbCEfxGex
+	je	NEAR $L$_last_num_blocks_is_4_343
+	jb	NEAR $L$_last_num_blocks_is_3_1_343
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_hckmhgEbCEfxGex
-	je	NEAR $L$_last_num_blocks_is_6_hckmhgEbCEfxGex
-	jmp	NEAR $L$_last_num_blocks_is_5_hckmhgEbCEfxGex
+	ja	NEAR $L$_last_num_blocks_is_7_343
+	je	NEAR $L$_last_num_blocks_is_6_343
+	jmp	NEAR $L$_last_num_blocks_is_5_343
 
-$L$_last_num_blocks_is_3_1_hckmhgEbCEfxGex:
+$L$_last_num_blocks_is_3_1_343:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_hckmhgEbCEfxGex
-	je	NEAR $L$_last_num_blocks_is_2_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_1_hckmhgEbCEfxGex:
+	ja	NEAR $L$_last_num_blocks_is_3_343
+	je	NEAR $L$_last_num_blocks_is_2_343
+$L$_last_num_blocks_is_1_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_cusmFrBvatujgqa
+	jae	NEAR $L$_16_blocks_overflow_344
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_cusmFrBvatujgqa
+	jmp	NEAR $L$_16_blocks_ok_344
 
-$L$_16_blocks_overflow_cusmFrBvatujgqa:
+$L$_16_blocks_overflow_344:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_cusmFrBvatujgqa:
+$L$_16_blocks_ok_344:
 
 
 
@@ -48857,7 +48857,7 @@ $L$_16_blocks_ok_cusmFrBvatujgqa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_aigiEoAknlbpcme
+	jl	NEAR $L$_small_initial_partial_block_345
 
 
 
@@ -48901,8 +48901,8 @@ $L$_16_blocks_ok_cusmFrBvatujgqa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_aigiEoAknlbpcme
-$L$_small_initial_partial_block_aigiEoAknlbpcme:
+	jmp	NEAR $L$_small_initial_compute_done_345
+$L$_small_initial_partial_block_345:
 
 
 
@@ -48954,24 +48954,24 @@ $L$_small_initial_partial_block_aigiEoAknlbpcme:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_aigiEoAknlbpcme
-$L$_small_initial_compute_done_aigiEoAknlbpcme:
-$L$_after_reduction_aigiEoAknlbpcme:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_2_hckmhgEbCEfxGex:
+	jmp	NEAR $L$_after_reduction_345
+$L$_small_initial_compute_done_345:
+$L$_after_reduction_345:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_2_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_rBqABmvldjvcejy
+	jae	NEAR $L$_16_blocks_overflow_346
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_rBqABmvldjvcejy
+	jmp	NEAR $L$_16_blocks_ok_346
 
-$L$_16_blocks_overflow_rBqABmvldjvcejy:
+$L$_16_blocks_overflow_346:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_rBqABmvldjvcejy:
+$L$_16_blocks_ok_346:
 
 
 
@@ -49064,7 +49064,7 @@ $L$_16_blocks_ok_rBqABmvldjvcejy:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kEsDcakEkckssqv
+	jl	NEAR $L$_small_initial_partial_block_347
 
 
 
@@ -49108,8 +49108,8 @@ $L$_16_blocks_ok_rBqABmvldjvcejy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kEsDcakEkckssqv
-$L$_small_initial_partial_block_kEsDcakEkckssqv:
+	jmp	NEAR $L$_small_initial_compute_done_347
+$L$_small_initial_partial_block_347:
 
 
 
@@ -49156,27 +49156,27 @@ $L$_small_initial_partial_block_kEsDcakEkckssqv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kEsDcakEkckssqv:
+$L$_small_initial_compute_done_347:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kEsDcakEkckssqv
+	je	NEAR $L$_after_reduction_347
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kEsDcakEkckssqv:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_3_hckmhgEbCEfxGex:
+$L$_after_reduction_347:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_3_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_FrCymcEfiAxExhE
+	jae	NEAR $L$_16_blocks_overflow_348
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_FrCymcEfiAxExhE
+	jmp	NEAR $L$_16_blocks_ok_348
 
-$L$_16_blocks_overflow_FrCymcEfiAxExhE:
+$L$_16_blocks_overflow_348:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_FrCymcEfiAxExhE:
+$L$_16_blocks_ok_348:
 
 
 
@@ -49269,7 +49269,7 @@ $L$_16_blocks_ok_FrCymcEfiAxExhE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_erzcvoejqmdzgvw
+	jl	NEAR $L$_small_initial_partial_block_349
 
 
 
@@ -49314,8 +49314,8 @@ $L$_16_blocks_ok_FrCymcEfiAxExhE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_erzcvoejqmdzgvw
-$L$_small_initial_partial_block_erzcvoejqmdzgvw:
+	jmp	NEAR $L$_small_initial_compute_done_349
+$L$_small_initial_partial_block_349:
 
 
 
@@ -49362,27 +49362,27 @@ $L$_small_initial_partial_block_erzcvoejqmdzgvw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_erzcvoejqmdzgvw:
+$L$_small_initial_compute_done_349:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_erzcvoejqmdzgvw
+	je	NEAR $L$_after_reduction_349
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_erzcvoejqmdzgvw:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_4_hckmhgEbCEfxGex:
+$L$_after_reduction_349:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_4_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_FFzEpsAFghqhhac
+	jae	NEAR $L$_16_blocks_overflow_350
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_FFzEpsAFghqhhac
+	jmp	NEAR $L$_16_blocks_ok_350
 
-$L$_16_blocks_overflow_FFzEpsAFghqhhac:
+$L$_16_blocks_overflow_350:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_FFzEpsAFghqhhac:
+$L$_16_blocks_ok_350:
 
 
 
@@ -49475,7 +49475,7 @@ $L$_16_blocks_ok_FFzEpsAFghqhhac:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_iglauhFiizdyGkd
+	jl	NEAR $L$_small_initial_partial_block_351
 
 
 
@@ -49520,8 +49520,8 @@ $L$_16_blocks_ok_FFzEpsAFghqhhac:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_iglauhFiizdyGkd
-$L$_small_initial_partial_block_iglauhFiizdyGkd:
+	jmp	NEAR $L$_small_initial_compute_done_351
+$L$_small_initial_partial_block_351:
 
 
 
@@ -49569,32 +49569,32 @@ $L$_small_initial_partial_block_iglauhFiizdyGkd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_iglauhFiizdyGkd:
+$L$_small_initial_compute_done_351:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_iglauhFiizdyGkd
+	je	NEAR $L$_after_reduction_351
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_iglauhFiizdyGkd:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_5_hckmhgEbCEfxGex:
+$L$_after_reduction_351:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_5_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_oytAqDBjsqrkGCB
+	jae	NEAR $L$_16_blocks_overflow_352
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_oytAqDBjsqrkGCB
+	jmp	NEAR $L$_16_blocks_ok_352
 
-$L$_16_blocks_overflow_oytAqDBjsqrkGCB:
+$L$_16_blocks_overflow_352:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_oytAqDBjsqrkGCB:
+$L$_16_blocks_ok_352:
 
 
 
@@ -49706,7 +49706,7 @@ $L$_16_blocks_ok_oytAqDBjsqrkGCB:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FqaDopemqxtzdip
+	jl	NEAR $L$_small_initial_partial_block_353
 
 
 
@@ -49757,8 +49757,8 @@ $L$_16_blocks_ok_oytAqDBjsqrkGCB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FqaDopemqxtzdip
-$L$_small_initial_partial_block_FqaDopemqxtzdip:
+	jmp	NEAR $L$_small_initial_compute_done_353
+$L$_small_initial_partial_block_353:
 
 
 
@@ -49806,32 +49806,32 @@ $L$_small_initial_partial_block_FqaDopemqxtzdip:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FqaDopemqxtzdip:
+$L$_small_initial_compute_done_353:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FqaDopemqxtzdip
+	je	NEAR $L$_after_reduction_353
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FqaDopemqxtzdip:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_6_hckmhgEbCEfxGex:
+$L$_after_reduction_353:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_6_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_cjjDnztCFDfhcgD
+	jae	NEAR $L$_16_blocks_overflow_354
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_cjjDnztCFDfhcgD
+	jmp	NEAR $L$_16_blocks_ok_354
 
-$L$_16_blocks_overflow_cjjDnztCFDfhcgD:
+$L$_16_blocks_overflow_354:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_cjjDnztCFDfhcgD:
+$L$_16_blocks_ok_354:
 
 
 
@@ -49943,7 +49943,7 @@ $L$_16_blocks_ok_cjjDnztCFDfhcgD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_mednltACFflBwul
+	jl	NEAR $L$_small_initial_partial_block_355
 
 
 
@@ -49994,8 +49994,8 @@ $L$_16_blocks_ok_cjjDnztCFDfhcgD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_mednltACFflBwul
-$L$_small_initial_partial_block_mednltACFflBwul:
+	jmp	NEAR $L$_small_initial_compute_done_355
+$L$_small_initial_partial_block_355:
 
 
 
@@ -50049,32 +50049,32 @@ $L$_small_initial_partial_block_mednltACFflBwul:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mednltACFflBwul:
+$L$_small_initial_compute_done_355:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_mednltACFflBwul
+	je	NEAR $L$_after_reduction_355
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mednltACFflBwul:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_7_hckmhgEbCEfxGex:
+$L$_after_reduction_355:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_7_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_pGiwlbnCFjAEAjc
+	jae	NEAR $L$_16_blocks_overflow_356
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_pGiwlbnCFjAEAjc
+	jmp	NEAR $L$_16_blocks_ok_356
 
-$L$_16_blocks_overflow_pGiwlbnCFjAEAjc:
+$L$_16_blocks_overflow_356:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_pGiwlbnCFjAEAjc:
+$L$_16_blocks_ok_356:
 
 
 
@@ -50186,7 +50186,7 @@ $L$_16_blocks_ok_pGiwlbnCFjAEAjc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CwaymaCAqoazghf
+	jl	NEAR $L$_small_initial_partial_block_357
 
 
 
@@ -50238,8 +50238,8 @@ $L$_16_blocks_ok_pGiwlbnCFjAEAjc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CwaymaCAqoazghf
-$L$_small_initial_partial_block_CwaymaCAqoazghf:
+	jmp	NEAR $L$_small_initial_compute_done_357
+$L$_small_initial_partial_block_357:
 
 
 
@@ -50293,32 +50293,32 @@ $L$_small_initial_partial_block_CwaymaCAqoazghf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_CwaymaCAqoazghf:
+$L$_small_initial_compute_done_357:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_CwaymaCAqoazghf
+	je	NEAR $L$_after_reduction_357
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_CwaymaCAqoazghf:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_8_hckmhgEbCEfxGex:
+$L$_after_reduction_357:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_8_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_linajoiBksebfcw
+	jae	NEAR $L$_16_blocks_overflow_358
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_linajoiBksebfcw
+	jmp	NEAR $L$_16_blocks_ok_358
 
-$L$_16_blocks_overflow_linajoiBksebfcw:
+$L$_16_blocks_overflow_358:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_linajoiBksebfcw:
+$L$_16_blocks_ok_358:
 
 
 
@@ -50430,7 +50430,7 @@ $L$_16_blocks_ok_linajoiBksebfcw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FcwwBcvngpqymxB
+	jl	NEAR $L$_small_initial_partial_block_359
 
 
 
@@ -50484,8 +50484,8 @@ $L$_16_blocks_ok_linajoiBksebfcw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FcwwBcvngpqymxB
-$L$_small_initial_partial_block_FcwwBcvngpqymxB:
+	jmp	NEAR $L$_small_initial_compute_done_359
+$L$_small_initial_partial_block_359:
 
 
 
@@ -50540,26 +50540,26 @@ $L$_small_initial_partial_block_FcwwBcvngpqymxB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FcwwBcvngpqymxB:
+$L$_small_initial_compute_done_359:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FcwwBcvngpqymxB
+	je	NEAR $L$_after_reduction_359
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FcwwBcvngpqymxB:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_9_hckmhgEbCEfxGex:
+$L$_after_reduction_359:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_9_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_lCdEcnxvpBmtCdG
+	jae	NEAR $L$_16_blocks_overflow_360
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_lCdEcnxvpBmtCdG
+	jmp	NEAR $L$_16_blocks_ok_360
 
-$L$_16_blocks_overflow_lCdEcnxvpBmtCdG:
+$L$_16_blocks_overflow_360:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -50568,7 +50568,7 @@ $L$_16_blocks_overflow_lCdEcnxvpBmtCdG:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_lCdEcnxvpBmtCdG:
+$L$_16_blocks_ok_360:
 
 
 
@@ -50699,7 +50699,7 @@ $L$_16_blocks_ok_lCdEcnxvpBmtCdG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zfpcdypEwnnEdjA
+	jl	NEAR $L$_small_initial_partial_block_361
 
 
 
@@ -50759,8 +50759,8 @@ $L$_16_blocks_ok_lCdEcnxvpBmtCdG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zfpcdypEwnnEdjA
-$L$_small_initial_partial_block_zfpcdypEwnnEdjA:
+	jmp	NEAR $L$_small_initial_compute_done_361
+$L$_small_initial_partial_block_361:
 
 
 
@@ -50817,26 +50817,26 @@ $L$_small_initial_partial_block_zfpcdypEwnnEdjA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zfpcdypEwnnEdjA:
+$L$_small_initial_compute_done_361:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zfpcdypEwnnEdjA
+	je	NEAR $L$_after_reduction_361
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_zfpcdypEwnnEdjA:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_10_hckmhgEbCEfxGex:
+$L$_after_reduction_361:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_10_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_CkjowyfDEsGAfFt
+	jae	NEAR $L$_16_blocks_overflow_362
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_CkjowyfDEsGAfFt
+	jmp	NEAR $L$_16_blocks_ok_362
 
-$L$_16_blocks_overflow_CkjowyfDEsGAfFt:
+$L$_16_blocks_overflow_362:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -50845,7 +50845,7 @@ $L$_16_blocks_overflow_CkjowyfDEsGAfFt:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_CkjowyfDEsGAfFt:
+$L$_16_blocks_ok_362:
 
 
 
@@ -50976,7 +50976,7 @@ $L$_16_blocks_ok_CkjowyfDEsGAfFt:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dDapvFzxafghbGC
+	jl	NEAR $L$_small_initial_partial_block_363
 
 
 
@@ -51036,8 +51036,8 @@ $L$_16_blocks_ok_CkjowyfDEsGAfFt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dDapvFzxafghbGC
-$L$_small_initial_partial_block_dDapvFzxafghbGC:
+	jmp	NEAR $L$_small_initial_compute_done_363
+$L$_small_initial_partial_block_363:
 
 
 
@@ -51100,26 +51100,26 @@ $L$_small_initial_partial_block_dDapvFzxafghbGC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dDapvFzxafghbGC:
+$L$_small_initial_compute_done_363:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dDapvFzxafghbGC
+	je	NEAR $L$_after_reduction_363
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dDapvFzxafghbGC:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_11_hckmhgEbCEfxGex:
+$L$_after_reduction_363:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_11_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_AxrjErunvjtltho
+	jae	NEAR $L$_16_blocks_overflow_364
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_AxrjErunvjtltho
+	jmp	NEAR $L$_16_blocks_ok_364
 
-$L$_16_blocks_overflow_AxrjErunvjtltho:
+$L$_16_blocks_overflow_364:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -51128,7 +51128,7 @@ $L$_16_blocks_overflow_AxrjErunvjtltho:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_AxrjErunvjtltho:
+$L$_16_blocks_ok_364:
 
 
 
@@ -51259,7 +51259,7 @@ $L$_16_blocks_ok_AxrjErunvjtltho:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ByteietdDfmkewj
+	jl	NEAR $L$_small_initial_partial_block_365
 
 
 
@@ -51320,8 +51320,8 @@ $L$_16_blocks_ok_AxrjErunvjtltho:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ByteietdDfmkewj
-$L$_small_initial_partial_block_ByteietdDfmkewj:
+	jmp	NEAR $L$_small_initial_compute_done_365
+$L$_small_initial_partial_block_365:
 
 
 
@@ -51384,26 +51384,26 @@ $L$_small_initial_partial_block_ByteietdDfmkewj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ByteietdDfmkewj:
+$L$_small_initial_compute_done_365:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ByteietdDfmkewj
+	je	NEAR $L$_after_reduction_365
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ByteietdDfmkewj:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_12_hckmhgEbCEfxGex:
+$L$_after_reduction_365:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_12_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_rqcuAykruhfhbmD
+	jae	NEAR $L$_16_blocks_overflow_366
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_rqcuAykruhfhbmD
+	jmp	NEAR $L$_16_blocks_ok_366
 
-$L$_16_blocks_overflow_rqcuAykruhfhbmD:
+$L$_16_blocks_overflow_366:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -51412,7 +51412,7 @@ $L$_16_blocks_overflow_rqcuAykruhfhbmD:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_rqcuAykruhfhbmD:
+$L$_16_blocks_ok_366:
 
 
 
@@ -51543,7 +51543,7 @@ $L$_16_blocks_ok_rqcuAykruhfhbmD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yeweabhDugrrzjc
+	jl	NEAR $L$_small_initial_partial_block_367
 
 
 
@@ -51602,8 +51602,8 @@ $L$_16_blocks_ok_rqcuAykruhfhbmD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yeweabhDugrrzjc
-$L$_small_initial_partial_block_yeweabhDugrrzjc:
+	jmp	NEAR $L$_small_initial_compute_done_367
+$L$_small_initial_partial_block_367:
 
 
 
@@ -51667,27 +51667,27 @@ $L$_small_initial_partial_block_yeweabhDugrrzjc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yeweabhDugrrzjc:
+$L$_small_initial_compute_done_367:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yeweabhDugrrzjc
+	je	NEAR $L$_after_reduction_367
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yeweabhDugrrzjc:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_13_hckmhgEbCEfxGex:
+$L$_after_reduction_367:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_13_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_ozdjlzuEzsxcFvC
+	jae	NEAR $L$_16_blocks_overflow_368
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_ozdjlzuEzsxcFvC
+	jmp	NEAR $L$_16_blocks_ok_368
 
-$L$_16_blocks_overflow_ozdjlzuEzsxcFvC:
+$L$_16_blocks_overflow_368:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -51698,7 +51698,7 @@ $L$_16_blocks_overflow_ozdjlzuEzsxcFvC:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_ozdjlzuEzsxcFvC:
+$L$_16_blocks_ok_368:
 
 
 
@@ -51848,7 +51848,7 @@ $L$_16_blocks_ok_ozdjlzuEzsxcFvC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ulCmfxeugsrehBz
+	jl	NEAR $L$_small_initial_partial_block_369
 
 
 
@@ -51913,8 +51913,8 @@ $L$_16_blocks_ok_ozdjlzuEzsxcFvC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ulCmfxeugsrehBz
-$L$_small_initial_partial_block_ulCmfxeugsrehBz:
+	jmp	NEAR $L$_small_initial_compute_done_369
+$L$_small_initial_partial_block_369:
 
 
 
@@ -51976,27 +51976,27 @@ $L$_small_initial_partial_block_ulCmfxeugsrehBz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ulCmfxeugsrehBz:
+$L$_small_initial_compute_done_369:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ulCmfxeugsrehBz
+	je	NEAR $L$_after_reduction_369
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ulCmfxeugsrehBz:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_14_hckmhgEbCEfxGex:
+$L$_after_reduction_369:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_14_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_DcGsgxntpaakhov
+	jae	NEAR $L$_16_blocks_overflow_370
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_DcGsgxntpaakhov
+	jmp	NEAR $L$_16_blocks_ok_370
 
-$L$_16_blocks_overflow_DcGsgxntpaakhov:
+$L$_16_blocks_overflow_370:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -52007,7 +52007,7 @@ $L$_16_blocks_overflow_DcGsgxntpaakhov:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_DcGsgxntpaakhov:
+$L$_16_blocks_ok_370:
 
 
 
@@ -52157,7 +52157,7 @@ $L$_16_blocks_ok_DcGsgxntpaakhov:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kEfnxmmwrwCeefx
+	jl	NEAR $L$_small_initial_partial_block_371
 
 
 
@@ -52222,8 +52222,8 @@ $L$_16_blocks_ok_DcGsgxntpaakhov:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kEfnxmmwrwCeefx
-$L$_small_initial_partial_block_kEfnxmmwrwCeefx:
+	jmp	NEAR $L$_small_initial_compute_done_371
+$L$_small_initial_partial_block_371:
 
 
 
@@ -52291,27 +52291,27 @@ $L$_small_initial_partial_block_kEfnxmmwrwCeefx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kEfnxmmwrwCeefx:
+$L$_small_initial_compute_done_371:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kEfnxmmwrwCeefx
+	je	NEAR $L$_after_reduction_371
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kEfnxmmwrwCeefx:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_15_hckmhgEbCEfxGex:
+$L$_after_reduction_371:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_15_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_DorsgtnlFlzyFcF
+	jae	NEAR $L$_16_blocks_overflow_372
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_DorsgtnlFlzyFcF
+	jmp	NEAR $L$_16_blocks_ok_372
 
-$L$_16_blocks_overflow_DorsgtnlFlzyFcF:
+$L$_16_blocks_overflow_372:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -52322,7 +52322,7 @@ $L$_16_blocks_overflow_DorsgtnlFlzyFcF:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_DorsgtnlFlzyFcF:
+$L$_16_blocks_ok_372:
 
 
 
@@ -52472,7 +52472,7 @@ $L$_16_blocks_ok_DorsgtnlFlzyFcF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_guBrsvfwCEmeECA
+	jl	NEAR $L$_small_initial_partial_block_373
 
 
 
@@ -52538,8 +52538,8 @@ $L$_16_blocks_ok_DorsgtnlFlzyFcF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_guBrsvfwCEmeECA
-$L$_small_initial_partial_block_guBrsvfwCEmeECA:
+	jmp	NEAR $L$_small_initial_compute_done_373
+$L$_small_initial_partial_block_373:
 
 
 
@@ -52607,27 +52607,27 @@ $L$_small_initial_partial_block_guBrsvfwCEmeECA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_guBrsvfwCEmeECA:
+$L$_small_initial_compute_done_373:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_guBrsvfwCEmeECA
+	je	NEAR $L$_after_reduction_373
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_guBrsvfwCEmeECA:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_16_hckmhgEbCEfxGex:
+$L$_after_reduction_373:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_16_343:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_fAzaxpzrjcFgxpA
+	jae	NEAR $L$_16_blocks_overflow_374
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_fAzaxpzrjcFgxpA
+	jmp	NEAR $L$_16_blocks_ok_374
 
-$L$_16_blocks_overflow_fAzaxpzrjcFgxpA:
+$L$_16_blocks_overflow_374:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -52638,7 +52638,7 @@ $L$_16_blocks_overflow_fAzaxpzrjcFgxpA:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_fAzaxpzrjcFgxpA:
+$L$_16_blocks_ok_374:
 
 
 
@@ -52785,7 +52785,7 @@ $L$_16_blocks_ok_fAzaxpzrjcFgxpA:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_rdpfayaEwezxmGd:
+$L$_small_initial_partial_block_375:
 
 
 
@@ -52854,11 +52854,11 @@ $L$_small_initial_partial_block_rdpfayaEwezxmGd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rdpfayaEwezxmGd:
+$L$_small_initial_compute_done_375:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rdpfayaEwezxmGd:
-	jmp	NEAR $L$_last_blocks_done_hckmhgEbCEfxGex
-$L$_last_num_blocks_is_0_hckmhgEbCEfxGex:
+$L$_after_reduction_375:
+	jmp	NEAR $L$_last_blocks_done_343
+$L$_last_num_blocks_is_0_343:
 	vmovdqa64	zmm13,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -52919,18 +52919,18 @@ $L$_last_num_blocks_is_0_hckmhgEbCEfxGex:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_hckmhgEbCEfxGex:
+$L$_last_blocks_done_343:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_GzunuFcqcAlgCge
-$L$_encrypt_32_blocks_GzunuFcqcAlgCge:
+	jmp	NEAR $L$_ghash_done_334
+$L$_encrypt_32_blocks_334:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_DzeqErwwtCgtlEB
+	jae	NEAR $L$_16_blocks_overflow_376
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_DzeqErwwtCgtlEB
-$L$_16_blocks_overflow_DzeqErwwtCgtlEB:
+	jmp	NEAR $L$_16_blocks_ok_376
+$L$_16_blocks_overflow_376:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -52941,7 +52941,7 @@ $L$_16_blocks_overflow_DzeqErwwtCgtlEB:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_DzeqErwwtCgtlEB:
+$L$_16_blocks_ok_376:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -53129,13 +53129,13 @@ $L$_16_blocks_ok_DzeqErwwtCgtlEB:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_wqBaklcdEpwjdCD
+	jae	NEAR $L$_16_blocks_overflow_377
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_wqBaklcdEpwjdCD
-$L$_16_blocks_overflow_wqBaklcdEpwjdCD:
+	jmp	NEAR $L$_16_blocks_ok_377
+$L$_16_blocks_overflow_377:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -53146,7 +53146,7 @@ $L$_16_blocks_overflow_wqBaklcdEpwjdCD:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_wqBaklcdEpwjdCD:
+$L$_16_blocks_ok_377:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -53402,61 +53402,61 @@ $L$_16_blocks_ok_wqBaklcdEpwjdCD:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_kCmGDfwlEusvwbj
+	je	NEAR $L$_last_num_blocks_is_0_378
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_kCmGDfwlEusvwbj
-	jb	NEAR $L$_last_num_blocks_is_7_1_kCmGDfwlEusvwbj
+	je	NEAR $L$_last_num_blocks_is_8_378
+	jb	NEAR $L$_last_num_blocks_is_7_1_378
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_kCmGDfwlEusvwbj
-	jb	NEAR $L$_last_num_blocks_is_11_9_kCmGDfwlEusvwbj
+	je	NEAR $L$_last_num_blocks_is_12_378
+	jb	NEAR $L$_last_num_blocks_is_11_9_378
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_kCmGDfwlEusvwbj
-	ja	NEAR $L$_last_num_blocks_is_16_kCmGDfwlEusvwbj
+	je	NEAR $L$_last_num_blocks_is_15_378
+	ja	NEAR $L$_last_num_blocks_is_16_378
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_kCmGDfwlEusvwbj
-	jmp	NEAR $L$_last_num_blocks_is_13_kCmGDfwlEusvwbj
+	je	NEAR $L$_last_num_blocks_is_14_378
+	jmp	NEAR $L$_last_num_blocks_is_13_378
 
-$L$_last_num_blocks_is_11_9_kCmGDfwlEusvwbj:
+$L$_last_num_blocks_is_11_9_378:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_kCmGDfwlEusvwbj
-	ja	NEAR $L$_last_num_blocks_is_11_kCmGDfwlEusvwbj
-	jmp	NEAR $L$_last_num_blocks_is_9_kCmGDfwlEusvwbj
+	je	NEAR $L$_last_num_blocks_is_10_378
+	ja	NEAR $L$_last_num_blocks_is_11_378
+	jmp	NEAR $L$_last_num_blocks_is_9_378
 
-$L$_last_num_blocks_is_7_1_kCmGDfwlEusvwbj:
+$L$_last_num_blocks_is_7_1_378:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_kCmGDfwlEusvwbj
-	jb	NEAR $L$_last_num_blocks_is_3_1_kCmGDfwlEusvwbj
+	je	NEAR $L$_last_num_blocks_is_4_378
+	jb	NEAR $L$_last_num_blocks_is_3_1_378
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_kCmGDfwlEusvwbj
-	je	NEAR $L$_last_num_blocks_is_6_kCmGDfwlEusvwbj
-	jmp	NEAR $L$_last_num_blocks_is_5_kCmGDfwlEusvwbj
+	ja	NEAR $L$_last_num_blocks_is_7_378
+	je	NEAR $L$_last_num_blocks_is_6_378
+	jmp	NEAR $L$_last_num_blocks_is_5_378
 
-$L$_last_num_blocks_is_3_1_kCmGDfwlEusvwbj:
+$L$_last_num_blocks_is_3_1_378:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_kCmGDfwlEusvwbj
-	je	NEAR $L$_last_num_blocks_is_2_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_1_kCmGDfwlEusvwbj:
+	ja	NEAR $L$_last_num_blocks_is_3_378
+	je	NEAR $L$_last_num_blocks_is_2_378
+$L$_last_num_blocks_is_1_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_BbDunijpkoFhvmE
+	jae	NEAR $L$_16_blocks_overflow_379
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_BbDunijpkoFhvmE
+	jmp	NEAR $L$_16_blocks_ok_379
 
-$L$_16_blocks_overflow_BbDunijpkoFhvmE:
+$L$_16_blocks_overflow_379:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_BbDunijpkoFhvmE:
+$L$_16_blocks_ok_379:
 
 
 
@@ -53548,7 +53548,7 @@ $L$_16_blocks_ok_BbDunijpkoFhvmE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ffDyqaDChkEbpjE
+	jl	NEAR $L$_small_initial_partial_block_380
 
 
 
@@ -53592,8 +53592,8 @@ $L$_16_blocks_ok_BbDunijpkoFhvmE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ffDyqaDChkEbpjE
-$L$_small_initial_partial_block_ffDyqaDChkEbpjE:
+	jmp	NEAR $L$_small_initial_compute_done_380
+$L$_small_initial_partial_block_380:
 
 
 
@@ -53645,24 +53645,24 @@ $L$_small_initial_partial_block_ffDyqaDChkEbpjE:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_ffDyqaDChkEbpjE
-$L$_small_initial_compute_done_ffDyqaDChkEbpjE:
-$L$_after_reduction_ffDyqaDChkEbpjE:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_2_kCmGDfwlEusvwbj:
+	jmp	NEAR $L$_after_reduction_380
+$L$_small_initial_compute_done_380:
+$L$_after_reduction_380:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_2_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_kblvvxaFaqhdqCD
+	jae	NEAR $L$_16_blocks_overflow_381
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_kblvvxaFaqhdqCD
+	jmp	NEAR $L$_16_blocks_ok_381
 
-$L$_16_blocks_overflow_kblvvxaFaqhdqCD:
+$L$_16_blocks_overflow_381:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_kblvvxaFaqhdqCD:
+$L$_16_blocks_ok_381:
 
 
 
@@ -53755,7 +53755,7 @@ $L$_16_blocks_ok_kblvvxaFaqhdqCD:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EreFEgameFFBmfo
+	jl	NEAR $L$_small_initial_partial_block_382
 
 
 
@@ -53799,8 +53799,8 @@ $L$_16_blocks_ok_kblvvxaFaqhdqCD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EreFEgameFFBmfo
-$L$_small_initial_partial_block_EreFEgameFFBmfo:
+	jmp	NEAR $L$_small_initial_compute_done_382
+$L$_small_initial_partial_block_382:
 
 
 
@@ -53847,27 +53847,27 @@ $L$_small_initial_partial_block_EreFEgameFFBmfo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EreFEgameFFBmfo:
+$L$_small_initial_compute_done_382:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EreFEgameFFBmfo
+	je	NEAR $L$_after_reduction_382
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EreFEgameFFBmfo:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_3_kCmGDfwlEusvwbj:
+$L$_after_reduction_382:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_3_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_DAfwzleBpCuzoev
+	jae	NEAR $L$_16_blocks_overflow_383
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_DAfwzleBpCuzoev
+	jmp	NEAR $L$_16_blocks_ok_383
 
-$L$_16_blocks_overflow_DAfwzleBpCuzoev:
+$L$_16_blocks_overflow_383:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_DAfwzleBpCuzoev:
+$L$_16_blocks_ok_383:
 
 
 
@@ -53960,7 +53960,7 @@ $L$_16_blocks_ok_DAfwzleBpCuzoev:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_eCxEbeqchaoxoBc
+	jl	NEAR $L$_small_initial_partial_block_384
 
 
 
@@ -54005,8 +54005,8 @@ $L$_16_blocks_ok_DAfwzleBpCuzoev:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_eCxEbeqchaoxoBc
-$L$_small_initial_partial_block_eCxEbeqchaoxoBc:
+	jmp	NEAR $L$_small_initial_compute_done_384
+$L$_small_initial_partial_block_384:
 
 
 
@@ -54053,27 +54053,27 @@ $L$_small_initial_partial_block_eCxEbeqchaoxoBc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_eCxEbeqchaoxoBc:
+$L$_small_initial_compute_done_384:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_eCxEbeqchaoxoBc
+	je	NEAR $L$_after_reduction_384
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_eCxEbeqchaoxoBc:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_4_kCmGDfwlEusvwbj:
+$L$_after_reduction_384:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_4_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_EjeCEBAuaADuEEC
+	jae	NEAR $L$_16_blocks_overflow_385
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_EjeCEBAuaADuEEC
+	jmp	NEAR $L$_16_blocks_ok_385
 
-$L$_16_blocks_overflow_EjeCEBAuaADuEEC:
+$L$_16_blocks_overflow_385:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_EjeCEBAuaADuEEC:
+$L$_16_blocks_ok_385:
 
 
 
@@ -54166,7 +54166,7 @@ $L$_16_blocks_ok_EjeCEBAuaADuEEC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_czeFqDmwGBeczkw
+	jl	NEAR $L$_small_initial_partial_block_386
 
 
 
@@ -54211,8 +54211,8 @@ $L$_16_blocks_ok_EjeCEBAuaADuEEC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_czeFqDmwGBeczkw
-$L$_small_initial_partial_block_czeFqDmwGBeczkw:
+	jmp	NEAR $L$_small_initial_compute_done_386
+$L$_small_initial_partial_block_386:
 
 
 
@@ -54260,32 +54260,32 @@ $L$_small_initial_partial_block_czeFqDmwGBeczkw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_czeFqDmwGBeczkw:
+$L$_small_initial_compute_done_386:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_czeFqDmwGBeczkw
+	je	NEAR $L$_after_reduction_386
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_czeFqDmwGBeczkw:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_5_kCmGDfwlEusvwbj:
+$L$_after_reduction_386:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_5_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_kfpsdFmuiarpoqE
+	jae	NEAR $L$_16_blocks_overflow_387
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_kfpsdFmuiarpoqE
+	jmp	NEAR $L$_16_blocks_ok_387
 
-$L$_16_blocks_overflow_kfpsdFmuiarpoqE:
+$L$_16_blocks_overflow_387:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_kfpsdFmuiarpoqE:
+$L$_16_blocks_ok_387:
 
 
 
@@ -54397,7 +54397,7 @@ $L$_16_blocks_ok_kfpsdFmuiarpoqE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_bBshnnivwteauBD
+	jl	NEAR $L$_small_initial_partial_block_388
 
 
 
@@ -54448,8 +54448,8 @@ $L$_16_blocks_ok_kfpsdFmuiarpoqE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_bBshnnivwteauBD
-$L$_small_initial_partial_block_bBshnnivwteauBD:
+	jmp	NEAR $L$_small_initial_compute_done_388
+$L$_small_initial_partial_block_388:
 
 
 
@@ -54497,32 +54497,32 @@ $L$_small_initial_partial_block_bBshnnivwteauBD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_bBshnnivwteauBD:
+$L$_small_initial_compute_done_388:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_bBshnnivwteauBD
+	je	NEAR $L$_after_reduction_388
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_bBshnnivwteauBD:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_6_kCmGDfwlEusvwbj:
+$L$_after_reduction_388:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_6_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_vFdABlaCcwhrgxi
+	jae	NEAR $L$_16_blocks_overflow_389
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_vFdABlaCcwhrgxi
+	jmp	NEAR $L$_16_blocks_ok_389
 
-$L$_16_blocks_overflow_vFdABlaCcwhrgxi:
+$L$_16_blocks_overflow_389:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_vFdABlaCcwhrgxi:
+$L$_16_blocks_ok_389:
 
 
 
@@ -54634,7 +54634,7 @@ $L$_16_blocks_ok_vFdABlaCcwhrgxi:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tyEptEpfzapklyA
+	jl	NEAR $L$_small_initial_partial_block_390
 
 
 
@@ -54685,8 +54685,8 @@ $L$_16_blocks_ok_vFdABlaCcwhrgxi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tyEptEpfzapklyA
-$L$_small_initial_partial_block_tyEptEpfzapklyA:
+	jmp	NEAR $L$_small_initial_compute_done_390
+$L$_small_initial_partial_block_390:
 
 
 
@@ -54740,32 +54740,32 @@ $L$_small_initial_partial_block_tyEptEpfzapklyA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tyEptEpfzapklyA:
+$L$_small_initial_compute_done_390:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tyEptEpfzapklyA
+	je	NEAR $L$_after_reduction_390
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tyEptEpfzapklyA:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_7_kCmGDfwlEusvwbj:
+$L$_after_reduction_390:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_7_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_czxGDtGDBuufDju
+	jae	NEAR $L$_16_blocks_overflow_391
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_czxGDtGDBuufDju
+	jmp	NEAR $L$_16_blocks_ok_391
 
-$L$_16_blocks_overflow_czxGDtGDBuufDju:
+$L$_16_blocks_overflow_391:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_czxGDtGDBuufDju:
+$L$_16_blocks_ok_391:
 
 
 
@@ -54877,7 +54877,7 @@ $L$_16_blocks_ok_czxGDtGDBuufDju:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_vtpAyxwhAceGAcm
+	jl	NEAR $L$_small_initial_partial_block_392
 
 
 
@@ -54929,8 +54929,8 @@ $L$_16_blocks_ok_czxGDtGDBuufDju:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_vtpAyxwhAceGAcm
-$L$_small_initial_partial_block_vtpAyxwhAceGAcm:
+	jmp	NEAR $L$_small_initial_compute_done_392
+$L$_small_initial_partial_block_392:
 
 
 
@@ -54984,32 +54984,32 @@ $L$_small_initial_partial_block_vtpAyxwhAceGAcm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_vtpAyxwhAceGAcm:
+$L$_small_initial_compute_done_392:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_vtpAyxwhAceGAcm
+	je	NEAR $L$_after_reduction_392
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_vtpAyxwhAceGAcm:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_8_kCmGDfwlEusvwbj:
+$L$_after_reduction_392:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_8_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_orsAAAveEdvtsEs
+	jae	NEAR $L$_16_blocks_overflow_393
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_orsAAAveEdvtsEs
+	jmp	NEAR $L$_16_blocks_ok_393
 
-$L$_16_blocks_overflow_orsAAAveEdvtsEs:
+$L$_16_blocks_overflow_393:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_orsAAAveEdvtsEs:
+$L$_16_blocks_ok_393:
 
 
 
@@ -55121,7 +55121,7 @@ $L$_16_blocks_ok_orsAAAveEdvtsEs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hxisfAtcterambG
+	jl	NEAR $L$_small_initial_partial_block_394
 
 
 
@@ -55175,8 +55175,8 @@ $L$_16_blocks_ok_orsAAAveEdvtsEs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hxisfAtcterambG
-$L$_small_initial_partial_block_hxisfAtcterambG:
+	jmp	NEAR $L$_small_initial_compute_done_394
+$L$_small_initial_partial_block_394:
 
 
 
@@ -55231,26 +55231,26 @@ $L$_small_initial_partial_block_hxisfAtcterambG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hxisfAtcterambG:
+$L$_small_initial_compute_done_394:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hxisfAtcterambG
+	je	NEAR $L$_after_reduction_394
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hxisfAtcterambG:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_9_kCmGDfwlEusvwbj:
+$L$_after_reduction_394:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_9_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_xoldAvFxomeoinp
+	jae	NEAR $L$_16_blocks_overflow_395
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_xoldAvFxomeoinp
+	jmp	NEAR $L$_16_blocks_ok_395
 
-$L$_16_blocks_overflow_xoldAvFxomeoinp:
+$L$_16_blocks_overflow_395:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -55259,7 +55259,7 @@ $L$_16_blocks_overflow_xoldAvFxomeoinp:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_xoldAvFxomeoinp:
+$L$_16_blocks_ok_395:
 
 
 
@@ -55390,7 +55390,7 @@ $L$_16_blocks_ok_xoldAvFxomeoinp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xjCmnitrxvDgoka
+	jl	NEAR $L$_small_initial_partial_block_396
 
 
 
@@ -55450,8 +55450,8 @@ $L$_16_blocks_ok_xoldAvFxomeoinp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xjCmnitrxvDgoka
-$L$_small_initial_partial_block_xjCmnitrxvDgoka:
+	jmp	NEAR $L$_small_initial_compute_done_396
+$L$_small_initial_partial_block_396:
 
 
 
@@ -55508,26 +55508,26 @@ $L$_small_initial_partial_block_xjCmnitrxvDgoka:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xjCmnitrxvDgoka:
+$L$_small_initial_compute_done_396:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xjCmnitrxvDgoka
+	je	NEAR $L$_after_reduction_396
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xjCmnitrxvDgoka:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_10_kCmGDfwlEusvwbj:
+$L$_after_reduction_396:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_10_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_FsktyGdtDcijcbc
+	jae	NEAR $L$_16_blocks_overflow_397
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_FsktyGdtDcijcbc
+	jmp	NEAR $L$_16_blocks_ok_397
 
-$L$_16_blocks_overflow_FsktyGdtDcijcbc:
+$L$_16_blocks_overflow_397:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -55536,7 +55536,7 @@ $L$_16_blocks_overflow_FsktyGdtDcijcbc:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_FsktyGdtDcijcbc:
+$L$_16_blocks_ok_397:
 
 
 
@@ -55667,7 +55667,7 @@ $L$_16_blocks_ok_FsktyGdtDcijcbc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_Betzfilxtymaezt
+	jl	NEAR $L$_small_initial_partial_block_398
 
 
 
@@ -55727,8 +55727,8 @@ $L$_16_blocks_ok_FsktyGdtDcijcbc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_Betzfilxtymaezt
-$L$_small_initial_partial_block_Betzfilxtymaezt:
+	jmp	NEAR $L$_small_initial_compute_done_398
+$L$_small_initial_partial_block_398:
 
 
 
@@ -55791,26 +55791,26 @@ $L$_small_initial_partial_block_Betzfilxtymaezt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_Betzfilxtymaezt:
+$L$_small_initial_compute_done_398:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_Betzfilxtymaezt
+	je	NEAR $L$_after_reduction_398
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_Betzfilxtymaezt:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_11_kCmGDfwlEusvwbj:
+$L$_after_reduction_398:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_11_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_jDEDlnlzBCnisch
+	jae	NEAR $L$_16_blocks_overflow_399
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_jDEDlnlzBCnisch
+	jmp	NEAR $L$_16_blocks_ok_399
 
-$L$_16_blocks_overflow_jDEDlnlzBCnisch:
+$L$_16_blocks_overflow_399:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -55819,7 +55819,7 @@ $L$_16_blocks_overflow_jDEDlnlzBCnisch:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_jDEDlnlzBCnisch:
+$L$_16_blocks_ok_399:
 
 
 
@@ -55950,7 +55950,7 @@ $L$_16_blocks_ok_jDEDlnlzBCnisch:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ksbkeFvkqwaBoqc
+	jl	NEAR $L$_small_initial_partial_block_400
 
 
 
@@ -56011,8 +56011,8 @@ $L$_16_blocks_ok_jDEDlnlzBCnisch:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ksbkeFvkqwaBoqc
-$L$_small_initial_partial_block_ksbkeFvkqwaBoqc:
+	jmp	NEAR $L$_small_initial_compute_done_400
+$L$_small_initial_partial_block_400:
 
 
 
@@ -56075,26 +56075,26 @@ $L$_small_initial_partial_block_ksbkeFvkqwaBoqc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ksbkeFvkqwaBoqc:
+$L$_small_initial_compute_done_400:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ksbkeFvkqwaBoqc
+	je	NEAR $L$_after_reduction_400
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ksbkeFvkqwaBoqc:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_12_kCmGDfwlEusvwbj:
+$L$_after_reduction_400:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_12_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_EpvzryFmBoEjzhA
+	jae	NEAR $L$_16_blocks_overflow_401
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_EpvzryFmBoEjzhA
+	jmp	NEAR $L$_16_blocks_ok_401
 
-$L$_16_blocks_overflow_EpvzryFmBoEjzhA:
+$L$_16_blocks_overflow_401:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -56103,7 +56103,7 @@ $L$_16_blocks_overflow_EpvzryFmBoEjzhA:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_EpvzryFmBoEjzhA:
+$L$_16_blocks_ok_401:
 
 
 
@@ -56234,7 +56234,7 @@ $L$_16_blocks_ok_EpvzryFmBoEjzhA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AEoDgtdxsfwDwnB
+	jl	NEAR $L$_small_initial_partial_block_402
 
 
 
@@ -56293,8 +56293,8 @@ $L$_16_blocks_ok_EpvzryFmBoEjzhA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AEoDgtdxsfwDwnB
-$L$_small_initial_partial_block_AEoDgtdxsfwDwnB:
+	jmp	NEAR $L$_small_initial_compute_done_402
+$L$_small_initial_partial_block_402:
 
 
 
@@ -56358,27 +56358,27 @@ $L$_small_initial_partial_block_AEoDgtdxsfwDwnB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AEoDgtdxsfwDwnB:
+$L$_small_initial_compute_done_402:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AEoDgtdxsfwDwnB
+	je	NEAR $L$_after_reduction_402
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AEoDgtdxsfwDwnB:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_13_kCmGDfwlEusvwbj:
+$L$_after_reduction_402:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_13_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_aenvrlbqigsiyGp
+	jae	NEAR $L$_16_blocks_overflow_403
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_aenvrlbqigsiyGp
+	jmp	NEAR $L$_16_blocks_ok_403
 
-$L$_16_blocks_overflow_aenvrlbqigsiyGp:
+$L$_16_blocks_overflow_403:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -56389,7 +56389,7 @@ $L$_16_blocks_overflow_aenvrlbqigsiyGp:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_aenvrlbqigsiyGp:
+$L$_16_blocks_ok_403:
 
 
 
@@ -56539,7 +56539,7 @@ $L$_16_blocks_ok_aenvrlbqigsiyGp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tswBrhorBmFhyBm
+	jl	NEAR $L$_small_initial_partial_block_404
 
 
 
@@ -56604,8 +56604,8 @@ $L$_16_blocks_ok_aenvrlbqigsiyGp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tswBrhorBmFhyBm
-$L$_small_initial_partial_block_tswBrhorBmFhyBm:
+	jmp	NEAR $L$_small_initial_compute_done_404
+$L$_small_initial_partial_block_404:
 
 
 
@@ -56667,27 +56667,27 @@ $L$_small_initial_partial_block_tswBrhorBmFhyBm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tswBrhorBmFhyBm:
+$L$_small_initial_compute_done_404:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tswBrhorBmFhyBm
+	je	NEAR $L$_after_reduction_404
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tswBrhorBmFhyBm:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_14_kCmGDfwlEusvwbj:
+$L$_after_reduction_404:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_14_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_GltftFdzloFxepd
+	jae	NEAR $L$_16_blocks_overflow_405
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_GltftFdzloFxepd
+	jmp	NEAR $L$_16_blocks_ok_405
 
-$L$_16_blocks_overflow_GltftFdzloFxepd:
+$L$_16_blocks_overflow_405:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -56698,7 +56698,7 @@ $L$_16_blocks_overflow_GltftFdzloFxepd:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_GltftFdzloFxepd:
+$L$_16_blocks_ok_405:
 
 
 
@@ -56848,7 +56848,7 @@ $L$_16_blocks_ok_GltftFdzloFxepd:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nCEuwkwaFjcmiat
+	jl	NEAR $L$_small_initial_partial_block_406
 
 
 
@@ -56913,8 +56913,8 @@ $L$_16_blocks_ok_GltftFdzloFxepd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nCEuwkwaFjcmiat
-$L$_small_initial_partial_block_nCEuwkwaFjcmiat:
+	jmp	NEAR $L$_small_initial_compute_done_406
+$L$_small_initial_partial_block_406:
 
 
 
@@ -56982,27 +56982,27 @@ $L$_small_initial_partial_block_nCEuwkwaFjcmiat:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nCEuwkwaFjcmiat:
+$L$_small_initial_compute_done_406:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nCEuwkwaFjcmiat
+	je	NEAR $L$_after_reduction_406
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nCEuwkwaFjcmiat:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_15_kCmGDfwlEusvwbj:
+$L$_after_reduction_406:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_15_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_CsdvkqrcAFlujfk
+	jae	NEAR $L$_16_blocks_overflow_407
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_CsdvkqrcAFlujfk
+	jmp	NEAR $L$_16_blocks_ok_407
 
-$L$_16_blocks_overflow_CsdvkqrcAFlujfk:
+$L$_16_blocks_overflow_407:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -57013,7 +57013,7 @@ $L$_16_blocks_overflow_CsdvkqrcAFlujfk:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_CsdvkqrcAFlujfk:
+$L$_16_blocks_ok_407:
 
 
 
@@ -57163,7 +57163,7 @@ $L$_16_blocks_ok_CsdvkqrcAFlujfk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uqmlyDxiwGpeqrw
+	jl	NEAR $L$_small_initial_partial_block_408
 
 
 
@@ -57229,8 +57229,8 @@ $L$_16_blocks_ok_CsdvkqrcAFlujfk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uqmlyDxiwGpeqrw
-$L$_small_initial_partial_block_uqmlyDxiwGpeqrw:
+	jmp	NEAR $L$_small_initial_compute_done_408
+$L$_small_initial_partial_block_408:
 
 
 
@@ -57298,27 +57298,27 @@ $L$_small_initial_partial_block_uqmlyDxiwGpeqrw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uqmlyDxiwGpeqrw:
+$L$_small_initial_compute_done_408:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uqmlyDxiwGpeqrw
+	je	NEAR $L$_after_reduction_408
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uqmlyDxiwGpeqrw:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_16_kCmGDfwlEusvwbj:
+$L$_after_reduction_408:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_16_378:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_ApGjcrcFvDfcECC
+	jae	NEAR $L$_16_blocks_overflow_409
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ApGjcrcFvDfcECC
+	jmp	NEAR $L$_16_blocks_ok_409
 
-$L$_16_blocks_overflow_ApGjcrcFvDfcECC:
+$L$_16_blocks_overflow_409:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -57329,7 +57329,7 @@ $L$_16_blocks_overflow_ApGjcrcFvDfcECC:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ApGjcrcFvDfcECC:
+$L$_16_blocks_ok_409:
 
 
 
@@ -57476,7 +57476,7 @@ $L$_16_blocks_ok_ApGjcrcFvDfcECC:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_BEmymgEGeDtnezu:
+$L$_small_initial_partial_block_410:
 
 
 
@@ -57545,11 +57545,11 @@ $L$_small_initial_partial_block_BEmymgEGeDtnezu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BEmymgEGeDtnezu:
+$L$_small_initial_compute_done_410:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BEmymgEGeDtnezu:
-	jmp	NEAR $L$_last_blocks_done_kCmGDfwlEusvwbj
-$L$_last_num_blocks_is_0_kCmGDfwlEusvwbj:
+$L$_after_reduction_410:
+	jmp	NEAR $L$_last_blocks_done_378
+$L$_last_num_blocks_is_0_378:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -57611,18 +57611,18 @@ $L$_last_num_blocks_is_0_kCmGDfwlEusvwbj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_kCmGDfwlEusvwbj:
+$L$_last_blocks_done_378:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_GzunuFcqcAlgCge
-$L$_encrypt_16_blocks_GzunuFcqcAlgCge:
+	jmp	NEAR $L$_ghash_done_334
+$L$_encrypt_16_blocks_334:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_ryvGdxDcqrCfnGo
+	jae	NEAR $L$_16_blocks_overflow_411
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ryvGdxDcqrCfnGo
-$L$_16_blocks_overflow_ryvGdxDcqrCfnGo:
+	jmp	NEAR $L$_16_blocks_ok_411
+$L$_16_blocks_overflow_411:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -57633,7 +57633,7 @@ $L$_16_blocks_overflow_ryvGdxDcqrCfnGo:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ryvGdxDcqrCfnGo:
+$L$_16_blocks_ok_411:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -57858,61 +57858,61 @@ $L$_16_blocks_ok_ryvGdxDcqrCfnGo:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_fDDCfzaelyfhavq
+	je	NEAR $L$_last_num_blocks_is_0_412
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_fDDCfzaelyfhavq
-	jb	NEAR $L$_last_num_blocks_is_7_1_fDDCfzaelyfhavq
+	je	NEAR $L$_last_num_blocks_is_8_412
+	jb	NEAR $L$_last_num_blocks_is_7_1_412
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_fDDCfzaelyfhavq
-	jb	NEAR $L$_last_num_blocks_is_11_9_fDDCfzaelyfhavq
+	je	NEAR $L$_last_num_blocks_is_12_412
+	jb	NEAR $L$_last_num_blocks_is_11_9_412
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_fDDCfzaelyfhavq
-	ja	NEAR $L$_last_num_blocks_is_16_fDDCfzaelyfhavq
+	je	NEAR $L$_last_num_blocks_is_15_412
+	ja	NEAR $L$_last_num_blocks_is_16_412
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_fDDCfzaelyfhavq
-	jmp	NEAR $L$_last_num_blocks_is_13_fDDCfzaelyfhavq
+	je	NEAR $L$_last_num_blocks_is_14_412
+	jmp	NEAR $L$_last_num_blocks_is_13_412
 
-$L$_last_num_blocks_is_11_9_fDDCfzaelyfhavq:
+$L$_last_num_blocks_is_11_9_412:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_fDDCfzaelyfhavq
-	ja	NEAR $L$_last_num_blocks_is_11_fDDCfzaelyfhavq
-	jmp	NEAR $L$_last_num_blocks_is_9_fDDCfzaelyfhavq
+	je	NEAR $L$_last_num_blocks_is_10_412
+	ja	NEAR $L$_last_num_blocks_is_11_412
+	jmp	NEAR $L$_last_num_blocks_is_9_412
 
-$L$_last_num_blocks_is_7_1_fDDCfzaelyfhavq:
+$L$_last_num_blocks_is_7_1_412:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_fDDCfzaelyfhavq
-	jb	NEAR $L$_last_num_blocks_is_3_1_fDDCfzaelyfhavq
+	je	NEAR $L$_last_num_blocks_is_4_412
+	jb	NEAR $L$_last_num_blocks_is_3_1_412
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_fDDCfzaelyfhavq
-	je	NEAR $L$_last_num_blocks_is_6_fDDCfzaelyfhavq
-	jmp	NEAR $L$_last_num_blocks_is_5_fDDCfzaelyfhavq
+	ja	NEAR $L$_last_num_blocks_is_7_412
+	je	NEAR $L$_last_num_blocks_is_6_412
+	jmp	NEAR $L$_last_num_blocks_is_5_412
 
-$L$_last_num_blocks_is_3_1_fDDCfzaelyfhavq:
+$L$_last_num_blocks_is_3_1_412:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_fDDCfzaelyfhavq
-	je	NEAR $L$_last_num_blocks_is_2_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_1_fDDCfzaelyfhavq:
+	ja	NEAR $L$_last_num_blocks_is_3_412
+	je	NEAR $L$_last_num_blocks_is_2_412
+$L$_last_num_blocks_is_1_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_owjcAeDDwuzEgzu
+	jae	NEAR $L$_16_blocks_overflow_413
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_owjcAeDDwuzEgzu
+	jmp	NEAR $L$_16_blocks_ok_413
 
-$L$_16_blocks_overflow_owjcAeDDwuzEgzu:
+$L$_16_blocks_overflow_413:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_owjcAeDDwuzEgzu:
+$L$_16_blocks_ok_413:
 
 
 
@@ -58027,7 +58027,7 @@ $L$_16_blocks_ok_owjcAeDDwuzEgzu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FAouCdksynnwgcg
+	jl	NEAR $L$_small_initial_partial_block_414
 
 
 
@@ -58069,8 +58069,8 @@ $L$_16_blocks_ok_owjcAeDDwuzEgzu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FAouCdksynnwgcg
-$L$_small_initial_partial_block_FAouCdksynnwgcg:
+	jmp	NEAR $L$_small_initial_compute_done_414
+$L$_small_initial_partial_block_414:
 
 
 
@@ -58094,24 +58094,24 @@ $L$_small_initial_partial_block_FAouCdksynnwgcg:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_FAouCdksynnwgcg
-$L$_small_initial_compute_done_FAouCdksynnwgcg:
-$L$_after_reduction_FAouCdksynnwgcg:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_2_fDDCfzaelyfhavq:
+	jmp	NEAR $L$_after_reduction_414
+$L$_small_initial_compute_done_414:
+$L$_after_reduction_414:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_2_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_kGvsjgkFzgqiEsB
+	jae	NEAR $L$_16_blocks_overflow_415
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_kGvsjgkFzgqiEsB
+	jmp	NEAR $L$_16_blocks_ok_415
 
-$L$_16_blocks_overflow_kGvsjgkFzgqiEsB:
+$L$_16_blocks_overflow_415:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_kGvsjgkFzgqiEsB:
+$L$_16_blocks_ok_415:
 
 
 
@@ -58227,7 +58227,7 @@ $L$_16_blocks_ok_kGvsjgkFzgqiEsB:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nlabvzfdGwtCpDe
+	jl	NEAR $L$_small_initial_partial_block_416
 
 
 
@@ -58269,8 +58269,8 @@ $L$_16_blocks_ok_kGvsjgkFzgqiEsB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nlabvzfdGwtCpDe
-$L$_small_initial_partial_block_nlabvzfdGwtCpDe:
+	jmp	NEAR $L$_small_initial_compute_done_416
+$L$_small_initial_partial_block_416:
 
 
 
@@ -58315,27 +58315,27 @@ $L$_small_initial_partial_block_nlabvzfdGwtCpDe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nlabvzfdGwtCpDe:
+$L$_small_initial_compute_done_416:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nlabvzfdGwtCpDe
+	je	NEAR $L$_after_reduction_416
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nlabvzfdGwtCpDe:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_3_fDDCfzaelyfhavq:
+$L$_after_reduction_416:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_3_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_bzprdBtojoEDtbz
+	jae	NEAR $L$_16_blocks_overflow_417
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_bzprdBtojoEDtbz
+	jmp	NEAR $L$_16_blocks_ok_417
 
-$L$_16_blocks_overflow_bzprdBtojoEDtbz:
+$L$_16_blocks_overflow_417:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_bzprdBtojoEDtbz:
+$L$_16_blocks_ok_417:
 
 
 
@@ -58451,7 +58451,7 @@ $L$_16_blocks_ok_bzprdBtojoEDtbz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uuGeCmcpkCtvggm
+	jl	NEAR $L$_small_initial_partial_block_418
 
 
 
@@ -58494,8 +58494,8 @@ $L$_16_blocks_ok_bzprdBtojoEDtbz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uuGeCmcpkCtvggm
-$L$_small_initial_partial_block_uuGeCmcpkCtvggm:
+	jmp	NEAR $L$_small_initial_compute_done_418
+$L$_small_initial_partial_block_418:
 
 
 
@@ -58540,27 +58540,27 @@ $L$_small_initial_partial_block_uuGeCmcpkCtvggm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uuGeCmcpkCtvggm:
+$L$_small_initial_compute_done_418:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uuGeCmcpkCtvggm
+	je	NEAR $L$_after_reduction_418
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uuGeCmcpkCtvggm:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_4_fDDCfzaelyfhavq:
+$L$_after_reduction_418:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_4_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_fCctssAcjacckmb
+	jae	NEAR $L$_16_blocks_overflow_419
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_fCctssAcjacckmb
+	jmp	NEAR $L$_16_blocks_ok_419
 
-$L$_16_blocks_overflow_fCctssAcjacckmb:
+$L$_16_blocks_overflow_419:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_fCctssAcjacckmb:
+$L$_16_blocks_ok_419:
 
 
 
@@ -58676,7 +58676,7 @@ $L$_16_blocks_ok_fCctssAcjacckmb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fexgnpkBhahsECD
+	jl	NEAR $L$_small_initial_partial_block_420
 
 
 
@@ -58718,8 +58718,8 @@ $L$_16_blocks_ok_fCctssAcjacckmb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fexgnpkBhahsECD
-$L$_small_initial_partial_block_fexgnpkBhahsECD:
+	jmp	NEAR $L$_small_initial_compute_done_420
+$L$_small_initial_partial_block_420:
 
 
 
@@ -58765,32 +58765,32 @@ $L$_small_initial_partial_block_fexgnpkBhahsECD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fexgnpkBhahsECD:
+$L$_small_initial_compute_done_420:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fexgnpkBhahsECD
+	je	NEAR $L$_after_reduction_420
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fexgnpkBhahsECD:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_5_fDDCfzaelyfhavq:
+$L$_after_reduction_420:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_5_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_jzxoyyqlqxkghny
+	jae	NEAR $L$_16_blocks_overflow_421
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_jzxoyyqlqxkghny
+	jmp	NEAR $L$_16_blocks_ok_421
 
-$L$_16_blocks_overflow_jzxoyyqlqxkghny:
+$L$_16_blocks_overflow_421:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_jzxoyyqlqxkghny:
+$L$_16_blocks_ok_421:
 
 
 
@@ -58925,7 +58925,7 @@ $L$_16_blocks_ok_jzxoyyqlqxkghny:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uBnFelBslrydbDa
+	jl	NEAR $L$_small_initial_partial_block_422
 
 
 
@@ -58977,8 +58977,8 @@ $L$_16_blocks_ok_jzxoyyqlqxkghny:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uBnFelBslrydbDa
-$L$_small_initial_partial_block_uBnFelBslrydbDa:
+	jmp	NEAR $L$_small_initial_compute_done_422
+$L$_small_initial_partial_block_422:
 
 
 
@@ -59023,32 +59023,32 @@ $L$_small_initial_partial_block_uBnFelBslrydbDa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uBnFelBslrydbDa:
+$L$_small_initial_compute_done_422:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uBnFelBslrydbDa
+	je	NEAR $L$_after_reduction_422
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uBnFelBslrydbDa:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_6_fDDCfzaelyfhavq:
+$L$_after_reduction_422:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_6_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_thEpypmegrwyBsp
+	jae	NEAR $L$_16_blocks_overflow_423
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_thEpypmegrwyBsp
+	jmp	NEAR $L$_16_blocks_ok_423
 
-$L$_16_blocks_overflow_thEpypmegrwyBsp:
+$L$_16_blocks_overflow_423:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_thEpypmegrwyBsp:
+$L$_16_blocks_ok_423:
 
 
 
@@ -59183,7 +59183,7 @@ $L$_16_blocks_ok_thEpypmegrwyBsp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_pAokwBdcuotjEkj
+	jl	NEAR $L$_small_initial_partial_block_424
 
 
 
@@ -59235,8 +59235,8 @@ $L$_16_blocks_ok_thEpypmegrwyBsp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_pAokwBdcuotjEkj
-$L$_small_initial_partial_block_pAokwBdcuotjEkj:
+	jmp	NEAR $L$_small_initial_compute_done_424
+$L$_small_initial_partial_block_424:
 
 
 
@@ -59291,32 +59291,32 @@ $L$_small_initial_partial_block_pAokwBdcuotjEkj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_pAokwBdcuotjEkj:
+$L$_small_initial_compute_done_424:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_pAokwBdcuotjEkj
+	je	NEAR $L$_after_reduction_424
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_pAokwBdcuotjEkj:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_7_fDDCfzaelyfhavq:
+$L$_after_reduction_424:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_7_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_ytpkmAypwbqehxC
+	jae	NEAR $L$_16_blocks_overflow_425
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ytpkmAypwbqehxC
+	jmp	NEAR $L$_16_blocks_ok_425
 
-$L$_16_blocks_overflow_ytpkmAypwbqehxC:
+$L$_16_blocks_overflow_425:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_ytpkmAypwbqehxC:
+$L$_16_blocks_ok_425:
 
 
 
@@ -59451,7 +59451,7 @@ $L$_16_blocks_ok_ytpkmAypwbqehxC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_mhGCrcddwFvFpDl
+	jl	NEAR $L$_small_initial_partial_block_426
 
 
 
@@ -59504,8 +59504,8 @@ $L$_16_blocks_ok_ytpkmAypwbqehxC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_mhGCrcddwFvFpDl
-$L$_small_initial_partial_block_mhGCrcddwFvFpDl:
+	jmp	NEAR $L$_small_initial_compute_done_426
+$L$_small_initial_partial_block_426:
 
 
 
@@ -59560,32 +59560,32 @@ $L$_small_initial_partial_block_mhGCrcddwFvFpDl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mhGCrcddwFvFpDl:
+$L$_small_initial_compute_done_426:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_mhGCrcddwFvFpDl
+	je	NEAR $L$_after_reduction_426
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mhGCrcddwFvFpDl:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_8_fDDCfzaelyfhavq:
+$L$_after_reduction_426:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_8_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_jlyGCvpCEdnanqe
+	jae	NEAR $L$_16_blocks_overflow_427
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_jlyGCvpCEdnanqe
+	jmp	NEAR $L$_16_blocks_ok_427
 
-$L$_16_blocks_overflow_jlyGCvpCEdnanqe:
+$L$_16_blocks_overflow_427:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_jlyGCvpCEdnanqe:
+$L$_16_blocks_ok_427:
 
 
 
@@ -59720,7 +59720,7 @@ $L$_16_blocks_ok_jlyGCvpCEdnanqe:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qqcnzivjzthbclC
+	jl	NEAR $L$_small_initial_partial_block_428
 
 
 
@@ -59771,8 +59771,8 @@ $L$_16_blocks_ok_jlyGCvpCEdnanqe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qqcnzivjzthbclC
-$L$_small_initial_partial_block_qqcnzivjzthbclC:
+	jmp	NEAR $L$_small_initial_compute_done_428
+$L$_small_initial_partial_block_428:
 
 
 
@@ -59828,26 +59828,26 @@ $L$_small_initial_partial_block_qqcnzivjzthbclC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qqcnzivjzthbclC:
+$L$_small_initial_compute_done_428:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qqcnzivjzthbclC
+	je	NEAR $L$_after_reduction_428
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qqcnzivjzthbclC:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_9_fDDCfzaelyfhavq:
+$L$_after_reduction_428:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_9_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_FcylmGDBoxbpjhA
+	jae	NEAR $L$_16_blocks_overflow_429
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_FcylmGDBoxbpjhA
+	jmp	NEAR $L$_16_blocks_ok_429
 
-$L$_16_blocks_overflow_FcylmGDBoxbpjhA:
+$L$_16_blocks_overflow_429:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -59856,7 +59856,7 @@ $L$_16_blocks_overflow_FcylmGDBoxbpjhA:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_FcylmGDBoxbpjhA:
+$L$_16_blocks_ok_429:
 
 
 
@@ -60010,7 +60010,7 @@ $L$_16_blocks_ok_FcylmGDBoxbpjhA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dzwuauubxhkACob
+	jl	NEAR $L$_small_initial_partial_block_430
 
 
 
@@ -60071,8 +60071,8 @@ $L$_16_blocks_ok_FcylmGDBoxbpjhA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dzwuauubxhkACob
-$L$_small_initial_partial_block_dzwuauubxhkACob:
+	jmp	NEAR $L$_small_initial_compute_done_430
+$L$_small_initial_partial_block_430:
 
 
 
@@ -60126,26 +60126,26 @@ $L$_small_initial_partial_block_dzwuauubxhkACob:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dzwuauubxhkACob:
+$L$_small_initial_compute_done_430:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dzwuauubxhkACob
+	je	NEAR $L$_after_reduction_430
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dzwuauubxhkACob:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_10_fDDCfzaelyfhavq:
+$L$_after_reduction_430:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_10_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_nkdBjooflBmslpj
+	jae	NEAR $L$_16_blocks_overflow_431
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_nkdBjooflBmslpj
+	jmp	NEAR $L$_16_blocks_ok_431
 
-$L$_16_blocks_overflow_nkdBjooflBmslpj:
+$L$_16_blocks_overflow_431:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -60154,7 +60154,7 @@ $L$_16_blocks_overflow_nkdBjooflBmslpj:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_nkdBjooflBmslpj:
+$L$_16_blocks_ok_431:
 
 
 
@@ -60308,7 +60308,7 @@ $L$_16_blocks_ok_nkdBjooflBmslpj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yqffhAEpqksvcwp
+	jl	NEAR $L$_small_initial_partial_block_432
 
 
 
@@ -60369,8 +60369,8 @@ $L$_16_blocks_ok_nkdBjooflBmslpj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yqffhAEpqksvcwp
-$L$_small_initial_partial_block_yqffhAEpqksvcwp:
+	jmp	NEAR $L$_small_initial_compute_done_432
+$L$_small_initial_partial_block_432:
 
 
 
@@ -60434,26 +60434,26 @@ $L$_small_initial_partial_block_yqffhAEpqksvcwp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yqffhAEpqksvcwp:
+$L$_small_initial_compute_done_432:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yqffhAEpqksvcwp
+	je	NEAR $L$_after_reduction_432
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yqffhAEpqksvcwp:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_11_fDDCfzaelyfhavq:
+$L$_after_reduction_432:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_11_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_AjgyFaohnFialFg
+	jae	NEAR $L$_16_blocks_overflow_433
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_AjgyFaohnFialFg
+	jmp	NEAR $L$_16_blocks_ok_433
 
-$L$_16_blocks_overflow_AjgyFaohnFialFg:
+$L$_16_blocks_overflow_433:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -60462,7 +60462,7 @@ $L$_16_blocks_overflow_AjgyFaohnFialFg:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_AjgyFaohnFialFg:
+$L$_16_blocks_ok_433:
 
 
 
@@ -60616,7 +60616,7 @@ $L$_16_blocks_ok_AjgyFaohnFialFg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EGquxxcGdykaGbd
+	jl	NEAR $L$_small_initial_partial_block_434
 
 
 
@@ -60678,8 +60678,8 @@ $L$_16_blocks_ok_AjgyFaohnFialFg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EGquxxcGdykaGbd
-$L$_small_initial_partial_block_EGquxxcGdykaGbd:
+	jmp	NEAR $L$_small_initial_compute_done_434
+$L$_small_initial_partial_block_434:
 
 
 
@@ -60743,26 +60743,26 @@ $L$_small_initial_partial_block_EGquxxcGdykaGbd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EGquxxcGdykaGbd:
+$L$_small_initial_compute_done_434:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EGquxxcGdykaGbd
+	je	NEAR $L$_after_reduction_434
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EGquxxcGdykaGbd:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_12_fDDCfzaelyfhavq:
+$L$_after_reduction_434:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_12_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_fuFysCnnaajcguh
+	jae	NEAR $L$_16_blocks_overflow_435
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_fuFysCnnaajcguh
+	jmp	NEAR $L$_16_blocks_ok_435
 
-$L$_16_blocks_overflow_fuFysCnnaajcguh:
+$L$_16_blocks_overflow_435:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -60771,7 +60771,7 @@ $L$_16_blocks_overflow_fuFysCnnaajcguh:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_fuFysCnnaajcguh:
+$L$_16_blocks_ok_435:
 
 
 
@@ -60925,7 +60925,7 @@ $L$_16_blocks_ok_fuFysCnnaajcguh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AtFeenceeibhxep
+	jl	NEAR $L$_small_initial_partial_block_436
 
 
 
@@ -60981,8 +60981,8 @@ $L$_16_blocks_ok_fuFysCnnaajcguh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AtFeenceeibhxep
-$L$_small_initial_partial_block_AtFeenceeibhxep:
+	jmp	NEAR $L$_small_initial_compute_done_436
+$L$_small_initial_partial_block_436:
 
 
 
@@ -61047,27 +61047,27 @@ $L$_small_initial_partial_block_AtFeenceeibhxep:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AtFeenceeibhxep:
+$L$_small_initial_compute_done_436:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AtFeenceeibhxep
+	je	NEAR $L$_after_reduction_436
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AtFeenceeibhxep:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_13_fDDCfzaelyfhavq:
+$L$_after_reduction_436:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_13_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_CyFbtpeBvFuzCfo
+	jae	NEAR $L$_16_blocks_overflow_437
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_CyFbtpeBvFuzCfo
+	jmp	NEAR $L$_16_blocks_ok_437
 
-$L$_16_blocks_overflow_CyFbtpeBvFuzCfo:
+$L$_16_blocks_overflow_437:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -61078,7 +61078,7 @@ $L$_16_blocks_overflow_CyFbtpeBvFuzCfo:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_CyFbtpeBvFuzCfo:
+$L$_16_blocks_ok_437:
 
 
 
@@ -61251,7 +61251,7 @@ $L$_16_blocks_ok_CyFbtpeBvFuzCfo:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kdrmfuoqtCFowrB
+	jl	NEAR $L$_small_initial_partial_block_438
 
 
 
@@ -61317,8 +61317,8 @@ $L$_16_blocks_ok_CyFbtpeBvFuzCfo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kdrmfuoqtCFowrB
-$L$_small_initial_partial_block_kdrmfuoqtCFowrB:
+	jmp	NEAR $L$_small_initial_compute_done_438
+$L$_small_initial_partial_block_438:
 
 
 
@@ -61377,27 +61377,27 @@ $L$_small_initial_partial_block_kdrmfuoqtCFowrB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kdrmfuoqtCFowrB:
+$L$_small_initial_compute_done_438:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kdrmfuoqtCFowrB
+	je	NEAR $L$_after_reduction_438
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kdrmfuoqtCFowrB:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_14_fDDCfzaelyfhavq:
+$L$_after_reduction_438:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_14_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_uFpEfGqgbFregfa
+	jae	NEAR $L$_16_blocks_overflow_439
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_uFpEfGqgbFregfa
+	jmp	NEAR $L$_16_blocks_ok_439
 
-$L$_16_blocks_overflow_uFpEfGqgbFregfa:
+$L$_16_blocks_overflow_439:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -61408,7 +61408,7 @@ $L$_16_blocks_overflow_uFpEfGqgbFregfa:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_uFpEfGqgbFregfa:
+$L$_16_blocks_ok_439:
 
 
 
@@ -61581,7 +61581,7 @@ $L$_16_blocks_ok_uFpEfGqgbFregfa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nCckEpDnvjqjBvr
+	jl	NEAR $L$_small_initial_partial_block_440
 
 
 
@@ -61647,8 +61647,8 @@ $L$_16_blocks_ok_uFpEfGqgbFregfa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nCckEpDnvjqjBvr
-$L$_small_initial_partial_block_nCckEpDnvjqjBvr:
+	jmp	NEAR $L$_small_initial_compute_done_440
+$L$_small_initial_partial_block_440:
 
 
 
@@ -61717,27 +61717,27 @@ $L$_small_initial_partial_block_nCckEpDnvjqjBvr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nCckEpDnvjqjBvr:
+$L$_small_initial_compute_done_440:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nCckEpDnvjqjBvr
+	je	NEAR $L$_after_reduction_440
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nCckEpDnvjqjBvr:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_15_fDDCfzaelyfhavq:
+$L$_after_reduction_440:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_15_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_Byrmjnidlghmvjb
+	jae	NEAR $L$_16_blocks_overflow_441
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_Byrmjnidlghmvjb
+	jmp	NEAR $L$_16_blocks_ok_441
 
-$L$_16_blocks_overflow_Byrmjnidlghmvjb:
+$L$_16_blocks_overflow_441:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -61748,7 +61748,7 @@ $L$_16_blocks_overflow_Byrmjnidlghmvjb:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_Byrmjnidlghmvjb:
+$L$_16_blocks_ok_441:
 
 
 
@@ -61921,7 +61921,7 @@ $L$_16_blocks_ok_Byrmjnidlghmvjb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lcknDojxoDudlEy
+	jl	NEAR $L$_small_initial_partial_block_442
 
 
 
@@ -61988,8 +61988,8 @@ $L$_16_blocks_ok_Byrmjnidlghmvjb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lcknDojxoDudlEy
-$L$_small_initial_partial_block_lcknDojxoDudlEy:
+	jmp	NEAR $L$_small_initial_compute_done_442
+$L$_small_initial_partial_block_442:
 
 
 
@@ -62058,27 +62058,27 @@ $L$_small_initial_partial_block_lcknDojxoDudlEy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lcknDojxoDudlEy:
+$L$_small_initial_compute_done_442:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lcknDojxoDudlEy
+	je	NEAR $L$_after_reduction_442
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lcknDojxoDudlEy:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_16_fDDCfzaelyfhavq:
+$L$_after_reduction_442:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_16_412:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_EbidaoxhCsGFkAz
+	jae	NEAR $L$_16_blocks_overflow_443
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_EbidaoxhCsGFkAz
+	jmp	NEAR $L$_16_blocks_ok_443
 
-$L$_16_blocks_overflow_EbidaoxhCsGFkAz:
+$L$_16_blocks_overflow_443:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -62089,7 +62089,7 @@ $L$_16_blocks_overflow_EbidaoxhCsGFkAz:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_EbidaoxhCsGFkAz:
+$L$_16_blocks_ok_443:
 
 
 
@@ -62259,7 +62259,7 @@ $L$_16_blocks_ok_EbidaoxhCsGFkAz:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_BytgDtangtgntkr:
+$L$_small_initial_partial_block_444:
 
 
 
@@ -62329,11 +62329,11 @@ $L$_small_initial_partial_block_BytgDtangtgntkr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BytgDtangtgntkr:
+$L$_small_initial_compute_done_444:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BytgDtangtgntkr:
-	jmp	NEAR $L$_last_blocks_done_fDDCfzaelyfhavq
-$L$_last_num_blocks_is_0_fDDCfzaelyfhavq:
+$L$_after_reduction_444:
+	jmp	NEAR $L$_last_blocks_done_412
+$L$_last_num_blocks_is_0_412:
 	vmovdqa64	zmm13,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm12,ZMMWORD[512+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -62394,18 +62394,18 @@ $L$_last_num_blocks_is_0_fDDCfzaelyfhavq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_fDDCfzaelyfhavq:
+$L$_last_blocks_done_412:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_GzunuFcqcAlgCge
+	jmp	NEAR $L$_ghash_done_334
 
-$L$_message_below_32_blocks_GzunuFcqcAlgCge:
+$L$_message_below_32_blocks_334:
 
 
 	sub	r13,256
 	add	r11,256
 	mov	r10d,r13d
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_fqrBglnDxrCdEbj
+	jnz	NEAR $L$_skip_hkeys_precomputation_445
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -62533,7 +62533,7 @@ $L$_message_below_32_blocks_GzunuFcqcAlgCge:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[256+rsp],zmm5
-$L$_skip_hkeys_precomputation_fqrBglnDxrCdEbj:
+$L$_skip_hkeys_precomputation_445:
 	mov	r14,1
 	and	r10d,~15
 	mov	ebx,512
@@ -62541,61 +62541,61 @@ $L$_skip_hkeys_precomputation_fqrBglnDxrCdEbj:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_jGcrzfpqfFqBFbB
+	je	NEAR $L$_last_num_blocks_is_0_446
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_jGcrzfpqfFqBFbB
-	jb	NEAR $L$_last_num_blocks_is_7_1_jGcrzfpqfFqBFbB
+	je	NEAR $L$_last_num_blocks_is_8_446
+	jb	NEAR $L$_last_num_blocks_is_7_1_446
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_jGcrzfpqfFqBFbB
-	jb	NEAR $L$_last_num_blocks_is_11_9_jGcrzfpqfFqBFbB
+	je	NEAR $L$_last_num_blocks_is_12_446
+	jb	NEAR $L$_last_num_blocks_is_11_9_446
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_jGcrzfpqfFqBFbB
-	ja	NEAR $L$_last_num_blocks_is_16_jGcrzfpqfFqBFbB
+	je	NEAR $L$_last_num_blocks_is_15_446
+	ja	NEAR $L$_last_num_blocks_is_16_446
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_jGcrzfpqfFqBFbB
-	jmp	NEAR $L$_last_num_blocks_is_13_jGcrzfpqfFqBFbB
+	je	NEAR $L$_last_num_blocks_is_14_446
+	jmp	NEAR $L$_last_num_blocks_is_13_446
 
-$L$_last_num_blocks_is_11_9_jGcrzfpqfFqBFbB:
+$L$_last_num_blocks_is_11_9_446:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_jGcrzfpqfFqBFbB
-	ja	NEAR $L$_last_num_blocks_is_11_jGcrzfpqfFqBFbB
-	jmp	NEAR $L$_last_num_blocks_is_9_jGcrzfpqfFqBFbB
+	je	NEAR $L$_last_num_blocks_is_10_446
+	ja	NEAR $L$_last_num_blocks_is_11_446
+	jmp	NEAR $L$_last_num_blocks_is_9_446
 
-$L$_last_num_blocks_is_7_1_jGcrzfpqfFqBFbB:
+$L$_last_num_blocks_is_7_1_446:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_jGcrzfpqfFqBFbB
-	jb	NEAR $L$_last_num_blocks_is_3_1_jGcrzfpqfFqBFbB
+	je	NEAR $L$_last_num_blocks_is_4_446
+	jb	NEAR $L$_last_num_blocks_is_3_1_446
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_jGcrzfpqfFqBFbB
-	je	NEAR $L$_last_num_blocks_is_6_jGcrzfpqfFqBFbB
-	jmp	NEAR $L$_last_num_blocks_is_5_jGcrzfpqfFqBFbB
+	ja	NEAR $L$_last_num_blocks_is_7_446
+	je	NEAR $L$_last_num_blocks_is_6_446
+	jmp	NEAR $L$_last_num_blocks_is_5_446
 
-$L$_last_num_blocks_is_3_1_jGcrzfpqfFqBFbB:
+$L$_last_num_blocks_is_3_1_446:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_jGcrzfpqfFqBFbB
-	je	NEAR $L$_last_num_blocks_is_2_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_1_jGcrzfpqfFqBFbB:
+	ja	NEAR $L$_last_num_blocks_is_3_446
+	je	NEAR $L$_last_num_blocks_is_2_446
+$L$_last_num_blocks_is_1_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_fhdCpotbheEmjxw
+	jae	NEAR $L$_16_blocks_overflow_447
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_fhdCpotbheEmjxw
+	jmp	NEAR $L$_16_blocks_ok_447
 
-$L$_16_blocks_overflow_fhdCpotbheEmjxw:
+$L$_16_blocks_overflow_447:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_fhdCpotbheEmjxw:
+$L$_16_blocks_ok_447:
 
 
 
@@ -62687,7 +62687,7 @@ $L$_16_blocks_ok_fhdCpotbheEmjxw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CwjiesCzjAeadDa
+	jl	NEAR $L$_small_initial_partial_block_448
 
 
 
@@ -62731,8 +62731,8 @@ $L$_16_blocks_ok_fhdCpotbheEmjxw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CwjiesCzjAeadDa
-$L$_small_initial_partial_block_CwjiesCzjAeadDa:
+	jmp	NEAR $L$_small_initial_compute_done_448
+$L$_small_initial_partial_block_448:
 
 
 
@@ -62784,24 +62784,24 @@ $L$_small_initial_partial_block_CwjiesCzjAeadDa:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_CwjiesCzjAeadDa
-$L$_small_initial_compute_done_CwjiesCzjAeadDa:
-$L$_after_reduction_CwjiesCzjAeadDa:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_2_jGcrzfpqfFqBFbB:
+	jmp	NEAR $L$_after_reduction_448
+$L$_small_initial_compute_done_448:
+$L$_after_reduction_448:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_2_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_oGBqxbCzEakpDEp
+	jae	NEAR $L$_16_blocks_overflow_449
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_oGBqxbCzEakpDEp
+	jmp	NEAR $L$_16_blocks_ok_449
 
-$L$_16_blocks_overflow_oGBqxbCzEakpDEp:
+$L$_16_blocks_overflow_449:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_oGBqxbCzEakpDEp:
+$L$_16_blocks_ok_449:
 
 
 
@@ -62894,7 +62894,7 @@ $L$_16_blocks_ok_oGBqxbCzEakpDEp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_llshjtrxeBxiflA
+	jl	NEAR $L$_small_initial_partial_block_450
 
 
 
@@ -62938,8 +62938,8 @@ $L$_16_blocks_ok_oGBqxbCzEakpDEp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_llshjtrxeBxiflA
-$L$_small_initial_partial_block_llshjtrxeBxiflA:
+	jmp	NEAR $L$_small_initial_compute_done_450
+$L$_small_initial_partial_block_450:
 
 
 
@@ -62986,27 +62986,27 @@ $L$_small_initial_partial_block_llshjtrxeBxiflA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_llshjtrxeBxiflA:
+$L$_small_initial_compute_done_450:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_llshjtrxeBxiflA
+	je	NEAR $L$_after_reduction_450
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_llshjtrxeBxiflA:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_3_jGcrzfpqfFqBFbB:
+$L$_after_reduction_450:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_3_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_BmcjAakzeEGoCqa
+	jae	NEAR $L$_16_blocks_overflow_451
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_BmcjAakzeEGoCqa
+	jmp	NEAR $L$_16_blocks_ok_451
 
-$L$_16_blocks_overflow_BmcjAakzeEGoCqa:
+$L$_16_blocks_overflow_451:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_BmcjAakzeEGoCqa:
+$L$_16_blocks_ok_451:
 
 
 
@@ -63099,7 +63099,7 @@ $L$_16_blocks_ok_BmcjAakzeEGoCqa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BfzxzuawxkhDzea
+	jl	NEAR $L$_small_initial_partial_block_452
 
 
 
@@ -63144,8 +63144,8 @@ $L$_16_blocks_ok_BmcjAakzeEGoCqa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BfzxzuawxkhDzea
-$L$_small_initial_partial_block_BfzxzuawxkhDzea:
+	jmp	NEAR $L$_small_initial_compute_done_452
+$L$_small_initial_partial_block_452:
 
 
 
@@ -63192,27 +63192,27 @@ $L$_small_initial_partial_block_BfzxzuawxkhDzea:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BfzxzuawxkhDzea:
+$L$_small_initial_compute_done_452:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BfzxzuawxkhDzea
+	je	NEAR $L$_after_reduction_452
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BfzxzuawxkhDzea:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_4_jGcrzfpqfFqBFbB:
+$L$_after_reduction_452:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_4_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_tFzEvnysmakbzvq
+	jae	NEAR $L$_16_blocks_overflow_453
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_tFzEvnysmakbzvq
+	jmp	NEAR $L$_16_blocks_ok_453
 
-$L$_16_blocks_overflow_tFzEvnysmakbzvq:
+$L$_16_blocks_overflow_453:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_tFzEvnysmakbzvq:
+$L$_16_blocks_ok_453:
 
 
 
@@ -63305,7 +63305,7 @@ $L$_16_blocks_ok_tFzEvnysmakbzvq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fvtFFztkkdhghjb
+	jl	NEAR $L$_small_initial_partial_block_454
 
 
 
@@ -63350,8 +63350,8 @@ $L$_16_blocks_ok_tFzEvnysmakbzvq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fvtFFztkkdhghjb
-$L$_small_initial_partial_block_fvtFFztkkdhghjb:
+	jmp	NEAR $L$_small_initial_compute_done_454
+$L$_small_initial_partial_block_454:
 
 
 
@@ -63399,32 +63399,32 @@ $L$_small_initial_partial_block_fvtFFztkkdhghjb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fvtFFztkkdhghjb:
+$L$_small_initial_compute_done_454:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fvtFFztkkdhghjb
+	je	NEAR $L$_after_reduction_454
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fvtFFztkkdhghjb:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_5_jGcrzfpqfFqBFbB:
+$L$_after_reduction_454:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_5_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_kyCiirzgBnoidla
+	jae	NEAR $L$_16_blocks_overflow_455
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_kyCiirzgBnoidla
+	jmp	NEAR $L$_16_blocks_ok_455
 
-$L$_16_blocks_overflow_kyCiirzgBnoidla:
+$L$_16_blocks_overflow_455:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_kyCiirzgBnoidla:
+$L$_16_blocks_ok_455:
 
 
 
@@ -63536,7 +63536,7 @@ $L$_16_blocks_ok_kyCiirzgBnoidla:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fiaxthnDloicaCn
+	jl	NEAR $L$_small_initial_partial_block_456
 
 
 
@@ -63587,8 +63587,8 @@ $L$_16_blocks_ok_kyCiirzgBnoidla:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fiaxthnDloicaCn
-$L$_small_initial_partial_block_fiaxthnDloicaCn:
+	jmp	NEAR $L$_small_initial_compute_done_456
+$L$_small_initial_partial_block_456:
 
 
 
@@ -63636,32 +63636,32 @@ $L$_small_initial_partial_block_fiaxthnDloicaCn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fiaxthnDloicaCn:
+$L$_small_initial_compute_done_456:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fiaxthnDloicaCn
+	je	NEAR $L$_after_reduction_456
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fiaxthnDloicaCn:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_6_jGcrzfpqfFqBFbB:
+$L$_after_reduction_456:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_6_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_ekjGkljgwgfsrjf
+	jae	NEAR $L$_16_blocks_overflow_457
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ekjGkljgwgfsrjf
+	jmp	NEAR $L$_16_blocks_ok_457
 
-$L$_16_blocks_overflow_ekjGkljgwgfsrjf:
+$L$_16_blocks_overflow_457:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_ekjGkljgwgfsrjf:
+$L$_16_blocks_ok_457:
 
 
 
@@ -63773,7 +63773,7 @@ $L$_16_blocks_ok_ekjGkljgwgfsrjf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_aqjDgCxCFhwGjyf
+	jl	NEAR $L$_small_initial_partial_block_458
 
 
 
@@ -63824,8 +63824,8 @@ $L$_16_blocks_ok_ekjGkljgwgfsrjf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_aqjDgCxCFhwGjyf
-$L$_small_initial_partial_block_aqjDgCxCFhwGjyf:
+	jmp	NEAR $L$_small_initial_compute_done_458
+$L$_small_initial_partial_block_458:
 
 
 
@@ -63879,32 +63879,32 @@ $L$_small_initial_partial_block_aqjDgCxCFhwGjyf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_aqjDgCxCFhwGjyf:
+$L$_small_initial_compute_done_458:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_aqjDgCxCFhwGjyf
+	je	NEAR $L$_after_reduction_458
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_aqjDgCxCFhwGjyf:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_7_jGcrzfpqfFqBFbB:
+$L$_after_reduction_458:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_7_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_DGruwgdtqhpwBrx
+	jae	NEAR $L$_16_blocks_overflow_459
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_DGruwgdtqhpwBrx
+	jmp	NEAR $L$_16_blocks_ok_459
 
-$L$_16_blocks_overflow_DGruwgdtqhpwBrx:
+$L$_16_blocks_overflow_459:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_DGruwgdtqhpwBrx:
+$L$_16_blocks_ok_459:
 
 
 
@@ -64016,7 +64016,7 @@ $L$_16_blocks_ok_DGruwgdtqhpwBrx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CGwnyvpAAprBiEl
+	jl	NEAR $L$_small_initial_partial_block_460
 
 
 
@@ -64068,8 +64068,8 @@ $L$_16_blocks_ok_DGruwgdtqhpwBrx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CGwnyvpAAprBiEl
-$L$_small_initial_partial_block_CGwnyvpAAprBiEl:
+	jmp	NEAR $L$_small_initial_compute_done_460
+$L$_small_initial_partial_block_460:
 
 
 
@@ -64123,32 +64123,32 @@ $L$_small_initial_partial_block_CGwnyvpAAprBiEl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_CGwnyvpAAprBiEl:
+$L$_small_initial_compute_done_460:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_CGwnyvpAAprBiEl
+	je	NEAR $L$_after_reduction_460
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_CGwnyvpAAprBiEl:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_8_jGcrzfpqfFqBFbB:
+$L$_after_reduction_460:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_8_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_EEqxAqvjGnujgCg
+	jae	NEAR $L$_16_blocks_overflow_461
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_EEqxAqvjGnujgCg
+	jmp	NEAR $L$_16_blocks_ok_461
 
-$L$_16_blocks_overflow_EEqxAqvjGnujgCg:
+$L$_16_blocks_overflow_461:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_EEqxAqvjGnujgCg:
+$L$_16_blocks_ok_461:
 
 
 
@@ -64260,7 +64260,7 @@ $L$_16_blocks_ok_EEqxAqvjGnujgCg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jblcqrhvcgDFsFF
+	jl	NEAR $L$_small_initial_partial_block_462
 
 
 
@@ -64314,8 +64314,8 @@ $L$_16_blocks_ok_EEqxAqvjGnujgCg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jblcqrhvcgDFsFF
-$L$_small_initial_partial_block_jblcqrhvcgDFsFF:
+	jmp	NEAR $L$_small_initial_compute_done_462
+$L$_small_initial_partial_block_462:
 
 
 
@@ -64370,26 +64370,26 @@ $L$_small_initial_partial_block_jblcqrhvcgDFsFF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jblcqrhvcgDFsFF:
+$L$_small_initial_compute_done_462:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jblcqrhvcgDFsFF
+	je	NEAR $L$_after_reduction_462
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_jblcqrhvcgDFsFF:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_9_jGcrzfpqfFqBFbB:
+$L$_after_reduction_462:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_9_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_vcrfpiBbeeEcoqt
+	jae	NEAR $L$_16_blocks_overflow_463
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_vcrfpiBbeeEcoqt
+	jmp	NEAR $L$_16_blocks_ok_463
 
-$L$_16_blocks_overflow_vcrfpiBbeeEcoqt:
+$L$_16_blocks_overflow_463:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -64398,7 +64398,7 @@ $L$_16_blocks_overflow_vcrfpiBbeeEcoqt:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_vcrfpiBbeeEcoqt:
+$L$_16_blocks_ok_463:
 
 
 
@@ -64529,7 +64529,7 @@ $L$_16_blocks_ok_vcrfpiBbeeEcoqt:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tztwyvyGDxwAzae
+	jl	NEAR $L$_small_initial_partial_block_464
 
 
 
@@ -64589,8 +64589,8 @@ $L$_16_blocks_ok_vcrfpiBbeeEcoqt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tztwyvyGDxwAzae
-$L$_small_initial_partial_block_tztwyvyGDxwAzae:
+	jmp	NEAR $L$_small_initial_compute_done_464
+$L$_small_initial_partial_block_464:
 
 
 
@@ -64647,26 +64647,26 @@ $L$_small_initial_partial_block_tztwyvyGDxwAzae:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tztwyvyGDxwAzae:
+$L$_small_initial_compute_done_464:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tztwyvyGDxwAzae
+	je	NEAR $L$_after_reduction_464
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tztwyvyGDxwAzae:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_10_jGcrzfpqfFqBFbB:
+$L$_after_reduction_464:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_10_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_grneoFAqruvvEDz
+	jae	NEAR $L$_16_blocks_overflow_465
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_grneoFAqruvvEDz
+	jmp	NEAR $L$_16_blocks_ok_465
 
-$L$_16_blocks_overflow_grneoFAqruvvEDz:
+$L$_16_blocks_overflow_465:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -64675,7 +64675,7 @@ $L$_16_blocks_overflow_grneoFAqruvvEDz:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_grneoFAqruvvEDz:
+$L$_16_blocks_ok_465:
 
 
 
@@ -64806,7 +64806,7 @@ $L$_16_blocks_ok_grneoFAqruvvEDz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_vwDdvkszfkoxEoC
+	jl	NEAR $L$_small_initial_partial_block_466
 
 
 
@@ -64866,8 +64866,8 @@ $L$_16_blocks_ok_grneoFAqruvvEDz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_vwDdvkszfkoxEoC
-$L$_small_initial_partial_block_vwDdvkszfkoxEoC:
+	jmp	NEAR $L$_small_initial_compute_done_466
+$L$_small_initial_partial_block_466:
 
 
 
@@ -64930,26 +64930,26 @@ $L$_small_initial_partial_block_vwDdvkszfkoxEoC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_vwDdvkszfkoxEoC:
+$L$_small_initial_compute_done_466:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_vwDdvkszfkoxEoC
+	je	NEAR $L$_after_reduction_466
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_vwDdvkszfkoxEoC:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_11_jGcrzfpqfFqBFbB:
+$L$_after_reduction_466:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_11_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_BDyFGrBxiBndGtB
+	jae	NEAR $L$_16_blocks_overflow_467
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_BDyFGrBxiBndGtB
+	jmp	NEAR $L$_16_blocks_ok_467
 
-$L$_16_blocks_overflow_BDyFGrBxiBndGtB:
+$L$_16_blocks_overflow_467:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -64958,7 +64958,7 @@ $L$_16_blocks_overflow_BDyFGrBxiBndGtB:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_BDyFGrBxiBndGtB:
+$L$_16_blocks_ok_467:
 
 
 
@@ -65089,7 +65089,7 @@ $L$_16_blocks_ok_BDyFGrBxiBndGtB:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_cgdBeqGcxEDEumn
+	jl	NEAR $L$_small_initial_partial_block_468
 
 
 
@@ -65150,8 +65150,8 @@ $L$_16_blocks_ok_BDyFGrBxiBndGtB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_cgdBeqGcxEDEumn
-$L$_small_initial_partial_block_cgdBeqGcxEDEumn:
+	jmp	NEAR $L$_small_initial_compute_done_468
+$L$_small_initial_partial_block_468:
 
 
 
@@ -65214,26 +65214,26 @@ $L$_small_initial_partial_block_cgdBeqGcxEDEumn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_cgdBeqGcxEDEumn:
+$L$_small_initial_compute_done_468:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_cgdBeqGcxEDEumn
+	je	NEAR $L$_after_reduction_468
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_cgdBeqGcxEDEumn:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_12_jGcrzfpqfFqBFbB:
+$L$_after_reduction_468:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_12_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_xcAvneiEhrnCeEv
+	jae	NEAR $L$_16_blocks_overflow_469
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_xcAvneiEhrnCeEv
+	jmp	NEAR $L$_16_blocks_ok_469
 
-$L$_16_blocks_overflow_xcAvneiEhrnCeEv:
+$L$_16_blocks_overflow_469:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -65242,7 +65242,7 @@ $L$_16_blocks_overflow_xcAvneiEhrnCeEv:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_xcAvneiEhrnCeEv:
+$L$_16_blocks_ok_469:
 
 
 
@@ -65373,7 +65373,7 @@ $L$_16_blocks_ok_xcAvneiEhrnCeEv:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FtxtFAovrmBGDyc
+	jl	NEAR $L$_small_initial_partial_block_470
 
 
 
@@ -65432,8 +65432,8 @@ $L$_16_blocks_ok_xcAvneiEhrnCeEv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FtxtFAovrmBGDyc
-$L$_small_initial_partial_block_FtxtFAovrmBGDyc:
+	jmp	NEAR $L$_small_initial_compute_done_470
+$L$_small_initial_partial_block_470:
 
 
 
@@ -65497,27 +65497,27 @@ $L$_small_initial_partial_block_FtxtFAovrmBGDyc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FtxtFAovrmBGDyc:
+$L$_small_initial_compute_done_470:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FtxtFAovrmBGDyc
+	je	NEAR $L$_after_reduction_470
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FtxtFAovrmBGDyc:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_13_jGcrzfpqfFqBFbB:
+$L$_after_reduction_470:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_13_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_wFzdgzAckeFCmxo
+	jae	NEAR $L$_16_blocks_overflow_471
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_wFzdgzAckeFCmxo
+	jmp	NEAR $L$_16_blocks_ok_471
 
-$L$_16_blocks_overflow_wFzdgzAckeFCmxo:
+$L$_16_blocks_overflow_471:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -65528,7 +65528,7 @@ $L$_16_blocks_overflow_wFzdgzAckeFCmxo:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_wFzdgzAckeFCmxo:
+$L$_16_blocks_ok_471:
 
 
 
@@ -65678,7 +65678,7 @@ $L$_16_blocks_ok_wFzdgzAckeFCmxo:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uGjmnnakgfnjkye
+	jl	NEAR $L$_small_initial_partial_block_472
 
 
 
@@ -65743,8 +65743,8 @@ $L$_16_blocks_ok_wFzdgzAckeFCmxo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uGjmnnakgfnjkye
-$L$_small_initial_partial_block_uGjmnnakgfnjkye:
+	jmp	NEAR $L$_small_initial_compute_done_472
+$L$_small_initial_partial_block_472:
 
 
 
@@ -65806,27 +65806,27 @@ $L$_small_initial_partial_block_uGjmnnakgfnjkye:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uGjmnnakgfnjkye:
+$L$_small_initial_compute_done_472:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uGjmnnakgfnjkye
+	je	NEAR $L$_after_reduction_472
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uGjmnnakgfnjkye:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_14_jGcrzfpqfFqBFbB:
+$L$_after_reduction_472:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_14_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_nqzpcDGkmCgpesn
+	jae	NEAR $L$_16_blocks_overflow_473
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_nqzpcDGkmCgpesn
+	jmp	NEAR $L$_16_blocks_ok_473
 
-$L$_16_blocks_overflow_nqzpcDGkmCgpesn:
+$L$_16_blocks_overflow_473:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -65837,7 +65837,7 @@ $L$_16_blocks_overflow_nqzpcDGkmCgpesn:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_nqzpcDGkmCgpesn:
+$L$_16_blocks_ok_473:
 
 
 
@@ -65987,7 +65987,7 @@ $L$_16_blocks_ok_nqzpcDGkmCgpesn:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nzceidsGctBApht
+	jl	NEAR $L$_small_initial_partial_block_474
 
 
 
@@ -66052,8 +66052,8 @@ $L$_16_blocks_ok_nqzpcDGkmCgpesn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nzceidsGctBApht
-$L$_small_initial_partial_block_nzceidsGctBApht:
+	jmp	NEAR $L$_small_initial_compute_done_474
+$L$_small_initial_partial_block_474:
 
 
 
@@ -66121,27 +66121,27 @@ $L$_small_initial_partial_block_nzceidsGctBApht:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nzceidsGctBApht:
+$L$_small_initial_compute_done_474:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nzceidsGctBApht
+	je	NEAR $L$_after_reduction_474
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nzceidsGctBApht:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_15_jGcrzfpqfFqBFbB:
+$L$_after_reduction_474:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_15_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_zowlehybDCsBjqj
+	jae	NEAR $L$_16_blocks_overflow_475
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_zowlehybDCsBjqj
+	jmp	NEAR $L$_16_blocks_ok_475
 
-$L$_16_blocks_overflow_zowlehybDCsBjqj:
+$L$_16_blocks_overflow_475:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -66152,7 +66152,7 @@ $L$_16_blocks_overflow_zowlehybDCsBjqj:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_zowlehybDCsBjqj:
+$L$_16_blocks_ok_475:
 
 
 
@@ -66302,7 +66302,7 @@ $L$_16_blocks_ok_zowlehybDCsBjqj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kGyntvlFsmtggEt
+	jl	NEAR $L$_small_initial_partial_block_476
 
 
 
@@ -66368,8 +66368,8 @@ $L$_16_blocks_ok_zowlehybDCsBjqj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kGyntvlFsmtggEt
-$L$_small_initial_partial_block_kGyntvlFsmtggEt:
+	jmp	NEAR $L$_small_initial_compute_done_476
+$L$_small_initial_partial_block_476:
 
 
 
@@ -66437,27 +66437,27 @@ $L$_small_initial_partial_block_kGyntvlFsmtggEt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kGyntvlFsmtggEt:
+$L$_small_initial_compute_done_476:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kGyntvlFsmtggEt
+	je	NEAR $L$_after_reduction_476
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kGyntvlFsmtggEt:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_16_jGcrzfpqfFqBFbB:
+$L$_after_reduction_476:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_16_446:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_wrxskDujjDedvqi
+	jae	NEAR $L$_16_blocks_overflow_477
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_wrxskDujjDedvqi
+	jmp	NEAR $L$_16_blocks_ok_477
 
-$L$_16_blocks_overflow_wrxskDujjDedvqi:
+$L$_16_blocks_overflow_477:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -66468,7 +66468,7 @@ $L$_16_blocks_overflow_wrxskDujjDedvqi:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_wrxskDujjDedvqi:
+$L$_16_blocks_ok_477:
 
 
 
@@ -66615,7 +66615,7 @@ $L$_16_blocks_ok_wrxskDujjDedvqi:
 	vpshufb	zmm21,zmm5,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_kljvqidFEeclFfw:
+$L$_small_initial_partial_block_478:
 
 
 
@@ -66684,11 +66684,11 @@ $L$_small_initial_partial_block_kljvqidFEeclFfw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kljvqidFEeclFfw:
+$L$_small_initial_compute_done_478:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kljvqidFEeclFfw:
-	jmp	NEAR $L$_last_blocks_done_jGcrzfpqfFqBFbB
-$L$_last_num_blocks_is_0_jGcrzfpqfFqBFbB:
+$L$_after_reduction_478:
+	jmp	NEAR $L$_last_blocks_done_446
+$L$_last_num_blocks_is_0_446:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -66750,65 +66750,65 @@ $L$_last_num_blocks_is_0_jGcrzfpqfFqBFbB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_jGcrzfpqfFqBFbB:
+$L$_last_blocks_done_446:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_GzunuFcqcAlgCge
+	jmp	NEAR $L$_ghash_done_334
 
-$L$_message_below_equal_16_blocks_GzunuFcqcAlgCge:
+$L$_message_below_equal_16_blocks_334:
 
 
 	mov	r12d,r13d
 	add	r12d,15
 	shr	r12d,4
 	cmp	r12,8
-	je	NEAR $L$_small_initial_num_blocks_is_8_qFtAcpbuzAziwdE
-	jl	NEAR $L$_small_initial_num_blocks_is_7_1_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_8_479
+	jl	NEAR $L$_small_initial_num_blocks_is_7_1_479
 
 
 	cmp	r12,12
-	je	NEAR $L$_small_initial_num_blocks_is_12_qFtAcpbuzAziwdE
-	jl	NEAR $L$_small_initial_num_blocks_is_11_9_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_12_479
+	jl	NEAR $L$_small_initial_num_blocks_is_11_9_479
 
 
 	cmp	r12,16
-	je	NEAR $L$_small_initial_num_blocks_is_16_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_16_479
 	cmp	r12,15
-	je	NEAR $L$_small_initial_num_blocks_is_15_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_15_479
 	cmp	r12,14
-	je	NEAR $L$_small_initial_num_blocks_is_14_qFtAcpbuzAziwdE
-	jmp	NEAR $L$_small_initial_num_blocks_is_13_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_14_479
+	jmp	NEAR $L$_small_initial_num_blocks_is_13_479
 
-$L$_small_initial_num_blocks_is_11_9_qFtAcpbuzAziwdE:
+$L$_small_initial_num_blocks_is_11_9_479:
 
 	cmp	r12,11
-	je	NEAR $L$_small_initial_num_blocks_is_11_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_11_479
 	cmp	r12,10
-	je	NEAR $L$_small_initial_num_blocks_is_10_qFtAcpbuzAziwdE
-	jmp	NEAR $L$_small_initial_num_blocks_is_9_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_10_479
+	jmp	NEAR $L$_small_initial_num_blocks_is_9_479
 
-$L$_small_initial_num_blocks_is_7_1_qFtAcpbuzAziwdE:
+$L$_small_initial_num_blocks_is_7_1_479:
 	cmp	r12,4
-	je	NEAR $L$_small_initial_num_blocks_is_4_qFtAcpbuzAziwdE
-	jl	NEAR $L$_small_initial_num_blocks_is_3_1_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_4_479
+	jl	NEAR $L$_small_initial_num_blocks_is_3_1_479
 
 	cmp	r12,7
-	je	NEAR $L$_small_initial_num_blocks_is_7_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_7_479
 	cmp	r12,6
-	je	NEAR $L$_small_initial_num_blocks_is_6_qFtAcpbuzAziwdE
-	jmp	NEAR $L$_small_initial_num_blocks_is_5_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_6_479
+	jmp	NEAR $L$_small_initial_num_blocks_is_5_479
 
-$L$_small_initial_num_blocks_is_3_1_qFtAcpbuzAziwdE:
+$L$_small_initial_num_blocks_is_3_1_479:
 
 	cmp	r12,3
-	je	NEAR $L$_small_initial_num_blocks_is_3_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_3_479
 	cmp	r12,2
-	je	NEAR $L$_small_initial_num_blocks_is_2_qFtAcpbuzAziwdE
+	je	NEAR $L$_small_initial_num_blocks_is_2_479
 
 
 
 
 
-$L$_small_initial_num_blocks_is_1_qFtAcpbuzAziwdE:
+$L$_small_initial_num_blocks_is_1_479:
 	vmovdqa64	xmm29,XMMWORD[SHUF_MASK]
 	vpaddd	xmm0,xmm2,XMMWORD[ONE]
 	lea	r10,[byte64_len_to_mask_table]
@@ -66857,7 +66857,7 @@ $L$_small_initial_num_blocks_is_1_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AApmdydlwrdzjBp
+	jl	NEAR $L$_small_initial_partial_block_480
 
 
 
@@ -66899,8 +66899,8 @@ $L$_small_initial_num_blocks_is_1_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AApmdydlwrdzjBp
-$L$_small_initial_partial_block_AApmdydlwrdzjBp:
+	jmp	NEAR $L$_small_initial_compute_done_480
+$L$_small_initial_partial_block_480:
 
 
 
@@ -66924,11 +66924,11 @@ $L$_small_initial_partial_block_AApmdydlwrdzjBp:
 
 	vpxorq	xmm14,xmm14,xmm13
 
-	jmp	NEAR $L$_after_reduction_AApmdydlwrdzjBp
-$L$_small_initial_compute_done_AApmdydlwrdzjBp:
-$L$_after_reduction_AApmdydlwrdzjBp:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_2_qFtAcpbuzAziwdE:
+	jmp	NEAR $L$_after_reduction_480
+$L$_small_initial_compute_done_480:
+$L$_after_reduction_480:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_2_479:
 	vmovdqa64	ymm29,YMMWORD[SHUF_MASK]
 	vshufi64x2	ymm0,ymm2,ymm2,0
 	vpaddd	ymm0,ymm0,YMMWORD[ddq_add_1234]
@@ -66979,7 +66979,7 @@ $L$_small_initial_num_blocks_is_2_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lhbCsoqykFwlhEc
+	jl	NEAR $L$_small_initial_partial_block_481
 
 
 
@@ -67021,8 +67021,8 @@ $L$_small_initial_num_blocks_is_2_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lhbCsoqykFwlhEc
-$L$_small_initial_partial_block_lhbCsoqykFwlhEc:
+	jmp	NEAR $L$_small_initial_compute_done_481
+$L$_small_initial_partial_block_481:
 
 
 
@@ -67067,14 +67067,14 @@ $L$_small_initial_partial_block_lhbCsoqykFwlhEc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lhbCsoqykFwlhEc:
+$L$_small_initial_compute_done_481:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lhbCsoqykFwlhEc
+	je	NEAR $L$_after_reduction_481
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_lhbCsoqykFwlhEc:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_3_qFtAcpbuzAziwdE:
+$L$_after_reduction_481:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_3_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -67125,7 +67125,7 @@ $L$_small_initial_num_blocks_is_3_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_pteAlwjqswfDhaF
+	jl	NEAR $L$_small_initial_partial_block_482
 
 
 
@@ -67168,8 +67168,8 @@ $L$_small_initial_num_blocks_is_3_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_pteAlwjqswfDhaF
-$L$_small_initial_partial_block_pteAlwjqswfDhaF:
+	jmp	NEAR $L$_small_initial_compute_done_482
+$L$_small_initial_partial_block_482:
 
 
 
@@ -67214,14 +67214,14 @@ $L$_small_initial_partial_block_pteAlwjqswfDhaF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_pteAlwjqswfDhaF:
+$L$_small_initial_compute_done_482:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_pteAlwjqswfDhaF
+	je	NEAR $L$_after_reduction_482
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_pteAlwjqswfDhaF:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_4_qFtAcpbuzAziwdE:
+$L$_after_reduction_482:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_4_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -67272,7 +67272,7 @@ $L$_small_initial_num_blocks_is_4_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nhyBzvBolADwkFA
+	jl	NEAR $L$_small_initial_partial_block_483
 
 
 
@@ -67314,8 +67314,8 @@ $L$_small_initial_num_blocks_is_4_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nhyBzvBolADwkFA
-$L$_small_initial_partial_block_nhyBzvBolADwkFA:
+	jmp	NEAR $L$_small_initial_compute_done_483
+$L$_small_initial_partial_block_483:
 
 
 
@@ -67361,14 +67361,14 @@ $L$_small_initial_partial_block_nhyBzvBolADwkFA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nhyBzvBolADwkFA:
+$L$_small_initial_compute_done_483:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nhyBzvBolADwkFA
+	je	NEAR $L$_after_reduction_483
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_nhyBzvBolADwkFA:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_5_qFtAcpbuzAziwdE:
+$L$_after_reduction_483:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_5_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -67441,7 +67441,7 @@ $L$_small_initial_num_blocks_is_5_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EDeyshgpaEwBzee
+	jl	NEAR $L$_small_initial_partial_block_484
 
 
 
@@ -67493,8 +67493,8 @@ $L$_small_initial_num_blocks_is_5_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EDeyshgpaEwBzee
-$L$_small_initial_partial_block_EDeyshgpaEwBzee:
+	jmp	NEAR $L$_small_initial_compute_done_484
+$L$_small_initial_partial_block_484:
 
 
 
@@ -67539,14 +67539,14 @@ $L$_small_initial_partial_block_EDeyshgpaEwBzee:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EDeyshgpaEwBzee:
+$L$_small_initial_compute_done_484:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EDeyshgpaEwBzee
+	je	NEAR $L$_after_reduction_484
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_EDeyshgpaEwBzee:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_6_qFtAcpbuzAziwdE:
+$L$_after_reduction_484:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_6_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -67619,7 +67619,7 @@ $L$_small_initial_num_blocks_is_6_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fsvhpjafdlDxhlq
+	jl	NEAR $L$_small_initial_partial_block_485
 
 
 
@@ -67671,8 +67671,8 @@ $L$_small_initial_num_blocks_is_6_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fsvhpjafdlDxhlq
-$L$_small_initial_partial_block_fsvhpjafdlDxhlq:
+	jmp	NEAR $L$_small_initial_compute_done_485
+$L$_small_initial_partial_block_485:
 
 
 
@@ -67727,14 +67727,14 @@ $L$_small_initial_partial_block_fsvhpjafdlDxhlq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fsvhpjafdlDxhlq:
+$L$_small_initial_compute_done_485:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fsvhpjafdlDxhlq
+	je	NEAR $L$_after_reduction_485
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_fsvhpjafdlDxhlq:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_7_qFtAcpbuzAziwdE:
+$L$_after_reduction_485:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_7_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -67807,7 +67807,7 @@ $L$_small_initial_num_blocks_is_7_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jFlwAgCzufExBic
+	jl	NEAR $L$_small_initial_partial_block_486
 
 
 
@@ -67860,8 +67860,8 @@ $L$_small_initial_num_blocks_is_7_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jFlwAgCzufExBic
-$L$_small_initial_partial_block_jFlwAgCzufExBic:
+	jmp	NEAR $L$_small_initial_compute_done_486
+$L$_small_initial_partial_block_486:
 
 
 
@@ -67916,14 +67916,14 @@ $L$_small_initial_partial_block_jFlwAgCzufExBic:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jFlwAgCzufExBic:
+$L$_small_initial_compute_done_486:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jFlwAgCzufExBic
+	je	NEAR $L$_after_reduction_486
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_jFlwAgCzufExBic:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_8_qFtAcpbuzAziwdE:
+$L$_after_reduction_486:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_8_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -67996,7 +67996,7 @@ $L$_small_initial_num_blocks_is_8_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_sFenckreffbdxxB
+	jl	NEAR $L$_small_initial_partial_block_487
 
 
 
@@ -68047,8 +68047,8 @@ $L$_small_initial_num_blocks_is_8_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_sFenckreffbdxxB
-$L$_small_initial_partial_block_sFenckreffbdxxB:
+	jmp	NEAR $L$_small_initial_compute_done_487
+$L$_small_initial_partial_block_487:
 
 
 
@@ -68104,14 +68104,14 @@ $L$_small_initial_partial_block_sFenckreffbdxxB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_sFenckreffbdxxB:
+$L$_small_initial_compute_done_487:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_sFenckreffbdxxB
+	je	NEAR $L$_after_reduction_487
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_sFenckreffbdxxB:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_9_qFtAcpbuzAziwdE:
+$L$_after_reduction_487:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_9_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -68205,7 +68205,7 @@ $L$_small_initial_num_blocks_is_9_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ohvlDqlqCAweyha
+	jl	NEAR $L$_small_initial_partial_block_488
 
 
 
@@ -68266,8 +68266,8 @@ $L$_small_initial_num_blocks_is_9_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ohvlDqlqCAweyha
-$L$_small_initial_partial_block_ohvlDqlqCAweyha:
+	jmp	NEAR $L$_small_initial_compute_done_488
+$L$_small_initial_partial_block_488:
 
 
 
@@ -68321,14 +68321,14 @@ $L$_small_initial_partial_block_ohvlDqlqCAweyha:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ohvlDqlqCAweyha:
+$L$_small_initial_compute_done_488:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ohvlDqlqCAweyha
+	je	NEAR $L$_after_reduction_488
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_ohvlDqlqCAweyha:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_10_qFtAcpbuzAziwdE:
+$L$_after_reduction_488:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_10_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -68422,7 +68422,7 @@ $L$_small_initial_num_blocks_is_10_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BFyxGudahCbowBB
+	jl	NEAR $L$_small_initial_partial_block_489
 
 
 
@@ -68483,8 +68483,8 @@ $L$_small_initial_num_blocks_is_10_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BFyxGudahCbowBB
-$L$_small_initial_partial_block_BFyxGudahCbowBB:
+	jmp	NEAR $L$_small_initial_compute_done_489
+$L$_small_initial_partial_block_489:
 
 
 
@@ -68548,14 +68548,14 @@ $L$_small_initial_partial_block_BFyxGudahCbowBB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BFyxGudahCbowBB:
+$L$_small_initial_compute_done_489:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BFyxGudahCbowBB
+	je	NEAR $L$_after_reduction_489
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_BFyxGudahCbowBB:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_11_qFtAcpbuzAziwdE:
+$L$_after_reduction_489:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_11_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -68649,7 +68649,7 @@ $L$_small_initial_num_blocks_is_11_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_cnvrEElczxslqaA
+	jl	NEAR $L$_small_initial_partial_block_490
 
 
 
@@ -68711,8 +68711,8 @@ $L$_small_initial_num_blocks_is_11_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_cnvrEElczxslqaA
-$L$_small_initial_partial_block_cnvrEElczxslqaA:
+	jmp	NEAR $L$_small_initial_compute_done_490
+$L$_small_initial_partial_block_490:
 
 
 
@@ -68776,14 +68776,14 @@ $L$_small_initial_partial_block_cnvrEElczxslqaA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_cnvrEElczxslqaA:
+$L$_small_initial_compute_done_490:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_cnvrEElczxslqaA
+	je	NEAR $L$_after_reduction_490
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_cnvrEElczxslqaA:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_12_qFtAcpbuzAziwdE:
+$L$_after_reduction_490:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_12_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -68877,7 +68877,7 @@ $L$_small_initial_num_blocks_is_12_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ygqyqptbyxkvmCp
+	jl	NEAR $L$_small_initial_partial_block_491
 
 
 
@@ -68933,8 +68933,8 @@ $L$_small_initial_num_blocks_is_12_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ygqyqptbyxkvmCp
-$L$_small_initial_partial_block_ygqyqptbyxkvmCp:
+	jmp	NEAR $L$_small_initial_compute_done_491
+$L$_small_initial_partial_block_491:
 
 
 
@@ -68999,14 +68999,14 @@ $L$_small_initial_partial_block_ygqyqptbyxkvmCp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ygqyqptbyxkvmCp:
+$L$_small_initial_compute_done_491:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ygqyqptbyxkvmCp
+	je	NEAR $L$_after_reduction_491
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_ygqyqptbyxkvmCp:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_13_qFtAcpbuzAziwdE:
+$L$_after_reduction_491:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_13_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -69121,7 +69121,7 @@ $L$_small_initial_num_blocks_is_13_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BcCAyEospoEijkm
+	jl	NEAR $L$_small_initial_partial_block_492
 
 
 
@@ -69187,8 +69187,8 @@ $L$_small_initial_num_blocks_is_13_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BcCAyEospoEijkm
-$L$_small_initial_partial_block_BcCAyEospoEijkm:
+	jmp	NEAR $L$_small_initial_compute_done_492
+$L$_small_initial_partial_block_492:
 
 
 
@@ -69247,14 +69247,14 @@ $L$_small_initial_partial_block_BcCAyEospoEijkm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BcCAyEospoEijkm:
+$L$_small_initial_compute_done_492:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BcCAyEospoEijkm
+	je	NEAR $L$_after_reduction_492
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_BcCAyEospoEijkm:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_14_qFtAcpbuzAziwdE:
+$L$_after_reduction_492:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_14_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -69369,7 +69369,7 @@ $L$_small_initial_num_blocks_is_14_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oddcFtvkqkcmEAG
+	jl	NEAR $L$_small_initial_partial_block_493
 
 
 
@@ -69435,8 +69435,8 @@ $L$_small_initial_num_blocks_is_14_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oddcFtvkqkcmEAG
-$L$_small_initial_partial_block_oddcFtvkqkcmEAG:
+	jmp	NEAR $L$_small_initial_compute_done_493
+$L$_small_initial_partial_block_493:
 
 
 
@@ -69505,14 +69505,14 @@ $L$_small_initial_partial_block_oddcFtvkqkcmEAG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_oddcFtvkqkcmEAG:
+$L$_small_initial_compute_done_493:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_oddcFtvkqkcmEAG
+	je	NEAR $L$_after_reduction_493
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_oddcFtvkqkcmEAG:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_15_qFtAcpbuzAziwdE:
+$L$_after_reduction_493:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_15_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -69627,7 +69627,7 @@ $L$_small_initial_num_blocks_is_15_qFtAcpbuzAziwdE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_akpDezxjzdweeAb
+	jl	NEAR $L$_small_initial_partial_block_494
 
 
 
@@ -69694,8 +69694,8 @@ $L$_small_initial_num_blocks_is_15_qFtAcpbuzAziwdE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_akpDezxjzdweeAb
-$L$_small_initial_partial_block_akpDezxjzdweeAb:
+	jmp	NEAR $L$_small_initial_compute_done_494
+$L$_small_initial_partial_block_494:
 
 
 
@@ -69764,14 +69764,14 @@ $L$_small_initial_partial_block_akpDezxjzdweeAb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_akpDezxjzdweeAb:
+$L$_small_initial_compute_done_494:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_akpDezxjzdweeAb
+	je	NEAR $L$_after_reduction_494
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_akpDezxjzdweeAb:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE
-$L$_small_initial_num_blocks_is_16_qFtAcpbuzAziwdE:
+$L$_after_reduction_494:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_479
+$L$_small_initial_num_blocks_is_16_479:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -69883,7 +69883,7 @@ $L$_small_initial_num_blocks_is_16_qFtAcpbuzAziwdE:
 	vpshufb	zmm11,zmm5,zmm29
 	vextracti32x4	xmm13,zmm11,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_wzswekqDoBGuytc:
+$L$_small_initial_partial_block_495:
 
 
 
@@ -69953,18 +69953,18 @@ $L$_small_initial_partial_block_wzswekqDoBGuytc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wzswekqDoBGuytc:
+$L$_small_initial_compute_done_495:
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_wzswekqDoBGuytc:
-$L$_small_initial_blocks_encrypted_qFtAcpbuzAziwdE:
-$L$_ghash_done_GzunuFcqcAlgCge:
+$L$_after_reduction_495:
+$L$_small_initial_blocks_encrypted_479:
+$L$_ghash_done_334:
 	vmovdqu64	XMMWORD[rdx],xmm2
 	vmovdqu64	XMMWORD[64+rdx],xmm14
-$L$_enc_dec_done_GzunuFcqcAlgCge:
+$L$_enc_dec_done_334:
 	jmp	NEAR $L$exit_gcm_encrypt
 $L$exit_gcm_encrypt:
 	cmp	QWORD[112+rbp],256
-	jbe	NEAR $L$skip_hkeys_cleanup_gbFfnzGAnhoxych
+	jbe	NEAR $L$skip_hkeys_cleanup_496
 	vpxor	xmm0,xmm0,xmm0
 	vmovdqa64	ZMMWORD[rsp],zmm0
 	vmovdqa64	ZMMWORD[64+rsp],zmm0
@@ -69978,7 +69978,7 @@ $L$exit_gcm_encrypt:
 	vmovdqa64	ZMMWORD[576+rsp],zmm0
 	vmovdqa64	ZMMWORD[640+rsp],zmm0
 	vmovdqa64	ZMMWORD[704+rsp],zmm0
-$L$skip_hkeys_cleanup_gbFfnzGAnhoxych:
+$L$skip_hkeys_cleanup_496:
 	vzeroupper
 	vmovdqu	xmm15,XMMWORD[((-16))+rbp]
 	vmovdqu	xmm14,XMMWORD[((-32))+rbp]
@@ -70094,13 +70094,13 @@ $L$decrypt_seh_prolog_end:
 ALIGN	32
 $L$aes_gcm_decrypt_128_avx512:
 	cmp	QWORD[112+rbp],0
-	je	NEAR $L$_enc_dec_done_FybgEjtCEAxrgxA
+	je	NEAR $L$_enc_dec_done_497
 	xor	r14,r14
 	vmovdqu64	xmm14,XMMWORD[64+rdx]
 
 	mov	r11,QWORD[r8]
 	or	r11,r11
-	je	NEAR $L$_partial_block_done_pdidmtrBytnauyt
+	je	NEAR $L$_partial_block_done_498
 	mov	r10d,16
 	lea	r12,[byte_len_to_mask_table]
 	cmp	QWORD[112+rbp],r10
@@ -70127,9 +70127,9 @@ $L$aes_gcm_decrypt_128_avx512:
 	mov	r13,QWORD[112+rbp]
 	add	r13,r11
 	sub	r13,16
-	jge	NEAR $L$_no_extra_mask_pdidmtrBytnauyt
+	jge	NEAR $L$_no_extra_mask_498
 	sub	r12,r13
-$L$_no_extra_mask_pdidmtrBytnauyt:
+$L$_no_extra_mask_498:
 
 
 
@@ -70140,7 +70140,7 @@ $L$_no_extra_mask_pdidmtrBytnauyt:
 	vpshufb	xmm6,xmm6,xmm5
 	vpxorq	xmm14,xmm14,xmm6
 	cmp	r13,0
-	jl	NEAR $L$_partial_incomplete_pdidmtrBytnauyt
+	jl	NEAR $L$_partial_incomplete_498
 
 	vpclmulqdq	xmm7,xmm14,xmm4,0x11
 	vpclmulqdq	xmm10,xmm14,xmm4,0x00
@@ -70175,14 +70175,14 @@ $L$_no_extra_mask_pdidmtrBytnauyt:
 	mov	r12,r11
 	mov	r11,16
 	sub	r11,r12
-	jmp	NEAR $L$_enc_dec_done_pdidmtrBytnauyt
+	jmp	NEAR $L$_enc_dec_done_498
 
-$L$_partial_incomplete_pdidmtrBytnauyt:
+$L$_partial_incomplete_498:
 	mov	r12,QWORD[112+rbp]
 	add	QWORD[r8],r12
 	mov	r11,QWORD[112+rbp]
 
-$L$_enc_dec_done_pdidmtrBytnauyt:
+$L$_enc_dec_done_498:
 
 
 	lea	r12,[byte_len_to_mask_table]
@@ -70190,13 +70190,13 @@ $L$_enc_dec_done_pdidmtrBytnauyt:
 	vmovdqu64	XMMWORD[64+rdx],xmm14
 	mov	r12,QWORD[120+rbp]
 	vmovdqu8	XMMWORD[r12]{k1},xmm3
-$L$_partial_block_done_pdidmtrBytnauyt:
+$L$_partial_block_done_498:
 	vmovdqu64	xmm2,XMMWORD[rdx]
 	mov	r13,QWORD[112+rbp]
 	sub	r13,r11
-	je	NEAR $L$_enc_dec_done_FybgEjtCEAxrgxA
+	je	NEAR $L$_enc_dec_done_497
 	cmp	r13,256
-	jbe	NEAR $L$_message_below_equal_16_blocks_FybgEjtCEAxrgxA
+	jbe	NEAR $L$_message_below_equal_16_blocks_497
 
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vmovdqa64	zmm27,ZMMWORD[ddq_addbe_4444]
@@ -70216,13 +70216,13 @@ $L$_partial_block_done_pdidmtrBytnauyt:
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_FyFpGpzogbsfFot
+	jae	NEAR $L$_next_16_overflow_499
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_FyFpGpzogbsfFot
-$L$_next_16_overflow_FyFpGpzogbsfFot:
+	jmp	NEAR $L$_next_16_ok_499
+$L$_next_16_overflow_499:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -70233,7 +70233,7 @@ $L$_next_16_overflow_FyFpGpzogbsfFot:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_FyFpGpzogbsfFot:
+$L$_next_16_ok_499:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -70321,7 +70321,7 @@ $L$_next_16_ok_FyFpGpzogbsfFot:
 	vmovdqa64	ZMMWORD[896+rsp],zmm11
 	vmovdqa64	ZMMWORD[960+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_qbryDEGFrfmlsEv
+	jnz	NEAR $L$_skip_hkeys_precomputation_500
 
 	vmovdqu64	zmm0,ZMMWORD[288+rdx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm0
@@ -70337,20 +70337,20 @@ $L$_next_16_ok_FyFpGpzogbsfFot:
 
 	vmovdqu64	zmm5,ZMMWORD[96+rdx]
 	vmovdqu64	ZMMWORD[512+rsp],zmm5
-$L$_skip_hkeys_precomputation_qbryDEGFrfmlsEv:
+$L$_skip_hkeys_precomputation_500:
 	cmp	r13,512
-	jb	NEAR $L$_message_below_32_blocks_FybgEjtCEAxrgxA
+	jb	NEAR $L$_message_below_32_blocks_497
 
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_EkbmuzEwhyAsldF
+	jae	NEAR $L$_next_16_overflow_501
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_EkbmuzEwhyAsldF
-$L$_next_16_overflow_EkbmuzEwhyAsldF:
+	jmp	NEAR $L$_next_16_ok_501
+$L$_next_16_overflow_501:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -70361,7 +70361,7 @@ $L$_next_16_overflow_EkbmuzEwhyAsldF:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_EkbmuzEwhyAsldF:
+$L$_next_16_ok_501:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -70449,7 +70449,7 @@ $L$_next_16_ok_EkbmuzEwhyAsldF:
 	vmovdqa64	ZMMWORD[1152+rsp],zmm11
 	vmovdqa64	ZMMWORD[1216+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_eiartyanitEpFbt
+	jnz	NEAR $L$_skip_hkeys_precomputation_502
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -70697,22 +70697,22 @@ $L$_next_16_ok_EkbmuzEwhyAsldF:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[rsp],zmm5
-$L$_skip_hkeys_precomputation_eiartyanitEpFbt:
+$L$_skip_hkeys_precomputation_502:
 	mov	r14,1
 	add	r11,512
 	sub	r13,512
 
 	cmp	r13,768
-	jb	NEAR $L$_no_more_big_nblocks_FybgEjtCEAxrgxA
-$L$_encrypt_big_nblocks_FybgEjtCEAxrgxA:
+	jb	NEAR $L$_no_more_big_nblocks_497
+$L$_encrypt_big_nblocks_497:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_jrbBFwCGzqvsEed
+	jae	NEAR $L$_16_blocks_overflow_503
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_jrbBFwCGzqvsEed
-$L$_16_blocks_overflow_jrbBFwCGzqvsEed:
+	jmp	NEAR $L$_16_blocks_ok_503
+$L$_16_blocks_overflow_503:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -70723,7 +70723,7 @@ $L$_16_blocks_overflow_jrbBFwCGzqvsEed:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_jrbBFwCGzqvsEed:
+$L$_16_blocks_ok_503:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -70888,13 +70888,13 @@ $L$_16_blocks_ok_jrbBFwCGzqvsEed:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_ljtAFlvsegmrwDe
+	jae	NEAR $L$_16_blocks_overflow_504
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ljtAFlvsegmrwDe
-$L$_16_blocks_overflow_ljtAFlvsegmrwDe:
+	jmp	NEAR $L$_16_blocks_ok_504
+$L$_16_blocks_overflow_504:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -70905,7 +70905,7 @@ $L$_16_blocks_overflow_ljtAFlvsegmrwDe:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ljtAFlvsegmrwDe:
+$L$_16_blocks_ok_504:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -71070,13 +71070,13 @@ $L$_16_blocks_ok_ljtAFlvsegmrwDe:
 	vmovdqa64	ZMMWORD[896+rsp],zmm4
 	vmovdqa64	ZMMWORD[960+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_smxnbEmdnsGmAch
+	jae	NEAR $L$_16_blocks_overflow_505
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_smxnbEmdnsGmAch
-$L$_16_blocks_overflow_smxnbEmdnsGmAch:
+	jmp	NEAR $L$_16_blocks_ok_505
+$L$_16_blocks_overflow_505:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -71087,7 +71087,7 @@ $L$_16_blocks_overflow_smxnbEmdnsGmAch:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_smxnbEmdnsGmAch:
+$L$_16_blocks_ok_505:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm1,ZMMWORD[512+rsp]
@@ -71282,16 +71282,16 @@ $L$_16_blocks_ok_smxnbEmdnsGmAch:
 	add	r11,768
 	sub	r13,768
 	cmp	r13,768
-	jae	NEAR $L$_encrypt_big_nblocks_FybgEjtCEAxrgxA
+	jae	NEAR $L$_encrypt_big_nblocks_497
 
-$L$_no_more_big_nblocks_FybgEjtCEAxrgxA:
+$L$_no_more_big_nblocks_497:
 
 	cmp	r13,512
-	jae	NEAR $L$_encrypt_32_blocks_FybgEjtCEAxrgxA
+	jae	NEAR $L$_encrypt_32_blocks_497
 
 	cmp	r13,256
-	jae	NEAR $L$_encrypt_16_blocks_FybgEjtCEAxrgxA
-$L$_encrypt_0_blocks_ghash_32_FybgEjtCEAxrgxA:
+	jae	NEAR $L$_encrypt_16_blocks_497
+$L$_encrypt_0_blocks_ghash_32_497:
 	mov	r10d,r13d
 	and	r10d,~15
 	mov	ebx,256
@@ -71334,61 +71334,61 @@ $L$_encrypt_0_blocks_ghash_32_FybgEjtCEAxrgxA:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_uygroEsBxlghxgr
+	je	NEAR $L$_last_num_blocks_is_0_506
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_uygroEsBxlghxgr
-	jb	NEAR $L$_last_num_blocks_is_7_1_uygroEsBxlghxgr
+	je	NEAR $L$_last_num_blocks_is_8_506
+	jb	NEAR $L$_last_num_blocks_is_7_1_506
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_uygroEsBxlghxgr
-	jb	NEAR $L$_last_num_blocks_is_11_9_uygroEsBxlghxgr
+	je	NEAR $L$_last_num_blocks_is_12_506
+	jb	NEAR $L$_last_num_blocks_is_11_9_506
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_uygroEsBxlghxgr
-	ja	NEAR $L$_last_num_blocks_is_16_uygroEsBxlghxgr
+	je	NEAR $L$_last_num_blocks_is_15_506
+	ja	NEAR $L$_last_num_blocks_is_16_506
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_uygroEsBxlghxgr
-	jmp	NEAR $L$_last_num_blocks_is_13_uygroEsBxlghxgr
+	je	NEAR $L$_last_num_blocks_is_14_506
+	jmp	NEAR $L$_last_num_blocks_is_13_506
 
-$L$_last_num_blocks_is_11_9_uygroEsBxlghxgr:
+$L$_last_num_blocks_is_11_9_506:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_uygroEsBxlghxgr
-	ja	NEAR $L$_last_num_blocks_is_11_uygroEsBxlghxgr
-	jmp	NEAR $L$_last_num_blocks_is_9_uygroEsBxlghxgr
+	je	NEAR $L$_last_num_blocks_is_10_506
+	ja	NEAR $L$_last_num_blocks_is_11_506
+	jmp	NEAR $L$_last_num_blocks_is_9_506
 
-$L$_last_num_blocks_is_7_1_uygroEsBxlghxgr:
+$L$_last_num_blocks_is_7_1_506:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_uygroEsBxlghxgr
-	jb	NEAR $L$_last_num_blocks_is_3_1_uygroEsBxlghxgr
+	je	NEAR $L$_last_num_blocks_is_4_506
+	jb	NEAR $L$_last_num_blocks_is_3_1_506
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_uygroEsBxlghxgr
-	je	NEAR $L$_last_num_blocks_is_6_uygroEsBxlghxgr
-	jmp	NEAR $L$_last_num_blocks_is_5_uygroEsBxlghxgr
+	ja	NEAR $L$_last_num_blocks_is_7_506
+	je	NEAR $L$_last_num_blocks_is_6_506
+	jmp	NEAR $L$_last_num_blocks_is_5_506
 
-$L$_last_num_blocks_is_3_1_uygroEsBxlghxgr:
+$L$_last_num_blocks_is_3_1_506:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_uygroEsBxlghxgr
-	je	NEAR $L$_last_num_blocks_is_2_uygroEsBxlghxgr
-$L$_last_num_blocks_is_1_uygroEsBxlghxgr:
+	ja	NEAR $L$_last_num_blocks_is_3_506
+	je	NEAR $L$_last_num_blocks_is_2_506
+$L$_last_num_blocks_is_1_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_CcrlgEkkaEppqAi
+	jae	NEAR $L$_16_blocks_overflow_507
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_CcrlgEkkaEppqAi
+	jmp	NEAR $L$_16_blocks_ok_507
 
-$L$_16_blocks_overflow_CcrlgEkkaEppqAi:
+$L$_16_blocks_overflow_507:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_CcrlgEkkaEppqAi:
+$L$_16_blocks_ok_507:
 
 
 
@@ -71472,7 +71472,7 @@ $L$_16_blocks_ok_CcrlgEkkaEppqAi:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_skbxFlpubeAhCfj
+	jl	NEAR $L$_small_initial_partial_block_508
 
 
 
@@ -71516,8 +71516,8 @@ $L$_16_blocks_ok_CcrlgEkkaEppqAi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_skbxFlpubeAhCfj
-$L$_small_initial_partial_block_skbxFlpubeAhCfj:
+	jmp	NEAR $L$_small_initial_compute_done_508
+$L$_small_initial_partial_block_508:
 
 
 
@@ -71569,24 +71569,24 @@ $L$_small_initial_partial_block_skbxFlpubeAhCfj:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_skbxFlpubeAhCfj
-$L$_small_initial_compute_done_skbxFlpubeAhCfj:
-$L$_after_reduction_skbxFlpubeAhCfj:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_2_uygroEsBxlghxgr:
+	jmp	NEAR $L$_after_reduction_508
+$L$_small_initial_compute_done_508:
+$L$_after_reduction_508:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_2_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_BABGdvmlAosFjqb
+	jae	NEAR $L$_16_blocks_overflow_509
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_BABGdvmlAosFjqb
+	jmp	NEAR $L$_16_blocks_ok_509
 
-$L$_16_blocks_overflow_BABGdvmlAosFjqb:
+$L$_16_blocks_overflow_509:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_BABGdvmlAosFjqb:
+$L$_16_blocks_ok_509:
 
 
 
@@ -71671,7 +71671,7 @@ $L$_16_blocks_ok_BABGdvmlAosFjqb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wzgDpukbEhlCrtC
+	jl	NEAR $L$_small_initial_partial_block_510
 
 
 
@@ -71715,8 +71715,8 @@ $L$_16_blocks_ok_BABGdvmlAosFjqb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wzgDpukbEhlCrtC
-$L$_small_initial_partial_block_wzgDpukbEhlCrtC:
+	jmp	NEAR $L$_small_initial_compute_done_510
+$L$_small_initial_partial_block_510:
 
 
 
@@ -71763,27 +71763,27 @@ $L$_small_initial_partial_block_wzgDpukbEhlCrtC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wzgDpukbEhlCrtC:
+$L$_small_initial_compute_done_510:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wzgDpukbEhlCrtC
+	je	NEAR $L$_after_reduction_510
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_wzgDpukbEhlCrtC:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_3_uygroEsBxlghxgr:
+$L$_after_reduction_510:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_3_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_ABvyyhvlsGfuyDC
+	jae	NEAR $L$_16_blocks_overflow_511
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_ABvyyhvlsGfuyDC
+	jmp	NEAR $L$_16_blocks_ok_511
 
-$L$_16_blocks_overflow_ABvyyhvlsGfuyDC:
+$L$_16_blocks_overflow_511:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_ABvyyhvlsGfuyDC:
+$L$_16_blocks_ok_511:
 
 
 
@@ -71868,7 +71868,7 @@ $L$_16_blocks_ok_ABvyyhvlsGfuyDC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zluvExbtGhqwrji
+	jl	NEAR $L$_small_initial_partial_block_512
 
 
 
@@ -71913,8 +71913,8 @@ $L$_16_blocks_ok_ABvyyhvlsGfuyDC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zluvExbtGhqwrji
-$L$_small_initial_partial_block_zluvExbtGhqwrji:
+	jmp	NEAR $L$_small_initial_compute_done_512
+$L$_small_initial_partial_block_512:
 
 
 
@@ -71961,27 +71961,27 @@ $L$_small_initial_partial_block_zluvExbtGhqwrji:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zluvExbtGhqwrji:
+$L$_small_initial_compute_done_512:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zluvExbtGhqwrji
+	je	NEAR $L$_after_reduction_512
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_zluvExbtGhqwrji:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_4_uygroEsBxlghxgr:
+$L$_after_reduction_512:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_4_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_zCdDAsChbgdfolk
+	jae	NEAR $L$_16_blocks_overflow_513
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_zCdDAsChbgdfolk
+	jmp	NEAR $L$_16_blocks_ok_513
 
-$L$_16_blocks_overflow_zCdDAsChbgdfolk:
+$L$_16_blocks_overflow_513:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_zCdDAsChbgdfolk:
+$L$_16_blocks_ok_513:
 
 
 
@@ -72066,7 +72066,7 @@ $L$_16_blocks_ok_zCdDAsChbgdfolk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rlawuiCeifpEacn
+	jl	NEAR $L$_small_initial_partial_block_514
 
 
 
@@ -72111,8 +72111,8 @@ $L$_16_blocks_ok_zCdDAsChbgdfolk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rlawuiCeifpEacn
-$L$_small_initial_partial_block_rlawuiCeifpEacn:
+	jmp	NEAR $L$_small_initial_compute_done_514
+$L$_small_initial_partial_block_514:
 
 
 
@@ -72160,32 +72160,32 @@ $L$_small_initial_partial_block_rlawuiCeifpEacn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rlawuiCeifpEacn:
+$L$_small_initial_compute_done_514:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rlawuiCeifpEacn
+	je	NEAR $L$_after_reduction_514
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rlawuiCeifpEacn:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_5_uygroEsBxlghxgr:
+$L$_after_reduction_514:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_5_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_Csainnjdbweymnh
+	jae	NEAR $L$_16_blocks_overflow_515
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_Csainnjdbweymnh
+	jmp	NEAR $L$_16_blocks_ok_515
 
-$L$_16_blocks_overflow_Csainnjdbweymnh:
+$L$_16_blocks_overflow_515:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_Csainnjdbweymnh:
+$L$_16_blocks_ok_515:
 
 
 
@@ -72285,7 +72285,7 @@ $L$_16_blocks_ok_Csainnjdbweymnh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FlsycifmbrBGEvx
+	jl	NEAR $L$_small_initial_partial_block_516
 
 
 
@@ -72336,8 +72336,8 @@ $L$_16_blocks_ok_Csainnjdbweymnh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FlsycifmbrBGEvx
-$L$_small_initial_partial_block_FlsycifmbrBGEvx:
+	jmp	NEAR $L$_small_initial_compute_done_516
+$L$_small_initial_partial_block_516:
 
 
 
@@ -72385,32 +72385,32 @@ $L$_small_initial_partial_block_FlsycifmbrBGEvx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FlsycifmbrBGEvx:
+$L$_small_initial_compute_done_516:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FlsycifmbrBGEvx
+	je	NEAR $L$_after_reduction_516
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FlsycifmbrBGEvx:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_6_uygroEsBxlghxgr:
+$L$_after_reduction_516:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_6_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_hazlksksiyoBCFg
+	jae	NEAR $L$_16_blocks_overflow_517
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_hazlksksiyoBCFg
+	jmp	NEAR $L$_16_blocks_ok_517
 
-$L$_16_blocks_overflow_hazlksksiyoBCFg:
+$L$_16_blocks_overflow_517:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_hazlksksiyoBCFg:
+$L$_16_blocks_ok_517:
 
 
 
@@ -72510,7 +72510,7 @@ $L$_16_blocks_ok_hazlksksiyoBCFg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hfgjhjohfBjfyzh
+	jl	NEAR $L$_small_initial_partial_block_518
 
 
 
@@ -72561,8 +72561,8 @@ $L$_16_blocks_ok_hazlksksiyoBCFg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hfgjhjohfBjfyzh
-$L$_small_initial_partial_block_hfgjhjohfBjfyzh:
+	jmp	NEAR $L$_small_initial_compute_done_518
+$L$_small_initial_partial_block_518:
 
 
 
@@ -72616,32 +72616,32 @@ $L$_small_initial_partial_block_hfgjhjohfBjfyzh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hfgjhjohfBjfyzh:
+$L$_small_initial_compute_done_518:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hfgjhjohfBjfyzh
+	je	NEAR $L$_after_reduction_518
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hfgjhjohfBjfyzh:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_7_uygroEsBxlghxgr:
+$L$_after_reduction_518:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_7_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_dipDhrcFqDupABh
+	jae	NEAR $L$_16_blocks_overflow_519
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_dipDhrcFqDupABh
+	jmp	NEAR $L$_16_blocks_ok_519
 
-$L$_16_blocks_overflow_dipDhrcFqDupABh:
+$L$_16_blocks_overflow_519:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_dipDhrcFqDupABh:
+$L$_16_blocks_ok_519:
 
 
 
@@ -72741,7 +72741,7 @@ $L$_16_blocks_ok_dipDhrcFqDupABh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_GzhBmmwEqhhGweD
+	jl	NEAR $L$_small_initial_partial_block_520
 
 
 
@@ -72793,8 +72793,8 @@ $L$_16_blocks_ok_dipDhrcFqDupABh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_GzhBmmwEqhhGweD
-$L$_small_initial_partial_block_GzhBmmwEqhhGweD:
+	jmp	NEAR $L$_small_initial_compute_done_520
+$L$_small_initial_partial_block_520:
 
 
 
@@ -72848,32 +72848,32 @@ $L$_small_initial_partial_block_GzhBmmwEqhhGweD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_GzhBmmwEqhhGweD:
+$L$_small_initial_compute_done_520:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_GzhBmmwEqhhGweD
+	je	NEAR $L$_after_reduction_520
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_GzhBmmwEqhhGweD:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_8_uygroEsBxlghxgr:
+$L$_after_reduction_520:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_8_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_icAotuuyhEsvGAz
+	jae	NEAR $L$_16_blocks_overflow_521
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_icAotuuyhEsvGAz
+	jmp	NEAR $L$_16_blocks_ok_521
 
-$L$_16_blocks_overflow_icAotuuyhEsvGAz:
+$L$_16_blocks_overflow_521:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_icAotuuyhEsvGAz:
+$L$_16_blocks_ok_521:
 
 
 
@@ -72973,7 +72973,7 @@ $L$_16_blocks_ok_icAotuuyhEsvGAz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dewaAflGaGjpthf
+	jl	NEAR $L$_small_initial_partial_block_522
 
 
 
@@ -73027,8 +73027,8 @@ $L$_16_blocks_ok_icAotuuyhEsvGAz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dewaAflGaGjpthf
-$L$_small_initial_partial_block_dewaAflGaGjpthf:
+	jmp	NEAR $L$_small_initial_compute_done_522
+$L$_small_initial_partial_block_522:
 
 
 
@@ -73083,26 +73083,26 @@ $L$_small_initial_partial_block_dewaAflGaGjpthf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dewaAflGaGjpthf:
+$L$_small_initial_compute_done_522:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dewaAflGaGjpthf
+	je	NEAR $L$_after_reduction_522
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dewaAflGaGjpthf:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_9_uygroEsBxlghxgr:
+$L$_after_reduction_522:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_9_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_nwioetGbngmrkwu
+	jae	NEAR $L$_16_blocks_overflow_523
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_nwioetGbngmrkwu
+	jmp	NEAR $L$_16_blocks_ok_523
 
-$L$_16_blocks_overflow_nwioetGbngmrkwu:
+$L$_16_blocks_overflow_523:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -73111,7 +73111,7 @@ $L$_16_blocks_overflow_nwioetGbngmrkwu:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_nwioetGbngmrkwu:
+$L$_16_blocks_ok_523:
 
 
 
@@ -73226,7 +73226,7 @@ $L$_16_blocks_ok_nwioetGbngmrkwu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_elgfdAaecaghDCq
+	jl	NEAR $L$_small_initial_partial_block_524
 
 
 
@@ -73286,8 +73286,8 @@ $L$_16_blocks_ok_nwioetGbngmrkwu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_elgfdAaecaghDCq
-$L$_small_initial_partial_block_elgfdAaecaghDCq:
+	jmp	NEAR $L$_small_initial_compute_done_524
+$L$_small_initial_partial_block_524:
 
 
 
@@ -73344,26 +73344,26 @@ $L$_small_initial_partial_block_elgfdAaecaghDCq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_elgfdAaecaghDCq:
+$L$_small_initial_compute_done_524:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_elgfdAaecaghDCq
+	je	NEAR $L$_after_reduction_524
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_elgfdAaecaghDCq:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_10_uygroEsBxlghxgr:
+$L$_after_reduction_524:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_10_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_ArhsDGrnBscpqtu
+	jae	NEAR $L$_16_blocks_overflow_525
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ArhsDGrnBscpqtu
+	jmp	NEAR $L$_16_blocks_ok_525
 
-$L$_16_blocks_overflow_ArhsDGrnBscpqtu:
+$L$_16_blocks_overflow_525:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -73372,7 +73372,7 @@ $L$_16_blocks_overflow_ArhsDGrnBscpqtu:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_ArhsDGrnBscpqtu:
+$L$_16_blocks_ok_525:
 
 
 
@@ -73487,7 +73487,7 @@ $L$_16_blocks_ok_ArhsDGrnBscpqtu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jfBFhazadEbksvE
+	jl	NEAR $L$_small_initial_partial_block_526
 
 
 
@@ -73547,8 +73547,8 @@ $L$_16_blocks_ok_ArhsDGrnBscpqtu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jfBFhazadEbksvE
-$L$_small_initial_partial_block_jfBFhazadEbksvE:
+	jmp	NEAR $L$_small_initial_compute_done_526
+$L$_small_initial_partial_block_526:
 
 
 
@@ -73611,26 +73611,26 @@ $L$_small_initial_partial_block_jfBFhazadEbksvE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jfBFhazadEbksvE:
+$L$_small_initial_compute_done_526:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jfBFhazadEbksvE
+	je	NEAR $L$_after_reduction_526
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_jfBFhazadEbksvE:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_11_uygroEsBxlghxgr:
+$L$_after_reduction_526:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_11_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_eiiAtlCufGsqofj
+	jae	NEAR $L$_16_blocks_overflow_527
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_eiiAtlCufGsqofj
+	jmp	NEAR $L$_16_blocks_ok_527
 
-$L$_16_blocks_overflow_eiiAtlCufGsqofj:
+$L$_16_blocks_overflow_527:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -73639,7 +73639,7 @@ $L$_16_blocks_overflow_eiiAtlCufGsqofj:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_eiiAtlCufGsqofj:
+$L$_16_blocks_ok_527:
 
 
 
@@ -73754,7 +73754,7 @@ $L$_16_blocks_ok_eiiAtlCufGsqofj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_mpwfrwCGdDipgmd
+	jl	NEAR $L$_small_initial_partial_block_528
 
 
 
@@ -73815,8 +73815,8 @@ $L$_16_blocks_ok_eiiAtlCufGsqofj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_mpwfrwCGdDipgmd
-$L$_small_initial_partial_block_mpwfrwCGdDipgmd:
+	jmp	NEAR $L$_small_initial_compute_done_528
+$L$_small_initial_partial_block_528:
 
 
 
@@ -73879,26 +73879,26 @@ $L$_small_initial_partial_block_mpwfrwCGdDipgmd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mpwfrwCGdDipgmd:
+$L$_small_initial_compute_done_528:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_mpwfrwCGdDipgmd
+	je	NEAR $L$_after_reduction_528
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mpwfrwCGdDipgmd:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_12_uygroEsBxlghxgr:
+$L$_after_reduction_528:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_12_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_pdixiDbhBmrDqgh
+	jae	NEAR $L$_16_blocks_overflow_529
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_pdixiDbhBmrDqgh
+	jmp	NEAR $L$_16_blocks_ok_529
 
-$L$_16_blocks_overflow_pdixiDbhBmrDqgh:
+$L$_16_blocks_overflow_529:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -73907,7 +73907,7 @@ $L$_16_blocks_overflow_pdixiDbhBmrDqgh:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_pdixiDbhBmrDqgh:
+$L$_16_blocks_ok_529:
 
 
 
@@ -74022,7 +74022,7 @@ $L$_16_blocks_ok_pdixiDbhBmrDqgh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xpmjqfvpghlgdqz
+	jl	NEAR $L$_small_initial_partial_block_530
 
 
 
@@ -74081,8 +74081,8 @@ $L$_16_blocks_ok_pdixiDbhBmrDqgh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xpmjqfvpghlgdqz
-$L$_small_initial_partial_block_xpmjqfvpghlgdqz:
+	jmp	NEAR $L$_small_initial_compute_done_530
+$L$_small_initial_partial_block_530:
 
 
 
@@ -74146,27 +74146,27 @@ $L$_small_initial_partial_block_xpmjqfvpghlgdqz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xpmjqfvpghlgdqz:
+$L$_small_initial_compute_done_530:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xpmjqfvpghlgdqz
+	je	NEAR $L$_after_reduction_530
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xpmjqfvpghlgdqz:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_13_uygroEsBxlghxgr:
+$L$_after_reduction_530:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_13_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_DuBGDnevpgEfump
+	jae	NEAR $L$_16_blocks_overflow_531
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_DuBGDnevpgEfump
+	jmp	NEAR $L$_16_blocks_ok_531
 
-$L$_16_blocks_overflow_DuBGDnevpgEfump:
+$L$_16_blocks_overflow_531:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -74177,7 +74177,7 @@ $L$_16_blocks_overflow_DuBGDnevpgEfump:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_DuBGDnevpgEfump:
+$L$_16_blocks_ok_531:
 
 
 
@@ -74307,7 +74307,7 @@ $L$_16_blocks_ok_DuBGDnevpgEfump:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ekcrvbFEybEwAld
+	jl	NEAR $L$_small_initial_partial_block_532
 
 
 
@@ -74372,8 +74372,8 @@ $L$_16_blocks_ok_DuBGDnevpgEfump:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ekcrvbFEybEwAld
-$L$_small_initial_partial_block_ekcrvbFEybEwAld:
+	jmp	NEAR $L$_small_initial_compute_done_532
+$L$_small_initial_partial_block_532:
 
 
 
@@ -74435,27 +74435,27 @@ $L$_small_initial_partial_block_ekcrvbFEybEwAld:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ekcrvbFEybEwAld:
+$L$_small_initial_compute_done_532:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ekcrvbFEybEwAld
+	je	NEAR $L$_after_reduction_532
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ekcrvbFEybEwAld:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_14_uygroEsBxlghxgr:
+$L$_after_reduction_532:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_14_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_AwklCiGiEGirgac
+	jae	NEAR $L$_16_blocks_overflow_533
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_AwklCiGiEGirgac
+	jmp	NEAR $L$_16_blocks_ok_533
 
-$L$_16_blocks_overflow_AwklCiGiEGirgac:
+$L$_16_blocks_overflow_533:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -74466,7 +74466,7 @@ $L$_16_blocks_overflow_AwklCiGiEGirgac:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_AwklCiGiEGirgac:
+$L$_16_blocks_ok_533:
 
 
 
@@ -74596,7 +74596,7 @@ $L$_16_blocks_ok_AwklCiGiEGirgac:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_eChvptFkyhfbhgu
+	jl	NEAR $L$_small_initial_partial_block_534
 
 
 
@@ -74661,8 +74661,8 @@ $L$_16_blocks_ok_AwklCiGiEGirgac:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_eChvptFkyhfbhgu
-$L$_small_initial_partial_block_eChvptFkyhfbhgu:
+	jmp	NEAR $L$_small_initial_compute_done_534
+$L$_small_initial_partial_block_534:
 
 
 
@@ -74730,27 +74730,27 @@ $L$_small_initial_partial_block_eChvptFkyhfbhgu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_eChvptFkyhfbhgu:
+$L$_small_initial_compute_done_534:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_eChvptFkyhfbhgu
+	je	NEAR $L$_after_reduction_534
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_eChvptFkyhfbhgu:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_15_uygroEsBxlghxgr:
+$L$_after_reduction_534:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_15_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_AahyDubwrsBDsap
+	jae	NEAR $L$_16_blocks_overflow_535
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_AahyDubwrsBDsap
+	jmp	NEAR $L$_16_blocks_ok_535
 
-$L$_16_blocks_overflow_AahyDubwrsBDsap:
+$L$_16_blocks_overflow_535:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -74761,7 +74761,7 @@ $L$_16_blocks_overflow_AahyDubwrsBDsap:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_AahyDubwrsBDsap:
+$L$_16_blocks_ok_535:
 
 
 
@@ -74891,7 +74891,7 @@ $L$_16_blocks_ok_AahyDubwrsBDsap:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_cBuswdbnyECmwBo
+	jl	NEAR $L$_small_initial_partial_block_536
 
 
 
@@ -74957,8 +74957,8 @@ $L$_16_blocks_ok_AahyDubwrsBDsap:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_cBuswdbnyECmwBo
-$L$_small_initial_partial_block_cBuswdbnyECmwBo:
+	jmp	NEAR $L$_small_initial_compute_done_536
+$L$_small_initial_partial_block_536:
 
 
 
@@ -75026,27 +75026,27 @@ $L$_small_initial_partial_block_cBuswdbnyECmwBo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_cBuswdbnyECmwBo:
+$L$_small_initial_compute_done_536:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_cBuswdbnyECmwBo
+	je	NEAR $L$_after_reduction_536
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_cBuswdbnyECmwBo:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_16_uygroEsBxlghxgr:
+$L$_after_reduction_536:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_16_506:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_ixcfvphcsnmGmcz
+	jae	NEAR $L$_16_blocks_overflow_537
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ixcfvphcsnmGmcz
+	jmp	NEAR $L$_16_blocks_ok_537
 
-$L$_16_blocks_overflow_ixcfvphcsnmGmcz:
+$L$_16_blocks_overflow_537:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -75057,7 +75057,7 @@ $L$_16_blocks_overflow_ixcfvphcsnmGmcz:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ixcfvphcsnmGmcz:
+$L$_16_blocks_ok_537:
 
 
 
@@ -75184,7 +75184,7 @@ $L$_16_blocks_ok_ixcfvphcsnmGmcz:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_gGdAfigjvxyDjzf:
+$L$_small_initial_partial_block_538:
 
 
 
@@ -75253,11 +75253,11 @@ $L$_small_initial_partial_block_gGdAfigjvxyDjzf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gGdAfigjvxyDjzf:
+$L$_small_initial_compute_done_538:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_gGdAfigjvxyDjzf:
-	jmp	NEAR $L$_last_blocks_done_uygroEsBxlghxgr
-$L$_last_num_blocks_is_0_uygroEsBxlghxgr:
+$L$_after_reduction_538:
+	jmp	NEAR $L$_last_blocks_done_506
+$L$_last_num_blocks_is_0_506:
 	vmovdqa64	zmm13,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -75318,18 +75318,18 @@ $L$_last_num_blocks_is_0_uygroEsBxlghxgr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_uygroEsBxlghxgr:
+$L$_last_blocks_done_506:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_FybgEjtCEAxrgxA
-$L$_encrypt_32_blocks_FybgEjtCEAxrgxA:
+	jmp	NEAR $L$_ghash_done_497
+$L$_encrypt_32_blocks_497:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_tatoewzwhtlDlxE
+	jae	NEAR $L$_16_blocks_overflow_539
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_tatoewzwhtlDlxE
-$L$_16_blocks_overflow_tatoewzwhtlDlxE:
+	jmp	NEAR $L$_16_blocks_ok_539
+$L$_16_blocks_overflow_539:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -75340,7 +75340,7 @@ $L$_16_blocks_overflow_tatoewzwhtlDlxE:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_tatoewzwhtlDlxE:
+$L$_16_blocks_ok_539:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -75505,13 +75505,13 @@ $L$_16_blocks_ok_tatoewzwhtlDlxE:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_rjfkCGBzDCmCvaf
+	jae	NEAR $L$_16_blocks_overflow_540
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_rjfkCGBzDCmCvaf
-$L$_16_blocks_overflow_rjfkCGBzDCmCvaf:
+	jmp	NEAR $L$_16_blocks_ok_540
+$L$_16_blocks_overflow_540:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -75522,7 +75522,7 @@ $L$_16_blocks_overflow_rjfkCGBzDCmCvaf:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_rjfkCGBzDCmCvaf:
+$L$_16_blocks_ok_540:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -75755,61 +75755,61 @@ $L$_16_blocks_ok_rjfkCGBzDCmCvaf:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_GmBouisxcBfeqlf
+	je	NEAR $L$_last_num_blocks_is_0_541
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_GmBouisxcBfeqlf
-	jb	NEAR $L$_last_num_blocks_is_7_1_GmBouisxcBfeqlf
+	je	NEAR $L$_last_num_blocks_is_8_541
+	jb	NEAR $L$_last_num_blocks_is_7_1_541
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_GmBouisxcBfeqlf
-	jb	NEAR $L$_last_num_blocks_is_11_9_GmBouisxcBfeqlf
+	je	NEAR $L$_last_num_blocks_is_12_541
+	jb	NEAR $L$_last_num_blocks_is_11_9_541
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_GmBouisxcBfeqlf
-	ja	NEAR $L$_last_num_blocks_is_16_GmBouisxcBfeqlf
+	je	NEAR $L$_last_num_blocks_is_15_541
+	ja	NEAR $L$_last_num_blocks_is_16_541
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_GmBouisxcBfeqlf
-	jmp	NEAR $L$_last_num_blocks_is_13_GmBouisxcBfeqlf
+	je	NEAR $L$_last_num_blocks_is_14_541
+	jmp	NEAR $L$_last_num_blocks_is_13_541
 
-$L$_last_num_blocks_is_11_9_GmBouisxcBfeqlf:
+$L$_last_num_blocks_is_11_9_541:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_GmBouisxcBfeqlf
-	ja	NEAR $L$_last_num_blocks_is_11_GmBouisxcBfeqlf
-	jmp	NEAR $L$_last_num_blocks_is_9_GmBouisxcBfeqlf
+	je	NEAR $L$_last_num_blocks_is_10_541
+	ja	NEAR $L$_last_num_blocks_is_11_541
+	jmp	NEAR $L$_last_num_blocks_is_9_541
 
-$L$_last_num_blocks_is_7_1_GmBouisxcBfeqlf:
+$L$_last_num_blocks_is_7_1_541:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_GmBouisxcBfeqlf
-	jb	NEAR $L$_last_num_blocks_is_3_1_GmBouisxcBfeqlf
+	je	NEAR $L$_last_num_blocks_is_4_541
+	jb	NEAR $L$_last_num_blocks_is_3_1_541
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_GmBouisxcBfeqlf
-	je	NEAR $L$_last_num_blocks_is_6_GmBouisxcBfeqlf
-	jmp	NEAR $L$_last_num_blocks_is_5_GmBouisxcBfeqlf
+	ja	NEAR $L$_last_num_blocks_is_7_541
+	je	NEAR $L$_last_num_blocks_is_6_541
+	jmp	NEAR $L$_last_num_blocks_is_5_541
 
-$L$_last_num_blocks_is_3_1_GmBouisxcBfeqlf:
+$L$_last_num_blocks_is_3_1_541:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_GmBouisxcBfeqlf
-	je	NEAR $L$_last_num_blocks_is_2_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_1_GmBouisxcBfeqlf:
+	ja	NEAR $L$_last_num_blocks_is_3_541
+	je	NEAR $L$_last_num_blocks_is_2_541
+$L$_last_num_blocks_is_1_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_mCddzkAxyxhEmme
+	jae	NEAR $L$_16_blocks_overflow_542
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_mCddzkAxyxhEmme
+	jmp	NEAR $L$_16_blocks_ok_542
 
-$L$_16_blocks_overflow_mCddzkAxyxhEmme:
+$L$_16_blocks_overflow_542:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_mCddzkAxyxhEmme:
+$L$_16_blocks_ok_542:
 
 
 
@@ -75893,7 +75893,7 @@ $L$_16_blocks_ok_mCddzkAxyxhEmme:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jizGqqBgAohDugk
+	jl	NEAR $L$_small_initial_partial_block_543
 
 
 
@@ -75937,8 +75937,8 @@ $L$_16_blocks_ok_mCddzkAxyxhEmme:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jizGqqBgAohDugk
-$L$_small_initial_partial_block_jizGqqBgAohDugk:
+	jmp	NEAR $L$_small_initial_compute_done_543
+$L$_small_initial_partial_block_543:
 
 
 
@@ -75990,24 +75990,24 @@ $L$_small_initial_partial_block_jizGqqBgAohDugk:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_jizGqqBgAohDugk
-$L$_small_initial_compute_done_jizGqqBgAohDugk:
-$L$_after_reduction_jizGqqBgAohDugk:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_2_GmBouisxcBfeqlf:
+	jmp	NEAR $L$_after_reduction_543
+$L$_small_initial_compute_done_543:
+$L$_after_reduction_543:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_2_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_wEjmqgGiyigFGbn
+	jae	NEAR $L$_16_blocks_overflow_544
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_wEjmqgGiyigFGbn
+	jmp	NEAR $L$_16_blocks_ok_544
 
-$L$_16_blocks_overflow_wEjmqgGiyigFGbn:
+$L$_16_blocks_overflow_544:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_wEjmqgGiyigFGbn:
+$L$_16_blocks_ok_544:
 
 
 
@@ -76092,7 +76092,7 @@ $L$_16_blocks_ok_wEjmqgGiyigFGbn:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fFkvDmnjGjkeafq
+	jl	NEAR $L$_small_initial_partial_block_545
 
 
 
@@ -76136,8 +76136,8 @@ $L$_16_blocks_ok_wEjmqgGiyigFGbn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fFkvDmnjGjkeafq
-$L$_small_initial_partial_block_fFkvDmnjGjkeafq:
+	jmp	NEAR $L$_small_initial_compute_done_545
+$L$_small_initial_partial_block_545:
 
 
 
@@ -76184,27 +76184,27 @@ $L$_small_initial_partial_block_fFkvDmnjGjkeafq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fFkvDmnjGjkeafq:
+$L$_small_initial_compute_done_545:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fFkvDmnjGjkeafq
+	je	NEAR $L$_after_reduction_545
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fFkvDmnjGjkeafq:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_3_GmBouisxcBfeqlf:
+$L$_after_reduction_545:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_3_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_DqDhwrtsEzDurAa
+	jae	NEAR $L$_16_blocks_overflow_546
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_DqDhwrtsEzDurAa
+	jmp	NEAR $L$_16_blocks_ok_546
 
-$L$_16_blocks_overflow_DqDhwrtsEzDurAa:
+$L$_16_blocks_overflow_546:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_DqDhwrtsEzDurAa:
+$L$_16_blocks_ok_546:
 
 
 
@@ -76289,7 +76289,7 @@ $L$_16_blocks_ok_DqDhwrtsEzDurAa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_mspCtApBcCeBGds
+	jl	NEAR $L$_small_initial_partial_block_547
 
 
 
@@ -76334,8 +76334,8 @@ $L$_16_blocks_ok_DqDhwrtsEzDurAa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_mspCtApBcCeBGds
-$L$_small_initial_partial_block_mspCtApBcCeBGds:
+	jmp	NEAR $L$_small_initial_compute_done_547
+$L$_small_initial_partial_block_547:
 
 
 
@@ -76382,27 +76382,27 @@ $L$_small_initial_partial_block_mspCtApBcCeBGds:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mspCtApBcCeBGds:
+$L$_small_initial_compute_done_547:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_mspCtApBcCeBGds
+	je	NEAR $L$_after_reduction_547
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mspCtApBcCeBGds:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_4_GmBouisxcBfeqlf:
+$L$_after_reduction_547:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_4_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_skdkcEDadwzpDrs
+	jae	NEAR $L$_16_blocks_overflow_548
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_skdkcEDadwzpDrs
+	jmp	NEAR $L$_16_blocks_ok_548
 
-$L$_16_blocks_overflow_skdkcEDadwzpDrs:
+$L$_16_blocks_overflow_548:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_skdkcEDadwzpDrs:
+$L$_16_blocks_ok_548:
 
 
 
@@ -76487,7 +76487,7 @@ $L$_16_blocks_ok_skdkcEDadwzpDrs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xgfzsBuBssikkxg
+	jl	NEAR $L$_small_initial_partial_block_549
 
 
 
@@ -76532,8 +76532,8 @@ $L$_16_blocks_ok_skdkcEDadwzpDrs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xgfzsBuBssikkxg
-$L$_small_initial_partial_block_xgfzsBuBssikkxg:
+	jmp	NEAR $L$_small_initial_compute_done_549
+$L$_small_initial_partial_block_549:
 
 
 
@@ -76581,32 +76581,32 @@ $L$_small_initial_partial_block_xgfzsBuBssikkxg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xgfzsBuBssikkxg:
+$L$_small_initial_compute_done_549:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xgfzsBuBssikkxg
+	je	NEAR $L$_after_reduction_549
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xgfzsBuBssikkxg:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_5_GmBouisxcBfeqlf:
+$L$_after_reduction_549:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_5_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_tEAjbtatvttgxEG
+	jae	NEAR $L$_16_blocks_overflow_550
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_tEAjbtatvttgxEG
+	jmp	NEAR $L$_16_blocks_ok_550
 
-$L$_16_blocks_overflow_tEAjbtatvttgxEG:
+$L$_16_blocks_overflow_550:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_tEAjbtatvttgxEG:
+$L$_16_blocks_ok_550:
 
 
 
@@ -76706,7 +76706,7 @@ $L$_16_blocks_ok_tEAjbtatvttgxEG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yvzaqudzEjdaoyt
+	jl	NEAR $L$_small_initial_partial_block_551
 
 
 
@@ -76757,8 +76757,8 @@ $L$_16_blocks_ok_tEAjbtatvttgxEG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yvzaqudzEjdaoyt
-$L$_small_initial_partial_block_yvzaqudzEjdaoyt:
+	jmp	NEAR $L$_small_initial_compute_done_551
+$L$_small_initial_partial_block_551:
 
 
 
@@ -76806,32 +76806,32 @@ $L$_small_initial_partial_block_yvzaqudzEjdaoyt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yvzaqudzEjdaoyt:
+$L$_small_initial_compute_done_551:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yvzaqudzEjdaoyt
+	je	NEAR $L$_after_reduction_551
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yvzaqudzEjdaoyt:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_6_GmBouisxcBfeqlf:
+$L$_after_reduction_551:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_6_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_ihmjhyxDbnrzyws
+	jae	NEAR $L$_16_blocks_overflow_552
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ihmjhyxDbnrzyws
+	jmp	NEAR $L$_16_blocks_ok_552
 
-$L$_16_blocks_overflow_ihmjhyxDbnrzyws:
+$L$_16_blocks_overflow_552:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_ihmjhyxDbnrzyws:
+$L$_16_blocks_ok_552:
 
 
 
@@ -76931,7 +76931,7 @@ $L$_16_blocks_ok_ihmjhyxDbnrzyws:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nlzxAsryljGGEel
+	jl	NEAR $L$_small_initial_partial_block_553
 
 
 
@@ -76982,8 +76982,8 @@ $L$_16_blocks_ok_ihmjhyxDbnrzyws:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nlzxAsryljGGEel
-$L$_small_initial_partial_block_nlzxAsryljGGEel:
+	jmp	NEAR $L$_small_initial_compute_done_553
+$L$_small_initial_partial_block_553:
 
 
 
@@ -77037,32 +77037,32 @@ $L$_small_initial_partial_block_nlzxAsryljGGEel:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nlzxAsryljGGEel:
+$L$_small_initial_compute_done_553:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nlzxAsryljGGEel
+	je	NEAR $L$_after_reduction_553
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nlzxAsryljGGEel:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_7_GmBouisxcBfeqlf:
+$L$_after_reduction_553:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_7_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_rjrlBnjlbqwDhgd
+	jae	NEAR $L$_16_blocks_overflow_554
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_rjrlBnjlbqwDhgd
+	jmp	NEAR $L$_16_blocks_ok_554
 
-$L$_16_blocks_overflow_rjrlBnjlbqwDhgd:
+$L$_16_blocks_overflow_554:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_rjrlBnjlbqwDhgd:
+$L$_16_blocks_ok_554:
 
 
 
@@ -77162,7 +77162,7 @@ $L$_16_blocks_ok_rjrlBnjlbqwDhgd:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ukjvpmaECvCyCfj
+	jl	NEAR $L$_small_initial_partial_block_555
 
 
 
@@ -77214,8 +77214,8 @@ $L$_16_blocks_ok_rjrlBnjlbqwDhgd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ukjvpmaECvCyCfj
-$L$_small_initial_partial_block_ukjvpmaECvCyCfj:
+	jmp	NEAR $L$_small_initial_compute_done_555
+$L$_small_initial_partial_block_555:
 
 
 
@@ -77269,32 +77269,32 @@ $L$_small_initial_partial_block_ukjvpmaECvCyCfj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ukjvpmaECvCyCfj:
+$L$_small_initial_compute_done_555:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ukjvpmaECvCyCfj
+	je	NEAR $L$_after_reduction_555
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ukjvpmaECvCyCfj:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_8_GmBouisxcBfeqlf:
+$L$_after_reduction_555:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_8_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_ymtwDhgqyvCqxff
+	jae	NEAR $L$_16_blocks_overflow_556
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ymtwDhgqyvCqxff
+	jmp	NEAR $L$_16_blocks_ok_556
 
-$L$_16_blocks_overflow_ymtwDhgqyvCqxff:
+$L$_16_blocks_overflow_556:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_ymtwDhgqyvCqxff:
+$L$_16_blocks_ok_556:
 
 
 
@@ -77394,7 +77394,7 @@ $L$_16_blocks_ok_ymtwDhgqyvCqxff:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rEytxujuteobfzb
+	jl	NEAR $L$_small_initial_partial_block_557
 
 
 
@@ -77448,8 +77448,8 @@ $L$_16_blocks_ok_ymtwDhgqyvCqxff:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rEytxujuteobfzb
-$L$_small_initial_partial_block_rEytxujuteobfzb:
+	jmp	NEAR $L$_small_initial_compute_done_557
+$L$_small_initial_partial_block_557:
 
 
 
@@ -77504,26 +77504,26 @@ $L$_small_initial_partial_block_rEytxujuteobfzb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rEytxujuteobfzb:
+$L$_small_initial_compute_done_557:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rEytxujuteobfzb
+	je	NEAR $L$_after_reduction_557
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rEytxujuteobfzb:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_9_GmBouisxcBfeqlf:
+$L$_after_reduction_557:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_9_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_jsGDzccdprwopuv
+	jae	NEAR $L$_16_blocks_overflow_558
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_jsGDzccdprwopuv
+	jmp	NEAR $L$_16_blocks_ok_558
 
-$L$_16_blocks_overflow_jsGDzccdprwopuv:
+$L$_16_blocks_overflow_558:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -77532,7 +77532,7 @@ $L$_16_blocks_overflow_jsGDzccdprwopuv:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_jsGDzccdprwopuv:
+$L$_16_blocks_ok_558:
 
 
 
@@ -77647,7 +77647,7 @@ $L$_16_blocks_ok_jsGDzccdprwopuv:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AyEuhDlFocsqkub
+	jl	NEAR $L$_small_initial_partial_block_559
 
 
 
@@ -77707,8 +77707,8 @@ $L$_16_blocks_ok_jsGDzccdprwopuv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AyEuhDlFocsqkub
-$L$_small_initial_partial_block_AyEuhDlFocsqkub:
+	jmp	NEAR $L$_small_initial_compute_done_559
+$L$_small_initial_partial_block_559:
 
 
 
@@ -77765,26 +77765,26 @@ $L$_small_initial_partial_block_AyEuhDlFocsqkub:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AyEuhDlFocsqkub:
+$L$_small_initial_compute_done_559:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AyEuhDlFocsqkub
+	je	NEAR $L$_after_reduction_559
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AyEuhDlFocsqkub:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_10_GmBouisxcBfeqlf:
+$L$_after_reduction_559:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_10_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_ADuiDwpFscvFemb
+	jae	NEAR $L$_16_blocks_overflow_560
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ADuiDwpFscvFemb
+	jmp	NEAR $L$_16_blocks_ok_560
 
-$L$_16_blocks_overflow_ADuiDwpFscvFemb:
+$L$_16_blocks_overflow_560:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -77793,7 +77793,7 @@ $L$_16_blocks_overflow_ADuiDwpFscvFemb:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_ADuiDwpFscvFemb:
+$L$_16_blocks_ok_560:
 
 
 
@@ -77908,7 +77908,7 @@ $L$_16_blocks_ok_ADuiDwpFscvFemb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oEohalozlcwcylp
+	jl	NEAR $L$_small_initial_partial_block_561
 
 
 
@@ -77968,8 +77968,8 @@ $L$_16_blocks_ok_ADuiDwpFscvFemb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oEohalozlcwcylp
-$L$_small_initial_partial_block_oEohalozlcwcylp:
+	jmp	NEAR $L$_small_initial_compute_done_561
+$L$_small_initial_partial_block_561:
 
 
 
@@ -78032,26 +78032,26 @@ $L$_small_initial_partial_block_oEohalozlcwcylp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_oEohalozlcwcylp:
+$L$_small_initial_compute_done_561:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_oEohalozlcwcylp
+	je	NEAR $L$_after_reduction_561
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_oEohalozlcwcylp:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_11_GmBouisxcBfeqlf:
+$L$_after_reduction_561:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_11_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_spaFrjaEdFmmlBl
+	jae	NEAR $L$_16_blocks_overflow_562
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_spaFrjaEdFmmlBl
+	jmp	NEAR $L$_16_blocks_ok_562
 
-$L$_16_blocks_overflow_spaFrjaEdFmmlBl:
+$L$_16_blocks_overflow_562:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -78060,7 +78060,7 @@ $L$_16_blocks_overflow_spaFrjaEdFmmlBl:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_spaFrjaEdFmmlBl:
+$L$_16_blocks_ok_562:
 
 
 
@@ -78175,7 +78175,7 @@ $L$_16_blocks_ok_spaFrjaEdFmmlBl:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tAaqDdhGtycmFoG
+	jl	NEAR $L$_small_initial_partial_block_563
 
 
 
@@ -78236,8 +78236,8 @@ $L$_16_blocks_ok_spaFrjaEdFmmlBl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tAaqDdhGtycmFoG
-$L$_small_initial_partial_block_tAaqDdhGtycmFoG:
+	jmp	NEAR $L$_small_initial_compute_done_563
+$L$_small_initial_partial_block_563:
 
 
 
@@ -78300,26 +78300,26 @@ $L$_small_initial_partial_block_tAaqDdhGtycmFoG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tAaqDdhGtycmFoG:
+$L$_small_initial_compute_done_563:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tAaqDdhGtycmFoG
+	je	NEAR $L$_after_reduction_563
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tAaqDdhGtycmFoG:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_12_GmBouisxcBfeqlf:
+$L$_after_reduction_563:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_12_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_nfanuoCugvbzotG
+	jae	NEAR $L$_16_blocks_overflow_564
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_nfanuoCugvbzotG
+	jmp	NEAR $L$_16_blocks_ok_564
 
-$L$_16_blocks_overflow_nfanuoCugvbzotG:
+$L$_16_blocks_overflow_564:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -78328,7 +78328,7 @@ $L$_16_blocks_overflow_nfanuoCugvbzotG:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_nfanuoCugvbzotG:
+$L$_16_blocks_ok_564:
 
 
 
@@ -78443,7 +78443,7 @@ $L$_16_blocks_ok_nfanuoCugvbzotG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qGmycECAcoCkjit
+	jl	NEAR $L$_small_initial_partial_block_565
 
 
 
@@ -78502,8 +78502,8 @@ $L$_16_blocks_ok_nfanuoCugvbzotG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qGmycECAcoCkjit
-$L$_small_initial_partial_block_qGmycECAcoCkjit:
+	jmp	NEAR $L$_small_initial_compute_done_565
+$L$_small_initial_partial_block_565:
 
 
 
@@ -78567,27 +78567,27 @@ $L$_small_initial_partial_block_qGmycECAcoCkjit:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qGmycECAcoCkjit:
+$L$_small_initial_compute_done_565:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qGmycECAcoCkjit
+	je	NEAR $L$_after_reduction_565
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qGmycECAcoCkjit:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_13_GmBouisxcBfeqlf:
+$L$_after_reduction_565:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_13_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_ukpgxhdfxFexktF
+	jae	NEAR $L$_16_blocks_overflow_566
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_ukpgxhdfxFexktF
+	jmp	NEAR $L$_16_blocks_ok_566
 
-$L$_16_blocks_overflow_ukpgxhdfxFexktF:
+$L$_16_blocks_overflow_566:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -78598,7 +78598,7 @@ $L$_16_blocks_overflow_ukpgxhdfxFexktF:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_ukpgxhdfxFexktF:
+$L$_16_blocks_ok_566:
 
 
 
@@ -78728,7 +78728,7 @@ $L$_16_blocks_ok_ukpgxhdfxFexktF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_afhxCnwetnqlkuj
+	jl	NEAR $L$_small_initial_partial_block_567
 
 
 
@@ -78793,8 +78793,8 @@ $L$_16_blocks_ok_ukpgxhdfxFexktF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_afhxCnwetnqlkuj
-$L$_small_initial_partial_block_afhxCnwetnqlkuj:
+	jmp	NEAR $L$_small_initial_compute_done_567
+$L$_small_initial_partial_block_567:
 
 
 
@@ -78856,27 +78856,27 @@ $L$_small_initial_partial_block_afhxCnwetnqlkuj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_afhxCnwetnqlkuj:
+$L$_small_initial_compute_done_567:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_afhxCnwetnqlkuj
+	je	NEAR $L$_after_reduction_567
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_afhxCnwetnqlkuj:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_14_GmBouisxcBfeqlf:
+$L$_after_reduction_567:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_14_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_wratscrGfCpftCv
+	jae	NEAR $L$_16_blocks_overflow_568
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_wratscrGfCpftCv
+	jmp	NEAR $L$_16_blocks_ok_568
 
-$L$_16_blocks_overflow_wratscrGfCpftCv:
+$L$_16_blocks_overflow_568:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -78887,7 +78887,7 @@ $L$_16_blocks_overflow_wratscrGfCpftCv:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_wratscrGfCpftCv:
+$L$_16_blocks_ok_568:
 
 
 
@@ -79017,7 +79017,7 @@ $L$_16_blocks_ok_wratscrGfCpftCv:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yuFCDEGajnureaq
+	jl	NEAR $L$_small_initial_partial_block_569
 
 
 
@@ -79082,8 +79082,8 @@ $L$_16_blocks_ok_wratscrGfCpftCv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yuFCDEGajnureaq
-$L$_small_initial_partial_block_yuFCDEGajnureaq:
+	jmp	NEAR $L$_small_initial_compute_done_569
+$L$_small_initial_partial_block_569:
 
 
 
@@ -79151,27 +79151,27 @@ $L$_small_initial_partial_block_yuFCDEGajnureaq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yuFCDEGajnureaq:
+$L$_small_initial_compute_done_569:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yuFCDEGajnureaq
+	je	NEAR $L$_after_reduction_569
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yuFCDEGajnureaq:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_15_GmBouisxcBfeqlf:
+$L$_after_reduction_569:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_15_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_bdqdoFuCCdvAdnb
+	jae	NEAR $L$_16_blocks_overflow_570
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_bdqdoFuCCdvAdnb
+	jmp	NEAR $L$_16_blocks_ok_570
 
-$L$_16_blocks_overflow_bdqdoFuCCdvAdnb:
+$L$_16_blocks_overflow_570:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -79182,7 +79182,7 @@ $L$_16_blocks_overflow_bdqdoFuCCdvAdnb:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_bdqdoFuCCdvAdnb:
+$L$_16_blocks_ok_570:
 
 
 
@@ -79312,7 +79312,7 @@ $L$_16_blocks_ok_bdqdoFuCCdvAdnb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AxbAAprvfzklwBB
+	jl	NEAR $L$_small_initial_partial_block_571
 
 
 
@@ -79378,8 +79378,8 @@ $L$_16_blocks_ok_bdqdoFuCCdvAdnb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AxbAAprvfzklwBB
-$L$_small_initial_partial_block_AxbAAprvfzklwBB:
+	jmp	NEAR $L$_small_initial_compute_done_571
+$L$_small_initial_partial_block_571:
 
 
 
@@ -79447,27 +79447,27 @@ $L$_small_initial_partial_block_AxbAAprvfzklwBB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AxbAAprvfzklwBB:
+$L$_small_initial_compute_done_571:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AxbAAprvfzklwBB
+	je	NEAR $L$_after_reduction_571
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AxbAAprvfzklwBB:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_16_GmBouisxcBfeqlf:
+$L$_after_reduction_571:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_16_541:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_wzszjwBztGijyDE
+	jae	NEAR $L$_16_blocks_overflow_572
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_wzszjwBztGijyDE
+	jmp	NEAR $L$_16_blocks_ok_572
 
-$L$_16_blocks_overflow_wzszjwBztGijyDE:
+$L$_16_blocks_overflow_572:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -79478,7 +79478,7 @@ $L$_16_blocks_overflow_wzszjwBztGijyDE:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_wzszjwBztGijyDE:
+$L$_16_blocks_ok_572:
 
 
 
@@ -79605,7 +79605,7 @@ $L$_16_blocks_ok_wzszjwBztGijyDE:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_fEfFFrvFvtqogzC:
+$L$_small_initial_partial_block_573:
 
 
 
@@ -79674,11 +79674,11 @@ $L$_small_initial_partial_block_fEfFFrvFvtqogzC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fEfFFrvFvtqogzC:
+$L$_small_initial_compute_done_573:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fEfFFrvFvtqogzC:
-	jmp	NEAR $L$_last_blocks_done_GmBouisxcBfeqlf
-$L$_last_num_blocks_is_0_GmBouisxcBfeqlf:
+$L$_after_reduction_573:
+	jmp	NEAR $L$_last_blocks_done_541
+$L$_last_num_blocks_is_0_541:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -79740,18 +79740,18 @@ $L$_last_num_blocks_is_0_GmBouisxcBfeqlf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_GmBouisxcBfeqlf:
+$L$_last_blocks_done_541:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_FybgEjtCEAxrgxA
-$L$_encrypt_16_blocks_FybgEjtCEAxrgxA:
+	jmp	NEAR $L$_ghash_done_497
+$L$_encrypt_16_blocks_497:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_iEihkFDGEnCvAtr
+	jae	NEAR $L$_16_blocks_overflow_574
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_iEihkFDGEnCvAtr
-$L$_16_blocks_overflow_iEihkFDGEnCvAtr:
+	jmp	NEAR $L$_16_blocks_ok_574
+$L$_16_blocks_overflow_574:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -79762,7 +79762,7 @@ $L$_16_blocks_overflow_iEihkFDGEnCvAtr:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_iEihkFDGEnCvAtr:
+$L$_16_blocks_ok_574:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -79964,61 +79964,61 @@ $L$_16_blocks_ok_iEihkFDGEnCvAtr:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_epCvgktrjywwqcF
+	je	NEAR $L$_last_num_blocks_is_0_575
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_epCvgktrjywwqcF
-	jb	NEAR $L$_last_num_blocks_is_7_1_epCvgktrjywwqcF
+	je	NEAR $L$_last_num_blocks_is_8_575
+	jb	NEAR $L$_last_num_blocks_is_7_1_575
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_epCvgktrjywwqcF
-	jb	NEAR $L$_last_num_blocks_is_11_9_epCvgktrjywwqcF
+	je	NEAR $L$_last_num_blocks_is_12_575
+	jb	NEAR $L$_last_num_blocks_is_11_9_575
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_epCvgktrjywwqcF
-	ja	NEAR $L$_last_num_blocks_is_16_epCvgktrjywwqcF
+	je	NEAR $L$_last_num_blocks_is_15_575
+	ja	NEAR $L$_last_num_blocks_is_16_575
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_epCvgktrjywwqcF
-	jmp	NEAR $L$_last_num_blocks_is_13_epCvgktrjywwqcF
+	je	NEAR $L$_last_num_blocks_is_14_575
+	jmp	NEAR $L$_last_num_blocks_is_13_575
 
-$L$_last_num_blocks_is_11_9_epCvgktrjywwqcF:
+$L$_last_num_blocks_is_11_9_575:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_epCvgktrjywwqcF
-	ja	NEAR $L$_last_num_blocks_is_11_epCvgktrjywwqcF
-	jmp	NEAR $L$_last_num_blocks_is_9_epCvgktrjywwqcF
+	je	NEAR $L$_last_num_blocks_is_10_575
+	ja	NEAR $L$_last_num_blocks_is_11_575
+	jmp	NEAR $L$_last_num_blocks_is_9_575
 
-$L$_last_num_blocks_is_7_1_epCvgktrjywwqcF:
+$L$_last_num_blocks_is_7_1_575:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_epCvgktrjywwqcF
-	jb	NEAR $L$_last_num_blocks_is_3_1_epCvgktrjywwqcF
+	je	NEAR $L$_last_num_blocks_is_4_575
+	jb	NEAR $L$_last_num_blocks_is_3_1_575
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_epCvgktrjywwqcF
-	je	NEAR $L$_last_num_blocks_is_6_epCvgktrjywwqcF
-	jmp	NEAR $L$_last_num_blocks_is_5_epCvgktrjywwqcF
+	ja	NEAR $L$_last_num_blocks_is_7_575
+	je	NEAR $L$_last_num_blocks_is_6_575
+	jmp	NEAR $L$_last_num_blocks_is_5_575
 
-$L$_last_num_blocks_is_3_1_epCvgktrjywwqcF:
+$L$_last_num_blocks_is_3_1_575:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_epCvgktrjywwqcF
-	je	NEAR $L$_last_num_blocks_is_2_epCvgktrjywwqcF
-$L$_last_num_blocks_is_1_epCvgktrjywwqcF:
+	ja	NEAR $L$_last_num_blocks_is_3_575
+	je	NEAR $L$_last_num_blocks_is_2_575
+$L$_last_num_blocks_is_1_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_ywuBfotgxfpsqmA
+	jae	NEAR $L$_16_blocks_overflow_576
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_ywuBfotgxfpsqmA
+	jmp	NEAR $L$_16_blocks_ok_576
 
-$L$_16_blocks_overflow_ywuBfotgxfpsqmA:
+$L$_16_blocks_overflow_576:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_ywuBfotgxfpsqmA:
+$L$_16_blocks_ok_576:
 
 
 
@@ -80125,7 +80125,7 @@ $L$_16_blocks_ok_ywuBfotgxfpsqmA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xEjwuADmxCwwfnn
+	jl	NEAR $L$_small_initial_partial_block_577
 
 
 
@@ -80167,8 +80167,8 @@ $L$_16_blocks_ok_ywuBfotgxfpsqmA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xEjwuADmxCwwfnn
-$L$_small_initial_partial_block_xEjwuADmxCwwfnn:
+	jmp	NEAR $L$_small_initial_compute_done_577
+$L$_small_initial_partial_block_577:
 
 
 
@@ -80192,24 +80192,24 @@ $L$_small_initial_partial_block_xEjwuADmxCwwfnn:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_xEjwuADmxCwwfnn
-$L$_small_initial_compute_done_xEjwuADmxCwwfnn:
-$L$_after_reduction_xEjwuADmxCwwfnn:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_2_epCvgktrjywwqcF:
+	jmp	NEAR $L$_after_reduction_577
+$L$_small_initial_compute_done_577:
+$L$_after_reduction_577:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_2_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_fcspxnCyDDnwfio
+	jae	NEAR $L$_16_blocks_overflow_578
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_fcspxnCyDDnwfio
+	jmp	NEAR $L$_16_blocks_ok_578
 
-$L$_16_blocks_overflow_fcspxnCyDDnwfio:
+$L$_16_blocks_overflow_578:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_fcspxnCyDDnwfio:
+$L$_16_blocks_ok_578:
 
 
 
@@ -80317,7 +80317,7 @@ $L$_16_blocks_ok_fcspxnCyDDnwfio:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FGttktmqrekCfBG
+	jl	NEAR $L$_small_initial_partial_block_579
 
 
 
@@ -80359,8 +80359,8 @@ $L$_16_blocks_ok_fcspxnCyDDnwfio:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FGttktmqrekCfBG
-$L$_small_initial_partial_block_FGttktmqrekCfBG:
+	jmp	NEAR $L$_small_initial_compute_done_579
+$L$_small_initial_partial_block_579:
 
 
 
@@ -80405,27 +80405,27 @@ $L$_small_initial_partial_block_FGttktmqrekCfBG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FGttktmqrekCfBG:
+$L$_small_initial_compute_done_579:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FGttktmqrekCfBG
+	je	NEAR $L$_after_reduction_579
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FGttktmqrekCfBG:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_3_epCvgktrjywwqcF:
+$L$_after_reduction_579:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_3_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_AizeyxlvfkEupbi
+	jae	NEAR $L$_16_blocks_overflow_580
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_AizeyxlvfkEupbi
+	jmp	NEAR $L$_16_blocks_ok_580
 
-$L$_16_blocks_overflow_AizeyxlvfkEupbi:
+$L$_16_blocks_overflow_580:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_AizeyxlvfkEupbi:
+$L$_16_blocks_ok_580:
 
 
 
@@ -80533,7 +80533,7 @@ $L$_16_blocks_ok_AizeyxlvfkEupbi:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_twwddkuccxpnosB
+	jl	NEAR $L$_small_initial_partial_block_581
 
 
 
@@ -80576,8 +80576,8 @@ $L$_16_blocks_ok_AizeyxlvfkEupbi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_twwddkuccxpnosB
-$L$_small_initial_partial_block_twwddkuccxpnosB:
+	jmp	NEAR $L$_small_initial_compute_done_581
+$L$_small_initial_partial_block_581:
 
 
 
@@ -80622,27 +80622,27 @@ $L$_small_initial_partial_block_twwddkuccxpnosB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_twwddkuccxpnosB:
+$L$_small_initial_compute_done_581:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_twwddkuccxpnosB
+	je	NEAR $L$_after_reduction_581
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_twwddkuccxpnosB:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_4_epCvgktrjywwqcF:
+$L$_after_reduction_581:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_4_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_hjdchtgBmcsamjk
+	jae	NEAR $L$_16_blocks_overflow_582
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_hjdchtgBmcsamjk
+	jmp	NEAR $L$_16_blocks_ok_582
 
-$L$_16_blocks_overflow_hjdchtgBmcsamjk:
+$L$_16_blocks_overflow_582:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_hjdchtgBmcsamjk:
+$L$_16_blocks_ok_582:
 
 
 
@@ -80750,7 +80750,7 @@ $L$_16_blocks_ok_hjdchtgBmcsamjk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FAapEmewkbuuCAk
+	jl	NEAR $L$_small_initial_partial_block_583
 
 
 
@@ -80792,8 +80792,8 @@ $L$_16_blocks_ok_hjdchtgBmcsamjk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FAapEmewkbuuCAk
-$L$_small_initial_partial_block_FAapEmewkbuuCAk:
+	jmp	NEAR $L$_small_initial_compute_done_583
+$L$_small_initial_partial_block_583:
 
 
 
@@ -80839,32 +80839,32 @@ $L$_small_initial_partial_block_FAapEmewkbuuCAk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FAapEmewkbuuCAk:
+$L$_small_initial_compute_done_583:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FAapEmewkbuuCAk
+	je	NEAR $L$_after_reduction_583
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FAapEmewkbuuCAk:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_5_epCvgktrjywwqcF:
+$L$_after_reduction_583:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_5_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_mxvxkdxictxngup
+	jae	NEAR $L$_16_blocks_overflow_584
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_mxvxkdxictxngup
+	jmp	NEAR $L$_16_blocks_ok_584
 
-$L$_16_blocks_overflow_mxvxkdxictxngup:
+$L$_16_blocks_overflow_584:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_mxvxkdxictxngup:
+$L$_16_blocks_ok_584:
 
 
 
@@ -80987,7 +80987,7 @@ $L$_16_blocks_ok_mxvxkdxictxngup:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EauwiibEwFlCnmd
+	jl	NEAR $L$_small_initial_partial_block_585
 
 
 
@@ -81039,8 +81039,8 @@ $L$_16_blocks_ok_mxvxkdxictxngup:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EauwiibEwFlCnmd
-$L$_small_initial_partial_block_EauwiibEwFlCnmd:
+	jmp	NEAR $L$_small_initial_compute_done_585
+$L$_small_initial_partial_block_585:
 
 
 
@@ -81085,32 +81085,32 @@ $L$_small_initial_partial_block_EauwiibEwFlCnmd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EauwiibEwFlCnmd:
+$L$_small_initial_compute_done_585:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EauwiibEwFlCnmd
+	je	NEAR $L$_after_reduction_585
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EauwiibEwFlCnmd:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_6_epCvgktrjywwqcF:
+$L$_after_reduction_585:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_6_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_pEklFGflkgcgvjz
+	jae	NEAR $L$_16_blocks_overflow_586
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_pEklFGflkgcgvjz
+	jmp	NEAR $L$_16_blocks_ok_586
 
-$L$_16_blocks_overflow_pEklFGflkgcgvjz:
+$L$_16_blocks_overflow_586:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_pEklFGflkgcgvjz:
+$L$_16_blocks_ok_586:
 
 
 
@@ -81233,7 +81233,7 @@ $L$_16_blocks_ok_pEklFGflkgcgvjz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_frvAoefCqfodkgF
+	jl	NEAR $L$_small_initial_partial_block_587
 
 
 
@@ -81285,8 +81285,8 @@ $L$_16_blocks_ok_pEklFGflkgcgvjz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_frvAoefCqfodkgF
-$L$_small_initial_partial_block_frvAoefCqfodkgF:
+	jmp	NEAR $L$_small_initial_compute_done_587
+$L$_small_initial_partial_block_587:
 
 
 
@@ -81341,32 +81341,32 @@ $L$_small_initial_partial_block_frvAoefCqfodkgF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_frvAoefCqfodkgF:
+$L$_small_initial_compute_done_587:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_frvAoefCqfodkgF
+	je	NEAR $L$_after_reduction_587
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_frvAoefCqfodkgF:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_7_epCvgktrjywwqcF:
+$L$_after_reduction_587:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_7_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_osiDpxaEbwjdlaa
+	jae	NEAR $L$_16_blocks_overflow_588
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_osiDpxaEbwjdlaa
+	jmp	NEAR $L$_16_blocks_ok_588
 
-$L$_16_blocks_overflow_osiDpxaEbwjdlaa:
+$L$_16_blocks_overflow_588:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_osiDpxaEbwjdlaa:
+$L$_16_blocks_ok_588:
 
 
 
@@ -81489,7 +81489,7 @@ $L$_16_blocks_ok_osiDpxaEbwjdlaa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zkwkCaEfDmnfinm
+	jl	NEAR $L$_small_initial_partial_block_589
 
 
 
@@ -81542,8 +81542,8 @@ $L$_16_blocks_ok_osiDpxaEbwjdlaa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zkwkCaEfDmnfinm
-$L$_small_initial_partial_block_zkwkCaEfDmnfinm:
+	jmp	NEAR $L$_small_initial_compute_done_589
+$L$_small_initial_partial_block_589:
 
 
 
@@ -81598,32 +81598,32 @@ $L$_small_initial_partial_block_zkwkCaEfDmnfinm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zkwkCaEfDmnfinm:
+$L$_small_initial_compute_done_589:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zkwkCaEfDmnfinm
+	je	NEAR $L$_after_reduction_589
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_zkwkCaEfDmnfinm:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_8_epCvgktrjywwqcF:
+$L$_after_reduction_589:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_8_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_CGrBuvaEzeswpGz
+	jae	NEAR $L$_16_blocks_overflow_590
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_CGrBuvaEzeswpGz
+	jmp	NEAR $L$_16_blocks_ok_590
 
-$L$_16_blocks_overflow_CGrBuvaEzeswpGz:
+$L$_16_blocks_overflow_590:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_CGrBuvaEzeswpGz:
+$L$_16_blocks_ok_590:
 
 
 
@@ -81746,7 +81746,7 @@ $L$_16_blocks_ok_CGrBuvaEzeswpGz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FoetukpEyqEhlhg
+	jl	NEAR $L$_small_initial_partial_block_591
 
 
 
@@ -81797,8 +81797,8 @@ $L$_16_blocks_ok_CGrBuvaEzeswpGz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FoetukpEyqEhlhg
-$L$_small_initial_partial_block_FoetukpEyqEhlhg:
+	jmp	NEAR $L$_small_initial_compute_done_591
+$L$_small_initial_partial_block_591:
 
 
 
@@ -81854,26 +81854,26 @@ $L$_small_initial_partial_block_FoetukpEyqEhlhg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FoetukpEyqEhlhg:
+$L$_small_initial_compute_done_591:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FoetukpEyqEhlhg
+	je	NEAR $L$_after_reduction_591
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FoetukpEyqEhlhg:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_9_epCvgktrjywwqcF:
+$L$_after_reduction_591:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_9_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_banwelbdqjDryCa
+	jae	NEAR $L$_16_blocks_overflow_592
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_banwelbdqjDryCa
+	jmp	NEAR $L$_16_blocks_ok_592
 
-$L$_16_blocks_overflow_banwelbdqjDryCa:
+$L$_16_blocks_overflow_592:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -81882,7 +81882,7 @@ $L$_16_blocks_overflow_banwelbdqjDryCa:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_banwelbdqjDryCa:
+$L$_16_blocks_ok_592:
 
 
 
@@ -82020,7 +82020,7 @@ $L$_16_blocks_ok_banwelbdqjDryCa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_vEkswvhycEdewbq
+	jl	NEAR $L$_small_initial_partial_block_593
 
 
 
@@ -82081,8 +82081,8 @@ $L$_16_blocks_ok_banwelbdqjDryCa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_vEkswvhycEdewbq
-$L$_small_initial_partial_block_vEkswvhycEdewbq:
+	jmp	NEAR $L$_small_initial_compute_done_593
+$L$_small_initial_partial_block_593:
 
 
 
@@ -82136,26 +82136,26 @@ $L$_small_initial_partial_block_vEkswvhycEdewbq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_vEkswvhycEdewbq:
+$L$_small_initial_compute_done_593:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_vEkswvhycEdewbq
+	je	NEAR $L$_after_reduction_593
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_vEkswvhycEdewbq:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_10_epCvgktrjywwqcF:
+$L$_after_reduction_593:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_10_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_apFqvhvwfqvAGDF
+	jae	NEAR $L$_16_blocks_overflow_594
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_apFqvhvwfqvAGDF
+	jmp	NEAR $L$_16_blocks_ok_594
 
-$L$_16_blocks_overflow_apFqvhvwfqvAGDF:
+$L$_16_blocks_overflow_594:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -82164,7 +82164,7 @@ $L$_16_blocks_overflow_apFqvhvwfqvAGDF:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_apFqvhvwfqvAGDF:
+$L$_16_blocks_ok_594:
 
 
 
@@ -82302,7 +82302,7 @@ $L$_16_blocks_ok_apFqvhvwfqvAGDF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qknopvlEistyrBB
+	jl	NEAR $L$_small_initial_partial_block_595
 
 
 
@@ -82363,8 +82363,8 @@ $L$_16_blocks_ok_apFqvhvwfqvAGDF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qknopvlEistyrBB
-$L$_small_initial_partial_block_qknopvlEistyrBB:
+	jmp	NEAR $L$_small_initial_compute_done_595
+$L$_small_initial_partial_block_595:
 
 
 
@@ -82428,26 +82428,26 @@ $L$_small_initial_partial_block_qknopvlEistyrBB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qknopvlEistyrBB:
+$L$_small_initial_compute_done_595:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qknopvlEistyrBB
+	je	NEAR $L$_after_reduction_595
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qknopvlEistyrBB:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_11_epCvgktrjywwqcF:
+$L$_after_reduction_595:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_11_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_qhfGlqvuczovllz
+	jae	NEAR $L$_16_blocks_overflow_596
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_qhfGlqvuczovllz
+	jmp	NEAR $L$_16_blocks_ok_596
 
-$L$_16_blocks_overflow_qhfGlqvuczovllz:
+$L$_16_blocks_overflow_596:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -82456,7 +82456,7 @@ $L$_16_blocks_overflow_qhfGlqvuczovllz:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_qhfGlqvuczovllz:
+$L$_16_blocks_ok_596:
 
 
 
@@ -82594,7 +82594,7 @@ $L$_16_blocks_ok_qhfGlqvuczovllz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qxehiaczwkyjpzs
+	jl	NEAR $L$_small_initial_partial_block_597
 
 
 
@@ -82656,8 +82656,8 @@ $L$_16_blocks_ok_qhfGlqvuczovllz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qxehiaczwkyjpzs
-$L$_small_initial_partial_block_qxehiaczwkyjpzs:
+	jmp	NEAR $L$_small_initial_compute_done_597
+$L$_small_initial_partial_block_597:
 
 
 
@@ -82721,26 +82721,26 @@ $L$_small_initial_partial_block_qxehiaczwkyjpzs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qxehiaczwkyjpzs:
+$L$_small_initial_compute_done_597:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qxehiaczwkyjpzs
+	je	NEAR $L$_after_reduction_597
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qxehiaczwkyjpzs:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_12_epCvgktrjywwqcF:
+$L$_after_reduction_597:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_12_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_aifsstDkDGgkswm
+	jae	NEAR $L$_16_blocks_overflow_598
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_aifsstDkDGgkswm
+	jmp	NEAR $L$_16_blocks_ok_598
 
-$L$_16_blocks_overflow_aifsstDkDGgkswm:
+$L$_16_blocks_overflow_598:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -82749,7 +82749,7 @@ $L$_16_blocks_overflow_aifsstDkDGgkswm:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_aifsstDkDGgkswm:
+$L$_16_blocks_ok_598:
 
 
 
@@ -82887,7 +82887,7 @@ $L$_16_blocks_ok_aifsstDkDGgkswm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fldCsmxxCmradvu
+	jl	NEAR $L$_small_initial_partial_block_599
 
 
 
@@ -82943,8 +82943,8 @@ $L$_16_blocks_ok_aifsstDkDGgkswm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fldCsmxxCmradvu
-$L$_small_initial_partial_block_fldCsmxxCmradvu:
+	jmp	NEAR $L$_small_initial_compute_done_599
+$L$_small_initial_partial_block_599:
 
 
 
@@ -83009,27 +83009,27 @@ $L$_small_initial_partial_block_fldCsmxxCmradvu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fldCsmxxCmradvu:
+$L$_small_initial_compute_done_599:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fldCsmxxCmradvu
+	je	NEAR $L$_after_reduction_599
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fldCsmxxCmradvu:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_13_epCvgktrjywwqcF:
+$L$_after_reduction_599:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_13_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_vcrxkwrezgcAuzg
+	jae	NEAR $L$_16_blocks_overflow_600
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_vcrxkwrezgcAuzg
+	jmp	NEAR $L$_16_blocks_ok_600
 
-$L$_16_blocks_overflow_vcrxkwrezgcAuzg:
+$L$_16_blocks_overflow_600:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -83040,7 +83040,7 @@ $L$_16_blocks_overflow_vcrxkwrezgcAuzg:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_vcrxkwrezgcAuzg:
+$L$_16_blocks_ok_600:
 
 
 
@@ -83193,7 +83193,7 @@ $L$_16_blocks_ok_vcrxkwrezgcAuzg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BdaitBkaDehAbki
+	jl	NEAR $L$_small_initial_partial_block_601
 
 
 
@@ -83259,8 +83259,8 @@ $L$_16_blocks_ok_vcrxkwrezgcAuzg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BdaitBkaDehAbki
-$L$_small_initial_partial_block_BdaitBkaDehAbki:
+	jmp	NEAR $L$_small_initial_compute_done_601
+$L$_small_initial_partial_block_601:
 
 
 
@@ -83319,27 +83319,27 @@ $L$_small_initial_partial_block_BdaitBkaDehAbki:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BdaitBkaDehAbki:
+$L$_small_initial_compute_done_601:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BdaitBkaDehAbki
+	je	NEAR $L$_after_reduction_601
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BdaitBkaDehAbki:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_14_epCvgktrjywwqcF:
+$L$_after_reduction_601:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_14_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_gAbtDavErjmmvzF
+	jae	NEAR $L$_16_blocks_overflow_602
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_gAbtDavErjmmvzF
+	jmp	NEAR $L$_16_blocks_ok_602
 
-$L$_16_blocks_overflow_gAbtDavErjmmvzF:
+$L$_16_blocks_overflow_602:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -83350,7 +83350,7 @@ $L$_16_blocks_overflow_gAbtDavErjmmvzF:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_gAbtDavErjmmvzF:
+$L$_16_blocks_ok_602:
 
 
 
@@ -83503,7 +83503,7 @@ $L$_16_blocks_ok_gAbtDavErjmmvzF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xzDFxnCiEwhviCr
+	jl	NEAR $L$_small_initial_partial_block_603
 
 
 
@@ -83569,8 +83569,8 @@ $L$_16_blocks_ok_gAbtDavErjmmvzF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xzDFxnCiEwhviCr
-$L$_small_initial_partial_block_xzDFxnCiEwhviCr:
+	jmp	NEAR $L$_small_initial_compute_done_603
+$L$_small_initial_partial_block_603:
 
 
 
@@ -83639,27 +83639,27 @@ $L$_small_initial_partial_block_xzDFxnCiEwhviCr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xzDFxnCiEwhviCr:
+$L$_small_initial_compute_done_603:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xzDFxnCiEwhviCr
+	je	NEAR $L$_after_reduction_603
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xzDFxnCiEwhviCr:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_15_epCvgktrjywwqcF:
+$L$_after_reduction_603:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_15_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_cetxhFqdGBczceh
+	jae	NEAR $L$_16_blocks_overflow_604
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_cetxhFqdGBczceh
+	jmp	NEAR $L$_16_blocks_ok_604
 
-$L$_16_blocks_overflow_cetxhFqdGBczceh:
+$L$_16_blocks_overflow_604:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -83670,7 +83670,7 @@ $L$_16_blocks_overflow_cetxhFqdGBczceh:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_cetxhFqdGBczceh:
+$L$_16_blocks_ok_604:
 
 
 
@@ -83823,7 +83823,7 @@ $L$_16_blocks_ok_cetxhFqdGBczceh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_udukCalecuorwuq
+	jl	NEAR $L$_small_initial_partial_block_605
 
 
 
@@ -83890,8 +83890,8 @@ $L$_16_blocks_ok_cetxhFqdGBczceh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_udukCalecuorwuq
-$L$_small_initial_partial_block_udukCalecuorwuq:
+	jmp	NEAR $L$_small_initial_compute_done_605
+$L$_small_initial_partial_block_605:
 
 
 
@@ -83960,27 +83960,27 @@ $L$_small_initial_partial_block_udukCalecuorwuq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_udukCalecuorwuq:
+$L$_small_initial_compute_done_605:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_udukCalecuorwuq
+	je	NEAR $L$_after_reduction_605
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_udukCalecuorwuq:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_16_epCvgktrjywwqcF:
+$L$_after_reduction_605:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_16_575:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_mpcgbtiigpEGoBj
+	jae	NEAR $L$_16_blocks_overflow_606
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_mpcgbtiigpEGoBj
+	jmp	NEAR $L$_16_blocks_ok_606
 
-$L$_16_blocks_overflow_mpcgbtiigpEGoBj:
+$L$_16_blocks_overflow_606:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -83991,7 +83991,7 @@ $L$_16_blocks_overflow_mpcgbtiigpEGoBj:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_mpcgbtiigpEGoBj:
+$L$_16_blocks_ok_606:
 
 
 
@@ -84141,7 +84141,7 @@ $L$_16_blocks_ok_mpcgbtiigpEGoBj:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_sFuwgsBgyEskDug:
+$L$_small_initial_partial_block_607:
 
 
 
@@ -84211,11 +84211,11 @@ $L$_small_initial_partial_block_sFuwgsBgyEskDug:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_sFuwgsBgyEskDug:
+$L$_small_initial_compute_done_607:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_sFuwgsBgyEskDug:
-	jmp	NEAR $L$_last_blocks_done_epCvgktrjywwqcF
-$L$_last_num_blocks_is_0_epCvgktrjywwqcF:
+$L$_after_reduction_607:
+	jmp	NEAR $L$_last_blocks_done_575
+$L$_last_num_blocks_is_0_575:
 	vmovdqa64	zmm13,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm12,ZMMWORD[512+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -84276,18 +84276,18 @@ $L$_last_num_blocks_is_0_epCvgktrjywwqcF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_epCvgktrjywwqcF:
+$L$_last_blocks_done_575:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_FybgEjtCEAxrgxA
+	jmp	NEAR $L$_ghash_done_497
 
-$L$_message_below_32_blocks_FybgEjtCEAxrgxA:
+$L$_message_below_32_blocks_497:
 
 
 	sub	r13,256
 	add	r11,256
 	mov	r10d,r13d
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_CjamjjjpEGwtrqt
+	jnz	NEAR $L$_skip_hkeys_precomputation_608
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -84415,7 +84415,7 @@ $L$_message_below_32_blocks_FybgEjtCEAxrgxA:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[256+rsp],zmm5
-$L$_skip_hkeys_precomputation_CjamjjjpEGwtrqt:
+$L$_skip_hkeys_precomputation_608:
 	mov	r14,1
 	and	r10d,~15
 	mov	ebx,512
@@ -84423,61 +84423,61 @@ $L$_skip_hkeys_precomputation_CjamjjjpEGwtrqt:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_EyngGgabqwtlAwE
+	je	NEAR $L$_last_num_blocks_is_0_609
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_EyngGgabqwtlAwE
-	jb	NEAR $L$_last_num_blocks_is_7_1_EyngGgabqwtlAwE
+	je	NEAR $L$_last_num_blocks_is_8_609
+	jb	NEAR $L$_last_num_blocks_is_7_1_609
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_EyngGgabqwtlAwE
-	jb	NEAR $L$_last_num_blocks_is_11_9_EyngGgabqwtlAwE
+	je	NEAR $L$_last_num_blocks_is_12_609
+	jb	NEAR $L$_last_num_blocks_is_11_9_609
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_EyngGgabqwtlAwE
-	ja	NEAR $L$_last_num_blocks_is_16_EyngGgabqwtlAwE
+	je	NEAR $L$_last_num_blocks_is_15_609
+	ja	NEAR $L$_last_num_blocks_is_16_609
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_EyngGgabqwtlAwE
-	jmp	NEAR $L$_last_num_blocks_is_13_EyngGgabqwtlAwE
+	je	NEAR $L$_last_num_blocks_is_14_609
+	jmp	NEAR $L$_last_num_blocks_is_13_609
 
-$L$_last_num_blocks_is_11_9_EyngGgabqwtlAwE:
+$L$_last_num_blocks_is_11_9_609:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_EyngGgabqwtlAwE
-	ja	NEAR $L$_last_num_blocks_is_11_EyngGgabqwtlAwE
-	jmp	NEAR $L$_last_num_blocks_is_9_EyngGgabqwtlAwE
+	je	NEAR $L$_last_num_blocks_is_10_609
+	ja	NEAR $L$_last_num_blocks_is_11_609
+	jmp	NEAR $L$_last_num_blocks_is_9_609
 
-$L$_last_num_blocks_is_7_1_EyngGgabqwtlAwE:
+$L$_last_num_blocks_is_7_1_609:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_EyngGgabqwtlAwE
-	jb	NEAR $L$_last_num_blocks_is_3_1_EyngGgabqwtlAwE
+	je	NEAR $L$_last_num_blocks_is_4_609
+	jb	NEAR $L$_last_num_blocks_is_3_1_609
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_EyngGgabqwtlAwE
-	je	NEAR $L$_last_num_blocks_is_6_EyngGgabqwtlAwE
-	jmp	NEAR $L$_last_num_blocks_is_5_EyngGgabqwtlAwE
+	ja	NEAR $L$_last_num_blocks_is_7_609
+	je	NEAR $L$_last_num_blocks_is_6_609
+	jmp	NEAR $L$_last_num_blocks_is_5_609
 
-$L$_last_num_blocks_is_3_1_EyngGgabqwtlAwE:
+$L$_last_num_blocks_is_3_1_609:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_EyngGgabqwtlAwE
-	je	NEAR $L$_last_num_blocks_is_2_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_1_EyngGgabqwtlAwE:
+	ja	NEAR $L$_last_num_blocks_is_3_609
+	je	NEAR $L$_last_num_blocks_is_2_609
+$L$_last_num_blocks_is_1_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_rDuACEBuudeotyz
+	jae	NEAR $L$_16_blocks_overflow_610
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_rDuACEBuudeotyz
+	jmp	NEAR $L$_16_blocks_ok_610
 
-$L$_16_blocks_overflow_rDuACEBuudeotyz:
+$L$_16_blocks_overflow_610:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_rDuACEBuudeotyz:
+$L$_16_blocks_ok_610:
 
 
 
@@ -84561,7 +84561,7 @@ $L$_16_blocks_ok_rDuACEBuudeotyz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rAqluyzFxkxCdwd
+	jl	NEAR $L$_small_initial_partial_block_611
 
 
 
@@ -84605,8 +84605,8 @@ $L$_16_blocks_ok_rDuACEBuudeotyz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rAqluyzFxkxCdwd
-$L$_small_initial_partial_block_rAqluyzFxkxCdwd:
+	jmp	NEAR $L$_small_initial_compute_done_611
+$L$_small_initial_partial_block_611:
 
 
 
@@ -84658,24 +84658,24 @@ $L$_small_initial_partial_block_rAqluyzFxkxCdwd:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_rAqluyzFxkxCdwd
-$L$_small_initial_compute_done_rAqluyzFxkxCdwd:
-$L$_after_reduction_rAqluyzFxkxCdwd:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_2_EyngGgabqwtlAwE:
+	jmp	NEAR $L$_after_reduction_611
+$L$_small_initial_compute_done_611:
+$L$_after_reduction_611:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_2_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_rkfuhthGFDFjjpm
+	jae	NEAR $L$_16_blocks_overflow_612
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_rkfuhthGFDFjjpm
+	jmp	NEAR $L$_16_blocks_ok_612
 
-$L$_16_blocks_overflow_rkfuhthGFDFjjpm:
+$L$_16_blocks_overflow_612:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_rkfuhthGFDFjjpm:
+$L$_16_blocks_ok_612:
 
 
 
@@ -84760,7 +84760,7 @@ $L$_16_blocks_ok_rkfuhthGFDFjjpm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_vfryhwEdGiqmwsf
+	jl	NEAR $L$_small_initial_partial_block_613
 
 
 
@@ -84804,8 +84804,8 @@ $L$_16_blocks_ok_rkfuhthGFDFjjpm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_vfryhwEdGiqmwsf
-$L$_small_initial_partial_block_vfryhwEdGiqmwsf:
+	jmp	NEAR $L$_small_initial_compute_done_613
+$L$_small_initial_partial_block_613:
 
 
 
@@ -84852,27 +84852,27 @@ $L$_small_initial_partial_block_vfryhwEdGiqmwsf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_vfryhwEdGiqmwsf:
+$L$_small_initial_compute_done_613:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_vfryhwEdGiqmwsf
+	je	NEAR $L$_after_reduction_613
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_vfryhwEdGiqmwsf:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_3_EyngGgabqwtlAwE:
+$L$_after_reduction_613:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_3_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_sqoEEDdbqxvxfGw
+	jae	NEAR $L$_16_blocks_overflow_614
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_sqoEEDdbqxvxfGw
+	jmp	NEAR $L$_16_blocks_ok_614
 
-$L$_16_blocks_overflow_sqoEEDdbqxvxfGw:
+$L$_16_blocks_overflow_614:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_sqoEEDdbqxvxfGw:
+$L$_16_blocks_ok_614:
 
 
 
@@ -84957,7 +84957,7 @@ $L$_16_blocks_ok_sqoEEDdbqxvxfGw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hmufgAfveccniGi
+	jl	NEAR $L$_small_initial_partial_block_615
 
 
 
@@ -85002,8 +85002,8 @@ $L$_16_blocks_ok_sqoEEDdbqxvxfGw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hmufgAfveccniGi
-$L$_small_initial_partial_block_hmufgAfveccniGi:
+	jmp	NEAR $L$_small_initial_compute_done_615
+$L$_small_initial_partial_block_615:
 
 
 
@@ -85050,27 +85050,27 @@ $L$_small_initial_partial_block_hmufgAfveccniGi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hmufgAfveccniGi:
+$L$_small_initial_compute_done_615:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hmufgAfveccniGi
+	je	NEAR $L$_after_reduction_615
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hmufgAfveccniGi:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_4_EyngGgabqwtlAwE:
+$L$_after_reduction_615:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_4_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_zzthDearnEcucec
+	jae	NEAR $L$_16_blocks_overflow_616
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_zzthDearnEcucec
+	jmp	NEAR $L$_16_blocks_ok_616
 
-$L$_16_blocks_overflow_zzthDearnEcucec:
+$L$_16_blocks_overflow_616:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_zzthDearnEcucec:
+$L$_16_blocks_ok_616:
 
 
 
@@ -85155,7 +85155,7 @@ $L$_16_blocks_ok_zzthDearnEcucec:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AntktxnlsmoCrha
+	jl	NEAR $L$_small_initial_partial_block_617
 
 
 
@@ -85200,8 +85200,8 @@ $L$_16_blocks_ok_zzthDearnEcucec:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AntktxnlsmoCrha
-$L$_small_initial_partial_block_AntktxnlsmoCrha:
+	jmp	NEAR $L$_small_initial_compute_done_617
+$L$_small_initial_partial_block_617:
 
 
 
@@ -85249,32 +85249,32 @@ $L$_small_initial_partial_block_AntktxnlsmoCrha:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AntktxnlsmoCrha:
+$L$_small_initial_compute_done_617:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AntktxnlsmoCrha
+	je	NEAR $L$_after_reduction_617
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AntktxnlsmoCrha:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_5_EyngGgabqwtlAwE:
+$L$_after_reduction_617:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_5_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_qyvlzmFeGqijeBi
+	jae	NEAR $L$_16_blocks_overflow_618
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_qyvlzmFeGqijeBi
+	jmp	NEAR $L$_16_blocks_ok_618
 
-$L$_16_blocks_overflow_qyvlzmFeGqijeBi:
+$L$_16_blocks_overflow_618:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_qyvlzmFeGqijeBi:
+$L$_16_blocks_ok_618:
 
 
 
@@ -85374,7 +85374,7 @@ $L$_16_blocks_ok_qyvlzmFeGqijeBi:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ntqamyssbFimsjb
+	jl	NEAR $L$_small_initial_partial_block_619
 
 
 
@@ -85425,8 +85425,8 @@ $L$_16_blocks_ok_qyvlzmFeGqijeBi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ntqamyssbFimsjb
-$L$_small_initial_partial_block_ntqamyssbFimsjb:
+	jmp	NEAR $L$_small_initial_compute_done_619
+$L$_small_initial_partial_block_619:
 
 
 
@@ -85474,32 +85474,32 @@ $L$_small_initial_partial_block_ntqamyssbFimsjb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ntqamyssbFimsjb:
+$L$_small_initial_compute_done_619:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ntqamyssbFimsjb
+	je	NEAR $L$_after_reduction_619
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ntqamyssbFimsjb:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_6_EyngGgabqwtlAwE:
+$L$_after_reduction_619:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_6_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_cziFejFjuiqncjz
+	jae	NEAR $L$_16_blocks_overflow_620
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_cziFejFjuiqncjz
+	jmp	NEAR $L$_16_blocks_ok_620
 
-$L$_16_blocks_overflow_cziFejFjuiqncjz:
+$L$_16_blocks_overflow_620:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_cziFejFjuiqncjz:
+$L$_16_blocks_ok_620:
 
 
 
@@ -85599,7 +85599,7 @@ $L$_16_blocks_ok_cziFejFjuiqncjz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fCFirthwCwfvddx
+	jl	NEAR $L$_small_initial_partial_block_621
 
 
 
@@ -85650,8 +85650,8 @@ $L$_16_blocks_ok_cziFejFjuiqncjz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fCFirthwCwfvddx
-$L$_small_initial_partial_block_fCFirthwCwfvddx:
+	jmp	NEAR $L$_small_initial_compute_done_621
+$L$_small_initial_partial_block_621:
 
 
 
@@ -85705,32 +85705,32 @@ $L$_small_initial_partial_block_fCFirthwCwfvddx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fCFirthwCwfvddx:
+$L$_small_initial_compute_done_621:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fCFirthwCwfvddx
+	je	NEAR $L$_after_reduction_621
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fCFirthwCwfvddx:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_7_EyngGgabqwtlAwE:
+$L$_after_reduction_621:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_7_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_jrtEwutdfFfsnre
+	jae	NEAR $L$_16_blocks_overflow_622
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_jrtEwutdfFfsnre
+	jmp	NEAR $L$_16_blocks_ok_622
 
-$L$_16_blocks_overflow_jrtEwutdfFfsnre:
+$L$_16_blocks_overflow_622:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_jrtEwutdfFfsnre:
+$L$_16_blocks_ok_622:
 
 
 
@@ -85830,7 +85830,7 @@ $L$_16_blocks_ok_jrtEwutdfFfsnre:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_cDrtniwzlucpyfA
+	jl	NEAR $L$_small_initial_partial_block_623
 
 
 
@@ -85882,8 +85882,8 @@ $L$_16_blocks_ok_jrtEwutdfFfsnre:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_cDrtniwzlucpyfA
-$L$_small_initial_partial_block_cDrtniwzlucpyfA:
+	jmp	NEAR $L$_small_initial_compute_done_623
+$L$_small_initial_partial_block_623:
 
 
 
@@ -85937,32 +85937,32 @@ $L$_small_initial_partial_block_cDrtniwzlucpyfA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_cDrtniwzlucpyfA:
+$L$_small_initial_compute_done_623:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_cDrtniwzlucpyfA
+	je	NEAR $L$_after_reduction_623
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_cDrtniwzlucpyfA:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_8_EyngGgabqwtlAwE:
+$L$_after_reduction_623:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_8_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_uuBGDGakgFEgzme
+	jae	NEAR $L$_16_blocks_overflow_624
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_uuBGDGakgFEgzme
+	jmp	NEAR $L$_16_blocks_ok_624
 
-$L$_16_blocks_overflow_uuBGDGakgFEgzme:
+$L$_16_blocks_overflow_624:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_uuBGDGakgFEgzme:
+$L$_16_blocks_ok_624:
 
 
 
@@ -86062,7 +86062,7 @@ $L$_16_blocks_ok_uuBGDGakgFEgzme:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FFhoazbtaeCorfm
+	jl	NEAR $L$_small_initial_partial_block_625
 
 
 
@@ -86116,8 +86116,8 @@ $L$_16_blocks_ok_uuBGDGakgFEgzme:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FFhoazbtaeCorfm
-$L$_small_initial_partial_block_FFhoazbtaeCorfm:
+	jmp	NEAR $L$_small_initial_compute_done_625
+$L$_small_initial_partial_block_625:
 
 
 
@@ -86172,26 +86172,26 @@ $L$_small_initial_partial_block_FFhoazbtaeCorfm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FFhoazbtaeCorfm:
+$L$_small_initial_compute_done_625:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FFhoazbtaeCorfm
+	je	NEAR $L$_after_reduction_625
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FFhoazbtaeCorfm:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_9_EyngGgabqwtlAwE:
+$L$_after_reduction_625:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_9_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_eutefbtGmotEmbj
+	jae	NEAR $L$_16_blocks_overflow_626
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_eutefbtGmotEmbj
+	jmp	NEAR $L$_16_blocks_ok_626
 
-$L$_16_blocks_overflow_eutefbtGmotEmbj:
+$L$_16_blocks_overflow_626:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -86200,7 +86200,7 @@ $L$_16_blocks_overflow_eutefbtGmotEmbj:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_eutefbtGmotEmbj:
+$L$_16_blocks_ok_626:
 
 
 
@@ -86315,7 +86315,7 @@ $L$_16_blocks_ok_eutefbtGmotEmbj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AGxuzkjihCnrfwo
+	jl	NEAR $L$_small_initial_partial_block_627
 
 
 
@@ -86375,8 +86375,8 @@ $L$_16_blocks_ok_eutefbtGmotEmbj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AGxuzkjihCnrfwo
-$L$_small_initial_partial_block_AGxuzkjihCnrfwo:
+	jmp	NEAR $L$_small_initial_compute_done_627
+$L$_small_initial_partial_block_627:
 
 
 
@@ -86433,26 +86433,26 @@ $L$_small_initial_partial_block_AGxuzkjihCnrfwo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AGxuzkjihCnrfwo:
+$L$_small_initial_compute_done_627:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AGxuzkjihCnrfwo
+	je	NEAR $L$_after_reduction_627
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AGxuzkjihCnrfwo:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_10_EyngGgabqwtlAwE:
+$L$_after_reduction_627:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_10_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_FwhDtGdnCCbyEuo
+	jae	NEAR $L$_16_blocks_overflow_628
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_FwhDtGdnCCbyEuo
+	jmp	NEAR $L$_16_blocks_ok_628
 
-$L$_16_blocks_overflow_FwhDtGdnCCbyEuo:
+$L$_16_blocks_overflow_628:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -86461,7 +86461,7 @@ $L$_16_blocks_overflow_FwhDtGdnCCbyEuo:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_FwhDtGdnCCbyEuo:
+$L$_16_blocks_ok_628:
 
 
 
@@ -86576,7 +86576,7 @@ $L$_16_blocks_ok_FwhDtGdnCCbyEuo:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_slqbEoyADAheEtx
+	jl	NEAR $L$_small_initial_partial_block_629
 
 
 
@@ -86636,8 +86636,8 @@ $L$_16_blocks_ok_FwhDtGdnCCbyEuo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_slqbEoyADAheEtx
-$L$_small_initial_partial_block_slqbEoyADAheEtx:
+	jmp	NEAR $L$_small_initial_compute_done_629
+$L$_small_initial_partial_block_629:
 
 
 
@@ -86700,26 +86700,26 @@ $L$_small_initial_partial_block_slqbEoyADAheEtx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_slqbEoyADAheEtx:
+$L$_small_initial_compute_done_629:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_slqbEoyADAheEtx
+	je	NEAR $L$_after_reduction_629
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_slqbEoyADAheEtx:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_11_EyngGgabqwtlAwE:
+$L$_after_reduction_629:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_11_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_FGkunawkEECCrhg
+	jae	NEAR $L$_16_blocks_overflow_630
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FGkunawkEECCrhg
+	jmp	NEAR $L$_16_blocks_ok_630
 
-$L$_16_blocks_overflow_FGkunawkEECCrhg:
+$L$_16_blocks_overflow_630:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -86728,7 +86728,7 @@ $L$_16_blocks_overflow_FGkunawkEECCrhg:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_FGkunawkEECCrhg:
+$L$_16_blocks_ok_630:
 
 
 
@@ -86843,7 +86843,7 @@ $L$_16_blocks_ok_FGkunawkEECCrhg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jAdpmdykttxoDrs
+	jl	NEAR $L$_small_initial_partial_block_631
 
 
 
@@ -86904,8 +86904,8 @@ $L$_16_blocks_ok_FGkunawkEECCrhg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jAdpmdykttxoDrs
-$L$_small_initial_partial_block_jAdpmdykttxoDrs:
+	jmp	NEAR $L$_small_initial_compute_done_631
+$L$_small_initial_partial_block_631:
 
 
 
@@ -86968,26 +86968,26 @@ $L$_small_initial_partial_block_jAdpmdykttxoDrs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jAdpmdykttxoDrs:
+$L$_small_initial_compute_done_631:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jAdpmdykttxoDrs
+	je	NEAR $L$_after_reduction_631
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_jAdpmdykttxoDrs:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_12_EyngGgabqwtlAwE:
+$L$_after_reduction_631:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_12_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_uEqqEpdmebovFDc
+	jae	NEAR $L$_16_blocks_overflow_632
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_uEqqEpdmebovFDc
+	jmp	NEAR $L$_16_blocks_ok_632
 
-$L$_16_blocks_overflow_uEqqEpdmebovFDc:
+$L$_16_blocks_overflow_632:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -86996,7 +86996,7 @@ $L$_16_blocks_overflow_uEqqEpdmebovFDc:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_uEqqEpdmebovFDc:
+$L$_16_blocks_ok_632:
 
 
 
@@ -87111,7 +87111,7 @@ $L$_16_blocks_ok_uEqqEpdmebovFDc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_iiobdvnaokbhgyb
+	jl	NEAR $L$_small_initial_partial_block_633
 
 
 
@@ -87170,8 +87170,8 @@ $L$_16_blocks_ok_uEqqEpdmebovFDc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_iiobdvnaokbhgyb
-$L$_small_initial_partial_block_iiobdvnaokbhgyb:
+	jmp	NEAR $L$_small_initial_compute_done_633
+$L$_small_initial_partial_block_633:
 
 
 
@@ -87235,27 +87235,27 @@ $L$_small_initial_partial_block_iiobdvnaokbhgyb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_iiobdvnaokbhgyb:
+$L$_small_initial_compute_done_633:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_iiobdvnaokbhgyb
+	je	NEAR $L$_after_reduction_633
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_iiobdvnaokbhgyb:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_13_EyngGgabqwtlAwE:
+$L$_after_reduction_633:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_13_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_yugmCaGFkEtglrd
+	jae	NEAR $L$_16_blocks_overflow_634
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_yugmCaGFkEtglrd
+	jmp	NEAR $L$_16_blocks_ok_634
 
-$L$_16_blocks_overflow_yugmCaGFkEtglrd:
+$L$_16_blocks_overflow_634:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -87266,7 +87266,7 @@ $L$_16_blocks_overflow_yugmCaGFkEtglrd:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_yugmCaGFkEtglrd:
+$L$_16_blocks_ok_634:
 
 
 
@@ -87396,7 +87396,7 @@ $L$_16_blocks_ok_yugmCaGFkEtglrd:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xddBclDyoGqeuia
+	jl	NEAR $L$_small_initial_partial_block_635
 
 
 
@@ -87461,8 +87461,8 @@ $L$_16_blocks_ok_yugmCaGFkEtglrd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xddBclDyoGqeuia
-$L$_small_initial_partial_block_xddBclDyoGqeuia:
+	jmp	NEAR $L$_small_initial_compute_done_635
+$L$_small_initial_partial_block_635:
 
 
 
@@ -87524,27 +87524,27 @@ $L$_small_initial_partial_block_xddBclDyoGqeuia:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xddBclDyoGqeuia:
+$L$_small_initial_compute_done_635:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xddBclDyoGqeuia
+	je	NEAR $L$_after_reduction_635
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xddBclDyoGqeuia:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_14_EyngGgabqwtlAwE:
+$L$_after_reduction_635:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_14_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_AnjCjkaAcwDskcy
+	jae	NEAR $L$_16_blocks_overflow_636
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_AnjCjkaAcwDskcy
+	jmp	NEAR $L$_16_blocks_ok_636
 
-$L$_16_blocks_overflow_AnjCjkaAcwDskcy:
+$L$_16_blocks_overflow_636:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -87555,7 +87555,7 @@ $L$_16_blocks_overflow_AnjCjkaAcwDskcy:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_AnjCjkaAcwDskcy:
+$L$_16_blocks_ok_636:
 
 
 
@@ -87685,7 +87685,7 @@ $L$_16_blocks_ok_AnjCjkaAcwDskcy:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CrdBAminoxknnzA
+	jl	NEAR $L$_small_initial_partial_block_637
 
 
 
@@ -87750,8 +87750,8 @@ $L$_16_blocks_ok_AnjCjkaAcwDskcy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CrdBAminoxknnzA
-$L$_small_initial_partial_block_CrdBAminoxknnzA:
+	jmp	NEAR $L$_small_initial_compute_done_637
+$L$_small_initial_partial_block_637:
 
 
 
@@ -87819,27 +87819,27 @@ $L$_small_initial_partial_block_CrdBAminoxknnzA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_CrdBAminoxknnzA:
+$L$_small_initial_compute_done_637:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_CrdBAminoxknnzA
+	je	NEAR $L$_after_reduction_637
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_CrdBAminoxknnzA:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_15_EyngGgabqwtlAwE:
+$L$_after_reduction_637:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_15_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_BlcqEEmmebnEqGa
+	jae	NEAR $L$_16_blocks_overflow_638
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_BlcqEEmmebnEqGa
+	jmp	NEAR $L$_16_blocks_ok_638
 
-$L$_16_blocks_overflow_BlcqEEmmebnEqGa:
+$L$_16_blocks_overflow_638:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -87850,7 +87850,7 @@ $L$_16_blocks_overflow_BlcqEEmmebnEqGa:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_BlcqEEmmebnEqGa:
+$L$_16_blocks_ok_638:
 
 
 
@@ -87980,7 +87980,7 @@ $L$_16_blocks_ok_BlcqEEmmebnEqGa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hpydbaoBlicfwyA
+	jl	NEAR $L$_small_initial_partial_block_639
 
 
 
@@ -88046,8 +88046,8 @@ $L$_16_blocks_ok_BlcqEEmmebnEqGa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hpydbaoBlicfwyA
-$L$_small_initial_partial_block_hpydbaoBlicfwyA:
+	jmp	NEAR $L$_small_initial_compute_done_639
+$L$_small_initial_partial_block_639:
 
 
 
@@ -88115,27 +88115,27 @@ $L$_small_initial_partial_block_hpydbaoBlicfwyA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hpydbaoBlicfwyA:
+$L$_small_initial_compute_done_639:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hpydbaoBlicfwyA
+	je	NEAR $L$_after_reduction_639
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hpydbaoBlicfwyA:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_16_EyngGgabqwtlAwE:
+$L$_after_reduction_639:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_16_609:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_BFEtbBsvyqjEsAD
+	jae	NEAR $L$_16_blocks_overflow_640
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_BFEtbBsvyqjEsAD
+	jmp	NEAR $L$_16_blocks_ok_640
 
-$L$_16_blocks_overflow_BFEtbBsvyqjEsAD:
+$L$_16_blocks_overflow_640:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -88146,7 +88146,7 @@ $L$_16_blocks_overflow_BFEtbBsvyqjEsAD:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_BFEtbBsvyqjEsAD:
+$L$_16_blocks_ok_640:
 
 
 
@@ -88273,7 +88273,7 @@ $L$_16_blocks_ok_BFEtbBsvyqjEsAD:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_uptDbeBwvjtyFff:
+$L$_small_initial_partial_block_641:
 
 
 
@@ -88342,11 +88342,11 @@ $L$_small_initial_partial_block_uptDbeBwvjtyFff:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uptDbeBwvjtyFff:
+$L$_small_initial_compute_done_641:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uptDbeBwvjtyFff:
-	jmp	NEAR $L$_last_blocks_done_EyngGgabqwtlAwE
-$L$_last_num_blocks_is_0_EyngGgabqwtlAwE:
+$L$_after_reduction_641:
+	jmp	NEAR $L$_last_blocks_done_609
+$L$_last_num_blocks_is_0_609:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -88408,65 +88408,65 @@ $L$_last_num_blocks_is_0_EyngGgabqwtlAwE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_EyngGgabqwtlAwE:
+$L$_last_blocks_done_609:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_FybgEjtCEAxrgxA
+	jmp	NEAR $L$_ghash_done_497
 
-$L$_message_below_equal_16_blocks_FybgEjtCEAxrgxA:
+$L$_message_below_equal_16_blocks_497:
 
 
 	mov	r12d,r13d
 	add	r12d,15
 	shr	r12d,4
 	cmp	r12,8
-	je	NEAR $L$_small_initial_num_blocks_is_8_zgrsavAflEBhoss
-	jl	NEAR $L$_small_initial_num_blocks_is_7_1_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_8_642
+	jl	NEAR $L$_small_initial_num_blocks_is_7_1_642
 
 
 	cmp	r12,12
-	je	NEAR $L$_small_initial_num_blocks_is_12_zgrsavAflEBhoss
-	jl	NEAR $L$_small_initial_num_blocks_is_11_9_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_12_642
+	jl	NEAR $L$_small_initial_num_blocks_is_11_9_642
 
 
 	cmp	r12,16
-	je	NEAR $L$_small_initial_num_blocks_is_16_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_16_642
 	cmp	r12,15
-	je	NEAR $L$_small_initial_num_blocks_is_15_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_15_642
 	cmp	r12,14
-	je	NEAR $L$_small_initial_num_blocks_is_14_zgrsavAflEBhoss
-	jmp	NEAR $L$_small_initial_num_blocks_is_13_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_14_642
+	jmp	NEAR $L$_small_initial_num_blocks_is_13_642
 
-$L$_small_initial_num_blocks_is_11_9_zgrsavAflEBhoss:
+$L$_small_initial_num_blocks_is_11_9_642:
 
 	cmp	r12,11
-	je	NEAR $L$_small_initial_num_blocks_is_11_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_11_642
 	cmp	r12,10
-	je	NEAR $L$_small_initial_num_blocks_is_10_zgrsavAflEBhoss
-	jmp	NEAR $L$_small_initial_num_blocks_is_9_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_10_642
+	jmp	NEAR $L$_small_initial_num_blocks_is_9_642
 
-$L$_small_initial_num_blocks_is_7_1_zgrsavAflEBhoss:
+$L$_small_initial_num_blocks_is_7_1_642:
 	cmp	r12,4
-	je	NEAR $L$_small_initial_num_blocks_is_4_zgrsavAflEBhoss
-	jl	NEAR $L$_small_initial_num_blocks_is_3_1_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_4_642
+	jl	NEAR $L$_small_initial_num_blocks_is_3_1_642
 
 	cmp	r12,7
-	je	NEAR $L$_small_initial_num_blocks_is_7_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_7_642
 	cmp	r12,6
-	je	NEAR $L$_small_initial_num_blocks_is_6_zgrsavAflEBhoss
-	jmp	NEAR $L$_small_initial_num_blocks_is_5_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_6_642
+	jmp	NEAR $L$_small_initial_num_blocks_is_5_642
 
-$L$_small_initial_num_blocks_is_3_1_zgrsavAflEBhoss:
+$L$_small_initial_num_blocks_is_3_1_642:
 
 	cmp	r12,3
-	je	NEAR $L$_small_initial_num_blocks_is_3_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_3_642
 	cmp	r12,2
-	je	NEAR $L$_small_initial_num_blocks_is_2_zgrsavAflEBhoss
+	je	NEAR $L$_small_initial_num_blocks_is_2_642
 
 
 
 
 
-$L$_small_initial_num_blocks_is_1_zgrsavAflEBhoss:
+$L$_small_initial_num_blocks_is_1_642:
 	vmovdqa64	xmm29,XMMWORD[SHUF_MASK]
 	vpaddd	xmm0,xmm2,XMMWORD[ONE]
 	lea	r10,[byte64_len_to_mask_table]
@@ -88507,7 +88507,7 @@ $L$_small_initial_num_blocks_is_1_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_sEEEFFlaEfrunkr
+	jl	NEAR $L$_small_initial_partial_block_643
 
 
 
@@ -88549,8 +88549,8 @@ $L$_small_initial_num_blocks_is_1_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_sEEEFFlaEfrunkr
-$L$_small_initial_partial_block_sEEEFFlaEfrunkr:
+	jmp	NEAR $L$_small_initial_compute_done_643
+$L$_small_initial_partial_block_643:
 
 
 
@@ -88574,11 +88574,11 @@ $L$_small_initial_partial_block_sEEEFFlaEfrunkr:
 
 	vpxorq	xmm14,xmm14,xmm13
 
-	jmp	NEAR $L$_after_reduction_sEEEFFlaEfrunkr
-$L$_small_initial_compute_done_sEEEFFlaEfrunkr:
-$L$_after_reduction_sEEEFFlaEfrunkr:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_2_zgrsavAflEBhoss:
+	jmp	NEAR $L$_after_reduction_643
+$L$_small_initial_compute_done_643:
+$L$_after_reduction_643:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_2_642:
 	vmovdqa64	ymm29,YMMWORD[SHUF_MASK]
 	vshufi64x2	ymm0,ymm2,ymm2,0
 	vpaddd	ymm0,ymm0,YMMWORD[ddq_add_1234]
@@ -88621,7 +88621,7 @@ $L$_small_initial_num_blocks_is_2_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_gpFcCqnAklkFCcp
+	jl	NEAR $L$_small_initial_partial_block_644
 
 
 
@@ -88663,8 +88663,8 @@ $L$_small_initial_num_blocks_is_2_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_gpFcCqnAklkFCcp
-$L$_small_initial_partial_block_gpFcCqnAklkFCcp:
+	jmp	NEAR $L$_small_initial_compute_done_644
+$L$_small_initial_partial_block_644:
 
 
 
@@ -88709,14 +88709,14 @@ $L$_small_initial_partial_block_gpFcCqnAklkFCcp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gpFcCqnAklkFCcp:
+$L$_small_initial_compute_done_644:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_gpFcCqnAklkFCcp
+	je	NEAR $L$_after_reduction_644
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_gpFcCqnAklkFCcp:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_3_zgrsavAflEBhoss:
+$L$_after_reduction_644:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_3_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -88759,7 +88759,7 @@ $L$_small_initial_num_blocks_is_3_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jvpzyiGxsgdfGxC
+	jl	NEAR $L$_small_initial_partial_block_645
 
 
 
@@ -88802,8 +88802,8 @@ $L$_small_initial_num_blocks_is_3_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jvpzyiGxsgdfGxC
-$L$_small_initial_partial_block_jvpzyiGxsgdfGxC:
+	jmp	NEAR $L$_small_initial_compute_done_645
+$L$_small_initial_partial_block_645:
 
 
 
@@ -88848,14 +88848,14 @@ $L$_small_initial_partial_block_jvpzyiGxsgdfGxC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jvpzyiGxsgdfGxC:
+$L$_small_initial_compute_done_645:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jvpzyiGxsgdfGxC
+	je	NEAR $L$_after_reduction_645
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_jvpzyiGxsgdfGxC:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_4_zgrsavAflEBhoss:
+$L$_after_reduction_645:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_4_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -88898,7 +88898,7 @@ $L$_small_initial_num_blocks_is_4_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qGkwevsoadvtgnr
+	jl	NEAR $L$_small_initial_partial_block_646
 
 
 
@@ -88940,8 +88940,8 @@ $L$_small_initial_num_blocks_is_4_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qGkwevsoadvtgnr
-$L$_small_initial_partial_block_qGkwevsoadvtgnr:
+	jmp	NEAR $L$_small_initial_compute_done_646
+$L$_small_initial_partial_block_646:
 
 
 
@@ -88987,14 +88987,14 @@ $L$_small_initial_partial_block_qGkwevsoadvtgnr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qGkwevsoadvtgnr:
+$L$_small_initial_compute_done_646:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qGkwevsoadvtgnr
+	je	NEAR $L$_after_reduction_646
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_qGkwevsoadvtgnr:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_5_zgrsavAflEBhoss:
+$L$_after_reduction_646:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_5_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -89055,7 +89055,7 @@ $L$_small_initial_num_blocks_is_5_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rxGiyEcbsvoDiAj
+	jl	NEAR $L$_small_initial_partial_block_647
 
 
 
@@ -89107,8 +89107,8 @@ $L$_small_initial_num_blocks_is_5_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rxGiyEcbsvoDiAj
-$L$_small_initial_partial_block_rxGiyEcbsvoDiAj:
+	jmp	NEAR $L$_small_initial_compute_done_647
+$L$_small_initial_partial_block_647:
 
 
 
@@ -89153,14 +89153,14 @@ $L$_small_initial_partial_block_rxGiyEcbsvoDiAj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rxGiyEcbsvoDiAj:
+$L$_small_initial_compute_done_647:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rxGiyEcbsvoDiAj
+	je	NEAR $L$_after_reduction_647
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_rxGiyEcbsvoDiAj:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_6_zgrsavAflEBhoss:
+$L$_after_reduction_647:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_6_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -89221,7 +89221,7 @@ $L$_small_initial_num_blocks_is_6_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fdkpqlntqsEgbDD
+	jl	NEAR $L$_small_initial_partial_block_648
 
 
 
@@ -89273,8 +89273,8 @@ $L$_small_initial_num_blocks_is_6_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fdkpqlntqsEgbDD
-$L$_small_initial_partial_block_fdkpqlntqsEgbDD:
+	jmp	NEAR $L$_small_initial_compute_done_648
+$L$_small_initial_partial_block_648:
 
 
 
@@ -89329,14 +89329,14 @@ $L$_small_initial_partial_block_fdkpqlntqsEgbDD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fdkpqlntqsEgbDD:
+$L$_small_initial_compute_done_648:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fdkpqlntqsEgbDD
+	je	NEAR $L$_after_reduction_648
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_fdkpqlntqsEgbDD:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_7_zgrsavAflEBhoss:
+$L$_after_reduction_648:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_7_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -89397,7 +89397,7 @@ $L$_small_initial_num_blocks_is_7_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ECuczxGkDfmdyig
+	jl	NEAR $L$_small_initial_partial_block_649
 
 
 
@@ -89450,8 +89450,8 @@ $L$_small_initial_num_blocks_is_7_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ECuczxGkDfmdyig
-$L$_small_initial_partial_block_ECuczxGkDfmdyig:
+	jmp	NEAR $L$_small_initial_compute_done_649
+$L$_small_initial_partial_block_649:
 
 
 
@@ -89506,14 +89506,14 @@ $L$_small_initial_partial_block_ECuczxGkDfmdyig:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ECuczxGkDfmdyig:
+$L$_small_initial_compute_done_649:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ECuczxGkDfmdyig
+	je	NEAR $L$_after_reduction_649
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_ECuczxGkDfmdyig:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_8_zgrsavAflEBhoss:
+$L$_after_reduction_649:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_8_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -89574,7 +89574,7 @@ $L$_small_initial_num_blocks_is_8_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_bFexvklajfubaAu
+	jl	NEAR $L$_small_initial_partial_block_650
 
 
 
@@ -89625,8 +89625,8 @@ $L$_small_initial_num_blocks_is_8_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_bFexvklajfubaAu
-$L$_small_initial_partial_block_bFexvklajfubaAu:
+	jmp	NEAR $L$_small_initial_compute_done_650
+$L$_small_initial_partial_block_650:
 
 
 
@@ -89682,14 +89682,14 @@ $L$_small_initial_partial_block_bFexvklajfubaAu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_bFexvklajfubaAu:
+$L$_small_initial_compute_done_650:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_bFexvklajfubaAu
+	je	NEAR $L$_after_reduction_650
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_bFexvklajfubaAu:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_9_zgrsavAflEBhoss:
+$L$_after_reduction_650:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_9_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -89767,7 +89767,7 @@ $L$_small_initial_num_blocks_is_9_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xFjgscsFBkijeej
+	jl	NEAR $L$_small_initial_partial_block_651
 
 
 
@@ -89828,8 +89828,8 @@ $L$_small_initial_num_blocks_is_9_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xFjgscsFBkijeej
-$L$_small_initial_partial_block_xFjgscsFBkijeej:
+	jmp	NEAR $L$_small_initial_compute_done_651
+$L$_small_initial_partial_block_651:
 
 
 
@@ -89883,14 +89883,14 @@ $L$_small_initial_partial_block_xFjgscsFBkijeej:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xFjgscsFBkijeej:
+$L$_small_initial_compute_done_651:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xFjgscsFBkijeej
+	je	NEAR $L$_after_reduction_651
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_xFjgscsFBkijeej:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_10_zgrsavAflEBhoss:
+$L$_after_reduction_651:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_10_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -89968,7 +89968,7 @@ $L$_small_initial_num_blocks_is_10_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lpajAiveyrbwkcz
+	jl	NEAR $L$_small_initial_partial_block_652
 
 
 
@@ -90029,8 +90029,8 @@ $L$_small_initial_num_blocks_is_10_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lpajAiveyrbwkcz
-$L$_small_initial_partial_block_lpajAiveyrbwkcz:
+	jmp	NEAR $L$_small_initial_compute_done_652
+$L$_small_initial_partial_block_652:
 
 
 
@@ -90094,14 +90094,14 @@ $L$_small_initial_partial_block_lpajAiveyrbwkcz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lpajAiveyrbwkcz:
+$L$_small_initial_compute_done_652:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lpajAiveyrbwkcz
+	je	NEAR $L$_after_reduction_652
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_lpajAiveyrbwkcz:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_11_zgrsavAflEBhoss:
+$L$_after_reduction_652:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_11_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -90179,7 +90179,7 @@ $L$_small_initial_num_blocks_is_11_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wfwxkmbkbnGGwgA
+	jl	NEAR $L$_small_initial_partial_block_653
 
 
 
@@ -90241,8 +90241,8 @@ $L$_small_initial_num_blocks_is_11_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wfwxkmbkbnGGwgA
-$L$_small_initial_partial_block_wfwxkmbkbnGGwgA:
+	jmp	NEAR $L$_small_initial_compute_done_653
+$L$_small_initial_partial_block_653:
 
 
 
@@ -90306,14 +90306,14 @@ $L$_small_initial_partial_block_wfwxkmbkbnGGwgA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wfwxkmbkbnGGwgA:
+$L$_small_initial_compute_done_653:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wfwxkmbkbnGGwgA
+	je	NEAR $L$_after_reduction_653
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_wfwxkmbkbnGGwgA:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_12_zgrsavAflEBhoss:
+$L$_after_reduction_653:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_12_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -90391,7 +90391,7 @@ $L$_small_initial_num_blocks_is_12_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oAmgqzeuyAEsmmm
+	jl	NEAR $L$_small_initial_partial_block_654
 
 
 
@@ -90447,8 +90447,8 @@ $L$_small_initial_num_blocks_is_12_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oAmgqzeuyAEsmmm
-$L$_small_initial_partial_block_oAmgqzeuyAEsmmm:
+	jmp	NEAR $L$_small_initial_compute_done_654
+$L$_small_initial_partial_block_654:
 
 
 
@@ -90513,14 +90513,14 @@ $L$_small_initial_partial_block_oAmgqzeuyAEsmmm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_oAmgqzeuyAEsmmm:
+$L$_small_initial_compute_done_654:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_oAmgqzeuyAEsmmm
+	je	NEAR $L$_after_reduction_654
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_oAmgqzeuyAEsmmm:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_13_zgrsavAflEBhoss:
+$L$_after_reduction_654:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_13_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -90615,7 +90615,7 @@ $L$_small_initial_num_blocks_is_13_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_vfgszriGGCvrqCx
+	jl	NEAR $L$_small_initial_partial_block_655
 
 
 
@@ -90681,8 +90681,8 @@ $L$_small_initial_num_blocks_is_13_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_vfgszriGGCvrqCx
-$L$_small_initial_partial_block_vfgszriGGCvrqCx:
+	jmp	NEAR $L$_small_initial_compute_done_655
+$L$_small_initial_partial_block_655:
 
 
 
@@ -90741,14 +90741,14 @@ $L$_small_initial_partial_block_vfgszriGGCvrqCx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_vfgszriGGCvrqCx:
+$L$_small_initial_compute_done_655:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_vfgszriGGCvrqCx
+	je	NEAR $L$_after_reduction_655
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_vfgszriGGCvrqCx:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_14_zgrsavAflEBhoss:
+$L$_after_reduction_655:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_14_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -90843,7 +90843,7 @@ $L$_small_initial_num_blocks_is_14_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zvEmypwhbqepybh
+	jl	NEAR $L$_small_initial_partial_block_656
 
 
 
@@ -90909,8 +90909,8 @@ $L$_small_initial_num_blocks_is_14_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zvEmypwhbqepybh
-$L$_small_initial_partial_block_zvEmypwhbqepybh:
+	jmp	NEAR $L$_small_initial_compute_done_656
+$L$_small_initial_partial_block_656:
 
 
 
@@ -90979,14 +90979,14 @@ $L$_small_initial_partial_block_zvEmypwhbqepybh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zvEmypwhbqepybh:
+$L$_small_initial_compute_done_656:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zvEmypwhbqepybh
+	je	NEAR $L$_after_reduction_656
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_zvEmypwhbqepybh:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_15_zgrsavAflEBhoss:
+$L$_after_reduction_656:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_15_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -91081,7 +91081,7 @@ $L$_small_initial_num_blocks_is_15_zgrsavAflEBhoss:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_iuygihjwtzuGBlo
+	jl	NEAR $L$_small_initial_partial_block_657
 
 
 
@@ -91148,8 +91148,8 @@ $L$_small_initial_num_blocks_is_15_zgrsavAflEBhoss:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_iuygihjwtzuGBlo
-$L$_small_initial_partial_block_iuygihjwtzuGBlo:
+	jmp	NEAR $L$_small_initial_compute_done_657
+$L$_small_initial_partial_block_657:
 
 
 
@@ -91218,14 +91218,14 @@ $L$_small_initial_partial_block_iuygihjwtzuGBlo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_iuygihjwtzuGBlo:
+$L$_small_initial_compute_done_657:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_iuygihjwtzuGBlo
+	je	NEAR $L$_after_reduction_657
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_iuygihjwtzuGBlo:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zgrsavAflEBhoss
-$L$_small_initial_num_blocks_is_16_zgrsavAflEBhoss:
+$L$_after_reduction_657:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_642
+$L$_small_initial_num_blocks_is_16_642:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -91317,7 +91317,7 @@ $L$_small_initial_num_blocks_is_16_zgrsavAflEBhoss:
 	vpshufb	zmm11,zmm11,zmm29
 	vextracti32x4	xmm13,zmm11,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_gszmfawiveaDskF:
+$L$_small_initial_partial_block_658:
 
 
 
@@ -91387,25 +91387,25 @@ $L$_small_initial_partial_block_gszmfawiveaDskF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gszmfawiveaDskF:
+$L$_small_initial_compute_done_658:
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_gszmfawiveaDskF:
-$L$_small_initial_blocks_encrypted_zgrsavAflEBhoss:
-$L$_ghash_done_FybgEjtCEAxrgxA:
+$L$_after_reduction_658:
+$L$_small_initial_blocks_encrypted_642:
+$L$_ghash_done_497:
 	vmovdqu64	XMMWORD[rdx],xmm2
 	vmovdqu64	XMMWORD[64+rdx],xmm14
-$L$_enc_dec_done_FybgEjtCEAxrgxA:
+$L$_enc_dec_done_497:
 	jmp	NEAR $L$exit_gcm_decrypt
 ALIGN	32
 $L$aes_gcm_decrypt_192_avx512:
 	cmp	QWORD[112+rbp],0
-	je	NEAR $L$_enc_dec_done_FCvvteafomDkwaj
+	je	NEAR $L$_enc_dec_done_659
 	xor	r14,r14
 	vmovdqu64	xmm14,XMMWORD[64+rdx]
 
 	mov	r11,QWORD[r8]
 	or	r11,r11
-	je	NEAR $L$_partial_block_done_kBClqwtujvqjEmo
+	je	NEAR $L$_partial_block_done_660
 	mov	r10d,16
 	lea	r12,[byte_len_to_mask_table]
 	cmp	QWORD[112+rbp],r10
@@ -91432,9 +91432,9 @@ $L$aes_gcm_decrypt_192_avx512:
 	mov	r13,QWORD[112+rbp]
 	add	r13,r11
 	sub	r13,16
-	jge	NEAR $L$_no_extra_mask_kBClqwtujvqjEmo
+	jge	NEAR $L$_no_extra_mask_660
 	sub	r12,r13
-$L$_no_extra_mask_kBClqwtujvqjEmo:
+$L$_no_extra_mask_660:
 
 
 
@@ -91445,7 +91445,7 @@ $L$_no_extra_mask_kBClqwtujvqjEmo:
 	vpshufb	xmm6,xmm6,xmm5
 	vpxorq	xmm14,xmm14,xmm6
 	cmp	r13,0
-	jl	NEAR $L$_partial_incomplete_kBClqwtujvqjEmo
+	jl	NEAR $L$_partial_incomplete_660
 
 	vpclmulqdq	xmm7,xmm14,xmm4,0x11
 	vpclmulqdq	xmm10,xmm14,xmm4,0x00
@@ -91480,14 +91480,14 @@ $L$_no_extra_mask_kBClqwtujvqjEmo:
 	mov	r12,r11
 	mov	r11,16
 	sub	r11,r12
-	jmp	NEAR $L$_enc_dec_done_kBClqwtujvqjEmo
+	jmp	NEAR $L$_enc_dec_done_660
 
-$L$_partial_incomplete_kBClqwtujvqjEmo:
+$L$_partial_incomplete_660:
 	mov	r12,QWORD[112+rbp]
 	add	QWORD[r8],r12
 	mov	r11,QWORD[112+rbp]
 
-$L$_enc_dec_done_kBClqwtujvqjEmo:
+$L$_enc_dec_done_660:
 
 
 	lea	r12,[byte_len_to_mask_table]
@@ -91495,13 +91495,13 @@ $L$_enc_dec_done_kBClqwtujvqjEmo:
 	vmovdqu64	XMMWORD[64+rdx],xmm14
 	mov	r12,QWORD[120+rbp]
 	vmovdqu8	XMMWORD[r12]{k1},xmm3
-$L$_partial_block_done_kBClqwtujvqjEmo:
+$L$_partial_block_done_660:
 	vmovdqu64	xmm2,XMMWORD[rdx]
 	mov	r13,QWORD[112+rbp]
 	sub	r13,r11
-	je	NEAR $L$_enc_dec_done_FCvvteafomDkwaj
+	je	NEAR $L$_enc_dec_done_659
 	cmp	r13,256
-	jbe	NEAR $L$_message_below_equal_16_blocks_FCvvteafomDkwaj
+	jbe	NEAR $L$_message_below_equal_16_blocks_659
 
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vmovdqa64	zmm27,ZMMWORD[ddq_addbe_4444]
@@ -91521,13 +91521,13 @@ $L$_partial_block_done_kBClqwtujvqjEmo:
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_laygCrzhBeyhzuF
+	jae	NEAR $L$_next_16_overflow_661
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_laygCrzhBeyhzuF
-$L$_next_16_overflow_laygCrzhBeyhzuF:
+	jmp	NEAR $L$_next_16_ok_661
+$L$_next_16_overflow_661:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -91538,7 +91538,7 @@ $L$_next_16_overflow_laygCrzhBeyhzuF:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_laygCrzhBeyhzuF:
+$L$_next_16_ok_661:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -91636,7 +91636,7 @@ $L$_next_16_ok_laygCrzhBeyhzuF:
 	vmovdqa64	ZMMWORD[896+rsp],zmm11
 	vmovdqa64	ZMMWORD[960+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_lttDqcGfudlwdCt
+	jnz	NEAR $L$_skip_hkeys_precomputation_662
 
 	vmovdqu64	zmm0,ZMMWORD[288+rdx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm0
@@ -91652,20 +91652,20 @@ $L$_next_16_ok_laygCrzhBeyhzuF:
 
 	vmovdqu64	zmm5,ZMMWORD[96+rdx]
 	vmovdqu64	ZMMWORD[512+rsp],zmm5
-$L$_skip_hkeys_precomputation_lttDqcGfudlwdCt:
+$L$_skip_hkeys_precomputation_662:
 	cmp	r13,512
-	jb	NEAR $L$_message_below_32_blocks_FCvvteafomDkwaj
+	jb	NEAR $L$_message_below_32_blocks_659
 
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_yAaxkqbzbBciGdA
+	jae	NEAR $L$_next_16_overflow_663
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_yAaxkqbzbBciGdA
-$L$_next_16_overflow_yAaxkqbzbBciGdA:
+	jmp	NEAR $L$_next_16_ok_663
+$L$_next_16_overflow_663:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -91676,7 +91676,7 @@ $L$_next_16_overflow_yAaxkqbzbBciGdA:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_yAaxkqbzbBciGdA:
+$L$_next_16_ok_663:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -91774,7 +91774,7 @@ $L$_next_16_ok_yAaxkqbzbBciGdA:
 	vmovdqa64	ZMMWORD[1152+rsp],zmm11
 	vmovdqa64	ZMMWORD[1216+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_dcvAuwilhElFumj
+	jnz	NEAR $L$_skip_hkeys_precomputation_664
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -92022,22 +92022,22 @@ $L$_next_16_ok_yAaxkqbzbBciGdA:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[rsp],zmm5
-$L$_skip_hkeys_precomputation_dcvAuwilhElFumj:
+$L$_skip_hkeys_precomputation_664:
 	mov	r14,1
 	add	r11,512
 	sub	r13,512
 
 	cmp	r13,768
-	jb	NEAR $L$_no_more_big_nblocks_FCvvteafomDkwaj
-$L$_encrypt_big_nblocks_FCvvteafomDkwaj:
+	jb	NEAR $L$_no_more_big_nblocks_659
+$L$_encrypt_big_nblocks_659:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_EmmfzmwDrErjiEa
+	jae	NEAR $L$_16_blocks_overflow_665
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_EmmfzmwDrErjiEa
-$L$_16_blocks_overflow_EmmfzmwDrErjiEa:
+	jmp	NEAR $L$_16_blocks_ok_665
+$L$_16_blocks_overflow_665:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -92048,7 +92048,7 @@ $L$_16_blocks_overflow_EmmfzmwDrErjiEa:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_EmmfzmwDrErjiEa:
+$L$_16_blocks_ok_665:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -92224,13 +92224,13 @@ $L$_16_blocks_ok_EmmfzmwDrErjiEa:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_mDqnkmxEewFFkDy
+	jae	NEAR $L$_16_blocks_overflow_666
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_mDqnkmxEewFFkDy
-$L$_16_blocks_overflow_mDqnkmxEewFFkDy:
+	jmp	NEAR $L$_16_blocks_ok_666
+$L$_16_blocks_overflow_666:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -92241,7 +92241,7 @@ $L$_16_blocks_overflow_mDqnkmxEewFFkDy:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_mDqnkmxEewFFkDy:
+$L$_16_blocks_ok_666:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -92417,13 +92417,13 @@ $L$_16_blocks_ok_mDqnkmxEewFFkDy:
 	vmovdqa64	ZMMWORD[896+rsp],zmm4
 	vmovdqa64	ZMMWORD[960+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_pbGnyiuaEAwrChv
+	jae	NEAR $L$_16_blocks_overflow_667
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_pbGnyiuaEAwrChv
-$L$_16_blocks_overflow_pbGnyiuaEAwrChv:
+	jmp	NEAR $L$_16_blocks_ok_667
+$L$_16_blocks_overflow_667:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -92434,7 +92434,7 @@ $L$_16_blocks_overflow_pbGnyiuaEAwrChv:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_pbGnyiuaEAwrChv:
+$L$_16_blocks_ok_667:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm1,ZMMWORD[512+rsp]
@@ -92640,16 +92640,16 @@ $L$_16_blocks_ok_pbGnyiuaEAwrChv:
 	add	r11,768
 	sub	r13,768
 	cmp	r13,768
-	jae	NEAR $L$_encrypt_big_nblocks_FCvvteafomDkwaj
+	jae	NEAR $L$_encrypt_big_nblocks_659
 
-$L$_no_more_big_nblocks_FCvvteafomDkwaj:
+$L$_no_more_big_nblocks_659:
 
 	cmp	r13,512
-	jae	NEAR $L$_encrypt_32_blocks_FCvvteafomDkwaj
+	jae	NEAR $L$_encrypt_32_blocks_659
 
 	cmp	r13,256
-	jae	NEAR $L$_encrypt_16_blocks_FCvvteafomDkwaj
-$L$_encrypt_0_blocks_ghash_32_FCvvteafomDkwaj:
+	jae	NEAR $L$_encrypt_16_blocks_659
+$L$_encrypt_0_blocks_ghash_32_659:
 	mov	r10d,r13d
 	and	r10d,~15
 	mov	ebx,256
@@ -92692,61 +92692,61 @@ $L$_encrypt_0_blocks_ghash_32_FCvvteafomDkwaj:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_cakgbrEGhktBloA
+	je	NEAR $L$_last_num_blocks_is_0_668
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_cakgbrEGhktBloA
-	jb	NEAR $L$_last_num_blocks_is_7_1_cakgbrEGhktBloA
+	je	NEAR $L$_last_num_blocks_is_8_668
+	jb	NEAR $L$_last_num_blocks_is_7_1_668
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_cakgbrEGhktBloA
-	jb	NEAR $L$_last_num_blocks_is_11_9_cakgbrEGhktBloA
+	je	NEAR $L$_last_num_blocks_is_12_668
+	jb	NEAR $L$_last_num_blocks_is_11_9_668
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_cakgbrEGhktBloA
-	ja	NEAR $L$_last_num_blocks_is_16_cakgbrEGhktBloA
+	je	NEAR $L$_last_num_blocks_is_15_668
+	ja	NEAR $L$_last_num_blocks_is_16_668
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_cakgbrEGhktBloA
-	jmp	NEAR $L$_last_num_blocks_is_13_cakgbrEGhktBloA
+	je	NEAR $L$_last_num_blocks_is_14_668
+	jmp	NEAR $L$_last_num_blocks_is_13_668
 
-$L$_last_num_blocks_is_11_9_cakgbrEGhktBloA:
+$L$_last_num_blocks_is_11_9_668:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_cakgbrEGhktBloA
-	ja	NEAR $L$_last_num_blocks_is_11_cakgbrEGhktBloA
-	jmp	NEAR $L$_last_num_blocks_is_9_cakgbrEGhktBloA
+	je	NEAR $L$_last_num_blocks_is_10_668
+	ja	NEAR $L$_last_num_blocks_is_11_668
+	jmp	NEAR $L$_last_num_blocks_is_9_668
 
-$L$_last_num_blocks_is_7_1_cakgbrEGhktBloA:
+$L$_last_num_blocks_is_7_1_668:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_cakgbrEGhktBloA
-	jb	NEAR $L$_last_num_blocks_is_3_1_cakgbrEGhktBloA
+	je	NEAR $L$_last_num_blocks_is_4_668
+	jb	NEAR $L$_last_num_blocks_is_3_1_668
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_cakgbrEGhktBloA
-	je	NEAR $L$_last_num_blocks_is_6_cakgbrEGhktBloA
-	jmp	NEAR $L$_last_num_blocks_is_5_cakgbrEGhktBloA
+	ja	NEAR $L$_last_num_blocks_is_7_668
+	je	NEAR $L$_last_num_blocks_is_6_668
+	jmp	NEAR $L$_last_num_blocks_is_5_668
 
-$L$_last_num_blocks_is_3_1_cakgbrEGhktBloA:
+$L$_last_num_blocks_is_3_1_668:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_cakgbrEGhktBloA
-	je	NEAR $L$_last_num_blocks_is_2_cakgbrEGhktBloA
-$L$_last_num_blocks_is_1_cakgbrEGhktBloA:
+	ja	NEAR $L$_last_num_blocks_is_3_668
+	je	NEAR $L$_last_num_blocks_is_2_668
+$L$_last_num_blocks_is_1_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_cuqwfazzpAGChEv
+	jae	NEAR $L$_16_blocks_overflow_669
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_cuqwfazzpAGChEv
+	jmp	NEAR $L$_16_blocks_ok_669
 
-$L$_16_blocks_overflow_cuqwfazzpAGChEv:
+$L$_16_blocks_overflow_669:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_cuqwfazzpAGChEv:
+$L$_16_blocks_ok_669:
 
 
 
@@ -92834,7 +92834,7 @@ $L$_16_blocks_ok_cuqwfazzpAGChEv:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rxzxfxEsbEdFCrq
+	jl	NEAR $L$_small_initial_partial_block_670
 
 
 
@@ -92878,8 +92878,8 @@ $L$_16_blocks_ok_cuqwfazzpAGChEv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rxzxfxEsbEdFCrq
-$L$_small_initial_partial_block_rxzxfxEsbEdFCrq:
+	jmp	NEAR $L$_small_initial_compute_done_670
+$L$_small_initial_partial_block_670:
 
 
 
@@ -92931,24 +92931,24 @@ $L$_small_initial_partial_block_rxzxfxEsbEdFCrq:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_rxzxfxEsbEdFCrq
-$L$_small_initial_compute_done_rxzxfxEsbEdFCrq:
-$L$_after_reduction_rxzxfxEsbEdFCrq:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_2_cakgbrEGhktBloA:
+	jmp	NEAR $L$_after_reduction_670
+$L$_small_initial_compute_done_670:
+$L$_after_reduction_670:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_2_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_ighvenvCoakACwb
+	jae	NEAR $L$_16_blocks_overflow_671
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_ighvenvCoakACwb
+	jmp	NEAR $L$_16_blocks_ok_671
 
-$L$_16_blocks_overflow_ighvenvCoakACwb:
+$L$_16_blocks_overflow_671:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_ighvenvCoakACwb:
+$L$_16_blocks_ok_671:
 
 
 
@@ -93037,7 +93037,7 @@ $L$_16_blocks_ok_ighvenvCoakACwb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_bAvzednpoeegght
+	jl	NEAR $L$_small_initial_partial_block_672
 
 
 
@@ -93081,8 +93081,8 @@ $L$_16_blocks_ok_ighvenvCoakACwb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_bAvzednpoeegght
-$L$_small_initial_partial_block_bAvzednpoeegght:
+	jmp	NEAR $L$_small_initial_compute_done_672
+$L$_small_initial_partial_block_672:
 
 
 
@@ -93129,27 +93129,27 @@ $L$_small_initial_partial_block_bAvzednpoeegght:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_bAvzednpoeegght:
+$L$_small_initial_compute_done_672:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_bAvzednpoeegght
+	je	NEAR $L$_after_reduction_672
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_bAvzednpoeegght:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_3_cakgbrEGhktBloA:
+$L$_after_reduction_672:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_3_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_GowEqjmAsbemxxq
+	jae	NEAR $L$_16_blocks_overflow_673
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_GowEqjmAsbemxxq
+	jmp	NEAR $L$_16_blocks_ok_673
 
-$L$_16_blocks_overflow_GowEqjmAsbemxxq:
+$L$_16_blocks_overflow_673:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_GowEqjmAsbemxxq:
+$L$_16_blocks_ok_673:
 
 
 
@@ -93238,7 +93238,7 @@ $L$_16_blocks_ok_GowEqjmAsbemxxq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qnnmzkpalmBhuen
+	jl	NEAR $L$_small_initial_partial_block_674
 
 
 
@@ -93283,8 +93283,8 @@ $L$_16_blocks_ok_GowEqjmAsbemxxq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qnnmzkpalmBhuen
-$L$_small_initial_partial_block_qnnmzkpalmBhuen:
+	jmp	NEAR $L$_small_initial_compute_done_674
+$L$_small_initial_partial_block_674:
 
 
 
@@ -93331,27 +93331,27 @@ $L$_small_initial_partial_block_qnnmzkpalmBhuen:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qnnmzkpalmBhuen:
+$L$_small_initial_compute_done_674:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qnnmzkpalmBhuen
+	je	NEAR $L$_after_reduction_674
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qnnmzkpalmBhuen:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_4_cakgbrEGhktBloA:
+$L$_after_reduction_674:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_4_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_aarhBkdfwmCbhGr
+	jae	NEAR $L$_16_blocks_overflow_675
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_aarhBkdfwmCbhGr
+	jmp	NEAR $L$_16_blocks_ok_675
 
-$L$_16_blocks_overflow_aarhBkdfwmCbhGr:
+$L$_16_blocks_overflow_675:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_aarhBkdfwmCbhGr:
+$L$_16_blocks_ok_675:
 
 
 
@@ -93440,7 +93440,7 @@ $L$_16_blocks_ok_aarhBkdfwmCbhGr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_GdhyaGfbacenDuc
+	jl	NEAR $L$_small_initial_partial_block_676
 
 
 
@@ -93485,8 +93485,8 @@ $L$_16_blocks_ok_aarhBkdfwmCbhGr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_GdhyaGfbacenDuc
-$L$_small_initial_partial_block_GdhyaGfbacenDuc:
+	jmp	NEAR $L$_small_initial_compute_done_676
+$L$_small_initial_partial_block_676:
 
 
 
@@ -93534,32 +93534,32 @@ $L$_small_initial_partial_block_GdhyaGfbacenDuc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_GdhyaGfbacenDuc:
+$L$_small_initial_compute_done_676:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_GdhyaGfbacenDuc
+	je	NEAR $L$_after_reduction_676
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_GdhyaGfbacenDuc:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_5_cakgbrEGhktBloA:
+$L$_after_reduction_676:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_5_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_EefzhsdjCeGoasp
+	jae	NEAR $L$_16_blocks_overflow_677
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_EefzhsdjCeGoasp
+	jmp	NEAR $L$_16_blocks_ok_677
 
-$L$_16_blocks_overflow_EefzhsdjCeGoasp:
+$L$_16_blocks_overflow_677:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_EefzhsdjCeGoasp:
+$L$_16_blocks_ok_677:
 
 
 
@@ -93665,7 +93665,7 @@ $L$_16_blocks_ok_EefzhsdjCeGoasp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ElhgtCdbraADfzF
+	jl	NEAR $L$_small_initial_partial_block_678
 
 
 
@@ -93716,8 +93716,8 @@ $L$_16_blocks_ok_EefzhsdjCeGoasp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ElhgtCdbraADfzF
-$L$_small_initial_partial_block_ElhgtCdbraADfzF:
+	jmp	NEAR $L$_small_initial_compute_done_678
+$L$_small_initial_partial_block_678:
 
 
 
@@ -93765,32 +93765,32 @@ $L$_small_initial_partial_block_ElhgtCdbraADfzF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ElhgtCdbraADfzF:
+$L$_small_initial_compute_done_678:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ElhgtCdbraADfzF
+	je	NEAR $L$_after_reduction_678
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ElhgtCdbraADfzF:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_6_cakgbrEGhktBloA:
+$L$_after_reduction_678:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_6_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_lDrhhBGpjxgmBFA
+	jae	NEAR $L$_16_blocks_overflow_679
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_lDrhhBGpjxgmBFA
+	jmp	NEAR $L$_16_blocks_ok_679
 
-$L$_16_blocks_overflow_lDrhhBGpjxgmBFA:
+$L$_16_blocks_overflow_679:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_lDrhhBGpjxgmBFA:
+$L$_16_blocks_ok_679:
 
 
 
@@ -93896,7 +93896,7 @@ $L$_16_blocks_ok_lDrhhBGpjxgmBFA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ltxepEAqiolxzhB
+	jl	NEAR $L$_small_initial_partial_block_680
 
 
 
@@ -93947,8 +93947,8 @@ $L$_16_blocks_ok_lDrhhBGpjxgmBFA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ltxepEAqiolxzhB
-$L$_small_initial_partial_block_ltxepEAqiolxzhB:
+	jmp	NEAR $L$_small_initial_compute_done_680
+$L$_small_initial_partial_block_680:
 
 
 
@@ -94002,32 +94002,32 @@ $L$_small_initial_partial_block_ltxepEAqiolxzhB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ltxepEAqiolxzhB:
+$L$_small_initial_compute_done_680:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ltxepEAqiolxzhB
+	je	NEAR $L$_after_reduction_680
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ltxepEAqiolxzhB:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_7_cakgbrEGhktBloA:
+$L$_after_reduction_680:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_7_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_hwrurnvnzjDvnvg
+	jae	NEAR $L$_16_blocks_overflow_681
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_hwrurnvnzjDvnvg
+	jmp	NEAR $L$_16_blocks_ok_681
 
-$L$_16_blocks_overflow_hwrurnvnzjDvnvg:
+$L$_16_blocks_overflow_681:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_hwrurnvnzjDvnvg:
+$L$_16_blocks_ok_681:
 
 
 
@@ -94133,7 +94133,7 @@ $L$_16_blocks_ok_hwrurnvnzjDvnvg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_opCssgcnbwmGlqr
+	jl	NEAR $L$_small_initial_partial_block_682
 
 
 
@@ -94185,8 +94185,8 @@ $L$_16_blocks_ok_hwrurnvnzjDvnvg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_opCssgcnbwmGlqr
-$L$_small_initial_partial_block_opCssgcnbwmGlqr:
+	jmp	NEAR $L$_small_initial_compute_done_682
+$L$_small_initial_partial_block_682:
 
 
 
@@ -94240,32 +94240,32 @@ $L$_small_initial_partial_block_opCssgcnbwmGlqr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_opCssgcnbwmGlqr:
+$L$_small_initial_compute_done_682:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_opCssgcnbwmGlqr
+	je	NEAR $L$_after_reduction_682
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_opCssgcnbwmGlqr:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_8_cakgbrEGhktBloA:
+$L$_after_reduction_682:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_8_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_ruttpFldeEGFCpj
+	jae	NEAR $L$_16_blocks_overflow_683
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ruttpFldeEGFCpj
+	jmp	NEAR $L$_16_blocks_ok_683
 
-$L$_16_blocks_overflow_ruttpFldeEGFCpj:
+$L$_16_blocks_overflow_683:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_ruttpFldeEGFCpj:
+$L$_16_blocks_ok_683:
 
 
 
@@ -94371,7 +94371,7 @@ $L$_16_blocks_ok_ruttpFldeEGFCpj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_trddymnEohshqic
+	jl	NEAR $L$_small_initial_partial_block_684
 
 
 
@@ -94425,8 +94425,8 @@ $L$_16_blocks_ok_ruttpFldeEGFCpj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_trddymnEohshqic
-$L$_small_initial_partial_block_trddymnEohshqic:
+	jmp	NEAR $L$_small_initial_compute_done_684
+$L$_small_initial_partial_block_684:
 
 
 
@@ -94481,26 +94481,26 @@ $L$_small_initial_partial_block_trddymnEohshqic:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_trddymnEohshqic:
+$L$_small_initial_compute_done_684:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_trddymnEohshqic
+	je	NEAR $L$_after_reduction_684
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_trddymnEohshqic:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_9_cakgbrEGhktBloA:
+$L$_after_reduction_684:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_9_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_vfzpfGAskApwluC
+	jae	NEAR $L$_16_blocks_overflow_685
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_vfzpfGAskApwluC
+	jmp	NEAR $L$_16_blocks_ok_685
 
-$L$_16_blocks_overflow_vfzpfGAskApwluC:
+$L$_16_blocks_overflow_685:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -94509,7 +94509,7 @@ $L$_16_blocks_overflow_vfzpfGAskApwluC:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_vfzpfGAskApwluC:
+$L$_16_blocks_ok_685:
 
 
 
@@ -94632,7 +94632,7 @@ $L$_16_blocks_ok_vfzpfGAskApwluC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uAbpeCkklqjvAAD
+	jl	NEAR $L$_small_initial_partial_block_686
 
 
 
@@ -94692,8 +94692,8 @@ $L$_16_blocks_ok_vfzpfGAskApwluC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uAbpeCkklqjvAAD
-$L$_small_initial_partial_block_uAbpeCkklqjvAAD:
+	jmp	NEAR $L$_small_initial_compute_done_686
+$L$_small_initial_partial_block_686:
 
 
 
@@ -94750,26 +94750,26 @@ $L$_small_initial_partial_block_uAbpeCkklqjvAAD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uAbpeCkklqjvAAD:
+$L$_small_initial_compute_done_686:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uAbpeCkklqjvAAD
+	je	NEAR $L$_after_reduction_686
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uAbpeCkklqjvAAD:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_10_cakgbrEGhktBloA:
+$L$_after_reduction_686:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_10_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_plzpcyiyilnBpdp
+	jae	NEAR $L$_16_blocks_overflow_687
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_plzpcyiyilnBpdp
+	jmp	NEAR $L$_16_blocks_ok_687
 
-$L$_16_blocks_overflow_plzpcyiyilnBpdp:
+$L$_16_blocks_overflow_687:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -94778,7 +94778,7 @@ $L$_16_blocks_overflow_plzpcyiyilnBpdp:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_plzpcyiyilnBpdp:
+$L$_16_blocks_ok_687:
 
 
 
@@ -94901,7 +94901,7 @@ $L$_16_blocks_ok_plzpcyiyilnBpdp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ltimvyBzGtjmCpC
+	jl	NEAR $L$_small_initial_partial_block_688
 
 
 
@@ -94961,8 +94961,8 @@ $L$_16_blocks_ok_plzpcyiyilnBpdp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ltimvyBzGtjmCpC
-$L$_small_initial_partial_block_ltimvyBzGtjmCpC:
+	jmp	NEAR $L$_small_initial_compute_done_688
+$L$_small_initial_partial_block_688:
 
 
 
@@ -95025,26 +95025,26 @@ $L$_small_initial_partial_block_ltimvyBzGtjmCpC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ltimvyBzGtjmCpC:
+$L$_small_initial_compute_done_688:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ltimvyBzGtjmCpC
+	je	NEAR $L$_after_reduction_688
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ltimvyBzGtjmCpC:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_11_cakgbrEGhktBloA:
+$L$_after_reduction_688:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_11_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_ufqFarFmeulxuoq
+	jae	NEAR $L$_16_blocks_overflow_689
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ufqFarFmeulxuoq
+	jmp	NEAR $L$_16_blocks_ok_689
 
-$L$_16_blocks_overflow_ufqFarFmeulxuoq:
+$L$_16_blocks_overflow_689:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -95053,7 +95053,7 @@ $L$_16_blocks_overflow_ufqFarFmeulxuoq:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_ufqFarFmeulxuoq:
+$L$_16_blocks_ok_689:
 
 
 
@@ -95176,7 +95176,7 @@ $L$_16_blocks_ok_ufqFarFmeulxuoq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ekmCxfjAjtkxhCp
+	jl	NEAR $L$_small_initial_partial_block_690
 
 
 
@@ -95237,8 +95237,8 @@ $L$_16_blocks_ok_ufqFarFmeulxuoq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ekmCxfjAjtkxhCp
-$L$_small_initial_partial_block_ekmCxfjAjtkxhCp:
+	jmp	NEAR $L$_small_initial_compute_done_690
+$L$_small_initial_partial_block_690:
 
 
 
@@ -95301,26 +95301,26 @@ $L$_small_initial_partial_block_ekmCxfjAjtkxhCp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ekmCxfjAjtkxhCp:
+$L$_small_initial_compute_done_690:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ekmCxfjAjtkxhCp
+	je	NEAR $L$_after_reduction_690
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ekmCxfjAjtkxhCp:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_12_cakgbrEGhktBloA:
+$L$_after_reduction_690:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_12_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_lfnecdsvpnsjoaz
+	jae	NEAR $L$_16_blocks_overflow_691
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_lfnecdsvpnsjoaz
+	jmp	NEAR $L$_16_blocks_ok_691
 
-$L$_16_blocks_overflow_lfnecdsvpnsjoaz:
+$L$_16_blocks_overflow_691:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -95329,7 +95329,7 @@ $L$_16_blocks_overflow_lfnecdsvpnsjoaz:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_lfnecdsvpnsjoaz:
+$L$_16_blocks_ok_691:
 
 
 
@@ -95452,7 +95452,7 @@ $L$_16_blocks_ok_lfnecdsvpnsjoaz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zcqiiwAzxqwvkeE
+	jl	NEAR $L$_small_initial_partial_block_692
 
 
 
@@ -95511,8 +95511,8 @@ $L$_16_blocks_ok_lfnecdsvpnsjoaz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zcqiiwAzxqwvkeE
-$L$_small_initial_partial_block_zcqiiwAzxqwvkeE:
+	jmp	NEAR $L$_small_initial_compute_done_692
+$L$_small_initial_partial_block_692:
 
 
 
@@ -95576,27 +95576,27 @@ $L$_small_initial_partial_block_zcqiiwAzxqwvkeE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zcqiiwAzxqwvkeE:
+$L$_small_initial_compute_done_692:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zcqiiwAzxqwvkeE
+	je	NEAR $L$_after_reduction_692
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_zcqiiwAzxqwvkeE:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_13_cakgbrEGhktBloA:
+$L$_after_reduction_692:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_13_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_njxjCFEpDtABBEc
+	jae	NEAR $L$_16_blocks_overflow_693
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_njxjCFEpDtABBEc
+	jmp	NEAR $L$_16_blocks_ok_693
 
-$L$_16_blocks_overflow_njxjCFEpDtABBEc:
+$L$_16_blocks_overflow_693:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -95607,7 +95607,7 @@ $L$_16_blocks_overflow_njxjCFEpDtABBEc:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_njxjCFEpDtABBEc:
+$L$_16_blocks_ok_693:
 
 
 
@@ -95747,7 +95747,7 @@ $L$_16_blocks_ok_njxjCFEpDtABBEc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jpyDiBxevjlzfbm
+	jl	NEAR $L$_small_initial_partial_block_694
 
 
 
@@ -95812,8 +95812,8 @@ $L$_16_blocks_ok_njxjCFEpDtABBEc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jpyDiBxevjlzfbm
-$L$_small_initial_partial_block_jpyDiBxevjlzfbm:
+	jmp	NEAR $L$_small_initial_compute_done_694
+$L$_small_initial_partial_block_694:
 
 
 
@@ -95875,27 +95875,27 @@ $L$_small_initial_partial_block_jpyDiBxevjlzfbm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jpyDiBxevjlzfbm:
+$L$_small_initial_compute_done_694:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jpyDiBxevjlzfbm
+	je	NEAR $L$_after_reduction_694
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_jpyDiBxevjlzfbm:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_14_cakgbrEGhktBloA:
+$L$_after_reduction_694:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_14_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_waehhizhjtkczbA
+	jae	NEAR $L$_16_blocks_overflow_695
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_waehhizhjtkczbA
+	jmp	NEAR $L$_16_blocks_ok_695
 
-$L$_16_blocks_overflow_waehhizhjtkczbA:
+$L$_16_blocks_overflow_695:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -95906,7 +95906,7 @@ $L$_16_blocks_overflow_waehhizhjtkczbA:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_waehhizhjtkczbA:
+$L$_16_blocks_ok_695:
 
 
 
@@ -96046,7 +96046,7 @@ $L$_16_blocks_ok_waehhizhjtkczbA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_svdeAhAomfBoGcp
+	jl	NEAR $L$_small_initial_partial_block_696
 
 
 
@@ -96111,8 +96111,8 @@ $L$_16_blocks_ok_waehhizhjtkczbA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_svdeAhAomfBoGcp
-$L$_small_initial_partial_block_svdeAhAomfBoGcp:
+	jmp	NEAR $L$_small_initial_compute_done_696
+$L$_small_initial_partial_block_696:
 
 
 
@@ -96180,27 +96180,27 @@ $L$_small_initial_partial_block_svdeAhAomfBoGcp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_svdeAhAomfBoGcp:
+$L$_small_initial_compute_done_696:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_svdeAhAomfBoGcp
+	je	NEAR $L$_after_reduction_696
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_svdeAhAomfBoGcp:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_15_cakgbrEGhktBloA:
+$L$_after_reduction_696:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_15_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_igekyaCxnbnFjzy
+	jae	NEAR $L$_16_blocks_overflow_697
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_igekyaCxnbnFjzy
+	jmp	NEAR $L$_16_blocks_ok_697
 
-$L$_16_blocks_overflow_igekyaCxnbnFjzy:
+$L$_16_blocks_overflow_697:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -96211,7 +96211,7 @@ $L$_16_blocks_overflow_igekyaCxnbnFjzy:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_igekyaCxnbnFjzy:
+$L$_16_blocks_ok_697:
 
 
 
@@ -96351,7 +96351,7 @@ $L$_16_blocks_ok_igekyaCxnbnFjzy:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jDEeqiDoroGfyiy
+	jl	NEAR $L$_small_initial_partial_block_698
 
 
 
@@ -96417,8 +96417,8 @@ $L$_16_blocks_ok_igekyaCxnbnFjzy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jDEeqiDoroGfyiy
-$L$_small_initial_partial_block_jDEeqiDoroGfyiy:
+	jmp	NEAR $L$_small_initial_compute_done_698
+$L$_small_initial_partial_block_698:
 
 
 
@@ -96486,27 +96486,27 @@ $L$_small_initial_partial_block_jDEeqiDoroGfyiy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jDEeqiDoroGfyiy:
+$L$_small_initial_compute_done_698:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jDEeqiDoroGfyiy
+	je	NEAR $L$_after_reduction_698
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_jDEeqiDoroGfyiy:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_16_cakgbrEGhktBloA:
+$L$_after_reduction_698:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_16_668:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_FCgwsFFzqyodfue
+	jae	NEAR $L$_16_blocks_overflow_699
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FCgwsFFzqyodfue
+	jmp	NEAR $L$_16_blocks_ok_699
 
-$L$_16_blocks_overflow_FCgwsFFzqyodfue:
+$L$_16_blocks_overflow_699:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -96517,7 +96517,7 @@ $L$_16_blocks_overflow_FCgwsFFzqyodfue:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_FCgwsFFzqyodfue:
+$L$_16_blocks_ok_699:
 
 
 
@@ -96654,7 +96654,7 @@ $L$_16_blocks_ok_FCgwsFFzqyodfue:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_orCiddjAdbAgDvh:
+$L$_small_initial_partial_block_700:
 
 
 
@@ -96723,11 +96723,11 @@ $L$_small_initial_partial_block_orCiddjAdbAgDvh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_orCiddjAdbAgDvh:
+$L$_small_initial_compute_done_700:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_orCiddjAdbAgDvh:
-	jmp	NEAR $L$_last_blocks_done_cakgbrEGhktBloA
-$L$_last_num_blocks_is_0_cakgbrEGhktBloA:
+$L$_after_reduction_700:
+	jmp	NEAR $L$_last_blocks_done_668
+$L$_last_num_blocks_is_0_668:
 	vmovdqa64	zmm13,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -96788,18 +96788,18 @@ $L$_last_num_blocks_is_0_cakgbrEGhktBloA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_cakgbrEGhktBloA:
+$L$_last_blocks_done_668:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_FCvvteafomDkwaj
-$L$_encrypt_32_blocks_FCvvteafomDkwaj:
+	jmp	NEAR $L$_ghash_done_659
+$L$_encrypt_32_blocks_659:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_AFqfpreviifumFa
+	jae	NEAR $L$_16_blocks_overflow_701
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_AFqfpreviifumFa
-$L$_16_blocks_overflow_AFqfpreviifumFa:
+	jmp	NEAR $L$_16_blocks_ok_701
+$L$_16_blocks_overflow_701:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -96810,7 +96810,7 @@ $L$_16_blocks_overflow_AFqfpreviifumFa:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_AFqfpreviifumFa:
+$L$_16_blocks_ok_701:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -96986,13 +96986,13 @@ $L$_16_blocks_ok_AFqfpreviifumFa:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_lmuCljyjkypbtzy
+	jae	NEAR $L$_16_blocks_overflow_702
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_lmuCljyjkypbtzy
-$L$_16_blocks_overflow_lmuCljyjkypbtzy:
+	jmp	NEAR $L$_16_blocks_ok_702
+$L$_16_blocks_overflow_702:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -97003,7 +97003,7 @@ $L$_16_blocks_overflow_lmuCljyjkypbtzy:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_lmuCljyjkypbtzy:
+$L$_16_blocks_ok_702:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -97247,61 +97247,61 @@ $L$_16_blocks_ok_lmuCljyjkypbtzy:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_sxhiuBFCmneEyCp
+	je	NEAR $L$_last_num_blocks_is_0_703
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_sxhiuBFCmneEyCp
-	jb	NEAR $L$_last_num_blocks_is_7_1_sxhiuBFCmneEyCp
+	je	NEAR $L$_last_num_blocks_is_8_703
+	jb	NEAR $L$_last_num_blocks_is_7_1_703
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_sxhiuBFCmneEyCp
-	jb	NEAR $L$_last_num_blocks_is_11_9_sxhiuBFCmneEyCp
+	je	NEAR $L$_last_num_blocks_is_12_703
+	jb	NEAR $L$_last_num_blocks_is_11_9_703
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_sxhiuBFCmneEyCp
-	ja	NEAR $L$_last_num_blocks_is_16_sxhiuBFCmneEyCp
+	je	NEAR $L$_last_num_blocks_is_15_703
+	ja	NEAR $L$_last_num_blocks_is_16_703
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_sxhiuBFCmneEyCp
-	jmp	NEAR $L$_last_num_blocks_is_13_sxhiuBFCmneEyCp
+	je	NEAR $L$_last_num_blocks_is_14_703
+	jmp	NEAR $L$_last_num_blocks_is_13_703
 
-$L$_last_num_blocks_is_11_9_sxhiuBFCmneEyCp:
+$L$_last_num_blocks_is_11_9_703:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_sxhiuBFCmneEyCp
-	ja	NEAR $L$_last_num_blocks_is_11_sxhiuBFCmneEyCp
-	jmp	NEAR $L$_last_num_blocks_is_9_sxhiuBFCmneEyCp
+	je	NEAR $L$_last_num_blocks_is_10_703
+	ja	NEAR $L$_last_num_blocks_is_11_703
+	jmp	NEAR $L$_last_num_blocks_is_9_703
 
-$L$_last_num_blocks_is_7_1_sxhiuBFCmneEyCp:
+$L$_last_num_blocks_is_7_1_703:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_sxhiuBFCmneEyCp
-	jb	NEAR $L$_last_num_blocks_is_3_1_sxhiuBFCmneEyCp
+	je	NEAR $L$_last_num_blocks_is_4_703
+	jb	NEAR $L$_last_num_blocks_is_3_1_703
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_sxhiuBFCmneEyCp
-	je	NEAR $L$_last_num_blocks_is_6_sxhiuBFCmneEyCp
-	jmp	NEAR $L$_last_num_blocks_is_5_sxhiuBFCmneEyCp
+	ja	NEAR $L$_last_num_blocks_is_7_703
+	je	NEAR $L$_last_num_blocks_is_6_703
+	jmp	NEAR $L$_last_num_blocks_is_5_703
 
-$L$_last_num_blocks_is_3_1_sxhiuBFCmneEyCp:
+$L$_last_num_blocks_is_3_1_703:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_sxhiuBFCmneEyCp
-	je	NEAR $L$_last_num_blocks_is_2_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_1_sxhiuBFCmneEyCp:
+	ja	NEAR $L$_last_num_blocks_is_3_703
+	je	NEAR $L$_last_num_blocks_is_2_703
+$L$_last_num_blocks_is_1_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_FukljqmxzDfBrjj
+	jae	NEAR $L$_16_blocks_overflow_704
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_FukljqmxzDfBrjj
+	jmp	NEAR $L$_16_blocks_ok_704
 
-$L$_16_blocks_overflow_FukljqmxzDfBrjj:
+$L$_16_blocks_overflow_704:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_FukljqmxzDfBrjj:
+$L$_16_blocks_ok_704:
 
 
 
@@ -97389,7 +97389,7 @@ $L$_16_blocks_ok_FukljqmxzDfBrjj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oktkoyngCBEAvvf
+	jl	NEAR $L$_small_initial_partial_block_705
 
 
 
@@ -97433,8 +97433,8 @@ $L$_16_blocks_ok_FukljqmxzDfBrjj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oktkoyngCBEAvvf
-$L$_small_initial_partial_block_oktkoyngCBEAvvf:
+	jmp	NEAR $L$_small_initial_compute_done_705
+$L$_small_initial_partial_block_705:
 
 
 
@@ -97486,24 +97486,24 @@ $L$_small_initial_partial_block_oktkoyngCBEAvvf:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_oktkoyngCBEAvvf
-$L$_small_initial_compute_done_oktkoyngCBEAvvf:
-$L$_after_reduction_oktkoyngCBEAvvf:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_2_sxhiuBFCmneEyCp:
+	jmp	NEAR $L$_after_reduction_705
+$L$_small_initial_compute_done_705:
+$L$_after_reduction_705:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_2_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_yEtfoBobwkfxxmf
+	jae	NEAR $L$_16_blocks_overflow_706
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_yEtfoBobwkfxxmf
+	jmp	NEAR $L$_16_blocks_ok_706
 
-$L$_16_blocks_overflow_yEtfoBobwkfxxmf:
+$L$_16_blocks_overflow_706:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_yEtfoBobwkfxxmf:
+$L$_16_blocks_ok_706:
 
 
 
@@ -97592,7 +97592,7 @@ $L$_16_blocks_ok_yEtfoBobwkfxxmf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wruamxnaoAfBCsr
+	jl	NEAR $L$_small_initial_partial_block_707
 
 
 
@@ -97636,8 +97636,8 @@ $L$_16_blocks_ok_yEtfoBobwkfxxmf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wruamxnaoAfBCsr
-$L$_small_initial_partial_block_wruamxnaoAfBCsr:
+	jmp	NEAR $L$_small_initial_compute_done_707
+$L$_small_initial_partial_block_707:
 
 
 
@@ -97684,27 +97684,27 @@ $L$_small_initial_partial_block_wruamxnaoAfBCsr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wruamxnaoAfBCsr:
+$L$_small_initial_compute_done_707:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wruamxnaoAfBCsr
+	je	NEAR $L$_after_reduction_707
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_wruamxnaoAfBCsr:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_3_sxhiuBFCmneEyCp:
+$L$_after_reduction_707:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_3_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_gtvavncAhtykCGe
+	jae	NEAR $L$_16_blocks_overflow_708
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_gtvavncAhtykCGe
+	jmp	NEAR $L$_16_blocks_ok_708
 
-$L$_16_blocks_overflow_gtvavncAhtykCGe:
+$L$_16_blocks_overflow_708:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_gtvavncAhtykCGe:
+$L$_16_blocks_ok_708:
 
 
 
@@ -97793,7 +97793,7 @@ $L$_16_blocks_ok_gtvavncAhtykCGe:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lGhFcgrwpxECeFm
+	jl	NEAR $L$_small_initial_partial_block_709
 
 
 
@@ -97838,8 +97838,8 @@ $L$_16_blocks_ok_gtvavncAhtykCGe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lGhFcgrwpxECeFm
-$L$_small_initial_partial_block_lGhFcgrwpxECeFm:
+	jmp	NEAR $L$_small_initial_compute_done_709
+$L$_small_initial_partial_block_709:
 
 
 
@@ -97886,27 +97886,27 @@ $L$_small_initial_partial_block_lGhFcgrwpxECeFm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lGhFcgrwpxECeFm:
+$L$_small_initial_compute_done_709:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lGhFcgrwpxECeFm
+	je	NEAR $L$_after_reduction_709
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lGhFcgrwpxECeFm:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_4_sxhiuBFCmneEyCp:
+$L$_after_reduction_709:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_4_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_xphqaGnbmAkAljy
+	jae	NEAR $L$_16_blocks_overflow_710
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_xphqaGnbmAkAljy
+	jmp	NEAR $L$_16_blocks_ok_710
 
-$L$_16_blocks_overflow_xphqaGnbmAkAljy:
+$L$_16_blocks_overflow_710:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_xphqaGnbmAkAljy:
+$L$_16_blocks_ok_710:
 
 
 
@@ -97995,7 +97995,7 @@ $L$_16_blocks_ok_xphqaGnbmAkAljy:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EDubszgatukwBAo
+	jl	NEAR $L$_small_initial_partial_block_711
 
 
 
@@ -98040,8 +98040,8 @@ $L$_16_blocks_ok_xphqaGnbmAkAljy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EDubszgatukwBAo
-$L$_small_initial_partial_block_EDubszgatukwBAo:
+	jmp	NEAR $L$_small_initial_compute_done_711
+$L$_small_initial_partial_block_711:
 
 
 
@@ -98089,32 +98089,32 @@ $L$_small_initial_partial_block_EDubszgatukwBAo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EDubszgatukwBAo:
+$L$_small_initial_compute_done_711:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EDubszgatukwBAo
+	je	NEAR $L$_after_reduction_711
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EDubszgatukwBAo:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_5_sxhiuBFCmneEyCp:
+$L$_after_reduction_711:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_5_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_cjBdkdlhBanGuaa
+	jae	NEAR $L$_16_blocks_overflow_712
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_cjBdkdlhBanGuaa
+	jmp	NEAR $L$_16_blocks_ok_712
 
-$L$_16_blocks_overflow_cjBdkdlhBanGuaa:
+$L$_16_blocks_overflow_712:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_cjBdkdlhBanGuaa:
+$L$_16_blocks_ok_712:
 
 
 
@@ -98220,7 +98220,7 @@ $L$_16_blocks_ok_cjBdkdlhBanGuaa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xBheihEApqzAApb
+	jl	NEAR $L$_small_initial_partial_block_713
 
 
 
@@ -98271,8 +98271,8 @@ $L$_16_blocks_ok_cjBdkdlhBanGuaa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xBheihEApqzAApb
-$L$_small_initial_partial_block_xBheihEApqzAApb:
+	jmp	NEAR $L$_small_initial_compute_done_713
+$L$_small_initial_partial_block_713:
 
 
 
@@ -98320,32 +98320,32 @@ $L$_small_initial_partial_block_xBheihEApqzAApb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xBheihEApqzAApb:
+$L$_small_initial_compute_done_713:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xBheihEApqzAApb
+	je	NEAR $L$_after_reduction_713
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xBheihEApqzAApb:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_6_sxhiuBFCmneEyCp:
+$L$_after_reduction_713:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_6_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_GuDsigkprfFjjtj
+	jae	NEAR $L$_16_blocks_overflow_714
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_GuDsigkprfFjjtj
+	jmp	NEAR $L$_16_blocks_ok_714
 
-$L$_16_blocks_overflow_GuDsigkprfFjjtj:
+$L$_16_blocks_overflow_714:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_GuDsigkprfFjjtj:
+$L$_16_blocks_ok_714:
 
 
 
@@ -98451,7 +98451,7 @@ $L$_16_blocks_ok_GuDsigkprfFjjtj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xjGwGFGAiBsAAmo
+	jl	NEAR $L$_small_initial_partial_block_715
 
 
 
@@ -98502,8 +98502,8 @@ $L$_16_blocks_ok_GuDsigkprfFjjtj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xjGwGFGAiBsAAmo
-$L$_small_initial_partial_block_xjGwGFGAiBsAAmo:
+	jmp	NEAR $L$_small_initial_compute_done_715
+$L$_small_initial_partial_block_715:
 
 
 
@@ -98557,32 +98557,32 @@ $L$_small_initial_partial_block_xjGwGFGAiBsAAmo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xjGwGFGAiBsAAmo:
+$L$_small_initial_compute_done_715:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xjGwGFGAiBsAAmo
+	je	NEAR $L$_after_reduction_715
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xjGwGFGAiBsAAmo:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_7_sxhiuBFCmneEyCp:
+$L$_after_reduction_715:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_7_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_FhqxcCdjycjiEiq
+	jae	NEAR $L$_16_blocks_overflow_716
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FhqxcCdjycjiEiq
+	jmp	NEAR $L$_16_blocks_ok_716
 
-$L$_16_blocks_overflow_FhqxcCdjycjiEiq:
+$L$_16_blocks_overflow_716:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_FhqxcCdjycjiEiq:
+$L$_16_blocks_ok_716:
 
 
 
@@ -98688,7 +98688,7 @@ $L$_16_blocks_ok_FhqxcCdjycjiEiq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EjDGmCzcaAyvFDj
+	jl	NEAR $L$_small_initial_partial_block_717
 
 
 
@@ -98740,8 +98740,8 @@ $L$_16_blocks_ok_FhqxcCdjycjiEiq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EjDGmCzcaAyvFDj
-$L$_small_initial_partial_block_EjDGmCzcaAyvFDj:
+	jmp	NEAR $L$_small_initial_compute_done_717
+$L$_small_initial_partial_block_717:
 
 
 
@@ -98795,32 +98795,32 @@ $L$_small_initial_partial_block_EjDGmCzcaAyvFDj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EjDGmCzcaAyvFDj:
+$L$_small_initial_compute_done_717:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EjDGmCzcaAyvFDj
+	je	NEAR $L$_after_reduction_717
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EjDGmCzcaAyvFDj:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_8_sxhiuBFCmneEyCp:
+$L$_after_reduction_717:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_8_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_lBCaamDgjAAjbGs
+	jae	NEAR $L$_16_blocks_overflow_718
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_lBCaamDgjAAjbGs
+	jmp	NEAR $L$_16_blocks_ok_718
 
-$L$_16_blocks_overflow_lBCaamDgjAAjbGs:
+$L$_16_blocks_overflow_718:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_lBCaamDgjAAjbGs:
+$L$_16_blocks_ok_718:
 
 
 
@@ -98926,7 +98926,7 @@ $L$_16_blocks_ok_lBCaamDgjAAjbGs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_CgcBadbqGvxotrr
+	jl	NEAR $L$_small_initial_partial_block_719
 
 
 
@@ -98980,8 +98980,8 @@ $L$_16_blocks_ok_lBCaamDgjAAjbGs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_CgcBadbqGvxotrr
-$L$_small_initial_partial_block_CgcBadbqGvxotrr:
+	jmp	NEAR $L$_small_initial_compute_done_719
+$L$_small_initial_partial_block_719:
 
 
 
@@ -99036,26 +99036,26 @@ $L$_small_initial_partial_block_CgcBadbqGvxotrr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_CgcBadbqGvxotrr:
+$L$_small_initial_compute_done_719:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_CgcBadbqGvxotrr
+	je	NEAR $L$_after_reduction_719
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_CgcBadbqGvxotrr:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_9_sxhiuBFCmneEyCp:
+$L$_after_reduction_719:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_9_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_mkGBoxBneippAyA
+	jae	NEAR $L$_16_blocks_overflow_720
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_mkGBoxBneippAyA
+	jmp	NEAR $L$_16_blocks_ok_720
 
-$L$_16_blocks_overflow_mkGBoxBneippAyA:
+$L$_16_blocks_overflow_720:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -99064,7 +99064,7 @@ $L$_16_blocks_overflow_mkGBoxBneippAyA:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_mkGBoxBneippAyA:
+$L$_16_blocks_ok_720:
 
 
 
@@ -99187,7 +99187,7 @@ $L$_16_blocks_ok_mkGBoxBneippAyA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tplsyxyzidrhAmc
+	jl	NEAR $L$_small_initial_partial_block_721
 
 
 
@@ -99247,8 +99247,8 @@ $L$_16_blocks_ok_mkGBoxBneippAyA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tplsyxyzidrhAmc
-$L$_small_initial_partial_block_tplsyxyzidrhAmc:
+	jmp	NEAR $L$_small_initial_compute_done_721
+$L$_small_initial_partial_block_721:
 
 
 
@@ -99305,26 +99305,26 @@ $L$_small_initial_partial_block_tplsyxyzidrhAmc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tplsyxyzidrhAmc:
+$L$_small_initial_compute_done_721:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tplsyxyzidrhAmc
+	je	NEAR $L$_after_reduction_721
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tplsyxyzidrhAmc:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_10_sxhiuBFCmneEyCp:
+$L$_after_reduction_721:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_10_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_aztxsmnickxhCkB
+	jae	NEAR $L$_16_blocks_overflow_722
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_aztxsmnickxhCkB
+	jmp	NEAR $L$_16_blocks_ok_722
 
-$L$_16_blocks_overflow_aztxsmnickxhCkB:
+$L$_16_blocks_overflow_722:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -99333,7 +99333,7 @@ $L$_16_blocks_overflow_aztxsmnickxhCkB:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_aztxsmnickxhCkB:
+$L$_16_blocks_ok_722:
 
 
 
@@ -99456,7 +99456,7 @@ $L$_16_blocks_ok_aztxsmnickxhCkB:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dqjpmjdpjbwpxwk
+	jl	NEAR $L$_small_initial_partial_block_723
 
 
 
@@ -99516,8 +99516,8 @@ $L$_16_blocks_ok_aztxsmnickxhCkB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dqjpmjdpjbwpxwk
-$L$_small_initial_partial_block_dqjpmjdpjbwpxwk:
+	jmp	NEAR $L$_small_initial_compute_done_723
+$L$_small_initial_partial_block_723:
 
 
 
@@ -99580,26 +99580,26 @@ $L$_small_initial_partial_block_dqjpmjdpjbwpxwk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dqjpmjdpjbwpxwk:
+$L$_small_initial_compute_done_723:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dqjpmjdpjbwpxwk
+	je	NEAR $L$_after_reduction_723
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dqjpmjdpjbwpxwk:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_11_sxhiuBFCmneEyCp:
+$L$_after_reduction_723:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_11_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_cgptcjjksDAygge
+	jae	NEAR $L$_16_blocks_overflow_724
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_cgptcjjksDAygge
+	jmp	NEAR $L$_16_blocks_ok_724
 
-$L$_16_blocks_overflow_cgptcjjksDAygge:
+$L$_16_blocks_overflow_724:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -99608,7 +99608,7 @@ $L$_16_blocks_overflow_cgptcjjksDAygge:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_cgptcjjksDAygge:
+$L$_16_blocks_ok_724:
 
 
 
@@ -99731,7 +99731,7 @@ $L$_16_blocks_ok_cgptcjjksDAygge:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BuumxCjCFjrmvAh
+	jl	NEAR $L$_small_initial_partial_block_725
 
 
 
@@ -99792,8 +99792,8 @@ $L$_16_blocks_ok_cgptcjjksDAygge:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BuumxCjCFjrmvAh
-$L$_small_initial_partial_block_BuumxCjCFjrmvAh:
+	jmp	NEAR $L$_small_initial_compute_done_725
+$L$_small_initial_partial_block_725:
 
 
 
@@ -99856,26 +99856,26 @@ $L$_small_initial_partial_block_BuumxCjCFjrmvAh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BuumxCjCFjrmvAh:
+$L$_small_initial_compute_done_725:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BuumxCjCFjrmvAh
+	je	NEAR $L$_after_reduction_725
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BuumxCjCFjrmvAh:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_12_sxhiuBFCmneEyCp:
+$L$_after_reduction_725:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_12_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_DGahGgeDyBaequj
+	jae	NEAR $L$_16_blocks_overflow_726
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_DGahGgeDyBaequj
+	jmp	NEAR $L$_16_blocks_ok_726
 
-$L$_16_blocks_overflow_DGahGgeDyBaequj:
+$L$_16_blocks_overflow_726:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -99884,7 +99884,7 @@ $L$_16_blocks_overflow_DGahGgeDyBaequj:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_DGahGgeDyBaequj:
+$L$_16_blocks_ok_726:
 
 
 
@@ -100007,7 +100007,7 @@ $L$_16_blocks_ok_DGahGgeDyBaequj:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BCBpFDcDnjiBwky
+	jl	NEAR $L$_small_initial_partial_block_727
 
 
 
@@ -100066,8 +100066,8 @@ $L$_16_blocks_ok_DGahGgeDyBaequj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BCBpFDcDnjiBwky
-$L$_small_initial_partial_block_BCBpFDcDnjiBwky:
+	jmp	NEAR $L$_small_initial_compute_done_727
+$L$_small_initial_partial_block_727:
 
 
 
@@ -100131,27 +100131,27 @@ $L$_small_initial_partial_block_BCBpFDcDnjiBwky:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BCBpFDcDnjiBwky:
+$L$_small_initial_compute_done_727:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BCBpFDcDnjiBwky
+	je	NEAR $L$_after_reduction_727
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BCBpFDcDnjiBwky:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_13_sxhiuBFCmneEyCp:
+$L$_after_reduction_727:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_13_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_xwAAGEyhGklxDeq
+	jae	NEAR $L$_16_blocks_overflow_728
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_xwAAGEyhGklxDeq
+	jmp	NEAR $L$_16_blocks_ok_728
 
-$L$_16_blocks_overflow_xwAAGEyhGklxDeq:
+$L$_16_blocks_overflow_728:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -100162,7 +100162,7 @@ $L$_16_blocks_overflow_xwAAGEyhGklxDeq:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_xwAAGEyhGklxDeq:
+$L$_16_blocks_ok_728:
 
 
 
@@ -100302,7 +100302,7 @@ $L$_16_blocks_ok_xwAAGEyhGklxDeq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ifAroxAlzdostDC
+	jl	NEAR $L$_small_initial_partial_block_729
 
 
 
@@ -100367,8 +100367,8 @@ $L$_16_blocks_ok_xwAAGEyhGklxDeq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ifAroxAlzdostDC
-$L$_small_initial_partial_block_ifAroxAlzdostDC:
+	jmp	NEAR $L$_small_initial_compute_done_729
+$L$_small_initial_partial_block_729:
 
 
 
@@ -100430,27 +100430,27 @@ $L$_small_initial_partial_block_ifAroxAlzdostDC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ifAroxAlzdostDC:
+$L$_small_initial_compute_done_729:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ifAroxAlzdostDC
+	je	NEAR $L$_after_reduction_729
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ifAroxAlzdostDC:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_14_sxhiuBFCmneEyCp:
+$L$_after_reduction_729:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_14_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_vhBgptezzbvjkrz
+	jae	NEAR $L$_16_blocks_overflow_730
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_vhBgptezzbvjkrz
+	jmp	NEAR $L$_16_blocks_ok_730
 
-$L$_16_blocks_overflow_vhBgptezzbvjkrz:
+$L$_16_blocks_overflow_730:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -100461,7 +100461,7 @@ $L$_16_blocks_overflow_vhBgptezzbvjkrz:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_vhBgptezzbvjkrz:
+$L$_16_blocks_ok_730:
 
 
 
@@ -100601,7 +100601,7 @@ $L$_16_blocks_ok_vhBgptezzbvjkrz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rrltqxxBapjxfiz
+	jl	NEAR $L$_small_initial_partial_block_731
 
 
 
@@ -100666,8 +100666,8 @@ $L$_16_blocks_ok_vhBgptezzbvjkrz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rrltqxxBapjxfiz
-$L$_small_initial_partial_block_rrltqxxBapjxfiz:
+	jmp	NEAR $L$_small_initial_compute_done_731
+$L$_small_initial_partial_block_731:
 
 
 
@@ -100735,27 +100735,27 @@ $L$_small_initial_partial_block_rrltqxxBapjxfiz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rrltqxxBapjxfiz:
+$L$_small_initial_compute_done_731:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rrltqxxBapjxfiz
+	je	NEAR $L$_after_reduction_731
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rrltqxxBapjxfiz:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_15_sxhiuBFCmneEyCp:
+$L$_after_reduction_731:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_15_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_AewDeitxeDvnBbE
+	jae	NEAR $L$_16_blocks_overflow_732
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_AewDeitxeDvnBbE
+	jmp	NEAR $L$_16_blocks_ok_732
 
-$L$_16_blocks_overflow_AewDeitxeDvnBbE:
+$L$_16_blocks_overflow_732:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -100766,7 +100766,7 @@ $L$_16_blocks_overflow_AewDeitxeDvnBbE:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_AewDeitxeDvnBbE:
+$L$_16_blocks_ok_732:
 
 
 
@@ -100906,7 +100906,7 @@ $L$_16_blocks_ok_AewDeitxeDvnBbE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ltBstjsBqripBbd
+	jl	NEAR $L$_small_initial_partial_block_733
 
 
 
@@ -100972,8 +100972,8 @@ $L$_16_blocks_ok_AewDeitxeDvnBbE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ltBstjsBqripBbd
-$L$_small_initial_partial_block_ltBstjsBqripBbd:
+	jmp	NEAR $L$_small_initial_compute_done_733
+$L$_small_initial_partial_block_733:
 
 
 
@@ -101041,27 +101041,27 @@ $L$_small_initial_partial_block_ltBstjsBqripBbd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ltBstjsBqripBbd:
+$L$_small_initial_compute_done_733:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ltBstjsBqripBbd
+	je	NEAR $L$_after_reduction_733
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ltBstjsBqripBbd:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_16_sxhiuBFCmneEyCp:
+$L$_after_reduction_733:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_16_703:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_ifzokruFwhlEbek
+	jae	NEAR $L$_16_blocks_overflow_734
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ifzokruFwhlEbek
+	jmp	NEAR $L$_16_blocks_ok_734
 
-$L$_16_blocks_overflow_ifzokruFwhlEbek:
+$L$_16_blocks_overflow_734:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -101072,7 +101072,7 @@ $L$_16_blocks_overflow_ifzokruFwhlEbek:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ifzokruFwhlEbek:
+$L$_16_blocks_ok_734:
 
 
 
@@ -101209,7 +101209,7 @@ $L$_16_blocks_ok_ifzokruFwhlEbek:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_cCoeclpvnnEigaf:
+$L$_small_initial_partial_block_735:
 
 
 
@@ -101278,11 +101278,11 @@ $L$_small_initial_partial_block_cCoeclpvnnEigaf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_cCoeclpvnnEigaf:
+$L$_small_initial_compute_done_735:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_cCoeclpvnnEigaf:
-	jmp	NEAR $L$_last_blocks_done_sxhiuBFCmneEyCp
-$L$_last_num_blocks_is_0_sxhiuBFCmneEyCp:
+$L$_after_reduction_735:
+	jmp	NEAR $L$_last_blocks_done_703
+$L$_last_num_blocks_is_0_703:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -101344,18 +101344,18 @@ $L$_last_num_blocks_is_0_sxhiuBFCmneEyCp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_sxhiuBFCmneEyCp:
+$L$_last_blocks_done_703:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_FCvvteafomDkwaj
-$L$_encrypt_16_blocks_FCvvteafomDkwaj:
+	jmp	NEAR $L$_ghash_done_659
+$L$_encrypt_16_blocks_659:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_bpnxEGadchhCwmg
+	jae	NEAR $L$_16_blocks_overflow_736
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_bpnxEGadchhCwmg
-$L$_16_blocks_overflow_bpnxEGadchhCwmg:
+	jmp	NEAR $L$_16_blocks_ok_736
+$L$_16_blocks_overflow_736:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -101366,7 +101366,7 @@ $L$_16_blocks_overflow_bpnxEGadchhCwmg:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_bpnxEGadchhCwmg:
+$L$_16_blocks_ok_736:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -101579,61 +101579,61 @@ $L$_16_blocks_ok_bpnxEGadchhCwmg:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_jelhzhcwsFGqGrq
+	je	NEAR $L$_last_num_blocks_is_0_737
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_jelhzhcwsFGqGrq
-	jb	NEAR $L$_last_num_blocks_is_7_1_jelhzhcwsFGqGrq
+	je	NEAR $L$_last_num_blocks_is_8_737
+	jb	NEAR $L$_last_num_blocks_is_7_1_737
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_jelhzhcwsFGqGrq
-	jb	NEAR $L$_last_num_blocks_is_11_9_jelhzhcwsFGqGrq
+	je	NEAR $L$_last_num_blocks_is_12_737
+	jb	NEAR $L$_last_num_blocks_is_11_9_737
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_jelhzhcwsFGqGrq
-	ja	NEAR $L$_last_num_blocks_is_16_jelhzhcwsFGqGrq
+	je	NEAR $L$_last_num_blocks_is_15_737
+	ja	NEAR $L$_last_num_blocks_is_16_737
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_jelhzhcwsFGqGrq
-	jmp	NEAR $L$_last_num_blocks_is_13_jelhzhcwsFGqGrq
+	je	NEAR $L$_last_num_blocks_is_14_737
+	jmp	NEAR $L$_last_num_blocks_is_13_737
 
-$L$_last_num_blocks_is_11_9_jelhzhcwsFGqGrq:
+$L$_last_num_blocks_is_11_9_737:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_jelhzhcwsFGqGrq
-	ja	NEAR $L$_last_num_blocks_is_11_jelhzhcwsFGqGrq
-	jmp	NEAR $L$_last_num_blocks_is_9_jelhzhcwsFGqGrq
+	je	NEAR $L$_last_num_blocks_is_10_737
+	ja	NEAR $L$_last_num_blocks_is_11_737
+	jmp	NEAR $L$_last_num_blocks_is_9_737
 
-$L$_last_num_blocks_is_7_1_jelhzhcwsFGqGrq:
+$L$_last_num_blocks_is_7_1_737:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_jelhzhcwsFGqGrq
-	jb	NEAR $L$_last_num_blocks_is_3_1_jelhzhcwsFGqGrq
+	je	NEAR $L$_last_num_blocks_is_4_737
+	jb	NEAR $L$_last_num_blocks_is_3_1_737
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_jelhzhcwsFGqGrq
-	je	NEAR $L$_last_num_blocks_is_6_jelhzhcwsFGqGrq
-	jmp	NEAR $L$_last_num_blocks_is_5_jelhzhcwsFGqGrq
+	ja	NEAR $L$_last_num_blocks_is_7_737
+	je	NEAR $L$_last_num_blocks_is_6_737
+	jmp	NEAR $L$_last_num_blocks_is_5_737
 
-$L$_last_num_blocks_is_3_1_jelhzhcwsFGqGrq:
+$L$_last_num_blocks_is_3_1_737:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_jelhzhcwsFGqGrq
-	je	NEAR $L$_last_num_blocks_is_2_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_1_jelhzhcwsFGqGrq:
+	ja	NEAR $L$_last_num_blocks_is_3_737
+	je	NEAR $L$_last_num_blocks_is_2_737
+$L$_last_num_blocks_is_1_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_EeuFlapxroawGly
+	jae	NEAR $L$_16_blocks_overflow_738
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_EeuFlapxroawGly
+	jmp	NEAR $L$_16_blocks_ok_738
 
-$L$_16_blocks_overflow_EeuFlapxroawGly:
+$L$_16_blocks_overflow_738:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_EeuFlapxroawGly:
+$L$_16_blocks_ok_738:
 
 
 
@@ -101744,7 +101744,7 @@ $L$_16_blocks_ok_EeuFlapxroawGly:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kAjEbpbjGeFEfCD
+	jl	NEAR $L$_small_initial_partial_block_739
 
 
 
@@ -101786,8 +101786,8 @@ $L$_16_blocks_ok_EeuFlapxroawGly:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kAjEbpbjGeFEfCD
-$L$_small_initial_partial_block_kAjEbpbjGeFEfCD:
+	jmp	NEAR $L$_small_initial_compute_done_739
+$L$_small_initial_partial_block_739:
 
 
 
@@ -101811,24 +101811,24 @@ $L$_small_initial_partial_block_kAjEbpbjGeFEfCD:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_kAjEbpbjGeFEfCD
-$L$_small_initial_compute_done_kAjEbpbjGeFEfCD:
-$L$_after_reduction_kAjEbpbjGeFEfCD:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_2_jelhzhcwsFGqGrq:
+	jmp	NEAR $L$_after_reduction_739
+$L$_small_initial_compute_done_739:
+$L$_after_reduction_739:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_2_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_aEqskalthCsoxns
+	jae	NEAR $L$_16_blocks_overflow_740
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_aEqskalthCsoxns
+	jmp	NEAR $L$_16_blocks_ok_740
 
-$L$_16_blocks_overflow_aEqskalthCsoxns:
+$L$_16_blocks_overflow_740:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_aEqskalthCsoxns:
+$L$_16_blocks_ok_740:
 
 
 
@@ -101940,7 +101940,7 @@ $L$_16_blocks_ok_aEqskalthCsoxns:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zynhnlmEFyromuo
+	jl	NEAR $L$_small_initial_partial_block_741
 
 
 
@@ -101982,8 +101982,8 @@ $L$_16_blocks_ok_aEqskalthCsoxns:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zynhnlmEFyromuo
-$L$_small_initial_partial_block_zynhnlmEFyromuo:
+	jmp	NEAR $L$_small_initial_compute_done_741
+$L$_small_initial_partial_block_741:
 
 
 
@@ -102028,27 +102028,27 @@ $L$_small_initial_partial_block_zynhnlmEFyromuo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zynhnlmEFyromuo:
+$L$_small_initial_compute_done_741:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zynhnlmEFyromuo
+	je	NEAR $L$_after_reduction_741
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_zynhnlmEFyromuo:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_3_jelhzhcwsFGqGrq:
+$L$_after_reduction_741:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_3_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_ipgtwuuFbFnDlet
+	jae	NEAR $L$_16_blocks_overflow_742
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_ipgtwuuFbFnDlet
+	jmp	NEAR $L$_16_blocks_ok_742
 
-$L$_16_blocks_overflow_ipgtwuuFbFnDlet:
+$L$_16_blocks_overflow_742:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_ipgtwuuFbFnDlet:
+$L$_16_blocks_ok_742:
 
 
 
@@ -102160,7 +102160,7 @@ $L$_16_blocks_ok_ipgtwuuFbFnDlet:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dinlapoGeotzhti
+	jl	NEAR $L$_small_initial_partial_block_743
 
 
 
@@ -102203,8 +102203,8 @@ $L$_16_blocks_ok_ipgtwuuFbFnDlet:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dinlapoGeotzhti
-$L$_small_initial_partial_block_dinlapoGeotzhti:
+	jmp	NEAR $L$_small_initial_compute_done_743
+$L$_small_initial_partial_block_743:
 
 
 
@@ -102249,27 +102249,27 @@ $L$_small_initial_partial_block_dinlapoGeotzhti:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dinlapoGeotzhti:
+$L$_small_initial_compute_done_743:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dinlapoGeotzhti
+	je	NEAR $L$_after_reduction_743
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dinlapoGeotzhti:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_4_jelhzhcwsFGqGrq:
+$L$_after_reduction_743:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_4_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_DtnkFfEytsrFasa
+	jae	NEAR $L$_16_blocks_overflow_744
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_DtnkFfEytsrFasa
+	jmp	NEAR $L$_16_blocks_ok_744
 
-$L$_16_blocks_overflow_DtnkFfEytsrFasa:
+$L$_16_blocks_overflow_744:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_DtnkFfEytsrFasa:
+$L$_16_blocks_ok_744:
 
 
 
@@ -102381,7 +102381,7 @@ $L$_16_blocks_ok_DtnkFfEytsrFasa:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FhvudvajyphnnAu
+	jl	NEAR $L$_small_initial_partial_block_745
 
 
 
@@ -102423,8 +102423,8 @@ $L$_16_blocks_ok_DtnkFfEytsrFasa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FhvudvajyphnnAu
-$L$_small_initial_partial_block_FhvudvajyphnnAu:
+	jmp	NEAR $L$_small_initial_compute_done_745
+$L$_small_initial_partial_block_745:
 
 
 
@@ -102470,32 +102470,32 @@ $L$_small_initial_partial_block_FhvudvajyphnnAu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FhvudvajyphnnAu:
+$L$_small_initial_compute_done_745:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FhvudvajyphnnAu
+	je	NEAR $L$_after_reduction_745
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FhvudvajyphnnAu:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_5_jelhzhcwsFGqGrq:
+$L$_after_reduction_745:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_5_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_mnadgbrhACngiag
+	jae	NEAR $L$_16_blocks_overflow_746
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_mnadgbrhACngiag
+	jmp	NEAR $L$_16_blocks_ok_746
 
-$L$_16_blocks_overflow_mnadgbrhACngiag:
+$L$_16_blocks_overflow_746:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_mnadgbrhACngiag:
+$L$_16_blocks_ok_746:
 
 
 
@@ -102624,7 +102624,7 @@ $L$_16_blocks_ok_mnadgbrhACngiag:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_cAdisDuDufdzFck
+	jl	NEAR $L$_small_initial_partial_block_747
 
 
 
@@ -102676,8 +102676,8 @@ $L$_16_blocks_ok_mnadgbrhACngiag:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_cAdisDuDufdzFck
-$L$_small_initial_partial_block_cAdisDuDufdzFck:
+	jmp	NEAR $L$_small_initial_compute_done_747
+$L$_small_initial_partial_block_747:
 
 
 
@@ -102722,32 +102722,32 @@ $L$_small_initial_partial_block_cAdisDuDufdzFck:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_cAdisDuDufdzFck:
+$L$_small_initial_compute_done_747:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_cAdisDuDufdzFck
+	je	NEAR $L$_after_reduction_747
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_cAdisDuDufdzFck:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_6_jelhzhcwsFGqGrq:
+$L$_after_reduction_747:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_6_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_pqyEEFsluxnjFCG
+	jae	NEAR $L$_16_blocks_overflow_748
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_pqyEEFsluxnjFCG
+	jmp	NEAR $L$_16_blocks_ok_748
 
-$L$_16_blocks_overflow_pqyEEFsluxnjFCG:
+$L$_16_blocks_overflow_748:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_pqyEEFsluxnjFCG:
+$L$_16_blocks_ok_748:
 
 
 
@@ -102876,7 +102876,7 @@ $L$_16_blocks_ok_pqyEEFsluxnjFCG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ohsgGxcFmjupmDq
+	jl	NEAR $L$_small_initial_partial_block_749
 
 
 
@@ -102928,8 +102928,8 @@ $L$_16_blocks_ok_pqyEEFsluxnjFCG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ohsgGxcFmjupmDq
-$L$_small_initial_partial_block_ohsgGxcFmjupmDq:
+	jmp	NEAR $L$_small_initial_compute_done_749
+$L$_small_initial_partial_block_749:
 
 
 
@@ -102984,32 +102984,32 @@ $L$_small_initial_partial_block_ohsgGxcFmjupmDq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ohsgGxcFmjupmDq:
+$L$_small_initial_compute_done_749:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ohsgGxcFmjupmDq
+	je	NEAR $L$_after_reduction_749
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ohsgGxcFmjupmDq:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_7_jelhzhcwsFGqGrq:
+$L$_after_reduction_749:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_7_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_hDhCovvfkBximag
+	jae	NEAR $L$_16_blocks_overflow_750
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_hDhCovvfkBximag
+	jmp	NEAR $L$_16_blocks_ok_750
 
-$L$_16_blocks_overflow_hDhCovvfkBximag:
+$L$_16_blocks_overflow_750:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_hDhCovvfkBximag:
+$L$_16_blocks_ok_750:
 
 
 
@@ -103138,7 +103138,7 @@ $L$_16_blocks_ok_hDhCovvfkBximag:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_sawuxCvGjGCzDiB
+	jl	NEAR $L$_small_initial_partial_block_751
 
 
 
@@ -103191,8 +103191,8 @@ $L$_16_blocks_ok_hDhCovvfkBximag:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_sawuxCvGjGCzDiB
-$L$_small_initial_partial_block_sawuxCvGjGCzDiB:
+	jmp	NEAR $L$_small_initial_compute_done_751
+$L$_small_initial_partial_block_751:
 
 
 
@@ -103247,32 +103247,32 @@ $L$_small_initial_partial_block_sawuxCvGjGCzDiB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_sawuxCvGjGCzDiB:
+$L$_small_initial_compute_done_751:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_sawuxCvGjGCzDiB
+	je	NEAR $L$_after_reduction_751
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_sawuxCvGjGCzDiB:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_8_jelhzhcwsFGqGrq:
+$L$_after_reduction_751:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_8_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_AxEjsaytkmcdtzw
+	jae	NEAR $L$_16_blocks_overflow_752
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_AxEjsaytkmcdtzw
+	jmp	NEAR $L$_16_blocks_ok_752
 
-$L$_16_blocks_overflow_AxEjsaytkmcdtzw:
+$L$_16_blocks_overflow_752:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_AxEjsaytkmcdtzw:
+$L$_16_blocks_ok_752:
 
 
 
@@ -103401,7 +103401,7 @@ $L$_16_blocks_ok_AxEjsaytkmcdtzw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_mgqgDyrvuxryaup
+	jl	NEAR $L$_small_initial_partial_block_753
 
 
 
@@ -103452,8 +103452,8 @@ $L$_16_blocks_ok_AxEjsaytkmcdtzw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_mgqgDyrvuxryaup
-$L$_small_initial_partial_block_mgqgDyrvuxryaup:
+	jmp	NEAR $L$_small_initial_compute_done_753
+$L$_small_initial_partial_block_753:
 
 
 
@@ -103509,26 +103509,26 @@ $L$_small_initial_partial_block_mgqgDyrvuxryaup:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mgqgDyrvuxryaup:
+$L$_small_initial_compute_done_753:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_mgqgDyrvuxryaup
+	je	NEAR $L$_after_reduction_753
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mgqgDyrvuxryaup:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_9_jelhzhcwsFGqGrq:
+$L$_after_reduction_753:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_9_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_tfqpFayqldppGmb
+	jae	NEAR $L$_16_blocks_overflow_754
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_tfqpFayqldppGmb
+	jmp	NEAR $L$_16_blocks_ok_754
 
-$L$_16_blocks_overflow_tfqpFayqldppGmb:
+$L$_16_blocks_overflow_754:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -103537,7 +103537,7 @@ $L$_16_blocks_overflow_tfqpFayqldppGmb:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_tfqpFayqldppGmb:
+$L$_16_blocks_ok_754:
 
 
 
@@ -103683,7 +103683,7 @@ $L$_16_blocks_ok_tfqpFayqldppGmb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dklkBceumbmBdxy
+	jl	NEAR $L$_small_initial_partial_block_755
 
 
 
@@ -103744,8 +103744,8 @@ $L$_16_blocks_ok_tfqpFayqldppGmb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dklkBceumbmBdxy
-$L$_small_initial_partial_block_dklkBceumbmBdxy:
+	jmp	NEAR $L$_small_initial_compute_done_755
+$L$_small_initial_partial_block_755:
 
 
 
@@ -103799,26 +103799,26 @@ $L$_small_initial_partial_block_dklkBceumbmBdxy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dklkBceumbmBdxy:
+$L$_small_initial_compute_done_755:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dklkBceumbmBdxy
+	je	NEAR $L$_after_reduction_755
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dklkBceumbmBdxy:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_10_jelhzhcwsFGqGrq:
+$L$_after_reduction_755:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_10_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_hnfksidhecgcwlk
+	jae	NEAR $L$_16_blocks_overflow_756
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_hnfksidhecgcwlk
+	jmp	NEAR $L$_16_blocks_ok_756
 
-$L$_16_blocks_overflow_hnfksidhecgcwlk:
+$L$_16_blocks_overflow_756:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -103827,7 +103827,7 @@ $L$_16_blocks_overflow_hnfksidhecgcwlk:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_hnfksidhecgcwlk:
+$L$_16_blocks_ok_756:
 
 
 
@@ -103973,7 +103973,7 @@ $L$_16_blocks_ok_hnfksidhecgcwlk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kCwqecbiFgdDpBi
+	jl	NEAR $L$_small_initial_partial_block_757
 
 
 
@@ -104034,8 +104034,8 @@ $L$_16_blocks_ok_hnfksidhecgcwlk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kCwqecbiFgdDpBi
-$L$_small_initial_partial_block_kCwqecbiFgdDpBi:
+	jmp	NEAR $L$_small_initial_compute_done_757
+$L$_small_initial_partial_block_757:
 
 
 
@@ -104099,26 +104099,26 @@ $L$_small_initial_partial_block_kCwqecbiFgdDpBi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kCwqecbiFgdDpBi:
+$L$_small_initial_compute_done_757:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kCwqecbiFgdDpBi
+	je	NEAR $L$_after_reduction_757
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kCwqecbiFgdDpBi:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_11_jelhzhcwsFGqGrq:
+$L$_after_reduction_757:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_11_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_xttvwDChfjdnvBB
+	jae	NEAR $L$_16_blocks_overflow_758
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_xttvwDChfjdnvBB
+	jmp	NEAR $L$_16_blocks_ok_758
 
-$L$_16_blocks_overflow_xttvwDChfjdnvBB:
+$L$_16_blocks_overflow_758:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -104127,7 +104127,7 @@ $L$_16_blocks_overflow_xttvwDChfjdnvBB:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_xttvwDChfjdnvBB:
+$L$_16_blocks_ok_758:
 
 
 
@@ -104273,7 +104273,7 @@ $L$_16_blocks_ok_xttvwDChfjdnvBB:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kctabzsAFsBzsAd
+	jl	NEAR $L$_small_initial_partial_block_759
 
 
 
@@ -104335,8 +104335,8 @@ $L$_16_blocks_ok_xttvwDChfjdnvBB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kctabzsAFsBzsAd
-$L$_small_initial_partial_block_kctabzsAFsBzsAd:
+	jmp	NEAR $L$_small_initial_compute_done_759
+$L$_small_initial_partial_block_759:
 
 
 
@@ -104400,26 +104400,26 @@ $L$_small_initial_partial_block_kctabzsAFsBzsAd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kctabzsAFsBzsAd:
+$L$_small_initial_compute_done_759:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kctabzsAFsBzsAd
+	je	NEAR $L$_after_reduction_759
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kctabzsAFsBzsAd:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_12_jelhzhcwsFGqGrq:
+$L$_after_reduction_759:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_12_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_gghCErmonrDutds
+	jae	NEAR $L$_16_blocks_overflow_760
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_gghCErmonrDutds
+	jmp	NEAR $L$_16_blocks_ok_760
 
-$L$_16_blocks_overflow_gghCErmonrDutds:
+$L$_16_blocks_overflow_760:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -104428,7 +104428,7 @@ $L$_16_blocks_overflow_gghCErmonrDutds:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_gghCErmonrDutds:
+$L$_16_blocks_ok_760:
 
 
 
@@ -104574,7 +104574,7 @@ $L$_16_blocks_ok_gghCErmonrDutds:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DqDtkCGxnjopwDa
+	jl	NEAR $L$_small_initial_partial_block_761
 
 
 
@@ -104630,8 +104630,8 @@ $L$_16_blocks_ok_gghCErmonrDutds:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DqDtkCGxnjopwDa
-$L$_small_initial_partial_block_DqDtkCGxnjopwDa:
+	jmp	NEAR $L$_small_initial_compute_done_761
+$L$_small_initial_partial_block_761:
 
 
 
@@ -104696,27 +104696,27 @@ $L$_small_initial_partial_block_DqDtkCGxnjopwDa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DqDtkCGxnjopwDa:
+$L$_small_initial_compute_done_761:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_DqDtkCGxnjopwDa
+	je	NEAR $L$_after_reduction_761
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_DqDtkCGxnjopwDa:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_13_jelhzhcwsFGqGrq:
+$L$_after_reduction_761:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_13_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_osyBrlhfrkBhsug
+	jae	NEAR $L$_16_blocks_overflow_762
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_osyBrlhfrkBhsug
+	jmp	NEAR $L$_16_blocks_ok_762
 
-$L$_16_blocks_overflow_osyBrlhfrkBhsug:
+$L$_16_blocks_overflow_762:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -104727,7 +104727,7 @@ $L$_16_blocks_overflow_osyBrlhfrkBhsug:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_osyBrlhfrkBhsug:
+$L$_16_blocks_ok_762:
 
 
 
@@ -104890,7 +104890,7 @@ $L$_16_blocks_ok_osyBrlhfrkBhsug:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hwuBkExCbqBovjp
+	jl	NEAR $L$_small_initial_partial_block_763
 
 
 
@@ -104956,8 +104956,8 @@ $L$_16_blocks_ok_osyBrlhfrkBhsug:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hwuBkExCbqBovjp
-$L$_small_initial_partial_block_hwuBkExCbqBovjp:
+	jmp	NEAR $L$_small_initial_compute_done_763
+$L$_small_initial_partial_block_763:
 
 
 
@@ -105016,27 +105016,27 @@ $L$_small_initial_partial_block_hwuBkExCbqBovjp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hwuBkExCbqBovjp:
+$L$_small_initial_compute_done_763:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hwuBkExCbqBovjp
+	je	NEAR $L$_after_reduction_763
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hwuBkExCbqBovjp:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_14_jelhzhcwsFGqGrq:
+$L$_after_reduction_763:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_14_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_tbvGngnyuvBsxfu
+	jae	NEAR $L$_16_blocks_overflow_764
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_tbvGngnyuvBsxfu
+	jmp	NEAR $L$_16_blocks_ok_764
 
-$L$_16_blocks_overflow_tbvGngnyuvBsxfu:
+$L$_16_blocks_overflow_764:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -105047,7 +105047,7 @@ $L$_16_blocks_overflow_tbvGngnyuvBsxfu:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_tbvGngnyuvBsxfu:
+$L$_16_blocks_ok_764:
 
 
 
@@ -105210,7 +105210,7 @@ $L$_16_blocks_ok_tbvGngnyuvBsxfu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_iybDAGmeeiyfwcD
+	jl	NEAR $L$_small_initial_partial_block_765
 
 
 
@@ -105276,8 +105276,8 @@ $L$_16_blocks_ok_tbvGngnyuvBsxfu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_iybDAGmeeiyfwcD
-$L$_small_initial_partial_block_iybDAGmeeiyfwcD:
+	jmp	NEAR $L$_small_initial_compute_done_765
+$L$_small_initial_partial_block_765:
 
 
 
@@ -105346,27 +105346,27 @@ $L$_small_initial_partial_block_iybDAGmeeiyfwcD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_iybDAGmeeiyfwcD:
+$L$_small_initial_compute_done_765:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_iybDAGmeeiyfwcD
+	je	NEAR $L$_after_reduction_765
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_iybDAGmeeiyfwcD:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_15_jelhzhcwsFGqGrq:
+$L$_after_reduction_765:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_15_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_CuEnrydspDGeBFp
+	jae	NEAR $L$_16_blocks_overflow_766
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_CuEnrydspDGeBFp
+	jmp	NEAR $L$_16_blocks_ok_766
 
-$L$_16_blocks_overflow_CuEnrydspDGeBFp:
+$L$_16_blocks_overflow_766:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -105377,7 +105377,7 @@ $L$_16_blocks_overflow_CuEnrydspDGeBFp:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_CuEnrydspDGeBFp:
+$L$_16_blocks_ok_766:
 
 
 
@@ -105540,7 +105540,7 @@ $L$_16_blocks_ok_CuEnrydspDGeBFp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ExswwDAtBBvfluA
+	jl	NEAR $L$_small_initial_partial_block_767
 
 
 
@@ -105607,8 +105607,8 @@ $L$_16_blocks_ok_CuEnrydspDGeBFp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ExswwDAtBBvfluA
-$L$_small_initial_partial_block_ExswwDAtBBvfluA:
+	jmp	NEAR $L$_small_initial_compute_done_767
+$L$_small_initial_partial_block_767:
 
 
 
@@ -105677,27 +105677,27 @@ $L$_small_initial_partial_block_ExswwDAtBBvfluA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ExswwDAtBBvfluA:
+$L$_small_initial_compute_done_767:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ExswwDAtBBvfluA
+	je	NEAR $L$_after_reduction_767
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ExswwDAtBBvfluA:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_16_jelhzhcwsFGqGrq:
+$L$_after_reduction_767:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_16_737:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_wgBEwggzqrknfvm
+	jae	NEAR $L$_16_blocks_overflow_768
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_wgBEwggzqrknfvm
+	jmp	NEAR $L$_16_blocks_ok_768
 
-$L$_16_blocks_overflow_wgBEwggzqrknfvm:
+$L$_16_blocks_overflow_768:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -105708,7 +105708,7 @@ $L$_16_blocks_overflow_wgBEwggzqrknfvm:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_wgBEwggzqrknfvm:
+$L$_16_blocks_ok_768:
 
 
 
@@ -105868,7 +105868,7 @@ $L$_16_blocks_ok_wgBEwggzqrknfvm:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_mlkDxAwwDehdFqb:
+$L$_small_initial_partial_block_769:
 
 
 
@@ -105938,11 +105938,11 @@ $L$_small_initial_partial_block_mlkDxAwwDehdFqb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mlkDxAwwDehdFqb:
+$L$_small_initial_compute_done_769:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mlkDxAwwDehdFqb:
-	jmp	NEAR $L$_last_blocks_done_jelhzhcwsFGqGrq
-$L$_last_num_blocks_is_0_jelhzhcwsFGqGrq:
+$L$_after_reduction_769:
+	jmp	NEAR $L$_last_blocks_done_737
+$L$_last_num_blocks_is_0_737:
 	vmovdqa64	zmm13,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm12,ZMMWORD[512+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -106003,18 +106003,18 @@ $L$_last_num_blocks_is_0_jelhzhcwsFGqGrq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_jelhzhcwsFGqGrq:
+$L$_last_blocks_done_737:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_FCvvteafomDkwaj
+	jmp	NEAR $L$_ghash_done_659
 
-$L$_message_below_32_blocks_FCvvteafomDkwaj:
+$L$_message_below_32_blocks_659:
 
 
 	sub	r13,256
 	add	r11,256
 	mov	r10d,r13d
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_jlbqiEzkxEhwghn
+	jnz	NEAR $L$_skip_hkeys_precomputation_770
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -106142,7 +106142,7 @@ $L$_message_below_32_blocks_FCvvteafomDkwaj:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[256+rsp],zmm5
-$L$_skip_hkeys_precomputation_jlbqiEzkxEhwghn:
+$L$_skip_hkeys_precomputation_770:
 	mov	r14,1
 	and	r10d,~15
 	mov	ebx,512
@@ -106150,61 +106150,61 @@ $L$_skip_hkeys_precomputation_jlbqiEzkxEhwghn:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_vctDErhxmpfenBv
+	je	NEAR $L$_last_num_blocks_is_0_771
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_vctDErhxmpfenBv
-	jb	NEAR $L$_last_num_blocks_is_7_1_vctDErhxmpfenBv
+	je	NEAR $L$_last_num_blocks_is_8_771
+	jb	NEAR $L$_last_num_blocks_is_7_1_771
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_vctDErhxmpfenBv
-	jb	NEAR $L$_last_num_blocks_is_11_9_vctDErhxmpfenBv
+	je	NEAR $L$_last_num_blocks_is_12_771
+	jb	NEAR $L$_last_num_blocks_is_11_9_771
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_vctDErhxmpfenBv
-	ja	NEAR $L$_last_num_blocks_is_16_vctDErhxmpfenBv
+	je	NEAR $L$_last_num_blocks_is_15_771
+	ja	NEAR $L$_last_num_blocks_is_16_771
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_vctDErhxmpfenBv
-	jmp	NEAR $L$_last_num_blocks_is_13_vctDErhxmpfenBv
+	je	NEAR $L$_last_num_blocks_is_14_771
+	jmp	NEAR $L$_last_num_blocks_is_13_771
 
-$L$_last_num_blocks_is_11_9_vctDErhxmpfenBv:
+$L$_last_num_blocks_is_11_9_771:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_vctDErhxmpfenBv
-	ja	NEAR $L$_last_num_blocks_is_11_vctDErhxmpfenBv
-	jmp	NEAR $L$_last_num_blocks_is_9_vctDErhxmpfenBv
+	je	NEAR $L$_last_num_blocks_is_10_771
+	ja	NEAR $L$_last_num_blocks_is_11_771
+	jmp	NEAR $L$_last_num_blocks_is_9_771
 
-$L$_last_num_blocks_is_7_1_vctDErhxmpfenBv:
+$L$_last_num_blocks_is_7_1_771:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_vctDErhxmpfenBv
-	jb	NEAR $L$_last_num_blocks_is_3_1_vctDErhxmpfenBv
+	je	NEAR $L$_last_num_blocks_is_4_771
+	jb	NEAR $L$_last_num_blocks_is_3_1_771
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_vctDErhxmpfenBv
-	je	NEAR $L$_last_num_blocks_is_6_vctDErhxmpfenBv
-	jmp	NEAR $L$_last_num_blocks_is_5_vctDErhxmpfenBv
+	ja	NEAR $L$_last_num_blocks_is_7_771
+	je	NEAR $L$_last_num_blocks_is_6_771
+	jmp	NEAR $L$_last_num_blocks_is_5_771
 
-$L$_last_num_blocks_is_3_1_vctDErhxmpfenBv:
+$L$_last_num_blocks_is_3_1_771:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_vctDErhxmpfenBv
-	je	NEAR $L$_last_num_blocks_is_2_vctDErhxmpfenBv
-$L$_last_num_blocks_is_1_vctDErhxmpfenBv:
+	ja	NEAR $L$_last_num_blocks_is_3_771
+	je	NEAR $L$_last_num_blocks_is_2_771
+$L$_last_num_blocks_is_1_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_xcwEeohyszrseaq
+	jae	NEAR $L$_16_blocks_overflow_772
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_xcwEeohyszrseaq
+	jmp	NEAR $L$_16_blocks_ok_772
 
-$L$_16_blocks_overflow_xcwEeohyszrseaq:
+$L$_16_blocks_overflow_772:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_xcwEeohyszrseaq:
+$L$_16_blocks_ok_772:
 
 
 
@@ -106292,7 +106292,7 @@ $L$_16_blocks_ok_xcwEeohyszrseaq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uwvvwlyDpBrjsgl
+	jl	NEAR $L$_small_initial_partial_block_773
 
 
 
@@ -106336,8 +106336,8 @@ $L$_16_blocks_ok_xcwEeohyszrseaq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uwvvwlyDpBrjsgl
-$L$_small_initial_partial_block_uwvvwlyDpBrjsgl:
+	jmp	NEAR $L$_small_initial_compute_done_773
+$L$_small_initial_partial_block_773:
 
 
 
@@ -106389,24 +106389,24 @@ $L$_small_initial_partial_block_uwvvwlyDpBrjsgl:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_uwvvwlyDpBrjsgl
-$L$_small_initial_compute_done_uwvvwlyDpBrjsgl:
-$L$_after_reduction_uwvvwlyDpBrjsgl:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_2_vctDErhxmpfenBv:
+	jmp	NEAR $L$_after_reduction_773
+$L$_small_initial_compute_done_773:
+$L$_after_reduction_773:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_2_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_yFdBraGxnBCvbcs
+	jae	NEAR $L$_16_blocks_overflow_774
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_yFdBraGxnBCvbcs
+	jmp	NEAR $L$_16_blocks_ok_774
 
-$L$_16_blocks_overflow_yFdBraGxnBCvbcs:
+$L$_16_blocks_overflow_774:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_yFdBraGxnBCvbcs:
+$L$_16_blocks_ok_774:
 
 
 
@@ -106495,7 +106495,7 @@ $L$_16_blocks_ok_yFdBraGxnBCvbcs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_iCbEmipzesoFpho
+	jl	NEAR $L$_small_initial_partial_block_775
 
 
 
@@ -106539,8 +106539,8 @@ $L$_16_blocks_ok_yFdBraGxnBCvbcs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_iCbEmipzesoFpho
-$L$_small_initial_partial_block_iCbEmipzesoFpho:
+	jmp	NEAR $L$_small_initial_compute_done_775
+$L$_small_initial_partial_block_775:
 
 
 
@@ -106587,27 +106587,27 @@ $L$_small_initial_partial_block_iCbEmipzesoFpho:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_iCbEmipzesoFpho:
+$L$_small_initial_compute_done_775:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_iCbEmipzesoFpho
+	je	NEAR $L$_after_reduction_775
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_iCbEmipzesoFpho:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_3_vctDErhxmpfenBv:
+$L$_after_reduction_775:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_3_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_gtmEBhBFigzvcAE
+	jae	NEAR $L$_16_blocks_overflow_776
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_gtmEBhBFigzvcAE
+	jmp	NEAR $L$_16_blocks_ok_776
 
-$L$_16_blocks_overflow_gtmEBhBFigzvcAE:
+$L$_16_blocks_overflow_776:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_gtmEBhBFigzvcAE:
+$L$_16_blocks_ok_776:
 
 
 
@@ -106696,7 +106696,7 @@ $L$_16_blocks_ok_gtmEBhBFigzvcAE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_uGwAlfGcoEkEDnx
+	jl	NEAR $L$_small_initial_partial_block_777
 
 
 
@@ -106741,8 +106741,8 @@ $L$_16_blocks_ok_gtmEBhBFigzvcAE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_uGwAlfGcoEkEDnx
-$L$_small_initial_partial_block_uGwAlfGcoEkEDnx:
+	jmp	NEAR $L$_small_initial_compute_done_777
+$L$_small_initial_partial_block_777:
 
 
 
@@ -106789,27 +106789,27 @@ $L$_small_initial_partial_block_uGwAlfGcoEkEDnx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_uGwAlfGcoEkEDnx:
+$L$_small_initial_compute_done_777:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_uGwAlfGcoEkEDnx
+	je	NEAR $L$_after_reduction_777
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_uGwAlfGcoEkEDnx:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_4_vctDErhxmpfenBv:
+$L$_after_reduction_777:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_4_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_hfcebGxDlmksnqv
+	jae	NEAR $L$_16_blocks_overflow_778
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_hfcebGxDlmksnqv
+	jmp	NEAR $L$_16_blocks_ok_778
 
-$L$_16_blocks_overflow_hfcebGxDlmksnqv:
+$L$_16_blocks_overflow_778:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_hfcebGxDlmksnqv:
+$L$_16_blocks_ok_778:
 
 
 
@@ -106898,7 +106898,7 @@ $L$_16_blocks_ok_hfcebGxDlmksnqv:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ejavbodFCmpChay
+	jl	NEAR $L$_small_initial_partial_block_779
 
 
 
@@ -106943,8 +106943,8 @@ $L$_16_blocks_ok_hfcebGxDlmksnqv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ejavbodFCmpChay
-$L$_small_initial_partial_block_ejavbodFCmpChay:
+	jmp	NEAR $L$_small_initial_compute_done_779
+$L$_small_initial_partial_block_779:
 
 
 
@@ -106992,32 +106992,32 @@ $L$_small_initial_partial_block_ejavbodFCmpChay:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ejavbodFCmpChay:
+$L$_small_initial_compute_done_779:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ejavbodFCmpChay
+	je	NEAR $L$_after_reduction_779
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ejavbodFCmpChay:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_5_vctDErhxmpfenBv:
+$L$_after_reduction_779:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_5_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_BFsvuEvCuxjaGwe
+	jae	NEAR $L$_16_blocks_overflow_780
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_BFsvuEvCuxjaGwe
+	jmp	NEAR $L$_16_blocks_ok_780
 
-$L$_16_blocks_overflow_BFsvuEvCuxjaGwe:
+$L$_16_blocks_overflow_780:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_BFsvuEvCuxjaGwe:
+$L$_16_blocks_ok_780:
 
 
 
@@ -107123,7 +107123,7 @@ $L$_16_blocks_ok_BFsvuEvCuxjaGwe:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_maAxokDkfeoflqr
+	jl	NEAR $L$_small_initial_partial_block_781
 
 
 
@@ -107174,8 +107174,8 @@ $L$_16_blocks_ok_BFsvuEvCuxjaGwe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_maAxokDkfeoflqr
-$L$_small_initial_partial_block_maAxokDkfeoflqr:
+	jmp	NEAR $L$_small_initial_compute_done_781
+$L$_small_initial_partial_block_781:
 
 
 
@@ -107223,32 +107223,32 @@ $L$_small_initial_partial_block_maAxokDkfeoflqr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_maAxokDkfeoflqr:
+$L$_small_initial_compute_done_781:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_maAxokDkfeoflqr
+	je	NEAR $L$_after_reduction_781
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_maAxokDkfeoflqr:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_6_vctDErhxmpfenBv:
+$L$_after_reduction_781:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_6_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_rwooCpjvqGCfhdp
+	jae	NEAR $L$_16_blocks_overflow_782
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_rwooCpjvqGCfhdp
+	jmp	NEAR $L$_16_blocks_ok_782
 
-$L$_16_blocks_overflow_rwooCpjvqGCfhdp:
+$L$_16_blocks_overflow_782:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_rwooCpjvqGCfhdp:
+$L$_16_blocks_ok_782:
 
 
 
@@ -107354,7 +107354,7 @@ $L$_16_blocks_ok_rwooCpjvqGCfhdp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oqBwxkwjApfjyly
+	jl	NEAR $L$_small_initial_partial_block_783
 
 
 
@@ -107405,8 +107405,8 @@ $L$_16_blocks_ok_rwooCpjvqGCfhdp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oqBwxkwjApfjyly
-$L$_small_initial_partial_block_oqBwxkwjApfjyly:
+	jmp	NEAR $L$_small_initial_compute_done_783
+$L$_small_initial_partial_block_783:
 
 
 
@@ -107460,32 +107460,32 @@ $L$_small_initial_partial_block_oqBwxkwjApfjyly:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_oqBwxkwjApfjyly:
+$L$_small_initial_compute_done_783:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_oqBwxkwjApfjyly
+	je	NEAR $L$_after_reduction_783
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_oqBwxkwjApfjyly:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_7_vctDErhxmpfenBv:
+$L$_after_reduction_783:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_7_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_vomfaaBcwiGizCf
+	jae	NEAR $L$_16_blocks_overflow_784
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_vomfaaBcwiGizCf
+	jmp	NEAR $L$_16_blocks_ok_784
 
-$L$_16_blocks_overflow_vomfaaBcwiGizCf:
+$L$_16_blocks_overflow_784:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_vomfaaBcwiGizCf:
+$L$_16_blocks_ok_784:
 
 
 
@@ -107591,7 +107591,7 @@ $L$_16_blocks_ok_vomfaaBcwiGizCf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_meorBCgmcssunrx
+	jl	NEAR $L$_small_initial_partial_block_785
 
 
 
@@ -107643,8 +107643,8 @@ $L$_16_blocks_ok_vomfaaBcwiGizCf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_meorBCgmcssunrx
-$L$_small_initial_partial_block_meorBCgmcssunrx:
+	jmp	NEAR $L$_small_initial_compute_done_785
+$L$_small_initial_partial_block_785:
 
 
 
@@ -107698,32 +107698,32 @@ $L$_small_initial_partial_block_meorBCgmcssunrx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_meorBCgmcssunrx:
+$L$_small_initial_compute_done_785:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_meorBCgmcssunrx
+	je	NEAR $L$_after_reduction_785
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_meorBCgmcssunrx:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_8_vctDErhxmpfenBv:
+$L$_after_reduction_785:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_8_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_flhmkuljqxbDfkr
+	jae	NEAR $L$_16_blocks_overflow_786
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_flhmkuljqxbDfkr
+	jmp	NEAR $L$_16_blocks_ok_786
 
-$L$_16_blocks_overflow_flhmkuljqxbDfkr:
+$L$_16_blocks_overflow_786:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_flhmkuljqxbDfkr:
+$L$_16_blocks_ok_786:
 
 
 
@@ -107829,7 +107829,7 @@ $L$_16_blocks_ok_flhmkuljqxbDfkr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_icbtbCzgadzEvvA
+	jl	NEAR $L$_small_initial_partial_block_787
 
 
 
@@ -107883,8 +107883,8 @@ $L$_16_blocks_ok_flhmkuljqxbDfkr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_icbtbCzgadzEvvA
-$L$_small_initial_partial_block_icbtbCzgadzEvvA:
+	jmp	NEAR $L$_small_initial_compute_done_787
+$L$_small_initial_partial_block_787:
 
 
 
@@ -107939,26 +107939,26 @@ $L$_small_initial_partial_block_icbtbCzgadzEvvA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_icbtbCzgadzEvvA:
+$L$_small_initial_compute_done_787:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_icbtbCzgadzEvvA
+	je	NEAR $L$_after_reduction_787
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_icbtbCzgadzEvvA:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_9_vctDErhxmpfenBv:
+$L$_after_reduction_787:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_9_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_xomjvseDjtchAin
+	jae	NEAR $L$_16_blocks_overflow_788
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_xomjvseDjtchAin
+	jmp	NEAR $L$_16_blocks_ok_788
 
-$L$_16_blocks_overflow_xomjvseDjtchAin:
+$L$_16_blocks_overflow_788:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -107967,7 +107967,7 @@ $L$_16_blocks_overflow_xomjvseDjtchAin:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_xomjvseDjtchAin:
+$L$_16_blocks_ok_788:
 
 
 
@@ -108090,7 +108090,7 @@ $L$_16_blocks_ok_xomjvseDjtchAin:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_GldmGrkonEdbEsF
+	jl	NEAR $L$_small_initial_partial_block_789
 
 
 
@@ -108150,8 +108150,8 @@ $L$_16_blocks_ok_xomjvseDjtchAin:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_GldmGrkonEdbEsF
-$L$_small_initial_partial_block_GldmGrkonEdbEsF:
+	jmp	NEAR $L$_small_initial_compute_done_789
+$L$_small_initial_partial_block_789:
 
 
 
@@ -108208,26 +108208,26 @@ $L$_small_initial_partial_block_GldmGrkonEdbEsF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_GldmGrkonEdbEsF:
+$L$_small_initial_compute_done_789:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_GldmGrkonEdbEsF
+	je	NEAR $L$_after_reduction_789
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_GldmGrkonEdbEsF:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_10_vctDErhxmpfenBv:
+$L$_after_reduction_789:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_10_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_ebfextwqwjocqzt
+	jae	NEAR $L$_16_blocks_overflow_790
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ebfextwqwjocqzt
+	jmp	NEAR $L$_16_blocks_ok_790
 
-$L$_16_blocks_overflow_ebfextwqwjocqzt:
+$L$_16_blocks_overflow_790:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -108236,7 +108236,7 @@ $L$_16_blocks_overflow_ebfextwqwjocqzt:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_ebfextwqwjocqzt:
+$L$_16_blocks_ok_790:
 
 
 
@@ -108359,7 +108359,7 @@ $L$_16_blocks_ok_ebfextwqwjocqzt:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_sBprmDuwpEAujsi
+	jl	NEAR $L$_small_initial_partial_block_791
 
 
 
@@ -108419,8 +108419,8 @@ $L$_16_blocks_ok_ebfextwqwjocqzt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_sBprmDuwpEAujsi
-$L$_small_initial_partial_block_sBprmDuwpEAujsi:
+	jmp	NEAR $L$_small_initial_compute_done_791
+$L$_small_initial_partial_block_791:
 
 
 
@@ -108483,26 +108483,26 @@ $L$_small_initial_partial_block_sBprmDuwpEAujsi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_sBprmDuwpEAujsi:
+$L$_small_initial_compute_done_791:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_sBprmDuwpEAujsi
+	je	NEAR $L$_after_reduction_791
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_sBprmDuwpEAujsi:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_11_vctDErhxmpfenBv:
+$L$_after_reduction_791:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_11_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_kCeABEdeqgAmnns
+	jae	NEAR $L$_16_blocks_overflow_792
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_kCeABEdeqgAmnns
+	jmp	NEAR $L$_16_blocks_ok_792
 
-$L$_16_blocks_overflow_kCeABEdeqgAmnns:
+$L$_16_blocks_overflow_792:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -108511,7 +108511,7 @@ $L$_16_blocks_overflow_kCeABEdeqgAmnns:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_kCeABEdeqgAmnns:
+$L$_16_blocks_ok_792:
 
 
 
@@ -108634,7 +108634,7 @@ $L$_16_blocks_ok_kCeABEdeqgAmnns:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fwdxvcBEGBClrvg
+	jl	NEAR $L$_small_initial_partial_block_793
 
 
 
@@ -108695,8 +108695,8 @@ $L$_16_blocks_ok_kCeABEdeqgAmnns:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fwdxvcBEGBClrvg
-$L$_small_initial_partial_block_fwdxvcBEGBClrvg:
+	jmp	NEAR $L$_small_initial_compute_done_793
+$L$_small_initial_partial_block_793:
 
 
 
@@ -108759,26 +108759,26 @@ $L$_small_initial_partial_block_fwdxvcBEGBClrvg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fwdxvcBEGBClrvg:
+$L$_small_initial_compute_done_793:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fwdxvcBEGBClrvg
+	je	NEAR $L$_after_reduction_793
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fwdxvcBEGBClrvg:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_12_vctDErhxmpfenBv:
+$L$_after_reduction_793:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_12_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_bmxldiGuarBrcqs
+	jae	NEAR $L$_16_blocks_overflow_794
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_bmxldiGuarBrcqs
+	jmp	NEAR $L$_16_blocks_ok_794
 
-$L$_16_blocks_overflow_bmxldiGuarBrcqs:
+$L$_16_blocks_overflow_794:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -108787,7 +108787,7 @@ $L$_16_blocks_overflow_bmxldiGuarBrcqs:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_bmxldiGuarBrcqs:
+$L$_16_blocks_ok_794:
 
 
 
@@ -108910,7 +108910,7 @@ $L$_16_blocks_ok_bmxldiGuarBrcqs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BxpzFyajdsvyyys
+	jl	NEAR $L$_small_initial_partial_block_795
 
 
 
@@ -108969,8 +108969,8 @@ $L$_16_blocks_ok_bmxldiGuarBrcqs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BxpzFyajdsvyyys
-$L$_small_initial_partial_block_BxpzFyajdsvyyys:
+	jmp	NEAR $L$_small_initial_compute_done_795
+$L$_small_initial_partial_block_795:
 
 
 
@@ -109034,27 +109034,27 @@ $L$_small_initial_partial_block_BxpzFyajdsvyyys:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BxpzFyajdsvyyys:
+$L$_small_initial_compute_done_795:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BxpzFyajdsvyyys
+	je	NEAR $L$_after_reduction_795
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BxpzFyajdsvyyys:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_13_vctDErhxmpfenBv:
+$L$_after_reduction_795:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_13_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_ynEqnyDtgEsrxff
+	jae	NEAR $L$_16_blocks_overflow_796
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_ynEqnyDtgEsrxff
+	jmp	NEAR $L$_16_blocks_ok_796
 
-$L$_16_blocks_overflow_ynEqnyDtgEsrxff:
+$L$_16_blocks_overflow_796:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -109065,7 +109065,7 @@ $L$_16_blocks_overflow_ynEqnyDtgEsrxff:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_ynEqnyDtgEsrxff:
+$L$_16_blocks_ok_796:
 
 
 
@@ -109205,7 +109205,7 @@ $L$_16_blocks_ok_ynEqnyDtgEsrxff:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_prDgGiwpzxqksiw
+	jl	NEAR $L$_small_initial_partial_block_797
 
 
 
@@ -109270,8 +109270,8 @@ $L$_16_blocks_ok_ynEqnyDtgEsrxff:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_prDgGiwpzxqksiw
-$L$_small_initial_partial_block_prDgGiwpzxqksiw:
+	jmp	NEAR $L$_small_initial_compute_done_797
+$L$_small_initial_partial_block_797:
 
 
 
@@ -109333,27 +109333,27 @@ $L$_small_initial_partial_block_prDgGiwpzxqksiw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_prDgGiwpzxqksiw:
+$L$_small_initial_compute_done_797:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_prDgGiwpzxqksiw
+	je	NEAR $L$_after_reduction_797
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_prDgGiwpzxqksiw:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_14_vctDErhxmpfenBv:
+$L$_after_reduction_797:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_14_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_CtfDBbrfiDFGbke
+	jae	NEAR $L$_16_blocks_overflow_798
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_CtfDBbrfiDFGbke
+	jmp	NEAR $L$_16_blocks_ok_798
 
-$L$_16_blocks_overflow_CtfDBbrfiDFGbke:
+$L$_16_blocks_overflow_798:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -109364,7 +109364,7 @@ $L$_16_blocks_overflow_CtfDBbrfiDFGbke:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_CtfDBbrfiDFGbke:
+$L$_16_blocks_ok_798:
 
 
 
@@ -109504,7 +109504,7 @@ $L$_16_blocks_ok_CtfDBbrfiDFGbke:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xgoadinCbhxbGFf
+	jl	NEAR $L$_small_initial_partial_block_799
 
 
 
@@ -109569,8 +109569,8 @@ $L$_16_blocks_ok_CtfDBbrfiDFGbke:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xgoadinCbhxbGFf
-$L$_small_initial_partial_block_xgoadinCbhxbGFf:
+	jmp	NEAR $L$_small_initial_compute_done_799
+$L$_small_initial_partial_block_799:
 
 
 
@@ -109638,27 +109638,27 @@ $L$_small_initial_partial_block_xgoadinCbhxbGFf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xgoadinCbhxbGFf:
+$L$_small_initial_compute_done_799:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xgoadinCbhxbGFf
+	je	NEAR $L$_after_reduction_799
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xgoadinCbhxbGFf:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_15_vctDErhxmpfenBv:
+$L$_after_reduction_799:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_15_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_iozEzigpqDeGtgC
+	jae	NEAR $L$_16_blocks_overflow_800
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_iozEzigpqDeGtgC
+	jmp	NEAR $L$_16_blocks_ok_800
 
-$L$_16_blocks_overflow_iozEzigpqDeGtgC:
+$L$_16_blocks_overflow_800:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -109669,7 +109669,7 @@ $L$_16_blocks_overflow_iozEzigpqDeGtgC:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_iozEzigpqDeGtgC:
+$L$_16_blocks_ok_800:
 
 
 
@@ -109809,7 +109809,7 @@ $L$_16_blocks_ok_iozEzigpqDeGtgC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_pkmzftzsvowqbxh
+	jl	NEAR $L$_small_initial_partial_block_801
 
 
 
@@ -109875,8 +109875,8 @@ $L$_16_blocks_ok_iozEzigpqDeGtgC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_pkmzftzsvowqbxh
-$L$_small_initial_partial_block_pkmzftzsvowqbxh:
+	jmp	NEAR $L$_small_initial_compute_done_801
+$L$_small_initial_partial_block_801:
 
 
 
@@ -109944,27 +109944,27 @@ $L$_small_initial_partial_block_pkmzftzsvowqbxh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_pkmzftzsvowqbxh:
+$L$_small_initial_compute_done_801:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_pkmzftzsvowqbxh
+	je	NEAR $L$_after_reduction_801
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_pkmzftzsvowqbxh:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_16_vctDErhxmpfenBv:
+$L$_after_reduction_801:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_16_771:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_oaArEFdCfcqkkqE
+	jae	NEAR $L$_16_blocks_overflow_802
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_oaArEFdCfcqkkqE
+	jmp	NEAR $L$_16_blocks_ok_802
 
-$L$_16_blocks_overflow_oaArEFdCfcqkkqE:
+$L$_16_blocks_overflow_802:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -109975,7 +109975,7 @@ $L$_16_blocks_overflow_oaArEFdCfcqkkqE:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_oaArEFdCfcqkkqE:
+$L$_16_blocks_ok_802:
 
 
 
@@ -110112,7 +110112,7 @@ $L$_16_blocks_ok_oaArEFdCfcqkkqE:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_leqGAEqtopywDzd:
+$L$_small_initial_partial_block_803:
 
 
 
@@ -110181,11 +110181,11 @@ $L$_small_initial_partial_block_leqGAEqtopywDzd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_leqGAEqtopywDzd:
+$L$_small_initial_compute_done_803:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_leqGAEqtopywDzd:
-	jmp	NEAR $L$_last_blocks_done_vctDErhxmpfenBv
-$L$_last_num_blocks_is_0_vctDErhxmpfenBv:
+$L$_after_reduction_803:
+	jmp	NEAR $L$_last_blocks_done_771
+$L$_last_num_blocks_is_0_771:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -110247,65 +110247,65 @@ $L$_last_num_blocks_is_0_vctDErhxmpfenBv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_vctDErhxmpfenBv:
+$L$_last_blocks_done_771:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_FCvvteafomDkwaj
+	jmp	NEAR $L$_ghash_done_659
 
-$L$_message_below_equal_16_blocks_FCvvteafomDkwaj:
+$L$_message_below_equal_16_blocks_659:
 
 
 	mov	r12d,r13d
 	add	r12d,15
 	shr	r12d,4
 	cmp	r12,8
-	je	NEAR $L$_small_initial_num_blocks_is_8_GBnActweDhGfwyk
-	jl	NEAR $L$_small_initial_num_blocks_is_7_1_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_8_804
+	jl	NEAR $L$_small_initial_num_blocks_is_7_1_804
 
 
 	cmp	r12,12
-	je	NEAR $L$_small_initial_num_blocks_is_12_GBnActweDhGfwyk
-	jl	NEAR $L$_small_initial_num_blocks_is_11_9_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_12_804
+	jl	NEAR $L$_small_initial_num_blocks_is_11_9_804
 
 
 	cmp	r12,16
-	je	NEAR $L$_small_initial_num_blocks_is_16_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_16_804
 	cmp	r12,15
-	je	NEAR $L$_small_initial_num_blocks_is_15_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_15_804
 	cmp	r12,14
-	je	NEAR $L$_small_initial_num_blocks_is_14_GBnActweDhGfwyk
-	jmp	NEAR $L$_small_initial_num_blocks_is_13_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_14_804
+	jmp	NEAR $L$_small_initial_num_blocks_is_13_804
 
-$L$_small_initial_num_blocks_is_11_9_GBnActweDhGfwyk:
+$L$_small_initial_num_blocks_is_11_9_804:
 
 	cmp	r12,11
-	je	NEAR $L$_small_initial_num_blocks_is_11_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_11_804
 	cmp	r12,10
-	je	NEAR $L$_small_initial_num_blocks_is_10_GBnActweDhGfwyk
-	jmp	NEAR $L$_small_initial_num_blocks_is_9_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_10_804
+	jmp	NEAR $L$_small_initial_num_blocks_is_9_804
 
-$L$_small_initial_num_blocks_is_7_1_GBnActweDhGfwyk:
+$L$_small_initial_num_blocks_is_7_1_804:
 	cmp	r12,4
-	je	NEAR $L$_small_initial_num_blocks_is_4_GBnActweDhGfwyk
-	jl	NEAR $L$_small_initial_num_blocks_is_3_1_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_4_804
+	jl	NEAR $L$_small_initial_num_blocks_is_3_1_804
 
 	cmp	r12,7
-	je	NEAR $L$_small_initial_num_blocks_is_7_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_7_804
 	cmp	r12,6
-	je	NEAR $L$_small_initial_num_blocks_is_6_GBnActweDhGfwyk
-	jmp	NEAR $L$_small_initial_num_blocks_is_5_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_6_804
+	jmp	NEAR $L$_small_initial_num_blocks_is_5_804
 
-$L$_small_initial_num_blocks_is_3_1_GBnActweDhGfwyk:
+$L$_small_initial_num_blocks_is_3_1_804:
 
 	cmp	r12,3
-	je	NEAR $L$_small_initial_num_blocks_is_3_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_3_804
 	cmp	r12,2
-	je	NEAR $L$_small_initial_num_blocks_is_2_GBnActweDhGfwyk
+	je	NEAR $L$_small_initial_num_blocks_is_2_804
 
 
 
 
 
-$L$_small_initial_num_blocks_is_1_GBnActweDhGfwyk:
+$L$_small_initial_num_blocks_is_1_804:
 	vmovdqa64	xmm29,XMMWORD[SHUF_MASK]
 	vpaddd	xmm0,xmm2,XMMWORD[ONE]
 	lea	r10,[byte64_len_to_mask_table]
@@ -110350,7 +110350,7 @@ $L$_small_initial_num_blocks_is_1_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_gAesobwxfdtyfui
+	jl	NEAR $L$_small_initial_partial_block_805
 
 
 
@@ -110392,8 +110392,8 @@ $L$_small_initial_num_blocks_is_1_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_gAesobwxfdtyfui
-$L$_small_initial_partial_block_gAesobwxfdtyfui:
+	jmp	NEAR $L$_small_initial_compute_done_805
+$L$_small_initial_partial_block_805:
 
 
 
@@ -110417,11 +110417,11 @@ $L$_small_initial_partial_block_gAesobwxfdtyfui:
 
 	vpxorq	xmm14,xmm14,xmm13
 
-	jmp	NEAR $L$_after_reduction_gAesobwxfdtyfui
-$L$_small_initial_compute_done_gAesobwxfdtyfui:
-$L$_after_reduction_gAesobwxfdtyfui:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_2_GBnActweDhGfwyk:
+	jmp	NEAR $L$_after_reduction_805
+$L$_small_initial_compute_done_805:
+$L$_after_reduction_805:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_2_804:
 	vmovdqa64	ymm29,YMMWORD[SHUF_MASK]
 	vshufi64x2	ymm0,ymm2,ymm2,0
 	vpaddd	ymm0,ymm0,YMMWORD[ddq_add_1234]
@@ -110468,7 +110468,7 @@ $L$_small_initial_num_blocks_is_2_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tGdkpbrdqnzvpCF
+	jl	NEAR $L$_small_initial_partial_block_806
 
 
 
@@ -110510,8 +110510,8 @@ $L$_small_initial_num_blocks_is_2_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tGdkpbrdqnzvpCF
-$L$_small_initial_partial_block_tGdkpbrdqnzvpCF:
+	jmp	NEAR $L$_small_initial_compute_done_806
+$L$_small_initial_partial_block_806:
 
 
 
@@ -110556,14 +110556,14 @@ $L$_small_initial_partial_block_tGdkpbrdqnzvpCF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tGdkpbrdqnzvpCF:
+$L$_small_initial_compute_done_806:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tGdkpbrdqnzvpCF
+	je	NEAR $L$_after_reduction_806
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_tGdkpbrdqnzvpCF:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_3_GBnActweDhGfwyk:
+$L$_after_reduction_806:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_3_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -110610,7 +110610,7 @@ $L$_small_initial_num_blocks_is_3_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BikEDCBpfAacdbr
+	jl	NEAR $L$_small_initial_partial_block_807
 
 
 
@@ -110653,8 +110653,8 @@ $L$_small_initial_num_blocks_is_3_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BikEDCBpfAacdbr
-$L$_small_initial_partial_block_BikEDCBpfAacdbr:
+	jmp	NEAR $L$_small_initial_compute_done_807
+$L$_small_initial_partial_block_807:
 
 
 
@@ -110699,14 +110699,14 @@ $L$_small_initial_partial_block_BikEDCBpfAacdbr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BikEDCBpfAacdbr:
+$L$_small_initial_compute_done_807:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BikEDCBpfAacdbr
+	je	NEAR $L$_after_reduction_807
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_BikEDCBpfAacdbr:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_4_GBnActweDhGfwyk:
+$L$_after_reduction_807:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_4_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -110753,7 +110753,7 @@ $L$_small_initial_num_blocks_is_4_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_GnmcBugbfFvlzan
+	jl	NEAR $L$_small_initial_partial_block_808
 
 
 
@@ -110795,8 +110795,8 @@ $L$_small_initial_num_blocks_is_4_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_GnmcBugbfFvlzan
-$L$_small_initial_partial_block_GnmcBugbfFvlzan:
+	jmp	NEAR $L$_small_initial_compute_done_808
+$L$_small_initial_partial_block_808:
 
 
 
@@ -110842,14 +110842,14 @@ $L$_small_initial_partial_block_GnmcBugbfFvlzan:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_GnmcBugbfFvlzan:
+$L$_small_initial_compute_done_808:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_GnmcBugbfFvlzan
+	je	NEAR $L$_after_reduction_808
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_GnmcBugbfFvlzan:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_5_GBnActweDhGfwyk:
+$L$_after_reduction_808:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_5_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -110916,7 +110916,7 @@ $L$_small_initial_num_blocks_is_5_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_robedjxEssiteiv
+	jl	NEAR $L$_small_initial_partial_block_809
 
 
 
@@ -110968,8 +110968,8 @@ $L$_small_initial_num_blocks_is_5_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_robedjxEssiteiv
-$L$_small_initial_partial_block_robedjxEssiteiv:
+	jmp	NEAR $L$_small_initial_compute_done_809
+$L$_small_initial_partial_block_809:
 
 
 
@@ -111014,14 +111014,14 @@ $L$_small_initial_partial_block_robedjxEssiteiv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_robedjxEssiteiv:
+$L$_small_initial_compute_done_809:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_robedjxEssiteiv
+	je	NEAR $L$_after_reduction_809
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_robedjxEssiteiv:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_6_GBnActweDhGfwyk:
+$L$_after_reduction_809:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_6_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -111088,7 +111088,7 @@ $L$_small_initial_num_blocks_is_6_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FvxxksAgankqmum
+	jl	NEAR $L$_small_initial_partial_block_810
 
 
 
@@ -111140,8 +111140,8 @@ $L$_small_initial_num_blocks_is_6_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FvxxksAgankqmum
-$L$_small_initial_partial_block_FvxxksAgankqmum:
+	jmp	NEAR $L$_small_initial_compute_done_810
+$L$_small_initial_partial_block_810:
 
 
 
@@ -111196,14 +111196,14 @@ $L$_small_initial_partial_block_FvxxksAgankqmum:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FvxxksAgankqmum:
+$L$_small_initial_compute_done_810:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FvxxksAgankqmum
+	je	NEAR $L$_after_reduction_810
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_FvxxksAgankqmum:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_7_GBnActweDhGfwyk:
+$L$_after_reduction_810:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_7_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -111270,7 +111270,7 @@ $L$_small_initial_num_blocks_is_7_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xpzptexxAGqidrw
+	jl	NEAR $L$_small_initial_partial_block_811
 
 
 
@@ -111323,8 +111323,8 @@ $L$_small_initial_num_blocks_is_7_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xpzptexxAGqidrw
-$L$_small_initial_partial_block_xpzptexxAGqidrw:
+	jmp	NEAR $L$_small_initial_compute_done_811
+$L$_small_initial_partial_block_811:
 
 
 
@@ -111379,14 +111379,14 @@ $L$_small_initial_partial_block_xpzptexxAGqidrw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xpzptexxAGqidrw:
+$L$_small_initial_compute_done_811:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xpzptexxAGqidrw
+	je	NEAR $L$_after_reduction_811
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_xpzptexxAGqidrw:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_8_GBnActweDhGfwyk:
+$L$_after_reduction_811:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_8_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -111453,7 +111453,7 @@ $L$_small_initial_num_blocks_is_8_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zetEGcaAwrqaemz
+	jl	NEAR $L$_small_initial_partial_block_812
 
 
 
@@ -111504,8 +111504,8 @@ $L$_small_initial_num_blocks_is_8_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zetEGcaAwrqaemz
-$L$_small_initial_partial_block_zetEGcaAwrqaemz:
+	jmp	NEAR $L$_small_initial_compute_done_812
+$L$_small_initial_partial_block_812:
 
 
 
@@ -111561,14 +111561,14 @@ $L$_small_initial_partial_block_zetEGcaAwrqaemz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zetEGcaAwrqaemz:
+$L$_small_initial_compute_done_812:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zetEGcaAwrqaemz
+	je	NEAR $L$_after_reduction_812
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_zetEGcaAwrqaemz:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_9_GBnActweDhGfwyk:
+$L$_after_reduction_812:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_9_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -111654,7 +111654,7 @@ $L$_small_initial_num_blocks_is_9_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jyBqerebAnnzvba
+	jl	NEAR $L$_small_initial_partial_block_813
 
 
 
@@ -111715,8 +111715,8 @@ $L$_small_initial_num_blocks_is_9_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jyBqerebAnnzvba
-$L$_small_initial_partial_block_jyBqerebAnnzvba:
+	jmp	NEAR $L$_small_initial_compute_done_813
+$L$_small_initial_partial_block_813:
 
 
 
@@ -111770,14 +111770,14 @@ $L$_small_initial_partial_block_jyBqerebAnnzvba:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jyBqerebAnnzvba:
+$L$_small_initial_compute_done_813:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jyBqerebAnnzvba
+	je	NEAR $L$_after_reduction_813
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_jyBqerebAnnzvba:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_10_GBnActweDhGfwyk:
+$L$_after_reduction_813:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_10_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -111863,7 +111863,7 @@ $L$_small_initial_num_blocks_is_10_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AycbBbotiqCsAvr
+	jl	NEAR $L$_small_initial_partial_block_814
 
 
 
@@ -111924,8 +111924,8 @@ $L$_small_initial_num_blocks_is_10_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AycbBbotiqCsAvr
-$L$_small_initial_partial_block_AycbBbotiqCsAvr:
+	jmp	NEAR $L$_small_initial_compute_done_814
+$L$_small_initial_partial_block_814:
 
 
 
@@ -111989,14 +111989,14 @@ $L$_small_initial_partial_block_AycbBbotiqCsAvr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AycbBbotiqCsAvr:
+$L$_small_initial_compute_done_814:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AycbBbotiqCsAvr
+	je	NEAR $L$_after_reduction_814
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_AycbBbotiqCsAvr:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_11_GBnActweDhGfwyk:
+$L$_after_reduction_814:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_11_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -112082,7 +112082,7 @@ $L$_small_initial_num_blocks_is_11_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zeetrejmrcBlsym
+	jl	NEAR $L$_small_initial_partial_block_815
 
 
 
@@ -112144,8 +112144,8 @@ $L$_small_initial_num_blocks_is_11_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zeetrejmrcBlsym
-$L$_small_initial_partial_block_zeetrejmrcBlsym:
+	jmp	NEAR $L$_small_initial_compute_done_815
+$L$_small_initial_partial_block_815:
 
 
 
@@ -112209,14 +112209,14 @@ $L$_small_initial_partial_block_zeetrejmrcBlsym:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zeetrejmrcBlsym:
+$L$_small_initial_compute_done_815:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zeetrejmrcBlsym
+	je	NEAR $L$_after_reduction_815
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_zeetrejmrcBlsym:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_12_GBnActweDhGfwyk:
+$L$_after_reduction_815:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_12_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -112302,7 +112302,7 @@ $L$_small_initial_num_blocks_is_12_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ysdwsviceioaahp
+	jl	NEAR $L$_small_initial_partial_block_816
 
 
 
@@ -112358,8 +112358,8 @@ $L$_small_initial_num_blocks_is_12_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ysdwsviceioaahp
-$L$_small_initial_partial_block_ysdwsviceioaahp:
+	jmp	NEAR $L$_small_initial_compute_done_816
+$L$_small_initial_partial_block_816:
 
 
 
@@ -112424,14 +112424,14 @@ $L$_small_initial_partial_block_ysdwsviceioaahp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ysdwsviceioaahp:
+$L$_small_initial_compute_done_816:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ysdwsviceioaahp
+	je	NEAR $L$_after_reduction_816
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_ysdwsviceioaahp:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_13_GBnActweDhGfwyk:
+$L$_after_reduction_816:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_13_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -112536,7 +112536,7 @@ $L$_small_initial_num_blocks_is_13_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_sspAiDuyxjEufxy
+	jl	NEAR $L$_small_initial_partial_block_817
 
 
 
@@ -112602,8 +112602,8 @@ $L$_small_initial_num_blocks_is_13_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_sspAiDuyxjEufxy
-$L$_small_initial_partial_block_sspAiDuyxjEufxy:
+	jmp	NEAR $L$_small_initial_compute_done_817
+$L$_small_initial_partial_block_817:
 
 
 
@@ -112662,14 +112662,14 @@ $L$_small_initial_partial_block_sspAiDuyxjEufxy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_sspAiDuyxjEufxy:
+$L$_small_initial_compute_done_817:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_sspAiDuyxjEufxy
+	je	NEAR $L$_after_reduction_817
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_sspAiDuyxjEufxy:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_14_GBnActweDhGfwyk:
+$L$_after_reduction_817:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_14_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -112774,7 +112774,7 @@ $L$_small_initial_num_blocks_is_14_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hDGlbnEgsCtBlnh
+	jl	NEAR $L$_small_initial_partial_block_818
 
 
 
@@ -112840,8 +112840,8 @@ $L$_small_initial_num_blocks_is_14_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hDGlbnEgsCtBlnh
-$L$_small_initial_partial_block_hDGlbnEgsCtBlnh:
+	jmp	NEAR $L$_small_initial_compute_done_818
+$L$_small_initial_partial_block_818:
 
 
 
@@ -112910,14 +112910,14 @@ $L$_small_initial_partial_block_hDGlbnEgsCtBlnh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hDGlbnEgsCtBlnh:
+$L$_small_initial_compute_done_818:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hDGlbnEgsCtBlnh
+	je	NEAR $L$_after_reduction_818
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_hDGlbnEgsCtBlnh:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_15_GBnActweDhGfwyk:
+$L$_after_reduction_818:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_15_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -113022,7 +113022,7 @@ $L$_small_initial_num_blocks_is_15_GBnActweDhGfwyk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EjjmttlpeAnrEno
+	jl	NEAR $L$_small_initial_partial_block_819
 
 
 
@@ -113089,8 +113089,8 @@ $L$_small_initial_num_blocks_is_15_GBnActweDhGfwyk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EjjmttlpeAnrEno
-$L$_small_initial_partial_block_EjjmttlpeAnrEno:
+	jmp	NEAR $L$_small_initial_compute_done_819
+$L$_small_initial_partial_block_819:
 
 
 
@@ -113159,14 +113159,14 @@ $L$_small_initial_partial_block_EjjmttlpeAnrEno:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EjjmttlpeAnrEno:
+$L$_small_initial_compute_done_819:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EjjmttlpeAnrEno
+	je	NEAR $L$_after_reduction_819
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_EjjmttlpeAnrEno:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_GBnActweDhGfwyk
-$L$_small_initial_num_blocks_is_16_GBnActweDhGfwyk:
+$L$_after_reduction_819:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_804
+$L$_small_initial_num_blocks_is_16_804:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -113268,7 +113268,7 @@ $L$_small_initial_num_blocks_is_16_GBnActweDhGfwyk:
 	vpshufb	zmm11,zmm11,zmm29
 	vextracti32x4	xmm13,zmm11,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_ilrCsDuqBgxCnqj:
+$L$_small_initial_partial_block_820:
 
 
 
@@ -113338,25 +113338,25 @@ $L$_small_initial_partial_block_ilrCsDuqBgxCnqj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ilrCsDuqBgxCnqj:
+$L$_small_initial_compute_done_820:
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_ilrCsDuqBgxCnqj:
-$L$_small_initial_blocks_encrypted_GBnActweDhGfwyk:
-$L$_ghash_done_FCvvteafomDkwaj:
+$L$_after_reduction_820:
+$L$_small_initial_blocks_encrypted_804:
+$L$_ghash_done_659:
 	vmovdqu64	XMMWORD[rdx],xmm2
 	vmovdqu64	XMMWORD[64+rdx],xmm14
-$L$_enc_dec_done_FCvvteafomDkwaj:
+$L$_enc_dec_done_659:
 	jmp	NEAR $L$exit_gcm_decrypt
 ALIGN	32
 $L$aes_gcm_decrypt_256_avx512:
 	cmp	QWORD[112+rbp],0
-	je	NEAR $L$_enc_dec_done_nGltgytEkotuqBl
+	je	NEAR $L$_enc_dec_done_821
 	xor	r14,r14
 	vmovdqu64	xmm14,XMMWORD[64+rdx]
 
 	mov	r11,QWORD[r8]
 	or	r11,r11
-	je	NEAR $L$_partial_block_done_tdtAbrkdcFmkshc
+	je	NEAR $L$_partial_block_done_822
 	mov	r10d,16
 	lea	r12,[byte_len_to_mask_table]
 	cmp	QWORD[112+rbp],r10
@@ -113383,9 +113383,9 @@ $L$aes_gcm_decrypt_256_avx512:
 	mov	r13,QWORD[112+rbp]
 	add	r13,r11
 	sub	r13,16
-	jge	NEAR $L$_no_extra_mask_tdtAbrkdcFmkshc
+	jge	NEAR $L$_no_extra_mask_822
 	sub	r12,r13
-$L$_no_extra_mask_tdtAbrkdcFmkshc:
+$L$_no_extra_mask_822:
 
 
 
@@ -113396,7 +113396,7 @@ $L$_no_extra_mask_tdtAbrkdcFmkshc:
 	vpshufb	xmm6,xmm6,xmm5
 	vpxorq	xmm14,xmm14,xmm6
 	cmp	r13,0
-	jl	NEAR $L$_partial_incomplete_tdtAbrkdcFmkshc
+	jl	NEAR $L$_partial_incomplete_822
 
 	vpclmulqdq	xmm7,xmm14,xmm4,0x11
 	vpclmulqdq	xmm10,xmm14,xmm4,0x00
@@ -113431,14 +113431,14 @@ $L$_no_extra_mask_tdtAbrkdcFmkshc:
 	mov	r12,r11
 	mov	r11,16
 	sub	r11,r12
-	jmp	NEAR $L$_enc_dec_done_tdtAbrkdcFmkshc
+	jmp	NEAR $L$_enc_dec_done_822
 
-$L$_partial_incomplete_tdtAbrkdcFmkshc:
+$L$_partial_incomplete_822:
 	mov	r12,QWORD[112+rbp]
 	add	QWORD[r8],r12
 	mov	r11,QWORD[112+rbp]
 
-$L$_enc_dec_done_tdtAbrkdcFmkshc:
+$L$_enc_dec_done_822:
 
 
 	lea	r12,[byte_len_to_mask_table]
@@ -113446,13 +113446,13 @@ $L$_enc_dec_done_tdtAbrkdcFmkshc:
 	vmovdqu64	XMMWORD[64+rdx],xmm14
 	mov	r12,QWORD[120+rbp]
 	vmovdqu8	XMMWORD[r12]{k1},xmm3
-$L$_partial_block_done_tdtAbrkdcFmkshc:
+$L$_partial_block_done_822:
 	vmovdqu64	xmm2,XMMWORD[rdx]
 	mov	r13,QWORD[112+rbp]
 	sub	r13,r11
-	je	NEAR $L$_enc_dec_done_nGltgytEkotuqBl
+	je	NEAR $L$_enc_dec_done_821
 	cmp	r13,256
-	jbe	NEAR $L$_message_below_equal_16_blocks_nGltgytEkotuqBl
+	jbe	NEAR $L$_message_below_equal_16_blocks_821
 
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vmovdqa64	zmm27,ZMMWORD[ddq_addbe_4444]
@@ -113472,13 +113472,13 @@ $L$_partial_block_done_tdtAbrkdcFmkshc:
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_qvnucvdbpjCoxpi
+	jae	NEAR $L$_next_16_overflow_823
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_qvnucvdbpjCoxpi
-$L$_next_16_overflow_qvnucvdbpjCoxpi:
+	jmp	NEAR $L$_next_16_ok_823
+$L$_next_16_overflow_823:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -113489,7 +113489,7 @@ $L$_next_16_overflow_qvnucvdbpjCoxpi:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_qvnucvdbpjCoxpi:
+$L$_next_16_ok_823:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -113597,7 +113597,7 @@ $L$_next_16_ok_qvnucvdbpjCoxpi:
 	vmovdqa64	ZMMWORD[896+rsp],zmm11
 	vmovdqa64	ZMMWORD[960+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_jDhcqBruhbFCavl
+	jnz	NEAR $L$_skip_hkeys_precomputation_824
 
 	vmovdqu64	zmm0,ZMMWORD[288+rdx]
 	vmovdqu64	ZMMWORD[704+rsp],zmm0
@@ -113613,20 +113613,20 @@ $L$_next_16_ok_qvnucvdbpjCoxpi:
 
 	vmovdqu64	zmm5,ZMMWORD[96+rdx]
 	vmovdqu64	ZMMWORD[512+rsp],zmm5
-$L$_skip_hkeys_precomputation_jDhcqBruhbFCavl:
+$L$_skip_hkeys_precomputation_824:
 	cmp	r13,512
-	jb	NEAR $L$_message_below_32_blocks_nGltgytEkotuqBl
+	jb	NEAR $L$_message_below_32_blocks_821
 
 
 
 	cmp	r15b,240
-	jae	NEAR $L$_next_16_overflow_hoffhEnkAzGhCue
+	jae	NEAR $L$_next_16_overflow_825
 	vpaddd	zmm7,zmm2,zmm28
 	vpaddd	zmm10,zmm7,zmm27
 	vpaddd	zmm11,zmm10,zmm27
 	vpaddd	zmm12,zmm11,zmm27
-	jmp	NEAR $L$_next_16_ok_hoffhEnkAzGhCue
-$L$_next_16_overflow_hoffhEnkAzGhCue:
+	jmp	NEAR $L$_next_16_ok_825
+$L$_next_16_overflow_825:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm12,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm7,zmm2,ZMMWORD[ddq_add_1234]
@@ -113637,7 +113637,7 @@ $L$_next_16_overflow_hoffhEnkAzGhCue:
 	vpshufb	zmm10,zmm10,zmm29
 	vpshufb	zmm11,zmm11,zmm29
 	vpshufb	zmm12,zmm12,zmm29
-$L$_next_16_ok_hoffhEnkAzGhCue:
+$L$_next_16_ok_825:
 	vshufi64x2	zmm2,zmm12,zmm12,255
 	add	r15b,16
 
@@ -113745,7 +113745,7 @@ $L$_next_16_ok_hoffhEnkAzGhCue:
 	vmovdqa64	ZMMWORD[1152+rsp],zmm11
 	vmovdqa64	ZMMWORD[1216+rsp],zmm12
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_EFCiBtecGFvFwxe
+	jnz	NEAR $L$_skip_hkeys_precomputation_826
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -113993,22 +113993,22 @@ $L$_next_16_ok_hoffhEnkAzGhCue:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[rsp],zmm5
-$L$_skip_hkeys_precomputation_EFCiBtecGFvFwxe:
+$L$_skip_hkeys_precomputation_826:
 	mov	r14,1
 	add	r11,512
 	sub	r13,512
 
 	cmp	r13,768
-	jb	NEAR $L$_no_more_big_nblocks_nGltgytEkotuqBl
-$L$_encrypt_big_nblocks_nGltgytEkotuqBl:
+	jb	NEAR $L$_no_more_big_nblocks_821
+$L$_encrypt_big_nblocks_821:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_pngpmeFAfbvsbjg
+	jae	NEAR $L$_16_blocks_overflow_827
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_pngpmeFAfbvsbjg
-$L$_16_blocks_overflow_pngpmeFAfbvsbjg:
+	jmp	NEAR $L$_16_blocks_ok_827
+$L$_16_blocks_overflow_827:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -114019,7 +114019,7 @@ $L$_16_blocks_overflow_pngpmeFAfbvsbjg:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_pngpmeFAfbvsbjg:
+$L$_16_blocks_ok_827:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -114207,13 +114207,13 @@ $L$_16_blocks_ok_pngpmeFAfbvsbjg:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_wtwEBnclgcFAcFf
+	jae	NEAR $L$_16_blocks_overflow_828
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_wtwEBnclgcFAcFf
-$L$_16_blocks_overflow_wtwEBnclgcFAcFf:
+	jmp	NEAR $L$_16_blocks_ok_828
+$L$_16_blocks_overflow_828:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -114224,7 +114224,7 @@ $L$_16_blocks_overflow_wtwEBnclgcFAcFf:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_wtwEBnclgcFAcFf:
+$L$_16_blocks_ok_828:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -114412,13 +114412,13 @@ $L$_16_blocks_ok_wtwEBnclgcFAcFf:
 	vmovdqa64	ZMMWORD[896+rsp],zmm4
 	vmovdqa64	ZMMWORD[960+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_xejBpjpqnjxFeyh
+	jae	NEAR $L$_16_blocks_overflow_829
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_xejBpjpqnjxFeyh
-$L$_16_blocks_overflow_xejBpjpqnjxFeyh:
+	jmp	NEAR $L$_16_blocks_ok_829
+$L$_16_blocks_overflow_829:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -114429,7 +114429,7 @@ $L$_16_blocks_overflow_xejBpjpqnjxFeyh:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_xejBpjpqnjxFeyh:
+$L$_16_blocks_ok_829:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm1,ZMMWORD[512+rsp]
@@ -114647,16 +114647,16 @@ $L$_16_blocks_ok_xejBpjpqnjxFeyh:
 	add	r11,768
 	sub	r13,768
 	cmp	r13,768
-	jae	NEAR $L$_encrypt_big_nblocks_nGltgytEkotuqBl
+	jae	NEAR $L$_encrypt_big_nblocks_821
 
-$L$_no_more_big_nblocks_nGltgytEkotuqBl:
+$L$_no_more_big_nblocks_821:
 
 	cmp	r13,512
-	jae	NEAR $L$_encrypt_32_blocks_nGltgytEkotuqBl
+	jae	NEAR $L$_encrypt_32_blocks_821
 
 	cmp	r13,256
-	jae	NEAR $L$_encrypt_16_blocks_nGltgytEkotuqBl
-$L$_encrypt_0_blocks_ghash_32_nGltgytEkotuqBl:
+	jae	NEAR $L$_encrypt_16_blocks_821
+$L$_encrypt_0_blocks_ghash_32_821:
 	mov	r10d,r13d
 	and	r10d,~15
 	mov	ebx,256
@@ -114699,61 +114699,61 @@ $L$_encrypt_0_blocks_ghash_32_nGltgytEkotuqBl:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_CgpDAAqizmgsoDB
+	je	NEAR $L$_last_num_blocks_is_0_830
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_CgpDAAqizmgsoDB
-	jb	NEAR $L$_last_num_blocks_is_7_1_CgpDAAqizmgsoDB
+	je	NEAR $L$_last_num_blocks_is_8_830
+	jb	NEAR $L$_last_num_blocks_is_7_1_830
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_CgpDAAqizmgsoDB
-	jb	NEAR $L$_last_num_blocks_is_11_9_CgpDAAqizmgsoDB
+	je	NEAR $L$_last_num_blocks_is_12_830
+	jb	NEAR $L$_last_num_blocks_is_11_9_830
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_CgpDAAqizmgsoDB
-	ja	NEAR $L$_last_num_blocks_is_16_CgpDAAqizmgsoDB
+	je	NEAR $L$_last_num_blocks_is_15_830
+	ja	NEAR $L$_last_num_blocks_is_16_830
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_CgpDAAqizmgsoDB
-	jmp	NEAR $L$_last_num_blocks_is_13_CgpDAAqizmgsoDB
+	je	NEAR $L$_last_num_blocks_is_14_830
+	jmp	NEAR $L$_last_num_blocks_is_13_830
 
-$L$_last_num_blocks_is_11_9_CgpDAAqizmgsoDB:
+$L$_last_num_blocks_is_11_9_830:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_CgpDAAqizmgsoDB
-	ja	NEAR $L$_last_num_blocks_is_11_CgpDAAqizmgsoDB
-	jmp	NEAR $L$_last_num_blocks_is_9_CgpDAAqizmgsoDB
+	je	NEAR $L$_last_num_blocks_is_10_830
+	ja	NEAR $L$_last_num_blocks_is_11_830
+	jmp	NEAR $L$_last_num_blocks_is_9_830
 
-$L$_last_num_blocks_is_7_1_CgpDAAqizmgsoDB:
+$L$_last_num_blocks_is_7_1_830:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_CgpDAAqizmgsoDB
-	jb	NEAR $L$_last_num_blocks_is_3_1_CgpDAAqizmgsoDB
+	je	NEAR $L$_last_num_blocks_is_4_830
+	jb	NEAR $L$_last_num_blocks_is_3_1_830
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_CgpDAAqizmgsoDB
-	je	NEAR $L$_last_num_blocks_is_6_CgpDAAqizmgsoDB
-	jmp	NEAR $L$_last_num_blocks_is_5_CgpDAAqizmgsoDB
+	ja	NEAR $L$_last_num_blocks_is_7_830
+	je	NEAR $L$_last_num_blocks_is_6_830
+	jmp	NEAR $L$_last_num_blocks_is_5_830
 
-$L$_last_num_blocks_is_3_1_CgpDAAqizmgsoDB:
+$L$_last_num_blocks_is_3_1_830:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_CgpDAAqizmgsoDB
-	je	NEAR $L$_last_num_blocks_is_2_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_1_CgpDAAqizmgsoDB:
+	ja	NEAR $L$_last_num_blocks_is_3_830
+	je	NEAR $L$_last_num_blocks_is_2_830
+$L$_last_num_blocks_is_1_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_yGxjswhvaFDAAgh
+	jae	NEAR $L$_16_blocks_overflow_831
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_yGxjswhvaFDAAgh
+	jmp	NEAR $L$_16_blocks_ok_831
 
-$L$_16_blocks_overflow_yGxjswhvaFDAAgh:
+$L$_16_blocks_overflow_831:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_yGxjswhvaFDAAgh:
+$L$_16_blocks_ok_831:
 
 
 
@@ -114845,7 +114845,7 @@ $L$_16_blocks_ok_yGxjswhvaFDAAgh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_pqkqwqftzjEvkDe
+	jl	NEAR $L$_small_initial_partial_block_832
 
 
 
@@ -114889,8 +114889,8 @@ $L$_16_blocks_ok_yGxjswhvaFDAAgh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_pqkqwqftzjEvkDe
-$L$_small_initial_partial_block_pqkqwqftzjEvkDe:
+	jmp	NEAR $L$_small_initial_compute_done_832
+$L$_small_initial_partial_block_832:
 
 
 
@@ -114942,24 +114942,24 @@ $L$_small_initial_partial_block_pqkqwqftzjEvkDe:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_pqkqwqftzjEvkDe
-$L$_small_initial_compute_done_pqkqwqftzjEvkDe:
-$L$_after_reduction_pqkqwqftzjEvkDe:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_2_CgpDAAqizmgsoDB:
+	jmp	NEAR $L$_after_reduction_832
+$L$_small_initial_compute_done_832:
+$L$_after_reduction_832:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_2_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_kobqCAzwacpGrpy
+	jae	NEAR $L$_16_blocks_overflow_833
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_kobqCAzwacpGrpy
+	jmp	NEAR $L$_16_blocks_ok_833
 
-$L$_16_blocks_overflow_kobqCAzwacpGrpy:
+$L$_16_blocks_overflow_833:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_kobqCAzwacpGrpy:
+$L$_16_blocks_ok_833:
 
 
 
@@ -115052,7 +115052,7 @@ $L$_16_blocks_ok_kobqCAzwacpGrpy:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_wGhDFsdGmhnDGpy
+	jl	NEAR $L$_small_initial_partial_block_834
 
 
 
@@ -115096,8 +115096,8 @@ $L$_16_blocks_ok_kobqCAzwacpGrpy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_wGhDFsdGmhnDGpy
-$L$_small_initial_partial_block_wGhDFsdGmhnDGpy:
+	jmp	NEAR $L$_small_initial_compute_done_834
+$L$_small_initial_partial_block_834:
 
 
 
@@ -115144,27 +115144,27 @@ $L$_small_initial_partial_block_wGhDFsdGmhnDGpy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_wGhDFsdGmhnDGpy:
+$L$_small_initial_compute_done_834:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_wGhDFsdGmhnDGpy
+	je	NEAR $L$_after_reduction_834
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_wGhDFsdGmhnDGpy:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_3_CgpDAAqizmgsoDB:
+$L$_after_reduction_834:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_3_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_fmEAhCkEAsfEcyy
+	jae	NEAR $L$_16_blocks_overflow_835
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_fmEAhCkEAsfEcyy
+	jmp	NEAR $L$_16_blocks_ok_835
 
-$L$_16_blocks_overflow_fmEAhCkEAsfEcyy:
+$L$_16_blocks_overflow_835:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_fmEAhCkEAsfEcyy:
+$L$_16_blocks_ok_835:
 
 
 
@@ -115257,7 +115257,7 @@ $L$_16_blocks_ok_fmEAhCkEAsfEcyy:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AnEAbqcvbDeByqm
+	jl	NEAR $L$_small_initial_partial_block_836
 
 
 
@@ -115302,8 +115302,8 @@ $L$_16_blocks_ok_fmEAhCkEAsfEcyy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AnEAbqcvbDeByqm
-$L$_small_initial_partial_block_AnEAbqcvbDeByqm:
+	jmp	NEAR $L$_small_initial_compute_done_836
+$L$_small_initial_partial_block_836:
 
 
 
@@ -115350,27 +115350,27 @@ $L$_small_initial_partial_block_AnEAbqcvbDeByqm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AnEAbqcvbDeByqm:
+$L$_small_initial_compute_done_836:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AnEAbqcvbDeByqm
+	je	NEAR $L$_after_reduction_836
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AnEAbqcvbDeByqm:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_4_CgpDAAqizmgsoDB:
+$L$_after_reduction_836:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_4_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_crfjwciqohEhhjs
+	jae	NEAR $L$_16_blocks_overflow_837
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_crfjwciqohEhhjs
+	jmp	NEAR $L$_16_blocks_ok_837
 
-$L$_16_blocks_overflow_crfjwciqohEhhjs:
+$L$_16_blocks_overflow_837:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_crfjwciqohEhhjs:
+$L$_16_blocks_ok_837:
 
 
 
@@ -115463,7 +115463,7 @@ $L$_16_blocks_ok_crfjwciqohEhhjs:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_Dplucebqlnevtnj
+	jl	NEAR $L$_small_initial_partial_block_838
 
 
 
@@ -115508,8 +115508,8 @@ $L$_16_blocks_ok_crfjwciqohEhhjs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_Dplucebqlnevtnj
-$L$_small_initial_partial_block_Dplucebqlnevtnj:
+	jmp	NEAR $L$_small_initial_compute_done_838
+$L$_small_initial_partial_block_838:
 
 
 
@@ -115557,32 +115557,32 @@ $L$_small_initial_partial_block_Dplucebqlnevtnj:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_Dplucebqlnevtnj:
+$L$_small_initial_compute_done_838:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_Dplucebqlnevtnj
+	je	NEAR $L$_after_reduction_838
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_Dplucebqlnevtnj:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_5_CgpDAAqizmgsoDB:
+$L$_after_reduction_838:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_5_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_haoshvmthBFAifb
+	jae	NEAR $L$_16_blocks_overflow_839
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_haoshvmthBFAifb
+	jmp	NEAR $L$_16_blocks_ok_839
 
-$L$_16_blocks_overflow_haoshvmthBFAifb:
+$L$_16_blocks_overflow_839:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_haoshvmthBFAifb:
+$L$_16_blocks_ok_839:
 
 
 
@@ -115694,7 +115694,7 @@ $L$_16_blocks_ok_haoshvmthBFAifb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FDnlEcjpvhzyszu
+	jl	NEAR $L$_small_initial_partial_block_840
 
 
 
@@ -115745,8 +115745,8 @@ $L$_16_blocks_ok_haoshvmthBFAifb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FDnlEcjpvhzyszu
-$L$_small_initial_partial_block_FDnlEcjpvhzyszu:
+	jmp	NEAR $L$_small_initial_compute_done_840
+$L$_small_initial_partial_block_840:
 
 
 
@@ -115794,32 +115794,32 @@ $L$_small_initial_partial_block_FDnlEcjpvhzyszu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FDnlEcjpvhzyszu:
+$L$_small_initial_compute_done_840:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FDnlEcjpvhzyszu
+	je	NEAR $L$_after_reduction_840
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FDnlEcjpvhzyszu:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_6_CgpDAAqizmgsoDB:
+$L$_after_reduction_840:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_6_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_lvyhltxfwFblCwo
+	jae	NEAR $L$_16_blocks_overflow_841
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_lvyhltxfwFblCwo
+	jmp	NEAR $L$_16_blocks_ok_841
 
-$L$_16_blocks_overflow_lvyhltxfwFblCwo:
+$L$_16_blocks_overflow_841:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_lvyhltxfwFblCwo:
+$L$_16_blocks_ok_841:
 
 
 
@@ -115931,7 +115931,7 @@ $L$_16_blocks_ok_lvyhltxfwFblCwo:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EzGcgEuGqaivbzn
+	jl	NEAR $L$_small_initial_partial_block_842
 
 
 
@@ -115982,8 +115982,8 @@ $L$_16_blocks_ok_lvyhltxfwFblCwo:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EzGcgEuGqaivbzn
-$L$_small_initial_partial_block_EzGcgEuGqaivbzn:
+	jmp	NEAR $L$_small_initial_compute_done_842
+$L$_small_initial_partial_block_842:
 
 
 
@@ -116037,32 +116037,32 @@ $L$_small_initial_partial_block_EzGcgEuGqaivbzn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EzGcgEuGqaivbzn:
+$L$_small_initial_compute_done_842:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EzGcgEuGqaivbzn
+	je	NEAR $L$_after_reduction_842
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EzGcgEuGqaivbzn:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_7_CgpDAAqizmgsoDB:
+$L$_after_reduction_842:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_7_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_cGhpnrnaogfxwEe
+	jae	NEAR $L$_16_blocks_overflow_843
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_cGhpnrnaogfxwEe
+	jmp	NEAR $L$_16_blocks_ok_843
 
-$L$_16_blocks_overflow_cGhpnrnaogfxwEe:
+$L$_16_blocks_overflow_843:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_cGhpnrnaogfxwEe:
+$L$_16_blocks_ok_843:
 
 
 
@@ -116174,7 +116174,7 @@ $L$_16_blocks_ok_cGhpnrnaogfxwEe:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lEvuubDtngCDmvC
+	jl	NEAR $L$_small_initial_partial_block_844
 
 
 
@@ -116226,8 +116226,8 @@ $L$_16_blocks_ok_cGhpnrnaogfxwEe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lEvuubDtngCDmvC
-$L$_small_initial_partial_block_lEvuubDtngCDmvC:
+	jmp	NEAR $L$_small_initial_compute_done_844
+$L$_small_initial_partial_block_844:
 
 
 
@@ -116281,32 +116281,32 @@ $L$_small_initial_partial_block_lEvuubDtngCDmvC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lEvuubDtngCDmvC:
+$L$_small_initial_compute_done_844:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lEvuubDtngCDmvC
+	je	NEAR $L$_after_reduction_844
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lEvuubDtngCDmvC:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_8_CgpDAAqizmgsoDB:
+$L$_after_reduction_844:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_8_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_rtqfvxoanzddwGy
+	jae	NEAR $L$_16_blocks_overflow_845
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_rtqfvxoanzddwGy
+	jmp	NEAR $L$_16_blocks_ok_845
 
-$L$_16_blocks_overflow_rtqfvxoanzddwGy:
+$L$_16_blocks_overflow_845:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_rtqfvxoanzddwGy:
+$L$_16_blocks_ok_845:
 
 
 
@@ -116418,7 +116418,7 @@ $L$_16_blocks_ok_rtqfvxoanzddwGy:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rdexzzpifqwEhmn
+	jl	NEAR $L$_small_initial_partial_block_846
 
 
 
@@ -116472,8 +116472,8 @@ $L$_16_blocks_ok_rtqfvxoanzddwGy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rdexzzpifqwEhmn
-$L$_small_initial_partial_block_rdexzzpifqwEhmn:
+	jmp	NEAR $L$_small_initial_compute_done_846
+$L$_small_initial_partial_block_846:
 
 
 
@@ -116528,26 +116528,26 @@ $L$_small_initial_partial_block_rdexzzpifqwEhmn:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rdexzzpifqwEhmn:
+$L$_small_initial_compute_done_846:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rdexzzpifqwEhmn
+	je	NEAR $L$_after_reduction_846
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rdexzzpifqwEhmn:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_9_CgpDAAqizmgsoDB:
+$L$_after_reduction_846:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_9_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_tlcEpjgBzrxfGEe
+	jae	NEAR $L$_16_blocks_overflow_847
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_tlcEpjgBzrxfGEe
+	jmp	NEAR $L$_16_blocks_ok_847
 
-$L$_16_blocks_overflow_tlcEpjgBzrxfGEe:
+$L$_16_blocks_overflow_847:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -116556,7 +116556,7 @@ $L$_16_blocks_overflow_tlcEpjgBzrxfGEe:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_tlcEpjgBzrxfGEe:
+$L$_16_blocks_ok_847:
 
 
 
@@ -116687,7 +116687,7 @@ $L$_16_blocks_ok_tlcEpjgBzrxfGEe:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ukbAGsGwjtppdEc
+	jl	NEAR $L$_small_initial_partial_block_848
 
 
 
@@ -116747,8 +116747,8 @@ $L$_16_blocks_ok_tlcEpjgBzrxfGEe:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ukbAGsGwjtppdEc
-$L$_small_initial_partial_block_ukbAGsGwjtppdEc:
+	jmp	NEAR $L$_small_initial_compute_done_848
+$L$_small_initial_partial_block_848:
 
 
 
@@ -116805,26 +116805,26 @@ $L$_small_initial_partial_block_ukbAGsGwjtppdEc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ukbAGsGwjtppdEc:
+$L$_small_initial_compute_done_848:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ukbAGsGwjtppdEc
+	je	NEAR $L$_after_reduction_848
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ukbAGsGwjtppdEc:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_10_CgpDAAqizmgsoDB:
+$L$_after_reduction_848:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_10_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_jCckktfwmhugFsc
+	jae	NEAR $L$_16_blocks_overflow_849
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_jCckktfwmhugFsc
+	jmp	NEAR $L$_16_blocks_ok_849
 
-$L$_16_blocks_overflow_jCckktfwmhugFsc:
+$L$_16_blocks_overflow_849:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -116833,7 +116833,7 @@ $L$_16_blocks_overflow_jCckktfwmhugFsc:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_jCckktfwmhugFsc:
+$L$_16_blocks_ok_849:
 
 
 
@@ -116964,7 +116964,7 @@ $L$_16_blocks_ok_jCckktfwmhugFsc:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qGmjxEdlGxahfxw
+	jl	NEAR $L$_small_initial_partial_block_850
 
 
 
@@ -117024,8 +117024,8 @@ $L$_16_blocks_ok_jCckktfwmhugFsc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qGmjxEdlGxahfxw
-$L$_small_initial_partial_block_qGmjxEdlGxahfxw:
+	jmp	NEAR $L$_small_initial_compute_done_850
+$L$_small_initial_partial_block_850:
 
 
 
@@ -117088,26 +117088,26 @@ $L$_small_initial_partial_block_qGmjxEdlGxahfxw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qGmjxEdlGxahfxw:
+$L$_small_initial_compute_done_850:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qGmjxEdlGxahfxw
+	je	NEAR $L$_after_reduction_850
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qGmjxEdlGxahfxw:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_11_CgpDAAqizmgsoDB:
+$L$_after_reduction_850:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_11_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_mlfcxBcbjvAEEeu
+	jae	NEAR $L$_16_blocks_overflow_851
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_mlfcxBcbjvAEEeu
+	jmp	NEAR $L$_16_blocks_ok_851
 
-$L$_16_blocks_overflow_mlfcxBcbjvAEEeu:
+$L$_16_blocks_overflow_851:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -117116,7 +117116,7 @@ $L$_16_blocks_overflow_mlfcxBcbjvAEEeu:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_mlfcxBcbjvAEEeu:
+$L$_16_blocks_ok_851:
 
 
 
@@ -117247,7 +117247,7 @@ $L$_16_blocks_ok_mlfcxBcbjvAEEeu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fxpuvgoywmtdhjd
+	jl	NEAR $L$_small_initial_partial_block_852
 
 
 
@@ -117308,8 +117308,8 @@ $L$_16_blocks_ok_mlfcxBcbjvAEEeu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fxpuvgoywmtdhjd
-$L$_small_initial_partial_block_fxpuvgoywmtdhjd:
+	jmp	NEAR $L$_small_initial_compute_done_852
+$L$_small_initial_partial_block_852:
 
 
 
@@ -117372,26 +117372,26 @@ $L$_small_initial_partial_block_fxpuvgoywmtdhjd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fxpuvgoywmtdhjd:
+$L$_small_initial_compute_done_852:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fxpuvgoywmtdhjd
+	je	NEAR $L$_after_reduction_852
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_fxpuvgoywmtdhjd:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_12_CgpDAAqizmgsoDB:
+$L$_after_reduction_852:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_12_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_qblaoqaycGAtpfm
+	jae	NEAR $L$_16_blocks_overflow_853
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_qblaoqaycGAtpfm
+	jmp	NEAR $L$_16_blocks_ok_853
 
-$L$_16_blocks_overflow_qblaoqaycGAtpfm:
+$L$_16_blocks_overflow_853:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -117400,7 +117400,7 @@ $L$_16_blocks_overflow_qblaoqaycGAtpfm:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_qblaoqaycGAtpfm:
+$L$_16_blocks_ok_853:
 
 
 
@@ -117531,7 +117531,7 @@ $L$_16_blocks_ok_qblaoqaycGAtpfm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_iiuEemcaCuBrEjc
+	jl	NEAR $L$_small_initial_partial_block_854
 
 
 
@@ -117590,8 +117590,8 @@ $L$_16_blocks_ok_qblaoqaycGAtpfm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_iiuEemcaCuBrEjc
-$L$_small_initial_partial_block_iiuEemcaCuBrEjc:
+	jmp	NEAR $L$_small_initial_compute_done_854
+$L$_small_initial_partial_block_854:
 
 
 
@@ -117655,27 +117655,27 @@ $L$_small_initial_partial_block_iiuEemcaCuBrEjc:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_iiuEemcaCuBrEjc:
+$L$_small_initial_compute_done_854:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_iiuEemcaCuBrEjc
+	je	NEAR $L$_after_reduction_854
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_iiuEemcaCuBrEjc:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_13_CgpDAAqizmgsoDB:
+$L$_after_reduction_854:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_13_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_xvvAuiyqtebFFtE
+	jae	NEAR $L$_16_blocks_overflow_855
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_xvvAuiyqtebFFtE
+	jmp	NEAR $L$_16_blocks_ok_855
 
-$L$_16_blocks_overflow_xvvAuiyqtebFFtE:
+$L$_16_blocks_overflow_855:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -117686,7 +117686,7 @@ $L$_16_blocks_overflow_xvvAuiyqtebFFtE:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_xvvAuiyqtebFFtE:
+$L$_16_blocks_ok_855:
 
 
 
@@ -117836,7 +117836,7 @@ $L$_16_blocks_ok_xvvAuiyqtebFFtE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nkkjAEqgEDlrrpw
+	jl	NEAR $L$_small_initial_partial_block_856
 
 
 
@@ -117901,8 +117901,8 @@ $L$_16_blocks_ok_xvvAuiyqtebFFtE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nkkjAEqgEDlrrpw
-$L$_small_initial_partial_block_nkkjAEqgEDlrrpw:
+	jmp	NEAR $L$_small_initial_compute_done_856
+$L$_small_initial_partial_block_856:
 
 
 
@@ -117964,27 +117964,27 @@ $L$_small_initial_partial_block_nkkjAEqgEDlrrpw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nkkjAEqgEDlrrpw:
+$L$_small_initial_compute_done_856:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nkkjAEqgEDlrrpw
+	je	NEAR $L$_after_reduction_856
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nkkjAEqgEDlrrpw:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_14_CgpDAAqizmgsoDB:
+$L$_after_reduction_856:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_14_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_vnbcfnlqEwgczcm
+	jae	NEAR $L$_16_blocks_overflow_857
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_vnbcfnlqEwgczcm
+	jmp	NEAR $L$_16_blocks_ok_857
 
-$L$_16_blocks_overflow_vnbcfnlqEwgczcm:
+$L$_16_blocks_overflow_857:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -117995,7 +117995,7 @@ $L$_16_blocks_overflow_vnbcfnlqEwgczcm:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_vnbcfnlqEwgczcm:
+$L$_16_blocks_ok_857:
 
 
 
@@ -118145,7 +118145,7 @@ $L$_16_blocks_ok_vnbcfnlqEwgczcm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_hDknfpffeeixtav
+	jl	NEAR $L$_small_initial_partial_block_858
 
 
 
@@ -118210,8 +118210,8 @@ $L$_16_blocks_ok_vnbcfnlqEwgczcm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_hDknfpffeeixtav
-$L$_small_initial_partial_block_hDknfpffeeixtav:
+	jmp	NEAR $L$_small_initial_compute_done_858
+$L$_small_initial_partial_block_858:
 
 
 
@@ -118279,27 +118279,27 @@ $L$_small_initial_partial_block_hDknfpffeeixtav:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_hDknfpffeeixtav:
+$L$_small_initial_compute_done_858:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_hDknfpffeeixtav
+	je	NEAR $L$_after_reduction_858
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_hDknfpffeeixtav:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_15_CgpDAAqizmgsoDB:
+$L$_after_reduction_858:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_15_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_ynqtjppBafmwffi
+	jae	NEAR $L$_16_blocks_overflow_859
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ynqtjppBafmwffi
+	jmp	NEAR $L$_16_blocks_ok_859
 
-$L$_16_blocks_overflow_ynqtjppBafmwffi:
+$L$_16_blocks_overflow_859:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -118310,7 +118310,7 @@ $L$_16_blocks_overflow_ynqtjppBafmwffi:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ynqtjppBafmwffi:
+$L$_16_blocks_ok_859:
 
 
 
@@ -118460,7 +118460,7 @@ $L$_16_blocks_ok_ynqtjppBafmwffi:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ksFtzDacpgdtztg
+	jl	NEAR $L$_small_initial_partial_block_860
 
 
 
@@ -118526,8 +118526,8 @@ $L$_16_blocks_ok_ynqtjppBafmwffi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ksFtzDacpgdtztg
-$L$_small_initial_partial_block_ksFtzDacpgdtztg:
+	jmp	NEAR $L$_small_initial_compute_done_860
+$L$_small_initial_partial_block_860:
 
 
 
@@ -118595,27 +118595,27 @@ $L$_small_initial_partial_block_ksFtzDacpgdtztg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ksFtzDacpgdtztg:
+$L$_small_initial_compute_done_860:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ksFtzDacpgdtztg
+	je	NEAR $L$_after_reduction_860
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ksFtzDacpgdtztg:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_16_CgpDAAqizmgsoDB:
+$L$_after_reduction_860:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_16_830:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_nGzhpmyEAykgDsB
+	jae	NEAR $L$_16_blocks_overflow_861
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_nGzhpmyEAykgDsB
+	jmp	NEAR $L$_16_blocks_ok_861
 
-$L$_16_blocks_overflow_nGzhpmyEAykgDsB:
+$L$_16_blocks_overflow_861:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -118626,7 +118626,7 @@ $L$_16_blocks_overflow_nGzhpmyEAykgDsB:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_nGzhpmyEAykgDsB:
+$L$_16_blocks_ok_861:
 
 
 
@@ -118773,7 +118773,7 @@ $L$_16_blocks_ok_nGzhpmyEAykgDsB:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_kFvnrpoDeyguFdq:
+$L$_small_initial_partial_block_862:
 
 
 
@@ -118842,11 +118842,11 @@ $L$_small_initial_partial_block_kFvnrpoDeyguFdq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kFvnrpoDeyguFdq:
+$L$_small_initial_compute_done_862:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kFvnrpoDeyguFdq:
-	jmp	NEAR $L$_last_blocks_done_CgpDAAqizmgsoDB
-$L$_last_num_blocks_is_0_CgpDAAqizmgsoDB:
+$L$_after_reduction_862:
+	jmp	NEAR $L$_last_blocks_done_830
+$L$_last_num_blocks_is_0_830:
 	vmovdqa64	zmm13,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -118907,18 +118907,18 @@ $L$_last_num_blocks_is_0_CgpDAAqizmgsoDB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_CgpDAAqizmgsoDB:
+$L$_last_blocks_done_830:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_nGltgytEkotuqBl
-$L$_encrypt_32_blocks_nGltgytEkotuqBl:
+	jmp	NEAR $L$_ghash_done_821
+$L$_encrypt_32_blocks_821:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_fDmuDehrvnnBddF
+	jae	NEAR $L$_16_blocks_overflow_863
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_fDmuDehrvnnBddF
-$L$_16_blocks_overflow_fDmuDehrvnnBddF:
+	jmp	NEAR $L$_16_blocks_ok_863
+$L$_16_blocks_overflow_863:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -118929,7 +118929,7 @@ $L$_16_blocks_overflow_fDmuDehrvnnBddF:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_fDmuDehrvnnBddF:
+$L$_16_blocks_ok_863:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -119117,13 +119117,13 @@ $L$_16_blocks_ok_fDmuDehrvnnBddF:
 	vmovdqa64	ZMMWORD[1408+rsp],zmm4
 	vmovdqa64	ZMMWORD[1472+rsp],zmm5
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_terAjGgDbdpEeno
+	jae	NEAR $L$_16_blocks_overflow_864
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_terAjGgDbdpEeno
-$L$_16_blocks_overflow_terAjGgDbdpEeno:
+	jmp	NEAR $L$_16_blocks_ok_864
+$L$_16_blocks_overflow_864:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -119134,7 +119134,7 @@ $L$_16_blocks_overflow_terAjGgDbdpEeno:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_terAjGgDbdpEeno:
+$L$_16_blocks_ok_864:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vmovdqa64	zmm8,ZMMWORD[1024+rsp]
 	vmovdqu64	zmm1,ZMMWORD[256+rsp]
@@ -119390,61 +119390,61 @@ $L$_16_blocks_ok_terAjGgDbdpEeno:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_diyyvGgarqjvvjq
+	je	NEAR $L$_last_num_blocks_is_0_865
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_diyyvGgarqjvvjq
-	jb	NEAR $L$_last_num_blocks_is_7_1_diyyvGgarqjvvjq
+	je	NEAR $L$_last_num_blocks_is_8_865
+	jb	NEAR $L$_last_num_blocks_is_7_1_865
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_diyyvGgarqjvvjq
-	jb	NEAR $L$_last_num_blocks_is_11_9_diyyvGgarqjvvjq
+	je	NEAR $L$_last_num_blocks_is_12_865
+	jb	NEAR $L$_last_num_blocks_is_11_9_865
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_diyyvGgarqjvvjq
-	ja	NEAR $L$_last_num_blocks_is_16_diyyvGgarqjvvjq
+	je	NEAR $L$_last_num_blocks_is_15_865
+	ja	NEAR $L$_last_num_blocks_is_16_865
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_diyyvGgarqjvvjq
-	jmp	NEAR $L$_last_num_blocks_is_13_diyyvGgarqjvvjq
+	je	NEAR $L$_last_num_blocks_is_14_865
+	jmp	NEAR $L$_last_num_blocks_is_13_865
 
-$L$_last_num_blocks_is_11_9_diyyvGgarqjvvjq:
+$L$_last_num_blocks_is_11_9_865:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_diyyvGgarqjvvjq
-	ja	NEAR $L$_last_num_blocks_is_11_diyyvGgarqjvvjq
-	jmp	NEAR $L$_last_num_blocks_is_9_diyyvGgarqjvvjq
+	je	NEAR $L$_last_num_blocks_is_10_865
+	ja	NEAR $L$_last_num_blocks_is_11_865
+	jmp	NEAR $L$_last_num_blocks_is_9_865
 
-$L$_last_num_blocks_is_7_1_diyyvGgarqjvvjq:
+$L$_last_num_blocks_is_7_1_865:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_diyyvGgarqjvvjq
-	jb	NEAR $L$_last_num_blocks_is_3_1_diyyvGgarqjvvjq
+	je	NEAR $L$_last_num_blocks_is_4_865
+	jb	NEAR $L$_last_num_blocks_is_3_1_865
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_diyyvGgarqjvvjq
-	je	NEAR $L$_last_num_blocks_is_6_diyyvGgarqjvvjq
-	jmp	NEAR $L$_last_num_blocks_is_5_diyyvGgarqjvvjq
+	ja	NEAR $L$_last_num_blocks_is_7_865
+	je	NEAR $L$_last_num_blocks_is_6_865
+	jmp	NEAR $L$_last_num_blocks_is_5_865
 
-$L$_last_num_blocks_is_3_1_diyyvGgarqjvvjq:
+$L$_last_num_blocks_is_3_1_865:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_diyyvGgarqjvvjq
-	je	NEAR $L$_last_num_blocks_is_2_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_1_diyyvGgarqjvvjq:
+	ja	NEAR $L$_last_num_blocks_is_3_865
+	je	NEAR $L$_last_num_blocks_is_2_865
+$L$_last_num_blocks_is_1_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_gxBjwvlpCFGsvbr
+	jae	NEAR $L$_16_blocks_overflow_866
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_gxBjwvlpCFGsvbr
+	jmp	NEAR $L$_16_blocks_ok_866
 
-$L$_16_blocks_overflow_gxBjwvlpCFGsvbr:
+$L$_16_blocks_overflow_866:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_gxBjwvlpCFGsvbr:
+$L$_16_blocks_ok_866:
 
 
 
@@ -119536,7 +119536,7 @@ $L$_16_blocks_ok_gxBjwvlpCFGsvbr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_svfCtEcoqjxArGa
+	jl	NEAR $L$_small_initial_partial_block_867
 
 
 
@@ -119580,8 +119580,8 @@ $L$_16_blocks_ok_gxBjwvlpCFGsvbr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_svfCtEcoqjxArGa
-$L$_small_initial_partial_block_svfCtEcoqjxArGa:
+	jmp	NEAR $L$_small_initial_compute_done_867
+$L$_small_initial_partial_block_867:
 
 
 
@@ -119633,24 +119633,24 @@ $L$_small_initial_partial_block_svfCtEcoqjxArGa:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_svfCtEcoqjxArGa
-$L$_small_initial_compute_done_svfCtEcoqjxArGa:
-$L$_after_reduction_svfCtEcoqjxArGa:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_2_diyyvGgarqjvvjq:
+	jmp	NEAR $L$_after_reduction_867
+$L$_small_initial_compute_done_867:
+$L$_after_reduction_867:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_2_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_nFEEyvlmxiDmeGE
+	jae	NEAR $L$_16_blocks_overflow_868
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_nFEEyvlmxiDmeGE
+	jmp	NEAR $L$_16_blocks_ok_868
 
-$L$_16_blocks_overflow_nFEEyvlmxiDmeGE:
+$L$_16_blocks_overflow_868:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_nFEEyvlmxiDmeGE:
+$L$_16_blocks_ok_868:
 
 
 
@@ -119743,7 +119743,7 @@ $L$_16_blocks_ok_nFEEyvlmxiDmeGE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_kzevbbvscpaFnpC
+	jl	NEAR $L$_small_initial_partial_block_869
 
 
 
@@ -119787,8 +119787,8 @@ $L$_16_blocks_ok_nFEEyvlmxiDmeGE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_kzevbbvscpaFnpC
-$L$_small_initial_partial_block_kzevbbvscpaFnpC:
+	jmp	NEAR $L$_small_initial_compute_done_869
+$L$_small_initial_partial_block_869:
 
 
 
@@ -119835,27 +119835,27 @@ $L$_small_initial_partial_block_kzevbbvscpaFnpC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_kzevbbvscpaFnpC:
+$L$_small_initial_compute_done_869:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_kzevbbvscpaFnpC
+	je	NEAR $L$_after_reduction_869
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_kzevbbvscpaFnpC:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_3_diyyvGgarqjvvjq:
+$L$_after_reduction_869:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_3_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_bewmveDyAlqmgpw
+	jae	NEAR $L$_16_blocks_overflow_870
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_bewmveDyAlqmgpw
+	jmp	NEAR $L$_16_blocks_ok_870
 
-$L$_16_blocks_overflow_bewmveDyAlqmgpw:
+$L$_16_blocks_overflow_870:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_bewmveDyAlqmgpw:
+$L$_16_blocks_ok_870:
 
 
 
@@ -119948,7 +119948,7 @@ $L$_16_blocks_ok_bewmveDyAlqmgpw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_Ftbqjrwjteerhuw
+	jl	NEAR $L$_small_initial_partial_block_871
 
 
 
@@ -119993,8 +119993,8 @@ $L$_16_blocks_ok_bewmveDyAlqmgpw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_Ftbqjrwjteerhuw
-$L$_small_initial_partial_block_Ftbqjrwjteerhuw:
+	jmp	NEAR $L$_small_initial_compute_done_871
+$L$_small_initial_partial_block_871:
 
 
 
@@ -120041,27 +120041,27 @@ $L$_small_initial_partial_block_Ftbqjrwjteerhuw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_Ftbqjrwjteerhuw:
+$L$_small_initial_compute_done_871:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_Ftbqjrwjteerhuw
+	je	NEAR $L$_after_reduction_871
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_Ftbqjrwjteerhuw:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_4_diyyvGgarqjvvjq:
+$L$_after_reduction_871:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_4_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_jeorzrvqyiauqar
+	jae	NEAR $L$_16_blocks_overflow_872
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_jeorzrvqyiauqar
+	jmp	NEAR $L$_16_blocks_ok_872
 
-$L$_16_blocks_overflow_jeorzrvqyiauqar:
+$L$_16_blocks_overflow_872:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_jeorzrvqyiauqar:
+$L$_16_blocks_ok_872:
 
 
 
@@ -120154,7 +120154,7 @@ $L$_16_blocks_ok_jeorzrvqyiauqar:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_mfAkbGhdpipCBip
+	jl	NEAR $L$_small_initial_partial_block_873
 
 
 
@@ -120199,8 +120199,8 @@ $L$_16_blocks_ok_jeorzrvqyiauqar:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_mfAkbGhdpipCBip
-$L$_small_initial_partial_block_mfAkbGhdpipCBip:
+	jmp	NEAR $L$_small_initial_compute_done_873
+$L$_small_initial_partial_block_873:
 
 
 
@@ -120248,32 +120248,32 @@ $L$_small_initial_partial_block_mfAkbGhdpipCBip:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_mfAkbGhdpipCBip:
+$L$_small_initial_compute_done_873:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_mfAkbGhdpipCBip
+	je	NEAR $L$_after_reduction_873
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_mfAkbGhdpipCBip:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_5_diyyvGgarqjvvjq:
+$L$_after_reduction_873:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_5_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_xoFnmpFgFwglopk
+	jae	NEAR $L$_16_blocks_overflow_874
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_xoFnmpFgFwglopk
+	jmp	NEAR $L$_16_blocks_ok_874
 
-$L$_16_blocks_overflow_xoFnmpFgFwglopk:
+$L$_16_blocks_overflow_874:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_xoFnmpFgFwglopk:
+$L$_16_blocks_ok_874:
 
 
 
@@ -120385,7 +120385,7 @@ $L$_16_blocks_ok_xoFnmpFgFwglopk:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_eqbwgzdmyDwjkxd
+	jl	NEAR $L$_small_initial_partial_block_875
 
 
 
@@ -120436,8 +120436,8 @@ $L$_16_blocks_ok_xoFnmpFgFwglopk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_eqbwgzdmyDwjkxd
-$L$_small_initial_partial_block_eqbwgzdmyDwjkxd:
+	jmp	NEAR $L$_small_initial_compute_done_875
+$L$_small_initial_partial_block_875:
 
 
 
@@ -120485,32 +120485,32 @@ $L$_small_initial_partial_block_eqbwgzdmyDwjkxd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_eqbwgzdmyDwjkxd:
+$L$_small_initial_compute_done_875:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_eqbwgzdmyDwjkxd
+	je	NEAR $L$_after_reduction_875
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_eqbwgzdmyDwjkxd:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_6_diyyvGgarqjvvjq:
+$L$_after_reduction_875:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_6_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_ruvlgCdtpvfaqaq
+	jae	NEAR $L$_16_blocks_overflow_876
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_ruvlgCdtpvfaqaq
+	jmp	NEAR $L$_16_blocks_ok_876
 
-$L$_16_blocks_overflow_ruvlgCdtpvfaqaq:
+$L$_16_blocks_overflow_876:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_ruvlgCdtpvfaqaq:
+$L$_16_blocks_ok_876:
 
 
 
@@ -120622,7 +120622,7 @@ $L$_16_blocks_ok_ruvlgCdtpvfaqaq:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_unpqBdvpvByAjdu
+	jl	NEAR $L$_small_initial_partial_block_877
 
 
 
@@ -120673,8 +120673,8 @@ $L$_16_blocks_ok_ruvlgCdtpvfaqaq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_unpqBdvpvByAjdu
-$L$_small_initial_partial_block_unpqBdvpvByAjdu:
+	jmp	NEAR $L$_small_initial_compute_done_877
+$L$_small_initial_partial_block_877:
 
 
 
@@ -120728,32 +120728,32 @@ $L$_small_initial_partial_block_unpqBdvpvByAjdu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_unpqBdvpvByAjdu:
+$L$_small_initial_compute_done_877:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_unpqBdvpvByAjdu
+	je	NEAR $L$_after_reduction_877
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_unpqBdvpvByAjdu:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_7_diyyvGgarqjvvjq:
+$L$_after_reduction_877:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_7_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_oqEvoEvrmpqaxcC
+	jae	NEAR $L$_16_blocks_overflow_878
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_oqEvoEvrmpqaxcC
+	jmp	NEAR $L$_16_blocks_ok_878
 
-$L$_16_blocks_overflow_oqEvoEvrmpqaxcC:
+$L$_16_blocks_overflow_878:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_oqEvoEvrmpqaxcC:
+$L$_16_blocks_ok_878:
 
 
 
@@ -120865,7 +120865,7 @@ $L$_16_blocks_ok_oqEvoEvrmpqaxcC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rgDbunryuvyzrdz
+	jl	NEAR $L$_small_initial_partial_block_879
 
 
 
@@ -120917,8 +120917,8 @@ $L$_16_blocks_ok_oqEvoEvrmpqaxcC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rgDbunryuvyzrdz
-$L$_small_initial_partial_block_rgDbunryuvyzrdz:
+	jmp	NEAR $L$_small_initial_compute_done_879
+$L$_small_initial_partial_block_879:
 
 
 
@@ -120972,32 +120972,32 @@ $L$_small_initial_partial_block_rgDbunryuvyzrdz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rgDbunryuvyzrdz:
+$L$_small_initial_compute_done_879:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rgDbunryuvyzrdz
+	je	NEAR $L$_after_reduction_879
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rgDbunryuvyzrdz:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_8_diyyvGgarqjvvjq:
+$L$_after_reduction_879:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_8_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_FygiAeaaxgBeGEb
+	jae	NEAR $L$_16_blocks_overflow_880
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FygiAeaaxgBeGEb
+	jmp	NEAR $L$_16_blocks_ok_880
 
-$L$_16_blocks_overflow_FygiAeaaxgBeGEb:
+$L$_16_blocks_overflow_880:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_FygiAeaaxgBeGEb:
+$L$_16_blocks_ok_880:
 
 
 
@@ -121109,7 +121109,7 @@ $L$_16_blocks_ok_FygiAeaaxgBeGEb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_BmczqElmhxooBDE
+	jl	NEAR $L$_small_initial_partial_block_881
 
 
 
@@ -121163,8 +121163,8 @@ $L$_16_blocks_ok_FygiAeaaxgBeGEb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_BmczqElmhxooBDE
-$L$_small_initial_partial_block_BmczqElmhxooBDE:
+	jmp	NEAR $L$_small_initial_compute_done_881
+$L$_small_initial_partial_block_881:
 
 
 
@@ -121219,26 +121219,26 @@ $L$_small_initial_partial_block_BmczqElmhxooBDE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_BmczqElmhxooBDE:
+$L$_small_initial_compute_done_881:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_BmczqElmhxooBDE
+	je	NEAR $L$_after_reduction_881
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_BmczqElmhxooBDE:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_9_diyyvGgarqjvvjq:
+$L$_after_reduction_881:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_9_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_aodcaecwaxmjksz
+	jae	NEAR $L$_16_blocks_overflow_882
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_aodcaecwaxmjksz
+	jmp	NEAR $L$_16_blocks_ok_882
 
-$L$_16_blocks_overflow_aodcaecwaxmjksz:
+$L$_16_blocks_overflow_882:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -121247,7 +121247,7 @@ $L$_16_blocks_overflow_aodcaecwaxmjksz:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_aodcaecwaxmjksz:
+$L$_16_blocks_ok_882:
 
 
 
@@ -121378,7 +121378,7 @@ $L$_16_blocks_ok_aodcaecwaxmjksz:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DqguptAyGeuDGih
+	jl	NEAR $L$_small_initial_partial_block_883
 
 
 
@@ -121438,8 +121438,8 @@ $L$_16_blocks_ok_aodcaecwaxmjksz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DqguptAyGeuDGih
-$L$_small_initial_partial_block_DqguptAyGeuDGih:
+	jmp	NEAR $L$_small_initial_compute_done_883
+$L$_small_initial_partial_block_883:
 
 
 
@@ -121496,26 +121496,26 @@ $L$_small_initial_partial_block_DqguptAyGeuDGih:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DqguptAyGeuDGih:
+$L$_small_initial_compute_done_883:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_DqguptAyGeuDGih
+	je	NEAR $L$_after_reduction_883
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_DqguptAyGeuDGih:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_10_diyyvGgarqjvvjq:
+$L$_after_reduction_883:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_10_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_mgAtfkiGmnkqyyE
+	jae	NEAR $L$_16_blocks_overflow_884
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_mgAtfkiGmnkqyyE
+	jmp	NEAR $L$_16_blocks_ok_884
 
-$L$_16_blocks_overflow_mgAtfkiGmnkqyyE:
+$L$_16_blocks_overflow_884:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -121524,7 +121524,7 @@ $L$_16_blocks_overflow_mgAtfkiGmnkqyyE:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_mgAtfkiGmnkqyyE:
+$L$_16_blocks_ok_884:
 
 
 
@@ -121655,7 +121655,7 @@ $L$_16_blocks_ok_mgAtfkiGmnkqyyE:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xGfyexfsrripCwd
+	jl	NEAR $L$_small_initial_partial_block_885
 
 
 
@@ -121715,8 +121715,8 @@ $L$_16_blocks_ok_mgAtfkiGmnkqyyE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xGfyexfsrripCwd
-$L$_small_initial_partial_block_xGfyexfsrripCwd:
+	jmp	NEAR $L$_small_initial_compute_done_885
+$L$_small_initial_partial_block_885:
 
 
 
@@ -121779,26 +121779,26 @@ $L$_small_initial_partial_block_xGfyexfsrripCwd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xGfyexfsrripCwd:
+$L$_small_initial_compute_done_885:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xGfyexfsrripCwd
+	je	NEAR $L$_after_reduction_885
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xGfyexfsrripCwd:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_11_diyyvGgarqjvvjq:
+$L$_after_reduction_885:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_11_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_dfyxhogitfGcgFv
+	jae	NEAR $L$_16_blocks_overflow_886
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_dfyxhogitfGcgFv
+	jmp	NEAR $L$_16_blocks_ok_886
 
-$L$_16_blocks_overflow_dfyxhogitfGcgFv:
+$L$_16_blocks_overflow_886:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -121807,7 +121807,7 @@ $L$_16_blocks_overflow_dfyxhogitfGcgFv:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_dfyxhogitfGcgFv:
+$L$_16_blocks_ok_886:
 
 
 
@@ -121938,7 +121938,7 @@ $L$_16_blocks_ok_dfyxhogitfGcgFv:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zmexgmdCanzFapk
+	jl	NEAR $L$_small_initial_partial_block_887
 
 
 
@@ -121999,8 +121999,8 @@ $L$_16_blocks_ok_dfyxhogitfGcgFv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zmexgmdCanzFapk
-$L$_small_initial_partial_block_zmexgmdCanzFapk:
+	jmp	NEAR $L$_small_initial_compute_done_887
+$L$_small_initial_partial_block_887:
 
 
 
@@ -122063,26 +122063,26 @@ $L$_small_initial_partial_block_zmexgmdCanzFapk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zmexgmdCanzFapk:
+$L$_small_initial_compute_done_887:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zmexgmdCanzFapk
+	je	NEAR $L$_after_reduction_887
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_zmexgmdCanzFapk:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_12_diyyvGgarqjvvjq:
+$L$_after_reduction_887:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_12_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_dAqqFutrACasewG
+	jae	NEAR $L$_16_blocks_overflow_888
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_dAqqFutrACasewG
+	jmp	NEAR $L$_16_blocks_ok_888
 
-$L$_16_blocks_overflow_dAqqFutrACasewG:
+$L$_16_blocks_overflow_888:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -122091,7 +122091,7 @@ $L$_16_blocks_overflow_dAqqFutrACasewG:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_dAqqFutrACasewG:
+$L$_16_blocks_ok_888:
 
 
 
@@ -122222,7 +122222,7 @@ $L$_16_blocks_ok_dAqqFutrACasewG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lcAFzrxzeqweiel
+	jl	NEAR $L$_small_initial_partial_block_889
 
 
 
@@ -122281,8 +122281,8 @@ $L$_16_blocks_ok_dAqqFutrACasewG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lcAFzrxzeqweiel
-$L$_small_initial_partial_block_lcAFzrxzeqweiel:
+	jmp	NEAR $L$_small_initial_compute_done_889
+$L$_small_initial_partial_block_889:
 
 
 
@@ -122346,27 +122346,27 @@ $L$_small_initial_partial_block_lcAFzrxzeqweiel:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lcAFzrxzeqweiel:
+$L$_small_initial_compute_done_889:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lcAFzrxzeqweiel
+	je	NEAR $L$_after_reduction_889
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lcAFzrxzeqweiel:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_13_diyyvGgarqjvvjq:
+$L$_after_reduction_889:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_13_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_smGcagnekfsDmAh
+	jae	NEAR $L$_16_blocks_overflow_890
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_smGcagnekfsDmAh
+	jmp	NEAR $L$_16_blocks_ok_890
 
-$L$_16_blocks_overflow_smGcagnekfsDmAh:
+$L$_16_blocks_overflow_890:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -122377,7 +122377,7 @@ $L$_16_blocks_overflow_smGcagnekfsDmAh:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_smGcagnekfsDmAh:
+$L$_16_blocks_ok_890:
 
 
 
@@ -122527,7 +122527,7 @@ $L$_16_blocks_ok_smGcagnekfsDmAh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lnhnkqgzjblGvjg
+	jl	NEAR $L$_small_initial_partial_block_891
 
 
 
@@ -122592,8 +122592,8 @@ $L$_16_blocks_ok_smGcagnekfsDmAh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lnhnkqgzjblGvjg
-$L$_small_initial_partial_block_lnhnkqgzjblGvjg:
+	jmp	NEAR $L$_small_initial_compute_done_891
+$L$_small_initial_partial_block_891:
 
 
 
@@ -122655,27 +122655,27 @@ $L$_small_initial_partial_block_lnhnkqgzjblGvjg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lnhnkqgzjblGvjg:
+$L$_small_initial_compute_done_891:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lnhnkqgzjblGvjg
+	je	NEAR $L$_after_reduction_891
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lnhnkqgzjblGvjg:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_14_diyyvGgarqjvvjq:
+$L$_after_reduction_891:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_14_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_BAnqjBsjuBApxwg
+	jae	NEAR $L$_16_blocks_overflow_892
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_BAnqjBsjuBApxwg
+	jmp	NEAR $L$_16_blocks_ok_892
 
-$L$_16_blocks_overflow_BAnqjBsjuBApxwg:
+$L$_16_blocks_overflow_892:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -122686,7 +122686,7 @@ $L$_16_blocks_overflow_BAnqjBsjuBApxwg:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_BAnqjBsjuBApxwg:
+$L$_16_blocks_ok_892:
 
 
 
@@ -122836,7 +122836,7 @@ $L$_16_blocks_ok_BAnqjBsjuBApxwg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_AfyrywAknqoqwrB
+	jl	NEAR $L$_small_initial_partial_block_893
 
 
 
@@ -122901,8 +122901,8 @@ $L$_16_blocks_ok_BAnqjBsjuBApxwg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_AfyrywAknqoqwrB
-$L$_small_initial_partial_block_AfyrywAknqoqwrB:
+	jmp	NEAR $L$_small_initial_compute_done_893
+$L$_small_initial_partial_block_893:
 
 
 
@@ -122970,27 +122970,27 @@ $L$_small_initial_partial_block_AfyrywAknqoqwrB:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_AfyrywAknqoqwrB:
+$L$_small_initial_compute_done_893:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_AfyrywAknqoqwrB
+	je	NEAR $L$_after_reduction_893
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_AfyrywAknqoqwrB:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_15_diyyvGgarqjvvjq:
+$L$_after_reduction_893:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_15_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_uFyFDktaovknbDd
+	jae	NEAR $L$_16_blocks_overflow_894
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_uFyFDktaovknbDd
+	jmp	NEAR $L$_16_blocks_ok_894
 
-$L$_16_blocks_overflow_uFyFDktaovknbDd:
+$L$_16_blocks_overflow_894:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -123001,7 +123001,7 @@ $L$_16_blocks_overflow_uFyFDktaovknbDd:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_uFyFDktaovknbDd:
+$L$_16_blocks_ok_894:
 
 
 
@@ -123151,7 +123151,7 @@ $L$_16_blocks_ok_uFyFDktaovknbDd:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nwmyElzBrcFcqau
+	jl	NEAR $L$_small_initial_partial_block_895
 
 
 
@@ -123217,8 +123217,8 @@ $L$_16_blocks_ok_uFyFDktaovknbDd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nwmyElzBrcFcqau
-$L$_small_initial_partial_block_nwmyElzBrcFcqau:
+	jmp	NEAR $L$_small_initial_compute_done_895
+$L$_small_initial_partial_block_895:
 
 
 
@@ -123286,27 +123286,27 @@ $L$_small_initial_partial_block_nwmyElzBrcFcqau:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nwmyElzBrcFcqau:
+$L$_small_initial_compute_done_895:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nwmyElzBrcFcqau
+	je	NEAR $L$_after_reduction_895
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nwmyElzBrcFcqau:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_16_diyyvGgarqjvvjq:
+$L$_after_reduction_895:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_16_865:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_dCozoAtzycynfCp
+	jae	NEAR $L$_16_blocks_overflow_896
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_dCozoAtzycynfCp
+	jmp	NEAR $L$_16_blocks_ok_896
 
-$L$_16_blocks_overflow_dCozoAtzycynfCp:
+$L$_16_blocks_overflow_896:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -123317,7 +123317,7 @@ $L$_16_blocks_overflow_dCozoAtzycynfCp:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_dCozoAtzycynfCp:
+$L$_16_blocks_ok_896:
 
 
 
@@ -123464,7 +123464,7 @@ $L$_16_blocks_ok_dCozoAtzycynfCp:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_bpCaqkwEdmprlux:
+$L$_small_initial_partial_block_897:
 
 
 
@@ -123533,11 +123533,11 @@ $L$_small_initial_partial_block_bpCaqkwEdmprlux:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_bpCaqkwEdmprlux:
+$L$_small_initial_compute_done_897:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_bpCaqkwEdmprlux:
-	jmp	NEAR $L$_last_blocks_done_diyyvGgarqjvvjq
-$L$_last_num_blocks_is_0_diyyvGgarqjvvjq:
+$L$_after_reduction_897:
+	jmp	NEAR $L$_last_blocks_done_865
+$L$_last_num_blocks_is_0_865:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -123599,18 +123599,18 @@ $L$_last_num_blocks_is_0_diyyvGgarqjvvjq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_diyyvGgarqjvvjq:
+$L$_last_blocks_done_865:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_nGltgytEkotuqBl
-$L$_encrypt_16_blocks_nGltgytEkotuqBl:
+	jmp	NEAR $L$_ghash_done_821
+$L$_encrypt_16_blocks_821:
 	cmp	r15b,240
-	jae	NEAR $L$_16_blocks_overflow_FzoFnpnBqlowBEp
+	jae	NEAR $L$_16_blocks_overflow_898
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FzoFnpnBqlowBEp
-$L$_16_blocks_overflow_FzoFnpnBqlowBEp:
+	jmp	NEAR $L$_16_blocks_ok_898
+$L$_16_blocks_overflow_898:
 	vpshufb	zmm2,zmm2,zmm29
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -123621,7 +123621,7 @@ $L$_16_blocks_overflow_FzoFnpnBqlowBEp:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_FzoFnpnBqlowBEp:
+$L$_16_blocks_ok_898:
 	vbroadcastf64x2	zmm30,ZMMWORD[rcx]
 	vpxorq	zmm8,zmm14,ZMMWORD[768+rsp]
 	vmovdqu64	zmm1,ZMMWORD[rsp]
@@ -123846,61 +123846,61 @@ $L$_16_blocks_ok_FzoFnpnBqlowBEp:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_BtrDkgodihdxghd
+	je	NEAR $L$_last_num_blocks_is_0_899
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_BtrDkgodihdxghd
-	jb	NEAR $L$_last_num_blocks_is_7_1_BtrDkgodihdxghd
+	je	NEAR $L$_last_num_blocks_is_8_899
+	jb	NEAR $L$_last_num_blocks_is_7_1_899
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_BtrDkgodihdxghd
-	jb	NEAR $L$_last_num_blocks_is_11_9_BtrDkgodihdxghd
+	je	NEAR $L$_last_num_blocks_is_12_899
+	jb	NEAR $L$_last_num_blocks_is_11_9_899
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_BtrDkgodihdxghd
-	ja	NEAR $L$_last_num_blocks_is_16_BtrDkgodihdxghd
+	je	NEAR $L$_last_num_blocks_is_15_899
+	ja	NEAR $L$_last_num_blocks_is_16_899
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_BtrDkgodihdxghd
-	jmp	NEAR $L$_last_num_blocks_is_13_BtrDkgodihdxghd
+	je	NEAR $L$_last_num_blocks_is_14_899
+	jmp	NEAR $L$_last_num_blocks_is_13_899
 
-$L$_last_num_blocks_is_11_9_BtrDkgodihdxghd:
+$L$_last_num_blocks_is_11_9_899:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_BtrDkgodihdxghd
-	ja	NEAR $L$_last_num_blocks_is_11_BtrDkgodihdxghd
-	jmp	NEAR $L$_last_num_blocks_is_9_BtrDkgodihdxghd
+	je	NEAR $L$_last_num_blocks_is_10_899
+	ja	NEAR $L$_last_num_blocks_is_11_899
+	jmp	NEAR $L$_last_num_blocks_is_9_899
 
-$L$_last_num_blocks_is_7_1_BtrDkgodihdxghd:
+$L$_last_num_blocks_is_7_1_899:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_BtrDkgodihdxghd
-	jb	NEAR $L$_last_num_blocks_is_3_1_BtrDkgodihdxghd
+	je	NEAR $L$_last_num_blocks_is_4_899
+	jb	NEAR $L$_last_num_blocks_is_3_1_899
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_BtrDkgodihdxghd
-	je	NEAR $L$_last_num_blocks_is_6_BtrDkgodihdxghd
-	jmp	NEAR $L$_last_num_blocks_is_5_BtrDkgodihdxghd
+	ja	NEAR $L$_last_num_blocks_is_7_899
+	je	NEAR $L$_last_num_blocks_is_6_899
+	jmp	NEAR $L$_last_num_blocks_is_5_899
 
-$L$_last_num_blocks_is_3_1_BtrDkgodihdxghd:
+$L$_last_num_blocks_is_3_1_899:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_BtrDkgodihdxghd
-	je	NEAR $L$_last_num_blocks_is_2_BtrDkgodihdxghd
-$L$_last_num_blocks_is_1_BtrDkgodihdxghd:
+	ja	NEAR $L$_last_num_blocks_is_3_899
+	je	NEAR $L$_last_num_blocks_is_2_899
+$L$_last_num_blocks_is_1_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_DjcqCsCmnCjsowh
+	jae	NEAR $L$_16_blocks_overflow_900
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_DjcqCsCmnCjsowh
+	jmp	NEAR $L$_16_blocks_ok_900
 
-$L$_16_blocks_overflow_DjcqCsCmnCjsowh:
+$L$_16_blocks_overflow_900:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_DjcqCsCmnCjsowh:
+$L$_16_blocks_ok_900:
 
 
 
@@ -124015,7 +124015,7 @@ $L$_16_blocks_ok_DjcqCsCmnCjsowh:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qGfxctaAugnpwsy
+	jl	NEAR $L$_small_initial_partial_block_901
 
 
 
@@ -124057,8 +124057,8 @@ $L$_16_blocks_ok_DjcqCsCmnCjsowh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qGfxctaAugnpwsy
-$L$_small_initial_partial_block_qGfxctaAugnpwsy:
+	jmp	NEAR $L$_small_initial_compute_done_901
+$L$_small_initial_partial_block_901:
 
 
 
@@ -124082,24 +124082,24 @@ $L$_small_initial_partial_block_qGfxctaAugnpwsy:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_qGfxctaAugnpwsy
-$L$_small_initial_compute_done_qGfxctaAugnpwsy:
-$L$_after_reduction_qGfxctaAugnpwsy:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_2_BtrDkgodihdxghd:
+	jmp	NEAR $L$_after_reduction_901
+$L$_small_initial_compute_done_901:
+$L$_after_reduction_901:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_2_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_ebjvDtmlCbonylm
+	jae	NEAR $L$_16_blocks_overflow_902
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_ebjvDtmlCbonylm
+	jmp	NEAR $L$_16_blocks_ok_902
 
-$L$_16_blocks_overflow_ebjvDtmlCbonylm:
+$L$_16_blocks_overflow_902:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_ebjvDtmlCbonylm:
+$L$_16_blocks_ok_902:
 
 
 
@@ -124215,7 +124215,7 @@ $L$_16_blocks_ok_ebjvDtmlCbonylm:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jkAtgucaGplahew
+	jl	NEAR $L$_small_initial_partial_block_903
 
 
 
@@ -124257,8 +124257,8 @@ $L$_16_blocks_ok_ebjvDtmlCbonylm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jkAtgucaGplahew
-$L$_small_initial_partial_block_jkAtgucaGplahew:
+	jmp	NEAR $L$_small_initial_compute_done_903
+$L$_small_initial_partial_block_903:
 
 
 
@@ -124303,27 +124303,27 @@ $L$_small_initial_partial_block_jkAtgucaGplahew:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jkAtgucaGplahew:
+$L$_small_initial_compute_done_903:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jkAtgucaGplahew
+	je	NEAR $L$_after_reduction_903
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_jkAtgucaGplahew:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_3_BtrDkgodihdxghd:
+$L$_after_reduction_903:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_3_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_DrhbftbuterhvCu
+	jae	NEAR $L$_16_blocks_overflow_904
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_DrhbftbuterhvCu
+	jmp	NEAR $L$_16_blocks_ok_904
 
-$L$_16_blocks_overflow_DrhbftbuterhvCu:
+$L$_16_blocks_overflow_904:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_DrhbftbuterhvCu:
+$L$_16_blocks_ok_904:
 
 
 
@@ -124439,7 +124439,7 @@ $L$_16_blocks_ok_DrhbftbuterhvCu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_tcprADCiabbjdlG
+	jl	NEAR $L$_small_initial_partial_block_905
 
 
 
@@ -124482,8 +124482,8 @@ $L$_16_blocks_ok_DrhbftbuterhvCu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_tcprADCiabbjdlG
-$L$_small_initial_partial_block_tcprADCiabbjdlG:
+	jmp	NEAR $L$_small_initial_compute_done_905
+$L$_small_initial_partial_block_905:
 
 
 
@@ -124528,27 +124528,27 @@ $L$_small_initial_partial_block_tcprADCiabbjdlG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_tcprADCiabbjdlG:
+$L$_small_initial_compute_done_905:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_tcprADCiabbjdlG
+	je	NEAR $L$_after_reduction_905
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_tcprADCiabbjdlG:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_4_BtrDkgodihdxghd:
+$L$_after_reduction_905:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_4_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_tqliAhbwhyxfhvF
+	jae	NEAR $L$_16_blocks_overflow_906
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_tqliAhbwhyxfhvF
+	jmp	NEAR $L$_16_blocks_ok_906
 
-$L$_16_blocks_overflow_tqliAhbwhyxfhvF:
+$L$_16_blocks_overflow_906:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_tqliAhbwhyxfhvF:
+$L$_16_blocks_ok_906:
 
 
 
@@ -124664,7 +124664,7 @@ $L$_16_blocks_ok_tqliAhbwhyxfhvF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lGDABsrEqmqwtzb
+	jl	NEAR $L$_small_initial_partial_block_907
 
 
 
@@ -124706,8 +124706,8 @@ $L$_16_blocks_ok_tqliAhbwhyxfhvF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lGDABsrEqmqwtzb
-$L$_small_initial_partial_block_lGDABsrEqmqwtzb:
+	jmp	NEAR $L$_small_initial_compute_done_907
+$L$_small_initial_partial_block_907:
 
 
 
@@ -124753,32 +124753,32 @@ $L$_small_initial_partial_block_lGDABsrEqmqwtzb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lGDABsrEqmqwtzb:
+$L$_small_initial_compute_done_907:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lGDABsrEqmqwtzb
+	je	NEAR $L$_after_reduction_907
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lGDABsrEqmqwtzb:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_5_BtrDkgodihdxghd:
+$L$_after_reduction_907:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_5_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_dzneCzcprsCEujb
+	jae	NEAR $L$_16_blocks_overflow_908
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_dzneCzcprsCEujb
+	jmp	NEAR $L$_16_blocks_ok_908
 
-$L$_16_blocks_overflow_dzneCzcprsCEujb:
+$L$_16_blocks_overflow_908:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_dzneCzcprsCEujb:
+$L$_16_blocks_ok_908:
 
 
 
@@ -124913,7 +124913,7 @@ $L$_16_blocks_ok_dzneCzcprsCEujb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dshziClAlrwhbAi
+	jl	NEAR $L$_small_initial_partial_block_909
 
 
 
@@ -124965,8 +124965,8 @@ $L$_16_blocks_ok_dzneCzcprsCEujb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dshziClAlrwhbAi
-$L$_small_initial_partial_block_dshziClAlrwhbAi:
+	jmp	NEAR $L$_small_initial_compute_done_909
+$L$_small_initial_partial_block_909:
 
 
 
@@ -125011,32 +125011,32 @@ $L$_small_initial_partial_block_dshziClAlrwhbAi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dshziClAlrwhbAi:
+$L$_small_initial_compute_done_909:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dshziClAlrwhbAi
+	je	NEAR $L$_after_reduction_909
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dshziClAlrwhbAi:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_6_BtrDkgodihdxghd:
+$L$_after_reduction_909:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_6_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_FwomesEanpFmtwF
+	jae	NEAR $L$_16_blocks_overflow_910
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_FwomesEanpFmtwF
+	jmp	NEAR $L$_16_blocks_ok_910
 
-$L$_16_blocks_overflow_FwomesEanpFmtwF:
+$L$_16_blocks_overflow_910:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_FwomesEanpFmtwF:
+$L$_16_blocks_ok_910:
 
 
 
@@ -125171,7 +125171,7 @@ $L$_16_blocks_ok_FwomesEanpFmtwF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_qDlllybdCEbbvew
+	jl	NEAR $L$_small_initial_partial_block_911
 
 
 
@@ -125223,8 +125223,8 @@ $L$_16_blocks_ok_FwomesEanpFmtwF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_qDlllybdCEbbvew
-$L$_small_initial_partial_block_qDlllybdCEbbvew:
+	jmp	NEAR $L$_small_initial_compute_done_911
+$L$_small_initial_partial_block_911:
 
 
 
@@ -125279,32 +125279,32 @@ $L$_small_initial_partial_block_qDlllybdCEbbvew:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_qDlllybdCEbbvew:
+$L$_small_initial_compute_done_911:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_qDlllybdCEbbvew
+	je	NEAR $L$_after_reduction_911
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_qDlllybdCEbbvew:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_7_BtrDkgodihdxghd:
+$L$_after_reduction_911:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_7_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_npGcBzynEErernt
+	jae	NEAR $L$_16_blocks_overflow_912
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_npGcBzynEErernt
+	jmp	NEAR $L$_16_blocks_ok_912
 
-$L$_16_blocks_overflow_npGcBzynEErernt:
+$L$_16_blocks_overflow_912:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_npGcBzynEErernt:
+$L$_16_blocks_ok_912:
 
 
 
@@ -125439,7 +125439,7 @@ $L$_16_blocks_ok_npGcBzynEErernt:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_iamldeFAyDjwmuz
+	jl	NEAR $L$_small_initial_partial_block_913
 
 
 
@@ -125492,8 +125492,8 @@ $L$_16_blocks_ok_npGcBzynEErernt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_iamldeFAyDjwmuz
-$L$_small_initial_partial_block_iamldeFAyDjwmuz:
+	jmp	NEAR $L$_small_initial_compute_done_913
+$L$_small_initial_partial_block_913:
 
 
 
@@ -125548,32 +125548,32 @@ $L$_small_initial_partial_block_iamldeFAyDjwmuz:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_iamldeFAyDjwmuz:
+$L$_small_initial_compute_done_913:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_iamldeFAyDjwmuz
+	je	NEAR $L$_after_reduction_913
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_iamldeFAyDjwmuz:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_8_BtrDkgodihdxghd:
+$L$_after_reduction_913:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_8_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_hdDCwcewzfgjzjr
+	jae	NEAR $L$_16_blocks_overflow_914
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_hdDCwcewzfgjzjr
+	jmp	NEAR $L$_16_blocks_ok_914
 
-$L$_16_blocks_overflow_hdDCwcewzfgjzjr:
+$L$_16_blocks_overflow_914:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_hdDCwcewzfgjzjr:
+$L$_16_blocks_ok_914:
 
 
 
@@ -125708,7 +125708,7 @@ $L$_16_blocks_ok_hdDCwcewzfgjzjr:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_pjlcDxeqjAkAqAp
+	jl	NEAR $L$_small_initial_partial_block_915
 
 
 
@@ -125759,8 +125759,8 @@ $L$_16_blocks_ok_hdDCwcewzfgjzjr:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_pjlcDxeqjAkAqAp
-$L$_small_initial_partial_block_pjlcDxeqjAkAqAp:
+	jmp	NEAR $L$_small_initial_compute_done_915
+$L$_small_initial_partial_block_915:
 
 
 
@@ -125816,26 +125816,26 @@ $L$_small_initial_partial_block_pjlcDxeqjAkAqAp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_pjlcDxeqjAkAqAp:
+$L$_small_initial_compute_done_915:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_pjlcDxeqjAkAqAp
+	je	NEAR $L$_after_reduction_915
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_pjlcDxeqjAkAqAp:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_9_BtrDkgodihdxghd:
+$L$_after_reduction_915:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_9_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_CuExArCEEfanhzf
+	jae	NEAR $L$_16_blocks_overflow_916
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_CuExArCEEfanhzf
+	jmp	NEAR $L$_16_blocks_ok_916
 
-$L$_16_blocks_overflow_CuExArCEEfanhzf:
+$L$_16_blocks_overflow_916:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -125844,7 +125844,7 @@ $L$_16_blocks_overflow_CuExArCEEfanhzf:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_CuExArCEEfanhzf:
+$L$_16_blocks_ok_916:
 
 
 
@@ -125998,7 +125998,7 @@ $L$_16_blocks_ok_CuExArCEEfanhzf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FDughjdElADpazi
+	jl	NEAR $L$_small_initial_partial_block_917
 
 
 
@@ -126059,8 +126059,8 @@ $L$_16_blocks_ok_CuExArCEEfanhzf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FDughjdElADpazi
-$L$_small_initial_partial_block_FDughjdElADpazi:
+	jmp	NEAR $L$_small_initial_compute_done_917
+$L$_small_initial_partial_block_917:
 
 
 
@@ -126114,26 +126114,26 @@ $L$_small_initial_partial_block_FDughjdElADpazi:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FDughjdElADpazi:
+$L$_small_initial_compute_done_917:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FDughjdElADpazi
+	je	NEAR $L$_after_reduction_917
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_FDughjdElADpazi:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_10_BtrDkgodihdxghd:
+$L$_after_reduction_917:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_10_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_fzFcvjsnrlzczyp
+	jae	NEAR $L$_16_blocks_overflow_918
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_fzFcvjsnrlzczyp
+	jmp	NEAR $L$_16_blocks_ok_918
 
-$L$_16_blocks_overflow_fzFcvjsnrlzczyp:
+$L$_16_blocks_overflow_918:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -126142,7 +126142,7 @@ $L$_16_blocks_overflow_fzFcvjsnrlzczyp:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_fzFcvjsnrlzczyp:
+$L$_16_blocks_ok_918:
 
 
 
@@ -126296,7 +126296,7 @@ $L$_16_blocks_ok_fzFcvjsnrlzczyp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ymcxaiiGdAAzrDE
+	jl	NEAR $L$_small_initial_partial_block_919
 
 
 
@@ -126357,8 +126357,8 @@ $L$_16_blocks_ok_fzFcvjsnrlzczyp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ymcxaiiGdAAzrDE
-$L$_small_initial_partial_block_ymcxaiiGdAAzrDE:
+	jmp	NEAR $L$_small_initial_compute_done_919
+$L$_small_initial_partial_block_919:
 
 
 
@@ -126422,26 +126422,26 @@ $L$_small_initial_partial_block_ymcxaiiGdAAzrDE:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ymcxaiiGdAAzrDE:
+$L$_small_initial_compute_done_919:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ymcxaiiGdAAzrDE
+	je	NEAR $L$_after_reduction_919
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ymcxaiiGdAAzrDE:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_11_BtrDkgodihdxghd:
+$L$_after_reduction_919:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_11_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_nrdzfDknbavqxlA
+	jae	NEAR $L$_16_blocks_overflow_920
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_nrdzfDknbavqxlA
+	jmp	NEAR $L$_16_blocks_ok_920
 
-$L$_16_blocks_overflow_nrdzfDknbavqxlA:
+$L$_16_blocks_overflow_920:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -126450,7 +126450,7 @@ $L$_16_blocks_overflow_nrdzfDknbavqxlA:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_nrdzfDknbavqxlA:
+$L$_16_blocks_ok_920:
 
 
 
@@ -126604,7 +126604,7 @@ $L$_16_blocks_ok_nrdzfDknbavqxlA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ykgAlknchvebcca
+	jl	NEAR $L$_small_initial_partial_block_921
 
 
 
@@ -126666,8 +126666,8 @@ $L$_16_blocks_ok_nrdzfDknbavqxlA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ykgAlknchvebcca
-$L$_small_initial_partial_block_ykgAlknchvebcca:
+	jmp	NEAR $L$_small_initial_compute_done_921
+$L$_small_initial_partial_block_921:
 
 
 
@@ -126731,26 +126731,26 @@ $L$_small_initial_partial_block_ykgAlknchvebcca:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ykgAlknchvebcca:
+$L$_small_initial_compute_done_921:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ykgAlknchvebcca
+	je	NEAR $L$_after_reduction_921
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ykgAlknchvebcca:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_12_BtrDkgodihdxghd:
+$L$_after_reduction_921:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_12_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_ldhzCgduesvzGwx
+	jae	NEAR $L$_16_blocks_overflow_922
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ldhzCgduesvzGwx
+	jmp	NEAR $L$_16_blocks_ok_922
 
-$L$_16_blocks_overflow_ldhzCgduesvzGwx:
+$L$_16_blocks_overflow_922:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -126759,7 +126759,7 @@ $L$_16_blocks_overflow_ldhzCgduesvzGwx:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_ldhzCgduesvzGwx:
+$L$_16_blocks_ok_922:
 
 
 
@@ -126913,7 +126913,7 @@ $L$_16_blocks_ok_ldhzCgduesvzGwx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_rEtxAkCfhuujBqh
+	jl	NEAR $L$_small_initial_partial_block_923
 
 
 
@@ -126969,8 +126969,8 @@ $L$_16_blocks_ok_ldhzCgduesvzGwx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_rEtxAkCfhuujBqh
-$L$_small_initial_partial_block_rEtxAkCfhuujBqh:
+	jmp	NEAR $L$_small_initial_compute_done_923
+$L$_small_initial_partial_block_923:
 
 
 
@@ -127035,27 +127035,27 @@ $L$_small_initial_partial_block_rEtxAkCfhuujBqh:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_rEtxAkCfhuujBqh:
+$L$_small_initial_compute_done_923:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_rEtxAkCfhuujBqh
+	je	NEAR $L$_after_reduction_923
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_rEtxAkCfhuujBqh:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_13_BtrDkgodihdxghd:
+$L$_after_reduction_923:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_13_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_uolheEjGbBAbkpv
+	jae	NEAR $L$_16_blocks_overflow_924
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_uolheEjGbBAbkpv
+	jmp	NEAR $L$_16_blocks_ok_924
 
-$L$_16_blocks_overflow_uolheEjGbBAbkpv:
+$L$_16_blocks_overflow_924:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -127066,7 +127066,7 @@ $L$_16_blocks_overflow_uolheEjGbBAbkpv:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_uolheEjGbBAbkpv:
+$L$_16_blocks_ok_924:
 
 
 
@@ -127239,7 +127239,7 @@ $L$_16_blocks_ok_uolheEjGbBAbkpv:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_EcBEzCuhzljcCml
+	jl	NEAR $L$_small_initial_partial_block_925
 
 
 
@@ -127305,8 +127305,8 @@ $L$_16_blocks_ok_uolheEjGbBAbkpv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_EcBEzCuhzljcCml
-$L$_small_initial_partial_block_EcBEzCuhzljcCml:
+	jmp	NEAR $L$_small_initial_compute_done_925
+$L$_small_initial_partial_block_925:
 
 
 
@@ -127365,27 +127365,27 @@ $L$_small_initial_partial_block_EcBEzCuhzljcCml:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_EcBEzCuhzljcCml:
+$L$_small_initial_compute_done_925:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_EcBEzCuhzljcCml
+	je	NEAR $L$_after_reduction_925
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_EcBEzCuhzljcCml:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_14_BtrDkgodihdxghd:
+$L$_after_reduction_925:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_14_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_kfxjjDghsaEpqsl
+	jae	NEAR $L$_16_blocks_overflow_926
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_kfxjjDghsaEpqsl
+	jmp	NEAR $L$_16_blocks_ok_926
 
-$L$_16_blocks_overflow_kfxjjDghsaEpqsl:
+$L$_16_blocks_overflow_926:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -127396,7 +127396,7 @@ $L$_16_blocks_overflow_kfxjjDghsaEpqsl:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_kfxjjDghsaEpqsl:
+$L$_16_blocks_ok_926:
 
 
 
@@ -127569,7 +127569,7 @@ $L$_16_blocks_ok_kfxjjDghsaEpqsl:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ilfpsxhylzxCFdy
+	jl	NEAR $L$_small_initial_partial_block_927
 
 
 
@@ -127635,8 +127635,8 @@ $L$_16_blocks_ok_kfxjjDghsaEpqsl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ilfpsxhylzxCFdy
-$L$_small_initial_partial_block_ilfpsxhylzxCFdy:
+	jmp	NEAR $L$_small_initial_compute_done_927
+$L$_small_initial_partial_block_927:
 
 
 
@@ -127705,27 +127705,27 @@ $L$_small_initial_partial_block_ilfpsxhylzxCFdy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ilfpsxhylzxCFdy:
+$L$_small_initial_compute_done_927:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ilfpsxhylzxCFdy
+	je	NEAR $L$_after_reduction_927
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ilfpsxhylzxCFdy:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_15_BtrDkgodihdxghd:
+$L$_after_reduction_927:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_15_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_jbnAegfqktkiBBb
+	jae	NEAR $L$_16_blocks_overflow_928
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_jbnAegfqktkiBBb
+	jmp	NEAR $L$_16_blocks_ok_928
 
-$L$_16_blocks_overflow_jbnAegfqktkiBBb:
+$L$_16_blocks_overflow_928:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -127736,7 +127736,7 @@ $L$_16_blocks_overflow_jbnAegfqktkiBBb:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_jbnAegfqktkiBBb:
+$L$_16_blocks_ok_928:
 
 
 
@@ -127909,7 +127909,7 @@ $L$_16_blocks_ok_jbnAegfqktkiBBb:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_oAGorjdhFsDborG
+	jl	NEAR $L$_small_initial_partial_block_929
 
 
 
@@ -127976,8 +127976,8 @@ $L$_16_blocks_ok_jbnAegfqktkiBBb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_oAGorjdhFsDborG
-$L$_small_initial_partial_block_oAGorjdhFsDborG:
+	jmp	NEAR $L$_small_initial_compute_done_929
+$L$_small_initial_partial_block_929:
 
 
 
@@ -128046,27 +128046,27 @@ $L$_small_initial_partial_block_oAGorjdhFsDborG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_oAGorjdhFsDborG:
+$L$_small_initial_compute_done_929:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_oAGorjdhFsDborG
+	je	NEAR $L$_after_reduction_929
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_oAGorjdhFsDborG:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_16_BtrDkgodihdxghd:
+$L$_after_reduction_929:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_16_899:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_DolEspFpaAgFzzB
+	jae	NEAR $L$_16_blocks_overflow_930
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_DolEspFpaAgFzzB
+	jmp	NEAR $L$_16_blocks_ok_930
 
-$L$_16_blocks_overflow_DolEspFpaAgFzzB:
+$L$_16_blocks_overflow_930:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -128077,7 +128077,7 @@ $L$_16_blocks_overflow_DolEspFpaAgFzzB:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_DolEspFpaAgFzzB:
+$L$_16_blocks_ok_930:
 
 
 
@@ -128247,7 +128247,7 @@ $L$_16_blocks_ok_DolEspFpaAgFzzB:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_ryAaEfGvfAwGvkD:
+$L$_small_initial_partial_block_931:
 
 
 
@@ -128317,11 +128317,11 @@ $L$_small_initial_partial_block_ryAaEfGvfAwGvkD:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ryAaEfGvfAwGvkD:
+$L$_small_initial_compute_done_931:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ryAaEfGvfAwGvkD:
-	jmp	NEAR $L$_last_blocks_done_BtrDkgodihdxghd
-$L$_last_num_blocks_is_0_BtrDkgodihdxghd:
+$L$_after_reduction_931:
+	jmp	NEAR $L$_last_blocks_done_899
+$L$_last_num_blocks_is_0_899:
 	vmovdqa64	zmm13,ZMMWORD[1280+rsp]
 	vmovdqu64	zmm12,ZMMWORD[512+rsp]
 	vpclmulqdq	zmm0,zmm13,zmm12,0x11
@@ -128382,18 +128382,18 @@ $L$_last_num_blocks_is_0_BtrDkgodihdxghd:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_BtrDkgodihdxghd:
+$L$_last_blocks_done_899:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_nGltgytEkotuqBl
+	jmp	NEAR $L$_ghash_done_821
 
-$L$_message_below_32_blocks_nGltgytEkotuqBl:
+$L$_message_below_32_blocks_821:
 
 
 	sub	r13,256
 	add	r11,256
 	mov	r10d,r13d
 	test	r14,r14
-	jnz	NEAR $L$_skip_hkeys_precomputation_ACcDgnbfeGkDnic
+	jnz	NEAR $L$_skip_hkeys_precomputation_932
 	vmovdqu64	zmm3,ZMMWORD[640+rsp]
 
 
@@ -128521,7 +128521,7 @@ $L$_message_below_32_blocks_nGltgytEkotuqBl:
 	vpternlogq	zmm5,zmm6,zmm7,0x96
 
 	vmovdqu64	ZMMWORD[256+rsp],zmm5
-$L$_skip_hkeys_precomputation_ACcDgnbfeGkDnic:
+$L$_skip_hkeys_precomputation_932:
 	mov	r14,1
 	and	r10d,~15
 	mov	ebx,512
@@ -128529,61 +128529,61 @@ $L$_skip_hkeys_precomputation_ACcDgnbfeGkDnic:
 	mov	r10d,r13d
 	add	r10d,15
 	shr	r10d,4
-	je	NEAR $L$_last_num_blocks_is_0_mifuenAGhkwukog
+	je	NEAR $L$_last_num_blocks_is_0_933
 
 	cmp	r10d,8
-	je	NEAR $L$_last_num_blocks_is_8_mifuenAGhkwukog
-	jb	NEAR $L$_last_num_blocks_is_7_1_mifuenAGhkwukog
+	je	NEAR $L$_last_num_blocks_is_8_933
+	jb	NEAR $L$_last_num_blocks_is_7_1_933
 
 
 	cmp	r10d,12
-	je	NEAR $L$_last_num_blocks_is_12_mifuenAGhkwukog
-	jb	NEAR $L$_last_num_blocks_is_11_9_mifuenAGhkwukog
+	je	NEAR $L$_last_num_blocks_is_12_933
+	jb	NEAR $L$_last_num_blocks_is_11_9_933
 
 
 	cmp	r10d,15
-	je	NEAR $L$_last_num_blocks_is_15_mifuenAGhkwukog
-	ja	NEAR $L$_last_num_blocks_is_16_mifuenAGhkwukog
+	je	NEAR $L$_last_num_blocks_is_15_933
+	ja	NEAR $L$_last_num_blocks_is_16_933
 	cmp	r10d,14
-	je	NEAR $L$_last_num_blocks_is_14_mifuenAGhkwukog
-	jmp	NEAR $L$_last_num_blocks_is_13_mifuenAGhkwukog
+	je	NEAR $L$_last_num_blocks_is_14_933
+	jmp	NEAR $L$_last_num_blocks_is_13_933
 
-$L$_last_num_blocks_is_11_9_mifuenAGhkwukog:
+$L$_last_num_blocks_is_11_9_933:
 
 	cmp	r10d,10
-	je	NEAR $L$_last_num_blocks_is_10_mifuenAGhkwukog
-	ja	NEAR $L$_last_num_blocks_is_11_mifuenAGhkwukog
-	jmp	NEAR $L$_last_num_blocks_is_9_mifuenAGhkwukog
+	je	NEAR $L$_last_num_blocks_is_10_933
+	ja	NEAR $L$_last_num_blocks_is_11_933
+	jmp	NEAR $L$_last_num_blocks_is_9_933
 
-$L$_last_num_blocks_is_7_1_mifuenAGhkwukog:
+$L$_last_num_blocks_is_7_1_933:
 	cmp	r10d,4
-	je	NEAR $L$_last_num_blocks_is_4_mifuenAGhkwukog
-	jb	NEAR $L$_last_num_blocks_is_3_1_mifuenAGhkwukog
+	je	NEAR $L$_last_num_blocks_is_4_933
+	jb	NEAR $L$_last_num_blocks_is_3_1_933
 
 	cmp	r10d,6
-	ja	NEAR $L$_last_num_blocks_is_7_mifuenAGhkwukog
-	je	NEAR $L$_last_num_blocks_is_6_mifuenAGhkwukog
-	jmp	NEAR $L$_last_num_blocks_is_5_mifuenAGhkwukog
+	ja	NEAR $L$_last_num_blocks_is_7_933
+	je	NEAR $L$_last_num_blocks_is_6_933
+	jmp	NEAR $L$_last_num_blocks_is_5_933
 
-$L$_last_num_blocks_is_3_1_mifuenAGhkwukog:
+$L$_last_num_blocks_is_3_1_933:
 
 	cmp	r10d,2
-	ja	NEAR $L$_last_num_blocks_is_3_mifuenAGhkwukog
-	je	NEAR $L$_last_num_blocks_is_2_mifuenAGhkwukog
-$L$_last_num_blocks_is_1_mifuenAGhkwukog:
+	ja	NEAR $L$_last_num_blocks_is_3_933
+	je	NEAR $L$_last_num_blocks_is_2_933
+$L$_last_num_blocks_is_1_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,255
-	jae	NEAR $L$_16_blocks_overflow_BtDykBFeADgmcbw
+	jae	NEAR $L$_16_blocks_overflow_934
 	vpaddd	xmm0,xmm2,xmm28
-	jmp	NEAR $L$_16_blocks_ok_BtDykBFeADgmcbw
+	jmp	NEAR $L$_16_blocks_ok_934
 
-$L$_16_blocks_overflow_BtDykBFeADgmcbw:
+$L$_16_blocks_overflow_934:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	xmm0,xmm0,xmm29
-$L$_16_blocks_ok_BtDykBFeADgmcbw:
+$L$_16_blocks_ok_934:
 
 
 
@@ -128675,7 +128675,7 @@ $L$_16_blocks_ok_BtDykBFeADgmcbw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_gCzuCiGsjnDtbCh
+	jl	NEAR $L$_small_initial_partial_block_935
 
 
 
@@ -128719,8 +128719,8 @@ $L$_16_blocks_ok_BtDykBFeADgmcbw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_gCzuCiGsjnDtbCh
-$L$_small_initial_partial_block_gCzuCiGsjnDtbCh:
+	jmp	NEAR $L$_small_initial_compute_done_935
+$L$_small_initial_partial_block_935:
 
 
 
@@ -128772,24 +128772,24 @@ $L$_small_initial_partial_block_gCzuCiGsjnDtbCh:
 
 	vpxorq	xmm14,xmm14,xmm7
 
-	jmp	NEAR $L$_after_reduction_gCzuCiGsjnDtbCh
-$L$_small_initial_compute_done_gCzuCiGsjnDtbCh:
-$L$_after_reduction_gCzuCiGsjnDtbCh:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_2_mifuenAGhkwukog:
+	jmp	NEAR $L$_after_reduction_935
+$L$_small_initial_compute_done_935:
+$L$_after_reduction_935:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_2_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,254
-	jae	NEAR $L$_16_blocks_overflow_foEBfBscuEjfkgf
+	jae	NEAR $L$_16_blocks_overflow_936
 	vpaddd	ymm0,ymm2,ymm28
-	jmp	NEAR $L$_16_blocks_ok_foEBfBscuEjfkgf
+	jmp	NEAR $L$_16_blocks_ok_936
 
-$L$_16_blocks_overflow_foEBfBscuEjfkgf:
+$L$_16_blocks_overflow_936:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	ymm0,ymm0,ymm29
-$L$_16_blocks_ok_foEBfBscuEjfkgf:
+$L$_16_blocks_ok_936:
 
 
 
@@ -128882,7 +128882,7 @@ $L$_16_blocks_ok_foEBfBscuEjfkgf:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yfzEvwqGFsCeGow
+	jl	NEAR $L$_small_initial_partial_block_937
 
 
 
@@ -128926,8 +128926,8 @@ $L$_16_blocks_ok_foEBfBscuEjfkgf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yfzEvwqGFsCeGow
-$L$_small_initial_partial_block_yfzEvwqGFsCeGow:
+	jmp	NEAR $L$_small_initial_compute_done_937
+$L$_small_initial_partial_block_937:
 
 
 
@@ -128974,27 +128974,27 @@ $L$_small_initial_partial_block_yfzEvwqGFsCeGow:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yfzEvwqGFsCeGow:
+$L$_small_initial_compute_done_937:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yfzEvwqGFsCeGow
+	je	NEAR $L$_after_reduction_937
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yfzEvwqGFsCeGow:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_3_mifuenAGhkwukog:
+$L$_after_reduction_937:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_3_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,253
-	jae	NEAR $L$_16_blocks_overflow_tmhnuvstfrhEwlx
+	jae	NEAR $L$_16_blocks_overflow_938
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_tmhnuvstfrhEwlx
+	jmp	NEAR $L$_16_blocks_ok_938
 
-$L$_16_blocks_overflow_tmhnuvstfrhEwlx:
+$L$_16_blocks_overflow_938:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_tmhnuvstfrhEwlx:
+$L$_16_blocks_ok_938:
 
 
 
@@ -129087,7 +129087,7 @@ $L$_16_blocks_ok_tmhnuvstfrhEwlx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nEDaqgancszwcly
+	jl	NEAR $L$_small_initial_partial_block_939
 
 
 
@@ -129132,8 +129132,8 @@ $L$_16_blocks_ok_tmhnuvstfrhEwlx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nEDaqgancszwcly
-$L$_small_initial_partial_block_nEDaqgancszwcly:
+	jmp	NEAR $L$_small_initial_compute_done_939
+$L$_small_initial_partial_block_939:
 
 
 
@@ -129180,27 +129180,27 @@ $L$_small_initial_partial_block_nEDaqgancszwcly:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nEDaqgancszwcly:
+$L$_small_initial_compute_done_939:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nEDaqgancszwcly
+	je	NEAR $L$_after_reduction_939
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_nEDaqgancszwcly:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_4_mifuenAGhkwukog:
+$L$_after_reduction_939:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_4_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,252
-	jae	NEAR $L$_16_blocks_overflow_ujikplBAphummAu
+	jae	NEAR $L$_16_blocks_overflow_940
 	vpaddd	zmm0,zmm2,zmm28
-	jmp	NEAR $L$_16_blocks_ok_ujikplBAphummAu
+	jmp	NEAR $L$_16_blocks_ok_940
 
-$L$_16_blocks_overflow_ujikplBAphummAu:
+$L$_16_blocks_overflow_940:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vpshufb	zmm0,zmm0,zmm29
-$L$_16_blocks_ok_ujikplBAphummAu:
+$L$_16_blocks_ok_940:
 
 
 
@@ -129293,7 +129293,7 @@ $L$_16_blocks_ok_ujikplBAphummAu:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_etblFGpuzBotAhG
+	jl	NEAR $L$_small_initial_partial_block_941
 
 
 
@@ -129338,8 +129338,8 @@ $L$_16_blocks_ok_ujikplBAphummAu:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_etblFGpuzBotAhG
-$L$_small_initial_partial_block_etblFGpuzBotAhG:
+	jmp	NEAR $L$_small_initial_compute_done_941
+$L$_small_initial_partial_block_941:
 
 
 
@@ -129387,32 +129387,32 @@ $L$_small_initial_partial_block_etblFGpuzBotAhG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_etblFGpuzBotAhG:
+$L$_small_initial_compute_done_941:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_etblFGpuzBotAhG
+	je	NEAR $L$_after_reduction_941
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_etblFGpuzBotAhG:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_5_mifuenAGhkwukog:
+$L$_after_reduction_941:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_5_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,251
-	jae	NEAR $L$_16_blocks_overflow_qsEjvbfsqAvbfak
+	jae	NEAR $L$_16_blocks_overflow_942
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	xmm3,xmm0,xmm27
-	jmp	NEAR $L$_16_blocks_ok_qsEjvbfsqAvbfak
+	jmp	NEAR $L$_16_blocks_ok_942
 
-$L$_16_blocks_overflow_qsEjvbfsqAvbfak:
+$L$_16_blocks_overflow_942:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	xmm3,xmm3,xmm29
-$L$_16_blocks_ok_qsEjvbfsqAvbfak:
+$L$_16_blocks_ok_942:
 
 
 
@@ -129524,7 +129524,7 @@ $L$_16_blocks_ok_qsEjvbfsqAvbfak:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dDdDbmkkgviEhFs
+	jl	NEAR $L$_small_initial_partial_block_943
 
 
 
@@ -129575,8 +129575,8 @@ $L$_16_blocks_ok_qsEjvbfsqAvbfak:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dDdDbmkkgviEhFs
-$L$_small_initial_partial_block_dDdDbmkkgviEhFs:
+	jmp	NEAR $L$_small_initial_compute_done_943
+$L$_small_initial_partial_block_943:
 
 
 
@@ -129624,32 +129624,32 @@ $L$_small_initial_partial_block_dDdDbmkkgviEhFs:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dDdDbmkkgviEhFs:
+$L$_small_initial_compute_done_943:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dDdDbmkkgviEhFs
+	je	NEAR $L$_after_reduction_943
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dDdDbmkkgviEhFs:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_6_mifuenAGhkwukog:
+$L$_after_reduction_943:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_6_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,250
-	jae	NEAR $L$_16_blocks_overflow_wmdqnEswDsDpiGF
+	jae	NEAR $L$_16_blocks_overflow_944
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	ymm3,ymm0,ymm27
-	jmp	NEAR $L$_16_blocks_ok_wmdqnEswDsDpiGF
+	jmp	NEAR $L$_16_blocks_ok_944
 
-$L$_16_blocks_overflow_wmdqnEswDsDpiGF:
+$L$_16_blocks_overflow_944:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	ymm3,ymm3,ymm29
-$L$_16_blocks_ok_wmdqnEswDsDpiGF:
+$L$_16_blocks_ok_944:
 
 
 
@@ -129761,7 +129761,7 @@ $L$_16_blocks_ok_wmdqnEswDsDpiGF:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_jqAbialyztFlerl
+	jl	NEAR $L$_small_initial_partial_block_945
 
 
 
@@ -129812,8 +129812,8 @@ $L$_16_blocks_ok_wmdqnEswDsDpiGF:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_jqAbialyztFlerl
-$L$_small_initial_partial_block_jqAbialyztFlerl:
+	jmp	NEAR $L$_small_initial_compute_done_945
+$L$_small_initial_partial_block_945:
 
 
 
@@ -129867,32 +129867,32 @@ $L$_small_initial_partial_block_jqAbialyztFlerl:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_jqAbialyztFlerl:
+$L$_small_initial_compute_done_945:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_jqAbialyztFlerl
+	je	NEAR $L$_after_reduction_945
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_jqAbialyztFlerl:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_7_mifuenAGhkwukog:
+$L$_after_reduction_945:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_7_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,249
-	jae	NEAR $L$_16_blocks_overflow_kvgGjxGvdaDyrCp
+	jae	NEAR $L$_16_blocks_overflow_946
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_kvgGjxGvdaDyrCp
+	jmp	NEAR $L$_16_blocks_ok_946
 
-$L$_16_blocks_overflow_kvgGjxGvdaDyrCp:
+$L$_16_blocks_overflow_946:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_kvgGjxGvdaDyrCp:
+$L$_16_blocks_ok_946:
 
 
 
@@ -130004,7 +130004,7 @@ $L$_16_blocks_ok_kvgGjxGvdaDyrCp:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dikCxfqlGeCCljm
+	jl	NEAR $L$_small_initial_partial_block_947
 
 
 
@@ -130056,8 +130056,8 @@ $L$_16_blocks_ok_kvgGjxGvdaDyrCp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dikCxfqlGeCCljm
-$L$_small_initial_partial_block_dikCxfqlGeCCljm:
+	jmp	NEAR $L$_small_initial_compute_done_947
+$L$_small_initial_partial_block_947:
 
 
 
@@ -130111,32 +130111,32 @@ $L$_small_initial_partial_block_dikCxfqlGeCCljm:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dikCxfqlGeCCljm:
+$L$_small_initial_compute_done_947:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dikCxfqlGeCCljm
+	je	NEAR $L$_after_reduction_947
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dikCxfqlGeCCljm:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_8_mifuenAGhkwukog:
+$L$_after_reduction_947:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_8_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,64
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,248
-	jae	NEAR $L$_16_blocks_overflow_FrsxjffoucxCzwg
+	jae	NEAR $L$_16_blocks_overflow_948
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
-	jmp	NEAR $L$_16_blocks_ok_FrsxjffoucxCzwg
+	jmp	NEAR $L$_16_blocks_ok_948
 
-$L$_16_blocks_overflow_FrsxjffoucxCzwg:
+$L$_16_blocks_overflow_948:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
 	vpaddd	zmm3,zmm0,zmm5
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
-$L$_16_blocks_ok_FrsxjffoucxCzwg:
+$L$_16_blocks_ok_948:
 
 
 
@@ -130248,7 +130248,7 @@ $L$_16_blocks_ok_FrsxjffoucxCzwg:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yAmCslqwmrwxzEb
+	jl	NEAR $L$_small_initial_partial_block_949
 
 
 
@@ -130302,8 +130302,8 @@ $L$_16_blocks_ok_FrsxjffoucxCzwg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yAmCslqwmrwxzEb
-$L$_small_initial_partial_block_yAmCslqwmrwxzEb:
+	jmp	NEAR $L$_small_initial_compute_done_949
+$L$_small_initial_partial_block_949:
 
 
 
@@ -130358,26 +130358,26 @@ $L$_small_initial_partial_block_yAmCslqwmrwxzEb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yAmCslqwmrwxzEb:
+$L$_small_initial_compute_done_949:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yAmCslqwmrwxzEb
+	je	NEAR $L$_after_reduction_949
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_yAmCslqwmrwxzEb:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_9_mifuenAGhkwukog:
+$L$_after_reduction_949:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_9_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,247
-	jae	NEAR $L$_16_blocks_overflow_blDpgzAgzgfgmjx
+	jae	NEAR $L$_16_blocks_overflow_950
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	xmm4,xmm3,xmm27
-	jmp	NEAR $L$_16_blocks_ok_blDpgzAgzgfgmjx
+	jmp	NEAR $L$_16_blocks_ok_950
 
-$L$_16_blocks_overflow_blDpgzAgzgfgmjx:
+$L$_16_blocks_overflow_950:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -130386,7 +130386,7 @@ $L$_16_blocks_overflow_blDpgzAgzgfgmjx:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	xmm4,xmm4,xmm29
-$L$_16_blocks_ok_blDpgzAgzgfgmjx:
+$L$_16_blocks_ok_950:
 
 
 
@@ -130517,7 +130517,7 @@ $L$_16_blocks_ok_blDpgzAgzgfgmjx:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_DEjaiaAdlguvjDy
+	jl	NEAR $L$_small_initial_partial_block_951
 
 
 
@@ -130577,8 +130577,8 @@ $L$_16_blocks_ok_blDpgzAgzgfgmjx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_DEjaiaAdlguvjDy
-$L$_small_initial_partial_block_DEjaiaAdlguvjDy:
+	jmp	NEAR $L$_small_initial_compute_done_951
+$L$_small_initial_partial_block_951:
 
 
 
@@ -130635,26 +130635,26 @@ $L$_small_initial_partial_block_DEjaiaAdlguvjDy:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_DEjaiaAdlguvjDy:
+$L$_small_initial_compute_done_951:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_DEjaiaAdlguvjDy
+	je	NEAR $L$_after_reduction_951
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_DEjaiaAdlguvjDy:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_10_mifuenAGhkwukog:
+$L$_after_reduction_951:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_10_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,246
-	jae	NEAR $L$_16_blocks_overflow_tBndbDzAavjkAga
+	jae	NEAR $L$_16_blocks_overflow_952
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	ymm4,ymm3,ymm27
-	jmp	NEAR $L$_16_blocks_ok_tBndbDzAavjkAga
+	jmp	NEAR $L$_16_blocks_ok_952
 
-$L$_16_blocks_overflow_tBndbDzAavjkAga:
+$L$_16_blocks_overflow_952:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -130663,7 +130663,7 @@ $L$_16_blocks_overflow_tBndbDzAavjkAga:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	ymm4,ymm4,ymm29
-$L$_16_blocks_ok_tBndbDzAavjkAga:
+$L$_16_blocks_ok_952:
 
 
 
@@ -130794,7 +130794,7 @@ $L$_16_blocks_ok_tBndbDzAavjkAga:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zxEwherhbhcnEiw
+	jl	NEAR $L$_small_initial_partial_block_953
 
 
 
@@ -130854,8 +130854,8 @@ $L$_16_blocks_ok_tBndbDzAavjkAga:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zxEwherhbhcnEiw
-$L$_small_initial_partial_block_zxEwherhbhcnEiw:
+	jmp	NEAR $L$_small_initial_compute_done_953
+$L$_small_initial_partial_block_953:
 
 
 
@@ -130918,26 +130918,26 @@ $L$_small_initial_partial_block_zxEwherhbhcnEiw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_zxEwherhbhcnEiw:
+$L$_small_initial_compute_done_953:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_zxEwherhbhcnEiw
+	je	NEAR $L$_after_reduction_953
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_zxEwherhbhcnEiw:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_11_mifuenAGhkwukog:
+$L$_after_reduction_953:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_11_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,245
-	jae	NEAR $L$_16_blocks_overflow_wdkGeDxlklpjstA
+	jae	NEAR $L$_16_blocks_overflow_954
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_wdkGeDxlklpjstA
+	jmp	NEAR $L$_16_blocks_ok_954
 
-$L$_16_blocks_overflow_wdkGeDxlklpjstA:
+$L$_16_blocks_overflow_954:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -130946,7 +130946,7 @@ $L$_16_blocks_overflow_wdkGeDxlklpjstA:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_wdkGeDxlklpjstA:
+$L$_16_blocks_ok_954:
 
 
 
@@ -131077,7 +131077,7 @@ $L$_16_blocks_ok_wdkGeDxlklpjstA:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xcFGjnrqcqmEfar
+	jl	NEAR $L$_small_initial_partial_block_955
 
 
 
@@ -131138,8 +131138,8 @@ $L$_16_blocks_ok_wdkGeDxlklpjstA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xcFGjnrqcqmEfar
-$L$_small_initial_partial_block_xcFGjnrqcqmEfar:
+	jmp	NEAR $L$_small_initial_compute_done_955
+$L$_small_initial_partial_block_955:
 
 
 
@@ -131202,26 +131202,26 @@ $L$_small_initial_partial_block_xcFGjnrqcqmEfar:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xcFGjnrqcqmEfar:
+$L$_small_initial_compute_done_955:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xcFGjnrqcqmEfar
+	je	NEAR $L$_after_reduction_955
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_xcFGjnrqcqmEfar:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_12_mifuenAGhkwukog:
+$L$_after_reduction_955:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_12_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,128
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,244
-	jae	NEAR $L$_16_blocks_overflow_exjeBvvyrdwpmly
+	jae	NEAR $L$_16_blocks_overflow_956
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
-	jmp	NEAR $L$_16_blocks_ok_exjeBvvyrdwpmly
+	jmp	NEAR $L$_16_blocks_ok_956
 
-$L$_16_blocks_overflow_exjeBvvyrdwpmly:
+$L$_16_blocks_overflow_956:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -131230,7 +131230,7 @@ $L$_16_blocks_overflow_exjeBvvyrdwpmly:
 	vpshufb	zmm0,zmm0,zmm29
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
-$L$_16_blocks_ok_exjeBvvyrdwpmly:
+$L$_16_blocks_ok_956:
 
 
 
@@ -131361,7 +131361,7 @@ $L$_16_blocks_ok_exjeBvvyrdwpmly:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lppDwvrlmmBEEfg
+	jl	NEAR $L$_small_initial_partial_block_957
 
 
 
@@ -131420,8 +131420,8 @@ $L$_16_blocks_ok_exjeBvvyrdwpmly:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lppDwvrlmmBEEfg
-$L$_small_initial_partial_block_lppDwvrlmmBEEfg:
+	jmp	NEAR $L$_small_initial_compute_done_957
+$L$_small_initial_partial_block_957:
 
 
 
@@ -131485,27 +131485,27 @@ $L$_small_initial_partial_block_lppDwvrlmmBEEfg:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lppDwvrlmmBEEfg:
+$L$_small_initial_compute_done_957:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lppDwvrlmmBEEfg
+	je	NEAR $L$_after_reduction_957
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_lppDwvrlmmBEEfg:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_13_mifuenAGhkwukog:
+$L$_after_reduction_957:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_13_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,243
-	jae	NEAR $L$_16_blocks_overflow_AeGqEbCBhiFmFcG
+	jae	NEAR $L$_16_blocks_overflow_958
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	xmm5,xmm4,xmm27
-	jmp	NEAR $L$_16_blocks_ok_AeGqEbCBhiFmFcG
+	jmp	NEAR $L$_16_blocks_ok_958
 
-$L$_16_blocks_overflow_AeGqEbCBhiFmFcG:
+$L$_16_blocks_overflow_958:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -131516,7 +131516,7 @@ $L$_16_blocks_overflow_AeGqEbCBhiFmFcG:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	xmm5,xmm5,xmm29
-$L$_16_blocks_ok_AeGqEbCBhiFmFcG:
+$L$_16_blocks_ok_958:
 
 
 
@@ -131666,7 +131666,7 @@ $L$_16_blocks_ok_AeGqEbCBhiFmFcG:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_erCAjxjGbGtmydv
+	jl	NEAR $L$_small_initial_partial_block_959
 
 
 
@@ -131731,8 +131731,8 @@ $L$_16_blocks_ok_AeGqEbCBhiFmFcG:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_erCAjxjGbGtmydv
-$L$_small_initial_partial_block_erCAjxjGbGtmydv:
+	jmp	NEAR $L$_small_initial_compute_done_959
+$L$_small_initial_partial_block_959:
 
 
 
@@ -131794,27 +131794,27 @@ $L$_small_initial_partial_block_erCAjxjGbGtmydv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_erCAjxjGbGtmydv:
+$L$_small_initial_compute_done_959:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_erCAjxjGbGtmydv
+	je	NEAR $L$_after_reduction_959
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_erCAjxjGbGtmydv:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_14_mifuenAGhkwukog:
+$L$_after_reduction_959:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_14_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,242
-	jae	NEAR $L$_16_blocks_overflow_fEtsEtlGlnvpzAC
+	jae	NEAR $L$_16_blocks_overflow_960
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	ymm5,ymm4,ymm27
-	jmp	NEAR $L$_16_blocks_ok_fEtsEtlGlnvpzAC
+	jmp	NEAR $L$_16_blocks_ok_960
 
-$L$_16_blocks_overflow_fEtsEtlGlnvpzAC:
+$L$_16_blocks_overflow_960:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -131825,7 +131825,7 @@ $L$_16_blocks_overflow_fEtsEtlGlnvpzAC:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	ymm5,ymm5,ymm29
-$L$_16_blocks_ok_fEtsEtlGlnvpzAC:
+$L$_16_blocks_ok_960:
 
 
 
@@ -131975,7 +131975,7 @@ $L$_16_blocks_ok_fEtsEtlGlnvpzAC:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_dxdqDuxgnckmnkA
+	jl	NEAR $L$_small_initial_partial_block_961
 
 
 
@@ -132040,8 +132040,8 @@ $L$_16_blocks_ok_fEtsEtlGlnvpzAC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_dxdqDuxgnckmnkA
-$L$_small_initial_partial_block_dxdqDuxgnckmnkA:
+	jmp	NEAR $L$_small_initial_compute_done_961
+$L$_small_initial_partial_block_961:
 
 
 
@@ -132109,27 +132109,27 @@ $L$_small_initial_partial_block_dxdqDuxgnckmnkA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_dxdqDuxgnckmnkA:
+$L$_small_initial_compute_done_961:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_dxdqDuxgnckmnkA
+	je	NEAR $L$_after_reduction_961
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_dxdqDuxgnckmnkA:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_15_mifuenAGhkwukog:
+$L$_after_reduction_961:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_15_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,241
-	jae	NEAR $L$_16_blocks_overflow_ofAgmszyorelhcw
+	jae	NEAR $L$_16_blocks_overflow_962
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ofAgmszyorelhcw
+	jmp	NEAR $L$_16_blocks_ok_962
 
-$L$_16_blocks_overflow_ofAgmszyorelhcw:
+$L$_16_blocks_overflow_962:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -132140,7 +132140,7 @@ $L$_16_blocks_overflow_ofAgmszyorelhcw:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ofAgmszyorelhcw:
+$L$_16_blocks_ok_962:
 
 
 
@@ -132290,7 +132290,7 @@ $L$_16_blocks_ok_ofAgmszyorelhcw:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_scmzgysrFsGxxyA
+	jl	NEAR $L$_small_initial_partial_block_963
 
 
 
@@ -132356,8 +132356,8 @@ $L$_16_blocks_ok_ofAgmszyorelhcw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_scmzgysrFsGxxyA
-$L$_small_initial_partial_block_scmzgysrFsGxxyA:
+	jmp	NEAR $L$_small_initial_compute_done_963
+$L$_small_initial_partial_block_963:
 
 
 
@@ -132425,27 +132425,27 @@ $L$_small_initial_partial_block_scmzgysrFsGxxyA:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_scmzgysrFsGxxyA:
+$L$_small_initial_compute_done_963:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_scmzgysrFsGxxyA
+	je	NEAR $L$_after_reduction_963
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_scmzgysrFsGxxyA:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_16_mifuenAGhkwukog:
+$L$_after_reduction_963:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_16_933:
 	lea	r10,[byte64_len_to_mask_table]
 	mov	rax,r13
 	sub	rax,192
 	kmovq	k1,[rax*8+r10]
 	cmp	r15d,240
-	jae	NEAR $L$_16_blocks_overflow_ncEujgsCitivwmt
+	jae	NEAR $L$_16_blocks_overflow_964
 	vpaddd	zmm0,zmm2,zmm28
 	vpaddd	zmm3,zmm0,zmm27
 	vpaddd	zmm4,zmm3,zmm27
 	vpaddd	zmm5,zmm4,zmm27
-	jmp	NEAR $L$_16_blocks_ok_ncEujgsCitivwmt
+	jmp	NEAR $L$_16_blocks_ok_964
 
-$L$_16_blocks_overflow_ncEujgsCitivwmt:
+$L$_16_blocks_overflow_964:
 	vpshufb	zmm2,zmm2,zmm29
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
 	vmovdqa64	zmm5,ZMMWORD[ddq_add_4444]
@@ -132456,7 +132456,7 @@ $L$_16_blocks_overflow_ncEujgsCitivwmt:
 	vpshufb	zmm3,zmm3,zmm29
 	vpshufb	zmm4,zmm4,zmm29
 	vpshufb	zmm5,zmm5,zmm29
-$L$_16_blocks_ok_ncEujgsCitivwmt:
+$L$_16_blocks_ok_964:
 
 
 
@@ -132603,7 +132603,7 @@ $L$_16_blocks_ok_ncEujgsCitivwmt:
 	vpshufb	zmm21,zmm21,zmm29
 	vextracti32x4	xmm7,zmm21,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_ssksfdsGvgkrwBw:
+$L$_small_initial_partial_block_965:
 
 
 
@@ -132672,11 +132672,11 @@ $L$_small_initial_partial_block_ssksfdsGvgkrwBw:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ssksfdsGvgkrwBw:
+$L$_small_initial_compute_done_965:
 	vpxorq	xmm14,xmm14,xmm7
-$L$_after_reduction_ssksfdsGvgkrwBw:
-	jmp	NEAR $L$_last_blocks_done_mifuenAGhkwukog
-$L$_last_num_blocks_is_0_mifuenAGhkwukog:
+$L$_after_reduction_965:
+	jmp	NEAR $L$_last_blocks_done_933
+$L$_last_num_blocks_is_0_933:
 	vmovdqa64	zmm13,ZMMWORD[768+rsp]
 	vpxorq	zmm13,zmm13,zmm14
 	vmovdqu64	zmm12,ZMMWORD[rbx*1+rsp]
@@ -132738,65 +132738,65 @@ $L$_last_num_blocks_is_0_mifuenAGhkwukog:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm3,xmm24,0x96
 
-$L$_last_blocks_done_mifuenAGhkwukog:
+$L$_last_blocks_done_933:
 	vpshufb	xmm2,xmm2,xmm29
-	jmp	NEAR $L$_ghash_done_nGltgytEkotuqBl
+	jmp	NEAR $L$_ghash_done_821
 
-$L$_message_below_equal_16_blocks_nGltgytEkotuqBl:
+$L$_message_below_equal_16_blocks_821:
 
 
 	mov	r12d,r13d
 	add	r12d,15
 	shr	r12d,4
 	cmp	r12,8
-	je	NEAR $L$_small_initial_num_blocks_is_8_zdfaAjvsGzEtnma
-	jl	NEAR $L$_small_initial_num_blocks_is_7_1_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_8_966
+	jl	NEAR $L$_small_initial_num_blocks_is_7_1_966
 
 
 	cmp	r12,12
-	je	NEAR $L$_small_initial_num_blocks_is_12_zdfaAjvsGzEtnma
-	jl	NEAR $L$_small_initial_num_blocks_is_11_9_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_12_966
+	jl	NEAR $L$_small_initial_num_blocks_is_11_9_966
 
 
 	cmp	r12,16
-	je	NEAR $L$_small_initial_num_blocks_is_16_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_16_966
 	cmp	r12,15
-	je	NEAR $L$_small_initial_num_blocks_is_15_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_15_966
 	cmp	r12,14
-	je	NEAR $L$_small_initial_num_blocks_is_14_zdfaAjvsGzEtnma
-	jmp	NEAR $L$_small_initial_num_blocks_is_13_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_14_966
+	jmp	NEAR $L$_small_initial_num_blocks_is_13_966
 
-$L$_small_initial_num_blocks_is_11_9_zdfaAjvsGzEtnma:
+$L$_small_initial_num_blocks_is_11_9_966:
 
 	cmp	r12,11
-	je	NEAR $L$_small_initial_num_blocks_is_11_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_11_966
 	cmp	r12,10
-	je	NEAR $L$_small_initial_num_blocks_is_10_zdfaAjvsGzEtnma
-	jmp	NEAR $L$_small_initial_num_blocks_is_9_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_10_966
+	jmp	NEAR $L$_small_initial_num_blocks_is_9_966
 
-$L$_small_initial_num_blocks_is_7_1_zdfaAjvsGzEtnma:
+$L$_small_initial_num_blocks_is_7_1_966:
 	cmp	r12,4
-	je	NEAR $L$_small_initial_num_blocks_is_4_zdfaAjvsGzEtnma
-	jl	NEAR $L$_small_initial_num_blocks_is_3_1_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_4_966
+	jl	NEAR $L$_small_initial_num_blocks_is_3_1_966
 
 	cmp	r12,7
-	je	NEAR $L$_small_initial_num_blocks_is_7_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_7_966
 	cmp	r12,6
-	je	NEAR $L$_small_initial_num_blocks_is_6_zdfaAjvsGzEtnma
-	jmp	NEAR $L$_small_initial_num_blocks_is_5_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_6_966
+	jmp	NEAR $L$_small_initial_num_blocks_is_5_966
 
-$L$_small_initial_num_blocks_is_3_1_zdfaAjvsGzEtnma:
+$L$_small_initial_num_blocks_is_3_1_966:
 
 	cmp	r12,3
-	je	NEAR $L$_small_initial_num_blocks_is_3_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_3_966
 	cmp	r12,2
-	je	NEAR $L$_small_initial_num_blocks_is_2_zdfaAjvsGzEtnma
+	je	NEAR $L$_small_initial_num_blocks_is_2_966
 
 
 
 
 
-$L$_small_initial_num_blocks_is_1_zdfaAjvsGzEtnma:
+$L$_small_initial_num_blocks_is_1_966:
 	vmovdqa64	xmm29,XMMWORD[SHUF_MASK]
 	vpaddd	xmm0,xmm2,XMMWORD[ONE]
 	lea	r10,[byte64_len_to_mask_table]
@@ -132845,7 +132845,7 @@ $L$_small_initial_num_blocks_is_1_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_zCxeBFrmBzFkaux
+	jl	NEAR $L$_small_initial_partial_block_967
 
 
 
@@ -132887,8 +132887,8 @@ $L$_small_initial_num_blocks_is_1_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_zCxeBFrmBzFkaux
-$L$_small_initial_partial_block_zCxeBFrmBzFkaux:
+	jmp	NEAR $L$_small_initial_compute_done_967
+$L$_small_initial_partial_block_967:
 
 
 
@@ -132912,11 +132912,11 @@ $L$_small_initial_partial_block_zCxeBFrmBzFkaux:
 
 	vpxorq	xmm14,xmm14,xmm13
 
-	jmp	NEAR $L$_after_reduction_zCxeBFrmBzFkaux
-$L$_small_initial_compute_done_zCxeBFrmBzFkaux:
-$L$_after_reduction_zCxeBFrmBzFkaux:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_2_zdfaAjvsGzEtnma:
+	jmp	NEAR $L$_after_reduction_967
+$L$_small_initial_compute_done_967:
+$L$_after_reduction_967:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_2_966:
 	vmovdqa64	ymm29,YMMWORD[SHUF_MASK]
 	vshufi64x2	ymm0,ymm2,ymm2,0
 	vpaddd	ymm0,ymm0,YMMWORD[ddq_add_1234]
@@ -132967,7 +132967,7 @@ $L$_small_initial_num_blocks_is_2_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_gscGhsdpjGlldea
+	jl	NEAR $L$_small_initial_partial_block_968
 
 
 
@@ -133009,8 +133009,8 @@ $L$_small_initial_num_blocks_is_2_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_gscGhsdpjGlldea
-$L$_small_initial_partial_block_gscGhsdpjGlldea:
+	jmp	NEAR $L$_small_initial_compute_done_968
+$L$_small_initial_partial_block_968:
 
 
 
@@ -133055,14 +133055,14 @@ $L$_small_initial_partial_block_gscGhsdpjGlldea:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gscGhsdpjGlldea:
+$L$_small_initial_compute_done_968:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_gscGhsdpjGlldea
+	je	NEAR $L$_after_reduction_968
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_gscGhsdpjGlldea:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_3_zdfaAjvsGzEtnma:
+$L$_after_reduction_968:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_3_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -133113,7 +133113,7 @@ $L$_small_initial_num_blocks_is_3_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_ctmfdGCCnrtaeep
+	jl	NEAR $L$_small_initial_partial_block_969
 
 
 
@@ -133156,8 +133156,8 @@ $L$_small_initial_num_blocks_is_3_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_ctmfdGCCnrtaeep
-$L$_small_initial_partial_block_ctmfdGCCnrtaeep:
+	jmp	NEAR $L$_small_initial_compute_done_969
+$L$_small_initial_partial_block_969:
 
 
 
@@ -133202,14 +133202,14 @@ $L$_small_initial_partial_block_ctmfdGCCnrtaeep:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_ctmfdGCCnrtaeep:
+$L$_small_initial_compute_done_969:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_ctmfdGCCnrtaeep
+	je	NEAR $L$_after_reduction_969
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_ctmfdGCCnrtaeep:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_4_zdfaAjvsGzEtnma:
+$L$_after_reduction_969:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_4_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -133260,7 +133260,7 @@ $L$_small_initial_num_blocks_is_4_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_gCzxgbtrsgwqqhk
+	jl	NEAR $L$_small_initial_partial_block_970
 
 
 
@@ -133302,8 +133302,8 @@ $L$_small_initial_num_blocks_is_4_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_gCzxgbtrsgwqqhk
-$L$_small_initial_partial_block_gCzxgbtrsgwqqhk:
+	jmp	NEAR $L$_small_initial_compute_done_970
+$L$_small_initial_partial_block_970:
 
 
 
@@ -133349,14 +133349,14 @@ $L$_small_initial_partial_block_gCzxgbtrsgwqqhk:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gCzxgbtrsgwqqhk:
+$L$_small_initial_compute_done_970:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_gCzxgbtrsgwqqhk
+	je	NEAR $L$_after_reduction_970
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_gCzxgbtrsgwqqhk:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_5_zdfaAjvsGzEtnma:
+$L$_after_reduction_970:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_5_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -133429,7 +133429,7 @@ $L$_small_initial_num_blocks_is_5_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_FtkAdaFfgeikjbv
+	jl	NEAR $L$_small_initial_partial_block_971
 
 
 
@@ -133481,8 +133481,8 @@ $L$_small_initial_num_blocks_is_5_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_FtkAdaFfgeikjbv
-$L$_small_initial_partial_block_FtkAdaFfgeikjbv:
+	jmp	NEAR $L$_small_initial_compute_done_971
+$L$_small_initial_partial_block_971:
 
 
 
@@ -133527,14 +133527,14 @@ $L$_small_initial_partial_block_FtkAdaFfgeikjbv:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_FtkAdaFfgeikjbv:
+$L$_small_initial_compute_done_971:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_FtkAdaFfgeikjbv
+	je	NEAR $L$_after_reduction_971
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_FtkAdaFfgeikjbv:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_6_zdfaAjvsGzEtnma:
+$L$_after_reduction_971:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_6_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -133607,7 +133607,7 @@ $L$_small_initial_num_blocks_is_6_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xhdaGtbsCDxyAps
+	jl	NEAR $L$_small_initial_partial_block_972
 
 
 
@@ -133659,8 +133659,8 @@ $L$_small_initial_num_blocks_is_6_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xhdaGtbsCDxyAps
-$L$_small_initial_partial_block_xhdaGtbsCDxyAps:
+	jmp	NEAR $L$_small_initial_compute_done_972
+$L$_small_initial_partial_block_972:
 
 
 
@@ -133715,14 +133715,14 @@ $L$_small_initial_partial_block_xhdaGtbsCDxyAps:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xhdaGtbsCDxyAps:
+$L$_small_initial_compute_done_972:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xhdaGtbsCDxyAps
+	je	NEAR $L$_after_reduction_972
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_xhdaGtbsCDxyAps:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_7_zdfaAjvsGzEtnma:
+$L$_after_reduction_972:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_7_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -133795,7 +133795,7 @@ $L$_small_initial_num_blocks_is_7_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xGsBjEibChfiwln
+	jl	NEAR $L$_small_initial_partial_block_973
 
 
 
@@ -133848,8 +133848,8 @@ $L$_small_initial_num_blocks_is_7_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xGsBjEibChfiwln
-$L$_small_initial_partial_block_xGsBjEibChfiwln:
+	jmp	NEAR $L$_small_initial_compute_done_973
+$L$_small_initial_partial_block_973:
 
 
 
@@ -133904,14 +133904,14 @@ $L$_small_initial_partial_block_xGsBjEibChfiwln:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xGsBjEibChfiwln:
+$L$_small_initial_compute_done_973:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xGsBjEibChfiwln
+	je	NEAR $L$_after_reduction_973
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_xGsBjEibChfiwln:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_8_zdfaAjvsGzEtnma:
+$L$_after_reduction_973:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_8_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -133984,7 +133984,7 @@ $L$_small_initial_num_blocks_is_8_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_xinAFCGuBGaljpa
+	jl	NEAR $L$_small_initial_partial_block_974
 
 
 
@@ -134035,8 +134035,8 @@ $L$_small_initial_num_blocks_is_8_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_xinAFCGuBGaljpa
-$L$_small_initial_partial_block_xinAFCGuBGaljpa:
+	jmp	NEAR $L$_small_initial_compute_done_974
+$L$_small_initial_partial_block_974:
 
 
 
@@ -134092,14 +134092,14 @@ $L$_small_initial_partial_block_xinAFCGuBGaljpa:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_xinAFCGuBGaljpa:
+$L$_small_initial_compute_done_974:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_xinAFCGuBGaljpa
+	je	NEAR $L$_after_reduction_974
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_xinAFCGuBGaljpa:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_9_zdfaAjvsGzEtnma:
+$L$_after_reduction_974:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_9_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -134193,7 +134193,7 @@ $L$_small_initial_num_blocks_is_9_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_GyxuegxCuAaxosp
+	jl	NEAR $L$_small_initial_partial_block_975
 
 
 
@@ -134254,8 +134254,8 @@ $L$_small_initial_num_blocks_is_9_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_GyxuegxCuAaxosp
-$L$_small_initial_partial_block_GyxuegxCuAaxosp:
+	jmp	NEAR $L$_small_initial_compute_done_975
+$L$_small_initial_partial_block_975:
 
 
 
@@ -134309,14 +134309,14 @@ $L$_small_initial_partial_block_GyxuegxCuAaxosp:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_GyxuegxCuAaxosp:
+$L$_small_initial_compute_done_975:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_GyxuegxCuAaxosp
+	je	NEAR $L$_after_reduction_975
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_GyxuegxCuAaxosp:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_10_zdfaAjvsGzEtnma:
+$L$_after_reduction_975:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_10_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -134410,7 +134410,7 @@ $L$_small_initial_num_blocks_is_10_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_fnCnouDhyjemAtx
+	jl	NEAR $L$_small_initial_partial_block_976
 
 
 
@@ -134471,8 +134471,8 @@ $L$_small_initial_num_blocks_is_10_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_fnCnouDhyjemAtx
-$L$_small_initial_partial_block_fnCnouDhyjemAtx:
+	jmp	NEAR $L$_small_initial_compute_done_976
+$L$_small_initial_partial_block_976:
 
 
 
@@ -134536,14 +134536,14 @@ $L$_small_initial_partial_block_fnCnouDhyjemAtx:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_fnCnouDhyjemAtx:
+$L$_small_initial_compute_done_976:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_fnCnouDhyjemAtx
+	je	NEAR $L$_after_reduction_976
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_fnCnouDhyjemAtx:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_11_zdfaAjvsGzEtnma:
+$L$_after_reduction_976:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_11_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -134637,7 +134637,7 @@ $L$_small_initial_num_blocks_is_11_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_nngmBadmzrmalGb
+	jl	NEAR $L$_small_initial_partial_block_977
 
 
 
@@ -134699,8 +134699,8 @@ $L$_small_initial_num_blocks_is_11_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_nngmBadmzrmalGb
-$L$_small_initial_partial_block_nngmBadmzrmalGb:
+	jmp	NEAR $L$_small_initial_compute_done_977
+$L$_small_initial_partial_block_977:
 
 
 
@@ -134764,14 +134764,14 @@ $L$_small_initial_partial_block_nngmBadmzrmalGb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_nngmBadmzrmalGb:
+$L$_small_initial_compute_done_977:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_nngmBadmzrmalGb
+	je	NEAR $L$_after_reduction_977
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_nngmBadmzrmalGb:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_12_zdfaAjvsGzEtnma:
+$L$_after_reduction_977:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_12_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -134865,7 +134865,7 @@ $L$_small_initial_num_blocks_is_12_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_swDpekqDhjaiByf
+	jl	NEAR $L$_small_initial_partial_block_978
 
 
 
@@ -134921,8 +134921,8 @@ $L$_small_initial_num_blocks_is_12_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_swDpekqDhjaiByf
-$L$_small_initial_partial_block_swDpekqDhjaiByf:
+	jmp	NEAR $L$_small_initial_compute_done_978
+$L$_small_initial_partial_block_978:
 
 
 
@@ -134987,14 +134987,14 @@ $L$_small_initial_partial_block_swDpekqDhjaiByf:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_swDpekqDhjaiByf:
+$L$_small_initial_compute_done_978:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_swDpekqDhjaiByf
+	je	NEAR $L$_after_reduction_978
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_swDpekqDhjaiByf:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_13_zdfaAjvsGzEtnma:
+$L$_after_reduction_978:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_13_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -135109,7 +135109,7 @@ $L$_small_initial_num_blocks_is_13_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_gcBCEzrfwyaFssC
+	jl	NEAR $L$_small_initial_partial_block_979
 
 
 
@@ -135175,8 +135175,8 @@ $L$_small_initial_num_blocks_is_13_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_gcBCEzrfwyaFssC
-$L$_small_initial_partial_block_gcBCEzrfwyaFssC:
+	jmp	NEAR $L$_small_initial_compute_done_979
+$L$_small_initial_partial_block_979:
 
 
 
@@ -135235,14 +135235,14 @@ $L$_small_initial_partial_block_gcBCEzrfwyaFssC:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_gcBCEzrfwyaFssC:
+$L$_small_initial_compute_done_979:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_gcBCEzrfwyaFssC
+	je	NEAR $L$_after_reduction_979
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_gcBCEzrfwyaFssC:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_14_zdfaAjvsGzEtnma:
+$L$_after_reduction_979:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_14_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -135357,7 +135357,7 @@ $L$_small_initial_num_blocks_is_14_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_yEdhBeebljmAkhb
+	jl	NEAR $L$_small_initial_partial_block_980
 
 
 
@@ -135423,8 +135423,8 @@ $L$_small_initial_num_blocks_is_14_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_yEdhBeebljmAkhb
-$L$_small_initial_partial_block_yEdhBeebljmAkhb:
+	jmp	NEAR $L$_small_initial_compute_done_980
+$L$_small_initial_partial_block_980:
 
 
 
@@ -135493,14 +135493,14 @@ $L$_small_initial_partial_block_yEdhBeebljmAkhb:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_yEdhBeebljmAkhb:
+$L$_small_initial_compute_done_980:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_yEdhBeebljmAkhb
+	je	NEAR $L$_after_reduction_980
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_yEdhBeebljmAkhb:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_15_zdfaAjvsGzEtnma:
+$L$_after_reduction_980:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_15_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -135615,7 +135615,7 @@ $L$_small_initial_num_blocks_is_15_zdfaAjvsGzEtnma:
 
 
 	cmp	r13,16
-	jl	NEAR $L$_small_initial_partial_block_lGDdAkirihwnqvq
+	jl	NEAR $L$_small_initial_partial_block_981
 
 
 
@@ -135682,8 +135682,8 @@ $L$_small_initial_num_blocks_is_15_zdfaAjvsGzEtnma:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-	jmp	NEAR $L$_small_initial_compute_done_lGDdAkirihwnqvq
-$L$_small_initial_partial_block_lGDdAkirihwnqvq:
+	jmp	NEAR $L$_small_initial_compute_done_981
+$L$_small_initial_partial_block_981:
 
 
 
@@ -135752,14 +135752,14 @@ $L$_small_initial_partial_block_lGDdAkirihwnqvq:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_lGDdAkirihwnqvq:
+$L$_small_initial_compute_done_981:
 
 	or	r13,r13
-	je	NEAR $L$_after_reduction_lGDdAkirihwnqvq
+	je	NEAR $L$_after_reduction_981
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_lGDdAkirihwnqvq:
-	jmp	NEAR $L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma
-$L$_small_initial_num_blocks_is_16_zdfaAjvsGzEtnma:
+$L$_after_reduction_981:
+	jmp	NEAR $L$_small_initial_blocks_encrypted_966
+$L$_small_initial_num_blocks_is_16_966:
 	vmovdqa64	zmm29,ZMMWORD[SHUF_MASK]
 	vshufi64x2	zmm2,zmm2,zmm2,0
 	vpaddd	zmm0,zmm2,ZMMWORD[ddq_add_1234]
@@ -135871,7 +135871,7 @@ $L$_small_initial_num_blocks_is_16_zdfaAjvsGzEtnma:
 	vpshufb	zmm11,zmm11,zmm29
 	vextracti32x4	xmm13,zmm11,3
 	sub	r13,16 * (16 - 1)
-$L$_small_initial_partial_block_aiBqAgqFybBuxCt:
+$L$_small_initial_partial_block_982:
 
 
 
@@ -135941,18 +135941,18 @@ $L$_small_initial_partial_block_aiBqAgqFybBuxCt:
 	vpslldq	xmm14,xmm14,4
 	vpternlogq	xmm14,xmm5,xmm0,0x96
 
-$L$_small_initial_compute_done_aiBqAgqFybBuxCt:
+$L$_small_initial_compute_done_982:
 	vpxorq	xmm14,xmm14,xmm13
-$L$_after_reduction_aiBqAgqFybBuxCt:
-$L$_small_initial_blocks_encrypted_zdfaAjvsGzEtnma:
-$L$_ghash_done_nGltgytEkotuqBl:
+$L$_after_reduction_982:
+$L$_small_initial_blocks_encrypted_966:
+$L$_ghash_done_821:
 	vmovdqu64	XMMWORD[rdx],xmm2
 	vmovdqu64	XMMWORD[64+rdx],xmm14
-$L$_enc_dec_done_nGltgytEkotuqBl:
+$L$_enc_dec_done_821:
 	jmp	NEAR $L$exit_gcm_decrypt
 $L$exit_gcm_decrypt:
 	cmp	QWORD[112+rbp],256
-	jbe	NEAR $L$skip_hkeys_cleanup_gzCCtqzDpirEnqG
+	jbe	NEAR $L$skip_hkeys_cleanup_983
 	vpxor	xmm0,xmm0,xmm0
 	vmovdqa64	ZMMWORD[rsp],zmm0
 	vmovdqa64	ZMMWORD[64+rsp],zmm0
@@ -135966,7 +135966,7 @@ $L$exit_gcm_decrypt:
 	vmovdqa64	ZMMWORD[576+rsp],zmm0
 	vmovdqa64	ZMMWORD[640+rsp],zmm0
 	vmovdqa64	ZMMWORD[704+rsp],zmm0
-$L$skip_hkeys_cleanup_gzCCtqzDpirEnqG:
+$L$skip_hkeys_cleanup_983:
 	vzeroupper
 	vmovdqu	xmm15,XMMWORD[((-16))+rbp]
 	vmovdqu	xmm14,XMMWORD[((-32))+rbp]
@@ -136011,7 +136011,7 @@ DB	243,15,30,250
 
 
 	cmp	rdx,0
-	je	NEAR $L$_partial_done_kFfsnBdccBBCtrw
+	je	NEAR $L$_partial_done_984
 
 	vpclmulqdq	xmm0,xmm4,xmm2,0x11
 	vpclmulqdq	xmm16,xmm4,xmm2,0x00
@@ -136041,7 +136041,7 @@ DB	243,15,30,250
 
 	vpternlogq	xmm4,xmm0,xmm16,0x96
 
-$L$_partial_done_kFfsnBdccBBCtrw:
+$L$_partial_done_984:
 	vmovq	xmm5,QWORD[56+rcx]
 	vpinsrq	xmm5,xmm5,QWORD[48+rcx],1
 	vpsllq	xmm5,xmm5,3
@@ -136079,7 +136079,7 @@ $L$_partial_done_kFfsnBdccBBCtrw:
 	vpshufb	xmm4,xmm4,XMMWORD[SHUF_MASK]
 	vpxor	xmm3,xmm3,xmm4
 
-$L$_return_T_kFfsnBdccBBCtrw:
+$L$_return_T_984:
 	vmovdqu	XMMWORD[64+rcx],xmm3
 $L$abort_finalize:
 	DB	0F3h,0C3h		;repret
