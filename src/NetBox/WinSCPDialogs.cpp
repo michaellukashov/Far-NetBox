@@ -1500,7 +1500,7 @@ private:
   void CodePageEditAdd(uint32_t Cp);
   void FtpProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType);
   void SshProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType);
-  bool IsSshProtocol(TFSProtocol FSProtocol) const;
+  static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
   bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
 
@@ -1508,7 +1508,7 @@ private:
   int32_t GetVisibleTabsCount(int32_t TabIndex, bool Forward) const;
   int32_t AddTab(int32_t TabID, const wchar_t * TabCaption);
 
-  TProxyMethod ToProxyMethod(int32_t Value) const { return static_cast<TProxyMethod>(Value); }
+  static TProxyMethod ToProxyMethod(int32_t Value) { return static_cast<TProxyMethod>(Value); }
 private:
   TSessionActionEnum FAction;
   TSessionData * FSessionData{nullptr};
@@ -2959,7 +2959,7 @@ void TSessionDialog::TransferProtocolComboChange()
   }
 }
 
-bool TSessionDialog::IsSshProtocol(TFSProtocol FSProtocol) const
+bool TSessionDialog::IsSshProtocol(TFSProtocol FSProtocol)
 {
   const bool Result =
     (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP) || (FSProtocol == fsSCPonly);
@@ -3159,7 +3159,7 @@ void TSessionDialog::UpdateControls()
 
 bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
 {
-  const int32_t Captions[] =
+  constexpr int32_t Captions[] =
   {
     NB_LOGIN_ADD,
     NB_LOGIN_EDIT,
