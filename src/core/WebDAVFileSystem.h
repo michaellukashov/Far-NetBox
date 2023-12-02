@@ -163,7 +163,7 @@ private:
   bool FUploading{false};
   bool FDownloading{false};
   UnicodeString FUploadMimeType;
-  ne_lock_store_s * FNeonLockStore{nullptr};
+  gsl::owner<ne_lock_store_s *> FNeonLockStore{nullptr};
   TCriticalSection FNeonLockStoreSection;
   bool FInitialHandshake{false};
   bool FAuthenticationRequested{false};
