@@ -212,7 +212,7 @@
 "&Secret access key:"
 "Private &key file:"
 " Protocol "
-"&File protocol: "
+"&File protocol:"
 "SCP"
 "SFTP"
 "FTP"
