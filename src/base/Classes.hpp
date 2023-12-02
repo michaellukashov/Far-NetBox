@@ -868,7 +868,7 @@ public:
   void SaveToFile(const UnicodeString & AFileName);
 
   void Clear();
-  void LoadFromStream(TStream * Stream);
+  // void LoadFromStream(TStream * Stream);
   // void LoadFromFile(const UnicodeString & AFileName);
   virtual int64_t GetSize() const override { return FSize; }
   virtual void SetSize(int64_t NewSize) override;
