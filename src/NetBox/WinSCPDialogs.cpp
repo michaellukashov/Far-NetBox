@@ -4333,7 +4333,7 @@ protected:
   TFarEdit * FOctalEdit{nullptr};
   TFarCheckBox * FDirectoriesXCheck{nullptr};
 
-  virtual void Change() override;
+  virtual void Changed() override;
   void UpdateControls();
 
 public:
@@ -4527,9 +4527,9 @@ void TRightsContainer::UpdateControls()
   }
 }
 
-void TRightsContainer::Change()
+void TRightsContainer::Changed()
 {
-  TFarDialogContainer::Change();
+  TFarDialogContainer::Changed();
 
   if (GetDialog()->GetHandle())
   {
@@ -5013,7 +5013,7 @@ protected:
 
   void ValidateMaskComboExit(TObject * Sender);
   void ValidateSpeedComboExit(TObject * Sender);
-  virtual void Change() override;
+  virtual void Changed() override;
   void UpdateControls();
 
 private:
@@ -5280,9 +5280,9 @@ void TCopyParamsContainer::UpdateControls()
   }
 }
 
-void TCopyParamsContainer::Change()
+void TCopyParamsContainer::Changed()
 {
-  TFarDialogContainer::Change();
+  TFarDialogContainer::Changed();
 
   if (GetDialog()->GetHandle())
   {

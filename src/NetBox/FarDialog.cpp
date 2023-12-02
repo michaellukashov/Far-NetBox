@@ -796,7 +796,7 @@ void TFarDialog::Change()
 
     for (int32_t Index = 0; Index < NotifiedContainers->GetCount(); ++Index)
     {
-      NotifiedContainers->GetAs<TFarDialogContainer>(Index)->Change();
+      NotifiedContainers->GetAs<TFarDialogContainer>(Index)->Changed();
     }
   }
 }
@@ -977,7 +977,7 @@ void TFarDialogContainer::SetPosition(int32_t AIndex, int32_t Value)
   }
 }
 
-void TFarDialogContainer::Change()
+void TFarDialogContainer::Changed()
 {
 }
 

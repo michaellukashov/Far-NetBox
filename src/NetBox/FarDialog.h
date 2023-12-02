@@ -70,7 +70,7 @@ public:
   HANDLE GetHandle() const { return FHandle; }
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
-  int32_t GetType(TFarDialogItem * Item) const;
+  // int32_t GetType(TFarDialogItem * Item) const;
   int32_t GetItem(TFarDialogItem * Item) const;
   TFarDialogItem * GetItem(int32_t Index) const;
   TFarDialogItem * GetControl(int32_t Index) const { return GetItem(Index); }
@@ -184,7 +184,7 @@ protected:
 
   void Add(TFarDialogItem * Item);
   void Remove(TFarDialogItem * Item);
-  virtual void Change();
+  virtual void Changed() override;
   UnicodeString GetMsg(intptr_t MsgId) const;
 
 private:
