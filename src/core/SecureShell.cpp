@@ -1472,7 +1472,7 @@ int32_t TSecureShell::TranslatePuttyMessage(
       {
         Message = FMTLOAD(Translation[Index].Translation,
           Message.SubString(PrefixLen + 1, Message.Length() - PrefixLen - SuffixLen).TrimRight());
-        Result = nb::ToInt32(Index);
+        Result = Index;
         break;
       }
     }
