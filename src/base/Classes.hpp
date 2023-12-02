@@ -878,7 +878,7 @@ public:
 
 protected:
   void SetPointer(void * Ptr, int64_t ASize);
-  virtual void * Realloc(int64_t & NewCapacity);
+  void * Realloc(int64_t & NewCapacity);
   int64_t GetCapacity() const { return FCapacity; }
 
 private:
