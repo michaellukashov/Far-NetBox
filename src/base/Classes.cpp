@@ -1740,7 +1740,7 @@ int32_t TRegistry::ReadInteger(const UnicodeString & Name) const
   {
     ReadError(Name);
   }
-  return Result;
+  return nb::ToInt32(Result);
 }
 
 int64_t TRegistry::ReadInt64(const UnicodeString & Name) const
