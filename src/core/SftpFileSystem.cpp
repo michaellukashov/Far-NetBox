@@ -3210,9 +3210,9 @@ void TSFTPFileSystem::DoStartup()
   {
     while (Packet1.GetNextData() != nullptr)
     {
-      UnicodeString ExtensionName = Packet1.GetAnsiString();
-      RawByteString ExtensionData = Packet1.GetRawByteString();
-      UnicodeString ExtensionDisplayData = DisplayableStr(ExtensionData);
+      const UnicodeString ExtensionName = Packet1.GetAnsiString();
+      const RawByteString ExtensionData = Packet1.GetRawByteString();
+      const UnicodeString ExtensionDisplayData = DisplayableStr(ExtensionData);
 
       if (ExtensionName == SFTP_EXT_NEWLINE)
       {
