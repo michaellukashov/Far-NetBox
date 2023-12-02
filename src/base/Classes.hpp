@@ -847,13 +847,13 @@ private:
 class NB_CORE_EXPORT EReadError : public std::runtime_error
 {
 public:
-  explicit EReadError(const char *Msg) noexcept : std::runtime_error(Msg) {}
+  explicit EReadError(const char * Msg) noexcept : std::runtime_error(Msg) {}
 };
 
 class NB_CORE_EXPORT EWriteError : public std::runtime_error
 {
 public:
-  explicit EWriteError(const char *Msg) noexcept : std::runtime_error(Msg) {}
+  explicit EWriteError(const char * Msg) noexcept : std::runtime_error(Msg) {}
 };
 
 class NB_CORE_EXPORT TMemoryStream : public TStream

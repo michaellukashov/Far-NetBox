@@ -1346,7 +1346,7 @@ intptr_t TFarDialogItem::ItemProc(intptr_t Msg, void * Param)
   }
   else if (Msg == DN_CONTROLINPUT)
   {
-    INPUT_RECORD * Rec = reinterpret_cast<INPUT_RECORD *>(Param);
+    INPUT_RECORD * Rec = static_cast<INPUT_RECORD *>(Param);
     MOUSE_EVENT_RECORD * Event = &Rec->Event.MouseEvent;
     if (FLAGCLEAR(Event->dwEventFlags, MOUSE_MOVED))
     {
@@ -1386,7 +1386,7 @@ intptr_t TFarDialogItem::DefaultItemProc(intptr_t Msg, void * Param)
   {
     TFarEnvGuard Guard; nb::used(Guard);
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
-        Msg, nb::ToInt32(GetItem()), Param);
+        Msg, nb::ToIntPtr(GetItem()), Param);
   }
   return 0;
 }
@@ -1397,7 +1397,7 @@ intptr_t TFarDialogItem::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void *
   {
     TFarEnvGuard Guard; nb::used(Guard);
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
-        Msg, nb::ToInt32(Param1), Param2);
+        Msg, Param1, Param2);
   }
   return 0;
 }

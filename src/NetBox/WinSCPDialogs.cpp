@@ -3293,8 +3293,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   FtpUndupFFCheck->SetChecked(SessionData->GetFtpUndupFF());
   SslSessionReuseCheck->SetChecked(SessionData->GetSslSessionReuse());
 
-  const TFtps Ftps = SessionData->GetFtps();
-  switch (Ftps)
+  switch (const TFtps Ftps = SessionData->GetFtps())
   {
   case ftpsNone:
     FtpEncryptionCombo->SetItemIndex(0);
@@ -5276,7 +5275,7 @@ void TCopyParamsContainer::UpdateControls()
   {
     IgnorePermErrorsCheck->SetEnabled(
       ((PreserveRightsCheck->GetEnabled() && PreserveRightsCheck->GetChecked()) ||
-        (PreserveTimeCheck->GetEnabled() && PreserveTimeCheck->GetChecked())) &&
+       (PreserveTimeCheck->GetEnabled() && PreserveTimeCheck->GetChecked())) &&
       FLAGCLEAR(FCopyParamAttrs, cpaNoIgnorePermErrors));
   }
 }
