@@ -397,7 +397,7 @@ void TCustomWinConfiguration::RecryptPasswords(TStrings * RecryptPasswordErrors)
     }
   }
 }
-//---------------------------------------------------------------------
+
 void TCustomWinConfiguration::AskForMasterPasswordIfNotSetAndNeededToPersistSessionData(
   TSessionData * SessionData)
 {

@@ -433,7 +433,7 @@ static UnicodeString ColorToRGBStr(TColor Color)
   UnicodeString Result = FORMAT(L"%.2x%.2x%.2x", (R, G, B));
   return Result;
 }
-//---------------------------------------------------------------------------
+
 class TStartupThread : public TSimpleThread
 {
 public:
@@ -450,30 +450,30 @@ protected:
   int FMilliseconds;
   bool FStop;
 };
-//---------------------------------------------------------------------------
+
 TStartupThread::TStartupThread()
 {
   FMilliseconds = 0;
   FStop = false;
   Start();
 }
-//---------------------------------------------------------------------------
+
 __fastcall TStartupThread::~TStartupThread()
 {
   Close();
 }
-//---------------------------------------------------------------------------
+
 int TStartupThread::GetStartupSeconds()
 {
   DebugAssert(!FStop);
   return FMilliseconds / 1000;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TStartupThread::Terminate()
 {
   FStop = true;
 }
-//---------------------------------------------------------------------------
+
 void __fastcall TStartupThread::Execute()
 {
   while (!FStop)
@@ -483,7 +483,7 @@ void __fastcall TStartupThread::Execute()
     FMilliseconds += Step;
   }
 }
-//---------------------------------------------------------------------------
+
 TStartupThread * StartupThread(new TStartupThread());
 TDateTime Started(Now());
 TDateTime LastStartupStartupSequence(Now());

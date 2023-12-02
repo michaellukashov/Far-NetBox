@@ -2378,7 +2378,7 @@ bool TShortCuts::Has(const TShortCut &ShortCut) const
   const nb::vector_t<TShortCut>::const_iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
   return (it != FShortCuts.end());
 }
-//---------------------------------------------------------------------------
+
 void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int32_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);

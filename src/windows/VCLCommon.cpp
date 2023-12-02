@@ -481,14 +481,14 @@ TWndMethod ControlWndProc(TWinControl * Control)
   TPublicWinControl * PublicWinControl = static_cast<TPublicWinControl *>(Control);
   return &PublicWinControl->WndProc;
 }
-//---------------------------------------------------------------------
+
 class TPublicControl : public TControl
 {
 friend void RealignControl(TControl * Control);
 friend void DoFormWindowProc(TCustomForm * Form, TWndMethod WndProc, TMessage & Message);
 friend TCanvas * CreateControlCanvas(TControl * Control);
 };
-//---------------------------------------------------------------------
+
 class TPublicForm : public TForm
 {
 friend void ChangeFormPixelsPerInch(TForm * Form, int PixelsPerInch);
