@@ -3489,7 +3489,7 @@ void TSFTPFileSystem::DoStartup()
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
       uint32_t MaxPacketSize = nb::ToUInt64(std::min(nb::ToInt64(std::numeric_limits<unsigned long>::max()), Packet.GetInt64()));
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to server's limit of %d + %d bytes",
-        (nb::ToInt32(MaxPacketSize), nb::ToInt32(PacketPayload))));
+        nb::ToInt32(MaxPacketSize), nb::ToInt32(PacketPayload)));
       FMaxPacketSize = MaxPacketSize + PacketPayload;
     }
     else if ((FSecureShell->GetSshImplementation() == sshiOpenSSH) && (FVersion == 3) && !FSupport->Loaded)
