@@ -1189,9 +1189,10 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueuePacket); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueuePacket) || TSFTPPacket::is(Kind); }
 public:
-  explicit TSFTPQueuePacket(uint32_t CodePage) noexcept :
-    TSFTPPacket(OBJECT_CLASS_TSFTPQueuePacket, CodePage)
+  explicit TSFTPQueuePacket(SSH_FXP_TYPE AType, uint32_t CodePage) noexcept :
+     TSFTPPacket(OBJECT_CLASS_TSFTPQueuePacket, CodePage)
   {
+    ChangeType(AType);
   }
 
   void * Token{nullptr};
@@ -1388,7 +1389,7 @@ protected:
 
   virtual bool SendRequest()
   {
-    std::unique_ptr<TSFTPQueuePacket> Request(std::make_unique<TSFTPQueuePacket>(FCodePage));
+    std::unique_ptr<TSFTPQueuePacket> Request(std::make_unique<TSFTPQueuePacket>(SSH_FXP_NONE, FCodePage));
     try__catch
     {
       if (!InitRequest(Request.get()))
