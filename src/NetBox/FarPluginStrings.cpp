@@ -2,6 +2,7 @@
 #include "FarPluginStrings.h"
 #include "TextsFileZilla.h"
 #include "TextsCore.h"
+#include "TextsWin.h"
 #include "rtlconsts.h"
 
 
