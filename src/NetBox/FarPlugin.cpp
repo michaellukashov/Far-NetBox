@@ -2961,25 +2961,31 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
 
 UnicodeString TGlobalFunctions::GetMsg(int32_t Id) const
 {
-  const HINSTANCE hInstance = GetInstanceHandle();
-  UnicodeString Result = ::LoadStrFrom(hInstance, Id);
-  if (!Result.IsEmpty())
-    return Result;
-
-  // map Id to PluginString value
-  int32_t PluginStringId = Id;
-  const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
-  while (CurFarPluginStrings && CurFarPluginStrings->Id)
+  UnicodeString Result;
+  if (FarPlugin != nullptr)
   {
-    if (CurFarPluginStrings->Id == Id)
+    // map Id to PluginString value
+    int32_t PluginStringId = Id;
+    const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
+    while (CurFarPluginStrings && CurFarPluginStrings->Id)
     {
-      PluginStringId = CurFarPluginStrings->FarPluginStringId;
-      break;
+      if (CurFarPluginStrings->Id == Id)
+      {
+        PluginStringId = CurFarPluginStrings->FarPluginStringId;
+        break;
+      }
+      ++CurFarPluginStrings;
     }
-    ++CurFarPluginStrings;
+  
+    Result = FarPlugin ? FarPlugin->GetMsg(PluginStringId) : UnicodeString();
   }
-  DebugAssert(FarPlugin != nullptr);
-  return FarPlugin ? FarPlugin->GetMsg(PluginStringId) : UnicodeString();
+
+  if (Result.IsEmpty())
+  {
+    const HINSTANCE Instance = GetInstanceHandle();
+    Result = ::LoadStrFrom(Instance, Id);
+  }
+  return Result;
 }
 
 UnicodeString TGlobalFunctions::GetCurrDirectory() const
