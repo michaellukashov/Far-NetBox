@@ -82,11 +82,7 @@ static int pthread_join(pthread_t th, void **p)
 
 static void *atomic_exchange_acq_rel_ptr(void **p, void *xchg)
 {
-#if defined(WIN64)
-  return (void *)_InterlockedExchange64((int64_t *)p, (int64_t)xchg);
-#else
-  return (void *)InterlockedExchange((long *)p, (long)xchg);
-#endif
+  return InterlockedExchangePointer(p, xchg);
 }
 
 static int get_cpu_count()

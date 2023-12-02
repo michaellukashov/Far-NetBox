@@ -1,19 +1,19 @@
 EXPORTS 
-   ClosePluginW
+   ClosePanelW
    ConfigureW
    DeleteFilesW
    ExitFARW
    FreeFindDataW
    GetFilesW
    GetFindDataW
-   GetMinFarVersionW
-   GetOpenPluginInfoW
+   GetGlobalInfoW
    GetPluginInfoW
+   GetOpenPanelInfoW
    MakeDirectoryW
-   OpenFilePluginW
-   OpenPluginW
-   ProcessKeyW
-   ProcessEventW
+   AnalyseW
+   OpenW
+   ProcessPanelInputW
+   ProcessPanelEventW
    ProcessHostFileW
    ProcessEditorEventW
    ProcessEditorInputW

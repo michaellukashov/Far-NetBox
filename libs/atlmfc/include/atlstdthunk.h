@@ -168,6 +168,40 @@ struct _stdcallthunk
 	}
 };
 #pragma pack(pop)
+#elif defined(_M_ARM64)
+PVOID __stdcall __AllocStdCallThunk(VOID);
+VOID  __stdcall __FreeStdCallThunk(PVOID);
+#pragma pack(push,4)
+struct _stdcallthunk {
+    ULONG   m_ldr_r16;      // ldr  x16, [pc, #24]
+    ULONG   m_ldr_r0;       // ldr  x0, [pc, #12]
+    ULONG   m_br;           // br   x16
+    ULONG   m_pad;
+    ULONG64	m_pThis;
+    ULONG64	m_pFunc;
+    BOOL Init(DWORD_PTR proc, void* pThis) {
+        m_ldr_r16 = 0x580000D0;
+        m_ldr_r0 = 0x58000060;
+        m_br = 0xd61f0200;
+        m_pThis = (ULONG64)pThis;
+        m_pFunc = (ULONG64)proc;
+        // write block from data cache and
+        //  flush from instruction cache
+        FlushInstructionCache(GetCurrentProcess(), this, sizeof(_stdcallthunk));
+        return TRUE;
+    }
+    void* GetCodeAddress() {
+        return (void *)((ULONG_PTR)this);
+    }
+    void* operator new(size_t)
+    {
+        return __AllocStdCallThunk();
+    }
+    void operator delete(void* pThunk) {
+        __FreeStdCallThunk(pThunk);
+    }
+};
+#pragma pack(pop)
 #elif defined(_ARM_)
 #pragma pack(push,4)
 struct _stdcallthunk // this should come out to 16 bytes
@@ -228,7 +262,7 @@ struct _stdcallthunk
 #pragma pack(pop)
 //IA64 thunks do not currently use the atlhunk.cpp allocator.
 #else
-#error Only ARM, ALPHA, SH3, MIPS, IA64, AMD64 and X86 supported
+#error Only ARM, ARM64, ALPHA, SH3, MIPS, IA64, AMD64 and X86 supported
 #endif
 
 

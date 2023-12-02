@@ -1013,6 +1013,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData *Data)
     {
       std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
       DebugAssert(Storage.get());
+      Storage->SetAccessMode(smRead);
       ADF("Configuration: %s", Storage->GetSource());
     }
 

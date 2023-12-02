@@ -11,6 +11,7 @@ enum TStorage
   stIniFile,
   stNul,
   stXmlFile,
+  stFar3Storage
 };
 
 enum TStorageAccessMode

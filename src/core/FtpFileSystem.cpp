@@ -1702,7 +1702,7 @@ void TFTPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
       try
       {
         SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,
-          OperationProgress, tfFirstLevel);
+          OperationProgress, FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0);
         Success = true;
         FLastDataSent = Now();
       }
@@ -2011,7 +2011,7 @@ void TFTPFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
           }
         }
         SourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
-          tfFirstLevel);
+          FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0);
         Success = true;
         FLastDataSent = Now();
       }
@@ -3394,7 +3394,14 @@ intptr_t TFTPFileSystem::GetOptionVal(intptr_t OptionID) const
     break;
 
   case OPTION_KEEPALIVE:
-    Result = ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
+    /* 
+    FIXME: Data may be NULL when called from CFtpControlSocket::OnTimer
+            in the data load thread (when the panel is closed immediately after
+            the end of download operations). On the good, it would be necessary
+            to "kill" the thread (or, although close the socket), but as a
+            temporary measure...
+    */
+    Result = ((Data && Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
     break;
 
   case OPTION_INTERVALLOW:
@@ -5023,17 +5030,18 @@ bool TFTPFileSystem::HandleListData(const wchar_t *Path,
 
         File->SetSize(Entry->Size);
 
-        if (Entry->Link)
-        {
-          File->SetType(FILETYPE_SYMLINK);
-        }
-        else if (Entry->Dir)
+        if (Entry->Dir)
         {
           File->SetType(FILETYPE_DIRECTORY);
         }
         else
         {
           File->SetType(FILETYPE_DEFAULT);
+        }
+
+        if (Entry->Link)
+        {
+          File->SetIsSymLink(true);
         }
 
         TDateTime Modification;

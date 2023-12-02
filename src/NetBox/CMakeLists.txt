@@ -1,5 +1,5 @@
 message(STATUS "CMake version: ${CMAKE_VERSION}")
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 
 set(OPT_COMPILE_OPENSSL ON CACHE STRING "Default build openSSL")
 set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
@@ -14,15 +14,15 @@ message("CMAKE_CL_64: ${CMAKE_CL_64}")
 message("MSVC10: ${MSVC10}")
 
 if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
-  set(FAR_VERSION Far2)
+  set(FAR_VERSION Far3)
 endif()
 
+if(NOT DEFINED PROJECT_PLATFORM OR PROJECT_PLATFORM STREQUAL "")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(x64 1)
   set(PROJECT_PLATFORM "x64")
 else()
-  set(x64 0)
   set(PROJECT_PLATFORM "x86")
+endif()
 endif()
 
 if(MSVC)
@@ -75,12 +75,8 @@ endif()
 
 set(NETBOX_C_FLAGS "")
 
-if(x64)
-set(NETBOX_PLATFORM_FLAGS "${NETBOX_PLATFORM_FLAGS} -DWIN64")
-else()
-if (MSVC_VERSION GREATER 1699)
+if(PROJECT_PLATFORM STREQUAL "x86")
 set(NETBOX_PLATFORM_FLAGS "${NETBOX_PLATFORM_FLAGS} /arch:IA32")
-endif()
 endif()
 
 if(MSVC)
@@ -191,7 +187,7 @@ set(NETBOX_DLL_LINK_FLAGS
 )
 #/DELAYLOAD:gdi32.dll
 
-set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF")
+set(NETBOX_DLL_LINK_FLAGS_RELEASE "/OPT:REF /MAP /debug /ltcg")
 set(NETBOX_DLL_LINK_FLAGS_DEBUG "/DEBUG")
 
 elseif(CMAKE_COMPILER_IS_MINGW)
@@ -210,17 +206,6 @@ include_directories(
 
 if(OPT_COMPILE_OPENSSL)
 
-if(x64)
-set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  -DOPENSSL_SYSNAME_WIN32 -DOPENSSL_SYSNAME_WIN64
-  -DMK1MF_PLATFORM_VC_WIN64A
-)
-else()
-set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  -DOPENSSL_SYSNAME_WIN32
-  -DMK1MF_PLATFORM_VC_WIN32
-)
-endif()
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN
   -DVC_EXTRALEAN -DSECURITY_WIN32 -DOPENSSL_NO_CAPIENG -DNO_CHMOD -DOPENSSL_NO_DGRAM -DOPENSSL_NO_RIJNDAEL
@@ -899,6 +884,7 @@ endif(OPT_COMPILE_OPENSSL)
 #-------------------------------------------------------------------------------
 #atlmfc
 
+
 set(ATLMFC_COMPILE_FLAGS
   -D_ATL_NO_DEBUG_CRT -D_ATL_NO_UUIDOF -D_ATL_NO_CONNECTION_POINTS -D_ATL_NO_DATETIME_RESOURCES_
   -D_ATL_NO_DEFAULT_LIBS -D_ATL_NO_PERF_SUPPORT -D_AFX_PORTABLE -D_ATL_NO_COMMODULE
@@ -1351,6 +1337,7 @@ set(NETBOX_SOURCES
   FarConfiguration.cpp
   FarInterface.cpp
   XmlStorage.cpp
+  Far3Storage.cpp
   FarPluginStrings.cpp
 )
 
@@ -1367,6 +1354,7 @@ set(NETBOX_SOURCES
   FarInterface.h
   FarConfiguration.h
   XmlStorage.h
+  Far3Storage.h
   FarUtils.h
   FarPluginStrings.h
 
@@ -1434,9 +1422,9 @@ set(NETBOX_SOURCES
   ../resource/HelpCore.h
   ../resource/TextsFileZilla.h
 
-  ../PluginSDK/Far2/plugin.hpp
-  ../PluginSDK/Far2/farcolor.hpp
-  ../PluginSDK/Far2/farkeys.hpp
+  ../PluginSDK/${FAR_VERSION}/plugin.hpp
+  ../PluginSDK/${FAR_VERSION}/farcolor.hpp
+  ../PluginSDK/${FAR_VERSION}/PluginSettings.hpp
 
   ../resource/TextsFileZilla.rc
   NetBox.rc
@@ -1446,12 +1434,14 @@ set(NETBOX_SOURCES
 add_custom_target(NETBOX_SOURCES SOURCES
   NetBoxEng.lng
   NetBoxRus.lng
+  NetBoxPol.lng
+  NetBoxSpa.lng
   resource.h.template
   NetBox.rc.template
 )
 
 if(MSVC)
-if(NOT x64)
+if(PROJECT_PLATFORM STREQUAL "x86")
 
 find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
@@ -1473,7 +1463,7 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
   ${ASM_OBJECTS}
 )
 
-endif(NOT x64)
+endif()
 endif(MSVC)
 
 set(NETBOX_LIBRARIES
@@ -1574,7 +1564,7 @@ add_custom_command(TARGET create_plugin_dir POST_BUILD
 )
 
 file(GLOB DIST_FILES
-  ${NETBOX_DIR}/*.lng
+  ${NETBOX_DIR}/*.lng ${PROJECT_ROOT}/ChangeLog
 #  ${BUILD_DIR}/*.dll
 #  ${BUILD_DIR}/*.pdb
 #  ${BUILD_DIR}/*.map

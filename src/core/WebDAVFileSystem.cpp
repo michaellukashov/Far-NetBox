@@ -1436,7 +1436,7 @@ void TWebDAVFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
           }
         }
         SourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
-          tfFirstLevel);
+          FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0);
         Success = true;
       }
       catch (ESkipFile &E)
@@ -1865,7 +1865,7 @@ void TWebDAVFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
       try
       {
         SinkRobust(AbsoluteFilePath, File, TargetDirectory, CopyParam, Params,
-          OperationProgress, tfFirstLevel);
+          OperationProgress, FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0);
         Success = true;
       }
       catch (ESkipFile &E)

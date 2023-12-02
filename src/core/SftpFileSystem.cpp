@@ -4554,7 +4554,7 @@ void TSFTPFileSystem::CopyToRemote(const TStrings *AFilesToCopy,
           }
         }
         SFTPSourceRobust(FileName, File, FullTargetDir, CopyParam, Params, OperationProgress,
-          tfFirstLevel);
+          FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0);
         Success = true;
       }
       catch (ESkipFile &E)
@@ -5806,7 +5806,7 @@ void TSFTPFileSystem::CopyToLocal(const TStrings *AFilesToCopy,
       try
       {
         SFTPSinkRobust(LocalCanonify(FileName), File, TargetDirectory, CopyParam,
-          Params, OperationProgress, tfFirstLevel);
+          Params, OperationProgress, FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0);
         Success = true;
       }
       catch (ESkipFile &E)

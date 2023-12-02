@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma warning(push, 1)
+#include <farcolor.hpp>
+#pragma warning(pop)
 #include "FarPlugin.h"
 
 #define MAX_SIZE -1
@@ -19,23 +22,20 @@ enum TItemPosition
 };
 
 #if 0
-typedef void __fastcall (__closure *TFarKeyEvent)
-(TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
+typedef void __fastcall (__closure *TFarKeyEvent)(TFarDialog *Sender, TFarDialogItem *Item, long KeyCode, bool &Handled);
 #endif // #if 0
 typedef nb::FastDelegate4<void,
-        TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
+  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/> TFarKeyEvent;
 #if 0
-typedef void __fastcall (__closure *TFarMouseClickEvent)
-(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
+typedef void __fastcall (__closure *TFarMouseClickEvent)(TFarDialogItem *Item, MOUSE_EVENT_RECORD *Event);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-        TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
+  TFarDialogItem * /*Item*/, MOUSE_EVENT_RECORD * /*Event*/> TFarMouseClickEvent;
 #if 0
-typedef void __fastcall (__closure *TFarProcessGroupEvent)
-(TFarDialogItem *Item, void *Arg);
+typedef void __fastcall (__closure *TFarProcessGroupEvent)(TFarDialogItem *Item, void *Arg);
 #endif // #if 0
 typedef nb::FastDelegate2<void,
-        TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
+  TFarDialogItem * /*Item*/, void * /*Arg*/> TFarProcessGroupEvent;
 
 class TFarDialog : public TObject
 {
@@ -60,8 +60,8 @@ public:
   TRect GetClientRect() const;
   UnicodeString GetHelpTopic() const { return FHelpTopic; }
   void SetHelpTopic(UnicodeString Value);
-  DWORD GetFlags() const { return FFlags; }
-  void SetFlags(DWORD Value);
+  FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
+  void SetFlags(const FARDIALOGITEMFLAGS Value);
   bool GetCentered() const;
   void SetCentered(bool Value);
   TPoint GetSize() const;
@@ -99,8 +99,8 @@ public:
   void Redraw();
   void LockChanges();
   void UnlockChanges();
-  uintptr_t GetSystemColor(intptr_t Index);
-  bool HotKey(uintptr_t Key) const;
+  FarColor GetSystemColor(PaletteColors colorId);
+  bool HotKey(uintptr_t Key, uintptr_t ControlState) const;
 
 protected:
   TCustomFarPlugin *GetFarPlugin() const { return FFarPlugin; }
@@ -109,10 +109,10 @@ protected:
   TObjectList *GetItems() { return FItems; }
   void Add(TFarDialogItem *DialogItem);
   void Add(TFarDialogContainer *Container);
-  LONG_PTR SendDlgMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
-  virtual LONG_PTR DialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
-  virtual LONG_PTR FailDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
-  LONG_PTR DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
+  intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void *Param2);
+  virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
+  virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
+  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
   virtual bool MouseEvent(MOUSE_EVENT_RECORD *Event);
   virtual bool Key(TFarDialogItem *Item, LONG_PTR KeyCode);
   virtual void Change();
@@ -131,14 +131,14 @@ protected:
   bool ChangesLocked() const;
   TFarDialogItem *ItemAt(intptr_t X, intptr_t Y);
 
-  static LONG_PTR WINAPI DialogProcGeneral(HANDLE Handle, int Msg, int Param1, LONG_PTR Param2);
+  static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void *Param2);
 
   virtual void SetBounds(const TRect &Value);
 
 private:
   mutable TCustomFarPlugin *FFarPlugin;
   TRect FBounds;
-  DWORD FFlags;
+  FARDIALOGITEMFLAGS FFlags;
   UnicodeString FHelpTopic;
   bool FVisible;
   TObjectList *FItems;
@@ -268,8 +268,8 @@ public:
   void UpdateData(UnicodeString Value);
   void UpdateSelected(intptr_t Value);
 
-  bool GetFlag(intptr_t Index) const;
-  void SetFlag(intptr_t Index, bool Value);
+  bool GetFlag(FARDIALOGITEMFLAGS Index) const;
+  void SetFlag(FARDIALOGITEMFLAGS Index, bool Value);
 
   virtual void DoFocus();
   virtual void DoExit();
@@ -278,13 +278,13 @@ public:
   void SetColor(intptr_t Index, char Value);
 
 protected:
-  uintptr_t FDefaultType;
+  FARDIALOGITEMTYPES FDefaultType;
   intptr_t FGroup;
   intptr_t FTag;
   TNotifyEvent FOnExit;
   TFarMouseClickEvent FOnMouseClick;
 
-  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, uintptr_t AType);
+  explicit TFarDialogItem(TObjectClassId Kind, TFarDialog *ADialog, FARDIALOGITEMTYPES AType);
   virtual ~TFarDialogItem();
 
   const FarDialogItem *GetDialogItem() const;
@@ -294,8 +294,8 @@ protected:
   virtual UnicodeString GetData() const;
   virtual UnicodeString GetData();
   virtual void SetData(UnicodeString Value);
-  intptr_t GetType() const;
-  void SetType(intptr_t Value);
+  FARDIALOGITEMTYPES GetType() const;
+  void SetType(FARDIALOGITEMTYPES Value);
   intptr_t GetItem() const { return FItem; }
   intptr_t GetSelected() const;
   void SetSelected(intptr_t Value);
@@ -304,9 +304,9 @@ protected:
   bool GetChecked() const;
   void SetChecked(bool Value);
   void SetBounds(const TRect &Value);
-  DWORD GetFlags() const;
-  void SetFlags(DWORD Value);
-  void UpdateFlags(DWORD Value);
+  FARDIALOGITEMFLAGS GetFlags() const;
+  void SetFlags(FARDIALOGITEMFLAGS Value);
+  void UpdateFlags(FARDIALOGITEMFLAGS Value);
   intptr_t GetCoordinate(intptr_t Index) const;
   void SetCoordinate(intptr_t Index, intptr_t Value);
   TFarDialogItem *GetPrevItem() const;
@@ -315,16 +315,17 @@ protected:
 
   virtual void Detach();
   void DialogResized();
-  LONG_PTR SendDialogMessage(int Msg, LONG_PTR Param);
-  LONG_PTR SendDialogMessage(int Msg, intptr_t Param1, LONG_PTR Param2);
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  LONG_PTR DefaultItemProc(int Msg, LONG_PTR Param);
-  LONG_PTR DefaultDialogProc(int Msg, intptr_t Param1, LONG_PTR Param2);
-  virtual LONG_PTR FailItemProc(int Msg, LONG_PTR Param);
+  intptr_t SendDialogMessage(intptr_t Msg, void *Param);
+  intptr_t SendDialogMessage(intptr_t Msg, intptr_t Param1, void *Param2);
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
+  intptr_t DefaultItemProc(intptr_t Msg, void *Param);
+  intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void *Param2);
+  virtual intptr_t FailItemProc(intptr_t Msg, void *Param);
   virtual void Change();
   void DialogChange();
-  bool GetAlterType(intptr_t Index) const;
-  bool GetAlterType(intptr_t Index);
+  bool GetAlterType(FARDIALOGITEMTYPES Index) const;
+  bool GetAlterType(FARDIALOGITEMTYPES Index);
+  void SetAlterType(FARDIALOGITEMTYPES Index, bool Value);
   void SetAlterType(intptr_t Index, bool Value);
   virtual void UpdateBounds();
   virtual void ResetBounds();
@@ -333,12 +334,13 @@ protected:
   virtual bool MouseMove(intptr_t X, intptr_t Y, MOUSE_EVENT_RECORD *Event);
   virtual bool MouseClick(MOUSE_EVENT_RECORD *Event);
   TPoint MouseClientPosition(MOUSE_EVENT_RECORD *Event);
-  void Text(intptr_t X, intptr_t Y, uintptr_t Color, UnicodeString Str);
+  void Text(intptr_t X, intptr_t Y, const FarColor &Color, UnicodeString Str);
   void Redraw();
   virtual bool HotKey(char HotKey);
 
 private:
   const struct PluginStartupInfo *GetPluginStartupInfo() const;
+
 
 private:
   TFarDialog *FDialog;
@@ -366,7 +368,8 @@ public:
 };
 
 typedef nb::FastDelegate2<void,
-        TFarButton * /*Sender*/, bool & /*Close*/> TFarButtonClickEvent;
+  TFarButton * /*Sender*/, bool & /*Close*/> TFarButtonClickEvent;
+
 enum TFarButtonBrackets
 {
   brNone,
@@ -403,7 +406,7 @@ public:
 
 protected:
   virtual void SetDataInternal(UnicodeString AValue) override;
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
   virtual bool HotKey(char HotKey) override;
 
 private:
@@ -413,7 +416,7 @@ private:
 };
 
 typedef nb::FastDelegate3<void,
-        TFarDialogItem * /*Sender*/, intptr_t /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
+  TFarDialogItem * /*Sender*/, void * /*NewState*/, bool & /*AllowChange*/> TFarAllowChangeEvent;
 
 class TFarCheckBox : public TFarDialogItem
 {
@@ -437,7 +440,7 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
   virtual bool GetIsEmpty() const override;
   virtual void SetData(UnicodeString Value) override;
 };
@@ -456,9 +459,9 @@ public:
 
 protected:
   TFarAllowChangeEvent FOnAllowChange;
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual bool GetIsEmpty() const;
-  virtual void SetData(UnicodeString Value);
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual bool GetIsEmpty() const override;
+  virtual void SetData(UnicodeString Value) override;
 };
 
 class TFarEdit : public TFarDialogItem
@@ -489,7 +492,7 @@ public:
   void SetReadOnly(bool Value) { SetFlag(DIF_READONLY, Value); }
 
 protected:
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
   virtual void Detach() override;
 
 private:
@@ -506,11 +509,11 @@ public:
   void SetDouble(bool Value);
   virtual UnicodeString GetCaption() { return GetData(); }
   virtual void SetCaption(UnicodeString Value) { SetData(Value); }
-  int GetPosition() const;
   void SetPosition(intptr_t Value);
+  intptr_t GetPosition() const;
 
 protected:
-  virtual void ResetBounds();
+  virtual void ResetBounds() override;
 };
 
 class TFarText : public TFarDialogItem
@@ -556,10 +559,10 @@ public:
   intptr_t GetTopIndex() const;
   void SetTopIndex(intptr_t Value);
   inline intptr_t GetSelectedInt(bool Init) const;
-  bool GetFlag(intptr_t Index, DWORD Flag) const;
-  void SetFlag(intptr_t Index, DWORD Flag, bool Value);
-  DWORD GetFlags(intptr_t Index) const;
-  void SetFlags(intptr_t Index, DWORD Value);
+  bool GetFlag(intptr_t Index, LISTITEMFLAGS Flag) const;
+  void SetFlag(intptr_t Index, LISTITEMFLAGS Flag, bool Value);
+  LISTITEMFLAGS GetFlags(intptr_t Index) const;
+  void SetFlags(intptr_t Index, LISTITEMFLAGS Value);
   intptr_t GetMaxLength() const;
   intptr_t GetVisibleCount() const;
   bool GetDisabled(intptr_t Index) const { return GetFlag(Index, LIF_DISABLE); }
@@ -569,7 +572,7 @@ public:
 
 protected:
   virtual void Changed() override;
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param);
   virtual void Init();
   void UpdatePosition(intptr_t Position);
   intptr_t GetPosition() const;
@@ -622,7 +625,7 @@ public:
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
 protected:
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param) override;
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
   virtual void Init() override;
   virtual bool CloseQuery() override;
 
@@ -661,8 +664,8 @@ public:
   void SetItemIndex(intptr_t Index) { FList->SetSelected(Index); }
 
 protected:
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual void Init();
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual void Init() override;
 
 private:
   TFarList *FList;
@@ -682,8 +685,8 @@ public:
   bool GetScrollBar() const;
 
 protected:
-  virtual LONG_PTR ItemProc(int Msg, LONG_PTR Param);
-  virtual void DoFocus();
+  virtual intptr_t ItemProc(intptr_t Msg, void *Param) override;
+  virtual void DoFocus() override;
 
 private:
   void ItemsChange(TObject *Sender);

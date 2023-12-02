@@ -22,9 +22,9 @@ extern "C" {
  * OpenSSL was configured with the following options:
  */
 
-#ifdef WIN64
-#ifndef OPENSSL_SYS_WIN64A
-# define OPENSSL_SYS_WIN64A 1
+#ifdef _WIN64
+#ifndef OPENSSL_SYS_WIN64
+# define OPENSSL_SYS_WIN64 1
 #endif
 #else
 #ifndef OPENSSL_SYS_WIN32
@@ -199,7 +199,7 @@ extern "C" {
 /*
  * The following are cipher-specific, but are part of the public API.
  */
-#ifdef WIN64
+#ifdef _WIN64
 #if !defined(OPENSSL_SYS_UEFI)
 # undef BN_LLONG
 /* Only one for the following should be defined */

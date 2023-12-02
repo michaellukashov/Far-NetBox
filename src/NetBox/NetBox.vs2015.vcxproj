@@ -78,7 +78,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
+    <OutDir>..\..\Far3_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -86,20 +86,20 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
+    <OutDir>..\..\Far3_x64\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\</IntDir>
     <TargetName>NetBox</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Far2_x86\Plugins\NetBox\</OutDir>
+    <OutDir>..\..\Far3_x86\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc15\$(SolutionName)\$(Configuration)\x86\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>NetBox</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\Far2_x64\Plugins\NetBox\</OutDir>
+    <OutDir>..\..\Far3_x64\Plugins\NetBox\</OutDir>
     <IntDir>..\..\build\vc15\$(SolutionName)\$(Configuration)\x64\</IntDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>NetBox</TargetName>
@@ -110,7 +110,7 @@
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog</AdditionalIncludeDirectories>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -139,7 +139,7 @@
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;WIN64;_DEBUG;_WINDOWS;_WINDLL;_USRDLL;NETBOX_DEBUG;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -169,7 +169,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -211,7 +211,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>NB_CORE_EXPORTS;WINSCP;FARPLUGIN;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;_WINSOCK_DEPRECATED_NO_WARNINGS;NOGDI;WIN32;WIN64;NDEBUG;_WINDOWS;_WINDLL;_USRDLL;MPEXT;STRICT;NE_LFS;NE_HAVE_SSL;HAVE_OPENSSL;OPENSSL_NO_LOCKING;HAVE_EXPAT;HAVE_EXPAT_H;NE_HAVE_DAV;NE_HAVE_ZLIB;XML_STATIC;USE_DLMALLOC;USE_DL_PREFIX;_ATL_NO_COMMODULE;_ATL_NO_PERF_SUPPORT;_ATL_NO_DATETIME_RESOURCES_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far2;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.;..\include;..\..\libs\atlmfc\include;..\core;..\base;..\resource;..\windows;..\..\libs\Putty;..\..\libs\Putty\windows;..\..\libs\Putty\charset;..\PluginSDK\Far3;..\..\libs;..\..\libs\openssl\include;..\filezilla;..\filezilla\misc;..\..\libs\tinyxml2;..\..\libs\neon\src;..\..\libs\expat\lib;..\..\libs\dlmalloc;..\..\libs\rdestl;..\..\libs\fmt;..\..\libs\tinylog</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MinimalRebuild>false</MinimalRebuild>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
@@ -296,6 +296,7 @@
     <ClCompile Include="..\windows\SynchronizeController.cpp" />
     <ClCompile Include="..\windows\Tools.cpp" />
     <ClCompile Include="..\windows\WinInterface.cpp" />
+    <ClCompile Include="Far3Storage.cpp" />
     <ClCompile Include="FarConfiguration.cpp" />
     <ClCompile Include="FarDialog.cpp" />
     <ClCompile Include="FarInterface.cpp" />

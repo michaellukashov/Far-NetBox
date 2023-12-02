@@ -8,41 +8,41 @@ class TXmlStorage : public THierarchicalStorage
 {
 public:
   explicit TXmlStorage(UnicodeString AStorage, UnicodeString StoredSessionsSubKey);
-  virtual void Init();
+  virtual void Init() override;
   virtual ~TXmlStorage();
 
   bool Copy(TXmlStorage *Storage);
 
-  virtual void CloseSubKey();
-  virtual bool DeleteSubKey(UnicodeString SubKey);
-  virtual void GetSubKeyNames(TStrings *Strings);
-  virtual bool ValueExists(UnicodeString Value) const;
-  virtual bool DeleteValue(UnicodeString Name);
-  virtual size_t BinaryDataSize(UnicodeString Name) const;
-  virtual UnicodeString GetSource() const;
-  virtual UnicodeString GetSource();
+  virtual void CloseSubKey() override;
+  virtual bool DeleteSubKey(UnicodeString SubKey) override;
+  virtual void GetSubKeyNames(TStrings *Strings) override;
+  virtual bool ValueExists(UnicodeString Value) const override;
+  virtual bool DeleteValue(UnicodeString Name) override;
+  virtual size_t BinaryDataSize(UnicodeString Name) const override;
+  virtual UnicodeString GetSource() const override;
+  virtual UnicodeString GetSource() override;
 
-  virtual bool ReadBool(UnicodeString Name, bool Default) const;
-  virtual intptr_t ReadInteger(UnicodeString Name, intptr_t Default) const;
-  virtual int64_t ReadInt64(UnicodeString Name, int64_t Default) const;
-  virtual TDateTime ReadDateTime(UnicodeString Name, const TDateTime &Default) const;
-  virtual double ReadFloat(UnicodeString Name, double Default) const;
-  virtual UnicodeString ReadStringRaw(UnicodeString Name, UnicodeString Default) const;
-  virtual size_t ReadBinaryData(UnicodeString Name, void *Buffer, size_t Size) const;
+  virtual bool ReadBool(UnicodeString Name, bool Default) const override;
+  virtual intptr_t ReadInteger(UnicodeString Name, intptr_t Default) const override;
+  virtual int64_t ReadInt64(UnicodeString Name, int64_t Default) const override;
+  virtual TDateTime ReadDateTime(UnicodeString Name, const TDateTime &Default) const override;
+  virtual double ReadFloat(UnicodeString Name, double Default) const override;
+  virtual UnicodeString ReadStringRaw(UnicodeString Name, UnicodeString Default) const override;
+  virtual size_t ReadBinaryData(UnicodeString Name, void *Buffer, size_t Size) const override;
 
-  virtual void WriteBool(UnicodeString Name, bool Value);
-  virtual void WriteInteger(UnicodeString Name, intptr_t Value);
-  virtual void WriteInt64(UnicodeString Name, int64_t Value);
-  virtual void WriteDateTime(UnicodeString Name, const TDateTime &Value);
-  virtual void WriteFloat(UnicodeString Name, double Value);
-  virtual void WriteStringRaw(UnicodeString Name, UnicodeString Value);
-  virtual void WriteBinaryData(UnicodeString Name, const void *Buffer, size_t Size);
+  virtual void WriteBool(UnicodeString Name, bool Value) override;
+  virtual void WriteInteger(UnicodeString Name, intptr_t Value) override;
+  virtual void WriteInt64(UnicodeString Name, int64_t Value) override;
+  virtual void WriteDateTime(UnicodeString Name, const TDateTime &Value) override;
+  virtual void WriteFloat(UnicodeString Name, double Value) override;
+  virtual void WriteStringRaw(UnicodeString Name, UnicodeString Value) override;
+  virtual void WriteBinaryData(UnicodeString Name, const void *Buffer, size_t Size) override;
 
-  virtual void GetValueNames(TStrings *Strings) const;
+  virtual void GetValueNames(TStrings *Strings) const override;
 
-  virtual void SetAccessMode(TStorageAccessMode Value);
-  virtual bool DoKeyExists(UnicodeString SubKey, bool ForceAnsi);
-  virtual bool DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate);
+  virtual void SetAccessMode(TStorageAccessMode Value) override;
+  virtual bool DoKeyExists(UnicodeString SubKey, bool ForceAnsi) override;
+  virtual bool DoOpenSubKey(UnicodeString MungedSubKey, bool CanCreate) override;
 
 protected:
   intptr_t GetFailed();
