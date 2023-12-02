@@ -103,7 +103,7 @@ class TTabbedDialog : public TWinSCPDialog
   friend class TTabButton;
 public:
   explicit TTabbedDialog(TCustomFarPlugin * AFarPlugin, int32_t TabCount) noexcept;
-  virtual ~TTabbedDialog() = default;
+  virtual ~TTabbedDialog() override = default;
 
   int32_t GetTab() const { return FTab; }
 
