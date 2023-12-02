@@ -415,8 +415,8 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   ../../libs/openssl-3/crypto/bf/libcrypto-lib-bf-586.obj.asm
   ../../libs/openssl-3/crypto/bn/libcrypto-lib-x86-mont.obj.asm
   ../../libs/openssl-3/crypto/bn/libcrypto-lib-x86-gf2m.obj.asm
-  ../../libs/openssl-3/crypto/bn/libcrypto-lib-co-586.obj.asm
-  ../../libs/openssl-3/crypto/bn/libcrypto-lib-bn-586.obj.asm
+  # ../../libs/openssl-3/crypto/bn/libcrypto-lib-co-586.obj.asm
+  # ../../libs/openssl-3/crypto/bn/libcrypto-lib-bn-586.obj.asm
   ../../libs/openssl-3/crypto/camellia/libcrypto-lib-cmll-x86.obj.asm
   ../../libs/openssl-3/crypto/cast/libcrypto-lib-cast-586.obj.asm
   # ../../libs/openssl-3/crypto/chacha/libcrypto-lib-chacha-x86.obj.asm
@@ -521,7 +521,6 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/sha/sha3.c
   ../../libs/openssl-3/crypto/sha/sha256.c
   ../../libs/openssl-3/crypto/sha/sha512.c
-  # ../../libs/openssl-3/crypto/sha/keccak1600.c
   ../../libs/openssl-3/crypto/hmac/hmac.c
   ../../libs/openssl-3/crypto/ripemd/rmd_dgst.c
   ../../libs/openssl-3/crypto/hmac/hm_ameth.c
@@ -570,13 +569,14 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/aes/aes_ofb.c
   ../../libs/openssl-3/crypto/aes/aes_ige.c
   ../../libs/openssl-3/crypto/aes/aes_wrap.c
+  ../../libs/openssl-3/crypto/bn/bn_asm.c
   ../../libs/openssl-3/crypto/bn/bn_add.c
   ../../libs/openssl-3/crypto/bn/bn_div.c
   ../../libs/openssl-3/crypto/bn/bn_exp.c
   ../../libs/openssl-3/crypto/bn/bn_lib.c
   ../../libs/openssl-3/crypto/bn/bn_ctx.c
-  ../../libs/openssl-3/crypto/bn/bn_mul.c
   ../../libs/openssl-3/crypto/bn/bn_mod.c
+  ../../libs/openssl-3/crypto/bn/bn_mul.c
   ../../libs/openssl-3/crypto/bn/bn_print.c
   ../../libs/openssl-3/crypto/bn/bn_rand.c
   ../../libs/openssl-3/crypto/bn/bn_shift.c
@@ -588,7 +588,6 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/bn/bn_prime.c
   ../../libs/openssl-3/crypto/bn/bn_err.c
   ../../libs/openssl-3/crypto/bn/bn_sqr.c
-  ../../libs/openssl-3/crypto/bn/bn_asm.c
   ../../libs/openssl-3/crypto/bn/bn_recp.c
   ../../libs/openssl-3/crypto/bn/bn_mont.c
   ../../libs/openssl-3/crypto/bn/bn_mpi.c
@@ -1300,6 +1299,7 @@ set(libeay32_c_files ${libeay32_c_files}
 )
 else()
 set(libeay32_c_files ${libeay32_c_files}
+  ../../libs/openssl-3/crypto/sha/keccak1600.c
   # ../../libs/openssl-3/crypto/rc4/rc4_enc.c
   # ../../libs/openssl-3/crypto/rc4/rc4_skey.c
   # ../../libs/openssl-3/crypto/des/des_enc.c
