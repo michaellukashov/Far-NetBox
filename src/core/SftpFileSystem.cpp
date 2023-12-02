@@ -3424,7 +3424,6 @@ void TSFTPFileSystem::DoStartup()
     FSignedTS = false;
   }
 
-  const TSessionInfo &Info = GetSessionInfo();
   switch (GetSessionData()->GetNotUtf())
   {
     case asOff:
@@ -3474,7 +3473,7 @@ void TSFTPFileSystem::DoStartup()
       TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
       Packet.AddString(RawByteString(SFTP_EXT_LIMITS));
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
-      uint32_t MaxPacketSize = nb::ToUInt64(std::min(nb::ToInt64(std::numeric_limits<unsigned long>::max()), Packet.GetInt64()));
+      uint32_t MaxPacketSize = nb::ToUInt32(std::min(std::numeric_limits<int64_t>::max(), Packet.GetInt64()));
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to server's limit of %d + %d bytes",
         nb::ToInt32(MaxPacketSize), nb::ToInt32(PacketPayload)));
       FMaxPacketSize = MaxPacketSize + PacketPayload;
@@ -3487,7 +3486,7 @@ void TSFTPFileSystem::DoStartup()
     }
     // full string is "1.77 sshlib: Momentum SSH Server",
     // possibly it is sshlib-related
-    else if (Info.SshImplementation.Pos(L"Momentum SSH Server") != 0)
+    else if (GetSessionInfo().SshImplementation.Pos(L"Momentum SSH Server") != 0)
     {
       FMaxPacketSize = PacketPayload + (32 * 1024);
       FTerminal->LogEvent(FORMAT("Limiting packet size to Momentum sftp-server limit of %d bytes",
