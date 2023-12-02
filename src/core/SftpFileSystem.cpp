@@ -32,6 +32,7 @@ constexpr SSH_FX_TYPE
   SSH_FX_OP_UNSUPPORTED = 8;
 
 constexpr SSH_FXP_TYPE
+  SSH_FXP_NONE = 0,
   SSH_FXP_INIT = 1,
   SSH_FXP_VERSION = 2,
   SSH_FXP_OPEN = 3,
@@ -240,55 +241,41 @@ NB_DEFINE_CLASS_ID(TSFTPPacket);
 class TSFTPPacket : public TObject
 {
   TSFTPPacket() = delete;
+  explicit TSFTPPacket(uint32_t CodePage) noexcept = delete;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPPacket); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPPacket) || TObject::is(Kind); }
 public:
-  explicit TSFTPPacket(uint32_t CodePage) noexcept :
-    TObject(OBJECT_CLASS_TSFTPPacket)
-  {
-    Init(CodePage);
-  }
-
   explicit TSFTPPacket(TObjectClassId Kind, uint32_t CodePage) noexcept :
     TObject(Kind)
   {
     Init(CodePage);
   }
 
-  explicit TSFTPPacket(const TSFTPPacket & Source) noexcept :
-    TObject(OBJECT_CLASS_TSFTPPacket)
+  explicit TSFTPPacket(const TSFTPPacket & Source) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, Source.FCodePage)
   {
     this->operator=(Source);
   }
 
-  explicit TSFTPPacket(const TSFTPPacket & Source, uint32_t CodePage) noexcept :
-    TObject(OBJECT_CLASS_TSFTPPacket)
+  explicit TSFTPPacket(const TSFTPPacket & Source, uint32_t CodePage) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, CodePage)
   {
-    Init(CodePage);
     *this = Source;
   }
 
-  explicit TSFTPPacket(SSH_FXP_TYPE AType, uint32_t CodePage) noexcept :
-    TObject(OBJECT_CLASS_TSFTPPacket)
+  explicit TSFTPPacket(SSH_FXP_TYPE AType, uint32_t CodePage) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, CodePage)
   {
-    Init(CodePage);
     ChangeType(AType);
   }
 
-  explicit TSFTPPacket(const uint8_t * Source, uint32_t Len, uint32_t CodePage) noexcept :
-    TObject(OBJECT_CLASS_TSFTPPacket)
+  explicit TSFTPPacket(const uint8_t * Source, uint32_t Len, uint32_t CodePage) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, CodePage)
   {
-    Init(CodePage);
     FLength = Len;
     SetCapacity(FLength);
     memmove(GetData(), Source, Len);
   }
 
-  explicit TSFTPPacket(const RawByteString & Source, uint32_t CodePage) noexcept :
-    TObject(OBJECT_CLASS_TSFTPPacket)
+  explicit TSFTPPacket(const RawByteString & Source, uint32_t CodePage) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, CodePage)
   {
-    Init(CodePage);
     FLength = nb::ToUInt32(Source.Length());
     SetCapacity(FLength);
     memmove(GetData(), Source.c_str(), Source.Length());
@@ -1014,8 +1001,8 @@ private:
   uint32_t FLength{0};
   uint32_t FCapacity{0};
   mutable uint32_t FPosition{0};
-  SSH_FXP_TYPE FType{0};
-  uint32_t FMessageNumber{0};
+  SSH_FXP_TYPE FType{SSH_FXP_NONE};
+  uint32_t FMessageNumber{SFTPNoMessageNumber};
   TSFTPFileSystem * FReservedBy{nullptr};
 
   static uint32_t FMessageCounter;
@@ -1417,7 +1404,7 @@ protected:
 
     if (Request != nullptr)
     {
-      TSFTPPacket * Response = new TSFTPPacket(FCodePage);
+      TSFTPPacket * Response = new TSFTPPacket(SSH_FXP_NONE, FCodePage);
       FRequests->Add(Request.get());
       FResponses->Add(Response);
 
@@ -2734,7 +2721,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
       {
         // Reset packet in case it was filled by previous out-of-order
         // reserved packet
-        *Packet = TSFTPPacket(FCodePage);
+        *Packet = TSFTPPacket(SSH_FXP_NONE, FCodePage);
       }
       else
       {
@@ -2887,7 +2874,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceiveResponse(
 {
   SSH_FX_TYPE Result;
   const uint32_t MessageNumber = Packet->GetMessageNumber();
-  TSFTPPacket * Response = (AResponse ? AResponse : new TSFTPPacket(FCodePage));
+  TSFTPPacket * Response = (AResponse ? AResponse : new TSFTPPacket(SSH_FXP_NONE, FCodePage));
   try__finally
   {
     Result = ReceivePacket(Response, ExpectedType, AllowStatus, TryOnly);
@@ -3484,8 +3471,8 @@ void TSFTPFileSystem::DoStartup()
     uint32_t PacketPayload = 4;
     if (SupportsLimits)
     {
-      TSFTPPacket Packet(SSH_FXP_EXTENDED);
-      Packet.AddString(SFTP_EXT_LIMITS);
+      TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
+      Packet.AddString(RawByteString(SFTP_EXT_LIMITS));
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
       uint32_t MaxPacketSize = nb::ToUInt64(std::min(nb::ToInt64(std::numeric_limits<unsigned long>::max()), Packet.GetInt64()));
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to server's limit of %d + %d bytes",
@@ -3512,7 +3499,7 @@ void TSFTPFileSystem::DoStartup()
 
   if (SupportsExtension(SFTP_EXT_VENDOR_ID))
   {
-    TSFTPPacket Packet(SSH_FXP_EXTENDED);
+    TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
     Packet.AddString(SFTP_EXT_VENDOR_ID);
     Packet.AddString(FTerminal->Configuration->GetCompanyName());
     Packet.AddString(FTerminal->Configuration->GetProductName());
@@ -3683,7 +3670,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
     throw;
   }
 
-  TSFTPPacket Response(FCodePage);
+  TSFTPPacket Response(SSH_FXP_NONE, FCodePage);
   try__finally
   {
     bool isEOF = false;
@@ -4035,7 +4022,7 @@ void TSFTPFileSystem::DoCloseRemoteIfOpened(const RawByteString & Handle)
 {
   if (!Handle.IsEmpty())
   {
-    TSFTPPacket Packet(SSH_FXP_CLOSE);
+    TSFTPPacket Packet(SSH_FXP_CLOSE, FCodePage);
     Packet.AddString(Handle);
     SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
   }
@@ -4050,7 +4037,7 @@ void TSFTPFileSystem::RemoteCopyFile(
 
   if (SupportsExtension(SFTP_EXT_COPY_FILE) || (FSecureShell->FSshImplementation == sshiBitvise))
   {
-    TSFTPPacket Packet(SSH_FXP_EXTENDED);
+    TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
     Packet.AddString(SFTP_EXT_COPY_FILE);
     AddPathString(Packet, FileNameCanonical);
     AddPathString(Packet, NewNameCanonical, Encrypted);
@@ -4071,7 +4058,7 @@ void TSFTPFileSystem::RemoteCopyFile(
       // So using SSH_FXF_EXCL for consistency.
       DestRemoteHandle = SFTPOpenRemoteFile(NewNameCanonical, SSH_FXF_WRITE | SSH_FXF_CREAT | SSH_FXF_EXCL, Encrypted, Size);
 
-      TSFTPPacket Packet(SSH_FXP_EXTENDED);
+      TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
       Packet.AddString(SFTP_EXT_COPY_DATA);
       Packet.AddString(SourceRemoteHandle);
       Packet.AddInt64(0);
@@ -4277,7 +4264,7 @@ bool TSFTPFileSystem::LoadFilesProperties(TStrings * AFileList)
       if (Queue.Init(LoadFilesPropertiesQueueLen, AFileList))
       {
         TRemoteFile * File = nullptr;
-        TSFTPPacket Packet(FCodePage);
+        TSFTPPacket Packet(SSH_FXP_NONE, FCodePage);
         bool Next;
         do
         {
@@ -4337,7 +4324,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
 
     if (Queue.Init(CalculateFilesChecksumQueueLen, SftpAlg, FileList))
     {
-      TSFTPPacket Packet(FCodePage);
+      TSFTPPacket Packet(SSH_FXP_NONE, FCodePage);
       bool Next;
       do
       {
@@ -4912,14 +4899,14 @@ void TSFTPFileSystem::Source(
 
   bool TransferFinished = false;
   // int64_t DestWriteOffset = 0;
-  TSFTPPacket CloseRequest(FCodePage);
+  TSFTPPacket CloseRequest(SSH_FXP_NONE, FCodePage);
   bool PreserveRights = CopyParam->PreserveRights && (CopyParam->FOnTransferIn.empty());
   bool PreserveExistingRights = (DoResume && DestFileExists) || OpenParams.Recycled;
   bool SetRights = (PreserveExistingRights || PreserveRights);
   bool PreserveTime = CopyParam->PreserveTime && (CopyParam->FOnTransferIn.empty());
   bool SetProperties = (PreserveTime || SetRights);
   TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT, FCodePage);
-  TSFTPPacket PropertiesResponse(FCodePage);
+  TSFTPPacket PropertiesResponse(SSH_FXP_NONE, FCodePage);
   TRights Rights;
   if (SetProperties)
   {
@@ -5113,7 +5100,7 @@ void TSFTPFileSystem::Source(
       {
         try
         {
-          TSFTPPacket DummyResponse(FCodePage);
+          TSFTPPacket DummyResponse(SSH_FXP_NONE, FCodePage);
           TSFTPPacket * Response = &PropertiesResponse;
           if (Resend)
           {
@@ -5440,7 +5427,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
   {
     try
     {
-      TSFTPPacket CloseRequest(FCodePage);
+      TSFTPPacket CloseRequest(SSH_FXP_NONE, FCodePage);
       TSFTPPacket * P = (Packet == nullptr) ? &CloseRequest : Packet;
 
       if (Request)
@@ -5726,7 +5713,7 @@ void TSFTPFileSystem::Sink(
       TSFTPDownloadQueue Queue(this, FCodePage);
       try__finally
       {
-        TSFTPPacket DataPacket(FCodePage);
+        TSFTPPacket DataPacket(SSH_FXP_NONE, FCodePage);
 
         int32_t QueueLen = nb::ToInt32(OperationProgress->TransferSize / DownloadBlockSize(OperationProgress)) + 1;
         if ((QueueLen > GetSessionData()->GetSFTPDownloadQueue()) ||
