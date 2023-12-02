@@ -1004,7 +1004,7 @@ public:
   uint8_t * GetData() const { return FData; }
   uint32_t GetCapacity() const { return FCapacity; }
   SSH_FXP_TYPE GetType() const { return FType; }
-  uint32_t GetMessageNumber() const { return nb::ToUInt32(FMessageNumber); }
+  uint32_t GetMessageNumber() const { return FMessageNumber; }
   void SetMessageNumber(uint32_t Value) { FMessageNumber = Value; }
   TSFTPFileSystem * GetReservedBy() const { return FReservedBy; }
   void SetReservedBy(TSFTPFileSystem * Value) { FReservedBy = Value; }
@@ -1098,7 +1098,7 @@ public:
 
   UnicodeString GetTypeName() const
   {
-    #define TYPE_CASE(TYPE) case TYPE: return MB_TEXT(#TYPE)
+    #define TYPE_CASE(TYPE) case (TYPE): return MB_TEXT(#TYPE)
     switch (GetType()) {
       TYPE_CASE(SSH_FXP_INIT);
       TYPE_CASE(SSH_FXP_VERSION);
@@ -2478,7 +2478,7 @@ void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
     FTerminal->LogEvent(FORMAT(L"Skipped %s packets", S));
   }
   FTerminal->Log->Add(
-    Type, FORMAT(L"Type: %s, Size: %d, Number: %d", Packet->TypeName(), nb::ToInt32(Packet->GetLength()), nb::ToInt32(Packet->GetMessageNumber())));
+    Type, FORMAT(L"Type: %s, Size: %d, Number: %d", Packet->TypeName(), nb::ToInt32(Packet->GetLength()), Packet->GetMessageNumber()));
   if (FTerminal->Configuration->ActualLogProtocol >= 2)
   {
     FTerminal->Log->Add(Type, Packet->Dump());
