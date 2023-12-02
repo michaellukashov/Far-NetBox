@@ -388,7 +388,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
 
 #define BLOCK(KEY, CANCREATE, BLOCK) \
   if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
-    { SCOPE_EXIT { Storage->CloseSubKeyPath(); }; { BLOCK } }
+    { try__finally { BLOCK } __finally { Storage->CloseSubKeyPath(); } end_try__finally }
 #undef KEY4
 #undef KEY3
 #undef KEY2

@@ -9367,13 +9367,16 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   [&]()
   {
     HANDLE LocalFileHandle;
-    SCOPE_EXIT
+    try__finally
+    {
+      this->TerminalOpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr,
+        &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
+      THROWOSIFFALSE(::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime));
+    }
+    __finally
     {
       SAFE_CLOSE_HANDLE(LocalFileHandle);
-    };
-    this->TerminalOpenLocalFile(LocalFileName, GENERIC_WRITE, nullptr,
-      &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
-    THROWOSIFFALSE(::SetFileTime(LocalFileHandle, nullptr, AcTime, WrTime));
+    } end_try__finally
   });
 }
 
