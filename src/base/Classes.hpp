@@ -690,27 +690,27 @@ public:
   static TTimeSpan Subtract(const TDateTime D1, const TDateTime D2);
   static TTimeSpan Parse(const UnicodeString & S);
   static bool TryParse(const UnicodeString & S, const TTimeSpan & Value);
-  static TTimeSpan Add(const TTimeSpan Left, const TTimeSpan Right);
-  static TDateTime Add(const TTimeSpan Left, const TDateTime Right);
-  static TDateTime Add(const TDateTime Left, const TTimeSpan Right);
-  static TTimeSpan Subtract(const TTimeSpan Left, const TTimeSpan Right);
-  static TDateTime Subtract(const TDateTime Left, const TTimeSpan Right);
-  static bool Equal(const TTimeSpan Left, const TTimeSpan Right);
-  static bool NotEqual(const TTimeSpan Left, const TTimeSpan Right);
-  static bool GreaterThan(const TTimeSpan Left, const TTimeSpan Right);
-  static bool GreaterThanOrEqual(const TTimeSpan Left, const TTimeSpan Right);
-  static bool LessThan(const TTimeSpan Left, const TTimeSpan Right);
-  static bool LessThanOrEqual(const TTimeSpan Left, const TTimeSpan Right) { return Left.FTicks <= Right.FTicks; }
+  static TTimeSpan Add(const TTimeSpan & Left, const TTimeSpan & Right);
+  static TDateTime Add(const TTimeSpan & Left, const TDateTime & Right);
+  static TDateTime Add(const TDateTime & Left, const TTimeSpan & Right);
+  static TTimeSpan Subtract(const TTimeSpan & Left, const TTimeSpan & Right);
+  static TDateTime Subtract(const TDateTime & Left, const TTimeSpan & Right);
+  static bool Equal(const TTimeSpan & Left, const TTimeSpan & Right);
+  static bool NotEqual(const TTimeSpan & Left, const TTimeSpan & Right);
+  static bool GreaterThan(const TTimeSpan & Left, const TTimeSpan & Right);
+  static bool GreaterThanOrEqual(const TTimeSpan & Left, const TTimeSpan & Right);
+  static bool LessThan(const TTimeSpan & Left, const TTimeSpan & Right);
+  static bool LessThanOrEqual(const TTimeSpan & Left, const TTimeSpan & Right) { return Left.FTicks <= Right.FTicks; }
   bool operator ==(const TTimeSpan & rhs) const { return TTimeSpan::Equal(*this, rhs); }
   bool operator !=(const TTimeSpan & rhs) const { return TTimeSpan::NotEqual(*this, rhs); }
   bool operator >(const TTimeSpan & rhs) const { return TTimeSpan::GreaterThan(*this, rhs); }
   bool operator >=(const TTimeSpan & rhs) const { return TTimeSpan::GreaterThanOrEqual(*this, rhs); }
   bool operator <(const TTimeSpan & rhs) const { return TTimeSpan::LessThan(*this, rhs); }
   bool operator <=(const TTimeSpan & rhs) const { return TTimeSpan::LessThanOrEqual(*this, rhs); }
-  static TTimeSpan Negative(const TTimeSpan Value);
-  static TTimeSpan Positive(const TTimeSpan Value);
-  static UnicodeString Implicit(const TTimeSpan Value);
-  static UnicodeString Explicit(const TTimeSpan Value);
+  static TTimeSpan Negative(const TTimeSpan & Value);
+  static TTimeSpan Positive(const TTimeSpan & Value);
+  static UnicodeString Implicit(const TTimeSpan & Value);
+  static UnicodeString Explicit(const TTimeSpan & Value);
   ROProperty<int64_t> Ticks{nb::bind(&TTimeSpan::GetTicks, this)};
   ROProperty<int32_t> Days{nb::bind(&TTimeSpan::GetDays, this)};
   ROProperty<int32_t> Hours{nb::bind(&TTimeSpan::GetHours, this)};
