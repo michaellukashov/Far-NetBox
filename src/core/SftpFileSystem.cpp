@@ -182,16 +182,16 @@ constexpr SSH_FX_TYPE asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 constexpr SSH_FX_TYPE asAll = static_cast<SSH_FX_TYPE>(0xFFFF);
 
 #define GET_32BIT(cp) \
-    (((unsigned long)(unsigned char)(cp)[0] << 24) | \
-    ((unsigned long)(unsigned char)(cp)[1] << 16) | \
-    ((unsigned long)(unsigned char)(cp)[2] << 8) | \
-    ((unsigned long)(unsigned char)(cp)[3]))
+    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[0])) << 24) | \
+    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[1])) << 16) | \
+    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[2])) << 8) | \
+    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[3])))
 
 #define PUT_32BIT(cp, value) { \
-    (cp)[0] = (unsigned char)((value) >> 24); \
-    (cp)[1] = (unsigned char)((value) >> 16); \
-    (cp)[2] = (unsigned char)((value) >> 8); \
-    (cp)[3] = (unsigned char)(value); }
+    (cp)[0] = static_cast<uint8_t>((value) >> 24); \
+    (cp)[1] = static_cast<uint8_t>((value) >> 16); \
+    (cp)[2] = static_cast<uint8_t>((value) >> 8); \
+    (cp)[3] = static_cast<uint8_t>(value); }
 
 constexpr uint32_t SFTP_PACKET_ALLOC_DELTA = 256;
 
