@@ -75,7 +75,7 @@ set(NETBOX_DEFS ${NETBOX_DEFS} -DFASTDELEGATE_ALLOW_FUNCTION_TYPE_SYNTAX)
 set(NETBOX_DEFS ${NETBOX_DEFS} -DUSE_DLMALLOC -DUSE_DL_PREFIX -DNO_MALLINFO -DUSE_LOCKS=1)
 set(NETBOX_DEFS ${NETBOX_DEFS} -DHIDE_TODO)
 set(NETBOX_DEFS ${NETBOX_DEFS} -DNEED_LIBS3)
-set(NETBOX_DEFS ${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT -DOPENSSL_NO_LOCKING)
+set(NETBOX_DEFS ${NETBOX_DEFS} -DNO_GZIP -DSTRICT -DNOCRYPT)
 set(NETBOX_DEFS ${NETBOX_DEFS} -D_WIN32_WINNT=0x0501 -D_LIB -D_WINDOWS -DWIN32 -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS)
 set(NETBOX_DEFS ${NETBOX_DEFS} -D_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING -D_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS -D_DISABLE_VECTOR_ANNOTATION)
 set(NETBOX_DEFS ${NETBOX_DEFS} -DCOM_NO_WINDOWS_H)
@@ -260,8 +260,19 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
 endif()
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN
-  -DVC_EXTRALEAN -DSECURITY_WIN32 -DOPENSSL_NO_CAPIENG -DNO_CHMOD -DOPENSSL_NO_DGRAM -DOPENSSL_NO_RIJNDAEL
+  -DVC_EXTRALEAN -DSECURITY_WIN32 # -DOPENSSL_NO_LOCKING
+  -DOPENSSL_NO_CAPIENG -DNO_CHMOD -DOPENSSL_NO_DGRAM
+  -DOPENSSL_NO_RIJNDAEL
   -DDSO_WIN32
+  -DMD5_ASM -DSHA1_ASM -DSHA256_ASM -DSHA512_ASM -DRMD160_ASM
+  # -DOPENSSL_BN_ASM_PART_WORDS -DOPENSSL_BN_ASM_MONT -DOPENSSL_BN_ASM_GF2m
+  -DRSAZ_ENABLED -DOPENSSL_BN_ASM_MONT # -DBN_MUL_COMBA
+  -DOPENSSL_NO_CAMELLIA -DOPENSSL_NO_RC5 -DOPENSSL_NO_MDC2 -DOPENSSL_NO_WHIRLPOOL
+  -DOPENSSL_NO_SEED -DOPENSSL_NO_CAPIENG -DOPENSSL_NO_ENGINE
+  -DOPENSSL_NO_SEED -DOPENSSL_NO_CAPIENG -DOPENSSL_NO_ENGINE # -DOPENSSL_NO_ZLIB
+  -DOPENSSL_NO_QUIC -DOPENSSL_NO_BROTLI -DOPENSSL_NO_COMP -DOPENSSL_NO_COMP_ALG
+  -DNO_INTERLOCKEDOR64
+  -DWINSCP
 )
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DOPENSSL_THREADS -DOPENSSL_NO_DYNAMIC_ENGINE
@@ -274,9 +285,10 @@ set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DWIN32_LEAN_AND_MEAN
   -DL_ENDIAN -DDSO_WIN32 -D_stricmp=stricmp -D_strnicmp=strnicmp
   -DBN_ASM -DMD5_ASM -DSHA1_ASM -DOPENSSL_NO_CAMELLIA -DOPENSSL_NO_SEED -DOPENSSL_NO_RC5 -DOPENSSL_NO_MDC2
-  -DOPENSSL_NO_CAPIENG -DOPENSSL_NO_KRB5 -DOPENSSL_NO_ENGINE -DOPENSSL_NO_DYNAMIC_ENGINE
-  -DOPENSSL_DISABLE_OLD_DES_SUPPORT -DNO_CHMOD -DOPENSSL_NO_DGRAM -DDOPENSSL_NO_EC_NISTP_64_GCC_128
-  -DOPENSSL_NO_WHIRLPOOL -DWINSCP -DMK1MF_BUILD -DMK1MF_PLATFORM_BC_NT
+  -DOPENSSL_NO_CAPIENG -DOPENSSL_NO_KRB5
+  -DOPENSSL_NO_ENGINE -DOPENSSL_NO_DYNAMIC_ENGINE
+  -DOPENSSL_DISABLE_OLD_DES_SUPPORT # -DDOPENSSL_NO_EC_NISTP_64_GCC_128
+  # -DOPENSSL_NO_WHIRLPOOL -DMK1MF_BUILD -DMK1MF_PLATFORM_BC_NT
   -DOPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
 )
 #-O2
@@ -289,28 +301,17 @@ endif()
 
 add_library(ssleay32 STATIC
   ../../libs/openssl-3/ssl/pqueue.c
-  ../../libs/openssl-3/ssl/statem/statem_srvr.c
-  ../../libs/openssl-3/ssl/statem/statem_clnt.c
   ../../libs/openssl-3/ssl/ssl_rsa_legacy.c
-  ../../libs/openssl-3/ssl/s3_cbc.c
+  # ../../libs/openssl-3/ssl/s3_cbc.c
   ../../libs/openssl-3/ssl/s3_lib.c
   ../../libs/openssl-3/ssl/s3_enc.c
-  ../../libs/openssl-3/ssl/record/rec_layer_s3.c
-  ../../libs/openssl-3/ssl/record/tls_pad.c
-  ../../libs/openssl-3/ssl/statem/statem_lib.c
-  ../../libs/openssl-3/ssl/statem/extensions.c
-  ../../libs/openssl-3/ssl/statem/extensions_srvr.c
-  ../../libs/openssl-3/ssl/statem/extensions_clnt.c
-  ../../libs/openssl-3/ssl/statem/extensions_cust.c
   ../../libs/openssl-3/ssl/s3_msg.c
   ../../libs/openssl-3/ssl/methods.c
   ../../libs/openssl-3/ssl/t1_lib.c
   ../../libs/openssl-3/ssl/t1_enc.c
   ../../libs/openssl-3/ssl/tls13_enc.c
   ../../libs/openssl-3/ssl/d1_lib.c
-  ../../libs/openssl-3/ssl/record/rec_layer_d1.c
   ../../libs/openssl-3/ssl/d1_msg.c
-  ../../libs/openssl-3/ssl/statem/statem_dtls.c
   ../../libs/openssl-3/ssl/d1_srtp.c
   ../../libs/openssl-3/ssl/ssl_lib.c
   ../../libs/openssl-3/ssl/ssl_cert.c
@@ -329,12 +330,33 @@ add_library(ssleay32 STATIC
   ../../libs/openssl-3/ssl/tls_srp.c
   ../../libs/openssl-3/ssl/t1_trce.c
   ../../libs/openssl-3/ssl/ssl_utst.c
-  ../../libs/openssl-3/ssl/record/ssl3_buffer.c
-  ../../libs/openssl-3/ssl/record/ssl3_record.c
-  ../../libs/openssl-3/ssl/record/dtls1_bitmap.c
-  ../../libs/openssl-3/ssl/statem/statem.c
-  ../../libs/openssl-3/ssl/record/ssl3_record_tls13.c
   ../../libs/openssl-3/ssl/tls_depr.c
+  ../../libs/openssl-3/ssl/ssl_cert_comp.c
+  ../../libs/openssl-3/ssl/record/methods/ssl3_cbc.c
+  ../../libs/openssl-3/ssl/record/methods/tls_pad.c
+  ../../libs/openssl-3/ssl/record/methods/dtls_meth.c
+  ../../libs/openssl-3/ssl/record/methods/tls_common.c
+  ../../libs/openssl-3/ssl/record/methods/tlsany_meth.c
+  ../../libs/openssl-3/ssl/record/methods/tls13_meth.c
+  ../../libs/openssl-3/ssl/record/methods/tls1_meth.c
+  ../../libs/openssl-3/ssl/record/methods/ssl3_meth.c
+  ../../libs/openssl-3/ssl/record/methods/tls_multib.c
+  ../../libs/openssl-3/ssl/record/rec_layer_s3.c
+  ../../libs/openssl-3/ssl/record/rec_layer_d1.c
+  # ../../libs/openssl-3/ssl/record/tls_pad.c
+  # ../../libs/openssl-3/ssl/record/ssl3_buffer.c
+  # ../../libs/openssl-3/ssl/record/ssl3_record.c
+  # ../../libs/openssl-3/ssl/record/dtls1_bitmap.c
+  # ../../libs/openssl-3/ssl/record/ssl3_record_tls13.c
+  ../../libs/openssl-3/ssl/statem/statem_lib.c
+  ../../libs/openssl-3/ssl/statem/statem_srvr.c
+  ../../libs/openssl-3/ssl/statem/statem_clnt.c
+  ../../libs/openssl-3/ssl/statem/extensions.c
+  ../../libs/openssl-3/ssl/statem/extensions_srvr.c
+  ../../libs/openssl-3/ssl/statem/extensions_clnt.c
+  ../../libs/openssl-3/ssl/statem/extensions_cust.c
+  ../../libs/openssl-3/ssl/statem/statem_dtls.c
+  ../../libs/openssl-3/ssl/statem/statem.c
 )
 
 target_compile_options(ssleay32 PRIVATE
@@ -355,23 +377,35 @@ target_include_directories(ssleay32 SYSTEM BEFORE PRIVATE
 set(libeay32_obj_files )
 if(x64)
 compile_asm_files(RESULT libeay32_obj_files ASM_FILES
+  # ../../libs/openssl-3/crypto/x86_64cpuid.asm
+  ../../libs/openssl-3/crypto/sha/sha512-x86_64.asm
+  ../../libs/openssl-3/crypto/sha/sha256-x86_64.asm
+  ../../libs/openssl-3/crypto/sha/sha256-mb-x86_64.asm
   ../../libs/openssl-3/crypto/sha/sha1-x86_64.asm
   ../../libs/openssl-3/crypto/sha/sha1-mb-x86_64.asm
-  ../../libs/openssl-3/crypto/sha/sha256-x86_64.asm
-  ../../libs/openssl-3/crypto/sha/sha512-x86_64.asm
+  ../../libs/openssl-3/crypto/sha/keccak1600-x86_64.asm
   ../../libs/openssl-3/crypto/md5/md5-x86_64.asm
   ../../libs/openssl-3/crypto/ec/x25519-x86_64.asm
   ../../libs/openssl-3/crypto/ec/ecp_nistz256-x86_64.asm
   ../../libs/openssl-3/crypto/poly1305/poly1305-x86_64.asm
-  ../../libs/openssl-3/crypto/aes/aes-x86_64.asm
-  ../../libs/openssl-3/crypto/aes/aesni-mb-x86_64.asm
-  ../../libs/openssl-3/crypto/aes/aesni-sha1-x86_64.asm
-  ../../libs/openssl-3/crypto/aes/aesni-sha256-x86_64.asm
-  ../../libs/openssl-3/crypto/aes/aesni-x86_64.asm
-  ../../libs/openssl-3/crypto/aes/bsaes-x86_64.asm
   ../../libs/openssl-3/crypto/aes/vpaes-x86_64.asm
+  ../../libs/openssl-3/crypto/aes/bsaes-x86_64.asm
+  ../../libs/openssl-3/crypto/aes/aesni-x86_64.asm
+  ../../libs/openssl-3/crypto/aes/aesni-sha256-x86_64.asm
+  ../../libs/openssl-3/crypto/aes/aesni-sha1-x86_64.asm
+  ../../libs/openssl-3/crypto/aes/aesni-mb-x86_64.asm
+  ../../libs/openssl-3/crypto/aes/aes-x86_64.asm
+  ../../libs/openssl-3/crypto/bn/x86_64-mont5.asm
+  ../../libs/openssl-3/crypto/bn/x86_64-mont.asm
+  ../../libs/openssl-3/crypto/bn/x86_64-gf2m.asm
   ../../libs/openssl-3/crypto/bn/rsaz-x86_64.asm
+  ../../libs/openssl-3/crypto/bn/rsaz-avx2.asm
+  ../../libs/openssl-3/crypto/bn/rsaz-4k-avx512.asm
+  ../../libs/openssl-3/crypto/bn/rsaz-3k-avx512.asm
+  ../../libs/openssl-3/crypto/bn/rsaz-2k-avx512.asm
+  ../../libs/openssl-3/crypto/modes/ghash-x86_64.asm
   ../../libs/openssl-3/crypto/modes/aesni-gcm-x86_64.asm
+  ../../libs/openssl-3/crypto/modes/aes-gcm-avx512.asm
 )
 else()
 compile_asm_files(RESULT libeay32_obj_files ASM_FILES
@@ -381,7 +415,8 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   ../../libs/openssl-3/crypto/bf/libcrypto-lib-bf-586.obj.asm
   ../../libs/openssl-3/crypto/bn/libcrypto-lib-x86-mont.obj.asm
   ../../libs/openssl-3/crypto/bn/libcrypto-lib-x86-gf2m.obj.asm
-  # ../../libs/openssl-3/crypto/bn/libcrypto-lib-co-586.obj.asm
+  ../../libs/openssl-3/crypto/bn/libcrypto-lib-co-586.obj.asm
+  ../../libs/openssl-3/crypto/bn/libcrypto-lib-bn-586.obj.asm
   ../../libs/openssl-3/crypto/camellia/libcrypto-lib-cmll-x86.obj.asm
   ../../libs/openssl-3/crypto/cast/libcrypto-lib-cast-586.obj.asm
   # ../../libs/openssl-3/crypto/chacha/libcrypto-lib-chacha-x86.obj.asm
@@ -414,13 +449,12 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/threads_none.c
   ../../libs/openssl-3/crypto/initthread.c
   ../../libs/openssl-3/crypto/context.c
-  ../../libs/openssl-3/crypto/provider_conf.c
+  ../../libs/openssl-3/crypto/params_idx.c
   ../../libs/openssl-3/crypto/sparse_array.c
   ../../libs/openssl-3/crypto/asn1_dsa.c
   ../../libs/openssl-3/crypto/packet.c
   ../../libs/openssl-3/crypto/param_build.c
   ../../libs/openssl-3/crypto/param_build_set.c
-  ../../libs/openssl-3/crypto/der_writer.c
   ../../libs/openssl-3/crypto/threads_lib.c
   ../../libs/openssl-3/crypto/params_dup.c
   ../../libs/openssl-3/crypto/o_str.c
@@ -443,15 +477,21 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/init.c
   ../../libs/openssl-3/crypto/trace.c
   ../../libs/openssl-3/crypto/provider.c
+  ../../libs/openssl-3/crypto/provider_conf.c
   ../../libs/openssl-3/crypto/provider_child.c
+  ../../libs/openssl-3/crypto/provider_predefined.c
   ../../libs/openssl-3/crypto/punycode.c
   ../../libs/openssl-3/crypto/passphrase.c
   ../../libs/openssl-3/crypto/provider_core.c
-  ../../libs/openssl-3/crypto/provider_predefined.c
   ../../libs/openssl-3/crypto/core_fetch.c
   ../../libs/openssl-3/crypto/core_algorithm.c
   ../../libs/openssl-3/crypto/core_namemap.c
   ../../libs/openssl-3/crypto/self_test_core.c
+  ../../libs/openssl-3/crypto/params_idx.c
+  ../../libs/openssl-3/crypto/der_writer.c
+  ../../libs/openssl-3/crypto/sleep.c
+  ../../libs/openssl-3/crypto/deterministic_nonce.c
+  ../../libs/openssl-3/crypto/time.c
   ../../libs/openssl-3/crypto/encode_decode/encoder_meth.c
   ../../libs/openssl-3/crypto/encode_decode/encoder_lib.c
   ../../libs/openssl-3/crypto/encode_decode/encoder_pkey.c
@@ -475,12 +515,13 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/modes/ctr128.c
   ../../libs/openssl-3/crypto/modes/ocb128.c
   ../../libs/openssl-3/crypto/modes/siv128.c
+  ../../libs/openssl-3/crypto/modes/xts128gb.c
   ../../libs/openssl-3/crypto/sha/sha1dgst.c
   ../../libs/openssl-3/crypto/sha/sha1_one.c
   ../../libs/openssl-3/crypto/sha/sha3.c
   ../../libs/openssl-3/crypto/sha/sha256.c
   ../../libs/openssl-3/crypto/sha/sha512.c
-  ../../libs/openssl-3/crypto/sha/keccak1600.c
+  # ../../libs/openssl-3/crypto/sha/keccak1600.c
   ../../libs/openssl-3/crypto/hmac/hmac.c
   ../../libs/openssl-3/crypto/ripemd/rmd_dgst.c
   ../../libs/openssl-3/crypto/hmac/hm_ameth.c
@@ -561,6 +602,8 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/bn/bn_srp.c
   ../../libs/openssl-3/crypto/bn/bn_conv.c
   ../../libs/openssl-3/crypto/bn/bn_rsa_fips186_4.c
+  ../../libs/openssl-3/crypto/bn/rsaz_exp.c
+  ../../libs/openssl-3/crypto/bn/rsaz_exp_x2.c
   ../../libs/openssl-3/crypto/rsa/rsa_ossl.c
   ../../libs/openssl-3/crypto/rsa/rsa_gen.c
   ../../libs/openssl-3/crypto/rsa/rsa_lib.c
@@ -646,24 +689,27 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/bio/bf_nbio.c
   ../../libs/openssl-3/crypto/bio/bf_prefix.c
   ../../libs/openssl-3/crypto/bio/bf_readbuff.c
+  ../../libs/openssl-3/crypto/bio/bss_dgram.c
+  ../../libs/openssl-3/crypto/bio/bss_dgram_pair.c
   ../../libs/openssl-3/crypto/stack/stack.c
   ../../libs/openssl-3/crypto/lhash/lhash.c
   ../../libs/openssl-3/crypto/lhash/lh_stats.c
-  ../../libs/openssl-3/crypto/rand/prov_seed.c
-  ../../libs/openssl-3/crypto/rand/rand_deprecated.c
-  ../../libs/openssl-3/crypto/rand/rand_egd.c
-  ../../libs/openssl-3/crypto/rand/rand_err.c
   ../../libs/openssl-3/crypto/rand/rand_lib.c
+  ../../libs/openssl-3/crypto/rand/rand_err.c
+  ../../libs/openssl-3/crypto/rand/rand_egd.c
   ../../libs/openssl-3/crypto/rand/rand_win.c
-  ../../libs/openssl-3/crypto/rand/rand_local.h
-  ../../libs/openssl-3/crypto/rand/rand_meth.c
   ../../libs/openssl-3/crypto/rand/rand_pool.c
+  ../../libs/openssl-3/crypto/rand/rand_meth.c
   ../../libs/openssl-3/crypto/rand/prov_seed.c
-  ../../libs/openssl-3/crypto/err/err_blocks.c
+  ../../libs/openssl-3/crypto/rand/rand_uniform.c
+  # ../../libs/openssl-3/crypto/rand/rand_deprecated.c
   ../../libs/openssl-3/crypto/err/err.c
   ../../libs/openssl-3/crypto/err/err_all.c
-  ../../libs/openssl-3/crypto/err/err_all_legacy.c
   ../../libs/openssl-3/crypto/err/err_prn.c
+  ../../libs/openssl-3/crypto/err/err_blocks.c
+  ../../libs/openssl-3/crypto/err/err_mark.c
+  ../../libs/openssl-3/crypto/err/err_save.c
+  # ../../libs/openssl-3/crypto/err/err_all_legacy.c
   ../../libs/openssl-3/crypto/objects/o_names.c
   ../../libs/openssl-3/crypto/objects/obj_dat.c
   ../../libs/openssl-3/crypto/objects/obj_lib.c
@@ -732,7 +778,7 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/evp/e_chacha20_poly1305.c
   ../../libs/openssl-3/crypto/evp/legacy_sha.c
   ../../libs/openssl-3/crypto/evp/ctrl_params_translate.c
-  ../../libs/openssl-3/crypto/evp/cmeth_lib.c
+  # ../../libs/openssl-3/crypto/evp/cmeth_lib.c
   ../../libs/openssl-3/crypto/evp/dh_ctrl.c
   ../../libs/openssl-3/crypto/evp/dsa_ctrl.c
   ../../libs/openssl-3/crypto/evp/ec_ctrl.c
@@ -854,16 +900,21 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/x509/x_attrib.c
   ../../libs/openssl-3/crypto/x509/x_exten.c
   ../../libs/openssl-3/crypto/x509/x_name.c
+  ../../libs/openssl-3/crypto/x509/v3err.c
+  ../../libs/openssl-3/crypto/x509/pcy_cache.c
+  ../../libs/openssl-3/crypto/x509/pcy_node.c
+  ../../libs/openssl-3/crypto/x509/pcy_data.c
+  ../../libs/openssl-3/crypto/x509/pcy_map.c
+  ../../libs/openssl-3/crypto/x509/pcy_tree.c
+  ../../libs/openssl-3/crypto/x509/pcy_lib.c
   ../../libs/openssl-3/crypto/x509/v3_bcons.c
   ../../libs/openssl-3/crypto/x509/v3_bitst.c
   ../../libs/openssl-3/crypto/x509/v3_conf.c
   ../../libs/openssl-3/crypto/x509/v3_extku.c
   ../../libs/openssl-3/crypto/x509/v3_ia5.c
-  ../../libs/openssl-3/crypto/x509/v3_utf8.c
   ../../libs/openssl-3/crypto/x509/v3_lib.c
   ../../libs/openssl-3/crypto/x509/v3_prn.c
   ../../libs/openssl-3/crypto/x509/v3_utl.c
-  ../../libs/openssl-3/crypto/x509/v3err.c
   ../../libs/openssl-3/crypto/x509/v3_genn.c
   ../../libs/openssl-3/crypto/x509/v3_san.c
   ../../libs/openssl-3/crypto/x509/v3_skid.c
@@ -882,17 +933,18 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/x509/v3_ncons.c
   ../../libs/openssl-3/crypto/x509/v3_pcia.c
   ../../libs/openssl-3/crypto/x509/v3_pci.c
-  ../../libs/openssl-3/crypto/x509/v3_ist.c
-  ../../libs/openssl-3/crypto/x509/pcy_cache.c
-  ../../libs/openssl-3/crypto/x509/pcy_node.c
-  ../../libs/openssl-3/crypto/x509/pcy_data.c
-  ../../libs/openssl-3/crypto/x509/pcy_map.c
-  ../../libs/openssl-3/crypto/x509/pcy_tree.c
-  ../../libs/openssl-3/crypto/x509/pcy_lib.c
   ../../libs/openssl-3/crypto/x509/v3_asid.c
   ../../libs/openssl-3/crypto/x509/v3_addr.c
   ../../libs/openssl-3/crypto/x509/v3_tlsf.c
   ../../libs/openssl-3/crypto/x509/v3_admis.c
+  ../../libs/openssl-3/crypto/x509/v3_utf8.c
+  ../../libs/openssl-3/crypto/x509/v3_ist.c
+  ../../libs/openssl-3/crypto/x509/v3_no_rev_avail.c
+  ../../libs/openssl-3/crypto/x509/v3_soa_id.c
+  ../../libs/openssl-3/crypto/x509/v3_ind_iss.c
+  ../../libs/openssl-3/crypto/x509/v3_no_ass.c
+  ../../libs/openssl-3/crypto/x509/v3_single_use.c
+  ../../libs/openssl-3/crypto/x509/v3_group_ac.c
   ../../libs/openssl-3/crypto/conf/conf_err.c
   ../../libs/openssl-3/crypto/conf/conf_lib.c
   ../../libs/openssl-3/crypto/conf/conf_api.c
@@ -995,6 +1047,7 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/ec/curve448/f_generic.c
   # ../../libs/openssl-3/crypto/ec/curve448/arch_64/f_impl64.c
   ../../libs/openssl-3/crypto/ec/curve448/arch_32/f_impl.c
+  ../../libs/openssl-3/crypto/ec/curve448/arch_32/f_impl32.c
   ../../libs/openssl-3/crypto/ec/ecdsa_vrf.c
   ../../libs/openssl-3/crypto/ec/ec_ameth.c
   ../../libs/openssl-3/crypto/cms/cms_sd.c
@@ -1070,6 +1123,10 @@ set(libeay32_c_files
   ../../libs/openssl-3/crypto/ffc/ffc_key_validate.c
   ../../libs/openssl-3/crypto/ffc/ffc_dh.c
   ../../libs/openssl-3/crypto/ffc/ffc_backend.c
+  ../../libs/openssl-3/crypto/hpke/hpke_util.c
+  ../../libs/openssl-3/crypto/thread/internal.c
+  ../../libs/openssl-3/crypto/thread/arch.c
+  ../../libs/openssl-3/crypto/thread/arch/thread_win.c
   ../../libs/openssl-3/providers/prov_running.c
   ../../libs/openssl-3/providers/nullprov.c
   ../../libs/openssl-3/providers/baseprov.c
@@ -1139,6 +1196,9 @@ set(libeay32_c_files
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_siv_hw.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_gcm.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_gcm_hw.c
+  ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_gcm_siv.c
+  ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_gcm_siv_hw.c
+  ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_gcm_siv_polyval.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_ccm.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_ccm_hw.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_aes_wrp.c
@@ -1162,6 +1222,8 @@ set(libeay32_c_files
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_sm4_ccm_hw.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_sm4_gcm_hw.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_sm4_hw.c
+  ../../libs/openssl-3/providers/implementations/ciphers/cipher_sm4_xts.c
+  ../../libs/openssl-3/providers/implementations/ciphers/cipher_sm4_xts_hw.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_chacha20.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_chacha20_hw.c
   ../../libs/openssl-3/providers/implementations/ciphers/cipher_chacha20_poly1305.c
@@ -1186,6 +1248,8 @@ set(libeay32_c_files
   ../../libs/openssl-3/providers/implementations/kdfs/sskdf.c
   ../../libs/openssl-3/providers/implementations/kdfs/tls1_prf.c
   ../../libs/openssl-3/providers/implementations/kdfs/x942kdf.c
+  ../../libs/openssl-3/providers/implementations/kdfs/hmacdrbg_kdf.c
+  ../../libs/openssl-3/providers/implementations/kdfs/argon2.c
   ../../libs/openssl-3/providers/implementations/exchange/dh_exch.c
   ../../libs/openssl-3/providers/implementations/exchange/ecdh_exch.c
   ../../libs/openssl-3/providers/implementations/exchange/ecx_exch.c
@@ -1199,6 +1263,9 @@ set(libeay32_c_files
   ../../libs/openssl-3/providers/implementations/asymciphers/rsa_enc.c
   ../../libs/openssl-3/providers/implementations/asymciphers/sm2_enc.c
   ../../libs/openssl-3/providers/implementations/kem/rsa_kem.c
+  ../../libs/openssl-3/providers/implementations/kem/ec_kem.c
+  ../../libs/openssl-3/providers/implementations/kem/kem_util.c
+  ../../libs/openssl-3/providers/implementations/kem/ecx_kem.c
   ../../libs/openssl-3/providers/implementations/keymgmt/dh_kmgmt.c
   ../../libs/openssl-3/providers/implementations/keymgmt/dsa_kmgmt.c
   ../../libs/openssl-3/providers/implementations/keymgmt/ec_kmgmt.c
@@ -1219,6 +1286,7 @@ set(libeay32_c_files
   ../../libs/openssl-3/providers/implementations/encode_decode/endecoder_common.c
   ../../libs/openssl-3/providers/implementations/storemgmt/file_store.c
   ../../libs/openssl-3/providers/implementations/storemgmt/file_store_any2obj.c
+  ../../libs/openssl-3/providers/implementations/storemgmt/winstore_store.c
 )
 
 if(x64)
