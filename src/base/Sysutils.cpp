@@ -1565,9 +1565,9 @@ TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes)
 {
   TDateTime Result;
   if (AValue > 0)
-    Result = ((AValue * MinsPerDay) + ANumberOfMinutes) / MinsPerDay;
+    Result = ((AValue * MinutesPerDay) + ANumberOfMinutes) / MinutesPerDay;
   else
-    Result = ((AValue * MinsPerDay) - ANumberOfMinutes) / MinsPerDay;
+    Result = ((AValue * MinutesPerDay) - ANumberOfMinutes) / MinutesPerDay;
   return Result;
 }
 
@@ -1603,7 +1603,7 @@ constexpr double HalfMilliSecond = 0.0005;
 constexpr double ApproxDaysPerMonth = 30.4375;
 constexpr double ApproxDaysPerYear = 365.25;
 //constexpr int32_t HoursPerDay = 24; // Adjust the value accordingly
-//constexpr int32_t MinsPerDay = 1440;
+//constexpr int32_t MinutesPerDay = 1440;
 
 bool IsSameDay(const TDateTime & AValue, const TDateTime & ABasis)
 {
@@ -1660,7 +1660,7 @@ int64_t HoursBetween(const TDateTime & ANow, const TDateTime & AThen)
 
 int64_t MinutesBetween(const TDateTime& ANow, const TDateTime & AThen)
 {
-  return static_cast<int64_t>(std::trunc((std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) * MinsPerDay));
+  return static_cast<int64_t>(std::trunc((std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond) * MinutesPerDay));
 }
 
 int64_t MilliSecondsBetween(const TDateTime & ANow, const TDateTime & AThen)

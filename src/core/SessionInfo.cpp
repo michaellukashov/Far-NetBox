@@ -1509,7 +1509,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     if ((Data->GetFSProtocol() == fsSCPonly) || (Data->GetFSProtocol() == fsFTP))
     {
       const int32_t TimeDifferenceMin = TimeToMinutes(Data->GetTimeDifference());
-      AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", TimeDifferenceMin / MinsPerHour, TimeDifferenceMin % MinsPerHour), L";");
+      AddToList(TimeInfo, FORMAT("Timezone offset: %dh %dm", TimeDifferenceMin / MinutesPerHour, TimeDifferenceMin % MinutesPerHour), L";");
     }
     ADSTR(TimeInfo);
 

@@ -42,13 +42,13 @@ using Cardinal = uint32_t;
 
 constexpr const int32_t MonthsPerYear = 12;
 constexpr const int32_t DaysPerWeek = 7;
-constexpr const int32_t MinsPerHour = 60;
+constexpr const int32_t MinutesPerHour = 60;
 constexpr const int32_t SecsPerMin = 60;
 constexpr const int32_t HoursPerDay = 24;
 constexpr const int32_t MSecsPerSec = 1000;
-constexpr const int32_t SecsPerHour = MinsPerHour * SecsPerMin;
-constexpr const int32_t MinsPerDay = HoursPerDay * MinsPerHour;
-constexpr const int32_t SecsPerDay = MinsPerDay * SecsPerMin;
+constexpr const int32_t SecsPerHour = MinutesPerHour * SecsPerMin;
+constexpr const int32_t MinutesPerDay = HoursPerDay * MinutesPerHour;
+constexpr const int32_t SecsPerDay = MinutesPerDay * SecsPerMin;
 constexpr const int32_t MSecsPerDay = SecsPerDay * MSecsPerSec;
 constexpr const int32_t OneSecond = MSecsPerSec;
 // Days between 1/1/0001 and 12/31/1899
@@ -634,7 +634,7 @@ private:
   int64_t GetTicks() const { return FTicks; }
   int32_t GetDays() const { return  nb::ToInt32(FTicks / TicksPerDay); }
   int32_t GetHours() const { return (FTicks / TicksPerHour) % HoursPerDay; }
-  int32_t GetMinutes() const { return (FTicks / TicksPerMinute) % MinsPerHour; }
+  int32_t GetMinutes() const { return (FTicks / TicksPerMinute) % MinutesPerHour; }
   int32_t GetSeconds() const { return (FTicks / TicksPerSecond) % SecsPerMin; }
   int32_t GetMilliseconds() const { return (FTicks / TicksPerMillisecond) % MillisPerSecond; }
   double GetTotalDays() const { return nb::ToDouble(FTicks / TicksPerDay); }

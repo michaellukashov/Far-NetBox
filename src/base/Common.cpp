@@ -2498,23 +2498,23 @@ static const TDateTimeParams *GetDateTimeParams(uint16_t Year)
     }
 
     Result->BaseDifferenceSec = TZI.Bias;
-    Result->BaseDifference = nb::ToDouble(TZI.Bias) / MinsPerDay;
+    Result->BaseDifference = nb::ToDouble(TZI.Bias) / MinutesPerDay;
     Result->BaseDifferenceSec *= SecsPerMin;
 
     Result->CurrentDifferenceSec = TZI.Bias +
       Result->CurrentDaylightDifferenceSec;
     Result->CurrentDifference =
-      nb::ToDouble(Result->CurrentDifferenceSec) / MinsPerDay;
+      nb::ToDouble(Result->CurrentDifferenceSec) / MinutesPerDay;
     Result->CurrentDifferenceSec *= SecsPerMin;
 
     Result->CurrentDaylightDifference =
-      nb::ToDouble(Result->CurrentDaylightDifferenceSec) / MinsPerDay;
+      nb::ToDouble(Result->CurrentDaylightDifferenceSec) / MinutesPerDay;
     Result->CurrentDaylightDifferenceSec *= SecsPerMin;
 
     Result->DaylightDifferenceSec = TZI.DaylightBias * SecsPerMin;
-    Result->DaylightDifference = nb::ToDouble(TZI.DaylightBias) / MinsPerDay;
+    Result->DaylightDifference = nb::ToDouble(TZI.DaylightBias) / MinutesPerDay;
     Result->StandardDifferenceSec = TZI.StandardBias * SecsPerMin;
-    Result->StandardDifference = nb::ToDouble(TZI.StandardBias) / MinsPerDay;
+    Result->StandardDifference = nb::ToDouble(TZI.StandardBias) / MinutesPerDay;
 
     Result->SystemStandardDate = TZI.StandardDate;
     Result->SystemDaylightDate = TZI.DaylightDate;

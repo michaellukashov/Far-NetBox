@@ -218,7 +218,7 @@ void TSessionData::DefaultSettings()
   SetFSProtocol(CONST_DEFAULT_PROTOCOL);
   SetAddressFamily(afAuto);
   SetRekeyData("1G");
-  SetRekeyTime(MinsPerHour);
+  SetRekeyTime(MinutesPerHour);
 
   // FS common
   SetLocalDirectory("");
