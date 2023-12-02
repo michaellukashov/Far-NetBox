@@ -132,6 +132,9 @@ class TSecureShell;
 class TSessionLog;
 struct TIEProxyConfig;
 
+constexpr const int32_t SFTPMinVersion = 0;
+constexpr const int32_t SFTPMaxVersion = 6;
+
 NB_DEFINE_CLASS_ID(TSessionData);
 class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
@@ -232,7 +235,7 @@ private:
   int32_t FSFTPDownloadQueue{0};
   int32_t FSFTPUploadQueue{0};
   int32_t FSFTPListingQueue{0};
-  int32_t FSFTPMaxVersion{0};
+  int32_t FSFTPMaxVersion{SFTPMaxVersion};
   uint32_t FSFTPMaxPacketSize{0};
   TAutoSwitch FSFTPRealPath;
   TDSTMode FDSTMode{dstmKeep};
@@ -1135,9 +1138,6 @@ private:
   void DoGetFolderOrWorkspace(const UnicodeString & Name, TList * List, bool NoRecrypt);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
-
-constexpr const int32_t SFTPMinVersion = 0;
-constexpr const int32_t SFTPMaxVersion = 6;
 
 struct NB_CORE_EXPORT TIEProxyConfig : public TObject
 {
