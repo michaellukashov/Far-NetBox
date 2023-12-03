@@ -112,6 +112,7 @@ public:
   virtual const struct PluginStartupInfo * GetPluginStartupInfo() const { return &FStartupInfo; }
   virtual void ExitFAR();
   virtual void GetPluginInfo(struct PluginInfo * Info);
+  virtual intptr_t ProcessSynchroEvent(const struct ProcessSynchroEventInfo * Info);
   virtual int32_t Configure(const struct ConfigureInfo * Info);
   virtual void * OpenPlugin(const struct OpenInfo * Info);
   virtual void ClosePanel(void * Plugin);

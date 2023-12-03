@@ -170,6 +170,20 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
   }
 }
 
+intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * Info)
+{
+  try
+  {
+
+  }
+  catch(Exception & E)
+  {
+    DEBUG_PRINTF("before HandleException");
+    HandleException(&E);
+  }
+  return 0;
+}
+
 UnicodeString TCustomFarPlugin::GetModuleName() const
 {
   return FStartupInfo.ModuleName;
@@ -924,6 +938,11 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 void TFarMessageDialog::Idle()
 {
   TFarDialog::Idle();
+  if (GetFarPlugin())
+  {
+    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
+    return;
+  }
 
   if (FParams->Timer > 0)
   {
