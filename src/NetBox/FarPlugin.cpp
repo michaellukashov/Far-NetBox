@@ -174,7 +174,7 @@ intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * I
 {
   try
   {
-
+    // TSynchroEvent Event = static_cast<TSynchroEvent>(Info->Param);
   }
   catch(Exception & E)
   {
@@ -940,7 +940,8 @@ void TFarMessageDialog::Idle()
   TFarDialog::Idle();
   if (GetFarPlugin())
   {
-    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
+    FSynchroParams.SynchroEvent = OnSyncro;
+    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &FSynchroParams);
     return;
   }
 
