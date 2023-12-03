@@ -948,7 +948,6 @@ void TFarMessageDialog::Idle()
   {
     FSynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
     GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &FSynchroParams);
-    return;
   }
 }
 
