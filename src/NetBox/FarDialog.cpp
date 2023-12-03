@@ -1205,7 +1205,7 @@ FARDIALOGITEMFLAGS TFarDialogItem::GetFlags() const
 
 void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
 {
-  UnicodeString FarData = Value.c_str();
+  const UnicodeString FarData = Value.c_str();
   if (GetDialog()->GetHandle())
   {
     SendDialogMessage(DM_SETTEXTPTR, nb::ToPtr(ToWChar(FarData)));
