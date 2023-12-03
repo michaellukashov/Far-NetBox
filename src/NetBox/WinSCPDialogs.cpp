@@ -4093,7 +4093,7 @@ bool TSessionDialog::CloseQuery()
       VerifyKey(PrivateKeyEdit->GetText(), false) &&
       // for tunnel key do not check SSH version as it is not configurable
       VerifyKey(TunnelPrivateKeyEdit->GetText(), true);*/
-    DEBUG_PRINTF("CanClose2: %d", CanClose);
+    // DEBUG_PRINTF("CanClose2: %d", CanClose);
   }
 
   if (CanClose && !PasswordEdit->GetText().IsEmpty() &&
