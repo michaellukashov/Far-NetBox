@@ -131,7 +131,7 @@ protected:
   virtual void SetBounds(const TRect & Value);
 
 private:
-  mutable TCustomFarPlugin * FFarPlugin{nullptr};
+  mutable gsl::not_null<TCustomFarPlugin *> FFarPlugin;
   TRect FBounds{};
   FARDIALOGITEMFLAGS FFlags;
   UnicodeString FHelpTopic;
