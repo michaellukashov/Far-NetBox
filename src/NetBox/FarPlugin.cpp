@@ -172,9 +172,14 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 
 intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * Info)
 {
+  Expects(Info);
   try
   {
-    // TSynchroEvent Event = static_cast<TSynchroEvent>(Info->Param);
+    TSynchroParams * SynchroParams = static_cast<TSynchroParams *>(Info->Param);
+    if (SynchroParams->SynchroEvent)
+    {
+      SynchroParams->SynchroEvent(this, nullptr);
+    }
   }
   catch(Exception & E)
   {
@@ -763,6 +768,7 @@ protected:
 
 private:
   void ButtonClick(TFarButton * Sender, bool & Close);
+  void OnUpdateTimeoutButton(TObject * Sender, void * Data);
 
 private:
   bool FCheckBoxChecked{false};
@@ -940,47 +946,9 @@ void TFarMessageDialog::Idle()
   TFarDialog::Idle();
   if (GetFarPlugin())
   {
-    FSynchroParams.SynchroEvent = OnSyncro;
+    FSynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
     GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &FSynchroParams);
     return;
-  }
-
-  if (FParams->Timer > 0)
-  {
-    uint32_t SinceLastTimer = nb::ToUInt32((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
-    if (SinceLastTimer >= FParams->Timeout)
-    {
-      DebugAssert(FParams->TimerEvent);
-      if (FParams->TimerEvent)
-      {
-        FParams->TimerAnswer = 0;
-        FParams->TimerEvent(FParams->TimerAnswer);
-        if (FParams->TimerAnswer != 0)
-        {
-          Close(GetDefaultButton());
-        }
-        FLastTimerTime = Now();
-      }
-    }
-  }
-
-  if (FParams->Timeout > 0)
-  {
-    uint32_t Running = nb::ToUInt32((Now() - FStartTime).GetValue() * MSecsPerDay);
-    if (Running >= FParams->Timeout)
-    {
-      DebugAssert(FTimeoutButton != nullptr);
-      Close(FTimeoutButton);
-    }
-    else
-    {
-      UnicodeString Caption =
-        FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
-            FTimeoutButtonCaption, nb::ToInt32((FParams->Timeout - Running) / 1000)));
-      int32_t Sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
-      Caption += ::StringOfChar(L' ', Sz);
-      FTimeoutButton->SetCaption(Caption);
-    }
   }
 }
 
@@ -1035,6 +1003,48 @@ void TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
   if (FParams->ClickEvent)
   {
     FParams->ClickEvent(FParams->Token, Sender->GetResult() - 1, Close);
+  }
+}
+
+void TFarMessageDialog::OnUpdateTimeoutButton(TObject * Sender, void * Data)
+{
+  // DEBUG_PRINTF("Sender: %p, Data: %p", (void *)Sender, (void *)Data);
+  if (FParams->Timer > 0)
+  {
+    uint32_t SinceLastTimer = nb::ToUInt32((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
+    if (SinceLastTimer >= FParams->Timeout)
+    {
+      DebugAssert(FParams->TimerEvent);
+      if (FParams->TimerEvent)
+      {
+        FParams->TimerAnswer = 0;
+        FParams->TimerEvent(FParams->TimerAnswer);
+        if (FParams->TimerAnswer != 0)
+        {
+          Close(GetDefaultButton());
+        }
+        FLastTimerTime = Now();
+      }
+    }
+  }
+
+  if (FParams->Timeout > 0)
+  {
+    uint32_t Running = nb::ToUInt32((Now() - FStartTime).GetValue() * MSecsPerDay);
+    if (Running >= FParams->Timeout)
+    {
+      DebugAssert(FTimeoutButton != nullptr);
+      Close(FTimeoutButton);
+    }
+    else
+    {
+      UnicodeString Caption =
+        FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
+            FTimeoutButtonCaption, nb::ToInt32((FParams->Timeout - Running) / 1000)));
+      int32_t Sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
+      Caption += ::StringOfChar(L' ', Sz);
+      FTimeoutButton->SetCaption(Caption);
+    }
   }
 }
 
