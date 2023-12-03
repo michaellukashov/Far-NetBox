@@ -146,7 +146,7 @@ struct NB_CORE_EXPORT TQueryParams : public TObject
   UnicodeString HelpKeyword;
 
 public:
-  TQueryParams &operator=(const TQueryParams & other);
+  TQueryParams & operator =(const TQueryParams & Other);
 };
 
 enum TPromptKind
@@ -209,7 +209,7 @@ public:
 
   UnicodeString Text;
 
-  void Copy(TObject * /*Sender*/, uint32_t & /*Answer*/)
+  void Copy(TObject * /*Sender*/, uint32_t & /*Answer*/) const
   {
     TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
     CopyToClipboard(Text);
