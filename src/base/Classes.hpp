@@ -122,7 +122,7 @@ struct TRect
 
   bool operator !=(const TRect & other) const
   {
-    return !(operator==(other));
+    return !(operator ==(other));
   }
 
   bool operator ==(const RECT & other) const
@@ -135,7 +135,7 @@ struct TRect
   }
   bool operator !=(const RECT & other) const
   {
-    return !(operator==(other));
+    return !(operator ==(other));
   }
 };
 
@@ -608,7 +608,7 @@ public:
   bool operator ==(const TDateTime & rhs) const;
   bool operator !=(const TDateTime & rhs) const
   {
-    return !(operator==(rhs));
+    return !(operator ==(rhs));
   }
   UnicodeString GetDateString() const;
   UnicodeString GetTimeString(bool Short) const;
@@ -1006,7 +1006,7 @@ public:
   }
   bool operator !=(const TValidProperties & rhs) const
   {
-    return !(operator==(rhs));
+    return !(operator ==(rhs));
   }
   TValidProperties & operator <<(const PropType Value)
   {
