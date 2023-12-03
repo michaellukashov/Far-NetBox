@@ -3494,7 +3494,7 @@ UnicodeString LoadStrFrom(HINSTANCE Module, int32_t Ident)
 
 UnicodeString LoadStr(int32_t Ident, uint32_t /*MaxLength*/)
 {
-  UnicodeString Result = GetGlobals()->GetMsg(Ident);
+  const UnicodeString Result = GetGlobals()->GetMsg(Ident);
   return Result;
 }
 

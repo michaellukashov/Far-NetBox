@@ -2665,11 +2665,11 @@ void TSecureShell::VerifyHostKey(
 
         bool Unknown = StoredKeys.IsEmpty();
 
-        UnicodeString AcceptButton = LoadStr(HOSTKEY_ACCEPT_BUTTON);
-        UnicodeString OnceButton = LoadStr(HOSTKEY_ONCE_BUTTON);
-        UnicodeString CancelButton = LoadStr(Vcl_Consts_SMsgDlgCancel);
-        UnicodeString UpdateButton = LoadStr(UPDATE_KEY_BUTTON);
-        UnicodeString AddButton = LoadStr(ADD_KEY_BUTTON);
+        const UnicodeString AcceptButton = LoadStr(HOSTKEY_ACCEPT_BUTTON);
+        const UnicodeString OnceButton = LoadStr(HOSTKEY_ONCE_BUTTON);
+        const UnicodeString CancelButton = LoadStr(Vcl_Consts_SMsgDlgCancel);
+        const UnicodeString UpdateButton = LoadStr(UPDATE_KEY_BUTTON);
+        const UnicodeString AddButton = LoadStr(ADD_KEY_BUTTON);
         int32_t Answers{0};
         nb::vector_t<TQueryButtonAlias> Aliases;
 
