@@ -47,15 +47,13 @@ void FormHelp(TCustomForm * Form)
 
 HINSTANCE HInstance{nullptr};
 
-TMessageParams::TMessageParams(uint32_t AParams) noexcept
+TMessageParams::TMessageParams(uint32_t AParams) noexcept : TMessageParams(nullptr)
 {
-  Reset();
   Params = AParams;
 }
 
 TMessageParams::TMessageParams(const TQueryParams * AParams) noexcept
 {
-  Reset();
   Assign(AParams);
 }
 
