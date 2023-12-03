@@ -1219,7 +1219,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 GetWinSCPPlugin()->ShowTerminalScreen(Command);
               }
 
-              FTerminal->CustomCommandOnFiles(Command, Params, FileList.get(), OutputEvent);
+              FTerminal->CustomCommandOnFiles(Command, Params, FileList.get(), std::forward<TCaptureOutputEvent>(OutputEvent));
             }
           }
         }
