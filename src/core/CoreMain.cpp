@@ -106,7 +106,7 @@ TQueryParams::TQueryParams(uint32_t AParams, const UnicodeString & AHelpKeyword)
 #endif
 }
 
-TQueryParams::TQueryParams(const TQueryParams & ASource) noexcept
+TQueryParams::TQueryParams(const TQueryParams & ASource) noexcept : TQueryParams(0, "")
 {
   Assign(ASource);
 }
@@ -116,20 +116,20 @@ void TQueryParams::Assign(const TQueryParams & ASource)
   *this = ASource;
 }
 
-TQueryParams & TQueryParams::operator =(const TQueryParams &other)
+TQueryParams & TQueryParams::operator =(const TQueryParams & Other)
 {
-  Params = other.Params;
-  Aliases = other.Aliases;
-  AliasesCount = other.AliasesCount;
-  Timer = other.Timer;
-  TimerEvent = other.TimerEvent;
-  TimerMessage = other.TimerMessage;
-  TimerAnswers = other.TimerAnswers;
-  TimerQueryType = other.TimerQueryType;
-  Timeout = other.Timeout;
-  TimeoutAnswer = other.TimeoutAnswer;
-  NoBatchAnswers = other.NoBatchAnswers;
-  HelpKeyword = other.HelpKeyword;
+  Params = Other.Params;
+  Aliases = Other.Aliases;
+  AliasesCount = Other.AliasesCount;
+  Timer = Other.Timer;
+  TimerEvent = Other.TimerEvent;
+  TimerMessage = Other.TimerMessage;
+  TimerAnswers = Other.TimerAnswers;
+  TimerQueryType = Other.TimerQueryType;
+  Timeout = Other.Timeout;
+  TimeoutAnswer = Other.TimeoutAnswer;
+  NoBatchAnswers = Other.NoBatchAnswers;
+  HelpKeyword = Other.HelpKeyword;
   return *this;
 }
 
