@@ -732,7 +732,7 @@ int32_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
   return Result;
 }
 
-class TFarMessageDialog : public TFarDialog
+class TFarMessageDialog final : public TFarDialog
 {
 public:
   explicit TFarMessageDialog(TCustomFarPlugin * Plugin,
