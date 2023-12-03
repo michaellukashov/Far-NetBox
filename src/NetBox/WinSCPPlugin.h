@@ -21,7 +21,7 @@ public:
   virtual ~TWinSCPPlugin() noexcept override;
   virtual VersionInfo GetMinFarVersion() const override;
 
-  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0) override;
+  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0) override;
   uint32_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uint32_t Answers, const TMessageParams * Params = nullptr);
   void ShowExtendedException(Exception * E);

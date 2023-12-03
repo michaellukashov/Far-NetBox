@@ -587,7 +587,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
   }
 }
 
-void TWinSCPPlugin::HandleException(Exception *E, OPERATION_MODES OpMode)
+void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if (((OpMode & OPM_FIND) == 0) || isa<EFatal>(E))
   {
