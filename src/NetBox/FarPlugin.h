@@ -113,8 +113,8 @@ public:
   virtual void ExitFAR();
   virtual void GetPluginInfo(struct PluginInfo * Info);
   virtual int32_t Configure(const struct ConfigureInfo * Info);
-  virtual void *OpenPlugin(const struct OpenInfo * Info);
-  virtual void ClosePanel(void *Plugin);
+  virtual void * OpenPlugin(const struct OpenInfo * Info);
+  virtual void ClosePanel(void * Plugin);
   virtual void GetOpenPanelInfo(struct OpenPanelInfo * Info);
   virtual int32_t GetFindData(struct GetFindDataInfo * Info);
   virtual void FreeFindData(const struct FreeFindDataInfo * Info);
