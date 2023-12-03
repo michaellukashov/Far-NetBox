@@ -416,7 +416,7 @@ static void eventlog(LogPolicy * ALogPolicy, const char * string)
   static_cast<ScpLogPolicy *>(ALogPolicy)->SecureShell->PuttyLogEvent(string);
 }
 
-static const LogPolicyVtable ScpLogPolicyVTable =
+static constexpr const LogPolicyVtable ScpLogPolicyVTable =
   {
     eventlog,
     nullptr, // Should never be called
