@@ -129,7 +129,7 @@ public:
   virtual intptr_t PutFiles(const struct PutFilesInfo * Info);
   virtual intptr_t ProcessEditorEvent(const struct ProcessEditorEventInfo * Info);
   virtual intptr_t ProcessEditorInput(const struct ProcessEditorInputInfo * Info);
-  virtual void HandleException(Exception *E, OPERATION_MODES OpMode = 0);
+  virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0);
 
   static wchar_t * DuplicateStr(const UnicodeString & Str, bool AllowEmpty = false);
   int32_t Message(uint32_t Flags, const UnicodeString & Title,

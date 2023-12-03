@@ -30,7 +30,7 @@ public:
   explicit ExtException(TObjectClassId Kind, const Exception * E);
   explicit ExtException(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
-  // explicit ExtException(const ExtException *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  // explicit ExtException(const ExtException * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
   explicit ExtException(TObjectClassId Kind, Exception * E, int32_t Ident, const UnicodeString & HelpKeyword = L"");
   // "copy the exception", just append message to the end
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E, const UnicodeString & HelpKeyword = L"");
@@ -78,11 +78,11 @@ private:
     static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    explicit inline NAME(const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
+    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
       BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
     { \
     } \
-    explicit inline NAME(TObjectClassId Kind, const Exception *E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
+    explicit inline NAME(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
       BASE(Kind, E, Msg, HelpKeyword) \
     { \
     } \
