@@ -96,7 +96,6 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   FNeedsSynchronize(false),
   FSynchronizeMethod(nullptr)
 {
-  assert(AFarPlugin);
   FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
   FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
 
