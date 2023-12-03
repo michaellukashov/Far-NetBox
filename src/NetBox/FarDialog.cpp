@@ -398,6 +398,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
 
     bool Changed = false;
 
+    // DEBUG_PRINTF("Msg: %d", Msg);
     switch (Msg)
     {
     case DN_BTNCLICK:
@@ -522,9 +523,9 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         Handled = true;
         break;
 
-      case DN_ENTERIDLE:
-        Idle();
-        break;
+      // case DN_ENTERIDLE:
+      //   Idle();
+      //   break;
       }
 
       if (!Handled)
