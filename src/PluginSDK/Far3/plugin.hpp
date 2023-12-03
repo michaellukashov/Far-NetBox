@@ -3,14 +3,13 @@
 #define __PLUGIN_HPP__
 
 /*
-  plugin.hpp
+plugin.hpp
 
-  Plugin API for Far Manager 3.0 build 4400
+Plugin API for Far Manager 3.0.5955.0
 */
-
 /*
-Copyright © 1996 Eugene Roshal
-Copyright © 2000 Far Group
+Copyright Â© 1996 Eugene Roshal
+Copyright Â© 2000 Far Group
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -40,43 +39,123 @@ Far Manager plugins that use this header file can be distributed under any
 other possible license with no implications from the above license on them.
 */
 
+#ifndef FAR_USE_INTERNALS
+#define FAR_USE_INTERNALS
+#endif // END FAR_USE_INTERNALS
+
 #define FARMANAGERVERSION_MAJOR 3
 #define FARMANAGERVERSION_MINOR 0
 #define FARMANAGERVERSION_REVISION 0
-#define FARMANAGERVERSION_BUILD 4400
+#define FARMANAGERVERSION_BUILD 5955
 #define FARMANAGERVERSION_STAGE VS_RELEASE
 
 #ifndef RC_INVOKED
 
+#ifdef FAR_USE_INTERNALS
+#else // ELSE FAR_USE_INTERNALS
 #include <stdint.h>
 #include <windows.h>
+#endif // END FAR_USE_INTERNALS
 
 #undef DefDlgProc
 
+#ifdef __cpp_inline_variables
+#define FAR_INLINE_CONSTANT inline constexpr
+#else
+#define FAR_INLINE_CONSTANT static const
+#endif
 
+typedef GUID UUID;
+
+#ifdef FAR_USE_INTERNALS
+struct FAR_INPUT_RECORD
+{
+	DWORD IntKey;
+	INPUT_RECORD Rec;
+};
+#endif // END FAR_USE_INTERNALS
+
+#ifdef FAR_USE_INTERNALS
+#define CP_UNICODE    static_cast<uintptr_t>(1200)
+#define CP_REVERSEBOM static_cast<uintptr_t>(1201)
+#define CP_DEFAULT    static_cast<uintptr_t>(-1)
+#define CP_REDETECT   static_cast<uintptr_t>(-2)
+#define CP_ALL        static_cast<uintptr_t>(-3)
+#else // ELSE FAR_USE_INTERNALS
 #define CP_UNICODE    ((uintptr_t)1200)
 #define CP_REVERSEBOM ((uintptr_t)1201)
 #define CP_DEFAULT    ((uintptr_t)-1)
 #define CP_REDETECT   ((uintptr_t)-2)
+#endif // END FAR_USE_INTERNALS
 
-typedef unsigned __int64 FARCOLORFLAGS;
-static const FARCOLORFLAGS
-	FCF_FG_4BIT       = 0x0000000000000001ULL,
-	FCF_BG_4BIT       = 0x0000000000000002ULL,
-	FCF_4BITMASK      = 0x0000000000000003ULL, // FCF_FG_4BIT|FCF_BG_4BIT
+enum UNDERLINE_STYLE
+{
+	UNDERLINE_NONE   = 0,
+	UNDERLINE_SINGLE = 1,
+	UNDERLINE_DOUBLE = 2,
+	UNDERLINE_CURLY  = 3,
+	UNDERLINE_DOT    = 4,
+	UNDERLINE_DASH   = 5,
+};
 
-	FCF_RAWATTR_MASK  = 0x000000000000FF00ULL, // stored console attributes
+typedef unsigned long long FARCOLORFLAGS;
+FAR_INLINE_CONSTANT FARCOLORFLAGS
+	FCF_FG_INDEX           = 0x0000000000000001ULL,
+	FCF_BG_INDEX           = 0x0000000000000002ULL,
+	FCF_FG_UNDERLINE_INDEX = 0x0000000000000008ULL,
+	FCF_INDEXMASK          = 0x000000000000000BULL, // FCF_FG_INDEX | FCF_BG_INDEX | FCF_FG_UNDERLINE_INDEX
 
-	FCF_EXTENDEDFLAGS = 0xFFFFFFFFFFFFFFFCULL, // ~FCF_4BITMASK
+#ifdef FAR_USE_INTERNALS
+#else // ELSE FAR_USE_INTERNALS
+#endif // END FAR_USE_INTERNALS
+// Legacy names, don't use
+FCF_FG_4BIT            = 0x0000000000000001ULL, // FCF_FG_INDEX
+FCF_BG_4BIT            = 0x0000000000000002ULL, // FCF_BG_INDEX
+FCF_4BITMASK           = 0x000000000000000BULL, // FCF_INDEXMASK
 
-	FCF_FG_BOLD       = 0x1000000000000000ULL,
-	FCF_FG_ITALIC     = 0x2000000000000000ULL,
-	FCF_FG_UNDERLINE  = 0x4000000000000000ULL,
-	FCF_STYLEMASK     = 0x7000000000000000ULL, // FCF_FG_BOLD|FCF_FG_ITALIC|FCF_FG_UNDERLINE
+	FCF_INHERIT_STYLE      = 0x0000000000000004ULL,
 
-	FCF_NONE          = 0;
+	FCF_RAWATTR_MASK       = 0x000000000000FF00ULL, // stored console attributes
 
-struct rgba { unsigned char r, g, b, a; };
+	FCF_FG_BOLD            = 0x1000000000000000ULL,
+	FCF_FG_ITALIC          = 0x2000000000000000ULL,
+	FCF_FG_U_DATA0         = 0x4000000000000000ULL, // This is not a style flag, but a storage for one of 5 underline styles
+	FCF_FG_U_DATA1         = 0x8000000000000000ULL, // This is not a style flag, but a storage for one of 5 underline styles
+	FCF_FG_OVERLINE        = 0x0100000000000000ULL,
+	FCF_FG_STRIKEOUT       = 0x0200000000000000ULL,
+	FCF_FG_FAINT           = 0x0400000000000000ULL,
+	FCF_FG_BLINK           = 0x0800000000000000ULL,
+	FCF_FG_INVERSE         = 0x0010000000000000ULL,
+	FCF_FG_INVISIBLE       = 0x0020000000000000ULL,
+	FCF_FG_U_DATA2         = 0x0040000000000000ULL, // This is not a style flag, but a storage for one of 5 underline styles
+
+	FCF_FG_UNDERLINE_MASK  = 0xC040000000000000ULL,  // FCF_FG_U_DATA0 | FCF_FG_U_DATA1 | FCF_FG_U_DATA2,
+
+	FCF_STYLEMASK          = 0xFFF0000000000000ULL,
+
+	FCF_NONE               = 0;
+
+struct rgba
+{
+	unsigned char
+		r,
+		g,
+		b,
+		a;
+};
+
+struct color_index
+{
+	unsigned char
+		i,
+		reserved0,
+		reserved1,
+		a;
+};
+
+#define INDEXMASK 0x000000ff
+#define COLORMASK 0x00ffffff
+#define ALPHAMASK 0xff000000
 
 struct FarColor
 {
@@ -84,6 +163,7 @@ struct FarColor
 	union
 	{
 		COLORREF ForegroundColor;
+		struct color_index ForegroundIndex;
 		struct rgba ForegroundRGBA;
 	}
 #ifndef __cplusplus
@@ -93,34 +173,194 @@ struct FarColor
 	union
 	{
 		COLORREF BackgroundColor;
+		struct color_index BackgroundIndex;
 		struct rgba BackgroundRGBA;
 	}
 #ifndef __cplusplus
 	Background
 #endif
 	;
-	void* Reserved;
+	union
+	{
+		COLORREF UnderlineColor;
+		struct color_index UnderlineIndex;
+		struct rgba UnderlineRGBA;
+	}
+#ifndef __cplusplus
+	Underline
+#endif
+		;
+	DWORD Reserved;
 
 #ifdef __cplusplus
-	bool operator ==(const FarColor& rhs) const
+	bool operator==(const FarColor& rhs) const
 	{
 		return Flags == rhs.Flags
 			&& ForegroundColor == rhs.ForegroundColor
 			&& BackgroundColor == rhs.BackgroundColor
+			&& UnderlineColor == rhs.UnderlineColor
 			&& Reserved == rhs.Reserved;
 	}
 
-	bool operator !=(const FarColor& rhs) const
+	bool operator!=(const FarColor& rhs) const
 	{
 		return !(*this == rhs);
 	}
+
+	bool IsBgIndex() const
+	{
+		return (Flags & FCF_BG_INDEX) != 0;
+	}
+
+	bool IsFgIndex() const
+	{
+		return (Flags & FCF_FG_INDEX) != 0;
+	}
+
+	bool IsUnderlineIndex() const
+	{
+		return (Flags & FCF_FG_UNDERLINE_INDEX) != 0;
+	}
+
+	bool IsBgDefault() const
+	{
+		return IsBgIndex() && ((BackgroundColor & COLORMASK) == 0x00800000);
+	}
+
+	bool IsFgDefault() const
+	{
+		return IsFgIndex() && ((ForegroundColor & COLORMASK) == 0x00800000);
+	}
+
+	bool IsUnderlineDefault() const
+	{
+		return IsUnderlineIndex() && ((UnderlineColor & COLORMASK) == 0x00800000);
+	}
+
+	UNDERLINE_STYLE GetUnderline() const
+	{
+		switch (Flags & FCF_FG_UNDERLINE_MASK)
+		{
+		default:                              return UNDERLINE_NONE;
+		case FCF_FG_U_DATA0:                  return UNDERLINE_SINGLE;
+		case FCF_FG_U_DATA1:                  return UNDERLINE_DOUBLE;
+		case FCF_FG_U_DATA1 | FCF_FG_U_DATA0: return UNDERLINE_CURLY;
+		case FCF_FG_U_DATA2:                  return UNDERLINE_DOT;
+		case FCF_FG_U_DATA2 | FCF_FG_U_DATA0: return UNDERLINE_DASH;
+		}
+	}
+
+	FarColor& SetBgIndex(bool Value)
+	{
+		Value? Flags |= FCF_BG_INDEX : Flags &= ~FCF_BG_INDEX;
+		return *this;
+	}
+
+	FarColor& SetFgIndex(bool Value)
+	{
+		Value? Flags |= FCF_FG_INDEX : Flags &= ~FCF_FG_INDEX;
+		return *this;
+	}
+
+	FarColor& SetUnderlineIndex(bool Value)
+	{
+		Value? Flags |= FCF_FG_UNDERLINE_INDEX : Flags &= ~FCF_FG_UNDERLINE_INDEX;
+		return *this;
+	}
+
+	FarColor& SetBgDefault()
+	{
+		SetBgIndex(true);
+		BackgroundColor &= ~COLORMASK;
+		BackgroundColor |= 0x00800000;
+		return *this;
+	}
+
+	FarColor& SetFgDefault()
+	{
+		SetFgIndex(true);
+		ForegroundColor &= ~COLORMASK;
+		ForegroundColor |= 0x00800000;
+		return *this;
+	}
+
+	FarColor& SetUnderlineDefault()
+	{
+		SetUnderlineIndex(true);
+		UnderlineColor &= ~COLORMASK;
+		UnderlineColor |= 0x00800000;
+		return *this;
+	}
+
+	FarColor& SetUnderline(UNDERLINE_STYLE UnderlineStyle)
+	{
+		Flags &= ~FCF_FG_UNDERLINE_MASK;
+
+		switch (UnderlineStyle)
+		{
+		default:
+		case UNDERLINE_NONE:
+			break;
+
+		case UNDERLINE_SINGLE:
+			Flags |= FCF_FG_U_DATA0;
+			break;
+
+		case UNDERLINE_DOUBLE:
+			Flags |= FCF_FG_U_DATA1;
+			break;
+
+		case UNDERLINE_CURLY:
+			Flags |= FCF_FG_U_DATA1 | FCF_FG_U_DATA0;
+			break;
+
+		case UNDERLINE_DOT:
+			Flags |= FCF_FG_U_DATA2;
+			break;
+
+		case UNDERLINE_DASH:
+			Flags |= FCF_FG_U_DATA2 | FCF_FG_U_DATA0;
+			break;
+
+		// We still have space for 2 styles (21 and 210)
+		}
+
+		return *this;
+	}
+
+#ifdef FAR_USE_INTERNALS
+#else // ELSE FAR_USE_INTERNALS
+
+	// Legacy names, don't use
+	bool IsBg4Bit() const
+	{
+		return IsBgIndex();
+	}
+
+	bool IsFg4Bit() const
+	{
+		return IsFgIndex();
+	}
+
+	FarColor& SetBg4Bit(bool Value)
+	{
+		return SetBgIndex(Value);
+	}
+
+	FarColor& SetFg4Bit(bool Value)
+	{
+		return SetFgIndex(Value);
+	}
+#endif // END FAR_USE_INTERNALS
 #endif
 };
 
-#define INDEXMASK 0x0000000f
-#define COLORMASK 0x00ffffff
-#define ALPHAMASK 0xff000000
+#ifdef FAR_USE_INTERNALS
+static_assert(sizeof(FarColor) == 24);
+#endif // END FAR_USE_INTERNALS
 
+#ifdef FAR_USE_INTERNALS
+#else // ELSE FAR_USE_INTERNALS
 #define INDEXVALUE(x) ((x)&INDEXMASK)
 #define COLORVALUE(x) ((x)&COLORMASK)
 #define ALPHAVALUE(x) ((x)&ALPHAMASK)
@@ -129,19 +369,20 @@ struct FarColor
 #define IS_TRANSPARENT(x) (!ALPHAVALUE(x))
 #define MAKE_OPAQUE(x) (x|=ALPHAMASK)
 #define MAKE_TRANSPARENT(x) (x&=COLORMASK)
+#endif // END FAR_USE_INTERNALS
 
-typedef unsigned __int64 COLORDIALOGFLAGS;
-static const COLORDIALOGFLAGS
+typedef unsigned long long COLORDIALOGFLAGS;
+FAR_INLINE_CONSTANT COLORDIALOGFLAGS
 	CDF_NONE = 0;
 
 typedef BOOL (WINAPI *FARAPICOLORDIALOG)(
-	const GUID* PluginId,
+	const UUID* PluginId,
 	COLORDIALOGFLAGS Flags,
 	struct FarColor *Color
 );
 
-typedef unsigned __int64 FARMESSAGEFLAGS;
-static const FARMESSAGEFLAGS
+typedef unsigned long long FARMESSAGEFLAGS;
+FAR_INLINE_CONSTANT FARMESSAGEFLAGS
 	FMSG_WARNING             = 0x0000000000000001ULL,
 	FMSG_ERRORTYPE           = 0x0000000000000002ULL,
 	FMSG_KEEPBACKGROUND      = 0x0000000000000004ULL,
@@ -156,8 +397,8 @@ static const FARMESSAGEFLAGS
 	FMSG_NONE                = 0;
 
 typedef intptr_t (WINAPI *FARAPIMESSAGE)(
-	const GUID* PluginId,
-	const GUID* Id,
+	const UUID* PluginId,
+	const UUID* Id,
 	FARMESSAGEFLAGS Flags,
 	const wchar_t *HelpTopic,
 	const wchar_t * const *Items,
@@ -179,6 +420,9 @@ enum FARDIALOGITEMTYPES
 	DI_RADIOBUTTON                  =  9,
 	DI_COMBOBOX                     = 10,
 	DI_LISTBOX                      = 11,
+#ifdef FAR_USE_INTERNALS
+	DI_MEMOEDIT,
+#endif // END FAR_USE_INTERNALS
 
 	DI_USERCONTROL                  =255,
 };
@@ -194,6 +438,9 @@ static __inline BOOL IsEdit(enum FARDIALOGITEMTYPES Type)
 		case DI_EDIT:
 		case DI_FIXEDIT:
 		case DI_PSWEDIT:
+#ifdef FAR_USE_INTERNALS
+		case DI_MEMOEDIT:
+#endif // END FAR_USE_INTERNALS
 		case DI_COMBOBOX:
 			return TRUE;
 		default:
@@ -201,8 +448,8 @@ static __inline BOOL IsEdit(enum FARDIALOGITEMTYPES Type)
 	}
 }
 
-typedef unsigned __int64 FARDIALOGITEMFLAGS;
-static const FARDIALOGITEMFLAGS
+typedef unsigned long long FARDIALOGITEMFLAGS;
+FAR_INLINE_CONSTANT FARDIALOGITEMFLAGS
 	DIF_BOXCOLOR              = 0x0000000000000200ULL,
 	DIF_GROUP                 = 0x0000000000000400ULL,
 	DIF_LEFTTEXT              = 0x0000000000000800ULL,
@@ -235,6 +482,9 @@ static const FARDIALOGITEMFLAGS
 	DIF_LISTAUTOHIGHLIGHT     = 0x0000000002000000ULL,
 	DIF_LISTNOCLOSE           = 0x0000000004000000ULL,
 	DIF_EDITPATHEXEC          = 0x0000000004000000ULL,
+#ifdef FAR_USE_INTERNALS
+	DIF_AUTOMATION            = 0x0000000008000000ULL,
+#endif // END FAR_USE_INTERNALS
 	DIF_HIDDEN                = 0x0000000010000000ULL,
 	DIF_READONLY              = 0x0000000020000000ULL,
 	DIF_NOFOCUS               = 0x0000000040000000ULL,
@@ -243,6 +493,10 @@ static const FARDIALOGITEMFLAGS
 	DIF_FOCUS                 = 0x0000000200000000ULL,
 	DIF_RIGHTTEXT             = 0x0000000400000000ULL,
 	DIF_WORDWRAP              = 0x0000000800000000ULL,
+#ifdef FAR_USE_INTERNALS
+	DIF_LISTNOMERGEBORDER     = 0x0000001000000000ULL,
+#endif // END FAR_USE_INTERNALS
+	DIF_HOMEITEM              = 0x0000002000000000ULL,
 	DIF_NONE                  = 0;
 
 enum FARMESSAGE
@@ -340,7 +594,6 @@ enum FARMESSAGE
 	DN_DRAWDIALOG                   = 4101,
 	DN_DRAWDLGITEM                  = 4102,
 	DN_EDITCHANGE                   = 4103,
-	DN_ENTERIDLE                    = 4104,
 	DN_GOTFOCUS                     = 4105,
 	DN_HELP                         = 4106,
 	DN_HOTKEY                       = 4107,
@@ -360,6 +613,10 @@ enum FARMESSAGE
 
 	DM_USER                         = 0x4000,
 
+#ifdef FAR_USE_INTERNALS
+	DM_KILLSAVESCREEN               = DN_FIRST-1,
+	DM_ALLKEYMODE                   = DN_FIRST-2,
+#endif // END FAR_USE_INTERNALS
 };
 
 enum FARCHECKEDSTATE
@@ -376,14 +633,17 @@ enum FARCOMBOBOXEVENTTYPE
 	CBET_MOUSE       = 0x00000002,
 };
 
-typedef unsigned __int64 LISTITEMFLAGS;
-static const LISTITEMFLAGS
+typedef unsigned long long LISTITEMFLAGS;
+FAR_INLINE_CONSTANT LISTITEMFLAGS
 	LIF_SELECTED           = 0x0000000000010000ULL,
 	LIF_CHECKED            = 0x0000000000020000ULL,
 	LIF_SEPARATOR          = 0x0000000000040000ULL,
 	LIF_DISABLE            = 0x0000000000080000ULL,
 	LIF_GRAYED             = 0x0000000000100000ULL,
 	LIF_HIDDEN             = 0x0000000000200000ULL,
+#ifdef FAR_USE_INTERNALS
+	LIF_FILTERED           = 0x0000000000800000ULL,
+#endif // END FAR_USE_INTERNALS
 	LIF_DELETEUSERDATA     = 0x0000000080000000ULL,
 	LIF_NONE               = 0;
 
@@ -393,7 +653,8 @@ struct FarListItem
 {
 	LISTITEMFLAGS Flags;
 	const wchar_t *Text;
-	intptr_t Reserved[2];
+	intptr_t UserData;
+	intptr_t Reserved;
 };
 
 struct FarListUpdate
@@ -424,8 +685,8 @@ struct FarListPos
 	intptr_t TopPos;
 };
 
-typedef unsigned __int64 FARLISTFINDFLAGS;
-static const FARLISTFINDFLAGS
+typedef unsigned long long FARLISTFINDFLAGS;
+FAR_INLINE_CONSTANT FARLISTFINDFLAGS
 	LIFIND_EXACTMATCH = 0x0000000000000001ULL,
 	LIFIND_NONE       = 0;
 
@@ -445,8 +706,8 @@ struct FarListDelete
 	intptr_t Count;
 };
 
-typedef unsigned __int64 FARLISTINFOFLAGS;
-static const FARLISTINFOFLAGS
+typedef unsigned long long FARLISTINFOFLAGS;
+FAR_INLINE_CONSTANT FARLISTINFOFLAGS
 	LINFO_SHOWNOBOX             = 0x0000000000000400ULL,
 	LINFO_AUTOHIGHLIGHT         = 0x0000000000000800ULL,
 	LINFO_REVERSEHIGHLIGHT      = 0x0000000000001000ULL,
@@ -492,34 +753,37 @@ struct FarListTitles
 struct FarDialogItemColors
 {
 	size_t StructSize;
-	unsigned __int64 Flags;
+	unsigned long long Flags;
 	size_t ColorsCount;
 	struct FarColor* Colors;
 };
 
 struct FAR_CHAR_INFO
 {
-	WCHAR Char;
+	wchar_t Char;
+	wchar_t Reserved0;
+	int Reserved1;
 	struct FarColor Attributes;
 
 #ifdef __cplusplus
-	static FAR_CHAR_INFO make(wchar_t Char, const FarColor& Attributes)
+	bool operator==(const FAR_CHAR_INFO& rhs) const
 	{
-		FAR_CHAR_INFO info = { Char, Attributes };
-		return info;
+		return
+			Char == rhs.Char &&
+			Reserved0 == rhs.Reserved0 &&
+			Reserved1 == rhs.Reserved1 &&
+			Attributes == rhs.Attributes;
 	}
 
-	bool operator ==(const FAR_CHAR_INFO& rhs) const
-	{
-		return Char == rhs.Char && Attributes == rhs.Attributes;
-	}
-
-	bool operator !=(const FAR_CHAR_INFO& rhs) const
+	bool operator!=(const FAR_CHAR_INFO& rhs) const
 	{
 		return !(*this == rhs);
 	}
 #endif
 };
+#ifdef FAR_USE_INTERNALS
+static_assert(sizeof(FAR_CHAR_INFO) == 32);
+#endif // END FAR_USE_INTERNALS
 
 struct FarDialogItem
 {
@@ -571,8 +835,8 @@ struct OpenDlgPluginData
 struct DialogInfo
 {
 	size_t StructSize;
-	GUID Id;
-	GUID Owner;
+	UUID Id;
+	UUID Owner;
 };
 
 struct FarGetDialogItem
@@ -582,13 +846,14 @@ struct FarGetDialogItem
 	struct FarDialogItem* Item;
 };
 
-typedef unsigned __int64 FARDIALOGFLAGS;
-static const FARDIALOGFLAGS
+typedef unsigned long long FARDIALOGFLAGS;
+FAR_INLINE_CONSTANT FARDIALOGFLAGS
 	FDLG_WARNING             = 0x0000000000000001ULL,
 	FDLG_SMALLDIALOG         = 0x0000000000000002ULL,
 	FDLG_NODRAWSHADOW        = 0x0000000000000004ULL,
 	FDLG_NODRAWPANEL         = 0x0000000000000008ULL,
 	FDLG_KEEPCONSOLETITLE    = 0x0000000000000010ULL,
+	FDLG_NONMODAL            = 0x0000000000000020ULL,
 	FDLG_NONE                = 0;
 
 typedef intptr_t(WINAPI *FARWINDOWPROC)(
@@ -613,8 +878,8 @@ typedef intptr_t(WINAPI *FARAPIDEFDLGPROC)(
 );
 
 typedef HANDLE(WINAPI *FARAPIDIALOGINIT)(
-	const GUID*           PluginId,
-	const GUID*           Id,
+	const UUID*           PluginId,
+	const UUID*           Id,
 	intptr_t              X1,
 	intptr_t              Y1,
 	intptr_t              X2,
@@ -642,14 +907,18 @@ struct FarKey
 	DWORD ControlKeyState;
 };
 
-typedef unsigned __int64 MENUITEMFLAGS;
-static const MENUITEMFLAGS
-	MIF_SELECTED   = 0x000000000010000ULL,
-	MIF_CHECKED    = 0x000000000020000ULL,
-	MIF_SEPARATOR  = 0x000000000040000ULL,
-	MIF_DISABLE    = 0x000000000080000ULL,
-	MIF_GRAYED     = 0x000000000100000ULL,
-	MIF_HIDDEN     = 0x000000000200000ULL,
+typedef unsigned long long MENUITEMFLAGS;
+FAR_INLINE_CONSTANT MENUITEMFLAGS
+	MIF_SELECTED   = 0x0000000000010000ULL,
+	MIF_CHECKED    = 0x0000000000020000ULL,
+	MIF_SEPARATOR  = 0x0000000000040000ULL,
+	MIF_DISABLE    = 0x0000000000080000ULL,
+	MIF_GRAYED     = 0x0000000000100000ULL,
+	MIF_HIDDEN     = 0x0000000000200000ULL,
+#ifdef FAR_USE_INTERNALS
+	MIF_SUBMENU    = 0x0000000000400000ULL,
+	MIF_FILTERED   = 0x0000000000800000ULL,
+#endif // END FAR_USE_INTERNALS
 	MIF_NONE       = 0;
 
 struct FarMenuItem
@@ -661,18 +930,22 @@ struct FarMenuItem
 	intptr_t Reserved[2];
 };
 
-typedef unsigned __int64 FARMENUFLAGS;
-static const FARMENUFLAGS
+typedef unsigned long long FARMENUFLAGS;
+FAR_INLINE_CONSTANT FARMENUFLAGS
 	FMENU_SHOWAMPERSAND        = 0x0000000000000001ULL,
 	FMENU_WRAPMODE             = 0x0000000000000002ULL,
 	FMENU_AUTOHIGHLIGHT        = 0x0000000000000004ULL,
 	FMENU_REVERSEAUTOHIGHLIGHT = 0x0000000000000008ULL,
 	FMENU_CHANGECONSOLETITLE   = 0x0000000000000010ULL,
+	FMENU_SHOWNOBOX            = 0x0000000000000020ULL,
+	FMENU_SHOWSHORTBOX         = 0x0000000000000040ULL,
+	FMENU_SHOWSINGLEBOX        = 0x0000000000000080ULL,
+	FMENU_NODRAWSHADOW         = 0x0000000000000100ULL,
 	FMENU_NONE                 = 0;
 
 typedef intptr_t (WINAPI *FARAPIMENU)(
-	const GUID*         PluginId,
-	const GUID*         Id,
+	const UUID*         PluginId,
+	const UUID*         Id,
 	intptr_t            X,
 	intptr_t            Y,
 	intptr_t            MaxHeight,
@@ -687,10 +960,15 @@ typedef intptr_t (WINAPI *FARAPIMENU)(
 );
 
 
-typedef unsigned __int64 PLUGINPANELITEMFLAGS;
-static const PLUGINPANELITEMFLAGS
+typedef unsigned long long PLUGINPANELITEMFLAGS;
+FAR_INLINE_CONSTANT PLUGINPANELITEMFLAGS
+	// The low word is reserved for private flags
 	PPIF_SELECTED               = 0x0000000040000000ULL,
 	PPIF_PROCESSDESCR           = 0x0000000080000000ULL,
+
+#ifdef FAR_USE_INTERNALS
+	PPIF_RESERVED               = 0x8000000000000000ULL,
+#endif // END FAR_USE_INTERNALS
 	PPIF_NONE                   = 0;
 
 struct FarPanelItemFreeInfo
@@ -714,8 +992,8 @@ struct PluginPanelItem
 	FILETIME LastAccessTime;
 	FILETIME LastWriteTime;
 	FILETIME ChangeTime;
-	unsigned __int64 FileSize;
-	unsigned __int64 AllocationSize;
+	unsigned long long FileSize;
+	unsigned long long AllocationSize;
 	const wchar_t *FileName;
 	const wchar_t *AlternateFileName;
 	const wchar_t *Description;
@@ -743,8 +1021,8 @@ struct SortingPanelItem
 	FILETIME LastAccessTime;
 	FILETIME LastWriteTime;
 	FILETIME ChangeTime;
-	unsigned __int64 FileSize;
-	unsigned __int64 AllocationSize;
+	unsigned long long FileSize;
+	unsigned long long AllocationSize;
 	const wchar_t *FileName;
 	const wchar_t *AlternateFileName;
 	const wchar_t *Description;
@@ -759,22 +1037,20 @@ struct SortingPanelItem
 	intptr_t Position;
 	intptr_t SortGroup;
 	uintptr_t NumberOfStreams;
-	unsigned __int64 StreamsSize;
+	unsigned long long StreamsSize;
 };
 
-typedef unsigned __int64 PANELINFOFLAGS;
-static const PANELINFOFLAGS
+typedef unsigned long long PANELINFOFLAGS;
+FAR_INLINE_CONSTANT PANELINFOFLAGS
 	PFLAGS_SHOWHIDDEN         = 0x0000000000000001ULL,
 	PFLAGS_HIGHLIGHT          = 0x0000000000000002ULL,
 	PFLAGS_REVERSESORTORDER   = 0x0000000000000004ULL,
 	PFLAGS_USESORTGROUPS      = 0x0000000000000008ULL,
 	PFLAGS_SELECTEDFIRST      = 0x0000000000000010ULL,
 	PFLAGS_REALNAMES          = 0x0000000000000020ULL,
-	PFLAGS_NUMERICSORT        = 0x0000000000000040ULL,
 	PFLAGS_PANELLEFT          = 0x0000000000000080ULL,
 	PFLAGS_DIRECTORIESFIRST   = 0x0000000000000100ULL,
 	PFLAGS_USECRC32           = 0x0000000000000200ULL,
-	PFLAGS_CASESENSITIVESORT  = 0x0000000000000400ULL,
 	PFLAGS_PLUGIN             = 0x0000000000000800ULL,
 	PFLAGS_VISIBLE            = 0x0000000000001000ULL,
 	PFLAGS_FOCUS              = 0x0000000000002000ULL,
@@ -795,6 +1071,7 @@ enum OPENPANELINFO_SORTMODES
 	SM_DEFAULT                   =  0,
 	SM_UNSORTED                  =  1,
 	SM_NAME                      =  2,
+	SM_FULLNAME                  =  SM_NAME,
 	SM_EXT                       =  3,
 	SM_MTIME                     =  4,
 	SM_CTIME                     =  5,
@@ -806,15 +1083,19 @@ enum OPENPANELINFO_SORTMODES
 	SM_NUMLINKS                  = 11,
 	SM_NUMSTREAMS                = 12,
 	SM_STREAMSSIZE               = 13,
-	SM_FULLNAME                  = 14,
+	SM_NAMEONLY                  = 14,
 	SM_CHTIME                    = 15,
+
+	SM_COUNT,
+
+	SM_USER                      = 100000
 };
 
 struct PanelInfo
 {
 	size_t StructSize;
 	HANDLE PluginHandle;
-	GUID OwnerGuid;
+	UUID OwnerGuid;
 	PANELINFOFLAGS Flags;
 	size_t ItemsNumber;
 	size_t SelectedItemsNumber;
@@ -846,14 +1127,21 @@ struct FarPanelDirectory
 	size_t StructSize;
 	const wchar_t* Name;
 	const wchar_t* Param;
-	GUID PluginId;
+	UUID PluginId;
 	const wchar_t* File;
 };
 
+#ifdef FAR_USE_INTERNALS
+#define PANEL_NONE    reinterpret_cast<HANDLE>(static_cast<intptr_t>(-1))
+#define PANEL_ACTIVE  reinterpret_cast<HANDLE>(static_cast<intptr_t>(-1))
+#define PANEL_PASSIVE reinterpret_cast<HANDLE>(static_cast<intptr_t>(-2))
+#define PANEL_STOP    reinterpret_cast<HANDLE>(static_cast<intptr_t>(-1))
+#else // ELSE FAR_USE_INTERNALS
 #define PANEL_NONE    ((HANDLE)(-1))
 #define PANEL_ACTIVE  ((HANDLE)(-1))
 #define PANEL_PASSIVE ((HANDLE)(-2))
-#define PANEL_STOP ((HANDLE)(-1))
+#define PANEL_STOP    ((HANDLE)(-1))
+#endif // END FAR_USE_INTERNALS
 
 enum FILE_CONTROL_COMMANDS
 {
@@ -875,7 +1163,6 @@ enum FILE_CONTROL_COMMANDS
 	FCTL_SETCMDLINESELECTION        = 15,
 	FCTL_GETCMDLINESELECTION        = 16,
 	FCTL_CHECKPANELSEXIST           = 17,
-	FCTL_SETNUMERICSORT             = 18,
 	FCTL_GETUSERSCREEN              = 19,
 	FCTL_ISACTIVEPANEL              = 20,
 	FCTL_GETPANELITEM               = 21,
@@ -890,7 +1177,6 @@ enum FILE_CONTROL_COMMANDS
 	FCTL_SETDIRECTORIESFIRST        = 30,
 	FCTL_GETPANELFORMAT             = 31,
 	FCTL_GETPANELHOSTFILE           = 32,
-	FCTL_SETCASESENSITIVESORT       = 33,
 	FCTL_GETPANELPREFIX             = 34,
 	FCTL_SETACTIVEPANEL             = 35,
 };
@@ -906,6 +1192,8 @@ typedef HANDLE(WINAPI *FARAPISAVESCREEN)(intptr_t X1, intptr_t Y1, intptr_t X2, 
 
 typedef void (WINAPI *FARAPIRESTORESCREEN)(HANDLE hScreen);
 
+typedef void (WINAPI *FARAPIFREESCREEN)(HANDLE hScreen);
+
 
 typedef intptr_t (WINAPI *FARAPIGETDIRLIST)(
 	const wchar_t *Dir,
@@ -914,7 +1202,7 @@ typedef intptr_t (WINAPI *FARAPIGETDIRLIST)(
 );
 
 typedef intptr_t (WINAPI *FARAPIGETPLUGINDIRLIST)(
-	const GUID* PluginId,
+	const UUID* PluginId,
 	HANDLE hPanel,
 	const wchar_t *Dir,
 	struct PluginPanelItem **pPanelItem,
@@ -924,8 +1212,8 @@ typedef intptr_t (WINAPI *FARAPIGETPLUGINDIRLIST)(
 typedef void (WINAPI *FARAPIFREEDIRLIST)(struct PluginPanelItem *PanelItem, size_t nItemsNumber);
 typedef void (WINAPI *FARAPIFREEPLUGINDIRLIST)(HANDLE hPanel, struct PluginPanelItem *PanelItem, size_t nItemsNumber);
 
-typedef unsigned __int64 VIEWER_FLAGS;
-static const VIEWER_FLAGS
+typedef unsigned long long VIEWER_FLAGS;
+FAR_INLINE_CONSTANT VIEWER_FLAGS
 	VF_NONMODAL              = 0x0000000000000001ULL,
 	VF_DELETEONCLOSE         = 0x0000000000000002ULL,
 	VF_ENABLE_F6             = 0x0000000000000004ULL,
@@ -945,8 +1233,8 @@ typedef intptr_t (WINAPI *FARAPIVIEWER)(
 	uintptr_t CodePage
 );
 
-typedef unsigned __int64 EDITOR_FLAGS;
-static const EDITOR_FLAGS
+typedef unsigned long long EDITOR_FLAGS;
+FAR_INLINE_CONSTANT EDITOR_FLAGS
 	EF_NONMODAL              = 0x0000000000000001ULL,
 	EF_CREATENEW             = 0x0000000000000002ULL,
 	EF_ENABLE_F6             = 0x0000000000000004ULL,
@@ -962,6 +1250,9 @@ static const EDITOR_FLAGS
 	EF_OPENMODE_USEEXISTING  = 0x0000000020000000ULL,
 	EF_OPENMODE_BREAKIFOPEN  = 0x0000000030000000ULL,
 	EF_OPENMODE_RELOADIFOPEN = 0x0000000040000000ULL,
+#ifdef FAR_USE_INTERNALS
+	EF_SERVICEREGION         = 0x0000000000001000ULL,
+#endif // END FAR_USE_INTERNALS
 	EN_NONE                  = 0;
 
 enum EDITOR_EXITCODE
@@ -970,6 +1261,12 @@ enum EDITOR_EXITCODE
 	EEC_MODIFIED            = 1,
 	EEC_NOT_MODIFIED        = 2,
 	EEC_LOADING_INTERRUPTED = 3,
+#ifdef FAR_USE_INTERNALS
+	EEC_OPENED_EXISTING     = 4,
+	EEC_ALREADY_EXISTS      = 5,
+	EEC_OPEN_NEWINSTANCE    = 6,
+	EEC_RELOAD              = 7,
+#endif // END FAR_USE_INTERNALS
 };
 
 typedef intptr_t (WINAPI *FARAPIEDITOR)(
@@ -986,12 +1283,12 @@ typedef intptr_t (WINAPI *FARAPIEDITOR)(
 );
 
 typedef const wchar_t*(WINAPI *FARAPIGETMSG)(
-	const GUID* PluginId,
+	const UUID* PluginId,
 	intptr_t MsgId
 );
 
-typedef unsigned __int64 FARHELPFLAGS;
-static const FARHELPFLAGS
+typedef unsigned long long FARHELPFLAGS;
+FAR_INLINE_CONSTANT FARHELPFLAGS
 	FHELP_NOSHOWERROR = 0x0000000080000000ULL,
 	FHELP_SELFHELP    = 0x0000000000000000ULL,
 	FHELP_FARHELP     = 0x0000000000000001ULL,
@@ -1013,6 +1310,7 @@ enum ADVANCED_CONTROL_COMMANDS
 	ACTL_WAITKEY                    = 2,
 	ACTL_GETCOLOR                   = 3,
 	ACTL_GETARRAYCOLOR              = 4,
+
 	ACTL_GETWINDOWINFO              = 6,
 	ACTL_GETWINDOWCOUNT             = 7,
 	ACTL_SETCURRENTWINDOW           = 8,
@@ -1029,12 +1327,7 @@ enum ADVANCED_CONTROL_COMMANDS
 	ACTL_SETCURSORPOS               = 26,
 	ACTL_PROGRESSNOTIFY             = 27,
 	ACTL_GETWINDOWTYPE              = 28,
-
-
 };
-
-
-
 
 enum FAR_MACRO_CONTROL_COMMANDS
 {
@@ -1049,8 +1342,8 @@ enum FAR_MACRO_CONTROL_COMMANDS
 	MCTL_EXECSTRING        = 10,
 };
 
-typedef unsigned __int64 FARKEYMACROFLAGS;
-static const FARKEYMACROFLAGS
+typedef unsigned long long FARKEYMACROFLAGS;
+FAR_INLINE_CONSTANT FARKEYMACROFLAGS
 	KMFLAGS_SILENTCHECK         = 0x0000000000000001,
 	KMFLAGS_NOSENDKEYSTOPLUGINS = 0x0000000000000002,
 	KMFLAGS_ENABLEOUTPUT        = 0x0000000000000004,
@@ -1067,7 +1360,7 @@ enum FARMACROSENDSTRINGCOMMAND
 
 enum FARMACROAREA
 {
-	MACROAREA_OTHER                      =   0,   // Mode of copying text from the screen; vertical menus
+	MACROAREA_OTHER                      =   0,   // Reserved
 	MACROAREA_SHELL                      =   1,   // File panels
 	MACROAREA_VIEWER                     =   2,   // Internal viewer program
 	MACROAREA_EDITOR                     =   3,   // Editor
@@ -1084,6 +1377,12 @@ enum FARMACROAREA
 	MACROAREA_USERMENU                   =  14,   // User menu
 	MACROAREA_SHELLAUTOCOMPLETION        =  15,   // Autocompletion list in command line
 	MACROAREA_DIALOGAUTOCOMPLETION       =  16,   // Autocompletion list in dialogs
+	MACROAREA_GRABBER                    =  17,   // Mode of copying text from the screen
+	MACROAREA_DESKTOP                    =  18,   // Desktop
+#ifdef FAR_USE_INTERNALS
+	MACROAREA_LAST,
+	MACROAREA_INVALID                    =  -1,
+#endif // END FAR_USE_INTERNALS
 
 	MACROAREA_COMMON                     = 255,
 };
@@ -1120,11 +1419,25 @@ struct MacroSendMacroText
 	const wchar_t *SequenceText;
 };
 
-typedef unsigned __int64 FARADDKEYMACROFLAGS;
-static const FARADDKEYMACROFLAGS
+typedef unsigned long long FARADDKEYMACROFLAGS;
+FAR_INLINE_CONSTANT FARADDKEYMACROFLAGS
 	AKMFLAGS_NONE                = 0;
 
 typedef intptr_t (WINAPI *FARMACROCALLBACK)(void* Id,FARADDKEYMACROFLAGS Flags);
+
+#ifdef FAR_USE_INTERNALS
+struct MacroAddMacroV1
+{
+	size_t StructSize;
+	void* Id;
+	const wchar_t *SequenceText;
+	const wchar_t *Description;
+	FARKEYMACROFLAGS Flags;
+	INPUT_RECORD AKey;
+	enum FARMACROAREA Area;
+	FARMACROCALLBACK Callback;
+};
+#endif // END FAR_USE_INTERNALS
 
 struct MacroAddMacro
 {
@@ -1136,6 +1449,7 @@ struct MacroAddMacro
 	INPUT_RECORD AKey;
 	enum FARMACROAREA Area;
 	FARMACROCALLBACK Callback;
+	intptr_t Priority;
 };
 
 enum FARMACROVARTYPE
@@ -1150,6 +1464,7 @@ enum FARMACROVARTYPE
 	FMVT_NIL                    = 7,
 	FMVT_ARRAY                  = 8,
 	FMVT_PANEL                  = 9,
+	FMVT_ERROR                  = 10,
 };
 
 struct FarMacroValue
@@ -1157,8 +1472,8 @@ struct FarMacroValue
 	enum FARMACROVARTYPE Type;
 	union
 	{
-		__int64        Integer;
-		__int64        Boolean;
+		long long        Integer;
+		long long        Boolean;
 		double         Double;
 		const wchar_t *String;
 		void          *Pointer;
@@ -1181,14 +1496,17 @@ struct FarMacroValue
 	FarMacroValue()                   { Type=FMVT_NIL; }
 	FarMacroValue(int v)              { Type=FMVT_INTEGER; Integer=v; }
 	FarMacroValue(unsigned int v)     { Type=FMVT_INTEGER; Integer=v; }
-	FarMacroValue(__int64 v)          { Type=FMVT_INTEGER; Integer=v; }
-	FarMacroValue(unsigned __int64 v) { Type=FMVT_INTEGER; Integer=v; }
-	FarMacroValue(bool v)             { Type=FMVT_BOOLEAN; Boolean=v?1:0; }
+	FarMacroValue(long long v)          { Type=FMVT_INTEGER; Integer=v; }
+	FarMacroValue(unsigned long long v) { Type=FMVT_INTEGER; Integer=v; }
+	FarMacroValue(bool v)             { Type=FMVT_BOOLEAN; Boolean=v; }
 	FarMacroValue(double v)           { Type=FMVT_DOUBLE; Double=v; }
 	FarMacroValue(const wchar_t* v)   { Type=FMVT_STRING; String=v; }
 	FarMacroValue(void* v)            { Type=FMVT_POINTER; Pointer=v; }
-	FarMacroValue(const GUID& v)      { Type=FMVT_BINARY; Binary.Data=&const_cast<GUID&>(v); Binary.Size=sizeof(GUID); }
+	FarMacroValue(const UUID& v)      { Type=FMVT_BINARY; Binary.Data=&const_cast<UUID&>(v); Binary.Size=sizeof(UUID); }
 	FarMacroValue(FarMacroValue* arr,size_t count) { Type=FMVT_ARRAY; Array.Values=arr; Array.Count=count; }
+#ifdef FAR_USE_INTERNALS
+  // explicit(false) FarMacroValue(const string& v)    { Type=FMVT_STRING; String=v.c_str(); }
+#endif // END FAR_USE_INTERNALS
 #endif
 };
 
@@ -1223,11 +1541,11 @@ struct FarMacroLoad
 {
 	size_t StructSize;
 	const wchar_t *Path;
-	unsigned __int64 Flags;
+	unsigned long long Flags;
 };
 
-typedef unsigned __int64 FARSETCOLORFLAGS;
-static const FARSETCOLORFLAGS
+typedef unsigned long long FARSETCOLORFLAGS;
+FAR_INLINE_CONSTANT FARSETCOLORFLAGS
 	FSETCLR_REDRAW                 = 0x0000000000000001ULL,
 	FSETCLR_NONE                   = 0;
 
@@ -1242,6 +1560,7 @@ struct FarSetColors
 
 enum WINDOWINFO_TYPE
 {
+	WTYPE_UNKNOWN                   = -1,
 	WTYPE_DESKTOP                   = 0,
 	WTYPE_PANELS                    = 1,
 	WTYPE_VIEWER                    = 2,
@@ -1249,13 +1568,20 @@ enum WINDOWINFO_TYPE
 	WTYPE_DIALOG                    = 4,
 	WTYPE_VMENU                     = 5,
 	WTYPE_HELP                      = 6,
+	WTYPE_COMBOBOX                  = 7,
+	WTYPE_GRABBER                   = 8,
+	WTYPE_HMENU                     = 9,
+#ifdef FAR_USE_INTERNALS
+	WTYPE_FINDFOLDER,
+#endif // END FAR_USE_INTERNALS
 };
 
-typedef unsigned __int64 WINDOWINFO_FLAGS;
-static const WINDOWINFO_FLAGS
+typedef unsigned long long WINDOWINFO_FLAGS;
+FAR_INLINE_CONSTANT WINDOWINFO_FLAGS
 	WIF_MODIFIED = 0x0000000000000001ULL,
 	WIF_CURRENT  = 0x0000000000000002ULL,
-	WIF_MODAL    = 0x0000000000000004ULL;
+	WIF_MODAL    = 0x0000000000000004ULL,
+	WIF_NONE     = 0;
 
 struct WindowInfo
 {
@@ -1288,8 +1614,8 @@ enum TASKBARPROGRESSTATE
 struct ProgressValue
 {
 	size_t StructSize;
-	unsigned __int64 Completed;
-	unsigned __int64 Total;
+	unsigned long long Completed;
+	unsigned long long Total;
 };
 
 enum VIEWER_CONTROL_COMMANDS
@@ -1304,10 +1630,14 @@ enum VIEWER_CONTROL_COMMANDS
 	VCTL_GETFILENAME                = 7,
 };
 
-typedef unsigned __int64 VIEWER_OPTIONS;
-static const VIEWER_OPTIONS
+typedef unsigned long long VIEWER_OPTIONS;
+FAR_INLINE_CONSTANT VIEWER_OPTIONS
 	VOPT_SAVEFILEPOSITION   = 0x0000000000000001ULL,
 	VOPT_AUTODETECTCODEPAGE = 0x0000000000000002ULL,
+	VOPT_SHOWTITLEBAR       = 0x0000000000000004ULL,
+	VOPT_SHOWKEYBAR         = 0x0000000000000008ULL,
+	VOPT_SHOWSCROLLBAR      = 0x0000000000000010ULL,
+	VOPT_QUICKVIEW          = 0x0000000000000020ULL,
 	VOPT_NONE               = 0;
 
 enum VIEWER_SETMODE_TYPES
@@ -1317,9 +1647,10 @@ enum VIEWER_SETMODE_TYPES
 	VSMT_WORDWRAP                   = 2,
 };
 
-typedef unsigned __int64 VIEWER_SETMODEFLAGS_TYPES;
-static const VIEWER_SETMODEFLAGS_TYPES
-	VSMFL_REDRAW    = 0x0000000000000001ULL;
+typedef unsigned long long VIEWER_SETMODEFLAGS_TYPES;
+FAR_INLINE_CONSTANT VIEWER_SETMODEFLAGS_TYPES
+	VSMFL_REDRAW    = 0x0000000000000001ULL,
+	VSMFL_NONE      = 0;
 
 struct ViewerSetMode
 {
@@ -1340,29 +1671,31 @@ struct ViewerSetMode
 struct ViewerSelect
 {
 	size_t StructSize;
-	__int64 BlockStartPos;
-	__int64 BlockLen;
+	long long BlockStartPos;
+	long long BlockLen;
 };
 
-typedef unsigned __int64 VIEWER_SETPOS_FLAGS;
-static const VIEWER_SETPOS_FLAGS
+typedef unsigned long long VIEWER_SETPOS_FLAGS;
+FAR_INLINE_CONSTANT VIEWER_SETPOS_FLAGS
 	VSP_NOREDRAW    = 0x0000000000000001ULL,
 	VSP_PERCENT     = 0x0000000000000002ULL,
 	VSP_RELATIVE    = 0x0000000000000004ULL,
-	VSP_NORETNEWPOS = 0x0000000000000008ULL;
+	VSP_NORETNEWPOS = 0x0000000000000008ULL,
+	VSP_NONE        = 0;
 
 struct ViewerSetPosition
 {
 	size_t StructSize;
 	VIEWER_SETPOS_FLAGS Flags;
-	__int64 StartPos;
-	__int64 LeftPos;
+	long long StartPos;
+	long long LeftPos;
 };
 
-typedef unsigned __int64 VIEWER_MODE_FLAGS;
-static const VIEWER_MODE_FLAGS
+typedef unsigned long long VIEWER_MODE_FLAGS;
+FAR_INLINE_CONSTANT VIEWER_MODE_FLAGS
 	VMF_WRAP     = 0x0000000000000001ULL,
-	VMF_WORDWRAP = 0x0000000000000002ULL;
+	VMF_WORDWRAP = 0x0000000000000002ULL,
+	VMF_NONE     = 0;
 
 enum VIEWER_MODE_TYPE
 {
@@ -1384,9 +1717,9 @@ struct ViewerInfo
 	intptr_t ViewerID;
 	intptr_t TabSize;
 	struct ViewerMode CurMode;
-	__int64 FileSize;
-	__int64 FilePos;
-	__int64 LeftPos;
+	long long FileSize;
+	long long FilePos;
+	long long LeftPos;
 	VIEWER_OPTIONS Options;
 	intptr_t WindowSizeX;
 	intptr_t WindowSizeY;
@@ -1424,9 +1757,14 @@ enum DIALOG_EVENTS
 enum SYNCHRO_EVENTS
 {
 	SE_COMMONSYNCHRO  =0,
+	SE_FOLDERCHANGED  =1,
 };
 
+#ifdef FAR_USE_INTERNALS
+#define EEREDRAW_ALL    nullptr
+#else // ELSE FAR_USE_INTERNALS
 #define EEREDRAW_ALL    (void*)0
+#endif // END FAR_USE_INTERNALS
 
 #define CURRENT_EDITOR -1
 
@@ -1466,6 +1804,9 @@ enum EDITOR_CONTROL_COMMANDS
 	ECTL_UNDOREDO                   = 32,
 	ECTL_GETFILENAME                = 33,
 	ECTL_DELCOLOR                   = 34,
+#ifdef FAR_USE_INTERNALS
+	ECTL_SERVICEREGION              = 35,
+#endif // END FAR_USE_INTERNALS
 	ECTL_SUBSCRIBECHANGEEVENT       = 36,
 	ECTL_UNSUBSCRIBECHANGEEVENT     = 37,
 	ECTL_GETTITLE                   = 38,
@@ -1487,6 +1828,14 @@ enum EDITOR_SETPARAMETER_TYPES
 	ESPT_SETBOM                     = 11,
 };
 
+#ifdef FAR_USE_INTERNALS
+struct EditorServiceRegion
+{
+	size_t StructSize;
+	intptr_t Command;
+	unsigned long long Flags;
+};
+#endif // END FAR_USE_INTERNALS
 
 
 struct EditorSetParameter
@@ -1503,7 +1852,7 @@ struct EditorSetParameter
 	Param
 #endif
 	;
-	unsigned __int64 Flags;
+	unsigned long long Flags;
 	size_t Size;
 };
 
@@ -1565,6 +1914,9 @@ enum EDITOR_OPTIONS
 	EOPT_SHOWWHITESPACE    = 0x00000100,
 	EOPT_BOM               = 0x00000200,
 	EOPT_SHOWLINEBREAK     = 0x00000400,
+	EOPT_SHOWTITLEBAR      = 0x00000800,
+	EOPT_SHOWKEYBAR        = 0x00001000,
+	EOPT_SHOWSCROLLBAR     = 0x00002000,
 };
 
 
@@ -1648,11 +2000,17 @@ struct EditorConvertPos
 	intptr_t DestPos;
 };
 
-typedef unsigned __int64 EDITORCOLORFLAGS;
-static const EDITORCOLORFLAGS
+typedef unsigned long long EDITORCOLORFLAGS;
+FAR_INLINE_CONSTANT EDITORCOLORFLAGS
+#ifdef FAR_USE_INTERNALS
+	// Achtung! Internally stored as unsigned int to reduce memory usage.
+	// If you want to add any flags above 0x0000000080000000,
+	// don't forget to change ColorItem::Flags to 64-bit too.
+#endif // END FAR_USE_INTERNALS
 	ECF_TABMARKFIRST   = 0x0000000000000001ULL,
 	ECF_TABMARKCURRENT = 0x0000000000000002ULL,
-	ECF_AUTODELETE     = 0x0000000000000004ULL;
+	ECF_AUTODELETE     = 0x0000000000000004ULL,
+	ECF_NONE           = 0;
 
 struct EditorColor
 {
@@ -1664,18 +2022,21 @@ struct EditorColor
 	uintptr_t Priority;
 	EDITORCOLORFLAGS Flags;
 	struct FarColor Color;
-	GUID Owner;
+	UUID Owner;
 };
 
 struct EditorDeleteColor
 {
 	size_t StructSize;
-	GUID Owner;
+	UUID Owner;
 	intptr_t StringNumber;
 	intptr_t StartPos;
 };
 
 #define EDITOR_COLOR_NORMAL_PRIORITY 0x80000000U
+#ifdef FAR_USE_INTERNALS
+#define EDITOR_COLOR_SELECTION_PRIORITY 0xFFFFFFFFU
+#endif // END FAR_USE_INTERNALS
 
 struct EditorSaveFile
 {
@@ -1702,11 +2063,11 @@ struct EditorChange
 struct EditorSubscribeChangeEvent
 {
 	size_t StructSize;
-	GUID PluginId;
+	UUID PluginId;
 };
 
-typedef unsigned __int64 INPUTBOXFLAGS;
-static const INPUTBOXFLAGS
+typedef unsigned long long INPUTBOXFLAGS;
+FAR_INLINE_CONSTANT INPUTBOXFLAGS
 	FIB_ENABLEEMPTY      = 0x0000000000000001ULL,
 	FIB_PASSWORD         = 0x0000000000000002ULL,
 	FIB_EXPANDENV        = 0x0000000000000004ULL,
@@ -1715,11 +2076,14 @@ static const INPUTBOXFLAGS
 	FIB_NOAMPERSAND      = 0x0000000000000020ULL,
 	FIB_EDITPATH         = 0x0000000000000040ULL,
 	FIB_EDITPATHEXEC     = 0x0000000000000080ULL,
+#ifdef FAR_USE_INTERNALS
+	FIB_CHECKBOX         = 0x0000000000010000ULL,
+#endif // END FAR_USE_INTERNALS
 	FIB_NONE             = 0;
 
 typedef intptr_t (WINAPI *FARAPIINPUTBOX)(
-	const GUID* PluginId,
-	const GUID* Id,
+	const UUID* PluginId,
+	const UUID* Id,
 	const wchar_t *Title,
 	const wchar_t *SubTitle,
 	const wchar_t *HistoryName,
@@ -1751,8 +2115,8 @@ enum FAR_PLUGIN_FIND_TYPE
 	PFM_MODULENAME = 1,
 };
 
-typedef unsigned __int64 FAR_PLUGIN_FLAGS;
-static const FAR_PLUGIN_FLAGS
+typedef unsigned long long FAR_PLUGIN_FLAGS;
+FAR_INLINE_CONSTANT FAR_PLUGIN_FLAGS
 	FPF_LOADED         = 0x0000000000000001ULL,
 	FPF_ANSI           = 0x1000000000000000ULL,
 	FPF_NONE           = 0;
@@ -1784,6 +2148,7 @@ enum FAR_REGEXP_CONTROL_COMMANDS
 	RECTL_MATCHEX                   = 4,
 	RECTL_SEARCHEX                  = 5,
 	RECTL_BRACKETSCOUNT             = 6,
+	RECTL_NAMEDGROUPINDEX           = 7,
 };
 
 struct RegExpMatch
@@ -1824,6 +2189,9 @@ enum FARSETTINGSTYPES
 
 enum FARSETTINGS_SUBFOLDERS
 {
+#ifdef FAR_USE_INTERNALS
+	FSSF_PRIVATE                    =  0,
+#endif // END FAR_USE_INTERNALS
 	FSSF_ROOT                       =  0,
 	FSSF_HISTORY_CMD                =  1,
 	FSSF_HISTORY_FOLDER             =  2,
@@ -1848,6 +2216,9 @@ enum FARSETTINGS_SUBFOLDERS
 	FSSF_DIALOG                     = 21,
 	FSSF_INTERFACE                  = 22,
 	FSSF_PANELLAYOUT                = 23,
+#ifdef FAR_USE_INTERNALS
+	FSSF_COUNT
+#endif // END FAR_USE_INTERNALS
 };
 
 enum FAR_PLUGIN_SETTINGS_LOCATION
@@ -1859,7 +2230,7 @@ enum FAR_PLUGIN_SETTINGS_LOCATION
 struct FarSettingsCreate
 {
 	size_t StructSize;
-	GUID Guid;
+	UUID Guid;
 	HANDLE Handle;
 };
 
@@ -1871,7 +2242,7 @@ struct FarSettingsItem
 	enum FARSETTINGSTYPES Type;
 	union
 	{
-		unsigned __int64 Number;
+		unsigned long long Number;
 		const wchar_t* String;
 		struct
 		{
@@ -1895,7 +2266,7 @@ struct FarSettingsHistory
 {
 	const wchar_t* Name;
 	const wchar_t* Param;
-	GUID PluginId;
+	UUID PluginId;
 	const wchar_t* File;
 	FILETIME Time;
 	BOOL Lock;
@@ -1932,7 +2303,7 @@ typedef intptr_t (WINAPI *FARAPIPANELCONTROL)(
 );
 
 typedef intptr_t(WINAPI *FARAPIADVCONTROL)(
-	const GUID* PluginId,
+	const UUID* PluginId,
 	enum ADVANCED_CONTROL_COMMANDS Command,
 	intptr_t Param1,
 	void* Param2
@@ -1953,7 +2324,7 @@ typedef intptr_t (WINAPI *FARAPIEDITORCONTROL)(
 );
 
 typedef intptr_t (WINAPI *FARAPIMACROCONTROL)(
-	const GUID* PluginId,
+	const UUID* PluginId,
 	enum FAR_MACRO_CONTROL_COMMANDS Command,
 	intptr_t Param1,
 	void* Param2
@@ -2004,8 +2375,8 @@ typedef void   *(WINAPI *FARSTDBSEARCH)(const void *key, const void *base, size_
 typedef size_t (WINAPI *FARSTDGETFILEOWNER)(const wchar_t *Computer,const wchar_t *Name,wchar_t *Owner,size_t Size);
 typedef size_t (WINAPI *FARSTDGETNUMBEROFLINKS)(const wchar_t *Name);
 typedef int (WINAPI *FARSTDATOI)(const wchar_t *s);
-typedef __int64 (WINAPI *FARSTDATOI64)(const wchar_t *s);
-typedef wchar_t   *(WINAPI *FARSTDITOA64)(__int64 value, wchar_t *Str, int radix);
+typedef long long (WINAPI *FARSTDATOI64)(const wchar_t *s);
+typedef wchar_t   *(WINAPI *FARSTDITOA64)(long long value, wchar_t *Str, int radix);
 typedef wchar_t   *(WINAPI *FARSTDITOA)(int value, wchar_t *Str, int radix);
 typedef wchar_t   *(WINAPI *FARSTDLTRIM)(wchar_t *Str);
 typedef wchar_t   *(WINAPI *FARSTDRTRIM)(wchar_t *Str);
@@ -2027,12 +2398,13 @@ typedef void (WINAPI *FARSTDLOCALUPPERBUF)(wchar_t *Buf,intptr_t Length);
 typedef void (WINAPI *FARSTDLOCALLOWERBUF)(wchar_t *Buf,intptr_t Length);
 typedef void (WINAPI *FARSTDLOCALSTRUPR)(wchar_t *s1);
 typedef void (WINAPI *FARSTDLOCALSTRLWR)(wchar_t *s1);
-typedef int (WINAPI *FARSTDLOCALSTRICMP)(const wchar_t *s1,const wchar_t *s2);
-typedef int (WINAPI *FARSTDLOCALSTRNICMP)(const wchar_t *s1,const wchar_t *s2,intptr_t n);
-typedef unsigned __int64 (WINAPI *FARSTDFARCLOCK)();
+typedef int (WINAPI *FARSTDLOCALSTRICMP)(const wchar_t *s1,const wchar_t *s2); // Deprecated, don't use
+typedef int (WINAPI *FARSTDLOCALSTRNICMP)(const wchar_t *s1,const wchar_t *s2,intptr_t n); // Deprecated, don't use
+typedef unsigned long long (WINAPI *FARSTDFARCLOCK)(void);
+typedef int (WINAPI *FARSTDCOMPARESTRINGS)(const wchar_t*Str1, size_t Size1, const wchar_t* Str2, size_t Size2);
 
-typedef unsigned __int64 PROCESSNAME_FLAGS;
-static const PROCESSNAME_FLAGS
+typedef unsigned long long PROCESSNAME_FLAGS;
+FAR_INLINE_CONSTANT PROCESSNAME_FLAGS
 	//             0xFFFF - length
 	//           0xFF0000 - mode
 	// 0xFFFFFFFFFF000000 - flags
@@ -2042,14 +2414,15 @@ static const PROCESSNAME_FLAGS
 	PN_CHECKMASK        = 0x0000000000030000ULL,
 
 	PN_SKIPPATH         = 0x0000000001000000ULL,
-	PN_SHOWERRORMESSAGE = 0x0000000002000000ULL;
+	PN_SHOWERRORMESSAGE = 0x0000000002000000ULL,
+	PN_NONE             = 0;
 
 typedef size_t (WINAPI *FARSTDPROCESSNAME)(const wchar_t *param1, wchar_t *param2, size_t size, PROCESSNAME_FLAGS flags);
 
 typedef void (WINAPI *FARSTDUNQUOTE)(wchar_t *Str);
 
-typedef unsigned __int64 XLAT_FLAGS;
-static const XLAT_FLAGS
+typedef unsigned long long XLAT_FLAGS;
+FAR_INLINE_CONSTANT XLAT_FLAGS
 	XLAT_SWITCHKEYBLAYOUT  = 0x0000000000000001ULL,
 	XLAT_SWITCHKEYBBEEP    = 0x0000000000000002ULL,
 	XLAT_USEKEYBLAYOUTNAME = 0x0000000000000004ULL,
@@ -2068,11 +2441,12 @@ typedef int (WINAPI *FRSUSERFUNC)(
 	void *Param
 );
 
-typedef unsigned __int64 FRSMODE;
-static const FRSMODE
+typedef unsigned long long FRSMODE;
+FAR_INLINE_CONSTANT FRSMODE
 	FRS_RETUPDIR             = 0x0000000000000001ULL,
 	FRS_RECUR                = 0x0000000000000002ULL,
-	FRS_SCANSYMLINK          = 0x0000000000000004ULL;
+	FRS_SCANSYMLINK          = 0x0000000000000004ULL,
+	FRS_NONE                 = 0;
 
 typedef void (WINAPI *FARSTDRECURSIVESEARCH)(const wchar_t *InitDir,const wchar_t *Mask,FRSUSERFUNC Func,FRSMODE Flags,void *Param);
 typedef size_t (WINAPI *FARSTDMKTEMP)(wchar_t *Dest, size_t DestSize, const wchar_t *Prefix);
@@ -2088,8 +2462,8 @@ enum LINK_TYPE
 	LINK_SYMLINK          = 6,
 };
 
-typedef unsigned __int64 MKLINK_FLAGS;
-static const MKLINK_FLAGS
+typedef unsigned long long MKLINK_FLAGS;
+FAR_INLINE_CONSTANT MKLINK_FLAGS
 	MLF_SHOWERRMSG       = 0x0000000000010000ULL,
 	MLF_DONOTUPDATEPANEL = 0x0000000000020000ULL,
 	MLF_HOLDTARGET       = 0x0000000000040000ULL,
@@ -2109,17 +2483,18 @@ typedef size_t (WINAPI *FARCONVERTPATH)(enum CONVERTPATHMODES Mode, const wchar_
 
 typedef size_t (WINAPI *FARGETCURRENTDIRECTORY)(size_t Size, wchar_t* Buffer);
 
-typedef unsigned __int64 FARFORMATFILESIZEFLAGS;
-static const FARFORMATFILESIZEFLAGS
+typedef unsigned long long FARFORMATFILESIZEFLAGS;
+FAR_INLINE_CONSTANT FARFORMATFILESIZEFLAGS
 	FFFS_COMMAS                 = 0x0100000000000000LL,
 	FFFS_FLOATSIZE              = 0x0200000000000000LL,
 	FFFS_SHOWBYTESINDEX         = 0x0400000000000000LL,
 	FFFS_ECONOMIC               = 0x0800000000000000LL,
 	FFFS_THOUSAND               = 0x1000000000000000LL,
 	FFFS_MINSIZEINDEX           = 0x2000000000000000LL,
-	FFFS_MINSIZEINDEX_MASK      = 0x0000000000000003LL;
+	FFFS_MINSIZEINDEX_MASK      = 0x0000000000000007LL,
+	FFFS_NONE                   = 0;
 
-typedef size_t (WINAPI *FARFORMATFILESIZE)(unsigned __int64 Size, intptr_t Width, FARFORMATFILESIZEFLAGS Flags, wchar_t *Dest, size_t DestSize);
+typedef size_t (WINAPI *FARFORMATFILESIZE)(unsigned long long Size, intptr_t Width, FARFORMATFILESIZEFLAGS Flags, wchar_t *Dest, size_t DestSize);
 
 typedef struct FarStandardFunctions
 {
@@ -2149,8 +2524,8 @@ typedef struct FarStandardFunctions
 	FARSTDLOCALLOWERBUF        LLowerBuf;
 	FARSTDLOCALSTRUPR          LStrupr;
 	FARSTDLOCALSTRLWR          LStrlwr;
-	FARSTDLOCALSTRICMP         LStricmp;
-	FARSTDLOCALSTRNICMP        LStrnicmp;
+	FARSTDLOCALSTRICMP         LStricmp; // Deprecated, don't use
+	FARSTDLOCALSTRNICMP        LStrnicmp; // Deprecated, don't use
 
 	FARSTDUNQUOTE              Unquote;
 	FARSTDLTRIM                LTrim;
@@ -2178,6 +2553,7 @@ typedef struct FarStandardFunctions
 	FARGETCURRENTDIRECTORY     GetCurrentDirectory;
 	FARFORMATFILESIZE          FormatFileSize;
 	FARSTDFARCLOCK             FarClock;
+	FARSTDCOMPARESTRINGS       CompareStrings;
 } FARSTANDARDFUNCTIONS;
 
 struct PluginStartupInfo
@@ -2217,8 +2593,9 @@ struct PluginStartupInfo
 	FARAPIREGEXPCONTROL    RegExpControl;
 	FARAPIMACROCONTROL     MacroControl;
 	FARAPISETTINGSCONTROL  SettingsControl;
-	void                  *Private;
-	void* Instance;
+	const void*            Private;
+	void*                  Instance;
+	FARAPIFREESCREEN       FreeScreen;
 };
 
 typedef HANDLE (WINAPI *FARAPICREATEFILE)(const wchar_t *Object,DWORD DesiredAccess,DWORD ShareMode,LPSECURITY_ATTRIBUTES SecurityAttributes,DWORD CreationDistribution,DWORD FlagsAndAttributes,HANDLE TemplateFile);
@@ -2268,8 +2645,8 @@ struct MacroPrivateInfo
 	FARAPICALLFAR CallFar;
 };
 
-typedef unsigned __int64 PLUGIN_FLAGS;
-static const PLUGIN_FLAGS
+typedef unsigned long long PLUGIN_FLAGS;
+FAR_INLINE_CONSTANT PLUGIN_FLAGS
 	PF_PRELOAD        = 0x0000000000000001ULL,
 	PF_DISABLEPANELS  = 0x0000000000000002ULL,
 	PF_EDITOR         = 0x0000000000000004ULL,
@@ -2280,7 +2657,7 @@ static const PLUGIN_FLAGS
 
 struct PluginMenuItem
 {
-	const GUID *Guids;
+	const UUID* Guids;
 	const wchar_t * const *Strings;
 	size_t Count;
 };
@@ -2291,6 +2668,8 @@ enum VERSION_STAGE
 	VS_ALPHA                        = 1,
 	VS_BETA                         = 2,
 	VS_RC                           = 3,
+	VS_SPECIAL                      = 4,
+	VS_PRIVATE                      = 5,
 };
 
 struct VersionInfo
@@ -2304,12 +2683,16 @@ struct VersionInfo
 
 static __inline BOOL CheckVersion(const struct VersionInfo* Current, const struct VersionInfo* Required)
 {
-	return (Current->Major > Required->Major) || (Current->Major == Required->Major && Current->Minor > Required->Minor) || (Current->Major == Required->Major && Current->Minor == Required->Minor && Current->Revision > Required->Revision) || (Current->Major == Required->Major && Current->Minor == Required->Minor && Current->Revision == Required->Revision && Current->Build >= Required->Build);
+	return
+		(Current->Major > Required->Major) ||
+		(Current->Major == Required->Major && Current->Minor > Required->Minor) ||
+		(Current->Major == Required->Major && Current->Minor == Required->Minor && Current->Build > Required->Build) ||
+		(Current->Major == Required->Major && Current->Minor == Required->Minor && Current->Build == Required->Build && Current->Revision >= Required->Revision);
 }
 
 static __inline struct VersionInfo MAKEFARVERSION(DWORD Major, DWORD Minor, DWORD Revision, DWORD Build, enum VERSION_STAGE Stage)
 {
-	struct VersionInfo Info = {Major, Minor, Revision, Build, Stage};
+	const struct VersionInfo Info = {Major, Minor, Revision, Build, Stage};
 	return Info;
 }
 
@@ -2320,7 +2703,7 @@ struct GlobalInfo
 	size_t StructSize;
 	struct VersionInfo MinFarVersion;
 	struct VersionInfo Version;
-	GUID Guid;
+	UUID Guid;
 	const wchar_t *Title;
 	const wchar_t *Description;
 	const wchar_t *Author;
@@ -2347,9 +2730,10 @@ struct FarGetPluginInformation
 	struct GlobalInfo *GInfo;
 };
 
-typedef unsigned __int64 INFOPANELLINE_FLAGS;
-static const INFOPANELLINE_FLAGS
-	IPLFLAGS_SEPARATOR      = 0x0000000000000001ULL;
+typedef unsigned long long INFOPANELLINE_FLAGS;
+FAR_INLINE_CONSTANT INFOPANELLINE_FLAGS
+	IPLFLAGS_SEPARATOR      = 0x0000000000000001ULL,
+	IPLFLAGS_NONE           = 0;
 
 struct InfoPanelLine
 {
@@ -2358,12 +2742,13 @@ struct InfoPanelLine
 	INFOPANELLINE_FLAGS Flags;
 };
 
-typedef unsigned __int64 PANELMODE_FLAGS;
-static const PANELMODE_FLAGS
+typedef unsigned long long PANELMODE_FLAGS;
+FAR_INLINE_CONSTANT PANELMODE_FLAGS
 	PMFLAGS_FULLSCREEN      = 0x0000000000000001ULL,
 	PMFLAGS_DETAILEDSTATUS  = 0x0000000000000002ULL,
 	PMFLAGS_ALIGNEXTENSIONS = 0x0000000000000004ULL,
-	PMFLAGS_CASECONVERSION  = 0x0000000000000008ULL;
+	PMFLAGS_CASECONVERSION  = 0x0000000000000008ULL,
+	PMFLAGS_NONE            = 0;
 
 struct PanelMode
 {
@@ -2375,8 +2760,8 @@ struct PanelMode
 	PANELMODE_FLAGS Flags;
 };
 
-typedef unsigned __int64 OPENPANELINFO_FLAGS;
-static const OPENPANELINFO_FLAGS
+typedef unsigned long long OPENPANELINFO_FLAGS;
+FAR_INLINE_CONSTANT OPENPANELINFO_FLAGS
 	OPIF_DISABLEFILTER           = 0x0000000000000001ULL,
 	OPIF_DISABLESORTGROUPS       = 0x0000000000000002ULL,
 	OPIF_DISABLEHIGHLIGHTING     = 0x0000000000000004ULL,
@@ -2395,6 +2780,11 @@ static const OPENPANELINFO_FLAGS
 	OPIF_USECRC32                = 0x0000000000010000ULL,
 	OPIF_USEFREESIZE             = 0x0000000000020000ULL,
 	OPIF_SHORTCUT                = 0x0000000000040000ULL,
+	//
+	OPIF_RECURSIVEPANEL          = 0x0000000000080000ULL,
+	OPIF_DELETEFILEONCLOSE       = 0x0000000000100000ULL,
+	OPIF_DELETEDIRONCLOSE        = 0x0000000000200000ULL,
+	//
 	OPIF_NONE                    = 0;
 
 struct KeyBarLabel
@@ -2416,8 +2806,8 @@ struct FarSetKeyBarTitles
 	struct KeyBarTitles *Titles;
 };
 
-typedef unsigned __int64 OPERATION_MODES;
-static const OPERATION_MODES
+typedef unsigned long long OPERATION_MODES;
+FAR_INLINE_CONSTANT OPERATION_MODES
 	OPM_SILENT     =0x0000000000000001ULL,
 	OPM_FIND       =0x0000000000000002ULL,
 	OPM_VIEW       =0x0000000000000004ULL,
@@ -2449,7 +2839,7 @@ struct OpenPanelInfo
 	intptr_t                     StartSortOrder;
 	const struct KeyBarTitles   *KeyBar;
 	const wchar_t               *ShortcutData;
-	unsigned __int64             FreeSize;
+	unsigned long long             FreeSize;
 	struct UserDataItem          UserData;
 	void* Instance;
 };
@@ -2478,8 +2868,8 @@ struct OpenMacroInfo
 	struct FarMacroValue *Values;
 };
 
-typedef unsigned __int64 FAROPENSHORTCUTFLAGS;
-static const FAROPENSHORTCUTFLAGS
+typedef unsigned long long FAROPENSHORTCUTFLAGS;
+FAR_INLINE_CONSTANT FAROPENSHORTCUTFLAGS
 	FOSF_ACTIVE = 0x0000000000000001ULL,
 	FOSF_NONE   = 0;
 
@@ -2529,6 +2919,7 @@ enum MACROCALLTYPE
 	MCT_GETCUSTOMSORTMODES = 10,
 	MCT_ADDMACRO           = 11,
 	MCT_KEYMACRO           = 12,
+	MCT_CANPANELSORT       = 13,
 };
 
 enum MACROPLUGINRETURNTYPE
@@ -2553,7 +2944,6 @@ struct OpenMacroPluginInfo
 	struct MacroPluginReturn Ret;
 };
 
-
 enum FAR_EVENTS
 {
 	FE_CHANGEVIEWMODE   =0,
@@ -2572,7 +2962,7 @@ struct OpenInfo
 {
 	size_t StructSize;
 	enum OPENFROM OpenFrom;
-	const GUID* Guid;
+	const UUID* Guid;
 	intptr_t Data;
 	void* Instance;
 };
@@ -2648,6 +3038,17 @@ struct GetFindDataInfo
 	void* Instance;
 };
 
+#ifdef FAR_USE_INTERNALS
+struct GetVirtualFindDataInfo
+{
+	size_t StructSize;
+	HANDLE hPanel;
+	struct PluginPanelItem *PanelItem;
+	size_t ItemsNumber;
+	const wchar_t *Path;
+	void* Instance;
+};
+#endif // END FAR_USE_INTERNALS
 
 struct FreeFindDataInfo
 {
@@ -2695,9 +3096,8 @@ struct ProcessEditorInputInfo
 	void* Instance;
 };
 
-typedef unsigned __int64 PROCESSCONSOLEINPUT_FLAGS;
-static const PROCESSCONSOLEINPUT_FLAGS
-	PCIF_FROMMAIN = 0x0000000000000001ULL,
+typedef unsigned long long PROCESSCONSOLEINPUT_FLAGS;
+FAR_INLINE_CONSTANT PROCESSCONSOLEINPUT_FLAGS
 	PCIF_NONE     = 0;
 
 struct ProcessConsoleInputInfo
@@ -2774,7 +3174,7 @@ struct CloseAnalyseInfo
 struct ConfigureInfo
 {
 	size_t StructSize;
-	const GUID* Guid;
+	const UUID* Guid;
 	void* Instance;
 };
 
@@ -2796,7 +3196,17 @@ struct GetContentDataInfo
 	void* Instance;
 };
 
-static const GUID FarGuid =
+struct ErrorInfo
+{
+	size_t StructSize;
+	const wchar_t* Summary;
+	const wchar_t* Description;
+};
+
+#ifdef FAR_USE_INTERNALS
+#else // ELSE FAR_USE_INTERNALS
+#endif // END FAR_USE_INTERNALS
+FAR_INLINE_CONSTANT UUID FarGuid =
 {0x00000000, 0x0000, 0x0000, {0x00,0x00, 0x00,0x00,0x00,0x00,0x00,0x00}};
 
 #ifdef __cplusplus
@@ -2813,11 +3223,17 @@ extern "C"
 	intptr_t WINAPI DeleteFilesW(const struct DeleteFilesInfo *Info);
 	void     WINAPI ExitFARW(const struct ExitInfo *Info);
 	void     WINAPI FreeFindDataW(const struct FreeFindDataInfo *Info);
+#ifdef FAR_USE_INTERNALS
+	void     WINAPI FreeVirtualFindDataW(const struct FreeFindDataInfo *Info);
+#endif // END FAR_USE_INTERNALS
 	intptr_t WINAPI GetFilesW(struct GetFilesInfo *Info);
 	intptr_t WINAPI GetFindDataW(struct GetFindDataInfo *Info);
 	void     WINAPI GetGlobalInfoW(struct GlobalInfo *Info);
 	void     WINAPI GetOpenPanelInfoW(struct OpenPanelInfo *Info);
 	void     WINAPI GetPluginInfoW(struct PluginInfo *Info);
+#ifdef FAR_USE_INTERNALS
+	intptr_t WINAPI GetVirtualFindDataW(struct GetVirtualFindDataInfo *Info);
+#endif // END FAR_USE_INTERNALS
 	intptr_t WINAPI MakeDirectoryW(struct MakeDirectoryInfo *Info);
 	HANDLE   WINAPI OpenW(const struct OpenInfo *Info);
 	intptr_t WINAPI ProcessDialogEventW(const struct ProcessDialogEventInfo *Info);
@@ -2838,7 +3254,7 @@ extern "C"
 	void     WINAPI FreeContentDataW(const struct GetContentDataInfo *Info);
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif /* RC_INVOKED */
