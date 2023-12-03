@@ -2322,7 +2322,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
           // and using LIST (no conversion, expecting the server uses the same timezone as the client).
           // Note that FormatTimeZone reverses the value.
           FTimeDifference = nb::ToInt64(SecsPerDay * (UtcModification - File->GetModification()));
-          const double Hours = TTimeSpan::FromSeconds(FTimeDifference).TotalHours;
+          const double Hours = TTimeSpan::FromSeconds(FTimeDifference).GetTotalHours();
 
           UnicodeString FileLog =
             FORMAT("%s (Listing: %s, UTC: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));

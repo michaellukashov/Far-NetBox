@@ -3086,17 +3086,17 @@ UnicodeString FormatTimeZone(int32_t Sec)
 {
   const TTimeSpan Span = TTimeSpan::FromSeconds(Sec);
   UnicodeString Str;
-  if ((Span.Seconds == 0) && (Span.Minutes == 0))
+  if ((Span.GetSeconds() == 0) && (Span.GetMinutes() == 0))
   {
-    Str = FORMAT("%d", -Span.Hours);
+    Str = FORMAT("%d", -Span.GetHours());
   }
-  else if (Span.Seconds == 0)
+  else if (Span.GetSeconds() == 0)
   {
-    Str = FORMAT("%d:%2.2d", -Span.Hours, abs(Span.Minutes));
+    Str = FORMAT("%d:%2.2d", -Span.GetHours(), abs(Span.GetMinutes()));
   }
   else
   {
-    Str = FORMAT("%d:%2.2d:%2.2d", -Span.Hours, abs(Span.Minutes), abs(Span.Seconds));
+    Str = FORMAT("%d:%2.2d:%2.2d", -Span.GetHours(), abs(Span.GetMinutes()), abs(Span.GetSeconds()));
   }
   Str = ((Span <= TTimeSpan::GetZero()) ? L"+" : L"") + Str;
   return Str;
