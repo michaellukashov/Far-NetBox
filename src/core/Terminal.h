@@ -974,18 +974,18 @@ public:
   bool Result{true};
 };
 
-using TDateTimes = nb::vector_t<TDateTime>;
 
 NB_DEFINE_CLASS_ID(TMakeLocalFileListParams);
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
+  using TDateTimes = nb::vector_t<TDateTime>;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMakeLocalFileListParams); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TMakeLocalFileListParams) || TObject::is(Kind); }
 public:
   TMakeLocalFileListParams() : TObject(OBJECT_CLASS_TMakeLocalFileListParams) {}
   TStrings * FileList{nullptr};
-  TDateTimes * FileTimes{nullptr};
+  std::unique_ptr<TDateTimes> FileTimes;
   bool IncludeDirs{false};
   bool Recursive{false};
 };
