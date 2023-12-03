@@ -928,7 +928,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timer > 0)
   {
-    uint32_t SinceLastTimer = nb::ToUIntPtr((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
+    uint32_t SinceLastTimer = nb::ToUInt32((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
     if (SinceLastTimer >= FParams->Timeout)
     {
       DebugAssert(FParams->TimerEvent);
@@ -947,7 +947,7 @@ void TFarMessageDialog::Idle()
 
   if (FParams->Timeout > 0)
   {
-    uint32_t Running = nb::ToUIntPtr((Now() - FStartTime).GetValue() * MSecsPerDay);
+    uint32_t Running = nb::ToUInt32((Now() - FStartTime).GetValue() * MSecsPerDay);
     if (Running >= FParams->Timeout)
     {
       DebugAssert(FTimeoutButton != nullptr);
