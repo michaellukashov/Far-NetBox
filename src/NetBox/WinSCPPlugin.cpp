@@ -802,7 +802,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     FarParams.MoreMessages = nullptr;
   }
 
-  Result = Message(nb::ToDWord(Flags), GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
+  Result = Message(Flags, GetMsg(TitleId), DialogStr, ButtonLabels.get(), &FarParams);
   if (FarParams.TimerAnswer > 0)
   {
     Result = FarParams.TimerAnswer;

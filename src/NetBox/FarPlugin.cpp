@@ -710,13 +710,13 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
 
 int32_t TCustomFarPlugin::MaxMessageLines() const
 {
-  return nb::ToInt32(TerminalInfo().y - 5);
+  return std::min<int32_t>(1, TerminalInfo().y - 5);
 }
 
 int32_t TCustomFarPlugin::MaxMenuItemLength() const
 {
   // got from maximal length of path in FAR's folders history
-  return nb::ToInt32(TerminalInfo().x - 13);
+  return std::min<int32_t>(10, TerminalInfo().x - 13);
 }
 
 int32_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
@@ -826,11 +826,11 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     MoreMessagesSeparator = new TFarSeparator(this);
   }
 
-  int32_t ButtonOffset = (FParams->CheckBoxLabel.IsEmpty() ? -1 : -2);
+  int32_t ButtonOffset = FParams->CheckBoxLabel.IsEmpty() ? -1 : -2;
   int32_t ButtonLines = 1;
   TFarButton * Button = nullptr;
   FTimeoutButton = nullptr;
-  for (uint32_t Index = 0; Index < nb::ToUIntPtr(Buttons->GetCount()); ++Index)
+  for (int32_t Index = 0; Index < Buttons->GetCount(); ++Index)
   {
     TFarButton * PrevButton = Button;
     Button = new TFarButton(this);
@@ -872,7 +872,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 
     if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
     {
-      MaxLen = nb::ToInt32(Button->GetRight() - GetBorderBox()->GetLeft() + 2);
+      MaxLen = Button->GetRight() - GetBorderBox()->GetLeft() + 2;
     }
 
     SetNextItemPosition(ipRight);
@@ -886,7 +886,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 
     if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
     {
-      MaxLen = nb::ToInt32(FCheckBox->GetRight() - GetBorderBox()->GetLeft());
+      MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft();
     }
   }
   else
@@ -1025,7 +1025,7 @@ int32_t TCustomFarPlugin::DialogMessage(uint32_t Flags,
 {
   std::unique_ptr<TFarMessageDialog> Dialog(std::make_unique<TFarMessageDialog>(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);
-  uint32_t Result = nb::ToUInt32(Dialog->Execute(Params->CheckBox));
+  int32_t Result = Dialog->Execute(Params->CheckBox);
   return Result;
 }
 
