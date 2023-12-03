@@ -7,7 +7,7 @@
 #include "PluginSettings.hpp"
 
 
-class TFar3Storage : public THierarchicalStorage
+class TFar3Storage final : public THierarchicalStorage
 {
 public:
   explicit TFar3Storage(const UnicodeString & AStorage,
