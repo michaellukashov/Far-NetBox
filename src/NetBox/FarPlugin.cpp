@@ -15,7 +15,7 @@ extern "C" {
 
 TCustomFarPlugin * FarPlugin = nullptr;
 
-#define FAR_TITLE_SUFFIX L" - Far"
+constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
