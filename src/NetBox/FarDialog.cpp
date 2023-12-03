@@ -27,6 +27,7 @@ public:
     FDialog(Dialog),
     FMillisecs(Millisecs)
   {}
+
   virtual ~TIdleThread() noexcept override
   {
     SAFE_CLOSE_HANDLE(FEvent);
@@ -34,42 +35,37 @@ public:
     WaitFor();
   }
 
-  virtual void Execute() override;
-  virtual void Terminate() override;
+  virtual void Execute() override
+  {
+    while (!IsFinished())
+    {
+      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED) && !IsFinished())
+      {
+        FDialog->Idle();
+      }
+    }
+    SAFE_CLOSE_HANDLE(FEvent);
+  }
 
-  void InitIdleThread();
+  virtual void Terminate() override
+  {
+    // TCompThread::Terminate();
+    FFinished = true;
+    ::SetEvent(FEvent);
+  }
+
+  void InitIdleThread()
+  {
+    TSimpleThread::InitSimpleThread();
+    FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+    Start();
+  }
 
 private:
   gsl::not_null<TFarDialog *> FDialog;
   uint32_t FMillisecs{0};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
-
-void TIdleThread::InitIdleThread()
-{
-  TSimpleThread::InitSimpleThread();
-  FEvent = ::CreateEvent(nullptr, false, false, nullptr);
-  Start();
-}
-
-void TIdleThread::Terminate()
-{
-  // TCompThread::Terminate();
-  FFinished = true;
-  ::SetEvent(FEvent);
-}
-
-void TIdleThread::Execute()
-{
-  while (!IsFinished())
-  {
-    if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED) && !IsFinished())
-    {
-      FDialog->Idle();
-    }
-  }
-  SAFE_CLOSE_HANDLE(FEvent);
-}
 
 TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   TObject(OBJECT_CLASS_TFarDialog),
