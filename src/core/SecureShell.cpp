@@ -1296,7 +1296,12 @@ NB_DEFINE_CLASS_ID(TIdleThread);
 class TIdleThread : public TSimpleThread
 {
 public:
-  explicit TIdleThread(TSecureShell * Shell, const int64_t Interval) noexcept;
+  explicit TIdleThread(TSecureShell * Shell, TQueryParams * Params, int64_t Millisecs) noexcept :
+    TSimpleThread(OBJECT_CLASS_TIdleThread),
+    FShell(Shell),
+    FParams(Params),
+    FMillisecs(Millisecs)
+  {}
   virtual ~TIdleThread() noexcept override = default;
 
   virtual void Execute() override;
@@ -1306,16 +1311,10 @@ public:
 
 private:
   TSecureShell * FShell{nullptr};
+  TQueryParams * FParams{nullptr};
   uint32_t FMillisecs; //in msecs
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
-
-TIdleThread::TIdleThread(TSecureShell * Shell, const int64_t Millisecs) noexcept :
-  TSimpleThread(OBJECT_CLASS_TIdleThread),
-  FShell(Shell),
-  FMillisecs(Millisecs)
-{
-}
 
 void TIdleThread::InitIdleThread()
 {
@@ -1362,6 +1361,8 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent && PoolEvent)
       Params.TimeoutAnswer = qaAbort;
       Params.TimeoutResponse = qaNo;
     }
+    TIdleThread IdleThread(this, &Params, 1000);
+    IdleThread.InitIdleThread();
     Answer = FUI->QueryUser(MainInstructions(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout())),
       nullptr, qaRetry | qaAbort, &Params);
   }
