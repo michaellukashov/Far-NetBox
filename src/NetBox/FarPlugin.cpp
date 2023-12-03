@@ -106,7 +106,7 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
         sizeof(FFarStandardFunctions) : Info->FSF->StructSize);
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
@@ -163,7 +163,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
 
     memmove(Info, &FPluginInfo, sizeof(FPluginInfo));
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
@@ -274,7 +274,7 @@ int32_t TCustomFarPlugin::Configure(const struct ConfigureInfo * Info)
 
     return Result;
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
@@ -319,7 +319,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo * Info)
 
     return Result;
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
@@ -337,7 +337,7 @@ void TCustomFarPlugin::ClosePanel(void * Plugin)
       return;
     CloseFileSystem(FarFileSystem);
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(& E);
@@ -398,7 +398,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
     TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
     FarFileSystem->GetOpenPanelInfo(Info);
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -420,7 +420,7 @@ int32_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
       return FarFileSystem->GetFindData(Info);
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -443,7 +443,7 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
       FarFileSystem->FreeFindData(Info);
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -469,7 +469,7 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * In
     }
     return 0;
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -496,7 +496,7 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
     }
     return 0;
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -531,7 +531,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
     }
     return 0;
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E);
@@ -555,7 +555,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
       return FarFileSystem->SetDirectory(Info);
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -572,7 +572,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
         TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
         return FarFileSystem->SetDirectory(&Info2);
       }
-      catch (Exception &)
+      catch(Exception &)
       {
         return 0;
       }
@@ -596,7 +596,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
       return FarFileSystem->MakeDirectory(Info);
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -619,7 +619,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
       return FarFileSystem->DeleteFiles(Info);
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -642,7 +642,7 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
       return FarFileSystem->GetFiles(Info);
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     // display error even for OPM_FIND
@@ -666,7 +666,7 @@ intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
       return FarFileSystem->PutFiles(Info);
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleFileSystemException");
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
@@ -682,7 +682,7 @@ intptr_t TCustomFarPlugin::ProcessEditorEvent(const struct ProcessEditorEventInf
 
     return ProcessEditorEventEx(Info);
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
@@ -698,7 +698,7 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
 
     return ProcessEditorInputEx(&Info->Rec);
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
@@ -1231,7 +1231,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
         {
           OnValidate(Text);
         }
-        catch (Exception & E)
+        catch(Exception & E)
         {
           DEBUG_PRINTF("before HandleException");
           HandleException(&E);
@@ -1760,7 +1760,7 @@ TFarEditorInfo * TCustomFarPlugin::EditorInfo()
       nb_free(Info);
     }
   }
-  catch (...)
+  catch(...)
   {
     nb_free(Info);
     throw;
