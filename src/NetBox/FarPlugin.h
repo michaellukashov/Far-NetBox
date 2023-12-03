@@ -57,7 +57,7 @@ struct TFarMessageParams : public TObject
 public:
   TFarMessageParams() = default;
 
-  TStrings *MoreMessages{nullptr};
+  TStrings * MoreMessages{nullptr};
   UnicodeString CheckBoxLabel;
   bool CheckBox{false};
   uint32_t Timer{0};
@@ -68,7 +68,7 @@ public:
   uint32_t DefaultButton{0};
   UnicodeString TimeoutStr;
   TFarMessageClickEvent ClickEvent;
-  void *Token{nullptr};
+  void * Token{nullptr};
 };
 
 enum NetBoxSystemSettings

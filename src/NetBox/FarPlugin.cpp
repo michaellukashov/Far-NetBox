@@ -762,7 +762,7 @@ protected:
   virtual void Idle() override;
 
 private:
-  void ButtonClick(TFarButton * Sender, bool &Close);
+  void ButtonClick(TFarButton * Sender, bool & Close);
 
 private:
   bool FCheckBoxChecked{false};
