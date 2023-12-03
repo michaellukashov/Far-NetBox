@@ -13,7 +13,6 @@
 #include "CoreMain.h"
 #include <StrUtils.hpp>
 #include <Consts.hpp>
-#include <Queue.h> // TODO: move TSimpleThread to Sysutils
 
 #ifndef AUTO_WINSOCK
 #include <WinSock2.h>
@@ -1292,55 +1291,6 @@ void TSecureShell::SendSpecial(int32_t Code)
   FLastDataSent = Now();
 }
 
-NB_DEFINE_CLASS_ID(TIdleThread);
-class TIdleThread : public TSimpleThread
-{
-public:
-  explicit TIdleThread(TSecureShell * Shell, TQueryParams * Params, int64_t Millisecs) noexcept :
-    TSimpleThread(OBJECT_CLASS_TIdleThread),
-    FShell(Shell),
-    FParams(Params),
-    FMillisecs(Millisecs)
-  {}
-  virtual ~TIdleThread() noexcept override = default;
-
-  virtual void Execute() override;
-  virtual void Terminate() override;
-
-  void InitIdleThread();
-
-private:
-  TSecureShell * FShell{nullptr};
-  TQueryParams * FParams{nullptr};
-  uint32_t FMillisecs; //in msecs
-  HANDLE FEvent{INVALID_HANDLE_VALUE};
-};
-
-void TIdleThread::InitIdleThread()
-{
-  TSimpleThread::InitSimpleThread();
-  FEvent = ::CreateEvent(nullptr, false, false, nullptr);
-  Start();
-}
-
-void TIdleThread::Terminate()
-{
-  // TCompThread::Terminate();
-  ::SetEvent(FEvent);
-}
-
-void TIdleThread::Execute()
-{
-  while (!IsFinished())
-  {
-    if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED) && !IsFinished())
-    {
-      FShell->Idle();
-    }
-  }
-  SAFE_CLOSE_HANDLE(FEvent);
-}
-
 uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent && PoolEvent)
 {
   ++FWaiting;
@@ -1361,8 +1311,6 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent && PoolEvent)
       Params.TimeoutAnswer = qaAbort;
       Params.TimeoutResponse = qaNo;
     }
-    TIdleThread IdleThread(this, &Params, 1000);
-    IdleThread.InitIdleThread();
     Answer = FUI->QueryUser(MainInstructions(FMTLOAD(CONFIRM_PROLONG_TIMEOUT3, FSessionData->GetTimeout(), FSessionData->GetTimeout())),
       nullptr, qaRetry | qaAbort, &Params);
   }
