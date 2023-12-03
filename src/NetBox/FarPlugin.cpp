@@ -1008,7 +1008,7 @@ void TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
 void TFarMessageDialog::OnUpdateTimeoutButton(TObject * Sender, void * Data)
 {
   // DEBUG_PRINTF("Sender: %p, Data: %p", (void *)Sender, (void *)Data);
-  if (FParams->Timer > 0)
+  if (FParams && (FParams->Timer > 0))
   {
     uint32_t SinceLastTimer = nb::ToUInt32((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
     if (SinceLastTimer >= FParams->Timeout)
@@ -1027,7 +1027,7 @@ void TFarMessageDialog::OnUpdateTimeoutButton(TObject * Sender, void * Data)
     }
   }
 
-  if (FParams->Timeout > 0)
+  if (FParams && (FParams->Timeout > 0))
   {
     uint32_t Running = nb::ToUInt32((Now() - FStartTime).GetValue() * MSecsPerDay);
     if (Running >= FParams->Timeout)
