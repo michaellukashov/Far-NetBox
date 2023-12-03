@@ -630,7 +630,7 @@ NB_CORE_EXPORT double MilliSecondSpan(const TDateTime & ANow, const TDateTime & 
 
 class TTimeSpan
 {
-private:
+public:
   int64_t GetTicks() const { return FTicks; }
   int32_t GetDays() const { return  nb::ToInt32(FTicks / TicksPerDay); }
   int32_t GetHours() const { return (FTicks / TicksPerHour) % HoursPerDay; }
@@ -649,36 +649,36 @@ private:
   static constexpr int64_t FZero = 0;
 
 private:
-  const double MillisecondsPerTick = 0.0001;
-  const double SecondsPerTick = 1e-07;
-  const double MinutesPerTick = 1.6666666666666667E-09;
-  const double HoursPerTick = 2.7777777777777777E-11;
-  const double DaysPerTick = 1.1574074074074074E-12;
-  const int32_t MillisPerSecond = 1000;
-  const int32_t MillisPerMinute = 60 * MillisPerSecond;
-  const int32_t MillisPerHour = 60 * MillisPerMinute;
-  const int32_t MillisPerDay = 24 * MillisPerHour;
-  const int64_t MaxSeconds = 922337203685;
-  const int64_t MinSeconds = -922337203685;
-  const int64_t MaxMilliseconds = 922337203685477;
-  const int64_t MinMilliseconds = -922337203685477;
+  static constexpr const double MillisecondsPerTick = 0.0001;
+  static constexpr const double SecondsPerTick = 1e-07;
+  static constexpr const double MinutesPerTick = 1.6666666666666667E-09;
+  static constexpr const double HoursPerTick = 2.7777777777777777E-11;
+  static constexpr const double DaysPerTick = 1.1574074074074074E-12;
+  static constexpr const int32_t MillisPerSecond = 1000;
+  static constexpr const int32_t MillisPerMinute = 60 * MillisPerSecond;
+  static constexpr const int32_t MillisPerHour = 60 * MillisPerMinute;
+  static constexpr const int32_t MillisPerDay = 24 * MillisPerHour;
+  static constexpr const int64_t MaxSeconds = 922337203685;
+  static constexpr const int64_t MinSeconds = -922337203685;
+  static constexpr const int64_t MaxMilliseconds = 922337203685477;
+  static constexpr const int64_t MinMilliseconds = -922337203685477;
 
 public:
-  static constexpr int32_t TicksPerMillisecond = 10000;
-  static constexpr int64_t TicksPerSecond = 1000 * nb::ToInt64(TicksPerMillisecond);
-  static constexpr int64_t TicksPerMinute = 60 * nb::ToInt64(TicksPerSecond);
-  static constexpr int64_t TicksPerHour = 60 * nb::ToInt64(TicksPerMinute);
-  static constexpr int64_t TicksPerDay = 24 * TicksPerHour;
+  static constexpr const int32_t TicksPerMillisecond = 10000;
+  static constexpr const int64_t TicksPerSecond = 1000 * nb::ToInt64(TicksPerMillisecond);
+  static constexpr const int64_t TicksPerMinute = 60 * nb::ToInt64(TicksPerSecond);
+  static constexpr const int64_t TicksPerHour = 60 * nb::ToInt64(TicksPerMinute);
+  static constexpr const int64_t TicksPerDay = 24 * TicksPerHour;
 
 public:
   explicit TTimeSpan(int64_t ATicks);
   explicit TTimeSpan(int32_t Hours, int32_t Minutes, int32_t Seconds);
   explicit TTimeSpan(int32_t Days, int32_t Hours, int32_t Minutes, int32_t Seconds);
   explicit TTimeSpan(int32_t Days, int32_t Hours, int32_t Minutes, int32_t Seconds, int32_t Milliseconds);
-  TTimeSpan Add(const TTimeSpan TS) const;
+  TTimeSpan Add(const TTimeSpan & TS) const;
   TTimeSpan Duration() const;
   TTimeSpan Negate() const;
-  TTimeSpan Subtract(const TTimeSpan TS);
+  TTimeSpan Subtract(const TTimeSpan & TS);
   UnicodeString ToString() const;
 
   static TTimeSpan FromDays(double Value);
@@ -687,7 +687,7 @@ public:
   static TTimeSpan FromSeconds(double Value);
   static TTimeSpan FromMilliseconds(double Value);
   static TTimeSpan FromTicks(int64_t Value);
-  static TTimeSpan Subtract(const TDateTime D1, const TDateTime D2);
+  static TTimeSpan Subtract(const TDateTime & D1, const TDateTime & D2);
   static TTimeSpan Parse(const UnicodeString & S);
   static bool TryParse(const UnicodeString & S, const TTimeSpan & Value);
   static TTimeSpan Add(const TTimeSpan & Left, const TTimeSpan & Right);
@@ -711,17 +711,17 @@ public:
   static TTimeSpan Positive(const TTimeSpan & Value);
   static UnicodeString Implicit(const TTimeSpan & Value);
   static UnicodeString Explicit(const TTimeSpan & Value);
-  ROProperty<int64_t> Ticks{nb::bind(&TTimeSpan::GetTicks, this)};
-  ROProperty<int32_t> Days{nb::bind(&TTimeSpan::GetDays, this)};
-  ROProperty<int32_t> Hours{nb::bind(&TTimeSpan::GetHours, this)};
-  ROProperty<int32_t> Minutes{nb::bind(&TTimeSpan::GetMinutes, this)};
-  ROProperty<int32_t> Seconds{nb::bind(&TTimeSpan::GetSeconds, this)};
-  ROProperty<int32_t> Milliseconds{nb::bind(&TTimeSpan::GetMilliseconds, this)};
-  ROProperty<double> TotalDays{nb::bind(&TTimeSpan::GetTotalDays, this)};
-  ROProperty<double> TotalHours{nb::bind(&TTimeSpan::GetTotalHours, this)};
-  ROProperty<double> TotalMinutes{nb::bind(&TTimeSpan::GetTotalMinutes, this)};
-  ROProperty<double> TotalSeconds{nb::bind(&TTimeSpan::GetTotalSeconds, this)};
-  ROProperty<double> TotalMilliseconds{nb::bind(&TTimeSpan::GetTotalMilliseconds, this)};
+  // ROProperty<int64_t> Ticks{nb::bind(&TTimeSpan::GetTicks, this)};
+  // ROProperty<int32_t> Days{nb::bind(&TTimeSpan::GetDays, this)};
+  // ROProperty<int32_t> Hours{nb::bind(&TTimeSpan::GetHours, this)};
+  // ROProperty<int32_t> Minutes{nb::bind(&TTimeSpan::GetMinutes, this)};
+  // ROProperty<int32_t> Seconds{nb::bind(&TTimeSpan::GetSeconds, this)};
+  // ROProperty<int32_t> Milliseconds{nb::bind(&TTimeSpan::GetMilliseconds, this)};
+  // ROProperty<double> TotalDays{nb::bind(&TTimeSpan::GetTotalDays, this)};
+  // ROProperty<double> TotalHours{nb::bind(&TTimeSpan::GetTotalHours, this)};
+  // ROProperty<double> TotalMinutes{nb::bind(&TTimeSpan::GetTotalMinutes, this)};
+  // ROProperty<double> TotalSeconds{nb::bind(&TTimeSpan::GetTotalSeconds, this)};
+  // ROProperty<double> TotalMilliseconds{nb::bind(&TTimeSpan::GetTotalMilliseconds, this)};
   static TTimeSpan GetMinValue() { return TTimeSpan(FMinValue); }
   static TTimeSpan GetMaxValue() { return TTimeSpan(FMaxValue); }
   static TTimeSpan GetZero() { return TTimeSpan(FZero); }
