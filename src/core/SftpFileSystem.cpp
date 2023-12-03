@@ -3471,7 +3471,8 @@ void TSFTPFileSystem::DoStartup()
     uint32_t PacketPayload = 4;
     if (SupportsLimits)
     {
-      TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
+      // TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
+      TSFTPPacket Packet(-1, FCodePage);
       Packet.AddString(RawByteString(SFTP_EXT_LIMITS));
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
       uint32_t MaxPacketSize = nb::ToUInt32(std::min(std::numeric_limits<int64_t>::max(), Packet.GetInt64()));
