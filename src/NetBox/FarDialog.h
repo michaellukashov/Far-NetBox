@@ -28,6 +28,8 @@ using TFarMouseClickEvent = nb::FastDelegate2<void,
 using TFarProcessGroupEvent = nb::FastDelegate2<void,
   TFarDialogItem * /*Item*/, void * /*Arg*/>;
 
+class TIdleThread;
+
 NB_DEFINE_CLASS_ID(TFarDialog);
 class TFarDialog : public TObject
 {
@@ -36,12 +38,13 @@ class TFarDialog : public TObject
   friend class TFarButton;
   friend class TFarList;
   friend class TFarListBox;
+  friend class TIdleThread;
   NB_DISABLE_COPY(TFarDialog)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialog) || TObject::is(Kind); }
 public:
-  explicit TFarDialog(TCustomFarPlugin * AFarPlugin) noexcept;
+  explicit TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept;
   virtual ~TFarDialog() noexcept override;
 
   int32_t ShowModal();
@@ -144,6 +147,7 @@ private:
   TFarDialogItem * FItemFocused{nullptr};
   TFarKeyEvent FOnKey;
   FarDialogItem * FDialogItems{nullptr};
+  std::unique_ptr<TIdleThread> FTIdleThread;
   int32_t FDialogItemsCapacity{0};
   int32_t FChangesLocked{0};
   bool FChangesPending{false};

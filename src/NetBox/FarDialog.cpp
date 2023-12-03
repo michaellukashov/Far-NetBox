@@ -10,13 +10,68 @@
 #pragma warning(push, 1)
 #include <farcolor.hpp>
 #pragma warning(pop)
+#include <Queue.h> // TODO: move TSimpleThread to Sysutils
 
 inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
 {
   return TRect(Left, Top, Right, Bottom);
 }
 
-TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) noexcept :
+NB_DEFINE_CLASS_ID(TIdleThread);
+class TIdleThread : public TSimpleThread
+{
+  TIdleThread() = delete;
+public:
+  explicit TIdleThread(gsl::not_null<TFarDialog *> Dialog, int64_t Millisecs) noexcept :
+    TSimpleThread(OBJECT_CLASS_TIdleThread),
+    FDialog(Dialog),
+    FMillisecs(Millisecs)
+  {}
+  virtual ~TIdleThread() noexcept override
+  {
+    SAFE_CLOSE_HANDLE(FEvent);
+  }
+
+  virtual void Execute() override;
+  virtual void Terminate() override;
+
+  void InitIdleThread();
+
+private:
+  gsl::not_null<TFarDialog *> FDialog;
+  uint32_t FMillisecs{0};
+  HANDLE FEvent{INVALID_HANDLE_VALUE};
+};
+
+void TIdleThread::InitIdleThread()
+{
+  TSimpleThread::InitSimpleThread();
+  FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+  Start();
+}
+
+void TIdleThread::Terminate()
+{
+  // TCompThread::Terminate();
+  ::SetEvent(FEvent);
+}
+
+void TIdleThread::Execute()
+{
+  DEBUG_PRINTF("1");
+  while (!IsFinished())
+  {
+    if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED) && !IsFinished())
+    {
+       DEBUG_PRINTF("2", "");
+      FDialog->Idle();
+      DEBUG_PRINTF("3", "");
+    }
+  }
+  // SAFE_CLOSE_HANDLE(FEvent);
+}
+
+TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   TObject(OBJECT_CLASS_TFarDialog),
   FFarPlugin(AFarPlugin),
   FBounds(-1, -1, 40, 10),
@@ -48,10 +103,13 @@ TFarDialog::TFarDialog(TCustomFarPlugin * AFarPlugin) noexcept :
   FBorderBox = new TFarBox(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
+  FTIdleThread = std::make_unique<TIdleThread>(this, 1000);
+  FTIdleThread->InitIdleThread();
 }
 
 TFarDialog::~TFarDialog() noexcept
 {
+  FTIdleThread->Terminate();
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
     GetItem(Index)->Detach();
