@@ -1463,12 +1463,7 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TConsoleTitleParam); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TConsoleTitleParam) || TObject::is(Kind); }
 public:
-  explicit TConsoleTitleParam() :
-    TObject(OBJECT_CLASS_TConsoleTitleParam),
-    Progress(0),
-    Own(0)
-  {
-  }
+  explicit TConsoleTitleParam() : TObject(OBJECT_CLASS_TConsoleTitleParam) {}
 
   int16_t Progress{0};
   uint16_t Own{0};
@@ -1557,7 +1552,7 @@ void TCustomFarPlugin::UpdateProgress(int32_t State, int32_t Progress) const
   {
     ProgressValue pv{};
     pv.StructSize = sizeof(ProgressValue);
-    pv.Completed = Progress < 0 ? 0 : Progress > 100 ? 100 : Progress;
+    pv.Completed = (Progress < 0) ? 0 : (Progress > 100) ? 100 : Progress;
     pv.Total = 100;
     FarAdvControl(ACTL_SETPROGRESSVALUE, 0, &pv);
   }
