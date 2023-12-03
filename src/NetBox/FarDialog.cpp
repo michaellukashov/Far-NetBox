@@ -349,7 +349,7 @@ intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intpt
       // DM_CLOSE is sent after DN_CLOSE, if the dialog was closed programmatically
       // by SendMessage(DM_CLOSE, ...)
       assert(Msg == DM_CLOSE);
-      Result = static_cast<LONG_PTR>(0);
+      Result = static_cast<intptr_t>(0);
     }
     else
     {
@@ -611,12 +611,12 @@ bool TFarDialog::MouseEvent(MOUSE_EVENT_RECORD * Event)
   return Result;
 }
 
-bool TFarDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
+bool TFarDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
 {
   bool Result = false;
   if (FOnKey)
   {
-    FOnKey(this, Item, static_cast<long>(KeyCode), Result);
+    FOnKey(this, Item, KeyCode, Result);
   }
   return Result;
 }

@@ -24,7 +24,7 @@ enum TItemPosition
 };
 
 using TFarKeyEvent = nb::FastDelegate4<void,
-  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, long /*KeyCode*/, bool & /*Handled*/>;
+  TFarDialog * /*Sender*/, TFarDialogItem * /*Item*/, int32_t /*KeyCode*/, bool & /*Handled*/>;
 using TFarMouseClickEvent = nb::FastDelegate2<void,
   TFarDialogItem * /*Item*/, const MOUSE_EVENT_RECORD * /*Event*/>;
 using TFarProcessGroupEvent = nb::FastDelegate2<void,
@@ -108,7 +108,7 @@ protected:
   virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual bool MouseEvent(MOUSE_EVENT_RECORD * Event);
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode);
+  virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode);
   virtual void Change();
   virtual void Init();
   virtual bool CloseQuery();

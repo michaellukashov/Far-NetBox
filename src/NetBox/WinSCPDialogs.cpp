@@ -111,7 +111,7 @@ protected:
   void HideTabs();
   virtual void SelectTab(int32_t Tab);
   void TabButtonClick(TFarButton * Sender, bool & Close);
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
+  virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
   virtual UnicodeString GetTabName(int32_t Tab) const;
   TTabButton * GetTabButton(int32_t Tab) const;
   int32_t GetTabCount() const { return FTabCount; }
@@ -238,11 +238,11 @@ void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
   Close = false;
 }
 
-bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
+bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const LONG_PTR ControlState = KeyCode >> 16;
+  const intptr_t ControlState = KeyCode >> 16;
   if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && (ControlState & CTRLMASK) != 0) ||
     (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && (ControlState & CTRLMASK) != 0))
   {
@@ -5913,7 +5913,7 @@ protected:
   void CheckSpaceAvailable();
   void NeedSpaceAvailable();
   bool SpaceAvailableSupported() const;
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
+  virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
 
 private:
   TGetSpaceAvailableEvent FOnGetSpaceAvailable;
@@ -6329,11 +6329,11 @@ void TFileSystemInfoDialog::Execute(
   ShowModal();
 }
 
-bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
+bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
 {
   bool Result;
   const WORD Key = KeyCode & 0xFFFF;
-  // LONG_PTR ControlState = KeyCode >> 16;
+  // intptr_t ControlState = KeyCode >> 16;
   if ((Item == SpaceAvailablePathEdit) && (Key == VK_RETURN))
   {
     CheckSpaceAvailable();
@@ -7185,7 +7185,7 @@ public:
 
 protected:
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
+  virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
   void CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void VideoModeButtonClick(TFarButton * Sender, bool & Close);
   void ListBoxClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
@@ -7673,11 +7673,11 @@ void TSynchronizeChecklistDialog::ListBoxClick(
   }
 }
 
-bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, LONG_PTR KeyCode)
+bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const LONG_PTR ControlState = KeyCode >> 16;
+  const intptr_t ControlState = KeyCode >> 16;
   if (ListBox->Focused())
   {
     if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
@@ -7805,7 +7805,7 @@ protected:
   void DoSynchronizeThreads(TObject * Sender, TThreadMethod Slot);
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
   virtual bool CloseQuery() override;
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
+  virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
   TCopyParamType GetCopyParams() const;
   int32_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
@@ -8185,11 +8185,11 @@ void TSynchronizeDialog::Change()
   }
 }
 
-bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
+bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  // LONG_PTR ControlState = KeyCode >> 16;
+  // intptr_t ControlState = KeyCode >> 16;
   if ((Key == VK_ESCAPE) && FSynchronizing)
   {
     Stop();
@@ -8279,7 +8279,7 @@ protected:
     TQueueItemProxy * QueueItem, int32_t Index);
   bool QueueItemNeedsFrequentRefresh(TQueueItemProxy * QueueItem);
   void UpdateControls();
-  virtual bool Key(TFarDialogItem * Item, LONG_PTR KeyCode) override;
+  virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
   virtual bool CloseQuery() override;
 
 private:
@@ -8409,11 +8409,11 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   }
 }
 
-bool TQueueDialog::Key(TFarDialogItem * /*Item*/, LONG_PTR KeyCode)
+bool TQueueDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const LONG_PTR ControlState = KeyCode >> 16;
+  const intptr_t ControlState = KeyCode >> 16;
   if (QueueListBox->Focused())
   {
     TFarButton * DoButton = nullptr;
