@@ -5,8 +5,6 @@
 #pragma warning(pop)
 #include "FarPlugin.h"
 
-constexpr const int32_t MAX_SIZE = -1;
-
 class TFarDialogContainer;
 class TFarDialogItem;
 class TFarButton;
@@ -589,8 +587,8 @@ protected:
   TFarDialogItem * GetDialogItem() { return FDialogItem; }
 
 private:
-  FarList *FListItems{nullptr};
-  TFarDialogItem *FDialogItem{nullptr};
+  FarList * FListItems{nullptr};
+  TFarDialogItem * FDialogItem{nullptr};
   bool FNoDialogUpdate{false};
 };
 

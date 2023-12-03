@@ -131,10 +131,10 @@ struct TTraceInMemory
 #ifdef TRACE_IN_MEMORY_NO_FORMATTING
   DWORD Ticks;
   DWORD Thread;
-  const wchar_t *SourceFile;
-  const wchar_t *Func;
+  const wchar_t * SourceFile;
+  const wchar_t * Func;
   int32_t Line;
-  const wchar_t *Message;
+  const wchar_t * Message;
 #else
   UTF8String Message;
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
@@ -172,7 +172,7 @@ int32_t TraceThreadProc(void *)
 
 #ifdef TRACE_IN_MEMORY_NO_FORMATTING
 
-void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
+void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   uint32_t Line, const wchar_t *Message)
 {
   if (TracingCriticalSection != nullptr)
@@ -198,7 +198,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
   }
 }
 
-void DoTraceFmt(const wchar_t * SourceFile, const wchar_t *Func,
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
   uint32_t Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int32_t /*Args_Size*/)
 {
   DoTrace(SourceFile, Func, Line, AFormat);
