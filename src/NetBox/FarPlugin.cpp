@@ -734,6 +734,7 @@ int32_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
 
 class TFarMessageDialog final : public TFarDialog
 {
+  TFarMessageDialog() = delete;
 public:
   explicit TFarMessageDialog(TCustomFarPlugin * Plugin,
     TFarMessageParams * Params);
