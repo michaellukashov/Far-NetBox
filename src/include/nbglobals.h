@@ -365,22 +365,22 @@ struct SelfTest {       \
 #define NB_DISABLE_COPY(Class) \
 private: \
   Class(Class &&) = default; \
-  Class& operator =(Class &&) = default; \
+  Class & operator =(Class &&) = default; \
   Class(const Class &) = delete; \
-  Class& operator =(const Class &) = delete;
+  Class & operator =(const Class &) = delete;
 
 template <typename T1>
-inline constexpr void used(const T1&)
+inline constexpr void used(const T1 &)
 {
 }
 
 template <typename T1>
-inline constexpr void unused(const T1&)
+inline constexpr void unused(const T1 &)
 {
 }
 
 template <typename T1>
-inline constexpr void ignore(const T1&)
+inline constexpr void ignore(const T1 &)
 {
 }
 

@@ -740,7 +740,7 @@ public:
   void Init(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
     TStrings * Buttons);
 
-  int32_t Execute(bool &ACheckBox);
+  int32_t Execute(bool & ACheckBox);
 
 protected:
   virtual void Change() override;
@@ -984,7 +984,7 @@ void TFarMessageDialog::Change()
   }
 }
 
-int32_t TFarMessageDialog::Execute(bool &ACheckBox)
+int32_t TFarMessageDialog::Execute(bool & ACheckBox)
 {
   if (GetDefaultButton()->CanFocus())
     GetDefaultButton()->UpdateFocused(true);

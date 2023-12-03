@@ -787,7 +787,7 @@ TFileSystemInfo::TFileSystemInfo() noexcept
 }
 
 
-static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData *SessionData, bool Append, UnicodeString &ANewFileName)
+static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
 {
   // FILE * Result;
   const UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));

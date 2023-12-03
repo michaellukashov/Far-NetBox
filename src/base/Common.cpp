@@ -2745,7 +2745,7 @@ constexpr wchar_t MegaSize = L'M';
 constexpr wchar_t GigaSize = L'G';
 
 // Keep consistent with parse_blocksize
-bool TryStrToSize(const UnicodeString & ASizeStr, int64_t &ASize)
+bool TryStrToSize(const UnicodeString & ASizeStr, int64_t & ASize)
 {
   UnicodeString SizeStr = ASizeStr;
   int32_t Index = 0;
