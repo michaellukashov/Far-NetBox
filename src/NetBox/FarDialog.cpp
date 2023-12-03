@@ -706,12 +706,13 @@ int32_t TFarDialog::ShowModal()
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;
   {
+    const PluginStartupInfo & Info = *GetFarPlugin()->GetPluginStartupInfo();
     SCOPE_EXIT
     {
       GetFarPlugin()->FTopDialog = PrevTopDialog;
       if (CheckHandle(Handle))
       {
-        GetFarPlugin()->GetPluginStartupInfo()->DialogFree(Handle);
+        Info.DialogFree(Handle);
       }
     };
     assert(GetDefaultButton());
