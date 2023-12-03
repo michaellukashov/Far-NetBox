@@ -1443,18 +1443,18 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
 {
   if (FLAGSET(Params, TTerminal::spSelectedOnly) && SynchronizeAllowSelectedOnly())
   {
-    Options.Filter = new TStringList();
+    Options.Filter = std::make_unique<TStringList>();
     Options.Filter->SetCaseSensitive(false);
     Options.Filter->SetDuplicates(dupAccept);
 
     TFarPanelInfo ** PanelInfo = GetPanelInfo();
     if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount() > 0)
     {
-      CreateFileList((*PanelInfo)->GetItems(), osRemote, true, "", true, Options.Filter);
+      CreateFileList((*PanelInfo)->GetItems(), osRemote, true, "", true, Options.Filter.get());
     }
     if ((*GetAnotherPanelInfo())->GetSelectedCount() > 0)
     {
-      CreateFileList((*GetAnotherPanelInfo())->GetItems(), osLocal, true, "", true, Options.Filter);
+      CreateFileList((*GetAnotherPanelInfo())->GetItems(), osLocal, true, "", true, Options.Filter.get());
     }
     Options.Filter->Sort();
   }

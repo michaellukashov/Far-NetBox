@@ -997,7 +997,7 @@ public:
   TSynchronizeOptions() noexcept;
   virtual ~TSynchronizeOptions() noexcept override;
 
-  TStringList * Filter{nullptr};
+  std::unique_ptr<TStringList> Filter;
   int32_t Files{0};
 
   // bool FilterFind(const UnicodeString & AFileName) const;

@@ -121,7 +121,7 @@ TSynchronizeOptions::TSynchronizeOptions() noexcept
 
 TSynchronizeOptions::~TSynchronizeOptions() noexcept
 {
-  SAFE_DESTROY(Filter);
+  // SAFE_DESTROY(Filter);
 }
 
 bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName) const
