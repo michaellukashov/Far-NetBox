@@ -258,7 +258,7 @@ void CoreFinalize()
   PuttyFinalize();
 
   SAFE_DESTROY(StoredSessions);
-  StoredSessions = nullptr;
+  // StoredSessions = nullptr;
   DeleteConfiguration();
   // delete Configuration;
   // Configuration = nullptr;
