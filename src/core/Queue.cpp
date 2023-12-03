@@ -336,7 +336,7 @@ TSimpleThread::~TSimpleThread() noexcept
   // This is turn calls pure virtual Terminate, what does not work as intended, do not rely on it and remove the call eventually
   Close();
 
-  if (!CheckHandle(FThread))
+  if (CheckHandle(FThread))
   {
     SAFE_CLOSE_HANDLE(FThread);
   }
@@ -349,7 +349,7 @@ bool TSimpleThread::IsFinished() const
 
 void TSimpleThread::Start()
 {
-  if (ResumeThread(FThread) == 1)
+  if (::ResumeThread(FThread) == 1)
   {
     FFinished = false;
   }
