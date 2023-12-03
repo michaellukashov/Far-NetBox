@@ -3980,7 +3980,7 @@ bool TTerminal::DeleteContentsIfDirectory(
 }
 
 void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
-  TProcessFileEvent CallBackFunc, void * AParam, bool UseCache, bool IgnoreErrors)
+  TProcessFileEvent && CallBackFunc, void * AParam, bool UseCache, bool IgnoreErrors)
 {
   std::unique_ptr<TRemoteFileList> FileList;
   if (IgnoreErrors)
@@ -4165,7 +4165,7 @@ void TTerminal::OperationStop(TFileOperationProgressType & Progress)
 }
 
 bool TTerminal::ProcessFiles(TStrings * AFileList,
-  TFileOperation Operation, TProcessFileEvent ProcessFile, void * Param,
+  TFileOperation Operation, TProcessFileEvent && ProcessFile, void * Param,
   TOperationSide Side, bool Ex)
 {
   DebugAssert(FFileSystem);
@@ -4581,7 +4581,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
 }
 
 void TTerminal::CustomCommandOnFiles(const UnicodeString & ACommand,
-  int32_t AParams, TStrings * AFiles, TCaptureOutputEvent OutputEvent)
+  int32_t AParams, TStrings * AFiles, TCaptureOutputEvent && OutputEvent)
 {
   if (!TRemoteCustomCommand().IsFileListCommand(ACommand))
   {
@@ -4611,7 +4611,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & ACommand,
         Complete(ACommand, true);
     if (!DoOnCustomCommand(Cmd))
     {
-      DoAnyCommand(Cmd, OutputEvent, nullptr);
+      DoAnyCommand(Cmd, std::forward<TCaptureOutputEvent>(OutputEvent), nullptr);
     }
   }
 }
@@ -5555,7 +5555,7 @@ TTerminal * TTerminal::GetCommandSession()
 }
 
 void TTerminal::AnyCommand(const UnicodeString & Command,
-  TCaptureOutputEvent OutputEvent)
+  TCaptureOutputEvent && OutputEvent)
 {
 #if 0
 // moved to Terminal.h
@@ -5598,12 +5598,12 @@ void TTerminal::AnyCommand(const UnicodeString & Command,
 #endif // #if 0
 
   TCallSessionAction Action(GetActionLog(), Command, RemoteGetCurrentDirectory());
-  TOutputProxy ProxyOutputEvent(Action, OutputEvent);
+  TOutputProxy ProxyOutputEvent(Action, std::forward<TCaptureOutputEvent>(OutputEvent));
   DoAnyCommand(Command, nb::bind(&TOutputProxy::Output, &ProxyOutputEvent), &Action);
 }
 
 void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
-  TCaptureOutputEvent OutputEvent, TCallSessionAction * Action)
+  TCaptureOutputEvent && OutputEvent, TCallSessionAction * Action)
 {
   DebugAssert(FFileSystem);
   try

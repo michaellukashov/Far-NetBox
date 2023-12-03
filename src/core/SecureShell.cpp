@@ -1291,7 +1291,7 @@ void TSecureShell::SendSpecial(int32_t Code)
   FLastDataSent = Now();
 }
 
-uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
+uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent && PoolEvent)
 {
   ++FWaiting;
 
@@ -1301,7 +1301,7 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent PoolEvent)
     TQueryParams Params(qpFatalAbort | qpAllowContinueOnError | qpIgnoreAbort);
     Params.HelpKeyword = HELP_MESSAGE_HOST_IS_NOT_COMMUNICATING;
     Params.Timer = 500;
-    Params.TimerEvent = PoolEvent;
+    Params.TimerEvent = std::move(PoolEvent);
     Params.TimerMessage = MainInstructionsFirstParagraph(FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout()));
     Params.TimerAnswers = qaAbort;
     Params.TimerQueryType = qtInformation;

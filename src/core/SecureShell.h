@@ -113,7 +113,7 @@ public:
   bool GetReady() const;
   void DispatchSendBuffer(int32_t BufSize);
   void SendBuffer(uint32_t & Result);
-  uint32_t TimeoutPrompt(TQueryParamsTimerEvent PoolEvent);
+  uint32_t TimeoutPrompt(TQueryParamsTimerEvent && PoolEvent);
   void TimeoutAbort(uint32_t Answer);
   bool TryFtp();
   UnicodeString ConvertInput(const RawByteString & Input, uint32_t CodePage = CP_ACP) const;

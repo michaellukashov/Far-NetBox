@@ -360,12 +360,12 @@ protected:
     const UnicodeString & Message, void * Param1 = nullptr, void * Param2 = nullptr);
   bool GetIsCapableProtected(TFSCapability Capability) const;
   bool ProcessFiles(TStrings * AFileList, TFileOperation Operation,
-    TProcessFileEvent ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
+    TProcessFileEvent && ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
   // bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
   //  TProcessFileEventEx ProcessFile, void * AParam = nullptr, TOperationSide Side = osRemote);
   void ProcessDirectory(const UnicodeString & ADirName,
-    TProcessFileEvent CallBackFunc, void * AParam = nullptr, bool UseCache = false,
+    TProcessFileEvent && CallBackFunc, void * AParam = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
   bool DeleteContentsIfDirectory(
     const UnicodeString & AFileName, const TRemoteFile * AFile, int32_t AParams, TRmSessionAction & Action);
@@ -486,7 +486,7 @@ protected:
     const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * OperationProgress, Exception * E = nullptr);
-  void DoAnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent OutputEvent,
+  void DoAnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent && OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache);
   RawByteString EncryptPassword(const UnicodeString & APassword) const;
@@ -606,7 +606,7 @@ public:
   void Idle();
   void RecryptPasswords();
   bool AllowedAnyCommand(const UnicodeString & ACommand) const;
-  void AnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent OutputEvent);
+  void AnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent && OutputEvent);
   void CloseOnCompletion(
     TOnceDoneOperation Operation = odoDisconnect, const UnicodeString & AMessage = "",
     const UnicodeString & TargetLocalPath = "", const UnicodeString & ADestLocalFileName = "");
@@ -639,7 +639,7 @@ public:
   void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & ACommand, int32_t AParams,
-    TStrings * AFiles, TCaptureOutputEvent OutputEvent);
+    TStrings * AFiles, TCaptureOutputEvent && OutputEvent);
   void RemoteChangeDirectory(const UnicodeString & ADirectory);
   void EndTransaction();
   void HomeDirectory();
@@ -1192,9 +1192,9 @@ NB_CORE_EXPORT UnicodeString GetSessionUrl(const TTerminal * Terminal, bool With
 class TOutputProxy : public TObject
 {
 public:
-  TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent OutputEvent) noexcept :
+  TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent && OutputEvent) noexcept :
     FAction(Action),
-    FOutputEvent(OutputEvent)
+    FOutputEvent(std::move(OutputEvent))
   {
   }
 
