@@ -723,7 +723,8 @@ int32_t TFarDialog::ShowModal()
     {
       TFarEnvGuard Guard; nb::used(Guard);
       const TRect Bounds = GetBounds();
-      const PluginStartupInfo &Info = *GetFarPlugin()->GetPluginStartupInfo();
+      const PluginStartupInfo & Info = *GetFarPlugin()->GetPluginStartupInfo();
+      // TODO: start idle thread to send timer events (FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
       Handle = Info.DialogInit(
           &MainGuid, &MainGuid,
           Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
