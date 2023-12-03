@@ -591,29 +591,29 @@ constexpr char * sLineBreak = "\n";
 // MessageDlg relies on these to be <= 0x0000FFFF
 constexpr uint32_t qaYes      = 0x00000001;
 // MessageDlg relies that answer do not conflict with mrCancel (=0x2)
-constexpr uint32_t qaNo       = 0x00000004;
-constexpr uint32_t qaOK       = 0x00000008;
-constexpr uint32_t qaCancel   = 0x00000010;
-constexpr uint32_t qaYesToAll = 0x00000020;
-constexpr uint32_t qaNoToAll  = 0x00000040;
-constexpr uint32_t qaAbort    = 0x00000080;
-constexpr uint32_t qaRetry    = 0x00000100;
-constexpr uint32_t qaIgnore   = 0x00000200;
-constexpr uint32_t qaSkip     = 0x00000400;
-constexpr uint32_t qaAll      = 0x00000800;
-constexpr uint32_t qaHelp     = 0x00001000;
-constexpr uint32_t qaReport   = 0x00002000;
+constexpr const uint32_t qaNo       = 0x00000004;
+constexpr const uint32_t qaOK       = 0x00000008;
+constexpr const uint32_t qaCancel   = 0x00000010;
+constexpr const uint32_t qaYesToAll = 0x00000020;
+constexpr const uint32_t qaNoToAll  = 0x00000040;
+constexpr const uint32_t qaAbort    = 0x00000080;
+constexpr const uint32_t qaRetry    = 0x00000100;
+constexpr const uint32_t qaIgnore   = 0x00000200;
+constexpr const uint32_t qaSkip     = 0x00000400;
+constexpr const uint32_t qaAll      = 0x00000800;
+constexpr const uint32_t qaHelp     = 0x00001000;
+constexpr const uint32_t qaReport   = 0x00002000;
 
-constexpr uint32_t qaFirst = qaYes;
-constexpr uint32_t qaLast  = qaReport;
+constexpr const uint32_t qaFirst = qaYes;
+constexpr const uint32_t qaLast  = qaReport;
 
-constexpr uint32_t qaNeverAskAgain = 0x00010000;
+constexpr const uint32_t qaNeverAskAgain = 0x00010000;
 
-constexpr int32_t qpFatalAbort           = 0x01;
-constexpr int32_t qpNeverAskAgainCheck   = 0x02;
-constexpr int32_t qpAllowContinueOnError = 0x04;
-constexpr int32_t qpIgnoreAbort          = 0x08;
-constexpr int32_t qpWaitInBatch          = 0x10;
+constexpr const int32_t qpFatalAbort           = 0x01;
+constexpr const int32_t qpNeverAskAgainCheck   = 0x02;
+constexpr const int32_t qpAllowContinueOnError = 0x04;
+constexpr const int32_t qpIgnoreAbort          = 0x08;
+constexpr const int32_t qpWaitInBatch          = 0x10;
 
 inline void ThrowExtException() { throw ExtException(static_cast<Exception *>(nullptr), UnicodeString(L"")); }
 NB_CORE_EXPORT bool CompareFileName(const UnicodeString & APath1, const UnicodeString & APath2);
