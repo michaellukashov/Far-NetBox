@@ -24,8 +24,8 @@ const int32_t ccShowResultsInMsgBox = ccUser << 4;
 const int32_t ccSet = 0x80000000;
 
 constexpr const uint32_t AdditionaLanguageMask = 0xFFFFFF00;
-static const UnicodeString AdditionaLanguagePrefix("XX");
-static const UnicodeString TranslationsSubFolder("Translations");
+static constexpr const wchar_t * AdditionaLanguagePrefix = L"XX";
+static constexpr const wchar_t * TranslationsSubFolder = L"Translations";
 
 // TGUIConfiguration * GUIConfiguration = nullptr;
 
