@@ -780,20 +780,18 @@ void TFarMessageDialog::Init(uint32_t AFlags,
   std::unique_ptr<TStrings> MessageLines(std::make_unique<TStringList>());
   FarWrapText(Message, MessageLines.get(), MaxMessageWidth);
   int32_t MaxLen = GetFarPlugin()->MaxLength(MessageLines.get());
-  TStrings * MoreMessageLines = nullptr;
-  std::unique_ptr<TStrings> MoreMessageLinesPtr;
+  std::unique_ptr<TStrings> MoreMessageLines;
   if (FParams->MoreMessages != nullptr)
   {
-    MoreMessageLines = new TStringList();
-    MoreMessageLinesPtr.reset(MoreMessageLines);
+    MoreMessageLines = std::make_unique<TStringList>();
     UnicodeString MoreMessages = FParams->MoreMessages->GetText();
     while ((MoreMessages.Length() > 0) && (MoreMessages[MoreMessages.Length()] == L'\n' ||
         MoreMessages[MoreMessages.Length()] == L'\r'))
     {
       MoreMessages.SetLength(MoreMessages.Length() - 1);
     }
-    FarWrapText(MoreMessages, MoreMessageLines, MaxMessageWidth);
-    int32_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines);
+    FarWrapText(MoreMessages, MoreMessageLines.get(), MaxMessageWidth);
+    int32_t MoreMaxLen = GetFarPlugin()->MaxLength(MoreMessageLines.get());
     if (MaxLen < MoreMaxLen)
     {
       MaxLen = MoreMaxLen;
@@ -820,7 +818,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     new TFarSeparator(this);
 
     MoreMessagesLister = new TFarLister(this);
-    MoreMessagesLister->GetItems()->Assign(MoreMessageLines);
+    MoreMessagesLister->GetItems()->Assign(MoreMessageLines.get());
     MoreMessagesLister->SetLeft(GetBorderBox()->GetLeft() + 1);
 
     MoreMessagesSeparator = new TFarSeparator(this);
@@ -1052,10 +1050,9 @@ int32_t TCustomFarPlugin::FarMessage(uint32_t Flags,
     FullMessage += L"\n\x01\n";
   }
 
-  TStringList * MessageLines = new TStringList();
-  std::unique_ptr<TStrings> MessageLinesPtr(MessageLines);
+  std::unique_ptr<TStringList> MessageLines(std::make_unique<TStringList>());
   MessageLines->Add(Title);
-  FarWrapText(FullMessage, MessageLines, MaxMessageWidth);
+  FarWrapText(FullMessage, MessageLines.get(), MaxMessageWidth);
 
   // FAR WORKAROUND
   // When there is too many lines to fit on screen, far uses not-shown
