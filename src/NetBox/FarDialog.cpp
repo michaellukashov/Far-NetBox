@@ -30,6 +30,8 @@ public:
   virtual ~TIdleThread() noexcept override
   {
     SAFE_CLOSE_HANDLE(FEvent);
+    Terminate();
+    WaitFor();
   }
 
   virtual void Execute() override;
@@ -53,22 +55,20 @@ void TIdleThread::InitIdleThread()
 void TIdleThread::Terminate()
 {
   // TCompThread::Terminate();
+  FFinished = true;
   ::SetEvent(FEvent);
 }
 
 void TIdleThread::Execute()
 {
-  DEBUG_PRINTF("1");
   while (!IsFinished())
   {
     if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED) && !IsFinished())
     {
-       DEBUG_PRINTF("2", "");
       FDialog->Idle();
-      DEBUG_PRINTF("3", "");
     }
   }
-  // SAFE_CLOSE_HANDLE(FEvent);
+  SAFE_CLOSE_HANDLE(FEvent);
 }
 
 TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
