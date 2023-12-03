@@ -1005,7 +1005,7 @@ void TFarMessageDialog::ButtonClick(TFarButton * Sender, bool & Close)
   }
 }
 
-void TFarMessageDialog::OnUpdateTimeoutButton(TObject * Sender, void * Data)
+void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Data*/)
 {
   // DEBUG_PRINTF("Sender: %p, Data: %p", (void *)Sender, (void *)Data);
   if (FParams && (FParams->Timer > 0))
