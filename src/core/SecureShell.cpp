@@ -2623,7 +2623,7 @@ void TSecureShell::VerifyHostKey(
       try
       {
         UnicodeString StorageSource = StoreHostKey(Host, Port, KeyType, KeyStr);
-        UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
+        StoredKeys = RetrieveHostKey(Host, Port, KeyType);
         if (StoredKeys != KeyStr)
         {
           throw Exception(UnicodeString());
