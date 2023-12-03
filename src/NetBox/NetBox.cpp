@@ -80,7 +80,7 @@ intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
     Lines.SetCommaText(Text);
     assert(Lines.GetCount() == 5);
 
-    UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
+    const UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
     UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
     Instructions2 = ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
     Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
@@ -234,7 +234,7 @@ HANDLE WINAPI OpenW(const struct OpenInfo * Info)
     return nullptr;
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard; nb::used(Guard);
-  HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
+  const HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
   return Handle;
 }
 
