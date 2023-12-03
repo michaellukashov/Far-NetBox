@@ -22,10 +22,10 @@ UnicodeString Sprintf(const UnicodeString & fmt, fmt::ArgList args)
 UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args)
 {
   Expects(GetGlobals() != nullptr);
-  UnicodeString Fmt = GetGlobals()->GetMsg(id);
+  const UnicodeString Fmt = GetGlobals()->GetMsg(id);
   if (!Fmt.IsEmpty())
   {
-    UnicodeString Result = Sprintf(Fmt, args);
+    const UnicodeString Result = Sprintf(Fmt, args);
     return Result;
   }
   DEBUG_PRINTF("Unknown resource string id: %d\n", id);
