@@ -612,7 +612,7 @@ void AddStartupSequence(const UnicodeString & Tag);
 struct TCopyDataMessage
 {
   enum { CommandCanCommandLine, CommandCommandLine, MainWindowCheck, RefreshPanel };
-  static const uint32_t Version1 = 1;
+  static constexpr const uint32_t Version1 = 1;
 
   uint32_t Version{TCopyDataMessage::Version1};
   uint32_t Command{static_cast<uint32_t>(-1)};
