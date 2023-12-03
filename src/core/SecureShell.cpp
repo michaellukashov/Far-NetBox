@@ -1974,7 +1974,7 @@ class TPoolForDataEvent : public TObject
 {
   NB_DISABLE_COPY(TPoolForDataEvent)
 public:
-  TPoolForDataEvent(TSecureShell * SecureShell, WSANETWORKEVENTS & Events) noexcept :
+  TPoolForDataEvent(gsl::not_null<TSecureShell *> SecureShell, WSANETWORKEVENTS & Events) noexcept :
     FSecureShell(SecureShell),
     FEvents(Events)
   {
@@ -1986,7 +1986,7 @@ public:
   }
 
 private:
-  TSecureShell * FSecureShell{nullptr};
+  gsl::not_null<TSecureShell *> FSecureShell;
   WSANETWORKEVENTS & FEvents;
 };
 
