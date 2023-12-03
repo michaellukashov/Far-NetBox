@@ -2965,7 +2965,7 @@ UnicodeString TGlobalFunctions::GetMsg(int32_t Id) const
   if (FarPlugin != nullptr)
   {
     // map Id to PluginString value
-    int32_t PluginStringId = Id;
+    int32_t PluginStringId = -1;
     const TFarPluginStrings * CurFarPluginStrings = &FarPluginStrings[0];
     while (CurFarPluginStrings && CurFarPluginStrings->Id)
     {
@@ -2977,7 +2977,8 @@ UnicodeString TGlobalFunctions::GetMsg(int32_t Id) const
       ++CurFarPluginStrings;
     }
   
-    Result = FarPlugin ? FarPlugin->GetMsg(PluginStringId) : UnicodeString();
+    if (FarPlugin && (PluginStringId != -1)) 
+      Result = FarPlugin->GetMsg(PluginStringId);
   }
 
   if (Result.IsEmpty())
