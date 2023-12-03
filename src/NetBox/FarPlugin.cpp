@@ -2887,7 +2887,7 @@ void TFarMenuItems::SetFlag(int32_t Index, uint32_t Flag, bool Value)
 
 bool TFarMenuItems::GetFlag(int32_t Index, uint32_t Flag) const
 {
-  return (nb::ToUIntPtr(GetObj(Index)) & Flag) > 0;
+  return (nb::ToUIntPtr(GetObj(Index)) & Flag) != 0;
 }
 
 TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) noexcept :
