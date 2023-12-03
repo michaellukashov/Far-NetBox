@@ -1786,7 +1786,7 @@ UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
   UnicodeString Result(nb::NB_MAX_PATH, 0);
   TFarEnvGuard Guard; nb::used(Guard);
-  FFarStandardFunctions.MkTemp(ToWChar(Result), nb::ToDWord(Result.Length()), nullptr);
+  FFarStandardFunctions.MkTemp(ToWChar(Result), nb::ToSizeT(Result.Length()), nullptr);
   PackStr(Result);
   return Result;
 }
