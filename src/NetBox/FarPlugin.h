@@ -198,7 +198,7 @@ protected:
   TFarDialog * FTopDialog{nullptr};
   HANDLE FConsoleInput{};
   HANDLE FConsoleOutput{};
-  mutable int32_t FFarVersion{0};
+  mutable intptr_t FFarVersion{0};
   bool FTerminalScreenShowing{false};
   TCriticalSection FCriticalSection;
   uint32_t FFarThreadId{0};
