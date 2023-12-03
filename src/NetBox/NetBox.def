@@ -8,6 +8,7 @@ EXPORTS
    GetFindDataW
    GetGlobalInfoW
    GetPluginInfoW
+   ProcessSynchroEventW
    GetOpenPanelInfoW
    MakeDirectoryW
    AnalyseW

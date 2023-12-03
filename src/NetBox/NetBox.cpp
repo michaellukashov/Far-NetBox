@@ -64,6 +64,12 @@ void WINAPI GetPluginInfoW(PluginInfo * Info)
   FarPlugin->GetPluginInfo(Info);
 }
 
+intptr_t WINAPI ProcessSynchroEventW(const struct ProcessSynchroEventInfo * Info)
+{
+  //EXP_INTPTR(Info, LF_ProcessSynchroEvent)
+  return 0;
+}
+
 intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
 {
   if (!Info || (Info->StructSize < sizeof(ConfigureInfo)))
