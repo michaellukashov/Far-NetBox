@@ -284,6 +284,7 @@ public:
   }
 
   virtual void Clear() { SetCount(0); }
+
   void Sort(CompareFunc Func)
   {
     if (GetCount() > 1)
@@ -293,9 +294,11 @@ public:
   }
 
   virtual void Notify(O * Ptr, TListNotification Action) {}
+
   virtual void Sort() { ThrowNotImplemented(15); }
 
   virtual int32_t GetCount() const { return nb::ToInt32(FList.size()); }
+
   void SetCount(int32_t NewCount)
   {
     if (NewCount == nb::NPOS)
