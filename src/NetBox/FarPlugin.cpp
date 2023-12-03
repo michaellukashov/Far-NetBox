@@ -958,8 +958,8 @@ void TFarMessageDialog::Idle()
       UnicodeString Caption =
         FORMAT(" %s ", FORMAT(FParams->TimeoutStr,
             FTimeoutButtonCaption, nb::ToInt32((FParams->Timeout - Running) / 1000)));
-      int32_t sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
-      Caption += ::StringOfChar(L' ', sz);
+      int32_t Sz = FTimeoutButton->GetCaption().Length() > Caption.Length() ? FTimeoutButton->GetCaption().Length() - Caption.Length() : 0;
+      Caption += ::StringOfChar(L' ', Sz);
       FTimeoutButton->SetCaption(Caption);
     }
   }

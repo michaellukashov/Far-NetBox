@@ -8686,7 +8686,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
       Direction = GetMsg((Info->Side == osLocal) ? NB_QUEUE_UPLOAD : NB_QUEUE_DOWNLOAD);
     }
 
-    Values[0] = base::MinimizeName(Info->Source, PathMaxLen, (Info->Side == osRemote));
+    Values[0] = base::MinimizeName(Info->Source, PathMaxLen, Info->Side == osRemote);
 
     if ((ProgressData != nullptr) &&
       (ProgressData->GetOperation() == Info->Operation))
@@ -8696,7 +8696,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
   }
   else if (Index == 1)
   {
-    Values[0] = base::MinimizeName(Info->Destination, PathMaxLen, (Info->Side == osLocal));
+    Values[0] = base::MinimizeName(Info->Destination, PathMaxLen, Info->Side == osLocal);
 
     if (ProgressStr.IsEmpty())
     {
@@ -8722,7 +8722,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
     if (ProgressData != nullptr)
     {
       Values[0] = base::MinimizeName(ProgressData->GetFileName(), PathMaxLen,
-          (Info->Side == osRemote));
+        (Info->Side == osRemote));
       if (ProgressData->GetOperation() == Info->Operation)
       {
         Values[1] = FORMAT("%d%%", ProgressData->TransferProgress());
@@ -8735,7 +8735,7 @@ bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
   }
 
   Line = FORMAT("%1s %1s %-49s %s",
-      Operation, Direction, Values[0], Values[1]);
+    Operation, Direction, Values[0], Values[1]);
 
   return true;
 }
