@@ -583,7 +583,7 @@ private:
 
 enum TQueueFileState { qfsQueued = 0, qfsProcessed = 1 };
 
-class TQueueFileList
+class TQueueFileList : public TObject
 {
 friend class TParallelOperation;
 public:
@@ -596,7 +596,7 @@ public:
   int32_t GetCount() const;
 private:
   std::unique_ptr<TStrings> FList;
-  TParallelOperation * FLastParallelOperation;
-  int32_t FLastParallelOperationVersion;
+  TParallelOperation * FLastParallelOperation{nullptr};
+  int32_t FLastParallelOperationVersion{0};
 };
 
