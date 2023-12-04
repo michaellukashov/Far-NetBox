@@ -671,11 +671,11 @@ UnicodeString TSecureShell::ConvertFromPutty(const char * Str, int32_t Length) c
   }
 }
 
-const UnicodeString ServerVersionMsg(L"Remote version: ");
-const UnicodeString ForwardingFailureMsg(L"Forwarded connection refused by remote");
-const UnicodeString LocalPortMsg(L"Local port ");
-const UnicodeString ForwadingToMsg(L" forwarding to ");
-const UnicodeString FailedMsg(L" failed:");
+constexpr const wchar_t * ServerVersionMsg = L"Remote version: ";
+constexpr const wchar_t * ForwardingFailureMsg = L"Forwarded connection refused by remote";
+constexpr const wchar_t * LocalPortMsg = L"Local port ";
+constexpr const wchar_t * ForwardingToMsg = L" forwarding to ";
+constexpr const wchar_t * FailedMsg = L" failed:";
 
 void TSecureShell::PuttyLogEvent(const char * AStr)
 {
@@ -700,7 +700,7 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
     }
     else
     {
-      FLastTunnelError = RightStr(Str, Str.Length() - ForwardingFailureMsg.Length());
+      FLastTunnelError = RightStr(Str, Str.Length() - UnicodeString(ForwardingFailureMsg).Length());
       const UnicodeString Prefix(L": ");
       if (StartsStr(Prefix, FLastTunnelError))
       {
