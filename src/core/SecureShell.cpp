@@ -573,7 +573,7 @@ bool TSecureShell::TryFtp()
 
           nb::ClearStruct(Address);
           Address.sin_family = AF_INET;
-          int32_t Port = FtpPortNumber;
+          const int32_t Port = FtpPortNumber;
           Address.sin_port = htons(static_cast<short>(Port));
           Address.sin_addr.s_addr = *(reinterpret_cast<uint32_t *>(*HostEntry->h_addr_list));
 
@@ -894,9 +894,9 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     DebugFail();
   }
 
-  UnicodeString InstructionsLog =
+  const UnicodeString InstructionsLog =
     (AInstructions.IsEmpty() ? UnicodeString("<no instructions>") : FORMAT("\"%s\"", AInstructions));
-  UnicodeString PromptsLog =
+  const UnicodeString PromptsLog =
     (Prompts->GetCount() > 0 ? FORMAT("\"%s\"", Prompts->GetString(0)) : UnicodeString(L"<no prompt>")) +
     (Prompts->GetCount() > 1 ? FORMAT(" + %d more", Prompts->GetCount() - 1) : UnicodeString());
   LogEvent(FORMAT("Prompt (%s, \"%s\", %s, %s)", PromptDesc, AName, InstructionsLog, PromptsLog));
