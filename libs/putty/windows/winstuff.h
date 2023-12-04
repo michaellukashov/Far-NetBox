@@ -346,7 +346,9 @@ void init_common_controls(void);       /* also does some DLL-loading */
  * Exports from winutils.c.
  */
 typedef struct filereq_tag filereq; /* cwd for file requester */
+#ifndef WINSCP
 BOOL request_file(filereq *state, OPENFILENAME *of, int preserve, int save);
+#endif
 filereq *filereq_new(void);
 void filereq_free(filereq *state);
 int message_box(LPCTSTR text, LPCTSTR caption, DWORD style, DWORD helpctxid);
