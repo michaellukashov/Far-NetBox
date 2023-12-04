@@ -110,7 +110,7 @@ void TNamedObjectList::AlphaSort()
 
 int32_t TNamedObjectList::Add(TObject * AObject)
 {
-  int32_t Result;
+  int32_t Result{0};
   const TAutoFlag ControlledAddFlag(FControlledAdd); nb::used(ControlledAddFlag);
   const TNamedObject * NamedObject = static_cast<TNamedObject *>(AObject);
   // If temporarily not auto-sorting (when loading session list),
@@ -126,7 +126,7 @@ int32_t TNamedObjectList::Add(TObject * AObject)
     Result = -1;
     if (FAutoSort)
     {
-      int32_t pos;
+      int32_t pos{0};
       TNamedObject * NamedObject2 = GetSortObject(NamedObject->GetName(), pos);
       if (!NamedObject2)
       {
@@ -179,7 +179,7 @@ TNamedObject * TNamedObjectList::GetSortObject(const UnicodeString & Name, int32
 
   TNamedObject tn(OBJECT_CLASS_TNamedObject, Name);
   TNamedObject * NamedObject = nullptr;
-  int32_t cp=0;
+  int32_t cp = 0;
 
   while (l <= r)
   {

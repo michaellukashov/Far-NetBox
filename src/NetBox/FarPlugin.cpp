@@ -1956,10 +1956,6 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
   ResetCachedInfo();
   if (FClosed)
   {
-    // FAR WORKAROUND
-    // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
-    // so we close it here on the very next opportunity
-    static bool InsideClose = false;
     ClosePanel();
   }
   else
@@ -2193,6 +2189,9 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 
 void TCustomFarFileSystem::ClosePanel()
 {
+  // FAR WORKAROUND
+  // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
+  // so we close it here on the very next opportunity
   static bool InsideClose=false;
   if (MustSkipClose)
      MustSkipClose = false;
