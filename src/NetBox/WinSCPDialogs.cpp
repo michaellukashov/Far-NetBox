@@ -986,7 +986,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   return Result;
 }
 
-class TAboutDialog : public TFarDialog
+class TAboutDialog final : public TFarDialog
 {
 public:
   explicit TAboutDialog(TCustomFarPlugin * AFarPlugin);
@@ -1006,16 +1006,9 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 {
   // UnicodeString ProductName = GetConfiguration()->GetFileInfoString("ProductName");
   const UnicodeString ProductName = LoadStr(WINSCPFAR_NAME);
-  UnicodeString Comments;
-  try
-  {
-    Comments = GetConfiguration()->GetFileInfoString("Comments");
-  }
-  catch (...)
-  {
-    Comments.Clear();
-  }
-  UnicodeString LegalCopyright; // = GetConfiguration()->GetFileInfoString("LegalCopyright");
+  const UnicodeString Comments = GetConfiguration()->GetFileInfoString("Comments");
+  const UnicodeString LegalCopyright = GetConfiguration()->GetFileInfoString("LegalCopyright");
+  const UnicodeString FileDescription = GetConfiguration()->GetFileInfoString("FileDescription");
 
   int32_t Height = 15;
 #ifndef NO_FILEZILLA
@@ -1038,7 +1031,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
   TFarText * Text = new TFarText(this);
-  Text->SetCaption(GetConfiguration()->GetFileInfoString("FileDescription"));
+  Text->SetCaption(FileDescription);
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1171,7 +1164,7 @@ void TWinSCPPlugin::AboutDialog()
   Dialog->ShowModal();
 }
 
-class TPasswordDialog : public TFarDialog
+class TPasswordDialog final : public TFarDialog
 {
 public:
   explicit TPasswordDialog(TCustomFarPlugin * AFarPlugin,
@@ -1435,7 +1428,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   return Result;
 }
 
-class TSessionDialog : public TTabbedDialog
+class TSessionDialog final : public TTabbedDialog
 {
 public:
   enum TSessionTab
@@ -4316,7 +4309,7 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
 }
 
 NB_DEFINE_CLASS_ID(TRightsContainer);
-class TRightsContainer : public TFarDialogContainer
+class TRightsContainer final : public TFarDialogContainer
 {
   NB_DISABLE_COPY(TRightsContainer)
 public:
@@ -4646,7 +4639,7 @@ void TRightsContainer::SetAllowUndef(bool Value)
   }
 }
 
-class TPropertiesDialog : public TFarDialog
+class TPropertiesDialog final : public TFarDialog
 {
   NB_DISABLE_COPY(TPropertiesDialog)
 public:
@@ -4976,7 +4969,7 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
 }
 
 NB_DEFINE_CLASS_ID(TCopyParamsContainer);
-class TCopyParamsContainer : public TFarDialogContainer
+class TCopyParamsContainer final : public TFarDialogContainer
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamsContainer); }
