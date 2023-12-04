@@ -219,9 +219,9 @@ typedef struct
     unsigned int    mode;                       /* File encryption mode   */
 } fcrypt_ctx;
 
-constexpr int32_t MAX_KEY_LENGTH = 32;
-constexpr int32_t KEYING_ITERATIONS = 1000;
-constexpr int32_t PWD_VER_LENGTH         = 2;
+constexpr const int32_t MAX_KEY_LENGTH    = 32;
+constexpr const int32_t KEYING_ITERATIONS = 1000;
+constexpr const int32_t PWD_VER_LENGTH    = 2;
 
 /*
     Field lengths (in bytes) versus File Encryption Mode (0 < mode < 4)
@@ -234,8 +234,8 @@ constexpr int32_t PWD_VER_LENGTH         = 2;
    The following macros assume that the mode value is correct.
 */
 
-#define KEY_LENGTH(mode)        (8 * (mode & 3) + 8)
-#define SALT_LENGTH(mode)       (4 * (mode & 3) + 4)
+#define KEY_LENGTH(mode)        (8 * ((mode) & 3) + 8)
+#define SALT_LENGTH(mode)       (4 * ((mode) & 3) + 4)
 #define MAC_LENGTH(mode)        (10)
 
 /* subroutine for data encryption/decryption    */
@@ -681,7 +681,7 @@ TEncryption::TEncryption(const RawByteString & AKey) noexcept
   }
 }
 
-TEncryption::~TEncryption() // noexcept(false) // throw(std::runtime_error)
+void TEncryption::Finalize()
 {
   if (FContext != nullptr)
   {

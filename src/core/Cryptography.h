@@ -19,13 +19,15 @@ RawByteString GenerateEncryptKey();
 void ValidateEncryptKey(const RawByteString & AKey);
 
 class TFileBuffer;
-typedef void AESContext;
+using AESContext = void;
 
-class TEncryption : public TObject
+class TEncryption final : public TObject
 {
+  TEncryption() = delete;
 public:
   explicit TEncryption(const RawByteString & AKey) noexcept;
-  virtual ~TEncryption(); //noexcept(false); //throw(std::runtime_error);
+  virtual ~TEncryption() = default;
+  void Finalize();
 
   static bool IsEncryptedFileName(const UnicodeString & AFileName);
 

@@ -9066,6 +9066,7 @@ UnicodeString TTerminal::EncryptFileName(const UnicodeString & APath, bool Encry
         FileName = Encryption.EncryptFileName(FileName);
         FEncryptedFileNames[APath] = FileName;
         LogEvent(2, FORMAT("Name of file '%s' encrypted as '%s'", APath, FileName));
+        Encryption.Finalize();
       }
     }
 
@@ -9088,6 +9089,7 @@ UnicodeString TTerminal::DecryptFileName(const UnicodeString & Path, bool Decryp
     {
       TEncryption Encryption(FEncryptKey);
       FileName = Encryption.DecryptFileName(FileName);
+      Encryption.Finalize();
     }
 
     if (Encrypted || DecryptFullPath) // DecryptFullPath is just an optimization

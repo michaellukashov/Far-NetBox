@@ -1611,7 +1611,7 @@ private:
   RawByteString FHandle;
 };
 
-class TSFTPUploadQueue : public TSFTPAsynchronousQueue
+class TSFTPUploadQueue final : public TSFTPAsynchronousQueue
 {
   NB_DISABLE_COPY(TSFTPUploadQueue)
   TSFTPUploadQueue() = delete;
@@ -5006,6 +5006,7 @@ void TSFTPFileSystem::Source(
       // Either queue is empty now (noop call then),
       // or some error occurred (in that case, process remaining responses, ignoring other errors)
       Queue.DisposeSafe();
+      Encryption.Finalize();
     } end_try__finally
 
     TransferFinished = true;
@@ -5867,6 +5868,7 @@ void TSFTPFileSystem::Sink(
             WriteLocalFile(CopyParam, FileStream, BlockBuf, LocalFileName, OperationProgress);
           }
         }
+        Encryption.Finalize();
       }
       __finally
       {
