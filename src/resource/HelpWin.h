@@ -1,5 +1,4 @@
-#ifndef HelpWinH
-#define HelpWinH
+#pragma once
 
 #define HELP_ERROR                   "messages"
 #define HELP_SESSION_SAVE            "ui_login_save"
@@ -74,4 +73,3 @@
 #define HELP_SSH_HOST_CA             "ui_ssh_host_ca"
 #define HELP_SHOW_LOGIN              "ui_pref_window#show_login"
 
-#endif // TextsWin
