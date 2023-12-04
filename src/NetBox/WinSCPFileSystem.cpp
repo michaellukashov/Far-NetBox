@@ -452,7 +452,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       }
 
       TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
-      const bool ResolveSymlinks = GetSessionData()->GetResolveSymlinks();
+      bool ResolveSymlinks = GetSessionData()->GetResolveSymlinks();
       for (int32_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
@@ -483,7 +483,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
               File->SetIsSymLink(true);
               if (const auto LinkedFile = File->GetLinkedFile())
               {
-                LinkedFile->SetType(FILETYPE_DIRECTORY);
+                const_cast<TRemoteFile *>(LinkedFile)->SetType(FILETYPE_DIRECTORY);
               }
             }
             SAFE_DESTROY(LinkFile);
@@ -3106,12 +3106,14 @@ void TWinSCPFileSystem::TerminalInformation(
   if (Phase != 0)
   {
     const TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
+    bool mustLog = false;
     {
       const bool new_log = (FAuthenticationLog == nullptr);
+      TTerminal * term = GetTerminal();
       if (term)
       {
-        mustLog =    term->GetStatus() == ssOpening
-                 || (   term->GetStatus() == ssOpened
+        mustLog = term->GetStatus() == ssOpening
+                 || (term->GetStatus() == ssOpened
                      && term->GetSessionInfo().ProtocolBaseName == L"SSH");
       }
     }

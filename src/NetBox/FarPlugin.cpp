@@ -15,6 +15,8 @@ extern "C" {
 
 TCustomFarPlugin * FarPlugin = nullptr;
 
+static bool MustSkipClose = false;
+
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
 
@@ -546,12 +548,13 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
         Param = nb::ToPtr(Buf.c_str());
       }
 
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+      // don't destory plugin on locked CriticalSection
       bool onClose = (Info->Event == FE_CLOSE && !FarFileSystem->FClosed);
       MustSkipClose = onClose;
 
       int rc;
       { 
+        TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
         rc = FarFileSystem->ProcessPanelEvent(Info->Event, Param);
       }
       if (MustSkipClose)

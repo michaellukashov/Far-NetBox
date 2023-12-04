@@ -87,12 +87,12 @@ endif()
 
 set(NETBOX_C_FLAGS )
 
-if(PROJECT_PLATFORM STREQUAL "x86")
-else()
+if(PROJECT_PLATFORM STREQUAL "x64")
 set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} -DWIN64 -D_WIN64 -D_AMD64_)
-if (MSVC_VERSION GREATER 1699)
-set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} /arch:IA32)
 endif()
+
+if(PROJECT_PLATFORM STREQUAL "x86")
+# set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} /arch:IA32)
 endif()
 
 if(MSVC)
@@ -214,7 +214,7 @@ macro(compile_asm_files)
       set(ARG_ASM_FILES " ")
   endif()
 #  message("ARG_ASM_FILES: ${ARG_ASM_FILES}")
-  if(x64)
+  if(PROJECT_PLATFORM STREQUAL "x64")
     set(_nasm_args win64)
   else()
     set(_nasm_args win32)
@@ -365,7 +365,7 @@ target_include_directories(ssleay32 SYSTEM BEFORE PRIVATE
 )
 
 set(libeay32_obj_files )
-if(x64)
+if(PROJECT_PLATFORM STREQUAL "x64")
 compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   # ../../libs/openssl-3/crypto/x86_64cpuid.asm
   ../../libs/openssl-3/crypto/sha/sha512-x86_64.asm
@@ -1278,7 +1278,7 @@ set(libeay32_c_files
   ../../libs/openssl-3/providers/implementations/storemgmt/winstore_store.c
 )
 
-if(x64)
+if(PROJECT_PLATFORM STREQUAL "x64")
 set(libeay32_c_files ${libeay32_c_files}
   ../../libs/openssl-3/crypto/rc4/rc4_enc.c
   ../../libs/openssl-3/crypto/rc4/rc4_skey.c

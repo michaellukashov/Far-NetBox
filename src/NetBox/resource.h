@@ -1,5 +1,8 @@
 ﻿#pragma once
 
+#include "plugin_version.hpp"
+
+#define _MAJOR NETBOX_VERSION_MAJOR
 #define _MINOR NETBOX_VERSION_MINOR
 #define _PATCH NETBOX_VERSION_PATCH
 #define _BUILD NETBOX_VERSION_BUILD

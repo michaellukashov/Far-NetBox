@@ -18,7 +18,7 @@ public:
   RWProperty<UnicodeString> Name{nb::bind(&TNamedObject::GetName, this), nb::bind(&TNamedObject::SetName, this)};
   __property bool Hidden = { read = FHidden };
   const bool& Hidden{FHidden};
-  explicit TNamedObject() noexcept : TPersistent(OBJECT_CLASS_TNamedObject), FHidden(false) {}
+  explicit TNamedObject() noexcept : TNamedObject(OBJECT_CLASS_TNamedObject) {}
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value);
@@ -46,7 +46,9 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
   virtual int32_t GetCount() const override;
+  void SetCount(int32_t Value);
   int32_t GetCountIncludingHidden() const;
+  TNamedObject * GetSortObject(const UnicodeString & Name, int32_t & Position);
   virtual void Notify(TObject * Ptr, TListNotification Action) override;
 protected:
   int32_t FHiddenCount{0};
