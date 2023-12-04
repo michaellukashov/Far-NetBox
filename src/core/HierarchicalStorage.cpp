@@ -353,7 +353,10 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & ASubKey, bool CanCre
   {
     Access = hsaRead; // allow reading the access
     InheritAccess = GetCurrentAccess();
-    Result = DoOpenSubKey(MungedKey, CanCreate);
+    if (!Result) {
+        MungedKey = MungeStr(Key, !GetForceAnsi());
+        Result = DoOpenSubKey(MungedKey, CanCreate);
+    }
   }
 
   if (Result)

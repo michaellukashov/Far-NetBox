@@ -17,6 +17,7 @@ TCustomFarPlugin * FarPlugin = nullptr;
 
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
+
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
   FOpenedPlugins(std::make_unique<TList>()),
@@ -546,7 +547,18 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
       }
 
       TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
-      return FarFileSystem->ProcessPanelEvent(Info->Event, Param);
+      bool onClose = (Info->Event == FE_CLOSE && !FarFileSystem->FClosed);
+      MustSkipClose = onClose;
+
+      int rc;
+      { 
+        rc = FarFileSystem->ProcessPanelEvent(Info->Event, Param);
+      }
+      if (MustSkipClose)
+        MustSkipClose = false;
+      else if (onClose)
+        FarFileSystem->ClosePanel();
+      return rc;
     }
     return 0;
   }
@@ -1945,12 +1957,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
     // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
     // so we close it here on the very next opportunity
     static bool InsideClose = false;
-    if (!InsideClose)
-    {
-      InsideClose = true;
-      ClosePanel();
-      InsideClose = false;
-    }
+    ClosePanel();
   }
   else
   {
@@ -2183,8 +2190,16 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 
 void TCustomFarFileSystem::ClosePanel()
 {
-  FClosed = true;
-  FarControl(FCTL_CLOSEPANEL, 0, nullptr);
+  static bool InsideClose=false;
+  if (MustSkipClose)
+     MustSkipClose = false;
+  else if (!InsideClose)
+  {
+    InsideClose = true;
+    FClosed = true;
+    FarControl(FCTL_CLOSEPANEL, 0, nullptr);
+    InsideClose = false;
+  }
 }
 
 UnicodeString TCustomFarFileSystem::GetMsg(intptr_t MsgId) const

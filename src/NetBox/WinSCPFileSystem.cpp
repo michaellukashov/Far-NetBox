@@ -460,7 +460,10 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
         if (ResolveSymlinks && File->GetIsSymLink())
         {
           if (FarPlugin->CheckForEsc())
-            break;
+          {
+            ResolveSymlinks = false;
+            continue;
+          };
           // Check what kind of symlink this is
           const UnicodeString LinkFileName = File->GetLinkTo();
           if (!LinkFileName.IsEmpty())
@@ -477,6 +480,11 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
             if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
             {
               File->SetType(FILETYPE_DIRECTORY);
+              File->SetIsSymLink(true);
+              if (const auto LinkedFile = File->GetLinkedFile())
+              {
+                LinkedFile->SetType(FILETYPE_DIRECTORY);
+              }
             }
             SAFE_DESTROY(LinkFile);
           }
@@ -1044,7 +1052,19 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       MultipleEdit();
       Handled = true;
     }
+
+    // Return to session panel
+    if (Key == VK_RETURN && !Handled && Focused && FLastPath == ROOTDIRECTORY && Focused->GetFileName() == PARENTDIRECTORY)
+    {
+      SetDirectoryEx(PARENTDIRECTORY, 0);
+      if (UpdatePanel())
+      {
+        RedrawPanel();
+      }
+      Handled = true;
+    }
   }
+
   return Handled;
 }
 
@@ -1820,20 +1840,8 @@ void TWinSCPFileSystem::FileProperties()
   {
     DebugAssert(!FPanelItems);
 
-    bool Cont = true;
-    if (!GetTerminal()->LoadFilesProperties(FileList.get()))
-    {
-      if (UpdatePanel())
-      {
-        RedrawPanel();
-      }
-      else
-      {
-        Cont = false;
-      }
-    }
+    GetTerminal()->LoadFilesProperties(FileList.get());
 
-    if (Cont)
     {
       const TRemoteProperties CurrentProperties = TRemoteProperties::CommonProperties(FileList.get());
 
@@ -3098,10 +3106,18 @@ void TWinSCPFileSystem::TerminalInformation(
   if (Phase != 0)
   {
     const TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
-    if (sts == ssOpening || sts == ssOpened)
     {
       const bool new_log = (FAuthenticationLog == nullptr);
-      if (new_log)
+      if (term)
+      {
+        mustLog =    term->GetStatus() == ssOpening
+                 || (   term->GetStatus() == ssOpened
+                     && term->GetSessionInfo().ProtocolBaseName == L"SSH");
+      }
+    }
+    if (mustLog)
+    {
+      if (FAuthenticationLog == nullptr)
       {
         FAuthenticationLog = std::make_unique<TStringList>();
         GetWinSCPPlugin()->SaveScreen(FAuthenticationSaveScreenHandle);
@@ -3109,14 +3125,12 @@ void TWinSCPFileSystem::TerminalInformation(
       }
 
       LogAuthentication(Terminal, AStr);
-      if (new_log && sts == ssOpened) goto do_restore;
     }
   }
   else
   {
     if (FAuthenticationLog != nullptr)
     {
-do_restore:
       GetWinSCPPlugin()->ClearConsoleTitle();
       GetWinSCPPlugin()->RestoreScreen(FAuthenticationSaveScreenHandle);
       FAuthenticationLog.reset();

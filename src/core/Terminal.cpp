@@ -1300,9 +1300,15 @@ void TTerminal::Init(TSessionData * ASessionData, TConfiguration * AConfiguratio
 
 TTerminal::~TTerminal() noexcept
 {
-  if (GetActive())
+  try
   {
-    Close();
+    if (GetActive())
+    {
+      Close();
+    }
+  }
+  catch (...)
+  {
   }
 
   if (FCallbackGuard != nullptr)

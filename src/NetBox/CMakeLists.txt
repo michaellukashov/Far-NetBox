@@ -1,5 +1,5 @@
 ﻿message(STATUS "CMake version: ${CMAKE_VERSION}")
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10)
 
 project(NetBox)
 
@@ -33,12 +33,12 @@ if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
   set(FAR_VERSION Far3)
 endif()
 
+if(NOT DEFINED PROJECT_PLATFORM OR PROJECT_PLATFORM STREQUAL "")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(x64 1)
   set(PROJECT_PLATFORM "x64" CACHE STRING "Platform")
 else()
-  set(x64 0)
   set(PROJECT_PLATFORM "x86" CACHE STRING "Platform")
+endif()
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -87,9 +87,9 @@ endif()
 
 set(NETBOX_C_FLAGS )
 
-if(x64)
-set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} -DWIN64 -D_WIN64 -D_AMD64_)
+if(PROJECT_PLATFORM STREQUAL "x86")
 else()
+set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} -DWIN64 -D_WIN64 -D_AMD64_)
 if (MSVC_VERSION GREATER 1699)
 set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} /arch:IA32)
 endif()
@@ -248,17 +248,6 @@ endif(MSVC)
 #-------------------------------------------------------------------------------
 #openssl
 
-if(x64)
-set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  -DOPENSSL_SYSNAME_WIN32 -DOPENSSL_SYSNAME_WIN64
-  -DMK1MF_PLATFORM_VC_WIN64A
-)
-else()
-set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
-  -DOPENSSL_SYSNAME_WIN32
-  -DMK1MF_PLATFORM_VC_WIN32
-)
-endif()
 set(OPENSSL_COMPILE_FLAGS ${OPENSSL_COMPILE_FLAGS}
   -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN
   -DVC_EXTRALEAN -DSECURITY_WIN32 # -DOPENSSL_NO_LOCKING
@@ -2394,12 +2383,14 @@ set(NETBOX_SOURCES
 add_custom_target(NETBOX_SOURCES SOURCES
   NetBoxEng.lng
   NetBoxRus.lng
+  NetBoxPol.lng
+  NetBoxSpa.lng
   resource.h.template
   NetBox.rc.template
 )
 
 if(MSVC)
-if(NOT x64)
+if(PROJECT_PLATFORM STREQUAL "x86")
 
 #[[find_program(MASM_EXECUTABLE ml)
 # message("masm: ${MASM_EXECUTABLE}")
@@ -2421,7 +2412,7 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
   ${ASM_OBJECTS}
 )]]
 
-endif(NOT x64)
+endif()
 endif(MSVC)
 
 set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}

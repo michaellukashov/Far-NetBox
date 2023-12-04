@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -123,7 +123,25 @@ int32_t TNamedObjectList::Add(TObject * AObject)
   }
   else
   {
-    Result = TObjectList::Add(AObject);
+    Result = -1;
+    if (FAutoSort)
+    {
+      intptr_t pos;
+      TNamedObject* NamedObject2 = GetSortObject(NamedObject->GetName(), pos);
+      if (!NamedObject2)
+      {
+        Result = pos;
+        Insert(Result, AObject);
+      } 
+      else 
+      {
+        Result= pos - 1;
+      }
+    }
+    else 
+    {
+      Result = TObjectList::Add(AObject);
+    }
   }
   return Result;
 }
@@ -145,23 +163,60 @@ void TNamedObjectList::Notify(TObject * Ptr, TListNotification Action)
     {
       FHiddenCount = -1;
     }
-    if (FAutoSort)
-    {
-      AlphaSort();
-    }
   }
 }
 
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName)
 {
-  // This should/can be optimized when list is sorted
-  for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)
+TNamedObject* TNamedObjectList::GetSortObject(UnicodeString Name, intptr_t &outPosition)
+{
+  bool flag = false;
+  int l = 0;
+  int r = GetCountIncludingHidden() - 1;
+  int mid=0;
+  outPosition = 0;
+
+  if (r < 0)
+    return nullptr;
+
+  TNamedObject tn(OBJECT_CLASS_TNamedObject,Name);
+  TNamedObject* NamedObject = nullptr;
+  int cp=0;
+
+  while (l <= r)
   {
-    // Not using AtObject as we iterate even hidden objects here
-    TNamedObject * NamedObject = GetAs<TNamedObject>(Index);
-    if (NamedObject->IsSameName(AName))
-    {
+    mid = (l + r) / 2;
+    NamedObject = static_cast<TNamedObject*>(GetObj(mid));
+    cp = NamedObject->Compare(&tn);
+    if (cp == 0)
       return NamedObject;
+
+    if (cp > 0)
+      r = mid - 1;
+    else
+      l = mid + 1;
+  }
+
+  outPosition = mid + (cp > 0? 0 : 1);
+  return nullptr;
+}
+
+
+  if (FAutoSort)
+  {
+    intptr_t outpos;
+    return GetSortObject(Name, outpos);
+  }
+  else 
+  {
+    for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)
+    {
+      // Not using AtObject as we iterate even hidden objects here
+      TNamedObject * NamedObject = GetAs<TNamedObject>(Index);
+      if (NamedObject->IsSameName(AName))
+      {
+        return NamedObject;
+      }
     }
   }
   return nullptr;
