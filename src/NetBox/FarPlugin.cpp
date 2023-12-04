@@ -1125,7 +1125,7 @@ int32_t TCustomFarPlugin::Message(uint32_t Flags,
     FarControl(FCTL_SETUSERSCREEN, 0, nullptr);
   }
 
-  uint32_t Result;
+  int32_t Result;
   if (Buttons != nullptr)
   {
     TFarMessageParams DefaultParams;
@@ -1137,7 +1137,7 @@ int32_t TCustomFarPlugin::Message(uint32_t Flags,
     DebugAssert(Params == nullptr);
     const UnicodeString Items = Title + L"\n" + Message;
     TFarEnvGuard Guard; nb::used(Guard);
-    Result = static_cast<intptr_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
+    Result = nb::ToInt32(FStartupInfo.Message(&MainGuid, &MainGuid,
           Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
           nullptr,
           static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
@@ -1440,7 +1440,7 @@ void TCustomFarPlugin::ShowTerminalScreen(const UnicodeString & Command)
     int32_t Y = Size.y - 2;
     // if any panel is visible -- clear all screen (don't scroll panel)
     {
-      PanelInfo Info;
+      PanelInfo Info{};
       Info.StructSize = sizeof(Info);
       nb::ClearStruct(Info);
       FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_ACTIVE);
@@ -1455,7 +1455,7 @@ clearall:
         Y = 0;
       }
     }
-    UnicodeString Blank = ::StringOfChar(L' ', static_cast<intptr_t>(Size.x));
+    UnicodeString Blank = ::StringOfChar(L' ', Size.x);
     do
     {
       Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
@@ -1473,7 +1473,7 @@ clearall:
   }
   FlushText();
 
-  COORD Coord;
+  COORD Coord{};
   Coord.X = 0;
   Coord.Y = static_cast<SHORT>(Cursor.y);
   ::SetConsoleCursorPosition(FConsoleOutput, Coord);
@@ -1625,7 +1625,7 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
   if (FStartupInfo.GetMsg)
   try
   {
-    Result = FStartupInfo.GetMsg(&MainGuid, nb::ToInt32(MsgId));
+    Result = FStartupInfo.GetMsg(&MainGuid, MsgId);
   }
   catch(...)
   {
@@ -2760,7 +2760,7 @@ void TFarPanelInfo::SetFocusedIndex(int32_t Value)
   {
     DebugAssert(Value != nb::NPOS && Value < nb::ToInt32(FPanelInfo->ItemsNumber));
     FPanelInfo->CurrentItem = nb::ToInt32(Value);
-    PanelRedrawInfo PanelInfo;
+    PanelRedrawInfo PanelInfo{};
     nb::ClearStruct(PanelInfo);
     PanelInfo.StructSize = sizeof(PanelRedrawInfo);
     PanelInfo.CurrentItem = FPanelInfo->CurrentItem;
