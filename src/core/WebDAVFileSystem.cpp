@@ -40,13 +40,12 @@
 #include "CoreMain.h"
 #include "WinSCPSecurity.h"
 #include <StrUtils.hpp>
-#include <NeonIntf.h>
+#include "NeonIntf.h"
 
 // #pragma package(smart_init)
 
 // #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-constexpr const char * SESSION_FS_KEY = "filesystem";
 constexpr const char * SESSION_CONTEXT_KEY = "sessioncontext";
 constexpr const char * CONST_WEBDAV_PROTOCOL_BASE_NAME = "WebDAV";
 constexpr const int32_t HttpUnauthorized = 401;

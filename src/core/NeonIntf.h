@@ -11,6 +11,8 @@
 #define StrToNeon(S) UTF8String(S).c_str()
 #define StrFromNeon(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_UTF8)
 
+constexpr const char * SESSION_FS_KEY = "filesystem";
+
 struct TNeonCertificateData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
