@@ -3,6 +3,7 @@
 
 #include <Common.h>
 #include <TextsWin.h>
+#include <Interface.h>
 
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
