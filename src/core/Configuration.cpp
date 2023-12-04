@@ -1410,23 +1410,33 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   void * Info = GetFileApplicationInfo(AFileName);
   try__finally
   {
-    if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
+    try
     {
-      const TTranslation Translation = GetTranslation(Info, 0);
-      try
+      if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
       {
+        const TTranslation Translation = GetTranslation(Info, 0);
         Result = ::GetFileInfoString(Info, Translation, AKey, AllowEmpty);
       }
-      catch (const std::exception &e)
+      else
       {
-        (void)e;
-        DEBUG_PRINTF("Error: %s", ::MB2W(e.what()));
-        Result.Clear();
+        // DebugAssert(!AFileName.IsEmpty());
       }
     }
-    else
+    catch(const Exception & E)
     {
-      DebugAssert(!AFileName.IsEmpty());
+      (void)E;
+      DEBUG_PRINTF("Error: %s", E.Message);
+      Result.Clear();
+    }
+    catch(const std::exception & E)
+    {
+      (void)E;
+      DEBUG_PRINTF("Error: %s", ::MB2W(E.what()));
+      Result.Clear();
+    }
+    catch(...)
+    {
+      Result.Clear();
     }
   }
   __finally
