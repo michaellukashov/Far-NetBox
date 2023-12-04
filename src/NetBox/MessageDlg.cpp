@@ -12,5 +12,6 @@
 void AnswerNameAndCaption(
   uint32_t Answer, UnicodeString & Name, UnicodeString & Caption)
 {
+  ThrowNotImplemented(3012);
 }
 
