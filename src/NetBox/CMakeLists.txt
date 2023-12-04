@@ -2536,11 +2536,6 @@ string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
-file(GLOB DIST_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/*.lng
-)
-# message("DIST_FILES: ${DIST_FILES}")
-
 add_custom_target(create_plugin_dir ALL
   COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ${CMAKE_COMMAND} -E make_directory "${NETBOX_PLUGIN_DIR}"
   # VERBATIM
@@ -2557,9 +2552,18 @@ add_custom_target(copy_to_plugin_dir ALL
 )
 # add_dependencies(copy_to_plugin_dir NetBox)
 
+file(GLOB DIST_FILES
+  ${CMAKE_CURRENT_SOURCE_DIR}/*.lng
+)
+# message("DIST_FILES: ${DIST_FILES}")
+
+add_custom_target(copy_lng_to_plugin_dir ALL
+  DEPENDS NetBox
+)
+
 foreach(DIST_FILE ${DIST_FILES})
   string(REPLACE "/" "\\" DIST_FILE ${DIST_FILE})
-  add_custom_command(TARGET NetBox POST_BUILD
+  add_custom_command(TARGET copy_lng_to_plugin_dir POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DIST_FILE}" "${NETBOX_PLUGIN_DIR}"
     VERBATIM
   )
