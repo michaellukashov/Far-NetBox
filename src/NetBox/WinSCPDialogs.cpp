@@ -1249,7 +1249,6 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
 
 TPasswordDialog::~TPasswordDialog()
 {
-//  SAFE_DESTROY(FEdits);
 }
 
 void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
