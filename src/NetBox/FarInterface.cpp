@@ -56,7 +56,7 @@ HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
   void * Parameter, DWORD CreationFlags,
   DWORD & ThreadId)
 {
-  HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
+  const HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
       nb::ToSizeT(StackSize),
       static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
       Parameter,
