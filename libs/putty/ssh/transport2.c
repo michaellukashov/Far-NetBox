@@ -1983,7 +1983,7 @@ static void ssh2_transport_higher_layer_packet_callback(void *context)
     ssh_ppl_process_queue(ppl);
 }
 
-static void ssh2_transport_timer(void *ctx, unsigned long now)
+static void __cdecl ssh2_transport_timer(void *ctx, unsigned long now)
 {
     struct ssh2_transport_state *s = (struct ssh2_transport_state *)ctx;
     unsigned long mins;

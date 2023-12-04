@@ -2852,7 +2852,7 @@ bool open_for_write_would_lose_data(const Filename *fn);
  * GETTICKCOUNT() and compare the result with the returned `next'
  * value to find out how long you have to make your next wait().)
  */
-typedef void (*timer_fn_t)(void *ctx, uint32_t now);
+typedef void (__cdecl * timer_fn_t)(void *ctx, uint32_t now);
 uint32_t schedule_timer(int ticks, timer_fn_t fn, void *ctx);
 void expire_timer_context(void *ctx);
 bool run_timers(unsigned long now, unsigned long *next);
