@@ -8,7 +8,7 @@
 #include "AsyncGssSocketLayer.h"
 #endif
 
-constexpr const int32_t BUFSIZE = 16 * 1024;
+constexpr const int32_t TRANSFERSOCKET_BUFSIZE = 16 * 1024;
 
 constexpr const int32_t STATE_WAITING = 0;
 constexpr const int32_t STATE_STARTING = 1;
@@ -122,8 +122,8 @@ void CTransferSocket::OnReceive(int nErrorCode)
     if (m_nTransferState == STATE_STARTING)
       OnConnect(0);
 
-    nb::vector_t<char> Buffer(BUFSIZE);
-    int numread = CAsyncSocketEx::Receive(&Buffer[0], BUFSIZE);
+    nb::vector_t<char> Buffer(TRANSFERSOCKET_BUFSIZE);
+    int numread = CAsyncSocketEx::Receive(&Buffer[0], TRANSFERSOCKET_BUFSIZE);
     if (numread != SOCKET_ERROR && numread)
     {
       m_LastActiveTime = CTime::GetCurrentTime();
@@ -133,20 +133,20 @@ void CTransferSocket::OnReceive(int nErrorCode)
       {
         m_zlibStream.next_in = (Bytef *)&Buffer[0];
         m_zlibStream.avail_in = numread;
-        std::unique_ptr<char []> out(nb::calloc(BUFSIZE));
+        std::unique_ptr<char []> out(nb::calloc(TRANSFERSOCKET_BUFSIZE));
         m_zlibStream.next_out = (Bytef *)&out[0];
-        m_zlibStream.avail_out = BUFSIZE;
+        m_zlibStream.avail_out = TRANSFERSOCKET_BUFSIZE;
         int res = inflate(&m_zlibStream, 0);
         while (res == Z_OK)
         {
-          m_pListResult->AddData(&out[0], BUFSIZE - m_zlibStream.avail_out);
-          out.reset(nb::calloc(BUFSIZE));
+          m_pListResult->AddData(&out[0], TRANSFERSOCKET_BUFSIZE - m_zlibStream.avail_out);
+          out.reset(nb::calloc(TRANSFERSOCKET_BUFSIZE));
           m_zlibStream.next_out = (Bytef *)&out[0];
-          m_zlibStream.avail_out = BUFSIZE;
+          m_zlibStream.avail_out = TRANSFERSOCKET_BUFSIZE;
           res = inflate(&m_zlibStream, 0);
         }
         if (res == Z_STREAM_END)
-          m_pListResult->AddData(&out[0], BUFSIZE - m_zlibStream.avail_out);
+          m_pListResult->AddData(&out[0], TRANSFERSOCKET_BUFSIZE - m_zlibStream.avail_out);
         else if (res != Z_OK && res != Z_BUF_ERROR)
         {
           CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
@@ -199,7 +199,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
     if (GetState() != closed)
       ableToRead = m_pOwner->GetAbleToTransferSize(CFtpControlSocket::download, beenWaiting);
     else
-      ableToRead = BUFSIZE;
+      ableToRead = TRANSFERSOCKET_BUFSIZE;
 
     if (!beenWaiting)
       DebugAssert(ableToRead);
@@ -210,7 +210,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
     }
 
     if (!m_pBuffer)
-      m_pBuffer = nb::chcalloc(BUFSIZE);
+      m_pBuffer = nb::chcalloc(TRANSFERSOCKET_BUFSIZE);
 
     int numread = CAsyncSocketEx::Receive(m_pBuffer, static_cast<int>(ableToRead));
     if (numread!=SOCKET_ERROR)
@@ -255,25 +255,25 @@ void CTransferSocket::OnReceive(int nErrorCode)
       if (m_useZlib)
       {
         if (!m_pBuffer2)
-          m_pBuffer2 = nb::calloc(BUFSIZE);
+          m_pBuffer2 = nb::calloc(TRANSFERSOCKET_BUFSIZE);
 
         m_zlibStream.next_in = (Bytef *)m_pBuffer;
         m_zlibStream.avail_in = numread;
         m_zlibStream.next_out = (Bytef *)m_pBuffer2;
-        m_zlibStream.avail_out = BUFSIZE;
+        m_zlibStream.avail_out = TRANSFERSOCKET_BUFSIZE;
         int res = inflate(&m_zlibStream, 0);
         while (res == Z_OK)
         {
-          WriteData(m_pBuffer2, BUFSIZE - m_zlibStream.avail_out);
-          written += BUFSIZE - m_zlibStream.avail_out;
+          WriteData(m_pBuffer2, TRANSFERSOCKET_BUFSIZE - m_zlibStream.avail_out);
+          written += TRANSFERSOCKET_BUFSIZE - m_zlibStream.avail_out;
           m_zlibStream.next_out = (Bytef *)m_pBuffer2;
-          m_zlibStream.avail_out = BUFSIZE;
+          m_zlibStream.avail_out = TRANSFERSOCKET_BUFSIZE;
           res = inflate(&m_zlibStream, 0);
         }
         if (res == Z_STREAM_END)
         {
-          WriteData(m_pBuffer2, BUFSIZE - m_zlibStream.avail_out);
-          written += BUFSIZE - m_zlibStream.avail_out;
+          WriteData(m_pBuffer2, TRANSFERSOCKET_BUFSIZE - m_zlibStream.avail_out);
+          written += TRANSFERSOCKET_BUFSIZE - m_zlibStream.avail_out;
         }
         else if (res != Z_OK && res != Z_BUF_ERROR)
         {
@@ -291,8 +291,8 @@ void CTransferSocket::OnReceive(int nErrorCode)
     }
     CATCH(CFileException,e)
     {
-      LPTSTR msg = nb::wchcalloc(BUFSIZE);
-      if (e->GetErrorMessage(msg, BUFSIZE))
+      LPTSTR msg = nb::wchcalloc(TRANSFERSOCKET_BUFSIZE);
+      if (e->GetErrorMessage(msg, TRANSFERSOCKET_BUFSIZE))
         m_pOwner->ShowStatus(msg, FZ_LOG_ERROR);
       nb_free(msg);
       CloseAndEnsureSendClose(CSMODE_TRANSFERERROR);
@@ -569,15 +569,15 @@ void CTransferSocket::OnSend(int nErrorCode)
   {
     if (!m_pBuffer)
     {
-      m_pBuffer = nb::calloc(BUFSIZE);
+      m_pBuffer = nb::calloc(TRANSFERSOCKET_BUFSIZE);
       m_bufferpos = 0;
 
       m_zlibStream.next_out = (Bytef *)m_pBuffer;
-      m_zlibStream.avail_out = BUFSIZE;
+      m_zlibStream.avail_out = TRANSFERSOCKET_BUFSIZE;
     }
     if (!m_pBuffer2)
     {
-      m_pBuffer2 = nb::calloc(BUFSIZE);
+      m_pBuffer2 = nb::calloc(TRANSFERSOCKET_BUFSIZE);
 
       m_zlibStream.next_in = (Bytef *)m_pBuffer2;
     }
@@ -591,7 +591,7 @@ void CTransferSocket::OnSend(int nErrorCode)
         if (m_pFile)
         {
           DWORD numread;
-          numread = ReadDataFromFile(m_pBuffer2, BUFSIZE);
+          numread = ReadDataFromFile(m_pBuffer2, TRANSFERSOCKET_BUFSIZE);
           if (numread < 0)
           {
             return;
@@ -601,17 +601,17 @@ void CTransferSocket::OnSend(int nErrorCode)
           m_zlibStream.next_in = (Bytef *)m_pBuffer2;
           m_zlibStream.avail_in = numread;
 
-          if (numread < BUFSIZE)
+          if (numread < TRANSFERSOCKET_BUFSIZE)
             m_pFile = 0;
         }
       }
       if (!m_zlibStream.avail_out)
       {
-        if (m_bufferpos >= BUFSIZE)
+        if (m_bufferpos >= TRANSFERSOCKET_BUFSIZE)
         {
           m_bufferpos = 0;
           m_zlibStream.next_out = (Bytef *)m_pBuffer;
-          m_zlibStream.avail_out = BUFSIZE;
+          m_zlibStream.avail_out = TRANSFERSOCKET_BUFSIZE;
         }
       }
 
@@ -627,14 +627,14 @@ void CTransferSocket::OnSend(int nErrorCode)
         }
       }
 
-      numsend = BUFSIZE;
-      int len = BUFSIZE - m_bufferpos - m_zlibStream.avail_out;
+      numsend = TRANSFERSOCKET_BUFSIZE;
+      int len = TRANSFERSOCKET_BUFSIZE - m_bufferpos - m_zlibStream.avail_out;
       if (!len && !m_pFile)
       {
         break;
       }
 
-      if (len < BUFSIZE)
+      if (len < TRANSFERSOCKET_BUFSIZE)
         numsend = len;
 
       int nLimit = (int)m_pOwner->GetAbleToTransferSize(CFtpControlSocket::upload, beenWaiting);
@@ -679,7 +679,7 @@ void CTransferSocket::OnSend(int nErrorCode)
       UpdateStatusBar(false);
 
       if (!m_zlibStream.avail_in && !m_pFile && m_zlibStream.avail_out &&
-        m_zlibStream.avail_out + m_bufferpos == BUFSIZE && res == Z_STREAM_END)
+        m_zlibStream.avail_out + m_bufferpos == TRANSFERSOCKET_BUFSIZE && res == Z_STREAM_END)
       {
         CloseOnShutDownOrError(0);
         return;
@@ -702,7 +702,7 @@ void CTransferSocket::OnSend(int nErrorCode)
       return;
     }
     if (!m_pBuffer)
-      m_pBuffer = nb::chcalloc(BUFSIZE);
+      m_pBuffer = nb::chcalloc(TRANSFERSOCKET_BUFSIZE);
 
     int numread;
 
@@ -711,7 +711,7 @@ void CTransferSocket::OnSend(int nErrorCode)
     if (GetState() != closed)
       currentBufferSize = m_pOwner->GetAbleToTransferSize(CFtpControlSocket::upload, beenWaiting);
     else
-      currentBufferSize = BUFSIZE;
+      currentBufferSize = TRANSFERSOCKET_BUFSIZE;
 
     if (!currentBufferSize && !m_bufferpos)
     {
@@ -735,7 +735,7 @@ void CTransferSocket::OnSend(int nErrorCode)
     else
       numread = 0;
 
-    DebugAssert((numread+m_bufferpos) <= BUFSIZE);
+    DebugAssert((numread+m_bufferpos) <= TRANSFERSOCKET_BUFSIZE);
     DebugAssert(numread>=0);
     DebugAssert(m_bufferpos>=0);
 
@@ -788,7 +788,7 @@ void CTransferSocket::OnSend(int nErrorCode)
       {
         int pos = numread + m_bufferpos - numsent;
 
-        if (pos < 0 || (numsent + pos) > BUFSIZE)
+        if (pos < 0 || (numsent + pos) > TRANSFERSOCKET_BUFSIZE)
         {
           LogMessage(FZ_LOG_WARNING, L"Index out of range");
           CloseOnShutDownOrError(CSMODE_TRANSFERERROR);
@@ -828,7 +828,7 @@ void CTransferSocket::OnSend(int nErrorCode)
       if (GetState() != closed)
         currentBufferSize = m_pOwner->GetAbleToTransferSize(CFtpControlSocket::upload, beenWaiting);
       else
-        currentBufferSize = BUFSIZE;
+        currentBufferSize = TRANSFERSOCKET_BUFSIZE;
 
       if (m_bufferpos < currentBufferSize)
       {
@@ -1156,8 +1156,8 @@ int CTransferSocket::ReadDataFromFile(char *buffer, int len)
   }
   CATCH_ALL(e)
   {
-    TCHAR error[BUFSIZE];
-    if (e->GetErrorMessage(error, BUFSIZE))
+    TCHAR error[TRANSFERSOCKET_BUFSIZE];
+    if (e->GetErrorMessage(error, TRANSFERSOCKET_BUFSIZE))
       m_pOwner->ShowStatus(error, FZ_LOG_ERROR);
     CloseOnShutDownOrError(CSMODE_TRANSFERERROR);
     return -1;
