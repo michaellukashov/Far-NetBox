@@ -713,7 +713,7 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
       TranslatePuttyMessage(Translation, LENOF(Translation), FLastTunnelError);
     }
   }
-  else if (StartsStr(LocalPortMsg, Str) && ContainsStr(Str, ForwadingToMsg) && ContainsStr(Str, FailedMsg))
+  else if (StartsStr(LocalPortMsg, Str) && ContainsStr(Str, ForwardingToMsg) && ContainsStr(Str, FailedMsg))
   {
     FLastTunnelError = Str;
   }
