@@ -19,5 +19,6 @@
 #include "XmlStorage.cpp"
 #include "Far3Storage.cpp"
 #include "FarPluginStrings.cpp"
+#include "MessageDlg.cpp"
 
 #include <disable_warnings_in_std_end.hpp>

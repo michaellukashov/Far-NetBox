@@ -2268,6 +2268,34 @@ source_group("Base sources" FILES ${Base_SOURCES})
 source_group("NetBox headers" FILES ${NetBox_HEADERS})
 source_group("NetBox sources" FILES ${NetBox_SOURCES})
 
+#-------------------------------------------------------------------------------
+#baselib
+
+add_library(baselib STATIC
+  ${Base_HEADERS}
+  ${Base_SOURCES}
+)
+
+target_include_directories(baselib PRIVATE
+  ../../libs
+  ../../libs/fmt
+  ../../libs/tinylog
+  ../include
+  ../base
+  ../resource
+  ../../libs/GSL/include
+)
+
+target_compile_definitions(baselib PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+)
+
+set(NETBOX_LIBRARIES
+  baselib
+)
+
 endif(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
@@ -2395,7 +2423,7 @@ set(NETBOX_SOURCES ${NETBOX_SOURCES}
 endif(NOT x64)
 endif(MSVC)
 
-set(NETBOX_LIBRARIES
+set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   putty
   puttyvs
   atlmfc
@@ -2429,44 +2457,17 @@ set(NETBOX_LIBRARIES
 
 if(MSVC)
 if(BUILD_DEBUG)
-set(NETBOX_LIBRARIES PRIVATE
-  ${NETBOX_LIBRARIES}
+set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   libcmtd.lib
   libcpmtd.lib
 )
 else()
-set(NETBOX_LIBRARIES PRIVATE
-  ${NETBOX_LIBRARIES}
+set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   libcmt.lib
   libcpmt.lib
 )
 endif(BUILD_DEBUG)
 endif(MSVC)
-
-#-------------------------------------------------------------------------------
-#baselib
-
-add_library(baselib STATIC
-  ${Base_HEADERS}
-  ${Base_SOURCES}
-)
-
-target_include_directories(baselib PRIVATE
-  ../../libs
-  ../../libs/fmt
-  ../../libs/tinylog
-  ../include
-  ../base
-  ../resource
-  ../../libs/GSL/include
-)
-
-target_compile_definitions(baselib PRIVATE
-  ${NETBOX_CXX_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
-  ${NETBOX_PLATFORM_FLAGS}
-)
-
 
 add_library(NetBox SHARED
   ${NETBOX_SOURCES}
@@ -2510,7 +2511,6 @@ target_include_directories(NetBox PRIVATE
 
 target_link_libraries(NetBox PRIVATE
   ${NETBOX_LIBRARIES}
-  baselib
 )
 
 target_compile_options(NetBox PRIVATE
