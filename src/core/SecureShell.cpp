@@ -204,7 +204,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
   conf_set_int(conf, CONF_ssh_rekey_time, nb::ToInt32(Data->GetRekeyTime()));
 
-  DebugAssert(CIPHER_MAX == CIPHER_COUNT);
+  static_assert(CIPHER_MAX == CIPHER_COUNT);
   for (int32_t c = 0; c < CIPHER_COUNT; c++)
   {
     int32_t pcipher;
