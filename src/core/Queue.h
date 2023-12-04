@@ -13,7 +13,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSimpleThread) || TObject::is(Kind); }
 public:
   explicit TSimpleThread(TObjectClassId Kind) noexcept;
-  virtual ~TSimpleThread() noexcept;
+  virtual ~TSimpleThread() noexcept override;
   void InitSimpleThread();
 
   virtual void Start();
@@ -51,7 +51,7 @@ protected:
   bool FTerminated{false};
 
   explicit TSignalThread(TObjectClassId Kind) noexcept;
-  virtual ~TSignalThread() noexcept;
+  virtual ~TSignalThread() noexcept override;
   void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
 
   virtual bool WaitForEvent();
@@ -87,7 +87,7 @@ class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
   NB_DISABLE_COPY(TTerminalQueue)
 public:
   explicit TTerminalQueue(TTerminal * ATerminal, TConfiguration * AConfiguration) noexcept;
-  virtual ~TTerminalQueue() noexcept;
+  virtual ~TTerminalQueue() noexcept override;
   void InitTerminalQueue();
 
   void AddItem(TQueueItem * Item);
@@ -116,17 +116,17 @@ public:
   int32_t GetTransfersLimit() const { return FTransfersLimit; }
   int32_t GetKeepDoneItemsFor() const { return FKeepDoneItemsFor; }
   bool GetEnabled() const { return FEnabled; }
-  const TQueryUserEvent & GetOnQueryUser() const { return FOnQueryUser; }
+  TQueryUserEvent & GetOnQueryUser() { return FOnQueryUser; }
   void SetOnQueryUser(TQueryUserEvent && Value) { FOnQueryUser = std::move(Value); }
-  const TPromptUserEvent & GetOnPromptUser() const { return FOnPromptUser; }
+  TPromptUserEvent & GetOnPromptUser() { return FOnPromptUser; }
   void SetOnPromptUser(TPromptUserEvent && Value) { FOnPromptUser = std::move(Value); }
-  const TExtendedExceptionEvent & GetOnShowExtendedException() const { return FOnShowExtendedException; }
+  TExtendedExceptionEvent & GetOnShowExtendedException() { return FOnShowExtendedException; }
   void SetOnShowExtendedException(TExtendedExceptionEvent && Value) { FOnShowExtendedException = std::move(Value); }
-  const TQueueListUpdateEvent & GetOnListUpdate() const { return FOnListUpdate; }
+  TQueueListUpdateEvent & GetOnListUpdate() { return FOnListUpdate; }
   void SetOnListUpdate(TQueueListUpdateEvent && Value) { FOnListUpdate = std::move(Value); }
-  const TQueueItemUpdateEvent & GetOnQueueItemUpdate() const { return FOnQueueItemUpdate; }
+  TQueueItemUpdateEvent & GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
   void SetOnQueueItemUpdate(TQueueItemUpdateEvent && Value) { FOnQueueItemUpdate = std::move(Value); }
-  const TQueueEventEvent & GetOnEvent() const { return FOnEvent; }
+  TQueueEventEvent & GetOnEvent() { return FOnEvent; }
   void SetOnEvent(TQueueEventEvent && Value) { FOnEvent = std::move(Value); }
 
 protected:
@@ -227,7 +227,7 @@ public:
 
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
-  void SetMasks(const UnicodeString & Value);
+  // void SetMasks(const UnicodeString & Value);
 
 protected:
   TStatus FStatus{qsPending};
@@ -237,11 +237,11 @@ protected:
   std::unique_ptr<TQueueItem::TInfo> FInfo;
   TTerminalQueue * FQueue{nullptr};
   HANDLE FCompleteEvent{INVALID_HANDLE_VALUE};
-  int32_t FCPSLimit{nb::ToIntPtr(-1)};
+  int32_t FCPSLimit{-1};
   TDateTime FDoneAt{};
 
   explicit TQueueItem(TObjectClassId Kind) noexcept;
-  virtual ~TQueueItem() noexcept;
+  virtual ~TQueueItem() noexcept override;
 
 public:
   void SetStatus(TStatus Status);
@@ -298,7 +298,7 @@ public:
   void * GetUserData() const { return FUserData; }
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
-  void SetMasks(const UnicodeString & Value);
+  // void SetMasks(const UnicodeString & Value);
 
 private:
   std::unique_ptr<TFileOperationProgressType> FProgressData;
@@ -311,7 +311,7 @@ private:
   void * FUserData{nullptr};
 
   explicit TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem) noexcept;
-  virtual ~TQueueItemProxy() noexcept;
+  virtual ~TQueueItemProxy() noexcept override;
 public:
   int32_t GetIndex() const;
   TFileOperationProgressType * GetProgressData() const;
@@ -325,7 +325,7 @@ class NB_CORE_EXPORT TTerminalQueueStatus : public TObject
   NB_DISABLE_COPY(TTerminalQueueStatus)
 public:
   TTerminalQueueStatus() noexcept;
-  virtual ~TTerminalQueueStatus() noexcept;
+  virtual ~TTerminalQueueStatus() noexcept override;
 
   TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
 
@@ -378,7 +378,7 @@ public:
 public:
   TBootstrapQueueItem() noexcept;
   explicit TBootstrapQueueItem(TObjectClassId Kind) noexcept;
-  virtual ~TBootstrapQueueItem() noexcept;
+  virtual ~TBootstrapQueueItem() noexcept override;
 
 protected:
   virtual void DoExecute(TTerminal * Terminal) override;
@@ -395,7 +395,7 @@ public:
 protected:
   explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) noexcept;
   TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept;
-  virtual ~TLocatedQueueItem() = default;
+  virtual ~TLocatedQueueItem() override = default;
 
   virtual void DoExecute(TTerminal * Terminal) override;
   virtual UnicodeString GetStartupDirectory() const override;
@@ -416,7 +416,7 @@ public:
     const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
     const TCopyParamType * CopyParam, int32_t Params, TOperationSide Side,
     bool SingleFile, bool Parallel) noexcept;
-  virtual ~TTransferQueueItem() noexcept;
+  virtual ~TTransferQueueItem() noexcept override;
 
 protected:
   std::unique_ptr<TStrings> FFilesToCopy;
@@ -449,7 +449,7 @@ public:
   explicit TUploadQueueItem(TTerminal * ATerminal,
     const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
     const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
-  virtual ~TUploadQueueItem() = default;
+  virtual ~TUploadQueueItem() override = default;
 
 protected:
   virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) override;
@@ -465,7 +465,7 @@ public:
   explicit TDownloadQueueItem(TTerminal * ATerminal,
     const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
     const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
-  virtual ~TDownloadQueueItem() = default;
+  virtual ~TDownloadQueueItem() override = default;
 
 protected:
   virtual void DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation) override;
@@ -476,7 +476,7 @@ class TDeleteQueueItem : public TLocatedQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TDeleteQueueItem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDeleteQueueItem) || TQueueItem::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDeleteQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
   explicit TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept;
 
@@ -497,7 +497,7 @@ public:
   TTerminalThread() = delete;
   explicit TTerminalThread(TTerminal * Terminal) noexcept;
   void InitTerminalThread();
-  virtual ~TTerminalThread() noexcept;
+  virtual ~TTerminalThread() noexcept override;
 
   void TerminalOpen();
   void TerminalReopen();
@@ -551,7 +551,7 @@ private:
   TCriticalSection FSection;
 
   void WaitForUserAction(TUserAction * UserAction);
-  void RunAction(TNotifyEvent Action);
+  void RunAction(TNotifyEvent && Action);
 
   static void SaveException(Exception & E, Exception *& Exception);
   static void Rethrow(Exception *& AException);
