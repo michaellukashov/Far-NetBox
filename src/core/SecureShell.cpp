@@ -47,13 +47,13 @@ struct ScpLogPolicy : public LogPolicy
 
 Seat * get_log_seat(LogContext * logctx)
 {
-  ScpLogPolicy * ALogPolicy = static_cast<ScpLogPolicy *>(log_get_logpolicy(logctx));
+  const ScpLogPolicy * ALogPolicy = static_cast<ScpLogPolicy *>(log_get_logpolicy(logctx));
   return ALogPolicy->Seat;
 }
 
 struct callback_set * get_log_callback_set(LogContext * logctx)
 {
-  ScpLogPolicy * ALogPolicy = static_cast<ScpLogPolicy *>(log_get_logpolicy(logctx));
+  const ScpLogPolicy * ALogPolicy = static_cast<ScpLogPolicy *>(log_get_logpolicy(logctx));
   return ALogPolicy->SecureShell->GetCallbackSet();
 }
 
@@ -247,7 +247,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   DebugAssert(static_cast<THostKey>(HK_MAX) == HOSTKEY_COUNT);
   for (int32_t h = 0; h < HOSTKEY_COUNT; h++)
   {
-    int32_t phk = HostKeyToPutty(Data->GetHostKeys(h));
+    const int32_t phk = HostKeyToPutty(Data->GetHostKeys(h));
     conf_set_int_int(conf, CONF_ssh_hklist, h, phk);
   }
 
@@ -679,7 +679,7 @@ const UnicodeString FailedMsg(L" failed:");
 
 void TSecureShell::PuttyLogEvent(const char * AStr)
 {
-  UnicodeString Str = ConvertFromPutty(AStr, nb::ToIntPtr(NBChTraitsCRT<char>::SafeStringLen(AStr)));
+  const UnicodeString Str = ConvertFromPutty(AStr, nb::ToInt32(NBChTraitsCRT<char>::SafeStringLen(AStr)));
   // Gross hack
   if (StartsStr(ServerVersionMsg, Str))
   {
@@ -736,7 +736,7 @@ TPromptKind TSecureShell::IdentifyPromptKind(UnicodeString & AName) const
     { "HTTP proxy authentication", PROXY_AUTH_TITLE },
   };
 
-  int32_t Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), AName);
+  const int32_t Index = TranslatePuttyMessage(NameTranslation, _countof(NameTranslation), AName);
 
   TPromptKind PromptKind;
   if (Index == 0) // username
@@ -1144,7 +1144,7 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
 
 bool TSecureShell::Peek(uint8_t *& Buf, int32_t Len) const
 {
-  bool Result = (PendLen >= Len);
+  const bool Result = (PendLen >= Len);
 
   if (Result)
   {
@@ -1400,7 +1400,7 @@ void TSecureShell::Send(const uint8_t * Buf, int32_t Length)
 {
   CheckConnection();
   backend_send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), nb::ToInt32(Length));
-  int32_t BufSize = backend_sendbuffer(FBackendHandle);
+  const int32_t BufSize = backend_sendbuffer(FBackendHandle);
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT("Sent %d bytes", nb::ToInt32(Length)));
@@ -1463,9 +1463,9 @@ int32_t TSecureShell::TranslatePuttyMessage(
     }
     else
     {
-      size_t OriginalLen = nb::StrLength(Original);
-      size_t PrefixLen = Div - Original;
-      size_t SuffixLen = OriginalLen - PrefixLen - 1;
+      const size_t OriginalLen = nb::StrLength(Original);
+      const size_t PrefixLen = Div - Original;
+      const size_t SuffixLen = OriginalLen - PrefixLen - 1;
       if ((nb::ToSizeT(Message.Length()) >= OriginalLen - 1) &&
           (strncmp(AnsiMessage.c_str(), Original, PrefixLen) == 0) &&
           (strncmp(AnsiMessage.c_str() + AnsiMessage.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
@@ -1503,7 +1503,7 @@ int32_t TSecureShell::TranslateAuthenticationMessage(
     { "Server refused our key", AUTH_TRANSL_KEY_REFUSED, HELP_AUTH_TRANSL_KEY_REFUSED },
   };
 
-  int32_t Result = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
+  const int32_t Result = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
 
   if ((Result == 2) || (Result == 3) || (Result == 4))
   {
@@ -1536,7 +1536,7 @@ void TSecureShell::AddStdError(const uint8_t * Data, size_t Length)
 
 void TSecureShell::AddStdErrorLine(const UnicodeString & AStr)
 {
-  UnicodeString Str = AStr.Trim();
+  const UnicodeString Str = AStr.Trim();
   if (FAuthenticating)
   {
     FAuthenticationLog += (FAuthenticationLog.IsEmpty() ? L"" : L"\n") + Str;
@@ -1592,7 +1592,7 @@ int32_t TSecureShell::TranslateErrorMessage(
     { "Incoming packet was garbled on decryption", NET_TRANSL_PACKET_GARBLED, HELP_NET_TRANSL_PACKET_GARBLED },
   };
 
-  int32_t Index = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
+  const int32_t Index = TranslatePuttyMessage(Translation, _countof(Translation), Message, HelpKeyword);
 
   if ((Index == 0) || (Index == 1) || (Index == 2) || (Index == 3))
   {
@@ -1725,7 +1725,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Enable)
     }
     else
     {
-      typename TSockets::iterator it = FPortFwdSockets.find(value);
+      const TSockets::iterator it = FPortFwdSockets.find(Value);
       if (it != FPortFwdSockets.end())
         FPortFwdSockets.erase(it);
     }
@@ -1788,7 +1788,7 @@ void TSecureShell::FreeBackend()
 
 void TSecureShell::Discard()
 {
-  bool WasActive = FActive;
+  const bool WasActive = FActive;
   FActive = false;
   FOpened = false;
 
@@ -1814,7 +1814,7 @@ void TSecureShell::Close()
     int32_t Timeout = 500;
     while ((backend_exitcode(FBackendHandle) < 0) && (Timeout > 0))
     {
-      const int32_t Step = 100;
+      constexpr int32_t Step = 100;
       if (!EventSelectLoop(Step, false, nullptr))
       {
         Timeout -= Step;
@@ -1961,7 +1961,7 @@ void TSecureShell::WaitForData()
       TPoolForDataEvent Event(this, Events);
 
       LogEvent("Waiting for data timed out, asking user what to do.");
-      uint32_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
+      const uint32_t Answer = TimeoutPrompt(nb::bind(&TPoolForDataEvent::PoolForData, &Event));
       switch (Answer)
       {
         case qaRetry:
@@ -2032,7 +2032,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
     }
   }
 
-  bool Result =
+  const bool Result =
     FLAGSET(Events.lNetworkEvents, FD_READ) ||
     FLAGSET(Events.lNetworkEvents, FD_CLOSE);
   return Result;
@@ -2064,7 +2064,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
           EventTypes[Event].Desc, nb::ToInt32(Socket), Err));
       }
       // #pragma option push -w-prc
-      LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
+      const LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
       // #pragma option pop
       select_result(static_cast<WPARAM>(Socket), SelectEvent);
       CheckConnection();
@@ -2094,7 +2094,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
       LogEvent("Looking for network events");
 #endif // #if 0
     }
-    uint32_t TicksBefore = ::GetTickCount();
+    const uint32_t TicksBefore = ::GetTickCount();
     HandleWaitList * WaitList = nullptr;
 
     try__finally
@@ -2123,9 +2123,9 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         FUI->ProcessGUI();
         // run_toplevel_callbacks can cause processing of pending raw data, so:
         // 1) Check for changes in our pending buffer - wait criteria in Receive()
-        int32_t PrevDataLen = (-nb::ToInt32(OutLen) + nb::ToInt32(PendLen));
+        const int32_t PrevDataLen = (-nb::ToInt32(OutLen) + nb::ToInt32(PendLen));
         // 2) Changes in session state - wait criteria in Init()
-        uint32_t HadMainChannel = winscp_query(FBackendHandle, WINSCP_QUERY_MAIN_CHANNEL);
+        const uint32_t HadMainChannel = winscp_query(FBackendHandle, WINSCP_QUERY_MAIN_CHANNEL);
         if (run_toplevel_callbacks(GetCallbackSet()) &&
             (((-nb::ToInt32(OutLen) + nb::ToInt32(PendLen)) > PrevDataLen) ||
              (HadMainChannel != winscp_query(FBackendHandle, WINSCP_QUERY_MAIN_CHANNEL))))
@@ -2204,11 +2204,11 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
     } end_try__finally
 
 
-    uint32_t TicksAfter = ::GetTickCount();
+    const uint32_t TicksAfter = ::GetTickCount();
     // ticks wraps once in 49.7 days
     if (TicksBefore < TicksAfter)
     {
-      uint32_t Ticks = TicksAfter - TicksBefore;
+      const uint32_t Ticks = TicksAfter - TicksBefore;
       if (Ticks > MSec)
       {
         MSec = 0;
@@ -2388,7 +2388,7 @@ static bool DoVerifyFingerprint(const UnicodeString & AFingerprintFromUser, cons
     else
     {
       // normalized format "type-checksum"
-      UnicodeString NormalizedPrefix = FingerprintFromHost + NormalizedFingerprintSeparator;
+      const UnicodeString NormalizedPrefix = FingerprintFromHost + NormalizedFingerprintSeparator;
       if (StartsText(NormalizedPrefix, FingerprintFromUser))
       {
         FingerprintFromUser.Delete(1, NormalizedPrefix.Length());
@@ -2437,7 +2437,7 @@ void TPasteKeyHandler::Paste(TObject * /*Sender*/, uint32_t & Answer)
       const struct ssh_keyalg * Algorithm;
       try
       {
-        UnicodeString Key = ParseOpenSshPubLine(ClipboardText, Algorithm);
+        const UnicodeString Key = ParseOpenSshPubLine(ClipboardText, Algorithm);
         if (Key == KeyStr)
         {
           Answer = qaYes;
@@ -2465,10 +2465,10 @@ bool TSecureShell::VerifyCachedHostKey(
   {
     UnicodeString StoredKey = CutToChar(Buf, HostKeyDelimiter, false);
     // skip leading ECDH subtype identification
-    int32_t P = StoredKey.Pos(L",");
+    const int32_t P = StoredKey.Pos(L",");
     // Start from beginning or after the comma, if there's any.
     // If it does not start with 0x, it's probably a fingerprint (stored by TSessionData::CacheHostKey).
-    bool Fingerprint = (StoredKey.SubString(P + 1, 2) != L"0x");
+    const bool Fingerprint = (StoredKey.SubString(P + 1, 2) != L"0x");
     if (!Fingerprint && (StoredKey == KeyStr))
     {
       LogEvent(L"Host key matches cached key");
@@ -2511,8 +2511,8 @@ UnicodeString TSecureShell::StoreHostKey(
 void TSecureShell::ParseFingerprint(const UnicodeString & Fingerprint, UnicodeString & SignKeyType, UnicodeString & Hash)
 {
   UnicodeString Buf = Fingerprint;
-  UnicodeString SignKeyAlg = CutToChar(Buf, L' ', false);
-  UnicodeString SignKeySize = CutToChar(Buf, L' ', false);
+  const UnicodeString SignKeyAlg = CutToChar(Buf, L' ', false);
+  const UnicodeString SignKeySize = CutToChar(Buf, L' ', false);
   SignKeyType = SignKeyAlg + L' ' + SignKeySize;
   Hash = Buf;
 }
