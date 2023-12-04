@@ -1,9 +1,6 @@
 ﻿message(STATUS "CMake version: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 3.15)
 
-set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
-set(OPT_DEBUG_BUILD OFF CACHE STRING "Build plugin for debug")
-
 project(NetBox)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -12,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type to Debug")
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "Default build type Debug")
 endif()
 message("Build type: ${CMAKE_BUILD_TYPE}")
 # message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
@@ -38,20 +35,24 @@ endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(x64 1)
-  set(PROJECT_PLATFORM "x64")
+  set(PROJECT_PLATFORM "x64" CACHE STRING "Platform")
 else()
   set(x64 0)
-  set(PROJECT_PLATFORM "x86")
+  set(PROJECT_PLATFORM "x86" CACHE STRING "Platform")
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(BUILD_DEBUG 1)
+  set(BUILD_DEBUG ON)
 else()
-  set(BUILD_DEBUG 0)
+  set(BUILD_DEBUG OFF)
 endif()
 
-set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
-string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
+if(PROJECT_PLATFORM STREQUAL "x86" AND CMAKE_BUILD_TYPE STREQUAL "Release")
+  set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
+else()
+  set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
+endif()
+set(OPT_DEBUG_BUILD OFF CACHE STRING "Build plugin for debug")
 
 #-------------------------------------------------------------------------------
 
@@ -2530,6 +2531,8 @@ target_compile_options(NetBox PRIVATE
 
 if(OPT_DEBUG_BUILD)
 
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
+string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
