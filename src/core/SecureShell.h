@@ -167,8 +167,8 @@ public:
   void CollectUsage();
   bool CanChangePassword() const;
 
-  void RegisterReceiveHandler(TNotifyEvent Handler);
-  void UnregisterReceiveHandler(TNotifyEvent Handler);
+  void RegisterReceiveHandler(TNotifyEvent && Handler);
+  void UnregisterReceiveHandler(TNotifyEvent && Handler);
 
   // interface to PuTTY core
   void UpdateSocket(SOCKET Value, bool Enable);

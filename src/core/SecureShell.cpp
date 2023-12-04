@@ -683,7 +683,7 @@ void TSecureShell::PuttyLogEvent(const char * AStr)
   // Gross hack
   if (StartsStr(ServerVersionMsg, Str))
   {
-    FSessionInfo.SshVersionString = RightStr(Str, Str.Length() - ServerVersionMsg.Length());
+    FSessionInfo.SshVersionString = RightStr(Str, Str.Length() - UnicodeString(ServerVersionMsg).Length());
 
     const wchar_t * Ptr = wcschr(FSessionInfo.SshVersionString.c_str(), L'-');
     if (Ptr != nullptr)
@@ -1062,13 +1062,13 @@ void TSecureShell::CWrite(const char * Data, size_t Length)
   }
 }
 
-void TSecureShell::RegisterReceiveHandler(TNotifyEvent Handler)
+void TSecureShell::RegisterReceiveHandler(TNotifyEvent && Handler)
 {
   DebugAssert(FOnReceive.empty());
   FOnReceive = Handler;
 }
 
-void TSecureShell::UnregisterReceiveHandler(TNotifyEvent Handler)
+void TSecureShell::UnregisterReceiveHandler(TNotifyEvent && Handler)
 {
   DebugAssert(FOnReceive == Handler);
   DebugUsedParam(Handler);
@@ -1089,14 +1089,14 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
   // Following is taken from scp.c from_backend() and modified
 
   const uint8_t * p = Data;
-  unsigned Len = Length;
+  uint32_t Len = Length;
 
   // with event-select mechanism we can now receive data even before we
   // actually expect them (OutPtr can be nullptr)
 
   if ((OutPtr != nullptr) && (OutLen > 0) && (Len > 0))
   {
-    unsigned Used = OutLen;
+    uint32_t Used = OutLen;
     if (Used > Len) Used = Len;
     memmove(OutPtr, p, Used);
     OutPtr += Used; OutLen -= Used;
@@ -1516,7 +1516,7 @@ int32_t TSecureShell::TranslateAuthenticationMessage(
 
 void TSecureShell::AddStdError(const uint8_t * Data, size_t Length)
 {
-  UnicodeString Str = ConvertInput(RawByteString(Data, Length));
+  UnicodeString Str = ConvertInput(RawByteString(Data, nb::ToInt32(Length)));
   FStdError += Str;
 
   int32_t P;
@@ -1708,20 +1708,20 @@ void TSecureShell::UpdateSocket(SOCKET Value, bool Enable)
   }
 }
 
-void TSecureShell::UpdatePortFwdSocket(SOCKET value, bool Enable)
+void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Enable)
 {
-  if (value != INVALID_SOCKET)
+  if (Value != INVALID_SOCKET)
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-      LogEvent(FORMAT("Updating forwarding socket %d (%d)", nb::ToInt32(value), nb::ToInt32(Enable)));
+      LogEvent(FORMAT("Updating forwarding socket %d (%d)", nb::ToInt32(Value), nb::ToInt32(Enable)));
     }
 
-    SocketEventSelect(value, FSocketEvent, Enable);
+    SocketEventSelect(Value, FSocketEvent, Enable);
 
     if (Enable)
     {
-      FPortFwdSockets.push_back(value);
+      FPortFwdSockets.push_back(Value);
     }
     else
     {
@@ -1918,7 +1918,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, uint32_t & Result)
   }
 }
 
-class TPoolForDataEvent : public TObject
+class TPoolForDataEvent final : public TObject
 {
   NB_DISABLE_COPY(TPoolForDataEvent)
 public:
@@ -2038,7 +2038,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   return Result;
 }
 
-void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS &Events)
+void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
   static const struct { int32_t Bit, Mask; const wchar_t * Desc; } EventTypes[] =
   {
@@ -2230,7 +2230,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         if (FSendBuf < nb::ToInt32(BufferLen))
         {
           LogEvent(FORMAT("Increasing send buffer from %d to %d", FSendBuf, nb::ToInt32(BufferLen)));
-          FSendBuf = BufferLen;
+          FSendBuf = nb::ToInt32(BufferLen);
           setsockopt(FSocket, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&BufferLen), sizeof(BufferLen));
         }
       }
