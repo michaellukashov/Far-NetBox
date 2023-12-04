@@ -175,7 +175,7 @@ intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * I
   Expects(Info);
   try
   {
-    TSynchroParams * SynchroParams = static_cast<TSynchroParams *>(Info->Param);
+    const TSynchroParams * SynchroParams = static_cast<TSynchroParams *>(Info->Param);
     if (SynchroParams && SynchroParams->SynchroEvent)
     {
       SynchroParams->SynchroEvent(this, nullptr);
