@@ -167,7 +167,7 @@ BEGIN
         TOO_MANY_SESSIONS, "**Do you really want to open another tab?**\nYou have %d tabs opened already. Please consider closing some tabs first to free resources of your computer."
         EDIT_CHANGED_EXTERNALLY, "The remote file has been changed while you were editing it. Do you want to overwrite it anyway?"
 
-        WIN_INFORMATION_STRINGS, "WIN_INFORMATION"
+        // WIN_INFORMATION_STRINGS, "WIN_INFORMATION"
         COMPARE_NO_DIFFERENCES, "No differences found."
         SHORTCUT_INFO_TIP, "Opens site '%s'\n%s"
         SKIP_BUTTON, "&Skip"
@@ -319,7 +319,7 @@ BEGIN
         PATTERNS_HINT_K, "!K expands to current session private key path"
         PATTERNS_HINT_BACKSLASH, "!\\ expands to current local path"
 
-        WIN_FORMS_STRINGS, "WIN_FORMS_STRINGS"
+        // WIN_FORMS_STRINGS, "WIN_FORMS_STRINGS"
         COPY_FILE, "%s file '%s' to %s:"
         COPY_FILES, "%s %d files to %s:"
         COPY_TOLOCAL, "local directory"

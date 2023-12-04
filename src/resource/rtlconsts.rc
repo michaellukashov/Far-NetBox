@@ -2,5 +2,16 @@
 
 STRINGTABLE
 BEGIN
+  Vcl_Consts_SMsgDlgYes, "&Yes"
+  Vcl_Consts_SMsgDlgNo, "&No"
+  Vcl_Consts_SMsgDlgOK, "OK"
   Vcl_Consts_SMsgDlgCancel, "Cancel"
+  Vcl_Consts_SMsgDlgHelp, "&Help"
+  Vcl_Consts_SMsgDlgAbort, "&Abort"
+  Vcl_Consts_SMsgDlgRetry, "&Retry"
+  Vcl_Consts_SMsgDlgIgnore, "&Ignore"
+  Vcl_Consts_SMsgDlgAll, "&All"
+  Vcl_Consts_SMsgDlgNoToAll, "N&o to All"
+  Vcl_Consts_SMsgDlgYesToAll, "Yes to &All"
+  Vcl_Consts_SMsgDlgClose, "&Close"
 END

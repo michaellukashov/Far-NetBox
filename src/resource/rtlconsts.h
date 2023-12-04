@@ -116,3 +116,14 @@
 #define SDateEncodeError 5109
 #define SCannotOpenClipboard 5110
 #define Vcl_Consts_SMsgDlgCancel 5120
+#define Vcl_Consts_SMsgDlgYes 5121
+#define Vcl_Consts_SMsgDlgNo 5122
+#define Vcl_Consts_SMsgDlgOK 5123
+#define Vcl_Consts_SMsgDlgHelp 5124
+#define Vcl_Consts_SMsgDlgAbort 5125
+#define Vcl_Consts_SMsgDlgRetry 5126
+#define Vcl_Consts_SMsgDlgIgnore 5127
+#define Vcl_Consts_SMsgDlgAll 5128
+#define Vcl_Consts_SMsgDlgNoToAll 5130
+#define Vcl_Consts_SMsgDlgYesToAll 5131
+#define Vcl_Consts_SMsgDlgClose 5132
