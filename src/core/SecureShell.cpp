@@ -1420,7 +1420,7 @@ void TSecureShell::Send(const uint8_t * Buf, int32_t Length)
 void TSecureShell::SendNull()
 {
   LogEvent("Sending nullptr.");
-  uint8_t Null = 0;
+  const uint8_t Null = 0;
   Send(&Null, 1);
 }
 
