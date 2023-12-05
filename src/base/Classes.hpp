@@ -564,6 +564,10 @@ public:
     uint16_t Min, uint16_t Sec, uint16_t MSec = 0);
   TDateTime(const TDateTime & rhs) noexcept : FValue(rhs.FValue) {}
   double GetValue() const { return operator double(); }
+  int32_t ToInt32() const
+  {
+    return nb::ToInt32(FValue);
+  }
   TDateTime & operator =(const TDateTime & rhs)
   {
     FValue = rhs.FValue;

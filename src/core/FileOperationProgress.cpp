@@ -8,7 +8,7 @@
 #include "CoreMain.h"
 #include "Interface.h"
 
-constexpr const uint64_t TRANSFER_BUF_SIZE = 32 * 1024;
+constexpr const int64_t TRANSFER_BUF_SIZE = 32 * 1024;
 
 TFileOperationStatistics::TFileOperationStatistics() noexcept
 {
@@ -259,7 +259,7 @@ void TFileOperationProgressType::Resume()
 
     // shift timestamps for CPS calculation in advance
     // by the time the progress was suspended
-    int32_t Stopped = nb::ToIntPtr(::GetTickCount() - FSuspendTime);
+    int32_t Stopped = nb::ToInt32(::GetTickCount() - FSuspendTime);
     size_t Index = 0;
     while (Index < FPersistence.Ticks.size())
     {
@@ -496,10 +496,10 @@ uint64_t TFileOperationProgressType::AdjustToCPSLimit(
 // Use in SCP protocol only
 uint64_t TFileOperationProgressType::LocalBlockSize()
 {
-  uint64_t Result = TRANSFER_BUF_SIZE;
+  int64_t Result = TRANSFER_BUF_SIZE;
   if (FLocallyUsed + Result > FLocalSize)
   {
-    Result = (uint64_t)(FLocalSize - FLocallyUsed);
+    Result = static_cast<uint64_t>(FLocalSize - FLocallyUsed);
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
@@ -826,10 +826,10 @@ void TFileOperationProgressType::AddSkippedFileSize(int64_t ASize)
 // Use in SCP protocol only
 uint64_t TFileOperationProgressType::TransferBlockSize()
 {
-  uint64_t Result = TRANSFER_BUF_SIZE;
+  int64_t Result = TRANSFER_BUF_SIZE;
   if (FTransferredSize + Result > FTransferSize)
   {
-    Result = (uint64_t)(FTransferSize - FTransferredSize);
+    Result = static_cast<int64_t>(FTransferSize - FTransferredSize);
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
@@ -902,7 +902,7 @@ uint64_t TFileOperationProgressType::GetCPS() const
     }
     else
     {
-      TimeSpan = (Ticks - FPersistence.Ticks.front());
+      TimeSpan = nb::ToUInt32(Ticks - FPersistence.Ticks.front());
     }
 
     int64_t Transferred = (FPersistence.TotalTransferred - FPersistence.TotalTransferredThen.front());
@@ -925,7 +925,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
 {
   TGuard Guard(*FSection); nb::used(Guard);
   DebugAssert(FTotalSizeSet);
-  uint32_t CurCps = GetCPS();
+  uint64_t CurCps = GetCPS();
   // sanity check
   int64_t Processed = FTotalSkipped + FPersistence.TotalTransferred - FTotalTransferBase;
   if ((CurCps > 0) && (FTotalSize > Processed))
@@ -997,7 +997,7 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
   uint32_t ACPS;
   if (!Done)
   {
-    ACPS = CPS();
+    ACPS = nb::ToUInt32(CPS());
   }
   else
   {

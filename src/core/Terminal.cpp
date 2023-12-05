@@ -643,7 +643,7 @@ TCollectedFileList::TCollectedFileList() noexcept :
 
 TCollectedFileList::~TCollectedFileList()
 {
-  for (size_t Index = 0; Index < FList.size(); Index++)
+  for (int32_t Index = 0; Index < nb::ToInt32(FList.size()); Index++)
   {
     Deleting(Index);
   }
@@ -679,7 +679,7 @@ void TCollectedFileList::Delete(int32_t Index)
 
 int32_t TCollectedFileList::GetCount() const
 {
-  return FList.size();
+  return nb::ToInt32(FList.size());
 }
 
 UnicodeString TCollectedFileList::GetFileName(int32_t Index) const
@@ -894,7 +894,7 @@ void TParallelOperation::Done(
           const TParallelFileOffsets::const_iterator I = std::find(FParallelFileOffsets.begin(), FParallelFileOffsets.end(), CopyParam->PartOffset);
           if (DebugAlwaysTrue(I != FParallelFileOffsets.end()))
           {
-            const int32_t Index = I - FParallelFileOffsets.begin();
+            const int32_t Index = nb::ToInt32(I - FParallelFileOffsets.begin());
             DebugAssert(!FParallelFileDones[Index]);
             FParallelFileDones[Index] = true;
 
@@ -926,7 +926,7 @@ void TParallelOperation::Done(
 
                     if ((CopyParam->PartSize >= 0) && (Terminal->OperationProgress->TransferredSize != CopyParam->PartSize))
                     {
-                      UnicodeString TransferredSizeStr = IntToStr(Terminal->OperationProgress->TransferredSize);
+                      UnicodeString TransferredSizeStr = Int64ToStr(Terminal->OperationProgress->TransferredSize);
                       UnicodeString PartSizeStr = Int64ToStr(CopyParam->PartSize);
                       UnicodeString Message =
                         FMTLOAD(INCONSISTENT_SIZE, TargetPartName, TransferredSizeStr, PartSizeStr);
@@ -1160,13 +1160,13 @@ int32_t TParallelOperation::GetNext(
         {
           CustomCopyParam->PartSize = -1; // Until the end
           FParallelFileOffset = FParallelFileSize;
-          Terminal->LogEvent(FORMAT(L"Starting transfer of \"%s\" part %d from %s until the EOF", OnlyFileName, Index, IntToStr(CustomCopyParam->PartOffset)));
+          Terminal->LogEvent(FORMAT(L"Starting transfer of \"%s\" part %d from %s until the EOF", OnlyFileName, Index, Int64ToStr(CustomCopyParam->PartOffset)));
         }
         else
         {
           Processed = false;
           FParallelFileOffset += CustomCopyParam->PartSize;
-          Terminal->LogEvent(FORMAT(L"Starting transfer of \"%s\" part %d from %s, length %s", OnlyFileName, Index, IntToStr(CustomCopyParam->PartOffset), IntToStr(CustomCopyParam->PartSize)));
+          Terminal->LogEvent(FORMAT(L"Starting transfer of \"%s\" part %d from %s, length %s", OnlyFileName, Index, Int64ToStr(CustomCopyParam->PartOffset), Int64ToStr(CustomCopyParam->PartSize)));
         }
       }
 
@@ -4908,7 +4908,7 @@ bool TTerminal::CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalcul
   Size = Params.Size;
   if (Configuration->ActualLogProtocol >= 1)
   {
-    LogEvent(FORMAT(L"Size of %d remote files/folders calculated as %s", AFileList->Count, IntToStr(Size)));
+    LogEvent(FORMAT(L"Size of %d remote files/folders calculated as %s", AFileList->Count, Int64ToStr(Size)));
   }
   return Params.Result;
 }
@@ -6107,7 +6107,7 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
 
   if (Configuration->ActualLogProtocol >= 1)
   {
-    LogEvent(FORMAT(L"Size of %d local files/folders calculated as %s", AFileList->Count, IntToStr(Size)));
+    LogEvent(FORMAT(L"Size of %d local files/folders calculated as %s", AFileList->Count, Int64ToStr(Size)));
   }
 
   if (OnceDoneOperation != odoIdle)
@@ -6701,7 +6701,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
             }
             else if (FLAGSET(Data->Params, spByChecksum) &&
                      FLAGCLEAR(Data->Params, spTimestamp) &&
-                     !SameFileChecksum(FullLocalFileName, AFile));
+                     !SameFileChecksum(FullLocalFileName, AFile))
                      //&& FLAGCLEAR(Data->Params, spTimestamp)) ??
             {
               Modified = true;

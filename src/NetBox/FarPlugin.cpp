@@ -884,7 +884,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(nb::ToIntPtr(Buttons->GetObj(Index)));
+    Button->SetTag(nb::ToInt32(nb::ToIntPtr(Buttons->GetObj(Index))));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1241,7 +1241,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
   const UnicodeString & HistoryName, int32_t MaxLen, TFarInputBoxValidateEvent && OnValidate)
 {
   bool Repeat;
-  int32_t Result;
+  intptr_t Result;
   do
   {
     UnicodeString DestText;
@@ -1678,7 +1678,7 @@ bool TCustomFarPlugin::Viewer(const UnicodeString & AFileName,
   const UnicodeString & Title, VIEWER_FLAGS Flags)
 {
   TFarEnvGuard Guard; nb::used(Guard);
-  const int32_t Result = FStartupInfo.Viewer(
+  const intptr_t Result = FStartupInfo.Viewer(
       AFileName.c_str(),
       Title.c_str(), 0, 0, -1, -1, Flags,
       CP_DEFAULT);
@@ -1689,7 +1689,7 @@ bool TCustomFarPlugin::Editor(const UnicodeString & AFileName,
   const UnicodeString & Title, EDITOR_FLAGS Flags)
 {
   TFarEnvGuard Guard; nb::used(Guard);
-  const int32_t Result = FStartupInfo.Editor(
+  const intptr_t Result = FStartupInfo.Editor(
       AFileName.c_str(),
       Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
       CP_DEFAULT);
@@ -1809,7 +1809,7 @@ int32_t TCustomFarPlugin::GetFarVersion() const
 {
   if (FFarVersion == 0)
   {
-    FFarVersion = FarAdvControl(ACTL_GETFARMANAGERVERSION, 0);
+    FFarVersion = nb::ToInt32(FarAdvControl(ACTL_GETFARMANAGERVERSION, 0));
   }
   return FFarVersion;
 }
@@ -2045,7 +2045,7 @@ void TCustomFarFileSystem::FreeFindData(const struct FreeFindDataInfo * Info)
 int32_t TCustomFarFileSystem::ProcessHostFile(const struct ProcessHostFileInfo * Info)
 {
   ResetCachedInfo();
-  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, nb::ToInt32(Info->ItemsNumber)));
   const bool Result = ProcessHostFileEx(PanelItems.get(), Info->OpMode);
   return Result;
 }
@@ -2096,7 +2096,7 @@ int32_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo * Info)
 int32_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo * Info)
 {
   ResetCachedInfo();
-  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, nb::ToInt32(Info->ItemsNumber)));
   const bool Result = DeleteFilesEx(PanelItems.get(), Info->OpMode);
   return Result;
 }
@@ -2104,7 +2104,7 @@ int32_t TCustomFarFileSystem::DeleteFiles(const struct DeleteFilesInfo * Info)
 int32_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
 {
   ResetCachedInfo();
-  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, nb::ToInt32(Info->ItemsNumber)));
   int32_t Result;
   FDestPathStr = Info->DestPath;
   {
@@ -2124,7 +2124,7 @@ int32_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
 int32_t TCustomFarFileSystem::PutFiles(const struct PutFilesInfo * Info)
 {
   ResetCachedInfo();
-  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, Info->ItemsNumber));
+  std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, nb::ToInt32(Info->ItemsNumber)));
   const int32_t Result = PutFilesEx(PanelItems.get(), Info->Move > 0, Info->OpMode);
   return Result;
 }
@@ -2166,12 +2166,12 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int32_t Another)
 
 int32_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2)
 {
-  return FPlugin->FarControl(Command, Param1, Param2, this);
+  return nb::ToInt32(FPlugin->FarControl(Command, Param1, Param2, this));
 }
 
 int32_t TCustomFarFileSystem::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2, HANDLE Plugin)
 {
-  return FPlugin->FarControl(Command, Param1, Param2, Plugin);
+  return nb::ToInt32(FPlugin->FarControl(Command, Param1, Param2, Plugin));
 }
 
 bool TCustomFarFileSystem::UpdatePanel(bool ClearSelection, bool Another)
@@ -2816,7 +2816,7 @@ bool TFarPanelInfo::GetIsPlugin() const
 UnicodeString TFarPanelInfo::GetCurrDirectory() const
 {
   UnicodeString Result;
-  const int32_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
+  const intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
     0,
     nullptr,
     FOwner != nullptr ? PANEL_ACTIVE : PANEL_PASSIVE);
@@ -2947,10 +2947,10 @@ int32_t TFarEditorInfo::GetEditorID() const
 UnicodeString TFarEditorInfo::GetFileName()
 {
   UnicodeString Result;
-  const int32_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, nullptr);
+  const intptr_t BuffLen = FarPlugin->FarEditorControl(ECTL_GETFILENAME, 0, nullptr);
   if (BuffLen)
   {
-    wchar_t * Buffer = Result.SetLength(BuffLen + 1);
+    wchar_t * Buffer = Result.SetLength(nb::ToInt32(BuffLen + 1));
     FarPlugin->FarEditorControl(ECTL_GETFILENAME, BuffLen, Buffer);
   }
   PackStr(Result);

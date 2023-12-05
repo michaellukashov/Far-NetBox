@@ -4193,7 +4193,7 @@ void TWinSCPFileSystem::EditHistory()
   constexpr FarKey BreakKeys[] = {{ VK_F4, 0 }, { 0 }};
 
   intptr_t BreakCode = 0;
-  const int32_t Result = GetWinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+  const intptr_t Result = GetWinSCPPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
                                                  GetMsg(NB_MENU_EDIT_HISTORY), L"", MenuItems.get(), BreakKeys, BreakCode);
 
   if ((Result >= 0) && (Result < nb::ToInt32(FEditHistories.size())))

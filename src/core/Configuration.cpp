@@ -132,7 +132,7 @@ void TSshHostCAList::Load(THierarchicalStorage * Storage)
 
 int32_t TSshHostCAList::GetCount() const
 {
-  return FList.size();
+  return nb::ToInt32(FList.size());
 }
 
 const TSshHostCA * TSshHostCAList::Get(int32_t Index) const

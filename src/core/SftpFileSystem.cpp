@@ -2360,7 +2360,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(
   constexpr uint32_t MinPacketSize = 32 * 1024;
   uint32_t MaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (MaxPacketSize > 0);
-  const uint32_t CPSRounded = TEncryption::RoundToBlock(OperationProgress->CPS());
+  const uint32_t CPSRounded = TEncryption::RoundToBlock(nb::ToInt32(OperationProgress->CPS()));
   uint32_t Result = CPSRounded;
   if ((FMaxPacketSize > 0) &&
       ((FMaxPacketSize < MaxPacketSize) || !MaxPacketSizeValid))

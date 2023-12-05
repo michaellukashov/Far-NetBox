@@ -1501,7 +1501,7 @@ void TWebDAVFileSystem::NeonPreSend(
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(SessionContext->FileSystem);
 
   SessionContext->AuthorizationProtocol = "";
-  const UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, Header->used)));
+  const UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, nb::ToInt32(Header->used))));
   const UnicodeString AuthorizationHeaderName("Authorization:");
   int32_t P = HeaderBuf.Pos(AuthorizationHeaderName);
   if (P > 0)
@@ -1751,7 +1751,7 @@ int32_t TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, siz
           ((ne_strcasecmp(ContentType.type, "text") == 0) ||
            media_type_is_xml(&ContentType)))
       {
-        const UnicodeString Content = UnicodeString(UTF8String(Buf, Len)).Trim();
+        const UnicodeString Content = UnicodeString(UTF8String(Buf, nb::ToInt32(Len))).Trim();
         FileSystem->FResponse += Content;
       }
       ne_free(ContentType.value);

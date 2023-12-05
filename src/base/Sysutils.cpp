@@ -941,7 +941,7 @@ static DWORD FindMatchingFile(TSearchRec & Rec)
   WORD Hi = (Rec.Time & 0xFFFF0000) >> 16;
   WORD Lo = Rec.Time & 0xFFFF;
   ::FileTimeToDosDateTime(reinterpret_cast<LPFILETIME>(&LocalFileTime), &Hi, &Lo);
-  Rec.Time = (nb::ToIntPtr(Hi) << 16) + Lo;
+  Rec.Time = nb::ToInt32((nb::ToInt64(Hi) << 16) + Lo);
   Rec.Size = Rec.FindData.nFileSizeLow | (nb::ToInt64(Rec.FindData.nFileSizeHigh) << 32);
   Rec.Attr = Rec.FindData.dwFileAttributes;
   Rec.Name = Rec.FindData.cFileName;
@@ -1707,7 +1707,7 @@ uint32_t StrToVersionNumber(const UnicodeString & VersionNumberStr)
   while (!Version.IsEmpty())
   {
     UnicodeString Num = CutToChar(Version, L'.', true);
-    Result += nb::ToUIntPtr(Num.ToIntPtr()) << Shift;
+    Result += nb::ToUInt32(Num.ToInt32()) << Shift;
     if (Shift >= 8)
       Shift -= 8;
   }
@@ -1783,13 +1783,13 @@ DWORD YearOf(const TDateTime & AValue)
 
 TDateTime StartOfTheYear(const TDateTime & AValue)
 {
-  TDateTime Result = EncodeDate(YearOf(AValue), 1, 1);
+  TDateTime Result = EncodeDate(nb::ToUInt16(YearOf(AValue)), 1, 1);
   return Result;
 }
 
 DWORD DayOfTheYear(const TDateTime & AValue)
 {
-  const DWORD Result = Trunc(AValue - StartOfTheYear(AValue)+1);
+  const DWORD Result = nb::ToDWord(Trunc(AValue - StartOfTheYear(AValue)+1));
   return Result;
 }
 
@@ -1797,7 +1797,7 @@ int64_t MilliSecondOfTheYear(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
   DecodeTime(AValue, Hour, Min, Sec, MSec);
-  const WORD Result = ((Min+(Hour+((nb::ToInt64(DayOfTheYear(AValue))-1)*24))*60)*60+Sec)*1000+MSec;
+  const WORD Result = nb::ToWord(((Min+(Hour+((nb::ToInt64(DayOfTheYear(AValue))-1)*24))*60)*60+Sec)*1000+MSec);
   return Result;
 }
 

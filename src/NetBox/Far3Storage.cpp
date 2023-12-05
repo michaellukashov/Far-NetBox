@@ -212,7 +212,7 @@ UnicodeString TFar3Storage::DoReadStringRaw(const UnicodeString & Name, const Un
 int32_t TFar3Storage::DoReadBinaryData(const UnicodeString & Name,
   void * Buffer, int32_t Size)
 {
-  return FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size);
+  return nb::ToInt32(FPluginSettings.Get(FRoot, Name.c_str(), Buffer, Size));
 }
 
 void TFar3Storage::DoWriteBool(const UnicodeString & Name, bool Value)

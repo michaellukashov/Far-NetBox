@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <rdestl/vector.h>
 #include <rdestl/map.h>
@@ -87,11 +87,25 @@ inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32
 ToInt32(float a) { return static_cast<int32_t>(a); }
 
 template <class T>
+inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
+ToInt32(T a) { return static_cast<int32_t>(a); }
+
+template <class T>
 inline constexpr typename std::is_convertible<T, int32_t>::value
 ToInt32(T a) { return static_cast<int32_t>(a); }
 
+template <class T>
+inline constexpr typename std::enable_if<sizeof(T) >= sizeof(int64_t), int32_t>::value
+ToInt32(T a) { return reinterpret_cast<int32_t>((intptr_t)a); }
+
 inline constexpr int32_t
-ToInt32(uint32_t a) { return static_cast<int32_t>(a); }
+ToInt32(size_t a) { return static_cast<int32_t>(a); }
+
+// inline constexpr int32_t
+// ToInt32(int64_t a) { return static_cast<int32_t>(a); }
+
+// inline constexpr int32_t
+// ToInt32(double a) { return static_cast<int32_t>(a); }
 
 // inline constexpr int32_t
 // ToInt32(uint64_t a) { return static_cast<int32_t>(a); }
@@ -123,6 +137,10 @@ ToInt64(T a) { return static_cast<int64_t>(a); }
 template <class T>
 inline constexpr uint64_t
 ToUInt64(T a) { return static_cast<uint64_t>(a); }
+
+template <class T>
+inline constexpr uint16_t
+ToUInt16(T a) { return static_cast<uint16_t>(a); }
 
 template <class T>
 inline constexpr typename std::is_convertible<T, void *>::value

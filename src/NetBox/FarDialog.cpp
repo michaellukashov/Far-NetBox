@@ -39,7 +39,7 @@ public:
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED) && !IsFinished())
+      if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
       {
         FDialog->Idle();
       }
@@ -63,7 +63,7 @@ public:
 
 private:
   gsl::not_null<TFarDialog *> FDialog;
-  uint32_t FMillisecs{0};
+  int64_t FMillisecs{0};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
 
@@ -470,7 +470,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       // case DN_KEY:
       if (Param1 >= 0)
       {
-        TFarDialogItem * Item = GetItem(Param1);
+        TFarDialogItem * Item = GetItem(nb::ToInt32(Param1));
         try
         {
           Result = Item->ItemProc(Msg, Param2);
@@ -499,7 +499,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       if (!Result && (Msg == DN_CONTROLINPUT) &&
         (nb::ToIntPtr(Param2) == VK_RETURN) &&
         ((Param1 < 0) ||
-          !isa<TFarButton>(GetItem(Param1))) &&
+          !isa<TFarButton>(GetItem(nb::ToInt32(Param1)))) &&
         GetDefaultButton()->GetEnabled() &&
         (GetDefaultButton()->GetOnClick()))
       {
@@ -544,7 +544,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         Result = 1;
         if (Param1 >= 0)
         {
-          TFarButton * Button = dyn_cast<TFarButton>(GetItem(Param1));
+          TFarButton * Button = dyn_cast<TFarButton>(GetItem(nb::ToInt32(Param1)));
           // FAR WORKAROUND
           // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
           // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -553,7 +553,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           // flag DIF_LISTNOCLOSE.
           if (Button == nullptr)
           {
-            DebugAssert(isa<TFarListBox>(GetItem(Param1)));
+            DebugAssert(isa<TFarListBox>(GetItem(nb::ToInt32(Param1))));
             Result = nb::ToIntPtr(false);
           }
           else
@@ -670,7 +670,7 @@ bool TFarDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
   bool Result = false;
   if (FOnKey)
   {
-    FOnKey(this, Item, KeyCode, Result);
+    FOnKey(this, Item, nb::ToInt32(KeyCode), Result);
   }
   return Result;
 }
@@ -789,7 +789,7 @@ int32_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton * Button = dyn_cast<TFarButton>(GetItem(BResult));
+      TFarButton * Button = dyn_cast<TFarButton>(GetItem(nb::ToInt32(BResult)));
       assert(Button);
       // correct result should be already set by TFarButton
       assert(FResult == Button->GetResult());
@@ -1188,8 +1188,8 @@ void TFarDialogItem::UpdateFlags(FARDIALOGITEMFLAGS Value)
 
 TRect TFarDialogItem::GetActualBounds() const
 {
-  return TRect(GetDialogItem()->X1, GetDialogItem()->Y1,
-      GetDialogItem()->X2, GetDialogItem()->Y2);
+  return TRect(nb::ToInt32(GetDialogItem()->X1), nb::ToInt32(GetDialogItem()->Y1),
+               nb::ToInt32(GetDialogItem()->X2), nb::ToInt32(GetDialogItem()->Y2));
 }
 
 FARDIALOGITEMFLAGS TFarDialogItem::GetFlags() const
@@ -2351,7 +2351,7 @@ int32_t TFarList::GetPosition() const
 {
   TFarDialogItem * DialogItem = GetDialogItem();
   assert(DialogItem != nullptr);
-  return DialogItem->SendDialogMessage(DM_LISTGETCURPOS, nullptr);
+  return nb::ToInt32(DialogItem->SendDialogMessage(DM_LISTGETCURPOS, nullptr));
 }
 
 int32_t TFarList::GetTopIndex() const

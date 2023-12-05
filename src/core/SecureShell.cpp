@@ -795,7 +795,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
 
   const TPuttyTranslation * InstructionTranslation = nullptr;
   const TPuttyTranslation * PromptTranslation = nullptr;
-  size_t PromptTranslationCount = 1;
+  int32_t PromptTranslationCount = 1;
   UnicodeString PromptDesc;
 
   if (PromptKind == pkUserName)
@@ -1089,14 +1089,14 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
   // Following is taken from scp.c from_backend() and modified
 
   const uint8_t * p = Data;
-  uint32_t Len = nb::ToInt32(Length);
+  int32_t Len = nb::ToInt32(Length);
 
   // with event-select mechanism we can now receive data even before we
   // actually expect them (OutPtr can be nullptr)
 
   if ((OutPtr != nullptr) && (OutLen > 0) && (Len > 0))
   {
-    uint32_t Used = OutLen;
+    int32_t Used = OutLen;
     if (Used > Len) Used = Len;
     memmove(OutPtr, p, Used);
     OutPtr += Used; OutLen -= Used;
@@ -1362,7 +1362,7 @@ void TSecureShell::DispatchSendBuffer(int32_t BufSize)
         BufSize, BufSize - MAX_BUFSIZE));
     }
     EventSelectLoop(100, false, nullptr);
-    BufSize = backend_sendbuffer(FBackendHandle);
+    BufSize = nb::ToInt32(backend_sendbuffer(FBackendHandle));
     if (GetConfiguration()->GetActualLogProtocol() >= 1)
     {
       LogEvent(FORMAT("There are %u bytes remaining in the send buffer", BufSize));
@@ -1400,7 +1400,7 @@ void TSecureShell::Send(const uint8_t * Buf, int32_t Length)
 {
   CheckConnection();
   backend_send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), nb::ToInt32(Length));
-  const int32_t BufSize = backend_sendbuffer(FBackendHandle);
+  const int32_t BufSize = nb::ToInt32(backend_sendbuffer(FBackendHandle));
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT("Sent %d bytes", nb::ToInt32(Length)));
@@ -1463,9 +1463,9 @@ int32_t TSecureShell::TranslatePuttyMessage(
     }
     else
     {
-      const size_t OriginalLen = nb::StrLength(Original);
-      const size_t PrefixLen = Div - Original;
-      const size_t SuffixLen = OriginalLen - PrefixLen - 1;
+      const int32_t OriginalLen = nb::StrLength(Original);
+      const int32_t PrefixLen = nb::ToInt32(Div - Original);
+      const int32_t SuffixLen = OriginalLen - PrefixLen - 1;
       if ((nb::ToSizeT(Message.Length()) >= OriginalLen - 1) &&
           (strncmp(AnsiMessage.c_str(), Original, PrefixLen) == 0) &&
           (strncmp(AnsiMessage.c_str() + AnsiMessage.Length() - SuffixLen, Div + 1, SuffixLen) == 0))

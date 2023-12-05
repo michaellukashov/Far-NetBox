@@ -1683,7 +1683,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
 
         S3_set_acl(
           &BucketContext, StrToS3(Key), FileProperties.OwnerId, FileProperties.OwnerDisplayName,
-          NewAclGrants.size(), &NewAclGrants[0],
+          nb::ToInt32(NewAclGrants.size()), &NewAclGrants[0],
           FRequestContext, FTimeout, &ResponseHandler, &Data);
 
         CheckLibS3Error(Data);

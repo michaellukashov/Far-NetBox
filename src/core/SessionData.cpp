@@ -4558,7 +4558,7 @@ void TSessionData::FromURI(const UnicodeString & ProxyURI,
   if (Pos > 0)
   {
     ProxyUrl = ProxyURI.SubString(1, Pos - 1).Trim();
-    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToIntPtr();
+    ProxyPort = ProxyURI.SubString(Pos + 1).Trim().ToInt32();
   }
   // remove scheme from Url e.g. "socks5://" "https://"
   Pos = ProxyUrl.Pos(L"://");
@@ -5584,7 +5584,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
           if (P > 0)
           {
             UnicodeString PortNumberStr = HostNameStr.SubString(P + 1, HostNameStr.Length() - P);
-            PortNumber = ::StrToInt64(PortNumberStr);
+            PortNumber = ::StrToIntPtr(PortNumberStr);
             HostNameStr.SetLength(P - 1);
           }
           if (HasIP6LiteralBrackets(HostNameStr))

@@ -1325,12 +1325,12 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         // for --full-time format
         if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
         {
-          Year = nb::ToWord(Col.SubString(1, 4).ToIntPtr());
-          Month = nb::ToWord(Col.SubString(6, 2).ToIntPtr());
-          Day = nb::ToWord(Col.SubString(9, 2).ToIntPtr());
+          Year = nb::ToWord(Col.SubString(1, 4).ToInt32());
+          Month = nb::ToWord(Col.SubString(6, 2).ToInt32());
+          Day = nb::ToWord(Col.SubString(9, 2).ToInt32());
           GetCol();
-          Hour = nb::ToWord(Col.SubString(1, 2).ToIntPtr());
-          Min = nb::ToWord(Col.SubString(4, 2).ToIntPtr());
+          Hour = nb::ToWord(Col.SubString(1, 2).ToInt32());
+          Min = nb::ToWord(Col.SubString(4, 2).ToInt32());
           if (Col.Length() >= 8)
           {
             Sec = nb::ToWord(::StrToInt64(Col.SubString(7, 2)));
@@ -3350,7 +3350,7 @@ int32_t TSynchronizeProgress::Progress(const TFileOperationProgressType * Curren
     const int64_t Processed = GetProcessed(CurrentItemOperationProgress);
     if (FTotalSize > 0)
     {
-      Result = (Processed * 100) / FTotalSize;
+      Result = nb::ToInt32((Processed * 100) / FTotalSize);
     }
     else
     {
