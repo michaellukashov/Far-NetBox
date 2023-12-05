@@ -1186,30 +1186,30 @@ private:
   TTimer * Timer;
   bool FExternalTimestampVar;
 
-  void ScriptPrint(TScript * Script, const UnicodeString Str, bool Error);
-  void ScriptPrintProgress(TScript * Script, bool First, const UnicodeString Str);
+  void ScriptPrint(TScript * Script, const UnicodeString & Str, bool Error);
+  void ScriptPrintProgress(TScript * Script, bool First, const UnicodeString & Str);
   void ScriptInput(TScript * Script, const UnicodeString Prompt, UnicodeString & Str);
   void ScriptTerminalPromptUser(TTerminal * Terminal,
     TPromptKind Kind, UnicodeString Name, UnicodeString Instructions, TStrings * Prompts,
     TStrings * Results, bool & Result, void * Arg);
   void ScriptShowExtendedException(TTerminal * Terminal,
     Exception * E, void * Arg);
-  void ScriptTerminalQueryUser(TObject * Sender, const UnicodeString Query,
-    TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params, unsigned int & Answer,
+  void ScriptTerminalQueryUser(TObject * Sender, const UnicodeString & Query,
+    TStrings * MoreMessages, unsigned int Answers, const TQueryParams * Params, uint32_t & Answer,
     TQueryType QueryType, void * Arg);
   void ScriptQueryCancel(TScript * Script, bool & Cancel);
   void SynchronizeControllerAbort(TObject * Sender, bool Close);
   void SynchronizeControllerLog(TSynchronizeController * Controller,
-    TSynchronizeLogEntry Entry, const UnicodeString Message);
+    TSynchronizeLogEntry Entry, const UnicodeString & Message);
   void ScriptSynchronizeStartStop(TScript * Script,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+    const UnicodeString LocalDirectory, const UnicodeString & RemoteDirectory,
     const TCopyParamType & CopyParam, int SynchronizeParams);
   void SynchronizeControllerSynchronize(TSynchronizeController * Sender,
-    const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+    const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
     const TCopyParamType & CopyParam, const TSynchronizeParamType & Params,
     TSynchronizeChecklist ** Checklist, TSynchronizeOptions * Options, bool Full);
   void SynchronizeControllerSynchronizeInvalid(TSynchronizeController * Sender,
-    const UnicodeString Directory, const UnicodeString ErrorStr);
+    const UnicodeString & Directory, const UnicodeString & ErrorStr);
   void SynchronizeControllerTooManyDirectories(TSynchronizeController * Sender,
     int & MaxDirectories);
   unsigned int InputTimeout();
@@ -1347,13 +1347,13 @@ bool TConsoleRunner::Aborted(bool AllowCompleteAbort)
 }
 
 void TConsoleRunner::ScriptPrint(TScript * /*Script*/,
-  const UnicodeString Str, bool Error)
+  const UnicodeString & Str, bool Error)
 {
   Print(Str, false, Error);
 }
 
 void TConsoleRunner::ScriptPrintProgress(TScript * /*Script*/,
-  bool First, const UnicodeString Str)
+  bool First, const UnicodeString & Str)
 {
   UnicodeString S = Str;
   if (First && (FLastProgressLen > 0))
@@ -1410,8 +1410,8 @@ void TConsoleRunner::ScriptShowExtendedException(
 }
 
 void TConsoleRunner::ScriptTerminalQueryUser(TObject * /*Sender*/,
-  const UnicodeString Query, TStrings * MoreMessages, unsigned int Answers,
-  const TQueryParams * Params, unsigned int & Answer, TQueryType /*QueryType*/,
+  const UnicodeString & Query, TStrings * MoreMessages, unsigned int Answers,
+  const TQueryParams * Params, uint32_t & Answer, TQueryType /*QueryType*/,
   void * /*Arg*/)
 {
   UnicodeString AQuery = Query;
@@ -1825,7 +1825,7 @@ void TConsoleRunner::ScriptQueryCancel(TScript * /*Script*/, bool & Cancel)
 }
 
 void TConsoleRunner::ScriptSynchronizeStartStop(TScript * /*Script*/,
-  const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
+  const UnicodeString LocalDirectory, const UnicodeString & RemoteDirectory,
   const TCopyParamType & CopyParam, int SynchronizeParams)
 {
   TSynchronizeParamType Params;
@@ -1871,9 +1871,8 @@ size_t TConsoleRunner::ScriptTransferIn(TObject *, unsigned char * Data, size_t 
   return FConsole->TransferIn(Data, Len);
 }
 
-void TConsoleRunner::SynchronizeControllerLog(
-  TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
-  const UnicodeString Message)
+void TConsoleRunner::SynchronizeControllerLog(TSynchronizeController * /*Controller*/, TSynchronizeLogEntry /*Entry*/,
+  const UnicodeString & Message)
 {
   PrintMessage(Message);
   LogSynchronizeEvent(FScript->Terminal, Message);
@@ -1886,9 +1885,8 @@ void TConsoleRunner::SynchronizeControllerAbort(TObject * /*Sender*/,
   NotifyAbort();
 }
 
-void TConsoleRunner::SynchronizeControllerSynchronize(
-  TSynchronizeController * /*Sender*/, const UnicodeString LocalDirectory,
-  const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
+void TConsoleRunner::SynchronizeControllerSynchronize(TSynchronizeController * /*Sender*/, const UnicodeString & LocalDirectory,
+  const UnicodeString & RemoteDirectory, const TCopyParamType & CopyParam,
   const TSynchronizeParamType & Params, TSynchronizeChecklist ** Checklist,
   TSynchronizeOptions * /*Options*/, bool Full)
 {
@@ -1914,8 +1912,7 @@ void TConsoleRunner::SynchronizeControllerSynchronize(
   }
 }
 
-void TConsoleRunner::SynchronizeControllerSynchronizeInvalid(
-  TSynchronizeController * /*Sender*/, const UnicodeString Directory, const UnicodeString ErrorStr)
+void TConsoleRunner::SynchronizeControllerSynchronizeInvalid(TSynchronizeController * /*Sender*/, const UnicodeString & Directory, const UnicodeString & ErrorStr)
 {
   if (!Directory.IsEmpty())
   {

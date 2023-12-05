@@ -2618,7 +2618,7 @@ TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
   {
     if ((DSTMode == dstmWin) || (DSTMode == dstmUnix))
     {
-      const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
+      const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
       Result -= CurrentParams->CurrentDifference;
     }
     else if (DSTMode == dstmKeep)
