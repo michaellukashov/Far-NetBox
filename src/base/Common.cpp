@@ -1303,7 +1303,7 @@ UnicodeString AddPathQuotes(const UnicodeString & APath)
 static wchar_t * ReplaceChar(
   UnicodeString & AFileName, wchar_t * InvalidChar, wchar_t InvalidCharsReplacement)
 {
-  const int32_t Index = InvalidChar - AFileName.c_str() + 1;
+  const int32_t Index = nb::ToInt32(InvalidChar - AFileName.c_str() + 1);
   if (InvalidCharsReplacement == TokenReplacement)
   {
     // currently we do not support unicode chars replacement
@@ -1344,7 +1344,7 @@ UnicodeString ValidLocalFileName(
     wchar_t * InvalidChar = ToWChar(FileName);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
-      const int32_t Pos = (InvalidChar - FileName.c_str() + 1);
+      const int32_t Pos = nb::ToInt32(InvalidChar - FileName.c_str() + 1);
       wchar_t Char;
       if (ATokenReplacement &&
           (*InvalidChar == TokenPrefix) &&
@@ -1703,7 +1703,7 @@ static int32_t PathRootLength(const UnicodeString & APath)
   // Now call the API
   const LPCTSTR Buffer = ::PathSkipRoot(Result.c_str());
 
-  return (Buffer != nullptr) ? (Buffer - Result.c_str()) : -1;
+  return (Buffer != nullptr) ? nb::ToInt32(Buffer - Result.c_str()) : -1;
 }
 
 static bool PathIsRelative_CorrectedForMicrosoftStupidity(const UnicodeString & APath)
@@ -2609,7 +2609,7 @@ bool UsesDaylightHack()
 
 TDateTime UnixToDateTime(int64_t TimeStamp, TDSTMode DSTMode)
 {
-  DebugAssert(nb::ToInt32(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
+  DebugAssert(EncodeDateVerbose(1970, 1, 1).ToInt32() == UnixDateDelta);
 
   TDateTime Result = TDateTime(UnixDateDelta + (nb::ToDouble(TimeStamp) / SecsPerDay));
   const TDateTimeParams * Params = GetDateTimeParams(DecodeYear(Result));
@@ -2819,7 +2819,7 @@ static int64_t DateTimeToUnix(const TDateTime &DateTime)
 {
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
-  DebugAssert(nb::ToInt32(EncodeDateVerbose(1970, 1, 1)) == UnixDateDelta);
+  DebugAssert(EncodeDateVerbose(1970, 1, 1).ToInt32() == UnixDateDelta);
 
   return Round(nb::ToDouble(DateTime - UnixDateDelta) * SecsPerDay) +
     CurrentParams->CurrentDifferenceSec;

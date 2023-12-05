@@ -890,7 +890,7 @@ bool TextFromClipboard(UnicodeString & Text, bool Trim)
       constexpr const int32_t Limit = 64 * 1024;
       ErrorContext = L"size";
       const size_t Size = GlobalSize(Handle);
-      const int32_t Len = (Size / sizeof(*AText)) - 1;
+      const int32_t Len = nb::ToInt32(Size / sizeof(*AText)) - 1;
       if (Len > Limit)
       {
         ErrorContext = FORMAT(L"substring(%d,%d)", nb::ToInt32(Size), Len);

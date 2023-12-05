@@ -1984,7 +1984,7 @@ TTimeSpan::TTimeSpan(int64_t ATicks) : FTicks(ATicks)
 
 TTimeSpan TTimeSpan::FromSeconds(double Value)
 {
-  TTimeSpan Result(round(Value * TicksPerSecond));
+  TTimeSpan Result(nb::ToInt64(round(Value * TicksPerSecond)));
   return Result;
 }
 

@@ -57,7 +57,7 @@ public:
   void NeedSpace(int64_t Size);
   void SetSize(int64_t Value);
   int64_t GetPosition() const { return nb::ToInt64(FMemory->Position); }
-  void ProcessRead(DWORD Len, DWORD Result);
+  void ProcessRead(int64_t Len, DWORD Result);
 };
 
 #if 0

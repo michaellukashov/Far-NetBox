@@ -155,7 +155,7 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, int32_t MaxWidth
       WrappedLines.SetText(WrappedLine);
       for (intptr_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); ++WrappedIndex)
       {
-        UnicodeString FullLine = WrappedLines.GetString(WrappedIndex);
+        UnicodeString FullLine = WrappedLines.GetString(nb::ToInt32(WrappedIndex));
         do
         {
           // WrapText does not wrap when not possible, enforce it
@@ -164,12 +164,12 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, int32_t MaxWidth
           UnicodeString Line = FullLine.SubString(1, MaxWidth);
           FullLine.Delete(1, MaxWidth);
 
-          intptr_t P;
+          int32_t P;
           while ((P = Line.Pos(L'\t')) > 0)
           {
             Line.Delete(P, 1);
             Line.Insert(::StringOfChar(' ',
-                ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1),
+              nb::ToInt32(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1)),
               P);
           }
           Result->Add(Line);

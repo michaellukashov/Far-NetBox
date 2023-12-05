@@ -1836,7 +1836,7 @@ int32_t TQueueItem::GetCPSLimit() const
   }
   else if (FProgressData != nullptr)
   {
-    Result = FProgressData->GetCPSLimit();
+    Result = nb::ToInt32(FProgressData->GetCPSLimit());
   }
   else
   {

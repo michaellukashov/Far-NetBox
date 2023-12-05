@@ -331,7 +331,7 @@ void old_keyfile_warning(void)
 size_t banner(Seat * seat, const void * data, size_t len)
 {
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
-  const UnicodeString Banner(UTF8String(static_cast<const char *>(data), len));
+  const UnicodeString Banner(UTF8String(static_cast<const char *>(data), nb::ToInt32(len)));
   SecureShell->DisplayBanner(Banner);
   return 0; // PuTTY never uses the value
 }
@@ -982,7 +982,7 @@ void FreeKey(TPrivateKey * PrivateKey)
 
 RawByteString StrBufToString(strbuf * StrBuf)
 {
-  return RawByteString(reinterpret_cast<char *>(StrBuf->s), StrBuf->len);
+  return RawByteString(reinterpret_cast<char *>(StrBuf->s), nb::ToInt32(StrBuf->len));
 }
 
 RawByteString LoadPublicKey(
@@ -1175,7 +1175,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
     do
     {
       Buffer.Reset();
-      Read = Buffer.LoadStream(Stream, BlockSize, false);
+      Read = nb::ToDWord(Buffer.LoadStream(Stream, BlockSize, false));
       if (Read > 0)
       {
         put_datapl(Hash, make_ptrlen(Buffer.Data, Read));
@@ -1186,7 +1186,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
   __finally
   {
     RawByteString Buf;
-    Buf.SetLength(ssh_hash_alg(Hash)->hlen);
+    Buf.SetLength(nb::ToInt32(ssh_hash_alg(Hash)->hlen));
     ssh_hash_final(Hash, nb::ToUInt8Ptr(nb::ToPtr(Buf.c_str())));
     Result = BytesToHex(Buf);
   } end_try__finally
@@ -1270,7 +1270,7 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
       throw Exception(LoadStr(SSH_HOST_CA_NO_KEY_TYPE));
     }
 
-    const UnicodeString AlgName = UnicodeString(AnsiString(static_cast<const char *>(AlgNamePtrLen.ptr), AlgNamePtrLen.len));
+    const UnicodeString AlgName = UnicodeString(AnsiString(static_cast<const char *>(AlgNamePtrLen.ptr), nb::ToInt32(AlgNamePtrLen.len)));
     const ssh_keyalg * Alg = find_pubkey_alg_len(AlgNamePtrLen);
     if (Alg == nullptr)
     {
@@ -1312,8 +1312,8 @@ bool IsCertificateValidityExpressionValid(
   {
     Error = UnicodeString(ErrorMsg);
     sfree(ErrorMsg);
-    ErrorStart = static_cast<const char *>(ErrorLoc.ptr) - StrPtr;
-    ErrorLen = ErrorLoc.len;
+    ErrorStart = nb::ToInt32(static_cast<const char *>(ErrorLoc.ptr) - StrPtr);
+    ErrorLen = nb::ToInt32(ErrorLoc.len);
   }
   return Result;
 }

@@ -1165,12 +1165,13 @@ void TWinInteractiveCustomCommand::Prompt(
 void TWinInteractiveCustomCommand::Execute(
   const UnicodeString & Command, UnicodeString & Value) const
 {
-  DWORD DummyExitCode;
   ThrowNotImplemented(3019);
-//  ExecuteProcessAndReadOutput(Command, Value, DummyExitCode, false);
+  // DWORD DummyExitCode;
+  // ExecuteProcessAndReadOutput(Command, Value, DummyExitCode, false);
   // trim trailing cr/lf
   Value = TrimRight(Value);
 }
+
 #if 0
 
 void MenuPopup(TPopupMenu * Menu, TButton * Button)

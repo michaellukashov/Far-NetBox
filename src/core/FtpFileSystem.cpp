@@ -2322,7 +2322,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
           // and using LIST (no conversion, expecting the server uses the same timezone as the client).
           // Note that FormatTimeZone reverses the value.
           FTimeDifference = nb::ToInt64(SecsPerDay * (UtcModification - File->GetModification()));
-          const double Hours = TTimeSpan::FromSeconds(FTimeDifference).GetTotalHours();
+          const double Hours = TTimeSpan::FromSeconds(nb::ToDouble(FTimeDifference)).GetTotalHours();
 
           UnicodeString FileLog =
             FORMAT("%s (Listing: %s, UTC: %s)", File->GetFullFileName(), StandardTimestamp(File->GetModification()), StandardTimestamp(UtcModification));
@@ -4547,7 +4547,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
           const wchar_t * Space = wcschr(Entry->OwnerGroup, L' ');
           if (Space != nullptr)
           {
-            File->GetFileOwner().SetName(UnicodeString(Entry->OwnerGroup, Space - Entry->OwnerGroup));
+            File->GetFileOwner().SetName(UnicodeString(Entry->OwnerGroup, nb::ToInt32(Space - Entry->OwnerGroup)));
             File->GetFileGroup().SetName(Space + 1);
           }
           else
@@ -4650,12 +4650,12 @@ bool TFTPFileSystem::HandleReply(int32_t Command, int64_t Reply)
     if (Command != 0)
     {
       DebugAssert(FCommandReply == 0);
-      FCommandReply = Reply;
+      FCommandReply = nb::ToUInt32(Reply);
     }
     else
     {
       DebugAssert(FReply == 0);
-      FReply = Reply;
+      FReply = nb::ToUInt32(Reply);
     }
     return true;
   }

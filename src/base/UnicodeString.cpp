@@ -683,7 +683,7 @@ int32_t UnicodeString::CompareIC(const UnicodeString & Str) const
   return ::AnsiCompareIC(*this, Str);
 }
 
-int32_t UnicodeString::ToIntPtr() const
+int32_t UnicodeString::ToInt32() const
 {
   return ::StrToIntDef(*this, 0);
 }

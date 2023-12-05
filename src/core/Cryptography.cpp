@@ -710,8 +710,8 @@ void TEncryption::NeedSalt()
 
 constexpr const int32_t AesBlock = 16;
 constexpr const int32_t AesBlockMask = 0x0F;
-UnicodeString AesCtrExt(L".aesctr.enc");
-RawByteString AesCtrMagic("aesctr.........."); // 16 bytes fixed [to match AES block size], even for future algos
+constexpr const wchar_t * AesCtrExt = L".aesctr.enc";
+constexpr const char * AesCtrMagic = "aesctr.........."; // 16 bytes fixed [to match AES block size], even for future algos
 
 int32_t TEncryption::RoundToBlock(int32_t Size)
 {
@@ -746,19 +746,19 @@ void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
   if (Last)
   {
     Size = Buffer.Size;
-    Buffer.Size = RoundToBlock(Size);
+    Buffer.Size = RoundToBlock(nb::ToInt32(Size));
   }
   else
   {
-    const int32_t RoundedSize = RoundToBlockDown(Buffer.Size);
-    if (RoundedSize != Buffer.Size)
+    const int32_t RoundedSize = RoundToBlockDown(nb::ToInt32(Buffer.Size));
+    if (RoundedSize != nb::ToInt32(Buffer.Size))
     {
-      FOverflowBuffer += RawByteString(Buffer.Data + RoundedSize, Buffer.Size - RoundedSize);
+      FOverflowBuffer += RawByteString(Buffer.Data + RoundedSize, nb::ToInt32(Buffer.Size - RoundedSize));
       Buffer.Size = RoundedSize;
     }
   }
 
-  Aes(Buffer.Data, Buffer.Size);
+  Aes(Buffer.Data, nb::ToInt32(Buffer.Size));
 
   if (Last)
   {
@@ -772,8 +772,8 @@ void TEncryption::Encrypt(TFileBuffer & Buffer, bool Last)
   Aes(Buffer, Last);
   if (!FOutputtedHeader)
   {
-    DebugAssert(AesCtrMagic.Length() == BLOCK_SIZE);
-    const RawByteString Header = AesCtrMagic + FSalt;
+    DebugAssert(RawByteString(AesCtrMagic).Length() == BLOCK_SIZE);
+    const RawByteString Header = RawByteString(AesCtrMagic) + FSalt;
     DebugAssert(Header.Length() == GetOverhead());
     Buffer.Insert(0, Header.c_str(), Header.Length());
     FOutputtedHeader = true;
@@ -784,18 +784,18 @@ void TEncryption::Decrypt(TFileBuffer & Buffer)
 {
   if (FInputHeader.Length() < GetOverhead())
   {
-    const int32_t HeaderSize = std::min<int32_t>(GetOverhead() - FInputHeader.Length(), Buffer.Size());
+    const int32_t HeaderSize = std::min<int32_t>(GetOverhead() - FInputHeader.Length(), nb::ToInt32(Buffer.Size()));
     FInputHeader += RawByteString(Buffer.Data, HeaderSize);
     Buffer.Delete(0, HeaderSize);
 
     if (FInputHeader.Length() >= GetOverhead())
     {
-      if (RawByteString(FInputHeader.SubString(1, AesCtrMagic.Length())) != AesCtrMagic)
+      if (RawByteString(FInputHeader.SubString(1, RawByteString(AesCtrMagic).Length())) != AesCtrMagic)
       {
         throw Exception(LoadStr(UNKNOWN_FILE_ENCRYPTION));
       }
 
-      FSalt = FInputHeader.SubString(AesCtrMagic.Length() + 1, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
+      FSalt = FInputHeader.SubString(RawByteString(AesCtrMagic).Length() + 1, SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
       SetSalt();
     }
   }
@@ -848,7 +848,7 @@ UnicodeString TEncryption::DecryptFileName(const UnicodeString & AFileName)
   {
     throw Exception("Not an encrypted file name");
   }
-  UnicodeString Base64 = ReplaceChar(LeftStr(AFileName, AFileName.Length() - AesCtrExt.Length()), L'_', L'/');
+  UnicodeString Base64 = ReplaceChar(LeftStr(AFileName, AFileName.Length() - RawByteString(AesCtrExt).Length()), L'_', L'/');
   const int32_t Padding = 4 - (Base64.Length() % 4);
   if ((Padding > 0) && (Padding < 4))
   {
@@ -870,6 +870,6 @@ bool TEncryption::IsEncryptedFileName(const UnicodeString & AFileName)
 
 int32_t TEncryption::GetOverhead()
 {
-  return AesCtrMagic.Length() + SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
+  return RawByteString(AesCtrMagic).Length() + SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
 }
 

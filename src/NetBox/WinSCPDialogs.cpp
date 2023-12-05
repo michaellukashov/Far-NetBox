@@ -2854,10 +2854,7 @@ void TSessionDialog::Init()
   TTabbedDialog::Init();
 }
 
-static void AdjustRemoteDir(
-  UnicodeString & HostName,
-  TFarEdit * PortNumberEdit,
-  TFarEdit * RemoteDirectoryEdit)
+static void AdjustRemoteDir(UnicodeString & HostName, TFarEdit * PortNumberEdit, TFarEdit * RemoteDirectoryEdit)
 {
   UnicodeString Dir;
   const int32_t P = HostName.Pos(L'/');
@@ -2869,8 +2866,8 @@ static void AdjustRemoteDir(
     {
       const UnicodeString Port = Dir.SubString(P2 + 1, Dir.Length() - P2);
       Dir.SetLength(P2 - 1);
-      if (Port.ToIntPtr())
-        PortNumberEdit->SetAsInteger(Port.ToIntPtr());
+      if (Port.ToInt32())
+        PortNumberEdit->SetAsInteger(Port.ToInt32());
     }
     HostName.SetLength(P - 1);
   }
@@ -3898,7 +3895,7 @@ TProxyMethod TSessionDialog::IndexToProxyMethod(int32_t Index, TFarList * Items)
   if (Index >= 0 && Index < Items->GetCount())
   {
     TObject * Obj = Items->Get(Index);
-    Result = ToProxyMethod(nb::ToUIntPtr(Obj));
+    Result = ToProxyMethod(nb::ToInt32(nb::ToIntPtr(Obj)));
   }
   return Result;
 }
@@ -6524,8 +6521,8 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       { 0, 0 }
     };
 
-    ItemFocused = FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-        Caption, GetMsg(NB_OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode);
+    ItemFocused = nb::ToInt32(FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+        Caption, GetMsg(NB_OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode));
     if (BreakCode >= 0)
     {
       DebugAssert(BreakCode >= 0 && BreakCode <= 4);
@@ -8600,7 +8597,7 @@ void TQueueDialog::LoadQueue()
   for (int32_t Index = 0; Index < FStatus->GetCount(); ++Index)
   {
     TQueueItemProxy * QueueItem = FStatus->GetItem(Index);
-    size_t ILine = 0;
+    int32_t ILine = 0;
     while (FillQueueItemLine(Line, QueueItem, ILine))
     {
       List->AddObject(Line, QueueItem);

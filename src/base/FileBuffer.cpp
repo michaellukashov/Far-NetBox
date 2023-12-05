@@ -52,7 +52,7 @@ void TFileBuffer::Reset()
   FMemory->Position = 0;
 }
 
-void TFileBuffer::ProcessRead(DWORD Len, DWORD Result)
+void TFileBuffer::ProcessRead(int64_t Len, DWORD Result)
 {
   if (Result != Len)
   {
@@ -82,7 +82,7 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
     {
       Result = Stream->Read(GetPointer(), Len);
     }
-    ProcessRead(Len, Result);
+    ProcessRead(Len, nb::ToDWord(Result));
   }
   catch (EReadError &)
   {
@@ -104,8 +104,8 @@ DWORD TFileBuffer::LoadFromIn(TTransferInEvent && OnTransferIn, TObject * Sender
   DebugAssert(GetPosition() == 0);
   NeedSpace(Len);
   size_t Result = OnTransferIn(Sender, nb::ToUInt8Ptr(GetPointer()), Len);
-  ProcessRead(Len, Result);
-  return Result;
+  ProcessRead(Len, nb::ToDWord(Result));
+  return nb::ToDWord(Result);
 }
 
 void TFileBuffer::Convert(char * Source, char * Dest, int32_t Params,

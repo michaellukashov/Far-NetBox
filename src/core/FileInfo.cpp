@@ -129,7 +129,7 @@ bool GetFileVersionInfoFix(const wchar_t * FileName, DWORD Handle,
     if (Result)
     {
       static const char Signature[] = "FE2X";
-      uint32_t BufSize = nb::ToUIntPtr(VersionInfo->wLength + NBChTraitsCRT<char>::SafeStringLen(Signature));
+      uint32_t BufSize = nb::ToUInt32(VersionInfo->wLength + NBChTraitsCRT<char>::SafeStringLen(Signature));
 
       if (DataSize >= BufSize)
       {

@@ -180,9 +180,9 @@ int32_t THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)
 {
   bool Result = true;
   if ((FResponseLimit < 0) ||
-      (FResponse.Length() + nb::ToIntPtr(Len) <= FResponseLimit))
+      (FResponse.Length() + nb::ToInt32(Len) <= FResponseLimit))
   {
-    FResponse += RawByteString(Buf, Len);
+    FResponse += RawByteString(Buf, nb::ToInt32(Len));
 
     if (FOnDownload != nullptr)
     {

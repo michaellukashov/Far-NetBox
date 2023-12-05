@@ -654,7 +654,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
     wchar_t * InvalidChar = ToWChar(FileName);
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != nullptr)
     {
-      const int32_t Index = InvalidChar - FileName.c_str() + 1;
+      const int32_t Index = nb::ToInt32(InvalidChar - FileName.c_str() + 1);
       if (FileName.Length() >= Index + 2)
       {
         UnicodeString Hex = FileName.SubString(Index + 1, 2);

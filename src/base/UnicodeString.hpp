@@ -110,7 +110,7 @@ public:
 
   int32_t Compare(const UnicodeString & Str) const;
   int32_t CompareIC(const UnicodeString & Str) const;
-  int32_t ToIntPtr() const;
+  int32_t ToInt32() const;
   int32_t FindFirstOf(wchar_t Ch) const;
   int32_t FindFirstOf(const wchar_t * Str, int32_t Offset = 0) const;
 //  int32_t FindFirstNotOf(const wchar_t * Str) const { return (int32_t)Data.find_first_not_of(Str); }
@@ -210,7 +210,7 @@ class NB_CORE_EXPORT AnsiString
 public:
   AnsiString() = default;
   AnsiString(const AnsiString & rhs);
-  AnsiString(int32_t Length, char Ch) : Data(Ch, nb::ToInt32(Length)) {}
+  AnsiString(int32_t Length, char Ch) : Data(Ch, Length) {}
   explicit AnsiString(const wchar_t * Str);
   explicit AnsiString(const wchar_t * Str, int32_t Length);
   explicit AnsiString(const wchar_t * Str, int32_t Length, int32_t CodePage);
