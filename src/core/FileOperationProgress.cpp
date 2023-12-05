@@ -913,7 +913,7 @@ uint64_t TFileOperationProgressType::GetCPS() const
 
 TDateTime TFileOperationProgressType::TimeExpected() const
 {
-  uint32_t CurCps = CPS();
+  uint64_t CurCps = CPS();
   if (CurCps)
   {
     return TDateTime(nb::ToDouble((nb::ToDouble(FTransferSize - FTransferredSize)) / CurCps) / SecsPerDay);

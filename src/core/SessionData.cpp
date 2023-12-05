@@ -3158,7 +3158,7 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const wc
   {
     WarnPtr = std::find(DefaultList, DefaultList + Count, WarnAlgo);
     DebugAssert(WarnPtr != nullptr);
-    WarnDefaultIndex = (WarnPtr - DefaultList);
+    WarnDefaultIndex = nb::ToInt32(WarnPtr - DefaultList);
   }
 
   int32_t Index = 0;
@@ -3188,7 +3188,7 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const wc
   int32_t WarnIndex = -1;
   if (HasWarnAlgo)
   {
-    WarnIndex = std::find(NewList.begin(), NewList.end(), WarnAlgo) - NewList.begin();
+    WarnIndex = nb::ToInt32(std::find(NewList.begin(), NewList.end(), WarnAlgo) - NewList.begin());
   }
 
   bool Priority = true;

@@ -753,7 +753,7 @@ int32_t UnicodeString::Pos(const UnicodeString & Str) const
 
 bool UnicodeString::RPos(int32_t & nPos, wchar_t Ch, int32_t /*nStartPos*/) const
 {
-  size_t Pos = Data.ReverseFind(Ch); //, Data.size() - nStartPos);
+  int32_t Pos = Data.ReverseFind(Ch); //, Data.size() - nStartPos);
   nPos = Pos + 1;
   return Pos != std::wstring::npos;
 }
