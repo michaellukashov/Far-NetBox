@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Set match_start to the longest match starting at the given string and
  * return its length. Matches shorter or equal to prev_length are discarded,
  * in which case the result is equal to prev_length and match_start is garbage.
@@ -30,7 +30,7 @@
 
 
 #if defined(_MSC_VER) && !defined(__clang__)
-# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64)
+# if defined(_M_IX86) || defined(_M_AMD64) || defined(_M_IA64) || defined(_M_ARM64)
 #  include "arch/x86/ctzl.h"
 # elif defined(_M_ARM)
 #  include "arch/arm/ctzl.h"

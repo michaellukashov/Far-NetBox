@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -561,10 +561,6 @@ int32_t TStringList::AddObject(const UnicodeString & S, const TObject * AObject)
         break;
       }
     }
-    else
-    {
-      Result = GetCount();
-    }
   }
   InsertItem(Result, S, AObject);
   return Result;
@@ -678,7 +674,7 @@ void TStringList::InsertItem(int32_t Index, const UnicodeString & S, const TObje
   }
   else
   {
-    FStrings.insert(FStrings.begin() + Index, S);
+    FStrings.insert(FStrings.begin() + Index, 1, S);
     TObjectList::Insert(Index, (TObject *)AObject);
   }
   Changed();

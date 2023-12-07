@@ -673,6 +673,8 @@ private :
 		BYTE _pad[8];
 #elif defined(_M_AMD64)
 		BYTE _pad[8];
+#elif defined(_M_ARM64)
+		BYTE _pad[8];
 #else
 	#error Only supported for X86, AMD64 and IA64
 #endif

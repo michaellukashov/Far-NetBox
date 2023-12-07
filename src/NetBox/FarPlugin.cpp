@@ -15,7 +15,10 @@ extern "C" {
 
 TCustomFarPlugin * FarPlugin = nullptr;
 
+static bool MustSkipClose = false;
+
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
+
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
@@ -545,8 +548,20 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
         Param = nb::ToPtr(Buf.c_str());
       }
 
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
-      return FarFileSystem->ProcessPanelEvent(Info->Event, Param);
+      // don't destory plugin on locked CriticalSection
+      bool onClose = (Info->Event == FE_CLOSE && !FarFileSystem->FClosed);
+      MustSkipClose = onClose;
+
+      int rc;
+      { 
+        TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+        rc = FarFileSystem->ProcessPanelEvent(Info->Event, Param);
+      }
+      if (MustSkipClose)
+        MustSkipClose = false;
+      else if (onClose)
+        FarFileSystem->ClosePanel();
+      return rc;
     }
     return 0;
   }
@@ -1941,16 +1956,7 @@ void TCustomFarFileSystem::GetOpenPanelInfo(struct OpenPanelInfo * Info)
   ResetCachedInfo();
   if (FClosed)
   {
-    // FAR WORKAROUND
-    // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
-    // so we close it here on the very next opportunity
-    static bool InsideClose = false;
-    if (!InsideClose)
-    {
-      InsideClose = true;
-      ClosePanel();
-      InsideClose = false;
-    }
+    ClosePanel();
   }
   else
   {
@@ -2183,8 +2189,19 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 
 void TCustomFarFileSystem::ClosePanel()
 {
-  FClosed = true;
-  FarControl(FCTL_CLOSEPANEL, 0, nullptr);
+  // FAR WORKAROUND
+  // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
+  // so we close it here on the very next opportunity
+  static bool InsideClose=false;
+  if (MustSkipClose)
+     MustSkipClose = false;
+  else if (!InsideClose)
+  {
+    InsideClose = true;
+    FClosed = true;
+    FarControl(FCTL_CLOSEPANEL, 0, nullptr);
+    InsideClose = false;
+  }
 }
 
 UnicodeString TCustomFarFileSystem::GetMsg(intptr_t MsgId) const

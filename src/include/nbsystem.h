@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <rdestl/vector.h>
 #include <rdestl/map.h>
@@ -77,6 +77,14 @@ ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 
 inline constexpr uintptr_t
 ToUIntPtr(int64_t a) { return static_cast<uintptr_t>(a); }
+
+// template <class T>
+// inline constexpr typename std::enable_if<sizeof(T) >= sizeof(int64_t), int32_t>::value
+// ToInt32(T a) { return reinterpret_cast<int32_t>((intptr_t)a); }
+
+template <class T>
+inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
+ToInt32(float a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
