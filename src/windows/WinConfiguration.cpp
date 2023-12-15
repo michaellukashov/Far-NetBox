@@ -2813,11 +2813,6 @@ void TWinConfiguration::SetSessionTabCaptionTruncation(bool value)
   SET_CONFIG_PROPERTY(SessionTabCaptionTruncation);
 }
 
-void TWinConfiguration::SetSessionTabCaptionTruncation(bool value)
-{
-  SET_CONFIG_PROPERTY(SessionTabCaptionTruncation);
-}
-
 void TWinConfiguration::SetFirstRun(const UnicodeString & value)
 {
   SET_CONFIG_PROPERTY(FirstRun);

@@ -45,7 +45,7 @@ static bool IsValidOpensshLine(const UnicodeString & Line)
   return !Line.IsEmpty() && (Line[1] != L'#');
 }
 
-static bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directive, UnicodeString & Value)
+bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directive, UnicodeString & Value)
 {
   bool Result = IsValidOpensshLine(ALine);
   if (Result)
@@ -1731,13 +1731,13 @@ UnicodeString CutOpensshToken(UnicodeString & S)
   return Result;
 }
 
-static UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path)
+UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path)
 {
   // It's likely there would be forward slashes in OpenSSH config file and our load/save dialogs
   // (e.g. when converting keys) work suboptimally when working with forward slashes.
   UnicodeString Result = GetNormalizedPath(Path);
   const UnicodeString HomePathPrefix = L"~";
-  if (StartsStr(HomePathPrefix, Result + L"\\"))
+  if (StartsStr(HomePathPrefix, Result))
   {
     Result =
       GetShellFolderPath(CSIDL_PROFILE) +
@@ -5663,21 +5663,23 @@ void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
   {
     UnicodeString Line = Lines->GetString(Index);
     UnicodeString Directive, Value;
-    if (ParseOpensshDirective(Line, Directive, Value) &&
-        SameText(Directive, OpensshHostDirective))
+    if (ParseOpensshDirective(Line, Directive, Value))
     {
-      while (!Value.IsEmpty())
+      if (SameText(Directive, OpensshHostDirective))
       {
-        UnicodeString Name = CutOpensshToken(Value);
-        if ((Hosts->IndexOf(Name) < 0) && (Name.LastDelimiter(L"*?") == 0))
+        while (!Value.IsEmpty())
         {
-          std::unique_ptr<TSessionData> Data(new TSessionData(EmptyStr));
-          Data->CopyData(DefaultSettings);
-          Data->Name = Name;
-          Data->HostName = Name;
-          Data->ImportFromOpenssh(Lines);
-          Add(Data.release());
-          Hosts->Add(Name);
+          UnicodeString Name = CutOpensshToken(Value);
+          if ((Hosts->IndexOf(Name) < 0) && (Name.LastDelimiter(L"*?") == 0))
+          {
+            std::unique_ptr<TSessionData> Data(new TSessionData(EmptyStr));
+            Data->CopyData(DefaultSettings);
+            Data->Name = Name;
+            Data->HostName = Name;
+            Data->ImportFromOpenssh(Lines);
+            Add(Data.release());
+            Hosts->Add(Name);
+          }
         }
       }
     }

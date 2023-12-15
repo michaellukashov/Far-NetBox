@@ -1798,7 +1798,7 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
   }
 }
 
-static UnicodeString GetOpensshFolder()
+UnicodeString GetOpensshFolder()
 {
   const UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
   const UnicodeString Result = TPath::Combine(ProfilePath, OpensshFolderName);
@@ -1861,6 +1861,42 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
     {
       std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
       // LoadScriptFromFile(ConfigFile, Lines.get(), true);
+
+      const UnicodeString OpensshIncludeDirective(L"Include");
+      for (int32_t Index = 0; Index < Lines->Count; Index++)
+      {
+        UnicodeString Line = Lines->Strings[Index];
+        UnicodeString Directive, Args;
+        if (ParseOpensshDirective(Line, Directive, Args))
+        {
+          if (SameText(Directive, OpensshIncludeDirective))
+          {
+            while (!Args.IsEmpty())
+            {
+              UnicodeString IncludePath = ConvertPathFromOpenssh(CutOpensshToken(Args));
+
+              // If path does not exist, try if it works relatively to .ssh/
+              if (!base::FileExists(ApiPath(IncludePath)))
+              {
+                IncludePath = TPath::Combine(GetOpensshFolder(), IncludePath);
+              }
+
+              if (base::FileExists(ApiPath(IncludePath)))
+              {
+                std::unique_ptr <TStrings> LinesToInclude(std::make_unique<TStringList>());
+                // LoadScriptFromFile(IncludePath, LinesToInclude.get(), true);
+                Lines->Delete(Index); // Not really needed
+                for (int32_t Index2 = 0; Index2 < LinesToInclude->Count; Index2++)
+                {
+                  Lines->Insert(Index + Index2, LinesToInclude->Strings[Index2]);
+                }
+                Index--;
+              }
+            }
+          }
+        }
+      }
+
       ImportSessionList->ImportFromOpenssh(Lines.get());
 
       if (ImportSessionList->Count > 0)

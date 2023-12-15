@@ -1164,5 +1164,8 @@ NB_CORE_EXPORT int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
 NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString & HostName);
 NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString & IP);
 NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
+bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directive, UnicodeString & Value);
+UnicodeString CutOpensshToken(UnicodeString & S);
+UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path);
 
 

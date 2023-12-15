@@ -2296,7 +2296,6 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
         !FTerminal->IsEncryptingFiles() &&
         (// Specification says that "check-file" should be announced,
          // yet Vandyke VShell (as of 4.0.3) announce "check-file-name"
-         // https://forums.vandyke.com/showthread.php?t=11597
          SupportsExtension(SFTP_EXT_CHECK_FILE) ||
          SupportsExtension(SFTP_EXT_CHECK_FILE_NAME) ||
          // see above
