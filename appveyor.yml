@@ -1,27 +1,30 @@
-platform:
-  - Win64
-  - Win32
+branches:
+  only:
+    - main
 
-configuration:
-  - Debug
+image: Visual Studio 2022
 
 environment:
   matrix:
-    - language: cpp
-      BUILD_DLL: ON
-      UNICODE: ON
+  - id: Release.x64
+    configuration: Release
+    BUILD_DLL: ON
+    UNICODE: ON
+    arch: amd64
+    platform_name: x64
+  - id: Release.x86
+    configuration: Release
+    BUILD_DLL: ON
+    UNICODE: ON
+    arch: amd64_x86
+    platform_name: x86
 
 test: off
 
 install:
 
-before_build:
-  - if %platform%==Win32 set generator=Visual Studio 17 2022
-  - if %platform%==Win64 set generator=Visual Studio 17 2022
-  - if %platform%==Win32 set vcplatform=Win32
-  - if %platform%==Win64 set vcplatform=x64
-
 build_script:
+  - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch%
   - CALL appveyor.bat
 
 skip_commits:

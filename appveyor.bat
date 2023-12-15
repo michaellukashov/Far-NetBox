@@ -1,13 +1,8 @@
 setlocal
 
-IF %language%==cpp GOTO build_cpp
-
-echo Unsupported language %language%. Exiting.
-goto :error
-
 :build_cpp
-if %platform%==Win64 GOTO :build_vs2022_x64
-if %platform%==Win32 GOTO :build_vs2022_x86
+if %platform_name%==x64 GOTO :build_vs2022_x64
+if %platform_name%==x86 GOTO :build_vs2022_x86
 GOTO :build_vs2015_x64
 
 :build_vs2022_x64
