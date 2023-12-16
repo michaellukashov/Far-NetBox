@@ -347,8 +347,9 @@ public:
 
   RawByteString & operator +=(const RawByteString & rhs);
   RawByteString & operator +=(const char Ch);
+  RawByteString & operator +=(const uint8_t Ch);
 
-  bool operator==(const char * rhs) const
+  bool operator ==(const char * rhs) const
   { return Data == rhs; }
   inline friend bool operator ==(RawByteString & lhs, RawByteString & rhs)
   { return lhs.Data == rhs.Data; }

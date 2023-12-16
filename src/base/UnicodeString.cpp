@@ -143,13 +143,13 @@ AnsiString & AnsiString::Insert(const char * Str, int32_t Pos)
 
 AnsiString AnsiString::SubString(int32_t Pos) const
 {
-  string_t Str(Data.Mid(Pos - 1));
+  const string_t Str(Data.Mid(Pos - 1));
   return AnsiString(Str.c_str(), Str.GetLength());
 }
 
 AnsiString AnsiString::SubString(int32_t Pos, int32_t Len) const
 {
-  string_t Str(Data.Mid(Pos - 1), Len);
+  const string_t Str(Data.Mid(Pos - 1), Len);
   return AnsiString(Str.c_str(), Str.GetLength());
 }
 
@@ -315,14 +315,14 @@ RawByteString & RawByteString::Insert(const char * Str, int32_t Pos)
 
 RawByteString RawByteString::SubString(int32_t Pos) const
 {
-  rawstring_t Str(Data.Mid(Pos - 1));
+  const rawstring_t Str(Data.Mid(Pos - 1));
   return UTF8String(Str.c_str(), Str.GetLength());
 }
 
 RawByteString RawByteString::SubString(int32_t Pos, int32_t Len) const
 {
-  rawstring_t s = Data.Mid(Pos - 1, Len);
-  RawByteString Result(s.c_str(), s.GetLength());
+  const rawstring_t String = Data.Mid(Pos - 1, Len);
+  RawByteString Result(String.c_str(), String.GetLength());
   return Result;
 }
 
@@ -397,7 +397,7 @@ RawByteString & RawByteString::operator =(const wchar_t * lpwszData)
 
 RawByteString RawByteString::operator +(const RawByteString & rhs) const
 {
-  rawstring_t Result = Data + rhs.Data;
+  const rawstring_t Result = Data + rhs.Data;
   return RawByteString(Result.c_str(), Result.GetLength());
 }
 
@@ -408,6 +408,12 @@ RawByteString & RawByteString::operator +=(const RawByteString & rhs)
 }
 
 RawByteString & RawByteString::operator +=(const char Ch)
+{
+  Data.AppendChar(Ch);
+  return *this;
+}
+
+RawByteString & RawByteString::operator +=(const uint8_t Ch)
 {
   Data.AppendChar(Ch);
   return *this;
@@ -473,34 +479,34 @@ int32_t UTF8String::Pos(char Ch) const
 int32_t UTF8String::vprintf(const char * Format, va_list ArgList)
 {
   char * Buf = SetLength(32 * 1024);
-  int32_t Size = vsnprintf_s(Buf, Data.GetLength(), _TRUNCATE, Format, ArgList);
+  const int32_t Size = vsnprintf_s(Buf, Data.GetLength(), _TRUNCATE, Format, ArgList);
   Data.Truncate(Size);
   return Size;
 }
 
 UTF8String & UTF8String::Insert(wchar_t Ch, int32_t Pos)
 {
-  UTF8String UTF8(&Ch, 1);
+  const UTF8String UTF8(&Ch, 1);
   Data.Insert(Pos - 1, UTF8.c_str());
   return *this;
 }
 
 UTF8String & UTF8String::Insert(const wchar_t * Str, int32_t Pos)
 {
-  UTF8String UTF8(Str);
+  const UTF8String UTF8(Str);
   Data.Insert(Pos - 1, UTF8.c_str());
   return *this;
 }
 
 UTF8String UTF8String::SubString(int32_t Pos) const
 {
-  string_t Str(Data.Mid(Pos - 1));
+  const string_t Str(Data.Mid(Pos - 1));
   return UTF8String(Str.c_str(), Str.GetLength());
 }
 
 UTF8String UTF8String::SubString(int32_t Pos, int32_t Len) const
 {
-  string_t Str(Data.Mid(Pos - 1), Len);
+  const string_t Str(Data.Mid(Pos - 1), Len);
   return UTF8String(Str.c_str(), Str.GetLength());
 }
 
@@ -556,8 +562,8 @@ UTF8String & UTF8String::operator +=(const UTF8String & rhs)
 
 UTF8String & UTF8String::operator +=(const RawByteString & rhs)
 {
-  UTF8String s(rhs.c_str(), rhs.Length());
-  Data.Append(s.Data.c_str(), s.Length());
+  const UTF8String Utf8String(rhs.c_str(), rhs.Length());
+  Data.Append(Utf8String.Data.c_str(), Utf8String.Length());
   return *this;
 }
 
@@ -698,8 +704,8 @@ int32_t UnicodeString::FindFirstOf(const wchar_t * Str, int32_t Offset) const
   if (!Str || !*Str)
     return nb::NPOS;
   // int32_t Length = wstring_t::StringLength(Str);
-  wstring_t str = Data.Mid(Offset);
-  int32_t Res = str.FindOneOf(Str);
+  const wstring_t String = Data.Mid(Offset);
+  const int32_t Res = String.FindOneOf(String);
   if (Res != -1)
     return Res + Offset;
   return nb::NPOS;
@@ -753,20 +759,20 @@ int32_t UnicodeString::Pos(const UnicodeString & Str) const
 
 bool UnicodeString::RPos(int32_t & nPos, wchar_t Ch, int32_t /*nStartPos*/) const
 {
-  int32_t Pos = Data.ReverseFind(Ch); //, Data.size() - nStartPos);
+  const int32_t Pos = Data.ReverseFind(Ch); //, Data.size() - nStartPos);
   nPos = Pos + 1;
   return Pos != std::wstring::npos;
 }
 
 UnicodeString UnicodeString::SubStr(int32_t Pos, int32_t Len) const
 {
-  wstring_t Str(Data.Mid(Pos - 1, Len));
+  const wstring_t Str(Data.Mid(Pos - 1, Len));
   return UnicodeString(Str.c_str(), Str.GetLength());
 }
 
 UnicodeString UnicodeString::SubStr(int32_t Pos) const
 {
-  wstring_t Str(Data.Mid(Pos - 1));
+  const wstring_t Str(Data.Mid(Pos - 1));
   return UnicodeString(Str.c_str(), Str.GetLength());
 }
 
@@ -878,8 +884,8 @@ UnicodeString & UnicodeString::operator +=(const wchar_t * rhs)
 
 UnicodeString & UnicodeString::operator +=(const RawByteString & rhs)
 {
-  UnicodeString s(rhs.c_str(), rhs.Length());
-  Data.Append(s.Data.c_str(), s.Length());
+  const UnicodeString String(rhs.c_str(), rhs.Length());
+  Data.Append(String.Data.c_str(), String.Length());
   return *this;
 }
 
