@@ -2376,12 +2376,12 @@ set(NETBOX_SOURCES
   ../resource/TextsFileZilla.rc
   ../resource/TextsCore1.rc
   ../resource/rtlconsts.rc
- ../resource/TextsWin1.rc
+  ../resource/TextsWin1.rc
   NetBox.rc
   NetBox.def
 )
 
-add_custom_target(NetBox_Resources SOURCES
+add_custom_target(NetBoxResources SOURCES
   NetBoxEng.lng
   NetBoxRus.lng
   NetBoxPol.lng
