@@ -32,8 +32,8 @@ CAsyncSslSocketLayer::CAsyncSslSocketLayer()
   m_ssl_ctx = 0;
 
   m_bUseSSL = false;
-  m_bSslInitialized = FALSE;
-  m_bSslEstablished = FALSE;
+  m_bSslInitialized = false;
+  m_bSslEstablished = false;
   m_nNetworkSendBufferLen = 0;
   m_nNetworkSendBufferMaxLen = 0;
   m_pNetworkSendBuffer = nullptr;
@@ -42,7 +42,7 @@ CAsyncSslSocketLayer::CAsyncSslSocketLayer()
   m_nNetworkError = 0;
   m_nShutDown = 0;
 
-  m_bBlocking = FALSE;
+  m_bBlocking = false;
   m_nSslAsyncNotifyId = 0;
   m_bFailureSent = FALSE;
   m_nVerificationResult = 0;
@@ -899,14 +899,14 @@ void CAsyncSslSocketLayer::ResetSslSession()
   }
 
   m_bFailureSent = FALSE;
-  m_bBlocking = FALSE;
+  m_bBlocking = false;
   m_nSslAsyncNotifyId++;
   m_nNetworkError = 0;
   m_bUseSSL = FALSE;
   m_nVerificationResult = 0;
   m_nVerificationDepth = 0;
 
-  m_bSslEstablished = FALSE;
+  m_bSslEstablished = false;
   if (m_sslbio)
   {
     BIO_free(m_sslbio);
@@ -1225,7 +1225,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     }
     int error = SSL_get_verify_result(pLayer->m_ssl);
     pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_VERIFY_CERT, error);
-    pLayer->m_bBlocking = TRUE;
+    pLayer->m_bBlocking = true;
   }
 }
 
@@ -1625,7 +1625,7 @@ void CAsyncSslSocketLayer::SetNotifyReply(int nID, int nCode, int result)
   if (nCode != SSL_VERIFY_CERT)
     return;
 
-  m_bBlocking = FALSE;
+  m_bBlocking = false;
 
   if (!result)
   {
@@ -1639,7 +1639,7 @@ void CAsyncSslSocketLayer::SetNotifyReply(int nID, int nCode, int result)
     TriggerEvent(FD_CLOSE, 0, TRUE);
     return;
   }
-  m_bSslEstablished = TRUE;
+  m_bSslEstablished = true;
   PrintSessionInfo();
   DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_INFO, SSL_INFO_ESTABLISHED);
 

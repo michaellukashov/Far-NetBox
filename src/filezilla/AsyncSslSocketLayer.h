@@ -198,20 +198,20 @@ private:
 
   // Status variables
   static bool m_bSslInitialized;
-  int m_nShutDown;
-  int m_nNetworkError;
-  int m_nSslAsyncNotifyId;
-  BOOL m_bBlocking;
-  BOOL m_bSslEstablished;
+  int m_nShutDown{0};
+  int m_nNetworkError{0};
+  int m_nSslAsyncNotifyId{0};
+  bool m_bBlocking{false};
+  bool m_bSslEstablished{false};
   CString m_CertStorage;
-  int m_nVerificationResult;
-  int m_nVerificationDepth;
+  int m_nVerificationResult{0};
+  int m_nVerificationDepth{0};
 
   static struct t_SslLayerList //: public TObject
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    CAsyncSslSocketLayer * pLayer;
-    t_SslLayerList * pNext;
+    CAsyncSslSocketLayer * pLayer{nullptr};
+    t_SslLayerList * pNext{nullptr};
   } * m_pSslLayerList;
 
   // SSL data
