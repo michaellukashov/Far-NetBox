@@ -9,10 +9,10 @@
 
 //#pragma package(smart_init)
 
-constexpr uint8_t PWALG_SIMPLE_INTERNAL = 0x00;
-constexpr uint8_t PWALG_SIMPLE_EXTERNAL = 0x01;
-constexpr uint8_t PWALG_SIMPLE_INTERNAL2 = 0x02;
-RawByteString PWALG_SIMPLE_STRING("0123456789ABCDEF");
+constexpr const uint8_t PWALG_SIMPLE_INTERNAL = 0x00;
+constexpr const uint8_t PWALG_SIMPLE_EXTERNAL = 0x01;
+constexpr const uint8_t PWALG_SIMPLE_INTERNAL2 = 0x02;
+constexpr const char * PWALG_SIMPLE_STRING = "0123456789ABCDEF";
 
 RawByteString SimpleEncryptChar(uint8_t Ch)
 {
@@ -27,9 +27,9 @@ uint8_t SimpleDecryptNextChar(RawByteString &Str)
 {
   if (Str.Length() > 0)
   {
-    uint8_t Result = static_cast<uint8_t>(
-      ~((((PWALG_SIMPLE_STRING.Pos(Str.c_str()[0]) - 1) << 4) +
-         ((PWALG_SIMPLE_STRING.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
+    const uint8_t Result = static_cast<uint8_t>(
+      ~((((RawByteString(PWALG_SIMPLE_STRING).Pos(Str.c_str()[0]) - 1) << 4) +
+         ((RawByteString(PWALG_SIMPLE_STRING).Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
     Str.Delete(1, 2);
     return Result;
   }
@@ -39,31 +39,31 @@ uint8_t SimpleDecryptNextChar(RawByteString &Str)
 RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const UnicodeString & UnicodeKey, Integer /* Algorithm */)
 {
   UTF8String Password = UTF8String(UnicodePassword);
-  UTF8String Key = UTF8String(UnicodeKey);
+  const UTF8String Key = UTF8String(UnicodeKey);
 
   RawByteString Result;
 
   if (!::RandSeed) { ::Randomize(); ::RandSeed = 1; }
   Password = Key + Password;
-  Result += SimpleEncryptChar((uint8_t)PWALG_SIMPLE_FLAG); // Flag
-  int32_t Len = Password.Length();
+  Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
+  const int32_t Len = Password.Length();
   if (Len > std::numeric_limits<uint8_t>::max())
   {
     Result += SimpleEncryptChar((uint8_t)PWALG_SIMPLE_INTERNAL2);
-    Result += SimpleEncryptChar((uint8_t)(Len >> 8));
-    Result += SimpleEncryptChar((uint8_t)(Len & 0xFF));
+    Result += SimpleEncryptChar(static_cast<uint8_t>(Len >> 8));
+    Result += SimpleEncryptChar(static_cast<uint8_t>(Len & 0xFF));
   }
   else
   {
     Result += SimpleEncryptChar((uint8_t)PWALG_SIMPLE_INTERNAL);
-    Result += SimpleEncryptChar((uint8_t)Len);
+    Result += SimpleEncryptChar(static_cast<uint8_t>(Len));
   }
-  int32_t DataLen =
+  const int32_t DataLen =
     (Result.Length() / 2) +
     1 + // Shift
     Password.Length();
-  int32_t Shift = (DataLen < PWALG_SIMPLE_MAXLEN) ? random(PWALG_SIMPLE_MAXLEN - DataLen) : 0;
-  Result += SimpleEncryptChar((uint8_t)Shift);
+  const int32_t Shift = (DataLen < PWALG_SIMPLE_MAXLEN) ? random(PWALG_SIMPLE_MAXLEN - DataLen) : 0;
+  Result += SimpleEncryptChar(static_cast<uint8_t>(Shift));
   for (int32_t Index = 0; Index < Shift; Index++)
     Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
   for (int32_t Index = 0; Index < Password.Length(); Index++)
@@ -77,10 +77,10 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
 {
   RawByteString Password = APassword;
   int32_t Length;
-  uint8_t Flag = SimpleDecryptNextChar(Password);
+  const uint8_t Flag = SimpleDecryptNextChar(Password);
   if (Flag == PWALG_SIMPLE_FLAG)
   {
-    uint8_t Version = SimpleDecryptNextChar(Password);
+    const uint8_t Version = SimpleDecryptNextChar(Password);
     if (Version == PWALG_SIMPLE_INTERNAL)
     {
       Length = SimpleDecryptNextChar(Password);
@@ -102,14 +102,14 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   UTF8String Result;
   if (Length >= 0)
   {
-    Password.Delete(1, ((Integer)SimpleDecryptNextChar(Password)) * 2);
+    Password.Delete(1, static_cast<int32_t>(SimpleDecryptNextChar(Password)) * 2);
     for (int32_t Index = 0; Index < Length; Index++)
     {
-      Result += (char)SimpleDecryptNextChar(Password);
+      Result += static_cast<char>(SimpleDecryptNextChar(Password));
     }
     if (Flag == PWALG_SIMPLE_FLAG)
     {
-      UTF8String Key = UTF8String(UnicodeKey);
+      const UTF8String Key = UTF8String(UnicodeKey);
       if (Result.SubString(1, Key.Length()) != Key)
       {
         Result = UTF8String();
@@ -135,7 +135,7 @@ RawByteString SetExternalEncryptedPassword(const RawByteString & Password)
 bool GetExternalEncryptedPassword(const RawByteString & AEncrypted, RawByteString & Password)
 {
   RawByteString Encrypted = AEncrypted;
-  bool Result =
+  const bool Result =
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_FLAG) &&
     (SimpleDecryptNextChar(Encrypted) == PWALG_SIMPLE_EXTERNAL);
   if (Result)
@@ -184,7 +184,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     ChainConfig.CycleDetectionModulus = 0;
 
     HCERTCHAINENGINE ChainEngine;
-    bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine) != FALSE;
+    const bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine) != FALSE;
     if (!ChainEngineResult)
     {
       Error = L"Cannot create certificate chain engine";
@@ -207,7 +207,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
         PolicyPara.dwFlags = 0;
         PolicyPara.pvExtraPolicyPara = nullptr;
 
-        CERT_CHAIN_POLICY_STATUS PolicyStatus;
+        CERT_CHAIN_POLICY_STATUS PolicyStatus{};
         PolicyStatus.cbSize = sizeof(PolicyStatus);
 
         if (!CertVerifyCertificateChainPolicy(CERT_CHAIN_POLICY_SSL, ChainContext, &PolicyPara, &PolicyStatus))
@@ -216,12 +216,12 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
         }
         else
         {
-          int32_t PolicyError = PolicyStatus.dwError;
+          const DWORD PolicyError = PolicyStatus.dwError;
           // Windows thinks the certificate is valid.
           Result = (PolicyError == S_OK);
           if (!Result)
           {
-            UnicodeString ErrorStr = SysErrorMessage(PolicyError);
+            const UnicodeString ErrorStr = SysErrorMessage(PolicyError);
             Error = FORMAT(L"Error: %x (%s), Chain index: %d, Element index: %d", PolicyError, ErrorStr, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
           }
         }
