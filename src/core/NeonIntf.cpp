@@ -24,10 +24,9 @@ extern "C"
 #include <openssl/ssl.h>
 #include <rdestl/set.h>
 
-#define SESSION_PROXY_AUTH_KEY "proxyauth"
-#define SESSION_TLS_INIT_KEY "tlsinit"
-// #define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
-#define SESSION_TERMINAL_KEY "terminal"
+constexpr const char * SESSION_PROXY_AUTH_KEY = "proxyauth";
+constexpr const char * SESSION_TLS_INIT_KEY = "tlsinit";
+constexpr const char * SESSION_TERMINAL_KEY = "terminal";
 
 void NeonParseUrl(const UnicodeString & Url, ne_uri &uri)
 {
@@ -127,7 +126,7 @@ void InitNeonSession(ne_session * Session, TProxyMethod ProxyMethod, const Unico
 
 void DestroyNeonSession(ne_session * Session)
 {
-  TProxyAuthData * ProxyAuthData =
+  const TProxyAuthData * ProxyAuthData =
     static_cast<TProxyAuthData *>(ne_get_session_private(Session, SESSION_PROXY_AUTH_KEY));
   if (ProxyAuthData != nullptr)
   {
