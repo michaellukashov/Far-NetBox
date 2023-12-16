@@ -958,7 +958,7 @@ bool Win32Check(bool RetVal)
   return RetVal;
 }
 
-UnicodeString SysErrorMessage(int32_t ErrorCode)
+UnicodeString SysErrorMessage(DWORD ErrorCode)
 {
   wchar_t Buffer[255]{};
   int32_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
