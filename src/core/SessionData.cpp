@@ -2996,9 +2996,9 @@ void TSessionData::SessionSetUserName(const UnicodeString & value)
     UnicodeString XNewPassword = FNewPassword;
     UnicodeString XEncryptKey = EncryptKey;
     SET_SESSION_PROPERTY(UserName);
-    SetPassword(XPassword);
-    FNewPassword = XNewPassword;
-    EncryptKey = XEncryptKey;
+    // SetPassword(XPassword);
+    // FNewPassword = XNewPassword;
+    // EncryptKey = XEncryptKey;
     Shred(XPassword);
     Shred(XNewPassword);
     Shred(XEncryptKey);
