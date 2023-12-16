@@ -1056,7 +1056,7 @@ void TSessionData::Load(THierarchicalStorage * Storage, bool PuttyImport)
         Storage->CloseSubKey();
       }
     }
-    catch (...)
+    catch(...)
     {
       // ignore errors (like read-only INI file)
     }
@@ -2838,7 +2838,7 @@ UnicodeString TSessionData::DecryptPassword(const RawByteString & APassword, con
   {
     Result = GetConfiguration()->DecryptPassword(APassword, AKey);
   }
-  catch (EAbort &)
+  catch(EAbort &)
   {
     // silently ignore aborted prompts for master password and return empty password
   }
@@ -5284,7 +5284,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
       {
         TSessionData::ValidatePath(SessionName);
       }
-      catch (...)
+      catch(...)
       {
         ValidName = false;
       }
@@ -5635,7 +5635,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
         }
       }
     }
-    catch (Exception & E)
+    catch(Exception & E)
     {
       if (FirstError.IsEmpty())
       {
@@ -5771,7 +5771,7 @@ void TStoredSessionList::Cleanup()
       // delete Storage;
     } end_try__finally
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_SESSIONS_ERROR));
   }
@@ -5902,7 +5902,7 @@ void TStoredSessionList::UpdateStaticUsage()
     // handler is set
     CustomDefaultStoredSession = !FDefaultSettings->IsSame(FactoryDefaults.get(), false);
   }
-  catch (...)
+  catch(...)
   {
   }
   GetConfiguration()->Usage->Set(L"UsingDefaultStoredSession", CustomDefaultStoredSession);
