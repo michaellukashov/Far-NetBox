@@ -915,7 +915,8 @@ inline const X * dyn_cast(const Y * Val)
 template <class X, class Y>
 inline X * dyn_cast(Y * Val)
 {
-  return rtti::dyn_cast_or_null<X>(Val);
+  // return rtti::dyn_cast_or_null<X>(Val);
+  return static_cast<X *>(Val);
 }
 
 template <class X, class Y>
