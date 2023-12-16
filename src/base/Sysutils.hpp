@@ -3,10 +3,10 @@
 #include <Global.h>
 #include <Classes.hpp>
 
-#define THROWOSIFFALSE(C) { if (!(C)) ::RaiseLastOSError(); }
-#define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = (OBJ); (OBJ) = nullptr; delete PObj; }
+#define THROWOSIFFALSE(C) if (!(C)) { ::RaiseLastOSError(); }
+#define SAFE_DESTROY_EX(CLASS, OBJ) if ((OBJ)) { CLASS * PObj = (OBJ); (OBJ) = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, (OBJ))
-#define SAFE_CLOSE_HANDLE(H) { if ((H) && (H) != INVALID_HANDLE_VALUE) { HANDLE HH = (H); (H) = nullptr; if (HH != nullptr) { ::CloseHandle(HH); } } }
+#define SAFE_CLOSE_HANDLE(H) if ((H) && (H) != INVALID_HANDLE_VALUE) { HANDLE HH = (H); (H) = nullptr; if (HH != nullptr) { ::CloseHandle(HH); } }
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
 
 #define SWAP(TYPE, FIRST, SECOND) \
