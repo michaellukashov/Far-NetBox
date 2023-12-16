@@ -117,7 +117,7 @@ public:
   }
   void erase(const value_type& v)
   {
-    erase(find(v));
+    if (find(v) != end()) erase(find(v));
   }
   void erase(iterator it)
   {
