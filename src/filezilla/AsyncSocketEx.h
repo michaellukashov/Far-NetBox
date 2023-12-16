@@ -79,7 +79,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   CAsyncSocketExLayer* pLayer;
   int32_t nType;
   int32_t nParam1;
-  int32_t nParam2;
+  intptr_t nParam2;
   char* str;
 };
 
@@ -287,7 +287,7 @@ protected:
 
   virtual void LogSocketMessageRaw(int nMessageType, LPCTSTR pMsg) {}
   virtual bool LoggingSocketMessage(int nMessageType) { return true; }
-  virtual int GetSocketOptionVal(int OptionID) const { DebugFail(); return 0; };
+  virtual int GetSocketOptionVal(int OptionID) const { DebugFail(); return 0; }
   virtual void ConfigureSocket() {}
 };
 

@@ -498,7 +498,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         if (!responseLogged)
         {
           CString status;
-          status.Format(L"HTTP proxy response: %s", UnicodeString(m_pStrBuffer, pos - m_pStrBuffer).c_str());
+          status.Format(L"HTTP proxy response: %s", UnicodeString(m_pStrBuffer, nb::ToInt32(pos - m_pStrBuffer)).c_str());
           LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
           responseLogged = true;
         }

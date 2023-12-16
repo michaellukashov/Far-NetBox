@@ -121,7 +121,7 @@ protected:
   int32_t m_nCriticalError;
 
   // Calls OnLayerCallback on owner socket
-  int DoLayerCallback(int nType, int32_t nParam1, int32_t nParam2, char * str = 0);
+  int DoLayerCallback(int nType, int32_t nParam1, intptr_t nParam2, char * str = 0);
 
   int GetLayerState();
   BOOL TriggerEvent(long lEvent, int nErrorCode, BOOL bPassThrough = FALSE);
