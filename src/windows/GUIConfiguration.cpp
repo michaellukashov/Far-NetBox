@@ -25,6 +25,8 @@ const int32_t ccSet = 0x80000000;
 
 constexpr const uint32_t AdditionaLanguageMask = 0xFFFFFF00;
 static constexpr const wchar_t * AdditionaLanguagePrefix = L"XX";
+constexpr const uint32_t AdditionalLanguageMask = 0xFFFFFF00;
+static constexpr const wchar_t * AdditionalLanguagePrefix = L"XX";
 static constexpr const wchar_t * TranslationsSubFolder = L"Translations";
 
 // TGUIConfiguration * GUIConfiguration = nullptr;
