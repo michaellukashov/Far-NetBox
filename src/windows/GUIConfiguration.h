@@ -29,8 +29,8 @@ public:
   virtual ~TGUICopyParamType() noexcept override = default;
 public:
   TGUICopyParamType() noexcept;
-  TGUICopyParamType(const TCopyParamType & Source) noexcept;
-  explicit TGUICopyParamType(const TGUICopyParamType & Source) noexcept;
+  explicit TGUICopyParamType(const TCopyParamType & Source) noexcept;
+  TGUICopyParamType(const TGUICopyParamType & Source) noexcept;
 
   virtual void Load(THierarchicalStorage * Storage);
   virtual void Save(THierarchicalStorage * Storage, const TCopyParamType * Defaults = nullptr) const;
@@ -38,7 +38,7 @@ public:
   virtual void Default() override;
   virtual void Assign(const TCopyParamType * Source) override;
   TGUICopyParamType & operator =(const TGUICopyParamType & rhp);
-  TGUICopyParamType & operator =(const TCopyParamType & rhp);
+  virtual TGUICopyParamType & operator =(const TCopyParamType & rhp) override;
 
   __property bool Queue = { read = FQueue, write = FQueue };
   __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
@@ -246,8 +246,8 @@ public:
   void SetCopyParamList(const TCopyParamList * Value);
   virtual void DefaultLocalized();
   int32_t GetCopyParamIndex() const;
-  TGUICopyParamType GetCurrentCopyParam() const;
-  TGUICopyParamType GetCopyParamPreset(const UnicodeString & Name) const;
+  TGUICopyParamType GetCurrentCopyParam();
+  TGUICopyParamType GetCopyParamPreset(const UnicodeString & Name);
   bool GetHasCopyParamPreset(const UnicodeString & Name) const;
   void SetCopyParamIndex(int32_t Value);
   void SetCopyParamCurrent(const UnicodeString & Value);

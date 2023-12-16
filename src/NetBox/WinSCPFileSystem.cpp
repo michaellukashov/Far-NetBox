@@ -1495,7 +1495,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   int32_t Params = GetGUIConfiguration()->GetSynchronizeParams();
   bool SaveSettings = false;
 
-  TGUICopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
   const TUsableCopyParamAttrs CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0);
   const int32_t Options =
     FLAGMASK(!FTerminal->GetIsCapable(fcTimestampChanging), fsoDisableTimestamp) |
@@ -2546,7 +2546,7 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
     (OpMode & OPM_SILENT) &&
     (!EditView || GetFarConfiguration()->GetEditorDownloadDefaultMode());
 
-  TGUICopyParamType CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
   if (EditView)
   {
     EditViewCopyParam(CopyParam);

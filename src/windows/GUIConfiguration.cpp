@@ -39,6 +39,7 @@ TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source) noexcept
   : TCopyParamType(Source)
 {
   GUIDefault();
+  TGUICopyParamType::Assign(&Source);
 }
 
 TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source) noexcept
@@ -67,7 +68,7 @@ void TGUICopyParamType::GUIAssign(const TGUICopyParamType * Source)
 
 void TGUICopyParamType::Default()
 {
-  TCopyParamType::Default();
+  // TCopyParamType::Default();
 
   GUIDefault();
 }
@@ -1396,14 +1397,14 @@ void TGUIConfiguration::SetCopyParamCurrent(const UnicodeString & Value)
   SET_CONFIG_PROPERTY(CopyParamCurrent);
 }
 
-TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam() const
+TGUICopyParamType TGUIConfiguration::GetCurrentCopyParam()
 {
   return GetCopyParamPreset(GetCopyParamCurrent());
 }
 
-TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name) const
+TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Name)
 {
-  TGUICopyParamType Result = FDefaultCopyParam;
+  TGUICopyParamType Result(FDefaultCopyParam);
   if (!Name.IsEmpty())
   {
     int32_t Index = FCopyParamList->IndexOfName(Name);
