@@ -477,7 +477,8 @@ void RegisterForNeonDebug(TTerminal * Terminal)
 void UnregisterFromNeonDebug(TTerminal * Terminal)
 {
   TGuard Guard(*DebugSection.get()); nb::used(Guard);
-  NeonTerminals.erase(Terminal);
+  if (NeonTerminals.find(Terminal) != NeonTerminals.end())
+    NeonTerminals.erase(Terminal);
 }
 
 void RetrieveNeonCertificateData(
