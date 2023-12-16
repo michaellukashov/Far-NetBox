@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 #include <limits>
-#include <WinCrypt.h>
+#include <wincrypt.h>
 #include <Common.h>
 #include "WinSCPSecurity.h"
 
@@ -23,13 +23,14 @@ RawByteString SimpleEncryptChar(uint8_t Ch)
   return Result;
 }
 
-uint8_t SimpleDecryptNextChar(RawByteString &Str)
+uint8_t SimpleDecryptNextChar(RawByteString & Str)
 {
   if (Str.Length() > 0)
   {
+    const RawByteString PwStr(PWALG_SIMPLE_STRING);
     const uint8_t Result = static_cast<uint8_t>(
-      ~((((RawByteString(PWALG_SIMPLE_STRING).Pos(Str.c_str()[0]) - 1) << 4) +
-         ((RawByteString(PWALG_SIMPLE_STRING).Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
+      ~((((PwStr.Pos(Str.c_str()[0]) - 1) << 4) +
+         ((PwStr.Pos(Str.c_str()[1]) - 1) << 0)) ^ PWALG_SIMPLE_MAGIC));
     Str.Delete(1, 2);
     return Result;
   }
@@ -156,13 +157,13 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
 
   if (CertContext != nullptr)
   {
-    CERT_CHAIN_PARA ChainPara;
+    CERT_CHAIN_PARA ChainPara{};
     // Retrieve the certificate chain of the certificate
     // (a certificate without a valid root does not have a chain).
     nb::ClearStruct(ChainPara);
     ChainPara.cbSize = sizeof(ChainPara);
 
-    CERT_CHAIN_ENGINE_CONFIG ChainConfig;
+    CERT_CHAIN_ENGINE_CONFIG ChainConfig{};
 
     nb::ClearStruct(ChainConfig);
     /*const size_t ChainConfigSize =
