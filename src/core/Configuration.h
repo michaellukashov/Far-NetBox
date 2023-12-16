@@ -350,9 +350,9 @@ public:
   void TemporaryLogSensitive(bool ALogSensitive);
   void TemporaryLogMaxSize(int64_t ALogMaxSize);
   void TemporaryLogMaxCount(int32_t ALogMaxCount);
-  virtual RawByteString EncryptPassword(const UnicodeString & Password, const UnicodeString & Key);
-  virtual UnicodeString DecryptPassword(const RawByteString & Password, const UnicodeString & Key);
-  virtual RawByteString StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key);
+  virtual RawByteString EncryptPassword(const UnicodeString & APassword, const UnicodeString & AKey);
+  virtual UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeString & AKey);
+  virtual RawByteString StronglyRecryptPassword(const RawByteString & APassword, const UnicodeString & Key);
   UnicodeString GetFileDescription(const UnicodeString & AFileName) const;
   UnicodeString GetFileVersion(const UnicodeString & AFileName) const;
   UnicodeString GetFileMimeType(const UnicodeString & AFileName) const;

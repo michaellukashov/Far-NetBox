@@ -1096,30 +1096,30 @@ void TConfiguration::DontSave()
   FDontSave = true;
 }
 
-RawByteString TConfiguration::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
+RawByteString TConfiguration::EncryptPassword(const UnicodeString & APassword, const UnicodeString & AKey)
 {
-  if (Password.IsEmpty())
+  if (APassword.IsEmpty())
   {
     return RawByteString();
   }
   else
   {
-    return ::EncryptPassword(Password, Key);
+    return ::EncryptPassword(APassword, AKey);
   }
 }
 
-UnicodeString TConfiguration::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
+UnicodeString TConfiguration::DecryptPassword(const RawByteString & APassword, const UnicodeString & AKey)
 {
-  if (Password.IsEmpty())
+  if (APassword.IsEmpty())
   {
     return UnicodeString();
   }
-  return ::DecryptPassword(Password, Key);
+  return ::DecryptPassword(APassword, AKey);
 }
 
-RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & /*Key*/)
+RawByteString TConfiguration::StronglyRecryptPassword(const RawByteString & APassword, const UnicodeString & /*Key*/)
 {
-  return Password;
+  return APassword;
 }
 
 TVSFixedFileInfo * TConfiguration::GetFixedApplicationInfo() const
