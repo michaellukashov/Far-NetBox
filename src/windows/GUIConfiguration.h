@@ -3,17 +3,18 @@
 
 #include "Configuration.h"
 #include "CopyParam.h"
+#include <Terminal.h>
 
 class TGUIConfiguration;
 class TStoredSessionList;
 enum TInterface { ifCommander, ifExplorer };
 
-extern const int32_t ccLocal;
-extern const int32_t ccShowResults;
-extern const int32_t ccCopyResults;
-extern const int32_t ccSet;
-extern const int32_t ccRemoteFiles;
-extern const int32_t ccShowResultsInMsgBox;
+constexpr const int32_t ccLocal = ccUser;
+constexpr const int32_t ccShowResults = ccUser << 1;
+constexpr const int32_t ccCopyResults = ccUser << 2;
+constexpr const int32_t ccRemoteFiles = ccUser << 3;
+constexpr const int32_t ccShowResultsInMsgBox = ccUser << 4;
+constexpr const int32_t ccSet = 0x80000000;
 
 constexpr const int32_t soRecurse =         0x01;
 constexpr const int32_t soSynchronize =     0x02;

@@ -16,15 +16,6 @@
 
 // #pragma package(smart_init)
 
-const int32_t ccLocal = ccUser;
-const int32_t ccShowResults = ccUser << 1;
-const int32_t ccCopyResults = ccUser << 2;
-const int32_t ccRemoteFiles = ccUser << 3;
-const int32_t ccShowResultsInMsgBox = ccUser << 4;
-const int32_t ccSet = 0x80000000;
-
-constexpr const uint32_t AdditionaLanguageMask = 0xFFFFFF00;
-static constexpr const wchar_t * AdditionaLanguagePrefix = L"XX";
 constexpr const uint32_t AdditionalLanguageMask = 0xFFFFFF00;
 static constexpr const wchar_t * AdditionalLanguagePrefix = L"XX";
 static constexpr const wchar_t * TranslationsSubFolder = L"Translations";
@@ -772,7 +763,7 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * AStorage, bool All)
 
 bool TGUIConfiguration::LoadCopyParam(THierarchicalStorage * AStorage, TCopyParamType * CopyParam)
 {
-  bool Result =
+  const bool Result =
     AStorage->OpenSubKeyPath(L"Interface\\CopyParam", false);
   if (Result)
   {
@@ -819,7 +810,7 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * AStorage)
   if (LoadCopyParam(AStorage, &FDefaultCopyParam))
   try__finally
   {
-    int32_t CopyParamListCount = AStorage->ReadInteger(L"CopyParamList", -1);
+    const int32_t CopyParamListCount = AStorage->ReadInteger(L"CopyParamList", -1);
     FCopyParamListDefaults = (CopyParamListCount < 0);
     if (!FCopyParamListDefaults)
     {
@@ -873,7 +864,7 @@ void TGUIConfiguration::Saved()
 
 UnicodeString TGUIConfiguration::GetTranslationModule(const UnicodeString & Path) const
 {
-  UnicodeString SubPath = AddTranslationsSubFolder(Path);
+  const UnicodeString SubPath = AddTranslationsSubFolder(Path);
   UnicodeString Result;
   // Prefer the SubPath. Default to SubPath.
   if (base::FileExists(Path) && !base::FileExists(SubPath))
@@ -899,16 +890,16 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 {
   UnicodeString LibraryFileName;
   HINSTANCE NewInstance = nullptr;
-  LCID AInternalLocale = InternalLocale();
+  const LCID AInternalLocale = InternalLocale();
   bool Internal = (ALocale == AInternalLocale);
-  DWORD PrimaryLang = PRIMARYLANGID(ALocale);
+  const DWORD PrimaryLang = PRIMARYLANGID(ALocale);
   if (!Internal)
   {
     // UnicodeString Module;
     UnicodeString LocaleName;
 
     UnicodeString Module = ModuleFileName();
-    if ((ALocale & AdditionaLanguageMask) != AdditionaLanguageMask)
+    if ((ALocale & AdditionalLanguageMask) != AdditionalLanguageMask)
     {
       wchar_t LocaleStr[4];
       GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, LocaleStr, LENOF(LocaleStr));
@@ -917,8 +908,8 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
     else
     {
-      LocaleName = AdditionaLanguagePrefix +
-        char(ALocale & ~AdditionaLanguageMask);
+      LocaleName = AdditionalLanguagePrefix +
+        char(ALocale & ~AdditionalLanguageMask);
     }
 
     Module = ChangeFileExt(Module, UnicodeString(".") + LocaleName);
@@ -931,7 +922,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
     else
     {
-      DWORD SubLang = SUBLANGID(ALocale);
+      const DWORD SubLang = SUBLANGID(ALocale);
       DebugAssert(SUBLANG_DEFAULT == SUBLANG_CHINESE_TRADITIONAL);
       // Finally look for a language-only translation.
       // But for Chinese, never use "traditional" (what is the "default" Chinese), if we want "Simplified"
@@ -981,8 +972,7 @@ LCID TGUIConfiguration::InternalLocale()
   void * FileInfo = GetApplicationInfo();
   if (FileInfo && GetTranslationCount(FileInfo) > 0)
   {
-    TTranslation Translation;
-    Translation = GetTranslation(FileInfo, 0);
+    TTranslation Translation = GetTranslation(FileInfo, 0);
     Result = MAKELANGID(PRIMARYLANGID(Translation.Language), SUBLANG_DEFAULT);
     FreeFileInfo(FileInfo);
   }
@@ -1168,7 +1158,7 @@ HANDLE TGUIConfiguration::GetResourceModule()
 
 void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
 {
-  HANDLE PrevHandle = ChangeResourceModule(Instance);
+  const HANDLE PrevHandle = ChangeResourceModule(Instance);
   FreeResourceModule(PrevHandle);
 
   DefaultLocalized();
@@ -1176,7 +1166,7 @@ void TGUIConfiguration::SetResourceModule(HINSTANCE Instance)
 
 void TGUIConfiguration::FindLocales(const UnicodeString & LocalesMask, TStrings * Exts, UnicodeString & LocalesExts)
 {
-  int32_t FindAttrs = faReadOnly | faArchive;
+  const int32_t FindAttrs = faReadOnly | faArchive;
 
   TSearchRecOwned SearchRec;
   bool Found = (FindFirstUnchecked(LocalesMask, static_cast<DWORD>(FindAttrs), SearchRec) == 0);
@@ -1204,7 +1194,7 @@ void TGUIConfiguration::AddLocale(LCID Locale, const UnicodeString & Name)
   try
   {
     UnicodeString FileName;
-    HINSTANCE Module = LoadNewResourceModule(Locale, FileName);
+    const HINSTANCE Module = LoadNewResourceModule(Locale, FileName);
     try__finally
     {
       LocaleInfo->Completeness = GetResourceModuleCompleteness(Module);
@@ -1224,15 +1214,15 @@ void TGUIConfiguration::AddLocale(LCID Locale, const UnicodeString & Name)
 
 int32_t TGUIConfiguration::LocalesCompare(void * Item1, void * Item2)
 {
-  TLocaleInfo * LocaleInfo1 = static_cast<TLocaleInfo *>(Item1);
-  TLocaleInfo * LocaleInfo2 = static_cast<TLocaleInfo *>(Item2);
+  const TLocaleInfo * LocaleInfo1 = static_cast<TLocaleInfo *>(Item1);
+  const TLocaleInfo * LocaleInfo2 = static_cast<TLocaleInfo *>(Item2);
   return CompareText(LocaleInfo1->Name, LocaleInfo2->Name);
 }
 
 TObjectList * TGUIConfiguration::GetLocales()
 {
-  UnicodeString LocalesMask = ChangeFileExt(ModuleFileName(), L".*");
-  UnicodeString SubLocalesMask = AddTranslationsSubFolder(LocalesMask);
+  const UnicodeString LocalesMask = ChangeFileExt(ModuleFileName(), L".*");
+  const UnicodeString SubLocalesMask = AddTranslationsSubFolder(LocalesMask);
 
   UnicodeString LocalesExts;
   std::unique_ptr<TStringList> Exts(CreateSortedStringList());
@@ -1304,14 +1294,14 @@ TObjectList * TGUIConfiguration::GetLocales()
     {
       if ((Exts->Objects[Index] == nullptr) &&
           (Exts->Strings[Index].Length() == 3) &&
-          SameText(Exts->Strings[Index].SubString(1, 2), AdditionaLanguagePrefix))
+          SameText(Exts->Strings[Index].SubString(1, 2), AdditionalLanguagePrefix))
       {
         UnicodeString ModulePath = ChangeFileExt(ModuleFileName(), UnicodeString(L".") + Exts->Strings[Index]);
         ModulePath = GetTranslationModule(ModulePath);
         UnicodeString LangName = GetFileFileInfoString(L"LangName", ModulePath);
         if (!LangName.IsEmpty())
         {
-          AddLocale(AdditionaLanguageMask + Exts->Strings[Index][3], LangName);
+          AddLocale(AdditionalLanguageMask + Exts->Strings[Index][3], LangName);
         }
       }
     }
@@ -1409,7 +1399,7 @@ TGUICopyParamType TGUIConfiguration::GetCopyParamPreset(const UnicodeString & Na
   TGUICopyParamType Result(FDefaultCopyParam);
   if (!Name.IsEmpty())
   {
-    int32_t Index = FCopyParamList->IndexOfName(Name);
+    const int32_t Index = FCopyParamList->IndexOfName(Name);
     DebugAssert(Index >= 0);
     if (Index >= 0)
     {
