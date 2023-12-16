@@ -61,7 +61,7 @@ CAsyncSslSocketLayer::CAsyncSslSocketLayer()
 
   FCertificate = nullptr;
   FPrivateKey = nullptr;
-  m_CriticalSection.reset();
+  m_CriticalSection = std::make_unique<TCriticalSection>();
 }
 
 CAsyncSslSocketLayer::~CAsyncSslSocketLayer()
