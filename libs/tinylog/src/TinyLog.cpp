@@ -137,8 +137,11 @@ int32_t TinyLogImpl::MainLoop()
     {
       if (pthread_cond_timedwait(&cond_, &mutex_, timeout_millisecs) == WAIT_TIMEOUT)
       {
-        logstream_->SwapBuffer();
-        logstream_->UpdateBaseTime();
+        if (run_)
+        {
+          logstream_->SwapBuffer();
+          logstream_->UpdateBaseTime();
+        }
         break;
       }
     }
@@ -148,7 +151,7 @@ int32_t TinyLogImpl::MainLoop()
       already_swap_ = false;
     }
 
-    logstream_->WriteBuffer();
+    if (run_) logstream_->WriteBuffer();
 
     pthread_mutex_unlock(&mutex_);
   }

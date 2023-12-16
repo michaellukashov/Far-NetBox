@@ -36,8 +36,8 @@ public:
   void UpdateBaseTime();
 
 private:
-  LogStream(const LogStream &);
-  LogStream & operator =(const LogStream &);
+  LogStream(const LogStream &) = delete;
+  LogStream & operator =(const LogStream &) = delete;
 
   int64_t InternalWrite(const char * log_data, int64_t ToWrite);
 
