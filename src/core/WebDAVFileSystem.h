@@ -112,7 +112,7 @@ protected:
     int32_t Params);
   void CheckStatus(int32_t NeonStatus);
   struct TSessionContext;
-  void CheckStatus(TSessionContext * SessionContext, int32_t NeonStatus);
+  void CheckStatus(const TSessionContext * SessionContext, int32_t NeonStatus);
   void ClearNeonError();
   static void NeonPropsResult(
     void * UserData, const ne_uri * Uri, const ne_prop_result_set_s * Results);
@@ -171,6 +171,7 @@ private:
   RawByteString FPassword;
   UnicodeString FTlsVersionStr;
   uint32_t FCapabilities{0};
+protected:
   struct TSessionContext
   {
     CUSTOM_MEM_ALLOCATION_IMPL
@@ -183,6 +184,7 @@ private:
     bool NtlmAuthenticationFailed{false};
     UnicodeString AuthorizationProtocol;
   };
+private:
   std::unique_ptr<TSessionContext> FSessionContext;
   enum TIgnoreAuthenticationFailure { iafNo, iafWaiting, iafPasswordFailed } FIgnoreAuthenticationFailure{iafNo};
   UnicodeString FAuthorizationProtocol;

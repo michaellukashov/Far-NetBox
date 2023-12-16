@@ -697,7 +697,7 @@ void TWebDAVFileSystem::CheckStatus(int32_t NeonStatus)
   CheckStatus(FSessionContext.get(), NeonStatus);
 }
 
-void TWebDAVFileSystem::CheckStatus(TSessionContext * SessionContext, int32_t NeonStatus)
+void TWebDAVFileSystem::CheckStatus(const TSessionContext * SessionContext, int32_t NeonStatus)
 {
   if ((NeonStatus == NE_ERROR) && (FCancelled || FSkipped))
   {
