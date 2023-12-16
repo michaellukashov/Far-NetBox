@@ -159,8 +159,8 @@ public:
     UnicodeString & Text, PLUGINPANELITEMFLAGS Flags, const UnicodeString & HistoryName = L"",
     int32_t MaxLen = 255, TFarInputBoxValidateEvent && OnValidate = nullptr);
   virtual UnicodeString GetMsg(intptr_t MsgId) const;
-  void SaveScreen(HANDLE &Screen);
-  void RestoreScreen(HANDLE &Screen);
+  void SaveScreen(HANDLE & Screen);
+  void RestoreScreen(HANDLE & Screen);
   bool CheckForEsc() const;
   bool Viewer(const UnicodeString & AFileName, const UnicodeString & Title, VIEWER_FLAGS Flags);
   bool Editor(const UnicodeString & AFileName, const UnicodeString & Title, EDITOR_FLAGS Flags);
@@ -177,7 +177,7 @@ public:
   UnicodeString FormatFarVersion(VersionInfo & Info) const;
   UnicodeString GetTemporaryDir() const;
   intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
-  TFarEditorInfo *EditorInfo();
+  TFarEditorInfo * EditorInfo();
 
   void ShowConsoleTitle(const UnicodeString & Title);
   void ClearConsoleTitle();
