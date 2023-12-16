@@ -16,6 +16,7 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 
 if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /Zi")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP /Zi")
   # /MP Multi-processor compilation
   # /Zi Generate debug info
 
@@ -2380,7 +2381,7 @@ set(NETBOX_SOURCES
   NetBox.def
 )
 
-add_custom_target(NETBOX_SOURCES SOURCES
+add_custom_target(NetBox_Resources SOURCES
   NetBoxEng.lng
   NetBoxRus.lng
   NetBoxPol.lng
