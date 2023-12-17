@@ -5918,7 +5918,7 @@ void TSFTPFileSystem::Sink(
       SAFE_DESTROY(FileStream);
     }
 
-    if (DeleteLocalFile && (!ResumeAllowed || OperationProgress->GetLocallyUsed() == 0) &&
+    if (FTerminal && DeleteLocalFile && (!ResumeAllowed || OperationProgress->GetLocallyUsed() == 0) &&
         (OverwriteMode == omOverwrite))
     {
       FTerminal->DoDeleteLocalFile(LocalFileName);
