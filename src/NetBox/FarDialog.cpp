@@ -113,8 +113,8 @@ TFarDialog::~TFarDialog() noexcept
   nb_free(FDialogItems);
   FDialogItemsCapacity = 0;
 //  SAFE_DESTROY(FContainers);
-  SAFE_CLOSE_HANDLE(FSynchronizeObjects[0])
-  SAFE_CLOSE_HANDLE(FSynchronizeObjects[1])
+  SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
+  SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
 }
 
 void TFarDialog::SetBounds(const TRect & Value)

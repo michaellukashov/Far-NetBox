@@ -560,9 +560,9 @@ void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
   #define PROPERTY_HANDLER(P, F) F##P = SourceData->F##P;
 
   PROPERTY(Name);
-  BASE_PROPERTIES;
-  ADVANCED_PROPERTIES;
-  META_PROPERTIES;
+  BASE_PROPERTIES
+  ADVANCED_PROPERTIES
+  META_PROPERTIES
   #undef PROPERTY_HANDLER
   FOverrideCachedHostKey = SourceData->FOverrideCachedHostKey;
   FModified = SourceData->FModified;
@@ -675,10 +675,10 @@ bool TSessionData::IsSame(
 
   if (!AdvancedOnly)
   {
-    BASE_PROPERTIES;
+    BASE_PROPERTIES
     // META_PROPERTIES;
   }
-  ADVANCED_PROPERTIES;
+  ADVANCED_PROPERTIES
   #undef PROPERTY_HANDLER
   #undef PROPERTY
 
@@ -756,11 +756,11 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
       RawByteString A##PROP = Storage->ReadStringAsBinaryData(ENC_NAME, F##PROP); \
       SET_SESSION_PROPERTY_FROM(PROP, A##PROP); \
     }
-  #define LOAD_PASSWORD(PROP, PLAIN_NAME) LOAD_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), RewritePassword = true;)
+  #define LOAD_PASSWORD(PROP, PLAIN_NAME) LOAD_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), RewritePassword = true; )
   const bool LoadPasswords = !GetConfiguration()->GetDisablePasswordStoring() || !RespectDisablePasswordStoring;
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(Password, L"PasswordPlain");
+    LOAD_PASSWORD(Password, L"PasswordPlain")
   }
   SetHostKey(Storage->ReadString("SshHostKey", GetHostKey())); // probably never used
   SetNote(Storage->ReadString("Note", GetNote()));
@@ -883,7 +883,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FProxyPort = Storage->ReadInteger(L"ProxyPort", FProxyPort);
   FProxyUsername = Storage->ReadString(L"ProxyUsername", FProxyUsername);
   // proxy password is not rewritten
-  LOAD_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", );
+  LOAD_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", )
   if (!Unsafe)
   {
     if (FProxyMethod == pmCmd)
@@ -949,14 +949,14 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetTunnelHostName(Storage->ReadString("TunnelHostName", GetTunnelHostName()));
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(TunnelPassword, L"TunnelPasswordPlain");
+    LOAD_PASSWORD(TunnelPassword, L"TunnelPasswordPlain")
   }
   FTunnelPublicKeyFile = Storage->ReadString(L"TunnelPublicKeyFile", FTunnelPublicKeyFile);
   // Contrary to main session passphrase (which has -passphrase switch in scripting),
   // we are loading tunnel passphrase, as there's no other way to provide it in scripting
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(TunnelPassphrase, L"TunnelPassphrasePlain");
+    LOAD_PASSWORD(TunnelPassphrase, L"TunnelPassphrasePlain")
   }
   SetTunnelLocalPortNumber(Storage->ReadInteger("TunnelLocalPortNumber", nb::ToInt32(GetTunnelLocalPortNumber())));
   SetTunnelHostKey(Storage->ReadString("TunnelHostKey", GetTunnelHostKey()));
@@ -1048,10 +1048,10 @@ void TSessionData::Load(THierarchicalStorage * Storage, bool PuttyImport)
           { \
             Storage->WriteBinaryDataAsString(TEXT(#PROP), F##PROP); \
           }
-        REWRITE_PASSWORD(Password, L"PasswordPlain");
-        REWRITE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain");
-        REWRITE_PASSWORD(EncryptKey, L"EncryptKeyPlain");
-        REWRITE_PASSWORD(TunnelPassphrase, L"TunnelPassphrasePlain");
+        REWRITE_PASSWORD(Password, L"PasswordPlain")
+        REWRITE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain")
+        REWRITE_PASSWORD(EncryptKey, L"EncryptKeyPlain")
+        REWRITE_PASSWORD(TunnelPassphrase, L"TunnelPassphrasePlain")
         #undef REWRITE_PASSWORD
         Storage->CloseSubKey();
       }
@@ -1099,8 +1099,8 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 #define WRITE_DATA4(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, MB_TEXT(#PROPERTY), F ## PROPERTY, )
 
   Storage->WriteString("Version", ::VersionNumberToStr(::GetCurrentVersionNumber()));
-  WRITE_DATA(String, HostName);
-  WRITE_DATA2(Integer, PortNumber);
+  WRITE_DATA(String, HostName)
+  WRITE_DATA2(Integer, PortNumber)
   if ((PingType == ptOff) && PuttyExport)
   {
     // Deleting would do too
@@ -1109,89 +1109,89 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   }
   else
   {
-    WRITE_DATA_EX(Integer, "PingInterval", GetPingInterval() / SecsPerMin, nb::ToInt);
-    WRITE_DATA_EX(Integer, "PingIntervalSecs", GetPingInterval() % SecsPerMin, );
+    WRITE_DATA_EX(Integer, "PingInterval", GetPingInterval() / SecsPerMin, nb::ToInt)
+    WRITE_DATA_EX(Integer, "PingIntervalSecs", GetPingInterval() % SecsPerMin, )
   }
   Storage->DeleteValue("PingIntervalSec"); // obsolete
-  WRITE_DATA(Integer, PingType);
-  WRITE_DATA2(Integer, Timeout);
-  WRITE_DATA(Bool, TryAgent);
-  WRITE_DATA(Bool, AgentFwd);
-  WRITE_DATA(Bool, AuthKI);
-  WRITE_DATA(Bool, AuthKIPassword);
-  WRITE_DATA_EX(String, L"SshHostKey", HostKey, );
-  WRITE_DATA(String, Note);
+  WRITE_DATA(Integer, PingType)
+  WRITE_DATA2(Integer, Timeout)
+  WRITE_DATA(Bool, TryAgent)
+  WRITE_DATA(Bool, AgentFwd)
+  WRITE_DATA(Bool, AuthKI)
+  WRITE_DATA(Bool, AuthKIPassword)
+  WRITE_DATA_EX(String, L"SshHostKey", HostKey, )
+  WRITE_DATA(String, Note)
 
-  WRITE_DATA2(Bool, AuthGSSAPI);
-  WRITE_DATA3(Bool, AuthGSSAPIKEX);
-  WRITE_DATA2(Bool, GSSAPIFwdTGT);
+  WRITE_DATA2(Bool, AuthGSSAPI)
+  WRITE_DATA3(Bool, AuthGSSAPIKEX)
+  WRITE_DATA2(Bool, GSSAPIFwdTGT)
   Storage->DeleteValue("TryGSSKEX");
   Storage->DeleteValue("UserNameFromEnvironment");
   Storage->DeleteValue("GSSAPIServerChoosesUserName");
   Storage->DeleteValue("GSSAPITrustDNS");
-  WRITE_DATA(String, LogicalHostName);
+  WRITE_DATA(String, LogicalHostName)
   if (PuttyExport)
   {
     // duplicate kerberos setting with keys of the vintela quest putty
-    WRITE_DATA_EX(Bool, "AuthSSPI", GetAuthGSSAPI(), );
-    WRITE_DATA_EX(Bool, "SSPIFwdTGT", GetGSSAPIFwdTGT(), );
-    WRITE_DATA_EX(String, "KerbPrincipal", GetLogicalHostName(), );
+    WRITE_DATA_EX(Bool, "AuthSSPI", GetAuthGSSAPI(), )
+    WRITE_DATA_EX(Bool, "SSPIFwdTGT", GetGSSAPIFwdTGT(), )
+    WRITE_DATA_EX(String, "KerbPrincipal", GetLogicalHostName(), )
     // duplicate kerberos setting with keys of the official putty
-    WRITE_DATA_EX(Bool, "GssapiFwd", GetGSSAPIFwdTGT(), );
+    WRITE_DATA_EX(Bool, "GssapiFwd", GetGSSAPIFwdTGT(), )
   }
 
-  WRITE_DATA(Bool, ChangeUsername);
-  WRITE_DATA(Bool, Compression);
-  WRITE_DATA(Bool, Ssh2DES);
-  WRITE_DATA(Bool, SshNoUserAuth);
-  WRITE_DATA_EX(String, "Cipher", GetCipherList(), );
-  WRITE_DATA_EX(String, "KEX", GetKexList(), );
-  WRITE_DATA_EX(String, "HostKey", GetHostKeyList(), );
-  WRITE_DATA_EX(String, "GSSLibs", GetGssLibList(), );
-  WRITE_DATA_EX(String, "GSSCustom", GetGssLibCustom(), );
-  WRITE_DATA(Integer, AddressFamily);
-  WRITE_DATA_EX(String, "RekeyBytes", GetRekeyData(), );
-  WRITE_DATA2(Integer, RekeyTime);
+  WRITE_DATA(Bool, ChangeUsername)
+  WRITE_DATA(Bool, Compression)
+  WRITE_DATA(Bool, Ssh2DES)
+  WRITE_DATA(Bool, SshNoUserAuth)
+  WRITE_DATA_EX(String, "Cipher", GetCipherList(), )
+  WRITE_DATA_EX(String, "KEX", GetKexList(), )
+  WRITE_DATA_EX(String, "HostKey", GetHostKeyList(), )
+  WRITE_DATA_EX(String, "GSSLibs", GetGssLibList(), )
+  WRITE_DATA_EX(String, "GSSCustom", GetGssLibCustom(), )
+  WRITE_DATA(Integer, AddressFamily)
+  WRITE_DATA_EX(String, "RekeyBytes", GetRekeyData(), )
+  WRITE_DATA2(Integer, RekeyTime)
 
-  WRITE_DATA(Bool, TcpNoDelay);
+  WRITE_DATA(Bool, TcpNoDelay)
 
   if (PuttyExport)
   {
-    WRITE_DATA_EX(StringRaw, "UserName", SessionGetUserName(), );
+    WRITE_DATA_EX(StringRaw, "UserName", SessionGetUserName(), )
     // PuTTY is started in its binary directory to allow relative paths when opening PuTTY's own stored session.
     // To allow relative paths in our sessions, we have to expand them for PuTTY.
-    WRITE_DATA_EX(StringRaw, "PublicKeyFile", GetPublicKeyFile(), ExpandFileName);
-    WRITE_DATA_EX(StringRaw, L"DetachedCertificate", DetachedCertificate, ExpandFileName);
+    WRITE_DATA_EX(StringRaw, "PublicKeyFile", GetPublicKeyFile(), ExpandFileName)
+    WRITE_DATA_EX(StringRaw, L"DetachedCertificate", DetachedCertificate, ExpandFileName)
   }
   else
   {
-    WRITE_DATA_EX(String, "UserName", SessionGetUserName(), );
-    WRITE_DATA(String, PublicKeyFile);
-    WRITE_DATA_EX(String, "DetachedCertificate", FDetachedCertificate, );
-    WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), );
-    WRITE_DATA(String, LocalDirectory);
-    WRITE_DATA_EX(String, "OtherLocalDirectory", FOtherLocalDirectory, );
-    WRITE_DATA(String, RemoteDirectory);
-    WRITE_DATA(Bool, SynchronizeBrowsing);
-    WRITE_DATA(Bool, UpdateDirectories);
-    WRITE_DATA(Bool, CacheDirectories);
-    WRITE_DATA(Bool, CacheDirectoryChanges);
-    WRITE_DATA(Bool, PreserveDirectoryChanges);
+    WRITE_DATA_EX(String, "UserName", SessionGetUserName(), )
+    WRITE_DATA(String, PublicKeyFile)
+    WRITE_DATA_EX(String, "DetachedCertificate", FDetachedCertificate, )
+    WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), )
+    WRITE_DATA(String, LocalDirectory)
+    WRITE_DATA_EX(String, "OtherLocalDirectory", FOtherLocalDirectory, )
+    WRITE_DATA(String, RemoteDirectory)
+    WRITE_DATA(Bool, SynchronizeBrowsing)
+    WRITE_DATA(Bool, UpdateDirectories)
+    WRITE_DATA(Bool, CacheDirectories)
+    WRITE_DATA(Bool, CacheDirectoryChanges)
+    WRITE_DATA(Bool, PreserveDirectoryChanges)
 
-    WRITE_DATA(Bool, ResolveSymlinks);
-    WRITE_DATA(Bool, FollowDirectorySymlinks);
-    WRITE_DATA_EX(Integer, "ConsiderDST", GetDSTMode(), );
+    WRITE_DATA(Bool, ResolveSymlinks)
+    WRITE_DATA(Bool, FollowDirectorySymlinks)
+    WRITE_DATA_EX(Integer, "ConsiderDST", GetDSTMode(), )
     // Special is never stored (if it would, login dialog must be modified not to
     // duplicate Special parameter when Special session is loaded and then stored
     // under different name)
     // WRITE_DATA(Bool, Special);
-    WRITE_DATA(String, Shell);
-    WRITE_DATA(Bool, ClearAliases);
-    WRITE_DATA(Bool, UnsetNationalVars);
-    WRITE_DATA(String, ListingCommand);
-    WRITE_DATA(Bool, IgnoreLsWarnings);
-    WRITE_DATA(Integer, SCPLsFullTime);
-    WRITE_DATA(Bool, Scp1Compatibility);
+    WRITE_DATA(String, Shell)
+    WRITE_DATA(Bool, ClearAliases)
+    WRITE_DATA(Bool, UnsetNationalVars)
+    WRITE_DATA(String, ListingCommand)
+    WRITE_DATA(Bool, IgnoreLsWarnings)
+    WRITE_DATA(Integer, SCPLsFullTime)
+    WRITE_DATA(Bool, Scp1Compatibility)
     // TimeDifferenceAuto is valid for FTP protocol only.
     // For other protocols it's typically true (default value),
     // but ignored so TimeDifference is still taken into account (SCP only actually)
@@ -1203,67 +1203,67 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     }
     else
     {
-      WRITE_DATA(Float, TimeDifference);
+      WRITE_DATA(Float, TimeDifference)
     }
-    WRITE_DATA(Bool, TimeDifferenceAuto);
-    WRITE_DATA(Bool, DeleteToRecycleBin);
-    WRITE_DATA(Bool, OverwrittenToRecycleBin);
-    WRITE_DATA(String, RecycleBinPath);
-    WRITE_DATA(String, PostLoginCommands);
+    WRITE_DATA(Bool, TimeDifferenceAuto)
+    WRITE_DATA(Bool, DeleteToRecycleBin)
+    WRITE_DATA(Bool, OverwrittenToRecycleBin)
+    WRITE_DATA(String, RecycleBinPath)
+    WRITE_DATA(String, PostLoginCommands)
 
-    WRITE_DATA(String, ReturnVar);
-    WRITE_DATA(Bool, ExitCode1IsError);
-    WRITE_DATA_EX(Integer, L"LookupUserGroups2", LookupUserGroups, );
-    WRITE_DATA(Integer, EOLType);
-    WRITE_DATA(Bool, TrimVMSVersions);
-    WRITE_DATA3(Bool, VMSAllRevisions);
+    WRITE_DATA(String, ReturnVar)
+    WRITE_DATA(Bool, ExitCode1IsError)
+    WRITE_DATA_EX(Integer, L"LookupUserGroups2", LookupUserGroups, )
+    WRITE_DATA(Integer, EOLType)
+    WRITE_DATA(Bool, TrimVMSVersions)
+    WRITE_DATA3(Bool, VMSAllRevisions)
     Storage->DeleteValue("SFTPUtfBug");
-    WRITE_DATA_EX(Integer, "Utf", GetNotUtf(), );
-    WRITE_DATA2(Integer, InternalEditorEncoding);
-    WRITE_DATA(String, S3DefaultRegion);
-    WRITE_DATA4(String, S3SessionToken);
-    WRITE_DATA4(String, S3Profile);
-    WRITE_DATA3(Integer, S3UrlStyle);
-    WRITE_DATA3(Integer, S3MaxKeys);
-    WRITE_DATA3(Bool, S3CredentialsEnv);
-    WRITE_DATA3(Bool, S3RequesterPays);
-    WRITE_DATA(Integer, SendBuf);
-    WRITE_DATA4(String, SourceAddress);
-    WRITE_DATA4(String, ProtocolFeatures);
-    WRITE_DATA(Bool, SshSimple);
+    WRITE_DATA_EX(Integer, "Utf", GetNotUtf(), )
+    WRITE_DATA2(Integer, InternalEditorEncoding)
+    WRITE_DATA(String, S3DefaultRegion)
+    WRITE_DATA4(String, S3SessionToken)
+    WRITE_DATA4(String, S3Profile)
+    WRITE_DATA3(Integer, S3UrlStyle)
+    WRITE_DATA3(Integer, S3MaxKeys)
+    WRITE_DATA3(Bool, S3CredentialsEnv)
+    WRITE_DATA3(Bool, S3RequesterPays)
+    WRITE_DATA(Integer, SendBuf)
+    WRITE_DATA4(String, SourceAddress)
+    WRITE_DATA4(String, ProtocolFeatures)
+    WRITE_DATA(Bool, SshSimple)
   }
 
-  WRITE_DATA(Integer, ProxyMethod);
-  WRITE_DATA(String, ProxyHost);
-  WRITE_DATA2(Integer, ProxyPort);
-  WRITE_DATA(String, ProxyUsername);
+  WRITE_DATA(Integer, ProxyMethod)
+  WRITE_DATA(String, ProxyHost)
+  WRITE_DATA2(Integer, ProxyPort)
+  WRITE_DATA(String, ProxyUsername)
   if (GetProxyMethod() == pmCmd)
   {
-    WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyLocalCommand(), );
+    WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyLocalCommand(), )
   }
   else
   {
-    WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyTelnetCommand(), );
+    WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyTelnetCommand(), )
   }
   #undef WRITE_DATA_CONV_FUNC
   #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
-  WRITE_DATA_CONV(Integer, "ProxyDNS", GetProxyDNS());
+  WRITE_DATA_CONV(Integer, "ProxyDNS", GetProxyDNS())
 #undef WRITE_DATA_CONV_FUNC
-  WRITE_DATA_EX(Bool, "ProxyLocalhost", GetProxyLocalhost(), );
+  WRITE_DATA_EX(Bool, "ProxyLocalhost", GetProxyLocalhost(), )
 
   #undef WRITE_DATA_CONV_FUNC
   #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
   #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, MB_TEXT("Bug" #BUG), GetBug(sb##BUG));
-  WRITE_BUG(HMAC2);
-  WRITE_BUG(DeriveKey2);
-  WRITE_BUG(RSAPad2);
-  WRITE_BUG(PKSessID2);
-  WRITE_BUG(Rekey2);
-  WRITE_BUG(MaxPkt2);
-  WRITE_BUG(Ignore2);
-  WRITE_BUG(OldGex2);
-  WRITE_BUG(WinAdj);
-  WRITE_BUG(ChanReq);
+  WRITE_BUG(HMAC2)
+  WRITE_BUG(DeriveKey2)
+  WRITE_BUG(RSAPad2)
+  WRITE_BUG(PKSessID2)
+  WRITE_BUG(Rekey2)
+  WRITE_BUG(MaxPkt2)
+  WRITE_BUG(Ignore2)
+  WRITE_BUG(OldGex2)
+  WRITE_BUG(WinAdj)
+  WRITE_BUG(ChanReq)
   #undef WRITE_BUG
   #undef WRITE_DATA_CONV_FUNC
 
@@ -1272,61 +1272,61 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
   if (PuttyExport)
   {
-    WRITE_DATA_EX(String, "Protocol", GetNormalizedPuttyProtocol(), );
-    WRITE_DATA(String, WinTitle);
+    WRITE_DATA_EX(String, "Protocol", GetNormalizedPuttyProtocol(), )
+    WRITE_DATA(String, WinTitle)
   }
 
   if (!PuttyExport)
   {
-    WRITE_DATA(String, SftpServer);
+    WRITE_DATA(String, SftpServer)
 
-  #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, MB_TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), );
-    WRITE_SFTP_BUG(Symlink);
-    WRITE_SFTP_BUG(SignedTS);
+  #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, MB_TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), )
+    WRITE_SFTP_BUG(Symlink)
+    WRITE_SFTP_BUG(SignedTS)
   #undef WRITE_SFTP_BUG
 
-    WRITE_DATA2(Integer, SFTPMaxVersion);
-    WRITE_DATA2(Integer, SFTPMaxPacketSize);
-    WRITE_DATA2(Integer, SFTPMinPacketSize);
-    WRITE_DATA2(Integer, SFTPDownloadQueue);
-    WRITE_DATA2(Integer, SFTPUploadQueue);
-    WRITE_DATA2(Integer, SFTPListingQueue);
-    WRITE_DATA3(Integer, SFTPRealPath);
+    WRITE_DATA2(Integer, SFTPMaxVersion)
+    WRITE_DATA2(Integer, SFTPMaxPacketSize)
+    WRITE_DATA2(Integer, SFTPMinPacketSize)
+    WRITE_DATA2(Integer, SFTPDownloadQueue)
+    WRITE_DATA2(Integer, SFTPUploadQueue)
+    WRITE_DATA2(Integer, SFTPListingQueue)
+    WRITE_DATA3(Integer, SFTPRealPath)
 
-    WRITE_DATA2(Integer, Color);
+    WRITE_DATA2(Integer, Color)
 
-    WRITE_DATA(Bool, Tunnel);
-    WRITE_DATA(String, TunnelHostName);
-    WRITE_DATA2(Integer, TunnelPortNumber);
-    WRITE_DATA4(String, TunnelUserName);
-    WRITE_DATA4(String, TunnelPublicKeyFile);
-    WRITE_DATA2(Integer, TunnelLocalPortNumber);
-    WRITE_DATA4(String, TunnelHostKey);
+    WRITE_DATA(Bool, Tunnel)
+    WRITE_DATA(String, TunnelHostName)
+    WRITE_DATA2(Integer, TunnelPortNumber)
+    WRITE_DATA4(String, TunnelUserName)
+    WRITE_DATA4(String, TunnelPublicKeyFile)
+    WRITE_DATA2(Integer, TunnelLocalPortNumber)
+    WRITE_DATA4(String, TunnelHostKey)
 
-    WRITE_DATA(Bool, FtpPasvMode);
-    WRITE_DATA_EX(Integer, "FtpForcePasvIp2", GetFtpForcePasvIp(), );
-    WRITE_DATA(Integer, FtpUseMlsd);
-    WRITE_DATA(String, FtpAccount);
-    WRITE_DATA2(Integer, FtpPingInterval);
-    WRITE_DATA(Integer, FtpPingType);
-    WRITE_DATA_EX(Integer, "FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately(), );
-    WRITE_DATA(Integer, Ftps);
-    WRITE_DATA(Integer, FtpListAll);
-    WRITE_DATA(Integer, FtpHost);
-    WRITE_DATA(Bool, FtpDupFF);
-    WRITE_DATA(Bool, FtpUndupFF);
-    WRITE_DATA3(Integer, FtpWorkFromCwd);
-    WRITE_DATA3(Bool, FtpAnyCodeForPwd);
-    WRITE_DATA(Bool, SslSessionReuse);
-    WRITE_DATA(String, TlsCertificateFile);
+    WRITE_DATA(Bool, FtpPasvMode)
+    WRITE_DATA_EX(Integer, "FtpForcePasvIp2", GetFtpForcePasvIp(), )
+    WRITE_DATA(Integer, FtpUseMlsd)
+    WRITE_DATA(String, FtpAccount)
+    WRITE_DATA2(Integer, FtpPingInterval)
+    WRITE_DATA(Integer, FtpPingType)
+    WRITE_DATA_EX(Integer, "FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately(), )
+    WRITE_DATA(Integer, Ftps)
+    WRITE_DATA(Integer, FtpListAll)
+    WRITE_DATA(Integer, FtpHost)
+    WRITE_DATA(Bool, FtpDupFF)
+    WRITE_DATA(Bool, FtpUndupFF)
+    WRITE_DATA3(Integer, FtpWorkFromCwd)
+    WRITE_DATA3(Bool, FtpAnyCodeForPwd)
+    WRITE_DATA(Bool, SslSessionReuse)
+    WRITE_DATA(String, TlsCertificateFile)
 
-    WRITE_DATA2(Integer, FtpProxyLogonType);
+    WRITE_DATA2(Integer, FtpProxyLogonType)
 
-    WRITE_DATA(Integer, MinTlsVersion);
-    WRITE_DATA(Integer, MaxTlsVersion);
+    WRITE_DATA(Integer, MinTlsVersion)
+    WRITE_DATA(Integer, MaxTlsVersion)
 
-    WRITE_DATA3(Bool, WebDavLiberalEscaping);
-    WRITE_DATA3(Bool, WebDavAuthLegacy);
+    WRITE_DATA3(Bool, WebDavLiberalEscaping)
+    WRITE_DATA3(Bool, WebDavAuthLegacy)
 
 #if 0
     WRITE_DATA(Bool, IsWorkspace);
@@ -1334,17 +1334,17 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA(String, NameOverride);
 #endif // #if 0
 
-    WRITE_DATA4(String, PuttySettings);
+    WRITE_DATA4(String, PuttySettings)
 
-    WRITE_DATA(String, CustomParam1);
-    WRITE_DATA(String, CustomParam2);
+    WRITE_DATA(String, CustomParam1)
+    WRITE_DATA(String, CustomParam2)
 
     if (!GetCodePage().IsEmpty())
     {
-      WRITE_DATA_EX(String, "CodePage", GetCodePage(), );
+      WRITE_DATA_EX(String, "CodePage", GetCodePage(), )
     }
-    WRITE_DATA_EX(Integer, "LoginType", GetLoginType(), );
-    WRITE_DATA_EX(Bool, "FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), );
+    WRITE_DATA_EX(Integer, "LoginType", GetLoginType(), )
+    WRITE_DATA_EX(Bool, "FtpAllowEmptyPassword", GetFtpAllowEmptyPassword(), )
   }
 
   // This is for collecting all keys for TSiteRawDialog::AddButtonClick.
@@ -1942,9 +1942,9 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
       }
     #define SAVE_PASSWORD(PROP, PLAIN_NAME, ENC_KEY) SAVE_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), ENC_KEY, !GetConfiguration()->DisablePasswordStoring)
 
-    SAVE_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", FProxyUsername + FProxyHost, true);
-    SAVE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain", FTunnelUserName + FTunnelHostName);
-    SAVE_PASSWORD_EX(EncryptKey, L"EncryptKeyPlain", L"EncryptKey", FUserName + FHostName, true);
+    SAVE_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", FProxyUsername + FProxyHost, true)
+    SAVE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain", FTunnelUserName + FTunnelHostName)
+    SAVE_PASSWORD_EX(EncryptKey, L"EncryptKeyPlain", L"EncryptKey", FUserName + FHostName, true)
   }
 }
 
