@@ -216,7 +216,7 @@ CFtpControlSocket::CFtpControlSocket(CMainThread *pMainThread, CFileZillaTools *
 
 CFtpControlSocket::~CFtpControlSocket()
 {
-  DoClose();
+  CFtpControlSocket::DoClose();
   if (m_pTransferSocket)
   {
     m_pTransferSocket->Close();
@@ -228,7 +228,7 @@ CFtpControlSocket::~CFtpControlSocket()
     delete m_pDataFile;
     m_pDataFile=0;
   }
-  Close();
+  CFtpControlSocket::Close();
 }
 
 void CFtpControlSocket::ShowStatus(UINT nID, int type) const

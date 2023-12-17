@@ -652,7 +652,7 @@ CAsyncSocketEx::CAsyncSocketEx()
 
 CAsyncSocketEx::~CAsyncSocketEx()
 {
-  Close();
+  CAsyncSocketEx::Close();
   FreeAsyncSocketExInstance();
 }
 

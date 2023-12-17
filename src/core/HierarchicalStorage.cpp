@@ -162,7 +162,7 @@ THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) noexc
   FStorage(AStorage)
 {
   // FStorage = AStorage;
-  SetAccessMode(smRead);
+  THierarchicalStorage::SetAccessMode(smRead);
   SetExplicit(false);
   ForceSave = false;
   // While this was implemented in 5.0 already, for some reason

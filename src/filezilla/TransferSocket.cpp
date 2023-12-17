@@ -78,7 +78,7 @@ CTransferSocket::~CTransferSocket()
   nb_free(m_pBuffer2);
 #endif
   GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), 0);
-  Close();
+  CTransferSocket::Close();
   RemoveAllLayers();
   delete m_pProxyLayer;
   delete m_pSslLayer;

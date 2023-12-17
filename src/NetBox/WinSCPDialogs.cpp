@@ -269,8 +269,8 @@ TTabButton::TTabButton(TTabbedDialog * Dialog) :
   TFarButton(OBJECT_CLASS_TTabButton, Dialog),
   FTab(0)
 {
-  SetCenterGroup(true);
-  SetOnClick(nb::bind(&TTabbedDialog::TabButtonClick, Dialog));
+  TFarButton::SetCenterGroup(true);
+  TFarButton::SetOnClick(nb::bind(&TTabbedDialog::TabButtonClick, Dialog));
 }
 
 void TTabButton::SetTabName(const UnicodeString & AValue)

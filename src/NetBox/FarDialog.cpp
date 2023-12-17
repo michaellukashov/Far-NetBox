@@ -31,7 +31,7 @@ public:
   virtual ~TIdleThread() noexcept override
   {
     SAFE_CLOSE_HANDLE(FEvent);
-    Terminate();
+    TIdleThread::Terminate();
     WaitFor();
   }
 
@@ -1103,7 +1103,7 @@ void TFarDialogItem::SetBounds(const TRect & Value)
   if (FBounds != Value)
   {
     FBounds = Value;
-    UpdateBounds();
+    TFarDialogItem::UpdateBounds();
   }
 }
 

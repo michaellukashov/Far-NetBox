@@ -9520,7 +9520,7 @@ TTerminalList::TTerminalList(TConfiguration * AConfiguration) noexcept :
 
 TTerminalList::~TTerminalList() noexcept
 {
-  DebugAssert(GetCount() == 0);
+  DebugAssert(TListBase::GetCount() == 0);
 }
 
 TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
