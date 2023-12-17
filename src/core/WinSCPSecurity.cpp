@@ -104,10 +104,7 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   UTF8String Result;
   if (Length >= 0)
   {
-    // if ((Flag == PWALG_SIMPLE_FLAG) || (Flag == PWALG_SIMPLE_INTERNAL) || (Flag == PWALG_SIMPLE_INTERNAL2))
-      Password.Delete(1, static_cast<int32_t>(SimpleDecryptNextChar(Password)) * 2);
-    // else
-      // Password.Delete(1, UnicodeKey.Length() * 2);
+    Password.Delete(1, static_cast<int32_t>(SimpleDecryptNextChar(Password)) * 2);
     for (int32_t Index = 0; Index < Length; Index++)
     {
       Result += static_cast<char>(SimpleDecryptNextChar(Password));
