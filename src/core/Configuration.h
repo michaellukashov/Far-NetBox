@@ -54,7 +54,7 @@ public:
 class TSshHostCAList
 {
 public:
-  TSshHostCAList();
+  TSshHostCAList() = default;
   explicit TSshHostCAList(const TSshHostCA::TList & List);
   TSshHostCAList & operator =(const TSshHostCAList & other);
   void Default();

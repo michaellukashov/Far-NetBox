@@ -78,13 +78,14 @@ void TSshHostCA::Save(THierarchicalStorage * Storage) const
 }
 
 
-TSshHostCAList::TSshHostCAList()
+/*TSshHostCAList::TSshHostCAList()
 {
-}
+}*/
 
-TSshHostCAList::TSshHostCAList(const TSshHostCA::TList & List)
+TSshHostCAList::TSshHostCAList(const TSshHostCA::TList & List) :
+  FList(List)
 {
-  FList = List;
+
 }
 
 void TSshHostCAList::Default()
