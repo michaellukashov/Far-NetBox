@@ -1007,7 +1007,7 @@ public:
 struct NB_CORE_EXPORT TSpaceAvailable
 {
   CUSTOM_MEM_ALLOCATION_IMPL
-  TSpaceAvailable();
+  TSpaceAvailable() = default;
 
   int64_t BytesOnDevice{0};
   int64_t UnusedBytesOnDevice{0};
