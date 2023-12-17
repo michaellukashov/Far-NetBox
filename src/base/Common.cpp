@@ -1184,7 +1184,7 @@ UnicodeString SystemTemporaryDirectory()
 {
   UnicodeString TempDir;
   TempDir.SetLength(nb::NB_MAX_PATH);
-  TempDir.SetLength(::GetTempPath(nb::NB_MAX_PATH, const_cast<LPWSTR>(TempDir.c_str())));
+  TempDir.SetLength(nb::ToInt32(::GetTempPath(nb::ToDWord(nb::NB_MAX_PATH), const_cast<LPWSTR>(TempDir.c_str()))));
   return TempDir;
 }
 
