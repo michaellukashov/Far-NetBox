@@ -2448,7 +2448,7 @@ static const TDateTimeParams *GetDateTimeParams(uint16_t Year)
 {
   TGuard Guard(DateTimeParamsSection); nb::used(Guard);
 
-  TDateTimeParams *Result;
+  TDateTimeParams * Result;
 
   const TYearlyDateTimeParams::iterator it = YearlyDateTimeParams.find(Year);
   if (it != YearlyDateTimeParams.end())
