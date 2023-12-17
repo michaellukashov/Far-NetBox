@@ -9466,7 +9466,7 @@ TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind) noexcept :
 }
 
 void TSecondaryTerminal::Init(
-  TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration,
+  gsl::not_null<TTerminal *> MainTerminal, gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration,
   const UnicodeString & AName, TActionLog * ActionLog)
 {
   FMainTerminal = MainTerminal;

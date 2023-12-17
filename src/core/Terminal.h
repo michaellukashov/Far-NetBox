@@ -884,7 +884,7 @@ public:
   explicit TSecondaryTerminal(TObjectClassId Kind) noexcept;
   virtual ~TSecondaryTerminal() noexcept override = default;
   void Init(
-    TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration,
+    gsl::not_null<TTerminal *> MainTerminal, gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration,
     const UnicodeString & Name, TActionLog * ActionLog);
 
   void UpdateFromMain();
