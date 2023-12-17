@@ -2524,9 +2524,9 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
       Prompt = FORMAT(GetMsg(NB_EXPORT_SESSIONS_PROMPT), PanelItems->GetCount());
     }
 
-    const bool AResult = (OpMode & OPM_SILENT) ||
+    const bool InputResult = (OpMode & OPM_SILENT) ||
       GetWinSCPPlugin()->InputBox(Title, Prompt, DestPath, 0, "Copy");
-    if (AResult)
+    if (InputResult)
     {
       TExportSessionParam Param;
       Param.DestPath = DestPath;
