@@ -65,9 +65,9 @@ bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directiv
     else
     {
       wchar_t Equal = L'=';
-      UnicodeString Whitespaces(L" \t");
-      UnicodeString Delimiters(Whitespaces + Equal);
-      int32_t P = FindDelimiter(Delimiters, Line);
+      const UnicodeString Whitespaces(L" \t");
+      const UnicodeString Delimiters(Whitespaces + Equal);
+      const int32_t P = FindDelimiter(Delimiters, Line);
       Result = (P > 0);
       if (Result)
       {
