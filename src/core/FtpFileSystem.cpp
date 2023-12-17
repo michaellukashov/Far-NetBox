@@ -1337,7 +1337,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
         {
           const UnicodeString Checksum = DoCalculateFileChecksum(Alg, File);
 
-          if (OnCalculatedChecksum)
+          if (!OnCalculatedChecksum.empty())
           {
             OnCalculatedChecksum(File->FileName, Alg, Checksum);
           }
@@ -3781,14 +3781,11 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int32_t Type)
   switch (Type)
   {
     case TFileZillaIntf::LOG_STATUS:
-     {
       FTerminal->Information(Status, true);
       LogType = llMessage;
-     }
-     break;
+      break;
 
     case TFileZillaIntf::LOG_COMMAND:
-      {
       if (Status == L"SYST")
       {
         // not to trigger the assert in HandleReplyStatus,
@@ -3812,13 +3809,11 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int32_t Type)
       {
         LogType = llInput;
       }
-      }
       break;
 
     case TFileZillaIntf::LOG_ERROR:
     case TFileZillaIntf::LOG_APIERROR:
     case TFileZillaIntf::LOG_WARNING:
-    {
       // when timeout message occurs, break loop waiting for response code
       // by setting dummy one
       if (Type == TFileZillaIntf::LOG_ERROR)
@@ -3842,7 +3837,6 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int32_t Type)
       // (such as "cannot open local file..." followed by "download failed")
       FLastError->Add(Status);
       LogType = llMessage;
-    }
       break;
 
     case TFileZillaIntf::LOG_PROGRESS:
