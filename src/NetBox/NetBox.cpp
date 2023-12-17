@@ -83,6 +83,7 @@ intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
     UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
     TStringList Lines;
     Lines.SetCommaText(Text);
+    // DEBUG_PRINTF("Lines.GetCount(): %d", Lines.GetCount());
     assert(Lines.GetCount() == 5);
 
     const UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
