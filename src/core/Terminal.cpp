@@ -9470,10 +9470,10 @@ void TSecondaryTerminal::Init(
   const UnicodeString & AName, TActionLog * ActionLog)
 {
   FMainTerminal = MainTerminal;
+  DebugAssert(FMainTerminal != nullptr);
   TTerminal::Init(ASessionData, AConfiguration, ActionLog);
   GetLog()->SetParent(FMainTerminal->GetLog(), AName);
   GetSessionData()->NonPersistent();
-  DebugAssert(FMainTerminal != nullptr);
   FMainTerminal->FSecondaryTerminals++;
   if (SessionData->FTunnelLocalPortNumber != 0)
   {
