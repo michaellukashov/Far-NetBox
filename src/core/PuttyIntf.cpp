@@ -1201,7 +1201,7 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_k
   char * CommentPtr = nullptr;
   const char * ErrorStr = nullptr;
   strbuf * PubBlobBuf = strbuf_new();
-  BinarySource Source[1];
+  BinarySource Source[1]{};
   BinarySource_BARE_INIT(Source, UtfLine.c_str(), UtfLine.Length());
   UnicodeString Result;
   if (!openssh_loadpub(Source, &AlgorithmName, BinarySink_UPCAST(PubBlobBuf), &CommentPtr, &ErrorStr))
