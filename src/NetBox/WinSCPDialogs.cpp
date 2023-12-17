@@ -3558,7 +3558,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // SFTP tab
 
 #define TRISTATE(COMBO, PROP, MSG) \
-      SessionData->Set##PROP(sb##PROP, static_cast<TAutoSwitch>(2 - COMBO->GetItemIndex()));
+      SessionData->Set##PROP(sb##PROP, static_cast<TAutoSwitch>(2 - (COMBO)->GetItemIndex()));
     // SFTP_BUGS();
     SessionData->SetSFTPBug(sbSymlink, static_cast<TAutoSwitch>(2 - SFTPBugSymlinkCombo->GetItemIndex()));
     SessionData->SetSFTPBug(sbSignedTS, static_cast<TAutoSwitch>(2 - SFTPBugSignedTSCombo->GetItemIndex()));
