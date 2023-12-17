@@ -44,7 +44,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TNamedObjectList) || TObjectList::is(Kind); }
 public:
   virtual int32_t GetCount() const override;
-  void SetCount(int32_t Value);
+  virtual void SetCount(int32_t Value) override;
   int32_t GetCountIncludingHidden() const;
   TNamedObject * GetSortObject(const UnicodeString & Name, int32_t & Position);
   virtual void Notify(TObject * Ptr, TListNotification Action) override;

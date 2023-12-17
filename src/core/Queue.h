@@ -19,7 +19,7 @@ public:
   virtual void Start();
   void WaitFor(uint32_t Milliseconds = INFINITE) const;
   virtual void Terminate() = 0;
-  void Close();
+  virtual void Close();
   bool IsFinished() const;
 
 protected:
