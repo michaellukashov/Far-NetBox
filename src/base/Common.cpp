@@ -1339,7 +1339,7 @@ UnicodeString ValidLocalFileName(
   if (AInvalidCharsReplacement != NoReplacement)
   {
     const bool ATokenReplacement = (AInvalidCharsReplacement == TokenReplacement);
-    const wchar_t *Chars = 
+    const wchar_t * Chars = 
       (ATokenReplacement ? ATokenizibleChars : ALocalInvalidChars).c_str();
     wchar_t * InvalidChar = ToWChar(FileName);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
