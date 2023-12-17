@@ -3485,7 +3485,7 @@ UnicodeString TSessionData::GetNormalizedPuttyProtocol() const
   return DefaultStr(GetPuttyProtocol(), PuttySshProtocol);
 }
 
-void TSessionData::SetPingIntervalDT(TDateTime Value)
+void TSessionData::SetPingIntervalDT(const TDateTime & Value)
 {
   uint16_t hour, min, sec, msec;
 
@@ -4236,7 +4236,7 @@ void TSessionData::GenerateAssemblyCode(
 }
 #endif // #if 0
 
-void TSessionData::SetTimeDifference(TDateTime value)
+void TSessionData::SetTimeDifference(const TDateTime & value)
 {
   SET_SESSION_PROPERTY(TimeDifference);
 }

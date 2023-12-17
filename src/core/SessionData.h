@@ -346,10 +346,10 @@ public:
   bool GetCanLogin() const;
   bool GetCanOpen() const;
   bool GetIsLocalBrowser() const;
-  void SetPingIntervalDT(TDateTime value);
+  void SetPingIntervalDT(const TDateTime & value);
   TDateTime GetPingIntervalDT() const;
   TDateTime GetFtpPingIntervalDT() const;
-  void SetTimeDifference(TDateTime value);
+  void SetTimeDifference(const TDateTime & value);
   void SetTimeDifferenceAuto(bool value);
   void SetPingType(TPingType value);
   UnicodeString GetSessionName() const;
