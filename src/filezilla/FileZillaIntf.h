@@ -13,17 +13,17 @@ class TFileZillaIntern;
 struct TRemoteFileTime
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  WORD Year;
-  WORD Month;
-  WORD Day;
-  WORD Hour;
-  WORD Minute;
-  WORD Second;
-  bool HasTime;
-  bool HasYear;
-  bool HasSeconds;
-  bool HasDate;
-  bool Utc;
+  WORD Year{0};
+  WORD Month{0};
+  WORD Day{0};
+  WORD Hour{0};
+  WORD Minute{0};
+  WORD Second{0};
+  bool HasTime{false};
+  bool HasYear{false};
+  bool HasSeconds{false};
+  bool HasDate{false};
+  bool Utc{false};
 };
 
 struct TListDataEntry
@@ -38,7 +38,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int64_t Size{0};
   bool Dir{false};
   bool Link{false};
-  TRemoteFileTime Time;
+  TRemoteFileTime Time{};
   const wchar_t * LinkTarget{nullptr};
 };
 
