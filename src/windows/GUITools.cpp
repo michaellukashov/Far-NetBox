@@ -310,7 +310,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyPasswordThread) || TObject::is(Kind); }
 public:
   TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName);
-  virtual ~TPuttyPasswordThread();
+  virtual ~TPuttyPasswordThread() override;
   void InitPuttyPasswordThread();
 
 protected:
