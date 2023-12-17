@@ -246,12 +246,12 @@ protected:
 public:
   virtual TStorage GetStorage() const;
   virtual void Changed() override;
-  virtual void SaveData(THierarchicalStorage * Storage, bool All);
-  virtual void LoadData(THierarchicalStorage * Storage);
-  virtual void LoadFrom(THierarchicalStorage * Storage);
+  virtual void SaveData(THierarchicalStorage * AStorage, bool All);
+  virtual void LoadData(THierarchicalStorage * AStorage);
+  virtual void LoadFrom(THierarchicalStorage * AStorage);
   virtual void CopyData(THierarchicalStorage * Source, THierarchicalStorage * Target);
   virtual void LoadAdmin(THierarchicalStorage * Storage);
-  void LoadSshHostCAList(TSshHostCAList * SshHostCAList, THierarchicalStorage * Storage);
+  void LoadSshHostCAList(TSshHostCAList * SshHostCAList, THierarchicalStorage * AStorage);
   virtual UnicodeString GetDefaultKeyFile() const;
   virtual void Saved();
   void CleanupRegistry(const UnicodeString & RegistryPath);

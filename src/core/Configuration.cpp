@@ -388,8 +388,8 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
-    { try__finally { BLOCK } __finally { Storage->CloseSubKeyPath(); } end_try__finally }
+  if (AStorage->OpenSubKeyPath(KEY, CANCREATE)) \
+    { try__finally { BLOCK } __finally { AStorage->CloseSubKeyPath(); } end_try__finally }
 #undef KEY4
 #undef KEY3
 #undef KEY2
@@ -446,24 +446,24 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEYEX(String,PermanentActionsLogFileName, ActionsLogFileName); \
   )
 
-void TConfiguration::SaveData(THierarchicalStorage *Storage, bool /*All*/)
+void TConfiguration::SaveData(THierarchicalStorage * AStorage, bool /*All*/)
 {
-#define KEYEX(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
-#define KEYEX2(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
-#define KEYEX3(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(Get ## VAR()))
-#define KEYEX4(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(F ## VAR))
-#define KEYEX5(TYPE, NAME, VAR) Storage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
-  REGCONFIG(true);
+#define KEYEX(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
+#define KEYEX2(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
+#define KEYEX3(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(Get ## VAR()))
+#define KEYEX4(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(F ## VAR))
+#define KEYEX5(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
+  REGCONFIG(true)
 #undef KEYEX5
 #undef KEYEX4
 #undef KEYEX3
 #undef KEYEX2
 #undef KEYEX
 
-  if (Storage->OpenSubKey("Usage", true))
+  if (AStorage->OpenSubKey("Usage", true))
   {
-    FUsage->Save(Storage);
-    Storage->CloseSubKey();
+    FUsage->Save(AStorage);
+    AStorage->CloseSubKey();
   }
 }
 
@@ -628,13 +628,13 @@ void TConfiguration::Import(const UnicodeString & /*AFileName*/)
   FDontSave = true;
 }
 
-void TConfiguration::LoadData(THierarchicalStorage * Storage)
+void TConfiguration::LoadData(THierarchicalStorage * AStorage)
 {
-#define KEYEX(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
-#define KEYEX2(TYPE, NAME, VAR) VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
-#define KEYEX3(TYPE, NAME, VAR) Set ## VAR(Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(Get ## VAR())))
-#define KEYEX4(TYPE, NAME, VAR) F ## VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(F ## VAR))
-#define KEYEX5(TYPE, NAME, VAR) F ## VAR = Storage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
+#define KEYEX(TYPE, NAME, VAR) Set ## VAR(AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
+#define KEYEX2(TYPE, NAME, VAR) VAR = AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
+#define KEYEX3(TYPE, NAME, VAR) Set ## VAR(AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(Get ## VAR())))
+#define KEYEX4(TYPE, NAME, VAR) F ## VAR = AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(F ## VAR))
+#define KEYEX5(TYPE, NAME, VAR) F ## VAR = AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
   REGCONFIG(false);
 #undef KEYEX5
 #undef KEYEX4
@@ -642,10 +642,10 @@ void TConfiguration::LoadData(THierarchicalStorage * Storage)
 #undef KEYEX2
 #undef KEYEX
 
-  if (Storage->OpenSubKey("Usage", false))
+  if (AStorage->OpenSubKey("Usage", false))
   {
-    FUsage->Load(Storage);
-    Storage->CloseSubKey();
+    FUsage->Load(AStorage);
+    AStorage->CloseSubKey();
   }
 
   if (FPermanentLogActions && FPermanentActionsLogFileName.IsEmpty() &&
@@ -665,23 +665,23 @@ void TConfiguration::LoadAdmin(THierarchicalStorage * Storage)
   FDefaultCollectUsage = Storage->ReadBool("DefaultCollectUsage", FDefaultCollectUsage);
 }
 
-void TConfiguration::LoadSshHostCAList(TSshHostCAList * SshHostCAList, THierarchicalStorage * Storage)
+void TConfiguration::LoadSshHostCAList(TSshHostCAList * SshHostCAList, THierarchicalStorage * AStorage)
 {
-  if (Storage->OpenSubKey(SshHostCAsKey, false))
+  if (AStorage->OpenSubKey(SshHostCAsKey, false))
   {
-    SshHostCAList->Load(Storage);
-    Storage->CloseSubKey();
+    SshHostCAList->Load(AStorage);
+    AStorage->CloseSubKey();
   }
 }
 
-void TConfiguration::LoadFrom(THierarchicalStorage * Storage)
+void TConfiguration::LoadFrom(THierarchicalStorage * AStorage)
 {
-  if (Storage->OpenSubKey(GetConfigurationSubKey(), false))
+  if (AStorage->OpenSubKey(GetConfigurationSubKey(), false))
   {
-    LoadData(Storage);
-    Storage->CloseSubKey();
+    LoadData(AStorage);
+    AStorage->CloseSubKey();
   }
-  LoadSshHostCAList(FSshHostCAList.get(), Storage);
+  LoadSshHostCAList(FSshHostCAList.get(), AStorage);
 }
 
 UnicodeString TConfiguration::GetRegistryStorageOverrideKey() const
@@ -763,7 +763,8 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 
       for (int32_t Index = 0; Index < Names->GetCount(); ++Index)
       {
-        Target->WriteBinaryData(Names->GetString(Index), Source->ReadBinaryData(Names->GetString(Index)));
+        UnicodeString Name = Names->GetString(Index);
+        Target->WriteBinaryData(Name, Source->ReadBinaryData(Name));
       }
 
       Target->CloseSubKey();
