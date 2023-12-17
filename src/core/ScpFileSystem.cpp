@@ -1121,7 +1121,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       }
       else
       {
-        bool Empty = true;
+        bool Empty = false;
         if (ListCurrentDirectory)
         {
           // Empty file list -> probably "permission denied", we
