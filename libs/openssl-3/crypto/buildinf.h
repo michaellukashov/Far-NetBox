@@ -12,11 +12,11 @@
 
 #if defined(_WIN64) || defined(OPENSSL_SYS_WIN64)
 #define PLATFORM "platform: VC-WIN64A"
-#define DATE "built on: Sat Nov 25 14:01:17 2023 UTC"
 #else
 #define PLATFORM "platform: VC-WIN32"
-#define DATE "built on: Sat Dec  2 19:26:24 2023 UTC"
 #endif
+#define DATE "built on: Sun Dec 17 09:10:48 2023 UTC"
+
 /*
  * Generate compiler_flags as an array of individual characters. This is a
  * workaround for the situation where CFLAGS gets too long for a C90 string
