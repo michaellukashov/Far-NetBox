@@ -9563,18 +9563,19 @@ void TTerminalList::RecryptPasswords()
   }
 }
 
+#if 0
 
 TLocalFileHandle::TLocalFileHandle() noexcept
 {
-#if 0
   Handle = 0;
   Attrs = 0;
   MTime = 0;
   ATime = 0;
   Size = 0;
   Directory = false;
-#endif // #if 0
 }
+
+#endif // #if 0
 
 TLocalFileHandle::~TLocalFileHandle() noexcept
 {

@@ -1160,7 +1160,7 @@ private:
 
 struct TLocalFileHandle
 {
-  TLocalFileHandle() noexcept;
+  TLocalFileHandle() noexcept = default;
   ~TLocalFileHandle() noexcept;
 
   void Dismiss();
