@@ -11,24 +11,24 @@
 #include <Xml.XMLIntf.hpp>
 
 enum TCipher { cipWarn, cip3DES, cipBlowfish, cipAES, cipDES, cipArcfour, cipChaCha20, cipAESGCM, cipCount };
-#define CIPHER_COUNT (cipCount)
+constexpr int32_t CIPHER_COUNT = cipCount;
 // explicit values to skip obsoleted fsExternalSSH, fsExternalSFTP
 enum TFSProtocol { fsSCPonly = 0, fsSFTP = 1, fsSFTPonly = 2, fsFTP = 5, fsWebDAV = 6, fsS3 = 7 };
-#define FSPROTOCOL_COUNT (fsS3+1)
+constexpr int32_t FSPROTOCOL_COUNT = fsS3 + 1;
 constexpr const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 enum TProxyMethod { pmNone, pmSocks4, pmSocks5, pmHTTP, pmTelnet, pmCmd };
 enum TKex { kexWarn, kexDHGroup1, kexDHGroup14, kexDHGroup15, kexDHGroup16, kexDHGroup17, kexDHGroup18, kexDHGEx, kexRSA, kexECDH, kexNTRUHybrid, kexCount };
-#define KEX_COUNT (kexCount)
+constexpr int32_t KEX_COUNT = kexCount;
 enum THostKey { hkWarn, hkRSA, hkDSA, hkECDSA, hkED25519, hkED448, hkCount };
-#define HOSTKEY_COUNT (hkCount)
+constexpr int32_t HOSTKEY_COUNT = hkCount;
 enum TGssLib { gssGssApi32, gssSspi, gssCustom };
-#define GSSLIB_COUNT (gssCustom+1)
+constexpr int32_t GSSLIB_COUNT = gssCustom + 1;
 // names have to match PuTTY registry entries (see settings.c)
 enum TSshBug { sbHMAC2, sbDeriveKey2, sbRSAPad2,
   sbPKSessID2, sbRekey2, sbMaxPkt2, sbIgnore2, sbOldGex2, sbWinAdj, sbChanReq };
-#define BUG_COUNT (sbChanReq+1)
+constexpr int32_t BUG_COUNT = sbChanReq + 1;
 enum TSftpBug { sbSymlink, sbSignedTS };
-#define SFTP_BUG_COUNT (sbSignedTS+1)
+constexpr int32_t SFTP_BUG_COUNT = sbSignedTS + 1;
 constexpr const wchar_t * PingTypeNames = L"Off;Null;Dummy";
 enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
 enum TAddressFamily { afAuto, afIPv4, afIPv6 };
