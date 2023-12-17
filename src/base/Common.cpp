@@ -2740,9 +2740,9 @@ bool TryStrToDateTimeStandard(const UnicodeString & S, TDateTime & Value)
   return TryStrToDateTime(S, Value, FormatSettings);
 }
 
-constexpr wchar_t KiloSize = L'K';
-constexpr wchar_t MegaSize = L'M';
-constexpr wchar_t GigaSize = L'G';
+constexpr const wchar_t KiloSize = L'K';
+constexpr const wchar_t MegaSize = L'M';
+constexpr const wchar_t GigaSize = L'G';
 
 // Keep consistent with parse_blocksize
 bool TryStrToSize(const UnicodeString & ASizeStr, int64_t & ASize)
@@ -3789,7 +3789,7 @@ static OSVERSIONINFO GetWindowsVersion()
 bool IsWin10Build(uint32_t BuildNumber)
 {
   // It might be enough to check the dwBuildNumber, as we do in TWinConfiguration::IsDDExtBroken()
-  OSVERSIONINFO OSVersionInfo = GetWindowsVersion();
+  const OSVERSIONINFO OSVersionInfo = GetWindowsVersion();
   return
     (OSVersionInfo.dwMajorVersion > 10) ||
     ((OSVersionInfo.dwMajorVersion == 10) && (OSVersionInfo.dwMinorVersion > 0)) ||
