@@ -2768,10 +2768,10 @@ bool TryStrToSize(const UnicodeString & ASizeStr, int64_t & ASize)
         {
           case GigaSize:
             ASize *= 1024;
-            // fallthru
+            [[fallthrough]];
           case MegaSize:
             ASize *= 1024;
-            // fallthru
+            [[fallthrough]];
           case KiloSize:
             ASize *= 1024;
             break;
