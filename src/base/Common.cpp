@@ -2005,7 +2005,7 @@ UnicodeString DisplayableStr(const RawByteString & Str)
           break;
 
         default:
-          Result += wchar_t(Str[Index2]);
+          Result += static_cast<wchar_t>(Str[Index2]);
           break;
       }
     }
@@ -3227,7 +3227,7 @@ int32_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
 
 int32_t TimeToMSec(const TDateTime & T)
 {
-  return nb::ToInt32(Round(double(T) * double(MSecsPerDay)));
+  return nb::ToInt32(Round(static_cast<double>(T) * static_cast<double>(MSecsPerDay)));
 }
 
 int32_t TimeToSeconds(const TDateTime & T)
