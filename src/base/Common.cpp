@@ -3309,7 +3309,6 @@ static bool DoRecursiveDeleteFile(
   {
     SHFILEOPSTRUCT Data;
 
-    // memset(&Data, 0, sizeof(Data));
     nb::ClearStruct(Data);
     Data.hwnd = nullptr;
     Data.wFunc = FO_DELETE;
