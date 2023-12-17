@@ -844,19 +844,19 @@ public:
 
     if (GetType() == SSH_FXP_ATTRS || Version >= 4 || ParsingFailed)
     {
-      wchar_t Type = FILETYPE_DEFAULT;
+      wchar_t AType = FILETYPE_DEFAULT;
       if (FLAGSET(Flags, SSH_FILEXFER_ATTR_PERMISSIONS))
       {
         AFile->GetRightsNotConst()->SetNumber(static_cast<uint16_t>(Permissions & TRights::rfAllSpecials));
         if (FLAGSET(Permissions, TRights::rfDirectory))
         {
-          Type = FILETYPE_DIRECTORY;
+          AType = FILETYPE_DIRECTORY;
         }
       }
 
       if (Version < 4)
       {
-        AFile->SetType(Type);
+        AFile->SetType(AType);
       }
     }
 

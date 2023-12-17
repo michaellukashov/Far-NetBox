@@ -2361,16 +2361,16 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
           bool Match = false;
           // Comparison optimizations as this is called many times
           // e.g. when updating jumplist
-          UnicodeString Name = AData->GetName();
-          if ((Name.Length() == DecodedUrl.Length()) &&
-               SameText(Name, DecodedUrl))
+          UnicodeString AName = AData->GetName();
+          if ((AName.Length() == DecodedUrl.Length()) &&
+               SameText(AName, DecodedUrl))
           {
             Match = true;
           }
-          else if ((Name.Length() < DecodedUrl.Length()) &&
+          else if ((AName.Length() < DecodedUrl.Length()) &&
                    // (DecodedUrl[Name.Length() + 1] == L'/') &&
                    // StrLIComp is an equivalent of SameText
-                   (nb::StrLIComp(Name.c_str(), DecodedUrl.c_str(), Name.Length()) == 0))
+                   (nb::StrLIComp(AName.c_str(), DecodedUrl.c_str(), AName.Length()) == 0))
           {
             Match = true;
           }
