@@ -1076,7 +1076,7 @@ private:
 
 class TQueueFileList;
 
-class TParallelOperation : public TObject
+class TParallelOperation final : public TObject
 {
 public:
   TParallelOperation() = delete;
