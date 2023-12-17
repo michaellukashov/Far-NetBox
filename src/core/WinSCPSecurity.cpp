@@ -26,7 +26,7 @@ RawByteString SimpleEncryptChar(uint8_t Ch)
 
 uint8_t SimpleDecryptNextChar(RawByteString & Str)
 {
-  if (Str.Length() > 0)
+  if (Str.Length() >= 2)
   {
     const RawByteString PwStr(PWALG_SIMPLE_STRING);
     const uint8_t Result = static_cast<uint8_t>(
