@@ -1350,7 +1350,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   // This is for collecting all keys for TSiteRawDialog::AddButtonClick.
   // It should be enough to test for (Default == nullptr),
   // the DoNotEncryptPasswords and PuttyExport were added to limit a possible unintended impact.
-  bool SaveAll = (Default == nullptr) && DoNotEncryptPasswords && !PuttyExport;
+  const bool SaveAll = (Default == nullptr) && DoNotEncryptPasswords && !PuttyExport;
 
   SavePasswords(Storage, PuttyExport, DoNotEncryptPasswords, SaveAll);
 
@@ -1690,7 +1690,7 @@ bool OpensshBoolValue(const UnicodeString & Value)
 
 UnicodeString CutOpensshToken(UnicodeString & S)
 {
-  const wchar_t NoQuote = L'\0';
+  constexpr wchar_t NoQuote = L'\0';
   wchar_t Quote = NoQuote;
   UnicodeString Result;
   int32_t P = 1;
@@ -1762,7 +1762,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
         while (!Args.IsEmpty())
         {
           UnicodeString M = CutOpensshToken(Args);
-          bool Negated = DebugAlwaysTrue(!M.IsEmpty()) && (M[1] == L'!');
+          const bool Negated = DebugAlwaysTrue(!M.IsEmpty()) && (M[1] == L'!');
           if (Negated)
           {
             M.Delete(1, 1);
