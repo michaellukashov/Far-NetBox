@@ -3186,8 +3186,7 @@ void TSFTPFileSystem::DoStartup()
   FSupportsStatVfsV2 = false;
   FSupportsHardlink = false;
   bool SupportsLimits = false;
-  FFixedPaths.release();
-  // OpenSSH announce extensions directly in the SSH_FXP_VERSION packet only.
+  FFixedPaths.reset();
   // OpenSSH announce extensions directly in the SSH_FXP_VERSION packet only.
   // Bitvise uses "supported2" extension for some (mostly the standard ones) and SSH_FXP_VERSION for other.
   // ProFTPD uses "supported2" extension for the standard extensions. And repeats them along with non-standard in the SSH_FXP_VERSION.
