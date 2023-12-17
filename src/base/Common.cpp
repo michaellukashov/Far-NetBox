@@ -1327,7 +1327,7 @@ static wchar_t * ReplaceChar(
 //  Note similar function MakeValidFileName
 UnicodeString ValidLocalFileName(const UnicodeString & AFileName)
 {
-  return ValidLocalFileName(AFileName, L'_', L"", LOCAL_INVALID_CHARS);
+  return ValidLocalFileName(AFileName, L'-', L"", LOCAL_INVALID_CHARS);
 }
 
 UnicodeString ValidLocalFileName(
