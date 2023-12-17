@@ -136,12 +136,13 @@ bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName) const
   return Result;
 }
 
+#if 0
+
 TSpaceAvailable::TSpaceAvailable()
 {
   // memset(this, 0, sizeof(*this));
 }
 
-#if 0
 TOverwriteFileParams::TOverwriteFileParams()
 {
   SourceSize = 0;
@@ -1336,7 +1337,7 @@ TTerminal::~TTerminal() noexcept
   }
   else
   {
-    FActionLog.release();
+    nb::used(FActionLog.release());
   }
 #if defined(__BORLANDC__)
   delete FFiles;
@@ -1434,7 +1435,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & APath,
 
 bool TTerminal::GetActive() const
 {
-  return (this != nullptr) && (FFileSystem != nullptr) && FFileSystem->GetActive();
+  return (FFileSystem != nullptr) && FFileSystem->GetActive();
 }
 
 void TTerminal::Close()
@@ -1740,7 +1741,7 @@ void TTerminal::InitFileSystem()
         FFSProtocol = cfsSCP;
         FFileSystem = std::make_unique<TSCPFileSystem>(this);
         FFileSystem->Init(FSecureShell.release());
-        FSecureShell = nullptr; // ownership passed
+        // FSecureShell = nullptr; // ownership passed
         LogEvent("Using SCP protocol.");
       }
       else
@@ -1748,7 +1749,7 @@ void TTerminal::InitFileSystem()
         FFSProtocol = cfsSFTP;
         FFileSystem = std::make_unique<TSFTPFileSystem>(this);
         FFileSystem->Init(FSecureShell.release());
-        FSecureShell = nullptr; // ownership passed
+        // FSecureShell = nullptr; // ownership passed
         LogEvent("Using SFTP protocol.");
       }
     }
@@ -3695,7 +3696,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         DoReadDirectoryProgress(-1, 0, Cancel);
         FReadingCurrentDirectory = false;
         std::unique_ptr<TRemoteDirectory> OldFiles(FFiles.release());
-        FFiles.reset(Files.release());
+        FFiles = std::move(Files);
         try__finally
         {
           DoReadDirectory(ReloadOnly);

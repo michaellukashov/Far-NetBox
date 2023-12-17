@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 #include <limits>
-#include <stdarg.h>
+// #include <stdarg.h>
 #include <math.h>
 #include <fstream>
 
@@ -199,7 +199,7 @@ public:
     FList[Index] = Item;
   }
 
-  virtual int32_t Add(O * Value)
+  int32_t Add(O * Value)
   {
     const int32_t Result = nb::ToInt32(FList.size());
     FList.push_back(Value);

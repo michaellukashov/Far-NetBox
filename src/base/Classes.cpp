@@ -515,9 +515,7 @@ int32_t StringListCompareStrings(TStringList * List, int32_t Index1, int32_t Ind
 }
 
 TStringList::TStringList(TObjectClassId Kind) noexcept :
-  TStrings(Kind),
-  FSorted(false),
-  FCaseSensitive(false)
+  TStrings(Kind)
 {
   SetOwnsObjects(false);
 }
@@ -1213,8 +1211,7 @@ TFileStream::~TFileStream()
 }
 
 TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
-  THandleStream(AHandle),
-  FSource(nullptr)
+  THandleStream(AHandle)
 {
 }
 
@@ -1256,11 +1253,7 @@ int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
   return Result;
 }
 
-TMemoryStream::TMemoryStream() noexcept :
-  FMemory(nullptr),
-  FSize(0),
-  FPosition(0),
-  FCapacity(0)
+TMemoryStream::TMemoryStream() noexcept
 {
 }
 
@@ -1479,11 +1472,7 @@ class ERegistryException final : public std::exception
 {
 };
 
-TRegistry::TRegistry() noexcept :
-  FCurrentKey(nullptr),
-  FRootKey(nullptr),
-  FCloseRootKey(false),
-  FAccess(KEY_ALL_ACCESS)
+TRegistry::TRegistry() noexcept
 {
   SetRootKey(HKEY_CURRENT_USER);
   SetAccess(KEY_ALL_ACCESS);

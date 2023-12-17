@@ -344,7 +344,7 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const
 ExtException::ExtException(const UnicodeString & Msg, const UnicodeString & MoreMessages,
   const UnicodeString & HelpKeyword) :
   Exception(OBJECT_CLASS_ExtException, Msg),
-  FHelpKeyword(std::move(HelpKeyword))
+  FHelpKeyword(HelpKeyword)
 {
   if (!MoreMessages.IsEmpty())
   {
@@ -480,15 +480,13 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg,
 }
 
 EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
-  ExtException(OBJECT_CLASS_EFatal, Msg, E, HelpKeyword),
-  FReopenQueried(false)
+  ExtException(OBJECT_CLASS_EFatal, Msg, E, HelpKeyword)
 {
   Init(E);
 }
 
 EFatal::EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
-  ExtException(Kind, Msg, E, HelpKeyword),
-  FReopenQueried(false)
+  ExtException(Kind, Msg, E, HelpKeyword)
 {
   Init(E);
 }

@@ -2068,7 +2068,7 @@ TRemoteDirectoryChangesCache::TRemoteDirectoryChangesCache(int32_t MaxSize) noex
   TStringList(),
   FMaxSize(MaxSize)
 {
-  SetCaseSensitive(true);
+  TStringList::SetCaseSensitive(true);
 }
 
 void TRemoteDirectoryChangesCache::Clear()
@@ -2264,7 +2264,6 @@ TRights::TRights(uint16_t ANumber) noexcept
   FAllowUndef = false;
   FSet = 0;
   FUnset = 0;
-  Number = ANumber;
 }
 
 TRights::TRights(const TRights & Source) noexcept
