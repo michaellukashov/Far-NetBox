@@ -456,7 +456,7 @@ UnicodeString SysErrorMessageForError(int32_t LastError)
 
 UnicodeString LastSysErrorMessage()
 {
-  return SysErrorMessageForError(GetLastError());
+  return SysErrorMessageForError(nb::ToInt32(GetLastError()));
 }
 
 EOSExtException::EOSExtException() :
