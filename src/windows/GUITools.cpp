@@ -1771,18 +1771,19 @@ TLocalCustomCommand::TLocalCustomCommand() noexcept
 }
 
 TLocalCustomCommand::TLocalCustomCommand(
-    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & LocalPath) noexcept :
-  TFileCustomCommand(Data, RemotePath)
+    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & ALocalPath) noexcept :
+  TFileCustomCommand(Data, RemotePath),
+  FLocalPath(ALocalPath)
 {
-  FLocalPath = LocalPath;
+
 }
 
 TLocalCustomCommand::TLocalCustomCommand(const TCustomCommandData & Data,
-  const UnicodeString & RemotePath, const UnicodeString & LocalPath, const UnicodeString & FileName,
+  const UnicodeString & RemotePath, const UnicodeString & ALocalPath, const UnicodeString & FileName,
   const UnicodeString & LocalFileName, const UnicodeString & FileList) noexcept :
-  TFileCustomCommand(Data, RemotePath, FileName, FileList)
+  TFileCustomCommand(Data, RemotePath, FileName, FileList),
+  FLocalPath(ALocalPath)
 {
-  FLocalPath = LocalPath;
   FLocalFileName = LocalFileName;
 }
 

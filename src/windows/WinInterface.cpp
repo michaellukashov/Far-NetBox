@@ -1108,11 +1108,11 @@ bool TCustomCommandPromptsDialog::Execute(TUnicodeStringVector & Values)
 
 
 TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
-  TCustomCommand * ChildCustomCommand, const UnicodeString & CustomCommandName, const UnicodeString & HelpKeyword) noexcept :
-  TInteractiveCustomCommand(ChildCustomCommand)
+  TCustomCommand * ChildCustomCommand, const UnicodeString & CustomCommandName, const UnicodeString & AHelpKeyword) noexcept :
+  TInteractiveCustomCommand(ChildCustomCommand),
+  FHelpKeyword(AHelpKeyword)
 {
   FCustomCommandName = StripEllipsis(StripHotkey(CustomCommandName));
-  FHelpKeyword = HelpKeyword;
 }
 
 void TWinInteractiveCustomCommand::PatternHint(int32_t Index, const UnicodeString & Pattern)

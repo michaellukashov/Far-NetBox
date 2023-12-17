@@ -640,7 +640,7 @@ class TWinInteractiveCustomCommand : public TInteractiveCustomCommand
   TWinInteractiveCustomCommand() = delete;
 public:
   explicit TWinInteractiveCustomCommand(
-    TCustomCommand * ChildCustomCommand, const UnicodeString & CustomCommandName, const UnicodeString & HelpKeyword) noexcept;
+    TCustomCommand * ChildCustomCommand, const UnicodeString & CustomCommandName, const UnicodeString & AHelpKeyword) noexcept;
 
 protected:
   virtual void Prompt(int32_t Index, const UnicodeString & Prompt,

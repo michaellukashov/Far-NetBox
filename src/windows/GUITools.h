@@ -77,9 +77,9 @@ class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
 public:
   TLocalCustomCommand() noexcept;
   explicit TLocalCustomCommand(
-    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & LocalPath) noexcept;
+    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & ALocalPath) noexcept;
   explicit TLocalCustomCommand(
-    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & LocalPath,
+    const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & ALocalPath,
     const UnicodeString & AFileName, const UnicodeString & LocalFileName,
     const UnicodeString & FileList) noexcept;
   virtual ~TLocalCustomCommand() = default;
