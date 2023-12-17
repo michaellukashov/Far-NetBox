@@ -972,7 +972,7 @@ LCID TGUIConfiguration::InternalLocale()
   void * FileInfo = GetApplicationInfo();
   if (FileInfo && GetTranslationCount(FileInfo) > 0)
   {
-    TTranslation Translation = GetTranslation(FileInfo, 0);
+    const TTranslation Translation = GetTranslation(FileInfo, 0);
     Result = MAKELANGID(PRIMARYLANGID(Translation.Language), SUBLANG_DEFAULT);
     FreeFileInfo(FileInfo);
   }
