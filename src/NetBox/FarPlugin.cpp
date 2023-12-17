@@ -1220,7 +1220,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
     {
       Items->SetObj(Selected, ToObj(nb::ToIntPtr(Items->GetObj(Selected)) & ~MIF_SELECTED));
     }
-    Items->SetObj(nb::ToInt32(Result), ToObj(nb::ToIntPtr(Items->GetObj(Result)) | MIF_SELECTED));
+    Items->SetObj(nb::ToInt32(Result), ToObj(nb::ToIntPtr(Items->GetObj(nb::ToInt32(Result))) | MIF_SELECTED));
   }
   else
   {
