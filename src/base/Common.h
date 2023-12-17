@@ -250,7 +250,7 @@ struct NB_CORE_EXPORT TSearchRecChecked : public TSearchRecSmart
 };
 struct NB_CORE_EXPORT TSearchRecOwned : public TSearchRecChecked
 {
-  ~TSearchRecOwned() noexcept;
+  virtual ~TSearchRecOwned() noexcept override;
   void Close();
 };
 NB_CORE_EXPORT DWORD FindCheck(DWORD Result, const UnicodeString & APath);

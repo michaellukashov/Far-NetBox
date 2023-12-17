@@ -3246,7 +3246,7 @@ static bool DoRecursiveDeleteFile(
   bool Result;
   Deleted = 0;
 
-  const UnicodeString ErrorPath = AFileName;
+  const UnicodeString & ErrorPath = AFileName;
 
   if (!ToRecycleBin)
   {
