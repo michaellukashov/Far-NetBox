@@ -429,7 +429,7 @@ void TFTPFileSystem::Open()
       FileZillaImpl->SetDebugLevel(LogLevel);
 
       FileZillaImpl->Init();
-      FFileZillaIntf.reset(FileZillaImpl.release());
+      FFileZillaIntf = std::move(FileZillaImpl);
     }
     __catch__removed
     {
