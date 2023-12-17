@@ -303,7 +303,7 @@ void TPuttyCleanupThread::DoSchedule()
 }
 
 NB_DEFINE_CLASS_ID(TPuttyPasswordThread);
-class TPuttyPasswordThread : public TSimpleThread
+class TPuttyPasswordThread final : public TSimpleThread
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyPasswordThread); }
