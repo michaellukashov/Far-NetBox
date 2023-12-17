@@ -703,9 +703,8 @@ int32_t UnicodeString::FindFirstOf(const wchar_t * Str, int32_t Offset) const
 {
   if (!Str || !*Str)
     return nb::NPOS;
-  // int32_t Length = wstring_t::StringLength(Str);
   const wstring_t String = Data.Mid(Offset);
-  const int32_t Res = String.FindOneOf(String);
+  const int32_t Res = String.FindOneOf(Str);
   if (Res != -1)
     return Res + Offset;
   return nb::NPOS;
