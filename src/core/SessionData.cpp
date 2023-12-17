@@ -722,7 +722,7 @@ bool TSessionData::IsSameSite(const TSessionData * Other) const
   return
     // Particularly when handling /refresh,
     // fsSFTPonly sites when compared against sftp:// URLs (fsSFTP) have to match.
-    // But similarly also falled back SCP sites.
+    // But similarly also fallback SCP sites.
     (NormalizeFSProtocol(GetFSProtocol()) == NormalizeFSProtocol(Other->GetFSProtocol())) &&
     (GetHostName() == Other->GetHostName()) &&
     (GetPortNumber() == Other->GetPortNumber()) &&
