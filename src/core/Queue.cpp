@@ -1333,7 +1333,7 @@ void TTerminalItem::InitTerminalItem(int32_t Index)
 
 TTerminalItem::~TTerminalItem() noexcept
 {
-  Close();
+  TSimpleThread::Close();
 
   DebugAssert(FItem == nullptr);
   SAFE_DESTROY(FTerminal);
@@ -2599,7 +2599,7 @@ void TTerminalThread::InitTerminalThread()
 
 TTerminalThread::~TTerminalThread() noexcept
 {
-  Close();
+  TSimpleThread::Close();
 
   SAFE_CLOSE_HANDLE(FActionEvent);
 
