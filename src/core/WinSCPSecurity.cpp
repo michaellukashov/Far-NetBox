@@ -45,19 +45,19 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
 
   RawByteString Result;
 
-  if (!::RandSeed) { ::Randomize(); ::RandSeed = 1; }
+  if (!::RandSeed) { ::Randomize(); } //::RandSeed = 1;
   Password = Key + Password;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   const int32_t Len = Password.Length();
   if (Len > std::numeric_limits<uint8_t>::max())
   {
-    Result += SimpleEncryptChar((uint8_t)PWALG_SIMPLE_INTERNAL2);
+    Result += SimpleEncryptChar(PWALG_SIMPLE_INTERNAL2);
     Result += SimpleEncryptChar(static_cast<uint8_t>(Len >> 8));
     Result += SimpleEncryptChar(static_cast<uint8_t>(Len & 0xFF));
   }
   else
   {
-    Result += SimpleEncryptChar((uint8_t)PWALG_SIMPLE_INTERNAL);
+    Result += SimpleEncryptChar(PWALG_SIMPLE_INTERNAL);
     Result += SimpleEncryptChar(static_cast<uint8_t>(Len));
   }
   const int32_t DataLen =
@@ -104,7 +104,10 @@ UnicodeString DecryptPassword(const RawByteString & APassword, const UnicodeStri
   UTF8String Result;
   if (Length >= 0)
   {
-    Password.Delete(1, static_cast<int32_t>(SimpleDecryptNextChar(Password)) * 2);
+    // if ((Flag == PWALG_SIMPLE_FLAG) || (Flag == PWALG_SIMPLE_INTERNAL) || (Flag == PWALG_SIMPLE_INTERNAL2))
+      Password.Delete(1, static_cast<int32_t>(SimpleDecryptNextChar(Password)) * 2);
+    // else
+      // Password.Delete(1, UnicodeKey.Length() * 2);
     for (int32_t Index = 0; Index < Length; Index++)
     {
       Result += static_cast<char>(SimpleDecryptNextChar(Password));
