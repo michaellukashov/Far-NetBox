@@ -43,6 +43,7 @@
 #include "ne_dates.h"
 
 #include "ne_private.h"
+#include "ne_privssl.h"
 
 /* Destroy a a list of hooks. */
 static void destroy_hooks(struct hook *hooks)
@@ -119,7 +120,7 @@ void ne_session_destroy(ne_session *sess)
     if (sess->socks_password) ne_free(sess->socks_password);
 
 #ifdef NE_HAVE_SSL
-    if (sess->ssl_context)
+    if (sess->ssl_context && sess->ssl_context->ctx)
         ne_ssl_context_destroy(sess->ssl_context);
 
     if (sess->server_cert)
