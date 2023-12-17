@@ -670,12 +670,12 @@ void TStringList::InsertItem(int32_t Index, const UnicodeString & S, const TObje
   if (Index == GetCount())
   {
     FStrings.push_back(S);
-    TObjectList::Add((TObject *)AObject);
+    TObjectList::Add(const_cast<TObject*>(AObject));
   }
   else
   {
     FStrings.insert(FStrings.begin() + Index, 1, S);
-    TObjectList::Insert(Index, (TObject *)AObject);
+    TObjectList::Insert(Index, const_cast<TObject*>(AObject));
   }
   Changed();
 }
