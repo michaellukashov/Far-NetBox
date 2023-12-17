@@ -2092,7 +2092,7 @@ void TFrameAnimation::Repaint()
   FPaintBox->Repaint();
   if (!FPainted)
   {
-    // Paint later, alternativelly we may keep trying Repaint() in Animate().
+    // Paint later, alternatively we may keep trying Repaint() in Animate().
     // See also a hack in TAuthenticateForm::Log.
     FPaintBox->Invalidate();
   }
