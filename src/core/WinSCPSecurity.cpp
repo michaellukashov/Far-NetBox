@@ -18,8 +18,9 @@ RawByteString SimpleEncryptChar(uint8_t Ch)
 {
   Ch = static_cast<uint8_t>((~Ch) ^ PWALG_SIMPLE_MAGIC);
   RawByteString Result("..");
-  Result[1] = PWALG_SIMPLE_STRING[((Ch & 0xF0) >> 4) + 1];
-  Result[2] = PWALG_SIMPLE_STRING[((Ch & 0x0F) >> 0) + 1];
+  const RawByteString PwStr(PWALG_SIMPLE_STRING);
+  Result[1] = PwStr[((Ch & 0xF0) >> 4) + 1];
+  Result[2] = PwStr[((Ch & 0x0F) >> 0) + 1];
   return Result;
 }
 
