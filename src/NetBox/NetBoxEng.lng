@@ -501,7 +501,7 @@
 "Debug 2"
 "Log to &file:"
 "&Append"
-"&Overwrite"
+"O&verwrite"
 " In log viewer display (and keep in memory) "
 "&Complete session"
 "Only &last"
