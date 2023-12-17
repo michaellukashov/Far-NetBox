@@ -2643,7 +2643,7 @@ void TWinSCPFileSystem::ExportSession(TSessionData * Data, void * AParam)
   std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   ExportData->Assign(Data);
   ExportData->SetModified(true);
-  UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
+  const UnicodeString XmlFileName = ::IncludeTrailingBackslash(Param.DestPath) +
     ::ValidLocalFileName(ExportData->GetName()) + ".netbox";
   std::unique_ptr<THierarchicalStorage> ExportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
   ExportStorage->Init();
@@ -2818,7 +2818,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
       {
-        UnicodeString XmlFileName = ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName;
+        const UnicodeString XmlFileName = ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName;
         std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
         ImportStorage->Init();
         ImportStorage->SetAccessMode(smRead);
