@@ -3,11 +3,11 @@
 #pragma hdrstop
 
 #include <System.ShlObj.hpp>
-#include <mshtmhst.h>
+// #include <mshtmhst.h>
 #include <Common.h>
 
 #include "GUITools.h"
-#include "WinConfiguration.h"
+// #include "WinConfiguration.h"
 #include <TextsCore.h>
 #include <TextsWin.h>
 #include <CoreMain.h>
