@@ -116,7 +116,7 @@ NB_CORE_EXPORT UnicodeString ExpandFileNameCommand(const UnicodeString & AComman
 NB_CORE_EXPORT void ReformatFileNameCommand(UnicodeString & ACommand);
 NB_CORE_EXPORT UnicodeString EscapeParam(const UnicodeString & AParam);
 NB_CORE_EXPORT UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam);
-NB_CORE_EXPORT UnicodeString StringsToParams(TStrings * Strings);
+NB_CORE_EXPORT UnicodeString StringsToParams(const TStrings * Strings);
 NB_CORE_EXPORT UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
 NB_CORE_EXPORT bool SamePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 UnicodeString GetNormalizedPath(const UnicodeString & Path);

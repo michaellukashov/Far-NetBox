@@ -1527,7 +1527,7 @@ UnicodeString EscapePuttyCommandParam(const UnicodeString & AParam)
   return Param;
 }
 
-UnicodeString StringsToParams(TStrings * Strings)
+UnicodeString StringsToParams(const TStrings * Strings)
 {
   UnicodeString Result;
 
@@ -1893,7 +1893,7 @@ UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
             AddPrefix = FALSE;
 
             // Get current root path
-            UnicodeString CurrentDir = GetCurrentDir();
+            const UnicodeString CurrentDir = GetCurrentDir();
             PATH_PREFIX_TYPE PrefixType2; // unused
             const int32_t Following = GetOffsetAfterPathRoot(CurrentDir, PrefixType2);
             if (Following > 0)
