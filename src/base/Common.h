@@ -382,15 +382,13 @@ class TValueRestorer // : public TObject
 public:
   inline explicit TValueRestorer(T & Target, const T & Value) :
     FTarget(Target),
-    FValue(Value),
-    FArmed(true)
+    FValue(Value)
   {
   }
 
   inline explicit TValueRestorer(T & Target) :
     FTarget(Target),
-    FValue(Target),
-    FArmed(true)
+    FValue(Target)
   {
   }
 
