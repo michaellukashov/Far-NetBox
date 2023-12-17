@@ -78,6 +78,7 @@ void TFarConfiguration::Default()
 
 THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool & SessionList)
 {
+  nb::used(SessionList);
   // THierarchicalStorage * Storage = TGUIConfiguration::CreateScpStorage(SessionList);
   THierarchicalStorage * Storage = FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : nullptr;
   Storage->Init();
@@ -141,7 +142,7 @@ void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 #undef KEY
 #undef KEY2
 #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
-#define KEY2(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToUIntPtr(Get##VAR()))
+#define KEY2(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt32(Get##VAR()))
   REGCONFIG(true);
 #undef KEY2
 #undef KEY
