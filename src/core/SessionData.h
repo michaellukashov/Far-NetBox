@@ -236,7 +236,7 @@ private:
   int32_t FSFTPUploadQueue{0};
   int32_t FSFTPListingQueue{0};
   int32_t FSFTPMaxVersion{SFTPMaxVersion};
-  uint32_t FSFTPMaxPacketSize{0};
+  int32_t FSFTPMaxPacketSize{0};
   TAutoSwitch FSFTPRealPath;
   TDSTMode FDSTMode{dstmKeep};
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT]{};
@@ -896,8 +896,8 @@ public:
 
   bool GetTimeDifferenceAuto() const { return FTimeDifferenceAuto; }
   UnicodeString GetNote() const { return FNote; }
-  UnicodeString GetProtocolStr() const;
-  void SetProtocolStr(const UnicodeString & Value);
+  // UnicodeString GetProtocolStr() const;
+  // void SetProtocolStr(const UnicodeString & Value);
 
   UnicodeString GetHostName() const { return FHostName; }
   int32_t GetPortNumber() const { return FPortNumber; }
