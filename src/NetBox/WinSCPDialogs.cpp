@@ -1171,7 +1171,7 @@ public:
     const UnicodeString & SessionName, TPromptKind Kind, const UnicodeString & Name,
     const UnicodeString & Instructions, const TStrings * Prompts,
     bool StoredCredentialsTried) noexcept;
-  virtual ~TPasswordDialog() noexcept override;
+  virtual ~TPasswordDialog() noexcept override = default;
   bool Execute(TStrings * Results);
 
 private:
@@ -1193,9 +1193,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   const UnicodeString & Instructions, const TStrings * Prompts,
   bool /*StoredCredentialsTried*/) noexcept :
   TFarDialog(AFarPlugin),
-  FSessionData(nullptr),
-  FEdits(std::make_unique<TList>()),
-  SavePasswordCheck(nullptr)
+  FEdits(std::make_unique<TList>())
 {
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
@@ -1245,10 +1243,6 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
-}
-
-TPasswordDialog::~TPasswordDialog()
-{
 }
 
 void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
@@ -1679,22 +1673,22 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
 #define TRISTATE(COMBO, PROP, MSG) \
     Text = new TFarText(this); \
-    Text->SetCaption(GetMsg(MSG)); \
+    Text->SetCaption(GetMsg((MSG))); \
     SetNextItemPosition(ipRight); \
-    COMBO = new TFarComboBox(this); \
-    COMBO->SetDropDownList(true); \
-    COMBO->SetWidth(7); \
-    COMBO->GetItems()->BeginUpdate(); \
+    (COMBO) = new TFarComboBox(this); \
+    (COMBO)->SetDropDownList(true); \
+    (COMBO)->SetWidth(7); \
+    (COMBO)->GetItems()->BeginUpdate(); \
     { \
       SCOPE_EXIT \
       { \
-        COMBO->GetItems()->EndUpdate(); \
+        (COMBO)->GetItems()->EndUpdate(); \
       }; \
-      COMBO->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_AUTO)); \
-      COMBO->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_OFF)); \
-      COMBO->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_ON)); \
+      (COMBO)->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_AUTO)); \
+      (COMBO)->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_OFF)); \
+      (COMBO)->GetItems()->Add(GetMsg(NB_LOGIN_BUGS_ON)); \
     } \
-    Text->SetEnabledFollow(COMBO); \
+    Text->SetEnabledFollow((COMBO)); \
     SetNextItemPosition(ipNewLine)
 
   TRect CRect = GetClientRect();
@@ -3252,7 +3246,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // SFTP tab
 
 #define TRISTATE(COMBO, PROP, MSG) \
-    COMBO->SetItemIndex(nb::ToInt32(2 - SessionData->Get ## PROP))
+    (COMBO)->SetItemIndex(nb::ToInt32(2 - SessionData->Get ## PROP))
   SFTP_BUGS();
 
   if (SessionData->GetSftpServer().IsEmpty())
