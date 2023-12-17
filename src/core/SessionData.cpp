@@ -5089,7 +5089,7 @@ void TSessionData::DisableAuthenticationsExceptPassword()
 
 TStrings * TSessionData::GetAllOptionNames(bool PuttyExport)
 {
-  std::unique_ptr<TSessionData> FactoryDefaults(new TSessionData(L""));
+  std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(L""));
   return FactoryDefaults->SaveToOptions(nullptr, false, PuttyExport);
 }
 
@@ -5672,7 +5672,7 @@ void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
           UnicodeString Name = CutOpensshToken(Value);
           if ((Hosts->IndexOf(Name) < 0) && (Name.LastDelimiter(L"*?") == 0))
           {
-            std::unique_ptr<TSessionData> Data(new TSessionData(EmptyStr));
+            std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(EmptyStr));
             Data->CopyData(DefaultSettings);
             Data->Name = Name;
             Data->HostName = Name;
@@ -6187,7 +6187,7 @@ void TStoredSessionList::DoGetFolderOrWorkspace(const UnicodeString & Name, TLis
 TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
   const UnicodeString & Name)
 {
-  std::unique_ptr<TObjectList> DataList(new TObjectList());
+  std::unique_ptr<TObjectList> DataList(std::make_unique<TObjectList>());
   DoGetFolderOrWorkspace(Name, DataList.get(), true);
 
   std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());

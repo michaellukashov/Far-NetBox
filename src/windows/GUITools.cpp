@@ -105,7 +105,7 @@ bool FindFile(UnicodeString & Path)
 
 bool DoesSessionExistInPutty(const UnicodeString & StorageKey)
 {
-  std::unique_ptr<TRegistryStorage> Storage(new TRegistryStorage(GetConfiguration()->PuttySessionsKey));
+  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
   Storage->ConfigureForPutty();
   return Storage->OpenRootKey(true) && Storage->KeyExists(StorageKey);
 }
@@ -134,7 +134,7 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
         Storage->CloseSubKey();
       }
 
-      std::unique_ptr<TSessionData> ExportData(new TSessionData(L""));
+      std::unique_ptr<TSessionData> ExportData(std::make_unique<TSessionData>(L""));
       ExportData->Assign(SessionData);
       ExportData->SetModified(true);
       ExportData->SetName(SessionName);
@@ -187,7 +187,7 @@ private:
   static std::unique_ptr<TCriticalSection> FSection;
 };
 
-std::unique_ptr<TCriticalSection> TPuttyCleanupThread::FSection(TraceInitPtr(new TCriticalSection()));
+std::unique_ptr<TCriticalSection> TPuttyCleanupThread::FSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
 TPuttyCleanupThread * TPuttyCleanupThread::FInstance;
 
 void TPuttyCleanupThread::Schedule()

@@ -28,7 +28,7 @@
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
 
 constexpr const wchar_t HostKeyDelimiter = L';';
-static std::unique_ptr<TCriticalSection> PuttyStorageSection(TraceInitPtr(new TCriticalSection()));
+static std::unique_ptr<TCriticalSection> PuttyStorageSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
 
 struct TPuttyTranslation
 {
@@ -97,7 +97,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FNoConnectionResponse = false;
   FCollectPrivateKeyUsage = false;
   FWaitingForData = 0;
-  FCallbackSet.reset(new callback_set());
+  FCallbackSet = std::make_unique<callback_set>();
   memset(FCallbackSet.get(), 0, sizeof(callback_set));
   FCallbackSet->ready_event = INVALID_HANDLE_VALUE;
 }
