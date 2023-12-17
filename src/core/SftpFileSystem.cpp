@@ -4345,7 +4345,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
             // skip alg
             nb::used(Packet.GetAnsiString());
             const UnicodeString Checksum = BytesToHex(reinterpret_cast<const uint8_t *>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength(), false);
-            if (OnCalculatedChecksum != nullptr)
+            if (!OnCalculatedChecksum.empty())
             {
               OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
             }
