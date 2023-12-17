@@ -119,7 +119,7 @@ constexpr const uint32_t folRetryOnFatal = 0x02;
 #endif
 
 NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
-  TFileOperationProgressType * OperationProgress,
+  TFileOperationProgressType * AOperationProgress,
   uint32_t Flags, const UnicodeString & Message,
   const UnicodeString & HelpKeyword,
   std::function<void()> Operation);
@@ -356,7 +356,7 @@ protected:
   void FileModified(const TRemoteFile * AFile,
     const UnicodeString & AFileName, bool ClearDirectoryChange = false);
   int32_t FileOperationLoop(TFileOperationEvent CallBackFunc,
-    TFileOperationProgressType * OperationProgress, uint32_t AFlags,
+    TFileOperationProgressType * AOperationProgress, uint32_t AFlags,
     const UnicodeString & Message, void * Param1 = nullptr, void * Param2 = nullptr);
   bool GetIsCapableProtected(TFSCapability Capability) const;
   bool ProcessFiles(TStrings * AFileList, TFileOperation Operation,
@@ -374,7 +374,7 @@ protected:
   void CustomReadDirectory(TRemoteFileList * AFileList);
   void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
   bool TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
-    TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+    TFileOperationProgressType * AOperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
   void TerminalOpenLocalFile(const UnicodeString & ATargetFileName, DWORD Access,
     DWORD * AAttrs, HANDLE * AHandle, int64_t * ACTime, int64_t * AMTime,
@@ -383,7 +383,7 @@ protected:
     const UnicodeString & AFileName, DWORD Access, TLocalFileHandle & Handle, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(
     const UnicodeString & AFileName, const TSearchRecSmart * SearchRec,
-    const TCopyParamType * CopyParam, TFileOperationProgressType * OperationProgress);
+    const TCopyParamType * CopyParam, TFileOperationProgressType * AOperationProgress);
   bool HandleException(Exception * E);
   void CalculateFileSize(const UnicodeString & AFileName,
     const TRemoteFile * AFile, /*TCalculateSizeParams*/ void * ASize);
@@ -394,15 +394,15 @@ protected:
     const UnicodeString & AFileName, const TSearchRecSmart & Rec, /*int64_t*/ void * Size);
   TBatchOverwrite EffectiveBatchOverwrite(
     const UnicodeString & ASourceFullFileName, const TCopyParamType * CopyParam, int32_t Params,
-    TFileOperationProgressType * OperationProgress, bool Special) const;
+    TFileOperationProgressType * AOperationProgress, bool Special) const;
   bool CheckRemoteFile(
     const UnicodeString & AFileName, const TCopyParamType * CopyParam,
-    int32_t Params, TFileOperationProgressType * OperationProgress) const;
+    int32_t Params, TFileOperationProgressType * AOperationProgress) const;
   uint32_t ConfirmFileOverwrite(
     const UnicodeString & ASourceFullFileName, const UnicodeString & ATargetFileName,
     const TOverwriteFileParams * FileParams, uint32_t Answers, TQueryParams * QueryParams,
     TOperationSide Side, const TCopyParamType * CopyParam, int32_t Params,
-    TFileOperationProgressType * OperationProgress, const UnicodeString & AMessage = L"");
+    TFileOperationProgressType * AOperationProgress, const UnicodeString & AMessage = L"");
   void DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirectory,
     const UnicodeString & ARemoteDirectory, TSynchronizeMode Mode,
     const TCopyParamType * CopyParam, int32_t AParams,
@@ -451,7 +451,7 @@ protected:
   void FileFind(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void DoFilesFind(const UnicodeString & ADirectory, TFilesFindParams & Params, const UnicodeString & ARealDirectory);
   bool DoCreateLocalFile(const UnicodeString & AFileName,
-    TFileOperationProgressType * OperationProgress, HANDLE * AHandle,
+    TFileOperationProgressType * AOperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
   void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
@@ -478,14 +478,14 @@ protected:
   virtual void DisplayBanner(const UnicodeString & ABanner) override;
   virtual void Closed() override;
   virtual void ProcessGUI() override;
-  void Progress(TFileOperationProgressType * OperationProgress);
+  void Progress(TFileOperationProgressType * AOperationProgress);
   virtual void HandleExtendedException(Exception * E) override;
   bool IsListenerFree(uint32_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
     const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
-    TFileOperationProgressType * OperationProgress, Exception * E = nullptr);
+    TFileOperationProgressType * AOperationProgress, Exception * E = nullptr);
   void DoAnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent && OutputEvent,
     TCallSessionAction * Action);
   TRemoteFileList * DoReadDirectoryListing(const UnicodeString & ADirectory, bool UseCache);
@@ -497,12 +497,12 @@ protected:
     const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size, const TRemoteFile * LinkedFile = nullptr) const;
   void LogFileDetails(const UnicodeString & FileName, const TDateTime & Modification, int64_t Size, const TRemoteFile * LinkedFile = nullptr);
   void LogFileDone(
-    TFileOperationProgressType * OperationProgress, const UnicodeString & DestFileName,
+    TFileOperationProgressType * AOperationProgress, const UnicodeString & DestFileName,
     TTransferSessionAction & Action);
   void LogTotalTransferDetails(
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-    TFileOperationProgressType * OperationProgress, bool Parallel, TStrings * AFiles);
-  void LogTotalTransferDone(TFileOperationProgressType * OperationProgress);
+    TFileOperationProgressType * AOperationProgress, bool Parallel, TStrings * AFiles);
+  void LogTotalTransferDone(TFileOperationProgressType * AOperationProgress);
   virtual TTerminal * GetPrimaryTerminal();
   void DoEndTransaction(bool Inform);
   bool VerifyCertificate(
@@ -526,22 +526,22 @@ protected:
   bool CanRecurseToDirectory(const TRemoteFile * File) const;
   bool DoOnCustomCommand(const UnicodeString & ACommand);
   bool CanParallel(const TCopyParamType * CopyParam, int32_t AParams, TParallelOperation * ParallelOperation) const;
-  void CopyParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * OperationProgress);
+  void CopyParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * AOperationProgress);
   void DoCopyToRemote(
     TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * OperationProgress, uint32_t AFlags, TOnceDoneOperation & OnceDoneOperation);
+    TFileOperationProgressType * AOperationProgress, uint32_t AFlags, TOnceDoneOperation & OnceDoneOperation);
   void SourceRobust(
     const UnicodeString & AFileName, const TSearchRecSmart * SearchRec,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * OperationProgress, uint32_t AFlags);
+    TFileOperationProgressType * AOperationProgress, uint32_t AFlags);
   void Source(
     const UnicodeString & AFileName, const TSearchRecSmart * SearchRec,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * OperationProgress, uint32_t AFlags, TUploadSessionAction & Action, bool & ChildError);
+    TFileOperationProgressType * AOperationProgress, uint32_t AFlags, TUploadSessionAction & Action, bool & ChildError);
   void DirectorySource(
     const UnicodeString & ADirectoryName, const UnicodeString & ATargetDir, const UnicodeString & ADestDirectoryName,
     uint32_t Attrs, const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * OperationProgress, uint32_t AFlags);
+    TFileOperationProgressType * AOperationProgress, uint32_t AFlags);
   bool UseAsciiTransfer(
     const UnicodeString & BaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
     const TFileMasks::TParams & MaskParams);
@@ -554,13 +554,13 @@ protected:
   void UpdateSource(const TLocalFileHandle & Handle, const TCopyParamType * CopyParam, int32_t AParams);
   void DoCopyToLocal(
     TStrings * FilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * OperationProgress, uint32_t AFlags, TOnceDoneOperation & OnceDoneOperation);
+    TFileOperationProgressType * AOperationProgress, uint32_t AFlags, TOnceDoneOperation & OnceDoneOperation);
   void SinkRobust(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ATargetDir,
-    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress, uint32_t AFlags);
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * AOperationProgress, uint32_t AFlags);
   void Sink(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ATargetDir,
-    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress, uint32_t AFlags,
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * AOperationProgress, uint32_t AFlags,
     TDownloadSessionAction & Action);
   void SinkFile(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param);
   void UpdateTargetAttrs(
@@ -569,12 +569,12 @@ protected:
     HANDLE Handle, const TDateTime & Modification, TModificationFmt ModificationFmt, TDSTMode DSTMode);
   void CheckParallelFileTransfer(
     const UnicodeString & TargetDir, TStringList * Files, const TCopyParamType * CopyParam, int32_t Params,
-    UnicodeString & ParallelFileName, int64_t & ParallelFileSize, TFileOperationProgressType * OperationProgress);
+    UnicodeString & ParallelFileName, int64_t & ParallelFileSize, TFileOperationProgressType * AOperationProgress);
   TRemoteFile * CheckRights(const UnicodeString & EntryType, const UnicodeString & FileName, bool & WrongRights);
   bool IsValidFile(TRemoteFile * File) const;
   void CalculateSubFoldersChecksum(
     const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
-    TFileOperationProgressType * OperationProgress, bool FirstLevel);
+    TFileOperationProgressType * AOperationProgress, bool FirstLevel);
   void GetShellChecksumAlgs(TStrings * Algs);
   TStrings * GetShellChecksumAlgDefs();
   TStrings * ProcessFeatures(TStrings * Features);
@@ -589,7 +589,7 @@ protected:
 
   const TFileOperationProgressType * GetOperationProgress() const { return FOperationProgress; }
   TFileOperationProgressType * GetOperationProgress() { return FOperationProgress; }
-  void SetOperationProgress(TFileOperationProgressType * OperationProgress) { FOperationProgress = OperationProgress; }
+  void SetOperationProgress(TFileOperationProgressType * AOperationProgress) { FOperationProgress = AOperationProgress; }
   virtual const TTerminal * GetPasswordSource() const { return this; }
 
 public:
@@ -627,7 +627,7 @@ public:
   bool CopyToRemote(
     TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
     TParallelOperation * ParallelOperation);
-  int32_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * OperationProgress);
+  int32_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * AOperationProgress);
   void LogParallelTransfer(TParallelOperation * ParallelOperation);
   void RemoteCreateDirectory(const UnicodeString & ADirName, const TRemoteProperties * Properties = nullptr);
   void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
@@ -690,15 +690,15 @@ public:
   void MakeLocalFileList(
     const UnicodeString & AFileName, const TSearchRecSmart & Rec, void * Param);
   bool FileOperationLoopQuery(Exception & E,
-    TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
+    TFileOperationProgressType * AOperationProgress, const UnicodeString & Message,
     uint32_t AFlags, const UnicodeString & SpecialRetry = "", const UnicodeString & HelpKeyword = "");
   void FileOperationLoopEnd(Exception & E,
-    TFileOperationProgressType * OperationProgress, const UnicodeString & Message,
+    TFileOperationProgressType * AOperationProgress, const UnicodeString & Message,
     uint32_t AFlags, const UnicodeString & SpecialRetry, const UnicodeString & HelpKeyword);
   TUsableCopyParamAttrs UsableCopyParamAttrs(int32_t AParams) const;
   bool ContinueReopen(TDateTime Start) const;
   bool QueryReopen(Exception * E, int32_t AParams,
-    TFileOperationProgressType * OperationProgress);
+    TFileOperationProgressType * AOperationProgress);
   UnicodeString PeekCurrentDirectory();
   void FatalAbort();
   void ReflectSettings() const;
@@ -1021,7 +1021,7 @@ class NB_CORE_EXPORT TRobustOperationLoop : public TObject
   NB_DISABLE_COPY(TRobustOperationLoop)
 public:
   TRobustOperationLoop() = delete;
-  explicit TRobustOperationLoop(TTerminal * Terminal, TFileOperationProgressType * OperationProgress, bool * AnyTransfer = nullptr, bool CanRetry = true) noexcept;
+  explicit TRobustOperationLoop(TTerminal * Terminal, TFileOperationProgressType * AOperationProgress, bool * AnyTransfer = nullptr, bool CanRetry = true) noexcept;
   virtual ~TRobustOperationLoop() noexcept override;
   bool TryReopen(Exception & E);
   bool ShouldRetry() const;
