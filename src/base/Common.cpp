@@ -3196,7 +3196,6 @@ UnicodeString StandardTimestamp()
   return StandardTimestamp(Now());
 }
 
-static TDateTime TwoSeconds(0, 0, 2, 0);
 int32_t CompareFileTime(const TDateTime & T1, const TDateTime & T2)
 {
   const TDateTime TwoSeconds(0, 0, 2, 0);
