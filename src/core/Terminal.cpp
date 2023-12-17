@@ -2499,7 +2499,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
   return Result;
 }
 
-bool TTerminal::ContinueReopen(TDateTime Start) const
+bool TTerminal::ContinueReopen(const TDateTime & Start) const
 {
   return
     (FConfiguration->GetSessionReopenTimeout() == 0) ||
@@ -5044,7 +5044,7 @@ bool TTerminal::DoRenameOrCopyFile(
       }
       TQueryParams Params(qpNeverAskAgainCheck);
       const UnicodeString Question = FORMAT(QuestionFmt, NewName);
-      uint32_t Answers = qaYes | qaNo | FLAGMASK(OperationProgress != nullptr, qaCancel) | FLAGMASK(IsBatchOperation, qaYesToAll | qaNoToAll);
+      const uint32_t Answers = qaYes | qaNo | FLAGMASK(OperationProgress != nullptr, qaCancel) | FLAGMASK(IsBatchOperation, qaYesToAll | qaNoToAll);
       const uint32_t Answer = QueryUser(Question, nullptr, Answers, &Params, QueryType);
       switch (Answer)
       {
@@ -5777,7 +5777,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
 
   FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(FILE_NOT_EXISTS, ATargetFileName), "")
   {
-    UnicodeString FileNameApi = ApiPath(ATargetFileName);
+    const UnicodeString FileNameApi = ApiPath(ATargetFileName);
     LocalFileAttrs = this->GetLocalFileAttributes(FileNameApi);
     if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
     {

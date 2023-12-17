@@ -1388,7 +1388,7 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
   return false;
 }
 
-UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
+UnicodeString DateTimeToStr(const UnicodeString & Result, const UnicodeString & Format,
   const TDateTime & DateTime)
 {
   (void)Result;

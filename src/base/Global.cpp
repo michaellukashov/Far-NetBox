@@ -77,7 +77,7 @@ std::unique_ptr<TCriticalSection> TracesInMemoryListsSection;
 // Map to DirectTrace(MESSAGE) to enable tracing of in-memory tracing
 #define MemoryTracingTrace(MESSAGE)
 
-inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t * SourceFile,
+inline static UTF8String TraceFormat(const TDateTime & Time, DWORD Thread, const wchar_t * SourceFile,
   const wchar_t * Func, int32_t Line, const wchar_t * Message)
 {
   const UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);

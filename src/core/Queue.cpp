@@ -2678,7 +2678,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
       TriggerEvent();
 
       bool Done = false;
-      const DWORD MaxWait = 50;
+      constexpr DWORD MaxWait = 50;
       DWORD Wait = MaxWait;
 
       do

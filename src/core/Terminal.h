@@ -696,7 +696,7 @@ public:
     TFileOperationProgressType * AOperationProgress, const UnicodeString & Message,
     uint32_t AFlags, const UnicodeString & SpecialRetry, const UnicodeString & HelpKeyword);
   TUsableCopyParamAttrs UsableCopyParamAttrs(int32_t AParams) const;
-  bool ContinueReopen(TDateTime Start) const;
+  bool ContinueReopen(const TDateTime & Start) const;
   bool QueryReopen(Exception * E, int32_t AParams,
     TFileOperationProgressType * AOperationProgress);
   UnicodeString PeekCurrentDirectory();

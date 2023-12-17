@@ -226,7 +226,7 @@ NB_CORE_EXPORT UnicodeString ReplaceStrAll(const UnicodeString & Str, const Unic
 NB_CORE_EXPORT UnicodeString SysErrorMessage(DWORD ErrorCode);
 
 NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
-NB_CORE_EXPORT UnicodeString DateTimeToStr(UnicodeString & Result, const UnicodeString & Format,
+NB_CORE_EXPORT UnicodeString DateTimeToStr(const UnicodeString & Result, const UnicodeString & Format,
   const TDateTime & DateTime);
 NB_CORE_EXPORT UnicodeString DateTimeToString(const TDateTime & DateTime);
 NB_CORE_EXPORT uint32_t DayOfWeek(const TDateTime & DateTime);

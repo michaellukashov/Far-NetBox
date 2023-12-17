@@ -533,7 +533,7 @@ Exception * CloneException(Exception * E)
 {
   Exception * Result{nullptr};
   // this list has to be in sync with ExceptionMessage
-  ExtException * Ext = dyn_cast<ExtException>(E);
+  const ExtException * Ext = dyn_cast<ExtException>(E);
   if (Ext != nullptr)
   {
     Result = Ext->Clone();
