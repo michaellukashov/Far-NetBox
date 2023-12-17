@@ -2234,7 +2234,7 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * ATermina
   FFilesToCopy = std::make_unique<TStringList>();
   for (int32_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
   {
-    const UnicodeString& FileName = AFilesToCopy->GetString(Index);
+    const UnicodeString & FileName = AFilesToCopy->GetString(Index);
     const TRemoteFile * File = AFilesToCopy->As<TRemoteFile>(Index);
     FFilesToCopy->AddObject(FileName, ((File == nullptr) || (Side == osLocal)) ? nullptr : File->Duplicate());
   }

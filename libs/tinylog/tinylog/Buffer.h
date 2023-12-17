@@ -25,8 +25,8 @@ public:
   int32_t Flush(FILE* file);
 
 private:
-  Buffer(const Buffer&);
-  Buffer& operator=(const Buffer&);
+  Buffer(const Buffer&) = delete;
+  Buffer& operator =(const Buffer&) = delete;
 
   char * data_{nullptr};
   uint64_t size_{0};

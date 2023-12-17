@@ -24,7 +24,7 @@ public:
 
 protected:
   HANDLE FThread{nullptr};
-  TThreadID FThreadId{};
+  TThreadID FThreadId{0};
   bool FFinished{true};
 
   virtual void Execute() = 0;
@@ -47,7 +47,7 @@ public:
   void TriggerEvent() const;
 
 protected:
-  HANDLE FEvent{};
+  HANDLE FEvent{nullptr};
   bool FTerminated{false};
 
   explicit TSignalThread(TObjectClassId Kind) noexcept;
@@ -421,7 +421,7 @@ public:
 protected:
   std::unique_ptr<TStrings> FFilesToCopy;
   UnicodeString FTargetDir;
-  TCopyParamType * FCopyParam{nullptr};
+  gsl::owner<TCopyParamType *> FCopyParam{nullptr};
   int32_t FParams{0};
   bool FParallel{false};
   DWORD FLastParallelOperationAdded{false};

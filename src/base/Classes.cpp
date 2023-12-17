@@ -431,7 +431,7 @@ void TStrings::SetName(int32_t /*Index*/, const UnicodeString & /*Value*/)
   ThrowNotImplemented(2012);
 }
 
-UnicodeString TStrings::ExtractName(const UnicodeString & S) const
+UnicodeString TStrings::ExtractName(const UnicodeString & S)
 {
   UnicodeString Result = S;
   const int32_t P = ::AnsiPos(Result, L'=');

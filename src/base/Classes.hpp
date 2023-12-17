@@ -198,7 +198,8 @@ public:
     }
     FList[Index] = Item;
   }
-  int32_t Add(O * Value)
+
+  virtual int32_t Add(O * Value)
   {
     const int32_t Result = nb::ToInt32(FList.size());
     FList.push_back(Value);
@@ -213,7 +214,7 @@ public:
     }
     return nullptr;
   }
-  int32_t Remove(O * Item)
+  int32_t Remove(const O * Item)
   {
     const int32_t Result = IndexOf(Item);
     if (Result != nb::NPOS)
@@ -299,7 +300,7 @@ public:
 
   virtual int32_t GetCount() const { return nb::ToInt32(FList.size()); }
 
-  void SetCount(int32_t NewCount)
+  virtual void SetCount(int32_t NewCount)
   {
     if (NewCount == nb::NPOS)
     {
@@ -308,7 +309,7 @@ public:
     if (NewCount <= nb::ToInt32(FList.size()))
     {
       const int32_t sz = nb::ToInt32(FList.size());
-      for (int32_t Index = sz - 1; (Index != nb::NPOS) && (Index >= NewCount); Index--)
+      for (int32_t Index = sz - 1; (Index != nb::NPOS) && (Index >= NewCount); --Index)
       {
         Delete(Index);
       }
@@ -399,7 +400,7 @@ public:
   virtual void Move(int32_t CurIndex, int32_t NewIndex) override;
   virtual int32_t IndexOf(const UnicodeString & S) const;
   virtual int32_t IndexOfName(const UnicodeString & Name) const;
-  UnicodeString ExtractName(const UnicodeString & S) const;
+  static UnicodeString ExtractName(const UnicodeString & S);
   void AddStrings(const TStrings * Strings);
   void Append(const UnicodeString & Value);
   void SaveToStream(TStream * Stream) const;
@@ -555,7 +556,7 @@ private:
 };
 
 /// TDateTime: number of days since 12/30/1899
-class NB_CORE_EXPORT TDateTime : public TObject
+class NB_CORE_EXPORT TDateTime final : public TObject
 {
 public:
   TDateTime() noexcept = default;
@@ -649,7 +650,7 @@ public:
   double GetTotalMinutes() const { return nb::ToDouble(FTicks / TicksPerMinute); }
   double GetTotalSeconds() const { return nb::ToDouble(FTicks / TicksPerSecond); }
   double GetTotalMilliseconds() const { return nb::ToDouble(FTicks / TicksPerMillisecond); }
-  static TTimeSpan GetScaledInterval(double Value, int32_t Scale);
+  // static TTimeSpan GetScaledInterval(double Value, int32_t Scale);
 private:
   static constexpr const int64_t FMinValue = -9223372036854775808LL;
   static constexpr const int64_t FMaxValue = 0x7FFFFFFFFFFFFFFFLL;
@@ -825,7 +826,7 @@ protected:
   HANDLE FHandle{nullptr};
 };
 
-class TFileStream : public THandleStream
+class TFileStream final : public THandleStream
 {
 public:
   explicit TFileStream(const UnicodeString & AFileName, uint16_t Mode);
@@ -837,7 +838,7 @@ private:
   UnicodeString FFileName;
 };
 
-class NB_CORE_EXPORT TSafeHandleStream : public THandleStream
+class NB_CORE_EXPORT TSafeHandleStream final : public THandleStream
 {
 public:
   explicit TSafeHandleStream(THandle AHandle) noexcept;
@@ -981,7 +982,6 @@ public:
 private:
   HKEY FCurrentKey{};
   HKEY FRootKey{};
-  // bool FLazyWrite;
   UnicodeString FCurrentPath;
   bool FCloseRootKey{false};
   mutable uint32_t FAccess{KEY_ALL_ACCESS};
@@ -1123,7 +1123,7 @@ private:
   std::ofstream dbgstream_;
 };
 
-NB_CORE_EXPORT TGlobals *GetGlobals();
+NB_CORE_EXPORT TGlobals * GetGlobals();
 NB_CORE_EXPORT void SetGlobals(TGlobals *Value);
 
 template<typename T>

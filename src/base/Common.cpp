@@ -1261,10 +1261,10 @@ UnicodeString GetDesktopFolder()
 
     if (!WineHome.IsEmpty())
     {
-      const UnicodeString WineDesktop =
-        IncludeTrailingBackslash(WineHome) + L"Desktop";
       if (base::DirectoryExists(WineHome))
       {
+        const UnicodeString WineDesktop =
+          IncludeTrailingBackslash(WineHome) + L"Desktop";
         Result = WineDesktop;
       }
     }
@@ -2850,7 +2850,7 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
 
   }
 
-  FILETIME Result;
+  FILETIME Result{};
   (*reinterpret_cast<int64_t *>(&(Result)) = (nb::ToInt64(UnixTimeStamp) + 11644473600LL) * 10000000LL);
 
   return Result;
@@ -4116,7 +4116,7 @@ TStringList * TextToStringList(const UnicodeString & Text)
   return List.release();
 }
 
-UnicodeString StringsToText(TStrings *Strings)
+UnicodeString StringsToText(TStrings * Strings)
 {
   UnicodeString Result;
   if (Strings->GetCount() == 1)
