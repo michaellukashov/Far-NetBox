@@ -908,8 +908,8 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     }
     else
     {
-      LocaleName = AdditionalLanguagePrefix +
-        char(ALocale & ~AdditionalLanguageMask);
+      LocaleName = UnicodeString(AdditionalLanguagePrefix) +
+        static_cast<char>(ALocale & ~AdditionalLanguageMask);
     }
 
     Module = ChangeFileExt(Module, UnicodeString(".") + LocaleName);
