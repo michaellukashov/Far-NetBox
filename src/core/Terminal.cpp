@@ -192,7 +192,7 @@ void TTunnelThread::InitTunnelThread()
 TTunnelThread::~TTunnelThread() noexcept
 {
   // close before the class's virtual functions (Terminate particularly) are lost
-  Close();
+  TSimpleThread::Close();
 }
 
 void TTunnelThread::Terminate()

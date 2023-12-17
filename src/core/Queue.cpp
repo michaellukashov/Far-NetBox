@@ -334,7 +334,7 @@ void TSimpleThread::InitSimpleThread()
 TSimpleThread::~TSimpleThread() noexcept
 {
   // This is turn calls pure virtual Terminate, what does not work as intended, do not rely on it and remove the call eventually
-  Close();
+  TSimpleThread::Close();
 
   if (CheckHandle(FThread))
   {
@@ -405,7 +405,7 @@ TSignalThread::~TSignalThread() noexcept
 {
   // cannot leave closing to TSimpleThread as we need to close it before
   // destroying the event
-  Close();
+  TSimpleThread::Close();
 
   if (FEvent)
   {
@@ -514,7 +514,7 @@ void TTerminalQueue::InitTerminalQueue()
 
 TTerminalQueue::~TTerminalQueue() noexcept
 {
-  Close();
+  TSimpleThread::Close();
 
   {
     TGuard Guard(FItemsSection); nb::used(Guard);
