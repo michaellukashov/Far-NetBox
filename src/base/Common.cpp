@@ -2258,7 +2258,7 @@ UnicodeString GetEnvironmentInfo()
 }
 
 void ProcessLocalDirectory(const UnicodeString & ADirName,
-  TProcessLocalFileEvent CallBackFunc, void * Param,
+  TProcessLocalFileEvent && CallBackFunc, void * Param,
   DWORD FindAttrs)
 {
   DebugAssert(CallBackFunc);

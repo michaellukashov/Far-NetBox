@@ -259,7 +259,7 @@ NB_CORE_EXPORT DWORD FindFirstChecked(const UnicodeString & APath, DWORD LocalFi
 NB_CORE_EXPORT DWORD FindNextChecked(TSearchRecChecked & F);
 DWORD FindNextUnchecked(TSearchRecChecked & F);
 NB_CORE_EXPORT void ProcessLocalDirectory(const UnicodeString & ADirName,
-  TProcessLocalFileEvent CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
+  TProcessLocalFileEvent && CallBackFunc, void * Param = nullptr, DWORD FindAttrs = INVALID_FILE_ATTRIBUTES);
 NB_CORE_EXPORT DWORD FileGetAttrFix(const UnicodeString & AFileName);
 
 constexpr const wchar_t * DSTModeNames = L"Win;Unix;Keep";
