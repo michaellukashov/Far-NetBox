@@ -834,7 +834,7 @@ public:
         // modification time and filename is ignored
         AFile->SetListingStr(ListingStr);
       }
-      catch (...)
+      catch(...)
       {
         // ignore any error while parsing listing line,
         // SFTP specification do not recommend to parse it
@@ -1260,7 +1260,7 @@ public:
       {
         ReceiveResponse(Request.get(), Response.get(), ExpectedType, AllowStatus);
       }
-      catch (Exception &E)
+      catch(Exception & E)
       {
         if (ExpectedType < 0)
         {
@@ -1498,7 +1498,7 @@ protected:
         // loop
       }
     }
-    catch (Exception &E)  // prevent crash when server unexpectedly closes connection
+    catch(Exception & E)  // prevent crash when server unexpectedly closes connection
     {
       DebugUsedParam(E);
       DEBUG_PRINTF("ReceiveHandler: %s\n", E.Message);
@@ -3033,7 +3033,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   {
     Result = GetRealPath(Path);
   }
-  catch (...)
+  catch(...)
   {
     if (FTerminal->GetActive())
     {
@@ -3061,7 +3061,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
         Result = GetRealPath(Path3);
         Result = base::UnixIncludeTrailingBackslash(Result) + Name;
       }
-      catch (...)
+      catch(...)
       {
         if (FTerminal->GetActive())
         {
@@ -3161,7 +3161,7 @@ void TSFTPFileSystem::DoStartup()
   {
     SendPacketAndReceiveResponse(&Packet1, &Packet1, SSH_FXP_VERSION);
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     FTerminal->FatalError(&E, LoadStr(SFTP_INITIALIZE_ERROR), HELP_SFTP_INITIALIZE_ERROR);
   }
@@ -3317,7 +3317,7 @@ void TSFTPFileSystem::DoStartup()
             }
           }
         }
-        catch (Exception &E)
+        catch(Exception & E)
         {
           DEBUG_PRINTF("before FTerminal->HandleException");
           FFixedPaths->Clear();
@@ -3796,7 +3796,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             FTerminal->SetExceptionOnFail(false);
           } end_try__finally
         }
-        catch(Exception &E)
+        catch(Exception & E)
         {
           if (isa<EFatal>(&E))
           {
@@ -3919,7 +3919,7 @@ bool TSFTPFileSystem::RemoteFileExists(const UnicodeString & FullPath,
       }
     }
   }
-  catch (...)
+  catch(...)
   {
     if (!FTerminal->GetActive())
     {
@@ -4213,7 +4213,7 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
         FTerminal->ProcessDirectory(AFileName, nb::bind(&TTerminal::ChangeFileProperties, FTerminal),
           nb::ToPtr(const_cast<TRemoteProperties *>(AProperties)));
       }
-      catch (...)
+      catch(...)
       {
         Action.Cancel();
         throw;
@@ -4353,7 +4353,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
 
             Success = true;
           }
-          catch (Exception &E)
+          catch(Exception & E)
           {
             FTerminal->RollbackAction(Action, OperationProgress, &E);
 
@@ -4611,7 +4611,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
             OperationProgress->SetBatchOverwrite(boAlternateResume);
             break;
 
-          default: DebugFail(); //fallthru
+          default: DebugFail();
             [[fallthrough]];
           case qaCancel:
             OperationProgress->SetCancelAtLeast(csCancel);
@@ -4694,7 +4694,6 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
     switch (Answer) {
       case qaNeverAskAgain:
         FTerminal->GetConfiguration()->SetConfirmResume(false);
-        //FALLTHROU
         [[fallthrough]];
       case qaYes:
         ResumeTransfer = true;
@@ -5115,7 +5114,7 @@ void TSFTPFileSystem::Source(
           ReceiveResponse(&PropertiesRequest, Response, SSH_FXP_STATUS,
             asOK | FLAGMASK(CopyParam->GetIgnorePermErrors(), asPermDenied));
         }
-        catch (...)
+        catch(...)
         {
           if (FTerminal->GetActive() &&
               (!PreserveRights && !PreserveTime))
@@ -5276,7 +5275,7 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
             OpenParams->FileParams->DestSize = OpenParams->DestFileSize;
           }
         }
-        catch (...)
+        catch(...)
         {
           if (!FTerminal->GetActive())
           {
@@ -5332,7 +5331,7 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
               delete LinkedFile;
               IsSymLink = true;
             }
-            catch (...)
+            catch(...)
             {
               if (!FTerminal->Active)
               {
@@ -5444,7 +5443,7 @@ void TSFTPFileSystem::SFTPCloseRemote(const RawByteString & Handle,
         ReceiveResponse(P, Packet, SSH_FXP_STATUS);
       }
     }
-    catch (...)
+    catch(...)
     {
       if (!FTerminal->GetActive() || TransferFinished)
       {
