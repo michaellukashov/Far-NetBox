@@ -1109,8 +1109,8 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   if ((PingType == ptOff) && PuttyExport)
   {
     // Deleting would do too
-    Storage->WriteInteger(L"PingInterval", 0);
-    Storage->WriteInteger(L"PingIntervalSecs", 0);
+    Storage->WriteInteger("PingInterval", 0);
+    Storage->WriteInteger("PingIntervalSecs", 0);
   }
   else
   {
@@ -1166,7 +1166,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     // PuTTY is started in its binary directory to allow relative paths when opening PuTTY's own stored session.
     // To allow relative paths in our sessions, we have to expand them for PuTTY.
     WRITE_DATA_EX(StringRaw, "PublicKeyFile", GetPublicKeyFile(), ExpandFileName)
-    WRITE_DATA_EX(StringRaw, L"DetachedCertificate", DetachedCertificate, ExpandFileName)
+    WRITE_DATA_EX(StringRaw, "DetachedCertificate", DetachedCertificate, ExpandFileName)
   }
   else
   {
@@ -1218,7 +1218,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
     WRITE_DATA(String, ReturnVar)
     WRITE_DATA(Bool, ExitCode1IsError)
-    WRITE_DATA_EX(Integer, L"LookupUserGroups2", LookupUserGroups, )
+    WRITE_DATA_EX(Integer, "LookupUserGroups2", LookupUserGroups, )
     WRITE_DATA(Integer, EOLType)
     WRITE_DATA(Bool, TrimVMSVersions)
     WRITE_DATA3(Bool, VMSAllRevisions)
