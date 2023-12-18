@@ -309,7 +309,7 @@ RawByteString & RawByteString::Delete(int32_t Index, int32_t Count)
 
 RawByteString & RawByteString::Insert(const char * Str, int32_t Pos)
 {
-  Data.Insert(Pos - 1, static_cast<const char *>(Str));
+  Data.Insert(Pos - 1, Str);
   return *this;
 }
 
