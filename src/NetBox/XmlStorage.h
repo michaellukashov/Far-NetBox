@@ -55,7 +55,7 @@ private:
   void RemoveIfExists(const UnicodeString & Name);
   void AddNewElement(const UnicodeString & Name, const UnicodeString & Value);
   tinyxml2::XMLElement * FindChildElement(const AnsiString & SubKey) const;
-  UnicodeString GetValue(const tinyxml2::XMLElement  * Element) const;
+  UnicodeString GetValue(const tinyxml2::XMLElement * Element) const;
 
   bool ReadXml();
   bool WriteXml() const;
@@ -63,7 +63,7 @@ private:
 private:
   std::unique_ptr<tinyxml2::XMLDocument> FXmlDoc;
   nb::vector_t<tinyxml2::XMLElement *> FSubElements;
-  gsl::owner <tinyxml2::XMLElement *> FCurrentElement{nullptr};
+  gsl::owner<tinyxml2::XMLElement *> FCurrentElement{nullptr};
   UnicodeString FStoredSessionsSubKey;
   mutable int32_t FFailed{0};
   bool FStoredSessionsOpened{false};

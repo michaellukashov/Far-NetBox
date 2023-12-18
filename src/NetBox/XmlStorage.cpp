@@ -57,15 +57,15 @@ bool TXmlStorage::ReadXml()
   }
 
   // Get and check root node
-  tinyxml2::XMLElement *xmlRoot = FXmlDoc->RootElement();
+  tinyxml2::XMLElement * xmlRoot = FXmlDoc->RootElement();
   if (!xmlRoot)
     return false;
-  const char *Value = xmlRoot->Value();
+  const char * Value = xmlRoot->Value();
   if (!Value)
     return false;
   if (strcmp(Value, CONST_ROOT_NODE) != 0)
     return false;
-  const char *Attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
+  const char * Attr = xmlRoot->Attribute(CONST_VERSION_ATTR);
   if (!Attr)
     return false;
   const uint32_t Version = ::StrToVersionNumber(UnicodeString(Attr));
@@ -244,7 +244,7 @@ UnicodeString TXmlStorage::GetSubKeyText(const UnicodeString & Name) const
   return ToUnicodeString(Element->GetText());
 }
 
-tinyxml2::XMLElement *TXmlStorage::FindElement(const UnicodeString & Name) const
+tinyxml2::XMLElement * TXmlStorage::FindElement(const UnicodeString & Name) const
 {
   for (const tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
     Element != nullptr; Element = Element->NextSiblingElement())
@@ -258,7 +258,7 @@ tinyxml2::XMLElement *TXmlStorage::FindElement(const UnicodeString & Name) const
   return nullptr;
 }
 
-tinyxml2::XMLElement *TXmlStorage::FindChildElement(const AnsiString & SubKey) const
+tinyxml2::XMLElement * TXmlStorage::FindChildElement(const AnsiString & SubKey) const
 {
   tinyxml2::XMLElement * Result = nullptr;
   // DebugAssert(FCurrentElement);
