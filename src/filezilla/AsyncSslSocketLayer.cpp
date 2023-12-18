@@ -297,12 +297,12 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
           m_pNetworkSendBuffer = nb::chcalloc(m_nNetworkSendBufferMaxLen);
           if (tmp)
           {
-            libmemcpy_memcpy(m_pNetworkSendBuffer, tmp, m_nNetworkSendBufferLen);
+            nbstr_memcpy(m_pNetworkSendBuffer, tmp, m_nNetworkSendBufferLen);
             nb_free(tmp);
           }
         }
         DebugAssert(m_pNetworkSendBuffer);
-        libmemcpy_memcpy(m_pNetworkSendBuffer + m_nNetworkSendBufferLen, buffer, numread-numsent);
+        nbstr_memcpy(m_pNetworkSendBuffer + m_nNetworkSendBufferLen, buffer, numread-numsent);
         m_nNetworkSendBufferLen += numread - numsent;
       }
       if (!numsent)
@@ -400,7 +400,7 @@ int CAsyncSslSocketLayer::Send(const void* lpBuf, int nBufLen, int nFlags)
 
     m_pRetrySendBuffer = nb::chcalloc(nBufLen);
     m_nRetrySendBufferLen = nBufLen;
-    libmemcpy_memcpy(m_pRetrySendBuffer, lpBuf, nBufLen);
+    nbstr_memcpy(m_pRetrySendBuffer, lpBuf, nBufLen);
 
     int ProcessResult = ProcessSendBuffer();
     if (ProcessResult == -2)
@@ -1571,7 +1571,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       int len = BIO_get_mem_data(subjectAltNameBio, &data);
       char * buf = nb::chcalloc(len + 1);
 
-      libmemcpy_memcpy(buf, data, len);
+      nbstr_memcpy(buf, data, len);
       buf[len] = '\0';
       _tcsncpy(SslCertData.subjectAltName, A2CT(buf), LENOF(SslCertData.subjectAltName));
       SslCertData.subjectAltName[LENOF(SslCertData.subjectAltName) - 1] = '\0';

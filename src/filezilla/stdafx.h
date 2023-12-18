@@ -174,7 +174,7 @@ public:
       if (nLen != 0)
       {
         AllocBuffer(nLen);
-        libmemcpy_memcpy(m_pchData, lpsz, nLen*sizeof(char));
+        nbstr_memcpy(m_pchData, lpsz, nLen*sizeof(char));
       }
     }
   }
@@ -380,7 +380,7 @@ protected:
     else
     {
       dest.AllocBuffer(nNewLen);
-      libmemcpy_memcpy(dest.m_pchData, m_pchData+nCopyIndex, nCopyLen*sizeof(char));
+      nbstr_memcpy(dest.m_pchData, m_pchData+nCopyIndex, nCopyLen*sizeof(char));
     }
   }
 
@@ -413,7 +413,7 @@ protected:
   void AssignCopy(int nSrcLen, LPCSTR lpszSrcData)
   {
     AllocBeforeWrite(nSrcLen);
-    libmemcpy_memcpy(m_pchData, lpszSrcData, nSrcLen*sizeof(char));
+    nbstr_memcpy(m_pchData, lpszSrcData, nSrcLen*sizeof(char));
     GetData()->nDataLength = nSrcLen;
     m_pchData[nSrcLen] = '\0';
   }
@@ -458,8 +458,8 @@ protected:
     if (nNewLen != 0)
     {
       AllocBuffer(nNewLen);
-      libmemcpy_memcpy(m_pchData, lpszSrc1Data, nSrc1Len*sizeof(char));
-      libmemcpy_memcpy(m_pchData+nSrc1Len, lpszSrc2Data, nSrc2Len*sizeof(char));
+      nbstr_memcpy(m_pchData, lpszSrc1Data, nSrc1Len*sizeof(char));
+      nbstr_memcpy(m_pchData+nSrc1Len, lpszSrc2Data, nSrc2Len*sizeof(char));
     }
   }
 
@@ -486,7 +486,7 @@ protected:
     else
     {
       // fast concatenation when buffer big enough
-      libmemcpy_memcpy(m_pchData+GetData()->nDataLength, lpszSrcData, nSrcLen*sizeof(char));
+      nbstr_memcpy(m_pchData+GetData()->nDataLength, lpszSrcData, nSrcLen*sizeof(char));
       GetData()->nDataLength += nSrcLen;
       DebugAssert(GetData()->nDataLength <= GetData()->nAllocLength);
       m_pchData[GetData()->nDataLength] = '\0';
@@ -500,7 +500,7 @@ protected:
       CStringDataA* pData = GetData();
       Release();
       AllocBuffer(pData->nDataLength);
-      libmemcpy_memcpy(m_pchData, pData->data(), (pData->nDataLength+1)*sizeof(char));
+      nbstr_memcpy(m_pchData, pData->data(), (pData->nDataLength+1)*sizeof(char));
     }
     DebugAssert(GetData()->nRefs <= 1);
   }
