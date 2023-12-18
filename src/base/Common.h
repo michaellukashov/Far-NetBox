@@ -40,8 +40,7 @@ constexpr const wchar_t EngShortMonthNames[12][4] =
 };
 
 // extern const char Bom[3];
-#define CONST_BOM "\xEF\xBB\xBF"
-constexpr const char * Bom = CONST_BOM;
+constexpr const char * CONST_BOM = "\xEF\xBB\xBF";
 constexpr const wchar_t TokenPrefix = L'%';
 constexpr const wchar_t NoReplacement = wchar_t(0);
 constexpr const wchar_t TokenReplacement = wchar_t(1);

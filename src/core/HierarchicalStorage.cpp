@@ -60,7 +60,9 @@ UnicodeString UnMungeStr(const UnicodeString & Str)
   strbuf_free(sb);
   UnicodeString Result;
   const AnsiString Bom(CONST_BOM);
-  if (Dest.SubString(1, LENOF(CONST_BOM)) == Bom)
+  DebugAssert(Bom.Length() == 3);
+  DebugAssert(strlen(CONST_BOM) == 3);
+  if (Dest.SubString(1, Bom.Length()) == Bom)
   {
     Dest.Delete(1, Bom.GetLength());
     Result = UTF8ToString(Dest);
@@ -353,10 +355,12 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & ASubKey, bool CanCre
   {
     Access = hsaRead; // allow reading the access
     InheritAccess = GetCurrentAccess();
+    MungedKey = MungeStr(ASubKey, GetForceAnsi(), false);
+    Result = DoOpenSubKey(MungedKey, CanCreate);
     if (!Result)
     {
-        MungedKey = MungeStr(ASubKey, !GetForceAnsi(), false);
-        Result = DoOpenSubKey(MungedKey, CanCreate);
+      MungedKey = MungeStr(ASubKey, !GetForceAnsi(), false);
+      Result = DoOpenSubKey(MungedKey, CanCreate);
     }
   }
 
