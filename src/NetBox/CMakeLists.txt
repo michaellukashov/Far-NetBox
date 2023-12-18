@@ -2546,16 +2546,20 @@ add_custom_target(copy_to_plugin_dir ALL
 
 file(GLOB DIST_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/*.lng
+  ${CMAKE_CURRENT_SOURCE_DIR}/cacert.pem
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../README*.md
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../ChangeLog
+  ${CMAKE_CURRENT_SOURCE_DIR}/../../LICENSE.txt
 )
 # message("DIST_FILES: ${DIST_FILES}")
 
-add_custom_target(copy_lng_to_plugin_dir ALL
+add_custom_target(copy_dist_files_to_plugin_dir ALL
   DEPENDS NetBox
 )
 
 foreach(DIST_FILE ${DIST_FILES})
   string(REPLACE "/" "\\" DIST_FILE ${DIST_FILE})
-  add_custom_command(TARGET copy_lng_to_plugin_dir POST_BUILD
+  add_custom_command(TARGET copy_dist_files_to_plugin_dir POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DIST_FILE}" "${NETBOX_PLUGIN_DIR}"
     VERBATIM
   )
