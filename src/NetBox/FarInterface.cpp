@@ -43,7 +43,11 @@ void Busy(bool /*Start*/)
 
 UnicodeString GetSshVersionString()
 {
-  return FORMAT("NetBox-FAR-release-%s", GetConfiguration()->GetProductVersion());
+  UnicodeString Result = UnicodeString("NetBox-Far");
+  UnicodeString ProductVersion = GetConfiguration()->GetProductVersion();
+  if (!ProductVersion.IsEmpty())
+    Result += FORMAT("-%s", ProductVersion);
+  return Result;
 }
 
 static DWORD WINAPI threadstartroutine(void * Parameter)
