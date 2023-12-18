@@ -26,6 +26,7 @@ extern "C"
 
 constexpr const char * SESSION_PROXY_AUTH_KEY = "proxyauth";
 constexpr const char * SESSION_TLS_INIT_KEY = "tlsinit";
+// #define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
 constexpr const char * SESSION_TERMINAL_KEY = "terminal";
 
 void NeonParseUrl(const UnicodeString & Url, ne_uri &uri)
@@ -269,7 +270,8 @@ void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal 
   }
   if (!CertificateStorage.IsEmpty())
   {
-    ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
+    if (Session) // && Session->ssl_context)
+      ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
     if (Terminal != nullptr)
     {
       Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", CertificateStorage));
@@ -427,13 +429,16 @@ void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
   #endif
   {
     int32_t Size{0};
-    va_list Args;
-    va_start(Args, Format);
     AnsiString Str(4 * 1024, 0);
-    Size = vsnprintf_s(&Str[1], Str.Length(), _TRUNCATE, Format, Args);
-    va_end(Args);
-    const UTF8String UTFMessage(Str.data(), (Size == -1) ? 4 * 1024 : Size);
-    const UnicodeString Message = TrimRight(UnicodeString(UTFMessage.c_str(), UTFMessage.GetLength(), CP_ACP));
+    UnicodeString Message;
+    {
+      va_list Args;
+      va_start(Args, Format);
+      Size = vsnprintf_s(&Str[1], Str.Length(), _TRUNCATE, Format, Args);
+      va_end(Args);
+      const UTF8String UTFMessage(Str.data(), (Size == -1) ? 4 * 1024 : Size);
+      Message = TrimRight(UnicodeString(UTFMessage.c_str(), UTFMessage.GetLength(), CP_ACP));
+    }
 
     // if (DoLog)
     {
