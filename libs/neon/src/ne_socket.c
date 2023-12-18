@@ -247,7 +247,7 @@ static void print_error(int errnum, char *buffer, size_t buflen)
 {
     if (FormatMessageA (FORMAT_MESSAGE_FROM_SYSTEM
                        | FORMAT_MESSAGE_IGNORE_INSERTS,
-                       NULL, (DWORD) errnum, 0, 
+                       NULL, (DWORD) errnum, CP_ACP,
                        buffer, (DWORD)buflen, NULL) == 0)
         ne_snprintf(buffer, buflen, "Socket error %d", errnum);
 }
