@@ -980,7 +980,7 @@ void TConfiguration::CleanupConfiguration()
       FDontSave = true;
     }
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_CONFIG_ERROR));
   }
@@ -1050,7 +1050,7 @@ void TConfiguration::CleanupCaches()
       CleanupRegistry(Caches->GetString(Index));
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_CACHES_ERROR));
   }
@@ -1066,7 +1066,7 @@ void TConfiguration::CleanupRandomSeedFile()
       DeleteFileChecked(GetRandomSeedFileName());
     }
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_SEEDFILE_ERROR));
   }
@@ -1086,7 +1086,7 @@ void TConfiguration::CleanupIniFile()
       FDontSave = true;
     }
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     throw ExtException(&E, LoadStr(CLEANUP_INIFILE_ERROR));
   }
@@ -1131,7 +1131,7 @@ TVSFixedFileInfo * TConfiguration::GetFixedApplicationInfo() const
   {
     Result = GetFixedFileInfo(GetApplicationInfo());
   }
-  catch (const Exception&)
+  catch(const Exception &)
   {
     Result = nullptr;
   }
@@ -1294,7 +1294,7 @@ UnicodeString TConfiguration::GetVersionStrHuman()
 
     return Result;
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     throw ExtException(&E, L"Can't get application version");
   }
@@ -1356,7 +1356,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
 
     return Result;
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     throw ExtException(&E, "Can't get application version");
   }
@@ -1391,7 +1391,7 @@ UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info) const
         LOWORD(Info->dwFileVersionMS),
         HIWORD(Info->dwFileVersionLS));
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     throw ExtException(&E, "Can't get file version");
   }
@@ -1703,7 +1703,7 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACusto
       // this also removes an INI file, when switching to registry storage
       DoSave(true, true);
     }
-    catch (...)
+    catch(...)
     {
       // If this fails, do not pretend that storage was switched.
       // For instance:
@@ -1794,7 +1794,7 @@ bool TConfiguration::AnyFilezillaSessionForImport(TStoredSessionList * Sessions)
     std::unique_ptr<TStoredSessionList> SessionsForImport(SelectFilezillaSessionsForImport(Sessions, Error));
     return (SessionsForImport->GetCount() > 0);
   }
-  catch (...)
+  catch(...)
   {
     return false;
   }
@@ -1826,7 +1826,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
       throw Exception(LoadStr(KNOWN_HOSTS_NOT_FOUND));
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     Error = FORMAT("%s\n(%s)", E.Message, KnownHostsFile);
   }
@@ -1843,7 +1843,7 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
   {
     ImportSessionList->ImportFromKnownHosts(Lines);
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     Error = E.Message;
   }
@@ -1915,7 +1915,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
       throw Exception(LoadStr(OPENSSH_CONFIG_NOT_FOUND));
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     Error = FORMAT(L"%s\n(%s)", E.Message, ConfigFile);
   }
@@ -2453,7 +2453,7 @@ UnicodeString TConfiguration::GetProductVersion() const
         HIWORD(FixedApplicationInfo->dwFileVersionLS));
     }
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     throw ExtException(&E, "Can't get application version");
   }
