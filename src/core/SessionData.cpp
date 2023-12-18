@@ -1086,6 +1086,11 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     }
 #undef WRITE_DATA_EX2
 #define WRITE_DATA_EX2(TYPE, NAME, PROPERTY, CONV) \
+    if ((Default != nullptr) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
+    { \
+      Storage->DeleteValue(NAME); \
+    } \
+      else \
     { \
       Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
     }
