@@ -993,7 +993,7 @@ static S3Status compose_auth_header(const RequestParams *params,
     const unsigned char *rqstData = (const unsigned char*) canonicalRequest;
     SHA256(rqstData, strlen(canonicalRequest), canonicalRequestHash);
 #endif
-    nb_free(canonicalRequest); // WINSCP (heap allocation)
+    nb_free(canonicalRequest); // WINSCP
     char canonicalRequestHashHex[2 * S3_SHA256_DIGEST_LENGTH + 1];
     size = sizeof(canonicalRequestHashHex); // WINSCP
     canonicalRequestHashHex[0] = '\0';
@@ -1013,7 +1013,7 @@ static S3Status compose_auth_header(const RequestParams *params,
 
     const int stringToSignLen = 17 + 17 + sizeof(values->requestDateISO8601) +
         sizeof(scope) + sizeof(canonicalRequestHashHex) + 1; // WINSCP (heap allocation)
-    char * stringToSign = (char *)nb_calloc(stringToSignLen, sizeof(char)); // WINSCP (heap allocation)
+    char * stringToSign = (char *)nb_calloc(stringToSignLen, sizeof(char));
     snprintf(stringToSign, stringToSignLen, "AWS4-HMAC-SHA256\n%s\n%s\n%s",
              values->requestDateISO8601, scope, canonicalRequestHashHex);
 
@@ -1067,7 +1067,6 @@ static S3Status compose_auth_header(const RequestParams *params,
          (const unsigned char*) stringToSign, strlen(stringToSign),
          finalSignature, NULL);
 #endif
-    nb_free(stringToSign); // WINSCP (heap allocation)
     nb_free(accessKey); // WINSCP
     nb_free(stringToSign); // WINSCP
 
