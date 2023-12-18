@@ -42,7 +42,8 @@
 
 // #pragma package(smart_init)
 
-#define StrFromS3(S) StrFromNeon(S)
+// #define StrFromS3(S) StrFromNeon(S)
+#define StrFromS3(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_ACP)
 #define StrToS3(S) StrToNeon(S)
 
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
