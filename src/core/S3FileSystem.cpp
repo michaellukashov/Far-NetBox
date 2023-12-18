@@ -81,7 +81,7 @@ UnicodeString S3Profile;
 bool S3SecurityProfileChecked = false;
 TDateTime S3CredentialsExpiration;
 UnicodeString S3SecurityProfile;
-typedef rde::map<UnicodeString, UnicodeString> TS3Credentials;
+using TS3Credentials = nb::map_t<UnicodeString, UnicodeString>;
 TS3Credentials S3Credentials;
 
 #if 0
@@ -431,7 +431,7 @@ void TS3FileSystem::Open()
     }
   }
   FSecurityTokenBuf = UTF8String(SessionToken);
-  FSecurityToken = static_cast<const char *>(FSecurityTokenBuf.data());
+  FSecurityToken = FSecurityTokenBuf.data();
 
   FHostName = UTF8String(Data->HostNameExpanded);
   FPortSuffix = UTF8String();
@@ -1626,7 +1626,8 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
       {
         TRights::TRightGroup Group = static_cast<TRights::TRightGroup>(GroupI);
         S3AclGrant NewAclGrant;
-        memset(&NewAclGrant, 0, sizeof(NewAclGrant));
+        //memset(&NewAclGrant, 0, sizeof(NewAclGrant));
+        nb::ClearStruct(NewAclGrant);
         if (Group == TRights::rgUser)
         {
           NewAclGrant.granteeType = S3GranteeTypeCanonicalUser;
