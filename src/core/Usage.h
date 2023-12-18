@@ -6,7 +6,7 @@
 
 class TConfiguration;
 
-class TUsage : public TObject
+class TUsage final : public TObject
 {
 public:
   explicit TUsage(TConfiguration * Configuration) noexcept;
