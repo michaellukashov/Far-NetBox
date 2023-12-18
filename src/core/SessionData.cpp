@@ -760,7 +760,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   const bool LoadPasswords = !GetConfiguration()->GetDisablePasswordStoring() || !RespectDisablePasswordStoring;
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(Password, L"PasswordPlain")
+    LOAD_PASSWORD(Password, "PasswordPlain")
   }
   SetHostKey(Storage->ReadString("SshHostKey", GetHostKey())); // probably never used
   SetNote(Storage->ReadString("Note", GetNote()));
@@ -807,66 +807,66 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetGssLibList(Storage->ReadString("GSSLibs", GetGssLibList()));
   SetGssLibCustom(Storage->ReadString("GSSCustom", GetGssLibCustom()));
   SetPublicKeyFile(Storage->ReadString("PublicKeyFile", GetPublicKeyFile()));
-  DetachedCertificate = Storage->ReadString(L"DetachedCertificate", DetachedCertificate);
+  DetachedCertificate = Storage->ReadString("DetachedCertificate", DetachedCertificate);
   SetAddressFamily(static_cast<TAddressFamily>
     (Storage->ReadInteger("AddressFamily", GetAddressFamily())));
   SetRekeyData(Storage->ReadString("RekeyBytes", GetRekeyData()));
   SetRekeyTime(Storage->ReadInteger("RekeyTime", nb::ToInt32(GetRekeyTime())));
 
   FSProtocol = TranslateFSProtocol(Storage->ReadString("FSProtocol", GetFSProtocolStr()));
-  LocalDirectory = Storage->ReadString(L"LocalDirectory", LocalDirectory);
-  OtherLocalDirectory = Storage->ReadString(L"OtherLocalDirectory", OtherLocalDirectory);
-  RemoteDirectory = Storage->ReadString(L"RemoteDirectory", RemoteDirectory);
-  // SynchronizeBrowsing = Storage->ReadBool(L"SynchronizeBrowsing", SynchronizeBrowsing);
-  UpdateDirectories = Storage->ReadBool(L"UpdateDirectories", UpdateDirectories);
-  CacheDirectories = Storage->ReadBool(L"CacheDirectories", CacheDirectories);
-  CacheDirectoryChanges = Storage->ReadBool(L"CacheDirectoryChanges", CacheDirectoryChanges);
-  PreserveDirectoryChanges = Storage->ReadBool(L"PreserveDirectoryChanges", PreserveDirectoryChanges);
+  LocalDirectory = Storage->ReadString("LocalDirectory", LocalDirectory);
+  OtherLocalDirectory = Storage->ReadString("OtherLocalDirectory", OtherLocalDirectory);
+  RemoteDirectory = Storage->ReadString("RemoteDirectory", RemoteDirectory);
+  // SynchronizeBrowsing = Storage->ReadBool("SynchronizeBrowsing", SynchronizeBrowsing);
+  UpdateDirectories = Storage->ReadBool("UpdateDirectories", UpdateDirectories);
+  CacheDirectories = Storage->ReadBool("CacheDirectories", CacheDirectories);
+  CacheDirectoryChanges = Storage->ReadBool("CacheDirectoryChanges", CacheDirectoryChanges);
+  PreserveDirectoryChanges = Storage->ReadBool("PreserveDirectoryChanges", PreserveDirectoryChanges);
 
-  ResolveSymlinks = Storage->ReadBool(L"ResolveSymlinks", ResolveSymlinks);
-  FollowDirectorySymlinks = Storage->ReadBool(L"FollowDirectorySymlinks", FollowDirectorySymlinks);
-  DSTMode = (TDSTMode)Storage->ReadInteger(L"ConsiderDST", DSTMode);
-  Special = Storage->ReadBool(L"Special", Special);
+  ResolveSymlinks = Storage->ReadBool("ResolveSymlinks", ResolveSymlinks);
+  FollowDirectorySymlinks = Storage->ReadBool("FollowDirectorySymlinks", FollowDirectorySymlinks);
+  DSTMode = (TDSTMode)Storage->ReadInteger("ConsiderDST", DSTMode);
+  Special = Storage->ReadBool("Special", Special);
   if (!Unsafe)
   {
-    Shell = Storage->ReadString(L"Shell", Shell);
+    Shell = Storage->ReadString("Shell", Shell);
   }
-  ClearAliases = Storage->ReadBool(L"ClearAliases", ClearAliases);
-  FUnsetNationalVars = Storage->ReadBool(L"UnsetNationalVars", FUnsetNationalVars);
+  ClearAliases = Storage->ReadBool("ClearAliases", ClearAliases);
+  FUnsetNationalVars = Storage->ReadBool("UnsetNationalVars", FUnsetNationalVars);
   if (!Unsafe)
   {
-    FListingCommand = Storage->ReadString(L"ListingCommand",
-      Storage->ReadBool(L"AliasGroupList", false) ? UnicodeString(L"ls -gla") : FListingCommand);
+    FListingCommand = Storage->ReadString("ListingCommand",
+      Storage->ReadBool("AliasGroupList", false) ? UnicodeString(L"ls -gla") : FListingCommand);
   }
-  FIgnoreLsWarnings = Storage->ReadBool(L"IgnoreLsWarnings", FIgnoreLsWarnings);
-  FSCPLsFullTime = Storage->ReadEnum(L"SCPLsFullTime", FSCPLsFullTime, AutoSwitchMapping);
-  FScp1Compatibility = Storage->ReadBool(L"Scp1Compatibility", FScp1Compatibility);
-  FTimeDifference = Storage->ReadFloat(L"TimeDifference", FTimeDifference);
-  FTimeDifferenceAuto = Storage->ReadBool(L"TimeDifferenceAuto", (FTimeDifference == TDateTime()));
+  FIgnoreLsWarnings = Storage->ReadBool("IgnoreLsWarnings", FIgnoreLsWarnings);
+  FSCPLsFullTime = Storage->ReadEnum("SCPLsFullTime", FSCPLsFullTime, AutoSwitchMapping);
+  FScp1Compatibility = Storage->ReadBool("Scp1Compatibility", FScp1Compatibility);
+  FTimeDifference = Storage->ReadFloat("TimeDifference", FTimeDifference);
+  FTimeDifferenceAuto = Storage->ReadBool("TimeDifferenceAuto", (FTimeDifference == TDateTime()));
   if (!Unsafe)
   {
-    FDeleteToRecycleBin = Storage->ReadBool(L"DeleteToRecycleBin", FDeleteToRecycleBin);
-    FOverwrittenToRecycleBin = Storage->ReadBool(L"OverwrittenToRecycleBin", FOverwrittenToRecycleBin);
-    FRecycleBinPath = Storage->ReadString(L"RecycleBinPath", FRecycleBinPath);
-    FPostLoginCommands = Storage->ReadString(L"PostLoginCommands", FPostLoginCommands);
-    FReturnVar = Storage->ReadString(L"ReturnVar", FReturnVar);
+    FDeleteToRecycleBin = Storage->ReadBool("DeleteToRecycleBin", FDeleteToRecycleBin);
+    FOverwrittenToRecycleBin = Storage->ReadBool("OverwrittenToRecycleBin", FOverwrittenToRecycleBin);
+    FRecycleBinPath = Storage->ReadString("RecycleBinPath", FRecycleBinPath);
+    FPostLoginCommands = Storage->ReadString("PostLoginCommands", FPostLoginCommands);
+    FReturnVar = Storage->ReadString("ReturnVar", FReturnVar);
   }
 
-  FExitCode1IsError = Storage->ReadBool(L"ExitCode1IsError", FExitCode1IsError);
-  FLookupUserGroups = Storage->ReadEnum(L"LookupUserGroups2", FLookupUserGroups, AutoSwitchMapping);
-  FEOLType = static_cast<TEOLType>(Storage->ReadInteger(L"EOLType", FEOLType));
-  FTrimVMSVersions = Storage->ReadBool(L"TrimVMSVersions", FTrimVMSVersions);
-  FVMSAllRevisions = Storage->ReadBool(L"VMSAllRevisions", FVMSAllRevisions);
-  FNotUtf = Storage->ReadEnum(L"Utf", Storage->ReadEnum(L"SFTPUtfBug", FNotUtf), AutoSwitchReversedMapping);
-  FInternalEditorEncoding = Storage->ReadInteger(L"InternalEditorEncoding", FInternalEditorEncoding);
+  FExitCode1IsError = Storage->ReadBool("ExitCode1IsError", FExitCode1IsError);
+  FLookupUserGroups = Storage->ReadEnum("LookupUserGroups2", FLookupUserGroups, AutoSwitchMapping);
+  FEOLType = static_cast<TEOLType>(Storage->ReadInteger("EOLType", FEOLType));
+  FTrimVMSVersions = Storage->ReadBool("TrimVMSVersions", FTrimVMSVersions);
+  FVMSAllRevisions = Storage->ReadBool("VMSAllRevisions", FVMSAllRevisions);
+  FNotUtf = Storage->ReadEnum("Utf", Storage->ReadEnum("SFTPUtfBug", FNotUtf), AutoSwitchReversedMapping);
+  FInternalEditorEncoding = Storage->ReadInteger("InternalEditorEncoding", FInternalEditorEncoding);
 
-  FS3DefaultRegion = Storage->ReadString(L"S3DefaultRegion", FS3DefaultRegion);
-  FS3SessionToken = Storage->ReadString(L"S3SessionToken", FS3SessionToken);
-  S3Profile = Storage->ReadString(L"S3Profile", S3Profile);
+  FS3DefaultRegion = Storage->ReadString("S3DefaultRegion", FS3DefaultRegion);
+  FS3SessionToken = Storage->ReadString("S3SessionToken", FS3SessionToken);
+  S3Profile = Storage->ReadString("S3Profile", S3Profile);
   FS3UrlStyle = static_cast<TS3UrlStyle>(Storage->ReadInteger(L"S3UrlStyle", FS3UrlStyle));
-  FS3MaxKeys = Storage->ReadEnum(L"S3MaxKeys", FS3MaxKeys, AutoSwitchMapping);
-  FS3CredentialsEnv = Storage->ReadBool(L"S3CredentialsEnv", FS3CredentialsEnv);
-  FS3RequesterPays = Storage->ReadBool(L"S3RequesterPays", FS3RequesterPays);
+  FS3MaxKeys = Storage->ReadEnum("S3MaxKeys", FS3MaxKeys, AutoSwitchMapping);
+  FS3CredentialsEnv = Storage->ReadBool("S3CredentialsEnv", FS3CredentialsEnv);
+  FS3RequesterPays = Storage->ReadBool("S3RequesterPays", FS3RequesterPays);
 
   // PuTTY defaults to TcpNoDelay, but the psftp/pscp ignores this preference, and always set this to off (what is our default too)
   if (!PuttyImport)
@@ -874,25 +874,25 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
     SetTcpNoDelay(Storage->ReadBool("TcpNoDelay", GetTcpNoDelay()));
   }
   SetSendBuf(Storage->ReadInteger("SendBuf", Storage->ReadInteger("SshSendBuf", nb::ToInt32(GetSendBuf()))));
-  FSourceAddress = Storage->ReadString(L"SourceAddress", FSourceAddress);
-  FProtocolFeatures = Storage->ReadString(L"ProtocolFeatures", FProtocolFeatures);
+  FSourceAddress = Storage->ReadString("SourceAddress", FSourceAddress);
+  FProtocolFeatures = Storage->ReadString("ProtocolFeatures", FProtocolFeatures);
   SetSshSimple(Storage->ReadBool("SshSimple", GetSshSimple()));
 
   SetProxyMethod(Storage->ReadEnum<TProxyMethod>("ProxyMethod", GetProxyMethod(), ProxyMethodMapping));
-  FProxyHost = Storage->ReadString(L"ProxyHost", FProxyHost);
-  FProxyPort = Storage->ReadInteger(L"ProxyPort", FProxyPort);
-  FProxyUsername = Storage->ReadString(L"ProxyUsername", FProxyUsername);
+  FProxyHost = Storage->ReadString("ProxyHost", FProxyHost);
+  FProxyPort = Storage->ReadInteger("ProxyPort", FProxyPort);
+  FProxyUsername = Storage->ReadString("ProxyUsername", FProxyUsername);
   // proxy password is not rewritten
-  LOAD_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", )
+  LOAD_PASSWORD_EX(ProxyPassword, "ProxyPassword", "ProxyPasswordEnc", )
   if (!Unsafe)
   {
     if (FProxyMethod == pmCmd)
     {
-      FProxyLocalCommand = Storage->ReadStringRaw(L"ProxyTelnetCommand", FProxyLocalCommand);
+      FProxyLocalCommand = Storage->ReadStringRaw("ProxyTelnetCommand", FProxyLocalCommand);
     }
     else
     {
-      FProxyTelnetCommand = Storage->ReadStringRaw(L"ProxyTelnetCommand", FProxyTelnetCommand);
+      FProxyTelnetCommand = Storage->ReadStringRaw("ProxyTelnetCommand", FProxyTelnetCommand);
     }
   }
   SetProxyDNS(static_cast<TAutoSwitch>((Storage->ReadInteger("ProxyDNS", (GetProxyDNS() + 2) % 3) + 1) % 3));
@@ -935,7 +935,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetSFTPDownloadQueue(Storage->ReadInteger("SFTPDownloadQueue", nb::ToInt32(GetSFTPDownloadQueue())));
   SetSFTPUploadQueue(Storage->ReadInteger("SFTPUploadQueue", nb::ToInt32(GetSFTPUploadQueue())));
   SetSFTPListingQueue(Storage->ReadInteger("SFTPListingQueue", nb::ToInt32(GetSFTPListingQueue())));
-  FSFTPRealPath = Storage->ReadEnum(L"SFTPRealPath", FSFTPRealPath, AutoSwitchMapping);
+  FSFTPRealPath = Storage->ReadEnum("SFTPRealPath", FSFTPRealPath, AutoSwitchMapping);
 
   SetColor(Storage->ReadInteger("Color", nb::ToInt32(GetColor())));
 
@@ -949,14 +949,14 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetTunnelHostName(Storage->ReadString("TunnelHostName", GetTunnelHostName()));
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(TunnelPassword, L"TunnelPasswordPlain")
+    LOAD_PASSWORD(TunnelPassword, "TunnelPasswordPlain")
   }
   FTunnelPublicKeyFile = Storage->ReadString(L"TunnelPublicKeyFile", FTunnelPublicKeyFile);
   // Contrary to main session passphrase (which has -passphrase switch in scripting),
   // we are loading tunnel passphrase, as there's no other way to provide it in scripting
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(TunnelPassphrase, L"TunnelPassphrasePlain")
+    LOAD_PASSWORD(TunnelPassphrase, "TunnelPassphrasePlain")
   }
   SetTunnelLocalPortNumber(Storage->ReadInteger("TunnelLocalPortNumber", nb::ToInt32(GetTunnelLocalPortNumber())));
   SetTunnelHostKey(Storage->ReadString("TunnelHostKey", GetTunnelHostKey()));
@@ -965,18 +965,18 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetFtpPasvMode(Storage->ReadBool("FtpPasvMode", GetFtpPasvMode()));
   SetFtpForcePasvIp(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpForcePasvIp2", GetFtpForcePasvIp())));
   SetFtpUseMlsd(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpUseMlsd", GetFtpUseMlsd())));
-  FFtpForcePasvIp = Storage->ReadEnum(L"FtpForcePasvIp2", FFtpForcePasvIp, AutoSwitchMapping);
-  FFtpUseMlsd = Storage->ReadEnum(L"FtpUseMlsd", FFtpUseMlsd, AutoSwitchMapping);
+  FFtpForcePasvIp = Storage->ReadEnum("FtpForcePasvIp2", FFtpForcePasvIp, AutoSwitchMapping);
+  FFtpUseMlsd = Storage->ReadEnum("FtpUseMlsd", FFtpUseMlsd, AutoSwitchMapping);
   SetFtpAccount(Storage->ReadString("FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", nb::ToInt32(GetFtpPingInterval())));
   SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger("FtpPingType", GetFtpPingType())));
   SetFtpTransferActiveImmediately(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately())));
-  FFtpTransferActiveImmediately = Storage->ReadEnum(L"FtpTransferActiveImmediately2", FFtpTransferActiveImmediately, AutoSwitchMapping);
+  FFtpTransferActiveImmediately = Storage->ReadEnum("FtpTransferActiveImmediately2", FFtpTransferActiveImmediately, AutoSwitchMapping);
   SetFtps(static_cast<TFtps>(Storage->ReadInteger("Ftps", GetFtps())));
-  FFtpListAll = Storage->ReadEnum(L"FtpListAll", FFtpListAll, AutoSwitchMapping);
-  FFtpHost = Storage->ReadEnum(L"FtpHost", FFtpHost, AutoSwitchMapping);
-  FFtpWorkFromCwd = Storage->ReadEnum(L"FtpWorkFromCwd", Storage->ReadEnum(L"FtpDeleteFromCwd", FFtpWorkFromCwd), AutoSwitchMapping);
-  FFtpAnyCodeForPwd = Storage->ReadBool(L"FtpAnyCodeForPwd", FFtpAnyCodeForPwd);
+  FFtpListAll = Storage->ReadEnum("FtpListAll", FFtpListAll, AutoSwitchMapping);
+  FFtpHost = Storage->ReadEnum("FtpHost", FFtpHost, AutoSwitchMapping);
+  FFtpWorkFromCwd = Storage->ReadEnum("FtpWorkFromCwd", Storage->ReadEnum("FtpDeleteFromCwd", FFtpWorkFromCwd), AutoSwitchMapping);
+  FFtpAnyCodeForPwd = Storage->ReadBool("FtpAnyCodeForPwd", FFtpAnyCodeForPwd);
   SetSslSessionReuse(Storage->ReadBool("SslSessionReuse", GetSslSessionReuse()));
   SetTlsCertificateFile(Storage->ReadString("TlsCertificateFile", GetTlsCertificateFile()));
 
@@ -985,10 +985,10 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetMinTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MinTlsVersion", GetMinTlsVersion())));
   SetMaxTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MaxTlsVersion", GetMaxTlsVersion())));
 
-  LOAD_PASSWORD(EncryptKey, L"EncryptKeyPlain");
+  LOAD_PASSWORD(EncryptKey, "EncryptKeyPlain");
 
-  FWebDavLiberalEscaping = Storage->ReadBool(L"WebDavLiberalEscaping", FWebDavLiberalEscaping);
-  WebDavAuthLegacy = Storage->ReadBool(L"WebDavAuthLegacy", WebDavAuthLegacy);
+  FWebDavLiberalEscaping = Storage->ReadBool("WebDavLiberalEscaping", FWebDavLiberalEscaping);
+  WebDavAuthLegacy = Storage->ReadBool("WebDavAuthLegacy", WebDavAuthLegacy);
 
 #if 0
   IsWorkspace = Storage->ReadBool(L"IsWorkspace", IsWorkspace);
@@ -996,10 +996,10 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   NameOverride = Storage->ReadString(L"NameOverride", NameOverride);
 #endif // #if 0
 
-  FPuttySettings = Storage->ReadString(L"PuttySettings", FPuttySettings);
+  FPuttySettings = Storage->ReadString("PuttySettings", FPuttySettings);
 
-  FCustomParam1 = Storage->ReadString(L"CustomParam1", FCustomParam1);
-  FCustomParam2 = Storage->ReadString(L"CustomParam2", FCustomParam2);
+  FCustomParam1 = Storage->ReadString("CustomParam1", FCustomParam1);
+  FCustomParam2 = Storage->ReadString("CustomParam2", FCustomParam2);
   SetCustomParam1(Storage->ReadString("CustomParam1", GetCustomParam1()));
   SetCustomParam2(Storage->ReadString("CustomParam2", GetCustomParam2()));
   SetNameOverride(Storage->ReadString("NameOverride", GetNameOverride()));
@@ -1124,7 +1124,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   WRITE_DATA(Bool, AgentFwd)
   WRITE_DATA(Bool, AuthKI)
   WRITE_DATA(Bool, AuthKIPassword)
-  WRITE_DATA_EX(String, L"SshHostKey", HostKey, )
+  WRITE_DATA_EX(String, "SshHostKey", HostKey, )
   WRITE_DATA(String, Note)
 
   WRITE_DATA2(Bool, AuthGSSAPI)
