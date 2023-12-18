@@ -459,6 +459,10 @@ static ne_ssl_certificate *make_chain(STACK_OF(X509) *chain)
     return top;
 }
 
+#ifdef WINSCP
+void ne_fill_real_server_uri(ne_session *sess, ne_uri *uri);
+#endif
+
 /* Verifies an SSL server certificate. */
 static int check_certificate(ne_session *sess, SSL *ssl, ne_ssl_certificate *chain)
 {
@@ -833,6 +837,7 @@ void ne_ssl_trust_default_ca(ne_session *sess)
 #ifdef WINSCP
 void ne_ssl_set_certificates_storage(ne_session *sess, const char * filename)
 {
+  if (sess && sess->ssl_context)
     SSL_CTX_load_verify_locations(sess->ssl_context->ctx, filename, 0);
 }
 #endif
