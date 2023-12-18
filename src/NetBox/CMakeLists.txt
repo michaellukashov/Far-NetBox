@@ -1718,6 +1718,9 @@ target_compile_definitions(neon PRIVATE
   ${NETBOX_UNICODE_FLAGS}
   ${NEON_COMPILE_FLAGS}
   -DWINSCP
+  -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS
+  # -U_UNICODE -UUNICODE
+  -DZLIB_NAME_MANGLING_H
 )
 
 #-------------------------------------------------------------------------------
@@ -1782,8 +1785,10 @@ target_compile_options(zlib PRIVATE
 target_compile_definitions(zlib PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
-  -DUNALIGNED_OK -DZLIB_COMPAT
+  # -DUNALIGNED_OK
   -DZLIB_INTERNAL=
+  -DZLIB_COMPAT
+  -DZLIB_NAME_MANGLING_H
 )
 
 #-------------------------------------------------------------------------------
