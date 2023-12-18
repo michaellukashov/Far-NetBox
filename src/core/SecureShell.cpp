@@ -1495,7 +1495,6 @@ int32_t TSecureShell::TranslateAuthenticationMessage(
     { "Authenticating with public key \"%\" from agent", AUTH_TRANSL_PUBLIC_KEY_AGENT },
     { "Authenticating with public key \"%\"", AUTH_TRANSL_PUBLIC_KEY },
     { "Authenticated using RSA key \"%\" from agent", AUTH_TRANSL_PUBLIC_KEY_AGENT },
-    { "Wrong passphrase", AUTH_TRANSL_WRONG_PASSPHRASE },
     { "Wrong passphrase.", AUTH_TRANSL_WRONG_PASSPHRASE },
     { "Access denied", AUTH_TRANSL_ACCESS_DENIED },
     { "Trying public key authentication.", AUTH_TRANSL_TRY_PUBLIC_KEY },
