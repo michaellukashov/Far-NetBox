@@ -1189,7 +1189,7 @@ NB_CORE_EXPORT UnicodeString GetSessionUrl(const TTerminal * Terminal, bool With
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
 
-class TOutputProxy : public TObject
+class TOutputProxy final : public TObject
 {
 public:
   TOutputProxy(TCallSessionAction & Action, TCaptureOutputEvent && OutputEvent) noexcept :

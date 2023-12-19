@@ -540,7 +540,7 @@ public:
   void SetSessionReopenAutoMaximumNumberOfRetries(int32_t Value);
 };
 
-class NB_CORE_EXPORT TShortCuts : public TObject
+class NB_CORE_EXPORT TShortCuts final : public TObject
 {
 public:
   void Add(const TShortCut &ShortCut);

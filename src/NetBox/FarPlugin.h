@@ -73,7 +73,7 @@ public:
   void * Token{nullptr};
 };
 
-struct TSynchroParams : public TObject
+struct TSynchroParams final : public TObject
 {
   NB_DISABLE_COPY(TSynchroParams)
 public:

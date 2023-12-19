@@ -6119,7 +6119,7 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
 }
 
 NB_DEFINE_CLASS_ID(TSynchronizeFileData);
-struct TSynchronizeFileData : public TObject
+struct TSynchronizeFileData final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSynchronizeFileData); }

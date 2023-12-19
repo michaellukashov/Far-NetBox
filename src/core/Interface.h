@@ -100,7 +100,7 @@ const int32_t qpWaitInBatch =          0x10;
 using TButtonSubmitEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, uint32_t & /*Answer*/>;
 
-struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
+struct NB_CORE_EXPORT TQueryButtonAlias final : public TObject
 {
   TQueryButtonAlias() noexcept;
 
@@ -191,7 +191,7 @@ private:
   void * FToken{nullptr};
 };
 
-class NB_CORE_EXPORT TInstantOperationVisualizer : public TOperationVisualizer
+class NB_CORE_EXPORT TInstantOperationVisualizer final : public TOperationVisualizer
 {
 public:
   TInstantOperationVisualizer() noexcept;

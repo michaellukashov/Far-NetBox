@@ -59,7 +59,7 @@ enum TSessionActionEnum
   saConnect
 };
 
-struct TMultipleEdit : public TObject
+struct TMultipleEdit final : public TObject
 {
   UnicodeString FileName;
   UnicodeString FileTitle;
@@ -68,7 +68,7 @@ struct TMultipleEdit : public TObject
   bool PendingSave{false};
 };
 
-struct TEditHistory : public TObject
+struct TEditHistory final : public TObject
 {
   UnicodeString FileName;
   UnicodeString Directory;
@@ -78,7 +78,7 @@ struct TEditHistory : public TObject
 using TProcessSessionEvent = nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/>;
 
 NB_DEFINE_CLASS_ID(TWinSCPFileSystem);
-class TWinSCPFileSystem : public TCustomFarFileSystem
+class TWinSCPFileSystem final : public TCustomFarFileSystem
 {
   friend class TWinSCPPlugin;
   friend class TNetBoxPlugin;

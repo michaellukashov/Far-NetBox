@@ -157,14 +157,14 @@ public:
   void Size(int64_t Size);
 };
 
-class NB_CORE_EXPORT TUploadSessionAction : public TTransferSessionAction
+class NB_CORE_EXPORT TUploadSessionAction final : public TTransferSessionAction
 {
   TUploadSessionAction() = delete;
 public:
   explicit TUploadSessionAction(TActionLog * Log) noexcept;
 };
 
-class NB_CORE_EXPORT TDownloadSessionAction : public TTransferSessionAction
+class NB_CORE_EXPORT TDownloadSessionAction final : public TTransferSessionAction
 {
   TDownloadSessionAction() = delete;
 public:
@@ -173,7 +173,7 @@ public:
 
 class TRights;
 
-class NB_CORE_EXPORT TChmodSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TChmodSessionAction final : public TFileSessionAction
 {
   TChmodSessionAction() = delete;
 public:
@@ -185,7 +185,7 @@ public:
   void Recursive();
 };
 
-class NB_CORE_EXPORT TTouchSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TTouchSessionAction final : public TFileSessionAction
 {
   TTouchSessionAction() = delete;
 public:
@@ -193,14 +193,14 @@ public:
     const TDateTime & Modification) noexcept;
 };
 
-class NB_CORE_EXPORT TMkdirSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TMkdirSessionAction final : public TFileSessionAction
 {
   TMkdirSessionAction() = delete;
 public:
   explicit TMkdirSessionAction(TActionLog * Log, const UnicodeString & AFileName) noexcept;
 };
 
-class NB_CORE_EXPORT TRmSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TRmSessionAction final : public TFileSessionAction
 {
   TRmSessionAction() = delete;
 public:
@@ -209,7 +209,7 @@ public:
   void Recursive();
 };
 
-class NB_CORE_EXPORT TMvSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TMvSessionAction final : public TFileLocationSessionAction
 {
   TMvSessionAction() = delete;
 public:
@@ -217,7 +217,7 @@ public:
     const UnicodeString & ADestination) noexcept;
 };
 
-class NB_CORE_EXPORT TCpSessionAction : public TFileLocationSessionAction
+class NB_CORE_EXPORT TCpSessionAction final : public TFileLocationSessionAction
 {
   TCpSessionAction() = delete;
 public:
@@ -225,7 +225,7 @@ public:
     const UnicodeString & ADestination) noexcept;
 };
 
-class NB_CORE_EXPORT TCallSessionAction : public TSessionAction
+class NB_CORE_EXPORT TCallSessionAction final : public TSessionAction
 {
   TCallSessionAction() = delete;
 public:
@@ -236,7 +236,7 @@ public:
   void ExitCode(int32_t ExitCode);
 };
 
-class NB_CORE_EXPORT TLsSessionAction : public TSessionAction
+class NB_CORE_EXPORT TLsSessionAction final : public TSessionAction
 {
   TLsSessionAction() = delete;
 public:
@@ -245,7 +245,7 @@ public:
   void FileList(TRemoteFileList * FileList);
 };
 
-class NB_CORE_EXPORT TStatSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TStatSessionAction final : public TFileSessionAction
 {
   TStatSessionAction() = delete;
 public:
@@ -254,7 +254,7 @@ public:
   void File(TRemoteFile * AFile);
 };
 
-class NB_CORE_EXPORT TChecksumSessionAction : public TFileSessionAction
+class NB_CORE_EXPORT TChecksumSessionAction final : public TFileSessionAction
 {
   TChecksumSessionAction() = delete;
 public:
@@ -263,14 +263,14 @@ public:
   void Checksum(const UnicodeString & Alg, const UnicodeString & Checksum);
 };
 
-class NB_CORE_EXPORT TCwdSessionAction : public TSessionAction
+class NB_CORE_EXPORT TCwdSessionAction final : public TSessionAction
 {
   TCwdSessionAction() = delete;
 public:
   explicit TCwdSessionAction(TActionLog * Log, const UnicodeString & Path) noexcept;
 };
 
-class TDifferenceSessionAction : public TSessionAction
+class TDifferenceSessionAction final : public TSessionAction
 {
   TDifferenceSessionAction() = delete;
 public:
@@ -355,7 +355,7 @@ private:
   void DoAddStartupInfoEntry(const UnicodeString & S);
 };
 
-class NB_CORE_EXPORT TActionLog : public TObject
+class NB_CORE_EXPORT TActionLog final : public TObject
 {
 friend class TSessionAction;
 friend class TSessionActionRecord;

@@ -65,7 +65,7 @@ extern HINSTANCE HInstance;
 
 #define DUMPCALLSTACK_EVENT L"WinSCPCallstack%d"
 
-struct NB_CORE_EXPORT TMessageParams : public TObject
+struct NB_CORE_EXPORT TMessageParams final : public TObject
 {
   NB_DISABLE_COPY(TMessageParams)
 public:
@@ -635,7 +635,7 @@ struct TCopyDataMessage
   }
 };
 
-class TWinInteractiveCustomCommand : public TInteractiveCustomCommand
+class TWinInteractiveCustomCommand final : public TInteractiveCustomCommand
 {
   TWinInteractiveCustomCommand() = delete;
 public:
