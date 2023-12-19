@@ -3162,6 +3162,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   UserNameEdit->SetText(SessionData->SessionGetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
+  if (SessionData->GetFSProtocol() == fsS3)
+  {
+    S3AccessKeyIDEdit->SetText(SessionData->SessionGetUserName());
+    S3SecretAccessKeyEdit->SetText(SessionData->S3SessionToken());
+  }
 
   bool AllowScpFallback;
   TransferProtocolCombo->SetItemIndex(
@@ -3499,6 +3504,11 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetPassword(Password);
     SessionData->SetLoginType(ltNormal);
     SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());
+    if (GetFSProtocol() == fsS3)
+    {
+      SessionData->SessionSetUserName(S3AccessKeyIDEdit->GetText());
+      SessionData->SetS3SessionToken(S3SecretAccessKeyEdit->GetText());
+    }
 
     // Directories tab
     SessionData->SetRemoteDirectory(RemoteDirectoryEdit->GetText());
