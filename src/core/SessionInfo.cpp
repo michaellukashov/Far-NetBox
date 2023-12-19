@@ -806,7 +806,7 @@ static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, const TDateTim
 
 
 constexpr wchar_t * LogLineMarks = L"<>!.*";
-TSessionLog::TSessionLog(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
+TSessionLog::TSessionLog(gsl::not_null<TSessionUI *> UI, const TDateTime & Started, gsl::not_null<TSessionData *> SessionData,
   TConfiguration * Configuration) noexcept :
   FConfiguration(Configuration),
   FParent(nullptr),
@@ -841,7 +841,7 @@ TSessionLog::~TSessionLog() noexcept
   // delete FCriticalSection;
 }
 
-void TSessionLog::SetParent(TSessionLog * AParent, const UnicodeString & AName)
+void TSessionLog::SetParent(gsl::not_null<TSessionLog *> AParent, const UnicodeString & AName)
 {
   FParent = AParent;
   FName = AName;

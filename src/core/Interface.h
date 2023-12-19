@@ -188,7 +188,7 @@ public:
 
 private:
   bool FUseBusyCursor{false};
-  void * FToken{nullptr};
+  gsl::owner<void *> FToken{nullptr};
 };
 
 class NB_CORE_EXPORT TInstantOperationVisualizer final : public TOperationVisualizer

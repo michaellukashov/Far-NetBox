@@ -292,11 +292,11 @@ friend class TSessionActionRecord;
   NB_DISABLE_COPY(TSessionLog)
 public:
   TSessionLog() = delete;
-  explicit TSessionLog(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
+  explicit TSessionLog(gsl::not_null<TSessionUI *> UI, const TDateTime & Started, gsl::not_null<TSessionData *> SessionData,
     TConfiguration * Configuration) noexcept;
   virtual ~TSessionLog() noexcept;
 
-  void SetParent(TSessionLog * AParent, const UnicodeString & AName);
+  void SetParent(gsl::not_null<TSessionLog *> AParent, const UnicodeString & AName);
 
   void Add(TLogLineType Type, const UnicodeString & ALine);
   void AddSystemInfo();

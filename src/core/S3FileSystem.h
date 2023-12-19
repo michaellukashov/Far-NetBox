@@ -127,7 +127,7 @@ protected:
   UTF8String FAccessKeyId;
   UTF8String FSecretAccessKey;
   UTF8String FSecurityTokenBuf;
-  const char * FSecurityToken{nullptr};
+  gsl::owner<const char *> FSecurityToken{nullptr};
   UTF8String FHostName;
   UTF8String FPortSuffix;
   int32_t FTimeout{0};
