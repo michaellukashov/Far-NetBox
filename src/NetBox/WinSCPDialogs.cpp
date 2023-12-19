@@ -5641,7 +5641,7 @@ bool TCopyDialog::CloseQuery()
     if (!FToRemote && ((FOptions & coTempTransfer) == 0))
     {
       const UnicodeString Directory = ::ExtractFilePath(DirectoryEdit->GetText());
-      if (!Directory.IsEmpty() && !::SysUtulsDirectoryExists(Directory))
+      if (!Directory.IsEmpty() && !base::DirectoryExists(Directory))
       {
         TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
 

@@ -648,7 +648,7 @@ bool SysUtulsForceDirectories(const UnicodeString & ADir)
     return false;
   }
   const UnicodeString Dir = ::ExcludeTrailingBackslash(ADir);
-  if ((Dir.Length() < 3 + 4) || ::SysUtulsDirectoryExists(Dir)) // \\?\C:
+  if ((Dir.Length() < 3 + 4) || base::DirectoryExists(Dir)) // \\?\C:
   {
     return Result;
   }
@@ -2125,7 +2125,7 @@ bool DoExists(bool R, const UnicodeString & Path)
     if ((Error == ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
        (Error == ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
     {
-      Result = ::SysUtulsDirectoryExists(ExtractFileDir(Path));
+      Result = base::DirectoryExists(ExtractFileDir(Path));
     }
   }
   return Result;
