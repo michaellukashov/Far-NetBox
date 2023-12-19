@@ -3,7 +3,7 @@
 #include <Classes.hpp>
 #include <Interface.h>
 #include <GUIConfiguration.h>
-#include <FarDialog.h>
+#include "FarDialog.h"
 
 enum TMsgDlgType
 {
