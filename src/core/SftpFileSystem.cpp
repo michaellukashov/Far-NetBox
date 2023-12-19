@@ -5890,7 +5890,7 @@ void TSFTPFileSystem::Sink(
         // See also DoRenameLocalFileForce
         FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(RENAME_AFTER_RESUME_ERROR, base::ExtractFileName(DestPartialFullName, true), ADestFileName), "")
         {
-          if (base::FileExists(ApiPath(DestFullName)))
+          if (base::FileExists(DestFullName))
           {
             DeleteFileChecked(DestFullName);
           }
