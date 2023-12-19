@@ -932,7 +932,7 @@ void TSessionLog::CheckSize(int64_t Addition)
       }
       else
       {
-        THROWOSIFFALSE(::SysUtulsRenameFile(LogPart, LogPartFileName(BaseName, Index + 1)));
+        THROWOSIFFALSE(base::RenameFile(LogPart, LogPartFileName(BaseName, Index + 1)));
       }
       Index--;
     }
