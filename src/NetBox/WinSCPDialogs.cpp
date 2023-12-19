@@ -2974,6 +2974,7 @@ void TSessionDialog::UpdateControls()
   const bool lFtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
   const bool lFtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
   const bool LoginAnonymous = false;
+  const bool IsMainTab = GetTab() == TransferProtocolCombo->GetGroup();
 
   ConnectButton->SetEnabled(!HostNameEdit->GetIsEmpty());
 
@@ -2992,20 +2993,14 @@ void TSessionDialog::UpdateControls()
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
 
-  if (S3Protocol)
-  {
-  }
-  else
-  {
-  }
-  // UserNameLabel->SetVisible(!S3Protocol);
-  // UserNameEdit->SetVisible(!S3Protocol);
-  // PasswordLabel->SetVisible(!S3Protocol);
-  // PasswordEdit->SetVisible(!S3Protocol);
-  S3AccessKeyIDLabel->SetVisible(S3Protocol);
-  S3AccessKeyIDEdit->SetVisible(S3Protocol);
-  S3SecretAccessKeyLabel->SetVisible(S3Protocol);
-  S3SecretAccessKeyEdit->SetVisible(S3Protocol);
+  UserNameLabel->SetVisible(IsMainTab && !S3Protocol);
+  UserNameEdit->SetVisible(IsMainTab && !S3Protocol);
+  PasswordLabel->SetVisible(IsMainTab && !S3Protocol);
+  PasswordEdit->SetVisible(IsMainTab && !S3Protocol);
+  S3AccessKeyIDLabel->SetVisible(IsMainTab && S3Protocol);
+  S3AccessKeyIDEdit->SetVisible(IsMainTab && S3Protocol);
+  S3SecretAccessKeyLabel->SetVisible(IsMainTab && S3Protocol);
+  S3SecretAccessKeyEdit->SetVisible(IsMainTab && S3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
