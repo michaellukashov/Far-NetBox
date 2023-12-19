@@ -922,7 +922,7 @@ protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
 
 private:
-  TConfiguration * FConfiguration{nullptr};
+  gsl::not_null<TConfiguration *> FConfiguration;
 
 public:
   TTerminal * GetTerminal(int32_t Index);

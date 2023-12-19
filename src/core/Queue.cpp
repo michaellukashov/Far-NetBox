@@ -1256,8 +1256,8 @@ public:
   virtual ~TBackgroundTerminal() noexcept override = default;
 
   void Init(
-    TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * Configuration,
-    TTerminalItem * AItem, const UnicodeString & AName);
+    gsl::not_null<TTerminal *> MainTerminal, gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> Configuration,
+    gsl::not_null<TTerminalItem *> AItem, const UnicodeString & AName);
 
 protected:
   virtual bool DoQueryReopen(Exception * E) override;
@@ -1271,8 +1271,7 @@ TBackgroundTerminal::TBackgroundTerminal() noexcept :
 {
 }
 
-void TBackgroundTerminal::Init(
-  TTerminal * MainTerminal, TSessionData * ASessionData, TConfiguration * AConfiguration, TTerminalItem * AItem,
+void TBackgroundTerminal::Init(gsl::not_null<TTerminal *> MainTerminal, gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration, gsl::not_null<TTerminalItem *> AItem,
   const UnicodeString & AName)
 {
   TSecondaryTerminal::Init(MainTerminal, ASessionData, AConfiguration, AName, nullptr);
