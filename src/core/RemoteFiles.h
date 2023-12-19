@@ -765,6 +765,7 @@ class TFileOperationProgressType;
 
 class TSynchronizeProgress final : public TObject
 {
+  TSynchronizeProgress() = delete;
 public:
   explicit TSynchronizeProgress(const TSynchronizeChecklist * Checklist) noexcept;
 
