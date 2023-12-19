@@ -1707,7 +1707,7 @@ uint16_t TS3FileSystem::AclGrantToPermissions(S3AclGrant & AclGrant, const TS3Fi
     }
     else
     {
-      FTerminal->LogEvent(1, FORMAT(L"Unspported permission for canonical user %s", StrFromS3(Properties.OwnerId)));
+      FTerminal->LogEvent(1, FORMAT(L"Unsupported permission for canonical user %s", StrFromS3(Properties.OwnerId)));
     }
   }
   else if (AclGrant.granteeType == S3GranteeTypeAllAwsUsers)
