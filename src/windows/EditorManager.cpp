@@ -399,11 +399,9 @@ void TEditorManager::AddFile(TFileData & FileData, TEditedFileData * AData)
   FileData.Reupload = false;
   FileData.Reloading = false;
   FileData.Saves = 0;
-  FileData.Data = Data.get();
+  FileData.Data = Data.release(); // ownership passed
 
   FFiles.push_back(FileData);
-
-  Data.release(); // ownership passed
 }
 
 void TEditorManager::UploadComplete(int Index)
