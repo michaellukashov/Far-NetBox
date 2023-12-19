@@ -10,10 +10,10 @@
 #include <Common.h>
 #include "guid.h"
 
-#define RMASK (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED | SHIFT_PRESSED)
-#define ALTMASK (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED)
-#define CTRLMASK (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED)
-#define SHIFTMASK (SHIFT_PRESSED)
+constexpr const DWORD RMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED | SHIFT_PRESSED);
+constexpr const DWORD ALTMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED);
+constexpr const DWORD CTRLMASK = (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED);
+constexpr const DWORD SHIFTMASK = (SHIFT_PRESSED);
 
 class TCustomFarFileSystem;
 class TFarPanelModes;
@@ -26,7 +26,7 @@ class TFarMessageDialog;
 class TFarEditorInfo;
 class TFarPluginGuard;
 
-constexpr int32_t MaxMessageWidth = 64;
+constexpr const int32_t MaxMessageWidth = 64;
 
 enum TFarShiftStatus
 {

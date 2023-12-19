@@ -23,18 +23,18 @@ class TTerminalQueueStatus;
 class TQueueItem;
 class TKeepAliveThread;
 struct TMessageParams;
-#define REMOTE_DIR_HISTORY "WinscpRemoteDirectory"
-#define ASCII_MASK_HISTORY "WinscpAsciiMask"
-#define LINK_FILENAME_HISTORY "WinscpRemoteLink"
-#define LINK_POINT_TO_HISTORY "WinscpRemoteLinkPointTo"
-#define APPLY_COMMAND_HISTORY "WinscpApplyCmd"
-#define APPLY_COMMAND_PARAM_HISTORY "WinscpApplyCmdParam"
-#define LOG_FILE_HISTORY "WinscpLogFile"
-#define REMOTE_SYNC_HISTORY "WinscpRemoteSync"
-#define LOCAL_SYNC_HISTORY "WinscpLocalSync"
-#define MOVE_TO_HISTORY "WinscpMoveTo"
-#define WINSCP_FILE_MASK_HISTORY "WinscpFileMask"
-#define MAKE_SESSION_FOLDER_HISTORY "WinscpSessionFolder"
+constexpr const char * REMOTE_DIR_HISTORY = "WinscpRemoteDirectory";
+constexpr const char * ASCII_MASK_HISTORY = "WinscpAsciiMask";
+constexpr const char * LINK_FILENAME_HISTORY = "WinscpRemoteLink";
+constexpr const char * LINK_POINT_TO_HISTORY = "WinscpRemoteLinkPointTo";
+constexpr const char * APPLY_COMMAND_HISTORY = "WinscpApplyCmd";
+constexpr const char * APPLY_COMMAND_PARAM_HISTORY = "WinscpApplyCmdParam";
+constexpr const char * LOG_FILE_HISTORY = "WinscpLogFile";
+constexpr const char * REMOTE_SYNC_HISTORY = "WinscpRemoteSync";
+constexpr const char * LOCAL_SYNC_HISTORY = "WinscpLocalSync";
+constexpr const char * MOVE_TO_HISTORY = "WinscpMoveTo";
+constexpr const char * WINSCP_FILE_MASK_HISTORY = "WinscpFileMask";
+constexpr const char * MAKE_SESSION_FOLDER_HISTORY = "WinscpSessionFolder";
 
 #if 0
 // for Properties dialog
