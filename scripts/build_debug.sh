@@ -8,10 +8,10 @@ setup_netbox()
     NETBOX_ROOT_DIR=$(readlink -f "$PWD/..")
   fi
   if [ -z "$NETBOX_BUILD_DIR" ] ; then
-    NETBOX_BUILD_DIR="$NETBOX_ROOT_DIR/../../../NetBox-VS2019x64-$BUILD_TYPE"
+    NETBOX_BUILD_DIR="$NETBOX_ROOT_DIR/../NetBox-VS2019x64-$BUILD_TYPE"
   fi
   if [ -z "$OPENSSL_ROOT_DIR" ] ; then
-    OPENSSL_ROOT_DIR="$NETBOX_ROOT_DIR/../../libs/openssl"
+    OPENSSL_ROOT_DIR="$NETBOX_ROOT_DIR/libs/openssl"
   fi
   if [ -z "$OPENSSL_LIBRARY_DIR" ] ; then
     OPENSSL_LIBRARY_DIR="$OPENSSL_ROOT_DIR/x64-$BUILD_TYPE"

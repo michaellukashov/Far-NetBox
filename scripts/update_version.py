@@ -126,7 +126,7 @@ def get_build_number():
 
 def main():
     ver_re = re.compile(r'^NetBox\s(\d+)\.(\d+)\.(\d+).*$')
-    f = open('../../ChangeLog')
+    f = open('ChangeLog')
 
     for line in f.readlines():
         context = ver_re.match(line)
