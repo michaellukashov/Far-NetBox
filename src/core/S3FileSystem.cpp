@@ -1297,7 +1297,7 @@ void TS3FileSystem::ReadDirectoryInternal(
     } while (Continue);
 
     // Listing bucket root directory will report an error if the bucket does not exist.
-    // But there won't be any prefix/ entry, so if the bucket is ampty, the Data.Any is false.
+    // But there won't be any prefix/ entry, so if the bucket is empty, the Data.Any is false.
     // But when listing a prefix, we do not get any error, when the "prefix" does not exist.
     // But when the prefix does exist, there's at least the prefix/ entry. If there's none, it means that the path does not exist.
     // Even an empty-named entry/subprefix (which are ignored for other purposes) still indicate that the prefix exists.
