@@ -372,7 +372,7 @@ public:
   UnicodeString GetPuttySessionsKey(const UnicodeString & RootKey) const;
   void RefreshPuttySshHostCAList();
 
-  __property TVSFixedFileInfo *FixedApplicationInfo  = { read = GetFixedApplicationInfo };
+  __property TVSFixedFileInfo * FixedApplicationInfo  = { read = GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
   ROProperty<void *> ApplicationInfo{nb::bind(&TConfiguration::GetApplicationInfo, this)};
   __property TUsage * Usage = { read = FUsage };
@@ -543,8 +543,8 @@ public:
 class NB_CORE_EXPORT TShortCuts final : public TObject
 {
 public:
-  void Add(const TShortCut &ShortCut);
-  bool Has(const TShortCut &ShortCut) const;
+  void Add(const TShortCut & ShortCut);
+  bool Has(const TShortCut & ShortCut) const;
 
 private:
   nb::vector_t<TShortCut> FShortCuts;

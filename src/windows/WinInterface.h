@@ -218,7 +218,7 @@ struct TRegistration
 };
 void DoAboutDialog(TConfiguration * Configuration,
   bool AllowLicense, TRegistration * Registration);
-void DoAboutDialog(TConfiguration * Configuration);
+// void DoAboutDialog(TConfiguration * Configuration);
 
 // forms\Cleanup.cpp
 bool DoCleanupDialog();
@@ -397,8 +397,8 @@ bool DoSynchronizeDialog(TSynchronizeParamType & Params,
   bool & SaveSettings, int32_t Options, int32_t CopyParamAttrs,
   TGetSynchronizeOptionsEvent && OnGetOptions,
   TSynchronizeSessionLogEvent && OnSynchronizeSessionLog,
-  TFeedSynchronizeErrorEvent & OnFeedSynchronizeError,
-  TNotifyEvent & OnSynchronizeAbort,
+  TFeedSynchronizeErrorEvent && OnFeedSynchronizeError,
+  TNotifyEvent && OnSynchronizeAbort,
   TSynchronizeInNewWindowEvent && OnSynchronizeInNewWindow,
   int32_t AutoSubmit);
 
@@ -651,7 +651,7 @@ protected:
 
 private:
   UnicodeString FCustomCommandName;
-  rde::map<int32_t, size_t> FIndexes;
+  nb::map_t<int32_t, size_t> FIndexes;
   TUnicodeStringVector FPrompts;
   TUnicodeStringVector FDefaults;
   TUnicodeStringVector FValues;

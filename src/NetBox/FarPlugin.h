@@ -253,12 +253,12 @@ private:
   UnicodeString FCurrentTitle;
   int16_t FCurrentProgress{0};
 
-  void ClearPluginInfo(PluginInfo &Info) const;
+  void ClearPluginInfo(PluginInfo & Info) const;
   void UpdateCurrentConsoleTitle();
   UnicodeString FormatConsoleTitle() const;
   HWND GetConsoleWindow() const;
   RECT GetPanelBounds(HANDLE PanelHandle);
-  bool CompareRects(const RECT &lhs, const RECT &rhs) const
+  bool CompareRects(const RECT & lhs, const RECT & rhs) const
   {
     return
       lhs.left == rhs.left &&

@@ -656,7 +656,7 @@ public:
   bool Checked{true};
   TRemoteFile * RemoteFile{nullptr};
 
-  const UnicodeString& GetFileName() const;
+  const UnicodeString & GetFileName() const;
   bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
   bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
   bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }

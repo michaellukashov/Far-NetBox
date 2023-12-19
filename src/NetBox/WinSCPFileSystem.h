@@ -72,7 +72,7 @@ struct TEditHistory final : public TObject
 {
   UnicodeString FileName;
   UnicodeString Directory;
-  bool operator==(const TEditHistory &rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
+  bool operator ==(const TEditHistory & rh) const { return (FileName == rh.FileName) && (Directory == rh.Directory); }
 };
 
 using TProcessSessionEvent = nb::FastDelegate2<void, TSessionData * /*Data*/, void * /*Param*/>;
