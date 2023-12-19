@@ -3799,13 +3799,16 @@ void TWinSCPFileSystem::UploadFromEditor(bool NoReload,
 
   std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>());
   File->SetFileName(RealFileName);
-  SCOPE_EXIT
+  try__finally
+  {
+    FFileList->AddObject(AFileName, File.get()); //-V522
+    UploadFiles(false, 0, true, DestPath);
+  }
+  __finally
   {
     FTerminal->SetAutoReadDirectory(PrevAutoReadDirectory);
     FFileList.reset();
-  };
-  FFileList->AddObject(AFileName, File.get()); //-V522
-  UploadFiles(false, 0, true, DestPath);
+  } end_try__finally
 }
 
 void TWinSCPFileSystem::UploadOnSave(bool NoReload)
