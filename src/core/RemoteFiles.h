@@ -621,7 +621,7 @@ public:
     const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties);
 
 public:
-  TRemoteProperties &operator=(const TRemoteProperties &other);
+  TRemoteProperties & operator =(const TRemoteProperties & other);
 };
 
 enum TChecklistAction { //renamed from enum TSynchronizeChecklist::TAction

@@ -2357,7 +2357,7 @@ bool TRights::operator !=(const TRights & rhr) const
   return !(*this == rhr);
 }
 
-bool TRights::operator!=(TFlag rhr) const
+bool TRights::operator !=(TFlag rhr) const
 {
   return !(*this == rhr);
 }
@@ -2368,7 +2368,7 @@ TRights & TRights::operator =(uint16_t rhr)
   return *this;
 }
 
-TRights &TRights::operator =(const TRights & rhr)
+TRights & TRights::operator =(const TRights & rhr)
 {
   Assign(&rhr);
   return *this;
@@ -2394,14 +2394,14 @@ TRights TRights::operator &(const TRights & rhr) const
   return Result;
 }
 
-TRights TRights::operator&(TFlag rhr) const
+TRights TRights::operator &(TFlag rhr) const
 {
   TRights Result(*this);
   Result &= static_cast<uint16_t>(rhr);
   return Result;
 }
 
-TRights &TRights::operator&=(const TRights &  rhr)
+TRights & TRights::operator &=(const TRights &  rhr)
 {
   if (GetAllowUndef() || rhr.GetAllowUndef())
   {
@@ -2433,7 +2433,7 @@ TRights & TRights::operator &=(TFlag rhr)
   return *this;
 }
 
-TRights TRights::operator  |(const TRights &rhr) const
+TRights TRights::operator |(const TRights &rhr) const
 {
   TRights Result(*this);
   Result |= rhr;
@@ -2985,7 +2985,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
 }
 
 TRemoteProperties TRemoteProperties::ChangedProperties(
-  const TRemoteProperties &OriginalProperties, TRemoteProperties &NewProperties)
+  const TRemoteProperties & OriginalProperties, TRemoteProperties & NewProperties)
 {
   DebugAssert(!OriginalProperties.Valid.Contains(vpEncrypt));
   // TODO: Modification and LastAccess
@@ -3010,7 +3010,7 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
   return NewProperties;
 }
 
-TRemoteProperties &TRemoteProperties::operator =(const TRemoteProperties & other)
+TRemoteProperties & TRemoteProperties::operator =(const TRemoteProperties & other)
 {
   Valid = other.Valid;
   Rights = other.Rights;
@@ -3071,7 +3071,7 @@ TChecklistItem::~TChecklistItem() noexcept
   SAFE_DESTROY(RemoteFile);
 }
 
-const UnicodeString& TChecklistItem::GetFileName() const
+const UnicodeString & TChecklistItem::GetFileName() const
 {
   if (!Remote.FileName.IsEmpty())
   {
