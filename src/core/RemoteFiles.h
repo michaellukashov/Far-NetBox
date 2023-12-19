@@ -68,7 +68,7 @@ public:
   UnicodeString GetLogText() const;
 };
 
-class NB_CORE_EXPORT TRemoteTokenList : public TObject
+class NB_CORE_EXPORT TRemoteTokenList final : public TObject
 {
 public:
   TRemoteTokenList * Duplicate() const;
@@ -279,7 +279,7 @@ public:
 };
 
 NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
-class NB_CORE_EXPORT TRemoteParentDirectory : public TRemoteDirectoryFile
+class NB_CORE_EXPORT TRemoteParentDirectory final : public TRemoteDirectoryFile
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteParentDirectory); }
@@ -346,7 +346,7 @@ public:
 };
 
 NB_DEFINE_CLASS_ID(TRemoteDirectory);
-class NB_CORE_EXPORT TRemoteDirectory : public TRemoteFileList
+class NB_CORE_EXPORT TRemoteDirectory final : public TRemoteFileList
 {
   friend class TSCPFileSystem;
   friend class TSFTPFileSystem;
@@ -421,7 +421,7 @@ private:
   void DoClearFileList(const UnicodeString & Directory, bool SubDirs);
 };
 
-class TRemoteDirectoryChangesCache : private TStringList
+class TRemoteDirectoryChangesCache final : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
   TRemoteDirectoryChangesCache() = delete;
@@ -454,7 +454,7 @@ private:
   int32_t FMaxSize{0};
 };
 
-class NB_CORE_EXPORT TRights : public TObject
+class NB_CORE_EXPORT TRights final : public TObject
 {
 public:
   static const int32_t TextLen = 9;
@@ -592,7 +592,7 @@ public:
 enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20 };
 // typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
 NB_DEFINE_CLASS_ID(TRemoteProperties);
-class TRemoteProperties : public TObject
+class TRemoteProperties final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteProperties); }
@@ -629,7 +629,7 @@ enum TChecklistAction { //renamed from enum TSynchronizeChecklist::TAction
 
 class TSynchronizeChecklist;
 NB_DEFINE_CLASS_ID(TChecklistItem);
-class NB_CORE_EXPORT TChecklistItem : public TObject
+class NB_CORE_EXPORT TChecklistItem final : public TObject
 {
   friend class TTerminal;
   friend class TSynchronizeChecklist;
@@ -673,7 +673,7 @@ private:
 //  TChecklistItem() noexcept;
 };
 
-class NB_CORE_EXPORT TSynchronizeChecklist : public TObject
+class NB_CORE_EXPORT TSynchronizeChecklist final : public TObject
 {
   NB_DISABLE_COPY(TSynchronizeChecklist)
   friend class TTerminal;
@@ -763,7 +763,7 @@ private:
 
 class TFileOperationProgressType;
 
-class TSynchronizeProgress
+class TSynchronizeProgress final : public TObject
 {
 public:
   explicit TSynchronizeProgress(const TSynchronizeChecklist * Checklist) noexcept;
