@@ -1907,8 +1907,8 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     {
       // Define the members of TUnicodeSymLinkRec structure
       UnicodeString TargetName;
-      DWORD Attr;
-      int64_t Size;
+      DWORD Attr{0};
+      int64_t Size{0};
     };
 
     enum TSymLinkResult
@@ -1943,20 +1943,20 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
 #endif
    struct TReparseDataBuffer
    {
-      ULONG ReparseTag;
-      WORD ReparseDataLength;
-      WORD Reserved;
-      WORD SubstituteNameOffset;
-      WORD SubstituteNameLength;
-      WORD PrintNameOffset;
-      WORD PrintNameLength;
+      ULONG ReparseTag{0};
+      WORD ReparseDataLength{0};
+      WORD Reserved{0};
+      WORD SubstituteNameOffset{0};
+      WORD SubstituteNameLength{0};
+      WORD PrintNameOffset{0};
+      WORD PrintNameLength{0};
       union {
-          WCHAR PathBufferMount[4096];
-          struct
-          {
-            ULONG Flags;
-            WCHAR PathBufferSym[4096];
-          };
+        WCHAR PathBufferMount[4096]{};
+        struct
+        {
+          ULONG Flags;
+          WCHAR PathBufferSym[4096];
+        };
       };
    };
 
@@ -1966,8 +1966,8 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     const UnicodeString CGlobalPrefix = L"\\\\?\\";
 
     TReparseDataBuffer * PBuffer = nullptr;
-    DWORD BytesReturned;
-    GUID guid;
+    DWORD BytesReturned{0};
+    GUID guid{};
 
     TSymLinkResult Result = slrError;
     TUnicodeSymLinkRec SymLinkRec;
@@ -2014,20 +2014,20 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
 
             if (!SymLinkRec.TargetName.IsEmpty())
             {
-                WIN32_FILE_ATTRIBUTE_DATA fileAttributeData;
-                if (GetFileAttributesExW(SymLinkRec.TargetName.c_str(), GetFileExInfoStandard, &fileAttributeData))
-                {
-                    SymLinkRec.Attr = fileAttributeData.dwFileAttributes;
-                    SymLinkRec.Size = static_cast<uint64_t>(fileAttributeData.nFileSizeHigh) << 32 | fileAttributeData.nFileSizeLow;
-                }
-                /*else if (RaiseErrorOnMissing)
-                {
-                    throw std::runtime_error("Directory not found: " + std::to_string(GetLastError()));
-                }*/
-                else
-                {
-                    SymLinkRec.TargetName.Clear();
-                }
+              WIN32_FILE_ATTRIBUTE_DATA fileAttributeData{};
+              if (GetFileAttributesExW(SymLinkRec.TargetName.c_str(), GetFileExInfoStandard, &fileAttributeData))
+              {
+                  SymLinkRec.Attr = fileAttributeData.dwFileAttributes;
+                  SymLinkRec.Size = static_cast<uint64_t>(fileAttributeData.nFileSizeHigh) << 32 | fileAttributeData.nFileSizeLow;
+              }
+              /*else if (RaiseErrorOnMissing)
+              {
+                  throw std::runtime_error("Directory not found: " + std::to_string(GetLastError()));
+              }*/
+              else
+              {
+                  SymLinkRec.TargetName.Clear();
+              }
             }
             else
             {
@@ -2067,7 +2067,7 @@ namespace base {
 FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
 {
   const UnicodeString NewFileName = StripPathQuotes(::ExpandEnvironmentVariables(LogFileName));
-  FILE *Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
+  FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
   if (Result != nullptr)
   {
     setvbuf(Result, nullptr, _IONBF, BUFSIZ);

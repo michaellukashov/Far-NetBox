@@ -373,9 +373,9 @@ public:
   }
   Integer Time{0};
   Int64 Size{0};
-  Integer Attr{0};
+  DWORD Attr{0};
   TFileName Name;
-  Integer ExcludeAttr{0};
+  DWORD ExcludeAttr{0};
   THandle FindHandle{INVALID_HANDLE_VALUE};
   TWin32FindData FindData{};
 };
