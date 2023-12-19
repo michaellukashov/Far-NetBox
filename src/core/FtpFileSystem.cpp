@@ -993,7 +993,7 @@ bool TFTPFileSystem::EnsureLocationWhenWorkFromCwd(const UnicodeString & Directo
 
 
 void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
-  TCaptureOutputEvent OutputEvent)
+  TCaptureOutputEvent && OutputEvent)
 {
   // end-user has right to expect that client current directory is really
   // current directory for the server
@@ -1901,7 +1901,7 @@ void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
 
 void TFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * /*AFile*/, const UnicodeString & /*ACommand*/, int32_t /*AParams*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  TCaptureOutputEvent && /*OutputEvent*/)
 {
   // if ever implemented, do not forget to add EnsureLocation,
   // see AnyCommand for a reason why

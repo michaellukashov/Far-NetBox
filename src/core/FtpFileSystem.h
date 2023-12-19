@@ -40,7 +40,7 @@ public:
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) override;
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
   virtual void AnyCommand(const UnicodeString & Command,
-    TCaptureOutputEvent OutputEvent) override;
+    TCaptureOutputEvent && OutputEvent) override;
   virtual void ChangeDirectory(const UnicodeString & ADirectory) override;
   virtual void CachedChangeDirectory(const UnicodeString & ADirectory) override;
   virtual void AnnounceFileListOperation() override;
@@ -77,7 +77,7 @@ public:
   virtual void RemoteDeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action) override;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
+    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent && OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(int32_t Capability) const override;

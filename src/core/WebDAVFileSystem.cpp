@@ -1245,13 +1245,13 @@ void TWebDAVFileSystem::ConfirmOverwrite(
 }
 
 void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
-  const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, int32_t /*Params*/, TCaptureOutputEvent /*OutputEvent*/)
+  const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, int32_t /*Params*/, TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
 }
 
 void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
 }

@@ -4521,7 +4521,7 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
     Params->Command, Params->Params, LocalFileName));
   FileModified(AFile, LocalFileName);
   DoCustomCommandOnFile(LocalFileName, AFile, Params->Command, Params->Params,
-    Params->OutputEvent);
+    std::forward<TCaptureOutputEvent>(Params->OutputEvent));
   ReactOnCommand(fsAnyCommand);
 }
 
@@ -4567,7 +4567,7 @@ TCustomFileSystem * TTerminal::GetFileSystemForCapability(TFSCapability Capabili
 
 void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams,
-  TCaptureOutputEvent OutputEvent)
+  TCaptureOutputEvent && OutputEvent)
 {
   TRetryOperationLoop RetryLoop(this);
   do
@@ -4577,7 +4577,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
       TCustomFileSystem * FileSystem = GetFileSystemForCapability(fcAnyCommand, true);
       DebugAssert((FileSystem != FFileSystem.get()) || GetIsCapable(fcShellAnyCommand));
 
-      FileSystem->CustomCommandOnFile(AFileName, AFile, ACommand, AParams, OutputEvent);
+      FileSystem->CustomCommandOnFile(AFileName, AFile, ACommand, AParams, std::forward<TCaptureOutputEvent>(OutputEvent));
     }
     catch(Exception & E)
     {
@@ -4595,7 +4595,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & ACommand,
     TCustomCommandParams Params;
     Params.Command = ACommand;
     Params.Params = AParams;
-    Params.OutputEvent = OutputEvent;
+    Params.OutputEvent = std::forward<TCaptureOutputEvent>(OutputEvent);
     ProcessFiles(AFiles, foCustomCommand, nb::bind(&TTerminal::CustomCommandOnFile, this), &Params);
   }
   else
@@ -5618,7 +5618,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     DirectoryModified(RemoteGetCurrentDirectory(), false);
     LogEvent(L"Executing user defined command.");
     TCustomFileSystem * FileSystem = GetFileSystemForCapability(fcAnyCommand);
-    FileSystem->AnyCommand(ACommand, OutputEvent);
+    FileSystem->AnyCommand(ACommand, std::forward<TCaptureOutputEvent>(OutputEvent));
     if (GetCommandSessionOpened() && (FileSystem == FCommandSession->FFileSystem.get()))
     {
       FCommandSession->GetFileSystem()->ReadCurrentDirectory();

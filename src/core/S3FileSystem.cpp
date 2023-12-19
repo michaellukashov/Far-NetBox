@@ -1846,13 +1846,13 @@ void TS3FileSystem::CalculateFilesChecksum(
 }
 
 void TS3FileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
-  const TRemoteFile * /*AFile*/, const UnicodeString & /*ACommand*/, int32_t /*AParams*/, TCaptureOutputEvent /*OutputEvent*/)
+  const TRemoteFile * /*AFile*/, const UnicodeString & /*ACommand*/, int32_t /*AParams*/, TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
 }
 
 void TS3FileSystem::AnyCommand(const UnicodeString & /*ACommand*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
 }

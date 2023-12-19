@@ -1556,7 +1556,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
 
 void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams,
-    TCaptureOutputEvent OutputEvent)
+    TCaptureOutputEvent && OutputEvent)
 {
   DebugAssert(AFile);
   const bool Dir = AFile->GetIsDirectory() && FTerminal->CanRecurseToDirectory(AFile);
@@ -1579,7 +1579,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
 
     if (!FTerminal->DoOnCustomCommand(Cmd))
     {
-      AnyCommand(Cmd, OutputEvent);
+      AnyCommand(Cmd, std::forward<TCaptureOutputEvent>(OutputEvent));
     }
   }
 }
@@ -1600,7 +1600,7 @@ void TSCPFileSystem::CaptureOutput(const UnicodeString & AddedLine, TCaptureOutp
 }
 
 void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
-  TCaptureOutputEvent OutputEvent)
+  TCaptureOutputEvent && OutputEvent)
 {
   DebugAssert(!FSecureShell->GetOnCaptureOutput());
   if (!OutputEvent.empty())

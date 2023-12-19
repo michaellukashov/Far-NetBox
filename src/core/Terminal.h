@@ -338,7 +338,7 @@ protected:
   void DoDeleteFile(
     TCustomFileSystem * FileSystem, const UnicodeString & AFileName, const TRemoteFile * AFile, int32_t Params);
   void DoCustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent);
+    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent && OutputEvent);
   bool DoRenameOrCopyFile(
     bool Rename, const UnicodeString & FileName, const TRemoteFile * File, const UnicodeString & NewName,
     bool Move, bool DontOverwrite, bool IsBatchOperation);

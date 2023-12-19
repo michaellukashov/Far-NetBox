@@ -4396,13 +4396,13 @@ UnicodeString TSFTPFileSystem::CalculateFilesChecksumInitialize(const UnicodeStr
 
 void TSFTPFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
     const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, int32_t /*AParams*/,
-    TCaptureOutputEvent /*OutputEvent*/)
+    TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
 }
 
 void TSFTPFileSystem::AnyCommand(const UnicodeString & /*Command*/,
-  TCaptureOutputEvent /*OutputEvent*/)
+  TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
 }

@@ -52,7 +52,7 @@ public:
   virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) override;
   virtual void AnyCommand(const UnicodeString & ACommand,
-    TCaptureOutputEvent OutputEvent) override;
+    TCaptureOutputEvent && OutputEvent) override;
   virtual void ChangeDirectory(const UnicodeString & ADirectory) override;
   virtual void CachedChangeDirectory(const UnicodeString & ADirectory) override;
   virtual void AnnounceFileListOperation() override;
@@ -87,7 +87,7 @@ public:
     const TRemoteFile * File, int32_t AParams,
     TRmSessionAction & Action) override;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * File, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) override;
+    const TRemoteFile * File, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent && OutputEvent) override;
   virtual void DoStartup() override;
   virtual void HomeDirectory() override;
   virtual bool IsCapable(int32_t Capability) const override;

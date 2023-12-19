@@ -157,7 +157,7 @@ public:
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) = 0;
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const = 0;
   virtual void AnyCommand(const UnicodeString & ACommand,
-    TCaptureOutputEvent OutputEvent) = 0;
+    TCaptureOutputEvent && OutputEvent) = 0;
   virtual void ChangeDirectory(const UnicodeString & ADirectory) = 0;
   virtual void CachedChangeDirectory(const UnicodeString & ADirectory) = 0;
   virtual void AnnounceFileListOperation() = 0;
@@ -197,7 +197,7 @@ public:
     const TRemoteFile * AFile, int32_t AParams,
     TRmSessionAction & Action) = 0;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
-    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent OutputEvent) = 0;
+    const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent && OutputEvent) = 0;
   virtual void DoStartup() = 0;
   virtual void HomeDirectory() = 0;
   virtual UnicodeString GetHomeDirectory();
