@@ -313,8 +313,8 @@ UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * S
 
 #endif //if 0
 
-constexpr const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
-constexpr const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
+// constexpr const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
+// constexpr const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
 
 TS3FileSystem::TS3FileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TS3FileSystem, ATerminal),
@@ -1870,16 +1870,16 @@ void TS3FileSystem::SpaceAvailable(const UnicodeString & /*APath*/,
 
 void TS3FileSystem::CopyToRemote(
   TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-  int32_t AParams, TFileOperationProgressType * OperationProgress, TOnceDoneOperation & OnceDoneOperation)
+  int32_t AParams, TFileOperationProgressType * AOperationProgress, TOnceDoneOperation & OnceDoneOperation)
 {
   AParams &= ~cpAppend;
 
-  FTerminal->DoCopyToRemote(AFilesToCopy, ATargetDir, CopyParam, AParams, OperationProgress, tfPreCreateDir, OnceDoneOperation);
+  FTerminal->DoCopyToRemote(AFilesToCopy, ATargetDir, CopyParam, AParams, AOperationProgress, tfPreCreateDir, OnceDoneOperation);
 }
 
 void TS3FileSystem::ConfirmOverwrite(
   const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
-  TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
+  TFileOperationProgressType * AOperationProgress, const TOverwriteFileParams * FileParams,
   const TCopyParamType * CopyParam, int32_t AParams)
 {
   const uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
@@ -1894,12 +1894,12 @@ void TS3FileSystem::ConfirmOverwrite(
   uint32_t Answer;
 
   {
-    TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
+    TSuspendFileOperationProgress Suspend(AOperationProgress); nb::used(Suspend);
     Answer =
       FTerminal->ConfirmFileOverwrite(
         ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
-        ReverseOperationSide(OperationProgress->GetSide()),
-        CopyParam, AParams, OperationProgress);
+        ReverseOperationSide(AOperationProgress->GetSide()),
+        CopyParam, AParams, AOperationProgress);
   }
 
   switch (Answer)
@@ -1915,7 +1915,7 @@ void TS3FileSystem::ConfirmOverwrite(
       DebugFail();
       break;
     case qaCancel:
-      OperationProgress->SetCancelAtLeast(csCancel);
+      AOperationProgress->SetCancelAtLeast(csCancel);
       Abort();
       break;
   }
@@ -2036,7 +2036,7 @@ int32_t TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int32_t BufferS
   if (Data.Remaining > 0)
   {
     Result = std::min(BufferSize, Data.Remaining);
-    nbstr_memcpy(Buffer, Data.Message.c_str() + Data.Message.Length() - Data.Remaining, nb::ToSizeT(Result));
+    nbstr_memcpy(Buffer, Data.Message.c_str() + Data.Message.Length() - Data.Remaining, Result);
     Data.Remaining -= Result;
   }
   return Result;
@@ -2045,7 +2045,7 @@ int32_t TS3FileSystem::LibS3MultipartCommitPutObjectDataCallback(int32_t BufferS
 void TS3FileSystem::Source(
   TLocalFileHandle & AHandle, const UnicodeString & TargetDir, UnicodeString & ADestFileName,
   const TCopyParamType * CopyParam, int32_t Params,
-  TFileOperationProgressType * OperationProgress, uint32_t /*Flags*/,
+  TFileOperationProgressType * AOperationProgress, uint32_t /*Flags*/,
   TUploadSessionAction & Action, bool & /*ChildError*/)
 {
   UnicodeString DestFullName = TargetDir + ADestFileName;
@@ -2076,7 +2076,7 @@ void TS3FileSystem::Source(
     FileParams.DestPrecision = mfNone;
     delete RemoteFile;
 
-    ConfirmOverwrite(AHandle.FileName, ADestFileName, OperationProgress, &FileParams, CopyParam, Params);
+    ConfirmOverwrite(AHandle.FileName, ADestFileName, AOperationProgress, &FileParams, CopyParam, Params);
   }
 
   DestFullName = TargetDir + ADestFileName;
@@ -2122,7 +2122,7 @@ void TS3FileSystem::Source(
   {
     FTerminal->LogEvent(FORMAT("Initiating multipart upload (%d parts - chunk size %s)", Parts, IntToStr(ChunkSize)));
 
-    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
+    FILE_OPERATION_LOOP_BEGIN(FTerminal, AOperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
     {
       TLibS3MultipartInitialCallbackData Data;
       RequestInit(Data);
@@ -2152,21 +2152,21 @@ void TS3FileSystem::Source(
 
     for (int32_t Part = 1; Part <= Parts; Part++)
     {
-      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, AOperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
       {
-        DebugAssert(Stream->Position() == OperationProgress->TransferredSize);
+        DebugAssert(Stream->Position() == AOperationProgress->TransferredSize);
 
         // If not, it's chunk retry and we have to undo the unsuccessful chunk upload
         if (Position < Stream->Position())
         {
           Stream->Position = Position;
-          OperationProgress->AddTransferred(Position - OperationProgress->TransferredSize);
+          AOperationProgress->AddTransferred(Position - AOperationProgress->TransferredSize);
         }
 
         RequestInit(Data);
         Data.FileName = AHandle.FileName;
         Data.Stream = Stream.get();
-        Data.OperationProgress = OperationProgress;
+        Data.OperationProgress = AOperationProgress;
         Data.Exception.reset(nullptr);
 
         if (Multipart)
@@ -2219,7 +2219,7 @@ void TS3FileSystem::Source(
       FTerminal->LogEvent(FORMAT("Committing multipart upload (%s - %d parts)", UnicodeString(MultipartUploadId), Parts));
       FTerminal->LogEvent(UnicodeString(MultipartCommitPutObjectDataCallbackData.Message));
 
-      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, AOperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
       {
         RequestInit(MultipartCommitPutObjectDataCallbackData);
 
@@ -2270,11 +2270,11 @@ void TS3FileSystem::Source(
 
 void TS3FileSystem::CopyToLocal(
   TStrings * FilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-  int32_t AParams, TFileOperationProgressType * OperationProgress, TOnceDoneOperation & OnceDoneOperation)
+  int32_t AParams, TFileOperationProgressType * AOperationProgress, TOnceDoneOperation & OnceDoneOperation)
 {
   AParams &= ~cpAppend;
 
-  FTerminal->DoCopyToLocal(FilesToCopy, ATargetDir, CopyParam, AParams, OperationProgress, tfNone, OnceDoneOperation);
+  FTerminal->DoCopyToLocal(FilesToCopy, ATargetDir, CopyParam, AParams, AOperationProgress, tfNone, OnceDoneOperation);
 }
 
 struct TLibS3GetObjectDataCallbackData : TLibS3TransferObjectDataCallbackData
@@ -2323,7 +2323,7 @@ S3Status TS3FileSystem::GetObjectData(int32_t BufferSize, const char * Buffer, T
 void TS3FileSystem::Sink(
   const UnicodeString & AFileName, const TRemoteFile * AFile,
   const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
-  const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * OperationProgress,
+  const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * AOperationProgress,
   uint32_t /*AFlags*/, TDownloadSessionAction & Action)
 {
   UnicodeString DestFullName = ATargetDir + ADestFileName;
@@ -2339,7 +2339,7 @@ void TS3FileSystem::Sink(
     FileParams.DestSize = Size;
     FileParams.DestTimestamp = UnixToDateTime(MTime, FTerminal->GetSessionData()->GetDSTMode());
 
-    ConfirmOverwrite(AFileName, ADestFileName, OperationProgress, &FileParams, CopyParam, Params);
+    ConfirmOverwrite(AFileName, ADestFileName, AOperationProgress, &FileParams, CopyParam, Params);
   }
 
   UnicodeString BucketName, Key;
@@ -2350,10 +2350,10 @@ void TS3FileSystem::Sink(
   UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
-  FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AFileName), "")
+  FILE_OPERATION_LOOP_BEGIN(FTerminal, AOperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AFileName), "")
   {
     HANDLE LocalFileHandle;
-    if (!FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress, &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
+    if (!FTerminal->TerminalCreateLocalFile(DestFullName, AOperationProgress, &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
     {
       throw ESkipFile();
     }
@@ -2366,12 +2366,12 @@ void TS3FileSystem::Sink(
     {
       TLibS3GetObjectDataCallbackData Data;
 
-      FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AFileName), "")
+      FILE_OPERATION_LOOP_BEGIN(FTerminal, AOperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AFileName), "")
       {
         RequestInit(Data);
         Data.FileName = AFileName;
         Data.Stream = Stream.get();
-        Data.OperationProgress = OperationProgress;
+        Data.OperationProgress = AOperationProgress;
         Data.Exception.reset(nullptr);
 
         TAutoFlag ResponseIgnoreSwitch(FResponseIgnore); nb::used(ResponseIgnoreSwitch);

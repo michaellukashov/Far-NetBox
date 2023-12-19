@@ -62,24 +62,24 @@ public:
   virtual bool LoadFilesProperties(TStrings * FileList) override;
   virtual void CalculateFilesChecksum(
     const UnicodeString & Alg, TStrings * AFileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
-    TFileOperationProgressType * OperationProgress, bool FirstLevel) override;
+    TFileOperationProgressType * AOperationProgress, bool FirstLevel) override;
   virtual void CopyToLocal(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-    int32_t AParams, TFileOperationProgressType * OperationProgress,
+    int32_t AParams, TFileOperationProgressType * AOperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
   virtual void CopyToRemote(TStrings * AFilesToCopy,
     const UnicodeString & ATargetDir, const TCopyParamType * CopyParam,
-    int32_t AParams, TFileOperationProgressType * OperationProgress,
+    int32_t AParams, TFileOperationProgressType * AOperationProgress,
     TOnceDoneOperation & OnceDoneOperation) override;
   virtual void Source(
     TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
     const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * OperationProgress, uint32_t AFlags,
+    TFileOperationProgressType * AOperationProgress, uint32_t AFlags,
     TUploadSessionAction & Action, bool & ChildError) override;
   virtual void Sink(
     const UnicodeString & AFileName, const TRemoteFile * AFile,
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
-    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
+    const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * AOperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) override;
   virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
   virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
@@ -163,7 +163,7 @@ protected:
   void DoReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);
   void ConfirmOverwrite(
     const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
-    TFileOperationProgressType * OperationProgress, const TOverwriteFileParams * FileParams,
+    TFileOperationProgressType * AOperationProgress, const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam, int32_t AParams);
   int32_t PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
   S3Status GetObjectData(int32_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
@@ -193,10 +193,10 @@ protected:
   static S3Status LibS3MultipartResponsePropertiesCallback(const S3ResponseProperties * Properties, void * CallbackData);
   static S3Status LibS3GetObjectDataCallback(int32_t BufferSize, const char * Buffer, void * CallbackData);
 
-  static const int32_t S3MinMultiPartChunkSize;
-  static const int32_t S3MaxMultiPartChunks;
+  static constexpr const int32_t S3MinMultiPartChunkSize = 5 * 1024 * 1024;
+  static constexpr const int32_t S3MaxMultiPartChunks = 10000;
 private:
-  void InitSslSessionImpl(ssl_st *Ssl, void * /*Session*/);
+  void InitSslSessionImpl(ssl_st * Ssl, void * /*Session*/);
 };
 
 UnicodeString S3LibVersion();
