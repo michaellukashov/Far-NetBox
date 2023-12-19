@@ -760,7 +760,7 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
         --SpaceLeft;
         ++s;
       }
-      if (!*s)
+      if (s && !*s)
       {
         s = NextWord(nullptr);
       }
