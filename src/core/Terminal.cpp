@@ -6135,8 +6135,8 @@ public:
   bool New{false};
   bool IsDirectory{false};
   TChecklistItem::TFileInfo Info;
-  TChecklistItem::TFileInfo MatchingRemoteFile;
-  TRemoteFile * MatchingRemoteFileFile{nullptr};
+  TChecklistItem::TFileInfo MatchingRemoteFileInfo;
+  TRemoteFile * MatchingRemoteFile{nullptr};
   int32_t MatchingRemoteFileImageIndex{0};
   FILETIME LocalLastWriteTime;
 };
@@ -6440,10 +6440,10 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
 
             if (Modified)
             {
-              DebugAssert(!FileData->MatchingRemoteFile.Directory.IsEmpty());
-              ChecklistItem->Remote = FileData->MatchingRemoteFile;
+              DebugAssert(!FileData->MatchingRemoteFileInfo.Directory.IsEmpty());
+              ChecklistItem->Remote = FileData->MatchingRemoteFileInfo;
               ChecklistItem->ImageIndex = FileData->MatchingRemoteFileImageIndex;
-              ChecklistItem->RemoteFile = FileData->MatchingRemoteFileFile;
+              ChecklistItem->RemoteFile = FileData->MatchingRemoteFile;
             }
             else
             {
@@ -6483,7 +6483,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
         {
           if (FileData->Modified)
           {
-            SAFE_DESTROY(FileData->MatchingRemoteFileFile);
+            SAFE_DESTROY(FileData->MatchingRemoteFile);
           }
         }
       }
@@ -6712,11 +6712,11 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
             if (LocalModified)
             {
               LocalData->Modified = true;
-              LocalData->MatchingRemoteFile = ChecklistItem->Remote;
+              LocalData->MatchingRemoteFileInfo = ChecklistItem->Remote;
               LocalData->MatchingRemoteFileImageIndex = ChecklistItem->ImageIndex;
               // we need this for custom commands over checklist only,
               // not for sync itself
-              LocalData->MatchingRemoteFileFile = AFile->Duplicate();
+              LocalData->MatchingRemoteFile = AFile->Duplicate();
               LogEvent(FORMAT("Local file %s is modified comparing to remote file %s",
                 FormatFileDetailsForLog(FullLocalFileName, LocalData->Info.Modification, LocalData->Info.Size),
                 FormatFileDetailsForLog(FullRemoteFileName, AFile->Modification, AFile->Size, AFile->LinkedFile)));
