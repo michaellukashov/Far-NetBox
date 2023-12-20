@@ -1035,7 +1035,12 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
-  Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_VERSION), GetConfiguration()->GetProductVersion(), NETBOX_VERSION_BUILD));
+  UnicodeString VersionStr = GetConfiguration()->GetProductVersion();
+  if (VersionStr.IsEmpty())
+  {
+    VersionStr = PLUGIN_VERSION_TXT;
+  }
+  Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_VERSION), VersionStr, NETBOX_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
