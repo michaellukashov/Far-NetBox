@@ -428,10 +428,10 @@ void TS3FileSystem::Open()
     if (!SessionToken.IsEmpty())
     {
       FTerminal->LogEvent(FORMAT(L"Session token read from %s", SessionTokenSource));
+      FSecurityTokenBuf = UTF8String(SessionToken);
+      FSecurityToken = FSecurityTokenBuf.data();
     }
   }
-  FSecurityTokenBuf = UTF8String(SessionToken);
-  FSecurityToken = FSecurityTokenBuf.data();
 
   FHostName = UTF8String(Data->HostNameExpanded);
   FPortSuffix = UTF8String();
@@ -1272,6 +1272,9 @@ void TS3FileSystem::ReadDirectoryInternal(
     }
     Prefix += AFileName;
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Prefix);
+    BucketContext.hostName = BucketContext.HostNameBuf.c_str();
+    BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
+    BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
     TLibS3ListBucketCallbackData Data{};
     bool Continue;
@@ -1377,6 +1380,9 @@ void TS3FileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   }
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+  BucketContext.hostName = BucketContext.HostNameBuf.c_str();
+  BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
+  BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
   S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
@@ -1451,8 +1457,9 @@ void TS3FileSystem::RemoteCopyFile(
   }
 
   TLibS3BucketContext BucketContext = GetBucketContext(DestBucketName, DestKey);
-  BucketContext.BucketNameBuf = SourceBucketName;
+  BucketContext.hostName = BucketContext.HostNameBuf.c_str();
   BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
+  BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
   S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
@@ -1514,6 +1521,9 @@ void TS3FileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /
     Key = GetFolderKey(Key);
 
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+    BucketContext.hostName = BucketContext.HostNameBuf.c_str();
+    BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
+    BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
     S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), nullptr };
 
@@ -1577,6 +1587,9 @@ bool TS3FileSystem::DoLoadFileProperties(
   if (Result)
   {
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+    BucketContext.hostName = BucketContext.HostNameBuf.c_str();
+    BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
+    BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
     S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
@@ -1682,6 +1695,9 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
       if (DebugAlwaysTrue(ParsePathForPropertiesRequests(FileName, File, BucketName, Key)))
       {
         TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+        BucketContext.hostName = BucketContext.HostNameBuf.c_str();
+        BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
+        BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
         S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
@@ -2098,6 +2114,9 @@ void TS3FileSystem::Source(
   }
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+  BucketContext.hostName = BucketContext.HostNameBuf.c_str();
+  BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
+  BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
   UTF8String ContentType = UTF8String(FTerminal->Configuration->GetFileMimeType(AHandle.FileName));
   S3PutProperties PutProperties =
@@ -2351,6 +2370,9 @@ void TS3FileSystem::Sink(
   ParsePath(AFileName, BucketName, Key);
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+  BucketContext.hostName = BucketContext.HostNameBuf.c_str();
+  BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
+  BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
   UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
@@ -2455,5 +2477,6 @@ void TS3FileSystem::InitSslSession(ssl_st * Ssl, ne_session * Session)
 {
   TS3FileSystem * FileSystem =
     static_cast<TS3FileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
+  DebugAssert(FileSystem);
   FileSystem->InitSslSessionImpl(Ssl, Session);
 }
