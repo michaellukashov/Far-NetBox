@@ -42,8 +42,8 @@
 
 // #pragma package(smart_init)
 
-// #define StrFromS3(S) StrFromNeon(S)
-#define StrFromS3(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_ACP)
+#define StrFromACP(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_ACP)
+#define StrFromS3(S) StrFromNeon(S)
 #define StrToS3(S) StrToNeon(S)
 
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
@@ -591,26 +591,26 @@ void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3Error
   {
     if (Error->message != nullptr)
     {
-      Data.ErrorMessage = StrFromS3(Error->message);
+      Data.ErrorMessage = StrFromACP(Error->message);
       FileSystem->FTerminal->LogEvent(Data.ErrorMessage);
     }
 
     UnicodeString ErrorDetails;
     if (Error->resource != nullptr)
     {
-      AddToList(ErrorDetails, FMTLOAD(S3_ERROR_RESOURCE, StrFromNeon(Error->resource)), L"\n");
+      AddToList(ErrorDetails, FMTLOAD(S3_ERROR_RESOURCE, StrFromS3(Error->resource)), L"\n");
     }
     if (Error->furtherDetails != nullptr)
     {
-      AddToList(ErrorDetails, FMTLOAD(S3_ERROR_FURTHER_DETAILS, StrFromS3(Error->furtherDetails)), L"\n");
+      AddToList(ErrorDetails, FMTLOAD(S3_ERROR_FURTHER_DETAILS, StrFromACP(Error->furtherDetails)), L"\n");
     }
     if (Error->extraDetailsCount)
     {
       UnicodeString ExtraDetails;
       for (int32_t I = 0; I < Error->extraDetailsCount; I++)
       {
-        UnicodeString DetailName = StrFromNeon(Error->extraDetails[I].name);
-        UnicodeString DetailValue = StrFromNeon(Error->extraDetails[I].value);
+        UnicodeString DetailName = StrFromS3(Error->extraDetails[I].name);
+        UnicodeString DetailValue = StrFromS3(Error->extraDetails[I].value);
         if (SameText(DetailName, L"Region"))
         {
           Data.RegionDetail = DetailValue;
@@ -1065,10 +1065,10 @@ void TS3FileSystem::CachedChangeDirectory(const UnicodeString & Directory)
 TRemoteToken TS3FileSystem::MakeRemoteToken(const char * OwnerId, const char * OwnerDisplayName)
 {
   TRemoteToken Result;
-  Result.SetName(StrFromNeon(OwnerDisplayName));
+  Result.SetName(StrFromS3(OwnerDisplayName));
   if (Result.GetName().IsEmpty())
   {
-    Result.SetName(StrFromNeon(OwnerId));
+    Result.SetName(StrFromS3(OwnerId));
   }
   return Result;
 }
@@ -1087,13 +1087,13 @@ S3Status TS3FileSystem::LibS3ListServiceCallback(
 {
   TLibS3ListServiceCallbackData & Data = *static_cast<TLibS3ListServiceCallbackData *>(CallbackData);
 
-  UnicodeString FileName = StrFromNeon(BucketName);
+  UnicodeString FileName = StrFromS3(BucketName);
   if (Data.FileName.IsEmpty() || (Data.FileName == FileName))
   {
     std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
     TTerminal * Terminal = Data.FileSystem->FTerminal;
     File->SetTerminal(Terminal);
-    File->SetFileName(StrFromNeon(BucketName));
+    File->SetFileName(StrFromS3(BucketName));
     File->SetType(FILETYPE_DIRECTORY);
     File->SetFileOwner(Data.FileSystem->MakeRemoteToken(OwnerId, OwnerDisplayName));
     File->SetModificationFmt(mfNone);
@@ -1115,14 +1115,14 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
   Data.IsTruncated = IsTruncated != 0;
   // This is being called in chunks, not once for all data in a response.
   Data.KeyCount += ContentsCount;
-  Data.NextMarker = StrFromNeon(NextMarker);
+  Data.NextMarker = StrFromS3(NextMarker);
   TTerminal * Terminal = Data.FileSystem->FTerminal;
 
   for (int32_t Index = 0; Index < ContentsCount; Index++)
   {
     Data.Any = true;
     const S3ListBucketContent * Content = &Contents[Index];
-    UnicodeString FileName = base::UnixExtractFileName(StrFromNeon(Content->key));
+    UnicodeString FileName = base::UnixExtractFileName(StrFromS3(Content->key));
     if (!FileName.IsEmpty())
     {
       std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
@@ -1168,7 +1168,7 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
   for (int32_t Index = 0; Index < CommonPrefixesCount; Index++)
   {
     Data.Any = true;
-    UnicodeString CommonPrefix = StrFromNeon(CommonPrefixes[Index]);
+    UnicodeString CommonPrefix = StrFromS3(CommonPrefixes[Index]);
     UnicodeString FileName = base::UnixExtractFileName(base::UnixExcludeTrailingBackslash(CommonPrefix));
     // Have seen prefixes like "/" or "path/subpath//"
     if (!FileName.IsEmpty())
@@ -1728,7 +1728,7 @@ uint16_t TS3FileSystem::AclGrantToPermissions(S3AclGrant & AclGrant, const TS3Fi
     }
     else
     {
-      FTerminal->LogEvent(1, FORMAT(L"Unsupported permission for canonical user %s", StrFromNeon(Properties.OwnerId)));
+      FTerminal->LogEvent(1, FORMAT(L"Unsupported permission for canonical user %s", StrFromS3(Properties.OwnerId)));
     }
   }
   else if (AclGrant.granteeType == S3GranteeTypeAllAwsUsers)
