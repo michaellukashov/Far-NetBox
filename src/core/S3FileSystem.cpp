@@ -428,9 +428,12 @@ void TS3FileSystem::Open()
     if (!SessionToken.IsEmpty())
     {
       FTerminal->LogEvent(FORMAT(L"Session token read from %s", SessionTokenSource));
-      FSecurityTokenBuf = UTF8String(SessionToken);
-      FSecurityToken = FSecurityTokenBuf.data();
     }
+  }
+  if (!SessionToken.IsEmpty())
+  {
+    FSecurityTokenBuf = UTF8String(SessionToken);
+    FSecurityToken = FSecurityTokenBuf.data();
   }
 
   FHostName = UTF8String(Data->HostNameExpanded);
