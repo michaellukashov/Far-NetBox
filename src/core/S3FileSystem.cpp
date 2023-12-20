@@ -509,6 +509,11 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FileSystem->FTerminal);
 
+  ne_set_read_timeout(Session, nb::ToInt32(Data->GetTimeout()));
+  ne_set_connect_timeout(Session, nb::ToInt32(Data->GetTimeout()));
+
+  ne_set_session_private(Session, SESSION_FS_KEY, FileSystem);
+
   SetNeonTlsInit(Session, FileSystem->InitSslSession, FileSystem->FTerminal);
 
   ne_set_session_flag(Session, SE_SESSFLAG_SNDBUF, Data->FSendBuf);
