@@ -767,7 +767,7 @@ struct TLibS3ListBucketCallbackData : TLibS3CallbackData
 
 TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucketName, const UnicodeString & Prefix)
 {
-  TLibS3BucketContext Result;
+  TLibS3BucketContext Result{};
 
   bool First = true;
   bool Retry = false;
@@ -829,7 +829,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
     if (Retry)
     {
       std::unique_ptr<TRemoteFileList> FileList(std::make_unique<TRemoteFileList>());
-      TLibS3ListBucketCallbackData Data;
+      TLibS3ListBucketCallbackData Data{};
       // Using prefix for which we need the bucket, as the account may have access to that prefix only (using "Condition" in policy)
       DoListBucket(Prefix, FileList.get(), 1, Result, Data);
 
@@ -1229,7 +1229,7 @@ void TS3FileSystem::ReadDirectoryInternal(
   {
     DebugAssert(FileList != nullptr);
 
-    TLibS3ListServiceCallbackData Data;
+    TLibS3ListServiceCallbackData Data{};
     Data.FileList = FileList;
     Data.FileName = AFileName;
 
@@ -1273,7 +1273,7 @@ void TS3FileSystem::ReadDirectoryInternal(
     Prefix += AFileName;
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Prefix);
 
-    TLibS3ListBucketCallbackData Data;
+    TLibS3ListBucketCallbackData Data{};
     bool Continue;
 
     do
@@ -1380,7 +1380,7 @@ void TS3FileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
 
   S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
-  TLibS3CallbackData Data;
+  TLibS3CallbackData Data{};
   RequestInit(Data);
 
   if (Key.IsEmpty())
@@ -1456,7 +1456,7 @@ void TS3FileSystem::RemoteCopyFile(
 
   S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
-  TLibS3CallbackData Data;
+  TLibS3CallbackData Data{};
   RequestInit(Data);
 
   S3_copy_object(
@@ -1489,7 +1489,7 @@ void TS3FileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /
       Region = RegionBuf.c_str();
     }
 
-    TLibS3CallbackData Data;
+    TLibS3CallbackData Data{};
 
     bool Retry;
     do
@@ -1517,7 +1517,7 @@ void TS3FileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /
 
     S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), nullptr };
 
-    TLibS3CallbackData Data;
+    TLibS3CallbackData Data{};
     RequestInit(Data);
 
     S3_put_object(&BucketContext, StrToS3(Key), 0, nullptr, FRequestContext, FTimeout, &PutObjectHandler, &Data);
@@ -1580,7 +1580,7 @@ bool TS3FileSystem::DoLoadFileProperties(
 
     S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
-    TLibS3CallbackData Data;
+    TLibS3CallbackData Data{};
     RequestInit(Data);
 
     S3_get_acl(
@@ -1620,7 +1620,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
 
     DebugAssert(!Properties->AddXToDirectories);
 
-    TS3FileProperties FileProperties;
+    TS3FileProperties FileProperties{};
     if (DebugAlwaysTrue(!File->IsDirectory) &&
         DebugAlwaysTrue(DoLoadFileProperties(FileName, File, FileProperties)))
     {
@@ -1685,7 +1685,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
 
         S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
-        TLibS3CallbackData Data;
+        TLibS3CallbackData Data{};
         RequestInit(Data);
 
         S3_set_acl(
@@ -2149,7 +2149,7 @@ void TS3FileSystem::Source(
 
   try
   {
-    TLibS3PutObjectDataCallbackData Data;
+    TLibS3PutObjectDataCallbackData Data{};
 
     int64_t Position = 0;
 
@@ -2369,7 +2369,7 @@ void TS3FileSystem::Sink(
 
     try__finally
     {
-      TLibS3GetObjectDataCallbackData Data;
+      TLibS3GetObjectDataCallbackData Data{};
 
       FILE_OPERATION_LOOP_BEGIN(FTerminal, AOperationProgress, (folAllowSkip | folRetryOnFatal), FMTLOAD(TRANSFER_ERROR, AFileName), "")
       {
