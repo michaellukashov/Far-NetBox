@@ -20,7 +20,7 @@
 //#define PLUGIN_VERSION_WTXT L"2.4.5"
 
 #define PLUGIN_AUTHOR       L"Mikhail Lukashov"
-#define PLUGIN_DESCR        L"SFTP/FTP(S)/SCP/WebDAV client for FAR 3.0 x86/x64"
+#define PLUGIN_DESCR        L"SFTP/FTP(S)/SCP/WebDAV/S3 client for FAR 3.0 x86/x64"
 #define PLUGIN_FILENAME     L"NetBox.dll"
 
 #define WINSCP_PLUGIN_VERSION_WTXT  L"1.6.2.151"
@@ -28,4 +28,4 @@
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
 #define ZLIB_VERSION_WTXT           L"zlib-ng 2.1.5"
 #define OPENSSL_VERSION_WTXT        L"3.2.0"
-#define WINSCP_VERSION_WTXT         L"6.2.0"
+#define WINSCP_VERSION_WTXT         L"6.2.1"
