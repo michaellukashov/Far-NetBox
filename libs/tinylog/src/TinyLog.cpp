@@ -63,14 +63,16 @@ TinyLogImpl::TinyLogImpl(FILE * file) noexcept :
   void * Parameter = this;
 
   thrd_ = ::CreateThread(nullptr,
-      0,
-      static_cast<LPTHREAD_START_ROUTINE>(&TinyLogImpl::ThreadFunc),
-      Parameter,
-  0, &ThreadId_);
+    0,
+    static_cast<LPTHREAD_START_ROUTINE>(&TinyLogImpl::ThreadFunc),
+    Parameter,
+    0, &ThreadId_);
 }
 
 TinyLogImpl::~TinyLogImpl() noexcept
 {
+  if (logstream_)
+    logstream_->WriteBuffer();
   Close();
   pthread_cond_destroy(&cond_);
   pthread_mutex_destroy(&mutex_);
