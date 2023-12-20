@@ -749,6 +749,30 @@ void TS3FileSystem::ParsePath(const UnicodeString & APath, UnicodeString & Bucke
 struct TLibS3BucketContext : S3BucketContext
 {
   CUSTOM_MEM_ALLOCATION_IMPL
+  TLibS3BucketContext() = default;
+  TLibS3BucketContext(const TLibS3BucketContext & rhs)
+  {
+    operator =(rhs);
+  }
+  TLibS3BucketContext & TLibS3BucketContext::operator =(const TLibS3BucketContext & rhs)
+  {
+    if (this != &rhs)
+    {
+      HostNameBuf = rhs.HostNameBuf;
+      BucketNameBuf = rhs.BucketNameBuf;
+      AuthRegionBuf = rhs.AuthRegionBuf;
+
+      hostName = HostNameBuf.c_str();
+      bucketName = BucketNameBuf.c_str();
+      protocol = rhs.protocol;
+      uriStyle = rhs.uriStyle;
+      accessKeyId = rhs.accessKeyId;
+      secretAccessKey = rhs.secretAccessKey;
+      securityToken = rhs.securityToken;
+      authRegion = AuthRegionBuf.c_str();
+    }
+    return *this;
+  }
   // These keep data that we point the native S3BucketContext fields to
   UTF8String HostNameBuf;
   UTF8String BucketNameBuf;
@@ -1200,7 +1224,7 @@ void TS3FileSystem::DoListBucket(
   Data.IsTruncated = false;
 
   S3_list_bucket(
-    &BucketContext, StrToS3(APrefix), StrToS3(Data.NextMarker),
+    static_cast<const S3BucketContext *>(&BucketContext), StrToS3(APrefix), StrToS3(Data.NextMarker),
     LibS3Delimiter, nb::ToInt32(MaxKeys), FRequestContext, FTimeout, &ListBucketHandler, &Data);
 }
 
@@ -1272,9 +1296,6 @@ void TS3FileSystem::ReadDirectoryInternal(
     }
     Prefix += AFileName;
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Prefix);
-    BucketContext.hostName = BucketContext.HostNameBuf.c_str();
-    BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
-    BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
     TLibS3ListBucketCallbackData Data{};
     bool Continue;
@@ -1380,9 +1401,6 @@ void TS3FileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   }
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
-  BucketContext.hostName = BucketContext.HostNameBuf.c_str();
-  BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
-  BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
   S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
@@ -1457,9 +1475,6 @@ void TS3FileSystem::RemoteCopyFile(
   }
 
   TLibS3BucketContext BucketContext = GetBucketContext(DestBucketName, DestKey);
-  BucketContext.hostName = BucketContext.HostNameBuf.c_str();
-  BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
-  BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
   S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
@@ -1521,9 +1536,6 @@ void TS3FileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /
     Key = GetFolderKey(Key);
 
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
-    BucketContext.hostName = BucketContext.HostNameBuf.c_str();
-    BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
-    BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
     S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), nullptr };
 
@@ -1587,9 +1599,6 @@ bool TS3FileSystem::DoLoadFileProperties(
   if (Result)
   {
     TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
-    BucketContext.hostName = BucketContext.HostNameBuf.c_str();
-    BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
-    BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
     S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
@@ -1695,9 +1704,6 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
       if (DebugAlwaysTrue(ParsePathForPropertiesRequests(FileName, File, BucketName, Key)))
       {
         TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
-        BucketContext.hostName = BucketContext.HostNameBuf.c_str();
-        BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
-        BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
         S3ResponseHandler ResponseHandler = CreateResponseHandler();
 
@@ -2114,9 +2120,6 @@ void TS3FileSystem::Source(
   }
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
-  BucketContext.hostName = BucketContext.HostNameBuf.c_str();
-  BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
-  BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
   UTF8String ContentType = UTF8String(FTerminal->Configuration->GetFileMimeType(AHandle.FileName));
   S3PutProperties PutProperties =
@@ -2370,9 +2373,6 @@ void TS3FileSystem::Sink(
   ParsePath(AFileName, BucketName, Key);
 
   TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
-  BucketContext.hostName = BucketContext.HostNameBuf.c_str();
-  BucketContext.bucketName = BucketContext.BucketNameBuf.c_str();
-  BucketContext.authRegion = BucketContext.AuthRegionBuf.c_str();
 
   UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
