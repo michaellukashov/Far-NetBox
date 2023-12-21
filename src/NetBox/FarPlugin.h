@@ -460,7 +460,7 @@ protected:
     TDateTime & LastWriteTime, TDateTime & LastAccess,
     uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) override;
-  UnicodeString GetCustomColumnData(size_t Column) override;
+  virtual UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
 NB_DEFINE_CLASS_ID(THintPanelItem);
@@ -534,8 +534,8 @@ public:
   void AddSeparator(bool Visible = true);
   virtual int32_t Add(const UnicodeString & Text, bool Visible = true);
 
-  void Clear() override;
-  void Delete(int32_t Index) override;
+  virtual void Clear() override;
+  virtual void Delete(int32_t Index) override;
 
   int32_t GetItemFocused() const { return FItemFocused; }
   void SetItemFocused(int32_t Value);
@@ -548,7 +548,7 @@ public:
   bool GetFlag(int32_t Index, uint32_t Flag) const;
 
 protected:
-  void SetObj(int32_t Index, TObject *AObject) override;
+  virtual void SetObj(int32_t Index, TObject * AObject) override;
 
 private:
   int32_t FItemFocused{nb::NPOS};
