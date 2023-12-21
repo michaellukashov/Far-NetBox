@@ -102,10 +102,10 @@ public:
   UnicodeString & Delete(int32_t Index, int32_t Count);
   UnicodeString & Clear() { Data.Empty(); return *this; }
 
-  UnicodeString &  Lower(int32_t nStartPos = 1);
-  UnicodeString &  Lower(int32_t nStartPos, int32_t nLength);
-  UnicodeString &  Upper(int32_t nStartPos = 1);
-  UnicodeString &  Upper(int32_t nStartPos, int32_t nLength);
+  UnicodeString & Lower(int32_t nStartPos = 1);
+  UnicodeString & Lower(int32_t nStartPos, int32_t nLength);
+  UnicodeString & Upper(int32_t nStartPos = 1);
+  UnicodeString & Upper(int32_t nStartPos, int32_t nLength);
 
   UnicodeString & LowerCase() { return Lower(); }
   UnicodeString & UpperCase() { return Upper(); }
