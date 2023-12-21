@@ -7,7 +7,7 @@
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
-#include <vector>
+//#include <vector>
 
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
@@ -303,8 +303,8 @@ class NB_CORE_EXPORT TSuspendFileOperationProgress : public TObject
   NB_DISABLE_COPY(TSuspendFileOperationProgress)
 public:
   TSuspendFileOperationProgress() = default;
-  explicit TSuspendFileOperationProgress(TFileOperationProgressType * OperationProgress) noexcept :
-    FOperationProgress(OperationProgress)
+  explicit TSuspendFileOperationProgress(TFileOperationProgressType * AOperationProgress) noexcept :
+    FOperationProgress(AOperationProgress)
   {
     // FOperationProgress = OperationProgress;
     if (FOperationProgress != nullptr)
