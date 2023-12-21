@@ -206,7 +206,7 @@ AnsiString & AnsiString::operator +=(const char * rhs)
 
 void AnsiString::ThrowIfOutOfRange(int32_t Idx) const
 {
-  if (Idx < 1 || Idx > Length()) // NOTE: UnicodeString is 1-based !!
+  if (Idx < 1 || Idx > Length()) // NOTE: AnsiString is 1-based !!
     throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
 }
 
@@ -460,6 +460,12 @@ void UTF8String::Init(const char * Str, int32_t Length)
   Data = string_t(Str, Length);
 }
 
+void UTF8String::ThrowIfOutOfRange(int32_t Idx) const
+{
+  if (Idx < 1 || Idx > Length()) // NOTE: UTF8String is 1-based !!
+    throw Exception("Index is out of range"); // ERangeError(Sysconst_SRangeError);
+}
+
 char * UTF8String::SetLength(int32_t nLength)
 {
   return Data.GetBufferSetLength(nLength);
@@ -577,6 +583,18 @@ UTF8String & UTF8String::operator +=(const char * rhs)
 {
   Data.Append(rhs);
   return *this;
+}
+
+char UTF8String::operator [](int32_t Idx) const
+{
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+  return Data.operator[](Idx - 1);
+}
+
+char & UTF8String::operator [](int32_t Idx)
+{
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+  return Data.GetBuffer()[Idx - 1];
 }
 
 bool operator ==(const UTF8String & lhs, const UTF8String & rhs)

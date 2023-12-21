@@ -60,9 +60,13 @@ public:
   NB_CORE_EXPORT friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);
   NB_CORE_EXPORT friend bool operator !=(const UTF8String & lhs, const UTF8String & rhs);
 
+  char operator [](int32_t Idx) const;
+  char & operator [](int32_t Idx);
+
 private:
   void Init(const wchar_t * Str, int32_t Length);
   void Init(const char * Str, int32_t Length);
+  void ThrowIfOutOfRange(int32_t Idx) const;
 
   using string_t = CMStringA;
   string_t Data;
@@ -182,16 +186,16 @@ public:
   UnicodeString & operator +=(const char * Ch);
   UnicodeString & operator +=(wchar_t Ch);
 
-  bool operator==(const UnicodeString & Str) const { return Data == Str.Data; }
-  bool operator!=(const UnicodeString & Str) const { return Data != Str.Data; }
+  bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
+  bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
 
   NB_CORE_EXPORT friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
   NB_CORE_EXPORT friend bool operator ==(const wchar_t * lhs, const UnicodeString & rhs);
   NB_CORE_EXPORT friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
   NB_CORE_EXPORT friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
 
-  wchar_t operator[](int32_t Idx) const;
-  wchar_t & operator[](int32_t Idx);
+  wchar_t operator [](int32_t Idx) const;
+  wchar_t & operator [](int32_t Idx);
 
 private:
   void Init(const wchar_t * Str, int32_t Length);
