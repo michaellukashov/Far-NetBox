@@ -2261,6 +2261,16 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   int32_t DefaultProtocolPortNumber = 0;
   TFtps AFtps = ftpsNone;
   int32_t ProtocolLen = 0;
+  if (Url.SubString(1, 7).LowerCase() == L"netbox:")
+  {
+    // Remove "netbox:" prefix
+    Url.Delete(1, 7);
+    if (Url.SubString(1, 2) == L"//")
+    {
+      // Remove "//"
+      Url.Delete(1, 2);
+    }
+  }
   bool HttpForWebdav = FLAGCLEAR(Flags, pufPreferProtocol) || (FSProtocol != fsS3);
   if (IsProtocolUrl(Url, ScpProtocol, ProtocolLen))
   {
