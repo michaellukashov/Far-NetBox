@@ -31,6 +31,7 @@
   SET_SESSION_PROPERTY_FROM(PROPERTY, value)
 
 // constexpr const wchar_t * PingTypeNames = L"Off;Null;Dummy";
+// constexpr const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List";
 // constexpr const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 TIntMapping ProxyMethodMapping = CreateIntMappingFromEnumNames(LowerCase(ProxyMethodNames));
 constexpr const wchar_t * DefaultName = L"Default Settings";
@@ -298,7 +299,7 @@ void TSessionData::DefaultSettings()
   SetFtpUseMlsd(asAuto);
   SetFtpAccount("");
   SetFtpPingInterval(30);
-  SetFtpPingType(ptDummyCommand);
+  SetFtpPingType(fptDummyCommand);
   SetFtpTransferActiveImmediately(asAuto);
   SetFtps(ftpsNone);
   MinTlsVersion = tlsDefaultMin;
@@ -969,7 +970,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FFtpUseMlsd = Storage->ReadEnum("FtpUseMlsd", FFtpUseMlsd, AutoSwitchMapping);
   SetFtpAccount(Storage->ReadString("FtpAccount", GetFtpAccount()));
   SetFtpPingInterval(Storage->ReadInteger("FtpPingInterval", nb::ToInt32(GetFtpPingInterval())));
-  SetFtpPingType(static_cast<TPingType>(Storage->ReadInteger("FtpPingType", GetFtpPingType())));
+  SetFtpPingType(static_cast<TFtpPingType>(Storage->ReadInteger("FtpPingType", GetFtpPingType())));
   SetFtpTransferActiveImmediately(static_cast<TAutoSwitch>(Storage->ReadInteger("FtpTransferActiveImmediately2", GetFtpTransferActiveImmediately())));
   FFtpTransferActiveImmediately = Storage->ReadEnum("FtpTransferActiveImmediately2", FFtpTransferActiveImmediately, AutoSwitchMapping);
   SetFtps(static_cast<TFtps>(Storage->ReadInteger("Ftps", GetFtps())));
@@ -4834,7 +4835,7 @@ TDateTime TSessionData::GetFtpPingIntervalDT() const
   return SecToDateTime(GetFtpPingInterval());
 }
 
-void TSessionData::SetFtpPingType(TPingType value)
+void TSessionData::SetFtpPingType(TFtpPingType value)
 {
   SET_SESSION_PROPERTY(FtpPingType);
 }

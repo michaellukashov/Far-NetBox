@@ -188,7 +188,7 @@ public:
     const UnicodeString & FingerprintSHA256, const UnicodeString & FingerprintMD5,
     bool IsCertificate, int32_t CACount, bool AlreadyVerified);
   bool HaveHostKey(const UnicodeString & AHost, int32_t Port, const UnicodeString & KeyType);
-  void AskAlg(const UnicodeString & AAlgType, const UnicodeString & AlgName);
+  void AskAlg(const UnicodeString & AAlgType, const UnicodeString & AlgName, int32_t WeakCryptoReason);
   void DisplayBanner(const UnicodeString & Banner);
   void PuttyLogEvent(const char * AStr);
   UnicodeString ConvertFromPutty(const char * Str, int32_t Length) const;

@@ -3655,19 +3655,19 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       if (PingOffButton->GetChecked())
       {
-        SessionData->SetFtpPingType(ptOff);
+        SessionData->SetFtpPingType(fptOff);
       }
       else if (PingNullPacketButton->GetChecked())
       {
-        SessionData->SetFtpPingType(ptNullPacket);
+        SessionData->SetFtpPingType(fptDummyCommand0);
       }
       else if (PingDummyCommandButton->GetChecked())
       {
-        SessionData->SetFtpPingType(ptDummyCommand);
+        SessionData->SetFtpPingType(fptDummyCommand);
       }
       else
       {
-        SessionData->SetFtpPingType(ptOff);
+        SessionData->SetFtpPingType(fptOff);
       }
       SessionData->SetFtpPingInterval(PingIntervalSecEdit->GetAsInteger());
     }
@@ -3834,27 +3834,32 @@ void TSessionDialog::LoadPing(TSessionData * SessionData)
 void TSessionDialog::SavePing(TSessionData * SessionData)
 {
   TPingType PingType;
+  TFtpPingType FtpPingType;
   if (PingOffButton->GetChecked())
   {
     PingType = ptOff;
+    FtpPingType = fptOff;
   }
   else if (PingNullPacketButton->GetChecked())
   {
     PingType = ptNullPacket;
+    FtpPingType = fptDummyCommand0;
   }
   else if (PingDummyCommandButton->GetChecked())
   {
     PingType = ptDummyCommand;
+    FtpPingType = fptDummyCommand;
   }
   else
   {
     PingType = ptOff;
+    FtpPingType = fptOff;
   }
   const TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
       AllowScpFallbackCheck->GetChecked());
   if (FSProtocol == fsFTP)
   {
-    SessionData->SetFtpPingType(PingType);
+    SessionData->SetFtpPingType(FtpPingType);
     SessionData->SetFtpPingInterval(PingIntervalSecEdit->GetAsInteger());
   }
   else

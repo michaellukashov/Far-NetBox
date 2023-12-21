@@ -31,7 +31,7 @@ enum TSftpBug { sbSymlink, sbSignedTS };
 constexpr int32_t SFTP_BUG_COUNT = sbSignedTS + 1;
 constexpr const wchar_t * PingTypeNames = L"Off;Null;Dummy";
 enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
-extern const wchar_t * FtpPingTypeNames;
+constexpr const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List";
 enum TFtpPingType { fptOff, fptDummyCommand0, fptDummyCommand, fptDirectoryListing };
 enum TAddressFamily { afAuto, afIPv4, afIPv6 };
 enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls };
@@ -1004,7 +1004,7 @@ public:
   TAutoSwitch GetFtpUseMlsd() const { return FFtpUseMlsd; }
   UnicodeString GetFtpAccount() const { return FFtpAccount; }
   int32_t GetFtpPingInterval() const { return FFtpPingInterval; }
-  TPingType GetFtpPingType() const { return FFtpPingType; }
+  TFtpPingType GetFtpPingType() const { return FFtpPingType; }
   TAutoSwitch GetFtpTransferActiveImmediately() const { return FFtpTransferActiveImmediately; }
   TFtps GetFtps() const { return FFtps; }
   TTlsVersion GetMinTlsVersion() const { return FMinTlsVersion; }

@@ -1316,12 +1316,12 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     ADF(L"Transfer Protocol: %s", Data->GetFSProtocolStr());
     if (Data->GetUsesSsh() || (Data->GetFSProtocol() == fsFTP))
     {
-      TPingType PingType;
+      UnicodeString PingType;
       int32_t PingInterval;
       if (Data->FSProtocol == fsFTP)
       {
-        PingType = EnumName(Data->FtpPingType, FtpPingTypeNames);
-        PingInterval = Data->FtpPingInterval;
+        PingType = EnumName(Data->GetFtpPingType(), FtpPingTypeNames);
+        PingInterval = Data->GetFtpPingInterval();
       }
       else
       {
@@ -1329,7 +1329,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         PingInterval = Data->PingInterval;
       }
       ADF("Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
-        EnumName(PingType, PingTypeNames), PingInterval, Data->GetTimeout());
+        PingType, PingInterval, Data->GetTimeout());
       ADF("Disable Nagle: %s",
         BooleanToEngStr(Data->GetTcpNoDelay()));
     }

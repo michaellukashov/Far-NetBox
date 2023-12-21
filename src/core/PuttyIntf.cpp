@@ -296,18 +296,21 @@ bool have_ssh_host_key(Seat * seat, const char * hostname, int32_t port,
   return SecureShell->HaveHostKey(hostname, port, keytype) ? 1 : 0;
 }
 
-SeatPromptResult confirm_weak_crypto_primitive(Seat * seat, const char * algtype, const char * algname,
-  void (*/*callback*/)(void * ctx, SeatPromptResult result), void * /*ctx*/)
+SeatPromptResult confirm_weak_crypto_primitive(
+    Seat * seat, SeatDialogText *,
+    void (*DebugUsedArg(callback))(void * ctx, SeatPromptResult result), void * DebugUsedArg(ctx),
+    const char * algtype, const char *algname, int wcr)
 {
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
-  SecureShell->AskAlg(algtype, algname);
+  SecureShell->AskAlg(algtype, algname, wcr);
 
   // We should return 0 when alg was not confirmed, we throw exception instead.
   return SPR_OK;
 }
 
-SeatPromptResult confirm_weak_cached_hostkey(Seat *, const char * /*algname*/, const char * /*betteralgs*/,
-  void (*/*callback*/)(void *ctx, SeatPromptResult result), void * /*ctx*/)
+SeatPromptResult confirm_weak_cached_hostkey(
+  Seat *, SeatDialogText *,
+  void (*DebugUsedArg(callback))(void * ctx, SeatPromptResult result), void * DebugUsedArg(ctx))
 {
   return SPR_OK;
 }
@@ -379,7 +382,7 @@ void ldisc_echoedit_update(Ldisc * /*handle*/)
   DebugFail();
 }
 
-uint32_t schedule_timer(int32_t ticks, timer_fn_t /*fn*/, void * /*ctx*/)
+unsigned long schedule_timer(int32_t ticks, timer_fn_t /*fn*/, void * /*ctx*/)
 {
   return ticks + GetTickCount();
 }
@@ -476,11 +479,13 @@ int32_t reg_override_winscp()
   return (PuttyRegistryMode != prmPass);
 }
 
-HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
+HKEY open_regkey_fn_winscp(bool Create, bool Write, HKEY Key, const char * Path, ...)
 {
+  DebugUsedParam(Write);
   HKEY Result;
   if (PuttyRegistryMode == prmCollect)
   {
+    DebugAssert(Write && Create);
     Result = reinterpret_cast<HKEY>(1);
   }
   else if (PuttyRegistryMode == prmFail)
@@ -525,7 +530,7 @@ HKEY open_regkey_fn_winscp(bool Create, HKEY Key, const char * Path, ...)
       DebugAssert(RegKey == L"SshHostKeys");
 
       DebugAssert(PuttyStorage != nullptr);
-      DebugAssert(PuttyStorage->AccessMode == (Create ? smReadWrite : smRead));
+      DebugAssert(PuttyStorage->AccessMode == (Write ? smReadWrite : smRead));
       if (PuttyStorage->OpenSubKey(RegKey, Create))
       {
         Result = reinterpret_cast<HKEY>(PuttyStorage);

@@ -889,7 +889,7 @@ void TFTPFileSystem::Idle()
     PoolForFatalNonCommandReply();
 
     // Keep session alive
-    if ((FTerminal->GetSessionData()->GetFtpPingType() != ptOff) &&
+    if ((FTerminal->GetSessionData()->GetFtpPingType() == fptDirectoryListing) &&
         ((Now() - FLastDataSent).GetValue() > FTerminal->GetSessionData()->GetFtpPingIntervalDT().GetValue() * 4))
     {
       FTerminal->LogEvent("Dummy directory read to keep session alive.");
@@ -2905,7 +2905,7 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_KEEPALIVE:
-      Result = ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
+      Result = ((Data->GetFtpPingType() != fptOff) ? TRUE : FALSE);
       break;
 
     case OPTION_INTERVALLOW:
