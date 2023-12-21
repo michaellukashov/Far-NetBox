@@ -60,7 +60,7 @@ TFileOperationProgressType::TFileOperationProgressType() noexcept
 }
 
 TFileOperationProgressType::TFileOperationProgressType(
-  TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
+  TFileOperationProgressEvent && AOnProgress, TFileOperationFinishedEvent && AOnFinished,
   TFileOperationProgressType * Parent) noexcept :
   FParent(Parent),
   FOnProgress(AOnProgress),

@@ -203,7 +203,7 @@ public:
 
   TFileOperationProgressType() noexcept;
   explicit TFileOperationProgressType(
-    TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
+    TFileOperationProgressEvent && AOnProgress, TFileOperationFinishedEvent && AOnFinished,
     TFileOperationProgressType * Parent = nullptr) noexcept;
   virtual ~TFileOperationProgressType() noexcept override;
   void Assign(const TFileOperationProgressType & Other);
