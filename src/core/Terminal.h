@@ -1160,6 +1160,7 @@ private:
 
 struct TLocalFileHandle
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   TLocalFileHandle() noexcept = default;
   ~TLocalFileHandle() noexcept;
 
@@ -1175,7 +1176,6 @@ struct TLocalFileHandle
   int64_t MTime{0};
   int64_t ATime{0};
   int64_t Size{0};
-  CUSTOM_MEM_ALLOCATION_IMPL
 };
 
 class TLocalFile final : public TObject
