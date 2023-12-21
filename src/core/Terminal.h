@@ -1016,7 +1016,7 @@ struct NB_CORE_EXPORT TSpaceAvailable
   uint32_t BytesPerAllocationUnit{0};
 };
 
-class NB_CORE_EXPORT TRobustOperationLoop : public TObject
+class NB_CORE_EXPORT TRobustOperationLoop final : public TObject
 {
   NB_DISABLE_COPY(TRobustOperationLoop)
 public:
@@ -1038,7 +1038,7 @@ private:
 };
 
 NB_DEFINE_CLASS_ID(TCollectedFileList);
-class TCollectedFileList : public TObject
+class TCollectedFileList final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCollectedFileList); }
@@ -1178,7 +1178,7 @@ struct TLocalFileHandle
   CUSTOM_MEM_ALLOCATION_IMPL
 };
 
-class TLocalFile : public TObject
+class TLocalFile final : public TObject
 {
 public:
   TSearchRecSmart SearchRec;
