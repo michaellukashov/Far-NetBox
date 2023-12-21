@@ -84,7 +84,7 @@ intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
     TStringList Lines;
     Lines.SetCommaText(Text);
     // DEBUG_PRINTF("Lines.GetCount(): %d", Lines.GetCount());
-    assert(Lines.GetCount() == 5);
+    DebugAssert(Lines.GetCount() == 5);
 
     const UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
     UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
@@ -92,7 +92,11 @@ intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
     Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
     Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
     Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
-    assert(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
+    DebugAssert(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
+
+    UTF8String UtfS("123");
+    char C = UtfS[1];
+    DebugAssert(C == '1');
   )
   TFarPluginGuard Guard; nb::used(Guard);
   return FarPlugin->Configure(Info);
