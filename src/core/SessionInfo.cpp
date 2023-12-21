@@ -1320,13 +1320,13 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       int32_t PingInterval;
       if (Data->FSProtocol == fsFTP)
       {
-        PingType = Data->FFtpPingType;
-        PingInterval = Data->FFtpPingInterval;
+        PingType = EnumName(Data->FtpPingType, FtpPingTypeNames);
+        PingInterval = Data->FtpPingInterval;
       }
       else
       {
-        PingType = Data->FPingType;
-        PingInterval = Data->FPingInterval;
+        PingType = EnumName(Data->PingType, PingTypeNames);
+        PingInterval = Data->PingInterval;
       }
       ADF("Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
         EnumName(PingType, PingTypeNames), PingInterval, Data->GetTimeout());
