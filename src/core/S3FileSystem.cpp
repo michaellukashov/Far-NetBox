@@ -407,7 +407,7 @@ void TS3FileSystem::Open()
       FTerminal->LogEvent(FORMAT(L"Password (secret access key) read from %s", PasswordSource));
     }
   }
-  UnicodeString SecretAccessKey = UTF8String(NormalizeString(Password));
+  UnicodeString SecretAccessKey = UTF8String(NormalizeString(Password)).data();
   if (SecretAccessKey.IsEmpty() && !FTerminal->SessionData->FingerprintScan)
   {
     if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(S3_SECRET_ACCESS_KEY_TITLE), L"",

@@ -89,7 +89,7 @@ static UnicodeString PathUnescape(const char * Path)
     // In such case, take the path as is and we will probably overwrite the name with "display name".
     UtfResult = Path;
   }
-  UnicodeString Result = StrFromNeon(UtfResult);
+  UnicodeString Result = StrFromNeon(UtfResult.data());
   return Result;
 }
 
@@ -1501,7 +1501,7 @@ void TWebDAVFileSystem::NeonPreSend(
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(SessionContext->FileSystem);
 
   SessionContext->AuthorizationProtocol = "";
-  const UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, nb::ToInt32(Header->used))));
+  const UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, nb::ToInt32(Header->used)).data()));
   const UnicodeString AuthorizationHeaderName("Authorization:");
   int32_t P = HeaderBuf.Pos(AuthorizationHeaderName);
   if (P > 0)
@@ -1820,7 +1820,7 @@ void TWebDAVFileSystem::Sink(
         UTF8String RedirectUrl = CorrectedFileName;
         if (!Query.IsEmpty())
         {
-          RedirectUrl += L"?" + Query;
+          RedirectUrl += UTF8String("?") + Query;
         }
         NeonStatus = ne_get(CorrectedSessionContext->NeonSession, RedirectUrl.c_str(), FD);
         CheckStatus(CorrectedSessionContext.get(), NeonStatus);

@@ -22,7 +22,7 @@ public:
 
   ~UTF8String() = default;
 
-  operator const char *() const { return this->c_str(); }
+  operator const char *() const = delete; // { return this->c_str(); }
   const char * c_str() const { return Data.c_str(); }
   const char * data() const { return Data.c_str(); }
   int32_t Length() const { return Data.GetLength(); }

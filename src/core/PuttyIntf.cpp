@@ -579,7 +579,7 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
   {
     DebugAssert(GetConfiguration() != nullptr);
 
-    const UnicodeString ValueName = UTF8String(Name);
+    const UnicodeString ValueName = UTF8String(Name).data();
     bool Success;
     UnicodeString Value;
     if (Key == RandSeedFileStorage)
@@ -632,7 +632,7 @@ bool put_reg_dword_winscp(HKEY DebugUsedArg(Key), const char * Name, DWORD Debug
   bool Result;
   if (PuttyRegistryMode == prmCollect)
   {
-    const UnicodeString ValueName = UTF8String(Name);
+    const UnicodeString ValueName = UTF8String(Name).data();
     PuttyRegistryTypes[ValueName] = REG_DWORD;
     Result = true;
   }
@@ -652,7 +652,7 @@ bool put_reg_dword_winscp(HKEY DebugUsedArg(Key), const char * Name, DWORD Debug
 
 bool put_reg_sz_winscp(HKEY Key, const char * Name, const char * Str)
 {
-  const UnicodeString ValueName = UTF8String(Name);
+  const UnicodeString ValueName = UTF8String(Name).data();
   bool Result;
   if (PuttyRegistryMode == prmCollect)
   {
@@ -661,7 +661,7 @@ bool put_reg_sz_winscp(HKEY Key, const char * Name, const char * Str)
   }
   else if (PuttyRegistryMode == prmRedirect)
   {
-    const UnicodeString Value = UTF8String(Str);
+    const UnicodeString Value = UTF8String(Str).data();
     DebugAssert(Key != RandSeedFileStorage);
     THierarchicalStorage * Storage = reinterpret_cast<THierarchicalStorage *>(Key);
     DebugAssert(Storage != nullptr);
@@ -1598,7 +1598,7 @@ void enum_host_ca_finish(host_ca_enum * Enum)
 host_ca * host_ca_load(const char * NameStr)
 {
   host_ca * Result = nullptr;
-  const UnicodeString Name = UTF8String(NameStr);
+  const UnicodeString Name = UTF8String(NameStr).data();
   const TSshHostCA * SshHostCA = GetConfiguration()->GetActiveSshHostCAList()->Find(Name);
   if (DebugAlwaysTrue(SshHostCA != nullptr))
   {
