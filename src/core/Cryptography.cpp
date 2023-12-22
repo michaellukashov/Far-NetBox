@@ -387,14 +387,14 @@ constexpr const int32_t PASSWORD_MANAGER_AES_MODE = 3;
 static void AES256Salt(RawByteString & Salt)
 {
   Salt.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  RAND_bytes(reinterpret_cast<uint8_t *>(ToChar(Salt)), nb::ToInt32(Salt.Length()));
+  RAND_bytes(nb::ToUInt8Ptr(ToChar(Salt)), nb::ToInt32(Salt.Length()));
 }
 
 RawByteString GenerateEncryptKey()
 {
   RawByteString Result;
   Result.SetLength(KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  RAND_bytes(reinterpret_cast<uint8_t *>(ToChar(Result)), nb::ToInt32(Result.Length()));
+  RAND_bytes(nb::ToUInt8Ptr(ToChar(Result)), nb::ToInt32(Result.Length()));
   return Result;
 }
 
@@ -422,9 +422,9 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
     reinterpret_cast<const uint8_t *>(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), nb::ToUInt32(Output.Length()), &aes);
+  fcrypt_encrypt(nb::ToUInt8Ptr(ToChar(Output)), nb::ToUInt32(Output.Length()), &aes);
   Mac.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac)), &aes);
+  fcrypt_end(nb::ToUInt8Ptr(ToChar(Mac)), &aes);
 }
 
 void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
@@ -448,11 +448,11 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
     reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
-  fcrypt_decrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), nb::ToUInt32(Output.Length()), &aes);
+  fcrypt_decrypt(nb::ToUInt8Ptr(ToChar(Output)), nb::ToUInt32(Output.Length()), &aes);
   RawByteString Mac2;
   Mac2.SetLength(MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));
   DebugAssert(Mac.Length() == Mac2.Length());
-  fcrypt_end(reinterpret_cast<uint8_t *>(ToChar(Mac2)), &aes);
+  fcrypt_end(nb::ToUInt8Ptr(ToChar(Mac2)), &aes);
   return (Mac2 == Mac);
 }
 
@@ -673,7 +673,7 @@ TEncryption::TEncryption(const RawByteString & AKey) noexcept
   {
     DebugAssert(FKey.Length() == KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
     FContext = aes_make_context();
-    aes_set_encrypt_key(reinterpret_cast<uint8_t *>(ToChar(FKey)), nb::ToInt32(FKey.Length()), FContext);
+    aes_set_encrypt_key(nb::ToUInt8Ptr(ToChar(FKey)), nb::ToInt32(FKey.Length()), FContext);
   }
   else
   {
@@ -731,7 +731,7 @@ int32_t TEncryption::RoundToBlockDown(int32_t Size)
 void TEncryption::Aes(char * Buffer, int32_t Size)
 {
   DebugAssert(!FSalt.IsEmpty());
-  call_aes_sdctr(reinterpret_cast<uint8_t *>(Buffer), nb::ToInt32(Size), FContext);
+  call_aes_sdctr(nb::ToUInt8Ptr(Buffer), nb::ToInt32(Size), FContext);
 }
 
 void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
