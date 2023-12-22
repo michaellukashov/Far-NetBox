@@ -1,9 +1,9 @@
 setlocal
 
 :build_cpp
-if %platform_name%==x64 GOTO :build_vs2022_x64
-if %platform_name%==x86 GOTO :build_vs2022_x86
-GOTO :build_vs2015_x64
+if "%platform_name%"=="x64" GOTO :build_vs2022_x64
+if "%platform_name%"=="x86" GOTO :build_vs2022_x86
+GOTO :build_vs2022_x86
 
 :build_vs2022_x64
 echo Building VS2022-x64
