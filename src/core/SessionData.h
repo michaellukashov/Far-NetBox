@@ -1060,7 +1060,7 @@ private:
 };
 
 NB_DEFINE_CLASS_ID(TStoredSessionList);
-class NB_CORE_EXPORT TStoredSessionList : public TNamedObjectList
+class NB_CORE_EXPORT TStoredSessionList final : public TNamedObjectList
 {
   NB_DISABLE_COPY(TStoredSessionList)
 public:
