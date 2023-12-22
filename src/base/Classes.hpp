@@ -1063,16 +1063,6 @@ inline double Trunc(double Value) { double intpart; modf(Value, &intpart); retur
 inline double Frac(double Value) { double intpart; return modf(Value, &intpart); }
 inline double Abs(double Value) { return fabs(Value); }
 
-// forms\InputDlg.cpp
-struct TInputDialogData
-{
-//  TCustomEdit * Edit;
-  void *Edit{nullptr};
-};
-
-using TInputDialogInitializeEvent = nb::FastDelegate2<void,
-  TObject * /*Sender*/, TInputDialogData * /*Data*/>;
-
 enum TQueryType
 {
   qtConfirmation,
@@ -1082,6 +1072,14 @@ enum TQueryType
 };
 
 struct TMessageParams;
+
+struct TInputDialogData
+{
+  void * Edit{nullptr};
+};
+
+using TInputDialogInitializeEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, TInputDialogData * /*Data*/>;
 
 class NB_CORE_EXPORT TGlobalsIntf
 {
@@ -1124,7 +1122,7 @@ private:
 };
 
 NB_CORE_EXPORT TGlobals * GetGlobals();
-NB_CORE_EXPORT void SetGlobals(TGlobals *Value);
+NB_CORE_EXPORT void SetGlobals(TGlobals * Value);
 
 template<typename T>
 class TGlobalsIntfInitializer
