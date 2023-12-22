@@ -22,6 +22,7 @@
 #include <MsgIDs.h>
 //#include <farcolor.hpp>
 #include "plugin_version.hpp"
+#include "resource.h"
 
 enum TButtonResult
 {
