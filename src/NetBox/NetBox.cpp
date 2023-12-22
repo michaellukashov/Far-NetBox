@@ -231,7 +231,7 @@ HANDLE WINAPI AnalyseW(const struct AnalyseInfo * Info)
   {
     return nullptr;
   }
-  if (Info->BufferSize > 4 && strncmp(reinterpret_cast<const char *>(Info->Buffer), "<?xml", 5) != 0)
+  if (Info->BufferSize > 4 && strncmp(static_cast<const char *>(Info->Buffer), "<?xml", 5) != 0)
   {
     return nullptr;
   }
