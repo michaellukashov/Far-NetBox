@@ -409,7 +409,9 @@ void init_common_controls(void);       /* also does some DLL-loading */
  * Exports from utils.
  */
 typedef struct filereq_tag filereq; /* cwd for file requester */
+#ifndef WINSCP
 bool request_file(filereq *state, OPENFILENAME *of, bool preserve, bool save);
+#endif
 filereq *filereq_new(void);
 void filereq_free(filereq *state);
 void pgp_fingerprints_msgbox(HWND owner);
