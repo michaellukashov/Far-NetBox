@@ -382,19 +382,19 @@ static int fcrypt_end(uint8_t mac[], fcrypt_ctx cx[1])
   return MAC_LENGTH(cx->mode); /* return MAC length in bytes   */
 }
 
-constexpr int PASSWORD_MANAGER_AES_MODE = 3;
+constexpr const int32_t PASSWORD_MANAGER_AES_MODE = 3;
 
 static void AES256Salt(RawByteString & Salt)
 {
   Salt.SetLength(SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  RAND_bytes(reinterpret_cast<unsigned char *>(&Salt[0]), nb::ToInt32(Salt.Length()));
+  RAND_bytes(reinterpret_cast<uint8_t *>(ToChar(Salt)), nb::ToInt32(Salt.Length()));
 }
 
 RawByteString GenerateEncryptKey()
 {
   RawByteString Result;
   Result.SetLength(KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
-  RAND_bytes(reinterpret_cast<unsigned char *>(&Result[0]), nb::ToInt32(Result.Length()));
+  RAND_bytes(reinterpret_cast<uint8_t *>(ToChar(Result)), nb::ToInt32(Result.Length()));
   return Result;
 }
 
@@ -419,7 +419,7 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   const UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
     reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
-    reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
+    reinterpret_cast<const uint8_t *>(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
   fcrypt_encrypt(reinterpret_cast<uint8_t *>(ToChar(Output)), nb::ToUInt32(Output.Length()), &aes);
@@ -673,7 +673,7 @@ TEncryption::TEncryption(const RawByteString & AKey) noexcept
   {
     DebugAssert(FKey.Length() == KEY_LENGTH(PASSWORD_MANAGER_AES_MODE));
     FContext = aes_make_context();
-    aes_set_encrypt_key(reinterpret_cast<uint8_t *>(&FKey[0]), nb::ToInt32(FKey.Length()), FContext);
+    aes_set_encrypt_key(reinterpret_cast<uint8_t *>(ToChar(FKey)), nb::ToInt32(FKey.Length()), FContext);
   }
   else
   {
@@ -820,7 +820,7 @@ void TEncryption::Aes(RawByteString & Buffer)
 {
   const int32_t Size = Buffer.Length();
   Buffer.SetLength(RoundToBlock(Buffer.Length()));
-  Aes(reinterpret_cast<char *>(&Buffer[0]), Buffer.Length());
+  Aes(ToChar(Buffer), Buffer.Length());
   Buffer.SetLength(Size);
 }
 
