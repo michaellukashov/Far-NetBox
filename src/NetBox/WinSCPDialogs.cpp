@@ -759,7 +759,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   return Result;
 }
 
-class TTransferEditorConfigurationDialog : public TWinSCPDialog
+class TTransferEditorConfigurationDialog final : public TWinSCPDialog
 {
 public:
   explicit TTransferEditorConfigurationDialog(TCustomFarPlugin * AFarPlugin);
@@ -6603,7 +6603,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
   return Result;
 }
 
-class TApplyCommandDialog : public TWinSCPDialog
+class TApplyCommandDialog final : public TWinSCPDialog
 {
 public:
   explicit TApplyCommandDialog(TCustomFarPlugin * AFarPlugin);
@@ -6770,7 +6770,7 @@ bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
   return Result;
 }
 
-class TFullSynchronizeDialog : public TWinSCPDialog
+class TFullSynchronizeDialog final : public TWinSCPDialog
 {
 public:
   explicit TFullSynchronizeDialog(TCustomFarPlugin * AFarPlugin, int32_t Options,
@@ -7198,7 +7198,7 @@ bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode
   return Result;
 }
 
-class TSynchronizeChecklistDialog : public TWinSCPDialog
+class TSynchronizeChecklistDialog final : public TWinSCPDialog
 {
 public:
   explicit TSynchronizeChecklistDialog(
