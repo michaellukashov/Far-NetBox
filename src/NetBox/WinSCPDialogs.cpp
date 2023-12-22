@@ -2986,7 +2986,7 @@ void TSessionDialog::UpdateControls()
     (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !S3Protocol);
   const bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
-    (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol);
+    (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || S3Protocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
   PrivateKeyEdit->SetEnabled(lSshProtocol || lFtpsProtocol || HTTPSProtocol);
