@@ -54,7 +54,7 @@ protected:
   bool FControlledAdd{false};
   void Recount();
 public:
-  static const UnicodeString HiddenPrefix;
+  static constexpr const wchar_t * HiddenPrefix = CONST_HIDDEN_PREFIX;
 
   bool GetAutoSort() const { return FAutoSort; }
   void SetAutoSort(bool Value) { FAutoSort = Value; }
