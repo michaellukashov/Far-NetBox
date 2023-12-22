@@ -18,7 +18,7 @@ set PROJECT_KIT=vs2022
 
 :x64
 set PROJECT_PLATFORM=x64
-set PROJECT_GENERATOR=NMake Makefiles
+set PROJECT_GENERATOR=Ninja
 set PROJECT_VARS=x86_amd64
 
 call %~dp0\build_netbox.cmd
@@ -32,7 +32,7 @@ set PROJECT_KIT=vs2022
 
 :x86
 set PROJECT_PLATFORM=x86
-set PROJECT_GENERATOR=NMake Makefiles
+set PROJECT_GENERATOR=Ninja
 set PROJECT_VARS=x86
 
 call %~dp0\build_netbox.cmd
