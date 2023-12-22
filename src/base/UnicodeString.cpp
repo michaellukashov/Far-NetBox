@@ -338,6 +338,12 @@ unsigned char RawByteString::operator [](int32_t Idx) const
   return Data.operator[](Idx - 1);
 }
 
+unsigned char & RawByteString::operator [](int32_t Idx)
+{
+  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
+  return nb::ToUInt8Ptr(Data.GetBuffer())[Idx - 1];
+}
+
 RawByteString RawByteString::Trim() const
 {
   return ::Trim(*this);
@@ -351,12 +357,6 @@ RawByteString RawByteString::TrimLeft() const
 RawByteString RawByteString::TrimRight() const
 {
   return ::TrimRight(*this);
-}
-
-unsigned char & RawByteString::operator [](int32_t Idx)
-{
-  ThrowIfOutOfRange(Idx); // Should Range-checking be optional to avoid overhead ??
-  return nb::ToUInt8Ptr(Data.GetBuffer())[Idx - 1];
 }
 
 RawByteString & RawByteString::operator =(const UnicodeString & StrCopy)
