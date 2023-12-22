@@ -73,12 +73,12 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           N = 0;
         }
       }
-      SetName(Name + L" (" + ::Int64ToStr(N + 1) + L")");
+      SetName(Name + FORMAT(L" (%s)", ::Int64ToStr(N + 1)));
     }
   }
 }
 //--- TNamedObjectList ------------------------------------------------------
-const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
+// const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
 
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) noexcept :
   TObjectList(Kind)
@@ -127,16 +127,16 @@ int32_t TNamedObjectList::Add(TObject * AObject)
     Result = -1;
     if (FAutoSort)
     {
-      int32_t pos{0};
-      TNamedObject * NamedObject2 = GetSortObject(NamedObject->GetName(), pos);
+      int32_t Pos{0};
+      TNamedObject * NamedObject2 = GetSortObject(NamedObject->GetName(), Pos);
       if (!NamedObject2)
       {
-        Result = pos;
+        Result = Pos;
         Insert(Result, AObject);
       } 
       else 
       {
-        Result= pos - 1;
+        Result= Pos - 1;
       }
     }
     else 
@@ -169,34 +169,34 @@ void TNamedObjectList::Notify(TObject * Ptr, TListNotification Action)
 
 TNamedObject * TNamedObjectList::GetSortObject(const UnicodeString & Name, int32_t & Position)
 {
-  bool flag = false;
-  int32_t l = 0;
-  int32_t r = GetCountIncludingHidden() - 1;
-  int32_t mid=0;
+  // bool Flag = false;
+  int32_t L = 0;
+  int32_t R = GetCountIncludingHidden() - 1;
+  int32_t Mid=0;
   Position = 0;
 
-  if (r < 0)
+  if (R < 0)
     return nullptr;
 
   TNamedObject tn(OBJECT_CLASS_TNamedObject, Name);
   TNamedObject * NamedObject = nullptr;
-  int32_t cp = 0;
+  int32_t Cp = 0;
 
-  while (l <= r)
+  while (L <= R)
   {
-    mid = (l + r) / 2;
-    NamedObject = static_cast<TNamedObject *>(Get(mid));
-    cp = NamedObject->Compare(&tn);
-    if (cp == 0)
+    Mid = (L + R) / 2;
+    NamedObject = static_cast<TNamedObject *>(Get(Mid));
+    Cp = NamedObject->Compare(&tn);
+    if (Cp == 0)
       return NamedObject;
 
-    if (cp > 0)
-      r = mid - 1;
+    if (Cp > 0)
+      R = Mid - 1;
     else
-      l = mid + 1;
+      L = Mid + 1;
   }
 
-  Position = mid + (cp > 0? 0 : 1);
+  Position = Mid + (Cp > 0? 0 : 1);
   return nullptr;
 }
 
@@ -207,7 +207,7 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName)
     int32_t outpos{0};
     return GetSortObject(AName, outpos);
   }
-  else 
+  else
   {
     for (Integer Index = 0; Index < GetCountIncludingHidden(); ++Index)
     {
