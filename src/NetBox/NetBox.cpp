@@ -162,7 +162,7 @@ intptr_t WINAPI SetDirectoryW(const struct SetDirectoryInfo * Info)
   if (!Info || (Info->StructSize < sizeof(SetDirectoryInfo)))
     return FALSE;
   TFarPluginGuard Guard; nb::used(Guard);
-  intptr_t Result = FarPlugin->SetDirectory(Info);
+  const intptr_t Result = FarPlugin->SetDirectory(Info);
   return Result;
 }
 
@@ -171,7 +171,7 @@ intptr_t WINAPI MakeDirectoryW(struct MakeDirectoryInfo * Info)
   if (!Info || (Info->StructSize < sizeof(MakeDirectoryInfo)))
     return FALSE;
   TFarPluginGuard Guard; nb::used(Guard);
-  intptr_t Result = FarPlugin->MakeDirectory(Info);
+  const intptr_t Result = FarPlugin->MakeDirectory(Info);
   return Result;
 }
 
@@ -196,7 +196,7 @@ intptr_t WINAPI PutFilesW(const struct PutFilesInfo * Info)
   if (!Info || (Info->StructSize < sizeof(PutFilesInfo)))
     return FALSE;
   TFarPluginGuard Guard; nb::used(Guard);
-  intptr_t Result = FarPlugin->PutFiles(Info);
+  const intptr_t Result = FarPlugin->PutFiles(Info);
   return Result;
 }
 
