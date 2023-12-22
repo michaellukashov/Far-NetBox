@@ -17,7 +17,6 @@
 
 #define PLUGIN_VERSION_STR _NTOA4(_MAJOR,_MINOR,_PATCH,_BUILD)
 #define PLUGIN_VERSION_TXT _NTOA3(_MAJOR,_MINOR,_PATCH)
-//#define PLUGIN_VERSION_WTXT L"2.4.5"
 
 #define PLUGIN_AUTHOR       L"Mikhail Lukashov"
 #define PLUGIN_DESCR        L"SFTP/FTP(S)/SCP/WebDAV/S3 client for FAR 3.0 x86/x64"
