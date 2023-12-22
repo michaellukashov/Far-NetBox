@@ -407,8 +407,8 @@ void ValidateEncryptKey(const RawByteString & AKey)
   }
 }
 
-void AES256EncryptWithMAC(const RawByteString Input, const UnicodeString & Password,
-  RawByteString &Salt, RawByteString &Output, RawByteString &Mac)
+void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
+  RawByteString & Salt, RawByteString & Output, RawByteString & Mac)
 {
   fcrypt_ctx aes;
   if (Salt.IsEmpty())
@@ -437,7 +437,7 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   Output = Salt + Encrypted + Mac;
 }
 
-bool AES256DecryptWithMAC(RawByteString Input, const UnicodeString & Password,
+bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   const RawByteString & Salt, RawByteString & Output, const RawByteString & Mac)
 {
   fcrypt_ctx aes;
@@ -816,7 +816,7 @@ bool TEncryption::DecryptEnd(TFileBuffer & Buffer)
   return Result;
 }
 
-void TEncryption::Aes(RawByteString& Buffer)
+void TEncryption::Aes(RawByteString & Buffer)
 {
   const int32_t Size = Buffer.Length();
   Buffer.SetLength(RoundToBlock(Buffer.Length()));
