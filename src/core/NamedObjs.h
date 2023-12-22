@@ -49,10 +49,11 @@ public:
   TNamedObject * GetSortObject(const UnicodeString & Name, int32_t & Position);
   virtual void Notify(TObject * Ptr, TListNotification Action) override;
 protected:
+  void Recount();
+
   int32_t FHiddenCount{0};
   bool FAutoSort{true};
   bool FControlledAdd{false};
-  void Recount();
 public:
   static constexpr const wchar_t * HiddenPrefix = CONST_HIDDEN_PREFIX;
 
