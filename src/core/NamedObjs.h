@@ -4,7 +4,7 @@
 #include <System.hpp>
 #include <contnrs.hpp>
 
-#define CONST_HIDDEN_PREFIX L"_!_"
+constexpr const wchar_t * CONST_HIDDEN_PREFIX = L"_!_";
 
 class TNamedObjectList;
 NB_DEFINE_CLASS_ID(TNamedObject);
