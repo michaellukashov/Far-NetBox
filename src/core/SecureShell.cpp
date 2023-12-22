@@ -1466,7 +1466,7 @@ int32_t TSecureShell::TranslatePuttyMessage(
       const int32_t OriginalLen = nb::StrLength(Original);
       const int32_t PrefixLen = nb::ToInt32(Div - Original);
       const int32_t SuffixLen = OriginalLen - PrefixLen - 1;
-      if ((nb::ToSizeT(Message.Length()) >= OriginalLen - 1) &&
+      if ((Message.Length() >= OriginalLen - 1) &&
           (strncmp(AnsiMessage.c_str(), Original, PrefixLen) == 0) &&
           (strncmp(AnsiMessage.c_str() + AnsiMessage.Length() - SuffixLen, Div + 1, SuffixLen) == 0))
       {
