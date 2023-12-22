@@ -198,7 +198,7 @@ class WidthHandler : public ArgVisitor<WidthHandler, unsigned> {
       spec_.align_ = ALIGN_LEFT;
       width = 0 - width;
     }
-    unsigned int_max = std::numeric_limits<int>::max();
+    constexpr unsigned int_max = std::numeric_limits<int>::max();
     if (width > int_max)
       FMT_THROW(FormatError("number is too big"));
     return static_cast<unsigned>(width);

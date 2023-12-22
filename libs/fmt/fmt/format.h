@@ -3810,7 +3810,7 @@ unsigned parse_nonnegative_int(const Char *&s) {
   assert('0' <= *s && *s <= '9');
   unsigned value = 0;
   // Convert to unsigned to prevent a warning.
-  unsigned max_int = (std::numeric_limits<int>::max)();
+  constexpr unsigned max_int = (std::numeric_limits<int>::max)();
   unsigned big = max_int / 10;
   do {
     // Check for overflow.
@@ -3993,7 +3993,7 @@ const Char *BasicFormatter<Char, ArgFormatter>::format(
       default:
         FMT_THROW(FormatError("width is not integer"));
       }
-      unsigned max_int = (std::numeric_limits<int>::max)();
+      constexpr unsigned max_int = (std::numeric_limits<int>::max)();
       if (value > max_int)
         FMT_THROW(FormatError("number is too big"));
       spec.width_ = static_cast<int>(value);
@@ -4032,7 +4032,7 @@ const Char *BasicFormatter<Char, ArgFormatter>::format(
           default:
             FMT_THROW(FormatError("precision is not integer"));
         }
-        unsigned max_int = (std::numeric_limits<int>::max)();
+        constexpr unsigned max_int = (std::numeric_limits<int>::max)();
         if (value > max_int)
           FMT_THROW(FormatError("number is too big"));
         spec.precision_ = static_cast<int>(value);
