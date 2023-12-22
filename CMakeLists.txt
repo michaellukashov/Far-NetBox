@@ -1868,7 +1868,7 @@ target_include_directories(StackWalker PRIVATE
 )
 
 target_compile_options(StackWalker PRIVATE
-  /W4
+  # /W4
   -Zi
   /wd4740
 )
