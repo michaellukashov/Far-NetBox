@@ -234,7 +234,7 @@ static ssize_t neon_read_func(void * userdata, char * buf, size_t len)
         (len, (char *) ptr, request->callbackData);
     if (ret < 0) {
         request->status = S3StatusAbortedByCallback;
-        return -1;
+        return (ssize_t)-1;
     }
     else {
         if (ret > request->toS3CallbackBytesRemaining) {
