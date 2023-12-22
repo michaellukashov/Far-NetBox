@@ -122,7 +122,7 @@ TEncodeType DetectUTF8Encoding(const uint8_t * str, int32_t len)
   return trailing == 0 ? etUTF8 : etANSI;
 }
 
-/*TEncodeType DetectUTF8Encoding(RawByteString& str, int32_t len)
+/*TEncodeType DetectUTF8Encoding(RawByteString & str, int32_t len)
 {
   return DetectUTF8Encoding(str.c_str(), len);
 }*/

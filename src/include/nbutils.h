@@ -21,7 +21,7 @@ enum TEncodeType
 };
 
 TEncodeType DetectUTF8Encoding(const uint8_t * str, int32_t len);
-//TEncodeType DetectUTF8Encoding(RawByteString& str, int32_t len);
+//TEncodeType DetectUTF8Encoding(RawByteString & str, int32_t len);
 
 } // namespace nb
 
