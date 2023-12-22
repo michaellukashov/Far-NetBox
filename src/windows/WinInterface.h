@@ -19,9 +19,9 @@
 #include <LocalInterface.h>
 #endif
 
-#define SITE_ICON 1
-#define SITE_FOLDER_ICON 2
-#define WORKSPACE_ICON 3
+// #define SITE_ICON 1
+// #define SITE_FOLDER_ICON 2
+// #define WORKSPACE_ICON 3
 
 class TStoredSessionList;
 class TConfiguration;
