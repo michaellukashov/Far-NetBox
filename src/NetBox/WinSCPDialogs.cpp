@@ -1525,10 +1525,6 @@ private:
   TFarEdit * UserNameEdit{nullptr};
   TFarText * PasswordLabel{nullptr};
   TFarEdit * PasswordEdit{nullptr};
-  TFarText * S3AccessKeyIDLabel{nullptr};
-  // TFarEdit * S3AccessKeyIDEdit{nullptr};
-  TFarText * S3SecretAccessKeyLabel{nullptr};
-  // TFarEdit * S3SecretAccessKeyEdit{nullptr};
   TFarEdit * PrivateKeyEdit{nullptr};
   TFarComboBox * TransferProtocolCombo{nullptr};
   TFarCheckBox * AllowScpFallbackCheck{nullptr};
@@ -1836,13 +1832,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   UserNameLabel = new TFarText(this);
   UserNameLabel->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
   UserNameLabel->SetWidth(20);
-  // UserNameLabel->SetVisible(true);
-
-  SetNextItemPosition(ipSame);
-  S3AccessKeyIDLabel = new TFarText(this);
-  S3AccessKeyIDLabel->SetCaption(GetMsg(NB_LOGIN_S3_ACCESS_KEY));
-  S3AccessKeyIDLabel->SetWidth(20);
-  S3AccessKeyIDLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
 
@@ -1850,13 +1839,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   UserNameEdit->SetWidth(20);
   UserNameEdit->SetRight(CRect.Right - 12 - 2);
   UserNameEdit->SetVisible(true);
-
-  SetNextItemPosition(ipSame);
-  // S3AccessKeyIDEdit = new TFarEdit(this);
-  // S3AccessKeyIDEdit->SetWidth(20);
-  // S3AccessKeyIDEdit->SetRight(CRect.Right - 12 - 2);
-  // S3AccessKeyIDEdit->SetVisible(false);
-  // S3AccessKeyIDEdit->SetEnabledFollow(S3AccessKeyIDLabel);
 
   SetNextItemPosition(ipNewLine);
 
@@ -1868,12 +1850,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PasswordLabel->SetWidth(20);
   PasswordLabel->SetVisible(true);
 
-  SetNextItemPosition(ipSame);
-  S3SecretAccessKeyLabel = new TFarText(this);
-  S3SecretAccessKeyLabel->SetCaption(GetMsg(NB_LOGIN_S3_SECRET_ACCESS_KEY));
-  S3SecretAccessKeyLabel->SetWidth(20);
-  S3SecretAccessKeyLabel->SetVisible(false);
-
   SetNextItemPosition(ipRight);
 
   PasswordEdit = new TFarEdit(this);
@@ -1881,14 +1857,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PasswordEdit->SetWidth(20);
   PasswordEdit->SetRight(CRect.Right - 12 - 2);
   PasswordEdit->SetVisible(true);
-
-  // SetNextItemPosition(ipSame);
-  // S3SecretAccessKeyEdit = new TFarEdit(this);
-  // S3SecretAccessKeyEdit->SetPassword(false);
-  // S3SecretAccessKeyEdit->SetWidth(20);
-  // S3SecretAccessKeyEdit->SetRight(CRect.Right - 12 - 2);
-  // S3SecretAccessKeyEdit->SetVisible(false);
-  // S3SecretAccessKeyLabel->SetEnabledFollow(S3SecretAccessKeyEdit);
 
   SetNextItemPosition(ipNewLine);
   Text = new TFarText(this);
@@ -3000,13 +2968,9 @@ void TSessionDialog::UpdateControls()
   PasswordEdit->SetEnabled(!LoginAnonymous);
 
   UserNameLabel->SetVisible(IsMainTab && !S3Protocol);
-  UserNameEdit->SetVisible(IsMainTab); // && !S3Protocol);
+  UserNameEdit->SetVisible(IsMainTab);
   PasswordLabel->SetVisible(IsMainTab && !S3Protocol);
-  PasswordEdit->SetVisible(IsMainTab); // && !S3Protocol);
-  S3AccessKeyIDLabel->SetVisible(IsMainTab && S3Protocol);
-  // S3AccessKeyIDEdit->SetVisible(IsMainTab && S3Protocol);
-  S3SecretAccessKeyLabel->SetVisible(IsMainTab && S3Protocol);
-  // S3SecretAccessKeyEdit->SetVisible(IsMainTab && S3Protocol);
+  PasswordEdit->SetVisible(IsMainTab);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
@@ -3168,11 +3132,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   UserNameEdit->SetText(SessionData->SessionGetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
-  if (SessionData->GetFSProtocol() == fsS3)
-  {
-    // S3AccessKeyIDEdit->SetText(SessionData->SessionGetUserName());
-    // S3SecretAccessKeyEdit->SetText(SessionData->GetPassword());
-  }
 
   bool AllowScpFallback;
   TransferProtocolCombo->SetItemIndex(
@@ -3512,9 +3471,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());
     if (GetFSProtocol() == fsS3)
     {
-      // SessionData->SessionSetUserName(S3AccessKeyIDEdit->GetText());
       SessionData->SessionSetUserName(UserName);
-      //SessionData->SetS3SessionToken(S3SecretAccessKeyEdit->GetText());
       SessionData->SetPassword(Password);
       SessionData->SetFtps(ftpsImplicit); // TODO: get code from TLoginDialog::PortNumberEditChange
     }
@@ -3927,7 +3884,7 @@ TFarComboBox * TSessionDialog::GetOtherProxyMethodCombo() const
 TFSProtocol TSessionDialog::GetFSProtocol() const
 {
   return IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(),
-      AllowScpFallbackCheck->GetChecked());
+    AllowScpFallbackCheck->GetChecked());
 }
 
 inline int32_t TSessionDialog::GetLastSupportedFtpProxyMethod() const
