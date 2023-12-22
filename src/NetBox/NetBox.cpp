@@ -9,8 +9,8 @@
 #include "FarDialog.h"
 #include "plugin_version.hpp"
 
-extern void InitExtensionModule(HINSTANCE HInst);
-extern void TermExtensionModule();
+// extern void InitExtensionModule(HINSTANCE HInst);
+// extern void TermExtensionModule();
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 extern void DestroyFarPlugin(TCustomFarPlugin *& Plugin);
 
