@@ -39,7 +39,7 @@ public:
 
   int32_t vprintf(const char * Format, va_list ArgList);
 
-  void Unique() {}
+  void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
   UTF8String & operator =(const UnicodeString & StrCopy);
@@ -250,7 +250,7 @@ public:
   AnsiString & Append(const char * Str);
   AnsiString & Append(char Ch);
 
-  void Unique() {}
+  void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
   AnsiString & operator =(const UnicodeString & StrCopy);
@@ -336,7 +336,7 @@ public:
   RawByteString Trim() const;
   RawByteString TrimLeft() const;
   RawByteString TrimRight() const;
-  void Unique() {}
+  void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
   RawByteString & operator =(const UnicodeString & StrCopy);
