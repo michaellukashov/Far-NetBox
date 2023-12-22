@@ -1805,7 +1805,7 @@ bool TWinConfiguration::IsDDExtBroken()
   return (Build >= 17134) && (Build < 17763);
 }
 
-RawByteString TWinConfiguration::StronglyRecryptPassword(RawByteString Password, UnicodeString Key)
+RawByteString TWinConfiguration::StronglyRecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
   RawByteString Dummy;
   RawByteString Result;
@@ -1833,7 +1833,7 @@ RawByteString TWinConfiguration::StronglyRecryptPassword(RawByteString Password,
   return Result;
 }
 
-UnicodeString TWinConfiguration::DecryptPassword(RawByteString Password, UnicodeString Key)
+UnicodeString TWinConfiguration::DecryptPassword(const RawByteString & Password, const UnicodeString & Key)
 {
   UnicodeString Result;
   RawByteString Buf;
