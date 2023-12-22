@@ -3569,7 +3569,7 @@ UnicodeString TSessionData::GetNameWithoutHiddenPrefix() const
   UnicodeString Result = GetName();
   if (GetHidden())
   {
-    Result = Result.SubString(TNamedObjectList::HiddenPrefix.Length() + 1, Result.Length() - TNamedObjectList::HiddenPrefix.Length());
+    Result = Result.SubString(StrLength(TNamedObjectList::HiddenPrefix) + 1, Result.Length() - StrLength(TNamedObjectList::HiddenPrefix));
   }
   return Result;
 }

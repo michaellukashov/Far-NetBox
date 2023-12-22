@@ -4,6 +4,7 @@
 
 #include <Common.h>
 #include <Sysutils.hpp>
+#include <StrUtils.hpp>
 #include "NamedObjs.h"
 
 // #pragma package(smart_init)
@@ -21,7 +22,7 @@ TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) noe
 
 void TNamedObject::SetName(const UnicodeString & Value)
 {
-  FHidden = (Value.SubString(1, TNamedObjectList::HiddenPrefix.Length()) == TNamedObjectList::HiddenPrefix);
+  FHidden = (Value.SubString(1, StrLength(TNamedObjectList::HiddenPrefix)) == TNamedObjectList::HiddenPrefix);
   FName = Value;
 }
 
