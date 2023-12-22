@@ -1084,7 +1084,6 @@
 "&Hasło dla klucza '%s':"
 "Plik '%s' już istnieje. Zastąpić?"
 "Folder '%s' już istnieje. Zastąpić?"
-"Pierwszy szyfr %s obsługiwany przez serwer to %s, który jest skonfigurowany poniżej progu ostrzegawczego.\n\nChcesz kontynuować to połączenie?"
 "cipher"
 "klient-serwer "
 "serwer-klient "

@@ -1084,7 +1084,6 @@
 "&Passphrase for key «%s»:"
 "File «%s» already exists. Overwrite?"
 "Directory «%s» already exists. Overwrite?"
-"The first %s supported by the server is %s, which is below the configured warning threshold.\n\nDo you want to continue with this connection?"
 "cipher"
 "client-to-server cipher"
 "server-to-client cipher"
