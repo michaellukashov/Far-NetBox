@@ -2126,7 +2126,7 @@ void TWebDAVFileSystem::LockResult(void * UserData, const struct ne_lock * Lock,
   // Is NULL on failure (Status is not NULL then)
   if (Lock != nullptr)
   {
-    RawByteString &LockToken = *static_cast<RawByteString *>(UserData);
+    RawByteString & LockToken = *static_cast<RawByteString *>(UserData);
     LockToken = Lock->token;
   }
 }
