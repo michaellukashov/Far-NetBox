@@ -20,7 +20,7 @@ static UnicodeString FileMasksDelimiterStr = UnicodeString(1, FileMasksDelimiter
 static UnicodeString MaskSymbols = L"?*[";
 
 EFileMasksException::EFileMasksException(
-    const UnicodeString & AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept :
+  const UnicodeString & AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept :
   Exception(AMessage),
   ErrorStart(AErrorStart),
   ErrorLen(AErrorLen)
