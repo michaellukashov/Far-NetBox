@@ -351,7 +351,7 @@ uintmax_t strtoumax_(const char * nptr, char ** endptr, int32_t base)
 
 static void SSHFatalError(const char * Format, va_list Param)
 {
-  char Buf[200];
+  char Buf[200]{};
   vsnprintf(Buf, LENOF(Buf), Format, Param);
   Buf[LENOF(Buf) - 1] = '\0';
 
