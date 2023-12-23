@@ -80,7 +80,7 @@ private:
   UnicodeString FLocalRoot;
   UnicodeString FRemoteRoot;
 
-  struct TMask : public TObject
+  struct TMask final : public TObject
   {
     TMask() = default;
     enum TKind { Any, NoExt, Regular };
@@ -205,7 +205,7 @@ private:
 
 class TTerminal;
 class TSessionData;
-struct NB_CORE_EXPORT TCustomCommandData : public TObject
+struct NB_CORE_EXPORT TCustomCommandData final : public TObject
 {
 public:
   TCustomCommandData() noexcept;
