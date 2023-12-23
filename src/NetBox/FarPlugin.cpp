@@ -1872,10 +1872,7 @@ uint32_t TCustomFarFileSystem::FInstances = 0;
 
 TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin) noexcept :
   TObject(Kind),
-  FPlugin(APlugin),
-  FClosed(false),
-  FOpenPanelInfoValid(false),
-  FOwnerFileSystem(nullptr)
+  FPlugin(APlugin)
 {
   nb::ClearArray(FPanelInfo);
   nb::ClearStruct(FOpenPanelInfo);
@@ -2391,8 +2388,7 @@ int32_t TFarPanelModes::CommaCount(const UnicodeString & ColumnTypes)
   return Count;
 }
 
-TFarKeyBarTitles::TFarKeyBarTitles() noexcept :
-  FReferenced(false)
+TFarKeyBarTitles::TFarKeyBarTitles() noexcept
 {
   nb::ClearStruct(FKeyBarTitles);
   constexpr size_t CountLabels = 7 * 12;
@@ -2625,7 +2621,6 @@ void THintPanelItem::GetData(
 TFarPanelInfo::TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner) noexcept :
   TObject(),
   FPanelInfo(APanelInfo),
-  FItems(nullptr),
   FOwner(AOwner)
 {
   DebugAssert(FPanelInfo);
