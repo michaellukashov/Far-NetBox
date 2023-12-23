@@ -1266,7 +1266,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
     if (Result)
     {
       Text = DestText.c_str();
-      if (OnValidate)
+      if (!OnValidate.empty())
       {
         try
         {
