@@ -80,7 +80,7 @@ NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_
 
 NB_CORE_EXPORT void SetTraceFile(HANDLE ATraceFile);
 NB_CORE_EXPORT void CleanupTracing();
-#define TRACEENV "WINSCPTRACE"
+constexpr const char * TRACEENV = "WINSCPTRACE";
 NB_CORE_EXPORT extern bool IsTracing;
 NB_CORE_EXPORT extern const uint32_t CallstackTlsOff;
 NB_CORE_EXPORT extern uint32_t CallstackTls;
