@@ -3030,7 +3030,7 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   }
   else
   {
-    Length = ::GetCurrentDirectory(nb::ToDWord(Path.Length()), ToWCharPtr(Path));
+    Length = ::GetCurrentDirectoryW(nb::ToDWord(Path.Length()), ToWCharPtr(Path));
   }
   UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;
