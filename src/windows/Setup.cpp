@@ -1862,7 +1862,7 @@ void SetupInitialize()
     ShowExtendedException(&E);
   }
 }
-
+/*
 static bool AddJumpListCategory(TStrings * Names,
   UnicodeString AdditionalParams, TStringList * Removed,
   ICustomDestinationList * DestinationList, UnicodeString CategoryName,
@@ -2262,6 +2262,7 @@ void TipsUpdateStaticUsage()
   std::unique_ptr<TStringList> TipsSeen(CommaTextToStringList(WinConfiguration->TipsSeen));
   Configuration->Usage->Set(L"TipsSeen", TipsSeen->Count);
 }
+*/
 
 static void ReadNetVersion(TRegistryStorage * Registry)
 {
