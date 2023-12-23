@@ -85,9 +85,9 @@ private:
     TMask() = default;
     enum TKind { Any, NoExt, Regular };
 
-    TKind FileNameMaskKind;
+    TKind FileNameMaskKind{Any};
     Masks::TMask * FileNameMask{nullptr};
-    TKind DirectoryMaskKind;
+    TKind DirectoryMaskKind{Any};
     Masks::TMask * RemoteDirectoryMask{nullptr};
     Masks::TMask * LocalDirectoryMask{nullptr};
 
