@@ -2757,8 +2757,8 @@ UnicodeString TTerminal::RemoteGetCurrentDirectory()
     // there's occasional crash when assigning FFileSystem->CurrentDirectory
     // to FCurrentDirectory, splitting the assignment to two statements
     // to locate the crash more closely
-    const UnicodeString CurrentDirectory = FFileSystem->RemoteCurrentDirectory();
-    FCurrentDirectory = CurrentDirectory;
+    const UnicodeString ACurrentDirectory = FFileSystem->RemoteCurrentDirectory();
+    FCurrentDirectory = ACurrentDirectory;
     if (FCurrentDirectory.IsEmpty())
     {
       ReadCurrentDirectory();
@@ -3623,11 +3623,11 @@ void TTerminal::ReadCurrentDirectory()
     if (GetSessionData()->GetCacheDirectoryChanges())
     {
       DebugAssert(FDirectoryChangesCache != nullptr);
-      const UnicodeString CurrentDirectory = RemoteGetCurrentDirectory();
-      if (!CurrentDirectory.IsEmpty() && !FLastDirectoryChange.IsEmpty() && (CurrentDirectory != OldDirectory))
+      const UnicodeString ACurrentDirectory = RemoteGetCurrentDirectory();
+      if (!ACurrentDirectory.IsEmpty() && !FLastDirectoryChange.IsEmpty() && (ACurrentDirectory != OldDirectory))
       {
         FDirectoryChangesCache->AddDirectoryChange(OldDirectory,
-          FLastDirectoryChange, CurrentDirectory);
+          FLastDirectoryChange, ACurrentDirectory);
       }
       // not to break the cache, if the next directory change would not
       // be initialized by ChangeDirectory(), which sets it
