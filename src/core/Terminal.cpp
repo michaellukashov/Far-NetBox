@@ -4943,9 +4943,9 @@ void TTerminal::CalculateSubFoldersChecksum(
           {
             AOperationProgress->SetFile(File->FileName);
 
-            for (int32_t Index = 0; Index < SubFiles->Count; Index++)
+            for (int32_t Index2 = 0; Index2 < SubFiles->Count; Index2++)
             {
-              const TRemoteFile * SubFile = SubFiles->Files[Index];
+              const TRemoteFile * SubFile = SubFiles->Files[Index2];
               UnicodeString SubFileName = base::UnixCombinePaths(FileName, SubFile->FileName);
               SubFileList->AddObject(SubFileName, SubFile);
             }
