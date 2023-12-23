@@ -10,7 +10,7 @@
 CFileZillaApi::CFileZillaApi()
 {
   m_nInternalMessageID=0;
-  m_pMainThread=0;
+  m_pMainThread=nullptr;
   m_bInitialized=FALSE;
 }
 
@@ -511,10 +511,10 @@ COverwriteRequestData::COverwriteRequestData()
   size1 = 0;
   size2 = 0;
   nRequestType=FZ_ASYNCREQUEST_OVERWRITE;
-  localtime=0;
+  localtime=nullptr;
   localFileHandle = INVALID_HANDLE_VALUE;
   remotetime.hasdate = false;
-  pTransferFile=0;
+  pTransferFile=nullptr;
 }
 
 COverwriteRequestData::~COverwriteRequestData()
@@ -526,7 +526,7 @@ COverwriteRequestData::~COverwriteRequestData()
 CVerifyCertRequestData::CVerifyCertRequestData()
 {
   nRequestType=FZ_ASYNCREQUEST_VERIFYCERT;
-  pCertData=0;
+  pCertData=nullptr;
 }
 
 CVerifyCertRequestData::~CVerifyCertRequestData()

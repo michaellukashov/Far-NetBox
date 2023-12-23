@@ -490,7 +490,7 @@ HKEY open_regkey_fn_winscp(bool Create, bool Write, HKEY Key, const char * Path,
   }
   else if (PuttyRegistryMode == prmFail)
   {
-    Result = 0;
+    Result = nullptr;
   }
   else if (PuttyRegistryMode == prmRedirect)
   {
