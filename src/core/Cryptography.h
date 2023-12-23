@@ -38,8 +38,8 @@ public:
   UnicodeString DecryptFileName(const UnicodeString & AFileName);
 
   static int32_t GetOverhead();
-  static int32_t RoundToBlock(int32_t Size);
-  static int32_t RoundToBlockDown(int32_t Size);
+  static int64_t RoundToBlock(int64_t Size);
+  static int64_t RoundToBlockDown(int64_t Size);
 
 private:
   RawByteString FKey;
@@ -50,7 +50,7 @@ private:
   AESContext * FContext{nullptr};
 
   void Init(const RawByteString & AKey, const RawByteString & ASalt);
-  void Aes(char * Buffer, int32_t Size);
+  void Aes(char * Buffer, int64_t Size);
   void Aes(RawByteString & Buffer);
   void Aes(TFileBuffer & Buffer, bool Last);
   void NeedSalt();

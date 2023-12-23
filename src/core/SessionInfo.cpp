@@ -1612,9 +1612,9 @@ void TActionLog::Add(const UnicodeString & Line)
       try
       {
         const UTF8String UtfLine = UTF8String(Line);
-        size_t Written =
+        int64_t Written =
           FLogger->Write(UtfLine.c_str(), UtfLine.Length());
-        if (Written != nb::ToSizeT(UtfLine.Length()))
+        if (Written != nb::ToInt64(UtfLine.Length()))
         {
           throw ECRTExtException("");
         }

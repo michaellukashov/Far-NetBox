@@ -1672,8 +1672,8 @@ protected:
       bool Last;
       if (FOnTransferIn)
       {
-        const size_t Read = BlockBuf.LoadFromIn(std::forward<TTransferInEvent>(FOnTransferIn), FTerminal, BlockSize);
-        Last = (Read < BlockSize);
+        const DWORD Read = BlockBuf.LoadFromIn(std::forward<TTransferInEvent>(FOnTransferIn), FTerminal, BlockSize);
+        Last = (Read < nb::ToDWord(BlockSize));
       }
       else
       {
@@ -2359,8 +2359,8 @@ uint32_t TSFTPFileSystem::TransferBlockSize(
   constexpr uint32_t MinPacketSize = 32 * 1024;
   uint32_t MaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (MaxPacketSize > 0);
-  const uint32_t CPSRounded = TEncryption::RoundToBlock(nb::ToInt32(OperationProgress->CPS()));
-  uint32_t Result = CPSRounded;
+  const int64_t CPSRounded = TEncryption::RoundToBlock(nb::ToInt64(OperationProgress->CPS()));
+  uint32_t Result = nb::ToUInt32(CPSRounded);
   if ((FMaxPacketSize > 0) &&
       ((FMaxPacketSize < MaxPacketSize) || !MaxPacketSizeValid))
   {
@@ -2392,7 +2392,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(
       MaxPacketSize -= Overhead;
       if (Result > MaxPacketSize)
       {
-        const int32_t MaxPacketSizeRounded = TEncryption::RoundToBlockDown(MaxPacketSize);
+        const int64_t MaxPacketSizeRounded = TEncryption::RoundToBlockDown(MaxPacketSize);
         if (MaxPacketSizeRounded > 0)
         {
           MaxPacketSize = nb::ToUInt32(MaxPacketSizeRounded);

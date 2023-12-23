@@ -827,7 +827,7 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
 UnicodeString TConfiguration::BannerHash(const UnicodeString & ABanner) const
 {
   RawByteString Result(16, 0);
-  const char * Buf = Result.data();
+  char * Buf = Result.SetLength(16);
   md5checksum(
     reinterpret_cast<const char *>(ABanner.c_str()), nb::ToInt32(ABanner.Length() * sizeof(wchar_t)),
     const_cast<uint8_t *>(reinterpret_cast<const uint8_t *>(Buf)));

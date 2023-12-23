@@ -410,7 +410,7 @@ void ValidateEncryptKey(const RawByteString & AKey)
 void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   RawByteString & Salt, RawByteString & Output, RawByteString & Mac)
 {
-  fcrypt_ctx aes;
+  fcrypt_ctx aes{};
   if (Salt.IsEmpty())
   {
     AES256Salt(Salt);
@@ -440,7 +440,7 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
 bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Password,
   const RawByteString & Salt, RawByteString & Output, const RawByteString & Mac)
 {
-  fcrypt_ctx aes;
+  fcrypt_ctx aes{};
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   const UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
@@ -713,9 +713,9 @@ constexpr const int32_t AesBlockMask = 0x0F;
 constexpr const wchar_t * AesCtrExt = L".aesctr.enc";
 constexpr const char * AesCtrMagic = "aesctr.........."; // 16 bytes fixed [to match AES block size], even for future algos
 
-int32_t TEncryption::RoundToBlock(int32_t Size)
+int64_t TEncryption::RoundToBlock(int64_t Size)
 {
-  const int32_t M = (Size % BLOCK_SIZE);
+  const int64_t M = (Size % BLOCK_SIZE);
   if (M != 0)
   {
     Size += (BLOCK_SIZE - M);
@@ -723,12 +723,12 @@ int32_t TEncryption::RoundToBlock(int32_t Size)
   return Size;
 }
 
-int32_t TEncryption::RoundToBlockDown(int32_t Size)
+int64_t TEncryption::RoundToBlockDown(int64_t Size)
 {
   return Size - (Size % BLOCK_SIZE);
 }
 
-void TEncryption::Aes(char * Buffer, int32_t Size)
+void TEncryption::Aes(char * Buffer, int64_t Size)
 {
   DebugAssert(!FSalt.IsEmpty());
   call_aes_sdctr(nb::ToUInt8Ptr(Buffer), nb::ToInt32(Size), FContext);
@@ -742,23 +742,23 @@ void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
     FOverflowBuffer.SetLength(0);
   }
 
-  int64_t Size;
+  int64_t Size{0};
   if (Last)
   {
     Size = Buffer.Size;
-    Buffer.Size = RoundToBlock(nb::ToInt32(Size));
+    Buffer.Size = RoundToBlock(Size);
   }
   else
   {
-    const int32_t RoundedSize = RoundToBlockDown(nb::ToInt32(Buffer.Size));
-    if (RoundedSize != nb::ToInt32(Buffer.Size))
+    const int64_t RoundedSize = RoundToBlockDown(Buffer.Size);
+    if (RoundedSize != Buffer.Size)
     {
       FOverflowBuffer += RawByteString(Buffer.Data + RoundedSize, nb::ToInt32(Buffer.Size - RoundedSize));
       Buffer.Size = RoundedSize;
     }
   }
 
-  Aes(Buffer.Data, nb::ToInt32(Buffer.Size));
+  Aes(Buffer.Data, Buffer.Size);
 
   if (Last)
   {
@@ -819,8 +819,8 @@ bool TEncryption::DecryptEnd(TFileBuffer & Buffer)
 void TEncryption::Aes(RawByteString & Buffer)
 {
   const int32_t Size = Buffer.Length();
-  Buffer.SetLength(RoundToBlock(Buffer.Length()));
-  Aes(ToChar(Buffer), Buffer.Length());
+  Buffer.SetLength(nb::ToInt32(RoundToBlock(Buffer.Length())));
+  Aes(ToCharPtr(Buffer), Buffer.Length());
   Buffer.SetLength(Size);
 }
 
