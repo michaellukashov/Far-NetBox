@@ -767,7 +767,7 @@ TPrivateKey * LoadKey(TKeyType KeyType, const UnicodeString & FileName, const Un
       case ktOpenSSHPEM:
       case ktOpenSSHNew:
       case ktSSHCom:
-        Ssh2Key = import_ssh2(KeyFile, KeyType, ToChar(AnsiPassphrase), &ErrorStr);
+        Ssh2Key = import_ssh2(KeyFile, KeyType, ToCharPtr(AnsiPassphrase), &ErrorStr);
         break;
 
       default:
@@ -948,7 +948,7 @@ void SaveKey(TKeyType KeyType, const UnicodeString & FileName,
   {
     struct ssh2_userkey * Ssh2Key = reinterpret_cast<struct ssh2_userkey *>(PrivateKey);
     AnsiString AnsiPassphrase = AnsiString(Passphrase);
-    const char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : ToChar(AnsiPassphrase));
+    const char * PassphrasePtr = (AnsiPassphrase.IsEmpty() ? nullptr : ToCharPtr(AnsiPassphrase));
     switch (KeyType)
     {
       case ktSSH2:

@@ -2345,7 +2345,7 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, int32_t 
   AnsiStoredKeys.SetLength(10240);
   UnicodeString Result;
   if (retrieve_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(),
-        ToChar(AnsiStoredKeys), AnsiStoredKeys.Length()) == 0)
+        ToCharPtr(AnsiStoredKeys), AnsiStoredKeys.Length()) == 0)
   {
     PackStr(AnsiStoredKeys);
     Result = UnicodeString(AnsiStoredKeys);

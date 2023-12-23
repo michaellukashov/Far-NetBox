@@ -3516,7 +3516,7 @@ char * TSFTPFileSystem::GetEOL() const
   if (FVersion >= 4)
   {
     DebugAssert(!FEOL.IsEmpty());
-    return ToChar(FEOL);
+    return ToCharPtr(FEOL);
   }
   return EOLToStr(GetSessionData()->GetEOLType());
 }

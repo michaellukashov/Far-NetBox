@@ -404,6 +404,6 @@ inline bool operator >(const S & lhs, const S & rhs)
 // utility functions
 
 template <class StringClass>
-inline char * ToChar(StringClass & a) { return const_cast<char *>(a.c_str()); }
+inline char * ToCharPtr(StringClass & a) { return const_cast<char *>(a.c_str()); }
 template <class StringClass>
 inline wchar_t * ToWCharPtr(StringClass & a) { return const_cast<wchar_t *>(a.c_str()); }
