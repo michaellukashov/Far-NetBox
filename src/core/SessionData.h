@@ -604,8 +604,8 @@ public:
   void LookupLastFingerprint();
   bool GetIsSecure() const;
   static void ValidatePath(const UnicodeString & Path);
-  static void ValidateName(const UnicodeString & Name);
-  static UnicodeString MakeValidName(const UnicodeString & Name);
+  static void ValidateName(const UnicodeString & AName);
+  static UnicodeString MakeValidName(const UnicodeString & AName);
   static UnicodeString ExtractLocalName(const UnicodeString & Name);
   static UnicodeString ExtractFolderName(const UnicodeString & Name);
   static UnicodeString ComposePath(const UnicodeString & Path, const UnicodeString & Name);

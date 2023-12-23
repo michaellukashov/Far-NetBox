@@ -2822,19 +2822,19 @@ void TSessionData::ValidatePath(const UnicodeString & /*APath*/)
   // noop
 }
 
-void TSessionData::ValidateName(const UnicodeString & Name)
+void TSessionData::ValidateName(const UnicodeString & AName)
 {
   // keep consistent with MakeValidName
-  if (Name.LastDelimiter(L"/") > 0)
+  if (AName.LastDelimiter(L"/") > 0)
   {
-    throw Exception(FMTLOAD(ITEM_NAME_INVALID, Name, L"/"));
+    throw Exception(FMTLOAD(ITEM_NAME_INVALID, AName, L"/"));
   }
 }
 
-UnicodeString TSessionData::MakeValidName(const UnicodeString & Name)
+UnicodeString TSessionData::MakeValidName(const UnicodeString & AName)
 {
   // keep consistent with ValidateName
-  return ReplaceStr(Name, L"/", L"\\");
+  return ReplaceStr(AName, L"/", L"\\");
 }
 
 RawByteString TSessionData::EncryptPassword(const UnicodeString & Password, const UnicodeString & Key)
