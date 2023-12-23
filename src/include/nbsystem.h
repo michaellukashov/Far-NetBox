@@ -38,15 +38,15 @@ template <class T>
 inline constexpr DWORD ToDWord(const T a) { return static_cast<DWORD>(a); }
 
 template <class T>
-inline constexpr typename std::enable_if<std::is_integral<T>::value, intptr_t>::type
+inline constexpr std::enable_if_t<std::is_integral_v<T>, intptr_t>
 ToIntPtr(T a) { return static_cast<intptr_t>(a); }
 
 template <class T>
-inline constexpr typename std::enable_if<std::is_enum<T>::value, int32_t>::type
+inline constexpr std::enable_if_t<std::is_enum_v<T>, int32_t>
 ToIntPtr(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
-inline constexpr typename std::enable_if<std::is_pointer<T>::value, intptr_t>::type
+inline constexpr std::enable_if_t<std::is_pointer_v<T>, intptr_t>
 ToIntPtr(T a) { return reinterpret_cast<intptr_t>(a); }
 
 template <class T>
