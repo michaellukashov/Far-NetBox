@@ -490,7 +490,7 @@ void AES256CreateVerifier(const UnicodeString & Input, RawByteString & Verifier)
 
 bool AES256Verify(const UnicodeString & Input, const RawByteString & Verifier)
 {
-  const int32_t SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
+  constexpr int32_t SaltLength = SALT_LENGTH(PASSWORD_MANAGER_AES_MODE);
   RawByteString Salt = Verifier.SubString(1, SaltLength);
   const RawByteString Dummy = Verifier.SubString(SaltLength + 1, SaltLength);
   RawByteString Mac = Verifier.SubString(SaltLength + SaltLength + 1, MAC_LENGTH(PASSWORD_MANAGER_AES_MODE));

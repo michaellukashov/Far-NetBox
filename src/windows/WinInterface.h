@@ -27,8 +27,8 @@ class TStoredSessionList;
 class TConfiguration;
 class TTerminal;
 
-constexpr uint32_t mpNeverAskAgainCheck =   0x01;
-constexpr uint32_t mpAllowContinueOnError = 0x02;
+constexpr const uint32_t mpNeverAskAgainCheck =   0x01;
+constexpr const uint32_t mpAllowContinueOnError = 0x02;
 
 extern HINSTANCE HInstance;
 
