@@ -61,9 +61,9 @@ NB_CORE_DLL(CMStringData *) nbstr_realloc(CMStringData *pData, int nChars, int n
   return pNewData;
 }
 
-NB_CORE_DLL(void *) nbstr_memcpy(void *pDst, void const *pSrc, int nSize)
+NB_CORE_DLL(void *) nbstr_memcpy(void *pDst, void const *pSrc, size_t nSize)
 {
-  memmove(pDst, pSrc, (size_t)nSize);
+  memmove(pDst, pSrc, nSize);
   return pDst;
 }
 
