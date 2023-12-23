@@ -5,7 +5,6 @@
 #include <cstdlib>
 
 #include <nbtypes.h>
-#include <libmemcpy/memcpy.h>
 
 #ifdef NB_CORE_EXPORTS
 #define NB_CORE_EXPORT // __declspec(dllexport)
