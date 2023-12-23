@@ -229,7 +229,7 @@ TraceLogger::~TraceLogger()
 }
 
 #endif //#if defined(_DEBUG)
-
+/*
 StackWalker::StackWalker(int options) : sw::StackWalker(options)
 {
   m_MaxRecursionCount = 10;
@@ -261,5 +261,5 @@ void StackWalker::OnInfoOutput(LPCSTR szText)
 void StackWalker::OnErrorOutput(LPCSTR szText)
 {
 }
-
+*/
 } // namespace tinylog

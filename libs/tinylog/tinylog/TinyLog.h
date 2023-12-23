@@ -11,7 +11,7 @@
 
 #include <fmt/format.h>
 #include <fmt/printf.h>
-#include <StackWalker/StackWalker.h>
+// #include <StackWalker/StackWalker.h>
 #include <icecream-cpp/icecream.hpp>
 
 #include "Utils.h"
@@ -89,7 +89,7 @@ private:
 #else
 #define TINYLOG_TRACE_ENTER()
 #endif //ifndef NDEBUG
-
+/*
 class StackWalker : public sw::StackWalker
 {
 public:
@@ -102,7 +102,7 @@ protected:
   virtual void OnInfoOutput(LPCSTR szText) override;
   virtual void OnErrorOutput(LPCSTR szText) override;
 };
-
+*/
 } // namespace tinylog
 
 #define g_tinylog (tinylog::TinyLog::instance())
