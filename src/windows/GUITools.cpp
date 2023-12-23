@@ -779,8 +779,8 @@ static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString & Pa
       SEE_MASK_FLAG_NO_UI |
       FLAGMASK((Handle != nullptr), SEE_MASK_NOCLOSEPROCESS);
     ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
-    ExecuteInfo.lpFile = ToWChar(APath);
-    ExecuteInfo.lpParameters = ToWChar(Params);
+    ExecuteInfo.lpFile = ToWCharPtr(APath);
+    ExecuteInfo.lpParameters = ToWCharPtr(Params);
     ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
     ExecuteInfo.nShow = SW_SHOW;
 

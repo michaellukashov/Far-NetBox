@@ -674,7 +674,7 @@ NextWord(const wchar_t * Input)
   wchar_t * pBuffer = Buffer.SetLength(1024);
   static const wchar_t * text = nullptr;
 
-  const wchar_t * endOfBuffer = ToWChar(Buffer) + Buffer.GetLength() - 1;
+  const wchar_t * endOfBuffer = ToWCharPtr(Buffer) + Buffer.GetLength() - 1;
 
   if (Input)
   {
@@ -862,7 +862,7 @@ void AppendPathDelimiter(UnicodeString & Str)
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
   UnicodeString Buf(nb::NB_MAX_PATH, 0);
-  const int32_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWChar(Buf), nb::ToDWord(nb::NB_MAX_PATH - 1));
+  const int32_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWCharPtr(Buf), nb::ToDWord(nb::NB_MAX_PATH - 1));
   UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
@@ -897,12 +897,12 @@ UnicodeString ExpandFileName(const UnicodeString & AFileName)
 {
   UnicodeString Buf(nb::NB_MAX_PATH + 1, 0);
   int32_t Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
-      reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
+      reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
     Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
-        reinterpret_cast<LPWSTR>(ToWChar(Buf)), nullptr);
+        reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
   }
   UnicodeString Result = UnicodeString(Buf.c_str(), Size);
   return Result;

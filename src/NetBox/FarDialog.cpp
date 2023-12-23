@@ -1202,7 +1202,7 @@ void TFarDialogItem::SetDataInternal(const UnicodeString & Value)
   const UnicodeString FarData = Value.c_str();
   if (GetDialog()->GetHandle())
   {
-    SendDialogMessage(DM_SETTEXTPTR, nb::ToPtr(ToWChar(FarData)));
+    SendDialogMessage(DM_SETTEXTPTR, nb::ToPtr(ToWCharPtr(FarData)));
   }
   nb_free(GetDialogItem()->Data);
   GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);

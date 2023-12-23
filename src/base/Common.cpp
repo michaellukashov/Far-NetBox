@@ -682,7 +682,7 @@ UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
-  wchar_t * Buffer = ToWChar(Result);
+  wchar_t * Buffer = ToWCharPtr(Result);
   for (wchar_t * Ch = Buffer; Ch && *Ch; ++Ch)
     if (*Ch == A)
     {
@@ -1314,12 +1314,12 @@ static wchar_t * ReplaceChar(
 
     AFileName.Insert(ByteToHex(static_cast<uint8_t>(AFileName[Index])), Index + 1);
     AFileName[Index] = TokenPrefix;
-    InvalidChar = ToWChar(AFileName) + Index + 2;
+    InvalidChar = ToWCharPtr(AFileName) + Index + 2;
   }
   else
   {
     AFileName[Index] = InvalidCharsReplacement;
-    InvalidChar = ToWChar(AFileName) + Index;
+    InvalidChar = ToWCharPtr(AFileName) + Index;
   }
   return InvalidChar;
 }
@@ -1341,7 +1341,7 @@ UnicodeString ValidLocalFileName(
     const bool ATokenReplacement = (AInvalidCharsReplacement == TokenReplacement);
     const wchar_t * Chars = 
       (ATokenReplacement ? ATokenizibleChars : ALocalInvalidChars).c_str();
-    wchar_t * InvalidChar = ToWChar(FileName);
+    wchar_t * InvalidChar = ToWCharPtr(FileName);
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
       const int32_t Pos = nb::ToInt32(InvalidChar - FileName.c_str() + 1);
@@ -1365,7 +1365,7 @@ UnicodeString ValidLocalFileName(
         ((FileName[FileName.Length()] == L' ') ||
          (FileName[FileName.Length()] == L'.')))
     {
-      ReplaceChar(FileName, ToWChar(FileName) + FileName.Length() - 1, AInvalidCharsReplacement);
+      ReplaceChar(FileName, ToWCharPtr(FileName) + FileName.Length() - 1, AInvalidCharsReplacement);
     }
 
     if (IsReservedName(FileName))
@@ -3830,7 +3830,7 @@ static void NeedUWPData()
       GIsUWP = 1;
       AppLog(L"Is UWP application");
       GPackageName.SetLength(NameLen);
-      if (GetCurrentPackageFamilyName(&NameLen, ToWChar(GPackageName)) == ERROR_SUCCESS)
+      if (GetCurrentPackageFamilyName(&NameLen, ToWCharPtr(GPackageName)) == ERROR_SUCCESS)
       {
         PackStr(GPackageName);
       }

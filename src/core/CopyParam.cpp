@@ -651,7 +651,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
   UnicodeString FileName = AFileName;
   if (GetInvalidCharsReplacement() == TokenReplacement)
   {
-    wchar_t * InvalidChar = ToWChar(FileName);
+    wchar_t * InvalidChar = ToWCharPtr(FileName);
     while ((InvalidChar = wcschr(InvalidChar, TokenPrefix)) != nullptr)
     {
       const int32_t Index = nb::ToInt32(InvalidChar - FileName.c_str() + 1);
@@ -665,14 +665,14 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
         {
           FileName[Index] = Char;
           FileName.Delete(Index + 1, 2);
-          InvalidChar = ToWChar(FileName) + Index;
+          InvalidChar = ToWCharPtr(FileName) + Index;
         }
         else if ((Hex == L"00") &&
                  ((Index == FileName.Length() - 2) || (FileName[Index + 3] == L'.')) &&
                  IsReservedName(FileName.SubString(1, Index - 1) + FileName.SubString(Index + 3, FileName.Length() - Index - 3 + 1)))
         {
           FileName.Delete(Index, 3);
-          InvalidChar = ToWChar(FileName) + Index - 1;
+          InvalidChar = ToWCharPtr(FileName) + Index - 1;
         }
         else
         {

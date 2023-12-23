@@ -1118,7 +1118,7 @@ int32_t TCustomFarPlugin::FarMessage(uint32_t Flags,
   {
     const UnicodeString S = MessageLines->GetString(Index);
     MessageLines->SetString(Index, UnicodeString(S));
-    Items[Index] = ToWChar(MessageLines->GetStringRef(Index));
+    Items[Index] = ToWCharPtr(MessageLines->GetStringRef(Index));
   }
 
   TFarEnvGuard Guard; nb::used(Guard);
@@ -1257,7 +1257,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
           Prompt.c_str(),
           HistoryName.c_str(),
           Text.c_str(),
-          ToWChar(DestText),
+          ToWCharPtr(DestText),
           nb::ToInt32(MaxLen),
           nullptr,
           FIB_ENABLEEMPTY | FIB_BUTTONS | Flags);
@@ -1823,7 +1823,7 @@ UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
   UnicodeString Result(nb::NB_MAX_PATH, 0);
   TFarEnvGuard Guard; nb::used(Guard);
-  FFarStandardFunctions.MkTemp(ToWChar(Result), nb::ToSizeT(Result.Length()), nullptr);
+  FFarStandardFunctions.MkTemp(ToWCharPtr(Result), nb::ToSizeT(Result.Length()), nullptr);
   PackStr(Result);
   return Result;
 }
@@ -3034,11 +3034,11 @@ UnicodeString TGlobalFunctions::GetCurrDirectory() const
   int32_t Length;
   if (FarPlugin)
   {
-    Length = nb::ToInt32(FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(nb::ToDWord(Path.Length()), ToWChar(Path)) - 1);
+    Length = nb::ToInt32(FarPlugin->GetFarStandardFunctions().GetCurrentDirectory(nb::ToDWord(Path.Length()), ToWCharPtr(Path)) - 1);
   }
   else
   {
-    Length = ::GetCurrentDirectory(nb::ToDWord(Path.Length()), ToWChar(Path));
+    Length = ::GetCurrentDirectory(nb::ToDWord(Path.Length()), ToWCharPtr(Path));
   }
   UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;

@@ -1894,7 +1894,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString & Token, bo
       Token2 += L" ";
     }
 
-    FarControl(FCTL_INSERTCMDLINE, 0, nb::ToPtr(ToWChar(Token2)));
+    FarControl(FCTL_INSERTCMDLINE, 0, nb::ToPtr(ToWCharPtr(Token2)));
   }
 }
 
@@ -3876,7 +3876,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
             it->second.FileTitle;
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
             FullFileName.Length(),
-            nb::ToPtr(ToWChar(FullFileName)));
+            nb::ToPtr(ToWCharPtr(FullFileName)));
         }
       }
     }
@@ -3997,7 +3997,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
           // note that we need to reset the title periodically (see EE_REDRAW)
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
             FullFileName.Length(),
-            nb::ToPtr(ToWChar(FullFileName)));
+            nb::ToPtr(ToWCharPtr(FullFileName)));
         }
 
         if (GetFarConfiguration()->GetEditorUploadOnSave())
@@ -4122,7 +4122,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       Window.StructSize = sizeof(WindowInfo);
       Window.Pos = Pos;
       UnicodeString EditedFileName(1024, 0);
-      Window.Name = ToWChar(EditedFileName);
+      Window.Name = ToWCharPtr(EditedFileName);
       Window.NameSize = nb::ToIntPtr(EditedFileName.GetLength());
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, 0, &Window) != 0)
       {

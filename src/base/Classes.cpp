@@ -139,7 +139,7 @@ void TStrings::SetTextStr(const UnicodeString & Text)
       }
       UnicodeString S;
       S.SetLength(nb::ToInt32(P - Start));
-      memmove(ToWChar(S), Start, (P - Start) * sizeof(wchar_t));
+      memmove(ToWCharPtr(S), Start, (P - Start) * sizeof(wchar_t));
       Add(S);
       if (*P == 0x0D)
       {

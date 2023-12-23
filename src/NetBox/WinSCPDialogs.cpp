@@ -1168,7 +1168,7 @@ void TAboutDialog::UrlTextClick(TFarDialogItem * /*Item*/,
   MOUSE_EVENT_RECORD * /*Event*/)
 {
   UnicodeString Address = GetMsg(NB_ABOUT_URL);
-  ::ShellExecute(nullptr, L"open", ToWChar(Address), nullptr, nullptr, SW_SHOWNORMAL);
+  ::ShellExecute(nullptr, L"open", ToWCharPtr(Address), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
@@ -1183,7 +1183,7 @@ void TAboutDialog::UrlButtonClick(TFarButton * Sender, bool & /*Close*/)
     Address = GetMsg(NB_ABOUT_URL) + L"forum/";
     break;
   }
-  ::ShellExecute(nullptr, L"open", ToWChar(Address), nullptr, nullptr, SW_SHOWNORMAL);
+  ::ShellExecute(nullptr, L"open", ToWCharPtr(Address), nullptr, nullptr, SW_SHOWNORMAL);
 }
 
 void TWinSCPPlugin::AboutDialog()
@@ -6573,7 +6573,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       }
       else if (BreakCode == 2)
       {
-        FarControl(FCTL_INSERTCMDLINE, 0, nb::ToPtr(ToWChar(BookmarkPaths->GetString(ItemFocused))));
+        FarControl(FCTL_INSERTCMDLINE, 0, nb::ToPtr(ToWCharPtr(BookmarkPaths->GetString(ItemFocused))));
       }
       else if (BreakCode == 3 || BreakCode == 4)
       {
