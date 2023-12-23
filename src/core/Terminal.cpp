@@ -2757,7 +2757,7 @@ UnicodeString TTerminal::RemoteGetCurrentDirectory()
     // there's occasional crash when assigning FFileSystem->CurrentDirectory
     // to FCurrentDirectory, splitting the assignment to two statements
     // to locate the crash more closely
-    UnicodeString CurrentDirectory = FFileSystem->RemoteCurrentDirectory();
+    const UnicodeString CurrentDirectory = FFileSystem->RemoteCurrentDirectory();
     FCurrentDirectory = CurrentDirectory;
     if (FCurrentDirectory.IsEmpty())
     {
@@ -4603,7 +4603,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & ACommand,
     UnicodeString FileList;
     for (int32_t Index = 0; Index < AFiles->GetCount(); ++Index)
     {
-      TRemoteFile * File = AFiles->GetAs<TRemoteFile>(Index);
+      const TRemoteFile * File = AFiles->GetAs<TRemoteFile>(Index);
       const bool Dir = File->GetIsDirectory() && CanRecurseToDirectory(File);
 
       if (!Dir || FLAGSET(AParams, ccApplyToDirectories))
