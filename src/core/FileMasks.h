@@ -154,7 +154,7 @@ class NB_CORE_EXPORT TCustomCommand : public TObject
 public:
   TCustomCommand() noexcept;
   // Needs an explicit virtual destructor, as is has virtual methods
-  virtual ~TCustomCommand() = default;
+  virtual ~TCustomCommand() override = default;
 
   UnicodeString Complete(const UnicodeString & Command, bool LastPass);
   virtual void Validate(const UnicodeString & Command);
@@ -239,7 +239,7 @@ public:
   explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath) noexcept;
   explicit TFileCustomCommand(const TCustomCommandData & Data, const UnicodeString & APath,
     const UnicodeString & AFileName, const UnicodeString & FileList) noexcept;
-  virtual ~TFileCustomCommand() = default;
+  virtual ~TFileCustomCommand() override = default;
 
   virtual void Validate(const UnicodeString & Command) override;
   virtual void ValidatePattern(const UnicodeString & Command,
