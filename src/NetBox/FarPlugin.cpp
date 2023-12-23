@@ -798,10 +798,7 @@ private:
 TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin * Plugin,
   TFarMessageParams * Params) :
   TFarDialog(Plugin),
-  FCheckBoxChecked(false),
-  FParams(Params),
-  FTimeoutButton(nullptr),
-  FCheckBox(nullptr)
+  FParams(Params)
 {
   DebugAssert(FParams != nullptr);
 }
