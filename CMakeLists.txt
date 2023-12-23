@@ -30,10 +30,6 @@ else()
   set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
 endif()
 
-if(NOT DEFINED FAR_VERSION OR FAR_VERSION STREQUAL "")
-  set(FAR_VERSION Far3)
-endif()
-
 if(NOT DEFINED PROJECT_PLATFORM OR PROJECT_PLATFORM STREQUAL "")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(PROJECT_PLATFORM "x64" CACHE STRING "Platform")
@@ -2294,9 +2290,9 @@ set(NETBOX_SOURCES
   src/resource/rtlconsts.h
   src/resource/HelpCore.h
   src/resource/TextsFileZilla.h
-  src/PluginSDK/${FAR_VERSION}/plugin.hpp
-  src/PluginSDK/${FAR_VERSION}/farcolor.hpp
-  src/PluginSDK/${FAR_VERSION}/PluginSettings.hpp
+  src/PluginSDK/Far3/plugin.hpp
+  src/PluginSDK/Far3/farcolor.hpp
+  src/PluginSDK/Far3/PluginSettings.hpp
 
   src/resource/TextsFileZilla.rc
   src/resource/TextsCore1.rc
@@ -2412,7 +2408,7 @@ target_include_directories(NetBox PRIVATE
   src/windows
   src/resource
   src/include
-  src/PluginSDK/${FAR_VERSION}
+  src/PluginSDK/Far3
 )
 
 #[[set_target_properties(NetBox
@@ -2447,7 +2443,7 @@ if(OPT_DEBUG_BUILD)
 
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/)
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
-set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/${FAR_VERSION}_${PROJECT_PLATFORM}/Plugins/NetBox)
+set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/Far3_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
 add_custom_target(create_plugin_dir ALL
