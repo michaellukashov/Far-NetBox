@@ -595,7 +595,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode);
     if (FarFileSystem->GetOpenPanelInfoValid() && !PrevCurrentDirectory.IsEmpty())
     {
-      SetDirectoryInfo Info2;
+      SetDirectoryInfo Info2{};
       Info2.StructSize = sizeof(Info2);
       Info2.hPanel = Info->hPanel;
       Info2.Dir = PrevCurrentDirectory.c_str();
