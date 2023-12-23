@@ -2162,7 +2162,7 @@ uint32_t TTerminal::QueryUserException(const UnicodeString & AQuery,
         MoreMessages->Add(UnformatMessage(ExMessage));
       }
 
-      ExtException * EE = dyn_cast<ExtException>(E);
+      const ExtException * EE = dyn_cast<ExtException>(E);
       if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
       {
         MoreMessages->AddStrings(EE->GetMoreMessages());
@@ -3260,7 +3260,7 @@ uint32_t TTerminal::ConfirmFileOverwrite(
 
     if (!Applicable)
     {
-      TBatchOverwrite EffBatchOverwrite = EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, Params, AOperationProgress, false);
+      const TBatchOverwrite EffBatchOverwrite = EffectiveBatchOverwrite(ASourceFullFileName, CopyParam, Params, AOperationProgress, false);
       DebugAssert(BatchOverwrite != EffBatchOverwrite);
       BatchOverwrite = EffBatchOverwrite;
     }
@@ -4612,7 +4612,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & ACommand,
       }
     }
 
-    TCustomCommandData Data(this);
+    const TCustomCommandData Data(this);
     const UnicodeString Cmd =
       TRemoteCustomCommand(Data, RemoteGetCurrentDirectory(), "", FileList).
         Complete(ACommand, true);
