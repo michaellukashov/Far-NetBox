@@ -14,8 +14,8 @@ public:
   int32_t ErrorLen{0};
 };
 
-extern const wchar_t IncludeExcludeFileMasksDelimiter;
-#define MASK_INDEX(DIRECTORY, INCLUDE) ((DIRECTORY ? 2 : 0) + (INCLUDE ? 0 : 1))
+constexpr const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
+#define MASK_INDEX(DIRECTORY, INCLUDE) (((DIRECTORY) ? 2 : 0) + ((INCLUDE) ? 0 : 1))
 
 class TTerminal;
 class NB_CORE_EXPORT TFileMasks final : public TObject
@@ -163,8 +163,8 @@ public:
   static UnicodeString Escape(const UnicodeString & S);
 
 protected:
-  static const wchar_t NoQuote;
-  static const UnicodeString Quotes;
+  static constexpr const wchar_t NoQuote = L'\0';
+  static constexpr const wchar_t * Quotes = L"\"'";
   void GetToken(const UnicodeString & Command,
     int32_t Index, int32_t & Len, wchar_t & PatternCmd) const;
   void CustomValidate(const UnicodeString & Command, void * Arg);

@@ -7219,7 +7219,7 @@ private:
   TSynchronizeChecklist * FChecklist{nullptr};
   UnicodeString FLocalDirectory;
   UnicodeString FRemoteDirectory;
-  static const int32_t FColumns = 8;
+  static constexpr int32_t FColumns = 8;
   int32_t FWidths[FColumns]{};
   UnicodeString FActions[TSynchronizeChecklist::ActionCount];
   int32_t FScroll{0};

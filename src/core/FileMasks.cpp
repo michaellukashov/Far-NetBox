@@ -12,7 +12,7 @@
 #include "PuttyTools.h"
 #include "Terminal.h"
 
-const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
+// constexpr wchar_t IncludeExcludeFileMasksDelimiter = L'|';
 UnicodeString FileMasksDelimiters = L";,";
 static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
 static UnicodeString DirectoryMaskDelimiters = L"/\\";
@@ -881,8 +881,8 @@ void TFileMasks::SetRoots(const UnicodeString & LocalRoot, TStrings * RemoteFile
 
 #define TEXT_TOKEN L'\255'
 
-const wchar_t TCustomCommand::NoQuote = L'\0';
-const UnicodeString TCustomCommand::Quotes = L"\"'";
+// const wchar_t TCustomCommand::NoQuote = L'\0';
+// const UnicodeString TCustomCommand::Quotes = L"\"'";
 
 UnicodeString TCustomCommand::Escape(const UnicodeString & S)
 {
