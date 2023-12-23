@@ -25,7 +25,7 @@
 // #pragma package(smart_init)
 
 #define SET_SESSION_PROPERTY_FROM(PROPERTY, FROM) \
-  if (F##PROPERTY != FROM) { F##PROPERTY = FROM; Modify(); }
+  do { if (F##PROPERTY != (FROM)) { F##PROPERTY = (FROM); Modify(); } } while(0)
 
 #define SET_SESSION_PROPERTY(PROPERTY) \
   SET_SESSION_PROPERTY_FROM(PROPERTY, value)
