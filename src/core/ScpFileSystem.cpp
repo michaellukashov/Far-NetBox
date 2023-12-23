@@ -2161,7 +2161,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             FTerminal->LogEvent(FORMAT("Sending BINARY data (%u bytes)",
               BlockBuf.GetSize()));
           }
-          FSecureShell->Send(reinterpret_cast<const uint8_t *>(BlockBuf.GetData()), nb::ToInt32(BlockBuf.GetSize()));
+          FSecureShell->Send(nb::ToUInt8Ptr(BlockBuf.GetData()), nb::ToInt32(BlockBuf.GetSize()));
           OperationProgress->AddTransferred(BlockBuf.GetSize());
         }
 

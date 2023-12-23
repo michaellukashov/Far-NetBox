@@ -2047,12 +2047,12 @@ UnicodeString BytesToHex(const uint8_t * B, uint32_t Length, bool UpperCase, wch
 
 UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase, wchar_t Separator)
 {
-  return BytesToHex(reinterpret_cast<const uint8_t *>(Str.c_str()), static_cast<uint32_t>(Str.Length()), UpperCase, Separator);
+  return BytesToHex(nb::ToUInt8Ptr(Str.c_str()), static_cast<uint32_t>(Str.Length()), UpperCase, Separator);
 }
 
 UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 {
-  return BytesToHex(reinterpret_cast<const uint8_t *>(&Ch), sizeof(Ch), UpperCase);
+  return BytesToHex(nb::ToUInt8Ptr(&Ch), sizeof(Ch), UpperCase);
 }
 
 RawByteString HexToBytes(const UnicodeString & Hex)

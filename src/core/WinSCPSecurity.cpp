@@ -130,7 +130,7 @@ RawByteString SetExternalEncryptedPassword(const RawByteString & Password)
   RawByteString Result;
   Result += SimpleEncryptChar(PWALG_SIMPLE_FLAG);
   Result += SimpleEncryptChar(PWALG_SIMPLE_EXTERNAL);
-  Result += UTF8String(BytesToHex(reinterpret_cast<const uint8_t *>(Password.c_str()), Password.Length()));
+  Result += UTF8String(BytesToHex(nb::ToUInt8Ptr(Password.c_str()), Password.Length()));
   return Result;
 }
 

@@ -418,8 +418,8 @@ void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   const UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
-    reinterpret_cast<const uint8_t *>(Salt.c_str()), &aes);
+    nb::ToUInt8Ptr(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
+    nb::ToUInt8Ptr(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
   fcrypt_encrypt(nb::ToUInt8Ptr(ToCharPtr(Output)), nb::ToUInt32(Output.Length()), &aes);
@@ -444,8 +444,8 @@ bool AES256DecryptWithMAC(const RawByteString & Input, const UnicodeString & Pas
   DebugAssert(Salt.Length() == SALT_LENGTH(PASSWORD_MANAGER_AES_MODE));
   const UTF8String UtfPassword = UTF8String(Password);
   fcrypt_init(PASSWORD_MANAGER_AES_MODE,
-    reinterpret_cast<const uint8_t *>(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
-    reinterpret_cast<const unsigned char *>(Salt.c_str()), &aes);
+    nb::ToUInt8Ptr(UtfPassword.c_str()), nb::ToUInt32(UtfPassword.Length()),
+    nb::ToUInt8Ptr(Salt.c_str()), &aes);
   Output = Input;
   Output.Unique();
   fcrypt_decrypt(nb::ToUInt8Ptr(ToCharPtr(Output)), nb::ToUInt32(Output.Length()), &aes);

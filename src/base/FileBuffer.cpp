@@ -254,7 +254,7 @@ void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 
 void TFileBuffer::WriteToOut(TTransferOutEvent && OnTransferOut, TObject * Sender, const int64_t Len)
 {
-  OnTransferOut(Sender, reinterpret_cast<const uint8_t *>(GetPointer()), Len);
+  OnTransferOut(Sender, nb::ToUInt8Ptr(GetPointer()), nb::ToSizeT(Len));
   FMemory->Seek(Len, TSeekOrigin::soCurrent);
 }
 

@@ -4343,7 +4343,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
 
             // skip alg
             nb::used(Packet.GetAnsiString());
-            const UnicodeString Checksum = BytesToHex(reinterpret_cast<const uint8_t *>(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength(), false);
+            const UnicodeString Checksum = BytesToHex(nb::ToUInt8Ptr(Packet.GetNextData(Packet.GetRemainingLength())), Packet.GetRemainingLength(), false);
             if (!OnCalculatedChecksum.empty())
             {
               OnCalculatedChecksum(File->GetFileName(), Alg, Checksum);
@@ -4476,7 +4476,7 @@ void TSFTPFileSystem::SpaceAvailable(const UnicodeString & APath,
     FTerminal->LogEvent(FORMAT("Total file inodes: %s", ::Int64ToStr(FileINodes)));
     FTerminal->LogEvent(FORMAT("Free file inodes: %s", ::Int64ToStr(FreeFileINodes)));
     FTerminal->LogEvent(FORMAT("Free file inodes for non-root: %s", ::Int64ToStr(AvailableFileINodes)));
-    FTerminal->LogEvent(FORMAT("File system ID: %s", BytesToHex(reinterpret_cast<const uint8_t *>(&SID), sizeof(SID))));
+    FTerminal->LogEvent(FORMAT("File system ID: %s", BytesToHex(nb::ToUInt8Ptr(&SID), sizeof(SID))));
     UnicodeString FlagStr;
     if (FLAGSET(Flags, SFTP_EXT_STATVFS_ST_RDONLY))
     {
