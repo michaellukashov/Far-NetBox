@@ -1309,27 +1309,6 @@ target_include_directories(libeay32 SYSTEM BEFORE PRIVATE
 )
 
 #-------------------------------------------------------------------------------
-#libmemcpy
-
-#add_subdirectory(libs/libmemcpy)
-
-set(LIBMEMCPY_LIB "libmemcpy")
-
-set(LIBMEMCPY_LIB_SOURCES
-  libs/libmemcpy/memcpy.c
-)
-
-add_library(${LIBMEMCPY_LIB}
-  ${LIBMEMCPY_LIB_SOURCES}
-)
-
-target_compile_definitions(${LIBMEMCPY_LIB} PRIVATE
-  ${NETBOX_C_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
-)
-
-set_source_files_properties(${LIBMEMCPY_LIB_SOURCES} PROPERTIES LANGUAGE C)
-#-------------------------------------------------------------------------------
 #atlmfc
 
 
@@ -2411,7 +2390,6 @@ set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   s3
   tinylog
   StackWalker
-  ${LIBMEMCPY_LIB}
 
   Ws2_32.lib
   kernel32.lib
