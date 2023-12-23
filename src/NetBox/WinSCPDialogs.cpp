@@ -780,7 +780,7 @@ protected:
   virtual void Change() override;
 
 private:
-  virtual void UpdateControls();
+  void UpdateControls();
 
 private:
   TFarCheckBox * EditorMultipleCheck{nullptr};
@@ -7200,7 +7200,7 @@ public:
     TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode Mode, int32_t Params,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
 
-  virtual bool Execute(TSynchronizeChecklist * Checklist);
+  bool Execute(TSynchronizeChecklist * Checklist);
 
 protected:
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
