@@ -3271,7 +3271,7 @@ uint32_t TTerminal::ConfirmFileOverwrite(
     }
     else
     {
-      // particularly with parallel transfers, the overal operation can be already cancelled by other parallel operation
+      // particularly with parallel transfers, the overall operation can be already cancelled by other parallel operation
       if (AOperationProgress->GetCancel() > csContinue)
       {
         LogEvent(1, L"Transfer cancelled in parallel operation");
