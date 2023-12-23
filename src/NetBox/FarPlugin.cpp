@@ -13,6 +13,8 @@ extern "C" {
 }
 #include "plugin_version.hpp"
 
+#undef GetCurrentDirectory
+
 TCustomFarPlugin * FarPlugin = nullptr;
 
 static bool MustSkipClose = false;
@@ -579,7 +581,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
   if (!FarFileSystem || !FOpenedPlugins || (FOpenedPlugins->IndexOf(FarFileSystem) == nb::NPOS))
     return 0;
   DebugAssert(FarFileSystem);
-  const UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrDirectory();
+  const UnicodeString PrevCurrentDirectory = FarFileSystem->GetCurrentDirectory();
   try
   {
     ResetCachedInfo();
@@ -2805,7 +2807,7 @@ bool TFarPanelInfo::GetIsPlugin() const
   return CheckHandle(FPanelInfo->PluginHandle);
 }
 
-UnicodeString TFarPanelInfo::GetCurrDirectory() const
+UnicodeString TFarPanelInfo::GetCurrentDirectory() const
 {
   UnicodeString Result;
   const intptr_t Size = FarPlugin->FarControl(FCTL_GETPANELDIRECTORY,
@@ -3020,7 +3022,7 @@ UnicodeString TGlobalFunctions::GetMsg(int32_t Id) const
   return Result;
 }
 
-UnicodeString TGlobalFunctions::GetCurrDirectory() const
+UnicodeString TGlobalFunctions::GetCurrentDirectory() const
 {
   UnicodeString Path(nb::NB_MAX_PATH, 0);
   int32_t Length;

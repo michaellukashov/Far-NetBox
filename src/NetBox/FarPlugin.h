@@ -10,6 +10,8 @@
 #include <Common.h>
 #include "guid.h"
 
+#undef GetCurrentDirectory
+
 constexpr const DWORD RMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED | SHIFT_PRESSED);
 constexpr const DWORD ALTMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED);
 constexpr const DWORD CTRLMASK = (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED);
@@ -297,7 +299,7 @@ public:
   virtual void Close();
 
 protected:
-  virtual UnicodeString GetCurrDirectory() const = 0;
+  virtual UnicodeString GetCurrentDirectory() const = 0;
 
 protected:
   TCustomFarPlugin * FPlugin{nullptr};
@@ -509,7 +511,7 @@ public:
   TRect GetBounds() const;
   TFarPanelType GetType() const;
   bool GetIsPlugin() const;
-  UnicodeString GetCurrDirectory() const;
+  UnicodeString GetCurrentDirectory() const;
 
   void ApplySelection();
   const TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
@@ -593,15 +595,15 @@ extern TCustomFarPlugin * FarPlugin;
 class TGlobalFunctions : public TGlobals
 {
 public:
-  HINSTANCE GetInstanceHandle() const override;
-  UnicodeString GetMsg(int32_t Id) const override;
-  UnicodeString GetCurrDirectory() const override;
-  UnicodeString GetStrVersionNumber() const override;
-  bool InputDialog(const UnicodeString & ACaption,
+  virtual HINSTANCE GetInstanceHandle() const override;
+  virtual UnicodeString GetMsg(int32_t Id) const override;
+  virtual UnicodeString GetCurrentDirectory() const override;
+  virtual UnicodeString GetStrVersionNumber() const override;
+  virtual bool InputDialog(const UnicodeString & ACaption,
     const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
     TStrings * History, bool PathInput,
     TInputDialogInitializeEvent && OnInitialize, bool Echo) override;
-  uint32_t MoreMessageDialog(const UnicodeString & AMessage,
+  virtual uint32_t MoreMessageDialog(const UnicodeString & AMessage,
     TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams * Params) override;
 };

@@ -1485,7 +1485,7 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
   TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
   RequireLocalPanel(*AnotherPanel, GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED));
 
-  UnicodeString LocalDirectory = (*AnotherPanel)->GetCurrDirectory();
+  UnicodeString LocalDirectory = (*AnotherPanel)->GetCurrentDirectory();
   UnicodeString RemoteDirectory = FTerminal->RemoteGetCurrentDirectory();
 
   bool SaveMode = !(GetGUIConfiguration()->GetSynchronizeModeAuto() < 0);
@@ -1627,7 +1627,7 @@ void TWinSCPFileSystem::Synchronize()
   RequireLocalPanel(*AnotherPanel, GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED));
 
   TSynchronizeParamType Params;
-  Params.LocalDirectory = (*AnotherPanel)->GetCurrDirectory();
+  Params.LocalDirectory = (*AnotherPanel)->GetCurrentDirectory();
   Params.RemoteDirectory = FTerminal->RemoteGetCurrentDirectory();
   const int32_t UnusedParams = (GetGUIConfiguration()->GetSynchronizeParams() &
       (TTerminal::spPreviewChanges | TTerminal::spTimestamp |
@@ -2135,7 +2135,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
 {
   bool Result;
   TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
-  const UnicodeString OldPath = AnotherPanel && *AnotherPanel ? (*AnotherPanel)->GetCurrDirectory() : "";
+  const UnicodeString OldPath = AnotherPanel && *AnotherPanel ? (*AnotherPanel)->GetCurrentDirectory() : "";
   // IncludeTrailingBackslash to expand C: to C:\.
   const UnicodeString LocalPath = ::IncludeTrailingBackslash(NewPath);
   FarPanelDirectory fpd{};
@@ -2150,7 +2150,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   {
     ResetCachedInfo();
     AnotherPanel = GetAnotherPanelInfo();
-    if (AnotherPanel && *AnotherPanel && !::SamePaths((*AnotherPanel)->GetCurrDirectory(), NewPath))
+    if (AnotherPanel && *AnotherPanel && !::SamePaths((*AnotherPanel)->GetCurrentDirectory(), NewPath))
     {
       // FAR WORKAROUND
       // If FCTL_SETPANELDIR above fails, Far default current
@@ -2270,13 +2270,13 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
           UnicodeString LocalPath;
           if (RemotePath.SubString(1, FullPrevPath.Length()) == FullPrevPath && AnotherPanel)
           {
-            LocalPath = IncludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory()) +
+            LocalPath = IncludeTrailingBackslash((*AnotherPanel)->GetCurrentDirectory()) +
               base::FromUnixPath(RemotePath.SubString(FullPrevPath.Length() + 1,
                   RemotePath.Length() - FullPrevPath.Length()));
           }
           else if (FullPrevPath.SubString(1, RemotePath.Length()) == RemotePath && AnotherPanel)
           {
-            LocalPath = ExcludeTrailingBackslash((*AnotherPanel)->GetCurrDirectory());
+            LocalPath = ExcludeTrailingBackslash((*AnotherPanel)->GetCurrentDirectory());
             while (!base::UnixSamePath(FullPrevPath, RemotePath))
             {
               UnicodeString NewLocalPath = ExcludeTrailingBackslash(ExtractFileDir(LocalPath));
@@ -2856,7 +2856,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
     UnicodeString FileName = Focused->GetFileName();
     if (Side == osLocal)
     {
-      FileName = ::IncludeTrailingBackslash((*APanelInfo)->GetCurrDirectory()) + FileName;
+      FileName = ::IncludeTrailingBackslash((*APanelInfo)->GetCurrentDirectory()) + FileName;
     }
     Result->AddObject(FileName, static_cast<TObject *>(Focused->GetUserData()));
   }
@@ -2874,8 +2874,8 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(TOperationSide Side, TFarPa
   TStrings * Result{nullptr};
   if (PanelInfo && *PanelInfo && (*PanelInfo)->GetSelectedCount() > 0)
   {
-    const UnicodeString CurrDirectory = Connected() ? FTerminal->RemoteGetCurrentDirectory() : (*PanelInfo)->GetCurrDirectory();
-    Result = CreateFileList((*PanelInfo)->GetItems(), Side, true, CurrDirectory);
+    const UnicodeString CurrentDirectory = Connected() ? FTerminal->RemoteGetCurrentDirectory() : (*PanelInfo)->GetCurrentDirectory();
+    Result = CreateFileList((*PanelInfo)->GetItems(), Side, true, CurrentDirectory);
   }
   else
   {

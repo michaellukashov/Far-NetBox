@@ -227,7 +227,7 @@ protected:
   TSessionData * GetSessionData() { return FTerminal ? FTerminal->GetSessionData() : nullptr; }
 
 protected:
-  virtual UnicodeString GetCurrDirectory() const override { return FTerminal ? FTerminal->RemoteGetCurrentDirectory() : UnicodeString(); }
+  virtual UnicodeString GetCurrentDirectory() const override { return FTerminal ? FTerminal->RemoteGetCurrentDirectory() : UnicodeString(); }
 
 private:
   bool TerminalCheckForEsc();

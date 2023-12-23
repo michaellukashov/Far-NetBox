@@ -1081,6 +1081,8 @@ struct TInputDialogData
 using TInputDialogInitializeEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, TInputDialogData * /*Data*/>;
 
+#undef GetCurrentDirectory
+
 class NB_CORE_EXPORT TGlobalsIntf
 {
 public:
@@ -1088,7 +1090,7 @@ public:
 
   virtual HINSTANCE GetInstanceHandle() const = 0;
   virtual UnicodeString GetMsg(int32_t Id) const = 0;
-  virtual UnicodeString GetCurrDirectory() const = 0;
+  virtual UnicodeString GetCurrentDirectory() const = 0;
   virtual UnicodeString GetStrVersionNumber() const = 0;
   virtual void SetupDbgHandles(const UnicodeString & DbgFileName) = 0;
   virtual bool InputDialog(const UnicodeString & ACaption,
