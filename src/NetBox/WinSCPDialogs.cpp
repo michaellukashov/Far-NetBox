@@ -7242,11 +7242,8 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   TCustomFarPlugin * AFarPlugin, TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/,
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory) :
   TWinSCPDialog(AFarPlugin),
-  FChecklist(nullptr),
   FLocalDirectory(LocalDirectory),
-  FRemoteDirectory(RemoteDirectory),
-  FScroll(0),
-  FCanScrollRight(false)
+  FRemoteDirectory(RemoteDirectory)
 {
   SetCaption(GetMsg(NB_CHECKLIST_TITLE));
 
@@ -8329,16 +8326,8 @@ private:
 TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
   TWinSCPFileSystem * AFileSystem, bool ClosingPlugin) noexcept :
   TFarDialog(AFarPlugin),
-  FStatus(nullptr),
   FFileSystem(AFileSystem),
-  FClosingPlugin(ClosingPlugin),
-  QueueListBox(nullptr),
-  ShowButton(nullptr),
-  ExecuteButton(nullptr),
-  DeleteButton(nullptr),
-  MoveUpButton(nullptr),
-  MoveDownButton(nullptr),
-  CloseButton(nullptr)
+  FClosingPlugin(ClosingPlugin)
 {
   SetSize(TPoint(80, 23));
   // TRect CRect = GetClientRect();

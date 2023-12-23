@@ -8,7 +8,7 @@
 #include "FileMasks.h"
 
 #include "TextsCore.h"
-#include "RemoteFiles.h"
+// #include "RemoteFiles.h"
 #include "PuttyTools.h"
 #include "Terminal.h"
 
@@ -140,8 +140,7 @@ UnicodeString DelimitFileNameMask(const UnicodeString & AMask)
 }
 
 
-TFileMasks::TParams::TParams() noexcept :
-  Size(0)
+TFileMasks::TParams::TParams() noexcept
 {
 }
 

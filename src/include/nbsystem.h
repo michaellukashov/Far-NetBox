@@ -80,10 +80,6 @@ template <class T>
 inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
 ToInt32(T a) { return static_cast<int32_t>(a); }
 
-// template <class T>
-// inline constexpr typename std::is_convertible<T, int32_t>::value
-// ToInt32(T a) { return static_cast<int32_t>(a); }
-
 inline constexpr int32_t
 ToInt32(int64_t a) { return static_cast<int32_t>(a); }
 
