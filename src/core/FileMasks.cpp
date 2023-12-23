@@ -83,10 +83,10 @@ UnicodeString MaskFileName(const UnicodeString & AFileName, const UnicodeString 
   if (IsEffectiveFileNameMask(Mask))
   {
     bool Masked = false;
-    int32_t P = Mask.LastDelimiter(L".");
+    const int32_t P = Mask.LastDelimiter(L".");
     if (P > 0)
     {
-      int32_t P2 = FileName.LastDelimiter(L".");
+      const int32_t P2 = FileName.LastDelimiter(L".");
       // only dot at beginning of file name is not considered as
       // name/ext separator
       UnicodeString FileExt = P2 > 1 ?
@@ -352,7 +352,7 @@ bool TFileMasks::MatchesMasks(
 
     if (Result)
     {
-      bool HasSize = (Params != nullptr);
+      const bool HasSize = (Params != nullptr);
 
       switch (Mask.HighSizeMask)
       {
@@ -387,7 +387,7 @@ bool TFileMasks::MatchesMasks(
         }
       }
 
-      bool HasModification = (Params != nullptr);
+      const bool HasModification = (Params != nullptr);
 
       if (Result)
       {
@@ -431,8 +431,8 @@ bool TFileMasks::MatchesMasks(
 
   if (!Result && Directory && !base::IsUnixRootPath(Path) && Recurse)
   {
-    UnicodeString ParentFileName = base::UnixExtractFileName(Path);
-    UnicodeString ParentPath = base::SimpleUnixExcludeTrailingBackslash(base::UnixExtractFilePath(Path));
+    const UnicodeString ParentFileName = base::UnixExtractFileName(Path);
+    const UnicodeString ParentPath = base::SimpleUnixExcludeTrailingBackslash(base::UnixExtractFilePath(Path));
     // Pass Params down or not?
     // Currently it includes Size/Time only, what is not used for directories.
     // So it depends on future use. Possibly we should make a copy
@@ -447,9 +447,9 @@ bool TFileMasks::DoMatches(
   const UnicodeString & FileName, bool Local, bool Directory, const UnicodeString & Path, const TParams * Params,
   bool RecurseInclude, bool & ImplicitMatch) const
 {
-  bool ImplicitIncludeMatch = (FAllDirsAreImplicitlyIncluded && Directory) || FMasks[MASK_INDEX(Directory, true)].empty();
-  bool ExplicitIncludeMatch = MatchesMasks(FileName, Local, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], RecurseInclude);
-  bool Result =
+  const bool ImplicitIncludeMatch = (FAllDirsAreImplicitlyIncluded && Directory) || FMasks[MASK_INDEX(Directory, true)].empty();
+  const bool ExplicitIncludeMatch = MatchesMasks(FileName, Local, Directory, Path, Params, FMasks[MASK_INDEX(Directory, true)], RecurseInclude);
+  const bool Result =
     (ImplicitIncludeMatch || ExplicitIncludeMatch) &&
     !MatchesMasks(FileName, Local, Directory, Path, Params, FMasks[MASK_INDEX(Directory, false)], false);
   ImplicitMatch =
@@ -558,10 +558,10 @@ UnicodeString TFileMasks::MakeDirectoryMask(const UnicodeString & AStr)
   DebugAssert(!Result.IsEmpty());
   if (Result.IsEmpty() || !Result.IsDelimiter(DirectoryMaskDelimiters, Result.Length()))
   {
-    int32_t D = Result.LastDelimiter(DirectoryMaskDelimiters);
+    const int32_t D = Result.LastDelimiter(DirectoryMaskDelimiters);
     // if there's any [back]slash anywhere in str,
     // add the same [back]slash at the end, otherwise add slash
-    wchar_t Delimiter = (D > 0) ? Result[D] : DirectoryMaskDelimiters[1];
+    const wchar_t Delimiter = (D > 0) ? Result[D] : DirectoryMaskDelimiters[1];
     Result += Delimiter;
   }
   return Result;
@@ -589,8 +589,8 @@ void TFileMasks::CreateMask(
   int32_t NextPartFrom = 1;
   while (NextPartFrom <= MaskStr.Length())
   {
-    wchar_t PartDelimiter = NextPartDelimiter;
-    int32_t PartFrom = NextPartFrom;
+    const wchar_t PartDelimiter = NextPartDelimiter;
+    const int32_t PartFrom = NextPartFrom;
     UnicodeString PartStr = CopyToChars(MaskStr, NextPartFrom, "<>", false, &NextPartDelimiter, true);
 
     int32_t PartStart = MaskStart + PartFrom - 1;
@@ -600,7 +600,7 @@ void TFileMasks::CreateMask(
 
     if (PartDelimiter != L'\0')
     {
-      bool Low = (PartDelimiter == L'>');
+      const bool Low = (PartDelimiter == L'>');
 
       TMask::TMaskBoundary Boundary;
       if ((PartStr.Length() >= 1) && (PartStr[1] == L'='))
@@ -753,7 +753,7 @@ TStrings * TFileMasks::GetMasksStr(int32_t Index) const
 
 void TFileMasks::TrimEx(UnicodeString & Str, int32_t & Start, int32_t & End)
 {
-  UnicodeString Buf = ::TrimLeft(Str);
+  const UnicodeString Buf = ::TrimLeft(Str);
   Start += Str.Length() - Buf.Length();
   Str = ::TrimRight(Buf);
   End -= Buf.Length() - Str.Length();
@@ -793,7 +793,7 @@ void TFileMasks::SetMask(const UnicodeString & Mask)
 void TFileMasks::SetStr(const UnicodeString & Str, bool SingleMask)
 {
   FAnyRelative = false;
-  UnicodeString Backup = FStr;
+  const UnicodeString Backup = FStr;
   try
   {
     FStr = Str;
@@ -1294,7 +1294,7 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
 int32_t TFileCustomCommand::PatternLen(const UnicodeString & Command, int32_t Index) const
 {
   int32_t Len;
-  wchar_t PatternCmd = (Index < Command.Length()) ? static_cast<wchar_t>(::towlower(Command[Index + 1])) : L'\0';
+  const wchar_t PatternCmd = (Index < Command.Length()) ? static_cast<wchar_t>(::towlower(Command[Index + 1])) : L'\0';
   switch (PatternCmd)
   {
     case L's':
@@ -1322,7 +1322,7 @@ bool TFileCustomCommand::PatternReplacement(
 {
   // keep consistent with TSessionLog::OpenLogFile
 
-  TSessionData * SessionData = FData.GetSessionData();
+  const TSessionData * SessionData = FData.GetSessionData();
 
   if (::SameText(Pattern, L"!s"))
   {

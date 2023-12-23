@@ -699,7 +699,7 @@ TKeyType GetKeyType(const UnicodeString & FileName)
   DebugAssert(ktSSH2PublicOpenSSH == SSH_KEYTYPE_SSH2_PUBLIC_OPENSSH);
   const UTF8String UtfFileName = UTF8String(FileName);
   Filename * KeyFile = filename_from_str(UtfFileName.c_str());
-  TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
+  const TKeyType Result = static_cast<TKeyType>(key_type(KeyFile));
   filename_free(KeyFile);
   return Result;
 }
