@@ -4,10 +4,8 @@
 #include <rdestl/map.h>
 #include <rdestl/list.h>
 #include <rdestl/set.h>
-#include <rdestl/pair.h>
 
 #include <nbcore.h>
-#include <nbsystem_cpp.h>
 
 #if defined(__cplusplus)
 
@@ -23,13 +21,13 @@ template<typename Tk, typename Tv> using map_t = rde::map<Tk, Tv>;
 namespace nb {
 
 template <class T>
-inline constexpr const T Min(const T a, const T b) { return a < b ? a : b; }
+inline constexpr T Min(const T a, const T b) { return a < b ? a : b; }
 
 template <class T>
-inline constexpr const T Max(const T a, const T b) { return a > b ? a : b; }
+inline constexpr T Max(const T a, const T b) { return a > b ? a : b; }
 
 template <class T>
-inline constexpr const T Round(const T a, const T b) { return a / b + (a % b * 2 > b ? 1 : 0); }
+inline constexpr T Round(const T a, const T b) { return a / b + (a % b * 2 > b ? 1 : 0); }
 
 template <class T>
 inline constexpr double ToDouble(const T a) { return static_cast<double>(a); }
@@ -78,42 +76,16 @@ ToUIntPtr(T a) { return static_cast<uintptr_t>(a); }
 inline constexpr uintptr_t
 ToUIntPtr(int64_t a) { return static_cast<uintptr_t>(a); }
 
-// template <class T>
-// inline constexpr typename std::enable_if<sizeof(T) >= sizeof(int64_t), int32_t>::value
-// ToInt32(T a) { return reinterpret_cast<int32_t>((intptr_t)a); }
-
 template <class T>
 inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
 ToInt32(T a) { return static_cast<int32_t>(a); }
-
-//template <class T>
-//inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
-//ToInt32(T a) { return static_cast<int32_t>(a); }
 
 // template <class T>
 // inline constexpr typename std::is_convertible<T, int32_t>::value
 // ToInt32(T a) { return static_cast<int32_t>(a); }
 
-//template <class T>
-//inline constexpr typename std::enable_if<sizeof(T) >= sizeof(size_t), int32_t>::value
-//ToInt32(T a) { return reinterpret_cast<int32_t>(static_cast<intptr_t>(a)); }
-
-//template <class T>
-//inline constexpr typename std::enable_if<sizeof(T) == sizeof(size_t), int32_t>::value
-//ToInt32(T a) { return static_cast<int32_t>(a); }
-
 inline constexpr int32_t
 ToInt32(int64_t a) { return static_cast<int32_t>(a); }
-
-// inline constexpr int32_t
-// ToInt32(double a) { return static_cast<int32_t>(a); }
-
-// inline constexpr int32_t
-// ToInt32(uint64_t a) { return static_cast<int32_t>(a); }
-
-//template <class T>
-//inline constexpr typename std::is_convertible<T, int32_t>::value
-//ToInt(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr int32_t
