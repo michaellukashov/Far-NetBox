@@ -23,11 +23,11 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
   return Result;
 }
 
-const TDayTable MonthDays[] =
+/*const TDayTable MonthDays[] =
 {
   {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
-};
+};*/
 
 Exception::Exception(TObjectClassId Kind, Exception * E) noexcept :
   std::runtime_error(E ? E->what() : ""),

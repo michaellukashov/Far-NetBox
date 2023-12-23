@@ -68,8 +68,12 @@ enum FileAttributesEnum
 NB_CORE_EXPORT UnicodeString MB2W(const char * src, const UINT cp = CP_ACP);
 NB_CORE_EXPORT AnsiString W2MB(const wchar_t * src, const UINT cp = CP_ACP);
 
-typedef int32_t TDayTable[12];
-extern const TDayTable MonthDays[];
+using TDayTable = int32_t[12];
+constexpr const TDayTable MonthDays[] = {
+  {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
+  {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+};
+
 
 NB_DEFINE_CLASS_ID(Exception);
 class NB_CORE_EXPORT Exception : public std::runtime_error
