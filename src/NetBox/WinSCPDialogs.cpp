@@ -7073,7 +7073,7 @@ int32_t TFullSynchronizeDialog::ActualCopyParamAttrs() const
 
     default:
       DebugAssert(false);
-    //fallthru
+      // [[fallthrough]]
     case TTerminal::smBoth:
       Result = FCopyParamAttrs.General;
       break;
@@ -8130,7 +8130,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
     {
     case qaNeverAskAgain:
       SynchronizeSynchronizeCheck->SetSelected(BSTATE_CHECKED);
-    // fall thru
+      // [[fallthrough]]
 
     case qaYes:
       Synchronize = true;
