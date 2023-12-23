@@ -1236,7 +1236,7 @@ TCustomCommandData::TCustomCommandData(
 
 void TCustomCommandData::Init(TSessionData * ASessionData)
 {
-  FSessionData.reset(new TSessionData(L""));
+  FSessionData = std::make_unique<TSessionData>(L"");
   if (ASessionData != nullptr)
   {
     FSessionData->Assign(ASessionData);
