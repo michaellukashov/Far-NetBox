@@ -84,25 +84,26 @@ ToUIntPtr(int64_t a) { return static_cast<uintptr_t>(a); }
 
 template <class T>
 inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
-ToInt32(float a) { return static_cast<int32_t>(a); }
-
-template <class T>
-inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
 ToInt32(T a) { return static_cast<int32_t>(a); }
 
-template <class T>
-inline constexpr typename std::is_convertible<T, int32_t>::value
-ToInt32(T a) { return static_cast<int32_t>(a); }
+//template <class T>
+//inline constexpr typename std::enable_if<std::is_floating_point<T>::value, int32_t>::type
+//ToInt32(T a) { return static_cast<int32_t>(a); }
 
-template <class T>
-inline constexpr typename std::enable_if<sizeof(T) >= sizeof(int64_t), int32_t>::value
-ToInt32(T a) { return reinterpret_cast<int32_t>((intptr_t)a); }
+// template <class T>
+// inline constexpr typename std::is_convertible<T, int32_t>::value
+// ToInt32(T a) { return static_cast<int32_t>(a); }
+
+//template <class T>
+//inline constexpr typename std::enable_if<sizeof(T) >= sizeof(size_t), int32_t>::value
+//ToInt32(T a) { return reinterpret_cast<int32_t>(static_cast<intptr_t>(a)); }
+
+//template <class T>
+//inline constexpr typename std::enable_if<sizeof(T) == sizeof(size_t), int32_t>::value
+//ToInt32(T a) { return static_cast<int32_t>(a); }
 
 inline constexpr int32_t
-ToInt32(size_t a) { return static_cast<int32_t>(a); }
-
-// inline constexpr int32_t
-// ToInt32(int64_t a) { return static_cast<int32_t>(a); }
+ToInt32(int64_t a) { return static_cast<int32_t>(a); }
 
 // inline constexpr int32_t
 // ToInt32(double a) { return static_cast<int32_t>(a); }
@@ -110,9 +111,9 @@ ToInt32(size_t a) { return static_cast<int32_t>(a); }
 // inline constexpr int32_t
 // ToInt32(uint64_t a) { return static_cast<int32_t>(a); }
 
-template <class T>
-inline constexpr typename std::is_convertible<T, int32_t>::value
-ToInt(T a) { return static_cast<int32_t>(a); }
+//template <class T>
+//inline constexpr typename std::is_convertible<T, int32_t>::value
+//ToInt(T a) { return static_cast<int32_t>(a); }
 
 template <class T>
 inline constexpr int32_t
@@ -148,6 +149,12 @@ ToPtr(T a) { return const_cast<void *>(a); }
 
 template <class T>
 inline constexpr void * ToPtr(T a) { return reinterpret_cast<void *>((intptr_t)(a)); }
+
+inline constexpr int8_t *
+ToInt8Ptr(void * a) { return static_cast<int8_t *>(a); }
+
+inline constexpr const int8_t *
+ToInt8Ptr(const void * a) { return static_cast<const int8_t *>(a); }
 
 inline constexpr uint8_t *
 ToUInt8Ptr(void * a) { return static_cast<uint8_t *>(a); }
