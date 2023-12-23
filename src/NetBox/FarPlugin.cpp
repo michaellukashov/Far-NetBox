@@ -549,7 +549,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
       }
 
       // don't destroy plugin on locked CriticalSection
-      bool onClose = (Info->Event == FE_CLOSE && !FarFileSystem->FClosed);
+      const bool onClose = (Info->Event == FE_CLOSE && !FarFileSystem->FClosed);
       MustSkipClose = onClose;
 
       int rc;
