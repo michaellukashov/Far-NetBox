@@ -548,7 +548,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
         Param = nb::ToPtr(Buf.c_str());
       }
 
-      // don't destory plugin on locked CriticalSection
+      // don't destroy plugin on locked CriticalSection
       bool onClose = (Info->Event == FE_CLOSE && !FarFileSystem->FClosed);
       MustSkipClose = onClose;
 
