@@ -263,7 +263,7 @@ TFileMasks::TFileMasks(int32_t ForceDirectoryMasks) noexcept
   FForceDirectoryMasks = ForceDirectoryMasks;
 }
 
-TFileMasks::TFileMasks(const TFileMasks &Source) noexcept
+TFileMasks::TFileMasks(const TFileMasks & Source) noexcept
 {
   Init();
   DoCopy(Source);
@@ -1281,8 +1281,8 @@ TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & AData,
 }
 
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
-    const UnicodeString & Path, const UnicodeString & FileName,
-    const UnicodeString & FileList) noexcept :
+  const UnicodeString & Path, const UnicodeString & FileName,
+  const UnicodeString & FileList) noexcept :
   TCustomCommand()
 {
   FData = Data;

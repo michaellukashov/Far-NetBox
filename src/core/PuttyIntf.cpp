@@ -299,7 +299,7 @@ bool have_ssh_host_key(Seat * seat, const char * hostname, int32_t port,
 SeatPromptResult confirm_weak_crypto_primitive(
     Seat * seat, SeatDialogText *,
     void (*DebugUsedArg(callback))(void * ctx, SeatPromptResult result), void * DebugUsedArg(ctx),
-    const char * algtype, const char *algname, int wcr)
+    const char * algtype, const char * algname, int wcr)
 {
   TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
   SecureShell->AskAlg(algtype, algname, wcr);
