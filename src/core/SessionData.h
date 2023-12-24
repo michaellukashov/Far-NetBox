@@ -1092,7 +1092,7 @@ public:
   bool GetIsFolder(const UnicodeString & Name) const;
   bool GetIsWorkspace(const UnicodeString & Name) const;
   bool IsFolderOrWorkspace(const UnicodeString & Name) const;
-  TSessionData * ParseUrl(const UnicodeString & Url, TOptions * Options, bool & DefaultsOnly,
+  TSessionData * ParseUrl(const UnicodeString & AUrl, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr, int32_t Flags = 0);
   bool IsUrl(const UnicodeString & Url);
   bool CanOpen(TSessionData * Data);

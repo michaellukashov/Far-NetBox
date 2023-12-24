@@ -6269,14 +6269,14 @@ bool TStoredSessionList::HasAnyWorkspace() const
   return Result;
 }
 
-TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & Url,
+TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & AUrl,
   TOptions * Options, bool & DefaultsOnly, UnicodeString * AFileName,
   bool * AProtocolDefined, UnicodeString * MaskedUrl, int32_t Flags)
 {
   std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(""));
   try__catch
   {
-    Data->ParseUrl(Url, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl, Flags);
+    Data->ParseUrl(AUrl, Options, this, DefaultsOnly, AFileName, AProtocolDefined, MaskedUrl, Flags);
   }
   __catch__removed
   {
