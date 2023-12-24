@@ -24,7 +24,7 @@ public:
   void SetName(const UnicodeString & Value);
   bool GetHidden() const { return FHidden; }
 
-  explicit TNamedObject(TObjectClassId Kind) noexcept : TPersistent(Kind), FHidden(false) {}
+  explicit TNamedObject(TObjectClassId Kind) noexcept : TPersistent(Kind) {}
   explicit TNamedObject(TObjectClassId Kind, const UnicodeString & AName) noexcept;
   virtual ~TNamedObject() override = default;
 
