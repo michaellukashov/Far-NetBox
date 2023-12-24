@@ -66,7 +66,7 @@ public:
   virtual const TNamedObject * AtObject(int32_t Index) const;
   virtual TNamedObject * AtObject(int32_t Index);
   const TNamedObject * FindByName(const UnicodeString & AName) const;
-  TNamedObject * FindByName(const UnicodeString & Name);
+  TNamedObject * FindByName(const UnicodeString & AName);
   __property int32_t Count = { read = GetCount };
   __property int32_t CountIncludingHidden = { read = GetCountIncludingHidden };
 };
