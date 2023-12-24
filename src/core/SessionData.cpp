@@ -2400,7 +2400,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
     }
 
-    UnicodeString ARemoteDirectory;
+    // UnicodeString ARemoteDirectory;
 
     bool ParseOnly = FLAGSET(Flags, pufParseOnly);
     if (Data != nullptr)
@@ -2413,7 +2413,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         P++;
         DebugAssert(P <= Url.Length());
       }
-      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
+      UnicodeString ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
 
       if (Data->Hidden && !ParseOnly)
       {
@@ -2543,7 +2543,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         ApplyRawSettings(RawSettings.get(), Unsafe);
       }
 
-      bool HasPassword = (UserInfo.Pos(L':') > 0);
+      const bool HasPassword = UserInfo.Pos(L':') > 0;
       UnicodeString RawUserName = CutToChar(UserInfo, L':', false);
       UserName = DecodeUrlChars(RawUserName);
 
