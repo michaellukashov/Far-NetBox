@@ -311,7 +311,7 @@ public:
   RawByteString(const UTF8String & Str);
   ~RawByteString() = default;
 
-  operator const char *() const { return this->c_str(); }
+  // operator const char *() const { return this->c_str(); }
   operator UnicodeString() const;
   const char * c_str() const { return Data.c_str(); }
   const char * data() const { return Data.c_str(); }
@@ -353,12 +353,18 @@ public:
   RawByteString & operator +=(const char Ch);
   RawByteString & operator +=(const uint8_t Ch);
 
+  bool operator ==(const RawByteString & rhs) const
+  { return Data == rhs.Data; }
   bool operator ==(const char * rhs) const
   { return Data == rhs; }
-  inline friend bool operator ==(RawByteString & lhs, RawByteString & rhs)
-  { return lhs.Data == rhs.Data; }
-  inline friend bool operator !=(RawByteString & lhs, RawByteString & rhs)
-  { return lhs.Data != rhs.Data; }
+  bool operator !=(const RawByteString & rhs) const
+  { return Data != rhs.Data; }
+  bool operator !=(const char * rhs) const
+  { return Data != rhs; }
+  // inline friend bool operator ==(const RawByteString & lhs, const RawByteString & rhs)
+  // { return lhs.Data == rhs.Data; }
+  // inline friend bool operator !=(const RawByteString & lhs, const RawByteString & rhs)
+  // { return lhs.Data != rhs.Data; }
 
 private:
   void Init(const wchar_t * Str, int32_t Length);
