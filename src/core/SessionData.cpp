@@ -2356,7 +2356,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     *AProtocolDefined = ProtocolDefined;
   }
 
-  bool Unsafe = FLAGSET(Flags, pufUnsafe);
+  const bool Unsafe = FLAGSET(Flags, pufUnsafe);
   if (!Url.IsEmpty())
   {
     UnicodeString DecodedUrl = DecodeUrlChars(Url);
@@ -2402,7 +2402,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
 
     // UnicodeString ARemoteDirectory;
 
-    bool ParseOnly = FLAGSET(Flags, pufParseOnly);
+    const bool ParseOnly = FLAGSET(Flags, pufParseOnly);
     if (Data != nullptr)
     {
       DoCopyData(Data, ParseOnly);
@@ -2447,7 +2447,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         PSlash = Url.Length() + 1;
       }
 
-      UnicodeString ConnectInfo = Url.SubString(1, PSlash - 1);
+      const UnicodeString ConnectInfo = Url.SubString(1, PSlash - 1);
 
       int32_t P = ConnectInfo.LastDelimiter(L"@");
 
@@ -2464,7 +2464,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         HostInfo = ConnectInfo;
       }
 
-      UnicodeString OrigHostInfo = HostInfo;
+      const UnicodeString OrigHostInfo = HostInfo;
       if ((HostInfo.Length() >= 2) && (HostInfo[1] == L'[') && ((P = HostInfo.Pos(L"]")) > 0))
       {
         SetHostName(HostInfo.SubString(2, P - 2));
@@ -2507,7 +2507,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         SetFtps(AFtps);
       }
 
-      UnicodeString UserInfoWithoutConnectionParams = CutToChar(UserInfo, UrlParamSeparator, false);
+      const UnicodeString UserInfoWithoutConnectionParams = CutToChar(UserInfo, UrlParamSeparator, false);
       UnicodeString ConnectionParams = UserInfo;
       UserInfo = UserInfoWithoutConnectionParams;
 
@@ -2544,7 +2544,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
 
       const bool HasPassword = UserInfo.Pos(L':') > 0;
-      UnicodeString RawUserName = CutToChar(UserInfo, L':', false);
+      const UnicodeString RawUserName = CutToChar(UserInfo, L':', false);
       UserName = DecodeUrlChars(RawUserName);
 
       SetPassword(DecodeUrlChars(UserInfo));
@@ -2563,7 +2563,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       while (!SessionParams.IsEmpty())
       {
         UnicodeString SessionParam = CutToChar(SessionParams, UrlParamSeparator, false);
-        UnicodeString SessionParamName = CutToChar(SessionParam, UrlParamValueSeparator, false);
+        const UnicodeString SessionParamName = CutToChar(SessionParam, UrlParamValueSeparator, false);
         if (::SameText(SessionParamName, UrlSaveParamName))
         {
           FSaveOnly = (::StrToIntDef(SessionParam, 1) != 0);
