@@ -38,7 +38,7 @@ constexpr const wchar_t * DefaultName = L"Default Settings";
 
 static TDateTime SecToDateTime(int32_t Sec)
 {
-  return TDateTime(double(Sec) / SecsPerDay);
+  return TDateTime(static_cast<double>(Sec) / SecsPerDay);
 }
 
 static bool IsValidOpensshLine(const UnicodeString & Line)
