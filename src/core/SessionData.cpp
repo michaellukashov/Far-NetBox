@@ -6286,11 +6286,11 @@ TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & AUrl,
   return Data.release();
 }
 
-bool TStoredSessionList::IsUrl(const UnicodeString & Url)
+bool TStoredSessionList::IsUrl(const UnicodeString & AUrl)
 {
   bool DefaultsOnly;
   bool ProtocolDefined = false;
-  std::unique_ptr<TSessionData> ParsedData(ParseUrl(Url, nullptr, DefaultsOnly, nullptr, &ProtocolDefined));
+  std::unique_ptr<TSessionData> ParsedData(ParseUrl(AUrl, nullptr, DefaultsOnly, nullptr, &ProtocolDefined));
   const bool Result = ProtocolDefined;
   return Result;
 }

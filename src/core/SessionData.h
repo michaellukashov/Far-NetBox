@@ -1094,7 +1094,7 @@ public:
   bool IsFolderOrWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & AUrl, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr, int32_t Flags = 0);
-  bool IsUrl(const UnicodeString & Url);
+  bool IsUrl(const UnicodeString & AUrl);
   bool CanOpen(TSessionData * Data);
   void GetFolderOrWorkspace(const UnicodeString & Name, TList * List);
   TStrings * GetFolderOrWorkspaceList(const UnicodeString & Name);
