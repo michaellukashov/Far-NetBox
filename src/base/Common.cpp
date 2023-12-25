@@ -2444,7 +2444,7 @@ static uint16_t DecodeYear(const TDateTime &DateTime)
   return Year;
 }
 
-static const TDateTimeParams *GetDateTimeParams(uint16_t Year)
+static const TDateTimeParams * GetDateTimeParams(uint16_t Year)
 {
   TGuard Guard(DateTimeParamsSection); nb::used(Guard);
 
@@ -2843,7 +2843,7 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
       Params->DaylightDifferenceSec : Params->StandardDifferenceSec) +
       Params->BaseDifferenceSec;
 
-    const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
+    const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
     UnixTimeStamp -=
       CurrentParams->CurrentDaylightDifferenceSec +
       CurrentParams->BaseDifferenceSec;
@@ -2906,7 +2906,7 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
 
       if (DSTMode == dstmKeep)
       {
-        const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
+        const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
         Result -= CurrentParams->CurrentDaylightDifferenceSec;
       }
     }
@@ -2939,7 +2939,7 @@ TDateTime ConvertTimestampToUTC(const TDateTime & ADateTime)
 
   if (Params->DaylightHack)
   {
-    const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
+    const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
     DateTime += CurrentParams->CurrentDaylightDifference;
   }
 
@@ -2956,14 +2956,14 @@ TDateTime ConvertTimestampFromUTC(const TDateTime & ADateTime)
 
   if (Params->DaylightHack)
   {
-    const TDateTimeParams *CurrentParams = GetDateTimeParams(0);
+    const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
     DateTime -= CurrentParams->CurrentDaylightDifference;
   }
 
   return DateTime;
 }
 
-int64_t ConvertTimestampToUnixSafe(const FILETIME &FileTime,
+int64_t ConvertTimestampToUnixSafe(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
   int64_t Result;
