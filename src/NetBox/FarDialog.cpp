@@ -1573,7 +1573,7 @@ void TFarDialogItem::MoveAt(int32_t X, int32_t Y)
 
 void TFarDialogItem::SetCoordinate(int32_t Index, int32_t Value)
 {
-  static_assert(sizeof(TRect) == sizeof(int32_t) * 4);
+  static_assert(sizeof(TRect) == sizeof(int32_t) * 4, "TRect");
   TRect R = GetBounds();
   int32_t * D = reinterpret_cast<int32_t *>(&R);
   D += Index;
@@ -1583,7 +1583,7 @@ void TFarDialogItem::SetCoordinate(int32_t Index, int32_t Value)
 
 int32_t TFarDialogItem::GetCoordinate(int32_t Index) const
 {
-  static_assert(sizeof(TRect) == sizeof(int32_t) * 4);
+  static_assert(sizeof(TRect) == sizeof(int32_t) * 4, "TRect");
   TRect R = GetBounds();
   int32_t * D = reinterpret_cast<int32_t *>(&R);
   D += Index;
