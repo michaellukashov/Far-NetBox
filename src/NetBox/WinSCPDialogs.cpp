@@ -208,11 +208,15 @@ TTabButton * TTabbedDialog::GetTabButton(int32_t Tab) const
   TTabButton * Result = nullptr;
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
-    TTabButton * T = dyn_cast<TTabButton>(GetItem(Index));
-    if ((T != nullptr) && (T->GetTab() == Tab))
+    TObject * Item = GetItem(Index);
+    if (isa<TTabButton>(Item))
     {
-      Result = T;
-      break;
+      TTabButton * T = dyn_cast<TTabButton>(GetItem(Index));
+      if ((T != nullptr) && (T->GetTab() == Tab))
+      {
+        Result = T;
+        break;
+      }
     }
   }
 
