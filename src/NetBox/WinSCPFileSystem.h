@@ -174,13 +174,13 @@ protected:
   bool FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode,
     int32_t & Params, UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory,
     TCopyParamType * CopyParams, bool & SaveSettings, bool & SaveMode, int32_t Options,
-    const TUsableCopyParamAttrs &CopyParamAttrs) const;
+    const TUsableCopyParamAttrs & CopyParamAttrs) const;
   bool SynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
     TTerminal::TSynchronizeMode Mode, int32_t Params,
     const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory);
   bool RemoteTransferDialog(TStrings * AFileList, UnicodeString & Target,
     UnicodeString & FileMask, bool Move);
-  bool RenameFileDialog(TRemoteFile * AFile , UnicodeString & NewName);
+  bool RenameFileDialog(TRemoteFile * AFile, UnicodeString & NewName);
   uint32_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,
     TQueryType Type, uint32_t Answers, const TMessageParams * AParams = nullptr);
   bool PasswordDialog(TSessionData * SessionData,

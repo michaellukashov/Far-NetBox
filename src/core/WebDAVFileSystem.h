@@ -119,7 +119,7 @@ protected:
   void ParsePropResultSet(TRemoteFile * AFile,
     const UnicodeString & APath, const ne_prop_result_set_s * Results);
   void TryOpenDirectory(const UnicodeString & ADirectory);
-  static int32_t NeonBodyReader(void * UserData, const char * Buf , size_t Len);
+  static int32_t NeonBodyReader(void * UserData, const char * Buf, size_t Len);
   static void NeonPreSend(ne_request * Request, void * UserData, ne_buffer * Header);
   static int32_t NeonBodyAccepter(void * UserData, ne_request * Request, const ne_status * Status);
   static void NeonCreateRequest(ne_request * Request, void * UserData, const char * Method, const char * Uri);
