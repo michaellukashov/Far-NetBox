@@ -1523,7 +1523,7 @@ private:
 
   void ChangeTabs(int32_t FirstVisibleTabIndex);
   int32_t GetVisibleTabsCount(int32_t TabIndex, bool Forward) const;
-  int32_t AddTab(int32_t TabID, const wchar_t * TabCaption);
+  int32_t AddTab(int32_t TabID, const UnicodeString & TabCaption);
 
   static TProxyMethod ToProxyMethod(int32_t Value) { return static_cast<TProxyMethod>(Value); }
 private:
@@ -1720,19 +1720,19 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TRect CRect = GetClientRect();
 
-  int32_t Index1 = AddTab(tabSession, GetMsg(NB_LOGIN_TAB_SESSION).c_str());
+  int32_t Index1 = AddTab(tabSession, GetMsg(NB_LOGIN_TAB_SESSION));
   // Tab = dyn_cast<TTabButton>(GetItem(Index));
 
   SetNextItemPosition(ipRight);
 
-  Index1 = AddTab(tabEnvironment, GetMsg(NB_LOGIN_TAB_ENVIRONMENT).c_str());
+  Index1 = AddTab(tabEnvironment, GetMsg(NB_LOGIN_TAB_ENVIRONMENT));
 
-  Index1 = AddTab(tabDirectories, GetMsg(NB_LOGIN_TAB_DIRECTORIES).c_str());
+  Index1 = AddTab(tabDirectories, GetMsg(NB_LOGIN_TAB_DIRECTORIES));
 
-  Index1 = AddTab(tabSFTP, GetMsg(NB_LOGIN_TAB_SFTP).c_str());
+  Index1 = AddTab(tabSFTP, GetMsg(NB_LOGIN_TAB_SFTP));
   SftpTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabSCP, GetMsg(NB_LOGIN_TAB_SCP).c_str());
+  Index1 = AddTab(tabSCP, GetMsg(NB_LOGIN_TAB_SCP));
   ScpTab = dyn_cast<TTabButton>(GetItem(Index1));
 
   PrevTab = new TTabButton(this);
@@ -1755,29 +1755,29 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   NextTab->SetLeft(R - NWidth - 1);
   NextTab->SetWidth(PWidth);
 
-  Index1 = AddTab(tabFTP, GetMsg(NB_LOGIN_TAB_FTP).c_str());
+  Index1 = AddTab(tabFTP, GetMsg(NB_LOGIN_TAB_FTP));
   FtpTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabConnection, GetMsg(NB_LOGIN_TAB_CONNECTION).c_str());
+  Index1 = AddTab(tabConnection, GetMsg(NB_LOGIN_TAB_CONNECTION));
 
-  Index1 = AddTab(tabProxy, GetMsg(NB_LOGIN_TAB_PROXY).c_str());
+  Index1 = AddTab(tabProxy, GetMsg(NB_LOGIN_TAB_PROXY));
 
-  Index1 = AddTab(tabTunnel, GetMsg(NB_LOGIN_TAB_TUNNEL).c_str());
+  Index1 = AddTab(tabTunnel, GetMsg(NB_LOGIN_TAB_TUNNEL));
   TunnelTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabSsh, GetMsg(NB_LOGIN_TAB_SSH).c_str());
+  Index1 = AddTab(tabSsh, GetMsg(NB_LOGIN_TAB_SSH));
   SshTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabKex, GetMsg(NB_LOGIN_TAB_KEX).c_str());
+  Index1 = AddTab(tabKex, GetMsg(NB_LOGIN_TAB_KEX));
   KexTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabAuthentication, GetMsg(NB_LOGIN_TAB_AUTH).c_str());
+  Index1 = AddTab(tabAuthentication, GetMsg(NB_LOGIN_TAB_AUTH));
   AuthenticationTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabBugs, GetMsg(NB_LOGIN_TAB_BUGS).c_str());
+  Index1 = AddTab(tabBugs, GetMsg(NB_LOGIN_TAB_BUGS));
   BugsTab = dyn_cast<TTabButton>(GetItem(Index1));
 
-  Index1 = AddTab(tabWebDAV, GetMsg(NB_LOGIN_TAB_WEBDAV).c_str());
+  Index1 = AddTab(tabWebDAV, GetMsg(NB_LOGIN_TAB_WEBDAV));
   WebDAVTab = dyn_cast<TTabButton>(GetItem(Index1));
 
   // Session tab
@@ -4310,11 +4310,11 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   }
 }
 
-int32_t TSessionDialog::AddTab(int32_t TabID, const wchar_t * TabCaption)
+int32_t TSessionDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
 {
   constexpr TFarButtonBrackets TabBrackets = brNone; // brSpace; //
   TTabButton * Tab = new TTabButton(this);
-  Tab->SetTabName(UnicodeString(TabCaption));
+  Tab->SetTabName(TabCaption);
   Tab->SetTab(TabID);
   Tab->SetBrackets(TabBrackets);
   // SetTabCount(GetTabCount() + 1);
