@@ -181,7 +181,7 @@ intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * I
   try
   {
     const TSynchroParams * SynchroParams = static_cast<TSynchroParams *>(Info->Param);
-    if (SynchroParams && SynchroParams->SynchroEvent)
+    if (SynchroParams && SynchroParams->Dialog && SynchroParams->SynchroEvent)
     {
       SynchroParams->SynchroEvent(this, nullptr);
     }
@@ -776,6 +776,7 @@ public:
     TFarMessageParams * Params);
   void Init(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
     TStrings * Buttons);
+  virtual ~TFarMessageDialog() override;
 
   int32_t Execute(bool & ACheckBox);
 
@@ -955,13 +956,24 @@ void TFarMessageDialog::Init(uint32_t AFlags,
   SetSize(S);
 }
 
+TFarMessageDialog::~TFarMessageDialog()
+{
+  if (GetFarPlugin())
+  {
+    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+    SynchroParams.Dialog = nullptr;
+  }
+}
+
 void TFarMessageDialog::Idle()
 {
   TFarDialog::Idle();
   if (GetFarPlugin())
   {
-    FSynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
-    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &FSynchroParams);
+    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+    SynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
+    SynchroParams.Dialog = this;
+    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &SynchroParams);
   }
 }
 

@@ -81,6 +81,7 @@ struct TSynchroParams final : public TObject
 public:
   TSynchroParams() = default;
   TSynchroEvent SynchroEvent;
+  TFarMessageDialog * Dialog{nullptr};
 };
 
 enum NetBoxSystemSettings
@@ -218,6 +219,7 @@ protected:
   mutable bool FValidFarSystemSettings{false};
   mutable int32_t FFarSystemSettings{0};
   TPoint FNormalConsoleSize;
+  TSynchroParams FSynchroParams{};
 
   virtual bool HandlesFunction(THandlesFunction Function) const;
   virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags,

@@ -130,9 +130,6 @@ protected:
 
   virtual void SetBounds(const TRect & Value);
 
-protected:
-  TSynchroParams FSynchroParams{};
-
 private:
   mutable gsl::not_null<TCustomFarPlugin *> FFarPlugin;
   TRect FBounds{};
