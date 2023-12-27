@@ -4367,9 +4367,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   bool AAnyDirectories, bool ShowButtons,
   bool ShowSpecials, TFarDialogItem * EnabledDependency) :
   TFarDialogContainer(OBJECT_CLASS_TRightsContainer, ADialog),
-  FAnyDirectories(AAnyDirectories),
-  FOctalEdit(nullptr),
-  FDirectoriesXCheck(nullptr)
+  FAnyDirectories(AAnyDirectories)
 {
   GetDialog()->SetNextItemPosition(ipNewLine);
 
