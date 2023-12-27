@@ -487,7 +487,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         {
           INPUT_RECORD * Rec = static_cast<INPUT_RECORD *>(Param2);
           const KEY_EVENT_RECORD & Event = Rec->Event.KeyEvent;
-          Result = Key(Item, static_cast<long>(Event.wVirtualKeyCode | (Event.dwControlKeyState << 16)));
+          Result = Key(Item, static_cast<intptr_t>(Event.wVirtualKeyCode | (Event.dwControlKeyState << 16)));
         }
         Handled = true;
       }
