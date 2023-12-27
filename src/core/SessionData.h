@@ -183,7 +183,7 @@ private:
   TGssLib FGssLib[GSSLIB_COUNT]{};
   UnicodeString FGssLibCustom;
   bool FClearAliases{false};
-  TEOLType FEOLType{};
+  TEOLType FEOLType{eolLF};
   bool FTrimVMSVersions{false};
   bool FVMSAllRevisions{false};
   UnicodeString FPublicKeyFile;
@@ -240,17 +240,17 @@ private:
   int32_t FSFTPListingQueue{0};
   int32_t FSFTPMaxVersion{SFTPMaxVersion};
   int32_t FSFTPMaxPacketSize{0};
-  TAutoSwitch FSFTPRealPath;
+  TAutoSwitch FSFTPRealPath{asAuto};
   TDSTMode FDSTMode{dstmKeep};
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT]{};
   bool FDeleteToRecycleBin{false};
   bool FOverwrittenToRecycleBin{false};
   UnicodeString FRecycleBinPath;
   UnicodeString FPostLoginCommands;
-  TAutoSwitch FSCPLsFullTime{};
-  TAutoSwitch FFtpListAll{};
-  TAutoSwitch FFtpHost{};
-  TAutoSwitch FFtpWorkFromCwd;
+  TAutoSwitch FSCPLsFullTime{asAuto};
+  TAutoSwitch FFtpListAll{asAuto};
+  TAutoSwitch FFtpHost{asAuto};
+  TAutoSwitch FFtpWorkFromCwd{asAuto};
   bool FFtpAnyCodeForPwd{false};
   bool FSslSessionReuse{false};
   UnicodeString FTlsCertificateFile;
@@ -270,12 +270,12 @@ private:
   UnicodeString FTunnelHostKey;
   bool FFtpPasvMode{false};
   TAutoSwitch FFtpForcePasvIp{};
-  TAutoSwitch FFtpUseMlsd{};
+  TAutoSwitch FFtpUseMlsd{asAuto};
   UnicodeString FFtpAccount;
   int32_t FFtpPingInterval{0};
-  TFtpPingType FFtpPingType{};
+  TFtpPingType FFtpPingType{fptOff};
   TAutoSwitch FFtpTransferActiveImmediately{};
-  TFtps FFtps{};
+  TFtps FFtps{ftpsNone};
   TTlsVersion FMinTlsVersion{};
   TTlsVersion FMaxTlsVersion{};
   TAutoSwitch FNotUtf{};
@@ -311,7 +311,7 @@ public:
   UnicodeString GetHostNameExpanded() const;
   UnicodeString GetHostNameSource() const;
   void SetPortNumber(int32_t AValue);
-  void SetUserName(const UnicodeString & AValue);
+  // void SetUserName(const UnicodeString & AValue);
   UnicodeString GetUserNameExpanded() const;
   UnicodeString GetUserNameSource() const;
   void SetPassword(const UnicodeString & AValue);
@@ -539,7 +539,7 @@ public:
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & Name, bool Value);
 #endif // #if 0
-  TStrings * SaveToOptions(const TSessionData * Default);
+  // TStrings * SaveToOptions(const TSessionData * Default);
   TStrings * GetRawSettingsForUrl();
   void DoCopyData(const TSessionData * SourceData, bool NoRecrypt);
   bool HasS3AutoCredentials() const;
@@ -574,7 +574,7 @@ public:
   void MaskPasswords();
   void Remove();
   void CacheHostKeyIfNotCached();
-  virtual void Assign(const TPersistent * Source);
+  virtual void Assign(const TPersistent * Source) override;
   virtual int32_t Compare(const TNamedObject * Other) const override;
   void CopyData(const TSessionData * Source);
   void CopyDataNoRecrypt(const TSessionData * SourceData);
@@ -1147,8 +1147,8 @@ struct NB_CORE_EXPORT TIEProxyConfig : public TObject
   TIEProxyConfig() = default;
   bool AutoDetect{false}; // not used
   UnicodeString AutoConfigUrl; // not used
-  UnicodeString Proxy; //< string in format "http=host:80;https=host:443;ftp=ftpproxy:20;socks=socksproxy:1080"
-  UnicodeString ProxyBypass; //< string in format "*.local, foo.com, google.com"
+  UnicodeString Proxy; ///< string in format "http=host:80;https=host:443;ftp=ftpproxy:20;socks=socksproxy:1080"
+  UnicodeString ProxyBypass; ///< string in format "*.local, foo.com, google.com"
   UnicodeString ProxyHost;
   int32_t ProxyPort{0};
   TProxyMethod ProxyMethod{pmNone};
