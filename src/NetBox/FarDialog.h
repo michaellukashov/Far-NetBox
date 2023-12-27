@@ -120,7 +120,7 @@ protected:
   void BreakSynchronize();
   void Synchronize(TThreadMethod Method);
   void Close(TFarButton * Button);
-  void ProcessGroup(int32_t Group, TFarProcessGroupEvent Callback, void * Arg);
+  void ProcessGroup(int32_t Group, TFarProcessGroupEvent && Callback, void * Arg);
   void ShowItem(TFarDialogItem * Item, void * Arg);
   void EnableItem(TFarDialogItem * Item, void * Arg);
   bool ChangesLocked() const;

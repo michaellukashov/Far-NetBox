@@ -893,7 +893,7 @@ void TFarDialog::EnableGroup(int32_t Group, bool Enable)
   ProcessGroup(Group, nb::bind(&TFarDialog::EnableItem, this), &Enable);
 }
 
-void TFarDialog::ProcessGroup(int32_t Group, TFarProcessGroupEvent Callback,
+void TFarDialog::ProcessGroup(int32_t Group, TFarProcessGroupEvent && Callback,
   void *Arg)
 {
   LockChanges();
