@@ -79,7 +79,7 @@ TObjectList::~TObjectList()
 
 const TObject * TObjectList::operator [](int32_t Index) const
 {
-  return cast_to<const TObject>(TList::operator[](Index));
+  return cast_to<const TObject>(TList::operator [](Index));
 }
 
 const TObject * TObjectList::GetObj(int32_t Index) const

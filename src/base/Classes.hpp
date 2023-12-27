@@ -356,7 +356,7 @@ public:
   T * GetAs(int32_t Index) { return cast_to<T>(Get(Index)); }
   template<class T>
   const T * As(int32_t Index) const { return cast_to<T>(GetObj(Index)); }
-  // virtual const TObject * operator [](int32_t Index) const override;
+  virtual const TObject * operator [](int32_t Index) const override;
   const TObject * GetObj(int32_t Index) const;
   TObject * Get(int32_t Index) { return const_cast<TObject *>(GetObj(Index)); }
   bool GetOwnsObjects() const { return FOwnsObjects; }
