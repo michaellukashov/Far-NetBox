@@ -2930,13 +2930,13 @@ void TSessionDialog::TransferProtocolComboChange()
   }
   else if (FSProtocol == fsS3)
   {
-    if (Port == HTTPPortNumber)
+    if (Port == HTTPSPortNumber)
     {
       PortNumberEdit->SetAsInteger(HTTPSPortNumber);
       UnicodeString HostName = HostNameEdit->GetText();
       if (HostName.IsEmpty())
       {
-        HostName = "s3.amazonaws.com";
+        HostName = S3HostName;
       }
       ::AdjustRemoteDir(HostName, PortNumberEdit, RemoteDirectoryEdit);
       HostNameEdit->SetText(HostName);
