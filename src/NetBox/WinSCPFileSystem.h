@@ -192,9 +192,9 @@ protected:
     TRemoteProperties * Properties, bool & SaveSettings);
   bool QueueDialog(TTerminalQueueStatus * Status, bool ClosingPlugin);
   bool SynchronizeDialog(TSynchronizeParamType & Params,
-    const TCopyParamType * CopyParams, TSynchronizeStartStopEvent OnStartStop,
+    const TCopyParamType * CopyParams, TSynchronizeStartStopEvent && OnStartStop,
     bool & SaveSettings, uint32_t Options, uint32_t CopyParamAttrs,
-    TGetSynchronizeOptionsEvent OnGetOptions);
+    TGetSynchronizeOptionsEvent && OnGetOptions);
   bool SynchronizeAllowSelectedOnly();
   void RequireCapability(int32_t Capability);
   void RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString & Message);
