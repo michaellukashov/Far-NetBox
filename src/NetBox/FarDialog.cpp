@@ -41,7 +41,8 @@ public:
     {
       if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
       {
-        FDialog->Idle();
+        if (FDialog && FDialog->GetHandle())
+          FDialog->Idle();
       }
     }
     SAFE_CLOSE_HANDLE(FEvent);
@@ -51,7 +52,8 @@ public:
   {
     // TCompThread::Terminate();
     FFinished = true;
-    ::SetEvent(FEvent);
+    if (FEvent)
+      ::SetEvent(FEvent);
   }
 
   void InitIdleThread()
