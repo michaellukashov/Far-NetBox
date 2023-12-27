@@ -19,7 +19,7 @@ set PROJECT_KIT=vs2022
 :x64
 set PROJECT_PLATFORM=x64
 set PROJECT_GENERATOR=Ninja
-set PROJECT_VARS=x86_amd64
+set PROJECT_VARS=x64
 
 call %~dp0\build_netbox.cmd
 

@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-# C:\VS2019\VC\Auxiliary\Build\vcvarsall.bat x86_amd64 && bash ./build_debug.local.sh
+# C:\VS2022\VC\Auxiliary\Build\vcvarsall.bat amd64 && bash ./build_debug.local.sh
 
 #BUILD_TYPE=Debug
 BUILD_TYPE=Release
