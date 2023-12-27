@@ -110,7 +110,7 @@ bool UnixIsChildPath(const UnicodeString & AParent, const UnicodeString & AChild
 
 UnicodeString UnixExtractFileDir(const UnicodeString & APath)
 {
-  const int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/'));
+  const int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/')); //TODO: use UnixPathSeparator
   // it used to return Path when no slash was found
   if (Pos > 1)
   {
@@ -125,7 +125,7 @@ UnicodeString UnixExtractFileDir(const UnicodeString & APath)
 // must return trailing backslash
 UnicodeString UnixExtractFilePath(const UnicodeString & APath)
 {
-  const int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/'));
+  const int32_t Pos = APath.LastDelimiter(UnicodeString(1, L'/')); //TODO: use UnixPathSeparator
   // it used to return Path when no slash was found
   if (Pos > 0)
   {
