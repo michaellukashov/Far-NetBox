@@ -3513,36 +3513,36 @@ UnicodeString DecodeUrlChars(const UnicodeString & Url)
 {
   UnicodeString S = Url;
 
-  int32_t i = 1;
-  while (i <= S.Length())
+  int32_t I = 1;
+  while (I <= S.Length())
   {
-    switch (S[i])
+    switch (S[I])
     {
       case L'+':
-        S[i] = L' ';
+        S[I] = L' ';
         break;
 
       case L'%':
         {
           UnicodeString Hex;
-          while ((i + 2 <= S.Length()) && (S[i] == L'%') &&
-                 IsHex(S[i + 1]) && IsHex(S[i + 2]))
+          while ((I + 2 <= S.Length()) && (S[I] == L'%') &&
+                 IsHex(S[I + 1]) && IsHex(S[I + 2]))
           {
-            Hex += S.SubString(i + 1, 2);
-            S.Delete(i, 3);
+            Hex += S.SubString(I + 1, 2);
+            S.Delete(I, 3);
           }
 
           if (!Hex.IsEmpty())
           {
             RawByteString Bytes = HexToBytes(Hex);
             UnicodeString Chars(UTF8ToString(Bytes));
-            S.Insert(Chars, i);
-            i += Chars.Length() - 1;
+            S.Insert(Chars, I);
+            I += Chars.Length() - 1;
           }
         }
         break;
     }
-    ++i;
+    ++I;
   }
   return S;
 }
