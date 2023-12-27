@@ -144,7 +144,6 @@ private:
 
 TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int32_t TabCount) noexcept :
   TWinSCPDialog(AFarPlugin),
-  FTab(0),
   FTabCount(TabCount)
 {
   // FAR WORKAROUND
@@ -243,7 +242,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const intptr_t ControlState = KeyCode >> 16;
+  const DWORD ControlState = nb::ToDWord(KeyCode >> 16);
   if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && (ControlState & CTRLMASK) != 0) ||
     (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && (ControlState & CTRLMASK) != 0))
   {
