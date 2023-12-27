@@ -2364,8 +2364,9 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     // (this allows setting for example default username for host
     // by creating stored session named by host)
     TSessionData * Data = nullptr;
+    UnicodeString SessionNameWithoutFolder;
     // When using to paste URL on Login dialog, we do not want to lookup the stored sites
-    if ((StoredSessions != nullptr) &&
+    if ((AStoredSessions != nullptr) &&
         (!ProtocolDefined || FLAGSET(Flags, pufAllowStoredSiteWithProtocol)))
     {
       // this can be optimized as the list is sorted
@@ -2377,16 +2378,23 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
           bool Match = false;
           // Comparison optimizations as this is called many times
           // e.g. when updating jumplist
-          UnicodeString AName = AData->GetName();
-          if ((AName.Length() == DecodedUrl.Length()) &&
-               SameText(AName, DecodedUrl))
+          SessionNameWithoutFolder = AData->GetName(); //AData->GetSessionName();
+          // remove folder name
+          const int32_t P = SessionNameWithoutFolder.Pos(SLASH);
+          if (P > 0)
+          {
+            SessionNameWithoutFolder = SessionNameWithoutFolder.SubString(P + 1);
+          }
+
+          if ((SessionNameWithoutFolder.Length() == DecodedUrl.Length()) &&
+               SameText(SessionNameWithoutFolder, DecodedUrl))
           {
             Match = true;
           }
-          else if ((AName.Length() < DecodedUrl.Length()) &&
+          else if ((SessionNameWithoutFolder.Length() < DecodedUrl.Length()) &&
                    // (DecodedUrl[Name.Length() + 1] == L'/') &&
                    // StrLIComp is an equivalent of SameText
-                   (nb::StrLIComp(AName.c_str(), DecodedUrl.c_str(), AName.Length()) == 0))
+                   (nb::StrLIComp(SessionNameWithoutFolder.c_str(), DecodedUrl.c_str(), SessionNameWithoutFolder.Length()) == 0))
           {
             Match = true;
           }
@@ -2408,7 +2416,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       DoCopyData(Data, ParseOnly);
       FSource = Data->FSource;
       int32_t P = 1;
-      while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), Data->Name))
+      while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), SessionNameWithoutFolder))
       {
         P++;
         DebugAssert(P <= Url.Length());
@@ -3831,15 +3839,15 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
     Url += "@";
   }
 
-  const UnicodeString HostNameExpanded = GetHostNameExpanded();
-  DebugAssert(!HostNameExpanded.IsEmpty());
-  if (IsIPv6Literal(HostNameExpanded))
+  const UnicodeString AHostNameExpanded = GetHostNameExpanded();
+  DebugAssert(!AHostNameExpanded.IsEmpty());
+  if (IsIPv6Literal(AHostNameExpanded))
   {
-    Url += EscapeIPv6Literal(HostNameExpanded);
+    Url += EscapeIPv6Literal(AHostNameExpanded);
   }
   else
   {
-    Url += EncodeUrlString(HostNameExpanded);
+    Url += EncodeUrlString(AHostNameExpanded);
   }
 
   if (PortNumber != GetDefaultPort())
@@ -5040,7 +5048,7 @@ UnicodeString TSessionData::GetInfoTip() const
 UnicodeString TSessionData::ExtractLocalName(const UnicodeString & Name)
 {
   UnicodeString Result = Name;
-  int32_t P = Result.LastDelimiter(L"/");
+  const int32_t P = Result.LastDelimiter(L"/");
   if (P > 0)
   {
     Result.Delete(1, P);
