@@ -2359,7 +2359,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   const bool Unsafe = FLAGSET(Flags, pufUnsafe);
   if (!Url.IsEmpty())
   {
-    UnicodeString DecodedUrl = DecodeUrlChars(Url);
+    const UnicodeString DecodedUrl = DecodeUrlChars(Url);
     // lookup stored session even if protocol was defined
     // (this allows setting for example default username for host
     // by creating stored session named by host)
