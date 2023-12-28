@@ -111,7 +111,7 @@ public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EAbort); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EAbort) || Exception::is(Kind); }
 public:
-  explicit EAbort(const UnicodeString & What) noexcept : Exception(OBJECT_CLASS_EAbort, What) {}
+  explicit EAbort(const UnicodeString & What) noexcept : EAbort(OBJECT_CLASS_EAbort, What) {}
   explicit EAbort(TObjectClassId Kind, const UnicodeString & What) noexcept : Exception(Kind, What) {}
 };
 

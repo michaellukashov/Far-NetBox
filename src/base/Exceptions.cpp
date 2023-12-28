@@ -479,19 +479,8 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg,
 {
 }
 
-EFatal::EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
-  ExtException(OBJECT_CLASS_EFatal, Msg, E, HelpKeyword)
-{
-  Init(E);
-}
-
 EFatal::EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(Kind, Msg, E, HelpKeyword)
-{
-  Init(E);
-}
-
-void EFatal::Init(const Exception * E)
 {
   const EFatal * F = dyn_cast<EFatal>(E);
   if (F != nullptr)

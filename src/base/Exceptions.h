@@ -164,7 +164,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFatal) || ExtException::is(Kind); }
 public:
   // fatal errors are always copied, new message is only appended
-  explicit EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
+  explicit EFatal(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : EFatal(OBJECT_CLASS_EFatal, E, Msg, HelpKeyword) {}
   explicit EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"");
 
   __property bool ReopenQueried = { read = FReopenQueried, write = FReopenQueried };
@@ -175,7 +175,6 @@ public:
   bool GetReopenQueried() const { return FReopenQueried; }
   void SetReopenQueried(bool Value) { FReopenQueried = Value; }
 private:
-  void Init(const Exception * E);
   bool FReopenQueried{false};
 };
 
@@ -202,7 +201,7 @@ public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ESshTerminate); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ESshTerminate) || EFatal::is(Kind); }
 public:
-  explicit inline ESshTerminate(
+  explicit ESshTerminate(
     const Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation,
     const UnicodeString & ATargetLocalPath, const UnicodeString & ADestLocalFileName) :
     EFatal(OBJECT_CLASS_ESshTerminate, E, Msg),
@@ -237,9 +236,9 @@ public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EStreamError); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EStreamError) || ExtException::is(Kind); }
 public:
-  using ExtException::ExtException;
+  explicit EStreamError(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : ExtException(Kind, E, Msg, HelpKeyword) {}
   explicit EStreamError(const UnicodeString & Msg) :
-      ExtException(OBJECT_CLASS_EStreamError, static_cast<const Exception *>(nullptr), Msg)
+    EStreamError(OBJECT_CLASS_EStreamError, static_cast<const Exception *>(nullptr), Msg)
   {
   }
 };
@@ -252,7 +251,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFCreateError) || EStreamError::is(Kind); }
 public:
   explicit EFCreateError(const UnicodeString & Msg) :
-      EStreamError(OBJECT_CLASS_EFCreateError, static_cast<const Exception *>(nullptr), Msg)
+    EStreamError(OBJECT_CLASS_EFCreateError, static_cast<const Exception *>(nullptr), Msg)
   {
   }
 };
