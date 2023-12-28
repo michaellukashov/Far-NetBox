@@ -523,9 +523,9 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       {
         UnicodeString Name = SessionName.SubString(
             Folder.Length() + 1, SessionName.Length() - Folder.Length());
-        if (const int32_t Slash = Name.Pos(L'/'); Slash > 0)
+        if (const int32_t PSlash = Name.Pos(L'/'); PSlash > 0)
         {
-          Name.SetLength(Slash - 1);
+          Name.SetLength(PSlash - 1);
           if (ChildPaths->IndexOf(Name) < 0)
           {
             PanelItems->Add(new TSessionFolderPanelItem(Name));
