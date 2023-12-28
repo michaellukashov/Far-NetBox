@@ -357,7 +357,7 @@ private:
 };
 
 NB_DEFINE_CLASS_ID(TSessionPanelItem);
-class TSessionPanelItem : public TCustomFarPanelItem
+class TSessionPanelItem final : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TSessionPanelItem)
 public:
@@ -395,7 +395,7 @@ protected:
 };
 
 NB_DEFINE_CLASS_ID(TRemoteFilePanelItem);
-class TRemoteFilePanelItem : public TCustomFarPanelItem
+class TRemoteFilePanelItem final : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TRemoteFilePanelItem)
 public:
