@@ -13,35 +13,35 @@
 namespace nb {
 
 NB_CORE_EXPORT UnicodeString Format(const UnicodeString & fmt, fmt::ArgList args);
-FMT_VARIADIC_W(const UnicodeString, Format, const UnicodeString &)
+FMT_VARIADIC_W(UnicodeString, Format, const UnicodeString &)
 
 NB_CORE_EXPORT UnicodeString Sprintf(const UnicodeString & fmt, fmt::ArgList args);
-FMT_VARIADIC_W(const UnicodeString, Sprintf, const UnicodeString &)
+FMT_VARIADIC_W(UnicodeString, Sprintf, const UnicodeString &)
 
 NB_CORE_EXPORT UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args);
-FMT_VARIADIC_W(const UnicodeString, FmtLoadStr, int32_t)
+FMT_VARIADIC_W(UnicodeString, FmtLoadStr, int32_t)
 
 } // namespace nb
 
-inline std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const CMStringW &Value)
+inline std::basic_ostream<wchar_t> & operator <<(std::basic_ostream<wchar_t> & os, const CMStringW & Value)
 {
   os << Value.c_str();
   return os;
 }
 
-inline std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const CMStringA &Value)
+inline std::basic_ostream<char> & operator <<(std::basic_ostream<char> & os, const CMStringA & Value)
 {
   os << Value.c_str();
   return os;
 }
 
-inline std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t>& os, const UnicodeString& Value)
+inline std::basic_ostream<wchar_t> & operator<<(std::basic_ostream<wchar_t> & os, const UnicodeString & Value)
 {
   os << Value.c_str();
   return os;
 }
 
-inline std::basic_ostream<char>& operator<<(std::basic_ostream<char>& os, const AnsiString& Value)
+inline std::basic_ostream<char> & operator<<(std::basic_ostream<char> & os, const AnsiString & Value)
 {
   os << Value.c_str();
   return os;
