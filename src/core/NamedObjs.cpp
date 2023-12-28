@@ -59,21 +59,21 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
       int64_t N = 0;
       int32_t P = 0;
       // If name already contains number parenthesis remove it (and remember it)
-      UnicodeString Name = GetName();
-      if ((Name[Name.Length()] == L')') && ((P = Name.LastDelimiter(UnicodeString(1, L'('))) > 0))
+      UnicodeString AName = GetName();
+      if ((AName[AName.Length()] == L')') && ((P = AName.LastDelimiter(UnicodeString(1, L'('))) > 0))
       {
         try
         {
-          N = ::StrToInt64(Name.SubString(P + 1, Name.Length() - P - 1));
-          Name.Delete(P, Name.Length() - P + 1);
-          SetName(Name.TrimRight());
+          N = ::StrToInt64(AName.SubString(P + 1, AName.Length() - P - 1));
+          AName.Delete(P, AName.Length() - P + 1);
+          SetName(AName.TrimRight());
         }
         catch(Exception &)
         {
           N = 0;
         }
       }
-      SetName(Name + FORMAT(L" (%s)", ::Int64ToStr(N + 1)));
+      SetName(AName + FORMAT(L" (%s)", ::Int64ToStr(N + 1)));
     }
   }
 }
@@ -128,7 +128,7 @@ int32_t TNamedObjectList::Add(TObject * AObject)
     if (FAutoSort)
     {
       int32_t Pos{0};
-      TNamedObject * NamedObject2 = GetSortObject(NamedObject->GetName(), Pos);
+      const TNamedObject * NamedObject2 = GetSortObject(NamedObject->GetName(), Pos);
       if (!NamedObject2)
       {
         Result = Pos;
@@ -178,7 +178,7 @@ TNamedObject * TNamedObjectList::GetSortObject(const UnicodeString & Name, int32
   if (R < 0)
     return nullptr;
 
-  TNamedObject tn(OBJECT_CLASS_TNamedObject, Name);
+  const TNamedObject Object(OBJECT_CLASS_TNamedObject, Name);
   TNamedObject * NamedObject = nullptr;
   int32_t Cp = 0;
 
@@ -186,7 +186,7 @@ TNamedObject * TNamedObjectList::GetSortObject(const UnicodeString & Name, int32
   {
     Mid = (L + R) / 2;
     NamedObject = cast_to<TNamedObject>(Get(Mid));
-    Cp = NamedObject->Compare(&tn);
+    Cp = NamedObject->Compare(&Object);
     if (Cp == 0)
       return NamedObject;
 
@@ -204,8 +204,8 @@ TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName)
 {
   if (FAutoSort)
   {
-    int32_t outpos{0};
-    return GetSortObject(AName, outpos);
+    int32_t Outpos{0};
+    return GetSortObject(AName, Outpos);
   }
   else
   {
