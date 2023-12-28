@@ -22,12 +22,8 @@ TApplicationLog * ApplicationLog = nullptr;
 bool AnySession = false;
 
 TQueryButtonAlias::TQueryButtonAlias() noexcept :
-  Button(0),
   OnSubmit(nullptr),
-  GroupWith(-1),
-  Default(false),
-  GroupedShiftState(ssShift),
-  ElevationRequired(false)
+  GroupWith(-1)
 {
 #if defined(__BORLANDC__)
   OnSubmit = nullptr;
@@ -76,17 +72,10 @@ TQueryButtonAlias TQueryButtonAlias::CreateIgnoreAsRenameGroupedWithNo()
 }
 
 TQueryParams::TQueryParams(uint32_t AParams, const UnicodeString & AHelpKeyword) noexcept :
-  Aliases(nullptr),
-  AliasesCount(0),
   Params(AParams),
-  Timer(0),
   TimerEvent(nullptr),
   TimerMessage(L""),
-  TimerAnswers(0),
   TimerQueryType(static_cast<TQueryType>(-1)),
-  Timeout(0),
-  TimeoutAnswer(0),
-  NoBatchAnswers(0),
   HelpKeyword(AHelpKeyword)
 {
 #if defined(__BORLANDC__)
