@@ -353,12 +353,12 @@ bool TWinSCPFileSystem::Connected() const
 
 const TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin() const
 {
-  return dyn_cast<const TWinSCPPlugin>(FPlugin);
+  return cast_to<const TWinSCPPlugin>(FPlugin);
 }
 
 TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin()
 {
-  return dyn_cast<TWinSCPPlugin>(FPlugin);
+  return cast_to<TWinSCPPlugin>(FPlugin);
 }
 
 void TWinSCPFileSystem::Close()
