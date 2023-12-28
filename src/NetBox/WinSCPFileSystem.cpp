@@ -197,10 +197,11 @@ void TRemoteFilePanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
     FarPlugin->GetMsg(NB_RENAME_FILE_KEYBAR));
 }
 
-class TFarInteractiveCustomCommand : public TInteractiveCustomCommand
+class TFarInteractiveCustomCommand final : public TInteractiveCustomCommand
 {
+  TFarInteractiveCustomCommand() = delete;
 public:
-  TFarInteractiveCustomCommand(TCustomFarPlugin * Plugin,
+  explicit TFarInteractiveCustomCommand(TCustomFarPlugin * Plugin,
     TCustomCommand * ChildCustomCommand);
 
 protected:
@@ -208,14 +209,14 @@ protected:
     UnicodeString & Value) const override;
 
 private:
-  TCustomFarPlugin * FPlugin;
+  TCustomFarPlugin * FPlugin{nullptr};
 };
 
 TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
   TCustomFarPlugin * Plugin, TCustomCommand * ChildCustomCommand) :
-  TInteractiveCustomCommand(ChildCustomCommand)
+  TInteractiveCustomCommand(ChildCustomCommand),
+  FPlugin(Plugin)
 {
-  FPlugin = Plugin;
 }
 
 void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString & APrompt,
@@ -249,7 +250,7 @@ public:
 
 private:
   TWinSCPFileSystem * FFileSystem{nullptr};
-  TDateTime FInterval;
+  TDateTime FInterval{};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
 

@@ -220,7 +220,7 @@ public:
 };
 
 NB_DEFINE_CLASS_ID(ECallbackGuardAbort);
-class NB_CORE_EXPORT ECallbackGuardAbort : public EAbort
+class NB_CORE_EXPORT ECallbackGuardAbort final : public EAbort
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
@@ -244,7 +244,7 @@ public:
 };
 
 NB_DEFINE_CLASS_ID(EFCreateError);
-class NB_CORE_EXPORT EFCreateError : public EStreamError
+class NB_CORE_EXPORT EFCreateError final : public EStreamError
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFCreateError); }
@@ -257,7 +257,7 @@ public:
 };
 
 NB_DEFINE_CLASS_ID(EFOpenError);
-class NB_CORE_EXPORT EFOpenError : public EStreamError
+class NB_CORE_EXPORT EFOpenError final : public EStreamError
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EFOpenError); }

@@ -1622,7 +1622,7 @@ void TCustomFarPlugin::UpdateCurrentConsoleTitle()
   UpdateProgress(progress != 0 ? TBPS_NORMAL : TBPS_NOPROGRESS, progress);
 }
 
-void TCustomFarPlugin::SaveScreen(HANDLE &Screen)
+void TCustomFarPlugin::SaveScreen(HANDLE & Screen)
 {
   DebugAssert(!Screen);
   TFarEnvGuard Guard; nb::used(Guard);

@@ -264,7 +264,7 @@ int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
   return Result;
 }
 
-TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
+TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem;
   CoreInitializeOnce();
@@ -350,7 +350,7 @@ TCustomFarFileSystem *TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t It
     else if (OpenFrom == OPEN_ANALYSE)
     {
       const OpenAnalyseInfo * Info = reinterpret_cast<OpenAnalyseInfo *>(Item);
-      const wchar_t *XmlFileName = Info->Info->FileName;
+      const wchar_t * XmlFileName = Info->Info->FileName;
       std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
 
       ImportStorage->Init();

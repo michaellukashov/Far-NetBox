@@ -40,7 +40,7 @@ protected:
   virtual int32_t ProcessEditorInputEx(const INPUT_RECORD * Rec) override;
   bool CopyParamDialog(const UnicodeString & Caption, TCopyParamType & CopyParam,
     uint32_t CopyParamAttrs);
-  void MessageClick(void * Token, uint32_t Result, bool &Close);
+  void MessageClick(void * Token, uint32_t Result, bool & Close);
 
   void CommandsMenu(bool FromFileSystem);
   bool ConfigurationDialog();
