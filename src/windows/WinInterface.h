@@ -347,7 +347,7 @@ using TCalculatedChecksumCallbackEvent = nb::FastDelegate3<void,
   const UnicodeString & /*Hash*/>;
 using TCalculateChecksumEvent = nb::FastDelegate4<void,
   const UnicodeString & /*Alg*/, TStrings * /*FileList*/,
-  TCalculatedChecksumCallbackEvent /*OnCalculatedChecksum*/,
+  TCalculatedChecksumCallbackEvent && /*OnCalculatedChecksum*/,
   bool & /*Close*/>;
 
 bool DoPropertiesDialog(TStrings * FileList,

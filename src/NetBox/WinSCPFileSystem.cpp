@@ -908,7 +908,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
 {
   bool Handled = false;
 
-  TFarPanelInfo *const * PanelInfo = GetPanelInfo();
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
 
   if ((Key == 'W') && (ControlState & SHIFTMASK) &&
@@ -1901,7 +1901,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString & Token, bo
 
 void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 {
-  TFarPanelInfo *const * PanelInfo = GetPanelInfo();
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
 
   if (Focused != nullptr)
@@ -1926,7 +1926,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 
 void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 {
-  TFarPanelInfo *const * PanelInfo = GetPanelInfo();
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
 
   if (Focused != nullptr)
@@ -4025,7 +4025,7 @@ void TWinSCPFileSystem::EditViewCopyParam(TCopyParamType & CopyParam)
 
 void TWinSCPFileSystem::MultipleEdit()
 {
-  TFarPanelInfo *const * PanelInfo = GetPanelInfo();
+  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
   if ((Focused != nullptr) && Focused->GetIsFile() &&
     (Focused->GetUserData() != nullptr))
