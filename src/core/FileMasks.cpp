@@ -1253,12 +1253,12 @@ void TCustomCommandData::Init(
   FSessionData->HostKey = AHostKey;
 }
 
-TCustomCommandData & TCustomCommandData::operator=(const TCustomCommandData & Data)
+TCustomCommandData & TCustomCommandData::operator =(const TCustomCommandData & Data)
 {
   if (this == &Data)
     return *this;
   DebugAssert(Data.SessionData != nullptr);
-  FSessionData.reset(new TSessionData(L""));
+  FSessionData = std::make_unique<TSessionData>(L"");
   FSessionData->Assign(Data.SessionData);
   return *this;
 }

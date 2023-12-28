@@ -220,7 +220,7 @@ public:
   ROProperty<TSessionData *> SessionData{nb::bind(&TCustomCommandData::GetSessionData, this)};
   TSessionData * GetSessionData() const { return GetSessionDataPrivate(); }
 
-  TCustomCommandData &operator=(const TCustomCommandData & Data);
+  TCustomCommandData & operator =(const TCustomCommandData & Data);
 
 private:
   std::unique_ptr<TSessionData> FSessionData;
