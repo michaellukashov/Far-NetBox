@@ -1884,7 +1884,7 @@ void TCustomFarPlugin::RunTests()
 
 uint32_t TCustomFarFileSystem::FInstances = 0;
 
-TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin) noexcept :
+TCustomFarFileSystem::TCustomFarFileSystem(TObjectClassId Kind, gsl::not_null<TCustomFarPlugin *> APlugin) noexcept :
   TObject(Kind),
   FPlugin(APlugin)
 {

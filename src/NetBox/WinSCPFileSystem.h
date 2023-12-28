@@ -89,7 +89,7 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWinSCPFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWinSCPFileSystem) || TCustomFarFileSystem::is(Kind); }
 public:
-  explicit TWinSCPFileSystem(TCustomFarPlugin * APlugin) noexcept;
+  explicit TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept;
   virtual ~TWinSCPFileSystem() noexcept override;
   void Init(TSecureShell * SecureShell);
 

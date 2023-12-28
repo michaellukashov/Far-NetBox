@@ -289,7 +289,7 @@ void TKeepAliveThread::Execute()
   SAFE_CLOSE_HANDLE(FEvent);
 }
 
-TWinSCPFileSystem::TWinSCPFileSystem(TCustomFarPlugin * APlugin) noexcept :
+TWinSCPFileSystem::TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept :
   TCustomFarFileSystem(OBJECT_CLASS_TWinSCPFileSystem, APlugin),
   FPathHistory(std::make_unique<TStringList>())
 {

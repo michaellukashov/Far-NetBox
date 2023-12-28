@@ -283,7 +283,7 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarFileSystem) || TObject::is(Kind); }
 public:
-  explicit TCustomFarFileSystem(TObjectClassId Kind, TCustomFarPlugin * APlugin) noexcept;
+  explicit TCustomFarFileSystem(TObjectClassId Kind, gsl::not_null<TCustomFarPlugin *> APlugin) noexcept;
   virtual ~TCustomFarFileSystem() noexcept override;
   void Init();
 
@@ -304,7 +304,7 @@ protected:
   virtual UnicodeString GetCurrentDirectory() const = 0;
 
 protected:
-  TCustomFarPlugin * FPlugin{nullptr};
+  gsl::not_null<TCustomFarPlugin *> FPlugin;
   bool FClosed{false};
 
   virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
