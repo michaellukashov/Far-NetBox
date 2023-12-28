@@ -53,8 +53,7 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
 }
 
 TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
-  TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst),
-  FInitialized(false)
+  TCustomFarPlugin(OBJECT_CLASS_TWinSCPPlugin, HInst)
 {
 #ifndef NDEBUG
   // setup debug handlers
