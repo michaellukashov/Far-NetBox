@@ -134,7 +134,7 @@ protected:
   void FocusSession(const TSessionData * Data);
   void DeleteSession(TSessionData * Data, void * AParam);
   void ProcessSessions(TObjectList * PanelItems,
-    TProcessSessionEvent ProcessSession, void * AParam);
+    TProcessSessionEvent && ProcessSession, void * AParam);
   void ExportSession(TSessionData * Data, void * AParam);
   bool ImportSessions(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
   void FileProperties();

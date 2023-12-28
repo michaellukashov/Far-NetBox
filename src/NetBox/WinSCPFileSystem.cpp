@@ -2396,7 +2396,7 @@ void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*AParam*/)
 }
 
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
-  TProcessSessionEvent ProcessSession, void * AParam)
+  TProcessSessionEvent && ProcessSession, void * AParam)
 {
   for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
   {
