@@ -330,7 +330,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       bool DefaultsOnly = false;
       std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
       ParseCommandLine(CommandLine, Options.get());
-      const int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
+      constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
       std::unique_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
       if (DefaultsOnly)
       {
