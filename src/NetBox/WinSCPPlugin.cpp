@@ -704,7 +704,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     uint32_t TimeoutButton = 0;
 
 #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
-    if (AAnswers & qa ## TYPE) \
+    do { if (AAnswers & qa ## TYPE) \
     { \
       ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
       Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
@@ -715,12 +715,12 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
       { \
         TimeoutButton = ButtonLabels->GetCount() - 1; \
       } \
-      if (NeverAskAgainPending && CANNEVERASK) \
+      if (NeverAskAgainPending && (CANNEVERASK)) \
       { \
         ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, ToObj(true)); \
         NeverAskAgainPending = false; \
       } \
-    }
+    } } while (0)
 #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
 #pragma warning(push)
 #pragma warning(disable: 4127)
