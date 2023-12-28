@@ -1728,7 +1728,7 @@ bool CheckWin32Version(int32_t Major, int32_t Minor)
   return (GetGlobals()->Win32MajorVersion >= Major) && (GetGlobals()->Win32MinorVersion >= Minor);
 }
 
-TFormatSettings::TFormatSettings(LCID /*LCID*/) noexcept
+TFormatSettings::TFormatSettings(LCID id) noexcept : id(id)
 {
 }
 

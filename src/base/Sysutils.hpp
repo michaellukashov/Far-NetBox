@@ -180,8 +180,8 @@ struct NB_CORE_EXPORT TFormatSettings : public TObject
 {
 public:
   TFormatSettings() = delete;
-  explicit TFormatSettings(LCID /*LCID*/) noexcept;
-  static TFormatSettings Create(LCID LCID) { return TFormatSettings(LCID); }
+  explicit TFormatSettings(LCID id) noexcept;
+  static TFormatSettings Create(LCID id) { return TFormatSettings(id); }
   uint8_t CurrencyFormat{0};
   uint8_t NegCurrFormat{0};
   wchar_t ThousandSeparator{};
@@ -202,6 +202,7 @@ public:
   UnicodeString ShortDayNames[7]{"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
   UnicodeString LongDayNames[7]{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
   uint16_t TwoDigitYearCenturyWindow{50};
+  LCID id{0};
 };
 
 NB_CORE_EXPORT UnicodeString ExtractShortPathName(const UnicodeString & APath);
