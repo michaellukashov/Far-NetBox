@@ -169,7 +169,7 @@ extern void Randomize();
 
 NB_CORE_EXPORT void RaiseLastOSError(DWORD LastError = 0);
 //NB_CORE_EXPORT void ShowExtendedException(Exception * E);
-NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages);
+NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
 namespace Sysutils {
 //  TFormatSettings = record
