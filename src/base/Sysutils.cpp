@@ -1812,7 +1812,7 @@ UnicodeString ReadAllText(const UnicodeString & FileName)
   DWORD LastError = ERROR_SUCCESS;
 
   HANDLE FileHandle{INVALID_HANDLE_VALUE};
-  FileHandle = ::CreateFile(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  FileHandle = ::CreateFileW(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
   if (FileHandle == INVALID_HANDLE_VALUE)
   {
     LastError = ::GetLastError();
@@ -2070,6 +2070,7 @@ FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
   FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
   if (Result != nullptr)
   {
+    constexpr size_t BUFSIZE = 4 * 1024;
     setvbuf(Result, nullptr, _IONBF, BUFSIZ);
   }
   return Result;

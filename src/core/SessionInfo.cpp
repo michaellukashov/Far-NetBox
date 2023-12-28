@@ -794,7 +794,8 @@ static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, const TDateTim
   FILE * Result = _wfsopen(ApiPath(NewFileName).c_str(), Append ? L"ab" : L"wb", SH_DENYWR);
   if (Result != nullptr)
   {
-    setvbuf(Result, nullptr, _IONBF, BUFSIZ);
+    constexpr size_t BUFSIZE = 4 * 1024;
+    setvbuf(Result, nullptr, _IONBF, BUFSIZE);
     ANewFileName = NewFileName;
   }
   else
