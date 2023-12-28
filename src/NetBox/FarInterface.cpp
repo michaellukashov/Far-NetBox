@@ -44,7 +44,7 @@ void Busy(bool /*Start*/)
 UnicodeString GetSshVersionString()
 {
   UnicodeString Result = UnicodeString("NetBox-Far");
-  UnicodeString ProductVersion = GetConfiguration()->GetProductVersion();
+  const UnicodeString ProductVersion = GetConfiguration()->GetProductVersion();
   if (!ProductVersion.IsEmpty())
     Result += FORMAT("-%s", ProductVersion);
   return Result;
@@ -61,10 +61,10 @@ HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
   DWORD & ThreadId)
 {
   const HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
-      nb::ToSizeT(StackSize),
-      static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
-      Parameter,
-      CreationFlags, &ThreadId);
+    nb::ToSizeT(StackSize),
+    static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
+    Parameter,
+    CreationFlags, &ThreadId);
   return Result;
 }
 
@@ -78,7 +78,7 @@ HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
   TThreadID & ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, Parameter,
-      CreationFlags, ThreadId);
+    CreationFlags, ThreadId);
 }
 
 void CopyToClipboard(const UnicodeString & AText)
