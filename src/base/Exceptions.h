@@ -42,9 +42,9 @@ public:
   TStrings * GetMoreMessages() const { return FMoreMessages; }
   UnicodeString GetHelpKeyword() const { return FHelpKeyword; }
 
-  explicit ExtException(const UnicodeString & Msg) : Exception(OBJECT_CLASS_ExtException, Msg) {}
-  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg) : Exception(Kind, Msg) {}
-  explicit ExtException(TObjectClassId Kind, int32_t Ident) : Exception(Kind, Ident) {}
+  explicit ExtException(const UnicodeString & Msg) : ExtException(OBJECT_CLASS_ExtException, Msg, nullptr) {}
+  explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg) : ExtException(Kind, Msg, nullptr) {}
+  explicit ExtException(TObjectClassId Kind, int32_t Ident) : ExtException(Kind, nullptr, Ident) {}
   explicit ExtException(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) : Exception(Kind, Msg, AHelpContext) {}
 
   ExtException(const ExtException & E) : Exception(OBJECT_CLASS_ExtException, L""), FHelpKeyword(E.FHelpKeyword)
@@ -54,9 +54,12 @@ public:
 
   ExtException & operator =(const ExtException & rhs)
   {
-    FHelpKeyword = rhs.FHelpKeyword;
-    Message = rhs.Message;
-    AddMoreMessages(&rhs);
+    if (this != &rhs)
+    {
+      FHelpKeyword = rhs.FHelpKeyword;
+      Message = rhs.Message;
+      AddMoreMessages(&rhs);
+    }
     return *this;
   }
 
@@ -78,27 +81,27 @@ private:
     static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_##NAME); } \
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
-    explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
+    explicit NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
       BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
     { \
     } \
-    explicit inline NAME(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
-      BASE(Kind, E, Msg, HelpKeyword) \
-    { \
-    } \
-    inline NAME(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString()) : \
+    explicit NAME(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString()) : \
       BASE(Kind, Msg, MoreMessages, HelpKeyword) \
     { \
     } \
-    virtual inline ~NAME(void) override \
+    explicit NAME(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
+      BASE(Kind, E, Msg, HelpKeyword) \
     { \
     } \
-    explicit inline NAME(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) : \
+    explicit NAME(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) : \
       BASE(Kind, Msg, AHelpContext) \
     { \
     } \
-    explicit inline NAME(const UnicodeString & Msg, int32_t AHelpContext) : \
+    explicit NAME(const UnicodeString & Msg, int32_t AHelpContext) : \
       BASE(OBJECT_CLASS_##NAME, Msg, AHelpContext) \
+    { \
+    } \
+    virtual ~NAME(void) override \
     { \
     } \
     virtual ExtException * Clone() const override \
