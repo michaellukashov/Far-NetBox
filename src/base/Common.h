@@ -370,7 +370,7 @@ UnicodeString AssemblyAddRawSettings(
 #endif // if 0
 
 #pragma warning(push)
-#pragma warning(disable: 4512) // assignment operator could not be generated
+// #pragma warning(disable: 4512) // assignment operator could not be generated
 
 // #include "Global.h"
 
@@ -413,10 +413,11 @@ protected:
 
 class TAutoNestingCounter : public TValueRestorer<int32_t>
 {
+  using parent = TValueRestorer<int32_t>;
   TAutoNestingCounter() = delete;
 public:
   inline explicit TAutoNestingCounter(int32_t & Target) :
-    TValueRestorer<int32_t>(Target)
+    parent(Target)
   {
     DebugAssert(Target >= 0);
     ++Target;
@@ -430,10 +431,11 @@ public:
 
 class TAutoFlag : public TValueRestorer<bool>
 {
+  using parent = TValueRestorer<bool>;
   TAutoFlag() = default;
 public:
   explicit TAutoFlag(bool & Target) :
-    TValueRestorer<bool>(Target)
+    parent(Target)
   {
     DebugAssert(!Target);
     Target = true;
@@ -444,6 +446,7 @@ public:
     DebugAssert(!FArmed || FTarget);
   }
 };
+
 #pragma warning(pop)
 
 // #include <map>
@@ -463,7 +466,7 @@ public:
 
   T1 LookupFirst(const T2 & Value2) const
   {
-    typename TSecondToFirst::const_iterator Iterator = FSecondToFirst.find(Value2);
+    const typename TSecondToFirst::const_iterator Iterator = FSecondToFirst.find(Value2);
     DebugAssert(Iterator != FSecondToFirst.end());
     return Iterator->second;
   }
