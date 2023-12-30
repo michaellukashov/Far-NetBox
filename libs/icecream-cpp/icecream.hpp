@@ -932,7 +932,7 @@ namespace icecream{ namespace detail
         Tree(Tree const&) = delete;
         Tree& operator=(Tree const&) = delete;
 
-        Tree(Tree&& other)
+        Tree(Tree&& other) noexcept
             : is_leaf_ {other.is_leaf_}
             , content_ {std::move(other.content_), other.is_leaf_}
         {}
