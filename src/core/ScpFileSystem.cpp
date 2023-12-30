@@ -2753,14 +2753,14 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
               {
                 if (base::FileExists(ApiPath(DestFileName)))
                 {
-                  int64_t MTime = 0;
+                  int64_t TimeStamp = 0;
                   TOverwriteFileParams FileParams;
                   FileParams.SourceSize = OperationProgress->GetTransferSize();
                   FileParams.SourceTimestamp = FileData.Modification;
                   FTerminal->TerminalOpenLocalFile(DestFileName, GENERIC_READ,
-                    nullptr, nullptr, nullptr, &MTime, nullptr,
+                    nullptr, nullptr, nullptr, &TimeStamp, nullptr,
                     &FileParams.DestSize);
-                  FileParams.DestTimestamp = ::UnixToDateTime(MTime,
+                  FileParams.DestTimestamp = ::UnixToDateTime(TimeStamp,
                     FTerminal->GetSessionData()->GetDSTMode());
 
                   const uint32_t Answer =
