@@ -1226,7 +1226,7 @@ private:
 
 #pragma warning(pop)
 
-inline void ThrowSkipFile(Exception * Exception, const UnicodeString & Message)
+inline void ThrowSkipFile(const Exception * Exception, const UnicodeString & Message)
 {
   throw ESkipFile(Exception, Message);
 }
