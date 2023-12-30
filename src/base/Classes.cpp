@@ -288,7 +288,7 @@ UnicodeString TStrings::GetTextStr() const
   wchar_t * P = Buffer;
   for (int32_t Index = 0; Index < Count; ++Index)
   {
-    UnicodeString S = GetString(Index);
+    const UnicodeString S = GetString(Index);
     int32_t L = S.Length() * sizeof(wchar_t);
     if (L != 0)
     {
