@@ -5499,10 +5499,6 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   bool ToRemote, bool Move, const TStrings * AFileList,
   uint32_t Options, uint32_t CopyParamAttrs) noexcept :
   TFarDialog(AFarPlugin),
-  DirectoryEdit(nullptr),
-  NewerOnlyCheck(nullptr),
-  QueueCheck(nullptr),
-  QueueNoConfirmationCheck(nullptr),
   FFileList(AFileList),
   FOptions(Options),
   FCopyParamAttrs(CopyParamAttrs),
@@ -5915,7 +5911,7 @@ public:
     const TFileSystemInfo & FileSystemInfo, const UnicodeString & SpaceAvailablePath);
 
 protected:
-  void Feed(TFeedFileSystemDataEvent AddItem);
+  void Feed(TFeedFileSystemDataEvent && AddItem);
   UnicodeString CapabilityStr(TFSCapability Capability);
   UnicodeString CapabilityStr(TFSCapability Capability1,
     TFSCapability Capability2);
@@ -5966,8 +5962,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLabelList) || TList::is(Kind); }
 public:
   explicit TLabelList() noexcept :
-    TList(OBJECT_CLASS_TLabelList),
-    MaxLen(0)
+    TList(OBJECT_CLASS_TLabelList)
   {
   }
 
@@ -5975,11 +5970,8 @@ public:
 };
 
 TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
-  TGetSpaceAvailableEvent && OnGetSpaceAvailable) noexcept : TTabbedDialog(AFarPlugin, tabCount),
-  FSpaceAvailableLoaded(false),
-  FLastFeededControl(nullptr),
-  FLastListItem(0),
-  InfoLabel(nullptr)
+  TGetSpaceAvailableEvent && OnGetSpaceAvailable) noexcept :
+  TTabbedDialog(AFarPlugin, tabCount)
 {
   FOnGetSpaceAvailable = OnGetSpaceAvailable;
 
@@ -6131,7 +6123,7 @@ UnicodeString TFileSystemInfoDialog::SpaceStr(int64_t Bytes) const
   return Result;
 }
 
-void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent AddItem)
+void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent && AddItem)
 {
   AddItem(ServerLabels, NB_SERVER_REMOTE_SYSTEM, FFileSystemInfo.RemoteSystem);
   AddItem(ServerLabels, NB_SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
