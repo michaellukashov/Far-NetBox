@@ -164,7 +164,7 @@ void TFileOperationProgressType::ClearTransfer()
   if ((FTransferSize > 0) && (FTransferredSize < FTransferSize))
   {
     TGuard Guard(*FSection); nb::used(Guard);
-    int64_t RemainingSize = (FTransferSize - FTransferredSize);
+    const int64_t RemainingSize = (FTransferSize - FTransferredSize);
     AddSkipped(RemainingSize);
   }
   FLocalSize = 0;
@@ -258,7 +258,7 @@ void TFileOperationProgressType::Resume()
 
     // shift timestamps for CPS calculation in advance
     // by the time the progress was suspended
-    int32_t Stopped = nb::ToInt32(::GetTickCount() - FSuspendTime);
+    const int32_t Stopped = nb::ToInt32(::GetTickCount() - FSuspendTime);
     size_t Index = 0;
     while (Index < FPersistence.Ticks.size())
     {
@@ -462,7 +462,7 @@ uint64_t TFileOperationProgressType::AdjustToCPSLimit(
     // we wait until the next second
     do
     {
-      uint32_t Second = (::GetTickCount() / MSecsPerSec);
+      const uint32_t Second = (::GetTickCount() / MSecsPerSec);
 
       if (Second != FLastSecond)
       {
