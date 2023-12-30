@@ -45,7 +45,8 @@ public:
           FDialog->Idle();
       }
     }
-    SAFE_CLOSE_HANDLE(FEvent);
+    if (!IsFinished())
+      SAFE_CLOSE_HANDLE(FEvent);
   }
 
   virtual void Terminate() override
