@@ -33,21 +33,21 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
 {
   UnicodeString Result;
   int32_t RestStart = 1;
-  bool Delim = false;
+  bool Delimiter = false;
   for (int32_t Index = 1; Index <= Mask.Length(); ++Index)
   {
     switch (Mask[Index])
     {
       case Backslash:
-        if (!Delim)
+        if (!Delimiter)
         {
-          Delim = true;
+          Delimiter = true;
           Masked = false;
           break;
         }
 
       case L'*':
-        if (!Delim)
+        if (!Delimiter)
         {
           Result += Part.SubString(RestStart, Part.Length() - RestStart + 1);
           RestStart = Part.Length() + 1;
@@ -56,7 +56,7 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
         }
 
       case L'?':
-        if (!Delim)
+        if (!Delimiter)
         {
           if (RestStart <= Part.Length())
           {
@@ -70,7 +70,7 @@ static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeStrin
       default:
         Result += Mask[Index];
         RestStart++;
-        Delim = false;
+        Delimiter = false;
         break;
     }
   }
@@ -254,24 +254,24 @@ UnicodeString TFileMasks::ComposeMaskStr(
 
 TFileMasks::TFileMasks() noexcept
 {
-  Init();
+  TFileMasks::Init();
 }
 
 TFileMasks::TFileMasks(int32_t ForceDirectoryMasks) noexcept
 {
-  Init();
+  TFileMasks::Init();
   FForceDirectoryMasks = ForceDirectoryMasks;
 }
 
 TFileMasks::TFileMasks(const TFileMasks & Source) noexcept
 {
-  Init();
+  TFileMasks::Init();
   DoCopy(Source);
 }
 
 TFileMasks::TFileMasks(const UnicodeString & AMasks) noexcept
 {
-  Init();
+  TFileMasks::Init();
   SetStr(AMasks, false);
 }
 
@@ -282,6 +282,8 @@ TFileMasks::~TFileMasks() noexcept
 
 void TFileMasks::DoCopy(const TFileMasks & Source)
 {
+  if (this == &Source)
+    return;
   FForceDirectoryMasks = Source.FForceDirectoryMasks;
   FNoImplicitMatchWithDirExcludeMask = Source.FNoImplicitMatchWithDirExcludeMask;
   FAllDirsAreImplicitlyIncluded = Source.FAllDirsAreImplicitlyIncluded;
@@ -1216,6 +1218,11 @@ TCustomCommandData::TCustomCommandData() noexcept
   Init(nullptr);
 }
 
+TCustomCommandData::TCustomCommandData(const TCustomCommandData & Data) noexcept
+{
+  Init(Data.FSessionData.get());
+}
+
 TCustomCommandData::TCustomCommandData(TTerminal * Terminal) noexcept
 {
   // Should use FillSessionDataForCode as in TCustomScpExplorerForm::SessionDataForCode
@@ -1274,21 +1281,19 @@ TFileCustomCommand::TFileCustomCommand() noexcept
 }
 
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & AData,
-  const UnicodeString & APath) noexcept
+  const UnicodeString & APath) noexcept : TFileCustomCommand(AData, APath, EmptyStr, EmptyStr)
 {
-  FData = AData;
-  FPath = APath;
 }
 
 TFileCustomCommand::TFileCustomCommand(const TCustomCommandData & Data,
   const UnicodeString & Path, const UnicodeString & FileName,
   const UnicodeString & FileList) noexcept :
-  TCustomCommand()
+  TCustomCommand(),
+  FData(Data),
+  FPath(Path),
+  FFileName(FileName),
+  FFileList(FileList)
 {
-  FData = Data;
-  FPath = Path;
-  FFileName = FileName;
-  FFileList = FileList;
 }
 
 int32_t TFileCustomCommand::PatternLen(const UnicodeString & Command, int32_t Index) const

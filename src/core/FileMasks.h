@@ -43,7 +43,7 @@ public:
   explicit TFileMasks(int32_t ForceDirectoryMasks) noexcept;
   TFileMasks(const TFileMasks & Source) noexcept;
   explicit TFileMasks(const UnicodeString & AMasks) noexcept;
-  virtual ~TFileMasks() noexcept;
+  virtual ~TFileMasks() noexcept override;
   TFileMasks & operator =(const TFileMasks & rhm);
   TFileMasks & operator =(const UnicodeString & rhs);
   bool operator ==(const TFileMasks & rhm) const;
@@ -72,7 +72,7 @@ public:
   __property TStrings * ExcludeDirectoryMasksStr = { read = GetMasksStr, index = MASK_INDEX(true, false) };
 
 private:
-  int32_t FForceDirectoryMasks{0};
+  int32_t FForceDirectoryMasks{-1};
   UnicodeString FStr;
   bool FNoImplicitMatchWithDirExcludeMask{false};
   bool FAllDirsAreImplicitlyIncluded{false};
@@ -209,7 +209,7 @@ struct NB_CORE_EXPORT TCustomCommandData final : public TObject
 {
 public:
   TCustomCommandData() noexcept;
-  // explicit TCustomCommandData(const TCustomCommandData & Data) noexcept;
+  explicit TCustomCommandData(const TCustomCommandData & Data) noexcept;
   explicit TCustomCommandData(TTerminal * Terminal) noexcept;
   explicit TCustomCommandData(TSessionData * SessionData);
   explicit TCustomCommandData(
