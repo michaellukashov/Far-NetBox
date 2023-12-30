@@ -139,7 +139,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
       &PluginConfig, &CommandPrefixes);
 
 #define COMPOSESTRINGARRAY(NAME) \
-        if (NAME.GetCount()) \
+        do { if (NAME.GetCount()) \
         { \
           wchar_t ** StringArray = nb::calloc<wchar_t **>(1 + NAME.GetCount(), sizeof(wchar_t *)); \
           GUID * Guids = static_cast<GUID *>(nb_malloc(sizeof(GUID) * NAME.GetCount())); \
@@ -151,7 +151,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
             StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
             Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObj(Index)); \
           } \
-        }
+        } } while(0)
 
     COMPOSESTRINGARRAY(DiskMenu);
     COMPOSESTRINGARRAY(PluginMenu);
@@ -204,13 +204,13 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
   if (Info.StructSize)
   {
 #define FREESTRINGARRAY(NAME) \
-      for (size_t Index = 0; Index < Info.NAME.Count; ++Index) \
+      do { for (size_t Index = 0; Index < Info.NAME.Count; ++Index) \
       { \
         nb_free(Info.NAME.Strings[Index]); \
       } \
       nb_free(Info.NAME.Strings); \
       nb_free(Info.NAME.Guids); \
-      Info.NAME.Strings = nullptr;
+      Info.NAME.Strings = nullptr; } while(0)
 
       FREESTRINGARRAY(DiskMenu);
       FREESTRINGARRAY(PluginMenu);
