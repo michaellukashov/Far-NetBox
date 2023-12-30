@@ -1717,7 +1717,7 @@ int64_t TCustomFarPlugin::GetSystemSetting(HANDLE & Settings, const wchar_t * Na
   FarSettingsItem Item = {sizeof(FarSettingsItem), FSSF_SYSTEM, Name, FST_UNKNOWN, {0} };
   if (FStartupInfo.SettingsControl(Settings, SCTL_GET, 0, &Item) && FST_QWORD == Item.Type)
   {
-    return Item.Number;
+    return nb::ToInt64(Item.Number);
   }
   return 0;
 }
@@ -1727,8 +1727,8 @@ intptr_t TCustomFarPlugin::GetFarSystemSettings() const
   if (!FValidFarSystemSettings)
   {
     FFarSystemSettings = 0;
-    FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
-    HANDLE Settings = FStartupInfo.SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
+    FarSettingsCreate FarSettings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
+    HANDLE Settings = FStartupInfo.SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &Settings) ? FarSettings.Handle : nullptr;
     if (Settings)
     {
       if (GetSystemSetting(Settings, L"DeleteToRecycleBin"))
