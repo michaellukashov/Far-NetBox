@@ -61,7 +61,7 @@ extern const TCommandType DefaultCommandSet[];
 
 class TSessionData;
 
-class TCommandSet : public TObject
+class TCommandSet final : public TObject
 {
   NB_DISABLE_COPY(TCommandSet)
 private:
