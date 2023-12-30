@@ -2049,7 +2049,7 @@ struct TLibS3MultipartCommitPutObjectDataCallbackData : TLibS3CallbackData
 S3Status TS3FileSystem::LibS3MultipartResponsePropertiesCallback(
   const S3ResponseProperties * Properties, void * CallbackData)
 {
-  S3Status Result = LibS3ResponsePropertiesCallback(Properties, CallbackData);
+  const S3Status Result = LibS3ResponsePropertiesCallback(Properties, CallbackData);
 
   TLibS3PutObjectDataCallbackData & Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
@@ -2139,8 +2139,8 @@ void TS3FileSystem::Source(
       0
     };
 
-  int32_t Parts = std::min(S3MaxMultiPartChunks, std::max(1, nb::ToInt32((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
-  int32_t ChunkSize = std::max(S3MinMultiPartChunkSize, nb::ToInt32((AHandle.Size + Parts - 1) / Parts));
+  const int32_t Parts = std::min(S3MaxMultiPartChunks, std::max(1, nb::ToInt32((AHandle.Size + S3MinMultiPartChunkSize - 1) / S3MinMultiPartChunkSize)));
+  const int32_t ChunkSize = std::max(S3MinMultiPartChunkSize, nb::ToInt32((AHandle.Size + Parts - 1) / Parts));
   DebugAssert((ChunkSize == S3MinMultiPartChunkSize) || (AHandle.Size > nb::ToInt64(S3MaxMultiPartChunks) * S3MinMultiPartChunkSize));
 
   bool Multipart = (Parts > 1);
@@ -2203,9 +2203,9 @@ void TS3FileSystem::Source(
         {
           S3PutObjectHandler UploadPartHandler =
             { CreateResponseHandlerCustom(LibS3MultipartResponsePropertiesCallback), LibS3PutObjectDataCallback };
-          int64_t Remaining = Stream->Size() - Stream->Position();
-          int32_t RemainingInt = nb::ToInt32(std::min(nb::ToInt64(std::numeric_limits<int32_t>::max()), Remaining));
-          int32_t PartLength = std::min(ChunkSize, RemainingInt);
+          const int64_t Remaining = Stream->Size() - Stream->Position();
+          const int32_t RemainingInt = nb::ToInt32(std::min(nb::ToInt64(std::numeric_limits<int32_t>::max()), Remaining));
+          const int32_t PartLength = std::min(ChunkSize, RemainingInt);
           FTerminal->LogEvent(FORMAT("Uploading part %d [%s]", Part, IntToStr(PartLength)));
           S3_upload_part(
             &BucketContext, StrToS3(Key), &PutProperties, &UploadPartHandler, nb::ToInt32(Part), MultipartUploadId.c_str(),
@@ -2213,7 +2213,7 @@ void TS3FileSystem::Source(
         }
         else
         {
-          S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), LibS3PutObjectDataCallback };
+          const S3PutObjectHandler PutObjectHandler = { CreateResponseHandler(), LibS3PutObjectDataCallback };
           S3_put_object(&BucketContext, StrToS3(Key), nb::ToUInt64(AHandle.Size), &PutProperties, FRequestContext, FTimeout, &PutObjectHandler, &Data);
         }
 
@@ -2227,7 +2227,7 @@ void TS3FileSystem::Source(
 
         if (Multipart)
         {
-          RawByteString PartCommitTag =
+          const RawByteString PartCommitTag =
             FORMAT("  <Part><PartNumber>%d</PartNumber><ETag>%s</ETag></Part>\n", Part, Data.ETag.c_str());
           MultipartCommitPutObjectDataCallbackData.Message += PartCommitTag;
         }
@@ -2356,7 +2356,7 @@ void TS3FileSystem::Sink(
   const TCopyParamType * CopyParam, int32_t Params, TFileOperationProgressType * AOperationProgress,
   uint32_t /*AFlags*/, TDownloadSessionAction & Action)
 {
-  UnicodeString DestFullName = ATargetDir + ADestFileName;
+  const UnicodeString DestFullName = ATargetDir + ADestFileName;
   if (base::FileExists(ApiPath(DestFullName)))
   {
     int64_t Size;
@@ -2375,9 +2375,9 @@ void TS3FileSystem::Sink(
   UnicodeString BucketName, Key;
   ParsePath(AFileName, BucketName, Key);
 
-  TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
+  const TLibS3BucketContext BucketContext = GetBucketContext(BucketName, Key);
 
-  UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
+  const UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
   FILE_OPERATION_LOOP_BEGIN(FTerminal, AOperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AFileName), "")
@@ -2404,8 +2404,8 @@ void TS3FileSystem::Sink(
         Data.OperationProgress = AOperationProgress;
         Data.Exception.reset(nullptr);
 
-        TAutoFlag ResponseIgnoreSwitch(FResponseIgnore); nb::used(ResponseIgnoreSwitch);
-        S3GetObjectHandler GetObjectHandler = { CreateResponseHandler(), LibS3GetObjectDataCallback };
+        const TAutoFlag ResponseIgnoreSwitch(FResponseIgnore); nb::used(ResponseIgnoreSwitch);
+        const S3GetObjectHandler GetObjectHandler = { CreateResponseHandler(), LibS3GetObjectDataCallback };
         S3_get_object(
           &BucketContext, StrToS3(Key), nullptr, nb::ToUInt64(Stream->Position()), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);
 
