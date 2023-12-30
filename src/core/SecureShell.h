@@ -145,14 +145,14 @@ protected:
 public:
   explicit TSecureShell(TSessionUI * UI, TSessionData * SessionData,
     TSessionLog * Log, TConfiguration * Configuration) noexcept;
-  virtual ~TSecureShell() noexcept;
+  virtual ~TSecureShell() noexcept override;
   void Open();
   void Close();
   void KeepAlive();
-  int32_t Receive(uint8_t * Buf, int32_t Length);
-  bool Peek(uint8_t *& Buf, int32_t Length) const;
+  int32_t Receive(uint8_t * Buf, size_t Length);
+  bool Peek(uint8_t *& Buf, size_t Length) const;
   UnicodeString ReceiveLine();
-  void Send(const uint8_t * Buf, int32_t Length);
+  void Send(const uint8_t * Buf, size_t Length);
   void SendSpecial(int32_t Code);
   void Idle(uint32_t MSec = 0);
   void SendLine(const UnicodeString & Line);

@@ -1142,7 +1142,7 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
   }
 }
 
-bool TSecureShell::Peek(uint8_t *& Buf, int32_t Len) const
+bool TSecureShell::Peek(uint8_t *& Buf, size_t Len) const
 {
   const bool Result = (PendLen >= Len);
 
@@ -1154,7 +1154,7 @@ bool TSecureShell::Peek(uint8_t *& Buf, int32_t Len) const
   return Result;
 }
 
-int32_t TSecureShell::Receive(uint8_t * Buf, int32_t Len)
+int32_t TSecureShell::Receive(uint8_t * Buf, size_t Len)
 {
   CheckConnection();
 
@@ -1238,7 +1238,7 @@ UnicodeString TSecureShell::ReceiveLine()
       EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
       const int32_t PrevLen = Line.Length();
       char * Buf = Line.SetLength(PrevLen + Index);
-      Receive(nb::ToUInt8Ptr(Buf + PrevLen), Index);
+      Receive(nb::ToUInt8Ptr(Buf + PrevLen), nb::ToSizeT(Index));
     }
 
     // If buffer don't contain end-of-line character
@@ -1396,11 +1396,11 @@ void TSecureShell::DispatchSendBuffer(int32_t BufSize)
   while (BufSize > MAX_BUFSIZE);
 }
 
-void TSecureShell::Send(const uint8_t * Buf, int32_t Length)
+void TSecureShell::Send(const uint8_t * Buf, size_t Length)
 {
   CheckConnection();
-  backend_send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), nb::ToInt32(Length));
-  const int32_t BufSize = nb::ToInt32(backend_sendbuffer(FBackendHandle));
+  backend_send(FBackendHandle, const_cast<char *>(reinterpret_cast<const char *>(Buf)), Length);
+  const size_t BufSize = backend_sendbuffer(FBackendHandle);
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT("Sent %d bytes", nb::ToInt32(Length)));

@@ -2135,11 +2135,11 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
             while (!OperationProgress->IsTransferDoneChecked())
             {
-              uint32_t BlockSize = nb::ToUInt32(OperationProgress->TransferBlockSize());
+              size_t BlockSize = nb::ToSizeT(OperationProgress->TransferBlockSize());
               FSecureShell->Send(
                 reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + nb::ToIntPtr(OperationProgress->GetTransferredSize())),
                 BlockSize);
-              OperationProgress->AddTransferred(BlockSize);
+              OperationProgress->AddTransferred(nb::ToInt64(BlockSize));
               if (OperationProgress->GetCancel() == csCancelTransfer)
               {
                 throw Exception(MainInstructions(LoadStr(USER_TERMINATED)));
@@ -2823,7 +2823,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
                   BlockBuf.SetSize(OperationProgress->TransferBlockSize());
                   BlockBuf.Reset();
 
-                  FSecureShell->Receive(reinterpret_cast<uint8_t *>(BlockBuf.GetData()), nb::ToInt32(BlockBuf.GetSize()));
+                  FSecureShell->Receive(nb::ToUInt8Ptr(BlockBuf.GetData()), nb::ToSizeT(BlockBuf.GetSize()));
                   OperationProgress->AddTransferred(BlockBuf.GetSize());
 
                   if (OperationProgress->GetAsciiTransfer())

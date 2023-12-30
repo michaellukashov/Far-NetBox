@@ -2729,7 +2729,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         FSecureShell->Receive(LenBuf, sizeof(LenBuf));
         const int32_t Length = PacketLength(LenBuf, ExpectedType);
         Packet->SetCapacity(Length);
-        FSecureShell->Receive(Packet->GetData(), Length);
+        FSecureShell->Receive(Packet->GetData(), nb::ToSizeT(Length));
         Packet->DataUpdated(Length);
 
         const bool ResponseToNotLoggedRequest = FNotLoggedRequests.find(Packet->MessageNumber()) != FNotLoggedRequests.end();
