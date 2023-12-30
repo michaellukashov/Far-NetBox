@@ -425,15 +425,15 @@ public:
   UnicodeString GetCommaText() const;
   void SetCommaText(const UnicodeString & Value);
   virtual UnicodeString GetText() const;
-  virtual void SetText(const UnicodeString & Text);
+  virtual void SetText(const UnicodeString & AText);
   virtual const UnicodeString & GetStringRef(int32_t Index) const = 0;
   virtual const UnicodeString & GetString(int32_t Index) const = 0;
   virtual UnicodeString GetString(int32_t Index) = 0;
   virtual void SetString(int32_t Index, const UnicodeString & S) = 0;
   UnicodeString GetName(int32_t Index) const;
   void SetName(int32_t Index, const UnicodeString & Value);
-  UnicodeString GetValue(const UnicodeString & Name) const;
-  void SetValue(const UnicodeString & Name, const UnicodeString & Value);
+  UnicodeString GetValue(const UnicodeString & AName) const;
+  void SetValue(const UnicodeString & AName, const UnicodeString & AValue);
   UnicodeString GetValueFromIndex(int32_t Index) const;
 
   ROProperty<UnicodeString> Text{nb::bind(&TStrings::GetText, this)};

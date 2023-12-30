@@ -305,9 +305,9 @@ UnicodeString TStrings::GetTextStr() const
   return Result;
 }
 
-void TStrings::SetText(const UnicodeString & Text)
+void TStrings::SetText(const UnicodeString & AText)
 {
-  SetTextStr(Text);
+  SetTextStr(AText);
 }
 
 void TStrings::SetCommaText(const UnicodeString & Value)
@@ -446,27 +446,27 @@ UnicodeString TStrings::ExtractName(const UnicodeString & S)
   return Result;
 }
 
-UnicodeString TStrings::GetValue(const UnicodeString & Name) const
+UnicodeString TStrings::GetValue(const UnicodeString & AName) const
 {
   UnicodeString Result;
-  const int32_t Index = IndexOfName(Name);
+  const int32_t Index = IndexOfName(AName);
   if (Index >= 0)
   {
-    Result = GetString(Index).SubStr(Name.Length() + 2);
+    Result = GetString(Index).SubStr(AName.Length() + 2);
   }
   return Result;
 }
 
-void TStrings::SetValue(const UnicodeString & Name, const UnicodeString & Value)
+void TStrings::SetValue(const UnicodeString & AName, const UnicodeString & AValue)
 {
-  int32_t Index = IndexOfName(Name);
-  if (!Value.IsEmpty())
+  int32_t Index = IndexOfName(AName);
+  if (!AValue.IsEmpty())
   {
     if (Index < 0)
     {
       Index = Add("");
     }
-    SetString(Index, Name + L'=' + Value);
+    SetString(Index, AName + L'=' + AValue);
   }
   else
   {
