@@ -1,6 +1,10 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [23.12.1.564-RC6] - 2023-12-30
+### Fixed
+- S3: Fix Upload/Download large files
+
 ## [23.12.1.561-RC5] - 2023-12-27
 ### Fixed
 - Fix connect from History
