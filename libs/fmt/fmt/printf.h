@@ -31,7 +31,7 @@ template <bool IsSigned>
 struct IntChecker {
   template <typename T>
   static bool fits_in_int(T value) {
-    unsigned max = std::numeric_limits<int>::max();
+    constexpr unsigned max = std::numeric_limits<int>::max();
     return value <= max;
   }
   static bool fits_in_int(bool) { return true; }

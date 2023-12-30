@@ -1648,7 +1648,7 @@ class ArgList {
   /** Returns the argument at specified index. */
   internal::Arg operator[](unsigned index) const {
     using internal::Arg;
-    Arg arg;
+    Arg arg{};
     bool use_values = type(MAX_PACKED_ARGS - 1) == Arg::NONE;
     if (index < MAX_PACKED_ARGS) {
       Arg::Type arg_type = type(index);
@@ -3163,6 +3163,7 @@ void BasicWriter<Char>::write_double(T value, const Spec &spec) {
     type = 'f';
 #endif
     // Fall through.
+    // [[fallthrough]]
   case 'E': case 'G': case 'A':
     upper = true;
     break;
@@ -3222,7 +3223,7 @@ void BasicWriter<Char>::write_double(T value, const Spec &spec) {
 
   // Build format string.
   enum { MAX_FORMAT_SIZE = 10}; // longest format: %#-*.*Lg
-  Char format[MAX_FORMAT_SIZE];
+  Char format[MAX_FORMAT_SIZE]{};
   Char *format_ptr = format;
   *format_ptr++ = '%';
   unsigned width_for_sprintf = width;
@@ -3892,7 +3893,7 @@ const Char *BasicFormatter<Char, ArgFormatter>::format(
     const Char *&format_str, const internal::Arg &arg) {
   using internal::Arg;
   const Char *s = format_str;
-  typename ArgFormatter::SpecType spec;
+  typename ArgFormatter::SpecType spec{};
   if (*s == ':') {
     if (arg.type == Arg::CUSTOM) {
       arg.custom.format(this, arg.custom.value, &s);
