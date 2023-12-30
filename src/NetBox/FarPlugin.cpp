@@ -554,16 +554,16 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
       const bool onClose = (Info->Event == FE_CLOSE && !FarFileSystem->FClosed);
       MustSkipClose = onClose;
 
-      int rc;
+      bool Result{false};
       { 
         TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
-        rc = FarFileSystem->ProcessPanelEvent(Info->Event, Param);
+        Result = FarFileSystem->ProcessPanelEvent(Info->Event, Param);
       }
       if (MustSkipClose)
         MustSkipClose = false;
       else if (onClose)
         FarFileSystem->ClosePanel();
-      return rc;
+      return Result;
     }
     return 0;
   }
