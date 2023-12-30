@@ -36,7 +36,7 @@ public:
   int64_t TotalDownloaded{0};
 };
 
-class NB_CORE_EXPORT TFileOperationProgressType : public TObject
+class NB_CORE_EXPORT TFileOperationProgressType final : public TObject
 {
 public:
   class TPersistence : public TObject
