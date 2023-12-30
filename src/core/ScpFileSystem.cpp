@@ -1422,7 +1422,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
 {
   FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, FirstLevel);
 
-  TStrings * AlgDefs = FTerminal->GetShellChecksumAlgDefs();
+  const TStrings * AlgDefs = FTerminal->GetShellChecksumAlgDefs();
   const int32_t AlgIndex = AlgDefs->IndexOfName(Alg);
   const UnicodeString AlgCommand = (AlgIndex >= 0) ? AlgDefs->GetValueFromIndex(AlgIndex) : Alg;
 
@@ -1434,16 +1434,16 @@ void TSCPFileSystem::CalculateFilesChecksum(
     int64_t BatchSize = 0;
     while (Index < FileList->Count)
     {
-      TRemoteFile * File = DebugNotNull(FileList->GetAs<TRemoteFile>(Index));
+      const TRemoteFile * File = DebugNotNull(FileList->GetAs<TRemoteFile>(Index));
       if (!File->IsDirectory)
       {
-        UnicodeString FileName = FileList->GetString(Index);
-        UnicodeString FileListCommandLineBak = FileListCommandLine;
+        const UnicodeString FileName = FileList->GetString(Index);
+        const UnicodeString FileListCommandLineBak = FileListCommandLine;
         AddToShellFileListCommandLine(FileListCommandLine, FileName);
         BatchSize += File->Size;
         if (!FileListCommandLineBak.IsEmpty() &&
             ((FileListCommandLine.Length() > 2048) ||
-             (BatchSize > (1024 * 1024 * 1024))))
+             (BatchSize > (512 * 1024 * 1024))))
         {
           FileListCommandLine = FileListCommandLineBak;
           break;
@@ -1497,7 +1497,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
         for (int32_t BatchIndex = 0; BatchIndex < BatchFileList->Count; BatchIndex++)
         {
           UnicodeString FileName = BatchFileList->GetString(BatchIndex);
-          TRemoteFile * File = DebugNotNull(BatchFileList->GetAs<TRemoteFile>(BatchIndex));
+          const TRemoteFile * File = DebugNotNull(BatchFileList->GetAs<TRemoteFile>(BatchIndex));
           TChecksumSessionAction Action(FTerminal->ActionLog());
           Action.SetFileName(File->FullFileName);
           OperationProgress->SetFile(FileName);
@@ -1512,7 +1512,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
 
         for (int32_t BatchIndex = 0; BatchIndex < BatchFileList->Count; BatchIndex++)
         {
-          TRemoteFile * File = DebugNotNull(BatchFileList->GetAs<TRemoteFile>(BatchIndex));
+          const TRemoteFile * File = DebugNotNull(BatchFileList->GetAs<TRemoteFile>(BatchIndex));
           TChecksumSessionAction Action(FTerminal->ActionLog);
           try
           {
@@ -1797,7 +1797,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
       !OperationProgress->GetCancel(); ++IFile)
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
-      TRemoteFile * File1 = AFilesToCopy->GetAs<TRemoteFile>(IFile);
+      const TRemoteFile * File1 = AFilesToCopy->GetAs<TRemoteFile>(IFile);
       UnicodeString RealFileName = File1 ? File1->GetFileName() : FileName;
       bool CanProceed = false;
 
@@ -1811,7 +1811,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
         // fails for scripting, if 'ls' is not issued before.
         // formally we should call CheckRemoteFile here but as checking is for
         // free here (almost) ...
-        TRemoteFile * File2 = FTerminal->FFiles->FindFile(FileNameOnly);
+        const TRemoteFile * File2 = FTerminal->FFiles->FindFile(FileNameOnly);
         if (File2 != nullptr)
         {
           uint32_t Answer;
@@ -1885,7 +1885,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
           }
         }
 
-        void * Item = nb::ToPtr(AFilesToCopy->GetObj(IFile));
+        const void * Item = nb::ToPtr(AFilesToCopy->GetObj(IFile));
 
         try
         {
@@ -2018,7 +2018,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     OperationProgress->SetTransferSize(OperationProgress->GetLocalSize());
     OperationProgress->SetTransferringFile(false);
 
-    if (LocalFileHandle.Size > (512*1024*1024))
+    if (LocalFileHandle.Size > (512 * 1024 * 1024))
     {
       OperationProgress->SetAsciiTransfer(false);
       FTerminal->LogEvent(FORMAT(L"Binary transfer mode selected as the file is too large (%s) to be uploaded in Ascii mode using SCP protocol.", Int64ToStr(LocalFileHandle.Size)));
@@ -2303,11 +2303,11 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       // case without error message.
       catch (EScpFileSkipped &E)
       {
-        TQueryParams Params(qpAllowContinueOnError);
+        TQueryParams QueryParams(qpAllowContinueOnError);
         TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
 
         if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName), &E,
-              qaOK | qaAbort, &Params, qtError) == qaAbort)
+              qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
         {
           OperationProgress->SetCancel(csCancel);
         }
@@ -2510,7 +2510,7 @@ void TSCPFileSystem::SCPError(const UnicodeString & Message, bool Fatal)
 
 void TSCPFileSystem::SCPSendError(const UnicodeString & Message, bool Fatal)
 {
-  uint8_t ErrorLevel = static_cast<uint8_t>(Fatal ? 2 : 1);
+  const uint8_t ErrorLevel = static_cast<uint8_t>(Fatal ? 2 : 1);
   FTerminal->LogEvent(FORMAT("Sending SCP error (%d) to remote side:",
     nb::ToInt32(ErrorLevel)));
   FSecureShell->Send(&ErrorLevel, 1);
