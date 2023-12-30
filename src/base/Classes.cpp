@@ -1146,22 +1146,22 @@ int64_t THandleStream::Write(const void * Buffer, int64_t Count)
   return Result;
 }
 
-int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin Origin) const
+int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin SeekOrigin) const
 {
-  DWORD origin = FILE_BEGIN;
-  switch (Origin)
+  DWORD Origin = FILE_BEGIN;
+  switch (SeekOrigin)
   {
   case TSeekOrigin::soBeginning:
-    origin = FILE_BEGIN;
+    Origin = FILE_BEGIN;
     break;
   case TSeekOrigin::soCurrent:
-    origin = FILE_CURRENT;
+    Origin = FILE_CURRENT;
     break;
   case TSeekOrigin::soEnd:
-    origin = FILE_END;
+    Origin = FILE_END;
     break;
   }
-  const int64_t Result = ::FileSeek(FHandle, Offset, origin);
+  const int64_t Result = ::FileSeek(FHandle, Offset, Origin);
   return Result;
 }
 
