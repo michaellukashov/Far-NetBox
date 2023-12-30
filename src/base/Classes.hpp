@@ -814,7 +814,7 @@ public:
   virtual ~THandleStream() noexcept override = default;
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
+  virtual int64_t Seek(const int64_t Offset, TSeekOrigin SeekOrigin) const override;
   ROProperty<HANDLE> Handle{nb::bind(&THandleStream::GetHandle, this)};
 
   HANDLE GetHandle() const { return FHandle; }
