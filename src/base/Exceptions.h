@@ -118,12 +118,12 @@ private:
   class NB_CORE_EXPORT NAME : public BASE \
   { \
     EXT_EXCEPTION_METHODS(NAME, BASE) \
-  };
+  }
 
-DERIVE_EXT_EXCEPTION(ESsh, ExtException)
-DERIVE_EXT_EXCEPTION(ETerminal, ExtException)
-DERIVE_EXT_EXCEPTION(ECommand, ExtException)
-DERIVE_EXT_EXCEPTION(EScp, ExtException) // SCP protocol fatal error (non-fatal in application context)
+DERIVE_EXT_EXCEPTION(ESsh, ExtException);
+DERIVE_EXT_EXCEPTION(ETerminal, ExtException);
+DERIVE_EXT_EXCEPTION(ECommand, ExtException);
+DERIVE_EXT_EXCEPTION(EScp, ExtException); // SCP protocol fatal error (non-fatal in application context)
 NB_DEFINE_CLASS_ID(ESkipFile);
 class NB_CORE_EXPORT ESkipFile : public ExtException
 {
@@ -191,9 +191,9 @@ private:
   public: \
     explicit inline NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) {} \
     virtual ExtException * Clone() const override { return new NAME(this, L""); } \
-  };
+  }
 
-DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal)
+DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
 
 // exception that closes application, but displays info message (not error message)
 // = close on completion
