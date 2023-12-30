@@ -2137,7 +2137,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             {
               size_t BlockSize = nb::ToSizeT(OperationProgress->TransferBlockSize());
               FSecureShell->Send(
-                reinterpret_cast<uint8_t *>(AsciiBuf.GetData() + nb::ToIntPtr(OperationProgress->GetTransferredSize())),
+                nb::ToUInt8Ptr(AsciiBuf.GetData() + OperationProgress->GetTransferredSize()),
                 BlockSize);
               OperationProgress->AddTransferred(nb::ToInt64(BlockSize));
               if (OperationProgress->GetCancel() == csCancelTransfer)
