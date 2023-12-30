@@ -33,7 +33,7 @@ UnicodeString TFar3Storage::GetSource() const
 
 size_t TFar3Storage::OpenSubKeyInternal(size_t Root, const UnicodeString & SubKey, bool CanCreate)
 {
-  size_t NewRoot = 0;
+  size_t NewRoot{0};
   if (CanCreate)
   {
     NewRoot = FPluginSettings.CreateSubKey(Root, SubKey.c_str());
@@ -164,7 +164,7 @@ TDateTime TFar3Storage::DoReadDateTime(const UnicodeString & Name, const TDateTi
   TDateTime Result;
   double Val = 0.0;
   void * Value = nb::ToPtr(&Val);
-  const size_t Sz = sizeof(Val);
+  constexpr size_t Sz = sizeof(Val);
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
     Result = Val;
@@ -178,10 +178,10 @@ TDateTime TFar3Storage::DoReadDateTime(const UnicodeString & Name, const TDateTi
 
 double TFar3Storage::DoReadFloat(const UnicodeString & Name, double Default)
 {
-  double Result = 0.0;
-  double Val = 0.0;
+  double Result{0.0};
+  double Val{0.0};
   void * Value = nb::ToPtr(&Val);
-  size_t Sz = sizeof(Val);
+  const size_t Sz = sizeof(Val);
   if (FPluginSettings.Get(FRoot, Name.c_str(), Value, Sz) == Sz)
   {
     Result = Val;
