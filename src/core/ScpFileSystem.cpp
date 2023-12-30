@@ -53,8 +53,8 @@ struct TCommandType
 
 // Only one character! See TSCPFileSystem::ReadCommandOutput()
 #define LastLineSeparator ":"
-#define LAST_LINE "NetBox: this is end-of-file"
-#define FIRST_LINE "NetBox: this is begin-of-file"
+constexpr const wchar_t * LAST_LINE = L"NetBox: this is end-of-file";
+constexpr const wchar_t * FIRST_LINE = L"NetBox: this is begin-of-file";
 extern const TCommandType DefaultCommandSet[];
 
 #define CHECK_CMD DebugAssert((Cmd >=0) && (Cmd <= MaxShellCommand))
