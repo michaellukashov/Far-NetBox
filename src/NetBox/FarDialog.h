@@ -308,7 +308,7 @@ protected:
   void UpdateFlags(FARDIALOGITEMFLAGS Value);
   int32_t GetCoordinate(int32_t Index) const;
   void SetCoordinate(int32_t Index, int32_t Value);
-  TFarDialogItem * GetPrevItem() const;
+  // TFarDialogItem * GetPrevItem() const;
   void UpdateFocused(bool Value);
   void UpdateEnabled();
 
