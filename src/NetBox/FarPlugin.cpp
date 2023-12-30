@@ -181,7 +181,7 @@ intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * I
   try
   {
     const TSynchroParams * SynchroParams = static_cast<TSynchroParams *>(Info->Param);
-    if (SynchroParams && SynchroParams->Dialog && SynchroParams->SynchroEvent)
+    if (SynchroParams && SynchroParams->Sender && SynchroParams->SynchroEvent)
     {
       SynchroParams->SynchroEvent(this, nullptr);
     }
@@ -961,7 +961,7 @@ TFarMessageDialog::~TFarMessageDialog()
   if (GetFarPlugin())
   {
     TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
-    SynchroParams.Dialog = nullptr;
+    SynchroParams.Sender = nullptr;
   }
 }
 
@@ -972,7 +972,7 @@ void TFarMessageDialog::Idle()
   {
     TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
     SynchroParams.SynchroEvent = nb::bind(&TFarMessageDialog::OnUpdateTimeoutButton, this);
-    SynchroParams.Dialog = this;
+    SynchroParams.Sender = this;
     GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &SynchroParams);
   }
 }

@@ -68,8 +68,8 @@ public:
   uint32_t TimerAnswer{0};
   TFarMessageTimerEvent TimerEvent;
   uint32_t Timeout{0};
-  uint32_t TimeoutButton{0};
-  uint32_t DefaultButton{0};
+  int32_t TimeoutButton{0};
+  int32_t DefaultButton{0};
   UnicodeString TimeoutStr;
   TFarMessageClickEvent ClickEvent;
   void * Token{nullptr};
@@ -81,7 +81,7 @@ struct TSynchroParams final : public TObject
 public:
   TSynchroParams() = default;
   TSynchroEvent SynchroEvent;
-  TFarMessageDialog * Dialog{nullptr};
+  TFarMessageDialog * Sender{nullptr};
 };
 
 enum NetBoxSystemSettings
