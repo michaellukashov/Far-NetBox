@@ -262,7 +262,7 @@ private:
   UnicodeString FormatConsoleTitle() const;
   HWND GetConsoleWindow() const;
   RECT GetPanelBounds(HANDLE PanelHandle);
-  bool CompareRects(const RECT & lhs, const RECT & rhs) const
+  static bool CompareRects(const RECT & lhs, const RECT & rhs)
   {
     return
       lhs.left == rhs.left &&
