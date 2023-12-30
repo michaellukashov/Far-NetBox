@@ -498,7 +498,7 @@ uint64_t TFileOperationProgressType::LocalBlockSize()
   int64_t Result = TRANSFER_BUF_SIZE;
   if (FLocallyUsed + Result > FLocalSize)
   {
-    Result = static_cast<uint64_t>(FLocalSize - FLocallyUsed);
+    Result = FLocalSize - FLocallyUsed;
   }
   Result = AdjustToCPSLimit(Result);
   return Result;
