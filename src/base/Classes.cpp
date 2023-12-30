@@ -1105,14 +1105,14 @@ int64_t TStream::GetSize() const
 {
   const int64_t Pos = Seek(0, TSeekOrigin::soCurrent);
   const int64_t Result = Seek(0, TSeekOrigin::soEnd);
-  const auto Res = Seek(Pos, TSeekOrigin::soBeginning);
+  const int64_t Res = Seek(Pos, TSeekOrigin::soBeginning);
   DebugAssert(Res == Pos);
   return Result;
 }
 
 void TStream::SetPosition(int64_t Pos)
 {
-  const auto Res = Seek(Pos, TSeekOrigin::soBeginning);
+  const int64_t Res = Seek(Pos, TSeekOrigin::soBeginning);
   DebugAssert(Res == Pos);
 }
 
