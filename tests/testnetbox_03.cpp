@@ -503,7 +503,7 @@ TEST_CASE_METHOD(base_fixture_t, "testFileFuncs1", "netbox")
     TStream * FileStream = new TSafeHandleStream(FileHandle);
     TFileBuffer * BlockBuf = new TFileBuffer();
     // BlockBuf->SetSize(1024);
-    BlockBuf->SetPosition(0);
+    // BlockBuf->SetPosition(0);
     BlockBuf->Insert(0, str.c_str(), str.size());
     INFO("BlockBuf->GetSize = " << BlockBuf->GetSize());
     REQUIRE(BlockBuf->GetSize() == str.size());

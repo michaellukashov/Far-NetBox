@@ -24,7 +24,7 @@
 
 #define REQUIRE_EQUAL(exp1, exp2) \
   REQUIRE(exp1 == exp2)
-
+/*
 std::ostringstream& operator<<(std::ostringstream& os, const AnsiString& value)
 {
   os << std::string(value.c_str());
@@ -36,7 +36,7 @@ std::ostringstream& operator<<(std::ostringstream& os, const UnicodeString& valu
   os << std::string(W2MB(value.c_str()).c_str());
   return os;
 }
-
+*/
 std::ostream& operator<<(std::ostream& os, const UnicodeString& value)
 {
   os << std::string(W2MB(value.c_str()).c_str());
@@ -48,7 +48,7 @@ class TStubFarPlugin : public TCustomFarPlugin
 {
 public:
     explicit TStubFarPlugin() :
-        TCustomFarPlugin(OBJECT_CLASS_TCustomFarPlugin, 0) // GetModuleHandle(0))
+      TCustomFarPlugin(OBJECT_CLASS_TCustomFarPlugin, 0) // GetModuleHandle(0))
     {
       INFO("TStubFarPlugin()");
 //      CryptographyInitialize();
@@ -59,28 +59,28 @@ public:
 //      CryptographyFinalize();
     }
 protected:
-    virtual void GetPluginInfoEx(DWORD &Flags,
-        TStrings *DiskMenuStrings, TStrings *PluginMenuStrings,
-        TStrings *PluginConfigStrings, TStrings *CommandPrefixes)
+    virtual void GetPluginInfoEx(PLUGIN_FLAGS & Flags,
+      TStrings * DiskMenuStrings, TStrings * PluginMenuStrings,
+      TStrings * PluginConfigStrings, TStrings * CommandPrefixes) override
     {
         DEBUG_PRINTF(L"call");
     }
-    virtual TCustomFarFileSystem * OpenPluginEx(intptr_t OpenFrom, intptr_t Item)
+    virtual TCustomFarFileSystem * OpenPluginEx(OPENFROM OpenFrom, intptr_t Item) override
     {
         DEBUG_PRINTF(L"call");
         return NULL;
     }
-    virtual bool ConfigureEx(intptr_t Item)
+    virtual bool ConfigureEx(const GUID * Guid) override
     {
         DEBUG_PRINTF(L"call");
         return false;
     }
-    virtual intptr_t ProcessEditorEventEx(intptr_t Event, void *Param)
+    virtual int32_t ProcessEditorEventEx(const struct ProcessEditorEventInfo * Info) override
     {
         DEBUG_PRINTF(L"call");
         return -1;
     }
-    virtual intptr_t ProcessEditorInputEx(const INPUT_RECORD *Rec)
+    virtual int32_t ProcessEditorInputEx(const INPUT_RECORD * Rec) override
     {
         DEBUG_PRINTF(L"call");
         return -1;
@@ -94,23 +94,6 @@ static TCustomFarPlugin * CreateStub()
   return new TStubFarPlugin();
 }
 
-template<typename T>
-class TGlobalsIntfInitializer
-{
-public:
-  TGlobalsIntfInitializer()
-  {
-    ::SetGlobals(new T());
-  }
-
-  ~TGlobalsIntfInitializer()
-  {
-    TGlobalsIntf *Intf = GetGlobals();
-    delete Intf;
-    ::SetGlobals(nullptr);
-  }
-};
-
 //------------------------------------------------------------------------------
 
 // mocks
@@ -119,14 +102,14 @@ class TTestGlobalFunctions : public TGlobals
 {
 public:
   virtual HINSTANCE GetInstanceHandle() const override;
-  virtual UnicodeString GetMsg(intptr_t Id) const override;
-  virtual UnicodeString GetCurrDirectory() const override;
+  virtual UnicodeString GetMsg(int32_t Id) const override;
+  virtual UnicodeString GetCurrentDirectory() const override;
   virtual UnicodeString GetStrVersionNumber() const override;
-  virtual bool InputDialog(const UnicodeString ACaption,
-    const UnicodeString APrompt, UnicodeString & Value, const UnicodeString HelpKeyword,
+  virtual bool InputDialog(const UnicodeString & ACaption,
+    const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
     TStrings * History, bool PathInput,
-    TInputDialogInitializeEvent OnInitialize, bool Echo) override;
-  virtual uintptr_t MoreMessageDialog(const UnicodeString Message,
+    TInputDialogInitializeEvent && OnInitialize, bool Echo) override;
+  virtual uint32_t MoreMessageDialog(const UnicodeString & AMessage,
     TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
     const TMessageParams * Params) override;
 };
@@ -141,15 +124,15 @@ HINSTANCE TTestGlobalFunctions::GetInstanceHandle() const
   return Result;
 }
 
-UnicodeString TTestGlobalFunctions::GetMsg(intptr_t Id) const
+UnicodeString TTestGlobalFunctions::GetMsg(int32_t Id) const
 {
   return UnicodeString();
 }
 
-UnicodeString TTestGlobalFunctions::GetCurrDirectory() const
+UnicodeString TTestGlobalFunctions::GetCurrentDirectory() const
 {
-  UnicodeString Path(NB_MAX_PATH, 0);
-  int Length = ::GetCurrentDirectory((DWORD)Path.Length(), (wchar_t *)Path.c_str());
+  UnicodeString Path(nb::NB_MAX_PATH, 0);
+  int Length = ::GetCurrentDirectoryW((DWORD)Path.Length(), (wchar_t *)Path.c_str());
   UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;
 }
@@ -159,15 +142,16 @@ UnicodeString TTestGlobalFunctions::GetStrVersionNumber() const
   return UnicodeString();
 }
 
-bool TTestGlobalFunctions::InputDialog(const UnicodeString ACaption, UnicodeString APrompt,
-  UnicodeString & Value, const UnicodeString HelpKeyword, TStrings * History, bool PathInput,
-  TInputDialogInitializeEvent OnInitialize, bool Echo)
+bool TTestGlobalFunctions::InputDialog(const UnicodeString & ACaption,
+  const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
+  TStrings * History, bool PathInput,
+  TInputDialogInitializeEvent && OnInitialize, bool Echo)
 {
   return false;
 }
 
-uintptr_t TTestGlobalFunctions::MoreMessageDialog(const UnicodeString Message, TStrings * MoreMessages,
-  TQueryType Type, uint32_t Answers,
+uint32_t TTestGlobalFunctions::MoreMessageDialog(const UnicodeString & AMessage,
+  TStrings * MoreMessages, TQueryType Type, uint32_t Answers,
   const TMessageParams * Params)
 {
   return 0;

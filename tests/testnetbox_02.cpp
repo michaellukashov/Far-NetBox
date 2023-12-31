@@ -13,8 +13,8 @@
 
 #include <shlobj.h>
 
-#include "winstuff.h"
-#include "puttyexp.h"
+// #include "winstuff.h"
+// #include "puttyexp.h"
 #include "FarUtils.h"
 
 #include "TestTexts.h"
@@ -283,7 +283,7 @@ TEST_CASE_METHOD(base_fixture_t, "testStorage", "netbox")
   printf("1.2\n");
   UnicodeString SubKey = L"SubKey1";
   printf("1.3\n");
-  Storage.DeleteSubKey(SubKey);
+  Storage.RecursiveDeleteSubKey(SubKey);
   printf("2\n");
   REQUIRE(!Storage.KeyExists(SubKey));
   REQUIRE(Storage.OpenSubKey(SubKey, true));
@@ -303,7 +303,7 @@ TEST_CASE_METHOD(base_fixture_t, "testStorage", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "testAppendPathDelimiterW", "netbox")
 {
   UnicodeString path = L"C:\\test";
-  AppendPathDelimiterW(path);
+  AppendPathDelimiter(path);
   REQUIRE(path == L"C:\\test\\");
 }
 
@@ -391,23 +391,23 @@ TEST_CASE_METHOD(base_fixture_t, "testFileMasks", "netbox")
     REQUIRE_EQUAL(true, TFileMasks::IsMask(L"*.txt;*.log;*.exe,*.cmd|*.bat"));
     // REQUIRE_EQUAL(true, TFileMasks::IsAnyMask(L"*.*"));
     TFileMasks m(L"*.txt;*.log");
-    REQUIRE_EQUAL(false, m.Matches(L"test.exe"));
+    REQUIRE_EQUAL(false, m.Matches(L"test.exe", true, false));
   }
   {
     TFileMasks m(L"*.txt;*.log");
-    REQUIRE_EQUAL(true, m.Matches(L"test.txt"));
+    REQUIRE_EQUAL(true, m.Matches(L"test.txt", true, false));
   }
   if (1)
   {
     TFileMasks m(L"*.txt;*.log");
-    REQUIRE_EQUAL(true, m.Matches(L"test.log"));
+    REQUIRE_EQUAL(true, m.Matches(L"test.log", true, false));
 
 //    intptr_t Start, Length;
 //    REQUIRE_EQUAL(true, m.GetIsValid(Start, Length));
     m.SetMask(L"*.exe");
-    REQUIRE_EQUAL(true, m.Matches(L"test.exe"));
-    REQUIRE_EQUAL(false, m.Matches(L"test.txt"));
-    REQUIRE_EQUAL(false, m.Matches(L"test.log"));
+    REQUIRE_EQUAL(true, m.Matches(L"test.exe", true, false));
+    REQUIRE_EQUAL(false, m.Matches(L"test.txt", true, false));
+    REQUIRE_EQUAL(false, m.Matches(L"test.log", true, false));
   }
 }
 

@@ -2566,6 +2566,7 @@ target_compile_options(googlemock PRIVATE
 # target testnetbox_01
 
 set(TESTNETBOX_01_SOURCES
+#[[
   src/nbcore/nbutils.cpp
   src/nbcore/nbstring.cpp
   src/nbcore/nbmemory.cpp
@@ -2580,8 +2581,14 @@ set(TESTNETBOX_01_SOURCES
   src/base/Exceptions.cpp
   src/base/FileBuffer.cpp
   src/base/FormatUtils.cpp
-  tests/testutils.h
+  src/core/SessionInfo.cpp
+  src/core/CoreMain.cpp
+]]
+  src/NetBox/UnityBuildCore.cpp
+  src/NetBox/UnityBuildMain.cpp
+  src/NetBox/UnityBuildFilezilla.cpp
   tests/testnetbox_01.cpp
+  tests/testutils.h
 )
 
 add_executable(testnetbox_01
@@ -2745,7 +2752,10 @@ target_link_libraries(testnetbox_05 PRIVATE
 # target testnetbox_06
 
 set(TESTNETBOX_06_SOURCES
-  tests/UnityBuildMin.cpp
+  # tests/UnityBuildMin.cpp
+  src/NetBox/UnityBuildCore.cpp
+  src/NetBox/UnityBuildMain.cpp
+  src/NetBox/UnityBuildFilezilla.cpp
   tests/testnetbox_06.cpp
 )
 
@@ -2771,6 +2781,7 @@ target_link_libraries(testnetbox_06 PRIVATE
   dlmalloc
   fmt
   shlwapi.lib
+  ${NETBOX_LIBRARIES}
 )
 
 endif(OPT_COMPILE_TESTS)

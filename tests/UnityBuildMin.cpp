@@ -23,6 +23,8 @@
 #include "../base/System.SyncObjs.cpp"
 #include "../base/LibraryLoader.cpp"
 #include "../base/FileBuffer.cpp"
+#include "../core/SessionInfo.cpp"
+#include "../core/CoreMain.cpp"
 // #include "../windows/WinInterface.cpp"
 
 #include <disable_warnings_in_std_end.hpp>

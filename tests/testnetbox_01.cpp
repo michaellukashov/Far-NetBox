@@ -29,7 +29,7 @@
 
 //------------------------------------------------------------------------------
 // stub
-TCustomFarPlugin * FarPlugin = nullptr;
+// TCustomFarPlugin * FarPlugin = nullptr;
 //------------------------------------------------------------------------------
 
 void FreeIEConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG* ie_config)
@@ -72,13 +72,14 @@ protected:
 private:
 };
 
+//------------------------------------------------------------------------------
 // mocks
-
+/*
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 {
   return false;
 }
-
+*/
 //------------------------------------------------------------------------------
 
 //TEST_CASE("base tests", "netbox")
@@ -550,7 +551,7 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
     TStream * FileStream = new TSafeHandleStream(FileHandle);
     TFileBuffer * BlockBuf = new TFileBuffer();
     // BlockBuf->SetSize(1024);
-    BlockBuf->SetPosition(0);
+    // BlockBuf->SetPosition(0);
     BlockBuf->Insert(0, str.c_str(), str.size());
     INFO("BlockBuf->GetSize = " << BlockBuf->GetSize());
     REQUIRE(BlockBuf->GetSize() == str.size());
@@ -914,9 +915,9 @@ public:
   virtual int GetData3() const { return 41; }
 
   virtual int GetRWData1() const { return FRWData1; }
-  virtual void SetRWData1(int Value) { FRWData1 = Value; }
+  virtual void SetRWData1(const int & Value) { FRWData1 = Value; }
   virtual UnicodeString GetRWData2() const { return FRWData2; }
-  virtual void SetRWData2(UnicodeString Value) { FRWData2 = Value; }
+  virtual void SetRWData2(const UnicodeString & Value) { FRWData2 = Value; }
 private:
   int GetDataInternal() const { return GetData(); }
 
@@ -931,11 +932,11 @@ public:
   virtual int GetData2() const override { return 42; }
   virtual int GetData3() const override { return 42; }
 
-  virtual int GetRWData1() const { return FRWData1; }
-  virtual void SetRWData1(int Value) { FRWData1 = Value; }
+  virtual int GetRWData1() const override { return FRWData1; }
+  virtual void SetRWData1(const int & Value) override { FRWData1 = Value; }
 
   virtual UnicodeString GetRWData2() const override { return FRWData2; }
-  virtual void SetRWData2(UnicodeString Value) override { FRWData2 = Value; }
+  virtual void SetRWData2(const UnicodeString & Value) override { FRWData2 = Value; }
 private:
   int FRWData1 = 42;
   UnicodeString FRWData2 = "42";
@@ -957,13 +958,13 @@ private:
   int GetData3() const { return 41; }
 
   int GetRWData1() const { return FRWData1; }
-  void SetRWData1(int Value) { FRWData1 = Value; }
+  void SetRWData1(const int & Value) { FRWData1 = Value; }
   UnicodeString GetRWData2() const { return FRWData2; }
-  void SetRWData2(const UnicodeString Value) { FRWData2 = Value; }
+  void SetRWData2(const UnicodeString & Value) { FRWData2 = Value; }
   UnicodeString GetRWData3() const { return FRWData3; }
-  void SetRWData3(UnicodeString Value) { FRWData3 = Value; }
+  void SetRWData3(const UnicodeString & Value) { FRWData3 = Value; }
   TDateTime GetModification() const { return FModification; }
-  void SetModification(const TDateTime Value) { FModification = Value; }
+  void SetModification(const TDateTime & Value) { FModification = Value; }
 private:
   int FRWData1 = 41;
   UnicodeString FRWData2 = "41";
@@ -981,9 +982,9 @@ private:
   UnicodeString GetROProp1() { return FROProp1; }
   UnicodeString GetROProp1Const() const { return FROProp1; }
 
-  UnicodeString GetRWProp1() { return FRWProp1; }
+  UnicodeString GetRWProp1() const { return FRWProp1; }
   UnicodeString GetRWProp2Const() const { return FRWProp1; }
-  void SetRWProp1(const UnicodeString Value) { FRWProp1 = Value; }
+  void SetRWProp1(const UnicodeString & Value) { FRWProp1 = Value; }
 
   UnicodeString FROProp1 = "42";
   UnicodeString FRWProp1 = "RW";
@@ -1080,7 +1081,7 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
     d2.RWProp1 = "RW2";
     CHECK(d2.RWProp1() == "RW2");
     CHECK(d2.RWProp2() == "RW2");
-    CHECK("RW2" == d2.RWProp2);
+    CHECK(L"RW2" == d2.RWProp2);
   }
 }
 

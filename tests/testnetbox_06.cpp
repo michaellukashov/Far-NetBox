@@ -20,13 +20,14 @@
 #include <catch/catch.hpp>
 
 // stubs
-bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages)
+/*
+bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 {
   return false;
 }
 
-TCustomFarPlugin *FarPlugin = nullptr;
-
+TCustomFarPlugin * FarPlugin = nullptr;
+*/
 /*******************************************************************************
             test suite
 *******************************************************************************/
@@ -43,16 +44,16 @@ TEST_CASE_METHOD(base_fixture_t, "testUnicodeString01", "netbox")
     UnicodeString a("1");
     CHECK(a == "1");
     CHECK(a != "2");
-    CHECK("1" == a);
-    CHECK("2" != a);
+    CHECK(L"1" == a);
+    CHECK(L"2" != a);
   }
   SECTION("UTF8String01")
   {
     UTF8String a("ab");
-    CHECK(a == "ab");
-    CHECK(a != "abc");
-    CHECK("ab" == a);
-    CHECK("abc" != a);
+    CHECK(a == L"ab");
+    CHECK(a != L"abc");
+    CHECK(L"ab" == a);
+    CHECK(L"abc" != a);
   }
   SECTION("AnsiString01")
   {
@@ -67,8 +68,8 @@ TEST_CASE_METHOD(base_fixture_t, "testUnicodeString01", "netbox")
     RawByteString a("ab");
     CHECK(a == "ab");
     CHECK(a != "abc");
-    CHECK("ab" == a);
-    CHECK("abc" != a);
+    CHECK(L"ab" == a);
+    CHECK(L"abc" != a);
   }
 }
 
@@ -125,7 +126,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
       a = 2;
       printf("a = %d\n", a);
       // throw std::runtime_error("error in try block");
-    },
+    }
     __finally
     {
       WARN("in __finally");
@@ -146,7 +147,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
           a = 2;
           printf("a = %d\n", a);
           throw std::runtime_error("error in try block");
-        },
+        }
         __finally
         {
           WARN("in __finally");
@@ -169,7 +170,7 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
         a = 2;
         printf("a = %d\n", a);
         throw std::runtime_error("error in try block");
-      },
+      }
       __finally
       {
         WARN("in __finally");
@@ -634,10 +635,10 @@ private:
   int GetData1() const { return FIntData1; }
   const UnicodeString GetStrData1() const { return FStrData1; }
   UnicodeString GetStrData2() { return FStrData2; }
-  int GetRWData1() { return FIntData1; }
-  void SetRWData1(int Value) { FIntData1 = Value; }
+  int GetRWData1() const { return FIntData1; }
+  void SetRWData1(const int & Value) { FIntData1 = Value; }
   UnicodeString GetRWStrData1() { return FStrData1; }
-  void SetRWStrData1(const UnicodeString Value) { FStrData1 = Value; }
+  void SetRWStrData1(const UnicodeString & Value) { FStrData1 = Value; }
 
   int FIntData1{1};
   UnicodeString FStrData1{"test"};
@@ -671,7 +672,7 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
       CHECK(res);
     }
     {
-      bool res = ("test" == obj.StrData1);
+      bool res = (L"test" == obj.StrData1);
       CHECK(res);
     }
   }
@@ -683,7 +684,7 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
       CHECK(res);
     }
     {
-      bool res = ("test2" == obj.StrData2);
+      bool res = (L"test2" == obj.StrData2);
       CHECK(res);
     }
   }
@@ -716,10 +717,10 @@ TEST_CASE_METHOD(base_fixture_t, "properties04", "netbox")
       CHECK(res);
     }
     {
-      bool res = ("test" == obj.RWStrData1);
+      bool res = (L"test" == obj.RWStrData1);
       CHECK(res);
       obj.RWStrData1 = "42";
-      res = ("42" == obj.RWStrData1);
+      res = (L"42" == obj.RWStrData1);
       CHECK(res);
       res = (obj.RWStrData1 == "42");
       CHECK(res);
@@ -824,7 +825,7 @@ private:
   UnicodeString GetStrData1() const { return "42"; }
   UnicodeString GetStrData2() { return "42"; }
   int GetRWData1() const { return FIntData1; }
-  void SetRWData1(int Value) { FIntData1 = Value; }
+  void SetRWData1(const int & Value) { FIntData1 = Value; }
   UnicodeString GetRWStrData1() { return FStrData1; }
   void SetRWStrData1(const UnicodeString Value) { FStrData1 = Value; }
 
