@@ -877,7 +877,7 @@ inline static uint32_t CalculateCPS(int64_t Transferred, uint32_t MSecElapsed)
   }
   else
   {
-    Result = (uint32_t)(Transferred * MSecsPerSec / MSecElapsed);
+    Result = static_cast<uint32_t>(Transferred * MSecsPerSec / MSecElapsed);
   }
   return Result;
 }
