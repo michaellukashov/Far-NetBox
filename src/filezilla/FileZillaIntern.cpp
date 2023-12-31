@@ -5,7 +5,9 @@
 #include "FileZillaIntf.h"
 #include "FileZillaApi.h"
 
-TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
+// #pragma package(smart_init)
+
+TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) noexcept :
   // TObject(OBJECT_CLASS_TFileZillaIntern),
   FOwner(AOwner)
 {
@@ -15,7 +17,7 @@ TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) :
 bool TFileZillaIntern::FZPostMessage(WPARAM wParam, LPARAM lParam) const
 {
   bool Result;
-  unsigned int MessageID = FZ_MSG_ID(wParam);
+  uint32_t MessageID = FZ_MSG_ID(wParam);
 
   switch (MessageID)
   {
@@ -37,22 +39,22 @@ bool TFileZillaIntern::FZPostMessage(WPARAM wParam, LPARAM lParam) const
   return Result;
 }
 
-CString TFileZillaIntern::GetOption(int OptionID) const
+CString TFileZillaIntern::GetOption(int32_t OptionID) const
 {
   return FOwner->Option(OptionID);
 }
 
-int TFileZillaIntern::GetOptionVal(int OptionID) const
+int32_t TFileZillaIntern::GetOptionVal(int OptionID) const
 {
-  return ToInt(FOwner->OptionVal(OptionID));
+  return nb::ToInt32(FOwner->OptionVal(OptionID));
 }
 
-int TFileZillaIntern::GetDebugLevel() const
+int32_t TFileZillaIntern::GetDebugLevel() const
 {
   return FDebugLevel;
 }
 
-void TFileZillaIntern::SetDebugLevel(int DebugLevel)
+void TFileZillaIntern::SetDebugLevel(int32_t DebugLevel)
 {
   FDebugLevel = DebugLevel;
 }

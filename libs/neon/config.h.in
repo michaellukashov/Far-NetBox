@@ -42,6 +42,9 @@
 /* Define if you have expat */
 #undef HAVE_EXPAT
 
+/* Define to 1 if you have the `explicit_bzero' function. */
+#undef HAVE_EXPLICIT_BZERO
+
 /* Define to 1 if you have the `fcntl' function. */
 #undef HAVE_FCNTL
 
@@ -63,6 +66,9 @@
 /* Define to 1 if you have the `getsockopt' function. */
 #undef HAVE_GETSOCKOPT
 
+/* Define to 1 if you have the `gettimeofday' function. */
+#undef HAVE_GETTIMEOFDAY
+
 /* Define if GnuTLS support is enabled */
 #undef HAVE_GNUTLS
 
@@ -76,14 +82,15 @@
    function. */
 #undef HAVE_GNUTLS_CERTIFICATE_SET_RETRIEVE_FUNCTION2
 
+/* Define to 1 if you have the `gnutls_certificate_set_x509_system_trust'
+   function. */
+#undef HAVE_GNUTLS_CERTIFICATE_SET_X509_SYSTEM_TRUST
+
 /* Define to 1 if you have the `gnutls_privkey_import_ext' function. */
 #undef HAVE_GNUTLS_PRIVKEY_IMPORT_EXT
 
 /* Define to 1 if you have the `gnutls_session_get_data2' function. */
 #undef HAVE_GNUTLS_SESSION_GET_DATA2
-
-/* Define to 1 if you have the `gnutls_sign_callback_set' function. */
-#undef HAVE_GNUTLS_SIGN_CALLBACK_SET
 
 /* Define to 1 if you have the `gnutls_x509_crt_sign2' function. */
 #undef HAVE_GNUTLS_X509_CRT_SIGN2
@@ -169,6 +176,9 @@
 /* Define if OpenSSL support is enabled */
 #undef HAVE_OPENSSL
 
+/* Enable OpenSSL 1.1 support */
+#undef HAVE_OPENSSL11
+
 /* Define to 1 if you have the <openssl/opensslv.h> header file. */
 #undef HAVE_OPENSSL_OPENSSLV_H
 
@@ -189,6 +199,9 @@
 
 /* Define to 1 if you have the `pthread_mutex_lock' function. */
 #undef HAVE_PTHREAD_MUTEX_LOCK
+
+/* Define to 1 if you have the `sendmsg' function. */
+#undef HAVE_SENDMSG
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
@@ -295,6 +308,9 @@
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
 
+/* Define to 1 if you have the <wspiapi.h> header file. */
+#undef HAVE_WSPIAPI_H
+
 /* Define to be location of localedir */
 #undef LOCALEDIR
 
@@ -333,6 +349,9 @@
 
 /* Defined if DAV is supported */
 #undef NE_HAVE_DAV
+
+/* Defined if GSSAPI is supported */
+#undef NE_HAVE_GSSAPI
 
 /* Defined if I18N is supported */
 #undef NE_HAVE_I18N
@@ -420,9 +439,6 @@
 
 /* Define to 1 if strerror_r returns char *. */
 #undef STRERROR_R_CHAR_P
-
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#undef TIME_WITH_SYS_TIME
 
 /* Define if getaddrinfo supports AI_ADDRCONFIG */
 #undef USE_GAI_ADDRCONFIG

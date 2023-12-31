@@ -36,7 +36,7 @@ void backend_socket_log(void *frontend, int type, SockAddr addr, int port,
 
             /* Suffix \r\n temporarily, so we can log to the terminal. */
             msg = dupprintf("%s\r\n", error_msg);
-            len = (int)strlen(msg);
+            len = strlen(msg);
             assert(len >= 2);
 
             log_to_term = conf_get_int(conf, CONF_proxy_log_to_term);
@@ -100,7 +100,7 @@ void log_proxy_stderr(Plug plug, bufchain *buf, const void *vdata, int len)
         /*
          * Advance past the newline.
          */
-        pos += (int)(nlpos+1 - (data + pos));
+        pos += nlpos+1 - (data + pos);
     }
 
     /*

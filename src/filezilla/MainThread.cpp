@@ -13,11 +13,11 @@ CMainThread::CMainThread()
 {
   m_LastCommand.id = 0;
   m_LastCommand.param4 = 0;
-  m_pTools = NULL;
+  m_pTools = nullptr;
   m_nInternalMessageID = 0;
   m_pPostKeepAliveCommand = 0;
   m_nTimerID = 0;
-  m_pControlSocket = NULL;
+  m_pControlSocket = nullptr;
   m_bBusy = FALSE;
   m_bConnected = FALSE;
   m_pWorkingDir = 0;
@@ -70,7 +70,7 @@ DWORD CMainThread::ExitInstance()
   return 1;
 }
 
-BOOL CMainThread::IsConnected()
+BOOL CMainThread::IsConnected() const
 {
   BOOL bConnected;
   ECS;
@@ -188,7 +188,7 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
   return TRUE;
 }
 
-BOOL CMainThread::IsBusy()
+BOOL CMainThread::IsBusy() const
 {
   BOOL bBusy;
   ECS;
@@ -287,7 +287,7 @@ void CMainThread::SetCurrentPath(CServerPath path)
   return;
 }
 
-bool CMainThread::UsingMlsd()
+bool CMainThread::UsingMlsd() const
 {
   if (!IsConnected())
     return false;
@@ -301,14 +301,14 @@ bool CMainThread::UsingUtf8()
   return m_pControlSocket->UsingUtf8();
 }
 
-std::string CMainThread::GetTlsVersionStr()
+std::string CMainThread::GetTlsVersionStr() const
 {
   if (!IsConnected())
     return std::string();
   return m_pControlSocket->GetTlsVersionStr();
 }
 
-std::string CMainThread::GetCipherName()
+std::string CMainThread::GetCipherName() const
 {
   if (!IsConnected())
     return std::string();
@@ -380,7 +380,7 @@ CMainThread* CMainThread::Create(int nPriority, DWORD dwCreateFlags)
   if (!pMainThread->m_hThread)
   {
     delete pMainThread;
-    return NULL;
+    return nullptr;
   }
   ::SetThreadPriority(pMainThread->m_hThread, nPriority);
   return pMainThread;
@@ -393,11 +393,14 @@ BOOL CMainThread::PostThreadMessage(UINT message, WPARAM wParam, LPARAM lParam)
 
 DWORD CMainThread::ResumeThread()
 {
+  m_Started = false;
   BOOL res=::ResumeThread(m_hThread);
   if (res)
   {
-    m_EventStarted.Lock();
-    m_EventStarted.Unlock();
+    while (!m_Started)
+    {
+      Sleep(10);
+    }
   }
   return res;
 }
@@ -411,7 +414,7 @@ DWORD CMainThread::Run()
 {
   ECS;
   InitInstance();
-  m_EventStarted.SetEvent();
+  m_Started = true;
   LCS;
   MSG msg;
   while (GetMessage(&msg, 0, 0, 0))

@@ -5,7 +5,7 @@
 
 #include "FarUtils.h"
 
-bool CNBFile::OpenWrite(const wchar_t *fileName)
+bool CNBFile::OpenWrite(const wchar_t * fileName)
 {
   DebugAssert(m_File == INVALID_HANDLE_VALUE);
   DebugAssert(fileName);
@@ -19,7 +19,7 @@ bool CNBFile::OpenWrite(const wchar_t *fileName)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::OpenRead(const wchar_t *fileName)
+bool CNBFile::OpenRead(const wchar_t * fileName)
 {
   DebugAssert(m_File == INVALID_HANDLE_VALUE);
   DebugAssert(fileName);
@@ -33,12 +33,12 @@ bool CNBFile::OpenRead(const wchar_t *fileName)
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::Read(void *buff, size_t &buffSize)
+bool CNBFile::Read(void * buff, size_t & buffSize)
 {
-  DebugAssert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(CheckHandle(m_File));
   m_LastError = ERROR_SUCCESS;
 
-  DWORD bytesRead = ToDWord(buffSize);
+  DWORD bytesRead = nb::ToDWord(buffSize);
   if (!::ReadFile(m_File, buff, bytesRead, &bytesRead, nullptr))
   {
     m_LastError = ::GetLastError();
@@ -46,18 +46,18 @@ bool CNBFile::Read(void *buff, size_t &buffSize)
   }
   else
   {
-    buffSize = ToSizeT(bytesRead);
+    buffSize = nb::ToSizeT(bytesRead);
   }
   return (m_LastError == ERROR_SUCCESS);
 }
 
-bool CNBFile::Write(const void *buff, const size_t buffSize)
+bool CNBFile::Write(const void * buff, const size_t buffSize)
 {
-  DebugAssert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(CheckHandle(m_File));
   m_LastError = ERROR_SUCCESS;
 
   DWORD bytesWritten;
-  if (!::WriteFile(m_File, buff, ToDWord(buffSize), &bytesWritten, nullptr))
+  if (!::WriteFile(m_File, buff, nb::ToDWord(buffSize), &bytesWritten, nullptr))
   {
     m_LastError = ::GetLastError();
   }
@@ -66,7 +66,7 @@ bool CNBFile::Write(const void *buff, const size_t buffSize)
 
 int64_t CNBFile::GetFileSize() const
 {
-  DebugAssert(m_File != INVALID_HANDLE_VALUE);
+  DebugAssert(CheckHandle(m_File));
   m_LastError = ERROR_SUCCESS;
 
   LARGE_INTEGER fileSize;
@@ -80,7 +80,7 @@ int64_t CNBFile::GetFileSize() const
 
 void CNBFile::Close()
 {
-  if (m_File != INVALID_HANDLE_VALUE)
+  if (CheckHandle(m_File))
   {
     SAFE_CLOSE_HANDLE(m_File);
     m_File = INVALID_HANDLE_VALUE;
@@ -92,7 +92,7 @@ DWORD CNBFile::LastError() const
   return m_LastError;
 }
 
-DWORD CNBFile::SaveFile(const wchar_t *fileName, const rde::vector<char> &fileContent)
+DWORD CNBFile::SaveFile(const wchar_t * fileName, const nb::vector_t<char> & fileContent)
 {
   CNBFile f;
   if (f.OpenWrite(fileName) && !fileContent.empty())
@@ -102,7 +102,7 @@ DWORD CNBFile::SaveFile(const wchar_t *fileName, const rde::vector<char> &fileCo
   return f.LastError();
 }
 
-DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
+DWORD CNBFile::SaveFile(const wchar_t * fileName, const char * fileContent)
 {
   DebugAssert(fileContent);
   CNBFile f;
@@ -113,7 +113,7 @@ DWORD CNBFile::SaveFile(const wchar_t *fileName, const char *fileContent)
   return f.LastError();
 }
 
-DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char> &fileContent)
+DWORD CNBFile::LoadFile(const wchar_t * fileName, nb::vector_t<char> & fileContent)
 {
   fileContent.clear();
 
@@ -129,20 +129,20 @@ DWORD CNBFile::LoadFile(const wchar_t *fileName, rde::vector<char> &fileContent)
     {
       return ERROR_SUCCESS;
     }
-    size_t s = ToSizeT(fs);
+    size_t s = nb::ToSizeT(fs);
     fileContent.resize(s);
     f.Read(&fileContent[0], s);
   }
   return f.LastError();
 }
 
-void FarWrapText(const UnicodeString Text, TStrings *Result, intptr_t MaxWidth)
+void FarWrapText(const UnicodeString & Text, TStrings * Result, int32_t MaxWidth)
 {
   size_t TabSize = 8;
   TStringList Lines;
   Lines.SetText(Text);
   TStringList WrappedLines;
-  for (intptr_t Index = 0; Index < Lines.GetCount(); ++Index)
+  for (int32_t Index = 0; Index < Lines.GetCount(); ++Index)
   {
     UnicodeString WrappedLine = Lines.GetString(Index);
     if (!WrappedLine.IsEmpty())
@@ -155,7 +155,7 @@ void FarWrapText(const UnicodeString Text, TStrings *Result, intptr_t MaxWidth)
       WrappedLines.SetText(WrappedLine);
       for (intptr_t WrappedIndex = 0; WrappedIndex < WrappedLines.GetCount(); ++WrappedIndex)
       {
-        UnicodeString FullLine = WrappedLines.GetString(WrappedIndex);
+        UnicodeString FullLine = WrappedLines.GetString(nb::ToInt32(WrappedIndex));
         do
         {
           // WrapText does not wrap when not possible, enforce it
@@ -164,12 +164,12 @@ void FarWrapText(const UnicodeString Text, TStrings *Result, intptr_t MaxWidth)
           UnicodeString Line = FullLine.SubString(1, MaxWidth);
           FullLine.Delete(1, MaxWidth);
 
-          intptr_t P;
+          int32_t P;
           while ((P = Line.Pos(L'\t')) > 0)
           {
             Line.Delete(P, 1);
             Line.Insert(::StringOfChar(' ',
-                ((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1),
+              nb::ToInt32(((P / TabSize) + ((P % TabSize) > 0 ? 1 : 0)) * TabSize - P + 1)),
               P);
           }
           Result->Add(Line);

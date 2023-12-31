@@ -721,12 +721,12 @@ typedef BasicCStringRef<char> CStringRef;
 typedef BasicCStringRef<wchar_t> WCStringRef;
 
 /** A formatting error such as invalid format string. */
-class FormatError : public std::runtime_error {
+class FMT_API FormatError : public std::runtime_error {
  public:
   explicit FormatError(CStringRef message)
   : std::runtime_error(message.c_str()) {}
   FormatError(const FormatError &ferr) : std::runtime_error(ferr) {}
-  FMT_API ~FormatError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
+  ~FormatError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
 };
 
 namespace internal {
@@ -784,7 +784,7 @@ class Buffer {
   std::size_t size_;
   std::size_t capacity_;
 
-  Buffer(T *ptr = FMT_NULL, std::size_t capacity = 0)
+  Buffer(T *ptr = FMT_NULL, std::size_t capacity = 0) FMT_NOEXCEPT
     : ptr_(ptr), size_(0), capacity_(capacity) {}
 
   /**
@@ -855,7 +855,7 @@ namespace internal {
 
 // A memory buffer for trivially copyable/constructible types with the first
 // SIZE elements stored in the object itself.
-template <typename T, std::size_t SIZE, typename Allocator = custom_nballocator_t<T> >
+template <typename T, std::size_t SIZE, typename Allocator = nb::custom_nballocator_t<T> >
 class MemoryBuffer : private Allocator, public Buffer<T> {
  private:
   T data_[SIZE];
@@ -869,7 +869,7 @@ class MemoryBuffer : private Allocator, public Buffer<T> {
   void grow(std::size_t size) FMT_OVERRIDE;
 
  public:
-  explicit MemoryBuffer(const Allocator &alloc = Allocator())
+  explicit MemoryBuffer(const Allocator &alloc = Allocator()) FMT_NOEXCEPT
       : Allocator(alloc), Buffer<T>(data_, SIZE) {}
   ~MemoryBuffer() FMT_OVERRIDE { deallocate(); }
 
@@ -1164,7 +1164,7 @@ inline void format_decimal(Char *buffer, UInt value, unsigned num_digits) {
 // It is only provided for Windows since other systems support UTF-8 natively.
 class UTF8ToUTF16 {
  private:
-  MemoryBuffer<wchar_t, INLINE_BUFFER_SIZE, custom_nballocator_t<wchar_t> > buffer_;
+  MemoryBuffer<wchar_t, INLINE_BUFFER_SIZE, nb::custom_nballocator_t<wchar_t> > buffer_;
 
  public:
   FMT_API explicit UTF8ToUTF16(StringRef s);
@@ -1178,10 +1178,10 @@ class UTF8ToUTF16 {
 // It is only provided for Windows since other systems support UTF-8 natively.
 class UTF16ToUTF8 {
  private:
-  MemoryBuffer<char, INLINE_BUFFER_SIZE, custom_nballocator_t<char> > buffer_;
+  MemoryBuffer<char, INLINE_BUFFER_SIZE, nb::custom_nballocator_t<char> > buffer_;
 
  public:
-  UTF16ToUTF8() {}
+  UTF16ToUTF8() FMT_NOEXCEPT {}
   FMT_API explicit UTF16ToUTF8(WStringRef s);
   operator StringRef() const { return StringRef(&buffer_[0], size()); }
   size_t size() const { return buffer_.size() - 1; }
@@ -1600,7 +1600,7 @@ struct NamedArgWithType : NamedArg<Char> {
 
 class RuntimeError : public std::runtime_error {
  protected:
-  RuntimeError() : std::runtime_error("") {}
+  RuntimeError() FMT_NOEXCEPT : std::runtime_error("") {}
   RuntimeError(const RuntimeError &rerr) : std::runtime_error(rerr) {}
   FMT_API ~RuntimeError() FMT_DTOR_NOEXCEPT FMT_OVERRIDE;
 };
@@ -1614,14 +1614,14 @@ class ArgList {
  private:
   // To reduce compiled code size per formatting function call, types of first
   // MAX_PACKED_ARGS arguments are passed in the types_ field.
-  uint64_t types_;
+  uint64_t types_{0};
   union {
     // If the number of arguments is less than MAX_PACKED_ARGS, the argument
     // values are stored in values_, otherwise they are stored in args_.
     // This is done to reduce compiled code size as storing larger objects
     // may require more code (at least on x86-64) even if the same amount of
     // data is actually copied to stack. It saves ~10% on the bloat test.
-    const internal::Value *values_;
+    const internal::Value *values_{nullptr};
     const internal::Arg *args_;
   };
 
@@ -1648,7 +1648,7 @@ class ArgList {
   /** Returns the argument at specified index. */
   internal::Arg operator[](unsigned index) const {
     using internal::Arg;
-    Arg arg;
+    Arg arg{};
     bool use_values = type(MAX_PACKED_ARGS - 1) == Arg::NONE;
     if (index < MAX_PACKED_ARGS) {
       Arg::Type arg_type = type(index);
@@ -1907,7 +1907,7 @@ struct FormatSpec : AlignSpec {
   char type_;
 
   FormatSpec(
-    unsigned width = 0, char type = 0, wchar_t fill = ' ')
+    unsigned width = 0, char type = 0, wchar_t fill = ' ') FMT_NOEXCEPT
   : AlignSpec(width, fill), flags_(0), precision_(-1), type_(type) {}
 
   bool flag(unsigned f) const { return (flags_ & f) != 0; }
@@ -2070,7 +2070,7 @@ template <typename Char>
 class ArgMap {
  private:
   typedef std::vector<
-    std::pair<fmt::BasicStringRef<Char>, internal::Arg>, custom_nballocator_t<std::pair<fmt::BasicStringRef<Char>, internal::Arg>> > MapType;
+    std::pair<fmt::BasicStringRef<Char>, internal::Arg>, nb::custom_nballocator_t<std::pair<fmt::BasicStringRef<Char>, internal::Arg>> > MapType;
   typedef typename MapType::value_type Pair;
 
   MapType map_;
@@ -2584,7 +2584,7 @@ class SystemError : public internal::RuntimeError {
 
   typedef char Char;  // For FMT_VARIADIC_CTOR.
 
-  SystemError() {}
+  SystemError() FMT_NOEXCEPT {}
 
  public:
   /**
@@ -3162,6 +3162,7 @@ void BasicWriter<Char>::write_double(T value, const Spec &spec) {
     type = 'f';
 #endif
     // Fall through.
+    // [[fallthrough]]
   case 'E': case 'G': case 'A':
     upper = true;
     break;
@@ -3221,7 +3222,7 @@ void BasicWriter<Char>::write_double(T value, const Spec &spec) {
 
   // Build format string.
   enum { MAX_FORMAT_SIZE = 10}; // longest format: %#-*.*Lg
-  Char format[MAX_FORMAT_SIZE];
+  Char format[MAX_FORMAT_SIZE]{};
   Char *format_ptr = format;
   *format_ptr++ = '%';
   unsigned width_for_sprintf = width;
@@ -3333,13 +3334,13 @@ void BasicWriter<Char>::write_double(T value, const Spec &spec) {
   accessed as a C string with ``out.c_str()``.
   \endrst
  */
-template <typename Char, typename Allocator = custom_nballocator_t<Char> >
+template <typename Char, typename Allocator = nb::custom_nballocator_t<Char> >
 class BasicMemoryWriter : public BasicWriter<Char> {
  private:
   internal::MemoryBuffer<Char, internal::INLINE_BUFFER_SIZE, Allocator> buffer_;
 
  public:
-  explicit BasicMemoryWriter(const Allocator& alloc = Allocator())
+  explicit BasicMemoryWriter(const Allocator& alloc = Allocator()) FMT_NOEXCEPT
     : BasicWriter<Char>(buffer_), buffer_(alloc) {}
 
 #if FMT_USE_RVALUE_REFERENCES
@@ -3358,15 +3359,15 @@ class BasicMemoryWriter : public BasicWriter<Char> {
     Moves the content of the other ``BasicMemoryWriter`` object to this one.
     \endrst
    */
-  BasicMemoryWriter &operator=(BasicMemoryWriter &&other) {
+  BasicMemoryWriter &operator=(BasicMemoryWriter &&other) FMT_NOEXCEPT {
     buffer_ = std::move(other.buffer_);
     return *this;
   }
 #endif
 };
 
-typedef BasicMemoryWriter<char, custom_nballocator_t<char> > MemoryWriter;
-typedef BasicMemoryWriter<wchar_t, custom_nballocator_t<wchar_t> > WMemoryWriter;
+typedef BasicMemoryWriter<char, nb::custom_nballocator_t<char> > MemoryWriter;
+typedef BasicMemoryWriter<wchar_t, nb::custom_nballocator_t<wchar_t> > WMemoryWriter;
 
 /**
   \rst
@@ -3532,8 +3533,8 @@ class FormatInt {
   // Buffer should be large enough to hold all digits (digits10 + 1),
   // a sign and a null character.
   enum {BUFFER_SIZE = std::numeric_limits<ULongLong>::digits10 + 3};
-  mutable char buffer_[BUFFER_SIZE] = {};
-  char *str_ = nullptr;
+  mutable char buffer_[BUFFER_SIZE]{};
+  char *str_{nullptr};
 
   // Formats value in reverse and returns the number of digits.
   char *format_decimal(ULongLong value) {
@@ -3809,7 +3810,7 @@ unsigned parse_nonnegative_int(const Char *&s) {
   assert('0' <= *s && *s <= '9');
   unsigned value = 0;
   // Convert to unsigned to prevent a warning.
-  unsigned max_int = (std::numeric_limits<int>::max)();
+  constexpr unsigned max_int = (std::numeric_limits<int>::max)();
   unsigned big = max_int / 10;
   do {
     // Check for overflow.
@@ -3891,7 +3892,7 @@ const Char *BasicFormatter<Char, ArgFormatter>::format(
     const Char *&format_str, const internal::Arg &arg) {
   using internal::Arg;
   const Char *s = format_str;
-  typename ArgFormatter::SpecType spec;
+  typename ArgFormatter::SpecType spec{};
   if (*s == ':') {
     if (arg.type == Arg::CUSTOM) {
       arg.custom.format(this, arg.custom.value, &s);
@@ -3992,7 +3993,7 @@ const Char *BasicFormatter<Char, ArgFormatter>::format(
       default:
         FMT_THROW(FormatError("width is not integer"));
       }
-      unsigned max_int = (std::numeric_limits<int>::max)();
+      constexpr unsigned max_int = (std::numeric_limits<int>::max)();
       if (value > max_int)
         FMT_THROW(FormatError("number is too big"));
       spec.width_ = static_cast<int>(value);
@@ -4031,7 +4032,7 @@ const Char *BasicFormatter<Char, ArgFormatter>::format(
           default:
             FMT_THROW(FormatError("precision is not integer"));
         }
-        unsigned max_int = (std::numeric_limits<int>::max)();
+        constexpr unsigned max_int = (std::numeric_limits<int>::max)();
         if (value > max_int)
           FMT_THROW(FormatError("number is too big"));
         spec.precision_ = static_cast<int>(value);

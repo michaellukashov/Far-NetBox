@@ -51,7 +51,7 @@ typedef struct SSPIContextStruct SSPIContext;
 static ULONG negotiateMaxTokenSize = 0;
 static ULONG ntlmMaxTokenSize = 0;
 static HINSTANCE hSecDll = NULL;
-static PSecurityFunctionTableA pSFT = NULL;
+static PSecurityFunctionTable pSFT = NULL;
 static int initialized = 0;
 
 /*
@@ -60,9 +60,9 @@ static int initialized = 0;
 static int getMaxTokenSize(char *package, ULONG * maxTokenSize)
 {
     SECURITY_STATUS status;
-    SecPkgInfoA *packageSecurityInfo = NULL;
+    SecPkgInfo *packageSecurityInfo = NULL;
 
-    status = pSFT->QuerySecurityPackageInfoA(package, &packageSecurityInfo);
+    status = pSFT->QuerySecurityPackageInfo(package, &packageSecurityInfo);
     if (status == SEC_E_OK) {
         *maxTokenSize = packageSecurityInfo->cbMaxToken;
         if (pSFT->FreeContextBuffer(packageSecurityInfo) != SEC_E_OK) {
@@ -83,11 +83,11 @@ static int getMaxTokenSize(char *package, ULONG * maxTokenSize)
  */
 static void initDll(HINSTANCE hSecDll)
 {
-    INIT_SECURITY_INTERFACE_A initSecurityInterface = NULL;
+    INIT_SECURITY_INTERFACE initSecurityInterface = NULL;
 
     initSecurityInterface =
-        (INIT_SECURITY_INTERFACE_A) GetProcAddress(hSecDll,
-                                                 (LPCSTR)SECURITY_ENTRYPOINTA);
+        (INIT_SECURITY_INTERFACE) GetProcAddress(hSecDll,
+                                                 SECURITY_ENTRYPOINT);
 
     if (initSecurityInterface == NULL) {
         NE_DEBUG(NE_DBG_HTTPAUTH,
@@ -133,7 +133,7 @@ int ne_sspi_init(void)
 
     NE_DEBUG(NE_DBG_SOCKET, "sspiInit\n");
     NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Loading security dll.\n");
-    hSecDll = LoadLibraryA("security.dll");
+    hSecDll = LoadLibrary("security.dll");
 
     if (hSecDll == NULL) {
         NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Loading of security dll [fail].\n");
@@ -183,7 +183,7 @@ int ne_sspi_deinit(void)
 }
 
 /*
- * Simplification wrapper arround AcquireCredentialsHandle as most of
+ * Simplification wrapper around AcquireCredentialsHandle as most of
  * the parameters do not change.
  */
 static int acquireCredentialsHandle(CredHandle * credentials, char *package)
@@ -192,7 +192,7 @@ static int acquireCredentialsHandle(CredHandle * credentials, char *package)
     TimeStamp timestamp;
 
     status =
-        pSFT->AcquireCredentialsHandleA(NULL, package, SECPKG_CRED_OUTBOUND,
+        pSFT->AcquireCredentialsHandle(NULL, package, SECPKG_CRED_OUTBOUND,
                                        NULL, NULL, NULL, NULL, credentials,
                                        &timestamp);
 
@@ -206,7 +206,7 @@ static int acquireCredentialsHandle(CredHandle * credentials, char *package)
 }
 
 /*
- * Wrapper arround initializeSecurityContext.  Supplies several
+ * Wrapper around initializeSecurityContext.  Supplies several
  * default parameters as well as logging in case of errors.
  */
 static SECURITY_STATUS
@@ -219,7 +219,7 @@ initializeSecurityContext(CredHandle * credentials, CtxtHandle * context,
     SECURITY_STATUS status;
 
     status =
-        pSFT->InitializeSecurityContextA(credentials, context, spn, contextReq,
+        pSFT->InitializeSecurityContext(credentials, context, spn, contextReq,
                                         0, SECURITY_NETWORK_DREP, inBuffer, 0,
                                         newContext, outBuffer,
                                         &contextAttributes, NULL);
@@ -284,7 +284,7 @@ static int base64ToBuffer(const char *token, SecBufferDesc * secBufferDesc)
 
     buffer->BufferType = SECBUFFER_TOKEN;
     buffer->cbBuffer =
-        (unsigned long)ne_unbase64(token, (unsigned char **) &buffer->pvBuffer);
+        ne_unbase64(token, (unsigned char **) &buffer->pvBuffer);
 
     if (buffer->cbBuffer == 0) {
         NE_DEBUG(NE_DBG_HTTPAUTH,
@@ -335,7 +335,7 @@ static int freeBuffer(SecBufferDesc * secBufferDesc)
  * Canonicalize a server host name if possible.
  * The returned pointer must be freed after usage.
  */
-static const char *canonical_hostname(const char *serverName)
+static char *canonical_hostname(const char *serverName)
 {
     const char *hostname;
     ne_sock_addr *addr;
@@ -365,7 +365,7 @@ static const char *canonical_hostname(const char *serverName)
 int ne_sspi_create_context(void **context, char *serverName, int ntlm)
 {
     SSPIContext *sspiContext;
-    const char *canonicalName;
+    char *canonicalName;
 
     if (initialized <= 0) {
         return -1;
@@ -383,7 +383,7 @@ int ne_sspi_create_context(void **context, char *serverName, int ntlm)
         /* Canonicalize to conform to GSSAPI behavior */
         canonicalName = canonical_hostname(serverName);
         sspiContext->serverName = ne_concat("HTTP/", canonicalName, NULL);
-        ne_free((void*)canonicalName);
+        ne_free(canonicalName);
         NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Created context with SPN '%s'\n",
                  sspiContext->serverName);
         sspiContext->maxTokenSize = negotiateMaxTokenSize;
@@ -427,7 +427,7 @@ initSingleEmptyBuffer(SecBufferDesc * bufferDesc, SecBuffer * buffer)
 }
 
 /*
- * Destroyes the supplied context.
+ * Destroys the supplied context.
  */
 int ne_sspi_destroy_context(void *context)
 {

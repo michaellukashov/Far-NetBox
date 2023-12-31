@@ -1,16 +1,17 @@
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #define _int64 int64_t
-//---------------------------------------------------------------------------
+
 #define MPEXT_NO_ZLIB
 #define MPEXT_NO_GSS
 #define _AFX_ENABLE_INLINES
 #define _AFX_NOFORCE_LIBS
-//---------------------------------------------------------------------------
+
 #ifndef LENOF
 #define LENOF(x) (_countof(x))
 #endif
-//---------------------------------------------------------------------------
+
 #define _ATL_MIN_CRT
 #ifndef _ATL_NO_DEFAULT_LIBS
 #define _ATL_NO_DEFAULT_LIBS
@@ -20,10 +21,9 @@
 #include "afxole.h"
 #include "../src/mfc/oleimpl2.h"
 #include "../src/mfc/afximpl.h"
-//---------------------------------------------------------------------------
+
 #include <afx.h>
 //#include <wtypes.h>
-#include <afxmt.h>
 
 // STL includes
 #include <rdestl/list.h>
@@ -31,26 +31,25 @@
 #include <rdestl/vector.h>
 #include <rdestl/set.h>
 #include <algorithm>
-//---------------------------------------------------------------------------
+
 class CFileFix;
 #define CFile CFileFix
-//---------------------------------------------------------------------------
+
 // #pragma hdrstop
-//---------------------------------------------------------------------------
+
 #include <Global.h>
 // these create conflict with afxwin.h
 #undef BEGIN_MESSAGE_MAP
 #undef END_MESSAGE_MAP
 
 #include <FzApiStructures.h>
-//---------------------------------------------------------------------------
+
 #include <oleauto.h>
 #include <atlconv.h>
-#include <afxdisp.h>
 #include <afxconv.h>
-//---------------------------------------------------------------------------
+
 #define _strlwr strlwr
-//---------------------------------------------------------------------------
+
 #if 0
 const int FILEEXISTS_OVERWRITE = 0;
 const int FILEEXISTS_RESUME = 1;
@@ -58,24 +57,24 @@ const int FILEEXISTS_RENAME = 2;
 const int FILEEXISTS_SKIP = 3;
 const int FILEEXISTS_COMPLETE = 4;
 #endif // if 0
-//---------------------------------------------------------------------------
+
 class t_ffam_statusmessage
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CString status;
-  int type;
-  BOOL post;
+  int32_t type{0};
+  BOOL post{FALSE};
 };
-//---------------------------------------------------------------------------
+
 struct t_ffam_transferstatus
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  int64_t bytes;
-  int64_t transfersize;
-  BOOL bFileTransfer;
+  int64_t bytes{0};
+  int64_t transfersize{0};
+  BOOL bFileTransfer{FALSE};
 };
-//---------------------------------------------------------------------------
+
 #undef CFile
 
 class CFileFix : public CFile
@@ -96,11 +95,11 @@ public:
       return 0;   // avoid Win32 "null-read"
     }
 
-    DebugAssert(lpBuf != NULL);
+    DebugAssert(lpBuf != nullptr);
     DebugAssert(AfxIsValidAddress(lpBuf, nCount));
 
     DWORD dwRead;
-    if (!::ReadFile(static_cast<HANDLE>(m_hFile), lpBuf, nCount, &dwRead, NULL))
+    if (!::ReadFile(static_cast<HANDLE>(m_hFile), lpBuf, nCount, &dwRead, nullptr))
     {
       // The only change from MFC CFile::Read is m_strFileName
       CFileException::ThrowOsError(static_cast<LONG>(::GetLastError()), m_strFileName);
@@ -117,9 +116,9 @@ public:
     delete p;
   }*/
 };
-//---------------------------------------------------------------------------
+
 #define CFile CFileFix
-//---------------------------------------------------------------------------
+
 struct CStringDataA
 {
   long nRefs;             // reference count
@@ -132,11 +131,11 @@ struct CStringDataA
     return (CHAR *)(this + 1);
   }
 };
-//---------------------------------------------------------------------------
+
 extern LPCSTR _afxPchNilA;
 extern CStringDataA* _afxDataNilA;
 #define afxEmptyStringA ((CStringA&)*(CStringA*)&_afxPchNilA)
-//---------------------------------------------------------------------------
+
 #if 0
 class CStringA
 {
@@ -165,7 +164,7 @@ public:
   CStringA(LPCSTR lpsz)
   {
     Init();
-    if (lpsz != NULL && HIWORD(lpsz) == NULL)
+    if (lpsz != nullptr && HIWORD(lpsz) == nullptr)
     {
       DebugFail();
     }
@@ -175,7 +174,7 @@ public:
       if (nLen != 0)
       {
         AllocBuffer(nLen);
-        memcpy(m_pchData, lpsz, nLen*sizeof(char));
+        nbstr_memcpy(m_pchData, lpsz, nLen*sizeof(char));
       }
     }
   }
@@ -229,7 +228,7 @@ public:
 
   const CStringA & operator=(LPCSTR lpsz)
   {
-    DebugAssert(lpsz == NULL || AfxIsValidString(lpsz));
+    DebugAssert(lpsz == nullptr || AfxIsValidString(lpsz));
     AssignCopy(SafeStrlen(lpsz), lpsz);
     return *this;
   }
@@ -321,7 +320,7 @@ public:
     LPSTR lpsz = strchr(m_pchData + nStart, (unsigned char)ch);
 
     // return -1 if not found and index otherwise
-    return (lpsz == NULL) ? -1 : (int)(lpsz - m_pchData);
+    return (lpsz == nullptr) ? -1 : (int)(lpsz - m_pchData);
   }
 
   // find a sub-string (like strstr)
@@ -344,7 +343,7 @@ public:
     LPSTR lpsz = strstr(m_pchData + nStart, lpszSub);
 
     // return -1 for not found, distance from beginning otherwise
-    return (lpsz == NULL) ? -1 : (int)(lpsz - m_pchData);
+    return (lpsz == nullptr) ? -1 : (int)(lpsz - m_pchData);
   }
 
   void MakeUpper()
@@ -358,7 +357,7 @@ protected:
 
   CStringDataA * GetData() const
   {
-    DebugAssert(m_pchData != NULL); return ((CStringDataA*)m_pchData)-1;
+    DebugAssert(m_pchData != nullptr); return ((CStringDataA*)m_pchData)-1;
   }
 
   void Init()
@@ -381,7 +380,7 @@ protected:
     else
     {
       dest.AllocBuffer(nNewLen);
-      memcpy(dest.m_pchData, m_pchData+nCopyIndex, nCopyLen*sizeof(char));
+      nbstr_memcpy(dest.m_pchData, m_pchData+nCopyIndex, nCopyLen*sizeof(char));
     }
   }
 
@@ -414,7 +413,7 @@ protected:
   void AssignCopy(int nSrcLen, LPCSTR lpszSrcData)
   {
     AllocBeforeWrite(nSrcLen);
-    memcpy(m_pchData, lpszSrcData, nSrcLen*sizeof(char));
+    nbstr_memcpy(m_pchData, lpszSrcData, nSrcLen*sizeof(char));
     GetData()->nDataLength = nSrcLen;
     m_pchData[nSrcLen] = '\0';
   }
@@ -459,8 +458,8 @@ protected:
     if (nNewLen != 0)
     {
       AllocBuffer(nNewLen);
-      memcpy(m_pchData, lpszSrc1Data, nSrc1Len*sizeof(char));
-      memcpy(m_pchData+nSrc1Len, lpszSrc2Data, nSrc2Len*sizeof(char));
+      nbstr_memcpy(m_pchData, lpszSrc1Data, nSrc1Len*sizeof(char));
+      nbstr_memcpy(m_pchData+nSrc1Len, lpszSrc2Data, nSrc2Len*sizeof(char));
     }
   }
 
@@ -481,13 +480,13 @@ protected:
       // we have to grow the buffer, use the ConcatCopy routine
       CStringDataA* pOldData = GetData();
       ConcatCopy(GetData()->nDataLength, m_pchData, nSrcLen, lpszSrcData);
-      DebugAssert(pOldData != NULL);
+      DebugAssert(pOldData != nullptr);
       CStringA::Release(pOldData);
     }
     else
     {
       // fast concatenation when buffer big enough
-      memcpy(m_pchData+GetData()->nDataLength, lpszSrcData, nSrcLen*sizeof(char));
+      nbstr_memcpy(m_pchData+GetData()->nDataLength, lpszSrcData, nSrcLen*sizeof(char));
       GetData()->nDataLength += nSrcLen;
       DebugAssert(GetData()->nDataLength <= GetData()->nAllocLength);
       m_pchData[GetData()->nDataLength] = '\0';
@@ -501,7 +500,7 @@ protected:
       CStringDataA* pData = GetData();
       Release();
       AllocBuffer(pData->nDataLength);
-      memcpy(m_pchData, pData->data(), (pData->nDataLength+1)*sizeof(char));
+      nbstr_memcpy(m_pchData, pData->data(), (pData->nDataLength+1)*sizeof(char));
     }
     DebugAssert(GetData()->nRefs <= 1);
   }
@@ -518,25 +517,28 @@ protected:
 
   static int PASCAL SafeStrlen(LPCSTR lpsz)
   {
-    return (lpsz == NULL) ? 0 : strlen(lpsz);
+    return (lpsz == nullptr) ? 0 : strlen(lpsz);
   }
 };
-//---------------------------------------------------------------------------
+
 inline bool AFXAPI operator==(const CStringA & s1, LPCSTR s2)
 {
   return s1.Compare(s2) == 0;
 }
-//---------------------------------------------------------------------------
+
 inline bool AFXAPI operator!=(const CStringA & s1, LPCSTR s2)
 {
   return s1.Compare(s2) != 0;
 }
-//---------------------------------------------------------------------------
+
 inline CStringA AFXAPI operator+(const CStringA & string1, char ch)
 {
   CStringA s;
   s.ConcatCopy(string1.GetData()->nDataLength, string1.m_pchData, 1, &ch);
   return s;
 }
-//---------------------------------------------------------------------------
+
+#include <FileZillaApi.h>
+#include <FileZillaOpt.h>
+
 #endif

@@ -1,6 +1,6 @@
 /* 
    HTTP session handling
-   Copyright (C) 1999-2009, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -43,6 +43,7 @@
 #include "ne_dates.h"
 
 #include "ne_private.h"
+#include "ne_privssl.h"
 
 /* Destroy a a list of hooks. */
 static void destroy_hooks(struct hook *hooks)
@@ -119,7 +120,7 @@ void ne_session_destroy(ne_session *sess)
     if (sess->socks_password) ne_free(sess->socks_password);
 
 #ifdef NE_HAVE_SSL
-    if (sess->ssl_context)
+    if (sess->ssl_context && sess->ssl_context->ctx)
         ne_ssl_context_destroy(sess->ssl_context);
 
     if (sess->server_cert)
@@ -594,7 +595,8 @@ void ne__ssl_set_verify_err(ne_session *sess, int failures)
     };
     int n, flag = 0;
 
-    strcpy(sess->error, _("Server certificate verification failed: "));
+    ne_strnzcpy(sess->error, _("Server certificate verification failed: "),
+                sizeof sess->error);
 
     for (n = 0; reasons[n].bit; n++) {
 	if (failures & reasons[n].bit) {
@@ -611,7 +613,7 @@ int ne__ssl_match_hostname(const char *cn, size_t cnlen, const char *hostname)
 {
     const char *dot;
 
-    NE_DEBUG(NE_DBG_SSL, "ssl: Match common name '%s' against '%s'\n",
+    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "ssl: Match common name '%s' against '%s'\n",
              cn, hostname);
 
     if (strncmp(cn, "*.", 2) == 0 && cnlen > 2

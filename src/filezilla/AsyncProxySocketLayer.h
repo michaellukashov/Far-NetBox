@@ -10,7 +10,7 @@ can connect through SOCKS4/5 and HTTP 1.1 proxies. This class works
 as semi-transparent layer between CAsyncSocketEx and the actual socket.
 This class is used in FileZilla, a powerful open-source FTP client.
 It can be found under https://sourceforge.net/projects/filezilla/
-For more information about HTTP 1.1 goto https://tools.ietf.org/html/rfc2616
+For more information about HTTP 1.1 goto https://datatracker.ietf.org/doc/html/rfc2616
 
 How to use?
 -----------
@@ -80,8 +80,7 @@ If you use this class in commercial applications, please send a short message
 to tim.kosse@gmx.de
 */
 
-#ifndef AsyncProxySocketLayerH
-#define AsyncProxySocketLayerH
+#pragma once
 
 #include "AsyncSocketExLayer.h"
 
@@ -112,7 +111,7 @@ public:
   virtual BOOL GetPeerName(SOCKADDR * lpSockAddr, int * lpSockAddrLen);
 
 protected:
-  virtual BOOL Accept(CAsyncSocketEx & rConnectedSocket, SOCKADDR * lpSockAddr = NULL, int * lpSockAddrLen = NULL);
+  virtual BOOL Accept(CAsyncSocketEx & rConnectedSocket, SOCKADDR * lpSockAddr = nullptr, int * lpSockAddrLen = nullptr);
   virtual void OnReceive(int nErrorCode);
   virtual void OnConnect(int nErrorCode);
   virtual int Send(const void * lpBuf, int nBufLen, int nFlags = 0);
@@ -122,7 +121,7 @@ private:
   void Reset();
   void ClearBuffer();    // Clears the receive buffer
   void ConnectionEstablished();
-  void ConnectionFailed(int nErrorCode, char * Str = NULL);
+  void ConnectionFailed(int nErrorCode, char * Str = nullptr);
   char *m_pRecvBuffer;  // The receive buffer
   int m_nRecvBufferLen;  // Length of the RecvBuffer
   int m_nRecvBufferPos;  // Position within the receive buffer
@@ -177,4 +176,4 @@ struct t_ListenSocketCreatedStruct
 #define PROXYOP_CONNECT 1
 #define PROXYOP_LISTEN 2
 
-#endif // AsyncProxySocketLayerH
+

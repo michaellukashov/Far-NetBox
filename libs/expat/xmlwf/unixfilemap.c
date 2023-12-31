@@ -7,7 +7,11 @@
                                  |_| XML parser
 
    Copyright (c) 1997-2000 Thai Open Source Software Center Ltd
-   Copyright (c) 2000-2017 Expat development team
+   Copyright (c) 2000      Clark Cooper <coopercc@users.sourceforge.net>
+   Copyright (c) 2001-2002 Fred L. Drake, Jr. <fdrake@users.sourceforge.net>
+   Copyright (c) 2006      Karl Waclawek <karl@waclawek.net>
+   Copyright (c) 2016-2017 Sebastian Pipping <sebastian@pipping.org>
+   Copyright (c) 2017      Rhodri James <rhodri@wildebeest.org.uk>
    Licensed under the MIT license:
 
    Permission is  hereby granted,  free of charge,  to any  person obtaining
@@ -40,23 +44,22 @@
 #include <unistd.h>
 
 #ifndef MAP_FILE
-#define MAP_FILE 0
+#  define MAP_FILE 0
 #endif
 
 #include "xmltchar.h"
 #include "filemap.h"
 
 #ifdef XML_UNICODE_WCHAR_T
-# define XML_FMT_STR "ls"
+#  define XML_FMT_STR "ls"
 #else
-# define XML_FMT_STR "s"
+#  define XML_FMT_STR "s"
 #endif
 
 int
 filemap(const tchar *name,
         void (*processor)(const void *, size_t, const tchar *, void *arg),
-        void *arg)
-{
+        void *arg) {
   int fd;
   size_t nbytes;
   struct stat sb;
@@ -72,14 +75,14 @@ filemap(const tchar *name,
     close(fd);
     return 0;
   }
-  if (!S_ISREG(sb.st_mode)) {
+  if (! S_ISREG(sb.st_mode)) {
     close(fd);
     fprintf(stderr, "%" XML_FMT_STR ": not a regular file\n", name);
     return 0;
   }
   if (sb.st_size > XML_MAX_CHUNK_LEN) {
     close(fd);
-    return 2;  /* Cannot be passed to XML_Parse in one go */
+    return 2; /* Cannot be passed to XML_Parse in one go */
   }
 
   nbytes = sb.st_size;
@@ -90,8 +93,8 @@ filemap(const tchar *name,
     close(fd);
     return 1;
   }
-  p = (void *)mmap((void *)0, (size_t)nbytes, PROT_READ,
-                   MAP_FILE|MAP_PRIVATE, fd, (off_t)0);
+  p = (void *)mmap((void *)0, (size_t)nbytes, PROT_READ, MAP_FILE | MAP_PRIVATE,
+                   fd, (off_t)0);
   if (p == (void *)-1) {
     tperror(name);
     close(fd);

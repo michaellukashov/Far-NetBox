@@ -45,10 +45,10 @@
 #  define WIN32_LEAN_AND_MEAN
 # endif
 # if defined(NOMINMAX) || defined(FMT_WIN_MINMAX)
-#  include <windows.h>
+#  include <Windows.h>
 # else
 #  define NOMINMAX
-#  include <windows.h>
+#  include <Windows.h>
 #  undef NOMINMAX
 # endif
 #endif

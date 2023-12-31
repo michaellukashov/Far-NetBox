@@ -31,7 +31,7 @@ template <bool IsSigned>
 struct IntChecker {
   template <typename T>
   static bool fits_in_int(T value) {
-    unsigned max = std::numeric_limits<int>::max();
+    constexpr unsigned max = std::numeric_limits<int>::max();
     return value <= max;
   }
   static bool fits_in_int(bool) { return true; }
@@ -198,7 +198,7 @@ class WidthHandler : public ArgVisitor<WidthHandler, unsigned> {
       spec_.align_ = ALIGN_LEFT;
       width = 0 - width;
     }
-    unsigned int_max = std::numeric_limits<int>::max();
+    constexpr unsigned int_max = std::numeric_limits<int>::max();
     if (width > int_max)
       FMT_THROW(FormatError("number is too big"));
     return static_cast<unsigned>(width);

@@ -1,20 +1,22 @@
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
 #include <RemoteFiles.h>
 #include <Terminal.h>
-//#include <DiscMon.hpp>
+#include <DiscMon.hpp>
 #include <Exceptions.h>
 #include "GUIConfiguration.h"
+#include "CoreMain.h"
 #include "TextsCore.h"
 #include "SynchronizeController.h"
-//---------------------------------------------------------------------------
-__removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
+// #pragma package(smart_init)
+
 TSynchronizeController::TSynchronizeController(
   TSynchronizeEvent AOnSynchronize, TSynchronizeInvalidEvent AOnSynchronizeInvalid,
-  TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories) :
+  TSynchronizeTooManyDirectoriesEvent AOnTooManyDirectories) noexcept :
   FOnSynchronize(AOnSynchronize),
   FOptions(nullptr),
   FOnSynchronizeThreads(nullptr),
@@ -25,24 +27,29 @@ TSynchronizeController::TSynchronizeController(
   FSynchronizeLog(nullptr),
   FCopyParam(OBJECT_CLASS_TCopyParamType)
 {
-  FSynchronizeParams.Params = 0;
-  FSynchronizeParams.Options = 0;
+  FOnSynchronize = AOnSynchronize;
+  FOnSynchronizeInvalid = AOnSynchronizeInvalid;
+  FOnTooManyDirectories = AOnTooManyDirectories;
+  FSynchronizeMonitor = nullptr;
+  FSynchronizeAbort = nullptr;
+  FSynchronizeLog = nullptr;
+  FOptions = nullptr;
 }
-//---------------------------------------------------------------------------
-TSynchronizeController::~TSynchronizeController()
+
+TSynchronizeController::~TSynchronizeController() noexcept
 {
   DebugAssert(FSynchronizeMonitor == nullptr);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::StartStop(TObject * /*Sender*/,
-  bool Start, const TSynchronizeParamType &Params, const TCopyParamType &CopyParam,
-  TSynchronizeOptions *Options,
+  bool Start, const TSynchronizeParamType & Params, const TCopyParamType & CopyParam,
+  TSynchronizeOptions * Options,
   TSynchronizeAbortEvent OnAbort, TSynchronizeThreadsEvent /*OnSynchronizeThreads*/,
   TSynchronizeLogEvent OnSynchronizeLog)
 {
   if (Start)
   {
-    // Configuration->GetUsage()->Inc(L"KeepUpToDates");
+    GetConfiguration()->Usage->Inc(L"KeepUpToDates");
 
     try
     {
@@ -51,7 +58,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
 
       FOptions = Options;
       if (FLAGSET(Params.Options, soSynchronize) &&
-        (FOnSynchronize != nullptr))
+          (FOnSynchronize != nullptr))
       {
         FOnSynchronize(this, Params.LocalDirectory,
           Params.RemoteDirectory, CopyParam,
@@ -59,6 +66,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       }
 
       FCopyParam = CopyParam;
+      FCopyParam.IncludeFileMask.SetRoots(Params.LocalDirectory, Params.RemoteDirectory);
       FSynchronizeParams = Params;
 
       DebugAssert(OnAbort);
@@ -82,7 +90,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       }
       FSynchronizeMonitor->Filters = Filters;
       FSynchronizeMonitor->MaxDirectories = 0;
-      FSynchronizeMonitor->ChangeDelay = GetGUIConfiguration()->GetKeepUpToDateChangeDelay();
+      FSynchronizeMonitor->ChangeDelay = GUIConfiguration->KeepUpToDateChangeDelay;
       FSynchronizeMonitor->OnTooManyDirectories = SynchronizeTooManyDirectories;
       FSynchronizeMonitor->OnDirectoriesChange = SynchronizeDirectoriesChange;
       FSynchronizeMonitor->OnFilter = SynchronizeFilter;
@@ -110,9 +118,9 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
     // SAFE_DESTROY(FSynchronizeMonitor);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeChange(
-  TObject * /*Sender*/, UnicodeString Directory, bool &SubdirsChanged)
+  TObject * /*Sender*/, const UnicodeString & Directory, bool & SubdirsChanged)
 {
   try
   {
@@ -125,58 +133,67 @@ void TSynchronizeController::SynchronizeChange(
       RootLocalDirectory);
     RemoteDirectory = RemoteDirectory +
       base::ToUnixPath(LocalDirectory.SubString(RootLocalDirectory.Length() + 1,
-          LocalDirectory.Length() - RootLocalDirectory.Length()));
+        LocalDirectory.Length() - RootLocalDirectory.Length()));
 
     SynchronizeLog(slChange, FMTLOAD(SYNCHRONIZE_CHANGE,
-        ::ExcludeTrailingBackslash(LocalDirectory)));
+      ::ExcludeTrailingBackslash(LocalDirectory)));
 
     if (FOnSynchronize != nullptr)
     {
+      TSynchronizeOptions DefaultOptions; // Just as a container for the Files field
       // this is completely wrong as the options structure
       // can contain non-root specific options in future
-      TSynchronizeOptions *Options =
-        ((LocalDirectory == RootLocalDirectory) ? FOptions : nullptr);
-      TSynchronizeChecklist *Checklist = nullptr;
+      TSynchronizeOptions * Options =
+        ((LocalDirectory == RootLocalDirectory) ? FOptions : &DefaultOptions);
+      TSynchronizeChecklist * Checklist = nullptr;
       FOnSynchronize(this, LocalDirectory, RemoteDirectory, FCopyParam,
         FSynchronizeParams, &Checklist, Options, false);
       if (Checklist != nullptr)
       {
-        std::unique_ptr<TSynchronizeChecklist> ChecklistPtr(Checklist);
-        (void)ChecklistPtr;
-        if (FLAGSET(FSynchronizeParams.Options, soRecurse))
+        try__finally
         {
-          SubdirsChanged = false;
-          DebugAssert(Checklist != nullptr);
-          for (intptr_t Index = 0; Index < Checklist->GetCount(); ++Index)
+          if (FLAGSET(FSynchronizeParams.Options, soRecurse))
           {
-            const TChecklistItem *Item = Checklist->GetItem(Index);
-            // note that there may be action saDeleteRemote even if nothing has changed
-            // so this is sub-optimal
-            if (Item->IsDirectory)
+            SubdirsChanged = false;
+            DebugAssert(Checklist != nullptr);
+            for (int32_t Index = 0; Index < Checklist->Count(); Index++)
             {
-              if ((Item->Action == saUploadNew) ||
-                (Item->Action == saDeleteRemote))
+              const TChecklistItem * Item = Checklist->GetItem(Index);
+              // note that there may be action saDeleteRemote even if nothing has changed
+              // so this is sub-optimal
+              if (Item->IsDirectory)
               {
-                SubdirsChanged = true;
-                break;
+                if ((Item->Action == saUploadNew) ||
+                    (Item->Action == saDeleteRemote))
+                {
+                  SubdirsChanged = true;
+                  break;
+                }
+                else
+                {
+                  DebugFail();
+                }
               }
-              DebugAssert(false);
             }
           }
+          else
+          {
+            SubdirsChanged = false;
+          }
         }
-        else
+        __finally__removed
         {
-          SubdirsChanged = false;
-        }
+          // delete Checklist;
+        } end_try__finally
       }
     }
   }
-  catch (Exception &E)
+  catch(Exception & E)
   {
     SynchronizeAbort(isa<EFatal>(&E));
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeAbort(bool Close)
 {
   if (FSynchronizeMonitor != nullptr)
@@ -187,58 +204,64 @@ void TSynchronizeController::SynchronizeAbort(bool Close)
   DebugAssert(FSynchronizeAbort);
   FSynchronizeAbort(nullptr, Close);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::LogOperation(TSynchronizeOperation Operation,
-  const UnicodeString AFileName)
+  const UnicodeString & AFileName)
 {
   TSynchronizeLogEntry Entry;
   UnicodeString Message;
   switch (Operation)
   {
-  case soDelete:
-    Entry = slDelete;
-    Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName);
-    break;
+    case soDelete:
+      Entry = slDelete;
+      Message = FMTLOAD(SYNCHRONIZE_DELETED, AFileName);
+      break;
 
-  default:
-    DebugAssert(false);
-  // fallthru
+    default:
+      DebugFail();
+      // fallthru
 
-  case soUpload:
-    Entry = slUpload;
-    Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName);
-    break;
+    case soUpload:
+      Entry = slUpload;
+      Message = FMTLOAD(SYNCHRONIZE_UPLOADED, AFileName);
+      break;
   }
   SynchronizeLog(Entry, Message);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeLog(TSynchronizeLogEntry Entry,
-  const UnicodeString Message)
+  const UnicodeString & Message)
 {
   if (FSynchronizeLog != nullptr)
   {
     FSynchronizeLog(this, Entry, Message);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeFilter(TObject * /*Sender*/,
-  const UnicodeString DirectoryName, bool &Add)
+  const UnicodeString & DirectoryName, bool & Add)
 {
   if ((FOptions != nullptr) && (FOptions->Filter != nullptr))
   {
     if (::IncludeTrailingBackslash(::ExtractFilePath(DirectoryName)) ==
-      ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
+          ::IncludeTrailingBackslash(FSynchronizeParams.LocalDirectory))
     {
-      intptr_t FoundIndex;
+      int32_t FoundIndex;
       Add = FOptions->Filter->Find(base::ExtractFileName(DirectoryName, /*Unix=*/true), FoundIndex);
     }
   }
-  TFileMasks::TParams MaskParams; // size/time does not matter for directories
-  Add = Add && FCopyParam.AllowTransfer(DirectoryName, osLocal, /*Directory=*/true, MaskParams);
+
+  if (Add && !FCopyParam.AllowAnyTransfer()) // optimization
+  {
+    TFileMasks::TParams MaskParams; // size/time does not matter for directories
+    bool Hidden = FLAGSET(FileGetAttrFix(DirectoryName), faHidden);
+    // Missing call to GetBaseFileName
+    Add = FCopyParam.AllowTransfer(DirectoryName, osLocal, true, MaskParams, Hidden);
+  }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeInvalid(
-  TObject * /*Sender*/, const UnicodeString Directory, UnicodeString ErrorStr)
+  TObject * /*Sender*/, const UnicodeString & Directory, const UnicodeString & ErrorStr)
 {
   if (FOnSynchronizeInvalid != nullptr)
   {
@@ -247,26 +270,26 @@ void TSynchronizeController::SynchronizeInvalid(
 
   SynchronizeAbort(false);
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeTooManyDirectories(
-  TObject * /*Sender*/, intptr_t &MaxDirectories)
+  TObject * /*Sender*/, int32_t & MaxDirectories)
 {
   if (FOnTooManyDirectories != nullptr)
   {
     FOnTooManyDirectories(this, MaxDirectories);
   }
 }
-//---------------------------------------------------------------------------
+
 void TSynchronizeController::SynchronizeDirectoriesChange(
-  TObject * /*Sender*/, intptr_t Directories)
+  TObject * /*Sender*/, int32_t Directories)
 {
   SynchronizeLog(slDirChange, FMTLOAD(SYNCHRONIZE_START, Directories));
 }
-//---------------------------------------------------------------------------
-void LogSynchronizeEvent(TTerminal *Terminal, const UnicodeString Message)
+
+void LogSynchronizeEvent(TTerminal * ATerminal, const UnicodeString & Message)
 {
-  if (Terminal != nullptr)
+  if (ATerminal != nullptr)
   {
-    Terminal->LogEvent(FORMAT("Keep up to date: %s", Message));
+    ATerminal->LogEvent(FORMAT("Keep up to date: %s", Message));
   }
 }

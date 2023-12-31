@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -6,94 +6,133 @@
 
 #include "FileOperationProgress.h"
 #include "CoreMain.h"
-//---------------------------------------------------------------------------
-#define TRANSFER_BUF_SIZE (32 * 1024)
-//---------------------------------------------------------------------------
-TFileOperationProgressType::TFileOperationProgressType() :
-  FParent(nullptr),
-  FOnProgress(nullptr),
-  FOnFinished(nullptr),
-  FReset(false)
+#include "Interface.h"
+
+constexpr const int64_t TRANSFER_BUF_SIZE = 32 * 1024;
+
+TFileOperationStatistics::TFileOperationStatistics() noexcept
 {
+  // memset(this, 0, sizeof(*this));
+}
+
+
+TFileOperationProgressType::TPersistence::TPersistence() noexcept
+{
+  FStatistics = nullptr;
+  Clear(true, true);
+}
+
+bool TFileOperationProgressType::IsIndeterminateOperation(TFileOperation Operation)
+{
+  return (Operation == foCalculateSize);
+}
+
+bool TFileOperationProgressType::IsTransferOperation(TFileOperation Operation)
+{
+  return (Operation == foCopy) || (Operation == foMove);
+}
+
+void TFileOperationProgressType::TPersistence::Clear(bool Batch, bool Speed)
+{
+  if (Batch)
+  {
+    TotalTransferred = 0;
+    StartTime = Now();
+    SkipToAll = false;
+    BatchOverwrite = boNo;
+    CPSLimit = 0;
+    CounterSet = false;
+  }
+  if (Speed)
+  {
+    Ticks.clear();
+    TotalTransferredThen.clear();
+  }
+}
+
+TFileOperationProgressType::TFileOperationProgressType() noexcept
+{
+  FOnProgress = nullptr;
+  FOnFinished = nullptr;
+  FParent = nullptr;
   Init();
   Clear();
 }
-//---------------------------------------------------------------------------
+
 TFileOperationProgressType::TFileOperationProgressType(
-  TFileOperationProgressEvent AOnProgress, TFileOperationFinishedEvent AOnFinished,
-  TFileOperationProgressType *Parent) :
+  TFileOperationProgressEvent && AOnProgress, TFileOperationFinishedEvent && AOnFinished,
+  TFileOperationProgressType * Parent) noexcept :
   FParent(Parent),
   FOnProgress(AOnProgress),
-  FOnFinished(AOnFinished),
-  FReset(false)
+  FOnFinished(AOnFinished)
 {
+  FOnProgress = AOnProgress;
+  FOnFinished = AOnFinished;
+  FParent = Parent;
+  FReset = false;
   Init();
   Clear();
 }
-//---------------------------------------------------------------------------
-TFileOperationProgressType::~TFileOperationProgressType()
+
+TFileOperationProgressType::~TFileOperationProgressType() noexcept
 {
   DebugAssert(!GetInProgress() || FReset);
   DebugAssert(!GetSuspended() || FReset);
   SAFE_DESTROY_EX(TCriticalSection, FSection);
   SAFE_DESTROY_EX(TCriticalSection, FUserSelectionsSection);
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::Init()
 {
   FSection = new TCriticalSection();
   FUserSelectionsSection = new TCriticalSection();
+  FRestored = false;
+  FPersistence.Side = osCurrent; // = undefined value
 }
-//---------------------------------------------------------------------------
-void TFileOperationProgressType::Assign(const TFileOperationProgressType &Other)
+
+void TFileOperationProgressType::Assign(const TFileOperationProgressType & Other)
 {
-  volatile TValueRestorer<TCriticalSection *> SectionRestorer(FSection);
-  volatile TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(FUserSelectionsSection);
-  volatile TGuard Guard(*FSection);
-  volatile TGuard OtherGuard(*Other.FSection);
+  TValueRestorer<TCriticalSection *> SectionRestorer(FSection); nb::used(SectionRestorer);
+  TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(FUserSelectionsSection); nb::used(UserSelectionsSectionRestorer);
+  TGuard Guard(*FSection); nb::used(Guard);
+  TGuard OtherGuard(*Other.FSection); nb::used(OtherGuard);
 
   *this = Other;
 }
-//---------------------------------------------------------------------------
-void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType &Other)
+
+void TFileOperationProgressType::AssignButKeepSuspendState(const TFileOperationProgressType & Other)
 {
-  volatile TGuard Guard(*FSection);
-  volatile TValueRestorer<uintptr_t> SuspendTimeRestorer(FSuspendTime);
-  volatile TValueRestorer<bool> SuspendedRestorer(FSuspended);
+  TGuard Guard(*FSection); nb::used(Guard);
+  TValueRestorer<uint64_t> SuspendTimeRestorer(FSuspendTime); nb::used(SuspendTimeRestorer);
+  TValueRestorer<bool> SuspendedRestorer(FSuspended); nb::used(SuspendedRestorer);
 
   Assign(Other);
 }
-//---------------------------------------------------------------------------
-void TFileOperationProgressType::Clear()
+
+void TFileOperationProgressType::DoClear(bool Batch, bool Speed)
 {
-  FFileName = L"";
-  FFullFileName = L"";
-  FDirectory = L"";
+  FFileName = "";
+  FFullFileName = "";
+  FDirectory = "";
   FAsciiTransfer = false;
   FCount = -1;
   FFilesFinished = 0;
   FFilesFinishedSuccessfully = 0;
-  FStartTime = Now();
   FSuspended = false;
   FSuspendTime = 0;
   FInProgress = false;
   FDone = false;
   FFileInProgress = false;
-  FTotalTransferred = 0;
   FTotalSkipped = 0;
   FTotalSize = 0;
   FSkippedSize = 0;
   FTotalSizeSet = false;
   FFileStartTime = 0.0;
-  FFilesFinished = 0;
   FReset = false;
   FLastSecond = 0;
   FRemainingCPS = 0;
-  FTicks.clear();
-  FTotalTransferredThen.clear();
   FCounterSet = false;
   FOperation = foNone;
-  FSide = osLocal;
   FFileName.Clear();
   FDirectory.Clear();
   FAsciiTransfer = false;
@@ -101,31 +140,31 @@ void TFileOperationProgressType::Clear()
   FLocallyUsed = 0;
   FOperation = foNone;
   FTemp = false;
-  FSkipToAll = false;
-  FBatchOverwrite = boNo;
+  FPersistence.Clear(Batch, Speed);
   // to bypass check in ClearTransfer()
   FTransferSize = 0;
-  FCPSLimit = 0;
-  FTicks.clear();
-  FTotalTransferredThen.clear();
-  FCounterSet = false;
   ClearTransfer();
   FTransferredSize = 0;
   FCancel = csContinue;
   FCount = 0;
-  FStartTime = Now();
+  FPersistence.StartTime = Now();
   FCPSLimit = 0;
   FSuspended = false;
 
   ClearTransfer();
 }
-//---------------------------------------------------------------------------
+
+void TFileOperationProgressType::Clear()
+{
+  DoClear(true, true);
+}
+
 void TFileOperationProgressType::ClearTransfer()
 {
   if ((FTransferSize > 0) && (FTransferredSize < FTransferSize))
   {
-    volatile TGuard Guard(*FSection);
-    int64_t RemainingSize = (FTransferSize - FTransferredSize);
+    TGuard Guard(*FSection); nb::used(Guard);
+    const int64_t RemainingSize = (FTransferSize - FTransferredSize);
     AddSkipped(RemainingSize);
   }
   FLocalSize = 0;
@@ -136,29 +175,31 @@ void TFileOperationProgressType::ClearTransfer()
   FTransferringFile = false;
   FLastSecond = 0;
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::Start(TFileOperation AOperation,
-  TOperationSide ASide, intptr_t ACount)
+  TOperationSide ASide, int32_t ACount)
 {
-  Start(AOperation, ASide, ACount, false, L"", 0);
+  Start(AOperation, ASide, ACount, false, L"", 0, odoIdle);
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::Start(TFileOperation AOperation,
-  TOperationSide ASide, intptr_t ACount, bool ATemp,
-  const UnicodeString ADirectory, uintptr_t ACPSLimit)
+  TOperationSide ASide, int32_t ACount, bool ATemp,
+  const UnicodeString & ADirectory, uint64_t ACPSLimit, TOnceDoneOperation InitialOnceDoneOperation)
 {
 
   {
-    volatile TGuard Guard(*FSection); // not really needed, just for consistency
-    Clear();
+    TGuard Guard(*FSection); nb::used(Guard); // not really needed, just for consistency
+    DoClear(!FRestored, (FPersistence.Side != osCurrent) && (FPersistence.Side != ASide));
+    FTotalTransferBase = FPersistence.TotalTransferred;
     FOperation = AOperation;
-    FSide = ASide;
+    FPersistence.Side = ASide;
     FCount = ACount;
     FInProgress = true;
     FCancel = csContinue;
     FDirectory = ADirectory;
     FTemp = ATemp;
-    FCPSLimit = ACPSLimit;
+    FInitialOnceDoneOperation = InitialOnceDoneOperation;
+    FPersistence.CPSLimit = ACPSLimit;
   }
 
   try
@@ -173,12 +214,12 @@ void TFileOperationProgressType::Start(TFileOperation AOperation,
     throw;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::Reset()
 {
   FReset = true;
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::Stop()
 {
   // added to include remaining bytes to TotalSkipped, in case
@@ -187,18 +228,18 @@ void TFileOperationProgressType::Stop()
   FInProgress = false;
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetDone()
 {
   FDone = true;
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::Suspend()
 {
 
   {
-    volatile TGuard Guard(*FSection);
+    TGuard Guard(*FSection); nb::used(Guard);
     DebugAssert(!FSuspended);
     FSuspended = true;
     FSuspendTime = ::GetTickCount();
@@ -206,32 +247,32 @@ void TFileOperationProgressType::Suspend()
 
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::Resume()
 {
 
   {
-    volatile TGuard Guard(*FSection);
+    TGuard Guard(*FSection); nb::used(Guard);
     DebugAssert(FSuspended);
     FSuspended = false;
 
     // shift timestamps for CPS calculation in advance
     // by the time the progress was suspended
-    intptr_t Stopped = ToIntPtr(::GetTickCount() - FSuspendTime);
+    const int32_t Stopped = nb::ToInt32(::GetTickCount() - FSuspendTime);
     size_t Index = 0;
-    while (Index < FTicks.size())
+    while (Index < FPersistence.Ticks.size())
     {
-      FTicks[Index] += Stopped;
+      FPersistence.Ticks[Index] += Stopped;
       ++Index;
     }
   }
 
   DoProgress();
 }
-//---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::OperationProgress() const
+
+int32_t TFileOperationProgressType::OperationProgress() const
 {
-  intptr_t Result;
+  int32_t Result;
   if (FCount > 0)
   {
     Result = (FFilesFinished * 100) / FCount;
@@ -242,13 +283,13 @@ intptr_t TFileOperationProgressType::OperationProgress() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::TransferProgress() const
+
+int32_t TFileOperationProgressType::TransferProgress() const
 {
-  intptr_t Result;
+  int32_t Result;
   if (FTransferSize)
   {
-    Result = ToIntPtr((FTransferredSize * 100) / FTransferSize);
+    Result = nb::ToInt((FTransferredSize * 100) / FTransferSize);
   }
   else
   {
@@ -256,43 +297,51 @@ intptr_t TFileOperationProgressType::TransferProgress() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::TotalTransferProgress() const
+
+int32_t TFileOperationProgressType::TotalTransferProgress() const
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
   DebugAssert(FTotalSizeSet);
-  intptr_t Result = FTotalSize > 0 ? ToIntPtr(((GetTotalTransferred() + FTotalSkipped) * 100) / FTotalSize) : 0;
+  int32_t Result;
+  if (FTotalSize > 0)
+  {
+    Result = nb::ToInt32(((GetTotalTransferred() - FTotalTransferBase + FTotalSkipped) * 100) / FTotalSize);
+  }
+  else
+  {
+    Result = 0;
+  }
   return Result < 100 ? Result : 100;
 }
-//---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::OverallProgress() const
+
+int32_t TFileOperationProgressType::OverallProgress() const
 {
   if (FTotalSizeSet)
   {
-    DebugAssert((FOperation == foCopy) || (FOperation == foMove));
+    DebugAssert(IsTransfer());
     return TotalTransferProgress();
   }
   return OperationProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::Progress()
 {
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::DoProgress()
 {
-  SetThreadExecutionState(ES_SYSTEM_REQUIRED);
+  SystemRequired();
   FOnProgress(*this);
 }
-//---------------------------------------------------------------------------
-void TFileOperationProgressType::Finish(const UnicodeString AFileName,
-  bool Success, TOnceDoneOperation &OnceDoneOperation)
+
+void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
+  bool Success, TOnceDoneOperation & OnceDoneOperation)
 {
   DebugAssert(FInProgress);
 
   // Cancel reader is guarded
-  FOnFinished(FOperation, FSide, FTemp, AFileName,
+  FOnFinished(FOperation, Side(), FTemp, AFileName,
     Success && (FCancel == csContinue), OnceDoneOperation);
   FFilesFinished++;
   if (Success)
@@ -301,38 +350,70 @@ void TFileOperationProgressType::Finish(const UnicodeString AFileName,
   }
   DoProgress();
 }
-//---------------------------------------------------------------------------
-void TFileOperationProgressType::SetFile(const UnicodeString AFileName, bool AFileInProgress)
+
+void TFileOperationProgressType::Succeeded(int32_t Count)
 {
-  UnicodeString FileName = AFileName;
-  FFullFileName = FileName;
-  if (FSide == osRemote)
+  if (false) // FPersistence.Statistics != nullptr)
+  {
+    if (IsTransfer())
+    {
+      int64_t Transferred = FTransferredSize - FSkippedSize;
+      if (Side() == osLocal)
+      {
+        FPersistence.Statistics->FilesUploaded += Count;
+        FPersistence.Statistics->TotalUploaded += Transferred;
+      }
+      else
+      {
+        FPersistence.Statistics->FilesDownloaded += Count;
+        FPersistence.Statistics->TotalDownloaded += Transferred;
+      }
+    }
+    else if (Operation() == foDelete)
+    {
+      if (Side() == osLocal)
+      {
+        FPersistence.Statistics->FilesDeletedLocal += Count;
+      }
+      else
+      {
+        FPersistence.Statistics->FilesDeletedRemote += Count;
+      }
+    }
+  }
+}
+
+void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool AFileInProgress)
+{
+  UnicodeString Name = AFileName;
+  FFullFileName = AFileName;
+  if (Side() == osRemote)
   {
     // historically set were passing filename-only for remote site operations,
     // now we need to collect a full paths, so we pass in full path,
     // but still want to have filename-only in FileName
-    FileName = base::UnixExtractFileName(FileName);
+    Name = base::UnixExtractFileName(Name);
   }
-  FFileName = FileName;
+  FFileName = Name;
   FFileInProgress = AFileInProgress;
   ClearTransfer();
   FFileStartTime = Now();
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetFileInProgress()
 {
   DebugAssert(!FFileInProgress);
   FFileInProgress = true;
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetLocalSize(int64_t ASize)
 {
   FLocalSize = ASize;
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::AddLocallyUsed(int64_t ASize)
 {
   FLocallyUsed += ASize;
@@ -342,35 +423,35 @@ void TFileOperationProgressType::AddLocallyUsed(int64_t ASize)
   }
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 bool TFileOperationProgressType::IsLocallyDone() const
 {
   DebugAssert(FLocallyUsed <= FLocalSize);
   return (FLocallyUsed == FLocalSize);
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetSpeedCounters()
 {
-  if ((FCPSLimit > 0) && !FCounterSet)
+  if ((FCPSLimit > 0) && !FPersistence.CounterSet)
   {
-    FCounterSet = true;
-    __removed Configuration->Usage->Inc(L"SpeedLimitUses");
+    FPersistence.CounterSet = true;
+    // Configuration->Usage->Inc(L"SpeedLimitUses");
   }
 }
-//---------------------------------------------------------------------------
-// Used in WebDAV protocol
+
+// Used in WebDAV and S3 protocols
 void TFileOperationProgressType::ThrottleToCPSLimit(
-  int64_t Size)
+  uint64_t Size)
 {
-  int64_t  Remaining = Size;
+  uint64_t  Remaining = Size;
   while (Remaining > 0)
   {
     Remaining -= AdjustToCPSLimit(Remaining);
   }
 }
-//---------------------------------------------------------------------------
-int64_t TFileOperationProgressType::AdjustToCPSLimit(
-  int64_t Size)
+
+uint64_t TFileOperationProgressType::AdjustToCPSLimit(
+  uint64_t Size)
 {
   SetSpeedCounters();
 
@@ -381,7 +462,7 @@ int64_t TFileOperationProgressType::AdjustToCPSLimit(
     // we wait until the next second
     do
     {
-      uintptr_t Second = (::GetTickCount() / MSecsPerSec);
+      const uint32_t Second = (::GetTickCount() / MSecsPerSec);
 
       if (Second != FLastSecond)
       {
@@ -410,9 +491,9 @@ int64_t TFileOperationProgressType::AdjustToCPSLimit(
   }
   return Size;
 }
-//---------------------------------------------------------------------------
+
 // Use in SCP protocol only
-int64_t TFileOperationProgressType::LocalBlockSize()
+uint64_t TFileOperationProgressType::LocalBlockSize()
 {
   int64_t Result = TRANSFER_BUF_SIZE;
   if (FLocallyUsed + Result > FLocalSize)
@@ -422,10 +503,10 @@ int64_t TFileOperationProgressType::LocalBlockSize()
   Result = AdjustToCPSLimit(Result);
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetTotalSize(int64_t ASize)
 {
-  volatile TGuard Guard(*FSection); // not really needed, just for consistency
+  TGuard Guard(*FSection); nb::used(Guard); // not really needed, just for consistency
 
   FTotalSize = ASize;
   FTotalSizeSet = true;
@@ -436,18 +517,18 @@ void TFileOperationProgressType::SetTotalSize(int64_t ASize)
   }
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetTransferSize(int64_t ASize)
 {
   FTransferSize = ASize;
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetTransferringFile(bool ATransferringFile)
 {
   FTransferringFile = ATransferringFile;
 }
-//---------------------------------------------------------------------------
+
 bool TFileOperationProgressType::PassCancelToParent(TCancelStatus ACancel)
 {
   bool Result;
@@ -470,10 +551,10 @@ bool TFileOperationProgressType::PassCancelToParent(TCancelStatus ACancel)
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetCancel(TCancelStatus ACancel)
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
   FCancel = ACancel;
 
   if ((FParent != nullptr) && PassCancelToParent(ACancel))
@@ -481,10 +562,10 @@ void TFileOperationProgressType::SetCancel(TCancelStatus ACancel)
     FParent->SetCancel(ACancel);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetCancelAtLeast(TCancelStatus ACancel)
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
   if (FCancel < ACancel)
   {
     FCancel = ACancel;
@@ -495,14 +576,14 @@ void TFileOperationProgressType::SetCancelAtLeast(TCancelStatus ACancel)
     FParent->SetCancelAtLeast(ACancel);
   }
 }
-//---------------------------------------------------------------------------
+
 TCancelStatus TFileOperationProgressType::GetCancel() const
 {
   TCancelStatus Result = FCancel;
   if (FParent != nullptr)
   {
-    volatile TGuard Guard(*FSection);
-    TCancelStatus ParentCancel = FParent->GetCancel();
+    TGuard Guard(*FSection); nb::used(Guard);
+    const TCancelStatus ParentCancel = FParent->GetCancel();
     if (ParentCancel > Result)
     {
       Result = ParentCancel;
@@ -510,35 +591,35 @@ TCancelStatus TFileOperationProgressType::GetCancel() const
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 bool TFileOperationProgressType::ClearCancelFile()
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
   // Not propagated to parent, as this is local flag, see also PassCancelToParent
-  bool Result = (GetCancel() == csCancelFile);
+  const bool Result = (GetCancel() == csCancelFile);
   if (Result)
   {
     FCancel = csContinue;
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-intptr_t TFileOperationProgressType::GetCPSLimit() const
+
+uint64_t TFileOperationProgressType::GetCPSLimit() const
 {
-  intptr_t Result;
+  uint64_t Result;
   if (FParent != nullptr)
   {
     Result = FParent->GetCPSLimit();
   }
   else
   {
-    volatile TGuard Guard(*FSection);
-    Result = FCPSLimit;
+    TGuard Guard(*FSection); nb::used(Guard);
+    Result = FPersistence.CPSLimit;
   }
   return Result;
 }
-//---------------------------------------------------------------------------
-void TFileOperationProgressType::SetCPSLimit(intptr_t ACPSLimit)
+
+void TFileOperationProgressType::SetCPSLimit(uint64_t ACPSLimit)
 {
   if (FParent != nullptr)
   {
@@ -546,11 +627,11 @@ void TFileOperationProgressType::SetCPSLimit(intptr_t ACPSLimit)
   }
   else
   {
-    volatile TGuard Guard(*FSection);
-    FCPSLimit = ACPSLimit;
+    TGuard Guard(*FSection); nb::used(Guard);
+    FPersistence.CPSLimit = ACPSLimit;
   }
 }
-//---------------------------------------------------------------------------
+
 TBatchOverwrite TFileOperationProgressType::GetBatchOverwrite() const
 {
   TBatchOverwrite Result;
@@ -560,12 +641,12 @@ TBatchOverwrite TFileOperationProgressType::GetBatchOverwrite() const
   }
   else
   {
-    volatile TGuard Guard(*FSection); // not really needed
-    Result = FBatchOverwrite;
+    TGuard Guard(*FSection); nb::used(Guard); // not really needed
+    Result = FPersistence.BatchOverwrite;
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetBatchOverwrite(TBatchOverwrite ABatchOverwrite)
 {
   if (FParent != nullptr)
@@ -574,11 +655,11 @@ void TFileOperationProgressType::SetBatchOverwrite(TBatchOverwrite ABatchOverwri
   }
   else
   {
-    volatile TGuard Guard(*FSection); // not really needed
-    FBatchOverwrite = ABatchOverwrite;
+    TGuard Guard(*FSection); nb::used(Guard); // not really needed
+    FPersistence.BatchOverwrite = ABatchOverwrite;
   }
 }
-//---------------------------------------------------------------------------
+
 bool TFileOperationProgressType::GetSkipToAll() const
 {
   bool Result;
@@ -588,12 +669,12 @@ bool TFileOperationProgressType::GetSkipToAll() const
   }
   else
   {
-    volatile TGuard Guard(*FSection); // not really needed
-    Result = FSkipToAll;
+    TGuard Guard(*FSection); nb::used(Guard); // not really needed
+    Result = FPersistence.SkipToAll;
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetSkipToAll()
 {
   if (FParent != nullptr)
@@ -602,11 +683,11 @@ void TFileOperationProgressType::SetSkipToAll()
   }
   else
   {
-    volatile TGuard Guard(*FSection); // not really needed
-    FSkipToAll = true;
+    TGuard Guard(*FSection); nb::used(Guard); // not really needed
+    FPersistence.SkipToAll = true;
   }
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::ChangeTransferSize(int64_t ASize)
 {
   // reflect change on file size (due to text transfer mode conversion particularly)
@@ -618,16 +699,16 @@ void TFileOperationProgressType::ChangeTransferSize(int64_t ASize)
   FTransferSize = ASize;
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::RollbackTransferFromTotals(int64_t ATransferredSize, int64_t ASkippedSize)
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
 
-  DebugAssert(ATransferredSize <= FTotalTransferred);
+  DebugAssert(ATransferredSize <= FPersistence.TotalTransferred - FTotalTransferBase);
   DebugAssert(ASkippedSize <= FTotalSkipped);
-  FTotalTransferred -= ATransferredSize;
-  FTicks.clear();
-  FTotalTransferredThen.clear();
+  FPersistence.TotalTransferred -= ATransferredSize;
+  FPersistence.Ticks.clear();
+  FPersistence.TotalTransferredThen.clear();
   FTotalSkipped -= ASkippedSize;
 
   if (FParent != nullptr)
@@ -635,7 +716,7 @@ void TFileOperationProgressType::RollbackTransferFromTotals(int64_t ATransferred
     FParent->RollbackTransferFromTotals(ATransferredSize, ASkippedSize);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::RollbackTransfer()
 {
   FTransferredSize -= FSkippedSize;
@@ -645,32 +726,32 @@ void TFileOperationProgressType::RollbackTransfer()
   FTransferSize = 0;
   FLocallyUsed = 0;
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::AddTransferredToTotals(int64_t ASize)
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
 
-  FTotalTransferred += ASize;
+  FPersistence.TotalTransferred += ASize;
   if (ASize >= 0)
   {
-    intptr_t Ticks = ToIntPtr(::GetTickCount());
-    if (FTicks.empty() ||
-        (FTicks.back() > Ticks) || // ticks wrap after 49.7 days
-        ((Ticks - FTicks.back()) >= MSecsPerSec))
+    uint64_t Ticks = nb::ToUInt64(::GetTickCount());
+    if (FPersistence.Ticks.empty() ||
+        (FPersistence.Ticks.back() > Ticks) || // ticks wrap after 49.7 days
+        ((Ticks - FPersistence.Ticks.back()) >= nb::ToUInt64(MSecsPerSec)))
     {
-      FTicks.push_back(Ticks);
-      FTotalTransferredThen.push_back(FTotalTransferred);
+      FPersistence.Ticks.push_back(Ticks);
+      FPersistence.TotalTransferredThen.push_back(FPersistence.TotalTransferred);
     }
 
-    if (FTicks.size() > 10)
+    if (FPersistence.Ticks.size() > 10)
     {
-      FTicks.erase(FTicks.begin());
-      FTotalTransferredThen.erase(FTotalTransferredThen.begin());
+      FPersistence.Ticks.erase(FPersistence.Ticks.begin());
+      FPersistence.TotalTransferredThen.erase(FPersistence.TotalTransferredThen.begin());
     }
   }
   else
   {
-    FTicks.clear();
+    FPersistence.Ticks.clear();
   }
 
   if (FParent != nullptr)
@@ -678,12 +759,12 @@ void TFileOperationProgressType::AddTransferredToTotals(int64_t ASize)
     FParent->AddTransferredToTotals(ASize);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::AddTotalSize(int64_t ASize)
 {
   if (ASize != 0)
   {
-    volatile TGuard Guard(*FSection);
+    TGuard Guard(*FSection); nb::used(Guard);
     FTotalSize += ASize;
 
     if (FParent != nullptr)
@@ -692,7 +773,7 @@ void TFileOperationProgressType::AddTotalSize(int64_t ASize)
     }
   }
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::AddTransferred(int64_t ASize,
   bool AddToTotals)
 {
@@ -714,10 +795,10 @@ void TFileOperationProgressType::AddTransferred(int64_t ASize,
   }
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::AddSkipped(int64_t ASize)
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
 
   FTotalSkipped += ASize;
 
@@ -726,7 +807,7 @@ void TFileOperationProgressType::AddSkipped(int64_t ASize)
     FParent->AddSkipped(ASize);
   }
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::AddResumed(int64_t ASize)
 {
   AddSkipped(ASize);
@@ -734,124 +815,143 @@ void TFileOperationProgressType::AddResumed(int64_t ASize)
   AddTransferred(ASize, false);
   AddLocallyUsed(ASize);
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::AddSkippedFileSize(int64_t ASize)
 {
   AddSkipped(ASize);
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 // Use in SCP protocol only
-uintptr_t TFileOperationProgressType::TransferBlockSize()
+uint64_t TFileOperationProgressType::TransferBlockSize()
 {
   int64_t Result = TRANSFER_BUF_SIZE;
   if (FTransferredSize + Result > FTransferSize)
   {
-    Result = FTransferSize - FTransferredSize;
+    Result = static_cast<int64_t>(FTransferSize - FTransferredSize);
   }
   Result = AdjustToCPSLimit(Result);
-  return ToUIntPtr(Result);
+  return Result;
 }
-//---------------------------------------------------------------------------
-uintptr_t TFileOperationProgressType::StaticBlockSize()
+
+uint64_t TFileOperationProgressType::StaticBlockSize()
 {
   return TRANSFER_BUF_SIZE;
 }
-//---------------------------------------------------------------------------
+
+bool TFileOperationProgressType::IsTransferDoneChecked() const
+{
+  DebugAssert(TransferredSize <= TransferSize);
+  return IsTransferDone();
+}
+
+// Note that this does not work correctly, if the file is larger than expected (at least with the FTP protocol)
 bool TFileOperationProgressType::IsTransferDone() const
 {
-  DebugAssert(FTransferredSize <= FTransferSize);
-  return (FTransferredSize == FTransferSize);
+  return (TransferredSize == TransferSize);
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::SetAsciiTransfer(bool AAsciiTransfer)
 {
   FAsciiTransfer = AAsciiTransfer;
   DoProgress();
 }
-//---------------------------------------------------------------------------
+
 TDateTime TFileOperationProgressType::TimeElapsed() const
 {
   return Now() - GetStartTime();
 }
-//---------------------------------------------------------------------------
-uintptr_t TFileOperationProgressType::CPS() const
+
+uint64_t TFileOperationProgressType::CPS() const
 {
-  volatile TGuard Guard(*FSection);
-  return ToUIntPtr(GetCPS());
+  TGuard Guard(*FSection); nb::used(Guard);
+  return nb::ToUInt64(GetCPS());
 }
-//---------------------------------------------------------------------------
-// Has to be called from a guarded method
-uintptr_t TFileOperationProgressType::GetCPS() const
+
+inline static uint32_t CalculateCPS(int64_t Transferred, uint32_t MSecElapsed)
 {
-  int64_t Result;
-  if (FTicks.empty())
+  uint32_t Result;
+  if (MSecElapsed == 0)
   {
     Result = 0;
   }
   else
   {
-    intptr_t Ticks = (GetSuspended() ? FSuspendTime : ::GetTickCount());
-    intptr_t TimeSpan;
-    if (Ticks < FTicks.front())
+    Result = static_cast<uint32_t>(Transferred * MSecsPerSec / MSecElapsed);
+  }
+  return Result;
+}
+
+// Has to be called from a guarded method
+uint64_t TFileOperationProgressType::GetCPS() const
+{
+  uint64_t Result;
+  if (FPersistence.Ticks.empty())
+  {
+    Result = 0;
+  }
+  else
+  {
+    const uint64_t Ticks = (GetSuspended() ? FSuspendTime : ::GetTickCount());
+    uint32_t TimeSpan;
+    if (Ticks < FPersistence.Ticks.front())
     {
       // clocks has wrapped, guess 10 seconds difference
       TimeSpan = 10000;
     }
     else
     {
-      TimeSpan = (Ticks - FTicks.front());
+      TimeSpan = nb::ToUInt32(Ticks - FPersistence.Ticks.front());
     }
 
-    if (TimeSpan == 0)
-    {
-      Result = 0;
-    }
-    else
-    {
-      int64_t Transferred = (GetTotalTransferred() - FTotalTransferredThen.front());
-      Result = int64_t(Transferred * MSecsPerSec / TimeSpan);
-    }
+    const int64_t Transferred = (FPersistence.TotalTransferred - FPersistence.TotalTransferredThen.front());
+    Result = CalculateCPS(Transferred, TimeSpan);
   }
-  return ToUIntPtr(Result);
+  return Result;
 }
-//---------------------------------------------------------------------------
+
 TDateTime TFileOperationProgressType::TimeExpected() const
 {
-  uintptr_t CurCps = CPS();
+  const uint64_t CurCps = CPS();
   if (CurCps)
   {
-    return TDateTime(ToDouble((ToDouble(FTransferSize - FTransferredSize)) / CurCps) / SecsPerDay);
+    return TDateTime(nb::ToDouble((nb::ToDouble(FTransferSize - FTransferredSize)) / CurCps) / SecsPerDay);
   }
   return TDateTime(0.0);
 }
-//---------------------------------------------------------------------------
+
 TDateTime TFileOperationProgressType::TotalTimeLeft() const
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
   DebugAssert(FTotalSizeSet);
-  uintptr_t CurCps = GetCPS();
+  uint64_t CurCps = GetCPS();
   // sanity check
-  if ((CurCps > 0) && (FTotalSize > FTotalSkipped + FTotalTransferred))
+  const int64_t Processed = FTotalSkipped + FPersistence.TotalTransferred - FTotalTransferBase;
+  if ((CurCps > 0) && (FTotalSize > Processed))
   {
-    return TDateTime(ToDouble(ToDouble(FTotalSize - FTotalSkipped) / CurCps) /
-        SecsPerDay);
+    return TDateTime(nb::ToDouble(nb::ToDouble(FTotalSize - Processed) / CurCps) / SecsPerDay);
   }
   return TDateTime(0.0);
 }
-//---------------------------------------------------------------------------
+
 int64_t TFileOperationProgressType::GetTotalTransferred() const
 {
-  volatile TGuard Guard(*FSection);
-  return FTotalTransferred;
+  TGuard Guard(*FSection); nb::used(Guard);
+  return FPersistence.TotalTransferred;
 }
-//---------------------------------------------------------------------------
+
+int64_t TFileOperationProgressType::GetOperationTransferred() const
+{
+  TGuard Guard(*FSection);
+  return FPersistence.TotalTransferred - FTotalTransferBase + FTotalSkipped;
+}
+
 int64_t TFileOperationProgressType::GetTotalSize() const
 {
-  volatile TGuard Guard(*FSection);
+  TGuard Guard(*FSection); nb::used(Guard);
   return FTotalSize;
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::LockUserSelections()
 {
   if (FParent != nullptr)
@@ -863,7 +963,7 @@ void TFileOperationProgressType::LockUserSelections()
     FUserSelectionsSection->Enter();
   }
 }
-//---------------------------------------------------------------------------
+
 void TFileOperationProgressType::UnlockUserSelections()
 {
   if (FParent != nullptr)
@@ -875,24 +975,107 @@ void TFileOperationProgressType::UnlockUserSelections()
     FUserSelectionsSection->Leave();
   }
 }
-//---------------------------------------------------------------------------
+
 UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
 {
-  UnicodeString Transferred = FormatSize(FTotalTransferred);
-//  UnicodeString Left;
+  const UnicodeString Transferred = FormatSize(GetTotalTransferred());
   TDateTime Time;
   UnicodeString TimeLabel;
   if (!Done && FTotalSizeSet)
   {
     Time = TotalTimeLeft();
-    TimeLabel = L"Left";
+    TimeLabel = "Left";
   }
   else
   {
     Time = TimeElapsed();
-    TimeLabel = L"Elapsed";
+    TimeLabel = "Elapsed";
   }
-  UnicodeString TimeStr = FormatDateTimeSpan(GetConfiguration()->TimeFormat(), Time);
-  UnicodeString CPSStr = FormatSize(CPS());
+  const UnicodeString TimeStr = FormatDateTimeSpan(Time);
+
+  uint32_t ACPS;
+  if (!Done)
+  {
+    ACPS = nb::ToUInt32(CPS());
+  }
+  else
+  {
+    const uint32_t Elapsed = TimeToMSec(TimeElapsed());
+    ACPS = CalculateCPS(TotalTransferred, Elapsed);
+  }
+  const UnicodeString CPSStr = FormatSize(ACPS);
+
   return FORMAT("Transferred: %s, %s: %s, CPS: %s/s", Transferred, TimeLabel, TimeStr, CPSStr);
+}
+
+void TFileOperationProgressType::Store(TPersistence & Persistence)
+{
+  // in this current use, we do not need this to be guarded actually, as it's used only for a single-threaded synchronization
+  TGuard Guard(*FSection);
+  Persistence = FPersistence;
+}
+
+void TFileOperationProgressType::Restore(TPersistence & Persistence)
+{
+  TGuard Guard(*FSection);
+  FPersistence = Persistence;
+  FRestored = true;
+}
+
+bool TFileOperationProgressType::IsIndeterminate() const
+{
+  return
+    IsIndeterminateOperation(FOperation) ||
+    (!TotalSizeSet && (FCount == 1));
+}
+
+bool TFileOperationProgressType::IsTransfer() const
+{
+  return IsTransferOperation(Operation);
+}
+
+TFileOperationProgressType & TFileOperationProgressType::operator =(const TFileOperationProgressType & rhs)
+{
+  FFileName = rhs.FFileName;
+  FFullFileName = rhs.FFullFileName;
+  FDirectory = rhs.FDirectory;
+  FAsciiTransfer = rhs.FAsciiTransfer;
+  FCount = rhs.FCount;
+  FFilesFinished = rhs.FFilesFinished;
+  FFilesFinishedSuccessfully = rhs.FFilesFinishedSuccessfully;
+  FSuspended = rhs.FSuspended;
+  FSuspendTime = rhs.FSuspendTime;
+  FInProgress = rhs.FInProgress;
+  FDone = rhs.FDone;
+  FFileInProgress = rhs.FFileInProgress;
+  FTotalSkipped = rhs.FTotalSkipped;
+  FTotalSize = rhs.FTotalSize;
+  FSkippedSize = rhs.FSkippedSize;
+  FTotalSizeSet = rhs.FTotalSizeSet;
+  FFileStartTime = rhs.FFileStartTime;
+  FReset = rhs.FReset;
+  FLastSecond = rhs.FLastSecond;
+  FRemainingCPS = rhs.FRemainingCPS;
+  FInitialOnceDoneOperation = rhs.FInitialOnceDoneOperation;
+  FCounterSet = rhs.FCounterSet;
+  FOperation = rhs.FOperation;
+  FPersistence.Side = rhs.Side();
+  FLocalSize = rhs.FLocalSize;
+  FLocallyUsed = rhs.FLocallyUsed;
+  FOperation = rhs.FOperation;
+  FTemp = rhs.FTemp;
+  FPersistence = rhs.FPersistence;
+  FTransferSize = rhs.FTransferSize;
+
+  FTransferredSize = rhs.FTransferredSize;
+  FCancel = rhs.FCancel;
+  FCount = rhs.FCount;
+
+  FCPSLimit = rhs.FCPSLimit;
+  FSuspended = rhs.FSuspended;
+
+  FTransferringFile = rhs.FTransferringFile;
+  FLastSecond = rhs.FLastSecond;
+
+  return *this;
 }

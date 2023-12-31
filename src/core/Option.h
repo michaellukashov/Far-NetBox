@@ -1,50 +1,43 @@
-
+﻿
 #pragma once
 
 #include <Classes.hpp>
-//---------------------------------------------------------------------------
-enum TOptionType
-{
-  otParam,
-  otSwitch
-};
-//---------------------------------------------------------------------------
-#if 0
-typedef void (__closure *TLogOptionEvent)(const UnicodeString LogStr);
-#endif // #if 0
-typedef nb::FastDelegate1<void, UnicodeString /*LogStr*/> TLogOptionEvent;
-//---------------------------------------------------------------------------
+
+enum TOptionType { otParam, otSwitch };
+
+using TLogOptionEvent = nb::FastDelegate1<void, const UnicodeString & /*LogStr*/>;
+
 class NB_CORE_EXPORT TOptions : public TObject
 {
 public:
-  TOptions();
+  TOptions() noexcept;
+  TOptions(const TOptions & Source);
 
-  void Add(const UnicodeString Value);
+  void Add(const UnicodeString & Value);
+  void Parse(const UnicodeString & CmdLine);
 
-  bool FindSwitch(const UnicodeString Switch);
-  bool FindSwitch(const UnicodeString Switch, UnicodeString &Value);
-  bool FindSwitch(const UnicodeString Switch, UnicodeString &Value, bool &ValueSet);
-  bool FindSwitch(const UnicodeString Switch, intptr_t &ParamsStart,
-    intptr_t &ParamsCount);
-  bool FindSwitch(const UnicodeString Switch, TStrings *Params,
-    intptr_t ParamsMax = -1);
-  bool FindSwitchCaseSensitive(const UnicodeString Switch);
-  bool FindSwitchCaseSensitive(const UnicodeString Switch, TStrings *Params,
-    intptr_t ParamsMax = -1);
-  void ParamsProcessed(intptr_t ParamsStart, intptr_t ParamsCount);
-  UnicodeString SwitchValue(const UnicodeString Switch, const UnicodeString Default = L"");
-  bool SwitchValue(const UnicodeString Switch, bool Default);
-  bool SwitchValue(const UnicodeString Switch, bool Default, bool DefaultOnNonExistence);
-  bool UnusedSwitch(UnicodeString &Switch) const;
-  bool WasSwitchAdded(UnicodeString &Switch, wchar_t &SwitchMark) const;
+  bool FindSwitch(const UnicodeString & Switch);
+  bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value);
+  bool FindSwitch(const UnicodeString & Switch, UnicodeString & Value, bool & ValueSet);
+  bool FindSwitch(const UnicodeString & Switch, TStrings * Params,
+    int32_t ParamsMax = -1);
+  bool FindSwitchCaseSensitive(const UnicodeString & Switch);
+  bool FindSwitchCaseSensitive(const UnicodeString & Switch, TStrings * Params,
+    int32_t ParamsMax = -1);
+  UnicodeString SwitchValue(const UnicodeString & Switch, const UnicodeString & Default = L"");
+  bool SwitchValue(const UnicodeString & Switch, bool Default);
+  bool SwitchValue(const UnicodeString & Switch, bool Default, bool DefaultOnNonExistence);
+  bool UnusedSwitch(UnicodeString & Switch) const;
+  bool WasSwitchAdded(UnicodeString & Switch, UnicodeString & Value, wchar_t & SwitchMark) const;
+  UnicodeString ConsumeParam();
 
-  void LogOptions(TLogOptionEvent OnEnumOption);
+  void LogOptions(TLogOptionEvent && OnEnumOption);
 
   __property int ParamCount = { read = FParamCount };
-  __property UnicodeString Param[int Index] = { read = GetParam };
+  // __property UnicodeString Param[int Index] = { read = GetParam };
   __property bool Empty = { read = GetEmpty };
 
-  intptr_t GetParamCount() const { return FParamCount; }
+  int32_t GetParamCount() const { return FParamCount; }
   void Clear() { FOptions.resize(0); FNoMoreSwitches = false; FParamCount = 0; }
   UnicodeString GetSwitchMarks() const { return FSwitchMarks; }
 
@@ -52,31 +45,32 @@ protected:
   UnicodeString FSwitchMarks;
   UnicodeString FSwitchValueDelimiters;
 
-  bool FindSwitch(const UnicodeString Switch,
-    UnicodeString &Value, intptr_t &ParamsStart, intptr_t &ParamsCount, bool CaseSensitive, bool &ValueSet);
-  bool DoFindSwitch(const UnicodeString Switch, TStrings *Params,
-    intptr_t ParamsMax, bool CaseSensitive);
+  bool FindSwitch(const UnicodeString & Switch,
+    UnicodeString & Value, int32_t & ParamsStart, int32_t & ParamsCount, bool CaseSensitive, bool & ValueSet);
+  bool DoFindSwitch(const UnicodeString & Switch, TStrings * Params,
+    int32_t ParamsMax, bool CaseInsensitive);
+  void ParamsProcessed(int32_t Position, int32_t Count);
 
 private:
   struct TOption : public TObject
   {
-    TOption() : Type(otParam), ValueSet(false), Used(false), SwitchMark(0) {}
+    TOption() noexcept : Type(otParam), ValueSet(false), Used(false), SwitchMark(0) {}
+    TOptionType Type{otParam};
     UnicodeString Name;
     UnicodeString Value;
-    TOptionType Type;
-    bool ValueSet;
-    bool Used;
-    wchar_t SwitchMark;
+    bool ValueSet{false};
+    bool Used{false};
+    wchar_t SwitchMark{};
   };
 
-  typedef rde::vector<TOption> TOptionsVector;
-  TOptionsVector FOptions;
+  typedef nb::vector_t<TOption> TOptionsVector;
+  mutable TOptionsVector FOptions;
   TOptionsVector FOriginalOptions;
-  intptr_t FParamCount;
-  bool FNoMoreSwitches;
+  bool FNoMoreSwitches{false};
+  int32_t FParamCount{0};
 
 public:
-  UnicodeString GetParam(intptr_t AIndex);
+  UnicodeString GetParam(int32_t AIndex) const;
   bool GetEmpty() const;
 };
-//---------------------------------------------------------------------------
+

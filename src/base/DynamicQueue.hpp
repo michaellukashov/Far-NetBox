@@ -59,11 +59,11 @@ class DynamicQueue
 public:
    DynamicQueue();                               // Constructor
    ~DynamicQueue();                              // Destructor
-   void Reserve(int num);                        // Allocate buffer for num objects
-   int GetNum(){return NumEntries;};             // Get number of objects stored
-   bool IsEmpty() {return GetNum() == 0; };             // Get number of objects stored
+   void Reserve(int32_t num);                        // Allocate buffer for num objects
+   int32_t GetNum() { return NumEntries; }             // Get number of objects stored
+   bool IsEmpty() {return GetNum() == 0; }             // Get number of objects stored
    inline bool empty() { return IsEmpty(); }
-   int GetMaxNum(){return MaxNum;};              // Get number of objects that can be stored without re-allocating memory
+   int32_t GetMaxNum() { return MaxNum; }              // Get number of objects that can be stored without re-allocating memory
    void Put(TX const & obj);                     // Add object to head of queue
    inline TX push_back(TX const & obj) { Put(obj); }
    TX Get();                                     // Take object out from tail of queue
@@ -77,14 +77,14 @@ public:
 private:
    TX * Buffer;                                  // Buffer containing data
    TX * OldBuffer;                               // Old buffer before re-allocation
-   int head;
-   int tail;
-   int MaxNum;                                   // Maximum number of objects that currently allocated buffer can contain
-   int NumEntries;                               // Number of objects stored
+   int32_t head;
+   int32_t tail;
+   int32_t MaxNum;                                   // Maximum number of objects that currently allocated buffer can contain
+   int32_t NumEntries;                               // Number of objects stored
    void ReAllocate(int num);                     // Increase size of memory buffer
    void Error(int e, int n);                     // Make fatal error message
-   DynamicQueue(DynamicQueue const&){}          // Make private copy constructor to prevent copying
-   void operator=(DynamicQueue const&){}      // Make private assignment operator to prevent copying
+   DynamicQueue(DynamicQueue const &) {}          // Make private copy constructor to prevent copying
+   void operator =(DynamicQueue const &) {}      // Make private assignment operator to prevent copying
 };
 
 
@@ -138,9 +138,9 @@ void DynamicQueue<TX>::ReAllocate(int num) {
    // Note: ReAllocate leaves OldBuffer to be deleted by the calling function
    if (OldBuffer) nb_free(OldBuffer);            // Should not occur in single-threaded applications
 
-   TX * Buffer2 = 0;                             // New buffer
+   TX * Buffer2 = nullptr;                             // New buffer
    Buffer2 = static_cast<TX *>(nb_malloc(sizeof(TX) * num));                        // Allocate new buffer
-   if (Buffer2 == 0) {Error(3,num); return;}     // Error can't allocate
+   if (Buffer2 == nullptr) {Error(3,num); return;}     // Error can't allocate
    if (Buffer) {
       // A smaller buffer is previously allocated
       // Copy queue from old to new buffer
@@ -171,7 +171,7 @@ void DynamicQueue<TX>::Put(const TX & obj) {
    if (NumEntries >= MaxNum) {
       // buffer too small or no buffer. Allocate more memory
       // Determine new size = 2 * current size + the number of objects that correspond to AllocateSpace
-      int NewSize = MaxNum * 2 + (AllocateSpace+sizeof(TX)-1)/sizeof(TX);
+      const int32_t NewSize = MaxNum * 2 + (AllocateSpace+sizeof(TX)-1)/sizeof(TX);
 
       ReAllocate(NewSize);
    }
@@ -211,7 +211,7 @@ TX DynamicQueue<TX>::Get() {
 template <typename TX>
 TX & DynamicQueue<TX>::operator[] (int i) {
    // Access object at position i from tail
-   if ((unsigned int)i >= (unsigned int)NumEntries) {
+   if (static_cast<uint32_t>(i) >= static_cast<uint32_t>(NumEntries)) {
       // Index i does not exist
       Error(1, i);  i = 0;
    }
@@ -226,7 +226,7 @@ TX & DynamicQueue<TX>::operator[] (int i) {
 // Note: If your program has a graphical user interface (GUI) then you
 // must rewrite this function to produce a message box with the error message.
 template <typename TX>
-void DynamicQueue<TX>::Error(int e, int n) {
+void DynamicQueue<TX>::Error(int32_t e, int32_t n) {
    // Define error texts
    static const char * ErrorTexts[] = {
       "Unknown error",                 // 0
@@ -235,10 +235,10 @@ void DynamicQueue<TX>::Error(int e, int n) {
       "Memory allocation failed"       // 3
    };
    // Number of texts in ErrorTexts
-   const unsigned int NumErrorTexts = sizeof(ErrorTexts) / sizeof(*ErrorTexts);
+   constexpr uint32_t NumErrorTexts = sizeof(ErrorTexts) / sizeof(*ErrorTexts);
 
    // check that index is within range
-   if ((unsigned int)e >= NumErrorTexts) e = 0;
+   if (static_cast<uint32_t>(e) >= NumErrorTexts) e = 0;
 
    // Replace this with your own error routine, possibly with a message box:
    // fprintf(stderr, "\nDynamicArray error: %s (%i)\n", ErrorTexts[e], n);

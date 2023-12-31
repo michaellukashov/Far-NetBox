@@ -18,3 +18,4 @@ struct CFileStatus64
 };
 
 BOOL PASCAL GetStatus64(LPCTSTR lpszFileName, CFileStatus64 & rStatus);
+

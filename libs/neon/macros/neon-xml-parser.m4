@@ -1,4 +1,4 @@
-# Copyright (C) 1998-2005, 2007 Joe Orton <joe@manyfish.co.uk>    -*- autoconf -*-
+# Copyright (C) 1998-2022 Joe Orton <joe@manyfish.co.uk>    -*- autoconf -*-
 #
 # This file is free software; you may copy and/or distribute it with
 # or without modifications, as long as this notice is preserved.
@@ -12,8 +12,8 @@
 # LGPL, see COPYING.LIB for more details
 
 # This file is part of the neon HTTP/WebDAV client library.
-# See http://www.webdav.org/neon/ for the latest version. 
-# Please send any feedback to <neon@lists.manyfish.co.uk>
+# See https://notroj.github.io/neon/ for the latest version. 
+# Please report feedback via <https://github.com/notroj/neon/>
 
 # Check for XML parser, supporting libxml 2.x and expat 1.95.x,
 # or a bundled copy of expat.
@@ -44,14 +44,22 @@ AC_CHECK_HEADER(expat.h,
 
 dnl Find libxml2: run $1 if found, else $2
 AC_DEFUN([NE_XML_LIBXML2], [
-AC_CHECK_PROG(XML2_CONFIG, xml2-config, xml2-config)
-if test -n "$XML2_CONFIG"; then
-    neon_xml_parser_message="libxml `$XML2_CONFIG --version`"
+NE_PKG_CONFIG(NE_LX2, libxml-2.0,
+   [],
+   [AC_CHECK_TOOL(XML2_CONFIG, xml2-config)
+    if test "x$XML2_CONFIG" != "xno"; then
+      # xml2-config in some versions erroneously includes -I/include
+      # in the --cflags output.
+      NE_LX2_VERSION="`$XML2_CONFIG --version`"
+      NE_LX2_CFLAGS="`$XML2_CONFIG --cflags | sed 's| -I/include||g'`"
+      NE_LX2_LIBS="`$XML2_CONFIG --libs | sed 's|-L/usr/lib ||g'`"
+    fi])
+
+if test -n "${NE_LX2_VERSION+set}"; then
+    neon_xml_parser_message="libxml $NE_LX2_VERSION"
     AC_DEFINE(HAVE_LIBXML, 1, [Define if you have libxml])
-    # xml2-config in some versions erroneously includes -I/include
-    # in the --cflags output.
-    CPPFLAGS="$CPPFLAGS `$XML2_CONFIG --cflags | sed 's| -I/include||g'`"
-    NEON_LIBS="$NEON_LIBS `$XML2_CONFIG --libs | sed 's|-L/usr/lib ||g'`"
+    CPPFLAGS="$CPPFLAGS $NE_LX2_CFLAGS"
+    NEON_LIBS="$NEON_LIBS $NE_LX2_LIBS"
     AC_CHECK_HEADERS(libxml/xmlversion.h libxml/parser.h,,[
       AC_MSG_ERROR([could not find parser.h, libxml installation problem?])])
     neon_xml_parser=libxml2

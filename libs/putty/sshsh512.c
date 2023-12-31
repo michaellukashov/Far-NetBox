@@ -14,7 +14,7 @@
  * Arithmetic implementations. Note that AND, XOR and NOT can
  * overlap destination with one source, but the others can't.
  */
-#define putty_add(r,x,y) ( r.lo = y.lo + x.lo, \
+#define add(r,x,y) ( r.lo = y.lo + x.lo, \
 		     r.hi = y.hi + x.hi + ((uint32)r.lo < (uint32)y.lo) )
 #define rorB(r,x,y) ( r.lo = ((uint32)x.hi >> ((y)-32)) | ((uint32)x.lo << (64-(y))), \
 		      r.hi = ((uint32)x.lo >> ((y)-32)) | ((uint32)x.hi << (64-(y))) )
@@ -23,9 +23,9 @@
 #define shrB(r,x,y) ( r.lo = (uint32)x.hi >> ((y)-32), r.hi = 0 )
 #define shrL(r,x,y) ( r.lo = ((uint32)x.lo >> (y)) | ((uint32)x.hi << (32-(y))), \
 		      r.hi = (uint32)x.hi >> (y) )
-#define putty_and(r,x,y) ( r.lo = x.lo & y.lo, r.hi = x.hi & y.hi )
-#define putty_xor(r,x,y) ( r.lo = x.lo ^ y.lo, r.hi = x.hi ^ y.hi )
-#define putty_not(r,x) ( r.lo = ~x.lo, r.hi = ~x.hi )
+#define and(r,x,y) ( r.lo = x.lo & y.lo, r.hi = x.hi & y.hi )
+#define xor(r,x,y) ( r.lo = x.lo ^ y.lo, r.hi = x.hi ^ y.hi )
+#define not(r,x) ( r.lo = ~x.lo, r.hi = ~x.hi )
 #define INIT(h,l) { h, l }
 #define BUILD(r,h,l) ( r.hi = h, r.lo = l )
 #define EXTRACT(h,l,r) ( h = r.hi, l = r.lo )
@@ -35,17 +35,17 @@
  * message digest.
  */
 
-#define Ch(r,t,x,y,z) ( putty_not(t,x), putty_and(r,t,z), putty_and(t,x,y), putty_xor(r,r,t) )
-#define Maj(r,t,x,y,z) ( putty_and(r,x,y), putty_and(t,x,z), putty_xor(r,r,t), \
-	putty_and(t,y,z), putty_xor(r,r,t) )
-#define bigsigma0(r,t,x) ( rorL(r,x,28), rorB(t,x,34), putty_xor(r,r,t), \
-	rorB(t,x,39), putty_xor(r,r,t) )
-#define bigsigma1(r,t,x) ( rorL(r,x,14), rorL(t,x,18), putty_xor(r,r,t), \
-	rorB(t,x,41), putty_xor(r,r,t) )
-#define smallsigma0(r,t,x) ( rorL(r,x,1), rorL(t,x,8), putty_xor(r,r,t), \
-	shrL(t,x,7), putty_xor(r,r,t) )
-#define smallsigma1(r,t,x) ( rorL(r,x,19), rorB(t,x,61), putty_xor(r,r,t), \
-	shrL(t,x,6), putty_xor(r,r,t) )
+#define Ch(r,t,x,y,z) ( not(t,x), and(r,t,z), and(t,x,y), xor(r,r,t) )
+#define Maj(r,t,x,y,z) ( and(r,x,y), and(t,x,z), xor(r,r,t), \
+			 and(t,y,z), xor(r,r,t) )
+#define bigsigma0(r,t,x) ( rorL(r,x,28), rorB(t,x,34), xor(r,r,t), \
+			   rorB(t,x,39), xor(r,r,t) )
+#define bigsigma1(r,t,x) ( rorL(r,x,14), rorL(t,x,18), xor(r,r,t), \
+			   rorB(t,x,41), xor(r,r,t) )
+#define smallsigma0(r,t,x) ( rorL(r,x,1), rorL(t,x,8), xor(r,r,t), \
+			     shrL(t,x,7), xor(r,r,t) )
+#define smallsigma1(r,t,x) ( rorL(r,x,19), rorB(t,x,61), xor(r,r,t), \
+			     shrL(t,x,6), xor(r,r,t) )
 
 static void SHA512_Core_Init(SHA512_State *s) {
     static const uint64 iv[] = {
@@ -134,9 +134,9 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
 	uint64 p, q, r, tmp;
 	smallsigma1(p, tmp, w[t-2]);
 	smallsigma0(q, tmp, w[t-15]);
-	putty_add(r, p, q);
-	putty_add(p, r, w[t-7]);
-	putty_add(w[t], p, w[t-16]);
+	add(r, p, q);
+	add(p, r, w[t-7]);
+	add(w[t], p, w[t-16]);
     }
 
     a = s->h[0]; b = s->h[1]; c = s->h[2]; d = s->h[3];
@@ -148,16 +148,16 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
 #define ROUND(j,a,b,c,d,e,f,g,h) \
 	bigsigma1(p, tmp, e); \
 	Ch(q, tmp, e, f, g); \
-	putty_add(r, p, q); \
-	putty_add(p, r, k[j]) ; \
-	putty_add(q, p, w[j]); \
-	putty_add(r, q, h); \
+	add(r, p, q); \
+	add(p, r, k[j]) ; \
+	add(q, p, w[j]); \
+	add(r, q, h); \
 	bigsigma0(p, tmp, a); \
 	Maj(tmp, q, a, b, c); \
-	putty_add(q, tmp, p); \
-	putty_add(p, r, d); \
+	add(q, tmp, p); \
+	add(p, r, d); \
 	d = p; \
-	putty_add(h, q, r);
+	add(h, q, r);
 
 	ROUND(t+0, a,b,c,d,e,f,g,h);
 	ROUND(t+1, h,a,b,c,d,e,f,g);
@@ -171,7 +171,7 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
 
     {
 	uint64 tmp;
-#define UPDATE(state, local) ( tmp = state, putty_add(state, tmp, local) )
+#define UPDATE(state, local) ( tmp = state, add(state, tmp, local) )
 	UPDATE(s->h[0], a); UPDATE(s->h[1], b);
 	UPDATE(s->h[2], c); UPDATE(s->h[3], d);
 	UPDATE(s->h[4], e); UPDATE(s->h[5], f);
@@ -185,7 +185,7 @@ static void SHA512_Block(SHA512_State *s, uint64 *block) {
  * at the end, and pass those blocks to the core SHA512 algorithm.
  */
 
-void putty_SHA512_Init(SHA512_State *s) {
+void SHA512_Init(SHA512_State *s) {
     int i;
     SHA512_Core_Init(s);
     s->blkused = 0;
@@ -193,7 +193,7 @@ void putty_SHA512_Init(SHA512_State *s) {
 	s->len[i] = 0;
 }
 
-void putty_SHA384_Init(SHA512_State *s) {
+void SHA384_Init(SHA512_State *s) {
     int i;
     SHA384_Core_Init(s);
     s->blkused = 0;
@@ -201,7 +201,7 @@ void putty_SHA384_Init(SHA512_State *s) {
         s->len[i] = 0;
 }
 
-void putty_SHA512_Bytes(SHA512_State *s, const void *p, int len) {
+void SHA512_Bytes(SHA512_State *s, const void *p, int len) {
     unsigned char *q = (unsigned char *)p;
     uint64 wordblock[16];
     uint32 lenw = len;
@@ -250,7 +250,7 @@ void putty_SHA512_Bytes(SHA512_State *s, const void *p, int len) {
     }
 }
 
-void putty_SHA512_Final(SHA512_State *s, unsigned char *digest) {
+void SHA512_Final(SHA512_State *s, unsigned char *digest) {
     int i;
     int pad;
     unsigned char c[BLKSIZE];
@@ -269,7 +269,7 @@ void putty_SHA512_Final(SHA512_State *s, unsigned char *digest) {
 
     memset(c, 0, pad);
     c[0] = 0x80;
-    putty_SHA512_Bytes(s, &c, pad);
+    SHA512_Bytes(s, &c, pad);
 
     for (i = 0; i < 4; i++) {
 	c[i*4+0] = (len[3-i] >> 24) & 0xFF;
@@ -278,7 +278,7 @@ void putty_SHA512_Final(SHA512_State *s, unsigned char *digest) {
 	c[i*4+3] = (len[3-i] >>  0) & 0xFF;
     }
 
-    putty_SHA512_Bytes(s, &c, 16);
+    SHA512_Bytes(s, &c, 16);
 
     for (i = 0; i < 8; i++) {
 	uint32 h, l;
@@ -294,27 +294,27 @@ void putty_SHA512_Final(SHA512_State *s, unsigned char *digest) {
     }
 }
 
-void putty_SHA384_Final(SHA512_State *s, unsigned char *digest) {
+void SHA384_Final(SHA512_State *s, unsigned char *digest) {
     unsigned char biggerDigest[512 / 8];
-    putty_SHA512_Final(s, biggerDigest);
+    SHA512_Final(s, biggerDigest);
     memcpy(digest, biggerDigest, 384 / 8);
 }
 
-void putty_SHA512_Simple(const void *p, int len, unsigned char *output) {
+void SHA512_Simple(const void *p, int len, unsigned char *output) {
     SHA512_State s;
 
-    putty_SHA512_Init(&s);
-    putty_SHA512_Bytes(&s, p, len);
-    putty_SHA512_Final(&s, output);
+    SHA512_Init(&s);
+    SHA512_Bytes(&s, p, len);
+    SHA512_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
 
-void putty_SHA384_Simple(const void *p, int len, unsigned char *output) {
+void SHA384_Simple(const void *p, int len, unsigned char *output) {
     SHA512_State s;
 
-    putty_SHA384_Init(&s);
-    putty_SHA512_Bytes(&s, p, len);
-    putty_SHA384_Final(&s, output);
+    SHA384_Init(&s);
+    SHA512_Bytes(&s, p, len);
+    SHA384_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
 
@@ -327,7 +327,7 @@ static void *sha512_init(void)
     SHA512_State *s;
 
     s = snew(SHA512_State);
-    putty_SHA512_Init(s);
+    SHA512_Init(s);
     return s;
 }
 
@@ -353,14 +353,14 @@ static void sha512_bytes(void *handle, const void *p, int len)
 {
     SHA512_State *s = handle;
 
-    putty_SHA512_Bytes(s, p, len);
+    SHA512_Bytes(s, p, len);
 }
 
 static void sha512_final(void *handle, unsigned char *output)
 {
     SHA512_State *s = handle;
 
-    putty_SHA512_Final(s, output);
+    SHA512_Final(s, output);
     sha512_free(s);
 }
 
@@ -374,7 +374,7 @@ static void *sha384_init(void)
     SHA512_State *s;
 
     s = snew(SHA512_State);
-    putty_SHA384_Init(s);
+    SHA384_Init(s);
     return s;
 }
 
@@ -382,7 +382,7 @@ static void sha384_final(void *handle, unsigned char *output)
 {
     SHA512_State *s = handle;
 
-    putty_SHA384_Final(s, output);
+    SHA384_Final(s, output);
     smemclr(s, sizeof(*s));
     sfree(s);
 }
@@ -448,11 +448,11 @@ int main(void) {
 	} else {
 	    SHA512_State s;
 	    int n;
-	    putty_SHA512_Init(&s);
+	    SHA512_Init(&s);
 	    for (n = 0; n < 1000000 / 40; n++)
-		putty_SHA512_Bytes(&s, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+		SHA512_Bytes(&s, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 			     40);
-	    putty_SHA512_Final(&s, digest);
+	    SHA512_Final(&s, digest);
 	}
 	for (j = 0; j < 64; j++) {
 	    if (digest[j] != tests[i].digest512[j]) {

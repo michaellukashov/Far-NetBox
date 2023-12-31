@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "afxdll.h"
 
-HINSTANCE HInst = NULL;
+HINSTANCE HInst = nullptr;
 
 void InitExtensionModule(HINSTANCE HInstance)
 {

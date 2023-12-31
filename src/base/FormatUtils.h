@@ -1,12 +1,9 @@
 #pragma once
 
-#ifdef max
+#pragma push_macro("min")
+#pragma push_macro("max")
 #undef max
-#endif
-
-#ifdef min
 #undef min
-#endif
 
 #include <fmt/format.h>
 #include <fmt/printf.h>
@@ -15,25 +12,40 @@
 
 namespace nb {
 
-NB_CORE_EXPORT UnicodeString Format(const UnicodeString format_str, fmt::ArgList args);
-FMT_VARIADIC_W(UnicodeString, Format, UnicodeString)
+NB_CORE_EXPORT UnicodeString Format(const UnicodeString & fmt, fmt::ArgList args);
+FMT_VARIADIC_W(UnicodeString, Format, const UnicodeString &)
 
-NB_CORE_EXPORT UnicodeString Sprintf(const UnicodeString format_str, fmt::ArgList args);
-FMT_VARIADIC_W(UnicodeString, Sprintf, UnicodeString)
+NB_CORE_EXPORT UnicodeString Sprintf(const UnicodeString & fmt, fmt::ArgList args);
+FMT_VARIADIC_W(UnicodeString, Sprintf, const UnicodeString &)
 
-NB_CORE_EXPORT UnicodeString FmtLoadStr(intptr_t Id, fmt::ArgList args);
-FMT_VARIADIC_W(UnicodeString, FmtLoadStr, intptr_t)
+NB_CORE_EXPORT UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args);
+FMT_VARIADIC_W(UnicodeString, FmtLoadStr, int32_t)
 
 } // namespace nb
 
-inline std::basic_ostream<wchar_t>& operator<<(std::basic_ostream<wchar_t> &os, const BaseStringT<wchar_t> &Value)
+inline std::basic_ostream<wchar_t> & operator <<(std::basic_ostream<wchar_t> & os, const CMStringW & Value)
 {
   os << Value.c_str();
   return os;
 }
 
-inline std::basic_ostream<char>& operator<<(std::basic_ostream<char> &os, const BaseStringT<char> &Value)
+inline std::basic_ostream<char> & operator <<(std::basic_ostream<char> & os, const CMStringA & Value)
 {
   os << Value.c_str();
   return os;
 }
+
+inline std::basic_ostream<wchar_t> & operator<<(std::basic_ostream<wchar_t> & os, const UnicodeString & Value)
+{
+  os << Value.c_str();
+  return os;
+}
+
+inline std::basic_ostream<char> & operator<<(std::basic_ostream<char> & os, const AnsiString & Value)
+{
+  os << Value.c_str();
+  return os;
+}
+
+#pragma pop_macro("min")
+#pragma pop_macro("max")

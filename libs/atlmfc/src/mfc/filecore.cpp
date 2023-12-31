@@ -12,7 +12,7 @@
 #include <winnetwk.h>
 //#include <shlobj.h>
 //#include <shellapi.h>
-#include <Strsafe.h>
+//#include <Strsafe.h>
 #include "sal.h"
 
 AFX_STATIC void AFXAPI _AfxFillExceptionInfo(CFileException* pException,LPCTSTR lpszFileName)

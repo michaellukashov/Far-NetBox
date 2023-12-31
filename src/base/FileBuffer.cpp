@@ -1,39 +1,44 @@
 
 #include <vcl.h>
+// #pragma hdrstop
 
 #include <Common.h>
 #include <FileBuffer.h>
-//---------------------------------------------------------------------------
-__removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
+// #pragma package(smart_init)
+
 const wchar_t * EOLTypeNames = L"LF;CRLF;CR";
-//---------------------------------------------------------------------------
+
 char * EOLToStr(TEOLType EOLType)
 {
   switch (EOLType)
   {
-  case eolLF:
-    return const_cast<char *>("\n");
-  case eolCRLF:
-    return const_cast<char *>("\r\n");
-  case eolCR:
-    return const_cast<char *>("\r");
-  default:
-    DebugFail();
-    return const_cast<char *>("");
+    case eolLF:
+      return const_cast<char *>("\n");
+    case eolCRLF:
+      return const_cast<char *>("\r\n");
+    case eolCR:
+      return const_cast<char *>("\r");
+    default:
+      DebugFail();
+      return const_cast<char *>("");
   }
 }
-//---------------------------------------------------------------------------
-TFileBuffer::TFileBuffer() :
+
+TFileBuffer::TFileBuffer() noexcept :
   FMemory(std::make_unique<TMemoryStream>())
 {
+#if defined(__BORLANDC__)
+  FMemory = new TMemoryStream();
+  FSize = 0;
+#endif
 }
-//---------------------------------------------------------------------------
-TFileBuffer::~TFileBuffer()
+
+TFileBuffer::~TFileBuffer() noexcept
 {
   FMemory.reset();
 }
-//---------------------------------------------------------------------------
+
 void TFileBuffer::SetSize(int64_t Value)
 {
   if (FMemory->GetSize() != Value)
@@ -41,47 +46,43 @@ void TFileBuffer::SetSize(int64_t Value)
     FMemory->SetSize(Value);
   }
 }
-//---------------------------------------------------------------------------
-void TFileBuffer::SetPosition(int64_t Value)
+
+void TFileBuffer::Reset()
 {
-  FMemory->SetPosition(Value);
+  FMemory->Position = 0;
 }
-//---------------------------------------------------------------------------
-int64_t TFileBuffer::GetPosition() const
+
+void TFileBuffer::ProcessRead(int64_t Len, DWORD Result)
 {
-  return FMemory->GetPosition();
-}
-//---------------------------------------------------------------------------
-void TFileBuffer::SetMemory(TMemoryStream * Value)
-{
-  if (FMemory.get() != Value)
+  if (Result != Len)
   {
-    FMemory.reset(Value);
+    Size = Size - Len + Result;
   }
+  FMemory->Seek(Result, TSeekOrigin::soCurrent);
 }
-//---------------------------------------------------------------------------
+
+void TFileBuffer::NeedSpace(int64_t Len)
+{
+  Size = GetPosition() + Len;
+}
+
+
 int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceLen)
 {
   int64_t Result = 0;
   try
   {
-    SetSize(GetPosition() + Len);
-    // C++5
-    // FMemory->SetSize(FMemory->Position + Len);
+    NeedSpace(Len);
     if (ForceLen)
     {
-      Stream->ReadBuffer(GetData() + GetPosition(), Len);
+      Stream->ReadBuffer(GetPointer(), Len);
       Result = Len;
     }
     else
     {
-      Result = Stream->Read(GetData() + GetPosition(), Len);
+      Result = Stream->Read(GetPointer(), Len);
     }
-    if (Result != Len)
-    {
-      SetSize(GetSize() - Len + Result);
-    }
-    FMemory->Seek(Len, soFromCurrent);
+    ProcessRead(Len, nb::ToDWord(Result));
   }
   catch (EReadError &)
   {
@@ -89,14 +90,25 @@ int64_t TFileBuffer::ReadStream(TStream * Stream, const int64_t Len, bool ForceL
   }
   return Result;
 }
-//---------------------------------------------------------------------------
+
 int64_t TFileBuffer::LoadStream(TStream * Stream, const int64_t Len, bool ForceLen)
 {
-  FMemory->Seek(0, soFromBeginning);
+  auto const res = FMemory->Seek(0, TSeekOrigin::soBeginning);
+  DebugAssert(res == 0);
   return ReadStream(Stream, Len, ForceLen);
 }
-//---------------------------------------------------------------------------
-void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
+
+DWORD TFileBuffer::LoadFromIn(TTransferInEvent && OnTransferIn, TObject * Sender, int64_t Len)
+{
+  FMemory->Seek(0, TSeekOrigin::soBeginning);
+  DebugAssert(GetPosition() == 0);
+  NeedSpace(Len);
+  size_t Result = OnTransferIn(Sender, nb::ToUInt8Ptr(GetPointer()), nb::ToSizeT(Len));
+  ProcessRead(Len, nb::ToDWord(Result));
+  return nb::ToDWord(Result);
+}
+
+void TFileBuffer::Convert(char * Source, char * Dest, int32_t Params,
   bool & Token)
 {
   DebugAssert(NBChTraitsCRT<char>::SafeStringLen(Source) <= 2);
@@ -124,10 +136,10 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
   // one character source EOL
   if (!Source[1])
   {
-    bool PrevToken = Token;
+    const bool PrevToken = Token;
     Token = false;
 
-    for (intptr_t Index = 0; Index < GetSize(); ++Index)
+    for (int32_t Index = 0; Index < GetSize(); ++Index)
     {
       // EOL already in destination format, make sure to pass it unmodified
       if ((Index < GetSize() - 1) && (*Ptr == Dest[0]) && (*(Ptr + 1) == Dest[1]))
@@ -167,7 +179,7 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
   // two character source EOL
   else
   {
-    intptr_t Index;
+    int32_t Index;
     for (Index = 0; Index < GetSize() - 1; ++Index)
     {
       if ((*Ptr == Source[0]) && (*(Ptr + 1) == Source[1]))
@@ -193,49 +205,122 @@ void TFileBuffer::Convert(char * Source, char * Dest, intptr_t Params,
     }
   }
 }
-//---------------------------------------------------------------------------
-void TFileBuffer::Convert(TEOLType Source, TEOLType Dest, intptr_t Params,
+
+void TFileBuffer::Convert(TEOLType Source, TEOLType Dest, int32_t Params,
   bool & Token)
 {
   Convert(EOLToStr(Source), EOLToStr(Dest), Params, Token);
 }
-//---------------------------------------------------------------------------
-void TFileBuffer::Convert(char * Source, TEOLType Dest, intptr_t Params,
+
+void TFileBuffer::Convert(char * Source, TEOLType Dest, int32_t Params,
   bool & Token)
 {
   Convert(Source, EOLToStr(Dest), Params, Token);
 }
-//---------------------------------------------------------------------------
-void TFileBuffer::Convert(TEOLType Source, char * Dest, intptr_t Params,
+
+void TFileBuffer::Convert(TEOLType Source, char * Dest, int32_t Params,
   bool & Token)
 {
   Convert(EOLToStr(Source), Dest, Params, Token);
 }
-//---------------------------------------------------------------------------
+
 void TFileBuffer::Insert(int64_t Index, const char * Buf, int64_t Len)
 {
   SetSize(GetSize() + Len);
-  memmove(GetData() + Index + Len, GetData() + Index, ToSizeT(GetSize() - Index - Len));
-  memmove(GetData() + Index, Buf, ToSizeT(Len));
+  memmove(GetData() + Index + Len, GetData() + Index, nb::ToSizeT(GetSize() - Index - Len));
+  memmove(GetData() + Index, Buf, nb::ToSizeT(Len));
 }
-//---------------------------------------------------------------------------
+
 void TFileBuffer::Delete(int64_t Index, int64_t Len)
 {
-  memmove(GetData() + Index, GetData() + Index + Len, ToSizeT(GetSize() - Index - Len));
+  memmove(GetData() + Index, GetData() + Index + Len, nb::ToSizeT(GetSize() - Index - Len));
   SetSize(GetSize() - Len);
 }
-//---------------------------------------------------------------------------
+
 void TFileBuffer::WriteToStream(TStream * Stream, const int64_t Len)
 {
   DebugAssert(Stream);
   try
   {
-    Stream->WriteBuffer(GetData() + GetPosition(), Len);
-    FMemory->Seek(Len, soFromCurrent);
+    Stream->WriteBuffer(GetPointer(), Len);
+    const int64_t res = FMemory->Seek(Len, TSeekOrigin::soCurrent);
+    DebugAssert(res >= Len);
   }
-  catch (EWriteError &)
+  catch(EWriteError &)
   {
     ::RaiseLastOSError();
   }
 }
 
+void TFileBuffer::WriteToOut(TTransferOutEvent && OnTransferOut, TObject * Sender, const int64_t Len)
+{
+  OnTransferOut(Sender, nb::ToUInt8Ptr(GetPointer()), nb::ToSizeT(Len));
+  FMemory->Seek(Len, TSeekOrigin::soCurrent);
+}
+
+#if 0
+moved to Classes.cpp
+TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
+  THandleStream(AHandle),
+  FSource(nullptr)
+{
+}
+
+TSafeHandleStream::TSafeHandleStream(THandleStream * Source, bool Own) :
+  THandleStream(Source->Handle)
+{
+  FSource = Own ? Source : nullptr;
+}
+
+TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, uint16_t Mode)
+{
+  return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
+}
+
+TSafeHandleStream::~TSafeHandleStream()
+{
+  SAFE_DESTROY(FSource);
+}
+
+int64_t TSafeHandleStream::Read(void * Buffer, int64_t Count)
+{
+  int64_t Result = FileRead(FHandle, Buffer, Count);
+  if (Result == -1)
+  {
+    RaiseLastOSError();
+  }
+  return Result;
+}
+
+int64_t TSafeHandleStream::Write(const void * Buffer, int64_t Count)
+{
+  int64_t Result = FileWrite(FHandle, Buffer, Count);
+  if (Result == -1)
+  {
+    RaiseLastOSError();
+  }
+  return Result;
+}
+
+int64_t TSafeHandleStream::Read(System::DynamicArray<System::Byte> Buffer, int32_t Offset, int64_t Count)
+{
+  // This is invoked for example via CopyFrom from TParallelOperation::Done
+  int64_t Result = FileRead(FHandle, Buffer, Offset, Count);
+  if (Result == -1)
+  {
+    RaiseLastOSError();
+  }
+  return Result;
+}
+
+int64_t TSafeHandleStream::Write(const System::DynamicArray<System::Byte> Buffer, int32_t Offset, int Count)
+{
+  // This is invoked for example by TIniFileStorage::Flush or via CopyFrom from TParallelOperation::Done
+  int32_t Result = FileWrite(FHandle, Buffer, Offset, Count);
+  if (Result == -1)
+  {
+    RaiseLastOSError();
+  }
+  return Result;
+}
+#endif // #if 0

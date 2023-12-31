@@ -25,8 +25,8 @@ namespace internal
 		void link_before(list_base_node* nextNode);
 		void unlink();
 
-		list_base_node* prev;
-		list_base_node*	next;
+		list_base_node* prev{nullptr};
+		list_base_node*	next{nullptr};
 	};
 }
 

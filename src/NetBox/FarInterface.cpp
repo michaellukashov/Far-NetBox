@@ -10,15 +10,18 @@
 #include "FarDialog.h"
 #include "FarInterface.h"
 
-TConfiguration *CreateConfiguration()
+TConfiguration * CreateConfiguration()
 {
-  return new TFarConfiguration(FarPlugin);
+  TConfiguration * Result = new TFarConfiguration(FarPlugin);
+  Result->ConfigurationInit();
+  Result->Default();
+  return Result;
 }
 
-void ShowExtendedException(Exception *E)
+void ShowExtendedException(Exception * E)
 {
   DebugAssert(FarPlugin != nullptr);
-  TWinSCPPlugin *WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
   DebugAssert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }
@@ -30,7 +33,7 @@ UnicodeString GetAppNameString()
 
 UnicodeString GetRegistryKey()
 {
-  return "Software\\Far2\\Plugins\\NetBox 2";
+  return "NetBox 3"; // TODO: output MainGuid
 }
 
 void Busy(bool /*Start*/)
@@ -40,24 +43,28 @@ void Busy(bool /*Start*/)
 
 UnicodeString GetSshVersionString()
 {
-  return FORMAT("NetBox-FAR-release-%s", GetConfiguration()->GetProductVersion());
+  UnicodeString Result = UnicodeString("NetBox-Far");
+  const UnicodeString ProductVersion = GetConfiguration()->GetProductVersion();
+  if (!ProductVersion.IsEmpty())
+    Result += FORMAT("-%s", ProductVersion);
+  return Result;
 }
 
-DWORD WINAPI threadstartroutine(void *Parameter)
+static DWORD WINAPI threadstartroutine(void * Parameter)
 {
-  TSimpleThread *SimpleThread = get_as<TSimpleThread>(Parameter);
+  TSimpleThread * SimpleThread = static_cast<TSimpleThread *>(Parameter);
   return TSimpleThread::ThreadProc(SimpleThread);
 }
 
-HANDLE BeginThread(void *SecurityAttributes, DWORD StackSize,
-  void *Parameter, DWORD CreationFlags,
-  DWORD &ThreadId)
+HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
+  void * Parameter, DWORD CreationFlags,
+  DWORD & ThreadId)
 {
-  HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
-      ToSizeT(StackSize),
-      static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
-      Parameter,
-      CreationFlags, &ThreadId);
+  const HANDLE Result = ::CreateThread(static_cast<LPSECURITY_ATTRIBUTES>(SecurityAttributes),
+    nb::ToSizeT(StackSize),
+    static_cast<LPTHREAD_START_ROUTINE>(&threadstartroutine),
+    Parameter,
+    CreationFlags, &ThreadId);
   return Result;
 }
 
@@ -66,15 +73,15 @@ void EndThread(DWORD ExitCode)
   ::ExitThread(ExitCode);
 }
 
-HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
-  void *Parameter, DWORD CreationFlags,
-  TThreadID &ThreadId)
+HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
+  void * Parameter, DWORD CreationFlags,
+  TThreadID & ThreadId)
 {
   return BeginThread(SecurityAttributes, StackSize, Parameter,
-      CreationFlags, ThreadId);
+    CreationFlags, ThreadId);
 }
 
-void CopyToClipboard(const UnicodeString AText)
+void CopyToClipboard(const UnicodeString & AText)
 {
   DebugAssert(FarPlugin != nullptr);
   FarPlugin->FarCopyToClipboard(AText);
@@ -82,7 +89,7 @@ void CopyToClipboard(const UnicodeString AText)
 
 //from windows/GUITools.cpp
 template <class TEditControl>
-void ValidateMaskEditT(const UnicodeString Mask, TEditControl *Edit, int ForceDirectoryMasks)
+void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int32_t ForceDirectoryMasks)
 {
   DebugAssert(Edit != nullptr);
   TFileMasks Masks(ForceDirectoryMasks);
@@ -90,7 +97,7 @@ void ValidateMaskEditT(const UnicodeString Mask, TEditControl *Edit, int ForceDi
   {
     Masks = Mask;
   }
-  catch (EFileMasksException &E)
+  catch (EFileMasksException & E)
   {
     ShowExtendedException(&E);
     Edit->SetFocus();
@@ -102,12 +109,12 @@ void ValidateMaskEditT(const UnicodeString Mask, TEditControl *Edit, int ForceDi
   }
 }
 
-void ValidateMaskEdit(TFarComboBox *Edit)
+void ValidateMaskEdit(TFarComboBox * Edit)
 {
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
 
-void ValidateMaskEdit(TFarEdit *Edit)
+void ValidateMaskEdit(TFarEdit * Edit)
 {
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }

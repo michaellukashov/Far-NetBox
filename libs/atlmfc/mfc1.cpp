@@ -5,7 +5,6 @@
 // #include "src\mfc\arcstrm.cpp"
 #include "src\mfc\afxglobals.cpp"
 #include "src\mfc\except.cpp"
-#include "src\mfc\filecore.cpp"
 // #include "src\mfc\filetxt.cpp"
 // #include "src\mfc\filemem.cpp"
 // #include "src\mfc\fileshrd.cpp"
@@ -16,3 +15,4 @@
 //#include "src\mfc\winutil.cpp"
 #include "src\mfc\fixalloc.cpp"
 #include "src\mfc\timecore.cpp"
+#include "src\mfc\filecore.cpp"

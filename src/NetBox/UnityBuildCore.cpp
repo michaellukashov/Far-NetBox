@@ -37,6 +37,7 @@
 #include "../core/FileMasks.cpp"
 #include "../core/CopyParam.cpp"
 #include "../core/SessionData.cpp"
+#include "../core/Usage.cpp"
 #include "../core/Configuration.cpp"
 #include "../core/FileSystems.cpp"
 #include "../core/ScpFileSystem.cpp"

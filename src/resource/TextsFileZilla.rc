@@ -9,7 +9,7 @@
 #define _AFX_NO_TRACKER_RESOURCES
 #define _AFX_NO_CTL3D_RESOURCES
 #define _AFX_NO_NEWTYPEDLG_RESOURCES
-// #include "afxres.rc"
+#include "afxres.rc"
 
 STRINGTABLE
 BEGIN
@@ -19,7 +19,6 @@ BEGIN
   IDS_ERRORMSG_PROXY_CANTRESOLVEHOST, "Can't resolve host of proxy server"
   IDS_ERRORMSG_PROXY_NOCONN, "Can't connect to proxy server"
   IDS_ERRORMSG_PROXY_REQUESTFAILED, "Proxy request failed, can't connect through proxy server"
-  IDS_ERRORMSG_FILEOPENFAILED, "Can't open file '%s'."
 END
 
 STRINGTABLE

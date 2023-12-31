@@ -276,7 +276,7 @@ BOOL CServerPath::SetPath(CString &newpath, BOOL bIsFile /*=FALSE*/)
         path.TrimLeft( L"/" );
         if (bIsFile)
         {
-          if (path.Right(1)!= L"/" )
+          if (path.Right(1)!= L"/")
           {
             int rpos=path.ReverseFind(L'/');
             if (rpos==-1)
@@ -324,7 +324,7 @@ const CString CServerPath::DoGetPath(bool unterminated) const
     case FZ_SERVERTYPE_SUB_FTP_MVS:
     case FZ_SERVERTYPE_SUB_FTP_BS2000:
       path = L"'";
-      for (iter = m_Segments.begin(); iter != m_Segments.end(); iter++)
+      for (iter = m_Segments.begin(); iter != m_Segments.end(); ++iter)
       {
         if (iter != m_Segments.begin())
           path += L".";
@@ -334,7 +334,7 @@ const CString CServerPath::DoGetPath(bool unterminated) const
       break;
     case FZ_SERVERTYPE_SUB_FTP_VMS:
       path = m_Prefix + L"[";
-      for (iter = m_Segments.begin(); iter != m_Segments.end(); iter++)
+      for (iter = m_Segments.begin(); iter != m_Segments.end(); ++iter)
         path += *iter + L".";
       path.TrimRight( L"." );
       path += L"]";
@@ -342,7 +342,7 @@ const CString CServerPath::DoGetPath(bool unterminated) const
     default:
       if (!(m_nServerType & FZ_SERVERTYPE_SUB_FTP_WINDOWS))
         path=L"/";
-      for (iter=m_Segments.begin(); iter!=m_Segments.end(); iter++)
+      for (iter=m_Segments.begin(); iter!=m_Segments.end(); ++iter)
         path+=*iter + L"/";
       if (unterminated)
       {
@@ -408,8 +408,8 @@ const bool CServerPath::operator==(const CServerPath &op) const
       return false;
     if (*iter1 != *iter2)
       return false;
-    iter1++;
-    iter2++;
+    ++iter1;
+    ++iter2;
   }
   if (iter2 != op.m_Segments.end())
     return false;
@@ -463,8 +463,6 @@ const BOOL CServerPath::IsEmpty() const
 
 BOOL CServerPath::AddSubdir(CString subdir)
 {
-  subdir.TrimLeft( L" " );
-  subdir.TrimRight( L" " );
   if (subdir == L"")
     return FALSE;
 
@@ -515,7 +513,7 @@ CString CServerPath::FormatFilename(CString fn, bool omitPath /*=false*/) const
         return fn;
 
       path = L"'";
-      for (iter = m_Segments.begin(); iter != m_Segments.end(); iter++)
+      for (iter = m_Segments.begin(); iter != m_Segments.end(); ++iter)
         path += *iter + L".";
       if (m_Prefix != L".")
       {
@@ -531,7 +529,7 @@ CString CServerPath::FormatFilename(CString fn, bool omitPath /*=false*/) const
         return fn;
 
       path = m_Prefix + L"[";
-      for (iter = m_Segments.begin(); iter != m_Segments.end(); iter++)
+      for (iter = m_Segments.begin(); iter != m_Segments.end(); ++iter)
         path += *iter + L".";
       path.TrimRight( L"." );
       path += L"]";
@@ -542,7 +540,7 @@ CString CServerPath::FormatFilename(CString fn, bool omitPath /*=false*/) const
         return fn;
       if (!(m_nServerType & FZ_SERVERTYPE_SUB_FTP_WINDOWS))
         path=L"/";
-      for (iter = m_Segments.begin(); iter != m_Segments.end(); iter++)
+      for (iter = m_Segments.begin(); iter != m_Segments.end(); ++iter)
         path+=*iter + L"/";
       path += fn;
       break;

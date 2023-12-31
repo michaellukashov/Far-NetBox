@@ -7,19 +7,14 @@
 
 #include "puttyexp.h"
 
-#undef RegOpenKey
-#undef RegCreateKey
-#undef RegCreateKey
-#undef RegQueryValueEx
-#undef RegSetValueEx
-#undef RegCloseKey
-
+#pragma option push -w-dup
 #define RegOpenKey reg_open_winscp_key
 #define RegCreateKey reg_create_winscp_key
 #define RegCreateKey reg_create_winscp_key
 #define RegQueryValueEx reg_query_winscp_value_ex
 #define RegSetValueEx reg_set_winscp_value_ex
 #define RegCloseKey reg_close_winscp_key
+#pragma option pop
 
 #endif
 
@@ -46,7 +41,7 @@ static const char hex[16] = "0123456789ABCDEF";
 
 static int tried_shgetfolderpath = FALSE;
 static HMODULE shell32_module = NULL;
-PUTTY_DECL_WINDOWS_FUNCTION(static, HRESULT, SHGetFolderPathA,
+DECL_WINDOWS_FUNCTION(static, HRESULT, SHGetFolderPathA,
 		      (HWND, int, HANDLE, DWORD, LPSTR));
 
 static void mungestr(const char *in, char *out)
@@ -131,7 +126,7 @@ void write_setting_s(void *handle, const char *key, const char *value)
 {
     if (handle)
 	RegSetValueEx((HKEY) handle, key, 0, REG_SZ, (CONST BYTE *)value,
-		      1 + (int)strlen(value));
+		      1 + strlen(value));
 }
 
 void write_setting_i(void *handle, const char *key, int value)
@@ -173,7 +168,7 @@ void *open_settings_r(const char *sessionname)
 
 char *read_setting_s(void *handle, const char *key)
 {
-    DWORD type, allocsize, size = 0;
+    DWORD type, allocsize, size;
     char *ret;
 
     if (!handle)
@@ -359,7 +354,7 @@ static void hostkey_regname(char *buffer, const char *hostname,
     int len;
     strcpy(buffer, keytype);
     strcat(buffer, "@");
-    len = (int)strlen(buffer);
+    len = strlen(buffer);
     len += sprintf(buffer + len, "%d:", port);
     mungestr(hostname, buffer + strlen(buffer));
 }
@@ -377,10 +372,7 @@ int verify_host_key(const char *hostname, int port,
     HKEY rkey;
     DWORD readlen;
     DWORD type;
-    int ret;
-#ifndef MPEXT
-    int compare;
-#endif
+    int ret, compare;
 
 #ifdef MPEXT
     len = maxlen;
@@ -441,7 +433,7 @@ int verify_host_key(const char *hostname, int port,
 		int ndigits, nwords;
 		*p++ = '0';
 		*p++ = 'x';
-		ndigits = (int)strcspn(q, "/");	/* find / or end of string */
+		ndigits = strcspn(q, "/");	/* find / or end of string */
 		nwords = ndigits / 4;
 		/* now trim ndigits to remove leading zeros */
 		while (q[(ndigits - 1) ^ 3] == '0' && ndigits > 1)
@@ -465,7 +457,7 @@ int verify_host_key(const char *hostname, int port,
 	     */
 	    if (!strcmp(otherstr, key))
 		RegSetValueEx(rkey, regname, 0, REG_SZ, (BYTE *)otherstr,
-			      (int)strlen(otherstr) + 1);
+			      strlen(otherstr) + 1);
 	}
 
         sfree(oldstyle);
@@ -508,8 +500,7 @@ int have_ssh_host_key(const char *hostname, int port,
      * If we have a host key, verify_host_key will return 0 or 2.
      * If we don't have one, it'll return 1.
      */
-    char key[10];
-    return retrieve_host_key(hostname, port, keytype, key, 1) != 1;
+    return verify_host_key(hostname, port, keytype, "") != 1;
 }
 #endif
 
@@ -525,7 +516,7 @@ void store_host_key(const char *hostname, int port,
 
     if (RegCreateKey(HKEY_CURRENT_USER, PUTTY_REG_POS "\\SshHostKeys",
 		     &rkey) == ERROR_SUCCESS) {
-	RegSetValueEx(rkey, regname, 0, REG_SZ, (BYTE *)key, (unsigned long)strlen(key) + 1);
+	RegSetValueEx(rkey, regname, 0, REG_SZ, (BYTE *)key, strlen(key) + 1);
 	RegCloseKey(rkey);
     } /* else key does not exist in registry */
 
@@ -608,7 +599,7 @@ static HANDLE access_random_seed(int action)
 	 * However, the invocation below requires IE5+ anyway,
 	 * so stuff that. */
 	shell32_module = load_system32_dll("shell32.dll");
-	PUTTY_GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
+	GET_WINDOWS_FUNCTION(shell32_module, SHGetFolderPathA);
 	tried_shgetfolderpath = TRUE;
     }
     if (p_SHGetFolderPathA) {
@@ -758,12 +749,12 @@ static int transform_jumplist_registry
     /* Check validity of registry data: REG_MULTI_SZ value must end
      * with \0\0. */
     piterator_tmp = old_value;
-    while (((piterator_tmp - old_value) < ((int)value_length - 1)) &&
+    while (((piterator_tmp - old_value) < (value_length - 1)) &&
            !(*piterator_tmp == '\0' && *(piterator_tmp+1) == '\0')) {
         ++piterator_tmp;
     }
 
-    if ((piterator_tmp - old_value) >= ((int)value_length-1)) {
+    if ((piterator_tmp - old_value) >= (value_length-1)) {
         /* Invalid value. Start from an empty value. */
         *old_value = '\0';
         *(old_value + 1) = '\0';
@@ -803,7 +794,7 @@ static int transform_jumplist_registry
 
         /* Save the new list to the registry. */
         ret = RegSetValueEx(pjumplist_key, reg_jumplist_value, 0, REG_MULTI_SZ,
-                            (BYTE *)new_value, (unsigned long)(piterator_new - new_value));
+                            (BYTE *)new_value, piterator_new - new_value);
 
         sfree(old_value);
         old_value = new_value;

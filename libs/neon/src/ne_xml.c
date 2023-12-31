@@ -1,6 +1,6 @@
 /* 
    Wrapper interface to XML parser
-   Copyright (C) 1999-2007, 2009, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -471,7 +471,7 @@ ne_xml_parser *ne_xml_create(void)
     p->current = p->root = ne_calloc(sizeof *p->root);
     p->root->default_ns = "";
     p->root->state = 0;
-    strcpy(p->error, _("Unknown error"));
+    ne_strnzcpy(p->error, _("Unknown error"), sizeof p->error);
 #ifdef HAVE_EXPAT
     p->parser = XML_ParserCreate(NULL);
     if (p->parser == NULL) {
@@ -576,7 +576,7 @@ int ne_xml_parse(ne_xml_parser *p, const char *block, size_t len)
         if (p->bom_pos == 0) {
             p->bom_pos = 3; /* no BOM */
         } else if (p->bom_pos > 0 && p->bom_pos < 3) {
-            strcpy(p->error, _("Invalid Byte Order Mark"));
+            ne_strnzcpy(p->error, _("Invalid Byte Order Mark"), sizeof p->error);
             return p->failure = 1;
         }
     }
@@ -585,7 +585,7 @@ int ne_xml_parse(ne_xml_parser *p, const char *block, size_t len)
     /* Note, don't write a parser error if p->failure, since an error
      * will already have been written in that case. */
 #ifdef HAVE_EXPAT
-    ret = (int)XML_Parse(p->parser, block, (int)len, flag);
+    ret = XML_Parse(p->parser, block, len, flag);
     NE_DEBUG(NE_DBG_XMLPARSE, "XML: XML_Parse returned %d\n", ret);
     if (ret == 0 && p->failure == 0) {
 	ne_snprintf(p->error, ERR_SIZE,

@@ -1,15 +1,13 @@
 /* inftrees.c -- generate Huffman trees for efficient decoding
- * Copyright (C) 1995-2016 Mark Adler
+ * Copyright (C) 1995-2022 Mark Adler
  * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
+#include "zbuild.h"
 #include "zutil.h"
 #include "inftrees.h"
 
-#define MAXBITS 15
-
-const char inflate_copyright[] =
-   " inflate 1.2.11.f Copyright 1995-2016 Mark Adler ";
+const char PREFIX(inflate_copyright)[] = " inflate 1.2.13 Copyright 1995-2022 Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -29,29 +27,28 @@ const char inflate_copyright[] =
    table index bits.  It will differ if the request is greater than the
    longest code or if it is less than the shortest code.
  */
-int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
-                                code * *table, uint32_t *bits, uint16_t  *work)
-{
-    uint32_t len;               /* a code's length in bits */
-    uint32_t sym;               /* index of code symbols */
-    uint32_t min, max;          /* minimum and maximum code lengths */
-    uint32_t root;              /* number of index bits for root table */
-    uint32_t curr;              /* number of index bits for current table */
-    uint32_t drop;              /* code bits to drop for sub-table */
+int Z_INTERNAL zng_inflate_table(codetype type, uint16_t *lens, unsigned codes,
+                                code * *table, unsigned *bits, uint16_t *work) {
+    unsigned len;               /* a code's length in bits */
+    unsigned sym;               /* index of code symbols */
+    unsigned min, max;          /* minimum and maximum code lengths */
+    unsigned root;              /* number of index bits for root table */
+    unsigned curr;              /* number of index bits for current table */
+    unsigned drop;              /* code bits to drop for sub-table */
     int left;                   /* number of prefix codes available */
-    uint32_t used;              /* code entries in table used */
-    uint32_t huff;              /* Huffman code */
-    uint32_t incr;              /* for incrementing code, index */
-    uint32_t fill;              /* index for replicating entries */
-    uint32_t low;               /* low bits for current root entry */
-    uint32_t mask;              /* mask for low root bits */
+    unsigned used;              /* code entries in table used */
+    unsigned huff;              /* Huffman code */
+    unsigned incr;              /* for incrementing code, index */
+    unsigned fill;              /* index for replicating entries */
+    unsigned low;               /* low bits for current root entry */
+    unsigned mask;              /* mask for low root bits */
     code here;                  /* table entry for duplication */
     code *next;                 /* next available space in table */
     const uint16_t *base;       /* base value table to use */
     const uint16_t *extra;      /* extra bits table to use */
-    uint32_t match;              /* use base and extra for symbol > match */
-    uint16_t count[MAXBITS+1];  /* number of codes of each length */
-    uint16_t offs[MAXBITS+1];   /* offsets in table for each length */
+    unsigned match;             /* use base and extra for symbol >= match */
+    uint16_t count[MAX_BITS+1];  /* number of codes of each length */
+    uint16_t offs[MAX_BITS+1];   /* offsets in table for each length */
     static const uint16_t lbase[31] = { /* Length codes 257..285 base */
         3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
         35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0};
@@ -99,19 +96,19 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
      */
 
     /* accumulate lengths for codes (assumes lens[] all in 0..MAXBITS) */
-    for (len = 0; len <= MAXBITS; len++)
+    for (len = 0; len <= MAX_BITS; len++)
         count[len] = 0;
     for (sym = 0; sym < codes; sym++)
         count[lens[sym]]++;
 
     /* bound code lengths, force root to be within code lengths */
     root = *bits;
-    for (max = MAXBITS; max >= 1; max--)
+    for (max = MAX_BITS; max >= 1; max--)
         if (count[max] != 0) break;
-    if (root > max) root = max;
-    if (max == 0) {                     /* no symbols to code at all */
-        here.op = (uint8_t)64;    /* invalid code marker */
-        here.bits = (uint8_t)1;
+    root = MIN(root, max);
+    if (UNLIKELY(max == 0)) {           /* no symbols to code at all */
+        here.op = (unsigned char)64;    /* invalid code marker */
+        here.bits = (unsigned char)1;
         here.val = (uint16_t)0;
         *(*table)++ = here;             /* make a table to force an error */
         *(*table)++ = here;
@@ -120,11 +117,11 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
     }
     for (min = 1; min < max; min++)
         if (count[min] != 0) break;
-    if (root < min) root = min;
+    root = MAX(root, min);
 
     /* check for an over-subscribed or incomplete set of lengths */
     left = 1;
-    for (len = 1; len <= MAXBITS; len++) {
+    for (len = 1; len <= MAX_BITS; len++) {
         left <<= 1;
         left -= count[len];
         if (left < 0) return -1;        /* over-subscribed */
@@ -134,7 +131,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
 
     /* generate offsets into symbol table for each length for sorting */
     offs[1] = 0;
-    for (len = 1; len < MAXBITS; len++)
+    for (len = 1; len < MAX_BITS; len++)
         offs[len + 1] = offs[len] + count[len];
 
     /* sort symbols by length, by symbol order within each length */
@@ -183,7 +180,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         extra = lext;
         match = 257;
         break;
-    default:            /* DISTS */
+    default:    /* DISTS */
         base = dbase;
         extra = dext;
         match = 0;
@@ -196,7 +193,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
     next = *table;              /* current table to fill in */
     curr = root;                /* current table index bits */
     drop = 0;                   /* current bits to drop from code for index */
-    low = (uint32_t)(-1);       /* trigger new sub-table when len > root */
+    low = (unsigned)(-1);       /* trigger new sub-table when len > root */
     used = 1U << root;          /* use root table entries */
     mask = used - 1;            /* mask for comparing low */
 
@@ -208,17 +205,15 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
     /* process all codes and make table entries */
     for (;;) {
         /* create table entry */
-        here.bits = (uint8_t)(len - drop);
-        if (work[sym] + 1U < match) {
-            here.op = (uint8_t)0;
-            here.val = work[sym];
-        }
-        else if (work[sym] >= match) {
-            here.op = (uint8_t)(extra[work[sym] - match]);
+        here.bits = (unsigned char)(len - drop);
+        if (LIKELY(work[sym] >= match)) {
+            here.op = (unsigned char)(extra[work[sym] - match]);
             here.val = base[work[sym] - match];
-        }
-        else {
-            here.op = (uint8_t)(32 + 64);         /* end of block */
+        } else if (work[sym] + 1U < match) {
+            here.op = (unsigned char)0;
+            here.val = work[sym];
+        } else {
+            here.op = (unsigned char)(32 + 64);         /* end of block */
             here.val = 0;
         }
 
@@ -238,8 +233,7 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
         if (incr != 0) {
             huff &= incr - 1;
             huff += incr;
-        }
-        else {
+        } else {
             huff = 0;
         }
 
@@ -273,14 +267,13 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
 
             /* check for enough space */
             used += 1U << curr;
-            if ((type == LENS && used > ENOUGH_LENS) ||
-                (type == DISTS && used > ENOUGH_DISTS))
+            if ((type == LENS && used > ENOUGH_LENS) || (type == DISTS && used > ENOUGH_DISTS))
                 return 1;
 
             /* point entry in root table to sub-table */
             low = huff & mask;
-            (*table)[low].op = (uint8_t)curr;
-            (*table)[low].bits = (uint8_t)root;
+            (*table)[low].op = (unsigned char)curr;
+            (*table)[low].bits = (unsigned char)root;
             (*table)[low].val = (uint16_t)(next - *table);
         }
     }
@@ -288,9 +281,9 @@ int ZLIB_INTERNAL inflate_table(codetype type, uint16_t *lens, uint32_t codes,
     /* fill in remaining table entry if code is incomplete (guaranteed to have
        at most one remaining entry, since if the code is incomplete, the
        maximum code length that was allowed to get this far is one bit) */
-    if (huff != 0) {
-        here.op = (uint8_t)64;            /* invalid code marker */
-        here.bits = (uint8_t)(len - drop);
+    if (UNLIKELY(huff != 0)) {
+        here.op = (unsigned char)64;            /* invalid code marker */
+        here.bits = (unsigned char)(len - drop);
         here.val = (uint16_t)0;
         next[huff] = here;
     }

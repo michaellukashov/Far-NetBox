@@ -1,0 +1,27 @@
+@echo off
+@setlocal
+
+if "s%FAR_VERSION%"=="s" set FAR_VERSION=Far3
+if "s%PROJECT_ROOT%"=="s" set PROJECT_ROOT=%~dp0..
+
+if "s%PROJECT_BUILD_TYPE%"=="s" set PROJECT_BUILD_TYPE=Debug
+
+if "s%PROJECT_COMNTOOLS%"=="s" set PROJECT_COMNTOOLS=%VS170COMNTOOLS%
+if "s%PROJECT_KIT%"=="s" set PROJECT_KIT=vs2022
+if "s%PROJECT_PLATFORM%"=="s" set PROJECT_PLATFORM=x86
+if "s%PROJECT_GENERATOR%"=="s" set PROJECT_GENERATOR=Ninja
+if "s%PROJECT_VARS%"=="s" set PROJECT_VARS=x86
+
+set PROJECT_BUIILDDIR=%PROJECT_ROOT%\build\%PROJECT_KIT%\%PROJECT_BUILD_TYPE%\%PROJECT_PLATFORM%
+if not exist %PROJECT_BUIILDDIR% ( mkdir %PROJECT_BUIILDDIR% > NUL )
+cd %PROJECT_BUIILDDIR%
+
+@call "%PROJECT_COMNTOOLS%..\..\VC\Auxiliary\Build\vcvarsall.bat" %PROJECT_VARS%
+cmake.exe -D CMAKE_BUILD_TYPE=%PROJECT_BUILD_TYPE% -G "%PROJECT_GENERATOR%" %PROJECT_ROOT%\
+if "s%PROJECT_GENERATOR%"=="sNinja" (
+ninja
+) else (
+nmake
+)
+
+@endlocal

@@ -1,12 +1,12 @@
-
+﻿
 #pragma once
-//---------------------------------------------------------------------------
+
 #include <Classes.hpp>
 #if defined(FARPLUGIN)
 #include "Configuration.h"
 #include "SessionData.h"
 #endif // FARPLUGIN
-__removed #include <typeinfo>
+// #include <typeinfo>
 #define HELP_NONE ""
 #define SCRIPT_SWITCH "script"
 #define COMMAND_SWITCH "Command"
@@ -19,100 +19,134 @@ __removed #include <typeinfo>
 #define PERMISSIONS_SWITCH "permissions"
 #define NOPERMISSIONS_SWITCH "nopermissions"
 #define SPEED_SWITCH "speed"
-#define TRANSFER_SWITCH "transfer"
-#define FILEMASK_SWITCH "filemask"
-#define RESUMESUPPORT_SWITCH "resumesupport"
-#define NEWERONLY_SWICH "neweronly"
-#define NONEWERONLY_SWICH "noneweronly"
-#define DELETE_SWITCH "delete"
-#define REFRESH_SWITCH "refresh"
-extern const wchar_t *TransferModeNames[];
-extern const int TransferModeNamesCount;
-extern const wchar_t *ToggleNames[];
+#define TRANSFER_SWITCH L"transfer"
+#define FILEMASK_SWITCH L"filemask"
+#define RESUMESUPPORT_SWITCH L"resumesupport"
+#define NEWERONLY_SWITCH L"neweronly"
+#define NONEWERONLY_SWITCH L"noneweronly"
+#define DELETE_SWITCH L"delete"
+#define REFRESH_SWITCH L"refresh"
+#define RAWTRANSFERSETTINGS_SWITCH L"rawtransfersettings"
+#define USERNAME_SWITCH L"username"
+#define PASSWORD_SWITCH L"password"
+#define PRIVATEKEY_SWITCH L"privatekey"
+#define PASSWORDSFROMFILES_SWITCH L"passwordsfromfiles"
+constexpr const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
+constexpr const int32_t TransferModeNamesCount = _countof(TransferModeNames);
+constexpr const wchar_t * ToggleNames[] = { L"off", L"on" };
 enum TToggle { ToggleOff, ToggleOn };
-//---------------------------------------------------------------------------
+
 #if defined(FARPLUGIN)
-NB_CORE_EXPORT TConfiguration *CreateConfiguration();
+NB_CORE_EXPORT TConfiguration * CreateConfiguration();
 class TOptions;
-NB_CORE_EXPORT TOptions *GetGlobalOptions();
+NB_CORE_EXPORT TOptions * GetGlobalOptions();
 #endif // FARPLUGIN
 
-NB_CORE_EXPORT void ShowExtendedException(Exception *E);
-NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *&MoreMessages);
-__removed void IgnoreException(const std::type_info &ExceptionType);
-__removed UnicodeString GetExceptionDebugInfo();
+NB_CORE_EXPORT void ShowExtendedException(Exception * E);
+NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
+// void IgnoreException(const std::type_info & ExceptionType);
+// UnicodeString GetExceptionDebugInfo();
 
 NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();
-NB_CORE_EXPORT void *BusyStart();
-NB_CORE_EXPORT void BusyEnd(void *Token);
-static const uint32_t GUIUpdateInterval = 100;
+NB_CORE_EXPORT void * BusyStart();
+NB_CORE_EXPORT void BusyEnd(void * Token);
+constexpr const uint32_t GUIUpdateInterval = 100;
 NB_CORE_EXPORT void SetNoGUI();
 NB_CORE_EXPORT bool ProcessGUI(bool Force = false);
+void SystemRequired();
 NB_CORE_EXPORT UnicodeString GetAppNameString();
 NB_CORE_EXPORT UnicodeString GetSshVersionString();
-NB_CORE_EXPORT void CopyToClipboard(const UnicodeString Text);
-NB_CORE_EXPORT HANDLE StartThread(void *SecurityAttributes, DWORD StackSize,
-  /*TThreadFunc ThreadFunc,*/ void *Parameter, DWORD CreationFlags,
-  TThreadID &ThreadId);
-NB_CORE_EXPORT bool TextFromClipboard(UnicodeString &Text, bool Trim);
+NB_CORE_EXPORT void CopyToClipboard(const UnicodeString & AText);
+NB_CORE_EXPORT HANDLE StartThread(void * SecurityAttributes, DWORD StackSize,
+  /*TThreadFunc ThreadFunc,*/ void * Parameter, DWORD CreationFlags,
+  TThreadID & ThreadId);
+NB_CORE_EXPORT bool TextFromClipboard(UnicodeString & Text, bool Trim);
 
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
 
 #if 0
-typedef void (__closure *TButtonSubmitEvent)(TObject *Sender, uint32_t &Answer);
+// Order of the values also define order of the buttons/answers on the prompts
+// MessageDlg relies on these to be <= 0x0000FFFF
+const uint32_t qaYes =      0x00000001;
+// MessageDlg relies that answer do not conflict with mrCancel (=0x2)
+const uint32_t qaNo =       0x00000004;
+const uint32_t qaOK =       0x00000008;
+const uint32_t qaCancel =   0x00000010;
+const uint32_t qaYesToAll = 0x00000020;
+const uint32_t qaNoToAll =  0x00000040;
+const uint32_t qaAbort =    0x00000080;
+const uint32_t qaRetry =    0x00000100;
+const uint32_t qaIgnore =   0x00000200;
+const uint32_t qaSkip =     0x00000400;
+const uint32_t qaAll =      0x00000800;
+const uint32_t qaHelp =     0x00001000;
+const uint32_t qaReport =   0x00002000;
+
+const uint32_t qaFirst = qaYes;
+const uint32_t qaLast = qaReport;
+
+const uint32_t qaNeverAskAgain = 0x00010000;
+
+const int32_t qpFatalAbort =           0x01;
+const int32_t qpNeverAskAgainCheck =   0x02;
+const int32_t qpAllowContinueOnError = 0x04;
+const int32_t qpIgnoreAbort =          0x08;
+const int32_t qpWaitInBatch =          0x10;
+
 #endif // #if 0
-typedef nb::FastDelegate2<void,
-  TObject * /*Sender*/, uint32_t & /*Answer*/> TButtonSubmitEvent;
 
-struct NB_CORE_EXPORT TQueryButtonAlias : public TObject
+using TButtonSubmitEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, uint32_t & /*Answer*/>;
+
+struct NB_CORE_EXPORT TQueryButtonAlias final : public TObject
 {
-  TQueryButtonAlias();
+  TQueryButtonAlias() noexcept;
 
-  uintptr_t Button;
+  uint32_t Button{0};
   UnicodeString Alias;
   TButtonSubmitEvent OnSubmit;
-  int GroupWith;
-  bool Default;
-  TShiftStateFlag GrouppedShiftState;
-  bool ElevationRequired;
-  bool MenuButton;
+  int32_t GroupWith{0};
+  bool Default{false};
+  TShiftStateFlag GroupedShiftState{ssShift};
+  bool ElevationRequired{false};
+  bool MenuButton{false};
   UnicodeString ActionAlias;
 
-  static TQueryButtonAlias CreateYesToAllGrouppedWithYes();
-  static TQueryButtonAlias CreateNoToAllGrouppedWithNo();
-  static TQueryButtonAlias CreateAllAsYesToNewerGrouppedWithYes();
-  static TQueryButtonAlias CreateIgnoreAsRenameGrouppedWithNo();
+  static TQueryButtonAlias CreateYesToAllGroupedWithYes();
+  static TQueryButtonAlias CreateNoToAllGroupedWithNo();
+  static TQueryButtonAlias CreateAllAsYesToNewerGroupedWithYes();
+  static TQueryButtonAlias CreateIgnoreAsRenameGroupedWithNo();
 };
 
-#if 0
-typedef void (__closure *TQueryParamsTimerEvent)(uint32_t &Result);
-#endif // #if 0
-typedef nb::FastDelegate1<void, uint32_t & /*Result*/> TQueryParamsTimerEvent;
+using TQueryParamsTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
+// enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
-  explicit TQueryParams(uintptr_t AParams = 0, const UnicodeString AHelpKeyword = HELP_NONE);
-  explicit TQueryParams(const TQueryParams &Source);
+//  TQueryParams() noexcept = delete;
+  explicit TQueryParams(uint32_t AParams = 0, const UnicodeString & AHelpKeyword = HELP_NONE) noexcept;
+  explicit TQueryParams(const TQueryParams & ASource) noexcept;
 
-  void Assign(const TQueryParams &Source);
+  void Assign(const TQueryParams & Source);
 
-  const TQueryButtonAlias *Aliases;
-  uintptr_t AliasesCount;
-  uintptr_t Params;
-  uintptr_t Timer;
+  const TQueryButtonAlias * Aliases{nullptr};
+  uint32_t AliasesCount{0};
+  uint32_t Params{0};
+  uint32_t Timer{0};
   TQueryParamsTimerEvent TimerEvent;
   UnicodeString TimerMessage;
-  uint32_t TimerAnswers;
+  uint32_t TimerAnswers{0};
   TQueryType TimerQueryType;
-  uintptr_t Timeout;
-  uintptr_t TimeoutAnswer;
-  uintptr_t NoBatchAnswers;
+  uint32_t Timeout{0};
+  uint32_t TimeoutAnswer{0};
+  uint32_t TimeoutResponse{0};
+  uint32_t NoBatchAnswers{0};
   UnicodeString HelpKeyword;
 
 public:
-  TQueryParams &operator=(const TQueryParams &other);
+  TQueryParams & operator =(const TQueryParams & Other);
 };
 
 enum TPromptKind
@@ -126,70 +160,59 @@ enum TPromptKind
   pkKeybInteractive,
   pkPassword,
   pkNewPassword,
+  pkProxyAuth
 };
 
-enum TPromptUserParam
-{
-  pupEcho = 0x01,
-  pupRemember = 0x02,
-};
+enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02 };
 
 NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
-NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings *Prompts);
-NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings *Prompts);
+NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
+NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
+void AnswerNameAndCaption(uint32_t Answer, UnicodeString & Name, UnicodeString & Caption);
 class TTerminal;
 class TRemoteFile;
-//---------------------------------------------------------------------------
-#if 0
-typedef void (__closure *TFileFoundEvent)
-(TTerminal *Terminal, const UnicodeString FileName, const TRemoteFile *File,
-  bool &Cancel);
-#endif // #if 0
-typedef nb::FastDelegate4<void,
-  TTerminal * /*Terminal*/, UnicodeString /*FileName*/,
-  const TRemoteFile * /*File*/,
-  bool & /*Cancel*/> TFileFoundEvent;
-#if 0
-typedef void (__closure *TFindingFileEvent)
-(TTerminal *Terminal, const UnicodeString Directory, bool &Cancel);
-#endif // #if 0
-typedef nb::FastDelegate3<void,
-  TTerminal * /*Terminal*/, UnicodeString /*ADirectory*/, bool & /*Cancel*/> TFindingFileEvent;
-//---------------------------------------------------------------------------
+
+using TFileFoundEvent = nb::FastDelegate4<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
+  bool & /*Cancel*/>;
+using TFindingFileEvent = nb::FastDelegate3<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*ADirectory*/, bool & /*Cancel*/>;
+
 class NB_CORE_EXPORT TOperationVisualizer
 {
   NB_DISABLE_COPY(TOperationVisualizer)
 public:
-  explicit TOperationVisualizer(bool UseBusyCursor = true);
-  ~TOperationVisualizer();
+  TOperationVisualizer() = delete;
+  explicit TOperationVisualizer(bool UseBusyCursor = true) noexcept;
+  ~TOperationVisualizer() noexcept;
 
 private:
-  bool FUseBusyCursor;
-  void *FToken;
+  bool FUseBusyCursor{false};
+  gsl::owner<void *> FToken{nullptr};
 };
-//---------------------------------------------------------------------------
-class NB_CORE_EXPORT TInstantOperationVisualizer : public TOperationVisualizer
+
+class NB_CORE_EXPORT TInstantOperationVisualizer final : public TOperationVisualizer
 {
 public:
-  TInstantOperationVisualizer();
-  ~TInstantOperationVisualizer();
+  TInstantOperationVisualizer() noexcept;
+  ~TInstantOperationVisualizer() noexcept;
 
 private:
   TDateTime FStart;
 };
-//---------------------------------------------------------------------------
+
 struct TClipboardHandler
 {
   NB_DISABLE_COPY(TClipboardHandler)
 public:
-  TClipboardHandler() {}
+  TClipboardHandler() = default;
 
   UnicodeString Text;
 
-  void Copy(TObject * /*Sender*/, uint32_t & /*Answer*/)
+  void Copy(TObject * /*Sender*/, uint32_t & /*Answer*/) const
   {
-    volatile TInstantOperationVisualizer Visualizer;
+    TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
     CopyToClipboard(Text);
   }
 };
-//---------------------------------------------------------------------------
+

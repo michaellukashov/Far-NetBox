@@ -1,6 +1,6 @@
 /* 
    Replacement memory allocation handling etc.
-   Copyright (C) 1999-2005, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -93,11 +93,11 @@ char *ne_strdup(const char *s)
 
 char *ne_strndup(const char *s, size_t n)
 {
-    char *res;
-    DO_MALLOC(res, n+1);
-    res[n] = '\0';
-    memcpy(res, s, n);
-    return res;
+    char *new;
+    DO_MALLOC(new, n+1);
+    new[n] = '\0';
+    memcpy(new, s, n);
+    return new;
 }
 
 #else /* NEON_MEMLEAK */

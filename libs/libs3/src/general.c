@@ -7,7 +7,9 @@
  *
  * libs3 is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation, version 3 of the License.
+ * Software Foundation, version 3 or above of the License.  You can also
+ * redistribute and/or modify it under the terms of the GNU General Public
+ * License, version 2 or above of the License.
  *
  * In addition, as a special exception, the copyright holders give
  * permission to link the code of this library and its programs with the
@@ -20,6 +22,10 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * version 3 along with libs3, in a file named COPYING.  If not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * You should also have received a copy of the GNU General Public License
+ * version 2 along with libs3, in a file named COPYING-GPLv2.  If not, see
  * <https://www.gnu.org/licenses/>.
  *
  ************************************************************************** **/
@@ -108,6 +114,7 @@ const char *S3_get_status_name(S3Status status)
         handlecase(ConnectionFailed);
         handlecase(AbortedByCallback);
         handlecase(NotSupported);
+        handlecase(UploadIdTooLong);
         handlecase(ErrorAccessDenied);
         handlecase(ErrorAccountProblem);
         handlecase(ErrorAmbiguousGrantByEmailAddress);
@@ -382,7 +389,7 @@ static S3Status convertAclXmlCallback(const char *elementPath,
                 strcpy(grant->grantee.amazonCustomerByEmail.emailAddress,
                        caData->emailAddress);
             }
-            else if (caData->userId[0] && caData->userDisplayName[0]) {
+            else if (caData->userId[0]) {
                 grant->granteeType = S3GranteeTypeCanonicalUser;
                 strcpy(grant->grantee.canonicalUser.id, caData->userId);
                 strcpy(grant->grantee.canonicalUser.displayName,
@@ -497,15 +504,14 @@ int snprintf_S(char * s, size_t n, const char * format, size_t len, const char *
     int result;
     if (strcmp(format, "%.*s") == 0)
     {
-        result = 0;
-        while ((n > 0) && (len > 0) && (*data != '\0'))
+        result = len;
+        while ((n > 1) && (len > 0) && (*data != '\0'))
         {
             *s = *data;
             ++s;
             ++data;
             --len;
             --n;
-            ++result;
         }
 
         if (n > 0)

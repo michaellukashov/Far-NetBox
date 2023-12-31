@@ -1,6 +1,6 @@
 /* 
    HTTP utility functions
-   Copyright (C) 1999-2006, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -40,10 +40,8 @@ NE_BEGIN_DECLS
  *    "neon 0.2.0: Library build, OpenSSL support" */
 const char *ne_version_string(void);
 
-/* Returns non-zero if library version is not of major version
- * 'major', or if minor version is not greater than or equal to
- * 'minor'.  For neon versions with major == 0, all minor versions are
- * presumed to be incompatible.  */
+/* Returns non-zero if neon library version is backwards-compatible
+ * with ABI at given (major, minor). */
 int ne_version_match(int major, int minor);
 
 /* Feature codes: */
@@ -108,11 +106,11 @@ void ne_debug_init(FILE *stream, int mask);
 
 /* The current debug mask and stream set by the last call to
  * ne_debug_init. */
-extern int ne_debug_mask;
+NE_VAR int ne_debug_mask;
+NE_VAR FILE *ne_debug_stream;
 
 #ifndef WINSCP
 
-extern FILE *ne_debug_stream;
 
 /* Produce debug output if any of channels 'ch' is enabled for
  * debugging. */

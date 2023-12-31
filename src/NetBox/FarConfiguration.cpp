@@ -1,26 +1,43 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include <Common.h>
 
 #include "Bookmarks.h"
 #include "FarConfiguration.h"
+#include "Far3Storage.h"
 #include "FarPlugin.h"
 #include "CoreMain.h"
+#include <plugin.hpp>
 
-TFarConfiguration::TFarConfiguration(TCustomFarPlugin *APlugin) :
+enum NetBoxConfirmationsSettings
+{
+  NBCS_COPYOVERWRITE                  = 0x00000001,
+  NBCS_MOVEOVERWRITE                  = 0x00000002,
+  NBCS_DRAGANDDROP                    = 0x00000004,
+  NBCS_DELETE                         = 0x00000008,
+  NBCS_DELETENONEMPTYFOLDERS          = 0x00000010,
+  NBCS_INTERRUPTOPERATION             = 0x00000020,
+  // NBCS_DISCONNECTNETWORKDRIVE         = 0x00000040,
+  NBCS_RELOADEDITEDFILE               = 0x00000080,
+  NBCS_CLEARHISTORYLIST               = 0x00000100,
+  NBCS_EXIT                           = 0x00000200,
+  // NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
+};
+
+TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
-  FBookmarks(new TBookmarks()),
+  FBookmarks(std::make_unique<TBookmarks>()),
   FFarConfirmations(-1)
 {
-  TFarConfiguration::Default();
-  CacheFarSettings();
+//  TFarConfiguration::Default();
+  //CacheFarSettings();
 }
 
-TFarConfiguration::~TFarConfiguration()
+TFarConfiguration::~TFarConfiguration() noexcept
 {
-  SAFE_DESTROY(FBookmarks);
+//  SAFE_DESTROY(FBookmarks);
 }
 
 void TFarConfiguration::Default()
@@ -35,7 +52,7 @@ void TFarConfiguration::Default()
   SetDisksMenuHotKey(0);
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
-  SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav");
+  SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav,s3");
   SetSessionNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
@@ -50,18 +67,21 @@ void TFarConfiguration::Default()
   SetStatusColumnTypesDetailed("NR");
   SetStatusColumnWidthsDetailed("0");
 
-  SetApplyCommandCommand(L"");
+  SetApplyCommandCommand("");
   SetApplyCommandParams(0);
 
-  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", L""));
-  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", L""));
+  SetPuttygenPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\puttygen.exe", ""));
+  SetPageantPath(FormatCommand(::ExtractFilePath(ModuleFileName()) + "putty\\pageant.exe", ""));
 
   FBookmarks->Clear();
 }
 
-THierarchicalStorage *TFarConfiguration::CreateStorage(bool &SessionList)
+THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool & SessionList)
 {
-  return TGUIConfiguration::CreateStorage(SessionList);
+  nb::used(SessionList);
+  THierarchicalStorage * Storage = FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : TGUIConfiguration::CreateScpStorage(SessionList);
+  Storage->Init();
+  return Storage;
 }
 
 void TFarConfiguration::Saved()
@@ -70,19 +90,26 @@ void TFarConfiguration::Saved()
   FBookmarks->ModifyAll(false);
 }
 
+void TFarConfiguration::ConfigurationInit()
+{
+  TGUIConfiguration::ConfigurationInit();
+  CacheFarSettings();
+}
+
 // duplicated from core\configuration.cpp
+#undef LASTELEM
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKey(KEY, CANCREATE, true)) \
+  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
   { \
-    SCOPE_EXIT { Storage->CloseSubKey(); }; \
+    SCOPE_EXIT { Storage->CloseSubKeyPath(); }; \
     BLOCK \
   }
 #define REGCONFIG(CANCREATE) \
-  BLOCK(L"Far", CANCREATE, \
+  BLOCK("Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \
-    KEY(Integer,  DisksMenuHotKey); \
+    KEY2(Integer,  DisksMenuHotKey); \
     KEY(Bool,     PluginsMenu); \
     KEY(Bool,     PluginsMenuCommands); \
     KEY(String,   CommandPrefixes); \
@@ -102,20 +129,24 @@ void TFarConfiguration::Saved()
     KEY(String,   PuttygenPath); \
     KEY(String,   PageantPath); \
     KEY(String,   ApplyCommandCommand); \
-    KEY(Integer,  ApplyCommandParams); \
+    KEY2(Integer,  ApplyCommandParams); \
     KEY(Bool,     ConfirmSynchronizedBrowsing); \
   )
 
-void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
+void TFarConfiguration::SaveData(THierarchicalStorage * Storage, bool All)
 {
   TGUIConfiguration::SaveData(Storage, All);
 
   // duplicated from core\configuration.cpp
+#undef KEY
+#undef KEY2
 #define KEY(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR())
+#define KEY2(TYPE, VAR) Storage->Write ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt32(Get##VAR()))
   REGCONFIG(true);
+#undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", /*CanCreate=*/true))
+  if (Storage->OpenSubKeyPath("Bookmarks", /*CanCreate=*/true))
   {
     FBookmarks->Save(Storage, All);
 
@@ -123,16 +154,20 @@ void TFarConfiguration::SaveData(THierarchicalStorage *Storage, bool All)
   }
 }
 
-void TFarConfiguration::LoadData(THierarchicalStorage *Storage)
+void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
 {
   TGUIConfiguration::LoadData(Storage);
 
   // duplicated from core\configuration.cpp
+#undef KEY2
+#undef KEY
 #define KEY(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), Get##VAR()))
+#define KEY2(TYPE, VAR) Set##VAR(Storage->Read ## TYPE(LASTELEM(MB2W(#VAR)), nb::ToInt32(Get##VAR())))
   REGCONFIG(false);
+#undef KEY2
 #undef KEY
 
-  if (Storage->OpenSubKey(L"Bookmarks", false))
+  if (Storage->OpenSubKeyPath("Bookmarks", false))
   {
     FBookmarks->Load(Storage);
     Storage->CloseSubKey();
@@ -160,7 +195,7 @@ void TFarConfiguration::Save(bool All, bool Explicit)
   TGUIConfiguration::DoSave(All, Explicit);
 }
 
-void TFarConfiguration::SetPlugin(TCustomFarPlugin *Value)
+void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
 {
   if (GetPlugin() != Value)
   {
@@ -169,19 +204,76 @@ void TFarConfiguration::SetPlugin(TCustomFarPlugin *Value)
   }
 }
 
-void TFarConfiguration::CacheFarSettings()
+intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_t * Name) const
 {
-  if (GetPlugin())
+  intptr_t Result = 0;
+  FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
+  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
+  if (Settings)
   {
-    FFarConfirmations = GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
+    FarSettingsItem item = {sizeof(FarSettingsItem), nb::ToSizeT((int32_t)Root), Name, FST_UNKNOWN, {0} };
+    if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+    {
+      Result = static_cast<intptr_t>(item.Number);
+    }
+    FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, nullptr);
   }
+  return Result;
 }
 
-intptr_t TFarConfiguration::FarConfirmations() const
+intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t * Name) const
+{
+  FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
+  if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+  {
+    return static_cast<intptr_t>(item.Number);
+  }
+  return 0;
+}
+
+
+int32_t TFarConfiguration::GetConfirmationsSettings() const
+{
+  int32_t Result = 0;
+  FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
+  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
+  if (Settings)
+  {
+    if (GetConfirmationsSetting(Settings, L"Copy"))
+      Result |= NBCS_COPYOVERWRITE;
+    if (GetConfirmationsSetting(Settings, L"Move"))
+      Result |= NBCS_MOVEOVERWRITE;
+    // if (GetConfirmationsSetting(Settings, L"RO"))
+    // result |= NBCS_MOVEOVERWRITE;
+    if (GetConfirmationsSetting(Settings, L"Drag"))
+      Result |= NBCS_DRAGANDDROP;
+    if (GetConfirmationsSetting(Settings, L"Delete"))
+      Result |= NBCS_DELETE;
+    if (GetConfirmationsSetting(Settings, L"DeleteFolder"))
+      Result |= NBCS_DELETENONEMPTYFOLDERS;
+    if (GetConfirmationsSetting(Settings, L"Esc"))
+      Result |= NBCS_INTERRUPTOPERATION;
+    if (GetConfirmationsSetting(Settings, L"AllowReedit"))
+      Result |= NBCS_RELOADEDITEDFILE;
+    if (GetConfirmationsSetting(Settings, L"HistoryClear"))
+      Result |= NBCS_CLEARHISTORYLIST;
+    if (GetConfirmationsSetting(Settings, L"Exit"))
+      Result |= NBCS_EXIT;
+    FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, nullptr);
+  }
+  return Result;
+}
+
+void TFarConfiguration::CacheFarSettings()
+{
+  FFarConfirmations = GetConfirmationsSettings();
+}
+
+int32_t TFarConfiguration::FarConfirmations() const
 {
   if (GetPlugin() && (GetCurrentThreadId() == GetPlugin()->GetFarThreadId()))
   {
-    return GetPlugin()->FarAdvControl(ACTL_GETCONFIRMATIONS);
+    return GetConfirmationsSettings();
   }
   DebugAssert(FFarConfirmations >= 0);
   return FFarConfirmations;
@@ -194,7 +286,7 @@ bool TFarConfiguration::GetConfirmOverwriting() const
     return TGUIConfiguration::GetConfirmOverwriting();
   }
   // DebugAssert(GetPlugin());
-  return (FarConfirmations() & FCS_COPYOVERWRITE) != 0;
+  return (FarConfirmations() & NBCS_COPYOVERWRITE) != 0;
 }
 
 void TFarConfiguration::SetConfirmOverwriting(bool Value)
@@ -216,7 +308,7 @@ void TFarConfiguration::SetConfirmOverwriting(bool Value)
 bool TFarConfiguration::GetConfirmDeleting() const
 {
   DebugAssert(GetPlugin());
-  return (FarConfirmations() & FCS_DELETE) != 0;
+  return (FarConfirmations() & NBCS_DELETE) != 0;
 }
 
 UnicodeString TFarConfiguration::ModuleFileName() const
@@ -225,19 +317,19 @@ UnicodeString TFarConfiguration::ModuleFileName() const
   return GetPlugin()->GetModuleName();
 }
 
-void TFarConfiguration::SetBookmarks(const UnicodeString Key,
-  TBookmarkList *Value)
+void TFarConfiguration::SetBookmarks(const UnicodeString & Key,
+  TBookmarkList * Value)
 {
   FBookmarks->SetBookmarks(Key, Value);
   Changed();
 }
 
-TBookmarkList *TFarConfiguration::GetBookmarks(const UnicodeString Key)
+TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 {
   return FBookmarks->GetBookmarks(Key);
 }
 
-TFarConfiguration *GetFarConfiguration()
+TFarConfiguration * GetFarConfiguration()
 {
   return dyn_cast<TFarConfiguration>(GetConfiguration());
 }

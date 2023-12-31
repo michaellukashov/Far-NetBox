@@ -56,7 +56,7 @@ void filename_free(Filename *fn)
 int filename_serialise(const Filename *f, void *vdata)
 {
     char *data = (char *)vdata;
-    int len = (int)strlen(f->path) + 1;     /* include trailing NUL */
+    int len = strlen(f->path) + 1;     /* include trailing NUL */
     if (data) {
         strcpy(data, f->path);
     }
@@ -70,7 +70,7 @@ Filename *filename_deserialise(void *vdata, int maxsize, int *used)
     if (!end)
         return NULL;
     end++;
-    *used = (int)(end - data);
+    *used = end - data;
     return filename_from_str(data);
 }
 
@@ -87,7 +87,7 @@ FILE * mp_wfopen(const char *filename, const char *mode)
 {
     size_t len = strlen(filename);
     wchar_t * wfilename = snewn(len * 10, wchar_t);
-    size_t wlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, (int)(len * 10));
+    size_t wlen = MultiByteToWideChar(CP_UTF8, 0, filename, -1, wfilename, len * 10);
     FILE * file;
     if (wlen <= 0)
     {
@@ -130,7 +130,7 @@ char *get_username(void)
     DWORD namelen;
     char *user;
     int got_username = FALSE;
-    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOLEAN, GetUserNameExA,
+    DECL_WINDOWS_FUNCTION(static, BOOLEAN, GetUserNameExA,
 			  (EXTENDED_NAME_FORMAT, LPSTR, PULONG));
 
     {
@@ -143,7 +143,7 @@ char *get_username(void)
 	       sspicli.dll WITHOUT proper path sanitizing, so better
 	       load it properly before */
 	    HMODULE sspicli = load_system32_dll("sspicli.dll");
-	    PUTTY_GET_WINDOWS_FUNCTION(secur32, GetUserNameExA);
+	    GET_WINDOWS_FUNCTION(secur32, GetUserNameExA);
 	    tried_usernameex = TRUE;
 	}
     }
@@ -210,7 +210,7 @@ void dll_hijacking_protection(void)
      * full pathname by the user-provided configuration.
      */
     static HMODULE kernel32_module;
-    PUTTY_DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
+    DECL_WINDOWS_FUNCTION(static, BOOL, SetDefaultDllDirectories, (DWORD));
 
     if (!kernel32_module) {
         kernel32_module = load_system32_dll("kernel32.dll");
@@ -219,10 +219,10 @@ void dll_hijacking_protection(void)
          * currently use for Coveritying the Windows code, this
          * function isn't available in the header files to
          * type-check */
-        PUTTY_GET_WINDOWS_FUNCTION_NO_TYPECHECK(
+        GET_WINDOWS_FUNCTION_NO_TYPECHECK(
             kernel32_module, SetDefaultDllDirectories);
 #else
-        PUTTY_GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
+        GET_WINDOWS_FUNCTION(kernel32_module, SetDefaultDllDirectories);
 #endif
     }
 
@@ -269,12 +269,12 @@ HMODULE load_system32_dll(const char *libname)
 	do {
 	    size = 3*size/2 + 512;
 	    sysdir = sresize(sysdir, size, char);
-	    len = GetSystemDirectoryA(sysdir, size);
+	    len = GetSystemDirectory(sysdir, size);
 	} while (len >= size);
     }
 
     fullpath = dupcat(sysdir, "\\", libname, NULL);
-    ret = LoadLibraryA(fullpath);
+    ret = LoadLibrary(fullpath);
     sfree(fullpath);
     return ret;
 }
@@ -316,26 +316,23 @@ const char *win_strerror(int error)
     es = find234(errstrings, &error, errstring_find);
 
     if (!es) {
-        int bufsize;
+        char msgtext[65536]; /* maximum size for FormatMessage is 64K */
 
         es = snew(struct errstring);
         es->error = error;
-        /* maximum size for FormatMessage is 64K */
-        bufsize = 65535;
-        es->text = snewn(bufsize+1, char);
         if (!FormatMessage((FORMAT_MESSAGE_FROM_SYSTEM |
                             FORMAT_MESSAGE_IGNORE_INSERTS), NULL, error,
                            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                           es->text, bufsize, NULL)) {
-            sprintf(es->text,
-                    "Windows error code %d (and FormatMessage returned %d)", 
-                    error, GetLastError());
+                           msgtext, lenof(msgtext)-1, NULL)) {
+            sprintf(msgtext,
+                    "(unable to format: FormatMessage returned %u)",
+                    (unsigned int)GetLastError());
         } else {
-            int len = (int)strlen(es->text);
-            if (len > 0 && es->text[len-1] == '\n')
-                es->text[len-1] = '\0';
+            int len = strlen(msgtext);
+            if (len > 0 && msgtext[len-1] == '\n')
+                msgtext[len-1] = '\0';
         }
-        es->text = sresize(es->text, strlen(es->text) + 1, char);
+        es->text = dupprintf("Error %d: %s", error, msgtext);
         add234(errstrings, es);
     }
 
@@ -362,7 +359,7 @@ void dputs(const char *buf)
     }
 
     if (debug_hdl != INVALID_HANDLE_VALUE) {
-		WriteFile(debug_hdl, buf, (DWORD)strlen(buf), &dw, NULL);
+	WriteFile(debug_hdl, buf, strlen(buf), &dw, NULL);
     }
     fputs(buf, debug_fp);
     fflush(debug_fp);
@@ -612,7 +609,7 @@ void fontspec_free(FontSpec *f)
 int fontspec_serialise(FontSpec *f, void *vdata)
 {
     char *data = (char *)vdata;
-    int len = (int)strlen(f->name) + 1;     /* include trailing NUL */
+    int len = strlen(f->name) + 1;     /* include trailing NUL */
     if (data) {
         strcpy(data, f->name);
         PUT_32BIT_MSB_FIRST(data + len, f->isbold);
@@ -631,7 +628,7 @@ FontSpec *fontspec_deserialise(void *vdata, int maxsize, int *used)
     if (!end)
         return NULL;
     end++;
-    *used = (int)(end - data + 12);
+    *used = end - data + 12;
     return fontspec_new(data,
                         GET_32BIT_MSB_FIRST(end),
                         GET_32BIT_MSB_FIRST(end + 4),

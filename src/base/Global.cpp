@@ -1,61 +1,74 @@
 
 #include <vcl.h>
+//#pragma hdrstop
 
 #ifdef _DEBUG
-#include <stdio.h>
+//#include <cstdio>
 #include <rdestl/vector.h>
 // TODO: remove src/core dep
 #include <Interface.h>
 #endif // ifdef _DEBUG
 
 #include <Global.h>
-//---------------------------------------------------------------------------
-__removed #pragma package(smart_init)
-//---------------------------------------------------------------------------
+
+// #pragma package(smart_init)
+
+// const UnicodeString EmptyString(TraceInitStr(L"\1\1\1")); // magic
+
+UnicodeString NormalizeString(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  if (Result == L"\1\1\1")
+  {
+    Result = UnicodeString();
+  }
+  return Result;
+}
+
 // TGuard
-//---------------------------------------------------------------------------
-TGuard::TGuard(const TCriticalSection &ACriticalSection) :
+
+TGuard::TGuard(const TCriticalSection & ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Enter();
 }
-//---------------------------------------------------------------------------
-TGuard::~TGuard()
+
+TGuard::~TGuard() noexcept
 {
   FCriticalSection.Leave();
 }
-//---------------------------------------------------------------------------
+
 // TUnguard
-//---------------------------------------------------------------------------
-TUnguard::TUnguard(TCriticalSection &ACriticalSection) :
+
+TUnguard::TUnguard(TCriticalSection & ACriticalSection) noexcept :
   FCriticalSection(ACriticalSection)
 {
   FCriticalSection.Leave();
 }
-//---------------------------------------------------------------------------
-TUnguard::~TUnguard()
+
+TUnguard::~TUnguard() noexcept
 {
   FCriticalSection.Enter();
 }
-//---------------------------------------------------------------------------
+
 #ifdef _DEBUG
 
 static HANDLE TraceFile = nullptr;
 bool IsTracing = false;
-const uintptr_t CallstackTlsOff = (uintptr_t) - 1;
-uintptr_t CallstackTls = CallstackTlsOff;
+const uint32_t CallstackTlsOff = static_cast<uint32_t>(-1);
+uint32_t CallstackTls = CallstackTlsOff;
 TCriticalSection *TracingCriticalSection = nullptr;
 
 bool TracingInMemory = false;
 HANDLE TracingThread = nullptr;
 
-typedef rde::vector<UTF8String> TTracesInMemory;
-typedef rde::vector<TTracesInMemory *> TTracesInMemoryList;
+typedef nb::vector_t<UTF8String> TTracesInMemory;
+typedef nb::vector_t<TTracesInMemory *> TTracesInMemoryList;
 TTracesInMemory *CurrentTracesInMemory = nullptr;
 TTracesInMemoryList WriteTracesInMemory;
 TTracesInMemoryList ReadTracesInMemory;
 #define TracesInMemorySecond() (GetTickCount() % 1000)
-int CurrentTracesInMemorySecond = -1;
+int32_t CurrentTracesInMemorySecond = -1;
 std::unique_ptr<TCriticalSection> CurrentTracesInMemorySection;
 std::unique_ptr<TCriticalSection> TracesInMemoryListsSection;
 
@@ -64,29 +77,29 @@ std::unique_ptr<TCriticalSection> TracesInMemoryListsSection;
 // Map to DirectTrace(MESSAGE) to enable tracing of in-memory tracing
 #define MemoryTracingTrace(MESSAGE)
 
-inline static UTF8String TraceFormat(TDateTime Time, DWORD Thread, const wchar_t *SourceFile,
-  const wchar_t *Func, int Line, const wchar_t *Message)
+inline static UTF8String TraceFormat(const TDateTime & Time, DWORD Thread, const wchar_t * SourceFile,
+  const wchar_t * Func, int32_t Line, const wchar_t * Message)
 {
-  UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);
-  const wchar_t *Slash = wcsrchr(SourceFile, L'\\');
+  const UnicodeString TimeString = DateTimeToString(Time); // TimeString, L"hh:mm:ss.zzz", Time);
+  const wchar_t * Slash = wcsrchr(SourceFile, Backslash);
   if (Slash != nullptr)
   {
     SourceFile = Slash + 1;
   }
   UTF8String Buffer =
     UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
-        TimeString, int(Thread), SourceFile, Line, Func, Message));
+        TimeString, nb::ToInt32(Thread), SourceFile, Line, Func, Message));
   return Buffer;
 }
 
-inline static void WriteTraceBuffer(const char *Buffer, size_t Length)
+inline static void WriteTraceBuffer(const char * Buffer, size_t Length)
 {
   DWORD Written;
-  ::WriteFile(TraceFile, Buffer, (DWORD)Length, &Written, nullptr);
+  ::WriteFile(TraceFile, Buffer, static_cast<DWORD>(Length), &Written, nullptr);
 }
 
-inline static void DoDirectTrace(DWORD Thread, const wchar_t *SourceFile,
-  const wchar_t *Func, int Line, const wchar_t *Message)
+inline static void DoDirectTrace(DWORD Thread, const wchar_t * SourceFile,
+  const wchar_t * Func, int32_t Line, const wchar_t * Message)
 {
   UTF8String Buf = TraceFormat(Now(), Thread, SourceFile, Func, Line, Message);
   WriteTraceBuffer(Buf.c_str(), Buf.Length());
@@ -118,18 +131,18 @@ struct TTraceInMemory
 #ifdef TRACE_IN_MEMORY_NO_FORMATTING
   DWORD Ticks;
   DWORD Thread;
-  const wchar_t *SourceFile;
-  const wchar_t *Func;
-  int Line;
-  const wchar_t *Message;
+  const wchar_t * SourceFile;
+  const wchar_t * Func;
+  int32_t Line;
+  const wchar_t * Message;
 #else
   UTF8String Message;
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 };
-typedef rde::vector<TTraceInMemory> TTracesInMemory;
+typedef nb::vector_t<TTraceInMemory> TTracesInMemory;
 TTracesInMemory TracesInMemory;
 
-int TraceThreadProc(void *)
+int32_t TraceThreadProc(void *)
 {
   Trace(L">");
   try
@@ -159,8 +172,8 @@ int TraceThreadProc(void *)
 
 #ifdef TRACE_IN_MEMORY_NO_FORMATTING
 
-void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *Message)
+void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
+  uint32_t Line, const wchar_t *Message)
 {
   if (TracingCriticalSection != nullptr)
   {
@@ -172,7 +185,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
     TraceInMemory.Line = Line;
     TraceInMemory.Message = Message;
 
-    volatile TGuard Guard(TracingCriticalSection);
+    TGuard Guard(TracingCriticalSection); nb::used(Guard);
 
     if (TracesInMemory.capacity() == 0)
     {
@@ -185,8 +198,8 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
   }
 }
 
-void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *AFormat, TVarRec * /*Args*/, const int /*Args_Size*/)
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  uint32_t Line, const wchar_t * AFormat, TVarRec * /*Args*/, const int32_t /*Args_Size*/)
 {
   DoTrace(SourceFile, Func, Line, AFormat);
 }
@@ -199,7 +212,7 @@ void TraceDumpToFile()
 {
   if (TraceFile != nullptr)
   {
-    volatile TGuard Guard(TracingCriticalSection);
+    TGuard Guard(TracingCriticalSection); nb::used(Guard);
 
     DWORD Written;
 
@@ -229,9 +242,9 @@ void TraceDumpToFile()
 
       TimeString =
         FormatDateTime(TimestampFormat,
-          IncMilliSecond(N, -ToInt(Ticks - i->Ticks)));
+          IncMilliSecond(N, -nb::ToInt32(Ticks - i->Ticks)));
       Buffer = UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
-            TimeString, int(i->Thread), SourceFile,
+            TimeString, nb::ToInt32(i->Thread), SourceFile,
             i->Line, i->Func, i->Message));
       WriteFile(TraceFile, Buffer.c_str(), Buffer.Length(), &Written, nullptr);
 #else
@@ -260,21 +273,21 @@ void TraceInMemoryCallback(const wchar_t *Msg)
 
 #ifndef TRACE_IN_MEMORY_NO_FORMATTING
 
-void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *Message)
+void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
+  uint32_t Line, const wchar_t * Message)
 {
   DebugAssert(IsTracing);
 
-  UnicodeString TimeString;
+  const UnicodeString TimeString;
   // DateTimeToString(TimeString, L"hh:mm:ss.zzz", Now());
   TODO("use Format");
-  const wchar_t *Slash = wcsrchr(SourceFile, L'\\');
+  const wchar_t * Slash = wcsrchr(SourceFile, Backslash);
   if (Slash != nullptr)
   {
     SourceFile = Slash + 1;
   }
   UTF8String Buffer = UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
-        TimeString, int(::GetCurrentThreadId()), SourceFile,
+        TimeString, nb::ToInt32(::GetCurrentThreadId()), SourceFile,
         Line, Func, Message));
 #ifdef TRACE_IN_MEMORY
   if (TracingCriticalSection != nullptr)
@@ -282,7 +295,7 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
     TTraceInMemory TraceInMemory;
     TraceInMemory.Message = Buffer;
 
-    volatile TGuard Guard(TracingCriticalSection);
+    TGuard Guard(TracingCriticalSection); nb::used(Guard);
 
     if (TracesInMemory.capacity() == 0)
     {
@@ -295,12 +308,12 @@ void DoTrace(const wchar_t *SourceFile, const wchar_t *Func,
   }
 #else
   DWORD Written;
-  WriteFile(TraceFile, Buffer.c_str(), ToDWord(Buffer.Length()), &Written, nullptr);
+  WriteFile(TraceFile, Buffer.c_str(), nb::ToDWord(Buffer.Length()), &Written, nullptr);
 #endif // TRACE_IN_MEMORY
 }
 
-void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
-  uintptr_t Line, const wchar_t *AFormat, fmt::ArgList args)
+void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
+  uint32_t Line, const wchar_t * AFormat, fmt::ArgList args)
 {
   DebugAssert(IsTracing);
 
@@ -310,13 +323,19 @@ void DoTraceFmt(const wchar_t *SourceFile, const wchar_t *Func,
 
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 
-void DoAssert(const wchar_t *Message, const wchar_t *Filename, uintptr_t LineNumber)
+void DoAssert(const wchar_t * Message, const wchar_t * Filename, int32_t LineNumber)
 {
   if (IsTracing)
   {
     DoTrace(Filename, L"assert", LineNumber, Message);
   }
-  _wassert(Message, Filename, (unsigned int)LineNumber);
+  _wassert(Message, Filename, static_cast<uint32_t>(LineNumber));
+}
+
+NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_t LineNumber)
+{
+  DoTrace(UnicodeString(Filename).c_str(), L"assert", LineNumber, UnicodeString(Message).c_str());
+  _wassert(UnicodeString(Message).c_str(), UnicodeString(Filename).c_str(), static_cast<uint32_t>(LineNumber));
 }
 
 #endif // _DEBUG

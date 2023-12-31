@@ -1,23 +1,34 @@
 #pragma once
 
+#pragma push_macro("min")
+#pragma push_macro("max")
+#undef min
+#undef max
+
 #ifndef INCL_WINSOCK_API_TYPEDEFS
 #define INCL_WINSOCK_API_TYPEDEFS 1
 #endif
 #ifndef _WINSOCKAPI_
 #if !defined(__MINGW32__)
+#ifndef _WINSOCKAPI_
 #define _WINSOCKAPI_
+#endif
 #endif // defined(__MINGW32__)
 #endif
-#include <winsock2.h>
-#include <ws2tcpip.h>
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 
+#ifdef _MSC_VER
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
+#ifndef SECURITY_WIN32
 #define SECURITY_WIN32
+#endif
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
 #include <Windows.h>
+#endif
 
 #include "disable_warnings_in_std_begin.hpp"
 #include <nbglobals.h>
@@ -42,24 +53,30 @@
 #include "disable_warnings_in_std_end.hpp"
 
 #ifndef True
-#define True true
+constexpr const bool True = true;
 #endif
 #ifndef False
-#define False false
+constexpr const bool False = false;
 #endif
 #ifndef Integer
-typedef intptr_t Integer;
+using Integer = int32_t;
 #endif
 #ifndef Int64
-typedef int64_t Int64;
+using Int64 = int64_t;
 #endif
 #ifndef Boolean
-typedef bool Boolean;
+using Boolean = bool;
 #endif
 #ifndef Word
-typedef WORD Word;
+using Word = WORD;
+#endif
+#ifndef Cardinal
+using Cardinal = uint32_t;
 #endif
 
-#define NullToEmptyA(s) (s ? s : "")
-#define NullToEmpty(s) (s ? s : L"")
+#define NullToEmptyA(s) ((s) ? (s) : "")
+#define NullToEmpty(s) ((s) ? (s) : L"")
 
+
+#pragma pop_macro("min")
+#pragma pop_macro("max")

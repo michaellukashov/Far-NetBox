@@ -1,6 +1,6 @@
 /* 
    URI manipulation routines.
-   Copyright (C) 1999-2006, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -66,9 +66,11 @@
                      * ... except "+" which is PS */
 
 #define OT (0x4000) /* others */
+/* UNUSED  (0x8000) .. only remaining bit. */
 
 #define URI_ALPHA (AL)
 #define URI_DIGIT (DG)
+#define URI_NONURI (OT)
 
 /* unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" */
 #define URI_UNRESERVED (AL | DG | DS | DT | US | TD)
@@ -91,8 +93,11 @@
 
 /* any characters which should be path-escaped: */
 #define URI_ESCAPE ((URI_GENDELIM & ~(FS)) | URI_SUBDELIM | OT | PC)
+#ifdef WINSCP
+#define URI_NONPC (URI_ESCAPE & (~PC))
+#endif
 
-static const unsigned int uri_chars[256] = {
+static const unsigned short uri_chars[256] = {
 /* 0xXX    x0      x2      x4      x6      x8      xA      xC      xE     */
 /*   0x */ OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT,
 /*   1x */ OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT,
@@ -138,7 +143,7 @@ int ne_path_has_trailing_slash(const char *uri)
 
 unsigned int ne_uri_defaultport(const char *scheme)
 {
-    /* RFC2616/3.2.3 says use case-insensitive comparisons here. */
+    /* Scheme matching is case-insensitive per RFC 3986§3.1 */
     if (ne_strcasecmp(scheme, "http") == 0)
 	return 80;
     else if (ne_strcasecmp(scheme, "https") == 0)
@@ -147,7 +152,7 @@ unsigned int ne_uri_defaultport(const char *scheme)
 	return 0;
 }
 
-int ne_uri_parse(const char *uri, ne_uri *parsed)
+int ne_uri_parse_ex(const char *uri, ne_uri *parsed, int liberal) // WINSCP
 {
     const char *p, *s;
 
@@ -233,7 +238,11 @@ int ne_uri_parse(const char *uri, ne_uri *parsed)
 
     p = s;
 
-    while (uri_lookup(*p) & URI_SEGCHAR)
+    while ((uri_lookup(*p) & URI_SEGCHAR) ||
+           (liberal && // WINSCP
+            ((uri_lookup(*p) & SD) ||
+            ((uri_lookup(*p) & OT) && ((unsigned char)(*p) >= (unsigned char)' ')) || // OT without control characters
+            ((*p) == '[') || ((*p) == ']')))) // GD without #
         p++;
 
     /* => p = [ "?" query ] [ "#" fragment ] */
@@ -273,6 +282,13 @@ int ne_uri_parse(const char *uri, ne_uri *parsed)
     
     return 0;
 }
+
+#ifdef WINSCP
+int ne_uri_parse(const char *uri, ne_uri *parsed)
+{
+    return ne_uri_parse_ex(uri, parsed, 0);
+}
+#endif
 
 /* This function directly implements the "Merge Paths" algorithm
  * described in RFC 3986 section 5.2.3. */
@@ -475,16 +491,25 @@ char *ne_path_unescape(const char *uri)
 
 /* CH must be an unsigned char; evaluates to 1 if CH should be
  * percent-encoded (note !!x == x ? 1 : 0). */
-#define path_escape_ch(ch) (!!(uri_lookup(ch) & URI_ESCAPE))
+#define path_escape_ch(ch, mask) (!!(uri_lookup(ch) & (mask)))
 
-char *ne_path_escape(const char *path) 
+char *ne_path_escape(const char *path)
+{
+    return ne_path_escapef(path, NE_PATH_NONRES);
+}
+
+char *ne_path_escapef(const char *path, unsigned int flags)
 {
     const unsigned char *pnt;
     char *ret, *p;
     size_t count = 0;
+    unsigned short mask = 0;
+
+    if (flags & NE_PATH_NONRES) mask |= URI_ESCAPE;
+    if (flags & NE_PATH_NONURI) mask |= URI_NONURI;
 
     for (pnt = (const unsigned char *)path; *pnt != '\0'; pnt++) {
-        count += path_escape_ch(*pnt);
+        count += path_escape_ch(*pnt, mask);
     }
 
     if (count == 0) {
@@ -493,7 +518,7 @@ char *ne_path_escape(const char *path)
 
     p = ret = ne_malloc(strlen(path) + 2 * count + 1);
     for (pnt = (const unsigned char *)path; *pnt != '\0'; pnt++) {
-	if (path_escape_ch(*pnt)) {
+	if (path_escape_ch(*pnt, mask)) {
 	    /* Escape it - %<hex><hex> */
 	    sprintf(p, "%%%02x", (unsigned char) *pnt);
 	    p += 3;
@@ -550,7 +575,7 @@ int ne_path_compare(const char *a, const char *b)
 	 * slash and the SHORTER one DOESN'T, then..." */
 	int traila = ne_path_has_trailing_slash(a),
 	    trailb = ne_path_has_trailing_slash(b),
-	    lena = (int)strlen(a), lenb = (int)strlen(b);
+	    lena = strlen(a), lenb = strlen(b);
 	if (traila != trailb && abs(lena - lenb) == 1 &&
 	    ((traila && lena > lenb) || (trailb && lenb > lena))) {
 	    /* Compare them, ignoring the trailing slash on the longer

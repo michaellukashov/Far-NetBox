@@ -307,10 +307,10 @@ struct X11Display *x11_setup_display(const char *display, Conf *conf)
 	    /* Create trial connection to see if there is a useful Unix-domain
 	     * socket */
 	    const struct plug_function_table *dummy = &dummy_plug;
-	    Socket s = putty_sk_new(sk_addr_dup(ux), 0, 0, 0, 0, 0, (Plug)&dummy,
-	#ifdef MPEXT
+	    Socket s = sk_new(sk_addr_dup(ux), 0, 0, 0, 0, 0, (Plug)&dummy,
+	    #ifdef MPEXT
 	    0, 0
-	#endif
+	    #endif
 	    );
 	    err = sk_socket_error(s);
 	    sk_close(s);
@@ -677,10 +677,10 @@ int x11_get_screen_number(char *display)
 {
     int n;
 
-    n = (int)host_strcspn(display, ":");
+    n = host_strcspn(display, ":");
     if (!display[n])
 	return 0;
-		n = (int)strcspn(display, ".");
+    n = strcspn(display, ".");
     if (!display[n])
 	return 0;
     return atoi(display + n + 1);
@@ -782,7 +782,7 @@ static void x11_send_init_error(struct X11Connection *xconn,
 
     full_message = dupprintf("%s X11 proxy: %s\n", appname, err_message);
 
-    msglen = (int)strlen(full_message);
+    msglen = strlen(full_message);
     reply = snewn(8 + msglen+1 + 4, unsigned char); /* include zero */
     msgsize = (msglen + 3) & ~3;
     reply[0] = 0;	       /* failure */
@@ -870,7 +870,7 @@ int x11_send(struct X11Connection *xconn, char *data, int len)
         void *greeting;
         int greeting_len;
         unsigned char *socketdata;
-        int socketdatalen = 0;
+        int socketdatalen;
         char new_peer_addr[32];
         int new_peer_port;
 
@@ -933,10 +933,10 @@ int x11_send(struct X11Connection *xconn, char *data, int len)
          * auth data.
 	 */
         socketdatalen = 0;             /* placate compiler warning */
-#ifdef MPEXT
+        #ifdef MPEXT
         // placate compiler warning
         socketdatalen = 0;
-#endif
+        #endif
         socketdata = sk_getxdmdata(xconn->s, &socketdatalen);
         if (socketdata && socketdatalen==6) {
             sprintf(new_peer_addr, "%d.%d.%d.%d", socketdata[0],
@@ -1009,7 +1009,7 @@ void *x11_dehexify(const char *hex, int *outlen)
     int len, i;
     unsigned char *ret;
 
-    len = (int)strlen(hex) / 2;
+    len = strlen(hex) / 2;
     ret = snewn(len, unsigned char);
 
     for (i = 0; i < len; i++) {
@@ -1044,7 +1044,7 @@ void *x11_make_greeting(int endian, int protomajor, int protominor,
     int greeting_len;
 
     authname = x11_authnames[auth_proto];
-    authnamelen = (int)strlen(authname);
+    authnamelen = strlen(authname);
     authnamelen_pad = (authnamelen + 3) & ~3;
 
     if (auth_proto == X11_MIT) {
@@ -1058,7 +1058,7 @@ void *x11_make_greeting(int endian, int protomajor, int protominor,
 
         authdata = realauthdata;
         authdatalen = 24;
-        memset(realauthdata, 0, sizeof(realauthdata));
+        memset(realauthdata, 0, authdatalen);
         memcpy(realauthdata, auth_data, 8);
         PUT_32BIT_MSB_FIRST(realauthdata+8, peer_ip);
         PUT_16BIT_MSB_FIRST(realauthdata+12, peer_port);

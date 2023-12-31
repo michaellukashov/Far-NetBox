@@ -19,6 +19,7 @@
 #define smallsigma0(x) ( ror((x),7) ^ ror((x),18) ^ shr((x),3) )
 #define smallsigma1(x) ( ror((x),17) ^ ror((x),19) ^ shr((x),10) )
 
+#ifndef WINSCP_VS
 void SHA256_Core_Init(SHA256_State *s) {
     s->h[0] = 0x6a09e667;
     s->h[1] = 0xbb67ae85;
@@ -29,7 +30,11 @@ void SHA256_Core_Init(SHA256_State *s) {
     s->h[6] = 0x1f83d9ab;
     s->h[7] = 0x5be0cd19;
 }
+#endif // !WINSCP_VS
 
+#ifndef WINSCP_VS
+void SHA256_Block(SHA256_State *s, uint32 *block);
+#else
 void SHA256_Block(SHA256_State *s, uint32 *block) {
     uint32 w[80];
     uint32 a,b,c,d,e,f,g,h;
@@ -84,7 +89,9 @@ void SHA256_Block(SHA256_State *s, uint32 *block) {
     s->h[0] += a; s->h[1] += b; s->h[2] += c; s->h[3] += d;
     s->h[4] += e; s->h[5] += f; s->h[6] += g; s->h[7] += h;
 }
+#endif // !WINSCP_VS
 
+#ifndef WINSCP_VS
 /* ----------------------------------------------------------------------
  * Outer SHA256 algorithm: take an arbitrary length byte string,
  * convert it into 16-word blocks with the prescribed padding at
@@ -93,13 +100,13 @@ void SHA256_Block(SHA256_State *s, uint32 *block) {
 
 #define BLKSIZE 64
 
-void putty_SHA256_Init(SHA256_State *s) {
+void SHA256_Init(SHA256_State *s) {
     SHA256_Core_Init(s);
     s->blkused = 0;
     s->lenhi = s->lenlo = 0;
 }
 
-void putty_SHA256_Bytes(SHA256_State *s, const void *p, int len) {
+void SHA256_Bytes(SHA256_State *s, const void *p, int len) {
     unsigned char *q = (unsigned char *)p;
     uint32 wordblock[16];
     uint32 lenw = len;
@@ -141,7 +148,7 @@ void putty_SHA256_Bytes(SHA256_State *s, const void *p, int len) {
     }
 }
 
-void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
+void SHA256_Final(SHA256_State *s, unsigned char *digest) {
     int i;
     int pad;
     unsigned char c[64];
@@ -157,7 +164,7 @@ void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
 
     memset(c, 0, pad);
     c[0] = 0x80;
-    putty_SHA256_Bytes(s, &c, pad);
+    SHA256_Bytes(s, &c, pad);
 
     c[0] = (lenhi >> 24) & 0xFF;
     c[1] = (lenhi >> 16) & 0xFF;
@@ -168,7 +175,7 @@ void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
     c[6] = (lenlo >>  8) & 0xFF;
     c[7] = (lenlo >>  0) & 0xFF;
 
-    putty_SHA256_Bytes(s, &c, 8);
+    SHA256_Bytes(s, &c, 8);
 
     for (i = 0; i < 8; i++) {
 	digest[i*4+0] = (s->h[i] >> 24) & 0xFF;
@@ -178,12 +185,12 @@ void putty_SHA256_Final(SHA256_State *s, unsigned char *digest) {
     }
 }
 
-void putty_SHA256_Simple(const void *p, int len, unsigned char *output) {
+void SHA256_Simple(const void *p, int len, unsigned char *output) {
     SHA256_State s;
 
-    putty_SHA256_Init(&s);
-    putty_SHA256_Bytes(&s, p, len);
-    putty_SHA256_Final(&s, output);
+    SHA256_Init(&s);
+    SHA256_Bytes(&s, p, len);
+    SHA256_Final(&s, output);
     smemclr(&s, sizeof(s));
 }
 
@@ -191,16 +198,16 @@ void putty_SHA256_Simple(const void *p, int len, unsigned char *output) {
  * Thin abstraction for things where hashes are pluggable.
  */
 
-static void *putty_sha256_init(void)
+static void *sha256_init(void)
 {
     SHA256_State *s;
 
     s = snew(SHA256_State);
-    putty_SHA256_Init(s);
+    SHA256_Init(s);
     return s;
 }
 
-static void *putty_sha256_copy(const void *vold)
+static void *sha256_copy(const void *vold)
 {
     const SHA256_State *old = (const SHA256_State *)vold;
     SHA256_State *s;
@@ -210,7 +217,7 @@ static void *putty_sha256_copy(const void *vold)
     return s;
 }
 
-static void putty_sha256_free(void *handle)
+static void sha256_free(void *handle)
 {
     SHA256_State *s = handle;
 
@@ -218,23 +225,23 @@ static void putty_sha256_free(void *handle)
     sfree(s);
 }
 
-static void putty_sha256_bytes(void *handle, const void *p, int len)
+static void sha256_bytes(void *handle, const void *p, int len)
 {
     SHA256_State *s = handle;
 
-    putty_SHA256_Bytes(s, p, len);
+    SHA256_Bytes(s, p, len);
 }
 
-static void putty_sha256_final(void *handle, unsigned char *output)
+static void sha256_final(void *handle, unsigned char *output)
 {
     SHA256_State *s = handle;
 
-    putty_SHA256_Final(s, output);
-    putty_sha256_free(s);
+    SHA256_Final(s, output);
+    sha256_free(s);
 }
 
 const struct ssh_hash ssh_sha256 = {
-    putty_sha256_init, putty_sha256_copy, putty_sha256_bytes, putty_sha256_final, putty_sha256_free,
+    sha256_init, sha256_copy, sha256_bytes, sha256_final, sha256_free,
     32, "SHA-256"
 };
 
@@ -263,14 +270,14 @@ static void sha256_key_internal(void *handle, unsigned char *key, int len)
     memset(foo, 0x36, 64);
     for (i = 0; i < len && i < 64; i++)
 	foo[i] ^= key[i];
-    putty_SHA256_Init(&keys[0]);
-    putty_SHA256_Bytes(&keys[0], foo, 64);
+    SHA256_Init(&keys[0]);
+    SHA256_Bytes(&keys[0], foo, 64);
 
     memset(foo, 0x5C, 64);
     for (i = 0; i < len && i < 64; i++)
 	foo[i] ^= key[i];
-    putty_SHA256_Init(&keys[1]);
-    putty_SHA256_Bytes(&keys[1], foo, 64);
+    SHA256_Init(&keys[1]);
+    SHA256_Bytes(&keys[1], foo, 64);
 
     smemclr(foo, 64);		       /* burn the evidence */
 }
@@ -290,7 +297,7 @@ static void hmacsha256_start(void *handle)
 static void hmacsha256_bytes(void *handle, unsigned char const *blk, int len)
 {
     SHA256_State *keys = (SHA256_State *)handle;
-    putty_SHA256_Bytes(&keys[2], (void *)blk, len);
+    SHA256_Bytes(&keys[2], (void *)blk, len);
 }
 
 static void hmacsha256_genresult(void *handle, unsigned char *hmac)
@@ -300,10 +307,10 @@ static void hmacsha256_genresult(void *handle, unsigned char *hmac)
     unsigned char intermediate[32];
 
     s = keys[2];		       /* structure copy */
-    putty_SHA256_Final(&s, intermediate);
+    SHA256_Final(&s, intermediate);
     s = keys[1];		       /* structure copy */
-    putty_SHA256_Bytes(&s, intermediate, 32);
-    putty_SHA256_Final(&s, hmac);
+    SHA256_Bytes(&s, intermediate, 32);
+    SHA256_Final(&s, hmac);
 }
 
 static void sha256_do_hmac(void *handle, unsigned char *blk, int len,
@@ -348,6 +355,7 @@ const struct ssh_mac ssh_hmac_sha256 = {
     32, 32,
     "HMAC-SHA-256"
 };
+#endif // !WINSCP_VS
 
 #ifdef TEST
 
@@ -380,7 +388,7 @@ int main(void) {
     errors = 0;
 
     for (i = 0; i < sizeof(tests) / sizeof(*tests); i++) {
-	putty_SHA256_Simple(tests[i].teststring,
+	SHA256_Simple(tests[i].teststring,
 		      strlen(tests[i].teststring), digest);
 	for (j = 0; j < 32; j++) {
 	    if (digest[j] != tests[i].digest[j]) {

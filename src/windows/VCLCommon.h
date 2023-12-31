@@ -1,22 +1,22 @@
-//---------------------------------------------------------------------------
+﻿
 #pragma once
 
-#ifndef VCLCommonH
-#define VCLCommonH
-//---------------------------------------------------------------------------
 #include "Common.h"
 #include "Configuration.h"
 #include "Exceptions.h"
 #include <ComCtrls.hpp>
 #if 0
-//---------------------------------------------------------------------------
+#include <HistoryComboBox.hpp>
+
 const TColor LinkColor = clBlue;
-//---------------------------------------------------------------------------
+
 void FixListColumnWidth(TListView * TListView, int Index);
 void AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrinkIndex = -1);
-void EnableControl(TControl* Control, bool Enable);
+void EnableControl(TControl * Control, bool Enable);
 void ReadOnlyControl(TControl * Control, bool ReadOnly = true);
 void ReadOnlyAndEnabledControl(TControl * Control, bool ReadOnly, bool Enabled);
+int CalculateCheckBoxWidth(TControl * Control, const UnicodeString & Caption);
+void AutoSizeCheckBox(TCheckBox * CheckBox);
 void InitializeSystemSettings();
 void FinalizeSystemSettings();
 void LocalSystemSettings(TCustomForm * Control);
@@ -24,20 +24,22 @@ void UseSystemSettingsPre(TCustomForm * Control);
 void UseSystemSettingsPost(TCustomForm * Control);
 void UseSystemSettings(TCustomForm * Control);
 void ResetSystemSettings(TCustomForm * Control);
-void LinkLabel(TStaticText * StaticText, const UnicodeString Url = L"",
+void LinkLabel(TStaticText * StaticText, const UnicodeString & Url = L"",
   TNotifyEvent OnEnter = nullptr);
 void LinkActionLabel(TStaticText * StaticText);
 void LinkAppLabel(TStaticText * StaticText);
-void HintLabel(TStaticText * StaticText, const UnicodeString Hint = L"");
+void HintLabel(TStaticText * StaticText, const UnicodeString & Hint = L"");
 void HotTrackLabel(TLabel * Label);
-void SetLabelHintPopup(TLabel * Label, const UnicodeString Hint);
-bool HasLabelHintPopup(TLabel * Label, const UnicodeString HintStr);
+void SetLabelHintPopup(TLabel * Label, const UnicodeString & Hint);
+bool HasLabelHintPopup(TControl * Control, const UnicodeString & HintStr);
 void FixComboBoxResizeBug(TCustomComboBox * ComboBox);
-void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront = true);
+void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront = true, bool TriggerModalStarted = false);
 void HideAsModal(TForm * Form, void *& Storage);
 bool ReleaseAsModal(TForm * Form, void *& Storage);
-bool SelectDirectory(UnicodeString &Path, const UnicodeString Prompt,
+bool IsMainFormLike(TCustomForm * Form);
+bool SelectDirectory(UnicodeString & Path, const UnicodeString & Prompt,
   bool PreserveFileName);
+void SelectDirectoryForEdit(THistoryComboBox * Edit);
 enum TListViewCheckAll { caCheck, caUncheck, caToggle };
 bool ListViewAnyChecked(TListView * ListView, bool Checked = true);
 void ListViewCheckAll(TListView * ListView,
@@ -60,8 +62,8 @@ void SetCorrectFormParent(TForm * Form);
 void InvokeHelp(TWinControl * Control);
 void FixFormIcons(TForm * Form);
 Forms::TMonitor *  FormMonitor(TCustomForm * Form);
-int GetLastMonitor();
-void SetLastMonitor(int MonitorNum);
+int32_t GetLastMonitor();
+void SetLastMonitor(int32_t MonitorNum);
 TForm * _SafeFormCreate(TMetaClass * FormClass, TComponent * Owner);
 template<class FormType>
 FormType * SafeFormCreate(TComponent * Owner = nullptr)
@@ -74,8 +76,10 @@ void DefaultButton(TButton * Button, bool Default);
 void MemoKeyDown(TObject * Sender, WORD & Key, TShiftState Shift);
 void UseDesktopFont(TControl * Control);
 void UpdateDesktopFont();
-UnicodeString FormatFormCaption(TCustomForm * Form, const UnicodeString Caption);
-UnicodeString FormatMainFormCaption(const UnicodeString Caption);
+UnicodeString FormatFormCaption(
+  TCustomForm * Form, const UnicodeString & Caption, const UnicodeString & SessionName = UnicodeString());
+UnicodeString FormatMainFormCaption(
+  const UnicodeString & Caption, const UnicodeString & SessionName = UnicodeString());
 TShiftState AllKeyShiftStates();
 void RealignControl(TControl * Control);
 void HookFormActivation(TCustomForm * Form);
@@ -86,8 +90,14 @@ typedef void (*TRescaleEvent)(TComponent * Sender, TObject * Token);
 void SetRescaleFunction(
   TComponent * Component, TRescaleEvent OnRescale, TObject * Token = nullptr, bool OwnsToken = false);
 void RecordFormImplicitRescale(TForm * Form);
-//---------------------------------------------------------------------------
+void CountClicksForWindowPrint(TForm * Form);
+bool IsButtonBeingClicked(TButtonControl * Button);
+bool IsCancelButtonBeingClicked(TControl * Control);
+TCanvas * CreateControlCanvas(TControl * Control);
+void AutoSizeButton(TButton * Button);
+namespace Tb2item { class TTBCustomItem; }
+void GiveTBItemPriority(Tb2item::TTBCustomItem * Item);
+
 
 #endif // #if 0
 
-#endif  // VCLCommonH

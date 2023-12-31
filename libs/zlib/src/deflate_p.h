@@ -9,96 +9,108 @@
 #ifndef DEFLATE_P_H
 #define DEFLATE_P_H
 
-#if defined(X86_CPUID)
-# include "arch/x86/x86.h"
-#endif
-
 /* Forward declare common non-inlined functions declared in deflate.c */
 
 #ifdef ZLIB_DEBUG
-void check_match(deflate_state *s, IPos start, IPos match, int length);
+/* ===========================================================================
+ * Check that the match at match_start is indeed a match.
+ */
+static inline void check_match(deflate_state *s, Pos start, Pos match, int length) {
+    /* check that the match length is valid*/
+    if (length < STD_MIN_MATCH || length > STD_MAX_MATCH) {
+        fprintf(stderr, " start %u, match %u, length %d\n", start, match, length);
+        z_error("invalid match length");
+    }
+    /* check that the match isn't at the same position as the start string */
+    if (match == start) {
+        fprintf(stderr, " start %u, match %u, length %d\n", start, match, length);
+        z_error("invalid match position");
+    }
+    /* check that the match is indeed a match */
+    if (memcmp(s->window + match, s->window + start, length) != 0) {
+        int32_t i = 0;
+        fprintf(stderr, " start %u, match %u, length %d\n", start, match, length);
+        do {
+            fprintf(stderr, "  %03d: match [%02x] start [%02x]\n", i++,
+                s->window[match++], s->window[start++]);
+        } while (--length != 0);
+        z_error("invalid match");
+    }
+    if (z_verbose > 1) {
+        fprintf(stderr, "\\[%u,%d]", start-match, length);
+        do {
+            putc(s->window[start++], stderr);
+        } while (--length != 0);
+    }
+}
 #else
 #define check_match(s, start, match, length)
 #endif
-void fill_window(deflate_state *s);
-void flush_pending(z_stream *strm);
+
+Z_INTERNAL void PREFIX(flush_pending)(PREFIX3(stream) *strm);
+Z_INTERNAL unsigned PREFIX(read_buf)(PREFIX3(stream) *strm, unsigned char *buf, unsigned size);
 
 /* ===========================================================================
- * Insert string str in the dictionary and set match_head to the previous head
- * of the hash chain (the most recent string with same hash key). Return
- * the previous length of the hash chain.
- * IN  assertion: all calls to to INSERT_STRING are made with consecutive
- *    input characters and the first MIN_MATCH bytes of str are valid
- *    (except for the last MIN_MATCH-1 bytes of the input file).
+ * Save the match info and tally the frequency counts. Return true if
+ * the current block must be flushed.
  */
 
-#ifdef X86_SSE4_2_CRC_HASH
-extern Pos insert_string_sse(deflate_state *const s, const Pos str, uint32_t count);
-#elif defined(ARM_ACLE_CRC_HASH)
-extern Pos insert_string_acle(deflate_state *const s, const Pos str, uint32_t count);
-#endif
+extern const unsigned char Z_INTERNAL zng_length_code[];
+extern const unsigned char Z_INTERNAL zng_dist_code[];
 
-static inline Pos insert_string_c(deflate_state *const s, const Pos str, uint32_t count)
-{
-    Pos ret = 0;
-    uint32_t idx;
-
-    for (idx = 0; idx < count; idx++) {
-        UPDATE_HASH(s, s->ins_h, str+idx);
-        if (s->head[s->ins_h] != str+idx) {
-            s->prev[(str+idx) & s->w_mask] = s->head[s->ins_h];
-            s->head[s->ins_h] = str+idx;
-        }
-    }
-    ret = s->prev[(str+count-1) & s->w_mask];
-    return ret;
+static inline int zng_tr_tally_lit(deflate_state *s, unsigned char c) {
+    /* c is the unmatched char */
+    s->sym_buf[s->sym_next++] = 0;
+    s->sym_buf[s->sym_next++] = 0;
+    s->sym_buf[s->sym_next++] = c;
+    s->dyn_ltree[c].Freq++;
+    Tracevv((stderr, "%c", c));
+    Assert(c <= (STD_MAX_MATCH-STD_MIN_MATCH), "zng_tr_tally: bad literal");
+    return (s->sym_next == s->sym_end);
 }
 
-static inline Pos insert_string(deflate_state *const s, const Pos str, uint32_t count)
-{
-#ifdef X86_SSE4_2_CRC_HASH
-    if (x86_cpu_has_sse42)
-        return insert_string_sse(s, str, count);
-#endif
-#if defined(ARM_ACLE_CRC_HASH)
-    return insert_string_acle(s, str, count);
-#else
-    return insert_string_c(s, str, count);
-#endif
-}
+static inline int zng_tr_tally_dist(deflate_state *s, uint32_t dist, uint32_t len) {
+    /* dist: distance of matched string */
+    /* len: match length-STD_MIN_MATCH */
+    s->sym_buf[s->sym_next++] = (uint8_t)(dist);
+    s->sym_buf[s->sym_next++] = (uint8_t)(dist >> 8);
+    s->sym_buf[s->sym_next++] = (uint8_t)len;
+    s->matches++;
+    dist--;
+    Assert(dist < MAX_DIST(s) && (uint16_t)d_code(dist) < (uint16_t)D_CODES,
+        "zng_tr_tally: bad match");
 
-#ifndef NOT_TWEAK_COMPILER
-static inline void bulk_insert_str(deflate_state *const s, Pos startpos, uint32_t count) {
-# ifdef X86_SSE4_2_CRC_HASH
-    if (x86_cpu_has_sse42) {
-        insert_string_sse(s, startpos, count);
-    } else
-# endif
-    {
-        insert_string_c(s, startpos, count);
-    }
+    s->dyn_ltree[zng_length_code[len]+LITERALS+1].Freq++;
+    s->dyn_dtree[d_code(dist)].Freq++;
+    return (s->sym_next == s->sym_end);
 }
-#endif /* NOT_TWEAK_COMPILER */
 
 /* ===========================================================================
  * Flush the current block, with given end-of-file flag.
  * IN assertion: strstart is set to the end of the current match.
  */
 #define FLUSH_BLOCK_ONLY(s, last) { \
-   _tr_flush_block(s, (s->block_start >= 0L ? \
-                   (char *)&s->window[(uint32_t)s->block_start] : \
-                   (char *)Z_NULL), \
-                   (uint64_t)((int64_t)s->strstart - s->block_start), \
-                (last)); \
-   s->block_start = s->strstart; \
-   flush_pending(s->strm); \
-   Tracev((stderr,"[FLUSH]")); \
+    zng_tr_flush_block(s, (s->block_start >= 0 ? \
+                   (char *)&s->window[(unsigned)s->block_start] : \
+                   NULL), \
+                   (uint32_t)((int)s->strstart - s->block_start), \
+                   (last)); \
+    s->block_start = (int)s->strstart; \
+    PREFIX(flush_pending)(s->strm); \
 }
 
 /* Same but force premature exit if necessary. */
 #define FLUSH_BLOCK(s, last) { \
-   FLUSH_BLOCK_ONLY(s, last); \
-   if (s->strm->avail_out == 0) return (last) ? finish_started : need_more; \
+    FLUSH_BLOCK_ONLY(s, last); \
+    if (s->strm->avail_out == 0) return (last) ? finish_started : need_more; \
 }
+
+/* Maximum stored block length in deflate format (not including header). */
+#define MAX_STORED 65535
+
+/* Compression function. Returns the block state after the call. */
+typedef block_state (*compress_func) (deflate_state *s, int flush);
+/* Match function. Returns the longest match. */
+typedef uint32_t    (*match_func)    (deflate_state *const s, Pos cur_match);
 
 #endif

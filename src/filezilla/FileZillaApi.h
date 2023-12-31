@@ -11,20 +11,20 @@
 #include "ApiLog.h"
 
 #define DECL_WINDOWS_FUNCTION(linkage, rettype, name, params) \
-  typedef rettype (WINAPI *t_##name) params; \
-  linkage t_##name p_##name
+  typedef rettype (WINAPI * t_##name) params; \
+  extern t_##name p_##name
 #define STR1(x) #x
 #define STR(x) STR1(x)
 #define GET_WINDOWS_FUNCTION_PP(module, name) \
-  (p_##name = module ? (t_##name) GetProcAddress(module, STR(name)) : NULL)
+  (p_##name = module ? (t_##name) GetProcAddress(module, STR(name)) : nullptr)
 #define GET_WINDOWS_FUNCTION(module, name) \
-  (p_##name = module ? (t_##name) GetProcAddress(module, #name) : NULL)
+  (p_##name = module ? (t_##name) GetProcAddress(module, #name) : nullptr)
 
 #ifndef NO_IPV6
 DECL_WINDOWS_FUNCTION(static, int, getaddrinfo,
-  (const char *nodename, const char *servname,
-   const struct addrinfo *hints, struct addrinfo **res));
-DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo *res));
+  (const char * nodename, const char * servname,
+   const struct addrinfo * hints, struct addrinfo ** res));
+DECL_WINDOWS_FUNCTION(static, void, freeaddrinfo, (struct addrinfo * res));
 DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
   (const struct sockaddr FAR * sa, socklen_t salen,
    char FAR * host, size_t hostlen, char FAR * serv,
@@ -35,6 +35,7 @@ DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
 // You don't have to fill this struct, you may use the command specific
 // functions which is easier.
 // See below for a list of supported commands and their parameters.
+
 struct t_command //: public TObject
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -45,7 +46,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
   int  param4;
   CServerPath path;
   CServerPath newPath; // Used for rename
-  t_transferfile transferfile = {};
+  t_transferfile transferfile{};
   t_server server;
 };
 
@@ -246,7 +247,7 @@ public:
   CFileZillaApi();
   virtual ~CFileZillaApi();
 
-  void SetDebugLevel(int nDebugLevel);
+  void SetDebugLevel(int32_t nDebugLevel);
 
   int CustomCommand(CString ACommand);
   int Delete(CString FileName, const CServerPath & path, bool filenameOnly);
@@ -259,7 +260,7 @@ public:
 
   int Disconnect();
   int Cancel();
-  int Chmod(int nValue, const CString & FileName, const CServerPath & path = CServerPath());
+  int Chmod(int nValue, CString FileName, const CServerPath & path = CServerPath());
 
   //Initialization
   int Init(TFileZillaIntern * Intern, CFileZillaTools * pTools);
@@ -269,24 +270,25 @@ public:
 
   int List(const CServerPath & path);
 
-  int ListFile(const CString & FileName, const CServerPath & path); //Get info about specified file
+  int ListFile(CString FileName, const CServerPath & path); //Get info about specified file
 
   int FileTransfer(const t_transferfile & TransferFile);
   int GetCurrentServer(t_server & server);
 
   int SetCurrentPath(CServerPath path);
   int GetCurrentPath(CServerPath & path);
-  bool UsingMlsd();
-  bool UsingUtf8();
-  std::string GetTlsVersionStr();
-  std::string GetCipherName();
+  bool UsingMlsd() const;
+  bool UsingUtf8() const;
+  std::string GetTlsVersionStr() const;
+  std::string GetCipherName() const;
 
 protected:
-  CMainThread * m_pMainThread;
-  unsigned int m_nInternalMessageID;
-  BOOL m_bInitialized;
+  CMainThread * m_pMainThread{nullptr};
+  uint32_t m_nInternalMessageID{0};
+  BOOL m_bInitialized{FALSE};
 
   void Destroy();
-  int IsBusy();
+  int IsBusy() const;
   int IsConnected() const;
 };
+

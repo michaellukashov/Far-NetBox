@@ -10,22 +10,22 @@
 template<class T> class nb_ptr
 {
 protected:
-  T *data;
+  T *data{nullptr};
 
 public:
-  __inline explicit nb_ptr() : data(nullptr) {}
-  __inline explicit nb_ptr(T *_p) : data(_p) {}
+  __inline explicit nb_ptr() noexcept : data(nullptr) {}
+  __inline explicit nb_ptr(T *_p) noexcept : data(_p) {}
   __inline ~nb_ptr() { nbcore_free(data); }
   __inline T *get() const { return data; }
   __inline T *operator = (T *_p) { if (data) nbcore_free(data); data = _p; return data; }
   __inline T *operator->() const { return data; }
   __inline operator T *() const { return data; }
-  __inline operator intptr_t() const { return (intptr_t)data; }
+  __inline operator intptr_t() const { return static_cast<intptr_t>(data); }
   __inline T *detach() { T *res = data; data = nullptr; return res; }
 };
 
-typedef nb_ptr<char>  ptrA;
-typedef nb_ptr<wchar_t> ptrW;
+using ptrA = nb_ptr<char>;
+using ptrW = nb_ptr<wchar_t>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // nb_cs - simple wrapper for the critical sections
@@ -35,8 +35,8 @@ class nb_cs
   CRITICAL_SECTION m_cs;
 
 public:
-  __inline nb_cs() { ::InitializeCriticalSection(&m_cs); }
-  __inline ~nb_cs() { ::DeleteCriticalSection(&m_cs); }
+  __inline nb_cs() noexcept { ::InitializeCriticalSection(&m_cs); }
+  __inline ~nb_cs() noexcept { ::DeleteCriticalSection(&m_cs); }
 
   __inline operator CRITICAL_SECTION &() { return m_cs; }
 };
@@ -48,6 +48,7 @@ class nb_cslock
 {
   CRITICAL_SECTION &cs;
   __inline nb_cslock &operator = (const nb_cslock &) { return *this; }
+  __inline nb_cslock(const nb_cslock &) = delete;
 
 public:
   __inline nb_cslock(CRITICAL_SECTION &_cs) : cs(_cs) { ::EnterCriticalSection(&cs); }
@@ -60,8 +61,8 @@ public:
 class pass_ptrA : public nb_ptr<char>
 {
 public:
-  __inline explicit pass_ptrA() : nb_ptr() {}
-  __inline explicit pass_ptrA(char *_p) : nb_ptr(_p) {}
+  __inline explicit pass_ptrA() noexcept : nb_ptr() {}
+  __inline explicit pass_ptrA(char *_p) noexcept : nb_ptr(_p) {}
   __inline ~pass_ptrA() { zero(); }
   __inline char *operator = (char *_p) { zero(); return nb_ptr::operator=(_p); }
   __inline void zero()
@@ -73,13 +74,13 @@ public:
 class pass_ptrW : public nb_ptr<wchar_t>
 {
 public:
-  __inline explicit pass_ptrW() : nb_ptr() {}
-  __inline explicit pass_ptrW(wchar_t *_p) : nb_ptr(_p) {}
+  __inline explicit pass_ptrW() noexcept : nb_ptr() {}
+  __inline explicit pass_ptrW(wchar_t *_p) noexcept : nb_ptr(_p) {}
   __inline ~pass_ptrW() { zero(); }
   __inline wchar_t *operator = (wchar_t *_p) { zero(); return nb_ptr::operator=(_p); }
   __inline void zero()
   {
-    if (data) SecureZeroMemory(data, nbcore_wstrlen(data)*sizeof(wchar_t));
+    if (data) SecureZeroMemory(data, nbcore_wstrlen(data) * sizeof(wchar_t));
   }
 };
 
@@ -89,7 +90,7 @@ public:
 class nb_cslockfull
 {
   CRITICAL_SECTION &cs;
-  bool bIsLocked;
+  bool bIsLocked{false};
   __inline nb_cslockfull &operator = (const nb_cslockfull &) = delete;
   __inline nb_cslockfull(const nb_cslockfull &) = delete;
 
@@ -120,9 +121,9 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 // general lists' templates
 
-#define  NumericKeySortT -1
-#define  HandleKeySortT  -2
-#define  PtrKeySortT     -3
+#define  NumericKeySortT (-1)
+#define  HandleKeySortT  (-2)
+#define  PtrKeySortT     (-3)
 
 template<class T> struct LIST
 {
@@ -145,13 +146,13 @@ template<class T> struct LIST
   __inline LIST(const LIST &x)
   {
     items = nullptr;
-    List_Copy((SortedList *)&x, (SortedList *)this, sizeof(T));
+    List_Copy(static_cast<SortedList *>(&x), static_cast<SortedList *>(this), sizeof(T));
   }
 
   __inline LIST &operator = (const LIST &x)
   {
     destroy();
-    List_Copy((SortedList *)&x, (SortedList *)this, sizeof(T));
+    List_Copy(static_cast<SortedList *>(&x), static_cast<SortedList *>(this), sizeof(T));
     return *this;
   }
 
@@ -161,30 +162,30 @@ template<class T> struct LIST
   }
 
   __inline T  *operator[](int idx) const { return (idx >= 0 && idx < count) ? items[idx] : nullptr; }
-  __inline int getCount(void)     const { return count; }
-  __inline T **getArray(void)     const { return items; }
+  __inline int getCount()     const { return count; }
+  __inline T **getArray()     const { return items; }
 
   __inline int getIndex(T *p) const
   {
     int idx;
-    return (!List_GetIndex((SortedList *)this, p, &idx)) ? -1 : idx;
+    return (!List_GetIndex(static_cast<SortedList *>(this), p, &idx)) ? -1 : idx;
   }
 
-  __inline void destroy(void)         { List_Destroy((SortedList *)this); }
-  __inline T   *find(T *p) const      { return (T *)List_Find((SortedList *)this, p); }
-  __inline int  indexOf(T *p) const   { return List_IndexOf((SortedList *)this, p); }
-  __inline int  insert(T *p, int idx) { return List_Insert((SortedList *)this, p, idx); }
-  __inline int  remove(int idx)       { return List_Remove((SortedList *)this, idx); }
+  __inline void destroy()         { List_Destroy(static_cast<SortedList *>(this)); }
+  __inline T   *find(T *p) const      { return static_cast<T *>(List_Find(static_cast<SortedList *>(this), p)); }
+  __inline int  indexOf(T *p) const   { return List_IndexOf(static_cast<SortedList *>(this), p); }
+  __inline int  insert(T *p, int idx) { return List_Insert(static_cast<SortedList *>(this), p, idx); }
+  __inline int  remove(int idx)       { return List_Remove(static_cast<SortedList *>(this), idx); }
 
-  __inline int  insert(T *p)          { return List_InsertPtr((SortedList *)this, p); }
-  __inline int  remove(T *p)          { return List_RemovePtr((SortedList *)this, p); }
+  __inline int  insert(T *p)          { return List_InsertPtr(static_cast<SortedList *>(this), p); }
+  __inline int  remove(T *p)          { return List_RemovePtr(static_cast<SortedList *>(this), p); }
 
   __inline void put(int idx, T *p)   { items[idx] = p; }
 
 protected:
-  T        **items;
-  int        count, limit, increment;
-  FTSortFunc sortFunc;
+  T        **items{nullptr};
+  int        count{0}, limit{0}, increment{0};
+  FTSortFunc sortFunc{};
 };
 
 template<class T> struct OBJLIST : public LIST<T>
@@ -196,20 +197,20 @@ template<class T> struct OBJLIST : public LIST<T>
   {}
 
   __inline OBJLIST(int aincr, intptr_t id) :
-    LIST<T>(aincr, (FTSortFunc) id)
+    LIST<T>(aincr, static_cast<FTSortFunc>(id))
   {}
 
   __inline OBJLIST(const OBJLIST &x) :
     LIST<T>(x.increment, x.sortFunc)
   {
     this->items = nullptr;
-    List_ObjCopy((SortedList *)&x, (SortedList *)this, sizeof(T));
+    List_ObjCopy(static_cast<SortedList *>(&x), static_cast<SortedList *>(this), sizeof(T));
   }
 
   __inline OBJLIST &operator = (const OBJLIST &x)
   {
     destroy();
-    List_ObjCopy((SortedList *)&x, (SortedList *)this, sizeof(T));
+    List_ObjCopy(static_cast<SortedList *>(&x), static_cast<SortedList *>(this), sizeof(T));
     return *this;
   }
 
@@ -218,18 +219,18 @@ template<class T> struct OBJLIST : public LIST<T>
     destroy();
   }
 
-  __inline void destroy(void)
+  __inline void destroy()
   {
     for (int i = 0; i < this->count; i++)
       delete this->items[i];
 
-    List_Destroy((SortedList *)this);
+    List_Destroy(static_cast<SortedList *>(this));
   }
 
   __inline int remove(int idx)
   {
     delete this->items[idx];
-    return List_Remove((SortedList *)this, idx);
+    return List_Remove(static_cast<SortedList *>(this), idx);
   }
 
   __inline int remove(T *p)
@@ -267,7 +268,7 @@ class T2Utf : public ptrA
 {
 public:
   __forceinline T2Utf(const wchar_t *str) : ptrA(nbcore_utf8encodeW(str)) {}
-  __forceinline operator BYTE *() const { return (BYTE *)data; }
+  __forceinline operator BYTE *() const { return reinterpret_cast<BYTE *>(data); }
 #ifdef _XSTRING_
   std::string str() const { return std::string(data); }
 #endif
@@ -278,8 +279,8 @@ public:
 
 class NB_CORE_EXPORT MBinBuffer
 {
-  char *m_buf;
-  size_t m_len;
+  char *m_buf{nullptr};
+  size_t m_len{0};
 
 public:
   MBinBuffer();
@@ -304,14 +305,14 @@ public:
 
 struct PARAM
 {
-  const char *szName;
+  const char *szName{nullptr};
   __forceinline PARAM(const char *_name) : szName(_name)
   {}
 };
 
 struct BOOL_PARAM : public PARAM
 {
-  bool bValue;
+  bool bValue{false};
   __forceinline BOOL_PARAM(const char *_name, bool _value) :
     PARAM(_name), bValue(_value)
   {}
@@ -319,7 +320,7 @@ struct BOOL_PARAM : public PARAM
 
 struct INT_PARAM : public PARAM
 {
-  int32_t iValue;
+  int32_t iValue{0};
   __forceinline INT_PARAM(const char *_name, int32_t _value) :
     PARAM(_name), iValue(_value)
   {}
@@ -327,7 +328,7 @@ struct INT_PARAM : public PARAM
 
 struct INT64_PARAM : public PARAM
 {
-  int64_t iValue;
+  int64_t iValue{0};
   __forceinline INT64_PARAM(const char *_name, int64_t _value) :
     PARAM(_name), iValue(_value)
   {}
@@ -335,7 +336,7 @@ struct INT64_PARAM : public PARAM
 
 struct CHAR_PARAM : public PARAM
 {
-  const char *szValue;
+  const char *szValue{nullptr};
   __forceinline CHAR_PARAM(const char *_name, const char *_value) :
     PARAM(_name), szValue(_value)
   {}
@@ -343,7 +344,7 @@ struct CHAR_PARAM : public PARAM
 
 struct WCHAR_PARAM : public PARAM
 {
-  const wchar_t *wszValue;
+  const wchar_t *wszValue{nullptr};
   __forceinline WCHAR_PARAM(const char *_name, const wchar_t *_value) :
     PARAM(_name), wszValue(_value)
   {}

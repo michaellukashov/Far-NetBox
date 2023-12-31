@@ -1,4 +1,4 @@
-*.log
+﻿*.log
 build/
 /src/NetBox-build/
 build-CMakeLists.txt-*
@@ -53,6 +53,7 @@ cmake-build-*/
 cov-int/
 /src/NetBox/My */
 .idea/
+*.iml
 #Verone/
 
 .vs/

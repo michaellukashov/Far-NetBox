@@ -6,20 +6,19 @@
 
 namespace Masks {
 
-static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode)
+static int32_t CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode)
 {
   for (;; ++str)
   {
-    wchar_t stringc = nb::Upper(*str);
-    wchar_t patternc = nb::Upper(*pattern++);
+    const wchar_t Stringc = nb::Upper(*str);
 
-    switch (patternc)
+    switch (const wchar_t Patternc = nb::Upper(*pattern++))
     {
       case 0:
-        return !stringc;
+        return !Stringc;
 
       case L'?':
-        if (!stringc)
+        if (!Stringc)
           return FALSE;
         break;
 
@@ -39,12 +38,12 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
             if (!pattern[1])
               return !dot || !dot[1];
 
-            const wchar_t * patdot = wcschr(pattern + 1, L'.');
+            const wchar_t * Pathdot = wcschr(pattern + 1, L'.');
 
-            if (patdot && !dot)
+            if (Pathdot && !dot)
               return FALSE;
 
-            if (!patdot && dot )
+            if (!Pathdot && dot )
               return !nb::FarStrCmpI(pattern + 1, dot + 1);
           }
         }
@@ -62,7 +61,7 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
       {
         if (!wcschr(pattern, L']'))
         {
-          if (patternc != stringc)
+          if (Patternc != Stringc)
             return FALSE;
 
           break;
@@ -77,11 +76,11 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
           break;
         }
 
-        int match = 0;
-        wchar_t rangec;
-        while ((rangec = nb::Upper(*pattern++)) != 0)
+        int32_t match = 0;
+        wchar_t Rangec;
+        while ((Rangec = nb::Upper(*pattern++)) != 0)
         {
-          if (rangec == L']')
+          if (Rangec == L']')
           {
             if (match)
               break;
@@ -91,25 +90,25 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
           if (match)
             continue;
 
-          if (rangec == L'-' && *(pattern - 2) != L'[' && *pattern != L']')
+          if (Rangec == L'-' && *(pattern - 2) != L'[' && *pattern != L']')
           {
-            match = (stringc <= nb::Upper(*pattern) &&
-                     nb::Upper(*(pattern - 2)) <= stringc);
+            match = (Stringc <= nb::Upper(*pattern) &&
+                     nb::Upper(*(pattern - 2)) <= Stringc);
             pattern++;
           }
           else
-            match = (stringc == rangec);
+            match = (Stringc == Rangec);
         }
 
-        if (!rangec)
+        if (!Rangec)
           return FALSE;
       }
       break;
 
       default:
-        if (patternc != stringc)
+        if (Patternc != Stringc)
         {
-          if (patternc == L'.' && !stringc && !CmpNameSearchMode)
+          if (Patternc == L'.' && !Stringc && !CmpNameSearchMode)
             return *pattern != L'.' && CmpName(pattern, str, CmpNameSearchMode);
           else
             return FALSE;
@@ -119,7 +118,7 @@ static int CmpName_Body(const wchar_t * pattern, const wchar_t * str, bool CmpNa
   }
 }
 
-int CmpName(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode)
+int32_t CmpName(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode)
 {
   if (!pattern || !str)
     return FALSE;
@@ -130,12 +129,12 @@ int CmpName(const wchar_t * pattern, const wchar_t * str, bool CmpNameSearchMode
   return CmpName_Body(pattern, str, CmpNameSearchMode);
 }
 
-TMask::TMask(const UnicodeString Mask) :
+TMask::TMask(const UnicodeString & Mask) noexcept :
   FMask(Mask)
 {
 }
 
-bool TMask::Matches(const UnicodeString Str) const
+bool TMask::Matches(const UnicodeString & Str) const
 {
   return CmpName(FMask.c_str(), Str.c_str()) != FALSE;
 }

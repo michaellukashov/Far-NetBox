@@ -7,7 +7,9 @@
  *
  * libs3 is free software: you can redistribute it and/or modify it under the
  * terms of the GNU Lesser General Public License as published by the Free
- * Software Foundation, version 3 of the License.
+ * Software Foundation, version 3 or above of the License.  You can also
+ * redistribute and/or modify it under the terms of the GNU General Public
+ * License, version 2 or above of the License.
  *
  * In addition, as a special exception, the copyright holders give
  * permission to link the code of this library and its programs with the
@@ -20,6 +22,10 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * version 3 along with libs3, in a file named COPYING.  If not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * You should also have received a copy of the GNU General Public License
+ * version 2 along with libs3, in a file named COPYING-GPLv2.  If not, see
  * <https://www.gnu.org/licenses/>.
  *
  ************************************************************************** **/
@@ -46,6 +52,10 @@
 #define USER_AGENT_SIZE 256
 #define REQUEST_STACK_SIZE 32
 #define SIGNATURE_SCOPE_SIZE 64
+
+#ifdef WINSCP
+#define SIGNATURE_DEBUG
+#endif
 
 static char userAgentG[USER_AGENT_SIZE];
 
@@ -124,7 +134,7 @@ typedef struct RequestComputedValues
     char rangeHeader[128];
 
     // Authorization header
-    char authorizationHeader[1024];
+    char authorizationHeader[4096];
 
     // Request date stamp
     char requestDateISO8601[64];
@@ -192,7 +202,7 @@ static int neon_header_func(void * userdata, ne_request * NeonRequest, const ne_
 
 
 // WINSCP (neon)
-static int neon_read_func(void * userdata, char * buf, size_t len)
+static ssize_t neon_read_func(void * userdata, char * buf, size_t len)
 {
     Request *request = (Request *) userdata;
 
@@ -224,7 +234,7 @@ static int neon_read_func(void * userdata, char * buf, size_t len)
         (len, (char *) ptr, request->callbackData);
     if (ret < 0) {
         request->status = S3StatusAbortedByCallback;
-        return -1;
+        return (ssize_t)-1;
     }
     else {
         if (ret > request->toS3CallbackBytesRemaining) {
@@ -288,8 +298,9 @@ static S3Status append_amz_header(RequestComputedValues *values,
     values->amzHeaders[values->amzHeadersCount++] = &(values->amzHeadersRaw[rawPos]);
 
     const char *headerStr = headerName;
+    
+    char headerNameWithPrefix[S3_MAX_METADATA_SIZE - sizeof(": v")];
     if (addPrefix) {
-        char headerNameWithPrefix[S3_MAX_METADATA_SIZE - sizeof(": v")];
         snprintf(headerNameWithPrefix, sizeof(headerNameWithPrefix),
                  S3_METADATA_HEADER_NAME_PREFIX "%s", headerName);
         headerStr = headerNameWithPrefix;
@@ -335,6 +346,7 @@ static S3Status append_amz_header(RequestComputedValues *values,
 // to be the count of the total number of x-amz- headers thus created).
 static S3Status compose_amz_headers(const RequestParams *params,
                                     int forceUnsignedPayload,
+                                    int requesterPays, // WINSCP
                                     RequestComputedValues *values)
 {
     const S3PutProperties *properties = params->putProperties;
@@ -363,6 +375,9 @@ static S3Status compose_amz_headers(const RequestParams *params,
         case S3CannedAclPublicReadWrite:
             cannedAclString = "public-read-write";
             break;
+        case S3CannedAclBucketOwnerFullControl:
+            cannedAclString = "bucket-owner-full-control";
+            break;
         default: // S3CannedAclAuthenticatedRead
             cannedAclString = "authenticated-read";
             break;
@@ -385,9 +400,13 @@ static S3Status compose_amz_headers(const RequestParams *params,
         // Add the x-amz-copy-source header
         if (params->copySourceBucketName && params->copySourceBucketName[0]
             && params->copySourceKey && params->copySourceKey[0]) {
-            char bucketKey[S3_MAX_METADATA_SIZE];
-            snprintf(bucketKey, sizeof(bucketKey), "/%s/%s",
-                     params->copySourceBucketName, params->copySourceKey);
+            // WINSCP
+            char bucketKey[1 + S3_MAX_BUCKET_NAME_SIZE + 1 + MAX_URLENCODED_KEY_SIZE + 1];
+            snprintf(bucketKey, 1 + S3_MAX_BUCKET_NAME_SIZE + 1 + 1, "/%s/", params->copySourceBucketName);
+            if (!urlEncode(bucketKey + strlen(bucketKey), params->copySourceKey, S3_MAX_KEY_SIZE, 0))
+            {
+                return S3StatusUriTooLong;
+            }
             append_amz_header(values, 0, "x-amz-copy-source", bucketKey);
         }
         // If byteCount != 0 then we're just copying a range, add header
@@ -407,6 +426,16 @@ static S3Status compose_amz_headers(const RequestParams *params,
     if (params->bucketContext.securityToken) {
         append_amz_header(values, 0, "x-amz-security-token",
                           params->bucketContext.securityToken);
+    }
+
+    // WINSCP
+    if (requesterPays
+        && (params->httpRequestType == HttpRequestTypeDELETE
+            || params->httpRequestType == HttpRequestTypeGET
+            || params->httpRequestType == HttpRequestTypeHEAD
+            || params->httpRequestType == HttpRequestTypePOST
+            || params->httpRequestType == HttpRequestTypePUT)) {
+        append_amz_header(values, 0, "x-amz-request-payer", "requester");
     }
 
     if (!forceUnsignedPayload
@@ -669,7 +698,7 @@ static void canonicalize_signature_headers(RequestComputedValues *values)
     // Make a copy of the headers that will be sorted
     const char *sortedHeaders[S3_MAX_METADATA_COUNT + 3];
 
-    memcpy(sortedHeaders, values->amzHeaders,
+    memcpy((void*)sortedHeaders, (void const*)values->amzHeaders,
            (values->amzHeadersCount * sizeof(sortedHeaders[0])));
 
     // add the content-type header and host header
@@ -760,13 +789,13 @@ static void canonicalize_signature_headers(RequestComputedValues *values)
 // Canonicalizes the resource into params->canonicalizedResource
 static void canonicalize_resource(const S3BucketContext *context,
                                   const char *urlEncodedKey,
-                                  char *buffer)
+                                  char *buffer, unsigned int buffer_max)
 {
     int len = 0;
 
     *buffer = 0;
 
-#define append(str) len += sprintf(&(buffer[len]), "%s", str)
+#define append(str) len += snprintf(&(buffer[len]), buffer_max - len, "%s", str)
 
     if (context->uriStyle == S3UriStylePath) {
         if (context->bucketName && context->bucketName[0]) {
@@ -784,10 +813,12 @@ static void canonicalize_resource(const S3BucketContext *context,
 #undef append
 }
 
-
-static void sort_query_string(const char *queryString, char *result)
+static void sort_query_string(const char *queryString, char *result,
+                              unsigned int result_size)
 {
+#ifdef SIGNATURE_DEBUG
     ne_debug(NULL, NE_DBG_HTTPBODY, "\n--\nsort_and_urlencode\nqueryString: %s\n", queryString);
+#endif
 
     unsigned int numParams = 1;
     const char *tmp = queryString;
@@ -798,10 +829,11 @@ static void sort_query_string(const char *queryString, char *result)
 
     const char** params = (const char **)nb_calloc(numParams, sizeof(char*)); // WINSCP (heap allocation)
 
-    char * tokenized = (char *)nb_calloc(strlen(queryString) + 1, sizeof(char)); // WINSCP (heap allocation)
-    strncpy(tokenized, queryString, strlen(queryString) + 1);
-
-    char *tok = tokenized;
+    // Where did strdup go?!??
+    int queryStringLen = strlen(queryString);
+    char *buf = (char *) nb_calloc(queryStringLen + 1, 1);
+    char *tok = buf;
+    strcpy(tok, queryString);
     const char *token = NULL;
     char *save = NULL;
     unsigned int i = 0;
@@ -813,37 +845,47 @@ static void sort_query_string(const char *queryString, char *result)
 
     kv_gnome_sort(params, numParams, '=');
 
+#ifdef SIGNATURE_DEBUG
     for (i = 0; i < numParams; i++) {
         ne_debug(NULL, NE_DBG_HTTPBODY, "%d: %s\n", i, params[i]);
     }
+#endif
 
+    // All params are urlEncoded
+#define append(str) len += snprintf(&(result[len]), result_size - len, "%s", str)
     unsigned int pi = 0;
+    unsigned int len = 0;
     for (; pi < numParams; pi++) {
-        // All params are urlEncoded
-        strncat(result, params[pi], strlen(params[pi]));
-        strncat(result, "&", 1);
+        append(params[pi]);
+        append("&");
     }
-    result[strlen(result) - 1] = '\0';
+    // Take off the extra '&'
+    if (len > 0) {
+        result[len - 1] = 0;
+    }
+#undef append
 
-    nb_free(tokenized); // WINSCP (heap allocation)
-    nb_free(params);
+    nb_free(params); // WINSCP (heap allocation)
+    nb_free(buf);
 }
 
 
 // Canonicalize the query string part of the request into a buffer
 static void canonicalize_query_string(const char *queryParams,
-                                      const char *subResource, char *buffer)
+                                      const char *subResource,
+                                      char *buffer, unsigned int buffer_size)
 {
     int len = 0;
 
     *buffer = 0;
 
-#define append(str) len += sprintf(&(buffer[len]), "%s", str)
+#define append(str) len += snprintf(&(buffer[len]), buffer_size - len, "%s", str)
 
     if (queryParams && queryParams[0]) {
+        int sortedLen = strlen(queryParams) * 2;
         char * sorted = (char *)nb_calloc(strlen(queryParams) * 2, sizeof(char)); // WINSCP (heap allocation)
         sorted[0] = '\0';
-        sort_query_string(queryParams, sorted);
+        sort_query_string(queryParams, sorted, sortedLen);
         append(sorted);
         nb_free(sorted); // WINSCP (heap allocation)
     }
@@ -939,7 +981,9 @@ static S3Status compose_auth_header(const RequestParams *params,
 
     buf_append(canonicalRequest, "%s", values->payloadHash);
 
+#ifdef SIGNATURE_DEBUG
     ne_debug(NULL, NE_DBG_HTTPBODY, "--\nCanonical Request:\n%s\n", canonicalRequest);
+#endif
 
     len = 0;
     unsigned char canonicalRequestHash[S3_SHA256_DIGEST_LENGTH];
@@ -949,7 +993,7 @@ static S3Status compose_auth_header(const RequestParams *params,
     const unsigned char *rqstData = (const unsigned char*) canonicalRequest;
     SHA256(rqstData, strlen(canonicalRequest), canonicalRequestHash);
 #endif
-    nb_free(canonicalRequest); // WINSCP (heap allocation)
+    nb_free(canonicalRequest); // WINSCP
     char canonicalRequestHashHex[2 * S3_SHA256_DIGEST_LENGTH + 1];
     size = sizeof(canonicalRequestHashHex); // WINSCP
     canonicalRequestHashHex[0] = '\0';
@@ -962,17 +1006,20 @@ static S3Status compose_auth_header(const RequestParams *params,
     if (params->bucketContext.authRegion) {
         awsRegion = params->bucketContext.authRegion;
     }
-    char scope[SIGNATURE_SCOPE_SIZE + 1];
+    char scope[sizeof(values->requestDateISO8601) + sizeof(awsRegion) +
+               sizeof("//s3/aws4_request") + 1];
     snprintf(scope, sizeof(scope), "%.8s/%s/s3/aws4_request",
              values->requestDateISO8601, awsRegion);
 
-    const int stringToSignLen = 17 + 17 + SIGNATURE_SCOPE_SIZE + 1
-        + strlen(canonicalRequestHashHex); // WINSCP (heap allocation)
-    char * stringToSign = (char *)nb_calloc(stringToSignLen, sizeof(char)); // WINSCP (heap allocation)
+    const int stringToSignLen = 17 + 17 + sizeof(values->requestDateISO8601) +
+        sizeof(scope) + sizeof(canonicalRequestHashHex) + 1; // WINSCP (heap allocation)
+    char * stringToSign = (char *)nb_calloc(stringToSignLen, sizeof(char));
     snprintf(stringToSign, stringToSignLen, "AWS4-HMAC-SHA256\n%s\n%s\n%s",
              values->requestDateISO8601, scope, canonicalRequestHashHex);
 
+#ifdef SIGNATURE_DEBUG
     ne_debug(NULL, NE_DBG_HTTPBODY, "--\nString to Sign:\n%s\n", stringToSign);
+#endif
 
     const char *secretAccessKey = params->bucketContext.secretAccessKey;
     const int accessKeyLen = strlen(secretAccessKey) + 5; // WINSCP (heap allocation)
@@ -1020,8 +1067,8 @@ static S3Status compose_auth_header(const RequestParams *params,
          (const unsigned char*) stringToSign, strlen(stringToSign),
          finalSignature, NULL);
 #endif
-    nb_free(stringToSign); // WINSCP (heap allocation)
-    nb_free(accessKey);
+    nb_free(accessKey); // WINSCP
+    nb_free(stringToSign); // WINSCP
 
     len = 0;
     size = sizeof(values->requestSignatureHex); // WINSCP
@@ -1034,14 +1081,15 @@ static S3Status compose_auth_header(const RequestParams *params,
              "%s/%.8s/%s/s3/aws4_request", params->bucketContext.accessKeyId,
              values->requestDateISO8601, awsRegion);
 
-    snprintf(
-            values->authorizationHeader,
-            sizeof(values->authorizationHeader),
-            "Authorization: AWS4-HMAC-SHA256 Credential=%s,SignedHeaders=%s,Signature=%s",
-            values->authCredential, values->signedHeaders,
-            values->requestSignatureHex);
+    snprintf(values->authorizationHeader,
+             sizeof(values->authorizationHeader),
+             "Authorization: AWS4-HMAC-SHA256 Credential=%s,SignedHeaders=%s,Signature=%s",
+             values->authCredential, values->signedHeaders,
+             values->requestSignatureHex);
 
+#ifdef SIGNATURE_DEBUG
     ne_debug(NULL, NE_DBG_HTTPBODY, "--\nAuthorization Header:\n%s\n", values->authorizationHeader);
+#endif
 
     return S3StatusOK;
 
@@ -1196,6 +1244,11 @@ static S3Status setup_neon(Request *request,
     {
         ne_set_request_body_provider(request->NeonRequest, (ne_off_t)params->toS3CallbackTotalSize, neon_read_func, request);
     }
+    else if (params->httpRequestType == HttpRequestTypeCOPY)
+    {
+        // Google cloud needs "Content-Length: 0" header
+        ne_set_request_body_buffer(request->NeonRequest, "", 0);
+    }
 
     // WINSCP (Last-Modified parsed in response_headers_handler_done)
 
@@ -1206,9 +1259,12 @@ static S3Status setup_neon(Request *request,
 
     // WINSCP (neon sets "nodelay" unconditionally)
 
-    // WINSCP (we should verify peer always)
-    ne_ssl_set_verify(request->NeonSession, neon_ssl_callback, request);
-    ne_ssl_trust_default_ca(request->NeonSession);
+    if (params->bucketContext.protocol == S3ProtocolHTTPS)
+    {
+      // WINSCP (we should verify peer always)
+      ne_ssl_set_verify(request->NeonSession, neon_ssl_callback, request);
+      ne_ssl_trust_default_ca(request->NeonSession);
+    }
 
     // Follow any redirection directives that S3 sends
     // TODO
@@ -1246,7 +1302,15 @@ static S3Status setup_neon(Request *request,
 
     // WINSCP (hostHeader is added implicitly by neon based on uri, but for certificate check, we use base hostname
     // as the bucket name can contain dots, for which the certificate check would fail)
-    ne_set_realhost(request->NeonSession, params->bucketContext.hostName ? params->bucketContext.hostName : defaultHostNameG);
+    char * hostName = strdup(params->bucketContext.hostName ? params->bucketContext.hostName : defaultHostNameG);
+    char * colon = strchr(hostName, ':');
+    if (colon != NULL)
+    {
+        *colon = '\0';
+    }
+    ne_set_realhost(request->NeonSession, hostName);
+    free(hostName);
+
     append_standard_header(cacheControlHeader);
     append_standard_header(contentTypeHeader);
     append_standard_header(md5Header);
@@ -1280,8 +1344,8 @@ static void request_deinitialize(Request *request)
 
 
 static S3Status request_get(const RequestParams *params,
-                            S3RequestContext *context,
                             const RequestComputedValues *values,
+                            S3RequestContext *context, // WINSCP (non-const)
                             Request **reqReturn)
 {
     Request *request = 0;
@@ -1342,6 +1406,17 @@ static S3Status request_get(const RequestParams *params,
         free(request);
         return status;
     }
+
+#ifndef WINSCP
+    if (context && context->setupCurlCallback &&
+        (status = context->setupCurlCallback(
+                context->curlm, request->curl,
+                context->setupCurlCallbackData)) != S3StatusOK) {
+        curl_easy_cleanup(request->curl);
+        free(request);
+        return status;
+    }
+#endif
 
     request->propertiesCallback = params->propertiesCallback;
 
@@ -1422,8 +1497,8 @@ S3Status request_api_initialize(const char *userAgentInfo, int flags,
         userAgentInfo = "Unknown";
     }
 
-    char platform[96];
     struct utsname utsn;
+    char platform[sizeof(utsn.sysname) + 1 + sizeof(utsn.machine) + 1];
     if (uname(&utsn)) {
         snprintf(platform, sizeof(platform), "Unknown");
     }
@@ -1455,7 +1530,8 @@ void request_api_deinitialize()
 
 static S3Status setup_request(const RequestParams *params,
                               RequestComputedValues *computed,
-                              int forceUnsignedPayload)
+                              int forceUnsignedPayload,
+                              int requesterPays) // WINSCP
 {
     S3Status status;
 
@@ -1486,7 +1562,7 @@ static S3Status setup_request(const RequestParams *params,
              "%Y%m%dT%H%M%SZ", &gmt);
 
     // Compose the amz headers
-    if ((status = compose_amz_headers(params, forceUnsignedPayload, computed))
+    if ((status = compose_amz_headers(params, forceUnsignedPayload, requesterPays, computed)) // WINSCP
         != S3StatusOK) {
         return status;
     }
@@ -1506,20 +1582,24 @@ static S3Status setup_request(const RequestParams *params,
 
     // Compute the canonicalized resource
     canonicalize_resource(&params->bucketContext, computed->urlEncodedKey,
-                          computed->canonicalURI);
+                          computed->canonicalURI,
+                          sizeof(computed->canonicalURI));
     canonicalize_query_string(params->queryParams, params->subResource,
-                              computed->canonicalQueryString);
+                              computed->canonicalQueryString,
+                              sizeof(computed->canonicalQueryString));
 
     // Compose Authorization header
     if ((status = compose_auth_header(params, computed)) != S3StatusOK) {
         return status;
     }
 
+#ifdef SIGNATURE_DEBUG
     int i = 0;
     ne_debug(NULL, NE_DBG_HTTPBODY, "\n--\nAMZ Headers:\n");
     for (; i < computed->amzHeadersCount; i++) {
         ne_debug(NULL, NE_DBG_HTTPBODY, "%s\n", computed->amzHeaders[i]);
     }
+#endif
 
     return status;
 }
@@ -1536,12 +1616,12 @@ void request_perform(const RequestParams *params, S3RequestContext *context)
     // These will hold the computed values
     RequestComputedValues computed;
 
-    if ((status = setup_request(params, &computed, 0)) != S3StatusOK) {
+    if ((status = setup_request(params, &computed, 0, context->requesterPays)) != S3StatusOK) { // WINSCP
         return_status(status);
     }
 
     // Get an initialized Request structure now
-    if ((status = request_get(params, context /*WINSCP*/, &computed, &request)) != S3StatusOK) {
+    if ((status = request_get(params, &computed, context, &request)) != S3StatusOK) {
         return_status(status);
     }
     // WINSCP (we should always verify the peer)
@@ -1584,6 +1664,7 @@ void request_perform(const RequestParams *params, S3RequestContext *context)
 
 void request_finish(Request *request, NeonCode code)
 {
+    const char * httpMessage = NULL;
     // If we haven't detected this already, we now know that the headers are
     // definitely done being read in
     request_headers_done(request);
@@ -1669,14 +1750,24 @@ void request_finish(Request *request, NeonCode code)
                 request->status = S3StatusHttpErrorUnknown;
                 break;
             }
+            httpMessage = ne_get_status(request->NeonRequest)->reason_phrase;
         }
     }
 
+    { // WINSCP
+    // WINSCP
+    S3ErrorDetails errorDetails = request->errorParser.s3ErrorDetails;
+    if (errorDetails.furtherDetails == NULL)
+    {
+        errorDetails.furtherDetails = httpMessage;
+    }
+
     (*(request->completeCallback))
-        (request->status, &(request->errorParser.s3ErrorDetails),
+        (request->status, &errorDetails, // WINSCP
          request->callbackData);
 
     request_release(request);
+    } // WINSCP
 }
 
 
@@ -1696,6 +1787,7 @@ S3Status request_neon_code_to_status(NeonCode code)
 }
 
 
+#ifndef WINSCP
 S3Status S3_generate_authenticated_query_string
     (char *buffer, const S3BucketContext *bucketContext,
      const char *key, int expires, const char *resource,
@@ -1726,12 +1818,16 @@ S3Status S3_generate_authenticated_query_string
     }
 
     // Finally, compose the URI, with params
-    char queryParams[sizeof("X-Amz-Algorithm=AWS4-HMAC-SHA256")
-        + sizeof("&X-Amz-Credential=") + MAX_CREDENTIAL_SIZE
-        + sizeof("&X-Amz-Date=") + 16 + sizeof("&X-Amz-Expires=") + 6
-        + sizeof("&X-Amz-SignedHeaders=") + 128 + sizeof("&X-Amz-Signature=")
-        + sizeof(computed.requestSignatureHex) + 1];
-
+    char queryParams[sizeof("X-Amz-Algorithm=AWS4-HMAC-SHA256") +
+                     sizeof("&X-Amz-Credential=") +
+                     sizeof(computed.authCredential) +
+                     sizeof("&X-Amz-Date=") +
+                     sizeof(computed.requestDateISO8601) +
+                     sizeof("&X-Amz-Expires=") + 64 +
+                     sizeof("&X-Amz-SignedHeaders=") +
+                     sizeof(computed.signedHeaders) +
+                     sizeof("&X-Amz-Signature=") +
+                     sizeof(computed.requestSignatureHex) + 1];
     snprintf(queryParams, sizeof(queryParams),
              "X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=%s"
              "&X-Amz-Date=%s&X-Amz-Expires=%d"
@@ -1743,3 +1839,4 @@ S3Status S3_generate_authenticated_query_string
                        bucketContext, computed.urlEncodedKey, resource,
                        queryParams);
 }
+#endif

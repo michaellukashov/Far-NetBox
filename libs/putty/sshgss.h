@@ -63,7 +63,7 @@ typedef Ssh_gss_stat (*t_ssh_gss_indicate_mech)(struct ssh_gss_library *lib,
  * ssh_gss_release_name().
  */
 typedef Ssh_gss_stat (*t_ssh_gss_import_name)(struct ssh_gss_library *lib,
-					      const char *in, Ssh_gss_name *out);
+					      char *in, Ssh_gss_name *out);
 
 /*
  * Frees the contents of an Ssh_gss_name structure filled in by
