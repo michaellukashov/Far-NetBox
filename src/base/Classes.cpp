@@ -19,7 +19,7 @@ TGlobals * GetGlobals()
 
 void SetGlobals(TGlobals * Value)
 {
-  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr));
+  DebugAssert((GlobalFunctions == nullptr) || (Value == nullptr) || (Value == GlobalFunctions));
   GlobalFunctions = Value;
 }
 
