@@ -29,6 +29,23 @@
             test suite
 *******************************************************************************/
 
+class base_fixture_t
+{
+public:
+  base_fixture_t()
+  {
+    INFO("base_fixture_t ctor");
+  }
+
+  virtual ~base_fixture_t()
+  {
+    INFO("base_fixture_t dtor");
+  }
+public:
+protected:
+private:
+};
+
 class TMockTerminal : public TTerminal
 {
 public:
@@ -73,12 +90,53 @@ public:
   }
 };
 
-TEST_CASE("testRemoteFileSetListingStr", "netbox")
+intptr_t WINAPI SettingsControl(
+  HANDLE hHandle,
+  enum FAR_SETTINGS_CONTROL_COMMANDS Command,
+  intptr_t Param1,
+  void* Param2)
+{
+  DEBUG_PRINTF(L"SettingsControl");
+  return 0;
+}
+
+const wchar_t* WINAPI GetMsg(
+  const UUID* PluginId,
+  intptr_t MsgId)
+{
+  DEBUG_PRINTF(L"GetMsg");
+  return nullptr;
+}
+
+intptr_t WINAPI Message(
+  const UUID* PluginId,
+  const UUID* Id,
+  FARMESSAGEFLAGS Flags,
+  const wchar_t *HelpTopic,
+  const wchar_t * const *Items,
+  size_t ItemsNumber,
+  intptr_t ButtonsNumber)
+{
+  DEBUG_PRINTF(L"Message");
+  return 0;
+}
+
+TEST_CASE_METHOD(base_fixture_t, "testRemoteFileSetListingStr", "netbox")
 {
 //  DEBUG_PRINTF(L"testRemoteFileSetListingStr 0");
   // TGlobalsIntfInitializer<TTestGlobalFunctions> GlobalsIntfInitializer;
   testing::NiceMock<TMockWinSCPPlugin> MockWinSCPPlugin(nullptr);
   MockWinSCPPlugin.Initialize();
+  PluginStartupInfo Info{};
+  Info.StructSize = sizeof(Info);
+  Info.SettingsControl = SettingsControl;
+  Info.GetMsg = GetMsg;
+  Info.Message = Message;
+  FarStandardFunctions FSF{};
+  FSF.StructSize = sizeof(FSF);
+  Info.FSF = &FSF;
+
+  MockWinSCPPlugin.SetStartupInfo(&Info);
   FarPlugin = &MockWinSCPPlugin;
   if (1)
   {
