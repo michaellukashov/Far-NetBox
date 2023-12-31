@@ -907,7 +907,7 @@ uint64_t TFileOperationProgressType::GetCPS() const
     const int64_t Transferred = (FPersistence.TotalTransferred - FPersistence.TotalTransferredThen.front());
     Result = CalculateCPS(Transferred, TimeSpan);
   }
-  return nb::ToUIntPtr(Result);
+  return Result;
 }
 
 TDateTime TFileOperationProgressType::TimeExpected() const
