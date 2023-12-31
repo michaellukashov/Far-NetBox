@@ -50,6 +50,7 @@ else()
   set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
 endif()
 set(OPT_DEBUG_BUILD OFF CACHE STRING "Build plugin for debug")
+set(OPT_COMPILE_TESTS OFF CACHE STRING "Build tests using Catch2")
 
 #-------------------------------------------------------------------------------
 
@@ -108,7 +109,6 @@ if(MSVC)
 set(NETBOX_C_WARNING_FLAGS "")
 set(NETBOX_CXX_WARNING_FLAGS "")
 set(CMAKE_CXX_STANDARD 17)
-#set(NETBOX_CXX_FLAGS /std:c++17)
 set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>)
 
 elseif(CMAKE_COMPILER_IS_MINGW)
@@ -2485,6 +2485,295 @@ foreach(DIST_FILE ${DIST_FILES})
 endforeach()
 
 endif(OPT_DEBUG_BUILD)
+
+#-------------------------------------------------------------------------------
+
+if(OPT_COMPILE_TESTS)
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+set(TEST_INCLUDES
+  libs/openssl/${OPENSSL_INC_DIR}/include
+  libs/putty
+  libs/putty/windows
+  libs/tinyxml2
+  libs/rdestl
+  libs/atlmfc/include
+  libs/neon/src
+  libs/expat/lib
+  libs/fmt
+  libs/tinylog
+  libs/libs3/inc
+  libs/GSL/include
+  src/filezilla
+  src/filezilla/misc
+  src/base
+  src/core
+  src/resource
+  src/windows
+  src/PluginSDK/Far3
+  src/include
+  libs
+  libs/openssl-3/include
+  src/NetBox
+)
+
+set(GOOGLETEST_INCLUDES
+  libs/googlemock
+  libs/googlemock/include
+  libs/googletest
+  libs/googletest/include
+)
+
+set(GOOGLETEST_DEFINES
+  -DGTEST_DONT_DEFINE_FAIL -DGTEST_DONT_DEFINE_SUCCEED
+)
+
+#-------------------------------------------------------
+# target googletest
+
+add_library(googletest STATIC
+  libs/googletest/src/gtest-all.cc
+)
+
+target_include_directories(googletest PRIVATE
+  ${GOOGLETEST_INCLUDES}
+)
+
+target_compile_options(googletest PRIVATE
+  -DGOOGLETEST_EXPORT
+  ${GOOGLETEST_DEFINES}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------
+# target googlemock
+
+add_library(googlemock STATIC
+  libs/googlemock/src/gmock-all.cc
+)
+
+target_include_directories(googlemock PRIVATE
+  ${GOOGLETEST_INCLUDES}
+)
+
+target_compile_options(googlemock PRIVATE
+  -DGOOGLEMOCK_EXPORT
+  ${GOOGLETEST_DEFINES}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#-------------------------------------------------------
+# target testnetbox_01
+
+set(TESTNETBOX_01_SOURCES
+  src/nbcore/nbutils.cpp
+  src/nbcore/nbstring.cpp
+  src/nbcore/nbmemory.cpp
+  src/base/UnicodeString.cpp
+  src/base/StrUtils.cpp
+  src/base/Sysutils.cpp
+  src/base/Global.cpp
+  src/base/System.SyncObjs.cpp
+  src/base/LibraryLoader.cpp
+  src/base/Classes.cpp
+  src/base/Common.cpp
+  src/base/Exceptions.cpp
+  src/base/FileBuffer.cpp
+  src/base/FormatUtils.cpp
+  tests/testutils.h
+  tests/testnetbox_01.cpp
+)
+
+add_executable(testnetbox_01
+  ${TESTNETBOX_01_SOURCES}
+)
+
+target_include_directories(testnetbox_01 PRIVATE
+  ${TEST_INCLUDES}
+)
+
+target_compile_options(testnetbox_01 PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_link_libraries(testnetbox_01 PRIVATE
+  ${NETBOX_LIBRARIES}
+)
+
+#-------------------------------------------------------
+# target testnetbox_02
+
+set(TESTNETBOX_02_SOURCES
+  src/NetBox/UnityBuildCore.cpp
+  src/NetBox/UnityBuildMain.cpp
+  src/NetBox/UnityBuildFilezilla.cpp
+  tests/testnetbox_02.cpp
+)
+
+add_executable(testnetbox_02
+  ${TESTNETBOX_02_SOURCES}
+)
+
+target_include_directories(testnetbox_02 PRIVATE
+  ${TEST_INCLUDES}
+)
+
+target_compile_options(testnetbox_02 PRIVATE
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+set_target_properties(testnetbox_02
+  PROPERTIES
+  LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099 /verbose:lib"
+)
+
+target_link_libraries(testnetbox_02 PRIVATE
+  ${NETBOX_LIBRARIES}
+)
+
+#-------------------------------------------------------
+# target testnetbox_03
+
+set(TESTNETBOX_03_SOURCES
+  src/NetBox/UnityBuildCore.cpp
+  src/NetBox/UnityBuildMain.cpp
+  src/NetBox/UnityBuildFilezilla.cpp
+  tests/testnetbox_03.cpp
+)
+
+add_executable(testnetbox_03
+  ${TESTNETBOX_03_SOURCES}
+)
+
+target_include_directories(testnetbox_03 PRIVATE
+  ${TEST_INCLUDES}
+)
+
+set_target_properties(testnetbox_03
+  PROPERTIES
+  LINK_FLAGS "${CMAKE_LINK_FLAGS} /ignore:4099"
+)
+
+target_compile_options(testnetbox_03 PRIVATE
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_link_libraries(testnetbox_03 PRIVATE
+  ${NETBOX_LIBRARIES}
+)
+
+#-------------------------------------------------------
+# target testnetbox_04
+
+set(TESTNETBOX_04_SOURCES
+  src/NetBox/UnityBuildCore.cpp
+  src/NetBox/UnityBuildMain.cpp
+  src/NetBox/UnityBuildFilezilla.cpp
+  tests/testnetbox_04.cpp
+  tests/testnetbox_04.rc
+)
+
+add_executable(testnetbox_04
+  ${TESTNETBOX_04_SOURCES}
+)
+
+target_include_directories(testnetbox_04 PRIVATE
+  ${TEST_INCLUDES}
+)
+
+target_compile_options(testnetbox_04 PRIVATE
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+#add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
+#  calculator_dll
+#)
+
+target_link_libraries(testnetbox_04 PRIVATE
+  ${NETBOX_LIBRARIES}
+)
+
+#-------------------------------------------------------
+# target testnetbox_05
+
+set(TESTNETBOX_05_SOURCES
+  src/NetBox/UnityBuildCore.cpp
+  src/NetBox/UnityBuildMain.cpp
+  src/NetBox/UnityBuildFilezilla.cpp
+  tests/testnetbox_05.cpp
+)
+
+add_executable(testnetbox_05
+  ${TESTNETBOX_05_SOURCES}
+)
+
+target_include_directories(testnetbox_05 PRIVATE
+  ${GOOGLETEST_INCLUDES}
+  ${TEST_INCLUDES}
+)
+
+target_compile_options(testnetbox_05 PRIVATE
+  ${GOOGLETEST_DEFINES}
+  ${LIBNEON_DEFS}
+  ${LIBEXPAT_DEFS}
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_link_libraries(testnetbox_05 PRIVATE
+  googletest
+  googlemock
+  ${NETBOX_LIBRARIES}
+)
+
+#-------------------------------------------------------
+# target testnetbox_06
+
+set(TESTNETBOX_06_SOURCES
+  tests/UnityBuildMin.cpp
+  tests/testnetbox_06.cpp
+)
+
+add_executable(testnetbox_06
+  ${TESTNETBOX_06_SOURCES}
+)
+
+target_include_directories(testnetbox_06 PRIVATE
+  ${GOOGLETEST_INCLUDES}
+  ${TEST_INCLUDES}
+)
+
+target_compile_options(testnetbox_06 PRIVATE
+  ${GOOGLETEST_DEFINES}
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_PLATFORM_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+)
+
+target_link_libraries(testnetbox_06 PRIVATE
+  googletest
+  googlemock
+  dlmalloc
+  fmt
+  shlwapi.lib
+)
+
+endif(OPT_COMPILE_TESTS)
 
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
