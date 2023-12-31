@@ -2603,6 +2603,7 @@ target_compile_options(testnetbox_01 PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  -D_CRT_NON_CONFORMING_SWPRINTFS
 )
 
 target_link_libraries(testnetbox_01 PRIVATE
