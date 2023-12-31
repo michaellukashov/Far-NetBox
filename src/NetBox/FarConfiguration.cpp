@@ -235,8 +235,8 @@ intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wcha
 int32_t TFarConfiguration::GetConfirmationsSettings() const
 {
   int32_t Result = 0;
-  FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
-  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
+  FarSettingsCreate SettingsCreate = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
+  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &SettingsCreate) ? SettingsCreate.Handle : 0;
   if (Settings)
   {
     if (GetConfirmationsSetting(Settings, L"Copy"))
