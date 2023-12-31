@@ -1021,7 +1021,7 @@ class NB_CORE_EXPORT TRobustOperationLoop final : public TObject
   NB_DISABLE_COPY(TRobustOperationLoop)
 public:
   TRobustOperationLoop() = delete;
-  explicit TRobustOperationLoop(TTerminal * Terminal, TFileOperationProgressType * AOperationProgress, bool * AnyTransfer = nullptr, bool CanRetry = true) noexcept;
+  explicit TRobustOperationLoop(gsl::not_null<TTerminal *> Terminal, TFileOperationProgressType * AOperationProgress, bool * AnyTransfer = nullptr, bool CanRetry = true) noexcept;
   virtual ~TRobustOperationLoop() noexcept override;
   bool TryReopen(Exception & E);
   bool ShouldRetry() const;

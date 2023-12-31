@@ -444,7 +444,7 @@ bool TCallbackGuard::Verify(Exception * E)
 
 
 TRobustOperationLoop::TRobustOperationLoop(
-  TTerminal * Terminal, TFileOperationProgressType * AOperationProgress, bool * AnyTransfer, bool CanRetry) noexcept :
+  gsl::not_null<TTerminal *> Terminal, TFileOperationProgressType * AOperationProgress, bool * AnyTransfer, bool CanRetry) noexcept :
   FTerminal(Terminal),
   FOperationProgress(AOperationProgress),
   FRetry(false),
