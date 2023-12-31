@@ -201,6 +201,7 @@ public:
   HINSTANCE GetHandle() const { return FHandle; }
   uint32_t GetFarThreadId() const { return FFarThreadId; }
   const FarStandardFunctions & GetFarStandardFunctions() const { return FFarStandardFunctions; }
+  #undef GetStartupInfo
   const struct PluginStartupInfo * GetStartupInfo() const { return &FStartupInfo; }
 
 protected:
