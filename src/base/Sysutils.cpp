@@ -2071,7 +2071,7 @@ FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
   if (Result != nullptr)
   {
     constexpr size_t BUFSIZE = 4 * 1024;
-    setvbuf(Result, nullptr, _IONBF, BUFSIZ);
+    setvbuf(Result, nullptr, _IONBF, BUFSIZE);
   }
   return Result;
 }
