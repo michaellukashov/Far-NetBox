@@ -28,7 +28,6 @@
 /*******************************************************************************
             test suite
 *******************************************************************************/
-//#if 0
 
 class TMockTerminal : public TTerminal
 {
@@ -81,16 +80,16 @@ TEST_CASE("testRemoteFileSetListingStr", "netbox")
   testing::NiceMock<TMockWinSCPPlugin> MockWinSCPPlugin(nullptr);
   MockWinSCPPlugin.Initialize();
   FarPlugin = &MockWinSCPPlugin;
-  if (0)
+  if (1)
   {
     testing::NiceMock<TMockTerminal> MockTerminal;
-  //  DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
+    // DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
     TSessionData SessionData("Test");
-  //  MockTerminal.Init(&SessionData, GetConfiguration());
+    // MockTerminal.Init(&SessionData, GetConfiguration());
     DEBUG_PRINTF(L"SessionData: %p", (void*)&SessionData);
     ON_CALL(MockTerminal, GetSessionData())
       .WillByDefault(testing::Return(&SessionData));
-  //  DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
+    // DEBUG_PRINTF(L"MockTerminal.SessionData: %p", (void*)MockTerminal.GetSessionData());
     CHECK(&SessionData == MockTerminal.GetSessionData());
     SECTION("RemoteFile01")
     {
@@ -113,5 +112,3 @@ TEST_CASE("testRemoteFileSetListingStr", "netbox")
   }
   MockWinSCPPlugin.Finalize();
 }
-
-//#endif // if 0
