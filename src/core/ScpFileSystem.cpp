@@ -642,7 +642,7 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
       // contain CR/LF, we can recognize last line
       do
       {
-        const UnicodeString Line = FSecureShell->ReceiveLine();
+        UnicodeString Line = FSecureShell->ReceiveLine();
         IsLast = IsLastLine(Line);
         if (!IsLast || !Line.IsEmpty())
         {

@@ -583,7 +583,7 @@ TCancelStatus TFileOperationProgressType::GetCancel() const
   if (FParent != nullptr)
   {
     TGuard Guard(*FSection); nb::used(Guard);
-    TCancelStatus ParentCancel = FParent->GetCancel();
+    const TCancelStatus ParentCancel = FParent->GetCancel();
     if (ParentCancel > Result)
     {
       Result = ParentCancel;
@@ -596,7 +596,7 @@ bool TFileOperationProgressType::ClearCancelFile()
 {
   TGuard Guard(*FSection); nb::used(Guard);
   // Not propagated to parent, as this is local flag, see also PassCancelToParent
-  bool Result = (GetCancel() == csCancelFile);
+  const bool Result = (GetCancel() == csCancelFile);
   if (Result)
   {
     FCancel = csContinue;
@@ -892,7 +892,7 @@ uint64_t TFileOperationProgressType::GetCPS() const
   }
   else
   {
-    uint64_t Ticks = (GetSuspended() ? FSuspendTime : ::GetTickCount());
+    const uint64_t Ticks = (GetSuspended() ? FSuspendTime : ::GetTickCount());
     uint32_t TimeSpan;
     if (Ticks < FPersistence.Ticks.front())
     {
@@ -904,7 +904,7 @@ uint64_t TFileOperationProgressType::GetCPS() const
       TimeSpan = nb::ToUInt32(Ticks - FPersistence.Ticks.front());
     }
 
-    int64_t Transferred = (FPersistence.TotalTransferred - FPersistence.TotalTransferredThen.front());
+    const int64_t Transferred = (FPersistence.TotalTransferred - FPersistence.TotalTransferredThen.front());
     Result = CalculateCPS(Transferred, TimeSpan);
   }
   return nb::ToUIntPtr(Result);
@@ -912,7 +912,7 @@ uint64_t TFileOperationProgressType::GetCPS() const
 
 TDateTime TFileOperationProgressType::TimeExpected() const
 {
-  uint64_t CurCps = CPS();
+  const uint64_t CurCps = CPS();
   if (CurCps)
   {
     return TDateTime(nb::ToDouble((nb::ToDouble(FTransferSize - FTransferredSize)) / CurCps) / SecsPerDay);
@@ -926,7 +926,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
   DebugAssert(FTotalSizeSet);
   uint64_t CurCps = GetCPS();
   // sanity check
-  int64_t Processed = FTotalSkipped + FPersistence.TotalTransferred - FTotalTransferBase;
+  const int64_t Processed = FTotalSkipped + FPersistence.TotalTransferred - FTotalTransferBase;
   if ((CurCps > 0) && (FTotalSize > Processed))
   {
     return TDateTime(nb::ToDouble(nb::ToDouble(FTotalSize - Processed) / CurCps) / SecsPerDay);
@@ -978,7 +978,7 @@ void TFileOperationProgressType::UnlockUserSelections()
 
 UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
 {
-  UnicodeString Transferred = FormatSize(GetTotalTransferred());
+  const UnicodeString Transferred = FormatSize(GetTotalTransferred());
   TDateTime Time;
   UnicodeString TimeLabel;
   if (!Done && FTotalSizeSet)
@@ -991,7 +991,7 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
     Time = TimeElapsed();
     TimeLabel = "Elapsed";
   }
-  UnicodeString TimeStr = FormatDateTimeSpan(Time);
+  const UnicodeString TimeStr = FormatDateTimeSpan(Time);
 
   uint32_t ACPS;
   if (!Done)
@@ -1000,10 +1000,10 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
   }
   else
   {
-    uint32_t Elapsed = TimeToMSec(TimeElapsed());
+    const uint32_t Elapsed = TimeToMSec(TimeElapsed());
     ACPS = CalculateCPS(TotalTransferred, Elapsed);
   }
-  UnicodeString CPSStr = FormatSize(ACPS);
+  const UnicodeString CPSStr = FormatSize(ACPS);
 
   return FORMAT("Transferred: %s, %s: %s, CPS: %s/s", Transferred, TimeLabel, TimeStr, CPSStr);
 }
