@@ -928,7 +928,7 @@ UnicodeString TRegistryStorage::GetSource() const
 
 void TRegistryStorage::SetAccessModeProtected(TStorageAccessMode value)
 {
-  THierarchicalStorage::SetAccessMode(value);
+  THierarchicalStorage::SetAccessModeProtected(value);
   if (FRegistry)
   {
     switch (AccessMode) {
