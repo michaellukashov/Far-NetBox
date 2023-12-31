@@ -1163,7 +1163,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, size_t Len)
     // Following is taken from scp.c ssh_scp_recv() and modified
 
     OutPtr = Buf;
-    OutLen = Len;
+    OutLen = nb::ToInt32(Len);
 
     try__finally
     {
@@ -1215,7 +1215,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, size_t Len)
     LogEvent(FORMAT("Read %d bytes (%d pending)",
         nb::ToInt32(Len), nb::ToInt32(PendLen)));
   }
-  return Len;
+  return nb::ToInt32(Len);
 }
 
 UnicodeString TSecureShell::ReceiveLine()
@@ -1412,7 +1412,7 @@ void TSecureShell::Send(const uint8_t * Buf, size_t Length)
 
   if (BufSize > MAX_BUFSIZE)
   {
-    DispatchSendBuffer(BufSize);
+    DispatchSendBuffer(nb::ToInt32(BufSize));
   }
   CheckConnection();
 }
