@@ -126,7 +126,9 @@ HINSTANCE TTestGlobalFunctions::GetInstanceHandle() const
 
 UnicodeString TTestGlobalFunctions::GetMsg(int32_t Id) const
 {
-  return UnicodeString();
+  const HINSTANCE Instance = GetInstanceHandle();
+  UnicodeString Result = ::LoadStrFrom(Instance, Id);
+  return Result;
 }
 
 UnicodeString TTestGlobalFunctions::GetCurrentDirectory() const
