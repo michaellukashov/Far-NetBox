@@ -16,7 +16,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarConfiguration) || TGUIConfiguration::is(Kind); }
 public:
   TFarConfiguration() = delete;
-  explicit TFarConfiguration(TCustomFarPlugin * APlugin) noexcept;
+  explicit TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept;
   virtual ~TFarConfiguration() noexcept override;
 
   virtual void Load();
@@ -101,7 +101,7 @@ private:
   int32_t GetConfirmationsSettings() const;
 
 private:
-  TCustomFarPlugin * FFarPlugin{nullptr};
+  gsl::not_null<TCustomFarPlugin *> FFarPlugin;
   std::unique_ptr<TBookmarks> FBookmarks;
   int32_t FFarConfirmations{0};
   bool FConfirmOverwritingOverride{false};

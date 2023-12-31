@@ -25,7 +25,7 @@ enum NetBoxConfirmationsSettings
   // NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
 
-TFarConfiguration::TFarConfiguration(TCustomFarPlugin * APlugin) noexcept :
+TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),
   FBookmarks(std::make_unique<TBookmarks>()),
