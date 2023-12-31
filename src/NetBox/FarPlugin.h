@@ -209,7 +209,7 @@ protected:
   FarStandardFunctions FFarStandardFunctions{};
   HINSTANCE FHandle{};
   std::unique_ptr<TList> FOpenedPlugins;
-  TFarDialog * FTopDialog{nullptr};
+  gsl::owner<TFarDialog *> FTopDialog{nullptr};
   HANDLE FConsoleInput{};
   HANDLE FConsoleOutput{};
   mutable int32_t FFarVersion{0};
