@@ -594,7 +594,7 @@ protected:
 
 public:
   explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal) noexcept;
-  void Init(TSessionData * ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog = nullptr);
+  void Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration, TActionLog * AActionLog = nullptr);
   virtual ~TTerminal() noexcept override;
   void Open();
   void Close();

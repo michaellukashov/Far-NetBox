@@ -1947,7 +1947,7 @@ UnicodeString ApiPath(const UnicodeString & APath)
   }
 
   // Max path for directories is 12 characters shorter than max path for files
-  if (Path.Length() >= (nb::NB_MAX_PATH - 12))
+  if (Path.Length() >= (MAX_PATH - 12))
   {
     /*if (GetConfiguration() != nullptr)
     {
@@ -2193,11 +2193,12 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
   return Result;
 }
 
-DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
+DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
 {
   F.Path = APath;
   F.Dir = ExtractFilePath(APath);
-  const DWORD Result = base::FindFirst(ApiPath(APath), LocalFileAttrs, F);
+  // DEBUG_PRINTF("APath: %s", APath);
+  const DWORD Result = base::FindFirst(APath, LocalFileAttrs, F);
   F.Opened = (Result == 0);
   return Result;
 }
@@ -2222,7 +2223,7 @@ DWORD FindNextChecked(TSearchRecChecked & F)
   return FindCheck(FindNextUnchecked(F), F.Path);
 }
 
-bool FileSearchRec(const UnicodeString & AFileName, TSearchRec &Rec)
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec)
 {
   constexpr DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   const bool Result = (base::FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
@@ -2261,13 +2262,14 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   TProcessLocalFileEvent && CallBackFunc, void * Param,
   DWORD FindAttrs)
 {
-  DebugAssert(CallBackFunc);
+  DebugAssert(!CallBackFunc.empty());
   if (FindAttrs == INVALID_FILE_ATTRIBUTES)
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
 
   TSearchRecOwned SearchRec;
+  // DEBUG_PRINTF("ADirName: %s", ADirName);
   if (FindFirstChecked(TPath::Combine(ADirName, AnyMask), FindAttrs, SearchRec) == 0)
   {
     do

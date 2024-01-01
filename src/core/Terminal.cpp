@@ -368,8 +368,8 @@ private:
 };
 
 TCallbackGuard::TCallbackGuard(TTerminal * ATerminal) noexcept :
-  FTerminal(ATerminal),
   FFatalError(nullptr),
+  FTerminal(ATerminal),
   FGuarding(FTerminal->FCallbackGuard == nullptr)
 {
   if (FGuarding)
@@ -1237,7 +1237,7 @@ TTerminal::TTerminal(TObjectClassId Kind) noexcept :
 {
 }
 
-void TTerminal::Init(TSessionData * ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog)
+void TTerminal::Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration, TActionLog * AActionLog)
 {
   FConfiguration = AConfiguration;
   //FSessionData = new TSessionData(L"");
@@ -6061,8 +6061,8 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
     UnicodeString LastDirPath;
     for (int32_t Index = 0; Params.Result && (Index < AFileList->GetCount()); ++Index)
     {
-      UnicodeString FileName = AFileList->GetString(Index);
-      TSearchRecSmart Rec;
+      const UnicodeString FileName = AFileList->GetString(Index);
+      TSearchRecSmart Rec{};
       if (FileSearchRec(FileName, Rec))
       {
         if (Rec.IsDirectory() && !AllowDirs)
@@ -6261,7 +6261,7 @@ bool TTerminal::LocalFindFirstLoop(const UnicodeString & APath, TSearchRecChecke
   bool Result;
   FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(LIST_DIR_ERROR, APath), "")
   {
-    DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+    constexpr DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     Result = (FindFirstChecked(APath, FindAttrs, SearchRec) == 0);
   }
   FILE_OPERATION_LOOP_END(FMTLOAD(LIST_DIR_ERROR, Path));
@@ -6408,11 +6408,10 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
       ProcessDirectory(ARemoteDirectory, nb::bind(&TTerminal::SynchronizeCollectFile, this), &Data,
         FLAGSET(AParams, spUseCache));
 
-      TSynchronizeFileData * FileData;
+      // TSynchronizeFileData * FileData;
       for (int32_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
-        FileData = Data.LocalFileList->GetAs<TSynchronizeFileData>
-          (Index);
+        TSynchronizeFileData * FileData = Data.LocalFileList->GetAs<TSynchronizeFileData>(Index);
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
         // or if we are going to delete it (i.e. all "new"=obsolete files)
@@ -6470,8 +6469,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
 
             if (ChecklistItem->Action != saNone)
             {
-              Data.Checklist->Add(ChecklistItem.get());
-              ChecklistItem.release();
+              Data.Checklist->Add(ChecklistItem.release());
             }
           }
           __finally__removed
@@ -6778,8 +6776,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
         if (ChecklistItem->Action != saNone)
         {
           ChecklistItem->RemoteFile = AFile->Duplicate();
-          Data->Checklist->Add(ChecklistItem.get());
-          ChecklistItem.release();
+          Data->Checklist->Add(ChecklistItem.release());
         }
       }
     }
@@ -6825,13 +6822,13 @@ void TTerminal::SynchronizeApply(
     TSynchronizeChecklist::TItemList Items;
     for (int32_t Index = 0; Index < Checklist->Count; Index++)
     {
-      const TChecklistItem * ChecklistItem = Checklist->GetItem(Index);
+      TChecklistItem * ChecklistItem = const_cast<TChecklistItem*>(Checklist->GetItem(Index));
       // TSynchronizeChecklistDialog relies on us not to update a size of an item that had size already
       // See TSynchronizeChecklistDialog::UpdatedSynchronizationChecklistItems
       if (ChecklistItem->Checked && !TSynchronizeChecklist::IsItemSizeIrrelevant(ChecklistItem->Action) &&
           !ChecklistItem->HasSize() && DebugAlwaysTrue(ChecklistItem->IsDirectory))
       {
-        Items.Add((TChecklistItem *)ChecklistItem);
+        Items.Add(ChecklistItem);
       }
     }
 
@@ -6879,7 +6876,7 @@ void TTerminal::SynchronizeApply(
         if (FLAGSET(Params, spTimestamp))
         {
           // used by SynchronizeLocalTimestamp and SynchronizeRemoteTimestamp
-          TObject * ChecklistItemToken = const_cast<TObject *>(reinterpret_cast<const TObject *>(ChecklistItem));
+          const TObject * ChecklistItemToken = ChecklistItem;
           switch (ChecklistItem->Action)
           {
             case TChecklistAction::saDownloadUpdate:
@@ -7089,7 +7086,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*AFileName*/,
     const FILETIME WrTime = ::DateTimeToFileTime(ChecklistItem->Remote.Modification,
       SessionData->GetDSTMode());
     const bool Result = ::SetFileTime(Handle, nullptr, nullptr, &WrTime) != FALSE;
-    const int32_t Error = ::GetLastError();
+    const int32_t Error = nb::ToInt32(::GetLastError());
     ::CloseHandle(Handle);
     if (!Result)
     {
@@ -7137,7 +7134,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
     MaskParams.Size = AFile->Resolve()->GetSize();
     MaskParams.Modification = AFile->GetModification();
 
-    UnicodeString FullFileName = base::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
+    const UnicodeString FullFileName = base::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
     bool ImplicitMatch = false;
     // Do not use recursive include match
     if (AParams->FileMask.Matches(FullFileName, false,
@@ -7464,7 +7461,7 @@ int32_t TTerminal::CopyToParallel(TParallelOperation * ParallelOperation, TFileO
     }
     __finally
     {
-      bool Success = (Prev < AOperationProgress->GetFilesFinishedSuccessfully());
+      const bool Success = (Prev < AOperationProgress->GetFilesFinishedSuccessfully());
       ParallelOperation->Done(FileName, Dir, Success, TargetDir, CopyParam, this);
       // Not to fail an assertion in OperationStop when called from CopyToRemote or CopyToLocal,
       // when FOperationProgress is already AOperationProgress.
@@ -7847,8 +7844,8 @@ void TTerminal::DirectorySource(
         {
           // Not sure if we need the trailing slash here, but we cannot use it in CreateTargetDirectory.
           // At least FTP cannot handle it, when setting the new directory permissions.
-          UnicodeString ATargetDir = base::UnixIncludeTrailingBackslash(DestFullName);
-          SourceRobust(FileName, &SearchRec, ATargetDir, CopyParam, AParams, AOperationProgress, (AFlags & ~(tfFirstLevel | tfAutoResume)));
+          const UnicodeString TargetDir = base::UnixIncludeTrailingBackslash(DestFullName);
+          SourceRobust(FileName, &SearchRec, TargetDir, CopyParam, AParams, AOperationProgress, (AFlags & ~(tfFirstLevel | tfAutoResume)));
           // FTP: if any file got uploaded (i.e. there were any file in the directory and at least one was not skipped),
           // do not try to create the directory, as it should be already created by FZAPI during upload
           PostCreateDir = false;
@@ -8459,7 +8456,7 @@ void TTerminal::Sink(
     {
       FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, AFlags, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "")
       {
-        DWORD Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
+        const DWORD Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
         if (FLAGCLEAR(Attrs, faDirectory))
         {
           ThrowExtException();
@@ -8541,7 +8538,7 @@ void TTerminal::Sink(
     {
       FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, AFlags, FMTLOAD(NOT_FILE_ERROR, DestFullName), "")
       {
-        Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
+        Attrs = nb::ToInt32(FileGetAttrFix(ApiPath(DestFullName)));
         if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
         {
           ThrowExtException();
@@ -8590,7 +8587,7 @@ void TTerminal::UpdateTargetTime(
     const FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);
     if (!::SetFileTime(Handle, nullptr, nullptr, &WrTime))
     {
-      const int32_t Error = ::GetLastError();
+      const int32_t Error = nb::ToInt32(::GetLastError());
       LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s", ::SysErrorMessageForError(Error)));
     }
   }
@@ -9362,8 +9359,8 @@ TStrings * TTerminal::ProcessFeatures(TStrings * Features)
 void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   const TDateTime & Modification)
 {
-  FILETIME WrTime = ::DateTimeToFileTime(Modification,
-      GetSessionData()->GetDSTMode());
+  const FILETIME WrTime = ::DateTimeToFileTime(Modification,
+    GetSessionData()->GetDSTMode());
   SetLocalFileTime(LocalFileName, nullptr, &WrTime);
 }
 

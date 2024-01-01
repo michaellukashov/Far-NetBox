@@ -749,7 +749,7 @@ protected:
   void Add(TChecklistItem * Item);
 
 public:
-  void SetMasks(const UnicodeString & Value);
+  // void SetMasks(const UnicodeString & Value);
 
   int32_t GetCount() const;
   int32_t GetCheckedCount() const;

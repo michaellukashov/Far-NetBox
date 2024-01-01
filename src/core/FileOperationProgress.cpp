@@ -289,7 +289,7 @@ int32_t TFileOperationProgressType::TransferProgress() const
   int32_t Result;
   if (FTransferSize)
   {
-    Result = nb::ToInt((FTransferredSize * 100) / FTransferSize);
+    Result = nb::ToInt32((FTransferredSize * 100) / FTransferSize);
   }
   else
   {
