@@ -261,6 +261,7 @@ set(OPENSSL_COMPILE_FLAGS
   -DOPENSSL_NO_COMP -DOPENSSL_NO_COMP_ALG
   -DOPENSSL_NO_ERR
   -DOPENSSL_NO_CAMELLIA
+  -DOPENSSL_NO_DEPRECATED_3_0
 )
 
 if(MSVC)
@@ -948,7 +949,7 @@ set(libeay32_c_files
   libs/openssl-3/crypto/pkcs12/p12_sbag.c
   libs/openssl-3/crypto/comp/comp_lib.c
   libs/openssl-3/crypto/comp/comp_err.c
-  libs/openssl-3/crypto/comp/c_zlib.c
+  # libs/openssl-3/crypto/comp/c_zlib.c
   libs/openssl-3/crypto/cmac/cm_ameth.c
   libs/openssl-3/crypto/cmac/cm_pmeth.c
   libs/openssl-3/crypto/cmac/cmac.c
@@ -1301,6 +1302,7 @@ target_include_directories(libeay32 SYSTEM BEFORE PRIVATE
   libs/openssl-3/crypto/modes
   libs/openssl-3/crypto/ec/curve448
   libs/openssl-3
+  # libs/zlib/src
 )
 
 #-------------------------------------------------------------------------------
