@@ -124,6 +124,7 @@ public:
 //  CMSimpleStringT &operator=(CMSimpleStringT&&) = default;
 
   CMSimpleStringT(const CMSimpleStringT &strSrc);
+  CMSimpleStringT(CMSimpleStringT&&) noexcept = default;
   explicit CMSimpleStringT(PCXSTR pszSrc);
   explicit CMSimpleStringT(const XCHAR *pchSrc, int nLength);
   ~CMSimpleStringT();
@@ -827,6 +828,7 @@ public:
   inline operator CMStringT &() { return *static_cast<CMStringT *>(this); }
   // Assignment operators
   CMStringT &operator=(const CMStringT &strSrc);
+  CMStringT &operator=(CMStringT&&) noexcept = default;
   CMStringT &operator=(PCXSTR pszSrc);
   CMStringT &operator=(PCYSTR pszSrc);
   CMStringT &operator=(const unsigned char * pszSrc);
