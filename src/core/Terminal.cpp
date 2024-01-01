@@ -6261,7 +6261,7 @@ bool TTerminal::LocalFindFirstLoop(const UnicodeString & APath, TSearchRecChecke
   bool Result;
   FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(LIST_DIR_ERROR, APath), "")
   {
-    DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
+    constexpr DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     Result = (FindFirstChecked(APath, FindAttrs, SearchRec) == 0);
   }
   FILE_OPERATION_LOOP_END(FMTLOAD(LIST_DIR_ERROR, Path));
