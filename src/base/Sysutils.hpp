@@ -385,7 +385,7 @@ public:
   TWin32FindData FindData{};
 };
 
-NB_CORE_EXPORT void InitPlatformId();
+// NB_CORE_EXPORT void InitPlatformId();
 NB_CORE_EXPORT bool Win32Check(bool RetVal);
 
 NB_DEFINE_CLASS_ID(EConvertError);
