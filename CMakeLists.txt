@@ -182,7 +182,6 @@ set(NETBOX_DLL_LINK_FLAGS
   /MANIFEST:NO
   /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS
   /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS /NOLOGO
-  /MAP
   /INCREMENTAL:NO
   /ignore:4099
   /ignore:4197
@@ -2456,7 +2455,7 @@ add_custom_target(create_plugin_dir ALL
 add_custom_target(copy_to_plugin_dir ALL
   COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" "${NETBOX_PLUGIN_DIR}/"
   COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" "${NETBOX_PLUGIN_DIR}/"
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" "${NETBOX_PLUGIN_DIR}/"
+  # COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" "${NETBOX_PLUGIN_DIR}/"
   # VERBATIM
   DEPENDS NetBox
 )
