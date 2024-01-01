@@ -5845,7 +5845,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
         {
           // uint32_t LSize;
           DWORD HSize{0};
-          uint32_t LSize = ::GetFileSize(LocalFileHandle, &HSize);
+          const uint32_t LSize = ::GetFileSize(LocalFileHandle, &HSize);
           if ((LSize == nb::ToUInt32(-1)) && (::GetLastError() != NO_ERROR))
           {
             ::RaiseLastOSError();

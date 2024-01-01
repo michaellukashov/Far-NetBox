@@ -1421,7 +1421,7 @@ void TWebDAVFileSystem::Source(
         const TDateTime & DateTime = ModificationUTC;
         DateTime.DecodeDate(Y, M, D);
         DateTime.DecodeTime(H, NN, S, MS);
-        UnicodeString LastModified = FORMAT("%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
+        const UnicodeString LastModified = FORMAT("%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
 
         const UTF8String NeonLastModified(LastModified);
         // second element is "NULL-terminating"
