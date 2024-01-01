@@ -595,7 +595,7 @@ ne_ssl_context *ne_ssl_context_create(int mode)
         /* enable workarounds for buggy SSL server implementations */
         SSL_CTX_set_options(ctx->ctx, SSL_OP_ALL);
         SSL_CTX_set_verify(ctx->ctx, SSL_VERIFY_PEER, verify_callback);
-#if !defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x10101000L
+#if defined(LIBRESSL_VERSION_NUMBER) && LIBRESSL_VERSION_NUMBER >= 0x3040000fL || (!defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x10101000L)
         SSL_CTX_set_post_handshake_auth(ctx->ctx, 1);
 #endif
     } else if (mode == NE_SSL_CTX_SERVER) {
@@ -825,13 +825,15 @@ void ne_ssl_context_trustcert(ne_ssl_context *ctx, const ne_ssl_certificate *cer
 
 void ne_ssl_trust_default_ca(ne_session *sess)
 {
-    X509_STORE *store = SSL_CTX_get_cert_store(sess->ssl_context->ctx);
+    if (sess->ssl_context) {
+        X509_STORE *store = SSL_CTX_get_cert_store(sess->ssl_context->ctx);
     
 #ifdef NE_SSL_CA_BUNDLE
-    X509_STORE_load_locations(store, NE_SSL_CA_BUNDLE, NULL);
+        X509_STORE_load_locations(store, NE_SSL_CA_BUNDLE, NULL);
 #else
-    X509_STORE_set_default_paths(store);
+        X509_STORE_set_default_paths(store);
 #endif
+    }
 }
 
 #ifdef WINSCP
@@ -1168,7 +1170,9 @@ static const EVP_MD *hash_to_md(unsigned int flags)
     case NE_HASH_SHA256: return EVP_sha256();
 #ifdef HAVE_OPENSSL11
     case NE_HASH_SHA512: return EVP_sha512();
+#if !defined(LIBRESSL_VERSION_NUMBER) || LIBRESSL_VERSION_NUMBER >= 0x3080000fL
     case NE_HASH_SHA512_256: return EVP_sha512_256();
+#endif
 #endif
     default: break;
     }

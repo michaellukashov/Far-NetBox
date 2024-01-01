@@ -286,7 +286,8 @@ void ne_ssl_set_clicert(ne_session *sess, const ne_ssl_client_cert *clicert);
 void ne_ssl_trust_cert(ne_session *sess, const ne_ssl_certificate *cert);
 
 /* If the SSL library provided a default set of CA certificates, trust
- * this set of CAs. */
+ * this set of CAs. This function has no effect for non-SSL
+ * sessions. */
 void ne_ssl_trust_default_ca(ne_session *sess);
 
 /* Callback used to load a client certificate on demand.  If dncount
