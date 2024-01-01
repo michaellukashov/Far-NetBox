@@ -1,6 +1,10 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [24.1.0.565-RC7] - 2024-01-01
+### Fixed
+- Fix issues with unicode file names
+
 ## [23.12.1.564-RC6] - 2023-12-30
 ### Fixed
 - S3: Fix Upload/Download large files
