@@ -209,7 +209,7 @@ void TTunnelThread::Execute()
       FSecureShell->Idle(250);
     }
   }
-  catch (...)
+  catch(...)
   {
     if (FSecureShell->GetActive())
     {
@@ -1853,7 +1853,7 @@ void TTerminal::OpenTunnel()
     FTunnelThread = std::make_unique<TTunnelThread>(FTunnel.get());
     FTunnelThread->InitTunnelThread();
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     LogEvent(L"Error opening tunnel.");
     CloseTunnel();
@@ -1895,7 +1895,7 @@ void TTerminal::Closed()
       GetOnClose()(this);
       Guard.Verify();
     }
-    catch (Exception & E)
+    catch(Exception & E)
     {
       if (!Guard.Verify(&E))
       {
@@ -2082,7 +2082,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
         GetOnPromptUser()(this, Kind, AName, AInstructions, Prompts, Results, Result, nullptr);
         Guard.Verify();
       }
-      catch (Exception & E)
+      catch(Exception & E)
       {
         if (!Guard.Verify(&E))
         {
@@ -2730,7 +2730,7 @@ TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, cons
       {
         ReadDirectory(Result.get());
       }
-      catch (...)
+      catch(...)
       {
 //        SAFE_DESTROY(Result);
         throw;
@@ -3898,7 +3898,7 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
       File = ReadFile(APath);
       Action.File(File);
     }
-    catch (Exception & E)
+    catch(Exception & E)
     {
       RetryLoop.Error(E, Action);
     }
@@ -3999,7 +3999,7 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
       {
         FileList.reset(CustomReadDirectoryListing(ADirName, UseCache));
       }
-      catch (...)
+      catch(...)
       {
         if (!GetActive())
         {
@@ -4460,7 +4460,7 @@ void TTerminal::DoDeleteFile(
         OperationProgress->Succeeded();
       }
     }
-    catch (Exception & E)
+    catch(Exception & E)
     {
       RetryLoop.Error(E, Action, FMTLOAD(DELETE_FILE_ERROR, AFileName));
     }
@@ -5141,7 +5141,7 @@ bool TTerminal::DoRenameOrCopyFile(
           {
             FileSystem->RemoteRenameFile(FileName, File, NewName, !DontOverwrite);
           }
-          catch (Exception & E)
+          catch(Exception & E)
           {
             UnicodeString Message = FMTLOAD(Move ? MOVE_FILE_ERROR : RENAME_FILE_ERROR, FileName, NewName);
             RetryLoop.Error(E, Action, Message);
@@ -5154,7 +5154,7 @@ bool TTerminal::DoRenameOrCopyFile(
           {
             FileSystem->RemoteCopyFile(FileName, File, NewName, !DontOverwrite);
           }
-          catch (Exception & E)
+          catch(Exception & E)
           {
             RetryLoop.Error(E, Action, FMTLOAD(COPY_FILE_ERROR, FileName, NewName));
           }
@@ -5321,10 +5321,11 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt)
   TRetryOperationLoop RetryLoop(this);
   do
   {
-    TMkdirSessionAction Action(GetActionLog(), GetAbsolutePath(ADirName, true));
+    TMkdirSessionAction Action(GetActionLog(), GetAbsolutePath(ADirName, false));
     try
     {
       DebugAssert(FFileSystem);
+      DEBUG_PRINTF("ADirName: %s", ADirName);
       FFileSystem->RemoteCreateDirectory(ADirName, Encrypt);
     }
     catch(Exception & E)
@@ -5861,7 +5862,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
         LocalFileHandle = INVALID_HANDLE_VALUE;
       }
     }
-    catch (...)
+    catch(...)
     {
       SAFE_CLOSE_HANDLE(LocalFileHandle);
       throw;
@@ -7276,7 +7277,7 @@ void TTerminal::DoUnlockFile(const UnicodeString & AFileName, const TRemoteFile 
     {
       FFileSystem->UnlockFile(AFileName, AFile);
     }
-    catch (Exception & E)
+    catch(Exception & E)
     {
       RetryLoop.Error(E, FMTLOAD(UNLOCK_FILE_ERROR, AFileName));
     }
@@ -7755,7 +7756,7 @@ void TTerminal::SourceRobust(
     {
       Source(AFileName, SearchRec, ATargetDir, CopyParam, AParams, AOperationProgress, AFlags, Action, ChildError);
     }
-    catch (Exception & E)
+    catch(Exception & E)
     {
       if (!RobustLoop.TryReopen(E))
       {
@@ -8370,7 +8371,7 @@ void TTerminal::SinkRobust(
           RemoteDeleteFile(AFileName, AFile, &Params);
         }
       }
-      catch (Exception & E)
+      catch(Exception & E)
       {
         if (!RobustLoop.TryReopen(E))
         {
@@ -9021,7 +9022,7 @@ typename TTerminal::TEncryptedFileNames::const_iterator TTerminal::GetEncryptedF
     {
       delete DoReadDirectoryListing(FileDir, true);
     }
-    catch (Exception &)
+    catch(Exception &)
     {
       if (!Active)
       {
@@ -9137,7 +9138,7 @@ TRemoteFile * TTerminal::CheckRights(const UnicodeString & EntryType, const Unic
       LogEvent(FORMAT(L"%s \"%s\" exists and has correct permissions %s.", EntryType, FileName, File->Rights->Octal));
     }
   }
-  catch (Exception & DebugUsedArg(E))
+  catch(Exception & DebugUsedArg(E))
   {
   }
   return File.release();
