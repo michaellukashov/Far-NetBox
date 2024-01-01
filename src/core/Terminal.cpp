@@ -830,7 +830,7 @@ void TParallelOperation::Done(
   {
     TGuard Guard(*FSection.get()); nb::used(Guard);
 
-    TDirectories::iterator DirectoryIterator = FDirectories.find(FileName);
+    const TDirectories::iterator DirectoryIterator = FDirectories.find(FileName);
     if (DebugAlwaysTrue(DirectoryIterator != FDirectories.end()))
     {
       if (Success)
@@ -1071,12 +1071,12 @@ int32_t TParallelOperation::GetNext(
     bool FirstLevel;
     if (FSide == osLocal)
     {
-      DirPath = ::ExtractFileDir(FileName);
+      DirPath = ::ExcludeTrailingBackslash(::ExtractFileDir(FileName));
       FirstLevel = ::SamePaths(DirPath, RootPath);
     }
     else
     {
-      DirPath = base::UnixExtractFileDir(FileName);
+      DirPath = ::ExcludeTrailingBackslash(base::UnixExtractFileDir(FileName));
       FirstLevel = base::UnixSamePath(DirPath, RootPath);
     }
 
@@ -1133,7 +1133,7 @@ int32_t TParallelOperation::GetNext(
 
         DirectoryData.Exists = false;
 
-        FDirectories.insert(TDirectories::value_type(FileName, DirectoryData));
+        FDirectories.insert(TDirectories::value_type(::ExcludeTrailingBackslash(FileName), DirectoryData));
       }
 
       bool Processed = true;
