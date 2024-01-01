@@ -1237,7 +1237,7 @@ TTerminal::TTerminal(TObjectClassId Kind) noexcept :
 {
 }
 
-void TTerminal::Init(TSessionData * ASessionData, TConfiguration * AConfiguration, TActionLog * AActionLog)
+void TTerminal::Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration, TActionLog * AActionLog)
 {
   FConfiguration = AConfiguration;
   //FSessionData = new TSessionData(L"");
