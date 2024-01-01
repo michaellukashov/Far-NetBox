@@ -6822,13 +6822,13 @@ void TTerminal::SynchronizeApply(
     TSynchronizeChecklist::TItemList Items;
     for (int32_t Index = 0; Index < Checklist->Count; Index++)
     {
-      const TChecklistItem * ChecklistItem = Checklist->GetItem(Index);
+      TChecklistItem * ChecklistItem = const_cast<TChecklistItem*>(Checklist->GetItem(Index));
       // TSynchronizeChecklistDialog relies on us not to update a size of an item that had size already
       // See TSynchronizeChecklistDialog::UpdatedSynchronizationChecklistItems
       if (ChecklistItem->Checked && !TSynchronizeChecklist::IsItemSizeIrrelevant(ChecklistItem->Action) &&
           !ChecklistItem->HasSize() && DebugAlwaysTrue(ChecklistItem->IsDirectory))
       {
-        Items.Add((TChecklistItem *)ChecklistItem);
+        Items.Add(ChecklistItem);
       }
     }
 
@@ -6876,7 +6876,7 @@ void TTerminal::SynchronizeApply(
         if (FLAGSET(Params, spTimestamp))
         {
           // used by SynchronizeLocalTimestamp and SynchronizeRemoteTimestamp
-          TObject * ChecklistItemToken = const_cast<TObject *>(reinterpret_cast<const TObject *>(ChecklistItem));
+          const TObject * ChecklistItemToken = ChecklistItem;
           switch (ChecklistItem->Action)
           {
             case TChecklistAction::saDownloadUpdate:
@@ -7134,7 +7134,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
     MaskParams.Size = AFile->Resolve()->GetSize();
     MaskParams.Modification = AFile->GetModification();
 
-    UnicodeString FullFileName = base::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
+    const UnicodeString FullFileName = base::UnixExcludeTrailingBackslash(AFile->GetFullFileName());
     bool ImplicitMatch = false;
     // Do not use recursive include match
     if (AParams->FileMask.Matches(FullFileName, false,
@@ -7461,7 +7461,7 @@ int32_t TTerminal::CopyToParallel(TParallelOperation * ParallelOperation, TFileO
     }
     __finally
     {
-      bool Success = (Prev < AOperationProgress->GetFilesFinishedSuccessfully());
+      const bool Success = (Prev < AOperationProgress->GetFilesFinishedSuccessfully());
       ParallelOperation->Done(FileName, Dir, Success, TargetDir, CopyParam, this);
       // Not to fail an assertion in OperationStop when called from CopyToRemote or CopyToLocal,
       // when FOperationProgress is already AOperationProgress.
@@ -7844,8 +7844,8 @@ void TTerminal::DirectorySource(
         {
           // Not sure if we need the trailing slash here, but we cannot use it in CreateTargetDirectory.
           // At least FTP cannot handle it, when setting the new directory permissions.
-          UnicodeString ATargetDir = base::UnixIncludeTrailingBackslash(DestFullName);
-          SourceRobust(FileName, &SearchRec, ATargetDir, CopyParam, AParams, AOperationProgress, (AFlags & ~(tfFirstLevel | tfAutoResume)));
+          const UnicodeString TargetDir = base::UnixIncludeTrailingBackslash(DestFullName);
+          SourceRobust(FileName, &SearchRec, TargetDir, CopyParam, AParams, AOperationProgress, (AFlags & ~(tfFirstLevel | tfAutoResume)));
           // FTP: if any file got uploaded (i.e. there were any file in the directory and at least one was not skipped),
           // do not try to create the directory, as it should be already created by FZAPI during upload
           PostCreateDir = false;
@@ -8456,7 +8456,7 @@ void TTerminal::Sink(
     {
       FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, AFlags, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "")
       {
-        DWORD Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
+        const DWORD Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
         if (FLAGCLEAR(Attrs, faDirectory))
         {
           ThrowExtException();
@@ -9359,8 +9359,8 @@ TStrings * TTerminal::ProcessFeatures(TStrings * Features)
 void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   const TDateTime & Modification)
 {
-  FILETIME WrTime = ::DateTimeToFileTime(Modification,
-      GetSessionData()->GetDSTMode());
+  const FILETIME WrTime = ::DateTimeToFileTime(Modification,
+    GetSessionData()->GetDSTMode());
   SetLocalFileTime(LocalFileName, nullptr, &WrTime);
 }
 
