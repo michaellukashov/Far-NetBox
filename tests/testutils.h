@@ -14,6 +14,7 @@
 
 #define CATCH_CONFIG_MAIN
 //#define CATCH_CONFIG_RUNNER
+#define DO_NOT_USE_WMAIN
 #define CATCH_CONFIG_CPP11_NO_SHUFFLE
 #include <catch/catch.hpp>
 
