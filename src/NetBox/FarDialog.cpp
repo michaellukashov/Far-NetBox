@@ -756,8 +756,8 @@ void TFarDialog::Init()
 
 int32_t TFarDialog::ShowModal()
 {
+  Expects(GetFarPlugin());
   FResult = -1;
-
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;

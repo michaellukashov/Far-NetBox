@@ -111,10 +111,12 @@ void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int32_t 
 
 void ValidateMaskEdit(TFarComboBox * Edit)
 {
+  Expects(Edit);
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
 
 void ValidateMaskEdit(TFarEdit * Edit)
 {
+  Expects(Edit);
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
