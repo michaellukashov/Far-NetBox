@@ -2197,7 +2197,8 @@ DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSea
 {
   F.Path = APath;
   F.Dir = ExtractFilePath(APath);
-  const DWORD Result = base::FindFirst(ApiPath(APath), LocalFileAttrs, F);
+  // DEBUG_PRINTF("APath: %s", APath);
+  const DWORD Result = base::FindFirst(APath, LocalFileAttrs, F);
   F.Opened = (Result == 0);
   return Result;
 }
@@ -2268,6 +2269,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   }
 
   TSearchRecOwned SearchRec;
+  // DEBUG_PRINTF("ADirName: %s", ADirName);
   if (FindFirstChecked(TPath::Combine(ADirName, AnyMask), FindAttrs, SearchRec) == 0)
   {
     do
