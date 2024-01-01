@@ -18,7 +18,7 @@ static int CheckBlock(void *blk)
 
     if (*b != BLOCK_ALLOCATED || *e != BLOCK_ALLOCATED)
     {
-      if (*b == BLOCK_FREED && *e == BLOCK_FREED)
+      if ((*b == BLOCK_FREED) && (*e == BLOCK_FREED))
         OutputDebugStringA("memory block is already deleted\n");
       else
         OutputDebugStringA("memory block is corrupted\n");
