@@ -6061,8 +6061,8 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
     UnicodeString LastDirPath;
     for (int32_t Index = 0; Params.Result && (Index < AFileList->GetCount()); ++Index)
     {
-      UnicodeString FileName = AFileList->GetString(Index);
-      TSearchRecSmart Rec;
+      const UnicodeString FileName = AFileList->GetString(Index);
+      TSearchRecSmart Rec{};
       if (FileSearchRec(FileName, Rec))
       {
         if (Rec.IsDirectory() && !AllowDirs)
