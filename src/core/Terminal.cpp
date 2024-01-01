@@ -6469,8 +6469,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
 
             if (ChecklistItem->Action != saNone)
             {
-              Data.Checklist->Add(ChecklistItem.get());
-              ChecklistItem.release();
+              Data.Checklist->Add(ChecklistItem.release());
             }
           }
           __finally__removed
@@ -6777,8 +6776,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
         if (ChecklistItem->Action != saNone)
         {
           ChecklistItem->RemoteFile = AFile->Duplicate();
-          Data->Checklist->Add(ChecklistItem.get());
-          ChecklistItem.release();
+          Data->Checklist->Add(ChecklistItem.release());
         }
       }
     }
