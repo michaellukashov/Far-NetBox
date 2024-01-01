@@ -1431,7 +1431,7 @@ void TFarDialogItem::DoFocus()
 
 void TFarDialogItem::DoExit()
 {
-  if (FOnExit)
+  if (!FOnExit.empty())
   {
     FOnExit(this);
   }

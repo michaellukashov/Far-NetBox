@@ -6089,8 +6089,8 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
 
           if (CalculatedSizes != nullptr)
           {
-            int64_t Size = Params.Size - PrevSize;
-            CalculatedSizes->push_back(Size);
+            int64_t Sz = Params.Size - PrevSize;
+            CalculatedSizes->push_back(Sz);
           }
 
           OperationFinish(&OperationProgress, AFileList->GetObj(Index), FileName, true, OnceDoneOperation);
@@ -8073,7 +8073,7 @@ void TTerminal::CheckParallelFileTransfer(
     TObject * ParallelObject = nullptr;
     if (TParallelOperation::GetOnlyFile(Files, ParallelFileName, ParallelObject))
     {
-      const TRemoteFile * File = static_cast<TRemoteFile *>(ParallelObject);
+      const TRemoteFile * File = static_cast<const TRemoteFile *>(ParallelObject);
       const TRemoteFile * UltimateFile = File->Resolve();
       if ((UltimateFile == File) && // not tested with symlinks
           (UltimateFile->Size >= nb::ToInt64(Configuration->ParallelTransferThreshold) * 1024))
