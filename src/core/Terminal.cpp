@@ -368,8 +368,8 @@ private:
 };
 
 TCallbackGuard::TCallbackGuard(TTerminal * ATerminal) noexcept :
-  FTerminal(ATerminal),
   FFatalError(nullptr),
+  FTerminal(ATerminal),
   FGuarding(FTerminal->FCallbackGuard == nullptr)
 {
   if (FGuarding)
@@ -6408,11 +6408,10 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
       ProcessDirectory(ARemoteDirectory, nb::bind(&TTerminal::SynchronizeCollectFile, this), &Data,
         FLAGSET(AParams, spUseCache));
 
-      TSynchronizeFileData * FileData;
+      // TSynchronizeFileData * FileData;
       for (int32_t Index = 0; Index < Data.LocalFileList->GetCount(); ++Index)
       {
-        FileData = Data.LocalFileList->GetAs<TSynchronizeFileData>
-          (Index);
+        TSynchronizeFileData * FileData = Data.LocalFileList->GetAs<TSynchronizeFileData>(Index);
         // add local file either if we are going to upload it
         // (i.e. if it is updated or we want to upload even new files)
         // or if we are going to delete it (i.e. all "new"=obsolete files)

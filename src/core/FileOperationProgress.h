@@ -45,7 +45,7 @@ public:
   public:
     TPersistence() noexcept;
     TPersistence(const TPersistence &) = delete;
-    TPersistence & operator=(const TPersistence &) = default;
+    TPersistence & operator =(const TPersistence &) = default;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
     TFileOperationStatistics * Statistics{FStatistics};
 

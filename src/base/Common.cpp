@@ -2193,7 +2193,7 @@ DWORD FindCheck(DWORD Result, const UnicodeString & APath)
   return Result;
 }
 
-DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked &F)
+DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSearchRecChecked & F)
 {
   F.Path = APath;
   F.Dir = ExtractFilePath(APath);
@@ -2222,7 +2222,7 @@ DWORD FindNextChecked(TSearchRecChecked & F)
   return FindCheck(FindNextUnchecked(F), F.Path);
 }
 
-bool FileSearchRec(const UnicodeString & AFileName, TSearchRec &Rec)
+bool FileSearchRec(const UnicodeString & AFileName, TSearchRec & Rec)
 {
   constexpr DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   const bool Result = (base::FindFirst(ApiPath(AFileName), FindAttrs, Rec) == 0);
