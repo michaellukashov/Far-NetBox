@@ -7086,7 +7086,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*AFileName*/,
     const FILETIME WrTime = ::DateTimeToFileTime(ChecklistItem->Remote.Modification,
       SessionData->GetDSTMode());
     const bool Result = ::SetFileTime(Handle, nullptr, nullptr, &WrTime) != FALSE;
-    const int32_t Error = ::GetLastError();
+    const int32_t Error = nb::ToInt32(::GetLastError());
     ::CloseHandle(Handle);
     if (!Result)
     {
@@ -8538,7 +8538,7 @@ void TTerminal::Sink(
     {
       FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, AFlags, FMTLOAD(NOT_FILE_ERROR, DestFullName), "")
       {
-        Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
+        Attrs = nb::ToInt32(FileGetAttrFix(ApiPath(DestFullName)));
         if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
         {
           ThrowExtException();
@@ -8587,7 +8587,7 @@ void TTerminal::UpdateTargetTime(
     const FILETIME WrTime = DateTimeToFileTime(Modification, DSTMode);
     if (!::SetFileTime(Handle, nullptr, nullptr, &WrTime))
     {
-      const int32_t Error = ::GetLastError();
+      const int32_t Error = nb::ToInt32(::GetLastError());
       LogEvent(FORMAT("Preserving timestamp failed, ignoring: %s", ::SysErrorMessageForError(Error)));
     }
   }
