@@ -459,23 +459,22 @@ UnicodeString LastSysErrorMessage()
   return SysErrorMessageForError(nb::ToInt32(GetLastError()));
 }
 
-EOSExtException::EOSExtException() :
-  ExtException(OBJECT_CLASS_EOSExtException, nullptr, 0)
+EOSExtException::EOSExtException() : EOSExtException(LastSysErrorMessage())
 {
 }
 
 EOSExtException::EOSExtException(const UnicodeString & Msg) :
-  ExtException(OBJECT_CLASS_EOSExtException, Msg, LastSysErrorMessage())
+  EOSExtException(Msg, nb::ToInt32(GetLastError()))
 {
 }
 
 EOSExtException::EOSExtException(const UnicodeString & Msg, int32_t LastError) :
-  ExtException(OBJECT_CLASS_EOSExtException, Msg, SysErrorMessageForError(LastError))
+  EOSExtException(OBJECT_CLASS_EOSExtException, Msg, LastError)
 {
 }
 
 EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int32_t LastError) :
-  ExtException(Kind, Msg, SysErrorMessageForError(LastError))
+  ExtException(Kind, Msg, LastError)
 {
 }
 
