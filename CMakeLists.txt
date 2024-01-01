@@ -182,7 +182,6 @@ set(NETBOX_DLL_LINK_FLAGS
   /MANIFEST:NO
   /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS
   /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS /NOLOGO
-  /MAP
   /INCREMENTAL:NO
   /ignore:4099
   /ignore:4197
@@ -1361,10 +1360,10 @@ target_compile_definitions(atlmfc PRIVATE
 
 target_include_directories(atlmfc PRIVATE
   libs
-  src/include
-  src/base
   libs/atlmfc/include
   libs/GSL/include
+  src/include
+  src/base
 )
 
 #-------------------------------------------------------------------------------
@@ -1606,8 +1605,8 @@ add_library(tinyxml2 STATIC
 
 target_include_directories(tinyxml2 PRIVATE
   libs
-  src/include
   libs/GSL/include
+  src/include
 )
 
 target_compile_options(tinyxml2 PRIVATE
@@ -1815,9 +1814,9 @@ add_library(rdestl STATIC
 
 target_include_directories(rdestl PRIVATE
   libs
+  libs/GSL/include
   src/include
   src/base
-  libs/GSL/include
 )
 
 target_compile_definitions(rdestl PRIVATE
@@ -1847,9 +1846,9 @@ target_include_directories(tinylog PRIVATE
   libs
   libs/fmt
   libs/tinylog
+  libs/GSL/include
   src/include
   src/base
-  libs/GSL/include
 )
 
 target_compile_definitions(tinylog PRIVATE
@@ -1879,8 +1878,8 @@ add_library(fmt STATIC
 
 target_include_directories(fmt PRIVATE
   libs
-  src/include
   libs/GSL/include
+  src/include
 )
 
 target_compile_definitions(fmt PRIVATE
@@ -2203,10 +2202,10 @@ target_include_directories(baselib PRIVATE
   libs
   libs/fmt
   libs/tinylog
+  libs/GSL/include
   src/include
   src/base
   src/resource
-  libs/GSL/include
 )
 
 target_compile_definitions(baselib PRIVATE
@@ -2387,8 +2386,6 @@ add_library(NetBox SHARED
 
 target_include_directories(NetBox PRIVATE
   libs
-  src/include
-  libs
   libs/openssl-3/include
   # libs/openssl-3/providers/common/include
   libs/putty
@@ -2402,6 +2399,7 @@ target_include_directories(NetBox PRIVATE
   libs/tinylog
   libs/libs3/inc
   libs/GSL/include
+  src/include
   src/filezilla
   src/base
   src/core
