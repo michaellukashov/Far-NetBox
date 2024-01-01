@@ -5442,7 +5442,7 @@ TCopyParamType TCopyParamsContainer::GetParams() const
 
 void TCopyParamsContainer::ValidateMaskComboExit(TObject * Sender)
 {
-  ValidateMaskEdit(dyn_cast<TFarEdit>(Sender));
+  ValidateMaskEdit(static_cast<TFarEdit *>(Sender));
 }
 
 void TCopyParamsContainer::ValidateSpeedComboExit(TObject * /*Sender*/)
