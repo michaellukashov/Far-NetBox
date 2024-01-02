@@ -200,7 +200,7 @@ public:
 
   virtual UnicodeString GetModuleName() const;
   TFarDialog * GetTopDialog() const { return FTopDialog; }
-  HINSTANCE GetHandle() const { return FHandle; }
+  HINSTANCE GetPluginHandle() const { return FPluginHandle; }
   uint32_t GetFarThreadId() const { return FFarThreadId; }
   const FarStandardFunctions & GetFarStandardFunctions() const { return FFarStandardFunctions; }
   #undef GetStartupInfo
@@ -210,7 +210,7 @@ protected:
   TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
   PluginStartupInfo FStartupInfo{};
   FarStandardFunctions FFarStandardFunctions{};
-  HINSTANCE FHandle{};
+  HINSTANCE FPluginHandle{};
   std::unique_ptr<TList> FOpenedPlugins;
   gsl::owner<TFarDialog *> FTopDialog{nullptr};
   HANDLE FConsoleInput{};

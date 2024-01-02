@@ -28,7 +28,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FSavedTitles(std::make_unique<TStringList>())
 {
   FFarThreadId = GetCurrentThreadId();
-  FHandle = HInst;
+  FPluginHandle = HInst;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
 
@@ -2999,7 +2999,7 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
   HINSTANCE Result = nullptr;
   if (FarPlugin)
   {
-    Result = FarPlugin->GetHandle();
+    Result = FarPlugin->GetPluginHandle();
   }
   return Result;
 }
