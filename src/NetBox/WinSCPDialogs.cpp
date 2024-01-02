@@ -246,7 +246,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const WORD ControlState = KeyCode >> 16;
+  const WORD ControlState = nb::ToWord(KeyCode >> 16);
   if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && (ControlState & CTRLMASK) != 0) ||
     (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && (ControlState & CTRLMASK) != 0))
   {
@@ -7696,7 +7696,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const WORD ControlState = KeyCode >> 16;
+  const WORD ControlState = nb::ToWord(KeyCode >> 16);
   if (ListBox->Focused())
   {
     if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
@@ -8424,7 +8424,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const WORD ControlState = KeyCode >> 16;
+  const WORD ControlState = nb::ToWord(KeyCode >> 16);
   if (QueueListBox->Focused())
   {
     TFarButton * DoButton = nullptr;
