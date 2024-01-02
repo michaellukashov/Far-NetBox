@@ -50,6 +50,7 @@ protected:
   HANDLE FEvent{nullptr};
   bool FTerminated{true};
 
+  TSignalThread() = delete;
   explicit TSignalThread(TObjectClassId Kind) noexcept;
   virtual ~TSignalThread() noexcept override;
   void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
