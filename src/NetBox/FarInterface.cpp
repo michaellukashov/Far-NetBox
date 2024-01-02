@@ -33,7 +33,7 @@ UnicodeString GetAppNameString()
 
 UnicodeString GetRegistryKey()
 {
-  return "NetBox 3"; // TODO: output MainGuid
+  return "NetBox 3"; // TODO: output NetBoxPluginGuid
 }
 
 void Busy(bool /*Start*/)

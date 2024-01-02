@@ -1133,9 +1133,10 @@ int32_t TCustomFarPlugin::FarMessage(uint32_t Flags,
   }
 
   TFarEnvGuard Guard; nb::used(Guard);
-  const int32_t Result = static_cast<int32_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
-        Flags | FMSG_LEFTALIGN, nullptr, Items, nb::ToInt32(MessageLines->GetCount()),
-        nb::ToInt32(Buttons->GetCount())));
+  const int32_t Result = nb::ToInt32(FStartupInfo.Message(
+    &NetBoxPluginGuid, &MessageGuid,
+    Flags | FMSG_LEFTALIGN, nullptr, Items, nb::ToInt32(MessageLines->GetCount()),
+    nb::ToInt32(Buttons->GetCount())));
 
   return Result;
 }
@@ -1163,10 +1164,11 @@ int32_t TCustomFarPlugin::Message(uint32_t Flags,
     DebugAssert(Params == nullptr);
     const UnicodeString Items = Title + L"\n" + Message;
     TFarEnvGuard Guard; nb::used(Guard);
-    Result = nb::ToInt32(FStartupInfo.Message(&MainGuid, &MainGuid,
-          Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
-          nullptr,
-          static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
+    Result = nb::ToInt32(FStartupInfo.Message(
+      &NetBoxPluginGuid, &MessageGuid,
+      Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
+      nullptr,
+      static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
   }
   return Result;
 }
@@ -1178,7 +1180,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   DebugAssert(Items);
 
   TFarEnvGuard Guard; nb::used(Guard);
-  return FStartupInfo.Menu(&MainGuid, &MainGuid,
+  return FStartupInfo.Menu(&NetBoxPluginGuid, &MenuGuid,
       -1, -1, 0,
       Flags,
       Title.c_str(),
@@ -1262,8 +1264,8 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
     {
       TFarEnvGuard Guard; nb::used(Guard);
       Result = FStartupInfo.InputBox(
-          &MainGuid,
-          &MainGuid,
+          &NetBoxPluginGuid,
+          &InputBoxGuid,
           Title.c_str(),
           Prompt.c_str(),
           HistoryName.c_str(),
@@ -1651,7 +1653,7 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
   if (FStartupInfo.GetMsg)
   try
   {
-    Result = FStartupInfo.GetMsg(&MainGuid, MsgId);
+    Result = FStartupInfo.GetMsg(&NetBoxPluginGuid, MsgId);
   }
   catch(...)
   {
@@ -1766,7 +1768,7 @@ intptr_t TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intp
 {
   TFarEnvGuard Guard; nb::used(Guard);
   return FStartupInfo.AdvControl ?
-    FStartupInfo.AdvControl(&MainGuid, Command, Param1, Param2) : 0;
+    FStartupInfo.AdvControl(&NetBoxPluginGuid, Command, Param1, Param2) : 0;
 }
 
 intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const

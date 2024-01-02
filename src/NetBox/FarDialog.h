@@ -105,6 +105,7 @@ protected:
   void Add(TFarDialogItem * DialogItem);
   void Add(TFarDialogContainer * Container);
   intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2);
+  virtual const UUID * GetDialogGuid() const { return &DialogGuid; }
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);

@@ -781,7 +781,7 @@ int32_t TFarDialog::ShowModal()
       TFarEnvGuard Guard; nb::used(Guard);
       const TRect Bounds = GetBounds();
       Handle = Info.DialogInit(
-          &MainGuid, &MainGuid,
+          &NetBoxPluginGuid, GetDialogGuid(),
           Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
           HelpTopic.c_str(), FDialogItems,
           GetItemCount(), 0, GetFlags(),
