@@ -3,6 +3,7 @@
 
 #include <plugin.hpp>
 #include <Common.h>
+#include <Queue.h> // TODO: move TSimpleThread to Sysutils
 #include "FarPlugin.h"
 #include "FarUtils.h"
 #include "WinSCPPlugin.h"
@@ -21,6 +22,58 @@ static bool MustSkipClose = false;
 
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
+static constexpr const TObjectClassId OBJECT_CLASS_TPluginIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+class TPluginIdleThread : public TSimpleThread
+{
+  TPluginIdleThread() = delete;
+public:
+  explicit TPluginIdleThread(gsl::not_null<TCustomFarPlugin *> Plugin, int16_t Millisecs) noexcept :
+    TSimpleThread(OBJECT_CLASS_TPluginIdleThread),
+    FPlugin(Plugin),
+    FMillisecs(Millisecs)
+  {}
+
+  virtual ~TPluginIdleThread() noexcept override
+  {
+    SAFE_CLOSE_HANDLE(FEvent);
+    TPluginIdleThread::Terminate();
+    WaitFor();
+  }
+
+  virtual void Execute() override
+  {
+    while (!IsFinished())
+    {
+      if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
+      {
+        if (FPlugin && FPlugin->GetPluginHandle())
+          FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
+      }
+    }
+    if (!IsFinished())
+      SAFE_CLOSE_HANDLE(FEvent);
+  }
+
+  virtual void Terminate() override
+  {
+    // TCompThread::Terminate();
+    FFinished = true;
+    if (FEvent)
+      ::SetEvent(FEvent);
+  }
+
+  void InitIdleThread()
+  {
+    TSimpleThread::InitSimpleThread();
+    FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+    Start();
+  }
+
+private:
+  gsl::not_null<TCustomFarPlugin *> FPlugin;
+  HANDLE FEvent{INVALID_HANDLE_VALUE};
+  int16_t FMillisecs{0};
+};
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
@@ -181,9 +234,21 @@ intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * I
   try
   {
     const TSynchroParams * SynchroParams = static_cast<TSynchroParams *>(Info->Param);
-    if (SynchroParams && SynchroParams->Sender && SynchroParams->SynchroEvent)
+    if (SynchroParams)
     {
-      SynchroParams->SynchroEvent(this, nullptr);
+      if (SynchroParams->Sender && SynchroParams->SynchroEvent)
+      {
+        SynchroParams->SynchroEvent(this, nullptr);
+      }
+    }
+    else
+    {
+      TCustomFarFileSystem * FarFileSystem1 = GetPanelFileSystem(false);
+      if (FarFileSystem1)
+        FarFileSystem1->ProcessPanelEventEx(FE_IDLE, nullptr);
+      TCustomFarFileSystem * FarFileSystem2 = GetPanelFileSystem(true);
+      if (FarFileSystem2)
+        FarFileSystem2->ProcessPanelEventEx(FE_IDLE, nullptr);
     }
   }
   catch(Exception & E)
@@ -1861,6 +1926,8 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 void TCustomFarPlugin::Initialize()
 {
 //  ::SetGlobals(new TGlobalFunctions());
+  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 500);
+  FTIdleThread->InitIdleThread();
 }
 
 void TCustomFarPlugin::Finalize()

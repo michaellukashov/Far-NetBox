@@ -101,6 +101,7 @@ enum NetBoxSystemSettings
 };
 
 class TGlobalFunctions;
+class TPluginIdleThread;
 
 NB_DEFINE_CLASS_ID(TCustomFarPlugin);
 class TCustomFarPlugin : public TObject
@@ -256,6 +257,7 @@ private:
 
 private:
   PluginInfo FPluginInfo{};
+  std::unique_ptr<TPluginIdleThread> FTIdleThread;
   std::unique_ptr<TStringList> FSavedTitles;
   UnicodeString FCurrentTitle;
   int16_t FCurrentProgress{0};
