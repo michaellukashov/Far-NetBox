@@ -15,3 +15,4 @@ using TBytes = nb::vector_t<uint8_t>;
 NB_CORE_EXPORT UnicodeString EncodeBase64(const char * AStr, int32_t Len);
 NB_CORE_EXPORT TBytes DecodeBase64(const UnicodeString & AStr);
 
+bool CharIsInvalidPathCharacter(char C);
