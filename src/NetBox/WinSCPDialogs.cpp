@@ -8277,7 +8277,7 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
     !NewName.IsEmpty();
 }
 
-class TQueueDialog : TFarDialog
+class TQueueDialog final : public TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TQueueDialog)
@@ -8289,6 +8289,7 @@ public:
   bool Execute(TTerminalQueueStatus * Status);
 
 protected:
+  virtual const UUID * GetDialogGuid() const { return &QueueDialogGuid; }
   virtual void Change() override;
   virtual void Idle() override;
   bool UpdateQueue();
