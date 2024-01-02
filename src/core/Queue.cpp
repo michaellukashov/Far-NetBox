@@ -2243,7 +2243,7 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * ATermina
   DebugAssert(CopyParam != nullptr);
   if (CopyParam)
   {
-    FCopyParam = new TCopyParamType(*CopyParam);
+    FCopyParam = std::make_unique<TCopyParamType>(*CopyParam);
 
     FParams = Params;
 
@@ -2273,7 +2273,7 @@ void TTransferQueueItem::DoExecute(TTerminal * ATerminal)
   TLocatedQueueItem::DoExecute(ATerminal);
 
   DebugAssert(ATerminal != nullptr);
-  FParallelOperation.reset(new TParallelOperation(FInfo->Side));
+  FParallelOperation = std::make_unique<TParallelOperation>(FInfo->Side);
   try__finally
   {
     DoTransferExecute(ATerminal, FParallelOperation.get());
@@ -2402,7 +2402,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
 
 void TUploadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation)
 {
-  Terminal->CopyToRemote(FFilesToCopy.get(), FTargetDir, FCopyParam, FParams, ParallelOperation);
+  Terminal->CopyToRemote(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
 }
 
 // TParallelTransferQueueItem
@@ -2519,7 +2519,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
 void TDownloadQueueItem::DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation)
 {
   DebugAssert(ATerminal != nullptr);
-  ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam, FParams, ParallelOperation);
+  ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
 }
 
 

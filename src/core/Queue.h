@@ -421,7 +421,7 @@ public:
 protected:
   std::unique_ptr<TStrings> FFilesToCopy;
   UnicodeString FTargetDir;
-  gsl::owner<TCopyParamType *> FCopyParam{nullptr};
+  std::unique_ptr<TCopyParamType> FCopyParam;
   int32_t FParams{0};
   bool FParallel{false};
   DWORD FLastParallelOperationAdded{false};
