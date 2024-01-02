@@ -21,7 +21,7 @@ TConfiguration * CreateConfiguration()
 void ShowExtendedException(Exception * E)
 {
   DebugAssert(FarPlugin != nullptr);
-  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
   DebugAssert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }

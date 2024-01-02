@@ -7535,7 +7535,7 @@ void TTerminal::LogTotalTransferDetails(
       int32_t Count = 0;
       for (int32_t Index = 0; Index < AFiles->GetCount(); ++Index)
       {
-        const TCollectedFileList * FileList = dyn_cast<TCollectedFileList>(AFiles->GetObj(Index));
+        const TCollectedFileList * FileList = static_cast<const TCollectedFileList *>(AFiles->GetObj(Index));
         Count += FileList->GetCount();
       }
       S += FORMAT(" - in parallel, with %d total files", Count);

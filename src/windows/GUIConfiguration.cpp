@@ -1457,7 +1457,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   TSessionData * PuttySessionData =
-    dyn_cast<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
+    static_cast<TSessionData *>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);

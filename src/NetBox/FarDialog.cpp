@@ -547,7 +547,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         Result = 1;
         if (Param1 >= 0)
         {
-          TFarButton * Button = dyn_cast<TFarButton>(GetItem(nb::ToInt32(Param1)));
+          TFarButton * Button = static_cast<TFarButton *>(GetItem(nb::ToInt32(Param1)));
           // FAR WORKAROUND
           // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
           // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -792,7 +792,7 @@ int32_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton * Button = dyn_cast<TFarButton>(GetItem(nb::ToInt32(BResult)));
+      TFarButton * Button = static_cast<TFarButton *>(GetItem(nb::ToInt32(BResult)));
       DebugAssert(Button);
       // correct result should be already set by TFarButton
       DebugAssert(FResult == Button->GetResult());
@@ -2186,7 +2186,7 @@ void TFarList::Assign(const TPersistent *Source)
 {
   TStringList::Assign(Source);
 
-  const TFarList * FarList = dyn_cast<TFarList>(Source);
+  const TFarList * FarList = static_cast<const TFarList *>(Source);
   if (FarList != nullptr)
   {
     for (int32_t Index = 0; Index < FarList->GetCount(); ++Index)
