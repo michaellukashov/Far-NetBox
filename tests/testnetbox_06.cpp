@@ -1098,3 +1098,22 @@ TEST_CASE_METHOD(base_fixture_t, "strings01", "netbox")
   char C = UtfS[1];
   DebugAssert(C == '1');
 }
+
+// #undef DEBUG_PRINTF
+template<typename... Args>
+void debug_printf(const wchar_t * format, Args &&... args)
+{
+  // UnicodeString Result = nb::Sprintf("Plugin: [%s:%d] %s: ", args...);
+  UnicodeString Fmt = format; // TODO: add filename, line info
+  UnicodeString Result = fmt::sprintf(Fmt.c_str(), std::forward<Args>(args)...).c_str();
+  OutputDebugStringW(Result.c_str());
+}
+
+#define DEBUG_PRINTF2(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format L"\n", Sysutils::ExtractFilename(__FILEW__, Backslash), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
+
+TEST_CASE_METHOD(base_fixture_t, "debugprintf01", "netbox")
+{
+  DEBUG_PRINTF2("1");
+  debug_printf(L"1: %s", L" ");
+  debug_printf(L"1");
+}
