@@ -17,21 +17,21 @@ inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
   return TRect(Left, Top, Right, Bottom);
 }
 
-NB_DEFINE_CLASS_ID(TIdleThread);
-class TIdleThread : public TSimpleThread
+NB_DEFINE_CLASS_ID(TDialogIdleThread);
+class TDialogIdleThread : public TSimpleThread
 {
-  TIdleThread() = delete;
+  TDialogIdleThread() = delete;
 public:
-  explicit TIdleThread(gsl::not_null<TFarDialog *> Dialog, int64_t Millisecs) noexcept :
-    TSimpleThread(OBJECT_CLASS_TIdleThread),
+  explicit TDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, int64_t Millisecs) noexcept :
+    TSimpleThread(OBJECT_CLASS_TDialogIdleThread),
     FDialog(Dialog),
     FMillisecs(Millisecs)
   {}
 
-  virtual ~TIdleThread() noexcept override
+  virtual ~TDialogIdleThread() noexcept override
   {
     SAFE_CLOSE_HANDLE(FEvent);
-    TIdleThread::Terminate();
+    TDialogIdleThread::Terminate();
     WaitFor();
   }
 
@@ -101,7 +101,7 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   FBorderBox = new TFarBox(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TIdleThread>(this, 500);
+  FTIdleThread = std::make_unique<TDialogIdleThread>(this, 500);
   FTIdleThread->InitIdleThread();
 }
 
