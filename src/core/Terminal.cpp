@@ -1115,7 +1115,7 @@ int32_t TParallelOperation::GetNext(
         {
           OnlyFileName = base::UnixExtractFileName(FileName);
         }
-        OnlyFileName = Terminal->ChangeFileName(FCopyParam, OnlyFileName, osRemote, FirstLevel);
+        OnlyFileName = Terminal->ChangeFileName(FCopyParam, OnlyFileName, FSide, FirstLevel);
       }
 
       if (Dir)
