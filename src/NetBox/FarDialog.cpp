@@ -101,7 +101,7 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   FBorderBox = new TFarBox(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TIdleThread>(this, 1000);
+  FTIdleThread = std::make_unique<TIdleThread>(this, 500);
   FTIdleThread->InitIdleThread();
 }
 
