@@ -10,11 +10,13 @@ enum TEOLType {
   eolCR     // \r
 };
 
-constexpr int32_t cpRemoveCtrlZ = 0x01;
-constexpr int32_t cpRemoveBOM   = 0x02;
+constexpr const int32_t cpRemoveCtrlZ = 0x01;
+constexpr const int32_t cpRemoveBOM   = 0x02;
 
-using TTransferOutEvent = nb::FastDelegate3<void, TObject * /*Sender*/, const uint8_t * /*Data*/, size_t /*Len*/>;
-using TTransferInEvent = nb::FastDelegate3<size_t, TObject * /*Sender*/, uint8_t * /*Data*/, size_t /*Len*/>;
+using TTransferOutEvent = nb::FastDelegate3<void,
+  TObject * /*Sender*/, const uint8_t * /*Data*/, size_t /*Len*/>;
+using TTransferInEvent = nb::FastDelegate3<size_t,
+  TObject * /*Sender*/, uint8_t * /*Data*/, size_t /*Len*/>;
 
 class NB_CORE_EXPORT TFileBuffer : public TObject
 {
