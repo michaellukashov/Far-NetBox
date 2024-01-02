@@ -327,7 +327,7 @@ void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
 
 void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext)
 {
-  throw ESshFatal(E, Msg, HelpContext);
+  throw EConnectionFatal(E, Msg, HelpContext);
 }
 
 void TTunnelUI::HandleExtendedException(Exception * E)
@@ -425,7 +425,7 @@ void TCallbackGuard::Verify()
 
     if (FFatalError != nullptr)
     {
-      throw ESshFatal(FFatalError, "");
+      throw EConnectionFatal(FFatalError, "");
     }
   }
 }
@@ -3061,7 +3061,7 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & AMsg, const Unic
   }
   else
   {
-    throw ESshFatal(E, AMsg, AHelpKeyword);
+    throw EConnectionFatal(E, AMsg, AHelpKeyword);
   }
 }
 
@@ -3161,7 +3161,7 @@ void TTerminal::CloseOnCompletion(
     Configuration->Usage()->Inc("ClosesOnCompletion");
     LogEvent(L"Closing session after completed operation (as requested by user)");
     Close();
-    throw ESshTerminate(nullptr,
+    throw ETerminate(nullptr,
       MainInstructions(AMessage.IsEmpty() ? LoadStr(CLOSED_ON_COMPLETION) : AMessage),
       Operation, ATargetLocalPath, ADestLocalFileName);
   }

@@ -358,7 +358,7 @@ static void SSHFatalError(const char * Format, va_list Param)
   // Only few calls from putty\winnet.c might be connected with specific
   // TSecureShell. Otherwise called only for really fatal errors
   // like 'out of memory' from putty\ssh.c.
-  throw ESshFatal(nullptr, Buf);
+  throw EFatal(nullptr, Buf);
 }
 
 void modalfatalbox(const char * fmt, ...)
