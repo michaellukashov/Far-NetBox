@@ -1205,6 +1205,9 @@ public:
   virtual ~TPasswordDialog() noexcept override = default;
   bool Execute(TStrings * Results);
 
+protected:
+  virtual const UUID * GetDialogGuid() const override { return &PasswordDialogGuid; }
+
 private:
   void ShowPromptClick(TFarButton * Sender, bool & Close);
   void GenerateLabel(const UnicodeString & ACaption, bool & Truncated);
@@ -4675,6 +4678,7 @@ public:
   bool Execute(TRemoteProperties * Properties);
 
 protected:
+  virtual const UUID * GetDialogGuid() const override { return &PropertiesDialogGuid; }
   virtual void Change() override;
   void UpdateProperties(TRemoteProperties & Properties) const;
 

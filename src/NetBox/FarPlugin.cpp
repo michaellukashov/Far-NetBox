@@ -781,6 +781,7 @@ public:
   int32_t Execute(bool & ACheckBox);
 
 protected:
+  virtual const UUID * GetDialogGuid() const override { return &FarMessageDialogGuid; }
   virtual void Change() override;
   virtual void Idle() override;
 
