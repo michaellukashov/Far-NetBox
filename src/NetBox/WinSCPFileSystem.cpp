@@ -2664,6 +2664,7 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
   bool Ask = !Confirmed;
 
   TGUICopyParamType CopyParam;
+  CopyParam.Default();
 
   if (Edit)
   {
