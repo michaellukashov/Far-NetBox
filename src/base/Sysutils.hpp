@@ -671,13 +671,14 @@ extern UnicodeString EmptyStr;
 bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName);
 
 NB_DEFINE_CLASS_ID(EDirectoryNotFoundException);
-class NB_CORE_EXPORT EDirectoryNotFoundException : public Exception
+class NB_CORE_EXPORT EDirectoryNotFoundException final : public Exception
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EDirectoryNotFoundException); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EDirectoryNotFoundException) || Exception::is(Kind); }
 public:
-  explicit EDirectoryNotFoundException(const UnicodeString & What) noexcept : Exception(OBJECT_CLASS_EDirectoryNotFoundException, What) {}
+  EDirectoryNotFoundException() = delete;
+  explicit EDirectoryNotFoundException(const UnicodeString & What) noexcept : EDirectoryNotFoundException(OBJECT_CLASS_EDirectoryNotFoundException, What) {}
   explicit EDirectoryNotFoundException(TObjectClassId Kind, const UnicodeString & What) noexcept : Exception(Kind, What) {}
 };
 
