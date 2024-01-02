@@ -21,7 +21,7 @@ TConfiguration * CreateConfiguration()
 void ShowExtendedException(Exception * E)
 {
   DebugAssert(FarPlugin != nullptr);
-  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
   DebugAssert(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }
@@ -33,7 +33,7 @@ UnicodeString GetAppNameString()
 
 UnicodeString GetRegistryKey()
 {
-  return "NetBox 3"; // TODO: output MainGuid
+  return "NetBox 3"; // TODO: output NetBoxPluginGuid
 }
 
 void Busy(bool /*Start*/)
@@ -111,10 +111,12 @@ void ValidateMaskEditT(const UnicodeString & Mask, TEditControl * Edit, int32_t 
 
 void ValidateMaskEdit(TFarComboBox * Edit)
 {
+  Expects(Edit);
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }
 
 void ValidateMaskEdit(TFarEdit * Edit)
 {
+  Expects(Edit);
   ValidateMaskEditT(Edit->GetText(), Edit, -1);
 }

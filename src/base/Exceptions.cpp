@@ -503,14 +503,14 @@ void EFatal::Rethrow()
   throw EFatal(this, L"");
 }
 
-ExtException * ESshTerminate::Clone() const
+ExtException * ETerminate::Clone() const
 {
-  return new ESshTerminate(this, L"", Operation, TargetLocalPath, DestLocalFileName);
+  return new ETerminate(this, L"", Operation, TargetLocalPath, DestLocalFileName);
 }
 
-void ESshTerminate::Rethrow()
+void ETerminate::Rethrow()
 {
-  throw ESshTerminate(this, L"", Operation, TargetLocalPath, DestLocalFileName);
+  throw ETerminate(this, L"", Operation, TargetLocalPath, DestLocalFileName);
 }
 
 ECallbackGuardAbort::ECallbackGuardAbort() : EAbort(OBJECT_CLASS_ECallbackGuardAbort, L"callback abort")

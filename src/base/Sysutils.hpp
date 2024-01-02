@@ -566,27 +566,27 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
 
 #define NB_NONCOPYABLE(Type) \
   Type(const Type&) = delete; \
-  Type& operator=(const Type&) = delete;
+  Type& operator =(const Type&) = delete;
 
 //  Type(Type&&) = delete; \
 //  Type& operator=(Type&&) = delete;
 
 #define NB_MOVABLE(Type) \
   Type(Type&&) = default; \
-  Type& operator=(Type&&) = default;
+  Type& operator =(Type&&) = default;
 
 template < typename T, T Default = T{} >
 class movable
 {
 public:
   movable(T Value): m_Value(Value) {}
-  movable& operator=(T Value) { m_Value = Value; return *this; }
+  movable& operator =(T Value) { m_Value = Value; return *this; }
 
   movable(const movable &rhs) { *this = rhs; }
-  movable& operator=(const movable &rhs) { m_Value = rhs.m_Value; return *this; }
+  movable& operator =(const movable &rhs) { m_Value = rhs.m_Value; return *this; }
 
   movable(movable &&rhs) noexcept { *this = std::move(rhs); }
-  movable& operator=(movable &&rhs) noexcept { m_Value = rhs.m_Value; rhs.m_Value = Default; return *this; }
+  movable& operator =(movable &&rhs) noexcept { m_Value = rhs.m_Value; rhs.m_Value = Default; return *this; }
 
   T& operator*() const { return m_Value; }
   T& operator*() { return m_Value; }
@@ -671,13 +671,14 @@ extern UnicodeString EmptyStr;
 bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName);
 
 NB_DEFINE_CLASS_ID(EDirectoryNotFoundException);
-class NB_CORE_EXPORT EDirectoryNotFoundException : public Exception
+class NB_CORE_EXPORT EDirectoryNotFoundException final : public Exception
 {
 public:
   static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_EDirectoryNotFoundException); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EDirectoryNotFoundException) || Exception::is(Kind); }
 public:
-  explicit EDirectoryNotFoundException(const UnicodeString & What) noexcept : Exception(OBJECT_CLASS_EDirectoryNotFoundException, What) {}
+  EDirectoryNotFoundException() = delete;
+  explicit EDirectoryNotFoundException(const UnicodeString & What) noexcept : EDirectoryNotFoundException(OBJECT_CLASS_EDirectoryNotFoundException, What) {}
   explicit EDirectoryNotFoundException(TObjectClassId Kind, const UnicodeString & What) noexcept : Exception(Kind, What) {}
 };
 

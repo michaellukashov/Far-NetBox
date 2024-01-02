@@ -19,7 +19,6 @@ public:
 public:
   explicit TWinSCPPlugin(HINSTANCE HInst) noexcept;
   virtual ~TWinSCPPlugin() noexcept override;
-  virtual VersionInfo GetMinFarVersion() const override;
 
   virtual void HandleException(Exception * E, OPERATION_MODES OpMode = 0) override;
   uint32_t MoreMessageDialog(const UnicodeString & Str, TStrings * MoreMessages,

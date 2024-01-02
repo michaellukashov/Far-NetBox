@@ -3,6 +3,7 @@
 
 #include <plugin.hpp>
 #include <Common.h>
+#include <Queue.h> // TODO: move TSimpleThread to Sysutils
 #include "FarPlugin.h"
 #include "FarUtils.h"
 #include "WinSCPPlugin.h"
@@ -21,6 +22,58 @@ static bool MustSkipClose = false;
 
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
+static constexpr const TObjectClassId OBJECT_CLASS_TPluginIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+class TPluginIdleThread : public TSimpleThread
+{
+  TPluginIdleThread() = delete;
+public:
+  explicit TPluginIdleThread(gsl::not_null<TCustomFarPlugin *> Plugin, int16_t Millisecs) noexcept :
+    TSimpleThread(OBJECT_CLASS_TPluginIdleThread),
+    FPlugin(Plugin),
+    FMillisecs(Millisecs)
+  {}
+
+  virtual ~TPluginIdleThread() noexcept override
+  {
+    SAFE_CLOSE_HANDLE(FEvent);
+    TPluginIdleThread::Terminate();
+    WaitFor();
+  }
+
+  virtual void Execute() override
+  {
+    while (!IsFinished())
+    {
+      if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
+      {
+        if (FPlugin && FPlugin->GetPluginHandle())
+          FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
+      }
+    }
+    if (!IsFinished())
+      SAFE_CLOSE_HANDLE(FEvent);
+  }
+
+  virtual void Terminate() override
+  {
+    // TCompThread::Terminate();
+    FFinished = true;
+    if (FEvent)
+      ::SetEvent(FEvent);
+  }
+
+  void InitIdleThread()
+  {
+    TSimpleThread::InitSimpleThread();
+    FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+    Start();
+  }
+
+private:
+  gsl::not_null<TCustomFarPlugin *> FPlugin;
+  HANDLE FEvent{INVALID_HANDLE_VALUE};
+  int16_t FMillisecs{0};
+};
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
   TObject(Kind),
@@ -28,7 +81,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FSavedTitles(std::make_unique<TStringList>())
 {
   FFarThreadId = GetCurrentThreadId();
-  FHandle = HInst;
+  FPluginHandle = HInst;
   FFarVersion = 0;
   FTerminalScreenShowing = false;
 
@@ -181,9 +234,21 @@ intptr_t TCustomFarPlugin::ProcessSynchroEvent(const ProcessSynchroEventInfo * I
   try
   {
     const TSynchroParams * SynchroParams = static_cast<TSynchroParams *>(Info->Param);
-    if (SynchroParams && SynchroParams->Sender && SynchroParams->SynchroEvent)
+    if (SynchroParams)
     {
-      SynchroParams->SynchroEvent(this, nullptr);
+      if (SynchroParams->Sender && SynchroParams->SynchroEvent)
+      {
+        SynchroParams->SynchroEvent(this, nullptr);
+      }
+    }
+    else
+    {
+      TCustomFarFileSystem * FarFileSystem1 = GetPanelFileSystem(false);
+      if (FarFileSystem1)
+        FarFileSystem1->ProcessPanelEventEx(FE_IDLE, nullptr);
+      TCustomFarFileSystem * FarFileSystem2 = GetPanelFileSystem(true);
+      if (FarFileSystem2)
+        FarFileSystem2->ProcessPanelEventEx(FE_IDLE, nullptr);
     }
   }
   catch(Exception & E)
@@ -772,8 +837,8 @@ class TFarMessageDialog final : public TFarDialog
 {
   TFarMessageDialog() = delete;
 public:
-  explicit TFarMessageDialog(TCustomFarPlugin * Plugin,
-    TFarMessageParams * Params);
+  explicit TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
+    gsl::not_null<TFarMessageParams *> Params);
   void Init(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
     TStrings * Buttons);
   virtual ~TFarMessageDialog() override;
@@ -781,6 +846,7 @@ public:
   int32_t Execute(bool & ACheckBox);
 
 protected:
+  virtual const UUID * GetDialogGuid() const override { return &FarMessageDialogGuid; }
   virtual void Change() override;
   virtual void Idle() override;
 
@@ -798,8 +864,8 @@ private:
   TFarCheckBox * FCheckBox{nullptr};
 };
 
-TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin * Plugin,
-  TFarMessageParams * Params) :
+TFarMessageDialog::TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
+  gsl::not_null<TFarMessageParams *> Params) :
   TFarDialog(Plugin),
   FParams(Params)
 {
@@ -894,7 +960,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     {
       for (int32_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
       {
-        TFarButton * PrevButton2 = dyn_cast<TFarButton>(GetItem(PIndex));
+        TFarButton * PrevButton2 = static_cast<TFarButton *>(GetItem(PIndex));
         if ((PrevButton2 != nullptr) && (PrevButton2 != Button))
         {
           PrevButton2->Move(0, -1);
@@ -987,7 +1053,7 @@ void TFarMessageDialog::Change()
     {
       for (int32_t Index = 0; Index < GetItemCount(); ++Index)
       {
-        TFarButton * Button = dyn_cast<TFarButton>(GetItem(Index));
+        TFarButton * Button = static_cast<TFarButton *>(GetItem(Index));
         if ((Button != nullptr) && (Button->GetTag() == 0))
         {
           Button->SetEnabled(!FCheckBox->GetChecked());
@@ -1075,7 +1141,7 @@ void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Dat
 
 int32_t TCustomFarPlugin::DialogMessage(uint32_t Flags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
-  TFarMessageParams * Params)
+  gsl::not_null<TFarMessageParams *> Params)
 {
   std::unique_ptr<TFarMessageDialog> Dialog(std::make_unique<TFarMessageDialog>(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);
@@ -1133,9 +1199,10 @@ int32_t TCustomFarPlugin::FarMessage(uint32_t Flags,
   }
 
   TFarEnvGuard Guard; nb::used(Guard);
-  const int32_t Result = static_cast<int32_t>(FStartupInfo.Message(&MainGuid, &MainGuid,
-        Flags | FMSG_LEFTALIGN, nullptr, Items, nb::ToInt32(MessageLines->GetCount()),
-        nb::ToInt32(Buttons->GetCount())));
+  const int32_t Result = nb::ToInt32(FStartupInfo.Message(
+    &NetBoxPluginGuid, &MessageGuid,
+    Flags | FMSG_LEFTALIGN, nullptr, Items, nb::ToInt32(MessageLines->GetCount()),
+    nb::ToInt32(Buttons->GetCount())));
 
   return Result;
 }
@@ -1163,10 +1230,11 @@ int32_t TCustomFarPlugin::Message(uint32_t Flags,
     DebugAssert(Params == nullptr);
     const UnicodeString Items = Title + L"\n" + Message;
     TFarEnvGuard Guard; nb::used(Guard);
-    Result = nb::ToInt32(FStartupInfo.Message(&MainGuid, &MainGuid,
-          Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
-          nullptr,
-          static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
+    Result = nb::ToInt32(FStartupInfo.Message(
+      &NetBoxPluginGuid, &MessageGuid,
+      Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
+      nullptr,
+      static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
   }
   return Result;
 }
@@ -1178,7 +1246,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   DebugAssert(Items);
 
   TFarEnvGuard Guard; nb::used(Guard);
-  return FStartupInfo.Menu(&MainGuid, &MainGuid,
+  return FStartupInfo.Menu(&NetBoxPluginGuid, &MenuGuid,
       -1, -1, 0,
       Flags,
       Title.c_str(),
@@ -1262,8 +1330,8 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
     {
       TFarEnvGuard Guard; nb::used(Guard);
       Result = FStartupInfo.InputBox(
-          &MainGuid,
-          &MainGuid,
+          &NetBoxPluginGuid,
+          &InputBoxGuid,
           Title.c_str(),
           Prompt.c_str(),
           HistoryName.c_str(),
@@ -1552,7 +1620,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   {
     const UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
     TObject * Object = FSavedTitles->Get(FSavedTitles->GetCount() - 1);
-    const TConsoleTitleParam * Param = dyn_cast<TConsoleTitleParam>(Object);
+    const TConsoleTitleParam * Param = static_cast<TConsoleTitleParam *>(Object);
     if (Param->Own)
     {
       FCurrentTitle = Title;
@@ -1651,7 +1719,7 @@ UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
   if (FStartupInfo.GetMsg)
   try
   {
-    Result = FStartupInfo.GetMsg(&MainGuid, MsgId);
+    Result = FStartupInfo.GetMsg(&NetBoxPluginGuid, MsgId);
   }
   catch(...)
   {
@@ -1766,7 +1834,7 @@ intptr_t TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intp
 {
   TFarEnvGuard Guard; nb::used(Guard);
   return FStartupInfo.AdvControl ?
-    FStartupInfo.AdvControl(&MainGuid, Command, Param1, Param2) : 0;
+    FStartupInfo.AdvControl(&NetBoxPluginGuid, Command, Param1, Param2) : 0;
 }
 
 intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const
@@ -1858,6 +1926,8 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 void TCustomFarPlugin::Initialize()
 {
 //  ::SetGlobals(new TGlobalFunctions());
+  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 500);
+  FTIdleThread->InitIdleThread();
 }
 
 void TCustomFarPlugin::Finalize()
@@ -2200,7 +2270,7 @@ void TCustomFarFileSystem::ClosePanel()
   // FAR WORKAROUND
   // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
   // so we close it here on the very next opportunity
-  static bool InsideClose=false;
+  static bool InsideClose = false;
   if (MustSkipClose)
      MustSkipClose = false;
   else if (!InsideClose)
@@ -2999,7 +3069,7 @@ HINSTANCE TGlobalFunctions::GetInstanceHandle() const
   HINSTANCE Result = nullptr;
   if (FarPlugin)
   {
-    Result = FarPlugin->GetHandle();
+    Result = FarPlugin->GetPluginHandle();
   }
   return Result;
 }
@@ -3066,12 +3136,12 @@ bool TGlobalFunctions::InputDialog(const UnicodeString & ACaption, const Unicode
   DebugUsedParam(OnInitialize);
   DebugUsedParam(Echo);
 
-  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
   return WinSCPPlugin->InputBox(ACaption, APrompt, Value, 0);
 }
 
 uint32_t TGlobalFunctions::MoreMessageDialog(const UnicodeString & AMessage, TStrings * MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams * Params)
 {
-  TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
   return WinSCPPlugin->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
 }

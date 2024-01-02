@@ -82,7 +82,7 @@ private:
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_##NAME) || BASE::is(Kind); } \
   public: \
     explicit NAME(const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword = L"") : \
-      BASE(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
+      NAME(OBJECT_CLASS_##NAME, E, Msg, HelpKeyword) \
     { \
     } \
     explicit NAME(TObjectClassId Kind, const UnicodeString & Msg, const UnicodeString & MoreMessages, const UnicodeString & HelpKeyword = UnicodeString()) : \
@@ -193,21 +193,21 @@ private:
     virtual ExtException * Clone() const override { return new NAME(this, L""); } \
   }
 
-DERIVE_FATAL_EXCEPTION(ESshFatal, EFatal);
+DERIVE_FATAL_EXCEPTION(EConnectionFatal, EFatal);
 
 // exception that closes application, but displays info message (not error message)
 // = close on completion
-NB_DEFINE_CLASS_ID(ESshTerminate);
-class NB_CORE_EXPORT ESshTerminate : public EFatal
+NB_DEFINE_CLASS_ID(ETerminate);
+class NB_CORE_EXPORT ETerminate : public EFatal
 {
 public:
-  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ESshTerminate); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ESshTerminate) || EFatal::is(Kind); }
+  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ETerminate); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ETerminate) || EFatal::is(Kind); }
 public:
-  explicit ESshTerminate(
+  explicit ETerminate(
     const Exception * E, const UnicodeString & Msg, TOnceDoneOperation AOperation,
     const UnicodeString & ATargetLocalPath, const UnicodeString & ADestLocalFileName) :
-    EFatal(OBJECT_CLASS_ESshTerminate, E, Msg),
+    EFatal(OBJECT_CLASS_ETerminate, E, Msg),
     Operation(AOperation),
     TargetLocalPath(ATargetLocalPath),
     DestLocalFileName(ADestLocalFileName)

@@ -28,7 +28,7 @@ using TFarMouseClickEvent = nb::FastDelegate2<void,
 using TFarProcessGroupEvent = nb::FastDelegate2<void,
   TFarDialogItem * /*Item*/, void * /*Arg*/>;
 
-class TIdleThread;
+class TDialogIdleThread;
 
 NB_DEFINE_CLASS_ID(TFarDialog);
 class TFarDialog : public TObject
@@ -38,7 +38,7 @@ class TFarDialog : public TObject
   friend class TFarButton;
   friend class TFarList;
   friend class TFarListBox;
-  friend class TIdleThread;
+  friend class TDialogIdleThread;
   NB_DISABLE_COPY(TFarDialog)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
@@ -72,7 +72,7 @@ public:
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
   // int32_t GetType(TFarDialogItem * Item) const;
-  int32_t GetItem(TFarDialogItem * Item) const;
+  int32_t GetItemIdx(TFarDialogItem * Item) const;
   TFarDialogItem * GetItem(int32_t Index) const;
   TFarDialogItem * GetControl(int32_t Index) const { return GetItem(Index); }
   int32_t GetItemCount() const;
@@ -105,6 +105,7 @@ protected:
   void Add(TFarDialogItem * DialogItem);
   void Add(TFarDialogContainer * Container);
   intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2);
+  virtual const UUID * GetDialogGuid() const { return &DialogGuid; }
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
@@ -146,8 +147,8 @@ private:
   int32_t FTag{0};
   TFarDialogItem * FItemFocused{nullptr};
   TFarKeyEvent FOnKey;
-  FarDialogItem * FDialogItems{nullptr};
-  std::unique_ptr<TIdleThread> FTIdleThread;
+  gsl::owner<FarDialogItem *> FDialogItems{nullptr};
+  std::unique_ptr<TDialogIdleThread> FTIdleThread;
   int32_t FDialogItemsCapacity{0};
   int32_t FChangesLocked{0};
   bool FChangesPending{false};
@@ -260,7 +261,7 @@ public:
   virtual bool CanFocus() const;
   bool Focused() const;
   void SetFocus();
-  void SetItem(int32_t Value) { FItem = Value; }
+  void SetItemIdx(int32_t Value) { FItemIdx = Value; }
 
 public:
   virtual void SetDataInternal(const UnicodeString & Value);
@@ -295,7 +296,7 @@ protected:
   virtual void SetData(const UnicodeString & Value);
   FARDIALOGITEMTYPES GetType() const;
   void SetType(FARDIALOGITEMTYPES Value);
-  int32_t GetItem() const { return FItem; }
+  int32_t GetItemIdx() const { return FItemIdx; }
   virtual intptr_t GetSelected() const;
   virtual void SetSelected(int32_t Value);
   TFarDialogContainer * GetContainer() const { return FContainer; }
@@ -346,7 +347,7 @@ private:
   TFarDialogItem * FEnabledDependency{nullptr};
   TFarDialogItem * FEnabledDependencyNegative{nullptr};
   TFarDialogContainer * FContainer{nullptr};
-  int32_t FItem{0};
+  int32_t FItemIdx{0};
   uint32_t FColors{0};
   uint32_t FColorMask{0};
   bool FEnabled{false};

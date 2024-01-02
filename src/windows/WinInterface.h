@@ -357,7 +357,8 @@ bool DoPropertiesDialog(TStrings * FileList,
     int32_t AllowedChanges, bool UserGroupByID, TCalculateSizeEvent && OnCalculateSize,
     TCalculateChecksumEvent && OnCalculateChecksum);
 
-using TDirectoryExistsEvent = nb::FastDelegate4<bool, void * /*Session*/, const UnicodeString & /*Directory*/>;
+using TDirectoryExistsEvent = nb::FastDelegate4<bool,
+  void * /*Session*/, const UnicodeString & /*Directory*/>;
 bool DoRemoteMoveDialog(
   bool Multi, UnicodeString & Target, UnicodeString & FileMask, TDirectoryExistsEvent && OnDirectoryExists);
 enum TDirectRemoteCopy { drcDisallow, drcAllow, drcConfirmCommandSession, drcConfirmCommandSessionDirs };

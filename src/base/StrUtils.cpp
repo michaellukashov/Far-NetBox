@@ -46,3 +46,29 @@ NB_CORE_EXPORT TBytes DecodeBase64(const UnicodeString & AStr)
   // return Result;
   return TBytes();
 }
+
+bool CharIsInvalidPathCharacter(char C)
+{
+  switch (C)
+  {
+  case '<':
+  case '>':
+  case '?':
+  case '/':
+  case ',':
+  case '*':
+  case '+':
+  case '=':
+  case '[':
+  case ']':
+  case '|':
+  case ':':
+  case ';':
+  case '"':
+  case '\'':
+  return true;
+  default:
+  return false;
+  }
+  return false;
+}

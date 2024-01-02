@@ -1203,7 +1203,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
 {
   // all = "yes to newer"
   constexpr uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll | qaAll;
-  TQueryButtonAlias Aliases[3];
+  TQueryButtonAlias Aliases[3]{};
   Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGroupedWithYes();
   Aliases[1] = TQueryButtonAlias::CreateYesToAllGroupedWithYes();
   Aliases[2] = TQueryButtonAlias::CreateNoToAllGroupedWithNo();
@@ -1344,7 +1344,8 @@ void TWebDAVFileSystem::Source(
   int32_t FD = -1;
   try__finally
   {
-    UnicodeString DestFullName = ATargetDir + ADestFileName;
+    UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(ATargetDir) + ADestFileName;
+    DEBUG_PRINTF("DestFullName: %s", DestFullName);
 
     std::unique_ptr<TRemoteFile> RemoteFile;
     try
@@ -1421,7 +1422,7 @@ void TWebDAVFileSystem::Source(
         const TDateTime & DateTime = ModificationUTC;
         DateTime.DecodeDate(Y, M, D);
         DateTime.DecodeTime(H, NN, S, MS);
-        UnicodeString LastModified = FORMAT("%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
+        const UnicodeString LastModified = FORMAT("%04d, %d %02d %04d %02d:%02d%02d 'GMT'", D, D, M, Y, H, NN, D);
 
         const UTF8String NeonLastModified(LastModified);
         // second element is "NULL-terminating"
@@ -2214,7 +2215,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
 
 void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
 {
-  const TWebDAVFileSystem * MainFileSystem = dyn_cast<TWebDAVFileSystem>(AMainFileSystem);
+  const TWebDAVFileSystem * MainFileSystem = static_cast<TWebDAVFileSystem *>(AMainFileSystem);
   if (DebugAlwaysTrue(MainFileSystem != nullptr))
   {
     TGuard Guard(FNeonLockStoreSection); nb::used(Guard);

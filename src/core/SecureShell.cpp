@@ -1089,14 +1089,14 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
   // Following is taken from scp.c from_backend() and modified
 
   const uint8_t * p = Data;
-  int32_t Len = nb::ToInt32(Length);
+  size_t Len = Length;
 
   // with event-select mechanism we can now receive data even before we
   // actually expect them (OutPtr can be nullptr)
 
   if ((OutPtr != nullptr) && (OutLen > 0) && (Len > 0))
   {
-    int32_t Used = OutLen;
+    size_t Used = OutLen;
     if (Used > Len) Used = Len;
     memmove(OutPtr, p, Used);
     OutPtr += Used; OutLen -= Used;
@@ -1173,7 +1173,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, size_t Len)
        */
       if (PendLen > 0)
       {
-        int32_t PendUsed = PendLen;
+        size_t PendUsed = PendLen;
         if (PendUsed > OutLen)
         {
           PendUsed = OutLen;
@@ -1229,7 +1229,7 @@ UnicodeString TSecureShell::ReceiveLine()
     // If there is any buffer of received chars
     if (PendLen > 0)
     {
-      int32_t Index = 0;
+      size_t Index = 0;
       // Repeat until we walk thru whole buffer or reach end-of-line
       while ((Index < PendLen) && (!Index || (Pending[Index - 1] != '\n')))
       {
@@ -1237,7 +1237,7 @@ UnicodeString TSecureShell::ReceiveLine()
       }
       EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
       const int32_t PrevLen = Line.Length();
-      char * Buf = Line.SetLength(PrevLen + Index);
+      char * Buf = Line.SetLength(nb::ToInt32(PrevLen + Index));
       Receive(nb::ToUInt8Ptr(Buf + PrevLen), nb::ToSizeT(Index));
     }
 

@@ -17,21 +17,21 @@ inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
   return TRect(Left, Top, Right, Bottom);
 }
 
-NB_DEFINE_CLASS_ID(TIdleThread);
-class TIdleThread : public TSimpleThread
+NB_DEFINE_CLASS_ID(TDialogIdleThread);
+class TDialogIdleThread : public TSimpleThread
 {
-  TIdleThread() = delete;
+  TDialogIdleThread() = delete;
 public:
-  explicit TIdleThread(gsl::not_null<TFarDialog *> Dialog, int64_t Millisecs) noexcept :
-    TSimpleThread(OBJECT_CLASS_TIdleThread),
+  explicit TDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, int64_t Millisecs) noexcept :
+    TSimpleThread(OBJECT_CLASS_TDialogIdleThread),
     FDialog(Dialog),
     FMillisecs(Millisecs)
   {}
 
-  virtual ~TIdleThread() noexcept override
+  virtual ~TDialogIdleThread() noexcept override
   {
     SAFE_CLOSE_HANDLE(FEvent);
-    TIdleThread::Terminate();
+    TDialogIdleThread::Terminate();
     WaitFor();
   }
 
@@ -101,7 +101,7 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   FBorderBox = new TFarBox(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TIdleThread>(this, 1000);
+  FTIdleThread = std::make_unique<TDialogIdleThread>(this, 500);
   FTIdleThread->InitIdleThread();
 }
 
@@ -294,11 +294,11 @@ int32_t TFarDialog::GetItemCount() const
   return FItems->GetCount();
 }
 
-int32_t TFarDialog::GetItem(TFarDialogItem * Item) const
+int32_t TFarDialog::GetItemIdx(TFarDialogItem * Item) const
 {
   if (!Item)
     return -1;
-  return Item->GetItem();
+  return Item->GetItemIdx();
 }
 
 TFarDialogItem * TFarDialog::GetItem(int32_t Index) const
@@ -337,7 +337,7 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
   }
 
   DebugAssert(DialogItem);
-  DialogItem->SetItem(GetItems()->Add(DialogItem));
+  DialogItem->SetItemIdx(GetItems()->Add(DialogItem));
 
   R.Bottom = R.Top;
   DialogItem->SetBounds(R);
@@ -547,7 +547,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         Result = 1;
         if (Param1 >= 0)
         {
-          TFarButton * Button = dyn_cast<TFarButton>(GetItem(nb::ToInt32(Param1)));
+          TFarButton * Button = static_cast<TFarButton *>(GetItem(nb::ToInt32(Param1)));
           // FAR WORKAROUND
           // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
           // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -756,8 +756,8 @@ void TFarDialog::Init()
 
 int32_t TFarDialog::ShowModal()
 {
+  Expects(GetFarPlugin());
   FResult = -1;
-
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
   HANDLE Handle = INVALID_HANDLE_VALUE;
@@ -781,7 +781,7 @@ int32_t TFarDialog::ShowModal()
       TFarEnvGuard Guard; nb::used(Guard);
       const TRect Bounds = GetBounds();
       Handle = Info.DialogInit(
-          &MainGuid, &MainGuid,
+          &NetBoxPluginGuid, GetDialogGuid(),
           Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
           HelpTopic.c_str(), FDialogItems,
           GetItemCount(), 0, GetFlags(),
@@ -792,7 +792,7 @@ int32_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton * Button = dyn_cast<TFarButton>(GetItem(nb::ToInt32(BResult)));
+      TFarButton * Button = static_cast<TFarButton *>(GetItem(nb::ToInt32(BResult)));
       DebugAssert(Button);
       // correct result should be already set by TFarButton
       DebugAssert(FResult == Button->GetResult());
@@ -829,7 +829,7 @@ void TFarDialog::Synchronize(TThreadMethod Method)
 void TFarDialog::Close(TFarButton * Button)
 {
   DebugAssert(Button != nullptr);
-  SendDlgMessage(DM_CLOSE, Button->GetItem(), nullptr);
+  SendDlgMessage(DM_CLOSE, Button->GetItemIdx(), nullptr);
 }
 
 void TFarDialog::Change()
@@ -1067,7 +1067,7 @@ TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, FARDIA
   FEnabledDependency(nullptr),
   FEnabledDependencyNegative(nullptr),
   FContainer(nullptr),
-  FItem(nb::NPOS),
+  FItemIdx(nb::NPOS),
   FColors(0),
   FColorMask(0),
   FEnabled(true),
@@ -1098,7 +1098,7 @@ FarDialogItem * TFarDialogItem::GetDialogItem()
 {
   TFarDialog * Dlg = GetDialog();
   DebugAssert(Dlg);
-  return &Dlg->FDialogItems[GetItem()];
+  return &Dlg->FDialogItems[GetItemIdx()];
 }
 
 void TFarDialogItem::SetBounds(const TRect & Value)
@@ -1376,7 +1376,7 @@ intptr_t TFarDialogItem::FailItemProc(intptr_t Msg, void * Param)
   switch (Msg)
   {
   case DN_KILLFOCUS:
-    Result = nb::ToIntPtr(GetItem());
+    Result = nb::ToIntPtr(GetItemIdx());
     break;
 
   default:
@@ -1431,7 +1431,7 @@ void TFarDialogItem::DoFocus()
 
 void TFarDialogItem::DoExit()
 {
-  if (FOnExit)
+  if (!FOnExit.empty())
   {
     FOnExit(this);
   }
@@ -1443,7 +1443,7 @@ intptr_t TFarDialogItem::DefaultItemProc(intptr_t Msg, void * Param)
   {
     TFarEnvGuard Guard; nb::used(Guard);
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
-        Msg, nb::ToIntPtr(GetItem()), Param);
+      Msg, nb::ToIntPtr(GetItemIdx()), Param);
   }
   return 0;
 }
@@ -1508,7 +1508,7 @@ intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, intptr_t Param1, void *
 
 intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, void * Param)
 {
-  return GetDialog()->SendDlgMessage(Msg, GetItem(), Param);
+  return GetDialog()->SendDlgMessage(Msg, GetItemIdx(), Param);
 }
 
 void TFarDialogItem::SetSelected(int32_t Value)
@@ -2186,7 +2186,7 @@ void TFarList::Assign(const TPersistent *Source)
 {
   TStringList::Assign(Source);
 
-  const TFarList * FarList = dyn_cast<TFarList>(Source);
+  const TFarList * FarList = static_cast<const TFarList *>(Source);
   if (FarList != nullptr)
   {
     for (int32_t Index = 0; Index < FarList->GetCount(); ++Index)

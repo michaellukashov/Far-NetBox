@@ -49,7 +49,8 @@ using TDisplayBannerEvent = nb::FastDelegate6<void,
   bool & /*NeverShowAgain*/, int32_t /*Options*/, uint32_t & /*Params*/>;
 using TExtendedExceptionEvent = nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, Exception * /*E*/, void * /*Arg*/ >;
-using TReadDirectoryEvent = nb::FastDelegate2<void, TObject * /*Sender*/, Boolean /*ReloadOnly*/>;
+using TReadDirectoryEvent = nb::FastDelegate2<void,
+  TObject * /*Sender*/, Boolean /*ReloadOnly*/>;
 using TReadDirectoryProgressEvent = nb::FastDelegate4<void,
   TObject * /*Sender*/, int32_t /*Progress*/, int32_t /*ResolvedLinks*/, bool & /*Cancel*/>;
 using TProcessFileEvent = nb::FastDelegate3<void,

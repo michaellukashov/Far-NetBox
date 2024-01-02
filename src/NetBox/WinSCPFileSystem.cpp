@@ -549,7 +549,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
     }
 
     const TWinSCPFileSystem * OppositeFileSystem =
-      dyn_cast<TWinSCPFileSystem>(GetOppositeFileSystem());
+      static_cast<TWinSCPFileSystem *>(GetOppositeFileSystem());
     if ((OppositeFileSystem != nullptr) && !OppositeFileSystem->Connected() &&
       !OppositeFileSystem->FLoadingSessionList)
     {
@@ -2664,6 +2664,7 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
   bool Ask = !Confirmed;
 
   TGUICopyParamType CopyParam;
+  CopyParam.Default();
 
   if (Edit)
   {
@@ -2946,7 +2947,7 @@ void TWinSCPFileSystem::SaveSession()
   {
     GetSessionData()->SetRemoteDirectory(FTerminal->RemoteGetCurrentDirectory());
 
-    TSessionData * Data = dyn_cast<TSessionData>(StoredSessions->FindByName(GetSessionData()->GetName()));
+    TSessionData * Data = static_cast<TSessionData *>(StoredSessions->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -3704,7 +3705,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
   {
     TGuard Guard(FQueueStatusSection); nb::used(Guard);
 
-    TTerminalQueueStatus * QueueStatus = GetQueueStatus();
+    gsl::not_null<TTerminalQueueStatus *> QueueStatus = GetQueueStatus();
     DebugAssert(QueueStatus != nullptr);
 
     TQueueItemProxy * QueueItem = QueueStatus->FindByQueueItem(Item);

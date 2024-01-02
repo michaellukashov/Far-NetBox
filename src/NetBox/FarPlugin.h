@@ -48,10 +48,12 @@ enum THandlesFunction
   hfProcessPanelEvent
 };
 
-using TFarInputBoxValidateEvent = nb::FastDelegate1<void, UnicodeString & /*Text*/>;
-using TFarMessageTimerEvent = nb::FastDelegate1<void, uint32_t & /*Result*/>;
-using TFarMessageClickEvent = nb::FastDelegate3<void, void * /*Token*/,
-  uint32_t /*Result*/, bool & /*Close*/>;
+using TFarInputBoxValidateEvent = nb::FastDelegate1<void,
+  UnicodeString & /*Text*/>;
+using TFarMessageTimerEvent = nb::FastDelegate1<void,
+  uint32_t & /*Result*/>;
+using TFarMessageClickEvent = nb::FastDelegate3<void,
+  void * /*Token*/, uint32_t /*Result*/, bool & /*Close*/>;
 using TSynchroEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, void * /*Data*/>;
 
@@ -99,6 +101,7 @@ enum NetBoxSystemSettings
 };
 
 class TGlobalFunctions;
+class TPluginIdleThread;
 
 NB_DEFINE_CLASS_ID(TCustomFarPlugin);
 class TCustomFarPlugin : public TObject
@@ -114,10 +117,10 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
   TCustomFarPlugin() = delete;
+  VersionInfo GetMinFarVersion() const;
 public:
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept;
   virtual ~TCustomFarPlugin() override;
-  virtual VersionInfo GetMinFarVersion() const;
   virtual void Initialize();
   virtual void Finalize();
 
@@ -198,7 +201,7 @@ public:
 
   virtual UnicodeString GetModuleName() const;
   TFarDialog * GetTopDialog() const { return FTopDialog; }
-  HINSTANCE GetHandle() const { return FHandle; }
+  HINSTANCE GetPluginHandle() const { return FPluginHandle; }
   uint32_t GetFarThreadId() const { return FFarThreadId; }
   const FarStandardFunctions & GetFarStandardFunctions() const { return FFarStandardFunctions; }
   #undef GetStartupInfo
@@ -208,7 +211,7 @@ protected:
   TGlobalsIntfInitializer<TGlobalFunctions> FGlobalsIntfInitializer;
   PluginStartupInfo FStartupInfo{};
   FarStandardFunctions FFarStandardFunctions{};
-  HINSTANCE FHandle{};
+  HINSTANCE FPluginHandle{};
   std::unique_ptr<TList> FOpenedPlugins;
   gsl::owner<TFarDialog *> FTopDialog{nullptr};
   HANDLE FConsoleInput{};
@@ -239,7 +242,7 @@ protected:
     TFarMessageParams * Params);
   int32_t DialogMessage(uint32_t Flags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
-    TFarMessageParams * Params);
+    gsl::not_null<TFarMessageParams *> Params);
   void InvalidateOpenPanelInfo();
 
   const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
@@ -254,6 +257,7 @@ private:
 
 private:
   PluginInfo FPluginInfo{};
+  std::unique_ptr<TPluginIdleThread> FTIdleThread;
   std::unique_ptr<TStringList> FSavedTitles;
   UnicodeString FCurrentTitle;
   int16_t FCurrentProgress{0};

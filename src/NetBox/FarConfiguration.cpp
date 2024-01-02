@@ -79,7 +79,7 @@ void TFarConfiguration::Default()
 THierarchicalStorage * TFarConfiguration::CreateScpStorage(bool & SessionList)
 {
   nb::used(SessionList);
-  THierarchicalStorage * Storage = FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), MainGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : TGUIConfiguration::CreateScpStorage(SessionList);
+  THierarchicalStorage * Storage = FFarPlugin ? new TFar3Storage(GetRegistryStorageKey(), NetBoxPluginGuid, FFarPlugin->GetStartupInfo()->SettingsControl) : TGUIConfiguration::CreateScpStorage(SessionList);
   Storage->Init();
   return Storage;
 }
@@ -331,6 +331,6 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 
 TFarConfiguration * GetFarConfiguration()
 {
-  return dyn_cast<TFarConfiguration>(GetConfiguration());
+  return static_cast<TFarConfiguration *>(GetConfiguration());
 }
 

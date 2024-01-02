@@ -67,9 +67,9 @@ private:
   int32_t FWaitingForData{0};
   TSshImplementation FSshImplementation{sshiUnknown};
 
-  int32_t PendLen{0};
-  int32_t PendSize{0};
-  int32_t OutLen{0};
+  size_t PendLen{0};
+  size_t PendSize{0};
+  size_t OutLen{0};
   uint8_t * OutPtr{nullptr};
   uint8_t * Pending{nullptr};
   TSessionLog * FLog{nullptr};
