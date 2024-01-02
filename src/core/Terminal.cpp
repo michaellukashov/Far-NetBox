@@ -8019,10 +8019,11 @@ void TTerminal::Source(
   }
 
   AOperationProgress->SetFileInProgress();
-
+  // DEBUG_PRINTF("AFileName: %s", AFileName);
+  // DEBUG_PRINTF("ATargetDir: %s", ATargetDir);
   UnicodeString DestFileName =
     ChangeFileName(CopyParam, base::ExtractFileName(AFileName, false), osLocal, FLAGSET(AFlags, tfFirstLevel));
-
+  // DEBUG_PRINTF("DestFileName: %s", DestFileName);
   if (Handle.Directory)
   {
     Action.Cancel();
