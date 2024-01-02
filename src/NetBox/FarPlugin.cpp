@@ -837,8 +837,8 @@ class TFarMessageDialog final : public TFarDialog
 {
   TFarMessageDialog() = delete;
 public:
-  explicit TFarMessageDialog(TCustomFarPlugin * Plugin,
-    TFarMessageParams * Params);
+  explicit TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
+    gsl::not_null<TFarMessageParams *> Params);
   void Init(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
     TStrings * Buttons);
   virtual ~TFarMessageDialog() override;
@@ -864,8 +864,8 @@ private:
   TFarCheckBox * FCheckBox{nullptr};
 };
 
-TFarMessageDialog::TFarMessageDialog(TCustomFarPlugin * Plugin,
-  TFarMessageParams * Params) :
+TFarMessageDialog::TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
+  gsl::not_null<TFarMessageParams *> Params) :
   TFarDialog(Plugin),
   FParams(Params)
 {
@@ -1141,7 +1141,7 @@ void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Dat
 
 int32_t TCustomFarPlugin::DialogMessage(uint32_t Flags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
-  TFarMessageParams * Params)
+  gsl::not_null<TFarMessageParams *> Params)
 {
   std::unique_ptr<TFarMessageDialog> Dialog(std::make_unique<TFarMessageDialog>(this, Params));
   Dialog->Init(Flags, Title, Message, Buttons);

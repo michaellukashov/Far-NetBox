@@ -242,7 +242,7 @@ protected:
     TFarMessageParams * Params);
   int32_t DialogMessage(uint32_t Flags,
     const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons,
-    TFarMessageParams * Params);
+    gsl::not_null<TFarMessageParams *> Params);
   void InvalidateOpenPanelInfo();
 
   const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
