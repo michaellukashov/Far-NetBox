@@ -2116,7 +2116,7 @@ uint32_t TTerminal::QueryUser(const UnicodeString & AQuery,
 {
   LogEvent(FORMAT("Asking user:\n%s (%s)", AQuery, UnicodeString(MoreMessages ? MoreMessages->GetCommaText() : "")));
   uint32_t Answer = AbortAnswer(Answers);
-  if (FOnQueryUser)
+  if (!FOnQueryUser.empty())
   {
     TCallbackGuard Guard(this);
     try

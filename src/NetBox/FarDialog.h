@@ -146,7 +146,7 @@ private:
   int32_t FTag{0};
   TFarDialogItem * FItemFocused{nullptr};
   TFarKeyEvent FOnKey;
-  FarDialogItem * FDialogItems{nullptr};
+  gsl::owner<FarDialogItem *> FDialogItems{nullptr};
   std::unique_ptr<TIdleThread> FTIdleThread;
   int32_t FDialogItemsCapacity{0};
   int32_t FChangesLocked{0};

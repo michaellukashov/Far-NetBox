@@ -253,7 +253,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TTerminalItem) || TSignalThread::is(Kind); }
 public:
   TTerminalItem() = delete;
-  explicit TTerminalItem(TTerminalQueue * Queue) noexcept;
+  explicit TTerminalItem(gsl::not_null<TTerminalQueue *> Queue) noexcept;
   virtual ~TTerminalItem() noexcept override;
   void InitTerminalItem(int32_t Index);
 
@@ -265,8 +265,8 @@ public:
   bool Resume();
 
 protected:
-  TTerminalQueue * FQueue{nullptr};
-  TBackgroundTerminal * FTerminal{nullptr};
+  gsl::not_null<TTerminalQueue *> FQueue;
+  std::unique_ptr<TBackgroundTerminal> FTerminal{nullptr};
   TQueueItem * FItem{nullptr};
   TCriticalSection FCriticalSection;
   TUserAction * FUserAction{nullptr};
@@ -467,8 +467,8 @@ void TSignalThread::Terminate()
 
 // TTerminalQueue
 
-TTerminalQueue::TTerminalQueue(TTerminal * ATerminal,
-  TConfiguration * AConfiguration) noexcept :
+TTerminalQueue::TTerminalQueue(gsl::not_null<TTerminal *> ATerminal,
+  gsl::not_null<TConfiguration *> AConfiguration) noexcept :
   TSignalThread(OBJECT_CLASS_TTerminalQueue),
   FTerminal(ATerminal),
   FConfiguration(AConfiguration),
@@ -1297,7 +1297,7 @@ bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 
 // TTerminalItem
 
-TTerminalItem::TTerminalItem(TTerminalQueue * Queue) noexcept :
+TTerminalItem::TTerminalItem(gsl::not_null<TTerminalQueue *> Queue) noexcept :
   TSignalThread(OBJECT_CLASS_TTerminalItem),
   FQueue(Queue)
 {
@@ -1319,7 +1319,7 @@ void TTerminalItem::InitTerminalItem(int32_t Index)
     Terminal->SetOnProgress(nb::bind(&TTerminalItem::OperationProgress, this));
     Terminal->SetOnFinished(nb::bind(&TTerminalItem::OperationFinished, this));
 
-    FTerminal = Terminal.release();
+    FTerminal = std::move(Terminal);
   }
   __catch__removed
   {
@@ -1335,7 +1335,7 @@ TTerminalItem::~TTerminalItem() noexcept
   TSimpleThread::Close();
 
   DebugAssert(FItem == nullptr);
-  SAFE_DESTROY(FTerminal);
+  // SAFE_DESTROY(FTerminal);
 }
 
 void TTerminalItem::Process(TQueueItem * Item)
@@ -1671,7 +1671,7 @@ void TTerminalItem::OperationProgress(
 
 bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
 {
-  DebugAssert(FTerminal != nullptr);
+  DebugAssert(FTerminal.get() != nullptr);
   const bool Result = (FTerminal && FTerminal->GetStatus() < ssOpened) && (ItemStatus == TQueueItem::qsProcessing);
   if (Result)
   {
@@ -1813,7 +1813,7 @@ void TQueueItem::Execute(TTerminalItem * TerminalItem)
     TGuard Guard(FSection); nb::used(Guard);
     FProgressData = new TFileOperationProgressType();
   }
-  DoExecute(TerminalItem->FTerminal);
+  DoExecute(TerminalItem->FTerminal.get());
 }
 
 void TQueueItem::SetCPSLimit(int32_t CPSLimit)
@@ -1851,8 +1851,8 @@ TQueueItem * TQueueItem::CreateParallelOperation()
 
 // TQueueItemProxy
 
-TQueueItemProxy::TQueueItemProxy(TTerminalQueue * Queue,
-  TQueueItem * QueueItem) noexcept :
+TQueueItemProxy::TQueueItemProxy(gsl::not_null<TTerminalQueue *> Queue,
+  gsl::not_null<TQueueItem *> QueueItem) noexcept :
   TObject(OBJECT_CLASS_TQueueItemProxy),
   FProgressData(std::make_unique<TFileOperationProgressType>()),
   FQueue(Queue),
@@ -2074,7 +2074,7 @@ int32_t TTerminalQueueStatus::GetActiveAndPendingPrimaryCount() const
   return FActiveAndPendingPrimaryCount;
 }
 
-void TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
+void TTerminalQueueStatus::Add(gsl::not_null<TQueueItemProxy *> ItemProxy)
 {
   ItemProxy->FQueueStatus = this;
 
@@ -2096,7 +2096,7 @@ void TTerminalQueueStatus::Add(TQueueItemProxy * ItemProxy)
   ResetStats();
 }
 
-void TTerminalQueueStatus::Delete(TQueueItemProxy * ItemProxy)
+void TTerminalQueueStatus::Delete(gsl::not_null<TQueueItemProxy *> ItemProxy)
 {
   FList->Extract(ItemProxy);
   ItemProxy->FQueueStatus = nullptr;
@@ -2548,7 +2548,7 @@ void TDeleteQueueItem::DoExecute(TTerminal * Terminal)
 
 // TTerminalThread
 
-TTerminalThread::TTerminalThread(TTerminal * Terminal) noexcept :
+TTerminalThread::TTerminalThread(gsl::not_null<TTerminal *> Terminal) noexcept :
   TSignalThread(OBJECT_CLASS_TTerminalThread),
   FTerminal(Terminal)
 {
@@ -2627,7 +2627,7 @@ TTerminalThread::~TTerminalThread() noexcept
   // delete FSection;
   if (FAbandoned)
   {
-    SAFE_DESTROY(FTerminal);
+    delete FTerminal;
   }
 }
 
@@ -2663,10 +2663,10 @@ void TTerminalThread::TerminalReopen()
 
 void TTerminalThread::RunAction(TNotifyEvent && Action)
 {
-  DebugAssert(FAction == nullptr);
+  DebugAssert(!FAction.empty());
   DebugAssert(FException == nullptr);
   DebugAssert(FIdleException == nullptr);
-  DebugAssert(FOnIdle != nullptr);
+  DebugAssert(!FOnIdle.empty());
 
   FCancelled = false;
   FAction = Action;
@@ -2707,7 +2707,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
             }
             else
             {
-              if (FOnIdle != nullptr)
+              if (!FOnIdle.empty())
               {
                 FOnIdle(nullptr);
               }

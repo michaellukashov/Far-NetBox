@@ -86,7 +86,7 @@ class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
   friend class TParallelTransferQueueItem;
   NB_DISABLE_COPY(TTerminalQueue)
 public:
-  explicit TTerminalQueue(TTerminal * ATerminal, TConfiguration * AConfiguration) noexcept;
+  explicit TTerminalQueue(gsl::not_null<TTerminal *> ATerminal, gsl::not_null<TConfiguration *> AConfiguration) noexcept;
   virtual ~TTerminalQueue() noexcept override;
   void InitTerminalQueue();
 
@@ -136,8 +136,8 @@ protected:
   TQueueItemUpdateEvent FOnQueueItemUpdate;
   TQueueListUpdateEvent FOnListUpdate;
   TQueueEventEvent FOnEvent;
-  TTerminal * FTerminal{nullptr};
-  TConfiguration * FConfiguration{nullptr};
+  gsl::not_null<TTerminal *> FTerminal;
+  gsl::not_null<TConfiguration *> FConfiguration;
   std::unique_ptr<TSessionData> FSessionData;
   std::unique_ptr<TList> FItems;
   std::unique_ptr<TList> FDoneItems;
@@ -303,14 +303,15 @@ public:
 private:
   std::unique_ptr<TFileOperationProgressType> FProgressData;
   TQueueItem::TStatus FStatus{TQueueItem::qsPending};
-  TTerminalQueue * FQueue{nullptr};
-  TQueueItem * FQueueItem{nullptr};
+  gsl::not_null<TTerminalQueue *> FQueue;
+  gsl::not_null<TQueueItem *> FQueueItem;
   TTerminalQueueStatus * FQueueStatus{nullptr};
   std::unique_ptr<TQueueItem::TInfo> FInfo;
   bool FProcessingUserAction{false};
   void * FUserData{nullptr};
 
-  explicit TQueueItemProxy(TTerminalQueue * Queue, TQueueItem * QueueItem) noexcept;
+  TQueueItemProxy() = delete;
+  explicit TQueueItemProxy(gsl::not_null<TTerminalQueue *> Queue, gsl::not_null<TQueueItem *> QueueItem) noexcept;
   virtual ~TQueueItemProxy() noexcept override;
 public:
   int32_t GetIndex() const;
@@ -342,10 +343,8 @@ public:
   bool UpdateFileList(TQueueItemProxy * ItemProxy, TQueueFileList * FileList);
 
 protected:
-  // TTerminalQueueStatus() noexcept;
-
-  void Add(TQueueItemProxy * temProxy);
-  void Delete(TQueueItemProxy * ItemProxy);
+  void Add(gsl::not_null<TQueueItemProxy *> ItemProxy);
+  void Delete(gsl::not_null<TQueueItemProxy *> ItemProxy);
   void ResetStats() const;
   void NeedStats() const;
 
@@ -495,7 +494,7 @@ class NB_CORE_EXPORT TTerminalThread : public TSignalThread
   NB_DISABLE_COPY(TTerminalThread)
 public:
   TTerminalThread() = delete;
-  explicit TTerminalThread(TTerminal * Terminal) noexcept;
+  explicit TTerminalThread(gsl::not_null<TTerminal *> Terminal) noexcept;
   void InitTerminalThread();
   virtual ~TTerminalThread() noexcept override;
 
@@ -519,7 +518,7 @@ protected:
   virtual bool Finished() override;
 
 private:
-  TTerminal * FTerminal{nullptr};
+  gsl::not_null<TTerminal *> FTerminal;
 
   TInformationEvent FOnInformation{nullptr};
   TQueryUserEvent FOnQueryUser{nullptr};
@@ -538,8 +537,8 @@ private:
   HANDLE FActionEvent{nullptr};
   TUserAction * FUserAction{nullptr};
 
-  Exception * FException{nullptr};
-  Exception * FIdleException{nullptr};
+  gsl::owner<Exception *> FException{nullptr};
+  gsl::owner<Exception *> FIdleException{nullptr};
   bool FCancel{false};
   TDateTime FCancelAfter;
   bool FAbandoned{false};

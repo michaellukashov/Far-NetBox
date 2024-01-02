@@ -246,7 +246,7 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const DWORD ControlState = nb::ToDWord(KeyCode >> 16);
+  const WORD ControlState = KeyCode >> 16;
   if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && (ControlState & CTRLMASK) != 0) ||
     (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && (ControlState & CTRLMASK) != 0))
   {
@@ -6345,7 +6345,7 @@ bool TFileSystemInfoDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
 {
   bool Result;
   const WORD Key = KeyCode & 0xFFFF;
-  // intptr_t ControlState = KeyCode >> 16;
+  // WORD ControlState = KeyCode >> 16;
   if ((Item == SpaceAvailablePathEdit) && (Key == VK_RETURN))
   {
     CheckSpaceAvailable();
@@ -7692,7 +7692,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const intptr_t ControlState = KeyCode >> 16;
+  const WORD ControlState = KeyCode >> 16;
   if (ListBox->Focused())
   {
     if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
@@ -8204,7 +8204,7 @@ bool TSynchronizeDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  // intptr_t ControlState = KeyCode >> 16;
+  // const WORD ControlState = KeyCode >> 16;
   if ((Key == VK_ESCAPE) && FSynchronizing)
   {
     Stop();
@@ -8278,8 +8278,8 @@ class TQueueDialog : TFarDialog
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TQueueDialog)
 public:
-  explicit TQueueDialog(TCustomFarPlugin * AFarPlugin,
-    TWinSCPFileSystem * AFileSystem, bool ClosingPlugin) noexcept;
+  explicit TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
+    gsl::not_null<TWinSCPFileSystem *> AFileSystem, bool ClosingPlugin) noexcept;
   virtual ~TQueueDialog() override = default;
 
   bool Execute(TTerminalQueueStatus * Status);
@@ -8304,7 +8304,7 @@ private:
 
 private:
   TTerminalQueueStatus * FStatus{nullptr};
-  TWinSCPFileSystem * FFileSystem{nullptr};
+  gsl::not_null<TWinSCPFileSystem *> FFileSystem;
   bool FClosingPlugin{false};
 
   TFarListBox * QueueListBox{nullptr};
@@ -8316,13 +8316,13 @@ private:
   TFarButton * CloseButton{nullptr};
 };
 
-TQueueDialog::TQueueDialog(TCustomFarPlugin * AFarPlugin,
-  TWinSCPFileSystem * AFileSystem, bool ClosingPlugin) noexcept :
+TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
+  gsl::not_null<TWinSCPFileSystem *> AFileSystem, bool ClosingPlugin) noexcept :
   TFarDialog(AFarPlugin),
   FFileSystem(AFileSystem),
   FClosingPlugin(ClosingPlugin)
 {
-  SetSize(TPoint(80, 23));
+  SetSize(TPoint(80, 23)); // TODO: check actual configuration
   // TRect CRect = GetClientRect();
   const int32_t ListHeight = GetClientSize().y - 4;
 
@@ -8420,7 +8420,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 {
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
-  const intptr_t ControlState = KeyCode >> 16;
+  const WORD ControlState = KeyCode >> 16;
   if (QueueListBox->Focused())
   {
     TFarButton * DoButton = nullptr;
