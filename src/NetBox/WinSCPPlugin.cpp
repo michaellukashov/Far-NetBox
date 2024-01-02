@@ -570,7 +570,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    if (isa<EAbort>(E) || isa<EFatal>(E))
+    if (isa<EAbort>(E) || isa<EFatal>(E) || isa<ExtException>(E))
     {
       const TQueryType Type = isa<ETerminate>(E) ? qtInformation : qtError;
 
