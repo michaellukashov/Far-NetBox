@@ -2202,7 +2202,7 @@ void TCustomFarFileSystem::ClosePanel()
   // FAR WORKAROUND
   // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
   // so we close it here on the very next opportunity
-  static bool InsideClose=false;
+  static bool InsideClose = false;
   if (MustSkipClose)
      MustSkipClose = false;
   else if (!InsideClose)
