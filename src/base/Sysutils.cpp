@@ -1920,26 +1920,26 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
 
     // Reparse point specific declarations from Windows headers
 #ifndef IO_REPARSE_TAG_MOUNT_POINT
-    const ULONG IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
+    constexpr const ULONG IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
 #endif
 #ifndef IO_REPARSE_TAG_SYMLINK
-    const ULONG IO_REPARSE_TAG_SYMLINK = 0xA000000C;
+    constexpr const ULONG IO_REPARSE_TAG_SYMLINK = 0xA000000C;
 #endif
 #ifndef ERROR_REPARSE_TAG_INVALID
-    const DWORD ERROR_REPARSE_TAG_INVALID = 4393;
+    constexpr const DWORD ERROR_REPARSE_TAG_INVALID = 4393;
 #endif
 #ifndef FSCTL_GET_REPARSE_POINT
     constexpr DWORD FSCTL_GET_REPARSE_POINT = 0x900A8;
 #endif
 //    const DWORD MAXIMUM_REPARSE_DATA_BUFFER_SIZE = 16 * 1024;
 #ifndef SYMLINK_FLAG_RELATIVE
-    const ULONG SYMLINK_FLAG_RELATIVE = 1;
+    constexpr const ULONG SYMLINK_FLAG_RELATIVE = 1;
 #endif
 #ifndef FILE_FLAG_OPEN_REPARSE_POINT
-    const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x200000;
+    constexpr const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x200000;
 #endif
 #ifndef FILE_READ_EA
-   const DWORD FILE_READ_EA = 0x8;
+    constexpr const DWORD FILE_READ_EA = 0x8;
 #endif
    struct TReparseDataBuffer
    {
