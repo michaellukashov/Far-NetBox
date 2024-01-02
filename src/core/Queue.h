@@ -48,7 +48,7 @@ public:
 
 protected:
   HANDLE FEvent{nullptr};
-  bool FTerminated{false};
+  bool FTerminated{true};
 
   explicit TSignalThread(TObjectClassId Kind) noexcept;
   virtual ~TSignalThread() noexcept override;
