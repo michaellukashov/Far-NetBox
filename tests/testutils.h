@@ -120,7 +120,7 @@ HINSTANCE TTestGlobalFunctions::GetInstanceHandle() const
   HINSTANCE Result = nullptr;
   if (FarPlugin)
   {
-    Result = FarPlugin->GetHandle();
+    Result = FarPlugin->GetPluginHandle();
   }
   return Result;
 }
