@@ -4320,7 +4320,7 @@ int32_t TSessionDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
   // SetTabCount(GetTabCount() + 1);
   Tab->SetCenterGroup(false);
   FTabs->Add(Tab);
-  return GetItem(Tab);
+  return GetItemIdx(Tab);
 }
 
 bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,

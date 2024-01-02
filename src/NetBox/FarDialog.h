@@ -72,7 +72,7 @@ public:
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
   // int32_t GetType(TFarDialogItem * Item) const;
-  int32_t GetItem(TFarDialogItem * Item) const;
+  int32_t GetItemIdx(TFarDialogItem * Item) const;
   TFarDialogItem * GetItem(int32_t Index) const;
   TFarDialogItem * GetControl(int32_t Index) const { return GetItem(Index); }
   int32_t GetItemCount() const;
@@ -261,7 +261,7 @@ public:
   virtual bool CanFocus() const;
   bool Focused() const;
   void SetFocus();
-  void SetItem(int32_t Value) { FItem = Value; }
+  void SetItemIdx(int32_t Value) { FItemIdx = Value; }
 
 public:
   virtual void SetDataInternal(const UnicodeString & Value);
@@ -296,7 +296,7 @@ protected:
   virtual void SetData(const UnicodeString & Value);
   FARDIALOGITEMTYPES GetType() const;
   void SetType(FARDIALOGITEMTYPES Value);
-  int32_t GetItem() const { return FItem; }
+  int32_t GetItemIdx() const { return FItemIdx; }
   virtual intptr_t GetSelected() const;
   virtual void SetSelected(int32_t Value);
   TFarDialogContainer * GetContainer() const { return FContainer; }
@@ -347,7 +347,7 @@ private:
   TFarDialogItem * FEnabledDependency{nullptr};
   TFarDialogItem * FEnabledDependencyNegative{nullptr};
   TFarDialogContainer * FContainer{nullptr};
-  int32_t FItem{0};
+  int32_t FItemIdx{0};
   uint32_t FColors{0};
   uint32_t FColorMask{0};
   bool FEnabled{false};

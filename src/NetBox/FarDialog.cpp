@@ -294,11 +294,11 @@ int32_t TFarDialog::GetItemCount() const
   return FItems->GetCount();
 }
 
-int32_t TFarDialog::GetItem(TFarDialogItem * Item) const
+int32_t TFarDialog::GetItemIdx(TFarDialogItem * Item) const
 {
   if (!Item)
     return -1;
-  return Item->GetItem();
+  return Item->GetItemIdx();
 }
 
 TFarDialogItem * TFarDialog::GetItem(int32_t Index) const
@@ -337,7 +337,7 @@ void TFarDialog::Add(TFarDialogItem * DialogItem)
   }
 
   DebugAssert(DialogItem);
-  DialogItem->SetItem(GetItems()->Add(DialogItem));
+  DialogItem->SetItemIdx(GetItems()->Add(DialogItem));
 
   R.Bottom = R.Top;
   DialogItem->SetBounds(R);
@@ -829,7 +829,7 @@ void TFarDialog::Synchronize(TThreadMethod Method)
 void TFarDialog::Close(TFarButton * Button)
 {
   DebugAssert(Button != nullptr);
-  SendDlgMessage(DM_CLOSE, Button->GetItem(), nullptr);
+  SendDlgMessage(DM_CLOSE, Button->GetItemIdx(), nullptr);
 }
 
 void TFarDialog::Change()
@@ -1067,7 +1067,7 @@ TFarDialogItem::TFarDialogItem(TObjectClassId Kind, TFarDialog * ADialog, FARDIA
   FEnabledDependency(nullptr),
   FEnabledDependencyNegative(nullptr),
   FContainer(nullptr),
-  FItem(nb::NPOS),
+  FItemIdx(nb::NPOS),
   FColors(0),
   FColorMask(0),
   FEnabled(true),
@@ -1098,7 +1098,7 @@ FarDialogItem * TFarDialogItem::GetDialogItem()
 {
   TFarDialog * Dlg = GetDialog();
   DebugAssert(Dlg);
-  return &Dlg->FDialogItems[GetItem()];
+  return &Dlg->FDialogItems[GetItemIdx()];
 }
 
 void TFarDialogItem::SetBounds(const TRect & Value)
@@ -1376,7 +1376,7 @@ intptr_t TFarDialogItem::FailItemProc(intptr_t Msg, void * Param)
   switch (Msg)
   {
   case DN_KILLFOCUS:
-    Result = nb::ToIntPtr(GetItem());
+    Result = nb::ToIntPtr(GetItemIdx());
     break;
 
   default:
@@ -1443,7 +1443,7 @@ intptr_t TFarDialogItem::DefaultItemProc(intptr_t Msg, void * Param)
   {
     TFarEnvGuard Guard; nb::used(Guard);
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
-        Msg, nb::ToIntPtr(GetItem()), Param);
+      Msg, nb::ToIntPtr(GetItemIdx()), Param);
   }
   return 0;
 }
@@ -1508,7 +1508,7 @@ intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, intptr_t Param1, void *
 
 intptr_t TFarDialogItem::SendDialogMessage(intptr_t Msg, void * Param)
 {
-  return GetDialog()->SendDlgMessage(Msg, GetItem(), Param);
+  return GetDialog()->SendDlgMessage(Msg, GetItemIdx(), Param);
 }
 
 void TFarDialogItem::SetSelected(int32_t Value)
