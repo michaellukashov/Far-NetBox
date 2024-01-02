@@ -1077,3 +1077,24 @@ TEST_CASE_METHOD(base_fixture_t, "properties06", "netbox")
   CHECK(A == 1);
   CHECK(strcmp(F, "42") == 0);
 }
+
+TEST_CASE_METHOD(base_fixture_t, "strings01", "netbox")
+{
+  UnicodeString Text = L"text, text text, text text1\ntext text text, text text2\n";
+  TStringList Lines;
+  Lines.SetCommaText(Text);
+  // DEBUG_PRINTF("Lines.GetCount(): %d", Lines.GetCount());
+  DebugAssert(Lines.GetCount() == 5);
+
+  const UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
+  UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
+  Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
+  DebugAssert(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
+
+  UTF8String UtfS("123");
+  char C = UtfS[1];
+  DebugAssert(C == '1');
+}
