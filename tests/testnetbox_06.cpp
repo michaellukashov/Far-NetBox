@@ -118,22 +118,22 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
   SECTION("nothrows")
   {
     int a = 1;
-    WARN("before try__finally");
-    printf("a = %d\n", a);
+    INFO("before try__finally");
+    // printf("a = %d\n", a);
     try__finally
     {
-      WARN("in try__finally");
+      INFO("in try__finally");
       a = 2;
-      printf("a = %d\n", a);
+      // printf("a = %d\n", a);
       // throw std::runtime_error("error in try block");
     }
     __finally
     {
-      WARN("in __finally");
+      INFO("in __finally");
       a = 3;
     } end_try__finally
-    WARN("after try__finally");
-    printf("a = %d\n", a);
+    INFO("after try__finally");
+    // printf("a = %d\n", a);
     CHECK(a == 3);
   }
   SECTION("throws")
@@ -143,20 +143,20 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
       auto throws = [&]()
         try__finally
         {
-          WARN("in try__finally");
+          INFO("in try__finally");
           a = 2;
-          printf("a = %d\n", a);
+          // printf("a = %d\n", a);
           throw std::runtime_error("error in try block");
         }
         __finally
         {
-          WARN("in __finally");
+          INFO("in __finally");
           a = 3;
         } end_try__finally;
       REQUIRE_THROWS_AS(throws(), std::runtime_error);
     }
-    WARN("after try__finally");
-    printf("a = %d\n", a);
+    INFO("after try__finally");
+    // printf("a = %d\n", a);
     CHECK(a == 3);
   }
   SECTION("throws2")
@@ -166,22 +166,22 @@ TEST_CASE_METHOD(base_fixture_t, "tryfinally01", "netbox")
     {
       try__finally
       {
-        WARN("in try__finally");
+        INFO("in try__finally");
         a = 2;
-        printf("a = %d\n", a);
+        // printf("a = %d\n", a);
         throw std::runtime_error("error in try block");
       }
       __finally
       {
-        WARN("in __finally");
+        INFO("in __finally");
         a = 3;
       } end_try__finally
     }
     catch(std::runtime_error &)
     {
-      WARN("in catch");
+      INFO("in catch");
     }
-    printf("a = %d\n", a);
+    // printf("a = %d\n", a);
     CHECK(a == 3);
   }
 }
@@ -1084,7 +1084,7 @@ TEST_CASE_METHOD(base_fixture_t, "strings01", "netbox")
   TStringList Lines;
   Lines.SetCommaText(Text);
   // DEBUG_PRINTF("Lines.GetCount(): %d", Lines.GetCount());
-  DebugAssert(Lines.GetCount() == 5);
+  CHECK(Lines.GetCount() == 5);
 
   const UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
   UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
@@ -1092,21 +1092,22 @@ TEST_CASE_METHOD(base_fixture_t, "strings01", "netbox")
   Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
-  DebugAssert(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
+  CHECK(wcscmp(Instructions2.c_str(), UnicodeString(L"Using keyboard authentication.\x0D\x0A\x0D\x0A\x0D\x0APlease enter your password.").c_str()) == 0);
 
   UTF8String UtfS("123");
   char C = UtfS[1];
-  DebugAssert(C == '1');
+  CHECK(C == '1');
 }
 
 // #undef DEBUG_PRINTF
 template<typename... Args>
-void debug_printf(const wchar_t * format, Args &&... args)
+UnicodeString debug_printf(const wchar_t * format, Args &&... args)
 {
   // UnicodeString Result = nb::Sprintf("Plugin: [%s:%d] %s: ", args...);
   UnicodeString Fmt = format; // TODO: add filename, line info
   UnicodeString Result = fmt::sprintf(Fmt.c_str(), std::forward<Args>(args)...).c_str();
   OutputDebugStringW(Result.c_str());
+  return Result;
 }
 
 #define DEBUG_PRINTF2(format, ...) OutputDebugStringW(nb::Sprintf("Plugin: [%s:%d] %s: " format L"\n", Sysutils::ExtractFilename(__FILEW__, Backslash), __LINE__, ::MB2W(__FUNCTION__), __VA_ARGS__).c_str())
@@ -1115,5 +1116,7 @@ TEST_CASE_METHOD(base_fixture_t, "debugprintf01", "netbox")
 {
   DEBUG_PRINTF2("1");
   debug_printf(L"1: %s", L" ");
-  debug_printf(L"1");
+  UnicodeString Result = debug_printf(L"1");
+  INFO(Result);
+  CHECK(Result == "1");
 }
