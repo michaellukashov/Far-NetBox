@@ -2132,7 +2132,8 @@ void TSearchRecSmart::Clear()
   Name = TFileName();
   ExcludeAttr = 0;
   FindHandle = INVALID_HANDLE_VALUE;
-  memset(&FindData, 0, sizeof(FindData));
+  //memset(&FindData, 0, sizeof(FindData));
+  nb::ClearStruct(FindData);
   FLastWriteTimeSource.dwLowDateTime = 0;
   FLastWriteTimeSource.dwHighDateTime = 0;
 }
