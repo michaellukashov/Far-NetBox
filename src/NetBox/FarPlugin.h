@@ -116,10 +116,10 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomFarPlugin); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TCustomFarPlugin) || TObject::is(Kind); }
   TCustomFarPlugin() = delete;
+  VersionInfo GetMinFarVersion() const;
 public:
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept;
   virtual ~TCustomFarPlugin() override;
-  virtual VersionInfo GetMinFarVersion() const;
   virtual void Initialize();
   virtual void Finalize();
 

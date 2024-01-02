@@ -85,11 +85,6 @@ bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function) const
   return (Function == hfProcessKey || Function == hfProcessPanelEvent);
 }
 
-VersionInfo TWinSCPPlugin::GetMinFarVersion() const
-{
-  return MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
-}
-
 void TWinSCPPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
 {
   try
