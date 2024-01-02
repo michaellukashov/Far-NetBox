@@ -5787,7 +5787,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
   }
   FILE_OPERATION_LOOP_END(FMTLOAD(FILE_NOT_EXISTS, FileName));
 
-  if (FLAGCLEAR(LocalFileAttrs, faDirectory) || (AHandle == INVALID_HANDLE_VALUE))
+  if (FLAGCLEAR(LocalFileAttrs, faDirectory) || (AHandle == nullptr))
   {
     bool NoHandle = false;
     if (!TryWriteReadOnly && (Access == GENERIC_WRITE) &&
@@ -5805,6 +5805,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
         OPEN_EXISTING, Flags);
       if (LocalFileHandle == INVALID_HANDLE_VALUE)
       {
+        LocalFileHandle = INVALID_HANDLE_VALUE;
         ::RaiseLastOSError();
       }
     }
@@ -5844,10 +5845,10 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
         // Get file size
         FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(CANT_GET_ATTRS, ATargetFileName), "")
         {
-          // uint32_t LSize;
+          // DWORD LSize;
           DWORD HSize{0};
-          const uint32_t LSize = ::GetFileSize(LocalFileHandle, &HSize);
-          if ((LSize == nb::ToUInt32(-1)) && (::GetLastError() != NO_ERROR))
+          const DWORD LSize = ::GetFileSize(LocalFileHandle, &HSize);
+          if ((LSize == 0xFFFFFFFF) && (::GetLastError() != NO_ERROR))
           {
             ::RaiseLastOSError();
           }
