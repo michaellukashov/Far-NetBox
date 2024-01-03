@@ -758,7 +758,7 @@ public:
 private:
   std::unique_ptr<TItemList> FList;
 
-  static int32_t Compare(const TObject * AItem1, const TObject * AItem2);
+  static int32_t Compare(const void * AItem1, const void * AItem2);
 };
 
 class TFileOperationProgressType;

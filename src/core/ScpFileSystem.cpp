@@ -1762,8 +1762,6 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TargetDir);
 
   const UnicodeString Options = InitOptionsStr(CopyParam);
-  if (CopyParam->PreserveRights) Options = L"-p";
-  if (FTerminal->SessionData->Scp1Compatibility) Options += L" -1";
 
   FScpFatalError = false;
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,

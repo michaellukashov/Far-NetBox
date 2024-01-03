@@ -3143,10 +3143,10 @@ void TSynchronizeChecklist::Add(TChecklistItem * Item)
   FList->Add(Item);
 }
 
-int32_t TSynchronizeChecklist::Compare(const  TObject * AItem1, const TObject * AItem2)
+int32_t TSynchronizeChecklist::Compare(const void * AItem1, const void  * AItem2)
 {
-  const TChecklistItem * Item1 = cast_to<TChecklistItem>(AItem1);
-  const TChecklistItem * Item2 = cast_to<TChecklistItem>(AItem2);
+  const TChecklistItem * Item1 = cast_to<TChecklistItem>(ToObj(AItem1));
+  const TChecklistItem * Item2 = cast_to<TChecklistItem>(ToObj(AItem2));
 
   int32_t Result;
   if (!Item1->Local.Directory.IsEmpty())

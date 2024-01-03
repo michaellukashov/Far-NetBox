@@ -169,7 +169,7 @@ enum TListNotification
   lnDeleted,
 };
 
-using CompareFunc = int32_t (const TObject * Item1, const TObject * Item2);
+using CompareFunc = int32_t (const void * Item1, const void * Item2);
 
 extern const TObjectClassId OBJECT_CLASS_TListBase;
 template<class O = TObject>
@@ -289,7 +289,8 @@ public:
   {
     if (GetCount() > 1)
     {
-      QuickSort(FList, 0, GetCount() - 1, Func);
+      //QuickSort(FList, 0, GetCount() - 1, Func);
+      std::sort(FList.begin(), FList.end(), [&](void* a, void* b) { return Func(a, b) < 0; });
     }
   }
 
