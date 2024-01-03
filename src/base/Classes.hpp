@@ -72,7 +72,7 @@ public:
   virtual bool is(TObjectClassId Kind) const { return Kind == FKind; }
 
 public:
-  TObject() noexcept : FKind(OBJECT_CLASS_TObject) {}
+  TObject() noexcept : TObject(OBJECT_CLASS_TObject) {}
   explicit TObject(TObjectClassId Kind) noexcept : FKind(Kind) {}
   virtual ~TObject() noexcept = default;
   virtual void Changed() {}
@@ -146,7 +146,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPersistent) || TObject::is(Kind); }
 
 public:
-  TPersistent() noexcept : TObject(OBJECT_CLASS_TPersistent) {}
+  TPersistent() noexcept : TPersistent(OBJECT_CLASS_TPersistent) {}
   explicit TPersistent(TObjectClassId Kind);
   virtual ~TPersistent() noexcept override = default;
   virtual void Assign(const TPersistent * Source);
@@ -180,7 +180,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TListBase) || TPersistent::is(Kind); }
 
 public:
-  TListBase() : TPersistent(OBJECT_CLASS_TListBase) {}
+  TListBase() : TListBase(OBJECT_CLASS_TListBase) {}
   explicit TListBase(TObjectClassId Kind) : TPersistent(Kind) {}
   virtual ~TListBase() noexcept override { TListBase::Clear(); }
 
@@ -332,7 +332,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TList) || TListBase::is(Kind); }
 
 public:
-  TList() : TListBase(OBJECT_CLASS_TList) {}
+  TList() : TList(OBJECT_CLASS_TList) {}
   explicit TList(TObjectClassId Kind) : TListBase(Kind) {}
   virtual ~TList() noexcept override { TList::Clear(); }
 };
@@ -345,8 +345,8 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TObjectList) || TList::is(Kind); }
 
 public:
-  TObjectList();
-  explicit TObjectList(TObjectClassId Kind);
+  TObjectList() : TObjectList(OBJECT_CLASS_TObjectList) {}
+  explicit TObjectList(TObjectClassId Kind) : TList(Kind) {}
   virtual ~TObjectList() noexcept override;
 
   RWProperty2<bool> OwnsObjects{&FOwnsObjects};
@@ -382,8 +382,8 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStrings); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
 public:
-  TStrings() noexcept;
-  explicit TStrings(TObjectClassId Kind) noexcept;
+  TStrings() noexcept : TStrings(OBJECT_CLASS_TStrings) {}
+  explicit TStrings(TObjectClassId Kind) noexcept : TObjectList(Kind) {}
   virtual ~TStrings() noexcept override = default;
   int32_t Add(const UnicodeString & S, const TObject * AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
@@ -447,9 +447,9 @@ protected:
 
 protected:
   TDuplicatesEnum FDuplicates{dupAccept};
-  mutable wchar_t FDelimiter{};
+  mutable wchar_t FDelimiter{L','};
   bool FStrictDelimiter{false};
-  mutable wchar_t FQuoteChar{0};
+  mutable wchar_t FQuoteChar{L'"'};
   int32_t FUpdateCount{0};
 };
 
@@ -500,7 +500,8 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
 public:
-  explicit TStringList(TObjectClassId Kind = OBJECT_CLASS_TStringList) noexcept;
+  TStringList() : TStringList(OBJECT_CLASS_TStringList) {}
+  explicit TStringList(TObjectClassId Kind) noexcept;
   virtual ~TStringList() noexcept override = default;
 
   int32_t Add(const UnicodeString & S);
@@ -562,7 +563,8 @@ public:
   explicit TDateTime(double Value) noexcept : FValue(Value) {}
   explicit TDateTime(uint16_t Hour,
     uint16_t Min, uint16_t Sec, uint16_t MSec = 0);
-  TDateTime(const TDateTime & rhs) noexcept : FValue(rhs.FValue) {}
+  TDateTime(const TDateTime & rhs) noexcept : TDateTime(rhs.FValue) {}
+
   double GetValue() const { return operator double(); }
   int32_t ToInt32() const
   {
@@ -828,8 +830,8 @@ protected:
 class TFileStream final : public THandleStream
 {
 public:
+  TFileStream() = delete;
   explicit TFileStream(const UnicodeString & AFileName, uint16_t Mode);
-  //explicit TFileStream(const UnicodeString & AFileName, uint16_t Mode, uint32_t Rights);
   virtual ~TFileStream() noexcept override;
   UnicodeString GetFileName() const { return FFileName; }
 
@@ -841,9 +843,9 @@ class NB_CORE_EXPORT TSafeHandleStream final : public THandleStream
 {
 public:
   explicit TSafeHandleStream(THandle AHandle) noexcept;
-  TSafeHandleStream(THandleStream * Source, bool Own);
-  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, uint16_t Mode);
+  TSafeHandleStream(gsl::not_null<THandleStream *> Source, bool Own);
   virtual ~TSafeHandleStream() noexcept override;
+  static TSafeHandleStream * CreateFromFile(const UnicodeString & FileName, uint16_t Mode);
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
 private:
@@ -1037,7 +1039,7 @@ private:
 class NB_CORE_EXPORT TShortCut : public TObject
 {
 public:
-  explicit TShortCut() = default;
+  explicit TShortCut() noexcept : TShortCut(0) {}
   explicit TShortCut(int32_t Value) noexcept;
   operator int32_t() const;
   bool operator <(const TShortCut & rhs) const;
