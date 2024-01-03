@@ -19,7 +19,7 @@ TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept :
 }
 
 TCopyParamType::TCopyParamType(const TCopyParamType & Source) noexcept :
-  TObject(OBJECT_CLASS_TCopyParamType)
+  TCopyParamType(OBJECT_CLASS_TCopyParamType)
 {
   TCopyParamType::Assign(&Source);
 }
