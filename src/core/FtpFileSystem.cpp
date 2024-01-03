@@ -2907,7 +2907,14 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_KEEPALIVE:
-      Result = ((Data->GetFtpPingType() != fptOff) ? TRUE : FALSE);
+      /*
+      FIXME: Data may be NULL when called from CFtpControlSocket::OnTimer
+              in the data load thread (when the panel is closed immediately after
+              the end of download operations). On the good, it would be necessary
+              to "kill" the thread (or, although close the socket), but as a
+              temporary measure...
+      */
+      Result = ((Data && Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
       break;
 
     case OPTION_INTERVALLOW:
