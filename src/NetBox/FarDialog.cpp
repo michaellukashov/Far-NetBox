@@ -1970,7 +1970,7 @@ intptr_t TFarCheckBox::ItemProc(intptr_t Msg, void * Param)
     }
     if (Allow)
     {
-      UpdateSelected(reinterpret_cast<intptr_t>(Param));
+      UpdateSelected(nb::ToIntPtr(Param));
     }
     return nb::ToIntPtr(Allow);
   }
