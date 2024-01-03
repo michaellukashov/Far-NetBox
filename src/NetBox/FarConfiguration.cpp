@@ -25,6 +25,8 @@ enum NetBoxConfirmationsSettings
   // NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
 
+const TObjectClassId OBJECT_CLASS_TFarConfiguration = static_cast<TObjectClassId>(nb::counter_id());
+
 TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
   FFarPlugin(APlugin),

@@ -533,6 +533,7 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 
+const TObjectClassId OBJECT_CLASS_TGUIConfiguration = static_cast<TObjectClassId>(nb::counter_id());
 
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) noexcept : TConfiguration(Kind)
 {

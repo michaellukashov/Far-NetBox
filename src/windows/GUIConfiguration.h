@@ -180,7 +180,7 @@ private:
 };
 
 //NB_DEFINE_CLASS_ID(TGUIConfiguration);
-static constexpr const TObjectClassId OBJECT_CLASS_TGUIConfiguration = static_cast<TObjectClassId>(nb::counter_id());
+extern const TObjectClassId OBJECT_CLASS_TGUIConfiguration; // = static_cast<TObjectClassId>(nb::counter_id());
 class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
   NB_DISABLE_COPY(TGUIConfiguration)
