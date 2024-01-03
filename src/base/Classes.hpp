@@ -82,8 +82,8 @@ private:
   TObjectClassId FKind{0};
 };
 
-template<class O> inline O * cast_to(TObject * p) { return static_cast<O *>(p); }
-template<class O> inline const O * cast_to(const TObject * p) { return static_cast<const O *>(p); }
+template<class O> inline O * cast_to(TObject * p) { return rtti::dyn_cast_or_null<O>(p); }
+template<class O> inline const O * cast_to(const TObject * p) { return rtti::dyn_cast_or_null<const O>(p); }
 template <class T>
 inline TObject * ToObj(const T & a) { return reinterpret_cast<TObject *>(nb::ToIntPtr(a)); }
 
