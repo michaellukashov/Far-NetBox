@@ -2823,8 +2823,8 @@ const wchar_t * TFTPFileSystem::GetOption(int32_t OptionID) const
 
 int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
 {
-  TSessionData * Data = FTerminal ? FTerminal->GetSessionData() : nullptr;
-  const TConfiguration * Configuration = FTerminal ? FTerminal->Configuration() : nullptr;
+  const TSessionData * Data = FTerminal ? FTerminal->GetSessionData() : nullptr;
+  const TConfiguration * Configuration = FTerminal ? FTerminal->GetConfiguration() : nullptr;
   int32_t Result;
   TProxyMethod method;
 
@@ -4844,8 +4844,8 @@ void TFTPFileSystem::GetSupportedChecksumAlgs(TStrings * Algs)
 
   for (int32_t Index = 0; Index < FChecksumAlgs->GetCount(); Index++)
   {
-    UnicodeString Alg = FChecksumAlgs->GetString(Index);
-    UnicodeString Command = FChecksumCommands->GetString(Index);
+    const UnicodeString Alg = FChecksumAlgs->GetString(Index);
+    const UnicodeString Command = FChecksumCommands->GetString(Index);
 
     if (SupportsCommand(Command) && (Algs->IndexOf(Alg) < 0))
     {
