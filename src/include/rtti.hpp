@@ -906,17 +906,18 @@ template <class X, class Y>
 
 } // namespace rtti
 
+/*
 template <class X, class Y>
 inline bool isa(const Y * Val)
 {
-  return rtti::isa<X>(Val);
+  return rtti::isa<X, Y>(Val);
 }
 
 template <class X, class Y>
 inline const X * dyn_cast(const Y * Val)
 {
   // return rtti::dyn_cast_or_null<X>(Val);
-  if (Val && isa<X>(Val))
+  if (Val && rtti::isa<X, Y>(Val))
     return static_cast<const X *>(Val);
   return nullptr;
 }
@@ -925,10 +926,11 @@ template <class X, class Y>
 inline X * dyn_cast(Y * Val)
 {
   // return rtti::dyn_cast_or_null<X>(Val);
-  if (Val && isa<X>(Val))
+  if (Val && rtti::isa<X, Y>(Val))
     return static_cast<X *>(Val);
   return nullptr;
 }
+*/
 
 namespace nb {
 // generate unique IDs at compile-time
