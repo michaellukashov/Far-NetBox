@@ -59,7 +59,7 @@ static bool WellKnownException(
     Result = false;
   }
   // EAccessViolation is EExternal
-  else if (isa<EAccessViolation>(E))
+  else if (rtti::isa<EAccessViolation>(E))
   {
     if (Rethrow)
     {
@@ -78,13 +78,13 @@ static bool WellKnownException(
 #if 0
   // EIntError and EMathError are EExternal
   // EClassNotFound is EFilerError
-  else if ((dyn_cast<EListError>(E) != nullptr) ||
-           (dyn_cast<EStringListError>(E) != nullptr) ||
-           (dyn_cast<EIntError>(E) != nullptr) ||
-           (dyn_cast<EMathError>(E) != nullptr) ||
-           (dyn_cast<EVariantError>(E) != nullptr) ||
-           (dyn_cast<EInvalidOperation>(E) != nullptr))
-           (dyn_cast<EFilerError *>(E) != nullptr))
+  else if ((rtti::dyn_cast_or_null<EListError>(E) != nullptr) ||
+           (rtti::dyn_cast_or_null<EStringListError>(E) != nullptr) ||
+           (rtti::dyn_cast_or_null<EIntError>(E) != nullptr) ||
+           (rtti::dyn_cast_or_null<EMathError>(E) != nullptr) ||
+           (rtti::dyn_cast_or_null<EVariantError>(E) != nullptr) ||
+           (rtti::dyn_cast_or_null<EInvalidOperation>(E) != nullptr))
+           (rtti::dyn_cast_or_null<EFilerError *>(E) != nullptr))
   {
     if (Rethrow)
     {
@@ -94,7 +94,7 @@ static bool WellKnownException(
     CounterName = L"InternalExceptions";
     Clone.reset(new EIntError(E->Message));
   }
-  else if (dyn_cast<EExternal>(E) != nullptr)
+  else if (rtti::dyn_cast_or_null<EExternal>(E) != nullptr)
   {
     if (Rethrow)
     {
@@ -104,7 +104,7 @@ static bool WellKnownException(
     CounterName = L"ExternalExceptions";
     Clone.reset(new EExternal(E->Message));
   }
-  else if (dyn_cast<EHeapException>(E) != nullptr)
+  else if (rtti::dyn_cast_or_null<EHeapException>(E) != nullptr)
   {
     if (Rethrow)
     {
@@ -147,7 +147,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
   InternalError = false; // see also IsInternalException
 
   // this list has to be in sync with CloneException
-  if (isa<EAbort>(E))
+  if (rtti::isa<EAbort>(E))
   {
     Result = false;
   }
@@ -217,7 +217,7 @@ TStrings * ExceptionToMoreMessages(Exception * E)
   {
     Result = new TStringList();
     Result->Add(Message);
-    const ExtException * ExtE = dyn_cast<ExtException>(E);
+    const ExtException * ExtE = rtti::dyn_cast_or_null<ExtException>(E);
     if ((ExtE != nullptr) && (ExtE->GetMoreMessages() != nullptr))
     {
       Result->AddStrings(ExtE->GetMoreMessages());
@@ -232,7 +232,7 @@ bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
   if (Result)
   {
     Message += L"\n";
-    const ExtException * EE = dyn_cast<ExtException>(E);
+    const ExtException * EE = rtti::dyn_cast_or_null<ExtException>(E);
     if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
     {
       Message += EE->GetMoreMessages()->GetText() + L"\n";
@@ -244,7 +244,7 @@ bool ExceptionFullMessage(Exception * E, UnicodeString & Message)
 UnicodeString GetExceptionHelpKeyword(const Exception * E)
 {
   UnicodeString HelpKeyword;
-  const ExtException * ExtE = dyn_cast<ExtException>(E);
+  const ExtException * ExtE = rtti::dyn_cast_or_null<ExtException>(E);
   UnicodeString Message; // not used
   bool InternalError = false;
   if (ExtE != nullptr)
@@ -388,7 +388,7 @@ void ExtException::AddMoreMessages(const Exception * E)
       FMoreMessages = new TStringList();
     }
 
-    const ExtException * ExtE = dyn_cast<ExtException>(E);
+    const ExtException * ExtE = rtti::dyn_cast_or_null<ExtException>(E);
     if (ExtE != nullptr)
     {
       if (ExtE->GetMoreMessages() != nullptr)
@@ -481,7 +481,7 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg,
 EFatal::EFatal(TObjectClassId Kind, const Exception * E, const UnicodeString & Msg, const UnicodeString & HelpKeyword) :
   ExtException(Kind, Msg, E, HelpKeyword)
 {
-  const EFatal * F = dyn_cast<EFatal>(E);
+  const EFatal * F = rtti::dyn_cast_or_null<EFatal>(E);
   if (F != nullptr)
   {
     FReopenQueried = F->GetReopenQueried();
@@ -521,16 +521,16 @@ Exception * CloneException(Exception * E)
 {
   Exception * Result{nullptr};
   // this list has to be in sync with ExceptionMessage
-  const ExtException * Ext = dyn_cast<ExtException>(E);
+  const ExtException * Ext = rtti::dyn_cast_or_null<ExtException>(E);
   if (Ext != nullptr)
   {
     Result = Ext->Clone();
   }
-  else if (isa<ECallbackGuardAbort>(E))
+  else if (rtti::isa<ECallbackGuardAbort>(E))
   {
     Result = new ECallbackGuardAbort();
   }
-  else if (isa<EAbort>(E))
+  else if (rtti::isa<EAbort>(E))
   {
     Result = new EAbort(E->Message);
   }
@@ -557,15 +557,15 @@ Exception * CloneException(Exception * E)
 void RethrowException(Exception * E)
 {
   // this list has to be in sync with ExceptionMessage
-  if (isa<ExtException>(E))
+  if (rtti::isa<ExtException>(E))
   {
-    dyn_cast<ExtException>(E)->Rethrow();
+    rtti::dyn_cast_or_null<ExtException>(E)->Rethrow();
   }
-  else if (isa<ECallbackGuardAbort>(E))
+  else if (rtti::isa<ECallbackGuardAbort>(E))
   {
     throw ECallbackGuardAbort();
   }
-  else if (isa<EAbort>(E))
+  else if (rtti::isa<EAbort>(E))
   {
     throw EAbort(E->Message);
   }

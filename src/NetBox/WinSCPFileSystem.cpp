@@ -308,7 +308,7 @@ TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 
 void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
-  if ((GetTerminal() != nullptr) && isa<EFatal>(E))
+  if ((GetTerminal() != nullptr) && rtti::isa<EFatal>(E))
   {
     if (const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr))
     {
@@ -3010,7 +3010,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   }
   catch (Exception & E)
   {
-    EFatal * Fatal = dyn_cast<EFatal>(&E);
+    EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(&E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
     {
       FTerminal->ShowExtendedException(&E);

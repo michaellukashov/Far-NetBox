@@ -970,10 +970,10 @@ UnicodeString ShellQuoteStr(const UnicodeString & Str)
 UnicodeString ExceptionLogString(Exception * E)
 {
   DebugAssert(E);
-  if (isa<Exception>(E))
+  if (rtti::isa<Exception>(E))
   {
     UnicodeString Msg = FORMAT("%s", E->Message);
-    if (isa<ExtException>(E))
+    if (rtti::isa<ExtException>(E))
     {
       const TStrings * MoreMessages = static_cast<ExtException *>(E)->GetMoreMessages();
       if (MoreMessages)

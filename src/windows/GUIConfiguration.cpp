@@ -45,7 +45,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
 
-  const TGUICopyParamType * GUISource = dyn_cast<TGUICopyParamType>(Source);
+  const TGUICopyParamType * GUISource = rtti::dyn_cast_or_null<TGUICopyParamType>(Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);

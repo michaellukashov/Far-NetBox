@@ -2202,7 +2202,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     {
       // EScpFileSkipped is derived from ESkipFile,
       // but is does not indicate file skipped by user here
-      if (isa<EScpFileSkipped>(&E))
+      if (rtti::isa<EScpFileSkipped>(&E))
       {
         Action.Rollback(&E);
       }

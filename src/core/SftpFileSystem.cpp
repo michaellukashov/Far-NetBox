@@ -3797,7 +3797,7 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         catch(Exception & E)
         {
-          if (isa<EFatal>(&E))
+          if (rtti::isa<EFatal>(&E))
           {
             throw;
           }
