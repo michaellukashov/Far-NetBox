@@ -554,7 +554,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
     }
 
     const TWinSCPFileSystem * OppositeFileSystem =
-      static_cast<TWinSCPFileSystem *>(GetOppositeFileSystem());
+      rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetOppositeFileSystem());
     if ((OppositeFileSystem != nullptr) && !OppositeFileSystem->Connected() &&
       !OppositeFileSystem->FLoadingSessionList)
     {
@@ -2952,7 +2952,7 @@ void TWinSCPFileSystem::SaveSession()
   {
     GetSessionData()->SetRemoteDirectory(FTerminal->RemoteGetCurrentDirectory());
 
-    TSessionData * Data = static_cast<TSessionData *>(StoredSessions->FindByName(GetSessionData()->GetName()));
+    TSessionData * Data = rtti::dyn_cast_or_null<TSessionData>(StoredSessions->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;

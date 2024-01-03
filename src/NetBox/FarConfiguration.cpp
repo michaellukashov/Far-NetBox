@@ -333,6 +333,6 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 
 TFarConfiguration * GetFarConfiguration()
 {
-  return static_cast<TFarConfiguration *>(GetConfiguration());
+  return rtti::dyn_cast_or_null<TFarConfiguration>(GetConfiguration());
 }
 

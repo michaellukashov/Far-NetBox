@@ -310,7 +310,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         }
 
         const bool Another = !(Flags & FOSF_ACTIVE);
-        TWinSCPFileSystem * PanelSystem = static_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
+        TWinSCPFileSystem * PanelSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
 
         if (PanelSystem && PanelSystem->Connected() &&
           PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
@@ -418,8 +418,8 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   std::unique_ptr<TFarMenuItems> MenuItems(std::make_unique<TFarMenuItems>());
-  TWinSCPFileSystem * WinSCPFileSystem = static_cast<TWinSCPFileSystem *>(GetPanelFileSystem());
-  TWinSCPFileSystem * AnotherFileSystem = static_cast<TWinSCPFileSystem *>(GetPanelFileSystem(true));
+  TWinSCPFileSystem * WinSCPFileSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
+  TWinSCPFileSystem * AnotherFileSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem(true));
   const bool FSConnected = (WinSCPFileSystem != nullptr) && WinSCPFileSystem->Connected();
   const bool AnotherFSConnected = (AnotherFileSystem != nullptr) && AnotherFileSystem->Connected();
   const bool FSVisible = FSConnected && FromFileSystem;
@@ -579,7 +579,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
       TStrings * MoreMessages = nullptr;
       if (rtti::isa<ExtException>(E))
       {
-        MoreMessages = static_cast<ExtException *>(E)->GetMoreMessages();
+        MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
       }
       const UnicodeString Message = TranslateExceptionMessage(E);
       MoreMessageDialog(Message, MoreMessages, Type, qaOK);

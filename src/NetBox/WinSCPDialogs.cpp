@@ -211,7 +211,7 @@ TTabButton * TTabbedDialog::GetTabButton(int32_t Tab) const
     TObject * Item = GetItem(Index);
     if (rtti::isa<TTabButton>(Item))
     {
-      TTabButton * T = static_cast<TTabButton *>(GetItem(Index));
+      TTabButton * T = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index));
       if ((T != nullptr) && (T->GetTab() == Tab))
       {
         Result = T;
@@ -232,7 +232,7 @@ UnicodeString TTabbedDialog::GetTabName(int32_t Tab) const
 
 void TTabbedDialog::TabButtonClick(TFarButton * Sender, bool & Close)
 {
-  const TTabButton * Tab = static_cast<TTabButton *>(Sender);
+  const TTabButton * Tab = rtti::dyn_cast_or_null<TTabButton>(Sender);
   DebugAssert(Tab != nullptr);
 
   // HideTabs();
@@ -1236,7 +1236,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
     !SessionName.IsEmpty())
     // StoredCredentialsTried)
   {
-    FSessionData = static_cast<TSessionData *>(StoredSessions->FindByName(SessionName));
+    FSessionData = rtti::dyn_cast_or_null<TSessionData>(StoredSessions->FindByName(SessionName));
     ShowSavePassword = (FSessionData != nullptr);
   }
 
@@ -1359,7 +1359,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
 void TPasswordDialog::ShowPromptClick(TFarButton * /*Sender*/,
   bool & /*Close*/)
 {
-  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
 
   WinSCPPlugin->MoreMessageDialog(FPrompt, nullptr, qtInformation, qaOK);
 }
@@ -1733,10 +1733,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Index1 = AddTab(tabDirectories, GetMsg(NB_LOGIN_TAB_DIRECTORIES));
 
   Index1 = AddTab(tabSFTP, GetMsg(NB_LOGIN_TAB_SFTP));
-  SftpTab = static_cast<TTabButton *>(GetItem(Index1));
+  SftpTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabSCP, GetMsg(NB_LOGIN_TAB_SCP));
-  ScpTab = static_cast<TTabButton *>(GetItem(Index1));
+  ScpTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   PrevTab = new TTabButton(this);
   PrevTab->SetTabName(UnicodeString(1, '\x11'));
@@ -1759,29 +1759,29 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   NextTab->SetWidth(PWidth);
 
   Index1 = AddTab(tabFTP, GetMsg(NB_LOGIN_TAB_FTP));
-  FtpTab = static_cast<TTabButton *>(GetItem(Index1));
+  FtpTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabConnection, GetMsg(NB_LOGIN_TAB_CONNECTION));
 
   Index1 = AddTab(tabProxy, GetMsg(NB_LOGIN_TAB_PROXY));
 
   Index1 = AddTab(tabTunnel, GetMsg(NB_LOGIN_TAB_TUNNEL));
-  TunnelTab = static_cast<TTabButton *>(GetItem(Index1));
+  TunnelTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabSsh, GetMsg(NB_LOGIN_TAB_SSH));
-  SshTab = static_cast<TTabButton *>(GetItem(Index1));
+  SshTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabKex, GetMsg(NB_LOGIN_TAB_KEX));
-  KexTab = static_cast<TTabButton *>(GetItem(Index1));
+  KexTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabAuthentication, GetMsg(NB_LOGIN_TAB_AUTH));
-  AuthenticationTab = static_cast<TTabButton *>(GetItem(Index1));
+  AuthenticationTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabBugs, GetMsg(NB_LOGIN_TAB_BUGS));
-  BugsTab = static_cast<TTabButton *>(GetItem(Index1));
+  BugsTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabWebDAV, GetMsg(NB_LOGIN_TAB_WEBDAV));
-  WebDAVTab = static_cast<TTabButton *>(GetItem(Index1));
+  WebDAVTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   // Session tab
 
@@ -3011,7 +3011,7 @@ void TSessionDialog::UpdateControls()
   if (lFtpProtocol && (FtpProxyMethodCombo->GetItemIndex() != pmNone) && !FtpPasvModeCheck->GetChecked())
   {
     FtpPasvModeCheck->SetChecked(true);
-    TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+    TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
     WinSCPPlugin->MoreMessageDialog(GetMsg(NB_FTP_PASV_MODE_REQUIRED),
       nullptr, qtInformation, qaOK);
   }
@@ -4121,7 +4121,7 @@ bool TSessionDialog::CloseQuery()
     (((GetResult() == brOK)) ||
       ((GetResult() == brConnect) && (FAction == saEdit))))
   {
-    TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+    TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
     CanClose = (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_PASSWORD), nullptr,
           qtWarning, qaOK | qaCancel) == qaOK);
   }
@@ -4271,7 +4271,7 @@ void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
   if ((reinterpret_cast<size_t>(NewState) == BSTATE_CHECKED) && !HasGSSAPI(L""))
   {
     Allow = false;
-    TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+    TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
 
     WinSCPPlugin->MoreMessageDialog(GetMsg(NB_GSSAPI_NOT_INSTALLED),
       nullptr, qtError, qaOK);
@@ -5680,7 +5680,7 @@ bool TCopyDialog::CloseQuery()
       const UnicodeString Directory = ::ExtractFilePath(DirectoryEdit->GetText());
       if (!Directory.IsEmpty() && !base::DirectoryExists(Directory))
       {
-        TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+        TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
 
         if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY), Directory),
             nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
@@ -5734,7 +5734,7 @@ void TCopyDialog::CopyParamListerClick(
 
 void TCopyDialog::CustomCopyParam()
 {
-  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
   if (WinSCPPlugin->CopyParamCustomDialog(FCopyParams, FCopyParamAttrs))
   {
     Change();
@@ -6217,7 +6217,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
   }
   else
   {
-    const TLabelList * List = static_cast<TLabelList *>(AControl);
+    const TLabelList * List = rtti::dyn_cast_or_null<TLabelList>(AControl);
     DebugAssert(List != nullptr);
     if (!Value.IsEmpty() && List)
     {
@@ -6232,7 +6232,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
 void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
   int32_t Label, const UnicodeString &) const
 {
-  TLabelList * List = static_cast<TLabelList *>(AControl);
+  TLabelList * List = rtti::dyn_cast_or_null<TLabelList>(AControl);
   if (List != nullptr)
   {
     const UnicodeString S = GetMsg(Label);
@@ -6246,7 +6246,7 @@ void TFileSystemInfoDialog::CalculateMaxLenAddItem(TObject * AControl,
 void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
   int32_t Label, const UnicodeString & Value)
 {
-  const TFarDialogItem * Control = static_cast<TFarDialogItem *>(AControl);
+  const TFarDialogItem * Control = rtti::dyn_cast_or_null<TFarDialogItem>(AControl);
   // check for Enabled instead of Visible, as Visible is false
   // when control is on non-active tab
   if ((!Value.IsEmpty() &&
@@ -6989,7 +6989,7 @@ void TFullSynchronizeDialog::CopyParamListerClick(
 
 void TFullSynchronizeDialog::CustomCopyParam()
 {
-  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
   if (WinSCPPlugin->CopyParamCustomDialog(FCopyParams, ActualCopyParamAttrs()))
   {
     Change();
@@ -7086,7 +7086,7 @@ bool TFullSynchronizeDialog::CloseQuery()
   if (CanClose && (GetResult() == brOK) &&
     SaveSettingsCheck->GetChecked() && (FOrigMode != GetMode()) && !FSaveMode)
   {
-    TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+    TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
 
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_SYNCHRONIZE_MODE), nullptr,
         qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
@@ -7989,7 +7989,7 @@ void TSynchronizeDialog::CopyParamListerClick(
 
 void TSynchronizeDialog::CustomCopyParam()
 {
-  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
   // PreserveTime is forced for some settings, but avoid hard-setting it until
   // user really confirms it on custom dialog
   TCopyParamType ACopyParams = GetCopyParams();
@@ -8121,7 +8121,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
   {
     TMessageParams Params(nullptr);
     Params.Params = qpNeverAskAgainCheck;
-    TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+    TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SYNCHRONISE_BEFORE_KEEPUPTODATE),
         nullptr, qtConfirmation, qaYes | qaNo | qaCancel, &Params))
     {
@@ -8384,7 +8384,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 {
   if (GetQueueItems()->GetSelected() != nb::NPOS)
   {
-    TQueueItemProxy * QueueItem = static_cast<TQueueItemProxy *>(
+    TQueueItemProxy * QueueItem = rtti::dyn_cast_or_null<TQueueItemProxy>(
         GetQueueItems()->Get(GetQueueItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
@@ -8476,7 +8476,7 @@ void TQueueDialog::UpdateControls()
   const TQueueItemProxy * QueueItem = nullptr;
   if (GetQueueItems()->GetSelected() >= 0)
   {
-    QueueItem = static_cast<TQueueItemProxy *>(
+    QueueItem = rtti::dyn_cast_or_null<TQueueItemProxy>(
         GetQueueItems()->Get(GetQueueItems()->GetSelected()));
   }
 
@@ -8531,7 +8531,7 @@ bool TQueueDialog::CloseQuery()
   bool Result = TFarDialog::CloseQuery();
   if (Result)
   {
-    TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+    TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
     Result = !FClosingPlugin || (FStatus->GetCount() == 0) ||
       (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_QUEUE_PENDING_ITEMS), nullptr,
           qtWarning, qaOK | qaCancel) == qaCancel);
@@ -8582,7 +8582,7 @@ void TQueueDialog::RefreshQueue()
     while ((Index < GetQueueItems()->GetCount()) &&
       (Index < TopIndex + QueueListBox->GetHeight()))
     {
-      TQueueItemProxy * QueueItem = static_cast<TQueueItemProxy *>(
+      TQueueItemProxy * QueueItem = rtti::dyn_cast_or_null<TQueueItemProxy>(
         GetQueueItems()->Get(Index));
       DebugAssert(QueueItem != nullptr);
       if ((PrevQueueItem != nullptr) && (QueueItem != PrevQueueItem))

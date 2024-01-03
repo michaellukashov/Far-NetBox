@@ -1460,7 +1460,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   TSessionData * PuttySessionData =
-    static_cast<TSessionData *>(ImportSessionList->FindByName(GetPuttySession()));
+    rtti::dyn_cast_or_null<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);
