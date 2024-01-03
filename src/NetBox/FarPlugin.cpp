@@ -1542,8 +1542,8 @@ void TCustomFarPlugin::ShowTerminalScreen(const UnicodeString & Command)
     // if any panel is visible -- clear all screen (don't scroll panel)
     {
       PanelInfo Info{};
-      Info.StructSize = sizeof(Info);
       nb::ClearStruct(Info);
+      Info.StructSize = sizeof(Info);
       FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_ACTIVE);
       if(Info.Flags & PFLAGS_VISIBLE)
         goto clearall;
