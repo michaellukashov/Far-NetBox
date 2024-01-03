@@ -41,7 +41,7 @@ public:
 class TMockWinSCPPlugin : public TWinSCPPlugin
 {
 public:
-    TMockWinSCPPlugin() : TMockWinSCPPlugin(nullptr) {}
+  TMockWinSCPPlugin() : TMockWinSCPPlugin(nullptr) {}
   TMockWinSCPPlugin(HINSTANCE HInst) : TWinSCPPlugin(HInst)
   {
     ON_CALL(*this, GetModuleName())
@@ -166,4 +166,27 @@ TEST_CASE_METHOD(base_fixture_t, "testRemoteFileSetListingStr", "netbox")
     INFO("FileName2: " << RemoteFile2.GetFileName());
     CHECK(RemoteFile2.GetFileName() == "TZ2");
   }
+}
+
+TEST_CASE_METHOD(base_fixture_t, "dyncast01", "netbox")
+{
+  // TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
+  TConfiguration * Configuration = GetConfiguration();
+  CHECK(Configuration);
+  {
+    TGUIConfiguration * GUIConfiguration = cast_to<TGUIConfiguration>(Configuration);
+    CHECK(GUIConfiguration);
+  }
+  {
+    TGUIConfiguration * GUIConfiguration = rtti::dyn_cast_or_null<TGUIConfiguration>(Configuration);
+    CHECK(GUIConfiguration);
+  }
+  {
+    TGUIConfiguration * GUIConfiguration = rtti::dyn_cast_or_null<TGUIConfiguration>(Configuration);
+    CHECK(GUIConfiguration);
+  }
+  TGUICopyParamType GUICopyParamType;
+  TGUICopyParamType & DefaultCopyParam = GUICopyParamType; // GUIConfiguration1->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam(DefaultCopyParam);
+  CHECK(CopyParam.GetQueue() == false);
 }

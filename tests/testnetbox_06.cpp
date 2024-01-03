@@ -1,5 +1,6 @@
-//------------------------------------------------------------------------------
 // testnetbox_06.cpp
+// How to run:
+// testnetbox_06.exe dyncast01
 //------------------------------------------------------------------------------
 #include <vcl.h>
 #pragma hdrstop
@@ -12,8 +13,10 @@
 #include <type_traits>
 
 #include "testutils.h"
-//#include <gmock/gmock.h>
+
 #include <UnicodeString.hpp>
+#include <GUIConfiguration.h>
+#include <CoreMain.h>
 
 #define CATCH_CONFIG_MAIN
 #define CATCH_CONFIG_CPP11_NO_SHUFFLE
@@ -93,22 +96,22 @@ TEST_CASE_METHOD(base_fixture_t, "testIsA01", "netbox")
   TPersistent per1;
   SECTION("isa")
   {
-    CHECK(isa<TObject>(&obj1));
-    CHECK(isa<TObject>(&per1));
-    CHECK(isa<TPersistent>(&per1));
-    CHECK(!isa<TPersistent>(&obj1));
+    CHECK(rtti::isa<TObject>(&obj1));
+    CHECK(rtti::isa<TObject>(&per1));
+    CHECK(rtti::isa<TPersistent>(&per1));
+    CHECK(!rtti::isa<TPersistent>(&obj1));
   }
   SECTION("dyn_cast")
   {
-    TObject *obj2 = dyn_cast<TObject>(&obj1);
+    TObject *obj2 = rtti::dyn_cast_or_null<TObject>(&obj1);
     CHECK(obj2 != nullptr);
-    TPersistent *per2 = dyn_cast<TPersistent>(&per1);
+    TPersistent *per2 = rtti::dyn_cast_or_null<TPersistent>(&per1);
     CHECK(per2 != nullptr);
-    TObject *obj3 = dyn_cast<TObject>(per2);
+    TObject *obj3 = rtti::dyn_cast_or_null<TObject>(per2);
     CHECK(obj3 != nullptr);
-    TPersistent *per3 = dyn_cast<TPersistent>(obj3);
+    TPersistent *per3 = rtti::dyn_cast_or_null<TPersistent>(obj3);
     CHECK(per3 != nullptr);
-    TPersistent *per4 = dyn_cast<TPersistent>(&obj1);
+    TPersistent *per4 = rtti::dyn_cast_or_null<TPersistent>(&obj1);
     CHECK(per4 == nullptr);
   }
 }
