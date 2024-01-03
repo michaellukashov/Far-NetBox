@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <type_traits>
 
 #include <Common.h>
 #include <FileBuffer.h>
@@ -20,6 +21,7 @@
 #include "WinSCPPlugin.h"
 #include "GUITools.h"
 #include "GUIConfiguration.h"
+#include "FarConfiguration.h"
 #include "CoreMain.h"
 
 #include "testutils.h"
@@ -171,18 +173,32 @@ TEST_CASE_METHOD(base_fixture_t, "testRemoteFileSetListingStr", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "dyncast01", "netbox")
 {
   // TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
-  TConfiguration * Configuration = GetConfiguration();
-  CHECK(Configuration);
+  TConfiguration * Conf = GetConfiguration();
+  CHECK(Conf);
+  // WARN((int)Conf->FKind);
+  // WARN((int)OBJECT_CLASS_TFarConfiguration);
+  // WARN((int)OBJECT_CLASS_TStoredSessionList);
+  // NB_DEFINE_CLASS_ID2(TFarConfiguration2);
+  // __pragma(message ("TFarConfiguration2: " GSL_STRINGIFY(OBJECT_CLASS_TFarConfiguration2)))
+  bool is; // = Conf->FKind == OBJECT_CLASS_TFarConfiguration;
   {
-    TGUIConfiguration * GUIConfiguration = cast_to<TGUIConfiguration>(Configuration);
+    TGUIConfiguration * GUIConfiguration = cast_to<TGUIConfiguration>(Conf);
     CHECK(GUIConfiguration);
   }
+  // TFarConfiguration : public TGUIConfiguration
+  static_assert(std::is_base_of<TConfiguration, TGUIConfiguration>::value, "check");
+  static_assert(std::is_base_of<TGUIConfiguration, TFarConfiguration>::value, "check");
   {
-    TGUIConfiguration * GUIConfiguration = rtti::dyn_cast_or_null<TGUIConfiguration>(Configuration);
-    CHECK(GUIConfiguration);
-  }
-  {
-    TGUIConfiguration * GUIConfiguration = rtti::dyn_cast_or_null<TGUIConfiguration>(Configuration);
+    is = rtti::isa<TConfiguration>(Conf);
+    CHECK(is);
+    // is = rtti::isa<TFarConfiguration, TGUIConfiguration, TConfiguration>(Configuration);
+    is = rtti::isa<TGUIConfiguration>(Conf);
+    CHECK(is);
+    is = rtti::isa<TFarConfiguration>(Conf);
+    CHECK(is);
+    // is = Conf->FKind == OBJECT_CLASS_TFarConfiguration;
+    // CHECK(is);
+    TGUIConfiguration * GUIConfiguration = rtti::dyn_cast_or_null<TGUIConfiguration>(Conf);
     CHECK(GUIConfiguration);
   }
   TGUICopyParamType GUICopyParamType;
