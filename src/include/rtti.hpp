@@ -59,6 +59,11 @@ template<typename From> struct simplify_type<const From>
 // isa_impl
 //===----------------------------------------------------------------------===//
 
+template <typename To, typename From> struct isa_impl_p
+{
+  static inline bool doit(const From * Val) { return To::classof(Val); }
+};
+
 // The core of the implementation of isa<X> is here; To and From should be
 // the names of classes.  This template can be specialized to customize the
 // implementation of isa<> without rewriting it from scratch.
@@ -105,7 +110,7 @@ template <typename To, typename From> struct isa_impl_cl<To, From*>
   static inline bool doit(const From* Val)
   {
     assert(Val && "isa<> used on a null pointer");
-    return isa_impl<To, From>::doit(*Val);
+    return isa_impl_p<To, From>::doit(Val);
   }
 };
 
@@ -114,7 +119,7 @@ template <typename To, typename From> struct isa_impl_cl<To, From* const>
   static inline bool doit(const From* Val)
   {
     assert(Val && "isa<> used on a null pointer");
-    return isa_impl<To, From>::doit(*Val);
+    return isa_impl_p<To, From>::doit(Val);
   }
 };
 
@@ -123,7 +128,8 @@ template <typename To, typename From> struct isa_impl_cl<To, const From*>
   static inline bool doit(const From* Val)
   {
     assert(Val && "isa<> used on a null pointer");
-    return isa_impl<To, From>::doit(*Val);
+    // return isa_impl<To, From>::doit(*Val);
+    return isa_impl_p<To, From>::doit(Val);
   }
 };
 
@@ -133,7 +139,7 @@ struct isa_impl_cl<To, const From* const>
   static inline bool doit(const From* Val)
   {
     assert(Val && "isa<> used on a null pointer");
-    return isa_impl<To, From>::doit(*Val);
+    return isa_impl_p<To, From>::doit(Val);
   }
 };
 
@@ -604,7 +610,7 @@ template <typename To, typename From>
 struct CastInfo<To, std::optional<From>> : public OptionalValueCast<To, From>
 {
 };
-
+/*
 /// isa<X> - Return true if the parameter to the template is an instance of one
 /// of the template type arguments.  Used like this:
 ///
@@ -620,6 +626,12 @@ template <typename First, typename Second, typename... Rest, typename From>
 [[nodiscard]] inline bool isa(const From& Val)
 {
   return isa<First>(Val) || isa<Second, Rest...>(Val);
+}
+*/
+template <typename To, typename From>
+[[nodiscard]] inline bool isa(const From * Val)
+{
+  return isa_impl_p<To, From>::doit(Val);
 }
 
 /// cast<X> - Return the argument parameter cast to the specified type.  This
