@@ -61,7 +61,7 @@ class Exception;
 using TThreadMethod = nb::FastDelegate0<void>;
 using TNotifyEvent = nb::FastDelegate1<void, TObject * /*Sender*/>;
 
-using TObjectClassId = uint32_t;
+using TObjectClassId = uint16_t;
 
 extern const TObjectClassId OBJECT_CLASS_TObject;
 class NB_CORE_EXPORT TObject
