@@ -7,7 +7,7 @@ class TCustomFarPlugin;
 class TBookmarks;
 class TBookmarkList;
 
-// SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav,s3");
+// DefaultCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav,s3");
 constexpr const wchar_t * DefaultCommandPrefixes = L"netbox,ftp,scp,sftp,ftps,webdav,s3";
 
 // NB_DEFINE_CLASS_ID(TFarConfiguration);
