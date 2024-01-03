@@ -1401,11 +1401,11 @@ class MakeValue : public Arg {
   //   fmt::format("{}", L"test");
   // To fix this, use a wide format string: fmt::format(L"{}", L"test").
 #if !FMT_MSC_VER || defined(_NATIVE_WCHAR_T_DEFINED)
-  MakeValue(typename WCharHelper<wchar_t, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<wchar_t, Char>::Unsupported);
 #endif
-  MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
-  MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
-  MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<wchar_t *, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<const wchar_t *, Char>::Unsupported);
+  explicit MakeValue(typename WCharHelper<const std::wstring &, Char>::Unsupported);
 #if FMT_HAS_STRING_VIEW
   MakeValue(typename WCharHelper<const std::wstring_view &, Char>::Unsupported);
 #endif
@@ -2577,7 +2577,7 @@ inline uint64_t make_type(FMT_GEN15(FMT_ARG_TYPE_DEFAULT)) {
 */
 class SystemError : public internal::RuntimeError {
  private:
-  FMT_API void init(int err_code, CStringRef format_str, ArgList args);
+  FMT_API virtual void init(int err_code, CStringRef format_str, ArgList args);
 
  protected:
   int error_code_{0};
@@ -2606,8 +2606,9 @@ class SystemError : public internal::RuntimeError {
    \endrst
   */
   SystemError(int error_code, CStringRef message) {
-    init(error_code, message, ArgList());
+    SystemError::init(error_code, message, ArgList());
   }
+  SystemError& operator=(const SystemError&) { return *this; }
   FMT_DEFAULTED_COPY_CTOR(SystemError)
   FMT_VARIADIC_CTOR(SystemError, init, int, CStringRef)
 
@@ -3428,7 +3429,7 @@ FMT_API void report_system_error(int error_code,
 /** A Windows error. */
 class WindowsError : public SystemError {
  private:
-  FMT_API void init(int error_code, CStringRef format_str, ArgList args);
+  FMT_API void init(int error_code, CStringRef format_str, ArgList args) override;
 
  public:
   /**
@@ -3460,7 +3461,7 @@ class WindowsError : public SystemError {
    \endrst
   */
   WindowsError(int error_code, CStringRef message) {
-    init(error_code, message, ArgList());
+    WindowsError::init(error_code, message, ArgList());
   }
   FMT_VARIADIC_CTOR(WindowsError, init, int, CStringRef)
 };
