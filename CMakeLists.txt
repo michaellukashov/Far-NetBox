@@ -379,7 +379,7 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   libs/openssl-3/crypto/modes/aesni-gcm-x86_64.asm
   libs/openssl-3/crypto/modes/aes-gcm-avx512.asm
 )
-else()
+elseif(PROJECT_PLATFORM STREQUAL "x86")
 compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   libs/openssl-3/crypto/aes/libcrypto-lib-vpaes-x86.obj.asm
   libs/openssl-3/crypto/aes/libcrypto-lib-aesni-x86.obj.asm
@@ -406,6 +406,7 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   libs/openssl-3/crypto/sha/libcrypto-lib-sha1-586.obj.asm
   libs/openssl-3/crypto/whrlpool/libcrypto-lib-wp-mmx.obj.asm
 )
+# TODO: check PROJECT_PLATFORM STREQUAL "ARM64")
 endif()
 
 #message("libeay32_obj_files: ${libeay32_obj_files}")
@@ -2310,6 +2311,7 @@ add_custom_target(NetBoxResources SOURCES
   src/NetBox/NetBoxSpa.lng
   src/NetBox/resource.h.template
   src/NetBox/NetBox.rc.template
+  .github/workflows/release.yml
 )
 
 if(MSVC)
