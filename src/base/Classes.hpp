@@ -64,7 +64,8 @@ using TNotifyEvent = nb::FastDelegate1<void, TObject * /*Sender*/>;
 enum class TObjectClassId {};
 #define NB_DEFINE_CLASS_ID(CLASS_ID) static constexpr const TObjectClassId OBJECT_CLASS_ ## CLASS_ID = static_cast<TObjectClassId>(nb::counter_id())
 
-NB_DEFINE_CLASS_ID(TObject);
+//NB_DEFINE_CLASS_ID(TObject);
+static constexpr const TObjectClassId OBJECT_CLASS_TObject = static_cast<TObjectClassId>(nb::counter_id());
 class NB_CORE_EXPORT TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
