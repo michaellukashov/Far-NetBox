@@ -2255,7 +2255,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
       else
       {
         FTerminal->RemoteChangeDirectory(ADir);
-        FCurrentDirectoryWasChanged = true;
+        FCurrentDirectoryWasChanged = Normal;
       }
     }
 
