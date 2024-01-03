@@ -40,7 +40,7 @@ class TFileZillaImpl final : public TFileZillaIntf
 {
 public:
   TFileZillaImpl() = delete;
-  explicit TFileZillaImpl(TFTPFileSystem * FileSystem) noexcept;
+  explicit TFileZillaImpl(gsl::not_null<TFTPFileSystem *> FileSystem) noexcept;
   virtual ~TFileZillaImpl() = default;
 
   virtual const wchar_t * Option(int32_t OptionID) const override;
@@ -75,10 +75,10 @@ protected:
   virtual void SetupSsl(ssl_st * Ssl);
 
 private:
-  TFTPFileSystem * FFileSystem{nullptr};
+  gsl::not_null<TFTPFileSystem *> FFileSystem;
 };
 
-TFileZillaImpl::TFileZillaImpl(TFTPFileSystem * FileSystem) noexcept :
+TFileZillaImpl::TFileZillaImpl(gsl::not_null<TFTPFileSystem *> FileSystem) noexcept :
   TFileZillaIntf(),
   FFileSystem(FileSystem)
 {
