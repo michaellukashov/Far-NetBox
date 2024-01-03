@@ -1560,8 +1560,7 @@ clearall:
     do
     {
       Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
-    }
-    while(++Y < Size.y);
+    } while (++Y < Size.y);
     if(Command.Length() && Size.x > 2)
     {
       Blank = Command;
