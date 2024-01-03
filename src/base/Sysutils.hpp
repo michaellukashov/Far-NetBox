@@ -74,8 +74,15 @@ constexpr const TDayTable MonthDays[] = {
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
+extern const TObjectClassId OBJECT_CLASS_Exception;
+extern const TObjectClassId OBJECT_CLASS_EAbort;
+extern const TObjectClassId OBJECT_CLASS_EAccessViolation;
+extern const TObjectClassId OBJECT_CLASS_EFileNotFoundError;
+extern const TObjectClassId OBJECT_CLASS_EOSError;
+extern const TObjectClassId OBJECT_CLASS_EInvalidOperation;
+extern const TObjectClassId OBJECT_CLASS_EConvertError;
+extern const TObjectClassId OBJECT_CLASS_EDirectoryNotFoundException;
 
-NB_DEFINE_CLASS_ID(Exception);
 class NB_CORE_EXPORT Exception : public std::runtime_error
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -104,7 +111,6 @@ public:
   UnicodeString Message;
 };
 
-NB_DEFINE_CLASS_ID(EAbort);
 class NB_CORE_EXPORT EAbort : public Exception
 {
 public:
@@ -115,7 +121,6 @@ public:
   explicit EAbort(TObjectClassId Kind, const UnicodeString & What) noexcept : Exception(Kind, What) {}
 };
 
-NB_DEFINE_CLASS_ID(EAccessViolation);
 class NB_CORE_EXPORT EAccessViolation : public Exception
 {
 public:
@@ -125,7 +130,6 @@ public:
   explicit EAccessViolation(const UnicodeString & What) noexcept : Exception(OBJECT_CLASS_EAccessViolation, What) {}
 };
 
-NB_DEFINE_CLASS_ID(EFileNotFoundError);
 class NB_CORE_EXPORT EFileNotFoundError : public Exception
 {
 public:
@@ -135,7 +139,6 @@ public:
   EFileNotFoundError() noexcept : Exception(OBJECT_CLASS_EFileNotFoundError, L"") {}
 };
 
-NB_DEFINE_CLASS_ID(EOSError);
 class NB_CORE_EXPORT EOSError : public Exception
 {
 public:
@@ -150,7 +153,6 @@ public:
   DWORD ErrorCode{0};
 };
 
-NB_DEFINE_CLASS_ID(EInvalidOperation);
 class NB_CORE_EXPORT EInvalidOperation : public Exception
 {
 public:
@@ -388,7 +390,6 @@ public:
 // NB_CORE_EXPORT void InitPlatformId();
 NB_CORE_EXPORT bool Win32Check(bool RetVal);
 
-NB_DEFINE_CLASS_ID(EConvertError);
 class NB_CORE_EXPORT EConvertError : public Exception
 {
 public:
@@ -670,7 +671,6 @@ extern UnicodeString EmptyStr;
 
 bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName);
 
-NB_DEFINE_CLASS_ID(EDirectoryNotFoundException);
 class NB_CORE_EXPORT EDirectoryNotFoundException final : public Exception
 {
 public:

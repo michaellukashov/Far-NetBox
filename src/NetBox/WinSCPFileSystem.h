@@ -78,7 +78,7 @@ struct TEditHistory final : public TObject
 using TProcessSessionEvent = nb::FastDelegate2<void,
   TSessionData * /*Data*/, void * /*Param*/>;
 
-NB_DEFINE_CLASS_ID(TWinSCPFileSystem);
+extern const TObjectClassId OBJECT_CLASS_TWinSCPFileSystem;
 class TWinSCPFileSystem final : public TCustomFarFileSystem
 {
   friend class TWinSCPPlugin;
@@ -357,7 +357,7 @@ private:
   bool FCurrentDirectoryWasChanged{false};
 };
 
-NB_DEFINE_CLASS_ID(TSessionPanelItem);
+extern const TObjectClassId OBJECT_CLASS_TSessionPanelItem;
 class TSessionPanelItem final : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TSessionPanelItem)
@@ -378,7 +378,7 @@ protected:
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) override;
 };
 
-NB_DEFINE_CLASS_ID(TSessionFolderPanelItem);
+extern const TObjectClassId OBJECT_CLASS_TSessionFolderPanelItem;
 class TSessionFolderPanelItem : public TCustomFarPanelItem
 {
 public:
@@ -395,7 +395,7 @@ protected:
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) override;
 };
 
-NB_DEFINE_CLASS_ID(TRemoteFilePanelItem);
+extern const TObjectClassId OBJECT_CLASS_TRemoteFilePanelItem;
 class TRemoteFilePanelItem final : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TRemoteFilePanelItem)

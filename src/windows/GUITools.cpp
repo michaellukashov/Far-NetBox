@@ -162,7 +162,7 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
   return Result;
 }
 
-NB_DEFINE_CLASS_ID(TPuttyCleanupThread);
+const TObjectClassId OBJECT_CLASS_TPuttyCleanupThread = static_cast<TObjectClassId>(nb::counter_id());
 class TPuttyCleanupThread : public TSimpleThread
 {
 public:
@@ -302,7 +302,7 @@ void TPuttyCleanupThread::DoSchedule()
   FTimer = IncSecond(Now(), 10);
 }
 
-NB_DEFINE_CLASS_ID(TPuttyPasswordThread);
+const TObjectClassId OBJECT_CLASS_TPuttyPasswordThread = static_cast<TObjectClassId>(nb::counter_id());
 class TPuttyPasswordThread final : public TSimpleThread
 {
 public:

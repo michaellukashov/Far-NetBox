@@ -22,7 +22,14 @@ static bool MustSkipClose = false;
 
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
-static constexpr const TObjectClassId OBJECT_CLASS_TPluginIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomFarPlugin = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TPluginIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomFarFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomFarPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_THintPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarMenuItems = static_cast<TObjectClassId>(nb::counter_id());
+
 class TPluginIdleThread : public TSimpleThread
 {
   TPluginIdleThread() = delete;
@@ -960,7 +967,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     {
       for (int32_t PIndex = 0; PIndex < GetItemCount(); ++PIndex)
       {
-        TFarButton * PrevButton2 = static_cast<TFarButton *>(GetItem(PIndex));
+        TFarButton * PrevButton2 = rtti::dyn_cast_or_null<TFarButton>(GetItem(PIndex));
         if ((PrevButton2 != nullptr) && (PrevButton2 != Button))
         {
           PrevButton2->Move(0, -1);
@@ -1053,7 +1060,7 @@ void TFarMessageDialog::Change()
     {
       for (int32_t Index = 0; Index < GetItemCount(); ++Index)
       {
-        TFarButton * Button = static_cast<TFarButton *>(GetItem(Index));
+        TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(Index));
         if ((Button != nullptr) && (Button->GetTag() == 0))
         {
           Button->SetEnabled(!FCheckBox->GetChecked());
@@ -1580,7 +1587,7 @@ void TCustomFarPlugin::SaveTerminalScreen()
   FarControl(FCTL_SETUSERSCREEN, 0, nullptr);
 }
 
-NB_DEFINE_CLASS_ID(TConsoleTitleParam);
+const TObjectClassId OBJECT_CLASS_TConsoleTitleParam = static_cast<TObjectClassId>(nb::counter_id());
 class TConsoleTitleParam : public TObject
 {
 public:
@@ -1620,7 +1627,7 @@ void TCustomFarPlugin::ClearConsoleTitle()
   {
     const UnicodeString Title = FSavedTitles->GetString(FSavedTitles->GetCount() - 1);
     TObject * Object = FSavedTitles->Get(FSavedTitles->GetCount() - 1);
-    const TConsoleTitleParam * Param = static_cast<TConsoleTitleParam *>(Object);
+    const TConsoleTitleParam * Param = rtti::dyn_cast_or_null<TConsoleTitleParam>(Object);
     if (Param->Own)
     {
       FCurrentTitle = Title;
@@ -3136,12 +3143,12 @@ bool TGlobalFunctions::InputDialog(const UnicodeString & ACaption, const Unicode
   DebugUsedParam(OnInitialize);
   DebugUsedParam(Echo);
 
-  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
   return WinSCPPlugin->InputBox(ACaption, APrompt, Value, 0);
 }
 
 uint32_t TGlobalFunctions::MoreMessageDialog(const UnicodeString & AMessage, TStrings * MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams * Params)
 {
-  TWinSCPPlugin * WinSCPPlugin = static_cast<TWinSCPPlugin *>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
   return WinSCPPlugin->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
 }

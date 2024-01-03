@@ -30,7 +30,7 @@ using TFarProcessGroupEvent = nb::FastDelegate2<void,
 
 class TDialogIdleThread;
 
-NB_DEFINE_CLASS_ID(TFarDialog);
+extern const TObjectClassId OBJECT_CLASS_TFarDialog;
 class TFarDialog : public TObject
 {
   friend class TFarDialogItem;
@@ -158,7 +158,7 @@ private:
   TThreadMethod FSynchronizeMethod;
 };
 
-NB_DEFINE_CLASS_ID(TFarDialogContainer);
+extern const TObjectClassId OBJECT_CLASS_TFarDialogContainer;
 class TFarDialogContainer : public TObject
 {
   friend class TFarDialog;
@@ -200,7 +200,7 @@ private:
 
 constexpr const int32_t DIF_INVERSE = 0x00000001UL;
 
-NB_DEFINE_CLASS_ID(TFarDialogItem);
+extern const TObjectClassId OBJECT_CLASS_TFarDialogItem;
 class TFarDialogItem : public TObject
 {
   friend class TFarDialog;
@@ -354,7 +354,7 @@ private:
   bool FIsEnabled{false};
 };
 
-NB_DEFINE_CLASS_ID(TFarBox);
+extern const TObjectClassId OBJECT_CLASS_TFarBox;
 class TFarBox : public TFarDialogItem
 {
 public:
@@ -377,7 +377,7 @@ enum TFarButtonBrackets
   brNormal
 };
 
-NB_DEFINE_CLASS_ID(TFarButton);
+extern const TObjectClassId OBJECT_CLASS_TFarButton;
 class TFarButton : public TFarDialogItem
 {
 public:
@@ -418,7 +418,7 @@ private:
 using TFarAllowChangeEvent = nb::FastDelegate3<void,
   TFarDialogItem * /*Sender*/, void * /*NewState*/, bool & /*AllowChange*/>;
 
-NB_DEFINE_CLASS_ID(TFarCheckBox);
+extern const TObjectClassId OBJECT_CLASS_TFarCheckBox;
 class TFarCheckBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarCheckBox)
@@ -446,7 +446,7 @@ protected:
   virtual void SetData(const UnicodeString & Value) override;
 };
 
-NB_DEFINE_CLASS_ID(TFarRadioButton);
+extern const TObjectClassId OBJECT_CLASS_TFarRadioButton;
 class TFarRadioButton : public TFarDialogItem
 {
 public:
@@ -466,7 +466,7 @@ protected:
   virtual void SetData(const UnicodeString & Value) override;
 };
 
-NB_DEFINE_CLASS_ID(TFarEdit);
+extern const TObjectClassId OBJECT_CLASS_TFarEdit;
 class TFarEdit : public TFarDialogItem
 {
 public:
@@ -503,7 +503,7 @@ private:
   void SetHistoryMask(size_t Index, const UnicodeString & Value);
 };
 
-NB_DEFINE_CLASS_ID(TFarSeparator);
+extern const TObjectClassId OBJECT_CLASS_TFarSeparator;
 class TFarSeparator : public TFarDialogItem
 {
 public:
@@ -520,7 +520,7 @@ protected:
   virtual void ResetBounds() override;
 };
 
-NB_DEFINE_CLASS_ID(TFarText);
+extern const TObjectClassId OBJECT_CLASS_TFarText;
 class TFarText : public TFarDialogItem
 {
 public:
@@ -544,7 +544,7 @@ class TFarListBox;
 class TFarComboBox;
 class TFarLister;
 
-NB_DEFINE_CLASS_ID(TFarList);
+extern const TObjectClassId OBJECT_CLASS_TFarList;
 class TFarList : public TStringList
 {
   friend class TFarListBox;
@@ -604,7 +604,7 @@ enum TFarListBoxAutoSelect
   asNever
 };
 
-NB_DEFINE_CLASS_ID(TFarListBox);
+extern const TObjectClassId OBJECT_CLASS_TFarListBox;
 class TFarListBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarListBox)
@@ -645,7 +645,7 @@ private:
   bool FDenyClose{false};
 };
 
-NB_DEFINE_CLASS_ID(TFarComboBox);
+extern const TObjectClassId OBJECT_CLASS_TFarComboBox;
 class TFarComboBox : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarComboBox)
@@ -679,7 +679,7 @@ private:
   std::unique_ptr<TFarList> FList;
 };
 
-NB_DEFINE_CLASS_ID(TFarLister);
+extern const TObjectClassId OBJECT_CLASS_TFarLister;
 class TFarLister : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarLister)

@@ -44,6 +44,8 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+
 // #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
 constexpr const char * SESSION_CONTEXT_KEY = "sessioncontext";
@@ -2215,7 +2217,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
 
 void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
 {
-  const TWebDAVFileSystem * MainFileSystem = static_cast<TWebDAVFileSystem *>(AMainFileSystem);
+  const TWebDAVFileSystem * MainFileSystem = rtti::dyn_cast_or_null<TWebDAVFileSystem>(AMainFileSystem);
   if (DebugAlwaysTrue(MainFileSystem != nullptr))
   {
     TGuard Guard(FNeonLockStoreSection); nb::used(Guard);

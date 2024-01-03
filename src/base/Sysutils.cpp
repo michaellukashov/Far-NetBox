@@ -11,6 +11,15 @@
 #include <Sysutils.hpp>
 #include <nbutils.h>
 
+const TObjectClassId OBJECT_CLASS_Exception = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EAbort = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EAccessViolation = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EFileNotFoundError = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EOSError = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EInvalidOperation = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EConvertError = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EDirectoryNotFoundException = static_cast<TObjectClassId>(nb::counter_id());
+
 UnicodeString MB2W(const char * src, const UINT cp)
 {
   UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);

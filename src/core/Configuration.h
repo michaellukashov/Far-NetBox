@@ -76,8 +76,7 @@ class TSessionLog;
 class TFTPFileSystem;
 class TSTSFTPFileSystemFTPFileSystem;
 
-//NB_DEFINE_CLASS_ID(TConfiguration);
-static constexpr const TObjectClassId OBJECT_CLASS_TConfiguration = static_cast<TObjectClassId>(nb::counter_id());
+extern const TObjectClassId OBJECT_CLASS_TConfiguration;
 class NB_CORE_EXPORT TConfiguration : public TObject
 {
   NB_DISABLE_COPY(TConfiguration)

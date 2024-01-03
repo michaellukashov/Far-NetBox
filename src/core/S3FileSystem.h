@@ -32,7 +32,7 @@ enum _S3Protocol { };
 enum S3Permission { };
 #endif
 
-NB_DEFINE_CLASS_ID(TS3FileSystem);
+extern const TObjectClassId OBJECT_CLASS_TS3FileSystem;
 class NB_CORE_EXPORT TS3FileSystem final : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TS3FileSystem)

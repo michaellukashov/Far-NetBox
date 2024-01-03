@@ -20,6 +20,11 @@
 #include "XmlStorage.h"
 #include <plugin.hpp>
 
+const TObjectClassId OBJECT_CLASS_TWinSCPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TSessionPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TSessionFolderPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TRemoteFilePanelItem = static_cast<TObjectClassId>(nb::counter_id());
+
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
   TCustomFarPanelItem(OBJECT_CLASS_TSessionPanelItem)
 {
@@ -236,7 +241,7 @@ void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString
 
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
-NB_DEFINE_CLASS_ID(TKeepAliveThread);
+const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
 class TKeepAliveThread : public TSimpleThread
 {
 public:
@@ -549,7 +554,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
     }
 
     const TWinSCPFileSystem * OppositeFileSystem =
-      static_cast<TWinSCPFileSystem *>(GetOppositeFileSystem());
+      rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetOppositeFileSystem());
     if ((OppositeFileSystem != nullptr) && !OppositeFileSystem->Connected() &&
       !OppositeFileSystem->FLoadingSessionList)
     {
@@ -2947,7 +2952,7 @@ void TWinSCPFileSystem::SaveSession()
   {
     GetSessionData()->SetRemoteDirectory(FTerminal->RemoteGetCurrentDirectory());
 
-    TSessionData * Data = static_cast<TSessionData *>(StoredSessions->FindByName(GetSessionData()->GetName()));
+    TSessionData * Data = rtti::dyn_cast_or_null<TSessionData>(StoredSessions->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;

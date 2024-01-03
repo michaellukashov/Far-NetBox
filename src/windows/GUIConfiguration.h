@@ -21,7 +21,7 @@ constexpr const int32_t soSynchronize =     0x02;
 constexpr const int32_t soSynchronizeAsk =  0x04;
 constexpr const int32_t soContinueOnError = 0x08;
 
-NB_DEFINE_CLASS_ID(TGUICopyParamType);
+extern const TObjectClassId OBJECT_CLASS_TGUICopyParamType;
 class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
 {
 public:
@@ -72,7 +72,7 @@ struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
   void Default();
 };
 
-NB_DEFINE_CLASS_ID(TCopyParamRule);
+extern const TObjectClassId OBJECT_CLASS_TCopyParamRule;
 class NB_CORE_EXPORT TCopyParamRule : public TObject
 {
 public:
@@ -179,8 +179,7 @@ private:
     const TCopyParamRule * Rule) const;
 };
 
-//NB_DEFINE_CLASS_ID(TGUIConfiguration);
-extern const TObjectClassId OBJECT_CLASS_TGUIConfiguration; // = static_cast<TObjectClassId>(nb::counter_id());
+extern const TObjectClassId OBJECT_CLASS_TGUIConfiguration;
 class NB_CORE_EXPORT TGUIConfiguration : public TConfiguration
 {
   NB_DISABLE_COPY(TGUIConfiguration)

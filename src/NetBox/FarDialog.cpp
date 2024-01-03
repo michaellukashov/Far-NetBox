@@ -12,12 +12,27 @@
 #pragma warning(pop)
 #include <Queue.h> // TODO: move TSimpleThread to Sysutils
 
+const TObjectClassId OBJECT_CLASS_TFarDialog = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarDialogContainer = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarDialogItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarBox = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarButton = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarCheckBox = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarRadioButton = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarEdit = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarSeparator = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarText = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarList = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarListBox = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarComboBox = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarLister = static_cast<TObjectClassId>(nb::counter_id());
+
 inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
 {
   return TRect(Left, Top, Right, Bottom);
 }
 
-NB_DEFINE_CLASS_ID(TDialogIdleThread);
+const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
 class TDialogIdleThread : public TSimpleThread
 {
   TDialogIdleThread() = delete;
@@ -547,7 +562,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         Result = 1;
         if (Param1 >= 0)
         {
-          TFarButton * Button = static_cast<TFarButton *>(GetItem(nb::ToInt32(Param1)));
+          TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(Param1)));
           // FAR WORKAROUND
           // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
           // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -792,7 +807,7 @@ int32_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton * Button = static_cast<TFarButton *>(GetItem(nb::ToInt32(BResult)));
+      TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
       DebugAssert(Button);
       // correct result should be already set by TFarButton
       DebugAssert(FResult == Button->GetResult());
@@ -2186,7 +2201,7 @@ void TFarList::Assign(const TPersistent *Source)
 {
   TStringList::Assign(Source);
 
-  const TFarList * FarList = static_cast<const TFarList *>(Source);
+  const TFarList * FarList = rtti::dyn_cast_or_null<TFarList>(Source);
   if (FarList != nullptr)
   {
     for (int32_t Index = 0; Index < FarList->GetCount(); ++Index)

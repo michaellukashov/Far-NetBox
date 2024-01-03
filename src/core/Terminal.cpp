@@ -34,6 +34,14 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TTerminal = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TSecondaryTerminal = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TTerminalList = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomCommandParams = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCalculateSizeParams = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TMakeLocalFileListParams = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCollectedFileList = static_cast<TObjectClassId>(nb::counter_id());
+
 // #define FILE_OPERATION_LOOP_TERMINAL this
 
 
@@ -72,7 +80,7 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 }
 
 
-NB_DEFINE_CLASS_ID(TMoveFileParams);
+const TObjectClassId OBJECT_CLASS_TMoveFileParams = static_cast<TObjectClassId>(nb::counter_id());
 struct TMoveFileParams : public TObject
 {
 public:
@@ -85,7 +93,7 @@ public:
   bool DontOverwrite{false};
 };
 
-NB_DEFINE_CLASS_ID(TFilesFindParams);
+const TObjectClassId OBJECT_CLASS_TFilesFindParams = static_cast<TObjectClassId>(nb::counter_id());
 struct TFilesFindParams : public TObject
 {
 public:
@@ -153,7 +161,7 @@ TOverwriteFileParams::TOverwriteFileParams()
 #endif // if 0
 
 
-NB_DEFINE_CLASS_ID(TTunnelThread);
+const TObjectClassId OBJECT_CLASS_TTunnelThread = static_cast<TObjectClassId>(nb::counter_id());
 class TTunnelThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TTunnelThread)
@@ -220,7 +228,7 @@ void TTunnelThread::Execute()
 }
 
 
-NB_DEFINE_CLASS_ID(TTunnelUI);
+const TObjectClassId OBJECT_CLASS_TTunnelUI = static_cast<TObjectClassId>(nb::counter_id());
 class TTunnelUI : public TSessionUI
 {
   NB_DISABLE_COPY(TTunnelUI)
@@ -6120,7 +6128,7 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
   return Result;
 }
 
-NB_DEFINE_CLASS_ID(TSynchronizeFileData);
+const TObjectClassId OBJECT_CLASS_TSynchronizeFileData = static_cast<TObjectClassId>(nb::counter_id());
 struct TSynchronizeFileData final : public TObject
 {
 public:
@@ -6144,7 +6152,7 @@ public:
 };
 
 constexpr const int32_t sfFirstLevel = 0x01;
-NB_DEFINE_CLASS_ID(TSynchronizeData);
+const TObjectClassId OBJECT_CLASS_TSynchronizeData = static_cast<TObjectClassId>(nb::counter_id());
 struct TSynchronizeData : public TObject
 {
 public:
@@ -7535,7 +7543,7 @@ void TTerminal::LogTotalTransferDetails(
       int32_t Count = 0;
       for (int32_t Index = 0; Index < AFiles->GetCount(); ++Index)
       {
-        const TCollectedFileList * FileList = static_cast<const TCollectedFileList *>(AFiles->GetObj(Index));
+        const TCollectedFileList * FileList = rtti::dyn_cast_or_null<TCollectedFileList>(AFiles->GetObj(Index));
         Count += FileList->GetCount();
       }
       S += FORMAT(" - in parallel, with %d total files", Count);

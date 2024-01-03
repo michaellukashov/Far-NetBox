@@ -7,7 +7,7 @@
 constexpr const wchar_t * CONST_HIDDEN_PREFIX = L"_!_";
 
 class TNamedObjectList;
-NB_DEFINE_CLASS_ID(TNamedObject);
+extern const TObjectClassId OBJECT_CLASS_TNamedObject;
 class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
@@ -36,7 +36,7 @@ private:
   bool FHidden{false};
 };
 
-NB_DEFINE_CLASS_ID(TNamedObjectList);
+extern const TObjectClassId OBJECT_CLASS_TNamedObjectList;
 class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:

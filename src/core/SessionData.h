@@ -138,7 +138,7 @@ struct TIEProxyConfig;
 constexpr const int32_t SFTPMinVersion = 0;
 constexpr const int32_t SFTPMaxVersion = 6;
 
-NB_DEFINE_CLASS_ID(TSessionData);
+extern const TObjectClassId OBJECT_CLASS_TSessionData;
 class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
   friend class TStoredSessionList;
@@ -1060,7 +1060,7 @@ private:
   mutable TIEProxyConfig * FIEProxyConfig{nullptr};
 };
 
-NB_DEFINE_CLASS_ID(TStoredSessionList);
+extern const TObjectClassId OBJECT_CLASS_TStoredSessionList;
 class NB_CORE_EXPORT TStoredSessionList final : public TNamedObjectList
 {
   NB_DISABLE_COPY(TStoredSessionList)
@@ -1114,8 +1114,8 @@ public:
   static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
   static void SelectKnownHostsForSelectedSessions(TStoredSessionList * KnownHosts, TStoredSessionList * Sessions);
 
-  const TSessionData * GetSession(int32_t Index) const { return static_cast<const TSessionData *>(AtObject(Index)); }
-  TSessionData * GetSession(int32_t Index) { return static_cast<TSessionData *>(AtObject(Index)); }
+  const TSessionData * GetSession(int32_t Index) const { return rtti::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
+  TSessionData * GetSession(int32_t Index) { return rtti::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettingsConst() const { return FDefaultSettings.get(); }
   TSessionData * GetDefaultSettings() { return FDefaultSettings.get(); }
   void SetDefaultSettings(const TSessionData * Value);

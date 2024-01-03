@@ -213,7 +213,7 @@ static UnicodeString GetFileListItemPath(const TStrings * Files, int32_t Index)
   UnicodeString Result;
   if (Files->GetObj(Index) != nullptr)
   {
-    Result = DebugNotNull(static_cast<const TRemoteFile *>(Files->GetObj(Index)))->FullFileName();
+    Result = DebugNotNull(rtti::dyn_cast_or_null<TRemoteFile>(Files->GetObj(Index)))->FullFileName();
   }
   else
   {
@@ -975,7 +975,7 @@ UnicodeString ExceptionLogString(Exception * E)
     UnicodeString Msg = FORMAT("%s", E->Message);
     if (rtti::isa<ExtException>(E))
     {
-      const TStrings * MoreMessages = static_cast<ExtException *>(E)->GetMoreMessages();
+      const TStrings * MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n" +

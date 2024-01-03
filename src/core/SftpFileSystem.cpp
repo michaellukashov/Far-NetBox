@@ -21,6 +21,8 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TSFTPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+
 // #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
 constexpr SSH_FX_TYPE
@@ -237,7 +239,7 @@ public:
   bool Loaded{false};
 };
 
-NB_DEFINE_CLASS_ID(TSFTPPacket);
+const TObjectClassId OBJECT_CLASS_TSFTPPacket = static_cast<TObjectClassId>(nb::counter_id());
 class TSFTPPacket : public TObject
 {
   TSFTPPacket() = delete;
@@ -1180,7 +1182,7 @@ private:
   }
 };
 
-NB_DEFINE_CLASS_ID(TSFTPQueuePacket);
+const TObjectClassId OBJECT_CLASS_TSFTPQueuePacket = static_cast<TObjectClassId>(nb::counter_id());
 class TSFTPQueuePacket : public TSFTPPacket
 {
   NB_DISABLE_COPY(TSFTPQueuePacket)
@@ -1200,7 +1202,7 @@ public:
 
 uint32_t TSFTPPacket::FMessageCounter = 0;
 
-NB_DEFINE_CLASS_ID(TSFTPQueue);
+const TObjectClassId OBJECT_CLASS_TSFTPQueue = static_cast<TObjectClassId>(nb::counter_id());
 class TSFTPQueue : public TObject
 {
   NB_DISABLE_COPY(TSFTPQueue)

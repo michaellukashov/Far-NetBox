@@ -10,6 +10,8 @@
 #include "CoreMain.h"
 #include <plugin.hpp>
 
+const TObjectClassId OBJECT_CLASS_TFarConfiguration = static_cast<TObjectClassId>(nb::counter_id());
+
 enum NetBoxConfirmationsSettings
 {
   NBCS_COPYOVERWRITE                  = 0x00000001,
@@ -24,8 +26,6 @@ enum NetBoxConfirmationsSettings
   NBCS_EXIT                           = 0x00000200,
   // NBCS_OVERWRITEDELETEROFILES         = 0x00000400,
 };
-
-const TObjectClassId OBJECT_CLASS_TFarConfiguration = static_cast<TObjectClassId>(nb::counter_id());
 
 TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
@@ -333,6 +333,6 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 
 TFarConfiguration * GetFarConfiguration()
 {
-  return static_cast<TFarConfiguration *>(GetConfiguration());
+  return rtti::dyn_cast_or_null<TFarConfiguration>(GetConfiguration());
 }
 

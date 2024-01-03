@@ -16,6 +16,10 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TGUICopyParamType = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCopyParamRule = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TGUIConfiguration = static_cast<TObjectClassId>(nb::counter_id());
+
 constexpr const uint32_t AdditionalLanguageMask = 0xFFFFFF00;
 static constexpr const wchar_t * AdditionalLanguagePrefix = L"XX";
 static constexpr const wchar_t * TranslationsSubFolder = L"Translations";
@@ -533,8 +537,7 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 
-const TObjectClassId OBJECT_CLASS_TGUIConfiguration = static_cast<TObjectClassId>(nb::counter_id());
-
+extern const TObjectClassId OBJECT_CLASS_TGUIConfiguration;
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) noexcept : TConfiguration(Kind)
 {
   FLocale = 0;
@@ -1458,7 +1461,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   TSessionData * PuttySessionData =
-    static_cast<TSessionData *>(ImportSessionList->FindByName(GetPuttySession()));
+    rtti::dyn_cast_or_null<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);
@@ -1532,6 +1535,6 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 
 TGUIConfiguration * GetGUIConfiguration()
 {
-  return cast_to<TGUIConfiguration>(GetConfiguration());
+  return rtti::dyn_cast_or_null<TGUIConfiguration>(GetConfiguration());
 }
 
