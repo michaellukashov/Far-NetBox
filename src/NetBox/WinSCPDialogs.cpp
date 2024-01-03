@@ -209,7 +209,7 @@ TTabButton * TTabbedDialog::GetTabButton(int32_t Tab) const
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TObject * Item = GetItem(Index);
-    if (isa<TTabButton>(Item))
+    if (rtti::isa<TTabButton>(Item))
     {
       TTabButton * T = static_cast<TTabButton *>(GetItem(Index));
       if ((T != nullptr) && (T->GetTab() == Tab))
@@ -1724,7 +1724,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TRect CRect = GetClientRect();
 
   int32_t Index1 = AddTab(tabSession, GetMsg(NB_LOGIN_TAB_SESSION));
-  // Tab = dyn_cast<TTabButton>(GetItem(Index));
+  // Tab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index));
 
   SetNextItemPosition(ipRight);
 
@@ -4092,7 +4092,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool /*TypeOnly*
 
     if (!Message.IsEmpty())
     {
-      TWinSCPPlugin * WinSCPPlugin = dyn_cast<TWinSCPPlugin>(FarPlugin);
+      TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
       Result = (WinSCPPlugin->MoreMessageDialog(Message, nullptr, qtWarning,
             qaIgnore | qaAbort) != qaAbort);
     }
@@ -4136,7 +4136,7 @@ void TSessionDialog::SelectTab(int32_t Tab)
   int32_t Index;
   /*for (Index = 0; Index < FTabs->Count; ++Index)
   {
-    TTabButton * TabBtn = dyn_cast<TTabButton>(FTabs->GetItem(Index));
+    TTabButton * TabBtn = rtti::dyn_cast_or_null<TTabButton>(FTabs->GetItem(Index));
     // Button->SetBrackets(Button->GetTab() == Tab ? brTight : brNone);
     if (TabBtn == SelectedTabBtn)
       TabBtn->SetColor(0, static_cast<char>((GetSystemColor(COL_DIALOGTEXT) & 0xF0) | 0x09));
@@ -6263,7 +6263,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       FLastFeededControl = AControl;
     }
 
-    if (isa<TLabelList>(AControl))
+    if (rtti::isa<TLabelList>(AControl))
     {
       UnicodeString LabelStr;
       if (Control == HostKeyFingerprintEdit)
@@ -6294,7 +6294,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     }
     else
     {
-      DebugAssert(isa<TLabelList>(AControl));
+      DebugAssert(rtti::isa<TLabelList>(AControl));
       UnicodeString LabelStr = GetMsg(Label);
       if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
       {

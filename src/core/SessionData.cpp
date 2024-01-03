@@ -527,7 +527,7 @@ void TSessionData::NonPersistent()
 
 void TSessionData::Assign(const TPersistent * Source)
 {
-  if (Source && isa<TSessionData>(Source))
+  if (Source && rtti::isa<TSessionData>(Source))
   {
     TSessionData * SourceData = static_cast<TSessionData *>(const_cast<TPersistent *>(Source));
     // Master password prompt shows implicitly here, when cloning the session data for a new terminal

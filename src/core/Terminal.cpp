@@ -396,7 +396,7 @@ void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Msg, const 
   // make sure we do not bother about getting back the silent abort exception
   // we issued ourselves. this may happen when there is an exception handler
   // that converts any exception to fatal one (such as in TTerminal::Open).
-  if (isa<ECallbackGuardAbort>(E))
+  if (rtti::isa<ECallbackGuardAbort>(E))
   {
     SAFE_DESTROY_EX(Exception, FFatalError);
     FFatalError = new ExtException(E, Msg, HelpKeyword);
@@ -433,7 +433,7 @@ void TCallbackGuard::Verify()
 bool TCallbackGuard::Verify(Exception * E)
 {
   const bool Result =
-    (dyn_cast<ECallbackGuardAbort>(E) != nullptr);
+    (rtti::dyn_cast_or_null<ECallbackGuardAbort>(E) != nullptr);
   if (Result)
   {
     DebugAssert(FGuarding && (FFatalError != nullptr));
@@ -473,7 +473,7 @@ bool TRobustOperationLoop::TryReopen(Exception & E)
   {
     FRetry = false;
   }
-  else if (dyn_cast<ESkipFile>(&E) != nullptr)
+  else if (rtti::dyn_cast_or_null<ESkipFile>(&E) != nullptr)
   {
     FRetry = false;
   }
@@ -2162,7 +2162,7 @@ uint32_t TTerminal::QueryUserException(const UnicodeString & AQuery,
         MoreMessages->Add(UnformatMessage(ExMessage));
       }
 
-      const ExtException * EE = dyn_cast<ExtException>(E);
+      const ExtException * EE = rtti::dyn_cast_or_null<ExtException>(E);
       if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
       {
         MoreMessages->AddStrings(EE->GetMoreMessages());
@@ -2457,7 +2457,7 @@ void TTerminal::TerminalError(
 
 bool TTerminal::DoQueryReopen(Exception * E)
 {
-  EFatal * Fatal = dyn_cast<EFatal>(E);
+  EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(E);
   DebugAssert(Fatal != nullptr);
   bool Result = false;
   if ((Fatal != nullptr) && Fatal->GetReopenQueried())
@@ -2630,13 +2630,12 @@ void TTerminal::FileOperationLoopEnd(Exception & E,
   TFileOperationProgressType * AOperationProgress, const UnicodeString & AMessage,
   uint32_t AFlags, const UnicodeString & ASpecialRetry, const UnicodeString & AHelpKeyword)
 {
-  if (isa<EAbort>(&E) ||
-      isa<ESkipFile>(&E) ||
-      isa<ESkipFile>(&E))
+  if (rtti::isa<EAbort>(&E) ||
+      rtti::isa<ESkipFile>(&E))
   {
     RethrowException(&E);
   }
-  else if (isa<EFatal>(&E))
+  else if (rtti::isa<EFatal>(&E))
   {
     if (FLAGCLEAR(AFlags, folRetryOnFatal))
     {
@@ -3077,11 +3076,11 @@ uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
   // from within OnShowExtendedException handler
   DebugAssert(FCallbackGuard == nullptr);
   uint32_t Result = 0;
-  if (E && isa<EFatal>(E))
+  if (E && rtti::isa<EFatal>(E))
   {
     FatalError(E, AMsg, AHelpKeyword);
   }
-  else if (E && isa<EAbort>(E))
+  else if (E && rtti::isa<EAbort>(E))
   {
     // resent EAbort exception
     Abort();
@@ -3542,7 +3541,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
   // and we do not want to record skipped actions.
   // But ESkipFile with "cancel" is abort and we want to record that.
   // Note that TScpFileSystem modifies the logic of RollbackAction little bit.
-  if (isa<ESkipFile>(E) &&
+  if (rtti::isa<ESkipFile>(E) &&
       ((AOperationProgress == nullptr) ||
        (AOperationProgress->GetCancel() == csContinue)))
   {
@@ -5636,7 +5635,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     {
       RollbackAction(*Action, nullptr, &E);
     }
-    if (ExceptionOnFail || (isa<EFatal>(&E))) throw;
+    if (ExceptionOnFail || (rtti::isa<EFatal>(&E))) throw;
       else HandleExtendedException(&E);
   }
 }

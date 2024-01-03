@@ -1575,7 +1575,7 @@ void TRemoteFile::FindLinkedFile()
     }
     catch(Exception & E)
     {
-      if (isa<EFatal>(&E))
+      if (rtti::isa<EFatal>(&E))
       {
         throw;
       }

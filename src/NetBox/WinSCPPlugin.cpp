@@ -570,12 +570,12 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    if (isa<EAbort>(E) || isa<EFatal>(E) || isa<ExtException>(E))
+    if (rtti::isa<EAbort>(E) || rtti::isa<EFatal>(E) || rtti::isa<ExtException>(E))
     {
-      const TQueryType Type = isa<ETerminate>(E) ? qtInformation : qtError;
+      const TQueryType Type = rtti::isa<ETerminate>(E) ? qtInformation : qtError;
 
       TStrings * MoreMessages = nullptr;
-      if (isa<ExtException>(E))
+      if (rtti::isa<ExtException>(E))
       {
         MoreMessages = static_cast<ExtException *>(E)->GetMoreMessages();
       }
@@ -587,7 +587,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 
 void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || isa<EFatal>(E))
+  if (((OpMode & OPM_FIND) == 0) || rtti::isa<EFatal>(E))
   {
     ShowExtendedException(E);
   }

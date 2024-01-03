@@ -80,7 +80,7 @@ void TSynchronizeController::StartStop(TObject * /*Sender*/,
       ThrowNotImplemented(256);
       /*
       // FIXME
-      FSynchronizeMonitor = new TDiscMonitor(dyn_cast<TComponent>(Sender));
+      FSynchronizeMonitor = new TDiscMonitor(rtti::dyn_cast_or_null<TComponent>(Sender));
       FSynchronizeMonitor->SubTree = false;
       TMonitorFilters Filters;
       Filters << moFilename << moLastWrite;
@@ -190,7 +190,7 @@ void TSynchronizeController::SynchronizeChange(
   }
   catch(Exception & E)
   {
-    SynchronizeAbort(isa<EFatal>(&E));
+    SynchronizeAbort(rtti::isa<EFatal>(&E));
   }
 }
 

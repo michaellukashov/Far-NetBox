@@ -502,7 +502,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       if (!Result && (Msg == DN_CONTROLINPUT) &&
         (nb::ToIntPtr(Param2) == VK_RETURN) &&
         ((Param1 < 0) ||
-          !isa<TFarButton>(GetItem(nb::ToInt32(Param1)))) &&
+          !rtti::isa<TFarButton>(GetItem(nb::ToInt32(Param1)))) &&
         GetDefaultButton()->GetEnabled() &&
         (GetDefaultButton()->GetOnClick()))
       {
@@ -556,7 +556,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           // flag DIF_LISTNOCLOSE.
           if (Button == nullptr)
           {
-            DebugAssert(isa<TFarListBox>(GetItem(nb::ToInt32(Param1))));
+            DebugAssert(rtti::isa<TFarListBox>(GetItem(nb::ToInt32(Param1))));
             Result = nb::ToIntPtr(false);
           }
           else
