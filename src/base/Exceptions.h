@@ -17,7 +17,7 @@ NB_CORE_EXPORT bool IsInternalException(const Exception * E);
 
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoSuspend, odoShutDown };
 
-NB_DEFINE_CLASS_ID(ExtException);
+extern const TObjectClassId OBJECT_CLASS_ExtException;
 class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
@@ -114,7 +114,7 @@ private:
     }
 
 #define DERIVE_EXT_EXCEPTION(NAME, BASE) \
-  NB_DEFINE_CLASS_ID(NAME); \
+  extern const TObjectClassId OBJECT_CLASS_##NAME; \
   class NB_CORE_EXPORT NAME : public BASE \
   { \
     EXT_EXCEPTION_METHODS(NAME, BASE) \
@@ -124,7 +124,7 @@ DERIVE_EXT_EXCEPTION(ESsh, ExtException);
 DERIVE_EXT_EXCEPTION(ETerminal, ExtException);
 DERIVE_EXT_EXCEPTION(ECommand, ExtException);
 DERIVE_EXT_EXCEPTION(EScp, ExtException); // SCP protocol fatal error (non-fatal in application context)
-NB_DEFINE_CLASS_ID(ESkipFile);
+extern const TObjectClassId OBJECT_CLASS_ESkipFile;
 class NB_CORE_EXPORT ESkipFile : public ExtException
 {
 public:
@@ -135,7 +135,7 @@ public:
   EXT_EXCEPTION_METHODS(ESkipFile, ExtException)
 };
 
-NB_DEFINE_CLASS_ID(EOSExtException);
+extern const TObjectClassId OBJECT_CLASS_EOSExtException;
 class NB_CORE_EXPORT EOSExtException : public ExtException
 {
 public:
@@ -148,7 +148,7 @@ public:
   explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int32_t LastError);
 };
 
-NB_DEFINE_CLASS_ID(ECRTExtException);
+extern const TObjectClassId OBJECT_CLASS_ECRTExtException;
 class NB_CORE_EXPORT ECRTExtException : public EOSExtException
 {
 public:
@@ -159,7 +159,7 @@ public:
   explicit ECRTExtException(const UnicodeString & Msg);
 };
 
-NB_DEFINE_CLASS_ID(EFatal);
+extern const TObjectClassId OBJECT_CLASS_EFatal;
 class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
@@ -182,7 +182,7 @@ private:
 };
 
 #define DERIVE_FATAL_EXCEPTION(NAME, BASE) \
-  NB_DEFINE_CLASS_ID(NAME); \
+  extern const TObjectClassId OBJECT_CLASS_##NAME; \
   class NB_CORE_EXPORT NAME : public BASE \
   { \
   public: \
@@ -197,7 +197,7 @@ DERIVE_FATAL_EXCEPTION(EConnectionFatal, EFatal);
 
 // exception that closes application, but displays info message (not error message)
 // = close on completion
-NB_DEFINE_CLASS_ID(ETerminate);
+extern const TObjectClassId OBJECT_CLASS_ETerminate;
 class NB_CORE_EXPORT ETerminate : public EFatal
 {
 public:
@@ -222,7 +222,7 @@ public:
   UnicodeString DestLocalFileName;
 };
 
-NB_DEFINE_CLASS_ID(ECallbackGuardAbort);
+extern const TObjectClassId OBJECT_CLASS_ECallbackGuardAbort;
 class NB_CORE_EXPORT ECallbackGuardAbort final : public EAbort
 {
 public:
@@ -232,7 +232,7 @@ public:
   ECallbackGuardAbort();
 };
 
-NB_DEFINE_CLASS_ID(EStreamError);
+extern const TObjectClassId OBJECT_CLASS_EStreamError;
 class EStreamError : public ExtException
 {
 public:
@@ -246,7 +246,7 @@ public:
   }
 };
 
-NB_DEFINE_CLASS_ID(EFCreateError);
+extern const TObjectClassId OBJECT_CLASS_EFCreateError;
 class NB_CORE_EXPORT EFCreateError final : public EStreamError
 {
 public:
@@ -259,7 +259,7 @@ public:
   }
 };
 
-NB_DEFINE_CLASS_ID(EFOpenError);
+extern const TObjectClassId OBJECT_CLASS_EFOpenError;
 class NB_CORE_EXPORT EFOpenError final : public EStreamError
 {
 public:

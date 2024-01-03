@@ -9,7 +9,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 
-NB_DEFINE_CLASS_ID(TBookmarks);
+extern const TObjectClassId OBJECT_CLASS_TBookmarks;
 class NB_CORE_EXPORT TBookmarks : public TObject
 {
   NB_DISABLE_COPY(TBookmarks)
@@ -42,7 +42,7 @@ private:
 };
 
 class TBookmark;
-NB_DEFINE_CLASS_ID(TBookmarkList);
+extern const TObjectClassId OBJECT_CLASS_TBookmarkList;
 class NB_CORE_EXPORT TBookmarkList : public TPersistent
 {
   friend class TBookmarks;
@@ -94,7 +94,7 @@ public:
   void SetNodeOpened(const UnicodeString & AIndex, bool Value);
 };
 
-NB_DEFINE_CLASS_ID(TBookmark);
+extern const TObjectClassId OBJECT_CLASS_TBookmark;
 class NB_CORE_EXPORT TBookmark : public TPersistent
 {
   friend class TBookmarkList;

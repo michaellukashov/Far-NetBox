@@ -4,7 +4,7 @@
 #include "Terminal.h"
 #include "FileOperationProgress.h"
 
-NB_DEFINE_CLASS_ID(TSimpleThread);
+extern const TObjectClassId OBJECT_CLASS_TSimpleThread;
 class NB_CORE_EXPORT TSimpleThread : public TObject
 {
   NB_DISABLE_COPY(TSimpleThread)
@@ -34,7 +34,7 @@ public:
   static int32_t ThreadProc(void * Thread);
 };
 
-NB_DEFINE_CLASS_ID(TSignalThread);
+extern const TObjectClassId OBJECT_CLASS_TSignalThread;
 class NB_CORE_EXPORT TSignalThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TSignalThread)
@@ -78,7 +78,7 @@ using TQueueEventEvent = nb::FastDelegate2<void,
 
 class TTerminalItem;
 
-NB_DEFINE_CLASS_ID(TTerminalQueue);
+extern const TObjectClassId OBJECT_CLASS_TTerminalQueue;
 class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
 {
   friend class TQueueItem;
@@ -192,7 +192,7 @@ public:
   bool ContinueParallelOperation() const;
 };
 
-NB_DEFINE_CLASS_ID(TQueueItem);
+extern const TObjectClassId OBJECT_CLASS_TQueueItem;
 class NB_CORE_EXPORT TQueueItem : public TObject
 {
   friend class TTerminalQueue;
@@ -262,7 +262,7 @@ protected:
   virtual bool Complete();
 };
 
-NB_DEFINE_CLASS_ID(TQueueItemProxy);
+extern const TObjectClassId OBJECT_CLASS_TQueueItemProxy;
 class NB_CORE_EXPORT TQueueItemProxy : public TObject
 {
   friend class TQueueItem;
@@ -369,7 +369,7 @@ public:
   void SetDoneCount(int32_t Value);
 };
 
-NB_DEFINE_CLASS_ID(TBootstrapQueueItem);
+extern const TObjectClassId OBJECT_CLASS_TBootstrapQueueItem;
 class TBootstrapQueueItem : public TQueueItem
 {
 public:
@@ -386,7 +386,7 @@ protected:
   virtual bool Complete() override;
 };
 
-NB_DEFINE_CLASS_ID(TLocatedQueueItem);
+extern const TObjectClassId OBJECT_CLASS_TLocatedQueueItem;
 class NB_CORE_EXPORT TLocatedQueueItem : public TQueueItem
 {
 public:
@@ -404,7 +404,7 @@ private:
   UnicodeString FCurrentDir;
 };
 
-NB_DEFINE_CLASS_ID(TTransferQueueItem);
+extern const TObjectClassId OBJECT_CLASS_TTransferQueueItem;
 class NB_CORE_EXPORT TTransferQueueItem : public TLocatedQueueItem
 {
   NB_DISABLE_COPY(TTransferQueueItem)
@@ -439,7 +439,7 @@ public:
   TParallelOperation * GetParallelOperation() { return FParallelOperation.get(); }
 };
 
-NB_DEFINE_CLASS_ID(TUploadQueueItem);
+extern const TObjectClassId OBJECT_CLASS_TUploadQueueItem;
 class NB_CORE_EXPORT TUploadQueueItem : public TTransferQueueItem
 {
 public:
@@ -455,7 +455,7 @@ protected:
   virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) override;
 };
 
-NB_DEFINE_CLASS_ID(TDownloadQueueItem);
+extern const TObjectClassId OBJECT_CLASS_TDownloadQueueItem;
 class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
 {
 public:
@@ -471,7 +471,7 @@ protected:
   virtual void DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation) override;
 };
 
-NB_DEFINE_CLASS_ID(TDeleteQueueItem);
+extern const TObjectClassId OBJECT_CLASS_TDeleteQueueItem;
 class TDeleteQueueItem : public TLocatedQueueItem
 {
 public:
@@ -489,7 +489,7 @@ private:
 };
 
 class TUserAction;
-NB_DEFINE_CLASS_ID(TTerminalThread);
+extern const TObjectClassId OBJECT_CLASS_TTerminalThread;
 class NB_CORE_EXPORT TTerminalThread : public TSignalThread
 {
   NB_DISABLE_COPY(TTerminalThread)

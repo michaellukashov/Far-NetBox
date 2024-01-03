@@ -169,7 +169,7 @@ constexpr int32_t tfAutoResume = 0x04;
 constexpr int32_t tfPreCreateDir = 0x08;
 constexpr int32_t tfUseFileTransferAny = 0x10;
 
-NB_DEFINE_CLASS_ID(TTerminal);
+extern const TObjectClassId OBJECT_CLASS_TTerminal;
 class NB_CORE_EXPORT TTerminal : /*public TObject,*/ public TSessionUI
 {
   NB_DISABLE_COPY(TTerminal)
@@ -873,7 +873,7 @@ private:
   // void AfterMoveFiles(TStrings * AFileList);
 };
 
-NB_DEFINE_CLASS_ID(TSecondaryTerminal);
+extern const TObjectClassId OBJECT_CLASS_TSecondaryTerminal;
 class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
 {
   NB_DISABLE_COPY(TSecondaryTerminal)
@@ -904,7 +904,7 @@ private:
   TTerminal * FMainTerminal{nullptr};
 };
 
-NB_DEFINE_CLASS_ID(TTerminalList);
+extern const TObjectClassId OBJECT_CLASS_TTerminalList;
 class NB_CORE_EXPORT TTerminalList : public TObjectList
 {
   NB_DISABLE_COPY(TTerminalList)
@@ -929,7 +929,7 @@ public:
   TTerminal * GetTerminal(int32_t Index);
 };
 
-NB_DEFINE_CLASS_ID(TCustomCommandParams);
+extern const TObjectClassId OBJECT_CLASS_TCustomCommandParams;
 struct NB_CORE_EXPORT TCustomCommandParams : public TObject
 {
 public:
@@ -953,7 +953,7 @@ struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
   TCalculatedSizes * CalculatedSizes{nullptr};
 };
 
-NB_DEFINE_CLASS_ID(TCalculateSizeParams);
+extern const TObjectClassId OBJECT_CLASS_TCalculateSizeParams;
 struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
 friend class TTerminal;
@@ -976,7 +976,7 @@ public:
 };
 
 
-NB_DEFINE_CLASS_ID(TMakeLocalFileListParams);
+extern const TObjectClassId OBJECT_CLASS_TMakeLocalFileListParams;
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
   using TDateTimes = nb::vector_t<TDateTime>;
@@ -1038,7 +1038,7 @@ private:
   bool FCanRetry{false};
 };
 
-NB_DEFINE_CLASS_ID(TCollectedFileList);
+extern const TObjectClassId OBJECT_CLASS_TCollectedFileList;
 class TCollectedFileList final : public TObject
 {
 public:

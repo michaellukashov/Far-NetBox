@@ -22,6 +22,8 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TSessionUI = static_cast<TObjectClassId>(nb::counter_id());
+
 static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
 {
   UnicodeString Str = AStr;
@@ -114,7 +116,7 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 }
 
 
-NB_DEFINE_CLASS_ID(TSessionActionRecord);
+const TObjectClassId OBJECT_CLASS_TSessionActionRecord = static_cast<TObjectClassId>(nb::counter_id());
 // #pragma warn -inl
 class TSessionActionRecord : public TObject
 {

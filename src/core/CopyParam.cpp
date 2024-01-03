@@ -12,6 +12,8 @@
 //const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
 //constexpr int32_t TransferModeNamesCount = _countof(TransferModeNames);
 
+const TObjectClassId OBJECT_CLASS_TCopyParamType = static_cast<TObjectClassId>(nb::counter_id());
+
 TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept :
   TObject(Kind)
 {

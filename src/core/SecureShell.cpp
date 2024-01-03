@@ -25,6 +25,8 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TSecureShell = static_cast<TObjectClassId>(nb::counter_id());
+
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
 
 constexpr const wchar_t HostKeyDelimiter = L';';

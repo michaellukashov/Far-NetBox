@@ -42,6 +42,8 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TS3FileSystem = static_cast<TObjectClassId>(nb::counter_id());
+
 #define StrFromACP(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_ACP)
 #define StrFromS3(S) StrFromNeon(S)
 #define StrToS3(S) StrToNeon(S)

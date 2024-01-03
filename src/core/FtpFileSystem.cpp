@@ -27,6 +27,8 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TFTPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
 constexpr const int32_t DummyCodeClass = 8;

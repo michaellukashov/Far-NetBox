@@ -92,7 +92,7 @@ private:
   mutable TIDMap FIDMap;
 };
 
-NB_DEFINE_CLASS_ID(TRemoteFile);
+extern const TObjectClassId OBJECT_CLASS_TRemoteFile;
 class NB_CORE_EXPORT TRemoteFile : public TPersistent
 {
   NB_DISABLE_COPY(TRemoteFile)
@@ -265,7 +265,7 @@ private:
   void Init();
 };
 
-NB_DEFINE_CLASS_ID(TRemoteDirectoryFile);
+extern const TObjectClassId OBJECT_CLASS_TRemoteDirectoryFile;
 class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
 public:
@@ -278,7 +278,7 @@ public:
   void Init();
 };
 
-NB_DEFINE_CLASS_ID(TRemoteParentDirectory);
+extern const TObjectClassId OBJECT_CLASS_TRemoteParentDirectory;
 class NB_CORE_EXPORT TRemoteParentDirectory final : public TRemoteDirectoryFile
 {
 public:
@@ -290,7 +290,7 @@ public:
   virtual ~TRemoteParentDirectory() noexcept override = default;
 };
 
-NB_DEFINE_CLASS_ID(TRemoteFileList);
+extern const TObjectClassId OBJECT_CLASS_TRemoteFileList;
 class NB_CORE_EXPORT TRemoteFileList : public TObjectList
 {
   friend class TSCPFileSystem;
@@ -345,7 +345,7 @@ public:
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 
-NB_DEFINE_CLASS_ID(TRemoteDirectory);
+extern const TObjectClassId OBJECT_CLASS_TRemoteDirectory;
 class NB_CORE_EXPORT TRemoteDirectory final : public TRemoteFileList
 {
   friend class TSCPFileSystem;
@@ -591,7 +591,7 @@ public:
 
 enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20 };
 // typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
-NB_DEFINE_CLASS_ID(TRemoteProperties);
+extern const TObjectClassId OBJECT_CLASS_TRemoteProperties;
 class TRemoteProperties final : public TObject
 {
 public:
@@ -628,7 +628,7 @@ enum TChecklistAction { //renamed from enum TSynchronizeChecklist::TAction
   saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
 
 class TSynchronizeChecklist;
-NB_DEFINE_CLASS_ID(TChecklistItem);
+extern const TObjectClassId OBJECT_CLASS_TChecklistItem;
 class NB_CORE_EXPORT TChecklistItem final : public TObject
 {
   friend class TTerminal;

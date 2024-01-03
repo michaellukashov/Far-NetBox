@@ -44,6 +44,8 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+
 // #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
 constexpr const char * SESSION_CONTEXT_KEY = "sessioncontext";

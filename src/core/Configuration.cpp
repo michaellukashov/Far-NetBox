@@ -50,6 +50,7 @@
 
 //const int32_t BelowNormalLogLevels = 1;
 
+const TObjectClassId OBJECT_CLASS_TConfiguration = static_cast<TObjectClassId>(nb::counter_id());
 
 TSshHostCA::TSshHostCA()
 {

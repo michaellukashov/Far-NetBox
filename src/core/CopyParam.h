@@ -41,7 +41,7 @@ class TTerminal;
 class TFTPFileSystem;
 class TSFTPFileSystem;
 
-NB_DEFINE_CLASS_ID(TCopyParamType);
+extern const TObjectClassId OBJECT_CLASS_TCopyParamType;
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 friend class TTerminal;

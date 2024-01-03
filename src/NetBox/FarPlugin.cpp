@@ -22,7 +22,14 @@ static bool MustSkipClose = false;
 
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
-static constexpr const TObjectClassId OBJECT_CLASS_TPluginIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomFarPlugin = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TPluginIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomFarFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TCustomFarPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_THintPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarMenuItems = static_cast<TObjectClassId>(nb::counter_id());
+
 class TPluginIdleThread : public TSimpleThread
 {
   TPluginIdleThread() = delete;
@@ -1580,7 +1587,7 @@ void TCustomFarPlugin::SaveTerminalScreen()
   FarControl(FCTL_SETUSERSCREEN, 0, nullptr);
 }
 
-NB_DEFINE_CLASS_ID(TConsoleTitleParam);
+const TObjectClassId OBJECT_CLASS_TConsoleTitleParam = static_cast<TObjectClassId>(nb::counter_id());
 class TConsoleTitleParam : public TObject
 {
 public:

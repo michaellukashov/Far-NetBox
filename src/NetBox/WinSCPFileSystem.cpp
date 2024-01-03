@@ -20,6 +20,11 @@
 #include "XmlStorage.h"
 #include <plugin.hpp>
 
+const TObjectClassId OBJECT_CLASS_TWinSCPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TSessionPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TSessionFolderPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TRemoteFilePanelItem = static_cast<TObjectClassId>(nb::counter_id());
+
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
   TCustomFarPanelItem(OBJECT_CLASS_TSessionPanelItem)
 {
@@ -236,7 +241,7 @@ void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString
 
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
-NB_DEFINE_CLASS_ID(TKeepAliveThread);
+const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
 class TKeepAliveThread : public TSimpleThread
 {
 public:

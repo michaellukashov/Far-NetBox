@@ -24,6 +24,9 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_TSessionData = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TStoredSessionList = static_cast<TObjectClassId>(nb::counter_id());
+
 #define SET_SESSION_PROPERTY_FROM(PROPERTY, FROM) \
   do { if (F##PROPERTY != (FROM)) { F##PROPERTY = (FROM); Modify(); } } while(0)
 

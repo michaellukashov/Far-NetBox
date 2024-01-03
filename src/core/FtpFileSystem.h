@@ -17,7 +17,7 @@ struct TFileTransferData;
 struct TFtpsCertificateData;
 struct TRemoteFileTime;
 
-NB_DEFINE_CLASS_ID(TFTPFileSystem);
+extern const TObjectClassId OBJECT_CLASS_TFTPFileSystem;
 class NB_CORE_EXPORT TFTPFileSystem final : public TCustomFileSystem
 {
   friend class TFileZillaImpl;
