@@ -2823,14 +2823,15 @@ const wchar_t * TFTPFileSystem::GetOption(int32_t OptionID) const
 
 int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
 {
-  TSessionData * Data = FTerminal->GetSessionData();
+  TSessionData * Data = FTerminal ? FTerminal->GetSessionData() : nullptr;
+  const TConfiguration * Configuration = FTerminal ? FTerminal->Configuration() : nullptr;
   int32_t Result;
   TProxyMethod method;
 
   switch (OptionID)
   {
     case OPTION_PROXYTYPE:
-      method = Data->GetActualProxyMethod();
+      method = Data ? Data->GetActualProxyMethod() : pmNone;
       // DEBUG_PRINTF("method: %d", method);
       switch (method)
       {
@@ -2861,23 +2862,23 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
 
     case OPTION_PROXYPORT:
     case OPTION_FWPORT:
-      Result = Data->GetProxyPort();
+      Result = Data ? Data->GetProxyPort() : 0;
       break;
 
     case OPTION_PROXYUSELOGON:
-      Result = !Data->GetProxyUsername().IsEmpty();
+      Result = Data ? !Data->GetProxyUsername().IsEmpty() : 0;
       break;
 
     case OPTION_LOGONTYPE:
-      Result = Data->GetFtpProxyLogonType();
+      Result = Data ? Data->GetFtpProxyLogonType() : 0;
       break;
 
     case OPTION_TIMEOUTLENGTH:
-      Result = Data->GetTimeout();
+      Result = Data ? Data->GetTimeout() : 0;
       break;
 
     case OPTION_DEBUGSHOWLISTING:
-      Result = (FTerminal->Configuration->ActualLogProtocol >= 0);
+      Result = Configuration ? (Configuration->ActualLogProtocol >= 0) : 0;
       break;
 
     case OPTION_PASV:
@@ -2892,19 +2893,19 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_LIMITPORTRANGE:
-      Result = !FTerminal->SessionData->FFtpPasvMode && FTerminal->Configuration->HasLocalPortNumberLimits();
+      Result = Data && Configuration ? !Data->FFtpPasvMode && Configuration->HasLocalPortNumberLimits() : 0;
       break;
 
     case OPTION_PORTRANGELOW:
-      Result = FTerminal->Configuration->FLocalPortNumberMin;
+      Result = Configuration ? Configuration->FLocalPortNumberMin : 0;
       break;
 
     case OPTION_PORTRANGEHIGH:
-      Result = FTerminal->Configuration->FLocalPortNumberMax;
+      Result = Configuration ? Configuration->FLocalPortNumberMax : 0;
       break;
 
     case OPTION_ENABLE_IPV6:
-      Result = ((Data->GetAddressFamily() != afIPv4) ? TRUE : FALSE);
+      Result = Data ? ((Data->GetAddressFamily() != afIPv4) ? TRUE : FALSE) : 0;
       break;
 
     case OPTION_KEEPALIVE:
@@ -2915,12 +2916,12 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
               to "kill" the thread (or, although close the socket), but as a
               temporary measure...
       */
-      Result = ((Data && Data->GetFtpPingType() != ptOff) ? TRUE : FALSE);
+      Result = Data ? ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE) : 0;
       break;
 
     case OPTION_INTERVALLOW:
     case OPTION_INTERVALHIGH:
-      Result = Data->GetFtpPingInterval();
+      Result = Data ? Data->GetFtpPingInterval() : 0;
       break;
 
     case OPTION_VMSALLREVISIONS:
@@ -2942,11 +2943,11 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_MPEXT_SSLSESSIONREUSE:
-      Result = (Data->GetSslSessionReuse() ? TRUE : FALSE);
+      Result = Data ? (Data->GetSslSessionReuse() ? TRUE : FALSE) : 0;
       break;
 
     case OPTION_MPEXT_SNDBUF:
-      Result = Data->GetSendBuf();
+      Result = Data ? Data->GetSendBuf() : 0;
       break;
 
     case OPTION_MPEXT_TRANSFER_ACTIVE_IMMEDIATELY:
@@ -2958,15 +2959,15 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_MPEXT_LOG_SENSITIVE:
-      Result = FTerminal->GetConfiguration()->GetLogSensitive() ? TRUE : FALSE;
+      Result = Configuration ? Configuration->GetLogSensitive() ? TRUE : FALSE : 0;
       break;
 
     case OPTION_MPEXT_HOST:
-      Result = (Data->GetFtpHost() == asOn);
+      Result = Data ? (Data->GetFtpHost() == asOn) : 0;
       break;
 
     case OPTION_MPEXT_NODELAY:
-      Result = Data->GetTcpNoDelay();
+      Result = Data ? Data->GetTcpNoDelay() : 0;
       break;
 
     case OPTION_MPEXT_NOLIST:
@@ -2987,7 +2988,7 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
     case OPTION_MPEXT_TRANSFER_SIZE:
       {
         int64_t TransferSize = 0;
-        if ((FTerminal->OperationProgress != nullptr) &&
+        if (FTerminal && (FTerminal->OperationProgress != nullptr) &&
             (FTerminal->OperationProgress->Operation == foCopy) &&
             (FTerminal->OperationProgress->Side == osLocal))
         {
