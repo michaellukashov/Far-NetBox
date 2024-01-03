@@ -1169,14 +1169,14 @@ void TFarDialogItem::UpdateBounds()
 
 int8_t TFarDialogItem::GetColor(int32_t Index) const
 {
-  return *((reinterpret_cast<const int8_t *>(&FColors)) + Index);
+  return *((nb::ToInt8Ptr(&FColors)) + Index);
 }
 
 void TFarDialogItem::SetColor(int32_t Index, int8_t Value)
 {
   if (GetColor(Index) != Value)
   {
-    *((reinterpret_cast<int8_t *>(&FColors)) + Index) = Value;
+    *((nb::ToInt8Ptr(&FColors)) + Index) = Value;
     FColorMask |= (0xFF << (Index * 8));
   }
 }
