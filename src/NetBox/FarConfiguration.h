@@ -7,7 +7,11 @@ class TCustomFarPlugin;
 class TBookmarks;
 class TBookmarkList;
 
-NB_DEFINE_CLASS_ID(TFarConfiguration);
+// SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav,s3");
+constexpr const wchar_t * DefaultCommandPrefixes = L"netbox,ftp,scp,sftp,ftps,webdav,s3";
+
+// NB_DEFINE_CLASS_ID(TFarConfiguration);
+static constexpr const TObjectClassId OBJECT_CLASS_TFarConfiguration = static_cast<TObjectClassId>(nb::counter_id());
 class TFarConfiguration : public TGUIConfiguration
 {
   NB_DISABLE_COPY(TFarConfiguration)

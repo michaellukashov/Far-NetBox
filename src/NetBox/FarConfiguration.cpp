@@ -52,7 +52,7 @@ void TFarConfiguration::Default()
   SetDisksMenuHotKey(0);
   SetPluginsMenu(true);
   SetPluginsMenuCommands(true);
-  SetCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav,s3");
+  SetCommandPrefixes(DefaultCommandPrefixes);
   SetSessionNameInTitle(true);
   SetEditorDownloadDefaultMode(true);
   SetEditorUploadSameOptions(true);
