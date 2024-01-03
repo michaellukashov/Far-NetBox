@@ -2871,7 +2871,8 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
     case OPTION_LOGONTYPE:
       Result = Data->GetFtpProxyLogonType();
       break;
-     case OPTION_TIMEOUTLENGTH:
+
+    case OPTION_TIMEOUTLENGTH:
       Result = Data->GetTimeout();
       break;
 
