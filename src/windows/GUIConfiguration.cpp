@@ -35,8 +35,8 @@ TGUICopyParamType::TGUICopyParamType(const TCopyParamType & Source) noexcept
   TGUICopyParamType::Assign(&Source);
 }
 
-TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source) noexcept
-  : TCopyParamType(Source)
+TGUICopyParamType::TGUICopyParamType(const TGUICopyParamType & Source) noexcept :
+  TCopyParamType(Source)
 {
   GUIAssign(&Source);
 }
