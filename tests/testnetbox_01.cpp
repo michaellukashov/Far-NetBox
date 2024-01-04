@@ -1210,6 +1210,77 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
 namespace experimental {
 
 template <typename T>
+class ROProperty
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+using DataType = typename std::conditional<std::is_trivially_copyable<T>::value, T, const T&>::type;
+using TGetter = fastdelegate::FastDelegate0<T>;
+private:
+  TGetter _getter;
+public:
+  ROProperty() = delete;
+  explicit ROProperty(TGetter && Getter) noexcept :
+    _getter(std::move(Getter))
+  {
+    Expects(!_getter.empty());
+  }
+  ROProperty(const ROProperty &) = default;
+  ROProperty(ROProperty &&) noexcept = default;
+  ROProperty & operator =(const ROProperty &) = default;
+  ROProperty & operator =(ROProperty &&) noexcept = default;
+//  Property(const T& in) : data(in) {}
+//  Property(T&& in) : data(std::forward<T>(in)) {}
+//  T const& get() const {
+//      return data;
+//  }
+
+  T&& unwrap() &&
+  {
+     return std::move(_getter());
+  }
+
+  constexpr T operator()() const
+  {
+    Expects(_getter);
+    return _getter();
+  }
+
+  constexpr operator T() const
+  {
+    Expects(_getter);
+    return _getter();
+  }
+
+  /*operator T&() const
+  {
+    Expects(_getter);
+    return _getter();
+  }*/
+
+  constexpr T operator->() const
+  {
+    return _getter();
+  }
+  // constexpr decltype(auto) operator *() const { return _getter(); }
+  constexpr T operator *() const { return _getter(); }
+  constexpr bool operator ==(DataType Value) const
+  {
+    Expects(_getter);
+    return _getter() == Value;
+  }
+  friend bool inline operator ==(const ROProperty & lhs, const ROProperty & rhs)
+  {
+    Expects(lhs._getter);
+    return (lhs._getter == rhs._getter);
+  }
+  friend bool inline operator !=(ROProperty & lhs, DataType rhs)
+  {
+    Expects(lhs._getter);
+    return lhs._getter() != rhs;
+  }
+};
+
+template <typename T>
 class Property
 {
 CUSTOM_MEM_ALLOCATION_IMPL
@@ -1305,7 +1376,7 @@ public:
   Property<UnicodeString> RWData1{nb::bind(&TBase1::GetData1, this), nb::bind(&TBase1::SetData1, this)};
   // Property<UnicodeString> ROData1{nb::bind(&TBase1::GetData, this)};
   Property<int32_t> RWData2{nb::bind(&TBase1::GetData2, this), nb::bind(&TBase1::SetData2, this)};
-  Property<int32_t> ROData2{nb::bind(&TBase1::GetData2, this)};
+  ROProperty<int32_t> ROData2{nb::bind(&TBase1::GetData2, this)};
 private:
   UnicodeString GetData1() const { return FData1; }
   void SetData1(const UnicodeString & Value) { FData1 = Value; }
