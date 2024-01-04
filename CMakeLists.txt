@@ -2828,8 +2828,9 @@ ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 # linker settings
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /RTC1 /DEBUG CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /RTC1 CONFIG Debug)
 ucm_add_linker_flags(MODULE EXE /RTC1 /DEBUG CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED /RTC1 /DEBUG CONFIG RelWithDebugInfo)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
 #[[
