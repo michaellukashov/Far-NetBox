@@ -51,7 +51,7 @@ if(PROJECT_PLATFORM STREQUAL "x86" AND CMAKE_BUILD_TYPE STREQUAL "Release")
 else()
   set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
 endif()
-set(OPT_CREATE_PLUGIN_DIR OFF CACHE STRING "Create plugin dir")
+set(OPT_CREATE_PLUGIN_DIR ON CACHE STRING "Create plugin dir")
 
 #-------------------------------------------------------------------------------
 
