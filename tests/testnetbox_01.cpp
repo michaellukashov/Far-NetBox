@@ -1268,7 +1268,8 @@ public:
   {
     return _getter();
   }
-  constexpr decltype(auto) operator *() const { return *_getter(); }
+  // constexpr decltype(auto) operator *() const { return _getter(); }
+  constexpr T operator *() const { return _getter(); }
   void operator()(const T & Value)
   {
     Expects(_setter);
@@ -1318,5 +1319,8 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
     Base.RWData = "123";
     CHECK(Base.RWData == "123");
     CHECK(Base.ROData == "123");
+    CHECK(Base.ROData() == "123");
+    CHECK(*Base.ROData == "123");
+    // Base.ROData = "234";
   }
 }
