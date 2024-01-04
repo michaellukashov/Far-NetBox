@@ -394,7 +394,7 @@ public:
   TStrings * GetSelectedFiles() const;
 };
 
-class TRemoteDirectoryCache : private TStringList
+class TRemoteDirectoryCache final : private TStringList
 {
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TRemoteDirectoryCache)
