@@ -1248,13 +1248,13 @@ public:
      return std::move(_getter());
   }
 
-  constexpr DataType operator()() const
+  constexpr T operator()() const
   {
     Expects(_getter);
     return _getter();
   }
 
-  constexpr operator DataType() const
+  constexpr operator T() const
   {
     Expects(_getter);
     return _getter();
@@ -1266,12 +1266,12 @@ public:
     return _getter();
   }*/
 
-  constexpr DataType operator->() const
+  constexpr T operator->() const
   {
     return _getter();
   }
   // constexpr decltype(auto) operator *() const { return _getter(); }
-  constexpr DataType operator *() const { return _getter(); }
+  constexpr T operator *() const { return _getter(); }
   void operator()(DataType Value)
   {
     Expects(_setter);
@@ -1321,19 +1321,26 @@ private:
 
 TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
 {
+  experimental::TBase1 Base;
   SECTION("RWProperty01")
   {
-    experimental::TBase1 Base;
     Base.RWData1 = "123";
     CHECK(Base.RWData1 == "123");
     CHECK(Base.RWData1 == "123");
     CHECK(Base.RWData1() == "123");
     CHECK(*Base.RWData1 == "123");
+    CHECK(*Base.RWData1 == UnicodeString("123"));
+  }
+  SECTION("RWProperty02")
+  {
     Base.RWData2 = 123;
     CHECK(123 == Base.RWData2);
+  }
+  SECTION("ROProperty01")
+  {
     // Base.ROData2 = "234";
     int32_t ROData2 = Base.ROData2;
-    CHECK(Base.ROData2 == 123);
-    CHECK(ROData2 == 123);
+    CHECK(Base.ROData2 == 42);
+    CHECK(ROData2 == 42);
   }
 }
