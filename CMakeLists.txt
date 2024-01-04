@@ -2473,8 +2473,8 @@ target_compile_options(NetBox PRIVATE
 if(OPT_CREATE_PLUGIN_DIR)
 
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
-set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/Far3_${PROJECT_PLATFORM}/Plugins/NetBox)
+string(REPLACE "/" "\\" PROJECT_ROOT ${PROJECT_ROOT})
+set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}\\Far3_${PROJECT_PLATFORM}\\Plugins\\NetBox)
 
 file(GLOB DIST_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
@@ -2487,21 +2487,21 @@ file(GLOB DIST_FILES
 
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
+  VERBATIM
 )
 add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
-)
-add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll ${NETBOX_PLUGIN_DIR}\\
+  VERBATIM
 )
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
+  VERBATIM
 )
 
 foreach(DIST_FILE ${DIST_FILES})
   # string(REPLACE "\\" "/" DIST_FILE ${DIST_FILE})
-  # string(REPLACE "\\" "/" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
   add_custom_command(TARGET NetBox POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}\\
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
   )
 endforeach()
