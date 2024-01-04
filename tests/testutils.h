@@ -18,6 +18,8 @@
 #define CATCH_CONFIG_CPP11_NO_SHUFFLE
 #include <catch/catch.hpp>
 
+#include <TransientFunction.h>
+
 //------------------------------------------------------------------------------
 
 #define TEST_CASE_TODO(exp) \
