@@ -1281,68 +1281,27 @@ public:
 };
 
 template <typename T>
-class Property
+class RWProperty : public ROProperty<T>
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using DataType = typename std::conditional<std::is_trivially_copyable<T>::value, T, const T&>::type;
-using TGetter = fastdelegate::FastDelegate0<T>;
+using DataType = ROProperty<T>::DataType;
 using TSetter = fastdelegate::FastDelegate1<void, DataType>;
 private:
-  TGetter _getter;
   TSetter _setter;
 public:
-  Property() = delete;
-  explicit Property(TGetter && Getter, TSetter && Setter) noexcept :
-    _getter(std::move(Getter)),
+  RWProperty() = delete;
+  explicit RWProperty(TGetter && Getter, TSetter && Setter) noexcept :
+    ROProperty<T>(std::move(Getter)),
     _setter(std::move(Setter))
   {
-    Expects(!_getter.empty());
     Expects(!_setter.empty());
   }
-  explicit Property(TGetter && Getter) noexcept :
-    _getter(std::move(Getter))
-  {
-    Expects(!_getter.empty());
-  }
-  Property(const Property &) = default;
-  Property(Property &&) noexcept = default;
-  Property & operator =(const Property &) = default;
-  Property & operator =(Property &&) noexcept = default;
-//  Property(const T& in) : data(in) {}
-//  Property(T&& in) : data(std::forward<T>(in)) {}
-//  T const& get() const {
-//      return data;
-//  }
+  RWProperty(const RWProperty &) = default;
+  RWProperty(RWProperty &&) noexcept = default;
+  RWProperty & operator =(const RWProperty &) = default;
+  RWProperty & operator =(RWProperty &&) noexcept = default;
 
-  T&& unwrap() &&
-  {
-     return std::move(_getter());
-  }
-
-  constexpr T operator()() const
-  {
-    Expects(_getter);
-    return _getter();
-  }
-
-  constexpr operator T() const
-  {
-    Expects(_getter);
-    return _getter();
-  }
-
-  /*operator T&() const
-  {
-    Expects(_getter);
-    return _getter();
-  }*/
-
-  constexpr T operator->() const
-  {
-    return _getter();
-  }
-  // constexpr decltype(auto) operator *() const { return _getter(); }
-  constexpr T operator *() const { return _getter(); }
+  using ROProperty<T>::operator();
   void operator()(DataType Value)
   {
     Expects(_setter);
@@ -1353,30 +1312,17 @@ public:
     Expects(_setter);
     _setter(Value);
   }
-  constexpr bool operator ==(DataType Value) const
-  {
-    Expects(_getter);
-    return _getter() == Value;
-  }
-  friend bool inline operator ==(const Property & lhs, const Property & rhs)
-  {
-    Expects(lhs._getter);
-    return (lhs._getter == rhs._getter);
-  }
-  friend bool inline operator !=(Property & lhs, DataType rhs)
-  {
-    Expects(lhs._getter);
-    return lhs._getter() != rhs;
-  }
 };
 
 class TBase1
 {
 public:
-  Property<UnicodeString> RWData1{nb::bind(&TBase1::GetData1, this), nb::bind(&TBase1::SetData1, this)};
-  // Property<UnicodeString> ROData1{nb::bind(&TBase1::GetData, this)};
-  Property<int32_t> RWData2{nb::bind(&TBase1::GetData2, this), nb::bind(&TBase1::SetData2, this)};
+  // ROProperty<int32_t> ROData1{&FData2};
   ROProperty<int32_t> ROData2{nb::bind(&TBase1::GetData2, this)};
+
+  RWProperty<UnicodeString> RWData1{nb::bind(&TBase1::GetData1, this), nb::bind(&TBase1::SetData1, this)};
+  // Property<UnicodeString> ROData1{nb::bind(&TBase1::GetData, this)};
+  RWProperty<int32_t> RWData2{nb::bind(&TBase1::GetData2, this), nb::bind(&TBase1::SetData2, this)};
 private:
   UnicodeString GetData1() const { return FData1; }
   void SetData1(const UnicodeString & Value) { FData1 = Value; }
