@@ -1243,7 +1243,7 @@ extern const ssh2_macalg ssh_hmac_sha1_96_buggy;
 extern const ssh2_macalg ssh_hmac_sha256;
 extern const ssh2_macalg ssh_hmac_sha512;
 extern const ssh2_macalg ssh2_poly1305;
-#endif
+#endif //ifndef WINSCP_VS
 extern const ssh2_macalg ssh2_aesgcm_mac;
 #ifndef WINSCP_VS
 extern const ssh2_macalg ssh2_aesgcm_mac_sw;

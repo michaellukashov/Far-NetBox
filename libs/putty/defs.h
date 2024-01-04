@@ -34,7 +34,10 @@
 #include <stdbool.h>
 
 #ifdef WINSCP
+#if defined(_M_ARM) || defined (_M_ARM64)
+#else
 #define HAVE_AES_NI 1
+#endif
 #endif
 
 #if (!defined WINSCP) && defined _MSC_VER && _MSC_VER < 1800
