@@ -141,6 +141,7 @@ struct MakeOtherType { using Type = T; };
 NB_SPECIALIZE_MAKE_T(DWORD, size_t);
 NB_SPECIALIZE_MAKE_T(int, size_t);
 NB_SPECIALIZE_MAKE_T(int64_t, size_t);
+NB_SPECIALIZE_MAKE_T(uint64_t, size_t);
 
 // Casts integer to other type
 template <typename Int>

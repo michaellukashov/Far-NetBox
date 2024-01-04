@@ -1,6 +1,10 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [24.1.0.567-RC8] - 2024-01-04
+### Fixed
+- Fix ARM64 build
+
 ## [24.1.0.566-RC7] - 2024-01-02
 ### Fixed
 - Fix transfer on background issues

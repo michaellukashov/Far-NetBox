@@ -1275,7 +1275,7 @@
 "1.6.2"
 "Bazuje na WinSCP: SFTP/FTP/SCP klient dla FAR"
 " Wersja %s"
-"Copyright © 2000-2023 Martin Prikryl"
+"Copyright © 2000-2024 Martin Prikryl"
 
 
 "**Kontynuować połączenie do nieznanego serwera i dodać jego klucz do pamięci podręcznej?**\n\nKlucz serwera nie został znaleziony w pamięci podręcznej. Nie ma gwarancji, że serwer jest właściwym serwerem do połączenia.\n\nOdcisk klucza serwera to:\n%s\n\nJeżeli ufasz temu serwerowi, naciśnij 'Tak'. Aby połączyć bez zapisywania klucza w pamięci podręcznej, kliknij 'Nie'. Aby przerwać połączenie, naciśnij 'Anuluj'."

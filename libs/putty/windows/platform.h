@@ -803,7 +803,9 @@ bool handle_special_filemapping_cmdline(char *cmdline, Conf *conf);
 void plug_closing_system_error(Plug *plug, DWORD error);
 void plug_closing_winsock_error(Plug *plug, DWORD error);
 
+#ifndef WINSCP
 SeatPromptResult make_spr_sw_abort_winerror(const char *prefix, DWORD error);
+#endif
 
 HANDLE lock_interprocess_mutex(const char *mutexname, char **error);
 void unlock_interprocess_mutex(HANDLE mutex);

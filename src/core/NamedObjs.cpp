@@ -12,9 +12,9 @@
 const TObjectClassId OBJECT_CLASS_TNamedObject = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TNamedObjectList = static_cast<TObjectClassId>(nb::counter_id());
 
-int32_t NamedObjectSortProc(const TObject * Item1, const TObject * Item2)
+int32_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
-  return cast_to<TNamedObject>(Item1)->Compare(cast_to<TNamedObject>(Item2));
+  return cast_to<TNamedObject>(ToObj(Item1))->Compare(cast_to<TNamedObject>(ToObj(Item2)));
 }
 //--- TNamedObject ----------------------------------------------------------
 TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) noexcept :

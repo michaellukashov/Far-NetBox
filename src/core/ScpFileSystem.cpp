@@ -1762,8 +1762,6 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TargetDir);
 
   const UnicodeString Options = InitOptionsStr(CopyParam);
-  // if (CopyParam->PreserveRights) Options = L"-p";
-  // if (FTerminal->SessionData->Scp1Compatibility) Options += L" -1";
 
   FScpFatalError = false;
   SendCommand(FCommandSet->FullCommand(fsCopyToRemote,
@@ -1801,7 +1799,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
     {
       UnicodeString FileName = AFilesToCopy->GetString(IFile);
       const TRemoteFile * File1 = AFilesToCopy->GetAs<TRemoteFile>(IFile);
-      UnicodeString RealFileName = File1 ? File1->GetFileName() : FileName;
+      const UnicodeString RealFileName = File1 ? File1->GetFileName() : FileName;
       bool CanProceed = false;
 
       UnicodeString FileNameOnly =
@@ -1981,7 +1979,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   const UnicodeString & TargetDir, const TCopyParamType * CopyParam, int32_t AParams,
   TFileOperationProgressType * OperationProgress, int32_t Level)
 {
-  const UnicodeString& RealFileName = AFileName;
+  const UnicodeString RealFileName = AFileName;
   UnicodeString DestFileName =
     FTerminal->ChangeFileName(
       CopyParam, base::ExtractFileName(RealFileName, false), osLocal, Level == 0);
@@ -2138,7 +2136,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             OperationProgress->ChangeTransferSize(AsciiBuf.GetSize());
             while (!OperationProgress->IsTransferDoneChecked())
             {
-              size_t BlockSize = nb::ToSizeT(OperationProgress->TransferBlockSize());
+              const size_t BlockSize = nb::ToSizeT(OperationProgress->TransferBlockSize());
               FSecureShell->Send(
                 nb::ToUInt8Ptr(AsciiBuf.GetData() + OperationProgress->GetTransferredSize()),
                 BlockSize);

@@ -27,11 +27,13 @@ endif()
 if(CMAKE_GENERATOR STREQUAL "Ninja")
   set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 else()
-  set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+  set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}\\${CMAKE_BUILD_TYPE})
 endif()
 
 if(NOT DEFINED PROJECT_PLATFORM OR PROJECT_PLATFORM STREQUAL "")
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64")
+  set(PROJECT_PLATFORM "ARM64" CACHE STRING "Platform")
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(PROJECT_PLATFORM "x64" CACHE STRING "Platform")
 else()
   set(PROJECT_PLATFORM "x86" CACHE STRING "Platform")
@@ -49,7 +51,7 @@ if(PROJECT_PLATFORM STREQUAL "x86" AND CMAKE_BUILD_TYPE STREQUAL "Release")
 else()
   set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
 endif()
-set(OPT_DEBUG_BUILD OFF CACHE STRING "Build plugin for debug")
+set(OPT_CREATE_PLUGIN_DIR ON CACHE STRING "Create plugin dir")
 set(OPT_COMPILE_TESTS OFF CACHE STRING "Build tests using Catch2")
 
 #-------------------------------------------------------------------------------
@@ -57,13 +59,16 @@ set(OPT_COMPILE_TESTS OFF CACHE STRING "Build tests using Catch2")
 include(CMakeParseArguments)
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
-#include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}")
-# message("CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-# message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}, CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
-# message("NETBOX_OUTPUT_DIRECTORY: ${NETBOX_OUTPUT_DIRECTORY}, CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-# message("MSVC_VERSION: ${MSVC_VERSION}")
+# include(CMakeDetermineCXXCompiler)
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}")
 # message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+# message("MSVC_VERSION: ${MSVC_VERSION}")
+# message("CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+# message("CMAKE_COMPILER_IS_MSVC: ${CMAKE_COMPILER_IS_MSVC}")
+# message("CMAKE_COMPILER_IS_MINGW: ${CMAKE_COMPILER_IS_MINGW}")
+# message("CMAKE_COMPILER_IS_CLANG: ${CMAKE_COMPILER_IS_CLANG}")
+# message("CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
+# message("CMAKE_CXX_COMPILER_ARCHITECTURE_ID: ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
 
 #-------------------------------------------------------------------------------
 
@@ -258,7 +263,7 @@ set(OPENSSL_COMPILE_FLAGS
   -DOPENSSL_NO_ENGINE -DOPENSSL_NO_DYNAMIC_ENGINE
   -DOPENSSL_NO_QUIC
   -DOPENSSL_NO_BROTLI
-  -DOPENSSL_NO_COMP -DOPENSSL_NO_COMP_ALG
+  -DOPENSSL_NO_COMP
   -DOPENSSL_NO_ERR
   -DOPENSSL_NO_CAMELLIA
   -DOPENSSL_NO_DEPRECATED_3_0
@@ -379,7 +384,7 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   libs/openssl-3/crypto/modes/aesni-gcm-x86_64.asm
   libs/openssl-3/crypto/modes/aes-gcm-avx512.asm
 )
-else()
+elseif(PROJECT_PLATFORM STREQUAL "x86")
 compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   libs/openssl-3/crypto/aes/libcrypto-lib-vpaes-x86.obj.asm
   libs/openssl-3/crypto/aes/libcrypto-lib-aesni-x86.obj.asm
@@ -406,6 +411,7 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   libs/openssl-3/crypto/sha/libcrypto-lib-sha1-586.obj.asm
   libs/openssl-3/crypto/whrlpool/libcrypto-lib-wp-mmx.obj.asm
 )
+# TODO: check PROJECT_PLATFORM STREQUAL "ARM64")
 endif()
 
 #message("libeay32_obj_files: ${libeay32_obj_files}")
@@ -1260,7 +1266,18 @@ set(libeay32_c_files
   libs/openssl-3/providers/implementations/storemgmt/winstore_store.c
 )
 
-if(PROJECT_PLATFORM STREQUAL "x64")
+if(PROJECT_PLATFORM STREQUAL "ARM64")
+set(libeay32_c_files ${libeay32_c_files}
+  libs/openssl-3/crypto/aes/aes_core.c
+  libs/openssl-3/crypto/aes/aes_cbc.c
+  libs/openssl-3/crypto/sha/keccak1600.c
+  libs/openssl-3/crypto/rc4/rc4_enc.c
+  libs/openssl-3/crypto/rc4/rc4_skey.c
+  libs/openssl-3/crypto/des/des_enc.c
+  libs/openssl-3/crypto/cast/c_enc.c
+  libs/openssl-3/crypto/bf/bf_enc.c
+)
+elseif(PROJECT_PLATFORM STREQUAL "x64")
 set(libeay32_c_files ${libeay32_c_files}
   libs/openssl-3/crypto/rc4/rc4_enc.c
   libs/openssl-3/crypto/rc4/rc4_skey.c
@@ -1575,11 +1592,22 @@ target_compile_definitions(putty PRIVATE
 
 #puttyvs
 
-add_library(puttyvs STATIC
-  libs/putty/crypto/aes-ni.c
+set(puttyvs_SOURCES
   libs/putty/crypto/aes-sw.c
   libs/putty/crypto/argon2.c
   libs/putty/crypto/sha256-sw.c
+)
+
+if(NOT PROJECT_PLATFORM STREQUAL "ARM64")
+
+set(puttyvs_SOURCES ${puttyvs_SOURCES}
+  libs/putty/crypto/aes-ni.c
+)
+
+endif(NOT PROJECT_PLATFORM STREQUAL "ARM64")
+
+add_library(puttyvs STATIC
+ ${puttyvs_SOURCES}
 )
 
 target_include_directories(puttyvs PRIVATE
@@ -2310,6 +2338,9 @@ add_custom_target(NetBoxResources SOURCES
   src/NetBox/NetBoxSpa.lng
   src/NetBox/resource.h.template
   src/NetBox/NetBox.rc.template
+  .github/workflows/release.yml
+  appveyor.yml
+  appveyor.bat
 )
 
 if(MSVC)
@@ -2439,29 +2470,11 @@ target_compile_options(NetBox PRIVATE
   -D_CRTIMP=
 )
 
-if(OPT_DEBUG_BUILD)
+if(OPT_CREATE_PLUGIN_DIR)
 
-set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/)
-string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
-set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/Far3_${PROJECT_PLATFORM}/Plugins/NetBox)
-string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
-
-add_custom_target(create_plugin_dir ALL
-  COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
-  # VERBATIM
-  DEPENDS NetBox
-)
-# add_dependencies(create_plugin_dir NetBox)
-
-add_custom_target(copy_to_plugin_dir ALL
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" "${NETBOX_PLUGIN_DIR}/"
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" "${NETBOX_PLUGIN_DIR}/"
-  # COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" "${NETBOX_PLUGIN_DIR}/"
-  # VERBATIM
-  DEPENDS create_plugin_dir
-  DEPENDS NetBox
-)
-# add_dependencies(copy_to_plugin_dir NetBox)
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+string(REPLACE "/" "\\" PROJECT_ROOT ${PROJECT_ROOT})
+set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}\\Far3_${PROJECT_PLATFORM}\\Plugins\\NetBox)
 
 file(GLOB DIST_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
@@ -2472,19 +2485,28 @@ file(GLOB DIST_FILES
 )
 # message("DIST_FILES: ${DIST_FILES}")
 
-add_custom_target(copy_dist_files_to_plugin_dir ALL
-  DEPENDS NetBox
+add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
+  VERBATIM
+)
+add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll ${NETBOX_PLUGIN_DIR}\\
+  VERBATIM
+)
+add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
+  VERBATIM
 )
 
 foreach(DIST_FILE ${DIST_FILES})
-  string(REPLACE "/" "\\" DIST_FILE ${DIST_FILE})
-  add_custom_command(TARGET copy_dist_files_to_plugin_dir POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DIST_FILE}" "${NETBOX_PLUGIN_DIR}"
-    VERBATIM
+  # string(REPLACE "\\" "/" DIST_FILE ${DIST_FILE})
+  add_custom_command(TARGET NetBox POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}\\
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
   )
 endforeach()
 
-endif(OPT_DEBUG_BUILD)
+endif(OPT_CREATE_PLUGIN_DIR)
 
 #-------------------------------------------------------------------------------
 
@@ -2809,3 +2831,10 @@ ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /DEBUG CONFIG Debug)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
+#[[
+get_cmake_property(_variableNames VARIABLES)
+list (SORT _variableNames)
+foreach (_variableName ${_variableNames})
+  message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
+]]

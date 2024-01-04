@@ -71,15 +71,6 @@ void TPersistent::AssignError(const TPersistent * Source)
   throw Exception("Cannot assign");
 }
 
-TObjectList::TObjectList() : TList(OBJECT_CLASS_TObjectList)
-{
-}
-
-TObjectList::TObjectList(TObjectClassId Kind) :
-  TList(Kind)
-{
-}
-
 TObjectList::~TObjectList()
 {
   TList::Clear();
@@ -112,20 +103,6 @@ void TObjectList::Notify(TObject * Ptr, TListNotification Action)
 }
 
 constexpr const int32_t MemoryDelta = 0x2000;
-
-TStrings::TStrings() noexcept :
-  TObjectList(OBJECT_CLASS_TStrings),
-  FDelimiter(L','),
-  FQuoteChar(L'"')
-{
-}
-
-TStrings::TStrings(TObjectClassId Kind) noexcept :
-  TObjectList(Kind),
-  FDelimiter(L','),
-  FQuoteChar(L'"')
-{
-}
 
 void TStrings::SetTextStr(const UnicodeString & Text)
 {
@@ -1223,10 +1200,10 @@ TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
 {
 }
 
-TSafeHandleStream::TSafeHandleStream(THandleStream * Source, bool Own) :
-  THandleStream(Source->Handle)
+TSafeHandleStream::TSafeHandleStream(gsl::not_null<THandleStream *> Source, bool Own) :
+  TSafeHandleStream(Source->Handle)
 {
-  FSource = Own ? Source : nullptr;
+  FSource = Own ? Source.get() : nullptr;
 }
 
 TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & FileName, uint16_t Mode)

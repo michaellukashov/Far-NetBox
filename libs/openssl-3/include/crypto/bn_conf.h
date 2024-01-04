@@ -22,6 +22,11 @@
 /* Should we define BN_DIV2W here? */
 
 /* Only one for the following should be defined */
+#if defined(_M_ARM) || defined (_M_ARM64)
+#undef SIXTY_FOUR_BIT_LONG
+#define SIXTY_FOUR_BIT
+#undef THIRTY_TWO_BIT
+#else
 #if defined(_WIN64) || defined(OPENSSL_SYS_WIN64)
 #undef SIXTY_FOUR_BIT_LONG
 #define SIXTY_FOUR_BIT
@@ -30,6 +35,7 @@
 #undef SIXTY_FOUR_BIT_LONG
 #undef SIXTY_FOUR_BIT
 #define THIRTY_TWO_BIT
+#endif
 #endif
 
 #endif

@@ -4,27 +4,27 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - main
 
 jobs:
 
   build:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         build: [
-                 nmake_cl_x64_release,
-                 nmake_cl_x86_release,
-                 nmake_cl_ARM64_release,
+                 ninja_cl_x64_release,
+                 ninja_cl_x86_release,
+                 ninja_cl_ARM64_release,
                ]
 
         include:
-          - { build: nmake_cl_x64_release,    arch: amd64,       platform: x64,   }
-          - { build: nmake_cl_x86_release,    arch: amd64_x86,   platform: x86,   }
-          - { build: nmake_cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
+          - { build: ninja_cl_x64_release,    arch: amd64,       platform: x64,   }
+          - { build: ninja_cl_x86_release,    arch: amd64_x86,   platform: x86,   }
+          - { build: ninja_cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
 
     env:
-      BUILD_TYPE: Release
+      BUILD_TYPE: RelWithDebugInfo
 
     runs-on: windows-2019
     steps:
@@ -51,26 +51,28 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
 
-      - name: Create Build forlder
+      - name: Create Build folder
         run: cmake -E make_directory build
 
       - name: Configure CMake
         shell: bash
         working-directory: build
         run: >
-          cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} $GITHUB_WORKSPACE/src/NetBox
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} -DOPT_CREATE_PLUGIN_DIR=ON $GITHUB_WORKSPACE
 
       - name: Build
         working-directory: build
         shell: bash
-        run: cmake --build . --config $BUILD_TYPE
+        run: cmake --build . --config $BUILD_TYPE --target all
 
       - name: pack plugin
         shell: bash
         run: |
           cp LICENSE.txt README.md README.RU.md README.PL.md ./Far3_${{ matrix.platform }}/Plugins/NetBox/
           7z a -m0=LZMA -mf=BCJ2 -mx9 ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/* -xr!*.pdb
-          7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
+          if [ -f ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb ] ; then
+            7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
+          fi
 
       - name: Upload result
         uses: actions/upload-artifact@v2
@@ -81,13 +83,16 @@ jobs:
 
   create-release:
     needs: [build]
+    if: ${{ false }}
     runs-on: windows-2019
 
     steps:
       - name: Checkout source
+        if: ${{ false }}
         uses: actions/checkout@v2
 
       - name: Get version
+        if: ${{ false }}
         shell: bash
         run: |
           export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
@@ -97,11 +102,13 @@ jobs:
           echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
 
       - name: Download result
+        if: ${{ false }}
         uses: actions/download-artifact@v2
         with:
           name: result
 
       - name: Create release
+        if: ${{ false }}
         shell: bash
         run: gh release create v${{ env.version }} -t "v${{ env.version }}" -n "NetBox ${{ env.version }}" ./*.7z
         env:

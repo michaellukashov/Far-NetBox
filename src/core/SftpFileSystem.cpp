@@ -5526,7 +5526,7 @@ void TSFTPFileSystem::Sink(
     (CopyParam->PartOffset < 0);
 
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
-  TStream * FileStream = nullptr;
+  TStream * FileStream = nullptr; // TODO: use std::unique_ptr<>
   bool DeleteLocalFile = false;
   RawByteString RemoteHandle;
   UnicodeString DestFullName = ATargetDir + ADestFileName;

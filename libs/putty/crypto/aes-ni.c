@@ -30,8 +30,10 @@ NI_ENC_DEC_H(192)
 NI_ENC_DEC_H(256)
 #else
 
+#if !defined(_M_ARM) && !defined(_M_ARM64)
 #include <wmmintrin.h>
 #include <smmintrin.h>
+#endif
 
 #if defined(__clang__) || defined(__GNUC__)
 #include <cpuid.h>

@@ -927,7 +927,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
     TSessionData * Data = nullptr;
     if ((Focused != nullptr) && Focused->GetIsFile() && Focused->GetUserData())
     {
-      Data = static_cast<TSessionData *>(Focused->GetUserData());
+      Data = cast_to<TSessionData>(ToObj(Focused->GetUserData()));
     }
 
     if ((Key == 'F') && (ControlState & CTRLMASK))
@@ -1089,7 +1089,7 @@ void TWinSCPFileSystem::RemoteCreateLink()
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
   if (Focused && Focused->GetUserData())
   {
-    File = static_cast<TRemoteFile *>(Focused->GetUserData());
+    File = cast_to<TRemoteFile>(ToObj(Focused->GetUserData()));
 
     if (File)
     {
@@ -3112,10 +3112,8 @@ void TWinSCPFileSystem::TerminalInformation(
 {
   if (Phase != 0)
   {
-    const TSessionStatus sts = GetTerminal() ? GetTerminal()->GetStatus() : ssClosed;
     bool mustLog = false;
     {
-      const bool new_log = (FAuthenticationLog == nullptr);
       TTerminal * term = GetTerminal();
       if (term)
       {
@@ -3134,6 +3132,7 @@ void TWinSCPFileSystem::TerminalInformation(
       }
 
       LogAuthentication(Terminal, AStr);
+      GetWinSCPPlugin()->UpdateConsoleTitle(AStr);
     }
   }
   else

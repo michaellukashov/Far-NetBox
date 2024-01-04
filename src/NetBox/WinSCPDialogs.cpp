@@ -7557,7 +7557,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     const TChecklistItem * ChecklistItem = FChecklist->GetItem(Index);
 
     List->AddObject(ItemLine(ChecklistItem),
-      const_cast<TObject *>(reinterpret_cast<const TObject *>(ChecklistItem)));
+      ToObj(nb::ToPtr(ChecklistItem)));
   }
   List->EndUpdate();
 

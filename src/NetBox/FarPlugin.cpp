@@ -1542,8 +1542,8 @@ void TCustomFarPlugin::ShowTerminalScreen(const UnicodeString & Command)
     // if any panel is visible -- clear all screen (don't scroll panel)
     {
       PanelInfo Info{};
-      Info.StructSize = sizeof(Info);
       nb::ClearStruct(Info);
+      Info.StructSize = sizeof(Info);
       FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_ACTIVE);
       if(Info.Flags & PFLAGS_VISIBLE)
         goto clearall;
@@ -1560,8 +1560,7 @@ clearall:
     do
     {
       Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
-    }
-    while(++Y < Size.y);
+    } while (++Y < Size.y);
     if(Command.Length() && Size.x > 2)
     {
       Blank = Command;
@@ -2274,9 +2273,6 @@ void TCustomFarFileSystem::RedrawPanel(bool Another)
 
 void TCustomFarFileSystem::ClosePanel()
 {
-  // FAR WORKAROUND
-  // if plugin is closed from ProcessPanelEvent(FE_IDLE), is does not close,
-  // so we close it here on the very next opportunity
   static bool InsideClose = false;
   if (MustSkipClose)
      MustSkipClose = false;

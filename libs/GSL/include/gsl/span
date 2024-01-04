@@ -126,6 +126,7 @@ namespace details
 
 #ifdef _MSC_VER
         using _Unchecked_type = pointer;
+        using _Prevent_inheriting_unwrap = span_iterator;
 #endif // _MSC_VER
         constexpr span_iterator() = default;
 
@@ -214,6 +215,7 @@ namespace details
             if (n != 0) Expects(begin_ && current_ && end_);
             if (n > 0) Expects(current_ - begin_ >= n);
             if (n < 0) Expects(end_ - current_ >= -n);
+            GSL_SUPPRESS(bounds .1)
             current_ -= n;
             return *this;
         }
@@ -622,11 +624,7 @@ public:
     // [span.obs], span observers
     constexpr size_type size() const noexcept { return storage_.size(); }
 
-    constexpr size_type size_bytes() const noexcept
-    {
-        Expects(size() < dynamic_extent / sizeof(element_type));
-        return size() * sizeof(element_type);
-    }
+    constexpr size_type size_bytes() const noexcept { return size() * sizeof(element_type); }
 
     constexpr bool empty() const noexcept { return size() == 0; }
 
@@ -779,8 +777,15 @@ span(const Container&) -> span<Element>;
 #endif // ( defined(__cpp_deduction_guides) && (__cpp_deduction_guides >= 201611L) )
 
 #if defined(GSL_USE_STATIC_CONSTEXPR_WORKAROUND)
+#if defined(__clang__) && defined(_MSC_VER) && defined(__cplusplus) && (__cplusplus < 201703L)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated" // Bug in clang-cl.exe which raises a C++17 -Wdeprecated warning about this static constexpr workaround in C++14 mode.
+#endif // defined(__clang__) && defined(_MSC_VER) && defined(__cplusplus) && (__cplusplus < 201703L)
 template <class ElementType, std::size_t Extent>
 constexpr const typename span<ElementType, Extent>::size_type span<ElementType, Extent>::extent;
+#if defined(__clang__) && defined(_MSC_VER) && defined(__cplusplus) && (__cplusplus < 201703L)
+#pragma clang diagnostic pop
+#endif // defined(__clang__) && defined(_MSC_VER) && defined(__cplusplus) && (__cplusplus < 201703L)
 #endif
 
 namespace details

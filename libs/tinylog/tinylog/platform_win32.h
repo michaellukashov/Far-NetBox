@@ -84,10 +84,14 @@ static int pthread_join(pthread_t th, void **p)
 
 static void *atomic_exchange_acq_rel_ptr(void **p, void *xchg)
 {
+#if defined(_M_ARM) || defined (_M_ARM64)
+  return (void *)_InterlockedExchange64((int64_t volatile *)p, (int64_t)xchg);
+#else
 #if defined(WIN64)
   return (void *)_InterlockedExchange64((int64_t volatile *)p, (int64_t)xchg);
 #else
   return (void *)InterlockedExchange((LONG volatile *)p, (LONG)xchg);
+#endif
 #endif
 }
 

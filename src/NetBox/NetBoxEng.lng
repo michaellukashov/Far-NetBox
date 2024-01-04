@@ -1275,7 +1275,7 @@
 "1.6.2"
 "Based on WinSCP: SFTP/FTP/SCP client for FAR"
 " Version %s"
-"Copyright © 2000-2023 Martin Prikryl"
+"Copyright © 2000-2024 Martin Prikryl"
 
 
 "**Continue connecting to an unknown server and \nadd its host key to a cache?**\n\nThe server's host key was not found in the cache. You have no guarantee that the server is the computer you think it is.\n\nThe server's %s key details are:\n\n%s\n\nIf you trust this host, press Yes. To connect without adding host key to the cache, press No. To abandon the connection press Cancel."
