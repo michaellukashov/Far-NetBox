@@ -27,7 +27,7 @@ endif()
 if(CMAKE_GENERATOR STREQUAL "Ninja")
   set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 else()
-  set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
+  set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}\\${CMAKE_BUILD_TYPE})
 endif()
 
 if(NOT DEFINED PROJECT_PLATFORM OR PROJECT_PLATFORM STREQUAL "")
@@ -59,7 +59,7 @@ include(CMakeParseArguments)
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
 # include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}")
 # message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 # message("MSVC_VERSION: ${MSVC_VERSION}")
 # message("CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
@@ -2475,24 +2475,19 @@ if(OPT_CREATE_PLUGIN_DIR)
 set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/Far3_${PROJECT_PLATFORM}/Plugins/NetBox)
-string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
-
-add_custom_target(create_plugin_dir ALL
-  COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
-  # VERBATIM
-  DEPENDS NetBox
-)
-# add_dependencies(create_plugin_dir NetBox)
 
 add_custom_target(copy_to_plugin_dir ALL
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll ${NETBOX_PLUGIN_DIR}\\
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
-  # COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${NETBOX_PLUGIN_DIR}\\
-  # VERBATIM
-  DEPENDS create_plugin_dir
   DEPENDS NetBox
 )
-# add_dependencies(copy_to_plugin_dir NetBox)
+add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
+  COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
+)
+add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll ${NETBOX_PLUGIN_DIR}
+)
+add_custom_command(TARGET copy_to_plugin_dir POST_BUILD
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
+)
 
 file(GLOB DIST_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
