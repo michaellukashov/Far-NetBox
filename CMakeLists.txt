@@ -31,7 +31,9 @@ else()
 endif()
 
 if(NOT DEFINED PROJECT_PLATFORM OR PROJECT_PLATFORM STREQUAL "")
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64")
+  set(PROJECT_PLATFORM "ARM64" CACHE STRING "Platform")
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(PROJECT_PLATFORM "x64" CACHE STRING "Platform")
 else()
   set(PROJECT_PLATFORM "x86" CACHE STRING "Platform")
@@ -49,20 +51,23 @@ if(PROJECT_PLATFORM STREQUAL "x86" AND CMAKE_BUILD_TYPE STREQUAL "Release")
 else()
   set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
 endif()
-set(OPT_DEBUG_BUILD OFF CACHE STRING "Build plugin for debug")
+set(OPT_CREATE_PLUGIN_DIR OFF CACHE STRING "Create plugin dir")
 
 #-------------------------------------------------------------------------------
 
 include(CMakeParseArguments)
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
-#include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}")
-# message("CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
-# message("CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}, CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
-# message("NETBOX_OUTPUT_DIRECTORY: ${NETBOX_OUTPUT_DIRECTORY}, CMAKE_RUNTIME_OUTPUT_DIRECTORY: ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-# message("MSVC_VERSION: ${MSVC_VERSION}")
+# include(CMakeDetermineCXXCompiler)
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}, CMAKE_COMPILER_IS_MINGW = ${CMAKE_COMPILER_IS_MINGW}")
 # message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
+# message("MSVC_VERSION: ${MSVC_VERSION}")
+# message("CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+# message("CMAKE_COMPILER_IS_MSVC: ${CMAKE_COMPILER_IS_MSVC}")
+# message("CMAKE_COMPILER_IS_MINGW: ${CMAKE_COMPILER_IS_MINGW}")
+# message("CMAKE_COMPILER_IS_CLANG: ${CMAKE_COMPILER_IS_CLANG}")
+# message("CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
+# message("CMAKE_CXX_COMPILER_ARCHITECTURE_ID: ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
 
 #-------------------------------------------------------------------------------
 
@@ -1576,11 +1581,22 @@ target_compile_definitions(putty PRIVATE
 
 #puttyvs
 
-add_library(puttyvs STATIC
-  libs/putty/crypto/aes-ni.c
+set(puttyvs_SOURCES
   libs/putty/crypto/aes-sw.c
   libs/putty/crypto/argon2.c
   libs/putty/crypto/sha256-sw.c
+)
+
+if(NOT PROJECT_PLATFORM STREQUAL "ARM64")
+
+set(puttyvs_SOURCES ${puttyvs_SOURCES}
+  libs/putty/crypto/aes-ni.c
+)
+
+endif(NOT PROJECT_PLATFORM STREQUAL "ARM64")
+
+add_library(puttyvs STATIC
+ ${puttyvs_SOURCES}
 )
 
 target_include_directories(puttyvs PRIVATE
@@ -2312,6 +2328,8 @@ add_custom_target(NetBoxResources SOURCES
   src/NetBox/resource.h.template
   src/NetBox/NetBox.rc.template
   .github/workflows/release.yml
+  appveyor.yml
+  appveyor.bat
 )
 
 if(MSVC)
@@ -2441,24 +2459,24 @@ target_compile_options(NetBox PRIVATE
   -D_CRTIMP=
 )
 
-if(OPT_DEBUG_BUILD)
+if(OPT_CREATE_PLUGIN_DIR)
 
-set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/)
+set(PROJECT_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 string(REPLACE "\\" "/" PROJECT_ROOT ${PROJECT_ROOT})
 set(NETBOX_PLUGIN_DIR ${PROJECT_ROOT}/Far3_${PROJECT_PLATFORM}/Plugins/NetBox)
 string(REPLACE "/" "\\" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
 
 add_custom_target(create_plugin_dir ALL
-  COMMAND if not exist "${NETBOX_PLUGIN_DIR}" ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
+  COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
   # VERBATIM
   DEPENDS NetBox
 )
 # add_dependencies(create_plugin_dir NetBox)
 
 add_custom_target(copy_to_plugin_dir ALL
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" "${NETBOX_PLUGIN_DIR}/"
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" "${NETBOX_PLUGIN_DIR}/"
-  # COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" "${NETBOX_PLUGIN_DIR}/"
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll ${NETBOX_PLUGIN_DIR}\\
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
+  # COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${CMAKE_COMMAND} -E copy_if_different "${NETBOX_OUTPUT_DIRECTORY}/NetBox.map" ${NETBOX_PLUGIN_DIR}\\
   # VERBATIM
   DEPENDS create_plugin_dir
   DEPENDS NetBox
@@ -2479,14 +2497,15 @@ add_custom_target(copy_dist_files_to_plugin_dir ALL
 )
 
 foreach(DIST_FILE ${DIST_FILES})
-  string(REPLACE "/" "\\" DIST_FILE ${DIST_FILE})
+  string(REPLACE "\\" "/" DIST_FILE ${DIST_FILE})
+  string(REPLACE "\\" "/" NETBOX_PLUGIN_DIR ${NETBOX_PLUGIN_DIR})
   add_custom_command(TARGET copy_dist_files_to_plugin_dir POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${DIST_FILE}" "${NETBOX_PLUGIN_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
     VERBATIM
   )
 endforeach()
 
-endif(OPT_DEBUG_BUILD)
+endif(OPT_CREATE_PLUGIN_DIR)
 
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
@@ -2510,3 +2529,10 @@ ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /DEBUG CONFIG Debug)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
+#[[
+get_cmake_property(_variableNames VARIABLES)
+list (SORT _variableNames)
+foreach (_variableName ${_variableNames})
+  message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
+]]
