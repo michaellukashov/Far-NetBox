@@ -1338,7 +1338,7 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
   }
   SECTION("ROProperty01")
   {
-    // Base.ROData2 = "234";
+    // Base.ROData2 = 234;
     int32_t ROData2 = Base.ROData2;
     CHECK(Base.ROData2 == 42);
     CHECK(ROData2 == 42);
