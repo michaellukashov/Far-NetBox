@@ -8,6 +8,7 @@ build-NetBox-*/
 /Far2_x64/
 /Far3_x86/
 /Far3_x64/
+/Far3_ARM64/
 res.txt
 #libs/
 libs/openssl/tmp32/
