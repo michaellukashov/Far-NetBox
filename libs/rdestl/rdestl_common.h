@@ -1,6 +1,8 @@
 #ifndef RDESTL_COMMON_H
 #define RDESTL_COMMON_H
 
+#undef get_data
+
 #ifndef RDESTL_STANDALONE
 #	define RDESTL_STANDALONE	1
 #endif
