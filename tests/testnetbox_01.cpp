@@ -1213,7 +1213,7 @@ template <typename T>
 class Property
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using DataType = typename std::conditional<nb::is_trivially_copyable<T>::value, T, const T&>::type;
+using DataType = typename std::conditional<std::is_trivially_copyable<T>::value, T, const T&>::type;
 using TGetter = fastdelegate::FastDelegate0<T>;
 using TSetter = fastdelegate::FastDelegate1<void, DataType>;
 private:
