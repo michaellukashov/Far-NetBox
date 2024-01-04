@@ -1206,7 +1206,7 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
   }
 }
 
-namespace tst {
+namespace experimental {
 
 template <typename T>
 class Property
@@ -1226,6 +1226,11 @@ public:
     Expects(!_getter.empty());
     Expects(!_setter.empty());
   }
+  explicit Property(TGetter && Getter) noexcept :
+    _getter(std::move(Getter))
+  {
+    Expects(!_getter.empty());
+  }
   Property(const Property &) = default;
   Property(Property &&) noexcept = default;
   Property & operator =(const Property &) = default;
@@ -1236,24 +1241,29 @@ public:
 //      return data;
 //  }
 
-//  T&& unwrap() && {
-//      return std::move(data);
-//  }
+  T&& unwrap() &&
+  {
+     return std::move(_getter());
+  }
+
   constexpr T operator()() const
   {
     Expects(_getter);
     return _getter();
   }
+
   constexpr operator T() const
   {
     Expects(_getter);
     return _getter();
   }
+
   /*operator T&() const
   {
     Expects(_getter);
     return _getter();
   }*/
+
   constexpr T operator->() const
   {
     return _getter();
@@ -1290,7 +1300,7 @@ class TBase1
 {
 public:
   Property<UnicodeString> RWData{nb::bind(&TBase1::GetData, this), nb::bind(&TBase1::SetData, this)};
-  // Property<UnicodeString> ROData{nb::bind(&TBase1::GetData, this)};
+  Property<UnicodeString> ROData{nb::bind(&TBase1::GetData, this)};
 private:
   UnicodeString GetData() const { return FData; }
   void SetData(const UnicodeString & Value) { FData = Value; }
@@ -1298,14 +1308,15 @@ private:
   UnicodeString FData;
 };
 
-} // namespace tst
+} // namespace experimental
 
 TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
 {
   SECTION("RWProperty01")
   {
-    tst::TBase1 Base;
+    experimental::TBase1 Base;
     Base.RWData = "123";
     CHECK(Base.RWData == "123");
+    CHECK(Base.ROData == "123");
   }
 }
