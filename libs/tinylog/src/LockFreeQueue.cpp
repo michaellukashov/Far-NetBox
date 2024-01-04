@@ -8,10 +8,14 @@
 #define interlockedcompareexchange InterlockedCompareExchange
 #define interlockedexchange InterlockedExchange
 
+#if defined(_M_ARM) || defined (_M_ARM64)
+#define CAS(ptr, old_value, new_value) interlockedcompareexchange((uint64_t volatile *)ptr, (uint64_t)new_value, (uint64_t)old_value)
+#else
 #if defined(WIN64)
 #define CAS(ptr, old_value, new_value) interlockedcompareexchange((uint64_t volatile *)ptr, (uint64_t)new_value, (uint64_t)old_value)
 #else
 #define CAS(ptr, old_value, new_value) interlockedcompareexchange((ULONG volatile *)ptr, (ULONG)new_value, (ULONG)old_value)
+#endif
 #endif
 
 LockFreeQueue::LockFreeQueue()
