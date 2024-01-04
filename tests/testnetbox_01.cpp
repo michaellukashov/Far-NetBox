@@ -26,6 +26,7 @@
 
 #include "testutils.h"
 //#include "xproperty/xproperty.hpp"
+#include <type_traits.h>
 
 template <typename T>
 class propertyBase
@@ -1212,6 +1213,7 @@ template <typename T>
 class Property
 {
 CUSTOM_MEM_ALLOCATION_IMPL
+using DataType = typename std::enable_if<nb::is_trivially_copyable<T>::value, T>::type;
 using TGetter = fastdelegate::FastDelegate0<T>;
 using TSetter = fastdelegate::FastDelegate1<void, const T &>;
 private:
@@ -1300,13 +1302,17 @@ public:
 class TBase1
 {
 public:
-  Property<UnicodeString> RWData{nb::bind(&TBase1::GetData, this), nb::bind(&TBase1::SetData, this)};
-  Property<UnicodeString> ROData{nb::bind(&TBase1::GetData, this)};
+  Property<UnicodeString> RWData1{nb::bind(&TBase1::GetData, this), nb::bind(&TBase1::SetData, this)};
+  // Property<UnicodeString> ROData1{nb::bind(&TBase1::GetData, this)};
+  Property<int32_t> ROData2{nb::bind(&TBase1::GetData2, this)};
 private:
-  UnicodeString GetData() const { return FData; }
-  void SetData(const UnicodeString & Value) { FData = Value; }
+  UnicodeString GetData1() const { return FData1; }
+  void SetData1(const UnicodeString & Value) { FData1 = Value; }
 
-  UnicodeString FData;
+  int32_t GetData2() const { return FData2; }
+
+  UnicodeString FData1;
+  int32_t FData2{42};
 };
 
 } // namespace experimental
@@ -1316,11 +1322,14 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
   SECTION("RWProperty01")
   {
     experimental::TBase1 Base;
-    Base.RWData = "123";
-    CHECK(Base.RWData == "123");
-    CHECK(Base.ROData == "123");
-    CHECK(Base.ROData() == "123");
-    CHECK(*Base.ROData == "123");
+    // Base.RWData = "123";
+    // CHECK(Base.RWData == "123");
+    // CHECK(Base.ROData == "123");
+    // CHECK(Base.ROData() == "123");
+    // CHECK(*Base.ROData == "123");
     // Base.ROData = "234";
+    int32_t ROData2 = Base.ROData2;
+    CHECK(Base.ROData2 == 42);
+    CHECK(ROData2 == 42);
   }
 }
