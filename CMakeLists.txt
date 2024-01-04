@@ -1266,7 +1266,18 @@ set(libeay32_c_files
   libs/openssl-3/providers/implementations/storemgmt/winstore_store.c
 )
 
-if(PROJECT_PLATFORM STREQUAL "x64")
+if(PROJECT_PLATFORM STREQUAL "ARM64")
+set(libeay32_c_files ${libeay32_c_files}
+  libs/openssl-3/crypto/aes/aes_core.c
+  libs/openssl-3/crypto/aes/aes_cbc.c
+  libs/openssl-3/crypto/sha/keccak1600.c
+  libs/openssl-3/crypto/rc4/rc4_enc.c
+  libs/openssl-3/crypto/rc4/rc4_skey.c
+  libs/openssl-3/crypto/des/des_enc.c
+  libs/openssl-3/crypto/cast/c_enc.c
+  libs/openssl-3/crypto/bf/bf_enc.c
+)
+elseif(PROJECT_PLATFORM STREQUAL "x64")
 set(libeay32_c_files ${libeay32_c_files}
   libs/openssl-3/crypto/rc4/rc4_enc.c
   libs/openssl-3/crypto/rc4/rc4_skey.c
