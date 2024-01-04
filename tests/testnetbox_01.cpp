@@ -1085,3 +1085,107 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
   }
 }
 
+namespace tst {
+
+template <typename T>
+class RWProperty
+{
+CUSTOM_MEM_ALLOCATION_IMPL
+private:
+//  typedef fu2::function<T() const> TGetValueFunctor;
+//  typedef fu2::function<void(T)> TSetValueFunctor;
+  using TGetValueFunctor = fastdelegate::FastDelegate0<T>;
+  using TSetValueFunctor = fastdelegate::FastDelegate1<void, const T&>;
+  TGetValueFunctor _getter;
+  TSetValueFunctor _setter;
+public:
+  RWProperty() = delete;
+  explicit RWProperty(TGetValueFunctor && Getter, TSetValueFunctor && Setter) noexcept :
+    _getter(std::move(Getter)),
+    _setter(std::move(Setter))
+  {
+    Expects(!_getter.empty());
+    Expects(!_setter.empty());
+  }
+  RWProperty(const RWProperty &) = default;
+  RWProperty(RWProperty &&) noexcept = default;
+  RWProperty & operator =(const RWProperty &) = default;
+  RWProperty & operator =(RWProperty &&) noexcept = default;
+//  RWProperty(const T& in) : data(in) {}
+//  RWProperty(T&& in) : data(std::forward<T>(in)) {}
+//  T const& get() const {
+//      return data;
+//  }
+
+//  T&& unwrap() && {
+//      return std::move(data);
+//  }
+  constexpr T operator()() const
+  {
+    Expects(_getter);
+    return _getter();
+  }
+  constexpr operator T() const
+  {
+    Expects(_getter);
+    return _getter();
+  }
+  /*operator T&() const
+  {
+    Expects(_getter);
+    return _getter();
+  }*/
+  constexpr T operator->() const
+  {
+    return _getter();
+  }
+  constexpr decltype(auto) operator *() const { return *_getter(); }
+  void operator()(const T & Value)
+  {
+    Expects(_setter);
+    _setter(Value);
+  }
+  void operator =(T Value)
+  {
+    Expects(_setter);
+    _setter(Value);
+  }
+  constexpr bool operator==(T Value) const
+  {
+    Expects(_getter);
+    return _getter() == Value;
+  }
+  friend bool inline operator==(const RWProperty &lhs, const RWProperty &rhs)
+  {
+    Expects(lhs._getter);
+    return (lhs._getter == rhs._getter) && (lhs._setter == rhs._setter);
+  }
+  friend bool inline operator!=(RWProperty &lhs, const T &rhs)
+  {
+    Expects(lhs._getter);
+    return lhs._getter() != rhs;
+  }
+};
+
+class TBase1
+{
+public:
+  RWProperty<UnicodeString> Data{nb::bind(&TBase1::GetData, this), nb::bind(&TBase1::SetData, this)};
+private:
+  UnicodeString GetData() const { return FData; }
+  void SetData(const UnicodeString & Value) { FData = Value; }
+
+  UnicodeString FData;
+};
+
+} // namespace tst
+
+TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
+{
+  SECTION("RWProperty01")
+  {
+    tst::TBase1 Base;
+    Base.Data = "123";
+    CHECK(Base.Data == "123");
+  }
+}
