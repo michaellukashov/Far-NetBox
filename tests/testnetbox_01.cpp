@@ -1213,9 +1213,9 @@ template <typename T>
 class Property
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using DataType = typename std::enable_if<nb::is_trivially_copyable<T>::value, T>::type;
+using DataType = typename std::conditional<nb::is_trivially_copyable<T>::value, T, const T&>::type;
 using TGetter = fastdelegate::FastDelegate0<T>;
-using TSetter = fastdelegate::FastDelegate1<void, const T &>;
+using TSetter = fastdelegate::FastDelegate1<void, DataType>;
 private:
   TGetter _getter;
   TSetter _setter;
@@ -1248,13 +1248,13 @@ public:
      return std::move(_getter());
   }
 
-  constexpr T operator()() const
+  constexpr DataType operator()() const
   {
     Expects(_getter);
     return _getter();
   }
 
-  constexpr operator T() const
+  constexpr operator DataType() const
   {
     Expects(_getter);
     return _getter();
@@ -1266,33 +1266,33 @@ public:
     return _getter();
   }*/
 
-  constexpr T operator->() const
+  constexpr DataType operator->() const
   {
     return _getter();
   }
   // constexpr decltype(auto) operator *() const { return _getter(); }
-  constexpr T operator *() const { return _getter(); }
-  void operator()(const T & Value)
+  constexpr DataType operator *() const { return _getter(); }
+  void operator()(DataType Value)
   {
     Expects(_setter);
     _setter(Value);
   }
-  void operator =(T Value)
+  void operator =(DataType Value)
   {
     Expects(_setter);
     _setter(Value);
   }
-  constexpr bool operator==(T Value) const
+  constexpr bool operator ==(DataType Value) const
   {
     Expects(_getter);
     return _getter() == Value;
   }
-  friend bool inline operator==(const Property &lhs, const Property &rhs)
+  friend bool inline operator ==(const Property & lhs, const Property & rhs)
   {
     Expects(lhs._getter);
-    return (lhs._getter == rhs._getter) && (lhs._setter == rhs._setter);
+    return (lhs._getter == rhs._getter);
   }
-  friend bool inline operator!=(Property &lhs, const T &rhs)
+  friend bool inline operator !=(Property & lhs, DataType rhs)
   {
     Expects(lhs._getter);
     return lhs._getter() != rhs;
@@ -1302,14 +1302,16 @@ public:
 class TBase1
 {
 public:
-  Property<UnicodeString> RWData1{nb::bind(&TBase1::GetData, this), nb::bind(&TBase1::SetData, this)};
+  Property<UnicodeString> RWData1{nb::bind(&TBase1::GetData1, this), nb::bind(&TBase1::SetData1, this)};
   // Property<UnicodeString> ROData1{nb::bind(&TBase1::GetData, this)};
+  Property<int32_t> RWData2{nb::bind(&TBase1::GetData2, this), nb::bind(&TBase1::SetData2, this)};
   Property<int32_t> ROData2{nb::bind(&TBase1::GetData2, this)};
 private:
   UnicodeString GetData1() const { return FData1; }
   void SetData1(const UnicodeString & Value) { FData1 = Value; }
 
   int32_t GetData2() const { return FData2; }
+  void SetData2(int32_t Value) { FData2 = Value; }
 
   UnicodeString FData1;
   int32_t FData2{42};
@@ -1322,14 +1324,16 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
   SECTION("RWProperty01")
   {
     experimental::TBase1 Base;
-    // Base.RWData = "123";
-    // CHECK(Base.RWData == "123");
-    // CHECK(Base.ROData == "123");
-    // CHECK(Base.ROData() == "123");
-    // CHECK(*Base.ROData == "123");
-    // Base.ROData = "234";
+    Base.RWData1 = "123";
+    CHECK(Base.RWData1 == "123");
+    CHECK(Base.RWData1 == "123");
+    CHECK(Base.RWData1() == "123");
+    CHECK(*Base.RWData1 == "123");
+    Base.RWData2 = 123;
+    CHECK(123 == Base.RWData2);
+    // Base.ROData2 = "234";
     int32_t ROData2 = Base.ROData2;
-    CHECK(Base.ROData2 == 42);
-    CHECK(ROData2 == 42);
+    CHECK(Base.ROData2 == 123);
+    CHECK(ROData2 == 123);
   }
 }
