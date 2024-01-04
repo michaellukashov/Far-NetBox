@@ -1318,6 +1318,7 @@ TTerminal::~TTerminal() noexcept
   }
   catch (...)
   {
+    DebugAssert(false);
   }
 
   if (FCallbackGuard != nullptr)
@@ -1448,6 +1449,7 @@ bool TTerminal::GetActive() const
 
 void TTerminal::Close()
 {
+  Expects(FFileSystem);
   FFileSystem->Close();
 
   // Cannot rely on CommandSessionOpened here as Status is set to ssClosed too late
