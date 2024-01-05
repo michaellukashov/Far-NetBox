@@ -88,11 +88,9 @@ jobs:
 
     steps:
       - name: Checkout source
-        if: ${{ false }}
         uses: actions/checkout@v2
 
       - name: Get version
-        if: ${{ false }}
         shell: bash
         run: |
           export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
@@ -102,13 +100,11 @@ jobs:
           echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
 
       - name: Download result
-        if: ${{ false }}
         uses: actions/download-artifact@v2
         with:
           name: result
 
       - name: Create release
-        if: ${{ false }}
         shell: bash
         run: gh release create v${{ env.version }} -t "v${{ env.version }}" -n "NetBox ${{ env.version }}" ./*.7z
         env:

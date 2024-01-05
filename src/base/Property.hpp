@@ -437,8 +437,7 @@ public:
   friend bool constexpr inline operator !=(const RWPropertySimple & lhs, const RWPropertySimple & rhs)
   {
     Expects(lhs._value);
-    Expects(rhs._value);
-    return *lhs._value != *rhs._value;
+    return *lhs._value != rhs._value;
   }
 };
 
