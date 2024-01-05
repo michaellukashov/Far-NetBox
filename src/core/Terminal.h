@@ -594,7 +594,8 @@ protected:
   virtual const TTerminal * GetPasswordSource() const { return this; }
 
 public:
-  explicit TTerminal(TObjectClassId Kind = OBJECT_CLASS_TTerminal) noexcept;
+  explicit TTerminal() noexcept : TTerminal(OBJECT_CLASS_TTerminal) {}
+  explicit TTerminal(TObjectClassId Kind) noexcept;
   void Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration, TActionLog * AActionLog = nullptr);
   virtual ~TTerminal() noexcept override;
   void Open();
