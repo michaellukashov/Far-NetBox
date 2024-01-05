@@ -2658,7 +2658,7 @@ UnicodeString TRights::GetOctal() const
   return Result;
 }
 
-void TRights::SetNumber(const uint16_t & Value)
+void TRights::SetNumber(uint16_t Value)
 {
   if ((FSet != Value) || ((FSet | FUnset) != rfAllSpecials))
   {

@@ -41,7 +41,7 @@ public:
   __property char * Data = { read=GetData };
   ROProperty<char *> Data{nb::bind(&TFileBuffer::GetData, this)};
   __property int32_t Size = { read=FSize, write=SetSize };
-  RWProperty3<int64_t> Size{nb::bind(&TFileBuffer::GetSize, this), nb::bind(&TFileBuffer::SetSize, this)};
+  RWProperty<int64_t> Size{nb::bind(&TFileBuffer::GetSize, this), nb::bind(&TFileBuffer::SetSize, this)};
 
 private:
   std::unique_ptr<TMemoryStream> FMemory;

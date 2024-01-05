@@ -740,7 +740,7 @@ public:
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
   RWProperty<UnicodeString> CurrentDirectory{nb::bind(&TTerminal::RemoteGetCurrentDirectory, this), nb::bind(&TTerminal::TerminalSetCurrentDirectory, this)};
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
-  RWProperty3<bool> ExceptionOnFail{nb::bind(&TTerminal::GetExceptionOnFail, this), nb::bind(&TTerminal::SetExceptionOnFail, this)};
+  RWProperty<bool> ExceptionOnFail{nb::bind(&TTerminal::GetExceptionOnFail, this), nb::bind(&TTerminal::SetExceptionOnFail, this)};
   __property TRemoteDirectory * Files = { read = FFiles };
   __property TNotifyEvent OnChangeDirectory = { read = FOnChangeDirectory, write = FOnChangeDirectory };
   __property TReadDirectoryEvent OnReadDirectory = { read = FOnReadDirectory, write = FOnReadDirectory };

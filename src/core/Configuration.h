@@ -378,7 +378,7 @@ public:
   __property TUsage * Usage = { read = FUsage };
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
-  RWProperty3<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
+  RWProperty<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
   __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
   __property UnicodeString PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
   __property UnicodeString PuttySessionsKey  = { read=DoGetPuttySessionsKey };
@@ -417,7 +417,7 @@ public:
   __property UnicodeString CompanyName = { read=GetCompanyName };
   __property bool IsUnofficial = { read = GetIsUnofficial };
   __property bool Logging  = { read=FLogging, write=SetLogging };
-  RWProperty3<bool> Logging{nb::bind(&TConfiguration::GetLogging, this), nb::bind(&TConfiguration::SetLogging, this)};
+  RWProperty<bool> Logging{nb::bind(&TConfiguration::GetLogging, this), nb::bind(&TConfiguration::SetLogging, this)};
   __property UnicodeString LogFileName  = { read=FLogFileName, write=SetLogFileName };
   __property bool LogToFile  = { read=GetLogToFile };
   ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
@@ -426,7 +426,7 @@ public:
   __property int64_t LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
   __property int32_t LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
   __property int32_t LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
-  RWProperty3<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
+  RWProperty<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
   __property int32_t ActualLogProtocol  = { read=FActualLogProtocol };
   ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
@@ -461,7 +461,7 @@ public:
   int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
   __property int32_t ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
   __property int32_t QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
-  RWPropertySimple1<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
+  RWPropertySimple<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
   __property int32_t ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
   int32_t& ParallelTransferThreshold{FParallelTransferThreshold};
   __property int32_t KeyVersion = { read = FKeyVersion, write = FKeyVersion };
