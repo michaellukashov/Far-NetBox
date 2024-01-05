@@ -2461,12 +2461,12 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES 
     if (PanelItems->GetCount() > 1)
     {
       Query = FORMAT(GetMsg(Recycle ? NB_RECYCLE_FILES_CONFIRM : NB_DELETE_FILES_CONFIRM),
-          PanelItems->GetCount());
+        PanelItems->GetCount());
     }
     else
     {
       Query = FORMAT(GetMsg(Recycle ? NB_RECYCLE_FILE_CONFIRM : NB_DELETE_FILE_CONFIRM),
-          PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
+        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
     }
 
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
