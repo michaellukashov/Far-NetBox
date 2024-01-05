@@ -234,7 +234,7 @@ void TConfiguration::Default()
   FSessionReopenAuto = 5000;
   FSessionReopenBackground = 2000;
   FSessionReopenTimeout = 0;
-  FSessionReopenAutoStall = 60000;
+  FSessionReopenAutoStall = 60 * MSecsPerSec;
   FTunnelLocalPortNumberLow = 50000;
   FTunnelLocalPortNumberHigh = 50099;
   FCacheDirectoryChangesMaxSize = 100;
