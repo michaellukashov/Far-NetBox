@@ -1360,7 +1360,7 @@ void TPasswordDialog::ShowPromptClick(TFarButton * /*Sender*/,
   bool & /*Close*/)
 {
   TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
-
+  Ensures(WinSCPPlugin);
   WinSCPPlugin->MoreMessageDialog(FPrompt, nullptr, qtInformation, qaOK);
 }
 
@@ -3012,6 +3012,7 @@ void TSessionDialog::UpdateControls()
   {
     FtpPasvModeCheck->SetChecked(true);
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    Ensures(WinSCPPlugin);
     WinSCPPlugin->MoreMessageDialog(GetMsg(NB_FTP_PASV_MODE_REQUIRED),
       nullptr, qtInformation, qaOK);
   }
@@ -4093,6 +4094,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool /*TypeOnly*
     if (!Message.IsEmpty())
     {
       TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+      Expects(WinSCPPlugin);
       Result = (WinSCPPlugin->MoreMessageDialog(Message, nullptr, qtWarning,
             qaIgnore | qaAbort) != qaAbort);
     }
@@ -4122,6 +4124,7 @@ bool TSessionDialog::CloseQuery()
       ((GetResult() == brConnect) && (FAction == saEdit))))
   {
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    Ensures(WinSCPPlugin);
     CanClose = (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_PASSWORD), nullptr,
           qtWarning, qaOK | qaCancel) == qaOK);
   }
@@ -4272,7 +4275,7 @@ void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
   {
     Allow = false;
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
-
+    Ensures(WinSCPPlugin);
     WinSCPPlugin->MoreMessageDialog(GetMsg(NB_GSSAPI_NOT_INSTALLED),
       nullptr, qtError, qaOK);
   }
@@ -5681,6 +5684,7 @@ bool TCopyDialog::CloseQuery()
       if (!Directory.IsEmpty() && !base::DirectoryExists(Directory))
       {
         TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+        Ensures(WinSCPPlugin);
 
         if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY), Directory),
             nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
@@ -7087,7 +7091,7 @@ bool TFullSynchronizeDialog::CloseQuery()
     SaveSettingsCheck->GetChecked() && (FOrigMode != GetMode()) && !FSaveMode)
   {
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
-
+    Ensures(WinSCPPlugin);
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_SYNCHRONIZE_MODE), nullptr,
         qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
     {
@@ -7990,6 +7994,7 @@ void TSynchronizeDialog::CopyParamListerClick(
 void TSynchronizeDialog::CustomCopyParam()
 {
   TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+  Expects(WinSCPPlugin);
   // PreserveTime is forced for some settings, but avoid hard-setting it until
   // user really confirms it on custom dialog
   TCopyParamType ACopyParams = GetCopyParams();
@@ -8122,6 +8127,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
     TMessageParams Params(nullptr);
     Params.Params = qpNeverAskAgainCheck;
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    Ensures(WinSCPPlugin);
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SYNCHRONISE_BEFORE_KEEPUPTODATE),
         nullptr, qtConfirmation, qaYes | qaNo | qaCancel, &Params))
     {
@@ -8532,6 +8538,7 @@ bool TQueueDialog::CloseQuery()
   if (Result)
   {
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+    Ensures(WinSCPPlugin);
     Result = !FClosingPlugin || (FStatus->GetCount() == 0) ||
       (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_QUEUE_PENDING_ITEMS), nullptr,
           qtWarning, qaOK | qaCancel) == qaCancel);
