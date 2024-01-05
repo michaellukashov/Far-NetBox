@@ -2865,7 +2865,7 @@ TStrings * TWinSCPFileSystem::CreateFocusedFileList(TOperationSide Side, TFarPan
     {
       FileName = ::IncludeTrailingBackslash((*APanelInfo)->GetCurrentDirectory()) + FileName;
     }
-    Result->AddObject(FileName, static_cast<TObject *>(Focused->GetUserData()));
+    Result->AddObject(FileName, ToObj(Focused->GetUserData()));
   }
   return Result;
 }

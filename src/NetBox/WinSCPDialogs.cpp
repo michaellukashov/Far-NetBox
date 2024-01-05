@@ -2813,13 +2813,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 void TSessionDialog::FtpProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType)
 {
   FtpProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(nb::ToPtr(ProxyType)));
+    ToObj(nb::ToPtr(ProxyType)));
 }
 
 void TSessionDialog::SshProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType)
 {
   SshProxyMethodCombo->GetItems()->AddObject(GetMsg(ProxyTypeId),
-    static_cast<TObject *>(nb::ToPtr(ProxyType)));
+    ToObj(nb::ToPtr(ProxyType)));
 }
 
 TSessionDialog::~TSessionDialog() noexcept
@@ -3403,7 +3403,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Acti
       static_assert(NB_CIPHER_NAME_WARN + CIPHER_COUNT - 1 == NB_CIPHER_NAME_AESGCM, "CIPHER_COUNT");
       for (int32_t Index2 = 0; Index2 < CIPHER_COUNT; ++Index2)
       {
-        const TObject * Obj = static_cast<TObject *>(nb::ToPtr(SessionData->GetCipher(Index2)));
+        const TObject * Obj = ToObj(nb::ToPtr(SessionData->GetCipher(Index2)));
         CipherListBox->GetItems()->AddObject(
           GetMsg(NB_CIPHER_NAME_WARN + nb::ToInt32(SessionData->GetCipher(Index2))),
           Obj);
@@ -3429,7 +3429,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Acti
     {
       KexListBox->GetItems()->AddObject(
         GetMsg(NB_KEX_NAME_WARN + nb::ToInt32(SessionData->GetKex(Index3))),
-        static_cast<TObject *>(nb::ToPtr(SessionData->GetKex(Index3))));
+        ToObj(nb::ToPtr(SessionData->GetKex(Index3))));
     }
   }
   __finally
@@ -4296,7 +4296,7 @@ void TSessionDialog::FillCodePageEdit()
 {
   // CodePageEditAdd(CP_UTF8);
   CodePageEdit->GetItems()->AddObject(L"65001 (UTF-8)",
-    static_cast<TObject *>(nb::ToPtr(nb::ToUIntPtr(65001))));
+    ToObj(nb::ToUIntPtr(65001)));
   CodePageEditAdd(CP_ACP);
   CodePageEditAdd(CP_OEMCP);
   CodePageEditAdd(20866); // KOI8-r
@@ -4309,7 +4309,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
   if (::GetCodePageInfo(Cp, cpInfoEx))
   {
     CodePageEdit->GetItems()->AddObject(cpInfoEx.CodePageName,
-      static_cast<TObject *>(nb::ToPtr(nb::ToUIntPtr(cpInfoEx.CodePage))));
+      ToObj(nb::ToUIntPtr(cpInfoEx.CodePage)));
   }
 }
 
