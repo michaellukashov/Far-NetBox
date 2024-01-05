@@ -182,7 +182,7 @@ public:
   void FromBackend(const uint8_t * Data, size_t Length);
   void CWrite(const char * Data, size_t Length);
   void AddStdError(const uint8_t * Data, size_t Length);
-  const UnicodeString & GetStdError() const;
+  UnicodeString GetStdError() const;
   void VerifyHostKey(
     const UnicodeString & AHost, int32_t Port, const UnicodeString & AKeyType, const UnicodeString & AKeyStr,
     const UnicodeString & FingerprintSHA256, const UnicodeString & FingerprintMD5,

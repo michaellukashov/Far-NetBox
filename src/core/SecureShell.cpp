@@ -1547,7 +1547,7 @@ void TSecureShell::AddStdErrorLine(const UnicodeString & AStr)
   }
 }
 
-const UnicodeString & TSecureShell::GetStdError() const
+UnicodeString TSecureShell::GetStdError() const
 {
   return FStdError;
 }
