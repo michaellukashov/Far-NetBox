@@ -9,14 +9,32 @@ UnicodeString Format(const UnicodeString & fmt, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
   w.write(fmt.data(), args);
-  return UnicodeString(w.data(), nb::ToInt32(w.size()));
+  try
+  {
+    return UnicodeString(w.data(), nb::ToInt32(w.size()));
+  }
+  catch(const fmt::FormatError & ex)
+  {
+    DEBUG_PRINTF("Error: %s", UnicodeString(ex.what()));
+    DebugAssert(false);
+  }
+  return UnicodeString();
 }
 
 UnicodeString Sprintf(const UnicodeString & fmt, fmt::ArgList args)
 {
   fmt::WMemoryWriter w;
-  fmt::printf(w, fmt.data(), args);
-  return UnicodeString(w.data(), nb::ToInt32(w.size()));
+  try
+  {
+    fmt::printf(w, fmt.data(), args);
+    return UnicodeString(w.data(), nb::ToInt32(w.size()));
+  }
+  catch(const fmt::FormatError & ex)
+  {
+    DEBUG_PRINTF("Error: %s", UnicodeString(ex.what()));
+    DebugAssert(false);
+  }
+  return UnicodeString();
 }
 
 UnicodeString FmtLoadStr(int32_t id, fmt::ArgList args)
