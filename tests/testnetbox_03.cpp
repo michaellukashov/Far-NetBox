@@ -670,7 +670,7 @@ TEST_CASE_METHOD(base_fixture_t, "testfind01", "netbox")
     List.SetCaseSensitive(true);
     Res = List.Find(S2, Index);
     CHECK(!Res);
-    CHECK(Index == 0);
+    CHECK(Index == nb::NPOS);
     List.Add("ABCD");
     CHECK(List.GetCount() == 3);
     Res = List.Find(S2, Index);

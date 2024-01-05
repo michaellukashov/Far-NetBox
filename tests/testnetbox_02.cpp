@@ -42,16 +42,21 @@ public:
     ClickEventHandlerTriggered(false),
     onStringListChangeTriggered(false)
   {
-    INFO("base_fixture_t ctor");
-    INFO("base_fixture_t ctor2");
+    INFO("base_fixture_t ctor1");
     // CoreInitialize();
+    ::SetGlobals(new TTestGlobalFunctions());
+    INFO("base_fixture_t ctor2");
   }
 
   virtual ~base_fixture_t()
   {
-    INFO("base_fixture_t dtor");
+    INFO("base_fixture_t dtor1");
 //    delete FarPlugin;
     // CoreFinalize();
+    TGlobalsIntf * Intf = GetGlobals();
+    SAFE_DESTROY_EX(TGlobalsIntf, Intf);
+    ::SetGlobals(nullptr);
+    INFO("base_fixture_t dtor2");
   }
 
   bool scp_test(std::string host, int port, std::string user, std::string password);
