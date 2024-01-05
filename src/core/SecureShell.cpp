@@ -1528,7 +1528,7 @@ void TSecureShell::AddStdError(const uint8_t * Data, size_t Length)
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.Pos(L"\n")) > 0)
   {
-    UnicodeString Line = FStdErrorTemp.SubString(1, P - 1);
+    const UnicodeString Line = FStdErrorTemp.SubString(1, P - 1);
     FStdErrorTemp.Delete(1, P);
     AddStdErrorLine(Line);
   }
