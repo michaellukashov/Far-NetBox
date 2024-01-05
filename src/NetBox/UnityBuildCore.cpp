@@ -53,9 +53,9 @@
 #include "../core/FileInfo.cpp"
 #include "../core/Bookmarks.cpp"
 #include "../core/WinSCPSecurity.cpp"
-
 #include "../core/Http.cpp"
 #include "../core/NeonIntf.cpp"
+
 #include "../windows/SynchronizeController.cpp"
 #include "../windows/GUITools.cpp"
 #include "../windows/GUIConfiguration.cpp"
