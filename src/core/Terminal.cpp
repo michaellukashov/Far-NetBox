@@ -1248,7 +1248,6 @@ TTerminal::TTerminal(TObjectClassId Kind) noexcept :
 void TTerminal::Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<TConfiguration *> AConfiguration, TActionLog * AActionLog)
 {
   FConfiguration = AConfiguration;
-  //FSessionData = new TSessionData(L"");
   FSessionData->Assign(ASessionData);
   TDateTime Started = Now(); // use the same time for session and XML log
   FLog = std::make_unique<TSessionLog>(this, Started, FSessionData.get(), FConfiguration);
@@ -1318,6 +1317,7 @@ TTerminal::~TTerminal() noexcept
   }
   catch (...)
   {
+    DebugAssert(false);
   }
 
   if (FCallbackGuard != nullptr)
@@ -1448,6 +1448,7 @@ bool TTerminal::GetActive() const
 
 void TTerminal::Close()
 {
+  Expects(FFileSystem);
   FFileSystem->Close();
 
   // Cannot rely on CommandSessionOpened here as Status is set to ssClosed too late
