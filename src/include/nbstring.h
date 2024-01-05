@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifdef _MSC_VER
 #include <mbstring.h>
@@ -136,7 +136,6 @@ public:
   }
 
   CMSimpleStringT &operator=(const CMSimpleStringT &strSrc);
-//  CMSimpleStringT &operator=(CMSimpleStringT&&) noexcept = default;
 
   __forceinline CMSimpleStringT &operator=(PCXSTR pszSrc)
   {

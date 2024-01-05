@@ -537,7 +537,6 @@ bool TCopyParamList::GetAnyRule() const
   return Result;
 }
 
-extern const TObjectClassId OBJECT_CLASS_TGUIConfiguration;
 TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) noexcept : TConfiguration(Kind)
 {
   FLocale = 0;

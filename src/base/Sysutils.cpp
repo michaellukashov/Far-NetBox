@@ -38,31 +38,23 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };*/
 
-Exception::Exception(TObjectClassId Kind, Exception * E) noexcept :
-  std::runtime_error(E ? E->what() : ""),
-  FKind(Kind),
-  Message(E ? E->Message : L"")
+Exception::Exception(TObjectClassId Kind, const Exception * E) noexcept :
+  Exception(Kind, UnicodeString(E ? E->what() : ""))
 {
 }
 
 Exception::Exception(const UnicodeString & Msg) noexcept :
-  std::runtime_error(""),
-  FKind(OBJECT_CLASS_Exception),
-  Message(Msg)
+  Exception(OBJECT_CLASS_Exception, Msg)
 {
 }
 
 Exception::Exception(TObjectClassId Kind, const wchar_t * Msg) noexcept :
-  std::runtime_error(""),
-  FKind(Kind),
-  Message(Msg)
+  Exception(Kind, UnicodeString(Msg))
 {
 }
 
 Exception::Exception(const wchar_t * Msg) noexcept :
-  std::runtime_error(""),
-  FKind(OBJECT_CLASS_Exception),
-  Message(Msg)
+  Exception(OBJECT_CLASS_Exception, UnicodeString(Msg))
 {
 }
 
@@ -73,31 +65,26 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) noexcept :
 {
 }
 
-Exception::Exception(TObjectClassId Kind, std::exception * E) noexcept :
-  std::runtime_error(E ? E->what() : ""),
-  FKind(Kind)
+Exception::Exception(TObjectClassId Kind, const std::exception * E) noexcept :
+  Exception(Kind, UnicodeString(E ? E->what() : ""))
 {
 }
 
 Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) noexcept :
-  std::runtime_error(""),
-  FKind(Kind),
-  Message(Msg)
+  Exception(Kind, Msg)
 {
-  TODO("FHelpContext = AHelpContext");
+  TODO("use HelpContext");
   (void)AHelpContext;
 }
 
-Exception::Exception(TObjectClassId Kind, Exception * E, int32_t Ident) noexcept :
-  std::runtime_error(E ? E->what() : ""),
-  FKind(Kind)
+Exception::Exception(TObjectClassId Kind, const Exception * E, int32_t Ident) noexcept :
+  Exception(Kind, UnicodeString(E ? E->what() : ""))
 {
   Message = FMTLOAD(Ident);
 }
 
 Exception::Exception(TObjectClassId Kind, int32_t Ident) noexcept :
-  std::runtime_error(""),
-  FKind(Kind)
+  Exception(Kind, UnicodeString())
 {
   Message = FMTLOAD(Ident);
 }

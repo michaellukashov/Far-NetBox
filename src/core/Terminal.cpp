@@ -335,7 +335,8 @@ void TTunnelUI::DisplayBanner(const UnicodeString & Banner)
 
 void TTunnelUI::FatalError(Exception * E, const UnicodeString & Msg, const UnicodeString & HelpContext)
 {
-  throw EConnectionFatal(E, Msg, HelpContext);
+  (void)HelpContext;
+  throw EConnectionFatal(E, Msg);
 }
 
 void TTunnelUI::HandleExtendedException(Exception * E)
@@ -2653,7 +2654,7 @@ void TTerminal::FileOperationLoopEnd(Exception & E,
     else
     {
       DebugAssert(ASpecialRetry.IsEmpty());
-      std::unique_ptr<Exception> E2(std::make_unique<EFatal>(&E, AMessage, AHelpKeyword));
+      std::unique_ptr<Exception> E2(std::make_unique<EFatal>(&E, AMessage));
       if (!DoQueryReopen(E2.get()))
       {
         RethrowException(E2.get());
@@ -3069,7 +3070,7 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & AMsg, const Unic
   }
   else
   {
-    throw EConnectionFatal(E, AMsg, AHelpKeyword);
+    throw EConnectionFatal(E, AMsg);
   }
 }
 
@@ -3520,9 +3521,9 @@ void TTerminal::EnsureNonExistence(const UnicodeString & AFileName)
     {
       if (File->GetIsDirectory())
       {
-        throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName));
+        throw ECommand(FMTLOAD(RENAME_CREATE_DIR_EXISTS, AFileName));
       }
-      throw ECommand(nullptr, FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName));
+      throw ECommand(FMTLOAD(RENAME_CREATE_FILE_EXISTS, AFileName));
     }
   }
 }

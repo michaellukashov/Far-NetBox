@@ -707,7 +707,7 @@ void TSCPFileSystem::ReadCommandOutput(int32_t Params, const UnicodeString * Cmd
           }
           else
           {
-            throw ETerminal(nullptr, MainInstructions(FMTLOAD(COMMAND_FAILED2, *Cmd, FReturnCode)), Message);
+            throw ETerminal(MainInstructions(FMTLOAD(COMMAND_FAILED2, *Cmd, FReturnCode)), Message);
           }
         }
       }
