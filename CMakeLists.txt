@@ -113,7 +113,6 @@ if(MSVC)
 set(NETBOX_C_WARNING_FLAGS "")
 set(NETBOX_CXX_WARNING_FLAGS "")
 set(CMAKE_CXX_STANDARD 17)
-#set(NETBOX_CXX_FLAGS /std:c++17)
 set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreaded$<$<CONFIG:Debug>:Debug>)
 
 elseif(CMAKE_COMPILER_IS_MINGW)
@@ -2525,9 +2524,11 @@ ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 #ucm_add_flags(CXX C /MT CONFIG Release)
 #ucm_add_flags(CXX C /MTd CONFIG Debug)
 # linker settings
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /DEBUG CONFIG Debug)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /RTC1 CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG RelWithDebugInfo)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
 #[[
