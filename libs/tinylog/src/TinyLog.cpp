@@ -6,14 +6,6 @@
 
 namespace tinylog {
 
-/*std::string Format(const std::string& fmt, fmt::ArgList args)
-{
-  fmt::MemoryWriter w;
-  w.write(fmt.data(), args);
-  return std::string(w.data(), w.size());
-}
-FMT_VARIADIC_W(const std::string, Format, const std::string&)*/
-
 class TinyLogImpl
 {
   CUSTOM_MEM_ALLOCATION_IMPL
