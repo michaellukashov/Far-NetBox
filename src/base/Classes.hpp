@@ -290,7 +290,7 @@ public:
     if (GetCount() > 1)
     {
       //QuickSort(FList, 0, GetCount() - 1, Func);
-      std::sort(FList.begin(), FList.end(), [&](void* a, void* b) { return Func(a, b) < 0; });
+      std::sort(FList.begin(), FList.end(), [&](void * a, void * b) { return Func(a, b) < 0; });
     }
   }
 

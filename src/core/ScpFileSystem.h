@@ -133,6 +133,7 @@ private:
   //  int32_t size = 0, int32_t Params = -1);
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
+
   void InvalidOutputError(const UnicodeString & Command);
   void ReadCommandOutput(int32_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);
