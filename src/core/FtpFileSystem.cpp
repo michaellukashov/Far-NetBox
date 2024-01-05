@@ -27,9 +27,10 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TFTPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
-
+#undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
+
+const TObjectClassId OBJECT_CLASS_TFTPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
 
 constexpr const int32_t DummyCodeClass = 8;
 constexpr const int32_t DummyTimeoutCode = 801;
@@ -1608,7 +1609,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
   const UnicodeString & RemotePath, bool Get, int64_t Size, int32_t Type,
   TFileTransferData & UserData, TFileOperationProgressType * OperationProgress)
 {
-  FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AFileName), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     FFileZillaIntf->FileTransfer(
       ApiPath(LocalFile).c_str(), RemoteFile.c_str(), RemotePath.c_str(),
@@ -1618,7 +1619,7 @@ void TFTPFileSystem::FileTransfer(const UnicodeString & AFileName,
     const uint32_t Reply = WaitForCommandReply();
     GotReply(Reply, FLAGMASK(FFileTransferCancelled, REPLY_ALLOW_CANCEL));
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
+  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, AFileName));
 
   switch (FFileTransferAbort)
   {
