@@ -178,7 +178,7 @@ public:
   __property TRemoteFileList * Directory = { read = FDirectory, write = FDirectory };
   __property UnicodeString RightsStr = { read = GetRightsStr };
   __property int64_t Size = { read = GetSize, write = FSize };
-  RWProperty3<int64_t> Size{nb::bind(&TRemoteFile::GetSize, this), nb::bind(&TRemoteFile::SetSize, this)};
+  RWProperty<int64_t> Size{nb::bind(&TRemoteFile::GetSize, this), nb::bind(&TRemoteFile::SetSize, this)};
   __property int64_t CalculatedSize = { read = FCalculatedSize, write = FCalculatedSize };
   RWProperty2<int64_t> CalculatedSize{&FCalculatedSize};
   __property TRemoteToken Owner = { read = FOwner, write = FOwner };
@@ -212,7 +212,7 @@ public:
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   RWProperty1<TTerminal> Terminal{nb::bind(&TRemoteFile::GetTerminal, this), nb::bind(&TRemoteFile::SetTerminal, this)};
   __property wchar_t Type = { read = GetType, write = SetType };
-  RWProperty3<wchar_t> Type{nb::bind(&TRemoteFile::GetType, this), nb::bind(&TRemoteFile::SetType, this)};
+  RWProperty<wchar_t> Type{nb::bind(&TRemoteFile::GetType, this), nb::bind(&TRemoteFile::SetType, this)};
   __property UnicodeString FullFileName  = { read = GetFullFileName, write = FFullFileName };
   RWProperty<UnicodeString> FullFileName{nb::bind(&TRemoteFile::GetFullFileName, this), nb::bind(&TRemoteFile::SetFullFileName, this)};
   __property bool HaveFullFileName  = { read = GetHaveFullFileName };
@@ -537,7 +537,7 @@ public:
   UnicodeString GetChmodStr(int32_t Directory) const;
 
   __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
-  RWPropertySimple1<bool> AllowUndef{&FAllowUndef, nb::bind(&TRights::SetAllowUndef, this)};
+  RWPropertySimple<bool> AllowUndef{&FAllowUndef, nb::bind(&TRights::SetAllowUndef, this)};
   __property bool IsUndef = { read = GetIsUndef };
   ROProperty<bool> IsUndef{nb::bind(&TRights::GetIsUndef, this)};
   __property UnicodeString ModeStr = { read = GetModeStr };
@@ -569,7 +569,7 @@ private:
 public:
   bool GetIsUndef() const;
   UnicodeString GetModeStr() const;
-  void SetNumber(const uint16_t & Value);
+  void SetNumber(uint16_t Value);
   UnicodeString GetText() const;
   void SetText(const UnicodeString & Value);
   void SetOctal(const UnicodeString & AValue);
