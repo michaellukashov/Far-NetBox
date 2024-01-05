@@ -3457,7 +3457,7 @@ void TSessionData::SetTimeout(int32_t value)
   SET_SESSION_PROPERTY(Timeout);
 }
 
-void TSessionData::SetFSProtocol(const TFSProtocol & value)
+void TSessionData::SetFSProtocol(TFSProtocol value)
 {
   SET_SESSION_PROPERTY(FSProtocol);
 }
@@ -3530,7 +3530,7 @@ void TSessionData::SetPingType(TPingType value)
   SET_SESSION_PROPERTY(PingType);
 }
 
-void TSessionData::SetAddressFamily(const TAddressFamily & value)
+void TSessionData::SetAddressFamily(TAddressFamily value)
 {
   SET_SESSION_PROPERTY(AddressFamily);
 }

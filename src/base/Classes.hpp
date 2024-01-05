@@ -803,8 +803,8 @@ public:
   virtual void SetSize(int64_t NewSize) = 0;
   void SetPosition(int64_t Pos);
 
-  RWProperty3<int64_t> Size{nb::bind(&TStream::GetSize, this), nb::bind(&TStream::SetSize, this)};
-  RWProperty3<int64_t> Position{nb::bind(&TStream::GetPosition, this), nb::bind(&TStream::SetPosition, this)};
+  RWProperty<int64_t> Size{nb::bind(&TStream::GetSize, this), nb::bind(&TStream::SetSize, this)};
+  RWProperty<int64_t> Position{nb::bind(&TStream::GetPosition, this), nb::bind(&TStream::SetPosition, this)};
 };
 
 class NB_CORE_EXPORT THandleStream : public TStream
