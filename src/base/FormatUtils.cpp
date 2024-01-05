@@ -13,9 +13,10 @@ UnicodeString Format(const UnicodeString & fmt, fmt::ArgList args)
   {
     return UnicodeString(w.data(), nb::ToInt32(w.size()));
   }
-  catch(const fmt::FormatError & ex)
+  catch(const fmt::FormatError & Ex)
   {
-    DEBUG_PRINTF("Error: %s", UnicodeString(ex.what()));
+    nb::used(Ex);
+    DEBUG_PRINTF("Error: %s", UnicodeString(Ex.what()));
     DebugAssert(false);
   }
   return UnicodeString();
@@ -29,9 +30,10 @@ UnicodeString Sprintf(const UnicodeString & fmt, fmt::ArgList args)
     fmt::printf(w, fmt.data(), args);
     return UnicodeString(w.data(), nb::ToInt32(w.size()));
   }
-  catch(const fmt::FormatError & ex)
+  catch(const fmt::FormatError & Ex)
   {
-    DEBUG_PRINTF("Error: %s", UnicodeString(ex.what()));
+    nb::used(Ex);
+    DEBUG_PRINTF("Error: %s", UnicodeString(Ex.what()));
     DebugAssert(false);
   }
   return UnicodeString();
