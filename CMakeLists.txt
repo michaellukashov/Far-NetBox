@@ -410,7 +410,6 @@ compile_asm_files(RESULT libeay32_obj_files ASM_FILES
   libs/openssl-3/crypto/sha/libcrypto-lib-sha1-586.obj.asm
   libs/openssl-3/crypto/whrlpool/libcrypto-lib-wp-mmx.obj.asm
 )
-# TODO: check PROJECT_PLATFORM STREQUAL "ARM64")
 endif()
 
 #message("libeay32_obj_files: ${libeay32_obj_files}")
