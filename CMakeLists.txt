@@ -2336,10 +2336,13 @@ add_custom_target(NetBoxResources SOURCES
   src/NetBox/NetBoxPol.lng
   src/NetBox/NetBoxSpa.lng
   src/NetBox/resource.h.template
+  src/NetBox/NetBox.rc
   src/NetBox/NetBox.rc.template
   .github/workflows/release.yml
   appveyor.yml
   appveyor.bat
+  ChangeLog
+  README.md
 )
 
 if(MSVC)
