@@ -315,7 +315,8 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if ((GetTerminal() != nullptr) && rtti::isa<EFatal>(E))
   {
-    if (const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr))
+    const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
+    if (Reopen)
     {
       UpdatePanel();
     }
