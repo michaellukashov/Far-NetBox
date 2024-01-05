@@ -2979,6 +2979,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 {
   bool Result = false;
   DebugAssert(!FTerminal);
+  Expects(Data);
   FTerminal = new TTerminal();
   FTerminal->Init(Data, GetConfiguration());
   try
