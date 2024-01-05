@@ -483,7 +483,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
             {
               FileSystem->ReadFile(LinkFileName, LinkFile);
             }
-            catch (const Exception & /*E*/)
+            catch(const Exception & /*E*/)
             {
               LinkFile = nullptr;
             }
@@ -1157,13 +1157,13 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyPara
     {
       FTerminal->CopyToLocal(AFileList, TempDir, &CopyParam, cpTemporary, nullptr);
     }
-    catch (...)
+    catch(...)
     {
       try
       {
         RecursiveDeleteFile(::ExcludeTrailingBackslash(TempDir), false);
       }
-      catch (...)
+      catch(...)
       {
         DEBUG_PRINTF("TWinSCPFileSystem::TemporarilyDownloadFiles: error during RecursiveDeleteFile");
       }
@@ -1707,7 +1707,7 @@ void TWinSCPFileSystem::DoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch (Exception &E)
+  catch(Exception &E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
@@ -2021,7 +2021,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
     {
       GetTerminal()->SpaceAvailable(APath, ASpaceAvailable);
     }
-    catch (Exception &E)
+    catch(Exception & E)
     {
       if (!GetTerminal()->GetActive())
       {
@@ -2326,7 +2326,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
             }
           }
         }
-        catch (Exception &E)
+        catch(Exception & E)
         {
           FSynchronisingBrowse = false;
           GetWinSCPPlugin()->ShowExtendedException(&E);
@@ -3018,7 +3018,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
       throw Exception(FORMAT(GetMsg(NB_CANNOT_INIT_SESSION), Data->GetSessionName()));
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
     EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(&E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
