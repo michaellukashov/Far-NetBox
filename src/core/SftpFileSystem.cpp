@@ -4685,7 +4685,7 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
     {
       TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
       const TQueryParams Params(qpAllowContinueOnError | qpNeverAskAgainCheck,
-                                HELP_RESUME_TRANSFER);
+        HELP_RESUME_TRANSFER);
       // "abort" replaced with "cancel" to unify with "append/resume" query
       Answer = FTerminal->QueryUser(
         FMTLOAD(RESUME_TRANSFER2, DestFileName), nullptr, qaYes | qaNo | qaCancel,

@@ -384,7 +384,7 @@ void TWinSCPFileSystem::Close()
     {
       if (!FQueue->GetIsEmpty() &&
         (MoreMessageDialog(GetMsg(NB_PENDING_QUEUE_ITEMS), nullptr, qtWarning,
-            qaOK | qaCancel) == qaOK))
+          qaOK | qaCancel) == qaOK))
       {
         QueueShow(true);
       }
@@ -1624,7 +1624,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
 
     if (GetWinSCPPlugin()->CheckForEsc() &&
       (MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,
-          qtConfirmation, qaOK | qaCancel) == qaOK))
+        qtConfirmation, qaOK | qaCancel) == qaOK))
     {
       Continue = false;
     }
@@ -1744,8 +1744,8 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
     TMessageParams Params(nullptr);
     Params.Params = qpNeverAskAgainCheck;
     const uint32_t Result = MoreMessageDialog(
-        FORMAT(GetMsg(NB_TOO_MANY_WATCH_DIRECTORIES), MaxDirectories, MaxDirectories), nullptr,
-        qtConfirmation, qaYes | qaNo, &Params);
+      FORMAT(GetMsg(NB_TOO_MANY_WATCH_DIRECTORIES), MaxDirectories, MaxDirectories), nullptr,
+      qtConfirmation, qaYes | qaNo, &Params);
 
     if ((Result == qaYes) || (Result == qaNeverAskAgain))
     {
@@ -2701,8 +2701,8 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
       FLAGMASK(Edit, coTempTransfer) |
       FLAGMASK(Edit || !GetTerminal()->GetIsCapable(fcNewerOnlyUpload), coDisableNewerOnly);
     Confirmed = CopyDialog(true, Move, FFileList.get(),
-        Options, CopyParamAttrs,
-        DestPath, &CopyParam);
+      Options, CopyParamAttrs,
+      DestPath, &CopyParam);
 
     if (Confirmed && !Edit && CopyParam.GetQueue())
     {
@@ -2817,7 +2817,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
 {
   const bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(NB_IMPORT_SESSIONS_PROMPT), nullptr,
-        qtConfirmation, qaYes | qaNo) == qaYes);
+     qtConfirmation, qaYes | qaNo) == qaYes);
 
   if (Result)
   {
@@ -3760,12 +3760,12 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       (ProgressData.TimeExpected() > GetGUIConfiguration()->GetIgnoreCancelBeforeFinish()))
     {
       Result = MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION_FATAL2), nullptr,
-          qtWarning, qaYes | qaNo | qaCancel);
+        qtWarning, qaYes | qaNo | qaCancel);
     }
     else
     {
       Result = MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,
-          qtConfirmation, qaOK | qaCancel);
+        qtConfirmation, qaOK | qaCancel);
     }
     switch (Result)
     {
@@ -4098,7 +4098,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     Params.Aliases = Aliases;
     Params.AliasesCount = _countof(Aliases);
     switch (MoreMessageDialog(FORMAT(GetMsg(NB_EDITOR_ALREADY_LOADED), FullFileName),
-        nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
+      nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {
     case qaYes:
       EditCurrent = true;
