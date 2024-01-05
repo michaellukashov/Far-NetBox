@@ -3125,7 +3125,7 @@ UnicodeString TGlobalFunctions::GetCurrentDirectory() const
 
 UnicodeString TGlobalFunctions::GetStrVersionNumber() const
 {
-  return FORMAT("%d.%d.%d", NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH);
+  return FORMAT("%d.%d.%d.%d", NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH, NETBOX_VERSION_BUILD);
 }
 
 bool TGlobalFunctions::InputDialog(const UnicodeString & ACaption, const UnicodeString & APrompt,
