@@ -488,7 +488,7 @@ public:
   __property UnicodeString IniFileStorageName  = { read=GetIniFileStorageNameForReadingWriting };
   __property UnicodeString IniFileStorageNameForReading  = { read=GetIniFileStorageNameForReading };
   __property TStrings * OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
-  RWProperty1<TStrings> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
+  RWProperty<const TStrings *> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
   __property bool Persistent = { read = GetPersistent };
   ROProperty<bool> Persistent{nb::bind(&TConfiguration::GetPersistent, this)};
   __property bool ForceSave = { read = FForceSave, write = FForceSave };

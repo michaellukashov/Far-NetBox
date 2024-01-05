@@ -72,8 +72,8 @@ private:
 
 public:
   ROIndexedProperty() = delete;
-  explicit ROIndexedProperty(TGetter && Getter) noexcept
-    : _getter(std::move(Getter))
+  explicit ROIndexedProperty(TGetter && Getter) noexcept :
+    _getter(std::move(Getter))
   {
     Expects(!_getter.empty());
   }
@@ -201,80 +201,6 @@ public:
   {
     Expects(_setter);
     _setter(Value);
-  }
-};
-
-// pointers property with setter
-template <typename T>
-class RWProperty1
-{
-CUSTOM_MEM_ALLOCATION_IMPL
-private:
-  using TGetter = fastdelegate::FastDelegate0<const T*>;
-  using TSetter = fastdelegate::FastDelegate1<void, const T*>;
-  TGetter _getter;
-  TSetter _setter;
-public:
-  RWProperty1() = delete;
-  explicit RWProperty1(TGetter && Getter, TSetter && Setter) noexcept :
-    _getter(std::move(Getter)),
-    _setter(std::move(Setter))
-  {
-    Expects(!_getter.empty());
-    Expects(!_setter.empty());
-  }
-  RWProperty1(const RWProperty1 &) = default;
-  RWProperty1(RWProperty1 &&) noexcept = default;
-  RWProperty1 & operator =(const RWProperty1 &) = default;
-  RWProperty1 & operator =(RWProperty1 &&) noexcept = default;
-
-  constexpr const T * operator()() const
-  {
-    Expects(_getter);
-    return _getter();
-  }
-
-  constexpr operator const T*() const
-  {
-    Expects(_getter);
-    return _getter();
-  }
-
-  constexpr const T * operator->() const
-  {
-    return _getter();
-  }
-  // constexpr decltype(auto) operator*() const { return *_getter(); }
-  constexpr T operator *() const { return *_getter(); }
-
-  void operator()(const T * Value)
-  {
-    Expects(_setter);
-    _setter(Value);
-  }
-
-  void operator =(const T * Value)
-  {
-    Expects(_setter);
-    _setter(Value);
-  }
-
-  constexpr bool operator ==(const T * Value) const
-  {
-    Expects(_getter);
-    return _getter() == Value;
-  }
-
-  friend bool inline operator ==(const RWProperty1 & lhs, const RWProperty1 & rhs)
-  {
-    Expects(lhs._getter);
-    return (lhs._getter == rhs._getter) && (lhs._setter == rhs._setter);
-  }
-
-  friend bool inline operator !=(RWProperty1 & lhs, const T & rhs)
-  {
-    Expects(lhs._getter);
-    return lhs._getter() != rhs;
   }
 };
 
