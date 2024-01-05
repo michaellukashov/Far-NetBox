@@ -639,7 +639,7 @@ private:
   const UnicodeString GetStrData1() const { return FStrData1; }
   UnicodeString GetStrData2() { return FStrData2; }
   int GetRWData1() const { return FIntData1; }
-  void SetRWData1(const int & Value) { FIntData1 = Value; }
+  void SetRWData1(int Value) { FIntData1 = Value; }
   UnicodeString GetRWStrData1() { return FStrData1; }
   void SetRWStrData1(const UnicodeString & Value) { FStrData1 = Value; }
 
@@ -828,7 +828,7 @@ private:
   UnicodeString GetStrData1() const { return "42"; }
   UnicodeString GetStrData2() { return "42"; }
   int GetRWData1() const { return FIntData1; }
-  void SetRWData1(const int & Value) { FIntData1 = Value; }
+  void SetRWData1(int Value) { FIntData1 = Value; }
   UnicodeString GetRWStrData1() { return FStrData1; }
   void SetRWStrData1(const UnicodeString Value) { FStrData1 = Value; }
 

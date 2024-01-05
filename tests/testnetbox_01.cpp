@@ -1037,7 +1037,7 @@ public:
   virtual int GetData3() const { return 41; }
 
   virtual int GetRWData1() const { return FRWData1; }
-  virtual void SetRWData1(const int & Value) { FRWData1 = Value; }
+  virtual void SetRWData1(int Value) { FRWData1 = Value; }
   virtual UnicodeString GetRWData2() const { return FRWData2; }
   virtual void SetRWData2(const UnicodeString & Value) { FRWData2 = Value; }
 private:
@@ -1055,7 +1055,7 @@ public:
   virtual int GetData3() const override { return 42; }
 
   virtual int GetRWData1() const override { return FRWData1; }
-  virtual void SetRWData1(const int & Value) override { FRWData1 = Value; }
+  virtual void SetRWData1(int Value) override { FRWData1 = Value; }
 
   virtual UnicodeString GetRWData2() const override { return FRWData2; }
   virtual void SetRWData2(const UnicodeString & Value) override { FRWData2 = Value; }
@@ -1080,7 +1080,7 @@ private:
   int GetData3() const { return 41; }
 
   int GetRWData1() const { return FRWData1; }
-  void SetRWData1(const int & Value) { FRWData1 = Value; }
+  void SetRWData1(int Value) { FRWData1 = Value; }
   UnicodeString GetRWData2() const { return FRWData2; }
   void SetRWData2(const UnicodeString & Value) { FRWData2 = Value; }
   UnicodeString GetRWData3() const { return FRWData3; }
@@ -1236,7 +1236,7 @@ public:
 
   T&& unwrap() &&
   {
-     return std::move(_getter());
+    return std::move(_getter());
   }
 
   constexpr T operator()() const
@@ -1314,11 +1314,17 @@ public:
   }
 };
 
+// template<int s> struct GetSizeT;
+// GetSizeT<sizeof(ROProperty<UnicodeString>)> sz;
+// template<int s> struct GetSizeT;
+// GetSizeT<sizeof(RWProperty<UnicodeString>)> sz;
+
 class TBase1
 {
 public:
   // ROProperty<int32_t> ROData1{&FData2};
   ROProperty<int32_t> ROData2{nb::bind(&TBase1::GetData2, this)};
+  ROProperty<int32_t> ROData3{nb::bind(&TBase1::GetROData, this)};
 
   RWProperty<UnicodeString> RWData1{nb::bind(&TBase1::GetData1, this), nb::bind(&TBase1::SetData1, this)};
   // Property<UnicodeString> ROData1{nb::bind(&TBase1::GetData, this)};
@@ -1327,6 +1333,7 @@ private:
   UnicodeString GetData1() const { return FData1; }
   void SetData1(const UnicodeString & Value) { FData1 = Value; }
 
+  int32_t GetROData() { return FData2; }
   int32_t GetData2() const { return FData2; }
   void SetData2(int32_t Value) { FData2 = Value; }
 
