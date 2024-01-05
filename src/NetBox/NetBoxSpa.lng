@@ -852,7 +852,7 @@
 "Terminated by user."
 "Lost connection."
 "Can't detect command return code."
-"Command '%s'\nfailed with return code %d and error message\n%s."
+"Command '%s'\nfailed with return code %d and error message\n."
 "Command failed with return code %d."
 "Command '%s' failed with invalid output '%s'."
 "Error getting name of current remote directory."

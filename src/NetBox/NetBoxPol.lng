@@ -852,7 +852,7 @@
 "Przerwane przez użytkownika."
 "Zerwane połączenie."
 "Nie udało się określić kodu wyniku polecenia."
-"Polecenie '%s'\nzawiodło, zwracając kod wyniku %d i następujący komunikat o błędzie\n%s."
+"Polecenie '%s'\nzawiodło, zwracając kod wyniku %d i następujący komunikat o błędzie\n."
 "Polecenie '%s' zawiodło, zwracając nieprawidłowy wynik '%s'."
 "Polecenie '%s' nieudane z nieprawidłową odpowiedzią '%s'."
 "Błąd pobierania nazwy bieżącego folderu zdalnego."
