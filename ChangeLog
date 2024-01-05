@@ -1,8 +1,10 @@
-# for this file format description,
+﻿# for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [24.1.0.567-RC8] - 2024-01-04
+## [24.1.0.568-RC8] - 2024-01-05
 ### Fixed
+- Bugfix: SCP: crash if remote command fails
+https://forum.farmanager.com/viewtopic.php?p=176900#p176900
 - Fix ARM64 build
 
 ## [24.1.0.566-RC7] - 2024-01-02
