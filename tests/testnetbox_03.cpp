@@ -641,3 +641,46 @@ TEST_CASE_METHOD(base_fixture_t, "testTestPropsClass1", "netbox")
 #endif // if 0
 
 //------------------------------------------------------------------------------
+
+TEST_CASE_METHOD(base_fixture_t, "testfind01", "netbox")
+{
+  // TStringList::Find
+  TStringList List;
+  UnicodeString S1;
+  UnicodeString S2;
+  int32_t Index{-1};
+  bool Res;
+  SECTION("find01")
+  {
+    Res = List.Find(S1, Index);
+    CHECK(!Res);
+  }
+  SECTION("find02")
+  {
+    List.Add("abcd");
+    List.Add("efg");
+    S1 = "abcd";
+    S2 = "ABCD";
+    CHECK(List.GetCount() == 2);
+    CHECK(List.GetString(0) == "abcd");
+    CHECK(List.GetString(1) == "efg");
+    Res = List.Find(S1, Index);
+    CHECK(Res);
+    CHECK(Index == 0);
+    List.SetCaseSensitive(true);
+    Res = List.Find(S2, Index);
+    CHECK(!Res);
+    CHECK(Index == 0);
+    List.Add("ABCD");
+    CHECK(List.GetCount() == 3);
+    Res = List.Find(S2, Index);
+    CHECK(Res);
+    CHECK(Index == 2);
+    List.SetCaseSensitive(false);
+    Res = List.Find(S2, Index);
+    CHECK(Res);
+    CHECK(Index == 0);
+  }
+}
+
+//------------------------------------------------------------------------------
