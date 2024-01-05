@@ -3663,7 +3663,7 @@ TTerminalQueueStatus * TWinSCPFileSystem::ProcessQueue(bool Hidden)
 
   if (FQueueEventPending)
   {
-    TQueueEvent Event;
+    TQueueEventType Event;
 
     {
       TGuard Guard(FQueueStatusSection); nb::used(Guard);
@@ -3731,7 +3731,7 @@ void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
 }
 
 void TWinSCPFileSystem::QueueEvent(TTerminalQueue * Queue,
-  TQueueEvent Event)
+  TQueueEventType Event)
 {
   TGuard Guard(FQueueStatusSection); nb::used(Guard);
   if (Queue == GetQueue())
