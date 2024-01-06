@@ -1,4 +1,4 @@
-﻿NetBox: SFTP/FTP/FTP(S)/SCP/WebDAV client for Far Manager 3.0 x86/x64
+NetBox: SFTP/FTP/FTP(S)/SCP/WebDAV client for Far Manager 3.0 x86/x64
 ==============
 
 [![Build status](https://ci.appveyor.com/api/projects/status/rc32omfcxkhn7kfk?svg=true)](https://ci.appveyor.com/project/FarGroup/far-netbox)

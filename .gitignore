@@ -1,4 +1,4 @@
-﻿*.log
+*.log
 build/
 /src/NetBox-build/
 build-CMakeLists.txt-*
