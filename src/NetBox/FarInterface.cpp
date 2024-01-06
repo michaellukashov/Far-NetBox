@@ -20,9 +20,9 @@ TConfiguration * CreateConfiguration()
 
 void ShowExtendedException(Exception * E)
 {
-  DebugAssert(FarPlugin != nullptr);
+  Ensures(FarPlugin != nullptr);
   TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
-  DebugAssert(WinSCPPlugin != nullptr);
+  Ensures(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }
 

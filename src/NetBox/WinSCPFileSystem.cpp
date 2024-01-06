@@ -359,12 +359,16 @@ bool TWinSCPFileSystem::Connected() const
 
 const TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin() const
 {
-  return cast_to<const TWinSCPPlugin>(FPlugin);
+  const TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<const TWinSCPPlugin>(FPlugin.get());
+  Ensures(WinSCPPlugin);
+  return WinSCPPlugin;
 }
 
 TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin()
 {
-  return cast_to<TWinSCPPlugin>(FPlugin);
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FPlugin.get());
+  Ensures(WinSCPPlugin);
+  return WinSCPPlugin;
 }
 
 void TWinSCPFileSystem::Close()
@@ -2976,6 +2980,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
 {
   bool Result = false;
   DebugAssert(!FTerminal);
+  Expects(Data);
   FTerminal = new TTerminal();
   FTerminal->Init(Data, GetConfiguration());
   try
