@@ -445,13 +445,13 @@ bool TSignalThread::WaitForEvent()
   return WaitForEvent(INFINITE) > 0;
 }
 
-uint32_t TSignalThread::WaitForEvent(uint32_t Timeout) const
+int32_t TSignalThread::WaitForEvent(DWORD Timeout) const
 {
-  const uint32_t Res = ::WaitForSingleObject(FEvent, Timeout);
-  uint32_t Result;
+  const DWORD Res = ::WaitForSingleObject(FEvent, Timeout);
+  int32_t Result;
   if ((Res == WAIT_TIMEOUT) && !FTerminated)
   {
-    Result = nb::ToUInt32(-1);
+    Result = -1;
   }
   else
   {
@@ -2911,7 +2911,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           }
         }
 
-        const int32_t WaitResult = nb::ToInt32(WaitForEvent(1000));
+        const int32_t WaitResult = WaitForEvent(1000);
         if (WaitResult == 0)
         {
           SAFE_DESTROY_EX(Exception, FIdleException);

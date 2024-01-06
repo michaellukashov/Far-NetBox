@@ -56,7 +56,7 @@ protected:
   void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
 
   virtual bool WaitForEvent();
-  uint32_t WaitForEvent(uint32_t Timeout) const;
+  int32_t WaitForEvent(DWORD Timeout) const;
   virtual void Execute() override;
   virtual void ProcessEvent() = 0;
 };
