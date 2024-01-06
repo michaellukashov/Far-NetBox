@@ -45,18 +45,18 @@ public:
 
   virtual ~TDialogIdleThread() noexcept override
   {
+    WaitFor(1000);
     SAFE_CLOSE_HANDLE(FEvent);
     TDialogIdleThread::Terminate();
-    WaitFor();
   }
 
   virtual void Execute() override
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED) && !IsFinished())
+      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
       {
-        if (FDialog && FDialog->GetHandle())
+        if (!IsFinished() && FDialog && FDialog->GetHandle())
           FDialog->Idle();
       }
     }
@@ -116,7 +116,7 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   FBorderBox = new TFarBox(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TDialogIdleThread>(this, 500);
+  FTIdleThread = std::make_unique<TDialogIdleThread>(this, 1000);
   FTIdleThread->InitIdleThread();
 }
 
@@ -133,6 +133,7 @@ TFarDialog::~TFarDialog() noexcept
 //  SAFE_DESTROY(FContainers);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
+  FHandle = nullptr;
 }
 
 void TFarDialog::SetBounds(const TRect & Value)
