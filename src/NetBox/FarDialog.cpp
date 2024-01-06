@@ -123,10 +123,14 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
 
 TFarDialog::~TFarDialog() noexcept
 {
+  DEBUG_PRINTF("TFarDialog::~TFarDialog: 1");
+
   FTIdleThread->Terminate();
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
-    GetItem(Index)->Detach();
+    TFarDialogItem * Item = GetItem(Index);
+    Item->Detach();
+    // TODO: SAFE_DESTROY(Item);
   }
 //  SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
@@ -135,6 +139,7 @@ TFarDialog::~TFarDialog() noexcept
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
   FHandle = nullptr;
+  DEBUG_PRINTF("TFarDialog::~TFarDialog: 2");
 }
 
 void TFarDialog::SetBounds(const TRect & Value)
