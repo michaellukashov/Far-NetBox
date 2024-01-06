@@ -969,6 +969,7 @@ UnicodeString ShellQuoteStr(const UnicodeString & Str)
 
 UnicodeString ExceptionLogString(Exception * E)
 {
+  DebugAssert(OBJECT_CLASS_ExtException != OBJECT_CLASS_Exception);
   DebugAssert(E);
   if (rtti::isa<Exception>(E))
   {
