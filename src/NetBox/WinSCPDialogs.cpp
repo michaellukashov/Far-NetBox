@@ -8519,10 +8519,15 @@ void TQueueDialog::UpdateControls()
 
 void TQueueDialog::Idle()
 {
+  // DEBUG_PRINTF("TQueueDialog::Idle 1");
+
   TFarDialog::Idle();
 
+  if (!GetHandle())
+    return;
   if (UpdateQueue())
   {
+    DEBUG_PRINTF("TQueueDialog::Idle 2");
     LoadQueue();
     UpdateControls();
   }
@@ -8530,6 +8535,7 @@ void TQueueDialog::Idle()
   {
     RefreshQueue();
   }
+  // DEBUG_PRINTF("TQueueDialog::Idle 2");
 }
 
 bool TQueueDialog::CloseQuery()
@@ -8635,7 +8641,10 @@ void TQueueDialog::LoadQueue()
       ILine++;
     }
   }
-  QueueListBox->SetItems(List.get());
+  DEBUG_PRINTF("LoadQueue::GetHandle1: %p", GetHandle());
+  if (GetHandle())
+    QueueListBox->SetItems(List.get());
+  DEBUG_PRINTF("LoadQueue::GetHandle2: %p", GetHandle());
 }
 
 bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
