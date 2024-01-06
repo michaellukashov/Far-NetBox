@@ -979,14 +979,14 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   // Same as in TSessionData::DoSave
 #undef WRITE_DATA_EX
 #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
-    if ((Defaults != nullptr) && (CONV(Defaults->PROPERTY) == CONV(PROPERTY))) \
-    { \
-      Storage->DeleteValue(NAME); \
-    } \
-    else \
-    { \
-      Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
-    }
+  do { if ((Defaults != nullptr) && (CONV(Defaults->PROPERTY) == CONV(PROPERTY))) \
+  { \
+    Storage->DeleteValue(NAME); \
+  } \
+  else \
+  { \
+    Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
+  } } while(0)
   #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
   #undef WRITE_DATA
   #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), PROPERTY, )
