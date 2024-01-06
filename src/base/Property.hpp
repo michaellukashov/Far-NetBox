@@ -4,13 +4,14 @@
 #include <nbglobals.h>
 #include <FastDelegate.h>
 
-// 40 bytes using fu2::function
-// 16 bytes using FastDelegate
+/// Borland CBuilder __property emulation
+/// 40 bytes using fu2::function
+/// 16 bytes using FastDelegate
 template <typename T>
 class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = typename std::conditional<std::is_trivially_copyable<T>::value, T, const T&>::type;
+using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
 using TGetter = fastdelegate::FastDelegate0<T>;
 private:
   TGetter _getter;
@@ -49,15 +50,11 @@ public:
     Expects(_getter);
     return _getter() == Value;
   }
-  friend bool inline operator ==(const ROProperty & lhs, const ROProperty & rhs)
+
+  constexpr bool operator !=(ValueType rhs)
   {
-    Expects(lhs._getter);
-    return (lhs._getter == rhs._getter);
-  }
-  friend bool inline operator !=(ROProperty & lhs, ValueType rhs)
-  {
-    Expects(lhs._getter);
-    return lhs._getter() != rhs;
+    Expects(_getter);
+    return _getter() != rhs;
   }
 };
 
@@ -65,7 +62,6 @@ template <typename T>
 class ROIndexedProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-// using ValueType = typename std::conditional<std::is_trivially_copyable<T>::value, T, const T&>::type;
 using TGetter = fastdelegate::FastDelegate1<T, int32_t>;
 private:
   TGetter _getter;
@@ -85,13 +81,6 @@ public:
   {
     Expects(_getter);
     return _getter(Index);
-  }
-
-  friend bool constexpr inline operator ==(const ROIndexedProperty & lhs, const ROIndexedProperty & rhs)
-  {
-    Expects(lhs._getter);
-    Expects(rhs._getter);
-    return lhs._getter() == rhs._getter();
   }
 };
 
@@ -140,24 +129,10 @@ public:
   // constexpr decltype(auto) operator*() const { return *_value; }
   constexpr T operator *() const { return *_value; }
 
-  friend bool constexpr inline operator ==(const ROProperty2 & lhs, const ROProperty2 & rhs)
-  {
-    Expects(lhs._value);
-    Expects(rhs._value);
-    return *lhs._value == *rhs._value;
-  }
-
   friend bool constexpr inline operator ==(const ROProperty2 & lhs, const T & rhs)
   {
     Expects(lhs._value);
     return *lhs._value == rhs;
-  }
-
-  friend bool constexpr inline operator !=(const ROProperty2 & lhs, const ROProperty2 & rhs)
-  {
-    Expects(lhs._value);
-    Expects(rhs._value);
-    return *lhs._value != *rhs._value;
   }
 
   friend bool constexpr inline operator !=(ROProperty2 & lhs, const T & rhs)
@@ -209,7 +184,7 @@ template <typename T>
 class RWProperty2
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = typename std::conditional<std::is_trivially_copyable<T>::value, T, const T&>::type;
+using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
 private:
   T * _value{nullptr};
 public:
@@ -263,27 +238,13 @@ public:
     return *this;
   }
 
-  friend bool constexpr inline operator ==(const RWProperty2 & lhs, const RWProperty2 & rhs)
-  {
-    Expects(lhs._value);
-    Expects(rhs._value);
-    return *lhs._value == *rhs._value;
-  }
-
-  friend bool constexpr inline operator ==(const RWProperty2 & lhs, const T & rhs)
+  friend bool constexpr inline operator ==(const RWProperty2 & lhs, ValueType rhs)
   {
     Expects(lhs._value);
     return *lhs._value == rhs;
   }
 
-  friend bool constexpr inline operator !=(const RWProperty2 & lhs, const RWProperty2 & rhs)
-  {
-    Expects(lhs._value);
-    Expects(rhs._value);
-    return *lhs._value != *rhs._value;
-  }
-
-  friend bool constexpr inline operator!=(RWProperty2 & lhs, const T & rhs)
+  friend bool constexpr inline operator !=(RWProperty2 & lhs, ValueType rhs)
   {
     Expects(lhs._value);
     return *lhs._value != rhs;
@@ -294,7 +255,7 @@ template <typename T>
 class RWPropertySimple
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = typename std::conditional<std::is_trivially_copyable<T>::value, T, const T&>::type;
+using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
 using TSetter = fastdelegate::FastDelegate1<void, ValueType>;
 private:
   T * _value{nullptr};
@@ -347,24 +308,18 @@ public:
     _setter(Value);
   }
 
-  friend bool constexpr inline operator ==(const RWPropertySimple & lhs, const RWPropertySimple & rhs)
-  {
-    Expects(lhs._value);
-    Expects(rhs._value);
-    return *lhs._value == *rhs._value;
-  }
-
-  friend bool constexpr inline operator ==(const RWPropertySimple & lhs, const T & rhs)
+  friend bool constexpr inline operator ==(const RWPropertySimple & lhs, ValueType rhs)
   {
     Expects(lhs._value);
     return *lhs._value == rhs;
   }
 
-  friend bool constexpr inline operator !=(const RWPropertySimple & lhs, const RWPropertySimple & rhs)
+  friend bool constexpr inline operator !=(const RWPropertySimple & lhs, ValueType rhs)
   {
     Expects(lhs._value);
-    return *lhs._value != rhs._value;
+    return *lhs._value != rhs;
   }
+
 };
 
 //template<int s> struct CheckSizeT;
