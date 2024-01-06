@@ -247,8 +247,8 @@ protected:
 public:
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
-  void Execute(TTerminalItem * TerminalItem);
-  virtual void DoExecute(TTerminal * Terminal) = 0;
+  void Execute(gsl::not_null<TTerminalItem *> TerminalItem);
+  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) = 0;
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy) const;
   virtual bool UpdateFileList(TQueueFileList * FileList);
@@ -329,7 +329,7 @@ public:
   TTerminalQueueStatus() noexcept;
   virtual ~TTerminalQueueStatus() noexcept override;
 
-  TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
+  TQueueItemProxy * FindByQueueItem(const TQueueItem * QueueItem);
 
   __property int32_t Count = { read = GetCount };
   __property int32_t DoneCount = { read = FDoneCount };
@@ -370,7 +370,7 @@ public:
 };
 
 extern const TObjectClassId OBJECT_CLASS_TBootstrapQueueItem;
-class TBootstrapQueueItem : public TQueueItem
+class TBootstrapQueueItem final : public TQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBootstrapQueueItem); }
@@ -381,7 +381,7 @@ public:
   virtual ~TBootstrapQueueItem() noexcept override;
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal) override;
+  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;
   virtual UnicodeString GetStartupDirectory() const override;
   virtual bool Complete() override;
 };
@@ -393,11 +393,13 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocatedQueueItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocatedQueueItem) || TQueueItem::is(Kind); }
 protected:
-  explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) noexcept;
+  TLocatedQueueItem() = delete;
+  explicit TLocatedQueueItem(TObjectClassId Kind, gsl::not_null<TTerminal *> Terminal) noexcept;
   TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept;
+  explicit TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept;
   virtual ~TLocatedQueueItem() override = default;
 
-  virtual void DoExecute(TTerminal * Terminal) override;
+  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;
   virtual UnicodeString GetStartupDirectory() const override;
 
 private:
@@ -428,8 +430,8 @@ protected:
   std::unique_ptr<TParallelOperation> FParallelOperation;
 
   virtual int32_t DefaultCPSLimit() const override;
-  virtual void DoExecute(TTerminal * ATerminal) override;
-  virtual void DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation) = 0;
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
+  virtual void DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation) = 0;
   virtual void ProgressUpdated() override;
   virtual TQueueItem * CreateParallelOperation() override;
   virtual bool UpdateFileList(TQueueFileList * FileList) override;
@@ -452,7 +454,7 @@ public:
   virtual ~TUploadQueueItem() override = default;
 
 protected:
-  virtual void DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation) override;
+  virtual void DoTransferExecute(gsl::not_null<TTerminal *> Terminal, TParallelOperation * ParallelOperation) override;
 };
 
 extern const TObjectClassId OBJECT_CLASS_TDownloadQueueItem;
@@ -468,7 +470,7 @@ public:
   virtual ~TDownloadQueueItem() override = default;
 
 protected:
-  virtual void DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation) override;
+  virtual void DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation) override;
 };
 
 extern const TObjectClassId OBJECT_CLASS_TDeleteQueueItem;

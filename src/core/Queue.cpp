@@ -26,7 +26,7 @@ const TObjectClassId OBJECT_CLASS_TTerminalThread = static_cast<TObjectClassId>(
 class TBackgroundTerminal;
 
 const TObjectClassId OBJECT_CLASS_TParallelTransferQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-class TParallelTransferQueueItem : public TLocatedQueueItem
+class TParallelTransferQueueItem final : public TLocatedQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TParallelTransferQueueItem); }
@@ -35,7 +35,7 @@ public:
   explicit TParallelTransferQueueItem(const TLocatedQueueItem * ParentItem, TParallelOperation * ParallelOperation) noexcept;
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal) override;
+  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;
 
 private:
   TParallelOperation * FParallelOperation{nullptr};
@@ -390,8 +390,7 @@ void TSimpleThread::WaitFor(uint32_t Milliseconds) const
 // TSignalThread
 
 TSignalThread::TSignalThread(TObjectClassId Kind) noexcept :
-  TSimpleThread(Kind),
-  FTerminated(true)
+  TSimpleThread(Kind)
 {
 }
 
@@ -1819,7 +1818,7 @@ bool TQueueItem::UpdateFileList(TQueueFileList *)
   return false;
 }
 
-void TQueueItem::Execute(TTerminalItem * TerminalItem)
+void TQueueItem::Execute(gsl::not_null<TTerminalItem *> TerminalItem)
 {
   {
     DebugAssert(FProgressData == nullptr);
@@ -2132,7 +2131,7 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(int32_t Index)
 }
 
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
-  TQueueItem * QueueItem)
+  const TQueueItem * QueueItem)
 {
   for (int32_t Index = 0; Index < FList->GetCount(); ++Index)
   {
@@ -2167,9 +2166,8 @@ bool TTerminalQueueStatus::UpdateFileList(TQueueItemProxy * ItemProxy, TQueueFil
 // TBootstrapQueueItem
 
 TBootstrapQueueItem::TBootstrapQueueItem() noexcept :
-  TQueueItem(OBJECT_CLASS_TBootstrapQueueItem)
+  TBootstrapQueueItem(OBJECT_CLASS_TBootstrapQueueItem)
 {
-  FInfo->SingleFile = true;
 }
 
 TBootstrapQueueItem::TBootstrapQueueItem(TObjectClassId Kind) noexcept :
@@ -2183,7 +2181,7 @@ TBootstrapQueueItem::~TBootstrapQueueItem()
   TBootstrapQueueItem::Complete();
 }
 
-void TBootstrapQueueItem::DoExecute(TTerminal * DebugUsedArg(Terminal))
+void TBootstrapQueueItem::DoExecute(gsl::not_null<TTerminal *> DebugUsedArg)
 {
   // noop
 }
@@ -2202,17 +2200,20 @@ bool TBootstrapQueueItem::Complete()
 
 // TLocatedQueueItem
 
-TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) noexcept :
-  TQueueItem(Kind)
+TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, gsl::not_null<TTerminal *> Terminal) noexcept :
+  TLocatedQueueItem(Kind, Terminal->RemoteGetCurrentDirectory())
 {
-  DebugAssert(Terminal != nullptr);
-  FCurrentDir = Terminal->RemoteGetCurrentDirectory();
 }
 
 TLocatedQueueItem::TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept :
-  TQueueItem(OBJECT_CLASS_TLocatedQueueItem)
+  TLocatedQueueItem(OBJECT_CLASS_TLocatedQueueItem, Source.FCurrentDir)
 {
-  FCurrentDir = Source.FCurrentDir;
+}
+
+TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept :
+  TQueueItem(Kind)
+{
+  FCurrentDir = ACurrentDir;
 }
 
 UnicodeString TLocatedQueueItem::GetStartupDirectory() const
@@ -2220,7 +2221,7 @@ UnicodeString TLocatedQueueItem::GetStartupDirectory() const
   return FCurrentDir;
 }
 
-void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
+void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 {
   DebugAssert(Terminal != nullptr);
   if (Terminal)
@@ -2278,10 +2279,11 @@ TTransferQueueItem::~TTransferQueueItem() noexcept
 
 int32_t TTransferQueueItem::DefaultCPSLimit() const
 {
+  Expects(FCopyParam);
   return FCopyParam->GetCPSLimit();
 }
 
-void TTransferQueueItem::DoExecute(TTerminal * ATerminal)
+void TTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
 {
   TLocatedQueueItem::DoExecute(ATerminal);
 
@@ -2413,7 +2415,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   FInfo->ModifiedRemote = base::UnixIncludeTrailingBackslash(TargetDir);
 }
 
-void TUploadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation)
+void TUploadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> Terminal, TParallelOperation * ParallelOperation)
 {
   Terminal->CopyToRemote(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
 }
@@ -2435,7 +2437,7 @@ TParallelTransferQueueItem::TParallelTransferQueueItem(
   FInfo->GroupToken = ParentItem->FInfo->GroupToken;
 }
 
-void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
+void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 {
   TLocatedQueueItem::DoExecute(Terminal);
 
@@ -2481,7 +2483,7 @@ void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
 
 static void ExtractRemoteSourcePath(TTerminal * Terminal, const TStrings * Files, UnicodeString & Path)
 {
-  if (!base::UnixExtractCommonPath(Files, Path))
+  if (Terminal && !base::UnixExtractCommonPath(Files, Path))
   {
     Path = Terminal->CurrentDirectory;
   }
@@ -2529,7 +2531,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
-void TDownloadQueueItem::DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation)
+void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation)
 {
   DebugAssert(ATerminal != nullptr);
   ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
