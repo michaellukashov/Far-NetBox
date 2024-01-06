@@ -697,29 +697,29 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
     }
   }
 
-    uint32_t AAnswers = Answers;
-    bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
-    bool NeverAskAgainPending = NeverAskAgainCheck;
-    uint32_t TimeoutButton = 0;
+  uint32_t AAnswers = Answers;
+  bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
+  bool NeverAskAgainPending = NeverAskAgainCheck;
+  uint32_t TimeoutButton = 0;
 
 #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
-    do { if (AAnswers & qa ## TYPE) \
+  do { if (AAnswers & qa ## TYPE) \
+  { \
+    ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
+    Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
+    Data.ButtonCount++; \
+    AAnswers -= qa ## TYPE; \
+    if ((Params != nullptr) && (Params->Timeout != 0) && \
+        (Params->TimeoutAnswer == qa ## TYPE)) \
     { \
-      ButtonLabels->Add(GetMsg(MSG_BUTTON_ ## TYPE)); \
-      Data.Buttons[Data.ButtonCount] = qa ## TYPE; \
-      Data.ButtonCount++; \
-      AAnswers -= qa ## TYPE; \
-      if ((Params != nullptr) && (Params->Timeout != 0) && \
-          (Params->TimeoutAnswer == qa ## TYPE)) \
-      { \
-        TimeoutButton = ButtonLabels->GetCount() - 1; \
-      } \
-      if (NeverAskAgainPending && (CANNEVERASK)) \
-      { \
-        ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, ToObj(true)); \
-        NeverAskAgainPending = false; \
-      } \
-    } } while (0)
+      TimeoutButton = ButtonLabels->GetCount() - 1; \
+    } \
+    if (NeverAskAgainPending && (CANNEVERASK)) \
+    { \
+      ButtonLabels->SetObj(ButtonLabels->GetCount() - 1, ToObj(true)); \
+      NeverAskAgainPending = false; \
+    } \
+  } } while (0)
 #define ADD_BUTTON(TYPE) ADD_BUTTON_EX(TYPE, false)
 #pragma warning(push)
 #pragma warning(disable: 4127)
@@ -835,7 +835,7 @@ HANDLE TWinSCPPlugin::CreateLocalFile(const UnicodeString & LocalFileName,
   DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes)
 {
   return GetSystemFunctions()->CreateFile(LocalFileName.c_str(), DesiredAccess,
-      ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
+    ShareMode, nullptr, CreationDisposition, FlagsAndAttributes, nullptr);
 }
 
 DWORD TWinSCPPlugin::GetLocalFileAttributes(const UnicodeString & LocalFileName) const

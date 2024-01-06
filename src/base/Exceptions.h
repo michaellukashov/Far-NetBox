@@ -255,7 +255,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_EFOpenError) || EStreamError::is(Kind); }
 public:
   explicit EFOpenError(const UnicodeString & Msg) :
-      EStreamError(OBJECT_CLASS_EFOpenError, Msg, static_cast<const Exception *>(nullptr))
+    EStreamError(OBJECT_CLASS_EFOpenError, Msg, static_cast<const Exception *>(nullptr))
   {
   }
 };

@@ -315,7 +315,8 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   if ((GetTerminal() != nullptr) && rtti::isa<EFatal>(E))
   {
-    if (const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr))
+    const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
+    if (Reopen)
     {
       UpdatePanel();
     }
@@ -380,7 +381,7 @@ void TWinSCPFileSystem::Close()
     {
       if (!FQueue->GetIsEmpty() &&
         (MoreMessageDialog(GetMsg(NB_PENDING_QUEUE_ITEMS), nullptr, qtWarning,
-            qaOK | qaCancel) == qaOK))
+          qaOK | qaCancel) == qaOK))
       {
         QueueShow(true);
       }
@@ -479,7 +480,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
             {
               FileSystem->ReadFile(LinkFileName, LinkFile);
             }
-            catch (const Exception & /*E*/)
+            catch(const Exception & /*E*/)
             {
               LinkFile = nullptr;
             }
@@ -1153,13 +1154,13 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyPara
     {
       FTerminal->CopyToLocal(AFileList, TempDir, &CopyParam, cpTemporary, nullptr);
     }
-    catch (...)
+    catch(...)
     {
       try
       {
         RecursiveDeleteFile(::ExcludeTrailingBackslash(TempDir), false);
       }
-      catch (...)
+      catch(...)
       {
         DEBUG_PRINTF("TWinSCPFileSystem::TemporarilyDownloadFiles: error during RecursiveDeleteFile");
       }
@@ -1620,7 +1621,7 @@ void TWinSCPFileSystem::TerminalSynchronizeDirectory(
 
     if (GetWinSCPPlugin()->CheckForEsc() &&
       (MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,
-          qtConfirmation, qaOK | qaCancel) == qaOK))
+        qtConfirmation, qaOK | qaCancel) == qaOK))
     {
       Continue = false;
     }
@@ -1703,7 +1704,7 @@ void TWinSCPFileSystem::DoSynchronize(
     Synchronize(LocalDirectory, RemoteDirectory, TTerminal::smRemote, CopyParam,
       PParams, Checklist, Options);
   }
-  catch (Exception &E)
+  catch(Exception &E)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
@@ -1740,8 +1741,8 @@ void TWinSCPFileSystem::DoSynchronizeTooManyDirectories(
     TMessageParams Params(nullptr);
     Params.Params = qpNeverAskAgainCheck;
     const uint32_t Result = MoreMessageDialog(
-        FORMAT(GetMsg(NB_TOO_MANY_WATCH_DIRECTORIES), MaxDirectories, MaxDirectories), nullptr,
-        qtConfirmation, qaYes | qaNo, &Params);
+      FORMAT(GetMsg(NB_TOO_MANY_WATCH_DIRECTORIES), MaxDirectories, MaxDirectories), nullptr,
+      qtConfirmation, qaYes | qaNo, &Params);
 
     if ((Result == qaYes) || (Result == qaNeverAskAgain))
     {
@@ -2017,7 +2018,7 @@ void TWinSCPFileSystem::GetSpaceAvailable(const UnicodeString & APath,
     {
       GetTerminal()->SpaceAvailable(APath, ASpaceAvailable);
     }
-    catch (Exception &E)
+    catch(Exception & E)
     {
       if (!GetTerminal()->GetActive())
       {
@@ -2322,7 +2323,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
             }
           }
         }
-        catch (Exception &E)
+        catch(Exception & E)
         {
           FSynchronisingBrowse = false;
           GetWinSCPPlugin()->ShowExtendedException(&E);
@@ -2461,12 +2462,12 @@ bool TWinSCPFileSystem::DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES 
     if (PanelItems->GetCount() > 1)
     {
       Query = FORMAT(GetMsg(Recycle ? NB_RECYCLE_FILES_CONFIRM : NB_DELETE_FILES_CONFIRM),
-          PanelItems->GetCount());
+        PanelItems->GetCount());
     }
     else
     {
       Query = FORMAT(GetMsg(Recycle ? NB_RECYCLE_FILE_CONFIRM : NB_DELETE_FILE_CONFIRM),
-          PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
+        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
     }
 
     if ((OpMode & OPM_SILENT) || !GetFarConfiguration()->GetConfirmDeleting() ||
@@ -2697,8 +2698,8 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
       FLAGMASK(Edit, coTempTransfer) |
       FLAGMASK(Edit || !GetTerminal()->GetIsCapable(fcNewerOnlyUpload), coDisableNewerOnly);
     Confirmed = CopyDialog(true, Move, FFileList.get(),
-        Options, CopyParamAttrs,
-        DestPath, &CopyParam);
+      Options, CopyParamAttrs,
+      DestPath, &CopyParam);
 
     if (Confirmed && !Edit && CopyParam.GetQueue())
     {
@@ -2813,7 +2814,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
 {
   const bool Result = (OpMode & OPM_SILENT) ||
     (MoreMessageDialog(GetMsg(NB_IMPORT_SESSIONS_PROMPT), nullptr,
-        qtConfirmation, qaYes | qaNo) == qaYes);
+     qtConfirmation, qaYes | qaNo) == qaYes);
 
   if (Result)
   {
@@ -3756,12 +3757,12 @@ void TWinSCPFileSystem::CancelConfiguration(TFileOperationProgressType & Progres
       (ProgressData.TimeExpected() > GetGUIConfiguration()->GetIgnoreCancelBeforeFinish()))
     {
       Result = MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION_FATAL2), nullptr,
-          qtWarning, qaYes | qaNo | qaCancel);
+        qtWarning, qaYes | qaNo | qaCancel);
     }
     else
     {
       Result = MoreMessageDialog(GetMsg(NB_CANCEL_OPERATION), nullptr,
-          qtConfirmation, qaOK | qaCancel);
+        qtConfirmation, qaOK | qaCancel);
     }
     switch (Result)
     {
@@ -4094,7 +4095,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     Params.Aliases = Aliases;
     Params.AliasesCount = _countof(Aliases);
     switch (MoreMessageDialog(FORMAT(GetMsg(NB_EDITOR_ALREADY_LOADED), FullFileName),
-        nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
+      nullptr, qtConfirmation, qaYes | qaNo | qaOK | qaCancel, &Params))
     {
     case qaYes:
       EditCurrent = true;
