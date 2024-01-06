@@ -1867,10 +1867,12 @@ TQueueItemProxy::TQueueItemProxy(gsl::not_null<TTerminalQueue *> Queue,
   FInfo(std::make_unique<TQueueItem::TInfo>())
 {
   Update();
+  DEBUG_PRINTF("this: %p", (void*)this);
 }
 
 TQueueItemProxy::~TQueueItemProxy() noexcept
 {
+  DEBUG_PRINTF("this: %p", (void*)this);
 #if defined(__BORLANDC__)
   delete FProgressData;
   delete FInfo;
