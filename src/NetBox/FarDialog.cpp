@@ -37,7 +37,7 @@ class TDialogIdleThread : public TSimpleThread
 {
   TDialogIdleThread() = delete;
 public:
-  explicit TDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, int64_t Millisecs) noexcept :
+  explicit TDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TDialogIdleThread),
     FDialog(Dialog),
     FMillisecs(Millisecs)
@@ -54,7 +54,7 @@ public:
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
+      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED) && !IsFinished())
       {
         if (FDialog && FDialog->GetHandle())
           FDialog->Idle();
@@ -81,7 +81,7 @@ public:
 
 private:
   gsl::not_null<TFarDialog *> FDialog;
-  int64_t FMillisecs{0};
+  DWORD FMillisecs{0};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
 
