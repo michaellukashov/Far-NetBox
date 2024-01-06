@@ -8295,7 +8295,7 @@ public:
   bool Execute(TTerminalQueueStatus * Status);
 
 protected:
-  virtual const UUID * GetDialogGuid() const { return &QueueDialogGuid; }
+  virtual const UUID * GetDialogGuid() const override { return &QueueDialogGuid; }
   virtual void Change() override;
   virtual void Idle() override;
   bool UpdateQueue();
