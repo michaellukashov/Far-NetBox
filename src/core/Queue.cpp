@@ -382,9 +382,9 @@ void TSimpleThread::Close()
   }
 }
 
-void TSimpleThread::WaitFor(uint32_t Milliseconds) const
+void TSimpleThread::WaitFor(DWORD Milliseconds) const
 {
-  ::WaitForSingleObject(FThread, nb::ToDWord(Milliseconds));
+  ::WaitForSingleObject(FThread, Milliseconds);
 }
 
 // TSignalThread

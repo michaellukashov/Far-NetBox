@@ -17,7 +17,7 @@ public:
   void InitSimpleThread();
 
   virtual void Start();
-  void WaitFor(uint32_t Milliseconds = INFINITE) const;
+  void WaitFor(DWORD Milliseconds = INFINITE) const;
   virtual void Terminate() = 0;
   virtual void Close();
   bool IsFinished() const;
