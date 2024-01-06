@@ -13,6 +13,14 @@
 
 // #pragma package(smart_init)
 
+const TObjectClassId OBJECT_CLASS_Exception = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EAbort = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EAccessViolation = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EFileNotFoundError = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EOSError = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EInvalidOperation = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EConvertError = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_EDirectoryNotFoundException = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_ExtException = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_ESkipFile = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_EOSExtException = static_cast<TObjectClassId>(nb::counter_id());
@@ -56,7 +64,6 @@ static bool WellKnownException(
   UnicodeString Message;
   const wchar_t *CounterName = nullptr;
   std::unique_ptr<Exception> Clone;
-
 
   bool Result = true;
   const bool IgnoreException = false;
