@@ -65,7 +65,6 @@ struct NB_CORE_EXPORT TFileSystemInfo
   bool IsCapable[fcCount]{};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TSessionUI;
 class NB_CORE_EXPORT TSessionUI : public TObject
 {
 public:

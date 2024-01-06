@@ -2079,6 +2079,7 @@ set(WinSCP_SOURCES
   src/base/Global.cpp
   src/base/System.SyncObjs.cpp
   src/base/FormatUtils.cpp
+  src/base/ObjIDs.cpp
 
   src/core/RemoteFiles.cpp
   src/core/Terminal.cpp
@@ -2109,6 +2110,7 @@ set(WinSCP_SOURCES
   src/core/WinSCPSecurity.cpp
   src/core/Http.cpp
   src/core/NeonIntf.cpp
+
   src/windows/SynchronizeController.cpp
   src/windows/GUITools.cpp
   src/windows/GUIConfiguration.cpp
@@ -2150,6 +2152,7 @@ set(WinSCP_HEADERS
   src/core/PuttyIntf.h
   src/core/FileInfo.h
   src/core/CoreMain.h
+
   src/windows/WinInterface.h
   src/windows/GUIConfiguration.h
   src/windows/TerminalManager.h
@@ -2275,6 +2278,7 @@ set(NETBOX_SOURCES
   src/base/vcl.h
   src/base/FileBuffer.h
   src/base/FormatUtils.h
+  src/base/ObjIDs.h
 
   src/core/WebDAVFileSystem.h
   src/core/S3FileSystem.h

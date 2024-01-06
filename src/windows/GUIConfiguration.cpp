@@ -16,10 +16,6 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TGUICopyParamType = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TCopyParamRule = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TGUIConfiguration = static_cast<TObjectClassId>(nb::counter_id());
-
 constexpr const uint32_t AdditionalLanguageMask = 0xFFFFFF00;
 static constexpr const wchar_t * AdditionalLanguagePrefix = L"XX";
 static constexpr const wchar_t * TranslationsSubFolder = L"Translations";

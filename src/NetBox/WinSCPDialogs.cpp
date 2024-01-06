@@ -124,7 +124,6 @@ private:
   int32_t FTabCount{0};
 };
 
-const TObjectClassId OBJECT_CLASS_TTabButton = static_cast<TObjectClassId>(nb::counter_id());
 class TTabButton : public TFarButton
 {
 public:
@@ -4340,7 +4339,6 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   return Result;
 }
 
-const TObjectClassId OBJECT_CLASS_TRightsContainer = static_cast<TObjectClassId>(nb::counter_id());
 class TRightsContainer final : public TFarDialogContainer
 {
   NB_DISABLE_COPY(TRightsContainer)
@@ -5003,7 +5001,6 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
   return Result;
 }
 
-const TObjectClassId OBJECT_CLASS_TCopyParamsContainer = static_cast<TObjectClassId>(nb::counter_id());
 class TCopyParamsContainer final : public TFarDialogContainer
 {
 public:
@@ -5967,7 +5964,6 @@ private:
   TFarButton * OkButton{nullptr};
 };
 
-const TObjectClassId OBJECT_CLASS_TLabelList = static_cast<TObjectClassId>(nb::counter_id());
 class TLabelList : public TList
 {
 public:

@@ -12,21 +12,6 @@
 #pragma warning(pop)
 #include <Queue.h> // TODO: move TSimpleThread to Sysutils
 
-const TObjectClassId OBJECT_CLASS_TFarDialog = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarDialogContainer = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarDialogItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarBox = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarButton = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarCheckBox = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarRadioButton = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarEdit = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarSeparator = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarText = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarList = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarListBox = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarComboBox = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarLister = static_cast<TObjectClassId>(nb::counter_id());
-
 inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
 {
   return TRect(Left, Top, Right, Bottom);

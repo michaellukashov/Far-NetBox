@@ -10,22 +10,8 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TSimpleThread = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TSignalThread = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TTerminalQueue = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TQueueItemProxy = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TBootstrapQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TLocatedQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TTransferQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TUploadQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TDownloadQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TDeleteQueueItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TTerminalThread = static_cast<TObjectClassId>(nb::counter_id());
-
 class TBackgroundTerminal;
 
-const TObjectClassId OBJECT_CLASS_TParallelTransferQueueItem = static_cast<TObjectClassId>(nb::counter_id());
 class TParallelTransferQueueItem final : public TLocatedQueueItem
 {
 public:

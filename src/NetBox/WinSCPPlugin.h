@@ -8,7 +8,6 @@
 class TWinSCPFileSystem;
 class TCopyParamType;
 
-extern const TObjectClassId OBJECT_CLASS_TWinSCPPlugin;
 class TWinSCPPlugin : public TCustomFarPlugin
 {
   friend class TWinSCPFileSystem;

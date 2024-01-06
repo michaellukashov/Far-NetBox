@@ -9,9 +9,6 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TNamedObject = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TNamedObjectList = static_cast<TObjectClassId>(nb::counter_id());
-
 int32_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
   return cast_to<TNamedObject>(ToObj(Item1))->Compare(cast_to<TNamedObject>(ToObj(Item2)));

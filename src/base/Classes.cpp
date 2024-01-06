@@ -29,14 +29,6 @@ extern "C" {
 } // extern "C"
 #endif
 
-const TObjectClassId OBJECT_CLASS_TObject = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TPersistent = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TListBase = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TList = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TObjectList = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TStrings = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TStringList = static_cast<TObjectClassId>(nb::counter_id());
-
 TPersistent::TPersistent(TObjectClassId Kind) :
   TObject(Kind)
 {

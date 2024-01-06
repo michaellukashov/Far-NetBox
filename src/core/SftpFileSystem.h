@@ -21,10 +21,9 @@ class TEncryption;
 // enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
 // extern const int32_t SFTPMaxVersion;
 
-extern const TObjectClassId OBJECT_CLASS_TSFTPFileSystem;
 class NB_CORE_EXPORT TSFTPFileSystem final : public TCustomFileSystem
 {
-  NB_DISABLE_COPY(TSFTPFileSystem)
+NB_DISABLE_COPY(TSFTPFileSystem)
 friend class TSFTPPacket;
 friend class TSFTPQueue;
 friend class TSFTPAsynchronousQueue;

@@ -30,8 +30,6 @@
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-const TObjectClassId OBJECT_CLASS_TFTPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
-
 constexpr const int32_t DummyCodeClass = 8;
 constexpr const int32_t DummyTimeoutCode = 801;
 constexpr const int32_t DummyCancelCode = 802;

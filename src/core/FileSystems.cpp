@@ -10,12 +10,6 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TSinkFileParams = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFileTransferData = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TOverwriteFileParams = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TOpenRemoteFileParams = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TCustomFileSystem = static_cast<TObjectClassId>(nb::counter_id());
-
 TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept :
   TObject(Kind),
   FTerminal(ATerminal)
