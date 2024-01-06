@@ -3019,19 +3019,26 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
       throw Exception(FORMAT(GetMsg(NB_CANNOT_INIT_SESSION), Data->GetSessionName()));
     }
   }
-  catch (Exception & E)
+  catch(Exception & E)
   {
+    // HandleException(&E);
+    bool Reopen = false;
     EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(&E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
     {
-      FTerminal->ShowExtendedException(&E);
+      // FTerminal->ShowExtendedException(&E);
+      Reopen = FTerminal->QueryReopen(&E, 0, nullptr);
     }
-    SAFE_DESTROY(FTerminal);
-    SAFE_DESTROY(FQueue);
-    SAFE_DESTROY(FQueueStatus);
+    Result = Reopen && FTerminal && FTerminal->GetActive();
+    if (!Result)
+    {
+      SAFE_DESTROY(FTerminal);
+      SAFE_DESTROY(FQueue);
+      SAFE_DESTROY(FQueueStatus);
+    }
   }
 
-  if (FTerminal != nullptr)
+  if (FTerminal != nullptr && FTerminal->GetActive())
   {
     FSynchronisingBrowse = GetSessionData()->GetSynchronizeBrowsing();
   }
