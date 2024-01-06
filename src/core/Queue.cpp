@@ -255,7 +255,7 @@ public:
   bool Cancel{false};
 };
 
-const TObjectClassId OBJECT_CLASS_TTerminalItem = static_cast<TObjectClassId>(nb::counter_id());
+constexpr TObjectClassId OBJECT_CLASS_TTerminalItem = static_cast<TObjectClassId>(nb::counter_id());
 class TTerminalItem : public TSignalThread
 {
   friend class TQueueItem;
