@@ -1,7 +1,7 @@
 ﻿# for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [24.1.0.568-RC8] - 2024-01-05
+## [24.1.0.569-RC9] - 2024-01-06
 ### Fixed
 - Bugfix: SCP: crash if remote command fails
 https://forum.farmanager.com/viewtopic.php?p=176900#p176900
