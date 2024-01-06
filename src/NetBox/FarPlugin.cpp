@@ -885,6 +885,7 @@ TFarMessageDialog::TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
 void TFarMessageDialog::Init(uint32_t AFlags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons)
 {
+  TFarDialog::InitDialog();
   DebugAssert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
   DebugAssert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
   // FIXME DebugAssert(FLAGCLEAR(AFlags, FMSG_DOWN));

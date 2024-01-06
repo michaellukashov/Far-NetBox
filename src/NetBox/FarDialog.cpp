@@ -110,14 +110,6 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   FNeedsSynchronize(false),
   FSynchronizeMethod(nullptr)
 {
-  FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
-  FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
-
-  FBorderBox = new TFarBox(this);
-  FBorderBox->SetBounds(TRect(3, 1, -4, -2));
-  FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 1000);
-  FTIdleThread->InitIdleThread();
 }
 
 TFarDialog::~TFarDialog() noexcept
@@ -139,6 +131,18 @@ TFarDialog::~TFarDialog() noexcept
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
   FHandle = nullptr;
   DEBUG_PRINTF("TFarDialog::~TFarDialog: 2");
+}
+
+void TFarDialog::InitDialog()
+{
+  FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
+  FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
+
+  FBorderBox = new TFarBox(this);
+  FBorderBox->SetBounds(TRect(3, 1, -4, -2));
+  FBorderBox->SetDouble(true);
+  FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 1000);
+  FTIdleThread->InitIdleThread();
 }
 
 void TFarDialog::SetBounds(const TRect & Value)
