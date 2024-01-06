@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <functional>
 
 #include <FileBuffer.h>
 
@@ -1209,46 +1210,49 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
 
 namespace experimental {
 
-template <typename T>
+template <typename Owner, typename T>
 class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using DataType = typename std::conditional<std::is_trivially_copyable<T>::value, T, const T&>::type;
-using TGetter = fastdelegate::FastDelegate0<T>;
-private:
-  TGetter _getter;
+using DataType = typename std::conditional<std::is_trivially_copyable_v<T>, T, const T&>::type;
+using TGetter = T (Owner::*)() const;
+protected:
+  Owner * _owner{nullptr};
+  TGetter _getter{nullptr};
 public:
   ROProperty() = delete;
-  explicit ROProperty(TGetter && Getter) noexcept :
+  explicit ROProperty(Owner * owner, TGetter && Getter) noexcept :
+    _owner(owner),
     _getter(std::move(Getter))
   {
-    Expects(!_getter.empty());
+    Expects(_owner && _getter);
   }
   ROProperty(const ROProperty &) = default;
   ROProperty(ROProperty &&) noexcept = default;
   ROProperty & operator =(const ROProperty &) = default;
   ROProperty & operator =(ROProperty &&) noexcept = default;
-//  Property(const T& in) : data(in) {}
-//  Property(T&& in) : data(std::forward<T>(in)) {}
-//  T const& get() const {
-//      return data;
-//  }
+  /*ROProperty(DataType in) : data(in) {}
+  ROProperty(T&& in) : data(std::forward<T>(in)) {}
+  T get() const {
+     return _getter2();
+  }*/
 
-  T&& unwrap() &&
+  /*T&& unwrap() &&
   {
     return std::move(_getter());
-  }
+  }*/
 
   constexpr T operator()() const
   {
-    Expects(_getter);
-    return _getter();
+    Expects(_owner && _getter);
+    // return std::invoke(_owner, _getter);
+    return (_owner->*_getter)();
   }
 
   constexpr operator T() const
   {
-    Expects(_getter);
-    return _getter();
+    Expects(_owner && _getter);
+    return (_owner->*_getter)();
   }
 
   /*operator T&() const
@@ -1259,93 +1263,98 @@ public:
 
   constexpr T operator->() const
   {
-    return _getter();
+    Expects(_owner && _getter);
+    return (_owner->*_getter)();
   }
   // constexpr decltype(auto) operator *() const { return _getter(); }
-  constexpr T operator *() const { return _getter(); }
+  constexpr T operator *() const { return (_owner->*_getter)(); }
   constexpr bool operator ==(DataType Value) const
   {
-    Expects(_getter);
-    return _getter() == Value;
-  }
-  friend bool inline operator ==(const ROProperty & lhs, const ROProperty & rhs)
-  {
-    Expects(lhs._getter);
-    return (lhs._getter == rhs._getter);
-  }
-  friend bool inline operator !=(ROProperty & lhs, DataType rhs)
-  {
-    Expects(lhs._getter);
-    return lhs._getter() != rhs;
+    Expects(_owner && _getter);
+    return (_owner->*_getter)() == Value;
   }
 };
 
-template <typename T>
-class RWProperty : public ROProperty<T>
+template <typename Owner, typename T>
+class RWProperty : public ROProperty<Owner, T>
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using DataType = ROProperty<T>::DataType;
-using TSetter = fastdelegate::FastDelegate1<void, DataType>;
+using DataType = ROProperty<Owner, T>::DataType;
+using TGetter = ROProperty<Owner, T>::TGetter;
+using TSetter = void (Owner::*)(DataType);
 private:
   TSetter _setter;
 public:
   RWProperty() = delete;
-  explicit RWProperty(TGetter && Getter, TSetter && Setter) noexcept :
-    ROProperty<T>(std::move(Getter)),
+  explicit RWProperty(Owner * owner, TGetter && Getter, TSetter && Setter) noexcept :
+    ROProperty<Owner, T>(owner, std::move(Getter)),
     _setter(std::move(Setter))
   {
-    Expects(!_setter.empty());
+    Expects(_owner && _setter);
   }
   RWProperty(const RWProperty &) = default;
   RWProperty(RWProperty &&) noexcept = default;
   RWProperty & operator =(const RWProperty &) = default;
   RWProperty & operator =(RWProperty &&) noexcept = default;
 
-  using ROProperty<T>::operator();
+  using ROProperty<Owner, T>::operator();
   void operator()(DataType Value)
   {
-    Expects(_setter);
-    _setter(Value);
+    Expects(_owner && _setter);
+    (_owner->*_setter)(Value);
   }
   void operator =(DataType Value)
   {
-    Expects(_setter);
-    _setter(Value);
+    Expects(_owner && _setter);
+    (_owner->*_setter)(Value);
   }
 };
 
 // template<int s> struct GetSizeT;
-// GetSizeT<sizeof(ROProperty<UnicodeString>)> sz;
+// GetSizeT<sizeof(ROProperty<UnicodeString>)> sz; //16
 // template<int s> struct GetSizeT;
-// GetSizeT<sizeof(RWProperty<UnicodeString>)> sz;
+// GetSizeT<sizeof(RWProperty<UnicodeString>)> sz; //24
 
 class TBase1
 {
+using Self = TBase1;
 public:
-  // ROProperty<int32_t> ROData1{&FData2};
-  ROProperty<int32_t> ROData2{nb::bind(&TBase1::GetData2, this)};
-  ROProperty<int32_t> ROData3{nb::bind(&TBase1::GetROData, this)};
+  // ROProperty<int32_t> ROIntData1{&FData2};
+  ROProperty<Self, int32_t> ROIntData1{this, &Self::GetROIntData1};
+  ROProperty<Self, int32_t> ROIntData2{this, &Self::GetROIntData2};
 
-  RWProperty<UnicodeString> RWData1{nb::bind(&TBase1::GetData1, this), nb::bind(&TBase1::SetData1, this)};
+  RWProperty<Self, UnicodeString> RWData1{this, &Self::GetData1, &Self::SetData1};
   // Property<UnicodeString> ROData1{nb::bind(&TBase1::GetData, this)};
-  RWProperty<int32_t> RWData2{nb::bind(&TBase1::GetData2, this), nb::bind(&TBase1::SetData2, this)};
+  RWProperty<Self, int32_t> RWData2{this, &Self::GetROIntData1, &Self::SetData2};
 private:
   UnicodeString GetData1() const { return FData1; }
   void SetData1(const UnicodeString & Value) { FData1 = Value; }
 
-  int32_t GetROData() { return FData2; }
-  int32_t GetData2() const { return FData2; }
+  int32_t GetROIntData2() const { return FData2; }
+  int32_t GetROIntData1() const { return FData2; }
   void SetData2(int32_t Value) { FData2 = Value; }
 
   UnicodeString FData1;
   int32_t FData2{42};
 };
 
+// template<int s> struct GetSizeT;
+// GetSizeT<sizeof(ROProperty<TBase1, UnicodeString>)> sz; // 16
+// template<int s> struct GetSizeT;
+// GetSizeT<sizeof(RWProperty<TBase1, UnicodeString>)> sz; // 24
+
 } // namespace experimental
 
 TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
 {
   experimental::TBase1 Base;
+  SECTION("ROProperty01")
+  {
+    // Base.ROData2 = 234;
+    int32_t ROIntData1 = Base.ROIntData1;
+    CHECK(Base.ROIntData1 == 42);
+    CHECK(ROIntData1 == 42);
+  }
   SECTION("RWProperty01")
   {
     Base.RWData1 = "123";
@@ -1359,12 +1368,7 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty04", "netbox")
   {
     Base.RWData2 = 123;
     CHECK(123 == Base.RWData2);
-  }
-  SECTION("ROProperty01")
-  {
-    // Base.ROData2 = 234;
-    int32_t ROData2 = Base.ROData2;
-    CHECK(Base.ROData2 == 42);
-    CHECK(ROData2 == 42);
+    CHECK(Base.RWData2 == 123);
+    CHECK(*Base.RWData2 == 123);
   }
 }
