@@ -8295,7 +8295,7 @@ class TQueueDialog final : public TFarDialog
 public:
   explicit TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
     gsl::not_null<TWinSCPFileSystem *> AFileSystem, bool ClosingPlugin) noexcept;
-  virtual ~TQueueDialog() override = default;
+  virtual ~TQueueDialog() override;
 
   bool Execute(TTerminalQueueStatus * Status);
 
@@ -8317,6 +8317,7 @@ private:
   void OperationButtonClick(TFarButton * Sender, bool & Close);
   TFarList * GetQueueItems() const { return QueueListBox->GetItems(); }
   TFarList * GetQueueItems() { return QueueListBox->GetItems(); }
+  void OnIdle(TObject * /*Sender*/, void * /*Data*/);
 
 private:
   TTerminalQueueStatus * FStatus{nullptr};
@@ -8391,6 +8392,15 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
   QueueListBox->SetFocus();
 }
 
+TQueueDialog::~TQueueDialog()
+{
+  if (GetFarPlugin())
+  {
+    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+    SynchroParams.Sender = nullptr;
+  }
+}
+
 void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
@@ -8430,6 +8440,20 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
     {
       QueueItem->Delete();
     }
+  }
+}
+
+void TQueueDialog::OnIdle(TObject *, void *)
+{
+  if (UpdateQueue())
+  {
+    // DEBUG_PRINTF("TQueueDialog::Idle 2");
+    LoadQueue();
+    UpdateControls();
+  }
+  else
+  {
+    RefreshQueue();
   }
 }
 
@@ -8529,18 +8553,14 @@ void TQueueDialog::Idle()
 
   TFarDialog::Idle();
 
-  if (!GetHandle())
-    return;
-  if (UpdateQueue())
+  if (GetFarPlugin())
   {
-    DEBUG_PRINTF("TQueueDialog::Idle 2");
-    LoadQueue();
-    UpdateControls();
+    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+    SynchroParams.SynchroEvent = nb::bind(&TQueueDialog::OnIdle, this);
+    SynchroParams.Sender = this;
+    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &SynchroParams);
   }
-  else
-  {
-    RefreshQueue();
-  }
+
   // DEBUG_PRINTF("TQueueDialog::Idle 2");
 }
 
