@@ -56,8 +56,8 @@ public:
     {
       if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
       {
-        // if (!IsFinished() && FDialog && FDialog->GetHandle())
-        //   FDialog->Idle();
+        if (!IsFinished() && FDialog && FDialog->GetHandle())
+          FDialog->Idle();
         // TODO: use ACTL_SYNCHRO
       }
     }
