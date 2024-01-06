@@ -3140,11 +3140,13 @@ bool TGlobalFunctions::InputDialog(const UnicodeString & ACaption, const Unicode
   DebugUsedParam(Echo);
 
   TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+  Ensures(WinSCPPlugin);
   return WinSCPPlugin->InputBox(ACaption, APrompt, Value, 0);
 }
 
 uint32_t TGlobalFunctions::MoreMessageDialog(const UnicodeString & AMessage, TStrings * MoreMessages, TQueryType Type, uint32_t Answers, const TMessageParams * Params)
 {
   TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+  Ensures(WinSCPPlugin);
   return WinSCPPlugin->MoreMessageDialog(AMessage, MoreMessages, Type, Answers, Params);
 }
