@@ -168,7 +168,7 @@ public:
   __property TFileMasks IncludeFileMask = { read = FIncludeFileMask, write = FIncludeFileMask };
   TFileMasks& IncludeFileMask{FIncludeFileMask};
   __property TStrings * TransferSkipList = { read = GetTransferSkipList, write = SetTransferSkipList };
-  RWProperty1<TStrings>TransferSkipList{nb::bind(&TCopyParamType::GetTransferSkipList, this), nb::bind(&TCopyParamType::SetTransferSkipList, this)};
+  RWProperty<const TStrings *>TransferSkipList{nb::bind(&TCopyParamType::GetTransferSkipList, this), nb::bind(&TCopyParamType::SetTransferSkipList, this)};
   __property UnicodeString TransferResumeFile = { read = FTransferResumeFile, write = FTransferResumeFile };
   UnicodeString& TransferResumeFile{FTransferResumeFile};
   __property bool ClearArchive = { read = FClearArchive, write = FClearArchive };

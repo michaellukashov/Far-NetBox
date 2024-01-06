@@ -2955,7 +2955,7 @@ TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
     {
       if (!File->Rights->Unknown)
       {
-        CommonProperties.Rights = *(File->Rights);
+        CommonProperties.Rights = *File->Rights();
         // previously we allowed undef implicitly for directories,
         // now we do it explicitly in properties dialog and only in combination
         // with "recursive" option

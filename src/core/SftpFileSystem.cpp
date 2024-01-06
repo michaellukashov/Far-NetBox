@@ -4721,7 +4721,7 @@ bool TSFTPFileSystem::DoesFileLookLikeSymLink(TRemoteFile * File) const
 {
   return
     (FVersion < 4) &&
-    ((*File->Rights & TRights::rfAll) == TRights::rfAll) &&
+    ((*File->Rights() & TRights::rfAll) == TRights::rfAll) &&
     (File->Size < 100);
 }
 
@@ -5357,7 +5357,7 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
             else
             {
               OpenParams->Recycled = true;
-              OpenParams->RecycledRights = *File->Rights;
+              OpenParams->RecycledRights = *File->Rights();
             }
           }
         }
