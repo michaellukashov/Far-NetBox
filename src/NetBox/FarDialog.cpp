@@ -33,21 +33,21 @@ inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
 }
 
 const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
-class TDialogIdleThread : public TSimpleThread
+class TFarDialogIdleThread : public TSimpleThread
 {
-  TDialogIdleThread() = delete;
+  TFarDialogIdleThread() = delete;
 public:
-  explicit TDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, DWORD Millisecs) noexcept :
+  explicit TFarDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TDialogIdleThread),
     FDialog(Dialog),
     FMillisecs(Millisecs)
   {}
 
-  virtual ~TDialogIdleThread() noexcept override
+  virtual ~TFarDialogIdleThread() noexcept override
   {
     WaitFor(1000);
     SAFE_CLOSE_HANDLE(FEvent);
-    TDialogIdleThread::Terminate();
+    TFarDialogIdleThread::Terminate();
   }
 
   virtual void Execute() override
@@ -56,8 +56,9 @@ public:
     {
       if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
       {
-        if (!IsFinished() && FDialog && FDialog->GetHandle())
-          FDialog->Idle();
+        // if (!IsFinished() && FDialog && FDialog->GetHandle())
+        //   FDialog->Idle();
+        // TODO: use ACTL_SYNCHRO
       }
     }
     if (!IsFinished())
@@ -116,7 +117,7 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   FBorderBox = new TFarBox(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TDialogIdleThread>(this, 1000);
+  FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 1000);
   FTIdleThread->InitIdleThread();
 }
 
