@@ -823,7 +823,6 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     static const TPuttyTranslation TISInstructionTranslation[] = {
       { "Using TIS authentication.%", TIS_INSTRUCTION },
     };
-
     static const TPuttyTranslation TISPromptTranslation[] = {
       { "Response: ", PROMPT_PROMPT },
     };
@@ -1548,7 +1547,7 @@ void TSecureShell::AddStdErrorLine(const UnicodeString & AStr)
   }
 }
 
-const UnicodeString & TSecureShell::GetStdError() const
+UnicodeString TSecureShell::GetStdError() const
 {
   return FStdError;
 }

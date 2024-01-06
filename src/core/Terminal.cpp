@@ -2498,7 +2498,7 @@ bool TTerminal::DoQueryReopen(Exception * E)
       Aliases[0].Default = true;
       Params.Aliases = Aliases;
       Params.AliasesCount = _countof(Aliases);
-      Result = (QueryUserException("", E, qaRetry | qaAbort, &Params, qtError) == qaRetry);
+      Result = QueryUserException("", E, qaRetry | qaAbort, &Params, qtError) == qaRetry;
     }
 
     if (Fatal != nullptr)
