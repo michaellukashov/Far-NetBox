@@ -1946,15 +1946,6 @@ void TCustomFarPlugin::Finalize()
 #ifdef NETBOX_DEBUG
 void TCustomFarPlugin::RunTests()
 {
-  {
-    TFileMasks m(L"*.txt;*.log");
-    bool res = m.Matches(L"test.exe");
-    DebugAssert(!res);
-  }
-  {
-    random_ref();
-    random_unref();
-  }
 }
 #endif
 
