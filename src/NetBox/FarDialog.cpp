@@ -67,7 +67,6 @@ public:
 
   virtual void Terminate() override
   {
-    // TCompThread::Terminate();
     FFinished = true;
     if (FEvent)
       ::SetEvent(FEvent);
@@ -76,7 +75,7 @@ public:
   void InitIdleThread()
   {
     TSimpleThread::InitSimpleThread();
-    FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+    FEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
     Start();
   }
 
