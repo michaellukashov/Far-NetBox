@@ -2533,10 +2533,3 @@ ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG Debug)
 ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG RelWithDebugInfo)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
-#[[
-get_cmake_property(_variableNames VARIABLES)
-list (SORT _variableNames)
-foreach (_variableName ${_variableNames})
-  message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()
-]]
