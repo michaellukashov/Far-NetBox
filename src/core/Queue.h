@@ -72,9 +72,9 @@ using TQueueListUpdateEvent = nb::FastDelegate1<void,
   TTerminalQueue * /*Queue*/>;
 using TQueueItemUpdateEvent = nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/>;
-enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
-using TQueueEventEvent = nb::FastDelegate2<void,
-  TTerminalQueue * /*Queue*/, TQueueEvent /*Event*/>;
+enum TQueueEventType { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
+using TQueueEvent = nb::FastDelegate2<void,
+  TTerminalQueue * /*Queue*/, TQueueEventType /*Event*/>;
 
 class TTerminalItem;
 
@@ -127,8 +127,8 @@ public:
   void SetOnListUpdate(TQueueListUpdateEvent && Value) { FOnListUpdate = std::move(Value); }
   TQueueItemUpdateEvent & GetOnQueueItemUpdate() { return FOnQueueItemUpdate; }
   void SetOnQueueItemUpdate(TQueueItemUpdateEvent && Value) { FOnQueueItemUpdate = std::move(Value); }
-  TQueueEventEvent & GetOnEvent() { return FOnEvent; }
-  void SetOnEvent(TQueueEventEvent && Value) { FOnEvent = std::move(Value); }
+  TQueueEvent & GetOnEvent() { return FOnEvent; }
+  void SetOnEvent(TQueueEvent && Value) { FOnEvent = std::move(Value); }
 
 protected:
   TQueryUserEvent FOnQueryUser;
@@ -136,7 +136,7 @@ protected:
   TExtendedExceptionEvent FOnShowExtendedException;
   TQueueItemUpdateEvent FOnQueueItemUpdate;
   TQueueListUpdateEvent FOnListUpdate;
-  TQueueEventEvent FOnEvent;
+  TQueueEvent FOnEvent;
   gsl::not_null<TTerminal *> FTerminal;
   gsl::not_null<TConfiguration *> FConfiguration;
   std::unique_ptr<TSessionData> FSessionData;
@@ -180,7 +180,7 @@ protected:
 
   void DoQueueItemUpdate(TQueueItem * Item);
   void DoListUpdate();
-  void DoEvent(TQueueEvent Event);
+  void DoEvent(TQueueEventType Event);
 
 public:
   void SetTransfersLimit(int32_t Value);

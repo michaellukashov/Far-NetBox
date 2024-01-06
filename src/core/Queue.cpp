@@ -1161,7 +1161,7 @@ void TTerminalQueue::DoListUpdate()
   }
 }
 
-void TTerminalQueue::DoEvent(TQueueEvent Event)
+void TTerminalQueue::DoEvent(TQueueEventType Event)
 {
   if (!GetOnEvent().empty())
   {
