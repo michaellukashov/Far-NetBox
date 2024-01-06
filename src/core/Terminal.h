@@ -98,40 +98,25 @@ constexpr const uint32_t folNone = 0x00;
 constexpr const uint32_t folAllowSkip = 0x01;
 constexpr const uint32_t folRetryOnFatal = 0x02;
 
-#if 0
-
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_BEGIN \
+{ \
+  bool DoRepeat; \
+  do \
   { \
-    bool DoRepeat; \
-    do \
+    DoRepeat = false; \
+    try \
     { \
-      DoRepeat = false; \
-      try \
 
 #define FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, HELPKEYWORD) \
-      catch (Exception & E) \
-      { \
-        FILE_OPERATION_LOOP_TERMINAL->FileOperationLoopEnd(E, OperationProgress, MESSAGE, FLAGS, L"", HELPKEYWORD); \
-        DoRepeat = true; \
-      } \
-    } while (DoRepeat); \
-  }
-#endif
-
-NB_CORE_EXPORT void FileOperationLoopCustom(TTerminal * Terminal,
-  TFileOperationProgressType * AOperationProgress,
-  uint32_t Flags, const UnicodeString & Message,
-  const UnicodeString & HelpKeyword,
-  std::function<void()> Operation);
-
-#define FILE_OPERATION_LOOP_BEGIN(TERMINAL, OPERATION_PROGRESS, FLAGS, MESSAGE, HELPKEYWORD) \
-  FileOperationLoopCustom((TERMINAL), (OPERATION_PROGRESS), (FLAGS), \
-    (MESSAGE), HELPKEYWORD, \
-  [&]() \
-
-
-#define FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, HELPKEYWORD) )
+    } \
+    catch (Exception & E) \
+    { \
+      FILE_OPERATION_LOOP_TERMINAL->FileOperationLoopEnd(E, OperationProgress, (MESSAGE), (FLAGS), L"", (HELPKEYWORD)); \
+      DoRepeat = true; \
+    } \
+  } while (DoRepeat); \
+}
 
 #define FILE_OPERATION_LOOP_END_EX(MESSAGE, FLAGS) \
   FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, L"")
