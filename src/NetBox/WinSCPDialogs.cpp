@@ -8677,7 +8677,7 @@ void TQueueDialog::LoadQueue()
     int32_t ILine = 0;
     while (FillQueueItemLine(Line, QueueItem, ILine))
     {
-      List->AddObject(Line, QueueItem);
+      List->AddObject(Line, QueueItem->Clone());
       List->SetDisabled(List->GetCount() - 1, (ILine > 0));
       ILine++;
     }
