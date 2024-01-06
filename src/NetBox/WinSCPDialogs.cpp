@@ -4271,7 +4271,7 @@ void TSessionDialog::KexButtonClick(TFarButton * Sender, bool & Close)
 void TSessionDialog::AuthGSSAPICheckAllowChange(TFarDialogItem * /*Sender*/,
   void * NewState, bool & Allow)
 {
-  if ((reinterpret_cast<size_t>(NewState) == BSTATE_CHECKED) && !HasGSSAPI(L""))
+  if ((nb::ToIntPtr(NewState) == BSTATE_CHECKED) && !HasGSSAPI(L""))
   {
     Allow = false;
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
