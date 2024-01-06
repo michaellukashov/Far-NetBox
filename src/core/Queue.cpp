@@ -1255,7 +1255,7 @@ bool TTerminalQueue::ContinueParallelOperation() const
 
 // TBackgroundItem
 
-const TObjectClassId OBJECT_CLASS_TBackgroundTerminal = static_cast<TObjectClassId>(nb::counter_id());
+constexpr TObjectClassId OBJECT_CLASS_TBackgroundTerminal = static_cast<TObjectClassId>(nb::counter_id());
 class TBackgroundTerminal final : public TSecondaryTerminal
 {
   friend class TTerminalItem;
