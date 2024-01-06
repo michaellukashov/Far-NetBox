@@ -44,9 +44,10 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem = static_cast<TObjectClassId>(nb::counter_id());
+#undef FILE_OPERATION_LOOP_TERMINAL
+#define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-// #define FILE_OPERATION_LOOP_TERMINAL FTerminal
+const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem = static_cast<TObjectClassId>(nb::counter_id());
 
 constexpr const char * SESSION_CONTEXT_KEY = "sessioncontext";
 constexpr const char * CONST_WEBDAV_PROTOCOL_BASE_NAME = "WebDAV";
@@ -1389,7 +1390,7 @@ void TWebDAVFileSystem::Source(
 
     FUploadMimeType = GetConfiguration()->GetFileMimeType(ADestFileName);
 
-    FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AHandle.FileName), "")
+    FILE_OPERATION_LOOP_BEGIN
     {
       ::SetFilePointer(AHandle.Handle, 0, nullptr, FILE_BEGIN);
 
@@ -1790,7 +1791,7 @@ void TWebDAVFileSystem::Sink(
   const UnicodeString ExpandedDestFullName = ::ExpandUNCFileName(DestFullName);
   Action.Destination(ExpandedDestFullName);
 
-  FILE_OPERATION_LOOP_BEGIN(FTerminal, OperationProgress, folAllowSkip, FMTLOAD(TRANSFER_ERROR, AFileName), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
         GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
@@ -1860,7 +1861,7 @@ void TWebDAVFileSystem::Sink(
       }
     } end_try__finally
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, FileName));
+  FILE_OPERATION_LOOP_END(FMTLOAD(TRANSFER_ERROR, AFileName));
 
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }

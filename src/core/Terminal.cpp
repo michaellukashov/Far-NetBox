@@ -42,7 +42,8 @@ const TObjectClassId OBJECT_CLASS_TCalculateSizeParams = static_cast<TObjectClas
 const TObjectClassId OBJECT_CLASS_TMakeLocalFileListParams = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TCollectedFileList = static_cast<TObjectClassId>(nb::counter_id());
 
-// #define FILE_OPERATION_LOOP_TERMINAL this
+#undef FILE_OPERATION_LOOP_TERMINAL
+#define FILE_OPERATION_LOOP_TERMINAL this
 
 
 class TLoopDetector : public TObject
@@ -2673,11 +2674,11 @@ int32_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
 {
   DebugAssert(CallBackFunc);
   int32_t Result = 0;
-  FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, AFlags, AMessage, "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     Result = CallBackFunc(Param1, Param2);
   }
-  FILE_OPERATION_LOOP_END_EX(Message, Flags);
+  FILE_OPERATION_LOOP_END_EX(AMessage, AFlags);
 
   return Result;
 }
@@ -5735,14 +5736,14 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
             FLAGMASK(FLAGSET(LocalFileAttrs, faHidden), FILE_ATTRIBUTE_HIDDEN) |
             FLAGMASK(FLAGSET(LocalFileAttrs, faReadOnly), FILE_ATTRIBUTE_READONLY);
 
-          FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, folAllowSkip, FMTLOAD(CANT_SET_ATTRS, AFileName), "")
+          FILE_OPERATION_LOOP_BEGIN
           {
             if (!this->SetLocalFileAttributes(ApiPath(AFileName), LocalFileAttrs & ~(faReadOnly | faHidden)))
             {
               ::RaiseLastOSError();
             }
           }
-          FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, FileName));
+          FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, AFileName));
         }
         else
         {
@@ -5768,11 +5769,11 @@ bool TTerminal::TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
   DebugAssert(AHandle);
   bool Result = true;
 
-  FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, folAllowSkip, FMTLOAD(CREATE_FILE_ERROR, ATargetFileName), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     Result = DoCreateLocalFile(ATargetFileName, AOperationProgress, AHandle, NoConfirmation);
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_FILE_ERROR, FileName));
+  FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_FILE_ERROR, ATargetFileName));
 
   return Result;
 }
@@ -5786,7 +5787,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
   HANDLE LocalFileHandle = INVALID_HANDLE_VALUE;
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
 
-  FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(FILE_NOT_EXISTS, ATargetFileName), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     const UnicodeString FileNameApi = ApiPath(ATargetFileName);
     LocalFileAttrs = this->GetLocalFileAttributes(FileNameApi);
@@ -5795,7 +5796,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
       ::RaiseLastOSError();
     }
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(FILE_NOT_EXISTS, FileName));
+  FILE_OPERATION_LOOP_END(FMTLOAD(FILE_NOT_EXISTS, ATargetFileName));
 
   if (FLAGCLEAR(LocalFileAttrs, faDirectory) || (AHandle == nullptr))
   {
@@ -5807,7 +5808,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
       NoHandle = true;
     }
 
-    FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(OPENFILE_ERROR, ATargetFileName), "")
+    FILE_OPERATION_LOOP_BEGIN
     {
       const DWORD Flags = FLAGMASK(FLAGSET(LocalFileAttrs, faDirectory), FILE_FLAG_BACKUP_SEMANTICS);
       LocalFileHandle = this->TerminalCreateLocalFile(ApiPath(ATargetFileName), Access,
@@ -5819,7 +5820,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
         ::RaiseLastOSError();
       }
     }
-    FILE_OPERATION_LOOP_END(FMTLOAD(OPENFILE_ERROR, FileName));
+    FILE_OPERATION_LOOP_END(FMTLOAD(OPENFILE_ERROR, ATargetFileName));
 
     try
     {
@@ -5830,11 +5831,11 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
         FILETIME CTime;
 
         // Get last file access and modification time
-        FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(CANT_GET_ATTRS, ATargetFileName), "")
+        FILE_OPERATION_LOOP_BEGIN
         {
           THROWOSIFFALSE(::GetFileTime(LocalFileHandle, &CTime, &ATime, &MTime));
         }
-        FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, FileName));
+        FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, ATargetFileName));
 
         if (ACTime)
         {
@@ -5853,7 +5854,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
       if (ASize)
       {
         // Get file size
-        FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(CANT_GET_ATTRS, ATargetFileName), "")
+        FILE_OPERATION_LOOP_BEGIN
         {
           // DWORD LSize;
           DWORD HSize{0};
@@ -5864,7 +5865,7 @@ void TTerminal::TerminalOpenLocalFile(const UnicodeString & ATargetFileName,
           }
           *ASize = (nb::ToInt64(HSize) << 32) + LSize;
         }
-        FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, FileName));
+        FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, ATargetFileName));
       }
 
       if ((AHandle == nullptr) || NoHandle)
@@ -5949,14 +5950,14 @@ bool TTerminal::AllowLocalFileTransfer(
       }
       else
       {
-        FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, 0, FMTLOAD(FILE_NOT_EXISTS, AFileName), "")
+        FILE_OPERATION_LOOP_BEGIN
         {
           if (!FileSearchRec(AFileName, ASearchRec))
           {
             RaiseLastOSError();
           }
         }
-        FILE_OPERATION_LOOP_END(FMTLOAD(FILE_NOT_EXISTS, FileName));
+        FILE_OPERATION_LOOP_END(FMTLOAD(FILE_NOT_EXISTS, AFileName));
       }
       SearchRec = &ASearchRec;
     }
@@ -6271,19 +6272,19 @@ UnicodeString TTerminal::SynchronizeParamsStr(int32_t Params)
 bool TTerminal::LocalFindFirstLoop(const UnicodeString & APath, TSearchRecChecked & SearchRec)
 {
   bool Result;
-  FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(LIST_DIR_ERROR, APath), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     constexpr DWORD FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
     Result = (FindFirstChecked(APath, FindAttrs, SearchRec) == 0);
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(LIST_DIR_ERROR, Path));
+  FILE_OPERATION_LOOP_END(FMTLOAD(LIST_DIR_ERROR, APath));
   return Result;
 }
 
 bool TTerminal::LocalFindNextLoop(TSearchRecChecked & SearchRec)
 {
   bool Result;
-  FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(LIST_DIR_ERROR, SearchRec.Path), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     Result = (FindNextChecked(SearchRec) == 0);
   }
@@ -6591,12 +6592,12 @@ bool TTerminal::SameFileChecksum(const UnicodeString & LocalFileName, const TRem
   FCollectedCalculatedChecksum = EmptyStr;
 
   UnicodeString LocalChecksum;
-  FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folNone, FMTLOAD(CHECKSUM_ERROR, LocalFileName), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     std::unique_ptr<THandleStream> Stream(TSafeHandleStream::CreateFromFile(LocalFileName, fmOpenRead | fmShareDenyWrite));
     LocalChecksum = CalculateFileChecksum(Stream.get(), Alg);
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(CHECKSUM_ERROR, (LocalFileName)));
+  FILE_OPERATION_LOOP_END(FMTLOAD(CHECKSUM_ERROR, LocalFileName));
 
   return SameText(RemoteChecksum, LocalChecksum);
 }
@@ -7090,7 +7091,7 @@ void TTerminal::SynchronizeLocalTimestamp(const UnicodeString & /*AFileName*/,
   const UnicodeString LocalFile =
     ::IncludeTrailingBackslash(ChecklistItem->Local.Directory) +
       ChecklistItem->Local.FileName;
-  FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(CANT_SET_ATTRS, LocalFile), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     HANDLE Handle;
     this->TerminalOpenLocalFile(LocalFile, GENERIC_WRITE, nullptr, &Handle,
@@ -7913,11 +7914,11 @@ void TTerminal::DirectorySource(
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
-      FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, folAllowSkip, FMTLOAD(CANT_SET_ATTRS, ADirectoryName), "")
+      FILE_OPERATION_LOOP_BEGIN
       {
         THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADirectoryName), static_cast<DWORD>(Attrs & ~faArchive)) == 0);
       }
-      FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, DirectoryName));
+      FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, ADirectoryName));
     }
   }
 }
@@ -7956,11 +7957,11 @@ void TTerminal::SelectSourceTransferMode(const TLocalFileHandle & Handle, const 
 
 void TTerminal::DoDeleteLocalFile(const UnicodeString & FileName)
 {
-  FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folAllowSkip, FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     DeleteFileChecked(FileName);
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_LOCAL_FILE_ERROR, FileName));
+  FILE_OPERATION_LOOP_END(FMTLOAD(CORE_DELETE_LOCAL_FILE_ERROR, FileName));
 }
 
 void TTerminal::DoRenameLocalFileForce(const UnicodeString & OldName, const UnicodeString & NewName)
@@ -7970,7 +7971,7 @@ void TTerminal::DoRenameLocalFileForce(const UnicodeString & OldName, const Unic
     DoDeleteLocalFile(NewName);
   }
 
-  FILE_OPERATION_LOOP_BEGIN(this, FOperationProgress, folNone, FMTLOAD(RENAME_FILE_ERROR, OldName, NewName), "")
+  FILE_OPERATION_LOOP_BEGIN
   {
     THROWOSIFFALSE(base::RenameFile(ApiPath(OldName), ApiPath(NewName)));
   }
@@ -7992,11 +7993,11 @@ void TTerminal::UpdateSource(const TLocalFileHandle & AHandle, const TCopyParamT
   }
   else if (CopyParam->ClearArchive && FLAGSET(AHandle.Attrs, faArchive))
   {
-    FILE_OPERATION_LOOP_BEGIN(this, OperationProgress, folNone, FMTLOAD(CANT_SET_ATTRS, AHandle.FileName), "")
+    FILE_OPERATION_LOOP_BEGIN
     {
       THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(AHandle.FileName), (AHandle.Attrs & ~faArchive)) == 0);
     }
-    FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, Handle.FileName));
+    FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, AHandle.FileName));
   }
 }
 
@@ -8467,7 +8468,7 @@ void TTerminal::Sink(
     Action.Cancel();
     if (CanRecurseToDirectory(AFile))
     {
-      FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, AFlags, FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName), "")
+      FILE_OPERATION_LOOP_BEGIN
       {
         const DWORD Attrs = ::FileGetAttrFix(ApiPath(DestFullName));
         if (FLAGCLEAR(Attrs, faDirectory))
@@ -8477,7 +8478,7 @@ void TTerminal::Sink(
       }
       FILE_OPERATION_LOOP_END(FMTLOAD(NOT_DIRECTORY_ERROR, DestFullName));
 
-      FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, AFlags, FMTLOAD(CREATE_DIR_ERROR, DestFullName), "")
+      FILE_OPERATION_LOOP_BEGIN
       {
         THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFullName)));
       }
@@ -8549,7 +8550,7 @@ void TTerminal::Sink(
     }
     else
     {
-      FILE_OPERATION_LOOP_BEGIN(this, AOperationProgress, AFlags, FMTLOAD(NOT_FILE_ERROR, DestFullName), "")
+      FILE_OPERATION_LOOP_BEGIN
       {
         Attrs = nb::ToInt32(FileGetAttrFix(ApiPath(DestFullName)));
         if ((Attrs >= 0) && FLAGSET(Attrs, faDirectory))
@@ -8579,7 +8580,7 @@ void TTerminal::UpdateTargetAttrs(
   const uint32_t NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
   if ((NewAttrs & Attrs) != NewAttrs)
   {
-    FILE_OPERATION_LOOP_BEGIN(this, FOperationProgress, folAllowSkip, FMTLOAD(CANT_SET_ATTRS, ADestFullName), "")
+    FILE_OPERATION_LOOP_BEGIN
     {
       THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADestFullName), static_cast<DWORD>(Attrs | NewAttrs)) == 0);
     }
@@ -9381,8 +9382,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
   const FILETIME * AcTime, const FILETIME * WrTime)
 {
   TFileOperationProgressType * OperationProgress = GetOperationProgress();
-  FileOperationLoopCustom(this, OperationProgress, True, FMTLOAD(CANT_SET_ATTRS, LocalFileName), "",
-  [&]()
+  FILE_OPERATION_LOOP_BEGIN
   {
     HANDLE LocalFileHandle;
     try__finally
@@ -9395,7 +9395,8 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
     {
       SAFE_CLOSE_HANDLE(LocalFileHandle);
     } end_try__finally
-  });
+  }
+  FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, LocalFileName))
 }
 
 HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
@@ -9637,47 +9638,3 @@ UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
   return Result;
 }
 
-///* TODO : Better user interface (query to user) */
-void FileOperationLoopCustom(TTerminal * Terminal,
-  TFileOperationProgressType * AOperationProgress,
-  uint32_t Flags, const UnicodeString & Message,
-  const UnicodeString & HelpKeyword,
-  std::function<void()> Operation)
-{
-  bool DoRepeat;
-  do
-  {
-    DoRepeat = false;
-    try
-    {
-      Operation();
-    }
-    catch(EAbort &)
-    {
-      throw;
-    }
-    catch(ESkipFile &)
-    {
-      throw;
-    }
-    catch(EFatal &)
-    {
-      throw;
-    }
-    catch(EFileNotFoundError &)
-    {
-      throw;
-    }
-    catch(EOSError &)
-    {
-      throw;
-    }
-    catch(Exception & E)
-    {
-      Terminal->FileOperationLoopQuery(
-        E, AOperationProgress, Message, Flags & folAllowSkip, "", HelpKeyword);
-      DoRepeat = true;
-    }
-  }
-  while (DoRepeat);
-}
