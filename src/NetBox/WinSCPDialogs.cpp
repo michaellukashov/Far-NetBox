@@ -8520,7 +8520,7 @@ void TQueueDialog::UpdateControls()
   if (GetQueueItems()->GetSelected() >= 0)
   {
     QueueItem = rtti::dyn_cast_or_null<TQueueItemProxy>(
-        GetQueueItems()->Get(GetQueueItems()->GetSelected()));
+      GetQueueItems()->Get(GetQueueItems()->GetSelected()));
   }
 
   DEBUG_PRINTF("GetHandle2: %p", GetHandle());

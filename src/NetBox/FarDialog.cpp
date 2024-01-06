@@ -2207,7 +2207,7 @@ TFarList::~TFarList() noexcept
   nb_free(FListItems);
 }
 
-void TFarList::Assign(const TPersistent *Source)
+void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 
