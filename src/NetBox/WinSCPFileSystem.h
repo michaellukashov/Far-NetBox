@@ -295,7 +295,7 @@ private:
   void GetSynchronizeOptions(int32_t Params, TSynchronizeOptions & Options);
   void QueueListUpdate(TTerminalQueue * Queue);
   void QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
-  void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
+  void QueueEvent(TTerminalQueue * Queue, TQueueEventType Event);
   void GetSpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable, bool & Close);
   void QueueAddItem(TQueueItem * Item);
@@ -312,7 +312,7 @@ private:
   gsl::owner<TTerminalQueue *> FQueue{nullptr};
   gsl::owner<TTerminalQueueStatus *> FQueueStatus{nullptr};
   TCriticalSection FQueueStatusSection;
-  TQueueEvent FQueueEvent{qeEmpty};
+  TQueueEventType FQueueEvent{qeEmpty};
   HANDLE FProgressSaveScreenHandle{nullptr};
   HANDLE FSynchronizationSaveScreenHandle{nullptr};
   HANDLE FAuthenticationSaveScreenHandle{nullptr};

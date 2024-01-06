@@ -119,7 +119,7 @@ private:
   DWORD FMainThread{0};
   int32_t FPendingConfigurationChange{0};
   std::unique_ptr<TCriticalSection> FChangeSection;
-  nb::vector_t<std::pair<TTerminalQueue *, TQueueEvent> > FQueueEvents;
+  nb::vector_t<std::pair<TTerminalQueue *, TQueueEventType> > FQueueEvents;
   uint32_t FTaskbarButtonCreatedMessage{0};
   // ITaskbarList3 * FTaskbarList{nullptr};
   int32_t FAuthenticating{0};
@@ -174,7 +174,7 @@ private:
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData);
   void DeleteLocalFile(const UnicodeString & FileName, bool Alternative, int32_t & Deleted);
-  void QueueEvent(TTerminalQueue * Queue, TQueueEvent Event);
+  void QueueEvent(TTerminalQueue * Queue, TQueueEventType Event);
   TAuthenticateForm * MakeAuthenticateForm(TTerminal * Terminal);
   void MasterPasswordPrompt();
   void FileNameInputDialogInitializeRenameBaseName(
