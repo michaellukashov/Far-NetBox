@@ -97,9 +97,12 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FFarSystemSettings = 0;
 
   nb::ClearStruct(FPluginInfo);
+  FPluginInfo.StructSize = sizeof(FPluginInfo);
   ClearPluginInfo(FPluginInfo);
   nb::ClearStruct(FStartupInfo);
+  FStartupInfo.StructSize = sizeof(FStartupInfo);
   nb::ClearStruct(FFarStandardFunctions);
+  FFarStandardFunctions.StructSize = sizeof(FFarStandardFunctions);
 
   // far\Examples\Compare\compare.cpp
   FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
