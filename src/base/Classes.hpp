@@ -22,6 +22,7 @@
 
 namespace nb {
   using fastdelegate::bind;
+  using fastdelegate::FastDelegate;
   using fastdelegate::FastDelegate0;
   using fastdelegate::FastDelegate1;
   using fastdelegate::FastDelegate2;
