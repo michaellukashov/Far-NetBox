@@ -147,7 +147,8 @@ void FarWrapText(const UnicodeString & Text, TStrings * Result, int32_t MaxWidth
     UnicodeString WrappedLine = Lines.GetString(Index);
     if (!WrappedLine.IsEmpty())
     {
-      WrappedLine = ::ReplaceStrAll(WrappedLine, L"**", L"");
+      constexpr const wchar_t * MainMsgTag = L"**";
+      WrappedLine = ::ReplaceStrAll(WrappedLine, MainMsgTag, L"");
       WrappedLine = ::ReplaceChar(WrappedLine, L'\'', L'\3');
       WrappedLine = ::ReplaceChar(WrappedLine, L'\"', L'\4');
       WrappedLine = ::WrapText(WrappedLine, MaxWidth);

@@ -3490,7 +3490,8 @@ static UnicodeString DoLoadStrFrom(HINSTANCE Module, int32_t Ident, uint32_t Max
 UnicodeString LoadStrFrom(HINSTANCE Module, int32_t Ident)
 {
   // 1024 = what VCL LoadStr limits the string to
-  return DoLoadStrFrom(Module, Ident, 1024);
+  constexpr const uint32_t MaxStrLength = 1024;
+  return DoLoadStrFrom(Module, Ident, MaxStrLength);
 }
 
 UnicodeString LoadStr(int32_t Ident, uint32_t /*MaxLength*/)
