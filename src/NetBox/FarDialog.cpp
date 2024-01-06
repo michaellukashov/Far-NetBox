@@ -775,8 +775,8 @@ int32_t TFarDialog::ShowModal()
   FResult = -1;
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
-  HANDLE Handle = INVALID_HANDLE_VALUE;
   {
+    HANDLE Handle = INVALID_HANDLE_VALUE;
     const PluginStartupInfo & Info = *GetFarPlugin()->GetPluginStartupInfo();
     SCOPE_EXIT
     {
