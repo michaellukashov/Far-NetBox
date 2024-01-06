@@ -972,14 +972,14 @@ UnicodeString ExceptionLogString(Exception * E)
   DebugAssert(E);
   if (rtti::isa<Exception>(E))
   {
-    UnicodeString Msg = FORMAT("%s", E->Message);
+    UnicodeString Msg = E->Message; // FORMAT("%s", E->Message);
     if (rtti::isa<ExtException>(E))
     {
       const TStrings * MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
-        Msg += L"\n" +
-          ReplaceStr(MoreMessages->GetText(), L"\r", L"");
+        Msg += L"\n";
+        Msg += ReplaceStr(MoreMessages->GetText(), L"\r", L"");
       }
     }
     return Msg;
