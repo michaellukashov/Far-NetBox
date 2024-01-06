@@ -83,14 +83,15 @@ extern const TObjectClassId OBJECT_CLASS_EInvalidOperation;
 extern const TObjectClassId OBJECT_CLASS_EConvertError;
 extern const TObjectClassId OBJECT_CLASS_EDirectoryNotFoundException;
 
-class NB_CORE_EXPORT Exception : public std::runtime_error
+class NB_CORE_EXPORT Exception // : public std::runtime_error
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
-  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_Exception); }
-  virtual bool is(TObjectClassId Kind) const { return (Kind == FKind); }
+  static bool classof(const Exception * Obj) { return Obj != nullptr; }
+  virtual bool is(TObjectClassId Kind) const { return Kind == FKind; }
 public:
-  Exception() = default;
+  Exception() noexcept : Exception(OBJECT_CLASS_Exception) {}
+  explicit Exception(TObjectClassId Kind) noexcept : FKind(Kind) {}
   explicit Exception(TObjectClassId Kind, const wchar_t * Msg) noexcept;
   explicit Exception(const wchar_t * Msg) noexcept;
   explicit Exception(TObjectClassId Kind, const UnicodeString & Msg) noexcept;
@@ -100,15 +101,15 @@ public:
   explicit Exception(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHelpContext) noexcept;
   explicit Exception(TObjectClassId Kind, const Exception * E, int32_t Ident) noexcept;
   explicit Exception(TObjectClassId Kind, int32_t Ident) noexcept;
-  virtual ~Exception() override = default;
+  virtual ~Exception() = default;
 
 //  void Createfmt(int32_t Id, fmt::ArgList Args);
 //  FMT_VARIADIC_W(void, Createfmt, int32_t)
 
-private:
-  TObjectClassId FKind{0};
 public:
   UnicodeString Message;
+private:
+  TObjectClassId FKind{0};
 };
 
 class NB_CORE_EXPORT EAbort : public Exception

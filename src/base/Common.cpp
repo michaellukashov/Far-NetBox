@@ -991,7 +991,7 @@ UnicodeString ExceptionLogString(Exception * E)
     ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, _countof(Buffer));
     return UnicodeString(Buffer);
 #else
-    return UnicodeString(E->what());
+    return UnicodeString(E->Message);
 #endif
   }
 }

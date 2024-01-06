@@ -39,7 +39,7 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
 };*/
 
 Exception::Exception(TObjectClassId Kind, const Exception * E) noexcept :
-  Exception(Kind, UnicodeString(E ? E->what() : ""))
+  Exception(Kind, UnicodeString(E ? E->Message : ""))
 {
 }
 
@@ -59,7 +59,6 @@ Exception::Exception(const wchar_t * Msg) noexcept :
 }
 
 Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) noexcept :
-  std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
 {
@@ -78,7 +77,7 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHe
 }
 
 Exception::Exception(TObjectClassId Kind, const Exception * E, int32_t Ident) noexcept :
-  Exception(Kind, UnicodeString(E ? E->what() : ""))
+  Exception(Kind, UnicodeString(E ? E->Message : ""))
 {
   Message = FMTLOAD(Ident);
 }
@@ -834,7 +833,7 @@ UnicodeString TranslateExceptionMessage(Exception * E)
     {
       return rtti::dyn_cast_or_null<Exception>(E)->Message;
     }
-    return E->what();
+    return E->Message;
   }
   return UnicodeString();
 }
