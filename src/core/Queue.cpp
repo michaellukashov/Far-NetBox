@@ -355,11 +355,6 @@ TSimpleThread::~TSimpleThread() noexcept
   }
 }
 
-bool TSimpleThread::IsFinished() const
-{
-  return FFinished;
-}
-
 void TSimpleThread::Start()
 {
   if (::ResumeThread(FThread) == 1)
