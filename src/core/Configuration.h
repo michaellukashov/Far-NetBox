@@ -122,7 +122,7 @@ private:
   int32_t FSessionReopenAuto{0};
   int32_t FSessionReopenBackground{0};
   int32_t FSessionReopenTimeout{0};
-  int32_t FSessionReopenAutoStall{0};
+  int32_t FSessionReopenAutoStall{10 * MSecsPerSec};
   UnicodeString FCustomIniFileStorageName;
   UnicodeString FIniFileStorageName;
   mutable UnicodeString FVirtualIniFileStorageName;
