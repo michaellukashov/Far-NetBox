@@ -562,7 +562,7 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
   Type& operator =(const Type&) = delete;
 
 //  Type(Type&&) = delete; \
-//  Type& operator=(Type&&) = delete;
+//  Type& operator =(Type&&) = delete;
 
 #define NB_MOVABLE(Type) \
   Type(Type&&) = default; \
