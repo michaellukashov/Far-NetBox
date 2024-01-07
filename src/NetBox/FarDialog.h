@@ -129,12 +129,12 @@ protected:
 
   static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
 
-  virtual void SetBounds(const TRect & Value);
+  void SetBounds(const TRect & Value);
 
 private:
   mutable gsl::not_null<TCustomFarPlugin *> FFarPlugin;
-  TRect FBounds{};
-  FARDIALOGITEMFLAGS FFlags;
+  TRect FBounds{-1, -1, 40, 10};
+  FARDIALOGITEMFLAGS FFlags{0};
   UnicodeString FHelpTopic;
   bool FVisible{false};
   std::unique_ptr<TObjectList> FItems;
@@ -142,7 +142,7 @@ private:
   HANDLE FHandle{nullptr};
   TFarButton * FDefaultButton{nullptr};
   TFarBox * FBorderBox{nullptr};
-  TItemPosition FNextItemPosition{};
+  TItemPosition FNextItemPosition{ipNewLine};
   int32_t FDefaultGroup{0};
   int32_t FTag{0};
   TFarDialogItem * FItemFocused{nullptr};

@@ -90,6 +90,9 @@ TFarDialog::~TFarDialog() noexcept
 //  SAFE_DESTROY(FContainers);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
+  FHandle = nullptr;
+}
+
 void TFarDialog::InitDialog()
 {
   FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
@@ -742,8 +745,8 @@ int32_t TFarDialog::ShowModal()
   FResult = -1;
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
-  HANDLE Handle = INVALID_HANDLE_VALUE;
   {
+    HANDLE Handle = INVALID_HANDLE_VALUE;
     const PluginStartupInfo & Info = *GetFarPlugin()->GetPluginStartupInfo();
     SCOPE_EXIT
     {
@@ -763,12 +766,12 @@ int32_t TFarDialog::ShowModal()
       TFarEnvGuard Guard; nb::used(Guard);
       const TRect Bounds = GetBounds();
       Handle = Info.DialogInit(
-          &NetBoxPluginGuid, GetDialogGuid(),
-          Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-          HelpTopic.c_str(), FDialogItems,
-          GetItemCount(), 0, GetFlags(),
-          DialogProcGeneral,
-          nb::ToPtr(this));
+        &NetBoxPluginGuid, GetDialogGuid(),
+        Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
+        HelpTopic.c_str(), FDialogItems,
+        GetItemCount(), 0, GetFlags(),
+        TFarDialog::DialogProcGeneral,
+        nb::ToPtr(this));
       BResult = Info.DialogRun(Handle);
     }
 
@@ -2164,7 +2167,7 @@ TFarList::~TFarList() noexcept
   nb_free(FListItems);
 }
 
-void TFarList::Assign(const TPersistent *Source)
+void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 

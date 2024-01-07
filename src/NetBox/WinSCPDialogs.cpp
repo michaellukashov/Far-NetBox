@@ -1037,7 +1037,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   const UnicodeString LegalCopyright = GetConfiguration()->GetFileInfoString("LegalCopyright");
   const UnicodeString FileDescription = GetConfiguration()->GetFileInfoString("FileDescription");
 
-  int32_t Height = 15;
+  int32_t Height = 16;
 #ifndef NO_FILEZILLA
   Height += 2;
 #endif
@@ -1053,13 +1053,14 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Height++;
   }
-  SetSize(TPoint(55, Height));
+  SetSize(TPoint(60, Height));
 
   SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
   TFarText * Text = new TFarText(this);
   Text->SetCaption(FileDescription);
   Text->SetCenterGroup(true);
+
 
   Text = new TFarText(this);
   UnicodeString VersionStr = GetConfiguration()->GetProductVersion();
@@ -1083,8 +1084,8 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Text = new TFarText(this);
     Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_PRODUCT_VERSION),
-        ProductName,
-        LoadStr(WINSCP_VERSION)));
+      ProductName,
+      LoadStr(WINSCP_VERSION)));
     Text->SetCenterGroup(true);
   }
 
@@ -5471,7 +5472,7 @@ int32_t TCopyParamsContainer::GetHeight() const
   return 16;
 }
 
-class TCopyDialog final : TFarDialog
+class TCopyDialog final : public TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -8296,7 +8297,7 @@ public:
   bool Execute(TTerminalQueueStatus * Status);
 
 protected:
-  virtual const UUID * GetDialogGuid() const { return &QueueDialogGuid; }
+  virtual const UUID * GetDialogGuid() const override { return &QueueDialogGuid; }
   virtual void Change() override;
   virtual void Idle() override;
   bool UpdateQueue();
@@ -8485,7 +8486,7 @@ void TQueueDialog::UpdateControls()
   if (GetQueueItems()->GetSelected() >= 0)
   {
     QueueItem = rtti::dyn_cast_or_null<TQueueItemProxy>(
-        GetQueueItems()->Get(GetQueueItems()->GetSelected()));
+      GetQueueItems()->Get(GetQueueItems()->GetSelected()));
   }
 
   if ((QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))

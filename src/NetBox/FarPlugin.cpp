@@ -95,9 +95,9 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
 
   // far\Examples\Compare\compare.cpp
   FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
-      OPEN_EXISTING, 0, nullptr);
+    OPEN_EXISTING, 0, nullptr);
   FConsoleOutput = ::CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
+    FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
   if (ConsoleWindowState() == SW_SHOWNORMAL)
   {
     FNormalConsoleSize = TerminalInfo();
@@ -191,19 +191,19 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
       &PluginConfig, &CommandPrefixes);
 
 #define COMPOSESTRINGARRAY(NAME) \
-        do { if (NAME.GetCount()) \
-        { \
-          wchar_t ** StringArray = nb::calloc<wchar_t **>(1 + NAME.GetCount(), sizeof(wchar_t *)); \
-          GUID * Guids = static_cast<GUID *>(nb_malloc(sizeof(GUID) * NAME.GetCount())); \
-          FPluginInfo.NAME.Guids = Guids; \
-          FPluginInfo.NAME.Strings = StringArray; \
-          FPluginInfo.NAME.Count = NAME.GetCount(); \
-          for (int32_t Index = 0; Index < NAME.GetCount(); Index++) \
-          { \
-            StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
-            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObj(Index)); \
-          } \
-        } } while(0)
+    do { if (NAME.GetCount()) \
+    { \
+      wchar_t ** StringArray = nb::calloc<wchar_t **>(1 + NAME.GetCount(), sizeof(wchar_t *)); \
+      GUID * Guids = static_cast<GUID *>(nb_malloc(sizeof(GUID) * NAME.GetCount())); \
+      FPluginInfo.NAME.Guids = Guids; \
+      FPluginInfo.NAME.Strings = StringArray; \
+      FPluginInfo.NAME.Count = NAME.GetCount(); \
+      for (int32_t Index = 0; Index < NAME.GetCount(); Index++) \
+      { \
+        StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
+        Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObj(Index)); \
+      } \
+    } } while(0)
 
     COMPOSESTRINGARRAY(DiskMenu);
     COMPOSESTRINGARRAY(PluginMenu);
@@ -268,17 +268,17 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
   if (Info.StructSize)
   {
 #define FREESTRINGARRAY(NAME) \
-      do { for (size_t Index = 0; Index < Info.NAME.Count; ++Index) \
-      { \
-        nb_free(Info.NAME.Strings[Index]); \
-      } \
-      nb_free(Info.NAME.Strings); \
-      nb_free(Info.NAME.Guids); \
-      Info.NAME.Strings = nullptr; } while(0)
+    do { for (size_t Index = 0; Index < Info.NAME.Count; ++Index) \
+    { \
+      nb_free(Info.NAME.Strings[Index]); \
+    } \
+    nb_free(Info.NAME.Strings); \
+    nb_free(Info.NAME.Guids); \
+    Info.NAME.Strings = nullptr; } while(0)
 
-      FREESTRINGARRAY(DiskMenu);
-      FREESTRINGARRAY(PluginMenu);
-      FREESTRINGARRAY(PluginConfig);
+    FREESTRINGARRAY(DiskMenu);
+    FREESTRINGARRAY(PluginMenu);
+    FREESTRINGARRAY(PluginConfig);
 
 #undef FREESTRINGARRAY
 
