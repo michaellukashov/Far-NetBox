@@ -365,7 +365,7 @@ public:
   void SetDoneCount(int32_t Value);
 };
 
-class TBootstrapQueueItem : public TQueueItem
+class TBootstrapQueueItem final : public TQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TBootstrapQueueItem); }

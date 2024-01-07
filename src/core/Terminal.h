@@ -912,7 +912,7 @@ public:
   TTerminal * GetTerminal(int32_t Index);
 };
 
-struct NB_CORE_EXPORT TCustomCommandParams : public TObject
+struct NB_CORE_EXPORT TCustomCommandParams final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomCommandParams); }
@@ -924,7 +924,7 @@ public:
   TCaptureOutputEvent OutputEvent;
 };
 
-struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
+struct NB_CORE_EXPORT TCalculateSizeStats final : public TObject
 {
   TCalculateSizeStats() noexcept;
 

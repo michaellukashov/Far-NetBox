@@ -12,7 +12,7 @@
 
 class TBackgroundTerminal;
 
-class TParallelTransferQueueItem : public TLocatedQueueItem
+class TParallelTransferQueueItem final : public TLocatedQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TParallelTransferQueueItem); }
