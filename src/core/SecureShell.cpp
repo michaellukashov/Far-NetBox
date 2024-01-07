@@ -2038,7 +2038,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
 void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
-  static const struct { int32_t Bit, Mask; const wchar_t * Desc; } EventTypes[] =
+  static constexpr struct { int32_t Bit, Mask; const wchar_t * Desc; } EventTypes[] =
   {
     { FD_WRITE_BIT, FD_WRITE, L"write" },
     { FD_OOB_BIT, FD_OOB, L"oob" },
