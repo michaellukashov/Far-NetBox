@@ -2113,7 +2113,7 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(int32_t Index)
 }
 
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
-  TQueueItem * QueueItem)
+  const TQueueItem * QueueItem)
 {
   for (int32_t Index = 0; Index < FList->GetCount(); ++Index)
   {

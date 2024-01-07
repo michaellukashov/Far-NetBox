@@ -325,7 +325,7 @@ public:
   TTerminalQueueStatus() noexcept;
   virtual ~TTerminalQueueStatus() noexcept override;
 
-  TQueueItemProxy * FindByQueueItem(TQueueItem * QueueItem);
+  TQueueItemProxy * FindByQueueItem(const TQueueItem * QueueItem);
 
   __property int32_t Count = { read = GetCount };
   __property int32_t DoneCount = { read = FDoneCount };
