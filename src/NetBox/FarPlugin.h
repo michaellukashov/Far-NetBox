@@ -83,7 +83,7 @@ struct TSynchroParams final : public TObject
 public:
   TSynchroParams() = default;
   TSynchroEvent SynchroEvent;
-  TFarMessageDialog * Sender{nullptr};
+  TFarDialog * Sender{nullptr};
 };
 
 enum NetBoxSystemSettings
@@ -110,6 +110,7 @@ class TCustomFarPlugin : public TObject
   friend class TWinSCPFileSystem;
   friend class TFarDialogItem;
   friend class TFarMessageDialog;
+  friend class TQueueDialog;
   friend class TFarPluginGuard;
   NB_DISABLE_COPY(TCustomFarPlugin)
 public:
