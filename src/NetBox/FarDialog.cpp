@@ -18,30 +18,30 @@ inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
 }
 
 const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
-class TDialogIdleThread : public TSimpleThread
+class TFarDialogIdleThread : public TSimpleThread
 {
-  TDialogIdleThread() = delete;
+  TFarDialogIdleThread() = delete;
 public:
-  explicit TDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, int64_t Millisecs) noexcept :
+  explicit TFarDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TDialogIdleThread),
     FDialog(Dialog),
     FMillisecs(Millisecs)
   {}
 
-  virtual ~TDialogIdleThread() noexcept override
+  virtual ~TFarDialogIdleThread() noexcept override
   {
+    WaitFor(1000);
     SAFE_CLOSE_HANDLE(FEvent);
-    TDialogIdleThread::Terminate();
-    WaitFor();
+    TFarDialogIdleThread::Terminate();
   }
 
   virtual void Execute() override
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
+      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
       {
-        if (FDialog && FDialog->GetHandle())
+        if (!IsFinished() && FDialog && FDialog->GetHandle())
           FDialog->Idle();
       }
     }
