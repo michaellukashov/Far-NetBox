@@ -969,10 +969,11 @@ UnicodeString ShellQuoteStr(const UnicodeString & Str)
 
 UnicodeString ExceptionLogString(Exception * E)
 {
+  DebugAssert(OBJECT_CLASS_ExtException != OBJECT_CLASS_Exception);
   DebugAssert(E);
   if (rtti::isa<Exception>(E))
   {
-    UnicodeString Msg = FORMAT("%s", E->Message);
+    UnicodeString Msg = E->Message; // FORMAT("%s", E->Message);
     if (rtti::isa<ExtException>(E))
     {
       const TStrings * MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
@@ -991,7 +992,7 @@ UnicodeString ExceptionLogString(Exception * E)
     ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, _countof(Buffer));
     return UnicodeString(Buffer);
 #else
-    return UnicodeString(E->what());
+    return UnicodeString(E->Message);
 #endif
   }
 }
