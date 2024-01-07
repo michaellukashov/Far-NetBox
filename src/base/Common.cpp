@@ -979,8 +979,8 @@ UnicodeString ExceptionLogString(Exception * E)
       const TStrings * MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
-        Msg += L"\n" +
-          ReplaceStr(MoreMessages->GetText(), L"\r", L"");
+        Msg += L"\n";
+        Msg += ReplaceStr(MoreMessages->GetText(), L"\r", L"");
       }
     }
     return Msg;

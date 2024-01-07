@@ -2095,12 +2095,12 @@ bool WriteAndFlush(FILE * file, void const * data, size_t size)
 
 bool FileExists(const UnicodeString & AFileName)
 {
-  return SysUtulsFileExists(AFileName);
+  return ::SysUtulsFileExists(AFileName);
 }
 
 bool FileRemove(const UnicodeString & AFileName)
 {
-  return SysUtulsRemoveFile(AFileName);
+  return ::SysUtulsRemoveFile(AFileName);
 }
 
 bool DoExists(bool R, const UnicodeString & Path)

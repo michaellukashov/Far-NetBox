@@ -23,7 +23,7 @@ class TEncryption;
 
 class NB_CORE_EXPORT TSFTPFileSystem final : public TCustomFileSystem
 {
-  NB_DISABLE_COPY(TSFTPFileSystem)
+NB_DISABLE_COPY(TSFTPFileSystem)
 friend class TSFTPPacket;
 friend class TSFTPQueue;
 friend class TSFTPAsynchronousQueue;
