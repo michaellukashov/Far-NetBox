@@ -2259,6 +2259,7 @@ TTransferQueueItem::~TTransferQueueItem() noexcept
 
 int32_t TTransferQueueItem::DefaultCPSLimit() const
 {
+  Expects(FCopyParam);
   return FCopyParam->GetCPSLimit();
 }
 
@@ -2462,7 +2463,7 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 
 static void ExtractRemoteSourcePath(TTerminal * Terminal, const TStrings * Files, UnicodeString & Path)
 {
-  if (!base::UnixExtractCommonPath(Files, Path))
+  if (Terminal && !base::UnixExtractCommonPath(Files, Path))
   {
     Path = Terminal->CurrentDirectory;
   }
