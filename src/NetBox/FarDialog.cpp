@@ -73,27 +73,8 @@ private:
 TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   TObject(OBJECT_CLASS_TFarDialog),
   FFarPlugin(AFarPlugin),
-  FBounds(-1, -1, 40, 10),
-  FFlags(0),
-  FHelpTopic(),
-  FVisible(false),
   FItems(std::make_unique<TObjectList>()),
-  FContainers(std::make_unique<TObjectList>()),
-  FHandle(nullptr),
-  FDefaultButton(nullptr),
-  FBorderBox(nullptr),
-  FNextItemPosition(ipNewLine),
-  FDefaultGroup(0),
-  FTag(0),
-  FItemFocused(nullptr),
-  FOnKey(nullptr),
-  FDialogItems(nullptr),
-  FDialogItemsCapacity(0),
-  FChangesLocked(0),
-  FChangesPending(false),
-  FResult(-1),
-  FNeedsSynchronize(false),
-  FSynchronizeMethod(nullptr)
+  FContainers(std::make_unique<TObjectList>())
 {
 }
 
