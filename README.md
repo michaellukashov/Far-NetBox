@@ -4,15 +4,18 @@ NetBox: SFTP/FTP/SCP/WebDAV/S3 client for Far Manager 3.0 x86/x64/ARM64
 [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)
 
 
-Based on [WinSCP](http://winscp.net/eng/index.php) version 6.2.2 Copyright (c) 2000-2024 Martin Prikryl
-Based on [WinSCP as FAR Plugin: SFTP/FTP/SCP client for FAR version 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl
-SSH and SCP code based on PuTTY 0.80 Copyright (c) 1997-2023 Simon Tatham
-FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse
+Based on [WinSCP](http://winscp.net/eng/index.php) version 6.2.2 Copyright (c) 2000-2024 Martin Prikryl  
+
+Based on [WinSCP as FAR Plugin: SFTP/FTP/SCP client for FAR version 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl  
+
+SSH and SCP code based on PuTTY 0.80 Copyright (c) 1997-2023 Simon Tatham  
+
+FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
 
 How to build from source
 ========================
 
-To build plugin from source, you will need:
+To build plugin from source, you will need:  
 
   * Visual Studio 2022 build tools
   * Cmake 3.15
@@ -52,5 +55,6 @@ Links
 License
 ========================
 
-NetBox is [free](http://www.gnu.org/philosophy/free-sw.html) software: you can use it, redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+NetBox is [free](http://www.gnu.org/philosophy/free-sw.html) software: you can use it, redistribute it and/or modify it under the terms of the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.  
+
 NetBox is distributed in the hope that it will be useful, but without any warranty; without even the implied warranty of merchantability or fitness for a particular purpose. See the [GNU General Public License](http://www.gnu.org/licenses/gpl.html) for more details.

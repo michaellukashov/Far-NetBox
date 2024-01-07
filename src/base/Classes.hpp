@@ -371,6 +371,7 @@ enum TDuplicatesEnum
 
 class TStream;
 
+
 class NB_CORE_EXPORT TStrings : public TObjectList
 {
 public:

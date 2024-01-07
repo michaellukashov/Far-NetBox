@@ -1062,7 +1062,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCaption(FileDescription);
   Text->SetCenterGroup(true);
 
-  const UnicodeString PluginDescriptionText = GetMsg(NB_StringPluginDescriptionText); //"SFTP/FTP/SCP/WebDAV/S3 client for Far";
+  const UnicodeString PluginDescriptionText = GetMsg(NB_StringPluginDescriptionText);
   Text = new TFarText(this);
   Text->SetCaption(PluginDescriptionText);
   Text->SetCenterGroup(true);

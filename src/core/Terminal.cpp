@@ -37,7 +37,6 @@
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL this
 
-
 class TLoopDetector : public TObject
 {
 public:

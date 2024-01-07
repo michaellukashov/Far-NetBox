@@ -45,6 +45,7 @@
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
+
 #define StrFromACP(S) UnicodeString(S, NBChTraitsCRT<char>::GetBaseTypeLength(S), CP_ACP)
 #define StrFromS3(S) StrFromNeon(S)
 #define StrToS3(S) StrToNeon(S)
