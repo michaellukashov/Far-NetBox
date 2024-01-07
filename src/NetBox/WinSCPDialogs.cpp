@@ -1057,11 +1057,15 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
-  TFarText * Text = new TFarText(this);
+  TFarText * Text;
+  Text = new TFarText(this);
   Text->SetCaption(FileDescription);
   Text->SetCenterGroup(true);
 
-
+  const UnicodeString PluginDescriptionText = GetMsg(NB_StringPluginDescriptionText);
+  Text = new TFarText(this);
+  Text->SetCaption(PluginDescriptionText);
+  Text->SetCenterGroup(true);
   Text = new TFarText(this);
   UnicodeString VersionStr = GetConfiguration()->GetProductVersion();
   if (VersionStr.IsEmpty())
