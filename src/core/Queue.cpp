@@ -1973,9 +1973,7 @@ bool TQueueItemProxy::SetCPSLimit(int32_t CPSLimit)
 
 int32_t TQueueItemProxy::GetIndex() const
 {
-  DebugAssert(FQueueStatus != nullptr);
-  const int32_t Index = FQueueStatus ? FQueueStatus->FList->IndexOf(this) : 0;
-  DebugAssert(Index >= 0);
+  const int32_t Index = FQueueStatus ? FQueueStatus->FList->IndexOf(this) : -1;
   return Index;
 }
 
