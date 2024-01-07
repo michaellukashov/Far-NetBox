@@ -787,7 +787,7 @@
 
 //About menu
 "NetBox - О плагине"
-"FTP/FTPS/SFTP/WebDAV клиент для Far 2.0"
+"SFTP/FTP/SCP/WebDAV/S3 клиент для Far 3"
 "Версия %s"
 "Закрыть"
 
@@ -1273,7 +1273,7 @@
 "WinSCP"
 "6.2.2"
 "1.6.2"
-"Based on WinSCPFar: SFTP/FTP/SCP client for Far"
+"Based on WinSCPFar: SFTP/FTP/SCP client for Far 1"
 " Version %s"
 "Copyright © 2000-2024 Martin Prikryl"
 

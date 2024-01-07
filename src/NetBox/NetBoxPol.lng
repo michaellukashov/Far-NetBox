@@ -787,7 +787,7 @@
 
 //About menu
 "NetBox - O wtyczce"
-"Klient FTP/FTPS/SFTP/WebDAV dla Far 2.0"
+"Klient SFTP/FTP/SCP/WebDAV/S3 dla Far 3"
 "Wersja %s"
 "Zamknij"
 
@@ -1273,7 +1273,7 @@
 "WinSCP"
 "6.2.2"
 "1.6.2"
-"Bazuje na WinSCPFar: SFTP/FTP/SCP klient dla Far"
+"Bazuje na WinSCPFar: SFTP/FTP/SCP klient dla Far 1"
 " Wersja %s"
 "Copyright © 2000-2024 Martin Prikryl"
 
