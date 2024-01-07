@@ -8441,8 +8441,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 
 void TQueueDialog::OnIdle(TObject *, void *)
 {
-  // DEBUG_PRINTF("FarPlugin->GetFarThreadId: %d", FarPlugin->GetFarThreadId());
-  // DEBUG_PRINTF("GetCurrentThreadId: %d", GetCurrentThreadId());
+  // DEBUG_PRINTF("FarThreadId: %d, GetCurrentThreadId: %d", FarPlugin->GetFarThreadId(), GetCurrentThreadId());
   if (UpdateQueue())
   {
     LoadQueue();
@@ -8452,7 +8451,6 @@ void TQueueDialog::OnIdle(TObject *, void *)
   {
     RefreshQueue();
   }
-  DEBUG_PRINTF("GetHandle2: %p", GetHandle());
 }
 
 bool TQueueDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
