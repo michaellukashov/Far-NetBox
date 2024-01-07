@@ -1083,8 +1083,8 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Text = new TFarText(this);
     Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_PRODUCT_VERSION),
-        ProductName,
-        LoadStr(WINSCP_VERSION)));
+      ProductName,
+      LoadStr(WINSCP_VERSION)));
     Text->SetCenterGroup(true);
   }
 
