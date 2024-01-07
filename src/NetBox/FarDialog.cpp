@@ -769,12 +769,12 @@ int32_t TFarDialog::ShowModal()
       TFarEnvGuard Guard; nb::used(Guard);
       const TRect Bounds = GetBounds();
       Handle = Info.DialogInit(
-          &NetBoxPluginGuid, GetDialogGuid(),
-          Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-          HelpTopic.c_str(), FDialogItems,
-          GetItemCount(), 0, GetFlags(),
-          DialogProcGeneral,
-          nb::ToPtr(this));
+        &NetBoxPluginGuid, GetDialogGuid(),
+        Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
+        HelpTopic.c_str(), FDialogItems,
+        GetItemCount(), 0, GetFlags(),
+        TFarDialog::DialogProcGeneral,
+        nb::ToPtr(this));
       BResult = Info.DialogRun(Handle);
     }
 
