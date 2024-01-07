@@ -45,7 +45,7 @@ public:
     {
       if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
       {
-        if (FPlugin && FPlugin->GetPluginHandle())
+        if (!IsFinished() && FPlugin && FPlugin->GetPluginHandle())
           FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
       }
     }
@@ -1928,7 +1928,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 void TCustomFarPlugin::Initialize()
 {
 //  ::SetGlobals(new TGlobalFunctions());
-  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 500);
+  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 1000);
   FTIdleThread->InitIdleThread();
 }
 
