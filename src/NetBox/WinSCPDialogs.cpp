@@ -8390,13 +8390,11 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
 
 TQueueDialog::~TQueueDialog()
 {
-  DEBUG_PRINTF("GetHandle1: %p", GetHandle());
   if (GetFarPlugin())
   {
     TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
     SynchroParams.Sender = nullptr;
   }
-  DEBUG_PRINTF("GetHandle2: %p", GetHandle());
 }
 
 void TQueueDialog::OperationButtonClick(TFarButton * Sender,
@@ -8443,9 +8441,8 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
 
 void TQueueDialog::OnIdle(TObject *, void *)
 {
-  DEBUG_PRINTF("GetHandle1: %p", GetHandle());
-  DEBUG_PRINTF("FarPlugin->GetFarThreadId: %d", FarPlugin->GetFarThreadId());
-  DEBUG_PRINTF("GetCurrentThreadId: %d", GetCurrentThreadId());
+  // DEBUG_PRINTF("FarPlugin->GetFarThreadId: %d", FarPlugin->GetFarThreadId());
+  // DEBUG_PRINTF("GetCurrentThreadId: %d", GetCurrentThreadId());
   if (UpdateQueue())
   {
     LoadQueue();
@@ -8510,8 +8507,6 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
 
 void TQueueDialog::UpdateControls()
 {
-  DEBUG_PRINTF("GetHandle1: %p", GetHandle());
-
   const TQueueItemProxy * QueueItem = nullptr;
   if (GetQueueItems()->GetSelected() >= 0)
   {
@@ -8519,7 +8514,6 @@ void TQueueDialog::UpdateControls()
       GetQueueItems()->Get(GetQueueItems()->GetSelected()));
   }
 
-  DEBUG_PRINTF("GetHandle2: %p", GetHandle());
   if ((QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
   {
     ExecuteButton->SetCaption(GetMsg(NB_QUEUE_PAUSE));
@@ -8549,7 +8543,6 @@ void TQueueDialog::UpdateControls()
   MoveDownButton->SetEnabled((QueueItem != nullptr) &&
     (QueueItem->GetStatus() == TQueueItem::qsPending) &&
     (QueueItem->GetIndex() < FStatus->GetCount() - 1));
-  DEBUG_PRINTF("GetHandle3: %p", GetHandle());
 }
 
 void TQueueDialog::Idle()
@@ -8565,8 +8558,6 @@ void TQueueDialog::Idle()
     SynchroParams.Sender = this;
     GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &SynchroParams);
   }
-
-  // DEBUG_PRINTF("TQueueDialog::Idle 2");
 }
 
 bool TQueueDialog::CloseQuery()
@@ -8607,8 +8598,6 @@ void TQueueDialog::Change()
 
 void TQueueDialog::RefreshQueue()
 {
-  DEBUG_PRINTF("GetHandle1: %p", GetHandle());
-
   if (GetQueueItems()->GetCount() > 0)
   {
     bool Change = false;
@@ -8625,7 +8614,7 @@ void TQueueDialog::RefreshQueue()
 
     const TQueueItemProxy * PrevQueueItem = nullptr;
     UnicodeString Line;
-    DEBUG_PRINTF("GetHandle2: %p", GetHandle());
+
     while ((Index < GetQueueItems()->GetCount()) &&
       (Index < TopIndex + QueueListBox->GetHeight()))
     {
@@ -8653,14 +8642,11 @@ void TQueueDialog::RefreshQueue()
       ++ILine;
     }
 
-    DEBUG_PRINTF("GetHandle3: %p", GetHandle());
     if (Change)
     {
       Redraw();
     }
-    DEBUG_PRINTF("GetHandle4: %p", GetHandle());
   }
-  DEBUG_PRINTF("GetHandle5: %p", GetHandle());
 }
 
 void TQueueDialog::LoadQueue()

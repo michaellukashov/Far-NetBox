@@ -99,8 +99,6 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
 
 TFarDialog::~TFarDialog() noexcept
 {
-  DEBUG_PRINTF("TFarDialog::~TFarDialog: 1");
-
   FTIdleThread->Terminate();
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
@@ -115,7 +113,6 @@ TFarDialog::~TFarDialog() noexcept
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
   FHandle = nullptr;
-  DEBUG_PRINTF("TFarDialog::~TFarDialog: 2");
 }
 
 void TFarDialog::InitDialog()
