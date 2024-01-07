@@ -13,8 +13,6 @@
 #include "FarConfiguration.h"
 #include "XmlStorage.h"
 
-const TObjectClassId OBJECT_CLASS_TWinSCPPlugin = static_cast<TObjectClassId>(nb::counter_id());
-
 TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst)
 {
   TCustomFarPlugin * Result = new TWinSCPPlugin(HInst);
@@ -595,7 +593,6 @@ void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
   }
 }
 
-const TObjectClassId OBJECT_CLASS_TFarMessageData = static_cast<TObjectClassId>(nb::counter_id());
 struct TFarMessageData final : public TObject
 {
   NB_DISABLE_COPY(TFarMessageData)

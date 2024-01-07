@@ -10,7 +10,6 @@ class TBookmarkList;
 // DefaultCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav,s3");
 constexpr const wchar_t * DefaultCommandPrefixes = L"netbox,ftp,scp,sftp,ftps,webdav,s3";
 
-extern const TObjectClassId OBJECT_CLASS_TFarConfiguration;
 class TFarConfiguration : public TGUIConfiguration
 {
   NB_DISABLE_COPY(TFarConfiguration)

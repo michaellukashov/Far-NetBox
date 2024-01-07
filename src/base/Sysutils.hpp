@@ -74,15 +74,6 @@ constexpr const TDayTable MonthDays[] = {
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
-extern const TObjectClassId OBJECT_CLASS_Exception;
-extern const TObjectClassId OBJECT_CLASS_EAbort;
-extern const TObjectClassId OBJECT_CLASS_EAccessViolation;
-extern const TObjectClassId OBJECT_CLASS_EFileNotFoundError;
-extern const TObjectClassId OBJECT_CLASS_EOSError;
-extern const TObjectClassId OBJECT_CLASS_EInvalidOperation;
-extern const TObjectClassId OBJECT_CLASS_EConvertError;
-extern const TObjectClassId OBJECT_CLASS_EDirectoryNotFoundException;
-
 class NB_CORE_EXPORT Exception : public std::runtime_error
 {
   CUSTOM_MEM_ALLOCATION_IMPL

@@ -76,7 +76,6 @@ class TSessionLog;
 class TFTPFileSystem;
 class TSTSFTPFileSystemFTPFileSystem;
 
-extern const TObjectClassId OBJECT_CLASS_TConfiguration;
 class NB_CORE_EXPORT TConfiguration : public TObject
 {
   NB_DISABLE_COPY(TConfiguration)

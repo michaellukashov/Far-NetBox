@@ -30,7 +30,6 @@ constexpr const int32_t dfForceDelete = 0x04;
 
 enum TOverwriteMode { omOverwrite, omAppend, omResume, omComplete };
 
-extern const TObjectClassId OBJECT_CLASS_TSinkFileParams;
 struct NB_CORE_EXPORT TSinkFileParams : public TObject
 {
 public:
@@ -46,7 +45,6 @@ public:
   uint32_t Flags{0};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TFileTransferData;
 struct NB_CORE_EXPORT TFileTransferData : public TObject
 {
   NB_DISABLE_COPY(TFileTransferData)
@@ -63,7 +61,6 @@ public:
   bool AutoResume{false};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TOverwriteFileParams;
 struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
 {
 public:
@@ -87,7 +84,6 @@ public:
   TModificationFmt DestPrecision{mfFull};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TOpenRemoteFileParams;
 struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
 {
   NB_DISABLE_COPY(TOpenRemoteFileParams)
@@ -139,7 +135,6 @@ public:
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) = 0;
 };
 
-extern const TObjectClassId OBJECT_CLASS_TCustomFileSystem;
 class NB_CORE_EXPORT TCustomFileSystem : public TObject, public TFileSystemIntf
 {
   NB_DISABLE_COPY(TCustomFileSystem)

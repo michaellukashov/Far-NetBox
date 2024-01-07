@@ -92,7 +92,6 @@ private:
   mutable TIDMap FIDMap;
 };
 
-extern const TObjectClassId OBJECT_CLASS_TRemoteFile;
 class NB_CORE_EXPORT TRemoteFile : public TPersistent
 {
   NB_DISABLE_COPY(TRemoteFile)
@@ -265,7 +264,6 @@ private:
   void Init();
 };
 
-extern const TObjectClassId OBJECT_CLASS_TRemoteDirectoryFile;
 class NB_CORE_EXPORT TRemoteDirectoryFile : public TRemoteFile
 {
 public:
@@ -278,7 +276,6 @@ public:
   void Init();
 };
 
-extern const TObjectClassId OBJECT_CLASS_TRemoteParentDirectory;
 class NB_CORE_EXPORT TRemoteParentDirectory final : public TRemoteDirectoryFile
 {
 public:
@@ -290,7 +287,6 @@ public:
   virtual ~TRemoteParentDirectory() noexcept override = default;
 };
 
-extern const TObjectClassId OBJECT_CLASS_TRemoteFileList;
 class NB_CORE_EXPORT TRemoteFileList : public TObjectList
 {
   friend class TSCPFileSystem;
@@ -345,7 +341,6 @@ public:
   TDateTime GetTimestamp() const { return FTimestamp; }
 };
 
-extern const TObjectClassId OBJECT_CLASS_TRemoteDirectory;
 class NB_CORE_EXPORT TRemoteDirectory final : public TRemoteFileList
 {
   friend class TSCPFileSystem;
@@ -591,7 +586,6 @@ public:
 
 enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20 };
 // typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
-extern const TObjectClassId OBJECT_CLASS_TRemoteProperties;
 class TRemoteProperties final : public TObject
 {
 public:
@@ -628,7 +622,6 @@ enum TChecklistAction { //renamed from enum TSynchronizeChecklist::TAction
   saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
 
 class TSynchronizeChecklist;
-extern const TObjectClassId OBJECT_CLASS_TChecklistItem;
 class NB_CORE_EXPORT TChecklistItem final : public TObject
 {
   friend class TTerminal;

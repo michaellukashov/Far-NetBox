@@ -10,8 +10,6 @@
 #include "CoreMain.h"
 #include <plugin.hpp>
 
-const TObjectClassId OBJECT_CLASS_TFarConfiguration = static_cast<TObjectClassId>(nb::counter_id());
-
 enum NetBoxConfirmationsSettings
 {
   NBCS_COPYOVERWRITE                  = 0x00000001,

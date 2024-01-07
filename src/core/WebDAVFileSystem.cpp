@@ -47,8 +47,6 @@
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem = static_cast<TObjectClassId>(nb::counter_id());
-
 constexpr const char * SESSION_CONTEXT_KEY = "sessioncontext";
 constexpr const char * CONST_WEBDAV_PROTOCOL_BASE_NAME = "WebDAV";
 constexpr const int32_t HttpUnauthorized = 401;

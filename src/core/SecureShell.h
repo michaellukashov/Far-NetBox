@@ -26,7 +26,6 @@ struct LogContext;
 struct ScpSeat;
 class TSFTPFileSystem;
 
-extern const TObjectClassId OBJECT_CLASS_TSecureShell;
 class TSecureShell : public TObject
 {
   friend class TPoolForDataEvent;

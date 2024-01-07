@@ -103,7 +103,6 @@ enum NetBoxSystemSettings
 class TGlobalFunctions;
 class TPluginIdleThread;
 
-extern const TObjectClassId OBJECT_CLASS_TCustomFarPlugin;
 class TCustomFarPlugin : public TObject
 {
   friend class TCustomFarFileSystem;
@@ -278,7 +277,6 @@ private:
   void CloseFileSystem(TCustomFarFileSystem * FileSystem);
 };
 
-extern const TObjectClassId OBJECT_CLASS_TCustomFarFileSystem;
 class TCustomFarFileSystem : public TObject
 {
   friend class TFarPanelInfo;
@@ -416,7 +414,6 @@ private:
   static void ClearKeyBarTitles(KeyBarTitles &Titles);
 };
 
-extern const TObjectClassId OBJECT_CLASS_TCustomFarPanelItem;
 class TCustomFarPanelItem : public TObject
 {
   friend class TCustomFarFileSystem;
@@ -438,7 +435,6 @@ protected:
   void FillPanelItem(struct PluginPanelItem * PanelItem);
 };
 
-extern const TObjectClassId OBJECT_CLASS_TFarPanelItem;
 class TFarPanelItem final : public TCustomFarPanelItem
 {
   NB_DISABLE_COPY(TFarPanelItem)
@@ -472,7 +468,6 @@ protected:
   virtual UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
-extern const TObjectClassId OBJECT_CLASS_THintPanelItem;
 class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
@@ -531,7 +526,6 @@ private:
   TCustomFarFileSystem * FOwner{nullptr};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TFarMenuItems;
 class TFarMenuItems : public TStringList
 {
 public:

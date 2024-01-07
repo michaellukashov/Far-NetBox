@@ -16,14 +16,6 @@
 #include "HelpCore.h"
 #include "Cryptography.h"
 
-const TObjectClassId OBJECT_CLASS_TRemoteFile = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TRemoteDirectoryFile = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TRemoteParentDirectory = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TRemoteFileList = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TRemoteDirectory = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TRemoteProperties = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TChecklistItem = static_cast<TObjectClassId>(nb::counter_id());
-
 #if 0
 // moved to Common.cpp
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */

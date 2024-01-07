@@ -21,8 +21,6 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TSFTPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
-
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
@@ -240,7 +238,6 @@ public:
   bool Loaded{false};
 };
 
-const TObjectClassId OBJECT_CLASS_TSFTPPacket = static_cast<TObjectClassId>(nb::counter_id());
 class TSFTPPacket : public TObject
 {
   TSFTPPacket() = delete;
@@ -1183,7 +1180,6 @@ private:
   }
 };
 
-const TObjectClassId OBJECT_CLASS_TSFTPQueuePacket = static_cast<TObjectClassId>(nb::counter_id());
 class TSFTPQueuePacket : public TSFTPPacket
 {
   NB_DISABLE_COPY(TSFTPQueuePacket)
@@ -1203,7 +1199,6 @@ public:
 
 uint32_t TSFTPPacket::FMessageCounter = 0;
 
-const TObjectClassId OBJECT_CLASS_TSFTPQueue = static_cast<TObjectClassId>(nb::counter_id());
 class TSFTPQueue : public TObject
 {
   NB_DISABLE_COPY(TSFTPQueue)

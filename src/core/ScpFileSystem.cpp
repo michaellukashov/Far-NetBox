@@ -20,8 +20,6 @@
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
 
-const TObjectClassId OBJECT_CLASS_TSCPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
-
 constexpr int32_t coRaiseExcept = 1;
 constexpr int32_t coExpectNoOutput = 2;
 constexpr int32_t coWaitForLastLine = 4;
@@ -38,7 +36,6 @@ constexpr int32_t ecNoEnsureLocation = 0x10;
 constexpr int32_t ecDefault = ecRaiseExcept;
 
 DERIVE_EXT_EXCEPTION(EScpFileSkipped, ESkipFile);
-const TObjectClassId OBJECT_CLASS_EScpFileSkipped = static_cast<TObjectClassId>(nb::counter_id());
 //===========================================================================
 constexpr TFSCommand MaxShellCommand = fsLang;
 constexpr int32_t ShellCommandCount = MaxShellCommand + 1;

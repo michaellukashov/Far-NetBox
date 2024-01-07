@@ -34,17 +34,8 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TTerminal = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TSecondaryTerminal = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TTerminalList = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TCustomCommandParams = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TCalculateSizeParams = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TMakeLocalFileListParams = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TCollectedFileList = static_cast<TObjectClassId>(nb::counter_id());
-
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL this
-
 
 class TLoopDetector : public TObject
 {
@@ -81,7 +72,6 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 }
 
 
-const TObjectClassId OBJECT_CLASS_TMoveFileParams = static_cast<TObjectClassId>(nb::counter_id());
 struct TMoveFileParams : public TObject
 {
 public:
@@ -94,7 +84,6 @@ public:
   bool DontOverwrite{false};
 };
 
-const TObjectClassId OBJECT_CLASS_TFilesFindParams = static_cast<TObjectClassId>(nb::counter_id());
 struct TFilesFindParams : public TObject
 {
 public:
@@ -162,7 +151,6 @@ TOverwriteFileParams::TOverwriteFileParams()
 #endif // if 0
 
 
-const TObjectClassId OBJECT_CLASS_TTunnelThread = static_cast<TObjectClassId>(nb::counter_id());
 class TTunnelThread : public TSimpleThread
 {
   NB_DISABLE_COPY(TTunnelThread)
@@ -228,8 +216,6 @@ void TTunnelThread::Execute()
   }
 }
 
-
-const TObjectClassId OBJECT_CLASS_TTunnelUI = static_cast<TObjectClassId>(nb::counter_id());
 class TTunnelUI : public TSessionUI
 {
   NB_DISABLE_COPY(TTunnelUI)
@@ -6131,7 +6117,6 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
   return Result;
 }
 
-const TObjectClassId OBJECT_CLASS_TSynchronizeFileData = static_cast<TObjectClassId>(nb::counter_id());
 struct TSynchronizeFileData final : public TObject
 {
 public:
@@ -6155,7 +6140,6 @@ public:
 };
 
 constexpr const int32_t sfFirstLevel = 0x01;
-const TObjectClassId OBJECT_CLASS_TSynchronizeData = static_cast<TObjectClassId>(nb::counter_id());
 struct TSynchronizeData : public TObject
 {
 public:
