@@ -387,8 +387,10 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocatedQueueItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocatedQueueItem) || TQueueItem::is(Kind); }
 protected:
-  explicit TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) noexcept;
+  TLocatedQueueItem() = delete;
+  explicit TLocatedQueueItem(TObjectClassId Kind, gsl::not_null<TTerminal *> Terminal) noexcept;
   TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept;
+  explicit TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept;
   virtual ~TLocatedQueueItem() override = default;
 
   virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;

@@ -2148,9 +2148,8 @@ bool TTerminalQueueStatus::UpdateFileList(TQueueItemProxy * ItemProxy, TQueueFil
 // TBootstrapQueueItem
 
 TBootstrapQueueItem::TBootstrapQueueItem() noexcept :
-  TQueueItem(OBJECT_CLASS_TBootstrapQueueItem)
+  TBootstrapQueueItem(OBJECT_CLASS_TBootstrapQueueItem)
 {
-  FInfo->SingleFile = true;
 }
 
 TBootstrapQueueItem::TBootstrapQueueItem(TObjectClassId Kind) noexcept :
@@ -2189,9 +2188,14 @@ TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, gsl::not_null<TTermina
 }
 
 TLocatedQueueItem::TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept :
-  TQueueItem(OBJECT_CLASS_TLocatedQueueItem)
+  TLocatedQueueItem(OBJECT_CLASS_TLocatedQueueItem, Source.FCurrentDir)
 {
-  FCurrentDir = Source.FCurrentDir;
+}
+
+TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept :
+  TQueueItem(Kind)
+{
+  FCurrentDir = ACurrentDir;
 }
 
 UnicodeString TLocatedQueueItem::GetStartupDirectory() const
