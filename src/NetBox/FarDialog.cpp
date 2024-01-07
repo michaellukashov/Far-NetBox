@@ -82,7 +82,9 @@ TFarDialog::~TFarDialog() noexcept
   FTIdleThread->Terminate();
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
-    GetItem(Index)->Detach();
+    TFarDialogItem * Item = GetItem(Index);
+    Item->Detach();
+    // TODO: SAFE_DESTROY(Item);
   }
 //  SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
