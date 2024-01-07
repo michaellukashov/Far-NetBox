@@ -18,7 +18,7 @@ TFileOperationStatistics::TFileOperationStatistics() noexcept
 
 TFileOperationProgressType::TPersistence::TPersistence() noexcept
 {
-  FStatistics = nullptr;
+  FStatistics.Clear();
   Clear(true, true);
 }
 
@@ -353,11 +353,11 @@ void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
 
 void TFileOperationProgressType::Succeeded(int32_t Count)
 {
-  if (false) // FPersistence.Statistics != nullptr)
+  if (FPersistence.Statistics != nullptr)
   {
     if (IsTransfer())
     {
-      int64_t Transferred = FTransferredSize - FSkippedSize;
+      const int64_t Transferred = FTransferredSize - FSkippedSize;
       if (Side() == osLocal)
       {
         FPersistence.Statistics->FilesUploaded += Count;
@@ -385,16 +385,16 @@ void TFileOperationProgressType::Succeeded(int32_t Count)
 
 void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool AFileInProgress)
 {
-  UnicodeString Name = AFileName;
+  UnicodeString FileName = AFileName;
   FFullFileName = AFileName;
   if (Side() == osRemote)
   {
     // historically set were passing filename-only for remote site operations,
     // now we need to collect a full paths, so we pass in full path,
     // but still want to have filename-only in FileName
-    Name = base::UnixExtractFileName(Name);
+    FileName = base::UnixExtractFileName(FileName);
   }
-  FFileName = Name;
+  FFileName = FileName;
   FFileInProgress = AFileInProgress;
   ClearTransfer();
   FFileStartTime = Now();

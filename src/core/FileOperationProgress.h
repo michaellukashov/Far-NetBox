@@ -23,10 +23,19 @@ using TFileOperationFinishedEvent = nb::FastDelegate6<void,
   const UnicodeString & /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/>;
 
-class TFileOperationStatistics : public TObject
+class TFileOperationStatistics final : public TObject
 {
 public:
   TFileOperationStatistics() noexcept;
+  void Clear()
+  {
+    FilesUploaded = 0;
+    FilesDownloaded = 0;
+    FilesDeletedLocal = 0;
+    FilesDeletedRemote = 0;
+    TotalUploaded = 0;
+    TotalDownloaded = 0;
+  }
 
   int32_t FilesUploaded{0};
   int32_t FilesDownloaded{0};
@@ -39,7 +48,7 @@ public:
 class NB_CORE_EXPORT TFileOperationProgressType final : public TObject
 {
 public:
-  class TPersistence : public TObject
+  class TPersistence final : public TObject
   {
   friend class TFileOperationProgressType;
   public:
@@ -47,7 +56,7 @@ public:
     TPersistence(const TPersistence &) = delete;
     TPersistence & operator =(const TPersistence &) = default;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
-    TFileOperationStatistics * Statistics{FStatistics};
+    TFileOperationStatistics * Statistics{&FStatistics};
 
   private:
     void Clear(bool Batch, bool Speed);
@@ -61,7 +70,7 @@ public:
     nb::vector_t<int64_t> TotalTransferredThen;
     TOperationSide Side{osCurrent};
     int64_t TotalTransferred{0};
-    TFileOperationStatistics * FStatistics{nullptr};
+    TFileOperationStatistics FStatistics;
   };
 
 private:
