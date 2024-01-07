@@ -1,5 +1,5 @@
-﻿message(STATUS "CMake version: ${CMAKE_VERSION}")
-cmake_minimum_required(VERSION 3.10)
+message(STATUS "CMake version: ${CMAKE_VERSION}")
+cmake_minimum_required(VERSION 3.15)
 
 project(NetBox)
 
@@ -2516,15 +2516,16 @@ endif(OPT_CREATE_PLUGIN_DIR)
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
 ucm_add_flags(CXX /EHsc)
-ucm_add_flags(CXX C CONFIG Debug)
-ucm_add_flags(CXX C /Gy CONFIG Release)
 #/Ob2 /GR
-ucm_add_flags(CXX C /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
+ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 #/O1 release min size
 #/O2 release
 #/Oy - omit frame pointers
 #/Oi - enable intrinsic functions
+#/RTC1 - Run-time error checks
 ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
+ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG Debug)
+ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG RelWithDebugInfo)
 #-Ob1
 # static runtime settings
 #ucm_add_flags(CXX C /MT CONFIG Release)
@@ -2532,7 +2533,7 @@ ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 # linker settings
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /RTC1 CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} CONFIG Debug)
 ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG Debug)
 ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG RelWithDebugInfo)
 #ucm_print_flags()
