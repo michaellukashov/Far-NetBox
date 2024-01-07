@@ -51,7 +51,6 @@ public:
 
   virtual void Terminate() override
   {
-    // TCompThread::Terminate();
     FFinished = true;
     if (FEvent)
       ::SetEvent(FEvent);
@@ -73,36 +72,9 @@ private:
 TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   TObject(OBJECT_CLASS_TFarDialog),
   FFarPlugin(AFarPlugin),
-  FBounds(-1, -1, 40, 10),
-  FFlags(0),
-  FHelpTopic(),
-  FVisible(false),
   FItems(std::make_unique<TObjectList>()),
-  FContainers(std::make_unique<TObjectList>()),
-  FHandle(nullptr),
-  FDefaultButton(nullptr),
-  FBorderBox(nullptr),
-  FNextItemPosition(ipNewLine),
-  FDefaultGroup(0),
-  FTag(0),
-  FItemFocused(nullptr),
-  FOnKey(nullptr),
-  FDialogItems(nullptr),
-  FDialogItemsCapacity(0),
-  FChangesLocked(0),
-  FChangesPending(false),
-  FResult(-1),
-  FNeedsSynchronize(false),
-  FSynchronizeMethod(nullptr)
+  FContainers(std::make_unique<TObjectList>())
 {
-  FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
-  FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
-
-  FBorderBox = new TFarBox(this);
-  FBorderBox->SetBounds(TRect(3, 1, -4, -2));
-  FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TDialogIdleThread>(this, 500);
-  FTIdleThread->InitIdleThread();
 }
 
 TFarDialog::~TFarDialog() noexcept
@@ -118,6 +90,16 @@ TFarDialog::~TFarDialog() noexcept
 //  SAFE_DESTROY(FContainers);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
+void TFarDialog::InitDialog()
+{
+  FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
+  FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
+
+  FBorderBox = new TFarBox(this);
+  FBorderBox->SetBounds(TRect(3, 1, -4, -2));
+  FBorderBox->SetDouble(true);
+  FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 1000);
+  FTIdleThread->InitIdleThread();
 }
 
 void TFarDialog::SetBounds(const TRect & Value)

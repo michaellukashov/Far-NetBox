@@ -49,6 +49,7 @@ TWinSCPDialog::TWinSCPDialog(TCustomFarPlugin * AFarPlugin) :
   OkButton(nullptr),
   CancelButton(nullptr)
 {
+  TFarDialog::InitDialog();
 }
 
 void TWinSCPDialog::AddStandardButtons(int32_t Shift, bool ButtonsOnly)
@@ -1029,6 +1030,7 @@ UnicodeString ReplaceCopyright(const UnicodeString & S)
 TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarDialog(AFarPlugin)
 {
+  TFarDialog::InitDialog();
   // UnicodeString ProductName = GetConfiguration()->GetFileInfoString("ProductName");
   const UnicodeString ProductName = LoadStr(WINSCPFAR_NAME);
   const UnicodeString Comments = GetConfiguration()->GetFileInfoString("Comments");
@@ -1228,6 +1230,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   TFarDialog(AFarPlugin),
   FEdits(std::make_unique<TList>())
 {
+  TFarDialog::InitDialog();
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
       (Kind == pkKeybInteractive)) &&
@@ -4709,6 +4712,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   RecursiveCheck(nullptr),
   OkButton(nullptr)
 {
+  TFarDialog::InitDialog();
   DebugAssert(AFileList->GetCount() > 0);
   const TRemoteFile * OnlyFile = AFileList->GetAs<TRemoteFile>(0);
   DebugUsedParam(OnlyFile);
@@ -5508,6 +5512,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   FCopyParamAttrs(CopyParamAttrs),
   FToRemote(ToRemote)
 {
+  TFarDialog::InitDialog();
   DebugAssert(FFileList);
   constexpr int32_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
@@ -8329,6 +8334,7 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
   FFileSystem(AFileSystem),
   FClosingPlugin(ClosingPlugin)
 {
+  TFarDialog::InitDialog();
   SetSize(TPoint(80, 23)); // TODO: check actual configuration
   // TRect CRect = GetClientRect();
   const int32_t ListHeight = GetClientSize().y - 4;

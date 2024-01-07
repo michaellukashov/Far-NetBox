@@ -45,6 +45,7 @@ public:
 public:
   explicit TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept;
   virtual ~TFarDialog() noexcept override;
+  void InitDialog();
 
   int32_t ShowModal();
   void ShowGroup(int32_t Group, bool Show);
