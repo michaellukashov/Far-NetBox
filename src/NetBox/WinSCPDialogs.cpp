@@ -1037,7 +1037,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   const UnicodeString LegalCopyright = GetConfiguration()->GetFileInfoString("LegalCopyright");
   const UnicodeString FileDescription = GetConfiguration()->GetFileInfoString("FileDescription");
 
-  int32_t Height = 15;
+  int32_t Height = 16;
 #ifndef NO_FILEZILLA
   Height += 2;
 #endif
@@ -1053,12 +1053,18 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Height++;
   }
-  SetSize(TPoint(55, Height));
+  SetSize(TPoint(60, Height));
 
   SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
-  TFarText * Text = new TFarText(this);
+  TFarText * Text;
+  Text = new TFarText(this);
   Text->SetCaption(FileDescription);
+  Text->SetCenterGroup(true);
+
+  const UnicodeString PluginDescriptionText = GetMsg(NB_StringPluginDescriptionText); //"SFTP/FTP/SCP/WebDAV/S3 client for Far";
+  Text = new TFarText(this);
+  Text->SetCaption(PluginDescriptionText);
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
