@@ -1273,7 +1273,7 @@
 "WinSCP"
 "6.2.2"
 "1.6.2"
-"Based on WinSCP: SFTP/FTP/SCP client for FAR"
+"Based on WinSCPFar: SFTP/FTP/SCP client for Far"
 " Version %s"
 "Copyright © 2000-2024 Martin Prikryl"
 
