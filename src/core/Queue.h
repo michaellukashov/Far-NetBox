@@ -17,7 +17,7 @@ public:
   void InitSimpleThread();
 
   virtual void Start();
-  void WaitFor(uint32_t Milliseconds = INFINITE) const;
+  void WaitFor(DWORD Milliseconds = INFINITE) const;
   virtual void Terminate() = 0;
   virtual void Close();
   bool IsFinished() const { return FFinished; }
@@ -55,7 +55,7 @@ protected:
   void InitSignalThread(bool LowPriority, HANDLE Event = nullptr);
 
   virtual bool WaitForEvent();
-  uint32_t WaitForEvent(uint32_t Timeout) const;
+  int32_t WaitForEvent(DWORD Timeout) const;
   virtual void Execute() override;
   virtual void ProcessEvent() = 0;
 };

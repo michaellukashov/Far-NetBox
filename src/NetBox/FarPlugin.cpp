@@ -26,7 +26,7 @@ class TPluginIdleThread : public TSimpleThread
 {
   TPluginIdleThread() = delete;
 public:
-  explicit TPluginIdleThread(gsl::not_null<TCustomFarPlugin *> Plugin, int16_t Millisecs) noexcept :
+  explicit TPluginIdleThread(gsl::not_null<TCustomFarPlugin *> Plugin, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TPluginIdleThread),
     FPlugin(Plugin),
     FMillisecs(Millisecs)
@@ -43,7 +43,7 @@ public:
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
+      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
       {
         if (FPlugin && FPlugin->GetPluginHandle())
           FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
@@ -71,7 +71,7 @@ public:
 private:
   gsl::not_null<TCustomFarPlugin *> FPlugin;
   HANDLE FEvent{INVALID_HANDLE_VALUE};
-  int16_t FMillisecs{0};
+  DWORD FMillisecs{0};
 };
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :

@@ -60,13 +60,13 @@ public:
   void InitIdleThread()
   {
     TSimpleThread::InitSimpleThread();
-    FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+    FEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
     Start();
   }
 
 private:
   gsl::not_null<TFarDialog *> FDialog;
-  int64_t FMillisecs{0};
+  DWORD FMillisecs{0};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
 

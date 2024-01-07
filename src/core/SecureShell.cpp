@@ -2099,7 +2099,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
     {
       uint32_t Timeout = MSec;
 
-      uint32_t WaitResult;
+      DWORD WaitResult;
       do
       {
         CheckConnection();
