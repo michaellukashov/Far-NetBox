@@ -296,6 +296,7 @@ public:
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
   // void SetMasks(const UnicodeString & Value);
+  TQueueItemProxy * Clone() { return new TQueueItemProxy(FQueue, FQueueItem); }
 
 private:
   std::unique_ptr<TFileOperationProgressType> FProgressData;
