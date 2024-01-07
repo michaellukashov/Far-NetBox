@@ -124,7 +124,7 @@ protected:
   void ShowItem(TFarDialogItem * Item, void * Arg);
   void EnableItem(TFarDialogItem * Item, void * Arg);
   bool ChangesLocked() const;
-  TFarDialogItem * ItemAt(int32_t X, int32_t Y);
+  TFarDialogItem * ItemAt(int32_t X, int32_t Y) const;
 
   static intptr_t WINAPI DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2);
 

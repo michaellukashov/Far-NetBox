@@ -704,7 +704,7 @@ bool TFarDialog::HotKey(uint32_t Key, uint32_t ControlState) const
   return Result;
 }
 
-TFarDialogItem * TFarDialog::ItemAt(int32_t X, int32_t Y)
+TFarDialogItem * TFarDialog::ItemAt(int32_t X, int32_t Y) const
 {
   TFarDialogItem * Result = nullptr;
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
@@ -792,7 +792,7 @@ int32_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
+      const TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
       DebugAssert(Button);
       // correct result should be already set by TFarButton
       DebugAssert(FResult == Button->GetResult());
