@@ -2533,6 +2533,7 @@ void TFarListBox::UpdateMouseReaction()
 void TFarListBox::SetItems(TStrings * Value)
 {
   FList->Assign(Value);
+  FList->SetOwnsObjects(true);
 }
 
 void TFarListBox::SetList(TFarList * Value)
