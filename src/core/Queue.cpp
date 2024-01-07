@@ -371,8 +371,7 @@ void TSimpleThread::WaitFor(DWORD Milliseconds) const
 // TSignalThread
 
 TSignalThread::TSignalThread(TObjectClassId Kind) noexcept :
-  TSimpleThread(Kind),
-  FTerminated(true)
+  TSimpleThread(Kind)
 {
 }
 
