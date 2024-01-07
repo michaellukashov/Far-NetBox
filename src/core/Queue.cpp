@@ -21,7 +21,7 @@ public:
   explicit TParallelTransferQueueItem(const TLocatedQueueItem * ParentItem, TParallelOperation * ParallelOperation) noexcept;
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal) override;
+  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;
 
 private:
   TParallelOperation * FParallelOperation{nullptr};
@@ -1800,7 +1800,7 @@ bool TQueueItem::UpdateFileList(TQueueFileList *)
   return false;
 }
 
-void TQueueItem::Execute(TTerminalItem * TerminalItem)
+void TQueueItem::Execute(gsl::not_null<TTerminalItem *> TerminalItem)
 {
   {
     DebugAssert(FProgressData == nullptr);
@@ -2164,7 +2164,7 @@ TBootstrapQueueItem::~TBootstrapQueueItem()
   TBootstrapQueueItem::Complete();
 }
 
-void TBootstrapQueueItem::DoExecute(TTerminal * DebugUsedArg(Terminal))
+void TBootstrapQueueItem::DoExecute(gsl::not_null<TTerminal *> DebugUsedArg)
 {
   // noop
 }
@@ -2183,11 +2183,9 @@ bool TBootstrapQueueItem::Complete()
 
 // TLocatedQueueItem
 
-TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, TTerminal * Terminal) noexcept :
-  TQueueItem(Kind)
+TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, gsl::not_null<TTerminal *> Terminal) noexcept :
+  TLocatedQueueItem(Kind, Terminal->RemoteGetCurrentDirectory())
 {
-  DebugAssert(Terminal != nullptr);
-  FCurrentDir = Terminal->RemoteGetCurrentDirectory();
 }
 
 TLocatedQueueItem::TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept :
@@ -2201,7 +2199,7 @@ UnicodeString TLocatedQueueItem::GetStartupDirectory() const
   return FCurrentDir;
 }
 
-void TLocatedQueueItem::DoExecute(TTerminal * Terminal)
+void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 {
   DebugAssert(Terminal != nullptr);
   if (Terminal)
@@ -2262,7 +2260,7 @@ int32_t TTransferQueueItem::DefaultCPSLimit() const
   return FCopyParam->GetCPSLimit();
 }
 
-void TTransferQueueItem::DoExecute(TTerminal * ATerminal)
+void TTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
 {
   TLocatedQueueItem::DoExecute(ATerminal);
 
@@ -2394,7 +2392,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   FInfo->ModifiedRemote = base::UnixIncludeTrailingBackslash(TargetDir);
 }
 
-void TUploadQueueItem::DoTransferExecute(TTerminal * Terminal, TParallelOperation * ParallelOperation)
+void TUploadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> Terminal, TParallelOperation * ParallelOperation)
 {
   Terminal->CopyToRemote(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
 }
@@ -2416,7 +2414,7 @@ TParallelTransferQueueItem::TParallelTransferQueueItem(
   FInfo->GroupToken = ParentItem->FInfo->GroupToken;
 }
 
-void TParallelTransferQueueItem::DoExecute(TTerminal * Terminal)
+void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 {
   TLocatedQueueItem::DoExecute(Terminal);
 
@@ -2510,7 +2508,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
-void TDownloadQueueItem::DoTransferExecute(TTerminal * ATerminal, TParallelOperation * ParallelOperation)
+void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation)
 {
   DebugAssert(ATerminal != nullptr);
   ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
