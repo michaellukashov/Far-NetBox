@@ -1937,10 +1937,10 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 
     if (!PrevRandomSeedFileName.IsEmpty() &&
         (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-        base::FileExists(ApiPath(PrevRandomSeedFileName)))
+        base::FileExists(PrevRandomSeedFileName))
     {
       // ignore any error
-      base::FileRemove(ApiPath(PrevRandomSeedFileName));
+      base::FileRemove(PrevRandomSeedFileName);
     }
   }
 }
