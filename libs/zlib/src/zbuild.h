@@ -116,7 +116,9 @@
 #elif defined(HAVE_VISIBILITY_HIDDEN)
 #  define Z_INTERNAL __attribute__((visibility ("hidden")))
 #else
-#  define Z_INTERNAL
+#ifdef ZLIB_INTERNAL
+#  define Z_INTERNAL ZLIB_INTERNAL
+#endif
 #endif
 
 /* Symbol versioning helpers, allowing multiple versions of a function to exist.
