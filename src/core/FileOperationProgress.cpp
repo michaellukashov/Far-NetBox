@@ -441,17 +441,17 @@ void TFileOperationProgressType::SetSpeedCounters()
 
 // Used in WebDAV and S3 protocols
 void TFileOperationProgressType::ThrottleToCPSLimit(
-  uint64_t Size)
+  int64_t Size)
 {
-  uint64_t  Remaining = Size;
+  int64_t Remaining = Size;
   while (Remaining > 0)
   {
     Remaining -= AdjustToCPSLimit(Remaining);
   }
 }
 
-uint64_t TFileOperationProgressType::AdjustToCPSLimit(
-  uint64_t Size)
+int64_t TFileOperationProgressType::AdjustToCPSLimit(
+  int64_t Size)
 {
   SetSpeedCounters();
 
@@ -493,7 +493,7 @@ uint64_t TFileOperationProgressType::AdjustToCPSLimit(
 }
 
 // Use in SCP protocol only
-uint64_t TFileOperationProgressType::LocalBlockSize()
+int64_t TFileOperationProgressType::LocalBlockSize()
 {
   int64_t Result = TRANSFER_BUF_SIZE;
   if (FLocallyUsed + Result > FLocalSize)

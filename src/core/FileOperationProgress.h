@@ -227,15 +227,15 @@ public:
     TOnceDoneOperation & OnceDoneOperation);
   void Succeeded(int32_t Count = 1);
   void Progress();
-  uint64_t LocalBlockSize();
+  int64_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
   bool IsTransferDoneChecked() const;
   void SetFile(const UnicodeString & AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   uint64_t TransferBlockSize();
-  uint64_t AdjustToCPSLimit(uint64_t Size);
-  void ThrottleToCPSLimit(uint64_t Size);
+  int64_t AdjustToCPSLimit(int64_t Size);
+  void ThrottleToCPSLimit(int64_t Size);
   static uint64_t StaticBlockSize();
   void Reset();
   void Resume();
