@@ -4985,14 +4985,14 @@ void TTerminal::CalculateFilesChecksum(
   } end_try__finally
 }
 
-void TTerminal::TerminalRenameFile(const TRemoteFile * File, const UnicodeString & NewName)
+void TTerminal::TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & ANewName)
 {
   // Already checked in TUnixDirView::InternalEdit
-  if (DebugAlwaysTrue(File->FileName() != NewName))
+  if (DebugAlwaysTrue(AFile->FileName() != ANewName))
   {
-    FileModified(File, File->FileName);
-    LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", File->FileName(), NewName));
-    if (DoRenameFile(File->FileName, File, NewName, false, false))
+    FileModified(AFile, AFile->FileName);
+    LogEvent(FORMAT(L"Renaming file \"%s\" to \"%s\".", AFile->FileName(), ANewName));
+    if (DoRenameFile(AFile->FileName, AFile, ANewName, false, false))
     {
       ReactOnCommand(fsRenameFile);
     }
