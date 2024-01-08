@@ -109,7 +109,7 @@ private:
   TFileOperationFinishedEvent FOnFinished{nullptr};
   bool FReset{false};
   uint32_t FLastSecond{0};
-  uint64_t FRemainingCPS{0};
+  int64_t FRemainingCPS{0};
   TOnceDoneOperation FInitialOnceDoneOperation{odoIdle};
   TPersistence FPersistence{};
   TCriticalSection * FSection{nullptr};
