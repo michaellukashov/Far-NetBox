@@ -347,7 +347,7 @@ TPuttyPasswordThread::~TPuttyPasswordThread()
 
 void TPuttyPasswordThread::InitPuttyPasswordThread()
 {
-  TSimpleThread::InitSimpleThread();
+  TSimpleThread::InitSimpleThread("Putty Password Thread");
   Start();
 }
 

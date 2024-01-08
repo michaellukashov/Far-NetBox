@@ -325,9 +325,10 @@ TSimpleThread::TSimpleThread(TObjectClassId Kind) noexcept :
 #endif
 }
 
-void TSimpleThread::InitSimpleThread()
+void TSimpleThread::InitSimpleThread(const UnicodeString & Name)
 {
   FThread = StartThread(nullptr, 0, this, CREATE_SUSPENDED, FThreadId);
+  os::debug::SetThreadName(FThread, Name);
 }
 
 TSimpleThread::~TSimpleThread() noexcept
@@ -377,7 +378,7 @@ TSignalThread::TSignalThread(TObjectClassId Kind) noexcept :
 
 void TSignalThread::InitSignalThread(bool LowPriority, HANDLE Event)
 {
-  TSimpleThread::InitSimpleThread();
+  TSimpleThread::InitSimpleThread("NetBox Signal Thread");
   if (Event == nullptr)
   {
     FEvent = ::CreateEvent(nullptr, false, false, nullptr);

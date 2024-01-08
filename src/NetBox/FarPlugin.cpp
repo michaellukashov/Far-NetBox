@@ -61,9 +61,9 @@ public:
       ::SetEvent(FEvent);
   }
 
-  void InitIdleThread()
+  void InitIdleThread(const UnicodeString & Name)
   {
-    TSimpleThread::InitSimpleThread();
+    TSimpleThread::InitSimpleThread(Name);
     FEvent = ::CreateEvent(nullptr, false, false, nullptr);
     Start();
   }
@@ -1929,7 +1929,7 @@ void TCustomFarPlugin::Initialize()
 {
 //  ::SetGlobals(new TGlobalFunctions());
   FTIdleThread = std::make_unique<TPluginIdleThread>(this, 1000);
-  FTIdleThread->InitIdleThread();
+  FTIdleThread->InitIdleThread("NetBox IdleThread");
 }
 
 void TCustomFarPlugin::Finalize()
