@@ -1776,6 +1776,8 @@ target_compile_definitions(zlib PRIVATE
   -DZLIB_INTERNAL=
   -DZLIB_COMPAT
   -DZLIB_NAME_MANGLING_H
+  -DMEMCPY=memcpy
+  -DMEMSET=memset
 )
 
 #-------------------------------------------------------------------------------
