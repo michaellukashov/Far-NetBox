@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <Interface.h>
 #include "FarPlugin.h"

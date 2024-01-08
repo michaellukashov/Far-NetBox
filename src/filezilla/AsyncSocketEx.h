@@ -1,4 +1,4 @@
-﻿/*CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
+/*CAsyncSocketEx by Tim Kosse (Tim.Kosse@gmx.de)
             Version 1.3 (2003-04-26)
 --------------------------------------------------------
 

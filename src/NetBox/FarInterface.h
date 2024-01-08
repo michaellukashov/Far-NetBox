@@ -1,4 +1,4 @@
-﻿//from windows/WinInterface.h
+//from windows/WinInterface.h
 #pragma once
 #include <Classes.hpp>
 #include <Interface.h>

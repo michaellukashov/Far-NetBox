@@ -1,4 +1,4 @@
-﻿#include "afxdll.h"
+#include "afxdll.h"
 #include <vcl.h>
 
 #include <plugin.hpp>

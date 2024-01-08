@@ -1,4 +1,4 @@
-﻿
+
 
 #ifndef WinConfigurationH
 #define WinConfigurationH
