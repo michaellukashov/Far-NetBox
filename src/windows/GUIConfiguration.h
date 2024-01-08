@@ -21,7 +21,7 @@ constexpr const int32_t soSynchronize =     0x02;
 constexpr const int32_t soSynchronizeAsk =  0x04;
 constexpr const int32_t soContinueOnError = 0x08;
 
-class NB_CORE_EXPORT TGUICopyParamType : public TCopyParamType
+class NB_CORE_EXPORT TGUICopyParamType final : public TCopyParamType
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TGUICopyParamType); }
@@ -61,7 +61,7 @@ private:
   bool FQueueParallel{false};
 };
 
-struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
+struct NB_CORE_EXPORT TCopyParamRuleData final : public TObject
 {
   UnicodeString HostName;
   UnicodeString UserName;
@@ -71,7 +71,7 @@ struct NB_CORE_EXPORT TCopyParamRuleData : public TObject
   void Default();
 };
 
-class NB_CORE_EXPORT TCopyParamRule : public TObject
+class NB_CORE_EXPORT TCopyParamRule final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCopyParamRule); }
@@ -106,7 +106,7 @@ public:
   bool GetEmpty() const;
 };
 
-class NB_CORE_EXPORT TLocaleInfo : public TObject
+class NB_CORE_EXPORT TLocaleInfo final : public TObject
 {
 public:
   LCID Locale{};
@@ -114,7 +114,7 @@ public:
   int32_t Completeness{0};
 };
 
-class NB_CORE_EXPORT TCopyParamList : public TObject
+class NB_CORE_EXPORT TCopyParamList final : public TObject
 {
 friend class TGUIConfiguration;
 public:
