@@ -26,10 +26,10 @@ jobs:
     env:
       BUILD_TYPE: RelWithDebugInfo
 
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Get version
         shell: bash
@@ -75,7 +75,7 @@ jobs:
           fi
 
       - name: Upload result
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: result
           path: ./*.7z
@@ -84,12 +84,12 @@ jobs:
   create-release:
     needs: [build]
     if: ${{ false }}
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
       - name: Checkout source
         if: ${{ false }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Get version
         if: ${{ false }}
@@ -103,7 +103,7 @@ jobs:
 
       - name: Download result
         if: ${{ false }}
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: result
 
