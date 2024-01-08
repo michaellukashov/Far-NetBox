@@ -1284,7 +1284,7 @@ set(libeay32_c_files ${libeay32_c_files}
   libs/openssl-3/crypto/bf/bf_enc.c
   # libs/openssl-3/crypto/ec/curve448/arch_64/f_impl64.c
 )
-else()
+elseif(PROJECT_PLATFORM STREQUAL "x86")
 set(libeay32_c_files ${libeay32_c_files}
   libs/openssl-3/crypto/sha/keccak1600.c
   # libs/openssl-3/crypto/rc4/rc4_enc.c
@@ -2348,32 +2348,6 @@ add_custom_target(NetBoxResources SOURCES
   README.md
 )
 
-if(MSVC)
-if(PROJECT_PLATFORM STREQUAL "x86")
-
-#[[find_program(MASM_EXECUTABLE ml)
-# message("masm: ${MASM_EXECUTABLE}")
-set(ASM_OBJECTS)
-foreach(src vc_crt_fix)
-  set(ASM_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${src}.asm)
-  set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
-  set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
-  add_custom_command(
-    OUTPUT ${ASM_OBJECT}
-    COMMAND ${MASM_EXECUTABLE}
-    ARGS   /c /Fo ${ASM_OBJECT} ${ASM_SOURCE}
-    DEPENDS ${ASM_SOURCE}
-  )
-endforeach(src)
-
-set(NETBOX_SOURCES ${NETBOX_SOURCES}
-  vc_crt_fix_impl.cpp
-  ${ASM_OBJECTS}
-)]]
-
-endif()
-endif(MSVC)
-
 set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   putty
   puttyvs
@@ -2526,7 +2500,8 @@ ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG Debug)
 ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG RelWithDebugInfo)
-ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
+# ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
+# ucm_add_flags(CXX /fsanitize-address-use-after-return CONFIG Debug)
 #-Ob1
 # static runtime settings
 #ucm_add_flags(CXX C /MT CONFIG Release)
