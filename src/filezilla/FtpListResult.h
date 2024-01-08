@@ -34,7 +34,7 @@ public:
   t_server m_server;
   void AddData(const char * data,int size);
   CFtpListResult(t_server server, bool mlst, bool * bUTF8, int *nCodePage, bool vmsAllRevisions, bool debugShowListing);
-  t_directory::t_direntry * getList(int & num);
+  t_directory::t_direntry * getList(size_t & num);
 
 private:
   typedef nb::list_t<t_directory::t_direntry> tEntryList;
@@ -79,12 +79,12 @@ protected:
   bool m_mlst{false};
   bool * m_bUTF8{nullptr};
   int * m_nCodePage{nullptr};
-  void copyStr(CString & target, int pos, const char * source, int len, bool mayInvalidateUTF8 = false);
+  void copyStr(CString & target, int pos, const char * source, size_t len, bool mayInvalidateUTF8 = false);
   const char * strnchr(const char * str, int len, char c) const;
   const char * strnstr(const char * str, int len, const char * c) const;
-  _int64 strntoi64(const char * str, int len) const;
+  _int64 strntoi64(const char * str, size_t len) const;
   void AddLine(t_directory::t_direntry & direntry);
-  bool IsNumeric(const char * str, int len) const;
+  bool IsNumeric(const char * str, size_t len) const;
   bool IsNewLineChar(char C) const;
   void SendLineToMessageLog(const RawByteString & Line);
 };
