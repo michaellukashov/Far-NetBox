@@ -1,4 +1,4 @@
-﻿
+
 #include "stdafx.h"
 #include <rdestl/map.h>
 #include <nbutils.h>

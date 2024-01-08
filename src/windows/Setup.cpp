@@ -1,4 +1,4 @@
-﻿
+
 // Part of this code is
 // Copyright (C) 2002-2004, Marco Barisione <marco.bari@vene.ws>
 

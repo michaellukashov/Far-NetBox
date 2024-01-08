@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #define _int64 int64_t

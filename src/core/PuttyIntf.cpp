@@ -1,4 +1,4 @@
-﻿
+
 #include <rdestl/map.h>
 #include <vcl.h>
 #pragma hdrstop

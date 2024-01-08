@@ -1,4 +1,4 @@
-﻿#include <Classes.hpp>
+#include <Classes.hpp>
 #include <Common.h>
 #include <Exceptions.h>
 #include <PuttyIntf.h>
