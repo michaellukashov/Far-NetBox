@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <rdestl/vector.h>
 // #include <set>
@@ -76,7 +76,6 @@ class TSessionLog;
 class TFTPFileSystem;
 class TSTSFTPFileSystemFTPFileSystem;
 
-extern const TObjectClassId OBJECT_CLASS_TConfiguration;
 class NB_CORE_EXPORT TConfiguration : public TObject
 {
   NB_DISABLE_COPY(TConfiguration)
@@ -123,7 +122,7 @@ private:
   int32_t FSessionReopenAuto{0};
   int32_t FSessionReopenBackground{0};
   int32_t FSessionReopenTimeout{0};
-  int32_t FSessionReopenAutoStall{0};
+  int32_t FSessionReopenAutoStall{10 * MSecsPerSec};
   UnicodeString FCustomIniFileStorageName;
   UnicodeString FIniFileStorageName;
   mutable UnicodeString FVirtualIniFileStorageName;

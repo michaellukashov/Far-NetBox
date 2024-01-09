@@ -17,7 +17,6 @@ NB_CORE_EXPORT bool IsInternalException(const Exception * E);
 
 enum TOnceDoneOperation { odoIdle, odoDisconnect, odoSuspend, odoShutDown };
 
-extern const TObjectClassId OBJECT_CLASS_ExtException;
 class NB_CORE_EXPORT ExtException : public Exception
 {
 public:
@@ -112,7 +111,6 @@ DERIVE_EXT_EXCEPTION(ESsh, ExtException);
 DERIVE_EXT_EXCEPTION(ETerminal, ExtException);
 DERIVE_EXT_EXCEPTION(ECommand, ExtException);
 DERIVE_EXT_EXCEPTION(EScp, ExtException); // SCP protocol fatal error (non-fatal in application context)
-extern const TObjectClassId OBJECT_CLASS_ESkipFile;
 class NB_CORE_EXPORT ESkipFile : public ExtException
 {
 public:
@@ -123,7 +121,6 @@ public:
   EXT_EXCEPTION_METHODS(ESkipFile, ExtException)
 };
 
-extern const TObjectClassId OBJECT_CLASS_EOSExtException;
 class NB_CORE_EXPORT EOSExtException : public ExtException
 {
 public:
@@ -136,7 +133,6 @@ public:
   explicit EOSExtException(TObjectClassId Kind, const UnicodeString & Msg, int32_t LastError);
 };
 
-extern const TObjectClassId OBJECT_CLASS_ECRTExtException;
 class NB_CORE_EXPORT ECRTExtException : public EOSExtException
 {
 public:
@@ -147,7 +143,6 @@ public:
   explicit ECRTExtException(const UnicodeString & Msg);
 };
 
-extern const TObjectClassId OBJECT_CLASS_EFatal;
 class NB_CORE_EXPORT EFatal : public ExtException
 {
 public:
@@ -185,7 +180,6 @@ DERIVE_FATAL_EXCEPTION(EConnectionFatal, EFatal);
 
 // exception that closes application, but displays info message (not error message)
 // = close on completion
-extern const TObjectClassId OBJECT_CLASS_ETerminate;
 class NB_CORE_EXPORT ETerminate : public EFatal
 {
 public:
@@ -210,7 +204,6 @@ public:
   UnicodeString DestLocalFileName;
 };
 
-extern const TObjectClassId OBJECT_CLASS_ECallbackGuardAbort;
 class NB_CORE_EXPORT ECallbackGuardAbort final : public EAbort
 {
 public:
@@ -220,7 +213,6 @@ public:
   ECallbackGuardAbort();
 };
 
-extern const TObjectClassId OBJECT_CLASS_EStreamError;
 class EStreamError : public ExtException
 {
 public:
@@ -234,7 +226,6 @@ public:
   }
 };
 
-extern const TObjectClassId OBJECT_CLASS_EFCreateError;
 class NB_CORE_EXPORT EFCreateError final : public EStreamError
 {
 public:
@@ -247,7 +238,6 @@ public:
   }
 };
 
-extern const TObjectClassId OBJECT_CLASS_EFOpenError;
 class NB_CORE_EXPORT EFOpenError final : public EStreamError
 {
 public:

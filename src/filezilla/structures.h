@@ -13,7 +13,7 @@ public:
   t_directory(const t_directory &a);
   ~t_directory();
   CServerPath path;
-  int num{0};
+  size_t num{0};
   class t_direntry // : public TObject
   {
   CUSTOM_MEM_ALLOCATION_IMPL

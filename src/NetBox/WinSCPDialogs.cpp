@@ -1,4 +1,4 @@
-﻿#include <vcl.h>
+#include <vcl.h>
 #pragma hdrstop
 
 #include "WinSCPPlugin.h"
@@ -49,6 +49,7 @@ TWinSCPDialog::TWinSCPDialog(TCustomFarPlugin * AFarPlugin) :
   OkButton(nullptr),
   CancelButton(nullptr)
 {
+  TFarDialog::InitDialog();
 }
 
 void TWinSCPDialog::AddStandardButtons(int32_t Shift, bool ButtonsOnly)
@@ -123,7 +124,6 @@ private:
   int32_t FTabCount{0};
 };
 
-const TObjectClassId OBJECT_CLASS_TTabButton = static_cast<TObjectClassId>(nb::counter_id());
 class TTabButton : public TFarButton
 {
 public:
@@ -1030,13 +1030,14 @@ UnicodeString ReplaceCopyright(const UnicodeString & S)
 TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   TFarDialog(AFarPlugin)
 {
+  TFarDialog::InitDialog();
   // UnicodeString ProductName = GetConfiguration()->GetFileInfoString("ProductName");
   const UnicodeString ProductName = LoadStr(WINSCPFAR_NAME);
   const UnicodeString Comments = GetConfiguration()->GetFileInfoString("Comments");
   const UnicodeString LegalCopyright = GetConfiguration()->GetFileInfoString("LegalCopyright");
   const UnicodeString FileDescription = GetConfiguration()->GetFileInfoString("FileDescription");
 
-  int32_t Height = 15;
+  int32_t Height = 16;
 #ifndef NO_FILEZILLA
   Height += 2;
 #endif
@@ -1052,12 +1053,18 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Height++;
   }
-  SetSize(TPoint(55, Height));
+  SetSize(TPoint(60, Height));
 
   SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
-  TFarText * Text = new TFarText(this);
+  TFarText * Text;
+  Text = new TFarText(this);
   Text->SetCaption(FileDescription);
+  Text->SetCenterGroup(true);
+
+  const UnicodeString PluginDescriptionText = GetMsg(NB_StringPluginDescriptionText);
+  Text = new TFarText(this);
+  Text->SetCaption(PluginDescriptionText);
   Text->SetCenterGroup(true);
 
   Text = new TFarText(this);
@@ -1082,8 +1089,8 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Text = new TFarText(this);
     Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_PRODUCT_VERSION),
-        ProductName,
-        LoadStr(WINSCP_VERSION)));
+      ProductName,
+      LoadStr(WINSCP_VERSION)));
     Text->SetCenterGroup(true);
   }
 
@@ -1229,6 +1236,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
   TFarDialog(AFarPlugin),
   FEdits(std::make_unique<TList>())
 {
+  TFarDialog::InitDialog();
   bool ShowSavePassword = false;
   if (((Kind == pkPassword) || (Kind == pkTIS) || (Kind == pkCryptoCard) ||
       (Kind == pkKeybInteractive)) &&
@@ -4337,7 +4345,6 @@ bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   return Result;
 }
 
-const TObjectClassId OBJECT_CLASS_TRightsContainer = static_cast<TObjectClassId>(nb::counter_id());
 class TRightsContainer final : public TFarDialogContainer
 {
   NB_DISABLE_COPY(TRightsContainer)
@@ -4711,6 +4718,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   RecursiveCheck(nullptr),
   OkButton(nullptr)
 {
+  TFarDialog::InitDialog();
   DebugAssert(AFileList->GetCount() > 0);
   const TRemoteFile * OnlyFile = AFileList->GetAs<TRemoteFile>(0);
   DebugUsedParam(OnlyFile);
@@ -4999,7 +5007,6 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
   return Result;
 }
 
-const TObjectClassId OBJECT_CLASS_TCopyParamsContainer = static_cast<TObjectClassId>(nb::counter_id());
 class TCopyParamsContainer final : public TFarDialogContainer
 {
 public:
@@ -5470,7 +5477,7 @@ int32_t TCopyParamsContainer::GetHeight() const
   return 16;
 }
 
-class TCopyDialog final : TFarDialog
+class TCopyDialog final : public TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -5511,6 +5518,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   FCopyParamAttrs(CopyParamAttrs),
   FToRemote(ToRemote)
 {
+  TFarDialog::InitDialog();
   DebugAssert(FFileList);
   constexpr int32_t DlgLength = 78;
   SetSize(TPoint(DlgLength, 12 + (FLAGCLEAR(FOptions, coTempTransfer) ? 4 : 0)));
@@ -5962,7 +5970,6 @@ private:
   TFarButton * OkButton{nullptr};
 };
 
-const TObjectClassId OBJECT_CLASS_TLabelList = static_cast<TObjectClassId>(nb::counter_id());
 class TLabelList : public TList
 {
 public:
@@ -8290,12 +8297,12 @@ class TQueueDialog final : public TFarDialog
 public:
   explicit TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
     gsl::not_null<TWinSCPFileSystem *> AFileSystem, bool ClosingPlugin) noexcept;
-  virtual ~TQueueDialog() override = default;
+  virtual ~TQueueDialog() override;
 
   bool Execute(TTerminalQueueStatus * Status);
 
 protected:
-  virtual const UUID * GetDialogGuid() const { return &QueueDialogGuid; }
+  virtual const UUID * GetDialogGuid() const override { return &QueueDialogGuid; }
   virtual void Change() override;
   virtual void Idle() override;
   bool UpdateQueue();
@@ -8312,6 +8319,7 @@ private:
   void OperationButtonClick(TFarButton * Sender, bool & Close);
   TFarList * GetQueueItems() const { return QueueListBox->GetItems(); }
   TFarList * GetQueueItems() { return QueueListBox->GetItems(); }
+  void OnIdle(TObject * /*Sender*/, void * /*Data*/);
 
 private:
   TTerminalQueueStatus * FStatus{nullptr};
@@ -8333,6 +8341,7 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
   FFileSystem(AFileSystem),
   FClosingPlugin(ClosingPlugin)
 {
+  TFarDialog::InitDialog();
   SetSize(TPoint(80, 23)); // TODO: check actual configuration
   // TRect CRect = GetClientRect();
   const int32_t ListHeight = GetClientSize().y - 4;
@@ -8385,6 +8394,15 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
   QueueListBox->SetFocus();
 }
 
+TQueueDialog::~TQueueDialog()
+{
+  if (GetFarPlugin())
+  {
+    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+    SynchroParams.Sender = nullptr;
+  }
+}
+
 void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   bool & /*Close*/)
 {
@@ -8424,6 +8442,20 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
     {
       QueueItem->Delete();
     }
+  }
+}
+
+void TQueueDialog::OnIdle(TObject *, void *)
+{
+  // DEBUG_PRINTF("FarThreadId: %d, GetCurrentThreadId: %d", FarPlugin->GetFarThreadId(), GetCurrentThreadId());
+  if (UpdateQueue())
+  {
+    LoadQueue();
+    UpdateControls();
+  }
+  else
+  {
+    RefreshQueue();
   }
 }
 
@@ -8483,7 +8515,7 @@ void TQueueDialog::UpdateControls()
   if (GetQueueItems()->GetSelected() >= 0)
   {
     QueueItem = rtti::dyn_cast_or_null<TQueueItemProxy>(
-        GetQueueItems()->Get(GetQueueItems()->GetSelected()));
+      GetQueueItems()->Get(GetQueueItems()->GetSelected()));
   }
 
   if ((QueueItem != nullptr) && (QueueItem->GetStatus() == TQueueItem::qsProcessing))
@@ -8519,16 +8551,16 @@ void TQueueDialog::UpdateControls()
 
 void TQueueDialog::Idle()
 {
+  // DEBUG_PRINTF("TQueueDialog::Idle 1");
+
   TFarDialog::Idle();
 
-  if (UpdateQueue())
+  if (GetFarPlugin())
   {
-    LoadQueue();
-    UpdateControls();
-  }
-  else
-  {
-    RefreshQueue();
+    TSynchroParams & SynchroParams = GetFarPlugin()->FSynchroParams;
+    SynchroParams.SynchroEvent = nb::bind(&TQueueDialog::OnIdle, this);
+    SynchroParams.Sender = this;
+    GetFarPlugin()->FarAdvControl(ACTL_SYNCHRO, 0, &SynchroParams);
   }
 }
 
@@ -8586,6 +8618,7 @@ void TQueueDialog::RefreshQueue()
 
     const TQueueItemProxy * PrevQueueItem = nullptr;
     UnicodeString Line;
+
     while ((Index < GetQueueItems()->GetCount()) &&
       (Index < TopIndex + QueueListBox->GetHeight()))
     {
@@ -8630,12 +8663,13 @@ void TQueueDialog::LoadQueue()
     int32_t ILine = 0;
     while (FillQueueItemLine(Line, QueueItem, ILine))
     {
-      List->AddObject(Line, QueueItem);
+      List->AddObject(Line, QueueItem->Clone());
       List->SetDisabled(List->GetCount() - 1, (ILine > 0));
       ILine++;
     }
   }
-  QueueListBox->SetItems(List.get());
+  if (GetHandle())
+    QueueListBox->SetItems(List.get());
 }
 
 bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,

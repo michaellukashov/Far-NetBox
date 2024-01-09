@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 
@@ -17,7 +17,6 @@ struct TFileTransferData;
 struct TFtpsCertificateData;
 struct TRemoteFileTime;
 
-extern const TObjectClassId OBJECT_CLASS_TFTPFileSystem;
 class NB_CORE_EXPORT TFTPFileSystem final : public TCustomFileSystem
 {
   friend class TFileZillaImpl;

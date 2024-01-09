@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <FileSystems.h>
 #include <rdestl/map.h>
@@ -32,7 +32,6 @@ enum _S3Protocol { };
 enum S3Permission { };
 #endif
 
-extern const TObjectClassId OBJECT_CLASS_TS3FileSystem;
 class NB_CORE_EXPORT TS3FileSystem final : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TS3FileSystem)

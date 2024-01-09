@@ -1,3 +1,4 @@
+#include <Global.h>
 #include <tinylog/platform_win32.h>
 
 #include <tinylog/TinyLog.h>
@@ -59,6 +60,7 @@ TinyLogImpl::TinyLogImpl(FILE * file) noexcept :
     static_cast<LPTHREAD_START_ROUTINE>(&TinyLogImpl::ThreadFunc),
     Parameter,
     0, &ThreadId_);
+  os::debug::SetThreadName(thrd_, L"Log processor");
 }
 
 TinyLogImpl::~TinyLogImpl() noexcept

@@ -1,4 +1,4 @@
-﻿
+
 #include "stdafx.h"
 #include <rdestl/map.h>
 #include <nbutils.h>
@@ -230,7 +230,7 @@ CFtpListResult::CFtpListResult(t_server server, bool mlst, bool *bUTF8, int *nCo
   m_MonthNamesMap[L"avg"] = 8;
 }
 
-t_directory::t_direntry * CFtpListResult::getList(int & Num)
+t_directory::t_direntry * CFtpListResult::getList(size_t & Num)
 {
   if (!FBuffer.IsEmpty())
   {
@@ -494,7 +494,7 @@ void CFtpListResult::AddLine(t_directory::t_direntry & direntry)
   }
 }
 
-bool CFtpListResult::IsNumeric(const char *str, int len) const
+bool CFtpListResult::IsNumeric(const char *str, size_t len) const
 {
   if (!str)
     return false;
@@ -504,7 +504,7 @@ bool CFtpListResult::IsNumeric(const char *str, int len) const
   while(*p)
   {
     if (len != -1)
-      if ((p - str) >= len)
+      if ((size_t)(p - str) >= len)
         return true;
 
     if (*p<'0' || *p>'9')
@@ -759,7 +759,7 @@ BOOL CFtpListResult::parseAsVMS(const char *line, const int linelen, t_directory
       return FALSE;
 
     const char *p = strnchr(str, tokenlen, '/');
-    int len;
+    size_t len;
     if (p)
       len = p - str;
     else
@@ -1385,7 +1385,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
   }
 
   const char *size = str;
-  int sizelen = tokenlen;
+  size_t sizelen = tokenlen;
   if (!ParseSize(str, tokenlen, direntry.size))
   {
     //Maybe we've skipped too much tokens
@@ -2168,11 +2168,11 @@ BOOL CFtpListResult::parseAsOther(const char *line, const int linelen, t_directo
   return TRUE;
 }
 
-_int64 CFtpListResult::strntoi64(const char *str, int len) const
+_int64 CFtpListResult::strntoi64(const char *str, size_t len) const
 {
   _int64 res = 0;
   const char *p = str;
-  while ((p-str) < len)
+  while ((size_t)(p-str) < len)
   {
     if (*p < '0' || *p > '9')
       break;
@@ -2261,7 +2261,7 @@ const char * CFtpListResult::strnstr(const char *str, int len, const char *c) co
   return nullptr;
 }
 
-void CFtpListResult::copyStr(CString &target, int pos, const char *source, int len, bool mayInvalidateUTF8 /*=false*/)
+void CFtpListResult::copyStr(CString &target, int pos, const char *source, size_t len, bool mayInvalidateUTF8 /*=false*/)
 {
   USES_CONVERSION;
 
@@ -2271,7 +2271,7 @@ void CFtpListResult::copyStr(CString &target, int pos, const char *source, int l
   if (m_bUTF8 && *m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (nb::DetectUTF8Encoding(reinterpret_cast<const uint8_t *>(p), len) == nb::etANSI)
+    if (nb::DetectUTF8Encoding(reinterpret_cast<const uint8_t *>(p), (int32_t)len) == nb::etANSI)
     {
       if (mayInvalidateUTF8 && m_server.nUTF8 != 1)
       {

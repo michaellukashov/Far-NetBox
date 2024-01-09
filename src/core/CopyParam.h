@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #include "FileMasks.h"
@@ -41,7 +41,6 @@ class TTerminal;
 class TFTPFileSystem;
 class TSFTPFileSystem;
 
-extern const TObjectClassId OBJECT_CLASS_TCopyParamType;
 class NB_CORE_EXPORT TCopyParamType : public TObject
 {
 friend class TTerminal;
@@ -64,7 +63,7 @@ private:
   TResumeSupport FResumeSupport{rsOn};
   int64_t FResumeThreshold{0};
   // UnicodeString GetLogStr() const;
-  wchar_t FInvalidCharsReplacement{};
+  wchar_t FInvalidCharsReplacement{L'-'};
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
   bool FCalculateSize{false};
@@ -127,7 +126,7 @@ public:
   UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
   // UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ uint32_t Attrs) const;
 
-  bool operator ==(const TCopyParamType &rhp) const;
+  bool operator ==(const TCopyParamType & rhp) const;
 
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
   TFileMasks& AsciiFileMask{FAsciiFileMask};

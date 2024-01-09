@@ -1,5 +1,5 @@
 ﻿message(STATUS "CMake version: ${CMAKE_VERSION}")
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 
 project(NetBox)
 
@@ -1285,7 +1285,7 @@ set(libeay32_c_files ${libeay32_c_files}
   libs/openssl-3/crypto/bf/bf_enc.c
   # libs/openssl-3/crypto/ec/curve448/arch_64/f_impl64.c
 )
-else()
+elseif(PROJECT_PLATFORM STREQUAL "x86")
 set(libeay32_c_files ${libeay32_c_files}
   libs/openssl-3/crypto/sha/keccak1600.c
   # libs/openssl-3/crypto/rc4/rc4_enc.c
@@ -1777,6 +1777,8 @@ target_compile_definitions(zlib PRIVATE
   -DZLIB_INTERNAL=
   -DZLIB_COMPAT
   -DZLIB_NAME_MANGLING_H
+  -DMEMCPY=memcpy
+  -DMEMSET=memset
 )
 
 #-------------------------------------------------------------------------------
@@ -2080,6 +2082,7 @@ set(WinSCP_SOURCES
   src/base/Global.cpp
   src/base/System.SyncObjs.cpp
   src/base/FormatUtils.cpp
+  src/base/ObjIDs.cpp
 
   src/core/RemoteFiles.cpp
   src/core/Terminal.cpp
@@ -2110,6 +2113,7 @@ set(WinSCP_SOURCES
   src/core/WinSCPSecurity.cpp
   src/core/Http.cpp
   src/core/NeonIntf.cpp
+
   src/windows/SynchronizeController.cpp
   src/windows/GUITools.cpp
   src/windows/GUIConfiguration.cpp
@@ -2151,6 +2155,7 @@ set(WinSCP_HEADERS
   src/core/PuttyIntf.h
   src/core/FileInfo.h
   src/core/CoreMain.h
+
   src/windows/WinInterface.h
   src/windows/GUIConfiguration.h
   src/windows/TerminalManager.h
@@ -2276,6 +2281,7 @@ set(NETBOX_SOURCES
   src/base/vcl.h
   src/base/FileBuffer.h
   src/base/FormatUtils.h
+  src/base/ObjIDs.h
 
   src/core/WebDAVFileSystem.h
   src/core/S3FileSystem.h
@@ -2344,32 +2350,6 @@ add_custom_target(NetBoxResources SOURCES
   ChangeLog
   README.md
 )
-
-if(MSVC)
-if(PROJECT_PLATFORM STREQUAL "x86")
-
-#[[find_program(MASM_EXECUTABLE ml)
-# message("masm: ${MASM_EXECUTABLE}")
-set(ASM_OBJECTS)
-foreach(src vc_crt_fix)
-  set(ASM_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/${src}.asm)
-  set(ASM_OBJECT ${CMAKE_CURRENT_BINARY_DIR}/${src}.obj)
-  set(ASM_OBJECTS ${ASM_OBJECTS} ${ASM_OBJECT})
-  add_custom_command(
-    OUTPUT ${ASM_OBJECT}
-    COMMAND ${MASM_EXECUTABLE}
-    ARGS   /c /Fo ${ASM_OBJECT} ${ASM_SOURCE}
-    DEPENDS ${ASM_SOURCE}
-  )
-endforeach(src)
-
-set(NETBOX_SOURCES ${NETBOX_SOURCES}
-  vc_crt_fix_impl.cpp
-  ${ASM_OBJECTS}
-)]]
-
-endif()
-endif(MSVC)
 
 set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   putty
@@ -2814,15 +2794,18 @@ endif(OPT_COMPILE_TESTS)
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
 ucm_add_flags(CXX /EHsc)
-ucm_add_flags(CXX C CONFIG Debug)
-ucm_add_flags(CXX C /Gy CONFIG Release)
 #/Ob2 /GR
-ucm_add_flags(CXX C /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
+ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 #/O1 release min size
 #/O2 release
 #/Oy - omit frame pointers
 #/Oi - enable intrinsic functions
+#/RTC1 - Run-time error checks
 ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
+ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG Debug)
+ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG RelWithDebugInfo)
+# ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
+# ucm_add_flags(CXX /fsanitize-address-use-after-return CONFIG Debug)
 #-Ob1
 # static runtime settings
 #ucm_add_flags(CXX C /MT CONFIG Release)
@@ -2830,15 +2813,8 @@ ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 # linker settings
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /RTC1 CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} CONFIG Debug)
 ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG Debug)
 ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG RelWithDebugInfo)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
-#[[
-get_cmake_property(_variableNames VARIABLES)
-list (SORT _variableNames)
-foreach (_variableName ${_variableNames})
-  message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()
-]]

@@ -6,37 +6,37 @@
 
 namespace nb {
 
-int32_t __cdecl StrLength(const wchar_t * str) { return static_cast<int32_t>(wcslen(NullToEmpty(str))); }
-int32_t __cdecl StrLength(const char * str) { return static_cast<int32_t>(strlen(NullToEmptyA(str))); }
+int32_t StrLength(const wchar_t * str) { return static_cast<int32_t>(wcslen(NullToEmpty(str))); }
+int32_t StrLength(const char * str) { return static_cast<int32_t>(strlen(NullToEmptyA(str))); }
 
-wchar_t __cdecl Upper(wchar_t Ch)
+wchar_t Upper(wchar_t Ch)
 {
   ::CharUpperBuff(&Ch, 1);
   return Ch;
 }
 
-wchar_t __cdecl Lower(wchar_t Ch)
+wchar_t Lower(wchar_t Ch)
 {
   ::CharLowerBuff(&Ch, 1);
   return Ch;
 }
 
-int32_t __cdecl StrCmpNNI(const wchar_t * s1, int32_t n1, const wchar_t * s2, int32_t n2)
+int32_t StrCmpNNI(const wchar_t * s1, int32_t n1, const wchar_t * s2, int32_t n2)
 {
   return ::CompareString(0, NORM_IGNORECASE | NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, n1, s2, n2) - 2;
 }
 
-int32_t __cdecl StrLIComp(const wchar_t * s1, const wchar_t * s2, int32_t n)
+int32_t StrLIComp(const wchar_t * s1, const wchar_t * s2, int32_t n)
 {
   return StrCmpNNI(s1, n, s2, n);
 }
 
-int32_t __cdecl FarStrCmpI(const wchar_t * s1, const wchar_t * s2)
+int32_t FarStrCmpI(const wchar_t * s1, const wchar_t * s2)
 {
   return ::CompareString(0, NORM_IGNORECASE | SORT_STRINGSORT, s1, -1, s2, -1) - 2;
 }
 
-int32_t __cdecl StrCmpNN(const wchar_t * s1, int32_t n1, const wchar_t * s2, int32_t n2)
+int32_t StrCmpNN(const wchar_t * s1, int32_t n1, const wchar_t * s2, int32_t n2)
 {
   return ::CompareString(0, NORM_STOP_ON_NULL | SORT_STRINGSORT, s1, n1, s2, n2) - 2;
 }

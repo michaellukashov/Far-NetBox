@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #include <rdestl/map.h>
@@ -154,7 +154,6 @@ constexpr int32_t tfAutoResume = 0x04;
 constexpr int32_t tfPreCreateDir = 0x08;
 constexpr int32_t tfUseFileTransferAny = 0x10;
 
-extern const TObjectClassId OBJECT_CLASS_TTerminal;
 class NB_CORE_EXPORT TTerminal : /*public TObject,*/ public TSessionUI
 {
   NB_DISABLE_COPY(TTerminal)
@@ -859,7 +858,6 @@ private:
   // void AfterMoveFiles(TStrings * AFileList);
 };
 
-extern const TObjectClassId OBJECT_CLASS_TSecondaryTerminal;
 class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
 {
   NB_DISABLE_COPY(TSecondaryTerminal)
@@ -890,7 +888,6 @@ private:
   TTerminal * FMainTerminal{nullptr};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TTerminalList;
 class NB_CORE_EXPORT TTerminalList : public TObjectList
 {
   NB_DISABLE_COPY(TTerminalList)
@@ -915,8 +912,7 @@ public:
   TTerminal * GetTerminal(int32_t Index);
 };
 
-extern const TObjectClassId OBJECT_CLASS_TCustomCommandParams;
-struct NB_CORE_EXPORT TCustomCommandParams : public TObject
+struct NB_CORE_EXPORT TCustomCommandParams final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TCustomCommandParams); }
@@ -928,7 +924,7 @@ public:
   TCaptureOutputEvent OutputEvent;
 };
 
-struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
+struct NB_CORE_EXPORT TCalculateSizeStats final : public TObject
 {
   TCalculateSizeStats() noexcept;
 
@@ -939,7 +935,6 @@ struct NB_CORE_EXPORT TCalculateSizeStats : public TObject
   TCalculatedSizes * CalculatedSizes{nullptr};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TCalculateSizeParams;
 struct NB_CORE_EXPORT TCalculateSizeParams : public TObject
 {
 friend class TTerminal;
@@ -961,8 +956,6 @@ public:
   bool Result{true};
 };
 
-
-extern const TObjectClassId OBJECT_CLASS_TMakeLocalFileListParams;
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
   using TDateTimes = nb::vector_t<TDateTime>;
@@ -1024,7 +1017,6 @@ private:
   bool FCanRetry{false};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TCollectedFileList;
 class TCollectedFileList final : public TObject
 {
 public:

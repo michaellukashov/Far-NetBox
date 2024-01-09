@@ -13,22 +13,6 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_ExtException = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_ESkipFile = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EOSExtException = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_ECRTExtException = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EFatal = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_ETerminate = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_ECallbackGuardAbort = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EStreamError = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EFCreateError = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EFOpenError = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_ETerminal = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_ECommand = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EScp = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_ESsh = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EConnectionFatal = static_cast<TObjectClassId>(nb::counter_id());
-
 #if 0
 
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
@@ -56,7 +40,6 @@ static bool WellKnownException(
   UnicodeString Message;
   const wchar_t *CounterName = nullptr;
   std::unique_ptr<Exception> Clone;
-
 
   bool Result = true;
   const bool IgnoreException = false;

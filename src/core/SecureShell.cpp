@@ -1,4 +1,4 @@
-﻿
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -24,8 +24,6 @@
 #endif
 
 // #pragma package(smart_init)
-
-const TObjectClassId OBJECT_CLASS_TSecureShell = static_cast<TObjectClassId>(nb::counter_id());
 
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
 
@@ -2040,7 +2038,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 
 void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 {
-  static const struct { int32_t Bit, Mask; const wchar_t * Desc; } EventTypes[] =
+  static constexpr struct { int32_t Bit, Mask; const wchar_t * Desc; } EventTypes[] =
   {
     { FD_WRITE_BIT, FD_WRITE, L"write" },
     { FD_OOB_BIT, FD_OOB, L"oob" },
@@ -2101,7 +2099,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
     {
       uint32_t Timeout = MSec;
 
-      uint32_t WaitResult;
+      DWORD WaitResult;
       do
       {
         CheckConnection();
@@ -2119,7 +2117,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         WaitList = get_handle_wait_list(FCallbackSet.get());
         DebugAssert(WaitList->nhandles < MAXIMUM_WAIT_OBJECTS);
         WaitList->handles[WaitList->nhandles] = FSocketEvent;
-        WaitResult = WaitForMultipleObjects(WaitList->nhandles + 1, WaitList->handles, FALSE, TimeoutStep);
+        WaitResult = ::WaitForMultipleObjects(WaitList->nhandles + 1, WaitList->handles, FALSE, TimeoutStep);
         FUI->ProcessGUI();
         // run_toplevel_callbacks can cause processing of pending raw data, so:
         // 1) Check for changes in our pending buffer - wait criteria in Receive()

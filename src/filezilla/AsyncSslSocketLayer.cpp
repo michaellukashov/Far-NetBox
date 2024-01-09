@@ -1,4 +1,4 @@
-﻿// CAsyncSslSocketLayer by Tim Kosse (Tim.Kosse@gmx.de)
+// CAsyncSslSocketLayer by Tim Kosse (Tim.Kosse@gmx.de)
 //            Version 2.0 (2005-02-27)
 
 // Feel free to use this class, as long as you don't claim that you wrote it

@@ -1,4 +1,4 @@
-﻿#include <vcl.h>
+#include <vcl.h>
 #pragma hdrstop
 
 #include <plugin.hpp>
@@ -22,19 +22,11 @@ static bool MustSkipClose = false;
 
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
-const TObjectClassId OBJECT_CLASS_TCustomFarPlugin = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TPluginIdleThread = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TCustomFarFileSystem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TCustomFarPanelItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarPanelItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_THintPanelItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarMenuItems = static_cast<TObjectClassId>(nb::counter_id());
-
 class TPluginIdleThread : public TSimpleThread
 {
   TPluginIdleThread() = delete;
 public:
-  explicit TPluginIdleThread(gsl::not_null<TCustomFarPlugin *> Plugin, int16_t Millisecs) noexcept :
+  explicit TPluginIdleThread(gsl::not_null<TCustomFarPlugin *> Plugin, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TPluginIdleThread),
     FPlugin(Plugin),
     FMillisecs(Millisecs)
@@ -51,9 +43,9 @@ public:
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
+      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
       {
-        if (FPlugin && FPlugin->GetPluginHandle())
+        if (!IsFinished() && FPlugin && FPlugin->GetPluginHandle())
           FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
       }
     }
@@ -69,9 +61,9 @@ public:
       ::SetEvent(FEvent);
   }
 
-  void InitIdleThread()
+  void InitIdleThread(const UnicodeString & Name)
   {
-    TSimpleThread::InitSimpleThread();
+    TSimpleThread::InitSimpleThread(Name);
     FEvent = ::CreateEvent(nullptr, false, false, nullptr);
     Start();
   }
@@ -79,7 +71,7 @@ public:
 private:
   gsl::not_null<TCustomFarPlugin *> FPlugin;
   HANDLE FEvent{INVALID_HANDLE_VALUE};
-  int16_t FMillisecs{0};
+  DWORD FMillisecs{0};
 };
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
@@ -97,15 +89,18 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FFarSystemSettings = 0;
 
   nb::ClearStruct(FPluginInfo);
+  FPluginInfo.StructSize = sizeof(FPluginInfo);
   ClearPluginInfo(FPluginInfo);
   nb::ClearStruct(FStartupInfo);
+  FStartupInfo.StructSize = sizeof(FStartupInfo);
   nb::ClearStruct(FFarStandardFunctions);
+  FFarStandardFunctions.StructSize = sizeof(FFarStandardFunctions);
 
   // far\Examples\Compare\compare.cpp
   FConsoleInput = ::CreateFile(L"CONIN$", GENERIC_READ, FILE_SHARE_READ, nullptr,
-      OPEN_EXISTING, 0, nullptr);
+    OPEN_EXISTING, 0, nullptr);
   FConsoleOutput = ::CreateFile(L"CONOUT$", GENERIC_READ | GENERIC_WRITE,
-      FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
+    FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_EXISTING, 0, nullptr);
   if (ConsoleWindowState() == SW_SHOWNORMAL)
   {
     FNormalConsoleSize = TerminalInfo();
@@ -199,19 +194,19 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
       &PluginConfig, &CommandPrefixes);
 
 #define COMPOSESTRINGARRAY(NAME) \
-        do { if (NAME.GetCount()) \
-        { \
-          wchar_t ** StringArray = nb::calloc<wchar_t **>(1 + NAME.GetCount(), sizeof(wchar_t *)); \
-          GUID * Guids = static_cast<GUID *>(nb_malloc(sizeof(GUID) * NAME.GetCount())); \
-          FPluginInfo.NAME.Guids = Guids; \
-          FPluginInfo.NAME.Strings = StringArray; \
-          FPluginInfo.NAME.Count = NAME.GetCount(); \
-          for (int32_t Index = 0; Index < NAME.GetCount(); Index++) \
-          { \
-            StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
-            Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObj(Index)); \
-          } \
-        } } while(0)
+    do { if (NAME.GetCount()) \
+    { \
+      wchar_t ** StringArray = nb::calloc<wchar_t **>(1 + NAME.GetCount(), sizeof(wchar_t *)); \
+      GUID * Guids = static_cast<GUID *>(nb_malloc(sizeof(GUID) * NAME.GetCount())); \
+      FPluginInfo.NAME.Guids = Guids; \
+      FPluginInfo.NAME.Strings = StringArray; \
+      FPluginInfo.NAME.Count = NAME.GetCount(); \
+      for (int32_t Index = 0; Index < NAME.GetCount(); Index++) \
+      { \
+        StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
+        Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObj(Index)); \
+      } \
+    } } while(0)
 
     COMPOSESTRINGARRAY(DiskMenu);
     COMPOSESTRINGARRAY(PluginMenu);
@@ -276,17 +271,17 @@ void TCustomFarPlugin::ClearPluginInfo(PluginInfo & Info) const
   if (Info.StructSize)
   {
 #define FREESTRINGARRAY(NAME) \
-      do { for (size_t Index = 0; Index < Info.NAME.Count; ++Index) \
-      { \
-        nb_free(Info.NAME.Strings[Index]); \
-      } \
-      nb_free(Info.NAME.Strings); \
-      nb_free(Info.NAME.Guids); \
-      Info.NAME.Strings = nullptr; } while(0)
+    do { for (size_t Index = 0; Index < Info.NAME.Count; ++Index) \
+    { \
+      nb_free(Info.NAME.Strings[Index]); \
+    } \
+    nb_free(Info.NAME.Strings); \
+    nb_free(Info.NAME.Guids); \
+    Info.NAME.Strings = nullptr; } while(0)
 
-      FREESTRINGARRAY(DiskMenu);
-      FREESTRINGARRAY(PluginMenu);
-      FREESTRINGARRAY(PluginConfig);
+    FREESTRINGARRAY(DiskMenu);
+    FREESTRINGARRAY(PluginMenu);
+    FREESTRINGARRAY(PluginConfig);
 
 #undef FREESTRINGARRAY
 
@@ -882,6 +877,7 @@ TFarMessageDialog::TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
 void TFarMessageDialog::Init(uint32_t AFlags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons)
 {
+  TFarDialog::InitDialog();
   DebugAssert(FLAGCLEAR(AFlags, FMSG_ERRORTYPE));
   DebugAssert(FLAGCLEAR(AFlags, FMSG_KEEPBACKGROUND));
   // FIXME DebugAssert(FLAGCLEAR(AFlags, FMSG_DOWN));
@@ -1932,8 +1928,8 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 void TCustomFarPlugin::Initialize()
 {
 //  ::SetGlobals(new TGlobalFunctions());
-  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 500);
-  FTIdleThread->InitIdleThread();
+  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 1000);
+  FTIdleThread->InitIdleThread("NetBox IdleThread");
 }
 
 void TCustomFarPlugin::Finalize()
@@ -1946,15 +1942,6 @@ void TCustomFarPlugin::Finalize()
 #ifdef NETBOX_DEBUG
 void TCustomFarPlugin::RunTests()
 {
-  {
-    TFileMasks m(L"*.txt;*.log");
-    bool res = m.Matches(L"test.exe");
-    DebugAssert(!res);
-  }
-  {
-    random_ref();
-    random_unref();
-  }
 }
 #endif
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <nbsystem.h>
 
@@ -17,6 +17,7 @@
 #include <UnicodeString.hpp>
 #include <rtti.hpp>
 #include <Property.hpp>
+#include <ObjIDs.h>
 
 #pragma warning(pop)
 
@@ -62,9 +63,6 @@ class Exception;
 using TThreadMethod = nb::FastDelegate0<void>;
 using TNotifyEvent = nb::FastDelegate1<void, TObject * /*Sender*/>;
 
-using TObjectClassId = uint16_t;
-
-extern const TObjectClassId OBJECT_CLASS_TObject;
 class NB_CORE_EXPORT TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
@@ -139,7 +137,6 @@ struct TRect
   }
 };
 
-extern const TObjectClassId OBJECT_CLASS_TPersistent;
 class NB_CORE_EXPORT TPersistent : public TObject
 {
 public:
@@ -172,7 +169,6 @@ enum TListNotification
 
 using CompareFunc = int32_t (const void * Item1, const void * Item2);
 
-extern const TObjectClassId OBJECT_CLASS_TListBase;
 template<class O = TObject>
 class NB_CORE_EXPORT TListBase : public TPersistent
 {
@@ -326,7 +322,6 @@ private:
   O * GetItemPrivate(int32_t Index) const { return FList[Index]; }
 };
 
-extern const TObjectClassId OBJECT_CLASS_TList;
 class NB_CORE_EXPORT TList : public TListBase<TObject>
 {
 public:
@@ -339,7 +334,6 @@ public:
   virtual ~TList() noexcept override { TList::Clear(); }
 };
 
-extern const TObjectClassId OBJECT_CLASS_TObjectList;
 class NB_CORE_EXPORT TObjectList : public TList
 {
 public:
@@ -377,7 +371,7 @@ enum TDuplicatesEnum
 
 class TStream;
 
-extern const TObjectClassId OBJECT_CLASS_TStrings;
+
 
 class NB_CORE_EXPORT TStrings : public TObjectList
 {
@@ -495,7 +489,6 @@ void QuickSort(nb::vector_t<O *> & SortList, int32_t L, int32_t R,
 class TStringList;
 typedef int32_t (TStringListSortCompare)(TStringList * List, int32_t Index1, int32_t Index2);
 
-extern const TObjectClassId OBJECT_CLASS_TStringList;
 class NB_CORE_EXPORT TStringList : public TStrings
 {
   friend int32_t StringListCompareStrings(TStringList * List, int32_t Index1, int32_t Index2);

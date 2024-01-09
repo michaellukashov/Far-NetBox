@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #include <System.ShlObj.hpp>
 
@@ -10,15 +10,6 @@
 #include <rtlconsts.h>
 #include <Sysutils.hpp>
 #include <nbutils.h>
-
-const TObjectClassId OBJECT_CLASS_Exception = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EAbort = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EAccessViolation = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EFileNotFoundError = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EOSError = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EInvalidOperation = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EConvertError = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_EDirectoryNotFoundException = static_cast<TObjectClassId>(nb::counter_id());
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
@@ -39,7 +30,7 @@ AnsiString W2MB(const wchar_t * src, const UINT cp)
 };*/
 
 Exception::Exception(TObjectClassId Kind, const Exception * E) noexcept :
-  Exception(Kind, UnicodeString(E ? E->what() : ""))
+  Exception(Kind, UnicodeString(E ? E->Message : ""))
 {
 }
 
@@ -59,7 +50,6 @@ Exception::Exception(const wchar_t * Msg) noexcept :
 }
 
 Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg) noexcept :
-  std::runtime_error(""),
   FKind(Kind),
   Message(Msg)
 {
@@ -78,7 +68,7 @@ Exception::Exception(TObjectClassId Kind, const UnicodeString & Msg, int32_t AHe
 }
 
 Exception::Exception(TObjectClassId Kind, const Exception * E, int32_t Ident) noexcept :
-  Exception(Kind, UnicodeString(E ? E->what() : ""))
+  Exception(Kind, UnicodeString(E ? E->Message : ""))
 {
   Message = FMTLOAD(Ident);
 }
@@ -834,7 +824,7 @@ UnicodeString TranslateExceptionMessage(Exception * E)
     {
       return rtti::dyn_cast_or_null<Exception>(E)->Message;
     }
-    return E->what();
+    return E->Message;
   }
   return UnicodeString();
 }
@@ -2105,12 +2095,12 @@ bool WriteAndFlush(FILE * file, void const * data, size_t size)
 
 bool FileExists(const UnicodeString & AFileName)
 {
-  return SysUtulsFileExists(AFileName);
+  return ::SysUtulsFileExists(AFileName);
 }
 
 bool FileRemove(const UnicodeString & AFileName)
 {
-  return SysUtulsRemoveFile(AFileName);
+  return ::SysUtulsRemoveFile(AFileName);
 }
 
 bool DoExists(bool R, const UnicodeString & Path)

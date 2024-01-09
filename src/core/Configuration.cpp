@@ -50,8 +50,6 @@
 
 //const int32_t BelowNormalLogLevels = 1;
 
-const TObjectClassId OBJECT_CLASS_TConfiguration = static_cast<TObjectClassId>(nb::counter_id());
-
 TSshHostCA::TSshHostCA()
 {
   PermitRsaSha1 = false;
@@ -234,7 +232,7 @@ void TConfiguration::Default()
   FSessionReopenAuto = 5000;
   FSessionReopenBackground = 2000;
   FSessionReopenTimeout = 0;
-  FSessionReopenAutoStall = 60 * MSecsPerSec;
+  FSessionReopenAutoStall = 10 * MSecsPerSec;
   FTunnelLocalPortNumberLow = 50000;
   FTunnelLocalPortNumberHigh = 50099;
   FCacheDirectoryChangesMaxSize = 100;
@@ -411,7 +409,6 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY3(Integer,  SessionReopenAuto); \
     KEY3(Integer,  SessionReopenBackground); \
     KEY3(Integer,  SessionReopenTimeout); \
-    KEY3(Integer,  SessionReopenAutoStall); \
     KEY3(Integer,  TunnelLocalPortNumberLow); \
     KEY3(Integer,  TunnelLocalPortNumberHigh); \
     KEY3(Integer,  CacheDirectoryChangesMaxSize); \
@@ -1940,10 +1937,10 @@ void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)
 
     if (!PrevRandomSeedFileName.IsEmpty() &&
         (PrevRandomSeedFileName != GetRandomSeedFileName()) &&
-        base::FileExists(ApiPath(PrevRandomSeedFileName)))
+        base::FileExists(PrevRandomSeedFileName))
     {
       // ignore any error
-      base::FileRemove(ApiPath(PrevRandomSeedFileName));
+      base::FileRemove(PrevRandomSeedFileName);
     }
   }
 }

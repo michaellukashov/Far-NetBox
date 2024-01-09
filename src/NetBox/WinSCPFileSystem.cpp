@@ -1,4 +1,4 @@
-﻿#include <vcl.h>
+#include <vcl.h>
 #pragma hdrstop
 
 #include "WinSCPFileSystem.h"
@@ -7,6 +7,7 @@
 #include "FarUtils.h"
 #include <Common.h>
 #include <MsgIDs.h>
+#include <ObjIDs.h>
 #include <Exceptions.h>
 #include <SessionData.h>
 #include <CoreMain.h>
@@ -19,11 +20,6 @@
 #include "PuttyIntf.h"
 #include "XmlStorage.h"
 #include <plugin.hpp>
-
-const TObjectClassId OBJECT_CLASS_TWinSCPFileSystem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TSessionPanelItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TSessionFolderPanelItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TRemoteFilePanelItem = static_cast<TObjectClassId>(nb::counter_id());
 
 TSessionPanelItem::TSessionPanelItem(const TSessionData * ASessionData) :
   TCustomFarPanelItem(OBJECT_CLASS_TSessionPanelItem)
@@ -269,7 +265,7 @@ TKeepAliveThread::TKeepAliveThread(TWinSCPFileSystem * FileSystem,
 
 void TKeepAliveThread::InitKeepaliveThread()
 {
-  TSimpleThread::InitSimpleThread();
+  TSimpleThread::InitSimpleThread("NetBox KeepAlive Thread");
   FEvent = ::CreateEvent(nullptr, false, false, nullptr);
   Start();
 }

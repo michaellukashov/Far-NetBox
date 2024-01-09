@@ -1,4 +1,4 @@
-﻿
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -21,8 +21,6 @@
 #include <System.IOUtils.hpp>
 
 // #pragma package(smart_init)
-
-const TObjectClassId OBJECT_CLASS_TSessionUI = static_cast<TObjectClassId>(nb::counter_id());
 
 static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
 {
@@ -116,7 +114,6 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 }
 
 
-const TObjectClassId OBJECT_CLASS_TSessionActionRecord = static_cast<TObjectClassId>(nb::counter_id());
 // #pragma warn -inl
 class TSessionActionRecord : public TObject
 {

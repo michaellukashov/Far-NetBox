@@ -1,4 +1,4 @@
-﻿
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -15,10 +15,6 @@
 #include <System.ShlObj.hpp>
 
 // #pragma package(smart_init)
-
-const TObjectClassId OBJECT_CLASS_TGUICopyParamType = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TCopyParamRule = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TGUIConfiguration = static_cast<TObjectClassId>(nb::counter_id());
 
 constexpr const uint32_t AdditionalLanguageMask = 0xFFFFFF00;
 static constexpr const wchar_t * AdditionalLanguagePrefix = L"XX";
@@ -143,7 +139,7 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) noexcept :
 
 #undef C
 #define C(Property) (Property == rhp.Property)
-bool TCopyParamRule::operator==(const TCopyParamRule & rhp) const
+bool TCopyParamRule::operator ==(const TCopyParamRule & rhp) const
 {
   return
     C(FData.HostName) &&
@@ -212,7 +208,7 @@ bool TCopyParamRule::GetEmpty() const
     FData.LocalDirectory.IsEmpty();
 }
 
-TCopyParamRule & TCopyParamRule::operator=(const TCopyParamRule & other)
+TCopyParamRule & TCopyParamRule::operator =(const TCopyParamRule & other)
 {
   SetData(other.FData);
   return *this;
@@ -279,7 +275,7 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
   }
 }
 
-TCopyParamList & TCopyParamList::operator=(const TCopyParamList & rhl)
+TCopyParamList & TCopyParamList::operator =(const TCopyParamList & rhl)
 {
   if (this == &rhl)
     return *this;
@@ -301,7 +297,7 @@ TCopyParamList & TCopyParamList::operator=(const TCopyParamList & rhl)
   return *this;
 }
 
-bool TCopyParamList::operator==(const TCopyParamList & rhl) const
+bool TCopyParamList::operator ==(const TCopyParamList & rhl) const
 {
   bool Result = (GetCount() == rhl.GetCount());
   if (Result)

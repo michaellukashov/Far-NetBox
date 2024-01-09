@@ -1,4 +1,4 @@
-﻿
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -18,7 +18,7 @@ TFileOperationStatistics::TFileOperationStatistics() noexcept
 
 TFileOperationProgressType::TPersistence::TPersistence() noexcept
 {
-  FStatistics = nullptr;
+  FStatistics.Clear();
   Clear(true, true);
 }
 
@@ -353,11 +353,11 @@ void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
 
 void TFileOperationProgressType::Succeeded(int32_t Count)
 {
-  if (false) // FPersistence.Statistics != nullptr)
+  if (FPersistence.Statistics != nullptr)
   {
     if (IsTransfer())
     {
-      int64_t Transferred = FTransferredSize - FSkippedSize;
+      const int64_t Transferred = FTransferredSize - FSkippedSize;
       if (Side() == osLocal)
       {
         FPersistence.Statistics->FilesUploaded += Count;
@@ -385,16 +385,16 @@ void TFileOperationProgressType::Succeeded(int32_t Count)
 
 void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool AFileInProgress)
 {
-  UnicodeString Name = AFileName;
-  FFullFileName = AFileName;
+  UnicodeString LocalFileName = AFileName;
+  FFullFileName = LocalFileName;
   if (Side() == osRemote)
   {
     // historically set were passing filename-only for remote site operations,
     // now we need to collect a full paths, so we pass in full path,
     // but still want to have filename-only in FileName
-    Name = base::UnixExtractFileName(Name);
+    LocalFileName = base::UnixExtractFileName(LocalFileName);
   }
-  FFileName = Name;
+  FFileName = LocalFileName;
   FFileInProgress = AFileInProgress;
   ClearTransfer();
   FFileStartTime = Now();
@@ -441,17 +441,17 @@ void TFileOperationProgressType::SetSpeedCounters()
 
 // Used in WebDAV and S3 protocols
 void TFileOperationProgressType::ThrottleToCPSLimit(
-  uint64_t Size)
+  int64_t Size)
 {
-  uint64_t  Remaining = Size;
+  int64_t Remaining = Size;
   while (Remaining > 0)
   {
     Remaining -= AdjustToCPSLimit(Remaining);
   }
 }
 
-uint64_t TFileOperationProgressType::AdjustToCPSLimit(
-  uint64_t Size)
+int64_t TFileOperationProgressType::AdjustToCPSLimit(
+  int64_t Size)
 {
   SetSpeedCounters();
 
@@ -493,7 +493,7 @@ uint64_t TFileOperationProgressType::AdjustToCPSLimit(
 }
 
 // Use in SCP protocol only
-uint64_t TFileOperationProgressType::LocalBlockSize()
+int64_t TFileOperationProgressType::LocalBlockSize()
 {
   int64_t Result = TRANSFER_BUF_SIZE;
   if (FLocallyUsed + Result > FLocalSize)

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <plugin.hpp>
 #include "GUIConfiguration.h"
@@ -10,8 +10,7 @@ class TBookmarkList;
 // DefaultCommandPrefixes("netbox,ftp,scp,sftp,ftps,http,https,webdav,s3");
 constexpr const wchar_t * DefaultCommandPrefixes = L"netbox,ftp,scp,sftp,ftps,webdav,s3";
 
-extern const TObjectClassId OBJECT_CLASS_TFarConfiguration;
-class TFarConfiguration : public TGUIConfiguration
+class TFarConfiguration final : public TGUIConfiguration
 {
   NB_DISABLE_COPY(TFarConfiguration)
 public:

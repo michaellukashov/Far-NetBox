@@ -10,10 +10,6 @@
 
 // #pragma package(smart_init)
 
-const TObjectClassId OBJECT_CLASS_TBookmarks = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TBookmarkList = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TBookmark = static_cast<TObjectClassId>(nb::counter_id());
-
 TBookmarks::TBookmarks() noexcept : TObject(OBJECT_CLASS_TBookmarks),
   FSharedKey(UnicodeString(CONST_HIDDEN_PREFIX) + "shared")
 {

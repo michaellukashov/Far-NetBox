@@ -1,4 +1,4 @@
-﻿#include <vcl.h>
+#include <vcl.h>
 #pragma hdrstop
 
 #include <rdestl/map.h>
@@ -12,52 +12,38 @@
 #pragma warning(pop)
 #include <Queue.h> // TODO: move TSimpleThread to Sysutils
 
-const TObjectClassId OBJECT_CLASS_TFarDialog = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarDialogContainer = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarDialogItem = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarBox = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarButton = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarCheckBox = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarRadioButton = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarEdit = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarSeparator = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarText = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarList = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarListBox = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarComboBox = static_cast<TObjectClassId>(nb::counter_id());
-const TObjectClassId OBJECT_CLASS_TFarLister = static_cast<TObjectClassId>(nb::counter_id());
-
 inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
 {
   return TRect(Left, Top, Right, Bottom);
 }
 
 const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
-class TDialogIdleThread : public TSimpleThread
+class TFarDialogIdleThread : public TSimpleThread
 {
-  TDialogIdleThread() = delete;
+  TFarDialogIdleThread() = delete;
 public:
-  explicit TDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, int64_t Millisecs) noexcept :
+  explicit TFarDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TDialogIdleThread),
     FDialog(Dialog),
     FMillisecs(Millisecs)
   {}
 
-  virtual ~TDialogIdleThread() noexcept override
+  virtual ~TFarDialogIdleThread() noexcept override
   {
+    WaitFor(1000);
     SAFE_CLOSE_HANDLE(FEvent);
-    TDialogIdleThread::Terminate();
-    WaitFor();
+    TFarDialogIdleThread::Terminate();
   }
 
   virtual void Execute() override
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, nb::ToDWord(FMillisecs)) != WAIT_FAILED) && !IsFinished())
+      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
       {
-        if (FDialog && FDialog->GetHandle())
+        if (!IsFinished() && FDialog && FDialog->GetHandle())
           FDialog->Idle();
+        // TODO: use ACTL_SYNCHRO
       }
     }
     if (!IsFinished())
@@ -66,7 +52,6 @@ public:
 
   virtual void Terminate() override
   {
-    // TCompThread::Terminate();
     FFinished = true;
     if (FEvent)
       ::SetEvent(FEvent);
@@ -74,50 +59,23 @@ public:
 
   void InitIdleThread()
   {
-    TSimpleThread::InitSimpleThread();
-    FEvent = ::CreateEvent(nullptr, false, false, nullptr);
+    TSimpleThread::InitSimpleThread("NetBox Dialog Idle Thread");
+    FEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
     Start();
   }
 
 private:
   gsl::not_null<TFarDialog *> FDialog;
-  int64_t FMillisecs{0};
+  DWORD FMillisecs{0};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
 
 TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   TObject(OBJECT_CLASS_TFarDialog),
   FFarPlugin(AFarPlugin),
-  FBounds(-1, -1, 40, 10),
-  FFlags(0),
-  FHelpTopic(),
-  FVisible(false),
   FItems(std::make_unique<TObjectList>()),
-  FContainers(std::make_unique<TObjectList>()),
-  FHandle(nullptr),
-  FDefaultButton(nullptr),
-  FBorderBox(nullptr),
-  FNextItemPosition(ipNewLine),
-  FDefaultGroup(0),
-  FTag(0),
-  FItemFocused(nullptr),
-  FOnKey(nullptr),
-  FDialogItems(nullptr),
-  FDialogItemsCapacity(0),
-  FChangesLocked(0),
-  FChangesPending(false),
-  FResult(-1),
-  FNeedsSynchronize(false),
-  FSynchronizeMethod(nullptr)
+  FContainers(std::make_unique<TObjectList>())
 {
-  FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
-  FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
-
-  FBorderBox = new TFarBox(this);
-  FBorderBox->SetBounds(TRect(3, 1, -4, -2));
-  FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TDialogIdleThread>(this, 500);
-  FTIdleThread->InitIdleThread();
 }
 
 TFarDialog::~TFarDialog() noexcept
@@ -125,7 +83,9 @@ TFarDialog::~TFarDialog() noexcept
   FTIdleThread->Terminate();
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
-    GetItem(Index)->Detach();
+    TFarDialogItem * Item = GetItem(Index);
+    Item->Detach();
+    // TODO: SAFE_DESTROY(Item);
   }
 //  SAFE_DESTROY(FItems);
   nb_free(FDialogItems);
@@ -133,6 +93,19 @@ TFarDialog::~TFarDialog() noexcept
 //  SAFE_DESTROY(FContainers);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[0]);
   SAFE_CLOSE_HANDLE(FSynchronizeObjects[1]);
+  FHandle = nullptr;
+}
+
+void TFarDialog::InitDialog()
+{
+  FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
+  FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
+
+  FBorderBox = new TFarBox(this);
+  FBorderBox->SetBounds(TRect(3, 1, -4, -2));
+  FBorderBox->SetDouble(true);
+  FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 1000);
+  FTIdleThread->InitIdleThread();
 }
 
 void TFarDialog::SetBounds(const TRect & Value)
@@ -719,7 +692,7 @@ bool TFarDialog::HotKey(uint32_t Key, uint32_t ControlState) const
   return Result;
 }
 
-TFarDialogItem * TFarDialog::ItemAt(int32_t X, int32_t Y)
+TFarDialogItem * TFarDialog::ItemAt(int32_t X, int32_t Y) const
 {
   TFarDialogItem * Result = nullptr;
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
@@ -775,8 +748,8 @@ int32_t TFarDialog::ShowModal()
   FResult = -1;
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
-  HANDLE Handle = INVALID_HANDLE_VALUE;
   {
+    HANDLE Handle = INVALID_HANDLE_VALUE;
     const PluginStartupInfo & Info = *GetFarPlugin()->GetPluginStartupInfo();
     SCOPE_EXIT
     {
@@ -796,18 +769,18 @@ int32_t TFarDialog::ShowModal()
       TFarEnvGuard Guard; nb::used(Guard);
       const TRect Bounds = GetBounds();
       Handle = Info.DialogInit(
-          &NetBoxPluginGuid, GetDialogGuid(),
-          Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
-          HelpTopic.c_str(), FDialogItems,
-          GetItemCount(), 0, GetFlags(),
-          DialogProcGeneral,
-          nb::ToPtr(this));
+        &NetBoxPluginGuid, GetDialogGuid(),
+        Bounds.Left, Bounds.Top, Bounds.Right, Bounds.Bottom,
+        HelpTopic.c_str(), FDialogItems,
+        GetItemCount(), 0, GetFlags(),
+        TFarDialog::DialogProcGeneral,
+        nb::ToPtr(this));
       BResult = Info.DialogRun(Handle);
     }
 
     if (BResult >= 0)
     {
-      TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
+      const TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
       DebugAssert(Button);
       // correct result should be already set by TFarButton
       DebugAssert(FResult == Button->GetResult());
@@ -2197,7 +2170,7 @@ TFarList::~TFarList() noexcept
   nb_free(FListItems);
 }
 
-void TFarList::Assign(const TPersistent *Source)
+void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 
@@ -2561,6 +2534,7 @@ void TFarListBox::UpdateMouseReaction()
 void TFarListBox::SetItems(TStrings * Value)
 {
   FList->Assign(Value);
+  FList->SetOwnsObjects(true);
 }
 
 void TFarListBox::SetList(TFarList * Value)

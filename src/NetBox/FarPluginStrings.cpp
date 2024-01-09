@@ -1,4 +1,4 @@
-﻿#include <MsgIDs.h>
+#include <MsgIDs.h>
 #include "FarPluginStrings.h"
 #include "TextsFileZilla.h"
 #include "TextsCore.h"

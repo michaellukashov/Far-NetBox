@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 
@@ -17,7 +17,6 @@ struct TOverwriteFileParams;
 struct ssl_st;
 struct ne_lock;
 
-extern const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem;
 class TWebDAVFileSystem final : public TCustomFileSystem
 {
   NB_DISABLE_COPY(TWebDAVFileSystem)

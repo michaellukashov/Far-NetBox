@@ -39,7 +39,7 @@ public:
     return _getter();
   }
 
-  constexpr T operator->() const
+  constexpr T operator ->() const
   {
     return _getter();
   }
@@ -114,13 +114,13 @@ public:
     return *_value;
   }
 
-  constexpr T operator->() const
+  constexpr T operator ->() const
   {
     Expects(_value);
     return _value();
   }
 
-  constexpr T operator->()
+  constexpr T operator ->()
   {
     Expects(_value);
     return *_value;
@@ -211,13 +211,13 @@ public:
     return *_value;
   }
 
-  constexpr T operator->() const
+  constexpr T operator ->() const
   {
     Expects(_value);
     return _value();
   }
 
-  constexpr T operator->()
+  constexpr T operator ->()
   {
     Expects(_value);
     return *_value;

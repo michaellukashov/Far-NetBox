@@ -1,4 +1,4 @@
-﻿
+
 #include "stdafx.h"
 #include "FtpControlSocket.h"
 #include "MainThread.h"
@@ -1801,7 +1801,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
       return;
     }
 
-    int num = 0;
+    size_t num = 0;
     pData->pDirectoryListing = new t_directory;
     pData->pDirectoryListing->direntry = m_pTransferSocket->m_pListResult->getList(num);
     pData->pDirectoryListing->num = num;
@@ -2436,7 +2436,7 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
   CString cmd;
   CString retmsg;
   int code = -1;
-  int num = -1;
+  size_t num = (size_t)-1;
   switch (m_Operation.nOpState)
   {
   case LISTFILE_INIT:
@@ -2925,7 +2925,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
         return;
       }
 
-      int32_t num=0;
+      size_t num=0;
       pData->pDirectoryListing=new t_directory;
       pData->pDirectoryListing->direntry=m_pTransferSocket->m_pListResult->getList(num);
       pData->pDirectoryListing->num=num;

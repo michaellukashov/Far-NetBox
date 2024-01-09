@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #include <System.hpp>
@@ -7,7 +7,6 @@
 constexpr const wchar_t * CONST_HIDDEN_PREFIX = L"_!_";
 
 class TNamedObjectList;
-extern const TObjectClassId OBJECT_CLASS_TNamedObject;
 class NB_CORE_EXPORT TNamedObject : public TPersistent
 {
 public:
@@ -36,7 +35,6 @@ private:
   bool FHidden{false};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TNamedObjectList;
 class NB_CORE_EXPORT TNamedObjectList : public TObjectList
 {
 public:

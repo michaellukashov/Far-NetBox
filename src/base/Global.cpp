@@ -339,3 +339,59 @@ NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_
 }
 
 #endif // _DEBUG
+
+namespace os::debug
+{
+
+void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name)
+{
+  // from osquery\osquery\core\system.cpp
+#if defined(WIN32)
+  // SetThreadDescription is available in builds newer than 1607 of windows 10
+  // and works even if there is no debugger.
+  typedef HRESULT(WINAPI * PFNSetThreadDescription)(HANDLE hThread,
+                                                    PCWSTR lpThreadDescription);
+  auto pfnSetThreadDescription = reinterpret_cast<PFNSetThreadDescription>(
+    GetProcAddress(GetModuleHandleA("Kernel32.dll"), "SetThreadDescription"));
+  if (pfnSetThreadDescription != nullptr)
+  {
+    HRESULT hr = pfnSetThreadDescription(ThreadHandle, Name.c_str());
+    if (!FAILED(hr))
+    {
+      DEBUG_PRINTF("SetThreadDescription: success");
+    }
+  }
+  else
+  {
+    DEBUG_PRINTF("SetThreadName failed due to GetProcAddress returning null");
+  }
+#endif
+}
+
+UnicodeString GetThreadName(HANDLE ThreadHandle)
+{
+  UnicodeString Result;
+#if defined(WIN32)
+  typedef HRESULT(WINAPI * PFNGetThreadDescription)(HANDLE hThread, PWSTR* ThreadDescription);
+  auto pfnGetThreadDescription = reinterpret_cast<PFNGetThreadDescription>(
+    GetProcAddress(GetModuleHandleA("Kernel32.dll"), "GetThreadDescription"));
+  if (pfnGetThreadDescription != nullptr)
+  {
+    wchar_t * ThreadDescription{};
+    HRESULT hr = pfnGetThreadDescription(ThreadHandle, &ThreadDescription);
+    if (!FAILED(hr))
+    {
+      DEBUG_PRINTF("GetThreadDescription: success");
+      Result = ThreadDescription;
+    }
+  }
+  else
+  {
+    DEBUG_PRINTF("GetThreadName failed due to GetProcAddress returning null");
+  }
+#endif
+
+  return Result;
+}
+
+} // namespace os::debug

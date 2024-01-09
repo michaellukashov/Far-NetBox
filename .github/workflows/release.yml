@@ -1,4 +1,4 @@
-name: Release
+﻿name: Release
 
 on:
   workflow_dispatch:
@@ -26,10 +26,10 @@ jobs:
     env:
       BUILD_TYPE: RelWithDebugInfo
 
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Get version
         shell: bash
@@ -75,7 +75,7 @@ jobs:
           fi
 
       - name: Upload result
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: result
           path: ./*.7z
@@ -84,11 +84,11 @@ jobs:
   create-release:
     needs: [build]
     if: ${{ false }}
-    runs-on: windows-2019
+    runs-on: windows-2022
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Get version
         shell: bash
@@ -100,7 +100,7 @@ jobs:
           echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
 
       - name: Download result
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: result
 

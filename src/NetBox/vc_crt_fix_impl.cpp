@@ -1,4 +1,4 @@
-﻿// validator: no-self-include
+// validator: no-self-include
 /*
 vc_crt_fix_impl.cpp
 

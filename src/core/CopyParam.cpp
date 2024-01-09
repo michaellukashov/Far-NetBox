@@ -1,4 +1,4 @@
-﻿
+
 #include <vcl.h>
 #pragma hdrstop
 
@@ -11,8 +11,6 @@
 
 //const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
 //constexpr int32_t TransferModeNamesCount = _countof(TransferModeNames);
-
-const TObjectClassId OBJECT_CLASS_TCopyParamType = static_cast<TObjectClassId>(nb::counter_id());
 
 TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept :
   TObject(Kind)
@@ -979,14 +977,14 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   // Same as in TSessionData::DoSave
 #undef WRITE_DATA_EX
 #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
-    if ((Defaults != nullptr) && (CONV(Defaults->PROPERTY) == CONV(PROPERTY))) \
-    { \
-      Storage->DeleteValue(NAME); \
-    } \
-    else \
-    { \
-      Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
-    }
+  do { if ((Defaults != nullptr) && (CONV(Defaults->PROPERTY) == CONV(PROPERTY))) \
+  { \
+    Storage->DeleteValue(NAME); \
+  } \
+  else \
+  { \
+    Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
+  } } while(0)
   #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
   #undef WRITE_DATA
   #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), PROPERTY, )

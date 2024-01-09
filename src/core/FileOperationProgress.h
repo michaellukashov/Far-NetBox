@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #include <Common.h>
@@ -23,10 +23,19 @@ using TFileOperationFinishedEvent = nb::FastDelegate6<void,
   const UnicodeString & /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/>;
 
-class TFileOperationStatistics : public TObject
+class TFileOperationStatistics final : public TObject
 {
 public:
   TFileOperationStatistics() noexcept;
+  void Clear()
+  {
+    FilesUploaded = 0;
+    FilesDownloaded = 0;
+    FilesDeletedLocal = 0;
+    FilesDeletedRemote = 0;
+    TotalUploaded = 0;
+    TotalDownloaded = 0;
+  }
 
   int32_t FilesUploaded{0};
   int32_t FilesDownloaded{0};
@@ -39,7 +48,7 @@ public:
 class NB_CORE_EXPORT TFileOperationProgressType final : public TObject
 {
 public:
-  class TPersistence : public TObject
+  class TPersistence final : public TObject
   {
   friend class TFileOperationProgressType;
   public:
@@ -47,7 +56,7 @@ public:
     TPersistence(const TPersistence &) = delete;
     TPersistence & operator =(const TPersistence &) = default;
     __property TFileOperationStatistics * Statistics = { read = FStatistics, write = FStatistics };
-    TFileOperationStatistics * Statistics{FStatistics};
+    TFileOperationStatistics * Statistics{&FStatistics};
 
   private:
     void Clear(bool Batch, bool Speed);
@@ -61,7 +70,7 @@ public:
     nb::vector_t<int64_t> TotalTransferredThen;
     TOperationSide Side{osCurrent};
     int64_t TotalTransferred{0};
-    TFileOperationStatistics * FStatistics{nullptr};
+    TFileOperationStatistics FStatistics;
   };
 
 private:
@@ -100,7 +109,7 @@ private:
   TFileOperationFinishedEvent FOnFinished{nullptr};
   bool FReset{false};
   uint32_t FLastSecond{0};
-  uint64_t FRemainingCPS{0};
+  int64_t FRemainingCPS{0};
   TOnceDoneOperation FInitialOnceDoneOperation{odoIdle};
   TPersistence FPersistence{};
   TCriticalSection * FSection{nullptr};
@@ -218,15 +227,15 @@ public:
     TOnceDoneOperation & OnceDoneOperation);
   void Succeeded(int32_t Count = 1);
   void Progress();
-  uint64_t LocalBlockSize();
+  int64_t LocalBlockSize();
   bool IsLocallyDone() const;
   bool IsTransferDone() const;
   bool IsTransferDoneChecked() const;
   void SetFile(const UnicodeString & AFileName, bool AFileInProgress = true);
   void SetFileInProgress();
   uint64_t TransferBlockSize();
-  uint64_t AdjustToCPSLimit(uint64_t Size);
-  void ThrottleToCPSLimit(uint64_t Size);
+  int64_t AdjustToCPSLimit(int64_t Size);
+  void ThrottleToCPSLimit(int64_t Size);
   static uint64_t StaticBlockSize();
   void Reset();
   void Resume();
@@ -270,8 +279,8 @@ public:
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
   static bool IsTransferOperation(TFileOperation Operation);
-  TFileOperationProgressType(const TFileOperationProgressType & rhs) { operator =(rhs); }
-  TFileOperationProgressType & operator=(const TFileOperationProgressType &);
+  TFileOperationProgressType(const TFileOperationProgressType & rhs) : TObject() { operator =(rhs); }
+  TFileOperationProgressType & operator =(const TFileOperationProgressType &);
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
   UnicodeString GetFileName() const { return FFileName; }

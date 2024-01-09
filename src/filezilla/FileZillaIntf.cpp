@@ -1,4 +1,4 @@
-﻿
+
 #include "stdafx.h"
 
 #include "FileZillaIntf.h"
@@ -519,9 +519,9 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
           Dest.LinkTarget = Source.linkTarget;
         }
 
-        int Num = Directory->num;
+        size_t Num = Directory->num;
         TListDataEntry * pEntries = Num > 0 ? &Entries[0] : nullptr;
-        Result = HandleListData(Path, pEntries, Num);
+        Result = HandleListData(Path, pEntries, (uint32_t)Num);
 
         delete Directory;
       }

@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #include <Common.h>
@@ -138,7 +138,6 @@ struct TIEProxyConfig;
 constexpr const int32_t SFTPMinVersion = 0;
 constexpr const int32_t SFTPMaxVersion = 6;
 
-extern const TObjectClassId OBJECT_CLASS_TSessionData;
 class NB_CORE_EXPORT TSessionData : public TNamedObject
 {
   friend class TStoredSessionList;
@@ -1060,7 +1059,6 @@ private:
   mutable TIEProxyConfig * FIEProxyConfig{nullptr};
 };
 
-extern const TObjectClassId OBJECT_CLASS_TStoredSessionList;
 class NB_CORE_EXPORT TStoredSessionList final : public TNamedObjectList
 {
   NB_DISABLE_COPY(TStoredSessionList)
