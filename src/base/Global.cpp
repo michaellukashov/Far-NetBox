@@ -358,12 +358,12 @@ void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name)
     HRESULT hr = pfnSetThreadDescription(ThreadHandle, Name.c_str());
     if (!FAILED(hr))
     {
-      DEBUG_PRINTF("SetThreadDescription: success");
+      // DEBUG_PRINTF("SetThreadDescription: success");
     }
   }
   else
   {
-    DEBUG_PRINTF("SetThreadName failed due to GetProcAddress returning null");
+    // DEBUG_PRINTF("SetThreadName failed due to GetProcAddress returning null");
   }
 #endif
 }
@@ -381,13 +381,13 @@ UnicodeString GetThreadName(HANDLE ThreadHandle)
     HRESULT hr = pfnGetThreadDescription(ThreadHandle, &ThreadDescription);
     if (!FAILED(hr))
     {
-      DEBUG_PRINTF("GetThreadDescription: success");
+      // DEBUG_PRINTF("GetThreadDescription: success");
       Result = ThreadDescription;
     }
   }
   else
   {
-    DEBUG_PRINTF("GetThreadName failed due to GetProcAddress returning null");
+    // DEBUG_PRINTF("GetThreadName failed due to GetProcAddress returning null");
   }
 #endif
 
