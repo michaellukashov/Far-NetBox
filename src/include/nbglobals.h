@@ -367,24 +367,16 @@ private: \
   Class & operator =(const Class &) = delete;
 
 template <typename T1>
-inline constexpr void used(const T1 &)
-{
-}
+inline constexpr void used(const T1 &) {}
 
 template <typename T1>
-inline constexpr void unused(const T1 &)
-{
-}
+inline constexpr void unused(const T1 &) {}
 
 template <typename T1>
-inline constexpr void ignore(const T1 &)
-{
-}
+inline constexpr void ignore(const T1 &) {}
 
 template <typename T>
-inline constexpr void ignore_result(const T&)
-{
-}
+inline constexpr void ignore_result(const T &) {}
 
 template <class T>
 struct add_const
@@ -395,7 +387,7 @@ struct add_const
 template <class T> struct
 add_const<T&>
 {
-  using type = T&;
+  using type = const T &;
 };
 
 template <class T> using add_const_t = typename add_const<T>::type;
