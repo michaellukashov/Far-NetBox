@@ -273,7 +273,7 @@ void TPuttyCleanupThread::Execute()
 
       if (Continue)
       {
-        Sleep(1000);
+        Sleep(400);
       }
     }
     while (Continue);

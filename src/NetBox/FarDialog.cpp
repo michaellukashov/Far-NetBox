@@ -30,7 +30,7 @@ public:
 
   virtual ~TFarDialogIdleThread() noexcept override
   {
-    WaitFor(1000);
+    WaitFor(400);
     SAFE_CLOSE_HANDLE(FEvent);
     TFarDialogIdleThread::Terminate();
   }
@@ -103,7 +103,7 @@ void TFarDialog::InitDialog()
   FBorderBox = new TFarBox(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
-  FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 1000);
+  FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 400);
   FTIdleThread->InitIdleThread();
 }
 

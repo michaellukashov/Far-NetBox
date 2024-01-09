@@ -1044,7 +1044,7 @@ void TTerminalQueue::Idle()
 bool TTerminalQueue::WaitForEvent()
 {
   // terminate loop regularly, so that we can check for expired done items
-  const bool Result = (TSignalThread::WaitForEvent(1000) != 0);
+  const bool Result = (TSignalThread::WaitForEvent(400) != 0);
   return Result;
 }
 
@@ -2891,7 +2891,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
           }
         }
 
-        const int32_t WaitResult = WaitForEvent(1000);
+        const int32_t WaitResult = WaitForEvent(400);
         if (WaitResult == 0)
         {
           SAFE_DESTROY_EX(Exception, FIdleException);
