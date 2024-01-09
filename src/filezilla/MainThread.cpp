@@ -383,6 +383,7 @@ CMainThread* CMainThread::Create(int nPriority, DWORD dwCreateFlags)
     return nullptr;
   }
   ::SetThreadPriority(pMainThread->m_hThread, nPriority);
+  os::debug::SetThreadName(pMainThread->m_hThread, L"NetBox FTP Main Thread");
   return pMainThread;
 }
 

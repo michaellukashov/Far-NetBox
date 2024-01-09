@@ -265,7 +265,7 @@ TKeepAliveThread::TKeepAliveThread(TWinSCPFileSystem * FileSystem,
 
 void TKeepAliveThread::InitKeepaliveThread()
 {
-  TSimpleThread::InitSimpleThread();
+  TSimpleThread::InitSimpleThread("NetBox KeepAlive Thread");
   FEvent = ::CreateEvent(nullptr, false, false, nullptr);
   Start();
 }

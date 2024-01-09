@@ -145,3 +145,11 @@ using TShellExecuteInfoW = struct _SHELLEXECUTEINFOW;
 using TSHFileInfoW = struct _SHFILEINFOW;
 using TVSFixedFileInfo = VS_FIXEDFILEINFO;
 using PVSFixedFileInfo = VS_FIXEDFILEINFO*;
+
+namespace os::debug {
+
+void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name);
+UnicodeString GetThreadName(HANDLE ThreadHandle);
+
+} // namespace os::debug
+

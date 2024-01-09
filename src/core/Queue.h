@@ -14,7 +14,7 @@ public:
 public:
   explicit TSimpleThread(TObjectClassId Kind) noexcept;
   virtual ~TSimpleThread() noexcept override;
-  void InitSimpleThread();
+  void InitSimpleThread(const UnicodeString & Name);
 
   virtual void Start();
   void WaitFor(DWORD Milliseconds = INFINITE) const;

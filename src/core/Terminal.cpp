@@ -182,7 +182,7 @@ TTunnelThread::TTunnelThread(TSecureShell * SecureShell) noexcept :
 
 void TTunnelThread::InitTunnelThread()
 {
-  TSimpleThread::InitSimpleThread();
+  TSimpleThread::InitSimpleThread("Terminal Tunnel Thread");
   Start();
 }
 

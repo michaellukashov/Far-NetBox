@@ -58,7 +58,7 @@ public:
 
   void InitIdleThread()
   {
-    TSimpleThread::InitSimpleThread();
+    TSimpleThread::InitSimpleThread("NetBox Dialog Idle Thread");
     FEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
     Start();
   }
