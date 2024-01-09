@@ -393,6 +393,12 @@ TEST_CASE_METHOD(base_fixture_t, "testFileMasks", "netbox")
 {
   if (1)
   {
+    TFileMasks m(L"*.txt;*.log");
+    bool res = m.Matches(L"test.exe");
+    REQUIRE(!res);
+  }
+  if (1)
+  {
     REQUIRE_EQUAL(true, TFileMasks::IsMask(L"*.txt;*.log;*.exe,*.cmd|*.bat"));
     // REQUIRE_EQUAL(true, TFileMasks::IsAnyMask(L"*.*"));
     TFileMasks m(L"*.txt;*.log");
