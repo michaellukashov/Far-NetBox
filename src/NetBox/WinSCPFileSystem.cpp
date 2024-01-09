@@ -4063,7 +4063,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   EditHistory.Directory = Directory;
   EditHistory.FileName = AFileName;
 
-  const TEditHistories::iterator it_h = rde::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
+  const TEditHistories::iterator it_h = std::find(FEditHistories.begin(), FEditHistories.end(), EditHistory);
   if (it_h != FEditHistories.end())
   {
     FEditHistories.erase(it_h);

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <rdestl/vector.h>
-#include <rdestl/map.h>
-#include <rdestl/list.h>
-#include <rdestl/set.h>
+#include <vector>
+#include <map>
+#include <list>
+#include <set>
 
 #include <nbcore.h>
 
@@ -11,10 +11,10 @@
 
 namespace nb {
 
-template<typename T> using vector_t = rde::vector<T>;
-template<typename T> using set_t = rde::set<T>;
-template<typename T> using list_t = rde::list<T>;
-template<typename Tk, typename Tv> using map_t = rde::map<Tk, Tv>;
+template<typename T> using vector_t = std::vector<T>;
+template<typename T> using set_t = std::set<T>;
+template<typename T> using list_t = std::list<T>;
+template<typename Tk, typename Tv> using map_t = std::map<Tk, Tv>;
 
 } // namespace nb
 

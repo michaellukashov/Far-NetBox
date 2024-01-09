@@ -1799,8 +1799,8 @@ void TTerminal::SetupTunnelLocalPortNumber()
           FConfiguration->GetTunnelLocalPortNumberLow(), FConfiguration->GetTunnelLocalPortNumberHigh()));
       }
       const int32_t Index = Random(nb::ToInt32(Ports.size()));
-      const int32_t Port = Ports[Index];
-      Ports.erase(&Ports.at(Index));
+      const int32_t Port = Ports.at(Index);
+      Ports.erase(std::find(Ports.begin(), Ports.end(), Port));
       if (IsListenerFree(Port))
       {
         FTunnelLocalPortNumber = Port;

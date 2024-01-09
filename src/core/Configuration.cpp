@@ -2421,7 +2421,8 @@ void TShortCuts::Add(const TShortCut &ShortCut)
 
 bool TShortCuts::Has(const TShortCut &ShortCut) const
 {
-  const nb::vector_t<TShortCut>::const_iterator it = const_cast<TShortCuts *>(this)->FShortCuts.find(ShortCut);
+  nb::vector_t<TShortCut> & ShortCuts = const_cast<TShortCuts *>(this)->FShortCuts;
+  const nb::vector_t<TShortCut>::const_iterator it = std::find(ShortCuts.begin(), ShortCuts.end(), ShortCut);
   return (it != FShortCuts.end());
 }
 
