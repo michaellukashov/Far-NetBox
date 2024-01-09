@@ -385,16 +385,16 @@ void TFileOperationProgressType::Succeeded(int32_t Count)
 
 void TFileOperationProgressType::SetFile(const UnicodeString & AFileName, bool AFileInProgress)
 {
-  UnicodeString Name = AFileName;
-  FFullFileName = AFileName;
+  UnicodeString LocalFileName = AFileName;
+  FFullFileName = LocalFileName;
   if (Side() == osRemote)
   {
     // historically set were passing filename-only for remote site operations,
     // now we need to collect a full paths, so we pass in full path,
     // but still want to have filename-only in FileName
-    Name = base::UnixExtractFileName(Name);
+    LocalFileName = base::UnixExtractFileName(LocalFileName);
   }
-  FFileName = Name;
+  FFileName = LocalFileName;
   FFileInProgress = AFileInProgress;
   ClearTransfer();
   FFileStartTime = Now();
