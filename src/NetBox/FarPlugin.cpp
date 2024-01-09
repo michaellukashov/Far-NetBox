@@ -1928,7 +1928,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
 void TCustomFarPlugin::Initialize()
 {
 //  ::SetGlobals(new TGlobalFunctions());
-  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 1000);
+  FTIdleThread = std::make_unique<TPluginIdleThread>(this, 400);
   FTIdleThread->InitIdleThread("NetBox IdleThread");
 }
 
