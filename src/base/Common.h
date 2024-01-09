@@ -552,12 +552,12 @@ public:
     return (FEventHandlers.size() > 0);
   }
 
-  bool operator==(const TMulticastEvent<T> & Other) const
+  bool operator ==(const TMulticastEvent<T> & Other) const
   {
     return (FEventHandlers == Other.FEventHandlers);
   }
 
-  void operator=(const TMulticastEvent<T> & Other)
+  void operator =(const TMulticastEvent<T> & Other)
   {
     FEventHandlers = Other.FEventHandlers;
   }

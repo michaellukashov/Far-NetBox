@@ -1066,6 +1066,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text = new TFarText(this);
   Text->SetCaption(PluginDescriptionText);
   Text->SetCenterGroup(true);
+
   Text = new TFarText(this);
   UnicodeString VersionStr = GetConfiguration()->GetProductVersion();
   if (VersionStr.IsEmpty())
@@ -8615,6 +8616,7 @@ void TQueueDialog::RefreshQueue()
 
     const TQueueItemProxy * PrevQueueItem = nullptr;
     UnicodeString Line;
+
     while ((Index < GetQueueItems()->GetCount()) &&
       (Index < TopIndex + QueueListBox->GetHeight()))
     {

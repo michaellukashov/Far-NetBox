@@ -23,7 +23,7 @@ using TFileOperationFinishedEvent = nb::FastDelegate6<void,
   const UnicodeString & /*FileName*/, bool /*Success*/,
   TOnceDoneOperation & /*OnceDoneOperation*/>;
 
-class TFileOperationStatistics : public TObject
+class TFileOperationStatistics final : public TObject
 {
 public:
   TFileOperationStatistics() noexcept;
@@ -39,7 +39,7 @@ public:
 class NB_CORE_EXPORT TFileOperationProgressType final : public TObject
 {
 public:
-  class TPersistence : public TObject
+  class TPersistence final : public TObject
   {
   friend class TFileOperationProgressType;
   public:
@@ -270,8 +270,8 @@ public:
 
   static bool IsIndeterminateOperation(TFileOperation Operation);
   static bool IsTransferOperation(TFileOperation Operation);
-  TFileOperationProgressType(const TFileOperationProgressType & rhs) { operator =(rhs); }
-  TFileOperationProgressType & operator=(const TFileOperationProgressType &);
+  TFileOperationProgressType(const TFileOperationProgressType & rhs) : TObject() { operator =(rhs); }
+  TFileOperationProgressType & operator =(const TFileOperationProgressType &);
   TFileOperation GetOperation() const { return FOperation; }
   // on what side if operation being processed (local/remote), source of copy
   UnicodeString GetFileName() const { return FFileName; }

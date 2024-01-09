@@ -56,7 +56,7 @@ public:
   UnicodeString GetHelpTopic() const { return FHelpTopic; }
   void SetHelpTopic(const UnicodeString & Value);
   FARDIALOGITEMFLAGS GetFlags() const { return FFlags; }
-  void SetFlags(const FARDIALOGITEMFLAGS Value);
+  void SetFlags(FARDIALOGITEMFLAGS Value);
   bool GetCentered() const;
   void SetCentered(bool Value);
   TPoint GetSize() const;
@@ -617,7 +617,7 @@ public:
   TFarList * GetItems() const { return FList.get(); }
   TFarList * GetItems() { return FList.get(); }
   void SetList(TFarList * Value);
-  TFarListBoxAutoSelect GetAutoSelect() { return FAutoSelect; }
+  TFarListBoxAutoSelect GetAutoSelect() const { return FAutoSelect; }
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
 protected:

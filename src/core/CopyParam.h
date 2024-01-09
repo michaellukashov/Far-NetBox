@@ -63,7 +63,7 @@ private:
   TResumeSupport FResumeSupport{rsOn};
   int64_t FResumeThreshold{0};
   // UnicodeString GetLogStr() const;
-  wchar_t FInvalidCharsReplacement{};
+  wchar_t FInvalidCharsReplacement{L'-'};
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
   bool FCalculateSize{false};
@@ -126,7 +126,7 @@ public:
   UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
   // UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ uint32_t Attrs) const;
 
-  bool operator ==(const TCopyParamType &rhp) const;
+  bool operator ==(const TCopyParamType & rhp) const;
 
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
   TFileMasks& AsciiFileMask{FAsciiFileMask};
