@@ -66,7 +66,7 @@ protected:
 
 protected:
   t_directory * m_pWorkingDir{nullptr};
-  rde::map<int, int> m_Options;
+  nb::map_t<int, int> m_Options;
   BOOL m_bQuit{FALSE};
   t_command * m_pPostKeepAliveCommand{nullptr};
   CServerPath m_CurrentPath;

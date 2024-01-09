@@ -12,8 +12,6 @@
 #define NEED_LIBS3
 #endif
 
-#include <rdestl/map.h>
-#include <rdestl/vector.h>
 #include <StrUtils.hpp>
 #include <NeonIntf.h>
 #include <SessionData.h>

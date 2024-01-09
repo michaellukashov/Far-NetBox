@@ -258,7 +258,7 @@ public:
     }
     if (Index <= nb::ToInt32(FList.size()))
     {
-      FList.insert(Index, 1, Item);
+      FList.insert(FList.begin() + Index, Item);
     }
     if (Item != nullptr)
     {

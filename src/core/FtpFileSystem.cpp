@@ -2,8 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-
-#include <rdestl/list.h>
 #ifndef MPEXT
 #define MPEXT
 #endif

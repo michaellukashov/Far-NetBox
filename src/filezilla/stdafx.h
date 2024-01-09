@@ -26,10 +26,6 @@
 //#include <wtypes.h>
 
 // STL includes
-#include <rdestl/list.h>
-#include <rdestl/map.h>
-#include <rdestl/vector.h>
-#include <rdestl/set.h>
 #include <algorithm>
 
 class CFileFix;

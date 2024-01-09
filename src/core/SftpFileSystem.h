@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <rdestl/set.h>
 #include <FileSystems.h>
 
 using SSH_FX_TYPE = int32_t;
@@ -131,7 +130,7 @@ protected:
   nb::vector_t<uint32_t> FPacketNumbers;
   SSH_FXP_TYPE FPreviousLoggedPacket{0};
   int32_t FNotLoggedWritePackets{0}, FNotLoggedReadPackets{0}, FNotLoggedStatusPackets{0}, FNotLoggedDataPackets{0};
-  rde::set<uint32_t> FNotLoggedRequests;
+  nb::set_t<uint32_t> FNotLoggedRequests;
   int32_t FBusy{0};
   void * FBusyToken{nullptr};
   bool FAvoidBusy{false};

@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <rdestl/vector.h>
 #include <winhttp.h>
 
 #include <Common.h>
@@ -1968,7 +1967,7 @@ void TSessionData::RecryptPasswords()
 // Caching read password files, particularly when the file is actually a named pipe
 // that does not support repeated reading.
 static std::unique_ptr<TCriticalSection> PasswordFilesCacheSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
-typedef rde::map<UnicodeString, UnicodeString> TPasswordFilesCache;
+using TPasswordFilesCache = nb::map_t<UnicodeString, UnicodeString>;
 static TPasswordFilesCache PasswordFilesCache;
 
 static UnicodeString ReadPasswordFromFile(const UnicodeString & FileName)

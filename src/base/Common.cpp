@@ -17,8 +17,6 @@
 #include <shlobj.h>
 #include <limits>
 #include <algorithm>
-#include <rdestl/map.h>
-#include <rdestl/vector.h>
 #include <psapi.h>
 #include <CoreMain.h>
 #include <SessionInfo.h>
@@ -5192,7 +5190,7 @@ UnicodeString GetAncestorProcessName(int32_t Levels)
 
       DWORD ProcessId = GetCurrentProcessId();
 
-      typedef std::vector<DWORD> TProcesses;
+      typedef nb::vector_t<DWORD> TProcesses;
       TProcesses Processes;
       // Either more to go (>0) or collecting all levels (-1 from GetAncestorProcessNames)
       while ((Levels != 0) &&

@@ -189,6 +189,8 @@ public:
   bool operator ==(const UnicodeString & Str) const { return Data == Str.Data; }
   bool operator !=(const UnicodeString & Str) const { return Data != Str.Data; }
 
+  friend bool operator <(const UnicodeString & Str1, const UnicodeString & Str2) { return Str1.Compare(Str2) < 0; }
+
   NB_CORE_EXPORT friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
   NB_CORE_EXPORT friend bool operator ==(const wchar_t * lhs, const UnicodeString & rhs);
   NB_CORE_EXPORT friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
@@ -377,9 +379,9 @@ private:
 };
 
 
-// rde support
+// std support
 
-namespace rde {
+namespace nb {
 
 template<typename S>
 inline bool operator ==(const S & lhs, const S & rhs)
@@ -405,7 +407,7 @@ inline bool operator >(const S & lhs, const S & rhs)
   return lhs.Compare(rhs) > 0;
 }
 
-}  // namespace rde
+}  // namespace nb
 
 // utility functions
 

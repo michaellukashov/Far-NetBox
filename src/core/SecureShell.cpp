@@ -1723,7 +1723,7 @@ void TSecureShell::UpdatePortFwdSocket(SOCKET Value, bool Enable)
     }
     else
     {
-      const TSockets::iterator it = FPortFwdSockets.find(Value);
+      const TSockets::iterator it = std::find(FPortFwdSockets.begin(), FPortFwdSockets.end(), Value);
       if (it != FPortFwdSockets.end())
         FPortFwdSockets.erase(it);
     }

@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <rdestl/vector.h>
-#include <rdestl/set.h>
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
@@ -88,7 +86,7 @@ private:
   std::unique_ptr<ScpLogPolicy> FLogPolicy{nullptr};
   std::unique_ptr<ScpSeat> FSeat{nullptr};
   gsl::owner<LogContext *> FLogCtx{nullptr};
-  rde::set<UnicodeString> FLoggedKnownHostKeys;
+  nb::set_t<UnicodeString> FLoggedKnownHostKeys;
 
 public:
   void Init();

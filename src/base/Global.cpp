@@ -4,7 +4,6 @@
 
 #ifdef _DEBUG
 //#include <cstdio>
-#include <rdestl/vector.h>
 // TODO: remove src/core dep
 #include <Interface.h>
 #endif // ifdef _DEBUG
