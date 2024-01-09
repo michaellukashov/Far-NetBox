@@ -2407,7 +2407,6 @@ target_include_directories(NetBox PRIVATE
   libs/putty/windows
   libs/neon/src
   libs/tinyxml2
-  libs/rdestl
   libs/expat/lib
   libs/atlmfc/include
   libs/fmt
@@ -2500,7 +2499,6 @@ set(TEST_INCLUDES
   libs/putty
   libs/putty/windows
   libs/tinyxml2
-  libs/rdestl
   libs/atlmfc/include
   libs/neon/src
   libs/expat/lib
