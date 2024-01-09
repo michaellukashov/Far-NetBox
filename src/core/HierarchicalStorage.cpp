@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <rdestl/vector.h>
 #include <Common.h>
 #include <Exceptions.h>
 #include <StrUtils.hpp>

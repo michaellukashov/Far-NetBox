@@ -22,7 +22,6 @@ extern "C"
 }
 #include <StrUtils.hpp>
 #include <openssl/ssl.h>
-#include <rdestl/set.h>
 
 constexpr const char * SESSION_PROXY_AUTH_KEY = "proxyauth";
 constexpr const char * SESSION_TLS_INIT_KEY = "tlsinit";

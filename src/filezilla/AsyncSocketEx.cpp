@@ -578,7 +578,7 @@ public:
 
       // Process pending callbacks
       nb::list_t<t_callbackMsg> tmp;
-      rde::swap(tmp, pSocket->m_pendingCallbacks);
+      std::swap(tmp, pSocket->m_pendingCallbacks);
       pSocket->OnLayerCallback(tmp);
     }
     else if (message == WM_TIMER)
