@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rdestl/vector.h>
-
 #include <Classes.hpp>
 #include "HierarchicalStorage.h"
 #include "PluginSettings.hpp"

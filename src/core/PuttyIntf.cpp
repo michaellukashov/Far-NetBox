@@ -1,5 +1,4 @@
 
-#include <rdestl/map.h>
 #include <vcl.h>
 #pragma hdrstop
 
@@ -470,7 +469,7 @@ ScpSeat::ScpSeat(TSecureShell * ASecureShell)
 static TCriticalSection PuttyRegistrySection;
 enum TPuttyRegistryMode { prmPass, prmRedirect, prmCollect, prmFail };
 static TPuttyRegistryMode PuttyRegistryMode = prmRedirect;
-using TPuttyRegistryTypes = rde::map<UnicodeString, uint32_t>;
+using TPuttyRegistryTypes = nb::map_t<UnicodeString, uint32_t>;
 TPuttyRegistryTypes PuttyRegistryTypes;
 HKEY RandSeedFileStorage = reinterpret_cast<HKEY>(1);
 

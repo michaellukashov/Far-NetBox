@@ -1,9 +1,6 @@
 
 #pragma once
 
-#include <rdestl/map.h>
-#include <rdestl/vector.h>
-
 #include <Global.h>
 #include <Exceptions.h>
 

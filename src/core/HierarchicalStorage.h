@@ -3,12 +3,10 @@
 
 #include <registry.hpp>
 #include <memory>
-#include <rdestl/map.h>
-#include <rdestl/vector.h>
 
 enum TStorage { stDetect, stRegistry, stIniFile, stXmlFile, stFar3Storage, stNul };
 enum TStorageAccessMode { smRead, smReadWrite };
-using TIntMapping = rde::map<UnicodeString, int32_t>;
+using TIntMapping = nb::map_t<UnicodeString, int32_t>;
 
 class NB_CORE_EXPORT THierarchicalStorage : public TObject
 {

@@ -1,7 +1,6 @@
 
 #pragma once
 
-#include <rdestl/vector.h>
 #include <Masks.hpp>
 #include <Exceptions.h>
 #include "SessionData.h"

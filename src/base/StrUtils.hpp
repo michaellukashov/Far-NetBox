@@ -1,6 +1,5 @@
 #pragma once
 
-#include <rdestl/vector.h>
 #include <Classes.hpp>
 
 NB_CORE_EXPORT UnicodeString ReplaceStr(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);

@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include <rdestl/map.h>
-
 #include <time.h>
 #include <FileZillaOpt.h>
 #include <FilezillaTools.h>

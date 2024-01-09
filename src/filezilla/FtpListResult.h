@@ -70,7 +70,7 @@ private:
   tTempData m_TempData;
 
   // Month names map
-  rde::map<CString, int> m_MonthNamesMap;
+  nb::map_t<CString, int> m_MonthNamesMap;
 
   bool m_vmsAllRevisions{false};
   bool m_debugShowListing{false};
