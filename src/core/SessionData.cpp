@@ -5691,7 +5691,7 @@ void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
   std::unique_ptr<TStrings> Hosts(CreateSortedStringList());
   for (int32_t Index = 0; Index < Lines->Count; Index++)
   {
-    UnicodeString Line = Lines->GetString(Index);
+    const UnicodeString Line = Lines->GetString(Index);
     UnicodeString Directive, Value;
     if (ParseOpensshDirective(Line, Directive, Value))
     {
@@ -5699,7 +5699,7 @@ void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
       {
         while (!Value.IsEmpty())
         {
-          UnicodeString Name = CutOpensshToken(Value);
+          const UnicodeString Name = CutOpensshToken(Value);
           if ((Hosts->IndexOf(Name) < 0) && (Name.LastDelimiter(L"*?") == 0))
           {
             std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(EmptyStr));
@@ -6362,18 +6362,7 @@ const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & 
   }
   return nullptr;
 }
-#if 0
-void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
-{
-  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(AKey));
-  Storage->Init();
-  if (Storage->OpenRootKey(false))
-  {
-    Load(Storage.get(), false, UseDefaults);
-  }
-}
-#endif // if 0
-//===========================================================================
+
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData)
 {
   // StripPathQuotes should not be needed as we do not feed quotes anymore
