@@ -787,7 +787,7 @@
 
 //About menu
 "NetBox - About"
-"SFTP/FTP/SCP/WebDAV/S3 client for Far 3"
+"SFTP/FTP/SCP/WebDAV/S3 client for Far 3.0"
 "Version %s"
 "Close"
 
