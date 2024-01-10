@@ -40,17 +40,17 @@ bool TXmlStorage::ReadXml()
     return false;
   }
   size_t BuffSize = nb::ToSizeT(xmlFile.GetFileSize() + 1);
-  if (BuffSize > 1000000)
+  if (BuffSize > 1024 * 1024)
   {
     return false;
   }
-  AnsiString buff(nb::ToInt32(BuffSize), 0);
-  if (!xmlFile.Read(&buff[1], BuffSize))
+  AnsiString Buff(nb::ToInt32(BuffSize), 0);
+  if (!xmlFile.Read(&Buff[1], BuffSize))
   {
     return false;
   }
 
-  FXmlDoc->Parse(buff.c_str());
+  FXmlDoc->Parse(Buff.c_str());
   if (FXmlDoc->Error())
   {
     return false;
