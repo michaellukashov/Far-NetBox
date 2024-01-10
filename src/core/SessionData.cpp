@@ -746,7 +746,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetHostName(Storage->ReadString("HostName", GetHostName()));
 
   #define LOAD_PASSWORD_EX(PROP, PLAIN_NAME, ENC_NAME, ONPLAIN) \
-    if (Storage->ValueExists(PLAIN_NAME)) \
+    do { if (Storage->ValueExists(PLAIN_NAME)) \
     { \
       Set ## PROP(Storage->ReadString(PLAIN_NAME, F ## PROP)); \
       ONPLAIN \
@@ -755,12 +755,12 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
     { \
       RawByteString A##PROP = Storage->ReadStringAsBinaryData(ENC_NAME, F##PROP); \
       SET_SESSION_PROPERTY_FROM(PROP, A##PROP); \
-    }
+    } } while(0)
   #define LOAD_PASSWORD(PROP, PLAIN_NAME) LOAD_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), RewritePassword = true; )
   const bool LoadPasswords = !GetConfiguration()->GetDisablePasswordStoring() || !RespectDisablePasswordStoring;
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(Password, "PasswordPlain")
+    LOAD_PASSWORD(Password, "PasswordPlain");
   }
   SetHostKey(Storage->ReadString("SshHostKey", GetHostKey())); // probably never used
   SetNote(Storage->ReadString("Note", GetNote()));
@@ -883,7 +883,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FProxyPort = Storage->ReadInteger("ProxyPort", FProxyPort);
   FProxyUsername = Storage->ReadString("ProxyUsername", FProxyUsername);
   // proxy password is not rewritten
-  LOAD_PASSWORD_EX(ProxyPassword, "ProxyPassword", "ProxyPasswordEnc", )
+  LOAD_PASSWORD_EX(ProxyPassword, "ProxyPassword", "ProxyPasswordEnc", );
   if (!Unsafe)
   {
     if (FProxyMethod == pmCmd)
@@ -949,14 +949,14 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetTunnelHostName(Storage->ReadString("TunnelHostName", GetTunnelHostName()));
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(TunnelPassword, "TunnelPasswordPlain")
+    LOAD_PASSWORD(TunnelPassword, "TunnelPasswordPlain");
   }
   FTunnelPublicKeyFile = Storage->ReadString(L"TunnelPublicKeyFile", FTunnelPublicKeyFile);
   // Contrary to main session passphrase (which has -passphrase switch in scripting),
   // we are loading tunnel passphrase, as there's no other way to provide it in scripting
   if (LoadPasswords)
   {
-    LOAD_PASSWORD(TunnelPassphrase, "TunnelPassphrasePlain")
+    LOAD_PASSWORD(TunnelPassphrase, "TunnelPassphrasePlain");
   }
   SetTunnelLocalPortNumber(Storage->ReadInteger("TunnelLocalPortNumber", nb::ToInt32(GetTunnelLocalPortNumber())));
   SetTunnelHostKey(Storage->ReadString("TunnelHostKey", GetTunnelHostKey()));
