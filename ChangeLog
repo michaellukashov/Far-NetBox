@@ -1,6 +1,12 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [24.1.1.571] - 2024-01-11
+### Fixed
+- Fix connect from History
+- Bugfix: Import session: session data not updated if session already exists
+https://forum.farmanager.com/viewtopic.php?p=176925#p176925 p.3
+
 ## [24.1.1.570] - 2024-01-07
 ### Fixed
 - Transfer on background: fix found issues
