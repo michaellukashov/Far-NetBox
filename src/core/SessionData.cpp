@@ -2407,7 +2407,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
     }
 
-    // UnicodeString ARemoteDirectory;
+    UnicodeString ARemoteDirectory;
 
     const bool ParseOnly = FLAGSET(Flags, pufParseOnly);
     if (Data != nullptr)
@@ -2420,7 +2420,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         P++;
         DebugAssert(P <= Url.Length());
       }
-      UnicodeString ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
+      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
 
       if (Data->Hidden && !ParseOnly)
       {
@@ -2561,7 +2561,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
 
       UnicodeString RemoteDirectoryWithSessionParams = Url.SubString(PSlash, Url.Length() - PSlash + 1);
-      RemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, UrlParamSeparator, false);
+      ARemoteDirectory = CutToChar(RemoteDirectoryWithSessionParams, UrlParamSeparator, false);
       UnicodeString SessionParams = RemoteDirectoryWithSessionParams;
 
       // We should handle session params in "stored session" branch too.
@@ -2588,22 +2588,22 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         {
           (*MaskedUrl) += L"@";
         }
-        (*MaskedUrl) += OrigHostInfo + RemoteDirectory;
+        (*MaskedUrl) += OrigHostInfo + ARemoteDirectory;
       }
 
-      if (PSlash <= Url.Length())
+      /*if (PSlash <= Url.Length())
       {
-        RemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
-      }
+        ARemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
+      }*/
     }
 
-    if (!RemoteDirectory().IsEmpty() && (RemoteDirectory() != ROOTDIRECTORY))
+    if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != ROOTDIRECTORY))
     {
-      if ((RemoteDirectory()[RemoteDirectory().Length()] != Slash) &&
+      if ((ARemoteDirectory[ARemoteDirectory.Length()] != Slash) &&
           (AFileName != nullptr))
       {
-        *AFileName = DecodeUrlChars(base::UnixExtractFileName(RemoteDirectory));
-        RemoteDirectory = base::UnixExtractFilePath(RemoteDirectory);
+        *AFileName = DecodeUrlChars(base::UnixExtractFileName(ARemoteDirectory));
+        ARemoteDirectory = base::UnixExtractFilePath(ARemoteDirectory);
       }
       SetRemoteDirectory(DecodeUrlChars(RemoteDirectory));
       // Is already true for ad-hoc URL, but we want to error even for "storedsite/path/"-style URL.
