@@ -528,7 +528,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
       if (SessionName.SubString(1, Folder.Length()) == Folder)
       {
         UnicodeString Name = SessionName.SubString(
-            Folder.Length() + 1, SessionName.Length() - Folder.Length());
+          Folder.Length() + 1, SessionName.Length() - Folder.Length());
         if (const int32_t PSlash = Name.Pos(L'/'); PSlash > 0)
         {
           Name.SetLength(PSlash - 1);

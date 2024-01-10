@@ -2386,7 +2386,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
           }
 
           if ((SessionNameWithoutFolder.Length() == DecodedUrl.Length()) &&
-               SameText(SessionNameWithoutFolder, DecodedUrl))
+              SameText(SessionNameWithoutFolder, DecodedUrl))
           {
             Match = true;
           }
