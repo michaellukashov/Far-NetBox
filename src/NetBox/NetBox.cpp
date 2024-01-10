@@ -14,7 +14,7 @@
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
 extern void DestroyFarPlugin(TCustomFarPlugin *& Plugin);
 
-class TFarPluginGuard : public TFarPluginEnvGuard, public TGuard
+class TFarPluginGuard final : public TFarPluginEnvGuard, public TGuard
 {
 public:
   TFarPluginGuard() :

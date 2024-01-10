@@ -22,7 +22,7 @@
 #define WRITE_REGISTRY(Method) \
   try { FRegistry->Method(Name, Value); } catch(...) { }
 
-UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi, bool Value)
+static UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi, bool Value)
 {
   RawByteString Source;
   if (ForceAnsi)
@@ -49,7 +49,7 @@ UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi, bool Value)
   return UnicodeString(Dest.c_str(), Dest.Length());
 }
 
-UnicodeString UnMungeStr(const UnicodeString & Str)
+static UnicodeString UnMungeStr(const UnicodeString & Str)
 {
   // Str should contain ASCII characters only
   const RawByteString Source = AnsiString(Str);

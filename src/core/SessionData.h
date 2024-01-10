@@ -138,7 +138,7 @@ struct TIEProxyConfig;
 constexpr const int32_t SFTPMinVersion = 0;
 constexpr const int32_t SFTPMaxVersion = 6;
 
-class NB_CORE_EXPORT TSessionData : public TNamedObject
+class NB_CORE_EXPORT TSessionData final : public TNamedObject
 {
   friend class TStoredSessionList;
   friend class TSecondaryTerminal;
@@ -147,14 +147,13 @@ class NB_CORE_EXPORT TSessionData : public TNamedObject
   friend class TSFTPFileSystem;
   friend class TWebDAVFileSystem;
   friend class TS3FileSystem;
+  friend class TTerminal;
+  friend class TSecureShell;
+  friend class TSessionLog;
   NB_DISABLE_COPY(TSessionData)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
-  friend class TTerminal;
-  friend class TSecureShell;
-  friend class TSessionLog;
-  void SessionSetUserName(const UnicodeString & AValue);
 private:
   UnicodeString FHostName;
   int32_t FPortNumber{0};
@@ -1022,6 +1021,7 @@ public:
   UnicodeString GetLogicalHostName() const { return FLogicalHostName; }
   int32_t GetOrigPortNumber() const { return FOrigPortNumber; }
   void SetPasswordless(bool Value);
+  void SessionSetUserName(const UnicodeString & AValue);
 
   void SetLogicalHostName(const UnicodeString & AValue);
   int32_t GetNumberOfRetries() const { return FNumberOfRetries; }
@@ -1140,7 +1140,7 @@ private:
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
 
-struct NB_CORE_EXPORT TIEProxyConfig : public TObject
+struct NB_CORE_EXPORT TIEProxyConfig final : public TObject
 {
   TIEProxyConfig() = default;
   bool AutoDetect{false}; // not used
