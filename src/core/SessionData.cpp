@@ -2377,7 +2377,8 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
           bool Match = false;
           // Comparison optimizations as this is called many times
           // e.g. when updating jumplist
-          SessionNameWithoutFolder = AData->GetName(); //AData->GetSessionName();
+          UnicodeString SessionNameWithFolder = AData->GetName(); //AData->GetSessionName();
+          SessionNameWithoutFolder = SessionNameWithFolder;
           // remove folder name
           const int32_t P = SessionNameWithoutFolder.Pos(SLASH);
           if (P > 0)
@@ -2387,6 +2388,11 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
 
           if ((SessionNameWithoutFolder.Length() == DecodedUrl.Length()) &&
               SameText(SessionNameWithoutFolder, DecodedUrl))
+          {
+            Match = true;
+          }
+          else if ((SessionNameWithFolder.Length() == DecodedUrl.Length()) &&
+                   SameText(SessionNameWithFolder, DecodedUrl))
           {
             Match = true;
           }
@@ -2414,13 +2420,13 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     {
       DoCopyData(Data, ParseOnly);
       FSource = Data->FSource;
-      int32_t P = 1;
+      /*int32_t P = 1;
       while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), SessionNameWithoutFolder))
       {
         P++;
         DebugAssert(P <= Url.Length());
       }
-      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
+      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);*/
 
       if (Data->Hidden && !ParseOnly)
       {
