@@ -5300,13 +5300,14 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   try__finally
   {
     DebugAssert(FAutoSort);
+    FAutoSort = false;
     const bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());
 
     for (int32_t Index = 0; Index < SubKeys->GetCount(); ++Index)
     {
-      UnicodeString SessionName = SubKeys->GetString(Index);
+      const UnicodeString SessionName = SubKeys->GetString(Index);
 
       bool ValidName = true;
       try
@@ -5352,8 +5353,8 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
             SessionData->SetName(SessionName);
             Add(SessionData);
           }
-          SessionData->Load(Storage, PuttyImport);
           Loaded->Add(SessionData);
+          SessionData->Load(Storage, PuttyImport);
           if (AsModified)
           {
             SessionData->SetModified(true);
