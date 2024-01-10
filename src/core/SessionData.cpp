@@ -2425,9 +2425,9 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       if (Data->Hidden && !ParseOnly)
       {
         Data->Remove();
-        StoredSessions->Remove(Data);
+        GetStoredSessions()->Remove(Data);
         // only modified, implicit
-        StoredSessions->Save(false, false);
+        GetStoredSessions()->Save(false, false);
       }
 
       if (MaskedUrl != nullptr)
@@ -2442,9 +2442,9 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       RequireDirectories = true;
 
       // This happens when pasting URL on Login dialog
-      if (StoredSessions != nullptr)
+      if (GetStoredSessions() != nullptr)
       {
-        DoCopyData(StoredSessions->DefaultSettings, ParseOnly);
+        DoCopyData(GetStoredSessions()->DefaultSettings, ParseOnly);
       }
       Name = L"";
 
@@ -2766,7 +2766,7 @@ void TSessionData::RollbackTunnel()
 TSessionData * TSessionData::CreateTunnelData(int32_t TunnelLocalPortNumber)
 {
   std::unique_ptr<TSessionData> TunnelData(std::make_unique<TSessionData>(EmptyStr));
-  TunnelData->Assign(StoredSessions->DefaultSettings);
+  TunnelData->Assign(GetStoredSessions()->DefaultSettings);
   TunnelData->Name = FMTLOAD(TUNNEL_SESSION_NAME, SessionName);
   TunnelData->FTunnel = false;
   TunnelData->FHostName = FTunnelHostName;
@@ -6319,7 +6319,7 @@ TSessionData * TStoredSessionList::SaveWorkspaceData(TSessionData * Data, int32_
 {
   std::unique_ptr<TSessionData> Result(std::make_unique<TSessionData>(""));
 
-  const TSessionData * SameData = StoredSessions->FindSame(Data);
+  const TSessionData * SameData = GetStoredSessions()->FindSame(Data);
   if (SameData != nullptr)
   {
     Result->CopyStateData(Data);

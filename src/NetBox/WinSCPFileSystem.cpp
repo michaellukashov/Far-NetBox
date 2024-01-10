@@ -504,13 +504,13 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
   else if (IsSessionList())
   {
     Result = true;
-    DebugAssert(StoredSessions);
+    DebugAssert(GetStoredSessions());
     bool SessionList = true;
     {
       std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
       if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
       {
-          StoredSessions->Load(Storage.get());
+        GetStoredSessions()->Load(Storage.get());
       }
     }
     UnicodeString Folder = FSessionsFolder;
@@ -521,9 +521,9 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
 
     std::unique_ptr<TStringList> ChildPaths(std::make_unique<TStringList>());
     ChildPaths->SetCaseSensitive(false);
-    for (int32_t Index = 0; Index < StoredSessions->GetCount(); ++Index)
+    for (int32_t Index = 0; Index < GetStoredSessions()->GetCount(); ++Index)
     {
-      const TSessionData * Data = StoredSessions->GetSession(Index);
+      const TSessionData * Data = GetStoredSessions()->GetSession(Index);
       UnicodeString SessionName = Data->GetName();
       if (SessionName.SubString(1, Folder.Length()) == Folder)
       {
@@ -571,7 +571,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
     }
     if (!FPrevSessionName.IsEmpty())
     {
-      const TSessionData * PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
+      const TSessionData * PrevSession = GetStoredSessions()->GetSessionByName(FPrevSessionName);
       FPrevSessionName.Clear();
       if (UpdatePanel())
       {
@@ -598,14 +598,14 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
     !Name.IsEmpty() && (Name != Data->GetName()))
   {
     Name = ReplaceChar(Name, Backslash, Slash);
-    const TNamedObject * EData = StoredSessions->FindByName(Name);
+    const TNamedObject * EData = GetStoredSessions()->FindByName(Name);
     if ((EData != nullptr) && (EData != Data))
     {
       throw Exception(FORMAT(GetMsg(NB_SESSION_ALREADY_EXISTS_ERROR), Name));
     }
     else
     {
-      const TSessionData * NData = StoredSessions->NewSession(Name, Data);
+      const TSessionData * NData = GetStoredSessions()->NewSession(Name, Data);
       FSessionsFolder = ::ExcludeTrailingBackslash(base::UnixExtractFilePath(Name));
 
       // change of letter case during duplication degrades the operation to rename
@@ -614,12 +614,12 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
         Data->Remove();
         if (NData != Data)
         {
-          StoredSessions->Remove(Data);
+          GetStoredSessions()->Remove(Data);
         }
       }
 
       // modified only, explicit
-      StoredSessions->Save(/*All*/true, /*Explicit*/true);
+      GetStoredSessions()->Save(/*All*/true, /*Explicit*/true);
 
       if (UpdatePanel())
       {
@@ -693,13 +693,13 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
               GetMsg(NB_NEW_SESSION_NAME_PROMPT), Name, 0) &&
             !Name.IsEmpty())
           {
-            if (StoredSessions->FindByName(Name))
+            if (GetStoredSessions()->FindByName(Name))
             {
               throw Exception(FORMAT(GetMsg(NB_SESSION_ALREADY_EXISTS_ERROR), Name));
             }
             else
             {
-              SelectSession = StoredSessions->NewSession(Name, Data);
+              SelectSession = GetStoredSessions()->NewSession(Name, Data);
               FSessionsFolder = ::ExcludeTrailingBackslash(base::UnixExtractFilePath(Name));
             }
           }
@@ -712,7 +712,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
         }
 
         // modified only, explicit
-        StoredSessions->Save(false, true);
+        GetStoredSessions()->Save(false, true);
         if (UpdatePanel())
         {
           if (SelectSession != nullptr)
@@ -951,7 +951,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
 
     if (Key == VK_F4 && (ControlState == 0))
     {
-      if ((Data != nullptr) || (StoredSessions->GetCount() == 0))
+      if ((Data != nullptr) || (GetStoredSessions()->GetCount() == 0))
       {
         EditConnectSession(Data, true);
       }
@@ -2398,7 +2398,7 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(const UnicodeString & AName, OPERATIO
 void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*AParam*/)
 {
   Data->Remove();
-  StoredSessions->Remove(Data);
+  GetStoredSessions()->Remove(Data);
 }
 
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
@@ -2427,13 +2427,13 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       UnicodeString Folder = base::UnixIncludeTrailingBackslash(
           base::UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
       int32_t Index2 = 0;
-      while (Index2 < StoredSessions->GetCount())
+      while (Index2 < GetStoredSessions()->GetCount())
       {
-        TSessionData * Data = StoredSessions->GetSession(Index2);
+        TSessionData * Data = GetStoredSessions()->GetSession(Index2);
         if (Data->GetName().SubString(1, Folder.Length()) == Folder)
         {
           ProcessSession(Data, AParam);
-          if ((Index2 < StoredSessions->GetCount()) && StoredSessions->GetSession(Index2) != Data)
+          if ((Index2 < GetStoredSessions()->GetCount()) && GetStoredSessions()->GetSession(Index2) != Data)
           {
             Index2--;
           }
@@ -2834,9 +2834,9 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
           ImportStorage->HasSubKeys())
         {
           AnyData = true;
-          StoredSessions->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
+          GetStoredSessions()->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
           // modified only, explicit
-          StoredSessions->Save(false, true);
+          GetStoredSessions()->Save(false, true);
         }
       }
       if (!AnyData)
@@ -2953,7 +2953,7 @@ void TWinSCPFileSystem::SaveSession()
   {
     GetSessionData()->SetRemoteDirectory(FTerminal->RemoteGetCurrentDirectory());
 
-    TSessionData * Data = rtti::dyn_cast_or_null<TSessionData>(StoredSessions->FindByName(GetSessionData()->GetName()));
+    TSessionData * Data = rtti::dyn_cast_or_null<TSessionData>(GetStoredSessions()->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -2966,7 +2966,7 @@ void TWinSCPFileSystem::SaveSession()
       if (Changed)
       {
         // modified only, implicit
-        StoredSessions->Save(false, false);
+        GetStoredSessions()->Save(false, false);
       }
     }
   }

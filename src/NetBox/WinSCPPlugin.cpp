@@ -323,12 +323,12 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         // directory will be set by FAR itself
         Directory.Clear();
       }
-      DebugAssert(StoredSessions);
+      DebugAssert(GetStoredSessions());
       bool DefaultsOnly = false;
       std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
       ParseCommandLine(CommandLine, Options.get());
       constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
-      std::unique_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
+      std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
       if (DefaultsOnly)
       {
         Abort();

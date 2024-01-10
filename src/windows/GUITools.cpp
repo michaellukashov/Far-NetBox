@@ -127,7 +127,7 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
     {
       std::unique_ptr<TRegistryStorage> SourceStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
       SourceStorage->ConfigureForPutty();
-      if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
+      if (SourceStorage->OpenSubKey(GetStoredSessions()->DefaultSettings->Name, false) &&
           Storage->OpenSubKey(SessionName, true))
       {
         Storage->Copy(SourceStorage.get());

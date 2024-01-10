@@ -311,7 +311,7 @@ void TConfiguration::UpdateStaticUsage()
 
   // this is called from here, because we are guarded from calling into
   // master password handler here, see TWinConfiguration::UpdateStaticUsage
-  StoredSessions->UpdateStaticUsage();
+  GetStoredSessions()->UpdateStaticUsage();
 }
 
 THierarchicalStorage * TConfiguration::CreateConfigStorage()
@@ -519,7 +519,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
 
   if (All)
   {
-    StoredSessions->Save(true, Explicit);
+    GetStoredSessions()->Save(true, Explicit);
   }
 
   // clean up as last, so that if it fails (read only INI), the saving can proceed

@@ -1244,7 +1244,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
     !SessionName.IsEmpty())
     // StoredCredentialsTried)
   {
-    FSessionData = rtti::dyn_cast_or_null<TSessionData>(StoredSessions->FindByName(SessionName));
+    FSessionData = rtti::dyn_cast_or_null<TSessionData>(GetStoredSessions()->FindByName(SessionName));
     ShowSavePassword = (FSessionData != nullptr);
   }
 
@@ -1393,7 +1393,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
       DebugAssert(FSessionData != nullptr);
       FSessionData->SetPassword(Results->GetString(0));
       // modified only, explicit
-      StoredSessions->Save(false, true);
+      GetStoredSessions()->Save(false, true);
     }
   }
   return Result;
