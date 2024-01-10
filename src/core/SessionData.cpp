@@ -5300,7 +5300,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
 
     for (int32_t Index = 0; Index < SubKeys->GetCount(); ++Index)
     {
-      UnicodeString SessionName = SubKeys->GetString(Index);
+      const UnicodeString SessionName = SubKeys->GetString(Index);
 
       bool ValidName = true;
       try
@@ -5684,7 +5684,7 @@ void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
   std::unique_ptr<TStrings> Hosts(CreateSortedStringList());
   for (int32_t Index = 0; Index < Lines->Count; Index++)
   {
-    UnicodeString Line = Lines->GetString(Index);
+    const UnicodeString Line = Lines->GetString(Index);
     UnicodeString Directive, Value;
     if (ParseOpensshDirective(Line, Directive, Value))
     {
@@ -5692,7 +5692,7 @@ void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
       {
         while (!Value.IsEmpty())
         {
-          UnicodeString Name = CutOpensshToken(Value);
+          const UnicodeString Name = CutOpensshToken(Value);
           if ((Hosts->IndexOf(Name) < 0) && (Name.LastDelimiter(L"*?") == 0))
           {
             std::unique_ptr<TSessionData> Data(std::make_unique<TSessionData>(EmptyStr));

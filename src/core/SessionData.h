@@ -138,7 +138,7 @@ struct TIEProxyConfig;
 constexpr const int32_t SFTPMinVersion = 0;
 constexpr const int32_t SFTPMaxVersion = 6;
 
-class NB_CORE_EXPORT TSessionData : public TNamedObject
+class NB_CORE_EXPORT TSessionData final : public TNamedObject
 {
   friend class TStoredSessionList;
   friend class TSecondaryTerminal;
@@ -1140,7 +1140,7 @@ private:
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
 
-struct NB_CORE_EXPORT TIEProxyConfig : public TObject
+struct NB_CORE_EXPORT TIEProxyConfig final : public TObject
 {
   TIEProxyConfig() = default;
   bool AutoDetect{false}; // not used
