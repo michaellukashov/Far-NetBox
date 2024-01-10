@@ -405,6 +405,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     // leaved subdirectory is not focused, when entering parent directory.
     HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
     CurDir = FTerminal->RemoteGetCurrentDirectory();
+    const UnicodeString FolderName = GetSessionData()->GetFolderName();
     const UnicodeString SessionName = GetSessionData()->GetLocalName();
     AFormat = FORMAT("netbox:%s", SessionName);
     const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
@@ -417,7 +418,19 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     {
       PanelTitle = FORMAT(" %s:%s ", HostName, CurDir);
     }
-    ShortcutData = FORMAT("netbox:%s\1%s", Url, CurDir);
+    UnicodeString FolderAndSessionName;
+    if (!FolderName.IsEmpty())
+      FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
+    else
+      FolderAndSessionName = FORMAT("%s", FolderName, SessionName);
+    ShortcutData = FORMAT("netbox:%s\1%s", FolderAndSessionName, CurDir);
+
+    /*DEBUG_PRINTF("SessionName: %s", SessionName);
+    DEBUG_PRINTF("HostName: %s", HostName);
+    DEBUG_PRINTF("FolderAndSessionName: %s", FolderAndSessionName);
+    DEBUG_PRINTF("Url: %s", Url);
+    DEBUG_PRINTF("CurDir: %s", CurDir);
+    DEBUG_PRINTF("ShortcutData: %s", ShortcutData);*/
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
