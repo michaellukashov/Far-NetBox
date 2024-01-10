@@ -189,8 +189,8 @@ void TXmlStorage::DoGetSubKeyNames(TStrings * Strings)
   for (tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
     Element != nullptr; Element = Element->NextSiblingElement())
   {
-    UnicodeString val = GetValue(Element);
-    Strings->Add(PuttyUnMungeStr(val));
+    UnicodeString Val = GetValue(Element);
+    Strings->Add(PuttyUnMungeStr(Val));
   }
 }
 
