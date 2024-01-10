@@ -5294,6 +5294,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   try__finally
   {
     DebugAssert(FAutoSort);
+    FAutoSort = false;
     const bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());
@@ -5345,9 +5346,9 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
             }
             SessionData->SetName(SessionName);
             Add(SessionData);
-            SessionData->Load(Storage, PuttyImport);
           }
           Loaded->Add(SessionData);
+          SessionData->Load(Storage, PuttyImport);
           if (AsModified)
           {
             SessionData->SetModified(true);
@@ -6355,18 +6356,7 @@ const TSessionData * TStoredSessionList::GetSessionByName(const UnicodeString & 
   }
   return nullptr;
 }
-#if 0
-void TStoredSessionList::Load(const UnicodeString & AKey, bool UseDefaults)
-{
-  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(AKey));
-  Storage->Init();
-  if (Storage->OpenRootKey(false))
-  {
-    Load(Storage.get(), false, UseDefaults);
-  }
-}
-#endif // if 0
-//===========================================================================
+
 UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData)
 {
   // StripPathQuotes should not be needed as we do not feed quotes anymore
