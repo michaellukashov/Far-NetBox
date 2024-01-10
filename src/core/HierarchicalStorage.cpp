@@ -360,6 +360,8 @@ bool THierarchicalStorage::OpenSubKey(const UnicodeString & ASubKey, bool CanCre
     {
       MungedKey = MungeStr(ASubKey, !GetForceAnsi(), false);
       Result = DoOpenSubKey(MungedKey, CanCreate);
+      if (!Result)
+        Result = DoOpenSubKey(ASubKey, CanCreate);
     }
   }
 
