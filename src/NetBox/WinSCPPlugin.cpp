@@ -245,7 +245,7 @@ int32_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo 
   return 0;
 }
 
-int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
+int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
   int32_t Result = 0;
   if ((Rec->EventType == KEY_EVENT) &&
