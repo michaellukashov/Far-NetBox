@@ -709,7 +709,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
   {
     return FName;
   }
-  if (FIDValid)
+  else if (FIDValid)
   {
     return IntToStr(FID);
   }
