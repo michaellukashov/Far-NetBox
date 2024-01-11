@@ -1921,7 +1921,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
   else
   {
     #define SAVE_PASSWORD_EX(PROP, PLAIN_NAME, ENC_NAME, ENC_KEY, COND) \
-      if (DoNotEncryptPasswords) \
+      do { if (DoNotEncryptPasswords) \
       { \
         if (!F##PROP.IsEmpty() || SaveAll) \
         { \
@@ -1944,12 +1944,12 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
           Storage->DeleteValue(ENC_NAME); \
         } \
         Storage->DeleteValue(PLAIN_NAME); \
-      }
-    #define SAVE_PASSWORD(PROP, PLAIN_NAME, ENC_KEY) SAVE_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), ENC_KEY, !GetConfiguration()->DisablePasswordStoring)
+      } } while(0)
+    #define SAVE_PASSWORD(PROP, PLAIN_NAME, ENC_KEY) SAVE_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), ENC_KEY, !GetConfiguration()->DisablePasswordStoring);
 
-    SAVE_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", FProxyUsername + FProxyHost, true)
-    SAVE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain", FTunnelUserName + FTunnelHostName)
-    SAVE_PASSWORD_EX(EncryptKey, L"EncryptKeyPlain", L"EncryptKey", FUserName + FHostName, true)
+    SAVE_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", FProxyUsername + FProxyHost, true);
+    SAVE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain", FTunnelUserName + FTunnelHostName);
+    SAVE_PASSWORD_EX(EncryptKey, L"EncryptKeyPlain", L"EncryptKey", FUserName + FHostName, true);
   }
 }
 
