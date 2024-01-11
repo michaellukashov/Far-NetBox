@@ -238,6 +238,7 @@ int32_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo 
     for (int32_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
       TWinSCPFileSystem * FileSystem = FOpenedPlugins->GetAs<TWinSCPFileSystem>(Index);
+      Ensures(FileSystem);
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
