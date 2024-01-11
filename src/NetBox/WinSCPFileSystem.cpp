@@ -202,7 +202,7 @@ class TFarInteractiveCustomCommand final : public TInteractiveCustomCommand
 {
   TFarInteractiveCustomCommand() = delete;
 public:
-  explicit TFarInteractiveCustomCommand(TCustomFarPlugin * Plugin,
+  explicit TFarInteractiveCustomCommand(gsl::not_null<TCustomFarPlugin *> Plugin,
     TCustomCommand * ChildCustomCommand);
 
 protected:
@@ -210,11 +210,11 @@ protected:
     UnicodeString & Value) const override;
 
 private:
-  TCustomFarPlugin * FPlugin{nullptr};
+  gsl::not_null<TCustomFarPlugin *> FPlugin;
 };
 
 TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
-  TCustomFarPlugin * Plugin, TCustomCommand * ChildCustomCommand) :
+  gsl::not_null<TCustomFarPlugin *> Plugin, TCustomCommand * ChildCustomCommand) :
   TInteractiveCustomCommand(ChildCustomCommand),
   FPlugin(Plugin)
 {
@@ -238,10 +238,10 @@ void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
 const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
-class TKeepAliveThread : public TSimpleThread
+class TKeepAliveThread final : public TSimpleThread
 {
 public:
-  explicit TKeepAliveThread(TWinSCPFileSystem * FileSystem, const TDateTime & Interval) noexcept;
+  explicit TKeepAliveThread(gsl::not_null<TWinSCPFileSystem *> FileSystem, const TDateTime & Interval) noexcept;
   virtual ~TKeepAliveThread() noexcept override = default;
 
   virtual void Execute() override;
@@ -250,12 +250,12 @@ public:
   void InitKeepaliveThread();
 
 private:
-  TWinSCPFileSystem * FFileSystem{nullptr};
+  gsl::not_null<TWinSCPFileSystem *> FFileSystem;
   TDateTime FInterval{};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
 
-TKeepAliveThread::TKeepAliveThread(TWinSCPFileSystem * FileSystem,
+TKeepAliveThread::TKeepAliveThread(gsl::not_null<TWinSCPFileSystem *> FileSystem,
   const TDateTime & Interval) noexcept :
   TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
@@ -280,8 +280,7 @@ void TKeepAliveThread::Execute()
 {
   while (!IsFinished())
   {
-    if ((::WaitForSingleObject(FEvent, nb::ToDWord(
-            nb::ToDouble(FInterval) * MSecsPerDay)) != WAIT_FAILED) &&
+    if ((::WaitForSingleObject(FEvent, nb::ToDWord(FInterval.GetValue() * MSecsPerDay)) != WAIT_FAILED) &&
       !IsFinished())
     {
       FFileSystem->KeepaliveThreadCallback();
