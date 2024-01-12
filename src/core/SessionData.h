@@ -576,7 +576,7 @@ public:
   virtual int32_t Compare(const TNamedObject * Other) const override;
   void CopyData(const TSessionData * Source);
   void CopyDataNoRecrypt(const TSessionData * SourceData);
-  void CopyDirectoriesStateData(TSessionData * SourceData);
+  void CopyDirectoriesStateData(const TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl, int32_t Flags);

@@ -1497,7 +1497,7 @@ protected:
   virtual void SelectTab(int32_t Tab) override;
 
 private:
-  void LoadPing(TSessionData * SessionData);
+  void LoadPing(const TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
   int32_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const;
   TProxyMethod IndexToProxyMethod(int32_t Index, TFarList * Items) const;
@@ -3809,7 +3809,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Acti
   return Result;
 }
 
-void TSessionDialog::LoadPing(TSessionData * SessionData)
+void TSessionDialog::LoadPing(const TSessionData * SessionData)
 {
   const TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
       AllowScpFallbackCheck->GetChecked());
@@ -3995,8 +3995,8 @@ TFtps TSessionDialog::IndexToFtps(int32_t Index) const
 
 TFtps TSessionDialog::GetFtps() const
 {
-  TFSProtocol FSProtocol = GetFSProtocol();
-  int32_t Index = (((FSProtocol == fsWebDAV) || (FSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
+  TFSProtocol AFSProtocol = GetFSProtocol();
+  const int32_t Index = (((AFSProtocol == fsWebDAV) || (AFSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
   TFtps Ftps;
   switch (Index)
   {
@@ -4156,7 +4156,7 @@ void TSessionDialog::SelectTab(int32_t Tab)
   }*/
   for (Index = 0; Index < FTabs->GetCount(); ++Index)
   {
-    TTabButton * TabBtn = (FTabs->GetAs<TTabButton>(Index));
+    const TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
     if (TabBtn == SelectedTabBtn)
     {
       break;
@@ -4223,9 +4223,9 @@ int32_t TSessionDialog::GetVisibleTabsCount(int32_t TabIndex, bool Forward) cons
   {
     for (int32_t Index = TabIndex; Index < FTabs->GetCount() - 1; ++Index)
     {
-      TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
+      const TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * NextTabBtn = FTabs->GetAs<TTabButton>(Index + 1);
+      const TTabButton * NextTabBtn = FTabs->GetAs<TTabButton>(Index + 1);
       const int32_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
@@ -4236,9 +4236,9 @@ int32_t TSessionDialog::GetVisibleTabsCount(int32_t TabIndex, bool Forward) cons
   {
     for (int32_t Index = TabIndex; Index >= 1; Index--)
     {
-      TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
+      const TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * PrevTabBtn = FTabs->GetAs<TTabButton>(Index - 1);
+      const TTabButton * PrevTabBtn = FTabs->GetAs<TTabButton>(Index - 1);
       const int32_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;
@@ -4710,13 +4710,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   int32_t AAllowedChanges) :
   TFarDialog(AFarPlugin),
-  FAnyDirectories(false),
-  FAllowedChanges(AAllowedChanges),
-  RightsContainer(nullptr),
-  OwnerComboBox(nullptr),
-  GroupComboBox(nullptr),
-  RecursiveCheck(nullptr),
-  OkButton(nullptr)
+  FAllowedChanges(AAllowedChanges)
 {
   TFarDialog::InitDialog();
   DebugAssert(AFileList->GetCount() > 0);
@@ -4783,7 +4777,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     {
       Text->SetCaption(base::MinimizeName(AFileList->GetString(0), nb::ToInt32(GetClientSize().x), true));
     }
-    TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
+    const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
     {
       Text = new TFarText(this);

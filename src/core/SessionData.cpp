@@ -528,7 +528,7 @@ void TSessionData::Assign(const TPersistent * Source)
 {
   if (Source && rtti::isa<TSessionData>(Source))
   {
-    TSessionData * SourceData = rtti::dyn_cast_or_null<TSessionData>(const_cast<TPersistent *>(Source));
+    const TSessionData * SourceData = rtti::dyn_cast_or_null<TSessionData>(const_cast<TPersistent *>(Source));
     // Master password prompt shows implicitly here, when cloning the session data for a new terminal
     CopyData(SourceData);
     FSource = SourceData->FSource;
@@ -605,7 +605,7 @@ void TSessionData::CopyDataNoRecrypt(const TSessionData * SourceData)
   DoCopyData(SourceData, true);
 }
 
-void TSessionData::CopyDirectoriesStateData(TSessionData * SourceData)
+void TSessionData::CopyDirectoriesStateData(const TSessionData * SourceData)
 {
   SetRemoteDirectory(SourceData->GetRemoteDirectory());
   SetLocalDirectory(SourceData->GetLocalDirectory());
@@ -825,7 +825,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
 
   ResolveSymlinks = Storage->ReadBool("ResolveSymlinks", ResolveSymlinks);
   FollowDirectorySymlinks = Storage->ReadBool("FollowDirectorySymlinks", FollowDirectorySymlinks);
-  DSTMode = (TDSTMode)Storage->ReadInteger("ConsiderDST", DSTMode);
+  DSTMode = static_cast<TDSTMode>(Storage->ReadInteger("ConsiderDST", DSTMode));
   Special = Storage->ReadBool("Special", Special);
   if (!Unsafe)
   {
@@ -1935,7 +1935,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
       } \
       else \
       { \
-        if (COND && (!F##PROP.IsEmpty() || SaveAll)) \
+        if ((COND) && (!F##PROP.IsEmpty() || SaveAll)) \
         { \
           Storage->WriteBinaryDataAsString(ENC_NAME, StronglyRecryptPassword(F##PROP, ENC_KEY)); \
         } \
@@ -1945,7 +1945,7 @@ void TSessionData::SavePasswords(THierarchicalStorage * Storage, bool PuttyExpor
         } \
         Storage->DeleteValue(PLAIN_NAME); \
       } } while(0)
-    #define SAVE_PASSWORD(PROP, PLAIN_NAME, ENC_KEY) SAVE_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), ENC_KEY, !GetConfiguration()->DisablePasswordStoring);
+    #define SAVE_PASSWORD(PROP, PLAIN_NAME, ENC_KEY) SAVE_PASSWORD_EX(PROP, PLAIN_NAME, TEXT(#PROP), ENC_KEY, !GetConfiguration()->DisablePasswordStoring)
 
     SAVE_PASSWORD_EX(ProxyPassword, L"ProxyPassword", L"ProxyPasswordEnc", FProxyUsername + FProxyHost, true);
     SAVE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain", FTunnelUserName + FTunnelHostName);
@@ -2087,9 +2087,9 @@ void TSessionData::SaveRecryptedPasswords(THierarchicalStorage * Storage)
   }
 }
 
-void TSessionData::Remove(THierarchicalStorage * Storage, const UnicodeString & Name)
+void TSessionData::Remove(THierarchicalStorage * Storage, const UnicodeString & AName)
 {
-  Storage->RecursiveDeleteSubKey(Name);
+  Storage->RecursiveDeleteSubKey(AName);
 }
 
 void TSessionData::Remove()
@@ -2121,7 +2121,7 @@ void TSessionData::CacheHostKeyIfNotCached()
   Storage->SetAccessMode(smReadWrite);
   if (Storage->OpenRootKey(true))
   {
-    UnicodeString HostKeyName = PuttyMungeStr(FORMAT("%s@%d:%s", KeyType, GetPortNumber(), GetHostName()));
+    const UnicodeString HostKeyName = PuttyMungeStr(FORMAT("%s@%d:%s", KeyType, GetPortNumber(), GetHostName()));
     if (!Storage->ValueExists(HostKeyName))
     {
       // fingerprint is a checksum of a host key, so it cannot be translated back to host key,
@@ -3064,7 +3064,7 @@ UnicodeString TSessionData::GetUserNameSource() const
 
 void TSessionData::SetPassword(const UnicodeString & AValue)
 {
-  RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
+  const RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(Password);
 }
 
@@ -3075,7 +3075,7 @@ UnicodeString TSessionData::GetPassword() const
 
 void TSessionData::SetNewPassword(const UnicodeString & AValue)
 {
-  RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
+  const RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(NewPassword);
 }
 
@@ -6452,10 +6452,10 @@ bool GetIsSshProtocol(TFSProtocol FSProtocol)
     (FSProtocol == fsSCPonly);
 }
 
-int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
+int32_t DefaultPort(TFSProtocol AFSProtocol, TFtps Ftps)
 {
   int32_t Result;
-  switch (FSProtocol)
+  switch (AFSProtocol)
   {
     case fsFTP:
       if (Ftps == ftpsImplicit)
@@ -6481,7 +6481,7 @@ int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps)
       break;
 
     default:
-      if (GetIsSshProtocol(FSProtocol))
+      if (GetIsSshProtocol(AFSProtocol))
       {
         Result = SshPortNumber;
       }
