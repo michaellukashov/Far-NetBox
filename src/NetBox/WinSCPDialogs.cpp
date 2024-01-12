@@ -4930,12 +4930,12 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
   }
 
 #define STORE_NAME(PROPERTY) \
-    if (!PROPERTY ## ComboBox->GetText().IsEmpty() && \
+    do { if (!PROPERTY ## ComboBox->GetText().IsEmpty() && \
         FAllowedChanges & cp ## PROPERTY) \
     { \
       Properties.Valid << vp ## PROPERTY; \
       Properties.PROPERTY.SetName(::Trim(PROPERTY ## ComboBox->GetText())); \
-    }
+    } } while(0)
   STORE_NAME(Group);
   STORE_NAME(Owner);
 #undef STORE_NAME
