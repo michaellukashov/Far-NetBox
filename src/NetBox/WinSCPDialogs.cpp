@@ -5792,7 +5792,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
 }
 
 bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
-  int32_t CopyParamAttrs)
+  uint32_t CopyParamAttrs)
 {
   return CopyParamDialog(GetMsg(NB_COPY_PARAM_CUSTOM_TITLE), CopyParam, CopyParamAttrs);
 }
