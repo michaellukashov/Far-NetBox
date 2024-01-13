@@ -7810,8 +7810,7 @@ void TTerminal::DirectorySource(
 {
   FFileSystem->TransferOnDirectory(ATargetDir, CopyParam, AParams);
 
-  //UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(ATargetDir + ADestDirectoryName);
-  const UnicodeString DestFullName = ATargetDir + ADestDirectoryName;
+  const UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(ATargetDir) + ADestDirectoryName; //TODO: TPath::Join(ATargetDir, ADestDirectoryName)
 
   AOperationProgress->SetFile(ADirectoryName);
 
