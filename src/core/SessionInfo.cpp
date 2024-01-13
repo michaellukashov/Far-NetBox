@@ -1548,10 +1548,10 @@ TActionLog::TActionLog(TSessionUI * UI, const TDateTime & Started, TSessionData 
   FUI(UI),
   FSessionData(SessionData),
   FPendingActions(std::make_unique<TList>()),
-  FIndent(L"  "),
   FFailed(false),
   FClosed(false),
   FInGroup(false),
+  FIndent(L"  "),
   FEnabled(true)
 {
   DebugAssert(UI != nullptr);
@@ -1559,7 +1559,7 @@ TActionLog::TActionLog(TSessionUI * UI, const TDateTime & Started, TSessionData 
   Init(UI, Started, SessionData, Configuration);
 }
 
-TActionLog::TActionLog(TDateTime Started, TConfiguration * Configuration) noexcept
+TActionLog::TActionLog(const TDateTime Started, TConfiguration * Configuration) noexcept
 {
   Init(nullptr, Started, nullptr, Configuration);
   // not associated with session, so no need to waiting for anything
