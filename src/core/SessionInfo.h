@@ -364,7 +364,7 @@ public:
   explicit TActionLog(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
     TConfiguration * Configuration) noexcept;
   // For fatal failures for .NET assembly
-  explicit TActionLog(TDateTime Started, TConfiguration * Configuration) noexcept;
+  explicit TActionLog(const TDateTime Started, TConfiguration * Configuration) noexcept;
   virtual ~TActionLog() noexcept override;
 
   void ReflectSettings();

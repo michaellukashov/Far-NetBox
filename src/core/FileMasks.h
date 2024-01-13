@@ -5,7 +5,7 @@
 #include <Exceptions.h>
 #include "SessionData.h"
 
-class NB_CORE_EXPORT EFileMasksException : public Exception
+class NB_CORE_EXPORT EFileMasksException final : public Exception
 {
 public:
   explicit EFileMasksException(const UnicodeString & AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept;
