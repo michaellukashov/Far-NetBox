@@ -8525,8 +8525,6 @@ void TQueueDialog::UpdateControls()
 
 void TQueueDialog::Idle()
 {
-  // DEBUG_PRINTF("TQueueDialog::Idle 1");
-
   TFarDialog::Idle();
 
   if (GetFarPlugin())
@@ -8642,8 +8640,7 @@ void TQueueDialog::LoadQueue()
       ILine++;
     }
   }
-  if (GetHandle())
-    QueueListBox->SetItems(List.get());
+  QueueListBox->SetItems(List.get());
 }
 
 bool TQueueDialog::FillQueueItemLine(UnicodeString & Line,
