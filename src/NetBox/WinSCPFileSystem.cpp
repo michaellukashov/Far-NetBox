@@ -2529,7 +2529,7 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     if (PanelItems->GetCount() == 1)
     {
       Prompt = FORMAT(GetMsg(NB_EXPORT_SESSION_PROMPT),
-          PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
+        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
     }
     else
     {

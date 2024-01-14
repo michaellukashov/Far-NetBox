@@ -2641,7 +2641,6 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
         FTerminal->Log->Add(llOutput, FORMAT("Status code: %d", Code));
       }
     }
-    return Code;
   }
   return Code;
 }

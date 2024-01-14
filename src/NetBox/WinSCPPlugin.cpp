@@ -238,6 +238,7 @@ int32_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo 
     for (int32_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
       TWinSCPFileSystem * FileSystem = FOpenedPlugins->GetAs<TWinSCPFileSystem>(Index);
+      Ensures(FileSystem);
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
@@ -245,7 +246,7 @@ int32_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo 
   return 0;
 }
 
-int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
+int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
   int32_t Result = 0;
   if ((Rec->EventType == KEY_EVENT) &&

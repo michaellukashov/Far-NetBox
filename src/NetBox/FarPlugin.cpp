@@ -2791,6 +2791,7 @@ TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
+    Ensures(PanelItem);
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;
