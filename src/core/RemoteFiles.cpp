@@ -709,7 +709,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
   {
     return FName;
   }
-  if (FIDValid)
+  else if (FIDValid)
   {
     return IntToStr(FID);
   }
@@ -2023,7 +2023,8 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
     // file list cannot be cached already with only one thread, but it can be
     // when directory is loaded by secondary terminal
     DoClearFileList(FileList->GetDirectory(), false);
-    AddObject(Copy->GetDirectory(), Copy.release());
+    AddObject(Copy->GetDirectory(), Copy.get());
+    Copy.release();
   }
 }
 
