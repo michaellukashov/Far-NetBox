@@ -2827,6 +2827,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
     for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
       const TFarPanelItem * PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
+      DebugAssert(PanelItem);
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
