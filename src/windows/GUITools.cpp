@@ -175,9 +175,9 @@ public:
   static void Finalize();
 
 protected:
-  virtual void Execute();
-  virtual void Terminate();
-  bool Finished();
+  virtual void Execute() override;
+  virtual void Terminate() override;
+  virtual bool Finished() override;
   void DoSchedule();
 
 private:
@@ -312,9 +312,9 @@ public:
   void InitPuttyPasswordThread();
 
 protected:
-  virtual void Execute();
-  virtual void Terminate();
-  virtual bool Finished();
+  virtual void Execute() override;
+  virtual void Terminate() override;
+  virtual bool Finished() override;
 
 private:
   HANDLE FPipe;
