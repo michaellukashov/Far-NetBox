@@ -866,7 +866,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
           (Region != Data.RegionDetail))
       {
         FTerminal->LogEvent(FORMAT("Will use region \"%s\" for bucket \"%s\" from now on.", Data.RegionDetail, ABucketName));
-        FRegions.insert(TRegions::value_type(ABucketName, Data.RegionDetail));
+        FRegions.emplace(TRegions::value_type(ABucketName, Data.RegionDetail));
 
         Result.AuthRegionBuf = UTF8String(Data.RegionDetail);
         Result.authRegion = Result.AuthRegionBuf.c_str();
@@ -879,7 +879,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
         if (HostName != Endpoint)
         {
           FTerminal->LogEvent(FORMAT("Will use endpoint \"%s\" for bucket \"%s\" from now on.", Endpoint, ABucketName));
-          FHostNames.insert(TRegions::value_type(ABucketName, Endpoint));
+          FHostNames.emplace(TRegions::value_type(ABucketName, Endpoint));
           Retry = true;
         }
       }

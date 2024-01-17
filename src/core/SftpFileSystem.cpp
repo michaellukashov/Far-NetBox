@@ -2502,7 +2502,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
         {
           FNotLoggedReadPackets++;
         }
-        FNotLoggedRequests.insert(Packet->MessageNumber());
+        FNotLoggedRequests.emplace(Packet->MessageNumber());
       }
     }
     FSecureShell->Send(Packet->GetSendData(), Packet->GetSendLength());
