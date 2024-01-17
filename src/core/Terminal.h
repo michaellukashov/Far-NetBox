@@ -96,7 +96,7 @@ constexpr const uint32_t folRetryOnFatal = 0x02;
 
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_BEGIN \
-{ \
+do { \
   bool DoRepeat; \
   do \
   { \
@@ -112,7 +112,7 @@ constexpr const uint32_t folRetryOnFatal = 0x02;
       DoRepeat = true; \
     } \
   } while (DoRepeat); \
-}
+} while(0)
 
 #define FILE_OPERATION_LOOP_END_EX(MESSAGE, FLAGS) \
   FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, L"")
