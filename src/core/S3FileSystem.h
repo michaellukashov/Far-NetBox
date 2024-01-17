@@ -36,7 +36,7 @@ class NB_CORE_EXPORT TS3FileSystem final : public TCustomFileSystem
   NB_DISABLE_COPY(TS3FileSystem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TS3FileSystem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TCustomFileSystem::is(Kind); }
 
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 public:
