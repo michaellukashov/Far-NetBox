@@ -463,7 +463,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
     UnicodeString Password;
     if (GetGUIConfiguration()->PuttyPassword)
     {
-      // Passphrase has precendence, as it's more likely entered by user during authentication, hence more likely really needed.
+      // Passphrase has precedence, as it's more likely entered by user during authentication, hence more likely really needed.
       if (!SessionData->Passphrase().IsEmpty())
       {
         Password = SessionData->Passphrase;
@@ -1041,20 +1041,20 @@ bool IsEligibleForApplyingTabs(
   {
     Remaining = Line.SubString(TabPos + 1, Line.Length() - TabPos);
     // WORKAROUND
-    // Some translations still use obsolete hack of consecutive tabs to aling the contents.
+    // Some translations still use obsolete hack of consecutive tabs to align the contents.
     // Delete these, so that the following check does not fail on this
     while (Remaining.SubString(1, 1) == L"\t")
     {
       Remaining.Delete(1, 1);
     }
 
-    // We do not have, not support, mutiple tabs on a single line
+    // We do not have, not support, multiple tabs on a single line
     if (DebugAlwaysTrue(Remaining.Pos(L"\t") == 0))
     {
       Start = Line.SubString(1, TabPos - 1);
       // WORKAROUND
       // Previously we padded the string before tab with spaces,
-      // to aling the contents across multiple lines
+      // to align the contents across multiple lines
       Start = Start.TrimRight();
       // at least two normal spaces for separation
       Start += L"  ";
@@ -1508,7 +1508,7 @@ void TBrowserViewer::AddLinkHandler(
 void TBrowserViewer::DoContextPopup(const TPoint & MousePos, bool & Handled)
 {
   // Suppress built-in context menu.
-  // Is ignored with IDocHostUIHandler. Needs to be overriden by ShowContextMenu.
+  // Is ignored with IDocHostUIHandler. Needs to be overridden by ShowContextMenu.
   Handled = true;
   TWebBrowserEx::DoContextPopup(MousePos, Handled);
 }
@@ -1574,7 +1574,7 @@ TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, const UnicodeString & Loadi
   static_cast<TWinControl *>(Result)->Name = L"BrowserViewer";
   static_cast<TWinControl *>(Result)->Parent = Parent;
   Result->Align = alClient;
-  // Is ignored with IDocHostUIHandler. Needs to be overriden by DOCHOSTUIFLAG_NO3DBORDER in GetHostInfo.
+  // Is ignored with IDocHostUIHandler. Needs to be overridden by DOCHOSTUIFLAG_NO3DBORDER in GetHostInfo.
   Result->ControlBorder = cbNone;
 
   Result->LoadingPanel = CreateLabelPanel(Parent, LoadingLabel);
