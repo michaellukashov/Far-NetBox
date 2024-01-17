@@ -1897,8 +1897,8 @@ bool TRegistry::GetKeyInfo(TRegKeyInfo & Value) const
 {
   nb::ClearStruct(Value);
   const bool Result = ::RegQueryInfoKey(GetCurrentKey(), nullptr, nullptr, nullptr, &Value.NumSubKeys,
-      &Value.MaxSubKeyLen, nullptr, &Value.NumValues, &Value.MaxValueLen,
-      &Value.MaxDataLen, nullptr, &Value.FileTime) == ERROR_SUCCESS;
+    &Value.MaxSubKeyLen, nullptr, &Value.NumValues, &Value.MaxValueLen,
+    &Value.MaxDataLen, nullptr, &Value.FileTime) == ERROR_SUCCESS;
   return Result;
 }
 
