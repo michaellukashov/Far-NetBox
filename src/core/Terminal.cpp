@@ -5039,7 +5039,7 @@ bool TTerminal::DoRenameOrCopyFile(
         QuestionFmt = MainInstructions(LoadStr(CORE_PROMPT_FILE_OVERWRITE));
         QueryType = qtConfirmation;
       }
-      TQueryParams Params(qpNeverAskAgainCheck);
+      const TQueryParams Params(qpNeverAskAgainCheck);
       const UnicodeString Question = FORMAT(QuestionFmt, NewName);
       const uint32_t Answers = qaYes | qaNo | FLAGMASK(OperationProgress != nullptr, qaCancel) | FLAGMASK(IsBatchOperation, qaYesToAll | qaNoToAll);
       const uint32_t Answer = QueryUser(Question, nullptr, Answers, &Params, QueryType);
