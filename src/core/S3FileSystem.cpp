@@ -1913,9 +1913,9 @@ void TS3FileSystem::ConfirmOverwrite(
   const TCopyParamType * CopyParam, int32_t AParams)
 {
   constexpr uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
-  nb::vector_t<TQueryButtonAlias> Aliases;
-  Aliases.push_back(TQueryButtonAlias::CreateYesToAllGroupedWithYes());
-  Aliases.push_back(TQueryButtonAlias::CreateNoToAllGroupedWithNo());
+  nb::vector_t<TQueryButtonAlias> Aliases(2);
+  Aliases.emplace_back(TQueryButtonAlias::CreateYesToAllGroupedWithYes());
+  Aliases.emplace_back(TQueryButtonAlias::CreateNoToAllGroupedWithNo());
 
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = &Aliases[0];

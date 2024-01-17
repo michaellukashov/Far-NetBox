@@ -2446,7 +2446,7 @@ void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
   #define ADD_NOT_LOGGED(V, N) \
     do { if (FNotLogged##V##Packets > 0) \
     { \
-      NotLogged.push_back(FORMAT(L"%d SSH_FXP_"#N, FNotLogged##V##Packets)); \
+      NotLogged.emplace_back(FORMAT(L"%d SSH_FXP_"#N, FNotLogged##V##Packets)); \
       FNotLogged##V##Packets = 0; \
     } } while(0)
   ADD_NOT_LOGGED(Write, WRITE);
