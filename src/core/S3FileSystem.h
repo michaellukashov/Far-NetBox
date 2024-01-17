@@ -163,7 +163,7 @@ protected:
     const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
     TFileOperationProgressType * AOperationProgress, const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam, int32_t AParams);
-  int32_t PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
+  int64_t PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
   S3Status GetObjectData(int32_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
   bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data);
   bool IsGoogleCloud() const;

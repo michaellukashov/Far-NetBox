@@ -1972,7 +1972,7 @@ int32_t TS3FileSystem::LibS3PutObjectDataCallback(int32_t BufferSize, char * Buf
 {
   TLibS3PutObjectDataCallbackData & Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
-  return Data.FileSystem->PutObjectData(BufferSize, Buffer, Data);
+  return nb::ToInt32(Data.FileSystem->PutObjectData(BufferSize, Buffer, Data));
 }
 
 bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data)
@@ -1992,9 +1992,9 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & 
   return Result;
 }
 
-int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
+int64_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
 {
-  int32_t Result;
+  int64_t Result = -1;
 
   if (ShouldCancelTransfer(Data))
   {
@@ -2007,7 +2007,7 @@ int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3Pu
     {
       FILE_OPERATION_LOOP_BEGIN
       {
-        Result = nb::ToInt32(Data.Stream->Read(Buffer, BufferSize));
+        Result = Data.Stream->Read(Buffer, BufferSize);
       }
       FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, Data.FileName));
 
