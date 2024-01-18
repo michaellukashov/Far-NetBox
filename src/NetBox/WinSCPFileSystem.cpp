@@ -302,8 +302,10 @@ void TWinSCPFileSystem::Init(TSecureShell * /*SecureShell*/)
 
 TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 {
+  DEBUG_PRINTF("1");
   Disconnect();
   // SAFE_DESTROY(FPathHistory);
+  DEBUG_PRINTF("2");
 }
 
 void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)

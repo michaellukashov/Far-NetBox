@@ -113,6 +113,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
 
 TCustomFarPlugin::~TCustomFarPlugin() noexcept
 {
+  DEBUG_PRINTF("1");
   DebugAssert(FTopDialog == nullptr);
 
   ResetCachedInfo();
@@ -131,6 +132,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   }
   // SAFE_DESTROY(FSavedTitles);
   // TODO: CloseFileSystem(FarFileSystem);
+  DEBUG_PRINTF("2");
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
