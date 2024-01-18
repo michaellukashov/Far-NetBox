@@ -2593,7 +2593,7 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
   {
     ResetOperation(FZ_REPLY_ERROR);
   }
-  else if (num >= 0)
+  else if (num != (size_t)-1)
   {
     t_directory * pDirectoryListing = new t_directory();
     pDirectoryListing->direntry = pData->direntry;
