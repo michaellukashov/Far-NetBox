@@ -835,10 +835,12 @@ TSessionLog::TSessionLog(gsl::not_null<TSessionUI *> UI, const TDateTime & Start
 
 TSessionLog::~TSessionLog() noexcept
 {
+  DEBUG_PRINTF("1");
   FClosed = true;
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
   // delete FCriticalSection;
+  DEBUG_PRINTF("2");
 }
 
 void TSessionLog::SetParent(gsl::not_null<TSessionLog *> AParent, const UnicodeString & AName)
