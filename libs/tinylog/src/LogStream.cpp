@@ -11,8 +11,8 @@
 namespace tinylog {
 
 LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, bool & already_swap) :
-  front_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
-  back_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
+  front_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
+  back_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
 //  queue_(std::make_unique<LockFreeQueue>()),
   file_(file),
   mutex_(mutex),
