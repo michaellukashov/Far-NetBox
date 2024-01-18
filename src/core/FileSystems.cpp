@@ -19,6 +19,7 @@ TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal)
 
 TCustomFileSystem::~TCustomFileSystem() noexcept
 {
+  DEBUG_PRINTF("1");
 #ifdef USE_DLMALLOC
   dlmalloc_trim(0); // 64 * 1024);
 #endif

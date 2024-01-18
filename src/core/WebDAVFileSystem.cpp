@@ -183,6 +183,7 @@ void TWebDAVFileSystem::Init(void *)
 
 TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
 {
+  DEBUG_PRINTF("1");
   UnregisterFromNeonDebug(FTerminal);
 
   {
@@ -195,6 +196,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
   }
 
   // delete FNeonLockStoreSection;
+  DEBUG_PRINTF("2");
 }
 
 void TWebDAVFileSystem::Open()

@@ -1296,6 +1296,7 @@ void TTerminal::Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<T
 
 TTerminal::~TTerminal() noexcept
 {
+  DEBUG_PRINTF("1");
   try
   {
     if (GetActive())
@@ -1341,10 +1342,12 @@ TTerminal::~TTerminal() noexcept
   delete FDirectoryChangesCache;
   SAFE_DESTROY(FSessionData);
 #endif
+  DEBUG_PRINTF("2");
 }
 
 void TTerminal::Idle()
 {
+  DEBUG_PRINTF("1");
   // Once we disconnect, do nothing, until reconnect handler
   // "receives the information".
   // Never go idle when called from within ::ProcessGUI() call
