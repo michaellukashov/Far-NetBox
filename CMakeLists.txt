@@ -1817,7 +1817,7 @@ target_include_directories(tinylog PRIVATE
   libs/GSL/include
   src/include
   src/base
-  # src/resource
+  src/resource
 )
 
 target_compile_definitions(tinylog PRIVATE
@@ -2439,7 +2439,7 @@ ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG Debug)
 ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG RelWithDebugInfo)
-# ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
+ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
 # ucm_add_flags(CXX /fsanitize-address-use-after-return CONFIG Debug)
 #-Ob1
 # static runtime settings
