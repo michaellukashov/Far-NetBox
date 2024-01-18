@@ -6,7 +6,7 @@
 #include <tinylog/LogStream.h>
 #include <tinylog/Config.h>
 //#include <tinylog/LockFreeQueue.h>
-// #include <Sysutils.hpp>
+#include <Sysutils.hpp>
 
 
 namespace tinylog {
@@ -25,11 +25,13 @@ LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond
 
 LogStream::~LogStream()
 {
+  DEBUG_PRINTF("1");
   if (file_ != nullptr)
   {
     fclose(file_);
     file_ = nullptr;
   }
+  DEBUG_PRINTF("2");
 }
 
 int64_t LogStream::Write(const char * data, int64_t ToWrite)
