@@ -5322,7 +5322,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt)
     try
     {
       DebugAssert(FFileSystem);
-      DEBUG_PRINTF("ADirName: %s", ADirName);
+      // DEBUG_PRINTF("ADirName: %s", ADirName);
       FFileSystem->RemoteCreateDirectory(ADirName, Encrypt);
     }
     catch(Exception & E)
