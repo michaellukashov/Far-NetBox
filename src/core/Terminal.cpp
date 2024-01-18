@@ -6421,7 +6421,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
         {
           LogEvent(FORMAT("Local file %s is new",
             FormatFileDetailsForLog(UnicodeString(FileData->Info.Directory) + UnicodeString(FileData->Info.FileName),
-             FileData->Info.Modification, FileData->Info.Size)));
+              FileData->Info.Modification, FileData->Info.Size)));
         }
 
         if (Modified || New)
