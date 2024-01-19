@@ -21,6 +21,7 @@ LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond
   already_swap_(already_swap)
 {
   Utils::CurrentTime(&tv_base_, &tm_base_);
+  DEBUG_PRINTF("1");
 }
 
 LogStream::~LogStream()
