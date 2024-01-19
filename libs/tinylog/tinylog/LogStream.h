@@ -50,7 +50,7 @@ private:
   const char * func_name_{nullptr};
   std::string str_log_level_;
   timeval tv_base_{};
-  struct tm * tm_base_{nullptr};
+  struct tm tm_base_{};
   pthread_mutex_t & mutex_;
   pthread_cond_t & cond_;
   bool & already_swap_;
