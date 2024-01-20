@@ -9379,7 +9379,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
       SAFE_CLOSE_HANDLE(LocalFileHandle);
     } end_try__finally
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, LocalFileName))
+  FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, LocalFileName));
 }
 
 HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,

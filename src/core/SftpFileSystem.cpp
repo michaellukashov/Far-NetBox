@@ -2444,11 +2444,11 @@ void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
 {
   nb::vector_t<UnicodeString> NotLogged;
   #define ADD_NOT_LOGGED(V, N) \
-    if (FNotLogged##V##Packets > 0) \
+    do { if (FNotLogged##V##Packets > 0) \
     { \
       NotLogged.emplace_back(FORMAT(L"%d SSH_FXP_"#N, FNotLogged##V##Packets)); \
       FNotLogged##V##Packets = 0; \
-    }
+    } } while(0)
   ADD_NOT_LOGGED(Write, WRITE);
   ADD_NOT_LOGGED(Read, READ);
   ADD_NOT_LOGGED(Data, DATA);
