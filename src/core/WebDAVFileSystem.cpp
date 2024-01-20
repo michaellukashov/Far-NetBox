@@ -183,6 +183,7 @@ void TWebDAVFileSystem::Init(void *)
 
 TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
 {
+  // DEBUG_PRINTF("end");
   UnregisterFromNeonDebug(FTerminal);
 
   {
@@ -195,6 +196,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
   }
 
   // delete FNeonLockStoreSection;
+  // DEBUG_PRINTF("end");
 }
 
 void TWebDAVFileSystem::Open()
@@ -1346,7 +1348,7 @@ void TWebDAVFileSystem::Source(
   try__finally
   {
     UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(ATargetDir) + ADestFileName;
-    DEBUG_PRINTF("DestFullName: %s", DestFullName);
+    // DEBUG_PRINTF("DestFullName: %s", DestFullName);
 
     std::unique_ptr<TRemoteFile> RemoteFile;
     try

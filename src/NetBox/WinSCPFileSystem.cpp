@@ -302,8 +302,10 @@ void TWinSCPFileSystem::Init(TSecureShell * /*SecureShell*/)
 
 TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 {
+  // DEBUG_PRINTF("begin");
   Disconnect();
   // SAFE_DESTROY(FPathHistory);
+  // DEBUG_PRINTF("begin");
 }
 
 void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
@@ -423,6 +425,13 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     else
       FolderAndSessionName = FORMAT("%s", FolderName, SessionName);
     ShortcutData = FORMAT("netbox:%s\1%s", FolderAndSessionName, CurDir);
+
+    /*DEBUG_PRINTF("SessionName: %s", SessionName);
+    DEBUG_PRINTF("HostName: %s", HostName);
+    DEBUG_PRINTF("FolderAndSessionName: %s", FolderAndSessionName);
+    DEBUG_PRINTF("Url: %s", Url);
+    DEBUG_PRINTF("CurDir: %s", CurDir);
+    DEBUG_PRINTF("ShortcutData: %s", ShortcutData);*/
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);

@@ -818,6 +818,7 @@ TSessionLog::TSessionLog(gsl::not_null<TSessionUI *> UI, const TDateTime & Start
   FStarted(Started),
   FClosed(false)
 {
+  // DEBUG_PRINTF("begin");
 #if defined(__BORLANDC__)
   FCriticalSection = new TCriticalSection;
   FLogging = false;
@@ -831,14 +832,17 @@ TSessionLog::TSessionLog(gsl::not_null<TSessionUI *> UI, const TDateTime & Start
   FCurrentFileName = L"";
   FClosed = false;
 #endif
+  // DEBUG_PRINTF("begin");
 }
 
 TSessionLog::~TSessionLog() noexcept
 {
+  // DEBUG_PRINTF("end");
   FClosed = true;
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
   // delete FCriticalSection;
+  // DEBUG_PRINTF("end");
 }
 
 void TSessionLog::SetParent(gsl::not_null<TSessionLog *> AParent, const UnicodeString & AName)

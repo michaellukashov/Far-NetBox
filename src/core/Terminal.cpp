@@ -1292,10 +1292,12 @@ void TTerminal::Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<T
   FNesting = 0;
   FRememberedPasswordKind = static_cast<TPromptKind>(-1);
   FSecondaryTerminals = 0;
+  // DEBUG_PRINTF("begin");
 }
 
 TTerminal::~TTerminal() noexcept
 {
+  // DEBUG_PRINTF("end");
   try
   {
     if (GetActive())
@@ -1341,10 +1343,12 @@ TTerminal::~TTerminal() noexcept
   delete FDirectoryChangesCache;
   SAFE_DESTROY(FSessionData);
 #endif
+  // DEBUG_PRINTF("end");
 }
 
 void TTerminal::Idle()
 {
+  // DEBUG_PRINTF("begin");
   // Once we disconnect, do nothing, until reconnect handler
   // "receives the information".
   // Never go idle when called from within ::ProcessGUI() call
@@ -5322,7 +5326,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt)
     try
     {
       DebugAssert(FFileSystem);
-      DEBUG_PRINTF("ADirName: %s", ADirName);
+      // DEBUG_PRINTF("ADirName: %s", ADirName);
       FFileSystem->RemoteCreateDirectory(ADirName, Encrypt);
     }
     catch(Exception & E)
