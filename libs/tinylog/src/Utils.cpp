@@ -55,14 +55,14 @@ void Utils::CurrentTime(std::string &ref_time)
   ref_time = buff;
 }
 
-void Utils::CurrentTime(struct timeval *tv, struct tm **tm)
+void Utils::CurrentTime(struct timeval *tv, struct tm *tm)
 {
   gettimeofday(tv, nullptr);
   /* *tm = localtime(&tv->tv_sec);
   time_t rawtime;
   time(&rawtime);*/
   time_t time = static_cast<time_t>(tv->tv_sec);
-  *tm = localtime(&time);
+  localtime_s(tm, &time);
 }
 
 } // namespace tinylog

@@ -19,7 +19,7 @@ public:
 
   static std::string CurrentTime();
   static void CurrentTime(std::string &ref_time);
-  static void CurrentTime(struct timeval *tv, struct tm **tm);
+  static void CurrentTime(struct timeval *tv, struct tm * tm);
 };
 
 static constexpr const char * past_last_slash(const char * str, const char * last_slash)
