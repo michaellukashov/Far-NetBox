@@ -757,7 +757,7 @@ struct TLibS3BucketContext : S3BucketContext
   {
     operator =(rhs);
   }
-  TLibS3BucketContext & TLibS3BucketContext::operator =(const TLibS3BucketContext & rhs)
+  TLibS3BucketContext & operator =(const TLibS3BucketContext & rhs)
   {
     if (this != &rhs)
     {
