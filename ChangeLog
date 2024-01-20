@@ -1,7 +1,7 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [24.1.1.573] - 2024-01-14
+## [24.1.1.574] - 2024-01-20
 ### Fixed
 - Bugfix: Crash when session option "[x] Cache visited remote directories" is set
 https://forum.farmanager.com/viewtopic.php?p=176996&#p176996
