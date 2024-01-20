@@ -485,7 +485,7 @@ public:
     rfNo =        00000, rfDefault =     00644, rfAll =       00777,
     rfSpecials =  07000, rfAllSpecials = 07777,
     rfS3Read = rfOtherRead, rfS3Write = rfOtherWrite, rfS3ReadACP = rfOtherExec, rfS3WriteACP = rfStickyBit,
-     };
+  };
   enum TUnsupportedFlag {
     rfDirectory  = 040000 };
   enum TState { rsNo, rsYes, rsUndef };

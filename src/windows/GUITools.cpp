@@ -55,13 +55,13 @@ bool FindFile(UnicodeString & Path)
 
   if (!Result)
   {
-    UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
-    UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
+    const UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
+    const UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
     if (!ProgramFiles32.IsEmpty() &&
         SameText(Path.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
         !ProgramFiles64.IsEmpty())
     {
-      UnicodeString Path64 =
+      const UnicodeString Path64 =
         ProgramFiles64 + Path.SubString(ProgramFiles32.Length() + 1, Path.Length() - ProgramFiles32.Length());
       if (base::FileExists(ApiPath(Path64)))
       {
@@ -175,9 +175,9 @@ public:
   static void Finalize();
 
 protected:
-  virtual void Execute();
-  virtual void Terminate();
-  bool Finished();
+  virtual void Execute() override;
+  virtual void Terminate() override;
+  virtual bool Finished() override;
   void DoSchedule();
 
 private:
@@ -312,9 +312,9 @@ public:
   void InitPuttyPasswordThread();
 
 protected:
-  virtual void Execute();
-  virtual void Terminate();
-  virtual bool Finished();
+  virtual void Execute() override;
+  virtual void Terminate() override;
+  virtual bool Finished() override;
 
 private:
   HANDLE FPipe;
@@ -326,9 +326,9 @@ private:
 TPuttyPasswordThread::TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName) :
   TSimpleThread(OBJECT_CLASS_TPuttyPasswordThread)
 {
-  DWORD OpenMode = PIPE_ACCESS_OUTBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE;
-  DWORD PipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT | PIPE_REJECT_REMOTE_CLIENTS;
-  DWORD BufferSize = 16 * 1024;
+  const DWORD OpenMode = PIPE_ACCESS_OUTBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE;
+  const DWORD PipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT | PIPE_REJECT_REMOTE_CLIENTS;
+  const DWORD BufferSize = 16 * 1024;
   FPipe = CreateNamedPipe(PipeName.c_str(), OpenMode, PipeMode, 1, BufferSize, BufferSize, NMPWAIT_USE_DEFAULT_WAIT, nullptr);
   if (FPipe == INVALID_HANDLE_VALUE)
   {
@@ -646,7 +646,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
 
 bool FindTool(const UnicodeString & Name, UnicodeString & APath)
 {
-  UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName())); //TODO: use Application->ExeName
+  const UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName())); //TODO: use Application->ExeName
   APath = AppPath + Name;
   bool Result = true;
   if (!base::FileExists(ApiPath(APath)))
@@ -744,7 +744,7 @@ bool DontCopyCommandToClipboard = false;
 
 bool CopyCommandToClipboard(const UnicodeString & ACommand)
 {
-  bool Result = !DontCopyCommandToClipboard; // && UseAlternativeFunction && IsKeyPressed(VK_CONTROL);
+  const bool Result = !DontCopyCommandToClipboard; // && UseAlternativeFunction && IsKeyPressed(VK_CONTROL);
   if (Result)
   {
     TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
@@ -768,7 +768,7 @@ static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString & Pa
   }
   else
   {
-    UnicodeString Directory = ::ExtractFilePath(APath);
+    const UnicodeString Directory = ::ExtractFilePath(APath);
 
     TShellExecuteInfoW ExecuteInfo;
     nb::ClearStruct(ExecuteInfo);
@@ -822,7 +822,7 @@ void ExecuteShellCheckedAndWait(const UnicodeString & Command,
   UnicodeString Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
   HANDLE ProcessHandle;
-  bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
+  const bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
   if (!Result)
   {
     throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program));

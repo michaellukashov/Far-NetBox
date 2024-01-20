@@ -324,7 +324,7 @@ protected:
   virtual int32_t MakeDirectoryEx(const UnicodeString & Name, OPERATION_MODES OpMode);
   virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual int32_t GetFilesEx(TObjectList * PanelItems, bool Move,
-    UnicodeString &DestPath, OPERATION_MODES OpMode);
+    UnicodeString & DestPath, OPERATION_MODES OpMode);
   virtual int32_t PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode);
 
   void ResetCachedInfo();
@@ -450,7 +450,7 @@ public:
   PLUGINPANELITEMFLAGS GetFlags() const;
   uint32_t GetFileAttrs() const;
   UnicodeString GetFileName() const;
-  void *GetUserData() const;
+  void * GetUserData() const;
   bool GetSelected() const;
   void SetSelected(bool Value);
   bool GetIsParentDirectory() const;
@@ -472,6 +472,7 @@ protected:
 class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
+  THintPanelItem() = delete;
   explicit THintPanelItem(const UnicodeString & AHint) noexcept;
   virtual ~THintPanelItem() override = default;
 
@@ -495,7 +496,7 @@ enum TFarPanelType
   ptInfo
 };
 
-class TFarPanelInfo : public TObject
+class TFarPanelInfo final : public TObject
 {
   NB_DISABLE_COPY(TFarPanelInfo)
 public:
@@ -527,7 +528,7 @@ private:
   TCustomFarFileSystem * FOwner{nullptr};
 };
 
-class TFarMenuItems : public TStringList
+class TFarMenuItems final : public TStringList
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarMenuItems); }
@@ -558,7 +559,7 @@ private:
   int32_t FItemFocused{nb::NPOS};
 };
 
-class TFarEditorInfo : public TObject
+class TFarEditorInfo final : public TObject
 {
   CUSTOM_MEM_ALLOCATION_IMPL
   NB_DISABLE_COPY(TFarEditorInfo)

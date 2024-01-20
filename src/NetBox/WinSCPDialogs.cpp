@@ -3814,7 +3814,7 @@ void TSessionDialog::LoadPing(const TSessionData * SessionData)
   const TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
       AllowScpFallbackCheck->GetChecked());
 
-  switch ((FSProtocol == fsFTP) ? SessionData->GetFtpPingType() : SessionData->GetPingType())
+  switch ((FSProtocol == fsFTP) ? static_cast<TPingType>(SessionData->GetFtpPingType()) : SessionData->GetPingType())
   {
   case ptOff:
     PingOffButton->SetChecked(true);

@@ -72,7 +72,7 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 }
 
 
-struct TMoveFileParams : public TObject
+struct TMoveFileParams final  : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
@@ -84,7 +84,7 @@ public:
   bool DontOverwrite{false};
 };
 
-struct TFilesFindParams : public TObject
+struct TFilesFindParams final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
@@ -5039,7 +5039,7 @@ bool TTerminal::DoRenameOrCopyFile(
         QuestionFmt = MainInstructions(LoadStr(CORE_PROMPT_FILE_OVERWRITE));
         QueryType = qtConfirmation;
       }
-      TQueryParams Params(qpNeverAskAgainCheck);
+      const TQueryParams Params(qpNeverAskAgainCheck);
       const UnicodeString Question = FORMAT(QuestionFmt, NewName);
       const uint32_t Answers = qaYes | qaNo | FLAGMASK(OperationProgress != nullptr, qaCancel) | FLAGMASK(IsBatchOperation, qaYesToAll | qaNoToAll);
       const uint32_t Answer = QueryUser(Question, nullptr, Answers, &Params, QueryType);
@@ -6421,7 +6421,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
         {
           LogEvent(FORMAT("Local file %s is new",
             FormatFileDetailsForLog(UnicodeString(FileData->Info.Directory) + UnicodeString(FileData->Info.FileName),
-             FileData->Info.Modification, FileData->Info.Size)));
+              FileData->Info.Modification, FileData->Info.Size)));
         }
 
         if (Modified || New)
