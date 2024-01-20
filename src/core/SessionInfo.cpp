@@ -839,6 +839,8 @@ TSessionLog::~TSessionLog() noexcept
 {
   // DEBUG_PRINTF("end");
   FClosed = true;
+  if (FLogger)
+    FLogger->Close();
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
   // delete FCriticalSection;
