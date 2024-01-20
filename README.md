@@ -1,7 +1,8 @@
 Far-NetBox: SFTP/FTP/SCP/WebDAV/S3 client for Far Manager 3.0 x86/x64/ARM64
 ==============
 
-[![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)
+x86/x64/ARM64 build status [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)\
+Appveyor build status [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)
 
 
 Based on [WinSCP](http://winscp.net/eng/index.php) version 6.2.2 Copyright (c) 2000-2024 Martin Prikryl  
