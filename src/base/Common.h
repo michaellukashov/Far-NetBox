@@ -457,8 +457,8 @@ public:
 
   void Add(const T1 & Value1, const T2 & Value2)
   {
-    FFirstToSecond.insert(std::make_pair(Value1, Value2));
-    FSecondToFirst.insert(std::make_pair(Value2, Value1));
+    FFirstToSecond.emplace(std::make_pair(Value1, Value2));
+    FSecondToFirst.emplace(std::make_pair(Value2, Value1));
   }
 
   T1 LookupFirst(const T2 & Value2) const

@@ -2446,7 +2446,7 @@ void TSFTPFileSystem::LogPacket(const TSFTPPacket * Packet, TLogLineType Type)
   #define ADD_NOT_LOGGED(V, N) \
     if (FNotLogged##V##Packets > 0) \
     { \
-      NotLogged.push_back(FORMAT(L"%d SSH_FXP_"#N, FNotLogged##V##Packets)); \
+      NotLogged.emplace_back(FORMAT(L"%d SSH_FXP_"#N, FNotLogged##V##Packets)); \
       FNotLogged##V##Packets = 0; \
     }
   ADD_NOT_LOGGED(Write, WRITE);
@@ -2502,7 +2502,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
         {
           FNotLoggedReadPackets++;
         }
-        FNotLoggedRequests.insert(Packet->MessageNumber());
+        FNotLoggedRequests.emplace(Packet->MessageNumber());
       }
     }
     FSecureShell->Send(Packet->GetSendData(), Packet->GetSendLength());
