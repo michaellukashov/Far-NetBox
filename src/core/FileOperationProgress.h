@@ -117,7 +117,7 @@ private:
 
   bool FCounterSet{false};
   bool FSkipToAll{false};
-  uint64_t FCPSLimit{0};
+  int64_t FCPSLimit{0};
 
 public:
   int64_t GetTotalTransferred() const;
