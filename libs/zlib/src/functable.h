@@ -7,8 +7,8 @@
 #define FUNCTABLE_H_
 
 #include "deflate.h"
-#include "crc32_fold.h"
-#include "adler32_fold.h"
+#include "arch/generic/crc32_fold_c.h"
+#include "arch/generic/adler32_fold_c.h"
 
 #ifdef ZLIB_COMPAT
 typedef struct z_stream_s z_stream;
@@ -17,6 +17,7 @@ typedef struct zng_stream_s zng_stream;
 #endif
 
 struct functable_s {
+    void     (* force_init)         (void);
     uint32_t (* adler32)            (uint32_t adler, const uint8_t *buf, size_t len);
     uint32_t (* adler32_fold_copy)  (uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len);
     uint8_t* (* chunkmemset_safe)   (uint8_t *out, unsigned dist, unsigned len, unsigned left);

@@ -6,8 +6,7 @@
 #ifndef CPU_FEATURES_H_
 #define CPU_FEATURES_H_
 
-#include "adler32_fold.h"
-#include "crc32_fold.h"
+#include "crc32.h"
 
 #if defined(X86_FEATURES)
 #  include "arch/x86/x86_features.h"
@@ -70,6 +69,9 @@ extern uint32_t adler32_power8(uint32_t adler, const uint8_t *buf, size_t len);
 #endif
 
 /* adler32 folding */
+#ifdef RISCV_RVV
+extern uint32_t adler32_fold_copy_rvv(uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len);
+#endif
 #ifdef X86_SSE42
 extern uint32_t adler32_fold_copy_sse42(uint32_t adler, uint8_t *dst, const uint8_t *src, size_t len);
 #endif
