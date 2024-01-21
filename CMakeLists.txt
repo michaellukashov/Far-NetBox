@@ -1750,6 +1750,14 @@ set(ZLIB_SOURCES
   libs/zlib/src/deflate_slow.c
   libs/zlib/src/deflate_medium.c
   libs/zlib/src/deflate_fast.c
+  libs/zlib/src/arch/generic/crc32_fold_c.c
+  libs/zlib/src/arch/generic/insert_string_c.c
+  libs/zlib/src/arch/generic/slide_hash_c.c
+  libs/zlib/src/arch/generic/chunkset_c.c
+  libs/zlib/src/arch/generic/compare256_c.c
+  libs/zlib/src/arch/generic/crc32_braid_c.c
+  libs/zlib/src/arch/generic/adler32_c.c
+  libs/zlib/src/arch/generic/adler32_fold_c.c
 )
 
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
