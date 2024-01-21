@@ -96,10 +96,14 @@ UnicodeString AppNameString()
   return L"WinSCP";
 }
 
+#endif // #if 0
+
 UnicodeString GetCompanyRegistryKey()
 {
   return L"Software\\Martin Prikryl";
 }
+
+#if 0
 
 UnicodeString GetRegistryKey()
 {

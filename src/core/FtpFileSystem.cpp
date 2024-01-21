@@ -1563,7 +1563,6 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
     OperationProgress->AddTransferred(Diff);
     FFileTransferAny = true;
   }
-
   if (OperationProgress->GetCancel() != csContinue)
   {
     if (OperationProgress->ClearCancelFile())
@@ -1934,13 +1933,27 @@ void TFTPFileSystem::DoStartup()
     const UnicodeString NameFact = L"Name";
     const UnicodeString VersionFact = L"Version";
     const UnicodeString Command =
-      FORMAT(L"%s %s=%s;%s=%s", CsidCommand, NameFact, GetAppNameString(), VersionFact, FTerminal->Configuration->Version);
+      FORMAT(L"%s %s=%s;%s=%s;", CsidCommand, NameFact, GetAppNameString(), VersionFact, FTerminal->Configuration->Version);
     SendCommand(Command);
     TStrings * Response = nullptr;
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE, EmptyStr, nullptr, &Response);
     std::unique_ptr<TStrings> ResponseOwner(Response);
-    // Not using REPLY_SINGLE_LINE to make it robust
-    if (Response->Count == 1)
+    try
+    {
+      GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE, EmptyStr, nullptr, &Response);
+      ResponseOwner.reset(Response);
+    }
+    catch (...)
+    {
+      if (FTerminal->Active)
+      {
+        FTerminal->LogEvent(FORMAT(L"%s command failed", CsidCommand));
+      }
+      else
+      {
+        throw;
+      }
+    }
+    if (ResponseOwner.get() != nullptr)
     {
       UnicodeString ResponseText = Response->Strings[0];
       UnicodeString Name, Version;
@@ -2972,10 +2985,17 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_MPEXT_COMPLETE_TLS_SHUTDOWN:
-      // As of FileZilla Server 1.6.1 this does not seem to be needed. It's still needed with 1.5.1.
-      // It was possibly fixed by 1.6.0 (2022-12-06) change:
-      // Fixed an issue in the networking code when dealing with TLS close_notify alerts
-      Result = FFileZilla ? FALSE : TRUE;
+      if (Data && Data->CompleteTlsShutdown == asAuto)
+      {
+        // As of FileZilla Server 1.6.1 this does not seem to be needed. It's still needed with 1.5.1.
+        // It was possibly fixed by 1.6.0 (2022-12-06) change:
+        // Fixed an issue in the networking code when dealing with TLS close_notify alerts
+        Result = FFileZilla ? -1 : 0;
+      }
+      else
+      {
+        Result = (Data->CompleteTlsShutdown == asOn) ? 1 : -1;
+      }
       break;
 
     case OPTION_MPEXT_WORK_FROM_CWD:

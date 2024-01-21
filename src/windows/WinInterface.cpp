@@ -29,6 +29,7 @@
 // #include <WinApi.h>
 #include "Tools.h"
 //#include <Vcl.AppEvnts.hpp>
+
 #if 0
 
 #pragma package(smart_init)
@@ -43,6 +44,7 @@ void FormHelp(TCustomForm * Form)
 {
   InvokeHelp(Form->ActiveControl != nullptr ? Form->ActiveControl : Form);
 }
+
 #endif // #if 0
 
 HINSTANCE HInstance{nullptr};
@@ -598,13 +600,13 @@ static TStrings * StackInfoListToStrings(
   }
   return StackTrace.release();
 }
-#endif // #if 0
 
-#if 0
+
 static std::unique_ptr<TCriticalSection> StackTraceCriticalSection(TraceInitPtr(new TCriticalSection()));
 using TStackTraceMap = rde::map<DWORD, TStrings *>;
 static TStackTraceMap StackTraceMap;
-#endif
+
+#endif // #if 0
 
 UnicodeString GetExceptionDebugInfo()
 {
@@ -647,6 +649,7 @@ UnicodeString GetExceptionDebugInfo()
 bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 {
   bool Result = false;
+
 #if 0
 
   TGuard Guard(StackTraceCriticalSection.get()); nb::used(Guard);
@@ -1104,6 +1107,7 @@ bool TCustomCommandPromptsDialog::Execute(TUnicodeStringVector & Values)
 
   return Result;
 }
+
 #endif // #if 0
 
 
@@ -1113,6 +1117,7 @@ TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
   FHelpKeyword(AHelpKeyword)
 {
   FCustomCommandName = StripEllipsis(StripHotkey(CustomCommandName));
+  // FHelpKeyword = HelpKeyword;
 }
 
 void TWinInteractiveCustomCommand::PatternHint(int32_t Index, const UnicodeString & Pattern)
@@ -1595,6 +1600,7 @@ static void AppGetMainFormHandle(void * /*Data*/, HWND & Handle)
     Handle = MainForm->Handle;
   }
 }
+
 #endif // #if 0
 
 void WinInitialize()
@@ -1623,6 +1629,7 @@ void WinFinalize()
   JclRemoveExceptNotifier(DoExceptNotify);
 #endif // #if 0
 }
+
 #if 0
 
 ::TTrayIcon::TTrayIcon(uint32_t Id)

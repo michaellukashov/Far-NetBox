@@ -239,6 +239,7 @@ private:
   int32_t FSFTPMaxVersion{SFTPMaxVersion};
   int32_t FSFTPMaxPacketSize{0};
   TAutoSwitch FSFTPRealPath{asAuto};
+  bool FUsePosixRename{false};
   TDSTMode FDSTMode{dstmKeep};
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT]{};
   bool FDeleteToRecycleBin{false};
@@ -276,6 +277,7 @@ private:
   TFtps FFtps{ftpsNone};
   TTlsVersion FMinTlsVersion{};
   TTlsVersion FMaxTlsVersion{};
+  TAutoSwitch FCompleteTlsShutdown{};
   TAutoSwitch FNotUtf{};
   int32_t FInternalEditorEncoding{0};
   UnicodeString FS3DefaultRegion;
@@ -426,6 +428,7 @@ public:
   void SetSFTPMaxVersion(int32_t AValue);
   void SetSFTPMaxPacketSize(uint32_t AValue);
   void SetSFTPRealPath(TAutoSwitch AValue);
+  void SetUsePosixRename(bool AValue);
   void SetSFTPBug(TSftpBug Bug, TAutoSwitch AValue);
   TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
   void SetSCPLsFullTime(TAutoSwitch AValue);
@@ -470,6 +473,7 @@ public:
   void SetFtps(TFtps AValue);
   void SetMinTlsVersion(TTlsVersion AValue);
   void SetMaxTlsVersion(TTlsVersion AValue);
+  void SetCompleteTlsShutdown(TAutoSwitch AValue);
   void SetNotUtf(TAutoSwitch AValue);
   void SetInternalEditorEncoding(int32_t AValue);
   void SetS3DefaultRegion(const UnicodeString & AValue);
@@ -779,6 +783,8 @@ public:
   __property int32_t SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
   __property uint32_t SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
   __property TAutoSwitch SFTPRealPath = { read = FSFTPRealPath, write = SetSFTPRealPath };
+  __property bool UsePosixRename = { read = FUsePosixRename, write = SetUsePosixRename };
+  RWPropertySimple<bool> UsePosixRename{&FUsePosixRename, nb::bind(&TSessionData::SetUsePosixRename, this)};
   // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
   __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
   __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
@@ -833,6 +839,8 @@ public:
   RWPropertySimple<TTlsVersion> MinTlsVersion{&FMinTlsVersion, nb::bind(&TSessionData::SetMinTlsVersion, this)};
   __property TTlsVersion MaxTlsVersion = { read = FMaxTlsVersion, write = SetMaxTlsVersion };
   RWPropertySimple<TTlsVersion> MaxTlsVersion{&FMaxTlsVersion, nb::bind(&TSessionData::SetMaxTlsVersion, this)};
+  __property TAutoSwitch CompleteTlsShutdown = { read = FCompleteTlsShutdown, write = SetCompleteTlsShutdown };
+  RWPropertySimple<TAutoSwitch> CompleteTlsShutdown{&FCompleteTlsShutdown, nb::bind(&TSessionData::SetCompleteTlsShutdown, this)};
   __property UnicodeString LogicalHostName = { read = FLogicalHostName, write = SetLogicalHostName };
   RWProperty<UnicodeString> LogicalHostName{nb::bind(&TSessionData::GetLogicalHostName, this), nb::bind(&TSessionData::SetLogicalHostName, this)};
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };

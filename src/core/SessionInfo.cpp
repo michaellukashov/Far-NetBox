@@ -1388,17 +1388,17 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF("Simple channel: %s", BooleanToEngStr(Data->FSshSimple));
       ADF("Return code variable: %s; Lookup user groups: %s",
         Data->GetDetectReturnVar() ? UnicodeString(L"Autodetect") : Data->FReturnVar,
-        EnumName(Data->FLookupUserGroups, AutoSwitchNames));
+         EnumName(Data->FLookupUserGroups, AutoSwitchNames));
       ADF("Shell: %s", Data->GetShell().IsEmpty() ? UnicodeString(L"default") : Data->FShell);
       ADF("EOL: %s, UTF: %s", EnumName(Data->GetEOLType(), EOLTypeNames), EnumName(Data->GetNotUtf(), NotAutoSwitchNames)); // NotUtf duplicated in FTP branch
       ADF("Clear aliases: %s, Unset nat.vars: %s, Resolve symlinks: %s; Follow directory symlinks: %s",
         BooleanToEngStr(Data->FClearAliases), BooleanToEngStr(Data->FUnsetNationalVars),
-        BooleanToEngStr(Data->FResolveSymlinks), BooleanToEngStr(Data->FFollowDirectorySymlinks));
+         BooleanToEngStr(Data->FResolveSymlinks), BooleanToEngStr(Data->FFollowDirectorySymlinks));
       ADF("LS: %s, Ign LS warn: %s, Scp1 Comp: %s; Exit code 1 is error: %s",
-        Data->FListingCommand,
-        BooleanToEngStr(Data->FIgnoreLsWarnings),
-        BooleanToEngStr(Data->FScp1Compatibility),
-        BooleanToEngStr(Data->FExitCode1IsError));
+         Data->FListingCommand,
+         BooleanToEngStr(Data->FIgnoreLsWarnings),
+         BooleanToEngStr(Data->FScp1Compatibility),
+         BooleanToEngStr(Data->FExitCode1IsError));
     }
     if ((Data->GetFSProtocol() == fsSFTP) || (Data->GetFSProtocol() == fsSFTPonly))
     {
@@ -1411,7 +1411,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF("SFTP Server: %s", Data->FSftpServer.IsEmpty() ? UnicodeString(L"default") : Data->FSftpServer);
       if (Data->FSFTPRealPath != asAuto)
       {
-        ADF(L"SFTP Real Path: %s", EnumName(Data->FSFTPRealPath, AutoSwitchNames));
+        ADF(L"SFTP Real path: %s", EnumName(Data->FSFTPRealPath, AutoSwitchNames));
+      }
+      if (Data->UsePosixRename)
+      {
+        ADF(L"Use POSIX rename: %s", BooleanToEngStr(Data->UsePosixRename));
       }
     }
     bool FtpsOn = false;

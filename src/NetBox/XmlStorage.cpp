@@ -175,13 +175,16 @@ void TXmlStorage::DoCloseSubKey()
   }
 }
 
-void TXmlStorage::DoDeleteSubKey(const UnicodeString & SubKey)
+bool TXmlStorage::DoDeleteSubKey(const UnicodeString & SubKey)
 {
+  bool Result = false;
   tinyxml2::XMLElement * Element = FindElement(SubKey);
   if (Element != nullptr)
   {
     FCurrentElement->DeleteChild(Element);
+    Result = true;
   }
+  return Result;
 }
 
 void TXmlStorage::DoGetSubKeyNames(TStrings * Strings)
