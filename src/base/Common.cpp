@@ -635,7 +635,7 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   return Result;
 }
 
-UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
+UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
 {
   UnicodeString Result;
   const int32_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
@@ -1202,7 +1202,7 @@ static UnicodeString GetWineHomeFolder()
 {
   UnicodeString Result;
 
-  const UnicodeString WineHostHome = base::GetEnvVariable(L"WINE_HOST_HOME");
+  const UnicodeString WineHostHome = base::GetEnvironmentVariable(L"WINE_HOST_HOME");
   if (!WineHostHome.IsEmpty())
   {
     Result = L"Z:" + base::FromUnixPath(WineHostHome);
@@ -1210,7 +1210,7 @@ static UnicodeString GetWineHomeFolder()
   else
   {
     // Should we use WinAPI GetUserName() instead?
-    const UnicodeString UserName = base::GetEnvVariable(L"USERNAME");
+    const UnicodeString UserName = base::GetEnvironmentVariable(L"USERNAME");
     if (!UserName.IsEmpty())
     {
       Result = L"Z:\\home\\" + UserName;

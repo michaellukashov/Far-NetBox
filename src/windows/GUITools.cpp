@@ -55,8 +55,8 @@ bool FindFile(UnicodeString & Path)
 
   if (!Result)
   {
-    const UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
-    const UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
+    const UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvironmentVariable(L"ProgramFiles"));
+    const UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvironmentVariable(L"ProgramW6432"));
     if (!ProgramFiles32.IsEmpty() &&
         SameText(Path.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
         !ProgramFiles64.IsEmpty())
@@ -73,7 +73,7 @@ bool FindFile(UnicodeString & Path)
 
   if (!Result && SameText(base::ExtractFileName(Path), Path))
   {
-    UnicodeString Paths = base::GetEnvVariable("PATH");
+    UnicodeString Paths = base::GetEnvironmentVariable("PATH");
     if (!Paths.IsEmpty())
     {
       UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(Path), Paths);
