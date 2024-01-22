@@ -555,7 +555,7 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
   ThrowNotImplemented(3004);
 #if 0
   // not to "append" the export to an existing file
-  if (FileExists(AFileName))
+  if (base::FileExists(AFileName))
   {
     DeleteFileChecked(AFileName);
   }
@@ -1769,7 +1769,7 @@ TStorage TConfiguration::GetStorage() const
   {
 #if 0
     DebugFail(); // This is never called, as the detection is completely overriden by TWinConfiguration
-    if (::FileExists(ApiPath(IniFileStorageNameForReading)))
+    if (base::FileExists(ApiPath(IniFileStorageNameForReading)))
     {
       FStorage = stIniFile;
     }

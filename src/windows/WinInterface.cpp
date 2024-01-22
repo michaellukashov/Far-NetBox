@@ -1514,7 +1514,7 @@ UnicodeString DumpCallstackFileName(int32_t ProcessId)
 void CheckConfigurationForceSave()
 {
   if (UseAlternativeFunction() && Configuration->Persistent &&
-      (Configuration->Storage == stIniFile) && Sysutils::FileExists(ApiPath(Configuration->IniFileStorageName)) &&
+      (Configuration->Storage == stIniFile) && base::FileExists(ApiPath(Configuration->IniFileStorageName)) &&
       !Configuration->ForceSave)
   {
     int Attr = GetFileAttributes(ApiPath(Configuration->IniFileStorageName).c_str());
