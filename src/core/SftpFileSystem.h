@@ -81,9 +81,9 @@ public:
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t AAttrs,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) override;
-  virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
-  virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
-  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
+  virtual void CreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
+  virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
+  virtual void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action) override;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, const UnicodeString & ACommand, int32_t AParams, TCaptureOutputEvent && OutputEvent) override;
@@ -98,9 +98,9 @@ public:
     TRemoteFile *& AFile) override;
   virtual void ReadSymlink(TRemoteFile * ASymlinkFile,
     TRemoteFile *& AFile) override;
-  virtual void RemoteRenameFile(
+  virtual void RenameFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
-  virtual void RemoteCopyFile(
+  virtual void CopyFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString & APath,
@@ -109,7 +109,7 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) override;
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
-  virtual UnicodeString RemoteGetUserName() const override;
+  virtual UnicodeString GetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs) override;
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
@@ -153,7 +153,7 @@ protected:
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, SSH_FXP_TYPE Type, TRemoteFile * ALinkedByFile = nullptr,
     SSH_FX_TYPE AllowStatus = -1);
-  virtual UnicodeString RemoteGetCurrentDirectory() const override;
+  virtual UnicodeString GetCurrentDirectory() const override;
 
   SSH_FX_TYPE GotStatusPacket(TSFTPPacket * Packet, SSH_FX_TYPE AllowStatus, bool DoNotForceLog);
   bool RemoteFileExists(const UnicodeString & AFullPath, TRemoteFile ** AFile = nullptr);

@@ -3315,7 +3315,7 @@ bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & ALoca
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::CreateDirectory(ApiPath(ALocalDirName).c_str(), SecurityAttributes) != 0;
+    return ::CreateDirectoryW(ApiPath(ALocalDirName).c_str(), SecurityAttributes) != 0;
   }
   else
   {
