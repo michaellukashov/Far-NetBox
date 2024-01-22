@@ -2744,7 +2744,7 @@ TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, cons
 void TTerminal::TerminalSetCurrentDirectory(const UnicodeString & AValue)
 {
   DebugAssert(FFileSystem);
-  if (AValue != FFileSystem->RemoteCurrentDirectory)
+  if (AValue != FFileSystem->CurrentDirectory())
   {
     RemoteChangeDirectory(AValue);
   }
@@ -2757,7 +2757,7 @@ UnicodeString TTerminal::RemoteGetCurrentDirectory()
     // there's occasional crash when assigning FFileSystem->CurrentDirectory
     // to FCurrentDirectory, splitting the assignment to two statements
     // to locate the crash more closely
-    const UnicodeString ACurrentDirectory = FFileSystem->RemoteCurrentDirectory();
+    const UnicodeString ACurrentDirectory = FFileSystem->CurrentDirectory();
     FCurrentDirectory = ACurrentDirectory;
     if (FCurrentDirectory.IsEmpty())
     {
@@ -2772,7 +2772,7 @@ UnicodeString TTerminal::PeekCurrentDirectory()
 {
   if (FFileSystem)
   {
-    FCurrentDirectory = FFileSystem->RemoteCurrentDirectory();
+    FCurrentDirectory = FFileSystem->CurrentDirectory();
   }
 
   return FCurrentDirectory;
@@ -2803,7 +2803,7 @@ UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   DebugAssert(FFileSystem != nullptr);
-  UnicodeString Result = FFileSystem ? FFileSystem->RemoteGetUserName() : "";
+  UnicodeString Result = FFileSystem ? FFileSystem->GetUserName() : "";
   // Is empty also when stored username was used
   if (Result.IsEmpty())
   {
@@ -3596,7 +3596,7 @@ void TTerminal::DoStartup()
       }
       else
       {
-        RemoteChangeDirectory(SessionData->RemoteDirectory);
+        RemoteChangeDirectory(SessionData->RemoteDirectory());
       }
     }
   }
@@ -3616,7 +3616,7 @@ void TTerminal::ReadCurrentDirectory()
     FReadCurrentDirectoryPending = false;
 
     LogEvent("Getting current directory name.");
-    const UnicodeString OldDirectory = FFileSystem->RemoteCurrentDirectory();
+    const UnicodeString OldDirectory = FFileSystem->CurrentDirectory();
 
     FFileSystem->ReadCurrentDirectory();
     ReactOnCommand(fsCurrentDirectory);
@@ -3636,7 +3636,7 @@ void TTerminal::ReadCurrentDirectory()
       FLastDirectoryChange.Clear();
     }
 
-    if (OldDirectory != FFileSystem->RemoteCurrentDirectory()) DoChangeDirectory();
+    if (OldDirectory != FFileSystem->CurrentDirectory()) DoChangeDirectory();
   }
   catch(Exception & E)
   {
@@ -4455,7 +4455,7 @@ void TTerminal::DoDeleteFile(
     {
       DebugAssert(FileSystem != nullptr);
       // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
-      FileSystem->RemoteDeleteFile(AFileName, AFile, Params, Action);
+      FileSystem->DeleteFile(AFileName, AFile, Params, Action);
       if ((OperationProgress != nullptr) && (OperationProgress->Operation() == foDelete))
       {
         OperationProgress->Succeeded();
@@ -5145,7 +5145,7 @@ bool TTerminal::DoRenameOrCopyFile(
           TMvSessionAction Action(ActionLog, AbsoluteFileName, AbsoluteNewName);
           try
           {
-            FileSystem->RemoteRenameFile(FileName, File, NewName, !DontOverwrite);
+            FileSystem->RenameFile(FileName, File, NewName, !DontOverwrite);
           }
           catch(Exception & E)
           {
@@ -5158,7 +5158,7 @@ bool TTerminal::DoRenameOrCopyFile(
           TCpSessionAction Action(ActionLog, AbsoluteFileName, AbsoluteNewName);
           try
           {
-            FileSystem->RemoteCopyFile(FileName, File, NewName, !DontOverwrite);
+            FileSystem->CopyFile(FileName, File, NewName, !DontOverwrite);
           }
           catch(Exception & E)
           {
@@ -5332,7 +5332,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt)
     {
       DebugAssert(FFileSystem);
       // DEBUG_PRINTF("ADirName: %s", ADirName);
-      FFileSystem->RemoteCreateDirectory(ADirName, Encrypt);
+      FFileSystem->CreateDirectory(ADirName, Encrypt);
     }
     catch(Exception & E)
     {
@@ -5367,7 +5367,7 @@ void TTerminal::DoCreateLink(const UnicodeString & AFileName,
     try
     {
       DebugAssert(FFileSystem);
-      FFileSystem->RemoteCreateLink(AFileName, APointTo, Symbolic);
+      FFileSystem->CreateLink(AFileName, APointTo, Symbolic);
     }
     catch(Exception & E)
     {
@@ -5631,7 +5631,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
       FCommandSession->GetFileSystem()->ReadCurrentDirectory();
 
       // synchronize pwd (by purpose we lose transaction optimization here)
-      RemoteChangeDirectory(FCommandSession->RemoteGetCurrentDirectory());
+      RemoteChangeDirectory(FCommandSession->CurrentDirectory());
     }
     ReactOnCommand(fsAnyCommand);
   }

@@ -186,9 +186,9 @@ public:
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * OperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) = 0;
-  virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) = 0;
-  virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) = 0;
-  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
+  virtual void CreateDirectory(const UnicodeString & ADirName, bool Encrypt) = 0;
+  virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) = 0;
+  virtual void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, int32_t AParams,
     TRmSessionAction & Action) = 0;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
@@ -204,9 +204,9 @@ public:
     TRemoteFile *& File) = 0;
   virtual void ReadSymlink(TRemoteFile * SymLinkFile,
     TRemoteFile *& File) = 0;
-  virtual void RemoteRenameFile(
+  virtual void RenameFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) = 0;
-  virtual void RemoteCopyFile(
+  virtual void CopyFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) = 0;
   virtual TStrings * GetFixedPaths() const = 0;
   virtual void SpaceAvailable(const UnicodeString & APath,
@@ -215,7 +215,7 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) = 0;
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) = 0;
   virtual bool GetStoredCredentialsTried() const = 0;
-  virtual UnicodeString RemoteGetUserName() const = 0;
+  virtual UnicodeString GetUserName() const = 0;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs) = 0;
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) = 0;
@@ -223,7 +223,7 @@ public:
   virtual void ClearCaches() = 0;
 
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-  ROProperty<UnicodeString> RemoteCurrentDirectory{nb::bind(&TCustomFileSystem::RemoteGetCurrentDirectory, this)};
+  ROProperty<UnicodeString> CurrentDirectory{nb::bind(&TCustomFileSystem::GetCurrentDirectory, this)};
 
 protected:
   TTerminal * FTerminal{nullptr};
@@ -231,7 +231,7 @@ protected:
   TCustomFileSystem() = delete;
   explicit TCustomFileSystem(TObjectClassId Kind) noexcept : TObject(Kind) {}
   explicit TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept;
-  virtual UnicodeString RemoteGetCurrentDirectory() const = 0;
+  virtual UnicodeString GetCurrentDirectory() const = 0;
 
   UnicodeString CreateTargetDirectory(
     IN const UnicodeString & AFileName,

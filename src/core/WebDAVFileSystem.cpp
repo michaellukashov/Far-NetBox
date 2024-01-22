@@ -570,7 +570,7 @@ bool TWebDAVFileSystem::GetStoredCredentialsTried() const
   return FStoredPasswordTried;
 }
 
-UnicodeString TWebDAVFileSystem::RemoteGetUserName() const
+UnicodeString TWebDAVFileSystem::GetUserName() const
 {
   return FUserName;
 }
@@ -601,7 +601,7 @@ UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bo
     AddTrailingBackslash = (APath[APath.Length()] == Slash);
   }
 
-  UnicodeString Result = base::AbsolutePath(RemoteGetCurrentDirectory(), APath);
+  UnicodeString Result = base::AbsolutePath(GetCurrentDirectory(), APath);
   // We must preserve trailing slash, because particularly for mod_dav,
   // it really matters if the slash in there or not
   if (AddTrailingBackslash)
@@ -669,7 +669,7 @@ bool TWebDAVFileSystem::IsCapable(int32_t Capability) const
   }
 }
 
-UnicodeString TWebDAVFileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TWebDAVFileSystem::GetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -1101,7 +1101,7 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::RemoteDeleteFile(const UnicodeString & /*AFileName*/,
+void TWebDAVFileSystem::DeleteFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, int32_t /*Params*/, TRmSessionAction & Action)
 {
   Action.Recursive();
@@ -1125,7 +1125,7 @@ int32_t TWebDAVFileSystem::RenameFileInternal(
   return ne_move(FSessionContext->NeonSession, Overwrite, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
-void TWebDAVFileSystem::RemoteRenameFile(
+void TWebDAVFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool Overwrite)
 {
   ClearNeonError();
@@ -1148,7 +1148,7 @@ int32_t TWebDAVFileSystem::CopyFileInternal(
   return ne_copy(FSessionContext->NeonSession, Overwrite, NE_DEPTH_INFINITE, PathToNeon(AFileName), PathToNeon(ANewName));
 }
 
-void TWebDAVFileSystem::RemoteCopyFile(
+void TWebDAVFileSystem::CopyFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool Overwrite)
 {
   ClearNeonError();
@@ -1163,14 +1163,14 @@ void TWebDAVFileSystem::RemoteCopyFile(
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
+void TWebDAVFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   ClearNeonError();
   const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
   CheckStatus(ne_mkcol(FSessionContext->NeonSession, PathToNeon(ADirName)));
 }
 
-void TWebDAVFileSystem::RemoteCreateLink(const UnicodeString & /*AFileName*/,
+void TWebDAVFileSystem::CreateLink(const UnicodeString & /*AFileName*/,
   const UnicodeString & /*PointTo*/, bool /*Symbolic*/)
 {
   DebugFail();

@@ -2160,7 +2160,7 @@ bool TSFTPFileSystem::GetStoredCredentialsTried() const
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSFTPFileSystem::RemoteGetUserName() const
+UnicodeString TSFTPFileSystem::GetUserName() const
 {
   return FSecureShell->ShellGetUserName();
 }
@@ -3089,7 +3089,7 @@ UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool
   {
     return LocalCanonify(APath);
   }
-  return GetRealPath(APath, RemoteGetCurrentDirectory());
+  return GetRealPath(APath, GetCurrentDirectory());
 }
 
 UnicodeString TSFTPFileSystem::GetHomeDirectory()
@@ -3137,7 +3137,7 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   return File.release();
 }
 
-UnicodeString TSFTPFileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TSFTPFileSystem::GetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -3974,7 +3974,7 @@ void TSFTPFileSystem::DoDeleteFile(const UnicodeString & AFileName, SSH_FXP_TYPE
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
+void TSFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t AParams, TRmSessionAction & Action)
 {
   uint8_t Type;
@@ -3990,7 +3990,7 @@ void TSFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   DoDeleteFile(AFileName, Type);
 }
 
-void TSFTPFileSystem::RemoteRenameFile(
+void TSFTPFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*File*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   const bool UsePosixRename = FTerminal->SessionData->UsePosixRename;
@@ -4030,7 +4030,7 @@ void TSFTPFileSystem::DoCloseRemoteIfOpened(const RawByteString & Handle)
   }
 }
 
-void TSFTPFileSystem::RemoteCopyFile(
+void TSFTPFileSystem::CopyFile(
   const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   const UnicodeString FileNameCanonical = Canonify(AFileName);
@@ -4080,7 +4080,7 @@ void TSFTPFileSystem::RemoteCopyFile(
   }
 }
 
-void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt)
+void TSFTPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool Encrypt)
 {
   TSFTPPacket Packet(SSH_FXP_MKDIR, FCodePage);
   const UnicodeString CanonifiedName = Canonify(ADirName);
@@ -4089,7 +4089,7 @@ void TSFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
 }
 
-void TSFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
+void TSFTPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool Symbolic)
 {
   // Cerberus server does not even respond to LINK or SYMLINK,
@@ -5063,7 +5063,7 @@ void TSFTPFileSystem::Source(
     // on VShell it failed
     FILE_OPERATION_LOOP_BEGIN
     {
-      this->RemoteRenameFile(OpenParams.RemoteFileName, nullptr, ADestFileName, false);
+      this->RenameFile(OpenParams.RemoteFileName, nullptr, ADestFileName, false);
     }
     FILE_OPERATION_LOOP_END_CUSTOM(
       FMTLOAD(RENAME_AFTER_RESUME_ERROR,

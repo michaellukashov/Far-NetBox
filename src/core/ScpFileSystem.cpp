@@ -423,7 +423,7 @@ bool TSCPFileSystem::GetStoredCredentialsTried() const
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSCPFileSystem::RemoteGetUserName() const
+UnicodeString TSCPFileSystem::GetUserName() const
 {
   return FSecureShell->ShellGetUserName();
 }
@@ -466,7 +466,7 @@ UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
 
 UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
-  return base::AbsolutePath(RemoteGetCurrentDirectory(), APath);
+  return base::AbsolutePath(GetCurrentDirectory(), APath);
 }
 
 bool TSCPFileSystem::IsCapable(int32_t Capability) const
@@ -755,7 +755,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd,
   }
 }
 
-UnicodeString TSCPFileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TSCPFileSystem::GetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -1239,7 +1239,7 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   }
 }
 
-void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
+void TSCPFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action)
 {
   DebugUsedParam(AFile);
@@ -1249,13 +1249,13 @@ void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   ExecCommand(fsDeleteFile, Params, DelimitStr(AFileName));
 }
 
-void TSCPFileSystem::RemoteRenameFile(
+void TSCPFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   ExecCommand(fsRenameFile, 0, DelimitStr(AFileName), DelimitStr(ANewName));
 }
 
-void TSCPFileSystem::RemoteCopyFile(
+void TSCPFileSystem::CopyFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   const UnicodeString DelimitedFileName = DelimitStr(AFileName);
@@ -1281,12 +1281,12 @@ void TSCPFileSystem::RemoteCopyFile(
   }
 }
 
-void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
+void TSCPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   ExecCommand(fsCreateDirectory, 0, DelimitStr(ADirName));
 }
 
-void TSCPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
+void TSCPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & APointTo, bool Symbolic)
 {
   ExecCommand(fsCreateLink, 0,

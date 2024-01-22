@@ -691,13 +691,13 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPNonUTF8");
   }
-  if (!RemoteGetCurrentDirectory().IsEmpty() && (RemoteGetCurrentDirectory()[1] != Slash))
+  if (!GetCurrentDirectory().IsEmpty() && (GetCurrentDirectory()[1] != Slash))
   {
-    if (base::IsUnixStyleWindowsPath(RemoteGetCurrentDirectory()))
+    if (base::IsUnixStyleWindowsPath(GetCurrentDirectory()))
     {
       FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPWindowsPath");
     }
-    else if ((RemoteGetCurrentDirectory().Length() >= 3) && IsLetter(RemoteGetCurrentDirectory()[1]) && (RemoteGetCurrentDirectory()[2] == L':') && (RemoteGetCurrentDirectory()[3] == Slash))
+    else if ((GetCurrentDirectory().Length() >= 3) && IsLetter(GetCurrentDirectory()[1]) && (GetCurrentDirectory()[2] == L':') && (GetCurrentDirectory()[3] == Slash))
     {
       FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPRealWindowsPath");
     }
@@ -894,7 +894,7 @@ void TFTPFileSystem::Idle()
       FTerminal->LogEvent("Dummy directory read to keep session alive.");
       FLastDataSent = Now(); // probably redundant to the same statement in DoReadDirectory
 
-      DummyReadDirectory(RemoteGetCurrentDirectory());
+      DummyReadDirectory(GetCurrentDirectory());
     }
   }
 }
@@ -1826,7 +1826,7 @@ void TFTPFileSystem::Source(
   FLastDataSent = Now();
 }
 
-void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
+void TFTPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   const UnicodeString DirName = GetAbsolutePath(ADirName, false);
 
@@ -1840,7 +1840,7 @@ void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool 
   }
 }
 
-void TFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
+void TFTPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & APointTo, bool Symbolic)
 {
   DebugAssert(SupportsSiteCommand(SymlinkSiteCommand));
@@ -1854,7 +1854,7 @@ void TFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
   }
 }
 
-void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
+void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action)
 {
   const UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -2552,7 +2552,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
       if ((FFileListCache != nullptr) &&
           base::UnixSamePath(Path, FFileListCache->GetDirectory()) &&
           (base::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
-           (FFileListCachePath == RemoteGetCurrentDirectory())))
+           (FFileListCachePath == this->GetCurrentDirectory())))
       {
         File = FFileListCache->FindFile(NameOnly);
       }
@@ -2575,7 +2575,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
         // the FFileListCache is reset from ResetCache.
         SAFE_DESTROY(FFileListCache);
         FFileListCache = FileListCache.release();
-        FFileListCachePath = RemoteGetCurrentDirectory();
+        FFileListCachePath = this->GetCurrentDirectory();
 
         File = FFileListCache->FindFile(NameOnly);
       }
@@ -2630,7 +2630,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   }
 }
 
-void TFTPFileSystem::RemoteRenameFile(
+void TFTPFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   const UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -2652,7 +2652,7 @@ void TFTPFileSystem::RemoteRenameFile(
   }
 }
 
-void TFTPFileSystem::RemoteCopyFile(
+void TFTPFileSystem::CopyFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
@@ -2779,12 +2779,12 @@ bool TFTPFileSystem::GetStoredCredentialsTried() const
   return FStoredPasswordTried;
 }
 
-UnicodeString TFTPFileSystem::RemoteGetUserName() const
+UnicodeString TFTPFileSystem::GetUserName() const
 {
   return FUserName;
 }
 
-UnicodeString TFTPFileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TFTPFileSystem::GetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
