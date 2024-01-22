@@ -182,7 +182,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   FSshHostCAList = std::make_unique<TSshHostCAList>();
 
   UnicodeString RandomSeedPath;
-  if (!base::GetEnvVariable("APPDATA").IsEmpty())
+  if (!base::GetEnvironmentVariable("APPDATA").IsEmpty())
   {
     RandomSeedPath = "%APPDATA%";
   }

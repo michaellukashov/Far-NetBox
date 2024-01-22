@@ -11,3 +11,4 @@
 #undef DeleteFile
 #undef GetCurrentDirectory
 #undef GetUserName
+#undef GetEnvironmentVariable

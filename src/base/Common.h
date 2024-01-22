@@ -577,7 +577,7 @@ enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
 
 namespace base {
 //TODO: move to Sysutils.hpp
-NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName);
+NB_CORE_EXPORT UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName);
 NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 } // namespace base
 
