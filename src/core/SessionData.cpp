@@ -54,7 +54,7 @@ bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directiv
     if (Line.SubString(1, 1) == "\"")
     {
       Line.Delete(1, 1);
-      int32_t P = Line.Pos("\"");
+      const int32_t P = Line.Pos("\"");
       Result = (P > 0);
       if (Result)
       {
@@ -64,7 +64,7 @@ bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directiv
     }
     else
     {
-      wchar_t Equal = L'=';
+      const wchar_t Equal = L'=';
       const UnicodeString Whitespaces(L" \t");
       const UnicodeString Delimiters(Whitespaces + Equal);
       const int32_t P = FindDelimiter(Delimiters, Line);
@@ -3413,7 +3413,7 @@ UnicodeString TSessionData::ResolvePublicKeyFile()
 
 void TSessionData::SetPassphrase(const UnicodeString & AValue)
 {
-  RawByteString value = EncryptPassword(AValue, GetPublicKeyFile());
+  const RawByteString value = EncryptPassword(AValue, GetPublicKeyFile());
   SET_SESSION_PROPERTY(Passphrase);
 }
 
@@ -4417,7 +4417,7 @@ void TSessionData::SetProxyUsername(const UnicodeString & value)
 
 void TSessionData::SetProxyPassword(const UnicodeString & AValue)
 {
-  RawByteString value = EncryptPassword(AValue, GetProxyUsername() + GetProxyHost());
+  const RawByteString value = EncryptPassword(AValue, GetProxyUsername() + GetProxyHost());
   SET_SESSION_PROPERTY(ProxyPassword);
 }
 
@@ -4746,7 +4746,7 @@ void TSessionData::SetTunnelHostName(const UnicodeString & value)
     UnicodeString XTunnelPassword = GetTunnelPassword();
 
     UnicodeString Value2 = value;
-    int32_t P = Value2.LastDelimiter(L"@");
+    const int32_t P = Value2.LastDelimiter(L"@");
     if (P > 0)
     {
       SetTunnelUserName(Value2.SubString(1, P - 1));
@@ -4791,7 +4791,7 @@ UnicodeString TSessionData::GetTunnelPassword() const
 
 void TSessionData::SetTunnelPassphrase(const UnicodeString & AValue)
 {
-  RawByteString value = EncryptPassword(AValue, FTunnelPublicKeyFile);
+  const RawByteString value = EncryptPassword(AValue, FTunnelPublicKeyFile);
   SET_SESSION_PROPERTY(TunnelPassphrase);
 }
 
@@ -5033,7 +5033,7 @@ UnicodeString TSessionData::GetEncryptKey() const
 
 void TSessionData::SetEncryptKey(const UnicodeString & AValue)
 {
-  RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
+  const RawByteString value = EncryptPassword(AValue, GetSessionPasswordEncryptionKey());
   SET_SESSION_PROPERTY(EncryptKey);
 }
 
