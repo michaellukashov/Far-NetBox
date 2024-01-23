@@ -104,7 +104,7 @@ static void NeedS3Config()
     UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
     UnicodeString DefaultConfigFileName = IncludeTrailingBackslash(ProfilePath) + L".aws\\credentials";
     // "aws" cli really prefers the default location over location specified by AWS_CONFIG_FILE
-    if (FileExists(DefaultConfigFileName))
+    if (base::FileExists(DefaultConfigFileName))
     {
       S3ConfigFileName = DefaultConfigFileName;
     }

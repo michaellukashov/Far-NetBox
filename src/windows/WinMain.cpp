@@ -1020,7 +1020,7 @@ int Execute()
     if (!IniFileName.IsEmpty() && (IniFileName != INI_NUL))
     {
       UnicodeString IniFileNameExpanded = ExpandEnvironmentVariables(IniFileName);
-      if (!FileExists(ApiPath(IniFileNameExpanded)))
+      if (!base::FileExists(ApiPath(IniFileNameExpanded)))
       {
         // this should be displayed rather at the very beginning.
         // however for simplicity (GUI-only), we do it only here.

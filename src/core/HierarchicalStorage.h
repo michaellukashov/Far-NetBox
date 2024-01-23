@@ -3,6 +3,7 @@
 
 #include <registry.hpp>
 #include <memory>
+// #include <map>
 
 enum TStorage { stDetect, stRegistry, stIniFile, stXmlFile, stFar3Storage, stNul };
 enum TStorageAccessMode { smRead, smReadWrite };

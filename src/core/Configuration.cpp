@@ -555,7 +555,7 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
   ThrowNotImplemented(3004);
 #if 0
   // not to "append" the export to an existing file
-  if (FileExists(AFileName))
+  if (base::FileExists(AFileName))
   {
     DeleteFileChecked(AFileName);
   }
