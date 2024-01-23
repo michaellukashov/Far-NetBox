@@ -190,11 +190,11 @@ constexpr SSH_FX_TYPE asAll = static_cast<SSH_FX_TYPE>(0xFFFF);
     (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[2])) << 8) | \
     (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[3])))
 
-#define PUT_32BIT(cp, value) { \
+#define PUT_32BIT(cp, value) do { \
     (cp)[0] = static_cast<uint8_t>((value) >> 24); \
     (cp)[1] = static_cast<uint8_t>((value) >> 16); \
     (cp)[2] = static_cast<uint8_t>((value) >> 8); \
-    (cp)[3] = static_cast<uint8_t>(value); }
+    (cp)[3] = static_cast<uint8_t>(value); } while(0)
 
 constexpr uint32_t SFTP_PACKET_ALLOC_DELTA = 256;
 
