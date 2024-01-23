@@ -2517,7 +2517,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
   TSFTPPacket * Packet, SSH_FX_TYPE AllowStatus, bool DoNotForceLog)
 {
-  const SSH_FX_TYPE Code = Packet->GetCardinal();
+  const SSH_FX_TYPE Code = static_cast<SSH_FX_TYPE>(Packet->GetCardinal());
 
   static int32_t Messages[] = {
     SFTP_STATUS_OK,
