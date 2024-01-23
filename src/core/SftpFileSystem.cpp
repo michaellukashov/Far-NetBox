@@ -200,7 +200,7 @@ constexpr uint32_t SFTP_PACKET_ALLOC_DELTA = 256;
 
 // #pragma warn -inl
 
-struct TSFTPSupport : public TObject
+struct TSFTPSupport final : public TObject
 {
   NB_DISABLE_COPY(TSFTPSupport)
 public:
@@ -210,7 +210,7 @@ public:
     Reset();
   }
 
-  ~TSFTPSupport() noexcept
+  virtual ~TSFTPSupport() noexcept override
   {
     // SAFE_DESTROY(AttribExtensions);
   }
@@ -282,7 +282,7 @@ public:
     memmove(GetData(), Source.c_str(), Source.Length());
   }
 
-  virtual ~TSFTPPacket() noexcept
+  virtual ~TSFTPPacket() noexcept override
   {
     if (FData != nullptr)
     {
@@ -1181,7 +1181,7 @@ private:
   }
 };
 
-class TSFTPQueuePacket : public TSFTPPacket
+class TSFTPQueuePacket final : public TSFTPPacket
 {
   NB_DISABLE_COPY(TSFTPQueuePacket)
   TSFTPQueuePacket() = delete;
@@ -1218,7 +1218,7 @@ public:
     DebugAssert(FFileSystem);
   }
 
-  virtual ~TSFTPQueue() noexcept
+  virtual ~TSFTPQueue() noexcept override
   {
     DebugAssert(FResponses->GetCount() == FRequests->GetCount());
     for (int32_t Index = 0; Index < FRequests->GetCount(); ++Index)
@@ -1428,7 +1428,7 @@ public:
   {
     FMissedRequests = 0;
   }
-  virtual ~TSFTPFixedLenQueue() = default;
+  virtual ~TSFTPFixedLenQueue() override = default;
 
   bool Init(int32_t QueueLen)
   {
@@ -1528,7 +1528,7 @@ private:
   bool FReceiveHandlerRegistered{false};
 };
 
-class TSFTPDownloadQueue : public TSFTPFixedLenQueue
+class TSFTPDownloadQueue final : public TSFTPFixedLenQueue
 {
   NB_DISABLE_COPY(TSFTPDownloadQueue)
   TSFTPDownloadQueue() = delete;
@@ -1537,7 +1537,7 @@ public:
     TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
   }
-  virtual ~TSFTPDownloadQueue() = default;
+  virtual ~TSFTPDownloadQueue() override = default;
 
   bool Init(
     int32_t QueueLen, const RawByteString & AHandle, int64_t Offset, int64_t PartSize, TFileOperationProgressType * AOperationProgress)
@@ -1791,7 +1791,7 @@ private:
   TEncryption * FEncryption{nullptr};
 };
 
-class TSFTPLoadFilesPropertiesQueue : public TSFTPFixedLenQueue
+class TSFTPLoadFilesPropertiesQueue final : public TSFTPFixedLenQueue
 {
   NB_DISABLE_COPY(TSFTPLoadFilesPropertiesQueue)
 public:
@@ -1801,7 +1801,7 @@ public:
   {
     FIndex = 0;
   }
-  virtual ~TSFTPLoadFilesPropertiesQueue() = default;
+  virtual ~TSFTPLoadFilesPropertiesQueue() override = default;
 
   bool Init(uint32_t QueueLen, TStrings * AFileList)
   {
@@ -1873,7 +1873,7 @@ private:
   int32_t FIndex{0};
 };
 
-class TSFTPCalculateFilesChecksumQueue : public TSFTPFixedLenQueue
+class TSFTPCalculateFilesChecksumQueue final : public TSFTPFixedLenQueue
 {
   NB_DISABLE_COPY(TSFTPCalculateFilesChecksumQueue)
 public:
@@ -1883,7 +1883,7 @@ public:
   {
     FIndex = 0;
   }
-  virtual ~TSFTPCalculateFilesChecksumQueue() = default;
+  virtual ~TSFTPCalculateFilesChecksumQueue() override = default;
 
   bool Init(int32_t QueueLen, const UnicodeString & Alg, TStrings * AFileList)
   {
@@ -1961,7 +1961,7 @@ private:
 
 // #pragma warn .inl
 
-class TSFTPBusy : public TObject
+class TSFTPBusy final : public TObject
 {
   NB_DISABLE_COPY(TSFTPBusy)
   TSFTPBusy() = delete;
@@ -3639,8 +3639,8 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   DebugAssert(FileList && !FileList->GetDirectory().IsEmpty());
 
-  UnicodeString Directory;
-  Directory = base::UnixExcludeTrailingBackslash(LocalCanonify(FileList->GetDirectory()));
+  // UnicodeString Directory;
+  const UnicodeString Directory = base::UnixExcludeTrailingBackslash(LocalCanonify(FileList->GetDirectory()));
   FTerminal->LogEvent(FORMAT("Listing directory \"%s\".", Directory));
 
   // moved before SSH_FXP_OPENDIR, so directory listing does not retain

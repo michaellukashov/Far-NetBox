@@ -54,7 +54,7 @@ bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directiv
     if (Line.SubString(1, 1) == "\"")
     {
       Line.Delete(1, 1);
-      int32_t P = Line.Pos("\"");
+      const int32_t P = Line.Pos("\"");
       Result = (P > 0);
       if (Result)
       {
@@ -64,7 +64,7 @@ bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directiv
     }
     else
     {
-      wchar_t Equal = L'=';
+      const wchar_t Equal = L'=';
       const UnicodeString Whitespaces(L" \t");
       const UnicodeString Delimiters(Whitespaces + Equal);
       const int32_t P = FindDelimiter(Delimiters, Line);
