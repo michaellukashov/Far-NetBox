@@ -5008,11 +5008,17 @@ bool TTerminal::DoRenameOrCopyFile(
   bool Move, bool DontOverwrite, bool IsBatchOperation)
 {
   const TBatchOverwrite BatchOverwrite = (IsBatchOperation ? OperationProgress->BatchOverwrite : boNo);
+  const UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
   const UnicodeString AbsoluteNewName = GetAbsolutePath(NewName, true);
   bool Result = true;
   bool ExistenceKnown = false;
   std::unique_ptr<TRemoteFile> DuplicateFile;
-  if (BatchOverwrite == boNone)
+  if (base::UnixSamePath(AbsoluteFileName, AbsoluteNewName))
+  {
+    LogEvent(FORMAT(L"Tartget \"%s\" is same as source \"%s\" - skipping.", AbsoluteNewName, AbsoluteFileName));
+    Result = false;
+  }
+  else if (BatchOverwrite == boNone)
   {
     DebugAssert(!DontOverwrite); // unsupported combination
     Result = !this->FileExists(AbsoluteNewName);
@@ -5133,7 +5139,6 @@ bool TTerminal::DoRenameOrCopyFile(
       TRetryOperationLoop RetryLoop(this);
       do
       {
-        UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
         DebugAssert(FileSystem != nullptr);
         if (Rename)
         {

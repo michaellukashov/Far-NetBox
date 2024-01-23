@@ -776,7 +776,7 @@ UnicodeString MakeValidFileName(const UnicodeString & AFileName)
   return Result;
 }
 
-UnicodeString RootKeyToStr(HKEY RootKey)
+UnicodeString RootKeyToStr(HKEY RootKey, const UnicodeString & Default)
 {
   if (RootKey == HKEY_USERS)
     return "HKU";
@@ -790,8 +790,14 @@ UnicodeString RootKeyToStr(HKEY RootKey)
     return "HKCC";
   if (RootKey == HKEY_DYN_DATA)
     return "HKDD";
-  Abort();
-  return "";
+  else
+  {
+    if (Default.IsEmpty())
+    {
+      Abort();
+    }
+  }
+  return Default;
 }
 
 UnicodeString BooleanToEngStr(bool B)
@@ -3814,6 +3820,12 @@ bool IsWine()
 
 int32_t GIsUWP = -1;
 UnicodeString GPackageName;
+
+void EnableUWPTestMode()
+{
+  GIsUWP = 1;
+  AppLog(L"UWP test mode");
+}
 
 static void NeedUWPData()
 {

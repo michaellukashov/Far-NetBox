@@ -167,6 +167,7 @@ constexpr char * SFTP_EXT_COPY_FILE = "copy-file";
 constexpr char * SFTP_EXT_COPY_DATA = "copy-data";
 constexpr char * SFTP_EXT_LIMITS = "limits@openssh.com";
 constexpr char * SFTP_EXT_LIMITS_VALUE_V1 = "1";
+constexpr char * SFTP_EXT_POSIX_RENAME = "posix-rename@openssh.com";
 
 constexpr wchar_t OGQ_LIST_OWNERS = 0x01;
 constexpr wchar_t OGQ_LIST_GROUPS = 0x02;
@@ -3381,11 +3382,11 @@ void TSFTPFileSystem::DoStartup()
           FTerminal->LogEvent(FORMAT(L"Unsupported %s extension version %s", ExtensionName, LimitsVersion));
         }
       }
-      // See the comment in SupportsExtension
       else if ((ExtensionName == SFTP_EXT_COPY_FILE) ||
                (ExtensionName == SFTP_EXT_COPY_DATA) ||
                (ExtensionName == SFTP_EXT_SPACE_AVAILABLE) ||
-               (ExtensionName == SFTP_EXT_CHECK_FILE))
+               (ExtensionName == SFTP_EXT_CHECK_FILE) ||
+               (ExtensionName == SFTP_EXT_POSIX_RENAME))
       {
         FTerminal->LogEvent(FORMAT(L"Supports extension %s=%s", ExtensionName, ExtensionDisplayData));
       }
@@ -3992,7 +3993,12 @@ void TSFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
 void TSFTPFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*File*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
-  TSFTPPacket Packet(SSH_FXP_RENAME, FCodePage);
+  const bool UsePosixRename = FTerminal->SessionData->UsePosixRename;
+  TSFTPPacket Packet(UsePosixRename ? SSH_FXP_EXTENDED : SSH_FXP_RENAME, FCodePage);
+  if (UsePosixRename)
+  {
+    Packet.AddString(SFTP_EXT_POSIX_RENAME);
+  }
   const UnicodeString RealName = LocalCanonify(AFileName);
   const bool Encrypted = FTerminal->IsFileEncrypted(RealName);
   AddPathString(Packet, RealName);
@@ -4007,7 +4013,7 @@ void TSFTPFileSystem::RenameFile(
     TargetName = LocalCanonify(ANewName);
   }
   AddPathString(Packet, TargetName, Encrypted);
-  if (FVersion >= 5)
+  if (UsePosixRename && (FVersion >= 5))
   {
     Packet.AddCardinal(0);
   }

@@ -31,7 +31,8 @@ public:
   bool HasSubKeys();
   bool KeyExists(const UnicodeString & SubKey);
   bool ValueExists(const UnicodeString & Value);
-  virtual void RecursiveDeleteSubKey(const UnicodeString & Key);
+  bool DeleteSubKey(const UnicodeString & Key, bool Recursive = false);
+  bool RecursiveDeleteSubKey(const UnicodeString & Key);
   virtual void ClearSubKeys();
   virtual void ReadValues(TStrings * Strings, bool MaintainKeys = false);
   virtual void WriteValues(TStrings * Strings, bool MaintainKeys = false);
@@ -84,6 +85,8 @@ public:
   ROProperty<UnicodeString> Source{nb::bind(&THierarchicalStorage::GetSourceConst, this)};
   __property bool Temporary = { read = GetTemporary };
   ROProperty<bool> Temporary{nb::bind(&THierarchicalStorage::GetTemporary, this)};
+  __property UnicodeString UnmungedRoot = { read = FUnmungedRoot, write = FUnmungedRoot };
+  UnicodeString& UnmungedRoot{FUnmungedRoot};
 
   UnicodeString GetStorage() const { return FStorage; }
   TStorageAccessMode GetAccessMode() const { return FAccessMode; }
@@ -115,6 +118,7 @@ protected:
   bool FForceAnsi{false};
   int32_t FFakeReadOnlyOpens{0};
   mutable int32_t FRootAccess{0};
+  UnicodeString FUnmungedRoot;
 
   __property bool ForceAnsi = { read = FForceAnsi, write = FForceAnsi };
 
@@ -127,10 +131,11 @@ protected:
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   virtual void DoCloseSubKey() = 0;
+  bool MungingKeyName(const UnicodeString & Key);
   UnicodeString MungeKeyName(const UnicodeString & Key);
   virtual UnicodeString GetSource() const = 0;
   virtual bool GetTemporary() const;
-  virtual void DoDeleteSubKey(const UnicodeString & SubKey) = 0;
+  virtual bool DoDeleteSubKey(const UnicodeString & SubKey) = 0;
   virtual bool DoDeleteValue(const UnicodeString & Name) = 0;
 
   virtual void DoGetSubKeyNames(TStrings * Strings) = 0;
@@ -193,7 +198,7 @@ protected:
   virtual void DoCloseSubKey() override;
   virtual UnicodeString GetSource() const override;
   virtual int32_t DoBinaryDataSize(const UnicodeString & Name) override;
-  virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
+  virtual bool DoDeleteSubKey(const UnicodeString & SubKey) override;
   virtual bool DoDeleteValue(const UnicodeString & Name) override;
 
   virtual void DoGetSubKeyNames(TStrings * Strings) override;
@@ -258,7 +263,7 @@ protected:
   virtual void DoCloseSubKey();
   virtual UnicodeString GetSource();
   virtual size_t DoBinaryDataSize(const UnicodeString & Name);
-  virtual void DoDeleteSubKey(const UnicodeString & SubKey);
+  virtual bool DoDeleteSubKey(const UnicodeString & SubKey);
   virtual bool DoDeleteValue(const UnicodeString & Name);
 
   virtual void DoGetSubKeyNames(TStrings * Strings);

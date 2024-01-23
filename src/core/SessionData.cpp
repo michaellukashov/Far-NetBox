@@ -275,6 +275,7 @@ void TSessionData::DefaultSettings()
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
   FSFTPRealPath = asAuto;
+  UsePosixRename = false;
 
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
@@ -303,6 +304,7 @@ void TSessionData::DefaultSettings()
   SetFtps(ftpsNone);
   MinTlsVersion = tlsDefaultMin;
   MaxTlsVersion = tlsMax;
+  CompleteTlsShutdown = asAuto;
   SetFtpListAll(asAuto);
   SetFtpHost(asAuto);
   SetFtpDupFF(false);
@@ -311,12 +313,6 @@ void TSessionData::DefaultSettings()
   FFtpAnyCodeForPwd = false;
   SetSslSessionReuse(true);
   SetTlsCertificateFile("");
-
-#if 0
-  IsWorkspace = false;
-  Link = L"";
-  NameOverride = L"";
-#endif // #if 0
 
   SetSelected(false);
   FModified = false;
@@ -334,6 +330,7 @@ void TSessionData::DefaultSettings()
   SetFtpProxyLogonType(0); // none
 
   FPuttySettings = UnicodeString();
+
 
   SetCustomParam1("");
   SetCustomParam2("");
@@ -477,6 +474,7 @@ void TSessionData::NonPersistent()
   PROPERTY(SFTPMaxVersion); \
   PROPERTY(SFTPMaxPacketSize); \
   PROPERTY2(SFTPRealPath); \
+  PROPERTY2(UsePosixRename); \
   \
   PROPERTY(Tunnel); \
   PROPERTY(TunnelHostName); \
@@ -507,6 +505,7 @@ void TSessionData::NonPersistent()
   \
   PROPERTY(MinTlsVersion); \
   PROPERTY(MaxTlsVersion); \
+  PROPERTY2(CompleteTlsShutdown); \
   \
   PROPERTY(WinTitle); \
   \
@@ -936,6 +935,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   SetSFTPUploadQueue(Storage->ReadInteger("SFTPUploadQueue", nb::ToInt32(GetSFTPUploadQueue())));
   SetSFTPListingQueue(Storage->ReadInteger("SFTPListingQueue", nb::ToInt32(GetSFTPListingQueue())));
   FSFTPRealPath = Storage->ReadEnum("SFTPRealPath", FSFTPRealPath, AutoSwitchMapping);
+  UsePosixRename = Storage->ReadBool(L"UsePosixRename", UsePosixRename);
 
   SetColor(Storage->ReadInteger("Color", nb::ToInt32(GetColor())));
 
@@ -984,6 +984,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
 
   SetMinTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MinTlsVersion", GetMinTlsVersion())));
   SetMaxTlsVersion(static_cast<TTlsVersion>(Storage->ReadInteger("MaxTlsVersion", GetMaxTlsVersion())));
+  CompleteTlsShutdown = Storage->ReadEnum(L"CompleteTlsShutdown", FCompleteTlsShutdown, AutoSwitchMapping);
 
   LOAD_PASSWORD(EncryptKey, "EncryptKeyPlain");
 
@@ -1297,6 +1298,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA2(Integer, SFTPUploadQueue);
     WRITE_DATA2(Integer, SFTPListingQueue);
     WRITE_DATA3(Integer, SFTPRealPath);
+    WRITE_DATA3(Bool, UsePosixRename);
 
     WRITE_DATA2(Integer, Color);
 
@@ -1329,6 +1331,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
     WRITE_DATA(Integer, MinTlsVersion);
     WRITE_DATA(Integer, MaxTlsVersion);
+    WRITE_DATA3(Integer, CompleteTlsShutdown);
 
     WRITE_DATA3(Bool, WebDavLiberalEscaping);
     WRITE_DATA3(Bool, WebDavAuthLegacy);
@@ -4703,6 +4706,11 @@ void TSessionData::SetSFTPRealPath(TAutoSwitch value)
   SET_SESSION_PROPERTY(SFTPRealPath);
 }
 
+void TSessionData::SetUsePosixRename(bool value)
+{
+  SET_SESSION_PROPERTY(UsePosixRename);
+}
+
 void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch value)
 {
   DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FSFTPBugs));
@@ -4886,6 +4894,11 @@ void TSessionData::SetMaxTlsVersion(TTlsVersion value)
 void TSessionData::SetLogicalHostName(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(LogicalHostName);
+}
+
+void TSessionData::SetCompleteTlsShutdown(TAutoSwitch value)
+{
+  SET_SESSION_PROPERTY(CompleteTlsShutdown);
 }
 
 void TSessionData::SetFtpListAll(TAutoSwitch value)
@@ -5390,7 +5403,7 @@ void TStoredSessionList::Reload()
   {
     bool SessionList = true;
     std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
-    if (Storage->OpenSubKey(GetConfiguration()->StoredSessionsSubKey, False))
+    if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
     {
       Load(Storage.get());
     }

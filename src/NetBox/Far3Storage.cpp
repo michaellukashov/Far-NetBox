@@ -82,8 +82,9 @@ void TFar3Storage::DoCloseSubKey()
   }
 }
 
-void TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
+bool TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
 {
+  bool Result = false;
   UnicodeString K;
   if (FKeyHistory.empty())
   {
@@ -93,8 +94,9 @@ void TFar3Storage::DoDeleteSubKey(const UnicodeString & SubKey)
   const size_t Root = FPluginSettings.OpenSubKey(FRoot, MungeKeyName(SubKey).c_str());
   if (Root != 0)
   {
-    FPluginSettings.DeleteSubKey(Root);
+    Result = FPluginSettings.DeleteSubKey(Root);
   }
+  return Result;
 }
 
 void TFar3Storage::DoGetSubKeyNames(TStrings * Strings)

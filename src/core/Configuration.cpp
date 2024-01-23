@@ -84,7 +84,7 @@ void TSshHostCA::Save(THierarchicalStorage * Storage) const
 TSshHostCAList::TSshHostCAList(const TSshHostCA::TList & List) :
   FList(List)
 {
-
+  // FList = List;
 }
 
 void TSshHostCAList::Default()
@@ -177,7 +177,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   FForceSave = false;
   FApplicationInfo = nullptr;
   // FUsage = std::make_unique<TUsage>(this);
-  FDefaultCollectUsage = false;
+  FDefaultCollectUsage = false; // IsUWP();
   FScripting = false;
   FSshHostCAList = std::make_unique<TSshHostCAList>();
 
@@ -777,6 +777,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
   }
 
   CopyAllStringsInSubKey(Source, Target, SshHostKeysSubKey);
+  CopyAllStringsInSubKey(Source, Target, SshHostCAsKey);
   CopyAllStringsInSubKey(Source, Target, FtpsCertificateStorageKey);
   CopyAllStringsInSubKey(Source, Target, HttpsCertificateStorageKey);
 }
@@ -999,14 +1000,46 @@ bool TConfiguration::RegistryPathExists(const UnicodeString & RegistryPath) cons
 
 void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
 {
+  UnicodeString CompanyKey = GetCompanyRegistryKey();
   std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(RegistryStorageKey()));
-
-  UnicodeString ParentKey = ExtractFileDir(RegistryPath);
-  if (ParentKey.IsEmpty() ||
-      Registry->OpenSubKeyPath(ParentKey, false))
+  const UnicodeString Prefix = IncludeTrailingBackslash(CompanyKey);
+  if (DebugAlwaysTrue(SameStr(LeftStr(RegistryStorageKey, Prefix.Length()), Prefix)))
   {
-    const UnicodeString SubKey = base::ExtractFileName(RegistryPath, false);
-    Registry->RecursiveDeleteSubKey(SubKey);
+    UnicodeString CompanyParentKey = ExtractFileDir(CompanyKey);
+    std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(CompanyParentKey));
+    const UnicodeString RegistryStorageSubKey = MidStr(RegistryStorageKey, CompanyParentKey.Length() + 2);
+    Registry->UnmungedRoot = RegistryStorageSubKey;
+
+    AppLogFmt(L"Cleaning up registry key %s", RegistryPath);
+    const UnicodeString ARegistryPath = TPath::Combine(RegistryStorageSubKey, RegistryPath);
+    UnicodeString Buf = ARegistryPath;
+    while (!Buf.IsEmpty())
+    {
+      UnicodeString ParentKey = ExtractFileDir(Buf);
+      // Actually can be simplified to Registry->OpenSubKeyPath(ParentKey, false)
+      if (ParentKey.IsEmpty() ? Registry->OpenRootKey(false) : Registry->OpenSubKeyPath(ParentKey, false))
+      {
+        const UnicodeString SubKey = base::ExtractFileName(Buf);
+        if (Registry->KeyExists(SubKey))
+        {
+          const bool Recursive = (Buf == ARegistryPath);
+          if (Registry->DeleteSubKey(SubKey, Recursive))
+          {
+            AppLogFmt(L"Deleted registry key %s in %s", SubKey, ParentKey);
+          }
+          else
+          {
+            break;
+          }
+        }
+        Registry->CloseSubKeyPath();
+        Buf = ParentKey;
+      }
+      else
+      {
+        break;
+      }
+    }
   }
 }
 
@@ -1014,6 +1047,7 @@ TStrings * TConfiguration::GetCaches() const
 {
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   Result->Add(SshHostKeysSubKey);
+  Result->Add(SshHostCAsKey);
   Result->Add(FtpsCertificateStorageKey);
   Result->Add(HttpsCertificateStorageKey);
   Result->Add(DirectoryStatisticsCacheKey);
@@ -1629,7 +1663,7 @@ const TStrings * TConfiguration::GetOptionsStorage() const
 
 UnicodeString TConfiguration::GetPuttySessionsSubKey() const
 {
-  return StoredSessionsSubKey;
+  return GetStoredSessionsSubKey();
 }
 
 UnicodeString TConfiguration::GetPuttySessionsKey(const UnicodeString & RootKey) const
@@ -1734,7 +1768,8 @@ TStorage TConfiguration::GetStorage() const
   if (FStorage == stDetect)
   {
 #if 0
-    if (::FileExists(ApiPath(IniFileStorageNameForReading)))
+    DebugFail(); // This is never called, as the detection is completely overriden by TWinConfiguration
+    if (base::FileExists(ApiPath(IniFileStorageNameForReading)))
     {
       FStorage = stIniFile;
     }
