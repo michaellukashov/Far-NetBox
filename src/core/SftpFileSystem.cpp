@@ -1663,7 +1663,7 @@ protected:
     // Buffer for one block of data
     TFileBuffer BlockBuf;
 
-    const int32_t BlockSize = GetBlockSize();
+    const uint32_t BlockSize = GetBlockSize();
     bool Result = (BlockSize > 0);
 
     if (Result)
@@ -1766,7 +1766,7 @@ protected:
     return Result;
   }
 
-  int32_t GetBlockSize() const
+  uint32_t GetBlockSize() const
   {
     return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
   }
@@ -1803,7 +1803,7 @@ public:
   }
   virtual ~TSFTPLoadFilesPropertiesQueue() = default;
 
-  bool Init(uint32_t QueueLen, TStrings * AFileList)
+  bool Init(int32_t QueueLen, TStrings * AFileList)
   {
     FFileList = AFileList;
 
