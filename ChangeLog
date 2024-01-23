@@ -1,7 +1,7 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [24.1.1.574] - 2024-01-20
+## [24.1.1.575] - 2024-01-23
 ### Fixed
 - Bugfix: Crash when session option "[x] Cache visited remote directories" is set
 https://forum.farmanager.com/viewtopic.php?p=176996&#p176996
@@ -9,6 +9,9 @@ https://forum.farmanager.com/viewtopic.php?p=176996&#p176996
 - Fix connect from History
 - Bugfix: Import session: session data not updated if session already exists
 https://forum.farmanager.com/viewtopic.php?p=176925#p176925 p.3
+
+### Added
+- sync WinSCP core with WinSCP 6.2.3-RC
 
 ## [24.1.1.570] - 2024-01-07
 ### Fixed
