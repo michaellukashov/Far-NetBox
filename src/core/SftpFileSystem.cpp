@@ -241,12 +241,12 @@ public:
 
 class TSFTPPacket : public TObject
 {
-  TSFTPPacket() = delete;
-  explicit TSFTPPacket(uint32_t CodePage) noexcept = delete;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPPacket); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPPacket) || TObject::is(Kind); }
 public:
+  explicit TSFTPPacket(uint32_t CodePage) noexcept = delete;
+  TSFTPPacket() = delete;
   explicit TSFTPPacket(TObjectClassId Kind, uint32_t CodePage) noexcept :
     TObject(Kind)
   {
@@ -1184,11 +1184,11 @@ private:
 class TSFTPQueuePacket final : public TSFTPPacket
 {
   NB_DISABLE_COPY(TSFTPQueuePacket)
-  TSFTPQueuePacket() = delete;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueuePacket); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueuePacket) || TSFTPPacket::is(Kind); }
 public:
+  TSFTPQueuePacket() = delete;
   explicit TSFTPQueuePacket(SSH_FXP_TYPE AType, uint32_t CodePage) noexcept :
      TSFTPPacket(OBJECT_CLASS_TSFTPQueuePacket, CodePage)
   {
@@ -1203,11 +1203,11 @@ uint32_t TSFTPPacket::FMessageCounter = 0;
 class TSFTPQueue : public TObject
 {
   NB_DISABLE_COPY(TSFTPQueue)
-  TSFTPQueue() = delete;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueue); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueue) || TObject::is(Kind); }
 public:
+  TSFTPQueue() = delete;
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept :
     TObject(OBJECT_CLASS_TSFTPQueue),
     FRequests(std::make_unique<TList>()),
@@ -1421,8 +1421,8 @@ protected:
 
 class TSFTPFixedLenQueue : public TSFTPQueue
 {
-  TSFTPFixedLenQueue() = delete;
 public:
+  TSFTPFixedLenQueue() = delete;
   explicit TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept :
     TSFTPQueue(AFileSystem, CodePage)
   {
@@ -1455,8 +1455,8 @@ protected:
 
 class TSFTPAsynchronousQueue : public TSFTPQueue
 {
-  TSFTPAsynchronousQueue() = delete;
 public:
+  TSFTPAsynchronousQueue() = delete;
   // #pragma option push -vi- // WORKAROUND for internal compiler errors
   explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept : TSFTPQueue(AFileSystem, CodePage)
   {
@@ -1531,8 +1531,8 @@ private:
 class TSFTPDownloadQueue final : public TSFTPFixedLenQueue
 {
   NB_DISABLE_COPY(TSFTPDownloadQueue)
-  TSFTPDownloadQueue() = delete;
 public:
+  TSFTPDownloadQueue() = delete;
   explicit TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept :
     TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
@@ -1613,8 +1613,8 @@ private:
 class TSFTPUploadQueue final : public TSFTPAsynchronousQueue
 {
   NB_DISABLE_COPY(TSFTPUploadQueue)
-  TSFTPUploadQueue() = delete;
 public:
+  TSFTPUploadQueue() = delete;
   explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uint32_t ACodePage, TEncryption * Encryption) noexcept :
     TSFTPAsynchronousQueue(AFileSystem, ACodePage),
     FEncryption(Encryption)
@@ -1964,8 +1964,8 @@ private:
 class TSFTPBusy final : public TObject
 {
   NB_DISABLE_COPY(TSFTPBusy)
-  TSFTPBusy() = delete;
 public:
+  TSFTPBusy() = delete;
   explicit TSFTPBusy(TSFTPFileSystem * AFileSystem) noexcept :
     FFileSystem(AFileSystem)
   {
