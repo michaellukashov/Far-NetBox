@@ -185,10 +185,10 @@ constexpr SSH_FX_TYPE asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 constexpr SSH_FX_TYPE asAll = static_cast<SSH_FX_TYPE>(0xFFFF);
 
 #define GET_32BIT(cp) \
-    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[0])) << 24) | \
+    ((static_cast<uint32_t>(static_cast<const uint8_t>((cp)[0])) << 24) | \
     (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[1])) << 16) | \
     (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[2])) << 8) | \
-    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[3])))
+    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[3]))))
 
 #define PUT_32BIT(cp, value) do { \
     (cp)[0] = static_cast<uint8_t>((value) >> 24); \
