@@ -509,6 +509,8 @@ TFileMasks & TFileMasks::operator =(const UnicodeString & rhs)
 
 TFileMasks & TFileMasks::operator =(const TFileMasks & rhm)
 {
+  if (this == &rhm)
+    return *this;
   DoInit(true);
   DoCopy(rhm);
   return *this;
