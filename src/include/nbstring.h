@@ -766,7 +766,7 @@ public:
 
   static uint32_t __stdcall GetEnvironmentVariable(LPCWSTR pszVar, LPWSTR pszBuffer, uint32_t dwSize)
   {
-    return GetEnvironmentVariable(pszVar, pszBuffer, dwSize);
+    return GetEnvironmentVariableW(pszVar, pszBuffer, dwSize);
   }
 
   static void __stdcall ConvertToOem(LPWSTR /*psz*/)
