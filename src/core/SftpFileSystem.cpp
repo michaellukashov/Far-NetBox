@@ -639,7 +639,7 @@ public:
     return Result;
   }
 
-  // For reading strings that are character strings (not byte strings as
+  // For reading strings that are character strings (not byte strings
   // as file handles), and SFTP spec does not say explicitly that they
   // are in UTF. For most of them it actually does not matter as
   // the content should be pure ASCII (e.g. extension names, etc.)
@@ -2798,7 +2798,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
     // before we removed the reservation after check for packet type,
     // but if it raises exception, removal is unnecessarily
     // postponed until the packet is removed
-    // (and it have not worked anyway until recent fix to UnreserveResponse)
+    // (and it has not worked anyway until recent fix to UnreserveResponse)
     if (Reservation >= 0)
     {
       DebugAssert(Packet->GetMessageNumber() == FPacketNumbers[Reservation]);
@@ -4844,7 +4844,7 @@ void TSFTPFileSystem::Source(
         }
         else
         {
-          // partial upload file does not exists, check for full file
+          // partial upload file does not exist, check for full file
           if (DestFileExists)
           {
             UnicodeString PrevDestFileName = ADestFileName;
@@ -5584,7 +5584,7 @@ void TSFTPFileSystem::Sink(
       OperationProgress->Progress();
     }
 
-    // first open source file, not to loose the destination file,
+    // first open source file, not to lose the destination file,
     // if we cannot open the source one in the first place
     FTerminal->LogEvent("Opening remote file.");
     FILE_OPERATION_LOOP_BEGIN

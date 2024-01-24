@@ -1034,7 +1034,7 @@ Boolean TRemoteFile::GetIsThisDirectory() const
   return wcscmp(FFileName.c_str(), THISDIRECTORY) == 0;
 }
 
-Boolean TRemoteFile::GetIsInaccesibleDirectory() const
+Boolean TRemoteFile::GetIsInaccessibleDirectory() const
 {
   Boolean Result = False;
   if (GetIsDirectory())

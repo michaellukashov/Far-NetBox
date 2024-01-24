@@ -144,7 +144,7 @@ public:
   void SetIsHidden(bool Value);
   bool GetIsParentDirectory() const;
   bool GetIsThisDirectory() const;
-  bool GetIsInaccesibleDirectory() const;
+  bool GetIsInaccessibleDirectory() const;
   UnicodeString GetExtension() const;
   bool GetIsEncrypted() const { return FIsEncrypted; }
   UnicodeString GetUserModificationStr() const;
@@ -220,8 +220,8 @@ public:
   ROProperty<bool> IsParentDirectory{nb::bind(&TRemoteFile::GetIsParentDirectory, this)};
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
   ROProperty<bool> IsThisDirectory{nb::bind(&TRemoteFile::GetIsThisDirectory, this)};
-  __property bool IsInaccesibleDirectory  = { read=GetIsInaccesibleDirectory };
-  ROProperty<bool> IsInaccesibleDirectory{nb::bind(&TRemoteFile::GetIsInaccesibleDirectory, this)};
+  __property bool IsInaccessibleDirectory  = { read=GetIsInaccessibleDirectory };
+  ROProperty<bool> IsInaccessibleDirectory{nb::bind(&TRemoteFile::GetIsInaccessibleDirectory, this)};
   __property UnicodeString Extension  = { read=GetExtension };
   ROProperty<UnicodeString> Extension{nb::bind(&TRemoteFile::GetExtension, this)};
   __property bool IsEncrypted  = { read = FIsEncrypted };
