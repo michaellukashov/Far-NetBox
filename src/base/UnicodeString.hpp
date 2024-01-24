@@ -44,7 +44,7 @@ public:
   void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
-  UTF8String & operator =(UTF8String && rhs) { Data = std::move(rhs.Data); return *this; }
+  UTF8String & operator =(UTF8String && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   UTF8String & operator =(const UnicodeString & StrCopy);
   UTF8String & operator =(const UTF8String & StrCopy);
   UTF8String & operator =(const RawByteString & StrCopy);
@@ -81,7 +81,7 @@ class NB_CORE_EXPORT UnicodeString
 public:
   UnicodeString() = default;
   // UnicodeString(UnicodeString &&) noexcept = default;
-  UnicodeString(UnicodeString && rhs) noexcept : Data(std::move(rhs.Data)) {}
+  UnicodeString(UnicodeString && rhs) noexcept : Data(rhs.Data) {}
   UnicodeString(const wchar_t * Str);
   UnicodeString(const wchar_t * Str, int32_t Length);
   explicit UnicodeString(wchar_t Src) = delete;
@@ -164,7 +164,7 @@ public:
   static UnicodeString StringOfChar(const wchar_t Ch, int32_t Len);
 
 public:
-  UnicodeString & operator =(UnicodeString && rhs) { Data = std::move(rhs.Data); return *this; }
+  UnicodeString & operator =(UnicodeString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   UnicodeString & operator =(const UnicodeString & StrCopy);
   UnicodeString & operator =(const RawByteString & StrCopy);
   UnicodeString & operator =(const AnsiString & StrCopy);
@@ -263,7 +263,7 @@ public:
   void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
-  AnsiString & operator =(AnsiString && rhs) { Data = std::move(rhs.Data); return *this; }
+  AnsiString & operator =(AnsiString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   AnsiString & operator =(const UnicodeString & StrCopy);
   // AnsiString & operator =(const RawByteString & StrCopy);
   AnsiString & operator =(const AnsiString & StrCopy);
@@ -352,7 +352,7 @@ public:
   void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
-  RawByteString & operator =(RawByteString && rhs) { Data = std::move(rhs.Data); return *this; }
+  RawByteString & operator =(RawByteString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   RawByteString & operator =(const UnicodeString & StrCopy);
   RawByteString & operator =(const RawByteString & StrCopy);
   RawByteString & operator =(const AnsiString & StrCopy);
