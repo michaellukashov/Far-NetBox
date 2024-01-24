@@ -873,11 +873,11 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) noexcept :
   FCalculatedSize = -1;
 }
 
-TRemoteFile::~TRemoteFile() noexcept
-{
-  // SAFE_DESTROY(FRights);
-  // SAFE_DESTROY(FLinkedFile);
-}
+TRemoteFile::~TRemoteFile() noexcept = default;
+/*{
+  SAFE_DESTROY(FRights);
+  SAFE_DESTROY(FLinkedFile);
+}*/
 
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
