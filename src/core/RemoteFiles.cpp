@@ -890,7 +890,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FLinkedFile->FLinkedByFile = Result.get();
     }
     Result->SetRights(FRights.get());
-#define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
+#define COPY_FP(PROP) Result->F ## PROP = F ## PROP
     COPY_FP(Terminal);
     COPY_FP(Owner);
     COPY_FP(ModificationFmt);
