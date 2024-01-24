@@ -964,6 +964,8 @@ public:
 
   TSFTPPacket & operator =(const TSFTPPacket & Source)
   {
+    if (this == &Source)
+      return *this;
     SetCapacity(0);
     Add(Source.GetData(), Source.GetLength());
     DataUpdated(Source.GetLength());
