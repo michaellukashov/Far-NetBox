@@ -324,7 +324,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   new TFarSeparator(Dialog);
 
   TFarText * Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(NB_CONFIG_COMAND_PREFIXES));
+  Text->SetCaption(GetMsg(NB_CONFIG_COMMAND_PREFIXES));
 
   TFarEdit * CommandPrefixesEdit = new TFarEdit(Dialog);
 
