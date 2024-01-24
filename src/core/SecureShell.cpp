@@ -343,7 +343,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       {
         conf_set_str(conf, CONF_remote_cmd, AnsiString(Data->GetShell()).c_str());
       }
-      conf_set_bool(conf, CONF_force_remote_cmd2, 0);
+      conf_set_bool(conf, CONF_force_remote_cmd2, false);
     }
     else
     {
@@ -369,7 +369,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
           // PuTTY ignores CONF_remote_cmd2 set to "",
           // so we have to enforce it
           // (CONF_force_remote_cmd2 is our config option)
-          conf_set_bool(conf, CONF_force_remote_cmd2, 1);
+          conf_set_bool(conf, CONF_force_remote_cmd2, true);
         }
         else
         {
@@ -389,7 +389,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
         }
         else
         {
-          conf_set_bool(conf, CONF_force_remote_cmd2, 0);
+          conf_set_bool(conf, CONF_force_remote_cmd2, false);
         }
       }
     }
@@ -401,7 +401,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 
   // permanent settings
   conf_set_bool(conf, CONF_nopty, TRUE);
-  conf_set_bool(conf, CONF_tcp_keepalives, 1); //?0
+  conf_set_bool(conf, CONF_tcp_keepalives, true); //?false
   conf_set_bool(conf, CONF_ssh_show_banner, TRUE);
   conf_set_int(conf, CONF_proxy_log_to_term, FORCE_OFF);
 
@@ -457,7 +457,7 @@ void TSecureShell::Open()
       FLogCtx = log_init(FLogPolicy.get(), conf);
       InitError = backend_init(&ssh_backend, FSeat.get(), &FBackendHandle, FLogCtx, conf,
         AnsiString(FSessionData->GetHostNameExpanded()).c_str(), nb::ToInt32(FSessionData->GetPortNumber()), &RealHost,
-        FSessionData->GetTcpNoDelay() ? 1 : 0,
+        FSessionData->GetTcpNoDelay() ? true : false,
         conf_get_bool(conf, CONF_tcp_keepalives));
     }
     __finally
