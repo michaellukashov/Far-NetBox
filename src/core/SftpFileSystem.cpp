@@ -210,10 +210,10 @@ public:
     Reset();
   }
 
-  virtual ~TSFTPSupport() noexcept override
-  {
-    // SAFE_DESTROY(AttribExtensions);
-  }
+  virtual ~TSFTPSupport() noexcept override = default;
+  /*{
+    SAFE_DESTROY(AttribExtensions);
+  }*/
 
   void Reset()
   {
@@ -1627,10 +1627,10 @@ public:
     FConvertToken = false;
   }
 
-  virtual ~TSFTPUploadQueue() noexcept override
-  {
+  virtual ~TSFTPUploadQueue() noexcept override = default;
+  /*{
 //    SAFE_DESTROY(FStream);
-  }
+  }*/
 
   bool Init(const UnicodeString & AFileName,
     HANDLE AFile, TTransferInEvent && OnTransferIn, TFileOperationProgressType * AOperationProgress,
