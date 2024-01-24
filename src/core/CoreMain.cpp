@@ -166,6 +166,8 @@ void DeleteConfiguration()
   }
 }
 
+static bool StoredSessionsInitialized = false;
+
 TStoredSessionList * GetStoredSessions()
 {
   static TStoredSessionList * StoredSessions = nullptr;
@@ -187,17 +189,19 @@ TStoredSessionList * GetStoredSessions()
   {
     ShowExtendedException(&E);
   }
+  StoredSessionsInitialized = true;
   return StoredSessions;
 }
 
 void DeleteStoredSessions()
 {
   static bool StoredSessionsDeleted = false;
-  if (!StoredSessionsDeleted)
+  if (!StoredSessionsDeleted && StoredSessionsInitialized)
   {
     TStoredSessionList * StoredSessions = GetStoredSessions();
     SAFE_DESTROY(StoredSessions);
     StoredSessionsDeleted = true;
+    StoredSessionsInitialized = false;
   }
 }
 
