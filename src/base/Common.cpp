@@ -14,7 +14,7 @@
 #include <Sysutils.hpp>
 #include <System.IOUtils.hpp>
 #include <cmath>
-#include <shlobj.h>
+#include <ShlObj.h>
 #include <limits>
 #include <algorithm>
 #include <psapi.h>
