@@ -340,7 +340,7 @@ public:
   void RememberLastFingerprint(const UnicodeString & ASiteKey, const UnicodeString & AFingerprintType, const UnicodeString & AFingerprint);
   UnicodeString GetLastFingerprint(const UnicodeString & SiteKey, const UnicodeString & FingerprintType);
   THierarchicalStorage * CreateConfigStorage();
-  THierarchicalStorage * CreateConfigRegistryStorage();
+  THierarchicalStorage * CreateConfigRegistryStorage() const;
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList);
   void TemporaryLogging(const UnicodeString & ALogFileName);
   void TemporaryActionsLogging(const UnicodeString & ALogFileName);

@@ -320,7 +320,7 @@ THierarchicalStorage * TConfiguration::CreateConfigStorage()
   return CreateScpStorage(SessionList);
 }
 
-THierarchicalStorage * TConfiguration::CreateConfigRegistryStorage()
+THierarchicalStorage * TConfiguration::CreateConfigRegistryStorage() const
 {
   return new TRegistryStorage(RegistryStorageKey);
 }
