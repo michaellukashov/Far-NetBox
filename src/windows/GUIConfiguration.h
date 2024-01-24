@@ -79,7 +79,7 @@ public:
 public:
   explicit TCopyParamRule() noexcept;
   explicit TCopyParamRule(const TCopyParamRuleData & Data) noexcept;
-  explicit TCopyParamRule(const TCopyParamRule & Source) noexcept;
+  TCopyParamRule(const TCopyParamRule & Source) noexcept;
 
   bool Matches(const TCopyParamRuleData & Value) const;
   void Load(THierarchicalStorage * Storage);
