@@ -3524,7 +3524,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       TargetDirLabel = GetMsg(NB_TARGET_DIR_LABEL);
       StartTimeLabel = GetMsg(NB_START_TIME_LABEL);
       TimeElapsedLabel = GetMsg(NB_TIME_ELAPSED_LABEL);
-      BytesTransferredLabel = GetMsg(NB_BYTES_TRANSFERED_LABEL);
+      BytesTransferredLabel = GetMsg(NB_BYTES_TRANSFERRED_LABEL);
       CPSLabel = GetMsg(NB_CPS_LABEL);
       TimeLeftLabel = GetMsg(NB_TIME_LEFT_LABEL);
     }
