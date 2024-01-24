@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <limits>
 // #include <stdarg.h>
-#include <math.h>
+#include <cmath>
 #include <fstream>
 
 #include <FastDelegate.h>

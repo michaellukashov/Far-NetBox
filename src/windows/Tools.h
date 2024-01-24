@@ -4,7 +4,7 @@
 #include <comctrls.hpp>
 #include <WinInterface.h>
 // #include <HelpIntfs.hpp>
-#include <stdio.h>
+#include <cstdio>
 #include <SessionData.h>
 // #include <Vcl.Graphics.hpp>
 
