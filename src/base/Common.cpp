@@ -895,7 +895,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, int32_t & From, const Unico
   }
   // even if we reached the end, return index, as if there were the delimiter,
   // so caller can easily find index of the end of the piece by subtracting
-  // 2 from From (as long as he did not asked for trimming)
+  // 2 from From (as long as he did not ask for trimming)
   From = P + 1;
   if (Trim)
   {
