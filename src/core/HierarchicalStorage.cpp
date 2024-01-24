@@ -221,7 +221,7 @@ bool THierarchicalStorage::OpenRootKey(bool CanCreate)
   return OpenSubKey(UnicodeString(), CanCreate);
 }
 
-bool THierarchicalStorage::MungingKeyName(const UnicodeString & Key)
+bool THierarchicalStorage::MungingKeyName(const UnicodeString & Key) const
 {
   UnicodeString K = CurrentSubKey() + Key + Backslash;
   return UnmungedRoot.IsEmpty() || !SameText(LeftStr(UnmungedRoot + Backslash, K.Length()), K);

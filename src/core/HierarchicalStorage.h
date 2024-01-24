@@ -131,7 +131,7 @@ protected:
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   virtual void DoCloseSubKey() = 0;
-  bool MungingKeyName(const UnicodeString & Key);
+  bool MungingKeyName(const UnicodeString & Key) const;
   UnicodeString MungeKeyName(const UnicodeString & Key);
   virtual UnicodeString GetSource() const = 0;
   virtual bool GetTemporary() const;
