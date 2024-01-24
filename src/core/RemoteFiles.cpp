@@ -602,6 +602,7 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) noexcept :
 }
 
 TRemoteToken::TRemoteToken(const TRemoteToken & rhs) noexcept :
+  TObject(rhs),
   FName(rhs.FName),
   FID(rhs.FID),
   FIDValid(rhs.FIDValid)
