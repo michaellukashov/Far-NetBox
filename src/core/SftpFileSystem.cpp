@@ -2369,7 +2369,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(
 
   if (Result == 0)
   {
-    Result = nb::ToUInt32(OperationProgress->StaticBlockSize());
+    Result = nb::ToUInt32(TFileOperationProgressType::StaticBlockSize());
   }
 
   if (Result < MinPacketSize)
