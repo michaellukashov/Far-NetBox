@@ -62,7 +62,7 @@ void TPersistent::AssignError(const TPersistent * Source)
   throw Exception("Cannot assign");
 }
 
-TObjectList::~TObjectList()
+TObjectList::~TObjectList() noexcept
 {
   TList::Clear();
 }
@@ -1201,7 +1201,7 @@ TFileStream::TFileStream(const UnicodeString & AFileName, uint16_t Mode) :
 
 }*/
 
-TFileStream::~TFileStream()
+TFileStream::~TFileStream() noexcept
 {
   SAFE_CLOSE_HANDLE(FHandle);
 }
@@ -1222,7 +1222,7 @@ TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & File
   return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
 }
 
-TSafeHandleStream::~TSafeHandleStream()
+TSafeHandleStream::~TSafeHandleStream() noexcept
 {
   SAFE_DESTROY(FSource);
 }
