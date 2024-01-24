@@ -1379,7 +1379,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     AddToList(BuildStr, DateStr, L" ");
 #endif
 
-    UnicodeString Result = FMTLOAD(VERSION2, FullVersion, BuildStr);
+    Result = FMTLOAD(VERSION2, FullVersion, BuildStr);
 
     if (GetIsUnofficial())
     {
