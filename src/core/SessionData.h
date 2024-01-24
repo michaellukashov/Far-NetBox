@@ -264,7 +264,7 @@ private:
   RawByteString FTunnelPassword;
   UnicodeString FTunnelPublicKeyFile;
   RawByteString FTunnelPassphrase;
-  int32_t FTunnelLocalPortNumber;
+  int32_t FTunnelLocalPortNumber{0};
   UnicodeString FTunnelPortFwd;
   UnicodeString FTunnelHostKey;
   bool FFtpPasvMode{false};

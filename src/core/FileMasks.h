@@ -93,15 +93,15 @@ private:
 
     enum TMaskBoundary { None, Open, Close };
 
-    TMaskBoundary HighSizeMask;
+    TMaskBoundary HighSizeMask{None};
   
     int64_t HighSize{0};
     TMaskBoundary LowSizeMask{None};
     int64_t LowSize{0};
 
-    TMaskBoundary HighModificationMask;
+    TMaskBoundary HighModificationMask{None};
     TDateTime HighModification;
-    TMaskBoundary LowModificationMask;
+    TMaskBoundary LowModificationMask{None};
     TDateTime LowModification;
 
     UnicodeString MaskStr;

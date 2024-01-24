@@ -89,7 +89,7 @@ private:
   bool FInProgress{false};
   bool FDone{false};
   bool FFileInProgress{false};
-  TCancelStatus FCancel;
+  TCancelStatus FCancel{csContinue};
   int32_t FCount{-1};
   int64_t FTotalTransferBase{0};
   int64_t FTotalSkipped{0};
