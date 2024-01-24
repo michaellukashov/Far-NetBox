@@ -253,7 +253,7 @@ public:
     Init(CodePage);
   }
 
-  explicit TSFTPPacket(const TSFTPPacket & Source) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, Source.FCodePage)
+  TSFTPPacket(const TSFTPPacket & Source) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, Source.FCodePage)
   {
     this->operator=(Source);
   }
