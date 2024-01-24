@@ -1001,7 +1001,6 @@ bool TConfiguration::RegistryPathExists(const UnicodeString & RegistryPath) cons
 void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
 {
   UnicodeString CompanyKey = GetCompanyRegistryKey();
-  std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(RegistryStorageKey()));
   const UnicodeString Prefix = IncludeTrailingBackslash(CompanyKey);
   if (DebugAlwaysTrue(SameStr(LeftStr(RegistryStorageKey, Prefix.Length()), Prefix)))
   {
