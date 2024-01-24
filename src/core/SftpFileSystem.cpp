@@ -1315,10 +1315,8 @@ public:
 
       if ((Response->GetCapacity() == 0) && DebugAlwaysTrue(TryOnly))
       {
-        FRequests->Insert(0, Request.get());
-        Request.release();
-        FResponses->Insert(0, Response.get());
-        Response.release();
+        FRequests->Insert(0, Request.release());
+        FResponses->Insert(0, Response.release());
         Result = true;
       }
       else
