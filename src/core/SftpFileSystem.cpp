@@ -1470,7 +1470,7 @@ public:
     UnregisterReceiveHandler();
   }
 
-  virtual void Dispose(SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1) override
+  virtual void Dispose(SSH_FXP_TYPE ExpectedType, SSH_FX_TYPE AllowStatus) override
   {
     // we do not want to receive asynchronous notifications anymore,
     // while waiting synchronously for pending responses
