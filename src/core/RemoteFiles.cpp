@@ -1418,7 +1418,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
               Min = nb::ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
               if ((Hour > 23) || (Min > 59))
                 Abort();
-              // When we don't got year, we assume current year
+              // When we don't get year, we assume current year
               // with exception that the date would be in future
               // in this case we assume last year.
               ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
