@@ -209,7 +209,7 @@ struct NB_CORE_EXPORT TCustomCommandData final : public TObject
 {
 public:
   TCustomCommandData() noexcept;
-  explicit TCustomCommandData(const TCustomCommandData & Data) noexcept;
+  TCustomCommandData(const TCustomCommandData & Data) noexcept;
   explicit TCustomCommandData(TTerminal * Terminal) noexcept;
   explicit TCustomCommandData(TSessionData * SessionData);
   explicit TCustomCommandData(
