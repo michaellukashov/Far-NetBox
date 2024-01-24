@@ -1866,7 +1866,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
           }
           else if (SameText(Directive, L"ProxyJump"))
           {
-            UnicodeString Jump = Value;
+            const UnicodeString Jump = Value;
             // multiple jumps are not supported
             if (Jump.Pos(L",") == 0)
             {
@@ -6387,7 +6387,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TD
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
       uint16_t Y, M, D, H, NN, S, MS;
-      TDateTime DateTime = Started;
+      const TDateTime DateTime = Started;
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, NN, S, MS);
       switch (::LowCase(Result[Index + 1]))

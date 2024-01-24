@@ -1582,14 +1582,14 @@ Boolean IsLeapYear(Word Year)
   return (Year % 4 == 0) && ((Year % 100 != 0) || (Year % 400 == 0));
 }
 
-constexpr double TDateTimeEpsilon = 2.2204460493e-16;
-constexpr double OneMillisecond = 0.001;
+constexpr const double TDateTimeEpsilon = 2.2204460493e-16;
+constexpr const double OneMillisecond = 0.001;
 //constexpr double HalfMilliSecond = OneMillisecond / 2.0;
-constexpr double HalfMilliSecond = 0.0005;
-constexpr double ApproxDaysPerMonth = 30.4375;
-constexpr double ApproxDaysPerYear = 365.25;
-//constexpr int32_t HoursPerDay = 24; // Adjust the value accordingly
-//constexpr int32_t MinutesPerDay = 1440;
+constexpr const double HalfMilliSecond = 0.0005;
+constexpr const double ApproxDaysPerMonth = 30.4375;
+constexpr const double ApproxDaysPerYear = 365.25;
+//constexpr const int32_t HoursPerDay = 24; // Adjust the value accordingly
+//constexpr const int32_t MinutesPerDay = 1440;
 
 bool IsSameDay(const TDateTime & AValue, const TDateTime & ABasis)
 {
