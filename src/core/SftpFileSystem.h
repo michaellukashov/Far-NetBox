@@ -121,7 +121,7 @@ protected:
   TSecureShell * FSecureShell{nullptr};
   TFileSystemInfo FFileSystemInfo{};
   bool FFileSystemInfoValid{false};
-  int32_t FVersion{0};
+  uint32_t FVersion{0};
   UnicodeString FCurrentDirectory;
   UnicodeString FDirectoryToChangeTo;
   UnicodeString FHomeDirectory;

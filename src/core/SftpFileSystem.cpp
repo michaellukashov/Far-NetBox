@@ -3148,7 +3148,7 @@ void TSFTPFileSystem::DoStartup()
   FVersion = -1;
   FFileSystemInfoValid = false;
   TSFTPPacket Packet1(SSH_FXP_INIT, FCodePage);
-  int32_t MaxVersion = GetSessionData()->GetSFTPMaxVersion();
+  uint32_t MaxVersion = GetSessionData()->GetSFTPMaxVersion();
   if (MaxVersion > SFTPMaxVersion)
   {
     MaxVersion = SFTPMaxVersion;

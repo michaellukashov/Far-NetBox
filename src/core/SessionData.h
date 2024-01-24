@@ -135,8 +135,8 @@ class TSecureShell;
 class TSessionLog;
 struct TIEProxyConfig;
 
-constexpr const int32_t SFTPMinVersion = 0;
-constexpr const int32_t SFTPMaxVersion = 6;
+constexpr const uint32_t SFTPMinVersion = 0;
+constexpr const uint32_t SFTPMaxVersion = 6;
 
 class NB_CORE_EXPORT TSessionData final : public TNamedObject
 {
@@ -236,7 +236,7 @@ private:
   int32_t FSFTPDownloadQueue{0};
   int32_t FSFTPUploadQueue{0};
   int32_t FSFTPListingQueue{0};
-  int32_t FSFTPMaxVersion{SFTPMaxVersion};
+  uint32_t FSFTPMaxVersion{SFTPMaxVersion};
   int32_t FSFTPMaxPacketSize{0};
   TAutoSwitch FSFTPRealPath{asAuto};
   bool FUsePosixRename{false};
@@ -974,7 +974,7 @@ public:
   int32_t GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
   int32_t GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
   int32_t GetSFTPListingQueue() const { return FSFTPListingQueue; }
-  int32_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
+  uint32_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
   int32_t GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
   int32_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch GetSCPLsFullTime() const { return FSCPLsFullTime; }
