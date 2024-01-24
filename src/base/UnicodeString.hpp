@@ -12,7 +12,7 @@ class NB_CORE_EXPORT UTF8String
 public:
   UTF8String() = default;
   // UTF8String(UTF8String &&) noexcept = default;
-  UTF8String(UTF8String && rhs) noexcept : Data(std::move(rhs.Data)) {}
+  UTF8String(UTF8String && rhs) noexcept : Data(rhs.Data) {}
   UTF8String(const UTF8String & rhs);
   explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str);
@@ -222,7 +222,7 @@ class NB_CORE_EXPORT AnsiString
 public:
   AnsiString() = default;
   // AnsiString(AnsiString &&) noexcept = default;
-  AnsiString(AnsiString && rhs) noexcept : Data(std::move(rhs.Data)) {}
+  AnsiString(AnsiString && rhs) noexcept : Data(rhs.Data) {}
   AnsiString(const AnsiString & rhs);
   AnsiString(int32_t Length, char Ch) : Data(Ch, Length) {}
   explicit AnsiString(const wchar_t * Str);
@@ -309,7 +309,7 @@ class NB_CORE_EXPORT RawByteString
 public:
   RawByteString() = default;
   // RawByteString(RawByteString &&) noexcept = default;
-  RawByteString(RawByteString && rhs) noexcept : Data(std::move(rhs.Data)) {}
+  RawByteString(RawByteString && rhs) noexcept : Data(rhs.Data) {}
   explicit RawByteString(const wchar_t * Str);
   explicit RawByteString(const wchar_t * Str, int32_t Length);
   RawByteString(const char * Str);
@@ -339,7 +339,7 @@ public:
   RawByteString SubString(int32_t Pos, int32_t Len) const;
 
   int32_t Pos(wchar_t Ch) const;
-  int32_t Pos(const wchar_t * Str) const;
+  // int32_t Pos(const wchar_t * Str) const;
   int32_t Pos(char Ch) const;
   int32_t Pos(const char * Str) const;
 
@@ -364,8 +364,8 @@ public:
   RawByteString operator +(const RawByteString & rhs) const;
 
   RawByteString & operator +=(const RawByteString & rhs);
-  RawByteString & operator +=(const char Ch);
-  RawByteString & operator +=(const uint8_t Ch);
+  RawByteString & operator +=(char Ch);
+  RawByteString & operator +=(uint8_t Ch);
 
   bool operator ==(const RawByteString & rhs) const
   { return Data == rhs.Data; }
