@@ -366,7 +366,7 @@ NetBox 2.1.33 02.02.2014
     (https://github.com/michaellukashov/Far-NetBox/pull/85)
   * SessionData: Fix parsing URL paths
     (https://github.com/michaellukashov/Far-NetBox/pull/83)
-  * Bugfix: #79 (Stack Overflow), M0002526 (Crash on login to SSH runing on Debian 7.1 x64)
+  * Bugfix: #79 (Stack Overflow), M0002526 (Crash on login to SSH running on Debian 7.1 x64)
     (https://github.com/michaellukashov/Far-NetBox/issues/79)
     (http://bugs.farmanager.com/view.php?id=2526)
 
@@ -674,7 +674,7 @@ NetBox 2.1.5 09.07.2012
 
 NetBox 2.1.4 20.06.2012
 ---------------------
-  * Add new type of proxy: "System sesttings". Read actual proxy configuration from IE system settings.
+  * Add new type of proxy: "System settings". Read actual proxy configuration from IE system settings.
   * Far3: bugfix: plugin now works in WinPE environment (tested Hiren Boot CD, MiniPE, WinPE uVS)
     (http://forum.farmanager.com/viewtopic.php?f=5&t=6317&start=675#p96040)
   * Bugfix: information window didn't show up when connecting to remote server
