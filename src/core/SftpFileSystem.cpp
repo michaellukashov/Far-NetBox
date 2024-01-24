@@ -3011,7 +3011,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath, const Un
 
 UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
 {
-  TODO("improve (handle .. etc.)");
+  TODO("improve (handle .. etc.)")
   if (base::UnixIsAbsolutePath(APath) ||
       (!FCurrentDirectory.IsEmpty() && base::UnixSamePath(FCurrentDirectory, APath)))
   {
