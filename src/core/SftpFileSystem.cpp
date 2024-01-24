@@ -146,28 +146,28 @@ constexpr SSH_FXP_REALPATH_TYPE
 
 constexpr int32_t SFTP_MAX_PACKET_LEN = 1000 * 1024;
 
-constexpr char * SFTP_EXT_OWNER_GROUP = "owner-group-query@generic-extensions";
-constexpr char * SFTP_EXT_OWNER_GROUP_REPLY = "owner-group-query-reply@generic-extensions";
-constexpr char * SFTP_EXT_NEWLINE = "newline";
-constexpr char * SFTP_EXT_SUPPORTED = "supported";
-constexpr char * SFTP_EXT_SUPPORTED2 = "supported2";
-constexpr char * SFTP_EXT_FSROOTS = "fs-roots@vandyke.com";
-constexpr char * SFTP_EXT_VENDOR_ID = "vendor-id";
-constexpr char * SFTP_EXT_VERSIONS = "versions";
-constexpr char * SFTP_EXT_SPACE_AVAILABLE = "space-available";
-constexpr char * SFTP_EXT_CHECK_FILE = "check-file";
-constexpr char * SFTP_EXT_CHECK_FILE_NAME = "check-file-name";
-constexpr char * SFTP_EXT_STATVFS = "statvfs@openssh.com";
-constexpr char * SFTP_EXT_STATVFS_VALUE_V2 = "2";
-constexpr int64_t SFTP_EXT_STATVFS_ST_RDONLY = 0x1;
-constexpr int64_t SFTP_EXT_STATVFS_ST_NOSUID = 0x2;
-constexpr char * SFTP_EXT_HARDLINK = "hardlink@openssh.com";
-constexpr char * SFTP_EXT_HARDLINK_VALUE_V1 = "1";
-constexpr char * SFTP_EXT_COPY_FILE = "copy-file";
-constexpr char * SFTP_EXT_COPY_DATA = "copy-data";
-constexpr char * SFTP_EXT_LIMITS = "limits@openssh.com";
-constexpr char * SFTP_EXT_LIMITS_VALUE_V1 = "1";
-constexpr char * SFTP_EXT_POSIX_RENAME = "posix-rename@openssh.com";
+constexpr const char * SFTP_EXT_OWNER_GROUP = "owner-group-query@generic-extensions";
+constexpr const char * SFTP_EXT_OWNER_GROUP_REPLY = "owner-group-query-reply@generic-extensions";
+constexpr const char * SFTP_EXT_NEWLINE = "newline";
+constexpr const char * SFTP_EXT_SUPPORTED = "supported";
+constexpr const char * SFTP_EXT_SUPPORTED2 = "supported2";
+constexpr const char * SFTP_EXT_FSROOTS = "fs-roots@vandyke.com";
+constexpr const char * SFTP_EXT_VENDOR_ID = "vendor-id";
+constexpr const char * SFTP_EXT_VERSIONS = "versions";
+constexpr const char * SFTP_EXT_SPACE_AVAILABLE = "space-available";
+constexpr const char * SFTP_EXT_CHECK_FILE = "check-file";
+constexpr const char * SFTP_EXT_CHECK_FILE_NAME = "check-file-name";
+constexpr const char * SFTP_EXT_STATVFS = "statvfs@openssh.com";
+constexpr const char * SFTP_EXT_STATVFS_VALUE_V2 = "2";
+constexpr const int64_t SFTP_EXT_STATVFS_ST_RDONLY = 0x1;
+constexpr const int64_t SFTP_EXT_STATVFS_ST_NOSUID = 0x2;
+constexpr const char * SFTP_EXT_HARDLINK = "hardlink@openssh.com";
+constexpr const char * SFTP_EXT_HARDLINK_VALUE_V1 = "1";
+constexpr const char * SFTP_EXT_COPY_FILE = "copy-file";
+constexpr const char * SFTP_EXT_COPY_DATA = "copy-data";
+constexpr const char * SFTP_EXT_LIMITS = "limits@openssh.com";
+constexpr const char * SFTP_EXT_LIMITS_VALUE_V1 = "1";
+constexpr const char * SFTP_EXT_POSIX_RENAME = "posix-rename@openssh.com";
 
 constexpr wchar_t OGQ_LIST_OWNERS = 0x01;
 constexpr wchar_t OGQ_LIST_GROUPS = 0x02;
@@ -399,9 +399,9 @@ public:
     return (Version >= 6) ? SSH_FILEXFER_ATTR_ALLOCATION_SIZE : SSH_FILEXFER_ATTR_SIZE;
   }
 
-  void AddProperties(uint16_t * Rights, TRemoteToken * Owner,
-    TRemoteToken * Group, int64_t * MTime, int64_t * ATime,
-    int64_t * Size, bool IsDirectory, int32_t Version, TAutoSwitch Utf)
+  void AddProperties(const uint16_t * Rights, TRemoteToken * Owner,
+    TRemoteToken * Group, const int64_t * MTime, const int64_t * ATime,
+    const int64_t * Size, bool IsDirectory, int32_t Version, TAutoSwitch Utf)
   {
     SSH_FILEXFER_ATTR_TYPE Flags = 0;
     if (Size != nullptr)
@@ -702,7 +702,7 @@ public:
 
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
-      constexpr wchar_t * Types = L"U-DLSUOCBF";
+      constexpr const wchar_t * Types = L"U-DLSUOCBF";
       if (FXType > static_cast<uint8_t>(nb::StrLength(Types)))
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, nb::ToInt32(FXType)));
