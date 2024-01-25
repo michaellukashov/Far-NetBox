@@ -2870,24 +2870,24 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
   TDateTime Result;
   // The 0xFFF... is sometimes seen for invalid timestamps,
   // it would cause failure in SystemTimeToDateTime below
-  if (FileTime.dwLowDateTime == std::numeric_limits<DWORD>::max())
+  if (FileTime.dwLowDateTime == 0x7FFF) // std::numeric_limits<DWORD>::max())
   {
     Result = MinDateTime;
   }
   else
   {
-    SYSTEMTIME SysTime;
+    SYSTEMTIME SysTime{};
     if (!UsesDaylightHack())
     {
-      SYSTEMTIME UniversalSysTime;
-      FileTimeToSystemTime(&FileTime, &UniversalSysTime);
-      SystemTimeToTzSpecificLocalTime(nullptr, &UniversalSysTime, &SysTime);
+      SYSTEMTIME UniversalSysTime{};
+      if (FileTimeToSystemTime(&FileTime, &UniversalSysTime) != FALSE)
+        SystemTimeToTzSpecificLocalTime(nullptr, &UniversalSysTime, &SysTime);
     }
     else
     {
-      FILETIME LocalFileTime;
-      FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-      FileTimeToSystemTime(&LocalFileTime, &SysTime);
+      FILETIME LocalFileTime{};
+      if (FileTimeToLocalFileTime(&FileTime, &LocalFileTime) != FALSE)
+        FileTimeToSystemTime(&LocalFileTime, &SysTime);
     }
     Result = SystemTimeToDateTimeVerbose(SysTime);
   }
