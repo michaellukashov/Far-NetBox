@@ -1037,7 +1037,7 @@ public:
   uint32_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uint32_t Value) { FSessionVersion = Value; }
   void RemoveProtocolPrefix(UnicodeString & HostName) const;
-  static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
+  // static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
 
 private:
   uint32_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
