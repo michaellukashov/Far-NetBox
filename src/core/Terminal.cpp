@@ -1947,7 +1947,7 @@ void TTerminal::Reopen(int32_t Params)
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
     // Not sure why we are suspending the transaction in the first place,
-    // but definitely when set while connecting auto loaded workspace session, it causes loading the directory twice.
+    // but definitely when set while connecting autoloaded workspace session, it causes loading the directory twice.
     // (when reconnecting lost connection, it's usually prevented by cached directory)
     // Preventing that by suspending transaction only when there is one.
     FSuspendTransaction = (FInTransaction > 0);
@@ -2966,7 +2966,7 @@ void TTerminal::DoEndTransaction(bool Inform)
   DebugAssert(FInTransaction > 0);
   FInTransaction--;
 
-  // it connection was closed due to fatal error during transaction, do nothing
+  // if connection was closed due to fatal error during transaction, do nothing
   if (GetActive())
   {
     if (FInTransaction == 0)
@@ -3036,7 +3036,7 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & AMsg, const Unic
   if (GetActive() || SecureShellActive)
   {
     // We log this instead of exception handler, because Close() would
-    // probably cause exception handler to loose pointer to TShellLog()
+    // probably cause exception handler to lose pointer to TShellLog()
     LogEvent("Attempt to close connection due to fatal exception:");
     GetLog()->Add(llException, AMsg);
     GetLog()->AddException(E);
@@ -3319,7 +3319,7 @@ uint32_t TTerminal::ConfirmFileOverwrite(
             break;
         }
 
-        // we user has not selected another batch overwrite mode,
+        // if user has not selected another batch overwrite mode,
         // keep the current one. note that we may get here even
         // when batch overwrite was selected already, but it could not be applied
         // to current transfer (see condition above)
@@ -3706,7 +3706,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         {
           // delete only after loading new files to dir view,
           // not to destroy the file objects that the view holds
-          // (can be issue in multi threaded environment, such as when the
+          // (can be issue in multithreaded environment, such as when the
           // terminal is reconnecting in the terminal thread)
           OldFiles->Reset();
         } end_try__finally
@@ -5230,7 +5230,7 @@ bool TTerminal::TerminalMoveFiles(
 
       UnicodeString WithTrailing = base::UnixIncludeTrailingBackslash(CurrentDirectory);
       bool PossiblyMoved = false;
-      // check if we was moving current directory.
+      // check if we were moving current directory.
       // this is just optimization to avoid checking existence of current
       // directory after each move operation.
       for (int32_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
@@ -6044,7 +6044,7 @@ void TTerminal::CalculateLocalFileSize(
     catch (...)
     {
       // ignore
-      DEBUG_PRINTF("TTerminal::CalculateLocalFileSize: error occured");
+      DEBUG_PRINTF("TTerminal::CalculateLocalFileSize: error occurred");
     }
   }
 }

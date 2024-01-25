@@ -2057,7 +2057,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
         OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
         // We do ASCII transfer: convert EOL of current block
-        // (we don't convert whole buffer, cause it would produce
+        // (we don't convert whole buffer, because it would produce
         // huge memory-transfers while inserting/deleting EOL characters)
         // Then we add current block to file buffer
         if (OperationProgress->GetAsciiTransfer())
@@ -2070,7 +2070,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             ConvertParams, ConvertToken);
           BlockBuf.GetMemory()->Seek(0, TSeekOrigin::soBeginning);
           AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
-          // We don't need it any more
+          // We don't need it anymore
           BlockBuf.GetMemory()->Clear();
           // Calculate total size to sent (assume that ratio between
           // size of source and size of EOL-transformed data would remain same)
@@ -2200,7 +2200,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     catch(Exception & E)
     {
       // EScpFileSkipped is derived from ESkipFile,
-      // but is does not indicate file skipped by user here
+      // but it does not indicate file skipped by user here
       if (rtti::isa<EScpFileSkipped>(&E))
       {
         Action.Rollback(&E);
@@ -2461,7 +2461,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   }
   __finally
   {
-    // In case that copying doesn't cause fatal error (ie. connection is
+    // In case that copying doesn't cause fatal error (i.e. connection is
     // still active) but wasn't successful (exception or user termination)
     // we need to ensure, that SCP on remote side is closed
     if (FTerminal->GetActive() && (CloseSCP ||
@@ -2711,7 +2711,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
           ::IncludeTrailingBackslash(TargetDir) + DestFileNameOnly;
 
         FileData.LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFileName));
-        // If getting attrs fails, we suppose, that file/folder doesn't exists
+        // If getting attrs fails, we suppose, that file/folder doesn't exist
         FileData.Exists = (FileData.LocalFileAttrs != INVALID_FILE_ATTRIBUTES);
         if (Dir)
         {

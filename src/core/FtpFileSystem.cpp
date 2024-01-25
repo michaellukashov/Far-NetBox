@@ -1405,7 +1405,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
   const bool CanResume =
     !OperationProgress->GetAsciiTransfer() &&
     // when resuming transfer after interrupted connection,
-    // do nothing (dummy resume) when the files has the same size.
+    // do nothing (dummy resume) when the files have the same size.
     // this is workaround for servers that strangely fails just after successful
     // upload.
     (DestIsSmaller || (DestIsSame && CanAutoResume));
