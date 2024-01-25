@@ -2983,7 +2983,7 @@ void TSessionDialog::UpdateControls()
   const bool InternalSshProtocol = IsSshProtocol(FSProtocol);
   const bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
   const bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
-  const bool S3Protocol = (FSProtocol == fsS3);
+  const bool lS3Protocol = (FSProtocol == fsS3);
   const bool lSshProtocol = InternalSshProtocol;
   const bool lSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   const bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
@@ -2998,9 +2998,9 @@ void TSessionDialog::UpdateControls()
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
-  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !S3Protocol);
+  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !lS3Protocol);
   const bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
-    (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || S3Protocol);
+    (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || lS3Protocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
   PrivateKeyEdit->SetEnabled(lSshProtocol || lFtpsProtocol || HTTPSProtocol);
@@ -3009,9 +3009,9 @@ void TSessionDialog::UpdateControls()
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
 
-  UserNameLabel->SetVisible(IsMainTab && !S3Protocol);
+  UserNameLabel->SetVisible(IsMainTab && !lS3Protocol);
   UserNameEdit->SetVisible(IsMainTab);
-  PasswordLabel->SetVisible(IsMainTab && !S3Protocol);
+  PasswordLabel->SetVisible(IsMainTab && !lS3Protocol);
   PasswordEdit->SetVisible(IsMainTab);
 
   // Connection sheet
