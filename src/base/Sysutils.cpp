@@ -516,9 +516,9 @@ int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count)
 
 int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
 {
-  LONG Low = static_cast<LONG>(Offset) & 0xFFFFFFFF;
+  const LONG Low = static_cast<LONG>(Offset) & 0xFFFFFFFF;
   LONG High = static_cast<LONG>(Offset >> 32);
-  DWORD Res = ::SetFilePointer(AHandle, Low, &High, Origin);
+  const DWORD Res = ::SetFilePointer(AHandle, Low, &High, Origin);
   return (nb::ToInt64(High) << 32) + nb::ToInt64(Res);
 }
 
