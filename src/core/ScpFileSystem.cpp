@@ -541,7 +541,7 @@ void TSCPFileSystem::EnsureLocation()
     {
       // when location to cached directory fails, pretend again
       // location in cached directory
-      // here used to be check (CurrentDirectory != Directory), but it is
+      // here used to check (CurrentDirectory != Directory), but it is
       // false always (current directory is already set to cached directory),
       // making the condition below useless. check removed.
       if (FTerminal->GetActive())
