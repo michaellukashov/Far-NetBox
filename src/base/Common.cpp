@@ -2868,7 +2868,7 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
   TDateTime Result;
-  // The 0xFFF... is sometime seen for invalid timestamps,
+  // The 0xFFF... is sometimes seen for invalid timestamps,
   // it would cause failure in SystemTimeToDateTime below
   if (FileTime.dwLowDateTime == std::numeric_limits<DWORD>::max())
   {
