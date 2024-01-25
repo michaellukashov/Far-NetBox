@@ -1957,7 +1957,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
       catch(Exception & E)
       {
         // Only log error message (it should always succeed, but
-        // some pending error maybe in queue) }
+        // some pending error maybe in queue)
         FTerminal->GetLog()->AddException(&E);
       }
     }
