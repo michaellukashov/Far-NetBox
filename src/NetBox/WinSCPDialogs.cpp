@@ -6790,7 +6790,7 @@ private:
   bool FSaveMode{false};
   int32_t FOptions{0};
   int32_t FFullHeight{0};
-  TTerminal::TSynchronizeMode FOrigMode;
+  TTerminal::TSynchronizeMode FOrigMode{TTerminal::TSynchronizeMode::smRemote};
   TUsableCopyParamAttrs FCopyParamAttrs;
   TCopyParamType FCopyParams;
 
