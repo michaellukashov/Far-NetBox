@@ -5604,10 +5604,16 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     DEBUG_PRINTF("Directory: %s", Directory);
     if (FFileList->GetCount() == 1)
     {
-      UnicodeString DestFileName = FFileList->GetString(0);
-      DestFileName = FToRemote ? DestFileName : FCopyParams.ChangeFileName(DestFileName, osRemote, true);
-      FileMask = base::ExtractFileName(DestFileName, false);
+      const UnicodeString FN = FFileList->GetString(0);
+      DEBUG_PRINTF("FN: %s", FN);
+      const TFarPanelItemData * FarPanelItemData = cast_to<const TFarPanelItemData>(FFileList->GetObj(0));
+      const UnicodeString DestFileName = FToRemote ?
+        FarPanelItemData ? FarPanelItemData->AlternateFileName : FN :
+        FCopyParams.ChangeFileName(FN, osLocal, true);
+      DEBUG_PRINTF("DestFileName: %s", DestFileName);
+      FileMask = DestFileName; // base::ExtractFileName(DestFileName, FToRemote);
     }
+    DEBUG_PRINTF("FileMask: %s", FileMask);
     DirectoryEdit->SetText(Directory + FileMask);
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
