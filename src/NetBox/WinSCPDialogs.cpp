@@ -5510,9 +5510,11 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     {
       const UnicodeString PromptMsg = GetMsg(Move ? NB_MOVE_FILE_PROMPT : NB_COPY_FILE_PROMPT);
       const UnicodeString FileName = FFileList->GetString(0);
+      DEBUG_PRINTF("FileName: %s", FileName);
       const UnicodeString OnlyFileName = ToRemote ?
         base::ExtractFileName(FileName, false) :
         base::UnixExtractFileName(FileName);
+      DEBUG_PRINTF("OnlyFileName: %s", OnlyFileName);
       const UnicodeString MinimizedName = base::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg, MinimizedName);
     }

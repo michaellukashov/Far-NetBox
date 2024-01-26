@@ -3966,6 +3966,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
     }
 
     std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
+    DEBUG_PRINTF("GetFileName: %s", Info->GetFileName());
     if (Info != nullptr)
     {
       if (FLastEditorID == Info->GetEditorID())
