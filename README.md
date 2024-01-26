@@ -19,7 +19,7 @@ How to build from source
 To build plugin from source, you will need:  
 
   * Visual Studio 2022 build tools
-  * Cmake 3.15
+  * CMake 3.15
   * Ninja (optional)
 
 Download the source:
