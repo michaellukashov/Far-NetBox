@@ -2924,6 +2924,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       !PanelItem->GetIsParentDirectory())
     {
       UnicodeString FileName = PanelItem->GetFileName();
+      DEBUG_PRINTF("FileName: %s", FileName);
       if (Side == osRemote)
       {
         Data = static_cast<TRemoteFile *>(PanelItem->GetUserData());
