@@ -4201,7 +4201,8 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
         int32_t Index = 0;
         while ((Index < AFileList->GetCount()) && (Progress.GetCancel() == csContinue))
         {
-          UnicodeString FileName = AFileList->GetString(Index);
+          const UnicodeString FileName = AFileList->GetString(Index);
+          DEBUG_PRINTF("FileName: %s", FileName);
           TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
           try
           {
@@ -7702,9 +7703,10 @@ void TTerminal::DoCopyToRemote(
   while ((Index < AFilesToCopy->GetCount()) && !AOperationProgress->GetCancel())
   {
     bool Success = false;
-    UnicodeString FileName = AFilesToCopy->GetString(Index);
+    const UnicodeString FileName = AFilesToCopy->GetString(Index);
+    DEBUG_PRINTF("FileName: %s", FileName);
     TSearchRecSmart * SearchRec = nullptr;
-    if (AFilesToCopy->GetObj(Index) != nullptr)
+    if (rtti::dyn_cast_or_null<TLocalFile>(AFilesToCopy->GetObj(Index)) != nullptr)
     {
       TLocalFile * LocalFile = AFilesToCopy->GetAs<TLocalFile>(Index);
       SearchRec = &LocalFile->SearchRec;
