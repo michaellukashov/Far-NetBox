@@ -1156,6 +1156,9 @@ struct TLocalFileHandle
 class TLocalFile final : public TObject
 {
 public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocalFile); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocalFile) || TObject::is(Kind); }
+public:
   TSearchRecSmart SearchRec;
 };
 

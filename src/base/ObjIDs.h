@@ -101,6 +101,7 @@ extern const TObjectClassId OBJECT_CLASS_TCustomCommandParams;
 extern const TObjectClassId OBJECT_CLASS_TCalculateSizeParams;
 extern const TObjectClassId OBJECT_CLASS_TMakeLocalFileListParams;
 extern const TObjectClassId OBJECT_CLASS_TCollectedFileList;
+extern const TObjectClassId OBJECT_CLASS_TLocalFile;
 extern const TObjectClassId OBJECT_CLASS_TSFTPFileSystem;
 extern const TObjectClassId OBJECT_CLASS_TWebDAVFileSystem;
 extern const TObjectClassId OBJECT_CLASS_TGUICopyParamType;

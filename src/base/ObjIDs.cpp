@@ -81,6 +81,7 @@ const TObjectClassId OBJECT_CLASS_TCustomCommandParams = static_cast<TObjectClas
 const TObjectClassId OBJECT_CLASS_TCalculateSizeParams = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TMakeLocalFileListParams = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TCollectedFileList = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TLocalFile = static_cast<TObjectClassId>(nb::counter_id());
 
 const TObjectClassId OBJECT_CLASS_TSFTPQueue = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TSFTPQueuePacket = static_cast<TObjectClassId>(nb::counter_id());
