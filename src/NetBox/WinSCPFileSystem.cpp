@@ -2908,7 +2908,7 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(TOperationSide Side, TFarPa
 }
 
 TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
-  TOperationSide Side, bool SelectedOnly, const UnicodeString & Directory, bool FileNameOnly,
+  TOperationSide Side, bool SelectedOnly, const UnicodeString & ADirectory, bool FileNameOnly,
   TStrings * AFileList)
 {
   std::unique_ptr<TStrings> FileList((AFileList == nullptr) ? new TStringList() : AFileList);
