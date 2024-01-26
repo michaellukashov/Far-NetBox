@@ -8079,7 +8079,7 @@ void TTerminal::CheckParallelFileTransfer(
     TObject * ParallelObject = nullptr;
     if (TParallelOperation::GetOnlyFile(Files, ParallelFileName, ParallelObject))
     {
-      const TRemoteFile * File = static_cast<const TRemoteFile *>(ParallelObject);
+      const TRemoteFile * File = cast_to<const TRemoteFile>(ParallelObject);
       const TRemoteFile * UltimateFile = File->Resolve();
       if ((UltimateFile == File) && // not tested with symlinks
           (UltimateFile->Size >= nb::ToInt64(Configuration->ParallelTransferThreshold) * 1024))
