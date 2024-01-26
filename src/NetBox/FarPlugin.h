@@ -470,6 +470,15 @@ protected:
   virtual UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
+class TFarPanelItemData final : public TObject
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItemData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItemData) || TObject::is(Kind); }
+public:
+  UnicodeString AlternateFileName;
+};
+
 class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
