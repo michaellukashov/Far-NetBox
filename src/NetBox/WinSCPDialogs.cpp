@@ -5512,12 +5512,13 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
       const UnicodeString FileName = FFileList->GetString(0);
       DEBUG_PRINTF("FileName: %s", FileName);
       const UnicodeString OnlyFileName = ToRemote ?
-        base::UnixExtractFileName(FileName) :
-        base::ExtractFileName(FileName, false);
+        base::ExtractFileName(FileName, false) :
+        base::UnixExtractFileName(FileName);
       DEBUG_PRINTF("OnlyFileName: %s", OnlyFileName);
       const UnicodeString MinimizedName = base::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg, MinimizedName);
     }
+    DEBUG_PRINTF("Prompt: %s", Prompt);
 
     TFarText * Text = new TFarText(this);
     Text->SetCaption(Prompt);
@@ -5596,9 +5597,11 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
     UnicodeString FileMask = Params->GetFileMask();
+    DEBUG_PRINTF("FileMask: %s", FileMask);
     const UnicodeString Directory = FToRemote ?
       base::UnixIncludeTrailingBackslash(TargetDirectory) :
       ::IncludeTrailingBackslash(TargetDirectory);
+    DEBUG_PRINTF("Directory: %s", Directory);
     if (FFileList->GetCount() == 1)
     {
       UnicodeString DestFileName = FFileList->GetString(0);
