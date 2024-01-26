@@ -122,6 +122,7 @@ extern const TObjectClassId OBJECT_CLASS_TCustomFarPlugin;
 extern const TObjectClassId OBJECT_CLASS_TCustomFarFileSystem;
 extern const TObjectClassId OBJECT_CLASS_TCustomFarPanelItem;
 extern const TObjectClassId OBJECT_CLASS_TFarPanelItem;
+extern const TObjectClassId OBJECT_CLASS_TFarPanelItemData;
 extern const TObjectClassId OBJECT_CLASS_THintPanelItem;
 extern const TObjectClassId OBJECT_CLASS_TFarMenuItems;
 extern const TObjectClassId OBJECT_CLASS_TWinSCPFileSystem;

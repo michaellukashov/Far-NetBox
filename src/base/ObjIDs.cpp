@@ -134,6 +134,7 @@ const TObjectClassId OBJECT_CLASS_TPluginIdleThread = static_cast<TObjectClassId
 const TObjectClassId OBJECT_CLASS_TCustomFarFileSystem = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TCustomFarPanelItem = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TFarPanelItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TFarPanelItemData = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_THintPanelItem = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TFarMenuItems = static_cast<TObjectClassId>(nb::counter_id());
 
