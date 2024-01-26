@@ -2911,8 +2911,14 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
   TOperationSide Side, bool SelectedOnly, const UnicodeString & ADirectory, bool FileNameOnly,
   TStrings * AFileList)
 {
+  Expects(PanelItems);
   std::unique_ptr<TStrings> FileList((AFileList == nullptr) ? new TStringList() : AFileList);
-  FileList->SetDuplicates(dupAccept);
+  if (AFileList == nullptr)
+  {
+    // FileList->SetOwnsObjects(true);
+    FileList->SetCaseSensitive(true);
+    FileList->SetDuplicates(dupAccept);
+  }
 
   TFarPanelItem * PanelItem{nullptr};
   TObject * Data = nullptr;
@@ -2958,7 +2964,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
 
   if (FileList->GetCount() == 0)
   {
-    Abort();
+    DebugAssert(true); // Abort();
   }
   return FileList.release();
 }
