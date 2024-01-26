@@ -450,6 +450,7 @@ public:
   PLUGINPANELITEMFLAGS GetFlags() const;
   uint32_t GetFileAttrs() const;
   UnicodeString GetFileName() const;
+  UnicodeString GetAlternateFileName() const;
   void * GetUserData() const;
   bool GetSelected() const;
   void SetSelected(bool Value);

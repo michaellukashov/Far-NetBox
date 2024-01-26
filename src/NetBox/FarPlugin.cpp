@@ -2637,7 +2637,14 @@ PLUGINPANELITEMFLAGS TFarPanelItem::GetFlags() const
 
 UnicodeString TFarPanelItem::GetFileName() const
 {
-  UnicodeString Result = FPanelItem->FileName;
+  // UnicodeString Result = FPanelItem->AlternateFileName ? FPanelItem->AlternateFileName : FPanelItem->FileName;
+  const UnicodeString Result = FPanelItem->FileName;
+  return Result;
+}
+
+UnicodeString TFarPanelItem::GetAlternateFileName() const
+{
+  const UnicodeString Result = FPanelItem->AlternateFileName;
   return Result;
 }
 
