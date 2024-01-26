@@ -5735,7 +5735,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   TGUICopyParamType * Params)
 {
   std::unique_ptr<TCopyDialog> Dialog(std::make_unique<TCopyDialog>(FPlugin, ToRemote,
-      Move, AFileList, Options, CopyParamAttrs));
+    Move, AFileList, Options, CopyParamAttrs));
   const bool Result = Dialog->Execute(TargetDirectory, Params);
   return Result;
 }

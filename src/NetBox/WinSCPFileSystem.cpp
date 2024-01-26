@@ -2773,8 +2773,8 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
     // (since 1.70 alpha 6, DestPath in GetFiles is short path,
     // while current path in PutFiles is long path)
     if (FLAGCLEAR(OpMode, OPM_SILENT) && (FFileList->GetCount() == 1) && //-V522
-      (IsPathToSameFile(FFileList->GetString(0), FOriginalEditFile) || //-V522
-        IsPathToSameFile(FFileList->GetString(0), FLastEditFile)))
+        (IsPathToSameFile(FFileList->GetString(0), FOriginalEditFile) || //-V522
+         IsPathToSameFile(FFileList->GetString(0), FLastEditFile)))
     {
       // editor should be closed already
       DebugAssert(FLastEditorID < 0);
