@@ -5512,8 +5512,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
       const UnicodeString FileName = FFileList->GetString(0);
       DEBUG_PRINTF("FileName: %s", FileName);
       const UnicodeString OnlyFileName = ToRemote ?
-        base::ExtractFileName(FileName, false) :
-        base::UnixExtractFileName(FileName);
+        base::UnixExtractFileName(FileName) :
+        base::ExtractFileName(FileName, false);
       DEBUG_PRINTF("OnlyFileName: %s", OnlyFileName);
       const UnicodeString MinimizedName = base::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg, MinimizedName);
