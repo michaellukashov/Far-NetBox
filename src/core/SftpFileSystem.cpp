@@ -2,12 +2,12 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include "SftpFileSystem.h"
+
+#include "PuttyTools.h"
 #include <Common.h>
 #include <Exceptions.h>
-#include <WideStrUtils.hpp>
-#include <memory>
 
-#include "SftpFileSystem.h"
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
