@@ -6148,7 +6148,7 @@ bool TStoredSessionList::IsFolderOrWorkspace(const UnicodeString & Name) const
   return (GetFirstFolderOrWorkspaceSession(Name) != nullptr);
 }
 
-bool TStoredSessionList::GetIsFolder(const UnicodeString & Name) const
+/*bool TStoredSessionList::GetIsFolder(const UnicodeString & Name) const
 {
   const TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
   return (SessionData != nullptr) && !SessionData->GetIsWorkspace();
@@ -6158,7 +6158,7 @@ bool TStoredSessionList::GetIsWorkspace(const UnicodeString & Name) const
 {
   const TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
   return (SessionData != nullptr) && SessionData->GetIsWorkspace();
-}
+}*/
 
 TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   TSessionData * Data, const UnicodeString & Name)
@@ -6258,7 +6258,7 @@ TStrings * TStoredSessionList::GetWorkspaces() const
   return Result.release();
 }
 
-void TStoredSessionList::NewWorkspace(
+/*void TStoredSessionList::NewWorkspace(
   const UnicodeString & Name, TList * DataList)
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
@@ -6283,7 +6283,7 @@ void TStoredSessionList::NewWorkspace(
     Data2->SetModified(true);
     Add(Data2.release());
   }
-}
+}*/
 
 bool TStoredSessionList::HasAnyWorkspace() const
 {
