@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [
+                 ninja_cl_x64_release,
+                 ninja_cl_x86_release,
+                 ninja_cl_ARM64_release,
+               ]
+
+        include:
+          - { build: ninja_cl_x64_release,    arch: amd64,       platform: x64,   }
+          - { build: ninja_cl_x86_release,    arch: amd64_x86,   platform: x86,   }
+          - { build: ninja_cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
+
+    env:
+      BUILD_TYPE: Debug
+
+    runs-on: windows-2022
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Get version
+        shell: bash
+        run: |
+          export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
+          export VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
+          export VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
+          export VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
+          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
+
+      - name: Set the pack file name
+        shell: bash
+        run: |
+          echo "netbox_name=NetBox.${{ matrix.platform }}.${{ env.version }}.7z" >> $GITHUB_ENV
+          echo "netbox_pdb_name=NetBox.${{ matrix.platform }}.${{ env.version }}.pdb.7z" >> $GITHUB_ENV
+
+      - name: Add C++ build tools to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Create Build folder
+        run: cmake -E make_directory build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: build
+        run: >
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOPT_COMPILE_TESTS=ON -DPROJECT_PLATFORM=${{ matrix.platform }} -DOPT_CREATE_PLUGIN_DIR=ON $GITHUB_WORKSPACE
+
+      - name: Build
+        working-directory: build
+        shell: bash
+        run: cmake --build . --config $BUILD_TYPE --target all
+
+      - name: Build
+        working-directory: build
+        shell: bash
+        run: |
+          ./testnetbox_01.exe
+          ./testnetbox_02.exe
+          ./testnetbox_03.exe
+          ./testnetbox_04.exe
+          ./testnetbox_05.exe
+          ./testnetbox_06.exe
