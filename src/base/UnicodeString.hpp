@@ -7,12 +7,11 @@ class RawByteString;
 class UnicodeString;
 class AnsiString;
 
-class NB_CORE_EXPORT UTF8String
+class UTF8String
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() = default;
-  // UTF8String(UTF8String &&) noexcept = default;
   UTF8String(UTF8String && rhs) noexcept : Data(rhs.Data) {}
   UTF8String(const UTF8String & rhs);
   explicit UTF8String(const UnicodeString & Str);
@@ -28,7 +27,7 @@ public:
   operator const char *() const = delete; // { return this->c_str(); }
   const char * c_str() const { return Data.c_str(); }
   const char * data() const { return Data.c_str(); }
-  int32_t Length() const { return (int32_t)Data.length(); }
+  int32_t Length() const { return static_cast<int32_t>(Data.length()); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(int32_t nLength);
@@ -42,7 +41,7 @@ public:
 
   int32_t vprintf(const char * Format, va_list ArgList);
 
-  void Unique() { Init(Data.c_str(), (int32_t)Data.length()); }
+  void Unique() { Init(Data.c_str(), static_cast<int32_t>(Data.length())); }
 
 public:
   UTF8String & operator =(UTF8String && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
@@ -61,8 +60,8 @@ public:
   UTF8String & operator +=(char Ch);
   UTF8String & operator +=(const char * rhs);
 
-  NB_CORE_EXPORT friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);
-  NB_CORE_EXPORT friend bool operator !=(const UTF8String & lhs, const UTF8String & rhs);
+  friend bool operator ==(const UTF8String & lhs, const UTF8String & rhs);
+  friend bool operator !=(const UTF8String & lhs, const UTF8String & rhs);
 
   char operator [](int32_t Idx) const;
   char & operator [](int32_t Idx);
@@ -77,12 +76,11 @@ private:
   string_t Data;
 };
 
-class NB_CORE_EXPORT UnicodeString
+class UnicodeString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() = default;
-  // UnicodeString(UnicodeString &&) noexcept = default;
   UnicodeString(UnicodeString && rhs) noexcept : Data(rhs.Data) {}
   UnicodeString(const wchar_t * Str);
   UnicodeString(const wchar_t * Str, int32_t Length);
@@ -101,7 +99,7 @@ public:
 
   const wchar_t * c_str() const { return Data.c_str(); }
   const wchar_t * data() const { return Data.c_str(); }
-  int32_t Length() const { return (int32_t)Data.length(); }
+  int32_t Length() const { return static_cast<int32_t>(Data.length()); }
   int32_t GetLength() const { return Length(); }
   int32_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
@@ -124,7 +122,7 @@ public:
   int32_t ToInt32() const;
   int32_t FindFirstOf(wchar_t Ch) const;
   int32_t FindFirstOf(const wchar_t * Str, int32_t Offset = 0) const;
-//  int32_t FindFirstNotOf(const wchar_t * Str) const { return (int32_t)Data.find_first_not_of(Str); }
+//  int32_t FindFirstNotOf(const wchar_t * Str) const { return static_cast<int32_t>(Data.find_first_not_of(Str)); }
 
   UnicodeString & Replace(int32_t Pos, int32_t Len, const wchar_t * Str, int32_t DataLen);
   UnicodeString & Replace(int32_t Pos, int32_t Len, const UnicodeString & Str) { return Replace(Pos, Len, Str.c_str(), Str.GetLength()); }
@@ -163,7 +161,7 @@ public:
   UnicodeString TrimRight() const;
 
   void Unique();
-  static UnicodeString StringOfChar(const wchar_t Ch, int32_t Len);
+  static UnicodeString StringOfChar(wchar_t Ch, int32_t Len);
 
 public:
   UnicodeString & operator =(UnicodeString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
@@ -180,11 +178,11 @@ public:
   // UnicodeString operator +(const AnsiString & rhs) const;
   // UnicodeString operator +(const UTF8String & rhs) const;
 
-  NB_CORE_EXPORT friend UnicodeString operator +(wchar_t lhs, const UnicodeString & rhs);
-  NB_CORE_EXPORT friend UnicodeString operator +(const UnicodeString & lhs, wchar_t rhs);
-  NB_CORE_EXPORT friend UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs);
-  NB_CORE_EXPORT friend UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs);
-  NB_CORE_EXPORT friend UnicodeString operator +(const UnicodeString & lhs, const char * rhs);
+  friend UnicodeString operator +(wchar_t lhs, const UnicodeString & rhs);
+  friend UnicodeString operator +(const UnicodeString & lhs, wchar_t rhs);
+  friend UnicodeString operator +(const wchar_t * lhs, const UnicodeString & rhs);
+  friend UnicodeString operator +(const UnicodeString & lhs, const wchar_t * rhs);
+  friend UnicodeString operator +(const UnicodeString & lhs, const char * rhs);
 
   UnicodeString & operator +=(const UnicodeString & rhs);
   UnicodeString & operator +=(const wchar_t * rhs);
@@ -199,10 +197,10 @@ public:
 
   friend bool operator <(const UnicodeString & Str1, const UnicodeString & Str2) { return Str1.Compare(Str2) < 0; }
 
-  NB_CORE_EXPORT friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
-  NB_CORE_EXPORT friend bool operator ==(const wchar_t * lhs, const UnicodeString & rhs);
-  NB_CORE_EXPORT friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
-  NB_CORE_EXPORT friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
+  friend bool operator ==(const UnicodeString & lhs, const wchar_t * rhs);
+  friend bool operator ==(const wchar_t * lhs, const UnicodeString & rhs);
+  friend bool operator !=(const UnicodeString & lhs, const wchar_t * rhs);
+  friend bool operator !=(const wchar_t * lhs, const UnicodeString & rhs);
 
   wchar_t operator [](int32_t Idx) const;
   wchar_t & operator [](int32_t Idx);
@@ -219,12 +217,11 @@ private:
 
 class RawByteString;
 
-class NB_CORE_EXPORT AnsiString
+class AnsiString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() = default;
-  // AnsiString(AnsiString &&) noexcept = default;
   AnsiString(AnsiString && rhs) noexcept : Data(rhs.Data) {}
   AnsiString(const AnsiString & rhs);
   AnsiString(int32_t Length, char Ch) : Data(Ch, Length) {}
@@ -242,7 +239,7 @@ public:
 
   const char * c_str() const { return Data.c_str(); }
   const char * data() const { return Data.c_str(); }
-  int32_t Length() const { return (int32_t)Data.length(); }
+  int32_t Length() const { return static_cast<int32_t>(Data.length()); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(int32_t nLength);
@@ -263,20 +260,15 @@ public:
   AnsiString & Append(const char * Str);
   AnsiString & Append(char Ch);
 
-  void Unique() { Init(Data.c_str(), (int32_t)Data.length()); }
+  void Unique() { Init(Data.c_str(), static_cast<int32_t>(Data.length())); }
 
 public:
   AnsiString & operator =(AnsiString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   AnsiString & operator =(const UnicodeString & StrCopy);
-  // AnsiString & operator =(const RawByteString & StrCopy);
   AnsiString & operator =(const AnsiString & StrCopy);
   AnsiString & operator =(const UTF8String & StrCopy);
   AnsiString & operator =(const char * Str);
   AnsiString & operator =(const wchar_t * Str);
-  // AnsiString & operator =(wchar_t chData);
-
-  // AnsiString operator +(const UnicodeString & rhs) const;
-  // AnsiString operator +(const AnsiString & rhs) const;
 
   AnsiString & operator +=(const AnsiString & rhs);
   AnsiString & operator +=(char Ch);
@@ -307,12 +299,11 @@ private:
   string_t Data;
 };
 
-class NB_CORE_EXPORT RawByteString
+class RawByteString
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() = default;
-  // RawByteString(RawByteString &&) noexcept = default;
   RawByteString(RawByteString && rhs) noexcept : Data(rhs.Data) {}
   explicit RawByteString(const wchar_t * Str);
   explicit RawByteString(const wchar_t * Str, int32_t Length);
@@ -332,7 +323,7 @@ public:
   operator UnicodeString() const;
   const char * c_str() const { return Data.c_str(); }
   const char * data() const { return Data.c_str(); }
-  int32_t Length() const { return (int32_t)Data.length(); }
+  int32_t Length() const { return static_cast<int32_t>(Data.length()); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(int32_t nLength);
@@ -353,7 +344,7 @@ public:
   RawByteString Trim() const;
   RawByteString TrimLeft() const;
   RawByteString TrimRight() const;
-  void Unique() { Init(Data.c_str(), (int32_t)Data.length()); }
+  void Unique() { Init(Data.c_str(), static_cast<int32_t>(Data.length())); }
 
 public:
   RawByteString & operator =(RawByteString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
