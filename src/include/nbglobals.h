@@ -83,11 +83,13 @@ inline wchar_t * wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * siz
 inline void * operator_new(size_t size)
 {
   void * p = nb::calloc<void *>(1, size);
-  /*if (!p)
+#ifndef NDEBUG
+  if (!p)
   {
     static std::bad_alloc badalloc;
     throw badalloc;
-  }*/
+  }
+#endif // ifndef NDEBUG
   return p;
 }
 
@@ -105,45 +107,45 @@ inline void operator_delete(void * p)
 
 #ifdef USE_DLMALLOC
 /// custom memory allocation
-#define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
-  public:                                         \
-  void * operator new(size_t sz)                  \
-  {                                               \
-    return nb::operator_new(sz);                  \
-  }                                               \
-  void operator delete(void * p)                  \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void operator delete(void * p, size_t)          \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void * operator new[](size_t sz)                \
-  {                                               \
-    return nb::operator_new(sz);                  \
-  }                                               \
-  void operator delete[](void * p)                \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void operator delete[](void * p, size_t)        \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void * operator new(size_t, void * p)           \
-  {                                               \
-    return p;                                     \
-  }                                               \
-  void operator delete(void *, void *)            \
-  {                                               \
-  }                                               \
-  void * operator new[](size_t, void * p)         \
-  {                                               \
-    return p;                                     \
-  }                                               \
-  void operator delete[](void *, void *)          \
-  {                                               \
+#define DEF_CUSTOM_MEM_ALLOCATION_IMPL     \
+  public:                                  \
+  void * operator new(size_t sz)           \
+  {                                        \
+    return nb::operator_new(sz);           \
+  }                                        \
+  void operator delete(void * p)           \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void operator delete(void * p, size_t)   \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void * operator new[](size_t sz)         \
+  {                                        \
+    return nb::operator_new(sz);           \
+  }                                        \
+  void operator delete[](void * p)         \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void operator delete[](void * p, size_t) \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void * operator new(size_t, void * p)    \
+  {                                        \
+    return p;                              \
+  }                                        \
+  void operator delete(void *, void *)     \
+  {                                        \
+  }                                        \
+  void * operator new[](size_t, void * p)  \
+  {                                        \
+    return p;                              \
+  }                                        \
+  void operator delete[](void *, void *)   \
+  {                                        \
   }
 
 #ifdef _DEBUG
@@ -222,7 +224,7 @@ inline void operator_delete(void * p)
 namespace nb {
 
 constexpr const int32_t NB_MAX_PATH = (32 * 1024);
-constexpr const int32_t NPOS  = static_cast<int32_t>(-1);
+constexpr const int32_t NPOS = static_cast<int32_t>(-1);
 
 namespace nballoc {
 
