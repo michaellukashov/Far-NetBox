@@ -210,6 +210,11 @@ public:
     return GetData()->nDataLength;
   }
 
+  __forceinline int length() const
+  {
+    return GetLength();
+  }
+
   __forceinline PCXSTR GetString() const
   {
     return m_pszData;
@@ -241,6 +246,7 @@ public:
   void Append(const CMSimpleStringT& strSrc);
 
   void Empty();
+  void clear() { this->Empty(); }
   void FreeExtra();
 
   PXSTR GetBuffer();
