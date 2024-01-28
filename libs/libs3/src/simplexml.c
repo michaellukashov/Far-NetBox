@@ -78,7 +78,7 @@ static void saxStartElement(void *user_data, const xmlChar *nameUtf8,
     char *name = (char *) nameUtf8;
 
     // Append the element to the element path
-    int len = strlen(name);
+    int len = (int)strlen(name);
 
     if ((simpleXml->elementPathLen + len + 1) >= 
         (int) sizeof(simpleXml->elementPath)) {

@@ -226,7 +226,7 @@ static S3Status convert_bls(char *blsXml, char *targetBucketReturn,
     SimpleXml simpleXml;
     simplexml_initialize(&simpleXml, &convertBlsXmlCallback, &data);
 
-    S3Status status = simplexml_add(&simpleXml, blsXml, strlen(blsXml));
+    S3Status status = simplexml_add(&simpleXml, blsXml, (int)strlen(blsXml));
 
     simplexml_deinitialize(&simpleXml);
 
