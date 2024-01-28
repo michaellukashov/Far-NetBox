@@ -83,11 +83,13 @@ inline wchar_t * wchcalloc(size_t size) { return calloc<wchar_t *>(1, size * siz
 inline void * operator_new(size_t size)
 {
   void * p = nb::calloc<void *>(1, size);
-  /*if (!p)
+#ifndef NDEBUG
+  if (!p)
   {
     static std::bad_alloc badalloc;
     throw badalloc;
-  }*/
+  }
+#endif // ifndef NDEBUG
   return p;
 }
 
@@ -105,45 +107,45 @@ inline void operator_delete(void * p)
 
 #ifdef USE_DLMALLOC
 /// custom memory allocation
-#define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
-  public:                                         \
-  void * operator new(size_t sz)                  \
-  {                                               \
-    return nb::operator_new(sz);                  \
-  }                                               \
-  void operator delete(void * p)                  \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void operator delete(void * p, size_t)          \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void * operator new[](size_t sz)                \
-  {                                               \
-    return nb::operator_new(sz);                  \
-  }                                               \
-  void operator delete[](void * p)                \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void operator delete[](void * p, size_t)        \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void * operator new(size_t, void * p)           \
-  {                                               \
-    return p;                                     \
-  }                                               \
-  void operator delete(void *, void *)            \
-  {                                               \
-  }                                               \
-  void * operator new[](size_t, void * p)         \
-  {                                               \
-    return p;                                     \
-  }                                               \
-  void operator delete[](void *, void *)          \
-  {                                               \
+#define DEF_CUSTOM_MEM_ALLOCATION_IMPL     \
+  public:                                  \
+  void * operator new(size_t sz)           \
+  {                                        \
+    return nb::operator_new(sz);           \
+  }                                        \
+  void operator delete(void * p)           \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void operator delete(void * p, size_t)   \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void * operator new[](size_t sz)         \
+  {                                        \
+    return nb::operator_new(sz);           \
+  }                                        \
+  void operator delete[](void * p)         \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void operator delete[](void * p, size_t) \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void * operator new(size_t, void * p)    \
+  {                                        \
+    return p;                              \
+  }                                        \
+  void operator delete(void *, void *)     \
+  {                                        \
+  }                                        \
+  void * operator new[](size_t, void * p)  \
+  {                                        \
+    return p;                              \
+  }                                        \
+  void operator delete[](void *, void *)   \
+  {                                        \
   }
 
 #ifdef _DEBUG
@@ -222,7 +224,7 @@ inline void operator_delete(void * p)
 namespace nb {
 
 constexpr const int32_t NB_MAX_PATH = (32 * 1024);
-constexpr const int32_t NPOS  = static_cast<int32_t>(-1);
+constexpr const int32_t NPOS = static_cast<int32_t>(-1);
 
 namespace nballoc {
 
@@ -267,8 +269,8 @@ struct custom_nballocator_t
   using difference_type = ptrdiff_t;
   using pointer = T *;
   using const_pointer = const T *;
-  using reference = T&;
-  using const_reference = const T&;
+  using reference = T &;
+  using const_reference = const T &;
   using value_type = T;
 
   template<class U>
@@ -280,43 +282,54 @@ struct custom_nballocator_t
   custom_nballocator_t() = default;
   custom_nballocator_t(const custom_nballocator_t &) = default;
   custom_nballocator_t & operator =(const custom_nballocator_t &) = default;
-  custom_nballocator_t(custom_nballocator_t &&) = default;
-  custom_nballocator_t & operator =(custom_nballocator_t &&) = default;
+  custom_nballocator_t(custom_nballocator_t &&) noexcept = default;
+  custom_nballocator_t & operator =(custom_nballocator_t &&) noexcept = default;
 
+  /// Copy constructor
   template<class U>
   custom_nballocator_t(const custom_nballocator_t<U> &) noexcept {}
 
-  ~custom_nballocator_t() = default;
+  ~custom_nballocator_t() noexcept = default;
 
-  static pointer address(reference x) { return &x; }
-  static const_pointer address(const_reference x) { return &x; }
+  pointer address(reference x) const { return &x; }
+  const_pointer address(const_reference x) const { return &x; }
+  // size_type max_size() const throw() { return size_t(-1) / sizeof(value_type); }
+  size_type max_size() const noexcept
+  {
+    // return std::numeric_limits<size_t>::max() / sizeof(T);
+    return size_t(-1) / sizeof(value_type);
+  }
 
-  pointer allocate(size_type s, void const * = nullptr)
+  pointer allocate(size_type n, custom_nballocator_t<void>::const_pointer hint = nullptr)
+  {
+    return static_cast<pointer>(operator_new(n * sizeof(T)));
+  }
+
+  /*pointer allocate(size_type s, void const * = nullptr)
   {
     if (0 == s)
       return nullptr;
     const auto temp = nb::calloc<pointer>(s, sizeof(T));
-#if !defined(__MINGW32__)
+#ifndef NDEBUG
     if (temp == nullptr)
       throw std::bad_alloc();
-#endif
+#endif // ifndef NDEBUG
     return temp;
-  }
+  }*/
 
   static void deallocate(pointer p, size_type)
   {
     nb_free(p);
   }
 
-  static size_type max_size() noexcept
+  void construct(pointer p, const T & val)
   {
-    // return std::numeric_limits<size_t>::max() / sizeof(T);
-    return size_t(-1) / sizeof(T);
+    new(static_cast<void *>(p)) T(val);
   }
 
-  static void construct(pointer p, const T& val)
+  void construct(pointer p)
   {
-    new(reinterpret_cast<void *>(p)) T(val);
+    new(static_cast<void*>(p)) T();
   }
 
   void destroy(pointer p)
@@ -326,13 +339,13 @@ struct custom_nballocator_t
 };
 
 template<typename T, typename U>
-inline bool operator ==(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
+inline bool operator ==(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
 {
   return true;
 }
 
 template<typename T, typename U>
-inline bool operator !=(const custom_nballocator_t<T>&, const custom_nballocator_t<U>&)
+inline bool operator !=(const custom_nballocator_t<T> &, const custom_nballocator_t<U> &)
 {
   return false;
 }
@@ -393,5 +406,28 @@ add_const<T&>
 template <class T> using add_const_t = typename add_const<T>::type;
 
 } // namespace nb
+
+#ifdef _WIN32
+#define STD_ALLOC_CDECL __cdecl
+#else
+#define STD_ALLOC_CDECL
+#endif
+
+namespace std
+{
+  template <class _Tp1, class _Tp2>
+  inline nb::custom_nballocator_t<_Tp2>& STD_ALLOC_CDECL
+  __stl_alloc_rebind(nb::custom_nballocator_t<_Tp1>& __a, const _Tp2 *)
+  {
+    return (nb::custom_nballocator_t<_Tp2>&)(__a);
+  }
+
+  template <class _Tp1, class _Tp2>
+  inline nb::custom_nballocator_t<_Tp2> STD_ALLOC_CDECL
+  __stl_alloc_create(const nb::custom_nballocator_t<_Tp1>&, const _Tp2 *)
+  {
+    return nb::custom_nballocator_t<_Tp2>();
+  }
+}
 
 #endif //__cplusplus
