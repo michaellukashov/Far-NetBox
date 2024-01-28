@@ -43,7 +43,7 @@ void TLibraryLoader::Unload()
 }
 
 // Get procedure address from loaded library by name
-FARPROC TLibraryLoader::GetProcAddress(AnsiString ProcedureName) const
+FARPROC TLibraryLoader::GetProcAddress(const AnsiString & ProcedureName) const
 {
   return ::GetProcAddress(FHModule, ProcedureName.c_str());
 }
