@@ -72,7 +72,7 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 }
 
 
-struct TMoveFileParams final  : public TObject
+struct TMoveFileParams final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
