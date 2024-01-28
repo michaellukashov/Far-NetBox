@@ -395,7 +395,7 @@ private:
 
 namespace nb {
 
-template<typename S>
+/*template<typename S>
 inline bool operator ==(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) == 0;
@@ -417,7 +417,7 @@ template<typename S>
 inline bool operator >(const S & lhs, const S & rhs)
 {
   return lhs.Compare(rhs) > 0;
-}
+}*/
 
 }  // namespace nb
 
