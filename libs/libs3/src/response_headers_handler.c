@@ -79,9 +79,9 @@ void response_headers_handler_add(ResponseHeadersHandler *handler,
         return;
     }
 
-    int valuelen = strlen(header_value), fit;
+    int valuelen = (int)strlen(header_value), fit;
     const char * c = header_value;
-    int namelen = strlen(header_name);
+    int namelen = (int)strlen(header_name);
     const char * header = header_name;
 
     #define strncasecmp strnicmp // WINSCP
