@@ -225,20 +225,20 @@ static ssize_t neon_read_func(void * userdata, char * buf, size_t len)
 
     // Don't tell the callback that we are willing to accept more data than we
     // really are
-    if (len > request->toS3CallbackBytesRemaining) {
+    if (len > (int)request->toS3CallbackBytesRemaining) {
         len = request->toS3CallbackBytesRemaining;
     }
 
     // Otherwise, make the data callback
     int ret = (*(request->toS3Callback))
-        (len, (char *) ptr, request->callbackData);
+        ((int)len, (char *) ptr, request->callbackData);
     if (ret < 0) {
         request->status = S3StatusAbortedByCallback;
         return (ssize_t)-1;
     }
     else {
         if (ret > request->toS3CallbackBytesRemaining) {
-            ret = request->toS3CallbackBytesRemaining;
+            ret = (int)request->toS3CallbackBytesRemaining;
         }
         request->toS3CallbackBytesRemaining -= ret;
         return ret;
@@ -272,12 +272,12 @@ static int neon_write_func(void * data, const char * buf, size_t len)
     if ((request->httpResponseCode < 200) ||
         (request->httpResponseCode > 299)) {
         request->status = error_parser_add
-            (&(request->errorParser), buf, len);
+            (&(request->errorParser), buf, (int)len);
     }
     // If there was a callback registered, make it
     else if (request->fromS3Callback) {
         request->status = (*(request->fromS3Callback))
-            (len, buf, request->callbackData);
+            ((int)len, buf, request->callbackData);
     }
     // Else, consider this an error - S3 has sent back data when it was not
     // expected
@@ -750,7 +750,7 @@ static void canonicalize_signature_headers(RequestComputedValues *values)
             // replace the ":" with a ";"
             *(hbuf - 1) = ';';
             // Save the header len since it's a new header
-            lastHeaderLen = c - header;
+            lastHeaderLen = (int)(c - header);
             // Skip the space
             c++;
         }
@@ -830,7 +830,7 @@ static void sort_query_string(const char *queryString, char *result,
     const char** params = (const char **)nb_calloc(numParams, sizeof(char*)); // WINSCP (heap allocation)
 
     // Where did strdup go?!??
-    int queryStringLen = strlen(queryString);
+    int queryStringLen = (int)strlen(queryString);
     char *buf = (char *) nb_calloc(queryStringLen + 1, 1);
     char *tok = buf;
     strcpy(tok, queryString);
@@ -882,7 +882,7 @@ static void canonicalize_query_string(const char *queryParams,
 #define append(str) len += snprintf(&(buffer[len]), buffer_size - len, "%s", str)
 
     if (queryParams && queryParams[0]) {
-        int sortedLen = strlen(queryParams) * 2;
+        int sortedLen = (int)strlen(queryParams) * 2;
         char * sorted = (char *)nb_calloc(strlen(queryParams) * 2, sizeof(char)); // WINSCP (heap allocation)
         sorted[0] = '\0';
         sort_query_string(queryParams, sorted, sortedLen);
@@ -955,12 +955,12 @@ static S3Status compose_auth_header(const RequestParams *params,
                                     RequestComputedValues *values)
 {
     const char *httpMethod = http_request_type_to_verb(params->httpRequestType);
-    int canonicalRequestLen = strlen(httpMethod) + 1 +
+    int canonicalRequestLen = (int)(strlen(httpMethod) + 1 +
     strlen(values->canonicalURI) + 1 +
     strlen(values->canonicalQueryString) + 1 +
     strlen(values->canonicalizedSignatureHeaders) + 1 +
     strlen(values->signedHeaders) + 1 +
-    2 * S3_SHA256_DIGEST_LENGTH + 1; // 2 hex digits for each byte
+    2 * S3_SHA256_DIGEST_LENGTH + 1); // 2 hex digits for each byte
 
     int len = 0;
 
@@ -1022,7 +1022,7 @@ static S3Status compose_auth_header(const RequestParams *params,
 #endif
 
     const char *secretAccessKey = params->bucketContext.secretAccessKey;
-    const int accessKeyLen = strlen(secretAccessKey) + 5; // WINSCP (heap allocation)
+    const int accessKeyLen = (int)strlen(secretAccessKey) + 5; // WINSCP (heap allocation)
     char * accessKey = (char *)nb_calloc(accessKeyLen, sizeof(char));
     snprintf(accessKey, accessKeyLen, "AWS4%s", secretAccessKey);
 
@@ -1046,7 +1046,7 @@ static S3Status compose_auth_header(const RequestParams *params,
 #else
     const EVP_MD *sha256evp = EVP_sha256();
     unsigned char dateKey[S3_SHA256_DIGEST_LENGTH];
-    HMAC(sha256evp, accessKey, strlen(accessKey),
+    HMAC(sha256evp, accessKey, (int)strlen(accessKey),
          (const unsigned char*) values->requestDateISO8601, 8, dateKey,
          NULL);
     unsigned char dateRegionKey[S3_SHA256_DIGEST_LENGTH];
@@ -1184,7 +1184,7 @@ static S3Status setup_neon(Request *request,
                            const RequestParams *params,
                            const RequestComputedValues *values)
 {
-    NeonCode status;
+    // NeonCode status;
 
     ne_uri uri;
     if (ne_uri_parse(request->uri, &uri) != 0)
