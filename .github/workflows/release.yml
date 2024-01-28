@@ -79,7 +79,7 @@ jobs:
         with:
           name: result
           path: ./*.7z
-          retention-days: 1
+          retention-days: 60
 
   create-release:
     needs: [build]
