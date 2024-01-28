@@ -178,14 +178,14 @@ static void tokenize(const UnicodeString & str, nb::vector_t<UnicodeString> & to
 
       if (pos != lastPos || !trimEmpty)
       {
-        tokens.push_back(
+        tokens.emplace_back(
           UnicodeString(str.data() + lastPos, pos - lastPos));
       }
       break;
     }
     if (pos != lastPos || !trimEmpty)
     {
-      tokens.push_back(
+      tokens.emplace_back(
         UnicodeString(str.data() + lastPos, pos - lastPos));
     }
 
