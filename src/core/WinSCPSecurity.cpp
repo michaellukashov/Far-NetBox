@@ -185,7 +185,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     ChainConfig.MaximumCachedCertificates = 0;
     ChainConfig.CycleDetectionModulus = 0;
 
-    HCERTCHAINENGINE ChainEngine;
+    HCERTCHAINENGINE ChainEngine{INVALID_HANDLE_VALUE};
     const bool ChainEngineResult = CertCreateCertificateChainEngine(&ChainConfig, &ChainEngine) != FALSE;
     if (!ChainEngineResult)
     {
@@ -227,12 +227,14 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
             Error = FORMAT(L"Error: %x (%s), Chain index: %d, Element index: %d", PolicyError, ErrorStr, PolicyStatus.lChainIndex, PolicyStatus.lElementIndex);
           }
         }
-
-        CertFreeCertificateChain(ChainContext);
+        if (ChainContext)
+          CertFreeCertificateChain(ChainContext);
       }
-      CertFreeCertificateChainEngine(ChainEngine);
+      if (INVALID_HANDLE_VALUE != INVALID_HANDLE_VALUE)
+        CertFreeCertificateChainEngine(ChainEngine);
     }
-    CertFreeCertificateContext(CertContext);
+    if (CertContext)
+      CertFreeCertificateContext(CertContext);
   }
   return Result;
 }

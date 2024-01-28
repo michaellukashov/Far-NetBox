@@ -602,6 +602,7 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) noexcept :
 }
 
 TRemoteToken::TRemoteToken(const TRemoteToken & rhs) noexcept :
+  TObject(rhs),
   FName(rhs.FName),
   FID(rhs.FID),
   FIDValid(rhs.FIDValid)
@@ -709,7 +710,7 @@ UnicodeString TRemoteToken::GetDisplayText() const
   {
     return FName;
   }
-  if (FIDValid)
+  else if (FIDValid)
   {
     return IntToStr(FID);
   }
@@ -873,11 +874,11 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) noexcept :
   FCalculatedSize = -1;
 }
 
-TRemoteFile::~TRemoteFile() noexcept
-{
-  // SAFE_DESTROY(FRights);
-  // SAFE_DESTROY(FLinkedFile);
-}
+TRemoteFile::~TRemoteFile() noexcept = default;
+/*{
+  SAFE_DESTROY(FRights);
+  SAFE_DESTROY(FLinkedFile);
+}*/
 
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
@@ -890,7 +891,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FLinkedFile->FLinkedByFile = Result.get();
     }
     Result->SetRights(FRights.get());
-#define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
+#define COPY_FP(PROP) Result->F ## PROP = F ## PROP
     COPY_FP(Terminal);
     COPY_FP(Owner);
     COPY_FP(ModificationFmt);
@@ -1034,7 +1035,7 @@ Boolean TRemoteFile::GetIsThisDirectory() const
   return wcscmp(FFileName.c_str(), THISDIRECTORY) == 0;
 }
 
-Boolean TRemoteFile::GetIsInaccesibleDirectory() const
+Boolean TRemoteFile::GetIsInaccessibleDirectory() const
 {
   Boolean Result = False;
   if (GetIsDirectory())
@@ -1418,7 +1419,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
               Min = nb::ToWord(::StrToInt64(Col.SubString(P + 1, Col.Length() - P)));
               if ((Hour > 23) || (Min > 59))
                 Abort();
-              // When we don't got year, we assume current year
+              // When we don't get year, we assume current year
               // with exception that the date would be in future
               // in this case we assume last year.
               ::DecodeDate(::Date(), Year, CurrMonth, CurrDay);
@@ -1771,7 +1772,7 @@ UnicodeString TRemoteFileList::GetFullDirectory() const
 
 TRemoteFile * TRemoteFileList::GetFile(Integer Index) const
 {
-  return static_cast<TRemoteFile *>(GetItem(Index));
+  return cast_to<TRemoteFile>(GetItem(Index));
 }
 
 Boolean TRemoteFileList::GetIsRoot() const
@@ -2023,7 +2024,8 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
     // file list cannot be cached already with only one thread, but it can be
     // when directory is loaded by secondary terminal
     DoClearFileList(FileList->GetDirectory(), false);
-    AddObject(Copy->GetDirectory(), Copy.release());
+    AddObject(Copy->GetDirectory(), Copy.get());
+    Copy.release();
   }
 }
 

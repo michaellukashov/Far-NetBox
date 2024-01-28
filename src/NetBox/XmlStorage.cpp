@@ -40,17 +40,17 @@ bool TXmlStorage::ReadXml()
     return false;
   }
   size_t BuffSize = nb::ToSizeT(xmlFile.GetFileSize() + 1);
-  if (BuffSize > 1000000)
+  if (BuffSize > 1024 * 1024)
   {
     return false;
   }
-  AnsiString buff(nb::ToInt32(BuffSize), 0);
-  if (!xmlFile.Read(&buff[1], BuffSize))
+  AnsiString Buff(nb::ToInt32(BuffSize), 0);
+  if (!xmlFile.Read(&Buff[1], BuffSize))
   {
     return false;
   }
 
-  FXmlDoc->Parse(buff.c_str());
+  FXmlDoc->Parse(Buff.c_str());
   if (FXmlDoc->Error())
   {
     return false;
@@ -175,13 +175,16 @@ void TXmlStorage::DoCloseSubKey()
   }
 }
 
-void TXmlStorage::DoDeleteSubKey(const UnicodeString & SubKey)
+bool TXmlStorage::DoDeleteSubKey(const UnicodeString & SubKey)
 {
+  bool Result = false;
   tinyxml2::XMLElement * Element = FindElement(SubKey);
   if (Element != nullptr)
   {
     FCurrentElement->DeleteChild(Element);
+    Result = true;
   }
+  return Result;
 }
 
 void TXmlStorage::DoGetSubKeyNames(TStrings * Strings)
@@ -189,8 +192,8 @@ void TXmlStorage::DoGetSubKeyNames(TStrings * Strings)
   for (tinyxml2::XMLElement * Element = FCurrentElement->FirstChildElement();
     Element != nullptr; Element = Element->NextSiblingElement())
   {
-    UnicodeString val = GetValue(Element);
-    Strings->Add(PuttyUnMungeStr(val));
+    UnicodeString Val = GetValue(Element);
+    Strings->Add(PuttyUnMungeStr(Val));
   }
 }
 

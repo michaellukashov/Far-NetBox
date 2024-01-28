@@ -17,7 +17,7 @@
 // #pragma package(smart_init)
 
 // TConfiguration * Configuration = nullptr;
-TStoredSessionList * StoredSessions = nullptr;
+// TStoredSessionList * StoredSessions = nullptr;
 TApplicationLog * ApplicationLog = nullptr;
 bool AnySession = false;
 
@@ -166,6 +166,45 @@ void DeleteConfiguration()
   }
 }
 
+static bool StoredSessionsInitialized = false;
+
+TStoredSessionList * GetStoredSessions()
+{
+  static TStoredSessionList * StoredSessions = nullptr;
+  if (StoredSessions != nullptr)
+    return StoredSessions;
+
+  StoredSessions = new TStoredSessionList();
+
+  bool SessionList = false;
+  std::unique_ptr<THierarchicalStorage> SessionsStorage(GetConfiguration()->CreateScpStorage(SessionList));
+  try
+  {
+    if (SessionsStorage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), false))
+    {
+      StoredSessions->Load(SessionsStorage.get());
+    }
+  }
+  catch(Exception & E)
+  {
+    ShowExtendedException(&E);
+  }
+  StoredSessionsInitialized = true;
+  return StoredSessions;
+}
+
+void DeleteStoredSessions()
+{
+  static bool StoredSessionsDeleted = false;
+  if (!StoredSessionsDeleted && StoredSessionsInitialized)
+  {
+    TStoredSessionList * StoredSessions = GetStoredSessions();
+    SAFE_DESTROY(StoredSessions);
+    StoredSessionsDeleted = true;
+    StoredSessionsInitialized = false;
+  }
+}
+
 void CoreLoad()
 {
   bool SessionList = false;
@@ -197,6 +236,7 @@ void CoreLoad()
   // should be noop, unless exception occurred above
   ConfigStorage->CloseAll();
 
+  /* moved to GetStoredSessions()
   StoredSessions = new TStoredSessionList();
 
   try
@@ -209,7 +249,7 @@ void CoreLoad()
   catch(Exception & E)
   {
     ShowExtendedException(&E);
-  }
+  }*/
 }
 
 void CoreInitialize()
@@ -246,7 +286,8 @@ void CoreFinalize()
   TFileZillaIntf::Finalize();
   PuttyFinalize();
 
-  SAFE_DESTROY(StoredSessions);
+  DeleteStoredSessions();
+  // SAFE_DESTROY(StoredSessions);
   // StoredSessions = nullptr;
   DeleteConfiguration();
   // delete Configuration;

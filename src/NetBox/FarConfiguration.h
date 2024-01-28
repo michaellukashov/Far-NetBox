@@ -21,7 +21,7 @@ public:
   explicit TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept;
   virtual ~TFarConfiguration() noexcept override;
 
-  virtual void Load();
+  void Load();
   virtual void Save(bool All, bool Explicit);
   virtual void Default() override;
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList) override;

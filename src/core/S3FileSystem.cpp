@@ -104,7 +104,7 @@ static void NeedS3Config()
     UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
     UnicodeString DefaultConfigFileName = IncludeTrailingBackslash(ProfilePath) + L".aws\\credentials";
     // "aws" cli really prefers the default location over location specified by AWS_CONFIG_FILE
-    if (FileExists(DefaultConfigFileName))
+    if (base::FileExists(DefaultConfigFileName))
     {
       S3ConfigFileName = DefaultConfigFileName;
     }
@@ -757,7 +757,7 @@ struct TLibS3BucketContext : S3BucketContext
   {
     operator =(rhs);
   }
-  TLibS3BucketContext & TLibS3BucketContext::operator =(const TLibS3BucketContext & rhs)
+  TLibS3BucketContext & operator =(const TLibS3BucketContext & rhs)
   {
     if (this != &rhs)
     {
@@ -866,7 +866,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
           (Region != Data.RegionDetail))
       {
         FTerminal->LogEvent(FORMAT("Will use region \"%s\" for bucket \"%s\" from now on.", Data.RegionDetail, ABucketName));
-        FRegions.insert(TRegions::value_type(ABucketName, Data.RegionDetail));
+        FRegions.emplace(TRegions::value_type(ABucketName, Data.RegionDetail));
 
         Result.AuthRegionBuf = UTF8String(Data.RegionDetail);
         Result.authRegion = Result.AuthRegionBuf.c_str();
@@ -879,7 +879,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
         if (HostName != Endpoint)
         {
           FTerminal->LogEvent(FORMAT("Will use endpoint \"%s\" for bucket \"%s\" from now on.", Endpoint, ABucketName));
-          FHostNames.insert(TRegions::value_type(ABucketName, Endpoint));
+          FHostNames.emplace(TRegions::value_type(ABucketName, Endpoint));
           Retry = true;
         }
       }
@@ -946,7 +946,7 @@ bool TS3FileSystem::GetStoredCredentialsTried() const
   return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
 }
 
-UnicodeString TS3FileSystem::RemoteGetUserName() const
+UnicodeString TS3FileSystem::GetUserName() const
 {
   return UnicodeString(FAccessKeyId);
 }
@@ -1023,7 +1023,7 @@ bool TS3FileSystem::IsCapable(int32_t Capability) const
   }
 }
 
-UnicodeString TS3FileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TS3FileSystem::GetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -1388,7 +1388,7 @@ void TS3FileSystem::ReadFile(const UnicodeString & AFileName,
   }
 }
 
-void TS3FileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
+void TS3FileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t AParams, TRmSessionAction & Action)
 {
   const UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -1441,20 +1441,20 @@ void TS3FileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   }
 }
 
-void TS3FileSystem::RemoteRenameFile(
+void TS3FileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite)
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
   {
     throw Exception(LoadStr(FS_RENAME_NOT_SUPPORTED));
   }
-  RemoteCopyFile(AFileName, AFile, ANewName, Overwrite);
+  CopyFile(AFileName, AFile, ANewName, Overwrite);
   TRmSessionAction DummyAction(FTerminal->GetActionLog(), AFileName);
-  RemoteDeleteFile(AFileName, AFile, dfForceDelete, DummyAction);
+  DeleteFile(AFileName, AFile, dfForceDelete, DummyAction);
   DummyAction.Cancel();
 }
 
-void TS3FileSystem::RemoteCopyFile(
+void TS3FileSystem::CopyFile(
   const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
@@ -1491,7 +1491,7 @@ void TS3FileSystem::RemoteCopyFile(
   CheckLibS3Error(Data);
 }
 
-void TS3FileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
+void TS3FileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
   const UnicodeString DirName = base::UnixExcludeTrailingBackslash(GetAbsolutePath(ADirName, false));
@@ -1551,7 +1551,7 @@ void TS3FileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /
   }
 }
 
-void TS3FileSystem::RemoteCreateLink(const UnicodeString & FileName,
+void TS3FileSystem::CreateLink(const UnicodeString & FileName,
   const UnicodeString & PointTo, bool /*Symbolic*/)
 {
   DebugFail();
@@ -1913,9 +1913,9 @@ void TS3FileSystem::ConfirmOverwrite(
   const TCopyParamType * CopyParam, int32_t AParams)
 {
   constexpr uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
-  nb::vector_t<TQueryButtonAlias> Aliases;
-  Aliases.push_back(TQueryButtonAlias::CreateYesToAllGroupedWithYes());
-  Aliases.push_back(TQueryButtonAlias::CreateNoToAllGroupedWithNo());
+  nb::vector_t<TQueryButtonAlias> Aliases(2);
+  Aliases.emplace_back(TQueryButtonAlias::CreateYesToAllGroupedWithYes());
+  Aliases.emplace_back(TQueryButtonAlias::CreateNoToAllGroupedWithNo());
 
   TQueryParams QueryParams(qpNeverAskAgainCheck);
   QueryParams.Aliases = &Aliases[0];
@@ -1972,7 +1972,7 @@ int32_t TS3FileSystem::LibS3PutObjectDataCallback(int32_t BufferSize, char * Buf
 {
   TLibS3PutObjectDataCallbackData & Data = *static_cast<TLibS3PutObjectDataCallbackData *>(CallbackData);
 
-  return Data.FileSystem->PutObjectData(BufferSize, Buffer, Data);
+  return nb::ToInt32(Data.FileSystem->PutObjectData(BufferSize, Buffer, Data));
 }
 
 bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data)
@@ -1992,9 +1992,9 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & 
   return Result;
 }
 
-int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
+int64_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data)
 {
-  int32_t Result;
+  int64_t Result = -1;
 
   if (ShouldCancelTransfer(Data))
   {
@@ -2007,7 +2007,7 @@ int32_t TS3FileSystem::PutObjectData(int32_t BufferSize, char * Buffer, TLibS3Pu
     {
       FILE_OPERATION_LOOP_BEGIN
       {
-        Result = nb::ToInt32(Data.Stream->Read(Buffer, BufferSize));
+        Result = Data.Stream->Read(Buffer, BufferSize);
       }
       FILE_OPERATION_LOOP_END(FMTLOAD(READ_ERROR, Data.FileName));
 

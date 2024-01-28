@@ -73,11 +73,13 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
 
 TWinSCPPlugin::~TWinSCPPlugin() noexcept
 {
+  // DEBUG_PRINTF("begin");
   if (FInitialized)
   {
     // GetFarConfiguration()->SetPlugin(nullptr);
     CoreFinalize();
   }
+  // DEBUG_PRINTF("begin");
 }
 
 bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function) const
@@ -238,6 +240,7 @@ int32_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo 
     for (int32_t Index = 0; Index < FOpenedPlugins->GetCount(); ++Index)
     {
       TWinSCPFileSystem * FileSystem = FOpenedPlugins->GetAs<TWinSCPFileSystem>(Index);
+      Ensures(FileSystem);
       FileSystem->ProcessEditorEvent(Info->Event, Info->Param);
     }
   }
@@ -245,7 +248,7 @@ int32_t TWinSCPPlugin::ProcessEditorEventEx(const struct ProcessEditorEventInfo 
   return 0;
 }
 
-int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD *Rec)
+int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 {
   int32_t Result = 0;
   if ((Rec->EventType == KEY_EVENT) &&
@@ -323,12 +326,12 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         // directory will be set by FAR itself
         Directory.Clear();
       }
-      DebugAssert(StoredSessions);
+      DebugAssert(GetStoredSessions());
       bool DefaultsOnly = false;
       std::unique_ptr<TOptions> Options(std::make_unique<TProgramParams>());
       ParseCommandLine(CommandLine, Options.get());
       constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
-      std::unique_ptr<TSessionData> Session(StoredSessions->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
+      std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
       if (DefaultsOnly)
       {
         Abort();

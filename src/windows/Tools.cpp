@@ -4,7 +4,7 @@
 
 // #include <Consts.hpp>
 #include <shlobj.h>
-#include <stdio.h>
+#include <cstdio>
 #include <winhttp.h>
 #define INITGUID
 #include <propkey.h>

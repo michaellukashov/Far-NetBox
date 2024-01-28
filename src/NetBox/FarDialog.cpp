@@ -1113,8 +1113,8 @@ void TFarDialogItem::ResetBounds()
   FarDialogItem * DItem = GetDialogItem();
   nb::used(B);
   nb::used(DItem);
-#define BOUND(DIB, BB, DB, CB) DItem->DIB = B.BB >= 0 ? \
-    (GetContainer() ? nb::ToInt32(GetContainer()->CB) : 0) + B.BB : GetDialog()->GetSize().DB + B.BB
+#define BOUND(DIB, BB, DB, CB) ((DItem->DIB = B.BB >= 0 ? \
+    (GetContainer() ? nb::ToInt32(GetContainer()->CB) : 0) + B.BB : GetDialog()->GetSize().DB + B.BB))
   BOUND(X1, Left, x, GetLeft());
   BOUND(Y1, Top, y, GetTop());
   BOUND(X2, Right, x, GetLeft());

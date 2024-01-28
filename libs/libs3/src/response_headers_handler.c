@@ -79,12 +79,12 @@ void response_headers_handler_add(ResponseHeadersHandler *handler,
         return;
     }
 
-    int valuelen = strlen(header_value), fit;
+    int valuelen = (int)strlen(header_value), fit;
     const char * c = header_value;
-    int namelen = strlen(header_name);
+    int namelen = (int)strlen(header_name);
     const char * header = header_name;
 
-    #define strncasecmp strnicmp // WINSCP
+    #define strncasecmp _strnicmp // WINSCP
 
     if (!strncasecmp(header, "x-amz-request-id", namelen)) {
         responseProperties->requestId = 
@@ -164,7 +164,7 @@ void response_headers_handler_add(ResponseHeadersHandler *handler,
         metaHeader->value = copiedValue;
     }
     else if (!strncasecmp(header, "x-amz-server-side-encryption", namelen)) {
-        if (!strncmp(c, "AES256", sizeof("AES256") - 1)) {
+        if (!_strnicmp(c, "AES256", sizeof("AES256") - 1)) {
             responseProperties->usesServerSideEncryption = 1;
         }
         // Ignore other values - only AES256 is expected, anything else is

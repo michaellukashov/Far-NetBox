@@ -135,10 +135,10 @@ class TSecureShell;
 class TSessionLog;
 struct TIEProxyConfig;
 
-constexpr const int32_t SFTPMinVersion = 0;
-constexpr const int32_t SFTPMaxVersion = 6;
+constexpr const uint32_t SFTPMinVersion = 0;
+constexpr const uint32_t SFTPMaxVersion = 6;
 
-class NB_CORE_EXPORT TSessionData : public TNamedObject
+class NB_CORE_EXPORT TSessionData final : public TNamedObject
 {
   friend class TStoredSessionList;
   friend class TSecondaryTerminal;
@@ -147,14 +147,13 @@ class NB_CORE_EXPORT TSessionData : public TNamedObject
   friend class TSFTPFileSystem;
   friend class TWebDAVFileSystem;
   friend class TS3FileSystem;
+  friend class TTerminal;
+  friend class TSecureShell;
+  friend class TSessionLog;
   NB_DISABLE_COPY(TSessionData)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSessionData); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSessionData) || TNamedObject::is(Kind); }
-  friend class TTerminal;
-  friend class TSecureShell;
-  friend class TSessionLog;
-  void SessionSetUserName(const UnicodeString & AValue);
 private:
   UnicodeString FHostName;
   int32_t FPortNumber{0};
@@ -237,9 +236,10 @@ private:
   int32_t FSFTPDownloadQueue{0};
   int32_t FSFTPUploadQueue{0};
   int32_t FSFTPListingQueue{0};
-  int32_t FSFTPMaxVersion{SFTPMaxVersion};
+  uint32_t FSFTPMaxVersion{SFTPMaxVersion};
   int32_t FSFTPMaxPacketSize{0};
   TAutoSwitch FSFTPRealPath{asAuto};
+  bool FUsePosixRename{false};
   TDSTMode FDSTMode{dstmKeep};
   TAutoSwitch FSFTPBugs[SFTP_BUG_COUNT]{};
   bool FDeleteToRecycleBin{false};
@@ -264,7 +264,7 @@ private:
   RawByteString FTunnelPassword;
   UnicodeString FTunnelPublicKeyFile;
   RawByteString FTunnelPassphrase;
-  int32_t FTunnelLocalPortNumber;
+  int32_t FTunnelLocalPortNumber{0};
   UnicodeString FTunnelPortFwd;
   UnicodeString FTunnelHostKey;
   bool FFtpPasvMode{false};
@@ -277,6 +277,7 @@ private:
   TFtps FFtps{ftpsNone};
   TTlsVersion FMinTlsVersion{};
   TTlsVersion FMaxTlsVersion{};
+  TAutoSwitch FCompleteTlsShutdown{};
   TAutoSwitch FNotUtf{};
   int32_t FInternalEditorEncoding{0};
   UnicodeString FS3DefaultRegion;
@@ -427,6 +428,7 @@ public:
   void SetSFTPMaxVersion(int32_t AValue);
   void SetSFTPMaxPacketSize(uint32_t AValue);
   void SetSFTPRealPath(TAutoSwitch AValue);
+  void SetUsePosixRename(bool AValue);
   void SetSFTPBug(TSftpBug Bug, TAutoSwitch AValue);
   TAutoSwitch GetSFTPBug(TSftpBug Bug) const;
   void SetSCPLsFullTime(TAutoSwitch AValue);
@@ -471,6 +473,7 @@ public:
   void SetFtps(TFtps AValue);
   void SetMinTlsVersion(TTlsVersion AValue);
   void SetMaxTlsVersion(TTlsVersion AValue);
+  void SetCompleteTlsShutdown(TAutoSwitch AValue);
   void SetNotUtf(TAutoSwitch AValue);
   void SetInternalEditorEncoding(int32_t AValue);
   void SetS3DefaultRegion(const UnicodeString & AValue);
@@ -577,7 +580,7 @@ public:
   virtual int32_t Compare(const TNamedObject * Other) const override;
   void CopyData(const TSessionData * Source);
   void CopyDataNoRecrypt(const TSessionData * SourceData);
-  void CopyDirectoriesStateData(TSessionData * SourceData);
+  void CopyDirectoriesStateData(const TSessionData * SourceData);
   bool ParseUrl(const UnicodeString & Url, TOptions * Options,
     TStoredSessionList * AStoredSessions, bool & DefaultsOnly,
     UnicodeString * AFileName, bool * AProtocolDefined, UnicodeString * MaskedUrl, int32_t Flags);
@@ -780,6 +783,8 @@ public:
   __property int32_t SFTPMaxVersion = { read = FSFTPMaxVersion, write = SetSFTPMaxVersion };
   __property uint32_t SFTPMaxPacketSize = { read = FSFTPMaxPacketSize, write = SetSFTPMaxPacketSize };
   __property TAutoSwitch SFTPRealPath = { read = FSFTPRealPath, write = SetSFTPRealPath };
+  __property bool UsePosixRename = { read = FUsePosixRename, write = SetUsePosixRename };
+  RWPropertySimple<bool> UsePosixRename{&FUsePosixRename, nb::bind(&TSessionData::SetUsePosixRename, this)};
   // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
   __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
   __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
@@ -834,6 +839,8 @@ public:
   RWPropertySimple<TTlsVersion> MinTlsVersion{&FMinTlsVersion, nb::bind(&TSessionData::SetMinTlsVersion, this)};
   __property TTlsVersion MaxTlsVersion = { read = FMaxTlsVersion, write = SetMaxTlsVersion };
   RWPropertySimple<TTlsVersion> MaxTlsVersion{&FMaxTlsVersion, nb::bind(&TSessionData::SetMaxTlsVersion, this)};
+  __property TAutoSwitch CompleteTlsShutdown = { read = FCompleteTlsShutdown, write = SetCompleteTlsShutdown };
+  RWPropertySimple<TAutoSwitch> CompleteTlsShutdown{&FCompleteTlsShutdown, nb::bind(&TSessionData::SetCompleteTlsShutdown, this)};
   __property UnicodeString LogicalHostName = { read = FLogicalHostName, write = SetLogicalHostName };
   RWProperty<UnicodeString> LogicalHostName{nb::bind(&TSessionData::GetLogicalHostName, this), nb::bind(&TSessionData::SetLogicalHostName, this)};
   __property TAutoSwitch NotUtf = { read = FNotUtf, write = SetNotUtf };
@@ -967,7 +974,7 @@ public:
   int32_t GetSFTPDownloadQueue() const { return FSFTPDownloadQueue; }
   int32_t GetSFTPUploadQueue() const { return FSFTPUploadQueue; }
   int32_t GetSFTPListingQueue() const { return FSFTPListingQueue; }
-  int32_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
+  uint32_t GetSFTPMaxVersion() const { return FSFTPMaxVersion; }
   int32_t GetSFTPMinPacketSize() const { return FSFTPMinPacketSize; }
   int32_t GetSFTPMaxPacketSize() const { return FSFTPMaxPacketSize; }
   TAutoSwitch GetSCPLsFullTime() const { return FSCPLsFullTime; }
@@ -1022,6 +1029,7 @@ public:
   UnicodeString GetLogicalHostName() const { return FLogicalHostName; }
   int32_t GetOrigPortNumber() const { return FOrigPortNumber; }
   void SetPasswordless(bool Value);
+  void SessionSetUserName(const UnicodeString & AValue);
 
   void SetLogicalHostName(const UnicodeString & AValue);
   int32_t GetNumberOfRetries() const { return FNumberOfRetries; }
@@ -1029,7 +1037,7 @@ public:
   uint32_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uint32_t Value) { FSessionVersion = Value; }
   void RemoveProtocolPrefix(UnicodeString & HostName) const;
-  static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
+  // static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
 
 private:
   uint32_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
@@ -1086,9 +1094,9 @@ public:
   int32_t IndexOf(TSessionData * Data) const;
   const TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
-  void NewWorkspace(const UnicodeString & Name, TList * DataList);
-  bool GetIsFolder(const UnicodeString & Name) const;
-  bool GetIsWorkspace(const UnicodeString & Name) const;
+  // void NewWorkspace(const UnicodeString & Name, TList * DataList);
+  // bool GetIsFolder(const UnicodeString & Name) const;
+  // bool GetIsWorkspace(const UnicodeString & Name) const;
   bool IsFolderOrWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & AUrl, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr, int32_t Flags = 0);
@@ -1140,7 +1148,7 @@ private:
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
 
-struct NB_CORE_EXPORT TIEProxyConfig : public TObject
+struct NB_CORE_EXPORT TIEProxyConfig final : public TObject
 {
   TIEProxyConfig() = default;
   bool AutoDetect{false}; // not used

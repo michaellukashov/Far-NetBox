@@ -324,7 +324,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   new TFarSeparator(Dialog);
 
   TFarText * Text = new TFarText(Dialog);
-  Text->SetCaption(GetMsg(NB_CONFIG_COMAND_PREFIXES));
+  Text->SetCaption(GetMsg(NB_CONFIG_COMMAND_PREFIXES));
 
   TFarEdit * CommandPrefixesEdit = new TFarEdit(Dialog);
 
@@ -1244,7 +1244,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
     !SessionName.IsEmpty())
     // StoredCredentialsTried)
   {
-    FSessionData = rtti::dyn_cast_or_null<TSessionData>(StoredSessions->FindByName(SessionName));
+    FSessionData = rtti::dyn_cast_or_null<TSessionData>(GetStoredSessions()->FindByName(SessionName));
     ShowSavePassword = (FSessionData != nullptr);
   }
 
@@ -1393,7 +1393,7 @@ bool TPasswordDialog::Execute(TStrings * Results)
       DebugAssert(FSessionData != nullptr);
       FSessionData->SetPassword(Results->GetString(0));
       // modified only, explicit
-      StoredSessions->Save(false, true);
+      GetStoredSessions()->Save(false, true);
     }
   }
   return Result;
@@ -1497,7 +1497,7 @@ protected:
   virtual void SelectTab(int32_t Tab) override;
 
 private:
-  void LoadPing(TSessionData * SessionData);
+  void LoadPing(const TSessionData * SessionData);
   void SavePing(TSessionData * SessionData);
   int32_t ProxyMethodToIndex(TProxyMethod ProxyMethod, TFarList * Items) const;
   TProxyMethod IndexToProxyMethod(int32_t Index, TFarList * Items) const;
@@ -2983,7 +2983,7 @@ void TSessionDialog::UpdateControls()
   const bool InternalSshProtocol = IsSshProtocol(FSProtocol);
   const bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
   const bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
-  const bool S3Protocol = (FSProtocol == fsS3);
+  const bool lS3Protocol = (FSProtocol == fsS3);
   const bool lSshProtocol = InternalSshProtocol;
   const bool lSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   const bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
@@ -2998,9 +2998,9 @@ void TSessionDialog::UpdateControls()
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
     (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
-  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !S3Protocol);
+  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !lS3Protocol);
   const bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
-    (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || S3Protocol);
+    (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || lS3Protocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
   PrivateKeyEdit->SetEnabled(lSshProtocol || lFtpsProtocol || HTTPSProtocol);
@@ -3009,9 +3009,9 @@ void TSessionDialog::UpdateControls()
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
 
-  UserNameLabel->SetVisible(IsMainTab && !S3Protocol);
+  UserNameLabel->SetVisible(IsMainTab && !lS3Protocol);
   UserNameEdit->SetVisible(IsMainTab);
-  PasswordLabel->SetVisible(IsMainTab && !S3Protocol);
+  PasswordLabel->SetVisible(IsMainTab && !lS3Protocol);
   PasswordEdit->SetVisible(IsMainTab);
 
   // Connection sheet
@@ -3595,7 +3595,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Acti
     SessionData->SetFtpUndupFF(FtpUndupFFCheck->GetChecked());
     SessionData->SetSslSessionReuse(SslSessionReuseCheck->GetChecked());
     TODO("TlsCertificateFileEdit->GetText()");
-    SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText());
+    // SessionData->SetTlsCertificateFile(PrivateKeyEdit->GetText());
     std::unique_ptr<TStrings> PostLoginCommands2(std::make_unique<TStringList>());
     for (int32_t Index4 = 0; Index4 < nb::ToInt32(_countof(PostLoginCommandsEdits)); ++Index4)
     {
@@ -3809,12 +3809,12 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Acti
   return Result;
 }
 
-void TSessionDialog::LoadPing(TSessionData * SessionData)
+void TSessionDialog::LoadPing(const TSessionData * SessionData)
 {
   const TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
       AllowScpFallbackCheck->GetChecked());
 
-  switch ((FSProtocol == fsFTP) ? SessionData->GetFtpPingType() : SessionData->GetPingType())
+  switch ((FSProtocol == fsFTP) ? static_cast<TPingType>(SessionData->GetFtpPingType()) : SessionData->GetPingType())
   {
   case ptOff:
     PingOffButton->SetChecked(true);
@@ -3995,8 +3995,8 @@ TFtps TSessionDialog::IndexToFtps(int32_t Index) const
 
 TFtps TSessionDialog::GetFtps() const
 {
-  TFSProtocol FSProtocol = GetFSProtocol();
-  int32_t Index = (((FSProtocol == fsWebDAV) || (FSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
+  TFSProtocol AFSProtocol = GetFSProtocol();
+  const int32_t Index = (((AFSProtocol == fsWebDAV) || (AFSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
   TFtps Ftps;
   switch (Index)
   {
@@ -4156,7 +4156,7 @@ void TSessionDialog::SelectTab(int32_t Tab)
   }*/
   for (Index = 0; Index < FTabs->GetCount(); ++Index)
   {
-    TTabButton * TabBtn = (FTabs->GetAs<TTabButton>(Index));
+    const TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
     if (TabBtn == SelectedTabBtn)
     {
       break;
@@ -4223,9 +4223,9 @@ int32_t TSessionDialog::GetVisibleTabsCount(int32_t TabIndex, bool Forward) cons
   {
     for (int32_t Index = TabIndex; Index < FTabs->GetCount() - 1; ++Index)
     {
-      TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
+      const TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * NextTabBtn = FTabs->GetAs<TTabButton>(Index + 1);
+      const TTabButton * NextTabBtn = FTabs->GetAs<TTabButton>(Index + 1);
       const int32_t NextTabWidth = NextTabBtn->GetWidth() + 1;
       if (TabsWidth + NextTabWidth >= DialogWidth)
         break;
@@ -4236,9 +4236,9 @@ int32_t TSessionDialog::GetVisibleTabsCount(int32_t TabIndex, bool Forward) cons
   {
     for (int32_t Index = TabIndex; Index >= 1; Index--)
     {
-      TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
+      const TTabButton * TabBtn = FTabs->GetAs<TTabButton>(Index);
       TabsWidth += TabBtn->GetWidth() + 1;
-      TTabButton * PrevTabBtn = FTabs->GetAs<TTabButton>(Index - 1);
+      const TTabButton * PrevTabBtn = FTabs->GetAs<TTabButton>(Index - 1);
       const int32_t PrevTabWidth = PrevTabBtn->GetWidth() + 1;
       if (TabsWidth + PrevTabWidth >= DialogWidth)
         break;
@@ -4710,13 +4710,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   int32_t AAllowedChanges) :
   TFarDialog(AFarPlugin),
-  FAnyDirectories(false),
-  FAllowedChanges(AAllowedChanges),
-  RightsContainer(nullptr),
-  OwnerComboBox(nullptr),
-  GroupComboBox(nullptr),
-  RecursiveCheck(nullptr),
-  OkButton(nullptr)
+  FAllowedChanges(AAllowedChanges)
 {
   TFarDialog::InitDialog();
   DebugAssert(AFileList->GetCount() > 0);
@@ -4783,7 +4777,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     {
       Text->SetCaption(base::MinimizeName(AFileList->GetString(0), nb::ToInt32(GetClientSize().x), true));
     }
-    TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
+    const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
     {
       Text = new TFarText(this);
@@ -4936,12 +4930,12 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
   }
 
 #define STORE_NAME(PROPERTY) \
-    if (!PROPERTY ## ComboBox->GetText().IsEmpty() && \
+    do { if (!PROPERTY ## ComboBox->GetText().IsEmpty() && \
         FAllowedChanges & cp ## PROPERTY) \
     { \
       Properties.Valid << vp ## PROPERTY; \
       Properties.PROPERTY.SetName(::Trim(PROPERTY ## ComboBox->GetText())); \
-    }
+    } } while(0)
   STORE_NAME(Group);
   STORE_NAME(Owner);
 #undef STORE_NAME
@@ -5056,26 +5050,6 @@ private:
 TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   uint32_t Options, uint32_t CopyParamAttrs) noexcept :
   TFarDialogContainer(OBJECT_CLASS_TCopyParamsContainer, ADialog),
-  TMTextButton(nullptr),
-  TMBinaryButton(nullptr),
-  TMAutomaticButton(nullptr),
-  AsciiFileMaskEdit(nullptr),
-  RightsContainer(nullptr),
-  CCNoChangeButton(nullptr),
-  CCUpperCaseButton(nullptr),
-  CCLowerCaseButton(nullptr),
-  CCFirstUpperCaseButton(nullptr),
-  CCLowerCaseShortButton(nullptr),
-  ReplaceInvalidCharsCheck(nullptr),
-  PreserveRightsCheck(nullptr),
-  PreserveTimeCheck(nullptr),
-  PreserveReadOnlyCheck(nullptr),
-  IgnorePermErrorsCheck(nullptr),
-  ClearArchiveCheck(nullptr),
-  CalculateSizeCheck(nullptr),
-  FileMaskText(nullptr),
-  FileMaskEdit(nullptr),
-  SpeedCombo(nullptr),
   FOptions(Options),
   FCopyParamAttrs(CopyParamAttrs)
 {
@@ -5536,12 +5510,15 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     {
       const UnicodeString PromptMsg = GetMsg(Move ? NB_MOVE_FILE_PROMPT : NB_COPY_FILE_PROMPT);
       const UnicodeString FileName = FFileList->GetString(0);
+      DEBUG_PRINTF("FileName: %s", FileName);
       const UnicodeString OnlyFileName = ToRemote ?
         base::ExtractFileName(FileName, false) :
         base::UnixExtractFileName(FileName);
+      DEBUG_PRINTF("OnlyFileName: %s", OnlyFileName);
       const UnicodeString MinimizedName = base::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
       Prompt = FORMAT(PromptMsg, MinimizedName);
     }
+    DEBUG_PRINTF("Prompt: %s", Prompt);
 
     TFarText * Text = new TFarText(this);
     Text->SetCaption(Prompt);
@@ -5620,15 +5597,23 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     NewerOnlyCheck->SetChecked(FLAGCLEAR(FOptions, coDisableNewerOnly) && Params->GetNewerOnly());
 
     UnicodeString FileMask = Params->GetFileMask();
+    DEBUG_PRINTF("FileMask: %s", FileMask);
     const UnicodeString Directory = FToRemote ?
       base::UnixIncludeTrailingBackslash(TargetDirectory) :
       ::IncludeTrailingBackslash(TargetDirectory);
+    DEBUG_PRINTF("Directory: %s", Directory);
     if (FFileList->GetCount() == 1)
     {
-      UnicodeString DestFileName = FFileList->GetString(0);
-      DestFileName = FToRemote ? DestFileName : FCopyParams.ChangeFileName(DestFileName, osRemote, true);
-      FileMask = base::ExtractFileName(DestFileName, false);
+      const UnicodeString FN = FFileList->GetString(0);
+      DEBUG_PRINTF("FN: %s", FN);
+      const TFarPanelItemData * FarPanelItemData = cast_to<const TFarPanelItemData>(FFileList->GetObj(0));
+      const UnicodeString DestFileName = FToRemote ?
+        FarPanelItemData ? FarPanelItemData->AlternateFileName : FN :
+        FCopyParams.ChangeFileName(FN, osLocal, true);
+      DEBUG_PRINTF("DestFileName: %s", DestFileName);
+      FileMask = DestFileName; // base::ExtractFileName(DestFileName, FToRemote);
     }
+    DEBUG_PRINTF("FileMask: %s", FileMask);
     DirectoryEdit->SetText(Directory + FileMask);
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
@@ -5761,7 +5746,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   TGUICopyParamType * Params)
 {
   std::unique_ptr<TCopyDialog> Dialog(std::make_unique<TCopyDialog>(FPlugin, ToRemote,
-      Move, AFileList, Options, CopyParamAttrs));
+    Move, AFileList, Options, CopyParamAttrs));
   const bool Result = Dialog->Execute(TargetDirectory, Params);
   return Result;
 }
@@ -5798,7 +5783,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
 }
 
 bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
-  int32_t CopyParamAttrs)
+  uint32_t CopyParamAttrs)
 {
   return CopyParamDialog(GetMsg(NB_COPY_PARAM_CUSTOM_TITLE), CopyParam, CopyParamAttrs);
 }
@@ -6816,7 +6801,7 @@ private:
   bool FSaveMode{false};
   int32_t FOptions{0};
   int32_t FFullHeight{0};
-  TTerminal::TSynchronizeMode FOrigMode;
+  TTerminal::TSynchronizeMode FOrigMode{TTerminal::TSynchronizeMode::smRemote};
   TUsableCopyParamAttrs FCopyParamAttrs;
   TCopyParamType FCopyParams;
 

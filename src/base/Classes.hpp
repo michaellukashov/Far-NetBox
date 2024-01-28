@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <limits>
 // #include <stdarg.h>
-#include <math.h>
+#include <cmath>
 #include <fstream>
 
 #include <FastDelegate.h>
@@ -384,7 +384,7 @@ public:
   virtual ~TStrings() noexcept override = default;
   int32_t Add(const UnicodeString & S, const TObject * AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
-  virtual void SetTextStr(const UnicodeString & Text);
+  virtual void SetTextStr(const UnicodeString & AText);
   virtual void BeginUpdate();
   virtual void EndUpdate();
   virtual void SetUpdateState(bool Updating);
@@ -397,7 +397,7 @@ public:
   virtual int32_t IndexOf(const UnicodeString & S) const;
   virtual int32_t IndexOfName(const UnicodeString & Name) const;
   static UnicodeString ExtractName(const UnicodeString & S);
-  void AddStrings(const TStrings * Strings);
+  void AddStrings(const TStrings * AStrings);
   void Append(const UnicodeString & Value);
   void SaveToStream(TStream * Stream) const;
   wchar_t GetDelimiter() const { return FDelimiter; }
@@ -633,7 +633,7 @@ NB_CORE_EXPORT TDateTime Now();
 NB_CORE_EXPORT TDateTime SpanOfNowAndThen(const TDateTime & ANow, const TDateTime & AThen);
 NB_CORE_EXPORT double MilliSecondSpan(const TDateTime & ANow, const TDateTime & AThen);
 
-class TTimeSpan
+class TTimeSpan final
 {
 public:
   int64_t GetTicks() const { return FTicks; }
@@ -787,7 +787,7 @@ public:
   virtual ~TStream() noexcept override = default;
   virtual int64_t Read(void * Buffer, int64_t Count) = 0;
   virtual int64_t Write(const void * Buffer, int64_t Count) = 0;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const = 0;
+  virtual int64_t Seek(int64_t Offset, TSeekOrigin Origin) const = 0;
   void ReadBuffer(void * Buffer, int64_t Count);
   void WriteBuffer(const void * Buffer, int64_t Count);
   int64_t CopyFrom(TStream * Source, int64_t Count);
@@ -811,7 +811,7 @@ public:
   virtual ~THandleStream() noexcept override = default;
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin SeekOrigin) const override;
+  virtual int64_t Seek(int64_t Offset, TSeekOrigin SeekOrigin) const override;
   ROProperty<HANDLE> Handle{nb::bind(&THandleStream::GetHandle, this)};
 
   HANDLE GetHandle() const { return FHandle; }
@@ -838,6 +838,7 @@ private:
 class NB_CORE_EXPORT TSafeHandleStream final : public THandleStream
 {
 public:
+  TSafeHandleStream() = delete;
   explicit TSafeHandleStream(THandle AHandle) noexcept;
   TSafeHandleStream(gsl::not_null<THandleStream *> Source, bool Own);
   virtual ~TSafeHandleStream() noexcept override;
@@ -861,7 +862,7 @@ public:
   explicit EWriteError(const char * Msg) noexcept : std::runtime_error(Msg) {}
 };
 
-class NB_CORE_EXPORT TMemoryStream : public TStream
+class NB_CORE_EXPORT TMemoryStream final : public TStream
 {
   NB_DISABLE_COPY(TMemoryStream)
 public:
@@ -1032,7 +1033,7 @@ private:
 };
 
 // FIXME
-class NB_CORE_EXPORT TShortCut : public TObject
+class NB_CORE_EXPORT TShortCut final : public TObject
 {
 public:
   explicit TShortCut() noexcept : TShortCut(0) {}

@@ -1,7 +1,8 @@
 Far-NetBox: SFTP/FTP/SCP/WebDAV/S3 client for Far Manager 3.0 x86/x64/ARM64
 ==============
 
-[![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)
+x86/x64/ARM64 build status [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)\
+Appveyor build status [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)
 
 
 Based on [WinSCP](http://winscp.net/eng/index.php) version 6.2.2 Copyright (c) 2000-2024 Martin Prikryl  
@@ -18,7 +19,7 @@ How to build from source
 To build plugin from source, you will need:  
 
   * Visual Studio 2022 build tools
-  * Cmake 3.15
+  * CMake 3.15
   * Ninja (optional)
 
 Download the source:
@@ -50,7 +51,7 @@ Links
 * Project main page: [https://github.com/michaellukashov/Far-NetBox](https://github.com/michaellukashov/Far-NetBox)
 * Far Manager forum: [http://forum.farmanager.com/](http://forum.farmanager.com/)
 * Far-NetBox discussions (in Russian): [http://forum.farmanager.com/viewtopic.php?f=5&t=6317](http://forum.farmanager.com/viewtopic.php?f=5&t=6317)
-* Far-NetBoxdiscussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
+* Far-NetBox discussions (in English): [http://forum.farmanager.com/viewtopic.php?f=39&t=6638](http://forum.farmanager.com/viewtopic.php?f=39&t=6638)
 * Latest builds:
 https://nightly.link/michaellukashov/Far-NetBox/workflows/release/main?preview
 

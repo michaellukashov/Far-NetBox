@@ -664,7 +664,7 @@ TEST_CASE_METHOD(base_fixture_t, "test21", "netbox")
 TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
 {
   UnicodeString FileName = L"testfile";
-  ::DeleteFile(FileName.c_str());
+  ::DeleteFileW(FileName.c_str());
   std::string str = "test string";
   {
     unsigned int CreateAttrs = FILE_ATTRIBUTE_NORMAL;

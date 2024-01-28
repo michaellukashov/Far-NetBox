@@ -15,7 +15,7 @@ public:
   bool Copy(TFar3Storage * Storage);
 
   virtual void DoCloseSubKey() override;
-  virtual void DoDeleteSubKey(const UnicodeString & SubKey) override;
+  virtual bool DoDeleteSubKey(const UnicodeString & SubKey) override;
   virtual void DoGetSubKeyNames(TStrings * Strings) override;
   virtual bool DoValueExists(const UnicodeString & Value) override;
   virtual bool DoDeleteValue(const UnicodeString & Name) override;

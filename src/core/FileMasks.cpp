@@ -509,6 +509,8 @@ TFileMasks & TFileMasks::operator =(const UnicodeString & rhs)
 
 TFileMasks & TFileMasks::operator =(const TFileMasks & rhm)
 {
+  if (this == &rhm)
+    return *this;
   DoInit(true);
   DoCopy(rhm);
   return *this;
@@ -1121,7 +1123,7 @@ void TInteractiveCustomCommand::Execute(
 int32_t TInteractiveCustomCommand::PatternLen(const UnicodeString & Command, int32_t Index) const
 {
   int32_t Len;
-  wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
+  const wchar_t PatternCmd = (Index < Command.Length()) ? Command[Index + 1] : L'\0';
   switch (PatternCmd)
   {
     case L'?':

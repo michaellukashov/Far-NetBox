@@ -45,7 +45,7 @@ constexpr const wchar_t * LocalInvalidChars = L"/\\:*?\"<>|";
 constexpr const wchar_t * PasswordMask = L"***";
 constexpr const wchar_t * Ellipsis = L"...";
 constexpr const wchar_t * TitleSeparator = L" \u2013 "; // En-Dash
-constexpr const wchar_t * OfficialPackage = L"MartinPikryl.WinSCP";
+constexpr const wchar_t * OfficialPackage = L"MartinPrikryl.WinSCP";
 
 constexpr const wchar_t * HttpProtocol = L"http";
 constexpr const wchar_t * HttpsProtocol = L"https";
@@ -63,9 +63,9 @@ NB_CORE_EXPORT void Shred(RawByteString & Str);
 NB_CORE_EXPORT UnicodeString AnsiToString(const RawByteString & S);
 NB_CORE_EXPORT UnicodeString AnsiToString(const char * S, int32_t Len);
 NB_CORE_EXPORT UnicodeString MakeValidFileName(const UnicodeString & AFileName);
-NB_CORE_EXPORT UnicodeString RootKeyToStr(HKEY RootKey);
-NB_CORE_EXPORT UnicodeString BooleanToStr(bool B);
-NB_CORE_EXPORT UnicodeString BooleanToEngStr(bool B);
+UnicodeString RootKeyToStr(HKEY RootKey, const UnicodeString & Default = EmptyStr);
+UnicodeString BooleanToStr(bool B);
+UnicodeString BooleanToEngStr(bool B);
 NB_CORE_EXPORT UnicodeString DefaultStr(const UnicodeString & Str, const UnicodeString & Default);
 NB_CORE_EXPORT UnicodeString CutToChar(UnicodeString & Str, wchar_t Ch, bool Trim);
 NB_CORE_EXPORT UnicodeString CopyToChars(const UnicodeString & Str, int32_t & From, const UnicodeString & Chs, bool Trim,
@@ -152,9 +152,9 @@ NB_CORE_EXPORT UnicodeString LoadStr(int32_t Ident, uint32_t MaxLength = 0);
 NB_CORE_EXPORT UnicodeString LoadStrFrom(HINSTANCE Module, int32_t Ident);
 NB_CORE_EXPORT UnicodeString LoadStrPart(int32_t Ident, int32_t Part);
 NB_CORE_EXPORT UnicodeString EscapeHotkey(const UnicodeString & Caption);
-NB_CORE_EXPORT bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
+bool CutToken(UnicodeString & AStr, UnicodeString & AToken,
   UnicodeString * ARawToken = nullptr, UnicodeString * ASeparator = nullptr);
-NB_CORE_EXPORT bool CutTokenEx(UnicodeString & Str, UnicodeString & Token,
+bool CutTokenEx(UnicodeString & Str, UnicodeString & Token,
   UnicodeString * RawToken = nullptr, UnicodeString * Separator = nullptr);
 NB_CORE_EXPORT void AddToList(UnicodeString & List, const UnicodeString & Value, const UnicodeString & Delimiter);
 void AddToShellFileListCommandLine(UnicodeString & List, const UnicodeString & Value);
@@ -164,8 +164,9 @@ bool IsWin8();
 bool IsWin10();
 bool IsWin10Build(uint32_t BuildNumber);
 bool IsWin11();
-NB_CORE_EXPORT bool IsWine();
-NB_CORE_EXPORT bool IsUWP();
+bool IsWine();
+void EnableUWPTestMode();
+bool IsUWP();
 UnicodeString GetPackageName();
 bool IsOfficialPackage();
 // TLibModule * FindModule(void * Instance);
@@ -457,8 +458,8 @@ public:
 
   void Add(const T1 & Value1, const T2 & Value2)
   {
-    FFirstToSecond.insert(std::make_pair(Value1, Value2));
-    FSecondToFirst.insert(std::make_pair(Value2, Value1));
+    FFirstToSecond.emplace(std::make_pair(Value1, Value2));
+    FSecondToFirst.emplace(std::make_pair(Value2, Value1));
   }
 
   T1 LookupFirst(const T2 & Value2) const
@@ -576,7 +577,7 @@ enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
 
 namespace base {
 //TODO: move to Sysutils.hpp
-NB_CORE_EXPORT UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName);
+NB_CORE_EXPORT UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName);
 NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 } // namespace base
 

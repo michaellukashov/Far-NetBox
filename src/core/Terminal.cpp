@@ -72,7 +72,7 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 }
 
 
-struct TMoveFileParams : public TObject
+struct TMoveFileParams final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
@@ -84,7 +84,7 @@ public:
   bool DontOverwrite{false};
 };
 
-struct TFilesFindParams : public TObject
+struct TFilesFindParams final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFilesFindParams); }
@@ -918,7 +918,7 @@ void TParallelOperation::Done(
 
                     UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
                     // Safe as write access to FParallelFileMerged is guarded by FParallelFileMerging
-                    int32_t Index = FParallelFileMerged;
+                    const int32_t Index = FParallelFileMerged;
                     UnicodeString TargetPartName = GetPartPrefix(TPath::Combine(TargetDir, FileNameOnly)) + IntToStr(Index);
 
                     if ((CopyParam->PartSize >= 0) && (Terminal->OperationProgress->TransferredSize != CopyParam->PartSize))
@@ -1292,10 +1292,12 @@ void TTerminal::Init(gsl::not_null<TSessionData *> ASessionData, gsl::not_null<T
   FNesting = 0;
   FRememberedPasswordKind = static_cast<TPromptKind>(-1);
   FSecondaryTerminals = 0;
+  // DEBUG_PRINTF("begin");
 }
 
 TTerminal::~TTerminal() noexcept
 {
+  // DEBUG_PRINTF("end");
   try
   {
     if (GetActive())
@@ -1341,10 +1343,12 @@ TTerminal::~TTerminal() noexcept
   delete FDirectoryChangesCache;
   SAFE_DESTROY(FSessionData);
 #endif
+  // DEBUG_PRINTF("end");
 }
 
 void TTerminal::Idle()
 {
+  // DEBUG_PRINTF("begin");
   // Once we disconnect, do nothing, until reconnect handler
   // "receives the information".
   // Never go idle when called from within ::ProcessGUI() call
@@ -1943,7 +1947,7 @@ void TTerminal::Reopen(int32_t Params)
     FReadCurrentDirectoryPending = false;
     FReadDirectoryPending = false;
     // Not sure why we are suspending the transaction in the first place,
-    // but definitely when set while connecting auto loaded workspace session, it causes loading the directory twice.
+    // but definitely when set while connecting autoloaded workspace session, it causes loading the directory twice.
     // (when reconnecting lost connection, it's usually prevented by cached directory)
     // Preventing that by suspending transaction only when there is one.
     FSuspendTransaction = (FInTransaction > 0);
@@ -2740,7 +2744,7 @@ TRemoteFileList * TTerminal::DirectoryFileList(const UnicodeString & APath, cons
 void TTerminal::TerminalSetCurrentDirectory(const UnicodeString & AValue)
 {
   DebugAssert(FFileSystem);
-  if (AValue != FFileSystem->RemoteCurrentDirectory)
+  if (AValue != FFileSystem->CurrentDirectory())
   {
     RemoteChangeDirectory(AValue);
   }
@@ -2753,7 +2757,7 @@ UnicodeString TTerminal::RemoteGetCurrentDirectory()
     // there's occasional crash when assigning FFileSystem->CurrentDirectory
     // to FCurrentDirectory, splitting the assignment to two statements
     // to locate the crash more closely
-    const UnicodeString ACurrentDirectory = FFileSystem->RemoteCurrentDirectory();
+    const UnicodeString ACurrentDirectory = FFileSystem->CurrentDirectory();
     FCurrentDirectory = ACurrentDirectory;
     if (FCurrentDirectory.IsEmpty())
     {
@@ -2768,7 +2772,7 @@ UnicodeString TTerminal::PeekCurrentDirectory()
 {
   if (FFileSystem)
   {
-    FCurrentDirectory = FFileSystem->RemoteCurrentDirectory();
+    FCurrentDirectory = FFileSystem->CurrentDirectory();
   }
 
   return FCurrentDirectory;
@@ -2799,7 +2803,7 @@ UnicodeString TTerminal::TerminalGetUserName() const
 {
   // in future might also be implemented to detect username similar to GetUserGroups
   DebugAssert(FFileSystem != nullptr);
-  UnicodeString Result = FFileSystem ? FFileSystem->RemoteGetUserName() : "";
+  UnicodeString Result = FFileSystem ? FFileSystem->GetUserName() : "";
   // Is empty also when stored username was used
   if (Result.IsEmpty())
   {
@@ -2962,7 +2966,7 @@ void TTerminal::DoEndTransaction(bool Inform)
   DebugAssert(FInTransaction > 0);
   FInTransaction--;
 
-  // it connection was closed due to fatal error during transaction, do nothing
+  // if connection was closed due to fatal error during transaction, do nothing
   if (GetActive())
   {
     if (FInTransaction == 0)
@@ -3032,7 +3036,7 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & AMsg, const Unic
   if (GetActive() || SecureShellActive)
   {
     // We log this instead of exception handler, because Close() would
-    // probably cause exception handler to loose pointer to TShellLog()
+    // probably cause exception handler to lose pointer to TShellLog()
     LogEvent("Attempt to close connection due to fatal exception:");
     GetLog()->Add(llException, AMsg);
     GetLog()->AddException(E);
@@ -3315,7 +3319,7 @@ uint32_t TTerminal::ConfirmFileOverwrite(
             break;
         }
 
-        // we user has not selected another batch overwrite mode,
+        // if user has not selected another batch overwrite mode,
         // keep the current one. note that we may get here even
         // when batch overwrite was selected already, but it could not be applied
         // to current transfer (see condition above)
@@ -3592,7 +3596,7 @@ void TTerminal::DoStartup()
       }
       else
       {
-        RemoteChangeDirectory(SessionData->RemoteDirectory);
+        RemoteChangeDirectory(SessionData->RemoteDirectory());
       }
     }
   }
@@ -3612,7 +3616,7 @@ void TTerminal::ReadCurrentDirectory()
     FReadCurrentDirectoryPending = false;
 
     LogEvent("Getting current directory name.");
-    const UnicodeString OldDirectory = FFileSystem->RemoteCurrentDirectory();
+    const UnicodeString OldDirectory = FFileSystem->CurrentDirectory();
 
     FFileSystem->ReadCurrentDirectory();
     ReactOnCommand(fsCurrentDirectory);
@@ -3632,7 +3636,7 @@ void TTerminal::ReadCurrentDirectory()
       FLastDirectoryChange.Clear();
     }
 
-    if (OldDirectory != FFileSystem->RemoteCurrentDirectory()) DoChangeDirectory();
+    if (OldDirectory != FFileSystem->CurrentDirectory()) DoChangeDirectory();
   }
   catch(Exception & E)
   {
@@ -3702,7 +3706,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         {
           // delete only after loading new files to dir view,
           // not to destroy the file objects that the view holds
-          // (can be issue in multi threaded environment, such as when the
+          // (can be issue in multithreaded environment, such as when the
           // terminal is reconnecting in the terminal thread)
           OldFiles->Reset();
         } end_try__finally
@@ -4091,12 +4095,12 @@ TRemoteFile * TTerminal::ReadFile(const UnicodeString & AFileName)
   return File.release();
 }
 
-TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName)
+TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName, bool AExceptionOnFail)
 {
   TRemoteFile * File;
   try
   {
-    SetExceptionOnFail(true);
+    SetExceptionOnFail(AExceptionOnFail);
     try__finally
     {
       File = ReadFile(base::UnixExcludeTrailingBackslash(AFileName));
@@ -4197,8 +4201,10 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
         int32_t Index = 0;
         while ((Index < AFileList->GetCount()) && (Progress.GetCancel() == csContinue))
         {
-          UnicodeString FileName = AFileList->GetString(Index);
+          const UnicodeString FileName = AFileList->GetString(Index);
+          DEBUG_PRINTF("FileName: %s", FileName);
           TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
+          DEBUG_PRINTF("GetFullFileName: %s", File->GetFullFileName());
           try
           {
             bool Success = false;
@@ -4451,7 +4457,7 @@ void TTerminal::DoDeleteFile(
     {
       DebugAssert(FileSystem != nullptr);
       // 'File' parameter: SFTPFileSystem needs to know if file is file or directory
-      FileSystem->RemoteDeleteFile(AFileName, AFile, Params, Action);
+      FileSystem->DeleteFile(AFileName, AFile, Params, Action);
       if ((OperationProgress != nullptr) && (OperationProgress->Operation() == foDelete))
       {
         OperationProgress->Succeeded();
@@ -5004,11 +5010,17 @@ bool TTerminal::DoRenameOrCopyFile(
   bool Move, bool DontOverwrite, bool IsBatchOperation)
 {
   const TBatchOverwrite BatchOverwrite = (IsBatchOperation ? OperationProgress->BatchOverwrite : boNo);
+  const UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
   const UnicodeString AbsoluteNewName = GetAbsolutePath(NewName, true);
   bool Result = true;
   bool ExistenceKnown = false;
   std::unique_ptr<TRemoteFile> DuplicateFile;
-  if (BatchOverwrite == boNone)
+  if (base::UnixSamePath(AbsoluteFileName, AbsoluteNewName))
+  {
+    LogEvent(FORMAT(L"Target \"%s\" is same as source \"%s\" - skipping.", AbsoluteNewName, AbsoluteFileName));
+    Result = false;
+  }
+  else if (BatchOverwrite == boNone)
   {
     DebugAssert(!DontOverwrite); // unsupported combination
     Result = !this->FileExists(AbsoluteNewName);
@@ -5039,7 +5051,7 @@ bool TTerminal::DoRenameOrCopyFile(
         QuestionFmt = MainInstructions(LoadStr(CORE_PROMPT_FILE_OVERWRITE));
         QueryType = qtConfirmation;
       }
-      TQueryParams Params(qpNeverAskAgainCheck);
+      const TQueryParams Params(qpNeverAskAgainCheck);
       const UnicodeString Question = FORMAT(QuestionFmt, NewName);
       const uint32_t Answers = qaYes | qaNo | FLAGMASK(OperationProgress != nullptr, qaCancel) | FLAGMASK(IsBatchOperation, qaYesToAll | qaNoToAll);
       const uint32_t Answer = QueryUser(Question, nullptr, Answers, &Params, QueryType);
@@ -5129,14 +5141,13 @@ bool TTerminal::DoRenameOrCopyFile(
       TRetryOperationLoop RetryLoop(this);
       do
       {
-        UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
         DebugAssert(FileSystem != nullptr);
         if (Rename)
         {
           TMvSessionAction Action(ActionLog, AbsoluteFileName, AbsoluteNewName);
           try
           {
-            FileSystem->RemoteRenameFile(FileName, File, NewName, !DontOverwrite);
+            FileSystem->RenameFile(FileName, File, NewName, !DontOverwrite);
           }
           catch(Exception & E)
           {
@@ -5149,7 +5160,7 @@ bool TTerminal::DoRenameOrCopyFile(
           TCpSessionAction Action(ActionLog, AbsoluteFileName, AbsoluteNewName);
           try
           {
-            FileSystem->RemoteCopyFile(FileName, File, NewName, !DontOverwrite);
+            FileSystem->CopyFile(FileName, File, NewName, !DontOverwrite);
           }
           catch(Exception & E)
           {
@@ -5221,7 +5232,7 @@ bool TTerminal::TerminalMoveFiles(
 
       UnicodeString WithTrailing = base::UnixIncludeTrailingBackslash(CurrentDirectory);
       bool PossiblyMoved = false;
-      // check if we was moving current directory.
+      // check if we were moving current directory.
       // this is just optimization to avoid checking existence of current
       // directory after each move operation.
       for (int32_t Index = 0; !PossiblyMoved && (Index < AFileList->GetCount()); ++Index)
@@ -5322,8 +5333,8 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt)
     try
     {
       DebugAssert(FFileSystem);
-      DEBUG_PRINTF("ADirName: %s", ADirName);
-      FFileSystem->RemoteCreateDirectory(ADirName, Encrypt);
+      // DEBUG_PRINTF("ADirName: %s", ADirName);
+      FFileSystem->CreateDirectory(ADirName, Encrypt);
     }
     catch(Exception & E)
     {
@@ -5358,7 +5369,7 @@ void TTerminal::DoCreateLink(const UnicodeString & AFileName,
     try
     {
       DebugAssert(FFileSystem);
-      FFileSystem->RemoteCreateLink(AFileName, APointTo, Symbolic);
+      FFileSystem->CreateLink(AFileName, APointTo, Symbolic);
     }
     catch(Exception & E)
     {
@@ -5622,7 +5633,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
       FCommandSession->GetFileSystem()->ReadCurrentDirectory();
 
       // synchronize pwd (by purpose we lose transaction optimization here)
-      RemoteChangeDirectory(FCommandSession->RemoteGetCurrentDirectory());
+      RemoteChangeDirectory(FCommandSession->CurrentDirectory());
     }
     ReactOnCommand(fsAnyCommand);
   }
@@ -6035,7 +6046,7 @@ void TTerminal::CalculateLocalFileSize(
     catch (...)
     {
       // ignore
-      DEBUG_PRINTF("TTerminal::CalculateLocalFileSize: error occured");
+      DEBUG_PRINTF("TTerminal::CalculateLocalFileSize: error occurred");
     }
   }
 }
@@ -6421,7 +6432,7 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
         {
           LogEvent(FORMAT("Local file %s is new",
             FormatFileDetailsForLog(UnicodeString(FileData->Info.Directory) + UnicodeString(FileData->Info.FileName),
-             FileData->Info.Modification, FileData->Info.Size)));
+              FileData->Info.Modification, FileData->Info.Size)));
         }
 
         if (Modified || New)
@@ -7693,9 +7704,10 @@ void TTerminal::DoCopyToRemote(
   while ((Index < AFilesToCopy->GetCount()) && !AOperationProgress->GetCancel())
   {
     bool Success = false;
-    UnicodeString FileName = AFilesToCopy->GetString(Index);
+    const UnicodeString FileName = AFilesToCopy->GetString(Index);
+    DEBUG_PRINTF("FileName: %s", FileName);
     TSearchRecSmart * SearchRec = nullptr;
-    if (AFilesToCopy->GetObj(Index) != nullptr)
+    if (rtti::dyn_cast_or_null<TLocalFile>(AFilesToCopy->GetObj(Index)) != nullptr)
     {
       TLocalFile * LocalFile = AFilesToCopy->GetAs<TLocalFile>(Index);
       SearchRec = &LocalFile->SearchRec;
@@ -7781,7 +7793,7 @@ void TTerminal::SourceRobust(
 bool TTerminal::CreateTargetDirectory(
   const UnicodeString & ADirectoryPath, uint32_t Attrs, const TCopyParamType * CopyParam)
 {
-  std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath));
+  std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath, false));
   const bool DoCreate =
     (File == nullptr) ||
     !File->IsDirectory; // just try to create and make it fail
@@ -7810,8 +7822,7 @@ void TTerminal::DirectorySource(
 {
   FFileSystem->TransferOnDirectory(ATargetDir, CopyParam, AParams);
 
-  //UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(ATargetDir + ADestDirectoryName);
-  const UnicodeString DestFullName = ATargetDir + ADestDirectoryName;
+  const UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(ATargetDir) + ADestDirectoryName; //TODO: TPath::Join(ATargetDir, ADestDirectoryName)
 
   AOperationProgress->SetFile(ADirectoryName);
 
@@ -8071,7 +8082,7 @@ void TTerminal::CheckParallelFileTransfer(
     TObject * ParallelObject = nullptr;
     if (TParallelOperation::GetOnlyFile(Files, ParallelFileName, ParallelObject))
     {
-      const TRemoteFile * File = static_cast<const TRemoteFile *>(ParallelObject);
+      const TRemoteFile * File = cast_to<const TRemoteFile>(ParallelObject);
       const TRemoteFile * UltimateFile = File->Resolve();
       if ((UltimateFile == File) && // not tested with symlinks
           (UltimateFile->Size >= nb::ToInt64(Configuration->ParallelTransferThreshold) * 1024))
@@ -9380,7 +9391,7 @@ void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,
       SAFE_CLOSE_HANDLE(LocalFileHandle);
     } end_try__finally
   }
-  FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, LocalFileName))
+  FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, LocalFileName));
 }
 
 HANDLE TTerminal::TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,

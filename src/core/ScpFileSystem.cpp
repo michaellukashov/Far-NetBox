@@ -423,7 +423,7 @@ bool TSCPFileSystem::GetStoredCredentialsTried() const
   return FSecureShell->GetStoredCredentialsTried();
 }
 
-UnicodeString TSCPFileSystem::RemoteGetUserName() const
+UnicodeString TSCPFileSystem::GetUserName() const
 {
   return FSecureShell->ShellGetUserName();
 }
@@ -466,7 +466,7 @@ UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool 
 
 UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
-  return base::AbsolutePath(RemoteGetCurrentDirectory(), APath);
+  return base::AbsolutePath(GetCurrentDirectory(), APath);
 }
 
 bool TSCPFileSystem::IsCapable(int32_t Capability) const
@@ -541,7 +541,7 @@ void TSCPFileSystem::EnsureLocation()
     {
       // when location to cached directory fails, pretend again
       // location in cached directory
-      // here used to be check (CurrentDirectory != Directory), but it is
+      // here used to check (CurrentDirectory != Directory), but it is
       // false always (current directory is already set to cached directory),
       // making the condition below useless. check removed.
       if (FTerminal->GetActive())
@@ -755,7 +755,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd,
   }
 }
 
-UnicodeString TSCPFileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TSCPFileSystem::GetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -1239,7 +1239,7 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   }
 }
 
-void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
+void TSCPFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action)
 {
   DebugUsedParam(AFile);
@@ -1249,13 +1249,13 @@ void TSCPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
   ExecCommand(fsDeleteFile, Params, DelimitStr(AFileName));
 }
 
-void TSCPFileSystem::RemoteRenameFile(
+void TSCPFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   ExecCommand(fsRenameFile, 0, DelimitStr(AFileName), DelimitStr(ANewName));
 }
 
-void TSCPFileSystem::RemoteCopyFile(
+void TSCPFileSystem::CopyFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   const UnicodeString DelimitedFileName = DelimitStr(AFileName);
@@ -1281,12 +1281,12 @@ void TSCPFileSystem::RemoteCopyFile(
   }
 }
 
-void TSCPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
+void TSCPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   ExecCommand(fsCreateDirectory, 0, DelimitStr(ADirName));
 }
 
-void TSCPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
+void TSCPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & APointTo, bool Symbolic)
 {
   ExecCommand(fsCreateLink, 0,
@@ -1957,7 +1957,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
       catch(Exception & E)
       {
         // Only log error message (it should always succeed, but
-        // some pending error maybe in queue) }
+        // some pending error maybe in queue)
         FTerminal->GetLog()->AddException(&E);
       }
     }
@@ -2057,7 +2057,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
         OperationProgress->AddLocallyUsed(BlockBuf.GetSize());
 
         // We do ASCII transfer: convert EOL of current block
-        // (we don't convert whole buffer, cause it would produce
+        // (we don't convert whole buffer, because it would produce
         // huge memory-transfers while inserting/deleting EOL characters)
         // Then we add current block to file buffer
         if (OperationProgress->GetAsciiTransfer())
@@ -2070,7 +2070,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
             ConvertParams, ConvertToken);
           BlockBuf.GetMemory()->Seek(0, TSeekOrigin::soBeginning);
           AsciiBuf.ReadStream(BlockBuf.GetMemory(), BlockBuf.GetSize(), true);
-          // We don't need it any more
+          // We don't need it anymore
           BlockBuf.GetMemory()->Clear();
           // Calculate total size to sent (assume that ratio between
           // size of source and size of EOL-transformed data would remain same)
@@ -2200,7 +2200,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
     catch(Exception & E)
     {
       // EScpFileSkipped is derived from ESkipFile,
-      // but is does not indicate file skipped by user here
+      // but it does not indicate file skipped by user here
       if (rtti::isa<EScpFileSkipped>(&E))
       {
         Action.Rollback(&E);
@@ -2461,7 +2461,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   }
   __finally
   {
-    // In case that copying doesn't cause fatal error (ie. connection is
+    // In case that copying doesn't cause fatal error (i.e. connection is
     // still active) but wasn't successful (exception or user termination)
     // we need to ensure, that SCP on remote side is closed
     if (FTerminal->GetActive() && (CloseSCP ||
@@ -2711,7 +2711,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
           ::IncludeTrailingBackslash(TargetDir) + DestFileNameOnly;
 
         FileData.LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DestFileName));
-        // If getting attrs fails, we suppose, that file/folder doesn't exists
+        // If getting attrs fails, we suppose, that file/folder doesn't exist
         FileData.Exists = (FileData.LocalFileAttrs != INVALID_FILE_ATTRIBUTES);
         if (Dir)
         {

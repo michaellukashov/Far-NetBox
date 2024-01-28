@@ -58,7 +58,8 @@ public:
   bool GetAutoSort() const { return FAutoSort; }
   void SetAutoSort(bool Value) { FAutoSort = Value; }
 
-  explicit TNamedObjectList(TObjectClassId Kind = OBJECT_CLASS_TNamedObjectList) noexcept;
+  TNamedObjectList() noexcept : TNamedObjectList(OBJECT_CLASS_TNamedObjectList) {}
+  explicit TNamedObjectList(TObjectClassId Kind) noexcept;
   void AlphaSort();
   virtual int32_t Add(TObject * AObject) override;
   virtual const TNamedObject * AtObject(int32_t Index) const;

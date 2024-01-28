@@ -1,11 +1,12 @@
 
 #pragma once
 
+// #include <vector>
 #include <Masks.hpp>
 #include <Exceptions.h>
 #include "SessionData.h"
 
-class NB_CORE_EXPORT EFileMasksException : public Exception
+class NB_CORE_EXPORT EFileMasksException final : public Exception
 {
 public:
   explicit EFileMasksException(const UnicodeString & AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept;
@@ -92,15 +93,15 @@ private:
 
     enum TMaskBoundary { None, Open, Close };
 
-    TMaskBoundary HighSizeMask;
+    TMaskBoundary HighSizeMask{None};
   
     int64_t HighSize{0};
     TMaskBoundary LowSizeMask{None};
     int64_t LowSize{0};
 
-    TMaskBoundary HighModificationMask;
+    TMaskBoundary HighModificationMask{None};
     TDateTime HighModification;
-    TMaskBoundary LowModificationMask;
+    TMaskBoundary LowModificationMask{None};
     TDateTime LowModification;
 
     UnicodeString MaskStr;
@@ -208,7 +209,7 @@ struct NB_CORE_EXPORT TCustomCommandData final : public TObject
 {
 public:
   TCustomCommandData() noexcept;
-  explicit TCustomCommandData(const TCustomCommandData & Data) noexcept;
+  TCustomCommandData(const TCustomCommandData & Data) noexcept;
   explicit TCustomCommandData(TTerminal * Terminal) noexcept;
   explicit TCustomCommandData(TSessionData * SessionData);
   explicit TCustomCommandData(

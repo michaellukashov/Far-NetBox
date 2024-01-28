@@ -6,13 +6,14 @@
 #include <tinylog/LogStream.h>
 #include <tinylog/Config.h>
 //#include <tinylog/LockFreeQueue.h>
+// #include <Sysutils.hpp>
 
 
 namespace tinylog {
 
 LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, bool & already_swap) :
-  front_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
-  back_buff_(std::make_unique<Buffer>(BUFFER_SIZE)),
+  front_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
+  back_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
 //  queue_(std::make_unique<LockFreeQueue>()),
   file_(file),
   mutex_(mutex),
@@ -20,15 +21,18 @@ LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond
   already_swap_(already_swap)
 {
   Utils::CurrentTime(&tv_base_, &tm_base_);
+  // DEBUG_PRINTF("begin");
 }
 
 LogStream::~LogStream()
 {
+  // DEBUG_PRINTF("end");
   if (file_ != nullptr)
   {
     fclose(file_);
     file_ = nullptr;
   }
+  // DEBUG_PRINTF("end");
 }
 
 int64_t LogStream::Write(const char * data, int64_t ToWrite)
@@ -99,11 +103,11 @@ int64_t LogStream::InternalWrite(const char * log_data, int64_t ToWrite)
 
   pthread_mutex_lock(&mutex_);
 
-  if (front_buff_->TryAppend(tm_base_, (int64_t)tv_base_.tv_usec, file_name_, line_, func_name_, str_log_level_, log_data) < 0)
+  if (front_buff_->TryAppend(&tm_base_, static_cast<int64_t>(tv_base_.tv_usec), file_name_, line_, func_name_, str_log_level_, log_data) < 0)
   {
     SwapBuffer();
     already_swap_ = true;
-    front_buff_->TryAppend(tm_base_, (long)tv_base_.tv_usec, file_name_, line_, func_name_, str_log_level_, log_data);
+    front_buff_->TryAppend(&tm_base_, static_cast<int64_t>(tv_base_.tv_usec), file_name_, line_, func_name_, str_log_level_, log_data);
   }
 
   pthread_cond_signal(&cond_);
@@ -127,8 +131,8 @@ LogStream & LogStream::operator<<(const std::string & ref_log)
 
   char buff[256]{};
   int n_append = sprintf(buff, "%d-%02d-%02d %02d:%02d:%02d.%.03ld %s %d %s %s %s\n",
-      tm_base_->tm_year + 1900, tm_base_->tm_mon + 1, tm_base_->tm_mday,
-      tm_base_->tm_hour, tm_base_->tm_min, tm_base_->tm_sec, (long)tv_base_.tv_usec / 1000,
+      tm_base_.tm_year + 1900, tm_base_.tm_mon + 1, tm_base_.tm_mday,
+      tm_base_.tm_hour, tm_base_.tm_min, tm_base_.tm_sec, (long)tv_base_.tv_usec / 1000,
       file_name_, line_, func_name_, str_log_level_.c_str(),
       ref_log.c_str());
 
@@ -150,32 +154,32 @@ void LogStream::UpdateBaseTime()
 
   if (tv_now.tv_sec != tv_base_.tv_sec)
   {
-    const int new_sec = tm_base_->tm_sec + static_cast<int>(tv_now.tv_sec - tv_base_.tv_sec);
+    const int new_sec = tm_base_.tm_sec + static_cast<int>(tv_now.tv_sec - tv_base_.tv_sec);
     if (new_sec >= 60)
     {
-      tm_base_->tm_sec = new_sec % 60;
-      const int new_min = tm_base_->tm_min + new_sec / 60;
+      tm_base_.tm_sec = new_sec % 60;
+      const int new_min = tm_base_.tm_min + new_sec / 60;
       if (new_min >= 60)
       {
-        tm_base_->tm_min = new_min % 60;
-        const int new_hour = tm_base_->tm_hour + new_min / 60;
+        tm_base_.tm_min = new_min % 60;
+        const int new_hour = tm_base_.tm_hour + new_min / 60;
         if (new_hour >= 24)
         {
           Utils::CurrentTime(&tv_now, &tm_base_);
         }
         else
         {
-          tm_base_->tm_hour = new_hour;
+          tm_base_.tm_hour = new_hour;
         }
       }
       else
       {
-        tm_base_->tm_min = new_min;
+        tm_base_.tm_min = new_min;
       }
     }
     else
     {
-      tm_base_->tm_sec = new_sec;
+      tm_base_.tm_sec = new_sec;
     }
 
     tv_base_ = tv_now;

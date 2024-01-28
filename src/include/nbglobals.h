@@ -361,8 +361,8 @@ struct SelfTest {       \
 
 #define NB_DISABLE_COPY(Class) \
 private: \
-  Class(Class &&) = default; \
-  Class & operator =(Class &&) = default; \
+  Class(Class &&) noexcept = delete; \
+  Class & operator =(Class &&) noexcept = delete; \
   Class(const Class &) = delete; \
   Class & operator =(const Class &) = delete;
 

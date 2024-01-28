@@ -79,6 +79,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FOpenedPlugins(std::make_unique<TList>()),
   FSavedTitles(std::make_unique<TStringList>())
 {
+  // DEBUG_PRINTF("begin");
   FFarThreadId = GetCurrentThreadId();
   FPluginHandle = HInst;
   FFarVersion = 0;
@@ -109,10 +110,12 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   {
     FNormalConsoleSize = TPoint(-1, -1);
   }
+  // DEBUG_PRINTF("begin");
 }
 
 TCustomFarPlugin::~TCustomFarPlugin() noexcept
 {
+  // DEBUG_PRINTF("end");
   DebugAssert(FTopDialog == nullptr);
 
   ResetCachedInfo();
@@ -131,6 +134,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   }
   // SAFE_DESTROY(FSavedTitles);
   // TODO: CloseFileSystem(FarFileSystem);
+  // DEBUG_PRINTF("end");
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const
@@ -2635,7 +2639,14 @@ PLUGINPANELITEMFLAGS TFarPanelItem::GetFlags() const
 
 UnicodeString TFarPanelItem::GetFileName() const
 {
-  UnicodeString Result = FPanelItem->FileName;
+  // UnicodeString Result = FPanelItem->AlternateFileName ? FPanelItem->AlternateFileName : FPanelItem->FileName;
+  const UnicodeString Result = FPanelItem->FileName;
+  return Result;
+}
+
+UnicodeString TFarPanelItem::GetAlternateFileName() const
+{
+  const UnicodeString Result = FPanelItem->AlternateFileName;
   return Result;
 }
 
@@ -2791,6 +2802,7 @@ TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
     TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
+    Ensures(PanelItem);
     if (PanelItem->GetUserData() == UserData)
     {
       return PanelItem;

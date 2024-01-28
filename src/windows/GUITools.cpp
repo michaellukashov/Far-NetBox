@@ -55,13 +55,13 @@ bool FindFile(UnicodeString & Path)
 
   if (!Result)
   {
-    UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramFiles"));
-    UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvVariable(L"ProgramW6432"));
+    const UnicodeString ProgramFiles32 = ::IncludeTrailingBackslash(base::GetEnvironmentVariable(L"ProgramFiles"));
+    const UnicodeString ProgramFiles64 = ::IncludeTrailingBackslash(base::GetEnvironmentVariable(L"ProgramW6432"));
     if (!ProgramFiles32.IsEmpty() &&
         SameText(Path.SubString(1, ProgramFiles32.Length()), ProgramFiles32) &&
         !ProgramFiles64.IsEmpty())
     {
-      UnicodeString Path64 =
+      const UnicodeString Path64 =
         ProgramFiles64 + Path.SubString(ProgramFiles32.Length() + 1, Path.Length() - ProgramFiles32.Length());
       if (base::FileExists(ApiPath(Path64)))
       {
@@ -73,7 +73,7 @@ bool FindFile(UnicodeString & Path)
 
   if (!Result && SameText(base::ExtractFileName(Path), Path))
   {
-    UnicodeString Paths = base::GetEnvVariable("PATH");
+    UnicodeString Paths = base::GetEnvironmentVariable("PATH");
     if (!Paths.IsEmpty())
     {
       UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(Path), Paths);
@@ -127,7 +127,7 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
     {
       std::unique_ptr<TRegistryStorage> SourceStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
       SourceStorage->ConfigureForPutty();
-      if (SourceStorage->OpenSubKey(StoredSessions->DefaultSettings->Name, false) &&
+      if (SourceStorage->OpenSubKey(GetStoredSessions()->DefaultSettings->Name, false) &&
           Storage->OpenSubKey(SessionName, true))
       {
         Storage->Copy(SourceStorage.get());
@@ -166,7 +166,7 @@ class TPuttyCleanupThread : public TSimpleThread
 {
 public:
     static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyCleanupThread); }
-    virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TObject::is(Kind); }
+    virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TSimpleThread::is(Kind); }
 public:
   TPuttyCleanupThread() noexcept:
     TSimpleThread(OBJECT_CLASS_TPuttyCleanupThread)
@@ -175,9 +175,9 @@ public:
   static void Finalize();
 
 protected:
-  virtual void Execute();
-  virtual void Terminate();
-  bool Finished();
+  virtual void Execute() override;
+  virtual void Terminate() override;
+  virtual bool Finished() override;
   void DoSchedule();
 
 private:
@@ -312,9 +312,9 @@ public:
   void InitPuttyPasswordThread();
 
 protected:
-  virtual void Execute();
-  virtual void Terminate();
-  virtual bool Finished();
+  virtual void Execute() override;
+  virtual void Terminate() override;
+  virtual bool Finished() override;
 
 private:
   HANDLE FPipe;
@@ -326,9 +326,9 @@ private:
 TPuttyPasswordThread::TPuttyPasswordThread(const UnicodeString & Password, const UnicodeString & PipeName) :
   TSimpleThread(OBJECT_CLASS_TPuttyPasswordThread)
 {
-  DWORD OpenMode = PIPE_ACCESS_OUTBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE;
-  DWORD PipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT | PIPE_REJECT_REMOTE_CLIENTS;
-  DWORD BufferSize = 16 * 1024;
+  const DWORD OpenMode = PIPE_ACCESS_OUTBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE;
+  const DWORD PipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_NOWAIT | PIPE_REJECT_REMOTE_CLIENTS;
+  const DWORD BufferSize = 16 * 1024;
   FPipe = CreateNamedPipe(PipeName.c_str(), OpenMode, PipeMode, 1, BufferSize, BufferSize, NMPWAIT_USE_DEFAULT_WAIT, nullptr);
   if (FPipe == INVALID_HANDLE_VALUE)
   {
@@ -463,7 +463,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
     UnicodeString Password;
     if (GetGUIConfiguration()->PuttyPassword)
     {
-      // Passphrase has precendence, as it's more likely entered by user during authentication, hence more likely really needed.
+      // Passphrase has precedence, as it's more likely entered by user during authentication, hence more likely really needed.
       if (!SessionData->Passphrase().IsEmpty())
       {
         Password = SessionData->Passphrase;
@@ -646,7 +646,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
 
 bool FindTool(const UnicodeString & Name, UnicodeString & APath)
 {
-  UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName())); //TODO: use Application->ExeName
+  const UnicodeString AppPath = ::IncludeTrailingBackslash(::ExtractFilePath(GetConfiguration()->ModuleFileName())); //TODO: use Application->ExeName
   APath = AppPath + Name;
   bool Result = true;
   if (!base::FileExists(ApiPath(APath)))
@@ -744,7 +744,7 @@ bool DontCopyCommandToClipboard = false;
 
 bool CopyCommandToClipboard(const UnicodeString & ACommand)
 {
-  bool Result = !DontCopyCommandToClipboard; // && UseAlternativeFunction && IsKeyPressed(VK_CONTROL);
+  const bool Result = !DontCopyCommandToClipboard; // && UseAlternativeFunction && IsKeyPressed(VK_CONTROL);
   if (Result)
   {
     TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
@@ -768,7 +768,7 @@ static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString & Pa
   }
   else
   {
-    UnicodeString Directory = ::ExtractFilePath(APath);
+    const UnicodeString Directory = ::ExtractFilePath(APath);
 
     TShellExecuteInfoW ExecuteInfo;
     nb::ClearStruct(ExecuteInfo);
@@ -822,7 +822,7 @@ void ExecuteShellCheckedAndWait(const UnicodeString & Command,
   UnicodeString Program, Params, Dir;
   SplitCommand(Command, Program, Params, Dir);
   HANDLE ProcessHandle;
-  bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
+  const bool Result = DoExecuteShell(Program, Params, false, &ProcessHandle);
   if (!Result)
   {
     throw EOSExtException(FMTLOAD(EXECUTE_APP_ERROR, Program));
@@ -1041,20 +1041,20 @@ bool IsEligibleForApplyingTabs(
   {
     Remaining = Line.SubString(TabPos + 1, Line.Length() - TabPos);
     // WORKAROUND
-    // Some translations still use obsolete hack of consecutive tabs to aling the contents.
+    // Some translations still use obsolete hack of consecutive tabs to align the contents.
     // Delete these, so that the following check does not fail on this
     while (Remaining.SubString(1, 1) == L"\t")
     {
       Remaining.Delete(1, 1);
     }
 
-    // We do not have, not support, mutiple tabs on a single line
+    // We do not have, not support, multiple tabs on a single line
     if (DebugAlwaysTrue(Remaining.Pos(L"\t") == 0))
     {
       Start = Line.SubString(1, TabPos - 1);
       // WORKAROUND
       // Previously we padded the string before tab with spaces,
-      // to aling the contents across multiple lines
+      // to align the contents across multiple lines
       Start = Start.TrimRight();
       // at least two normal spaces for separation
       Start += L"  ";
@@ -1508,7 +1508,7 @@ void TBrowserViewer::AddLinkHandler(
 void TBrowserViewer::DoContextPopup(const TPoint & MousePos, bool & Handled)
 {
   // Suppress built-in context menu.
-  // Is ignored with IDocHostUIHandler. Needs to be overriden by ShowContextMenu.
+  // Is ignored with IDocHostUIHandler. Needs to be overridden by ShowContextMenu.
   Handled = true;
   TWebBrowserEx::DoContextPopup(MousePos, Handled);
 }
@@ -1574,7 +1574,7 @@ TWebBrowserEx * CreateBrowserViewer(TPanel * Parent, const UnicodeString & Loadi
   static_cast<TWinControl *>(Result)->Name = L"BrowserViewer";
   static_cast<TWinControl *>(Result)->Parent = Parent;
   Result->Align = alClient;
-  // Is ignored with IDocHostUIHandler. Needs to be overriden by DOCHOSTUIFLAG_NO3DBORDER in GetHostInfo.
+  // Is ignored with IDocHostUIHandler. Needs to be overridden by DOCHOSTUIFLAG_NO3DBORDER in GetHostInfo.
   Result->ControlBorder = cbNone;
 
   Result->LoadingPanel = CreateLabelPanel(Parent, LoadingLabel);

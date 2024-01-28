@@ -36,7 +36,7 @@ class NB_CORE_EXPORT TS3FileSystem final : public TCustomFileSystem
   NB_DISABLE_COPY(TS3FileSystem)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TS3FileSystem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TObject::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TS3FileSystem) || TCustomFileSystem::is(Kind); }
 
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 public:
@@ -79,9 +79,9 @@ public:
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
     const TCopyParamType * CopyParam, int32_t AParams, TFileOperationProgressType * AOperationProgress,
     uint32_t AFlags, TDownloadSessionAction & Action) override;
-  virtual void RemoteCreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
-  virtual void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
-  virtual void RemoteDeleteFile(const UnicodeString & AFileName,
+  virtual void CreateDirectory(const UnicodeString & ADirName, bool Encrypt) override;
+  virtual void CreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic) override;
+  virtual void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * File, int32_t AParams,
     TRmSessionAction & Action) override;
   virtual void CustomCommandOnFile(const UnicodeString & AFileName,
@@ -96,9 +96,9 @@ public:
     TRemoteFile *& AFile) override;
   virtual void ReadSymlink(TRemoteFile * ASymLinkFile,
     TRemoteFile *& AFile) override;
-  virtual void RemoteRenameFile(
+  virtual void RenameFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
-  virtual void RemoteCopyFile(
+  virtual void CopyFile(
     const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ANewName, bool Overwrite) override;
   virtual TStrings * GetFixedPaths() const override;
   virtual void SpaceAvailable(const UnicodeString & APath,
@@ -107,7 +107,7 @@ public:
   virtual const TFileSystemInfo & GetFileSystemInfo(bool Retrieve) override;
   virtual bool TemporaryTransferFile(const UnicodeString & AFileName) override;
   virtual bool GetStoredCredentialsTried() const override;
-  virtual UnicodeString RemoteGetUserName() const override;
+  virtual UnicodeString GetUserName() const override;
   virtual void GetSupportedChecksumAlgs(TStrings * Algs) override;
   virtual void LockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
@@ -140,7 +140,7 @@ protected:
   TRegions FHostNames;
   UnicodeString FAuthRegion;
 
-  virtual UnicodeString RemoteGetCurrentDirectory() const override;
+  virtual UnicodeString GetCurrentDirectory() const override;
 
   void LibS3Deinitialize();
   bool VerifyCertificate(TNeonCertificateData & Data);
@@ -163,7 +163,7 @@ protected:
     const UnicodeString & ASourceFullFileName, UnicodeString & ATargetFileName,
     TFileOperationProgressType * AOperationProgress, const TOverwriteFileParams * FileParams,
     const TCopyParamType * CopyParam, int32_t AParams);
-  int32_t PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
+  int64_t PutObjectData(int32_t BufferSize, char * Buffer, TLibS3PutObjectDataCallbackData & Data);
   S3Status GetObjectData(int32_t BufferSize, const char * Buffer, TLibS3GetObjectDataCallbackData & Data);
   bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data);
   bool IsGoogleCloud() const;

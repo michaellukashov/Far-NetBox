@@ -202,7 +202,7 @@ class TFarInteractiveCustomCommand final : public TInteractiveCustomCommand
 {
   TFarInteractiveCustomCommand() = delete;
 public:
-  explicit TFarInteractiveCustomCommand(TCustomFarPlugin * Plugin,
+  explicit TFarInteractiveCustomCommand(gsl::not_null<TCustomFarPlugin *> Plugin,
     TCustomCommand * ChildCustomCommand);
 
 protected:
@@ -210,11 +210,11 @@ protected:
     UnicodeString & Value) const override;
 
 private:
-  TCustomFarPlugin * FPlugin{nullptr};
+  gsl::not_null<TCustomFarPlugin *> FPlugin;
 };
 
 TFarInteractiveCustomCommand::TFarInteractiveCustomCommand(
-  TCustomFarPlugin * Plugin, TCustomCommand * ChildCustomCommand) :
+  gsl::not_null<TCustomFarPlugin *> Plugin, TCustomCommand * ChildCustomCommand) :
   TInteractiveCustomCommand(ChildCustomCommand),
   FPlugin(Plugin)
 {
@@ -238,10 +238,10 @@ void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
 const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
-class TKeepAliveThread : public TSimpleThread
+class TKeepAliveThread final : public TSimpleThread
 {
 public:
-  explicit TKeepAliveThread(TWinSCPFileSystem * FileSystem, const TDateTime & Interval) noexcept;
+  explicit TKeepAliveThread(gsl::not_null<TWinSCPFileSystem *> FileSystem, const TDateTime & Interval) noexcept;
   virtual ~TKeepAliveThread() noexcept override = default;
 
   virtual void Execute() override;
@@ -250,12 +250,12 @@ public:
   void InitKeepaliveThread();
 
 private:
-  TWinSCPFileSystem * FFileSystem{nullptr};
+  gsl::not_null<TWinSCPFileSystem *> FFileSystem;
   TDateTime FInterval{};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
 };
 
-TKeepAliveThread::TKeepAliveThread(TWinSCPFileSystem * FileSystem,
+TKeepAliveThread::TKeepAliveThread(gsl::not_null<TWinSCPFileSystem *> FileSystem,
   const TDateTime & Interval) noexcept :
   TSimpleThread(OBJECT_CLASS_TKeepAliveThread),
   FFileSystem(FileSystem),
@@ -280,8 +280,7 @@ void TKeepAliveThread::Execute()
 {
   while (!IsFinished())
   {
-    if ((::WaitForSingleObject(FEvent, nb::ToDWord(
-            nb::ToDouble(FInterval) * MSecsPerDay)) != WAIT_FAILED) &&
+    if ((::WaitForSingleObject(FEvent, nb::ToDWord(FInterval.GetValue() * MSecsPerDay)) != WAIT_FAILED) &&
       !IsFinished())
     {
       FFileSystem->KeepaliveThreadCallback();
@@ -303,8 +302,10 @@ void TWinSCPFileSystem::Init(TSecureShell * /*SecureShell*/)
 
 TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 {
+  // DEBUG_PRINTF("begin");
   Disconnect();
   // SAFE_DESTROY(FPathHistory);
+  // DEBUG_PRINTF("begin");
 }
 
 void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
@@ -405,6 +406,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     // leaved subdirectory is not focused, when entering parent directory.
     HostFile = GetSessionData()->GetHostName(); // GenerateSessionUrl(sufHostKey); // GetSessionData()->GetSessionName();
     CurDir = FTerminal->RemoteGetCurrentDirectory();
+    const UnicodeString FolderName = GetSessionData()->GetFolderName();
     const UnicodeString SessionName = GetSessionData()->GetLocalName();
     AFormat = FORMAT("netbox:%s", SessionName);
     const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
@@ -417,7 +419,19 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     {
       PanelTitle = FORMAT(" %s:%s ", HostName, CurDir);
     }
-    ShortcutData = FORMAT("netbox:%s\1%s", Url, CurDir);
+    UnicodeString FolderAndSessionName;
+    if (!FolderName.IsEmpty())
+      FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
+    else
+      FolderAndSessionName = FORMAT("%s", FolderName, SessionName);
+    ShortcutData = FORMAT("netbox:%s\1%s", FolderAndSessionName, CurDir);
+
+    /*DEBUG_PRINTF("SessionName: %s", SessionName);
+    DEBUG_PRINTF("HostName: %s", HostName);
+    DEBUG_PRINTF("FolderAndSessionName: %s", FolderAndSessionName);
+    DEBUG_PRINTF("Url: %s", Url);
+    DEBUG_PRINTF("CurDir: %s", CurDir);
+    DEBUG_PRINTF("ShortcutData: %s", ShortcutData);*/
 
     TRemoteFilePanelItem::SetPanelModes(PanelModes);
     TRemoteFilePanelItem::SetKeyBarTitles(KeyBarTitles);
@@ -504,13 +518,13 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
   else if (IsSessionList())
   {
     Result = true;
-    DebugAssert(StoredSessions);
+    DebugAssert(GetStoredSessions());
     bool SessionList = true;
     {
       std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
       if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
       {
-          StoredSessions->Load(Storage.get());
+        GetStoredSessions()->Load(Storage.get());
       }
     }
     UnicodeString Folder = FSessionsFolder;
@@ -521,14 +535,14 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
 
     std::unique_ptr<TStringList> ChildPaths(std::make_unique<TStringList>());
     ChildPaths->SetCaseSensitive(false);
-    for (int32_t Index = 0; Index < StoredSessions->GetCount(); ++Index)
+    for (int32_t Index = 0; Index < GetStoredSessions()->GetCount(); ++Index)
     {
-      const TSessionData * Data = StoredSessions->GetSession(Index);
+      const TSessionData * Data = GetStoredSessions()->GetSession(Index);
       UnicodeString SessionName = Data->GetName();
       if (SessionName.SubString(1, Folder.Length()) == Folder)
       {
         UnicodeString Name = SessionName.SubString(
-            Folder.Length() + 1, SessionName.Length() - Folder.Length());
+          Folder.Length() + 1, SessionName.Length() - Folder.Length());
         if (const int32_t PSlash = Name.Pos(L'/'); PSlash > 0)
         {
           Name.SetLength(PSlash - 1);
@@ -571,7 +585,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
     }
     if (!FPrevSessionName.IsEmpty())
     {
-      const TSessionData * PrevSession = StoredSessions->GetSessionByName(FPrevSessionName);
+      const TSessionData * PrevSession = GetStoredSessions()->GetSessionByName(FPrevSessionName);
       FPrevSessionName.Clear();
       if (UpdatePanel())
       {
@@ -598,14 +612,14 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
     !Name.IsEmpty() && (Name != Data->GetName()))
   {
     Name = ReplaceChar(Name, Backslash, Slash);
-    const TNamedObject * EData = StoredSessions->FindByName(Name);
+    const TNamedObject * EData = GetStoredSessions()->FindByName(Name);
     if ((EData != nullptr) && (EData != Data))
     {
       throw Exception(FORMAT(GetMsg(NB_SESSION_ALREADY_EXISTS_ERROR), Name));
     }
     else
     {
-      const TSessionData * NData = StoredSessions->NewSession(Name, Data);
+      const TSessionData * NData = GetStoredSessions()->NewSession(Name, Data);
       FSessionsFolder = ::ExcludeTrailingBackslash(base::UnixExtractFilePath(Name));
 
       // change of letter case during duplication degrades the operation to rename
@@ -614,12 +628,12 @@ void TWinSCPFileSystem::DuplicateOrRenameSession(TSessionData * Data,
         Data->Remove();
         if (NData != Data)
         {
-          StoredSessions->Remove(Data);
+          GetStoredSessions()->Remove(Data);
         }
       }
 
       // modified only, explicit
-      StoredSessions->Save(/*All*/true, /*Explicit*/true);
+      GetStoredSessions()->Save(/*All*/true, /*Explicit*/true);
 
       if (UpdatePanel())
       {
@@ -693,13 +707,13 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
               GetMsg(NB_NEW_SESSION_NAME_PROMPT), Name, 0) &&
             !Name.IsEmpty())
           {
-            if (StoredSessions->FindByName(Name))
+            if (GetStoredSessions()->FindByName(Name))
             {
               throw Exception(FORMAT(GetMsg(NB_SESSION_ALREADY_EXISTS_ERROR), Name));
             }
             else
             {
-              SelectSession = StoredSessions->NewSession(Name, Data);
+              SelectSession = GetStoredSessions()->NewSession(Name, Data);
               FSessionsFolder = ::ExcludeTrailingBackslash(base::UnixExtractFilePath(Name));
             }
           }
@@ -712,7 +726,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
         }
 
         // modified only, explicit
-        StoredSessions->Save(false, true);
+        GetStoredSessions()->Save(false, true);
         if (UpdatePanel())
         {
           if (SelectSession != nullptr)
@@ -951,7 +965,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
 
     if (Key == VK_F4 && (ControlState == 0))
     {
-      if ((Data != nullptr) || (StoredSessions->GetCount() == 0))
+      if ((Data != nullptr) || (GetStoredSessions()->GetCount() == 0))
       {
         EditConnectSession(Data, true);
       }
@@ -2398,7 +2412,7 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(const UnicodeString & AName, OPERATIO
 void TWinSCPFileSystem::DeleteSession(TSessionData * Data, void * /*AParam*/)
 {
   Data->Remove();
-  StoredSessions->Remove(Data);
+  GetStoredSessions()->Remove(Data);
 }
 
 void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
@@ -2427,13 +2441,13 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
       UnicodeString Folder = base::UnixIncludeTrailingBackslash(
           base::UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
       int32_t Index2 = 0;
-      while (Index2 < StoredSessions->GetCount())
+      while (Index2 < GetStoredSessions()->GetCount())
       {
-        TSessionData * Data = StoredSessions->GetSession(Index2);
+        TSessionData * Data = GetStoredSessions()->GetSession(Index2);
         if (Data->GetName().SubString(1, Folder.Length()) == Folder)
         {
           ProcessSession(Data, AParam);
-          if ((Index2 < StoredSessions->GetCount()) && StoredSessions->GetSession(Index2) != Data)
+          if ((Index2 < GetStoredSessions()->GetCount()) && GetStoredSessions()->GetSession(Index2) != Data)
           {
             Index2--;
           }
@@ -2524,7 +2538,7 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     if (PanelItems->GetCount() == 1)
     {
       Prompt = FORMAT(GetMsg(NB_EXPORT_SESSION_PROMPT),
-          PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
+        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
     }
     else
     {
@@ -2759,8 +2773,8 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
     // (since 1.70 alpha 6, DestPath in GetFiles is short path,
     // while current path in PutFiles is long path)
     if (FLAGCLEAR(OpMode, OPM_SILENT) && (FFileList->GetCount() == 1) && //-V522
-      (IsPathToSameFile(FFileList->GetString(0), FOriginalEditFile) || //-V522
-        IsPathToSameFile(FFileList->GetString(0), FLastEditFile)))
+        (IsPathToSameFile(FFileList->GetString(0), FOriginalEditFile) || //-V522
+         IsPathToSameFile(FFileList->GetString(0), FLastEditFile)))
     {
       // editor should be closed already
       DebugAssert(FLastEditorID < 0);
@@ -2822,6 +2836,7 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
     for (int32_t Index = 0; Index < PanelItems->GetCount(); ++Index)
     {
       const TFarPanelItem * PanelItem = PanelItems->GetAs<TFarPanelItem>(Index);
+      DebugAssert(PanelItem);
       bool AnyData = false;
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
@@ -2834,9 +2849,9 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
           ImportStorage->HasSubKeys())
         {
           AnyData = true;
-          StoredSessions->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
+          GetStoredSessions()->Load(ImportStorage.get(), /*AsModified*/ true, /*UseDefaults*/ true);
           // modified only, explicit
-          StoredSessions->Save(false, true);
+          GetStoredSessions()->Save(false, true);
         }
       }
       if (!AnyData)
@@ -2893,11 +2908,17 @@ TStrings * TWinSCPFileSystem::CreateSelectedFileList(TOperationSide Side, TFarPa
 }
 
 TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
-  TOperationSide Side, bool SelectedOnly, const UnicodeString & Directory, bool FileNameOnly,
+  TOperationSide Side, bool SelectedOnly, const UnicodeString & ADirectory, bool FileNameOnly,
   TStrings * AFileList)
 {
+  Expects(PanelItems);
   std::unique_ptr<TStrings> FileList((AFileList == nullptr) ? new TStringList() : AFileList);
-  FileList->SetDuplicates(dupAccept);
+  if (AFileList == nullptr)
+  {
+    // FileList->SetOwnsObjects(true);
+    FileList->SetCaseSensitive(true);
+    FileList->SetDuplicates(dupAccept);
+  }
 
   TFarPanelItem * PanelItem{nullptr};
   TObject * Data = nullptr;
@@ -2909,22 +2930,23 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       !PanelItem->GetIsParentDirectory())
     {
       UnicodeString FileName = PanelItem->GetFileName();
+      DEBUG_PRINTF("FileName: %s", FileName);
       if (Side == osRemote)
       {
         Data = static_cast<TRemoteFile *>(PanelItem->GetUserData());
         DebugAssert(Data);
       }
-      if (Side == osLocal)
+      else if (Side == osLocal)
       {
+        TFarPanelItemData * FarPanelItemData = new TFarPanelItemData();
+        FarPanelItemData->AlternateFileName = PanelItem->GetAlternateFileName();
+        Data = FarPanelItemData;
         if (::ExtractFilePath(FileName).IsEmpty())
         {
           if (!FileNameOnly)
           {
-            UnicodeString Dir = Directory;
-            if (Dir.IsEmpty())
-            {
-              Dir = ::GetCurrentDir();
-            }
+            const UnicodeString Dir = ADirectory.IsEmpty() ?
+              ::GetCurrentDir() : ADirectory;
             FileName = ::IncludeTrailingBackslash(Dir) + FileName;
           }
         }
@@ -2942,7 +2964,7 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
 
   if (FileList->GetCount() == 0)
   {
-    Abort();
+    DebugAssert(true); // Abort();
   }
   return FileList.release();
 }
@@ -2953,7 +2975,7 @@ void TWinSCPFileSystem::SaveSession()
   {
     GetSessionData()->SetRemoteDirectory(FTerminal->RemoteGetCurrentDirectory());
 
-    TSessionData * Data = rtti::dyn_cast_or_null<TSessionData>(StoredSessions->FindByName(GetSessionData()->GetName()));
+    TSessionData * Data = rtti::dyn_cast_or_null<TSessionData>(GetStoredSessions()->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -2966,7 +2988,7 @@ void TWinSCPFileSystem::SaveSession()
       if (Changed)
       {
         // modified only, implicit
-        StoredSessions->Save(false, false);
+        GetStoredSessions()->Save(false, false);
       }
     }
   }
@@ -3300,7 +3322,7 @@ bool TWinSCPFileSystem::TerminalCreateLocalDirectory(const UnicodeString & ALoca
 {
   if (!GetWinSCPPlugin()->GetSystemFunctions())
   {
-    return ::CreateDirectory(ApiPath(ALocalDirName).c_str(), SecurityAttributes) != 0;
+    return ::CreateDirectoryW(ApiPath(ALocalDirName).c_str(), SecurityAttributes) != 0;
   }
   else
   {
@@ -3456,8 +3478,8 @@ void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
       PanelItem = cast_to<TFarPanelItem>(FPanelItems->GetItem(Index));
     }
 
-    DebugAssert(PanelItem && PanelItem->GetFileName() ==
-      ((Side == osLocal) ? base::ExtractFileName(AFileName, false) : AFileName));
+    /*DebugAssert(PanelItem && PanelItem->GetFileName() ==
+      ((Side == osLocal) ? base::ExtractFileName(AFileName, false) : AFileName));*/
     if (Success && PanelItem)
     {
       PanelItem->SetSelected(false);
@@ -3509,7 +3531,7 @@ void TWinSCPFileSystem::ShowOperationProgress(
       TargetDirLabel = GetMsg(NB_TARGET_DIR_LABEL);
       StartTimeLabel = GetMsg(NB_START_TIME_LABEL);
       TimeElapsedLabel = GetMsg(NB_TIME_ELAPSED_LABEL);
-      BytesTransferredLabel = GetMsg(NB_BYTES_TRANSFERED_LABEL);
+      BytesTransferredLabel = GetMsg(NB_BYTES_TRANSFERRED_LABEL);
       CPSLabel = GetMsg(NB_CPS_LABEL);
       TimeLeftLabel = GetMsg(NB_TIME_LEFT_LABEL);
     }
@@ -3951,6 +3973,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
     }
 
     std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
+    DEBUG_PRINTF("GetFileName: %s", Info->GetFileName());
     if (Info != nullptr)
     {
       if (FLastEditorID == Info->GetEditorID())

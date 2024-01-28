@@ -7,6 +7,8 @@
 
 #include <nbsystem.h>
 
+#undef GetEnvironmentVariable
+
 #ifdef __MINGW32__
 #include <limits.h>
 
@@ -534,7 +536,7 @@ public:
     return int(_mbclen(reinterpret_cast<const unsigned char *>(pch)));
   }
 
-  static DWORD __stdcall GetEnvVariable(LPCSTR pszVar, LPSTR pszBuffer, uint32_t dwSize)
+  static DWORD __stdcall GetEnvironmentVariable(LPCSTR pszVar, LPSTR pszBuffer, uint32_t dwSize)
   {
     return ::GetEnvironmentVariableA(pszVar, pszBuffer, static_cast<DWORD>(dwSize));
   }
@@ -549,7 +551,7 @@ public:
 template<>
 class NBChTraitsCRT<wchar_t> : public NBChTraitsBase<wchar_t>
 {
-  static DWORD __stdcall GetEnvVariableW(LPCWSTR pszName, LPWSTR pszBuffer, uint32_t nSize)
+  static DWORD __stdcall GetEnvironmentVariableW(LPCWSTR pszName, LPWSTR pszBuffer, uint32_t nSize)
   {
     return ::GetEnvironmentVariableW(pszName, pszBuffer, static_cast<DWORD>(nSize));
   }
@@ -762,9 +764,9 @@ public:
     return static_cast<int>(_mbclen(reinterpret_cast<const unsigned char *>(pch)));
   }
 
-  static uint32_t __stdcall GetEnvVariable(LPCWSTR pszVar, LPWSTR pszBuffer, uint32_t dwSize)
+  static uint32_t __stdcall GetEnvironmentVariable(LPCWSTR pszVar, LPWSTR pszBuffer, uint32_t dwSize)
   {
-    return GetEnvVariableW(pszVar, pszBuffer, dwSize);
+    return GetEnvironmentVariableW(pszVar, pszBuffer, dwSize);
   }
 
   static void __stdcall ConvertToOem(LPWSTR /*psz*/)
@@ -968,7 +970,7 @@ public:
   PXSTR Detach() const;
 
   // Set the string to the value of environment variable 'pszVar'
-  BOOL GetEnvVariable(PCXSTR pszVar);
+  BOOL GetEnvironmentVariable(PCXSTR pszVar);
 
   friend bool __forceinline operator==(const CMStringT &str1, const CMStringT &str2) { return str1.Compare(str2) == 0; }
   friend bool __forceinline operator==(const CMStringT &str1, PCXSTR psz2) { return str1.Compare(psz2) == 0; }

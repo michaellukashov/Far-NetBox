@@ -14,7 +14,7 @@
 #include <Sysutils.hpp>
 #include <System.IOUtils.hpp>
 #include <cmath>
-#include <shlobj.h>
+#include <ShlObj.h>
 #include <limits>
 #include <algorithm>
 #include <psapi.h>
@@ -635,7 +635,7 @@ UnicodeString FormatBytes(int64_t Bytes, bool UseOrders)
   return Result;
 }
 
-UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
+UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
 {
   UnicodeString Result;
   const int32_t Len = ::GetEnvironmentVariableW(AEnvVarName.c_str(), nullptr, 0);
@@ -675,7 +675,7 @@ UnicodeString GetEnvVariable(const UnicodeString & AEnvVarName)
 //const UnicodeString PasswordMask(TraceInitStr(L"***"));
 //const UnicodeString Ellipsis(TraceInitStr(L"..."));
 // const UnicodeString TitleSeparator(TraceInitStr(L" \u2013 ")); // En-Dash
-// const UnicodeString OfficialPackage(TraceInitStr(L"MartinPikryl.WinSCP_tvv458r3h9r5m"));
+// const UnicodeString OfficialPackage(TraceInitStr(L"MartinPrikryl.WinSCP_tvv458r3h9r5m"));
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
@@ -776,7 +776,7 @@ UnicodeString MakeValidFileName(const UnicodeString & AFileName)
   return Result;
 }
 
-UnicodeString RootKeyToStr(HKEY RootKey)
+UnicodeString RootKeyToStr(HKEY RootKey, const UnicodeString & Default)
 {
   if (RootKey == HKEY_USERS)
     return "HKU";
@@ -790,8 +790,14 @@ UnicodeString RootKeyToStr(HKEY RootKey)
     return "HKCC";
   if (RootKey == HKEY_DYN_DATA)
     return "HKDD";
-  Abort();
-  return "";
+  else
+  {
+    if (Default.IsEmpty())
+    {
+      Abort();
+    }
+  }
+  return Default;
 }
 
 UnicodeString BooleanToEngStr(bool B)
@@ -889,7 +895,7 @@ UnicodeString CopyToChars(const UnicodeString & Str, int32_t & From, const Unico
   }
   // even if we reached the end, return index, as if there were the delimiter,
   // so caller can easily find index of the end of the piece by subtracting
-  // 2 from From (as long as he did not asked for trimming)
+  // 2 from From (as long as he did not ask for trimming)
   From = P + 1;
   if (Trim)
   {
@@ -1202,7 +1208,7 @@ static UnicodeString GetWineHomeFolder()
 {
   UnicodeString Result;
 
-  const UnicodeString WineHostHome = base::GetEnvVariable(L"WINE_HOST_HOME");
+  const UnicodeString WineHostHome = base::GetEnvironmentVariable(L"WINE_HOST_HOME");
   if (!WineHostHome.IsEmpty())
   {
     Result = L"Z:" + base::FromUnixPath(WineHostHome);
@@ -1210,7 +1216,7 @@ static UnicodeString GetWineHomeFolder()
   else
   {
     // Should we use WinAPI GetUserName() instead?
-    const UnicodeString UserName = base::GetEnvVariable(L"USERNAME");
+    const UnicodeString UserName = base::GetEnvironmentVariable(L"USERNAME");
     if (!UserName.IsEmpty())
     {
       Result = L"Z:\\home\\" + UserName;
@@ -2862,26 +2868,26 @@ TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
   TDateTime Result;
-  // The 0xFFF... is sometime seen for invalid timestamps,
+  // The 0xFFF... is sometimes seen for invalid timestamps,
   // it would cause failure in SystemTimeToDateTime below
-  if (FileTime.dwLowDateTime == std::numeric_limits<DWORD>::max())
+  if (FileTime.dwLowDateTime == 0x7FFF) // std::numeric_limits<DWORD>::max())
   {
     Result = MinDateTime;
   }
   else
   {
-    SYSTEMTIME SysTime;
+    SYSTEMTIME SysTime{};
     if (!UsesDaylightHack())
     {
-      SYSTEMTIME UniversalSysTime;
-      FileTimeToSystemTime(&FileTime, &UniversalSysTime);
-      SystemTimeToTzSpecificLocalTime(nullptr, &UniversalSysTime, &SysTime);
+      SYSTEMTIME UniversalSysTime{};
+      if (FileTimeToSystemTime(&FileTime, &UniversalSysTime) != FALSE)
+        SystemTimeToTzSpecificLocalTime(nullptr, &UniversalSysTime, &SysTime);
     }
     else
     {
-      FILETIME LocalFileTime;
-      FileTimeToLocalFileTime(&FileTime, &LocalFileTime);
-      FileTimeToSystemTime(&LocalFileTime, &SysTime);
+      FILETIME LocalFileTime{};
+      if (FileTimeToLocalFileTime(&FileTime, &LocalFileTime) != FALSE)
+        FileTimeToSystemTime(&LocalFileTime, &SysTime);
     }
     Result = SystemTimeToDateTimeVerbose(SysTime);
   }
@@ -3814,6 +3820,12 @@ bool IsWine()
 
 int32_t GIsUWP = -1;
 UnicodeString GPackageName;
+
+void EnableUWPTestMode()
+{
+  GIsUWP = 1;
+  AppLog(L"UWP test mode");
+}
 
 static void NeedUWPData()
 {

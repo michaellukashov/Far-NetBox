@@ -24,7 +24,7 @@ public:
     TQueryType Type, uint32_t Answers, const TMessageParams * Params = nullptr);
   void ShowExtendedException(Exception * E);
   bool CopyParamCustomDialog(TCopyParamType & CopyParam,
-    int32_t CopyParamAttrs);
+    uint32_t CopyParamAttrs);
   virtual void SetStartupInfo(const struct PluginStartupInfo * Info) override;
 
 protected:

@@ -251,9 +251,8 @@ endif(MSVC)
 
 set(OPENSSL_COMPILE_FLAGS
   -DWINSCP
-  -DNB_COMPILE_OPENSSL
-  -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN
-  -DVC_EXTRALEAN -DSECURITY_WIN32 # -DOPENSSL_NO_LOCKING
+  -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32
+   # -DOPENSSL_NO_LOCKING
   -DDSO_WIN32
   -DL_ENDIAN -D_stricmp=stricmp -D_strnicmp=strnicmp
   -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS
@@ -1752,6 +1751,14 @@ set(ZLIB_SOURCES
   libs/zlib/src/deflate_slow.c
   libs/zlib/src/deflate_medium.c
   libs/zlib/src/deflate_fast.c
+  libs/zlib/src/arch/generic/crc32_fold_c.c
+  libs/zlib/src/arch/generic/insert_string_c.c
+  libs/zlib/src/arch/generic/slide_hash_c.c
+  libs/zlib/src/arch/generic/chunkset_c.c
+  libs/zlib/src/arch/generic/compare256_c.c
+  libs/zlib/src/arch/generic/crc32_braid_c.c
+  libs/zlib/src/arch/generic/adler32_c.c
+  libs/zlib/src/arch/generic/adler32_fold_c.c
 )
 
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
@@ -1795,67 +1802,6 @@ target_compile_definitions(dlmalloc PRIVATE
 )
 
 #-------------------------------------------------------------------------------
-#rdestl
-
-add_library(rdestl STATIC
-#  libs/rdestl/allocator.cpp
-  libs/rdestl/intrusive_list.cpp
-  libs/rdestl/list.cpp
-#  libs/rdestl/intrusive_slist.cpp
-#  libs/rdestl/slist.cpp
-  libs/rdestl/sort.h
-  libs/rdestl/string_utils.h
-#  libs/rdestl/intrusive_list.h
-  libs/rdestl/sorted_vector.h
-  libs/rdestl/allocator.h
-  libs/rdestl/hash_map.h
-  libs/rdestl/map.h
-  libs/rdestl/basic_string.h
-  libs/rdestl/list.h
-  libs/rdestl/type_traits.h
-#  libs/rdestl/intrusive_slist.h
-  libs/rdestl/radix_sorter.h
-  libs/rdestl/stack_allocator.h
-  libs/rdestl/utility.h
-  libs/rdestl/vector.h
-#  libs/rdestl/slist.h
-  libs/rdestl/fixed_array.h
-  libs/rdestl/pair.h
-  libs/rdestl/algorithm.h
-  libs/rdestl/fixed_list.h
-  libs/rdestl/hash.h
-  libs/rdestl/alignment.h
-  libs/rdestl/fixed_vector.h
-  libs/rdestl/rb_tree.h
-  libs/rdestl/buffer_allocator.h
-  libs/rdestl/sstream.h
-  libs/rdestl/rdestl_common.h
-  libs/rdestl/stack.h
-  libs/rdestl/cow_string_storage.h
-  libs/rdestl/fixed_sorted_vector.h
-  libs/rdestl/functional.h
-  libs/rdestl/simple_string_storage.h
-  libs/rdestl/fixed_substring.h
-  libs/rdestl/int_to_type.h
-  libs/rdestl/rde_string.h
-  libs/rdestl/rdestl.h
-  libs/rdestl/set.h
-  libs/rdestl/iterator.h
-)
-
-target_include_directories(rdestl PRIVATE
-  libs
-  libs/GSL/include
-  src/include
-  src/base
-)
-
-target_compile_definitions(rdestl PRIVATE
-  ${NETBOX_CXX_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
-)
-
-#-------------------------------------------------------------------------------
 #tinylog
 
 add_library(tinylog STATIC
@@ -1880,6 +1826,7 @@ target_include_directories(tinylog PRIVATE
   libs/GSL/include
   src/include
   src/base
+  # src/resource
 )
 
 target_compile_definitions(tinylog PRIVATE
@@ -2362,7 +2309,6 @@ set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
   neon
   expat
   dlmalloc
-  rdestl
   fmt
   s3
   tinylog

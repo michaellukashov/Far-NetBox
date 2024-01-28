@@ -11,6 +11,8 @@ class NB_CORE_EXPORT UTF8String
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UTF8String() = default;
+  // UTF8String(UTF8String &&) noexcept = default;
+  UTF8String(UTF8String && rhs) noexcept : Data(rhs.Data) {}
   UTF8String(const UTF8String & rhs);
   explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str);
@@ -42,6 +44,7 @@ public:
   void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
+  UTF8String & operator =(UTF8String && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   UTF8String & operator =(const UnicodeString & StrCopy);
   UTF8String & operator =(const UTF8String & StrCopy);
   UTF8String & operator =(const RawByteString & StrCopy);
@@ -77,6 +80,8 @@ class NB_CORE_EXPORT UnicodeString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   UnicodeString() = default;
+  // UnicodeString(UnicodeString &&) noexcept = default;
+  UnicodeString(UnicodeString && rhs) noexcept : Data(rhs.Data) {}
   UnicodeString(const wchar_t * Str);
   UnicodeString(const wchar_t * Str, int32_t Length);
   explicit UnicodeString(wchar_t Src) = delete;
@@ -159,6 +164,7 @@ public:
   static UnicodeString StringOfChar(const wchar_t Ch, int32_t Len);
 
 public:
+  UnicodeString & operator =(UnicodeString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   UnicodeString & operator =(const UnicodeString & StrCopy);
   UnicodeString & operator =(const RawByteString & StrCopy);
   UnicodeString & operator =(const AnsiString & StrCopy);
@@ -215,6 +221,8 @@ class NB_CORE_EXPORT AnsiString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   AnsiString() = default;
+  // AnsiString(AnsiString &&) noexcept = default;
+  AnsiString(AnsiString && rhs) noexcept : Data(rhs.Data) {}
   AnsiString(const AnsiString & rhs);
   AnsiString(int32_t Length, char Ch) : Data(Ch, Length) {}
   explicit AnsiString(const wchar_t * Str);
@@ -255,6 +263,7 @@ public:
   void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
+  AnsiString & operator =(AnsiString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   AnsiString & operator =(const UnicodeString & StrCopy);
   // AnsiString & operator =(const RawByteString & StrCopy);
   AnsiString & operator =(const AnsiString & StrCopy);
@@ -299,6 +308,8 @@ class NB_CORE_EXPORT RawByteString
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   RawByteString() = default;
+  // RawByteString(RawByteString &&) noexcept = default;
+  RawByteString(RawByteString && rhs) noexcept : Data(rhs.Data) {}
   explicit RawByteString(const wchar_t * Str);
   explicit RawByteString(const wchar_t * Str, int32_t Length);
   RawByteString(const char * Str);
@@ -328,7 +339,7 @@ public:
   RawByteString SubString(int32_t Pos, int32_t Len) const;
 
   int32_t Pos(wchar_t Ch) const;
-  int32_t Pos(const wchar_t * Str) const;
+  // int32_t Pos(const wchar_t * Str) const;
   int32_t Pos(char Ch) const;
   int32_t Pos(const char * Str) const;
 
@@ -341,6 +352,7 @@ public:
   void Unique() { Init(Data.c_str(), Data.GetLength()); }
 
 public:
+  RawByteString & operator =(RawByteString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
   RawByteString & operator =(const UnicodeString & StrCopy);
   RawByteString & operator =(const RawByteString & StrCopy);
   RawByteString & operator =(const AnsiString & StrCopy);
@@ -352,8 +364,8 @@ public:
   RawByteString operator +(const RawByteString & rhs) const;
 
   RawByteString & operator +=(const RawByteString & rhs);
-  RawByteString & operator +=(const char Ch);
-  RawByteString & operator +=(const uint8_t Ch);
+  RawByteString & operator +=(char Ch);
+  RawByteString & operator +=(uint8_t Ch);
 
   bool operator ==(const RawByteString & rhs) const
   { return Data == rhs.Data; }

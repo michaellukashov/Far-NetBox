@@ -281,6 +281,11 @@ void RemoveSearchPath(const UnicodeString Path)
 
 static const UnicodeString SoftwareClassesBaseKey = L"Software\\Classes\\";
 
+static UnicodeString KeyName(HKEY RootKey, const UnicodeString & Key)
+{
+  return FORMAT(L"%s\\%s", RootKeyToStr(RootKey, L"Unknown"), Key);
+}
+
 static void DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeString & Key, bool AllowRootValues)
 {
   if (Registry->OpenKey(Key, false))
@@ -310,6 +315,7 @@ static void DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeString & Key, bo
 
     Registry->CloseKey();
 
+    UnicodeString AKeyName = KeyName(Registry->RootKey, Key);
     if (CanDelete)
     {
       for (int Index = 0; Index < List->Count; Index++)
@@ -319,6 +325,11 @@ static void DeleteKeyIfEmpty(TRegistry * Registry, const UnicodeString & Key, bo
 
       // will fail, if not all subkeys got removed
       Registry->DeleteKey(Key);
+      AppLogFmt(L"Deleted key %s", AKeyName);
+    }
+    else
+    {
+      AppLogFmt(L"Cannot delete non-empty key %s", AKeyName);
     }
   }
 }
@@ -335,7 +346,8 @@ static void RegisterProtocol(TRegistry * Registry,
   UnicodeString ProtocolKey = SoftwareClassesBaseKey + Protocol;
   if (Force || !Registry->KeyExists(ProtocolKey))
   {
-    if (Registry->OpenKey(SoftwareClassesBaseKey + Protocol, true))
+    const UnicodeString Key = SoftwareClassesBaseKey + Protocol;
+    if (Registry->OpenKey(Key, true))
     {
       Registry->WriteString(L"", Description);
       Registry->WriteString(L"URL Protocol", L"");
@@ -350,6 +362,7 @@ static void RegisterProtocol(TRegistry * Registry,
       {
         Abort();
       }
+      AppLogFmt(L"Created %s", KeyName(Registry->RootKey, Key));
     }
     else
     {
@@ -381,13 +394,15 @@ static void RegisterAsUrlHandler(HKEY RootKey,
 
   RegisterProtocol(Registry.get(), Protocol, Description, true);
 
-  if (Registry->OpenKey(SoftwareClassesBaseKey + Protocol, false) &&
+  const UnicodeString Key = SoftwareClassesBaseKey + Protocol;
+  if (Registry->OpenKey(Key, false) &&
       Registry->OpenKey(L"shell", true) &&
       Registry->OpenKey(L"open", true) &&
       Registry->OpenKey(L"command", true))
   {
     Registry->WriteString(L"", FORMAT("\"%s\" %s \"%%1\"", Application->ExeName, TProgramParams::FormatSwitch(UNSAFE_SWITCH)));
     Registry->CloseKey();
+    AppLogFmt(L"Added command to %s", KeyName(RootKey, Key));
   }
   else
   {
@@ -402,7 +417,7 @@ static void RegisterAsUrlHandler(const UnicodeString & Protocol, UnicodeString D
   {
     RegisterAsUrlHandler(HKEY_LOCAL_MACHINE, Protocol, Description);
 
-    // get rid of any HKCU registraction that would overrite the HKLM one
+    // get rid of any HKCU registraction that would override the HKLM one
     std::unique_ptr<TRegistry> Registry(CreateRegistry(HKEY_CURRENT_USER));
     if (Registry->KeyExists(SoftwareClassesBaseKey + Protocol))
     {
@@ -493,7 +508,8 @@ static void RegisterProtocolForDefaultPrograms(HKEY RootKey, const UnicodeString
   // Register protocol, if it does not exist yet.
   // Prior to Windows 8, we need to register ourselves as legacy handler to
   // become the default handler. On Windows 8, it's automatic as long as no other
-  // application is registered for the protocol (i.e. RegisterProtocol would be enough)
+  // application is registered for the protocol (i.e. RegisterProtocol would be enough).
+  // Inconsistently with other calls, this does not use UpperCase().
   RegisterAsUrlHandler(RootKey, Protocol);
 
   // see https://learn.microsoft.com/en-us/windows/win32/shell/default-programs#registering-an-application-for-use-with-default-programs
@@ -521,15 +537,20 @@ static void RegisterProtocolForDefaultPrograms(HKEY RootKey, const UnicodeString
   Registry->WriteString(Protocol, GenericUrlHandler);
   Registry->CloseKey();
 
+  AppLogFmt(L"Added capabilities to %s", KeyName(RootKey, CapabilitiesKey));
+
   // register application
 
-  if (!Registry->OpenKey(L"Software\\RegisteredApplications", true))
+  const UnicodeString ApplicationsKey = L"Software\\RegisteredApplications";
+  if (!Registry->OpenKey(ApplicationsKey, true))
   {
     Abort();
   }
 
-  Registry->WriteString(AppNameString(), CapabilitiesKey);
+  UnicodeString AppName = AppNameString();
+  Registry->WriteString(AppName, CapabilitiesKey);
   Registry->CloseKey();
+  AppLogFmt(L"Registered %s in %s", AppName, KeyName(RootKey, ApplicationsKey));
 }
 
 static void UnregisterProtocolForDefaultPrograms(HKEY RootKey,
@@ -602,6 +623,7 @@ static void UnregisterProtocolsForDefaultPrograms(HKEY RootKey, bool ForceHandle
   UnregisterProtocolForDefaultPrograms(RootKey, FtpesProtocol, ForceHandlerUnregistration);
   UnregisterProtocolForDefaultPrograms(RootKey, SftpProtocol, ForceHandlerUnregistration);
   UnregisterProtocolForDefaultPrograms(RootKey, ScpProtocol, ForceHandlerUnregistration);
+  UnregisterProtocolForDefaultPrograms(RootKey, SshProtocol, ForceHandlerUnregistration);
   UnregisterProtocolForDefaultPrograms(RootKey, WebDAVProtocol, ForceHandlerUnregistration);
   UnregisterProtocolForDefaultPrograms(RootKey, WebDAVSProtocol, ForceHandlerUnregistration);
   UnregisterProtocolForDefaultPrograms(RootKey, S3Protocol, ForceHandlerUnregistration);
@@ -640,16 +662,21 @@ static void NotifyChangedAssociations()
 
 void RegisterForDefaultProtocols()
 {
+  AppLog(L"Registering to handle protocol URL addresses");
   if (IsWinVista())
   {
+    AppLog(L"Registering as default program");
     RegisterForDefaultPrograms();
   }
   else
   {
+    AppLog(L"Registering for non-browser protocols");
     RegisterAsNonBrowserUrlHandler(UnicodeString());
   }
 
+  AppLog(L"Registering for non-browser protocols with prefix");
   RegisterAsNonBrowserUrlHandler(WinSCPProtocolPrefix);
+  AppLog(L"Registering for browser protocols with prefix");
   RegisterAsUrlHandler(WinSCPProtocolPrefix + FtpProtocol.UpperCase());
   RegisterAsUrlHandler(WinSCPProtocolPrefix + FtpsProtocol.UpperCase());
   RegisterAsUrlHandler(WinSCPProtocolPrefix + FtpesProtocol.UpperCase());
@@ -657,11 +684,14 @@ void RegisterForDefaultProtocols()
   RegisterAsUrlHandler(WinSCPProtocolPrefix + HttpsProtocol.UpperCase());
   RegisterAsUrlHandler(WinSCPProtocolPrefix + SshProtocol.UpperCase());
 
+  AppLog(L"Notifying about changes");
   NotifyChangedAssociations();
+  AppLog(L"Registration done");
 }
 
 void UnregisterForProtocols()
 {
+  AppLog(L"Unregistering from handling protocol URL addresses");
   UnregisterAsUrlHandlers(UnicodeString(), false);
   UnregisterAsUrlHandlers(WinSCPProtocolPrefix, true);
   UnregisterAsUrlHandler(WinSCPProtocolPrefix + FtpProtocol.UpperCase(), true);
@@ -674,7 +704,9 @@ void UnregisterForProtocols()
   UnregisterProtocolsForDefaultPrograms(HKEY_CURRENT_USER, false);
   UnregisterProtocolsForDefaultPrograms(HKEY_LOCAL_MACHINE, false);
 
+  AppLog(L"Notifying about changes");
   NotifyChangedAssociations();
+  AppLog(L"Unregistration done");
 }
 
 void LaunchAdvancedAssociationUI()

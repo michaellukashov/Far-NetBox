@@ -691,13 +691,13 @@ void TFTPFileSystem::CollectUsage()
   {
     FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPNonUTF8");
   }
-  if (!RemoteGetCurrentDirectory().IsEmpty() && (RemoteGetCurrentDirectory()[1] != Slash))
+  if (!GetCurrentDirectory().IsEmpty() && (GetCurrentDirectory()[1] != Slash))
   {
-    if (base::IsUnixStyleWindowsPath(RemoteGetCurrentDirectory()))
+    if (base::IsUnixStyleWindowsPath(GetCurrentDirectory()))
     {
       FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPWindowsPath");
     }
-    else if ((RemoteGetCurrentDirectory().Length() >= 3) && IsLetter(RemoteGetCurrentDirectory()[1]) && (RemoteGetCurrentDirectory()[2] == L':') && (RemoteGetCurrentDirectory()[3] == Slash))
+    else if ((GetCurrentDirectory().Length() >= 3) && IsLetter(GetCurrentDirectory()[1]) && (GetCurrentDirectory()[2] == L':') && (GetCurrentDirectory()[3] == Slash))
     {
       FTerminal->Configuration->Usage->Inc("OpenedSessionsFTPRealWindowsPath");
     }
@@ -894,7 +894,7 @@ void TFTPFileSystem::Idle()
       FTerminal->LogEvent("Dummy directory read to keep session alive.");
       FLastDataSent = Now(); // probably redundant to the same statement in DoReadDirectory
 
-      DummyReadDirectory(RemoteGetCurrentDirectory());
+      DummyReadDirectory(GetCurrentDirectory());
     }
   }
 }
@@ -1405,7 +1405,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
   const bool CanResume =
     !OperationProgress->GetAsciiTransfer() &&
     // when resuming transfer after interrupted connection,
-    // do nothing (dummy resume) when the files has the same size.
+    // do nothing (dummy resume) when the files have the same size.
     // this is workaround for servers that strangely fails just after successful
     // upload.
     (DestIsSmaller || (DestIsSame && CanAutoResume));
@@ -1563,7 +1563,6 @@ void TFTPFileSystem::DoFileTransferProgress(int64_t TransferSize,
     OperationProgress->AddTransferred(Diff);
     FFileTransferAny = true;
   }
-
   if (OperationProgress->GetCancel() != csContinue)
   {
     if (OperationProgress->ClearCancelFile())
@@ -1827,7 +1826,7 @@ void TFTPFileSystem::Source(
   FLastDataSent = Now();
 }
 
-void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
+void TFTPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   const UnicodeString DirName = GetAbsolutePath(ADirName, false);
 
@@ -1841,7 +1840,7 @@ void TFTPFileSystem::RemoteCreateDirectory(const UnicodeString & ADirName, bool 
   }
 }
 
-void TFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
+void TFTPFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & APointTo, bool Symbolic)
 {
   DebugAssert(SupportsSiteCommand(SymlinkSiteCommand));
@@ -1855,7 +1854,7 @@ void TFTPFileSystem::RemoteCreateLink(const UnicodeString & AFileName,
   }
 }
 
-void TFTPFileSystem::RemoteDeleteFile(const UnicodeString & AFileName,
+void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action)
 {
   const UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -1934,13 +1933,27 @@ void TFTPFileSystem::DoStartup()
     const UnicodeString NameFact = L"Name";
     const UnicodeString VersionFact = L"Version";
     const UnicodeString Command =
-      FORMAT(L"%s %s=%s;%s=%s", CsidCommand, NameFact, GetAppNameString(), VersionFact, FTerminal->Configuration->Version);
+      FORMAT(L"%s %s=%s;%s=%s;", CsidCommand, NameFact, GetAppNameString(), VersionFact, FTerminal->Configuration->Version);
     SendCommand(Command);
     TStrings * Response = nullptr;
-    GotReply(WaitForCommandReply(), REPLY_2XX_CODE, EmptyStr, nullptr, &Response);
     std::unique_ptr<TStrings> ResponseOwner(Response);
-    // Not using REPLY_SINGLE_LINE to make it robust
-    if (Response->Count == 1)
+    try
+    {
+      GotReply(WaitForCommandReply(), REPLY_2XX_CODE | REPLY_SINGLE_LINE, EmptyStr, nullptr, &Response);
+      ResponseOwner.reset(Response);
+    }
+    catch (...)
+    {
+      if (FTerminal->Active)
+      {
+        FTerminal->LogEvent(FORMAT(L"%s command failed", CsidCommand));
+      }
+      else
+      {
+        throw;
+      }
+    }
+    if (ResponseOwner.get() != nullptr)
     {
       UnicodeString ResponseText = Response->Strings[0];
       UnicodeString Name, Version;
@@ -2539,7 +2552,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
       if ((FFileListCache != nullptr) &&
           base::UnixSamePath(Path, FFileListCache->GetDirectory()) &&
           (base::UnixIsAbsolutePath(FFileListCache->GetDirectory()) ||
-           (FFileListCachePath == RemoteGetCurrentDirectory())))
+           (FFileListCachePath == this->GetCurrentDirectory())))
       {
         File = FFileListCache->FindFile(NameOnly);
       }
@@ -2562,7 +2575,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
         // the FFileListCache is reset from ResetCache.
         SAFE_DESTROY(FFileListCache);
         FFileListCache = FileListCache.release();
-        FFileListCachePath = RemoteGetCurrentDirectory();
+        FFileListCachePath = this->GetCurrentDirectory();
 
         File = FFileListCache->FindFile(NameOnly);
       }
@@ -2617,7 +2630,7 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   }
 }
 
-void TFTPFileSystem::RemoteRenameFile(
+void TFTPFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   const UnicodeString FileName = GetAbsolutePath(AFileName, false);
@@ -2639,7 +2652,7 @@ void TFTPFileSystem::RemoteRenameFile(
   }
 }
 
-void TFTPFileSystem::RemoteCopyFile(
+void TFTPFileSystem::CopyFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
   DebugAssert(SupportsSiteCommand(CopySiteCommand));
@@ -2766,12 +2779,12 @@ bool TFTPFileSystem::GetStoredCredentialsTried() const
   return FStoredPasswordTried;
 }
 
-UnicodeString TFTPFileSystem::RemoteGetUserName() const
+UnicodeString TFTPFileSystem::GetUserName() const
 {
   return FUserName;
 }
 
-UnicodeString TFTPFileSystem::RemoteGetCurrentDirectory() const
+UnicodeString TFTPFileSystem::GetCurrentDirectory() const
 {
   return FCurrentDirectory;
 }
@@ -2972,10 +2985,17 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_MPEXT_COMPLETE_TLS_SHUTDOWN:
-      // As of FileZilla Server 1.6.1 this does not seem to be needed. It's still needed with 1.5.1.
-      // It was possibly fixed by 1.6.0 (2022-12-06) change:
-      // Fixed an issue in the networking code when dealing with TLS close_notify alerts
-      Result = FFileZilla ? FALSE : TRUE;
+      if (Data && Data->CompleteTlsShutdown == asAuto)
+      {
+        // As of FileZilla Server 1.6.1 this does not seem to be needed. It's still needed with 1.5.1.
+        // It was possibly fixed by 1.6.0 (2022-12-06) change:
+        // Fixed an issue in the networking code when dealing with TLS close_notify alerts
+        Result = FFileZilla ? -1 : 0;
+      }
+      else
+      {
+        Result = (Data->CompleteTlsShutdown == asOn) ? 1 : -1;
+      }
       break;
 
     case OPTION_MPEXT_WORK_FROM_CWD:

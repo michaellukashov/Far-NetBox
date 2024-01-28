@@ -43,6 +43,7 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialog); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialog) || TObject::is(Kind); }
 public:
+  TFarDialog() = delete;
   explicit TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept;
   virtual ~TFarDialog() noexcept override;
   void InitDialog();
