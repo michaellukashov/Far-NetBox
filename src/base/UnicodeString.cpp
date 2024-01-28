@@ -212,7 +212,7 @@ void AnsiString::ThrowIfOutOfRange(int32_t Idx) const
 
 
 RawByteString::RawByteString(const wchar_t * Str) :
-  Data(Str, rawstring_t::StringLength(Str))
+  Data(Str, string_t::StringLength(Str))
 {
 }
 
@@ -222,7 +222,7 @@ RawByteString::RawByteString(const wchar_t * Str, int32_t Length) :
 }
 
 RawByteString::RawByteString(const char * Str) :
-  Data(Str, rawstring_t::StringLength(Str))
+  Data(Str, string_t::StringLength(Str))
 {
 }
 
@@ -232,7 +232,7 @@ RawByteString::RawByteString(const char * Str, int32_t Length) :
 }
 
 RawByteString::RawByteString(const unsigned char * Str) :
-  Data(reinterpret_cast<const char *>(Str), rawstring_t::StringLength(reinterpret_cast<const char *>(Str)))
+  Data(reinterpret_cast<const char *>(Str), string_t::StringLength(reinterpret_cast<const char *>(Str)))
 {
 }
 
@@ -263,17 +263,17 @@ RawByteString::RawByteString(const UTF8String & Str) :
 
 void RawByteString::Init(const wchar_t * Str, int32_t Length)
 {
-  Data = rawstring_t(Str, Length);
+  Data = string_t(Str, Length);
 }
 
 void RawByteString::Init(const char * Str, int32_t Length)
 {
-  Data = rawstring_t(Str, Length);
+  Data = string_t(Str, Length);
 }
 
 void RawByteString::Init(const unsigned char * Str, int32_t Length)
 {
-  Data = rawstring_t(reinterpret_cast<const char *>(Str), Length);
+  Data = string_t(reinterpret_cast<const char *>(Str), Length);
 }
 
 RawByteString::operator UnicodeString() const
@@ -315,13 +315,13 @@ RawByteString & RawByteString::Insert(const char * Str, int32_t Pos)
 
 RawByteString RawByteString::SubString(int32_t Pos) const
 {
-  const rawstring_t Str(Data.Mid(Pos - 1));
+  const string_t Str(Data.Mid(Pos - 1));
   return UTF8String(Str.c_str(), Str.GetLength());
 }
 
 RawByteString RawByteString::SubString(int32_t Pos, int32_t Len) const
 {
-  const rawstring_t String = Data.Mid(Pos - 1, Len);
+  const string_t String = Data.Mid(Pos - 1, Len);
   RawByteString Result(String.c_str(), String.GetLength());
   return Result;
 }
@@ -385,7 +385,7 @@ RawByteString & RawByteString::operator =(const UTF8String & StrCopy)
 
 RawByteString & RawByteString::operator =(const char * lpszData)
 {
-  Init(lpszData, rawstring_t::StringLength(lpszData));
+  Init(lpszData, string_t::StringLength(lpszData));
   return *this;
 }
 
@@ -397,7 +397,7 @@ RawByteString & RawByteString::operator =(const wchar_t * lpwszData)
 
 RawByteString RawByteString::operator +(const RawByteString & rhs) const
 {
-  const rawstring_t Result = Data + rhs.Data;
+  const string_t Result = Data + rhs.Data;
   return RawByteString(Result.c_str(), Result.GetLength());
 }
 
@@ -618,7 +618,7 @@ UnicodeString::UnicodeString(const UTF8String & Str) :
 }
 
 UnicodeString::UnicodeString(const wchar_t * Str) :
-  Data(Str, wstring_t::StringLength(Str))
+  Data(Str, string_t::StringLength(Str))
 {
 }
 
@@ -643,7 +643,7 @@ UnicodeString::UnicodeString(const char * Str, int32_t Length, int32_t CodePage)
 }
 
 UnicodeString::UnicodeString(const char * Str) :
-  Data(Str, wstring_t::StringLength(Str))
+  Data(Str, string_t::StringLength(Str))
 {
 }
 
@@ -654,12 +654,12 @@ UnicodeString::UnicodeString(const AnsiString & Str) :
 
 void UnicodeString::Init(const wchar_t * Str, int32_t Length)
 {
-  Data = wstring_t(Str, Length);
+  Data = string_t(Str, Length);
 }
 
 void UnicodeString::Init(const char * Str, int32_t Length, int32_t CodePage)
 {
-  Data = wstring_t(Str, Length, CodePage);
+  Data = string_t(Str, Length, CodePage);
 }
 
 wchar_t * UnicodeString::SetLength(int32_t nLength)
@@ -721,7 +721,7 @@ int32_t UnicodeString::FindFirstOf(const wchar_t * Str, int32_t Offset) const
 {
   if (!Str || !*Str)
     return nb::NPOS;
-  const wstring_t String = Data.Mid(Offset);
+  const string_t String = Data.Mid(Offset);
   const int32_t Res = String.FindOneOf(Str);
   if (Res != -1)
     return Res + Offset;
@@ -730,38 +730,38 @@ int32_t UnicodeString::FindFirstOf(const wchar_t * Str, int32_t Offset) const
 
 UnicodeString & UnicodeString::Replace(int32_t Pos, int32_t Len, const wchar_t * Str, int32_t DataLen)
 {
-  wstring_t NewData = Data;
+  string_t NewData = Data;
   NewData.Delete(Pos - 1, Len);
-  NewData.Insert(Pos - 1, wstring_t(Str, DataLen).c_str());
+  NewData.Insert(Pos - 1, string_t(Str, DataLen).c_str());
   Data = NewData;
   return *this;
 }
 
 UnicodeString & UnicodeString::Replace(int32_t Pos, int32_t Len, const wchar_t * Str)
 {
-  return Replace(Pos, Len, Str, wstring_t::StringLength(Str));
+  return Replace(Pos, Len, Str, string_t::StringLength(Str));
 }
 
 UnicodeString & UnicodeString::Append(const wchar_t * Str)
 {
-  return Append(Str, wstring_t::StringLength(Str));
+  return Append(Str, string_t::StringLength(Str));
 }
 
 UnicodeString & UnicodeString::Append(const char * lpszAdd, int32_t CodePage)
 {
-  Data.Append(wstring_t(lpszAdd, wstring_t::StringLength(lpszAdd), CodePage));
+  Data.Append(string_t(lpszAdd, string_t::StringLength(lpszAdd), CodePage));
   return *this;
 }
 
 UnicodeString & UnicodeString::Insert(int32_t Pos, const wchar_t * Str, int32_t StrLen)
 {
-  Data.Insert(Pos - 1, wstring_t(Str, StrLen).c_str());
+  Data.Insert(Pos - 1, string_t(Str, StrLen).c_str());
   return *this;
 }
 
 UnicodeString & UnicodeString::Insert(const wchar_t * Str, int32_t Pos)
 {
-  return Insert(Pos, Str, wstring_t::StringLength(Str));
+  return Insert(Pos, Str, string_t::StringLength(Str));
 }
 
 int32_t UnicodeString::Pos(wchar_t Ch) const
@@ -783,13 +783,13 @@ bool UnicodeString::RPos(int32_t & nPos, wchar_t Ch, int32_t /*nStartPos*/) cons
 
 UnicodeString UnicodeString::SubStr(int32_t Pos, int32_t Len) const
 {
-  const wstring_t Str(Data.Mid(Pos - 1, Len));
+  const string_t Str(Data.Mid(Pos - 1, Len));
   return UnicodeString(Str.c_str(), Str.GetLength());
 }
 
 UnicodeString UnicodeString::SubStr(int32_t Pos) const
 {
-  const wstring_t Str(Data.Mid(Pos - 1));
+  const string_t Str(Data.Mid(Pos - 1));
   return UnicodeString(Str.c_str(), Str.GetLength());
 }
 
@@ -864,7 +864,7 @@ UnicodeString & UnicodeString::operator =(const UTF8String & StrCopy)
 
 UnicodeString & UnicodeString::operator =(const wchar_t * Str)
 {
-  Init(Str, wstring_t::StringLength(Str));
+  Init(Str, string_t::StringLength(Str));
   return *this;
 }
 
@@ -876,13 +876,13 @@ UnicodeString & UnicodeString::operator =(const wchar_t Ch)
 
 UnicodeString & UnicodeString::operator =(const char * lpszData)
 {
-  Init(lpszData, wstring_t::StringLength(lpszData), CP_UTF8);
+  Init(lpszData, string_t::StringLength(lpszData), CP_UTF8);
   return *this;
 }
 
 UnicodeString UnicodeString::operator +(const UnicodeString & rhs) const
 {
-  wstring_t Result(Data);
+  string_t Result(Data);
   Result += rhs.Data;
   return UnicodeString(Result);
 }
