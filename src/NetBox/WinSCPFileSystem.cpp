@@ -2935,17 +2935,14 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
         Data = static_cast<TRemoteFile *>(PanelItem->GetUserData());
         DebugAssert(Data);
       }
-      if (Side == osLocal)
+      else if (Side == osLocal)
       {
         if (::ExtractFilePath(FileName).IsEmpty())
         {
           if (!FileNameOnly)
           {
-            UnicodeString Dir = Directory;
-            if (Dir.IsEmpty())
-            {
-              Dir = ::GetCurrentDir();
-            }
+            const UnicodeString Dir = ADirectory.IsEmpty() ?
+              ::GetCurrentDir() : ADirectory;
             FileName = ::IncludeTrailingBackslash(Dir) + FileName;
           }
         }
