@@ -3995,14 +3995,12 @@ TFtps TSessionDialog::IndexToFtps(int32_t Index) const
 
 TFtps TSessionDialog::GetFtps() const
 {
-  TFSProtocol AFSProtocol = GetFSProtocol();
-  const int32_t Index = (((AFSProtocol == fsWebDAV) || (AFSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
+  // TFSProtocol AFSProtocol = GetFSProtocol();
+  // const int32_t Index = (((AFSProtocol == fsWebDAV) || (AFSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
+  const int32_t Index = FtpEncryptionCombo->GetItemIndex();
   TFtps Ftps;
   switch (Index)
   {
-    default:
-      Ftps = static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
-      break;
     case 0:
       Ftps = ftpsNone;
       break;
@@ -4012,7 +4010,10 @@ TFtps TSessionDialog::GetFtps() const
       break;
 
     case 2:
-      Ftps = ftpsExplicitTls;
+      Ftps = ftpsExplicitSsl;
+      break;
+    default:
+      Ftps = static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
       break;
   }
   // return static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
