@@ -210,6 +210,11 @@ public:
     return GetData()->nDataLength;
   }
 
+  __forceinline int length() const
+  {
+    return GetLength();
+  }
+
   __forceinline PCXSTR GetString() const
   {
     return m_pszData;
@@ -241,6 +246,7 @@ public:
   void Append(const CMSimpleStringT& strSrc);
 
   void Empty();
+  void clear() { this->Empty(); }
   void FreeExtra();
 
   PXSTR GetBuffer();
@@ -794,6 +800,7 @@ public:
 template<typename BaseType, class StringTraits>
 class NB_CORE_EXPORT CMStringT : public CMSimpleStringT<BaseType>
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   typedef CMSimpleStringT<BaseType> CThisSimpleString;
   typedef typename CThisSimpleString::XCHAR XCHAR;
