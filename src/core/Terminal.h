@@ -1123,7 +1123,7 @@ private:
   int64_t FParallelFileOffset{0};
   int32_t FParallelFileCount{0};
   UnicodeString FParallelFileTargetName;
-  using TParallelFileOffsets = nb::vector_t<int64_t> ;
+  using TParallelFileOffsets = nb::vector_t<int64_t>;
   TParallelFileOffsets FParallelFileOffsets;
   nb::vector_t<bool> FParallelFileDones;
   bool FParallelFileMerging{false};
@@ -1155,6 +1155,9 @@ struct TLocalFileHandle
 
 class TLocalFile final : public TObject
 {
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocalFile); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocalFile) || TObject::is(Kind); }
 public:
   TSearchRecSmart SearchRec;
 };

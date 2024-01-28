@@ -72,7 +72,7 @@ bool TLoopDetector::IsUnvisitedDirectory(const UnicodeString & Directory)
 }
 
 
-struct TMoveFileParams final  : public TObject
+struct TMoveFileParams final : public TObject
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TMoveFileParams); }
@@ -918,7 +918,7 @@ void TParallelOperation::Done(
 
                     UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
                     // Safe as write access to FParallelFileMerged is guarded by FParallelFileMerging
-                    int32_t Index = FParallelFileMerged;
+                    const int32_t Index = FParallelFileMerged;
                     UnicodeString TargetPartName = GetPartPrefix(TPath::Combine(TargetDir, FileNameOnly)) + IntToStr(Index);
 
                     if ((CopyParam->PartSize >= 0) && (Terminal->OperationProgress->TransferredSize != CopyParam->PartSize))

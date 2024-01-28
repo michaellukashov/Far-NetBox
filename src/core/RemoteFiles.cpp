@@ -602,6 +602,7 @@ TRemoteToken::TRemoteToken(const UnicodeString & Name) noexcept :
 }
 
 TRemoteToken::TRemoteToken(const TRemoteToken & rhs) noexcept :
+  TObject(rhs),
   FName(rhs.FName),
   FID(rhs.FID),
   FIDValid(rhs.FIDValid)
@@ -873,11 +874,11 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) noexcept :
   FCalculatedSize = -1;
 }
 
-TRemoteFile::~TRemoteFile() noexcept
-{
-  // SAFE_DESTROY(FRights);
-  // SAFE_DESTROY(FLinkedFile);
-}
+TRemoteFile::~TRemoteFile() noexcept = default;
+/*{
+  SAFE_DESTROY(FRights);
+  SAFE_DESTROY(FLinkedFile);
+}*/
 
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
@@ -890,7 +891,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
       Result->FLinkedFile->FLinkedByFile = Result.get();
     }
     Result->SetRights(FRights.get());
-#define COPY_FP(PROP) Result->F ## PROP = F ## PROP;
+#define COPY_FP(PROP) Result->F ## PROP = F ## PROP
     COPY_FP(Terminal);
     COPY_FP(Owner);
     COPY_FP(ModificationFmt);

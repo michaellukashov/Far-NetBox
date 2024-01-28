@@ -72,7 +72,7 @@ public:
   virtual void Source(
     TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
     const TCopyParamType * CopyParam, int32_t AParams,
-    TFileOperationProgressType * AOperationProgress, uint32_t AFlags,
+    TFileOperationProgressType * OperationProgress, uint32_t AFlags,
     TUploadSessionAction & Action, bool & ChildError) override;
   virtual void Sink(
     const UnicodeString & AFileName, const TRemoteFile * AFile,

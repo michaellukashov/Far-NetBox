@@ -2,12 +2,12 @@
 #include <vcl.h>
 #pragma hdrstop
 
+#include "SftpFileSystem.h"
+
+#include "PuttyTools.h"
 #include <Common.h>
 #include <Exceptions.h>
-#include <WideStrUtils.hpp>
-#include <memory>
 
-#include "SftpFileSystem.h"
 #include "Interface.h"
 #include "Terminal.h"
 #include "TextsCore.h"
@@ -146,28 +146,28 @@ constexpr SSH_FXP_REALPATH_TYPE
 
 constexpr int32_t SFTP_MAX_PACKET_LEN = 1000 * 1024;
 
-constexpr char * SFTP_EXT_OWNER_GROUP = "owner-group-query@generic-extensions";
-constexpr char * SFTP_EXT_OWNER_GROUP_REPLY = "owner-group-query-reply@generic-extensions";
-constexpr char * SFTP_EXT_NEWLINE = "newline";
-constexpr char * SFTP_EXT_SUPPORTED = "supported";
-constexpr char * SFTP_EXT_SUPPORTED2 = "supported2";
-constexpr char * SFTP_EXT_FSROOTS = "fs-roots@vandyke.com";
-constexpr char * SFTP_EXT_VENDOR_ID = "vendor-id";
-constexpr char * SFTP_EXT_VERSIONS = "versions";
-constexpr char * SFTP_EXT_SPACE_AVAILABLE = "space-available";
-constexpr char * SFTP_EXT_CHECK_FILE = "check-file";
-constexpr char * SFTP_EXT_CHECK_FILE_NAME = "check-file-name";
-constexpr char * SFTP_EXT_STATVFS = "statvfs@openssh.com";
-constexpr char * SFTP_EXT_STATVFS_VALUE_V2 = "2";
-constexpr int64_t SFTP_EXT_STATVFS_ST_RDONLY = 0x1;
-constexpr int64_t SFTP_EXT_STATVFS_ST_NOSUID = 0x2;
-constexpr char * SFTP_EXT_HARDLINK = "hardlink@openssh.com";
-constexpr char * SFTP_EXT_HARDLINK_VALUE_V1 = "1";
-constexpr char * SFTP_EXT_COPY_FILE = "copy-file";
-constexpr char * SFTP_EXT_COPY_DATA = "copy-data";
-constexpr char * SFTP_EXT_LIMITS = "limits@openssh.com";
-constexpr char * SFTP_EXT_LIMITS_VALUE_V1 = "1";
-constexpr char * SFTP_EXT_POSIX_RENAME = "posix-rename@openssh.com";
+constexpr const char * SFTP_EXT_OWNER_GROUP = "owner-group-query@generic-extensions";
+constexpr const char * SFTP_EXT_OWNER_GROUP_REPLY = "owner-group-query-reply@generic-extensions";
+constexpr const char * SFTP_EXT_NEWLINE = "newline";
+constexpr const char * SFTP_EXT_SUPPORTED = "supported";
+constexpr const char * SFTP_EXT_SUPPORTED2 = "supported2";
+constexpr const char * SFTP_EXT_FSROOTS = "fs-roots@vandyke.com";
+constexpr const char * SFTP_EXT_VENDOR_ID = "vendor-id";
+constexpr const char * SFTP_EXT_VERSIONS = "versions";
+constexpr const char * SFTP_EXT_SPACE_AVAILABLE = "space-available";
+constexpr const char * SFTP_EXT_CHECK_FILE = "check-file";
+constexpr const char * SFTP_EXT_CHECK_FILE_NAME = "check-file-name";
+constexpr const char * SFTP_EXT_STATVFS = "statvfs@openssh.com";
+constexpr const char * SFTP_EXT_STATVFS_VALUE_V2 = "2";
+constexpr const int64_t SFTP_EXT_STATVFS_ST_RDONLY = 0x1;
+constexpr const int64_t SFTP_EXT_STATVFS_ST_NOSUID = 0x2;
+constexpr const char * SFTP_EXT_HARDLINK = "hardlink@openssh.com";
+constexpr const char * SFTP_EXT_HARDLINK_VALUE_V1 = "1";
+constexpr const char * SFTP_EXT_COPY_FILE = "copy-file";
+constexpr const char * SFTP_EXT_COPY_DATA = "copy-data";
+constexpr const char * SFTP_EXT_LIMITS = "limits@openssh.com";
+constexpr const char * SFTP_EXT_LIMITS_VALUE_V1 = "1";
+constexpr const char * SFTP_EXT_POSIX_RENAME = "posix-rename@openssh.com";
 
 constexpr wchar_t OGQ_LIST_OWNERS = 0x01;
 constexpr wchar_t OGQ_LIST_GROUPS = 0x02;
@@ -185,10 +185,10 @@ constexpr SSH_FX_TYPE asNoSuchFile =    1 << SSH_FX_NO_SUCH_FILE;
 constexpr SSH_FX_TYPE asAll = static_cast<SSH_FX_TYPE>(0xFFFF);
 
 #define GET_32BIT(cp) \
-    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[0])) << 24) | \
+    ((static_cast<uint32_t>(static_cast<const uint8_t>((cp)[0])) << 24) | \
     (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[1])) << 16) | \
     (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[2])) << 8) | \
-    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[3])))
+    (static_cast<uint32_t>(static_cast<const uint8_t>((cp)[3]))))
 
 #define PUT_32BIT(cp, value) do { \
     (cp)[0] = static_cast<uint8_t>((value) >> 24); \
@@ -210,10 +210,10 @@ public:
     Reset();
   }
 
-  virtual ~TSFTPSupport() noexcept override
-  {
-    // SAFE_DESTROY(AttribExtensions);
-  }
+  virtual ~TSFTPSupport() noexcept override = default;
+  /*{
+    SAFE_DESTROY(AttribExtensions);
+  }*/
 
   void Reset()
   {
@@ -241,19 +241,19 @@ public:
 
 class TSFTPPacket : public TObject
 {
-  TSFTPPacket() = delete;
-  explicit TSFTPPacket(uint32_t CodePage) noexcept = delete;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPPacket); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPPacket) || TObject::is(Kind); }
 public:
+  explicit TSFTPPacket(uint32_t CodePage) noexcept = delete;
+  TSFTPPacket() = delete;
   explicit TSFTPPacket(TObjectClassId Kind, uint32_t CodePage) noexcept :
     TObject(Kind)
   {
     Init(CodePage);
   }
 
-  explicit TSFTPPacket(const TSFTPPacket & Source) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, Source.FCodePage)
+  TSFTPPacket(const TSFTPPacket & Source) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, Source.FCodePage)
   {
     this->operator=(Source);
   }
@@ -399,9 +399,9 @@ public:
     return (Version >= 6) ? SSH_FILEXFER_ATTR_ALLOCATION_SIZE : SSH_FILEXFER_ATTR_SIZE;
   }
 
-  void AddProperties(uint16_t * Rights, TRemoteToken * Owner,
-    TRemoteToken * Group, int64_t * MTime, int64_t * ATime,
-    int64_t * Size, bool IsDirectory, int32_t Version, TAutoSwitch Utf)
+  void AddProperties(const uint16_t * Rights, TRemoteToken * Owner,
+    TRemoteToken * Group, const int64_t * MTime, const int64_t * ATime,
+    const int64_t * Size, bool IsDirectory, int32_t Version, TAutoSwitch Utf)
   {
     SSH_FILEXFER_ATTR_TYPE Flags = 0;
     if (Size != nullptr)
@@ -702,7 +702,7 @@ public:
 
       // SSH-2.0-cryptlib returns file type 0 in response to SSH_FXP_LSTAT,
       // handle this undefined value as "unknown"
-      constexpr wchar_t * Types = L"U-DLSUOCBF";
+      constexpr const wchar_t * Types = L"U-DLSUOCBF";
       if (FXType > static_cast<uint8_t>(nb::StrLength(Types)))
       {
         throw Exception(FMTLOAD(SFTP_UNKNOWN_FILE_TYPE, nb::ToInt32(FXType)));
@@ -1186,11 +1186,11 @@ private:
 class TSFTPQueuePacket final : public TSFTPPacket
 {
   NB_DISABLE_COPY(TSFTPQueuePacket)
-  TSFTPQueuePacket() = delete;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueuePacket); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueuePacket) || TSFTPPacket::is(Kind); }
 public:
+  TSFTPQueuePacket() = delete;
   explicit TSFTPQueuePacket(SSH_FXP_TYPE AType, uint32_t CodePage) noexcept :
      TSFTPPacket(OBJECT_CLASS_TSFTPQueuePacket, CodePage)
   {
@@ -1205,11 +1205,11 @@ uint32_t TSFTPPacket::FMessageCounter = 0;
 class TSFTPQueue : public TObject
 {
   NB_DISABLE_COPY(TSFTPQueue)
-  TSFTPQueue() = delete;
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSFTPQueue); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSFTPQueue) || TObject::is(Kind); }
 public:
+  TSFTPQueue() = delete;
   explicit TSFTPQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept :
     TObject(OBJECT_CLASS_TSFTPQueue),
     FRequests(std::make_unique<TList>()),
@@ -1315,10 +1315,8 @@ public:
 
       if ((Response->GetCapacity() == 0) && DebugAlwaysTrue(TryOnly))
       {
-        FRequests->Insert(0, Request.get());
-        Request.release();
-        FResponses->Insert(0, Response.get());
-        Response.release();
+        FRequests->Insert(0, Request.release());
+        FResponses->Insert(0, Response.release());
         Result = true;
       }
       else
@@ -1423,8 +1421,8 @@ protected:
 
 class TSFTPFixedLenQueue : public TSFTPQueue
 {
-  TSFTPFixedLenQueue() = delete;
 public:
+  TSFTPFixedLenQueue() = delete;
   explicit TSFTPFixedLenQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept :
     TSFTPQueue(AFileSystem, CodePage)
   {
@@ -1457,8 +1455,8 @@ protected:
 
 class TSFTPAsynchronousQueue : public TSFTPQueue
 {
-  TSFTPAsynchronousQueue() = delete;
 public:
+  TSFTPAsynchronousQueue() = delete;
   // #pragma option push -vi- // WORKAROUND for internal compiler errors
   explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept : TSFTPQueue(AFileSystem, CodePage)
   {
@@ -1472,7 +1470,7 @@ public:
     UnregisterReceiveHandler();
   }
 
-  virtual void Dispose(SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1) override
+  virtual void Dispose(SSH_FXP_TYPE ExpectedType, SSH_FX_TYPE AllowStatus) override
   {
     // we do not want to receive asynchronous notifications anymore,
     // while waiting synchronously for pending responses
@@ -1533,8 +1531,8 @@ private:
 class TSFTPDownloadQueue final : public TSFTPFixedLenQueue
 {
   NB_DISABLE_COPY(TSFTPDownloadQueue)
-  TSFTPDownloadQueue() = delete;
 public:
+  TSFTPDownloadQueue() = delete;
   explicit TSFTPDownloadQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept :
     TSFTPFixedLenQueue(AFileSystem, CodePage)
   {
@@ -1615,8 +1613,8 @@ private:
 class TSFTPUploadQueue final : public TSFTPAsynchronousQueue
 {
   NB_DISABLE_COPY(TSFTPUploadQueue)
-  TSFTPUploadQueue() = delete;
 public:
+  TSFTPUploadQueue() = delete;
   explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uint32_t ACodePage, TEncryption * Encryption) noexcept :
     TSFTPAsynchronousQueue(AFileSystem, ACodePage),
     FEncryption(Encryption)
@@ -1629,10 +1627,10 @@ public:
     FConvertToken = false;
   }
 
-  virtual ~TSFTPUploadQueue() noexcept override
-  {
+  virtual ~TSFTPUploadQueue() noexcept override = default;
+  /*{
 //    SAFE_DESTROY(FStream);
-  }
+  }*/
 
   bool Init(const UnicodeString & AFileName,
     HANDLE AFile, TTransferInEvent && OnTransferIn, TFileOperationProgressType * AOperationProgress,
@@ -1966,8 +1964,8 @@ private:
 class TSFTPBusy final : public TObject
 {
   NB_DISABLE_COPY(TSFTPBusy)
-  TSFTPBusy() = delete;
 public:
+  TSFTPBusy() = delete;
   explicit TSFTPBusy(TSFTPFileSystem * AFileSystem) noexcept :
     FFileSystem(AFileSystem)
   {
@@ -2371,7 +2369,7 @@ uint32_t TSFTPFileSystem::TransferBlockSize(
 
   if (Result == 0)
   {
-    Result = nb::ToUInt32(OperationProgress->StaticBlockSize());
+    Result = nb::ToUInt32(TFileOperationProgressType::StaticBlockSize());
   }
 
   if (Result < MinPacketSize)
@@ -2519,7 +2517,7 @@ void TSFTPFileSystem::SendPacket(const TSFTPPacket * Packet)
 SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
   TSFTPPacket * Packet, SSH_FX_TYPE AllowStatus, bool DoNotForceLog)
 {
-  const SSH_FX_TYPE Code = Packet->GetCardinal();
+  const SSH_FX_TYPE Code = static_cast<SSH_FX_TYPE>(Packet->GetCardinal());
 
   static int32_t Messages[] = {
     SFTP_STATUS_OK,
@@ -3013,7 +3011,7 @@ UnicodeString TSFTPFileSystem::GetRealPath(const UnicodeString & APath, const Un
 
 UnicodeString TSFTPFileSystem::LocalCanonify(const UnicodeString & APath) const
 {
-  TODO("improve (handle .. etc.)");
+  TODO("improve (handle .. etc.)")
   if (base::UnixIsAbsolutePath(APath) ||
       (!FCurrentDirectory.IsEmpty() && base::UnixSamePath(FCurrentDirectory, APath)))
   {

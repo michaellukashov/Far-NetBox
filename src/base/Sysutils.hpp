@@ -321,13 +321,13 @@ NB_CORE_EXPORT UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWid
 
 NB_CORE_EXPORT UnicodeString TranslateExceptionMessage(Exception * E);
 
-NB_CORE_EXPORT void AppendWChar(UnicodeString & Str, const wchar_t Ch);
+NB_CORE_EXPORT void AppendWChar(UnicodeString & Str, wchar_t Ch);
 
 NB_CORE_EXPORT void AppendPathDelimiter(UnicodeString & Str);
 
 NB_CORE_EXPORT UnicodeString ExpandEnvVars(const UnicodeString & Str);
 
-NB_CORE_EXPORT UnicodeString StringOfChar(const wchar_t Ch, int32_t Len);
+NB_CORE_EXPORT UnicodeString StringOfChar(wchar_t Ch, int32_t Len);
 
 NB_CORE_EXPORT UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
   wchar_t Delimiter = Slash);
@@ -393,14 +393,14 @@ public:
 
 NB_CORE_EXPORT UnicodeString UnixExcludeLeadingBackslash(const UnicodeString & APath);
 
-NB_CORE_EXPORT TDateTime IncYear(const TDateTime & AValue, const Int64 ANumberOfYears = 1);
-NB_CORE_EXPORT TDateTime IncMonth(const TDateTime & AValue, const Int64 NumberOfMonths = 1);
-NB_CORE_EXPORT TDateTime IncWeek(const TDateTime & AValue, const Int64 ANumberOfWeeks = 1);
-NB_CORE_EXPORT TDateTime IncDay(const TDateTime & AValue, const Int64 ANumberOfDays = 1);
-NB_CORE_EXPORT TDateTime IncHour(const TDateTime & AValue, const Int64 ANumberOfHours = 1);
-NB_CORE_EXPORT TDateTime IncMinute(const TDateTime & AValue, const Int64 ANumberOfMinutes = 1);
-NB_CORE_EXPORT TDateTime IncSecond(const TDateTime & AValue, const Int64 ANumberOfSeconds = 1);
-NB_CORE_EXPORT TDateTime IncMilliSecond(const TDateTime & AValue, const Int64 ANumberOfMilliSeconds = 1);
+NB_CORE_EXPORT TDateTime IncYear(const TDateTime & AValue, Int64 ANumberOfYears = 1);
+NB_CORE_EXPORT TDateTime IncMonth(const TDateTime & AValue, Int64 NumberOfMonths = 1);
+NB_CORE_EXPORT TDateTime IncWeek(const TDateTime & AValue, Int64 ANumberOfWeeks = 1);
+NB_CORE_EXPORT TDateTime IncDay(const TDateTime & AValue, Int64 ANumberOfDays = 1);
+NB_CORE_EXPORT TDateTime IncHour(const TDateTime & AValue, Int64 ANumberOfHours = 1);
+NB_CORE_EXPORT TDateTime IncMinute(const TDateTime & AValue, Int64 ANumberOfMinutes = 1);
+NB_CORE_EXPORT TDateTime IncSecond(const TDateTime & AValue, Int64 ANumberOfSeconds = 1);
+NB_CORE_EXPORT TDateTime IncMilliSecond(const TDateTime & AValue, Int64 ANumberOfMilliSeconds = 1);
 uint16_t MilliSecondOfTheSecond(const TDateTime & AValue);
 int32_t MilliSecondOfTheMinute(const TDateTime & AValue);
 int32_t MilliSecondOfTheHour(const TDateTime & AValue);
@@ -558,15 +558,15 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
 #if (defined _MSC_VER && _MSC_VER > 1900)
 
 #define NB_NONCOPYABLE(Type) \
-  Type(const Type&) = delete; \
-  Type& operator =(const Type&) = delete;
+  Type(const Type &) = delete; \
+  Type & operator =(const Type &) = delete;
 
 //  Type(Type&&) = delete; \
 //  Type& operator =(Type&&) = delete;
 
 #define NB_MOVABLE(Type) \
-  Type(Type&&) = default; \
-  Type& operator =(Type&&) = default;
+  Type(Type &&) = default; \
+  Type & operator =(Type &&) = default;
 
 template < typename T, T Default = T{} >
 class movable

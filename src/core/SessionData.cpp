@@ -1866,7 +1866,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
           }
           else if (SameText(Directive, L"ProxyJump"))
           {
-            UnicodeString Jump = Value;
+            const UnicodeString Jump = Value;
             // multiple jumps are not supported
             if (Jump.Pos(L",") == 0)
             {
@@ -5297,7 +5297,7 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) noexcept :
 TStoredSessionList::~TStoredSessionList() noexcept
 {
 //  SAFE_DESTROY(FDefaultSettings);
-  for (int32_t Index = 0; Index < GetCount(); ++Index)
+  for (int32_t Index = 0; Index < TStoredSessionList::GetCount(); ++Index)
   {
     TObject * Obj = TNamedObjectList::AtObject(Index);
     SAFE_DESTROY(Obj);
@@ -6148,7 +6148,7 @@ bool TStoredSessionList::IsFolderOrWorkspace(const UnicodeString & Name) const
   return (GetFirstFolderOrWorkspaceSession(Name) != nullptr);
 }
 
-bool TStoredSessionList::GetIsFolder(const UnicodeString & Name) const
+/*bool TStoredSessionList::GetIsFolder(const UnicodeString & Name) const
 {
   const TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
   return (SessionData != nullptr) && !SessionData->GetIsWorkspace();
@@ -6158,7 +6158,7 @@ bool TStoredSessionList::GetIsWorkspace(const UnicodeString & Name) const
 {
   const TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
   return (SessionData != nullptr) && SessionData->GetIsWorkspace();
-}
+}*/
 
 TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   TSessionData * Data, const UnicodeString & Name)
@@ -6258,7 +6258,7 @@ TStrings * TStoredSessionList::GetWorkspaces() const
   return Result.release();
 }
 
-void TStoredSessionList::NewWorkspace(
+/*void TStoredSessionList::NewWorkspace(
   const UnicodeString & Name, TList * DataList)
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
@@ -6283,7 +6283,7 @@ void TStoredSessionList::NewWorkspace(
     Data2->SetModified(true);
     Add(Data2.release());
   }
-}
+}*/
 
 bool TStoredSessionList::HasAnyWorkspace() const
 {
@@ -6387,7 +6387,7 @@ UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TD
       UnicodeString Replacement;
       // keep consistent with TFileCustomCommand::PatternReplacement
       uint16_t Y, M, D, H, NN, S, MS;
-      TDateTime DateTime = Started;
+      const TDateTime DateTime = Started;
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, NN, S, MS);
       switch (::LowCase(Result[Index + 1]))

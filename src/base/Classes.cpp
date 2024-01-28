@@ -62,7 +62,7 @@ void TPersistent::AssignError(const TPersistent * Source)
   throw Exception("Cannot assign");
 }
 
-TObjectList::~TObjectList()
+TObjectList::~TObjectList() noexcept
 {
   TList::Clear();
 }
@@ -95,7 +95,7 @@ void TObjectList::Notify(TObject * Ptr, TListNotification Action)
 
 constexpr const int32_t MemoryDelta = 0x2000;
 
-void TStrings::SetTextStr(const UnicodeString & Text)
+void TStrings::SetTextStr(const UnicodeString & AText)
 {
   BeginUpdate();
   SCOPE_EXIT
@@ -103,7 +103,7 @@ void TStrings::SetTextStr(const UnicodeString & Text)
     EndUpdate();
   };
   Clear();
-  const wchar_t * P = Text.c_str();
+  const wchar_t * P = AText.c_str();
   // if (P != nullptr)
   {
     while (*P != 0x00)
@@ -218,8 +218,8 @@ int32_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString &
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings * Strings = rtti::dyn_cast_or_null<TStrings>(Source);
-  if (Strings != nullptr)
+  const TStrings * pStrings = rtti::dyn_cast_or_null<TStrings>(Source);
+  if (pStrings != nullptr)
   {
     BeginUpdate();
     SCOPE_EXIT
@@ -227,10 +227,10 @@ void TStrings::Assign(const TPersistent * Source)
       EndUpdate();
     };
     Clear();
-    DebugAssert(Strings);
-    FQuoteChar = Strings->FQuoteChar;
-    FDelimiter = Strings->FDelimiter;
-    AddStrings(Strings);
+    DebugAssert(pStrings);
+    FQuoteChar = pStrings->FQuoteChar;
+    FDelimiter = pStrings->FDelimiter;
+    AddStrings(pStrings);
   }
   else
   {
@@ -460,16 +460,16 @@ UnicodeString TStrings::GetValueFromIndex(int32_t Index) const
   return Result;
 }
 
-void TStrings::AddStrings(const TStrings * Strings)
+void TStrings::AddStrings(const TStrings * AStrings)
 {
   BeginUpdate();
   SCOPE_EXIT
   {
     EndUpdate();
   };
-  for (int32_t Index = 0; Index < Strings->GetCount(); ++Index)
+  for (int32_t Index = 0; Index < AStrings->GetCount(); ++Index)
   {
-    AddObject(Strings->GetString(Index), Strings->GetObj(Index));
+    AddObject(AStrings->GetString(Index), AStrings->GetObj(Index));
   }
 }
 
@@ -1201,7 +1201,7 @@ TFileStream::TFileStream(const UnicodeString & AFileName, uint16_t Mode) :
 
 }*/
 
-TFileStream::~TFileStream()
+TFileStream::~TFileStream() noexcept
 {
   SAFE_CLOSE_HANDLE(FHandle);
 }
@@ -1222,7 +1222,7 @@ TSafeHandleStream * TSafeHandleStream::CreateFromFile(const UnicodeString & File
   return new TSafeHandleStream(new TFileStream(ApiPath(FileName), Mode), true);
 }
 
-TSafeHandleStream::~TSafeHandleStream()
+TSafeHandleStream::~TSafeHandleStream() noexcept
 {
   SAFE_DESTROY(FSource);
 }

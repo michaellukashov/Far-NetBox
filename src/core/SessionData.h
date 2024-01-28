@@ -1094,9 +1094,9 @@ public:
   int32_t IndexOf(TSessionData * Data) const;
   const TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
-  void NewWorkspace(const UnicodeString & Name, TList * DataList);
-  bool GetIsFolder(const UnicodeString & Name) const;
-  bool GetIsWorkspace(const UnicodeString & Name) const;
+  // void NewWorkspace(const UnicodeString & Name, TList * DataList);
+  // bool GetIsFolder(const UnicodeString & Name) const;
+  // bool GetIsWorkspace(const UnicodeString & Name) const;
   bool IsFolderOrWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & AUrl, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr, int32_t Flags = 0);
