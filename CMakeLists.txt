@@ -95,7 +95,7 @@ set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} -DWIN64 -D_WIN64 -D_AMD64_)
 endif()
 
 if(PROJECT_PLATFORM STREQUAL "x86")
-# set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} /arch:IA32)
+# set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} -DWIN32 -D_WIN32)
 endif()
 
 if(MSVC)
@@ -1364,6 +1364,7 @@ add_library(atlmfc STATIC
 target_compile_options(atlmfc PRIVATE
   ${ATLMFC_COMPILE_FLAGS}
 )
+
 if(MSVC)
 target_compile_options(atlmfc PRIVATE
   -wd4995 -wd4996 -wd4101 -wd4290
@@ -2551,6 +2552,7 @@ target_compile_options(testnetbox_01 PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${ATLMFC_COMPILE_FLAGS}
   -D_CRT_NON_CONFORMING_SWPRINTFS
 )
 
@@ -2582,6 +2584,7 @@ target_compile_options(testnetbox_02 PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${ATLMFC_COMPILE_FLAGS}
 )
 
 set_target_properties(testnetbox_02
@@ -2622,6 +2625,7 @@ target_compile_options(testnetbox_03 PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${ATLMFC_COMPILE_FLAGS}
 )
 
 target_link_libraries(testnetbox_03 PRIVATE
@@ -2653,6 +2657,7 @@ target_compile_options(testnetbox_04 PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${ATLMFC_COMPILE_FLAGS}
 )
 
 #add_dependencies(testnetbox_04 ${NETBOX_LIBRARIES}
@@ -2689,6 +2694,7 @@ target_compile_options(testnetbox_05 PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${ATLMFC_COMPILE_FLAGS}
 )
 
 target_link_libraries(testnetbox_05 PRIVATE
@@ -2722,6 +2728,7 @@ target_compile_options(testnetbox_06 PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+  ${ATLMFC_COMPILE_FLAGS}
 )
 
 target_link_libraries(testnetbox_06 PRIVATE
@@ -2758,7 +2765,7 @@ ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG RelWithDebugInfo)
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} CONFIG Debug)
-ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG Debug)
-ucm_add_linker_flags(MODULE SHARED EXE /RTC1 /DEBUG CONFIG RelWithDebugInfo)
+ucm_add_linker_flags(MODULE SHARED EXE /DEBUG CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED EXE /DEBUG CONFIG RelWithDebugInfo)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
