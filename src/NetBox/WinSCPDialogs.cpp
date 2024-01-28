@@ -3607,14 +3607,14 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Acti
     }
 
     SessionData->SetPostLoginCommands(PostLoginCommands2->GetText());
-    if ((GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
+    // if ((GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
     {
       SessionData->SetFtps(GetFtps());
     }
-    else if (GetFSProtocol() != fsS3)
+    /*else if (GetFSProtocol() != fsS3)
     {
       SessionData->SetFtps(ftpsNone);
-    }
+    }*/
 
     if (FtpEncryptionCombo->GetVisible())
     switch (FtpEncryptionCombo->GetItemIndex())
