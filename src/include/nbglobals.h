@@ -105,45 +105,45 @@ inline void operator_delete(void * p)
 
 #ifdef USE_DLMALLOC
 /// custom memory allocation
-#define DEF_CUSTOM_MEM_ALLOCATION_IMPL            \
-  public:                                         \
-  void * operator new(size_t sz)                  \
-  {                                               \
-    return nb::operator_new(sz);                  \
-  }                                               \
-  void operator delete(void * p)                  \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void operator delete(void * p, size_t)          \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void * operator new[](size_t sz)                \
-  {                                               \
-    return nb::operator_new(sz);                  \
-  }                                               \
-  void operator delete[](void * p)                \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void operator delete[](void * p, size_t)        \
-  {                                               \
-    nb::operator_delete(p);                       \
-  }                                               \
-  void * operator new(size_t, void * p)           \
-  {                                               \
-    return p;                                     \
-  }                                               \
-  void operator delete(void *, void *)            \
-  {                                               \
-  }                                               \
-  void * operator new[](size_t, void * p)         \
-  {                                               \
-    return p;                                     \
-  }                                               \
-  void operator delete[](void *, void *)          \
-  {                                               \
+#define DEF_CUSTOM_MEM_ALLOCATION_IMPL     \
+  public:                                  \
+  void * operator new(size_t sz)           \
+  {                                        \
+    return nb::operator_new(sz);           \
+  }                                        \
+  void operator delete(void * p)           \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void operator delete(void * p, size_t)   \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void * operator new[](size_t sz)         \
+  {                                        \
+    return nb::operator_new(sz);           \
+  }                                        \
+  void operator delete[](void * p)         \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void operator delete[](void * p, size_t) \
+  {                                        \
+    nb::operator_delete(p);                \
+  }                                        \
+  void * operator new(size_t, void * p)    \
+  {                                        \
+    return p;                              \
+  }                                        \
+  void operator delete(void *, void *)     \
+  {                                        \
+  }                                        \
+  void * operator new[](size_t, void * p)  \
+  {                                        \
+    return p;                              \
+  }                                        \
+  void operator delete[](void *, void *)   \
+  {                                        \
   }
 
 #ifdef _DEBUG
