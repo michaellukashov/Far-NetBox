@@ -1,10 +1,10 @@
-name: Release
+name: Build and run tests
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - far3-dev-tests
 
 jobs:
 
@@ -13,15 +13,15 @@ jobs:
       fail-fast: false
       matrix:
         build: [
-                 ninja_cl_x64_release,
-                 ninja_cl_x86_release,
-                 ninja_cl_ARM64_release,
+                 ninja_cl_x64_debug,
+                 ninja_cl_x86_debug,
+                 ninja_cl_ARM64_debug,
                ]
 
         include:
-          - { build: ninja_cl_x64_release,    arch: amd64,       platform: x64,   }
-          - { build: ninja_cl_x86_release,    arch: amd64_x86,   platform: x86,   }
-          - { build: ninja_cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
+          - { build: ninja_cl_x64_debug,    arch: amd64,       platform: x64,   }
+          - { build: ninja_cl_x86_debug,    arch: amd64_x86,   platform: x86,   }
+          - { build: ninja_cl_ARM64_debug,  arch: amd64_arm64, platform: ARM64, }
 
     env:
       BUILD_TYPE: Debug
@@ -58,14 +58,15 @@ jobs:
         shell: bash
         working-directory: build
         run: >
-          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOPT_COMPILE_TESTS=ON -DPROJECT_PLATFORM=${{ matrix.platform }} -DOPT_CREATE_PLUGIN_DIR=ON $GITHUB_WORKSPACE
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOPT_COMPILE_TESTS=ON -DOPT_USE_UNITY_BUILD=OFF -DPROJECT_PLATFORM=${{ matrix.platform }} -DOPT_CREATE_PLUGIN_DIR=ON $GITHUB_WORKSPACE
 
       - name: Build
         working-directory: build
         shell: bash
         run: cmake --build . --config $BUILD_TYPE --target all
 
-      - name: Build
+      - name: Run tests
+        if: matrix.build != 'ninja_cl_ARM64_debug'
         working-directory: build
         shell: bash
         run: |
