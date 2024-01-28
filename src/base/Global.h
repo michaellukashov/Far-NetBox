@@ -50,8 +50,22 @@ private:
   TCriticalSection & FCriticalSection;
 };
 
-//#include <assert.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define ACCESS_VIOLATION_TEST { (*((int32_t*)nullptr)) = 0; }
+#define NB_ASSERT() \
+ FaultHandler(NB_TEXT(__FILE__), static_cast<int32_t>(__LINE__))
+
+#define NB_ASSERT_TRUE(condition) \
+ do { if (!(condition)) FaultHandler(NB_TEXT(__FILE__), static_cast<int32_t>(__LINE__)); } while (0)
+
+void FaultHandler(const wchar_t * Filename, int32_t LineNumber);
+
+#ifdef __cplusplus
+}
+#endif
 
 #if !defined(_DEBUG) || defined(DESIGN_ONLY)
 
