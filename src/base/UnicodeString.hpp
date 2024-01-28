@@ -1,5 +1,6 @@
 #pragma once
 
+// #include <string>
 #include <nbstring.h>
 
 class RawByteString;
@@ -27,7 +28,7 @@ public:
   operator const char *() const = delete; // { return this->c_str(); }
   const char * c_str() const { return Data.c_str(); }
   const char * data() const { return Data.c_str(); }
-  int32_t Length() const { return Data.GetLength(); }
+  int32_t Length() const { return (int32_t)Data.length(); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(int32_t nLength);
@@ -41,7 +42,7 @@ public:
 
   int32_t vprintf(const char * Format, va_list ArgList);
 
-  void Unique() { Init(Data.c_str(), Data.GetLength()); }
+  void Unique() { Init(Data.c_str(), (int32_t)Data.length()); }
 
 public:
   UTF8String & operator =(UTF8String && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
@@ -72,6 +73,7 @@ private:
   void ThrowIfOutOfRange(int32_t Idx) const;
 
   using string_t = CMStringA;
+  // using string_t = std::basic_string<char, std::char_traits<char>, nb::custom_nballocator_t<char>>;
   string_t Data;
 };
 
@@ -99,13 +101,13 @@ public:
 
   const wchar_t * c_str() const { return Data.c_str(); }
   const wchar_t * data() const { return Data.c_str(); }
-  int32_t Length() const { return Data.GetLength(); }
+  int32_t Length() const { return (int32_t)Data.length(); }
   int32_t GetLength() const { return Length(); }
   int32_t GetBytesCount() const { return (Length() + 1) * sizeof(wchar_t); }
   bool IsEmpty() const { return Length() == 0; }
   wchar_t * SetLength(int32_t nLength);
   UnicodeString & Delete(int32_t Index, int32_t Count);
-  UnicodeString & Clear() { Data.Empty(); return *this; }
+  UnicodeString & Clear() { Data.clear(); return *this; }
 
   UnicodeString & Lower(int32_t nStartPos = 1);
   UnicodeString & Lower(int32_t nStartPos, int32_t nLength);
@@ -210,8 +212,9 @@ private:
   void Init(const char * Str, int32_t Length, int32_t CodePage);
   void ThrowIfOutOfRange(int32_t Idx) const;
 
-  using wstring_t = CMStringW;
-  wstring_t Data;
+  using string_t = CMStringW;
+  // using string_t = std::basic_string<wchar_t, std::char_traits<wchar_t>, nb::custom_nballocator_t<wchar_t>>;
+  string_t Data;
 };
 
 class RawByteString;
@@ -239,7 +242,7 @@ public:
 
   const char * c_str() const { return Data.c_str(); }
   const char * data() const { return Data.c_str(); }
-  int32_t Length() const { return Data.GetLength(); }
+  int32_t Length() const { return (int32_t)Data.length(); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(int32_t nLength);
@@ -260,7 +263,7 @@ public:
   AnsiString & Append(const char * Str);
   AnsiString & Append(char Ch);
 
-  void Unique() { Init(Data.c_str(), Data.GetLength()); }
+  void Unique() { Init(Data.c_str(), (int32_t)Data.length()); }
 
 public:
   AnsiString & operator =(AnsiString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
@@ -300,6 +303,7 @@ private:
   void ThrowIfOutOfRange(int32_t Idx) const;
 
   using string_t = CMStringA;
+  // using string_t = std::basic_string<char, std::char_traits<char>, nb::custom_nballocator_t<char>>;
   string_t Data;
 };
 
@@ -328,7 +332,7 @@ public:
   operator UnicodeString() const;
   const char * c_str() const { return Data.c_str(); }
   const char * data() const { return Data.c_str(); }
-  int32_t Length() const { return Data.GetLength(); }
+  int32_t Length() const { return (int32_t)Data.length(); }
   int32_t GetLength() const { return Length(); }
   bool IsEmpty() const { return Length() == 0; }
   char * SetLength(int32_t nLength);
@@ -349,7 +353,7 @@ public:
   RawByteString Trim() const;
   RawByteString TrimLeft() const;
   RawByteString TrimRight() const;
-  void Unique() { Init(Data.c_str(), Data.GetLength()); }
+  void Unique() { Init(Data.c_str(), (int32_t)Data.length()); }
 
 public:
   RawByteString & operator =(RawByteString && rhs) noexcept { Data = std::move(rhs.Data); return *this; }
@@ -369,12 +373,12 @@ public:
 
   bool operator ==(const RawByteString & rhs) const
   { return Data == rhs.Data; }
-  bool operator ==(const char * rhs) const
-  { return Data == rhs; }
+  // bool operator ==(const char * rhs) const
+  // { return Data == rhs; }
   bool operator !=(const RawByteString & rhs) const
   { return Data != rhs.Data; }
-  bool operator !=(const char * rhs) const
-  { return Data != rhs; }
+  // bool operator !=(const char * rhs) const
+  // { return Data != rhs; }
   // inline friend bool operator ==(const RawByteString & lhs, const RawByteString & rhs)
   // { return lhs.Data == rhs.Data; }
   // inline friend bool operator !=(const RawByteString & lhs, const RawByteString & rhs)
@@ -386,8 +390,9 @@ private:
   void Init(const unsigned char * Str, int32_t Length);
   void ThrowIfOutOfRange(int32_t Idx) const;
 
-  using rawstring_t = CMStringT<unsigned char, NBChTraitsCRT<unsigned char>>;
-  rawstring_t Data;
+  using string_t = CMStringT<unsigned char, NBChTraitsCRT<unsigned char>>;
+  // using string_t = std::basic_string<unsigned char, std::char_traits<unsigned char>, nb::custom_nballocator_t<unsigned char>>;
+  string_t Data;
 };
 
 
