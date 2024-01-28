@@ -1184,7 +1184,7 @@ static S3Status setup_neon(Request *request,
                            const RequestParams *params,
                            const RequestComputedValues *values)
 {
-    NeonCode status;
+    // NeonCode status;
 
     ne_uri uri;
     if (ne_uri_parse(request->uri, &uri) != 0)
