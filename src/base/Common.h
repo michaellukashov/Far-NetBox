@@ -45,7 +45,7 @@ constexpr const wchar_t * LocalInvalidChars = L"/\\:*?\"<>|";
 constexpr const wchar_t * PasswordMask = L"***";
 constexpr const wchar_t * Ellipsis = L"...";
 constexpr const wchar_t * TitleSeparator = L" \u2013 "; // En-Dash
-constexpr const wchar_t * OfficialPackage = L"MartinPikryl.WinSCP";
+constexpr const wchar_t * OfficialPackage = L"MartinPrikryl.WinSCP";
 
 constexpr const wchar_t * HttpProtocol = L"http";
 constexpr const wchar_t * HttpsProtocol = L"https";

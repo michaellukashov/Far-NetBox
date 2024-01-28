@@ -675,7 +675,7 @@ UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
 //const UnicodeString PasswordMask(TraceInitStr(L"***"));
 //const UnicodeString Ellipsis(TraceInitStr(L"..."));
 // const UnicodeString TitleSeparator(TraceInitStr(L" \u2013 ")); // En-Dash
-// const UnicodeString OfficialPackage(TraceInitStr(L"MartinPikryl.WinSCP_tvv458r3h9r5m"));
+// const UnicodeString OfficialPackage(TraceInitStr(L"MartinPrikryl.WinSCP_tvv458r3h9r5m"));
 
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
