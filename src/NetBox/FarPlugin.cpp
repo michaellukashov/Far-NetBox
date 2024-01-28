@@ -79,6 +79,7 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   FOpenedPlugins(std::make_unique<TList>()),
   FSavedTitles(std::make_unique<TStringList>())
 {
+  // DEBUG_PRINTF("begin");
   FFarThreadId = GetCurrentThreadId();
   FPluginHandle = HInst;
   FFarVersion = 0;
@@ -109,11 +110,12 @@ TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcep
   {
     FNormalConsoleSize = TPoint(-1, -1);
   }
+  // DEBUG_PRINTF("begin");
 }
 
 TCustomFarPlugin::~TCustomFarPlugin() noexcept
 {
-  DEBUG_PRINTF("1");
+  // DEBUG_PRINTF("end");
   DebugAssert(FTopDialog == nullptr);
 
   ResetCachedInfo();
@@ -132,7 +134,7 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
   }
   // SAFE_DESTROY(FSavedTitles);
   // TODO: CloseFileSystem(FarFileSystem);
-  DEBUG_PRINTF("2");
+  // DEBUG_PRINTF("end");
 }
 
 bool TCustomFarPlugin::HandlesFunction(THandlesFunction /*Function*/) const

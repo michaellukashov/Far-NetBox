@@ -1825,7 +1825,7 @@ target_include_directories(tinylog PRIVATE
   libs/GSL/include
   src/include
   src/base
-  src/resource
+  # src/resource
 )
 
 target_compile_definitions(tinylog PRIVATE

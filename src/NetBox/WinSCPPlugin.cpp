@@ -73,13 +73,13 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
 
 TWinSCPPlugin::~TWinSCPPlugin() noexcept
 {
-  DEBUG_PRINTF("1");
+  // DEBUG_PRINTF("begin");
   if (FInitialized)
   {
     // GetFarConfiguration()->SetPlugin(nullptr);
     CoreFinalize();
   }
-  DEBUG_PRINTF("2");
+  // DEBUG_PRINTF("begin");
 }
 
 bool TWinSCPPlugin::HandlesFunction(THandlesFunction Function) const
