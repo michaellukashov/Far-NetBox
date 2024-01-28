@@ -95,7 +95,7 @@ static S3Status errorXmlCallback(const char *elementPath, const char *data,
         // Copy in the name and value
         char *name = string_multibuffer_current
             (errorParser->extraDetailsNamesValues);
-        int nameLen = strlen(elementName);
+        int nameLen = (int)strlen(elementName);
         string_multibuffer_add(errorParser->extraDetailsNamesValues,
                                elementName, nameLen, fit);
         if (!fit) {
