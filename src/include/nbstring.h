@@ -794,6 +794,7 @@ public:
 template<typename BaseType, class StringTraits>
 class NB_CORE_EXPORT CMStringT : public CMSimpleStringT<BaseType>
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
 public:
   typedef CMSimpleStringT<BaseType> CThisSimpleString;
   typedef typename CThisSimpleString::XCHAR XCHAR;
