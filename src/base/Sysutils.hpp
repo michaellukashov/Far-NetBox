@@ -97,10 +97,9 @@ public:
 //  void Createfmt(int32_t Id, fmt::ArgList Args);
 //  FMT_VARIADIC_W(void, Createfmt, int32_t)
 
+  TObjectClassId FKind{0};
 public:
   UnicodeString Message;
-private:
-  TObjectClassId FKind{0};
 };
 
 class NB_CORE_EXPORT EAbort : public Exception

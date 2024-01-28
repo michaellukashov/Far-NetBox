@@ -41,7 +41,6 @@ public:
       {
         if (!IsFinished() && FDialog && FDialog->GetHandle())
           FDialog->Idle();
-        // TODO: use ACTL_SYNCHRO
       }
     }
     if (!IsFinished())

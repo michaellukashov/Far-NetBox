@@ -1,4 +1,4 @@
-﻿
+
 #include <vcl.h>
 #include <System.ShlObj.hpp>
 

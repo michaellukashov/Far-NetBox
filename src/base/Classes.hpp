@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include <nbsystem.h>
 
@@ -370,7 +370,6 @@ enum TDuplicatesEnum
 };
 
 class TStream;
-
 
 
 class NB_CORE_EXPORT TStrings : public TObjectList
