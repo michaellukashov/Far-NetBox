@@ -11,10 +11,11 @@
 
 namespace nb {
 
-template<typename T> using vector_t = std::vector<T>;
-template<typename T> using set_t = std::set<T>;
-template<typename T> using list_t = std::list<T>;
-template<typename Tk, typename Tv> using map_t = std::map<Tk, Tv>;
+template<typename T> using vector_t = std::vector<T, nb::custom_nballocator_t<T>>;
+template<typename T> using set_t = std::set<T, std::less<T>, nb::custom_nballocator_t<T>>;
+template<typename T> using list_t = std::list<T, nb::custom_nballocator_t<T>>;
+template<typename Tk, typename Tv> using map_t = std::map<Tk, Tv,
+  std::less<Tk>, nb::custom_nballocator_t<std::pair<const Tk, Tv>>>;
 
 } // namespace nb
 
