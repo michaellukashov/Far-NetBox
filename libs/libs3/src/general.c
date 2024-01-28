@@ -473,7 +473,7 @@ S3Status S3_convert_acl(char *aclXml, char *ownerId, char *ownerDisplayName,
     SimpleXml simpleXml;
     simplexml_initialize(&simpleXml, &convertAclXmlCallback, &data);
 
-    S3Status status = simplexml_add(&simpleXml, aclXml, strlen(aclXml));
+    S3Status status = simplexml_add(&simpleXml, aclXml, (int)strlen(aclXml));
 
     simplexml_deinitialize(&simpleXml);
 
@@ -504,7 +504,7 @@ int snprintf_S(char * s, size_t n, const char * format, size_t len, const char *
     int result;
     if (strcmp(format, "%.*s") == 0)
     {
-        result = len;
+        result = (int)len;
         while ((n > 1) && (len > 0) && (*data != '\0'))
         {
             *s = *data;

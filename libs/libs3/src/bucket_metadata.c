@@ -545,7 +545,7 @@ void S3_set_lifecycle(const S3BucketContext *bucketContext,
 
 
     data->xmlDocument = lifecycleXmlDocument;
-    data->xmlDocumentLen = strlen(lifecycleXmlDocument);
+    data->xmlDocumentLen = (int)strlen(lifecycleXmlDocument);
 
     data->responsePropertiesCallback = handler->propertiesCallback;
     data->responseCompleteCallback = handler->completeCallback;
