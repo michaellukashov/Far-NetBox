@@ -2391,7 +2391,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   }
 
   FInfo->Destination =
-    base::UnixIncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
+    TPath::Join(TargetDir, CopyParam->GetFileMask());
   FInfo->ModifiedRemote = base::UnixIncludeTrailingBackslash(TargetDir);
 }
 
@@ -2487,8 +2487,8 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
     FInfo->Source = AFilesToCopy->GetString(0);
     if (base::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
-      FInfo->Source = base::UnixIncludeTrailingBackslash(ATerminal->RemoteGetCurrentDirectory()) +
-        FInfo->Source;
+      FInfo->Source = TPath::Join(ATerminal->RemoteGetCurrentDirectory(),
+        FInfo->Source);
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         base::UnixIncludeTrailingBackslash(ATerminal->RemoteGetCurrentDirectory());
     }

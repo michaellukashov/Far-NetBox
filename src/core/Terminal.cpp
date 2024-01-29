@@ -1427,7 +1427,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & APath,
     }
     else
     {
-      Result = base::UnixIncludeTrailingBackslash(BasePath) + APath;
+      Result = TPath::Join(BasePath, APath);
     }
   }
   return Result;
@@ -3422,8 +3422,8 @@ void TTerminal::FileModified(const TRemoteFile * AFile,
       // this case for scripting
       if ((AFile != nullptr) && AFile->GetIsDirectory())
       {
-        Directory = base::UnixIncludeTrailingBackslash(ParentDirectory) +
-          base::UnixExtractFileName(AFile->GetFileName());
+        Directory = TPath::Join(ParentDirectory,
+          base::UnixExtractFileName(AFile->GetFileName()));
       }
     }
   }
@@ -5192,8 +5192,8 @@ bool TTerminal::DoMoveFile(const UnicodeString & FileName, const TRemoteFile * F
   StartOperationWithFile(FileName, foRemoteMove, foDelete);
   DebugAssert(Param != nullptr);
   const TMoveFileParams & Params = *static_cast<const TMoveFileParams *>(Param);
-  const UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(base::UnixExtractFileName(FileName), Params.FileMask);
+  const UnicodeString NewName = TPath::Join(Params.Target,
+    MaskFileName(base::UnixExtractFileName(FileName), Params.FileMask));
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", FileName, NewName));
   FileModified(File, FileName);
   const bool Result = DoRenameFile(FileName, File, NewName, true, Params.DontOverwrite);
@@ -5284,8 +5284,8 @@ void TTerminal::TerminalCopyFile(const UnicodeString & AFileName,
   StartOperationWithFile(AFileName, foRemoteCopy);
   DebugAssert(Param != nullptr);
   const TMoveFileParams & Params = *static_cast<TMoveFileParams *>(Param);
-  const UnicodeString NewName = base::UnixIncludeTrailingBackslash(Params.Target) +
-    MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask);
+  const UnicodeString NewName = TPath::Join(Params.Target,
+    MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask));
   LogEvent(FORMAT("Copying file \"%s\" to \"%s\".", AFileName, NewName));
   DoCopyFile(AFileName, AFile, NewName, Params.DontOverwrite);
   ReactOnCommand(fsCopyFile);
@@ -6878,7 +6878,7 @@ void TTerminal::SynchronizeApply(
         std::unique_ptr<TStringList> FileList(std::make_unique<TStringList>());
 
         UnicodeString LocalPath = IncludeTrailingBackslash(ChecklistItem->Local.Directory) + ChecklistItem->Local.FileName;
-        UnicodeString RemotePath = base::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) + ChecklistItem->Remote.FileName;
+        UnicodeString RemotePath = TPath::Join(ChecklistItem->Remote.Directory, ChecklistItem->Remote.FileName);
         bool Result = true;
 
         if (FLAGSET(Params, spTimestamp))
@@ -7116,7 +7116,7 @@ void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*AFileName*/,
     GetSessionData()->GetDSTMode());
 
   ChangeFileProperties(
-    base::UnixIncludeTrailingBackslash(ChecklistItem->Remote.Directory) + ChecklistItem->Remote.FileName,
+    TPath::Join(ChecklistItem->Remote.Directory, ChecklistItem->Remote.FileName),
     nullptr, &Properties);
 }
 
@@ -7158,7 +7158,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
         UnicodeString RealDirectory;
         if (!AFile->GetIsSymLink() || AFile->GetLinkTo().IsEmpty())
         {
-          RealDirectory = base::UnixIncludeTrailingBackslash(AParams->RealDirectory) + AFile->GetFileName();
+          RealDirectory = TPath::Join(AParams->RealDirectory, AFile->GetFileName());
         }
         else
         {
@@ -9175,7 +9175,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
 
     LogEvent(FORMAT(L"Adding public key line to \"%s\" file:\n%s", AuthorizedKeysFilePath, Line));
 
-    UnicodeString SshFolderAbsolutePath = base::UnixIncludeTrailingBackslash(GetHomeDirectory()) + OpensshFolderName;
+    UnicodeString SshFolderAbsolutePath = TPath::Join(GetHomeDirectory(), OpensshFolderName);
     bool WrongRights = false;
     std::unique_ptr<TRemoteFile> SshFolderFile(CheckRights(L"Folder", SshFolderAbsolutePath, WrongRights));
     if (SshFolderFile == nullptr)
@@ -9197,7 +9197,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
     }
     UnicodeString TemporaryAuthorizedKeysFile = IncludeTrailingBackslash(TemporaryDir) + OpensshAuthorizedKeysFileName;
 
-    UnicodeString AuthorizedKeysFileAbsolutePath = base::UnixIncludeTrailingBackslash(SshFolderAbsolutePath) + OpensshAuthorizedKeysFileName;
+    const UnicodeString AuthorizedKeysFileAbsolutePath = TPath::Join(SshFolderAbsolutePath, OpensshAuthorizedKeysFileName);
 
     bool Updated = true;
     TCopyParamType CopyParam; // Use factory defaults

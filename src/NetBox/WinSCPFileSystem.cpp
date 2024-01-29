@@ -1937,7 +1937,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
       Name = base::UnixIncludeTrailingBackslash(FSessionsFolder);
       if (!Focused->GetIsParentDirectory())
       {
-        Name = base::UnixIncludeTrailingBackslash(Name + Focused->GetFileName());
+        Name = base::UnixIncludeTrailingBackslash(TPath::Join(Name, Focused->GetFileName()));
       }
     }
     InsertTokenOnCommandLine(Name, true);
@@ -2439,7 +2439,7 @@ void TWinSCPFileSystem::ProcessSessions(TObjectList * PanelItems,
     {
       DebugAssert(PanelItem->GetUserData() == nullptr);
       UnicodeString Folder = base::UnixIncludeTrailingBackslash(
-          base::UnixIncludeTrailingBackslash(FSessionsFolder) + PanelItem->GetFileName());
+          TPath::Join(FSessionsFolder, PanelItem->GetFileName()));
       int32_t Index2 = 0;
       while (Index2 < GetStoredSessions()->GetCount())
       {
@@ -3909,8 +3909,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
         const TMultipleEdits::const_iterator it = FMultipleEdits.find(Info->GetEditorID());
         if (it != FMultipleEdits.end())
         {
-          UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(it->second.Directory) +
-            it->second.FileTitle;
+          const UnicodeString FullFileName = TPath::Join(it->second.Directory, it->second.FileTitle);
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
             FullFileName.Length(),
             nb::ToPtr(ToWCharPtr(FullFileName)));
@@ -4030,8 +4029,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
           it->second.LocalFileName = Info->GetFileName();
           it->second.FileName = base::ExtractFileName(Info->GetFileName(), true);
           // update editor title
-          UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(it->second.Directory) +
-            it->second.FileTitle;
+          const UnicodeString FullFileName = TPath::Join(it->second.Directory, it->second.FileTitle);
           // note that we need to reset the title periodically (see EE_REDRAW)
           GetWinSCPPlugin()->FarEditorControl(ECTL_SETTITLE,
             FullFileName.Length(),
@@ -4093,7 +4091,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   }
   FEditHistories.push_back(EditHistory);
 
-  const UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(Directory) + AFileName;
+  const UnicodeString FullFileName = TPath::Join(Directory, AFileName);
 
   std::unique_ptr<TRemoteFile> FileDuplicate(AFile ? AFile->Duplicate() : new TRemoteFile());
   const UnicodeString NewFileName = AFileName; // FullFileName;
@@ -4223,8 +4221,8 @@ void TWinSCPFileSystem::EditHistory()
   TEditHistories::const_iterator it = FEditHistories.begin();
   while (it != FEditHistories.end())
   {
-    MenuItems->Add(base::MinimizeName(base::UnixIncludeTrailingBackslash(it->Directory) + it->FileName,
-        GetWinSCPPlugin()->MaxMenuItemLength(), true));
+    MenuItems->Add(base::MinimizeName(TPath::Join(it->Directory, it->FileName),
+      GetWinSCPPlugin()->MaxMenuItemLength(), true));
     ++it;
   }
 
@@ -4241,7 +4239,7 @@ void TWinSCPFileSystem::EditHistory()
   {
     const TEditHistory & EditHistory = FEditHistories[Result];
     const UnicodeString FullFileName =
-      base::UnixIncludeTrailingBackslash(EditHistory.Directory) + EditHistory.FileName;
+      TPath::Join(EditHistory.Directory, EditHistory.FileName);
     TRemoteFile * File = FTerminal->ReadFile(FullFileName);
     std::unique_ptr<TRemoteFile> FilePtr(File);
     DebugAssert(FilePtr.get());

@@ -3057,7 +3057,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
       try
       {
         Result = GetRealPath(Path3);
-        Result = base::UnixIncludeTrailingBackslash(Result) + Name;
+        Result = TPath::Join(Result, Name);
       }
       catch(...)
       {
