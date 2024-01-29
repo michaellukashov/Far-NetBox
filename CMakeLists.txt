@@ -2409,7 +2409,6 @@ file(GLOB DIST_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog
   ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt
 )
-# message("DIST_FILES: ${DIST_FILES}")
 
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
@@ -2425,7 +2424,6 @@ add_custom_command(TARGET NetBox POST_BUILD
 )
 
 foreach(DIST_FILE ${DIST_FILES})
-  # string(REPLACE "\\" "/" DIST_FILE ${DIST_FILE})
   add_custom_command(TARGET NetBox POST_BUILD
     COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}\\
