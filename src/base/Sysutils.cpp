@@ -1724,6 +1724,11 @@ UnicodeString TPath::Combine(const UnicodeString & APath, const UnicodeString & 
   return Result;
 }
 
+UnicodeString TPath::Join(const UnicodeString & APath, const UnicodeString & AFileName)
+{
+  return base::UnixIncludeTrailingBackslash(APath) + AFileName;
+}
+
 uint16_t MilliSecondOf(const TDateTime & AValue)
 {
   uint16_t Hour{0}, Min{0}, Sec{0}, MSec{0};
