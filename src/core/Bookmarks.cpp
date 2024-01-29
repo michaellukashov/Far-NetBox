@@ -33,7 +33,7 @@ void TBookmarks::Clear()
   FBookmarkLists->Clear();
 }
 
-std::string_view TBookmarks::Keys[]{"Local", "Remote", "ShortCuts", "Options"};
+//std::string_view TBookmarks::Keys[]{"Local", "Remote", "ShortCuts", "Options"};
 
 void TBookmarks::Load(THierarchicalStorage * Storage)
 {

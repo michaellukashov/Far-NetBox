@@ -27,7 +27,7 @@ public:
 private:
   TStringList * FBookmarkLists;
   UnicodeString FSharedKey;
-  static std::string_view Keys[];
+  static constexpr const std::string_view Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
 
 public:
   TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
