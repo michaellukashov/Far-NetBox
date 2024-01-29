@@ -25,7 +25,7 @@ public:
   __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
 
 private:
-  TStringList * FBookmarkLists;
+  gsl::owner<TStringList *> FBookmarkLists;
   UnicodeString FSharedKey;
   static constexpr const std::string_view Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
 
