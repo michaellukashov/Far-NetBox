@@ -270,7 +270,7 @@ public:
   __forceinline T2Utf(const wchar_t *str) : ptrA(nbcore_utf8encodeW(str)) {}
   __forceinline operator BYTE *() const { return reinterpret_cast<BYTE *>(data); }
 #ifdef _XSTRING_
-  std::string str() const { return std::string(data); }
+  // std::string str() const { return std::string(data); }
 #endif
 };
 
