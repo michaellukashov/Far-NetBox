@@ -8258,8 +8258,8 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
 
   UnicodeString Value = TPath::Join(Target, FileMask);
   const bool Result = FPlugin->InputBox(
-      GetMsg(Move ? NB_REMOTE_MOVE_TITLE : NB_REMOTE_COPY_TITLE), Prompt,
-      Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
+    GetMsg(Move ? NB_REMOTE_MOVE_TITLE : NB_REMOTE_COPY_TITLE), Prompt,
+    Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
   if (Result)
   {
     Target = base::UnixExtractFilePath(Value);
@@ -8272,8 +8272,8 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
   return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE),
-      FORMAT(GetMsg(NB_RENAME_FILE), AFile->GetFileName()), NewName, 0) &&
-    !NewName.IsEmpty();
+    FORMAT(GetMsg(NB_RENAME_FILE), AFile->GetFileName()), NewName, 0) &&
+      !NewName.IsEmpty();
 }
 
 class TQueueDialog final : public TFarDialog
@@ -8395,7 +8395,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   if (GetQueueItems()->GetSelected() != nb::NPOS)
   {
     TQueueItemProxy * QueueItem = rtti::dyn_cast_or_null<TQueueItemProxy>(
-        GetQueueItems()->Get(GetQueueItems()->GetSelected()));
+      GetQueueItems()->Get(GetQueueItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
     {
