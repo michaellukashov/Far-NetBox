@@ -9,8 +9,6 @@ NB_CORE_EXPORT bool EndsText(const UnicodeString & SubStr, const UnicodeString &
 NB_CORE_EXPORT UnicodeString LeftStr(const UnicodeString & AStr, int32_t Len);
 inline int32_t StrLength(const UnicodeString & Str) { return Str.Length(); }
 
-using TBytes = nb::vector_t<uint8_t>;
-
 NB_CORE_EXPORT UnicodeString EncodeBase64(const char * AStr, int32_t Len);
 NB_CORE_EXPORT TBytes DecodeBase64(const UnicodeString & AStr);
 

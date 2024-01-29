@@ -160,6 +160,8 @@ using TSHFileInfoW = struct _SHFILEINFOW;
 using TVSFixedFileInfo = VS_FIXEDFILEINFO;
 using PVSFixedFileInfo = VS_FIXEDFILEINFO*;
 
+using TBytes = nb::vector_t<uint8_t>;
+
 namespace os::debug {
 
 void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name);
