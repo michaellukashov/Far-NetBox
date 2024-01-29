@@ -9195,7 +9195,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
     {
       throw EOSExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, TemporaryDir));
     }
-    UnicodeString TemporaryAuthorizedKeysFile = IncludeTrailingBackslash(TemporaryDir) + OpensshAuthorizedKeysFileName;
+    const UnicodeString TemporaryAuthorizedKeysFile = IncludeTrailingBackslash(TemporaryDir) + OpensshAuthorizedKeysFileName;
 
     const UnicodeString AuthorizedKeysFileAbsolutePath = TPath::Join(SshFolderAbsolutePath, OpensshAuthorizedKeysFileName);
 
