@@ -13,6 +13,7 @@ class UTF8String
 public:
   UTF8String() = default;
   UTF8String(UTF8String && rhs) noexcept : Data(rhs.Data) {}
+
   UTF8String(const UTF8String & rhs);
   explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str);
@@ -82,6 +83,7 @@ class UnicodeString
 public:
   UnicodeString() = default;
   UnicodeString(UnicodeString && rhs) noexcept : Data(rhs.Data) {}
+
   UnicodeString(const wchar_t * Str);
   UnicodeString(const wchar_t * Str, int32_t Length);
   explicit UnicodeString(wchar_t Src) = delete;

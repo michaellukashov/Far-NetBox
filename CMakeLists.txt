@@ -2413,13 +2413,13 @@ file(GLOB DIST_FILES
 
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
-  VERBATIM
-)
-add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll ${NETBOX_PLUGIN_DIR}\\
   VERBATIM
 )
 add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
+  VERBATIM
   COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
   VERBATIM
 )
@@ -2427,8 +2427,8 @@ add_custom_command(TARGET NetBox POST_BUILD
 foreach(DIST_FILE ${DIST_FILES})
   # string(REPLACE "\\" "/" DIST_FILE ${DIST_FILE})
   add_custom_command(TARGET NetBox POST_BUILD
+    COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}\\
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
   )
 endforeach()
 

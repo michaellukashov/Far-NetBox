@@ -36,12 +36,13 @@ Compile Far-NetBox plugin on the command line as follows:
 ```
 "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 cmake -S C:/src/Far-NetBox -B C:/build/Far-NetBox -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build -B C:/build/Far-NetBox --target all
+cmake --build C:/build/Far-NetBox --target all
 ```
 
 You can generate solution for VS2022 IDE:
 ```
 cmake -S C:/src/Far-NetBox -B C:/build/Far-NetBox -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build C:/build/Far-NetBox
 ```
 
 
