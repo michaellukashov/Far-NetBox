@@ -2034,34 +2034,34 @@ FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
   return Result;
 }
 
-bool WriteAndFlush(FILE * file, void const * data, size_t size)
+bool WriteAndFlush(FILE * File, void const * Data, size_t Size)
 {
-  assert(file);
-  assert(data);
-  size_t n_write = 0;
-  while ((n_write = fwrite(data, 1, size - n_write, file)) != 0)
+  assert(File);
+  assert(Data);
+  size_t nWrite = 0;
+  while ((nWrite = ::fwrite(Data, 1, Size - nWrite, File)) != 0)
   {
-    if ((static_cast<intptr_t>(n_write) < 0) && (errno != EINTR))
+    if ((static_cast<intptr_t>(nWrite) < 0) && (errno != EINTR))
     {
       // error
       break;
     }
-    else if (n_write == size)
+    else if (nWrite == Size)
     {
       // All write
       break;
     }
-    else if (n_write > 0)
+    else if (nWrite > 0)
     {
       // Half write
     }
   }
 
   // error
-  if (static_cast<intptr_t>(n_write) < 0)
+  if (static_cast<intptr_t>(nWrite) < 0)
     return false; // TODO: throw exception
 
-  fflush(file);
+  ::fflush(File);
   return true;
 }
 
