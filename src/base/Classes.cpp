@@ -1469,7 +1469,7 @@ DWORD RegDataToDataType(TRegDataType Value)
   return Result;
 }
 
-class ERegistryException final : public std::exception
+class ERegistryException final // : public std::exception
 {
 };
 
