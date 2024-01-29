@@ -1894,161 +1894,162 @@ static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
 bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName)
 {
 
-    struct TUnicodeSymLinkRec
-    {
-      // Define the members of TUnicodeSymLinkRec structure
-      UnicodeString TargetName;
-      DWORD Attr{0};
-      int64_t Size{0};
-    };
+  struct TUnicodeSymLinkRec
+  {
+    // Define the members of TUnicodeSymLinkRec structure
+    UnicodeString TargetName;
+    DWORD Attr{0};
+    int64_t Size{0};
+  };
 
-    enum TSymLinkResult
-    {
-      slrError,
-      slrNoSymLink,
-      slrOk
-    };
+  enum TSymLinkResult
+  {
+    slrError,
+    slrNoSymLink,
+    slrOk
+  };
 
-    // Reparse point specific declarations from Windows headers
+  // Reparse point specific declarations from Windows headers
 #ifndef IO_REPARSE_TAG_MOUNT_POINT
-    constexpr const ULONG IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
+  constexpr const ULONG IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
 #endif
 #ifndef IO_REPARSE_TAG_SYMLINK
-    constexpr const ULONG IO_REPARSE_TAG_SYMLINK = 0xA000000C;
+  constexpr const ULONG IO_REPARSE_TAG_SYMLINK = 0xA000000C;
 #endif
 #ifndef ERROR_REPARSE_TAG_INVALID
-    constexpr const DWORD ERROR_REPARSE_TAG_INVALID = 4393;
+  constexpr const DWORD ERROR_REPARSE_TAG_INVALID = 4393;
 #endif
 #ifndef FSCTL_GET_REPARSE_POINT
-    constexpr DWORD FSCTL_GET_REPARSE_POINT = 0x900A8;
+  constexpr DWORD FSCTL_GET_REPARSE_POINT = 0x900A8;
 #endif
 //    const DWORD MAXIMUM_REPARSE_DATA_BUFFER_SIZE = 16 * 1024;
 #ifndef SYMLINK_FLAG_RELATIVE
-    constexpr const ULONG SYMLINK_FLAG_RELATIVE = 1;
+  constexpr const ULONG SYMLINK_FLAG_RELATIVE = 1;
 #endif
 #ifndef FILE_FLAG_OPEN_REPARSE_POINT
-    constexpr const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x200000;
+  constexpr const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x200000;
 #endif
 #ifndef FILE_READ_EA
-    constexpr const DWORD FILE_READ_EA = 0x8;
+  constexpr const DWORD FILE_READ_EA = 0x8;
 #endif
-   struct TReparseDataBuffer
-   {
-      ULONG ReparseTag{0};
-      WORD ReparseDataLength{0};
-      WORD Reserved{0};
-      WORD SubstituteNameOffset{0};
-      WORD SubstituteNameLength{0};
-      WORD PrintNameOffset{0};
-      WORD PrintNameLength{0};
-      union {
-        WCHAR PathBufferMount[4096]{};
-        struct
-        {
-          ULONG Flags;
-          WCHAR PathBufferSym[4096];
-        };
-      };
-   };
-
-    constexpr DWORD CShareAny = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-    constexpr DWORD COpenReparse = FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS;
-    const UnicodeString CVolumePrefix = L"Volume";
-    const UnicodeString CGlobalPrefix = L"\\\\?\\";
-
-    TReparseDataBuffer * PBuffer = nullptr;
-    DWORD BytesReturned{0};
-    GUID guid{};
-
-    TSymLinkResult Result = slrError;
-    TUnicodeSymLinkRec SymLinkRec;
-
-    const HANDLE HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, nullptr);
-    if (CheckHandle(HFile))
-    {
-      try
+  struct TReparseDataBuffer
+  {
+    ULONG ReparseTag{0};
+    WORD ReparseDataLength{0};
+    WORD Reserved{0};
+    WORD SubstituteNameOffset{0};
+    WORD SubstituteNameLength{0};
+    WORD PrintNameOffset{0};
+    WORD PrintNameLength{0};
+    union {
+      WCHAR PathBufferMount[4096]{};
+      struct
       {
-        PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
-        if (PBuffer != nullptr)
-        {
-          if (DeviceIoControl(HFile, FSCTL_GET_REPARSE_POINT, nullptr, 0,
-                              PBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &BytesReturned, nullptr))
-          {
-            switch (PBuffer->ReparseTag)
-            {
-              case IO_REPARSE_TAG_MOUNT_POINT:
-              {
-                SymLinkRec.TargetName = UnicodeString(
-                    &PBuffer->PathBufferMount[4 + PBuffer->SubstituteNameOffset / sizeof(WCHAR)],
-                    (PBuffer->SubstituteNameLength / sizeof(WCHAR)) - 4);
-                if (SymLinkRec.TargetName.Length() == (CVolumePrefix.Length() + 2 + 32 + 4 + 1)
-                    && SymLinkRec.TargetName.SubStr(0, CVolumePrefix.Length()) == CVolumePrefix
-                    && TryStringToGUID(UnicodeString(
-                                           SymLinkRec.TargetName.SubStr(CVolumePrefix.Length() + 1)),
-                                       guid)) {
-                    SymLinkRec.TargetName = CGlobalPrefix + SymLinkRec.TargetName;
-                }
-                break;
-              }
-            case IO_REPARSE_TAG_SYMLINK:
-              {
-                SymLinkRec.TargetName
-                    = UnicodeString(&PBuffer->PathBufferSym[PBuffer->PrintNameOffset / sizeof(WCHAR)],
-                                    PBuffer->PrintNameLength / sizeof(WCHAR));
-                if ((PBuffer->Flags & SYMLINK_FLAG_RELATIVE) != 0) {
-                    SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName)
-                                                           + SymLinkRec.TargetName);
-                }
-                break;
-              }
-            }
+        ULONG Flags;
+        WCHAR PathBufferSym[4096];
+      };
+    };
+  };
 
-            if (!SymLinkRec.TargetName.IsEmpty())
+  constexpr DWORD CShareAny = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+  constexpr DWORD COpenReparse = FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS;
+  const UnicodeString CVolumePrefix = L"Volume";
+  const UnicodeString CGlobalPrefix = L"\\\\?\\";
+
+  TReparseDataBuffer * PBuffer = nullptr;
+  DWORD BytesReturned{0};
+  GUID guid{};
+
+  TSymLinkResult Result = slrError;
+  TUnicodeSymLinkRec SymLinkRec;
+
+  const HANDLE HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, nullptr);
+  if (CheckHandle(HFile))
+  {
+    try
+    {
+      PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
+      if (PBuffer != nullptr)
+      {
+        if (DeviceIoControl(HFile, FSCTL_GET_REPARSE_POINT, nullptr, 0,
+                            PBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &BytesReturned, nullptr))
+        {
+          switch (PBuffer->ReparseTag)
+          {
+            case IO_REPARSE_TAG_MOUNT_POINT:
             {
-              WIN32_FILE_ATTRIBUTE_DATA fileAttributeData{};
-              if (GetFileAttributesExW(SymLinkRec.TargetName.c_str(), GetFileExInfoStandard, &fileAttributeData))
+              SymLinkRec.TargetName = UnicodeString(
+                  &PBuffer->PathBufferMount[4 + PBuffer->SubstituteNameOffset / sizeof(WCHAR)],
+                  (PBuffer->SubstituteNameLength / sizeof(WCHAR)) - 4);
+              if (SymLinkRec.TargetName.Length() == (CVolumePrefix.Length() + 2 + 32 + 4 + 1)
+                  && SymLinkRec.TargetName.SubStr(0, CVolumePrefix.Length()) == CVolumePrefix
+                  && TryStringToGUID(UnicodeString(
+                                      SymLinkRec.TargetName.SubStr(CVolumePrefix.Length() + 1)),
+                                      guid))
               {
-                  SymLinkRec.Attr = fileAttributeData.dwFileAttributes;
-                  SymLinkRec.Size = static_cast<uint64_t>(fileAttributeData.nFileSizeHigh) << 32 | fileAttributeData.nFileSizeLow;
+                  SymLinkRec.TargetName = CGlobalPrefix + SymLinkRec.TargetName;
               }
-              /*else if (RaiseErrorOnMissing)
-              {
-                  throw std::runtime_error("Directory not found: " + std::to_string(GetLastError()));
-              }*/
-              else
-              {
-                  SymLinkRec.TargetName.Clear();
-              }
+              break;
             }
+            case IO_REPARSE_TAG_SYMLINK:
+            {
+              SymLinkRec.TargetName
+                  = UnicodeString(&PBuffer->PathBufferSym[PBuffer->PrintNameOffset / sizeof(WCHAR)],
+                                  PBuffer->PrintNameLength / sizeof(WCHAR));
+              if ((PBuffer->Flags & SYMLINK_FLAG_RELATIVE) != 0) {
+                  SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName)
+                                                         + SymLinkRec.TargetName);
+              }
+              break;
+            }
+          }
+
+          if (!SymLinkRec.TargetName.IsEmpty())
+          {
+            WIN32_FILE_ATTRIBUTE_DATA fileAttributeData{};
+            if (GetFileAttributesExW(SymLinkRec.TargetName.c_str(), GetFileExInfoStandard, &fileAttributeData))
+            {
+              SymLinkRec.Attr = fileAttributeData.dwFileAttributes;
+              SymLinkRec.Size = static_cast<uint64_t>(fileAttributeData.nFileSizeHigh) << 32 | fileAttributeData.nFileSizeLow;
+            }
+            /*else if (RaiseErrorOnMissing)
+            {
+                throw std::runtime_error("Directory not found: " + std::to_string(GetLastError()));
+            }*/
             else
             {
-                ::SetLastError(ERROR_REPARSE_TAG_INVALID);
-                Result = slrNoSymLink;
+              SymLinkRec.TargetName.Clear();
             }
           }
           else
           {
             ::SetLastError(ERROR_REPARSE_TAG_INVALID);
+            Result = slrNoSymLink;
           }
-
-          nb_free(PBuffer);
         }
-      }
-      catch (...)
-      {
-        ::CloseHandle(HFile);
-        throw;
-      }
+        else
+        {
+          ::SetLastError(ERROR_REPARSE_TAG_INVALID);
+        }
 
-      ::CloseHandle(HFile);
+        nb_free(PBuffer);
+      }
     }
-
-    if (!SymLinkRec.TargetName.IsEmpty())
+    catch (...)
     {
-      Result = slrOk;
+      ::CloseHandle(HFile);
+      throw;
     }
 
-    return Result == slrOk;
+    ::CloseHandle(HFile);
+  }
+
+  if (!SymLinkRec.TargetName.IsEmpty())
+  {
+    Result = slrOk;
+  }
+
+  return Result == slrOk;
 }
 
 } // namespace Sysutils
