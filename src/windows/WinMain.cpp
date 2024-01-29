@@ -165,7 +165,7 @@ void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefault
       DisplayName = File->DisplayName;
     }
 
-    UnicodeString FriendyFileName = UnixIncludeTrailingBackslash(UnixExtractFilePath(FileName)) + DisplayName;
+    const UnicodeString FriendyFileName = TPath::Join(UnixExtractFilePath(FileName), DisplayName);
     std::unique_ptr<TStrings> FileListFriendly(std::make_unique<TStringList>());
     FileListFriendly->AddObject(FriendyFileName, File);
 
@@ -1308,7 +1308,7 @@ int Execute()
                 if (!DownloadFile.IsEmpty())
                 {
                   Session->AutoReadDirectory = false;
-                  DownloadFile = UnixIncludeTrailingBackslash(Session->SessionData->RemoteDirectory) + DownloadFile;
+                  DownloadFile = TPath::Join(Session->SessionData->RemoteDirectory, DownloadFile);
                   Session->SessionData->RemoteDirectory = L"";
                   Session->StateData->RemoteDirectory = Session->SessionData->RemoteDirectory;
                 }

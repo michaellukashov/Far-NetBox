@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -2391,7 +2391,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   }
 
   FInfo->Destination =
-    base::UnixIncludeTrailingBackslash(TargetDir) + CopyParam->GetFileMask();
+    TPath::Join(TargetDir, CopyParam->GetFileMask());
   FInfo->ModifiedRemote = base::UnixIncludeTrailingBackslash(TargetDir);
 }
 

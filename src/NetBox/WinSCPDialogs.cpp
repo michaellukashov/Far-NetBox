@@ -8362,7 +8362,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
       GetMsg(Move ? NB_REMOTE_MOVE_FILE : NB_REMOTE_COPY_FILE),
       GetMsg(Move ? NB_REMOTE_MOVE_FILES : NB_REMOTE_COPY_FILES), AFileList, true);
 
-  UnicodeString Value = base::UnixIncludeTrailingBackslash(Target) + FileMask;
+  UnicodeString Value = TPath::Join(Target, FileMask);
   const bool Result = FPlugin->InputBox(
       GetMsg(Move ? NB_REMOTE_MOVE_TITLE : NB_REMOTE_COPY_TITLE), Prompt,
       Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();

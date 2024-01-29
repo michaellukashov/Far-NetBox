@@ -5112,7 +5112,7 @@ UnicodeString TSessionData::GetFolderName() const
 UnicodeString TSessionData::ComposePath(
   const UnicodeString & APath, const UnicodeString & Name)
 {
-  return base::UnixIncludeTrailingBackslash(APath) + Name;
+  return TPath::Join(APath, Name);
 }
 
 void TSessionData::DisableAuthenticationsExceptPassword()
