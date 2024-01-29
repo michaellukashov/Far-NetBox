@@ -647,7 +647,7 @@ public:
 
 #endif // #if (defined _MSC_VER && _MSC_VER > 1900)
 
-class NB_CORE_EXPORT TPath : public TObject
+class TPath
 {
 public:
   static UnicodeString Combine(const UnicodeString & APath, const UnicodeString & AFileName);
@@ -656,9 +656,6 @@ public:
 };
 
 int32_t Random(int32_t Max);
-// TODO: TFile::ReadAllText TFile::WriteAllText
-UnicodeString ReadAllText(const UnicodeString & FileName);
-void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text);
 
 extern UnicodeString EmptyStr;
 

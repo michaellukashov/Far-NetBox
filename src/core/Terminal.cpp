@@ -9214,7 +9214,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
       LogEvent(FORMAT(L"Downloading current \"%s\" file...", OpensshAuthorizedKeysFileName));
       CopyToLocal(Files.get(), TemporaryDir, &CopyParam, cpNoConfirmation, nullptr);
       // Overload with Encoding parameter work incorrectly, when used on a file without BOM
-      AuthorizedKeys = /*TFile::*/ReadAllText(TemporaryAuthorizedKeysFile);
+      AuthorizedKeys = TFile::ReadAllText(TemporaryAuthorizedKeysFile);
 
       std::unique_ptr<TStrings> AuthorizedKeysLines(TextToStringList(AuthorizedKeys));
       int32_t P = Line.Pos(L" ");
@@ -9253,7 +9253,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
     {
       AuthorizedKeys += Line + L"\n";
       // Overload without Encoding parameter uses TEncoding::UTF8, but does not write BOM, what we want
-      WriteAllText(TemporaryAuthorizedKeysFile, AuthorizedKeys);
+      TFile::WriteAllText(TemporaryAuthorizedKeysFile, AuthorizedKeys);
       std::unique_ptr<TStrings> Files(std::make_unique<TStringList>());
       Files->Add(TemporaryAuthorizedKeysFile);
       LogEvent(FORMAT(L"Uploading updated \"%s\" file...", OpensshAuthorizedKeysFileName));
