@@ -708,12 +708,12 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
   while (Result.Length() == 0)
   {
     int32_t LineCount = 0;
-    wchar_t *w = nullptr;
+    wchar_t * W = nullptr;
 
     if (LenBuffer)
     {
       /* second pass, so create the wrapped buffer */
-      w = Result.SetLength(LenBuffer + 1);
+      W = Result.SetLength(LenBuffer + 1);
       if (Result.Length() == 0)
       {
         break;
@@ -721,19 +721,19 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
     }
 
     /* for each Word in Text
-         if Width(Word) > SpaceLeft
-           insert line break before Word in Text
-           SpaceLeft := LineWidth - Width(Word)
-         else
-           SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
+    if Width(Word) > SpaceLeft
+      insert line break before Word in Text
+      SpaceLeft := LineWidth - Width(Word)
+    else
+      SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
     */
-    const wchar_t *s = NextWord(Line.c_str());
-    while (s && *s)
+    const wchar_t * S = NextWord(Line.c_str());
+    while (S && *S)
     {
       int32_t SpaceLeft = MaxWidth;
 
       /* force the first word to always be completely copied */
-      while (s && *s)
+      while (S && *S)
       {
         if (Result.Length() == 0)
         {
@@ -741,18 +741,18 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
         }
         else
         {
-          if (w) *(w++) = *s;
+          if (W) *(W++) = *S;
         }
         --SpaceLeft;
-        ++s;
+        ++S;
       }
-      if (s && !*s)
+      if (S && !*S)
       {
-        s = NextWord(nullptr);
+        S = NextWord(nullptr);
       }
 
       /* copy as many words as will fit onto the current line */
-      while (*s && (nb::StrLength(s) + 1) <= SpaceLeft)
+      while (*S && (nb::StrLength(S) + 1) <= SpaceLeft)
       {
         if (Result.Length() == 0)
         {
@@ -761,7 +761,7 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
         --SpaceLeft;
 
         /* then copy the word */
-        while (*s)
+        while (*S)
         {
           if (Result.Length() == 0)
           {
@@ -769,22 +769,22 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
           }
           else
           {
-            if (w) *(w++) = *s;
+            if (W) *(W++) = *S;
           }
           --SpaceLeft;
-          ++s;
+          ++S;
         }
-        if (!*s)
+        if (!*S)
         {
-          s = NextWord(nullptr);
+          S = NextWord(nullptr);
         }
       }
-      if (!*s)
+      if (!*S)
       {
-        s = NextWord(nullptr);
+        S = NextWord(nullptr);
       }
 
-      if (*s)
+      if (*S)
       {
         /* add a new line here */
         if (Result.Length() == 0)
@@ -793,12 +793,12 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
         }
         else
         {
-          if (w) *(w++) = L'\n';
+          if (W) *(W++) = L'\n';
         }
         // Skip whitespace before first word on new line
-        while (iswspace(*s))
+        while (iswspace(*S))
         {
-          ++s;
+          ++S;
         }
       }
 
@@ -807,9 +807,9 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
 
     LenBuffer += 2;
 
-    if (w)
+    if (W)
     {
-      *w = 0;
+      *W = 0;
     }
   }
 
@@ -883,12 +883,12 @@ UnicodeString ExpandFileName(const UnicodeString & AFileName)
 {
   UnicodeString Buf(nb::NB_MAX_PATH + 1, 0);
   int32_t Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
-      reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
+    reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
     Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
-        reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
+      reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
   }
   UnicodeString Result = UnicodeString(Buf.c_str(), Size);
   return Result;
@@ -948,11 +948,11 @@ UnicodeString SysErrorMessage(DWORD ErrorCode)
 {
   wchar_t Buffer[255]{};
   int32_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt32(ErrorCode), 0,
-      static_cast<LPTSTR>(Buffer),
-      _countof(Buffer), nullptr);
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt32(ErrorCode), 0,
+    static_cast<LPTSTR>(Buffer),
+    _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
-      ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
+    ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
   {
     Len--;
   }
@@ -1012,7 +1012,7 @@ UnicodeString ExtractFileDrive(const UnicodeString & FileName)
     Result = FileName.SubStr(0,2);
   }
   else if (CharInSet(FileName[1], AllowDirectorySeparators) &&
-          CharInSet(FileName[2], AllowDirectorySeparators))
+           CharInSet(FileName[2], AllowDirectorySeparators))
   {
     int32_t I = 2;
     // skip share
@@ -1466,7 +1466,7 @@ static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 {
   TDateTime Result = ComposeDateTime(EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay),
-      EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
+    EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
   return Result;
 }
 
@@ -1799,44 +1799,45 @@ int32_t Random(int32_t Max)
 
 static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
 {
-  bool e;
-  const char * p;
+  bool E;
+  const char * P;
 
-  auto rb = [&p, &e]() -> unsigned char
+  auto rb = [&P, &E]() -> unsigned char
   {
-    unsigned char result{0};
-    if ((*p >= '0') && (*p <= '9'))
+    unsigned char Result{0};
+    if ((*P >= '0') && (*P <= '9'))
     {
-        result = *p - '0';
+      Result = *P - '0';
     }
-    else if ((*p >= 'a') && (*p <= 'f'))
+    else if ((*P >= 'a') && (*P <= 'f'))
     {
-        result = *p - 'a' + 10;
+      Result = *P - 'a' + 10;
     }
-    else if ((*p >= 'A') && (*p <= 'F'))
+    else if ((*P >= 'A') && (*P <= 'F'))
     {
-        result = *p - 'A' + 10;
+      Result = *P - 'A' + 10;
     }
     else
     {
-        e = false;
+      E = false;
     }
-    ++p;
-    return result;
+    ++P;
+    return Result;
   };
 
-  auto nextChar = [&p, &e](char c) {
-      if (*p != c)
-          e = false;
-      ++p;
+  auto nextChar = [&P, &E](char C)
+  {
+    if (*P != C)
+      E = false;
+    ++P;
   };
 
   if (S.Length() != 38)
     return false;
 
-  e = true;
+  E = true;
   const AnsiString str(S.c_str());
-  p = str.c_str();
+  P = str.c_str();
   nextChar('{');
   Guid.Data1 = (rb() << 28) | (rb() << 24) | (rb() << 20) | (rb() << 16) | (rb() << 12) | (rb() << 8) | (rb() << 4) | rb();
   nextChar('-');
@@ -1854,7 +1855,7 @@ static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
   Guid.Data4[6] = (rb() << 4) | rb();
   Guid.Data4[7] = (rb() << 4) | rb();
   nextChar('}');
-  return e;
+  return E;
 }
 
 bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName)
@@ -1907,7 +1908,8 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
     WORD SubstituteNameLength{0};
     WORD PrintNameOffset{0};
     WORD PrintNameLength{0};
-    union {
+    union
+    {
       WCHAR PathBufferMount[4096]{};
       struct
       {
@@ -1938,33 +1940,32 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
       if (PBuffer != nullptr)
       {
         if (DeviceIoControl(HFile, FSCTL_GET_REPARSE_POINT, nullptr, 0,
-                            PBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &BytesReturned, nullptr))
+          PBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &BytesReturned, nullptr))
         {
           switch (PBuffer->ReparseTag)
           {
             case IO_REPARSE_TAG_MOUNT_POINT:
             {
               SymLinkRec.TargetName = UnicodeString(
-                  &PBuffer->PathBufferMount[4 + PBuffer->SubstituteNameOffset / sizeof(WCHAR)],
-                  (PBuffer->SubstituteNameLength / sizeof(WCHAR)) - 4);
+                &PBuffer->PathBufferMount[4 + PBuffer->SubstituteNameOffset / sizeof(WCHAR)],
+                (PBuffer->SubstituteNameLength / sizeof(WCHAR)) - 4);
               if (SymLinkRec.TargetName.Length() == (CVolumePrefix.Length() + 2 + 32 + 4 + 1)
                   && SymLinkRec.TargetName.SubStr(0, CVolumePrefix.Length()) == CVolumePrefix
                   && TryStringToGUID(UnicodeString(
                                       SymLinkRec.TargetName.SubStr(CVolumePrefix.Length() + 1)),
                                       guid))
               {
-                  SymLinkRec.TargetName = CGlobalPrefix + SymLinkRec.TargetName;
+                SymLinkRec.TargetName = CGlobalPrefix + SymLinkRec.TargetName;
               }
               break;
             }
             case IO_REPARSE_TAG_SYMLINK:
             {
-              SymLinkRec.TargetName
-                  = UnicodeString(&PBuffer->PathBufferSym[PBuffer->PrintNameOffset / sizeof(WCHAR)],
-                                  PBuffer->PrintNameLength / sizeof(WCHAR));
+              SymLinkRec.TargetName = UnicodeString(
+                &PBuffer->PathBufferSym[PBuffer->PrintNameOffset / sizeof(WCHAR)],
+                  PBuffer->PrintNameLength / sizeof(WCHAR));
               if ((PBuffer->Flags & SYMLINK_FLAG_RELATIVE) != 0) {
-                  SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName)
-                                                         + SymLinkRec.TargetName);
+                  SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName) + SymLinkRec.TargetName);
               }
               break;
             }
@@ -2082,7 +2083,7 @@ bool DoExists(bool R, const UnicodeString & Path)
   {
     const int32_t Error = GetLastError();
     if ((Error == ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
-       (Error == ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
+        (Error == ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
     {
       Result = base::DirectoryExists(ExtractFileDir(Path));
     }
