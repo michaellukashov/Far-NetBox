@@ -2591,10 +2591,10 @@ void TSecureShell::VerifyHostKey(
       UnicodeString Buf = ConfigHostKey;
       while (!Result && !Buf.IsEmpty())
       {
-        UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
+        const UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
         if (ExpectedKey == L"*")
         {
-          UnicodeString Message = LoadStr(ANY_HOSTKEY);
+          const UnicodeString Message = LoadStr(ANY_HOSTKEY);
           FUI->Information(Message, true);
           FLog->Add(llException, Message);
           Result = true;
@@ -2620,7 +2620,7 @@ void TSecureShell::VerifyHostKey(
     {
       try
       {
-        UnicodeString StorageSource = StoreHostKey(Host, Port, KeyType, KeyStr);
+        const UnicodeString StorageSource = StoreHostKey(Host, Port, KeyType, KeyStr);
         StoredKeys = RetrieveHostKey(Host, Port, KeyType);
         if (StoredKeys != KeyStr)
         {
