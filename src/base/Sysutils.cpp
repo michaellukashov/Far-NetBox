@@ -658,27 +658,27 @@ NextWord(const wchar_t * Input)
 {
   static UnicodeString Buffer;
   wchar_t * pBuffer = Buffer.SetLength(1024);
-  static const wchar_t * text = nullptr;
+  static const wchar_t * Text = nullptr;
 
   const wchar_t * endOfBuffer = ToWCharPtr(Buffer) + Buffer.GetLength() - 1;
 
   if (Input)
   {
-    text = Input;
+    Text = Input;
   }
 
-  if (text)
+  if (Text)
   {
     /* add leading spaces */
-    while (iswspace(*text))
+    while (iswspace(*Text))
     {
-      *(pBuffer++) = *(text++);
+      *(pBuffer++) = *(Text++);
     }
 
     /* copy the word to our static buffer */
-    while (*text && !iswspace(*text) && pBuffer < endOfBuffer)
+    while (*Text && !iswspace(*Text) && pBuffer < endOfBuffer)
     {
-      *(pBuffer++) = *(text++);
+      *(pBuffer++) = *(Text++);
     }
   }
 
@@ -1632,9 +1632,11 @@ int32_t MonthsBetween(const TDateTime & ANow, const TDateTime & AThen)
 
 int32_t DaysBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
-  if (ANow > AThen) {
+  if (ANow > AThen)
+  {
     return nb::ToInt32(std::trunc(std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond));
-  } else {
+  } else
+  {
     return nb::ToInt32(std::trunc(std::abs(DateTimeDiff(AThen, ANow)) + HalfMilliSecond));
   }
 }
@@ -1964,8 +1966,9 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
               SymLinkRec.TargetName = UnicodeString(
                 &PBuffer->PathBufferSym[PBuffer->PrintNameOffset / sizeof(WCHAR)],
                   PBuffer->PrintNameLength / sizeof(WCHAR));
-              if ((PBuffer->Flags & SYMLINK_FLAG_RELATIVE) != 0) {
-                  SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName) + SymLinkRec.TargetName);
+              if ((PBuffer->Flags & SYMLINK_FLAG_RELATIVE) != 0)
+              {
+                SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName) + SymLinkRec.TargetName);
               }
               break;
             }
