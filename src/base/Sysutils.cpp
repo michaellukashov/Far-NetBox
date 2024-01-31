@@ -13,7 +13,7 @@
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
-  UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
+  const UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
   return Result;
 }
 
@@ -114,19 +114,19 @@ UnicodeString EmptyStr;
 
 UnicodeString IntToStr(int32_t Value)
 {
-  UnicodeString Result = FORMAT("%d", Value);
+  const UnicodeString Result = FORMAT("%d", Value);
   return Result;
 }
 
 UnicodeString UIntToStr(uint32_t Value)
 {
-  UnicodeString Result = FORMAT("%u", Value);
+  const UnicodeString Result = FORMAT("%u", Value);
   return Result;
 }
 
 UnicodeString Int64ToStr(int64_t Value)
 {
-  UnicodeString Result = FORMAT("%lld", Value);
+  const UnicodeString Result = FORMAT("%lld", Value);
   return Result;
 }
 
@@ -194,7 +194,7 @@ bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value)
 
 UnicodeString Trim(const UnicodeString & Str)
 {
-  UnicodeString Result = TrimRight(TrimLeft(Str));
+  const UnicodeString Result = TrimRight(TrimLeft(Str));
   return Result;
 }
 
@@ -403,7 +403,7 @@ bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 
 UnicodeString RightStr(const UnicodeString & Str, int32_t ACount)
 {
-  UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
+  const UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
   return Result;
 }
 
@@ -847,9 +847,9 @@ void AppendPathDelimiter(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  UnicodeString Buf(nb::NB_MAX_PATH, 0);
+  const UnicodeString Buf(nb::NB_MAX_PATH, 0);
   const int32_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWCharPtr(Buf), nb::ToDWord(nb::NB_MAX_PATH - 1));
-  UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
+  const UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
 
@@ -869,13 +869,13 @@ UnicodeString StringOfChar(const wchar_t Ch, int32_t Len)
 UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
   wchar_t Delimiter)
 {
-  UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);
+  const UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);
   return Result;
 }
 
 UnicodeString ExtractFileExt(const UnicodeString & AFileName)
 {
-  UnicodeString Result = ::ExtractFileExtension(AFileName, L'.');
+  const UnicodeString Result = ::ExtractFileExtension(AFileName, L'.');
   return Result;
 }
 
@@ -890,13 +890,13 @@ UnicodeString ExpandFileName(const UnicodeString & AFileName)
     Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
       reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
   }
-  UnicodeString Result = UnicodeString(Buf.c_str(), Size);
+  const UnicodeString Result = UnicodeString(Buf.c_str(), Size);
   return Result;
 }
 
 static UnicodeString GetUniversalName(const UnicodeString & AFileName)
 {
-  UnicodeString Result = AFileName;
+  const UnicodeString Result = AFileName;
   return Result;
 }
 
@@ -956,7 +956,7 @@ UnicodeString SysErrorMessage(DWORD ErrorCode)
   {
     Len--;
   }
-  UnicodeString Result = UnicodeString(Buffer, Len);
+  const UnicodeString Result = UnicodeString(Buffer, Len);
   return Result;
 }
 
@@ -988,7 +988,7 @@ UnicodeString ExtractShortPathName(const UnicodeString & APath)
 // "/foo/bar/baz.txt" --> "/foo/bar/"
 UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter)
 {
-  UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
+  const UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
   return Result;
 }
 
@@ -1123,13 +1123,13 @@ UnicodeString ExtractFileDir(const UnicodeString & Str)
 
 UnicodeString ExtractFilePath(const UnicodeString & Str)
 {
-  UnicodeString Result = ::ExtractFileDir(Str);
+  const UnicodeString Result = ::ExtractFileDir(Str);
   return Result;
 }
 
 UnicodeString GetCurrentDir()
 {
-  UnicodeString Result = GetGlobals()->GetCurrentDirectory();
+  const UnicodeString Result = GetGlobals()->GetCurrentDirectory();
   return Result;
 }
 
@@ -1694,7 +1694,7 @@ uint32_t StrToVersionNumber(const UnicodeString & VersionNumberStr)
   int32_t Shift = 16;
   while (!Version.IsEmpty())
   {
-    UnicodeString Num = CutToChar(Version, L'.', true);
+    const UnicodeString Num = CutToChar(Version, L'.', true);
     Result += nb::ToUInt32(Num.ToInt32()) << Shift;
     if (Shift >= 8)
       Shift -= 8;
@@ -1707,7 +1707,7 @@ UnicodeString VersionNumberToStr(uint32_t VersionNumber)
   const DWORD Major = (VersionNumber >> 16) & 0xFF;
   const DWORD Minor = (VersionNumber >> 8) & 0xFF;
   const DWORD Revision = (VersionNumber & 0xFF);
-  UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
+  const UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
 
@@ -1722,7 +1722,7 @@ TFormatSettings::TFormatSettings(LCID id) noexcept : id(id)
 
 UnicodeString TPath::Combine(const UnicodeString & APath, const UnicodeString & AFileName)
 {
-  UnicodeString Result = ::IncludeTrailingBackslash(APath) + AFileName;
+  const UnicodeString Result = ::IncludeTrailingBackslash(APath) + AFileName;
   return Result;
 }
 
