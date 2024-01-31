@@ -486,7 +486,7 @@ void QuickSort(nb::vector_t<O *> & SortList, int32_t L, int32_t R,
 }
 
 class TStringList;
-typedef int32_t (TStringListSortCompare)(TStringList * List, int32_t Index1, int32_t Index2);
+using TStringListSortCompare = int32_t (TStringList * List, int32_t Index1, int32_t Index2);
 
 class NB_CORE_EXPORT TStringList : public TStrings
 {
