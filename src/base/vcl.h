@@ -10,5 +10,6 @@
 #undef CreateLink
 #undef DeleteFile
 #undef GetCurrentDirectory
+#undef SetCurrentDirectory
 #undef GetUserName
 #undef GetEnvironmentVariable

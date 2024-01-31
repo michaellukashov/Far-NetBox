@@ -1777,7 +1777,7 @@ void TWebDAVFileSystem::Sink(
   {
     int64_t Size;
     int64_t MTime;
-    FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
+    FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
     TOverwriteFileParams FileParams;
 
     FileParams.SourceSize = AFile->GetSize();
@@ -1793,7 +1793,7 @@ void TWebDAVFileSystem::Sink(
 
   FILE_OPERATION_LOOP_BEGIN
   {
-    HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
+    HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
         GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
     if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
@@ -2091,7 +2091,7 @@ void TWebDAVFileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRem
     Lock->uri.path = ne_strdup(PathToNeon(FilePath(AFile)));
     Lock->depth = NE_DEPTH_INFINITE;
     Lock->timeout = NE_TIMEOUT_INFINITE;
-    Lock->owner = ne_strdup(StrToNeon(FTerminal->TerminalGetUserName()));
+    Lock->owner = ne_strdup(StrToNeon(FTerminal->GetUserName()));
     CheckStatus(ne_lock(FSessionContext->NeonSession, Lock));
 
     {
