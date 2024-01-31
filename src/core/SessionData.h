@@ -1064,7 +1064,7 @@ private:
   int32_t FNumberOfRetries{0};
   uint32_t FSessionVersion{0};
 
-  mutable TIEProxyConfig * FIEProxyConfig{nullptr};
+  mutable gsl::owner<TIEProxyConfig *> FIEProxyConfig{nullptr};
 };
 
 class NB_CORE_EXPORT TStoredSessionList final : public TNamedObjectList
