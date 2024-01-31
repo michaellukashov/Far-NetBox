@@ -1042,12 +1042,12 @@ Boolean TRemoteFile::GetIsInaccessibleDirectory() const
   {
     DebugAssert(GetTerminal());
     Result = !
-       (base::SameUserName(GetTerminal()->TerminalGetUserName(), L"root")) ||
+       (base::SameUserName(GetTerminal()->GetUserName(), L"root")) ||
         (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
           GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-          (base::SameUserName(GetTerminal()->TerminalGetUserName(), GetFileOwner().GetName()))));
+          (base::SameUserName(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
   }
     // else Result = False;
   return Result;

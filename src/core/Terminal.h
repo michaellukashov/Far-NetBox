@@ -278,15 +278,15 @@ public:
   void CommandError(Exception * E, const UnicodeString & AMsg);
   uint32_t CommandError(Exception * E, const UnicodeString & AMsg,
     uint32_t Answers, const UnicodeString & HelpKeyword = "");
-  UnicodeString RemoteGetCurrentDirectory();
+  UnicodeString GetCurrentDirectory();
   bool GetExceptionOnFail() const;
   const TRemoteTokenList * GetGroups() const { return const_cast<TTerminal *>(this)->GetGroups(); }
   const TRemoteTokenList * GetUsers() const { return const_cast<TTerminal *>(this)->GetUsers(); }
   const TRemoteTokenList * GetMembership() const { return const_cast<TTerminal *>(this)->GetMembership(); }
-  void TerminalSetCurrentDirectory(const UnicodeString & AValue);
+  void SetCurrentDirectory(const UnicodeString & AValue);
   void SetExceptionOnFail(bool Value);
   void ReactOnCommand(int32_t /*TFSCommand*/ ACmd);
-  UnicodeString TerminalGetUserName() const;
+  UnicodeString GetUserName() const;
   bool GetAreCachesEmpty() const;
   void ClearCachedFileList(const UnicodeString & APath, bool SubDirs);
   void AddCachedFileList(TRemoteFileList * FileList);
@@ -354,13 +354,13 @@ protected:
   void ReadDirectory(TRemoteFileList * AFileList);
   void CustomReadDirectory(TRemoteFileList * AFileList);
   void DoCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
-  bool TerminalCreateLocalFile(const UnicodeString & ATargetFileName,
+  bool CreateLocalFile(const UnicodeString & ATargetFileName,
     TFileOperationProgressType * AOperationProgress, HANDLE * AHandle,
     bool NoConfirmation);
-  void TerminalOpenLocalFile(const UnicodeString & ATargetFileName, DWORD Access,
+  void OpenLocalFile(const UnicodeString & ATargetFileName, DWORD Access,
     DWORD * AAttrs, HANDLE * AHandle, int64_t * ACTime, int64_t * AMTime,
     int64_t * AATime, int64_t * ASize, bool TryWriteReadOnly = true);
-  void TerminalOpenLocalFile(
+  void OpenLocalFile(
     const UnicodeString & AFileName, DWORD Access, TLocalFileHandle & Handle, bool TryWriteReadOnly = true);
   bool AllowLocalFileTransfer(
     const UnicodeString & AFileName, const TSearchRecSmart * SearchRec,
@@ -611,18 +611,18 @@ public:
     TParallelOperation * ParallelOperation);
   int32_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * AOperationProgress);
   void LogParallelTransfer(TParallelOperation * ParallelOperation);
-  void RemoteCreateDirectory(const UnicodeString & ADirName, const TRemoteProperties * Properties = nullptr);
-  void RemoteCreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
-  void RemoteDeleteFile(const UnicodeString & AFileName,
+  void CreateDirectory(const UnicodeString & ADirName, const TRemoteProperties * Properties = nullptr);
+  void CreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
+  void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * AParams = nullptr);
-  bool RemoteDeleteFiles(TStrings * AFilesToDelete, int32_t Params = 0);
+  bool DeleteFiles(TStrings * AFilesToDelete, int32_t Params = 0);
   bool DeleteLocalFiles(TStrings * AFileList, int32_t Params = 0);
   bool IsRecycledFile(const UnicodeString & AFileName);
   void CustomCommandOnFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile, void * AParams);
   void CustomCommandOnFiles(const UnicodeString & ACommand, int32_t AParams,
     TStrings * AFiles, TCaptureOutputEvent && OutputEvent);
-  void RemoteChangeDirectory(const UnicodeString & ADirectory);
+  void ChangeDirectory(const UnicodeString & ADirectory);
   void EndTransaction();
   void HomeDirectory();
   UnicodeString GetHomeDirectory();
@@ -635,14 +635,14 @@ public:
   void TerminalError(Exception * E, const UnicodeString & AMsg, const UnicodeString & AHelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
-  void TerminalRenameFile(const TRemoteFile * AFile, const UnicodeString & ANewName);
-  void TerminalMoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void RenameFile(const TRemoteFile * AFile, const UnicodeString & ANewName);
+  void MoveFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool TerminalMoveFiles(
+  bool MoveFiles(
     TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite);
-  void TerminalCopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
+  void CopyFile(const UnicodeString & AFileName, const TRemoteFile * AFile,
     /*const TMoveFileParams*/ void * Param);
-  bool TerminalCopyFiles(
+  bool CopyFiles(
     TStrings * AFileList, const UnicodeString & ATarget, const UnicodeString & AFileMask, bool DontOverwrite);
   bool CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalculateSizeParams & Params);
   bool CalculateLocalFilesSize(TStrings * FileList, int64_t & Size,
@@ -718,7 +718,7 @@ public:
   ROProperty<bool> Active{nb::bind(&TTerminal::GetActive, this)};
   __property TSessionStatus Status = { read = FStatus };
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory, write = SetCurrentDirectory };
-  RWProperty<UnicodeString> CurrentDirectory{nb::bind(&TTerminal::RemoteGetCurrentDirectory, this), nb::bind(&TTerminal::TerminalSetCurrentDirectory, this)};
+  RWProperty<UnicodeString> CurrentDirectory{nb::bind(&TTerminal::GetCurrentDirectory, this), nb::bind(&TTerminal::SetCurrentDirectory, this)};
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
   RWProperty<bool> ExceptionOnFail{nb::bind(&TTerminal::GetExceptionOnFail, this), nb::bind(&TTerminal::SetExceptionOnFail, this)};
   __property TRemoteDirectory * Files = { read = FFiles };
@@ -738,7 +738,7 @@ public:
   __property bool UseBusyCursor = { read = FUseBusyCursor, write = FUseBusyCursor };
   bool& UseBusyCursor{FUseBusyCursor};
   __property UnicodeString UserName = { read=GetUserName };
-  ROProperty<UnicodeString> UserName{nb::bind(&TTerminal::TerminalGetUserName, this)};
+  ROProperty<UnicodeString> UserName{nb::bind(&TTerminal::GetUserName, this)};
   // __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
   __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
   __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
@@ -837,7 +837,7 @@ public:
   TCustomFileSystem * GetFileSystem() const { return FFileSystem.get(); }
   TCustomFileSystem * GetFileSystem() { return FFileSystem.get(); }
 
-  HANDLE TerminalCreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
+  HANDLE CreateLocalFile(const UnicodeString & LocalFileName, DWORD DesiredAccess,
     DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
 
   bool CheckForEsc() const;

@@ -4797,7 +4797,7 @@ void TSFTPFileSystem::Source(
         // as deleting and recreating the file would change ownership.
         // This won't for work for SFTP-3 (OpenSSH) as it does not provide
         // owner name (only UID) and we know only logged in username (not UID)
-        else if (!FilePtr->GetFileOwner().GetName().IsEmpty() && !base::SameUserName(FilePtr->GetFileOwner().GetName(), FTerminal->TerminalGetUserName()))
+        else if (!FilePtr->GetFileOwner().GetName().IsEmpty() && !base::SameUserName(FilePtr->GetFileOwner().GetName(), FTerminal->GetUserName()))
         {
           ResumeAllowed = false;
           FTerminal->LogEvent(
@@ -5406,7 +5406,7 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
         {
           OperationProgress->Progress();
           int32_t Params = dfNoRecursive;
-          FTerminal->RemoteDeleteFile(OpenParams->RemoteFileName, nullptr, &Params);
+          FTerminal->DeleteFile(OpenParams->RemoteFileName, nullptr, &Params);
         }
       }
       else
@@ -5550,7 +5550,7 @@ void TSFTPFileSystem::Sink(
       {
         FTerminal->LogEvent("Partially transferred file exists.");
         int64_t ResumeOffset;
-        FTerminal->TerminalOpenLocalFile(DestPartialFullName, GENERIC_WRITE,
+        FTerminal->OpenLocalFile(DestPartialFullName, GENERIC_WRITE,
           nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, &ResumeOffset);
 
         const bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->GetTransferSize());
@@ -5628,7 +5628,7 @@ void TSFTPFileSystem::Sink(
     {
       int64_t DestFileSize;
       int64_t MTime;
-      FTerminal->TerminalOpenLocalFile(
+      FTerminal->OpenLocalFile(
         DestFullName, GENERIC_WRITE, nullptr, &LocalFileHandle, nullptr, &MTime, nullptr, &DestFileSize, false);
 
       FTerminal->LogEvent("Confirming overwriting of file.");
@@ -5673,7 +5673,7 @@ void TSFTPFileSystem::Sink(
         // probably fail anyway
         if ((LocalFileHandle == INVALID_HANDLE_VALUE) || (LocalFileHandle == nullptr))
         {
-          FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_WRITE, nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
+          FTerminal->OpenLocalFile(DestFullName, GENERIC_WRITE, nullptr, &LocalFileHandle, nullptr, nullptr, nullptr, nullptr);
         }
         ResumeAllowed = false;
         FileSeek(static_cast<THandle>(LocalFileHandle), DestFileSize, soFromBeginning);
@@ -5697,7 +5697,7 @@ void TSFTPFileSystem::Sink(
       // if not already opened (resume, append...), create new empty file
       if (!CheckHandle(LocalFileHandle))
       {
-        if (!FTerminal->TerminalCreateLocalFile(LocalFileName, OperationProgress,
+        if (!FTerminal->CreateLocalFile(LocalFileName, OperationProgress,
              &LocalFileHandle, FLAGSET(AParams, cpNoConfirmation)))
         {
           throw ESkipFile();

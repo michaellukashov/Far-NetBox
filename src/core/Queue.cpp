@@ -2181,7 +2181,7 @@ bool TBootstrapQueueItem::Complete()
 // TLocatedQueueItem
 
 TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, gsl::not_null<TTerminal *> Terminal) noexcept :
-  TLocatedQueueItem(Kind, Terminal->RemoteGetCurrentDirectory())
+  TLocatedQueueItem(Kind, Terminal->GetCurrentDirectory())
 {
 }
 
@@ -2205,7 +2205,7 @@ void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 {
   DebugAssert(Terminal != nullptr);
   if (Terminal)
-    Terminal->TerminalSetCurrentDirectory(FCurrentDir);
+    Terminal->SetCurrentDirectory(FCurrentDir);
 }
 
 // TTransferQueueItem
@@ -2487,10 +2487,10 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
     FInfo->Source = AFilesToCopy->GetString(0);
     if (base::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
-      FInfo->Source = base::UnixIncludeTrailingBackslash(ATerminal->RemoteGetCurrentDirectory()) +
-        FInfo->Source;
+      FInfo->Source = TPath::Join(ATerminal->GetCurrentDirectory(),
+        FInfo->Source);
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
-        base::UnixIncludeTrailingBackslash(ATerminal->RemoteGetCurrentDirectory());
+        base::UnixIncludeTrailingBackslash(ATerminal->GetCurrentDirectory());
     }
     else
     {
@@ -2538,7 +2538,7 @@ void TDeleteQueueItem::DoExecute(TTerminal * Terminal)
   TLocatedQueueItem::DoExecute(Terminal);
 
   DebugAssert(Terminal != nullptr);
-  Terminal->RemoteDeleteFiles(FFilesToDelete.get(), FParams);
+  Terminal->DeleteFiles(FFilesToDelete.get(), FParams);
 }
 
 // TTerminalThread
