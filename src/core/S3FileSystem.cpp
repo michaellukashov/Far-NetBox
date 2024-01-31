@@ -2361,7 +2361,7 @@ void TS3FileSystem::Sink(
   {
     int64_t Size;
     int64_t MTime;
-    FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
+    FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
     TOverwriteFileParams FileParams;
 
     FileParams.SourceSize = AFile->Size();
@@ -2383,7 +2383,7 @@ void TS3FileSystem::Sink(
   FILE_OPERATION_LOOP_BEGIN
   {
     HANDLE LocalFileHandle;
-    if (!FTerminal->TerminalCreateLocalFile(DestFullName, OperationProgress, &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
+    if (!FTerminal->CreateLocalFile(DestFullName, OperationProgress, &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
     {
       throw ESkipFile();
     }

@@ -1760,7 +1760,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
   std::unique_ptr<TStrings> UsedDirectives(CreateSortedStringList());
   for (int32_t Index = 0; Index < Lines->Count; Index++)
   {
-    UnicodeString Line = Lines->GetString(Index);
+    const UnicodeString Line = Lines->GetString(Index);
     UnicodeString Directive, Args;
     if (ParseOpensshDirective(Line, Directive, Args))
     {
@@ -1801,7 +1801,7 @@ void TSessionData::ImportFromOpenssh(TStrings * Lines)
       }
       else if (!SkippingSection && (UsedDirectives->IndexOf(Directive) < 0))
       {
-        UnicodeString Value = CutOpensshToken(Args);
+        const UnicodeString Value = CutOpensshToken(Args);
         // All the directives we support allow only one token
         if (Args.IsEmpty())
         {
@@ -2118,7 +2118,7 @@ void TSessionData::CacheHostKeyIfNotCached()
   const UnicodeString KeyType = KeyTypeFromFingerprint(GetHostKey());
 
   // Should allow importing to INI file as ImportHostKeys
-  UnicodeString TargetKey = GetConfiguration()->GetRegistryStorageKey() + L"\\" + GetConfiguration()->GetSshHostKeysSubKey();
+  const UnicodeString TargetKey = GetConfiguration()->GetRegistryStorageKey() + L"\\" + GetConfiguration()->GetSshHostKeysSubKey();
   std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(TargetKey));
   Storage->Init();
   Storage->SetAccessMode(smReadWrite);
@@ -5115,7 +5115,7 @@ UnicodeString TSessionData::GetFolderName() const
 UnicodeString TSessionData::ComposePath(
   const UnicodeString & APath, const UnicodeString & Name)
 {
-  return base::UnixIncludeTrailingBackslash(APath) + Name;
+  return TPath::Join(APath, Name);
 }
 
 void TSessionData::DisableAuthenticationsExceptPassword()
@@ -5629,7 +5629,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
           int32_t PortNumber = -1;
           if (P > 0)
           {
-            UnicodeString PortNumberStr = HostNameStr.SubString(P + 1, HostNameStr.Length() - P);
+            const UnicodeString PortNumberStr = HostNameStr.SubString(P + 1, HostNameStr.Length() - P);
             PortNumber = ::StrToIntPtr(PortNumberStr);
             HostNameStr.SetLength(P - 1);
           }
@@ -5661,9 +5661,9 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
 
           const struct ssh_keyalg * Algorithm;
           UnicodeString Key = ParseOpenSshPubLine(Line, Algorithm);
-          UnicodeString KeyKey =
+          const UnicodeString KeyKey =
             FORMAT(L"%s@%d:%s", Algorithm->cache_id, SessionData->PortNumber, HostNameStr);
-          UnicodeString HostKey =
+          const UnicodeString HostKey =
             FORMAT(L"%s:%s=%s", Algorithm->ssh_id, KeyKey, Key);
           UnicodeString HostKeyList = SessionData->HostKey;
           AddToList(HostKeyList, HostKey, L";");
@@ -6054,10 +6054,10 @@ int32_t TStoredSessionList::ImportHostKeys(
       const TSessionData * Session = Sessions->GetSession(Index);
       if (!OnlySelected || Session->Selected)
       {
-        UnicodeString HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", Session->PortNumber, Session->HostNameExpanded));
+        const UnicodeString HostKeyName = PuttyMungeStr(FORMAT("@%d:%s", Session->PortNumber, Session->HostNameExpanded));
         for (int32_t KeyIndex = 0; KeyIndex < KeyList->Count; KeyIndex++)
         {
-          UnicodeString KeyName = KeyList->GetString(KeyIndex);
+          const UnicodeString KeyName = KeyList->GetString(KeyIndex);
           if (EndsText(HostKeyName, KeyName))
           {
             TargetStorage->WriteStringRaw(KeyName, SourceStorage->ReadStringRaw(KeyName, ""));
@@ -6098,7 +6098,7 @@ void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList * Sessions)
           UnicodeString HostKey = CutToChar(HostKeys, L';', true);
           // skip alg
           CutToChar(HostKey, L':', true);
-          UnicodeString Key = CutToChar(HostKey, L'=', true);
+          const UnicodeString Key = CutToChar(HostKey, L'=', true);
           Storage->WriteStringRaw(Key, HostKey);
         }
       }

@@ -22,6 +22,7 @@
 #include "../base/Common.cpp"
 #include "../base/Exceptions.cpp"
 #include "../base/FileBuffer.cpp"
+#include "../base/System.IOUtils.cpp"
 #include "../base/Global.cpp"
 #include "../base/System.SyncObjs.cpp"
 #include "../base/FormatUtils.cpp"

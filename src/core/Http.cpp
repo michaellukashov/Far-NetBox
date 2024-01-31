@@ -129,7 +129,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           if (NeonStatus->klass != 2)
           {
             int32_t StatusCode = NeonStatus->code;
-            UnicodeString Message = StrFromNeon(NeonStatus->reason_phrase);
+            const UnicodeString Message = StrFromNeon(NeonStatus->reason_phrase);
             if (!GetOnError().empty())
             {
               GetOnError()(this, StatusCode, Message);
@@ -271,7 +271,7 @@ int32_t THttp::NeonServerSSLCallbackImpl(int32_t Failures, const ne_ssl_certific
     }
     while (true);
 
-    UnicodeString RootCert = UnicodeString(NeonExportCertificate(RootCertificate));
+    const UnicodeString RootCert = UnicodeString(NeonExportCertificate(RootCertificate));
     if (RootCert == Certificate)
     {
       Failures &= ~NE_SSL_UNTRUSTED;

@@ -51,7 +51,7 @@ if(PROJECT_PLATFORM STREQUAL "x86" AND CMAKE_BUILD_TYPE STREQUAL "Release")
 else()
   set(OPT_USE_UNITY_BUILD OFF CACHE STRING "Default use unity build")
 endif()
-set(OPT_CREATE_PLUGIN_DIR ON CACHE STRING "Create plugin dir")
+set(OPT_CREATE_PLUGIN_DIR OFF CACHE STRING "Create plugin dir")
 set(OPT_COMPILE_TESTS OFF CACHE STRING "Build tests using Catch2")
 
 #-------------------------------------------------------------------------------
@@ -2027,6 +2027,7 @@ set(WinSCP_SOURCES
   src/base/Common.cpp
   src/base/Exceptions.cpp
   src/base/FileBuffer.cpp
+  src/base/System.IOUtils.cpp
   src/base/Global.cpp
   src/base/System.SyncObjs.cpp
   src/base/FormatUtils.cpp
@@ -2228,6 +2229,7 @@ set(NETBOX_SOURCES
   src/base/MsgIDs.h
   src/base/vcl.h
   src/base/FileBuffer.h
+  src/base/System.IOUtils.hpp
   src/base/FormatUtils.h
   src/base/ObjIDs.h
 
@@ -2411,26 +2413,24 @@ file(GLOB DIST_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog
   ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt
 )
-# message("DIST_FILES: ${DIST_FILES}")
 
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
-  VERBATIM
-)
-add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.dll ${NETBOX_PLUGIN_DIR}\\
   VERBATIM
 )
 add_custom_command(TARGET NetBox POST_BUILD
+  COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
+  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
+  VERBATIM
   COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
   VERBATIM
 )
 
 foreach(DIST_FILE ${DIST_FILES})
-  # string(REPLACE "\\" "/" DIST_FILE ${DIST_FILE})
   add_custom_command(TARGET NetBox POST_BUILD
+    COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}\\
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DIST_FILE} ${NETBOX_PLUGIN_DIR}
   )
 endforeach()
 

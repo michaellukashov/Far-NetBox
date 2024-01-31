@@ -91,7 +91,7 @@ UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath)
 
 UnicodeString UnixCombinePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 {
-  return UnixIncludeTrailingBackslash(APath1) + APath2;
+  return TPath::Join(APath1, APath2);
 }
 
 Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2)
@@ -274,7 +274,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APa
   else
   {
     Result = base::UnixIncludeTrailingBackslash(
-      base::UnixIncludeTrailingBackslash(Base) + APath);
+      TPath::Join(Base, APath));
     int32_t P;
     while ((P = Result.Pos("/../")) > 0)
     {

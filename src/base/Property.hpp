@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <nbglobals.h>
 #include <FastDelegate.h>
+#include <Global.h>
 
 /// Borland CBuilder __property emulation
 /// 40 bytes using fu2::function
@@ -20,7 +21,7 @@ public:
   explicit ROProperty(TGetter && Getter) noexcept :
     _getter(std::move(Getter))
   {
-    Expects(!_getter.empty());
+    DebugCheck(!_getter.empty());
   }
   ROProperty(const ROProperty &) = default;
   ROProperty(ROProperty &&) noexcept = default;
@@ -29,13 +30,13 @@ public:
 
   constexpr T operator()() const
   {
-    Expects(_getter);
+    DebugCheck(_getter);
     return _getter();
   }
 
   constexpr operator T() const
   {
-    Expects(_getter);
+    DebugCheck(_getter);
     return _getter();
   }
 
@@ -47,13 +48,13 @@ public:
   constexpr T operator *() const { return _getter(); }
   constexpr bool operator ==(ValueType Value) const
   {
-    Expects(_getter);
+    DebugCheck(_getter);
     return _getter() == Value;
   }
 
   constexpr bool operator !=(ValueType rhs)
   {
-    Expects(_getter);
+    DebugCheck(_getter);
     return _getter() != rhs;
   }
 };
@@ -71,7 +72,7 @@ public:
   explicit ROIndexedProperty(TGetter && Getter) noexcept :
     _getter(std::move(Getter))
   {
-    Expects(!_getter.empty());
+    DebugCheck(!_getter.empty());
   }
   ROIndexedProperty(const ROIndexedProperty &) = default;
   ROIndexedProperty(ROIndexedProperty &&) noexcept = default;
@@ -79,7 +80,7 @@ public:
   ROIndexedProperty & operator =(ROIndexedProperty &&) noexcept = default;
   constexpr T operator [](int32_t Index)
   {
-    Expects(_getter);
+    DebugCheck(_getter);
     return _getter(Index);
   }
 };
@@ -95,7 +96,7 @@ public:
   explicit ROProperty2(const T * Value) noexcept :
     _value(Value)
   {
-    Expects(_value != nullptr);
+    DebugCheck(_value != nullptr);
   }
   ROProperty2(const ROProperty2 &) = default;
   ROProperty2(ROProperty2 &&) noexcept = default;
@@ -104,25 +105,25 @@ public:
 
   constexpr T operator ()() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
 
   constexpr operator T() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
 
   constexpr T operator ->() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return _value();
   }
 
   constexpr T operator ->()
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
 
@@ -131,13 +132,13 @@ public:
 
   friend bool constexpr inline operator ==(const ROProperty2 & lhs, const T & rhs)
   {
-    Expects(lhs._value);
+    DebugCheck(lhs._value);
     return *lhs._value == rhs;
   }
 
   friend bool constexpr inline operator !=(ROProperty2 & lhs, const T & rhs)
   {
-    Expects(lhs._value);
+    DebugCheck(lhs._value);
     return *lhs._value != rhs;
   }
 };
@@ -159,7 +160,7 @@ public:
     ROProperty<T>(std::move(Getter)),
     _setter(std::move(Setter))
   {
-    Expects(!_setter.empty());
+    DebugCheck(!_setter.empty());
   }
   RWProperty(const RWProperty &) = default;
   RWProperty(RWProperty &&) noexcept = default;
@@ -169,12 +170,12 @@ public:
   using ROProperty<T>::operator();
   void operator()(ValueType Value)
   {
-    Expects(_setter);
+    DebugCheck(_setter);
     _setter(Value);
   }
   void operator =(ValueType Value)
   {
-    Expects(_setter);
+    DebugCheck(_setter);
     _setter(Value);
   }
 };
@@ -192,7 +193,7 @@ public:
   explicit RWProperty2(T * Value) noexcept :
     _value(Value)
   {
-    Expects(_value != nullptr);
+    DebugCheck(_value != nullptr);
   }
   RWProperty2(const RWProperty2 &) = default;
   RWProperty2(RWProperty2 &&) noexcept = default;
@@ -201,25 +202,25 @@ public:
 
   constexpr T operator ()() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
 
   constexpr operator T() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
 
   constexpr T operator ->() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return _value();
   }
 
   constexpr T operator ->()
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
   // constexpr decltype(auto) operator*() const { return *_value; }
@@ -227,26 +228,26 @@ public:
 
   void operator()(ValueType Value)
   {
-    Expects(_value);
+    DebugCheck(_value);
     *_value = Value;
   }
 
   RWProperty2 & operator =(ValueType Value)
   {
-    Expects(_value);
+    DebugCheck(_value);
     *_value = Value;
     return *this;
   }
 
   friend bool constexpr inline operator ==(const RWProperty2 & lhs, ValueType rhs)
   {
-    Expects(lhs._value);
+    DebugCheck(lhs._value);
     return *lhs._value == rhs;
   }
 
   friend bool constexpr inline operator !=(RWProperty2 & lhs, ValueType rhs)
   {
-    Expects(lhs._value);
+    DebugCheck(lhs._value);
     return *lhs._value != rhs;
   }
 };
@@ -266,8 +267,8 @@ public:
     _value(Value),
     _setter(std::move(Setter))
   {
-    Expects(_value != nullptr);
-    Expects(!_setter.empty());
+    DebugCheck(_value != nullptr);
+    DebugCheck(!_setter.empty());
   }
   RWPropertySimple(const RWPropertySimple &) = default;
   RWPropertySimple(RWPropertySimple &&) noexcept = default;
@@ -275,22 +276,22 @@ public:
   RWPropertySimple & operator =(RWPropertySimple &&) noexcept = default;
   constexpr T operator ()() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
   constexpr operator T() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
   constexpr T operator ->() const
   {
-    Expects(_value);
+    DebugCheck(_value);
     return _value();
   }
   constexpr T operator ->()
   {
-    Expects(_value);
+    DebugCheck(_value);
     return *_value;
   }
 
@@ -299,24 +300,24 @@ public:
 
   void operator ()(ValueType Value)
   {
-    Expects(_setter);
+    DebugCheck(_setter);
     _setter(Value);
   }
   void operator =(ValueType Value)
   {
-    Expects(_setter);
+    DebugCheck(_setter);
     _setter(Value);
   }
 
   friend bool constexpr inline operator ==(const RWPropertySimple & lhs, ValueType rhs)
   {
-    Expects(lhs._value);
+    DebugCheck(lhs._value);
     return *lhs._value == rhs;
   }
 
   friend bool constexpr inline operator !=(const RWPropertySimple & lhs, ValueType rhs)
   {
-    Expects(lhs._value);
+    DebugCheck(lhs._value);
     return *lhs._value != rhs;
   }
 

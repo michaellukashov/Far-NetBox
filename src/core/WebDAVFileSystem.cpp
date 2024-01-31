@@ -90,7 +90,7 @@ static UnicodeString PathUnescape(const char * Path)
     // In such case, take the path as is and we will probably overwrite the name with "display name".
     UtfResult = Path;
   }
-  UnicodeString Result = StrFromNeon(UtfResult.data());
+  const UnicodeString Result = StrFromNeon(UtfResult.data());
   return Result;
 }
 
@@ -153,7 +153,7 @@ UnicodeString NeonVersion()
 {
   UnicodeString Str = StrFromNeon(ne_version_string());
   CutToChar(Str, L' ', true); // "neon"
-  UnicodeString Result = CutToChar(Str, L':', true);
+  const UnicodeString Result = CutToChar(Str, L':', true);
   return Result;
 }
 
@@ -421,7 +421,7 @@ void TWebDAVFileSystem::NeonAddAuthentication(TSessionContext * SessionContext, 
 
 UnicodeString TWebDAVFileSystem::GetRedirectUrl() const
 {
-  UnicodeString Result = GetNeonRedirectUrl(FSessionContext->NeonSession);
+  const UnicodeString Result = GetNeonRedirectUrl(FSessionContext->NeonSession);
   FTerminal->LogEvent(FORMAT("Redirected to \"%s\".", Result));
   return Result;
 }
@@ -973,7 +973,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     if (ResourceType != nullptr)
     {
       // property has XML value
-      UnicodeString AResourceType = ResourceType;
+      // UnicodeString AResourceType = ResourceType;
       // this is very poor parsing
       if (ContainsText(ResourceType, "<DAV:collection"))
       {
@@ -1347,7 +1347,7 @@ void TWebDAVFileSystem::Source(
   int32_t FD = -1;
   try__finally
   {
-    UnicodeString DestFullName = base::UnixIncludeTrailingBackslash(ATargetDir) + ADestFileName;
+    UnicodeString DestFullName = TPath::Join(ATargetDir, ADestFileName);
     // DEBUG_PRINTF("DestFullName: %s", DestFullName);
 
     std::unique_ptr<TRemoteFile> RemoteFile;
@@ -1383,7 +1383,7 @@ void TWebDAVFileSystem::Source(
         &FileParams, CopyParam, AParams);
     }
 
-    DestFullName = ATargetDir + ADestFileName;
+    DestFullName = TPath::Join(ATargetDir, ADestFileName);
     // only now, we know the final destination
     // (not really true as we do not support changing file name on overwrite dialog)
     Action.Destination(DestFullName);
@@ -1777,7 +1777,7 @@ void TWebDAVFileSystem::Sink(
   {
     int64_t Size;
     int64_t MTime;
-    FTerminal->TerminalOpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
+    FTerminal->OpenLocalFile(DestFullName, GENERIC_READ, nullptr, nullptr, nullptr, &MTime, nullptr, &Size);
     TOverwriteFileParams FileParams;
 
     FileParams.SourceSize = AFile->GetSize();
@@ -1793,7 +1793,7 @@ void TWebDAVFileSystem::Sink(
 
   FILE_OPERATION_LOOP_BEGIN
   {
-    HANDLE LocalFileHandle = FTerminal->TerminalCreateLocalFile(DestFullName,
+    HANDLE LocalFileHandle = FTerminal->CreateLocalFile(DestFullName,
         GENERIC_WRITE, 0, FLAGSET(AParams, cpNoConfirmation) ? CREATE_ALWAYS : CREATE_NEW, 0);
     if (LocalFileHandle == INVALID_HANDLE_VALUE)
     {
@@ -2091,7 +2091,7 @@ void TWebDAVFileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRem
     Lock->uri.path = ne_strdup(PathToNeon(FilePath(AFile)));
     Lock->depth = NE_DEPTH_INFINITE;
     Lock->timeout = NE_TIMEOUT_INFINITE;
-    Lock->owner = ne_strdup(StrToNeon(FTerminal->TerminalGetUserName()));
+    Lock->owner = ne_strdup(StrToNeon(FTerminal->GetUserName()));
     CheckStatus(ne_lock(FSessionContext->NeonSession, Lock));
 
     {

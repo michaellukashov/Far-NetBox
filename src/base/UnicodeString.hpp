@@ -13,6 +13,7 @@ class UTF8String
 public:
   UTF8String() = default;
   UTF8String(UTF8String && rhs) noexcept : Data(rhs.Data) {}
+
   UTF8String(const UTF8String & rhs);
   explicit UTF8String(const UnicodeString & Str);
   UTF8String(const wchar_t * Str);
@@ -82,6 +83,7 @@ class UnicodeString
 public:
   UnicodeString() = default;
   UnicodeString(UnicodeString && rhs) noexcept : Data(rhs.Data) {}
+
   UnicodeString(const wchar_t * Str);
   UnicodeString(const wchar_t * Str, int32_t Length);
   explicit UnicodeString(wchar_t Src) = delete;
@@ -223,6 +225,7 @@ class AnsiString
 public:
   AnsiString() = default;
   AnsiString(AnsiString && rhs) noexcept : Data(rhs.Data) {}
+
   AnsiString(const AnsiString & rhs);
   AnsiString(int32_t Length, char Ch) : Data(Ch, Length) {}
   explicit AnsiString(const wchar_t * Str);
@@ -305,6 +308,7 @@ class RawByteString
 public:
   RawByteString() = default;
   RawByteString(RawByteString && rhs) noexcept : Data(rhs.Data) {}
+
   explicit RawByteString(const wchar_t * Str);
   explicit RawByteString(const wchar_t * Str, int32_t Length);
   RawByteString(const char * Str);

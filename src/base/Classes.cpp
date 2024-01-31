@@ -1206,6 +1206,11 @@ TFileStream::~TFileStream() noexcept
   SAFE_CLOSE_HANDLE(FHandle);
 }
 
+TFileStream * TFileStream::Create(const UnicodeString & AFileName, uint16_t Mode)
+{
+  return new TFileStream(AFileName, Mode);
+}
+
 TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
   THandleStream(AHandle)
 {
@@ -1464,7 +1469,7 @@ DWORD RegDataToDataType(TRegDataType Value)
   return Result;
 }
 
-class ERegistryException final : public std::exception
+class ERegistryException final // : public std::exception
 {
 };
 

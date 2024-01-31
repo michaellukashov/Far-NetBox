@@ -1,6 +1,11 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [24.1.1.577] - 2024-01-28
+### Fixed
+- FTP,WebDAV,S3: "Encryption" setting was not saved correctly
+https://forum.farmanager.com/viewtopic.php?p=177022#p177022
+
 ## [24.1.1.575] - 2024-01-23
 ### Fixed
 - Bugfix: Crash when session option "[x] Cache visited remote directories" is set

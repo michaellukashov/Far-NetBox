@@ -71,7 +71,7 @@ UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
 
 UnicodeString UnixCombinePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
-  return UnixIncludeTrailingBackslash(Path1) + Path2;
+  return TPath::Join(Path1, Path2);
 }
 
 Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2)
@@ -1042,12 +1042,12 @@ Boolean TRemoteFile::GetIsInaccessibleDirectory() const
   {
     DebugAssert(GetTerminal());
     Result = !
-       (base::SameUserName(GetTerminal()->TerminalGetUserName(), L"root")) ||
+       (base::SameUserName(GetTerminal()->GetUserName(), L"root")) ||
         (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
         ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
           GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
         ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
-          (base::SameUserName(GetTerminal()->TerminalGetUserName(), GetFileOwner().GetName()))));
+          (base::SameUserName(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
   }
     // else Result = False;
   return Result;
@@ -1624,7 +1624,7 @@ UnicodeString TRemoteFile::GetFullFileName() const
     }
     else if (GetIsDirectory())
     {
-      Result = base::UnixIncludeTrailingBackslash(GetDirectory()->GetFullDirectory() + GetFileName());
+      Result = base::UnixIncludeTrailingBackslash(TPath::Join(GetDirectory()->GetFullDirectory(), GetFileName()));
     }
     else
     {

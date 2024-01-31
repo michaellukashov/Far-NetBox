@@ -373,7 +373,7 @@ struct SelfTest {       \
 #endif
 
 #define NB_DISABLE_COPY(Class) \
-private: \
+public: \
   Class(Class &&) noexcept = delete; \
   Class & operator =(Class &&) noexcept = delete; \
   Class(const Class &) = delete; \
@@ -407,7 +407,7 @@ template <class T> using add_const_t = typename add_const<T>::type;
 
 } // namespace nb
 
-#ifdef _WIN32
+/*#ifdef _WIN32
 #define STD_ALLOC_CDECL __cdecl
 #else
 #define STD_ALLOC_CDECL
@@ -428,6 +428,6 @@ namespace std
   {
     return nb::custom_nballocator_t<_Tp2>();
   }
-}
+}*/
 
 #endif //__cplusplus

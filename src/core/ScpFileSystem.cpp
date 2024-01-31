@@ -1066,7 +1066,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         FLAGMASK(FTerminal->GetSessionData()->GetIgnoreLsWarnings(), ecIgnoreWarnings);
       UnicodeString Options =
         ((FLsFullTime == asAuto) || (FLsFullTime == asOn)) ? FullTimeOption : "";
-      const bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->RemoteGetCurrentDirectory());
+      const bool ListCurrentDirectory = (FileList->GetDirectory() == FTerminal->GetCurrentDirectory());
       if (ListCurrentDirectory)
       {
         FTerminal->LogEvent("Listing current directory.");
@@ -1575,7 +1575,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   {
     const TCustomCommandData Data(FTerminal);
     const UnicodeString Cmd = TRemoteCustomCommand(
-      Data, FTerminal->RemoteGetCurrentDirectory(), AFileName, L"").
+      Data, FTerminal->GetCurrentDirectory(), AFileName, L"").
       Complete(ACommand, true);
 
     if (!FTerminal->DoOnCustomCommand(Cmd))
@@ -1749,7 +1749,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
   Params &= ~(cpAppend | cpResume);
   // UnicodeString Options = L"";
-  const bool CheckExistence = base::UnixSamePath(TargetDir, FTerminal->RemoteGetCurrentDirectory()) &&
+  const bool CheckExistence = base::UnixSamePath(TargetDir, FTerminal->GetCurrentDirectory()) &&
     (FTerminal->GetFiles() != nullptr) && FTerminal->GetFiles()->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;
@@ -1831,7 +1831,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
           {
             int64_t MTime = 0;
             TOverwriteFileParams FileParams;
-            FTerminal->TerminalOpenLocalFile(FileName, GENERIC_READ, 
+            FTerminal->OpenLocalFile(FileName, GENERIC_READ, 
               nullptr, nullptr, nullptr, &MTime, nullptr,
               &FileParams.SourceSize);
             FileParams.SourceTimestamp = ::UnixToDateTime(MTime,
@@ -1879,8 +1879,8 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
           if (base::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
           {
-            FTerminal->DirectoryModified(base::UnixIncludeTrailingBackslash(TargetDir) +
-              FileNameOnly, true);
+            FTerminal->DirectoryModified(TPath::Join(TargetDir,
+              FileNameOnly), true);
           }
         }
 
@@ -1992,7 +1992,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   }
 
   TLocalFileHandle LocalFileHandle;
-  FTerminal->TerminalOpenLocalFile(RealFileName, GENERIC_READ, LocalFileHandle);
+  FTerminal->OpenLocalFile(RealFileName, GENERIC_READ, LocalFileHandle);
 
   OperationProgress->SetFileInProgress();
 
@@ -2270,7 +2270,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   }
   FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, DirectoryName));
 
-  const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TargetDir + DestFileName);
+  const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TPath::Join(TargetDir, DestFileName));
 
   // UnicodeString Buf;
 
@@ -2419,7 +2419,7 @@ void TSCPFileSystem::CopyToLocal(TStrings * AFilesToCopy,
               {
                 // pass full file name in FileName, in case we are not moving
                 // from current directory
-                FTerminal->RemoteDeleteFile(FileName, File);
+                FTerminal->DeleteFile(FileName, File);
               }
               FILE_OPERATION_LOOP_END(FMTLOAD(DELETE_FILE_ERROR, FileName));
             }
@@ -2756,7 +2756,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
                   TOverwriteFileParams FileParams;
                   FileParams.SourceSize = OperationProgress->GetTransferSize();
                   FileParams.SourceTimestamp = FileData.Modification;
-                  FTerminal->TerminalOpenLocalFile(DestFileName, GENERIC_READ,
+                  FTerminal->OpenLocalFile(DestFileName, GENERIC_READ,
                     nullptr, nullptr, nullptr, &TimeStamp, nullptr,
                     &FileParams.DestSize);
                   FileParams.DestTimestamp = ::UnixToDateTime(TimeStamp,
@@ -2779,7 +2779,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
 
                 Action.Destination(DestFileName);
 
-                if (!FTerminal->TerminalCreateLocalFile(DestFileName, OperationProgress,
+                if (!FTerminal->CreateLocalFile(DestFileName, OperationProgress,
                        &LocalFileHandle, FLAGSET(Params, cpNoConfirmation)))
                 {
                   SkipConfirmed = true;

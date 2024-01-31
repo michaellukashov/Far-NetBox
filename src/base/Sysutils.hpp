@@ -646,17 +646,15 @@ public:
 
 #endif // #if (defined _MSC_VER && _MSC_VER > 1900)
 
-class NB_CORE_EXPORT TPath : public TObject
+class TPath
 {
 public:
   static UnicodeString Combine(const UnicodeString & APath, const UnicodeString & AFileName);
+  static UnicodeString Join(const UnicodeString & APath, const UnicodeString & AFileName);
   static bool IsDriveRooted(const UnicodeString & /*APath*/) { return false; } // TODO: implement
 };
 
 int32_t Random(int32_t Max);
-// TODO: TFile::ReadAllText TFile::WriteAllText
-UnicodeString ReadAllText(const UnicodeString & FileName);
-void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text);
 
 extern UnicodeString EmptyStr;
 
@@ -685,7 +683,7 @@ using namespace Sysutils;
 namespace base {
 
 FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append = false);
-bool WriteAndFlush(FILE * file, void const * data, size_t size);
+bool WriteAndFlush(FILE * File, void const * Data, size_t Size);
 
 bool FileExists(const UnicodeString & AFileName);
 bool FileRemove(const UnicodeString & AFileName);
