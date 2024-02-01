@@ -448,6 +448,7 @@ void TCustomFarPlugin::CloseFileSystem(TCustomFarFileSystem * FileSystem)
     SCOPE_EXIT
     {
       FOpenedPlugins->Remove(FileSystem);
+      delete FileSystem;
     };
     TGuard Guard(FileSystem->GetCriticalSection()); nb::used(Guard);
     FileSystem->Close();

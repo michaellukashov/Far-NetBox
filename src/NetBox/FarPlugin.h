@@ -120,7 +120,7 @@ public:
   VersionInfo GetMinFarVersion() const;
 public:
   explicit TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept;
-  virtual ~TCustomFarPlugin() override;
+  virtual ~TCustomFarPlugin() noexcept override;
   virtual void Initialize();
   virtual void Finalize();
 
