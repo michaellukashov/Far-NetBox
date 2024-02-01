@@ -4358,6 +4358,7 @@ public:
     TFarDialogItem * EnabledDependency);
 protected:
   bool FAnyDirectories{false};
+  bool Recursive{false};
   TFarCheckBox * FCheckBoxes[12]{};
   TRights::TState FFixedStates[12]{};
   TFarEdit * FOctalEdit{nullptr};
@@ -4368,6 +4369,7 @@ protected:
 
 public:
   TRights GetRights();
+  void SetRecursive(bool ARecursive);
   void SetRights(const TRights & Value);
   void SetAddXToDirectories(bool Value);
   bool GetAddXToDirectories() const;
@@ -4533,8 +4535,12 @@ void TRightsContainer::UpdateControls()
 
     if (FDirectoriesXCheck)
     {
-      FDirectoriesXCheck->SetEnabled(
+      FDirectoriesXCheck->SetEnabled(Recursive ||
         !((R.GetNumberSet() & TRights::rfExec) == TRights::rfExec));
+      if (!Recursive && (R.GetNumberSet() & TRights::rfExec) == TRights::rfExec)
+      {
+        SetAddXToDirectories(false);
+      }
     }
 
     if (!FOctalEdit->Focused())
@@ -4622,6 +4628,14 @@ TRights TRightsContainer::GetRights()
       GetStates(static_cast<TRights::TRight>(Right)));
   }
   return Result;
+}
+
+void TRightsContainer::SetRecursive(bool ARecursive)
+{
+  if (Recursive != ARecursive)
+  {
+    Recursive = ARecursive;
+  }
 }
 
 void TRightsContainer::SetRights(const TRights & Value)
@@ -4931,6 +4945,7 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
 #undef STORE_NAME
 
   Properties.Recursive = RecursiveCheck != nullptr && RecursiveCheck->GetChecked();
+  RightsContainer->SetRecursive(Properties.Recursive);
 }
 
 bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
