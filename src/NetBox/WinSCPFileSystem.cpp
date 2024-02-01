@@ -1879,6 +1879,10 @@ void TWinSCPFileSystem::FileProperties()
       {
         Flags |= cpGroup;
       }
+      if (FTerminal->GetIsCapable(fcGroupOwnerChangingByID))
+      {
+        Flags |= cpIDs;
+      }
 
       TRemoteProperties NewProperties = CurrentProperties;
       if (PropertiesDialog(FileList.get(), FTerminal->RemoteGetCurrentDirectory(),
