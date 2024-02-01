@@ -2564,7 +2564,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       for (int32_t Index4 = GetConfiguration()->GetTunnelLocalPortNumberLow();
         Index4 <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index4)
       {
-        TunnelLocalPortNumberEdit->GetItems()->Add(::IntToStr(Index1));
+        TunnelLocalPortNumberEdit->GetItems()->Add(::IntToStr(Index4));
       }
     }
     __finally
