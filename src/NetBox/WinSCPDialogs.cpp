@@ -1488,7 +1488,7 @@ public:
   explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) noexcept;
   virtual ~TSessionDialog() noexcept override;
 
-  bool Execute(TSessionData * SessionData, TSessionActionEnum Action);
+  bool Execute(TSessionData * SessionData, TSessionActionEnum & Action);
 
 protected:
   virtual void Change() override;
@@ -3147,7 +3147,7 @@ void TSessionDialog::UpdateControls()
   TunnelTab->SetEnabled(InternalSshProtocol);
 }
 
-bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Action)
+bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
 {
   constexpr int32_t Captions[] =
   {
@@ -4338,7 +4338,7 @@ int32_t TSessionDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
 }
 
 bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
-  TSessionActionEnum Action)
+  TSessionActionEnum & Action)
 {
   std::unique_ptr<TSessionDialog> Dialog(std::make_unique<TSessionDialog>(FPlugin, Action));
   const bool Result = Dialog->Execute(SessionData, Action);
