@@ -3775,7 +3775,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Acti
 
     for (int32_t Index6 = 0; Index6 < KEX_COUNT; ++Index6)
     {
-      SessionData->SetKex(Index6, static_cast<TKex>(nb::ToUIntPtr(KexListBox->GetItems()->GetObj(Index))));
+      SessionData->SetKex(Index6, static_cast<TKex>(nb::ToUIntPtr(KexListBox->GetItems()->GetObj(Index6))));
     }
 
     // Authentication tab
