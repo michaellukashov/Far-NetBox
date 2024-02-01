@@ -532,12 +532,10 @@ int32_t TStringList::AddObject(const UnicodeString & S, const TObject * AObject)
         Error(SDuplicateString, 2);
         break;
       case dupAccept:
-        Result = GetCount();
+        ++Result;
         break;
       }
     }
-    else
-      Result = GetCount();
   }
   InsertItem(Result, S, AObject);
   return Result;
@@ -546,12 +544,11 @@ int32_t TStringList::AddObject(const UnicodeString & S, const TObject * AObject)
 bool TStringList::Find(const UnicodeString & S, int32_t & Index) const
 {
   bool Result = false;
-  Index = nb::NPOS;
   if (GetSorted())
   {
     int32_t L = 0;
-    int32_t H = GetCount() - 1;
-    while ((H != nb::NPOS) && (L <= H))
+    int32_t H = GetCount();
+    while (L < H)
     {
       const int32_t Idx = (L + H) >> 1;
       const int32_t C = CompareStrings(FStrings[Idx], S);
@@ -559,23 +556,22 @@ bool TStringList::Find(const UnicodeString & S, int32_t & Index) const
       {
         L = Idx + 1;
       }
+      else if (C == 0)
+      {
+        Index = Idx;
+        return true;
+      }
       else
       {
-        H = Idx - 1;
-        if (C == 0)
-        {
-          Result = true;
-          Index = L;
-          if (FDuplicates != dupAccept)
-          {
-            L = Idx;
-          }
-        }
+        H = Idx;
       }
     }
+    Index = H;
+    return false;
   }
   else
   {
+    Index = GetCount();
     for (int32_t Idx = 0; Idx < GetCount(); Idx++)
     {
       const int32_t C = CompareStrings(FStrings[Idx], S);
