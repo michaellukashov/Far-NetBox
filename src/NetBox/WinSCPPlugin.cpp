@@ -78,6 +78,7 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
   {
     // GetFarConfiguration()->SetPlugin(nullptr);
     CoreFinalize();
+    FInitialized = false;
   }
   // DEBUG_PRINTF("begin");
 }
