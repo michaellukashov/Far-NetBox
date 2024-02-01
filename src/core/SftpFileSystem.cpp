@@ -2247,7 +2247,6 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
     case fcOwnerChanging:
     case fcGroupChanging:
       return
-        (FVersion <= 3) ||
         ((FVersion >= 4) &&
          (!FSupport->Loaded ||
           FLAGSET(FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP)));

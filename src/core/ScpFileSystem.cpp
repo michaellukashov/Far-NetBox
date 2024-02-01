@@ -479,6 +479,7 @@ bool TSCPFileSystem::IsCapable(int32_t Capability) const
     case fcPreservingTimestampUpload:
     case fcGroupChanging:
     case fcOwnerChanging:
+    case fcGroupOwnerChangingByID:
     case fcAnyCommand:
     case fcShellAnyCommand:
     case fcHardLink:
@@ -504,7 +505,6 @@ bool TSCPFileSystem::IsCapable(int32_t Capability) const
     case fcCheckingSpaceAvailable:
     case fcIgnorePermErrors:
     case fcSecondaryShell: // has fcShellAnyCommand
-    case fcGroupOwnerChangingByID: // by name
     case fcMoveToQueue:
     case fcLocking:
     case fcPreservingTimestampDirs:
