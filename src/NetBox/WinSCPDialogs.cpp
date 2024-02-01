@@ -2263,7 +2263,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_CONNECTION_GROUP));
 
-  Text = new TFarText(this);
   SetNextItemPosition(ipNewLine);
 
   SshBufferSizeCheck = new TFarCheckBox(this);
