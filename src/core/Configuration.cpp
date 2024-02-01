@@ -740,7 +740,7 @@ void TConfiguration::CopyAllStringsInSubKey(
 
     for (int32_t Index = 0; Index < Names->Count; Index++)
     {
-      UnicodeString Buf = Source->ReadStringRaw(Names->GetString(Index), UnicodeString());
+      const UnicodeString Buf = Source->ReadStringRaw(Names->GetString(Index), UnicodeString());
       Target->WriteStringRaw(Names->GetString(Index), Buf);
     }
 
@@ -761,7 +761,7 @@ void TConfiguration::CopyData(THierarchicalStorage * Source,
 
       for (int32_t Index = 0; Index < Names->GetCount(); ++Index)
       {
-        UnicodeString Name = Names->GetString(Index);
+        const UnicodeString Name = Names->GetString(Index);
         Target->WriteBinaryData(Name, Source->ReadBinaryData(Name));
       }
 
@@ -1000,11 +1000,11 @@ bool TConfiguration::RegistryPathExists(const UnicodeString & RegistryPath) cons
 
 void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
 {
-  UnicodeString CompanyKey = GetCompanyRegistryKey();
+  const UnicodeString CompanyKey = GetCompanyRegistryKey();
   const UnicodeString Prefix = IncludeTrailingBackslash(CompanyKey);
   if (DebugAlwaysTrue(SameStr(LeftStr(RegistryStorageKey, Prefix.Length()), Prefix)))
   {
-    UnicodeString CompanyParentKey = ExtractFileDir(CompanyKey);
+    const UnicodeString CompanyParentKey = ExtractFileDir(CompanyKey);
     std::unique_ptr<TRegistryStorage> Registry(std::make_unique<TRegistryStorage>(CompanyParentKey));
     const UnicodeString RegistryStorageSubKey = MidStr(RegistryStorageKey, CompanyParentKey.Length() + 2);
     Registry->UnmungedRoot = RegistryStorageSubKey;
@@ -1014,7 +1014,7 @@ void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
     UnicodeString Buf = ARegistryPath;
     while (!Buf.IsEmpty())
     {
-      UnicodeString ParentKey = ExtractFileDir(Buf);
+      const UnicodeString ParentKey = ExtractFileDir(Buf);
       // Actually can be simplified to Registry->OpenSubKeyPath(ParentKey, false)
       if (ParentKey.IsEmpty() ? Registry->OpenRootKey(false) : Registry->OpenSubKeyPath(ParentKey, false))
       {
@@ -1260,7 +1260,7 @@ bool TConfiguration::GetIsUnofficial() const
 
 static TDateTime GetBuildDate()
 {
-  UnicodeString BuildDateStr = __DATE__;
+  UnicodeString BuildDateStr = NB_TEXT(__DATE__);
   const UnicodeString MonthStr = CutToChar(BuildDateStr, L' ', true);
   const int32_t Month = ParseShortEngMonthName(MonthStr);
   const int32_t Day = StrToIntDef(CutToChar(BuildDateStr, L' ', true), 0);
@@ -1321,7 +1321,7 @@ UnicodeString TConfiguration::GetVersionStrHuman()
       DateStr = FormatDateTime(L"ddddd", BuildDate);
     }
 
-    UnicodeString Result = FORMAT(L"%s (%s)", FullVersion, DateStr);
+    const UnicodeString Result = FORMAT(L"%s (%s)", FullVersion, DateStr);
 
     return Result;
   }
@@ -1499,7 +1499,7 @@ UnicodeString TConfiguration::GetFileMimeType(const UnicodeString & AFileName) c
     while (!Found && !AMimeTypes.IsEmpty())
     {
       UnicodeString Token = CutToChar(AMimeTypes, L',', true);
-      UnicodeString MaskStr = CutToChar(Token, L'=', true);
+      const UnicodeString MaskStr = CutToChar(Token, L'=', true);
       TFileMasks Mask(MaskStr);
       if (Mask.MatchesFileName(FileNameOnly))
       {
@@ -1899,7 +1899,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
       const UnicodeString OpensshIncludeDirective(L"Include");
       for (int32_t Index = 0; Index < Lines->Count; Index++)
       {
-        UnicodeString Line = Lines->Strings[Index];
+        const UnicodeString Line = Lines->Strings[Index];
         UnicodeString Directive, Args;
         if (ParseOpensshDirective(Line, Directive, Args))
         {
