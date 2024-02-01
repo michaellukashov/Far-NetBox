@@ -139,6 +139,7 @@ const TCommandType DefaultCommandSet[ShellCommandCount] =
   /*ListCurrentDirectory*/{ -1, -1, F, F, F, "%s %s" /* listing command, options */ },
   /*ListFile*/            {  1,  1, F, F, F, "%s -d %s \"%s\"" /* listing command, options, file/directory */ },
   /*LookupUserGroups*/    {  0,  1, F, F, F, "groups" },
+  /*Whoami*/              {  0,  1, F, F, F, "whoami" },
   /*CopyToRemote*/        { -1, -1, T, F, T, "scp -r %s -d -t \"%s\"" /* options, directory */ },
   /*CopyToLocal*/         { -1, -1, F, F, T, "scp -r %s -d -f \"%s\"" /* options, file */ },
   /*DeleteFile*/          {  0,  0, T, F, F, "rm -f -r \"%s\"" /* file/directory */},
@@ -855,8 +856,14 @@ void TSCPFileSystem::SkipStartupMessage()
 
 void TSCPFileSystem::LookupUsersGroups()
 {
-  ExecCommand(fsLookupUsersGroups, 0);
+  ExecCommand(fsWhoami, 0);
   FTerminal->GetUsers()->Clear();
+  if (FOutput->GetCount() > 0)
+  {
+    UnicodeString CurrentUser = FOutput->GetString(0);
+    FTerminal->GetUsers()->Add(TRemoteToken(CurrentUser));
+  }
+  ExecCommand(fsLookupUsersGroups, 0);
   FTerminal->GetGroups()->Clear();
   if (FOutput->GetCount() > 0)
   {
