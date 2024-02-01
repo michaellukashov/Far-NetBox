@@ -1698,7 +1698,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FTabs(std::make_unique<TObjectList>()),
   FFirstVisibleTabIndex(0)
 {
-  TPoint S = TPoint(67, 23);
+  TPoint S = TPoint(67, 25);
   bool Limited = (S.y > GetMaxSize().y);
   if (Limited)
   {
