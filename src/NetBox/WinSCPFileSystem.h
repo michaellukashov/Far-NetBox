@@ -126,7 +126,7 @@ protected:
   TWinSCPPlugin * GetWinSCPPlugin();
   void ShowOperationProgress(TFileOperationProgressType & ProgressData,
     bool Force);
-  bool SessionDialog(TSessionData * SessionData, TSessionActionEnum Action);
+  bool SessionDialog(TSessionData * SessionData, TSessionActionEnum & Action);
   void EditConnectSession(TSessionData * Data, bool Edit);
   void EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect);
   void DuplicateOrRenameSession(TSessionData * Data,
