@@ -4721,8 +4721,8 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   FMultiple = (AFileList->GetCount() > 1);
 
   {
-    std::unique_ptr<TStrings> UsedGroupList;
-    std::unique_ptr<TStrings> UsedUserList;
+    std::unique_ptr<TStringList> UsedGroupList;
+    std::unique_ptr<TStringList> UsedUserList;
     if ((GroupList == nullptr) || (GroupList->GetCount() == 0))
     {
       UsedGroupList = std::make_unique<TStringList>();
