@@ -7848,6 +7848,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
+  TFarDialog::InitDialog();
   FSynchronizing = false;
   FStarted = false;
   FOnStartStop = OnStartStop;
