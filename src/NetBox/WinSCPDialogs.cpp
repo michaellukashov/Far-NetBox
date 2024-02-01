@@ -4783,6 +4783,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
     {
+      SetHeight(GetHeight() + 1);
       Text = new TFarText(this);
       Text->SetCaption(GetMsg(NB_PROPERTIES_LINKTO));
 
