@@ -4721,19 +4721,21 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   FMultiple = (AFileList->GetCount() > 1);
 
   {
-    std::unique_ptr<TStringList> UsedGroupList;
-    std::unique_ptr<TStringList> UsedUserList;
-    if ((GroupList == nullptr) || (GroupList->GetCount() == 0))
+    std::unique_ptr<TStringList> UsedGroupList = std::make_unique<TStringList>();
+    std::unique_ptr<TStringList> UsedUserList = std::make_unique<TStringList>();
+    UsedGroupList->SetDuplicates(dupIgnore);
+    UsedGroupList->SetSorted(true);
+    UsedUserList->SetDuplicates(dupIgnore);
+    UsedUserList->SetSorted(true);
+
+    for (int32_t Index = 0; Index < UserList->GetCount(); ++Index)
     {
-      UsedGroupList = std::make_unique<TStringList>();
-      UsedGroupList->SetDuplicates(dupIgnore);
-      UsedGroupList->SetSorted(true);
+        UsedUserList->Add(UserList->Token(Index)->GetName());
     }
-    if ((UserList == nullptr) || (UserList->GetCount() == 0))
+
+    for (int32_t Index = 0; Index < GroupList->GetCount(); ++Index)
     {
-      UsedUserList = std::make_unique<TStringList>();
-      UsedUserList->SetDuplicates(dupIgnore);
-      UsedUserList->SetSorted(true);
+        UsedGroupList->Add(GroupList->Token(Index)->GetName());
     }
 
     int32_t Directories = 0;
@@ -4808,13 +4810,6 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     {
       OwnerComboBox->GetItems()->Assign(UsedUserList.get());
     }
-    else if (UserList)
-    {
-      for (int32_t Index = 0; Index < UserList->GetCount(); ++Index)
-      {
-        OwnerComboBox->GetItems()->Add(UserList->Token(Index)->GetName());
-      }
-    }
 
     SetNextItemPosition(ipNewLine);
 
@@ -4830,13 +4825,6 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     if (UsedGroupList.get())
     {
       GroupComboBox->GetItems()->Assign(UsedGroupList.get());
-    }
-    else if (GroupList)
-    {
-      for (int32_t Index = 0; Index < GroupList->GetCount(); ++Index)
-      {
-        GroupComboBox->GetItems()->Add(GroupList->Token(Index)->GetName());
-      }
     }
 
     SetNextItemPosition(ipNewLine);
