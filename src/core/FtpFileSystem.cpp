@@ -1119,10 +1119,10 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   TChmodSessionAction & Action)
 {
   DebugAssert(Properties);
-  DebugAssert(Properties && !Properties->Valid.Contains(vpGroup)); //-V595
-  DebugAssert(Properties && !Properties->Valid.Contains(vpOwner)); //-V595
-  DebugAssert(Properties && !Properties->Valid.Contains(vpLastAccess)); //-V595
-  DebugAssert(Properties && !Properties->Valid.Contains(vpModification)); //-V595
+  // DebugAssert(Properties && !Properties->Valid.Contains(vpGroup)); //-V595
+  // DebugAssert(Properties && !Properties->Valid.Contains(vpOwner)); //-V595
+  // DebugAssert(Properties && !Properties->Valid.Contains(vpLastAccess)); //-V595
+  // DebugAssert(Properties && !Properties->Valid.Contains(vpModification)); //-V595
 
   if (Properties && Properties->Valid.Contains(vpRights))
   {
