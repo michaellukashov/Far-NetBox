@@ -5917,6 +5917,7 @@ private:
 TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   bool Edit, bool AllowSymbolic) : TFarDialog(AFarPlugin)
 {
+  TFarDialog::InitDialog();
   SetSize(TPoint(76, 12));
   const TRect CRect = GetClientRect();
 
