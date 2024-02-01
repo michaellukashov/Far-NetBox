@@ -4257,7 +4257,7 @@ void TWinSCPFileSystem::ShowLog()
 {
   DebugAssert(Connected() && FTerminal->GetLog()->LogToFile());
   const TSessionLog * Log = FTerminal->GetLog();
-  GetWinSCPPlugin()->Viewer(Log->GetLogFileName(), Log->GetLogFileName(), VF_NONMODAL);
+  GetWinSCPPlugin()->Viewer(Log->GetExpandedLogFileName(), Log->GetExpandedLogFileName(), VF_NONMODAL);
 }
 
 UnicodeString TWinSCPFileSystem::GetFileNameHash(const UnicodeString & AFileName) const
