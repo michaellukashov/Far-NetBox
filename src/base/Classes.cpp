@@ -521,7 +521,7 @@ int32_t TStringList::AddObject(const UnicodeString & S, const TObject * AObject)
   }
   else
   {
-    if (Find(S, Result))
+    if (Find(S, Result, false))
     {
       switch (FDuplicates)
       {
@@ -541,37 +541,39 @@ int32_t TStringList::AddObject(const UnicodeString & S, const TObject * AObject)
   return Result;
 }
 
-bool TStringList::Find(const UnicodeString & S, int32_t & Index) const
+bool TStringList::Find(const UnicodeString & S, int32_t & Index, bool leftmost) const
 {
   bool Result = false;
   if (GetSorted())
   {
+#define ASSIGNMENT(SELECTOR) if (SELECTOR) { L = Idx + 1; } else { H = Idx; }
     int32_t L = 0;
     int32_t H = GetCount();
+    bool Found = false;
     while (L < H)
     {
       const int32_t Idx = (L + H) >> 1;
       const int32_t C = CompareStrings(FStrings[Idx], S);
-      if (C < 0)
+      if (leftmost ? (C < 0) : (C > 0))
       {
-        L = Idx + 1;
-      }
-      else if (C == 0)
-      {
-        Index = Idx;
-        return true;
+        ASSIGNMENT(leftmost)
       }
       else
       {
-        H = Idx;
+        if (C == 0)
+        {
+          Found = true;
+        }
+        ASSIGNMENT(!leftmost)
       }
     }
-    Index = H;
-    return false;
+#undef ASSIGNMENT
+      Index = leftmost ? L : (Found ? H - 1 : H);
+      return Found;
   }
   else
   {
-    Index = GetCount();
+    Index = nb::NPOS;
     for (int32_t Idx = 0; Idx < GetCount(); Idx++)
     {
       const int32_t C = CompareStrings(FStrings[Idx], S);
