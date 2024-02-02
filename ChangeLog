@@ -1,6 +1,17 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [Unreleased]
+
+### Changed
+
+ - Upgrade dependencies: openssl 3.2.1
+
+### Fixed
+
+Thanks to ssvine https://github.com/ssvine
+ - gh-344 Fix TStringList::Find to pass tests
+
 ## [24.2.0.578] - 2024-02-02
 ### Fixed
 Thanks to ssvine https://github.com/ssvine
