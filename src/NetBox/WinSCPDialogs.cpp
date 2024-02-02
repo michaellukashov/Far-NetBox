@@ -4976,7 +4976,7 @@ void TPropertiesDialog::Change()
         RecursiveCheck && RecursiveCheck->GetChecked();
 
 #define CALC_CHANGES(PROPERTY) \
-  { \
+  do { \
     bool IsEmptyField = IsEmptyControl(cp ## PROPERTY); \
     if (IsNumericOnly(cp ## PROPERTY)) \
     { \
@@ -4995,7 +4995,7 @@ void TPropertiesDialog::Change()
         !MultipleWithEmpty ## PROPERTY && FOrigProperties.PROPERTY.GetNameValid() && \
         FOrigProperties.PROPERTY.GetName() != PROPERTY ## ComboBox->GetText(); \
     } \
-  }
+  } while(0)
     CALC_CHANGES(Group);
     CALC_CHANGES(Owner);
 #undef CALC_CHANGES
@@ -5014,7 +5014,7 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
   }
 
 #define STORE_NAME(PROPERTY) \
-  if (!IsEmptyControl(cp ## PROPERTY)) \
+  do { if (!IsEmptyControl(cp ## PROPERTY)) \
   { \
     Properties.Valid << vp ## PROPERTY; \
     if (IsNumericOnly(cp ## PROPERTY)) \
@@ -5025,7 +5025,7 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
     { \
       Properties.PROPERTY.SetName(::Trim(PROPERTY ## ComboBox->GetText())); \
     } \
-  }
+  } } while(0)
   STORE_NAME(Group);
   STORE_NAME(Owner);
 #undef STORE_NAME
@@ -5065,7 +5065,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
   }
 
 #define SET_CONTROL(PROPERTY) \
-  if (Properties->Valid.Contains(vp ## PROPERTY)) \
+  do { if (Properties->Valid.Contains(vp ## PROPERTY)) \
   { \
     if (IsNumericOnly(cp ## PROPERTY)) \
     { \
@@ -5087,7 +5087,7 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
         PROPERTY ## ComboBox->SetText(Properties->PROPERTY.GetName()); \
       } \
     } \
-  }
+  } } while(0)
   SET_CONTROL(Group);
   SET_CONTROL(Owner);
 #undef SET_CONTROL
