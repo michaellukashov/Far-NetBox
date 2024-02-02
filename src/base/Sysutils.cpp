@@ -13,7 +13,7 @@
 
 UnicodeString MB2W(const char * src, const UINT cp)
 {
-  UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
+  const UnicodeString Result(src, NBChTraitsCRT<char>::SafeStringLen(src), cp);
   return Result;
 }
 
@@ -114,19 +114,19 @@ UnicodeString EmptyStr;
 
 UnicodeString IntToStr(int32_t Value)
 {
-  UnicodeString Result = FORMAT("%d", Value);
+  const UnicodeString Result = FORMAT("%d", Value);
   return Result;
 }
 
 UnicodeString UIntToStr(uint32_t Value)
 {
-  UnicodeString Result = FORMAT("%u", Value);
+  const UnicodeString Result = FORMAT("%u", Value);
   return Result;
 }
 
 UnicodeString Int64ToStr(int64_t Value)
 {
-  UnicodeString Result = FORMAT("%lld", Value);
+  const UnicodeString Result = FORMAT("%lld", Value);
   return Result;
 }
 
@@ -194,7 +194,7 @@ bool TryStrToInt(const UnicodeString & StrValue, int32_t & Value)
 
 UnicodeString Trim(const UnicodeString & Str)
 {
-  UnicodeString Result = TrimRight(TrimLeft(Str));
+  const UnicodeString Result = TrimRight(TrimLeft(Str));
   return Result;
 }
 
@@ -403,7 +403,7 @@ bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 
 UnicodeString RightStr(const UnicodeString & Str, int32_t ACount)
 {
-  UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
+  const UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
   return Result;
 }
 
@@ -658,27 +658,27 @@ NextWord(const wchar_t * Input)
 {
   static UnicodeString Buffer;
   wchar_t * pBuffer = Buffer.SetLength(1024);
-  static const wchar_t * text = nullptr;
+  static const wchar_t * Text = nullptr;
 
   const wchar_t * endOfBuffer = ToWCharPtr(Buffer) + Buffer.GetLength() - 1;
 
   if (Input)
   {
-    text = Input;
+    Text = Input;
   }
 
-  if (text)
+  if (Text)
   {
     /* add leading spaces */
-    while (iswspace(*text))
+    while (iswspace(*Text))
     {
-      *(pBuffer++) = *(text++);
+      *(pBuffer++) = *(Text++);
     }
 
     /* copy the word to our static buffer */
-    while (*text && !iswspace(*text) && pBuffer < endOfBuffer)
+    while (*Text && !iswspace(*Text) && pBuffer < endOfBuffer)
     {
-      *(pBuffer++) = *(text++);
+      *(pBuffer++) = *(Text++);
     }
   }
 
@@ -708,12 +708,12 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
   while (Result.Length() == 0)
   {
     int32_t LineCount = 0;
-    wchar_t *w = nullptr;
+    wchar_t * W = nullptr;
 
     if (LenBuffer)
     {
       /* second pass, so create the wrapped buffer */
-      w = Result.SetLength(LenBuffer + 1);
+      W = Result.SetLength(LenBuffer + 1);
       if (Result.Length() == 0)
       {
         break;
@@ -721,19 +721,19 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
     }
 
     /* for each Word in Text
-         if Width(Word) > SpaceLeft
-           insert line break before Word in Text
-           SpaceLeft := LineWidth - Width(Word)
-         else
-           SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
+    if Width(Word) > SpaceLeft
+      insert line break before Word in Text
+      SpaceLeft := LineWidth - Width(Word)
+    else
+      SpaceLeft := SpaceLeft - Width(Word) + SpaceWidth
     */
-    const wchar_t *s = NextWord(Line.c_str());
-    while (s && *s)
+    const wchar_t * S = NextWord(Line.c_str());
+    while (S && *S)
     {
       int32_t SpaceLeft = MaxWidth;
 
       /* force the first word to always be completely copied */
-      while (s && *s)
+      while (S && *S)
       {
         if (Result.Length() == 0)
         {
@@ -741,18 +741,18 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
         }
         else
         {
-          if (w) *(w++) = *s;
+          if (W) *(W++) = *S;
         }
         --SpaceLeft;
-        ++s;
+        ++S;
       }
-      if (s && !*s)
+      if (S && !*S)
       {
-        s = NextWord(nullptr);
+        S = NextWord(nullptr);
       }
 
       /* copy as many words as will fit onto the current line */
-      while (*s && (nb::StrLength(s) + 1) <= SpaceLeft)
+      while (*S && (nb::StrLength(S) + 1) <= SpaceLeft)
       {
         if (Result.Length() == 0)
         {
@@ -761,7 +761,7 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
         --SpaceLeft;
 
         /* then copy the word */
-        while (*s)
+        while (*S)
         {
           if (Result.Length() == 0)
           {
@@ -769,22 +769,22 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
           }
           else
           {
-            if (w) *(w++) = *s;
+            if (W) *(W++) = *S;
           }
           --SpaceLeft;
-          ++s;
+          ++S;
         }
-        if (!*s)
+        if (!*S)
         {
-          s = NextWord(nullptr);
+          S = NextWord(nullptr);
         }
       }
-      if (!*s)
+      if (!*S)
       {
-        s = NextWord(nullptr);
+        S = NextWord(nullptr);
       }
 
-      if (*s)
+      if (*S)
       {
         /* add a new line here */
         if (Result.Length() == 0)
@@ -793,12 +793,12 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
         }
         else
         {
-          if (w) *(w++) = L'\n';
+          if (W) *(W++) = L'\n';
         }
         // Skip whitespace before first word on new line
-        while (iswspace(*s))
+        while (iswspace(*S))
         {
-          ++s;
+          ++S;
         }
       }
 
@@ -807,9 +807,9 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
 
     LenBuffer += 2;
 
-    if (w)
+    if (W)
     {
-      *w = 0;
+      *W = 0;
     }
   }
 
@@ -847,9 +847,9 @@ void AppendPathDelimiter(UnicodeString & Str)
 
 UnicodeString ExpandEnvVars(const UnicodeString & Str)
 {
-  UnicodeString Buf(nb::NB_MAX_PATH, 0);
+  const UnicodeString Buf(nb::NB_MAX_PATH, 0);
   const int32_t Size = ::ExpandEnvironmentStringsW(Str.c_str(), ToWCharPtr(Buf), nb::ToDWord(nb::NB_MAX_PATH - 1));
-  UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
+  const UnicodeString Result = UnicodeString(Buf.c_str(), Size - 1);
   return Result;
 }
 
@@ -869,13 +869,13 @@ UnicodeString StringOfChar(const wchar_t Ch, int32_t Len)
 UnicodeString ChangeFileExt(const UnicodeString & AFileName, const UnicodeString & AExt,
   wchar_t Delimiter)
 {
-  UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);
+  const UnicodeString Result = ::ChangeFileExtension(AFileName, AExt, Delimiter);
   return Result;
 }
 
 UnicodeString ExtractFileExt(const UnicodeString & AFileName)
 {
-  UnicodeString Result = ::ExtractFileExtension(AFileName, L'.');
+  const UnicodeString Result = ::ExtractFileExtension(AFileName, L'.');
   return Result;
 }
 
@@ -883,20 +883,20 @@ UnicodeString ExpandFileName(const UnicodeString & AFileName)
 {
   UnicodeString Buf(nb::NB_MAX_PATH + 1, 0);
   int32_t Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
-      reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
+    reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
   if (Size > Buf.Length())
   {
     Buf.SetLength(Size);
     Size = ::GetFullPathNameW(AFileName.c_str(), nb::ToDWord(Buf.Length() - 1),
-        reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
+      reinterpret_cast<LPWSTR>(ToWCharPtr(Buf)), nullptr);
   }
-  UnicodeString Result = UnicodeString(Buf.c_str(), Size);
+  const UnicodeString Result = UnicodeString(Buf.c_str(), Size);
   return Result;
 }
 
 static UnicodeString GetUniversalName(const UnicodeString & AFileName)
 {
-  UnicodeString Result = AFileName;
+  const UnicodeString Result = AFileName;
   return Result;
 }
 
@@ -948,15 +948,15 @@ UnicodeString SysErrorMessage(DWORD ErrorCode)
 {
   wchar_t Buffer[255]{};
   int32_t Len = ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-      FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt32(ErrorCode), 0,
-      static_cast<LPTSTR>(Buffer),
-      _countof(Buffer), nullptr);
+    FORMAT_MESSAGE_ARGUMENT_ARRAY, nullptr, nb::ToInt32(ErrorCode), 0,
+    static_cast<LPTSTR>(Buffer),
+    _countof(Buffer), nullptr);
   while ((Len > 0) && ((Buffer[Len - 1] != 0) &&
-      ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
+    ((Buffer[Len - 1] <= 32) || (Buffer[Len - 1] == L'.'))))
   {
     Len--;
   }
-  UnicodeString Result = UnicodeString(Buffer, Len);
+  const UnicodeString Result = UnicodeString(Buffer, Len);
   return Result;
 }
 
@@ -988,7 +988,7 @@ UnicodeString ExtractShortPathName(const UnicodeString & APath)
 // "/foo/bar/baz.txt" --> "/foo/bar/"
 UnicodeString ExtractDirectory(const UnicodeString & APath, wchar_t Delimiter)
 {
-  UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
+  const UnicodeString Result = APath.SubString(1, APath.RPos(Delimiter));
   return Result;
 }
 
@@ -1012,7 +1012,7 @@ UnicodeString ExtractFileDrive(const UnicodeString & FileName)
     Result = FileName.SubStr(0,2);
   }
   else if (CharInSet(FileName[1], AllowDirectorySeparators) &&
-          CharInSet(FileName[2], AllowDirectorySeparators))
+           CharInSet(FileName[2], AllowDirectorySeparators))
   {
     int32_t I = 2;
     // skip share
@@ -1123,13 +1123,13 @@ UnicodeString ExtractFileDir(const UnicodeString & Str)
 
 UnicodeString ExtractFilePath(const UnicodeString & Str)
 {
-  UnicodeString Result = ::ExtractFileDir(Str);
+  const UnicodeString Result = ::ExtractFileDir(Str);
   return Result;
 }
 
 UnicodeString GetCurrentDir()
 {
-  UnicodeString Result = GetGlobals()->GetCurrentDirectory();
+  const UnicodeString Result = GetGlobals()->GetCurrentDirectory();
   return Result;
 }
 
@@ -1466,7 +1466,7 @@ static TDateTime ComposeDateTime(const TDateTime & Date, const TDateTime & Time)
 TDateTime SystemTimeToDateTime(const SYSTEMTIME & SystemTime)
 {
   TDateTime Result = ComposeDateTime(EncodeDate(SystemTime.wYear, SystemTime.wMonth, SystemTime.wDay),
-      EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
+    EncodeTime(SystemTime.wHour, SystemTime.wMinute, SystemTime.wSecond, SystemTime.wMilliseconds));
   return Result;
 }
 
@@ -1632,9 +1632,11 @@ int32_t MonthsBetween(const TDateTime & ANow, const TDateTime & AThen)
 
 int32_t DaysBetween(const TDateTime & ANow, const TDateTime & AThen)
 {
-  if (ANow > AThen) {
+  if (ANow > AThen)
+  {
     return nb::ToInt32(std::trunc(std::abs(DateTimeDiff(ANow, AThen)) + HalfMilliSecond));
-  } else {
+  } else
+  {
     return nb::ToInt32(std::trunc(std::abs(DateTimeDiff(AThen, ANow)) + HalfMilliSecond));
   }
 }
@@ -1692,7 +1694,7 @@ uint32_t StrToVersionNumber(const UnicodeString & VersionNumberStr)
   int32_t Shift = 16;
   while (!Version.IsEmpty())
   {
-    UnicodeString Num = CutToChar(Version, L'.', true);
+    const UnicodeString Num = CutToChar(Version, L'.', true);
     Result += nb::ToUInt32(Num.ToInt32()) << Shift;
     if (Shift >= 8)
       Shift -= 8;
@@ -1705,7 +1707,7 @@ UnicodeString VersionNumberToStr(uint32_t VersionNumber)
   const DWORD Major = (VersionNumber >> 16) & 0xFF;
   const DWORD Minor = (VersionNumber >> 8) & 0xFF;
   const DWORD Revision = (VersionNumber & 0xFF);
-  UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
+  const UnicodeString Result = FORMAT("%d.%d.%d", Major, Minor, Revision);
   return Result;
 }
 
@@ -1720,7 +1722,7 @@ TFormatSettings::TFormatSettings(LCID id) noexcept : id(id)
 
 UnicodeString TPath::Combine(const UnicodeString & APath, const UnicodeString & AFileName)
 {
-  UnicodeString Result = ::IncludeTrailingBackslash(APath) + AFileName;
+  const UnicodeString Result = ::IncludeTrailingBackslash(APath) + AFileName;
   return Result;
 }
 
@@ -1799,44 +1801,45 @@ int32_t Random(int32_t Max)
 
 static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
 {
-  bool e;
-  const char * p;
+  bool E;
+  const char * P;
 
-  auto rb = [&p, &e]() -> unsigned char
+  auto rb = [&P, &E]() -> unsigned char
   {
-    unsigned char result{0};
-    if ((*p >= '0') && (*p <= '9'))
+    unsigned char Result{0};
+    if ((*P >= '0') && (*P <= '9'))
     {
-        result = *p - '0';
+      Result = *P - '0';
     }
-    else if ((*p >= 'a') && (*p <= 'f'))
+    else if ((*P >= 'a') && (*P <= 'f'))
     {
-        result = *p - 'a' + 10;
+      Result = *P - 'a' + 10;
     }
-    else if ((*p >= 'A') && (*p <= 'F'))
+    else if ((*P >= 'A') && (*P <= 'F'))
     {
-        result = *p - 'A' + 10;
+      Result = *P - 'A' + 10;
     }
     else
     {
-        e = false;
+      E = false;
     }
-    ++p;
-    return result;
+    ++P;
+    return Result;
   };
 
-  auto nextChar = [&p, &e](char c) {
-      if (*p != c)
-          e = false;
-      ++p;
+  auto nextChar = [&P, &E](char C)
+  {
+    if (*P != C)
+      E = false;
+    ++P;
   };
 
   if (S.Length() != 38)
     return false;
 
-  e = true;
+  E = true;
   const AnsiString str(S.c_str());
-  p = str.c_str();
+  P = str.c_str();
   nextChar('{');
   Guid.Data1 = (rb() << 28) | (rb() << 24) | (rb() << 20) | (rb() << 16) | (rb() << 12) | (rb() << 8) | (rb() << 4) | rb();
   nextChar('-');
@@ -1854,167 +1857,169 @@ static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
   Guid.Data4[6] = (rb() << 4) | rb();
   Guid.Data4[7] = (rb() << 4) | rb();
   nextChar('}');
-  return e;
+  return E;
 }
 
 bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName)
 {
 
-    struct TUnicodeSymLinkRec
-    {
-      // Define the members of TUnicodeSymLinkRec structure
-      UnicodeString TargetName;
-      DWORD Attr{0};
-      int64_t Size{0};
-    };
+  struct TUnicodeSymLinkRec
+  {
+    // Define the members of TUnicodeSymLinkRec structure
+    UnicodeString TargetName;
+    DWORD Attr{0};
+    int64_t Size{0};
+  };
 
-    enum TSymLinkResult
-    {
-      slrError,
-      slrNoSymLink,
-      slrOk
-    };
+  enum TSymLinkResult
+  {
+    slrError,
+    slrNoSymLink,
+    slrOk
+  };
 
-    // Reparse point specific declarations from Windows headers
+  // Reparse point specific declarations from Windows headers
 #ifndef IO_REPARSE_TAG_MOUNT_POINT
-    constexpr const ULONG IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
+  constexpr const ULONG IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
 #endif
 #ifndef IO_REPARSE_TAG_SYMLINK
-    constexpr const ULONG IO_REPARSE_TAG_SYMLINK = 0xA000000C;
+  constexpr const ULONG IO_REPARSE_TAG_SYMLINK = 0xA000000C;
 #endif
 #ifndef ERROR_REPARSE_TAG_INVALID
-    constexpr const DWORD ERROR_REPARSE_TAG_INVALID = 4393;
+  constexpr const DWORD ERROR_REPARSE_TAG_INVALID = 4393;
 #endif
 #ifndef FSCTL_GET_REPARSE_POINT
-    constexpr DWORD FSCTL_GET_REPARSE_POINT = 0x900A8;
+  constexpr DWORD FSCTL_GET_REPARSE_POINT = 0x900A8;
 #endif
 //    const DWORD MAXIMUM_REPARSE_DATA_BUFFER_SIZE = 16 * 1024;
 #ifndef SYMLINK_FLAG_RELATIVE
-    constexpr const ULONG SYMLINK_FLAG_RELATIVE = 1;
+  constexpr const ULONG SYMLINK_FLAG_RELATIVE = 1;
 #endif
 #ifndef FILE_FLAG_OPEN_REPARSE_POINT
-    constexpr const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x200000;
+  constexpr const DWORD FILE_FLAG_OPEN_REPARSE_POINT = 0x200000;
 #endif
 #ifndef FILE_READ_EA
-    constexpr const DWORD FILE_READ_EA = 0x8;
+  constexpr const DWORD FILE_READ_EA = 0x8;
 #endif
-   struct TReparseDataBuffer
-   {
-      ULONG ReparseTag{0};
-      WORD ReparseDataLength{0};
-      WORD Reserved{0};
-      WORD SubstituteNameOffset{0};
-      WORD SubstituteNameLength{0};
-      WORD PrintNameOffset{0};
-      WORD PrintNameLength{0};
-      union {
-        WCHAR PathBufferMount[4096]{};
-        struct
-        {
-          ULONG Flags;
-          WCHAR PathBufferSym[4096];
-        };
-      };
-   };
-
-    constexpr DWORD CShareAny = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
-    constexpr DWORD COpenReparse = FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS;
-    const UnicodeString CVolumePrefix = L"Volume";
-    const UnicodeString CGlobalPrefix = L"\\\\?\\";
-
-    TReparseDataBuffer * PBuffer = nullptr;
-    DWORD BytesReturned{0};
-    GUID guid{};
-
-    TSymLinkResult Result = slrError;
-    TUnicodeSymLinkRec SymLinkRec;
-
-    const HANDLE HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, nullptr);
-    if (CheckHandle(HFile))
+  struct TReparseDataBuffer
+  {
+    ULONG ReparseTag{0};
+    WORD ReparseDataLength{0};
+    WORD Reserved{0};
+    WORD SubstituteNameOffset{0};
+    WORD SubstituteNameLength{0};
+    WORD PrintNameOffset{0};
+    WORD PrintNameLength{0};
+    union
     {
-      try
+      WCHAR PathBufferMount[4096]{};
+      struct
       {
-        PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
-        if (PBuffer != nullptr)
-        {
-          if (DeviceIoControl(HFile, FSCTL_GET_REPARSE_POINT, nullptr, 0,
-                              PBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &BytesReturned, nullptr))
-          {
-            switch (PBuffer->ReparseTag)
-            {
-              case IO_REPARSE_TAG_MOUNT_POINT:
-              {
-                SymLinkRec.TargetName = UnicodeString(
-                    &PBuffer->PathBufferMount[4 + PBuffer->SubstituteNameOffset / sizeof(WCHAR)],
-                    (PBuffer->SubstituteNameLength / sizeof(WCHAR)) - 4);
-                if (SymLinkRec.TargetName.Length() == (CVolumePrefix.Length() + 2 + 32 + 4 + 1)
-                    && SymLinkRec.TargetName.SubStr(0, CVolumePrefix.Length()) == CVolumePrefix
-                    && TryStringToGUID(UnicodeString(
-                                           SymLinkRec.TargetName.SubStr(CVolumePrefix.Length() + 1)),
-                                       guid)) {
-                    SymLinkRec.TargetName = CGlobalPrefix + SymLinkRec.TargetName;
-                }
-                break;
-              }
-            case IO_REPARSE_TAG_SYMLINK:
-              {
-                SymLinkRec.TargetName
-                    = UnicodeString(&PBuffer->PathBufferSym[PBuffer->PrintNameOffset / sizeof(WCHAR)],
-                                    PBuffer->PrintNameLength / sizeof(WCHAR));
-                if ((PBuffer->Flags & SYMLINK_FLAG_RELATIVE) != 0) {
-                    SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName)
-                                                           + SymLinkRec.TargetName);
-                }
-                break;
-              }
-            }
+        ULONG Flags;
+        WCHAR PathBufferSym[4096];
+      };
+    };
+  };
 
-            if (!SymLinkRec.TargetName.IsEmpty())
+  constexpr DWORD CShareAny = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+  constexpr DWORD COpenReparse = FILE_FLAG_OPEN_REPARSE_POINT | FILE_FLAG_BACKUP_SEMANTICS;
+  const UnicodeString CVolumePrefix = L"Volume";
+  const UnicodeString CGlobalPrefix = L"\\\\?\\";
+
+  TReparseDataBuffer * PBuffer = nullptr;
+  DWORD BytesReturned{0};
+  GUID guid{};
+
+  TSymLinkResult Result = slrError;
+  TUnicodeSymLinkRec SymLinkRec;
+
+  const HANDLE HFile = CreateFileW(AFileName.c_str(), FILE_READ_EA, CShareAny, nullptr, OPEN_EXISTING, COpenReparse, nullptr);
+  if (CheckHandle(HFile))
+  {
+    try
+    {
+      PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
+      if (PBuffer != nullptr)
+      {
+        if (DeviceIoControl(HFile, FSCTL_GET_REPARSE_POINT, nullptr, 0,
+          PBuffer, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &BytesReturned, nullptr))
+        {
+          switch (PBuffer->ReparseTag)
+          {
+            case IO_REPARSE_TAG_MOUNT_POINT:
             {
-              WIN32_FILE_ATTRIBUTE_DATA fileAttributeData{};
-              if (GetFileAttributesExW(SymLinkRec.TargetName.c_str(), GetFileExInfoStandard, &fileAttributeData))
+              SymLinkRec.TargetName = UnicodeString(
+                &PBuffer->PathBufferMount[4 + PBuffer->SubstituteNameOffset / sizeof(WCHAR)],
+                (PBuffer->SubstituteNameLength / sizeof(WCHAR)) - 4);
+              if (SymLinkRec.TargetName.Length() == (CVolumePrefix.Length() + 2 + 32 + 4 + 1)
+                  && SymLinkRec.TargetName.SubStr(0, CVolumePrefix.Length()) == CVolumePrefix
+                  && TryStringToGUID(UnicodeString(
+                                      SymLinkRec.TargetName.SubStr(CVolumePrefix.Length() + 1)),
+                                      guid))
               {
-                  SymLinkRec.Attr = fileAttributeData.dwFileAttributes;
-                  SymLinkRec.Size = static_cast<uint64_t>(fileAttributeData.nFileSizeHigh) << 32 | fileAttributeData.nFileSizeLow;
+                SymLinkRec.TargetName = CGlobalPrefix + SymLinkRec.TargetName;
               }
-              /*else if (RaiseErrorOnMissing)
-              {
-                  throw std::runtime_error("Directory not found: " + std::to_string(GetLastError()));
-              }*/
-              else
-              {
-                  SymLinkRec.TargetName.Clear();
-              }
+              break;
             }
+            case IO_REPARSE_TAG_SYMLINK:
+            {
+              SymLinkRec.TargetName = UnicodeString(
+                &PBuffer->PathBufferSym[PBuffer->PrintNameOffset / sizeof(WCHAR)],
+                  PBuffer->PrintNameLength / sizeof(WCHAR));
+              if ((PBuffer->Flags & SYMLINK_FLAG_RELATIVE) != 0)
+              {
+                SymLinkRec.TargetName = ExpandFileName(ExtractFilePath(AFileName) + SymLinkRec.TargetName);
+              }
+              break;
+            }
+          }
+
+          if (!SymLinkRec.TargetName.IsEmpty())
+          {
+            WIN32_FILE_ATTRIBUTE_DATA fileAttributeData{};
+            if (GetFileAttributesExW(SymLinkRec.TargetName.c_str(), GetFileExInfoStandard, &fileAttributeData))
+            {
+              SymLinkRec.Attr = fileAttributeData.dwFileAttributes;
+              SymLinkRec.Size = static_cast<uint64_t>(fileAttributeData.nFileSizeHigh) << 32 | fileAttributeData.nFileSizeLow;
+            }
+            /*else if (RaiseErrorOnMissing)
+            {
+                throw std::runtime_error("Directory not found: " + std::to_string(GetLastError()));
+            }*/
             else
             {
-                ::SetLastError(ERROR_REPARSE_TAG_INVALID);
-                Result = slrNoSymLink;
+              SymLinkRec.TargetName.Clear();
             }
           }
           else
           {
             ::SetLastError(ERROR_REPARSE_TAG_INVALID);
+            Result = slrNoSymLink;
           }
-
-          nb_free(PBuffer);
         }
-      }
-      catch (...)
-      {
-        ::CloseHandle(HFile);
-        throw;
-      }
+        else
+        {
+          ::SetLastError(ERROR_REPARSE_TAG_INVALID);
+        }
 
-      ::CloseHandle(HFile);
+        nb_free(PBuffer);
+      }
     }
-
-    if (!SymLinkRec.TargetName.IsEmpty())
+    catch (...)
     {
-      Result = slrOk;
+      ::CloseHandle(HFile);
+      throw;
     }
 
-    return Result == slrOk;
+    ::CloseHandle(HFile);
+  }
+
+  if (!SymLinkRec.TargetName.IsEmpty())
+  {
+    Result = slrOk;
+  }
+
+  return Result == slrOk;
 }
 
 } // namespace Sysutils
@@ -2033,34 +2038,34 @@ FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append)
   return Result;
 }
 
-bool WriteAndFlush(FILE * file, void const * data, size_t size)
+bool WriteAndFlush(FILE * File, void const * Data, size_t Size)
 {
-  assert(file);
-  assert(data);
-  size_t n_write = 0;
-  while ((n_write = fwrite(data, 1, size - n_write, file)) != 0)
+  assert(File);
+  assert(Data);
+  size_t nWrite = 0;
+  while ((nWrite = ::fwrite(Data, 1, Size - nWrite, File)) != 0)
   {
-    if ((static_cast<intptr_t>(n_write) < 0) && (errno != EINTR))
+    if ((static_cast<intptr_t>(nWrite) < 0) && (errno != EINTR))
     {
       // error
       break;
     }
-    else if (n_write == size)
+    else if (nWrite == Size)
     {
       // All write
       break;
     }
-    else if (n_write > 0)
+    else if (nWrite > 0)
     {
       // Half write
     }
   }
 
   // error
-  if (static_cast<intptr_t>(n_write) < 0)
+  if (static_cast<intptr_t>(nWrite) < 0)
     return false; // TODO: throw exception
 
-  fflush(file);
+  ::fflush(File);
   return true;
 }
 
@@ -2081,7 +2086,7 @@ bool DoExists(bool R, const UnicodeString & Path)
   {
     const int32_t Error = GetLastError();
     if ((Error == ERROR_CANT_ACCESS_FILE) || // returned when resolving symlinks in %LOCALAPPDATA%\Microsoft\WindowsApps
-       (Error == ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
+        (Error == ERROR_ACCESS_DENIED)) // returned for %USERPROFILE%\Application Data symlink
     {
       Result = base::DirectoryExists(ExtractFileDir(Path));
     }

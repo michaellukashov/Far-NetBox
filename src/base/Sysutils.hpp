@@ -647,7 +647,7 @@ public:
 
 #endif // #if (defined _MSC_VER && _MSC_VER > 1900)
 
-class NB_CORE_EXPORT TPath : public TObject
+class TPath
 {
 public:
   static UnicodeString Combine(const UnicodeString & APath, const UnicodeString & AFileName);
@@ -684,7 +684,7 @@ using namespace Sysutils;
 namespace base {
 
 FILE * LocalOpenFileForWriting(const UnicodeString & LogFileName, bool Append = false);
-bool WriteAndFlush(FILE * file, void const * data, size_t size);
+bool WriteAndFlush(FILE * File, void const * Data, size_t Size);
 
 bool FileExists(const UnicodeString & AFileName);
 bool FileRemove(const UnicodeString & AFileName);

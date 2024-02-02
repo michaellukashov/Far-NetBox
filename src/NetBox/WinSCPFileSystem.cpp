@@ -4156,7 +4156,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
       nb::ClearStruct(Window);
       Window.StructSize = sizeof(WindowInfo);
       Window.Pos = Pos;
-      UnicodeString EditedFileName(1024, 0);
+      const UnicodeString EditedFileName(1024, 0);
       Window.Name = ToWCharPtr(EditedFileName);
       Window.NameSize = nb::ToIntPtr(EditedFileName.GetLength());
       if (FarPlugin->FarAdvControl(ACTL_GETWINDOWINFO, 0, &Window) != 0)

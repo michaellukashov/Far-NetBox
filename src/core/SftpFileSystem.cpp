@@ -3224,7 +3224,7 @@ void TSFTPFileSystem::DoStartup()
         {
           while (SupportedStruct.GetNextData() != nullptr)
           {
-            UnicodeString Extension = SupportedStruct.GetAnsiString();
+            const UnicodeString Extension = SupportedStruct.GetAnsiString();
             ExtensionsLog->Add(Extension);
             SupportedExtensions->Add(Extension);
           }
@@ -3245,7 +3245,7 @@ void TSFTPFileSystem::DoStartup()
           ExtensionCount = SupportedStruct.GetCardinal();
           for (uint32_t Index = 0; Index < ExtensionCount; ++Index)
           {
-            UnicodeString Extension = SupportedStruct.GetAnsiString();
+            const UnicodeString Extension = SupportedStruct.GetAnsiString();
             SupportedExtensions->Add(Extension);
             ExtensionsLog->Add(Extension);
           }
@@ -3282,9 +3282,9 @@ void TSFTPFileSystem::DoStartup()
       else if (ExtensionName == SFTP_EXT_VENDOR_ID)
       {
         TSFTPPacket VendorIdStruct(ExtensionData, FCodePage);
-        UnicodeString VendorName(VendorIdStruct.GetAnsiString());
-        UnicodeString ProductName(VendorIdStruct.GetAnsiString());
-        UnicodeString ProductVersion(VendorIdStruct.GetAnsiString());
+        const UnicodeString VendorName(VendorIdStruct.GetAnsiString());
+        const UnicodeString ProductName(VendorIdStruct.GetAnsiString());
+        const UnicodeString ProductVersion(VendorIdStruct.GetAnsiString());
         int64_t ProductBuildNumber = VendorIdStruct.GetInt64();
         FTerminal->LogEvent(FORMAT("Server software: %s %s (%d) by %s",
           ProductName, ProductVersion, nb::ToInt32(ProductBuildNumber), VendorName));
@@ -3331,7 +3331,7 @@ void TSFTPFileSystem::DoStartup()
         if (VersionsPacket.CanGetString(StringSize) &&
             (StringSize == VersionsPacket.GetRemainingLength()))
         {
-          UnicodeString Versions = VersionsPacket.GetAnsiString();
+          const UnicodeString Versions = VersionsPacket.GetAnsiString();
           FTerminal->LogEvent(FORMAT("SFTP versions supported by the server (VShell format): %s",
             Versions));
         }
@@ -3344,7 +3344,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else if (ExtensionName == SFTP_EXT_STATVFS)
       {
-        UnicodeString StatVfsVersion = AnsiToString(ExtensionData);
+        const UnicodeString StatVfsVersion = AnsiToString(ExtensionData);
         if (StatVfsVersion == SFTP_EXT_STATVFS_VALUE_V2)
         {
           FSupportsStatVfsV2 = true;
@@ -3357,7 +3357,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else if (ExtensionName == SFTP_EXT_HARDLINK)
       {
-        UnicodeString HardlinkVersion = AnsiToString(ExtensionData);
+        const UnicodeString HardlinkVersion = AnsiToString(ExtensionData);
         if (HardlinkVersion == SFTP_EXT_HARDLINK_VALUE_V1)
         {
           FSupportsHardlink = true;
@@ -3370,7 +3370,7 @@ void TSFTPFileSystem::DoStartup()
       }
       else if (ExtensionName == SFTP_EXT_LIMITS)
       {
-        UnicodeString LimitsVersion = AnsiToString(ExtensionData);
+        const UnicodeString LimitsVersion = AnsiToString(ExtensionData);
         if (LimitsVersion == SFTP_EXT_LIMITS_VALUE_V1)
         {
           SupportsLimits = true;
@@ -3706,8 +3706,8 @@ void TSFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             if (FTerminal->IsEncryptingFiles() && // optimization
                 IsRealFile(File->FileName))
             {
-              UnicodeString FullFileName = base::UnixExcludeTrailingBackslash(File->FullFileName);
-              UnicodeString FileName = base::UnixExtractFileName(FTerminal->DecryptFileName(FullFileName, false, false));
+              const UnicodeString FullFileName = base::UnixExcludeTrailingBackslash(File->FullFileName);
+              const UnicodeString FileName = base::UnixExtractFileName(FTerminal->DecryptFileName(FullFileName, false, false));
               if (File->FileName != FileName)
               {
                 File->SetEncrypted();
@@ -4846,7 +4846,7 @@ void TSFTPFileSystem::Source(
           // partial upload file does not exist, check for full file
           if (DestFileExists)
           {
-            UnicodeString PrevDestFileName = ADestFileName;
+            const UnicodeString PrevDestFileName = ADestFileName;
             SFTPConfirmOverwrite(AHandle.FileName, ADestFileName,
               CopyParam, Params, OperationProgress, OpenParams.OverwriteMode, &FileParams);
             if (PrevDestFileName != ADestFileName)
@@ -4866,7 +4866,7 @@ void TSFTPFileSystem::Source(
   // will the transfer be resumable?
   bool DoResume = (ResumeAllowed && (OpenParams.OverwriteMode == omOverwrite));
 
-  UnicodeString RemoteFileName = DoResume ? DestPartialFullName : DestFullName;
+  const UnicodeString RemoteFileName = DoResume ? DestPartialFullName : DestFullName;
   OpenParams.FileName = AHandle.FileName;
   OpenParams.RemoteFileName = RemoteFileName;
   OpenParams.Resume = DoResume;
@@ -4890,7 +4890,7 @@ void TSFTPFileSystem::Source(
     DebugAssert(!DoResume);
     DebugAssert(base::UnixExtractFilePath(OpenParams.RemoteFileName) == base::UnixExtractFilePath(RemoteFileName));
     DestFullName = OpenParams.RemoteFileName;
-    UnicodeString NewFileName = base::UnixExtractFileName(DestFullName);
+    const UnicodeString NewFileName = base::UnixExtractFileName(DestFullName);
     DebugAssert(ADestFileName != NewFileName);
     ADestFileName = NewFileName;
   }
@@ -5265,7 +5265,7 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
         {
           OperationProgress->Progress();
           TRemoteFile * LocalFile = nullptr;
-          UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
+          const UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
           ReadFile(RealFileName, LocalFile);
           File.reset(LocalFile);
           File->FullFileName = RealFileName;
@@ -5375,7 +5375,7 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
           try
           {
             TRemoteFile * File = nullptr;
-            UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
+            const UnicodeString RealFileName = LocalCanonify(OpenParams->RemoteFileName);
             ReadFile(RealFileName, File);
             SAFE_DESTROY(File);
           }

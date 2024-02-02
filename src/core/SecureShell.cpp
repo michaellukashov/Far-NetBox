@@ -317,8 +317,8 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     while (!TunnelPortFwd.IsEmpty())
     {
       UnicodeString Buf = CutToChar(TunnelPortFwd, L',', true);
-      AnsiString Key = AnsiString(CutToChar(Buf, L'\t', true));
-      AnsiString Value = AnsiString(Buf);
+      const AnsiString Key = AnsiString(CutToChar(Buf, L'\t', true));
+      const AnsiString Value = AnsiString(Buf);
       conf_set_str_str(conf, CONF_portfwd, Key.c_str(), Value.c_str());
     }
 
@@ -1255,7 +1255,7 @@ UnicodeString TSecureShell::ReceiveLine()
   // We don't want end-of-line character
   Line.SetLength(Line.Length() - 1);
 
-  UnicodeString Result = ConvertInput(Line, FSessionData->GetCodePageAsNumber());
+  const UnicodeString Result = ConvertInput(Line, FSessionData->GetCodePageAsNumber());
   CaptureOutput(llOutput, Result);
 
   return Result;
@@ -2458,7 +2458,7 @@ bool TSecureShell::VerifyCachedHostKey(
   UnicodeString Buf = StoredKeys;
   while (!Result && !Buf.IsEmpty())
   {
-    UnicodeString StoredKey = CutToChar(Buf, HostKeyDelimiter, false);
+    const UnicodeString StoredKey = CutToChar(Buf, HostKeyDelimiter, false);
     // skip leading ECDH subtype identification
     const int32_t P = StoredKey.Pos(L",");
     // Start from beginning or after the comma, if there's any.
@@ -2478,7 +2478,7 @@ bool TSecureShell::VerifyCachedHostKey(
     {
       if (GetConfiguration()->ActualLogProtocol >= 1)
       {
-        UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
+        const UnicodeString FormattedKey = Fingerprint ? StoredKey : FormatKeyStr(StoredKey);
         LogEvent(FORMAT(L"Host key does not match cached key %s", FormattedKey));
       }
       else
@@ -2519,7 +2519,7 @@ void TSecureShell::VerifyHostKey(
 {
   if (GetConfiguration()->ActualLogProtocol >= 1)
   {
-    UnicodeString HostKeyAction = AlreadyVerified ? L"Got" : L"Verifying";
+    const UnicodeString HostKeyAction = AlreadyVerified ? L"Got" : L"Verifying";
     LogEvent(FORMAT(L"%s host key %s %s with fingerprints %s, %s", HostKeyAction, KeyType, FormatKeyStr(KeyStr), AFingerprintSHA256, AFingerprintMD5));
   }
 
@@ -2588,10 +2588,10 @@ void TSecureShell::VerifyHostKey(
       UnicodeString Buf = ConfigHostKey;
       while (!Result && !Buf.IsEmpty())
       {
-        UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
+        const UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
         if (ExpectedKey == L"*")
         {
-          UnicodeString Message = LoadStr(ANY_HOSTKEY);
+          const UnicodeString Message = LoadStr(ANY_HOSTKEY);
           FUI->Information(Message, true);
           FLog->Add(llException, Message);
           Result = true;
@@ -2617,7 +2617,7 @@ void TSecureShell::VerifyHostKey(
     {
       try
       {
-        UnicodeString StorageSource = StoreHostKey(Host, Port, KeyType, KeyStr);
+        const UnicodeString StorageSource = StoreHostKey(Host, Port, KeyType, KeyStr);
         StoredKeys = RetrieveHostKey(Host, Port, KeyType);
         if (StoredKeys != KeyStr)
         {
@@ -2718,16 +2718,16 @@ void TSecureShell::VerifyHostKey(
         Params.Aliases = &Aliases[0];
         Params.AliasesCount = nb::ToInt32(Aliases.size());
 
-        UnicodeString NewLine = L"\n";
-        UnicodeString Para = NewLine + NewLine;
+        const UnicodeString NewLine = L"\n";
+        const UnicodeString Para = NewLine + NewLine;
         UnicodeString Message;
-        UnicodeString ServerPara = FMTLOAD(HOSTKEY_SERVER, Host, Port) + Para;
-        UnicodeString Nbsp = L"\xA0";
-        UnicodeString Indent = Nbsp + Nbsp + Nbsp + Nbsp;
-        UnicodeString FingerprintPara =
+        const UnicodeString ServerPara = FMTLOAD(HOSTKEY_SERVER, Host, Port) + Para;
+        const UnicodeString Nbsp = L"\xA0";
+        const UnicodeString Indent = Nbsp + Nbsp + Nbsp + Nbsp;
+        const UnicodeString FingerprintPara =
           Indent + FMTLOAD(HOSTKEY_FINGERPRINT, KeyType) + NewLine +
           Indent + ReplaceStr(FingerprintSHA256, L" ", Nbsp) + Para;
-        UnicodeString AdministratorChangerOrAnotherComputerExplanationPara =
+        const UnicodeString AdministratorChangerOrAnotherComputerExplanationPara =
           FMTLOAD(HOSTKEY_TWO_EXPLANATIONS, LoadStr(HOSTKEY_ADMINISTRATOR_CHANGED), LoadStr(HOSTKEY_ANOTHER_COMPUTER)) + Para;
         UnicodeString CertifiedTrustLine;
         if (IsCertificate)
@@ -2870,8 +2870,8 @@ bool TSecureShell::HaveHostKey(const UnicodeString & AHost, int32_t Port, const 
     UnicodeString Buf = FSessionData->GetHostKey();
     while (!Result && !Buf.IsEmpty())
     {
-      UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
-      UnicodeString ExpectedKeyType = KeyTypeFromFingerprint(ExpectedKey);
+      const UnicodeString ExpectedKey = CutToChar(Buf, HostKeyDelimiter, false);
+      const UnicodeString ExpectedKeyType = KeyTypeFromFingerprint(ExpectedKey);
       Result = SameText(ExpectedKeyType, KeyType);
     }
   }
@@ -2903,7 +2903,7 @@ void TSecureShell::AskAlg(const UnicodeString & AAlgType, const UnicodeString & 
   TranslatePuttyMessage(AlgTranslation, _countof(AlgTranslation), AlgType);
 
   UnicodeString Msg;
-  UnicodeString NewLine = UnicodeString(sLineBreak);
+  const UnicodeString NewLine = UnicodeString(sLineBreak);
   switch (WeakCryptoReason)
   {
     default:

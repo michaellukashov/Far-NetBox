@@ -47,7 +47,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
         Storage->GetSubKeyNames(BookmarkKeys.get());
         for (int32_t Index2 = 0; Index2 < BookmarkKeys->GetCount(); ++Index2)
         {
-          UnicodeString Key = BookmarkKeys->GetString(Index2);
+          const UnicodeString Key = BookmarkKeys->GetString(Index2);
           if (Storage->OpenSubKey(Key, false))
           {
             TBookmarkList * BookmarkList = GetBookmarks(Key);
@@ -167,7 +167,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
         TBookmarkList * BookmarkList = FBookmarkLists->GetAs<TBookmarkList>(Index);
         if (All || BookmarkList->GetModified())
         {
-          UnicodeString Key = FBookmarkLists->GetString(Index);
+          const UnicodeString Key = FBookmarkLists->GetString(Index);
           Storage->RecursiveDeleteSubKey(Key);
           if (Storage->OpenSubKey(Key, true))
           {
@@ -511,7 +511,7 @@ void TBookmark::SetName(const UnicodeString & Value)
   if (GetName() != Value)
   {
     int32_t OldIndex = FOwner ? FOwner->IndexOf(this) : -1;
-    UnicodeString OldName = FName;
+    const UnicodeString OldName = FName;
     FName = Value;
     try
     {

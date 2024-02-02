@@ -664,7 +664,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   SessionReopenAutoCheck->SetChecked((GetConfiguration()->GetSessionReopenAuto() > 0));
   SessionReopenAutoEdit->SetAsInteger((GetConfiguration()->GetSessionReopenAuto() > 0 ?
-      (GetConfiguration()->GetSessionReopenAuto() / 1000) : 5));
+    (GetConfiguration()->GetSessionReopenAuto() / 1000) : 5));
   const int32_t Value = GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries();
   SessionReopenNumberOfRetriesEdit->SetAsInteger(((Value < 0) || (Value > 99)) ?
     CONST_DEFAULT_NUMBER_OF_RETRIES : Value);
@@ -1405,7 +1405,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   TStrings * Results, bool StoredCredentialsTried)
 {
   std::unique_ptr<TPasswordDialog> Dialog(std::make_unique<TPasswordDialog>(FPlugin, SessionData->GetName(),
-      Kind, Name, Instructions, Prompts, StoredCredentialsTried));
+    Kind, Name, Instructions, Prompts, StoredCredentialsTried));
   const bool Result = Dialog->Execute(Results);
   return Result;
 }
@@ -3124,14 +3124,14 @@ void TSessionDialog::UpdateControls()
       (ProxyMethod == pmSocks5) ||
       (ProxyMethod == pmHTTP) ||
       (((ProxyMethod == pmTelnet) ||
-          (ProxyMethod == pmCmd)) &&
+        (ProxyMethod == pmCmd)) &&
         ::AnsiContainsText(ProxyCommand, L"%user")) /*||
       (ProxyMethod == pmSystem)*/));
   ProxyPasswordEdit->SetEnabled(Proxy &&
     ((ProxyMethod == pmSocks5) ||
       (ProxyMethod == pmHTTP) ||
       (((ProxyMethod == pmTelnet) ||
-          (ProxyMethod == pmCmd)) &&
+        (ProxyMethod == pmCmd)) &&
         ::AnsiContainsText(ProxyCommand, L"%pass")) /*||
       (ProxyMethod == pmSystem)*/));
   const bool ProxySettings = Proxy && lSshProtocol;
@@ -3569,8 +3569,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     SessionData->SetListingCommand(ListingCommandEdit->GetText());
     SessionData->SetSCPLsFullTime(SCPLsFullTimeAutoCheck->GetChecked() ? asAuto : asOff);
     SessionData->SetTimeDifference(TDateTime(
-        (nb::ToDouble(TimeDifferenceEdit->GetAsInteger()) / 24) +
-        (nb::ToDouble(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
+      (nb::ToDouble(TimeDifferenceEdit->GetAsInteger()) / 24) +
+      (nb::ToDouble(TimeDifferenceMinutesEdit->GetAsInteger()) / 24 / 60)));
 
     // SFTP tab
 
@@ -3811,7 +3811,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 void TSessionDialog::LoadPing(const TSessionData * SessionData)
 {
   const TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
-      AllowScpFallbackCheck->GetChecked());
+    AllowScpFallbackCheck->GetChecked());
 
   switch ((FSProtocol == fsFTP) ? static_cast<TPingType>(SessionData->GetFtpPingType()) : SessionData->GetPingType())
   {
@@ -3860,7 +3860,7 @@ void TSessionDialog::SavePing(TSessionData * SessionData)
     FtpPingType = fptOff;
   }
   const TFSProtocol FSProtocol = IndexToFSProtocol(FTransferProtocolIndex,
-      AllowScpFallbackCheck->GetChecked());
+    AllowScpFallbackCheck->GetChecked());
   if (FSProtocol == fsFTP)
   {
     SessionData->SetFtpPingType(FtpPingType);
@@ -4134,7 +4134,7 @@ bool TSessionDialog::CloseQuery()
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
     Ensures(WinSCPPlugin);
     CanClose = (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_PASSWORD), nullptr,
-          qtWarning, qaOK | qaCancel) == qaOK);
+      qtWarning, qaOK | qaCancel) == qaOK);
   }
 
   return CanClose;
@@ -5112,7 +5112,7 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
   TRemoteProperties * Properties, int32_t AllowedChanges)
 {
   std::unique_ptr<TPropertiesDialog> Dialog(std::make_unique<TPropertiesDialog>(FPlugin, AFileList,
-      ADirectory, GroupList, UserList, AllowedChanges));
+    ADirectory, GroupList, UserList, AllowedChanges));
   const bool Result = Dialog->Execute(Properties);
   return Result;
 }
@@ -5785,7 +5785,7 @@ bool TCopyDialog::CloseQuery()
         Ensures(WinSCPPlugin);
 
         if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY), Directory),
-            nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
+          nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
           if (!::SysUtulsForceDirectories(ApiPath(Directory)))
           {
@@ -6639,7 +6639,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
 
     Repeat = false;
     UnicodeString Caption = GetMsg(Add ? NB_OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
-        NB_OPEN_DIRECTORY_BROWSE_CAPTION);
+      NB_OPEN_DIRECTORY_BROWSE_CAPTION);
     constexpr FarKey BreakKeys[] =
     {
       { VK_DELETE, 0 },
@@ -6651,7 +6651,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     };
 
     ItemFocused = nb::ToInt32(FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
-        Caption, GetMsg(NB_OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode));
+      Caption, GetMsg(NB_OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode));
     if (BreakCode >= 0)
     {
       DebugAssert(BreakCode >= 0 && BreakCode <= 4);
@@ -7191,7 +7191,7 @@ bool TFullSynchronizeDialog::CloseQuery()
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
     Ensures(WinSCPPlugin);
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SAVE_SYNCHRONIZE_MODE), nullptr,
-        qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
+      qtConfirmation, qaYes | qaNo | qaCancel, nullptr))
     {
     case qaYes:
       FSaveMode = true;
@@ -7258,9 +7258,9 @@ bool TFullSynchronizeDialog::Execute(TTerminal::TSynchronizeMode & Mode,
     Mode = GetMode();
 
     Params &= ~(TTerminal::spDelete | TTerminal::spNoConfirmation |
-        TTerminal::spExistingOnly | TTerminal::spPreviewChanges |
-        TTerminal::spTimestamp | TTerminal::spNotByTime | TTerminal::spBySize |
-        TTerminal::spSelectedOnly | TTerminal::spMirror);
+      TTerminal::spExistingOnly | TTerminal::spPreviewChanges |
+      TTerminal::spTimestamp | TTerminal::spNotByTime | TTerminal::spBySize |
+      TTerminal::spSelectedOnly | TTerminal::spMirror);
     Params |=
       FLAGMASK(SynchronizeDeleteCheck->GetChecked(), TTerminal::spDelete) |
       FLAGMASK(SynchronizeExistingOnlyCheck->GetChecked(), TTerminal::spExistingOnly) |
@@ -7286,9 +7286,9 @@ bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode
   const TUsableCopyParamAttrs & CopyParamAttrs) const
 {
   std::unique_ptr<TFullSynchronizeDialog> Dialog(std::make_unique<TFullSynchronizeDialog>(
-      FPlugin, Options, CopyParamAttrs));
+    FPlugin, Options, CopyParamAttrs));
   const bool Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
-                                      CopyParams, SaveSettings, SaveMode);
+    CopyParams, SaveSettings, SaveMode);
   return Result;
 }
 
@@ -7463,8 +7463,8 @@ void TSynchronizeChecklistDialog::AdaptSize()
   SetSize(GetMaxSize());
 
   VideoModeButton->SetCaption(GetMsg(
-      FarPlugin->ConsoleWindowState() == SW_SHOWMAXIMIZED ?
-      NB_CHECKLIST_RESTORE : NB_CHECKLIST_MAXIMIZE));
+    FarPlugin->ConsoleWindowState() == SW_SHOWMAXIMIZED ?
+    NB_CHECKLIST_RESTORE : NB_CHECKLIST_MAXIMIZE));
 
   static constexpr int32_t Ratio[FColumns] = {140, 100, 80, 150, -2, 100, 80, 150};
 
@@ -7598,7 +7598,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
         AddColumn(Line, FormatSize(ChecklistItem->Local.Size, 2), 2);
       }
       AddColumn(Line, base::UserModificationStr(ChecklistItem->Local.Modification,
-          ChecklistItem->Local.ModificationFmt), 3);
+        ChecklistItem->Local.ModificationFmt), 3);
     }
   }
 
@@ -7642,7 +7642,7 @@ UnicodeString TSynchronizeChecklistDialog::ItemLine(const TChecklistItem * Check
         AddColumn(Line, FormatSize(ChecklistItem->Remote.Size, 6), 6);
       }
       AddColumn(Line, base::UserModificationStr(ChecklistItem->Remote.Modification,
-          ChecklistItem->Remote.ModificationFmt), 7);
+        ChecklistItem->Remote.ModificationFmt), 7);
     }
   }
 
@@ -7893,7 +7893,7 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory)
 {
   std::unique_ptr<TSynchronizeChecklistDialog> Dialog(std::make_unique<TSynchronizeChecklistDialog>(
-      FPlugin, Mode, Params, LocalDirectory, RemoteDirectory));
+    FPlugin, Mode, Params, LocalDirectory, RemoteDirectory));
   const bool Result = Dialog->Execute(Checklist);
   return Result;
 }
@@ -8136,7 +8136,7 @@ TSynchronizeParamType TSynchronizeDialog::GetParams() const
   Result.LocalDirectory = LocalDirectoryEdit->GetText();
   Result.Params =
     (Result.Params & ~(TTerminal::spDelete | TTerminal::spExistingOnly |
-        TTerminal::spSelectedOnly | TTerminal::spTimestamp)) |
+      TTerminal::spSelectedOnly | TTerminal::spTimestamp)) |
     FLAGMASK(SynchronizeDeleteCheck->GetChecked(), TTerminal::spDelete) |
     FLAGMASK(SynchronizeExistingOnlyCheck->GetChecked(), TTerminal::spExistingOnly) |
     FLAGMASK(SynchronizeSelectedOnlyCheck->GetChecked(), TTerminal::spSelectedOnly);
@@ -8228,7 +8228,7 @@ void TSynchronizeDialog::StartButtonClick(TFarButton * /*Sender*/,
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
     Ensures(WinSCPPlugin);
     switch (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_SYNCHRONISE_BEFORE_KEEPUPTODATE),
-        nullptr, qtConfirmation, qaYes | qaNo | qaCancel, &Params))
+      nullptr, qtConfirmation, qaYes | qaNo | qaCancel, &Params))
     {
     case qaNeverAskAgain:
       SynchronizeSynchronizeCheck->SetSelected(BSTATE_CHECKED);
@@ -8359,13 +8359,13 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
   UnicodeString & Target, UnicodeString & FileMask, bool Move)
 {
   const UnicodeString Prompt = FileNameFormatString(
-      GetMsg(Move ? NB_REMOTE_MOVE_FILE : NB_REMOTE_COPY_FILE),
-      GetMsg(Move ? NB_REMOTE_MOVE_FILES : NB_REMOTE_COPY_FILES), AFileList, true);
+    GetMsg(Move ? NB_REMOTE_MOVE_FILE : NB_REMOTE_COPY_FILE),
+    GetMsg(Move ? NB_REMOTE_MOVE_FILES : NB_REMOTE_COPY_FILES), AFileList, true);
 
   UnicodeString Value = TPath::Join(Target, FileMask);
   const bool Result = FPlugin->InputBox(
-      GetMsg(Move ? NB_REMOTE_MOVE_TITLE : NB_REMOTE_COPY_TITLE), Prompt,
-      Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
+    GetMsg(Move ? NB_REMOTE_MOVE_TITLE : NB_REMOTE_COPY_TITLE), Prompt,
+    Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
   if (Result)
   {
     Target = base::UnixExtractFilePath(Value);
@@ -8378,8 +8378,8 @@ bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
   return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE),
-      FORMAT(GetMsg(NB_RENAME_FILE), AFile->GetFileName()), NewName, 0) &&
-    !NewName.IsEmpty();
+    FORMAT(GetMsg(NB_RENAME_FILE), AFile->GetFileName()), NewName, 0) &&
+      !NewName.IsEmpty();
 }
 
 class TQueueDialog final : public TFarDialog
@@ -8501,7 +8501,7 @@ void TQueueDialog::OperationButtonClick(TFarButton * Sender,
   if (GetQueueItems()->GetSelected() != nb::NPOS)
   {
     TQueueItemProxy * QueueItem = rtti::dyn_cast_or_null<TQueueItemProxy>(
-        GetQueueItems()->Get(GetQueueItems()->GetSelected()));
+      GetQueueItems()->Get(GetQueueItems()->GetSelected()));
 
     if (Sender == ExecuteButton)
     {
@@ -8663,7 +8663,7 @@ bool TQueueDialog::CloseQuery()
     Ensures(WinSCPPlugin);
     Result = !FClosingPlugin || (FStatus->GetCount() == 0) ||
       (WinSCPPlugin->MoreMessageDialog(GetMsg(NB_QUEUE_PENDING_ITEMS), nullptr,
-          qtWarning, qaOK | qaCancel) == qaCancel);
+        qtWarning, qaOK | qaCancel) == qaCancel);
   }
   return Result;
 }
@@ -8886,8 +8886,8 @@ bool TQueueDialog::QueueItemNeedsFrequentRefresh(
   TQueueItemProxy * QueueItem)
 {
   return (QueueItem &&
-      (TQueueItem::IsUserActionStatus(QueueItem->GetStatus()) ||
-        (QueueItem->GetStatus() == TQueueItem::qsPaused)));
+    (TQueueItem::IsUserActionStatus(QueueItem->GetStatus()) ||
+      (QueueItem->GetStatus() == TQueueItem::qsPaused)));
 }
 
 bool TQueueDialog::Execute(TTerminalQueueStatus * Status)

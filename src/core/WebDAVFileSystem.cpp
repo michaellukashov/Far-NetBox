@@ -90,7 +90,7 @@ static UnicodeString PathUnescape(const char * Path)
     // In such case, take the path as is and we will probably overwrite the name with "display name".
     UtfResult = Path;
   }
-  UnicodeString Result = StrFromNeon(UtfResult.data());
+  const UnicodeString Result = StrFromNeon(UtfResult.data());
   return Result;
 }
 
@@ -153,7 +153,7 @@ UnicodeString NeonVersion()
 {
   UnicodeString Str = StrFromNeon(ne_version_string());
   CutToChar(Str, L' ', true); // "neon"
-  UnicodeString Result = CutToChar(Str, L':', true);
+  const UnicodeString Result = CutToChar(Str, L':', true);
   return Result;
 }
 
@@ -421,7 +421,7 @@ void TWebDAVFileSystem::NeonAddAuthentication(TSessionContext * SessionContext, 
 
 UnicodeString TWebDAVFileSystem::GetRedirectUrl() const
 {
-  UnicodeString Result = GetNeonRedirectUrl(FSessionContext->NeonSession);
+  const UnicodeString Result = GetNeonRedirectUrl(FSessionContext->NeonSession);
   FTerminal->LogEvent(FORMAT("Redirected to \"%s\".", Result));
   return Result;
 }
@@ -973,7 +973,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     if (ResourceType != nullptr)
     {
       // property has XML value
-      UnicodeString AResourceType = ResourceType;
+      // UnicodeString AResourceType = ResourceType;
       // this is very poor parsing
       if (ContainsText(ResourceType, "<DAV:collection"))
       {
