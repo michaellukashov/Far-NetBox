@@ -1797,40 +1797,6 @@ int32_t Random(int32_t Max)
   return nb::ToInt32(nb::ToInt64(rand()) / (std::numeric_limits<int>::max() / Max));
 }
 
-UnicodeString ReadAllText(const UnicodeString & FileName)
-{
-  UnicodeString Result;
-  DWORD LastError = ERROR_SUCCESS;
-
-  HANDLE FileHandle{INVALID_HANDLE_VALUE};
-  FileHandle = ::CreateFileW(FileName.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-  if (FileHandle == INVALID_HANDLE_VALUE)
-  {
-    LastError = ::GetLastError();
-  }
-
-  if (LastError != ERROR_SUCCESS)
-    Result.Clear();
-  if (CheckHandle(FileHandle))
-  {
-    SAFE_CLOSE_HANDLE(FileHandle);
-    FileHandle = INVALID_HANDLE_VALUE;
-  }
-  return Result;
-}
-
-void WriteAllText(const UnicodeString & FileName, const UnicodeString & Text)
-{
-  FILE * File = base::LocalOpenFileForWriting(FileName);
-  if (File)
-  {
-    void const * data = static_cast<void const *>(Text.data());
-    const size_t size = Text.GetLength();
-    base::WriteAndFlush(File, data, size);
-    fclose(File);
-  }
-}
-
 static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
 {
   bool e;

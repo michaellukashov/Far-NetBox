@@ -2025,6 +2025,7 @@ set(WinSCP_SOURCES
   src/base/Common.cpp
   src/base/Exceptions.cpp
   src/base/FileBuffer.cpp
+  src/base/System.IOUtils.cpp
   src/base/Global.cpp
   src/base/System.SyncObjs.cpp
   src/base/FormatUtils.cpp
@@ -2226,6 +2227,7 @@ set(NETBOX_SOURCES
   src/base/MsgIDs.h
   src/base/vcl.h
   src/base/FileBuffer.h
+  src/base/System.IOUtils.hpp
   src/base/FormatUtils.h
   src/base/ObjIDs.h
 

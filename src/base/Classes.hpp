@@ -830,6 +830,7 @@ public:
   virtual ~TFileStream() noexcept override;
   UnicodeString GetFileName() const { return FFileName; }
 
+  static TFileStream * Create(const UnicodeString & AFileName, uint16_t Mode);
 private:
   UnicodeString FFileName;
 };
