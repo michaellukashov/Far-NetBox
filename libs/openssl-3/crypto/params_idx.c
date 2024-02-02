@@ -109,7 +109,7 @@ int ossl_param_find_pidx(const char *s)
                             break;
                         case 's':
                             if (strcmp("ize", s + 6) == 0)
-                                return PIDX_CIPHER_PARAM_BLOCK_SIZE;
+                                return PIDX_DIGEST_PARAM_BLOCK_SIZE;
                         }
                     }
                 }
@@ -604,7 +604,7 @@ int ossl_param_find_pidx(const char *s)
                     return PIDX_CIPHER_PARAM_IVLEN;
                 break;
             case '\0':
-                return PIDX_CIPHER_PARAM_IV;
+                return PIDX_MAC_PARAM_IV;
             }
         }
         break;
@@ -915,7 +915,7 @@ int ossl_param_find_pidx(const char *s)
                     default:
                         break;
                     case '\0':
-                        return PIDX_KDF_PARAM_MODE;
+                        return PIDX_CIPHER_PARAM_MODE;
                     }
                     break;
                 case 'u':
@@ -1745,7 +1745,7 @@ int ossl_param_find_pidx(const char *s)
                             return PIDX_SIGNATURE_PARAM_PSS_SALTLEN;
                         break;
                     case '\0':
-                        return PIDX_MAC_PARAM_SALT;
+                        return PIDX_KDF_PARAM_SALT;
                     }
                 }
                 break;
@@ -1807,7 +1807,7 @@ int ossl_param_find_pidx(const char *s)
                 break;
             case 'e':
                 if (strcmp("d", s + 3) == 0)
-                    return PIDX_PKEY_PARAM_EC_SEED;
+                    return PIDX_KDF_PARAM_SEED;
                 break;
             case 'r':
                 if (strcmp("ial", s + 3) == 0)
@@ -1820,7 +1820,7 @@ int ossl_param_find_pidx(const char *s)
             break;
         case 'i':
             if (strcmp("ze", s + 2) == 0)
-                return PIDX_DIGEST_PARAM_SIZE;
+                return PIDX_KDF_PARAM_SIZE;
             break;
         case 'p':
             if (strcmp("eed", s + 2) == 0)
@@ -2493,7 +2493,7 @@ int ossl_param_find_pidx(const char *s)
             break;
         case 'y':
             if (strcmp("pe", s + 2) == 0)
-                return PIDX_PKEY_PARAM_FFC_TYPE;
+                return PIDX_OBJECT_PARAM_TYPE;
         }
         break;
     case 'u':
@@ -2623,7 +2623,7 @@ int ossl_param_find_pidx(const char *s)
             break;
         case 'e':
             if (strcmp("rsion", s + 2) == 0)
-                return PIDX_KDF_PARAM_ARGON2_VERSION;
+                return PIDX_PROV_PARAM_VERSION;
         }
         break;
     case 'x':
@@ -2647,7 +2647,7 @@ int ossl_param_find_pidx(const char *s)
                         return PIDX_DIGEST_PARAM_XOFLEN;
                     break;
                 case '\0':
-                    return PIDX_DIGEST_PARAM_XOF;
+                    return PIDX_MAC_PARAM_XOF;
                 }
             }
             break;
