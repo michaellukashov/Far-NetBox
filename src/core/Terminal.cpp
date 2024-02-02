@@ -2658,7 +2658,7 @@ void TTerminal::FileOperationLoopEnd(Exception & E,
   }
 }
 
-int32_t TTerminal::FileOperationLoop(TFileOperationEvent CallBackFunc,
+int32_t TTerminal::FileOperationLoop(TFileOperationEvent && CallBackFunc,
   TFileOperationProgressType * AOperationProgress, uint32_t AFlags,
   const UnicodeString & AMessage, void * Param1, void * Param2)
 {

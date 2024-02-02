@@ -336,7 +336,7 @@ protected:
   void LookupUsersGroups();
   void FileModified(const TRemoteFile * AFile,
     const UnicodeString & AFileName, bool ClearDirectoryChange = false);
-  int32_t FileOperationLoop(TFileOperationEvent CallBackFunc,
+  int32_t FileOperationLoop(TFileOperationEvent && CallBackFunc,
     TFileOperationProgressType * AOperationProgress, uint32_t AFlags,
     const UnicodeString & Message, void * Param1 = nullptr, void * Param2 = nullptr);
   bool GetIsCapableProtected(TFSCapability Capability) const;
