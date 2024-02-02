@@ -339,6 +339,7 @@ constexpr int32_t cpMode =  0x01;
 constexpr int32_t cpOwner = 0x02;
 constexpr int32_t cpGroup = 0x04;
 constexpr int32_t cpAcl =   0x08;
+constexpr int32_t cpIDs =   0x10;
 using TCalculateSizeEvent = nb::FastDelegate4<void,
   TStrings * /*FileList*/, int64_t & /*Size*/, TCalculateSizeStats & /*Stats*/,
   bool & /*Close*/>;

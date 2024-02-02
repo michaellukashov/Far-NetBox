@@ -2163,13 +2163,10 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
           }
         }
 
+        // do not use iterator because size can change
+        for (std::size_t i = 0; i < FPortFwdSockets.size(); ++i)
         {
-          TSockets::iterator it = FPortFwdSockets.begin();
-          while (it != FPortFwdSockets.end())
-          {
-            ProcessNetworkEvents(*it);
-            ++it;
-          }
+          ProcessNetworkEvents(FPortFwdSockets[i]);
         }
       }
       else if (WaitResult == WAIT_TIMEOUT)

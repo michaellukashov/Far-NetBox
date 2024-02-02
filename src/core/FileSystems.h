@@ -18,7 +18,7 @@ struct TLocalFileHandle;
 
 enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
-  fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
+  fsListFile, fsLookupUsersGroups, fsWhoami, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
   fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
   fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,

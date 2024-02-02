@@ -314,6 +314,7 @@ public:
   bool GetLogging() const { return FLogging; }
   UnicodeString GetName() const { return FName; }
   UnicodeString GetLogFileName() const { return FCurrentLogFileName; }
+  UnicodeString GetExpandedLogFileName() const { return FCurrentFileName; }
   bool LogToFile() const { return LogToFileProtected(); }
 
 protected:

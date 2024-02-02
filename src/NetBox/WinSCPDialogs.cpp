@@ -1,4 +1,4 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include "WinSCPPlugin.h"
@@ -1488,7 +1488,7 @@ public:
   explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) noexcept;
   virtual ~TSessionDialog() noexcept override;
 
-  bool Execute(TSessionData * SessionData, TSessionActionEnum Action);
+  bool Execute(TSessionData * SessionData, TSessionActionEnum & Action);
 
 protected:
   virtual void Change() override;
@@ -1698,7 +1698,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FTabs(std::make_unique<TObjectList>()),
   FFirstVisibleTabIndex(0)
 {
-  TPoint S = TPoint(67, 23);
+  TPoint S = TPoint(67, 25);
   bool Limited = (S.y > GetMaxSize().y);
   if (Limited)
   {
@@ -2263,7 +2263,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_CONNECTION_GROUP));
 
-  Text = new TFarText(this);
   SetNextItemPosition(ipNewLine);
 
   SshBufferSizeCheck = new TFarCheckBox(this);
@@ -2564,7 +2563,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
       for (int32_t Index4 = GetConfiguration()->GetTunnelLocalPortNumberLow();
         Index4 <= GetConfiguration()->GetTunnelLocalPortNumberHigh(); ++Index4)
       {
-        TunnelLocalPortNumberEdit->GetItems()->Add(::IntToStr(Index1));
+        TunnelLocalPortNumberEdit->GetItems()->Add(::IntToStr(Index4));
       }
     }
     __finally
@@ -3148,7 +3147,7 @@ void TSessionDialog::UpdateControls()
   TunnelTab->SetEnabled(InternalSshProtocol);
 }
 
-bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Action)
+bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Action)
 {
   constexpr int32_t Captions[] =
   {
@@ -3775,7 +3774,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum Acti
 
     for (int32_t Index6 = 0; Index6 < KEX_COUNT; ++Index6)
     {
-      SessionData->SetKex(Index6, static_cast<TKex>(nb::ToUIntPtr(KexListBox->GetItems()->GetObj(Index))));
+      SessionData->SetKex(Index6, static_cast<TKex>(nb::ToUIntPtr(KexListBox->GetItems()->GetObj(Index6))));
     }
 
     // Authentication tab
@@ -4339,7 +4338,7 @@ int32_t TSessionDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
 }
 
 bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
-  TSessionActionEnum Action)
+  TSessionActionEnum & Action)
 {
   std::unique_ptr<TSessionDialog> Dialog(std::make_unique<TSessionDialog>(FPlugin, Action));
   const bool Result = Dialog->Execute(SessionData, Action);
@@ -4358,6 +4357,7 @@ public:
     TFarDialogItem * EnabledDependency);
 protected:
   bool FAnyDirectories{false};
+  bool Recursive{false};
   TFarCheckBox * FCheckBoxes[12]{};
   TRights::TState FFixedStates[12]{};
   TFarEdit * FOctalEdit{nullptr};
@@ -4368,6 +4368,7 @@ protected:
 
 public:
   TRights GetRights();
+  void SetRecursive(bool ARecursive);
   void SetRights(const TRights & Value);
   void SetAddXToDirectories(bool Value);
   bool GetAddXToDirectories() const;
@@ -4533,8 +4534,12 @@ void TRightsContainer::UpdateControls()
 
     if (FDirectoriesXCheck)
     {
-      FDirectoriesXCheck->SetEnabled(
+      FDirectoriesXCheck->SetEnabled(Recursive ||
         !((R.GetNumberSet() & TRights::rfExec) == TRights::rfExec));
+      if (!Recursive && (R.GetNumberSet() & TRights::rfExec) == TRights::rfExec)
+      {
+        SetAddXToDirectories(false);
+      }
     }
 
     if (!FOctalEdit->Focused())
@@ -4624,6 +4629,14 @@ TRights TRightsContainer::GetRights()
   return Result;
 }
 
+void TRightsContainer::SetRecursive(bool ARecursive)
+{
+  if (Recursive != ARecursive)
+  {
+    Recursive = ARecursive;
+  }
+}
+
 void TRightsContainer::SetRights(const TRights & Value)
 {
   if (GetRights() != Value)
@@ -4692,6 +4705,9 @@ protected:
   virtual const UUID * GetDialogGuid() const override { return &PropertiesDialogGuid; }
   virtual void Change() override;
   void UpdateProperties(TRemoteProperties & Properties) const;
+  bool IsNumericOnly(int32_t Type) const { return (FAllowedChanges & cpIDs) && !(FAllowedChanges & Type); }
+  bool IsNumericOrText(int32_t Type) const { return (FAllowedChanges & (cpIDs | Type)) != 0; }
+  bool IsEmptyControl(int32_t Type) const;
 
 private:
   bool FAnyDirectories{false};
@@ -4702,9 +4718,31 @@ private:
   TRightsContainer * RightsContainer{nullptr};
   TFarComboBox * OwnerComboBox{nullptr};
   TFarComboBox * GroupComboBox{nullptr};
+  TFarEdit * OwnerIDEdit{nullptr};
+  TFarEdit * GroupIDEdit{nullptr};
+  TFarText * OwnerNameText{nullptr};
+  TFarText * GroupNameText{nullptr};
   TFarCheckBox * RecursiveCheck{nullptr};
   TFarButton * OkButton{nullptr};
 };
+
+bool TPropertiesDialog::IsEmptyControl(int32_t Type) const
+{
+  // if control is disabled then treat it as non-empty
+  DebugAssert(Type == cpOwner || Type == cpGroup);
+  if (IsNumericOnly(Type))
+  {
+    auto * const & Control = Type == cpOwner ? OwnerIDEdit : GroupIDEdit;
+    DebugAssert(Control);
+    return Control->GetIsEnabled() && ::Trim(Control->GetText()).IsEmpty();
+  }
+  else
+  {
+    auto * const & Control = Type == cpOwner ? OwnerComboBox : GroupComboBox;
+    DebugAssert(Control);
+    return Control->GetIsEnabled() && ::Trim(Control->GetText()).IsEmpty();
+  }
+}
 
 TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   TStrings * AFileList, const UnicodeString & /*Directory*/,
@@ -4721,19 +4759,21 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
   FMultiple = (AFileList->GetCount() > 1);
 
   {
-    std::unique_ptr<TStrings> UsedGroupList;
-    std::unique_ptr<TStrings> UsedUserList;
-    if ((GroupList == nullptr) || (GroupList->GetCount() == 0))
+    std::unique_ptr<TStringList> UsedGroupList = std::make_unique<TStringList>();
+    std::unique_ptr<TStringList> UsedUserList = std::make_unique<TStringList>();
+    UsedGroupList->SetDuplicates(dupIgnore);
+    UsedGroupList->SetSorted(true);
+    UsedUserList->SetDuplicates(dupIgnore);
+    UsedUserList->SetSorted(true);
+
+    for (int32_t Index = 0; Index < UserList->GetCount(); ++Index)
     {
-      UsedGroupList = std::make_unique<TStringList>();
-      UsedGroupList->SetDuplicates(dupIgnore);
-      UsedGroupList->SetSorted(true);
+        UsedUserList->Add(UserList->Token(Index)->GetName());
     }
-    if ((UserList == nullptr) || (UserList->GetCount() == 0))
+
+    for (int32_t Index = 0; Index < GroupList->GetCount(); ++Index)
     {
-      UsedUserList = std::make_unique<TStringList>();
-      UsedUserList->SetDuplicates(dupIgnore);
-      UsedUserList->SetSorted(true);
+        UsedGroupList->Add(GroupList->Token(Index)->GetName());
     }
 
     int32_t Directories = 0;
@@ -4781,6 +4821,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
     {
+      SetHeight(GetHeight() + 1);
       Text = new TFarText(this);
       Text->SetCaption(GetMsg(NB_PROPERTIES_LINKTO));
 
@@ -4797,22 +4838,30 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     Text = new TFarText(this);
     Text->SetCaption(GetMsg(NB_PROPERTIES_OWNER));
-    Text->SetEnabled((FAllowedChanges & cpOwner) != 0);
+    Text->SetEnabled(IsNumericOrText(cpOwner));
 
     SetNextItemPosition(ipRight);
 
-    OwnerComboBox = new TFarComboBox(this);
-    OwnerComboBox->SetWidth(20);
-    OwnerComboBox->SetEnabled((FAllowedChanges & cpOwner) != 0);
-    if (UsedUserList.get())
+    if (IsNumericOnly(cpOwner))
     {
-      OwnerComboBox->GetItems()->Assign(UsedUserList.get());
+      OwnerIDEdit = new TFarEdit(this);
+      OwnerIDEdit->SetWidth(8);
+      OwnerIDEdit->SetFixed(true);
+      OwnerIDEdit->SetMask("99999999");
+
+      SetNextItemPosition(ipRight);
+
+      OwnerNameText = new TFarText(this);
+      OwnerNameText->SetEnabled(false);
     }
-    else if (UserList)
+    else
     {
-      for (int32_t Index = 0; Index < UserList->GetCount(); ++Index)
+      OwnerComboBox = new TFarComboBox(this);
+      OwnerComboBox->SetWidth(20);
+      OwnerComboBox->SetEnabled(IsNumericOrText(cpOwner));
+      if (UsedUserList.get())
       {
-        OwnerComboBox->GetItems()->Add(UserList->Token(Index)->GetName());
+        OwnerComboBox->GetItems()->Assign(UsedUserList.get());
       }
     }
 
@@ -4820,25 +4869,32 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     Text = new TFarText(this);
     Text->SetCaption(GetMsg(NB_PROPERTIES_GROUP));
-    Text->SetEnabled((FAllowedChanges & cpGroup) != 0);
+    Text->SetEnabled(IsNumericOrText(cpGroup));
 
     SetNextItemPosition(ipRight);
 
-    GroupComboBox = new TFarComboBox(this);
-    GroupComboBox->SetWidth(OwnerComboBox->GetWidth());
-    GroupComboBox->SetEnabled((FAllowedChanges & cpGroup) != 0);
-    if (UsedGroupList.get())
+    if (IsNumericOnly(cpGroup))
     {
-      GroupComboBox->GetItems()->Assign(UsedGroupList.get());
+      GroupIDEdit = new TFarEdit(this);
+      GroupIDEdit->SetWidth(8);
+      GroupIDEdit->SetFixed(true);
+      GroupIDEdit->SetMask("99999999");
+
+      SetNextItemPosition(ipRight);
+
+      GroupNameText = new TFarText(this);
+      GroupNameText->SetEnabled(false);
     }
-    else if (GroupList)
+    else
     {
-      for (int32_t Index = 0; Index < GroupList->GetCount(); ++Index)
+      GroupComboBox = new TFarComboBox(this);
+      GroupComboBox->SetWidth(20);
+      GroupComboBox->SetEnabled(IsNumericOrText(cpGroup));
+      if (UsedGroupList.get())
       {
-        GroupComboBox->GetItems()->Add(GroupList->Token(Index)->GetName());
+        GroupComboBox->GetItems()->Assign(UsedGroupList.get());
       }
     }
-
     SetNextItemPosition(ipNewLine);
 
     TFarSeparator * Separator = new TFarSeparator(this);
@@ -4907,17 +4963,44 @@ void TPropertiesDialog::Change()
       RightsContainer->SetAllowUndef(AllowUndef);
     }
 
-    OkButton->SetEnabled(
-      // group name is specified or we set multiple-file properties and
-      // no valid group was specified (there are at least two different groups)
-      (!GroupComboBox->GetText().IsEmpty() ||
-        (FMultiple && !FOrigProperties.Valid.Contains(vpGroup)) ||
-        (FOrigProperties.Group.GetName() == GroupComboBox->GetText())) &&
-      // same but with owner
-      (!OwnerComboBox->GetText().IsEmpty() ||
-        (FMultiple && !FOrigProperties.Valid.Contains(vpOwner)) ||
-        (FOrigProperties.Owner.GetName() == OwnerComboBox->GetText())) &&
-      ((FileProperties != FOrigProperties) || (RecursiveCheck && RecursiveCheck->GetChecked())));
+    bool HasErrors = false;
+    bool MultipleWithEmptyOwner = FMultiple && !FOrigProperties.Valid.Contains(vpOwner);
+    bool MultipleWithEmptyGroup = FMultiple && !FOrigProperties.Valid.Contains(vpGroup);
+    // compare anything except Valid, Owner, Group
+    bool SomethingChanged = FileProperties.Rights != FOrigProperties.Rights ||
+        FileProperties.AddXToDirectories != FOrigProperties.AddXToDirectories ||
+        FileProperties.Recursive != FOrigProperties.Recursive ||
+        FileProperties.Modification != FOrigProperties.Modification ||
+        FileProperties.LastAccess != FOrigProperties.LastAccess ||
+        FileProperties.Encrypt != FOrigProperties.Encrypt ||
+        RecursiveCheck && RecursiveCheck->GetChecked();
+
+#define CALC_CHANGES(PROPERTY) \
+  { \
+    bool IsEmptyField = IsEmptyControl(cp ## PROPERTY); \
+    if (IsNumericOnly(cp ## PROPERTY)) \
+    { \
+      DebugAssert(PROPERTY ## IDEdit); \
+      HasErrors = HasErrors || !MultipleWithEmptyOwner && IsEmptyField; \
+      SomethingChanged = SomethingChanged || \
+        MultipleWithEmpty ## PROPERTY && !IsEmptyField || \
+        !MultipleWithEmpty ## PROPERTY && FOrigProperties.PROPERTY.GetIDValid() && \
+        FOrigProperties.PROPERTY.GetID() != PROPERTY ## IDEdit->GetAsInteger(); \
+    } \
+    else { \
+      DebugAssert(PROPERTY ## ComboBox); \
+      HasErrors = HasErrors || !MultipleWithEmpty ## PROPERTY && IsEmptyField; \
+      SomethingChanged = SomethingChanged || \
+        MultipleWithEmpty ## PROPERTY && !IsEmptyField || \
+        !MultipleWithEmpty ## PROPERTY && FOrigProperties.PROPERTY.GetNameValid() && \
+        FOrigProperties.PROPERTY.GetName() != PROPERTY ## ComboBox->GetText(); \
+    } \
+  }
+    CALC_CHANGES(Group);
+    CALC_CHANGES(Owner);
+#undef CALC_CHANGES
+
+    OkButton->SetEnabled(SomethingChanged && !HasErrors);
   }
 }
 
@@ -4931,17 +5014,24 @@ void TPropertiesDialog::UpdateProperties(TRemoteProperties & Properties) const
   }
 
 #define STORE_NAME(PROPERTY) \
-    do { if (!PROPERTY ## ComboBox->GetText().IsEmpty() && \
-        FAllowedChanges & cp ## PROPERTY) \
+  if (!IsEmptyControl(cp ## PROPERTY)) \
+  { \
+    Properties.Valid << vp ## PROPERTY; \
+    if (IsNumericOnly(cp ## PROPERTY)) \
     { \
-      Properties.Valid << vp ## PROPERTY; \
+      Properties.PROPERTY.SetID(PROPERTY ## IDEdit->GetAsInteger()); \
+    } \
+    else \
+    { \
       Properties.PROPERTY.SetName(::Trim(PROPERTY ## ComboBox->GetText())); \
-    } } while(0)
+    } \
+  }
   STORE_NAME(Group);
   STORE_NAME(Owner);
 #undef STORE_NAME
 
   Properties.Recursive = RecursiveCheck != nullptr && RecursiveCheck->GetChecked();
+  RightsContainer->SetRecursive(Properties.Recursive);
 }
 
 bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
@@ -4951,11 +5041,11 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
   {
     Valid << vpRights;
   }
-  if (Properties->Valid.Contains(vpOwner) && FAllowedChanges & cpOwner)
+  if (Properties->Valid.Contains(vpOwner) && IsNumericOrText(cpOwner))
   {
     Valid << vpOwner;
   }
-  if (Properties->Valid.Contains(vpGroup) && FAllowedChanges & cpGroup)
+  if (Properties->Valid.Contains(vpGroup) && IsNumericOrText(cpGroup))
   {
     Valid << vpGroup;
   }
@@ -4973,10 +5063,35 @@ bool TPropertiesDialog::Execute(TRemoteProperties * Properties)
     RightsContainer->SetRights(TRights());
     RightsContainer->SetAddXToDirectories(false);
   }
-  OwnerComboBox->SetText(Properties->Valid.Contains(vpOwner) ?
-    Properties->Owner.GetName() : UnicodeString());
-  GroupComboBox->SetText(Properties->Valid.Contains(vpGroup) ?
-    Properties->Group.GetName() : UnicodeString());
+
+#define SET_CONTROL(PROPERTY) \
+  if (Properties->Valid.Contains(vp ## PROPERTY)) \
+  { \
+    if (IsNumericOnly(cp ## PROPERTY)) \
+    { \
+      DebugAssert(PROPERTY ## NameText && PROPERTY ## IDEdit); \
+      if (Properties->PROPERTY.GetNameValid()) \
+      { \
+        PROPERTY ## NameText->SetCaption(FORMAT("[ %s ]", Properties->PROPERTY.GetName())); \
+      } \
+      if (Properties->PROPERTY.GetIDValid()) \
+      { \
+        PROPERTY ## IDEdit->SetAsInteger(Properties->PROPERTY.GetID()); \
+      } \
+    } \
+    else \
+    { \
+      DebugAssert(PROPERTY ## ComboBox); \
+      if (Properties->PROPERTY.GetNameValid()) \
+      { \
+        PROPERTY ## ComboBox->SetText(Properties->PROPERTY.GetName()); \
+      } \
+    } \
+  }
+  SET_CONTROL(Group);
+  SET_CONTROL(Owner);
+#undef SET_CONTROL
+
   if (RecursiveCheck)
   {
     RecursiveCheck->SetChecked(Properties->Recursive);
@@ -5812,6 +5927,7 @@ private:
 TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
   bool Edit, bool AllowSymbolic) : TFarDialog(AFarPlugin)
 {
+  TFarDialog::InitDialog();
   SetSize(TPoint(76, 12));
   const TRect CRect = GetClientRect();
 
@@ -7858,6 +7974,7 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions) :
   TFarDialog(AFarPlugin)
 {
+  TFarDialog::InitDialog();
   FSynchronizing = false;
   FStarted = false;
   FOnStartStop = OnStartStop;

@@ -1,5 +1,14 @@
-# for this file format description,
+﻿# for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
+
+## [24.2.0.578] - 2024-02-02
+### Fixed
+Thanks to ssvine https://github.com/ssvine
+ - gh-342 Fix displaying session log file
+ - gh-340 Fix runtime exception "can't increment invalidated vector iterator"
+ - gh-338 Several small fixes
+ - gh-336 Fix memory leak and dangling sessions
+ - gh-334 Fix numerous bugs in view/change file attributes dialog
 
 ## [24.1.1.577] - 2024-01-28
 ### Fixed
