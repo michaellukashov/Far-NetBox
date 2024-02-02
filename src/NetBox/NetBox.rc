@@ -1,4 +1,4 @@
-﻿#include <winuser.h>
+#include <winuser.h>
 #include "resource.h"
 1 VERSIONINFO
 FILEVERSION PLUGIN_VERSION_NUM
