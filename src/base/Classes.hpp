@@ -510,7 +510,7 @@ public:
   void QuickSort(int32_t L, int32_t R, TStringListSortCompare SCompare);
 
   virtual void Assign(const TPersistent * Source) override;
-  virtual bool Find(const UnicodeString & S, int32_t & Index) const;
+  virtual bool Find(const UnicodeString & S, int32_t & Index, bool leftmost = true) const;
   virtual int32_t IndexOf(const UnicodeString & S) const override;
   virtual void Delete(int32_t Index) override;
   virtual void InsertObject(int32_t Index, const UnicodeString & Key, TObject * AObject) override;
