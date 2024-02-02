@@ -691,7 +691,7 @@ int32_t TRemoteToken::Compare(const TRemoteToken & rhs) const
 void TRemoteToken::SetID(int32_t Value)
 {
   FID = Value;
-  FIDValid = Value != 0;
+  FIDValid = true;
 }
 
 bool TRemoteToken::GetNameValid() const
@@ -2254,18 +2254,12 @@ TRights::TRights() noexcept
 {
   SetNumber(0);
   FAllowUndef = false;
-  FSet = 0;
-  FUnset = 0;
-  Number = 0;
-  FUnknown = true;
 }
 
 TRights::TRights(uint16_t ANumber) noexcept
 {
   SetNumber(ANumber);
   FAllowUndef = false;
-  FSet = 0;
-  FUnset = 0;
 }
 
 TRights::TRights(const TRights & Source) noexcept
