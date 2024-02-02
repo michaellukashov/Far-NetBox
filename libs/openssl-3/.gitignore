@@ -1,3 +1,18 @@
 *.d
 *.cnf
+*.h.in
+*.c.in
+*.pm
+*.pl
+*.S
+*.m4
+*.num
+build.info
+*.asn1
+__DECC_INCLUDE_EPILOGUE.H
+__DECC_INCLUDE_PROLOGUE.H
+providers/fips.checksum
+providers/fips-sources.checksums
+providers/fips.module.sources
+crypto/perlasm/
 
