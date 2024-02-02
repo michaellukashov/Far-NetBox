@@ -121,34 +121,34 @@ do { \
 
 enum TCurrentFSProtocol { cfsUnknown, cfsSCP, cfsSFTP, cfsFTP, cfsWebDAV, cfsS3 }; //cfsFTPS, 
 
-constexpr int32_t cpDelete = 0x01;
-constexpr int32_t cpTemporary = 0x04;
-constexpr int32_t cpNoConfirmation = 0x08;
-constexpr int32_t cpAppend = 0x20;
-constexpr int32_t cpResume = 0x40;
-constexpr int32_t cpNoRecurse = 0x80;
-//constexpr int32_t cpNewerOnly = 0x100;
-//constexpr int32_t cpFirstLevel = 0x200;
+constexpr const int32_t cpDelete = 0x01;
+constexpr const int32_t cpTemporary = 0x04;
+constexpr const int32_t cpNoConfirmation = 0x08;
+constexpr const int32_t cpAppend = 0x20;
+constexpr const int32_t cpResume = 0x40;
+constexpr const int32_t cpNoRecurse = 0x80;
+//constexpr const int32_t cpNewerOnly = 0x100;
+//constexpr const int32_t cpFirstLevel = 0x200;
 
-constexpr int32_t ccApplyToDirectories = 0x01;
-constexpr int32_t ccRecursive = 0x02;
-constexpr int32_t ccUser = 0x100;
+constexpr const int32_t ccApplyToDirectories = 0x01;
+constexpr const int32_t ccRecursive = 0x02;
+constexpr const int32_t ccUser = 0x100;
 
-constexpr int32_t csIgnoreErrors = 0x01;
-constexpr int32_t csStopOnFirstFile = 0x02;
-constexpr int32_t csDisallowTemporaryTransferFiles = 0x04;
+constexpr const int32_t csIgnoreErrors = 0x01;
+constexpr const int32_t csStopOnFirstFile = 0x02;
+constexpr const int32_t csDisallowTemporaryTransferFiles = 0x04;
 
-constexpr int32_t ropNoReadDirectory = 0x02;
+constexpr const int32_t ropNoReadDirectory = 0x02;
 
-constexpr int32_t boDisableNeverShowAgain = 0x01;
-constexpr int32_t bpMonospacedFont = 0x01;
+constexpr const int32_t boDisableNeverShowAgain = 0x01;
+constexpr const int32_t bpMonospacedFont = 0x01;
 
-constexpr int32_t tfNone = 0x00;
-constexpr int32_t tfFirstLevel = 0x01;
-constexpr int32_t tfNewDirectory = 0x02;
-constexpr int32_t tfAutoResume = 0x04;
-constexpr int32_t tfPreCreateDir = 0x08;
-constexpr int32_t tfUseFileTransferAny = 0x10;
+constexpr const int32_t tfNone = 0x00;
+constexpr const int32_t tfFirstLevel = 0x01;
+constexpr const int32_t tfNewDirectory = 0x02;
+constexpr const int32_t tfAutoResume = 0x04;
+constexpr const int32_t tfPreCreateDir = 0x08;
+constexpr const int32_t tfUseFileTransferAny = 0x10;
 
 class NB_CORE_EXPORT TTerminal : /*public TObject,*/ public TSessionUI
 {
@@ -159,22 +159,22 @@ public:
 public:
   // TScript::SynchronizeProc relies on the order
   enum TSynchronizeMode { smRemote, smLocal, smBoth };
-  static constexpr int32_t spDelete = 0x01; // cannot be combined with spTimestamp
-  static constexpr int32_t spNoConfirmation = 0x02; // has no effect for spTimestamp
-  static constexpr int32_t spExistingOnly = 0x04; // is implicit for spTimestamp
-  static constexpr int32_t spNoRecurse = 0x08;
-  static constexpr int32_t spUseCache = 0x10; // cannot be combined with spTimestamp
-  static constexpr int32_t spDelayProgress = 0x20; // cannot be combined with spTimestamp
-  static constexpr int32_t spPreviewChanges = 0x40; // not used by core
-  static constexpr int32_t spSubDirs = 0x80; // cannot be combined with spTimestamp
-  static constexpr int32_t spTimestamp = 0x100;
-  static constexpr int32_t spNotByTime = 0x200; // cannot be combined with spTimestamp and smBoth
-  static constexpr int32_t spBySize = 0x400; // cannot be combined with smBoth, has opposite meaning for spTimestamp
-  static constexpr int32_t spSelectedOnly = 0x800; // not used by core
-  static constexpr int32_t spMirror = 0x1000;
-  static constexpr int32_t spCaseSensitive = 0x2000;
-  static constexpr int32_t spByChecksum = 0x4000; // cannot be combined with spTimestamp and smBoth
-  static constexpr int32_t spDefault = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
+  static constexpr const int32_t spDelete = 0x01; // cannot be combined with spTimestamp
+  static constexpr const int32_t spNoConfirmation = 0x02; // has no effect for spTimestamp
+  static constexpr const int32_t spExistingOnly = 0x04; // is implicit for spTimestamp
+  static constexpr const int32_t spNoRecurse = 0x08;
+  static constexpr const int32_t spUseCache = 0x10; // cannot be combined with spTimestamp
+  static constexpr const int32_t spDelayProgress = 0x20; // cannot be combined with spTimestamp
+  static constexpr const int32_t spPreviewChanges = 0x40; // not used by core
+  static constexpr const int32_t spSubDirs = 0x80; // cannot be combined with spTimestamp
+  static constexpr const int32_t spTimestamp = 0x100;
+  static constexpr const int32_t spNotByTime = 0x200; // cannot be combined with spTimestamp and smBoth
+  static constexpr const int32_t spBySize = 0x400; // cannot be combined with smBoth, has opposite meaning for spTimestamp
+  static constexpr const int32_t spSelectedOnly = 0x800; // not used by core
+  static constexpr const int32_t spMirror = 0x1000;
+  static constexpr const int32_t spCaseSensitive = 0x2000;
+  static constexpr const int32_t spByChecksum = 0x4000; // cannot be combined with spTimestamp and smBoth
+  static constexpr const int32_t spDefault = TTerminal::spNoConfirmation | TTerminal::spPreviewChanges;
 
 private:
   TCheckForEscEvent FOnCheckForEsc{nullptr};
