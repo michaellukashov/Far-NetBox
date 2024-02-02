@@ -23,66 +23,30 @@ extern "C" {
 #  error OPENSSL_ALGORITHM_DEFINES no longer supported
 # endif
 
+#define ENGINESDIR "\\engines-3"
+#define MODULESDIR "\\ossl-modules"
+#define OPENSSLDIR "\\SSL"
+
 /*
  * OpenSSL was configured with the following options:
  */
 
-#if defined(_M_ARM) || defined (_M_ARM64)
-# ifndef OPENSSL_NO_ASM
-#  define OPENSSL_NO_ASM
-# endif
-# ifndef OPENSSL_NO_BROTLI
-#  define OPENSSL_NO_BROTLI
-# endif
-# ifndef OPENSSL_NO_BROTLI_DYNAMIC
-#  define OPENSSL_NO_BROTLI_DYNAMIC
-# endif
-# ifndef OPENSSL_NO_DEFAULT_THREAD_POOL
-#  define OPENSSL_NO_DEFAULT_THREAD_POOL
-# endif
-# ifndef OPENSSL_NO_LOADERENG
-#  define OPENSSL_NO_LOADERENG
-# endif
-# ifndef OPENSSL_NO_TFO
-#  define OPENSSL_NO_TFO
-# endif
-# ifndef OPENSSL_NO_THREAD_POOL
-#  define OPENSSL_NO_THREAD_POOL
-# endif
-# ifndef OPENSSL_NO_UPLINK
-#  define OPENSSL_NO_UPLINK
-# endif
-# ifndef OPENSSL_NO_ZLIB
-#  define OPENSSL_NO_ZLIB
-# endif
-# ifndef OPENSSL_NO_ZLIB_DYNAMIC
-#  define OPENSSL_NO_ZLIB_DYNAMIC
-# endif
-# ifndef OPENSSL_NO_ZSTD
-#  define OPENSSL_NO_ZSTD
-# endif
-# ifndef OPENSSL_NO_ZSTD_DYNAMIC
-#  define OPENSSL_NO_ZSTD_DYNAMIC
-# endif
-
-#else
 #if defined(_WIN64) || defined(OPENSSL_SYS_WIN64)
 # ifndef OPENSSL_SYS_WIN64A
 #  define OPENSSL_SYS_WIN64A 1
 # endif
-#else
+#endif
+#if defined(_WIN32) || defined(OPENSSL_SYS_WIN32)
 # ifndef OPENSSL_SYS_WIN32
 #  define OPENSSL_SYS_WIN32 1
 # endif
 #endif
-#endif
-
+# ifndef OPENSSL_THREADS
+#  define OPENSSL_THREADS
+# endif
 # define OPENSSL_CONFIGURED_API 30200
 # ifndef OPENSSL_RAND_SEED_OS
 #  define OPENSSL_RAND_SEED_OS
-# endif
-# ifndef OPENSSL_THREADS
-#  define OPENSSL_THREADS
 # endif
 # ifndef OPENSSL_NO_ACVP_TESTS
 #  define OPENSSL_NO_ACVP_TESTS
@@ -93,19 +57,24 @@ extern "C" {
 # ifndef OPENSSL_NO_ASAN
 #  define OPENSSL_NO_ASAN
 # endif
+# ifndef OPENSSL_NO_BROTLI
+#  define OPENSSL_NO_BROTLI
+# endif
+# ifndef OPENSSL_NO_BROTLI_DYNAMIC
+#  define OPENSSL_NO_BROTLI_DYNAMIC
+# endif
 # ifndef OPENSSL_NO_CRYPTO_MDEBUG
 #  define OPENSSL_NO_CRYPTO_MDEBUG
 # endif
 # ifndef OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
 #  define OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
 # endif
+# ifndef OPENSSL_NO_DEFAULT_THREAD_POOL
+#  define OPENSSL_NO_DEFAULT_THREAD_POOL
+# endif
 # ifndef OPENSSL_NO_DEVCRYPTOENG
 #  define OPENSSL_NO_DEVCRYPTOENG
 # endif
-
-#define OPENSSL_SYS_WINDOWS
-// #define OPENSSL_NO_TS
-
 # ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
 #  define OPENSSL_NO_EC_NISTP_64_GCC_128
 # endif
@@ -127,6 +96,9 @@ extern "C" {
 # ifndef OPENSSL_NO_KTLS
 #  define OPENSSL_NO_KTLS
 # endif
+# ifndef OPENSSL_NO_LOADERENG
+#  define OPENSSL_NO_LOADERENG
+# endif
 # ifndef OPENSSL_NO_MD2
 #  define OPENSSL_NO_MD2
 # endif
@@ -136,20 +108,20 @@ extern "C" {
 # ifndef OPENSSL_NO_RC5
 #  define OPENSSL_NO_RC5
 # endif
-# ifndef OPENSSL_NO_RFC3779
-#  define OPENSSL_NO_RFC3779
-# endif
 # ifndef OPENSSL_NO_SCTP
 #  define OPENSSL_NO_SCTP
-# endif
-# ifndef OPENSSL_NO_SSL_TRACE
-#  define OPENSSL_NO_SSL_TRACE
 # endif
 # ifndef OPENSSL_NO_SSL3
 #  define OPENSSL_NO_SSL3
 # endif
 # ifndef OPENSSL_NO_SSL3_METHOD
 #  define OPENSSL_NO_SSL3_METHOD
+# endif
+# ifndef OPENSSL_NO_TFO
+#  define OPENSSL_NO_TFO
+# endif
+# ifndef OPENSSL_NO_THREAD_POOL
+#  define OPENSSL_NO_THREAD_POOL
 # endif
 # ifndef OPENSSL_NO_TRACE
 #  define OPENSSL_NO_TRACE
@@ -160,8 +132,23 @@ extern "C" {
 # ifndef OPENSSL_NO_UNIT_TEST
 #  define OPENSSL_NO_UNIT_TEST
 # endif
+# ifndef OPENSSL_NO_UPLINK
+#  define OPENSSL_NO_UPLINK
+# endif
 # ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
 #  define OPENSSL_NO_WEAK_SSL_CIPHERS
+# endif
+# ifndef OPENSSL_NO_ZLIB
+#  define OPENSSL_NO_ZLIB
+# endif
+# ifndef OPENSSL_NO_ZLIB_DYNAMIC
+#  define OPENSSL_NO_ZLIB_DYNAMIC
+# endif
+# ifndef OPENSSL_NO_ZSTD
+#  define OPENSSL_NO_ZSTD
+# endif
+# ifndef OPENSSL_NO_ZSTD_DYNAMIC
+#  define OPENSSL_NO_ZSTD_DYNAMIC
 # endif
 # ifndef OPENSSL_NO_DYNAMIC_ENGINE
 #  define OPENSSL_NO_DYNAMIC_ENGINE
@@ -171,34 +158,30 @@ extern "C" {
 /* Generate 80386 code? */
 # undef I386_ONLY
 
-#define ENGINESDIR "\\engines-3"
-#define MODULESDIR "\\ossl-modules"
-#define OPENSSLDIR "\\SSL"
-
 /*
  * The following are cipher-specific, but are part of the public API.
  */
 # if !defined(OPENSSL_SYS_UEFI)
-#if defined(_M_ARM) || defined (_M_ARM64)
-#  undef BN_LLONG
-/* Only one for the following should be defined */
-#  undef SIXTY_FOUR_BIT_LONG
-#  define SIXTY_FOUR_BIT
-#  undef THIRTY_TWO_BIT
-#else
 #if defined(_WIN64) || defined(OPENSSL_SYS_WIN64)
 #  undef BN_LLONG
 /* Only one for the following should be defined */
 #  undef SIXTY_FOUR_BIT_LONG
 #  define SIXTY_FOUR_BIT
 #  undef THIRTY_TWO_BIT
-#else
+#endif
+#if defined(_WIN32) || defined(OPENSSL_SYS_WIN32)
 #  define BN_LLONG
 /* Only one for the following should be defined */
 #  undef SIXTY_FOUR_BIT_LONG
 #  undef SIXTY_FOUR_BIT
 #  define THIRTY_TWO_BIT
 #endif
+#if defined(_M_ARM) || defined (_M_ARM64)
+#  undef BN_LLONG
+/* Only one for the following should be defined */
+#  undef SIXTY_FOUR_BIT_LONG
+#  define SIXTY_FOUR_BIT
+#  undef THIRTY_TWO_BIT
 #endif
 #endif
 
@@ -210,6 +193,15 @@ extern "C" {
 
 #define _setmode setmode
 #define _strdup strdup
+
+#if defined(_M_ARM) || defined (_M_ARM64)
+# ifndef OPENSSL_NO_ASM
+#  define OPENSSL_NO_ASM
+# endif
+#else
+#define OPENSSL_SYS_WINDOWS
+// #define OPENSSL_NO_TS
+#endif
 
 # if defined(OPENSSL_NO_COMP) || (defined(OPENSSL_NO_BROTLI) && defined(OPENSSL_NO_ZSTD) && defined(OPENSSL_NO_ZLIB))
 #  define OPENSSL_NO_COMP_ALG

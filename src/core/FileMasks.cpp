@@ -970,7 +970,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
     }
     else
     {
-      UnicodeString Pattern = Command.SubString(Index, Len);
+      const UnicodeString Pattern = Command.SubString(Index, Len);
       PatternHint(PatternIndex, Pattern);
       PatternIndex++;
     }
@@ -1012,7 +1012,7 @@ UnicodeString TCustomCommand::Complete(const UnicodeString & Command,
       {
         Quote = Command[Index - 1];
       }
-      UnicodeString Pattern = Command.SubString(Index, Len);
+      const UnicodeString Pattern = Command.SubString(Index, Len);
       UnicodeString Replacement;
       bool Delimit = true;
       if (PatternReplacement(PatternIndex, Pattern, Replacement, Delimit))

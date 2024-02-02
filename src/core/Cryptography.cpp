@@ -838,7 +838,7 @@ UnicodeString TEncryption::EncryptFileName(const UnicodeString & AFileName)
   {
     Base64.SetLength(Base64.Length() - 1);
   }
-  UnicodeString Result = Base64 + AesCtrExt;
+  const UnicodeString Result = Base64 + AesCtrExt;
   return Result;
 }
 
@@ -859,7 +859,7 @@ UnicodeString TEncryption::DecryptFileName(const UnicodeString & AFileName)
   SetSalt();
   Buffer.Delete(1, FSalt.Length());
   Aes(Buffer);
-  UnicodeString Result(UTF8ToString(Buffer));
+  const UnicodeString Result(UTF8ToString(Buffer));
   return Result;
 }
 

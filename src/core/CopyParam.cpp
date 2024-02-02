@@ -97,7 +97,7 @@ UnicodeString TCopyParamType::GenerateTransferCommandArgs(int32_t Attrs, const U
   UnicodeString Result;
   bool SomeAttrIncluded;
   UnicodeString ScriptArgs;
-  UnicodeString AssemblyCode;
+  // UnicodeString AssemblyCode;
   DoGetInfoStr(
     ";", Attrs, Result, SomeAttrIncluded,
     Link, ScriptArgs); // , TAssemblyLanguage(0), AssemblyCode);
@@ -157,7 +157,7 @@ void TCopyParamType::DoGetInfoStr(
         break;
     }
     UnicodeString S = FORMAT(LoadStrPart(COPY_INFO_TRANSFER_TYPE2, 1),
-        LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident));
+      LoadStrPart(COPY_INFO_TRANSFER_TYPE2, Ident));
     if (FormatMask)
     {
       S = FORMAT(S, GetAsciiFileMask().Masks());
@@ -657,7 +657,7 @@ UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) cons
       const int32_t Index = nb::ToInt32(InvalidChar - FileName.c_str() + 1);
       if (FileName.Length() >= Index + 2)
       {
-        UnicodeString Hex = FileName.SubString(Index + 1, 2);
+        const UnicodeString Hex = FileName.SubString(Index + 1, 2);
         const wchar_t Char = static_cast<wchar_t>(HexToByte(Hex));
         if ((Char != L'\0') &&
             ((FTokenizibleChars.Pos(Char) > 0) ||
@@ -1128,7 +1128,7 @@ void CopySpeedLimits(TStrings * Source, TStrings * Dest)
   bool Unlimited = false;
   for (int32_t Index = 0; Index < Source->GetCount(); ++Index)
   {
-    UnicodeString Text = Source->GetString(Index);
+    const UnicodeString Text = Source->GetString(Index);
     uint32_t Speed;
     const bool Valid = TryGetSpeedLimit(Text, Speed);
     if ((!Valid || (Speed == 0)) && !Unlimited)

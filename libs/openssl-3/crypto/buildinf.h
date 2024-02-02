@@ -15,10 +15,12 @@
 #endif
 #if defined(_WIN64) || defined(OPENSSL_SYS_WIN64)
 #define PLATFORM "platform: VC-WIN64A"
-#else
-#define PLATFORM "platform: VC-WIN32"
+#define DATE "built on: Fri Feb  2 19:14:22 2024 UTC"
 #endif
-#define DATE "built on: Sun Dec 17 09:10:48 2023 UTC"
+#if defined(_WIN32) || defined(OPENSSL_SYS_WIN32)
+#define PLATFORM "platform: VC-WIN32"
+#define DATE "built on: Fri Feb  2 20:36:20 2024 UTC"
+#endif
 
 /*
  * Generate compiler_flags as an array of individual characters. This is a
@@ -58,10 +60,20 @@ static const char compiler_flags[] = {
     '.','p','d','b',' ','/','G','s','0',' ','/','G','F',' ','/','G',
     'y',' ','/','M','D',' ','/','W','3',' ','/','w','d','4','0','9',
     '0',' ','/','n','o','l','o','g','o',' ','/','O','2',' ','-','D',
-    'L','_','E','N','D','I','A','N',' ','-','D','O','P','E','N','S',
-    'S','L','_','P','I','C','\0'
+    'L','_','E','N','D','I','A','N',' ','-','D','"','O','P','E','N',
+    'S','S','L','_','B','U','I','L','D','I','N','G','_','O','P','E',
+    'N','S','S','L','"',' ','-','D','"','O','P','E','N','S','S','L',
+    '_','S','Y','S','_','W','I','N','6','4','"',' ','-','D','"','W',
+    'I','N','6','4','_','L','E','A','N','_','A','N','D','_','M','E',
+    'A','N','"',' ','-','D','"','U','N','I','C','O','D','E','"',' ',
+    '-','D','"','_','U','N','I','C','O','D','E','"',' ','-','D','"',
+    '_','C','R','T','_','S','E','C','U','R','E','_','N','O','_','D',
+    'E','P','R','E','C','A','T','E','"',' ','-','D','"','_','W','I',
+    'N','S','O','C','K','_','D','E','P','R','E','C','A','T','E','D',
+    '_','N','O','_','W','A','R','N','I','N','G','S','"',' ','-','D',
+    '"','N','D','E','B','U','G','"','\0'
 };
-#else
+#elif defined(_WIN32) || defined(OPENSSL_SYS_WIN32)
 static const char compiler_flags[] = {
     'c','o','m','p','i','l','e','r',':',' ','c','l',' ',' ','/','Z',
     'i',' ','/','F','d','o','s','s','l','_','s','t','a','t','i','c',
