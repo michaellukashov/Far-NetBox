@@ -114,9 +114,9 @@ void TFileBuffer::Convert(char * Source, char * Dest, int32_t Params,
   DebugAssert(NBChTraitsCRT<char>::SafeStringLen(Source) <= 2);
   DebugAssert(NBChTraitsCRT<char>::SafeStringLen(Dest) <= 2);
 
-  const std::string Bom(CONST_BOM);
+  const AnsiString Bom(CONST_BOM);
   if (FLAGSET(Params, cpRemoveBOM) && (GetSize() >= 3) &&
-      (memcmp(GetData(), Bom.c_str(), Bom.size()) == 0))
+      (memcmp(GetData(), Bom.c_str(), Bom.GetLength()) == 0))
   {
     Delete(0, 3);
   }
