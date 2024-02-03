@@ -2281,6 +2281,7 @@ static void auth_register(ne_session *sess, int isproxy, unsigned protomask,
         }
 
         ahs->sspi_host = uri.host;
+
         uri.host = NULL;
 
         ne_uri_free(&uri);

@@ -202,7 +202,7 @@ struct iofns {
 static const ne_inet_addr dummy_laddr;
 
 struct ne_socket_s {
-    int fd;
+    SOCKET fd;
     unsigned int lport;
     const ne_inet_addr *laddr;
 
@@ -335,11 +335,6 @@ int ne_sock_init(void)
     if (err != 0) {
 	return init_state = -1;
     }
-#ifdef HAVE_SSPI
-    if (ne_sspi_init() < 0) {
-        return init_state = -1;
-    }
-#endif
 #endif
 
 #ifdef NE_HAVE_SOCKS
@@ -361,6 +356,16 @@ int ne_sock_init(void)
 #endif
 
     init_state = 1;
+
+#ifdef WIN32    
+#ifdef HAVE_SSPI
+    // This fails on Wine, and we do not want to abort
+    // whole Neon initialization because of that
+    if (ne_sspi_init() < 0) {
+        return -2;
+    }
+#endif
+#endif
     return 0;
 }
 
@@ -383,7 +388,7 @@ void ne_sock_exit(void)
 /* Await readability (rdwr = 0) or writability (rdwr != 0) for socket
  * fd for secs seconds.  Returns <0 on error, zero on timeout, >0 if
  * data is available. */
-static int raw_poll(int fdno, int rdwr, int secs)
+static int raw_poll(SOCKET fdno, int rdwr, int secs)
 {
     int ret;
 #ifdef NE_USE_POLL
@@ -421,7 +426,7 @@ static int raw_poll(int fdno, int rdwr, int secs)
         tvp->tv_usec = 0;
     }
     do {
-	ret = select(fdno + 1, &rdfds, &wrfds, &exfds, tvp);
+  ret = select((int)(fdno + 1), &rdfds, &wrfds, &exfds, tvp);
     } while (ret < 0 && NE_ISINTR(ne_errno));
 #endif
     return ret;
@@ -517,7 +522,7 @@ static ssize_t read_raw(ne_socket *sock, char *buffer, size_t len)
     if (ret) return ret;
 
     do {
-	ret = recv(sock->fd, buffer, len, 0);
+  ret = recv(sock->fd, buffer, (int)len, 0);
     } while (ret == -1 && NE_ISINTR(ne_errno));
 
     if (ret == 0) {
@@ -552,7 +557,7 @@ static ssize_t write_raw(ne_socket *sock, const char *data, size_t length)
 #endif
 
     do {
-	ret = send(sock->fd, data, length, SEND_FLAGS);
+  ret = send(sock->fd, data, (int)length, SEND_FLAGS);
     } while (ret == -1 && NE_ISINTR(ne_errno));
 
     if (ret < 0) {
@@ -573,7 +578,7 @@ static ssize_t writev_raw(ne_socket *sock, const struct ne_iovec *vector, int co
 
     for (i = 0; i < count; i++){
         wasvector[i].buf = vector[i].base;
-        wasvector[i].len = vector[i].len;
+        wasvector[i].len = (ULONG)vector[i].len;
     }
         
     ret = WSASend(sock->fd, wasvector, count, &total, 0, NULL, NULL);
@@ -742,7 +747,7 @@ static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
         ret = readable_ossl(sock, sock->rdtimeout);
         if (ret) return ret;
         
-        ret = SSL_read(sock->ssl, buffer, CAST2INT(len));
+        ret = SSL_read(sock->ssl, buffer, (int)CAST2INT(len));
         if (ret <= 0)
             ret = error_ossl(sock, ret);
     } while (ret == NE_SOCK_RETRY);
@@ -752,7 +757,7 @@ static ssize_t read_ossl(ne_socket *sock, char *buffer, size_t len)
 
 static ssize_t write_ossl(ne_socket *sock, const char *data, size_t len)
 {
-    int ret, ilen = CAST2INT(len);
+    int ret, ilen = (int)CAST2INT(len);
     ret = SSL_write(sock->ssl, data, ilen);
     /* ssl.h says SSL_MODE_ENABLE_PARTIAL_WRITE must be enabled to
      * have SSL_write return < length...  so, SSL_write should never
@@ -900,7 +905,7 @@ int ne_sock_fullwrite(ne_socket *sock, const char *data, size_t len)
         }
     } while (ret > 0 && len > 0);
 
-    return ret < 0 ? ret : 0;
+    return (int)(ret < 0 ? ret : 0);
 }
 
 int ne_sock_fullwritev(ne_socket *sock, const struct ne_iovec *vector, int count)
@@ -926,7 +931,7 @@ int ne_sock_fullwritev(ne_socket *sock, const struct ne_iovec *vector, int count
         }
     } while (count && ret >= 0);
 
-    return ret < 0 ? ret : 0;
+    return (int)(ret < 0 ? ret : 0);
 }
 
 ssize_t ne_sock_readline(ne_socket *sock, char *buf, size_t buflen)
@@ -1277,12 +1282,12 @@ void ne_addr_destroy(ne_sock_addr *addr)
 /* Perform a connect() for given fd, handling EINTR retries.  Returns
  * zero on success or -1 on failure, in which case, ne_errno is set
  * appropriately. */
-static int raw_connect(int fd, const struct sockaddr *sa, size_t salen)
+static int raw_connect(SOCKET fd, const struct sockaddr *sa, size_t salen)
 {
     int ret;
 
     do {
-        ret = connect(fd, sa, salen);
+        ret = connect(fd, sa, (int)salen);
     } while (ret < 0 && NE_ISINTR(ne_errno));
 
     return ret;
@@ -1291,7 +1296,7 @@ static int raw_connect(int fd, const struct sockaddr *sa, size_t salen)
 /* Perform a connect() for fd to address sa of length salen, with a
  * timeout if supported on this platform.  Returns zero on success or
  * NE_SOCK_* on failure, with sock->error set appropriately. */
-static int timed_connect(ne_socket *sock, int fd,
+static int timed_connect(ne_socket *sock, SOCKET fd,
                          const struct sockaddr *sa, size_t salen)
 {
     int ret;
@@ -1370,7 +1375,7 @@ static int timed_connect(ne_socket *sock, int fd,
 /* Connect socket to address 'addr' on given 'port'.  Returns zero on
  * success or NE_SOCK_* on failure with sock->error set
  * appropriately. */
-static int connect_socket(ne_socket *sock, int fd,
+static int connect_socket(ne_socket *sock, SOCKET fd,
                           const ne_inet_addr *addr, unsigned int port)
 {
 #ifdef USE_GETADDRINFO
@@ -1432,7 +1437,7 @@ void ne_sock_prebind(ne_socket *sock, const ne_inet_addr *addr,
 
 /* Bind socket 'fd' to address/port 'addr' and 'port', for subsequent
  * connect() to address of family 'peer_family'. */
-static int do_bind(int fd, int peer_family, 
+static int do_bind(SOCKET fd, int peer_family,
                    const ne_inet_addr *addr, unsigned int port)
 {
 #if defined(HAVE_SETSOCKOPT) && defined(SO_REUSEADDR) && defined(SOL_SOCKET)
@@ -1502,7 +1507,7 @@ static int sock_cloexec = SOCK_CLOEXEC;
 int ne_sock_connect(ne_socket *sock,
                     const ne_inet_addr *addr, unsigned int port)
 {
-    int fd, ret;
+    SOCKET fd; int ret;
     int type = SOCK_STREAM | sock_cloexec;
 
 #if defined(RETRY_ON_EINVAL) && defined(SOCK_NONBLOCK) \
@@ -1709,7 +1714,7 @@ void ne_iaddr_free(ne_inet_addr *addr)
 
 int ne_sock_accept(ne_socket *sock, int listener) 
 {
-    int fd = accept(listener, NULL, NULL);
+    SOCKET fd = accept(listener, NULL, NULL);
 
     if (fd < 0) {
         set_strerror(sock, ne_errno);
@@ -1722,7 +1727,7 @@ int ne_sock_accept(ne_socket *sock, int listener)
 
 int ne_sock_fd(const ne_socket *sock)
 {
-    return sock->fd;
+    return (int)sock->fd;
 }
 
 void ne_sock_read_timeout(ne_socket *sock, int timeout)
@@ -1800,7 +1805,7 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
 #if defined(HAVE_OPENSSL)
     ssl = SSL_new(ctx->ctx);
     
-    SSL_set_fd(ssl, sock->fd);
+    SSL_set_fd(ssl, (int)sock->fd);
 
     sock->ssl = ssl;
     ret = SSL_accept(ssl);
@@ -1842,6 +1847,10 @@ int ne_sock_accept_ssl(ne_socket *sock, ne_ssl_context *ctx)
     return 0;
 }
 
+#ifdef WINSCP
+void ne_init_ssl_session(struct ssl_st * Ssl, void * Session);
+#endif
+
 int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx, void *userdata)
 {
     int ret;
@@ -1866,7 +1875,7 @@ int ne_sock_connect_ssl(ne_socket *sock, ne_ssl_context *ctx, void *userdata)
 #else
     SSL_clear_mode(ssl, SSL_MODE_AUTO_RETRY);
 #endif    
-    SSL_set_fd(ssl, sock->fd);
+    SSL_set_fd(ssl, (int)sock->fd);
     sock->ops = &iofns_ssl;
 
 #ifdef SSL_set_tlsext_host_name
@@ -2135,7 +2144,7 @@ void do_ne_sock_sndbuf(ne_socket *sock, int opt, unsigned int buf)
 {
     unsigned int value = 0;
     int len = sizeof(value);
-    getsockopt(sock->fd, SOL_SOCKET, opt, (const char *)&value, &len);
+    getsockopt(sock->fd, SOL_SOCKET, opt, (char *)&value, &len);
     if (value < buf)
     {
         setsockopt(sock->fd, SOL_SOCKET, opt, (const char *)&buf, sizeof(buf));
