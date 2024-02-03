@@ -2629,7 +2629,7 @@ TTerminalThread::~TTerminalThread() noexcept
   // delete FSection;
   if (FAbandoned)
   {
-    delete FTerminal;
+    delete FTerminal.get();
   }
 }
 
