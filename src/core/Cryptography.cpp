@@ -70,7 +70,10 @@ struct hmac_ctx
   uint32_t klen;
     hmac_ctx()
     {
-        memset(this, 0, sizeof(*this));
+        // memset(this, 0, sizeof(*this));
+      memset(key, 0, IN_BLOCK_LENGTH);
+      ctx = nullptr;
+      klen = 0;
     }
     ~hmac_ctx()
     {
@@ -82,7 +85,10 @@ struct hmac_ctx
         {
             ssh_hash_free(ctx);
         }
-        memmove(this, Source, sizeof(*this));
+        // memmove(this, Source, sizeof(*this));
+        memmove(key, Source->key, IN_BLOCK_LENGTH);
+        ctx = nullptr;
+        klen = Source->klen;
         if (Source->ctx != nullptr)
         {
             ctx = ssh_hash_copy(Source->ctx);
