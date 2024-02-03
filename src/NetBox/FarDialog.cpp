@@ -69,9 +69,7 @@ private:
 
 TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
   TObject(OBJECT_CLASS_TFarDialog),
-  FFarPlugin(AFarPlugin),
-  FItems(std::make_unique<TObjectList>()),
-  FContainers(std::make_unique<TObjectList>())
+  FFarPlugin(AFarPlugin)
 {
 }
 
@@ -970,7 +968,6 @@ TFarDialogContainer::TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADial
   TObject(Kind),
   FLeft(0),
   FTop(0),
-  FItems(std::make_unique<TObjectList>()),
   FDialog(ADialog),
   FEnabled(true)
 {
@@ -2475,7 +2472,6 @@ TFarListBox::TFarListBox(TFarDialog * ADialog) noexcept :
   FAutoSelect(asOnlyFocus),
   FDenyClose(false)
 {
-  FList = std::make_unique<TFarList>(this);
   GetDialogItem()->ListItems = FList->GetListItems();
 }
 
@@ -2548,8 +2544,7 @@ bool TFarListBox::CloseQuery()
 }
 
 TFarComboBox::TFarComboBox(TFarDialog * ADialog) noexcept :
-  TFarDialogItem(OBJECT_CLASS_TFarComboBox, ADialog, DI_COMBOBOX),
-  FList(std::make_unique<TFarList>(this))
+  TFarDialogItem(OBJECT_CLASS_TFarComboBox, ADialog, DI_COMBOBOX)
 {
   GetDialogItem()->ListItems = FList->GetListItems();
   SetAutoSelect(false);
@@ -2588,9 +2583,7 @@ void TFarComboBox::Init()
 }
 
 TFarLister::TFarLister(TFarDialog * ADialog) noexcept :
-  TFarDialogItem(OBJECT_CLASS_TFarLister, ADialog, DI_USERCONTROL),
-  FItems(std::make_unique<TStringList>()),
-  FTopIndex(0)
+  TFarDialogItem(OBJECT_CLASS_TFarLister, ADialog, DI_USERCONTROL)
 {
   FItems->SetOnChange(nb::bind(&TFarLister::ItemsChange, this));
 }

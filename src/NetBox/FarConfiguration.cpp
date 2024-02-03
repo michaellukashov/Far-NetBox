@@ -27,9 +27,7 @@ enum NetBoxConfirmationsSettings
 
 TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
-  FFarPlugin(APlugin),
-  FBookmarks(std::make_unique<TBookmarks>()),
-  FFarConfirmations(-1)
+  FFarPlugin(APlugin)
 {
 //  TFarConfiguration::Default();
   //CacheFarSettings();

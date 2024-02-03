@@ -104,8 +104,8 @@ private:
 
 private:
   gsl::not_null<TCustomFarPlugin *> FFarPlugin;
-  std::unique_ptr<TBookmarks> FBookmarks;
-  int32_t FFarConfirmations{0};
+  std::unique_ptr<TBookmarks> FBookmarks{std::make_unique<TBookmarks>()};
+  int32_t FFarConfirmations{-1};
   bool FConfirmOverwritingOverride{false};
   bool FConfirmSynchronizedBrowsing{false};
   bool FForceInheritance{false};

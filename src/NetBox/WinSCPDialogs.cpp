@@ -1667,7 +1667,7 @@ private:
   TFarCheckBox * FtpUndupFFCheck{nullptr};
   TFarCheckBox * SslSessionReuseCheck{nullptr};
   TFarCheckBox * WebDAVCompressionCheck{nullptr};
-  std::unique_ptr<TObjectList> FTabs;
+  std::unique_ptr<TObjectList> FTabs{std::make_unique<TObjectList>()};
   int32_t FFirstVisibleTabIndex{0};
 };
 
@@ -1691,12 +1691,7 @@ static constexpr TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDA
 
 TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) noexcept :
   TTabbedDialog(AFarPlugin, tabCount),
-  FAction(Action),
-  FSessionData(nullptr),
-  FTransferProtocolIndex(0),
-  FFtpEncryptionComboIndex(0),
-  FTabs(std::make_unique<TObjectList>()),
-  FFirstVisibleTabIndex(0)
+  FAction(Action)
 {
   TPoint S = TPoint(67, 25);
   bool Limited = (S.y > GetMaxSize().y);
