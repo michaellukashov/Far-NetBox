@@ -19,13 +19,6 @@ void TFar3Storage::Init()
   FRoot = 0;
 }
 
-bool TFar3Storage::Copy(TFar3Storage * /*Storage*/)
-{
-  Error(SNotImplemented, 3014);
-  const bool Result = true;
-  return Result;
-}
-
 UnicodeString TFar3Storage::GetSource() const
 {
   return GetStorage();
