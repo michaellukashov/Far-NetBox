@@ -2470,11 +2470,11 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 
 // TDownloadQueueItem
 
-static void ExtractRemoteSourcePath(TTerminal * Terminal, const TStrings * Files, UnicodeString & Path)
+static void ExtractRemoteSourcePath(const TTerminal * ATerminal, const TStrings * Files, UnicodeString & Path)
 {
-  if (Terminal && !base::UnixExtractCommonPath(Files, Path))
+  if (ATerminal && !base::UnixExtractCommonPath(Files, Path))
   {
-    Path = Terminal->CurrentDirectory;
+    Path = ATerminal->CurrentDirectory;
   }
   Path = base::UnixExcludeTrailingBackslash(Path);
 }
