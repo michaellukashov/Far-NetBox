@@ -1316,7 +1316,7 @@ target_include_directories(libeay32 SYSTEM BEFORE PRIVATE
   libs/openssl-3/crypto/modes
   libs/openssl-3/crypto/ec/curve448
   libs/openssl-3
-  # libs/zlib/src
+  # libs/zlib
 )
 
 #-------------------------------------------------------------------------------
@@ -1682,7 +1682,7 @@ add_library(neon STATIC
 )
 
 target_include_directories(neon PRIVATE
-  libs/zlib/src
+  libs/zlib
   libs/expat/lib
   libs/openssl-3/include
 )
@@ -1737,40 +1737,65 @@ target_compile_definitions(expat PRIVATE
 #zlib
 
 set(ZLIB_SOURCES
-  libs/zlib/src/adler32.c
-  # libs/zlib/src/crc32.c
-  libs/zlib/src/infback.c
-  libs/zlib/src/inffast.c
-  libs/zlib/src/inflate.c
-  libs/zlib/src/inftrees.c
-  libs/zlib/src/trees.c
-  libs/zlib/src/zutil.c
-  # libs/zlib/src/match.c
-  libs/zlib/src/deflate.c
-  libs/zlib/src/deflate_slow.c
-  libs/zlib/src/deflate_medium.c
-  libs/zlib/src/deflate_fast.c
-  libs/zlib/src/arch/generic/crc32_fold_c.c
-  libs/zlib/src/arch/generic/insert_string_c.c
-  libs/zlib/src/arch/generic/slide_hash_c.c
-  libs/zlib/src/arch/generic/chunkset_c.c
-  libs/zlib/src/arch/generic/compare256_c.c
-  libs/zlib/src/arch/generic/crc32_braid_c.c
-  libs/zlib/src/arch/generic/adler32_c.c
-  libs/zlib/src/arch/generic/adler32_fold_c.c
+  libs/zlib/adler32.c
+  libs/zlib/infback.c
+  libs/zlib/inffast.c
+  libs/zlib/inflate.c
+  libs/zlib/inftrees.c
+  libs/zlib/trees.c
+  libs/zlib/zutil.c
+  libs/zlib/deflate.c
+  libs/zlib/deflate_slow.c
+  libs/zlib/deflate_medium.c
+  libs/zlib/deflate_fast.c
+  libs/zlib/arch/generic/crc32_fold_c.c
+  libs/zlib/arch/generic/insert_string_c.c
+  libs/zlib/arch/generic/slide_hash_c.c
+  libs/zlib/arch/generic/chunkset_c.c
+  libs/zlib/arch/generic/compare256_c.c
+  libs/zlib/arch/generic/crc32_braid_c.c
+  libs/zlib/arch/generic/adler32_c.c
+  libs/zlib/arch/generic/adler32_fold_c.c
 )
 
+if(PROJECT_PLATFORM STREQUAL "ARM64")
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  libs/zlib/src/arch/x86/crc_folding.c
-  libs/zlib/src/arch/x86/x86.c
+  libs/zlib/arch/arm/slide_hash_neon.c
+  libs/zlib/arch/arm/crc32_acle.c
+  libs/zlib/arch/arm/insert_string_acle.c
+  libs/zlib/arch/arm/slide_hash_armv6.c
+  libs/zlib/arch/arm/chunkset_neon.c
+  libs/zlib/arch/arm/compare256_neon.c
+  libs/zlib/arch/arm/adler32_neon.c
+  libs/zlib/arch/arm/arm_features.c
 )
+else()
+set(ZLIB_SOURCES ${ZLIB_SOURCES}
+  libs/zlib/arch/x86/x86_features.c
+  libs/zlib/arch/x86/insert_string_sse42.c
+  libs/zlib/arch/x86/slide_hash_avx2.c
+  libs/zlib/arch/x86/slide_hash_sse2.c
+  libs/zlib/arch/x86/crc32_pclmulqdq.c
+  libs/zlib/arch/x86/crc32_vpclmulqdq.c
+  libs/zlib/arch/x86/compare256_avx2.c
+  libs/zlib/arch/x86/compare256_sse2.c
+  libs/zlib/arch/x86/chunkset_avx2.c
+  libs/zlib/arch/x86/chunkset_sse2.c
+  libs/zlib/arch/x86/chunkset_ssse3.c
+  libs/zlib/arch/x86/adler32_avx512_vnni.c
+  libs/zlib/arch/x86/adler32_sse42.c
+  libs/zlib/arch/x86/adler32_ssse3.c
+  libs/zlib/arch/x86/adler32_avx512.c
+  libs/zlib/arch/x86/adler32_avx2.c
+)
+endif()
 
 add_library(zlib STATIC
   ${ZLIB_SOURCES}
 )
 
 target_include_directories(zlib PRIVATE
-  libs/zlib/src
+  libs/zlib
 )
 
 target_compile_options(zlib PRIVATE
@@ -1786,6 +1811,15 @@ target_compile_definitions(zlib PRIVATE
   -DMEMCPY=memcpy
   -DMEMSET=memset
 )
+if(PROJECT_PLATFORM STREQUAL "ARM64")
+target_compile_definitions(zlib PRIVATE
+  -D_ARM_WINAPI_PARTITION_DESKTOP_SDK_AVAILABLE=1
+  -D_CRT_SECURE_NO_DEPRECATE
+  -D_CRT_NONSTDC_NO_DEPRECATE
+  -DARM_FEATURES
+  -DARM_NEON_HASLD4
+)
+endif()
 
 #-------------------------------------------------------------------------------
 #dlmalloc
