@@ -1660,7 +1660,8 @@ void TTerminalItem::OperationProgress(
   }
 
   DebugAssert(FItem != nullptr);
-  FItem->SetProgress(ProgressData);
+  if (FItem)
+    FItem->SetProgress(ProgressData);
 }
 
 bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
