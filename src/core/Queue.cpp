@@ -3116,7 +3116,7 @@ void TQueueFileList::Clear()
   FLastParallelOperationVersion = -1;
 }
 
-void TQueueFileList::Add(const UnicodeString & FileName, int32_t State)
+void TQueueFileList::Add(const UnicodeString & FileName, int64_t State)
 {
   FList->AddObject(FileName, reinterpret_cast<TObject *>(State));
 }

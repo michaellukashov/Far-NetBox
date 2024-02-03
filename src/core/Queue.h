@@ -576,13 +576,13 @@ private:
 
 enum TQueueFileState { qfsQueued = 0, qfsProcessed = 1 };
 
-class TQueueFileList : public TObject
+class TQueueFileList final : public TObject
 {
 friend class TParallelOperation;
 public:
   TQueueFileList();
   void Clear();
-  void Add(const UnicodeString & FileName, int32_t State);
+  void Add(const UnicodeString & FileName, int64_t State);
   UnicodeString GetFileName(int32_t Index) const;
   int64_t GetState(int32_t Index) const;
   void SetState(int32_t Index, int64_t State);
