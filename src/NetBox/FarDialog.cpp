@@ -771,9 +771,12 @@ int32_t TFarDialog::ShowModal()
     {
       const TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
       DebugAssert(Button);
-      // correct result should be already set by TFarButton
-      DebugAssert(FResult == Button->GetResult());
-      FResult = Button->GetResult();
+      if (Button)
+      {
+        // correct result should be already set by TFarButton
+        DebugAssert(FResult == Button->GetResult());
+        FResult = Button->GetResult();
+      }
     }
     else
     {
