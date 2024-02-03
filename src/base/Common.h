@@ -515,7 +515,7 @@ public:
   {
     DebugAssert(EventHandler != nullptr);
     DebugAssert(Find(EventHandler) == FEventHandlers.end());
-    FEventHandlers.push_back(EventHandler);
+    FEventHandlers.emplace_back(EventHandler);
   }
 
   void Remove(T EventHandler)
