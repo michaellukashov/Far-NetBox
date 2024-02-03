@@ -176,21 +176,27 @@ void TFarConfiguration::Load()
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   FForceInheritance = true;
-  SCOPE_EXIT
+  try__finally
+  {
+    TGUIConfiguration::Load(Storage.get());
+  }
+  __finally
   {
     FForceInheritance = false;
-  };
-  TGUIConfiguration::Load(Storage.get());
+  } end_try__finally
 }
 
 void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
-  SCOPE_EXIT
+  try__finally
+  {
+    TGUIConfiguration::DoSave(All, Explicit);
+  }
+  __finally
   {
     FForceInheritance = false;
-  };
-  TGUIConfiguration::DoSave(All, Explicit);
+  } end_try__finally
 }
 
 void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
