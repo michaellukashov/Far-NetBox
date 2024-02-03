@@ -12,7 +12,8 @@ class NB_CORE_EXPORT TOptions : public TObject
 {
 public:
   TOptions() noexcept;
-  TOptions(const TOptions & Source);
+  TOptions(const TOptions & Source) { operator =(Source); }
+  TOptions & operator =(const TOptions & Source);
 
   void Add(const UnicodeString & Value);
   void Parse(const UnicodeString & CmdLine);
