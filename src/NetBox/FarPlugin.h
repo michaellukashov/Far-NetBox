@@ -537,7 +537,7 @@ public:
   explicit TFarMenuItems() noexcept;
   virtual ~TFarMenuItems() override = default;
   void AddSeparator(bool Visible = true);
-  virtual int32_t Add(const UnicodeString & Text, bool Visible = true);
+  int32_t Add(const UnicodeString & Text, bool Visible = true);
 
   virtual void Clear() override;
   virtual void Delete(int32_t Index) override;
