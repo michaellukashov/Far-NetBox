@@ -215,10 +215,10 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
   HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : nullptr;
   if (CheckHandle(Settings))
   {
-    FarSettingsItem item = {sizeof(FarSettingsItem), nb::ToSizeT((int32_t)Root), Name, FST_UNKNOWN, {0} };
-    if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+    FarSettingsItem Item = {sizeof(FarSettingsItem), nb::ToSizeT((int32_t)Root), Name, FST_UNKNOWN, {0} };
+    if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &Item) && FST_QWORD == Item.Type)
     {
-      Result = static_cast<intptr_t>(item.Number);
+      Result = static_cast<intptr_t>(Item.Number);
     }
     FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, nullptr);
   }
@@ -227,10 +227,10 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
 
 intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t * Name) const
 {
-  FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
-  if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+  FarSettingsItem Item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
+  if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &Item) && FST_QWORD == Item.Type)
   {
-    return static_cast<intptr_t>(item.Number);
+    return static_cast<intptr_t>(Item.Number);
   }
   return 0;
 }
