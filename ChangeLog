@@ -3,8 +3,12 @@
 
 ## [Unreleased]
 
+## [24.2.1.580] - 2024-02-04
+
 ### Changed
 
+ - Upgrade dependencies: zlib-ng 2.1.6
+ - Upgrade dependencies: neon 0.33.0
  - Upgrade dependencies: openssl 3.2.1
 
 ### Fixed
