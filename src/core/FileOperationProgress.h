@@ -271,7 +271,7 @@ public:
   void SetCPSLimit(uint64_t ACPSLimit);
   void SetBatchOverwrite(TBatchOverwrite ABatchOverwrite);
   void SetSkipToAll();
-  UnicodeString GetLogStr(bool Done) const;
+  UnicodeString GetLogStr(bool ADone) const;
   void Store(TPersistence & Persistence);
   void Restore(TPersistence & Persistence);
   bool IsIndeterminate() const;

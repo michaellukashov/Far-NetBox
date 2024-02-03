@@ -976,12 +976,12 @@ void TFileOperationProgressType::UnlockUserSelections()
   }
 }
 
-UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
+UnicodeString TFileOperationProgressType::GetLogStr(bool ADone) const
 {
   const UnicodeString Transferred = FormatSize(GetTotalTransferred());
   TDateTime Time;
   UnicodeString TimeLabel;
-  if (!Done && FTotalSizeSet)
+  if (!ADone && FTotalSizeSet)
   {
     Time = TotalTimeLeft();
     TimeLabel = "Left";
@@ -994,7 +994,7 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
   const UnicodeString TimeStr = FormatDateTimeSpan(Time);
 
   uint32_t ACPS;
-  if (!Done)
+  if (!ADone)
   {
     ACPS = nb::ToUInt32(CPS());
   }
