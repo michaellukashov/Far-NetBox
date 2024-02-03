@@ -174,7 +174,7 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 }
 
-void TFarConfiguration::Load()
+void TFarConfiguration::LoadFarConfiguration()
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   FForceInheritance = true;
