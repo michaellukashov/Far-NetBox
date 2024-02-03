@@ -581,9 +581,9 @@ NB_CORE_EXPORT UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVa
 NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 } // namespace base
 
-constexpr char * LOCAL_INVALID_CHARS = "/\\:*?\"<>|";
-constexpr char * PASSWORD_MASK = "***";
-constexpr char * sLineBreak = "\n";
+constexpr const char * LOCAL_INVALID_CHARS = "/\\:*?\"<>|";
+constexpr const char * PASSWORD_MASK = "***";
+constexpr const char * sLineBreak = "\n";
 
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
