@@ -496,9 +496,9 @@ bool TFileMasks::MatchesFileName(const UnicodeString & FileName, bool Directory,
   return DoMatches(FileName, false, Directory, EmptyStr, Params, true, ImplicitMatch);
 }
 
-bool TFileMasks::operator ==(const TFileMasks & rhm) const
+bool TFileMasks::operator ==(const TFileMasks & rhs) const
 {
-  return (Masks() == rhm.Masks());
+  return (Masks() == rhs.Masks());
 }
 
 TFileMasks & TFileMasks::operator =(const UnicodeString & rhs)
@@ -507,12 +507,12 @@ TFileMasks & TFileMasks::operator =(const UnicodeString & rhs)
   return *this;
 }
 
-TFileMasks & TFileMasks::operator =(const TFileMasks & rhm)
+TFileMasks & TFileMasks::operator =(const TFileMasks & rhs)
 {
-  if (this == &rhm)
+  if (this == &rhs)
     return *this;
   DoInit(true);
-  DoCopy(rhm);
+  DoCopy(rhs);
   return *this;
 }
 

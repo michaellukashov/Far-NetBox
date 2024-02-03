@@ -44,9 +44,9 @@ public:
   TFileMasks(const TFileMasks & Source) noexcept;
   explicit TFileMasks(const UnicodeString & AMasks) noexcept;
   virtual ~TFileMasks() noexcept override;
-  TFileMasks & operator =(const TFileMasks & rhm);
+  TFileMasks & operator =(const TFileMasks & rhs);
   TFileMasks & operator =(const UnicodeString & rhs);
-  bool operator ==(const TFileMasks & rhm) const;
+  bool operator ==(const TFileMasks & rhs) const;
   bool operator ==(const UnicodeString & rhs) const;
 
   void SetMask(const UnicodeString & Mask);
