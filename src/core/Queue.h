@@ -391,6 +391,7 @@ protected:
   TLocatedQueueItem() = delete;
   explicit TLocatedQueueItem(TObjectClassId Kind, gsl::not_null<TTerminal *> Terminal) noexcept;
   TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept;
+  TLocatedQueueItem & operator =(const TLocatedQueueItem& Source);
   explicit TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept;
   virtual ~TLocatedQueueItem() override = default;
 

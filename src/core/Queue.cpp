@@ -2190,6 +2190,14 @@ TLocatedQueueItem::TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept 
 {
 }
 
+TLocatedQueueItem & TLocatedQueueItem::operator=(const TLocatedQueueItem & Source)
+{
+  if (this == &Source)
+    return *this;
+  FCurrentDir = Source.FCurrentDir;
+  return *this;
+}
+
 TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept :
   TQueueItem(Kind)
 {
