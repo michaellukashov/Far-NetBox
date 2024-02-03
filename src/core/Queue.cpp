@@ -722,7 +722,7 @@ void TTerminalQueue::UpdateStatusForList(
       ItemProxy = nullptr;
     }
 
-    if (ItemProxy != nullptr)
+    if ((Current != nullptr) && (ItemProxy != nullptr))
     {
       Current->Delete(ItemProxy);
       Status->Add(ItemProxy);
