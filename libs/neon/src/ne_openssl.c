@@ -585,7 +585,7 @@ ne_ssl_context *ne_ssl_context_create(int mode)
 
 void ne_ssl_context_set_flag(ne_ssl_context *ctx, int flag, int value)
 {
-    long opts = SSL_CTX_get_options(ctx->ctx);
+    long opts = (long)SSL_CTX_get_options(ctx->ctx);
 
     switch (flag) {
     case NE_SSL_CTX_SSLv2:
@@ -929,7 +929,7 @@ ne_ssl_client_cert *ne_ssl_clicert_import(const unsigned char *buffer,
     PKCS12 *p12;
 
     p = buffer;
-    p12 = d2i_PKCS12(NULL, &p, buflen);
+    p12 = d2i_PKCS12(NULL, &p, (int)buflen);
     
     return parse_client_cert(p12);
 }
@@ -1106,7 +1106,7 @@ ne_ssl_certificate *ne_ssl_cert_import(const char *data)
     if (len == 0) return NULL;
 
     p = der;
-    x5 = d2i_X509(NULL, &p, len); /* p is incremented */
+    x5 = d2i_X509(NULL, &p, (int)len); /* p is incremented */
     ne_free(der);
     if (x5 == NULL) {
         ERR_clear_error();

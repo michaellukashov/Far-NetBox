@@ -37,11 +37,11 @@
 
 struct SSPIContextStruct {
     CtxtHandle context;
-    char *serverName;
+    SEC_WCHAR *serverName;
     CredHandle credentials;
     int continueNeeded;
     int authfinished;
-    char *mechanism;
+    LPWSTR mechanism;
     int ntlm;
     ULONG maxTokenSize;
 };
@@ -51,13 +51,13 @@ typedef struct SSPIContextStruct SSPIContext;
 static ULONG negotiateMaxTokenSize = 0;
 static ULONG ntlmMaxTokenSize = 0;
 static HINSTANCE hSecDll = NULL;
-static PSecurityFunctionTable pSFT = NULL;
+static PSecurityFunctionTableW pSFT = NULL;
 static int initialized = 0;
 
 /*
  * Query specified package for it's maximum token size.
  */
-static int getMaxTokenSize(char *package, ULONG * maxTokenSize)
+static int getMaxTokenSize(LPWSTR package, ULONG * maxTokenSize)
 {
     SECURITY_STATUS status;
     SecPkgInfo *packageSecurityInfo = NULL;
@@ -87,7 +87,7 @@ static void initDll(HINSTANCE hSecDll)
 
     initSecurityInterface =
         (INIT_SECURITY_INTERFACE) GetProcAddress(hSecDll,
-                                                 SECURITY_ENTRYPOINT);
+                                                 (LPCSTR)SECURITY_ENTRYPOINTA);
 
     if (initSecurityInterface == NULL) {
         NE_DEBUG(NE_DBG_HTTPAUTH,
@@ -109,13 +109,13 @@ static void initDll(HINSTANCE hSecDll)
         NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Security Function Table [ok].\n");
     }
 
-    if (getMaxTokenSize("Negotiate", &negotiateMaxTokenSize)) {
+    if (getMaxTokenSize(L"Negotiate", &negotiateMaxTokenSize)) {
         NE_DEBUG(NE_DBG_HTTPAUTH,
                  "sspi: Unable to get negotiate maximum packet size");
         initialized = -3;
     }
 
-    if (getMaxTokenSize("NTLM", &ntlmMaxTokenSize)) {
+    if (getMaxTokenSize(L"NTLM", &ntlmMaxTokenSize)) {
         NE_DEBUG(NE_DBG_HTTPAUTH,
                  "sspi: Unable to get negotiate maximum packet size");
         initialized = -3;
@@ -133,7 +133,7 @@ int ne_sspi_init(void)
 
     NE_DEBUG(NE_DBG_SOCKET, "sspiInit\n");
     NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Loading security dll.\n");
-    hSecDll = LoadLibrary("security.dll");
+    hSecDll = LoadLibraryA("security.dll");
 
     if (hSecDll == NULL) {
         NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Loading of security dll [fail].\n");
@@ -186,7 +186,7 @@ int ne_sspi_deinit(void)
  * Simplification wrapper around AcquireCredentialsHandle as most of
  * the parameters do not change.
  */
-static int acquireCredentialsHandle(CredHandle * credentials, char *package)
+static int acquireCredentialsHandle(CredHandle * credentials, LPWSTR package)
 {
     SECURITY_STATUS status;
     TimeStamp timestamp;
@@ -211,7 +211,7 @@ static int acquireCredentialsHandle(CredHandle * credentials, char *package)
  */
 static SECURITY_STATUS
 initializeSecurityContext(CredHandle * credentials, CtxtHandle * context,
-                          char *spn, ULONG contextReq,
+                          SEC_WCHAR *spn, ULONG contextReq,
                           SecBufferDesc * inBuffer, CtxtHandle * newContext,
                           SecBufferDesc * outBuffer)
 {
@@ -335,7 +335,7 @@ static int freeBuffer(SecBufferDesc * secBufferDesc)
  * Canonicalize a server host name if possible.
  * The returned pointer must be freed after usage.
  */
-static char *canonical_hostname(const char *serverName)
+static const char *canonical_hostname(const char *serverName)
 {
     const char *hostname;
     ne_sock_addr *addr;
@@ -365,7 +365,7 @@ static char *canonical_hostname(const char *serverName)
 int ne_sspi_create_context(void **context, char *serverName, int ntlm)
 {
     SSPIContext *sspiContext;
-    char *canonicalName;
+    const char *canonicalName;
 
     if (initialized <= 0) {
         return -1;
@@ -375,15 +375,15 @@ int ne_sspi_create_context(void **context, char *serverName, int ntlm)
     sspiContext->continueNeeded = 0;
 
     if (ntlm) {
-        sspiContext->mechanism = "NTLM";
-        sspiContext->serverName = ne_strdup(serverName);
+        sspiContext->mechanism = L"NTLM";
+        sspiContext->serverName = (SEC_WCHAR *)ne_strdup(serverName);
         sspiContext->maxTokenSize = ntlmMaxTokenSize;
     } else {
-        sspiContext->mechanism = "Negotiate";
+        sspiContext->mechanism = L"Negotiate";
         /* Canonicalize to conform to GSSAPI behavior */
         canonicalName = canonical_hostname(serverName);
-        sspiContext->serverName = ne_concat("HTTP/", canonicalName, NULL);
-        ne_free(canonicalName);
+        sspiContext->serverName = (SEC_WCHAR *)ne_concat("HTTP/", canonicalName, NULL);
+        ne_free((void *)canonicalName);
         NE_DEBUG(NE_DBG_HTTPAUTH, "sspi: Created context with SPN '%s'\n",
                  sspiContext->serverName);
         sspiContext->maxTokenSize = negotiateMaxTokenSize;
