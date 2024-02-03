@@ -154,7 +154,7 @@ protected:
   virtual void AssignTo(TPersistent * Dest) const;
 
 private:
-  void AssignError(const TPersistent * Source);
+  [[noreturn]] void AssignError(const TPersistent * Source);
 };
 
 void Error(int32_t Id, int32_t ErrorId);
@@ -238,15 +238,14 @@ public:
 
   virtual void Delete(int32_t Index)
   {
-    if ((Index == nb::NPOS) || (Index >= nb::ToInt32(FList.size())))
+    if (Index < nb::ToInt32(FList.size()))
     {
-      Error(SListIndexError, Index);
-    }
-    O * Temp = TListBase::GetItem(Index);
-    FList.erase(FList.begin() + Index);
-    if (Temp != nullptr)
-    {
-      Notify(Temp, lnDeleted);
+      O * Temp = TListBase::GetItem(Index);
+      FList.erase(FList.begin() + Index);
+      if (Temp != nullptr)
+      {
+        Notify(Temp, lnDeleted);
+      }
     }
   }
 
@@ -299,10 +298,6 @@ public:
 
   virtual void SetCount(int32_t NewCount)
   {
-    if (NewCount == nb::NPOS)
-    {
-      Error(SListCountError, NewCount);
-    }
     if (NewCount <= nb::ToInt32(FList.size()))
     {
       const int32_t sz = nb::ToInt32(FList.size());

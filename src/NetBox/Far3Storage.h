@@ -12,23 +12,17 @@ public:
     const GUID & Guid, FARAPISETTINGSCONTROL SettingsControl);
   virtual ~TFar3Storage() noexcept override = default;
 
-  bool Copy(TFar3Storage * Storage);
-
   virtual void DoCloseSubKey() override;
   virtual bool DoDeleteSubKey(const UnicodeString & SubKey) override;
   virtual void DoGetSubKeyNames(TStrings * Strings) override;
   virtual bool DoValueExists(const UnicodeString & Value) override;
   virtual bool DoDeleteValue(const UnicodeString & Name) override;
-//  virtual size_t DoBinaryDataSize(const UnicodeString & Name) const override;
   virtual int32_t DoBinaryDataSize(const UnicodeString & Name) override;
 
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
   virtual bool DoOpenSubKey(const UnicodeString & MungedSubKey, bool CanCreate) override;
   virtual UnicodeString GetSource() const override;
-//  virtual void DoGetSubKeyNames(TStrings *Strings) override;
   virtual void DoGetValueNames(TStrings *Strings) override;
-
-//  virtual void DoSetAccessMode(TStorageAccessMode Value) override;
 
   virtual void DoWriteBool(const UnicodeString & Name, bool Value) override;
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;

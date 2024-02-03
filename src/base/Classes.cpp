@@ -56,7 +56,7 @@ TPersistent * TPersistent::GetOwner()
   return nullptr;
 }
 
-void TPersistent::AssignError(const TPersistent * Source)
+[[noreturn]] void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
   throw Exception("Cannot assign");
@@ -74,11 +74,11 @@ const TObject * TObjectList::operator [](int32_t Index) const
 
 const TObject * TObjectList::GetObj(int32_t Index) const
 {
-  if ((Index == nb::NPOS) || (Index >= GetCount()))
+  if (Index < GetCount())
   {
-    Error(SListIndexError, Index);
+    return TList::GetAs<TObject>(Index);
   }
-  return TList::GetAs<TObject>(Index);
+  return nullptr;
 }
 
 void TObjectList::Notify(TObject * Ptr, TListNotification Action)

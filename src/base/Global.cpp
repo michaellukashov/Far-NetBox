@@ -275,9 +275,9 @@ void TraceInMemoryCallback(const wchar_t *Msg)
 void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
   uint32_t Line, const wchar_t * Message)
 {
-  DebugAssert(IsTracing);
+  // DebugAssert(IsTracing);
 
-  const UnicodeString TimeString;
+  UnicodeString TimeString;
   // DateTimeToString(TimeString, L"hh:mm:ss.zzz", Now());
   TODO("use Format");
   const wchar_t * Slash = wcsrchr(SourceFile, Backslash);
@@ -286,8 +286,8 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
     SourceFile = Slash + 1;
   }
   UTF8String Buffer = UTF8String(FORMAT("[%s] [%.4X] [%s:%d:%s] %s\n",
-        TimeString, nb::ToInt32(::GetCurrentThreadId()), SourceFile,
-        Line, Func, Message));
+    TimeString, nb::ToInt32(::GetCurrentThreadId()), SourceFile,
+    Line, Func, Message));
 #ifdef TRACE_IN_MEMORY
   if (TracingCriticalSection != nullptr)
   {

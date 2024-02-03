@@ -4304,7 +4304,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
   const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
-  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, FirstLevel);
+  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::move(OnCalculatedChecksum), OperationProgress, FirstLevel);
 
   static int32_t CalculateFilesChecksumQueueLen = 5;
   TSFTPCalculateFilesChecksumQueue Queue(this, FCodePage);

@@ -351,7 +351,7 @@ void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
   DoProgress();
 }
 
-void TFileOperationProgressType::Succeeded(int32_t Count)
+void TFileOperationProgressType::Succeeded(int32_t ACount)
 {
   if (FPersistence.Statistics != nullptr)
   {
@@ -360,12 +360,12 @@ void TFileOperationProgressType::Succeeded(int32_t Count)
       const int64_t Transferred = FTransferredSize - FSkippedSize;
       if (Side() == osLocal)
       {
-        FPersistence.Statistics->FilesUploaded += Count;
+        FPersistence.Statistics->FilesUploaded += ACount;
         FPersistence.Statistics->TotalUploaded += Transferred;
       }
       else
       {
-        FPersistence.Statistics->FilesDownloaded += Count;
+        FPersistence.Statistics->FilesDownloaded += ACount;
         FPersistence.Statistics->TotalDownloaded += Transferred;
       }
     }
@@ -373,11 +373,11 @@ void TFileOperationProgressType::Succeeded(int32_t Count)
     {
       if (Side() == osLocal)
       {
-        FPersistence.Statistics->FilesDeletedLocal += Count;
+        FPersistence.Statistics->FilesDeletedLocal += ACount;
       }
       else
       {
-        FPersistence.Statistics->FilesDeletedRemote += Count;
+        FPersistence.Statistics->FilesDeletedRemote += ACount;
       }
     }
   }
@@ -976,12 +976,12 @@ void TFileOperationProgressType::UnlockUserSelections()
   }
 }
 
-UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
+UnicodeString TFileOperationProgressType::GetLogStr(bool ADone) const
 {
   const UnicodeString Transferred = FormatSize(GetTotalTransferred());
   TDateTime Time;
   UnicodeString TimeLabel;
-  if (!Done && FTotalSizeSet)
+  if (!ADone && FTotalSizeSet)
   {
     Time = TotalTimeLeft();
     TimeLabel = "Left";
@@ -994,7 +994,7 @@ UnicodeString TFileOperationProgressType::GetLogStr(bool Done) const
   const UnicodeString TimeStr = FormatDateTimeSpan(Time);
 
   uint32_t ACPS;
-  if (!Done)
+  if (!ADone)
   {
     ACPS = nb::ToUInt32(CPS());
   }

@@ -2942,9 +2942,6 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       }
       else if (Side == osLocal)
       {
-        TFarPanelItemData * FarPanelItemData = new TFarPanelItemData();
-        FarPanelItemData->AlternateFileName = PanelItem->GetAlternateFileName();
-        Data = FarPanelItemData;
         if (::ExtractFilePath(FileName).IsEmpty())
         {
           if (!FileNameOnly)

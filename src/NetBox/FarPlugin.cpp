@@ -43,7 +43,7 @@ public:
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
+      if (::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED)
       {
         if (!IsFinished() && FPlugin && FPlugin->GetPluginHandle())
           FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
@@ -2640,14 +2640,7 @@ PLUGINPANELITEMFLAGS TFarPanelItem::GetFlags() const
 
 UnicodeString TFarPanelItem::GetFileName() const
 {
-  // UnicodeString Result = FPanelItem->AlternateFileName ? FPanelItem->AlternateFileName : FPanelItem->FileName;
-  const UnicodeString Result = FPanelItem->FileName;
-  return Result;
-}
-
-UnicodeString TFarPanelItem::GetAlternateFileName() const
-{
-  const UnicodeString Result = FPanelItem->AlternateFileName;
+  UnicodeString Result = FPanelItem->FileName;
   return Result;
 }
 

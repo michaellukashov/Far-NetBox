@@ -1084,9 +1084,9 @@ bool TRemoteFile::GetIsTimeShiftingApplicable() const
   return GetIsTimeShiftingApplicable(GetModificationFmt());
 }
 
-bool TRemoteFile::GetIsTimeShiftingApplicable(TModificationFmt ModificationFmt)
+bool TRemoteFile::GetIsTimeShiftingApplicable(TModificationFmt AModificationFmt)
 {
-  return (ModificationFmt == mfMDHM) || (ModificationFmt == mfYMDHM) || (ModificationFmt == mfFull);
+  return (AModificationFmt == mfMDHM) || (AModificationFmt == mfYMDHM) || (AModificationFmt == mfFull);
 }
 
 void TRemoteFile::ShiftTimeInSeconds(int64_t Seconds)
@@ -1095,9 +1095,9 @@ void TRemoteFile::ShiftTimeInSeconds(int64_t Seconds)
   ShiftTimeInSeconds(FLastAccess, GetModificationFmt(), Seconds);
 }
 
-void TRemoteFile::ShiftTimeInSeconds(TDateTime & DateTime, TModificationFmt ModificationFmt, int64_t Seconds)
+void TRemoteFile::ShiftTimeInSeconds(TDateTime & DateTime, TModificationFmt AModificationFmt, int64_t Seconds)
 {
-  if ((Seconds != 0) && GetIsTimeShiftingApplicable(ModificationFmt))
+  if ((Seconds != 0) && GetIsTimeShiftingApplicable(AModificationFmt))
   {
     DebugAssert(nb::ToInt(DateTime) != 0);
     DateTime = IncSecond(DateTime, Seconds);
@@ -1835,12 +1835,12 @@ void TRemoteDirectory::ReleaseRelativeDirectories()
   if ((GetThisDirectory() != nullptr) && !GetIncludeThisDirectory())
   {
     SAFE_DESTROY(FThisDirectory);
-    FThisDirectory = nullptr;
+    // FThisDirectory = nullptr;
   }
   if ((GetParentDirectory() != nullptr) && !GetIncludeParentDirectory())
   {
     SAFE_DESTROY(FParentDirectory);
-    FParentDirectory = nullptr;
+    // FParentDirectory = nullptr;
   }
 }
 

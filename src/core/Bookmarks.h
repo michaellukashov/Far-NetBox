@@ -57,7 +57,7 @@ public:
   void Add(TBookmark * Bookmark);
   void Insert(int32_t Index, TBookmark * Bookmark);
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
-  void MoveTo(TBookmark * ToBookmark, TBookmark * Bookmark, bool Before);
+  void MoveTo(TBookmark * ToBookmark, const TBookmark * Bookmark, bool Before);
   void Delete(TBookmark *& Bookmark);
   TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name) const;
   TBookmark * FindByShortCut(const TShortCut & ShortCut);

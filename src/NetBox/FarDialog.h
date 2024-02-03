@@ -138,8 +138,8 @@ private:
   FARDIALOGITEMFLAGS FFlags{0};
   UnicodeString FHelpTopic;
   bool FVisible{false};
-  std::unique_ptr<TObjectList> FItems;
-  std::unique_ptr<TObjectList> FContainers;
+  std::unique_ptr<TObjectList> FItems{std::make_unique<TObjectList>()};
+  std::unique_ptr<TObjectList> FContainers{std::make_unique<TObjectList>()};
   HANDLE FHandle{nullptr};
   TFarButton * FDefaultButton{nullptr};
   TFarBox * FBorderBox{nullptr};
@@ -193,9 +193,9 @@ protected:
 private:
   int32_t FLeft{0};
   int32_t FTop{0};
-  std::unique_ptr<TObjectList> FItems;
+  std::unique_ptr<TObjectList> FItems{std::make_unique<TObjectList>()};
   TFarDialog * FDialog{nullptr};
-  bool FEnabled{false};
+  bool FEnabled{true};
 };
 
 constexpr const int32_t DIF_INVERSE = 0x00000001UL;
@@ -630,7 +630,7 @@ private:
   void UpdateMouseReaction();
 
 private:
-  std::unique_ptr<TFarList> FList;
+  std::unique_ptr<TFarList> FList{std::make_unique<TFarList>(this)};
   TFarListBoxAutoSelect FAutoSelect;
   bool FDenyClose{false};
 };
@@ -665,7 +665,7 @@ protected:
   virtual void Init() override;
 
 private:
-  std::unique_ptr<TFarList> FList;
+  std::unique_ptr<TFarList> FList{std::make_unique<TFarList>(this)};
 };
 
 class TFarLister : public TFarDialogItem
@@ -690,7 +690,7 @@ private:
   void ItemsChange(TObject * Sender);
 
 private:
-  std::unique_ptr<TStringList> FItems;
+  std::unique_ptr<TStringList> FItems{std::make_unique<TStringList>()};
   int32_t FTopIndex{0};
 };
 

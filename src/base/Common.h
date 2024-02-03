@@ -39,8 +39,8 @@ constexpr const wchar_t EngShortMonthNames[12][4] =
 // extern const char Bom[3];
 constexpr const char * CONST_BOM = "\xEF\xBB\xBF";
 constexpr const wchar_t TokenPrefix = L'%';
-constexpr const wchar_t NoReplacement = wchar_t(0);
-constexpr const wchar_t TokenReplacement = wchar_t(1);
+constexpr const wchar_t NoReplacement = static_cast<wchar_t>(0);
+constexpr const wchar_t TokenReplacement = static_cast<wchar_t>(1);
 constexpr const wchar_t * LocalInvalidChars = L"/\\:*?\"<>|";
 constexpr const wchar_t * PasswordMask = L"***";
 constexpr const wchar_t * Ellipsis = L"...";
@@ -199,8 +199,8 @@ NB_CORE_EXPORT TStringList * CreateSortedStringList(bool CaseSensitive = false, 
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
 bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
 NB_CORE_EXPORT void CheckCertificate(const UnicodeString & Path);
-typedef struct x509_st X509;
-typedef struct evp_pkey_st EVP_PKEY;
+using X509 = struct x509_st;
+using EVP_PKEY = struct evp_pkey_st;
 NB_CORE_EXPORT void ParseCertificate(const UnicodeString & Path,
   const UnicodeString & Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
   bool & WrongPassphrase);
@@ -515,12 +515,12 @@ public:
   {
     DebugAssert(EventHandler != nullptr);
     DebugAssert(Find(EventHandler) == FEventHandlers.end());
-    FEventHandlers.push_back(EventHandler);
+    FEventHandlers.emplace_back(EventHandler);
   }
 
   void Remove(T EventHandler)
   {
-    TEventHandlers::iterator I = Find(EventHandler);
+    typename TEventHandlers::const_iterator I = Find(EventHandler);
     if (DebugAlwaysTrue(I != FEventHandlers.end()))
     {
       FEventHandlers.erase(I);
@@ -531,7 +531,7 @@ public:
   template<typename P>
   void Invoke(const P & p)
   {
-    TEventHandlers::iterator I = FEventHandlers.begin();
+    typename TEventHandlers::iterator I = FEventHandlers.begin();
     while (I != FEventHandlers.end())
     {
       (*I)(p);
@@ -581,9 +581,9 @@ NB_CORE_EXPORT UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVa
 NB_CORE_EXPORT UnicodeString FormatBytes(int64_t Bytes, bool UseOrders = true);
 } // namespace base
 
-constexpr char * LOCAL_INVALID_CHARS = "/\\:*?\"<>|";
-constexpr char * PASSWORD_MASK = "***";
-constexpr char * sLineBreak = "\n";
+constexpr const char * LOCAL_INVALID_CHARS = "/\\:*?\"<>|";
+constexpr const char * PASSWORD_MASK = "***";
+constexpr const char * sLineBreak = "\n";
 
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF

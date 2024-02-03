@@ -722,7 +722,7 @@ void TTerminalQueue::UpdateStatusForList(
       ItemProxy = nullptr;
     }
 
-    if (ItemProxy != nullptr)
+    if ((Current != nullptr) && (ItemProxy != nullptr))
     {
       Current->Delete(ItemProxy);
       Status->Add(ItemProxy);
@@ -808,7 +808,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
       }
     }
 
-    if (Result)
+    if (Result && TerminalItem)
     {
       Result = TerminalItem->ProcessUserAction(Arg);
     }
@@ -961,7 +961,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 
     if (Result)
     {
-      if (Pause)
+      if (Pause && TerminalItem)
       {
         Result = TerminalItem->Pause();
       }
@@ -1626,7 +1626,6 @@ void TTerminalItem::OperationProgress(
 {
   if (FPause && !FTerminated && !FCancel && FItem)
   {
-    DebugAssert(FItem != nullptr);
     const TQueueItem::TStatus PrevStatus = FItem->GetStatus();
     DebugAssert(PrevStatus == TQueueItem::qsProcessing);
     // must be set before TFileOperationProgressType::Suspend(), because
@@ -1660,7 +1659,8 @@ void TTerminalItem::OperationProgress(
   }
 
   DebugAssert(FItem != nullptr);
-  FItem->SetProgress(ProgressData);
+  if (FItem)
+    FItem->SetProgress(ProgressData);
 }
 
 bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
@@ -2190,6 +2190,14 @@ TLocatedQueueItem::TLocatedQueueItem(const TLocatedQueueItem & Source) noexcept 
 {
 }
 
+TLocatedQueueItem & TLocatedQueueItem::operator=(const TLocatedQueueItem & Source)
+{
+  if (this == &Source)
+    return *this;
+  FCurrentDir = Source.FCurrentDir;
+  return *this;
+}
+
 TLocatedQueueItem::TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept :
   TQueueItem(Kind)
 {
@@ -2260,7 +2268,7 @@ TTransferQueueItem::~TTransferQueueItem() noexcept
 int32_t TTransferQueueItem::DefaultCPSLimit() const
 {
   Expects(FCopyParam);
-  return FCopyParam->GetCPSLimit();
+  return nb::ToInt32(FCopyParam->GetCPSLimit());
 }
 
 void TTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
@@ -2461,11 +2469,11 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 
 // TDownloadQueueItem
 
-static void ExtractRemoteSourcePath(TTerminal * Terminal, const TStrings * Files, UnicodeString & Path)
+static void ExtractRemoteSourcePath(const TTerminal * ATerminal, const TStrings * Files, UnicodeString & Path)
 {
-  if (Terminal && !base::UnixExtractCommonPath(Files, Path))
+  if (ATerminal && !base::UnixExtractCommonPath(Files, Path))
   {
-    Path = Terminal->CurrentDirectory;
+    Path = ATerminal->CurrentDirectory;
   }
   Path = base::UnixExcludeTrailingBackslash(Path);
 }
@@ -2622,7 +2630,7 @@ TTerminalThread::~TTerminalThread() noexcept
   // delete FSection;
   if (FAbandoned)
   {
-    delete FTerminal;
+    delete FTerminal.get();
   }
 }
 
@@ -3107,7 +3115,7 @@ void TQueueFileList::Clear()
   FLastParallelOperationVersion = -1;
 }
 
-void TQueueFileList::Add(const UnicodeString & FileName, int32_t State)
+void TQueueFileList::Add(const UnicodeString & FileName, int64_t State)
 {
   FList->AddObject(FileName, reinterpret_cast<TObject *>(State));
 }

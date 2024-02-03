@@ -68,26 +68,32 @@ struct hmac_ctx
   uint8_t key[IN_BLOCK_LENGTH];
   ssh_hash *ctx;
   uint32_t klen;
-    hmac_ctx()
+  hmac_ctx()
+  {
+    // memset(this, 0, sizeof(*this));
+    memset(key, 0, IN_BLOCK_LENGTH);
+    ctx = nullptr;
+    klen = 0;
+  }
+  ~hmac_ctx()
+  {
+    if (ctx != nullptr) ssh_hash_free(ctx);
+  }
+  void CopyFrom(hmac_ctx * Source)
+  {
+    if (ctx != nullptr)
     {
-        memset(this, 0, sizeof(*this));
+      ssh_hash_free(ctx);
     }
-    ~hmac_ctx()
+    // memmove(this, Source, sizeof(*this));
+    memmove(key, Source->key, IN_BLOCK_LENGTH);
+    ctx = nullptr;
+    klen = Source->klen;
+    if (Source->ctx != nullptr)
     {
-        if (ctx != nullptr) ssh_hash_free(ctx);
+      ctx = ssh_hash_copy(Source->ctx);
     }
-    void CopyFrom(hmac_ctx * Source)
-    {
-        if (ctx != nullptr)
-        {
-            ssh_hash_free(ctx);
-        }
-        memmove(this, Source, sizeof(*this));
-        if (Source->ctx != nullptr)
-        {
-            ctx = ssh_hash_copy(Source->ctx);
-        }
-    }
+  }
 };
 
 /* initialise the HMAC context to zero */

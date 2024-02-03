@@ -1667,13 +1667,13 @@ private:
   TFarCheckBox * FtpUndupFFCheck{nullptr};
   TFarCheckBox * SslSessionReuseCheck{nullptr};
   TFarCheckBox * WebDAVCompressionCheck{nullptr};
-  std::unique_ptr<TObjectList> FTabs;
+  std::unique_ptr<TObjectList> FTabs{std::make_unique<TObjectList>()};
   int32_t FFirstVisibleTabIndex{0};
 };
 
-//  BUG(Ignore1, NB_LOGIN_BUGS_IGNORE1, ); \
-//  BUG(PlainPW1, NB_LOGIN_BUGS_PLAIN_PW1, ); \
-//  BUG(RSA1, NB_LOGIN_BUGS_RSA1, ); \
+//  BUG(Ignore1, NB_LOGIN_BUGS_IGNORE1, );
+//  BUG(PlainPW1, NB_LOGIN_BUGS_PLAIN_PW1, );
+//  BUG(RSA1, NB_LOGIN_BUGS_RSA1, );
 
 #define BUG(BUGID, MSG, PREFIX) \
   TRISTATE(PREFIX ## Bug ## BUGID ## Combo, PREFIX ## Bug(sb ## BUGID), MSG)
@@ -1691,12 +1691,7 @@ static constexpr TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDA
 
 TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) noexcept :
   TTabbedDialog(AFarPlugin, tabCount),
-  FAction(Action),
-  FSessionData(nullptr),
-  FTransferProtocolIndex(0),
-  FFtpEncryptionComboIndex(0),
-  FTabs(std::make_unique<TObjectList>()),
-  FFirstVisibleTabIndex(0)
+  FAction(Action)
 {
   TPoint S = TPoint(67, 25);
   bool Limited = (S.y > GetMaxSize().y);
@@ -6538,7 +6533,7 @@ void TWinSCPFileSystem::FileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
   const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent && OnGetSpaceAvailable)
 {
-  std::unique_ptr<TFileSystemInfoDialog> Dialog(std::make_unique<TFileSystemInfoDialog>(FPlugin, std::forward<TGetSpaceAvailableEvent>(OnGetSpaceAvailable)));
+  std::unique_ptr<TFileSystemInfoDialog> Dialog(std::make_unique<TFileSystemInfoDialog>(FPlugin, std::move(OnGetSpaceAvailable)));
   Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
 }
 
@@ -8355,8 +8350,8 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent && OnStartStop,
   bool & SaveSettings, uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions)
 {
-  std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(FPlugin, std::forward<TSynchronizeStartStopEvent>(OnStartStop),
-    Options, CopyParamAttrs, std::forward<TGetSynchronizeOptionsEvent>(OnGetOptions)));
+  std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(FPlugin, std::move(OnStartStop),
+    Options, CopyParamAttrs, std::move(OnGetOptions)));
   const bool Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   return Result;
 }

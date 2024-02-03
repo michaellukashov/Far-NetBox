@@ -3988,7 +3988,6 @@ UnicodeString FormatSize(int64_t ASize)
 
 UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
 {
-  const TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
   UnicodeString Result;
   if ((0 <= DateTime) && (DateTime <= MaxDateTime))
   {
@@ -4000,6 +3999,7 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
     }
     else
     {
+      const TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
       uint16_t Hour, Min, Sec, Dummy;
       DecodeTime(DateTime, Hour, Min, Sec, Dummy);
       const int32_t TotalHours = nb::ToInt32(Hour) + (Days * HoursPerDay);

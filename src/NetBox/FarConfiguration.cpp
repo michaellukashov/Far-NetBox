@@ -27,9 +27,7 @@ enum NetBoxConfirmationsSettings
 
 TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept :
   TGUIConfiguration(OBJECT_CLASS_TFarConfiguration),
-  FFarPlugin(APlugin),
-  FBookmarks(std::make_unique<TBookmarks>()),
-  FFarConfirmations(-1)
+  FFarPlugin(APlugin)
 {
 //  TFarConfiguration::Default();
   //CacheFarSettings();
@@ -174,25 +172,31 @@ void TFarConfiguration::LoadData(THierarchicalStorage * Storage)
   }
 }
 
-void TFarConfiguration::Load()
+void TFarConfiguration::LoadFarConfiguration()
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   FForceInheritance = true;
-  SCOPE_EXIT
+  try__finally
+  {
+    TGUIConfiguration::Load(Storage.get());
+  }
+  __finally
   {
     FForceInheritance = false;
-  };
-  TGUIConfiguration::Load(Storage.get());
+  } end_try__finally
 }
 
 void TFarConfiguration::Save(bool All, bool Explicit)
 {
   FForceInheritance = true;
-  SCOPE_EXIT
+  try__finally
+  {
+    TGUIConfiguration::DoSave(All, Explicit);
+  }
+  __finally
   {
     FForceInheritance = false;
-  };
-  TGUIConfiguration::DoSave(All, Explicit);
+  } end_try__finally
 }
 
 void TFarConfiguration::SetPlugin(TCustomFarPlugin * Value)
@@ -208,13 +212,13 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
 {
   intptr_t Result = 0;
   FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
-  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
-  if (Settings)
+  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : nullptr;
+  if (CheckHandle(Settings))
   {
-    FarSettingsItem item = {sizeof(FarSettingsItem), nb::ToSizeT((int32_t)Root), Name, FST_UNKNOWN, {0} };
-    if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+    FarSettingsItem Item = {sizeof(FarSettingsItem), nb::ToSizeT((int32_t)Root), Name, FST_UNKNOWN, {0} };
+    if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &Item) && FST_QWORD == Item.Type)
     {
-      Result = static_cast<intptr_t>(item.Number);
+      Result = static_cast<intptr_t>(Item.Number);
     }
     FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_FREE, 0, nullptr);
   }
@@ -223,10 +227,10 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
 
 intptr_t TFarConfiguration::GetConfirmationsSetting(HANDLE &Settings, const wchar_t * Name) const
 {
-  FarSettingsItem item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
-  if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
+  FarSettingsItem Item = {sizeof(FarSettingsItem), FSSF_CONFIRMATIONS, Name, FST_UNKNOWN, {0} };
+  if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &Item) && FST_QWORD == Item.Type)
   {
-    return static_cast<intptr_t>(item.Number);
+    return static_cast<intptr_t>(Item.Number);
   }
   return 0;
 }
@@ -236,8 +240,8 @@ int32_t TFarConfiguration::GetConfirmationsSettings() const
 {
   int32_t Result = 0;
   FarSettingsCreate SettingsCreate = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
-  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &SettingsCreate) ? SettingsCreate.Handle : 0;
-  if (Settings)
+  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &SettingsCreate) ? SettingsCreate.Handle : nullptr;
+  if (CheckHandle(Settings))
   {
     if (GetConfirmationsSetting(Settings, L"Copy"))
       Result |= NBCS_COPYOVERWRITE;

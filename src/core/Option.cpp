@@ -17,14 +17,17 @@ TOptions::TOptions() noexcept
   FSwitchValueDelimiters = UnicodeString(L"=:") + ArrayValueDelimiter;
 }
 
-TOptions::TOptions(const TOptions & Source)
+TOptions & TOptions::operator=(const TOptions & Source)
 {
+  if (this == &Source)
+    return *this;
   FSwitchMarks = Source.FSwitchMarks;
   FSwitchValueDelimiters = Source.FSwitchValueDelimiters;
   FOptions = Source.FOptions;
   FOriginalOptions = Source.FOriginalOptions;
   FNoMoreSwitches = Source.FNoMoreSwitches;
   FParamCount = Source.FParamCount;
+  return *this;
 }
 
 void TOptions::Parse(const UnicodeString & CmdLine)

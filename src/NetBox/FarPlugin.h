@@ -450,7 +450,6 @@ public:
   PLUGINPANELITEMFLAGS GetFlags() const;
   uint32_t GetFileAttrs() const;
   UnicodeString GetFileName() const;
-  UnicodeString GetAlternateFileName() const;
   void * GetUserData() const;
   bool GetSelected() const;
   void SetSelected(bool Value);
@@ -468,15 +467,6 @@ protected:
     uintptr_t & NumberOfLinks, UnicodeString & Description,
     UnicodeString & Owner, void *& UserData, size_t & CustomColumnNumber) override;
   virtual UnicodeString GetCustomColumnData(size_t Column) override;
-};
-
-class TFarPanelItemData final : public TObject
-{
-public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItemData); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItemData) || TObject::is(Kind); }
-public:
-  UnicodeString AlternateFileName;
 };
 
 class THintPanelItem final : public TCustomFarPanelItem
@@ -547,7 +537,7 @@ public:
   explicit TFarMenuItems() noexcept;
   virtual ~TFarMenuItems() override = default;
   void AddSeparator(bool Visible = true);
-  virtual int32_t Add(const UnicodeString & Text, bool Visible = true);
+  int32_t Add(const UnicodeString & Text, bool Visible = true);
 
   virtual void Clear() override;
   virtual void Delete(int32_t Index) override;
