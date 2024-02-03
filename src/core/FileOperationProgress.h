@@ -225,7 +225,7 @@ public:
   uint64_t CPS() const;
   void Finish(const UnicodeString & AFileName, bool Success,
     TOnceDoneOperation & OnceDoneOperation);
-  void Succeeded(int32_t Count = 1);
+  void Succeeded(int32_t ACount = 1);
   void Progress();
   int64_t LocalBlockSize();
   bool IsLocallyDone() const;
