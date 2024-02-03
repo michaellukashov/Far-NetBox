@@ -56,7 +56,7 @@ TPersistent * TPersistent::GetOwner()
   return nullptr;
 }
 
-void TPersistent::AssignError(const TPersistent * Source)
+[[noreturn]] void TPersistent::AssignError(const TPersistent * Source)
 {
   (void)Source;
   throw Exception("Cannot assign");
