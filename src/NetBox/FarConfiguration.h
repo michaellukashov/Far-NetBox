@@ -22,7 +22,7 @@ public:
   virtual ~TFarConfiguration() noexcept override;
 
   void LoadFarConfiguration();
-  virtual void Save(bool All, bool Explicit);
+  void Save(bool All, bool Explicit);
   virtual void Default() override;
   virtual THierarchicalStorage * CreateScpStorage(bool & SessionList) override;
   void CacheFarSettings();
