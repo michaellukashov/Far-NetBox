@@ -1671,9 +1671,9 @@ private:
   int32_t FFirstVisibleTabIndex{0};
 };
 
-//  BUG(Ignore1, NB_LOGIN_BUGS_IGNORE1, ); \
-//  BUG(PlainPW1, NB_LOGIN_BUGS_PLAIN_PW1, ); \
-//  BUG(RSA1, NB_LOGIN_BUGS_RSA1, ); \
+//  BUG(Ignore1, NB_LOGIN_BUGS_IGNORE1, );
+//  BUG(PlainPW1, NB_LOGIN_BUGS_PLAIN_PW1, );
+//  BUG(RSA1, NB_LOGIN_BUGS_RSA1, );
 
 #define BUG(BUGID, MSG, PREFIX) \
   TRISTATE(PREFIX ## Bug ## BUGID ## Combo, PREFIX ## Bug(sb ## BUGID), MSG)
