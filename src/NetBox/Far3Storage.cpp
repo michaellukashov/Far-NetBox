@@ -144,7 +144,6 @@ int32_t TFar3Storage::DoBinaryDataSize(const UnicodeString & Name)
 bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
 {
   DebugUsedParam(ForceAnsi);
-  // Error(SNotImplemented, 3011);
   const UnicodeString K = PuttyMungeStr(SubKey);
   const bool Result = FPluginSettings.ValueExists(FRoot, K.c_str());
   return Result;
