@@ -37,7 +37,7 @@ public:
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
+      if (::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED)
       {
         if (!IsFinished() && FDialog && FDialog->GetHandle())
           FDialog->Idle();

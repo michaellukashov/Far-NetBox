@@ -43,7 +43,7 @@ public:
   {
     while (!IsFinished())
     {
-      if ((::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED))
+      if (::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED)
       {
         if (!IsFinished() && FPlugin && FPlugin->GetPluginHandle())
           FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
