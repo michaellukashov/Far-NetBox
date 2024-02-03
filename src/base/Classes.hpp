@@ -154,7 +154,7 @@ protected:
   virtual void AssignTo(TPersistent * Dest) const;
 
 private:
-  void AssignError(const TPersistent * Source);
+  [[noreturn]] void AssignError(const TPersistent * Source);
 };
 
 void Error(int32_t Id, int32_t ErrorId);
