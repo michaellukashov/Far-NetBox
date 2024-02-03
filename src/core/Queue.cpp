@@ -1626,7 +1626,6 @@ void TTerminalItem::OperationProgress(
 {
   if (FPause && !FTerminated && !FCancel && FItem)
   {
-    DebugAssert(FItem != nullptr);
     const TQueueItem::TStatus PrevStatus = FItem->GetStatus();
     DebugAssert(PrevStatus == TQueueItem::qsProcessing);
     // must be set before TFileOperationProgressType::Suspend(), because
