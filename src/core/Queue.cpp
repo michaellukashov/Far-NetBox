@@ -808,7 +808,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
       }
     }
 
-    if (Result)
+    if (Result && TerminalItem)
     {
       Result = TerminalItem->ProcessUserAction(Arg);
     }
@@ -961,7 +961,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 
     if (Result)
     {
-      if (Pause)
+      if (Pause && TerminalItem)
       {
         Result = TerminalItem->Pause();
       }
