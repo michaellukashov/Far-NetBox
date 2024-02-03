@@ -33,13 +33,16 @@ NE_BEGIN_DECLS
 
 typedef struct ne_session_s ne_session;
 
-/* Create a session to the given server, using the given scheme.  If
- * "https" is passed as the scheme, SSL will be used to connect to the
- * server. */
-ne_session *ne_session_create(const char *scheme,
-			      const char *hostname, unsigned int port);
+/* Create a session to the server 'host', using the given scheme.  If
+ * "https" is passed as the scheme, TLS will be used to connect to the
+ * server. The host string must follow the definition of 'host' in RFC
+ * 3986, which can be an IP-literal or registered (DNS) hostname. An
+ * IPv6 literal address must be enclosed in square brackets (for
+ * example "[::1]"). */
+ne_session *ne_session_create(const char *scheme, const char *host,
+                              unsigned int port);
 
-/* Finish an HTTP session */
+/* Finish an HTTP session, freeing associated memory. */
 void ne_session_destroy(ne_session *sess);
 
 /* Prematurely force the connection to be closed for the given

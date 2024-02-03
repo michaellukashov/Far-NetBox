@@ -239,6 +239,10 @@ typedef enum ne_request_flag_e {
     NE_REQFLAG_IDEMPOTENT, /* disable this flag if the request uses a
                             * non-idempotent method such as POST. */
 
+    NE_REQFLAG_1XXTIMEOUT, /* disable this flag to apply no overall
+                             * timeout when reading interim
+                             * responses. */
+
     NE_REQFLAG_LAST /* enum sentinel value */
 } ne_request_flag;
 
@@ -260,8 +264,6 @@ void ne_add_interim_handler(ne_request *req, ne_interim_response_fn fn,
                             void *userdata);
 
 /**** Request hooks handling *****/
-
-typedef void (*ne_free_hooks)(void *cookie);
 
 /* Hook called when a request is created; passed the method and
  * request-target as used in the request-line (RFC7230§5.3).  The
