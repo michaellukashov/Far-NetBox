@@ -242,7 +242,7 @@ public:
   void SetDisplayName(const UnicodeString & Value) { FDisplayName = Value; }
   TDateTime GetModification() const { return FModification; }
   TModificationFmt GetModificationFmt() const { return FModificationFmt; }
-  void SetModificationFmt(const TModificationFmt & Value) { FModificationFmt = Value; }
+  void SetModificationFmt(const TModificationFmt Value) { FModificationFmt = Value; }
   TDateTime GetLastAccess() const { return FLastAccess; }
   void SetLastAccess(const TDateTime & Value) { FLastAccess = Value; }
   bool GetIsSymLink() const { return FIsSymLink; }
