@@ -54,8 +54,9 @@ class TSshHostCAList
 {
 public:
   TSshHostCAList() = default;
+  TSshHostCAList(const TSshHostCAList & Other) { operator =(Other); }
   explicit TSshHostCAList(const TSshHostCA::TList & List);
-  TSshHostCAList & operator =(const TSshHostCAList & other);
+  TSshHostCAList & operator =(const TSshHostCAList & Other);
   void Default();
   const TSshHostCA::TList & GetList() const;
   int32_t GetCount() const;
