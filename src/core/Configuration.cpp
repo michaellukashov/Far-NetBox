@@ -160,9 +160,9 @@ const TSshHostCA::TList & TSshHostCAList::GetList() const
   return FList;
 }
 
-TSshHostCAList & TSshHostCAList::operator =(const TSshHostCAList & other)
+TSshHostCAList & TSshHostCAList::operator =(const TSshHostCAList & Other)
 {
-  FList = other.FList;
+  FList = Other.FList;
   return *this;
 }
 
