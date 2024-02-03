@@ -2269,7 +2269,7 @@ TTransferQueueItem::~TTransferQueueItem() noexcept
 int32_t TTransferQueueItem::DefaultCPSLimit() const
 {
   Expects(FCopyParam);
-  return FCopyParam->GetCPSLimit();
+  return nb::ToInt32(FCopyParam->GetCPSLimit());
 }
 
 void TTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
