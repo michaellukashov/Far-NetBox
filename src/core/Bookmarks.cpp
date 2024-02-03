@@ -352,7 +352,7 @@ void TBookmarkList::InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmar
 }
 
 void TBookmarkList::MoveTo(TBookmark * ToBookmark,
-  TBookmark * Bookmark, bool Before)
+  const TBookmark * Bookmark, bool Before)
 {
   DebugAssert(ToBookmark != nullptr);
   int32_t NewIndex = ToBookmark ? FBookmarks->IndexOf(ToBookmark->GetKey()) : 0;
@@ -408,7 +408,7 @@ int32_t TBookmarkList::IndexOf(TBookmark * Bookmark) const
 void TBookmarkList::KeyChanged(int32_t Index)
 {
   DebugAssert(Index < GetCount());
-  TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(Index);
+  const TBookmark * Bookmark = FBookmarks->GetAs<TBookmark>(Index);
   DebugAssert(FBookmarks->GetString(Index) != Bookmark->GetKey());
   if (FBookmarks->IndexOf(Bookmark->GetKey()) >= 0)
   {
