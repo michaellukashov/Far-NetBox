@@ -199,8 +199,8 @@ NB_CORE_EXPORT TStringList * CreateSortedStringList(bool CaseSensitive = false, 
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
 bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
 NB_CORE_EXPORT void CheckCertificate(const UnicodeString & Path);
-typedef struct x509_st X509;
-typedef struct evp_pkey_st EVP_PKEY;
+using X509 = struct x509_st;
+using EVP_PKEY = struct evp_pkey_st;
 NB_CORE_EXPORT void ParseCertificate(const UnicodeString & Path,
   const UnicodeString & Passphrase, X509 *& Certificate, EVP_PKEY *& PrivateKey,
   bool & WrongPassphrase);
