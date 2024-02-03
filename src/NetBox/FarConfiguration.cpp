@@ -208,8 +208,8 @@ intptr_t TFarConfiguration::GetSetting(FARSETTINGS_SUBFOLDERS Root, const wchar_
 {
   intptr_t Result = 0;
   FarSettingsCreate settings = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
-  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : 0;
-  if (Settings)
+  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &settings) ? settings.Handle : nullptr;
+  if (CheckHandle(Settings))
   {
     FarSettingsItem item = {sizeof(FarSettingsItem), nb::ToSizeT((int32_t)Root), Name, FST_UNKNOWN, {0} };
     if (FFarPlugin->GetStartupInfo()->SettingsControl(Settings, SCTL_GET, 0, &item) && FST_QWORD == item.Type)
@@ -236,8 +236,8 @@ int32_t TFarConfiguration::GetConfirmationsSettings() const
 {
   int32_t Result = 0;
   FarSettingsCreate SettingsCreate = {sizeof(FarSettingsCreate), FarGuid, INVALID_HANDLE_VALUE};
-  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &SettingsCreate) ? SettingsCreate.Handle : 0;
-  if (Settings)
+  HANDLE Settings = FFarPlugin->GetStartupInfo()->SettingsControl(INVALID_HANDLE_VALUE, SCTL_CREATE, 0, &SettingsCreate) ? SettingsCreate.Handle : nullptr;
+  if (CheckHandle(Settings))
   {
     if (GetConfirmationsSetting(Settings, L"Copy"))
       Result |= NBCS_COPYOVERWRITE;
