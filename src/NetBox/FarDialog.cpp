@@ -110,11 +110,8 @@ void TFarDialog::SetBounds(const TRect & Value)
   if (GetBounds() != Value)
   {
     LockChanges();
+    try__finally
     {
-      SCOPE_EXIT
-      {
-        UnlockChanges();
-      };
       FBounds = Value;
       if (GetHandle())
       {
@@ -131,6 +128,10 @@ void TFarDialog::SetBounds(const TRect & Value)
         GetItem(Index)->DialogResized();
       }
     }
+    __finally
+    {
+      UnlockChanges();
+    } end_try__finally
   }
 }
 
@@ -745,17 +746,10 @@ int32_t TFarDialog::ShowModal()
   FResult = -1;
   TFarDialog * PrevTopDialog = GetFarPlugin()->FTopDialog;
   GetFarPlugin()->FTopDialog = this;
+  HANDLE Handle = INVALID_HANDLE_VALUE;
+  const PluginStartupInfo & Info = *GetFarPlugin()->GetPluginStartupInfo();
+  try__finally
   {
-    HANDLE Handle = INVALID_HANDLE_VALUE;
-    const PluginStartupInfo & Info = *GetFarPlugin()->GetPluginStartupInfo();
-    SCOPE_EXIT
-    {
-      GetFarPlugin()->FTopDialog = PrevTopDialog;
-      if (CheckHandle(Handle))
-      {
-        Info.DialogFree(Handle);
-      }
-    };
     DebugAssert(GetDefaultButton());
     DebugAssert(GetDefaultButton()->GetDefault());
 
@@ -789,6 +783,14 @@ int32_t TFarDialog::ShowModal()
       FResult = -1;
     }
   }
+  __finally
+  {
+    GetFarPlugin()->FTopDialog = PrevTopDialog;
+    if (CheckHandle(Handle))
+    {
+      Info.DialogFree(Handle);
+    }
+  } end_try__finally
 
   return FResult;
 }
@@ -883,11 +885,8 @@ void TFarDialog::ProcessGroup(int32_t Group, TFarProcessGroupEvent && Callback,
   void *Arg)
 {
   LockChanges();
+  try__finally
   {
-    SCOPE_EXIT
-    {
-      UnlockChanges();
-    };
     for (int32_t Index = 0; Index < GetItemCount(); ++Index)
     {
       TFarDialogItem * Item = GetItem(Index);
@@ -897,6 +896,10 @@ void TFarDialog::ProcessGroup(int32_t Group, TFarProcessGroupEvent && Callback,
       }
     }
   }
+  __finally
+  {
+    UnlockChanges();
+  } end_try__finally
 }
 
 void TFarDialog::ShowItem(TFarDialogItem * Item, void * Arg)
