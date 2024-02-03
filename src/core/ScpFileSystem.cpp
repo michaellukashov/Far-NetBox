@@ -1428,7 +1428,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
   const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
-  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, FirstLevel);
+  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::move(OnCalculatedChecksum), OperationProgress, FirstLevel);
 
   const TStrings * AlgDefs = FTerminal->GetShellChecksumAlgDefs();
   const int32_t AlgIndex = AlgDefs->IndexOfName(Alg);
