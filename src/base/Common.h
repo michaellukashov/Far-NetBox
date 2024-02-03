@@ -520,7 +520,7 @@ public:
 
   void Remove(T EventHandler)
   {
-    TEventHandlers::iterator I = Find(EventHandler);
+    typename TEventHandlers::const_iterator I = Find(EventHandler);
     if (DebugAlwaysTrue(I != FEventHandlers.end()))
     {
       FEventHandlers.erase(I);
@@ -531,7 +531,7 @@ public:
   template<typename P>
   void Invoke(const P & p)
   {
-    TEventHandlers::iterator I = FEventHandlers.begin();
+    typename TEventHandlers::iterator I = FEventHandlers.begin();
     while (I != FEventHandlers.end())
     {
       (*I)(p);
