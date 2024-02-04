@@ -1257,7 +1257,7 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfigur
   ADF(L"Command-line: %s", ACmdLine);
   if (AConfiguration->ActualLogProtocol >= 1)
   {
-    GetGlobalOptions()->LogOptions(std::forward<TAddLogEntryEvent>(OnAddLogEntry));
+    GetGlobalOptions()->LogOptions(std::move(OnAddLogEntry));
   }
   ADF(L"Time zone: %s", GetTimeZoneLogString());
   if (!AdjustClockForDSTEnabled())

@@ -613,7 +613,7 @@ public:
   NB_NONCOPYABLE(scope_guard0)
   NB_MOVABLE(scope_guard0)
 
-  explicit scope_guard0(F&& f) noexcept : m_f(std::forward<F>(f)) {}
+  explicit scope_guard0(F&& f) noexcept : m_f(std::move(f)) {}
 
   ~scope_guard0() noexcept(Type == scope_type::fail)
   {
