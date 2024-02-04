@@ -3823,7 +3823,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
       S = Base64ToUrlSafe(S); // Noop for MD5 (both in SSH host keys and TLS/SSL)
       S = MD5ToUrlSafe(S); // TLS/SSL fingerprints
       const UnicodeString S2 = EncodeUrlString(S);
-      DebugAssert(S2 == S2); // There should be nothing left for encoding
+      DebugAssert(S == S2); // There should be nothing left for encoding
 
       Url +=
         UnicodeString(1, UrlParamSeparator) + UrlHostKeyParamName +
