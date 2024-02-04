@@ -60,7 +60,7 @@ include(CMakeParseArguments)
 include(${CMAKE_ROOT}/Modules/CMakeDetermineSystem.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
 # include(CMakeDetermineCXXCompiler)
-message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}, BUILD_DIR: ${BUILD_DIR}")
+message("System: ${CMAKE_SYSTEM_NAME}, PROJECT_PLATFORM: ${PROJECT_PLATFORM}")
 # message("CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 # message("MSVC_VERSION: ${MSVC_VERSION}")
 # message("CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
@@ -1758,8 +1758,6 @@ set(ZLIB_SOURCES
   libs/zlib/arch/generic/crc32_braid_c.c
   libs/zlib/arch/generic/adler32_c.c
   libs/zlib/arch/generic/adler32_fold_c.c
-  libs/zlib/src/arch/generic/adler32_c.c
-  libs/zlib/src/arch/generic/adler32_fold_c.c
 )
 
 if(PROJECT_PLATFORM STREQUAL "ARM64")
@@ -2457,8 +2455,6 @@ add_custom_command(TARGET NetBox POST_BUILD
 )
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND if not exist ${NETBOX_PLUGIN_DIR} ${CMAKE_COMMAND} -E make_directory ${NETBOX_PLUGIN_DIR}
-  COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
-  VERBATIM
   COMMAND if exist "${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb" ${CMAKE_COMMAND} -E copy_if_different ${NETBOX_OUTPUT_DIRECTORY}\\NetBox.pdb ${NETBOX_PLUGIN_DIR}\\
   VERBATIM
 )

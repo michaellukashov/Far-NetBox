@@ -3,6 +3,8 @@
 
 ## [Unreleased]
 
+## [24.2.1.580] - 2024-02-04
+
 ### Changed
 
  - Upgrade dependencies: zlib-ng 2.1.6

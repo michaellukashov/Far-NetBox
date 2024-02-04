@@ -959,7 +959,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
       }
     }
 
-    if (Result)
+    if (Result && TerminalItem)
     {
       if (Pause && TerminalItem)
       {
