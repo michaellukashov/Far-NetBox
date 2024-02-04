@@ -358,7 +358,7 @@ void TSessionData::NonPersistent()
   SetPreserveDirectoryChanges(false);
 }
 
-  //PROPERTY(UserName); \
+  //PROPERTY(UserName);
 
 #define PROPERTY(P) PROPERTY_HANDLER(P, )
 #define BASE_PROPERTIES \

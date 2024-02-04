@@ -15,7 +15,7 @@ class ITaskbarList3;
 
 enum TTerminalPendingAction { tpNull, tpNone, tpReconnect, tpFree };
 
-class TManagedTerminal : public TTerminal
+class TManagedTerminal final : public TTerminal
 {
 public:
   TManagedTerminal(TSessionData * SessionData, TConfiguration * Configuration);
@@ -39,7 +39,7 @@ public:
   bool Permanent{false};
 };
 
-class TTerminalManager : public TTerminalList
+class TTerminalManager final : public TTerminalList
 {
 public:
   static TTerminalManager * Instance(bool ForceCreation = true);

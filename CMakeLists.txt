@@ -1,4 +1,4 @@
-﻿message(STATUS "CMake version: ${CMAKE_VERSION}")
+message(STATUS "CMake version: ${CMAKE_VERSION}")
 cmake_minimum_required(VERSION 3.15)
 
 project(NetBox)

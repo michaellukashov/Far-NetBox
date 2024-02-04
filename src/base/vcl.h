@@ -3,6 +3,7 @@
 #include <Global.h>
 #include <Classes.hpp>
 #include <Sysutils.hpp>
+#include <gsl/gsl>
 
 #undef CopyFile
 #undef RenameFile

@@ -1260,7 +1260,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 GetWinSCPPlugin()->ShowTerminalScreen(Command);
               }
 
-              FTerminal->CustomCommandOnFiles(Command, Params, FileList.get(), std::forward<TCaptureOutputEvent>(OutputEvent));
+              FTerminal->CustomCommandOnFiles(Command, Params, FileList.get(), std::move(OutputEvent));
             }
           }
         }
@@ -2058,7 +2058,7 @@ void TWinSCPFileSystem::ShowInformation()
     OnGetSpaceAvailable = nb::bind(&TWinSCPFileSystem::GetSpaceAvailable, this);
   }
   FileSystemInfoDialog(SessionInfo, FileSystemInfo, GetTerminal()->GetCurrentDirectory(),
-    std::forward<TGetSpaceAvailableEvent>(OnGetSpaceAvailable));
+    std::move(OnGetSpaceAvailable));
 }
 
 bool TWinSCPFileSystem::AreCachesEmpty() const
@@ -2942,9 +2942,6 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       }
       else if (Side == osLocal)
       {
-        TFarPanelItemData * FarPanelItemData = new TFarPanelItemData();
-        FarPanelItemData->AlternateFileName = PanelItem->GetAlternateFileName();
-        Data = FarPanelItemData;
         if (::ExtractFilePath(FileName).IsEmpty())
         {
           if (!FileNameOnly)

@@ -4524,7 +4524,7 @@ void TTerminal::CustomCommandOnFile(const UnicodeString & AFileName,
     Params->Command, Params->Params, LocalFileName));
   FileModified(AFile, LocalFileName);
   DoCustomCommandOnFile(LocalFileName, AFile, Params->Command, Params->Params,
-    std::forward<TCaptureOutputEvent>(Params->OutputEvent));
+    std::move(Params->OutputEvent));
   ReactOnCommand(fsAnyCommand);
 }
 
@@ -4580,7 +4580,7 @@ void TTerminal::DoCustomCommandOnFile(const UnicodeString & AFileName,
       TCustomFileSystem * FileSystem = GetFileSystemForCapability(fcAnyCommand, true);
       DebugAssert((FileSystem != FFileSystem.get()) || GetIsCapable(fcShellAnyCommand));
 
-      FileSystem->CustomCommandOnFile(AFileName, AFile, ACommand, AParams, std::forward<TCaptureOutputEvent>(OutputEvent));
+      FileSystem->CustomCommandOnFile(AFileName, AFile, ACommand, AParams, std::move(OutputEvent));
     }
     catch(Exception & E)
     {
@@ -4598,7 +4598,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & ACommand,
     TCustomCommandParams Params;
     Params.Command = ACommand;
     Params.Params = AParams;
-    Params.OutputEvent = std::forward<TCaptureOutputEvent>(OutputEvent);
+    Params.OutputEvent = std::move(OutputEvent);
     ProcessFiles(AFiles, foCustomCommand, nb::bind(&TTerminal::CustomCommandOnFile, this), &Params);
   }
   else
@@ -4621,7 +4621,7 @@ void TTerminal::CustomCommandOnFiles(const UnicodeString & ACommand,
         Complete(ACommand, true);
     if (!DoOnCustomCommand(Cmd))
     {
-      DoAnyCommand(Cmd, std::forward<TCaptureOutputEvent>(OutputEvent), nullptr);
+      DoAnyCommand(Cmd, std::move(OutputEvent), nullptr);
     }
   }
 }
@@ -4953,7 +4953,7 @@ void TTerminal::CalculateSubFoldersChecksum(
               SubFileList->AddObject(SubFileName, SubFile);
             }
 
-            FFileSystem->CalculateFilesChecksum(Alg, SubFileList.get(), std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), AOperationProgress, false);
+            FFileSystem->CalculateFilesChecksum(Alg, SubFileList.get(), std::move(OnCalculatedChecksum), AOperationProgress, false);
 
             Success = true;
           }
@@ -4983,7 +4983,7 @@ void TTerminal::CalculateFilesChecksum(
 
     const UnicodeString NormalizedAlg = FileSystem->CalculateFilesChecksumInitialize(Alg);
 
-    FileSystem->CalculateFilesChecksum(NormalizedAlg, AFileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), &Progress, true);
+    FileSystem->CalculateFilesChecksum(NormalizedAlg, AFileList, std::move(OnCalculatedChecksum), &Progress, true);
   }
   __finally
   {
@@ -5614,7 +5614,7 @@ void TTerminal::AnyCommand(const UnicodeString & Command,
 #endif // #if 0
 
   TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
-  TOutputProxy ProxyOutputEvent(Action, std::forward<TCaptureOutputEvent>(OutputEvent));
+  TOutputProxy ProxyOutputEvent(Action, std::move(OutputEvent));
   DoAnyCommand(Command, nb::bind(&TOutputProxy::Output, &ProxyOutputEvent), &Action);
 }
 
@@ -5627,7 +5627,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     DirectoryModified(GetCurrentDirectory(), false);
     LogEvent(L"Executing user defined command.");
     TCustomFileSystem * FileSystem = GetFileSystemForCapability(fcAnyCommand);
-    FileSystem->AnyCommand(ACommand, std::forward<TCaptureOutputEvent>(OutputEvent));
+    FileSystem->AnyCommand(ACommand, std::move(OutputEvent));
     if (GetCommandSessionOpened() && (FileSystem == FCommandSession->FFileSystem.get()))
     {
       FCommandSession->GetFileSystem()->ReadCurrentDirectory();
@@ -6197,7 +6197,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   try__catch
   {
     DoSynchronizeCollectDirectory(LocalDirectory, RemoteDirectory, Mode,
-      CopyParam, Params, std::forward<TSynchronizeDirectoryEvent>(OnSynchronizeDirectory), Options, sfFirstLevel,
+      CopyParam, Params, std::move(OnSynchronizeDirectory), Options, sfFirstLevel,
       Checklist.get());
     Checklist->Sort();
   }
@@ -6739,7 +6739,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
           {
             DoSynchronizeCollectDirectory(
               FullLocalFileName, FullRemoteFileName,
-              Data->Mode, Data->CopyParam, Data->Params, std::forward<TSynchronizeDirectoryEvent>(Data->OnSynchronizeDirectory),
+              Data->Mode, Data->CopyParam, Data->Params, std::move(Data->OnSynchronizeDirectory),
               Data->Options, (Data->Flags & ~sfFirstLevel),
               Data->Checklist);
           }

@@ -470,15 +470,6 @@ protected:
   virtual UnicodeString GetCustomColumnData(size_t Column) override;
 };
 
-class TFarPanelItemData final : public TObject
-{
-public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarPanelItemData); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarPanelItemData) || TObject::is(Kind); }
-public:
-  UnicodeString AlternateFileName;
-};
-
 class THintPanelItem final : public TCustomFarPanelItem
 {
 public:
@@ -514,8 +505,8 @@ public:
   explicit TFarPanelInfo(PanelInfo * APanelInfo, TCustomFarFileSystem * AOwner) noexcept;
   virtual ~TFarPanelInfo() noexcept override;
 
-  const TObjectList * GetItems() const { return const_cast<TFarPanelInfo *>(this)->GetItems(); }
-  TObjectList * GetItems();
+  TObjectList * GetItems() const;
+  TObjectList * GetItems() { return static_cast<const TFarPanelInfo *>(this)->GetItems(); }
   int32_t GetItemCount() const;
   const TFarPanelItem * GetFocusedItem() const;
   void SetFocusedItem(const TFarPanelItem * Value);
@@ -529,12 +520,12 @@ public:
 
   void ApplySelection();
   const TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
-  const TFarPanelItem * FindUserData(const void * UserData) const;
+  TFarPanelItem * FindUserData(const void * UserData) const;
   TFarPanelItem * FindUserData(const void * UserData);
 
 private:
   gsl::owner<PanelInfo *> FPanelInfo{nullptr};
-  TObjectList * FItems{nullptr};
+  mutable TObjectList * FItems{nullptr};
   TCustomFarFileSystem * FOwner{nullptr};
 };
 

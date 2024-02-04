@@ -323,7 +323,6 @@ protected:
   virtual void Change();
   void DialogChange();
   bool GetAlterType(FARDIALOGITEMTYPES Index) const;
-  bool GetAlterType(FARDIALOGITEMTYPES Index);
   void SetAlterType(FARDIALOGITEMTYPES Index, bool Value);
   virtual void UpdateBounds();
   virtual void ResetBounds();
@@ -390,8 +389,8 @@ public:
   virtual int32_t GetModalResult() const { return FResult; }
   virtual int32_t GetResult() const { return FResult; }
   virtual void SetResult(int32_t Value) { FResult = Value; }
-  virtual UnicodeString GetData() const override { return const_cast<TFarButton *>(this)->GetData(); }
-  virtual UnicodeString GetData() override;
+  virtual UnicodeString GetData() const override;
+  virtual UnicodeString GetData() override { return static_cast<const TFarButton *>(this)->GetData(); }
   bool GetDefault() const;
   void SetDefault(bool Value);
   TFarButtonBrackets GetBrackets() const { return FBrackets; }

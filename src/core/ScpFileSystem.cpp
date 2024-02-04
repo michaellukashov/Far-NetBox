@@ -1510,7 +1510,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
           Action.SetFileName(File->FullFileName);
           OperationProgress->SetFile(FileName);
           UnicodeString Checksum = BatchChecksums->Strings[BatchIndex];
-          ProcessFileChecksum(std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
+          ProcessFileChecksum(std::move(OnCalculatedChecksum), Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
         }
       }
       else
@@ -1542,7 +1542,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
             }
             __finally
             {
-              ProcessFileChecksum(std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
+              ProcessFileChecksum(std::move(OnCalculatedChecksum), Action, OperationProgress, FirstLevel, FileName, Alg, Checksum);
             } end_try__finally
           }
           catch (Exception & E)
@@ -1587,7 +1587,7 @@ void TSCPFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
 
     if (!FTerminal->DoOnCustomCommand(Cmd))
     {
-      AnyCommand(Cmd, std::forward<TCaptureOutputEvent>(OutputEvent));
+      AnyCommand(Cmd, std::move(OutputEvent));
     }
   }
 }
