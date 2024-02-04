@@ -1213,12 +1213,12 @@ void TFarDialogItem::UpdateData(const UnicodeString & Value)
   GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(FarData, /*AllowEmpty=*/true);
 }
 
-UnicodeString TFarDialogItem::GetData() const
+UnicodeString TFarDialogItem::GetData()
 {
-  return const_cast<TFarDialogItem *>(this)->GetData();
+  return static_cast<const TFarDialogItem *>(this)->GetData();
 }
 
-UnicodeString TFarDialogItem::GetData()
+UnicodeString TFarDialogItem::GetData() const
 {
   UnicodeString Result;
   if (GetDialogItem()->Data)
@@ -1251,11 +1251,6 @@ void TFarDialogItem::SetAlterType(FARDIALOGITEMTYPES Index, bool Value)
 }
 
 bool TFarDialogItem::GetAlterType(FARDIALOGITEMTYPES Index) const
-{
-  return const_cast<TFarDialogItem *>(this)->GetAlterType(Index);
-}
-
-bool TFarDialogItem::GetAlterType(FARDIALOGITEMTYPES Index)
 {
   return (GetType() == Index);
 }
@@ -1823,7 +1818,7 @@ void TFarButton::SetDataInternal(const UnicodeString & AValue)
   }
 }
 
-UnicodeString TFarButton::GetData()
+UnicodeString TFarButton::GetData() const
 {
   UnicodeString Result = TFarDialogItem::GetData();
   if ((FBrackets == brTight) || (FBrackets == brSpace))

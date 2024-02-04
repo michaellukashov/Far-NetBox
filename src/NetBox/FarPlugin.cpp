@@ -2741,7 +2741,7 @@ int32_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
   return Count;
 }
 
-TObjectList * TFarPanelInfo::GetItems()
+TObjectList * TFarPanelInfo::GetItems() const
 {
   if (!FItems)
   {
@@ -2785,21 +2785,21 @@ const TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileNam
   return nullptr;
 }
 
-const TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData) const
-{
-  return const_cast<TFarPanelInfo *>(this)->FindUserData(UserData);
-}
-
 TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
 {
-  TObjectList * Items = GetItems();
+  return static_cast<const TFarPanelInfo *>(this)->FindUserData(UserData);
+}
+
+TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData) const
+{
+  const TObjectList * Items = GetItems();
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
+    const TFarPanelItem * PanelItem = Items->As<TFarPanelItem>(Index);
     Ensures(PanelItem);
     if (PanelItem->GetUserData() == UserData)
     {
-      return PanelItem;
+      return const_cast<TFarPanelItem *>(PanelItem);
     }
   }
   return nullptr;

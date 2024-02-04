@@ -54,7 +54,6 @@ protected:
 
 protected:
   const NetBoxPrivateInfo * GetSystemFunctions() const { return static_cast<const NetBoxPrivateInfo *>(FStartupInfo.Private); }
-  NetBoxPrivateInfo * GetSystemFunctions() { return const_cast<NetBoxPrivateInfo *>(static_cast<const NetBoxPrivateInfo *>(FStartupInfo.Private)); }
   void DeleteLocalFile(const UnicodeString & LocalFileName);
   HANDLE CreateLocalFile(const UnicodeString & LocalFileName,
     DWORD DesiredAccess, DWORD ShareMode, DWORD CreationDisposition, DWORD FlagsAndAttributes);
