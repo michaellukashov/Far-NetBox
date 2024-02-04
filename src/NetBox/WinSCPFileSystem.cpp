@@ -1260,7 +1260,7 @@ void TWinSCPFileSystem::ApplyCommand()
                 GetWinSCPPlugin()->ShowTerminalScreen(Command);
               }
 
-              FTerminal->CustomCommandOnFiles(Command, Params, FileList.get(), std::forward<TCaptureOutputEvent>(OutputEvent));
+              FTerminal->CustomCommandOnFiles(Command, Params, FileList.get(), std::move(OutputEvent));
             }
           }
         }
@@ -1676,7 +1676,7 @@ void TWinSCPFileSystem::Synchronize()
       }
     };
     bool SaveSettings = false;
-    const TCopyParamType CopyParam = static_cast<TCopyParamType>(GetGUIConfiguration()->GetDefaultCopyParam());
+    const TCopyParamType & CopyParam = static_cast<TCopyParamType>(GetGUIConfiguration()->GetDefaultCopyParam());
     const DWORD CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     const uint32_t Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
@@ -2058,7 +2058,7 @@ void TWinSCPFileSystem::ShowInformation()
     OnGetSpaceAvailable = nb::bind(&TWinSCPFileSystem::GetSpaceAvailable, this);
   }
   FileSystemInfoDialog(SessionInfo, FileSystemInfo, GetTerminal()->GetCurrentDirectory(),
-    std::forward<TGetSpaceAvailableEvent>(OnGetSpaceAvailable));
+    std::move(OnGetSpaceAvailable));
 }
 
 bool TWinSCPFileSystem::AreCachesEmpty() const

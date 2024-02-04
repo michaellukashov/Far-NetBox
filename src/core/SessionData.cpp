@@ -358,7 +358,7 @@ void TSessionData::NonPersistent()
   SetPreserveDirectoryChanges(false);
 }
 
-  //PROPERTY(UserName); \
+  //PROPERTY(UserName);
 
 #define PROPERTY(P) PROPERTY_HANDLER(P, )
 #define BASE_PROPERTIES \
@@ -3825,7 +3825,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
       S = Base64ToUrlSafe(S); // Noop for MD5 (both in SSH host keys and TLS/SSL)
       S = MD5ToUrlSafe(S); // TLS/SSL fingerprints
       const UnicodeString S2 = EncodeUrlString(S);
-      DebugAssert(S2 == S2); // There should be nothing left for encoding
+      DebugAssert(S == S2); // There should be nothing left for encoding
 
       Url +=
         UnicodeString(1, UrlParamSeparator) + UrlHostKeyParamName +
@@ -3915,7 +3915,7 @@ void TSessionData::LookupLastFingerprint()
   if (FTunnel)
   {
     // not used anyway
-    int32_t TunnelPortNumber = std::max(FTunnelLocalPortNumber, GetConfiguration()->FTunnelLocalPortNumberLow);
+    const int32_t TunnelPortNumber = std::max(FTunnelLocalPortNumber, GetConfiguration()->FTunnelLocalPortNumberLow);
     std::unique_ptr<TSessionData> TunnelData(CreateTunnelData(TunnelPortNumber));
     FTunnelHostKey = GetConfiguration()->GetLastFingerprint(TunnelData->GetSiteKey(), SshFingerprintType);
   }

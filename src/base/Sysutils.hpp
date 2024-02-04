@@ -224,7 +224,7 @@ NB_CORE_EXPORT UnicodeString ReplaceStrAll(const UnicodeString & Str, const Unic
 NB_CORE_EXPORT UnicodeString SysErrorMessage(DWORD ErrorCode);
 
 NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
-NB_CORE_EXPORT UnicodeString DateTimeToStr(const UnicodeString & Result, const UnicodeString & Format,
+NB_CORE_EXPORT UnicodeString  DateTimeToString(const UnicodeString & Format,
   const TDateTime & DateTime);
 NB_CORE_EXPORT UnicodeString DateTimeToString(const TDateTime & DateTime);
 NB_CORE_EXPORT uint32_t DayOfWeek(const TDateTime & DateTime);
@@ -490,7 +490,7 @@ class make_scope_guard
 {
 public:
   template<typename F>
-  scope_guard0<F> operator<<(F&& f) { return scope_guard0<F>(std::move(f)); }
+  scope_guard0<F> operator<<(F&& f) { return scope_guard0<F>(std::forward<F>(f)); }
 };
 
 template<typename F, typename F2>
@@ -526,7 +526,7 @@ private:
 };
 
 template<typename F, typename F2>
-scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(std::move(f), std::move(f2)); }
+scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(std::forward<F>(f), std::forward<F2>(f2)); }
 
 } // namespace detail
 
@@ -612,7 +612,7 @@ public:
   NB_NONCOPYABLE(scope_guard0)
   NB_MOVABLE(scope_guard0)
 
-  explicit scope_guard0(F&& f) noexcept : m_f(std::forward<F>(f)) {}
+  explicit scope_guard0(F&& f) noexcept : m_f(std::move(f)) {}
 
   ~scope_guard0() noexcept(Type == scope_type::fail)
   {

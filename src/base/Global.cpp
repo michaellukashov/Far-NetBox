@@ -277,9 +277,9 @@ void DoTrace(const wchar_t * SourceFile, const wchar_t * Func,
 {
   // DebugAssert(IsTracing);
 
-  UnicodeString TimeString;
-  // DateTimeToString(TimeString, L"hh:mm:ss.zzz", Now());
-  TODO("use Format");
+  // const UnicodeString TimeString = DateTimeToString(L"hh:mm:ss.zzz", Now());
+  const UnicodeString TimeString = DateTimeToString("%H:%M:%S", Now());
+  // DEBUG_PRINTF("TimeString: %s", TimeString);
   const wchar_t * Slash = wcsrchr(SourceFile, Backslash);
   if (Slash != nullptr)
   {

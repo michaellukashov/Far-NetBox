@@ -2434,7 +2434,7 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
     return;
 
   Terminal->LogParallelTransfer(FParallelOperation);
-  TFileOperationProgressType OperationProgress(std::forward<TFileOperationProgressEvent>(Terminal->GetOnProgress()), std::forward<TFileOperationFinishedEvent>(Terminal->GetOnFinished()), FParallelOperation->GetMainOperationProgress());
+  TFileOperationProgressType OperationProgress(std::move(Terminal->GetOnProgress()), std::move(Terminal->GetOnFinished()), FParallelOperation->GetMainOperationProgress());
   const TFileOperation Operation = (FLAGSET(FParallelOperation->GetParams(), cpDelete) ? foMove : foCopy);
   const bool Temp = FLAGSET(FParallelOperation->GetParams(), cpTemporary);
 

@@ -1374,17 +1374,44 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
   return false;
 }
 
-UnicodeString DateTimeToStr(const UnicodeString & Result, const UnicodeString & Format,
+UnicodeString DateTimeToString(const UnicodeString & Format,
   const TDateTime & DateTime)
 {
-  (void)Result;
-  (void)Format;
-  return DateTime.FormatString(const_cast<wchar_t *>(L""));
+  UnicodeString Result;
+  // SYSTEMTIME st;
+  // ::ZeroMemory(&st, sizeof(SYSTEMTIME));
+
+  uint16_t Y; uint16_t M; uint16_t D;
+  uint16_t H; uint16_t N; uint16_t S; uint16_t MS;
+
+  DateTime.DecodeDate(Y, M, D);
+  DateTime.DecodeTime(H, N, S, MS);
+
+  std::tm tm{};
+  tm.tm_sec = S;
+  tm.tm_min = N;
+  tm.tm_hour = H;
+  tm.tm_mday = D;
+  tm.tm_mon = M - 1;
+  tm.tm_year = Y - 1900;
+  tm.tm_isdst = -1;
+
+  const std::time_t t = std::mktime(&tm);
+  struct tm dt{};
+  if (const errno_t err = localtime_s(&dt, &t))
+    return Result;
+
+  char Buffer[80]{};
+  if (const size_t Res = strftime(Buffer, sizeof(Buffer), AnsiString(Format).c_str(), &dt))
+    Result = Buffer;
+
+  return Result;
 }
 
 UnicodeString DateTimeToString(const TDateTime & DateTime)
 {
-  return DateTime.FormatString(const_cast<wchar_t *>(L""));
+  // return DateTime.FormatString(const_cast<wchar_t *>(L""));
+  return DateTimeToString("%Y-%m-%dT%H:%M:%S", DateTime);
 }
 
 // DayOfWeek returns the day of the week of the given date. The Result is an
@@ -1397,9 +1424,9 @@ uint32_t DayOfWeek(const TDateTime & DateTime)
 
 TDateTime Date()
 {
-  SYSTEMTIME t;
-  ::GetLocalTime(&t);
-  TDateTime Result = ::EncodeDate(t.wYear, t.wMonth, t.wDay);
+  SYSTEMTIME st;
+  ::GetLocalTime(&st);
+  TDateTime Result = ::EncodeDate(st.wYear, st.wMonth, st.wDay);
   return Result;
 }
 

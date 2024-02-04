@@ -1909,7 +1909,7 @@ bool InputDialog(const UnicodeString & ACaption,
   TInputDialogInitializeEvent && OnInitialize, bool Echo, int32_t Width)
 {
   bool Result = GetGlobals()->InputDialog(ACaption, APrompt, Value, HelpKeyword,
-    History, PathInput, std::forward<TInputDialogInitializeEvent>(OnInitialize), Echo);
+    History, PathInput, std::move(OnInitialize), Echo);
   return Result;
 }
 
