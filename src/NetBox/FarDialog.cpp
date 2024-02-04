@@ -969,10 +969,7 @@ bool TFarDialog::ChangesLocked() const
 
 TFarDialogContainer::TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog) noexcept :
   TObject(Kind),
-  FLeft(0),
-  FTop(0),
-  FDialog(ADialog),
-  FEnabled(true)
+  FDialog(ADialog)
 {
   DebugAssert(ADialog);
   FItems->SetOwnsObjects(false);
