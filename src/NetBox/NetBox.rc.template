@@ -1,4 +1,4 @@
-﻿1 VERSIONINFO
+1 VERSIONINFO
 FILEVERSION ${file.ver.major},${file.ver.minor},${file.ver.version_patch},${file.ver.build}
 PRODUCTVERSION ${file.ver.major},${file.ver.minor},${file.ver.version_patch},${file.ver.build}
 FILEOS 0x4
