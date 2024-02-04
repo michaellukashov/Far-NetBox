@@ -444,17 +444,17 @@ void TCustomFarPlugin::CloseFileSystem(TCustomFarFileSystem * FileSystem)
   if (!FileSystem)
     return;
   DebugAssert(FOpenedPlugins->IndexOf(FileSystem) != nb::NPOS);
+  try__finally
   {
-    SCOPE_EXIT
-    {
-      FOpenedPlugins->Remove(FileSystem);
-      delete FileSystem;
-    };
     TGuard Guard(FileSystem->GetCriticalSection()); nb::used(Guard);
     FileSystem->Close();
   }
-  CloseFileSystem(FileSystem->GetOwnerFileSystem());
-  //SAFE_DESTROY(FileSystem);
+  __finally
+  {
+    FOpenedPlugins->Remove(FileSystem);
+    CloseFileSystem(FileSystem->GetOwnerFileSystem());
+    SAFE_DESTROY(FileSystem);
+  } end_try__finally
 #ifdef USE_DLMALLOC
   // dlmalloc_trim(0); // 64 * 1024);
 #endif
