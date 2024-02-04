@@ -1387,7 +1387,7 @@ UnicodeString DateTimeToString(const UnicodeString & Format,
   DateTime.DecodeDate(Y, M, D);
   DateTime.DecodeTime(H, N, S, MS);
 
-  std::tm tm;
+  std::tm tm{};
   tm.tm_sec = S;
   tm.tm_min = N;
   tm.tm_hour = H;
@@ -1396,12 +1396,13 @@ UnicodeString DateTimeToString(const UnicodeString & Format,
   tm.tm_year = Y - 1900;
   tm.tm_isdst = -1;
 
-  std::time_t t = std::mktime(&tm);
-  struct tm * dateTime = std::localtime(&t);
+  const std::time_t t = std::mktime(&tm);
+  struct tm dt{};
+  if (const errno_t err = localtime_s(&dt, &t))
+    return Result;
 
   char Buffer[80]{};
-  size_t Res = strftime(Buffer, sizeof(Buffer), AnsiString(Format).c_str(), dateTime);
-  if (Res)
+  if (const size_t Res = strftime(Buffer, sizeof(Buffer), AnsiString(Format).c_str(), &dt))
     Result = Buffer;
 
   return Result;
