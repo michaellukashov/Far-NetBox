@@ -206,7 +206,7 @@ public:
 class NB_CORE_EXPORT ECallbackGuardAbort final : public EAbort
 {
 public:
-  static bool classof(const Exception * Obj) { return Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
+  static bool classof(const Exception * Obj) { return Obj && Obj->is(OBJECT_CLASS_ECallbackGuardAbort); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_ECallbackGuardAbort) || EAbort::is(Kind); }
 public:
   ECallbackGuardAbort();
