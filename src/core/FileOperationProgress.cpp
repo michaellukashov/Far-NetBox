@@ -915,7 +915,7 @@ TDateTime TFileOperationProgressType::TimeExpected() const
   const uint64_t CurCps = CPS();
   if (CurCps)
   {
-    return TDateTime(nb::ToDouble((nb::ToDouble(FTransferSize - FTransferredSize)) / CurCps) / SecsPerDay);
+    return TDateTime(nb::ToDouble(FTransferSize - FTransferredSize) / CurCps / SecsPerDay);
   }
   return TDateTime(0.0);
 }
@@ -929,7 +929,7 @@ TDateTime TFileOperationProgressType::TotalTimeLeft() const
   const int64_t Processed = FTotalSkipped + FPersistence.TotalTransferred - FTotalTransferBase;
   if ((CurCps > 0) && (FTotalSize > Processed))
   {
-    return TDateTime(nb::ToDouble(nb::ToDouble(FTotalSize - Processed) / CurCps) / SecsPerDay);
+    return TDateTime(nb::ToDouble(FTotalSize - Processed) / CurCps / SecsPerDay);
   }
   return TDateTime(0.0);
 }
