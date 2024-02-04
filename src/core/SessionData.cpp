@@ -3913,7 +3913,7 @@ void TSessionData::LookupLastFingerprint()
   if (FTunnel)
   {
     // not used anyway
-    int32_t TunnelPortNumber = std::max(FTunnelLocalPortNumber, GetConfiguration()->FTunnelLocalPortNumberLow);
+    const int32_t TunnelPortNumber = std::max(FTunnelLocalPortNumber, GetConfiguration()->FTunnelLocalPortNumberLow);
     std::unique_ptr<TSessionData> TunnelData(CreateTunnelData(TunnelPortNumber));
     FTunnelHostKey = GetConfiguration()->GetLastFingerprint(TunnelData->GetSiteKey(), SshFingerprintType);
   }
