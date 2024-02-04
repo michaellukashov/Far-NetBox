@@ -230,7 +230,7 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
         if (ChainContext)
           CertFreeCertificateChain(ChainContext);
       }
-      if (INVALID_HANDLE_VALUE != INVALID_HANDLE_VALUE)
+      if (ChainEngine != INVALID_HANDLE_VALUE)
         CertFreeCertificateChainEngine(ChainEngine);
     }
     if (CertContext)
