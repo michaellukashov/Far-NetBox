@@ -1676,7 +1676,7 @@ void TWinSCPFileSystem::Synchronize()
       }
     };
     bool SaveSettings = false;
-    const TCopyParamType CopyParam = static_cast<TCopyParamType>(GetGUIConfiguration()->GetDefaultCopyParam());
+    const TCopyParamType & CopyParam = static_cast<TCopyParamType>(GetGUIConfiguration()->GetDefaultCopyParam());
     const DWORD CopyParamAttrs = GetTerminal()->UsableCopyParamAttrs(0).Upload;
     const uint32_t Options =
       FLAGMASK(SynchronizeAllowSelectedOnly(), soAllowSelectedOnly);
