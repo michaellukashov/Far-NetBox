@@ -755,8 +755,8 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
     DEBUG_PRINTF("before HandleFileSystemException");
     // display error even for OPM_FIND
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode & ~OPM_FIND);
-    return 0;
   }
+  return 0;
 }
 
 intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
