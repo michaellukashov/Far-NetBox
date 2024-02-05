@@ -1953,7 +1953,6 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
   const UnicodeString CVolumePrefix = L"Volume";
   const UnicodeString CGlobalPrefix = L"\\\\?\\";
 
-  TReparseDataBuffer * PBuffer = nullptr;
   DWORD BytesReturned{0};
   GUID guid{};
 
@@ -1965,7 +1964,7 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
   {
     try
     {
-      PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
+      TReparseDataBuffer * PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
       if (PBuffer != nullptr)
       {
         if (DeviceIoControl(HFile, FSCTL_GET_REPARSE_POINT, nullptr, 0,
