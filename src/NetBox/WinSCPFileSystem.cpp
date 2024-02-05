@@ -319,11 +319,12 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
     }
     else
     {
+      if (GetTerminal())
+        GetTerminal()->ShowExtendedException(E);
       if (!FClosed)
       {
         ClosePanel();
       }
-      GetTerminal()->ShowExtendedException(E);
     }
   }
   else
