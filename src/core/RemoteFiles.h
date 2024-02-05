@@ -487,7 +487,7 @@ public:
     rfS3Read = rfOtherRead, rfS3Write = rfOtherWrite, rfS3ReadACP = rfOtherExec, rfS3WriteACP = rfStickyBit,
   };
   enum TUnsupportedFlag {
-    rfDirectory  = 040000 };
+    rfDirectory = 040000 };
   enum TState { rsNo, rsYes, rsUndef };
 
 public:
@@ -739,7 +739,6 @@ protected:
   void Add(TChecklistItem * Item);
 
 public:
-  // void SetMasks(const UnicodeString & Value);
 
   int32_t GetCount() const;
   int32_t GetCheckedCount() const;
@@ -755,8 +754,8 @@ class TFileOperationProgressType;
 
 class TSynchronizeProgress final : public TObject
 {
-  TSynchronizeProgress() = delete;
 public:
+  TSynchronizeProgress() = delete;
   explicit TSynchronizeProgress(const TSynchronizeChecklist * Checklist) noexcept;
 
   void ItemProcessed(const TChecklistItem * ChecklistItem);
