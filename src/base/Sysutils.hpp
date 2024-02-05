@@ -565,8 +565,8 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
 //  Type& operator =(Type&&) = delete;
 
 #define NB_MOVABLE(Type) \
-  Type(Type &&) = default; \
-  Type & operator =(Type &&) = default;
+  Type(Type &&) noexcept = default; \
+  Type & operator =(Type &&) noexcept = default;
 
 template < typename T, T Default = T{} >
 class movable
