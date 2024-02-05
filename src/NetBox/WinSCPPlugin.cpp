@@ -45,7 +45,7 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
       Str = Path;
     }
 
-    UnicodeString DbgLogFileName = StripPathQuotes(::ExpandEnvironmentVariables(Str));
+    const UnicodeString DbgLogFileName = StripPathQuotes(::ExpandEnvironmentVariables(Str));
     return DbgLogFileName;
   }
 
