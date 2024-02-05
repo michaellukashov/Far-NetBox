@@ -1196,7 +1196,7 @@ uint32_t HexToIntPtr(const UnicodeString & Hex, uint32_t MinChars)
 UnicodeString IntToHex(uint32_t Int, uint32_t MinChars)
 {
   UnicodeString Result = FORMAT("%X", Int);
-  const int32_t Pad = MinChars - Result.Length();
+  const int32_t Pad = nb::ToInt32(MinChars - Result.Length());
   if (Pad > 0)
   {
     for (int32_t Index = 0; Index < Pad; ++Index)
