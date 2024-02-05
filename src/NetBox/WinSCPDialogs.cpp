@@ -4567,9 +4567,11 @@ void TRightsContainer::Changed()
 
 TFarCheckBox * TRightsContainer::GetChecks(TRights::TRight Right)
 {
-  NB_STATIC_ASSERT(TRights::TRight::rrLast == _countof(FCheckBoxes) - 1, "FCheckBoxes");
-  DebugAssert((Right >= 0) && (nb::ToSizeT(Right) < _countof(FCheckBoxes)));
-  return FCheckBoxes[nb::ToSizeT(Right)];
+  NB_STATIC_ASSERT(TRights::TRight::rrLast == _countof(FCheckBoxes) - 1, "CheckBoxes");
+  DebugAssert(nb::ToSizeT(Right) < _countof(FCheckBoxes));
+  if (Right < _countof(FCheckBoxes))
+    return FCheckBoxes[Right];
+  return nullptr;
 }
 
 TRights::TState TRightsContainer::GetStates(TRights::TRight Right)
