@@ -216,7 +216,7 @@ HANDLE WINAPI AnalyseW(const struct AnalyseInfo * Info)
   {
     return nullptr;
   }
-  return HANDLE(1);
+  return reinterpret_cast<HANDLE>(1);
 }
 
 HANDLE WINAPI OpenW(const struct OpenInfo * Info)
