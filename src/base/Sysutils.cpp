@@ -1365,7 +1365,7 @@ TDateTime StrToDateTime(const UnicodeString & Value)
 }
 
 bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
-  TFormatSettings & FormatSettings)
+  const TFormatSettings & FormatSettings)
 {
   (void)StrValue;
   (void)Value;
