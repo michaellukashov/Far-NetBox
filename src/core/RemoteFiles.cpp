@@ -1155,7 +1155,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     SetType(Line[1]);
     Line.Delete(1, 1);
 
-    auto GetNCol = [&]()
+    auto GETNCOL = [&]()
     {
       if (Line.IsEmpty())
         throw Exception("");
@@ -1172,9 +1172,9 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         Line.Clear();
       }
     };
-    auto GetCol = [&]()
+    auto GETCOL = [&]()
     {
-      GetNCol();
+      GETNCOL();
       Line = ::TrimLeft(Line);
     };
 
@@ -1198,7 +1198,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     }
     Line = Line.TrimLeft();
 
-    GetCol();
+    GETCOL();
     if (!::TryStrToInt64(Col, FINodeBlocks))
     {
       // if the column is not an integer, suppose it's owner
@@ -1207,19 +1207,19 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     }
     else
     {
-      GetCol();
+      GETCOL();
     }
 
     FOwner.SetName(Col);
 
     // #60 17.10.01: group name can contain space
     FGroup.SetName(L"");
-    GetCol();
+    GETCOL();
     int64_t ASize;
     do
     {
       FGroup.SetName(FGroup.GetName() + Col);
-      GetCol();
+      GETCOL();
       // SSH FS link like
       // d????????? ? ? ? ? ? name
       if ((FGroup.GetName() == L"?") && (Col == L"?"))
@@ -1231,7 +1231,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         DebugAssert(!Col.IsEmpty());
         // for devices etc.. there is additional column ending by comma, we ignore it
         if (Col[Col.Length()] == L',')
-          GetCol();
+          GETCOL();
         ASize = ::StrToInt64Def(Col, -1);
         // if it's not a number (file size) we take it as part of group name
         // (at least on CygWin, there can be group with space in its name)
@@ -1242,8 +1242,6 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
     while (ASize < 0);
 
     // Do not read modification time and filename (test close to the end of this block) if it is already set.
-    // if (::IsZero(FModification.GetValue()) && GetFileName().IsEmpty())
-    // Do not read modification time and filename (test close to the end of this block) if it is already set.
     if (::IsZero(FModification.GetValue()))
     {
       // bool FullTime = false;
@@ -1252,11 +1250,11 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       Word CurrYear = 0, CurrMonth = 0, CurrDay = 0;
       ::DecodeDate(::Date(), CurrYear, CurrMonth, CurrDay);
 
-      GetCol();
+      GETCOL();
       // SSH FS link, see above
       if (Col == L"?")
       {
-        GetCol();
+        GETCOL();
         FModificationFmt = mfNone;
         FModification = 0;
         FLastAccess = 0;
@@ -1273,7 +1271,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           Year = nb::ToWord(Y);
           Month = nb::ToWord(M);
           Day = nb::ToWord(D);
-          GetCol();
+          GETCOL();
           int32_t H, Mn, S, MS;
           Filled = swscanf(Col.c_str(), L"%02d:%02d:%02d.%d", &H, &Mn, &S, &MS);
           if (Filled == 4)
@@ -1284,7 +1282,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             FModificationFmt = mfFull;
             // skip TZ (TODO)
             // do not trim leading space of filename
-            GetNCol();
+            GETNCOL();
           }
           else
           {
@@ -1298,7 +1296,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
               FModificationFmt = mfFull;
               // skip TZ (TODO)
               // do not trim leading space of filename
-              GetNCol();
+              GETNCOL();
             }
           }
         } else {
@@ -1307,10 +1305,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
         if (Day > 0)
         {
           DayMonthFormat = true;
-          GetCol();
+          GETCOL();
         }
         Month = 0;
-        auto Col2Month = [&]()
+        auto COL2MONTH = [&]()
         {
           for (Word IMonth = 0; IMonth < 12; IMonth++)
             if (!Col.CompareIC(EngShortMonthNames[IMonth]))
@@ -1321,7 +1319,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             }
         };
 
-        Col2Month();
+        COL2MONTH();
         // if the column is not known month name, it may have been "yyyy-mm-dd"
         // for --full-time format
         if ((Month == 0) && (Col.Length() == 10) && (Col[5] == L'-') && (Col[8] == L'-'))
@@ -1329,7 +1327,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           Year = nb::ToWord(Col.SubString(1, 4).ToInt32());
           Month = nb::ToWord(Col.SubString(6, 2).ToInt32());
           Day = nb::ToWord(Col.SubString(9, 2).ToInt32());
-          GetCol();
+          GETCOL();
           Hour = nb::ToWord(Col.SubString(1, 2).ToInt32());
           Min = nb::ToWord(Col.SubString(4, 2).ToInt32());
           if (Col.Length() >= 8)
@@ -1343,7 +1341,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           FModificationFmt = mfFull;
           // skip TZ (TODO)
           // do not trim leading space of filename
-          GetNCol();
+          GETNCOL();
         }
         else
         {
@@ -1351,8 +1349,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           // or it may have been day name for another format of --full-time
           if (Month == 0)
           {
-            GetCol();
-            Col2Month();
+            GETCOL();
+            COL2MONTH();
             // neither standard, not --full-time format
             if (Month == 0)
             {
@@ -1363,10 +1361,11 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
               FullTime = true;
             }
           }
+          #undef COL2MONTH
 
           if (Day == 0)
           {
-            GetNCol();
+            GETNCOL();
             Day = nb::ToWord(::StrToInt64(Col));
           }
           if ((Day < 1) || (Day > 31))
@@ -1378,7 +1377,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
           // ddd mmm dd hh:nn:ss yyyy
           if (FullTime)
           {
-            GetCol();
+            GETCOL();
             if (Col.Length() != 8)
             {
               Abort();
@@ -1388,7 +1387,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             Sec = nb::ToWord(::StrToInt64(Col.SubString(7, 2)));
             FModificationFmt = mfFull;
             // do not trim leading space of filename
-            GetNCol();
+            GETNCOL();
             Year = nb::ToWord(::StrToInt64(Col));
           }
           else
@@ -1397,7 +1396,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
             // the year is not aligned to 5 characters
             if (DayMonthFormat)
             {
-              GetCol();
+              GETCOL();
             }
             else
             {
@@ -1695,7 +1694,6 @@ TRemoteParentDirectory::TRemoteParentDirectory(TTerminal * ATerminal) noexcept :
   SetFileName(PARENTDIRECTORY);
   SetTerminal(ATerminal);
 }
-
 //=== TRemoteFileList ------------------------------------------------------
 TRemoteFileList::TRemoteFileList() noexcept :
   TObjectList(OBJECT_CLASS_TRemoteFileList),
