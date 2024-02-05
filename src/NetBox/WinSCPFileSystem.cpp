@@ -2208,7 +2208,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
   // workaround to ignore "change to root directory" command issued by FAR,
   // before file is opened for viewing/editing from "find file" dialog
   // when plugin uses UNIX style paths
-  if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (ADir == L"\\"))
+  if ((OpMode & OPM_FIND) && (OpMode & OPM_SILENT) && (ADir == BACKSLASH))
   {
     if (FSavedFindFolder.IsEmpty())
     {
@@ -2263,7 +2263,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
         FNoProgress = false;
       };
       DebugAssert(FTerminal);
-      if (ADir == L"\\")
+      if (ADir == BACKSLASH)
       {
         FTerminal->ChangeDirectory(ROOTDIRECTORY);
       }

@@ -3564,10 +3564,10 @@ const TCustomCommandType::TOption & TCustomCommandType::GetOption(int Index) con
 UnicodeString TCustomCommandType::GetOptionKey(
   const TCustomCommandType::TOption & Option, const UnicodeString & Site) const
 {
-  UnicodeString Result = Id + L"\\" + Option.Id;
+  UnicodeString Result = Id + BACKSLASH + Option.Id;
   if (FLAGSET(Option.Flags, ofSite))
   {
-    Result += L"\\" + Site;
+    Result += BACKSLASH + Site;
   }
   return Result;
 }
