@@ -224,7 +224,7 @@ NB_CORE_EXPORT char HexToChar(const UnicodeString & Hex, uint32_t MinChars = 0);
 NB_CORE_EXPORT UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
 NB_CORE_EXPORT UnicodeString SysErrorMessage(DWORD ErrorCode);
 
-NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
+NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, const TFormatSettings & FormatSettings);
 NB_CORE_EXPORT UnicodeString  DateTimeToString(const UnicodeString & Format,
   const TDateTime & DateTime);
 NB_CORE_EXPORT UnicodeString DateTimeToString(const TDateTime & DateTime);

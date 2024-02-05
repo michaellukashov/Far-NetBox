@@ -383,7 +383,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
 }
 
 void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
-  TOptions * Options)
+  const TOptions * Options)
 {
   UnicodeString CmdLine = CommandLine;
   int32_t Index = 1;
