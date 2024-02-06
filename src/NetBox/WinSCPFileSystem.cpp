@@ -424,10 +424,11 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     if (!FolderName.IsEmpty())
       FolderAndSessionName = FORMAT("%s/%s", FolderName, SessionName);
     else
-      FolderAndSessionName = FORMAT("%s", FolderName, SessionName);
-    ShortcutData = FORMAT("netbox:%s\1%s", FolderAndSessionName, CurDir);
+      FolderAndSessionName = FORMAT("%s", SessionName);
+    ShortcutData = FORMAT(L"netbox:%s\1%s", FolderAndSessionName, CurDir);
 
-    /*DEBUG_PRINTF("SessionName: %s", SessionName);
+    /*DEBUG_PRINTF("FolderName: %s", FolderName);
+    DEBUG_PRINTF("SessionName: %s", SessionName);
     DEBUG_PRINTF("HostName: %s", HostName);
     DEBUG_PRINTF("FolderAndSessionName: %s", FolderAndSessionName);
     DEBUG_PRINTF("Url: %s", Url);
