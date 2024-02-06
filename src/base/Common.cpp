@@ -3303,7 +3303,7 @@ static bool DoRecursiveDeleteFile(
 
           if (Result)
           {
-            Result = ::SysUtulsRemoveDir(ApiPath(AFileName));
+            Result = ::RemoveDir(ApiPath(AFileName));
             if (Result)
             {
               Deleted++;

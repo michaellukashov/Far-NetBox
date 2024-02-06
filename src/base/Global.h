@@ -5,6 +5,7 @@
 
 #include <tchar.h>
 #include <cassert>
+#include <gsl/gsl>
 
 #include <FormatUtils.h>
 #include <tinylog/TinyLog.h>
@@ -19,6 +20,17 @@
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 
 #include <System.SyncObjs.hpp>
+
+#undef CopyFile
+#undef RenameFile
+#undef CreateDirectory
+#undef CreateLink
+#undef DeleteFile
+#undef GetCurrentDirectory
+#undef SetCurrentDirectory
+#undef GetUserName
+#undef GetEnvironmentVariable
+#undef MoveFile
 
 // extern const UnicodeString EmptyString;
 

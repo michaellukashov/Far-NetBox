@@ -5785,7 +5785,7 @@ bool TCopyDialog::CloseQuery()
         if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY), Directory),
           nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
-          if (!::SysUtulsForceDirectories(ApiPath(Directory)))
+          if (!::ForceDirectories(ApiPath(Directory)))
           {
             DirectoryEdit->SetFocus();
             throw ExtException(FORMAT(GetMsg(NB_CREATE_LOCAL_DIR_ERROR), Directory));

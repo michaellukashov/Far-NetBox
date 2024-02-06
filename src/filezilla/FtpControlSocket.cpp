@@ -5043,7 +5043,7 @@ int CFtpControlSocket::CheckOverwriteFileAndCreateTarget()
         {
           path2 += path.Left(path.Find(L"\\") + 1);
           path = path.Mid(path.Find(L"\\") + 1);
-          CreateDirectory(path2, 0);
+          CreateDirectoryW(path2, 0);
         }
       }
     }
