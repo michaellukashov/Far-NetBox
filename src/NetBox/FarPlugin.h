@@ -16,6 +16,7 @@ constexpr const DWORD RMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL
 constexpr const DWORD ALTMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED);
 constexpr const DWORD CTRLMASK = (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED);
 constexpr const DWORD SHIFTMASK = (SHIFT_PRESSED);
+constexpr const wchar_t * SHORTCUT_DELIMITER = L"\1";
 
 class TCustomFarFileSystem;
 class TFarPanelModes;
