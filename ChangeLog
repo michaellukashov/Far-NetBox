@@ -3,6 +3,9 @@
 
 ## [Unreleased]
 
+ - gh-333 Build script fails to collate the finished files
+ - Create Directory: fix position cursor on newly created dir
+https://forum.farmanager.com/viewtopic.php?p=177192#p177192
 ## [24.2.1.580] - 2024-02-04
 
 ### Changed
