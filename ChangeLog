@@ -4,7 +4,9 @@
 ## [Unreleased]
 
 ### Fixed
-
+ - gh-333 Build script fails to collate the finished files
+ - Create Directory: fix position cursor on newly created dir
+https://forum.farmanager.com/viewtopic.php?p=177192#p177192
  - Fix opening plugin on opposite panel using macro
 https://forum.farmanager.com/viewtopic.php?p=177178#p177178 p.1
  - SCP: Crash if file transfer is canceled
