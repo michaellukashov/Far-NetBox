@@ -75,7 +75,7 @@ jobs:
           fi
 
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: result
           path: ./*.7z
