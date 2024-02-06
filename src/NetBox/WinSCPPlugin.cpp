@@ -45,7 +45,7 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
       Str = Path;
     }
 
-    UnicodeString DbgLogFileName = StripPathQuotes(::ExpandEnvironmentVariables(Str));
+    const UnicodeString DbgLogFileName = StripPathQuotes(::ExpandEnvironmentVariables(Str));
     return DbgLogFileName;
   }
 
@@ -61,10 +61,10 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   GetGlobals()->SetupDbgHandles(DbgFileName);
   // setup tinylog
   g_tinylog.level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
-  FILE * logFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
-  if (logFile)
+  FILE * LogFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
+  if (LogFile)
   {
-    g_tinylog.file(logFile);
+    g_tinylog.file(LogFile);
   }
   // TODO: icecream::ic.output(logFile);
   // IC();
@@ -269,6 +269,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem;
   CoreInitializeOnce();
+  // DEBUG_PRINTF("OpenFrom: %d", (int)OpenFrom);
 
   if ((OpenFrom == OPEN_PLUGINSMENU) &&
     (!GetFarConfiguration()->GetPluginsMenu() || (Item == 1)))
@@ -302,14 +303,17 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         const OpenCommandLineInfo * Info = reinterpret_cast<OpenCommandLineInfo *>(Item);
         CommandLine = Info->CommandLine;
       }
+      // DEBUG_PRINTF("CommandLine: %s", CommandLine);
       if (OpenFrom == OPEN_SHORTCUT)
       {
-        const int32_t P = CommandLine.Pos(L"\1");
+        const int32_t P = CommandLine.Pos(SHORTCUT_DELIMITER);
         if (P > 0)
         {
           Directory = CommandLine.SubString(P + 1, CommandLine.Length() - P);
           CommandLine.SetLength(P - 1);
         }
+        // DEBUG_PRINTF("Directory: %s", Directory);
+        // DEBUG_PRINTF("CommandLine: %s", CommandLine);
 
         const bool Another = !(Flags & FOSF_ACTIVE);
         TWinSCPFileSystem * PanelSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
@@ -383,7 +387,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
 }
 
 void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
-  TOptions * Options)
+  const TOptions * Options)
 {
   UnicodeString CmdLine = CommandLine;
   int32_t Index = 1;

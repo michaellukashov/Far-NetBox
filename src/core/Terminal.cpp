@@ -7905,13 +7905,13 @@ void TTerminal::DirectorySource(
     if (FLAGSET(AParams, cpDelete))
     {
       DebugAssert(FLAGCLEAR(AParams, cpNoRecurse));
-      ::SysUtulsRemoveDir(ApiPath(ADirectoryName));
+      ::RemoveDir(ApiPath(ADirectoryName));
     }
     else if (CopyParam->GetClearArchive() && FLAGSET(Attrs, faArchive))
     {
       FILE_OPERATION_LOOP_BEGIN
       {
-        THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADirectoryName), static_cast<DWORD>(Attrs & ~faArchive)) == 0);
+        THROWOSIFFALSE(::FileSetAttr(ApiPath(ADirectoryName), static_cast<DWORD>(Attrs & ~faArchive)) == 0);
       }
       FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, ADirectoryName));
     }
@@ -7990,7 +7990,7 @@ void TTerminal::UpdateSource(const TLocalFileHandle & AHandle, const TCopyParamT
   {
     FILE_OPERATION_LOOP_BEGIN
     {
-      THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(AHandle.FileName), (AHandle.Attrs & ~faArchive)) == 0);
+      THROWOSIFFALSE(::FileSetAttr(ApiPath(AHandle.FileName), (AHandle.Attrs & ~faArchive)) == 0);
     }
     FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, AHandle.FileName));
   }
@@ -8475,7 +8475,7 @@ void TTerminal::Sink(
 
       FILE_OPERATION_LOOP_BEGIN
       {
-        THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFullName)));
+        THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFullName)));
       }
       FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, DestFullName));
 
@@ -8577,7 +8577,7 @@ void TTerminal::UpdateTargetAttrs(
   {
     FILE_OPERATION_LOOP_BEGIN
     {
-      THROWOSIFFALSE(::SysUtulsFileSetAttr(ApiPath(ADestFullName), static_cast<DWORD>(Attrs | NewAttrs)) == 0);
+      THROWOSIFFALSE(::FileSetAttr(ApiPath(ADestFullName), static_cast<DWORD>(Attrs | NewAttrs)) == 0);
     }
     FILE_OPERATION_LOOP_END(FMTLOAD(CANT_SET_ATTRS, ADestFullName));
   }
@@ -9191,7 +9191,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
     }
 
     TemporaryDir = ExcludeTrailingBackslash(Configuration->TemporaryDir());
-    if (!::SysUtulsForceDirectories(ApiPath(TemporaryDir)))
+    if (!::ForceDirectories(ApiPath(TemporaryDir)))
     {
       throw EOSExtException(FMTLOAD(CREATE_TEMP_DIR_ERROR, TemporaryDir));
     }
@@ -9419,7 +9419,7 @@ bool TTerminal::SetLocalFileAttributes(const UnicodeString & LocalFileName, DWOR
   {
     return GetOnSetLocalFileAttributes()(ApiPath(LocalFileName), FileAttributes);
   }
-  return SysUtulsFileSetAttr(LocalFileName, FileAttributes);
+  return FileSetAttr(LocalFileName, FileAttributes);
 }
 
 bool TTerminal::MoveLocalFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD Flags)
@@ -9437,7 +9437,7 @@ bool TTerminal::RemoveLocalDirectory(const UnicodeString & LocalDirName)
   {
     return GetOnRemoveLocalDirectory()(LocalDirName);
   }
-  return SysUtulsRemoveDir(LocalDirName);
+  return RemoveDir(LocalDirName);
 }
 
 bool TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECURITY_ATTRIBUTES SecurityAttributes)
@@ -9446,7 +9446,7 @@ bool TTerminal::CreateLocalDirectory(const UnicodeString & LocalDirName, LPSECUR
   {
     return GetOnCreateLocalDirectory()(LocalDirName, SecurityAttributes);
   }
-  return SysUtulsCreateDir(LocalDirName, SecurityAttributes);
+  return CreateDir(LocalDirName, SecurityAttributes);
 }
 
 bool TTerminal::CheckForEsc() const

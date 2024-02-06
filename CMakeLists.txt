@@ -1791,7 +1791,6 @@ set(ZLIB_SOURCES ${ZLIB_SOURCES}
   libs/zlib/arch/x86/adler32_avx2.c
 )
 endif()
-
 add_library(zlib STATIC
   ${ZLIB_SOURCES}
 )

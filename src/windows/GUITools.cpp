@@ -76,7 +76,7 @@ bool FindFile(UnicodeString & Path)
     UnicodeString Paths = base::GetEnvironmentVariable("PATH");
     if (!Paths.IsEmpty())
     {
-      UnicodeString NewPath = ::SysUtulsFileSearch(base::ExtractFileName(Path), Paths);
+      UnicodeString NewPath = ::FileSearch(base::ExtractFileName(Path), Paths);
       Result = !NewPath.IsEmpty();
       if (Result)
       {

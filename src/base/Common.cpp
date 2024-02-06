@@ -1946,7 +1946,7 @@ UnicodeString ApiPath(const UnicodeString & APath)
 
   const UnicodeString Drive = ExtractFileDrive(Path);
   // This may match even a path like "C:" or "\\server\\share", but we do not really care
-  if (Drive.IsEmpty() || (Path.SubString(Drive.Length() + 1, 1) != L"\\"))
+  if (Drive.IsEmpty() || (Path.SubString(Drive.Length() + 1, 1) != BACKSLASH))
   {
     Path = ExpandFileName(Path);
   }
@@ -3303,7 +3303,7 @@ static bool DoRecursiveDeleteFile(
 
           if (Result)
           {
-            Result = ::SysUtulsRemoveDir(ApiPath(AFileName));
+            Result = ::RemoveDir(ApiPath(AFileName));
             if (Result)
             {
               Deleted++;

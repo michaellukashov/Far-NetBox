@@ -4567,8 +4567,11 @@ void TRightsContainer::Changed()
 
 TFarCheckBox * TRightsContainer::GetChecks(TRights::TRight Right)
 {
-  DebugAssert((Right >= 0) && (nb::ToSizeT(Right) < _countof(FCheckBoxes)));
-  return FCheckBoxes[nb::ToSizeT(Right)];
+  NB_STATIC_ASSERT(TRights::TRight::rrLast == _countof(FCheckBoxes) - 1, "CheckBoxes");
+  DebugAssert(nb::ToSizeT(Right) < _countof(FCheckBoxes));
+  if (Right < _countof(FCheckBoxes))
+    return FCheckBoxes[Right];
+  return nullptr;
 }
 
 TRights::TState TRightsContainer::GetStates(TRights::TRight Right)
@@ -5788,7 +5791,7 @@ bool TCopyDialog::CloseQuery()
         if (WinSCPPlugin->MoreMessageDialog(FORMAT(GetMsg(NB_CREATE_LOCAL_DIRECTORY), Directory),
           nullptr, qtConfirmation, qaOK | qaCancel) != qaCancel)
         {
-          if (!::SysUtulsForceDirectories(ApiPath(Directory)))
+          if (!::ForceDirectories(ApiPath(Directory)))
           {
             DirectoryEdit->SetFocus();
             throw ExtException(FORMAT(GetMsg(NB_CREATE_LOCAL_DIR_ERROR), Directory));

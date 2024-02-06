@@ -3,6 +3,13 @@
 
 ## [Unreleased]
 
+### Fixed
+
+ - Fix opening plugin using current connection
+https://forum.farmanager.com/viewtopic.php?p=177178#p177178 p.1
+ - SCP: Crash if file transfer is canceled
+https://forum.farmanager.com/viewtopic.php?p=177178#p177178 p.2
+
 ## [24.2.1.580] - 2024-02-04
 
 ### Changed

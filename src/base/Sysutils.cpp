@@ -522,25 +522,25 @@ int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin)
   return (nb::ToInt64(High) << 32) + nb::ToInt64(Res);
 }
 
-bool SysUtulsFileExists(const UnicodeString & AFileName)
+bool FileExists(const UnicodeString & AFileName)
 {
-  return SysUtulsFileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
+  return FileGetAttr(AFileName) != INVALID_FILE_ATTRIBUTES;
 }
 
-bool SysUtulsRenameFile(const UnicodeString & From, const UnicodeString & To)
+bool RenameFile(const UnicodeString & From, const UnicodeString & To)
 {
   const bool Result = ::MoveFileW(ApiPath(From).c_str(), ApiPath(To).c_str()) != FALSE;
   return Result;
 }
 
-bool SysUtulsDirectoryExists(const UnicodeString & ADir)
+bool DirectoryExists(const UnicodeString & ADir)
 {
   if ((ADir == THISDIRECTORY) || (ADir == PARENTDIRECTORY))
   {
     return true;
   }
 
-  const DWORD LocalFileAttrs = SysUtulsFileGetAttr(ADir);
+  const DWORD LocalFileAttrs = FileGetAttr(ADir);
 
   if ((LocalFileAttrs != INVALID_FILE_ATTRIBUTES) && FLAGSET(LocalFileAttrs, FILE_ATTRIBUTE_DIRECTORY))
   {
@@ -549,7 +549,7 @@ bool SysUtulsDirectoryExists(const UnicodeString & ADir)
   return false;
 }
 
-UnicodeString SysUtulsFileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList)
+UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList)
 {
   UnicodeString Result;
   UnicodeString Temp = DirectoryList;
@@ -584,7 +584,7 @@ UnicodeString SysUtulsFileSearch(const UnicodeString & AFileName, const UnicodeS
   return Result;
 }
 
-void SysUtulsFileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
+void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
 {
   WIN32_FIND_DATA FindData;
   const HANDLE LocalFileHandle = ::FindFirstFileW(ApiPath(AFileName).c_str(), &FindData);
@@ -598,35 +598,35 @@ void SysUtulsFileAge(const UnicodeString & AFileName, TDateTime & ATimestamp)
   }
 }
 
-DWORD SysUtulsFileGetAttr(const UnicodeString & AFileName, bool /*FollowLink*/)
+DWORD FileGetAttr(const UnicodeString & AFileName, bool /*FollowLink*/)
 {
   TODO("FollowLink");
   const DWORD LocalFileAttrs = ::GetFileAttributesW(ApiPath(AFileName).c_str());
   return LocalFileAttrs;
 }
 
-bool SysUtulsFileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
+bool FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs)
 {
   const bool Result = ::SetFileAttributesW(ApiPath(AFileName).c_str(), LocalFileAttrs) != FALSE;
   return Result;
 }
 
-bool SysUtulsCreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
+bool CreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes)
 {
   return ::CreateDirectoryW(ApiPath(ADir).c_str(), SecurityAttributes) != FALSE;
 }
 
-bool SysUtulsRemoveDir(const UnicodeString & ADir)
+bool RemoveDir(const UnicodeString & ADir)
 {
   return ::RemoveDirectoryW(ApiPath(ADir).c_str()) != FALSE;
 }
 
-bool SysUtulsMoveFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD AFlags)
+bool MoveFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD AFlags)
 {
   return ::MoveFileExW(ApiPath(LocalFileName).c_str(), ApiPath(NewLocalFileName).c_str(), AFlags) != FALSE;
 }
 
-bool SysUtulsForceDirectories(const UnicodeString & ADir)
+bool ForceDirectories(const UnicodeString & ADir)
 {
   bool Result = true;
   if (ADir.IsEmpty())
@@ -640,13 +640,13 @@ bool SysUtulsForceDirectories(const UnicodeString & ADir)
   }
   if (::ExtractFilePath(Dir).IsEmpty())
   {
-    return ::SysUtulsCreateDir(Dir);
+    return ::CreateDir(Dir);
   }
-  Result = ::SysUtulsForceDirectories(::ExtractFilePath(Dir)) && ::SysUtulsCreateDir(Dir);
+  Result = ::ForceDirectories(::ExtractFilePath(Dir)) && ::CreateDir(Dir);
   return Result;
 }
 
-bool SysUtulsRemoveFile(const UnicodeString & AFileName)
+bool RemoveFile(const UnicodeString & AFileName)
 {
   ::DeleteFileW(ApiPath(AFileName).c_str());
   return !base::FileExists(AFileName);
@@ -1196,7 +1196,7 @@ uint32_t HexToIntPtr(const UnicodeString & Hex, uint32_t MinChars)
 UnicodeString IntToHex(uint32_t Int, uint32_t MinChars)
 {
   UnicodeString Result = FORMAT("%X", Int);
-  const int32_t Pad = MinChars - Result.Length();
+  const int32_t Pad = nb::ToInt32(MinChars - Result.Length());
   if (Pad > 0)
   {
     for (int32_t Index = 0; Index < Pad; ++Index)
@@ -1365,7 +1365,7 @@ TDateTime StrToDateTime(const UnicodeString & Value)
 }
 
 bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
-  TFormatSettings & FormatSettings)
+  const TFormatSettings & FormatSettings)
 {
   (void)StrValue;
   (void)Value;
@@ -1953,7 +1953,6 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
   const UnicodeString CVolumePrefix = L"Volume";
   const UnicodeString CGlobalPrefix = L"\\\\?\\";
 
-  TReparseDataBuffer * PBuffer = nullptr;
   DWORD BytesReturned{0};
   GUID guid{};
 
@@ -1965,7 +1964,7 @@ bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & Targe
   {
     try
     {
-      PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
+      TReparseDataBuffer * PBuffer = static_cast<TReparseDataBuffer*>(nb_malloc(MAXIMUM_REPARSE_DATA_BUFFER_SIZE));
       if (PBuffer != nullptr)
       {
         if (DeviceIoControl(HFile, FSCTL_GET_REPARSE_POINT, nullptr, 0,
@@ -2098,12 +2097,12 @@ bool WriteAndFlush(FILE * File, void const * Data, size_t Size)
 
 bool FileExists(const UnicodeString & AFileName)
 {
-  return ::SysUtulsFileExists(AFileName);
+  return ::FileExists(AFileName);
 }
 
 bool FileRemove(const UnicodeString & AFileName)
 {
-  return ::SysUtulsRemoveFile(AFileName);
+  return ::RemoveFile(AFileName);
 }
 
 bool DoExists(bool R, const UnicodeString & Path)
@@ -2131,12 +2130,12 @@ bool FileExistsFix(const UnicodeString & Path)
 
 bool RenameFile(const UnicodeString & From, const UnicodeString & To)
 {
-  return ::SysUtulsRenameFile(From, To);
+  return ::RenameFile(From, To);
 }
 
 bool DirectoryExists(const UnicodeString & ADir)
 {
-  return ::SysUtulsDirectoryExists(ApiPath(ADir));
+  return ::DirectoryExists(ApiPath(ADir));
 }
 
 DWORD FindFirst(const UnicodeString & AFileName, DWORD LocalFileAttrs, TSearchRec & Rec)

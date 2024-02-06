@@ -501,7 +501,7 @@ TEST_CASE_METHOD(base_fixture_t, "test9", "netbox")
   INFO("3");
   CHECK(::GetCurrentDir().Length() > 0);
   INFO("4");
-  CHECK(::SysUtulsDirectoryExists(::GetCurrentDir()));
+  CHECK(DirectoryExists(::GetCurrentDir()));
   INFO("5");
 }
 
@@ -683,7 +683,7 @@ TEST_CASE_METHOD(base_fixture_t, "test22", "netbox")
     delete BlockBuf; BlockBuf = nullptr;
     ::CloseHandle(FileHandle);
     INFO("FileName1 = " << FileName);
-    REQUIRE(::SysUtulsFileExists(FileName));
+    REQUIRE(FileExists(FileName));
   }
   {
     INFO("FileName2 = " << FileName);
@@ -715,17 +715,17 @@ TEST_CASE_METHOD(base_fixture_t, "test23", "netbox")
 {
   UnicodeString Dir1 = L"subdir1";
   UnicodeString Dir2 = L"subdir1/subdir2";
-  ::SysUtulsRemoveDir(Dir2);
-  ::SysUtulsRemoveDir(Dir1);
-  INFO("DirectoryExists(Dir2) = " << ::SysUtulsDirectoryExists(Dir2));
-  REQUIRE(!::SysUtulsDirectoryExists(Dir2));
-  ::SysUtulsForceDirectories(Dir2);
-  REQUIRE(::SysUtulsDirectoryExists(Dir2));
-  ::SysUtulsRemoveDir(Dir2);
-  ::SysUtulsForceDirectories(Dir2);
-  REQUIRE(::SysUtulsDirectoryExists(Dir2));
+  RemoveDir(Dir2);
+  RemoveDir(Dir1);
+  INFO("DirectoryExists(Dir2) = " << DirectoryExists(Dir2));
+  REQUIRE(!DirectoryExists(Dir2));
+  ForceDirectories(Dir2);
+  REQUIRE(DirectoryExists(Dir2));
+  RemoveDir(Dir2);
+  ForceDirectories(Dir2);
+  REQUIRE(DirectoryExists(Dir2));
   REQUIRE(::RecursiveDeleteFile(Dir1, false));
-  REQUIRE(!::SysUtulsDirectoryExists(Dir1));
+  REQUIRE(!DirectoryExists(Dir1));
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test24", "netbox")

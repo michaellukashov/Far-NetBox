@@ -223,7 +223,7 @@ NB_CORE_EXPORT char HexToChar(const UnicodeString & Hex, uint32_t MinChars = 0);
 NB_CORE_EXPORT UnicodeString ReplaceStrAll(const UnicodeString & Str, const UnicodeString & What, const UnicodeString & ByWhat);
 NB_CORE_EXPORT UnicodeString SysErrorMessage(DWORD ErrorCode);
 
-NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, TFormatSettings & FormatSettings);
+NB_CORE_EXPORT bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value, const TFormatSettings & FormatSettings);
 NB_CORE_EXPORT UnicodeString  DateTimeToString(const UnicodeString & Format,
   const TDateTime & DateTime);
 NB_CORE_EXPORT UnicodeString DateTimeToString(const TDateTime & DateTime);
@@ -301,20 +301,20 @@ NB_CORE_EXPORT int64_t FileRead(HANDLE AHandle, void * Buffer, int64_t Count);
 NB_CORE_EXPORT int64_t FileWrite(HANDLE AHandle, const void * Buffer, int64_t Count);
 NB_CORE_EXPORT int64_t FileSeek(HANDLE AHandle, int64_t Offset, DWORD Origin);
 
-NB_CORE_EXPORT bool SysUtulsFileExists(const UnicodeString & AFileName);
-NB_CORE_EXPORT bool SysUtulsRenameFile(const UnicodeString & From, const UnicodeString & To);
-NB_CORE_EXPORT bool SysUtulsDirectoryExists(const UnicodeString & ADir);
-NB_CORE_EXPORT UnicodeString SysUtulsFileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList);
-NB_CORE_EXPORT void SysUtulsFileAge(const UnicodeString & AFileName, TDateTime & ATimestamp);
+NB_CORE_EXPORT bool FileExists(const UnicodeString & AFileName);
+NB_CORE_EXPORT bool RenameFile(const UnicodeString & From, const UnicodeString & To);
+NB_CORE_EXPORT bool DirectoryExists(const UnicodeString & ADir);
+NB_CORE_EXPORT UnicodeString FileSearch(const UnicodeString & AFileName, const UnicodeString & DirectoryList);
+NB_CORE_EXPORT void FileAge(const UnicodeString & AFileName, TDateTime & ATimestamp);
 
-NB_CORE_EXPORT DWORD SysUtulsFileGetAttr(const UnicodeString & AFileName, bool FollowLink = true);
-NB_CORE_EXPORT bool SysUtulsFileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
+NB_CORE_EXPORT DWORD FileGetAttr(const UnicodeString & AFileName, bool FollowLink = true);
+NB_CORE_EXPORT bool FileSetAttr(const UnicodeString & AFileName, DWORD LocalFileAttrs);
 
-NB_CORE_EXPORT bool SysUtulsForceDirectories(const UnicodeString & ADir);
-NB_CORE_EXPORT bool SysUtulsRemoveFile(const UnicodeString & AFileName);
-NB_CORE_EXPORT bool SysUtulsCreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
-NB_CORE_EXPORT bool SysUtulsMoveFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD AFlags);
-NB_CORE_EXPORT bool SysUtulsRemoveDir(const UnicodeString & ADir);
+NB_CORE_EXPORT bool ForceDirectories(const UnicodeString & ADir);
+NB_CORE_EXPORT bool RemoveFile(const UnicodeString & AFileName);
+NB_CORE_EXPORT bool CreateDir(const UnicodeString & ADir, LPSECURITY_ATTRIBUTES SecurityAttributes = nullptr);
+NB_CORE_EXPORT bool MoveFile(const UnicodeString & LocalFileName, const UnicodeString & NewLocalFileName, DWORD AFlags);
+NB_CORE_EXPORT bool RemoveDir(const UnicodeString & ADir);
 
 NB_CORE_EXPORT UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth = 40);
 
@@ -426,7 +426,7 @@ struct NB_CORE_EXPORT TVersionInfo
   DWORD Build{0};
 };
 
-#define MAKEVERSIONNUMBER(major, minor, revision) ( ((major)<<16) | ((minor)<<8) | (revision))
+#define MAKEVERSIONNUMBER(major, minor, revision) (((major)<<16) | ((minor)<<8) | (revision))
 NB_CORE_EXPORT uint32_t StrToVersionNumber(const UnicodeString & VersionNumberStr);
 NB_CORE_EXPORT UnicodeString VersionNumberToStr(uint32_t VersionNumber);
 NB_CORE_EXPORT uint32_t inline GetVersionNumber219() { return MAKEVERSIONNUMBER(2, 1, 9); }
@@ -564,8 +564,8 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
 //  Type& operator =(Type&&) = delete;
 
 #define NB_MOVABLE(Type) \
-  Type(Type &&) = default; \
-  Type & operator =(Type &&) = default;
+  Type(Type &&) noexcept = default; \
+  Type & operator =(Type &&) noexcept = default;
 
 template < typename T, T Default = T{} >
 class movable

@@ -66,7 +66,7 @@ protected:
 private:
   void CleanupConfiguration();
   void CoreInitializeOnce();
-  void ParseCommandLine(UnicodeString & CommandLine, TOptions * Options);
+  void ParseCommandLine(UnicodeString & CommandLine, const TOptions * Options);
 
 private:
   bool FInitialized{false};

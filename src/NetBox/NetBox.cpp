@@ -71,8 +71,7 @@ intptr_t WINAPI ProcessSynchroEventW(const struct ProcessSynchroEventInfo * Info
     return 0;
   DebugAssert(FarPlugin);
   TFarPluginGuard Guard; nb::used(Guard);
-  FarPlugin->ProcessSynchroEvent(Info);
-  return 0;
+  return FarPlugin->ProcessSynchroEvent(Info);
 }
 
 intptr_t WINAPI ConfigureW(const struct ConfigureInfo * Info)
@@ -216,7 +215,7 @@ HANDLE WINAPI AnalyseW(const struct AnalyseInfo * Info)
   {
     return nullptr;
   }
-  return HANDLE(1);
+  return reinterpret_cast<HANDLE>(1);
 }
 
 HANDLE WINAPI OpenW(const struct OpenInfo * Info)

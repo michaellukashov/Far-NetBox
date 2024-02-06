@@ -173,10 +173,11 @@ public:
     DebugCheck(_setter);
     _setter(Value);
   }
-  void operator =(ValueType Value)
+  RWProperty & operator =(ValueType Value)
   {
     DebugCheck(_setter);
     _setter(Value);
+    return *this;
   }
 };
 
@@ -303,10 +304,11 @@ public:
     DebugCheck(_setter);
     _setter(Value);
   }
-  void operator =(ValueType Value)
+  RWPropertySimple & operator =(ValueType Value)
   {
     DebugCheck(_setter);
     _setter(Value);
+    return *this;
   }
 
   friend bool constexpr inline operator ==(const RWPropertySimple & lhs, ValueType rhs)

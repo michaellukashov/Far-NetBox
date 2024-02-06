@@ -755,8 +755,8 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
     DEBUG_PRINTF("before HandleFileSystemException");
     // display error even for OPM_FIND
     HandleFileSystemException(FarFileSystem, &E, Info->OpMode & ~OPM_FIND);
-    return 0;
   }
+  return 0;
 }
 
 intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
@@ -3110,7 +3110,7 @@ UnicodeString TGlobalFunctions::GetCurrentDirectory() const
   }
   else
   {
-    Length = ::GetCurrentDirectoryW(nb::ToDWord(Path.Length()), ToWCharPtr(Path));
+    Length = nb::ToInt32(::GetCurrentDirectoryW(nb::ToDWord(Path.Length()), ToWCharPtr(Path)));
   }
   UnicodeString Result = UnicodeString(Path.c_str(), Length);
   return Result;
