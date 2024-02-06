@@ -2731,7 +2731,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
           {
             FILE_OPERATION_LOOP_BEGIN
             {
-              THROWOSIFFALSE(::SysUtulsForceDirectories(ApiPath(DestFileName)));
+              THROWOSIFFALSE(::ForceDirectories(ApiPath(DestFileName)));
             }
             FILE_OPERATION_LOOP_END(FMTLOAD(CREATE_DIR_ERROR, DestFileName));
             /* SCP: can we set the timestamp for directories ? */

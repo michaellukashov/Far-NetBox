@@ -37,7 +37,7 @@ UnicodeString TCustomFileSystem::CreateTargetDirectory(
   if (!FileNamePath.IsEmpty())
   {
     Result = ::IncludeTrailingBackslash(ADirectory + FileNamePath);
-    if (!::SysUtulsForceDirectories(ApiPath(Result)))
+    if (!::ForceDirectories(ApiPath(Result)))
       Result.Clear();
   }
   return Result;

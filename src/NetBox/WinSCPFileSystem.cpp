@@ -1162,7 +1162,7 @@ void TWinSCPFileSystem::TemporarilyDownloadFiles(TStrings * AFileList, TCopyPara
   CopyParam.SetResumeSupport(rsOff);
 
   TempDir = GetWinSCPPlugin()->GetTemporaryDir();
-  if (TempDir.IsEmpty() || !::SysUtulsForceDirectories(ApiPath(TempDir)))
+  if (TempDir.IsEmpty() || !::ForceDirectories(ApiPath(TempDir)))
   {
     throw Exception(FMTLOAD(NB_CREATE_TEMP_DIR_ERROR, TempDir));
   }
@@ -2343,7 +2343,7 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
             if (MoreMessageDialog(FORMAT(GetMsg(NB_SYNC_DIR_BROWSE_CREATE), LocalPath),
                 nullptr, qtInformation, qaYes | qaNo) == qaYes)
             {
-              if (!::SysUtulsForceDirectories(ApiPath(LocalPath)))
+              if (!::ForceDirectories(ApiPath(LocalPath)))
               {
                 ::RaiseLastOSError();
               }
@@ -4024,7 +4024,7 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
         {
           // remove directory only if it is empty
           // (to avoid deleting another directory if user uses "save as")
-          ::SysUtulsRemoveDir(::ExcludeTrailingBackslash(::ExtractFilePath(Info->GetFileName())));
+          ::RemoveDir(::ExcludeTrailingBackslash(::ExtractFilePath(Info->GetFileName())));
         }
 
         FMultipleEdits.erase(it->first);
