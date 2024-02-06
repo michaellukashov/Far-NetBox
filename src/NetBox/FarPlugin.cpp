@@ -373,8 +373,8 @@ int32_t TCustomFarPlugin::Configure(const struct ConfigureInfo * Info)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
-    return 0;
   }
+  return 0;
 }
 
 void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo * Info)
