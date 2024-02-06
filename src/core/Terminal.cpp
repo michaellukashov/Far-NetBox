@@ -4204,7 +4204,6 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
           const UnicodeString FileName = AFileList->GetString(Index);
           DEBUG_PRINTF("FileName: %s", FileName);
           TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
-          DEBUG_PRINTF("GetFullFileName: %s", File->GetFullFileName());
           try
           {
             bool Success = false;

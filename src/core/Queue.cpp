@@ -961,7 +961,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 
     if (Result && TerminalItem)
     {
-      if (Pause && TerminalItem)
+      if (Pause)
       {
         Result = TerminalItem->Pause();
       }

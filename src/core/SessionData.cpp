@@ -2288,7 +2288,6 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   {
     AFSProtocol = fsFTP;
     Ftps = ftpsNone;
-    DEBUG_PRINTF("Ftps: %d", (int)Ftps);
     DefaultProtocolPortNumber = FtpPortNumber;
   }
   else if (IsProtocolUrl(Url, FtpsProtocol, ProtocolLen))
@@ -3775,7 +3774,6 @@ TStrings * TSessionData::GetRawSettingsForUrl()
   SessionData->UserName = FactoryDefaults->UserName;
   SessionData->Password = FactoryDefaults->Password;
   SessionData->Ftps = FactoryDefaults->Ftps;
-  DEBUG_PRINTF("Ftps: %d", (int)SessionData->Ftps);
   SessionData->HostKey = FactoryDefaults->HostKey;
   SessionData->CopyNonCoreData(FactoryDefaults.get());
   // Cannot be decided in SaveToOptions as it does not have HostName and UserName, so it cannot calculate DefaultSessionName.
@@ -4880,7 +4878,6 @@ void TSessionData::SetFtpTransferActiveImmediately(TAutoSwitch value)
 
 void TSessionData::SetFtps(TFtps value)
 {
-  DEBUG_PRINTF("value: %d", (int)value);
   SET_SESSION_PROPERTY(Ftps);
 }
 
