@@ -2327,7 +2327,7 @@ bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /*Dir*/, OPERATI
   return false;
 }
 
-int32_t TCustomFarFileSystem::MakeDirectoryEx(const UnicodeString & /*Name*/, OPERATION_MODES /*OpMode*/)
+int32_t TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /*Name*/, OPERATION_MODES /*OpMode*/)
 {
   return -1;
 }

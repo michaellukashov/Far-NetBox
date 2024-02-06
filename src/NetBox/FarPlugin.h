@@ -320,7 +320,7 @@ protected:
   virtual bool ProcessKeyEx(int32_t Key, uint32_t ControlState);
   virtual bool ProcessPanelEventEx(intptr_t Event, void * Param);
   virtual bool SetDirectoryEx(const UnicodeString & Dir, OPERATION_MODES OpMode);
-  virtual int32_t MakeDirectoryEx(const UnicodeString & Name, OPERATION_MODES OpMode);
+  virtual int32_t MakeDirectoryEx(UnicodeString & Name, OPERATION_MODES OpMode);
   virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode);
   virtual int32_t GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, OPERATION_MODES OpMode);

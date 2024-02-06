@@ -108,7 +108,7 @@ protected:
   virtual bool GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES OpMode) override;
   virtual bool ProcessKeyEx(int32_t Key, uint32_t ControlState) override;
   virtual bool SetDirectoryEx(const UnicodeString & ADir, OPERATION_MODES OpMode) override;
-  virtual int32_t MakeDirectoryEx(const UnicodeString & AName, OPERATION_MODES OpMode) override;
+  virtual int32_t MakeDirectoryEx(UnicodeString & AName, OPERATION_MODES OpMode) override;
   virtual bool DeleteFilesEx(TObjectList * PanelItems, OPERATION_MODES OpMode) override;
   virtual int32_t GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString & DestPath, OPERATION_MODES OpMode) override;
