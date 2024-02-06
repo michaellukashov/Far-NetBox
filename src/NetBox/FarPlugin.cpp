@@ -2157,15 +2157,18 @@ int32_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo * Info)
 {
   ResetCachedInfo();
   FNameStr = Info->Name;
-  SCOPE_EXIT
+  int32_t Result = 0;
+  try__finally
+  {
+    Result = MakeDirectoryEx(FNameStr, Info->OpMode);
+  }
+  __finally
   {
     if (0 != wcscmp(FNameStr.c_str(), Info->Name))
     {
       Info->Name = FNameStr.c_str();
     }
-  };
-  const int32_t Result = MakeDirectoryEx(FNameStr, Info->OpMode);
-
+  } end_try__finally
   return Result;
 }
 
@@ -2183,16 +2186,17 @@ int32_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, nb::ToInt32(Info->ItemsNumber)));
   int32_t Result;
   FDestPathStr = Info->DestPath;
+  try__finally
   {
-    SCOPE_EXIT
-    {
-      if (FDestPathStr != Info->DestPath)
-      {
-        Info->DestPath = FDestPathStr.c_str();
-      }
-    };
     Result = GetFilesEx(PanelItems.get(), Info->Move > 0, FDestPathStr, Info->OpMode);
   }
+  __finally
+  {
+    if (FDestPathStr != Info->DestPath)
+    {
+      Info->DestPath = FDestPathStr.c_str();
+    }
+  } end_try__finally
 
   return Result;
 }
