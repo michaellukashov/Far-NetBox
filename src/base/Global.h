@@ -21,19 +21,6 @@
 
 #include <System.SyncObjs.hpp>
 
-#undef CopyFile
-#undef RenameFile
-#undef CreateDirectory
-#undef CreateLink
-#undef DeleteFile
-#undef GetCurrentDirectory
-#undef SetCurrentDirectory
-#undef GetUserName
-#undef GetEnvironmentVariable
-#undef MoveFile
-
-// extern const UnicodeString EmptyString;
-
 UnicodeString NormalizeString(const UnicodeString & S);
 
 class NB_CORE_EXPORT TGuard
