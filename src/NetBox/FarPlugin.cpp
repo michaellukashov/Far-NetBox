@@ -2796,21 +2796,21 @@ const TFarPanelItem * TFarPanelInfo::FindFileName(const UnicodeString & AFileNam
   return nullptr;
 }
 
-TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
+const TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData) const
 {
-  return static_cast<const TFarPanelInfo *>(this)->FindUserData(UserData);
+  return const_cast<TFarPanelInfo *>(this)->FindUserData(UserData);
 }
 
-TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData) const
+TFarPanelItem * TFarPanelInfo::FindUserData(const void * UserData)
 {
-  const TObjectList * Items = GetItems();
+  TObjectList * Items = GetItems();
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    const TFarPanelItem * PanelItem = Items->As<TFarPanelItem>(Index);
+    TFarPanelItem * PanelItem = Items->GetAs<TFarPanelItem>(Index);
     Ensures(PanelItem);
     if (PanelItem->GetUserData() == UserData)
     {
-      return const_cast<TFarPanelItem *>(PanelItem);
+      return PanelItem;
     }
   }
   return nullptr;
