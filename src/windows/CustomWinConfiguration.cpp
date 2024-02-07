@@ -149,7 +149,7 @@ void TCustomWinConfiguration::Saved()
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) try { BLOCK } __finally { Storage->CloseSubKeyPath(); }
+  do { if (Storage->OpenSubKeyPath(KEY, CANCREATE)) try { BLOCK } __finally { Storage->CloseSubKeyPath(); } } while(0)
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \
     KEY(Integer,  Interface); \

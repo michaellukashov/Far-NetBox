@@ -1000,7 +1000,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
 // duplicated from core\configuration.cpp
 #undef LASTELEM
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) try { BLOCK } __finally { Storage->CloseSubKeyPath(); }
+  do { if (Storage->OpenSubKeyPath(KEY, CANCREATE)) try { BLOCK } __finally { Storage->CloseSubKeyPath(); } } while(0)
 #define KEY(TYPE, VAR) KEYEX(TYPE, VAR, PropertyToKey(TEXT(#VAR)))
 #define REGCONFIG(CANCREATE) \
   BLOCK("Interface", CANCREATE, \

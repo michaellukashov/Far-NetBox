@@ -387,8 +387,8 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
   ELEM.SubString(ELEM.LastDelimiter(L".>") + 1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (AStorage->OpenSubKeyPath(KEY, CANCREATE)) \
-    { try__finally { BLOCK } __finally { AStorage->CloseSubKeyPath(); } end_try__finally }
+  do { if (AStorage->OpenSubKeyPath(KEY, CANCREATE)) \
+         { try__finally { BLOCK } __finally { AStorage->CloseSubKeyPath(); } end_try__finally } } while(0)
 #undef KEY4
 #undef KEY3
 #undef KEY2
@@ -451,7 +451,7 @@ void TConfiguration::SaveData(THierarchicalStorage * AStorage, bool /*All*/)
 #define KEYEX3(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(Get ## VAR()))
 #define KEYEX4(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(F ## VAR))
 #define KEYEX5(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), F ## VAR)
-  REGCONFIG(true)
+  REGCONFIG(true);
 #undef KEYEX5
 #undef KEYEX4
 #undef KEYEX3
