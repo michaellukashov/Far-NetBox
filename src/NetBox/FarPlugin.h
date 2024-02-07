@@ -518,7 +518,7 @@ public:
 
   void ApplySelection();
   const TFarPanelItem * FindFileName(const UnicodeString & AFileName) const;
-  TFarPanelItem * FindUserData(const void * UserData) const;
+  const TFarPanelItem * FindUserData(const void * UserData) const;
   TFarPanelItem * FindUserData(const void * UserData);
 
 private:
