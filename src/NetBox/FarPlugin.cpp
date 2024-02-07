@@ -1681,11 +1681,11 @@ void TCustomFarPlugin::UpdateProgress(int32_t State, int32_t Progress) const
   FarAdvControl(ACTL_SETPROGRESSSTATE, State, nullptr);
   if (State == TBPS_NORMAL)
   {
-    ProgressValue pv{};
-    pv.StructSize = sizeof(ProgressValue);
-    pv.Completed = (Progress < 0) ? 0 : (Progress > 100) ? 100 : Progress;
-    pv.Total = 100;
-    FarAdvControl(ACTL_SETPROGRESSVALUE, 0, &pv);
+    ProgressValue PV{};
+    PV.StructSize = sizeof(ProgressValue);
+    PV.Completed = (Progress < 0) ? 0 : (Progress > 100) ? 100 : Progress;
+    PV.Total = 100;
+    FarAdvControl(ACTL_SETPROGRESSVALUE, 0, &PV);
   }
 }
 
@@ -1693,8 +1693,8 @@ void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 {
   const UnicodeString Title = FormatConsoleTitle();
   ::SetConsoleTitle(Title.c_str());
-  const int32_t progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
-  UpdateProgress(progress != 0 ? TBPS_NORMAL : TBPS_NOPROGRESS, progress);
+  const int32_t Progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
+  UpdateProgress(Progress != 0 ? TBPS_NORMAL : TBPS_NOPROGRESS, Progress);
 }
 
 void TCustomFarPlugin::SaveScreen(HANDLE & Screen)
