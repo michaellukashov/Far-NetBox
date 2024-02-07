@@ -615,8 +615,8 @@ char * get_reg_sz_winscp(HKEY Key, const char * Name)
     else
     {
       const AnsiString ValueAnsi = AnsiString(Value);
-      Result = snewn(ValueAnsi.Length() + 1, char);
-      strcpy(Result, ValueAnsi.c_str());
+      Result = snewn(ValueAnsi.GetLength() + 1, char);
+      strcpy_s(Result, ValueAnsi.GetLength() + 1, ValueAnsi.c_str());
     }
   }
   else

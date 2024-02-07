@@ -1662,7 +1662,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
         {
           NewAclGrant.granteeType = S3GranteeTypeCanonicalUser;
           DebugAssert(sizeof(NewAclGrant.grantee.canonicalUser.id) == sizeof(FileProperties.OwnerId));
-          strcpy(NewAclGrant.grantee.canonicalUser.id, FileProperties.OwnerId);
+          strcpy_s(NewAclGrant.grantee.canonicalUser.id, _countof(NewAclGrant.grantee.canonicalUser.id), FileProperties.OwnerId);
         }
         else if (Group == TRights::rgS3AllAwsUsers)
         {
