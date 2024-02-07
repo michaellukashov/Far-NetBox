@@ -1,8 +1,10 @@
 Far-NetBox: SFTP/FTP/SCP/WebDAV/S3 client for Far Manager 3.0 x86/x64/ARM64
 ==============
 
-x86/x64/ARM64 build status [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)\
-Appveyor build status [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)
+| Workflow                    | Build status  |
+| --------------------------- | ------------- |
+| x86/x64/ARM64               | [![build](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)](https://github.com/michaellukashov/Far-NetBox/actions/workflows/release.yml/badge.svg)  |
+| Appveyor                    | [![Build status](https://ci.appveyor.com/api/projects/status/91lhdjygkenumcmv?svg=true)](https://ci.appveyor.com/project/michaellukashov/far-netbox)  |
 
 
 Based on [WinSCP](http://winscp.net/eng/index.php) version 6.2.2 Copyright (c) 2000-2024 Martin Prikryl  
@@ -36,7 +38,7 @@ Compile Far-NetBox plugin on the command line as follows:
 ```
 "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 cmake -S C:/src/Far-NetBox -B C:/build/Far-NetBox -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build C:/build/Far-NetBox --target all
+cmake --build C:/build/Far-NetBox
 ```
 
 You can generate solution for VS2022 IDE:
