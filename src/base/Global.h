@@ -21,16 +21,36 @@
 
 #include <System.SyncObjs.hpp>
 
-#undef CopyFile
-#undef RenameFile
-#undef CreateDirectory
-#undef CreateLink
-#undef DeleteFile
-#undef GetCurrentDirectory
-#undef SetCurrentDirectory
-#undef GetUserName
-#undef GetEnvironmentVariable
-#undef MoveFile
+// #ifdef CopyFile
+// #undef CopyFile
+// #endif
+// #ifdef RenameFile
+// #undef RenameFile
+// #endif
+// #ifdef CreateDirectory
+// #undef CreateDirectory
+// #endif
+// #ifdef CreateLink
+// #undef CreateLink
+// #endif
+// #ifdef DeleteFile
+// #undef DeleteFile
+// #endif
+// #ifdef GetCurrentDirectory
+// #undef GetCurrentDirectory
+// #endif
+// #ifdef SetCurrentDirectory
+// #undef SetCurrentDirectory
+// #endif
+// #ifdef GetUserName
+// #undef GetUserName
+// #endif
+// #ifdef GetEnvironmentVariable
+// #undef GetEnvironmentVariable
+// #endif
+// #ifdef MoveFile
+// #undef MoveFile
+// #endif
 
 // extern const UnicodeString EmptyString;
 
