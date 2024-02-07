@@ -5,7 +5,12 @@
 
 ## [24.2.1.583] - 2024-02-07
 
+### Changed
+
+- Upgrade dependencies: expat 2.6.0
+
 ### Fixed
+
  - gh-333 Build script fails to collate the finished files
  - Create Directory: fix position cursor on newly created dir
 https://forum.farmanager.com/viewtopic.php?p=177192#p177192
@@ -14,9 +19,10 @@ https://forum.farmanager.com/viewtopic.php?p=177178#p177178 p.1
  - SCP: Crash if file transfer is canceled
 https://forum.farmanager.com/viewtopic.php?p=177178#p177178 p.2
 
+## [24.2.1.580] - 2024-02-04
+
 ### Changed
 
- - Upgrade dependencies: expat 2.6.0
  - Upgrade dependencies: zlib-ng 2.1.6
  - Upgrade dependencies: neon 0.33.0
  - Upgrade dependencies: openssl 3.2.1
