@@ -1397,12 +1397,12 @@ UnicodeString DateTimeToString(const UnicodeString & Format,
   tm.tm_isdst = -1;
 
   const std::time_t t = std::mktime(&tm);
-  struct tm dt{};
-  if (const errno_t err = localtime_s(&dt, &t))
+  std::tm dt{};
+  if (0 != localtime_s(&dt, &t))
     return Result;
 
-  char Buffer[80]{};
-  if (const size_t Res = strftime(Buffer, sizeof(Buffer), AnsiString(Format).c_str(), &dt))
+  AnsiString Buffer(80, 0);
+  if (0 != strftime(const_cast<char *>(Buffer.data()), sizeof(Buffer), AnsiString(Format).c_str(), &dt))
     Result = Buffer;
 
   return Result;
