@@ -1602,8 +1602,8 @@ public:
 
 void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 {
-  wchar_t SaveTitle[1024]{};
-  ::GetConsoleTitle(SaveTitle, _countof(SaveTitle));
+  UnicodeString SaveTitle(1024, 0);
+  ::GetConsoleTitle(const_cast<wchar_t *>(SaveTitle.c_str()), SaveTitle.GetLength());
   TConsoleTitleParam * Param = new TConsoleTitleParam();
   Param->Progress = FCurrentProgress;
   Param->Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
