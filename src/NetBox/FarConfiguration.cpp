@@ -33,10 +33,7 @@ TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) 
   //CacheFarSettings();
 }
 
-TFarConfiguration::~TFarConfiguration() noexcept
-{
-//  SAFE_DESTROY(FBookmarks);
-}
+TFarConfiguration::~TFarConfiguration() noexcept = default;
 
 void TFarConfiguration::Default()
 {
