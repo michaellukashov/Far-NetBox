@@ -1207,7 +1207,7 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfigur
   ULONG UserNameSize = LENOF(UserName);
   if (DebugAlwaysFalse(!::GetUserNameEx(NameSamCompatible, UserName, &UserNameSize)))
   {
-    wcscpy(UserName, L"<Failed to retrieve username>");
+    wcscpy_s(UserName, _countof(UserName), L"<Failed to retrieve username>");
   }
   UnicodeString LogStr;
   if (AConfiguration->LogProtocol <= -1)
