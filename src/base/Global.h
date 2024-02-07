@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include <nbcore.h>
@@ -51,8 +51,6 @@
 // #ifdef MoveFile
 // #undef MoveFile
 // #endif
-
-// extern const UnicodeString EmptyString;
 
 UnicodeString NormalizeString(const UnicodeString & S);
 

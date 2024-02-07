@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -1361,7 +1361,7 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
               FullTime = true;
             }
           }
-          #undef COL2MONTH
+          // #undef COL2MONTH
 
           if (Day == 0)
           {
@@ -1491,8 +1491,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
     }
 
-    #undef GETNCOL
-    #undef GETCOL
+    // #undef GETNCOL
+    // #undef GETCOL
   }
   catch(Exception & E)
   {
