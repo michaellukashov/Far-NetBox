@@ -4587,7 +4587,9 @@ TRights::TState TRightsContainer::GetStates(TRights::TRight Right)
     default: return TRights::rsUndef;
     }
   }
-  return FFixedStates[Right];
+  if (Right < _countof(FFixedStates))
+    return FFixedStates[Right];
+  return TRights::TState::rsUndef;
 }
 
 void TRightsContainer::SetStates(TRights::TRight Right,
@@ -4609,7 +4611,7 @@ void TRightsContainer::SetStates(TRights::TRight Right,
       break;
     }
   }
-  else
+  else if (Right < _countof(FFixedStates))
   {
     FFixedStates[Right] = Value;
   }

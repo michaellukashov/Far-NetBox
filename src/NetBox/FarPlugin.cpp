@@ -373,8 +373,8 @@ int32_t TCustomFarPlugin::Configure(const struct ConfigureInfo * Info)
   {
     DEBUG_PRINTF("before HandleException");
     HandleException(&E);
-    return 0;
   }
+  return 0;
 }
 
 void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo * Info)
@@ -2157,15 +2157,18 @@ int32_t TCustomFarFileSystem::MakeDirectory(struct MakeDirectoryInfo * Info)
 {
   ResetCachedInfo();
   FNameStr = Info->Name;
-  SCOPE_EXIT
+  int32_t Result = 0;
+  try__finally
+  {
+    Result = MakeDirectoryEx(FNameStr, Info->OpMode);
+  }
+  __finally
   {
     if (0 != wcscmp(FNameStr.c_str(), Info->Name))
     {
       Info->Name = FNameStr.c_str();
     }
-  };
-  const int32_t Result = MakeDirectoryEx(FNameStr, Info->OpMode);
-
+  } end_try__finally
   return Result;
 }
 
@@ -2183,16 +2186,17 @@ int32_t TCustomFarFileSystem::GetFiles(struct GetFilesInfo * Info)
   std::unique_ptr<TObjectList> PanelItems(CreatePanelItemList(Info->PanelItem, nb::ToInt32(Info->ItemsNumber)));
   int32_t Result;
   FDestPathStr = Info->DestPath;
+  try__finally
   {
-    SCOPE_EXIT
-    {
-      if (FDestPathStr != Info->DestPath)
-      {
-        Info->DestPath = FDestPathStr.c_str();
-      }
-    };
     Result = GetFilesEx(PanelItems.get(), Info->Move > 0, FDestPathStr, Info->OpMode);
   }
+  __finally
+  {
+    if (FDestPathStr != Info->DestPath)
+    {
+      Info->DestPath = FDestPathStr.c_str();
+    }
+  } end_try__finally
 
   return Result;
 }
@@ -2323,7 +2327,7 @@ bool TCustomFarFileSystem::SetDirectoryEx(const UnicodeString & /*Dir*/, OPERATI
   return false;
 }
 
-int32_t TCustomFarFileSystem::MakeDirectoryEx(const UnicodeString & /*Name*/, OPERATION_MODES /*OpMode*/)
+int32_t TCustomFarFileSystem::MakeDirectoryEx(UnicodeString & /*Name*/, OPERATION_MODES /*OpMode*/)
 {
   return -1;
 }

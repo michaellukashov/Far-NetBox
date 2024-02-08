@@ -657,8 +657,8 @@ void TGUIConfiguration::UpdateStaticUsage()
 // duplicated from core\configuration.cpp
 #undef BLOCK
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (AStorage->OpenSubKeyPath(KEY, CANCREATE)) \
-    { SCOPE_EXIT { AStorage->CloseSubKeyPath(); }; { BLOCK } }
+  do { if (AStorage->OpenSubKeyPath(KEY, CANCREATE)) \
+         { SCOPE_EXIT { AStorage->CloseSubKeyPath(); }; { BLOCK } } } while(0)
 #undef REGCONFIG
 
 #define REGCONFIG(CANCREATE) \

@@ -187,14 +187,10 @@ union horrible_union
 template <class OutputClass, class InputClass>
 inline OutputClass horrible_cast(const InputClass input)
 {
-  horrible_union<OutputClass, InputClass> u;
-  // Cause a compile-time error if in, out and u are not the same size.
-  // If the compile fails here, it means the compiler has peculiar
-  // unions which would prevent the cast from working.
-  typedef int ERROR_CantUseHorrible_cast[sizeof(InputClass)==sizeof(u)
-                                         && sizeof(InputClass)==sizeof(OutputClass) ? 1 : -1];
-  u.in = input;
-  return u.out;
+  static_assert(sizeof(InputClass) == sizeof(OutputClass), "horrible_cast");
+  OutputClass out;
+  std::memcpy(&out, &input, sizeof(out));
+  return out;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -33,10 +33,7 @@ TFarConfiguration::TFarConfiguration(gsl::not_null<TCustomFarPlugin *> APlugin) 
   //CacheFarSettings();
 }
 
-TFarConfiguration::~TFarConfiguration() noexcept
-{
-//  SAFE_DESTROY(FBookmarks);
-}
+TFarConfiguration::~TFarConfiguration() noexcept = default;
 
 void TFarConfiguration::Default()
 {
@@ -99,11 +96,11 @@ void TFarConfiguration::ConfigurationInit()
 #define LASTELEM(ELEM) \
   ELEM.SubString(ELEM.LastDelimiter(L".>")+1, ELEM.Length() - ELEM.LastDelimiter(L".>"))
 #define BLOCK(KEY, CANCREATE, BLOCK) \
-  if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
+  do { if (Storage->OpenSubKeyPath(KEY, CANCREATE)) \
   { \
     SCOPE_EXIT { Storage->CloseSubKeyPath(); }; \
     BLOCK \
-  }
+  } } while(0)
 #define REGCONFIG(CANCREATE) \
   BLOCK("Far", CANCREATE, \
     KEY(Bool,     DisksMenu); \

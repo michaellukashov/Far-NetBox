@@ -32,8 +32,6 @@
 #undef GetEnvironmentVariable
 #undef MoveFile
 
-// extern const UnicodeString EmptyString;
-
 UnicodeString NormalizeString(const UnicodeString & S);
 
 class NB_CORE_EXPORT TGuard

@@ -2375,18 +2375,17 @@ bool TWinSCPFileSystem::SetDirectoryEx(const UnicodeString & ADir, OPERATION_MOD
   return true;
 }
 
-int32_t TWinSCPFileSystem::MakeDirectoryEx(const UnicodeString & AName, OPERATION_MODES OpMode)
+int32_t TWinSCPFileSystem::MakeDirectoryEx(UnicodeString & AName, OPERATION_MODES OpMode)
 {
-  UnicodeString Name = AName;
   if (Connected())
   {
-    DebugAssert(!(OpMode & OPM_SILENT) || !Name.IsEmpty());
+    DebugAssert(!(OpMode & OPM_SILENT) || !AName.IsEmpty());
 
     TRemoteProperties Properties = GetGUIConfiguration()->GetNewDirectoryProperties();
     bool SaveSettings = false;
 
     if ((OpMode & OPM_SILENT) ||
-      CreateDirectoryDialog(Name, &Properties, SaveSettings))
+      CreateDirectoryDialog(AName, &Properties, SaveSettings))
     {
       if (SaveSettings)
       {
@@ -2396,7 +2395,7 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(const UnicodeString & AName, OPERATIO
       GetWinSCPPlugin()->ShowConsoleTitle(GetMsg(NB_CREATING_FOLDER));
       try__finally
       {
-        FTerminal->CreateDirectory(Name, &Properties);
+        FTerminal->CreateDirectory(AName, &Properties);
       }
       __finally
       {
@@ -2406,33 +2405,33 @@ int32_t TWinSCPFileSystem::MakeDirectoryEx(const UnicodeString & AName, OPERATIO
     }
     else
     {
-      Name.Clear();
+      AName.Clear();
       return -1;
     }
   }
   else if (IsSessionList())
   {
-    DebugAssert(!(OpMode & OPM_SILENT) || !Name.IsEmpty());
+    DebugAssert(!(OpMode & OPM_SILENT) || !AName.IsEmpty());
 
     if (((OpMode & OPM_SILENT) ||
         GetWinSCPPlugin()->InputBox(GetMsg(NB_CREATE_FOLDER_TITLE),
           ::StripHotkey(GetMsg(NB_CREATE_FOLDER_PROMPT)),
-          Name, 0, MAKE_SESSION_FOLDER_HISTORY)) &&
-      !Name.IsEmpty())
+          AName, 0, MAKE_SESSION_FOLDER_HISTORY)) &&
+      !AName.IsEmpty())
     {
-      TSessionData::ValidateName(Name);
-      FNewSessionsFolder = Name;
+      TSessionData::ValidateName(AName);
+      FNewSessionsFolder = AName;
       return 1;
     }
     else
     {
-      Name.Clear();
+      AName.Clear();
       return -1;
     }
   }
   else
   {
-    Name.Clear();
+    AName.Clear();
     return -1;
   }
 }
@@ -2962,7 +2961,6 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       !PanelItem->GetIsParentDirectory())
     {
       UnicodeString FileName = PanelItem->GetFileName();
-      DEBUG_PRINTF("FileName: %s", FileName);
       if (Side == osRemote)
       {
         Data = static_cast<TRemoteFile *>(PanelItem->GetUserData());
