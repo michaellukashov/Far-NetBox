@@ -6365,27 +6365,33 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       FLastFeededControl = AControl;
     }
 
-    if (rtti::isa<TLabelList>(AControl))
+    bool UseNewline = true;
+    UnicodeString LabelStr;
+    if (AControl == HostKeyFingerprintEdit)
     {
-      UnicodeString LabelStr;
-      if (Control == HostKeyFingerprintEdit)
-      {
-        LabelStr = GetMsg(NB_SERVER_HOST_KEY);
-      }
-      else if (Control == InfoLister)
-      {
-        LabelStr = ::Trim(GetMsg(NB_PROTOCOL_INFO_GROUP));
-      }
-      else
-      {
-        DebugAssert(false);
-      }
+      LabelStr = GetMsg(NB_SERVER_HOST_KEY);
+    }
+    else if (AControl == InfoLister)
+    {
+      LabelStr = ::Trim(GetMsg(NB_PROTOCOL_INFO_GROUP));
+    }
+    else if (rtti::isa<TLabelList>(AControl))
+    {
+      UseNewline = false;
+      LabelStr = GetMsg(Label);
+    }
+    else
+    {
+      DebugAssert(false);
+    }
 
-      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
-      {
-        LabelStr.SetLength(LabelStr.Length() - 1);
-      }
+    if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
+    {
+      LabelStr.SetLength(LabelStr.Length() - 1);
+    }
 
+    if (UseNewline)
+    {
       UnicodeString Value2 = Value;
       if ((Value2.Length() >= 2) && (Value2.SubString(Value2.Length() - 1, 2) == L"\r\n"))
       {
@@ -6396,12 +6402,6 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     }
     else
     {
-      DebugAssert(rtti::isa<TLabelList>(AControl));
-      UnicodeString LabelStr = GetMsg(Label);
-      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
-      {
-        LabelStr.SetLength(LabelStr.Length() - 1);
-      }
       FClipboard += FORMAT("%s = %s\r\n", LabelStr, Value);
     }
   }
