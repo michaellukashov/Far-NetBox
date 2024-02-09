@@ -7825,19 +7825,12 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
           FChecked++;
         }
 
-        // FAR WORKAROUND
-        // Changing "checked" state is not always drawn.
-        Redraw();
-        UpdateControls();
         if ((Key == VK_INSERT) &&
           (Index < ListBox->GetItems()->GetCount() - 1))
         {
           ListBox->GetItems()->SetSelected(Index + 1);
         }
-        else
-        {
-          ListBox->GetItems()->SetSelected(Index);
-        }
+        UpdateControls();
       }
       Result = true;
     }
