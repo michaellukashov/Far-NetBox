@@ -604,7 +604,7 @@ public:
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
   virtual ~TFarListBox() noexcept override;
 
-  void SetItems(TStrings * Value);
+  void SetItems(TStrings * Value, bool OwnItems = true);
 
   bool GetNoAmpersand() const { return GetFlag(DIF_LISTNOAMPERSAND); }
   void SetNoAmpersand(bool Value) { SetFlag(DIF_LISTNOAMPERSAND, Value); }
@@ -616,7 +616,7 @@ public:
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
   TFarList * GetItems() const { return FList.get(); }
   TFarList * GetItems() { return FList.get(); }
-  void SetList(TFarList * Value);
+  void SetList(TFarList * Value, bool OwnItems = true);
   TFarListBoxAutoSelect GetAutoSelect() const { return FAutoSelect; }
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 

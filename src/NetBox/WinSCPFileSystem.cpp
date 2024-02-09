@@ -1517,7 +1517,7 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
 
 void TWinSCPFileSystem::FullSynchronize(bool Source)
 {
-  TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
+  TFarPanelInfo ** AnotherPanel = (*GetAnotherPanelInfo())->GetIsPlugin() ? GetPanelInfo() : GetAnotherPanelInfo();
   RequireLocalPanel(*AnotherPanel, GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED));
 
   UnicodeString LocalDirectory = (*AnotherPanel)->GetCurrentDirectory();
@@ -1606,6 +1606,10 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       if (UpdatePanel())
       {
         RedrawPanel();
+      }
+      if (UpdatePanel(false, true))
+      {
+        RedrawPanel(true);
       }
     } end_try__finally
   }

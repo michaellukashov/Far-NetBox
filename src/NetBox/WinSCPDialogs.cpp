@@ -7652,6 +7652,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
 {
   FChecked = 0;
   std::unique_ptr<TFarList> List(std::make_unique<TFarList>());
+  List->SetOwnsObjects(false);
   List->BeginUpdate();
   for (int32_t Index = 0; Index < FChecklist->GetCount(); ++Index)
   {
@@ -7674,7 +7675,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     }
   }
 
-  ListBox->SetItems(List.get());
+  ListBox->SetItems(List.get(), false);
 
   UpdateControls();
 }
@@ -7823,19 +7824,12 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
           FChecked++;
         }
 
-        // FAR WORKAROUND
-        // Changing "checked" state is not always drawn.
-        Redraw();
-        UpdateControls();
         if ((Key == VK_INSERT) &&
           (Index < ListBox->GetItems()->GetCount() - 1))
         {
           ListBox->GetItems()->SetSelected(Index + 1);
         }
-        else
-        {
-          ListBox->GetItems()->SetSelected(Index);
-        }
+        UpdateControls();
       }
       Result = true;
     }

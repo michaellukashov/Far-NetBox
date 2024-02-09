@@ -2186,6 +2186,7 @@ void TFarList::UpdateItem(int32_t Index)
   nb::ClearStruct(ListUpdate);
   ListUpdate.StructSize = sizeof(FarListUpdate);
   ListUpdate.Item = *ListItem;
+  ListUpdate.Index = Index;
   GetDialogItem()->SendDialogMessage(DM_LISTUPDATE, nb::ToPtr(&ListUpdate));
 }
 
@@ -2412,7 +2413,19 @@ int32_t TFarList::GetSelected() const
 
 LISTITEMFLAGS TFarList::GetFlags(int32_t Index) const
 {
-  return FListItems->Items[Index].Flags;
+  DebugAssert(Index >= 0 && Index < FListItems->ItemsNumber);
+  if (GetDialogItem() == nullptr || !GetDialogItem()->GetDialog()->GetHandle())
+  {
+    return FListItems->Items[Index].Flags;
+  }
+  else
+  {
+    FarListGetItem List;
+    List.StructSize = sizeof(FarListGetItem);
+    List.ItemIndex = Index;
+    bool Result = GetDialogItem()->SendDialogMessage(DM_LISTGETITEM, nb::ToPtr(&List));
+    return Result ? List.Item.Flags : LIF_NONE;
+  }
 }
 
 void TFarList::SetFlags(int32_t Index, LISTITEMFLAGS Value)
@@ -2522,15 +2535,15 @@ void TFarListBox::UpdateMouseReaction()
   SendDialogMessage(DIF_LISTTRACKMOUSE, nb::ToPtr(GetAutoSelect()));
 }
 
-void TFarListBox::SetItems(TStrings * Value)
+void TFarListBox::SetItems(TStrings * Value, bool OwnItems)
 {
   FList->Assign(Value);
-  FList->SetOwnsObjects(true);
+  FList->SetOwnsObjects(OwnItems);
 }
 
-void TFarListBox::SetList(TFarList * Value)
+void TFarListBox::SetList(TFarList * Value, bool OwnItems)
 {
-  SetItems(Value);
+  SetItems(Value, OwnItems);
 }
 
 bool TFarListBox::CloseQuery()
