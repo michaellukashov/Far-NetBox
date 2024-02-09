@@ -394,7 +394,7 @@ void TPuttyPasswordThread::Execute()
           DWORD Written = 0;
           if (!WriteFile(FPipe, FPassword.c_str() + Pos, FPassword.Length() - Pos, &Written, nullptr))
           {
-            AppLog(L"Error writting password pipe");
+            AppLog(L"Error writing password pipe");
             Timeout = 0;
           }
           else
@@ -1138,7 +1138,7 @@ void ApplyTabs(
 static void DoSelectScaledImageList(TImageList * ImageList)
 {
   TImageList * MatchingList = nullptr;
-  int MachingPixelsPerInch = 0;
+  int MatchingPixelsPerInch = 0;
   int PixelsPerInch = GetComponentPixelsPerInch(ImageList);
 
   for (int Index = 0; Index < ImageList->Owner->ComponentCount; Index++)
@@ -1155,10 +1155,10 @@ static void DoSelectScaledImageList(TImageList * ImageList)
       int OtherListPixelsPerInch = StrToInt(OtherListPixelsPerInchStr);
       if ((OtherListPixelsPerInch <= PixelsPerInch) &&
           ((MatchingList == nullptr) ||
-           (MachingPixelsPerInch < OtherListPixelsPerInch)))
+           (MatchingPixelsPerInch < OtherListPixelsPerInch)))
       {
         MatchingList = OtherList;
-        MachingPixelsPerInch = OtherListPixelsPerInch;
+        MatchingPixelsPerInch = OtherListPixelsPerInch;
       }
     }
   }
@@ -1727,7 +1727,7 @@ TComponent * FindComponentRecursively(TComponent * Root, const UnicodeString & N
   return nullptr;
 }
 
-void GetInstrutionsTheme(
+void GetInstructionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont)
 {
   MainInstructionColor = Graphics::clNone;

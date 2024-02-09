@@ -66,7 +66,7 @@ bool CopyTextFromBrowser(TWebBrowserEx * WebBrowser, UnicodeString & Text);
 UnicodeString GenerateAppHtmlPage(TFont * Font, TPanel * Parent, const UnicodeString & Body, bool Seamless);
 void LoadBrowserDocument(TWebBrowserEx * WebBrowser, const UnicodeString & Document);
 TComponent * FindComponentRecursively(TComponent * Root, const UnicodeString & Name);
-void GetInstrutionsTheme(
+void GetInstructionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
 bool CanShowTimeEstimate(TDateTime StartTime);
 

@@ -41,7 +41,7 @@ extern HINSTANCE HInstance;
 #define SEND_TO_HOOK_SWITCH L"SendToHook"
 #define UNSAFE_SWITCH L"Unsafe"
 #define DEFAULTS_SWITCH L"Defaults"
-#define NEWINSTANCE_SWICH L"NewInstance"
+#define NEWINSTANCE_SWITCH L"NewInstance"
 #define KEYGEN_SWITCH L"KeyGen"
 #define KEYGEN_OUTPUT_SWITCH L"Output"
 #define KEYGEN_COMMENT_SWITCH L"Comment"

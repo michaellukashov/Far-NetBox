@@ -5,7 +5,7 @@
 #include "GUIConfiguration.h"
 #define WM_WINSCP_USER   (WM_USER + 0x2000)
 // WM_USER_STOP = WM_WINSCP_USER + 2 (in forms/Synchronize.cpp)
-// WM_INTERUPT_IDLE = WM_WINSCP_USER + 3 (in windows/ConsoleRunner.cpp)
+// WM_INTERRUPT_IDLE = WM_WINSCP_USER + 3 (in windows/ConsoleRunner.cpp)
 // WM_COMPONENT_HIDE = WM_WINSCP_USER + 4 (forms/CustomScpExplorer.cpp)
 // WM_TRAY_ICON = WM_WINSCP_USER + 5 (forms/CustomScpExplorer.cpp)
 // WM_WINSCP_USER + 6 was WM_LOG_UPDATE

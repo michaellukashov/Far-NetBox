@@ -6050,7 +6050,7 @@ private:
   TSessionInfo FSessionInfo;
   bool FSpaceAvailableLoaded{false};
   TSpaceAvailable FSpaceAvailable;
-  TObject * FLastFeededControl{nullptr};
+  TObject * FLastFedControl{nullptr};
   int32_t FLastListItem{0};
   UnicodeString FClipboard;
 
@@ -6293,9 +6293,9 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent && AddItem)
 void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
   int32_t Label, const UnicodeString & Value)
 {
-  if (FLastFeededControl != AControl)
+  if (FLastFedControl != AControl)
   {
-    FLastFeededControl = AControl;
+    FLastFedControl = AControl;
     FLastListItem = 0;
   }
 
@@ -6362,13 +6362,13 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       (AControl != SpaceAvailableLabels)) ||
     SpaceAvailableSupported())
   {
-    if (FLastFeededControl != AControl)
+    if (FLastFedControl != AControl)
     {
-      if (FLastFeededControl != nullptr)
+      if (FLastFedControl != nullptr)
       {
         FClipboard += ::StringOfChar('-', 60) + L"\r\n";
       }
-      FLastFeededControl = AControl;
+      FLastFedControl = AControl;
     }
 
     if (rtti::isa<TLabelList>(AControl))
@@ -6415,7 +6415,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
 
 void TFileSystemInfoDialog::FeedControls()
 {
-  FLastFeededControl = nullptr;
+  FLastFedControl = nullptr;
   Feed(nb::bind(&TFileSystemInfoDialog::ControlsAddItem, this));
   InfoLister->SetRight(GetBorderBox()->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
@@ -6489,7 +6489,7 @@ void TFileSystemInfoDialog::ClipboardButtonClick(TFarButton * /*Sender*/,
   bool & Close)
 {
   NeedSpaceAvailable();
-  FLastFeededControl = nullptr;
+  FLastFedControl = nullptr;
   FClipboard.Clear();
   Feed(nb::bind(&TFileSystemInfoDialog::ClipboardAddItem, this));
   FarPlugin->FarCopyToClipboard(FClipboard);
@@ -6644,7 +6644,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     intptr_t BreakCode;
 
     Repeat = false;
-    UnicodeString Caption = GetMsg(Add ? NB_OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
+    UnicodeString Caption = GetMsg(Add ? NB_OPEN_DIRECTORY_ADD_BOOKMARK_ACTION :
       NB_OPEN_DIRECTORY_BROWSE_CAPTION);
     constexpr FarKey BreakKeys[] =
     {

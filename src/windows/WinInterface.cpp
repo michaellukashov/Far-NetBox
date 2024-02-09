@@ -1733,7 +1733,7 @@ void ::TTrayIcon::PopupBalloon(UnicodeString Title,
   delete FBalloonUserData;
   FBalloonUserData = BalloonUserData;
 
-  // Clearing the flag ensures that subsequent updates does not hide the baloon
+  // Clearing the flag ensures that subsequent updates does not hide the balloon
   // unless CancelBalloon is called explicitly
   FTrayIcon->uFlags = FTrayIcon->uFlags & ~NIF_INFO;
 }

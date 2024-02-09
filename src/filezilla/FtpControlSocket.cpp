@@ -57,7 +57,7 @@ public:
   bool hasRemoteDate;
   t_directory::t_direntry::t_date remoteDate;
   //CTime *pFileTime; //Used when downloading and OPTION_PRESERVEDOWNLOADFILETIME is set or when LIST fails
-  _int64 *pFileSize; //Used when LIST failes
+  _int64 *pFileSize; //Used when LIST fails
   BOOL bUseAbsolutePaths;
   BOOL bTriedPortPasvOnce;
 #ifndef MPEXT_NO_ZLIB
@@ -4143,7 +4143,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
 
           if (!bError)
           {
-            // assamble EPRT command
+            // assemble EPRT command
             CString cmd;
             cmd.Format(L"EPRT |2|" +  host + L"|%d|", nPort);
             if (!Send(cmd))
@@ -4372,7 +4372,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
 
           if (!bError)
           {
-            // assamble EPRT command
+            // assemble EPRT command
             CString cmd;
             cmd.Format(L"EPRT |2|" +  host + L"|%d|", nPort);
             if (!Send(cmd))
@@ -4580,7 +4580,7 @@ void CFtpControlSocket::TransferFinished(bool preserveFileTimeForUploads)
         // that the server supports non-standard hack
         // of setting timestamp using
         // MFMT-like (two argument) call to MDTM.
-        // IIS definitelly does.
+        // IIS definitely does.
         command = L"MDTM";
       }
       if (Send( command + L" " + timestr + L" " + filename))
