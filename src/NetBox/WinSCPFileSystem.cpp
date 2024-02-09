@@ -2851,7 +2851,6 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
   {
     Result = -1;
   }
-  UpdatePanel();
   return Result;
 }
 
