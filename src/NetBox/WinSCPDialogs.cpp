@@ -4019,7 +4019,7 @@ TFtps TSessionDialog::GetFtps() const
       Ftps = ftpsExplicitSsl;
       break;
     default:
-      Ftps = static_cast<TFtps>(IndexToFtps(FFtpEncryptionComboIndex));
+      Ftps = IndexToFtps(FFtpEncryptionComboIndex);
       break;
   }
   // return static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
