@@ -2186,6 +2186,7 @@ void TFarList::UpdateItem(int32_t Index)
   nb::ClearStruct(ListUpdate);
   ListUpdate.StructSize = sizeof(FarListUpdate);
   ListUpdate.Item = *ListItem;
+  ListUpdate.Index = Index;
   GetDialogItem()->SendDialogMessage(DM_LISTUPDATE, nb::ToPtr(&ListUpdate));
 }
 
