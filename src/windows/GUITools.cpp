@@ -757,39 +757,27 @@ bool CopyCommandToClipboard(const UnicodeString & ACommand)
 static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   bool ChangeWorkingDirectory, HANDLE * Handle)
 {
-  bool Result = CopyCommandToClipboard(FormatCommand(APath, Params));
+  const UnicodeString Directory = ::ExtractFilePath(APath);
 
+  TShellExecuteInfoW ExecuteInfo;
+  nb::ClearStruct(ExecuteInfo);
+  ExecuteInfo.cbSize = sizeof(ExecuteInfo);
+  ExecuteInfo.fMask =
+    SEE_MASK_FLAG_NO_UI |
+    FLAGMASK((Handle != nullptr), SEE_MASK_NOCLOSEPROCESS);
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
+  ExecuteInfo.lpFile = ToWCharPtr(APath);
+  ExecuteInfo.lpParameters = ToWCharPtr(Params);
+  ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
+  ExecuteInfo.nShow = SW_SHOW;
+
+  AppLogFmt(L"Executing program \"%s\" with params: %s", APath, Params);
+  bool Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
     if (Handle != nullptr)
     {
-      *Handle = nullptr;
-    }
-  }
-  else
-  {
-    const UnicodeString Directory = ::ExtractFilePath(APath);
-
-    TShellExecuteInfoW ExecuteInfo;
-    nb::ClearStruct(ExecuteInfo);
-    ExecuteInfo.cbSize = sizeof(ExecuteInfo);
-    ExecuteInfo.fMask =
-      SEE_MASK_FLAG_NO_UI |
-      FLAGMASK((Handle != nullptr), SEE_MASK_NOCLOSEPROCESS);
-    ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
-    ExecuteInfo.lpFile = ToWCharPtr(APath);
-    ExecuteInfo.lpParameters = ToWCharPtr(Params);
-    ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
-    ExecuteInfo.nShow = SW_SHOW;
-
-    AppLogFmt(L"Executing program \"%s\" with params: %s", APath, Params);
-    Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
-    if (Result)
-    {
-      if (Handle != nullptr)
-      {
-        *Handle = ExecuteInfo.hProcess;
-      }
+      *Handle = ExecuteInfo.hProcess;
     }
   }
   return Result;
