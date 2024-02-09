@@ -437,7 +437,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 bool TWinSCPPlugin::PanelConfigurationDialog()
 {
   std::unique_ptr<TWinSCPDialog> Dialog(std::make_unique<TWinSCPDialog>(this));
-  Dialog->SetSize(TPoint(65, 7));
+  Dialog->SetSize(TPoint(74, 7));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
 
