@@ -1693,7 +1693,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TTabbedDialog(AFarPlugin, tabCount),
   FAction(Action)
 {
-  TPoint S = TPoint(67, 25);
+  TPoint S = TPoint(69, 25);
   bool Limited = (S.y > GetMaxSize().y);
   if (Limited)
   {
@@ -1710,7 +1710,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     SetNextItemPosition(ipRight); \
     (COMBO) = new TFarComboBox(this); \
     (COMBO)->SetDropDownList(true); \
-    (COMBO)->SetWidth(7); \
     (COMBO)->GetItems()->BeginUpdate(); \
     { \
       SCOPE_EXIT \
@@ -2162,7 +2161,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
   SFTPMaxVersionCombo = new TFarComboBox(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
-  SFTPMaxVersionCombo->SetWidth(7);
   for (int32_t Index2 = 0; Index2 <= 6; ++Index2)
   {
     SFTPMaxVersionCombo->GetItems()->Add(::IntToStr(Index2));
