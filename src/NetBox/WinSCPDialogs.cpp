@@ -7653,6 +7653,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
 {
   FChecked = 0;
   std::unique_ptr<TFarList> List(std::make_unique<TFarList>());
+  List->SetOwnsObjects(false);
   List->BeginUpdate();
   for (int32_t Index = 0; Index < FChecklist->GetCount(); ++Index)
   {
@@ -7675,7 +7676,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     }
   }
 
-  ListBox->SetItems(List.get());
+  ListBox->SetItems(List.get(), false);
 
   UpdateControls();
 }
