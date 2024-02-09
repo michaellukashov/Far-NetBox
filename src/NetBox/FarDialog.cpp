@@ -2562,6 +2562,7 @@ intptr_t TFarComboBox::ItemProc(intptr_t Msg, void * Param)
     const UnicodeString Data = (static_cast<FarDialogItem *>(Param))->Data;
     nb_free(GetDialogItem()->Data);
     GetDialogItem()->Data = TCustomFarPlugin::DuplicateStr(Data, /*AllowEmpty=*/true);
+    FItemChanged = true;
   }
 
   if (FList->ItemProc(Msg, Param))
