@@ -2425,7 +2425,7 @@ const TSshHostCAList * TConfiguration::GetPuttySshHostCAList()
 {
   if (FPuttySshHostCAList == nullptr)
   {
-    std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(PuttyRegistryStorageKey));
+    std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(PuttyRegistryStorageKey, HKEY_CURRENT_USER));
     Storage->ConfigureForPutty();
     FPuttySshHostCAList = std::make_unique<TSshHostCAList>();
     LoadSshHostCAList(FPuttySshHostCAList.get(), Storage.get());
