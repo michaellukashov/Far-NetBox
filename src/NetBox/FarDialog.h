@@ -551,6 +551,7 @@ public:
   virtual void Assign(const TPersistent * Source) override;
 
   int32_t GetSelected() const;
+  int32_t GetLastPosChange() const { return FLastPosChange; }
   void SetSelected(int32_t Value);
   int32_t GetTopIndex() const;
   void SetTopIndex(int32_t Value);
@@ -585,6 +586,7 @@ private:
   FarList * FListItems{nullptr};
   TFarDialogItem * FDialogItem{nullptr};
   bool FNoDialogUpdate{false};
+  int32_t FLastPosChange{0};
 };
 
 enum TFarListBoxAutoSelect

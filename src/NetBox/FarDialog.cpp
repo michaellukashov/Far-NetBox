@@ -2456,8 +2456,10 @@ int32_t TFarList::ItemProc(intptr_t Msg, void * Param)
     {
       const int32_t Int32 = nb::ToInt32(nb::ToIntPtr(Param));
       DebugAssert(Int32 >= 0 && Int32 < GetCount());
+      FLastPosChange = Int32;
       DialogItem->UpdateData(GetString(Int32));
     }
+    return 1;
   }
   return 0;
 }
