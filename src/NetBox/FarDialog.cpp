@@ -2537,7 +2537,7 @@ void TFarListBox::UpdateMouseReaction()
   SendDialogMessage(DIF_LISTTRACKMOUSE, nb::ToPtr(GetAutoSelect()));
 }
 
-void TFarListBox::SetItems(TStrings * Value, bool OwnItems)
+void TFarListBox::SetItems(const TStrings * Value, bool OwnItems)
 {
   FList->Assign(Value);
   FList->SetOwnsObjects(OwnItems);

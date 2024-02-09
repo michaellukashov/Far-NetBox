@@ -606,7 +606,7 @@ public:
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
   virtual ~TFarListBox() noexcept override;
 
-  void SetItems(TStrings * Value, bool OwnItems = true);
+  void SetItems(const TStrings * Value, bool OwnItems = true);
 
   bool GetNoAmpersand() const { return GetFlag(DIF_LISTNOAMPERSAND); }
   void SetNoAmpersand(bool Value) { SetFlag(DIF_LISTNOAMPERSAND, Value); }
