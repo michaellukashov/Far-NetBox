@@ -2522,15 +2522,15 @@ void TFarListBox::UpdateMouseReaction()
   SendDialogMessage(DIF_LISTTRACKMOUSE, nb::ToPtr(GetAutoSelect()));
 }
 
-void TFarListBox::SetItems(TStrings * Value)
+void TFarListBox::SetItems(TStrings * Value, bool OwnItems)
 {
   FList->Assign(Value);
-  FList->SetOwnsObjects(true);
+  FList->SetOwnsObjects(OwnItems);
 }
 
-void TFarListBox::SetList(TFarList * Value)
+void TFarListBox::SetList(TFarList * Value, bool OwnItems)
 {
-  SetItems(Value);
+  SetItems(Value, OwnItems);
 }
 
 bool TFarListBox::CloseQuery()
