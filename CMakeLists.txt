@@ -1734,7 +1734,7 @@ target_compile_definitions(expat PRIVATE
 
 
 #-------------------------------------------------------------------------------
-#zlib
+#zlib-ng
 
 set(ZLIB_SOURCES
   libs/zlib/adler32.c
@@ -1748,6 +1748,7 @@ set(ZLIB_SOURCES
   libs/zlib/deflate_slow.c
   libs/zlib/deflate_medium.c
   libs/zlib/deflate_fast.c
+  libs/zlib/crc32.c
   libs/zlib/arch/generic/crc32_fold_c.c
   libs/zlib/arch/generic/insert_string_c.c
   libs/zlib/arch/generic/slide_hash_c.c
