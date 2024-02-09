@@ -5323,7 +5323,8 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetTop(TMTop + 8);
   Add(Box);
   Box->SetBottom(Box->GetTop());
-  Box->SetLeft(TMWidth + 3 - 1);
+  Box->SetLeft(TMWidth + 3);
+  Box->SetWidth(Box->GetWidth() + 2);
   Box->SetCaption(GetMsg(NB_TRANSFER_COMMON_OPTIONS));
 
   PreserveTimeCheck = new TFarCheckBox(GetDialog());
@@ -5868,7 +5869,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
   TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
     Dialog, 0, CopyParamAttrs);
 
-  Dialog->SetSize(TPoint(78, 2 + nb::ToInt32(CopyParamsContainer->GetHeight()) + 3));
+  Dialog->SetSize(TPoint(79, 2 + nb::ToInt32(CopyParamsContainer->GetHeight()) + 3));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
