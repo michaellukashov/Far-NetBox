@@ -3043,9 +3043,9 @@ void TSessionDialog::UpdateControls()
 
   // SSH tab
   SshTab->SetEnabled(lSshProtocol);
-  CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetSelected() != 0);
+  CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetLastPosChange() != 0);
   CipherDownButton->SetEnabled(
-    CipherListBox->GetItems()->GetSelected() < CipherListBox->GetItems()->GetCount() - 1);
+    CipherListBox->GetItems()->GetLastPosChange() < CipherListBox->GetItems()->GetCount() - 1);
 
   // Authentication tab
   AuthenticationTab->SetEnabled(lSshProtocol);
@@ -3084,9 +3084,9 @@ void TSessionDialog::UpdateControls()
   // Kex tab
   KexTab->SetEnabled(lSshProtocol && !SshProt1onlyButton->GetChecked() &&
     (BugRekey2Combo->GetItemIndex() != 2));
-  KexUpButton->SetEnabled((KexListBox->GetItems()->GetSelected() > 0));
+  KexUpButton->SetEnabled((KexListBox->GetItems()->GetLastPosChange() > 0));
   KexDownButton->SetEnabled(
-    (KexListBox->GetItems()->GetSelected() < KexListBox->GetItems()->GetCount() - 1));
+    (KexListBox->GetItems()->GetLastPosChange() < KexListBox->GetItems()->GetCount() - 1));
 
   // Bugs tab
   BugsTab->SetEnabled(lSshProtocol);
