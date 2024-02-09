@@ -1682,7 +1682,7 @@ add_library(neon STATIC
 )
 
 target_include_directories(neon PRIVATE
-  libs/zlib
+  libs/zlib-ng
   libs/expat/lib
   libs/openssl-3/include
 )
@@ -1737,57 +1737,56 @@ target_compile_definitions(expat PRIVATE
 #zlib-ng
 
 set(ZLIB_SOURCES
-  libs/zlib/adler32.c
-  libs/zlib/infback.c
-  libs/zlib/inffast.c
-  libs/zlib/inflate.c
-  libs/zlib/inftrees.c
-  libs/zlib/trees.c
-  libs/zlib/zutil.c
-  libs/zlib/deflate.c
-  libs/zlib/deflate_slow.c
-  libs/zlib/deflate_medium.c
-  libs/zlib/deflate_fast.c
-  libs/zlib/crc32.c
-  libs/zlib/arch/generic/crc32_fold_c.c
-  libs/zlib/arch/generic/insert_string_c.c
-  libs/zlib/arch/generic/slide_hash_c.c
-  libs/zlib/arch/generic/chunkset_c.c
-  libs/zlib/arch/generic/compare256_c.c
-  libs/zlib/arch/generic/crc32_braid_c.c
-  libs/zlib/arch/generic/adler32_c.c
-  libs/zlib/arch/generic/adler32_fold_c.c
+  libs/zlib-ng/adler32.c
+  libs/zlib-ng/infback.c
+  libs/zlib-ng/inflate.c
+  libs/zlib-ng/inftrees.c
+  libs/zlib-ng/trees.c
+  libs/zlib-ng/zutil.c
+  libs/zlib-ng/deflate.c
+  libs/zlib-ng/deflate_slow.c
+  libs/zlib-ng/deflate_medium.c
+  libs/zlib-ng/deflate_fast.c
+  libs/zlib-ng/crc32.c
+  libs/zlib-ng/arch/generic/crc32_fold_c.c
+  libs/zlib-ng/arch/generic/insert_string_c.c
+  libs/zlib-ng/arch/generic/slide_hash_c.c
+  libs/zlib-ng/arch/generic/chunkset_c.c
+  libs/zlib-ng/arch/generic/compare256_c.c
+  libs/zlib-ng/arch/generic/crc32_braid_c.c
+  libs/zlib-ng/arch/generic/adler32_c.c
+  libs/zlib-ng/arch/generic/adler32_fold_c.c
 )
 
 if(PROJECT_PLATFORM STREQUAL "ARM64")
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  libs/zlib/arch/arm/slide_hash_neon.c
-  libs/zlib/arch/arm/crc32_acle.c
-  libs/zlib/arch/arm/insert_string_acle.c
-  libs/zlib/arch/arm/slide_hash_armv6.c
-  libs/zlib/arch/arm/chunkset_neon.c
-  libs/zlib/arch/arm/compare256_neon.c
-  libs/zlib/arch/arm/adler32_neon.c
-  libs/zlib/arch/arm/arm_features.c
+  libs/zlib-ng/arch/arm/slide_hash_neon.c
+  libs/zlib-ng/arch/arm/crc32_acle.c
+  libs/zlib-ng/arch/arm/insert_string_acle.c
+  libs/zlib-ng/arch/arm/slide_hash_armv6.c
+  libs/zlib-ng/arch/arm/chunkset_neon.c
+  libs/zlib-ng/arch/arm/compare256_neon.c
+  libs/zlib-ng/arch/arm/adler32_neon.c
+  libs/zlib-ng/arch/arm/arm_features.c
 )
 else()
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
-  libs/zlib/arch/x86/x86_features.c
-  libs/zlib/arch/x86/insert_string_sse42.c
-  libs/zlib/arch/x86/slide_hash_avx2.c
-  libs/zlib/arch/x86/slide_hash_sse2.c
-  libs/zlib/arch/x86/crc32_pclmulqdq.c
-  libs/zlib/arch/x86/crc32_vpclmulqdq.c
-  libs/zlib/arch/x86/compare256_avx2.c
-  libs/zlib/arch/x86/compare256_sse2.c
-  libs/zlib/arch/x86/chunkset_avx2.c
-  libs/zlib/arch/x86/chunkset_sse2.c
-  libs/zlib/arch/x86/chunkset_ssse3.c
-  libs/zlib/arch/x86/adler32_avx512_vnni.c
-  libs/zlib/arch/x86/adler32_sse42.c
-  libs/zlib/arch/x86/adler32_ssse3.c
-  libs/zlib/arch/x86/adler32_avx512.c
-  libs/zlib/arch/x86/adler32_avx2.c
+  libs/zlib-ng/arch/x86/x86_features.c
+  libs/zlib-ng/arch/x86/insert_string_sse42.c
+  libs/zlib-ng/arch/x86/slide_hash_avx2.c
+  libs/zlib-ng/arch/x86/slide_hash_sse2.c
+  libs/zlib-ng/arch/x86/crc32_pclmulqdq.c
+  libs/zlib-ng/arch/x86/crc32_vpclmulqdq.c
+  libs/zlib-ng/arch/x86/compare256_avx2.c
+  libs/zlib-ng/arch/x86/compare256_sse2.c
+  libs/zlib-ng/arch/x86/chunkset_avx2.c
+  libs/zlib-ng/arch/x86/chunkset_sse2.c
+  libs/zlib-ng/arch/x86/chunkset_ssse3.c
+  libs/zlib-ng/arch/x86/adler32_avx512_vnni.c
+  libs/zlib-ng/arch/x86/adler32_sse42.c
+  libs/zlib-ng/arch/x86/adler32_ssse3.c
+  libs/zlib-ng/arch/x86/adler32_avx512.c
+  libs/zlib-ng/arch/x86/adler32_avx2.c
 )
 endif()
 
@@ -1796,7 +1795,8 @@ add_library(zlib STATIC
 )
 
 target_include_directories(zlib PRIVATE
-  libs/zlib
+  libs/zlib-ng
+  libs/zlib-ng/arch/generic
 )
 
 target_compile_options(zlib PRIVATE
@@ -1819,6 +1819,13 @@ target_compile_definitions(zlib PRIVATE
   -D_CRT_NONSTDC_NO_DEPRECATE
   -DARM_FEATURES
   -DARM_NEON_HASLD4
+)
+target_include_directories(zlib PRIVATE
+  libs/zlib-ng/arch/arm
+)
+else()
+target_include_directories(zlib PRIVATE
+  libs/zlib-ng/arch/x86
 )
 endif()
 
