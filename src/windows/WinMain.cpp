@@ -123,7 +123,7 @@ void Upload(TTerminal * Terminal, TStrings * FileList, int UseDefaults)
       DoCopyDialog(true, false, FileList, TargetDirectory, &CopyParam, Options,
         CopyParamAttrs, Data.get(), nullptr, UseDefaults))
   {
-    // Setting parameter overrides only now, otherwise the dialog would present the parametes as non-default
+    // Setting parameter overrides only now, otherwise the dialog would present the parameters as non-default
     CopyParam.OnceDoneOperation = odoDisconnect;
     CopyParam.IncludeFileMask.SetRoots(FileList, TargetDirectory);
 
@@ -178,7 +178,7 @@ void Download(TTerminal * Terminal, const UnicodeString FileName, int UseDefault
     {
       if (FLAGCLEAR(OutputOptions, cooBrowse))
       {
-        // Setting parameter overrides only now, otherwise the dialog would present the parametes as non-default
+        // Setting parameter overrides only now, otherwise the dialog would present the parameters as non-default
 
         if (CustomDisplayName)
         {
@@ -1012,7 +1012,7 @@ int Execute()
     // The default is 2.5s.
     // 20s is used by Office 2010 and Windows 10 Explorer.
     // Some applications use an infinite (Thunderbird, Firefox).
-    // Overriden for some controls using THintInfo.HideTimeout
+    // Overridden for some controls using THintInfo.HideTimeout
     Application->HintHidePause = 20000;
     HintWindowClass = __classid(TScreenTipHintWindow);
 
@@ -1082,7 +1082,7 @@ int Execute()
           // ignore errors
           // (RemoveSearchPath is called always on uninstallation,
           // even if AddSearchPath was not used, so we would get the error
-          // always for non-priviledged user)
+          // always for non-privileged user)
         }
         Configuration->DontSave();
       }
@@ -1182,7 +1182,7 @@ int Execute()
         }
       }
 
-      bool NewInstance = Params->FindSwitch(NEWINSTANCE_SWICH);
+      bool NewInstance = Params->FindSwitch(NEWINSTANCE_SWITCH);
       if (Params->ParamCount > 0)
       {
         AutoStartSession = Params->ConsumeParam();

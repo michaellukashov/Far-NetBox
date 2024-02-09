@@ -382,7 +382,7 @@ private:
   bool FShowHiddenFiles;
   TFormatBytesStyle FFormatSizeBytes;
   TIncrementalSearch FPanelSearch;
-  bool FShowInaccesibleDirectories;
+  bool FShowInaccessibleDirectories;
   bool FConfirmTransferring;
   bool FConfirmDeleting;
   bool FConfirmRecycling;
@@ -511,7 +511,7 @@ private:
   void SetShowHiddenFiles(bool value);
   void SetFormatSizeBytes(TFormatBytesStyle value);
   void SetPanelSearch(TIncrementalSearch value);
-  void SetShowInaccesibleDirectories(bool value);
+  void SetShowInaccessibleDirectories(bool value);
   void SetConfirmTransferring(bool value);
   void SetConfirmDeleting(bool value);
   void SetConfirmRecycling(bool value);
@@ -609,7 +609,7 @@ private:
   void SetEditorCheckNotModified(bool value);
   void SetSessionTabCaptionTruncation(bool value);
   void SetFirstRun(const UnicodeString & value);
-  int GetLocaleCompletenessTreshold();
+  int GetLocaleCompletenessThreshold();
 
   bool GetDDExtInstalled();
   void AddVersionToHistory();
@@ -707,7 +707,7 @@ public:
   __property bool ShowHiddenFiles = { read = FShowHiddenFiles, write = SetShowHiddenFiles };
   __property TFormatBytesStyle FormatSizeBytes = { read = FFormatSizeBytes, write = SetFormatSizeBytes };
   __property TIncrementalSearch PanelSearch = { read = FPanelSearch, write = SetPanelSearch };
-  __property bool ShowInaccesibleDirectories = { read = FShowInaccesibleDirectories, write = SetShowInaccesibleDirectories };
+  __property bool ShowInaccessibleDirectories = { read = FShowInaccessibleDirectories, write = SetShowInaccessibleDirectories };
   __property TEditorConfiguration Editor = { read = FEditor, write = SetEditor };
   __property TQueueViewConfiguration QueueView = { read = FQueueView, write = SetQueueView };
   __property bool EnableQueueByDefault = { read = FEnableQueueByDefault, write = SetEnableQueueByDefault };
@@ -815,7 +815,7 @@ public:
   __property bool SessionTabCaptionTruncation = { read = FSessionTabCaptionTruncation, write = SetSessionTabCaptionTruncation };
   __property UnicodeString FirstRun = { read = FFirstRun, write = SetFirstRun };
   __property LCID DefaultLocale = { read = FDefaultLocale };
-  __property int LocaleCompletenessTreshold = { read = GetLocaleCompletenessTreshold };
+  __property int LocaleCompletenessThreshold = { read = GetLocaleCompletenessThreshold };
 };
 
 class TCustomCommandType

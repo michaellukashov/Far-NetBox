@@ -546,7 +546,7 @@ void TWinConfiguration::Default()
   FShowHiddenFiles = false;
   FFormatSizeBytes = fbKilobytes;
   FPanelSearch = isNameStartOnly;
-  FShowInaccesibleDirectories = true;
+  FShowInaccessibleDirectories = true;
   FConfirmTransferring = true;
   FConfirmDeleting = true;
   FConfirmRecycling = true;
@@ -1021,7 +1021,7 @@ THierarchicalStorage * TWinConfiguration::CreateScpStorage(bool & SessionList)
     KEY(Bool,     ShowHiddenFiles); \
     KEY(Integer,  FormatSizeBytes); \
     KEY(Integer,  PanelSearch); \
-    KEY(Bool,     ShowInaccesibleDirectories); \
+    KEY(Bool,     ShowInaccessibleDirectories); \
     KEY(Bool,     ConfirmTransferring); \
     KEY(Bool,     ConfirmDeleting); \
     KEY(Bool,     ConfirmRecycling); \
@@ -2093,9 +2093,9 @@ void TWinConfiguration::SetPanelSearch(TIncrementalSearch value)
   SET_CONFIG_PROPERTY(PanelSearch);
 }
 
-void TWinConfiguration::SetShowInaccesibleDirectories(bool value)
+void TWinConfiguration::SetShowInaccessibleDirectories(bool value)
 {
-  SET_CONFIG_PROPERTY(ShowInaccesibleDirectories);
+  SET_CONFIG_PROPERTY(ShowInaccessibleDirectories);
 }
 
 void TWinConfiguration::SetConfirmTransferring(bool value)
@@ -2662,14 +2662,14 @@ int TWinConfiguration::GetResourceModuleCompleteness(HINSTANCE Module)
   return StrToIntDef(CompletenessStr, -1);
 }
 
-int TWinConfiguration::GetLocaleCompletenessTreshold()
+int TWinConfiguration::GetLocaleCompletenessThreshold()
 {
   return 80;
 }
 
 bool TWinConfiguration::IsTranslationComplete(HINSTANCE Module)
 {
-  return (GetResourceModuleCompleteness(Module) >= LocaleCompletenessTreshold);
+  return (GetResourceModuleCompleteness(Module) >= LocaleCompletenessThreshold);
 }
 
 HINSTANCE TWinConfiguration::LoadNewResourceModule(LCID ALocale,

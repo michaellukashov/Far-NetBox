@@ -138,7 +138,7 @@ void path_reg_propagate()
                            5000, &send_message_result);
   if (ret != ERROR_SUCCESS && GetLastError() != 0)
   {
-    err_out_sys(_T("Cannot propagate the new enviroment to ")
+    err_out_sys(_T("Cannot propagate the new environment to ")
                 _T("other processes. The new value will be ")
                 _T("available after a reboot."), GetLastError());
     SimpleErrorDialog(LastPathError);
@@ -191,7 +191,7 @@ BOOL add_path_reg(LPCTSTR path){
                   err_out_sys(_T("Cannot write \"PATH\" key."), ret);
                   func_ret = FALSE;
               }
-              /* Is this needed to make the new key avaible? */
+              /* Is this needed to make the new key available? */
               RegFlushKey(key);
               SetLastError(0);
               path_reg_propagate();
@@ -250,7 +250,7 @@ BOOL remove_path_reg(LPCTSTR path){
                 func_ret = FALSE;
             }
             free(reg_str2);
-            /* Is this needed to make the new key avaible? */
+            /* Is this needed to make the new key available? */
             RegFlushKey(key);
             SetLastError(0);
             path_reg_propagate();
@@ -1344,7 +1344,7 @@ private:
 TUpdateDownloadThread::TUpdateDownloadThread(TProgressBar * ProgressBar) :
   TCompThread(true)
 {
-  // cache, as the progress bar miht be destroyed already when
+  // cache, as the progress bar might be destroyed already when
   // we need the form at the end of Execute()
   FForm = GetParentForm(ProgressBar);
   FProgressBar = ProgressBar;

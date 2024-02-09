@@ -701,10 +701,10 @@ void MenuPopup(TPopupMenu * AMenu, TRect Rect,
 {
   // Pressing the same button within 200ms after closing its popup menu
   // does nothing.
-  // It is to immitate close-by-click behavior. Note that menu closes itself
+  // It is to imitate close-by-click behavior. Note that menu closes itself
   // before onclick handler of button occurs.
   // To support content menu popups, we have to check for the popup location too,
-  // to allow poping menu on different location (such as different node of TTreeView),
+  // to allow popping menu on different location (such as different node of TTreeView),
   // even if there's another popup opened already (so that the time interval
   // below does not elapse).
   TDateTime N = Now();

@@ -1767,7 +1767,7 @@ TStorage TConfiguration::GetStorage() const
   if (FStorage == stDetect)
   {
 #if 0
-    DebugFail(); // This is never called, as the detection is completely overriden by TWinConfiguration
+    DebugFail(); // This is never called, as the detection is completely overridden by TWinConfiguration
     if (base::FileExists(ApiPath(IniFileStorageNameForReading)))
     {
       FStorage = stIniFile;

@@ -154,7 +154,7 @@ void AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrinkIndex)
         TListColumn * ColumnToShrink = ListView->Columns->Items[ColumnToShrinkIndex];
         int ColumnToShrinkCaptionWidth = GetColumnTextWidth(ListView, ColumnPadding, ColumnToShrink->Caption);
         int ColumnToShrinkMinWidth = Max(ColumnShrinkMinWidth, ColumnToShrinkCaptionWidth);
-        // This falls back to proprotional shrinking when the shrink column would fall below min width.
+        // This falls back to proportional shrinking when the shrink column would fall below min width.
         // Question is whether we should not shrink to min width instead.
         if ((ResizableWidth - ColumnToShrink->Width) < (Remaining - ColumnToShrinkMinWidth))
         {
@@ -200,7 +200,7 @@ void AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrinkIndex)
     SendMessage(ListView->Handle, WM_SETREDRAW, true, 0);
     // As recommended by documentation for WM_SETREDRAW.
     // Without this, session list on Import dialog stops working after the list is reloaded while visible
-    // (i.e. when chaing import source)
+    // (i.e. when chaining import source)
     RedrawWindow(ListView->Handle, nullptr, nullptr, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
   }
 }
@@ -686,7 +686,7 @@ static void ChangeFormPixelsPerInch(TForm * Form, int PixelsPerInch)
     TPublicForm * PublicCustomForm = static_cast<TPublicForm *>(Form);
 
     // WORKAROUND
-    // TCustomForm.ChangeScale scales contraints only after rescaling the size,
+    // TCustomForm.ChangeScale scales constraints only after rescaling the size,
     // so the unscaled constraints apply to the new size
     // (e.g. with TLoginDialog)
     std::unique_ptr<TSizeConstraints> Constraints(new TSizeConstraints(nullptr));
@@ -767,7 +767,7 @@ static void FormShowingChanged(TForm * Form, TWndMethod WndProc, TMessage & Mess
 
   // Part of following code (but actually not all, TODO), has to happen
   // for all windows when VCL main window is hidden (particularly the last branch).
-  // This is different from above brach, that should happen only for top-level visible window.
+  // This is different from above branch, that should happen only for top-level visible window.
   if ((Application->MainForm == Form) ||
       // this particularly happens if error occurs while main
       // window is being shown (e.g. non existent local directory when opening
@@ -1239,7 +1239,7 @@ void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront, bool TriggerM
   Screen->SaveFocusedList->Insert(0, Screen->FocusedForm);
   Screen->FocusedForm = Form;
   AStorage->SaveCursor = Screen->Cursor;
-  // This is particularly used when displaing progress window
+  // This is particularly used when displaying progress window
   // while downloading via temporary folder
   // (the mouse cursor is yet hidden at this point).
   // While the code was added to workaround the above problem,

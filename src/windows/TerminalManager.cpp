@@ -124,7 +124,7 @@ TTerminalManager::~TTerminalManager()
   delete FQueues;
   delete FTerminationMessages;
   delete FSessionList;
-  CloseAutheticateForm();
+  CloseAuthenticateForm();
   delete FQueueSection;
   ReleaseTaskbarList();
 }
@@ -399,7 +399,7 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
   }
 }
 
-void TTerminalManager::CloseAutheticateForm()
+void TTerminalManager::CloseAuthenticateForm()
 {
   SAFE_DESTROY(FAuthenticateForm);
 }
@@ -1377,7 +1377,7 @@ void TTerminalManager::AuthenticatingDone()
   }
   if (!FKeepAuthenticateForm)
   {
-    CloseAutheticateForm();
+    CloseAuthenticateForm();
   }
 }
 
@@ -1830,7 +1830,7 @@ void TTerminalManager::MasterPasswordPrompt()
   {
     // this can happen only when we keep cancelling all master password prompts
     // as long as the sessing finally connects (session password has to be
-    // explictly typed in), and background transfer is started
+    // explicitly typed in), and background transfer is started
     Abort();
   }
 }
@@ -1936,7 +1936,7 @@ bool TTerminalManager::UploadPublicKey(
       }
       catch (Exception & E)
       {
-        CloseAutheticateForm();
+        CloseAuthenticateForm();
         throw;
       }
     }
@@ -1963,7 +1963,7 @@ bool TTerminalManager::UploadPublicKey(
     }
     __finally
     {
-      CloseAutheticateForm(); // When uploading from Login dialog
+      CloseAuthenticateForm(); // When uploading from Login dialog
     }
 
     if (!Installed.IsEmpty())

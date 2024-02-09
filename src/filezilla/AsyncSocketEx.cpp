@@ -974,7 +974,7 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
   t_AsyncSocketExThreadDataList *pList=m_spAsyncSocketExThreadDataList;
   t_AsyncSocketExThreadDataList *pPrev=0;
 
-  //Serach for data for current thread and decrease instance count
+  //Search for data for current thread and decrease instance count
   while (pList)
   {
     DebugAssert(pList->pThreadData);
