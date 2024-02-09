@@ -2794,6 +2794,7 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
     SCOPE_EXIT
     {
       FPanelItems = nullptr;
+      FFileList.reset();
     };
     FPanelItems = PanelItems;
 
@@ -2850,7 +2851,6 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
   {
     Result = -1;
   }
-  UpdatePanel();
   return Result;
 }
 
