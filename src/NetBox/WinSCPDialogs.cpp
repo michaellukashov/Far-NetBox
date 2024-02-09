@@ -1542,6 +1542,7 @@ private:
   TSessionData * FSessionData{nullptr};
   int32_t FTransferProtocolIndex{0};
   int32_t FFtpEncryptionComboIndex{0};
+  int32_t FProxyComboIndex{0};
 
   TTabButton * SshTab{nullptr};
   TTabButton * AuthenticationTab{nullptr};
@@ -2833,8 +2834,22 @@ void TSessionDialog::Change()
 
   if (GetHandle() && !ChangesLocked())
   {
-    if ((FTransferProtocolIndex != TransferProtocolCombo->GetItemIndex()) ||
-      (FFtpEncryptionComboIndex != FtpEncryptionCombo->GetItemIndex()))
+    bool DoChange = false;
+    if (GetProxyMethodCombo()->GetSetChanged(false))
+    {
+      FProxyComboIndex = GetProxyMethodCombo()->GetItemIndex();
+    }
+    if (TransferProtocolCombo->GetSetChanged(false))
+    {
+      FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
+      DoChange = true;
+    }
+    if (FtpEncryptionCombo->GetSetChanged(false))
+    {
+      FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
+      DoChange = true;
+    }
+    if (DoChange)
     {
       TransferProtocolComboChange();
     }
@@ -2887,8 +2902,6 @@ void TSessionDialog::TransferProtocolComboChange()
   // even if user cancels the dialog
   SavePing(FSessionData);
 
-  FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
-  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
   const int32_t Port = PortNumberEdit->GetAsInteger();
 
   LoadPing(FSessionData);
@@ -2989,7 +3002,7 @@ void TSessionDialog::UpdateControls()
   // Basic tab
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
-    (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
+    lSftpProtocol);
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !lS3Protocol);
   const bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
     (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || lS3Protocol);
@@ -3008,7 +3021,7 @@ void TSessionDialog::UpdateControls()
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
-  if (lFtpProtocol && (FtpProxyMethodCombo->GetItemIndex() != pmNone) && !FtpPasvModeCheck->GetChecked())
+  if (lFtpProtocol && (FProxyComboIndex != pmNone) && !FtpPasvModeCheck->GetChecked())
   {
     FtpPasvModeCheck->SetChecked(true);
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
@@ -3096,7 +3109,7 @@ void TSessionDialog::UpdateControls()
 
   // Connection/Proxy tab
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  const TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
+  const TProxyMethod ProxyMethod = IndexToProxyMethod(FProxyComboIndex, ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
   TFarComboBox * OtherProxyMethodCombo = GetOtherProxyMethodCombo();
   OtherProxyMethodCombo->SetVisible(false);
@@ -3151,9 +3164,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   SetCaption(GetMsg(Captions[Action]));
 
   FSessionData = SessionData;
-  FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
-
-  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
 
   HideTabs();
   SelectTab(tabSession);
@@ -3172,6 +3182,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   TransferProtocolCombo->SetItemIndex(
     nb::ToInt32(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
+
+  FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
+  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
+
 
   // Directories tab
   RemoteDirectoryEdit->SetText(SessionData->GetRemoteDirectory());
@@ -3332,8 +3346,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   // Proxy tab
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  const int32_t Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), ProxyMethodCombo->GetItems());
-  ProxyMethodCombo->SetItemIndex(Index);
+  FProxyComboIndex = ProxyMethodToIndex(SessionData->GetProxyMethod(), ProxyMethodCombo->GetItems());
+  ProxyMethodCombo->SetItemIndex(FProxyComboIndex);
   // if (SessionData->GetProxyMethod() != pmSystem)
   {
     ProxyHostEdit->SetText(SessionData->GetProxyHost());
@@ -3609,7 +3623,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     }*/
 
     if (FtpEncryptionCombo->GetVisible())
-    switch (FtpEncryptionCombo->GetItemIndex())
+    switch (FFtpEncryptionComboIndex)
     {
     case 0:
       SessionData->SetFtps(ftpsNone);
@@ -3922,7 +3936,7 @@ TFarComboBox * TSessionDialog::GetOtherProxyMethodCombo() const
 
 TFSProtocol TSessionDialog::GetFSProtocol() const
 {
-  return IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(),
+  return IndexToFSProtocol(FTransferProtocolIndex,
     AllowScpFallbackCheck->GetChecked());
 }
 
@@ -3939,7 +3953,7 @@ bool TSessionDialog::GetSupportedFtpProxyMethod(int32_t Method) const
 TProxyMethod TSessionDialog::GetProxyMethod() const
 {
   const TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  const TProxyMethod Result = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
+  const TProxyMethod Result = IndexToProxyMethod(FProxyComboIndex, ProxyMethodCombo->GetItems());
   return Result;
 }
 
@@ -3989,7 +4003,7 @@ TFtps TSessionDialog::GetFtps() const
 {
   // TFSProtocol AFSProtocol = GetFSProtocol();
   // const int32_t Index = (((AFSProtocol == fsWebDAV) || (AFSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
-  const int32_t Index = FtpEncryptionCombo->GetItemIndex();
+  const int32_t Index = FFtpEncryptionComboIndex;
   TFtps Ftps;
   switch (Index)
   {
@@ -4005,7 +4019,7 @@ TFtps TSessionDialog::GetFtps() const
       Ftps = ftpsExplicitSsl;
       break;
     default:
-      Ftps = static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
+      Ftps = static_cast<TFtps>(IndexToFtps(FFtpEncryptionComboIndex));
       break;
   }
   // return static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));

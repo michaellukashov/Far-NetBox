@@ -658,6 +658,7 @@ public:
   void SetDropDownList(bool Value) { SetFlag(DIF_DROPDOWNLIST, Value); }
   int32_t GetItemIndex() const { return FList->GetSelected(); }
   void SetItemIndex(int32_t Index) { FList->SetSelected(Index); }
+  bool GetSetChanged(bool Value) { bool OldValue = FItemChanged; FItemChanged = Value; return OldValue; }
 
 protected:
   virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
@@ -665,6 +666,7 @@ protected:
 
 private:
   std::unique_ptr<TFarList> FList{std::make_unique<TFarList>(this)};
+  bool FItemChanged{false};
 };
 
 class TFarLister : public TFarDialogItem
