@@ -105,7 +105,7 @@ bool FindFile(UnicodeString & Path)
 
 bool DoesSessionExistInPutty(const UnicodeString & StorageKey)
 {
-  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
+  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey, HKEY_CURRENT_USER));
   Storage->ConfigureForPutty();
   return Storage->OpenRootKey(true) && Storage->KeyExists(StorageKey);
 }
@@ -113,7 +113,7 @@ bool DoesSessionExistInPutty(const UnicodeString & StorageKey)
 bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName)
 {
   bool Result = true;
-  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
+  std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey, HKEY_CURRENT_USER));
   Storage->AccessMode = smReadWrite;
   Storage->ConfigureForPutty();
   if (Storage->OpenRootKey(true))
@@ -125,7 +125,7 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
     }
     else
     {
-      std::unique_ptr<TRegistryStorage> SourceStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
+      std::unique_ptr<TRegistryStorage> SourceStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey, HKEY_CURRENT_USER));
       SourceStorage->ConfigureForPutty();
       if (SourceStorage->OpenSubKey(GetStoredSessions()->DefaultSettings->Name, false) &&
           Storage->OpenSubKey(SessionName, true))
@@ -230,7 +230,7 @@ void TPuttyCleanupThread::Execute()
     {
       {
         TGuard Guard(*FSection.get());
-        std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey));
+        std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttySessionsKey, HKEY_CURRENT_USER));
         Storage->AccessMode = smReadWrite;
         Storage->ConfigureForPutty();
 
@@ -489,7 +489,7 @@ void OpenSessionInPutty(TSessionData * SessionData)
         bool SessionList = false;
         std::unique_ptr<THierarchicalStorage> SourceHostKeyStorage(GetConfiguration()->CreateScpStorage(SessionList));
         SourceHostKeyStorage->Init();
-        std::unique_ptr<THierarchicalStorage> TargetHostKeyStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttyRegistryStorageKey()));
+        std::unique_ptr<THierarchicalStorage> TargetHostKeyStorage(std::make_unique<TRegistryStorage>(GetConfiguration()->PuttyRegistryStorageKey(), HKEY_CURRENT_USER));
         TargetHostKeyStorage->Init();
         TargetHostKeyStorage->SetExplicit(true);
         TargetHostKeyStorage->SetAccessMode(smReadWrite);
@@ -757,39 +757,27 @@ bool CopyCommandToClipboard(const UnicodeString & ACommand)
 static bool DoExecuteShell(const UnicodeString & APath, const UnicodeString & Params,
   bool ChangeWorkingDirectory, HANDLE * Handle)
 {
-  bool Result = CopyCommandToClipboard(FormatCommand(APath, Params));
+  const UnicodeString Directory = ::ExtractFilePath(APath);
 
+  TShellExecuteInfoW ExecuteInfo;
+  nb::ClearStruct(ExecuteInfo);
+  ExecuteInfo.cbSize = sizeof(ExecuteInfo);
+  ExecuteInfo.fMask =
+    SEE_MASK_FLAG_NO_UI |
+    FLAGMASK((Handle != nullptr), SEE_MASK_NOCLOSEPROCESS);
+  ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
+  ExecuteInfo.lpFile = ToWCharPtr(APath);
+  ExecuteInfo.lpParameters = ToWCharPtr(Params);
+  ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
+  ExecuteInfo.nShow = SW_SHOW;
+
+  AppLogFmt(L"Executing program \"%s\" with params: %s", APath, Params);
+  bool Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
   if (Result)
   {
     if (Handle != nullptr)
     {
-      *Handle = nullptr;
-    }
-  }
-  else
-  {
-    const UnicodeString Directory = ::ExtractFilePath(APath);
-
-    TShellExecuteInfoW ExecuteInfo;
-    nb::ClearStruct(ExecuteInfo);
-    ExecuteInfo.cbSize = sizeof(ExecuteInfo);
-    ExecuteInfo.fMask =
-      SEE_MASK_FLAG_NO_UI |
-      FLAGMASK((Handle != nullptr), SEE_MASK_NOCLOSEPROCESS);
-    ExecuteInfo.hwnd = reinterpret_cast<HWND>(::GetModuleHandle(nullptr));
-    ExecuteInfo.lpFile = ToWCharPtr(APath);
-    ExecuteInfo.lpParameters = ToWCharPtr(Params);
-    ExecuteInfo.lpDirectory = (ChangeWorkingDirectory ? Directory.c_str() : nullptr);
-    ExecuteInfo.nShow = SW_SHOW;
-
-    AppLogFmt(L"Executing program \"%s\" with params: %s", APath, Params);
-    Result = (::ShellExecuteEx(&ExecuteInfo) != 0);
-    if (Result)
-    {
-      if (Handle != nullptr)
-      {
-        *Handle = ExecuteInfo.hProcess;
-      }
+      *Handle = ExecuteInfo.hProcess;
     }
   }
   return Result;
