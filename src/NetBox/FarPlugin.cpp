@@ -2649,12 +2649,6 @@ UnicodeString TFarPanelItem::GetFileName() const
   return Result;
 }
 
-UnicodeString TFarPanelItem::GetAlternateFileName() const
-{
-  const UnicodeString Result = FPanelItem->AlternateFileName;
-  return Result;
-}
-
 void * TFarPanelItem::GetUserData() const
 {
   return FPanelItem->UserData.Data;

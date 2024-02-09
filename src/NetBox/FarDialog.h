@@ -551,6 +551,7 @@ public:
   virtual void Assign(const TPersistent * Source) override;
 
   int32_t GetSelected() const;
+  int32_t GetLastPosChange() const { return FLastPosChange; }
   void SetSelected(int32_t Value);
   int32_t GetTopIndex() const;
   void SetTopIndex(int32_t Value);
@@ -585,6 +586,7 @@ private:
   FarList * FListItems{nullptr};
   TFarDialogItem * FDialogItem{nullptr};
   bool FNoDialogUpdate{false};
+  int32_t FLastPosChange{0};
 };
 
 enum TFarListBoxAutoSelect
@@ -604,7 +606,7 @@ public:
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
   virtual ~TFarListBox() noexcept override;
 
-  void SetItems(TStrings * Value);
+  void SetItems(const TStrings * Value, bool OwnItems = true);
 
   bool GetNoAmpersand() const { return GetFlag(DIF_LISTNOAMPERSAND); }
   void SetNoAmpersand(bool Value) { SetFlag(DIF_LISTNOAMPERSAND, Value); }
@@ -616,7 +618,7 @@ public:
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
   TFarList * GetItems() const { return FList.get(); }
   TFarList * GetItems() { return FList.get(); }
-  void SetList(TFarList * Value);
+  void SetList(TFarList * Value, bool OwnItems = true);
   TFarListBoxAutoSelect GetAutoSelect() const { return FAutoSelect; }
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
@@ -658,6 +660,7 @@ public:
   void SetDropDownList(bool Value) { SetFlag(DIF_DROPDOWNLIST, Value); }
   int32_t GetItemIndex() const { return FList->GetSelected(); }
   void SetItemIndex(int32_t Index) { FList->SetSelected(Index); }
+  bool GetSetChanged(bool Value) { bool OldValue = FItemChanged; FItemChanged = Value; return OldValue; }
 
 protected:
   virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
@@ -665,6 +668,7 @@ protected:
 
 private:
   std::unique_ptr<TFarList> FList{std::make_unique<TFarList>(this)};
+  bool FItemChanged{false};
 };
 
 class TFarLister : public TFarDialogItem

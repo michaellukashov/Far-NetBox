@@ -1517,7 +1517,7 @@ void TWinSCPFileSystem::GetSynchronizeOptions(
 
 void TWinSCPFileSystem::FullSynchronize(bool Source)
 {
-  TFarPanelInfo ** AnotherPanel = GetAnotherPanelInfo();
+  TFarPanelInfo ** AnotherPanel = (*GetAnotherPanelInfo())->GetIsPlugin() ? GetPanelInfo() : GetAnotherPanelInfo();
   RequireLocalPanel(*AnotherPanel, GetMsg(NB_SYNCHRONIZE_LOCAL_PATH_REQUIRED));
 
   UnicodeString LocalDirectory = (*AnotherPanel)->GetCurrentDirectory();
@@ -1606,6 +1606,10 @@ void TWinSCPFileSystem::FullSynchronize(bool Source)
       if (UpdatePanel())
       {
         RedrawPanel();
+      }
+      if (UpdatePanel(false, true))
+      {
+        RedrawPanel(true);
       }
     } end_try__finally
   }
@@ -2794,6 +2798,7 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
     SCOPE_EXIT
     {
       FPanelItems = nullptr;
+      FFileList.reset();
     };
     FPanelItems = PanelItems;
 
@@ -2850,7 +2855,6 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
   {
     Result = -1;
   }
-  UpdatePanel();
   return Result;
 }
 
@@ -2961,7 +2965,6 @@ TStrings * TWinSCPFileSystem::CreateFileList(TObjectList * PanelItems,
       !PanelItem->GetIsParentDirectory())
     {
       UnicodeString FileName = PanelItem->GetFileName();
-      DEBUG_PRINTF("FileName: %s", FileName);
       if (Side == osRemote)
       {
         Data = static_cast<TRemoteFile *>(PanelItem->GetUserData());
@@ -4000,7 +4003,6 @@ void TWinSCPFileSystem::ProcessEditorEvent(intptr_t Event, void * /* Param */)
     }
 
     std::unique_ptr<TFarEditorInfo> Info(GetWinSCPPlugin()->EditorInfo());
-    DEBUG_PRINTF("GetFileName: %s", Info->GetFileName());
     if (Info != nullptr)
     {
       if (FLastEditorID == Info->GetEditorID())

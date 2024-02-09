@@ -5294,16 +5294,7 @@ TStoredSessionList::TStoredSessionList(bool AReadOnly) noexcept :
   SetOwnsObjects(true);
 }
 
-TStoredSessionList::~TStoredSessionList() noexcept
-{
-//  SAFE_DESTROY(FDefaultSettings);
-  for (int32_t Index = 0; Index < TStoredSessionList::GetCount(); ++Index)
-  {
-    TObject * Obj = TNamedObjectList::AtObject(Index);
-    SAFE_DESTROY(Obj);
-    SetItem(Index, nullptr);
-  }
-}
+TStoredSessionList::~TStoredSessionList() noexcept = default;
 
 void TStoredSessionList::Load(THierarchicalStorage * Storage,
   bool AsModified, bool UseDefaults, bool PuttyImport)
