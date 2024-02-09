@@ -26,7 +26,7 @@
 #include "VCLCommon.h"
 #include "Setup.h"
 
-#define WM_INTERUPT_IDLE (WM_WINSCP_USER + 3)
+#define WM_INTERRUPT_IDLE (WM_WINSCP_USER + 3)
 #define BATCH_INPUT_TIMEOUT 10000
 
 #pragma package(smart_init)
@@ -216,7 +216,7 @@ void TOwnConsole::CancelInput()
 {
   FPendingAbort = true;
 
-  PostMessage(Application->Handle, WM_INTERUPT_IDLE, 0, 0);
+  PostMessage(Application->Handle, WM_INTERRUPT_IDLE, 0, 0);
 }
 
 BOOL WINAPI TOwnConsole::HandlerRoutine(DWORD CtrlType)
@@ -2294,7 +2294,7 @@ void Usage(TConsole * Console)
   {
     PrintUsageSyntax(Console, L"site|workspace|folder");
     PrintUsageSyntax(Console, L"(sftp|scp|ftp[es]|dav[s]|s3)://[user[:password]@]host[:port][/path/[file]]");
-    PrintUsageSyntax(Console, FORMAT(L"[mysession] /%s=<name>", (LowerCase(SESSIONNAME_SWICH))));
+    PrintUsageSyntax(Console, FORMAT(L"[mysession] /%s=<name>", (LowerCase(SESSIONNAME_SWITCH))));
     PrintUsageSyntax(Console, L"[mysession] /newinstance");
     PrintUsageSyntax(Console, L"[mysession] /edit <path>");
     PrintUsageSyntax(Console, FORMAT(L"[mysession] /%s[=<file>]", (LowerCase(BROWSE_SWITCH))));
@@ -2352,7 +2352,7 @@ void Usage(TConsole * Console)
   if (!CommandLineOnly)
   {
     RegisterSwitch(SwitchesUsage, L"session", USAGE_SESSION);
-    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(SESSIONNAME_SWICH) + L"=", USAGE_SESSIONNAME);
+    RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(SESSIONNAME_SWITCH) + L"=", USAGE_SESSIONNAME);
     RegisterSwitch(SwitchesUsage, L"/newinstance", USAGE_NEWINSTANCE);
     RegisterSwitch(SwitchesUsage, L"/edit", USAGE_EDIT);
     RegisterSwitch(SwitchesUsage, TProgramParams::FormatSwitch(BROWSE_SWITCH), USAGE_BROWSE);

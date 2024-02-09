@@ -1670,7 +1670,7 @@ uint32_t TCustomIniFileStorage::GetCurrentAccess()
 {
   uint32_t Result;
   // The way THierarchicalStorage::OpenSubKey is implemented, the access will be zero for non-existing keys in
-  // configuration overrides => delegating access handling to the master storage (which still should read overriden access keys)
+  // configuration overrides => delegating access handling to the master storage (which still should read overridden access keys)
   if (FMasterStorage != nullptr)
   {
     Result = FMasterStorage->GetCurrentAccess();
@@ -1685,7 +1685,7 @@ uint32_t TCustomIniFileStorage::GetCurrentAccess()
 bool TCustomIniFileStorage::HasAccess(uint32_t Access)
 {
   bool Result;
-  // Avoid the FFakeReadOnlyOpens assertion in THierarchicalStorage::HasAccess, which is not valid for overriden configuration
+  // Avoid the FFakeReadOnlyOpens assertion in THierarchicalStorage::HasAccess, which is not valid for overridden configuration
   if (HandleByMasterStorage())
   {
     Result = FMasterStorage->HasAccess(Access);

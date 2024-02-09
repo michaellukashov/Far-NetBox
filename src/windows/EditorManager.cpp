@@ -191,7 +191,7 @@ bool TEditorManager::CloseInternalEditors(TNotifyEvent CloseCallback)
     {
       TFileData * FileData = &FFiles[i - 1];
       // PrevToken is simple check not to ask same editor twice, however
-      // it does not solve all posibilities
+      // it does not solve all possibilities
       if (!FileData->Closed && (FileData->Token != nullptr) &&
           (FileData->Token != PrevToken))
       {

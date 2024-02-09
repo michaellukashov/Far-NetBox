@@ -1080,12 +1080,12 @@ void TScript::CopyParamParams(TCopyParamType & CopyParam, TScriptProcParams * Pa
     }
   }
 
-  if (Parameters->FindSwitch(NONEWERONLY_SWICH))
+  if (Parameters->FindSwitch(NONEWERONLY_SWITCH))
   {
     CopyParam.NewerOnly = false;
   }
 
-  if (Parameters->FindSwitch(NEWERONLY_SWICH))
+  if (Parameters->FindSwitch(NEWERONLY_SWITCH))
   {
     CopyParam.NewerOnly = true;
   }

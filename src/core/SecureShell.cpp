@@ -527,11 +527,11 @@ void TSecureShell::Open()
   {
     FSshImplementation = sshiTitan;
   }
-  else if (::ContainsText(FSessionInfo.SshImplementation, "OpenVMS"))
+  else if (::ContainsText(SshImplementation, "OpenVMS"))
   {
     FSshImplementation = sshiOpenVMS;
   }
-  else if (::ContainsText(FSessionInfo.SshImplementation, "CerberusFTPServer"))
+  else if (::ContainsText(SshImplementation, "CerberusFTPServer"))
   {
     FSshImplementation = sshiCerberus;
   }

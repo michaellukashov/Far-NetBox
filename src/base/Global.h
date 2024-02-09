@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include <nbcore.h>
@@ -20,17 +20,6 @@
 #define FLAGMASK(ENABLE, FLAG) ((ENABLE) ? (FLAG) : 0)
 
 #include <System.SyncObjs.hpp>
-
-#undef CopyFile
-#undef RenameFile
-#undef CreateDirectory
-#undef CreateLink
-#undef DeleteFile
-#undef GetCurrentDirectory
-#undef SetCurrentDirectory
-#undef GetUserName
-#undef GetEnvironmentVariable
-#undef MoveFile
 
 UnicodeString NormalizeString(const UnicodeString & S);
 

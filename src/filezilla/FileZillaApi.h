@@ -230,7 +230,7 @@ public:
 #define FZ_LOG_ERROR 1
 #define FZ_LOG_COMMAND 2
 #define FZ_LOG_REPLY 3
-// By calling CFileZillaApi::SetDebugLevel, the aplication can enable logging of the following messages:
+// By calling CFileZillaApi::SetDebugLevel, the application can enable logging of the following messages:
 #define FZ_LOG_APIERROR 5
 #define FZ_LOG_WARNING 6
 #define FZ_LOG_PROGRESS 7

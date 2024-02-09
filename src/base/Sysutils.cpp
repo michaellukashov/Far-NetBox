@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #include <System.ShlObj.hpp>
 
@@ -403,7 +403,7 @@ bool ContainsText(const UnicodeString & Str1, const UnicodeString & Str2)
 
 UnicodeString RightStr(const UnicodeString & Str, int32_t ACount)
 {
-  const UnicodeString Result = Str.SubString(Str.Length() - ACount, ACount);
+  const UnicodeString Result = Str.SubString(Str.Length() - ACount + 1, ACount);
   return Result;
 }
 

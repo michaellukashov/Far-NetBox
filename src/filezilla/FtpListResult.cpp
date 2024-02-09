@@ -2733,7 +2733,7 @@ bool CFtpListResult::parseTime(const char *str, int len, t_directory::t_direntry
   //Convert to 24h format
   //I really wish we would have the following system:
   //one year->ten months->ten days->ten hours->ten minutes->ten seconds and so on...
-  //I should modifiy the earth rotation to force everyone to use this system *g*
+  //I should modify the earth rotation to force everyone to use this system *g*
   if (i != len)
   {
     if (str[i]=='P')

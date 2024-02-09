@@ -521,7 +521,7 @@ void ExecuteNewInstance(const UnicodeString & Param, const UnicodeString & Addit
     Arg = FORMAT(L"\"%s\"", Param);
   }
   UnicodeString Space(L" ");
-  AddToList(Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWICH), Space);
+  AddToList(Arg, TProgramParams::FormatSwitch(NEWINSTANCE_SWITCH), Space);
   AddToList(Arg, AdditionalParams, Space);
 
   ExecuteSelf(Arg);

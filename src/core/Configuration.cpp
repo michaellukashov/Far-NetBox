@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -1767,7 +1767,7 @@ TStorage TConfiguration::GetStorage() const
   if (FStorage == stDetect)
   {
 #if 0
-    DebugFail(); // This is never called, as the detection is completely overriden by TWinConfiguration
+    DebugFail(); // This is never called, as the detection is completely overridden by TWinConfiguration
     if (base::FileExists(ApiPath(IniFileStorageNameForReading)))
     {
       FStorage = stIniFile;
@@ -2425,7 +2425,7 @@ const TSshHostCAList * TConfiguration::GetPuttySshHostCAList()
 {
   if (FPuttySshHostCAList == nullptr)
   {
-    std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(PuttyRegistryStorageKey));
+    std::unique_ptr<TRegistryStorage> Storage(std::make_unique<TRegistryStorage>(PuttyRegistryStorageKey, HKEY_CURRENT_USER));
     Storage->ConfigureForPutty();
     FPuttySshHostCAList = std::make_unique<TSshHostCAList>();
     LoadSshHostCAList(FPuttySshHostCAList.get(), Storage.get());

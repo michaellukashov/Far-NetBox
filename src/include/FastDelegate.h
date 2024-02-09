@@ -2584,7 +2584,7 @@ public:
 
 // Also declare overloads of a MakeDelegate() global function to
 // reduce the need for typedefs.
-// We need seperate overloads for const and non-const member functions.
+// We need separate overloads for const and non-const member functions.
 // Also, because of the weird rule about the class of derived member function pointers,
 // implicit downcasts may need to be applied later to the 'this' pointer.
 // That's why two classes (X and Y) appear in the definitions. Y must be implicitly

@@ -1,4 +1,4 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include "WinSCPPlugin.h"
@@ -437,7 +437,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
 bool TWinSCPPlugin::PanelConfigurationDialog()
 {
   std::unique_ptr<TWinSCPDialog> Dialog(std::make_unique<TWinSCPDialog>(this));
-  Dialog->SetSize(TPoint(65, 7));
+  Dialog->SetSize(TPoint(74, 7));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
 
@@ -1542,6 +1542,7 @@ private:
   TSessionData * FSessionData{nullptr};
   int32_t FTransferProtocolIndex{0};
   int32_t FFtpEncryptionComboIndex{0};
+  int32_t FProxyComboIndex{0};
 
   TTabButton * SshTab{nullptr};
   TTabButton * AuthenticationTab{nullptr};
@@ -1693,7 +1694,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TTabbedDialog(AFarPlugin, tabCount),
   FAction(Action)
 {
-  TPoint S = TPoint(67, 25);
+  TPoint S = TPoint(69, 25);
   bool Limited = (S.y > GetMaxSize().y);
   if (Limited)
   {
@@ -1710,7 +1711,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     SetNextItemPosition(ipRight); \
     (COMBO) = new TFarComboBox(this); \
     (COMBO)->SetDropDownList(true); \
-    (COMBO)->SetWidth(7); \
     (COMBO)->GetItems()->BeginUpdate(); \
     { \
       SCOPE_EXIT \
@@ -2162,7 +2162,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipRight);
   SFTPMaxVersionCombo = new TFarComboBox(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
-  SFTPMaxVersionCombo->SetWidth(7);
   for (int32_t Index2 = 0; Index2 <= 6; ++Index2)
   {
     SFTPMaxVersionCombo->GetItems()->Add(::IntToStr(Index2));
@@ -2835,8 +2834,22 @@ void TSessionDialog::Change()
 
   if (GetHandle() && !ChangesLocked())
   {
-    if ((FTransferProtocolIndex != TransferProtocolCombo->GetItemIndex()) ||
-      (FFtpEncryptionComboIndex != FtpEncryptionCombo->GetItemIndex()))
+    bool DoChange = false;
+    if (GetProxyMethodCombo()->GetSetChanged(false))
+    {
+      FProxyComboIndex = GetProxyMethodCombo()->GetItemIndex();
+    }
+    if (TransferProtocolCombo->GetSetChanged(false))
+    {
+      FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
+      DoChange = true;
+    }
+    if (FtpEncryptionCombo->GetSetChanged(false))
+    {
+      FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
+      DoChange = true;
+    }
+    if (DoChange)
     {
       TransferProtocolComboChange();
     }
@@ -2889,8 +2902,6 @@ void TSessionDialog::TransferProtocolComboChange()
   // even if user cancels the dialog
   SavePing(FSessionData);
 
-  FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
-  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
   const int32_t Port = PortNumberEdit->GetAsInteger();
 
   LoadPing(FSessionData);
@@ -2991,7 +3002,7 @@ void TSessionDialog::UpdateControls()
   // Basic tab
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
-    (IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(), false) == fsSFTPonly));
+    lSftpProtocol);
   InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !lS3Protocol);
   const bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
     (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || lS3Protocol);
@@ -3010,7 +3021,7 @@ void TSessionDialog::UpdateControls()
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
-  if (lFtpProtocol && (FtpProxyMethodCombo->GetItemIndex() != pmNone) && !FtpPasvModeCheck->GetChecked())
+  if (lFtpProtocol && (FProxyComboIndex != pmNone) && !FtpPasvModeCheck->GetChecked())
   {
     FtpPasvModeCheck->SetChecked(true);
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
@@ -3032,9 +3043,9 @@ void TSessionDialog::UpdateControls()
 
   // SSH tab
   SshTab->SetEnabled(lSshProtocol);
-  CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetSelected() != 0);
+  CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetLastPosChange() != 0);
   CipherDownButton->SetEnabled(
-    CipherListBox->GetItems()->GetSelected() < CipherListBox->GetItems()->GetCount() - 1);
+    CipherListBox->GetItems()->GetLastPosChange() < CipherListBox->GetItems()->GetCount() - 1);
 
   // Authentication tab
   AuthenticationTab->SetEnabled(lSshProtocol);
@@ -3073,9 +3084,9 @@ void TSessionDialog::UpdateControls()
   // Kex tab
   KexTab->SetEnabled(lSshProtocol && !SshProt1onlyButton->GetChecked() &&
     (BugRekey2Combo->GetItemIndex() != 2));
-  KexUpButton->SetEnabled((KexListBox->GetItems()->GetSelected() > 0));
+  KexUpButton->SetEnabled((KexListBox->GetItems()->GetLastPosChange() > 0));
   KexDownButton->SetEnabled(
-    (KexListBox->GetItems()->GetSelected() < KexListBox->GetItems()->GetCount() - 1));
+    (KexListBox->GetItems()->GetLastPosChange() < KexListBox->GetItems()->GetCount() - 1));
 
   // Bugs tab
   BugsTab->SetEnabled(lSshProtocol);
@@ -3098,7 +3109,7 @@ void TSessionDialog::UpdateControls()
 
   // Connection/Proxy tab
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  const TProxyMethod ProxyMethod = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
+  const TProxyMethod ProxyMethod = IndexToProxyMethod(FProxyComboIndex, ProxyMethodCombo->GetItems());
   ProxyMethodCombo->SetVisible(GetTab() == ProxyMethodCombo->GetGroup());
   TFarComboBox * OtherProxyMethodCombo = GetOtherProxyMethodCombo();
   OtherProxyMethodCombo->SetVisible(false);
@@ -3153,9 +3164,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   SetCaption(GetMsg(Captions[Action]));
 
   FSessionData = SessionData;
-  FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
-
-  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
 
   HideTabs();
   SelectTab(tabSession);
@@ -3174,6 +3182,10 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   TransferProtocolCombo->SetItemIndex(
     nb::ToInt32(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
+
+  FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
+  FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
+
 
   // Directories tab
   RemoteDirectoryEdit->SetText(SessionData->GetRemoteDirectory());
@@ -3334,8 +3346,8 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
   // Proxy tab
   TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  const int32_t Index = ProxyMethodToIndex(SessionData->GetProxyMethod(), ProxyMethodCombo->GetItems());
-  ProxyMethodCombo->SetItemIndex(Index);
+  FProxyComboIndex = ProxyMethodToIndex(SessionData->GetProxyMethod(), ProxyMethodCombo->GetItems());
+  ProxyMethodCombo->SetItemIndex(FProxyComboIndex);
   // if (SessionData->GetProxyMethod() != pmSystem)
   {
     ProxyHostEdit->SetText(SessionData->GetProxyHost());
@@ -3611,7 +3623,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     }*/
 
     if (FtpEncryptionCombo->GetVisible())
-    switch (FtpEncryptionCombo->GetItemIndex())
+    switch (FFtpEncryptionComboIndex)
     {
     case 0:
       SessionData->SetFtps(ftpsNone);
@@ -3924,7 +3936,7 @@ TFarComboBox * TSessionDialog::GetOtherProxyMethodCombo() const
 
 TFSProtocol TSessionDialog::GetFSProtocol() const
 {
-  return IndexToFSProtocol(TransferProtocolCombo->GetItemIndex(),
+  return IndexToFSProtocol(FTransferProtocolIndex,
     AllowScpFallbackCheck->GetChecked());
 }
 
@@ -3941,7 +3953,7 @@ bool TSessionDialog::GetSupportedFtpProxyMethod(int32_t Method) const
 TProxyMethod TSessionDialog::GetProxyMethod() const
 {
   const TFarComboBox * ProxyMethodCombo = GetProxyMethodCombo();
-  const TProxyMethod Result = IndexToProxyMethod(ProxyMethodCombo->GetItemIndex(), ProxyMethodCombo->GetItems());
+  const TProxyMethod Result = IndexToProxyMethod(FProxyComboIndex, ProxyMethodCombo->GetItems());
   return Result;
 }
 
@@ -3991,7 +4003,7 @@ TFtps TSessionDialog::GetFtps() const
 {
   // TFSProtocol AFSProtocol = GetFSProtocol();
   // const int32_t Index = (((AFSProtocol == fsWebDAV) || (AFSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
-  const int32_t Index = FtpEncryptionCombo->GetItemIndex();
+  const int32_t Index = FFtpEncryptionComboIndex;
   TFtps Ftps;
   switch (Index)
   {
@@ -4007,7 +4019,7 @@ TFtps TSessionDialog::GetFtps() const
       Ftps = ftpsExplicitSsl;
       break;
     default:
-      Ftps = static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
+      Ftps = IndexToFtps(FFtpEncryptionComboIndex);
       break;
   }
   // return static_cast<TFtps>(IndexToFtps(FtpEncryptionCombo->GetItemIndex()));
@@ -5325,7 +5337,8 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetTop(TMTop + 8);
   Add(Box);
   Box->SetBottom(Box->GetTop());
-  Box->SetLeft(TMWidth + 3 - 1);
+  Box->SetLeft(TMWidth + 3);
+  Box->SetWidth(Box->GetWidth() + 2);
   Box->SetCaption(GetMsg(NB_TRANSFER_COMMON_OPTIONS));
 
   PreserveTimeCheck = new TFarCheckBox(GetDialog());
@@ -5876,7 +5889,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
   TCopyParamsContainer * CopyParamsContainer = new TCopyParamsContainer(
     Dialog, 0, CopyParamAttrs);
 
-  Dialog->SetSize(TPoint(78, 2 + nb::ToInt32(CopyParamsContainer->GetHeight()) + 3));
+  Dialog->SetSize(TPoint(79, 2 + nb::ToInt32(CopyParamsContainer->GetHeight()) + 3));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
@@ -6050,7 +6063,7 @@ private:
   TSessionInfo FSessionInfo;
   bool FSpaceAvailableLoaded{false};
   TSpaceAvailable FSpaceAvailable;
-  TObject * FLastFeededControl{nullptr};
+  TObject * FLastFedControl{nullptr};
   int32_t FLastListItem{0};
   UnicodeString FClipboard;
 
@@ -6293,9 +6306,9 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent && AddItem)
 void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
   int32_t Label, const UnicodeString & Value)
 {
-  if (FLastFeededControl != AControl)
+  if (FLastFedControl != AControl)
   {
-    FLastFeededControl = AControl;
+    FLastFedControl = AControl;
     FLastListItem = 0;
   }
 
@@ -6362,36 +6375,42 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
       (AControl != SpaceAvailableLabels)) ||
     SpaceAvailableSupported())
   {
-    if (FLastFeededControl != AControl)
+    if (FLastFedControl != AControl)
     {
-      if (FLastFeededControl != nullptr)
+      if (FLastFedControl != nullptr)
       {
         FClipboard += ::StringOfChar('-', 60) + L"\r\n";
       }
-      FLastFeededControl = AControl;
+      FLastFedControl = AControl;
     }
 
-    if (rtti::isa<TLabelList>(AControl))
+    bool UseNewline = true;
+    UnicodeString LabelStr;
+    if (AControl == HostKeyFingerprintEdit)
     {
-      UnicodeString LabelStr;
-      if (Control == HostKeyFingerprintEdit)
-      {
-        LabelStr = GetMsg(NB_SERVER_HOST_KEY);
-      }
-      else if (Control == InfoLister)
-      {
-        LabelStr = ::Trim(GetMsg(NB_PROTOCOL_INFO_GROUP));
-      }
-      else
-      {
-        DebugAssert(false);
-      }
+      LabelStr = GetMsg(NB_SERVER_HOST_KEY);
+    }
+    else if (AControl == InfoLister)
+    {
+      LabelStr = ::Trim(GetMsg(NB_PROTOCOL_INFO_GROUP));
+    }
+    else if (rtti::isa<TLabelList>(AControl))
+    {
+      UseNewline = false;
+      LabelStr = GetMsg(Label);
+    }
+    else
+    {
+      DebugAssert(false);
+    }
 
-      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
-      {
-        LabelStr.SetLength(LabelStr.Length() - 1);
-      }
+    if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
+    {
+      LabelStr.SetLength(LabelStr.Length() - 1);
+    }
 
+    if (UseNewline)
+    {
       UnicodeString Value2 = Value;
       if ((Value2.Length() >= 2) && (Value2.SubString(Value2.Length() - 1, 2) == L"\r\n"))
       {
@@ -6402,12 +6421,6 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
     }
     else
     {
-      DebugAssert(rtti::isa<TLabelList>(AControl));
-      UnicodeString LabelStr = GetMsg(Label);
-      if (!LabelStr.IsEmpty() && (LabelStr[LabelStr.Length()] == L':'))
-      {
-        LabelStr.SetLength(LabelStr.Length() - 1);
-      }
       FClipboard += FORMAT("%s = %s\r\n", LabelStr, Value);
     }
   }
@@ -6415,7 +6428,7 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
 
 void TFileSystemInfoDialog::FeedControls()
 {
-  FLastFeededControl = nullptr;
+  FLastFedControl = nullptr;
   Feed(nb::bind(&TFileSystemInfoDialog::ControlsAddItem, this));
   InfoLister->SetRight(GetBorderBox()->GetRight() - (InfoLister->GetScrollBar() ? 0 : 1));
 }
@@ -6489,7 +6502,7 @@ void TFileSystemInfoDialog::ClipboardButtonClick(TFarButton * /*Sender*/,
   bool & Close)
 {
   NeedSpaceAvailable();
-  FLastFeededControl = nullptr;
+  FLastFedControl = nullptr;
   FClipboard.Clear();
   Feed(nb::bind(&TFileSystemInfoDialog::ClipboardAddItem, this));
   FarPlugin->FarCopyToClipboard(FClipboard);
@@ -6644,7 +6657,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     intptr_t BreakCode;
 
     Repeat = false;
-    UnicodeString Caption = GetMsg(Add ? NB_OPEN_DIRECTORY_ADD_BOOMARK_ACTION :
+    UnicodeString Caption = GetMsg(Add ? NB_OPEN_DIRECTORY_ADD_BOOKMARK_ACTION :
       NB_OPEN_DIRECTORY_BROWSE_CAPTION);
     constexpr FarKey BreakKeys[] =
     {
@@ -7659,6 +7672,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
 {
   FChecked = 0;
   std::unique_ptr<TFarList> List(std::make_unique<TFarList>());
+  List->SetOwnsObjects(false);
   List->BeginUpdate();
   for (int32_t Index = 0; Index < FChecklist->GetCount(); ++Index)
   {
@@ -7681,7 +7695,7 @@ void TSynchronizeChecklistDialog::LoadChecklist()
     }
   }
 
-  ListBox->SetItems(List.get());
+  ListBox->SetItems(List.get(), false);
 
   UpdateControls();
 }
@@ -7830,19 +7844,12 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
           FChecked++;
         }
 
-        // FAR WORKAROUND
-        // Changing "checked" state is not always drawn.
-        Redraw();
-        UpdateControls();
         if ((Key == VK_INSERT) &&
           (Index < ListBox->GetItems()->GetCount() - 1))
         {
           ListBox->GetItems()->SetSelected(Index + 1);
         }
-        else
-        {
-          ListBox->GetItems()->SetSelected(Index);
-        }
+        UpdateControls();
       }
       Result = true;
     }
