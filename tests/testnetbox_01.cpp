@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // testnetbox_01.cpp
 //------------------------------------------------------------------------------
 
@@ -189,7 +189,7 @@ public:
   void AnonFunction() { printf("in base_fixture_t::AnonFunction\n"); }
   void AnonFunction2(void * Param)
   {
-    printf("in base_fixture_t::AnonFunction2: param: %d\n", *(int *)Param);
+    // printf("in base_fixture_t::AnonFunction2: param: %d\n", *(int *)Param);
   }
 protected:
 private:
@@ -754,23 +754,24 @@ public:
   CBaseClass(char * name) : m_name(name) {}
   void SimpleMemberFunction(int num, char * str)
   {
-    printf("In SimpleMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);
+    // printf("In SimpleMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);
   }
   int SimpleMemberFunctionReturnsInt(int num, char * str)
   {
-    printf("In SimpleMemberFunctionReturnsInt in %s. Num=%d, str = %s\n", m_name, num, str); return -1;
+    // printf("In SimpleMemberFunctionReturnsInt in %s. Num=%d, str = %s\n", m_name, num, str);
+    return -1;
   }
   void ConstMemberFunction(int num, char * str) const
   {
-    printf("In ConstMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);
+    // printf("In ConstMemberFunction in %s. Num=%d, str = %s\n", m_name, num, str);
   }
   virtual void SimpleVirtualFunction(int num, char * str)
   {
-    printf("In SimpleVirtualFunction in %s. Num=%d, str = %s\n", m_name, num, str);
+    // printf("In SimpleVirtualFunction in %s. Num=%d, str = %s\n", m_name, num, str);
   }
   static void StaticMemberFunction(int num, char * str)
   {
-    printf("In StaticMemberFunction. Num=%d, str =%s\n", num, str);
+    // printf("In StaticMemberFunction. Num=%d, str =%s\n", num, str);
   }
 };
 
@@ -939,17 +940,17 @@ TEST_CASE_METHOD(base_fixture_t, "test29", "netbox")
 //------------------------------------------------------------------------------
 TEST_CASE_METHOD(base_fixture_t, "test30", "netbox")
 {
-  printf("0\n");
+  // printf("0\n");
   INFO("Instructions1");
   UnicodeString Instructions = L"Using keyboard authentication.\x0A\x0A\x0APlease enter your password.";
-  printf("1\n");
+  // printf("1\n");
   INFO("Instructions = " << Instructions);
   UnicodeString Instructions2 = ReplaceStrAll(Instructions, L"\x0D\x0A", L"\x01");
-  printf("2\n");
+  // printf("2\n");
   Instructions2 = ReplaceStrAll(Instructions, L"\x0A\x0D", L"\x01");
-  printf("3\n");
+  // printf("3\n");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x0A", L"\x01");
-  printf("4\n");
+  // printf("4\n");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x0D", L"\x01");
   Instructions2 = ReplaceStrAll(Instructions2, L"\x01", L"\x0D\x0A");
   INFO("Instructions2 = " << Instructions2);
@@ -1007,16 +1008,16 @@ TEST_CASE_METHOD(base_fixture_t, "test_scope_exit2", "netbox")
   // TAnonFunction func = nb::bind(&TTestAnonFunc::AnonFunction, &TestAnonFunc);
   auto test_lambda1 = [&]()
   {
-     printf("in TEST_CASE_METHOD test_lambda1\n");
+     // printf("in TEST_CASE_METHOD test_lambda1\n");
   };
   auto test_lambda2 = [&]()
   {
-     printf("in TEST_CASE_METHOD test_lambda2\n");
+     // printf("in TEST_CASE_METHOD test_lambda2\n");
   };
   int Param = 42;
   // SCOPE_EXIT2(base_fixture_t::AnonFunction2, (void*)&Param);
   // detail::kscope_guard2<nb::FastDelegate1<void, int>, int> guard(nb::bind(&base_fixture_t::AnonFunction2, this), Param);
-  printf("in TEST_CASE_METHOD test_scope_exit2\n");
+  // printf("in TEST_CASE_METHOD test_scope_exit2\n");
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = test::make_scope_guard() << \
     test_lambda2;
   test_lambda1();
@@ -1153,30 +1154,30 @@ private:
 
 TEST_CASE_METHOD(base_fixture_t, "testProperty02", "netbox")
 {
-  printf("1\n");
-  printf("2\n");
+  // printf("1\n");
+  // printf("2\n");
   {
     TDerived d;
     int data = d.Data;
-    printf("3\n");
+    // printf("3\n");
     CHECK(data == 42);
   }
-  printf("4\n");
+  // printf("4\n");
   if (1)
   {
     TDerived d;
     int data2 = d.Data2;
-    printf("5\n");
+    // printf("5\n");
     CHECK(data2 == 42);
   }
-  printf("6\n");
+  // printf("6\n");
   {
     TDerived d;
     int data3 = d.Data3;
-    printf("7\n");
+    // printf("7\n");
     CHECK(data3 == 42);
   }
-  printf("8\n");
+  // printf("8\n");
 //  d.Data = 43;
 //  CHECK(d.Data == 43);
   {
@@ -1185,38 +1186,38 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty02", "netbox")
     d.RWData1 = 43;
     CHECK(d.RWData1 == 43);
   }
-  printf("9\n");
+  // printf("9\n");
   {
     TDerived d;
     CHECK(d.RWData2() == "42");
     d.RWData2 = "43";
     CHECK(d.RWData2() == "43");
   }
-  printf("10\n");
+  // printf("10\n");
   SECTION("RWData2")
   {
     TBase2 b2;
-    printf("11\n");
+    // printf("11\n");
     CHECK(b2.Data2 == 41);
-    printf("12\n");
+    // printf("12\n");
     CHECK(b2.RWData2() == "41");
-    printf("13\n");
+    // printf("13\n");
     b2.RWData2 = "42";
-    printf("13.1\n");
+    // printf("13.1\n");
     CHECK(b2.RWData2() == "42");
-    printf("13.2\n");
+    // printf("13.2\n");
 //    CHECK(b2.RWData3() == "FRWData3");
-    printf("14\n");
+    // printf("14\n");
     CHECK(b2.Modification() == TDateTime(10, 10, 10, 10));
     TBase2 b3 = b2;
     CHECK(b3.RWData2() == "42");
     CHECK(b3.RWData3() == "FRWData3");
-    printf("15\n");
+    // printf("15\n");
     b3.RWData3 = "FRWData3-mod";
     CHECK(b3.RWData3() == "FRWData3-mod");
     CHECK(b3.Modification() == TDateTime(10, 10, 10, 10));
     TDateTime dt(10, 20, 59, 10);
-    printf("16\n");
+    // printf("16\n");
     b3.Modification = dt;
     CHECK(b3.Modification() == TDateTime(10, 20, 59, 10));
   }
@@ -1227,16 +1228,16 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty03", "netbox")
   SECTION("ROProp1")
   {
     TDerived2 d2;
-    printf("1\n");
+    // printf("1\n");
     CHECK(d2.ROProp1() == "42");
-    printf("2\n");
+    // printf("2\n");
   }
   SECTION("RWProp1")
   {
     TDerived2 d2;
-    printf("3\n");
+    // printf("3\n");
     CHECK(d2.RWProp1() == "RW");
-    printf("4\n");
+    // printf("4\n");
     d2.RWProp1 = "RW2";
     CHECK(d2.RWProp1() == "RW2");
     CHECK(d2.RWProp2() == "RW2");
