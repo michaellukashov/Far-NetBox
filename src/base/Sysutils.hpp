@@ -467,7 +467,7 @@ class scope_guard0
 {
 public:
   explicit scope_guard0(F&& f) : m_f(std::move(f)) {}
-  ~scope_guard0() { m_f(); }
+  ~scope_guard0() noexcept(false) { m_f(); }
 
 private:
   const F m_f;
@@ -480,7 +480,7 @@ class scope_guard1
   NB_DISABLE_COPY(scope_guard1)
 public:
   explicit scope_guard1(F&& f, P p) noexcept : m_f(std::move(f)), m_p(p) {}
-  ~scope_guard1() { m_f(m_p); }
+  ~scope_guard1() noexcept(false) { m_f(m_p); }
 
 private:
   const F m_f;
@@ -511,7 +511,7 @@ public:
       throw;
     }
   }
-  ~scope_guard()
+  ~scope_guard() noexcept(false)
   {
     if (!m_finally_executed)
     {
