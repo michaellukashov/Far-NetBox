@@ -5,6 +5,21 @@
 ## [Unreleased] - ReleaseDate
 
 
+## [24.2.1.584] - 2024-02-09
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+- gh-353 Fix graying Up/Down buttons linked with kex and cipher list boxes
+- gh-352 Don't update dialog when selecting elements in open combos
+- gh-351 Fix crash when using Synchronize command
+- gh-350 Fix crash when using Open in PuTTY command
+- gh-349 Fix broken copy to clipboard in "Server and protocol information" dialog
+- gh-348 Fix PutFilesEx
+- gh-347 Fix the width of dialogs
+- gh-346 Fix russian translation
+
+
 ## [24.2.1.583] - 2024-02-07
 
 
