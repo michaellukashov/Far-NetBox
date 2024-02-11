@@ -466,8 +466,11 @@ template<typename F, typename F2>
 class scope_guard
 {
 public:
-  scope_guard() = delete;
-  explicit scope_guard(F&& f, F2&& f2) : m_f(std::move(f)), m_f2(std::move(f2))
+  scope_guard(scope_guard &&) noexcept = delete;
+  scope_guard & operator=(scope_guard &&) noexcept = delete;
+  scope_guard(const scope_guard &) = delete;
+  scope_guard & operator =(const scope_guard &) = delete;
+  explicit scope_guard(F && f, F2 && f2) : m_f(std::forward<F>(f)), m_f2(std::forward<F2>(f2))
   {
     try
     {
@@ -476,27 +479,19 @@ public:
     catch(...)
     {
       m_f2();
-      m_finally_executed = true;
       throw;
     }
+    m_f2();
   }
-  ~scope_guard() noexcept(false)
-  {
-    if (!m_finally_executed)
-    {
-      m_f2();
-    }
-  }
+  ~scope_guard() noexcept = default;
 
 private:
   const F m_f{};
   const F2 m_f2{};
-  bool m_finally_executed{false};
-//  NB_DISABLE_COPY(scope_guard)
 };
 
 template<typename F, typename F2>
-scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(std::forward<F>(f), std::forward<F2>(f2)); }
+scope_guard<F, F2> make_try_finally(F && f, F2 && f2) { return scope_guard<F, F2>(std::forward<F>(f), std::forward<F2>(f2)); }
 
 } // namespace detail
 
