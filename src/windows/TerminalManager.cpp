@@ -1439,7 +1439,7 @@ void TTerminalManager::OperationProgress(
 
 void TTerminalManager::QueueEvent(TTerminalQueue * Queue, TQueueEvent Event)
 {
-  TGuard Guard(FQueueSection); nb::used(Guard);
+  volatile const TGuard Guard(FQueueSection);
   FQueueEvents.push_back(std::make_pair(Queue, Event));
 }
 
@@ -1472,7 +1472,7 @@ void TTerminalManager::ConfigurationChange(TObject * /*Sender*/)
   }
   else
   {
-    TGuard Guard(FChangeSection.get()); nb::used(Guard);
+    volatile const TGuard Guard(FChangeSection.get());
     FPendingConfigurationChange++;
   }
 }
@@ -1708,7 +1708,7 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
     bool Changed = false;
 
     {
-      TGuard Guard(FChangeSection.get()); nb::used(Guard);
+      volatile const TGuard Guard(FChangeSection.get());
       if (DebugAlwaysTrue(FPendingConfigurationChange > 0))
       {
         FPendingConfigurationChange--;
@@ -1788,7 +1788,7 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
     QueueWithEvent = nullptr;
 
     {
-      TGuard Guard(FQueueSection); nb::used(Guard);
+      volatile const TGuard Guard(FQueueSection);
 
       if (!FQueueEvents.empty())
       {
