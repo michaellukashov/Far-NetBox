@@ -463,14 +463,14 @@ const RAII_type ANONYMOUS_VARIABLE(scoped_object_)
 namespace detail {
 
 template<typename F, typename F2>
-class scope_guard
+class scope_guard final
 {
 public:
   scope_guard(scope_guard &&) noexcept = delete;
   scope_guard & operator=(scope_guard &&) noexcept = delete;
   scope_guard(const scope_guard &) = delete;
   scope_guard & operator =(const scope_guard &) = delete;
-  explicit scope_guard(F && f, F2 && f2) : m_f(std::forward<F>(f)), m_f2(std::forward<F2>(f2))
+  explicit scope_guard(F && f, F2 && f2) : m_f(std::move(f)), m_f2(std::move(f2))
   {
     try
     {
