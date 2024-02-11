@@ -446,7 +446,7 @@ void TCustomFarPlugin::CloseFileSystem(TCustomFarFileSystem * FileSystem)
   DebugAssert(FOpenedPlugins->IndexOf(FileSystem) != nb::NPOS);
   try__finally
   {
-    TGuard Guard(FileSystem->GetCriticalSection()); nb::used(Guard);
+    volatile const TGuard Guard(FileSystem->GetCriticalSection());
     FileSystem->Close();
   }
   __finally
@@ -491,7 +491,7 @@ void TCustomFarPlugin::GetOpenPanelInfo(struct OpenPanelInfo * Info)
   {
     ResetCachedInfo();
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
-    TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+    volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
     FarFileSystem->GetOpenPanelInfo(Info);
   }
   catch(Exception & E)
@@ -512,7 +512,7 @@ int32_t TCustomFarPlugin::GetFindData(struct GetFindDataInfo * Info)
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+      volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->GetFindData(Info);
     }
   }
@@ -533,9 +533,8 @@ void TCustomFarPlugin::FreeFindData(const struct FreeFindDataInfo * Info)
   {
     ResetCachedInfo();
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
-
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+      volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
       FarFileSystem->FreeFindData(Info);
     }
   }
@@ -557,9 +556,8 @@ intptr_t TCustomFarPlugin::ProcessHostFile(const struct ProcessHostFileInfo * In
     if (HandlesFunction(hfProcessHostFile))
     {
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
-
       {
-        TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+        volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->ProcessHostFile(Info);
       }
     }
@@ -584,9 +582,8 @@ intptr_t TCustomFarPlugin::ProcessPanelInput(const struct ProcessPanelInputInfo 
     if (HandlesFunction(hfProcessKey))
     {
       DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
-
       {
-        TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+        volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->ProcessPanelInput(Info);
       }
     }
@@ -628,7 +625,7 @@ intptr_t TCustomFarPlugin::ProcessPanelEvent(const struct ProcessPanelEventInfo 
 
       bool Result{false};
       { 
-        TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+        volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
         Result = FarFileSystem->ProcessPanelEvent(Info->Event, Param);
       }
       if (MustSkipClose)
@@ -659,7 +656,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
     ResetCachedInfo();
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+      volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->SetDirectory(Info);
     }
   }
@@ -677,7 +674,7 @@ intptr_t TCustomFarPlugin::SetDirectory(const struct SetDirectoryInfo * Info)
       Info2.OpMode = Info->OpMode;
       try
       {
-        TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+        volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
         return FarFileSystem->SetDirectory(&Info2);
       }
       catch(Exception &)
@@ -700,7 +697,7 @@ intptr_t TCustomFarPlugin::MakeDirectory(struct MakeDirectoryInfo * Info)
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+      volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->MakeDirectory(Info);
     }
   }
@@ -723,7 +720,7 @@ intptr_t TCustomFarPlugin::DeleteFiles(const struct DeleteFilesInfo * Info)
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+      volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->DeleteFiles(Info);
     }
   }
@@ -746,7 +743,7 @@ intptr_t TCustomFarPlugin::GetFiles(struct GetFilesInfo * Info)
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+      volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->GetFiles(Info);
     }
   }
@@ -770,7 +767,7 @@ intptr_t TCustomFarPlugin::PutFiles(const struct PutFilesInfo * Info)
     DebugAssert(FOpenedPlugins->IndexOf(FarFileSystem) != nb::NPOS);
 
     {
-      TGuard Guard(FarFileSystem->GetCriticalSection()); nb::used(Guard);
+      volatile const TGuard Guard(FarFileSystem->GetCriticalSection());
       return FarFileSystem->PutFiles(Info);
     }
   }
@@ -1206,7 +1203,7 @@ int32_t TCustomFarPlugin::FarMessage(uint32_t Flags,
     Items[Index] = ToWCharPtr(MessageLines->GetStringRef(Index));
   }
 
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   const int32_t Result = nb::ToInt32(FStartupInfo.Message(
     &NetBoxPluginGuid, &MessageGuid,
     Flags | FMSG_LEFTALIGN, nullptr, Items, nb::ToInt32(MessageLines->GetCount()),
@@ -1237,7 +1234,7 @@ int32_t TCustomFarPlugin::Message(uint32_t Flags,
   {
     DebugAssert(Params == nullptr);
     const UnicodeString Items = Title + L"\n" + Message;
-    TFarEnvGuard Guard; nb::used(Guard);
+    volatile const TFarEnvGuard Guard;
     Result = nb::ToInt32(FStartupInfo.Message(
       &NetBoxPluginGuid, &MessageGuid,
       Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
@@ -1253,7 +1250,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
 {
   DebugAssert(Items);
 
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   return FStartupInfo.Menu(&NetBoxPluginGuid, &MenuGuid,
       -1, -1, 0,
       Flags,
@@ -1336,7 +1333,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
     HANDLE ScreenHandle = nullptr;
     SaveScreen(ScreenHandle);
     {
-      TFarEnvGuard Guard; nb::used(Guard);
+      volatile const TFarEnvGuard Guard;
       Result = FStartupInfo.InputBox(
           &NetBoxPluginGuid,
           &InputBoxGuid,
@@ -1376,7 +1373,7 @@ bool TCustomFarPlugin::InputBox(const UnicodeString & Title,
 
 void TCustomFarPlugin::Text(int32_t X, int32_t Y, int32_t Color, const UnicodeString & Str)
 {
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   FarColor color = {};
   color.Flags = FCF_FG_4BIT | FCF_BG_4BIT;
   color.ForegroundColor = Color; // LIGHTGRAY;
@@ -1386,7 +1383,7 @@ void TCustomFarPlugin::Text(int32_t X, int32_t Y, int32_t Color, const UnicodeSt
 
 void TCustomFarPlugin::FlushText()
 {
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   FStartupInfo.Text(0, 0, nullptr, nullptr);
 }
 
@@ -1398,7 +1395,7 @@ void TCustomFarPlugin::FarWriteConsole(const UnicodeString & Str)
 
 void TCustomFarPlugin::FarCopyToClipboard(const UnicodeString & Str)
 {
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   FFarStandardFunctions.CopyToClipboard(FCT_STREAM, Str.c_str());
 }
 
@@ -1700,7 +1697,7 @@ void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 void TCustomFarPlugin::SaveScreen(HANDLE & Screen)
 {
   DebugAssert(!Screen);
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   Screen = static_cast<HANDLE>(FStartupInfo.SaveScreen(0, 0, -1, -1));
   DebugAssert(Screen);
 }
@@ -1708,7 +1705,7 @@ void TCustomFarPlugin::SaveScreen(HANDLE & Screen)
 void TCustomFarPlugin::RestoreScreen(HANDLE & Screen)
 {
   DebugAssert(Screen);
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   FStartupInfo.RestoreScreen(Screen);
   Screen = nullptr;
 }
@@ -1721,7 +1718,7 @@ void TCustomFarPlugin::HandleException(Exception * E, OPERATION_MODES /*OpMode*/
 
 UnicodeString TCustomFarPlugin::GetMsg(intptr_t MsgId) const
 {
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   UnicodeString Result;
   if (FStartupInfo.GetMsg)
   try
@@ -1763,7 +1760,7 @@ bool TCustomFarPlugin::CheckForEsc() const
 bool TCustomFarPlugin::Viewer(const UnicodeString & AFileName,
   const UnicodeString & Title, VIEWER_FLAGS Flags)
 {
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   const intptr_t Result = FStartupInfo.Viewer(
       AFileName.c_str(),
       Title.c_str(), 0, 0, -1, -1, Flags,
@@ -1774,7 +1771,7 @@ bool TCustomFarPlugin::Viewer(const UnicodeString & AFileName,
 bool TCustomFarPlugin::Editor(const UnicodeString & AFileName,
   const UnicodeString & Title, EDITOR_FLAGS Flags)
 {
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   const intptr_t Result = FStartupInfo.Editor(
       AFileName.c_str(),
       Title.c_str(), 0, 0, -1, -1, Flags, -1, -1,
@@ -1833,13 +1830,13 @@ intptr_t TCustomFarPlugin::FarControl(FILE_CONTROL_COMMANDS Command, intptr_t Pa
     break;
   }
 
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   return FStartupInfo.PanelControl(Plugin, Command, Param1, Param2);
 }
 
 intptr_t TCustomFarPlugin::FarAdvControl(ADVANCED_CONTROL_COMMANDS Command, intptr_t Param1, void * Param2) const
 {
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   return FStartupInfo.AdvControl ?
     FStartupInfo.AdvControl(&NetBoxPluginGuid, Command, Param1, Param2) : 0;
 }
@@ -1863,7 +1860,7 @@ intptr_t TCustomFarPlugin::FarEditorControl(EDITOR_CONTROL_COMMANDS Command, int
     break;
   }
 
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   return FStartupInfo.EditorControl(-1, Command, Param1, Param2);
 }
 
@@ -1908,7 +1905,7 @@ UnicodeString TCustomFarPlugin::FormatFarVersion(VersionInfo & Info) const
 UnicodeString TCustomFarPlugin::GetTemporaryDir() const
 {
   UnicodeString Result(nb::NB_MAX_PATH, 0);
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   FFarStandardFunctions.MkTemp(ToWCharPtr(Result), nb::ToSizeT(Result.Length()), nullptr);
   PackStr(Result);
   return Result;
@@ -1919,7 +1916,7 @@ intptr_t TCustomFarPlugin::InputRecordToKey(const INPUT_RECORD * /*Rec*/)
   intptr_t  Result;
   /*
   {
-    TFarEnvGuard Guard; nb::used(Guard);
+    volatile const TFarEnvGuard Guard;
     Result = FFarStandardFunctions.FarInputRecordToKey(Rec);
   }
   else

@@ -125,7 +125,7 @@ TOwnConsole::TOwnConsole()
 
 TOwnConsole::~TOwnConsole()
 {
-  TGuard Guard(FSection.get()); nb::used(Guard);
+  volatile const TGuard Guard(FSection.get());
 
   delete FTrayIcon;
   delete FWindowStateTimer;
@@ -224,7 +224,7 @@ BOOL WINAPI TOwnConsole::HandlerRoutine(DWORD CtrlType)
   if ((CtrlType == CTRL_C_EVENT) || (CtrlType == CTRL_BREAK_EVENT))
   {
     {
-      TGuard Guard(FSection.get()); nb::used(Guard);
+      volatile const TGuard Guard(FSection.get());
 
       // just to be real thread-safe
       if (FInstance != nullptr)

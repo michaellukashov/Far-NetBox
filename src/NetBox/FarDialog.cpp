@@ -370,7 +370,7 @@ void TFarDialog::GetNextItemPosition(int32_t & Left, int32_t & Top)
 
 intptr_t WINAPI TFarDialog::DialogProcGeneral(HANDLE Handle, intptr_t Msg, intptr_t Param1, void * Param2)
 {
-  TFarPluginEnvGuard Guard; nb::used(Guard);
+  volatile const TFarPluginEnvGuard Guard;
 
   static nb::map_t<HANDLE, void *> Dialogs;
   TFarDialog * Dialog = nullptr;
@@ -594,7 +594,7 @@ intptr_t TFarDialog::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Par
 {
   if (GetHandle())
   {
-    TFarEnvGuard Guard; nb::used(Guard);
+    volatile const TFarEnvGuard Guard;
     return GetFarPlugin()->GetPluginStartupInfo()->DefDlgProc(GetHandle(), Msg, nb::ToInt32(Param1), Param2);
   }
   return 0;
@@ -755,7 +755,7 @@ int32_t TFarDialog::ShowModal()
     intptr_t BResult{0};
 
     {
-      TFarEnvGuard Guard; nb::used(Guard);
+      volatile const TFarEnvGuard Guard;
       const TRect Bounds = GetBounds();
       Handle = Info.DialogInit(
         &NetBoxPluginGuid, GetDialogGuid(),
@@ -850,9 +850,9 @@ intptr_t TFarDialog::SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2
 {
   if (GetHandle())
   {
-    TFarEnvGuard Guard; nb::used(Guard);
+    volatile const TFarEnvGuard Guard;
     return GetFarPlugin()->GetPluginStartupInfo()->SendDlgMessage(GetHandle(),
-        Msg, Param1, Param2);
+      Msg, Param1, Param2);
   }
   return 0;
 }
@@ -1421,7 +1421,7 @@ intptr_t TFarDialogItem::DefaultItemProc(intptr_t Msg, void * Param)
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
-    TFarEnvGuard Guard; nb::used(Guard);
+    volatile const TFarEnvGuard Guard;
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
       Msg, nb::ToIntPtr(GetItemIdx()), Param);
   }
@@ -1432,7 +1432,7 @@ intptr_t TFarDialogItem::DefaultDialogProc(intptr_t Msg, intptr_t Param1, void *
 {
   if (GetDialog() && GetDialog()->GetHandle())
   {
-    TFarEnvGuard Guard; nb::used(Guard);
+    volatile const TFarEnvGuard Guard;
     return GetPluginStartupInfo()->DefDlgProc(GetDialog()->GetHandle(),
         Msg, Param1, Param2);
   }
@@ -1722,7 +1722,7 @@ bool TFarDialogItem::MouseMove(int32_t /*X*/, int32_t /*Y*/,
 
 void TFarDialogItem::Text(int32_t X, int32_t Y, const FarColor &Color, const UnicodeString & Str)
 {
-  TFarEnvGuard Guard; nb::used(Guard);
+  volatile const TFarEnvGuard Guard;
   GetPluginStartupInfo()->Text(
     nb::ToInt32(GetDialog()->GetBounds().Left + GetLeft() + X),
     nb::ToInt32(GetDialog()->GetBounds().Top + GetTop() + Y),

@@ -202,7 +202,7 @@ TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
 
 void TConfiguration::Default()
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
 
   FDisablePasswordStoring = false;
   FForceBanners = false;
@@ -327,7 +327,7 @@ THierarchicalStorage * TConfiguration::CreateConfigRegistryStorage() const
 
 THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   THierarchicalStorage * Result = nullptr;
   if (GetStorage() == stRegistry)
   {
@@ -703,7 +703,7 @@ UnicodeString TConfiguration::LoadCustomIniFileStorageName()
 
 void TConfiguration::Load(THierarchicalStorage * Storage)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   const TStorageAccessMode StorageAccessMode = Storage->GetAccessMode();
   try__finally
   {
@@ -927,7 +927,7 @@ void TConfiguration::Changed()
   TNotifyEvent AOnChange = nullptr;
 
   {
-    TGuard Guard(FCriticalSection); nb::used(Guard);
+    volatile const TGuard Guard(FCriticalSection);
     if (FUpdating == 0)
     {
       AOnChange = GetOnChange();
@@ -1339,7 +1339,7 @@ UnicodeString TConfiguration::GetVersionStr() const
 UnicodeString TConfiguration::GetProductVersionStr() const
 {
   UnicodeString Result;
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   try
   {
     const TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
@@ -1411,7 +1411,7 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString & AFileName) co
 
 UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info) const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   UnicodeString Result;
   if (Info)
   try
@@ -1437,7 +1437,7 @@ UnicodeString TConfiguration::GetVersion() const
 UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
   const UnicodeString & AFileName, bool AllowEmpty) const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
 
   UnicodeString Result;
   void * Info = GetFileApplicationInfo(AFileName);
@@ -1647,7 +1647,7 @@ UnicodeString TConfiguration::GetIniFileStorageName(bool ReadingOnly) const
 
 void TConfiguration::SetOptionsStorage(const TStrings * Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   if (FOptionsStorage == nullptr)
   {
     FOptionsStorage = std::make_unique<TStringList>();
@@ -1763,7 +1763,7 @@ void TConfiguration::Saved()
 
 TStorage TConfiguration::GetStorage() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   if (FStorage == stDetect)
   {
 #if 0
@@ -2172,7 +2172,7 @@ void TConfiguration::TemporaryLogMaxCount(int32_t ALogMaxCount)
 
 void TConfiguration::SetLogging(bool Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   if (GetLogging() != Value)
   {
     FPermanentLogging = Value;
@@ -2184,13 +2184,13 @@ void TConfiguration::SetLogging(bool Value)
 
 bool TConfiguration::GetLogging() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FPermanentLogging;
 }
 
 void TConfiguration::SetLogFileName(const UnicodeString & Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   if (GetLogFileName() != Value)
   {
     FPermanentLogFileName = Value;
@@ -2201,7 +2201,7 @@ void TConfiguration::SetLogFileName(const UnicodeString & Value)
 
 void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   if (GetActionsLogFileName() != Value)
   {
     FPermanentActionsLogFileName = Value;
@@ -2212,13 +2212,13 @@ void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
 
 UnicodeString TConfiguration::GetPermanentActionsLogFileName() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FPermanentActionsLogFileName;
 }
 
 UnicodeString TConfiguration::GetActionsLogFileName() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FActionsLogFileName;
 }
 
@@ -2235,7 +2235,7 @@ void TConfiguration::UpdateActualLogProtocol()
 
 void TConfiguration::SetLogProtocol(int32_t Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   if (GetLogProtocol() != Value)
   {
     FPermanentLogProtocol = Value;
@@ -2247,7 +2247,7 @@ void TConfiguration::SetLogProtocol(int32_t Value)
 
 void TConfiguration::SetLogActions(bool Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   if (GetLogActions() != Value)
   {
     FPermanentLogActions = Value;
@@ -2258,7 +2258,7 @@ void TConfiguration::SetLogActions(bool Value)
 
 bool TConfiguration::GetLogActions() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FPermanentLogActions;
 }
 
@@ -2279,7 +2279,7 @@ void TConfiguration::SetLogSensitive(bool Value)
 
 void TConfiguration::SetLogMaxSize(int64_t Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   if (GetLogMaxSize() != Value)
   {
     FPermanentLogMaxSize = Value;
@@ -2290,7 +2290,7 @@ void TConfiguration::SetLogMaxSize(int64_t Value)
 
 int64_t TConfiguration::GetLogMaxSize() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FPermanentLogMaxSize;
 }
 
@@ -2306,7 +2306,7 @@ void TConfiguration::SetLogMaxCount(int32_t Value)
 
 int32_t TConfiguration::GetLogMaxCount() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FPermanentLogMaxCount;
 }
 
@@ -2317,37 +2317,37 @@ UnicodeString TConfiguration::GetDefaultLogFileName() const
 
 void TConfiguration::SetConfirmOverwriting(bool Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmOverwriting);
 }
 
 bool TConfiguration::GetConfirmOverwriting() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FConfirmOverwriting;
 }
 
 void TConfiguration::SetConfirmResume(bool Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(ConfirmResume);
 }
 
 bool TConfiguration::GetConfirmResume() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FConfirmResume;
 }
 
 void TConfiguration::SetAutoReadDirectoryAfterOp(bool Value)
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   SET_CONFIG_PROPERTY(AutoReadDirectoryAfterOp);
 }
 
 bool TConfiguration::GetAutoReadDirectoryAfterOp() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FAutoReadDirectoryAfterOp;
 }
 
@@ -2467,13 +2467,13 @@ void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int32_t Value)
 
 UnicodeString  TConfiguration::GetLogFileName() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   return FPermanentLogFileName;
 }
 
 UnicodeString TConfiguration::GetProductVersion() const
 {
-  TGuard Guard(FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(FCriticalSection);
   UnicodeString Result;
   try
   {
