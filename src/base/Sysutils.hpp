@@ -462,42 +462,11 @@ const RAII_type ANONYMOUS_VARIABLE(scoped_object_)
 
 namespace detail {
 
-template<typename F>
-class scope_guard0
-{
-public:
-  explicit scope_guard0(F&& f) : m_f(std::move(f)) {}
-  ~scope_guard0() noexcept(false) { m_f(); }
-
-private:
-  const F m_f;
-  NB_DISABLE_COPY(scope_guard0)
-};
-
-template<typename F, typename P>
-class scope_guard1
-{
-  NB_DISABLE_COPY(scope_guard1)
-public:
-  explicit scope_guard1(F&& f, P p) noexcept : m_f(std::move(f)), m_p(p) {}
-  ~scope_guard1() noexcept(false) { m_f(m_p); }
-
-private:
-  const F m_f;
-  P m_p;
-};
-
-class make_scope_guard
-{
-public:
-  template<typename F>
-  scope_guard0<F> operator<<(F&& f) { return scope_guard0<F>(std::forward<F>(f)); }
-};
-
 template<typename F, typename F2>
 class scope_guard
 {
 public:
+  scope_guard() = delete;
   explicit scope_guard(F&& f, F2&& f2) : m_f(std::move(f)), m_f2(std::move(f2))
   {
     try
@@ -540,12 +509,12 @@ scope_guard<F, F2> make_try_finally(F&& f, F2&& f2) { return scope_guard<F, F2>(
 
 #define try__removed
 #define try__catch \
-  { volatile const auto ANONYMOUS_VARIABLE(try_catch) = detail::make_try_finally([&]()
+  { volatile const auto ANONYMOUS_VARIABLE(try_catch) = Sysutils::detail::make_try_finally([&]()
 
 #define end_try__catch ); }
 
 #define try__finally \
-  { volatile const auto ANONYMOUS_VARIABLE(try_finally) = detail::make_try_finally([&]()
+  { volatile const auto ANONYMOUS_VARIABLE(try_finally) = Sysutils::detail::make_try_finally([&]()
 
 #define __finally \
   ,[&]() // lambda body here
@@ -593,7 +562,7 @@ struct nop_deleter { void operator()(void *) const {} };
 }
 
 template<class T>
-using movable_ptr = std::unique_ptr<T, detail::nop_deleter>;
+using movable_ptr = std::unique_ptr<T, Sysutils::detail::nop_deleter>;
 
 namespace scope_exit {
 
