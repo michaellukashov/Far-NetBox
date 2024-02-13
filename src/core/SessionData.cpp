@@ -4472,6 +4472,7 @@ static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConf
 
 void TSessionData::PrepareProxyData() const
 {
+#if 0
 //  if ((GetProxyMethod() == pmSystem) && (nullptr == FIEProxyConfig))
   {
     FIEProxyConfig = new TIEProxyConfig;
@@ -4511,6 +4512,7 @@ void TSessionData::PrepareProxyData() const
       }
     }
   }
+#endif // #if 0
 }
 
 void TSessionData::ParseIEProxyConfig() const
