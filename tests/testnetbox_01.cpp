@@ -957,6 +957,42 @@ TEST_CASE_METHOD(base_fixture_t, "test30", "netbox")
 }
 //------------------------------------------------------------------------------
 
+namespace test {
+
+template<typename F>
+class scope_guard0
+{
+public:
+  explicit scope_guard0(F&& f) : m_f(std::move(f)) {}
+  ~scope_guard0() noexcept(false) { m_f(); }
+
+private:
+  const F m_f;
+  NB_DISABLE_COPY(scope_guard0)
+};
+
+template<typename F, typename P>
+class scope_guard1
+{
+  NB_DISABLE_COPY(scope_guard1)
+public:
+  explicit scope_guard1(F&& f, P p) noexcept : m_f(std::move(f)), m_p(p) {}
+  ~scope_guard1() noexcept(false) { m_f(m_p); }
+
+private:
+  const F m_f;
+  P m_p;
+};
+
+class make_scope_guard
+{
+public:
+  template<typename F>
+  scope_guard0<F> operator<<(F&& f) { return scope_guard0<F>(std::forward<F>(f)); }
+};
+
+
+} // namespace test
 typedef nb::FastDelegate0<void> TAnonFunction;
 
 class TTestAnonFunc
@@ -981,7 +1017,7 @@ TEST_CASE_METHOD(base_fixture_t, "test_scope_exit2", "netbox")
   // SCOPE_EXIT2(base_fixture_t::AnonFunction2, (void*)&Param);
   // detail::kscope_guard2<nb::FastDelegate1<void, int>, int> guard(nb::bind(&base_fixture_t::AnonFunction2, this), Param);
   printf("in TEST_CASE_METHOD test_scope_exit2\n");
-  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << \
+  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = test::make_scope_guard() << \
     test_lambda2;
   test_lambda1();
 //  TAnonFunction func(test_lambda2, this);
