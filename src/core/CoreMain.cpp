@@ -171,8 +171,10 @@ static bool StoredSessionsInitialized = false;
 TStoredSessionList * GetStoredSessions()
 {
   static TStoredSessionList * StoredSessions = nullptr;
-  if (StoredSessions != nullptr)
+  if (StoredSessionsInitialized)
+  {
     return StoredSessions;
+  }
 
   StoredSessions = new TStoredSessionList();
 
@@ -195,12 +197,10 @@ TStoredSessionList * GetStoredSessions()
 
 void DeleteStoredSessions()
 {
-  static bool StoredSessionsDeleted = false;
-  if (!StoredSessionsDeleted && StoredSessionsInitialized)
+  if (StoredSessionsInitialized)
   {
     TStoredSessionList * StoredSessions = GetStoredSessions();
     SAFE_DESTROY(StoredSessions);
-    StoredSessionsDeleted = true;
     StoredSessionsInitialized = false;
   }
 }
