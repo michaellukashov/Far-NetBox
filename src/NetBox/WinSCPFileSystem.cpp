@@ -998,6 +998,16 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       }
       Handled = true;
     }
+
+    if (Key == 'R' && (ControlState & CTRLMASK))
+    {
+      DeleteStoredSessions();
+      if (UpdatePanel())
+      {
+        RedrawPanel();
+      }
+      Handled = true;
+    }
   }
   else if (Connected())
   {
