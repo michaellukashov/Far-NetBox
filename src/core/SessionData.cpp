@@ -4472,6 +4472,7 @@ static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConf
 
 void TSessionData::PrepareProxyData() const
 {
+#if 0
 //  if ((GetProxyMethod() == pmSystem) && (nullptr == FIEProxyConfig))
   {
     FIEProxyConfig = new TIEProxyConfig;
@@ -4511,6 +4512,7 @@ void TSessionData::PrepareProxyData() const
       }
     }
   }
+#endif // #if 0
 }
 
 void TSessionData::ParseIEProxyConfig() const
@@ -5304,7 +5306,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   try__finally
   {
     DebugAssert(FAutoSort);
-    FAutoSort = false;
+    // FAutoSort = false;
     const bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());
@@ -5355,10 +5357,10 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
               SessionData->CopyData(GetDefaultSettings());
             }
             SessionData->SetName(SessionName);
+            SessionData->Load(Storage, PuttyImport);
             Add(SessionData);
           }
           Loaded->Add(SessionData);
-          SessionData->Load(Storage, PuttyImport);
           if (AsModified)
           {
             SessionData->SetModified(true);
@@ -5381,8 +5383,9 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   }
   __finally
   {
-    FAutoSort = true;
-    AlphaSort();
+    // FAutoSort = true;
+    // AlphaSort();
+    Recount();
     // delete SubKeys;
     // delete Loaded;
   } end_try__finally

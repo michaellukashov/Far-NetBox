@@ -17,7 +17,7 @@ NB_CORE_EXPORT void CoreSetResourceModule(void * ResourceHandle);
 NB_CORE_EXPORT void CoreMaintenanceTask();
 void CoreUpdateFinalStaticUsage();
 TConfiguration * GetConfiguration();
-TStoredSessionList * GetStoredSessions();
+TStoredSessionList * GetStoredSessions(bool * JustLoaded = nullptr);
 void DeleteStoredSessions();
 
 NB_CORE_EXPORT UnicodeString NeonVersion();

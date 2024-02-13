@@ -168,11 +168,15 @@ void DeleteConfiguration()
 
 static bool StoredSessionsInitialized = false;
 
-TStoredSessionList * GetStoredSessions()
+TStoredSessionList * GetStoredSessions(bool * JustLoaded)
 {
+#define SET_LOADED(Value) do { if (JustLoaded != nullptr) *JustLoaded = Value; } while(0)
   static TStoredSessionList * StoredSessions = nullptr;
-  if (StoredSessions != nullptr)
+  if (StoredSessionsInitialized)
+  {
+    SET_LOADED(false);
     return StoredSessions;
+  }
 
   StoredSessions = new TStoredSessionList();
 
@@ -190,17 +194,17 @@ TStoredSessionList * GetStoredSessions()
     ShowExtendedException(&E);
   }
   StoredSessionsInitialized = true;
+  SET_LOADED(true);
+#undef SET_LOADED
   return StoredSessions;
 }
 
 void DeleteStoredSessions()
 {
-  static bool StoredSessionsDeleted = false;
-  if (!StoredSessionsDeleted && StoredSessionsInitialized)
+  if (StoredSessionsInitialized)
   {
     TStoredSessionList * StoredSessions = GetStoredSessions();
     SAFE_DESTROY(StoredSessions);
-    StoredSessionsDeleted = true;
     StoredSessionsInitialized = false;
   }
 }

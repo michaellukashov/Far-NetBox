@@ -24,7 +24,7 @@ jobs:
           - { build: ninja_cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
 
     env:
-      BUILD_TYPE: RelWithDebugInfo
+      BUILD_TYPE: RelWithDebInfo
 
     runs-on: windows-2022
     steps:
