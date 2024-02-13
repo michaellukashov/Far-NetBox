@@ -5306,7 +5306,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   try__finally
   {
     DebugAssert(FAutoSort);
-    FAutoSort = false;
+    // FAutoSort = false;
     const bool WasEmpty = (GetCount() == 0);
 
     Storage->GetSubKeyNames(SubKeys.get());
@@ -5383,8 +5383,9 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   }
   __finally
   {
-    FAutoSort = true;
-    AlphaSort();
+    // FAutoSort = true;
+    // AlphaSort();
+    Recount();
     // delete SubKeys;
     // delete Loaded;
   } end_try__finally
