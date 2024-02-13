@@ -170,7 +170,7 @@ static bool StoredSessionsInitialized = false;
 
 TStoredSessionList * GetStoredSessions(bool * JustLoaded)
 {
-#define SET_LOADED(Value) { if (JustLoaded != nullptr) *JustLoaded = Value; }
+#define SET_LOADED(Value) do { if (JustLoaded != nullptr) *JustLoaded = Value; } while(0)
   static TStoredSessionList * StoredSessions = nullptr;
   if (StoredSessionsInitialized)
   {
