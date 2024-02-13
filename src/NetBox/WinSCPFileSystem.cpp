@@ -521,8 +521,10 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
   else if (IsSessionList())
   {
     Result = true;
-    DebugAssert(GetStoredSessions());
+    bool JustLoaded = false;
+    GetStoredSessions(&JustLoaded);
     bool SessionList = true;
+    if (!JustLoaded)
     {
       std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
       if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
