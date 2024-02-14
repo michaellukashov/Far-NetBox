@@ -521,8 +521,10 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
   else if (IsSessionList())
   {
     Result = true;
-    DebugAssert(GetStoredSessions());
+    bool JustLoaded = false;
+    GetStoredSessions(&JustLoaded);
     bool SessionList = true;
+    if (!JustLoaded)
     {
       std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateScpStorage(SessionList));
       if (Storage->OpenSubKey(GetConfiguration()->GetStoredSessionsSubKey(), False))
@@ -993,6 +995,16 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       if (Data != nullptr)
       {
         DuplicateOrRenameSession(Data, Key == VK_F5);
+      }
+      Handled = true;
+    }
+
+    if (Key == 'R' && (ControlState & CTRLMASK))
+    {
+      DeleteStoredSessions();
+      if (UpdatePanel())
+      {
+        RedrawPanel();
       }
       Handled = true;
     }

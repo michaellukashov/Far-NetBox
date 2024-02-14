@@ -136,7 +136,7 @@ int32_t TNamedObjectList::Add(TObject * AObject)
       } 
       else 
       {
-        Result= Pos - 1;
+        Result = Pos - 1;
       }
     }
     else 
@@ -172,7 +172,7 @@ TNamedObject * TNamedObjectList::GetSortObject(const UnicodeString & Name, int32
   // bool Flag = false;
   int32_t L = 0;
   int32_t R = GetCountIncludingHidden() - 1;
-  int32_t Mid=0;
+  int32_t Mid = 0;
   Position = 0;
 
   if (R < 0)
