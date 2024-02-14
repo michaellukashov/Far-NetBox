@@ -2480,8 +2480,8 @@ ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 #/Oi - enable intrinsic functions
 #/RTC1 - Run-time error checks
 ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
-ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG Debug)
-ucm_add_flags(CXX C /DEBUG CONFIG RelWithDebInfo)
+ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
+ucm_add_flags(CXX C /DDEBUG CONFIG RelWithDebInfo)
 # ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
 # ucm_add_flags(CXX /fsanitize-address-use-after-return CONFIG Debug)
 #-Ob1
