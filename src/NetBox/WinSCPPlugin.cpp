@@ -618,12 +618,12 @@ public:
   uint32_t ButtonCount{0};
 };
 
-void TWinSCPPlugin::MessageClick(void * Token, uint32_t Result, bool & Close)
+void TWinSCPPlugin::MessageClick(void * Token, int32_t Result, bool & Close)
 {
   DebugAssert(Token);
   const TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 
-  DebugAssert(Result != nb::ToUInt32(-1) && Result < Data.ButtonCount);
+  DebugAssert((Result != -1) && Result < Data.ButtonCount);
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
