@@ -977,10 +977,7 @@ TFarDialogContainer::TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADial
   GetDialog()->GetNextItemPosition(FLeft, FTop);
 }
 
-TFarDialogContainer::~TFarDialogContainer() noexcept
-{
-//  SAFE_DESTROY(FItems);
-}
+TFarDialogContainer::~TFarDialogContainer() noexcept = default;
 
 UnicodeString TFarDialogContainer::GetMsg(intptr_t MsgId) const
 {
