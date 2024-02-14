@@ -52,7 +52,7 @@ using TFarInputBoxValidateEvent = nb::FastDelegate1<void,
 using TFarMessageTimerEvent = nb::FastDelegate1<void,
   uint32_t & /*Result*/>;
 using TFarMessageClickEvent = nb::FastDelegate3<void,
-  void * /*Token*/, uint32_t /*Result*/, bool & /*Close*/>;
+  void * /*Token*/, int32_t /*Result*/, bool & /*Close*/>;
 using TSynchroEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, void * /*Data*/>;
 
