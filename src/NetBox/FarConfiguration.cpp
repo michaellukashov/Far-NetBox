@@ -183,7 +183,7 @@ void TFarConfiguration::LoadFarConfiguration()
   } end_try__finally
 }
 
-void TFarConfiguration::Save(bool All, bool Explicit)
+void TFarConfiguration::SaveFarConfiguration(bool All, bool Explicit)
 {
   FForceInheritance = true;
   try__finally
