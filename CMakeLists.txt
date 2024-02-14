@@ -1351,6 +1351,9 @@ add_library(atlmfc STATIC
 
 target_compile_options(atlmfc PRIVATE
   ${ATLMFC_COMPILE_FLAGS}
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+
 )
 
 if(MSVC)
@@ -1358,11 +1361,6 @@ target_compile_options(atlmfc PRIVATE
   -wd4995 -wd4996 -wd4101 -wd4290
 )
 endif()
-
-target_compile_definitions(atlmfc PRIVATE
-  ${NETBOX_CXX_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
-)
 
 target_include_directories(atlmfc PRIVATE
   libs
@@ -1570,11 +1568,8 @@ endif()
 target_compile_options(putty PRIVATE
   ${PUTTY_COMPILE_FLAGS}
   -Dssize_t=size_t
-)
-
-target_compile_definitions(putty PRIVATE
   ${NETBOX_C_FLAGS}
-#  ${NETBOX_UNICODE_FLAGS}
+  #  ${NETBOX_UNICODE_FLAGS}
 )
 
 #puttyvs
@@ -1606,9 +1601,6 @@ target_compile_options(puttyvs PRIVATE
   ${PUTTY_COMPILE_FLAGS}
   -Dssize_t=size_t
   -DWINSCP_VS
-)
-
-target_compile_definitions(puttyvs PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
@@ -1627,11 +1619,11 @@ target_include_directories(tinyxml2 PRIVATE
 )
 
 target_compile_options(tinyxml2 PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_compile_definitions(tinyxml2 PRIVATE
-  ${NETBOX_CXX_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
   -DTINYXML2_EXPORT
 )
 
@@ -1686,13 +1678,13 @@ set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
 )
 endif()
 
-#target_compile_options(neon PRIVATE
-#)
-
-target_compile_definitions(neon PRIVATE
+target_compile_options(neon PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${NEON_COMPILE_FLAGS}
+)
+
+target_compile_definitions(neon PRIVATE
   -DWINSCP
   -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS
   # -U_UNICODE -UUNICODE
@@ -1716,7 +1708,7 @@ target_include_directories(expat PRIVATE
   libs/expat
 )
 
-target_compile_definitions(expat PRIVATE
+target_compile_options(expat PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${LIBEXPAT_DEFS}
@@ -1790,11 +1782,11 @@ target_include_directories(zlib PRIVATE
 )
 
 target_compile_options(zlib PRIVATE
+  ${NETBOX_C_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_compile_definitions(zlib PRIVATE
-  ${NETBOX_C_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
   # -DUNALIGNED_OK
   -DZLIB_INTERNAL=
   -DZLIB_COMPAT
@@ -1827,7 +1819,7 @@ add_library(dlmalloc STATIC
   libs/dlmalloc/dlmalloc-2.8.6.h
 )
 
-target_compile_definitions(dlmalloc PRIVATE
+target_compile_options(dlmalloc PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
@@ -1860,10 +1852,13 @@ target_include_directories(tinylog PRIVATE
   # src/resource
 )
 
-target_compile_definitions(tinylog PRIVATE
+target_compile_options(tinylog PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
+)
+
+target_compile_definitions(tinylog PRIVATE
   -DTINYLOG_EXPORT
 )
 
@@ -1891,10 +1886,13 @@ target_include_directories(fmt PRIVATE
   src/include
 )
 
-target_compile_definitions(fmt PRIVATE
+target_compile_options(fmt PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
+)
+
+target_compile_definitions(fmt PRIVATE
   ${fmt_DEFINES}
 )
 
@@ -1940,9 +1938,12 @@ target_include_directories(s3 PRIVATE
   # libs/openssl-3/providers/common/include
 )
 
-target_compile_definitions(s3 PRIVATE
+target_compile_options(s3 PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+)
+
+target_compile_definitions(s3 PRIVATE
   ${LIBEXPAT_DEFS}
   -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS -DNEED_LIBS3
 )
@@ -2221,7 +2222,7 @@ target_include_directories(baselib PRIVATE
   src/resource
 )
 
-target_compile_definitions(baselib PRIVATE
+target_compile_options(baselib PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
