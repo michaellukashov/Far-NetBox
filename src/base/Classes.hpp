@@ -297,6 +297,7 @@ public:
   virtual int32_t GetCount() const { return nb::ToInt32(FList.size()); }
 
   virtual void SetCount(int32_t NewCount)
+  try
   {
     if (NewCount <= nb::ToInt32(FList.size()))
     {
@@ -308,6 +309,7 @@ public:
     }
     FList.resize(NewCount);
   }
+  catch (const std::bad_alloc &) {}
 
   ROProperty<int32_t> Count{nb::bind(&TListBase::GetCount, this)};
   ROIndexedProperty<O *> Items{nb::bind(&TListBase::GetItemPrivate, this)};
