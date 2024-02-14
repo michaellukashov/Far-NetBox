@@ -40,12 +40,6 @@ else()
 endif()
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(BUILD_DEBUG ON)
-else()
-  set(BUILD_DEBUG OFF)
-endif()
-
 if(PROJECT_PLATFORM STREQUAL "x86" AND CMAKE_BUILD_TYPE STREQUAL "Release")
   set(OPT_USE_UNITY_BUILD ON CACHE STRING "Default use unity build")
 else()
@@ -2372,17 +2366,12 @@ set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
 )
 
 if(MSVC)
-if(BUILD_DEBUG)
 set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-  libcmtd.lib
-  libcpmtd.lib
+  debug libcmtd.lib
+  debug libcpmtd.lib
+  optimized libcmt.lib
+  optimized libcpmt.lib
 )
-else()
-set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-  libcmt.lib
-  libcpmt.lib
-)
-endif(BUILD_DEBUG)
 endif(MSVC)
 
 add_library(NetBox SHARED
