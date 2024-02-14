@@ -860,7 +860,7 @@ private:
 
 private:
   bool FCheckBoxChecked{false};
-  TFarMessageParams * FParams{nullptr};
+  gsl::not_null<TFarMessageParams *> FParams;
   TDateTime FStartTime;
   TDateTime FLastTimerTime;
   TFarButton * FTimeoutButton{nullptr};
