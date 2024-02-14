@@ -4202,9 +4202,9 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
         while ((Index < AFileList->GetCount()) && (Progress.GetCancel() == csContinue))
         {
           const UnicodeString FileName = AFileList->GetString(Index);
-          DEBUG_PRINTF("FileName: %s", FileName);
+          // DEBUG_PRINTF("FileName: %s", FileName);
           TRemoteFile * File = AFileList->GetAs<TRemoteFile>(Index);
-          DEBUG_PRINTF("GetFullFileName: %s", File->GetFullFileName());
+          // DEBUG_PRINTF("GetFullFileName: %s", File->GetFullFileName());
           try
           {
             bool Success = false;
