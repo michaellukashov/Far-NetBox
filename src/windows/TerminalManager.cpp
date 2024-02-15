@@ -1472,7 +1472,7 @@ void TTerminalManager::ConfigurationChange(TObject * /*Sender*/)
   }
   else
   {
-    volatile const TGuard Guard(FChangeSection.get());
+    const TGuard Guard(FChangeSection.get());
     FPendingConfigurationChange++;
   }
 }
@@ -1708,7 +1708,7 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
     bool Changed = false;
 
     {
-      volatile const TGuard Guard(FChangeSection.get());
+      const TGuard Guard(FChangeSection.get());
       if (DebugAlwaysTrue(FPendingConfigurationChange > 0))
       {
         FPendingConfigurationChange--;

@@ -450,7 +450,7 @@ void TS3FileSystem::Open()
   UpdateNeonDebugMask();
 
   {
-    volatile const TGuard Guard(*LibS3Section.get());
+    const TGuard Guard(*LibS3Section.get());
     S3_initialize(nullptr, S3_INIT_ALL, nullptr);
   }
 
@@ -719,7 +719,7 @@ void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData & Data, bool FatalO
 
 void TS3FileSystem::LibS3Deinitialize()
 {
-  volatile const TGuard Guard(*LibS3Section.get());
+  const TGuard Guard(*LibS3Section.get());
   S3_deinitialize();
 }
 
@@ -1350,7 +1350,7 @@ void TS3FileSystem::ReadDirectoryInternal(
 
 void TS3FileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
-  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
   ReadDirectoryInternal(FileList->GetDirectory(), FileList, 0, UnicodeString());
 }
 
@@ -1380,7 +1380,7 @@ void TS3FileSystem::DoReadFile(const UnicodeString & AFileName, TRemoteFile *& A
 void TS3FileSystem::ReadFile(const UnicodeString & AFileName,
   TRemoteFile *& File)
 {
-  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
   DoReadFile(AFileName, File);
   if (File == nullptr)
   {
@@ -1493,7 +1493,7 @@ void TS3FileSystem::CopyFile(
 
 void TS3FileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
-  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
   const UnicodeString DirName = base::UnixExcludeTrailingBackslash(GetAbsolutePath(ADirName, false));
 
   UnicodeString BucketName, Key;
@@ -1924,7 +1924,7 @@ void TS3FileSystem::ConfirmOverwrite(
   uint32_t Answer;
 
   {
-    volatile const TSuspendFileOperationProgress Suspend(AOperationProgress);
+    const TSuspendFileOperationProgress Suspend(AOperationProgress);
     Answer =
       FTerminal->ConfirmFileOverwrite(
         ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
@@ -2404,7 +2404,7 @@ void TS3FileSystem::Sink(
         Data.OperationProgress = OperationProgress;
         Data.Exception.reset(nullptr);
 
-        volatile const TAutoFlag ResponseIgnoreSwitch(FResponseIgnore);
+        const TAutoFlag ResponseIgnoreSwitch(FResponseIgnore);
         const S3GetObjectHandler GetObjectHandler = { CreateResponseHandler(), LibS3GetObjectDataCallback };
         S3_get_object(
           &BucketContext, StrToS3(Key), nullptr, nb::ToUInt64(Stream->Position()), 0, FRequestContext, FTimeout, &GetObjectHandler, &Data);

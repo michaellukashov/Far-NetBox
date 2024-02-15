@@ -26,7 +26,7 @@ static UnicodeString NormalizeClassName(const UnicodeString & ClassName)
 
 void IgnoreException(const std::type_info & ExceptionType)
 {
-  volatile const TGuard Guard(*IgnoredExceptionsCriticalSection.get());
+  const TGuard Guard(*IgnoredExceptionsCriticalSection.get());
   // We should better use type_index as a key, instead of a class name,
   // but type_index is not available in 32-bit version of STL in XE6.
   IgnoredExceptions.insert(NormalizeClassName(UnicodeString(AnsiString(ExceptionType.name()))));
@@ -47,7 +47,7 @@ static bool WellKnownException(
 #if 0
   if (!IgnoredExceptions.empty())
   {
-    volatile const TGuard Guard(*IgnoredExceptionsCriticalSection.get());
+    const TGuard Guard(*IgnoredExceptionsCriticalSection.get());
     UnicodeString ClassName = ""; // NormalizeClassName(E->QualifiedClassName());
     IgnoreException = (IgnoredExceptions.find(ClassName) != IgnoredExceptions.end());
   }

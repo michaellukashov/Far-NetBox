@@ -496,7 +496,7 @@ scope_guard<F, F2> make_try_finally(F && f, F2 && f2) { return scope_guard<F, F2
 } // namespace detail
 
 #define SCOPE_EXIT \
-  volatile const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
+  const auto ANONYMOUS_VARIABLE(scope_exit_guard) = detail::make_scope_guard() << [&]() /* lambda body here */
 
 #define ON_SCOPE_EXIT(FUNC, T, PARAM) \
   const auto ANONYMOUS_VARIABLE(scope_exit_guard) = \
@@ -504,12 +504,12 @@ scope_guard<F, F2> make_try_finally(F && f, F2 && f2) { return scope_guard<F, F2
 
 #define try__removed
 #define try__catch \
-  { volatile const auto ANONYMOUS_VARIABLE(try_catch) = Sysutils::detail::make_try_finally([&]()
+  { const auto ANONYMOUS_VARIABLE(try_catch) = Sysutils::detail::make_try_finally([&]()
 
 #define end_try__catch ); }
 
 #define try__finally \
-  { volatile const auto ANONYMOUS_VARIABLE(try_finally) = Sysutils::detail::make_try_finally([&]()
+  { const auto ANONYMOUS_VARIABLE(try_finally) = Sysutils::detail::make_try_finally([&]()
 
 #define __finally \
   ,[&]() // lambda body here
@@ -602,7 +602,7 @@ public:
 } // namespace scope_exit
 
 #define DETAIL_SCOPE_IMPL(type) \
-  volatile const auto ANONYMOUS_VARIABLE(scope_##type##_guard) = scope_exit::make_scope_guard<scope_exit::scope_type::type>() << [&]() /* lambda body here */
+  const auto ANONYMOUS_VARIABLE(scope_##type##_guard) = scope_exit::make_scope_guard<scope_exit::scope_type::type>() << [&]() /* lambda body here */
 
 #undef SCOPE_EXIT
 #define SCOPE_EXIT DETAIL_SCOPE_IMPL(exit)
