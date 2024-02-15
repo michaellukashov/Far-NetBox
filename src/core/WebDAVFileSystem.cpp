@@ -187,7 +187,7 @@ TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
   UnregisterFromNeonDebug(FTerminal);
 
   {
-    TGuard Guard(FNeonLockStoreSection); nb::used(Guard);
+    volatile const TGuard Guard(FNeonLockStoreSection);
     if (FNeonLockStore != nullptr)
     {
       ne_lockstore_destroy(FNeonLockStore);
@@ -858,7 +858,7 @@ bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APat
 void TWebDAVFileSystem::ReadDirectory(TRemoteFileList * AFileList)
 {
   UnicodeString Path = DirectoryPath(AFileList->GetDirectory());
-  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
+  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
   int32_t NeonStatus = ReadDirectoryInternal(Path, AFileList);
   if (IsValidRedirect(NeonStatus, Path))
@@ -1091,7 +1091,7 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile, TRemoteFile * ALinkedByFile)
 {
   UnicodeString FileName = AFileName;
-  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
+  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
   int32_t NeonStatus = CustomReadFileInternal(AFileName, AFile, ALinkedByFile);
   if (IsValidRedirect(NeonStatus, FileName))
@@ -1129,7 +1129,7 @@ void TWebDAVFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool Overwrite)
 {
   ClearNeonError();
-  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
+  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
   UnicodeString Path = AFileName;
   int32_t NeonStatus = RenameFileInternal(Path, ANewName, Overwrite);
@@ -1152,7 +1152,7 @@ void TWebDAVFileSystem::CopyFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool Overwrite)
 {
   ClearNeonError();
-  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
+  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
   UnicodeString Path = AFileName;
   int32_t NeonStatus = CopyFileInternal(Path, ANewName, Overwrite);
@@ -1166,7 +1166,7 @@ void TWebDAVFileSystem::CopyFile(
 void TWebDAVFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   ClearNeonError();
-  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
+  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
   CheckStatus(ne_mkcol(FSessionContext->NeonSession, PathToNeon(ADirName)));
 }
 
@@ -1217,7 +1217,7 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   uint32_t Answer;
 
   {
-    const TSuspendFileOperationProgress Suspend(OperationProgress); nb::used(Suspend);
+    volatile const TSuspendFileOperationProgress Suspend(OperationProgress);
     Answer =
       FTerminal->ConfirmFileOverwrite(
         ASourceFullFileName, ATargetFileName, FileParams, Answers, &QueryParams,
@@ -1319,7 +1319,7 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
   QuotaProps[2].nspace = nullptr;
   QuotaProps[2].name = nullptr;
 
-  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor()); nb::used(Visualizer);
+  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
   CheckStatus(
     ne_simple_propfind(FSessionContext->NeonSession, PathToNeon(Path), NE_DEPTH_ZERO, QuotaProps,
@@ -1353,7 +1353,7 @@ void TWebDAVFileSystem::Source(
     std::unique_ptr<TRemoteFile> RemoteFile;
     try
     {
-      const TValueRestorer<TIgnoreAuthenticationFailure> IgnoreAuthenticationFailureRestorer(FIgnoreAuthenticationFailure); nb::used(IgnoreAuthenticationFailureRestorer);
+      volatile const TValueRestorer<TIgnoreAuthenticationFailure> IgnoreAuthenticationFailureRestorer(FIgnoreAuthenticationFailure);
       FIgnoreAuthenticationFailure = iafWaiting;
 
       // this should not throw
@@ -1400,7 +1400,7 @@ void TWebDAVFileSystem::Source(
         throw ESkipFile();
       }
 
-      const TAutoFlag UploadingFlag(FUploading); nb::used(UploadingFlag);
+      volatile const TAutoFlag UploadingFlag(FUploading);
 
       ClearNeonError();
       CheckStatus(ne_put(FSessionContext->NeonSession, PathToNeon(DestFullName), FD));
@@ -1811,7 +1811,7 @@ void TWebDAVFileSystem::Sink(
         throw ESkipFile();
       }
 
-      const TAutoFlag DownloadingFlag(FDownloading); nb::used(DownloadingFlag);
+      volatile const TAutoFlag DownloadingFlag(FDownloading);
 
       ClearNeonError();
       int32_t NeonStatus = ne_get(FSessionContext->NeonSession, PathToNeon(AFileName), FD);
@@ -2095,7 +2095,7 @@ void TWebDAVFileSystem::LockFile(const UnicodeString & /*AFileName*/, const TRem
     CheckStatus(ne_lock(FSessionContext->NeonSession, Lock));
 
     {
-      TGuard Guard(FNeonLockStoreSection); nb::used(Guard);
+      volatile const TGuard Guard(FNeonLockStoreSection);
 
       RequireLockStore();
 
@@ -2144,7 +2144,7 @@ struct ne_lock * TWebDAVFileSystem::FindLock(const RawByteString & APath) const
 
 void TWebDAVFileSystem::DiscardLock(const RawByteString & APath)
 {
-  TGuard Guard(FNeonLockStoreSection); nb::used(Guard);
+  volatile const TGuard Guard(FNeonLockStoreSection);
   if (FNeonLockStore != nullptr)
   {
     struct ne_lock * Lock = FindLock(APath);
@@ -2167,7 +2167,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
     struct ne_lock * Lock2 = nullptr;
 
     {
-      TGuard Guard(FNeonLockStoreSection); nb::used(Guard);
+      volatile const TGuard Guard(FNeonLockStoreSection);
       if (FNeonLockStore != nullptr)
       {
         Lock2 = FindLock(Path);
@@ -2221,8 +2221,8 @@ void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
   const TWebDAVFileSystem * MainFileSystem = rtti::dyn_cast_or_null<TWebDAVFileSystem>(AMainFileSystem);
   if (DebugAlwaysTrue(MainFileSystem != nullptr))
   {
-    TGuard Guard(FNeonLockStoreSection); nb::used(Guard);
-    TGuard MainGuard(MainFileSystem->FNeonLockStoreSection); nb::used(MainGuard);
+    volatile const TGuard Guard(FNeonLockStoreSection);
+    volatile const TGuard MainGuard(MainFileSystem->FNeonLockStoreSection);
 
     if (FNeonLockStore != nullptr)
     {

@@ -747,7 +747,7 @@ bool CopyCommandToClipboard(const UnicodeString & ACommand)
   const bool Result = !DontCopyCommandToClipboard; // && UseAlternativeFunction && IsKeyPressed(VK_CONTROL);
   if (Result)
   {
-    TInstantOperationVisualizer Visualizer; nb::used(Visualizer);
+    volatile const TInstantOperationVisualizer Visualizer;
     AppLogFmt(L"Copied command to the clipboard: %s", ACommand);
     CopyToClipboard(ACommand);
   }

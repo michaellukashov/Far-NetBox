@@ -32,7 +32,7 @@ TUsage::~TUsage() noexcept
 
 void TUsage::Default()
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   FPeriodCounters.clear();
   FLifetimeCounters.clear();
   FValues->Clear();
@@ -47,7 +47,7 @@ void TUsage::Default()
 
 void TUsage::Load(THierarchicalStorage * Storage)
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   Default();
 
   if (Storage->OpenSubKey("Values", false))
@@ -98,7 +98,7 @@ void TUsage::Load(THierarchicalStorage * Storage,
 
 void TUsage::Save(THierarchicalStorage * Storage) const
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   if (Storage->OpenSubKey("Values", true))
   {
     Storage->ClearValues();
@@ -130,7 +130,7 @@ void TUsage::Set(const UnicodeString & AKey, const UnicodeString & AValue)
 {
   if (FCollect)
   {
-    TGuard Guard(*FCriticalSection); nb::used(Guard);
+    volatile const TGuard Guard(*FCriticalSection);
     FValues->SetValue(AKey, AValue);
   }
 }
@@ -147,7 +147,7 @@ void TUsage::Set(const UnicodeString & AKey, bool Value)
 
 UnicodeString TUsage::Get(const UnicodeString & AKey) const
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   UnicodeString Result = FValues->GetValue(AKey);
   Result.Unique();
   return Result;
@@ -160,7 +160,7 @@ void TUsage::UpdateLastReport()
 
 void TUsage::Reset()
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   UpdateLastReport();
   FPeriodCounters.clear();
   ResetLastExceptions();
@@ -168,7 +168,7 @@ void TUsage::Reset()
 
 void TUsage::UpdateCurrentVersion()
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   int32_t CompoundVersion = FConfiguration->CompoundVersion;
   DebugAssert(ZeroBuildNumber(CompoundVersion) == CompoundVersion);
   // ZeroBuildNumber for compatibility with versions that stored build number into the compound version
@@ -207,7 +207,7 @@ void TUsage::ResetValue(const UnicodeString & AKey)
 
 void TUsage::ResetLastExceptions()
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   ResetValue(LastInternalExceptionCounter);
   ResetValue(LastUpdateExceptionCounter);
 }
@@ -217,7 +217,7 @@ int32_t TUsage::Inc(const UnicodeString & AKey, int32_t Increment)
   int Result;
   if (FCollect)
   {
-    TGuard Guard(*FCriticalSection); nb::used(Guard);
+    volatile const TGuard Guard(*FCriticalSection);
     Inc(AKey, FPeriodCounters, Increment);
     Result = Inc(AKey, FLifetimeCounters, Increment);
   }
@@ -249,7 +249,7 @@ void TUsage::SetMax(const UnicodeString & AKey, int32_t Value)
 {
   if (FCollect)
   {
-    TGuard Guard(*FCriticalSection); nb::used(Guard);
+    volatile const TGuard Guard(*FCriticalSection);
     SetMax(AKey, Value, FPeriodCounters);
     SetMax(AKey, Value, FLifetimeCounters);
   }
@@ -274,7 +274,7 @@ void TUsage::SetMax(const UnicodeString & AKey, int32_t Value,
 
 void TUsage::SetCollect(bool Value)
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   if (FCollect != Value)
   {
     FCollect = Value;
@@ -293,7 +293,7 @@ void TUsage::SetCollect(bool Value)
 
 UnicodeString TUsage::Serialize(const UnicodeString & ADelimiter, const UnicodeString & AFilter) const
 {
-  TGuard Guard(*FCriticalSection); nb::used(Guard);
+  volatile const TGuard Guard(*FCriticalSection);
   UnicodeString Result;
 
   UnicodeString FilterUpper = UpperCase(AFilter);

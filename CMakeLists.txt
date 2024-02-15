@@ -24,11 +24,6 @@ if(MSVC)
   # set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 endif()
 # message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
-if(CMAKE_GENERATOR STREQUAL "Ninja")
-  set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-else()
-  set(NETBOX_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE})
-endif()
 
 if(NOT DEFINED PROJECT_PLATFORM OR PROJECT_PLATFORM STREQUAL "")
 if(CMAKE_CXX_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64")
@@ -38,12 +33,6 @@ elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 else()
   set(PROJECT_PLATFORM "x86" CACHE STRING "Platform")
 endif()
-endif()
-
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(BUILD_DEBUG ON)
-else()
-  set(BUILD_DEBUG OFF)
 endif()
 
 if(PROJECT_PLATFORM STREQUAL "x86" AND CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -98,9 +87,7 @@ if(PROJECT_PLATFORM STREQUAL "x86")
 # set(NETBOX_PLATFORM_FLAGS ${NETBOX_PLATFORM_FLAGS} -DWIN32 -D_WIN32)
 endif()
 
-if(MSVC)
-set(NETBOX_C_FLAGS ${NETBOX_C_FLAGS} /TC)
-elseif(CMAKE_COMPILER_IS_MINGW)
+if(CMAKE_COMPILER_IS_MINGW)
 set(NETBOX_C_FLAGS ${NETBOX_C_FLAGS} -x c --std=c99)
 endif()
 
@@ -1363,6 +1350,9 @@ add_library(atlmfc STATIC
 
 target_compile_options(atlmfc PRIVATE
   ${ATLMFC_COMPILE_FLAGS}
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
+
 )
 
 if(MSVC)
@@ -1370,11 +1360,6 @@ target_compile_options(atlmfc PRIVATE
   -wd4995 -wd4996 -wd4101 -wd4290
 )
 endif()
-
-target_compile_definitions(atlmfc PRIVATE
-  ${NETBOX_CXX_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
-)
 
 target_include_directories(atlmfc PRIVATE
   libs
@@ -1582,11 +1567,8 @@ endif()
 target_compile_options(putty PRIVATE
   ${PUTTY_COMPILE_FLAGS}
   -Dssize_t=size_t
-)
-
-target_compile_definitions(putty PRIVATE
   ${NETBOX_C_FLAGS}
-#  ${NETBOX_UNICODE_FLAGS}
+  #  ${NETBOX_UNICODE_FLAGS}
 )
 
 #puttyvs
@@ -1618,9 +1600,6 @@ target_compile_options(puttyvs PRIVATE
   ${PUTTY_COMPILE_FLAGS}
   -Dssize_t=size_t
   -DWINSCP_VS
-)
-
-target_compile_definitions(puttyvs PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
@@ -1639,12 +1618,12 @@ target_include_directories(tinyxml2 PRIVATE
 )
 
 target_compile_options(tinyxml2 PRIVATE
+  ${NETBOX_CXX_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_compile_definitions(tinyxml2 PRIVATE
-  ${NETBOX_CXX_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
-  -DTINYXML2_EXPORT
+#  -DTINYXML2_EXPORT
 )
 
 
@@ -1698,13 +1677,13 @@ set(NEON_COMPILE_FLAGS ${NEON_COMPILE_FLAGS}
 )
 endif()
 
-#target_compile_options(neon PRIVATE
-#)
-
-target_compile_definitions(neon PRIVATE
+target_compile_options(neon PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${NEON_COMPILE_FLAGS}
+)
+
+target_compile_definitions(neon PRIVATE
   -DWINSCP
   -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS
   # -U_UNICODE -UUNICODE
@@ -1728,7 +1707,7 @@ target_include_directories(expat PRIVATE
   libs/expat
 )
 
-target_compile_definitions(expat PRIVATE
+target_compile_options(expat PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${LIBEXPAT_DEFS}
@@ -1802,11 +1781,11 @@ target_include_directories(zlib PRIVATE
 )
 
 target_compile_options(zlib PRIVATE
+  ${NETBOX_C_FLAGS}
+  ${NETBOX_UNICODE_FLAGS}
 )
 
 target_compile_definitions(zlib PRIVATE
-  ${NETBOX_C_FLAGS}
-  ${NETBOX_UNICODE_FLAGS}
   # -DUNALIGNED_OK
   -DZLIB_INTERNAL=
   -DZLIB_COMPAT
@@ -1839,7 +1818,7 @@ add_library(dlmalloc STATIC
   libs/dlmalloc/dlmalloc-2.8.6.h
 )
 
-target_compile_definitions(dlmalloc PRIVATE
+target_compile_options(dlmalloc PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
 )
@@ -1872,10 +1851,13 @@ target_include_directories(tinylog PRIVATE
   # src/resource
 )
 
-target_compile_definitions(tinylog PRIVATE
+target_compile_options(tinylog PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
+)
+
+target_compile_definitions(tinylog PRIVATE
   -DTINYLOG_EXPORT
 )
 
@@ -1883,7 +1865,8 @@ target_compile_definitions(tinylog PRIVATE
 #fmt
 
 set(fmt_DEFINES
-  -DFMT_EXPORT #-DFMT_HEADER_ONLY
+  #-DFMT_EXPORT
+  #-DFMT_HEADER_ONLY
 )
 
 #if(FALSE)
@@ -1903,10 +1886,13 @@ target_include_directories(fmt PRIVATE
   src/include
 )
 
-target_compile_definitions(fmt PRIVATE
+target_compile_options(fmt PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
+)
+
+target_compile_definitions(fmt PRIVATE
   ${fmt_DEFINES}
 )
 
@@ -1952,9 +1938,12 @@ target_include_directories(s3 PRIVATE
   # libs/openssl-3/providers/common/include
 )
 
-target_compile_definitions(s3 PRIVATE
+target_compile_options(s3 PRIVATE
   ${NETBOX_C_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
+)
+
+target_compile_definitions(s3 PRIVATE
   ${LIBEXPAT_DEFS}
   -DS3_EXPORT -DWIN32 -DWINSCP -DNE_LFS -DNEED_LIBS3
 )
@@ -2233,7 +2222,7 @@ target_include_directories(baselib PRIVATE
   src/resource
 )
 
-target_compile_definitions(baselib PRIVATE
+target_compile_options(baselib PRIVATE
   ${NETBOX_CXX_FLAGS}
   ${NETBOX_UNICODE_FLAGS}
   ${NETBOX_PLATFORM_FLAGS}
@@ -2373,17 +2362,12 @@ set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
 )
 
 if(MSVC)
-if(BUILD_DEBUG)
 set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-  libcmtd.lib
-  libcpmtd.lib
+  debug libcmtd.lib
+  debug libcpmtd.lib
+  optimized libcmt.lib
+  optimized libcpmt.lib
 )
-else()
-set(NETBOX_LIBRARIES ${NETBOX_LIBRARIES}
-  libcmt.lib
-  libcpmt.lib
-)
-endif(BUILD_DEBUG)
 endif(MSVC)
 
 add_library(NetBox SHARED
@@ -2459,7 +2443,7 @@ file(GLOB DIST_FILES
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND ${CMAKE_COMMAND}
   "-DFILE_NAME=NetBox.dll"
-  "-DFULL_FILE_NAME=${NETBOX_OUTPUT_DIRECTORY}/NetBox.dll"
+  "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:NetBox>/NetBox.dll"
   "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
   -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
   VERBATIM
@@ -2467,7 +2451,7 @@ add_custom_command(TARGET NetBox POST_BUILD
 add_custom_command(TARGET NetBox POST_BUILD
   COMMAND ${CMAKE_COMMAND}
   "-DFILE_NAME=NetBox.pdb"
-  "-DFULL_FILE_NAME=${NETBOX_OUTPUT_DIRECTORY}/NetBox.pdb"
+  "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:NetBox>/NetBox.pdb"
   "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
   -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
   VERBATIM
@@ -2803,8 +2787,8 @@ ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 #/Oi - enable intrinsic functions
 #/RTC1 - Run-time error checks
 ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
-ucm_add_flags(CXX C /RTC1 /DEBUG CONFIG Debug)
-ucm_add_flags(CXX C /DEBUG CONFIG RelWithDebInfo)
+ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
+ucm_add_flags(CXX C /DDEBUG CONFIG RelWithDebInfo)
 # ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
 # ucm_add_flags(CXX /fsanitize-address-use-after-return CONFIG Debug)
 #-Ob1

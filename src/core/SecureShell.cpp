@@ -1952,7 +1952,7 @@ void TSecureShell::WaitForData()
     if (!IncomingData)
     {
       DebugAssert(FWaitingForData == 0);
-      TAutoNestingCounter NestingCounter(FWaitingForData); nb::used(NestingCounter);
+      volatile const TAutoNestingCounter NestingCounter(FWaitingForData);
 
       WSANETWORKEVENTS Events;
       nb::ClearStruct(Events);
