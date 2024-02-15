@@ -1622,7 +1622,7 @@ target_compile_options(tinyxml2 PRIVATE
 )
 
 target_compile_definitions(tinyxml2 PRIVATE
-  -DTINYXML2_EXPORT
+#  -DTINYXML2_EXPORT
 )
 
 
@@ -1864,7 +1864,8 @@ target_compile_definitions(tinylog PRIVATE
 #fmt
 
 set(fmt_DEFINES
-  -DFMT_EXPORT #-DFMT_HEADER_ONLY
+  #-DFMT_EXPORT
+  #-DFMT_HEADER_ONLY
 )
 
 #if(FALSE)
