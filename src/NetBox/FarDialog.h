@@ -512,7 +512,7 @@ protected:
   virtual void ResetBounds() override;
 };
 
-class TFarText : public TFarDialogItem
+class TFarText final : public TFarDialogItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarText); }
@@ -524,8 +524,6 @@ public:
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual bool GetCenterGroup() const override { return TFarDialogItem::GetCenterGroup(); }
   virtual void SetCenterGroup(bool Value) override { TFarDialogItem::SetCenterGroup(Value); }
-  char GetColor() const { return TFarDialogItem::GetColor(0); }
-  void SetColor(char Value) { TFarDialogItem::SetColor(0, Value); }
 
 protected:
   virtual void SetData(const UnicodeString & Value) override;
