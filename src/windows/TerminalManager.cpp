@@ -1439,7 +1439,7 @@ void TTerminalManager::OperationProgress(
 
 void TTerminalManager::QueueEvent(TTerminalQueue * Queue, TQueueEvent Event)
 {
-  volatile const TGuard Guard(FQueueSection);
+  const TGuard Guard(FQueueSection);
   FQueueEvents.push_back(std::make_pair(Queue, Event));
 }
 
@@ -1788,7 +1788,7 @@ void TTerminalManager::Idle(bool SkipCurrentTerminal)
     QueueWithEvent = nullptr;
 
     {
-      volatile const TGuard Guard(FQueueSection);
+      const TGuard Guard(FQueueSection);
 
       if (!FQueueEvents.empty())
       {
