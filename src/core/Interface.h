@@ -211,7 +211,7 @@ public:
 
   void Copy(TObject * /*Sender*/, uint32_t & /*Answer*/) const
   {
-    volatile const TInstantOperationVisualizer Visualizer;
+    const TInstantOperationVisualizer Visualizer;
     CopyToClipboard(Text);
   }
 };

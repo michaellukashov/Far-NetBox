@@ -731,7 +731,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd,
   const UnicodeString FullCommand = FCommandSet->FullCommand(Cmd, args);
   const UnicodeString Command = FCommandSet->Command(Cmd, args);
 
-  volatile const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
+  const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
 
   SendCommand(FullCommand, FLAGSET(Params, ecNoEnsureLocation));
 
@@ -1650,7 +1650,7 @@ uint32_t TSCPFileSystem::ConfirmOverwrite(
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   int32_t Params, TFileOperationProgressType * OperationProgress)
 {
-  volatile const TSuspendFileOperationProgress Suspend(OperationProgress);
+  const TSuspendFileOperationProgress Suspend(OperationProgress);
 
   TQueryButtonAlias Aliases[3];
   Aliases[0] = TQueryButtonAlias::CreateAllAsYesToNewerGroupedWithYes();
@@ -1828,7 +1828,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
             UnicodeString Message = MainInstructions(FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly));
             TQueryParams QueryParams(qpNeverAskAgainCheck);
 
-            volatile const TSuspendFileOperationProgress Suspend(OperationProgress);
+            const TSuspendFileOperationProgress Suspend(OperationProgress);
             Answer = FTerminal->ConfirmFileOverwrite(
               FileName, FileNameOnly, nullptr,
               qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
@@ -1903,7 +1903,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
         {
           TQueryParams QueryParams(qpAllowContinueOnError);
 
-          volatile const TSuspendFileOperationProgress Suspend1(OperationProgress);
+          const TSuspendFileOperationProgress Suspend1(OperationProgress);
 
           if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName), &E,
             qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
@@ -1921,7 +1921,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
           FTerminal->OperationFinish(OperationProgress, Item, FileName, false, OnceDoneOperation);
 
           {
-            volatile const TSuspendFileOperationProgress Suspend(OperationProgress);
+            const TSuspendFileOperationProgress Suspend(OperationProgress);
             // If ESkipFile occurs, just log it and continue with next file
             if (!FTerminal->HandleException(&E))
             {
@@ -2310,7 +2310,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       catch (EScpFileSkipped &E)
       {
         TQueryParams QueryParams(qpAllowContinueOnError);
-        volatile const TSuspendFileOperationProgress Suspend(OperationProgress);
+        const TSuspendFileOperationProgress Suspend(OperationProgress);
 
         if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FileName), &E,
               qaOK | qaAbort, &QueryParams, qtError) == qaAbort)
@@ -2325,7 +2325,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
       catch(ESkipFile & E)
       {
         // If ESkipFile occurs, just log it and continue with next file
-        volatile const TSuspendFileOperationProgress Suspend(OperationProgress);
+        const TSuspendFileOperationProgress Suspend(OperationProgress);
         if (!FTerminal->HandleException(&E))
         {
           throw;
@@ -2679,7 +2679,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
         catch(Exception & E)
         {
           {
-            volatile const TSuspendFileOperationProgress Suspend(OperationProgress);
+            const TSuspendFileOperationProgress Suspend(OperationProgress);
             FTerminal->GetLog()->AddException(&E);
           }
           SCPError(LoadStr(SCP_ILLEGAL_FILE_DESCRIPTOR), false);
@@ -2931,7 +2931,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
     {
       if (!SkipConfirmed)
       {
-        volatile const TSuspendFileOperationProgress Suspend(OperationProgress);
+        const TSuspendFileOperationProgress Suspend(OperationProgress);
         TQueryParams QueryParams(qpAllowContinueOnError);
         if (FTerminal->QueryUserException(FMTLOAD(COPY_ERROR, FullFileName),
               &E, qaOK | qaAbort, &QueryParams, qtError) == qaAbort)

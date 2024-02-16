@@ -979,7 +979,7 @@ void TSessionLog::Add(TLogLineType Type, const UnicodeString & ALine)
       }
       else
       {
-        volatile const TGuard Guard(FCriticalSection);
+        const TGuard Guard(FCriticalSection);
 
         DoAdd(Type, ALine, nb::bind(&TSessionLog::DoAddToSelf, this));
       }
@@ -1011,7 +1011,7 @@ void TSessionLog::AddException(Exception * E)
 
 void TSessionLog::ReflectSettings()
 {
-  volatile const TGuard Guard(FCriticalSection);
+  const TGuard Guard(FCriticalSection);
 
   FLogging =
     !FClosed &&
@@ -1083,7 +1083,7 @@ void TSessionLog::OpenLogFile()
     {
       AddException(&E2);
       // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-      volatile const TUnguard Unguard(FCriticalSection);
+      const TUnguard Unguard(FCriticalSection);
       FUI->HandleExtendedException(&E2);
     }
   }
@@ -1611,7 +1611,7 @@ void TActionLog::Add(const UnicodeString & Line)
   DebugAssert(FConfiguration);
   if (FLogging)
   {
-    volatile const TGuard Guard(FCriticalSection);
+    const TGuard Guard(FCriticalSection);
     if (FLogger == nullptr)
     {
       OpenLogFile();
@@ -1710,7 +1710,7 @@ void TActionLog::AddMessages(const UnicodeString & Indent, TStrings * Messages)
 
 void TActionLog::ReflectSettings()
 {
-  volatile const TGuard Guard(FCriticalSection);
+  const TGuard Guard(FCriticalSection);
 
   const bool ALogging =
     !FClosed && FConfiguration->GetLogActions() && GetEnabled();
@@ -1794,7 +1794,7 @@ void TActionLog::OpenLogFile()
         if (FUI != nullptr)
         {
           // not to deadlock with TSessionLog::ReflectSettings invoked by FConfiguration->LogFileName setter above
-          volatile const TUnguard Unguard(FCriticalSection);
+          const TUnguard Unguard(FCriticalSection);
           FUI->HandleExtendedException(&E2);
         }
       }
@@ -1892,7 +1892,7 @@ void TApplicationLog::Log(const UnicodeString & S)
     const UnicodeString Line = FORMAT(L"[%s] [%x] %s\r\n", Timestamp, nb::ToInt(GetCurrentThreadId()), S);
     const UTF8String UtfLine = UTF8String(Line);
     const int32_t Writing = UtfLine.Length();
-    volatile const TGuard Guard(FCriticalSection);
+    const TGuard Guard(FCriticalSection);
     fwrite(UtfLine.c_str(), 1, Writing, static_cast<FILE *>(FFile));
   }
 }

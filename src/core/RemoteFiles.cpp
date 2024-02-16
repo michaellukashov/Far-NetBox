@@ -1944,7 +1944,7 @@ TRemoteDirectoryCache::~TRemoteDirectoryCache() noexcept
 
 void TRemoteDirectoryCache::Clear()
 {
-  volatile const TGuard Guard(FSection);
+  const TGuard Guard(FSection);
 
   try__finally
   {
@@ -1963,14 +1963,14 @@ void TRemoteDirectoryCache::Clear()
 
 bool TRemoteDirectoryCache::GetIsEmptyPrivate() const
 {
-  volatile const TGuard Guard(FSection);
+  const TGuard Guard(FSection);
 
   return (const_cast<TRemoteDirectoryCache *>(this)->GetCount() == 0);
 }
 
 bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory) const
 {
-  volatile const TGuard Guard(FSection);
+  const TGuard Guard(FSection);
 
   const int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   return (Index >= 0);
@@ -1979,7 +1979,7 @@ bool TRemoteDirectoryCache::HasFileList(const UnicodeString & Directory) const
 bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
   const TDateTime & Timestamp) const
 {
-  volatile const TGuard Guard(FSection);
+  const TGuard Guard(FSection);
 
   int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   if (Index >= 0)
@@ -1996,7 +1996,7 @@ bool TRemoteDirectoryCache::HasNewerFileList(const UnicodeString & Directory,
 bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   TRemoteFileList * FileList) const
 {
-  volatile const TGuard Guard(FSection);
+  const TGuard Guard(FSection);
 
   const int32_t Index = IndexOf(base::UnixExcludeTrailingBackslash(Directory));
   const bool Result = (Index >= 0);
@@ -2017,7 +2017,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
   FileList->DuplicateTo(Copy.get());
 
   {
-    volatile const TGuard Guard(FSection);
+    const TGuard Guard(FSection);
 
     // file list cannot be cached already with only one thread, but it can be
     // when directory is loaded by secondary terminal
@@ -2029,7 +2029,7 @@ void TRemoteDirectoryCache::AddFileList(TRemoteFileList * FileList)
 
 void TRemoteDirectoryCache::ClearFileList(const UnicodeString & ADirectory, bool SubDirs)
 {
-  volatile const TGuard Guard(FSection);
+  const TGuard Guard(FSection);
   DoClearFileList(ADirectory, SubDirs);
 }
 

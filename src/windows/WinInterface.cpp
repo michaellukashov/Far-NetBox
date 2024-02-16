@@ -612,7 +612,7 @@ UnicodeString GetExceptionDebugInfo()
 {
   UnicodeString Result;
 #if 0
-  volatile const TGuard Guard(StackTraceCriticalSection.get());
+  const TGuard Guard(StackTraceCriticalSection.get());
   TStackTraceMap::iterator Iterator = StackTraceMap.find(GetCurrentThreadId());
   if (Iterator != StackTraceMap.end())
   {
@@ -652,7 +652,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 
 #if 0
 
-  volatile const TGuard Guard(StackTraceCriticalSection.get());
+  const TGuard Guard(StackTraceCriticalSection.get());
 
   TStackTraceMap::iterator Iterator = StackTraceMap.find(GetCurrentThreadId());
   if (Iterator != StackTraceMap.end())
@@ -762,7 +762,7 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
 
         DWORD ThreadID = GetCurrentThreadId();
 
-        volatile const TGuard Guard(StackTraceCriticalSection.get());
+        const TGuard Guard(StackTraceCriticalSection.get());
 
         TStackTraceMap::iterator Iterator = StackTraceMap.find(ThreadID);
         if (Iterator != StackTraceMap.end())
