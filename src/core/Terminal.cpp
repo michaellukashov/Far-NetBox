@@ -1951,9 +1951,6 @@ void TTerminal::Reopen(int32_t Params)
     // (when reconnecting lost connection, it's usually prevented by cached directory)
     // Preventing that by suspending transaction only when there is one.
     FSuspendTransaction = (FInTransaction > 0);
-    /*if (InTransaction())
-      EndTransaction();
-    FSuspendTransaction = true;*/
     FExceptionOnFail = 0;
     // typically, we avoid reading directory, when there is operation ongoing,
     // for file list which may reference files from current directory
@@ -3290,9 +3287,9 @@ uint32_t TTerminal::ConfirmFileOverwrite(
         {
           Message = FMTLOAD(FILE_OVERWRITE_DETAILS, Message,
             FormatSize(FileParams->SourceSize),
-            base::UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision),
+            DefaultStr(base::UserModificationStr(FileParams->SourceTimestamp, FileParams->SourcePrecision), LoadStr(TIME_UNKNOWN)),
             FormatSize(FileParams->DestSize),
-            base::UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision));
+            DefaultStr(base::UserModificationStr(FileParams->DestTimestamp, FileParams->DestPrecision), LoadStr(TIME_UNKNOWN)));
         }
         if (DebugAlwaysTrue(QueryParams->HelpKeyword.IsEmpty()))
         {
@@ -6642,7 +6639,7 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
         if (!New)
         {
           TSynchronizeFileData * LocalData =
-          Data->LocalFileList->GetAs<TSynchronizeFileData>(LocalIndex);
+            Data->LocalFileList->GetAs<TSynchronizeFileData>(LocalIndex);
 
           LocalData->New = false;
           const UnicodeString FullLocalFileName = LocalData->Info.Directory + LocalData->Info.FileName;
@@ -8416,7 +8413,7 @@ void TTerminal::SinkRobust(
   } end_try__finally
 }
 
-#if 0
+#if 0 // moved to FileSystems.h
 
 struct TSinkFileParams
 {
@@ -9465,6 +9462,7 @@ bool TTerminal::IsThisOrChild(TTerminal * ATerminal) const
     ((FCommandSession != nullptr) && (FCommandSession == ATerminal));
 }
 
+//------------------------------------------------------------------------------
 
 TSecondaryTerminal::TSecondaryTerminal(TObjectClassId Kind) noexcept :
   TTerminal(Kind)
@@ -9522,6 +9520,7 @@ TTerminalList::TTerminalList(TConfiguration * AConfiguration) noexcept :
   FConfiguration(AConfiguration)
 {
   DebugAssert(FConfiguration);
+  // FConfiguration = AConfiguration;
 }
 
 TTerminalList::~TTerminalList() noexcept
