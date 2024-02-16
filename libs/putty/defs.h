@@ -35,6 +35,7 @@
 
 #ifdef WINSCP
 #if defined(_M_ARM) || defined (_M_ARM64)
+#define HAVE_AES_NI 0
 #else
 #define HAVE_AES_NI 1
 #endif
