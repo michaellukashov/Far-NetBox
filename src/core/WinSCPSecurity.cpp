@@ -156,7 +156,11 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     CertCreateCertificateContext(
       X509_ASN_ENCODING | PKCS_7_ASN_ENCODING, Certificate, nb::ToDWord(Len));
 
-  if (CertContext != nullptr)
+  if (CertContext == nullptr)
+  {
+    Error = L"Cannot create certificate context";
+  }
+  else
   {
     CERT_CHAIN_PARA ChainPara{};
     // Retrieve the certificate chain of the certificate

@@ -12,6 +12,8 @@ public:
 
   void Enter() const;
   void Leave() const;
+  bool TryEnter();
+  void Release();
 
   int32_t GetAcquired() const { return FAcquired; }
 

@@ -150,7 +150,7 @@ void CAsyncSslSocketLayer::OnReceive(int nErrorCode)
       }
     }
 
-    if (m_pRetrySendBuffer)
+    if (m_pRetrySendBuffer != nullptr)
     {
       if (ProcessSendBuffer() == -2)
       {
@@ -322,7 +322,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
       }
     }
 
-    if (m_pRetrySendBuffer)
+    if (m_pRetrySendBuffer != nullptr)
     {
       if (ProcessSendBuffer() == -2)
       {
@@ -1017,8 +1017,9 @@ BOOL CAsyncSslSocketLayer::ShutDown(int nHow /*=sends*/)
       // Without bi-directional shutdown, file uploads are incomplete on some servers
       res = SSL_shutdown(m_ssl);
 
-      if ((SSL_version(m_ssl) <= TLS1_2_VERSION) ||
-          !GetSocketOptionVal(OPTION_MPEXT_COMPLETE_TLS_SHUTDOWN))
+      int completeShutdown = GetSocketOptionVal(OPTION_MPEXT_COMPLETE_TLS_SHUTDOWN);
+      if ((completeShutdown < 0) ||
+          ((completeShutdown == 0) && (SSL_version(m_ssl) <= TLS1_2_VERSION)))
       {
         LogSocketMessageRaw(FZ_LOG_INFO, L"Not waiting for complete TLS shutdown");
         res = 0;
@@ -1693,7 +1694,7 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
       m_TlsVersionStr.c_str(),
       m_CipherName.c_str());
   USES_CONVERSION;
-  LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+  LogSocketMessageRaw(FZ_LOG_PROGRESS, A2T(buffer));
   nb_free(buffer2);
   nb_free(buffer);
 }
@@ -1833,7 +1834,7 @@ BOOL CAsyncSslSocketLayer::SetCertStorage(CString file)
 void CAsyncSslSocketLayer::OnClose(int nErrorCode)
 {
   m_onCloseCalled = true;
-  if (m_bUseSSL)
+  if (m_bUseSSL) // && BIO_ctrl)
   {
     size_t pending = BIO_ctrl_pending(m_sslbio);
     if (pending > 0)

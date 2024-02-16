@@ -5357,10 +5357,10 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
               SessionData->CopyData(GetDefaultSettings());
             }
             SessionData->SetName(SessionName);
-            SessionData->Load(Storage, PuttyImport);
             Add(SessionData);
           }
           Loaded->Add(SessionData);
+          SessionData->Load(Storage, PuttyImport);
           if (AsModified)
           {
             SessionData->SetModified(true);

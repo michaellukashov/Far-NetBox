@@ -2247,6 +2247,7 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
     case fcOwnerChanging:
     case fcGroupChanging:
       return
+        // (FVersion <= 3) ||
         ((FVersion >= 4) &&
          (!FSupport->Loaded ||
           FLAGSET(FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP)));
@@ -2348,13 +2349,13 @@ void TSFTPFileSystem::BusyEnd()
 }
 
 // size + message number + type
-constexpr uint32_t SFTPPacketOverhead = 4 + 4 + 1;
+constexpr const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
 
 uint32_t TSFTPFileSystem::TransferBlockSize(
   uint32_t Overhead, TFileOperationProgressType * OperationProgress,
   uint32_t AMinPacketSize, uint32_t AMaxPacketSize) const
 {
-  constexpr uint32_t MinPacketSize = 32 * 1024;
+  constexpr const uint32_t MinPacketSize = 32 * 1024;
   uint32_t MaxPacketSize = FSecureShell->MaxPacketSize();
   bool MaxPacketSizeValid = (MaxPacketSize > 0);
   const int64_t CPSRounded = TEncryption::RoundToBlock(nb::ToInt64(OperationProgress->CPS()));

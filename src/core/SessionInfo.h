@@ -408,7 +408,7 @@ private:
   bool FClosed{false};
   bool FInGroup{false};
   UnicodeString FIndent;
-  bool FEnabled{false};
+  bool FEnabled{true};
 
 public:
   void OpenLogFile();

@@ -223,7 +223,7 @@ int64_t THttp::GetResponseLength() const
 
 void THttp::InitSslSession(ssl_st * Ssl, ne_session * /*Session*/)
 {
-  SetupSsl(Ssl, tls12, tls12);
+  SetupSsl(Ssl, tlsDefaultMin, tlsMax);
 }
 
 int32_t THttp::NeonServerSSLCallback(void * UserData, int32_t Failures, const ne_ssl_certificate * Certificate)

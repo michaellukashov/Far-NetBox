@@ -28,6 +28,9 @@ public:
   virtual ~TWebDAVFileSystem() noexcept override;
   virtual void Init(void *) override;
 
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
+  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
+
   virtual void Open() override;
   virtual void Close() override;
   virtual bool GetActive() const override;
@@ -92,9 +95,6 @@ public:
   virtual void UnlockFile(const UnicodeString & AFileName, const TRemoteFile * AFile) override;
   virtual void UpdateFromMain(TCustomFileSystem * AMainFileSystem) override;
   virtual void ClearCaches() override;
-
-  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
-  virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
 
 protected:
   virtual UnicodeString GetCurrentDirectory() const override;
