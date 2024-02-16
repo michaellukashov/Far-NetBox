@@ -1599,8 +1599,8 @@ public:
 
 void TCustomFarPlugin::ShowConsoleTitle(const UnicodeString & Title)
 {
-  wchar_t SaveTitle[1024]{};
-  ::GetConsoleTitle(SaveTitle, _countof(SaveTitle));
+  UnicodeString SaveTitle(1024, 0);
+  ::GetConsoleTitle(const_cast<wchar_t *>(SaveTitle.c_str()), SaveTitle.GetLength());
   TConsoleTitleParam * Param = new TConsoleTitleParam();
   Param->Progress = FCurrentProgress;
   Param->Own = !FCurrentTitle.IsEmpty() && (FormatConsoleTitle() == SaveTitle);
@@ -1678,11 +1678,11 @@ void TCustomFarPlugin::UpdateProgress(int32_t State, int32_t Progress) const
   FarAdvControl(ACTL_SETPROGRESSSTATE, State, nullptr);
   if (State == TBPS_NORMAL)
   {
-    ProgressValue pv{};
-    pv.StructSize = sizeof(ProgressValue);
-    pv.Completed = (Progress < 0) ? 0 : (Progress > 100) ? 100 : Progress;
-    pv.Total = 100;
-    FarAdvControl(ACTL_SETPROGRESSVALUE, 0, &pv);
+    ProgressValue PV{};
+    PV.StructSize = sizeof(ProgressValue);
+    PV.Completed = (Progress < 0) ? 0 : (Progress > 100) ? 100 : Progress;
+    PV.Total = 100;
+    FarAdvControl(ACTL_SETPROGRESSVALUE, 0, &PV);
   }
 }
 
@@ -1690,8 +1690,8 @@ void TCustomFarPlugin::UpdateCurrentConsoleTitle()
 {
   const UnicodeString Title = FormatConsoleTitle();
   ::SetConsoleTitle(Title.c_str());
-  const int32_t progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
-  UpdateProgress(progress != 0 ? TBPS_NORMAL : TBPS_NOPROGRESS, progress);
+  const int32_t Progress = FCurrentProgress != -1 ? FCurrentProgress : 0;
+  UpdateProgress(Progress != 0 ? TBPS_NORMAL : TBPS_NOPROGRESS, Progress);
 }
 
 void TCustomFarPlugin::SaveScreen(HANDLE & Screen)
@@ -2641,7 +2641,8 @@ PLUGINPANELITEMFLAGS TFarPanelItem::GetFlags() const
 
 UnicodeString TFarPanelItem::GetFileName() const
 {
-  UnicodeString Result = FPanelItem->FileName;
+  // UnicodeString Result = FPanelItem->AlternateFileName ? FPanelItem->AlternateFileName : FPanelItem->FileName;
+  const UnicodeString Result = FPanelItem->FileName;
   return Result;
 }
 

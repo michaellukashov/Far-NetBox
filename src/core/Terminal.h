@@ -97,22 +97,22 @@ constexpr const uint32_t folRetryOnFatal = 0x02;
 /* TODO : Better user interface (query to user) */
 #define FILE_OPERATION_LOOP_BEGIN \
 do { \
-  bool DoRepeat; \
-  do \
-  { \
-    DoRepeat = false; \
-    try \
+    bool DoRepeat; \
+    do \
     { \
+      DoRepeat = false; \
+      try \
+      { \
 
 #define FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, HELPKEYWORD) \
-    } \
-    catch (Exception & E) \
-    { \
-      FILE_OPERATION_LOOP_TERMINAL->FileOperationLoopEnd(E, OperationProgress, (MESSAGE), (FLAGS), L"", (HELPKEYWORD)); \
-      DoRepeat = true; \
-    } \
-  } while (DoRepeat); \
-} while(0)
+      } \
+      catch (Exception & E) \
+      { \
+        FILE_OPERATION_LOOP_TERMINAL->FileOperationLoopEnd(E, OperationProgress, (MESSAGE), (FLAGS), L"", (HELPKEYWORD)); \
+        DoRepeat = true; \
+      } \
+    } while (DoRepeat); \
+  } while(0)
 
 #define FILE_OPERATION_LOOP_END_EX(MESSAGE, FLAGS) \
   FILE_OPERATION_LOOP_END_CUSTOM(MESSAGE, FLAGS, L"")
@@ -945,12 +945,28 @@ public:
   TCalculateSizeStats * Stats{nullptr};
   bool AllowDirs{true};
   bool UseCache{false};
-//private:
+// private:
   TCollectedFileList * Files{nullptr};
   UnicodeString LastDirPath;
   int64_t Size{0};
   bool Result{true};
 };
+
+#if 0 // moved to FileSystems.h
+struct TOverwriteFileParams
+{
+  TOverwriteFileParams();
+
+  __int64 SourceSize;
+  __int64 DestSize;
+  TDateTime SourceTimestamp;
+  TDateTime DestTimestamp;
+  TModificationFmt SourcePrecision;
+  TModificationFmt DestPrecision;
+};
+
+typedef std::vector<TDateTime> TDateTimes;
+#endif // #if 0
 
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {

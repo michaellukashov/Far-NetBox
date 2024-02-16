@@ -5,7 +5,11 @@
 ## [Unreleased] - ReleaseDate
 
 
-## [24.2.1.586] - 2024-02-15
+## [24.2.1.587] - 2024-02-16
+
+### Changes
+
+ - Upgrade WinSCP sources: WinSCP 6.3.0
 
 ### Fixes
 

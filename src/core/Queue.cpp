@@ -961,7 +961,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
 
     if (Result && TerminalItem)
     {
-      if (Pause)
+      if (Pause && TerminalItem)
       {
         Result = TerminalItem->Pause();
       }
@@ -2642,16 +2642,28 @@ void TTerminalThread::Cancel()
 
 void TTerminalThread::Idle()
 {
-  const TGuard Guard(FSection);
-  // only when running user action already,
-  // so that the exception is caught, saved and actually
-  // passed back into the terminal thread, saved again
-  // and passed back to us
-  if ((FUserAction != nullptr) && (FIdleException != nullptr))
+  // If user action is needed during Idle() call from TTerminalThread::WaitForUserAction
+  // (e.g. when disconnect is detected and session get reconnected)
+  // unconditional Enter() here would deadlock.
+  if (FSection.TryEnter())
   {
-    Rethrow(FIdleException);
+    try__finally
+    {
+      // only when running user action already,
+      // so that the exception is caught, saved and actually
+      // passed back into the terminal thread, saved again
+      // and passed back to us
+      if ((FUserAction != nullptr) && (FIdleException != nullptr))
+      {
+        Rethrow(FIdleException);
+      }
+      FPendingIdle = true;
+    }
+    __finally
+    {
+      FSection.Release();
+    } end_try__finally
   }
-  FPendingIdle = true;
 }
 
 void TTerminalThread::TerminalOpen()

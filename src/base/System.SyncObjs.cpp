@@ -44,3 +44,14 @@ void TCriticalSection::Leave() const
     TINYLOG_TRACE(g_tinylog) << repr("FAcquired: %d", FAcquired);
   }
 }
+
+bool TCriticalSection::TryEnter()
+{
+  // return System.TryEnterCriticalSection(CriticalSection)<>0;
+  return ::TryEnterCriticalSection(&FSection) != FALSE;
+}
+
+void TCriticalSection::Release()
+{
+  ::LeaveCriticalSection(&FSection);
+}

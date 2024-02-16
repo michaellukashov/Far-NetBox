@@ -1460,6 +1460,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
         EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames),
         EnumName(Data->GetFtpListAll(), AutoSwitchNames),
         EnumName(Data->GetFtpHost(), AutoSwitchNames));
+      if (Data->FFtpWorkFromCwd != asAuto)
+      {
+        ADF(L"FTP: Relative paths: %s", EnumName(Data->FFtpWorkFromCwd, AutoSwitchNames));
+      }
     }
     if (Data->GetFSProtocol() == fsWebDAV)
     {
@@ -1553,16 +1557,10 @@ void TSessionLog::AddSeparator()
 TActionLog::TActionLog(TSessionUI * UI, const TDateTime & Started, TSessionData * SessionData,
   TConfiguration * Configuration) noexcept :
   FConfiguration(Configuration),
-  FLogging(false),
-  FLogger(nullptr),
   FUI(UI),
   FSessionData(SessionData),
   FPendingActions(std::make_unique<TList>()),
-  FFailed(false),
-  FClosed(false),
-  FInGroup(false),
-  FIndent(L"  "),
-  FEnabled(true)
+  FIndent(L"  ")
 {
   DebugAssert(UI != nullptr);
   DebugAssert(SessionData != nullptr);

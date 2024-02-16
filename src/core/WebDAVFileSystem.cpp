@@ -1311,6 +1311,7 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
   const UnicodeString Path = DirectoryPath(APath);
 
   ne_propname QuotaProps[3];
+  // memset(QuotaProps, 0, sizeof(QuotaProps));
   nb::ClearArray(QuotaProps);
   QuotaProps[0].nspace = DAV_PROP_NAMESPACE;
   QuotaProps[0].name = PROP_QUOTA_AVAILABLE;
