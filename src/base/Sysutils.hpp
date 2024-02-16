@@ -493,6 +493,8 @@ private:
 template<typename F, typename F2>
 scope_guard<F, F2> make_try_finally(F && f, F2 && f2) { return scope_guard<F, F2>(std::forward<F>(f), std::forward<F2>(f2)); }
 
+struct nop_deleter { void operator()(void *) const {} };
+
 } // namespace detail
 
 #define SCOPE_EXIT \
@@ -551,10 +553,6 @@ public:
 private:
   T m_Value{};
 };
-
-namespace detail {
-struct nop_deleter { void operator()(void *) const {} };
-}
 
 template<class T>
 using movable_ptr = std::unique_ptr<T, Sysutils::detail::nop_deleter>;
