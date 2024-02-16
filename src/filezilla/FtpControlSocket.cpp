@@ -738,7 +738,6 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
       if (cap == unknown)
       {
         std::transform(facts.begin(), facts.end(), facts.begin(), ::tolower);
-
         bool had_unset = false;
         std::string opts_facts;
         // Create a list of all facts understood by both FZ and the server.
@@ -3656,6 +3655,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
           m_Operation.nOpState = FILETRANSFER_REST;
         else
           m_Operation.nOpState = FILETRANSFER_RETRSTOR;
+
         if (m_pDataFile != nullptr)
         {
           delete m_pDataFile;
