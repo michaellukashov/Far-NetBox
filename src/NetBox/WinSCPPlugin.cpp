@@ -39,7 +39,11 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
       if (Home)
         Str = Home;
       else
-        Str = getenv("TEMP");
+      {
+        const char * Temp = getenv("TEMP");
+        if (Temp)
+          Str = Temp;
+      }
       Str += Path + 1;
     } else {
       Str = Path;
