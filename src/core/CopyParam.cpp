@@ -643,7 +643,7 @@ void TCopyParamType::SetReplaceInvalidChars(bool Value)
 
 UnicodeString TCopyParamType::ValidLocalFileName(const UnicodeString & AFileName) const
 {
-  return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LOCAL_INVALID_CHARS);
+  return ::ValidLocalFileName(AFileName, GetInvalidCharsReplacement(), FTokenizibleChars, LocalInvalidChars);
 }
 
 UnicodeString TCopyParamType::RestoreChars(const UnicodeString & AFileName) const
