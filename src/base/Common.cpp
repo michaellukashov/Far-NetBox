@@ -2259,7 +2259,7 @@ UnicodeString GetOSInfo()
 
 UnicodeString GetEnvironmentInfo()
 {
-  UnicodeString Result; //TODO: = FORMAT("WinSCP %s (OS %s)", GetConfiguration()->GetVersionStr(), GetOSInfo());
+  UnicodeString Result = FORMAT("NetBox %s (OS %s)", GetConfiguration()->GetVersionStr(), GetOSInfo());
   return Result;
 }
 
