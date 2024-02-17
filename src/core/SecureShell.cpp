@@ -1940,6 +1940,7 @@ void TSecureShell::WaitForData()
 {
   // see winsftp.c
   bool IncomingData;
+  const bool InfiniteWait = FSessionData->GetTimeout() == 0;
 
   do
   {
@@ -1949,7 +1950,7 @@ void TSecureShell::WaitForData()
     }
 
     IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
-    if (!IncomingData)
+    if (!IncomingData && !InfiniteWait)
     {
       DebugAssert(FWaitingForData == 0);
       const TAutoNestingCounter NestingCounter(FWaitingForData);
