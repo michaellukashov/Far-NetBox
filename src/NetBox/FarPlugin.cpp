@@ -2745,15 +2745,13 @@ int32_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
 
 TObjectList * TFarPanelInfo::GetItems() const
 {
-  if (!FItems)
+  if (FItems != nullptr)
   {
-    FItems = new TObjectList();
+    return FItems;
   }
+  FItems = new TObjectList();
   if (FOwner)
   {
-    // DebugAssert(FItems->GetCount() == 0);
-    if (!FItems->GetCount())
-      FItems->Clear();
     for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       TODO("move to common function");
