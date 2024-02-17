@@ -45,7 +45,7 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
 
   RawByteString Result;
 
-  if (!::RandSeed) { ::Randomize(); } //::RandSeed = 1;
+  // if (!::RandSeed) { ::Randomize(); }
   Password = Key + Password;
   Result += SimpleEncryptChar(static_cast<uint8_t>(PWALG_SIMPLE_FLAG)); // Flag
   const int32_t Len = Password.Length();
@@ -64,14 +64,14 @@ RawByteString EncryptPassword(const UnicodeString & UnicodePassword, const Unico
     (Result.Length() / 2) +
     1 + // Shift
     Password.Length();
-  const int32_t Shift = (DataLen < PWALG_SIMPLE_MAXLEN) ? random(PWALG_SIMPLE_MAXLEN - DataLen) : 0;
+  const int32_t Shift = (DataLen < PWALG_SIMPLE_MAXLEN) ? Random(PWALG_SIMPLE_MAXLEN - DataLen) : 0;
   Result += SimpleEncryptChar(static_cast<uint8_t>(Shift));
   for (int32_t Index = 0; Index < Shift; Index++)
-    Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
+    Result += SimpleEncryptChar(static_cast<uint8_t>(Random(256)));
   for (int32_t Index = 0; Index < Password.Length(); Index++)
     Result += SimpleEncryptChar(Password.c_str()[Index]);
   while (Result.Length() < PWALG_SIMPLE_MAXLEN * 2)
-    Result += SimpleEncryptChar(static_cast<uint8_t>(random(256)));
+    Result += SimpleEncryptChar(static_cast<uint8_t>(Random(256)));
   return Result;
 }
 
