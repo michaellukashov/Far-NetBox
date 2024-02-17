@@ -4274,7 +4274,7 @@ static int32_t PemPasswordCallback(char * Buf, int32_t ASize, int32_t /*RWFlag*/
 {
   TPemPasswordCallbackData & Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
-  strncpy(Buf, UtfPassphrase.c_str(), nb::ToSizeT(ASize));
+  strncpy_s(Buf, UtfPassphrase.GetLength(), UtfPassphrase.c_str(), nb::ToSizeT(ASize));
   Shred(UtfPassphrase);
   Buf[ASize - 1] = '\0';
   return nb::ToInt32(NBChTraitsCRT<char>::SafeStringLen(Buf));

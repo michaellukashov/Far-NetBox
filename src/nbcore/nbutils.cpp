@@ -6,8 +6,8 @@
 
 namespace nb {
 
-int32_t StrLength(const wchar_t * str) { return static_cast<int32_t>(wcslen(NullToEmpty(str))); }
-int32_t StrLength(const char * str) { return static_cast<int32_t>(strlen(NullToEmptyA(str))); }
+int32_t StrLength(const wchar_t * str) { return safe_strlen(str); }
+int32_t StrLength(const char * str) { return safe_strlen(str); }
 
 wchar_t Upper(wchar_t Ch)
 {

@@ -389,13 +389,13 @@ public:
 
   static LPSTR __stdcall StringUppercase(LPSTR psz)
   {
-    ::CharUpperBuffA(psz, static_cast<DWORD>(strlen(psz)));
+    ::CharUpperBuffA(psz, static_cast<DWORD>(nb::safe_strlen(psz)));
     return psz;
   }
 
   static LPSTR __stdcall StringLowercase(LPSTR psz)
   {
-    ::CharLowerBuffA(psz, static_cast<DWORD>(strlen(psz)));
+    ::CharLowerBuffA(psz, static_cast<DWORD>(nb::safe_strlen(psz)));
     return psz;
   }
 
@@ -429,7 +429,7 @@ public:
   static int __stdcall GetBaseTypeLength(LPCSTR pszSrc)
   {
     // Returns required buffer length in XCHARs
-    return static_cast<int>(strlen(pszSrc));
+    return static_cast<int>(nb::safe_strlen(pszSrc));
   }
 
   static int __stdcall GetBaseTypeLength(LPCSTR pszSrc, int nLength)
@@ -521,13 +521,13 @@ public:
   static int __stdcall SafeStringLen(LPCSTR psz)
   {
     // returns length in bytes
-    return (psz != nullptr) ? static_cast<int>(strlen(psz)) : 0;
+    return (psz != nullptr) ? static_cast<int>(nb::safe_strlen(psz)) : 0;
   }
 
   static int __stdcall SafeStringLen(LPCWSTR psz)
   {
     // returns length in wchar_ts
-    return (psz != nullptr) ? static_cast<int>(wcslen(psz)) : 0;
+    return static_cast<int>(nb::safe_strlen(psz));
   }
 
   static int __stdcall GetCharLen(const wchar_t *pch)
@@ -635,13 +635,13 @@ public:
 
   static LPWSTR __stdcall StringUppercase(LPWSTR psz)
   {
-    ::CharUpperBuffW(psz, static_cast<DWORD>(wcslen(psz)));
+    ::CharUpperBuffW(psz, static_cast<DWORD>(nb::safe_strlen(psz)));
     return psz;
   }
 
   static LPWSTR __stdcall StringLowercase(LPWSTR psz)
   {
-    ::CharLowerBuffW(psz, static_cast<DWORD>(wcslen(psz)));
+    ::CharLowerBuffW(psz, static_cast<DWORD>(nb::safe_strlen(psz)));
     return psz;
   }
 
@@ -704,7 +704,7 @@ public:
   static int __stdcall GetBaseTypeLength(LPCWSTR pszSrc)
   {
     // Returns required buffer size in wchar_ts
-    return static_cast<int>(wcslen(pszSrc));
+    return static_cast<int>(nb::safe_strlen(pszSrc));
   }
 
   static int __stdcall GetBaseTypeLength(LPCWSTR pszSrc, int nLength)
@@ -748,13 +748,13 @@ public:
   static int __stdcall SafeStringLen(LPCSTR psz)
   {
     // returns length in bytes
-    return (psz != nullptr) ? static_cast<int>(strlen(psz)) : 0;
+    return (psz != nullptr) ? static_cast<int>(nb::safe_strlen(psz)) : 0;
   }
 
   static int __stdcall SafeStringLen(LPCWSTR psz)
   {
     // returns length in wchar_ts
-    return (psz != nullptr) ? static_cast<int>(wcslen(psz)) : 0;
+    return static_cast<int>(nb::safe_strlen(psz));
   }
 
   static int __stdcall GetCharLen(const wchar_t *pch)

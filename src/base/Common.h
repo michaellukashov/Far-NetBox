@@ -13,7 +13,7 @@
 #define ASCOPY(dest, source) \
   { \
     AnsiString CopyBuf = source; \
-    strncpy(dest, CopyBuf.c_str(), LENOF(dest)); \
+    strncpy_s(dest, LENOF(dest), CopyBuf.c_str(), CopyBuf.Length()); \
     dest[LENOF(dest)-1] = '\0'; \
   }
 #define SWAP(TYPE, FIRST, SECOND) \

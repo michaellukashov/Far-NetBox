@@ -70,8 +70,8 @@ static int32_t NeonProxyAuth(
   }
   else
   {
-    strncpy(UserName, StrToNeon(ProxyAuthData->UserName), NE_ABUFSIZ);
-    strncpy(Password, StrToNeon(ProxyAuthData->Password), NE_ABUFSIZ);
+    strncpy_s(UserName, NE_ABUFSIZ, StrToNeon(ProxyAuthData->UserName), NE_ABUFSIZ);
+    strncpy_s(Password, NE_ABUFSIZ, StrToNeon(ProxyAuthData->Password), NE_ABUFSIZ);
     Result = 0;
   }
 

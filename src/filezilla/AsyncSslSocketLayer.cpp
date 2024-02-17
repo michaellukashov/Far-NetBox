@@ -1144,13 +1144,13 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     {
       debug = reinterpret_cast<char *>(nb::ToIntPtr(ret));
     }
-    char *buffer = nb::chcalloc(4096 + ((debug != nullptr) ? strlen(debug) : 0));
+    char *buffer = nb::chcalloc(4096 + ((debug != nullptr) ? nb::safe_strlen(debug) : 0));
     sprintf(buffer, "%s: %s",
         str,
         SSL_state_string_long(s));
     if (debug != nullptr)
     {
-      sprintf(buffer + strlen(buffer), " [%s]", debug);
+      sprintf(buffer + nb::safe_strlen(buffer), " [%s]", debug);
       OPENSSL_free(debug);
     }
     pLayer->LogSocketMessageRaw(FZ_LOG_INFO, A2T(buffer));
