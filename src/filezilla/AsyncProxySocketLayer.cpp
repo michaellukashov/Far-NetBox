@@ -782,11 +782,11 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
 
         CBase64Coding base64coding;
         base64coding.Encode(userpass, (int)nb::safe_strlen(userpass), base64str);
-        strcat(str, "Authorization: Basic ");
-        strcat(str, base64str);
-        strcat(str, "\r\nProxy-Authorization: Basic ");
-        strcat(str, base64str);
-        strcat(str, "\r\n\r\n");
+        strcat_s(str, sizeof(str), "Authorization: Basic ");
+        strcat_s(str, sizeof(str), base64str);
+        strcat_s(str, sizeof(str), "\r\nProxy-Authorization: Basic ");
+        strcat_s(str, sizeof(str), base64str);
+        strcat_s(str, sizeof(str), "\r\n\r\n");
       }
       nb_free(pHost);
 
