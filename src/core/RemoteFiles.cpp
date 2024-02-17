@@ -3116,11 +3116,14 @@ TSynchronizeChecklist::TSynchronizeChecklist() noexcept :
 
 TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
 {
-  for (int32_t Index = 0; Index < FList->Count(); Index++)
+  try
   {
-    TChecklistItem * Item = FList->GetItem(Index);
-    SAFE_DESTROY(Item);
-  }
+    for (int32_t Index = 0; Index < FList->Count(); Index++)
+    {
+      TChecklistItem * Item = FList->GetItem(Index);
+      SAFE_DESTROY(Item);
+    }
+  } catch (...) {}
 //  delete FList;
 }
 
