@@ -525,6 +525,9 @@
 "sekundach"
 "&Maksymalna liczba prób: "
 "(0-99)"
+" Timeouts "
+"Wait for reply dialog timeout: "
+"seconds"
 
 " Przy pobieraniu do edytora/podglądu "
 "Użyj &domyślnych opcji pobierania"
