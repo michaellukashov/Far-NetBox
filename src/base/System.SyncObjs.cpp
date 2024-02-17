@@ -39,15 +39,10 @@ void TCriticalSection::Leave() const
   --FAcquired;
 //  DEBUG_PRINTF("FAcquired: %d", FAcquired);
   ::LeaveCriticalSection(&FSection);
-  if (FAcquired == 2)
-  {
-    TINYLOG_TRACE(g_tinylog) << repr("FAcquired: %d", FAcquired);
-  }
 }
 
 bool TCriticalSection::TryEnter()
 {
-  // return System.TryEnterCriticalSection(CriticalSection)<>0;
   return ::TryEnterCriticalSection(&FSection) != FALSE;
 }
 
