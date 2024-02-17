@@ -1107,20 +1107,16 @@ void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Dat
   // DEBUG_PRINTF("Sender: %p, Data: %p", (void *)Sender, (void *)Data);
   if (FParams && (FParams->Timer > 0))
   {
-    const uint32_t SinceLastTimer = nb::ToUInt32((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
-    if (SinceLastTimer >= FParams->Timeout)
+    DebugAssert(FParams->TimerEvent);
+    if (FParams->TimerEvent)
     {
-      DebugAssert(FParams->TimerEvent);
-      if (FParams->TimerEvent)
+      FParams->TimerAnswer = 0;
+      FParams->TimerEvent(FParams->TimerAnswer);
+      if (FParams->TimerAnswer != 0)
       {
-        FParams->TimerAnswer = 0;
-        FParams->TimerEvent(FParams->TimerAnswer);
-        if (FParams->TimerAnswer != 0)
-        {
-          Close(GetDefaultButton());
-        }
-        FLastTimerTime = Now();
+        Close(GetDefaultButton());
       }
+      FLastTimerTime = Now();
     }
   }
 
