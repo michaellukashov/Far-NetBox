@@ -751,7 +751,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
     }
     else if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
     {
-      char str[4096]; //This should be large enough
+      char str[4096]{}; //This should be large enough
 
       char * pHost = nullptr;
       if (m_pProxyPeerHost && *m_pProxyPeerHost)
@@ -772,10 +772,10 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         sprintf(str, "CONNECT %s:%d HTTP/1.1\r\nHost: %s:%d\r\n", pHost, ntohs(m_nProxyPeerPort),
           pHost, ntohs(m_nProxyPeerPort));
 
-        char userpass[4096];
+        char userpass[4096]{};
         sprintf(userpass, "%s:%s", m_ProxyData.pProxyUser?m_ProxyData.pProxyUser:"", m_ProxyData.pProxyPass?m_ProxyData.pProxyPass:"");
 
-        char base64str[4096];
+        char base64str[4096]{};
 
         CBase64Coding base64coding;
         base64coding.Encode(userpass, (int)strlen(userpass), base64str);
