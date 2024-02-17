@@ -639,6 +639,11 @@ inline bool CheckHandle(HANDLE AFileHandle)
   return (AFileHandle != nullptr) && (AFileHandle != INVALID_HANDLE_VALUE);
 }
 
+inline bool CheckAttribute(DWORD Attr)
+{
+  return Attr != INVALID_FILE_ATTRIBUTES;
+}
+
 } // namespace Sysutils
 
 using namespace Sysutils;

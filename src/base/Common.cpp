@@ -2268,7 +2268,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   DWORD FindAttrs)
 {
   DebugAssert(!CallBackFunc.empty());
-  if (FindAttrs == INVALID_FILE_ATTRIBUTES)
+  if (!CheckAttribute(FindAttrs))
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
