@@ -1302,7 +1302,7 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent && PoolEvent)
     Params.Timer = 500;
     Params.TimerEvent = std::move(PoolEvent);
     Params.TimerMessage = MainInstructionsFirstParagraph(FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout()));
-    Params.TimerAnswers = qaAbort;
+    Params.TimerAnswers = qaAbort | qaRetry;
     Params.TimerQueryType = qtInformation;
     if (FConfiguration->GetSessionReopenAutoStall() > 0)
     {
@@ -1940,6 +1940,7 @@ void TSecureShell::WaitForData()
 {
   // see winsftp.c
   bool IncomingData;
+  const bool InfiniteWait = FSessionData->GetTimeout() == 0;
 
   do
   {
@@ -1949,7 +1950,7 @@ void TSecureShell::WaitForData()
     }
 
     IncomingData = EventSelectLoop(FSessionData->GetTimeout() * MSecsPerSec, true, nullptr);
-    if (!IncomingData)
+    if (!IncomingData && !InfiniteWait)
     {
       DebugAssert(FWaitingForData == 0);
       const TAutoNestingCounter NestingCounter(FWaitingForData);

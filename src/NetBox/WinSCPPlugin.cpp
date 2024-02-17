@@ -578,18 +578,15 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    if (rtti::isa<EAbort>(E) || rtti::isa<EFatal>(E) || rtti::isa<ExtException>(E))
-    {
-      const TQueryType Type = rtti::isa<ETerminate>(E) ? qtInformation : qtError;
+    const TQueryType Type = rtti::isa<ETerminate>(E) ? qtInformation : qtError;
 
-      TStrings * MoreMessages = nullptr;
-      if (rtti::isa<ExtException>(E))
-      {
-        MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
-      }
-      const UnicodeString Message = TranslateExceptionMessage(E);
-      MoreMessageDialog(Message, MoreMessages, Type, qaOK);
+    TStrings * MoreMessages = nullptr;
+    if (rtti::isa<ExtException>(E))
+    {
+      MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
     }
+    const UnicodeString Message = TranslateExceptionMessage(E);
+    MoreMessageDialog(Message, MoreMessages, Type, qaOK);
   }
 }
 

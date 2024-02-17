@@ -525,6 +525,9 @@
 "segundos"
 "Má&ximo número de intentos: "
 "(0-99)"
+" Timeouts "
+"Wait for reply dialog timeout: "
+"seconds"
 
 " Al descargar a editor/visor "
 "Usar opciones de &descarga por defecto"
@@ -1271,7 +1274,7 @@
 "$$"
 
 "WinSCP"
-"6.2.2"
+"6.3.0"
 "1.6.2"
 "Based on WinSCPFar: SFTP/FTP/SCP client for Far 1.75"
 " Version %s"

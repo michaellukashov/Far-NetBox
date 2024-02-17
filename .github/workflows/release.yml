@@ -75,7 +75,7 @@ jobs:
           fi
 
       - name: Upload result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: result
           path: ./*.7z
@@ -103,7 +103,7 @@ jobs:
 
       - name: Download result
         if: ${{ false }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: result
 
