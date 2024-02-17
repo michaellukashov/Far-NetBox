@@ -1110,7 +1110,7 @@ void TStream::SetPosition(int64_t Pos)
   DebugAssert(Res == Pos);
 }
 
-static void ReadError(const UnicodeString & Name)
+[[noreturn]] static void ReadError(const UnicodeString & Name)
 {
   throw Exception(FORMAT("InvalidRegType: %s", Name)); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
