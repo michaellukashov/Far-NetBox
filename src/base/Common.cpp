@@ -2203,7 +2203,6 @@ DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSea
 {
   F.Path = APath;
   F.Dir = ExtractFilePath(APath);
-  // DEBUG_PRINTF("APath: %s", APath);
   const DWORD Result = base::FindFirst(APath, LocalFileAttrs, F);
   F.Opened = (Result == 0);
   return Result;
