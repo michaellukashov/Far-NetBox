@@ -620,14 +620,14 @@ void TWinSCPPlugin::MessageClick(void * Token, int32_t Result, bool & Close)
   DebugAssert(Token);
   const TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 
-  DebugAssert((Result != -1) && (Result < Data.ButtonCount));
+  DebugAssert((Result != -1) && (Result < nb::ToInt32(Data.ButtonCount)));
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
     for (uint32_t Index = 0; Index < Data.Params->AliasesCount; ++Index)
     {
       const TQueryButtonAlias & Alias = Data.Params->Aliases[Index];
-      if ((Result >= 0) && (Result < Data.ButtonCount) && (Alias.Button == Data.Buttons[Result]) &&
+      if ((Result >= 0) && (Result < nb::ToInt32(Data.ButtonCount)) && (Alias.Button == Data.Buttons[Result]) &&
         (Alias.OnSubmit))
       {
         uint32_t Answer{0};
