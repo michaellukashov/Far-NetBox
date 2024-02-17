@@ -311,8 +311,8 @@ public:
   }
   catch (const std::bad_alloc &) {}
 
-  ROProperty<int32_t> Count{nb::bind(&TListBase::GetCount, this)};
-  ROIndexedProperty<O *> Items{nb::bind(&TListBase::GetItemPrivate, this)};
+  const ROProperty<int32_t> Count{nb::bind(&TListBase::GetCount, this)};
+  const ROIndexedProperty<O *> Items{nb::bind(&TListBase::GetItemPrivate, this)};
 
 private:
   nb::vector_t<O *> FList;

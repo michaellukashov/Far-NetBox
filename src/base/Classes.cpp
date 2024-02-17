@@ -1920,7 +1920,7 @@ bool TShortCut::operator <(const TShortCut & rhs) const
   return FValue < rhs.FValue;
 }
 
-void GetLocaleFormatSettings(int32_t LCID, TFormatSettings & FormatSettings)
+void GetLocaleFormatSettings(int32_t LCID, const TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;

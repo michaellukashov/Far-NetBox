@@ -2695,10 +2695,10 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
   else if (Msg == DN_CONTROLINPUT)
   {
     Result = 1;
-    INPUT_RECORD * Rec = static_cast<INPUT_RECORD *>(Param);
+    const INPUT_RECORD * Rec = static_cast<const INPUT_RECORD *>(Param);
     if (Rec->EventType == KEY_EVENT)
     {
-      KEY_EVENT_RECORD * KeyEvent = &Rec->Event.KeyEvent;
+      const KEY_EVENT_RECORD * KeyEvent = &Rec->Event.KeyEvent;
 
       int32_t NewTopIndex = GetTopIndex();
 
@@ -2777,7 +2777,7 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
         SetFocus();
       }
 
-      MOUSE_EVENT_RECORD * Event = &Rec->Event.MouseEvent;
+      const MOUSE_EVENT_RECORD * Event = &Rec->Event.MouseEvent;
       TPoint P = MouseClientPosition(Event);
 
       if (FLAGSET(Event->dwEventFlags, DOUBLE_CLICK) &&
