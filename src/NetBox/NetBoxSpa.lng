@@ -525,6 +525,9 @@
 "segundos"
 "Má&ximo número de intentos: "
 "(0-99)"
+" Timeouts "
+"Wait for reply dialog timeout: "
+"seconds"
 
 " Al descargar a editor/visor "
 "Usar opciones de &descarga por defecto"

@@ -525,6 +525,9 @@
 "seconds"
 "Ma&ximum number of retries: "
 "(0-99)"
+" Timeouts "
+"Wait for reply dialog timeout: "
+"seconds"
 
 " When downloading to editor/viewer "
 "Use default &download options"
