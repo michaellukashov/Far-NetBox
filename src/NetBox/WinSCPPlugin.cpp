@@ -702,7 +702,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   uint32_t AAnswers = Answers;
   bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
   bool NeverAskAgainPending = NeverAskAgainCheck;
-  uint32_t TimeoutButton = 0;
+  int32_t TimeoutButton = 0;
 
 #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
   do { if (AAnswers & qa ## TYPE) \
@@ -746,7 +746,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   DebugUsedParam(NeverAskAgainPending);
   DebugAssert(!NeverAskAgainPending);
 
-  uint32_t DefaultButtonIndex = 0;
+  int32_t DefaultButtonIndex = 0;
   if ((Params != nullptr) && (Params->Aliases != nullptr))
   {
     for (uint32_t bi = 0; bi < Data.ButtonCount; bi++)
@@ -756,9 +756,9 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
         if (Params->Aliases[ai].Button == Data.Buttons[bi] &&
           !Params->Aliases[ai].Alias.IsEmpty())
         {
-          ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
+          ButtonLabels->SetString(nb::ToInt32(bi), Params->Aliases[ai].Alias);
           if (Params->Aliases[ai].Default)
-            DefaultButtonIndex = bi;
+            DefaultButtonIndex = nb::ToInt32(bi);
           break;
         }
       }
