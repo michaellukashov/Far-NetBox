@@ -1302,7 +1302,7 @@ uint32_t TSecureShell::TimeoutPrompt(TQueryParamsTimerEvent && PoolEvent)
     Params.Timer = 500;
     Params.TimerEvent = std::move(PoolEvent);
     Params.TimerMessage = MainInstructionsFirstParagraph(FMTLOAD(TIMEOUT_STILL_WAITING3, FSessionData->GetTimeout()));
-    Params.TimerAnswers = qaAbort;
+    Params.TimerAnswers = qaAbort | qaRetry;
     Params.TimerQueryType = qtInformation;
     if (FConfiguration->GetSessionReopenAutoStall() > 0)
     {
