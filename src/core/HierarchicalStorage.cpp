@@ -817,7 +817,7 @@ void THierarchicalStorage::WriteDateTime(const UnicodeString & Name, const TDate
   if (CanWrite())
   {
     // TRegistry.WriteDateTime does this internally
-    DoWriteBinaryData(Name, &Value, sizeof(Value));
+    DoWriteBinaryData(Name, nb::ToUInt8Ptr(&Value), sizeof(Value));
   }
 }
 
@@ -826,7 +826,7 @@ void THierarchicalStorage::WriteFloat(const UnicodeString & Name, double Value)
   if (CanWrite())
   {
     // TRegistry.WriteFloat does this internally
-    DoWriteBinaryData(Name, &Value, sizeof(Value));
+    DoWriteBinaryData(Name, nb::ToUInt8Ptr(&Value), sizeof(Value));
   }
 }
 
@@ -842,7 +842,7 @@ void THierarchicalStorage::WriteString(const UnicodeString & Name, const Unicode
   }
 }
 
-void THierarchicalStorage::WriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size)
+void THierarchicalStorage::WriteBinaryData(const UnicodeString & Name, const uint8_t * Buffer, int32_t Size)
 {
   if (CanWrite())
   {
@@ -852,7 +852,7 @@ void THierarchicalStorage::WriteBinaryData(const UnicodeString & Name, const voi
 
 void THierarchicalStorage::WriteBinaryData(const UnicodeString & Name, const RawByteString & Value)
 {
-  WriteBinaryData(Name, Value.c_str(), Value.Length());
+  WriteBinaryData(Name, nb::ToUInt8Ptr(Value.c_str()), Value.Length());
 }
 
 void THierarchicalStorage::WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value)
@@ -1141,14 +1141,14 @@ void TRegistryStorage::DoWriteInteger(const UnicodeString & Name, int32_t Value)
 
 void TRegistryStorage::DoWriteInt64(const UnicodeString & Name, int64_t Value)
 {
-  WriteBinaryData(Name, &Value, sizeof(Value));
+  WriteBinaryData(Name, nb::ToUInt8Ptr(&Value), sizeof(Value));
 }
 
-void TRegistryStorage::DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size)
+void TRegistryStorage::DoWriteBinaryData(const UnicodeString & Name, const uint8_t * Buffer, int32_t Size)
 {
   try
   {
-    FRegistry->WriteBinaryData(Name, const_cast<void *>(Buffer), Size);
+    FRegistry->WriteBinaryData(Name, Buffer, Size);
   }
   catch(...)
   {

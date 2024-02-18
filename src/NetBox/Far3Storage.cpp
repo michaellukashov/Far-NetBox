@@ -230,8 +230,8 @@ void TFar3Storage::DoWriteInt64(const UnicodeString & Name, int64_t Value)
 }
 
 void TFar3Storage::DoWriteBinaryData(const UnicodeString & Name,
-  const void * Buffer, int32_t Size)
+  const uint8_t * Buffer, int32_t Size)
 {
-  FPluginSettings.Set(FRoot, Name.c_str(), Buffer, Size);
+  FPluginSettings.Set(FRoot, Name.c_str(), static_cast<const void *>(Buffer), Size);
 }
 

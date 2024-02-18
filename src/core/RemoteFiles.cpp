@@ -3036,7 +3036,7 @@ void TRemoteProperties::Load(THierarchicalStorage * Storage)
 void TRemoteProperties::Save(THierarchicalStorage * Storage) const
 {
   Storage->WriteBinaryData(UnicodeString(L"Valid"),
-    static_cast<const void *>(&Valid), sizeof(Valid));
+    nb::ToUInt8Ptr(&Valid), sizeof(Valid));
 
   if (Valid.Contains(vpRights))
   {

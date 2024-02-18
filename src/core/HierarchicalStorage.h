@@ -60,7 +60,7 @@ public:
   void WriteInt64(const UnicodeString & Name, int64_t Value);
   void WriteDateTime(const UnicodeString & Name, const TDateTime & Value);
   void WriteFloat(const UnicodeString & Name, double Value);
-  void WriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size);
+  void WriteBinaryData(const UnicodeString & Name, const uint8_t * Buffer, int32_t Size);
   void WriteString(const UnicodeString & Name, const UnicodeString & Value);
   void WriteBinaryData(const UnicodeString & Name, const RawByteString & Value);
   void WriteBinaryDataAsString(const UnicodeString & Name, const RawByteString & Value);
@@ -145,7 +145,7 @@ protected:
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) = 0;
   virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) = 0;
   virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) = 0;
-  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size) = 0;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const uint8_t * Buffer, int32_t Size) = 0;
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default) = 0;
   virtual UnicodeString DoReadStringRaw(const UnicodeString & Name, const UnicodeString & Default) = 0;
@@ -208,7 +208,7 @@ protected:
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
   virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
   virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
-  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size) override;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const uint8_t * Buffer, int32_t Size) override;
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default) override;
   virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;

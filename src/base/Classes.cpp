@@ -1857,11 +1857,11 @@ void TRegistry::WriteInteger(const UnicodeString & Name, int32_t Value)
 
 void TRegistry::WriteInt64(const UnicodeString & Name, int64_t Value)
 {
-  WriteBinaryData(Name, &Value, sizeof(Value));
+  WriteBinaryData(Name, nb::ToUInt8Ptr(&Value), sizeof(Value));
 }
 
 void TRegistry::WriteBinaryData(const UnicodeString & Name,
-  const void * Buffer, int32_t  BufSize)
+  const uint8_t * Buffer, int32_t  BufSize)
 {
   PutData(Name, Buffer, BufSize, rdBinary);
 }
