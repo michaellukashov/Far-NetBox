@@ -3085,8 +3085,8 @@ uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
   }
   else if (GetExceptionOnFail())
   {
-    // throw ECommand(E, AMsg, AHelpKeyword);
-    HandleExtendedException(E);
+    throw ECommand(E, AMsg, AHelpKeyword);
+    // HandleExtendedException(E);
   }
   else if (!Answers)
   {
