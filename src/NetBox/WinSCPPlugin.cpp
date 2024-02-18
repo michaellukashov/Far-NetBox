@@ -39,7 +39,11 @@ static UnicodeString GetDbgPath(const char * Env) noexcept
       if (Home)
         Str = Home;
       else
-        Str = getenv("TEMP");
+      {
+        const char * Temp = getenv("TEMP");
+        if (Temp)
+          Str = Temp;
+      }
       Str += Path + 1;
     } else {
       Str = Path;
@@ -578,18 +582,15 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    if (rtti::isa<EAbort>(E) || rtti::isa<EFatal>(E) || rtti::isa<ExtException>(E))
-    {
-      const TQueryType Type = rtti::isa<ETerminate>(E) ? qtInformation : qtError;
+    const TQueryType Type = rtti::isa<ETerminate>(E) ? qtInformation : qtError;
 
-      TStrings * MoreMessages = nullptr;
-      if (rtti::isa<ExtException>(E))
-      {
-        MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
-      }
-      const UnicodeString Message = TranslateExceptionMessage(E);
-      MoreMessageDialog(Message, MoreMessages, Type, qaOK);
+    TStrings * MoreMessages = nullptr;
+    if (rtti::isa<ExtException>(E))
+    {
+      MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
     }
+    const UnicodeString Message = TranslateExceptionMessage(E);
+    MoreMessageDialog(Message, MoreMessages, Type, qaOK);
   }
 }
 
@@ -623,14 +624,14 @@ void TWinSCPPlugin::MessageClick(void * Token, int32_t Result, bool & Close)
   DebugAssert(Token);
   const TFarMessageData & Data = *static_cast<TFarMessageData *>(Token);
 
-  DebugAssert((Result != -1) && (Result < Data.ButtonCount));
+  DebugAssert((Result != -1) && (Result < nb::ToInt32(Data.ButtonCount)));
 
   if ((Data.Params != nullptr) && (Data.Params->Aliases != nullptr))
   {
     for (uint32_t Index = 0; Index < Data.Params->AliasesCount; ++Index)
     {
       const TQueryButtonAlias & Alias = Data.Params->Aliases[Index];
-      if ((Result >= 0) && (Result < Data.ButtonCount) && (Alias.Button == Data.Buttons[Result]) &&
+      if ((Result >= 0) && (Result < nb::ToInt32(Data.ButtonCount)) && (Alias.Button == Data.Buttons[Result]) &&
         (Alias.OnSubmit))
       {
         uint32_t Answer{0};
@@ -705,7 +706,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   uint32_t AAnswers = Answers;
   bool NeverAskAgainCheck = (Params != nullptr) && FLAGSET(Params->Params, mpNeverAskAgainCheck);
   bool NeverAskAgainPending = NeverAskAgainCheck;
-  uint32_t TimeoutButton = 0;
+  int32_t TimeoutButton = 0;
 
 #define ADD_BUTTON_EX(TYPE, CANNEVERASK) \
   do { if (AAnswers & qa ## TYPE) \
@@ -749,7 +750,7 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
   DebugUsedParam(NeverAskAgainPending);
   DebugAssert(!NeverAskAgainPending);
 
-  uint32_t DefaultButtonIndex = 0;
+  int32_t DefaultButtonIndex = 0;
   if ((Params != nullptr) && (Params->Aliases != nullptr))
   {
     for (uint32_t bi = 0; bi < Data.ButtonCount; bi++)
@@ -759,9 +760,9 @@ uint32_t TWinSCPPlugin::MoreMessageDialog(const UnicodeString & Str,
         if (Params->Aliases[ai].Button == Data.Buttons[bi] &&
           !Params->Aliases[ai].Alias.IsEmpty())
         {
-          ButtonLabels->SetString(bi, Params->Aliases[ai].Alias);
+          ButtonLabels->SetString(nb::ToInt32(bi), Params->Aliases[ai].Alias);
           if (Params->Aliases[ai].Default)
-            DefaultButtonIndex = bi;
+            DefaultButtonIndex = nb::ToInt32(bi);
           break;
         }
       }

@@ -311,8 +311,8 @@ public:
   }
   catch (const std::bad_alloc &) {}
 
-  ROProperty<int32_t> Count{nb::bind(&TListBase::GetCount, this)};
-  ROIndexedProperty<O *> Items{nb::bind(&TListBase::GetItemPrivate, this)};
+  const ROProperty<int32_t> Count{nb::bind(&TListBase::GetCount, this)};
+  const ROIndexedProperty<O *> Items{nb::bind(&TListBase::GetItemPrivate, this)};
 
 private:
   nb::vector_t<O *> FList;
@@ -952,7 +952,7 @@ public:
   void WriteInteger(const UnicodeString & Name, int32_t Value);
   void WriteInt64(const UnicodeString & Name, int64_t Value);
   void WriteBinaryData(const UnicodeString & Name,
-    const void * Buffer, int32_t BufSize);
+    const uint8_t * Buffer, int32_t BufSize);
 private:
   void ChangeKey(HKEY Value, const UnicodeString & APath);
   HKEY GetBaseKey(bool Relative) const;
@@ -1132,8 +1132,12 @@ public:
 
   ~TGlobalsIntfInitializer()
   {
-    const TGlobalsIntf * Intf = GetGlobals();
-    delete Intf;
-    ::SetGlobals(nullptr);
+    try
+    {
+      const TGlobalsIntf * Intf = GetGlobals();
+      delete Intf;
+      ::SetGlobals(nullptr);
+    }
+    catch(...) {}
   }
 };

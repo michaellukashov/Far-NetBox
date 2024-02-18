@@ -128,9 +128,9 @@ NB_CORE_DLL(char *) nbcore_strdup(const char *str)
   if (str == nullptr)
     return nullptr;
 
-  char *p = static_cast<char *>(nbcore_alloc(strlen(str) + 1));
+  char *p = static_cast<char *>(nbcore_alloc(nb::safe_strlen(str) + 1));
   if (p)
-    strcpy(p, str);
+    strncpy_s(p, nb::safe_strlen(str) + 1, str, nb::safe_strlen(str));
   return p;
 }
 
@@ -139,9 +139,10 @@ NB_CORE_DLL(wchar_t *) nbcore_wstrdup(const wchar_t *str)
   if (str == nullptr)
     return nullptr;
 
-  wchar_t *p = static_cast<wchar_t *>(nbcore_alloc(sizeof(wchar_t) * (wcslen(str) + 1)));
+  int32_t sz = sizeof(wchar_t) * (nb::safe_strlen(str));
+  wchar_t *p = static_cast<wchar_t *>(nbcore_alloc(sz + 1));
   if (p)
-    wcscpy(p, str);
+    wcsncpy_s(p, sz+1, str, sz);
   return p;
 }
 

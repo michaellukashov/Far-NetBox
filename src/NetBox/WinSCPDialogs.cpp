@@ -581,7 +581,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(this));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
-  Dialog->SetSize(TPoint(76, 13));
+  Dialog->SetSize(TPoint(76, 15));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE))));
 
@@ -653,6 +653,28 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2));
   Text->SetEnabledDependency(SessionReopenAutoCheck);
 
+  Separator = new TFarSeparator(Dialog);
+  Separator->SetCaption(GetMsg(NB_TRANSFER_SESSION_TIMEOUTS_GROUP));
+  Separator->Move(0, 1);
+
+  Dialog->SetNextItemPosition(ipNewLine);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL));
+  
+  Dialog->SetNextItemPosition(ipRight);
+
+  TFarEdit * WaitDialogTimeoutEdit = new TFarEdit(Dialog);
+  WaitDialogTimeoutEdit->SetEnabledDependency(SessionReopenAutoCheck);
+  WaitDialogTimeoutEdit->SetFixed(true);
+  WaitDialogTimeoutEdit->SetMask(L"999");
+  WaitDialogTimeoutEdit->SetWidth(5);
+
+  Dialog->SetNextItemPosition(ipRight);
+
+  Text = new TFarText(Dialog);
+  Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL2));
+
   Dialog->AddStandardButtons();
 
   TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
@@ -668,6 +690,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   const int32_t Value = GetConfiguration()->GetSessionReopenAutoMaximumNumberOfRetries();
   SessionReopenNumberOfRetriesEdit->SetAsInteger(((Value < 0) || (Value > 99)) ?
     CONST_DEFAULT_NUMBER_OF_RETRIES : Value);
+  WaitDialogTimeoutEdit->SetAsInteger(GetConfiguration()->GetSessionReopenAutoStall() / 1000);
 
   const bool Result = (Dialog->ShowModal() == brOK);
 
@@ -696,6 +719,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
         (SessionReopenAutoCheck->GetChecked() ? (SessionReopenAutoEdit->GetAsInteger() * 1000) : 0));
       GetConfiguration()->SetSessionReopenAutoMaximumNumberOfRetries(
         (SessionReopenAutoCheck->GetChecked() ? SessionReopenNumberOfRetriesEdit->GetAsInteger() : CONST_DEFAULT_NUMBER_OF_RETRIES));
+      GetConfiguration()->SetSessionReopenAutoStall(WaitDialogTimeoutEdit->GetAsInteger() * 1000);
     }
     __finally
     {

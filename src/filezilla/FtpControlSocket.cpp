@@ -1263,7 +1263,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
         {
           // convert from UTF-8 to ANSI
           LPCSTR utf8 = (LPCSTR)m_RecvBuffer.back();
-          if (nb::DetectUTF8Encoding(nb::ToUInt8Ptr(utf8), nb::ToInt32(strlen(utf8))) == nb::etANSI)
+          if (nb::DetectUTF8Encoding(nb::ToUInt8Ptr(utf8), nb::safe_strlen(utf8)) == nb::etANSI)
           {
             if (m_CurrentServer.nUTF8 != 1)
             {
@@ -1492,9 +1492,9 @@ BOOL CFtpControlSocket::Send(CString str)
     char *utf8 = nb::chcalloc(len + 1);
     WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
 
-    size_t sendLen = strlen(utf8);
+    size_t sendLen = nb::safe_strlen(utf8);
     if (!m_awaitsReply && !m_sendBuffer)
-      res = CAsyncSocketEx::Send(utf8, (int)strlen(utf8));
+      res = CAsyncSocketEx::Send(utf8, (int)nb::safe_strlen(utf8));
     else
       res = -2;
     if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -1530,9 +1530,9 @@ BOOL CFtpControlSocket::Send(CString str)
   {
     LPCSTR lpszAsciiSend = T2CA(str);
 
-    size_t sendLen = strlen(lpszAsciiSend);
+    size_t sendLen = nb::safe_strlen(lpszAsciiSend);
     if (!m_awaitsReply && !m_sendBuffer)
-      res = CAsyncSocketEx::Send(lpszAsciiSend, (int)strlen(lpszAsciiSend), 0, m_CurrentServer.iDupFF);
+      res = CAsyncSocketEx::Send(lpszAsciiSend, (int)nb::safe_strlen(lpszAsciiSend), 0, m_CurrentServer.iDupFF);
     else
       res = -2;
     if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -6336,7 +6336,7 @@ CString CFtpControlSocket::GetReply()
   if (m_bUTF8)
   {
     // convert from UTF-8 to ANSI
-    if (nb::DetectUTF8Encoding(nb::ToUInt8Ptr(line), nb::ToInt32(strlen(line))) == nb::etANSI)
+    if (nb::DetectUTF8Encoding(nb::ToUInt8Ptr(line), nb::ToInt32(nb::safe_strlen(line))) == nb::etANSI)
     {
       if (m_CurrentServer.nUTF8 != 1)
       {

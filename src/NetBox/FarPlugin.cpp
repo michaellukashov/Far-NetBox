@@ -1107,20 +1107,16 @@ void TFarMessageDialog::OnUpdateTimeoutButton(TObject * /*Sender*/, void * /*Dat
   // DEBUG_PRINTF("Sender: %p, Data: %p", (void *)Sender, (void *)Data);
   if (FParams && (FParams->Timer > 0))
   {
-    const uint32_t SinceLastTimer = nb::ToUInt32((Now() - FLastTimerTime).GetValue() * MSecsPerDay);
-    if (SinceLastTimer >= FParams->Timeout)
+    DebugAssert(FParams->TimerEvent);
+    if (FParams->TimerEvent)
     {
-      DebugAssert(FParams->TimerEvent);
-      if (FParams->TimerEvent)
+      FParams->TimerAnswer = 0;
+      FParams->TimerEvent(FParams->TimerAnswer);
+      if (FParams->TimerAnswer != 0)
       {
-        FParams->TimerAnswer = 0;
-        FParams->TimerEvent(FParams->TimerAnswer);
-        if (FParams->TimerAnswer != 0)
-        {
-          Close(GetDefaultButton());
-        }
-        FLastTimerTime = Now();
+        Close(GetDefaultButton());
       }
+      FLastTimerTime = Now();
     }
   }
 
@@ -2745,15 +2741,13 @@ int32_t TFarPanelInfo::GetSelectedCount(bool CountCurrentItem) const
 
 TObjectList * TFarPanelInfo::GetItems() const
 {
-  if (!FItems)
+  if (FItems != nullptr)
   {
-    FItems = new TObjectList();
+    return FItems;
   }
+  FItems = new TObjectList();
   if (FOwner)
   {
-    // DebugAssert(FItems->GetCount() == 0);
-    if (!FItems->GetCount())
-      FItems->Clear();
     for (size_t Index = 0; Index < FPanelInfo->ItemsNumber; ++Index)
     {
       TODO("move to common function");

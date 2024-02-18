@@ -1110,7 +1110,7 @@ void TStream::SetPosition(int64_t Pos)
   DebugAssert(Res == Pos);
 }
 
-static void ReadError(const UnicodeString & Name)
+[[noreturn]] static void ReadError(const UnicodeString & Name)
 {
   throw Exception(FORMAT("InvalidRegType: %s", Name)); // FIXME ERegistryException.CreateResFmt(@SInvalidRegType, [Name]);
 }
@@ -1857,11 +1857,11 @@ void TRegistry::WriteInteger(const UnicodeString & Name, int32_t Value)
 
 void TRegistry::WriteInt64(const UnicodeString & Name, int64_t Value)
 {
-  WriteBinaryData(Name, &Value, sizeof(Value));
+  WriteBinaryData(Name, nb::ToUInt8Ptr(&Value), sizeof(Value));
 }
 
 void TRegistry::WriteBinaryData(const UnicodeString & Name,
-  const void * Buffer, int32_t  BufSize)
+  const uint8_t * Buffer, int32_t  BufSize)
 {
   PutData(Name, Buffer, BufSize, rdBinary);
 }
@@ -1920,7 +1920,7 @@ bool TShortCut::operator <(const TShortCut & rhs) const
   return FValue < rhs.FValue;
 }
 
-void GetLocaleFormatSettings(int32_t LCID, TFormatSettings & FormatSettings)
+void GetLocaleFormatSettings(int32_t LCID, const TFormatSettings & FormatSettings)
 {
   (void)LCID;
   (void)FormatSettings;

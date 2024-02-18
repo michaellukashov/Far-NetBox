@@ -409,6 +409,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY3(Integer,  SessionReopenAuto); \
     KEY3(Integer,  SessionReopenBackground); \
     KEY3(Integer,  SessionReopenTimeout); \
+    KEY3(Integer,  SessionReopenAutoStall); \
     KEY3(Integer,  TunnelLocalPortNumberLow); \
     KEY3(Integer,  TunnelLocalPortNumberHigh); \
     KEY3(Integer,  CacheDirectoryChangesMaxSize); \

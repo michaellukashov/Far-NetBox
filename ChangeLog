@@ -5,7 +5,7 @@
 ## [Unreleased] - ReleaseDate
 
 
-## [24.2.1.587] - 2024-02-16
+## [24.2.1.589] - 2024-02-19
 
 ### Changes
 
@@ -13,7 +13,14 @@
 
 ### Fixes
 
+ - gh-377 No Such File or Directory
+
 Thanks to ssvine https://github.com/ssvine
+ - gh-375 Fix: Many exceptions are not shown
+ - gh-373 Fix russian translation
+ - gh-371 Fix: Apply command runs twice
+ - gh-369 Fix timeout problems
+ - gh-367 Fix regression
  - gh-365 Fix cmake
  - gh-363 Fix slow session load
  - gh-362 scope_guard destructor should be noexcept(false)

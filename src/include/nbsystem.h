@@ -160,6 +160,16 @@ inline void ClearStruct(T * s) { T dont_instantiate_this_template_with_pointers 
 template<typename T, size_t N>
 inline void ClearArray(T (&a)[N]) { ::ZeroMemory(a, sizeof(a[0]) * N); }
 
+template<typename String>
+static int32_t safe_strlen(const String * S)
+{
+  int32_t I = 0;
+  const String * P = S;
+  while (*P++ != '\0')
+    ++I;
+  return I;
+}
+
 } // namespace nb
 
 #endif // #if defined(__cplusplus)

@@ -17,6 +17,8 @@
 #include <ShlObj.h>
 #include <limits>
 #include <algorithm>
+#include <Shlwapi.h>
+#include <tlhelp32.h>
 #include <psapi.h>
 #include <CoreMain.h>
 #include <SessionInfo.h>
@@ -659,24 +661,22 @@ UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
 
 // const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
-
-// const UnicodeString AnyMask = L"*.*";
-//const wchar_t EngShortMonthNames[12][4] =
-//{
-//  L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
-//  L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
-//};
-// const char * Bom = "\xEF\xBB\xBF";
-//const wchar_t TokenPrefix = L'%';
-//const wchar_t NoReplacement = wchar_t(0);
-//const wchar_t TokenReplacement = wchar_t(1);
+/*
+const UnicodeString AnyMask = L"*.*";
+const wchar_t EngShortMonthNames[12][4] =
+  {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
+   L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
+const char Bom[3] = "\xEF\xBB\xBF";
+const wchar_t TokenPrefix = L'%';
+const wchar_t NoReplacement = wchar_t(false);
+const wchar_t TokenReplacement = wchar_t(true);
 // Note similar list in MakeValidFileName
-// const UnicodeString LocalInvalidChars(TraceInitStr(L"/\\:*?\"<>|"));
-//const UnicodeString PasswordMask(TraceInitStr(L"***"));
-//const UnicodeString Ellipsis(TraceInitStr(L"..."));
-// const UnicodeString TitleSeparator(TraceInitStr(L" \u2013 ")); // En-Dash
-// const UnicodeString OfficialPackage(TraceInitStr(L"MartinPrikryl.WinSCP_tvv458r3h9r5m"));
-
+const UnicodeString LocalInvalidChars(TraceInitStr(L"/\\:*?\"<>|"));
+const UnicodeString PasswordMask(TraceInitStr(L"***"));
+const UnicodeString Ellipsis(TraceInitStr(L"..."));
+const UnicodeString TitleSeparator(TraceInitStr(L" \u2013 ")); // En-Dash
+const UnicodeString OfficialPackage(TraceInitStr(L"MartinPrikryl.WinSCP_tvv458r3h9r5m"));
+*/
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
@@ -1332,7 +1332,7 @@ static wchar_t * ReplaceChar(
 //  Note similar function MakeValidFileName
 UnicodeString ValidLocalFileName(const UnicodeString & AFileName)
 {
-  return ValidLocalFileName(AFileName, L'-', L"", LOCAL_INVALID_CHARS);
+  return ValidLocalFileName(AFileName, L'-', L"", LocalInvalidChars);
 }
 
 UnicodeString ValidLocalFileName(
@@ -2203,7 +2203,6 @@ DWORD FindFirstUnchecked(const UnicodeString & APath, DWORD LocalFileAttrs, TSea
 {
   F.Path = APath;
   F.Dir = ExtractFilePath(APath);
-  // DEBUG_PRINTF("APath: %s", APath);
   const DWORD Result = base::FindFirst(APath, LocalFileAttrs, F);
   F.Opened = (Result == 0);
   return Result;
@@ -2260,7 +2259,7 @@ UnicodeString GetOSInfo()
 
 UnicodeString GetEnvironmentInfo()
 {
-  UnicodeString Result; //TODO: = FORMAT("WinSCP %s (OS %s)", GetConfiguration()->GetVersionStr(), GetOSInfo());
+  UnicodeString Result = FORMAT("NetBox %s (OS %s)", GetConfiguration()->GetVersionStr(), GetOSInfo());
   return Result;
 }
 
@@ -2269,7 +2268,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
   DWORD FindAttrs)
 {
   DebugAssert(!CallBackFunc.empty());
-  if (FindAttrs == INVALID_FILE_ATTRIBUTES)
+  if (!CheckAttribute(FindAttrs))
   {
     FindAttrs = faReadOnly | faHidden | faSysFile | faDirectory | faArchive;
   }
@@ -4275,7 +4274,7 @@ static int32_t PemPasswordCallback(char * Buf, int32_t ASize, int32_t /*RWFlag*/
 {
   TPemPasswordCallbackData & Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
-  strncpy(Buf, UtfPassphrase.c_str(), nb::ToSizeT(ASize));
+  strncpy_s(Buf, UtfPassphrase.GetLength(), UtfPassphrase.c_str(), nb::ToSizeT(ASize));
   Shred(UtfPassphrase);
   Buf[ASize - 1] = '\0';
   return nb::ToInt32(NBChTraitsCRT<char>::SafeStringLen(Buf));

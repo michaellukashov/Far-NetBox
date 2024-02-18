@@ -95,18 +95,18 @@ void RaiseLastOSError(DWORD LastError)
   throw EOSError(ErrorMsg, LastError);
 }
 
-int32_t RandSeed = 0;
-
-int32_t random(int32_t range)
-{
-  return nb::ToInt32(nb::ToDouble(rand()) / (nb::ToDouble(RAND_MAX) / range));
-}
+std::mt19937 engine;
 
 void Randomize()
 {
-  srand(nb::ToUInt32(time(nullptr)));
+  engine.seed(nb::ToUInt32(time(nullptr)));
 }
 
+int32_t Random(int32_t Max)
+{
+  std::uniform_int_distribution<> distribution;
+  return nb::ToInt32(nb::ToInt64(distribution(engine)) / (std::numeric_limits<int32_t>::max() / Max));
+}
 
 namespace Sysutils {
 
@@ -1819,11 +1819,6 @@ int64_t MilliSecondOfTheYear(const TDateTime & AValue)
   DecodeTime(AValue, Hour, Min, Sec, MSec);
   const WORD Result = nb::ToWord(((Min+(Hour+((nb::ToInt64(DayOfTheYear(AValue))-1)*24))*60)*60+Sec)*1000+MSec);
   return Result;
-}
-
-int32_t Random(int32_t Max)
-{
-  return nb::ToInt32(nb::ToInt64(rand()) / (std::numeric_limits<int>::max() / Max));
 }
 
 static bool TryStringToGUID(const UnicodeString & S, GUID & Guid)
