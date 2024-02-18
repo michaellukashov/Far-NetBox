@@ -51,18 +51,18 @@ constexpr const char * SESSION_CONTEXT_KEY = "sessioncontext";
 constexpr const char * CONST_WEBDAV_PROTOCOL_BASE_NAME = "WebDAV";
 constexpr const int32_t HttpUnauthorized = 401;
 
-#define DAV_PROP_NAMESPACE "DAV:"
-#define MODDAV_PROP_NAMESPACE "http://apache.org/dav/props/"
-#define PROP_CONTENT_LENGTH "getcontentlength"
-#define PROP_LAST_MODIFIED "getlastmodified"
-#define PROP_CREATIONDATE "creationdate"
-#define PROP_RESOURCE_TYPE "resourcetype"
-#define PROP_HIDDEN "ishidden"
-#define PROP_QUOTA_AVAILABLE "quota-available-bytes"
-#define PROP_QUOTA_USED "quota-used-bytes"
-#define PROP_EXECUTABLE "executable"
-#define PROP_OWNER "owner"
-#define PROP_DISPLAY_NAME "displayname"
+constexpr const char * DAV_PROP_NAMESPACE = "DAV:";
+constexpr const char * MODDAV_PROP_NAMESPACE = "http://apache.org/dav/props/";
+constexpr const char * PROP_CONTENT_LENGTH = "getcontentlength";
+constexpr const char * PROP_LAST_MODIFIED = "getlastmodified";
+constexpr const char * PROP_CREATIONDATE = "creationdate";
+constexpr const char * PROP_RESOURCE_TYPE = "resourcetype";
+constexpr const char * PROP_HIDDEN = "ishidden";
+constexpr const char * PROP_QUOTA_AVAILABLE = "quota-available-bytes";
+constexpr const char * PROP_QUOTA_USED = "quota-used-bytes";
+constexpr const char * PROP_EXECUTABLE = "executable";
+constexpr const char * PROP_OWNER = "owner";
+constexpr const char * PROP_DISPLAY_NAME = "displayname";
 
 
 // ne_path_escape returns 7-bit string, so it does not really matter if we use
@@ -167,7 +167,9 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
+  // FSessionContext(nullptr),
   FNeonLockStore(nullptr),
+  // FNeonLockStoreSection(new TCriticalSection()),
   FUploading(false),
   FDownloading(false),
   FInitialHandshake(false),
@@ -2015,8 +2017,8 @@ int32_t TWebDAVFileSystem::NeonRequestAuth(
 
   if (Result)
   {
-    strncpy(UserName, StrToNeon(FileSystem->FUserName), NE_ABUFSIZ);
-    strncpy(Password, StrToNeon(APassword), NE_ABUFSIZ);
+    strncpy_s(UserName, FileSystem->FUserName.Length(), StrToNeon(FileSystem->FUserName), NE_ABUFSIZ);
+    strncpy_s(Password, APassword.Length(), StrToNeon(APassword), NE_ABUFSIZ);
   }
 
   FileSystem->FAuthenticationRequested = true;

@@ -65,51 +65,56 @@ jobs:
         shell: bash
         run: cmake --build . --config $BUILD_TYPE --target all
 
-      - name: pack plugin
+      - name: Pack plugin
         shell: bash
         run: |
           cp LICENSE.txt README.md README.RU.md README.PL.md ./Far3_${{ matrix.platform }}/Plugins/NetBox/
           7z a -m0=LZMA -mf=BCJ2 -mx9 ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/* -xr!*.pdb
-          if [[ -f ./Far3_${{matrix.platform}}/Plugins/NetBox/NetBox.pdb ]] ; then
-            7z a -m0=LZMA -mf=off -mx9 ${{env.netbox_pdb_name}} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
+          if [[ -f ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb ]] ; then
+            7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
           fi
 
       - name: Upload result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
-          name: result
+          name: FarNetBox.${{ matrix.platform }}
           path: ./*.7z
-          retention-days: 60
+          overwrite: true
+          retention-days: 30
 
   create-release:
     needs: [build]
-    if: ${{ false }}
     runs-on: windows-2022
 
     steps:
       - name: Checkout source
-        if: ${{ false }}
         uses: actions/checkout@v4
 
-      - name: Get version
-        if: ${{ false }}
+      - name: Get plugin version
         shell: bash
         run: |
           export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
           export VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
           export VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
           export VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
+          echo "VERSION_SHORT=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD">> $GITHUB_ENV
           echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
 
-      - name: Download result
-        if: ${{ false }}
+      - name: Download archives
         uses: actions/download-artifact@v4
         with:
-          name: result
+          # name: FarNetBox.${{ matrix.platform }}
+          pattern: FarNetBox.*
+          path: FarNetBox
+          merge-multiple: true
+
+      - name: Display structure of downloaded files
+        run: ls -R FarNetBox
 
       - name: Create release
-        if: ${{ false }}
         shell: bash
-        run: gh release create v${{ env.version }} -t "v${{ env.version }}" -n "NetBox ${{ env.version }}" ./*.7z
+        run: |
+          gh release create v${{ env.version }} --draft --title "NetBox ${{ env.version_short }}" FarNetBox/*
         env:
-          GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
+          # GITHUB_TOKEN: ${{ secrets.NETBOX_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}

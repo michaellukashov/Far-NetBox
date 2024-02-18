@@ -104,14 +104,14 @@ TSecureShell::TSecureShell(TSessionUI * UI,
 
 TSecureShell::~TSecureShell() noexcept
 {
-  DebugAssert(FWaiting == 0);
+  try { DebugAssert(FWaiting == 0);
   SetActive(false);
   if (FActive)
   {
     Close();
   }
   ResetConnection();
-  SAFE_CLOSE_HANDLE(FSocketEvent);
+  SAFE_CLOSE_HANDLE(FSocketEvent); } catch(...) { DEBUG_PRINTF("Error"); }
 }
 
 void TSecureShell::ResetConnection()

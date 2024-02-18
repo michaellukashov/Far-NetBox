@@ -28,7 +28,7 @@ public:
   virtual void DoWriteStringRaw(const UnicodeString & Name, const UnicodeString & Value) override;
   virtual void DoWriteInteger(const UnicodeString & Name, int32_t Value) override;
   virtual void DoWriteInt64(const UnicodeString & Name, int64_t Value) override;
-  virtual void DoWriteBinaryData(const UnicodeString & Name, const void * Buffer, int32_t Size) override;
+  virtual void DoWriteBinaryData(const UnicodeString & Name, const uint8_t * SBuffer, int32_t Size) override;
 
   virtual bool DoReadBool(const UnicodeString & Name, bool Default) override;
   virtual int32_t DoReadInteger(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping) override;

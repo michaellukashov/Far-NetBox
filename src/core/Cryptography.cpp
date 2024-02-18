@@ -545,7 +545,7 @@ RawByteString ScramblePassword(const UnicodeString & Password)
     int32_t P = 0;
     while ((P <= 0) || (P > 255) || IsDigit(static_cast<wchar_t>(P)))
     {
-      P = nb::ToInt(nb::ToDouble(rand()) / (nb::ToDouble(RAND_MAX) / 256.0));
+      P = Random(256);
     }
     Buf[Index] = static_cast<uint8_t>(P);
   }

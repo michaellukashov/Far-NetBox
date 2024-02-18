@@ -5785,7 +5785,7 @@ void TTerminal::OpenLocalFile(const UnicodeString & ATargetFileName,
   {
     const UnicodeString FileNameApi = ApiPath(ATargetFileName);
     LocalFileAttrs = this->GetLocalFileAttributes(FileNameApi);
-    if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
+    if (!CheckAttribute(LocalFileAttrs))
     {
       ::RaiseLastOSError();
     }

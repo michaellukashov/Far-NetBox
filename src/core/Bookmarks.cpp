@@ -23,7 +23,7 @@ TBookmarks::~TBookmarks() noexcept
   SAFE_DESTROY(FBookmarkLists);
 }
 
-void TBookmarks::Clear()
+void TBookmarks::Clear() try
 {
   for (int32_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
   {
@@ -31,7 +31,7 @@ void TBookmarks::Clear()
     SAFE_DESTROY(Object);
   }
   FBookmarkLists->Clear();
-}
+} catch(...) {}
 
 //std::string_view TBookmarks::Keys[]{"Local", "Remote", "ShortCuts", "Options"};
 
@@ -296,7 +296,7 @@ TBookmarkList::~TBookmarkList() noexcept
 #endif
 }
 
-void TBookmarkList::Clear()
+void TBookmarkList::Clear() try
 {
   for (int32_t Index = 0; Index < FBookmarks->GetCount(); ++Index)
   {
@@ -305,7 +305,7 @@ void TBookmarkList::Clear()
   }
   FBookmarks->Clear();
   FOpenedNodes->Clear();
-}
+} catch(...) {}
 
 void TBookmarkList::Assign(const TPersistent * Source)
 {

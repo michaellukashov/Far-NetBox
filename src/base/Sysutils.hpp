@@ -1,5 +1,6 @@
 #pragma once
 
+#include <random>
 #include <Global.h>
 #include <Classes.hpp>
 
@@ -157,9 +158,8 @@ public:
   }
 };
 
-extern int32_t RandSeed;
-extern int32_t random(int32_t range);
 extern void Randomize();
+extern int32_t Random(int32_t Max);
 
 NB_CORE_EXPORT void RaiseLastOSError(DWORD LastError = 0);
 //NB_CORE_EXPORT void ShowExtendedException(Exception * E);
@@ -617,8 +617,6 @@ public:
   static bool IsDriveRooted(const UnicodeString & /*APath*/) { return false; } // TODO: implement
 };
 
-int32_t Random(int32_t Max);
-
 extern UnicodeString EmptyStr;
 
 bool FileGetSymLinkTarget(const UnicodeString & AFileName, UnicodeString & TargetName);
@@ -637,6 +635,11 @@ public:
 inline bool CheckHandle(HANDLE AFileHandle)
 {
   return (AFileHandle != nullptr) && (AFileHandle != INVALID_HANDLE_VALUE);
+}
+
+inline bool CheckAttribute(DWORD Attr)
+{
+  return Attr != INVALID_FILE_ATTRIBUTES;
 }
 
 } // namespace Sysutils

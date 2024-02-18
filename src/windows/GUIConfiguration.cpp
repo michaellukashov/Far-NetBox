@@ -1455,7 +1455,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
     ImportSessionList->Load(Storage.get(), false, true, true);
   }
 
-  TSessionData * PuttySessionData =
+  const TSessionData * PuttySessionData =
     rtti::dyn_cast_or_null<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {

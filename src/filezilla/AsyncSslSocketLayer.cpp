@@ -1144,13 +1144,14 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     {
       debug = reinterpret_cast<char *>(nb::ToIntPtr(ret));
     }
-    char *buffer = nb::chcalloc(4096 + ((debug != nullptr) ? strlen(debug) : 0));
-    sprintf(buffer, "%s: %s",
+    int32_t sz = 4096 + ((debug != nullptr) ? nb::safe_strlen(debug) : 0);
+    char *buffer = nb::chcalloc(sz);
+    sprintf_s(buffer, sz, "%s: %s",
         str,
         SSL_state_string_long(s));
     if (debug != nullptr)
     {
-      sprintf(buffer + strlen(buffer), " [%s]", debug);
+      sprintf_s(buffer + nb::safe_strlen(buffer), sz - nb::safe_strlen(buffer), " [%s]", debug);
       OPENSSL_free(debug);
     }
     pLayer->LogSocketMessageRaw(FZ_LOG_INFO, A2T(buffer));
@@ -1166,8 +1167,9 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     {
       if (strcmp(desc, "close notify"))
       {
-        char *buffer = nb::chcalloc(4 * 1024);
-        sprintf(buffer, "SSL3 alert %s: %s: %s",
+        constexpr int32_t sz = 4 * 1024;
+        char *buffer = nb::chcalloc(sz);
+        sprintf_s(buffer, sz, "SSL3 alert %s: %s: %s",
             str,
             SSL_alert_type_string_long(ret),
             desc);
@@ -1182,8 +1184,9 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
   {
     if (ret == 0)
     {
-      char *buffer = nb::chcalloc(4 * 1024);
-      sprintf(buffer, "%s: failed in %s",
+      constexpr int32_t sz = 4 * 1024;
+      char *buffer = nb::chcalloc(sz);
+      sprintf_s(buffer, sz, "%s: failed in %s",
           str,
           SSL_state_string_long(s));
       pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
@@ -1200,8 +1203,9 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
       int error = SSL_get_error(s,ret);
       if (error != SSL_ERROR_WANT_READ && error != SSL_ERROR_WANT_WRITE)
       {
-        char *buffer = nb::chcalloc(4 * 1024);
-        sprintf(buffer, "%s: error in %s",
+        constexpr int32_t sz = 4 * 1024;
+        char *buffer = nb::chcalloc(sz);
+        sprintf_s(buffer, sz, "%s: error in %s",
             str,
             SSL_state_string_long(s));
         pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
@@ -1678,19 +1682,19 @@ void CAsyncSslSocketLayer::PrintSessionInfo()
      * otherwise we should print their lengths too */
   }
 
-  const int buffer_size = 4 * 1024;
+  constexpr const int buffer_size = 4 * 1024;
   char *buffer = nb::chcalloc(buffer_size);
   char *buffer2 = nb::chcalloc(buffer_size);
   // see also ne_ssl_get_version and ne_ssl_get_cipher
   m_TlsVersionStr = SSL_get_version(m_ssl);
-  sprintf(buffer, "%s: %s, %s, %s",
+  sprintf_s(buffer, buffer_size, "%s: %s, %s, %s",
       SSL_CIPHER_get_version(ciph),
       SSL_CIPHER_get_name(ciph),
       enc,
       SSL_CIPHER_description(ciph, buffer2, buffer_size));
   m_CipherName = buffer;
   // see TWebDAVFileSystem::CollectTLSSessionInfo()
-  sprintf(buffer, "Using %s, cipher %s",
+  sprintf_s(buffer, buffer_size, "Using %s, cipher %s",
       m_TlsVersionStr.c_str(),
       m_CipherName.c_str());
   USES_CONVERSION;

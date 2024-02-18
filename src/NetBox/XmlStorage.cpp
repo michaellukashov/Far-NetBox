@@ -398,10 +398,10 @@ void TXmlStorage::DoWriteStringRaw(const UnicodeString & Name, const UnicodeStri
 }
 
 void TXmlStorage::DoWriteBinaryData(const UnicodeString & Name,
-  const void * Buffer, int32_t Size)
+  const uint8_t * Buffer, int32_t Size)
 {
   RemoveIfExists(Name);
-  AddNewElement(Name, ::StrToHex(UnicodeString(static_cast<const wchar_t *>(Buffer), Size), true));
+  AddNewElement(Name, ::StrToHex(UnicodeString(reinterpret_cast<const wchar_t *>(Buffer), Size), true));
 }
 
 int32_t TXmlStorage::GetFailed() const

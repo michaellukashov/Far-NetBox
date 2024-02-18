@@ -2270,7 +2270,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   FILE_OPERATION_LOOP_BEGIN
   {
     LocalFileAttrs = FTerminal->GetLocalFileAttributes(ApiPath(DirectoryName));
-    if (LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
+    if (!CheckAttribute(LocalFileAttrs))
     {
       ::RaiseLastOSError();
     }
@@ -2909,7 +2909,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
             throw;
           }
 
-          if (FileData.LocalFileAttrs == INVALID_FILE_ATTRIBUTES)
+          if (!CheckAttribute(FileData.LocalFileAttrs))
           {
             FileData.LocalFileAttrs = faArchive;
           }

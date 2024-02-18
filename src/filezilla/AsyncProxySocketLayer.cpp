@@ -64,18 +64,18 @@ void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, i
   m_ProxyData.pProxyPass = nullptr;
 
   m_ProxyData.nProxyType = nProxyType;
-  m_ProxyData.pProxyHost = nb::chcalloc(strlen(pProxyHost)+1);
-  strcpy(m_ProxyData.pProxyHost, pProxyHost);
+  m_ProxyData.pProxyHost = nb::chcalloc(nb::safe_strlen(pProxyHost)+1);
+  strncpy_s(m_ProxyData.pProxyHost, nb::safe_strlen(pProxyHost)+1, pProxyHost, nb::safe_strlen(pProxyHost));
   m_ProxyData.nProxyPort=ProxyPort;
   if (pProxyUser)
   {
-    m_ProxyData.pProxyUser = nb::chcalloc(strlen(pProxyUser)+1);
-    strcpy(m_ProxyData.pProxyUser, pProxyUser);
+    m_ProxyData.pProxyUser = nb::chcalloc(nb::safe_strlen(pProxyUser)+1);
+    strncpy_s(m_ProxyData.pProxyUser, nb::safe_strlen(pProxyUser)+1, pProxyUser, nb::safe_strlen(pProxyUser));
   }
   if (pProxyPass)
   {
-    m_ProxyData.pProxyPass = nb::chcalloc(strlen(pProxyPass)+1);
-    strcpy(m_ProxyData.pProxyPass, pProxyPass);
+    m_ProxyData.pProxyPass = nb::chcalloc(nb::safe_strlen(pProxyPass)+1);
+    strncpy_s(m_ProxyData.pProxyPass, nb::safe_strlen(pProxyPass)+1, pProxyPass, nb::safe_strlen(pProxyPass));
   }
   m_ProxyData.bUseLogon = bUseLogon;
 }
@@ -237,14 +237,15 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           //Send authentication
           LPCSTR lpszAsciiUser = m_ProxyData.pProxyUser;
           LPCSTR lpszAsciiPass = m_ProxyData.pProxyPass;
-          DebugAssert(strlen(lpszAsciiUser?lpszAsciiUser:"")<=255);
-          DebugAssert(strlen(lpszAsciiPass?lpszAsciiPass:"")<=255);
-          uint8_t *buffer = nb::calloc<uint8_t *>(1, 3 + (lpszAsciiUser?strlen(lpszAsciiUser):0) + (lpszAsciiPass?strlen(lpszAsciiPass):0) + 1);
-          sprintf((char *)buffer, "  %s %s", lpszAsciiUser?lpszAsciiUser:"", lpszAsciiPass?lpszAsciiPass:"");
+          DebugAssert(nb::safe_strlen(lpszAsciiUser?lpszAsciiUser:"")<=255);
+          DebugAssert(nb::safe_strlen(lpszAsciiPass?lpszAsciiPass:"")<=255);
+          int32_t sz = 3 + (lpszAsciiUser?nb::safe_strlen(lpszAsciiUser):0) + (lpszAsciiPass?nb::safe_strlen(lpszAsciiPass):0);
+          uint8_t *buffer = nb::calloc<uint8_t *>(1, sz + 1);
+          sprintf_s((char *)buffer, sz + 1, "  %s %s", lpszAsciiUser?lpszAsciiUser:"", lpszAsciiPass?lpszAsciiPass:"");
           buffer[0]=1;
-          buffer[1]=static_cast<uint8_t>(strlen(lpszAsciiUser));
-          buffer[2+strlen(lpszAsciiUser)]=static_cast<uint8_t>(strlen(lpszAsciiPass?lpszAsciiPass:""));
-          intptr_t len=3+strlen(lpszAsciiUser)+strlen(lpszAsciiPass?lpszAsciiPass:"");
+          buffer[1]=static_cast<uint8_t>(nb::safe_strlen(lpszAsciiUser));
+          buffer[2+nb::safe_strlen(lpszAsciiUser)]=static_cast<uint8_t>(nb::safe_strlen(lpszAsciiPass?lpszAsciiPass:""));
+          intptr_t len=3+nb::safe_strlen(lpszAsciiUser)+nb::safe_strlen(lpszAsciiPass?lpszAsciiPass:"");
           int res=SendNext(buffer,(int)len);
           nb_free(buffer);
           if (res==SOCKET_ERROR || res<len)
@@ -263,8 +264,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       //No auth needed
       //Send connection request
       const char *lpszAsciiHost = m_pProxyPeerHost?m_pProxyPeerHost:"";
-      char *command=nb::chcalloc(10+strlen(lpszAsciiHost)+1);
-      memset(command,0,10+strlen(lpszAsciiHost)+1);
+      char *command=nb::chcalloc(10+nb::safe_strlen(lpszAsciiHost)+1);
+      memset(command,0,10+nb::safe_strlen(lpszAsciiHost)+1);
       command[0]=5;
       command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2;
       command[2]=0;
@@ -277,9 +278,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       }
       else
       {
-        command[len]=(char)strlen(lpszAsciiHost);
-        strcpy(&command[len+1], lpszAsciiHost);
-        len += (int)strlen(lpszAsciiHost) + 1;
+        command[len]=(char)nb::safe_strlen(lpszAsciiHost);
+        strncpy_s(&command[len+1], 10+nb::safe_strlen(lpszAsciiHost)+1, lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
+        len += (int)nb::safe_strlen(lpszAsciiHost) + 1;
       }
       nbstr_memcpy(&command[len], &m_nProxyPeerPort, 2);
       len+=2;
@@ -326,8 +327,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           return;
         }
         const char * lpszAsciiHost = m_pProxyPeerHost?m_pProxyPeerHost:"";
-        char *command = nb::chcalloc(10+strlen(lpszAsciiHost)+1);
-        memset(command,0,10+strlen(lpszAsciiHost)+1);
+        char *command = nb::chcalloc(10+nb::safe_strlen(lpszAsciiHost)+1);
+        memset(command,0,10+nb::safe_strlen(lpszAsciiHost)+1);
         command[0]=5;
         command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2;
         command[2]=0;
@@ -340,9 +341,9 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         }
         else
         {
-          command[len]=(char)strlen(lpszAsciiHost);
-          strcpy(&command[len+1],lpszAsciiHost);
-          len+=(int)strlen(lpszAsciiHost)+1;
+          command[len]=(char)nb::safe_strlen(lpszAsciiHost);
+          strncpy_s(&command[len+1], 10+nb::safe_strlen(lpszAsciiHost)+1, lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
+          len+=(int)nb::safe_strlen(lpszAsciiHost)+1;
         }
         nbstr_memcpy(&command[len],&m_nProxyPeerPort,2);
         len+=2;
@@ -472,23 +473,25 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       //Response begins with HTTP/
       if (!m_pStrBuffer)
       {
-        m_pStrBuffer = nb::chcalloc(strlen(buffer) + 1);
-        strcpy(m_pStrBuffer, buffer);
+        m_pStrBuffer = nb::chcalloc(nb::safe_strlen(buffer) + 1);
+        strncpy_s(m_pStrBuffer, nb::safe_strlen(buffer) + 1, buffer, nb::safe_strlen(buffer));
       }
       else
       {
         char *tmp = m_pStrBuffer;
-        m_pStrBuffer = nb::chcalloc(strlen(tmp) + strlen(buffer) + 1);
-        strcpy(m_pStrBuffer, tmp);
-        strcpy(m_pStrBuffer + strlen(tmp), buffer);
+        int32_t sz = nb::safe_strlen(tmp) + nb::safe_strlen(buffer);
+        m_pStrBuffer = nb::chcalloc(sz + 1);
+        strncpy_s(m_pStrBuffer, sz + 1, tmp, nb::safe_strlen(tmp));
+        strncpy_s(m_pStrBuffer + nb::safe_strlen(tmp), sz - nb::safe_strlen(buffer), buffer, nb::safe_strlen(buffer));
         nb_free(tmp);
       }
       memset(buffer, 0, 9);
       const char start[] = "HTTP/";
-      if (memcmp(start, m_pStrBuffer, (strlen(start)>strlen(m_pStrBuffer)) ? strlen(m_pStrBuffer) : strlen(start)))
+      if (memcmp(start, m_pStrBuffer, (nb::safe_strlen(start)>nb::safe_strlen(m_pStrBuffer)) ? nb::safe_strlen(m_pStrBuffer) : nb::safe_strlen(start)))
       {
-        char *str = nb::chcalloc(strlen("No valid HTTP response") + 1);
-        strcpy(str, "No valid HTTP response");
+        int32_t sz = nb::safe_strlen("No valid HTTP response");
+        char *str = nb::chcalloc(sz + 1);
+        strncpy_s(str, sz + 1, "No valid HTTP response", sz);
         ConnectionFailed(WSAECONNABORTED, str);
         return;
       }
@@ -507,12 +510,12 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         {
           char *tmp = nb::chcalloc(pos-m_pStrBuffer + 1);
           tmp[pos-m_pStrBuffer] = 0;
-          strncpy(tmp, m_pStrBuffer, pos-m_pStrBuffer);
+          strncpy_s(tmp, pos-m_pStrBuffer, m_pStrBuffer, nb::safe_strlen(m_pStrBuffer));
           ConnectionFailed(WSAECONNABORTED, tmp);
           return;
         }
       }
-      if (strlen(m_pStrBuffer)>3 && !memcmp(m_pStrBuffer+strlen(m_pStrBuffer)-4, "\r\n\r\n", 4)) //End of the HTTP header
+      if (nb::safe_strlen(m_pStrBuffer)>3 && !memcmp(m_pStrBuffer+nb::safe_strlen(m_pStrBuffer)-4, "\r\n\r\n", 4)) //End of the HTTP header
       {
         CString status;
         status.Format(L"HTTP proxy headers: %s", UnicodeString(pos).c_str());
@@ -579,7 +582,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
     m_nProxyPeerIp = 0;
     nb_free(m_pProxyPeerHost);
     m_pProxyPeerHost = nb::chcalloc(_tcslen(lpszHostAddress)+1);
-    strcpy(m_pProxyPeerHost, T2CA(lpszHostAddress));
+    strncpy_s(m_pProxyPeerHost, _tcslen(lpszHostAddress)+1, T2CA(lpszHostAddress), nb::safe_strlen(lpszHostAddress));
     m_nProxyOpID=PROXYOP_CONNECT;
     return TRUE;
   }
@@ -611,8 +614,8 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
   if (res || ::WSAGetLastError()==WSAEWOULDBLOCK)
   {
     nb_free(m_pProxyPeerHost);
-    m_pProxyPeerHost = nb::chcalloc(strlen(T2CA(lpszHostAddress))+1);
-    strcpy(m_pProxyPeerHost, T2CA(lpszHostAddress));
+    m_pProxyPeerHost = nb::chcalloc(nb::safe_strlen(T2CA(lpszHostAddress))+1);
+    strncpy_s(m_pProxyPeerHost, nb::safe_strlen(T2CA(lpszHostAddress)), T2CA(lpszHostAddress), nb::safe_strlen(lpszHostAddress));
   }
   return res;
 
@@ -689,8 +692,8 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
     { //SOCKS4 proxy
       //Send request
       LPCSTR lpszAscii = m_pProxyPeerHost?m_pProxyPeerHost:"";
-      char *command=nb::chcalloc(9+strlen(lpszAscii)+1);
-      memset(command,0,9+strlen(lpszAscii)+1);
+      char *command=nb::chcalloc(9+nb::safe_strlen(lpszAscii)+1);
+      memset(command,0,9+nb::safe_strlen(lpszAscii)+1);
       int len=9;
       command[0]=4;
       command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2; //CONNECT or BIND request
@@ -705,8 +708,8 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         command[6]=0;
         command[7]=1;
         //Add host as URL
-        strcpy(&command[9],lpszAscii);
-        len+=(int)strlen(lpszAscii)+1;
+        strncpy_s(&command[9], nb::safe_strlen(lpszAscii), lpszAscii, nb::safe_strlen(lpszAscii));
+        len+=(int)nb::safe_strlen(lpszAscii)+1;
       }
       else
         nbstr_memcpy(&command[4],&m_nProxyPeerIp,4);
@@ -751,13 +754,13 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
     }
     else if (m_ProxyData.nProxyType==PROXYTYPE_HTTP11)
     {
-      char str[4096]; //This should be large enough
+      char str[4096]{}; //This should be large enough
 
       char * pHost = nullptr;
       if (m_pProxyPeerHost && *m_pProxyPeerHost)
       {
-        pHost = nb::chcalloc(strlen(m_pProxyPeerHost)+1);
-        strcpy(pHost, m_pProxyPeerHost);
+        pHost = nb::chcalloc(nb::safe_strlen(m_pProxyPeerHost)+1);
+        strncpy_s(pHost, nb::safe_strlen(m_pProxyPeerHost)+1, m_pProxyPeerHost, nb::safe_strlen(m_pProxyPeerHost));
       }
       else
       {
@@ -772,32 +775,32 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         sprintf(str, "CONNECT %s:%d HTTP/1.1\r\nHost: %s:%d\r\n", pHost, ntohs(m_nProxyPeerPort),
           pHost, ntohs(m_nProxyPeerPort));
 
-        char userpass[4096];
+        char userpass[4096]{};
         sprintf(userpass, "%s:%s", m_ProxyData.pProxyUser?m_ProxyData.pProxyUser:"", m_ProxyData.pProxyPass?m_ProxyData.pProxyPass:"");
 
-        char base64str[4096];
+        char base64str[4096]{};
 
         CBase64Coding base64coding;
-        base64coding.Encode(userpass, (int)strlen(userpass), base64str);
-        strcat(str, "Authorization: Basic ");
-        strcat(str, base64str);
-        strcat(str, "\r\nProxy-Authorization: Basic ");
-        strcat(str, base64str);
-        strcat(str, "\r\n\r\n");
+        base64coding.Encode(userpass, (int)nb::safe_strlen(userpass), base64str);
+        strcat_s(str, sizeof(str), "Authorization: Basic ");
+        strcat_s(str, sizeof(str), base64str);
+        strcat_s(str, sizeof(str), "\r\nProxy-Authorization: Basic ");
+        strcat_s(str, sizeof(str), base64str);
+        strcat_s(str, sizeof(str), "\r\n\r\n");
       }
       nb_free(pHost);
 
       CString status;
       status.Format(L"HTTP proxy command: %s", (LPCWSTR)CString(str));
       LogSocketMessageRaw(FZ_LOG_PROGRESS, status);
-      int numsent=SendNext(str, (int)strlen(str) );
+      int numsent=SendNext(str, (int)nb::safe_strlen(str) );
       int nErrorCode=::WSAGetLastError();
       if (numsent==SOCKET_ERROR)//nErrorCode!=WSAEWOULDBLOCK)
       {
         ConnectionFailed((m_nProxyOpID == PROXYOP_CONNECT) && (nErrorCode == WSAEWOULDBLOCK) ? WSAECONNABORTED : nErrorCode);
         return;
       }
-      else if (  numsent < static_cast<int>( strlen(str) )  )
+      else if (  numsent < static_cast<int>( nb::safe_strlen(str) )  )
       {
         ConnectionFailed(WSAECONNABORTED);
         return;

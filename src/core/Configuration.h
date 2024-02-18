@@ -8,9 +8,9 @@
 #include "Usage.h"
 
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
-  if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
+  do { if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; } } while(0)
 #define SET_CONFIG_PROPERTY_EX2(PROPERTY, APPLY) \
-  if (F ## PROPERTY != Value) { F ## PROPERTY = Value; Changed(); APPLY; }
+  do { if (F ## PROPERTY != Value) { F ## PROPERTY = Value; Changed(); APPLY; } } while(0)
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
 #define SET_CONFIG_PROPERTY2(PROPERTY) \
