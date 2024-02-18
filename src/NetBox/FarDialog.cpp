@@ -915,7 +915,7 @@ void TFarDialog::EnableItem(TFarDialogItem * Item, void * Arg)
 
 void TFarDialog::SetItemFocused(TFarDialogItem * Value)
 {
-  if (Value != GetItemFocused())
+  if ((Value != GetItemFocused()) && Value)
   {
     DebugAssert(Value);
     Value->SetFocus();
