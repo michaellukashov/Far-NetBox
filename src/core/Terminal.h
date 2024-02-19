@@ -982,7 +982,7 @@ public:
   bool Recursive{false};
 };
 
-struct NB_CORE_EXPORT TSynchronizeOptions : public TObject
+struct NB_CORE_EXPORT TSynchronizeOptions final : public TObject
 {
   NB_DISABLE_COPY(TSynchronizeOptions)
 public:

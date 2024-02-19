@@ -96,7 +96,7 @@ void TFarDialog::InitDialog()
   FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
   FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
 
-  FBorderBox = new TFarBox(this);
+  FBorderBox = MakeOwnedObject<TFarBox>(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
   FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 400);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #pragma warning(push, 1)
 #include <farcolor.hpp>
 #pragma warning(pop)
@@ -697,3 +698,9 @@ private:
 
 inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom);
 
+template<typename ObjectType, typename OwnerType>
+ObjectType * MakeOwnedObject(OwnerType * Owner)
+{
+  std::unique_ptr<ObjectType> Object(std::make_unique<ObjectType>(Owner));
+  return Object.release();
+}
