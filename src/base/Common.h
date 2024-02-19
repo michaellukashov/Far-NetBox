@@ -372,20 +372,21 @@ UnicodeString AssemblyAddRawSettings(
 
 // #include "Global.h"
 
-template<class T>
+template<typename T>
 class TValueRestorer // : public TObject
 {
-  TValueRestorer() = delete;
 public:
-  inline explicit TValueRestorer(T & Target, const T & Value) :
+  TValueRestorer() = delete;
+  TValueRestorer(const TValueRestorer &) = delete;
+  TValueRestorer(T & Target) :
     FTarget(Target),
-    FValue(Value)
+    FValue(Target)
   {
   }
 
-  inline explicit TValueRestorer(T & Target) :
+  TValueRestorer(T & Target, const T & Value) :
     FTarget(Target),
-    FValue(Target)
+    FValue(Value)
   {
   }
 
@@ -412,8 +413,8 @@ protected:
 class TAutoNestingCounter : public TValueRestorer<int32_t>
 {
   using parent = TValueRestorer<int32_t>;
-  TAutoNestingCounter() = delete;
 public:
+  TAutoNestingCounter() = delete;
   inline explicit TAutoNestingCounter(int32_t & Target) :
     parent(Target)
   {
@@ -430,8 +431,8 @@ public:
 class TAutoFlag : public TValueRestorer<bool>
 {
   using parent = TValueRestorer<bool>;
-  TAutoFlag() = default;
 public:
+  TAutoFlag() = default;
   explicit TAutoFlag(bool & Target) :
     parent(Target)
   {
