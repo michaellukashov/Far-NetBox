@@ -18,8 +18,8 @@
 #include <limits>
 #include <algorithm>
 #include <Shlwapi.h>
-#include <tlhelp32.h>
-#include <psapi.h>
+#include <TLHelp32.h>
+#include <Psapi.h>
 #include <CoreMain.h>
 #include <SessionInfo.h>
 #include <Soap.EncdDecd.hpp>

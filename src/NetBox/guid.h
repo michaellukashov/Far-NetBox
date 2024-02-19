@@ -1,7 +1,7 @@
 #pragma once
 
 #define INITGUID
-#include <Guiddef.h>
+#include <guiddef.h>
 #include <plugin.hpp>
 
 DEFINE_GUID(NetBoxPluginGuid, 0x42e4aeb1, 0xa230, 0x44f4, 0xb3, 0x3c, 0xf1, 0x95, 0xbb, 0x65, 0x49, 0x31);

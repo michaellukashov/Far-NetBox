@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <comctrls.hpp>
+#include <ComCtrls.hpp>
 #include <WinInterface.h>
 // #include <HelpIntfs.hpp>
 #include <cstdio>
