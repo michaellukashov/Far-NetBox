@@ -7,8 +7,8 @@
 
 #include <stdio.h>
 #include <tchar.h>
-#include <shlobj.h>
-#include <tlhelp32.h>
+#include <ShlObj.h>
+#include <TLHelp32.h>
 #include <Common.h>
 #include <CoreMain.h>
 #include <Exceptions.h>

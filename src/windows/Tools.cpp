@@ -3,7 +3,7 @@
 #pragma hdrstop
 
 // #include <Consts.hpp>
-#include <shlobj.h>
+#include <ShlObj.h>
 #include <cstdio>
 #include <winhttp.h>
 #define INITGUID
