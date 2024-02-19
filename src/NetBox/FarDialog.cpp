@@ -2540,7 +2540,7 @@ void TFarListBox::SetItems(const TStrings * Value, bool OwnItems)
   FList->SetOwnsObjects(OwnItems);
 }
 
-void TFarListBox::SetList(TFarList * Value, bool OwnItems)
+void TFarListBox::SetList(const TFarList * Value, bool OwnItems)
 {
   SetItems(Value, OwnItems);
 }

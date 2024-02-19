@@ -617,7 +617,7 @@ public:
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
   TFarList * GetItems() const { return FList.get(); }
   TFarList * GetItems() { return FList.get(); }
-  void SetList(TFarList * Value, bool OwnItems = true);
+  void SetList(const TFarList * Value, bool OwnItems = true);
   TFarListBoxAutoSelect GetAutoSelect() const { return FAutoSelect; }
   void SetAutoSelect(TFarListBoxAutoSelect Value);
 
