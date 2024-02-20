@@ -278,7 +278,7 @@ int32_t TFarDialog::GetItemCount() const
   return FItems->GetCount();
 }
 
-int32_t TFarDialog::GetItemIdx(TFarDialogItem * Item) const
+int32_t TFarDialog::GetItemIdx(const TFarDialogItem * Item) const
 {
   if (!Item)
     return -1;
@@ -814,7 +814,7 @@ void TFarDialog::Synchronize(TThreadMethod Method)
     reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
 }
 
-void TFarDialog::Close(TFarButton * Button)
+void TFarDialog::Close(const TFarButton * Button)
 {
   DebugAssert(Button != nullptr);
   SendDlgMessage(DM_CLOSE, Button->GetItemIdx(), nullptr);

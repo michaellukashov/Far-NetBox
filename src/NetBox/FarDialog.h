@@ -74,7 +74,7 @@ public:
   TFarButton * GetDefaultButton() const { return FDefaultButton; }
   TFarBox * GetBorderBox() const { return FBorderBox; }
   // int32_t GetType(TFarDialogItem * Item) const;
-  int32_t GetItemIdx(TFarDialogItem * Item) const;
+  int32_t GetItemIdx(const TFarDialogItem * Item) const;
   TFarDialogItem * GetItem(int32_t Index) const;
   TFarDialogItem * GetControl(int32_t Index) const { return GetItem(Index); }
   int32_t GetItemCount() const;
@@ -122,7 +122,7 @@ protected:
   virtual void Idle();
   void BreakSynchronize();
   void Synchronize(TThreadMethod Method);
-  void Close(TFarButton * Button);
+  void Close(const TFarButton * Button);
   void ProcessGroup(int32_t Group, TFarProcessGroupEvent && Callback, void * Arg);
   void ShowItem(TFarDialogItem * Item, void * Arg);
   void EnableItem(TFarDialogItem * Item, void * Arg);
