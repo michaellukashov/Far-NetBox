@@ -1893,7 +1893,7 @@ int32_t TCustomFarPlugin::GetFarVersion() const
   return FFarVersion;
 }
 
-UnicodeString TCustomFarPlugin::FormatFarVersion(VersionInfo & Info) const
+UnicodeString TCustomFarPlugin::FormatFarVersion(const VersionInfo & Info) const
 {
   return FORMAT("%d.%d.%d", Info.Major, Info.Minor, Info.Build);
 }

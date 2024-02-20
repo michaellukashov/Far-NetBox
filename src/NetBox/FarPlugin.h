@@ -179,7 +179,7 @@ public:
   void FarCopyToClipboard(const UnicodeString & Str);
   void FarCopyToClipboard(const TStrings * Strings);
   int32_t GetFarVersion() const;
-  UnicodeString FormatFarVersion(VersionInfo & Info) const;
+  UnicodeString FormatFarVersion(const VersionInfo & Info) const;
   UnicodeString GetTemporaryDir() const;
   intptr_t InputRecordToKey(const INPUT_RECORD * Rec);
   TFarEditorInfo * EditorInfo();
