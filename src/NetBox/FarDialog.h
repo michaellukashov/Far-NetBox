@@ -521,8 +521,8 @@ public:
 public:
   explicit TFarText(TFarDialog * ADialog) noexcept;
 
-  virtual UnicodeString GetCaption() const { return GetData(); }
-  virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
+  UnicodeString GetCaption() const { return GetData(); }
+  void SetCaption(const UnicodeString & Value) { SetData(Value); }
   virtual bool GetCenterGroup() const override { return TFarDialogItem::GetCenterGroup(); }
   virtual void SetCenterGroup(bool Value) override { TFarDialogItem::SetCenterGroup(Value); }
 
