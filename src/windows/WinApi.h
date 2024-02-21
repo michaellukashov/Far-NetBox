@@ -4,7 +4,7 @@
 
 // For other API definitions, see also PasTools.pas
 
-#include <shlobj.h>
+#include <ShlObj.h>
 
 typedef BOOL WINAPI (* ChangeWindowMessageFilterExProc)(
   HWND hwnd, UINT message, DWORD action, PCHANGEFILTERSTRUCT pChangeFilterStruct);

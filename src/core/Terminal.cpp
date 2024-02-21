@@ -9537,7 +9537,7 @@ TTerminal * TTerminalList::CreateTerminal(TSessionData * Data)
 
 TTerminal * TTerminalList::NewTerminal(TSessionData * Data)
 {
-  TTerminal *Result = CreateTerminal(Data);
+  TTerminal * Result = CreateTerminal(Data);
   Add(Result);
   return Result;
 }

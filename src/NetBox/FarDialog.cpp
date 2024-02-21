@@ -96,7 +96,7 @@ void TFarDialog::InitDialog()
   FSynchronizeObjects[0] = INVALID_HANDLE_VALUE;
   FSynchronizeObjects[1] = INVALID_HANDLE_VALUE;
 
-  FBorderBox = new TFarBox(this);
+  FBorderBox = MakeOwnedObject<TFarBox>(this);
   FBorderBox->SetBounds(TRect(3, 1, -4, -2));
   FBorderBox->SetDouble(true);
   FTIdleThread = std::make_unique<TFarDialogIdleThread>(this, 400);
@@ -278,7 +278,7 @@ int32_t TFarDialog::GetItemCount() const
   return FItems->GetCount();
 }
 
-int32_t TFarDialog::GetItemIdx(TFarDialogItem * Item) const
+int32_t TFarDialog::GetItemIdx(const TFarDialogItem * Item) const
 {
   if (!Item)
     return -1;
@@ -814,7 +814,7 @@ void TFarDialog::Synchronize(TThreadMethod Method)
     reinterpret_cast<HANDLE *>(&FSynchronizeObjects), false, INFINITE);
 }
 
-void TFarDialog::Close(TFarButton * Button)
+void TFarDialog::Close(const TFarButton * Button)
 {
   DebugAssert(Button != nullptr);
   SendDlgMessage(DM_CLOSE, Button->GetItemIdx(), nullptr);
@@ -2540,7 +2540,7 @@ void TFarListBox::SetItems(const TStrings * Value, bool OwnItems)
   FList->SetOwnsObjects(OwnItems);
 }
 
-void TFarListBox::SetList(TFarList * Value, bool OwnItems)
+void TFarListBox::SetList(const TFarList * Value, bool OwnItems)
 {
   SetItems(Value, OwnItems);
 }

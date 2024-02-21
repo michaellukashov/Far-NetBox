@@ -130,13 +130,13 @@ public:
   // constexpr decltype(auto) operator*() const { return *_value; }
   constexpr T operator *() const { return *_value; }
 
-  friend bool constexpr inline operator ==(const ROProperty2 & lhs, const T & rhs)
+  friend bool constexpr operator ==(const ROProperty2 & lhs, const T & rhs)
   {
     DebugCheck(lhs._value);
     return *lhs._value == rhs;
   }
 
-  friend bool constexpr inline operator !=(ROProperty2 & lhs, const T & rhs)
+  friend bool constexpr operator !=(ROProperty2 & lhs, const T & rhs)
   {
     DebugCheck(lhs._value);
     return *lhs._value != rhs;
@@ -240,13 +240,13 @@ public:
     return *this;
   }
 
-  friend bool constexpr inline operator ==(const RWProperty2 & lhs, ValueType rhs)
+  friend bool constexpr operator ==(const RWProperty2 & lhs, ValueType rhs)
   {
     DebugCheck(lhs._value);
     return *lhs._value == rhs;
   }
 
-  friend bool constexpr inline operator !=(RWProperty2 & lhs, ValueType rhs)
+  friend bool constexpr operator !=(RWProperty2 & lhs, ValueType rhs)
   {
     DebugCheck(lhs._value);
     return *lhs._value != rhs;
@@ -311,13 +311,13 @@ public:
     return *this;
   }
 
-  friend bool constexpr inline operator ==(const RWPropertySimple & lhs, ValueType rhs)
+  friend bool constexpr operator ==(const RWPropertySimple & lhs, ValueType rhs)
   {
     DebugCheck(lhs._value);
     return *lhs._value == rhs;
   }
 
-  friend bool constexpr inline operator !=(const RWPropertySimple & lhs, ValueType rhs)
+  friend bool constexpr operator !=(const RWPropertySimple & lhs, ValueType rhs)
   {
     DebugCheck(lhs._value);
     return *lhs._value != rhs;

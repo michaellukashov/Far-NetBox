@@ -5,15 +5,14 @@
 ## [Unreleased] - ReleaseDate
 
 
-## [24.2.1.589] - 2024-02-19
+## [24.2.2.590] - 2024-02-20
 
 ### Changes
 
  - Upgrade WinSCP sources: WinSCP 6.3.0
+ - Upgrade dependencies: expat 2.6.0
 
 ### Fixes
-
- - gh-377 No Such File or Directory
 
 Thanks to ssvine https://github.com/ssvine
  - gh-375 Fix: Many exceptions are not shown
@@ -33,16 +32,7 @@ Thanks to ssvine https://github.com/ssvine
  - gh-347 Fix the width of dialogs
  - gh-346 Fix russian translation
 
-
-## [24.2.1.583] - 2024-02-07
-
-
-### Changes
-
- - Upgrade dependencies: expat 2.6.0
-
-### Fixes
-
+ - gh-377 No Such File or Directory
  - gh-333 Build script fails to collate the finished files
  - Create Directory: fix position cursor on newly created dir
 https://forum.farmanager.com/viewtopic.php?p=177192#p177192

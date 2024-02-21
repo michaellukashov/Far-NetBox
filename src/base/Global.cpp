@@ -56,7 +56,7 @@ static HANDLE TraceFile = nullptr;
 bool IsTracing = false;
 const uint32_t CallstackTlsOff = static_cast<uint32_t>(-1);
 uint32_t CallstackTls = CallstackTlsOff;
-TCriticalSection *TracingCriticalSection = nullptr;
+TCriticalSection * TracingCriticalSection = nullptr;
 
 bool TracingInMemory = false;
 HANDLE TracingThread = nullptr;

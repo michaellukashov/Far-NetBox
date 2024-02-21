@@ -112,8 +112,8 @@ private:
   int64_t FRemainingCPS{0};
   TOnceDoneOperation FInitialOnceDoneOperation{odoIdle};
   TPersistence FPersistence{};
-  TCriticalSection * FSection{nullptr};
-  TCriticalSection * FUserSelectionsSection{nullptr};
+  TCriticalSection FSection;
+  TCriticalSection FUserSelectionsSection;
 
   bool FCounterSet{false};
   bool FSkipToAll{false};

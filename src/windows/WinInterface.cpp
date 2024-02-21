@@ -2,7 +2,7 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <shlwapi.h>
+#include <Shlwapi.h>
 
 #include <Common.h>
 #include <Queue.h>

@@ -380,16 +380,16 @@ public: \
   Class & operator =(const Class &) = delete;
 
 template <typename T1>
-inline constexpr void used(const T1 &) {}
+constexpr void used(const T1 &) {}
 
 template <typename T1>
-inline constexpr void unused(const T1 &) {}
+constexpr void unused(const T1 &) {}
 
 template <typename T1>
-inline constexpr void ignore(const T1 &) {}
+constexpr void ignore(const T1 &) {}
 
 template <typename T>
-inline constexpr void ignore_result(const T &) {}
+constexpr void ignore_result(const T &) {}
 
 template <class T>
 struct add_const

@@ -33,7 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <utility>
 
-#include <windows.h>
+#include <Windows.h>
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wmissing-prototypes"

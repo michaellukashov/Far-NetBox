@@ -58,7 +58,7 @@ void TWinSCPDialog::AddStandardButtons(int32_t Shift, bool ButtonsOnly)
   {
     SetNextItemPosition(ipNewLine);
 
-    ButtonSeparator = new TFarSeparator(this);
+    ButtonSeparator = MakeOwnedObject<TFarSeparator>(this);
     if (Shift >= 0)
     {
       ButtonSeparator->Move(0, Shift);
@@ -71,7 +71,7 @@ void TWinSCPDialog::AddStandardButtons(int32_t Shift, bool ButtonsOnly)
   }
 
   DebugAssert(OkButton == nullptr);
-  OkButton = new TFarButton(this);
+  OkButton = MakeOwnedObject<TFarButton>(this);
   if (ButtonsOnly)
   {
     if (Shift >= 0)
@@ -92,7 +92,7 @@ void TWinSCPDialog::AddStandardButtons(int32_t Shift, bool ButtonsOnly)
   SetNextItemPosition(ipRight);
 
   DebugAssert(CancelButton == nullptr);
-  CancelButton = new TFarButton(this);
+  CancelButton = MakeOwnedObject<TFarButton>(this);
   CancelButton->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   CancelButton->SetResult(brCancel);
   CancelButton->SetCenterGroup(true);
@@ -149,7 +149,7 @@ TTabbedDialog::TTabbedDialog(TCustomFarPlugin * AFarPlugin, int32_t TabCount) no
   // FAR WORKAROUND
   // (to avoid first control on dialog be a button, that would be "pressed"
   // when listbox loses focus)
-  TFarText * Text = new TFarText(this);
+  TFarText * Text = MakeOwnedObject<TFarText>(this);
   // make next item be inserted to default position
   Text->Move(0, -1);
   // on FAR 1.70 alpha 6 and later, empty text control would overwrite the
@@ -307,93 +307,93 @@ bool TWinSCPPlugin::ConfigurationDialog()
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
 
-  TFarCheckBox * DisksMenuCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * DisksMenuCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   DisksMenuCheck->SetCaption(GetMsg(NB_CONFIG_DISKS_MENU));
 
   Dialog->SetNextItemPosition(ipNewLine);
 
-  TFarCheckBox * PluginsMenuCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * PluginsMenuCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   PluginsMenuCheck->SetCaption(GetMsg(NB_CONFIG_PLUGINS_MENU));
 
-  TFarCheckBox * PluginsMenuCommandsCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * PluginsMenuCommandsCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   PluginsMenuCommandsCheck->SetCaption(GetMsg(NB_CONFIG_PLUGINS_MENU_COMMANDS));
 
-  TFarCheckBox * SessionNameInTitleCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * SessionNameInTitleCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   SessionNameInTitleCheck->SetCaption(GetMsg(NB_CONFIG_SESSION_NAME_IN_TITLE));
 
-  new TFarSeparator(Dialog);
+  MakeOwnedObject<TFarSeparator>(Dialog);
 
-  TFarText * Text = new TFarText(Dialog);
+  TFarText * Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_CONFIG_COMMAND_PREFIXES));
 
-  TFarEdit * CommandPrefixesEdit = new TFarEdit(Dialog);
+  TFarEdit * CommandPrefixesEdit = MakeOwnedObject<TFarEdit>(Dialog);
 
-  new TFarSeparator(Dialog);
+  MakeOwnedObject<TFarSeparator>(Dialog);
 
-  TFarCheckBox * CustomPanelCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * CustomPanelCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   CustomPanelCheck->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_CHECK));
   CustomPanelCheck->SetEnabled(true);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetLeft(Text->GetLeft() + 4);
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_TYPES));
 
   Dialog->SetNextItemPosition(ipBelow);
 
-  TFarEdit * CustomPanelTypesEdit = new TFarEdit(Dialog);
+  TFarEdit * CustomPanelTypesEdit = MakeOwnedObject<TFarEdit>(Dialog);
   CustomPanelTypesEdit->SetEnabledDependency(CustomPanelCheck);
   CustomPanelTypesEdit->SetWidth(CustomPanelTypesEdit->GetWidth() / 2 - 1);
 
   Dialog->SetNextItemPosition(ipRight);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->Move(0, -1);
   Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_STATUS_TYPES));
 
   Dialog->SetNextItemPosition(ipBelow);
 
-  TFarEdit * CustomPanelStatusTypesEdit = new TFarEdit(Dialog);
+  TFarEdit * CustomPanelStatusTypesEdit = MakeOwnedObject<TFarEdit>(Dialog);
   CustomPanelStatusTypesEdit->SetEnabledDependency(CustomPanelCheck);
 
   Dialog->SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetLeft(Text->GetLeft() + 4);
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_WIDTHS));
 
   Dialog->SetNextItemPosition(ipBelow);
 
-  TFarEdit * CustomPanelWidthsEdit = new TFarEdit(Dialog);
+  TFarEdit * CustomPanelWidthsEdit = MakeOwnedObject<TFarEdit>(Dialog);
   CustomPanelWidthsEdit->SetEnabledDependency(CustomPanelCheck);
   CustomPanelWidthsEdit->SetWidth(CustomPanelTypesEdit->GetWidth());
 
   Dialog->SetNextItemPosition(ipRight);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->Move(0, -1);
   Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_STATUS_WIDTHS));
 
   Dialog->SetNextItemPosition(ipBelow);
 
-  TFarEdit * CustomPanelStatusWidthsEdit = new TFarEdit(Dialog);
+  TFarEdit * CustomPanelStatusWidthsEdit = MakeOwnedObject<TFarEdit>(Dialog);
   CustomPanelStatusWidthsEdit->SetEnabledDependency(CustomPanelCheck);
 
   Dialog->SetNextItemPosition(ipNewLine);
 
-  TFarCheckBox * CustomPanelFullScreenCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * CustomPanelFullScreenCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   CustomPanelFullScreenCheck->SetLeft(CustomPanelFullScreenCheck->GetLeft() + 4);
   CustomPanelFullScreenCheck->SetEnabledDependency(CustomPanelCheck);
   CustomPanelFullScreenCheck->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_FULL_SCREEN));
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetLeft(Text->GetLeft());
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_HINT));
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetLeft(Text->GetLeft());
   Text->SetEnabledDependency(CustomPanelCheck);
   Text->SetCaption(GetMsg(NB_CONFIG_PANEL_MODE_HINT2));
@@ -441,7 +441,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
 
-  TFarCheckBox * AutoReadDirectoryAfterOpCheck = new TFarCheckBox(Dialog.get());
+  TFarCheckBox * AutoReadDirectoryAfterOpCheck = MakeOwnedObject<TFarCheckBox>(Dialog.get());
   AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(NB_CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
 
   Dialog->AddStandardButtons();
@@ -474,19 +474,19 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING))));
 
-  TFarCheckBox * LoggingCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * LoggingCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   LoggingCheck->SetCaption(GetMsg(NB_LOGGING_ENABLE));
 
-  TFarSeparator * Separator = new TFarSeparator(Dialog);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(Dialog);
   Separator->SetCaption(GetMsg(NB_LOGGING_OPTIONS_GROUP));
 
-  TFarText * Text = new TFarText(Dialog);
+  TFarText * Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_LOGGING_LOG_PROTOCOL));
   Text->SetEnabledDependency(LoggingCheck);
 
   Dialog->SetNextItemPosition(ipRight);
 
-  TFarComboBox * LogProtocolCombo = new TFarComboBox(Dialog);
+  TFarComboBox * LogProtocolCombo = MakeOwnedObject<TFarComboBox>(Dialog);
   LogProtocolCombo->SetDropDownList(true);
   LogProtocolCombo->SetWidth(10);
   for (int32_t Index = 0; Index <= 2; ++Index)
@@ -497,31 +497,31 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
 
   Dialog->SetNextItemPosition(ipNewLine);
 
-  new TFarSeparator(Dialog);
+  MakeOwnedObject<TFarSeparator>(Dialog);
 
-  TFarCheckBox * LogToFileCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * LogToFileCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   LogToFileCheck->SetCaption(GetMsg(NB_LOGGING_LOG_TO_FILE));
   LogToFileCheck->SetEnabledDependency(LoggingCheck);
 
-  TFarEdit * LogFileNameEdit = new TFarEdit(Dialog);
+  TFarEdit * LogFileNameEdit = MakeOwnedObject<TFarEdit>(Dialog);
   LogFileNameEdit->SetLeft(LogFileNameEdit->GetLeft() + 4);
   LogFileNameEdit->SetHistory(LOG_FILE_HISTORY);
   LogFileNameEdit->SetEnabledDependency(LogToFileCheck);
 
   Dialog->SetNextItemPosition(ipBelow);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_HINT1));
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_HINT2));
 
-  TFarRadioButton * LogFileAppendButton = new TFarRadioButton(Dialog);
+  TFarRadioButton * LogFileAppendButton = MakeOwnedObject<TFarRadioButton>(Dialog);
   LogFileAppendButton->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_APPEND));
   LogFileAppendButton->SetEnabledDependency(LogToFileCheck);
 
   Dialog->SetNextItemPosition(ipRight);
 
-  TFarRadioButton * LogFileOverwriteButton = new TFarRadioButton(Dialog);
+  TFarRadioButton * LogFileOverwriteButton = MakeOwnedObject<TFarRadioButton>(Dialog);
   LogFileOverwriteButton->SetCaption(GetMsg(NB_LOGGING_LOG_FILE_OVERWRITE));
   LogFileOverwriteButton->SetEnabledDependency(LogToFileCheck);
 
@@ -585,20 +585,20 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE))));
 
-  TFarSeparator * Separator = new TFarSeparator(Dialog);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(Dialog);
   Separator->SetCaption(GetMsg(NB_TRANSFER_RESUME));
 
-  TFarRadioButton * ResumeOnButton = new TFarRadioButton(Dialog);
+  TFarRadioButton * ResumeOnButton = MakeOwnedObject<TFarRadioButton>(Dialog);
   ResumeOnButton->SetCaption(GetMsg(NB_TRANSFER_RESUME_ON));
 
-  TFarRadioButton * ResumeSmartButton = new TFarRadioButton(Dialog);
+  TFarRadioButton * ResumeSmartButton = MakeOwnedObject<TFarRadioButton>(Dialog);
   ResumeSmartButton->SetCaption(GetMsg(NB_TRANSFER_RESUME_SMART));
   const int32_t ResumeThresholdLeft = ResumeSmartButton->GetRight();
 
-  TFarRadioButton * ResumeOffButton = new TFarRadioButton(Dialog);
+  TFarRadioButton * ResumeOffButton = MakeOwnedObject<TFarRadioButton>(Dialog);
   ResumeOffButton->SetCaption(GetMsg(NB_TRANSFER_RESUME_OFF));
 
-  TFarEdit * ResumeThresholdEdit = new TFarEdit(Dialog);
+  TFarEdit * ResumeThresholdEdit = MakeOwnedObject<TFarEdit>(Dialog);
   ResumeThresholdEdit->Move(0, -2);
   ResumeThresholdEdit->SetLeft(ResumeThresholdLeft + 3);
   ResumeThresholdEdit->SetFixed(true);
@@ -608,63 +608,63 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->SetNextItemPosition(ipRight);
 
-  TFarText * Text = new TFarText(Dialog);
+  TFarText * Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_RESUME_THRESHOLD_UNIT));
   Text->SetEnabledDependency(ResumeSmartButton);
 
   Dialog->SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(Dialog);
+  Separator = MakeOwnedObject<TFarSeparator>(Dialog);
   Separator->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_GROUP));
   Separator->Move(0, 1);
 
-  TFarCheckBox * SessionReopenAutoCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * SessionReopenAutoCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   SessionReopenAutoCheck->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_AUTO_LABEL));
 
   Dialog->SetNextItemPosition(ipRight);
 
-  TFarEdit * SessionReopenAutoEdit = new TFarEdit(Dialog);
+  TFarEdit * SessionReopenAutoEdit = MakeOwnedObject<TFarEdit>(Dialog);
   SessionReopenAutoEdit->SetEnabledDependency(SessionReopenAutoCheck);
   SessionReopenAutoEdit->SetFixed(true);
   SessionReopenAutoEdit->SetMask(L"999");
   SessionReopenAutoEdit->SetWidth(5);
   SessionReopenAutoEdit->Move(12, 0);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_AUTO_LABEL2));
   Text->SetEnabledDependency(SessionReopenAutoCheck);
 
   Dialog->SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL));
   Text->SetEnabledDependency(SessionReopenAutoCheck);
   Text->Move(4, 0);
 
   Dialog->SetNextItemPosition(ipRight);
 
-  TFarEdit * SessionReopenNumberOfRetriesEdit = new TFarEdit(Dialog);
+  TFarEdit * SessionReopenNumberOfRetriesEdit = MakeOwnedObject<TFarEdit>(Dialog);
   SessionReopenNumberOfRetriesEdit->SetEnabledDependency(SessionReopenAutoCheck);
   SessionReopenNumberOfRetriesEdit->SetFixed(true);
   SessionReopenNumberOfRetriesEdit->SetMask(L"999");
   SessionReopenNumberOfRetriesEdit->SetWidth(5);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_REOPEN_NUMBER_OF_RETRIES_LABEL2));
   Text->SetEnabledDependency(SessionReopenAutoCheck);
 
-  Separator = new TFarSeparator(Dialog);
+  Separator = MakeOwnedObject<TFarSeparator>(Dialog);
   Separator->SetCaption(GetMsg(NB_TRANSFER_SESSION_TIMEOUTS_GROUP));
   Separator->Move(0, 1);
 
   Dialog->SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL));
   
   Dialog->SetNextItemPosition(ipRight);
 
-  TFarEdit * WaitDialogTimeoutEdit = new TFarEdit(Dialog);
+  TFarEdit * WaitDialogTimeoutEdit = MakeOwnedObject<TFarEdit>(Dialog);
   WaitDialogTimeoutEdit->SetEnabledDependency(SessionReopenAutoCheck);
   WaitDialogTimeoutEdit->SetFixed(true);
   WaitDialogTimeoutEdit->SetMask(L"999");
@@ -672,7 +672,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->SetNextItemPosition(ipRight);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_SESSION_TIMEOUTS_WAIT_TIMEOUT_LABEL2));
 
   Dialog->AddStandardButtons();
@@ -738,28 +738,28 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND))));
 
-  TFarText * Text = new TFarText(Dialog);
+  TFarText * Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_QUEUE_LIMIT));
 
   Dialog->SetNextItemPosition(ipRight);
 
-  TFarEdit * QueueTransferLimitEdit = new TFarEdit(Dialog);
+  TFarEdit * QueueTransferLimitEdit = MakeOwnedObject<TFarEdit>(Dialog);
   QueueTransferLimitEdit->SetFixed(true);
   QueueTransferLimitEdit->SetMask(L"9");
   QueueTransferLimitEdit->SetWidth(3);
 
   Dialog->SetNextItemPosition(ipNewLine);
 
-  TFarCheckBox * QueueCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * QueueCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   QueueCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE_DEFAULT));
 
-  TFarCheckBox * QueueAutoPopupCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * QueueAutoPopupCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   QueueAutoPopupCheck->SetCaption(GetMsg(NB_TRANSFER_AUTO_POPUP));
 
-  TFarCheckBox * RememberPasswordCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * RememberPasswordCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   RememberPasswordCheck->SetCaption(GetMsg(NB_TRANSFER_REMEMBER_PASSWORD));
 
-  TFarCheckBox * QueueBeepCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * QueueBeepCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   QueueBeepCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE_BEEP));
 
   Dialog->AddStandardButtons();
@@ -826,28 +826,28 @@ TTransferEditorConfigurationDialog::TTransferEditorConfigurationDialog(
   SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER_EDITOR))));
 
-  EditorMultipleCheck = new TFarCheckBox(this);
+  EditorMultipleCheck = MakeOwnedObject<TFarCheckBox>(this);
   EditorMultipleCheck->SetCaption(GetMsg(NB_TRANSFER_EDITOR_MULTIPLE));
 
-  EditorUploadOnSaveCheck = new TFarCheckBox(this);
+  EditorUploadOnSaveCheck = MakeOwnedObject<TFarCheckBox>(this);
   EditorUploadOnSaveCheck->SetCaption(GetMsg(NB_TRANSFER_EDITOR_UPLOAD_ON_SAVE));
 
-  TFarSeparator * Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_TRANSFER_EDITOR_DOWNLOAD));
 
-  EditorDownloadDefaultButton = new TFarRadioButton(this);
+  EditorDownloadDefaultButton = MakeOwnedObject<TFarRadioButton>(this);
   EditorDownloadDefaultButton->SetCaption(GetMsg(NB_TRANSFER_EDITOR_DOWNLOAD_DEFAULT));
 
-  EditorDownloadOptionsButton = new TFarRadioButton(this);
+  EditorDownloadOptionsButton = MakeOwnedObject<TFarRadioButton>(this);
   EditorDownloadOptionsButton->SetCaption(GetMsg(NB_TRANSFER_EDITOR_DOWNLOAD_OPTIONS));
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_TRANSFER_EDITOR_UPLOAD));
 
-  EditorUploadSameButton = new TFarRadioButton(this);
+  EditorUploadSameButton = MakeOwnedObject<TFarRadioButton>(this);
   EditorUploadSameButton->SetCaption(GetMsg(NB_TRANSFER_EDITOR_UPLOAD_SAME));
 
-  EditorUploadOptionsButton = new TFarRadioButton(this);
+  EditorUploadOptionsButton = MakeOwnedObject<TFarRadioButton>(this);
   EditorUploadOptionsButton->SetCaption(GetMsg(NB_TRANSFER_EDITOR_UPLOAD_OPTIONS));
 
   AddStandardButtons();
@@ -928,17 +928,17 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS))));
 
-  TFarCheckBox * ConfirmOverwritingCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * ConfirmOverwritingCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   ConfirmOverwritingCheck->SetAllowGrayed(true);
   ConfirmOverwritingCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_CONFIRM_OVERWRITING));
 
-  TFarCheckBox * ConfirmCommandSessionCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * ConfirmCommandSessionCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   ConfirmCommandSessionCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_OPEN_COMMAND_SESSION));
 
-  TFarCheckBox * ConfirmResumeCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * ConfirmResumeCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   ConfirmResumeCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_CONFIRM_RESUME));
 
-  TFarCheckBox * ConfirmSynchronizedBrowsingCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * ConfirmSynchronizedBrowsingCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   ConfirmSynchronizedBrowsingCheck->SetCaption(GetMsg(NB_CONFIRMATIONS_SYNCHRONIZED_BROWSING));
 
   Dialog->AddStandardButtons();
@@ -984,28 +984,28 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION))));
 
-  TFarText * Text = new TFarText(Dialog);
+  TFarText * Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_INTEGRATION_PUTTY));
 
-  TFarEdit * PuttyPathEdit = new TFarEdit(Dialog);
+  TFarEdit * PuttyPathEdit = MakeOwnedObject<TFarEdit>(Dialog);
 
-  TFarCheckBox * PuttyPasswordCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * PuttyPasswordCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   PuttyPasswordCheck->SetCaption(GetMsg(NB_INTEGRATION_PUTTY_PASSWORD));
   PuttyPasswordCheck->SetEnabledDependency(PuttyPathEdit);
 
-  TFarCheckBox * TelnetForFtpInPuttyCheck = new TFarCheckBox(Dialog);
+  TFarCheckBox * TelnetForFtpInPuttyCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   TelnetForFtpInPuttyCheck->SetCaption(GetMsg(NB_INTEGRATION_TELNET_FOR_FTP_IN_PUTTY));
   TelnetForFtpInPuttyCheck->SetEnabledDependency(PuttyPathEdit);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_INTEGRATION_PAGEANT));
 
-  TFarEdit * PageantPathEdit = new TFarEdit(Dialog);
+  TFarEdit * PageantPathEdit = MakeOwnedObject<TFarEdit>(Dialog);
 
-  Text = new TFarText(Dialog);
+  Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_INTEGRATION_PUTTYGEN));
 
-  TFarEdit * PuttygenPathEdit = new TFarEdit(Dialog);
+  TFarEdit * PuttygenPathEdit = MakeOwnedObject<TFarEdit>(Dialog);
 
   Dialog->AddStandardButtons();
 
@@ -1082,16 +1082,16 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
   TFarText * Text;
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(FileDescription);
   Text->SetCenterGroup(true);
 
   const UnicodeString PluginDescriptionText = GetMsg(NB_StringPluginDescriptionText);
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(PluginDescriptionText);
   Text->SetCenterGroup(true);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   UnicodeString VersionStr = GetConfiguration()->GetProductVersion();
   if (VersionStr.IsEmpty())
   {
@@ -1100,31 +1100,31 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_VERSION), VersionStr, NETBOX_VERSION_BUILD));
   Text->SetCenterGroup(true);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->Move(0, 1);
   Text->SetCaption(LoadStr(WINSCPFAR_BASED_ON));
   Text->SetCenterGroup(true);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(FMTLOAD(WINSCPFAR_BASED_VERSION, LoadStr(WINSCPFAR_VERSION)));
   Text->SetCenterGroup(true);
 
   if (!ProductName.IsEmpty())
   {
-    Text = new TFarText(this);
+    Text = MakeOwnedObject<TFarText>(this);
     Text->SetCaption(FORMAT(GetMsg(NB_ABOUT_PRODUCT_VERSION),
       ProductName,
       LoadStr(WINSCP_VERSION)));
     Text->SetCenterGroup(true);
   }
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(LoadStr(WINSCPFAR_BASED_COPYRIGHT));
   Text->SetCenterGroup(true);
 
   if (!Comments.IsEmpty())
   {
-    Text = new TFarText(this);
+    Text = MakeOwnedObject<TFarText>(this);
     if (ProductName.IsEmpty())
     {
       Text->Move(0, 1);
@@ -1135,13 +1135,13 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 #if 0
   if (!LegalCopyright.IsEmpty())
   {
-    Text = new TFarText(this);
+    Text = MakeOwnedObject<TFarText>(this);
     Text->Move(0, 1);
     Text->SetCaption(GetConfiguration()->GetFileInfoString("LegalCopyright"));
     Text->SetCenterGroup(true);
   }
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   if (LegalCopyright.IsEmpty())
   {
     Text->Move(0, 1);
@@ -1151,7 +1151,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   Text->SetCenterGroup(true);
   Text->SetOnMouseClick(nb::bind(&TAboutDialog::UrlTextClick, this));
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->Move(0, 1);
   Button->SetCaption(GetMsg(NB_ABOUT_HOMEPAGE));
   Button->SetOnClick(nb::bind(&TAboutDialog::UrlButtonClick, this));
@@ -1160,7 +1160,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
 
   SetNextItemPosition(ipRight);
 
-  Button = new TFarButton(this);
+  Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_ABOUT_FORUM));
   Button->SetOnClick(nb::bind(&TAboutDialog::UrlButtonClick, this));
   Button->SetTag(2);
@@ -1168,29 +1168,29 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   SetNextItemPosition(ipNewLine);
 #endif
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(FMTLOAD(PUTTY_BASED_ON, LoadStr(PUTTY_VERSION)));
   Text->SetCenterGroup(true);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(LoadStr(PUTTY_COPYRIGHT));
   Text->SetCenterGroup(true);
 
 #ifndef NO_FILEZILLA
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(LoadStr(FILEZILLA_BASED_ON2));
   Text->SetCenterGroup(true);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(LoadStr(FILEZILLA_COPYRIGHT2));
   Text->SetCenterGroup(true);
 #endif
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_CLOSE));
   Button->SetDefault(true);
   Button->SetResult(brOK);
@@ -1279,7 +1279,7 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
 
   if (ShowSavePassword)
   {
-    SavePasswordCheck = new TFarCheckBox(this);
+    SavePasswordCheck = MakeOwnedObject<TFarCheckBox>(this);
     SavePasswordCheck->SetCaption(GetMsg(NB_PASSWORD_SAVE));
   }
   else
@@ -1287,9 +1287,9 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
     SavePasswordCheck = nullptr;
   }
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_OK));
   Button->SetDefault(true);
   Button->SetResult(brOK);
@@ -1299,13 +1299,13 @@ TPasswordDialog::TPasswordDialog(TCustomFarPlugin * AFarPlugin,
 
   if (Truncated)
   {
-    Button = new TFarButton(this);
+    Button = MakeOwnedObject<TFarButton>(this);
     Button->SetCaption(GetMsg(NB_PASSWORD_SHOW_PROMPT));
     Button->SetOnClick(nb::bind(&TPasswordDialog::ShowPromptClick, this));
     Button->SetCenterGroup(true);
   }
 
-  Button = new TFarButton(this);
+  Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
@@ -1315,7 +1315,7 @@ void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
   bool & Truncated)
 {
   UnicodeString Caption = ACaption;
-  TFarText * Result = new TFarText(this);
+  TFarText * Result = MakeOwnedObject<TFarText>(this);
 
   if (!FPrompt.IsEmpty())
   {
@@ -1335,7 +1335,7 @@ void TPasswordDialog::GenerateLabel(const UnicodeString & ACaption,
 
 TFarEdit * TPasswordDialog::GenerateEdit(bool Echo)
 {
-  TFarEdit * Result = new TFarEdit(this);
+  TFarEdit * Result = MakeOwnedObject<TFarEdit>(this);
   Result->SetPassword(!Echo);
   return Result;
 }
@@ -1443,18 +1443,18 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   Dialog->SetSize(TPoint(70, 21));
   Dialog->SetCaption(FORMAT(GetMsg(NB_BANNER_TITLE), SessionName));
 
-  TFarLister * Lister = new TFarLister(Dialog);
+  TFarLister * Lister = MakeOwnedObject<TFarLister>(Dialog);
   FarWrapText(Banner, Lister->GetItems(), Dialog->GetBorderBox()->GetWidth() - 4);
   Lister->SetHeight(15);
   Lister->SetLeft(Dialog->GetBorderBox()->GetLeft() + 1);
   Lister->SetRight(Dialog->GetBorderBox()->GetRight() - (Lister->GetScrollBar() ? 0 : 1));
 
-  new TFarSeparator(Dialog);
+  MakeOwnedObject<TFarSeparator>(Dialog);
 
   TFarCheckBox * NeverShowAgainCheck = nullptr;
   if (FLAGCLEAR(Options, boDisableNeverShowAgain))
   {
-    NeverShowAgainCheck = new TFarCheckBox(Dialog);
+    NeverShowAgainCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
     NeverShowAgainCheck->SetCaption(GetMsg(NB_BANNER_NEVER_SHOW_AGAIN));
     NeverShowAgainCheck->SetVisible(FLAGCLEAR(Options, boDisableNeverShowAgain));
     NeverShowAgainCheck->SetChecked(NeverShowAgain);
@@ -1462,7 +1462,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
     Dialog->SetNextItemPosition(ipRight);
   }
 
-  TFarButton * Button = new TFarButton(Dialog);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(Dialog);
   Button->SetCaption(GetMsg(NB_BANNER_CONTINUE));
   Button->SetDefault(true);
   Button->SetResult(brOK);
@@ -1730,10 +1730,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FFirstVisibleTabIndex = 0;
 
 #define TRISTATE(COMBO, PROP, MSG) \
-    Text = new TFarText(this); \
+    Text = MakeOwnedObject<TFarText>(this); \
     Text->SetCaption(GetMsg((MSG))); \
     SetNextItemPosition(ipRight); \
-    (COMBO) = new TFarComboBox(this); \
+    (COMBO) = MakeOwnedObject<TFarComboBox>(this); \
     (COMBO)->SetDropDownList(true); \
     (COMBO)->GetItems()->BeginUpdate(); \
     { \
@@ -1765,13 +1765,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Index1 = AddTab(tabSCP, GetMsg(NB_LOGIN_TAB_SCP));
   ScpTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
-  PrevTab = new TTabButton(this);
+  PrevTab = MakeOwnedObject<TTabButton>(this);
   PrevTab->SetTabName(UnicodeString(1, '\x11'));
   PrevTab->SetBrackets(brNone);
   PrevTab->SetCenterGroup(false);
   PrevTab->SetOnClick(nb::bind(&TSessionDialog::PrevTabClick, this));
 
-  NextTab = new TTabButton(this);
+  NextTab = MakeOwnedObject<TTabButton>(this);
   NextTab->SetTabName(UnicodeString(1, '\x10'));
   NextTab->SetBrackets(brNone);
   NextTab->SetCenterGroup(false);
@@ -1815,16 +1815,16 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
   SetDefaultGroup(tabSession);
 
-  TFarSeparator * Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_GROUP_SESSION));
   int32_t GroupTop = Separator->GetTop();
 
-  TFarText * Text = new TFarText(this);
+  TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TRANSFER_PROTOCOL));
 
   SetNextItemPosition(ipRight);
 
-  TransferProtocolCombo = new TFarComboBox(this);
+  TransferProtocolCombo = MakeOwnedObject<TFarComboBox>(this);
   TransferProtocolCombo->SetDropDownList(true);
   TransferProtocolCombo->SetWidth(10);
   TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_SFTP));
@@ -1835,22 +1835,22 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_WEBDAV));
   TransferProtocolCombo->GetItems()->Add(GetMsg(NB_LOGIN_S3));
 
-  AllowScpFallbackCheck = new TFarCheckBox(this);
+  AllowScpFallbackCheck = MakeOwnedObject<TFarCheckBox>(this);
   AllowScpFallbackCheck->SetCaption(GetMsg(NB_LOGIN_ALLOW_SCP_FALLBACK));
 
-  InsecureLabel = new TFarText(this);
+  InsecureLabel = MakeOwnedObject<TFarText>(this);
   InsecureLabel->SetCaption(GetMsg(NB_LOGIN_INSECURE));
   InsecureLabel->MoveAt(AllowScpFallbackCheck->GetLeft(), AllowScpFallbackCheck->GetTop());
 
   SetNextItemPosition(ipNewLine);
 
-  FtpEncryptionLabel = new TFarText(this);
+  FtpEncryptionLabel = MakeOwnedObject<TFarText>(this);
   FtpEncryptionLabel->SetCaption(GetMsg(NB_LOGIN_FTP_ENCRYPTION));
   FtpEncryptionLabel->SetWidth(15);
 
   SetNextItemPosition(ipRight);
 
-  FtpEncryptionCombo = new TFarComboBox(this);
+  FtpEncryptionCombo = MakeOwnedObject<TFarComboBox>(this);
   FtpEncryptionCombo->SetDropDownList(true);
   FtpEncryptionCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP_USE_PLAIN_FTP));
   FtpEncryptionCombo->GetItems()->Add(GetMsg(NB_LOGIN_FTP_REQUIRE_IMPLICIT_FTP));
@@ -1860,76 +1860,76 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  HostNameLabel = new TFarText(this);
+  HostNameLabel = MakeOwnedObject<TFarText>(this);
   HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
-  HostNameEdit = new TFarEdit(this);
+  HostNameEdit = MakeOwnedObject<TFarEdit>(this);
   HostNameEdit->SetRight(CRect.Right - 12 - 2);
 
   SetNextItemPosition(ipRight);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PORT_NUMBER));
   Text->Move(0, -1);
 
   SetNextItemPosition(ipBelow);
 
-  PortNumberEdit = new TFarEdit(this);
+  PortNumberEdit = MakeOwnedObject<TFarEdit>(this);
   PortNumberEdit->SetFixed(true);
   PortNumberEdit->SetMask(L"999999");
 
   SetNextItemPosition(ipNewLine);
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   SetNextItemPosition(ipNewLine);
 
-  UserNameLabel = new TFarText(this);
+  UserNameLabel = MakeOwnedObject<TFarText>(this);
   UserNameLabel->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
   UserNameLabel->SetWidth(20);
 
   SetNextItemPosition(ipRight);
 
-  UserNameEdit = new TFarEdit(this);
+  UserNameEdit = MakeOwnedObject<TFarEdit>(this);
   UserNameEdit->SetWidth(20);
   UserNameEdit->SetRight(CRect.Right - 12 - 2);
   UserNameEdit->SetVisible(true);
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   SetNextItemPosition(ipNewLine);
 
-  PasswordLabel = new TFarText(this);
+  PasswordLabel = MakeOwnedObject<TFarText>(this);
   PasswordLabel->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
   PasswordLabel->SetWidth(20);
   PasswordLabel->SetVisible(true);
 
   SetNextItemPosition(ipRight);
 
-  PasswordEdit = new TFarEdit(this);
+  PasswordEdit = MakeOwnedObject<TFarEdit>(this);
   PasswordEdit->SetPassword(true);
   PasswordEdit->SetWidth(20);
   PasswordEdit->SetRight(CRect.Right - 12 - 2);
   PasswordEdit->SetVisible(true);
 
   SetNextItemPosition(ipNewLine);
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
 
-  PrivateKeyEdit = new TFarEdit(this);
+  PrivateKeyEdit = MakeOwnedObject<TFarEdit>(this);
   Text->SetEnabledFollow(PrivateKeyEdit);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetTop(CRect.Bottom - 3);
   Text->SetBottom(Text->GetTop());
   Text->SetCaption(GetMsg(NB_LOGIN_TAB_HINT1));
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TAB_HINT2));
 
   // Environment tab
@@ -1937,16 +1937,16 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetDefaultGroup(tabEnvironment);
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_ENVIRONMENT_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_EOL_TYPE));
 
   SetNextItemPosition(ipRight);
 
-  EOLTypeCombo = new TFarComboBox(this);
+  EOLTypeCombo = MakeOwnedObject<TFarComboBox>(this);
   EOLTypeCombo->SetDropDownList(true);
   EOLTypeCombo->SetWidth(7);
   EOLTypeCombo->SetRight(CRect.Right);
@@ -1956,86 +1956,86 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   // UTF_TRISTATE();
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_CODE_PAGE));
 
   SetNextItemPosition(ipRight);
 
-  CodePageEdit = new TFarComboBox(this);
+  CodePageEdit = MakeOwnedObject<TFarComboBox>(this);
   CodePageEdit->SetWidth(30);
   CodePageEdit->SetRight(CRect.Right);
   FillCodePageEdit();
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TIME_DIFFERENCE));
 
   SetNextItemPosition(ipRight);
 
-  TimeDifferenceEdit = new TFarEdit(this);
+  TimeDifferenceEdit = MakeOwnedObject<TFarEdit>(this);
   TimeDifferenceEdit->SetFixed(true);
   TimeDifferenceEdit->SetMask(L"###");
   TimeDifferenceEdit->SetWidth(4);
   Text->SetEnabledFollow(TimeDifferenceEdit);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TIME_DIFFERENCE_HOURS));
   Text->SetEnabledFollow(TimeDifferenceEdit);
 
-  TimeDifferenceMinutesEdit = new TFarEdit(this);
+  TimeDifferenceMinutesEdit = MakeOwnedObject<TFarEdit>(this);
   TimeDifferenceMinutesEdit->SetFixed(true);
   TimeDifferenceMinutesEdit->SetMask(L"###");
   TimeDifferenceMinutesEdit->SetWidth(4);
   TimeDifferenceMinutesEdit->SetEnabledFollow(TimeDifferenceEdit);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TIME_DIFFERENCE_MINUTES));
   Text->SetEnabledFollow(TimeDifferenceEdit);
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_DST_MODE_GROUP));
 
-  DSTModeUnixCheck = new TFarRadioButton(this);
+  DSTModeUnixCheck = MakeOwnedObject<TFarRadioButton>(this);
   DSTModeUnixCheck->SetCaption(GetMsg(NB_LOGIN_DST_MODE_UNIX));
 
-  DSTModeWinCheck = new TFarRadioButton(this);
+  DSTModeWinCheck = MakeOwnedObject<TFarRadioButton>(this);
   DSTModeWinCheck->SetCaption(GetMsg(NB_LOGIN_DST_MODE_WIN));
   DSTModeWinCheck->SetEnabledFollow(DSTModeUnixCheck);
 
-  DSTModeKeepCheck = new TFarRadioButton(this);
+  DSTModeKeepCheck = MakeOwnedObject<TFarRadioButton>(this);
   DSTModeKeepCheck->SetCaption(GetMsg(NB_LOGIN_DST_MODE_KEEP));
   DSTModeKeepCheck->SetEnabledFollow(DSTModeUnixCheck);
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_LOGIN_ENVIRONMENT_UNIX));
   Button->SetOnClick(nb::bind(&TSessionDialog::UnixEnvironmentButtonClick, this));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
-  Button = new TFarButton(this);
+  Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_LOGIN_ENVIRONMENT_WINDOWS));
   Button->SetOnClick(nb::bind(&TSessionDialog::WindowsEnvironmentButtonClick, this));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_RECYCLE_BIN_GROUP));
 
-  DeleteToRecycleBinCheck = new TFarCheckBox(this);
+  DeleteToRecycleBinCheck = MakeOwnedObject<TFarCheckBox>(this);
   DeleteToRecycleBinCheck->SetCaption(GetMsg(NB_LOGIN_RECYCLE_BIN_DELETE));
 
-  OverwrittenToRecycleBinCheck = new TFarCheckBox(this);
+  OverwrittenToRecycleBinCheck = MakeOwnedObject<TFarCheckBox>(this);
   OverwrittenToRecycleBinCheck->SetCaption(GetMsg(NB_LOGIN_RECYCLE_BIN_OVERWRITE));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_RECYCLE_BIN_LABEL));
 
-  RecycleBinPathEdit = new TFarEdit(this);
+  RecycleBinPathEdit = MakeOwnedObject<TFarEdit>(this);
   Text->SetEnabledFollow(RecycleBinPathEdit);
 
   SetNextItemPosition(ipNewLine);
@@ -2045,36 +2045,36 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetDefaultGroup(tabDirectories);
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_DIRECTORIES_GROUP));
 
-  UpdateDirectoriesCheck = new TFarCheckBox(this);
+  UpdateDirectoriesCheck = MakeOwnedObject<TFarCheckBox>(this);
   UpdateDirectoriesCheck->SetCaption(GetMsg(NB_LOGIN_UPDATE_DIRECTORIES));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_REMOTE_DIRECTORY));
 
-  RemoteDirectoryEdit = new TFarEdit(this);
+  RemoteDirectoryEdit = MakeOwnedObject<TFarEdit>(this);
   RemoteDirectoryEdit->SetHistory(REMOTE_DIR_HISTORY);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_DIRECTORY_OPTIONS_GROUP));
 
-  CacheDirectoriesCheck = new TFarCheckBox(this);
+  CacheDirectoriesCheck = MakeOwnedObject<TFarCheckBox>(this);
   CacheDirectoriesCheck->SetCaption(GetMsg(NB_LOGIN_CACHE_DIRECTORIES));
 
-  CacheDirectoryChangesCheck = new TFarCheckBox(this);
+  CacheDirectoryChangesCheck = MakeOwnedObject<TFarCheckBox>(this);
   CacheDirectoryChangesCheck->SetCaption(GetMsg(NB_LOGIN_CACHE_DIRECTORY_CHANGES));
 
-  PreserveDirectoryChangesCheck = new TFarCheckBox(this);
+  PreserveDirectoryChangesCheck = MakeOwnedObject<TFarCheckBox>(this);
   PreserveDirectoryChangesCheck->SetCaption(GetMsg(NB_LOGIN_PRESERVE_DIRECTORY_CHANGES));
   PreserveDirectoryChangesCheck->SetLeft(PreserveDirectoryChangesCheck->GetLeft() + 4);
 
-  ResolveSymlinksCheck = new TFarCheckBox(this);
+  ResolveSymlinksCheck = MakeOwnedObject<TFarCheckBox>(this);
   ResolveSymlinksCheck->SetCaption(GetMsg(NB_LOGIN_RESOLVE_SYMLINKS));
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   // SCP Tab
 
@@ -2082,83 +2082,83 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetDefaultGroup(tabSCP);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_SHELL_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_SHELL_SHELL));
 
   SetNextItemPosition(ipRight);
 
-  ShellEdit = new TFarComboBox(this);
+  ShellEdit = MakeOwnedObject<TFarComboBox>(this);
   ShellEdit->GetItems()->Add(GetMsg(NB_LOGIN_SHELL_SHELL_DEFAULT));
   ShellEdit->GetItems()->Add(L"/bin/bash");
   ShellEdit->GetItems()->Add(L"/bin/ksh");
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_SHELL_RETURN_VAR));
 
   SetNextItemPosition(ipRight);
 
-  ReturnVarEdit = new TFarComboBox(this);
+  ReturnVarEdit = MakeOwnedObject<TFarComboBox>(this);
   ReturnVarEdit->GetItems()->Add(GetMsg(NB_LOGIN_SHELL_RETURN_VAR_AUTODETECT));
   ReturnVarEdit->GetItems()->Add(L"?");
   ReturnVarEdit->GetItems()->Add(L"status");
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_SCP_LS_OPTIONS_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_LISTING_COMMAND));
 
   SetNextItemPosition(ipRight);
 
-  ListingCommandEdit = new TFarComboBox(this);
+  ListingCommandEdit = MakeOwnedObject<TFarComboBox>(this);
   ListingCommandEdit->GetItems()->Add(L"ls -la");
   ListingCommandEdit->GetItems()->Add(L"ls -gla");
   Text->SetEnabledFollow(ListingCommandEdit);
 
   SetNextItemPosition(ipNewLine);
 
-  IgnoreLsWarningsCheck = new TFarCheckBox(this);
+  IgnoreLsWarningsCheck = MakeOwnedObject<TFarCheckBox>(this);
   IgnoreLsWarningsCheck->SetCaption(GetMsg(NB_LOGIN_IGNORE_LS_WARNINGS));
 
   SetNextItemPosition(ipRight);
 
-  SCPLsFullTimeAutoCheck = new TFarCheckBox(this);
+  SCPLsFullTimeAutoCheck = MakeOwnedObject<TFarCheckBox>(this);
   SCPLsFullTimeAutoCheck->SetCaption(GetMsg(NB_LOGIN_SCP_LS_FULL_TIME_AUTO));
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_SCP_OPTIONS));
 
-  LookupUserGroupsCheck = new TFarCheckBox(this);
+  LookupUserGroupsCheck = MakeOwnedObject<TFarCheckBox>(this);
   LookupUserGroupsCheck->SetCaption(GetMsg(NB_LOGIN_LOOKUP_USER_GROUPS));
 
   SetNextItemPosition(ipRight);
 
-  UnsetNationalVarsCheck = new TFarCheckBox(this);
+  UnsetNationalVarsCheck = MakeOwnedObject<TFarCheckBox>(this);
   UnsetNationalVarsCheck->SetCaption(GetMsg(NB_LOGIN_CLEAR_NATIONAL_VARS));
 
   SetNextItemPosition(ipNewLine);
 
-  ClearAliasesCheck = new TFarCheckBox(this);
+  ClearAliasesCheck = MakeOwnedObject<TFarCheckBox>(this);
   ClearAliasesCheck->SetCaption(GetMsg(NB_LOGIN_CLEAR_ALIASES));
 
   SetNextItemPosition(ipRight);
 
-  Scp1CompatibilityCheck = new TFarCheckBox(this);
+  Scp1CompatibilityCheck = MakeOwnedObject<TFarCheckBox>(this);
   Scp1CompatibilityCheck->SetCaption(GetMsg(NB_LOGIN_SCP1_COMPATIBILITY));
 
   SetNextItemPosition(ipNewLine);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   // SFTP Tab
 
@@ -2166,14 +2166,14 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetDefaultGroup(tabSFTP);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_SFTP_PROTOCOL_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_SFTP_SERVER));
   SetNextItemPosition(ipRight);
-  SftpServerEdit = new TFarComboBox(this);
+  SftpServerEdit = MakeOwnedObject<TFarComboBox>(this);
   SftpServerEdit->GetItems()->Add(GetMsg(NB_LOGIN_SFTP_SERVER_DEFAULT));
   SftpServerEdit->GetItems()->Add(L"/bin/sftp-server");
   SftpServerEdit->GetItems()->Add(L"sudo su -c /bin/sftp-server");
@@ -2181,10 +2181,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_SFTP_MAX_VERSION));
   SetNextItemPosition(ipRight);
-  SFTPMaxVersionCombo = new TFarComboBox(this);
+  SFTPMaxVersionCombo = MakeOwnedObject<TFarComboBox>(this);
   SFTPMaxVersionCombo->SetDropDownList(true);
   for (int32_t Index2 = 0; Index2 <= 6; ++Index2)
   {
@@ -2194,18 +2194,18 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_SFTP_BUGS_GROUP));
 
   SFTP_BUGS();
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_SFTP_MIN_PACKET_SIZE));
   SetNextItemPosition(ipRight);
 
-  SFTPMinPacketSizeEdit = new TFarEdit(this);
+  SFTPMinPacketSizeEdit = MakeOwnedObject<TFarEdit>(this);
   SFTPMinPacketSizeEdit->SetFixed(true);
   SFTPMinPacketSizeEdit->SetMask(L"99999999");
   SFTPMinPacketSizeEdit->SetWidth(8);
@@ -2213,11 +2213,11 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_SFTP_MAX_PACKET_SIZE));
   SetNextItemPosition(ipRight);
 
-  SFTPMaxPacketSizeEdit = new TFarEdit(this);
+  SFTPMaxPacketSizeEdit = MakeOwnedObject<TFarEdit>(this);
   SFTPMaxPacketSizeEdit->SetFixed(true);
   SFTPMaxPacketSizeEdit->SetMask(L"99999999");
   SFTPMaxPacketSizeEdit->SetWidth(8);
@@ -2229,47 +2229,47 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetDefaultGroup(tabFTP);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_FTP_GROUP));
 
   TRISTATE(FtpUseMlsdCombo, FtpUseMlsd, NB_LOGIN_FTP_USE_MLSD);
 
-  FtpPasvModeCheck = new TFarCheckBox(this);
+  FtpPasvModeCheck = MakeOwnedObject<TFarCheckBox>(this);
   FtpPasvModeCheck->SetCaption(GetMsg(NB_LOGIN_FTP_PASV_MODE));
 
-  FtpAllowEmptyPasswordCheck = new TFarCheckBox(this);
+  FtpAllowEmptyPasswordCheck = MakeOwnedObject<TFarCheckBox>(this);
   FtpAllowEmptyPasswordCheck->SetCaption(GetMsg(NB_LOGIN_FTP_ALLOW_EMPTY_PASSWORD));
 
   SetNextItemPosition(ipNewLine);
 
-  FtpDupFFCheck = new TFarCheckBox(this);
+  FtpDupFFCheck = MakeOwnedObject<TFarCheckBox>(this);
   FtpDupFFCheck->SetCaption(GetMsg(NB_LOGIN_FTP_DUPFF));
 
   SetNextItemPosition(ipNewLine);
 
-  FtpUndupFFCheck = new TFarCheckBox(this);
+  FtpUndupFFCheck = MakeOwnedObject<TFarCheckBox>(this);
   FtpUndupFFCheck->SetCaption(GetMsg(NB_LOGIN_FTP_UNDUPFF));
 
   SetNextItemPosition(ipNewLine);
 
-  SslSessionReuseCheck = new TFarCheckBox(this);
+  SslSessionReuseCheck = MakeOwnedObject<TFarCheckBox>(this);
   SslSessionReuseCheck->SetCaption(GetMsg(NB_LOGIN_FTP_SSLSESSIONREUSE));
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_FTP_POST_LOGIN_COMMANDS));
 
   for (int32_t Index3 = 0; Index3 < nb::ToInt32(_countof(PostLoginCommandsEdits)); ++Index3)
   {
-    TFarEdit * Edit = new TFarEdit(this);
+    TFarEdit * Edit = MakeOwnedObject<TFarEdit>(this);
     PostLoginCommandsEdits[Index3] = Edit;
   }
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   // Connection tab
 
@@ -2277,52 +2277,52 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetDefaultGroup(tabConnection);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_CONNECTION_GROUP));
 
   SetNextItemPosition(ipNewLine);
 
-  SshBufferSizeCheck = new TFarCheckBox(this);
+  SshBufferSizeCheck = MakeOwnedObject<TFarCheckBox>(this);
   SshBufferSizeCheck->SetCaption(GetMsg(NB_LOGIN_SSH_OPTIMIZE_BUFFER_SIZE));
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_TIMEOUTS_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TIMEOUT));
 
   SetNextItemPosition(ipRight);
 
-  TimeoutEdit = new TFarEdit(this);
+  TimeoutEdit = MakeOwnedObject<TFarEdit>(this);
   TimeoutEdit->SetFixed(true);
   TimeoutEdit->SetMask(L"####");
   TimeoutEdit->SetWidth(5);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TIMEOUT_SECONDS));
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_PING_GROUP));
 
-  PingOffButton = new TFarRadioButton(this);
+  PingOffButton = MakeOwnedObject<TFarRadioButton>(this);
   PingOffButton->SetCaption(GetMsg(NB_LOGIN_PING_OFF));
 
-  PingNullPacketButton = new TFarRadioButton(this);
+  PingNullPacketButton = MakeOwnedObject<TFarRadioButton>(this);
   PingNullPacketButton->SetCaption(GetMsg(NB_LOGIN_PING_NULL_PACKET));
 
-  PingDummyCommandButton = new TFarRadioButton(this);
+  PingDummyCommandButton = MakeOwnedObject<TFarRadioButton>(this);
   PingDummyCommandButton->SetCaption(GetMsg(NB_LOGIN_PING_DUMMY_COMMAND));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PING_INTERVAL));
   Text->SetEnabledDependencyNegative(PingOffButton);
 
   SetNextItemPosition(ipRight);
 
-  PingIntervalSecEdit = new TFarEdit(this);
+  PingIntervalSecEdit = MakeOwnedObject<TFarEdit>(this);
   PingIntervalSecEdit->SetFixed(true);
   PingIntervalSecEdit->SetMask(L"####");
   PingIntervalSecEdit->SetWidth(6);
@@ -2330,39 +2330,39 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_IP_GROUP));
 
-  IPAutoButton = new TFarRadioButton(this);
+  IPAutoButton = MakeOwnedObject<TFarRadioButton>(this);
   IPAutoButton->SetCaption(GetMsg(NB_LOGIN_IP_AUTO));
 
   SetNextItemPosition(ipRight);
 
-  IPv4Button = new TFarRadioButton(this);
+  IPv4Button = MakeOwnedObject<TFarRadioButton>(this);
   IPv4Button->SetCaption(GetMsg(NB_LOGIN_IP_V4));
 
-  IPv6Button = new TFarRadioButton(this);
+  IPv6Button = MakeOwnedObject<TFarRadioButton>(this);
   IPv6Button->SetCaption(GetMsg(NB_LOGIN_IP_V6));
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
 
   SetNextItemPosition(ipNewLine);
 
   // Proxy tab
 
   SetDefaultGroup(tabProxy);
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_PROXY_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PROXY_METHOD));
 
   SetNextItemPosition(ipRight);
 
-  FtpProxyMethodCombo = new TFarComboBox(this);
+  FtpProxyMethodCombo = MakeOwnedObject<TFarComboBox>(this);
   FtpProxyMethodCombo->SetDropDownList(true);
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_NONE, pmNone);
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_SOCKS4, pmSocks4);
@@ -2380,7 +2380,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   FtpProxyMethodComboAddNewItem(NB_LOGIN_PROXY_FTP_USER_USERPROXYUSERHOST, ToProxyMethod(FtpProxyMethod + 8));
   FtpProxyMethodCombo->SetWidth(40);
 
-  SshProxyMethodCombo = new TFarComboBox(this);
+  SshProxyMethodCombo = MakeOwnedObject<TFarComboBox>(this);
   SshProxyMethodCombo->SetLeft(FtpProxyMethodCombo->GetLeft());
   SshProxyMethodCombo->SetWidth(FtpProxyMethodCombo->GetWidth());
   SshProxyMethodCombo->SetRight(FtpProxyMethodCombo->GetRight());
@@ -2396,26 +2396,26 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PROXY_HOST));
 
   SetNextItemPosition(ipNewLine);
 
-  ProxyHostEdit = new TFarEdit(this);
+  ProxyHostEdit = MakeOwnedObject<TFarEdit>(this);
   ProxyHostEdit->SetWidth(42);
   Text->SetEnabledFollow(ProxyHostEdit);
 
   SetNextItemPosition(ipRight);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PROXY_PORT));
   Text->Move(0, -1);
 
   SetNextItemPosition(ipBelow);
 
-  ProxyPortEdit = new TFarEdit(this);
+  ProxyPortEdit = MakeOwnedObject<TFarEdit>(this);
   ProxyPortEdit->SetFixed(true);
   ProxyPortEdit->SetMask(L"999999");
   // ProxyPortEdit->SetWidth(12);
@@ -2423,154 +2423,154 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PROXY_USERNAME));
 
-  ProxyUsernameEdit = new TFarEdit(this);
+  ProxyUsernameEdit = MakeOwnedObject<TFarEdit>(this);
   ProxyUsernameEdit->SetWidth(ProxyUsernameEdit->GetWidth() / 2 - 1);
   Text->SetEnabledFollow(ProxyUsernameEdit);
 
   SetNextItemPosition(ipRight);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PROXY_PASSWORD));
   Text->Move(0, -1);
 
   SetNextItemPosition(ipBelow);
 
-  ProxyPasswordEdit = new TFarEdit(this);
+  ProxyPasswordEdit = MakeOwnedObject<TFarEdit>(this);
   ProxyPasswordEdit->SetPassword(true);
   Text->SetEnabledFollow(ProxyPasswordEdit);
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_PROXY_SETTINGS_GROUP));
 
-  ProxyTelnetCommandLabel = new TFarText(this);
+  ProxyTelnetCommandLabel = MakeOwnedObject<TFarText>(this);
   ProxyTelnetCommandLabel->SetCaption(GetMsg(NB_LOGIN_PROXY_TELNET_COMMAND));
 
   SetNextItemPosition(ipRight);
 
-  ProxyTelnetCommandEdit = new TFarEdit(this);
+  ProxyTelnetCommandEdit = MakeOwnedObject<TFarEdit>(this);
   ProxyTelnetCommandLabel->SetEnabledFollow(ProxyTelnetCommandEdit);
 
   SetNextItemPosition(ipNewLine);
 
-  ProxyLocalCommandLabel = new TFarText(this);
+  ProxyLocalCommandLabel = MakeOwnedObject<TFarText>(this);
   ProxyLocalCommandLabel->SetCaption(GetMsg(NB_LOGIN_PROXY_LOCAL_COMMAND));
   ProxyLocalCommandLabel->Move(0, -1);
 
   SetNextItemPosition(ipRight);
 
-  ProxyLocalCommandEdit = new TFarEdit(this);
+  ProxyLocalCommandEdit = MakeOwnedObject<TFarEdit>(this);
   ProxyLocalCommandLabel->SetEnabledFollow(ProxyLocalCommandEdit);
 
   SetNextItemPosition(ipNewLine);
 
-  ProxyLocalhostCheck = new TFarCheckBox(this);
+  ProxyLocalhostCheck = MakeOwnedObject<TFarCheckBox>(this);
   ProxyLocalhostCheck->SetCaption(GetMsg(NB_LOGIN_PROXY_LOCALHOST));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PROXY_DNS));
 
-  ProxyDNSOffButton = new TFarRadioButton(this);
+  ProxyDNSOffButton = MakeOwnedObject<TFarRadioButton>(this);
   ProxyDNSOffButton->SetCaption(GetMsg(NB_LOGIN_PROXY_DNS_NO));
   Text->SetEnabledFollow(ProxyDNSOffButton);
 
   SetNextItemPosition(ipRight);
 
-  ProxyDNSAutoButton = new TFarRadioButton(this);
+  ProxyDNSAutoButton = MakeOwnedObject<TFarRadioButton>(this);
   ProxyDNSAutoButton->SetCaption(GetMsg(NB_LOGIN_PROXY_DNS_AUTO));
   ProxyDNSAutoButton->SetEnabledFollow(ProxyDNSOffButton);
 
-  ProxyDNSOnButton = new TFarRadioButton(this);
+  ProxyDNSOnButton = MakeOwnedObject<TFarRadioButton>(this);
   ProxyDNSOnButton->SetCaption(GetMsg(NB_LOGIN_PROXY_DNS_YES));
   ProxyDNSOnButton->SetEnabledFollow(ProxyDNSOffButton);
 
   SetNextItemPosition(ipNewLine);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   // Tunnel tab
 
   SetNextItemPosition(ipNewLine);
 
   SetDefaultGroup(tabTunnel);
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_TUNNEL_GROUP));
 
-  TunnelCheck = new TFarCheckBox(this);
+  TunnelCheck = MakeOwnedObject<TFarCheckBox>(this);
   TunnelCheck->SetCaption(GetMsg(NB_LOGIN_TUNNEL_TUNNEL));
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_TUNNEL_SESSION_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
   Text->SetEnabledDependency(TunnelCheck);
 
-  TunnelHostNameEdit = new TFarEdit(this);
+  TunnelHostNameEdit = MakeOwnedObject<TFarEdit>(this);
   TunnelHostNameEdit->SetRight(CRect.Right - 12 - 2);
   TunnelHostNameEdit->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipRight);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PORT_NUMBER));
   Text->Move(0, -1);
   Text->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipBelow);
 
-  TunnelPortNumberEdit = new TFarEdit(this);
+  TunnelPortNumberEdit = MakeOwnedObject<TFarEdit>(this);
   TunnelPortNumberEdit->SetFixed(true);
   TunnelPortNumberEdit->SetMask(L"999999");
   TunnelPortNumberEdit->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
   Text->SetEnabledDependency(TunnelCheck);
 
-  TunnelUserNameEdit = new TFarEdit(this);
+  TunnelUserNameEdit = MakeOwnedObject<TFarEdit>(this);
   TunnelUserNameEdit->SetWidth(TunnelUserNameEdit->GetWidth() / 2 - 1);
   TunnelUserNameEdit->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipRight);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
   Text->Move(0, -1);
   Text->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipBelow);
 
-  TunnelPasswordEdit = new TFarEdit(this);
+  TunnelPasswordEdit = MakeOwnedObject<TFarEdit>(this);
   TunnelPasswordEdit->SetPassword(true);
   TunnelPasswordEdit->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_PRIVATE_KEY));
   Text->SetEnabledDependency(TunnelCheck);
 
-  TunnelPrivateKeyEdit = new TFarEdit(this);
+  TunnelPrivateKeyEdit = MakeOwnedObject<TFarEdit>(this);
   TunnelPrivateKeyEdit->SetEnabledDependency(TunnelCheck);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_TUNNEL_OPTIONS_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_TUNNEL_LOCAL_PORT_NUMBER));
   Text->SetEnabledDependency(TunnelCheck);
 
   SetNextItemPosition(ipRight);
 
-  TunnelLocalPortNumberEdit = new TFarComboBox(this);
+  TunnelLocalPortNumberEdit = MakeOwnedObject<TFarComboBox>(this);
   TunnelLocalPortNumberEdit->SetLeft(TunnelPortNumberEdit->GetLeft());
   TunnelLocalPortNumberEdit->SetEnabledDependency(TunnelCheck);
   TunnelLocalPortNumberEdit->GetItems()->BeginUpdate();
@@ -2592,53 +2592,53 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   // SSH tab
 
   SetNextItemPosition(ipNewLine);
 
   SetDefaultGroup(tabSsh);
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_SSH_GROUP));
 
-  CompressionCheck = new TFarCheckBox(this);
+  CompressionCheck = MakeOwnedObject<TFarCheckBox>(this);
   CompressionCheck->SetCaption(GetMsg(NB_LOGIN_COMPRESSION));
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_SSH_PROTOCOL_GROUP));
 
-  SshProt1onlyButton = new TFarRadioButton(this);
+  SshProt1onlyButton = MakeOwnedObject<TFarRadioButton>(this);
   SshProt1onlyButton->SetCaption(GetMsg(NB_LOGIN_SSH1_ONLY));
 
   SetNextItemPosition(ipRight);
 
-  SshProt1Button = new TFarRadioButton(this);
+  SshProt1Button = MakeOwnedObject<TFarRadioButton>(this);
   SshProt1Button->SetCaption(GetMsg(NB_LOGIN_SSH1));
 
-  SshProt2Button = new TFarRadioButton(this);
+  SshProt2Button = MakeOwnedObject<TFarRadioButton>(this);
   SshProt2Button->SetCaption(GetMsg(NB_LOGIN_SSH2));
 
-  SshProt2onlyButton = new TFarRadioButton(this);
+  SshProt2onlyButton = MakeOwnedObject<TFarRadioButton>(this);
   SshProt2onlyButton->SetCaption(GetMsg(NB_LOGIN_SSH2_ONLY));
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_ENCRYPTION_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_CIPHER));
 
-  CipherListBox = new TFarListBox(this);
+  CipherListBox = MakeOwnedObject<TFarListBox>(this);
   CipherListBox->SetRight(CipherListBox->GetRight() - 15);
   CipherListBox->SetHeight(1 + CIPHER_COUNT + 1);
   int32_t Pos = CipherListBox->GetBottom();
 
   SetNextItemPosition(ipRight);
 
-  CipherUpButton = new TFarButton(this);
+  CipherUpButton = MakeOwnedObject<TFarButton>(this);
   CipherUpButton->SetCaption(GetMsg(NB_LOGIN_UP));
   CipherUpButton->Move(0, 1);
   CipherUpButton->SetResult(-1);
@@ -2646,7 +2646,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipBelow);
 
-  CipherDownButton = new TFarButton(this);
+  CipherDownButton = MakeOwnedObject<TFarButton>(this);
   CipherDownButton->SetCaption(GetMsg(NB_LOGIN_DOWN));
   CipherDownButton->SetResult(1);
   CipherDownButton->SetOnClick(nb::bind(&TSessionDialog::CipherButtonClick, this));
@@ -2655,7 +2655,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   if (!Limited)
   {
-    Ssh2DESCheck = new TFarCheckBox(this);
+    Ssh2DESCheck = MakeOwnedObject<TFarCheckBox>(this);
     Ssh2DESCheck->Move(0, Pos - Ssh2DESCheck->GetTop() + 1);
     Ssh2DESCheck->SetCaption(GetMsg(NB_LOGIN_SSH2DES));
     Ssh2DESCheck->SetEnabledDependencyNegative(SshProt1onlyButton);
@@ -2668,17 +2668,17 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   // KEX tab
 
   SetDefaultGroup(tabKex);
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_KEX_REEXCHANGE_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_KEX_REKEY_TIME));
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipRight);
 
-  RekeyTimeEdit = new TFarEdit(this);
+  RekeyTimeEdit = MakeOwnedObject<TFarEdit>(this);
   RekeyTimeEdit->SetFixed(true);
   RekeyTimeEdit->SetMask(L"####");
   RekeyTimeEdit->SetWidth(6);
@@ -2686,33 +2686,33 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_KEX_REKEY_DATA));
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipRight);
 
-  RekeyDataEdit = new TFarEdit(this);
+  RekeyDataEdit = MakeOwnedObject<TFarEdit>(this);
   RekeyDataEdit->SetWidth(6);
   RekeyDataEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_KEX_OPTIONS_GROUP));
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_KEX_LIST));
   Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
-  KexListBox = new TFarListBox(this);
+  KexListBox = MakeOwnedObject<TFarListBox>(this);
   KexListBox->SetRight(KexListBox->GetRight() - 15);
   KexListBox->SetHeight(1 + KEX_COUNT + 1);
   KexListBox->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipRight);
 
-  KexUpButton = new TFarButton(this);
+  KexUpButton = MakeOwnedObject<TFarButton>(this);
   KexUpButton->SetCaption(GetMsg(NB_LOGIN_UP));
   KexUpButton->Move(0, 1);
   KexUpButton->SetResult(-1);
@@ -2720,7 +2720,7 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipBelow);
 
-  KexDownButton = new TFarButton(this);
+  KexDownButton = MakeOwnedObject<TFarButton>(this);
   KexDownButton->SetCaption(GetMsg(NB_LOGIN_DOWN));
   KexDownButton->SetResult(1);
   KexDownButton->SetOnClick(nb::bind(&TSessionDialog::KexButtonClick, this));
@@ -2731,52 +2731,52 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetDefaultGroup(tabAuthentication);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
 
-  SshNoUserAuthCheck = new TFarCheckBox(this);
+  SshNoUserAuthCheck = MakeOwnedObject<TFarCheckBox>(this);
   SshNoUserAuthCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_SSH_NO_USER_AUTH));
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_GROUP));
 
-  TryAgentCheck = new TFarCheckBox(this);
+  TryAgentCheck = MakeOwnedObject<TFarCheckBox>(this);
   TryAgentCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_TRY_AGENT));
 
-  AuthTISCheck = new TFarCheckBox(this);
+  AuthTISCheck = MakeOwnedObject<TFarCheckBox>(this);
   AuthTISCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_TIS));
 
-  AuthKICheck = new TFarCheckBox(this);
+  AuthKICheck = MakeOwnedObject<TFarCheckBox>(this);
   AuthKICheck->SetCaption(GetMsg(NB_LOGIN_AUTH_KI));
 
-  AuthKIPasswordCheck = new TFarCheckBox(this);
+  AuthKIPasswordCheck = MakeOwnedObject<TFarCheckBox>(this);
   AuthKIPasswordCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_KI_PASSWORD));
   AuthKIPasswordCheck->Move(4, 0);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_PARAMS_GROUP));
 
-  AgentFwdCheck = new TFarCheckBox(this);
+  AgentFwdCheck = MakeOwnedObject<TFarCheckBox>(this);
   AgentFwdCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_AGENT_FWD));
 
   // GSSAPI
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_LOGIN_AUTH_GSSAPI_PARAMS_GROUP));
 
-  AuthGSSAPICheck3 = new TFarCheckBox(this);
+  AuthGSSAPICheck3 = MakeOwnedObject<TFarCheckBox>(this);
   AuthGSSAPICheck3->SetCaption(GetMsg(NB_LOGIN_AUTH_ATTEMPT_GSSAPI_AUTHENTICATION));
   AuthGSSAPICheck3->SetOnAllowChange(nb::bind(&TSessionDialog::AuthGSSAPICheckAllowChange, this));
 
-  GSSAPIFwdTGTCheck = new TFarCheckBox(this);
+  GSSAPIFwdTGTCheck = MakeOwnedObject<TFarCheckBox>(this);
   GSSAPIFwdTGTCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_ALLOW_GSSAPI_CREDENTIAL_DELEGATION));
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   // Bugs tab
 
   SetDefaultGroup(tabBugs);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_BUGS_GROUP));
 
@@ -2796,26 +2796,26 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SetNextItemPosition(ipNewLine);
 
   SetDefaultGroup(tabWebDAV);
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GroupTop);
   Separator->SetCaption(GetMsg(NB_LOGIN_WEBDAV_GROUP));
 
-  WebDAVCompressionCheck = new TFarCheckBox(this);
+  WebDAVCompressionCheck = MakeOwnedObject<TFarCheckBox>(this);
   WebDAVCompressionCheck->SetCaption(GetMsg(NB_LOGIN_COMPRESSION));
 
 #undef TRISTATE
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   // Buttons
 
   SetNextItemPosition(ipNewLine);
   SetDefaultGroup(0);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(CRect.Bottom - 1);
 
-  Button = new TFarButton(this);
+  Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_OK));
   Button->SetDefault(Action != saConnect);
   Button->SetResult(brOK);
@@ -2823,13 +2823,13 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   SetNextItemPosition(ipRight);
 
-  ConnectButton = new TFarButton(this);
+  ConnectButton = MakeOwnedObject<TFarButton>(this);
   ConnectButton->SetCaption(GetMsg(NB_LOGIN_CONNECT_BUTTON));
   ConnectButton->SetDefault(Action == saConnect);
   ConnectButton->SetResult(brConnect);
   ConnectButton->SetCenterGroup(true);
 
-  Button = new TFarButton(this);
+  Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
@@ -4358,7 +4358,7 @@ void TSessionDialog::CodePageEditAdd(uint32_t Cp)
 int32_t TSessionDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
 {
   constexpr TFarButtonBrackets TabBrackets = brNone; // brSpace; //
-  TTabButton * Tab = new TTabButton(this);
+  TTabButton * Tab = MakeOwnedObject<TTabButton>(this);
   Tab->SetTabName(TabCaption);
   Tab->SetTab(TabID);
   Tab->SetBrackets(TabBrackets);
@@ -4442,7 +4442,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   for (int32_t RowIndex = 0; RowIndex < 3; ++RowIndex)
   {
     GetDialog()->SetNextItemPosition(ipNewLine);
-    TFarText * Text = new TFarText(GetDialog());
+    TFarText * Text = MakeOwnedObject<TFarText>(GetDialog());
     if (RowIndex == 0)
     {
       Text->SetTop(0);
@@ -4456,7 +4456,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
     for (int32_t ColIndex = 0; ColIndex < 3; ++ColIndex)
     {
-      TFarCheckBox * CheckBox = new TFarCheckBox(GetDialog());
+      TFarCheckBox * CheckBox = MakeOwnedObject<TFarCheckBox>(GetDialog());
       FCheckBoxes[(RowIndex + 1) * 3 + ColIndex] = CheckBox;
       Add(CheckBox);
       CheckBox->SetEnabledDependency(EnabledDependency);
@@ -4465,7 +4465,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
     if (ShowSpecials)
     {
-      TFarCheckBox * CheckBox = new TFarCheckBox(GetDialog());
+      TFarCheckBox * CheckBox = MakeOwnedObject<TFarCheckBox>(GetDialog());
       Add(CheckBox);
       CheckBox->SetVisible(ShowSpecials);
       CheckBox->SetEnabledDependency(EnabledDependency);
@@ -4481,7 +4481,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  TFarText * Text = new TFarText(GetDialog());
+  TFarText * Text = MakeOwnedObject<TFarText>(GetDialog());
   Add(Text);
   Text->SetEnabledDependency(EnabledDependency);
   Text->SetLeft(0);
@@ -4489,7 +4489,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipRight);
 
-  FOctalEdit = new TFarEdit(GetDialog());
+  FOctalEdit = MakeOwnedObject<TFarEdit>(GetDialog());
   Add(FOctalEdit);
   FOctalEdit->SetEnabledDependency(EnabledDependency);
   FOctalEdit->SetWidth(5);
@@ -4500,21 +4500,21 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
   {
     GetDialog()->SetNextItemPosition(ipRight);
 
-    TFarButton * Button = new TFarButton(GetDialog());
+    TFarButton * Button = MakeOwnedObject<TFarButton>(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(NB_PROPERTIES_NONE_RIGHTS));
     Button->SetTag(TRights::rfNo);
     Button->SetOnClick(nb::bind(&TRightsContainer::RightsButtonClick, this));
 
-    Button = new TFarButton(GetDialog());
+    Button = MakeOwnedObject<TFarButton>(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(NB_PROPERTIES_DEFAULT_RIGHTS));
     Button->SetTag(TRights::rfDefault);
     Button->SetOnClick(nb::bind(&TRightsContainer::RightsButtonClick, this));
 
-    Button = new TFarButton(GetDialog());
+    Button = MakeOwnedObject<TFarButton>(GetDialog());
     Add(Button);
     Button->SetEnabledDependency(EnabledDependency);
     Button->SetCaption(GetMsg(NB_PROPERTIES_ALL_RIGHTS));
@@ -4526,7 +4526,7 @@ TRightsContainer::TRightsContainer(TFarDialog * ADialog,
 
   if (FAnyDirectories)
   {
-    FDirectoriesXCheck = new TFarCheckBox(GetDialog());
+    FDirectoriesXCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
     Add(FDirectoriesXCheck);
     FDirectoriesXCheck->SetEnabledDependency(EnabledDependency);
     FDirectoriesXCheck->SetLeft(0);
@@ -4838,13 +4838,13 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     const TRect CRect = GetClientRect();
 
-    TFarText * Text = new TFarText(this);
+    TFarText * Text = MakeOwnedObject<TFarText>(this);
     Text->SetCaption(GetMsg(NB_PROPERTIES_PROMPT));
     Text->SetCenterGroup(true);
 
     SetNextItemPosition(ipNewLine);
 
-    Text = new TFarText(this);
+    Text = MakeOwnedObject<TFarText>(this);
     Text->SetCenterGroup(true);
     if (AFileList->GetCount() > 1)
     {
@@ -4858,21 +4858,21 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     if (!File->GetLinkTo().IsEmpty())
     {
       SetHeight(GetHeight() + 1);
-      Text = new TFarText(this);
+      Text = MakeOwnedObject<TFarText>(this);
       Text->SetCaption(GetMsg(NB_PROPERTIES_LINKTO));
 
       SetNextItemPosition(ipRight);
 
-      TFarEdit * Edit = new TFarEdit(this);
+      TFarEdit * Edit = MakeOwnedObject<TFarEdit>(this);
       Edit->SetText(File->GetLinkTo());
       Edit->SetReadOnly(true);
 
       SetNextItemPosition(ipNewLine);
     }
 
-    new TFarSeparator(this);
+    MakeOwnedObject<TFarSeparator>(this);
 
-    Text = new TFarText(this);
+    Text = MakeOwnedObject<TFarText>(this);
     Text->SetCaption(GetMsg(NB_PROPERTIES_OWNER));
     Text->SetEnabled(IsNumericOrText(cpOwner));
 
@@ -4880,19 +4880,19 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     if (IsNumericOnly(cpOwner))
     {
-      OwnerIDEdit = new TFarEdit(this);
+      OwnerIDEdit = MakeOwnedObject<TFarEdit>(this);
       OwnerIDEdit->SetWidth(8);
       OwnerIDEdit->SetFixed(true);
       OwnerIDEdit->SetMask("99999999");
 
       SetNextItemPosition(ipRight);
 
-      OwnerNameText = new TFarText(this);
+      OwnerNameText = MakeOwnedObject<TFarText>(this);
       OwnerNameText->SetEnabled(false);
     }
     else
     {
-      OwnerComboBox = new TFarComboBox(this);
+      OwnerComboBox = MakeOwnedObject<TFarComboBox>(this);
       OwnerComboBox->SetWidth(20);
       OwnerComboBox->SetEnabled(IsNumericOrText(cpOwner));
       if (UsedUserList.get())
@@ -4903,7 +4903,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetNextItemPosition(ipNewLine);
 
-    Text = new TFarText(this);
+    Text = MakeOwnedObject<TFarText>(this);
     Text->SetCaption(GetMsg(NB_PROPERTIES_GROUP));
     Text->SetEnabled(IsNumericOrText(cpGroup));
 
@@ -4911,19 +4911,19 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     if (IsNumericOnly(cpGroup))
     {
-      GroupIDEdit = new TFarEdit(this);
+      GroupIDEdit = MakeOwnedObject<TFarEdit>(this);
       GroupIDEdit->SetWidth(8);
       GroupIDEdit->SetFixed(true);
       GroupIDEdit->SetMask("99999999");
 
       SetNextItemPosition(ipRight);
 
-      GroupNameText = new TFarText(this);
+      GroupNameText = MakeOwnedObject<TFarText>(this);
       GroupNameText->SetEnabled(false);
     }
     else
     {
-      GroupComboBox = new TFarComboBox(this);
+      GroupComboBox = MakeOwnedObject<TFarComboBox>(this);
       GroupComboBox->SetWidth(20);
       GroupComboBox->SetEnabled(IsNumericOrText(cpGroup));
       if (UsedGroupList.get())
@@ -4933,7 +4933,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     }
     SetNextItemPosition(ipNewLine);
 
-    TFarSeparator * Separator = new TFarSeparator(this);
+    TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
     Separator->SetCaption(GetMsg(NB_PROPERTIES_RIGHTS));
 
     RightsContainer = new TRightsContainer(this, FAnyDirectories,
@@ -4942,10 +4942,10 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     if (FAnyDirectories)
     {
-      Separator = new TFarSeparator(this);
+      Separator = MakeOwnedObject<TFarSeparator>(this);
       Separator->SetPosition(Separator->GetPosition() + RightsContainer->GetTop());
 
-      RecursiveCheck = new TFarCheckBox(this);
+      RecursiveCheck = MakeOwnedObject<TFarCheckBox>(this);
       RecursiveCheck->SetCaption(GetMsg(NB_PROPERTIES_RECURSIVE));
     }
     else
@@ -4955,10 +4955,10 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetNextItemPosition(ipNewLine);
 
-    Separator = new TFarSeparator(this);
+    Separator = MakeOwnedObject<TFarSeparator>(this);
     Separator->SetPosition(CRect.Bottom - 1);
 
-    OkButton = new TFarButton(this);
+    OkButton = MakeOwnedObject<TFarButton>(this);
     OkButton->SetCaption(GetMsg(MSG_BUTTON_OK));
     OkButton->SetDefault(true);
     OkButton->SetResult(brOK);
@@ -4966,7 +4966,7 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetNextItemPosition(ipRight);
 
-    TFarButton * Button = new TFarButton(this);
+    TFarButton * Button = MakeOwnedObject<TFarButton>(this);
     Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
     Button->SetResult(brCancel);
     Button->SetCenterGroup(true);
@@ -5209,7 +5209,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   SetLeft(GetLeft() - 1);
 
-  TFarBox * Box = new TFarBox(GetDialog());
+  TFarBox * Box = MakeOwnedObject<TFarBox>(GetDialog());
   Box->SetLeft(0);
   Box->SetTop(0);
   Box->SetHeight(1);
@@ -5219,7 +5219,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipRight);
 
-  Box = new TFarBox(GetDialog());
+  Box = MakeOwnedObject<TFarBox>(GetDialog());
   Add(Box);
   Box->SetLeft(Box->GetLeft() - 2);
   Box->SetRight(Box->GetRight() + 1);
@@ -5227,7 +5227,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  TMTextButton = new TFarRadioButton(GetDialog());
+  TMTextButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   TMTextButton->SetLeft(1);
   Add(TMTextButton);
   int32_t TMTop = TMTextButton->GetTop();
@@ -5235,25 +5235,25 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   TMTextButton->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoTransferMode));
 
-  TMBinaryButton = new TFarRadioButton(GetDialog());
+  TMBinaryButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   TMBinaryButton->SetLeft(1);
   Add(TMBinaryButton);
   TMBinaryButton->SetCaption(GetMsg(NB_TRANSFER_MODE_BINARY));
   TMBinaryButton->SetEnabled(TMTextButton->GetEnabled());
 
-  TMAutomaticButton = new TFarRadioButton(GetDialog());
+  TMAutomaticButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   TMAutomaticButton->SetLeft(1);
   Add(TMAutomaticButton);
   TMAutomaticButton->SetCaption(GetMsg(NB_TRANSFER_MODE_AUTOMATIC));
   TMAutomaticButton->SetEnabled(TMTextButton->GetEnabled());
 
-  TFarText * Text = new TFarText(GetDialog());
+  TFarText * Text = MakeOwnedObject<TFarText>(GetDialog());
   Text->SetLeft(1);
   Add(Text);
   Text->SetCaption(GetMsg(NB_TRANSFER_MODE_MASK));
   Text->SetEnabledDependency(TMAutomaticButton);
 
-  AsciiFileMaskEdit = new TFarEdit(GetDialog());
+  AsciiFileMaskEdit = MakeOwnedObject<TFarEdit>(GetDialog());
   AsciiFileMaskEdit->SetLeft(1);
   Add(AsciiFileMaskEdit);
   AsciiFileMaskEdit->SetEnabledDependency(TMAutomaticButton);
@@ -5261,13 +5261,13 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   AsciiFileMaskEdit->SetHistory(ASCII_MASK_HISTORY);
   AsciiFileMaskEdit->SetOnExit(nb::bind(&TCopyParamsContainer::ValidateMaskComboExit, this));
 
-  Box = new TFarBox(GetDialog());
+  Box = MakeOwnedObject<TFarBox>(GetDialog());
   Box->SetLeft(0);
   Add(Box);
   Box->SetWidth(TMWidth + 2);
   Box->SetCaption(GetMsg(NB_TRANSFER_FILENAME_MODIFICATION));
 
-  CCNoChangeButton = new TFarRadioButton(GetDialog());
+  CCNoChangeButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   CCNoChangeButton->SetLeft(1);
   Add(CCNoChangeButton);
   CCNoChangeButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_NOCHANGE));
@@ -5275,14 +5275,14 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipRight);
 
-  CCUpperCaseButton = new TFarRadioButton(GetDialog());
+  CCUpperCaseButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   Add(CCUpperCaseButton);
   CCUpperCaseButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_UPPERCASE));
   CCUpperCaseButton->SetEnabled(CCNoChangeButton->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  CCFirstUpperCaseButton = new TFarRadioButton(GetDialog());
+  CCFirstUpperCaseButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   CCFirstUpperCaseButton->SetLeft(1);
   Add(CCFirstUpperCaseButton);
   CCFirstUpperCaseButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_FIRSTUPPERCASE));
@@ -5290,14 +5290,14 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipRight);
 
-  CCLowerCaseButton = new TFarRadioButton(GetDialog());
+  CCLowerCaseButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   Add(CCLowerCaseButton);
   CCLowerCaseButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_LOWERCASE));
   CCLowerCaseButton->SetEnabled(CCNoChangeButton->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  CCLowerCaseShortButton = new TFarRadioButton(GetDialog());
+  CCLowerCaseShortButton = MakeOwnedObject<TFarRadioButton>(GetDialog());
   CCLowerCaseShortButton->SetLeft(1);
   Add(CCLowerCaseShortButton);
   CCLowerCaseShortButton->SetCaption(GetMsg(NB_TRANSFER_FILENAME_LOWERCASESHORT));
@@ -5305,20 +5305,20 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipRight);
 
-  ReplaceInvalidCharsCheck = new TFarCheckBox(GetDialog());
+  ReplaceInvalidCharsCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
   Add(ReplaceInvalidCharsCheck);
   ReplaceInvalidCharsCheck->SetCaption(GetMsg(NB_TRANSFER_FILENAME_REPLACE_INVALID));
   ReplaceInvalidCharsCheck->SetEnabled(CCNoChangeButton->GetEnabled());
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  Box = new TFarBox(GetDialog());
+  Box = MakeOwnedObject<TFarBox>(GetDialog());
   Box->SetLeft(0);
   Add(Box);
   Box->SetWidth(TMWidth + 2);
   Box->SetCaption(GetMsg(NB_TRANSFER_DOWNLOAD_OPTIONS));
 
-  PreserveReadOnlyCheck = new TFarCheckBox(GetDialog());
+  PreserveReadOnlyCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
   Add(PreserveReadOnlyCheck);
   PreserveReadOnlyCheck->SetLeft(1);
   PreserveReadOnlyCheck->SetCaption(GetMsg(NB_TRANSFER_PRESERVE_READONLY));
@@ -5326,7 +5326,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveReadOnly));
   int32_t TMBottom = PreserveReadOnlyCheck->GetTop();
 
-  PreserveRightsCheck = new TFarCheckBox(GetDialog());
+  PreserveRightsCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
   Add(PreserveRightsCheck);
   PreserveRightsCheck->SetLeft(TMWidth + 3);
   PreserveRightsCheck->SetTop(TMTop);
@@ -5342,13 +5342,13 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   RightsContainer->SetLeft(PreserveRightsCheck->GetActualBounds().Left);
   RightsContainer->SetTop(PreserveRightsCheck->GetActualBounds().Top + 1);
 
-  IgnorePermErrorsCheck = new TFarCheckBox(GetDialog());
+  IgnorePermErrorsCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
   Add(IgnorePermErrorsCheck);
   IgnorePermErrorsCheck->SetLeft(PreserveRightsCheck->GetLeft());
   IgnorePermErrorsCheck->SetTop(TMTop + 6);
   IgnorePermErrorsCheck->SetCaption(GetMsg(NB_TRANSFER_PRESERVE_PERM_ERRORS));
 
-  ClearArchiveCheck = new TFarCheckBox(GetDialog());
+  ClearArchiveCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
   ClearArchiveCheck->SetLeft(IgnorePermErrorsCheck->GetLeft());
   Add(ClearArchiveCheck);
   ClearArchiveCheck->SetTop(TMTop + 7);
@@ -5357,7 +5357,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
     FLAGCLEAR(FOptions, coTempTransfer) &&
     FLAGCLEAR(CopyParamAttrs, cpaNoClearArchive));
 
-  Box = new TFarBox(GetDialog());
+  Box = MakeOwnedObject<TFarBox>(GetDialog());
   Box->SetTop(TMTop + 8);
   Add(Box);
   Box->SetBottom(Box->GetTop());
@@ -5365,33 +5365,33 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
   Box->SetWidth(Box->GetWidth() + 2);
   Box->SetCaption(GetMsg(NB_TRANSFER_COMMON_OPTIONS));
 
-  PreserveTimeCheck = new TFarCheckBox(GetDialog());
+  PreserveTimeCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
   Add(PreserveTimeCheck);
   PreserveTimeCheck->SetLeft(TMWidth + 3);
   PreserveTimeCheck->SetCaption(GetMsg(NB_TRANSFER_PRESERVE_TIMESTAMP));
   PreserveTimeCheck->SetEnabled(
     FLAGCLEAR(CopyParamAttrs, cpaNoPreserveTime));
 
-  CalculateSizeCheck = new TFarCheckBox(GetDialog());
+  CalculateSizeCheck = MakeOwnedObject<TFarCheckBox>(GetDialog());
   CalculateSizeCheck->SetCaption(GetMsg(NB_TRANSFER_CALCULATE_SIZE));
   Add(CalculateSizeCheck);
   CalculateSizeCheck->SetLeft(TMWidth + 3);
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  TFarSeparator * Separator = new TFarSeparator(GetDialog());
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(GetDialog());
   Add(Separator);
   Separator->SetPosition(TMBottom + 1);
   Separator->SetCaption(GetMsg(NB_TRANSFER_OTHER));
 
-  FileMaskText = new TFarText(GetDialog());
+  FileMaskText = MakeOwnedObject<TFarText>(GetDialog());
   FileMaskText->SetLeft(1);
   Add(FileMaskText);
   FileMaskText->SetCaption(GetMsg(NB_TRANSFER_FILE_MASK));
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  FileMaskEdit = new TFarEdit(GetDialog());
+  FileMaskEdit = MakeOwnedObject<TFarEdit>(GetDialog());
   FileMaskEdit->SetLeft(1);
   Add(FileMaskEdit);
   FileMaskEdit->SetWidth(TMWidth);
@@ -5401,14 +5401,14 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  Text = new TFarText(GetDialog());
+  Text = MakeOwnedObject<TFarText>(GetDialog());
   Add(Text);
   Text->SetCaption(GetMsg(NB_TRANSFER_SPEED));
   Text->MoveAt(TMWidth + 3, FileMaskText->GetTop());
 
   GetDialog()->SetNextItemPosition(ipRight);
 
-  SpeedCombo = new TFarComboBox(GetDialog());
+  SpeedCombo = MakeOwnedObject<TFarComboBox>(GetDialog());
   Add(SpeedCombo);
   SpeedCombo->GetItems()->Add(LoadStr(SPEED_UNLIMITED));
   int32_t Speed = 1024;
@@ -5421,7 +5421,7 @@ TCopyParamsContainer::TCopyParamsContainer(TFarDialog * ADialog,
 
   GetDialog()->SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(GetDialog());
+  Separator = MakeOwnedObject<TFarSeparator>(GetDialog());
   Separator->SetPosition(FileMaskEdit->GetBottom() + 1);
   Separator->SetLeft(0);
   Add(Separator);
@@ -5673,36 +5673,36 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     }
     DEBUG_PRINTF("Prompt: %s", Prompt);
 
-    TFarText * Text = new TFarText(this);
+    TFarText * Text = MakeOwnedObject<TFarText>(this);
     Text->SetCaption(Prompt);
 
-    DirectoryEdit = new TFarEdit(this);
+    DirectoryEdit = MakeOwnedObject<TFarEdit>(this);
     DirectoryEdit->SetHistory(ToRemote ? REMOTE_DIR_HISTORY : "Copy");
   }
 
-  TFarSeparator * Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_COPY_PARAM_GROUP));
 
-  CopyParamLister = new TFarLister(this);
+  CopyParamLister = MakeOwnedObject<TFarLister>(this);
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
   CopyParamLister->SetOnMouseClick(nb::bind(&TCopyDialog::CopyParamListerClick, this));
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
-    NewerOnlyCheck = new TFarCheckBox(this);
+    NewerOnlyCheck = MakeOwnedObject<TFarCheckBox>(this);
     NewerOnlyCheck->SetCaption(GetMsg(NB_TRANSFER_NEWER_ONLY));
     NewerOnlyCheck->SetEnabled(FLAGCLEAR(FOptions, coDisableNewerOnly));
 
-    QueueCheck = new TFarCheckBox(this);
+    QueueCheck = MakeOwnedObject<TFarCheckBox>(this);
     QueueCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE));
 
     SetNextItemPosition(ipRight);
 
-    QueueNoConfirmationCheck = new TFarCheckBox(this);
+    QueueNoConfirmationCheck = MakeOwnedObject<TFarCheckBox>(this);
     QueueNoConfirmationCheck->SetCaption(GetMsg(NB_TRANSFER_QUEUE_NO_CONFIRMATION));
     QueueNoConfirmationCheck->SetEnabledDependency(QueueCheck);
 
@@ -5713,12 +5713,12 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
     DebugAssert(FLAGSET(FOptions, coDisableNewerOnly));
   }
 
-  SaveSettingsCheck = new TFarCheckBox(this);
+  SaveSettingsCheck = MakeOwnedObject<TFarCheckBox>(this);
   SaveSettingsCheck->SetCaption(GetMsg(NB_TRANSFER_REUSE_SETTINGS));
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
@@ -5726,7 +5726,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipRight);
 
-  Button = new TFarButton(this);
+  Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_OK));
   Button->SetDefault(true);
   Button->SetResult(brOK);
@@ -5734,7 +5734,7 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetEnabledDependency(
     ((Options & coTempTransfer) == 0) ? DirectoryEdit : nullptr);
 
-  Button = new TFarButton(this);
+  Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
@@ -5936,7 +5936,7 @@ bool TWinSCPPlugin::CopyParamCustomDialog(TCopyParamType & CopyParam,
   return CopyParamDialog(GetMsg(NB_COPY_PARAM_CUSTOM_TITLE), CopyParam, CopyParamAttrs);
 }
 
-class TLinkDialog : TFarDialog
+class TLinkDialog final : public TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -5965,30 +5965,30 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
 
   SetCaption(GetMsg(Edit ? NB_STRING_LINK_EDIT_CAPTION : NB_STRING_LINK_ADD_CAPTION));
 
-  TFarText * Text = new TFarText(this);
+  TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_STRING_LINK_FILE));
   Text->SetEnabled(!Edit);
 
-  FileNameEdit = new TFarEdit(this);
+  FileNameEdit = MakeOwnedObject<TFarEdit>(this);
   FileNameEdit->SetEnabled(!Edit);
   FileNameEdit->SetHistory(LINK_FILENAME_HISTORY);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_STRING_LINK_POINT_TO));
 
-  PointToEdit = new TFarEdit(this);
+  PointToEdit = MakeOwnedObject<TFarEdit>(this);
   PointToEdit->SetHistory(LINK_POINT_TO_HISTORY);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  SymbolicCheck = new TFarCheckBox(this);
+  SymbolicCheck = MakeOwnedObject<TFarCheckBox>(this);
   SymbolicCheck->SetCaption(GetMsg(NB_STRING_LINK_SYMLINK));
   SymbolicCheck->SetEnabled(AllowSymbolic && !Edit);
 
-  TFarSeparator * Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(CRect.Bottom - 1);
 
-  OkButton = new TFarButton(this);
+  OkButton = MakeOwnedObject<TFarButton>(this);
   OkButton->SetCaption(GetMsg(MSG_BUTTON_OK));
   OkButton->SetDefault(true);
   OkButton->SetResult(brOK);
@@ -5996,7 +5996,7 @@ TLinkDialog::TLinkDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipRight);
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
@@ -6042,7 +6042,7 @@ using TFeedFileSystemDataEvent = nb::FastDelegate3<void,
   TObject * /*Control*/, int32_t /*Label*/, const UnicodeString & /*Value*/>;
 
 class TLabelList;
-class TFileSystemInfoDialog final : TTabbedDialog
+class TFileSystemInfoDialog final : public TTabbedDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -6127,17 +6127,17 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetSize(TPoint(73, 22));
   SetCaption(GetMsg(NB_SERVER_PROTOCOL_INFORMATION));
 
-  TTabButton * Tab = new TTabButton(this);
+  TTabButton * Tab = MakeOwnedObject<TTabButton>(this);
   Tab->SetTabName(GetMsg(NB_SERVER_PROTOCOL_TAB_PROTOCOL));
   Tab->SetTab(tabProtocol);
 
   SetNextItemPosition(ipRight);
 
-  Tab = new TTabButton(this);
+  Tab = MakeOwnedObject<TTabButton>(this);
   Tab->SetTabName(GetMsg(NB_SERVER_PROTOCOL_TAB_CAPABILITIES));
   Tab->SetTab(tabCapabilities);
 
-  SpaceAvailableTab = new TTabButton(this);
+  SpaceAvailableTab = MakeOwnedObject<TTabButton>(this);
   SpaceAvailableTab->SetTabName(GetMsg(NB_SERVER_PROTOCOL_TAB_SPACE_AVAILABLE));
   SpaceAvailableTab->SetTab(tabSpaceAvailable);
 
@@ -6146,33 +6146,33 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
   SetNextItemPosition(ipNewLine);
   SetDefaultGroup(tabProtocol);
 
-  TFarSeparator * Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_SERVER_INFORMATION_GROUP));
   const int32_t GroupTop = Separator->GetTop();
 
   ServerLabels = CreateLabelArray(5);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  HostKeyFingerprintLabel = new TFarText(this);
+  HostKeyFingerprintLabel = MakeOwnedObject<TFarText>(this);
   HostKeyFingerprintLabel->SetCaption(GetMsg(NB_SERVER_HOST_KEY));
-  HostKeyFingerprintEdit = new TFarEdit(this);
+  HostKeyFingerprintEdit = MakeOwnedObject<TFarEdit>(this);
   HostKeyFingerprintEdit->SetReadOnly(true);
 
   // Protocol tab
 
   SetDefaultGroup(tabCapabilities);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_PROTOCOL_INFORMATION_GROUP));
   Separator->SetPosition(GroupTop);
 
   ProtocolLabels = CreateLabelArray(9);
 
-  InfoSeparator = new TFarSeparator(this);
+  InfoSeparator = MakeOwnedObject<TFarSeparator>(this);
   InfoSeparator->SetCaption(GetMsg(NB_PROTOCOL_INFO_GROUP));
 
-  InfoLister = new TFarLister(this);
+  InfoLister = MakeOwnedObject<TFarLister>(this);
   InfoLister->SetHeight(4);
   InfoLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   // Right edge is adjusted in FeedControls
@@ -6181,26 +6181,26 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   SetDefaultGroup(tabSpaceAvailable);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_SPACE_AVAILABLE_GROUP));
   Separator->SetPosition(GroupTop);
 
-  TFarText * Text = new TFarText(this);
+  TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_SPACE_AVAILABLE_PATH));
 
   SetNextItemPosition(ipRight);
 
-  SpaceAvailablePathEdit = new TFarEdit(this);
+  SpaceAvailablePathEdit = MakeOwnedObject<TFarEdit>(this);
   SpaceAvailablePathEdit->SetRight(-(nb::ToInt32(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE).Length() + 11)));
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_SPACE_AVAILABLE_CHECK_SPACE));
   Button->SetEnabledDependency(SpaceAvailablePathEdit);
   Button->SetOnClick(nb::bind(&TFileSystemInfoDialog::SpaceAvailableButtonClick, this));
 
   SetNextItemPosition(ipNewLine);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
   SpaceAvailableLabels = CreateLabelArray(5);
 
@@ -6208,17 +6208,17 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   SetDefaultGroup(0);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(GetClientRect().Bottom - 1);
 
-  Button = new TFarButton(this);
+  Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_SERVER_PROTOCOL_COPY_CLIPBOARD));
   Button->SetOnClick(nb::bind(&TFileSystemInfoDialog::ClipboardButtonClick, this));
   Button->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
-  OkButton = new TFarButton(this);
+  OkButton = MakeOwnedObject<TFarButton>(this);
   OkButton->SetCaption(GetMsg(MSG_BUTTON_OK));
   OkButton->SetDefault(true);
   OkButton->SetResult(brOK);
@@ -6237,7 +6237,7 @@ TLabelList * TFileSystemInfoDialog::CreateLabelArray(int32_t Count)
   std::unique_ptr<TLabelList> List(std::make_unique<TLabelList>());
   for (int32_t Index = 0; Index < Count; ++Index)
   {
-    List->Add(new TFarText(this));
+    List->Add(MakeOwnedObject<TFarText>(this));
   }
   return List.release();
 }
@@ -6778,57 +6778,57 @@ TApplyCommandDialog::TApplyCommandDialog(TCustomFarPlugin * AFarPlugin) :
   SetSize(TPoint(76, 18));
   SetCaption(GetMsg(NB_APPLY_COMMAND_TITLE));
 
-  TFarText * Text = new TFarText(this);
+  TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_APPLY_COMMAND_PROMPT));
 
-  CommandEdit = new TFarEdit(this);
+  CommandEdit = MakeOwnedObject<TFarEdit>(this);
   CommandEdit->SetHistory(APPLY_COMMAND_HISTORY);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT1));
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT2));
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT3));
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT4));
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT5));
-  LocalHintText = new TFarText(this);
+  LocalHintText = MakeOwnedObject<TFarText>(this);
   LocalHintText->SetCaption(GetMsg(NB_APPLY_COMMAND_HINT_LOCAL));
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  RemoteCommandButton = new TFarRadioButton(this);
+  RemoteCommandButton = MakeOwnedObject<TFarRadioButton>(this);
   RemoteCommandButton->SetCaption(GetMsg(NB_APPLY_COMMAND_REMOTE_COMMAND));
 
   SetNextItemPosition(ipRight);
 
-  LocalCommandButton = new TFarRadioButton(this);
+  LocalCommandButton = MakeOwnedObject<TFarRadioButton>(this);
   LocalCommandButton->SetCaption(GetMsg(NB_APPLY_COMMAND_LOCAL_COMMAND));
 
   LocalHintText->SetEnabledDependency(LocalCommandButton);
 
   SetNextItemPosition(ipNewLine);
 
-  ApplyToDirectoriesCheck = new TFarCheckBox(this);
+  ApplyToDirectoriesCheck = MakeOwnedObject<TFarCheckBox>(this);
   ApplyToDirectoriesCheck->SetCaption(
     GetMsg(NB_APPLY_COMMAND_APPLY_TO_DIRECTORIES));
 
   SetNextItemPosition(ipRight);
 
-  RecursiveCheck = new TFarCheckBox(this);
+  RecursiveCheck = MakeOwnedObject<TFarCheckBox>(this);
   RecursiveCheck->SetCaption(GetMsg(NB_APPLY_COMMAND_RECURSIVE));
 
   SetNextItemPosition(ipNewLine);
 
-  ShowResultsCheck = new TFarCheckBox(this);
+  ShowResultsCheck = MakeOwnedObject<TFarCheckBox>(this);
   ShowResultsCheck->SetCaption(GetMsg(NB_APPLY_COMMAND_SHOW_RESULTS));
   ShowResultsCheck->SetEnabledDependency(RemoteCommandButton);
 
   SetNextItemPosition(ipRight);
 
-  CopyResultsCheck = new TFarCheckBox(this);
+  CopyResultsCheck = MakeOwnedObject<TFarCheckBox>(this);
   CopyResultsCheck->SetCaption(GetMsg(NB_APPLY_COMMAND_COPY_RESULTS));
   CopyResultsCheck->SetEnabledDependency(RemoteCommandButton);
 
@@ -6967,100 +6967,100 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   SetSize(TPoint(78, 25));
   SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_TITLE));
 
-  TFarText * Text = new TFarText(this);
+  TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_LOCAL_LABEL));
 
-  LocalDirectoryEdit = new TFarEdit(this);
+  LocalDirectoryEdit = MakeOwnedObject<TFarEdit>(this);
   LocalDirectoryEdit->SetHistory(LOCAL_SYNC_HISTORY);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_REMOTE_LABEL));
 
-  RemoteDirectoryEdit = new TFarEdit(this);
+  RemoteDirectoryEdit = MakeOwnedObject<TFarEdit>(this);
   RemoteDirectoryEdit->SetHistory(REMOTE_SYNC_HISTORY);
 
-  TFarSeparator * Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_DIRECTION_GROUP));
 
-  SynchronizeBothButton = new TFarRadioButton(this);
+  SynchronizeBothButton = MakeOwnedObject<TFarRadioButton>(this);
   SynchronizeBothButton->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_BOTH));
 
   SetNextItemPosition(ipRight);
 
-  SynchronizeRemoteButton = new TFarRadioButton(this);
+  SynchronizeRemoteButton = MakeOwnedObject<TFarRadioButton>(this);
   SynchronizeRemoteButton->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_REMOTE));
 
-  SynchronizeLocalButton = new TFarRadioButton(this);
+  SynchronizeLocalButton = MakeOwnedObject<TFarRadioButton>(this);
   SynchronizeLocalButton->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_LOCAL));
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_MODE_GROUP));
 
-  SynchronizeFilesButton = new TFarRadioButton(this);
+  SynchronizeFilesButton = MakeOwnedObject<TFarRadioButton>(this);
   SynchronizeFilesButton->SetCaption(GetMsg(NB_SYNCHRONIZE_SYNCHRONIZE_FILES));
 
   SetNextItemPosition(ipRight);
 
-  MirrorFilesButton = new TFarRadioButton(this);
+  MirrorFilesButton = MakeOwnedObject<TFarRadioButton>(this);
   MirrorFilesButton->SetCaption(GetMsg(NB_SYNCHRONIZE_MIRROR_FILES));
 
-  SynchronizeTimestampsButton = new TFarRadioButton(this);
+  SynchronizeTimestampsButton = MakeOwnedObject<TFarRadioButton>(this);
   SynchronizeTimestampsButton->SetCaption(GetMsg(NB_SYNCHRONIZE_SYNCHRONIZE_TIMESTAMPS));
   SynchronizeTimestampsButton->SetEnabled(FLAGCLEAR(Options, fsoDisableTimestamp));
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_GROUP));
 
-  SynchronizeDeleteCheck = new TFarCheckBox(this);
+  SynchronizeDeleteCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeDeleteCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_DELETE));
 
   SetNextItemPosition(ipRight);
 
-  SynchronizeExistingOnlyCheck = new TFarCheckBox(this);
+  SynchronizeExistingOnlyCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeExistingOnlyCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_EXISTING_ONLY));
   SynchronizeExistingOnlyCheck->SetEnabledDependencyNegative(SynchronizeTimestampsButton);
 
   SetNextItemPosition(ipNewLine);
 
-  SynchronizePreviewChangesCheck = new TFarCheckBox(this);
+  SynchronizePreviewChangesCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizePreviewChangesCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_PREVIEW_CHANGES));
 
   SetNextItemPosition(ipRight);
 
-  SynchronizeSelectedOnlyCheck = new TFarCheckBox(this);
+  SynchronizeSelectedOnlyCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeSelectedOnlyCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_SELECTED_ONLY));
   SynchronizeSelectedOnlyCheck->SetEnabled(FLAGSET(FOptions, fsoAllowSelectedOnly));
 
   SetNextItemPosition(ipNewLine);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_FULL_SYNCHRONIZE_CRITERIONS_GROUP));
 
-  SynchronizeByTimeCheck = new TFarCheckBox(this);
+  SynchronizeByTimeCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeByTimeCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_BY_TIME));
 
   SetNextItemPosition(ipRight);
 
-  SynchronizeBySizeCheck = new TFarCheckBox(this);
+  SynchronizeBySizeCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeBySizeCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_BY_SIZE));
   SynchronizeBySizeCheck->SetEnabledDependencyNegative(SynchronizeBothButton);
 
   SetNextItemPosition(ipNewLine);
 
-  new TFarSeparator(this);
+  MakeOwnedObject<TFarSeparator>(this);
 
-  SaveSettingsCheck = new TFarCheckBox(this);
+  SaveSettingsCheck = MakeOwnedObject<TFarCheckBox>(this);
   SaveSettingsCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_REUSE_SETTINGS));
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetGroup(1);
   Separator->SetCaption(GetMsg(NB_COPY_PARAM_GROUP));
 
-  CopyParamLister = new TFarLister(this);
+  CopyParamLister = MakeOwnedObject<TFarLister>(this);
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
@@ -7069,10 +7069,10 @@ TFullSynchronizeDialog::TFullSynchronizeDialog(
   // Right edge is adjusted in Change
 
   // Align buttons with bottom of the window
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(-4);
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
@@ -7389,9 +7389,9 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
 {
   SetCaption(GetMsg(NB_CHECKLIST_TITLE));
 
-  Header = new TFarText(this);
+  Header = MakeOwnedObject<TFarText>(this);
 
-  ListBox = new TFarListBox(this);
+  ListBox = MakeOwnedObject<TFarListBox>(this);
   ListBox->SetNoBox(true);
   // align list with bottom of the window
   ListBox->SetBottom(-5);
@@ -7406,23 +7406,23 @@ TSynchronizeChecklistDialog::TSynchronizeChecklistDialog(
   }
 
   // align buttons with bottom of the window
-  ButtonSeparator = new TFarSeparator(this);
+  ButtonSeparator = MakeOwnedObject<TFarSeparator>(this);
   ButtonSeparator->SetTop(-4);
   ButtonSeparator->SetBottom(ButtonSeparator->GetTop());
 
-  CheckAllButton = new TFarButton(this);
+  CheckAllButton = MakeOwnedObject<TFarButton>(this);
   CheckAllButton->SetCaption(GetMsg(NB_CHECKLIST_CHECK_ALL));
   CheckAllButton->SetCenterGroup(true);
   CheckAllButton->SetOnClick(nb::bind(&TSynchronizeChecklistDialog::CheckAllButtonClick, this));
 
   SetNextItemPosition(ipRight);
 
-  UncheckAllButton = new TFarButton(this);
+  UncheckAllButton = MakeOwnedObject<TFarButton>(this);
   UncheckAllButton->SetCaption(GetMsg(NB_CHECKLIST_UNCHECK_ALL));
   UncheckAllButton->SetCenterGroup(true);
   UncheckAllButton->SetOnClick(nb::bind(&TSynchronizeChecklistDialog::CheckAllButtonClick, this));
 
-  VideoModeButton = new TFarButton(this);
+  VideoModeButton = MakeOwnedObject<TFarButton>(this);
   VideoModeButton->SetCenterGroup(true);
   VideoModeButton->SetOnClick(nb::bind(&TSynchronizeChecklistDialog::VideoModeButtonClick, this));
 
@@ -7935,7 +7935,7 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   return Result;
 }
 
-class TSynchronizeDialog : TFarDialog
+class TSynchronizeDialog final : public TFarDialog
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -8015,58 +8015,58 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
   SetDefaultGroup(1);
 
-  TFarText * Text = new TFarText(this);
+  TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_SYNCHRONIZE_LOCAL_LABEL));
 
-  LocalDirectoryEdit = new TFarEdit(this);
+  LocalDirectoryEdit = MakeOwnedObject<TFarEdit>(this);
   LocalDirectoryEdit->SetHistory(LOCAL_SYNC_HISTORY);
 
-  Text = new TFarText(this);
+  Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_SYNCHRONIZE_REMOTE_LABEL));
 
-  RemoteDirectoryEdit = new TFarEdit(this);
+  RemoteDirectoryEdit = MakeOwnedObject<TFarEdit>(this);
   RemoteDirectoryEdit->SetHistory(REMOTE_SYNC_HISTORY);
 
-  TFarSeparator * Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_SYNCHRONIZE_GROUP));
   Separator->SetGroup(0);
 
-  SynchronizeDeleteCheck = new TFarCheckBox(this);
+  SynchronizeDeleteCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeDeleteCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_DELETE));
 
   SetNextItemPosition(ipRight);
 
-  SynchronizeExistingOnlyCheck = new TFarCheckBox(this);
+  SynchronizeExistingOnlyCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeExistingOnlyCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_EXISTING_ONLY));
 
   SetNextItemPosition(ipNewLine);
 
-  SynchronizeRecursiveCheck = new TFarCheckBox(this);
+  SynchronizeRecursiveCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeRecursiveCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_RECURSIVE));
 
   SetNextItemPosition(ipRight);
 
-  SynchronizeSelectedOnlyCheck = new TFarCheckBox(this);
+  SynchronizeSelectedOnlyCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeSelectedOnlyCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_SELECTED_ONLY));
   // have more complex enable rules
   SynchronizeSelectedOnlyCheck->SetGroup(0);
 
   SetNextItemPosition(ipNewLine);
 
-  SynchronizeSynchronizeCheck = new TFarCheckBox(this);
+  SynchronizeSynchronizeCheck = MakeOwnedObject<TFarCheckBox>(this);
   SynchronizeSynchronizeCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_SYNCHRONIZE));
   SynchronizeSynchronizeCheck->SetAllowGrayed(true);
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetGroup(0);
 
-  SaveSettingsCheck = new TFarCheckBox(this);
+  SaveSettingsCheck = MakeOwnedObject<TFarCheckBox>(this);
   SaveSettingsCheck->SetCaption(GetMsg(NB_SYNCHRONIZE_REUSE_SETTINGS));
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetCaption(GetMsg(NB_COPY_PARAM_GROUP));
 
-  CopyParamLister = new TFarLister(this);
+  CopyParamLister = MakeOwnedObject<TFarLister>(this);
   CopyParamLister->SetHeight(3);
   CopyParamLister->SetLeft(GetBorderBox()->GetLeft() + 1);
   CopyParamLister->SetTabStop(false);
@@ -8076,10 +8076,10 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
   SetDefaultGroup(0);
 
   // align buttons with bottom of the window
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->SetPosition(-4);
 
-  TFarButton * Button = new TFarButton(this);
+  TFarButton * Button = MakeOwnedObject<TFarButton>(this);
   Button->SetCaption(GetMsg(NB_TRANSFER_SETTINGS_BUTTON));
   Button->SetResult(-1);
   Button->SetCenterGroup(true);
@@ -8087,20 +8087,20 @@ TSynchronizeDialog::TSynchronizeDialog(TCustomFarPlugin * AFarPlugin,
 
   SetNextItemPosition(ipRight);
 
-  StartButton = new TFarButton(this);
+  StartButton = MakeOwnedObject<TFarButton>(this);
   StartButton->SetCaption(GetMsg(NB_SYNCHRONIZE_START_BUTTON));
   StartButton->SetDefault(true);
   StartButton->SetCenterGroup(true);
   StartButton->SetOnClick(nb::bind(&TSynchronizeDialog::StartButtonClick, this));
 
-  StopButton = new TFarButton(this);
+  StopButton = MakeOwnedObject<TFarButton>(this);
   StopButton->SetCaption(GetMsg(NB_SYNCHRONIZE_STOP_BUTTON));
   StopButton->SetCenterGroup(true);
   StopButton->SetOnClick(nb::bind(&TSynchronizeDialog::StopButtonClick, this));
 
   SetNextItemPosition(ipRight);
 
-  CloseButton = new TFarButton(this);
+  CloseButton = MakeOwnedObject<TFarButton>(this);
   CloseButton->SetCaption(GetMsg(MSG_BUTTON_CLOSE));
   CloseButton->SetResult(brCancel);
   CloseButton->SetCenterGroup(true);
@@ -8477,38 +8477,38 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
 
   SetCaption(GetMsg(NB_QUEUE_TITLE));
 
-  TFarText * Text = new TFarText(this);
+  TFarText * Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_QUEUE_HEADER));
 
-  TFarSeparator * Separator = new TFarSeparator(this);
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(this);
   const int32_t ListTop = Separator->GetBottom();
 
-  Separator = new TFarSeparator(this);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
   Separator->Move(0, ListHeight);
 
-  ExecuteButton = new TFarButton(this);
+  ExecuteButton = MakeOwnedObject<TFarButton>(this);
   ExecuteButton->SetCaption(GetMsg(NB_QUEUE_EXECUTE));
   ExecuteButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   ExecuteButton->SetCenterGroup(true);
 
   SetNextItemPosition(ipRight);
 
-  DeleteButton = new TFarButton(this);
+  DeleteButton = MakeOwnedObject<TFarButton>(this);
   DeleteButton->SetCaption(GetMsg(NB_QUEUE_DELETE));
   DeleteButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   DeleteButton->SetCenterGroup(true);
 
-  MoveUpButton = new TFarButton(this);
+  MoveUpButton = MakeOwnedObject<TFarButton>(this);
   MoveUpButton->SetCaption(GetMsg(NB_QUEUE_MOVE_UP));
   MoveUpButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   MoveUpButton->SetCenterGroup(true);
 
-  MoveDownButton = new TFarButton(this);
+  MoveDownButton = MakeOwnedObject<TFarButton>(this);
   MoveDownButton->SetCaption(GetMsg(NB_QUEUE_MOVE_DOWN));
   MoveDownButton->SetOnClick(nb::bind(&TQueueDialog::OperationButtonClick, this));
   MoveDownButton->SetCenterGroup(true);
 
-  CloseButton = new TFarButton(this);
+  CloseButton = MakeOwnedObject<TFarButton>(this);
   CloseButton->SetCaption(GetMsg(NB_QUEUE_CLOSE));
   CloseButton->SetResult(brCancel);
   CloseButton->SetCenterGroup(true);
@@ -8516,7 +8516,7 @@ TQueueDialog::TQueueDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin,
 
   SetNextItemPosition(ipNewLine);
 
-  QueueListBox = new TFarListBox(this);
+  QueueListBox = MakeOwnedObject<TFarListBox>(this);
   QueueListBox->SetTop(ListTop + 1);
   QueueListBox->SetHeight(ListHeight);
   QueueListBox->SetNoBox(true);
@@ -8963,22 +8963,22 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   Dialog->SetCaption(GetMsg(NB_CREATE_FOLDER_TITLE));
   Dialog->SetSize(TPoint(66, 15));
 
-  TFarText * Text = new TFarText(Dialog.get());
+  TFarText * Text = MakeOwnedObject<TFarText>(Dialog.get());
   Text->SetCaption(GetMsg(NB_CREATE_FOLDER_PROMPT));
 
-  TFarEdit * DirectoryEdit = new TFarEdit(Dialog.get());
+  TFarEdit * DirectoryEdit = MakeOwnedObject<TFarEdit>(Dialog.get());
   DirectoryEdit->SetHistory(L"NewFolder");
 
-  TFarSeparator * Separator = new TFarSeparator(Dialog.get());
+  TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(Dialog.get());
   Separator->SetCaption(GetMsg(NB_CREATE_FOLDER_ATTRIBUTES));
 
-  TFarCheckBox * SetRightsCheck = new TFarCheckBox(Dialog.get());
+  TFarCheckBox * SetRightsCheck = MakeOwnedObject<TFarCheckBox>(Dialog.get());
   SetRightsCheck->SetCaption(GetMsg(NB_CREATE_FOLDER_SET_RIGHTS));
 
   TRightsContainer * RightsContainer = new TRightsContainer(Dialog.get(), false, true,
     true, SetRightsCheck);
 
-  TFarCheckBox * SaveSettingsCheck = new TFarCheckBox(Dialog.get());
+  TFarCheckBox * SaveSettingsCheck = MakeOwnedObject<TFarCheckBox>(Dialog.get());
   SaveSettingsCheck->SetCaption(GetMsg(NB_CREATE_FOLDER_REUSE_SETTINGS));
   SaveSettingsCheck->Move(0, 6);
 
