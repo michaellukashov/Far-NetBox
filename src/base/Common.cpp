@@ -3998,11 +3998,13 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
     }
     else
     {
+#if 0
       const TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
+#endif // #if 0
       uint16_t Hour, Min, Sec, Dummy;
       DecodeTime(DateTime, Hour, Min, Sec, Dummy);
       const int32_t TotalHours = nb::ToInt32(Hour) + (Days * HoursPerDay);
-      Result = FORMAT(L"%d%s%.2d%s%.2d", TotalHours, FormatSettings.TimeSeparator, Min, FormatSettings.TimeSeparator, Sec);
+      Result = FORMAT(L"%d:%.2d:%.2d", TotalHours, Min, Sec);
     }
   }
   return Result;
