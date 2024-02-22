@@ -788,7 +788,21 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
       // Control(FCTL_CLOSEPLUGIN) does not seem to close plugin when called from
       // ProcessPanelEvent(FE_IDLE). So if TTerminal::Idle() causes session to close
       // we must count on having ProcessPanelEvent(FE_IDLE) called again.
-      FTerminal->Idle();
+      try
+      {
+        FTerminal->Idle();
+      }
+      catch (EConnectionFatal & E)
+      {
+        if (FTerminal->QueryReopen(&E, 0, nullptr))
+        {
+          UpdatePanel();
+        }
+        else
+        {
+          ClosePanel();
+        }
+      }
       if (FQueue != nullptr)
       {
         FQueue->Idle();
