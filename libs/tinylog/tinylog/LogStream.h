@@ -53,7 +53,7 @@ private:
   struct tm tm_base_{};
   pthread_mutex_t & mutex_;
   pthread_cond_t & cond_;
-  bool & already_swap_;
+  bool & drain_buffer_;
 };
 
 } // namespace tinylog
