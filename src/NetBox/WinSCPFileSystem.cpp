@@ -808,13 +808,7 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
       }
     }
   }
-  else
-  {
-    if (Event == FE_CLOSE && !FClosed)
-    {
-      ClosePanel();
-    }
-  }
+  // otherwise, don't call ClosePanel upon receiving FE_CLOSE
   return Result;
 }
 
