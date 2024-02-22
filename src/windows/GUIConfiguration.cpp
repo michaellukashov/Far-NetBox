@@ -968,12 +968,12 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
 LCID TGUIConfiguration::InternalLocale()
 {
   LCID Result{0};
-  void * FileInfo = GetApplicationInfo();
+  void * FileInfo = GetApplicationInfo();  // Sets TConfiguration::FApplicationInfo
   if (FileInfo && GetTranslationCount(FileInfo) > 0)
   {
     const TTranslation Translation = GetTranslation(FileInfo, 0);
     Result = MAKELANGID(PRIMARYLANGID(Translation.Language), SUBLANG_DEFAULT);
-    FreeFileInfo(FileInfo);
+    // FreeFileInfo(FileInfo) - do not free here because of GetApplicationInfo()
   }
   else
   {
