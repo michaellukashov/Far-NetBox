@@ -483,11 +483,11 @@ void QuickSort(nb::vector_t<O *> & SortList, int32_t L, int32_t R,
 }
 
 class TStringList;
-using TStringListSortCompare = int32_t (TStringList * List, int32_t Index1, int32_t Index2);
+using TStringListSortCompare = int32_t (const TStringList * List, int32_t Index1, int32_t Index2);
 
 class NB_CORE_EXPORT TStringList : public TStrings
 {
-  friend int32_t StringListCompareStrings(TStringList * List, int32_t Index1, int32_t Index2);
+  friend int32_t StringListCompareStrings(const TStringList * List, int32_t Index1, int32_t Index2);
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TStringList); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStringList) || TStrings::is(Kind); }
@@ -866,7 +866,7 @@ public:
   TMemoryStream() noexcept;
   virtual ~TMemoryStream() noexcept override;
   virtual int64_t Read(void * Buffer, int64_t Count) override;
-  virtual int64_t Seek(const int64_t Offset, TSeekOrigin Origin) const override;
+  virtual int64_t Seek(int64_t Offset, TSeekOrigin Origin) const override;
   void SaveToStream(TStream * Stream);
   void SaveToFile(const UnicodeString & AFileName);
 
