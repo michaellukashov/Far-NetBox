@@ -2212,7 +2212,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   nb::ClearStruct(fpd);
   fpd.StructSize = sizeof(fpd);
   fpd.Name = LocalPath.c_str();
-  if (!FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
+  if (!FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, PANEL_PASSIVE))
   {
     Result = false;
   }
@@ -2229,7 +2229,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
       nb::ClearStruct(fpd);
       fpd.StructSize = sizeof(fpd);
       fpd.Name = OldPath.c_str();
-      FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE));
+      FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd, PANEL_PASSIVE);
       Result = false;
     }
     else
