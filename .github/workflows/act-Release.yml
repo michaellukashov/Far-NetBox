@@ -76,21 +76,23 @@ jobs:
           rm ./*.7z || true;
 
       - name: Create Build folder
-        run: cmake -E make_directory build
+        run: |
+          cmake -E make_directory build
 
       - name: Configure CMake
         shell: bash
         working-directory: build
+        #cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} $GITHUB_WORKSPACE/src/NetBox
         run: |
-          #cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} $GITHUB_WORKSPACE/src/NetBox
           cmake -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} -DOPT_CREATE_PLUGIN_DIR=ON $GITHUB_WORKSPACE
 
       - name: Build
         working-directory: build
         shell: bash
+        # cmake --build . --config $BUILD_TYPE
+        # cmake --build . --config $BUILD_TYPE --target all
         run: |
-          # cmake --build . --config $BUILD_TYPE
-          cmake --build . --config $BUILD_TYPE --target all
+          cmake --build . --config $BUILD_TYPE
 
       - name: pack plugin
         shell: bash
