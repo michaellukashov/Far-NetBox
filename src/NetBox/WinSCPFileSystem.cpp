@@ -788,7 +788,21 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
       // Control(FCTL_CLOSEPLUGIN) does not seem to close plugin when called from
       // ProcessPanelEvent(FE_IDLE). So if TTerminal::Idle() causes session to close
       // we must count on having ProcessPanelEvent(FE_IDLE) called again.
-      FTerminal->Idle();
+      try
+      {
+        FTerminal->Idle();
+      }
+      catch (EConnectionFatal & E)
+      {
+        if (FTerminal->QueryReopen(&E, 0, nullptr))
+        {
+          UpdatePanel();
+        }
+        else
+        {
+          ClosePanel();
+        }
+      }
       if (FQueue != nullptr)
       {
         FQueue->Idle();
@@ -808,13 +822,7 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
       }
     }
   }
-  else
-  {
-    if (Event == FE_CLOSE && !FClosed)
-    {
-      ClosePanel();
-    }
-  }
+  // otherwise, don't call ClosePanel upon receiving FE_CLOSE
   return Result;
 }
 
@@ -1096,7 +1104,8 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
     }
 
     // Return to session panel
-    if (Key == VK_RETURN && !Handled && Focused && FLastPath == ROOTDIRECTORY && Focused->GetFileName() == PARENTDIRECTORY)
+    if (Focused && !Handled && ((Key == VK_RETURN) && (Focused->GetFileName() == PARENTDIRECTORY) ||
+         (Key == VK_PRIOR) && (ControlState & CTRLMASK)) && FLastPath == ROOTDIRECTORY)
     {
       SetDirectoryEx(PARENTDIRECTORY, 0);
       if (UpdatePanel())

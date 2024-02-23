@@ -70,8 +70,8 @@ static int32_t NeonProxyAuth(
   }
   else
   {
-    strncpy_s(UserName, NE_ABUFSIZ, StrToNeon(ProxyAuthData->UserName), NE_ABUFSIZ);
-    strncpy_s(Password, NE_ABUFSIZ, StrToNeon(ProxyAuthData->Password), NE_ABUFSIZ);
+    strncpy_s(UserName, NE_ABUFSIZ, StrToNeon(ProxyAuthData->UserName), nb::ToSizeT(ProxyAuthData->UserName.Length()));
+    strncpy_s(Password, NE_ABUFSIZ, StrToNeon(ProxyAuthData->Password), nb::ToSizeT(ProxyAuthData->Password.Length()));
     Result = 0;
   }
 

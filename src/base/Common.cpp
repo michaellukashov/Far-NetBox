@@ -3998,11 +3998,13 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
     }
     else
     {
+#if 0
       const TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
+#endif // #if 0
       uint16_t Hour, Min, Sec, Dummy;
       DecodeTime(DateTime, Hour, Min, Sec, Dummy);
       const int32_t TotalHours = nb::ToInt32(Hour) + (Days * HoursPerDay);
-      Result = FORMAT(L"%d%s%.2d%s%.2d", TotalHours, FormatSettings.TimeSeparator, Min, FormatSettings.TimeSeparator, Sec);
+      Result = FORMAT(L"%d:%.2d:%.2d", TotalHours, Min, Sec);
     }
   }
   return Result;
@@ -4274,7 +4276,7 @@ static int32_t PemPasswordCallback(char * Buf, int32_t ASize, int32_t /*RWFlag*/
 {
   TPemPasswordCallbackData & Data = *reinterpret_cast<TPemPasswordCallbackData *>(UserData);
   UTF8String UtfPassphrase = UTF8String(*Data.Passphrase);
-  strncpy_s(Buf, UtfPassphrase.GetLength(), UtfPassphrase.c_str(), nb::ToSizeT(ASize));
+  strncpy_s(Buf, nb::ToSizeT(ASize), UtfPassphrase.c_str(), UtfPassphrase.GetLength());
   Shred(UtfPassphrase);
   Buf[ASize - 1] = '\0';
   return nb::ToInt32(NBChTraitsCRT<char>::SafeStringLen(Buf));

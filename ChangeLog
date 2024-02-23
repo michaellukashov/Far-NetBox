@@ -5,6 +5,20 @@
 ## [Unreleased] - ReleaseDate
 
 
+## [24.2.2.591] - 2024-02-23
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+- gh-409 Debug log loses messages
+- gh-407 Allow empty netbox prefix to open session list
+- gh-405 Fix ClosePanel problems
+- gh-403 Return to sessions list from the root directory by pressing Ctrl-PgUp
+- gh-401 Assertion on connection when logging is enabled
+- gh-399 Elapsed and Left times in copy dialog are broken
+- gh-397 Unable to connect to WebDAV
+
+
 ## [24.2.2.590] - 2024-02-20
 
 ### Changes
