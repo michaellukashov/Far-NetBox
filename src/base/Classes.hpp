@@ -339,7 +339,7 @@ public:
 
 public:
   TObjectList() : TObjectList(OBJECT_CLASS_TObjectList) {}
-  explicit TObjectList(TObjectClassId Kind) : TList(Kind) {}
+  using TList::TList;
   virtual ~TObjectList() noexcept override;
 
   RWProperty2<bool> OwnsObjects{&FOwnsObjects};
@@ -376,7 +376,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TStrings) || TObjectList::is(Kind); }
 public:
   TStrings() noexcept : TStrings(OBJECT_CLASS_TStrings) {}
-  explicit TStrings(TObjectClassId Kind) noexcept : TObjectList(Kind) {}
+  using TObjectList::TObjectList;
   virtual ~TStrings() noexcept override = default;
   int32_t Add(const UnicodeString & S, const TObject * AObject = nullptr);
   virtual UnicodeString GetTextStr() const;
