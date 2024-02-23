@@ -104,27 +104,24 @@ void TStrings::SetTextStr(const UnicodeString & AText)
   };
   Clear();
   const wchar_t * P = AText.c_str();
-  // if (P != nullptr)
+  while (*P != 0x00)
   {
-    while (*P != 0x00)
+    const wchar_t * Start = P;
+    while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
     {
-      const wchar_t * Start = P;
-      while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
-      {
-        P++;
-      }
-      UnicodeString S;
-      S.SetLength(nb::ToInt32(P - Start));
-      memmove(ToWCharPtr(S), Start, (P - Start) * sizeof(wchar_t));
-      Add(S);
-      if (*P == 0x0D)
-      {
-        P++;
-      }
-      if (*P == 0x0A)
-      {
-        P++;
-      }
+      P++;
+    }
+    UnicodeString S;
+    S.SetLength(nb::ToInt32(P - Start));
+    memmove(ToWCharPtr(S), Start, (P - Start) * sizeof(wchar_t));
+    Add(S);
+    if (*P == 0x0D)
+    {
+      P++;
+    }
+    if (*P == 0x0A)
+    {
+      P++;
     }
   }
 }
