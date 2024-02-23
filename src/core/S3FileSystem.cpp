@@ -1446,7 +1446,7 @@ void TS3FileSystem::RenameFile(
 {
   if (DebugAlwaysTrue(AFile != nullptr) && AFile->GetIsDirectory())
   {
-    throw Exception(LoadStr(FS_RENAME_NOT_SUPPORTED));
+    NotSupported();
   }
   CopyFile(AFileName, AFile, ANewName, Overwrite);
   TRmSessionAction DummyAction(FTerminal->GetActionLog(), AFileName);

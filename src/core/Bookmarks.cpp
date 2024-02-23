@@ -13,7 +13,9 @@
 TBookmarks::TBookmarks() noexcept : TObject(OBJECT_CLASS_TBookmarks),
   FSharedKey(UnicodeString(CONST_HIDDEN_PREFIX) + "shared")
 {
-  // FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
+#if defined(__BORLANDC__)
+  FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
+#endif // defined(__BORLANDC__)
   FBookmarkLists = CreateSortedStringList(false, dupError);
 }
 
@@ -33,7 +35,9 @@ void TBookmarks::Clear() try
   FBookmarkLists->Clear();
 } catch(...) {}
 
-//std::string_view TBookmarks::Keys[]{"Local", "Remote", "ShortCuts", "Options"};
+#if defined(__BORLANDC__)
+UnicodeString TBookmarks::Keys[] = { L"Local", L"Remote", L"ShortCuts", L"Options" };
+#endif // defined(__BORLANDC__)
 
 void TBookmarks::Load(THierarchicalStorage * Storage)
 {
@@ -70,7 +74,9 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
       }
       __finally__removed
       {
-        // delete BookmarkKeys;
+#if defined(__BORLANDC__)
+        delete BookmarkKeys;
+#endif // defined(__BORLANDC__)
       } end_try__finally
       Storage->CloseSubKey();
     }
@@ -152,7 +158,9 @@ void TBookmarks::LoadLevel(THierarchicalStorage * Storage, const UnicodeString &
   }
   __finally__removed
   {
-    // delete Names;
+#if defined(__BORLANDC__)
+    delete Names;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -251,6 +259,10 @@ void TBookmarks::SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Valu
   int32_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
+#if defined(__BORLANDC__)
+    TBookmarkList * BookmarkList;
+    BookmarkList = dynamic_cast<TBookmarkList *>(FBookmarkLists->Objects[I]);
+#endif // defined(__BORLANDC__)
     TBookmarkList * BookmarkList = FBookmarkLists->GetAs<TBookmarkList>(Index);
     BookmarkList->Assign(Value);
   }
@@ -309,6 +321,10 @@ void TBookmarkList::Clear() try
 
 void TBookmarkList::Assign(const TPersistent * Source)
 {
+#if defined(__BORLANDC__)
+  TBookmarkList * SourceList;
+  SourceList = dynamic_cast<TBookmarkList *>(Source);
+#endif // defined(__BORLANDC__)
   const TBookmarkList * SourceList = rtti::dyn_cast_or_null<TBookmarkList>(Source);
   if (SourceList)
   {
@@ -484,15 +500,17 @@ void TBookmarkList::ShortCuts(TShortCuts &ShortCuts)
 }
 
 
-TBookmark::TBookmark() noexcept :
-  TPersistent(OBJECT_CLASS_TBookmark)
+TBookmark::TBookmark() noexcept : TPersistent(OBJECT_CLASS_TBookmark)
 {
   FOwner = nullptr;
 }
 
 void TBookmark::Assign(const TPersistent * Source)
 {
-  // SourceBookmark = dynamic_cast<TBookmark *>(Source);
+#if defined(__BORLANDC__)
+  TBookmark * SourceBookmark;
+  SourceBookmark = dynamic_cast<TBookmark *>(Source);
+#endif // defined(__BORLANDC__)
   const TBookmark * SourceBookmark = rtti::dyn_cast_or_null<TBookmark>(Source);
   if (SourceBookmark)
   {

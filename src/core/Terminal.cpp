@@ -7569,7 +7569,7 @@ bool TTerminal::CopyToRemote(
 
   if ((!CopyParam->FOnTransferIn.empty()) && !FFileSystem->IsCapable(fcTransferIn))
   {
-    throw Exception(LoadStr(NOTSUPPORTED));
+    NotSupported();
   }
 
   TFileOperationProgressType OperationProgress(nb::bind(&TTerminal::DoProgress, this), nb::bind(&TTerminal::DoFinished, this));
@@ -8139,7 +8139,7 @@ bool TTerminal::CopyToLocal(
 
   if ((!CopyParam->FOnTransferOut.empty()) && !FFileSystem->IsCapable(fcTransferOut))
   {
-    throw Exception(LoadStr(NOTSUPPORTED));
+    NotSupported();
   }
 
   FDestFileName = "";

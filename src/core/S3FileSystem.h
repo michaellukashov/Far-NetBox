@@ -40,6 +40,7 @@ public:
 
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 public:
+  TS3FileSystem() = delete;
   explicit TS3FileSystem(TTerminal * ATerminal) noexcept;
   virtual ~TS3FileSystem() noexcept override;
 

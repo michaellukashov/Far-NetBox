@@ -33,6 +33,8 @@
 
 #endif
 
+enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
+
 constexpr const wchar_t Slash = L'/';
 constexpr const wchar_t Backslash = L'\\';
 

@@ -72,7 +72,7 @@ bool CanShowTimeEstimate(TDateTime StartTime);
 
 #endif // #if 0
 
-class NB_CORE_EXPORT TLocalCustomCommand : public TFileCustomCommand
+class NB_CORE_EXPORT TLocalCustomCommand final : public TFileCustomCommand
 {
 public:
   TLocalCustomCommand() noexcept;

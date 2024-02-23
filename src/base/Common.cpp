@@ -3,6 +3,7 @@
 #define NO_WIN32_LEAN_AND_MEAN
 #endif
 #include <vcl.h>
+// #pragma hdrstop
 
 #include <System.ShlObj.hpp>
 #include <Exceptions.h>
@@ -35,9 +36,8 @@
 #include "HelpCore.h"
 #include "Cryptography.h"
 
-// const UnicodeString PartialExt(L".filepart");
-
-namespace base { // from RemoteFiles.cpp
+// from RemoteFiles.cpp
+namespace base {
 
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
 
@@ -658,10 +658,10 @@ UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
 #include <openssl/ssl.h>
 
 //#pragma package(smart_init)
-
-// const wchar_t * DSTModeNames = L"Win;Unix;Keep";
-
 /*
+const wchar_t * DSTModeNames = L"Win;Unix;Keep";
+
+
 const UnicodeString AnyMask = L"*.*";
 const wchar_t EngShortMonthNames[12][4] =
   {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
@@ -1670,7 +1670,7 @@ bool IsReservedName(const UnicodeString & AFileName)
     {
       FileName.SetLength(P - 1);
     }
-    static UnicodeString Reserved[] = {
+    constexpr const char * Reserved[] = {
       "CON", "PRN", "AUX", "NUL",
       "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
       "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9" };
@@ -1783,10 +1783,10 @@ static int32_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_T
       IndCheckUNC = 8;
     }
     else if ((Len >= 4) &&
-             (APath[1] == Backslash || APath[1] == Slash) &&
-             (APath[2] == Backslash || APath[2] == Slash) &&
-             (APath[3] == L'?') &&
-             (APath[4] == Backslash || APath[4] == Slash))
+        (APath[1] == Backslash || APath[1] == Slash) &&
+        (APath[2] == Backslash || APath[2] == Slash) &&
+        (APath[3] == L'?') &&
+        (APath[4] == Backslash || APath[4] == Slash))
     {
       // Found \\?\ prefix
       PrefixType = PPT_LONG_UNICODE;
@@ -1798,8 +1798,8 @@ static int32_t GetOffsetAfterPathRoot(const UnicodeString & APath, PATH_PREFIX_T
       }
     }
     else if ((Len >= 2) &&
-             (APath[1] == Backslash || APath[1] == Slash) &&
-             (APath[2] == Backslash || APath[2] == Slash))
+        (APath[1] == Backslash || APath[1] == Slash) &&
+        (APath[2] == Backslash || APath[2] == Slash))
     {
       // Check for UNC share later
       IndCheckUNC = 2;
@@ -2346,7 +2346,7 @@ TDateTime EncodeDateVerbose(Word Year, Word Month, Word Day)
   {
     Result = EncodeDate(Year, Month, Day);
   }
-  catch (EConvertError &E)
+  catch (EConvertError & E)
   {
     throw EConvertError(FORMAT("%s [%04u-%02u-%02u]", E.Message, nb::ToInt32(Year), nb::ToInt32(Month), nb::ToInt32(Day)));
   }
@@ -2360,7 +2360,7 @@ TDateTime EncodeTimeVerbose(Word Hour, Word Min, Word Sec, Word MSec)
   {
     Result = EncodeTime(Hour, Min, Sec, MSec);
   }
-  catch (EConvertError &E)
+  catch (EConvertError & E)
   {
     throw EConvertError(FORMAT("%s [%02u:%02u:%02u.%04u]", E.Message, nb::ToInt32(Hour), nb::ToInt32(Min), nb::ToInt32(Sec), nb::ToInt32(MSec)));
   }
@@ -2374,7 +2374,7 @@ TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
     TDateTime DateTime = SystemTimeToDateTime(SystemTime);
     return DateTime;
   }
-  catch (EConvertError &E)
+  catch (EConvertError & E)
   {
     throw EConvertError(FORMAT("%s [%d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d.%3.3d]", E.Message, nb::ToInt32(SystemTime.wYear), nb::ToInt32(SystemTime.wMonth), nb::ToInt32(SystemTime.wDay), nb::ToInt32(SystemTime.wHour), nb::ToInt32(SystemTime.wMinute), nb::ToInt32(SystemTime.wSecond), nb::ToInt32(SystemTime.wMilliseconds)));
   }
@@ -3599,7 +3599,7 @@ UnicodeString EncodeUrlPath(const UnicodeString & S)
 UnicodeString AppendUrlParams(const UnicodeString & AURL, const UnicodeString & Params)
 {
   // see also TWebHelpSystem::ShowHelp
-  constexpr wchar_t FragmentSeparator = L'#';
+  constexpr const wchar_t FragmentSeparator = L'#';
   UnicodeString URL = AURL;
   URL = ::CutToChar(URL, FragmentSeparator, false);
 
@@ -5285,6 +5285,11 @@ void NotImplemented()
 {
   DebugFail();
   throw Exception(L"Not implemented");
+}
+
+void NotSupported()
+{
+  throw Exception(MainInstructions(LoadStr(NOTSUPPORTED)));
 }
 
 UnicodeString GetDividerLine()

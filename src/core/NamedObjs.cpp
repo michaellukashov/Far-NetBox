@@ -14,8 +14,7 @@ int32_t NamedObjectSortProc(const void * Item1, const void * Item2)
   return cast_to<TNamedObject>(ToObj(Item1))->Compare(cast_to<TNamedObject>(ToObj(Item2)));
 }
 //--- TNamedObject ----------------------------------------------------------
-TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) noexcept :
-  TNamedObject(Kind)
+TNamedObject::TNamedObject(TObjectClassId Kind, const UnicodeString & AName) noexcept : TNamedObject(Kind)
 {
   SetName(AName);
 }
@@ -164,40 +163,11 @@ void TNamedObjectList::Notify(TObject * Ptr, TListNotification Action)
     {
       FHiddenCount = -1;
     }
+    if (FAutoSort)
+    {
+      AlphaSort();
+    }
   }
-}
-
-TNamedObject * TNamedObjectList::GetSortObject(const UnicodeString & Name, int32_t & Position)
-{
-  // bool Flag = false;
-  int32_t L = 0;
-  int32_t R = GetCountIncludingHidden() - 1;
-  int32_t Mid = 0;
-  Position = 0;
-
-  if (R < 0)
-    return nullptr;
-
-  const TNamedObject Object(OBJECT_CLASS_TNamedObject, Name);
-  TNamedObject * NamedObject = nullptr;
-  int32_t Cp = 0;
-
-  while (L <= R)
-  {
-    Mid = (L + R) / 2;
-    NamedObject = cast_to<TNamedObject>(Get(Mid));
-    Cp = NamedObject->Compare(&Object);
-    if (Cp == 0)
-      return NamedObject;
-
-    if (Cp > 0)
-      R = Mid - 1;
-    else
-      L = Mid + 1;
-  }
-
-  Position = Mid + (Cp > 0? 0 : 1);
-  return nullptr;
 }
 
 TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName)
@@ -247,4 +217,37 @@ const TNamedObject * TNamedObjectList::AtObject(int32_t Index) const
 const TNamedObject * TNamedObjectList::FindByName(const UnicodeString & AName) const
 {
   return const_cast<TNamedObjectList *>(this)->FindByName(AName);
+}
+
+TNamedObject * TNamedObjectList::GetSortObject(const UnicodeString & Name, int32_t & Position)
+{
+  // bool Flag = false;
+  int32_t L = 0;
+  int32_t R = GetCountIncludingHidden() - 1;
+  int32_t Mid = 0;
+  Position = 0;
+
+  if (R < 0)
+    return nullptr;
+
+  const TNamedObject Object(OBJECT_CLASS_TNamedObject, Name);
+  TNamedObject * NamedObject = nullptr;
+  int32_t Cp = 0;
+
+  while (L <= R)
+  {
+    Mid = (L + R) / 2;
+    NamedObject = cast_to<TNamedObject>(Get(Mid));
+    Cp = NamedObject->Compare(&Object);
+    if (Cp == 0)
+      return NamedObject;
+
+    if (Cp > 0)
+      R = Mid - 1;
+    else
+      L = Mid + 1;
+  }
+
+  Position = Mid + (Cp > 0? 0 : 1);
+  return nullptr;
 }

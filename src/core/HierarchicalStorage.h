@@ -229,7 +229,7 @@ public:
   void SetFailed(int32_t Value) { FFailed = Value; }
 };
 
-#if 0
+#if defined(__BORLANDC__)
 
 class TCustomIniFileStorage : public THierarchicalStorage
 {
@@ -317,7 +317,7 @@ protected:
   virtual bool GetTemporary();
 };
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString & Str);

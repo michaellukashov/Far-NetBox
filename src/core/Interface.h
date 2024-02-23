@@ -5,6 +5,7 @@
 #if defined(FARPLUGIN)
 #include "Configuration.h"
 #include "SessionData.h"
+// #include <typeinfo>
 #endif // FARPLUGIN
 #define HELP_NONE ""
 #define SCRIPT_SWITCH "script"
@@ -201,7 +202,7 @@ private:
   TDateTime FStart;
 };
 
-struct TClipboardHandler
+struct TClipboardHandler final
 {
   NB_DISABLE_COPY(TClipboardHandler)
 public:

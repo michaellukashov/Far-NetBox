@@ -22,16 +22,16 @@ public:
   TOperationSide Side;
   UnicodeString FileName;
   UnicodeString Directory;
-  unsigned int OverallProgress;
-  unsigned int FileProgress;
-  unsigned int CPS;
+  uint32_t OverallProgress;
+  uint32_t FileProgress;
+  uint32_t CPS;
   bool Cancel;
 };
 
 typedef void (__closure *TScriptPrintEvent)(TScript * Script, const UnicodeString Str, bool Error);
 typedef void (__closure *TScriptSynchronizeStartStop)(TScript * Script,
   const UnicodeString LocalDirectory, const UnicodeString RemoteDirectory,
-  const TCopyParamType & CopyParam, int SynchronizeParams);
+  const TCopyParamType & CopyParam, int32_t SynchronizeParams);
 typedef void (__closure *TScriptProgressEvent)(TScript * Script, TScriptProgress & Progress);
 
 class TScriptProcParams : public TOptions
@@ -62,9 +62,9 @@ public:
 
   void Synchronize(const UnicodeString LocalDirectory,
     const UnicodeString RemoteDirectory, const TCopyParamType & CopyParam,
-    int SynchronizeParams, TSynchronizeChecklist ** Checklist);
+    int32_t SynchronizeParams, TSynchronizeChecklist ** Checklist);
 
-  static void RequireParams(TScriptProcParams * Parameters, int MinParams);
+  static void RequireParams(TScriptProcParams * Parameters, int32_t MinParams);
 
   __property TScriptPrintEvent OnPrint = { read = FOnPrint, write = FOnPrint };
   __property TExtendedExceptionEvent OnShowExtendedException = { read = FOnShowExtendedException, write = FOnShowExtendedException };
@@ -72,7 +72,7 @@ public:
   __property TScriptSynchronizeStartStop OnSynchronizeStartStop = { read = FOnSynchronizeStartStop, write = FOnSynchronizeStartStop };
   __property TScriptProgressEvent OnProgress = { read = FOnProgress, write = FOnProgress };
   __property TCopyParamType CopyParam = { read = FCopyParam, write = SetCopyParam };
-  __property int SynchronizeParams = { read = FSynchronizeParams, write = SetSynchronizeParams };
+  __property int32_t SynchronizeParams = { read = FSynchronizeParams, write = SetSynchronizeParams };
   __property TBatchMode Batch = { read = FBatch };
   __property TTerminal * Terminal = { read = FTerminal };
   __property bool Groups = { read = FGroups, write = FGroups };
@@ -98,13 +98,13 @@ protected:
   bool FInteractiveConfirm;
   bool FEcho;
   bool FFailOnNoMatch;
-  int FSynchronizeParams;
-  int FSynchronizeMode;
+  int32_t FSynchronizeParams;
+  int32_t FSynchronizeMode;
   bool FKeepingUpToDate;
   UnicodeString FSynchronizeIntro;
   bool FLimitedOutput;
-  int FSessionReopenTimeout;
-  int FInteractiveSessionReopenTimeout;
+  int32_t FSessionReopenTimeout;
+  int32_t FInteractiveSessionReopenTimeout;
   bool FGroups;
   bool FWantsProgress;
   bool FInteractive;
@@ -122,7 +122,7 @@ protected:
   void CheckSession();
   void CheckParams(TScriptProcParams * Parameters);
   void CopyParamParams(TCopyParamType & CopyParam, TScriptProcParams * Parameters);
-  void TransferParamParams(int & Params, TScriptProcParams * Parameters);
+  void TransferParamParams(int32_t & Params, TScriptProcParams * Parameters);
   enum TFileListType
   {
     fltDefault =     0x00,
@@ -132,10 +132,10 @@ protected:
     fltLatest =      0x08,
     fltOnlyFile =    0x10,
   };
-  TStrings * CreateFileList(TScriptProcParams * Parameters, int Start,
-    int End, TFileListType ListType = fltDefault);
+  TStrings * CreateFileList(TScriptProcParams * Parameters, int32_t Start,
+    int32_t End, TFileListType ListType = fltDefault);
   TStrings * CreateLocalFileList(TScriptProcParams * Parameters,
-    int Start, int End, TFileListType ListType);
+    int32_t Start, int32_t End, TFileListType ListType);
   void FreeFiles(TStrings * FileList);
   void FreeFileList(TStrings * FileList);
   void LogPendingLines(TTerminal * ATerminal);
@@ -165,7 +165,7 @@ protected:
 
   void OptionImpl(const UnicodeString & OptionName, const UnicodeString & ValueName);
   void SynchronizeDirectories(TScriptProcParams * Parameters,
-    UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory, int FirstParam);
+    UnicodeString & LocalDirectory, UnicodeString & RemoteDirectory, int32_t FirstParam);
   virtual bool HandleExtendedException(Exception * E,
     TTerminal * Terminal = nullptr);
   void TerminalCaptureLog(const UnicodeString & AddedLine, TCaptureOutputType OutputType);
@@ -184,13 +184,12 @@ protected:
 private:
   void Init();
   void SetCopyParam(const TCopyParamType & value);
-  void SetSynchronizeParams(int value);
+  void SetSynchronizeParams(int32_t value);
   TTransferMode ParseTransferModeName(UnicodeString Name);
   inline bool IsTerminalLogging(TTerminal * ATerminal);
   void CheckDefaultCopyParam();
   bool HasNonDefaultCopyParams();
   void CheckDefaultSynchronizeParams();
-  void NotSupported();
   void CheckMultiFilesToOne(TStrings * FileList, const UnicodeString & Target, bool Unix);
   void LogOption(const UnicodeString & LogStr);
   void DoMvOrCp(TScriptProcParams * Parameters, TFSCapability Capability, bool Cp);
@@ -239,7 +238,7 @@ protected:
   virtual void ResetTransfer();
   void Input(const UnicodeString Prompt, UnicodeString & Str, bool AllowEmpty);
   void TerminalInformation(
-    TTerminal * Terminal, const UnicodeString & Str, bool Status, int Phase, const UnicodeString & Additional);
+    TTerminal * Terminal, const UnicodeString & Str, bool Status, int32_t Phase, const UnicodeString & Additional);
   void TerminalOperationProgress(TFileOperationProgressType & ProgressData);
   void TerminalOperationFinished(TFileOperation Operation, TOperationSide Side,
     bool Temp, const UnicodeString & FileName, Boolean Success,

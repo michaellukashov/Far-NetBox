@@ -639,8 +639,8 @@ struct TCopyDataMessage
 
 class TWinInteractiveCustomCommand final : public TInteractiveCustomCommand
 {
-  TWinInteractiveCustomCommand() = delete;
 public:
+  TWinInteractiveCustomCommand() = delete;
   explicit TWinInteractiveCustomCommand(
     TCustomCommand * ChildCustomCommand, const UnicodeString & CustomCommandName, const UnicodeString & AHelpKeyword) noexcept;
 

@@ -221,7 +221,6 @@ protected:
     TFileOperationProgressType * OperationProgress);
   bool DoesFileLookLikeSymLink(TRemoteFile * File) const;
   void DoCloseRemoteIfOpened(const RawByteString & Handle);
-  void NoPacketReservations();
 
 private:
   const TSessionData * GetSessionData() const;

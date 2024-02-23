@@ -156,6 +156,14 @@ public:
   {
     FState = Opened;
     FRecursive = false;
+#if defined(__BORLANDC__)
+    delete FErrorMessages;
+    FErrorMessages = nullptr;
+    delete FFileList;
+    FFileList = nullptr;
+    delete FFile;
+    FFile = nullptr;
+#endif // defined(__BORLANDC__)
     SAFE_DESTROY(FErrorMessages);
     SAFE_DESTROY(FFileList);
     SAFE_DESTROY(FFile);
@@ -422,7 +430,7 @@ protected:
     FValues->Add(Value);
   }
 
-#if 0
+#if defined(__BORLANDC__)
   void RecordFile(const UnicodeString & AIndent, TRemoteFile * AFile, bool IncludeFileName)
   {
     FLog->AddIndented(AIndent + L"<file>");
@@ -465,7 +473,7 @@ protected:
       Modification(FileInfo.Modification);
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 private:
   TActionLog * FLog{nullptr};
@@ -843,7 +851,9 @@ TSessionLog::~TSessionLog() noexcept
     FLogger->Close();
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
-  // delete FCriticalSection;
+#if defined(__BORLANDC__)
+  delete FCriticalSection;
+#endif // defined(__BORLANDC__)
   // DEBUG_PRINTF("end");
 }
 
@@ -871,8 +881,8 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
     if (FLogger != nullptr)
     {
       const UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
-      UTF8String UtfLine = UTF8String(UnicodeString(1, LogLineMarks[Type]) + Timestamp + TrimRight(ALine)); // + "\r\n";
-#if 0
+      const UTF8String UtfLine = UTF8String(UnicodeString(1, LogLineMarks[Type]) + Timestamp + TrimRight(ALine)); // + "\r\n";
+#if defined(__BORLANDC__)
       for (int32_t Index = 1; Index <= UtfLine.Length(); Index++)
       {
         if ((UtfLine[Index] == '\n') &&
@@ -881,7 +891,7 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
           UtfLine.Insert(L'\r', Index);
         }
       }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
       const int32_t ToWrite = UtfLine.Length();
       CheckSize(ToWrite);
       FCurrentFileSize += FLogger->Write(UtfLine.c_str(), ToWrite);
@@ -1040,6 +1050,10 @@ void TSessionLog::CloseLogFile()
 {
   if (FLogger != nullptr)
   {
+#if defined(__BORLANDC__)
+    fclose((FILE *)FFile);
+    FFile = nullptr;
+#endif // defined(__BORLANDC__)
     FLogger.reset();
   }
   FCurrentLogFileName.Clear();
@@ -1157,10 +1171,10 @@ UnicodeString TSessionLog::GetCmdLineLog(TConfiguration * AConfiguration)
 
   if (!AConfiguration->GetLogSensitive())
   {
-#if 0
+#if defined(__BORLANDC__)
     TManagementScript Script(StoredSessions, false);
     Script.MaskPasswordInCommandLine(Result, true);
-#endif
+#endif // defined(__BORLANDC__)
   }
 
   return Result;
@@ -1192,7 +1206,6 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
 void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfiguration * AConfiguration, bool DoNotMaskPasswords)
 {
   ADSTR(GetEnvironmentInfo());
-  //THierarchicalStorage * Storage = AConfiguration->CreateConfigStorage();
   std::unique_ptr<THierarchicalStorage> Storage(FConfiguration->CreateConfigStorage());
   try__finally
   {
@@ -1200,7 +1213,9 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfigur
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   wchar_t UserName[UNLEN + 1];
@@ -1267,7 +1282,9 @@ void TSessionLog::DoAddStartupInfo(TAddLogEntryEvent && OnAddLogEntry, TConfigur
 }
 
 #undef ADSTR
-//#define ADSTR(S) DoAdd(llMessage, S, DoAddToSelf);
+#if defined(__BORLANDC__)
+#define ADSTR(S) DoAdd(llMessage, S, DoAddToSelf);
+#endif // defined(__BORLANDC__)
 #define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this))
 
 void TSessionLog::DoAddStartupInfoEntry(const UnicodeString & S)
@@ -1313,9 +1330,9 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         ADF(L"Tunnel: Host name: %s (Port: %d)", Data->GetTunnelHostName(), Data->GetTunnelPortNumber());
         ADF(L"Tunnel: User name: %s (Password: %s, Key file: %s)",
-          Data->FTunnelUserName,
-          LogSensitive(Data->GetTunnelPassword()),
-          LogSensitive(Data->FTunnelPublicKeyFile));
+           Data->FTunnelUserName,
+           LogSensitive(Data->GetTunnelPassword()),
+           LogSensitive(Data->FTunnelPublicKeyFile));
         ADF(L"Tunnel: Local port number: %d", Data->GetTunnelLocalPortNumber());
       }
     }
@@ -1346,8 +1363,8 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
     if ((Data->FFtpProxyLogonType != 0) || (Data->FProxyMethod != ::pmNone))
     {
       ADF("ProxyHostName: %s (Port: %d); ProxyUsername: %s; Passwd: %s",
-        Data->FProxyHost, Data->FProxyPort,
-        Data->FProxyUsername, LogSensitive(Data->GetProxyPassword()));
+         Data->FProxyHost, Data->FProxyPort,
+         Data->FProxyUsername, LogSensitive(Data->GetProxyPassword()));
       if (Data->FProxyMethod == pmTelnet)
       {
         ADF("Telnet command: %s", Data->FProxyTelnetCommand);
@@ -1427,25 +1444,25 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       UnicodeString Ftps;
       switch (Data->GetFtps())
       {
-      case ftpsImplicit:
-        Ftps = L"Implicit TLS/SSL";
-        FtpsOn = true;
-        break;
+        case ftpsImplicit:
+          Ftps = L"Implicit TLS/SSL";
+          FtpsOn = true;
+          break;
 
-      case ftpsExplicitSsl:
-        Ftps = L"Explicit SSL/TLS";
-        FtpsOn = true;
-        break;
+        case ftpsExplicitSsl:
+          Ftps = L"Explicit SSL/TLS";
+          FtpsOn = true;
+          break;
 
-      case ftpsExplicitTls:
-        Ftps = L"Explicit TLS/SSL";
-        FtpsOn = true;
-        break;
+        case ftpsExplicitTls:
+          Ftps = L"Explicit TLS/SSL";
+          FtpsOn = true;
+          break;
 
-      default:
-        DebugAssert(Data->GetFtps() == ftpsNone);
-        Ftps = L"None";
-        break;
+        default:
+          DebugAssert(Data->GetFtps() == ftpsNone);
+          Ftps = L"None";
+          break;
       }
       // kind of hidden option, so do not reveal it unless it is set
       if (Data->GetFtpTransferActiveImmediately() != asAuto)
@@ -1455,11 +1472,11 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF("FTPS: %s [Client certificate: %s]",
         Ftps, LogSensitive(Data->GetTlsCertificateFile()));
       ADF("FTP: Passive: %s [Force IP: %s]; MLSD: %s [List all: %s]; HOST: %s",
-        BooleanToEngStr(Data->GetFtpPasvMode()),
-        EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames),
-        EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames),
-        EnumName(Data->GetFtpListAll(), AutoSwitchNames),
-        EnumName(Data->GetFtpHost(), AutoSwitchNames));
+         BooleanToEngStr(Data->GetFtpPasvMode()),
+         EnumName(Data->GetFtpForcePasvIp(), AutoSwitchNames),
+         EnumName(Data->GetFtpUseMlsd(), AutoSwitchNames),
+         EnumName(Data->GetFtpListAll(), AutoSwitchNames),
+         EnumName(Data->GetFtpHost(), AutoSwitchNames));
       if (Data->FFtpWorkFromCwd != asAuto)
       {
         ADF(L"FTP: Relative paths: %s", EnumName(Data->FFtpWorkFromCwd, AutoSwitchNames));
@@ -1499,17 +1516,17 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       ADF("TLS/SSL versions: %s-%s", GetTlsVersionName(Data->FMinTlsVersion), GetTlsVersionName(Data->FMaxTlsVersion));
     }
     ADF("Local directory: %s, Remote directory: %s, Update: %s, Cache: %s",
-      Data->LocalDirectory().IsEmpty() ? UnicodeString(L"default") : Data->LocalDirectory(),
-      Data->GetRemoteDirectory().IsEmpty() ? UnicodeString(L"home") : Data->GetRemoteDirectory(),
-      BooleanToEngStr(Data->GetUpdateDirectories()),
-      BooleanToEngStr(Data->GetCacheDirectories()));
+       Data->LocalDirectory().IsEmpty() ? UnicodeString(L"default") : Data->LocalDirectory(),
+       Data->GetRemoteDirectory().IsEmpty() ? UnicodeString(L"home") : Data->GetRemoteDirectory(),
+       BooleanToEngStr(Data->GetUpdateDirectories()),
+       BooleanToEngStr(Data->GetCacheDirectories()));
     ADF("Cache directory changes: %s, Permanent: %s",
-      BooleanToEngStr(Data->GetCacheDirectoryChanges()),
-      BooleanToEngStr(Data->GetPreserveDirectoryChanges()));
+       BooleanToEngStr(Data->GetCacheDirectoryChanges()),
+       BooleanToEngStr(Data->GetPreserveDirectoryChanges()));
     ADF("Recycle bin: Delete to: %s, Overwritten to: %s, Bin path: %s",
-      BooleanToEngStr(Data->GetDeleteToRecycleBin()),
-      BooleanToEngStr(Data->GetOverwrittenToRecycleBin()),
-      Data->GetRecycleBinPath());
+       BooleanToEngStr(Data->GetDeleteToRecycleBin()),
+       BooleanToEngStr(Data->GetOverwrittenToRecycleBin()),
+       Data->GetRecycleBinPath());
     if (Data->TrimVMSVersions() || Data->VMSAllRevisions())
     {
       ADF(L"Trim VMS versions: %s; VMS all revisions: %s",
@@ -1692,7 +1709,9 @@ void TActionLog::AddFailure(Exception * E)
     }
     __finally__removed
     {
-      // delete Messages;
+#if defined(__BORLANDC__)
+      delete Messages;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
 }
@@ -1852,6 +1871,9 @@ TApplicationLog::TApplicationLog()
 {
   FFile = nullptr;
   FLogging = false;
+#if defined(__BORLANDC__)
+  FCriticalSection.reset(new TCriticalSection());
+#endif // defined(__BORLANDC__)
 }
 
 TApplicationLog::~TApplicationLog()

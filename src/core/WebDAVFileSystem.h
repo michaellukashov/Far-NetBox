@@ -24,6 +24,7 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TWebDAVFileSystem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TWebDAVFileSystem) || TCustomFileSystem::is(Kind); }
 public:
+  TWebDAVFileSystem() = delete;
   explicit TWebDAVFileSystem(TTerminal * ATerminal) noexcept;
   virtual ~TWebDAVFileSystem() noexcept override;
   virtual void Init(void *) override;

@@ -2044,29 +2044,24 @@ void TSFTPFileSystem::Init(void * Data /* TSecureShell*/)
 
 TSFTPFileSystem::~TSFTPFileSystem() noexcept
 {
-//  SAFE_DESTROY(FSupport);
-  NoPacketReservations();
-//  SAFE_DESTROY(FPacketReservations);
-//  SAFE_DESTROY(FFixedPaths);
-  SAFE_DESTROY(FSecureShell);
-}
-
-void TSFTPFileSystem::Open()
-{
-  NoPacketReservations();
-  ResetConnection();
-  // this is used for reconnects only
-  FSecureShell->Open();
-}
-
-void TSFTPFileSystem::NoPacketReservations()
-{
+  // delete FSupport;
   // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
   // (typically to SSH_FXP_CLOSE)
   for (int32_t I = 0; I < FPacketReservations->Count; I++)
   {
     DebugAssert(FPacketReservations->GetItem(I) == nullptr);
   }
+  // delete FPacketReservations;
+  // delete FFixedPaths;
+  // delete FSecureShell;
+  SAFE_DESTROY(FSecureShell);
+}
+
+void TSFTPFileSystem::Open()
+{
+  // this is used for reconnects only
+  ResetConnection();
+  FSecureShell->Open();
 }
 
 void TSFTPFileSystem::Close()
@@ -4013,8 +4008,9 @@ void TSFTPFileSystem::RenameFile(
     TargetName = LocalCanonify(ANewName);
   }
   AddPathString(Packet, TargetName, Encrypted);
-  if (UsePosixRename && (FVersion >= 5))
+  if (!UsePosixRename && (FVersion >= 5))
   {
+    // Use SSH_FXP_RENAME + SSH_FXF_RENAME_ATOMIC when UsePosixRename?
     Packet.AddCardinal(0);
   }
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);

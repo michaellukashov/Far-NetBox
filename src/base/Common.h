@@ -216,6 +216,7 @@ NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, const UnicodeString & Value);
 UnicodeString GetAncestorProcessName(int32_t Levels = 1);
 UnicodeString GetAncestorProcessNames();
+void NotSupported();
 void NotImplemented();
 UnicodeString GetDividerLine();
 
@@ -573,8 +574,6 @@ private:
 };
 
 using TUnicodeStringVector = nb::vector_t<UnicodeString>;
-
-enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
 
 namespace base {
 //TODO: move to Sysutils.hpp

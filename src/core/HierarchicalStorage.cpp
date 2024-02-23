@@ -17,11 +17,11 @@
 
 // ValueExists test was probably added to avoid registry exceptions when debugging
 #define READ_REGISTRY(Method) \
-  if (FRegistry->ValueExists(Name)) \
+  do { if (FRegistry->ValueExists(Name)) \
   try { return FRegistry->Method(Name); } catch(...) { return Default; } \
-  else return Default;
+  else return Default; } while(0)
 #define WRITE_REGISTRY(Method) \
-  try { FRegistry->Method(Name, Value); } catch(...) { }
+  do { try { FRegistry->Method(Name, Value); } catch(...) { } } while(0)
 
 static UnicodeString MungeStr(const UnicodeString & Str, bool ForceAnsi, bool Value)
 {
@@ -84,11 +84,6 @@ UnicodeString PuttyMungeStr(const UnicodeString & Str)
   return MungeStr(Str, true, false);
 }
 
-UnicodeString PuttyUnMungeStr(const UnicodeString & Str)
-{
-  return UnMungeStr(Str);
-}
-
 UnicodeString MungeIniName(const UnicodeString & Str)
 {
   const int32_t P = Str.Pos(L"=");
@@ -115,6 +110,11 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
   {
     return Str;
   }
+}
+
+UnicodeString PuttyUnMungeStr(const UnicodeString & Str)
+{
+  return UnMungeStr(Str);
 }
 
 template<typename T>
@@ -918,13 +918,19 @@ TRegistryStorage::TRegistryStorage(const UnicodeString & AStorage, HKEY ARootKey
 
 void TRegistryStorage::Init()
 {
+#if defined(__BORLANDC__)
+  FRegistry = new TRegistry();
+  FRegistry->Access = KEY_READ | FWowMode;
+#endif // defined(__BORLANDC__)
   THierarchicalStorage::Init();
 }
 
 TRegistryStorage::~TRegistryStorage() noexcept
 {
-  // SAFE_DESTROY(FRegistry);
-}
+#if defined(__BORLANDC__)
+  delete FRegistry;
+#endif // defined(__BORLANDC__)
+};
 
 // Used only in OpenSessionInPutty
 bool TRegistryStorage::Copy(TRegistryStorage * Storage)
@@ -1155,7 +1161,7 @@ void TRegistryStorage::DoWriteBinaryData(const UnicodeString & Name, const uint8
   }
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 //===========================================================================
 TCustomIniFileStorage::TCustomIniFileStorage(const UnicodeString & Storage, TCustomIniFile * IniFile) :
@@ -2093,4 +2099,4 @@ bool TOptionsStorage::GetTemporary()
   return true;
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)

@@ -50,7 +50,7 @@
 
 //const int32_t BelowNormalLogLevels = 1;
 
-TSshHostCA::TSshHostCA()
+TSshHostCA::TSshHostCA() noexcept
 {
   PermitRsaSha1 = false;
   PermitRsaSha256 = true;

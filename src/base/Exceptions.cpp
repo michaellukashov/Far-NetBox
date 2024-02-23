@@ -41,6 +41,7 @@ static bool WellKnownException(
   const wchar_t *CounterName = nullptr;
   std::unique_ptr<Exception> Clone;
 
+
   bool Result = true;
   const bool IgnoreException = false;
 

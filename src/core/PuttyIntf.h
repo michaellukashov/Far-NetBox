@@ -38,7 +38,7 @@ void PuttyDefaults(Conf * conf);
 int32_t GetCipherGroup(const ssh_cipher * TheCipher);
 
 class TSecureShell;
-struct ScpSeat : public Seat
+struct ScpSeat final : public Seat
 {
   CUSTOM_MEM_ALLOCATION_IMPL
   TSecureShell * SecureShell{nullptr};

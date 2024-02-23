@@ -12,7 +12,9 @@ constexpr const int64_t TRANSFER_BUF_SIZE = 32 * 1024;
 
 TFileOperationStatistics::TFileOperationStatistics() noexcept
 {
-  // memset(this, 0, sizeof(*this));
+#if defined(__BORLANDC__)
+  memset(this, 0, sizeof(*this));
+#endif // defined(__BORLANDC__)
 }
 
 
@@ -66,9 +68,11 @@ TFileOperationProgressType::TFileOperationProgressType(
   FOnProgress(AOnProgress),
   FOnFinished(AOnFinished)
 {
+#if defined(__BORLANDC__)
   FOnProgress = AOnProgress;
   FOnFinished = AOnFinished;
   FParent = Parent;
+#endif // defined(__BORLANDC__)
   FReset = false;
   Init();
   Clear();
