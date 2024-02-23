@@ -1,4 +1,4 @@
-#2023-10-17 08:30
+#2024-02-23 13:40
 name: act-Release
 
 on:
@@ -63,7 +63,7 @@ jobs:
           arch: ${{ matrix.arch }}
 
       - name: Setup cache
-        uses: deep-soft/cache@v3
+        uses: deep-soft/cache@v4
         with:
           path: ${{ github.workspace }}
           key: cache-${{ matrix.arch }}
@@ -104,7 +104,7 @@ jobs:
           fi
 
       - name: Upload result
-        uses: deep-soft/upload-artifact@v3
+        uses: deep-soft/upload-artifact@v4
         with:
           name: result
           path: ./*.7z
@@ -131,7 +131,7 @@ jobs:
           echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
 
       - name: Download result
-        uses: deep-soft/download-artifact@v3
+        uses: deep-soft/download-artifact@v4
         with:
           name: result
 
@@ -144,9 +144,10 @@ jobs:
           
       - name: Publish Release
         continue-on-error: true
-        uses: deep-soft/action-gh-release@v1
+        uses: deep-soft/action-gh-release@v2.1
         with:
           draft: false
+          name: "${{ env.PROG_NAME }} v${{ env.version }}"
           tag_name: "v${{ env.version }}"
           body: "Far ${{ env.PROG_NAME }}: v${{ env.version }}"
           files: |
@@ -164,7 +165,7 @@ jobs:
 
       - name: Publish latest Release
         continue-on-error: false
-        uses: deep-soft/action-gh-release@v1
+        uses: deep-soft/action-gh-release@v2.1
         with:
           draft: false
           tag_name: ${{ env.PROG_NAME }}-latest
