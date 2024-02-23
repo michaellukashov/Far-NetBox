@@ -293,11 +293,12 @@ struct custom_nballocator_t
 
   pointer address(reference x) const { return &x; }
   const_pointer address(const_reference x) const { return &x; }
-  // size_type max_size() const throw() { return size_t(-1) / sizeof(value_type); }
+
   size_type max_size() const noexcept
   {
-    // return std::numeric_limits<size_t>::max() / sizeof(T);
-    return size_t(-1) / sizeof(value_type);
+    // The following has been carefully written to be independent of
+    // the definition of size_t and to avoid signed/unsigned warnings.
+    return (static_cast<size_t>(0) - static_cast<size_t>(1)) / sizeof(value_type);
   }
 
   pointer allocate(size_type n, custom_nballocator_t<void>::const_pointer hint = nullptr)
