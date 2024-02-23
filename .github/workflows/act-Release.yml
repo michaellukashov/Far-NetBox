@@ -76,13 +76,16 @@ jobs:
       - name: Configure CMake
         shell: bash
         working-directory: build
-        run: >
-          cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} $GITHUB_WORKSPACE/src/NetBox
+        run: |
+          #cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=${{ matrix.platform }} $GITHUB_WORKSPACE/src/NetBox
+          cmake -G "Ninja" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DPROJECT_PLATFORM=x64 -DOPT_CREATE_PLUGIN_DIR=ON $GITHUB_WORKSPACE
 
       - name: Build
         working-directory: build
         shell: bash
-        run: cmake --build . --config $BUILD_TYPE
+        run: |
+          # cmake --build . --config $BUILD_TYPE
+          cmake --build . --config $BUILD_TYPE --target all
 
       - name: pack plugin
         shell: bash
