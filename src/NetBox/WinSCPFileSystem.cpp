@@ -295,7 +295,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) 
 {
 }
 
-void TWinSCPFileSystem::Init(TSecureShell * /*SecureShell*/)
+void TWinSCPFileSystem::Init(const TSecureShell * /*SecureShell*/)
 {
   TCustomFarFileSystem::Init();
 }
@@ -841,7 +841,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
   }
 }
 
-void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString & Message)
+void TWinSCPFileSystem::RequireLocalPanel(const TFarPanelInfo * Panel, const UnicodeString & Message)
 {
   if (Panel->GetIsPlugin() || (Panel->GetType() != ptFile))
   {
@@ -3093,7 +3093,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   {
     // HandleException(&E);
     bool Reopen = false;
-    EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(&E);
+    const EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(&E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
     {
       // FTerminal->ShowExtendedException(&E);
@@ -3785,7 +3785,7 @@ void TWinSCPFileSystem::QueueListUpdate(TTerminalQueue * Queue)
   }
 }
 
-void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
+void TWinSCPFileSystem::QueueItemUpdate(const TTerminalQueue * Queue,
   TQueueItem * Item)
 {
   if (GetQueue() == Queue)
@@ -4128,7 +4128,7 @@ void TWinSCPFileSystem::MultipleEdit()
 }
 
 void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
-  const UnicodeString & AFileName, TRemoteFile * AFile)
+  const UnicodeString & AFileName, const TRemoteFile * AFile)
 {
   DebugAssert(AFile);
   TEditHistory EditHistory;

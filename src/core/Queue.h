@@ -70,7 +70,7 @@ class TQueueFileList;
 using TQueueListUpdateEvent = nb::FastDelegate1<void,
   TTerminalQueue * /*Queue*/>;
 using TQueueItemUpdateEvent = nb::FastDelegate2<void,
-  TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/>;
+  const TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/>;
 enum TQueueEventType { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 using TQueueEvent = nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEventType /*Event*/>;

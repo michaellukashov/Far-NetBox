@@ -480,7 +480,7 @@ void TStrings::SaveToStream(TStream * /*Stream*/) const
   ThrowNotImplemented(12);
 }
 
-int32_t StringListCompareStrings(TStringList * List, int32_t Index1, int32_t Index2)
+int32_t StringListCompareStrings(const TStringList * List, int32_t Index1, int32_t Index2)
 {
   const int32_t Result = List->CompareStrings(List->FStrings[Index1],
       List->FStrings[Index2]);
