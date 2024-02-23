@@ -2017,8 +2017,8 @@ int32_t TWebDAVFileSystem::NeonRequestAuth(
 
   if (Result)
   {
-    strncpy_s(UserName, FileSystem->FUserName.Length(), StrToNeon(FileSystem->FUserName), NE_ABUFSIZ);
-    strncpy_s(Password, APassword.Length(), StrToNeon(APassword), NE_ABUFSIZ);
+    strncpy_s(UserName, NE_ABUFSIZ, StrToNeon(FileSystem->FUserName), nb::ToSizeT(FileSystem->FUserName.Length()));
+    strncpy_s(Password, NE_ABUFSIZ, StrToNeon(APassword), nb::ToSizeT(APassword.Length()));
   }
 
   FileSystem->FAuthenticationRequested = true;
