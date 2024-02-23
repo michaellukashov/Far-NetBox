@@ -11,14 +11,14 @@
 
 namespace tinylog {
 
-LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, bool & already_swap) :
+LogStream::LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, bool & drain_buffer) :
   front_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
   back_buff_(std::make_unique<Buffer>(LOG_BUFFER_SIZE)),
 //  queue_(std::make_unique<LockFreeQueue>()),
   file_(file),
   mutex_(mutex),
   cond_(cond),
-  already_swap_(already_swap)
+  drain_buffer_(drain_buffer)
 {
   Utils::CurrentTime(&tv_base_, &tm_base_);
   // DEBUG_PRINTF("begin");
@@ -60,8 +60,8 @@ void LogStream::WriteBuffer()
 {
   if (!file_)
     return;
-  back_buff_->Flush(file_);
-  back_buff_->Clear();
+  front_buff_->Flush(file_);
+  front_buff_->Clear();
 
   /*std::string data;
   int ret = queue_->Pop(data);
@@ -103,14 +103,40 @@ int64_t LogStream::InternalWrite(const char * log_data, int64_t ToWrite)
 
   pthread_mutex_lock(&mutex_);
 
-  if (front_buff_->TryAppend(&tm_base_, static_cast<int64_t>(tv_base_.tv_usec), file_name_, line_, func_name_, str_log_level_, log_data) < 0)
+  while (true)
   {
-    SwapBuffer();
-    already_swap_ = true;
-    front_buff_->TryAppend(&tm_base_, static_cast<int64_t>(tv_base_.tv_usec), file_name_, line_, func_name_, str_log_level_, log_data);
+    auto & buff = drain_buffer_ ? back_buff_ : front_buff_;
+    // append to the current buffer
+    if (buff->TryAppend(&tm_base_, static_cast<int64_t>(tv_base_.tv_usec), file_name_, line_, func_name_, str_log_level_, log_data) < 0)
+    {
+      if (drain_buffer_)
+      {
+        // we are appending to the back_buff_ and there is no more space there
+        // wait until buffer is drained (very rare situation)
+        pthread_mutex_unlock(&mutex_);
+        while (drain_buffer_)
+        {
+          // yield execution to another thread 
+          // usially it will require only one iteration
+          Sleep(1);
+        }
+        pthread_mutex_lock(&mutex_);
+      }
+      else
+      {
+        drain_buffer_ = true;
+      }
+    }
+    else
+    {
+      break;
+    }
   }
 
-  pthread_cond_signal(&cond_);
+  if (drain_buffer_)
+  {
+    pthread_cond_signal(&cond_);
+  }
   pthread_mutex_unlock(&mutex_);
 
   return Result;

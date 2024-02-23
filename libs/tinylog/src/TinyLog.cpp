@@ -40,7 +40,7 @@ private:
   pthread_mutex_t mutex_;
   pthread_cond_t cond_;
   bool run_{false};
-  bool already_swap_{false};
+  bool drain_buffer_{false};
 };
 
 TinyLogImpl::TinyLogImpl(FILE * file) noexcept :
@@ -48,11 +48,11 @@ TinyLogImpl::TinyLogImpl(FILE * file) noexcept :
   thrd_(INVALID_HANDLE_VALUE),
   ThreadId_(0),
   run_(true),
-  already_swap_(false)
+  drain_buffer_(false)
 {
   pthread_mutex_init(&mutex_, nullptr);
   pthread_cond_init(&cond_, nullptr);
-  logstream_ = std::make_unique<LogStream>(file, mutex_, cond_, already_swap_);
+  logstream_ = std::make_unique<LogStream>(file, mutex_, cond_, drain_buffer_);
   void * Parameter = this;
 
   thrd_ = ::CreateThread(nullptr,
@@ -108,6 +108,9 @@ void TinyLogImpl::Close()
   if (run_)
   {
     run_ = false;
+    pthread_mutex_lock(&mutex_);
+    pthread_cond_signal(&cond_);
+    pthread_mutex_unlock(&mutex_);
     pthread_join(thrd_, nullptr);
     logstream_.reset();
   }
@@ -123,34 +126,31 @@ DWORD WINAPI TinyLogImpl::ThreadFunc(void * pt_arg)
 
 int32_t TinyLogImpl::MainLoop()
 {
+  int result;
+  const DWORD timeout_millisecs = 1000 * TIME_OUT_SECOND;
+
+  pthread_mutex_lock(&mutex_);
   while (run_)
   {
-    DWORD timeout_millisecs = 1000 * TIME_OUT_SECOND;
-
-    pthread_mutex_lock(&mutex_);
-
-    while (!already_swap_)
+    while (run_ && !drain_buffer_)
     {
-      if (pthread_cond_timedwait(&cond_, &mutex_, timeout_millisecs) == WAIT_TIMEOUT)
+      result = pthread_cond_timedwait(&cond_, &mutex_, timeout_millisecs);
+      if (result == WAIT_TIMEOUT)
       {
-        if (run_)
-        {
-          logstream_->SwapBuffer();
-          logstream_->UpdateBaseTime();
-        }
         break;
       }
     }
 
-    if (already_swap_)
+    logstream_->WriteBuffer();
+
+    if (drain_buffer_)
     {
-      already_swap_ = false;
+      logstream_->SwapBuffer();
+      logstream_->UpdateBaseTime();
+      drain_buffer_ = false;
     }
-
-    if (run_) logstream_->WriteBuffer();
-
-    pthread_mutex_unlock(&mutex_);
   }
+  pthread_mutex_unlock(&mutex_);
 
   return 0;
 }
