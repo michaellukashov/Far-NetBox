@@ -1061,7 +1061,7 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   const UnicodeString LegalCopyright = GetConfiguration()->GetFileInfoString("LegalCopyright");
   const UnicodeString FileDescription = GetConfiguration()->GetFileInfoString("FileDescription");
 
-  int32_t Height = 16;
+  int32_t Height = 15;
 #ifndef NO_FILEZILLA
   Height += 2;
 #endif
@@ -1077,7 +1077,14 @@ TAboutDialog::TAboutDialog(TCustomFarPlugin * AFarPlugin) :
   {
     Height++;
   }
-  SetSize(TPoint(60, Height));
+
+  int32_t Width = std::max({50, 
+    ProductName.Length(),
+    Comments.Length(),
+    LegalCopyright.Length(),
+    FileDescription.Length()}) + 10;
+
+  SetSize(TPoint(Width, Height));
 
   SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ABOUT))));
