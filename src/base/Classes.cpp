@@ -460,14 +460,17 @@ UnicodeString TStrings::GetValueFromIndex(int32_t Index) const
 void TStrings::AddStrings(const TStrings * AStrings)
 {
   BeginUpdate();
-  SCOPE_EXIT
+  try__finally
   {
-    EndUpdate();
-  };
-  for (int32_t Index = 0; Index < AStrings->GetCount(); ++Index)
-  {
-    AddObject(AStrings->GetString(Index), AStrings->GetObj(Index));
+    for (int32_t Index = 0; Index < AStrings->GetCount(); ++Index)
+    {
+      AddObject(AStrings->GetString(Index), AStrings->GetObj(Index));
+    }
   }
+  __finally
+  {
+    EndUpdate();    
+  } end_try__finally
 }
 
 void TStrings::Append(const UnicodeString & Value)
@@ -839,11 +842,8 @@ void TStringList::ExchangeItems(int32_t Index1, int32_t Index2)
 {
   const bool Owns = GetOwnsObjects();
   SetOwnsObjects(false);
+  try__finally
   {
-    SCOPE_EXIT
-    {
-      SetOwnsObjects(Owns);
-    };
     const UnicodeString SItem1 = FStrings[Index1];
     TObject * OItem1 = TObjectList::Get(Index1);
     FStrings[Index1] = FStrings[Index2];
@@ -851,6 +851,10 @@ void TStringList::ExchangeItems(int32_t Index1, int32_t Index2)
     FStrings[Index2] = SItem1;
     TObjectList::SetItem(Index2, OItem1);
   }
+  __finally
+  {
+    SetOwnsObjects(Owns);
+  } end_try__finally
 }
 
 int32_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const
