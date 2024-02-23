@@ -45,8 +45,8 @@ jobs:
           export VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
           export VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
           export VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
-          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD">> $GITHUB_ENV
-          #echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
+          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD" >> $GITHUB_ENV
+          #echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
 
       - name: Set the pack file name
         shell: bash
@@ -118,12 +118,12 @@ jobs:
         continue-on-error: false
         shell: bash
         run: |
+          echo "${{ env.VERSION }}" > ${{ env.PROG_NAME }}-latest.txt
           rm *pdb.7z || true;
           mv ${{ env.PROG_NAME }}.${{ matrix.platform }}*.7z ${{ env.PROG_NAME }}.${{ matrix.platform }}.7z || true;
           #mv ${{ env.PROG_NAME }}.x64*.7z ${{ env.PROG_NAME }}.x64.7z || true;
           #mv ${{ env.PROG_NAME }}.x86*.7z ${{ env.PROG_NAME }}.x86.7z || true;
           #mv ${{ env.PROG_NAME }}.ARM64*.7z ${{ env.PROG_NAME }}.ARM64.7z || true;
-          echo "${{ env.version }}" > ${{ env.PROG_NAME }}-latest.txt
 
       - name: Publish latest Release
         continue-on-error: false
