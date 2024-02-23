@@ -11,7 +11,6 @@ env:
   PROG_NAME: 'Far-NetBox'
 
 jobs:
-
   build:
     strategy:
       fail-fast: false
@@ -103,10 +102,10 @@ jobs:
             7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
           fi
 
-      - name: Upload result
+      - name: Upload result to cache
         uses: deep-soft/upload-artifact@v4
         with:
-          name: result
+          name: result-${{ matrix.arch }}
           path: ./*.7z
           retention-days: 1
 
@@ -133,7 +132,9 @@ jobs:
       - name: Download result
         uses: deep-soft/download-artifact@v4
         with:
-          name: result
+          path: result
+          pattern: result-*
+          merge-multiple: true
 
 #      - name: Create release
 #        shell: bash
