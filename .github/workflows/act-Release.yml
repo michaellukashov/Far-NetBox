@@ -97,7 +97,7 @@ jobs:
         shell: bash
         run: |
           cp LICENSE.txt README.md ./Far3_${{ matrix.platform }}/Plugins/NetBox/
-          7z a -m0=LZMA -mf=BCJ2 -mx9 ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/* -xr!*.pdb \
+          7z a -m0=LZMA -mf=BCJ2 -mx9 ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/* -xr!*.pdb \
             -xr!NetBox.map -xr!NetBoxPol.lng -xr!NetBoxRus.lng -xr!NetBoxSpa.lng -xr!README.PL.md -xr!README.RU.md
           if [[ -f ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb ]] ; then
             7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
