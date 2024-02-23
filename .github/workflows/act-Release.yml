@@ -103,47 +103,6 @@ jobs:
           if [[ -f ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb ]] ; then
             7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
           fi
-
-      - name: Upload result to cache
-        uses: deep-soft/upload-artifact@v4
-        with:
-          name: result-${{ matrix.arch }}
-          path: ./*.7z
-          retention-days: 1
-
-  create-release:
-    needs: [build]
-    runs-on: windows-2019
-
-    steps:
-      - name: Checkout source
-        uses: deep-soft/checkout@v4
-
-      - name: Get version
-        id: get_version
-        shell: bash
-        run: |
-          export VERSION_MAJOR=$(grep "NETBOX_VERSION_MAJOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MAJOR\s*\([0-9]\+\)/\1/g")
-          export VERSION_MINOR=$(grep "NETBOX_VERSION_MINOR" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_MINOR\s*\([0-9]\+\)/\1/g")
-          export VERSION_PATCH=$(grep "NETBOX_VERSION_PATCH" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_PATCH\s*\([0-9]\+\)/\1/g")
-          export VERSION_BUILD=$(grep "NETBOX_VERSION_BUILD" src/NetBox/plugin_version.hpp | sed -e "s/^.* NETBOX_VERSION_BUILD\s*\([0-9]\+\)/\1/g")
-          echo "version=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER"
-          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_OUTPUT
-          echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
-
-      - name: Download result
-        uses: deep-soft/download-artifact@v4
-        with:
-          path: result
-          pattern: result-*
-          merge-multiple: true
-
-#      - name: Create release
-#        shell: bash
-#        run: gh release create v${{ env.version }} -t "v${{ env.version }}" -n "${{ env.PROG_NAME }} ${{ env.version }}" ./*.7z
-#        env:
-#          # GITHUB_TOKEN: ${{secrets.PACKAGES_GITHUB_TOKEN}}
-#          GITHUB_TOKEN: ${{github.token}}
           
       - name: Publish Release
         continue-on-error: true
@@ -154,16 +113,17 @@ jobs:
           tag_name: "v${{ env.version }}"
           body: "Far ${{ env.PROG_NAME }}: v${{ env.version }}"
           files: |
-            ./*.7z
+            ${{ env.PROG_NAME }}.${{ matrix.platform }}*.7z
 
       - name: Prepare latest Release
         continue-on-error: false
         shell: bash
         run: |
           rm *pdb.7z || true;
-          mv ${{ env.PROG_NAME }}.x64*.7z ${{ env.PROG_NAME }}.x64.7z
-          mv ${{ env.PROG_NAME }}.x86*.7z ${{ env.PROG_NAME }}.x86.7z
-          mv ${{ env.PROG_NAME }}.ARM64*.7z ${{ env.PROG_NAME }}.ARM64.7z
+          mv ${{ env.PROG_NAME }}.${{ matrix.platform }}*.7z ${{ env.PROG_NAME }}.${{ matrix.platform }}.7z || true;
+          #mv ${{ env.PROG_NAME }}.x64*.7z ${{ env.PROG_NAME }}.x64.7z || true;
+          #mv ${{ env.PROG_NAME }}.x86*.7z ${{ env.PROG_NAME }}.x86.7z || true;
+          #mv ${{ env.PROG_NAME }}.ARM64*.7z ${{ env.PROG_NAME }}.ARM64.7z || true;
           echo "${{ env.version }}" > ${{ env.PROG_NAME }}-latest.txt
 
       - name: Publish latest Release
@@ -174,7 +134,7 @@ jobs:
           tag_name: ${{ env.PROG_NAME }}-latest
           body: "${{ env.PROG_NAME }} latest: v${{ env.version }}"
           files: |
-            ./*.7z
+            ${{ env.PROG_NAME }}.${{ matrix.platform }}.7z
             ${{ env.PROG_NAME }}-latest.txt
 
       - name: Cleanup
