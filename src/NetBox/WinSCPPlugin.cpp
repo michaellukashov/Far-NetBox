@@ -341,19 +341,18 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
       ParseCommandLine(CommandLine, Options.get());
       constexpr int32_t ParseUrlFlags = pufAllowStoredSiteWithProtocol;
       std::unique_ptr<TSessionData> Session(GetStoredSessions()->ParseUrl(CommandLine, Options.get(), DefaultsOnly, nullptr, nullptr, nullptr, ParseUrlFlags));
-      if (DefaultsOnly)
+      if (!DefaultsOnly)
       {
-        Abort();
-      }
-      if (!Session->GetCanLogin())
-      {
-        DebugAssert(false);
-        Abort();
-      }
-      FileSystem->Connect(Session.get());
-      if (!Directory.IsEmpty())
-      {
-        FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+        if (!Session->GetCanLogin())
+        {
+          DebugAssert(false);
+          Abort();
+        }
+        FileSystem->Connect(Session.get());
+        if (!Directory.IsEmpty())
+        {
+          FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
+        }
       }
     }
     else if (OpenFrom == OPEN_ANALYSE)
