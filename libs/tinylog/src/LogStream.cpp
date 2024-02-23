@@ -117,8 +117,8 @@ int64_t LogStream::InternalWrite(const char * log_data, int64_t ToWrite)
         while (drain_buffer_)
         {
           // yield execution to another thread 
-          // usially it will require only one iteration
-          Sleep(1);
+          // usually it will require only one iteration
+          Sleep(10);
         }
         pthread_mutex_lock(&mutex_);
       }
