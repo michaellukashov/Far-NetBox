@@ -113,7 +113,7 @@ jobs:
       - name: Create release
         shell: bash
         run: |
-          gh release create v${{ env.version_short }} --draft --title "NetBox ${{ env.version_short }}" FarNetBox/*.7z
+          gh release create v${{ env.version_short }} --draft --generate-notes --title "NetBox ${{ env.version_short }}" FarNetBox/*.7z
         env:
           # GITHUB_TOKEN: ${{ secrets.NETBOX_GITHUB_TOKEN }}
           GH_TOKEN: ${{ github.token }}
