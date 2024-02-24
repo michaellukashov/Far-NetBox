@@ -30,7 +30,7 @@
 #include "PuttyTools.h"
 #include "Tools.h"
 #include "WinConfiguration.h"
-#if 0
+#if defined(__BORLANDC__)
 #include <WinHelpViewer.hpp>
 #include <PasTools.hpp>
 #include <System.Win.ComObj.hpp>
@@ -77,7 +77,7 @@
 #undef HTTP_VERSION_INFO
 #undef LPHTTP_VERSION_INFO
 
-// #pragma package(smart_init)
+#pragma package(smart_init)
 
 TFontStyles IntToFontStyles(int value)
 {
@@ -811,7 +811,8 @@ void ShowHelp(const UnicodeString & AHelpKeyword)
   AddToList(HelpUrl, HelpKeyword, FragmentSeparator);
   OpenBrowser(HelpUrl);
 }
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 bool IsFormatInClipboard(uint32_t Format)
 {
@@ -992,7 +993,7 @@ UnicodeString ReadResource(const UnicodeString & ResName)
   return Result;
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 template <class T>
 void BrowseForExecutableT(T * Control, const UnicodeString & Title,
@@ -1090,14 +1091,15 @@ bool FontDialog(TFont * Font)
   }
   return Result;
 }
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
   const UnicodeString & DefaultExt, UnicodeString & FileName)
 {
   TODO("implement");
   bool Result = false;
-#if 0
+#if defined(__BORLANDC__)
   TFileSaveDialog * Dialog = new TFileSaveDialog(Application);
   try
   {
@@ -1147,11 +1149,11 @@ bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
   {
     delete Dialog;
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 void CopyToClipboard(const UnicodeString & Text)
 {
@@ -1197,7 +1199,7 @@ void CopyToClipboard(const UnicodeString & Text)
   }
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 void CopyToClipboard(TStrings * Strings)
 {
@@ -1255,7 +1257,7 @@ void ShutDownWindows()
     SHTDN_REASON_MAJOR_OTHER | SHTDN_REASON_MINOR_OTHER | SHTDN_REASON_FLAG_PLANNED));
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 void SuspendWindows()
 {
@@ -1280,7 +1282,7 @@ void EditSelectBaseName(HWND Edit)
   }
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 UnicodeString GetConvertedKeyFileName(const UnicodeString & FileName)
 {
@@ -1493,7 +1495,7 @@ bool DetectSystemExternalEditor(
   UnicodeString & UsageState, bool & TryNextTime)
 {
   bool Result = false;
-#if 0
+#if defined(__BORLANDC__)
   UnicodeString TempName = ExcludeTrailingBackslash(WinConfiguration->TemporaryDir()) + L".txt";
   if (FileExists(ApiPath(TempName)))
   {
@@ -1567,7 +1569,7 @@ bool DetectSystemExternalEditor(
       }
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
@@ -1672,8 +1674,8 @@ bool AutodetectProxy(UnicodeString & HostName, int32_t & PortNumber)
 
   return Result;
 }
-#if 0
 
+#if defined(__BORLANDC__)
 
 class TWinHelpTester : public TInterfacedObject, public IWinHelpTester
 {
@@ -1783,4 +1785,6 @@ int TCustomHelpSelector::TableOfContents(TStrings * Contents)
 {
   return Contents->IndexOf(FName);
 }
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
+

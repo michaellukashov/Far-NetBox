@@ -8,7 +8,8 @@
 #include <SessionData.h>
 // #include <Vcl.Graphics.hpp>
 
-#if 0
+#if defined(__BORLANDC__)
+
 void CenterFormOn(TForm * Form, TControl * CenterOn);
 void ExecuteProcessAndReadOutput(const UnicodeString & Command, UnicodeString & Output, DWORD & ExitCode, bool ReadStdErr);
 void ExecuteProcessChecked(
@@ -50,12 +51,12 @@ void OpenBrowser(const UnicodeString & URL);
 void OpenFileInExplorer(const UnicodeString & Path);
 void OpenFolderInExplorer(const UnicodeString & Path);
 void ShowHelp(const UnicodeString & HelpKeyword);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 NB_CORE_EXPORT bool IsFormatInClipboard(uint32_t Format);
 NB_CORE_EXPORT bool NonEmptyTextFromClipboard(UnicodeString & Text);
 NB_CORE_EXPORT HANDLE OpenTextFromClipboard(const wchar_t *& Text);
 NB_CORE_EXPORT void CloseTextFromClipboard(HANDLE Handle);
-#if 0
+#if defined(__BORLANDC__)
 void ExitActiveControl(TForm * Form);
 UnicodeString ReadResource(const UnicodeString & ResName);
 bool DumpResourceToFile(const UnicodeString & ResName,
@@ -65,7 +66,7 @@ void BrowseForExecutable(TEdit * Control, UnicodeString Title,
 void BrowseForExecutable(TComboBox * Control, UnicodeString & Title,
   UnicodeString Filter, bool FileNameCommand, bool Escape);
 bool FontDialog(TFont * Font);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 NB_CORE_EXPORT bool SaveDialog(const UnicodeString & Title, const UnicodeString & Filter,
   const UnicodeString & DefaultExt, UnicodeString & FileName);
@@ -82,7 +83,7 @@ UnicodeString AddMatchingKeyCertificate(TPrivateKey * PrivateKey, const UnicodeS
 NB_CORE_EXPORT void VerifyAndConvertKey(UnicodeString & FileName, bool CanIgnore);
 NB_CORE_EXPORT void VerifyKey(const UnicodeString & FileName);
 NB_CORE_EXPORT void VerifyCertificate(const UnicodeString & FileName);
-#if 0
+#if defined(__BORLANDC__)
 NB_CORE_EXPORT TStrings * GetUnwrappedMemoLines(TMemo * Memo);
 NB_CORE_EXPORT bool DetectSystemExternalEditor(
   bool AllowDefaultEditor,
@@ -108,4 +109,4 @@ NB_CORE_EXPORT bool DetectSystemExternalEditor(
 void InitializeCustomHelp(ICustomHelpViewer * HelpViewer);
 void FinalizeCustomHelp();
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)

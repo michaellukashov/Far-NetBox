@@ -26,13 +26,11 @@ bool CopyCommandToClipboard(const UnicodeString & Command);
 bool DoesSessionExistInPutty(const UnicodeString & StorageKey);
 bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const UnicodeString & SessionName);
 void OpenSessionInPutty(TSessionData * SessionData);
-NB_CORE_EXPORT void OpenSessionInPutty(const UnicodeString & APuttyPath,
-  TSessionData * SessionData);
 NB_CORE_EXPORT bool SpecialFolderLocation(int32_t APathID, UnicodeString & APath);
 NB_CORE_EXPORT UnicodeString UniqTempDir(const UnicodeString & ABaseDir,
   const UnicodeString & Identity, bool Mask = false);
 
-#if 0
+#if defined(__BORLANDC__)
 
 int GetSessionColorImage(TCustomImageList * ImageList, TColor Color, int MaskIndex);
 void RegenerateSessionColorsImageList(TCustomImageList * ImageList, int MaskIndex);
@@ -70,7 +68,7 @@ void GetInstructionsTheme(
   TColor & MainInstructionColor, HFONT & MainInstructionFont, HFONT & InstructionFont);
 bool CanShowTimeEstimate(TDateTime StartTime);
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 class NB_CORE_EXPORT TLocalCustomCommand final : public TFileCustomCommand
 {
@@ -99,7 +97,7 @@ private:
   UnicodeString FLocalFileName;
 };
 
-#if 0
+#if defined(__BORLANDC__)
 
 namespace Pngimagelist
 {
@@ -192,19 +190,6 @@ protected:
 private:
   HINSTANCE FLibrary;
 };
-#endif // #if 0
-
-NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, int32_t Count, const UnicodeString & FirstItem);
-NB_CORE_EXPORT UnicodeString GetPersonalFolder();
-NB_CORE_EXPORT UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, const TStrings * Items);
-NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);
-NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);
-
-#if 0
 
 // Based on:
 // https://stackoverflow.com/q/6912424/850848
@@ -233,7 +218,7 @@ void FindComponentClass(
 #define INTERFACE_HOOK INTERFACE_HOOK_CUSTOM(TForm)
 
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 constexpr const wchar_t * PageantTool = L"pageant.exe";
 constexpr const wchar_t * PuttygenTool = L"puttygen.exe";

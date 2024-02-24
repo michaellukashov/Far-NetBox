@@ -19,7 +19,7 @@
 // WM_PASTE_FILES + 14 (forms/CustomScpExplorer.cpp)
 #define WM_IS_HIDDEN (WM_WINSCP_USER + 15)
 
-#if 0
+#if defined(__BORLANDC__)
 
 #define C(Property) (Property != rhc.Property) ||
 struct TSynchronizeChecklistConfiguration
@@ -127,6 +127,6 @@ public:
 
 extern TCustomWinConfiguration * CustomWinConfiguration;
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 #endif

@@ -4,7 +4,7 @@
 #define WinConfigurationH
 
 #include "CustomWinConfiguration.h"
-#if 0
+#if defined(__BORLANDC__)
 #include "CustomDirView.hpp"
 #include "FileInfo.h"
 
@@ -941,5 +941,6 @@ private:
 extern TWinConfiguration * WinConfiguration;
 extern const UnicodeString WinSCPExtensionExt;
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
+
 #endif

@@ -5422,11 +5422,13 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   }
   __finally
   {
-    // FAutoSort = true;
-    // AlphaSort();
+#if defined(__BORLANDC__)
+    AutoSort = true;
+    AlphaSort();
+    delete SubKeys;
+    delete Loaded;
+#endif // defined(__BORLANDC__)
     Recount();
-    // delete SubKeys;
-    // delete Loaded;
   } end_try__finally
 }
 
