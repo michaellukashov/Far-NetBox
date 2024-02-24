@@ -9485,7 +9485,7 @@ void TSecondaryTerminal::Init(
   }
   if (!FMainTerminal->GetUserName().IsEmpty())
   {
-    GetSessionData()->SessionSetUserName(FMainTerminal->GetUserName());
+    GetSessionData()->SetUserName(FMainTerminal->GetUserName());
   }
 }
 

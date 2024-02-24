@@ -311,7 +311,7 @@ public:
   UnicodeString GetHostNameExpanded() const;
   UnicodeString GetHostNameSource() const;
   void SetPortNumber(int32_t AValue);
-  // void SetUserName(const UnicodeString & AValue);
+  void SetUserName(const UnicodeString & AValue);
   UnicodeString GetUserNameExpanded() const;
   UnicodeString GetUserNameSource() const;
   void SetPassword(const UnicodeString & AValue);
@@ -627,7 +627,7 @@ public:
   __property int32_t PortNumber  = { read=FPortNumber, write=SetPortNumber };
   RWProperty<int32_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
   __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
-  RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::SessionGetUserName, this), nb::bind(&TSessionData::SessionSetUserName, this)};
+  RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::SessionGetUserName, this), nb::bind(&TSessionData::SetUserName, this)};
   __property UnicodeString UserNameExpanded  = { read=GetUserNameExpanded };
   __property UnicodeString UserNameSource  = { read=GetUserNameSource };
   __property UnicodeString Password  = { read=GetPassword, write=SetPassword };
@@ -1029,7 +1029,6 @@ public:
   UnicodeString GetLogicalHostName() const { return FLogicalHostName; }
   int32_t GetOrigPortNumber() const { return FOrigPortNumber; }
   void SetPasswordless(bool Value);
-  void SessionSetUserName(const UnicodeString & AValue);
 
   void SetLogicalHostName(const UnicodeString & AValue);
   int32_t GetNumberOfRetries() const { return FNumberOfRetries; }

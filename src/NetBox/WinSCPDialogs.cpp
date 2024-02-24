@@ -3549,13 +3549,13 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     SessionData->SetHostName(HostName);
     SessionData->SetPortNumber(PortNumberEdit->GetAsInteger());
-    SessionData->SessionSetUserName(UserName);
+    SessionData->SetUserName(UserName);
     SessionData->SetPassword(Password);
     SessionData->SetLoginType(ltNormal);
     SessionData->SetPublicKeyFile(PrivateKeyEdit->GetText());
     if (GetFSProtocol() == fsS3)
     {
-      SessionData->SessionSetUserName(UserName);
+      SessionData->SetUserName(UserName);
       SessionData->SetPassword(Password);
       SessionData->SetFtps(ftpsImplicit); // TODO: get code from TLoginDialog::PortNumberEditChange
     }
