@@ -118,7 +118,7 @@ public:
 
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 protected:
-  TSecureShell * FSecureShell{nullptr};
+  gsl::owner<TSecureShell *> FSecureShell{nullptr};
   TFileSystemInfo FFileSystemInfo{};
   bool FFileSystemInfoValid{false};
   uint32_t FVersion{0};
