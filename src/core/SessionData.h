@@ -621,9 +621,9 @@ public:
   __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   RWProperty<UnicodeString> HostName{nb::bind(&TSessionData::GetHostName, this), nb::bind(&TSessionData::SetHostName, this)};
   __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };
-  ROProperty<UnicodeString> HostNameExpanded{nb::bind(&TSessionData::GetHostNameExpanded, this)};
+  const ROProperty<UnicodeString> HostNameExpanded{nb::bind(&TSessionData::GetHostNameExpanded, this)};
   __property UnicodeString HostNameSource = { read=GetHostNameSource };
-  ROProperty<UnicodeString> HostNameSource{nb::bind(&TSessionData::GetHostNameSource, this)};
+  const ROProperty<UnicodeString> HostNameSource{nb::bind(&TSessionData::GetHostNameSource, this)};
   __property int32_t PortNumber  = { read=FPortNumber, write=SetPortNumber };
   RWProperty<int32_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
   __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
@@ -677,13 +677,13 @@ public:
   __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
   RWProperty<TFSProtocol> FSProtocol{nb::bind(&TSessionData::GetFSProtocol, this), nb::bind(&TSessionData::SetFSProtocol, this)};
   __property UnicodeString FSProtocolStr  = { read=GetFSProtocolStr };
-  ROProperty<UnicodeString> FSProtocolStr{nb::bind(&TSessionData::GetFSProtocolStr, this)};
+  const ROProperty<UnicodeString> FSProtocolStr{nb::bind(&TSessionData::GetFSProtocolStr, this)};
   __property bool Modified  = { read=FModified, write=FModified };
   __property bool CanLogin  = { read=GetCanLogin };
   __property bool CanOpen = { read=GetCanOpen };
-  ROProperty<bool> CanOpen{nb::bind(&TSessionData::GetCanOpen, this)};
+  const ROProperty<bool> CanOpen{nb::bind(&TSessionData::GetCanOpen, this)};
   __property bool IsLocalBrowser = { read=GetIsLocalBrowser };
-  ROProperty<bool> IsLocalBrowser{nb::bind(&TSessionData::GetIsLocalBrowser, this)};
+  const ROProperty<bool> IsLocalBrowser{nb::bind(&TSessionData::GetIsLocalBrowser, this)};
   __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
   RWPropertySimple<bool> ClearAliases{&FClearAliases, nb::bind(&TSessionData::SetClearAliases, this)};
   __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
@@ -692,9 +692,9 @@ public:
   __property TPingType PingType = { read = FPingType, write = SetPingType };
   RWPropertySimple<TPingType> PingType{&FPingType, nb::bind(&TSessionData::SetPingType, this)};
   __property UnicodeString SessionName  = { read=GetSessionName };
-  ROProperty<UnicodeString> SessionName{nb::bind(&TSessionData::GetSessionName, this)};
+  const ROProperty<UnicodeString> SessionName{nb::bind(&TSessionData::GetSessionName, this)};
   __property UnicodeString DefaultSessionName  = { read=GetDefaultSessionName };
-  ROProperty<UnicodeString> DefaultSessionName{nb::bind(&TSessionData::GetDefaultSessionName, this)};
+  const ROProperty<UnicodeString> DefaultSessionName{nb::bind(&TSessionData::GetDefaultSessionName, this)};
   __property UnicodeString LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
   RWPropertySimple<UnicodeString> LocalDirectory{&FLocalDirectory, nb::bind(&TSessionData::SetLocalDirectory, this) };
   __property UnicodeString LocalDirectoryExpanded = { read = GetLocalDirectoryExpanded };
@@ -866,7 +866,7 @@ public:
   __property bool FingerprintScan = { read = FFingerprintScan, write = FFingerprintScan };
   RWProperty2<bool> FingerprintScan{&FFingerprintScan};
   __property bool OverrideCachedHostKey = { read = FOverrideCachedHostKey };
-  ROProperty2<bool> OverrideCachedHostKey{&FOverrideCachedHostKey};
+  const ROProperty2<bool> OverrideCachedHostKey{&FOverrideCachedHostKey};
   __property UnicodeString Note = { read = FNote, write = SetNote };
   __property UnicodeString WinTitle = { read = FWinTitle, write = SetWinTitle };
   __property UnicodeString EncryptKey = { read = GetEncryptKey, write = SetEncryptKey };
@@ -877,19 +877,19 @@ public:
   RWPropertySimple<bool> WebDavAuthLegacy{&FWebDavAuthLegacy, nb::bind(&TSessionData::SetWebDavAuthLegacy, this) };
 
   __property UnicodeString StorageKey = { read = GetStorageKey };
-  ROProperty<UnicodeString> StorageKey{nb::bind(&TSessionData::GetStorageKey, this)};
+  const ROProperty<UnicodeString> StorageKey{nb::bind(&TSessionData::GetStorageKey, this)};
   __property UnicodeString SiteKey = { read = GetSiteKey };
-  ROProperty<UnicodeString> SiteKey{nb::bind(&TSessionData::GetSiteKey, this)};
+  const ROProperty<UnicodeString> SiteKey{nb::bind(&TSessionData::GetSiteKey, this)};
   __property UnicodeString OrigHostName = { read = FOrigHostName };
   const UnicodeString& OrigHostName{FOrigHostName};
   __property int32_t OrigPortNumber = { read = FOrigPortNumber };
   const int32_t& OrigPortNumber{FOrigPortNumber};
   __property UnicodeString LocalName = { read = GetLocalName };
-  ROProperty<UnicodeString> LocalName{nb::bind(&TSessionData::GetLocalName, this)};
+  const ROProperty<UnicodeString> LocalName{nb::bind(&TSessionData::GetLocalName, this)};
   __property UnicodeString FolderName = { read = GetFolderName };
-  ROProperty<UnicodeString> FolderName{nb::bind(&TSessionData::GetFolderName, this)};
+  const ROProperty<UnicodeString> FolderName{nb::bind(&TSessionData::GetFolderName, this)};
   __property UnicodeString Source = { read = GetSource };
-  ROProperty<UnicodeString> Source{nb::bind(&TSessionData::GetSource, this)};
+  const ROProperty<UnicodeString> Source{nb::bind(&TSessionData::GetSource, this)};
   __property bool SaveOnly = { read = FSaveOnly };
   const bool& SaveOnly{FSaveOnly};
 

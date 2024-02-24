@@ -143,7 +143,7 @@ public:
   __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
   TTransferMode& TransferMode{FTransferMode};
   __property UnicodeString LogStr  = { read=GetLogStr };
-  ROProperty<UnicodeString> LogStr{nb::bind(&TCopyParamType::GetLogStr, this)};
+  const ROProperty<UnicodeString> LogStr{nb::bind(&TCopyParamType::GetLogStr, this)};
   __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
   bool& AddXToDirectories{FAddXToDirectories};
   __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };

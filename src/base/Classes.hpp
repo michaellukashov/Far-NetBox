@@ -428,12 +428,12 @@ public:
   void SetValue(const UnicodeString & AName, const UnicodeString & AValue);
   UnicodeString GetValueFromIndex(int32_t Index) const;
 
-  ROProperty<UnicodeString> Text{nb::bind(&TStrings::GetText, this)};
+  const ROProperty<UnicodeString> Text{nb::bind(&TStrings::GetText, this)};
 
 public:
   // TODO: ROIndexedProperty<TObject *> Objects{nb::bind(&TStrings::GetObj, this)};
   // TODO: ROIndexedProperty<UnicodeString> Names{nb::bind(&TStrings::GetName, this)};
-  ROIndexedProperty<UnicodeString> Strings{nb::bind(&TStrings::GetStrings, this)};
+  const ROIndexedProperty<UnicodeString> Strings{nb::bind(&TStrings::GetStrings, this)};
 
 protected:
   UnicodeString GetStrings(int32_t Index) const { return GetString(Index); }
@@ -808,7 +808,7 @@ public:
   virtual int64_t Read(void * Buffer, int64_t Count) override;
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
   virtual int64_t Seek(int64_t Offset, TSeekOrigin SeekOrigin) const override;
-  ROProperty<HANDLE> Handle{nb::bind(&THandleStream::GetHandle, this)};
+  const ROProperty<HANDLE> Handle{nb::bind(&THandleStream::GetHandle, this)};
 
   HANDLE GetHandle() const { return FHandle; }
 

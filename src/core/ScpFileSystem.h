@@ -95,9 +95,9 @@ public:
   void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 protected:
   __property TStrings * Output = { read = FOutput.get() };
-  ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
+  const ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
   __property int ReturnCode = { read = FReturnCode };
-  ROProperty2<int32_t> ReturnCode{&FReturnCode};
+  const ROProperty2<int32_t> ReturnCode{&FReturnCode};
 
   TStrings * GetOutput() const { return FOutput.get(); }
   int32_t GetReturnCode() const { return FReturnCode; }

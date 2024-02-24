@@ -37,9 +37,9 @@ public:
   void WriteToOut(TTransferOutEvent && OnTransferOut, TObject * Sender, const int64_t Len);
   void Reset();
   __property TMemoryStream * Memory  = { read=FMemory };
-  ROProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this)};
+  const ROProperty<TMemoryStream *> Memory{nb::bind(&TFileBuffer::GetMemory, this)};
   __property char * Data = { read=GetData };
-  ROProperty<char *> Data{nb::bind(&TFileBuffer::GetData, this)};
+  const ROProperty<char *> Data{nb::bind(&TFileBuffer::GetData, this)};
   __property int32_t Size = { read=FSize, write=SetSize };
   RWProperty<int64_t> Size{nb::bind(&TFileBuffer::GetSize, this), nb::bind(&TFileBuffer::SetSize, this)};
 

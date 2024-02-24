@@ -67,7 +67,7 @@ public:
   void ShortCuts(TShortCuts & ShortCuts);
 
   __property int32_t Count = { read = GetCount };
-  ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
+  const ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
   // __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
   // __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 
@@ -122,7 +122,7 @@ protected:
 
   static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
   __property UnicodeString Key = { read = GetKey };
-  ROProperty<UnicodeString> Key{nb::bind(&TBookmark::GetKey, this)};
+  const ROProperty<UnicodeString> Key{nb::bind(&TBookmark::GetKey, this)};
 
 private:
   UnicodeString FName;

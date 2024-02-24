@@ -984,13 +984,13 @@ public:
   __property uint32_t SendLength = { read = GetSendLength };
   __property uint32_t Capacity = { read = FCapacity, write = SetCapacity };
   __property uint8_t Type = { read = FType };
-  ROProperty2<SSH_FXP_TYPE> Type{&FType};
+  const ROProperty2<SSH_FXP_TYPE> Type{&FType};
   __property uint8_t RequestType = { read = GetRequestType };
   __property uint32_t MessageNumber = { read = FMessageNumber, write = FMessageNumber };
   RWProperty2<uint32_t> MessageNumber{&FMessageNumber};
   __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
   __property UnicodeString TypeName = { read = GetTypeName };
-  ROProperty<UnicodeString> TypeName{nb::bind(&TSFTPPacket::GetTypeName, this)};
+  const ROProperty<UnicodeString> TypeName{nb::bind(&TSFTPPacket::GetTypeName, this)};
 
   uint32_t GetLength() const { return FLength; }
   uint8_t * GetData() const { return FData; }

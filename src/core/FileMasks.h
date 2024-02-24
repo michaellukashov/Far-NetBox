@@ -217,7 +217,7 @@ public:
     const UnicodeString & APassword) noexcept;
 
   __property TSessionData * SessionData = { read = GetSessionData };
-  ROProperty<TSessionData *> SessionData{nb::bind(&TCustomCommandData::GetSessionData, this)};
+  const ROProperty<TSessionData *> SessionData{nb::bind(&TCustomCommandData::GetSessionData, this)};
   TSessionData * GetSessionData() const { return GetSessionDataPrivate(); }
 
   TCustomCommandData & operator =(const TCustomCommandData & Data);

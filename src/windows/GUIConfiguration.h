@@ -142,7 +142,7 @@ public:
   int32_t IndexOfName(const UnicodeString & Name) const;
 
   __property int32_t Count = { read = GetCount };
-  ROProperty<int32_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
+  const ROProperty<int32_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
 #if defined(__BORLANDC__)
   __property UnicodeString Names[int32_t Index] = { read = GetName };
   __property const TCopyParamRule * Rules[int32_t Index] = { read = GetRule };
@@ -307,7 +307,7 @@ public:
   __property LCID LocaleSafe = { read = GetLocale, write = SetLocaleSafe };
   __property UnicodeString AppliedLocaleHex = { read = GetAppliedLocaleHex };
   __property TObjectList * Locales = { read = GetLocales };
-  ROProperty<TObjectList *> Locales{nb::bind(&TGUIConfiguration::GetLocales, this)};
+  const ROProperty<TObjectList *> Locales{nb::bind(&TGUIConfiguration::GetLocales, this)};
   __property UnicodeString PuttyPath = { read = FPuttyPath, write = FPuttyPath };
   UnicodeString& PuttyPath{FPuttyPath};
   __property TAutoSwitch UsePuttyPwFile = { read = FUsePuttyPwFile, write = FUsePuttyPwFile };
