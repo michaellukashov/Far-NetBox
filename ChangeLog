@@ -5,11 +5,15 @@
 ## [Unreleased] - ReleaseDate
 
 
-## [24.2.2.592] - 2024-02-24
+## [24.2.2.593] - 2024-02-24
 
 ### Changes
 
  - Upgrade WinSCP sources: WinSCP 6.3.1
+
+### Fixes
+
+- correction of: gh-409 Debug log loses messages
 
 
 ## [24.2.2.591] - 2024-02-23
