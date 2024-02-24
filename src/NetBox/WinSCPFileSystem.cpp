@@ -3131,6 +3131,8 @@ void TWinSCPFileSystem::Disconnect()
   DebugAssert(!FSynchronizationSaveScreenHandle);
   DebugAssert(!FFileList);
   DebugAssert(!FPanelItems);
+  if (FQueue)
+    FQueue->Close();
   SAFE_DESTROY(FQueue);
   SAFE_DESTROY(FQueueStatus);
   if (FTerminal != nullptr)
