@@ -12,6 +12,7 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSimpleThread); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSimpleThread) || TObject::is(Kind); }
 public:
+  TSimpleThread() = delete;
   explicit TSimpleThread(TObjectClassId Kind) noexcept;
   virtual ~TSimpleThread() noexcept override;
   void InitSimpleThread(const UnicodeString & Name);
@@ -77,7 +78,7 @@ using TQueueEvent = nb::FastDelegate2<void,
 
 class TTerminalItem;
 
-class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
+class NB_CORE_EXPORT TTerminalQueue final : public TSignalThread
 {
   friend class TQueueItem;
   friend class TQueueItemProxy;
@@ -317,7 +318,7 @@ public:
   int64_t GetTotalTransferred() const;
 };
 
-class NB_CORE_EXPORT TTerminalQueueStatus : public TObject
+class NB_CORE_EXPORT TTerminalQueueStatus final : public TObject
 {
   friend class TTerminalQueue;
   friend class TQueueItemProxy;

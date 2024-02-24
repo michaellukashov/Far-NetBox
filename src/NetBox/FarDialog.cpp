@@ -15,11 +15,11 @@ inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
   return TRect(Left, Top, Right, Bottom);
 }
 
-const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
-class TFarDialogIdleThread : public TSimpleThread
+constexpr const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+class TFarDialogIdleThread final : public TSimpleThread
 {
-  TFarDialogIdleThread() = delete;
 public:
+  TFarDialogIdleThread() = delete;
   explicit TFarDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TDialogIdleThread),
     FDialog(Dialog),

@@ -244,7 +244,7 @@ public:
 };
 
 constexpr TObjectClassId OBJECT_CLASS_TTerminalItem = static_cast<TObjectClassId>(nb::counter_id());
-class TTerminalItem : public TSignalThread
+class TTerminalItem final : public TSignalThread
 {
   friend class TQueueItem;
   friend class TBackgroundTerminal;
