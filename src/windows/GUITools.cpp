@@ -1749,11 +1749,11 @@ void GetInstructionsTheme(
   }
 }
 
-#endif // defined(__BORLANDC__)
-
 TLocalCustomCommand::TLocalCustomCommand() noexcept
 {
 }
+
+#endif // defined(__BORLANDC__)
 
 TLocalCustomCommand::TLocalCustomCommand(
     const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & ALocalPath) noexcept :
