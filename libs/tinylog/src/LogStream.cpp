@@ -108,7 +108,7 @@ int64_t LogStream::InternalWrite(const char * log_data, int64_t to_write)
   {
     auto & buff = drain_buffer_ ? back_buff_ : front_buff_;
     // append to the current buffer
-    int64_t need_capacity = (int64_t)(buff->Capacity() - buff->Size());
+    int64_t need_capacity = static_cast<int64_t>(buff->Capacity() - buff->Size());
     if (to_write > need_capacity)
     {
       // trunc log_data
