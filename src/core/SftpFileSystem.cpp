@@ -2050,16 +2050,14 @@ void TSFTPFileSystem::Init(void * Data /* TSecureShell*/)
 
 TSFTPFileSystem::~TSFTPFileSystem() noexcept
 {
-  // delete FSupport;
-  // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
-  // (typically to SSH_FXP_CLOSE)
-  for (int32_t I = 0; I < FPacketReservations->Count; I++)
-  {
-    DebugAssert(FPacketReservations->GetItem(I) == nullptr);
-  }
-  // delete FPacketReservations;
-  // delete FFixedPaths;
-  // delete FSecureShell;
+#if defined(__BORLANDC__)
+  delete FSupport;
+#endif // defined(__BORLANDC__)
+#if defined(__BORLANDC__)
+  delete FPacketReservations;
+  delete FFixedPaths;
+  delete FSecureShell;
+#endif // defined(__BORLANDC__)
   SAFE_DESTROY(FSecureShell);
 }
 
@@ -2073,6 +2071,12 @@ void TSFTPFileSystem::Open()
 void TSFTPFileSystem::Close()
 {
   FSecureShell->Close();
+  // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
+  // (typically to SSH_FXP_CLOSE)
+  for (int32_t I = 0; I < FPacketReservations->Count; I++)
+  {
+    DebugAssert(FPacketReservations->GetItem(I) == nullptr);
+  }
 }
 
 bool TSFTPFileSystem::GetActive() const
