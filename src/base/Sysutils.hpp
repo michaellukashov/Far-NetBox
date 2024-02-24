@@ -615,8 +615,13 @@ class TPath
 {
 public:
   static UnicodeString Combine(const UnicodeString & APath, const UnicodeString & AFileName);
-  static UnicodeString Join(const UnicodeString & APath, const UnicodeString & AFileName);
   static bool IsDriveRooted(const UnicodeString & /*APath*/) { return false; } // TODO: implement
+};
+
+class TUnixPath
+{
+public:
+  static UnicodeString Join(const UnicodeString & APath, const UnicodeString & AFileName);
 };
 
 extern UnicodeString EmptyStr;

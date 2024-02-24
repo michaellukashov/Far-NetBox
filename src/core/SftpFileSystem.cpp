@@ -3062,7 +3062,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
       try
       {
         Result = GetRealPath(Path3);
-        Result = TPath::Join(Result, Name);
+        Result = TUnixPath::Join(Result, Name);
       }
       catch(...)
       {

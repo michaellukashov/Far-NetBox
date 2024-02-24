@@ -1060,7 +1060,7 @@ void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
           SubDirectory.SetLength(P - 1);
         }
         SendCwd(SubDirectory);
-        Actual = base::UnixIncludeTrailingBackslash(TPath::Join(Actual, SubDirectory));
+        Actual = base::UnixIncludeTrailingBackslash(TUnixPath::Join(Actual, SubDirectory));
       }
       else
       {

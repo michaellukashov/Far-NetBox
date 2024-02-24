@@ -1753,7 +1753,7 @@ UnicodeString TPath::Combine(const UnicodeString & APath, const UnicodeString & 
   return Result;
 }
 
-UnicodeString TPath::Join(const UnicodeString & APath, const UnicodeString & AFileName)
+UnicodeString TUnixPath::Join(const UnicodeString & APath, const UnicodeString & AFileName)
 {
   return base::UnixIncludeTrailingBackslash(APath) + AFileName;
 }

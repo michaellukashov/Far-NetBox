@@ -5173,7 +5173,7 @@ UnicodeString TSessionData::GetFolderName() const
 UnicodeString TSessionData::ComposePath(
   const UnicodeString & APath, const UnicodeString & Name)
 {
-  return TPath::Join(APath, Name);
+  return TUnixPath::Join(APath, Name);
 }
 
 void TSessionData::DisableAuthenticationsExceptPassword()

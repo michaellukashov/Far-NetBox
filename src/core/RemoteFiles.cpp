@@ -71,7 +71,7 @@ UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
 
 UnicodeString UnixCombinePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
-  return TPath::Join(Path1, Path2);
+  return TUnixPath::Join(Path1, Path2);
 }
 
 Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2)
@@ -1646,7 +1646,7 @@ UnicodeString TRemoteFile::GetFullFileName() const
     }
     else if (GetIsDirectory())
     {
-      Result = base::UnixIncludeTrailingBackslash(TPath::Join(GetDirectory()->GetFullDirectory(), GetFileName()));
+      Result = base::UnixIncludeTrailingBackslash(TUnixPath::Join(GetDirectory()->GetFullDirectory(), GetFileName()));
     }
     else
     {

@@ -1350,7 +1350,7 @@ void TWebDAVFileSystem::Source(
   int32_t FD = -1;
   try__finally
   {
-    UnicodeString DestFullName = TPath::Join(ATargetDir, ADestFileName);
+    UnicodeString DestFullName = TUnixPath::Join(ATargetDir, ADestFileName);
     // DEBUG_PRINTF("DestFullName: %s", DestFullName);
 
     std::unique_ptr<TRemoteFile> RemoteFile;
@@ -1386,7 +1386,7 @@ void TWebDAVFileSystem::Source(
         &FileParams, CopyParam, AParams);
     }
 
-    DestFullName = TPath::Join(ATargetDir, ADestFileName);
+    DestFullName = TUnixPath::Join(ATargetDir, ADestFileName);
     // only now, we know the final destination
     // (not really true as we do not support changing file name on overwrite dialog)
     Action.Destination(DestFullName);
