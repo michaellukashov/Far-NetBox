@@ -163,10 +163,12 @@ void TNamedObjectList::Notify(TObject * Ptr, TListNotification Action)
     {
       FHiddenCount = -1;
     }
+#if defined(__BORLANDC__)
     if (FAutoSort)
     {
       AlphaSort();
     }
+#endif // defined(__BORLANDC__)
   }
 }
 
