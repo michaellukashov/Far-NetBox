@@ -14,7 +14,7 @@ TFileZillaIntern::TFileZillaIntern(TFileZillaIntf * AOwner) noexcept :
   FDebugLevel = 0;
 }
 
-bool TFileZillaIntern::FZPostMessage(WPARAM wParam, LPARAM lParam) const
+bool TFileZillaIntern::PostMessage(WPARAM wParam, LPARAM lParam) const
 {
   bool Result;
   uint32_t MessageID = FZ_MSG_ID(wParam);

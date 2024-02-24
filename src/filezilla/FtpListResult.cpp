@@ -415,7 +415,7 @@ void CFtpListResult::SendLineToMessageLog(const RawByteString & Line)
     Status->post = TRUE;
     Status->status = Line.c_str();
     Status->type = FZ_LOG_INFO;
-    if (!GetIntern()->FZPostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)Status))
+    if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)Status))
     {
       delete Status;
     }
