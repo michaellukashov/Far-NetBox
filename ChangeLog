@@ -5,6 +5,13 @@
 ## [Unreleased] - ReleaseDate
 
 
+## [24.2.2.594] - 2024-02-24
+
+### Fixes
+
+ - gh-411 Fix list sorting
+
+
 ## [24.2.2.593] - 2024-02-24
 
 ### Changes
