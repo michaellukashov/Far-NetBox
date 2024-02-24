@@ -165,11 +165,13 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     CERT_CHAIN_PARA ChainPara{};
     // Retrieve the certificate chain of the certificate
     // (a certificate without a valid root does not have a chain).
+    // memset(&ChainPara, 0, sizeof(ChainPara));
     nb::ClearStruct(ChainPara);
     ChainPara.cbSize = sizeof(ChainPara);
 
     CERT_CHAIN_ENGINE_CONFIG ChainConfig{};
 
+    // memset(&ChainConfig, 0, sizeof(ChainConfig));
     nb::ClearStruct(ChainConfig);
     /*const size_t ChainConfigSize =
       reinterpret_cast<const char *>(&ChainConfig.CycleDetectionModulus) + sizeof(ChainConfig.CycleDetectionModulus) -

@@ -41,7 +41,8 @@ static uint32_t VERSION_GetFileVersionInfo_PE(const wchar_t * FileName, uint32_t
   {
     try__finally
     {
-      const HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO), VS_FILE_INFO);
+      const HRSRC Rsrc = ::FindResource(Module, MAKEINTRESOURCE(VS_VERSION_INFO),
+        MAKEINTRESOURCE(VS_FILE_INFO));
       if (Rsrc != nullptr)
       {
         Len = ::SizeofResource(Module, static_cast<HRSRC>(Rsrc));

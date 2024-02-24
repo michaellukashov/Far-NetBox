@@ -144,7 +144,7 @@ bool IsEffectiveFileNameMask(const UnicodeString & AMask);
 UnicodeString DelimitFileNameMask(const UnicodeString & AMask);
 
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
-  int32_t /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
+   int32_t /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
    bool & /*LastPass*/>;
 
 class NB_CORE_EXPORT TCustomCommand : public TObject

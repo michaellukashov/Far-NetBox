@@ -9,17 +9,15 @@
 #include "TextsCore.h"
 #include "Interface.h"
 
-//const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
-//constexpr int32_t TransferModeNamesCount = _countof(TransferModeNames);
+// const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
+// const int TransferModeNamesCount = LENOF(TransferModeNames);
 
-TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept :
-  TObject(Kind)
+TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept : TObject(Kind)
 {
   TCopyParamType::Default();
 }
 
-TCopyParamType::TCopyParamType(const TCopyParamType & Source) noexcept :
-  TCopyParamType(OBJECT_CLASS_TCopyParamType)
+TCopyParamType::TCopyParamType(const TCopyParamType & Source) noexcept : TCopyParamType(OBJECT_CLASS_TCopyParamType)
 {
   TCopyParamType::Assign(&Source);
 }
@@ -757,7 +755,7 @@ bool TCopyParamType::UseAsciiTransfer(const UnicodeString & AFileName,
       return true;
     case tmAutomatic:
       return GetAsciiFileMask().Matches(AFileName, (Side == osLocal),
-          false, &Params);
+        false, &Params);
     default:
       DebugFail();
       return false;
@@ -781,34 +779,34 @@ UnicodeString TCopyParamType::GetLogStr() const
   return
     FORMAT(
       "  PrTime: %s%s; PrRO: %s; Rght: %s; PrR: %s (%s); FnCs: %c; RIC: %s; "
-      "Resume: %s (%d); CalcS: %s; Mask: %s\n",
-      BooleanToEngStr(GetPreserveTime()),
-      UnicodeString(GetPreserveTime() && GetPreserveTimeDirs() ? L"+Dirs" : L""),
-      BooleanToEngStr(GetPreserveReadOnly()),
-      GetRights().GetText(),
-      BooleanToEngStr(GetPreserveRights()),
-      BooleanToEngStr(GetIgnorePermErrors()),
-      CaseC[GetFileNameCase()],
-      CharToHex(GetInvalidCharsReplacement()),
-      ResumeC[GetResumeSupport()],
-      nb::ToInt32(GetResumeThreshold()),
-      BooleanToEngStr(GetCalculateSize()),
-      GetFileMask()) +
+        "Resume: %s (%d); CalcS: %s; Mask: %s\n",
+       BooleanToEngStr(GetPreserveTime()),
+       UnicodeString(GetPreserveTime() && GetPreserveTimeDirs() ? L"+Dirs" : L""),
+       BooleanToEngStr(GetPreserveReadOnly()),
+       GetRights().GetText(),
+       BooleanToEngStr(GetPreserveRights()),
+       BooleanToEngStr(GetIgnorePermErrors()),
+       CaseC[GetFileNameCase()],
+       CharToHex(GetInvalidCharsReplacement()),
+       ResumeC[GetResumeSupport()],
+       nb::ToInt32(GetResumeThreshold()),
+       BooleanToEngStr(GetCalculateSize()),
+       GetFileMask()) +
     FORMAT(
-      "  TM: %s; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; EncryptNewFiles: %s; ExcludeHiddenFiles: %s; ExcludeEmptyDirectories: %s; InclM: %s; ResumeL: %d\n"
-      "  AscM: %s\n",
-      ModeC[GetTransferMode()],
-      BooleanToEngStr(GetClearArchive()),
-      BooleanToEngStr(GetRemoveCtrlZ()),
-      BooleanToEngStr(GetRemoveBOM()),
-      nb::ToInt32(GetCPSLimit()),
-      BooleanToEngStr(GetNewerOnly()),
-      BooleanToEngStr(EncryptNewFiles),
-      BooleanToEngStr(ExcludeHiddenFiles),
-      BooleanToEngStr(ExcludeEmptyDirectories),
-      IncludeFileMask.Masks,
-      ((FTransferSkipList != nullptr) ? FTransferSkipList->Count : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
-      AsciiFileMask.Masks);
+       "  TM: %s; ClAr: %s; RemEOF: %s; RemBOM: %s; CPS: %u; NewerOnly: %s; EncryptNewFiles: %s; ExcludeHiddenFiles: %s; ExcludeEmptyDirectories: %s; InclM: %s; ResumeL: %d\n"
+       "  AscM: %s\n",
+       ModeC[GetTransferMode()],
+       BooleanToEngStr(GetClearArchive()),
+       BooleanToEngStr(GetRemoveCtrlZ()),
+       BooleanToEngStr(GetRemoveBOM()),
+       nb::ToInt32(GetCPSLimit()),
+       BooleanToEngStr(GetNewerOnly()),
+       BooleanToEngStr(EncryptNewFiles),
+       BooleanToEngStr(ExcludeHiddenFiles),
+       BooleanToEngStr(ExcludeEmptyDirectories),
+       IncludeFileMask.Masks,
+       ((FTransferSkipList != nullptr) ? FTransferSkipList->Count : 0) + (!FTransferResumeFile.IsEmpty() ? 1 : 0),
+       AsciiFileMask.Masks);
 }
 
 DWORD TCopyParamType::LocalFileAttrs(const TRights & Rights) const
@@ -928,7 +926,7 @@ void TCopyParamType::Load(THierarchicalStorage * Storage)
   SetResumeSupport(static_cast<TResumeSupport>(Storage->ReadInteger("ResumeSupport", GetResumeSupport())));
   SetResumeThreshold(Storage->ReadInt64("ResumeThreshold", GetResumeThreshold()));
   SetInvalidCharsReplacement(static_cast<wchar_t>(Storage->ReadInteger("ReplaceInvalidChars",
-        nb::ToInt32(GetInvalidCharsReplacement()))));
+    nb::ToInt32(GetInvalidCharsReplacement()))));
   SetLocalInvalidChars(Storage->ReadString("LocalInvalidChars", GetLocalInvalidChars()));
   SetCalculateSize(Storage->ReadBool("CalculateSize", GetCalculateSize()));
   if (Storage->ValueExists("IncludeFileMask"))
@@ -977,14 +975,14 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   // Same as in TSessionData::DoSave
 #undef WRITE_DATA_EX
 #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
-  do { if ((Defaults != nullptr) && (CONV(Defaults->PROPERTY) == CONV(PROPERTY))) \
-  { \
-    Storage->DeleteValue(NAME); \
-  } \
-  else \
-  { \
-    Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
-  } } while(0)
+    do { if ((Defaults != nullptr) && (CONV(Defaults->PROPERTY) == CONV(PROPERTY))) \
+    { \
+      Storage->DeleteValue(NAME); \
+    } \
+    else \
+    { \
+      Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
+    } } while(0)
   #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
   #undef WRITE_DATA
   #define WRITE_DATA(TYPE, PROPERTY) WRITE_DATA_EX(TYPE, TEXT(#PROPERTY), PROPERTY, )
@@ -1001,8 +999,8 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   WRITE_DATA(Integer, TransferMode);
   WRITE_DATA(Integer, ResumeSupport);
   WRITE_DATA(Int64, ResumeThreshold);
-  #undef WRITE_DATA_CONV_FUNC
-  #define WRITE_DATA_CONV_FUNC(X) (uint32_t)(X)
+#undef WRITE_DATA_CONV_FUNC
+#define WRITE_DATA_CONV_FUNC(X) static_cast<uint32_t>(X)
   WRITE_DATA_CONV(Integer, "ReplaceInvalidChars", InvalidCharsReplacement);
   WRITE_DATA(String, LocalInvalidChars);
   WRITE_DATA(Bool, CalculateSize);
@@ -1074,8 +1072,8 @@ bool TCopyParamType::operator ==(const TCopyParamType & rhp) const
 #undef C2
 #undef C
 
-// constexpr uint32_t MinSpeed = 8 * 1024;
-// constexpr uint32_t MaxSpeed = 8 * 1024 * 1024;
+// const unsigned long MinSpeed = 8 * 1024;
+// const unsigned long MaxSpeed = 8 * 1024 * 1024;
 
 static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t & Speed)
 {

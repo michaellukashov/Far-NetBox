@@ -49,9 +49,7 @@ private:
 
 public:
   int64_t GetSize() const { return FMemory->GetSize(); }
-  // void SetPosition(int64_t Value);
   TMemoryStream * GetMemory() const { return FMemory.get(); }
-  // void SetMemory(TMemoryStream * Value);
 
 public:
   char * GetData() const { return static_cast<char *>(FMemory->GetMemory()); }

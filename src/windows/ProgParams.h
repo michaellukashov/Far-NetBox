@@ -4,7 +4,7 @@
 
 #include <Option.h>
 
-class NB_CORE_EXPORT TProgramParams : public TOptions
+class NB_CORE_EXPORT TProgramParams final : public TOptions
 {
 public:
   static TProgramParams * Instance();

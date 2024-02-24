@@ -119,8 +119,6 @@ class NB_CORE_EXPORT TCopyParamList final : public TObject
 friend class TGUIConfiguration;
 public:
   explicit TCopyParamList() noexcept;
-  // explicit TCopyParamList(const TCopyParamList & other) noexcept;
-
   virtual ~TCopyParamList() noexcept override;
   int32_t Find(const TCopyParamRuleData & Value) const;
 
@@ -145,9 +143,11 @@ public:
 
   __property int32_t Count = { read = GetCount };
   ROProperty<int32_t> Count{nb::bind(&TCopyParamList::GetCount, this)};
-  // __property UnicodeString Names[int32_t Index] = { read = GetName };
-  // __property const TCopyParamRule * Rules[int32_t Index] = { read = GetRule };
-  // __property const TCopyParamType * CopyParams[int32_t Index] = { read = GetCopyParam };
+#if defined(__BORLANDC__)
+  __property UnicodeString Names[int32_t Index] = { read = GetName };
+  __property const TCopyParamRule * Rules[int32_t Index] = { read = GetRule };
+  __property const TCopyParamType * CopyParams[int32_t Index] = { read = GetCopyParam };
+#endif // defined(__BORLANDC__)
   __property bool Modified = { read = FModified };
   __property TStrings * NameList = { read = GetNameList };
   __property bool AnyRule = { read = GetAnyRule };
@@ -325,12 +325,15 @@ public:
   __property bool BeepOnFinish = { read = FBeepOnFinish, write = FBeepOnFinish };
   __property TDateTime BeepOnFinishAfter = { read = FBeepOnFinishAfter, write = FBeepOnFinishAfter };
   __property UnicodeString BeepSound = { read = FBeepSound, write = FBeepSound };
+  UnicodeString& BeepSound{FBeepSound};
   __property const TCopyParamList * CopyParamList = { read = GetCopyParamList, write = SetCopyParamList };
   __property UnicodeString CopyParamCurrent = { read = FCopyParamCurrent, write = SetCopyParamCurrent };
   __property int32_t CopyParamIndex = { read = GetCopyParamIndex, write = SetCopyParamIndex };
   __property TGUICopyParamType CurrentCopyParam = { read = GetCurrentCopyParam };
-  // __property TGUICopyParamType CopyParamPreset[UnicodeString Name] = { read = GetCopyParamPreset };
-  // __property bool HasCopyParamPreset[UnicodeString Name] = { read = GetHasCopyParamPreset };
+#if defined(__BORLANDC__)
+  __property TGUICopyParamType CopyParamPreset[UnicodeString Name] = { read = GetCopyParamPreset };
+  __property bool HasCopyParamPreset[UnicodeString Name] = { read = GetHasCopyParamPreset };
+#endif // defined(__BORLANDC__)
   __property TRemoteProperties NewDirectoryProperties = { read = FNewDirectoryProperties, write = SetNewDirectoryProperties };
   __property int32_t KeepUpToDateChangeDelay = { read = FKeepUpToDateChangeDelay, write = FKeepUpToDateChangeDelay };
   __property UnicodeString ChecksumAlg = { read = FChecksumAlg, write = FChecksumAlg };

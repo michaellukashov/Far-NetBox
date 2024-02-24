@@ -24,11 +24,11 @@
 #include <PasTools.hpp>
 #include <GUITools.h>
 
-#if 0
+#if defined(__BORLANDC__)
 
 #pragma package(smart_init)
 
-// const UnicodeString AppName = L"WinSCP";
+const UnicodeString AppName = L"WinSCP";
 
 TConfiguration * CreateConfiguration()
 {
@@ -62,7 +62,8 @@ TConfiguration * CreateConfiguration()
 
   return WinConfiguration;
 }
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 TOptions * GetGlobalOptions()
 {
@@ -70,7 +71,7 @@ TOptions * GetGlobalOptions()
   return &Options; // TProgramParams::Instance();
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 TCustomScpExplorerForm * CreateScpExplorer()
 {
@@ -96,14 +97,14 @@ UnicodeString AppNameString()
   return L"WinSCP";
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 UnicodeString GetCompanyRegistryKey()
 {
   return L"Software\\Martin Prikryl";
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 UnicodeString GetRegistryKey()
 {
@@ -1472,4 +1473,4 @@ bool CheckSafe(TProgramParams * Params)
   return !Params->FindSwitch(UNSAFE_SWITCH);
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)

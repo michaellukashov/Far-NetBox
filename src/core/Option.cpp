@@ -17,7 +17,7 @@ TOptions::TOptions() noexcept
   FSwitchValueDelimiters = UnicodeString(L"=:") + ArrayValueDelimiter;
 }
 
-TOptions & TOptions::operator=(const TOptions & Source)
+TOptions & TOptions::operator =(const TOptions & Source)
 {
   if (this == &Source)
     return *this;
@@ -166,7 +166,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
     else if (FOptions[Index].Type == otSwitch)
     {
       if ((!CaseSensitive && ::SameText(FOptions[Index].Name, Switch)) ||
-          (CaseSensitive && ::SameText(FOptions[Index].Name, Switch)))
+          (CaseSensitive && ::SameStr(FOptions[Index].Name, Switch)))
       {
         Found = true;
         Value = FOptions[Index].Value;
@@ -181,7 +181,7 @@ bool TOptions::FindSwitch(const UnicodeString & Switch,
   if (Found)
   {
     ParamsStart++;
-    while ((Index + ParamsCount < nb::ToIntPtr(FOptions.size())) &&
+    while ((Index + ParamsCount < nb::ToInt32(FOptions.size())) &&
            (FOptions[Index + ParamsCount].Type == otParam))
     {
       ParamsCount++;
@@ -389,20 +389,20 @@ void TOptions::LogOptions(TLogOptionEvent && OnLogOption)
     UnicodeString LogStr;
     switch (Option.Type)
     {
-    case otParam:
-      LogStr = FORMAT("Parameter: %s", Option.Value);
-      DebugAssert(Option.Name.IsEmpty());
-      break;
+      case otParam:
+        LogStr = FORMAT("Parameter: %s", Option.Value);
+        DebugAssert(Option.Name.IsEmpty());
+        break;
 
-    case otSwitch:
-      LogStr =
-        FORMAT("Switch:    %s%s%s%s",
-          FSwitchMarks[1], Option.Name, (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)), Option.Value);
-      break;
+      case otSwitch:
+        LogStr =
+          FORMAT("Switch:    %s%s%s%s",
+            FSwitchMarks[1], Option.Name, (Option.Value.IsEmpty() ? UnicodeString() : FSwitchValueDelimiters.SubString(1, 1)), Option.Value);
+        break;
 
-    default:
-      DebugFail();
-      break;
+      default:
+        DebugFail();
+        break;
     }
     OnLogOption(LogStr);
   }

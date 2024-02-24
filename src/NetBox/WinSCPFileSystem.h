@@ -91,7 +91,7 @@ public:
 public:
   explicit TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept;
   virtual ~TWinSCPFileSystem() noexcept override;
-  void Init(TSecureShell * SecureShell);
+  void Init(const TSecureShell * SecureShell);
 
   virtual void Close() override;
 
@@ -197,7 +197,7 @@ protected:
     TGetSynchronizeOptionsEvent && OnGetOptions);
   bool SynchronizeAllowSelectedOnly();
   void RequireCapability(int32_t Capability);
-  void RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString & Message);
+  void RequireLocalPanel(const TFarPanelInfo * Panel, const UnicodeString & Message);
   bool AreCachesEmpty() const;
   void ClearCaches();
   void OpenSessionInPutty();
@@ -213,7 +213,7 @@ protected:
       const UnicodeString & RealFileName, UnicodeString & DestPath);
   void LogAuthentication(TTerminal * Terminal, const UnicodeString & Msg);
   void MultipleEdit();
-  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & AFileName, TRemoteFile * AFile);
+  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & AFileName, const TRemoteFile * AFile);
   void EditViewCopyParam(TCopyParamType & CopyParam);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
   bool IsEditHistoryEmpty() const;
@@ -293,7 +293,7 @@ private:
   //void SynchronizeSessionLog(const UnicodeString & Message);
   void GetSynchronizeOptions(int32_t Params, TSynchronizeOptions & Options);
   void QueueListUpdate(TTerminalQueue * Queue);
-  void QueueItemUpdate(TTerminalQueue * Queue, TQueueItem * Item);
+  void QueueItemUpdate(const TTerminalQueue * Queue, TQueueItem * Item);
   void QueueEvent(TTerminalQueue * Queue, TQueueEventType Event);
   void GetSpaceAvailable(const UnicodeString & APath,
     TSpaceAvailable & ASpaceAvailable, bool & Close);

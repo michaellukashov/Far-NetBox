@@ -44,12 +44,6 @@ void ParseCertificatePublicKey(const UnicodeString & Str, RawByteString & Public
 bool IsCertificateValidityExpressionValid(
   const UnicodeString & Str, UnicodeString & Error, int32_t & ErrorStart, int32_t & ErrorLen);
 
-UnicodeString GetKeyTypeHuman(const UnicodeString & AKeyType);
-
-bool IsOpenSSH(const UnicodeString & SshImplementation);
-
-NB_CORE_EXPORT UnicodeString GetKeyTypeName(TKeyType KeyType);
-
 bool IsOpenSSH(const UnicodeString & SshImplementation);
 
 TStrings * SshCipherList();

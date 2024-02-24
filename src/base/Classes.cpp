@@ -104,27 +104,24 @@ void TStrings::SetTextStr(const UnicodeString & AText)
   };
   Clear();
   const wchar_t * P = AText.c_str();
-  // if (P != nullptr)
+  while (*P != 0x00)
   {
-    while (*P != 0x00)
+    const wchar_t * Start = P;
+    while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
     {
-      const wchar_t * Start = P;
-      while (!((*P == 0x00) || (*P == 0x0A) || (*P == 0x0D)))
-      {
-        P++;
-      }
-      UnicodeString S;
-      S.SetLength(nb::ToInt32(P - Start));
-      memmove(ToWCharPtr(S), Start, (P - Start) * sizeof(wchar_t));
-      Add(S);
-      if (*P == 0x0D)
-      {
-        P++;
-      }
-      if (*P == 0x0A)
-      {
-        P++;
-      }
+      P++;
+    }
+    UnicodeString S;
+    S.SetLength(nb::ToInt32(P - Start));
+    memmove(ToWCharPtr(S), Start, (P - Start) * sizeof(wchar_t));
+    Add(S);
+    if (*P == 0x0D)
+    {
+      P++;
+    }
+    if (*P == 0x0A)
+    {
+      P++;
     }
   }
 }
@@ -463,14 +460,17 @@ UnicodeString TStrings::GetValueFromIndex(int32_t Index) const
 void TStrings::AddStrings(const TStrings * AStrings)
 {
   BeginUpdate();
-  SCOPE_EXIT
+  try__finally
   {
-    EndUpdate();
-  };
-  for (int32_t Index = 0; Index < AStrings->GetCount(); ++Index)
-  {
-    AddObject(AStrings->GetString(Index), AStrings->GetObj(Index));
+    for (int32_t Index = 0; Index < AStrings->GetCount(); ++Index)
+    {
+      AddObject(AStrings->GetString(Index), AStrings->GetObj(Index));
+    }
   }
+  __finally
+  {
+    EndUpdate();    
+  } end_try__finally
 }
 
 void TStrings::Append(const UnicodeString & Value)
@@ -483,7 +483,7 @@ void TStrings::SaveToStream(TStream * /*Stream*/) const
   ThrowNotImplemented(12);
 }
 
-int32_t StringListCompareStrings(TStringList * List, int32_t Index1, int32_t Index2)
+int32_t StringListCompareStrings(const TStringList * List, int32_t Index1, int32_t Index2)
 {
   const int32_t Result = List->CompareStrings(List->FStrings[Index1],
       List->FStrings[Index2]);
@@ -842,11 +842,8 @@ void TStringList::ExchangeItems(int32_t Index1, int32_t Index2)
 {
   const bool Owns = GetOwnsObjects();
   SetOwnsObjects(false);
+  try__finally
   {
-    SCOPE_EXIT
-    {
-      SetOwnsObjects(Owns);
-    };
     const UnicodeString SItem1 = FStrings[Index1];
     TObject * OItem1 = TObjectList::Get(Index1);
     FStrings[Index1] = FStrings[Index2];
@@ -854,6 +851,10 @@ void TStringList::ExchangeItems(int32_t Index1, int32_t Index2)
     FStrings[Index2] = SItem1;
     TObjectList::SetItem(Index2, OItem1);
   }
+  __finally
+  {
+    SetOwnsObjects(Owns);
+  } end_try__finally
 }
 
 int32_t TStringList::CompareStrings(const UnicodeString & S1, const UnicodeString & S2) const

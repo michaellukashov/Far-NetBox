@@ -26,7 +26,7 @@ Buffer::~Buffer()
  * -1 : fail, buffer full
  */
 int32_t Buffer::TryAppend(struct tm * pt_time, int64_t u_sec, const char * file_name, int32_t line,
-  const char * func_name, std::string & str_log_level, const char * log_data)
+  const char * func_name, const char* str_log_level, const char * log_data, int64_t to_write)
 {
   /*
    * date: 11 byte
@@ -34,22 +34,23 @@ int32_t Buffer::TryAppend(struct tm * pt_time, int64_t u_sec, const char * file_
    * line number: at most 5 byte
    * log level: 9 byte
    */
-  const std::string::size_type append_len = 24 + (file_name ? strlen(file_name) : 0) + 5 +
-    (func_name ? strlen(func_name) : 0) + 9 + strlen(log_data);
+  const size_t prefix_len = 24 + (file_name ? strlen(file_name) : 0) + 5 +
+    (func_name ? strlen(func_name) : 0) + 9;
+  const size_t append_len = prefix_len + to_write; // strlen(log_data);
 
-  if (append_len + size_ > capacity_)
+  if (append_len + size_ >= capacity_)
   {
     return -1;
   }
 
   int n_append = 0;
-  if (file_name && *file_name && line > 0 && func_name && *func_name && !str_log_level.empty())
+  if (file_name && *file_name && line > 0 && func_name && *func_name && !(strlen(str_log_level) == 0))
   {
     n_append = sprintf_s(data_ + size_, capacity_ - size_,
       "%d-%02d-%02d %02d:%02d:%02d.%.03d %10s:%3d %16s %10s %s\n",
       pt_time->tm_year + 1900, pt_time->tm_mon + 1, pt_time->tm_mday,
       pt_time->tm_hour, pt_time->tm_min, pt_time->tm_sec, static_cast<int>(u_sec / 1000),
-      file_name ? file_name : "", line, func_name ? func_name : "", str_log_level.c_str(),
+      file_name ? file_name : "", line, func_name ? func_name : "", str_log_level,
       log_data);
   }
   else
@@ -82,7 +83,6 @@ int32_t Buffer::TryAppend(const void * pt_log, int32_t ToWrite)
   {
     return -1;
   }
-  // TODO: libmemcpy_memmove
   memmove(data_ + size_, pt_log, ToWrite);
   const int32_t n_append = ToWrite;
   if (n_append > 0)

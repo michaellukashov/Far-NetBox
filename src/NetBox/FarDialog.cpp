@@ -15,22 +15,24 @@ inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
   return TRect(Left, Top, Right, Bottom);
 }
 
-const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
-class TFarDialogIdleThread : public TSimpleThread
+constexpr const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+class TFarDialogIdleThread final : public TSimpleThread
 {
-  TFarDialogIdleThread() = delete;
 public:
+  TFarDialogIdleThread() = delete;
   explicit TFarDialogIdleThread(gsl::not_null<TFarDialog *> Dialog, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TDialogIdleThread),
     FDialog(Dialog),
     FMillisecs(Millisecs)
   {}
 
-  virtual ~TFarDialogIdleThread() noexcept override
+  virtual ~TFarDialogIdleThread() noexcept override = default;
+
+  void InitIdleThread()
   {
-    WaitFor(400);
-    SAFE_CLOSE_HANDLE(FEvent);
-    TFarDialogIdleThread::Terminate();
+    TSimpleThread::InitSimpleThread("NetBox Dialog Idle Thread");
+    FEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+    Start();
   }
 
   virtual void Execute() override
@@ -50,18 +52,24 @@ public:
   virtual void Terminate() override
   {
     FFinished = true;
-    if (FEvent)
-      ::SetEvent(FEvent);
+    TriggerEvent();
   }
 
-  void InitIdleThread()
+  virtual void Close() override
   {
-    TSimpleThread::InitSimpleThread("NetBox Dialog Idle Thread");
-    FEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
-    Start();
+    TSimpleThread::Close();
+    SAFE_CLOSE_HANDLE(FEvent);
   }
 
 private:
+  void TriggerEvent()
+  {
+    if (CheckHandle(FEvent))
+    {
+      ::SetEvent(FEvent);
+    }
+  }
+
   gsl::not_null<TFarDialog *> FDialog;
   DWORD FMillisecs{0};
   HANDLE FEvent{INVALID_HANDLE_VALUE};
@@ -75,7 +83,7 @@ TFarDialog::TFarDialog(gsl::not_null<TCustomFarPlugin *> AFarPlugin) noexcept :
 
 TFarDialog::~TFarDialog() noexcept
 {
-  FTIdleThread->Terminate();
+  FTIdleThread->Close();
   for (int32_t Index = 0; Index < GetItemCount(); ++Index)
   {
     TFarDialogItem * Item = GetItem(Index);

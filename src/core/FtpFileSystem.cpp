@@ -181,8 +181,7 @@ void TFileZillaImpl::SetupSsl(ssl_st * Ssl)
 struct message_t
 {
   CUSTOM_MEM_ALLOCATION_IMPL
-
-  message_t() noexcept : wparam(0), lparam(0) {}
+  message_t() noexcept = default;
   message_t(WPARAM w, LPARAM l) noexcept : wparam(w), lparam(l) {}
 
   WPARAM wparam{0};
@@ -198,6 +197,7 @@ public:
 
 
 #if 0
+// moved to FileSystems.h
 struct TFileTransferData
 {
   TFileTransferData()
@@ -232,6 +232,7 @@ class TFTPFileListHelper final : public TObject
 {
   NB_DISABLE_COPY(TFTPFileListHelper)
 public:
+  TFTPFileListHelper() = delete;
   explicit TFTPFileListHelper(TFTPFileSystem * FileSystem, TRemoteFileList * FileList,
       bool IgnoreFileList) noexcept :
     FFileSystem(FileSystem),
@@ -258,9 +259,8 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TFTPFileSystem, ATerminal),
   FFileZillaIntf(nullptr),
   FQueue(std::make_unique<TMessageQueue>()),
-  FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
-  FFileSystemInfoValid(false),
   FReply(0),
+  FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
   FCommandReply(0),
   FLastCommand(CMD_UNKNOWN),
   FPasswordFailed(false),
@@ -289,8 +289,9 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) noexcept :
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
   FOnCaptureOutput(nullptr),
-  FListAll(asOn),
+  FFileSystemInfoValid(false),
   FDoListAll(false),
+  FListAll(asOn),
   FServerCapabilities(std::make_unique<TFTPServerCapabilities>()),
   FDetectTimeDifference(false),
   FTimeDifference(0),
@@ -485,24 +486,23 @@ void TFTPFileSystem::Open()
 
   const int32_t Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
 
+  const uint32_t CodePage = Data->GetCodePageAsNumber();
   const int32_t TimeZoneOffset = Data->GetTimeDifferenceAuto() ? 0 : TimeToMinutes(Data->GetTimeDifference());
 
-  int32_t UTF8;
-  const uint32_t CodePage = Data->GetCodePageAsNumber();
-
+  int32_t UTF8 = 0;
   switch (CodePage)
   {
-  case CP_ACP:
-    UTF8 = 2; // no UTF8
-    break;
+    case CP_ACP:
+      UTF8 = 2; // no UTF8
+      break;
 
-  case CP_UTF8:
-    UTF8 = 1; // always UTF8
-    break;
+    case CP_UTF8:
+      UTF8 = 1; // always UTF8
+      break;
 
-  default:
-    UTF8 = 0; // auto detect
-    break;
+    default:
+      UTF8 = 0; // auto detect
+      break;
   }
 
   FPasswordFailed = false;
@@ -956,7 +956,7 @@ void TFTPFileSystem::EnsureLocation(const UnicodeString & ADirectory, bool Log)
     if (Log)
     {
       FTerminal->LogEvent(FORMAT("Synchronizing current directory \"%s\".",
-          Directory));
+        Directory));
     }
 
     DoChangeDirectory(Directory);
@@ -1119,10 +1119,12 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   TChmodSessionAction & Action)
 {
   DebugAssert(Properties);
-  // DebugAssert(Properties && !Properties->Valid.Contains(vpGroup)); //-V595
-  // DebugAssert(Properties && !Properties->Valid.Contains(vpOwner)); //-V595
-  // DebugAssert(Properties && !Properties->Valid.Contains(vpLastAccess)); //-V595
-  // DebugAssert(Properties && !Properties->Valid.Contains(vpModification)); //-V595
+#if defined(__BORLANDC__)
+  DebugAssert(Properties && !Properties->Valid.Contains(vpGroup)); //-V595
+  DebugAssert(Properties && !Properties->Valid.Contains(vpOwner)); //-V595
+  DebugAssert(Properties && !Properties->Valid.Contains(vpLastAccess)); //-V595
+  DebugAssert(Properties && !Properties->Valid.Contains(vpModification)); //-V595
+#endif // defined(__BORLANDC__)
 
   if (Properties && Properties->Valid.Contains(vpRights))
   {
@@ -1177,7 +1179,9 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
     }
     __finally__removed
     {
-      // delete OwnedFile;
+#if defined(__BORLANDC__)
+      delete OwnedFile;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   else
@@ -1399,6 +1403,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
   const TOverwriteFileParams * FileParams, const TCopyParamType * CopyParam,
   int32_t Params, bool AutoResume)
 {
+  bool Result = false;
   const bool CanAutoResume = FLAGSET(Params, cpNoConfirmation) && AutoResume;
   const bool DestIsSmaller = (FileParams != nullptr) && (FileParams->DestSize < FileParams->SourceSize);
   const bool DestIsSame = (FileParams != nullptr) && (FileParams->DestSize == FileParams->SourceSize);
@@ -1455,7 +1460,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     }
   }
 
-  bool Result = true;
+  Result = true;
 
   switch (Answer)
   {
@@ -2287,7 +2292,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
       // (it should not be problem to use them otherwise).
       // We are also not interested in files with day precision only.
       if (!File->GetIsDirectory() && !File->GetIsSymLink() &&
-        File->GetIsTimeShiftingApplicable())
+          File->GetIsTimeShiftingApplicable())
       {
         std::unique_ptr<TRemoteFile> UtcFilePtr;
         try
@@ -2919,13 +2924,6 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_KEEPALIVE:
-      /*
-      FIXME: Data may be NULL when called from CFtpControlSocket::OnTimer
-              in the data load thread (when the panel is closed immediately after
-              the end of download operations). On the good, it would be necessary
-              to "kill" the thread (or, although close the socket), but as a
-              temporary measure...
-      */
       Result = Data ? ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE) : 0;
       break;
 
@@ -3055,7 +3053,7 @@ bool TFTPFileSystem::ProcessMessage()
     if (Result)
     {
       Message = FQueue->front();
-      FQueue->erase(FQueue->begin());
+      FQueue->pop_front();
     }
     else
     {
@@ -3093,8 +3091,7 @@ void TFTPFileSystem::WaitForMessages()
   {
     Result = ::WaitForSingleObject(FQueueEvent, GUIUpdateInterval);
     FTerminal->ProcessGUI();
-  }
-  while (Result == WAIT_TIMEOUT);
+  } while (Result == WAIT_TIMEOUT);
 
   if (Result != WAIT_OBJECT_0)
   {
@@ -3413,13 +3410,19 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
 
         if (MoreMessages->GetCount() == 0)
         {
+#if defined(__BORLANDC__)
+          delete MoreMessages;
+          MoreMessages = NULL;
+#endif // defined(__BORLANDC__)
           MoreMessages.reset();
         }
       }
       __catch__removed
       {
-        // delete MoreMessages;
-        // throw;
+#if defined(__BORLANDC__)
+        delete MoreMessages;
+        throw;
+#endif // defined(__BORLANDC__)
       } end_try__catch
 
       if (Error.IsEmpty() && (MoreMessages != nullptr))
@@ -3445,7 +3448,9 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
         }
         __finally__removed
         {
-          // delete E;
+#if defined(__BORLANDC__)
+          delete E;
+#endif // defined(__BORLANDC__)
         } end_try__finally
       }
       else
@@ -3473,7 +3478,9 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
       *Response = FLastResponse.release();
       FLastResponse = std::make_unique<TStringList>();
       // just to be consistent
-//      SAFE_DESTROY(FLastErrorResponse);
+#if defined(__BORLANDC__)
+      delete FLastErrorResponse;
+#endif // defined(__BORLANDC__)
       FLastErrorResponse = std::make_unique<TStringList>();
     }
   }
@@ -3905,7 +3912,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
   int64_t Timestamp;
-  tm * Tm = gmtime(&Time);  // localtime(&Time);
+  tm * Tm = gmtime(&Time); // localtime(&Time);
   if (Tm != nullptr)
   {
     SYSTEMTIME SystemTime;
@@ -4022,7 +4029,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
           case omOverwrite:
             if (TargetFileName != FileName1)
             {
-              wcsncpy_s(FileName1, FileName1Len, TargetFileName.c_str(), FileName1Len);
+              wcsncpy_s(FileName1, FileName1Len, TargetFileName.c_str(), TargetFileName.Length());
               FileName1[FileName1Len - 1] = L'\0';
               UserData.FileName = FileName1;
               RequestResult = TFileZillaIntf::FILEEXISTS_RENAME;
@@ -4104,15 +4111,15 @@ UnicodeString FormatContact(const TFtpsCertificateData::TContact & Contact)
 
 UnicodeString FormatValidityTime(const TFtpsCertificateData::TValidityTime & ValidityTime)
 {
-#if 0
-  return FormatDateTime(L"dddddd tt",
-      EncodeDateVerbose(
-        static_cast<uint16_t>(ValidityTime.Year), static_cast<uint16_t>(ValidityTime.Month),
-        static_cast<uint16_t>(ValidityTime.Day)) +
-      EncodeTimeVerbose(
-        static_cast<uint16_t>(ValidityTime.Hour), static_cast<uint16_t>(ValidityTime.Min),
-        static_cast<uint16_t>(ValidityTime.Sec), 0));
-#endif // #if 0
+#if defined(__BORLANDC__)
+  return FormatDateTime(L"ddddd tt",
+    EncodeDateVerbose(
+      (unsigned short)ValidityTime.Year, (unsigned short)ValidityTime.Month,
+      (unsigned short)ValidityTime.Day) +
+    EncodeTimeVerbose(
+      (unsigned short)ValidityTime.Hour, (unsigned short)ValidityTime.Min,
+      (unsigned short)ValidityTime.Sec, 0));
+#endif // defined(__BORLANDC__)
   TODO("use Sysutils::FormatDateTime");
   uint16_t Y, M, D, H, Mm, S, MS;
   const TDateTime DateTime =
@@ -4452,7 +4459,7 @@ bool TFTPFileSystem::HandleAsyncRequestNeedPass(
         RequestResult = TFileZillaIntf::REPLY_OK;
       }
       else if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkPassword, LoadStr(PASSWORD_TITLE), "",
-          LoadStr(PASSWORD_PROMPT), false, 0, Password))
+        LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         RequestResult = TFileZillaIntf::REPLY_OK;
       }
@@ -4462,6 +4469,7 @@ bool TFTPFileSystem::HandleAsyncRequestNeedPass(
       }
     }
 
+    free(Data.Password);
     Data.Password = nullptr;
     // When returning REPLY_OK, we need to return an allocated password,
     // even if we were returning and empty string we got on input.
@@ -4585,18 +4593,17 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->SetSize(Entry->Size);
 
-        if (Entry->Dir)
+        if (Entry->Link)
+        {
+          File->SetType(FILETYPE_SYMLINK);
+        }
+        else if (Entry->Dir)
         {
           File->SetType(FILETYPE_DIRECTORY);
         }
         else
         {
           File->SetType(FILETYPE_DEFAULT);
-        }
-
-        if (Entry->Link)
-        {
-          File->SetIsSymLink(true);
         }
 
         TDateTime Modification;
@@ -4617,7 +4624,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
             nb::ToInt32(Entry->Time.HasYear), nb::ToInt32(Entry->Time.HasSeconds), nb::ToInt32(Entry->Time.HasDate));
         const UnicodeString EntryData =
           FORMAT("%s/%s/%s/%s/%s/%s/%s/%d/%d/%d/%d/%d/%d/%d/%s",
-            Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
+             Entry->Name, Entry->Permissions, Entry->HumanPerm, Entry->Owner, Entry->Group, Entry->OwnerGroup, ::Int64ToStr(Entry->Size),
              nb::ToInt32(Entry->Dir), nb::ToInt32(Entry->Link), Entry->Time.Year, Entry->Time.Month, Entry->Time.Day,
              Entry->Time.Hour, Entry->Time.Minute, TmStr);
         throw ETerminal(&E, FMTLOAD(LIST_LINE_ERROR, EntryData), HELP_LIST_LINE_ERROR);
@@ -4654,7 +4661,7 @@ bool TFTPFileSystem::HandleTransferStatus(bool Valid, int64_t TransferSize,
   return true;
 }
 
-bool TFTPFileSystem::HandleReply(int32_t Command, int64_t Reply)
+bool TFTPFileSystem::HandleReply(int32_t Command, uint32_t Reply)
 {
   if (!FActive)
   {
@@ -4664,7 +4671,7 @@ bool TFTPFileSystem::HandleReply(int32_t Command, int64_t Reply)
   {
     if (FTerminal->GetConfiguration()->GetActualLogProtocol() >= 1)
     {
-      FTerminal->LogEvent(FORMAT("Got reply %d to the command %d", Reply, Command));
+      FTerminal->LogEvent(FORMAT("Got reply %d to the command %d", nb::ToInt32(Reply), Command));
     }
 
     // reply with Command 0 is not associated with current operation
@@ -4673,12 +4680,12 @@ bool TFTPFileSystem::HandleReply(int32_t Command, int64_t Reply)
     if (Command != 0)
     {
       DebugAssert(FCommandReply == 0);
-      FCommandReply = nb::ToUInt32(Reply);
+      FCommandReply = Reply;
     }
     else
     {
       DebugAssert(FReply == 0);
-      FReply = nb::ToUInt32(Reply);
+      FReply = Reply;
     }
     return true;
   }
@@ -4731,8 +4738,9 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
     STATE_QUOTE,
     STATE_QUOTED,
     STATE_DONE
-  } State = STATE_INIT;
+  } State;
 
+  State = STATE_INIT;
   DebugAssert((Str.Length() > 0) && ((Str[1] == L'"') || (Str[1] == L'\'')));
 
   int32_t Index = 1;

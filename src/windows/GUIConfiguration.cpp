@@ -12,9 +12,18 @@
 #include <TextsWin.h>
 #include <Terminal.h>
 #include <CoreMain.h>
-#include <System.ShlObj.hpp>
+#if defined(__BORLANDC__)
+#include <shlobj.h>
 
-// #pragma package(smart_init)
+#pragma package(smart_init)
+
+const int ccLocal = ccUser;
+const int ccShowResults = ccUser << 1;
+const int ccCopyResults = ccUser << 2;
+const int ccRemoteFiles = ccUser << 3;
+const int ccShowResultsInMsgBox = ccUser << 4;
+const int ccSet = 0x80000000;
+#endif // defined(__BORLANDC__)
 
 constexpr const uint32_t AdditionalLanguageMask = 0xFFFFFF00;
 static constexpr const wchar_t * AdditionalLanguagePrefix = L"XX";
@@ -125,11 +134,12 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRuleData & Data) noexcept :
   TObject(OBJECT_CLASS_TCopyParamRule),
   FData(Data)
 {
-  // FData = Data;
+#if defined(__BORLANDC__)
+  FData = Data;
+#endif // defined(__BORLANDC__)
 }
 
-TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) noexcept :
-  TObject(OBJECT_CLASS_TCopyParamRule)
+TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) noexcept : TObject(OBJECT_CLASS_TCopyParamRule)
 {
   FData.HostName = Source.FData.HostName;
   FData.UserName = Source.FData.UserName;
@@ -219,8 +229,8 @@ UnicodeString TCopyParamRule::GetInfoStr(const UnicodeString & Separator) const
 {
   UnicodeString Result;
 #define ADD(FMT, ELEM) \
-    if (!FData.ELEM.IsEmpty()) \
-      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM);
+    do { if (!FData.ELEM.IsEmpty()) \
+      Result += (Result.IsEmpty() ? UnicodeString() : Separator) + FMTLOAD(FMT, FData.ELEM); } while(0)
   ADD(COPY_RULE_HOSTNAME, HostName);
   ADD(COPY_RULE_USERNAME, UserName);
   ADD(COPY_RULE_REMOTE_DIR, RemoteDirectory);
@@ -249,10 +259,12 @@ void TCopyParamList::Init()
 TCopyParamList::~TCopyParamList() noexcept
 {
   Clear();
-  // delete FCopyParams;
-  // delete FRules;
-  // delete FNames;
-  // delete FNameList;
+#if defined(__BORLANDC__)
+  delete FCopyParams;
+  delete FRules;
+  delete FNames;
+  delete FNameList;
+#endif // defined(__BORLANDC__)
 }
 
 void TCopyParamList::Reset()
@@ -447,9 +459,11 @@ void TCopyParamList::Load(THierarchicalStorage * Storage, int32_t ACount)
     }
     __catch__removed
     {
-      // delete CopyParam;
-      // delete Rule;
-      // throw;
+#if defined(__BORLANDC__)
+      delete CopyParam;
+      delete Rule;
+      throw;
+#endif // defined(__BORLANDC__)
     } end_try__catch
 
     FCopyParams->Add(CopyParam.release());
@@ -546,8 +560,10 @@ TGUIConfiguration::TGUIConfiguration(TObjectClassId Kind) noexcept : TConfigurat
 
 TGUIConfiguration::~TGUIConfiguration() noexcept
 {
-  // delete FLocales;
-  // delete FCopyParamList;
+#if defined(__BORLANDC__)
+  delete FLocales;
+  delete FCopyParamList;
+#endif // defined(__BORLANDC__)
 }
 
 void TGUIConfiguration::ConfigurationInit()
@@ -650,7 +666,7 @@ void TGUIConfiguration::DefaultLocalized()
 void TGUIConfiguration::UpdateStaticUsage()
 {
   TConfiguration::UpdateStaticUsage();
-  Usage->Set("CopyParamsCount", (int32_t)(FCopyParamListDefaults ? 0 : FCopyParamList->Count));
+  Usage->Set("CopyParamsCount", static_cast<int32_t>(FCopyParamListDefaults ? 0 : FCopyParamList->Count));
   Usage->Set("Putty", ExtractProgramName(PuttyPath));
 }
 
@@ -665,30 +681,29 @@ void TGUIConfiguration::UpdateStaticUsage()
   BLOCK("Interface", CANCREATE, \
     KEY(Bool,     ContinueOnError); \
     KEY(Bool,     ConfirmCommandSession); \
-    KEY3(Integer,  SynchronizeParams); \
-    KEY3(Integer,  SynchronizeOptions); \
-    KEY3(Integer,  SynchronizeModeAuto); \
-    KEY3(Integer,  SynchronizeMode); \
-    KEY3(Integer,  MaxWatchDirectories); \
+    KEY3(Integer, SynchronizeParams); \
+    KEY3(Integer, SynchronizeOptions); \
+    KEY3(Integer, SynchronizeModeAuto); \
+    KEY3(Integer, SynchronizeMode); \
+    KEY3(Integer, MaxWatchDirectories); \
     KEY(Bool,     QueueBootstrap); \
     KEY(Bool,     QueueKeepDoneItems); \
-    KEY3(Integer,  QueueKeepDoneItemsFor); \
+    KEY3(Integer, QueueKeepDoneItemsFor); \
     KEY(Bool,     QueueAutoPopup); \
-    KEYEX2(Bool,   SessionRememberPassword, SessionRememberPassword); \
+    KEYEX2(Bool,  SessionRememberPassword, SessionRememberPassword); \
     KEY(String,   PuttySession); \
     KEY(String,   PuttyPath); \
+    KEYEX3(TAutoSwitch, UsePuttyPwFile, FUsePuttyPwFile); \
     KEY(Bool,     PuttyPassword); \
     KEY(Bool,     TelnetForFtpInPutty); \
     KEY(DateTime, IgnoreCancelBeforeFinish); \
     KEY(Bool,     BeepOnFinish); \
     KEY(DateTime, BeepOnFinishAfter); \
-    KEY3(Integer,  KeepUpToDateChangeDelay); \
+    KEY2(String,  BeepSound); \
+    KEY3(Integer, KeepUpToDateChangeDelay); \
     KEY(String,   ChecksumAlg); \
-    KEY3(Integer,  SessionReopenAutoIdle); \
+    KEY3(Integer, SessionReopenAutoIdle); \
   ); \
-
-    // KEY3(Integer, UsePuttyPwFile);
-    // KEY(String,   BeepSound);
 
 bool TGUIConfiguration::DoSaveCopyParam(THierarchicalStorage * Storage, const TCopyParamType * CopyParam, const TCopyParamType * Defaults)
 {
@@ -712,10 +727,12 @@ void TGUIConfiguration::SaveData(THierarchicalStorage * AStorage, bool All)
 #undef KEYEX2
 #define KEYEX(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR())
 #define KEYEX2(TYPE, NAME, VAR) AStorage->Write ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
+#define KEYEX3(TYPE, NAME, VAR) AStorage->Write ## Integer(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(VAR))
 #undef KEY
 #undef KEY2
 #undef KEY3
 #undef KEY4
+#define KEY_NULL(TYPE, NAME)
 #define KEY(TYPE, NAME) AStorage->Write ## TYPE(PropertyToKey(#NAME), Get ## NAME())
 #define KEY2(TYPE, NAME) AStorage->Write ## TYPE(PropertyToKey(#NAME), NAME)
 #define KEY3(TYPE, NAME) AStorage->Write ## TYPE(PropertyToKey(#NAME), nb::ToInt32(Get ## NAME()))
@@ -791,15 +808,17 @@ void TGUIConfiguration::LoadData(THierarchicalStorage * AStorage)
   // duplicated from core\configuration.cpp
 #undef KEYEX
 #undef KEYEX2
+#undef KEYEX3
 #define KEYEX(TYPE, NAME, VAR) Set ## VAR(AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), Get ## VAR()))
 #define KEYEX2(TYPE, NAME, VAR) VAR = AStorage->Read ## TYPE(LASTELEM(UnicodeString(#NAME)), VAR)
+#define KEYEX3(TYPE, NAME, VAR) VAR = static_cast<TYPE>(AStorage->Read ## Integer(LASTELEM(UnicodeString(#NAME)), nb::ToInt32(VAR)))
 #undef KEY
 #undef KEY2
 #undef KEY3
 #undef KEY4
 #define KEY(TYPE, NAME) Set ## NAME(AStorage->Read ## TYPE(PropertyToKey(#NAME), Get ## NAME()))
 #define KEY2(TYPE, NAME) NAME = AStorage->Read ## TYPE(PropertyToKey(#NAME), NAME)
-#define KEY3(TYPE, NAME) Set ## NAME(AStorage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt(Get ## NAME())))
+#define KEY3(TYPE, NAME) Set ## NAME(AStorage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt32(Get ## NAME())))
 #define KEY4(TYPE, NAME) NAME = AStorage->Read ## TYPE(PropertyToKey(#NAME), nb::ToInt32(NAME))
   REGCONFIG(false);
 #undef KEY
@@ -900,7 +919,7 @@ HINSTANCE TGUIConfiguration::LoadNewResourceModule(LCID ALocale,
     UnicodeString Module = ModuleFileName();
     if ((ALocale & AdditionalLanguageMask) != AdditionalLanguageMask)
     {
-      wchar_t LocaleStr[4];
+      wchar_t LocaleStr[4]{};
       GetLocaleInfo(ALocale, LOCALE_SABBREVLANGNAME, LocaleStr, LENOF(LocaleStr));
       LocaleName = LocaleStr;
       DebugAssert(!LocaleName.IsEmpty());
@@ -1071,8 +1090,10 @@ void TGUIConfiguration::SetLocaleInternal(LCID Value, bool Safe, bool CompleteOn
 bool TGUIConfiguration::GetCanApplyLocaleImmediately() const
 {
   return true;
-    // (Screen->FormCount == 0) &&
-    // (Screen->DataModuleCount == 0);
+#if defined(__BORLANDC__)
+    (Screen->FormCount == 0) &&
+    (Screen->DataModuleCount == 0);
+#endif // defined(__BORLANDC__)
 }
 
 bool TGUIConfiguration::UsingInternalTranslation() const
@@ -1117,13 +1138,13 @@ void TGUIConfiguration::SetAppliedLocale(LCID AppliedLocale, const UnicodeString
 
 void TGUIConfiguration::FreeResourceModule(HANDLE /*Instance*/)
 {
-#if 0
+#if defined(__BORLANDC__)
   TLibModule * MainModule = FindModule(HInstance);
   if ((unsigned)Instance != MainModule->Instance)
   {
     FreeLibrary(static_cast<HMODULE>(Instance));
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 HANDLE TGUIConfiguration::ChangeToDefaultResourceModule()
@@ -1133,7 +1154,7 @@ HANDLE TGUIConfiguration::ChangeToDefaultResourceModule()
 
 HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE /*Instance*/)
 {
-#if 0
+#if defined(__BORLANDC__)
   if (Instance == nullptr)
   {
     Instance = HInstance;
@@ -1143,15 +1164,15 @@ HANDLE TGUIConfiguration::ChangeResourceModule(HANDLE /*Instance*/)
   MainModule->ResInstance = (unsigned)Instance;
   CoreSetResourceModule(Instance);
   return Result;
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return nullptr;
 }
 
 HANDLE TGUIConfiguration::GetResourceModule()
 {
-#if 0
+#if defined(__BORLANDC__)
   return (HANDLE)FindModule(HInstance)->ResInstance;
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return nullptr;
 }
 
@@ -1233,7 +1254,7 @@ TObjectList * TGUIConfiguration::GetLocales()
     FLastLocalesExts = LocalesExts;
     FLocales->Clear();
 
-#if 0
+#if defined(__BORLANDC__)
     TLanguages * Langs = Languages();
 
     int Count = Langs->Count;
@@ -1306,7 +1327,7 @@ TObjectList * TGUIConfiguration::GetLocales()
     }
 
     FLocales->Sort(LocalesCompare);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   }
 
   return FLocales.get();

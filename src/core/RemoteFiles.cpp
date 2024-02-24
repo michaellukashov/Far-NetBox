@@ -737,8 +737,10 @@ TRemoteTokenList * TRemoteTokenList::Duplicate() const
   }
   __catch__removed
   {
-    // delete Result;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Result;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Result.release();
 }
@@ -869,19 +871,34 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) noexcept :
   TPersistent(OBJECT_CLASS_TRemoteFile)
 {
   Init();
+#if defined(__BORLANDC__)
+  FLinkedFile = NULL;
+  FRights = new TRights();
+  FIconIndex = -1;
+  FCyclicLink = false;
+  FModificationFmt = mfFull;
+#endif // defined(__BORLANDC__)
   FLinkedByFile = ALinkedByFile;
+#if defined(__BORLANDC__)
+  FTerminal = NULL;
+  FDirectory = NULL;
+  FIsHidden = -1;
+#endif // defined(__BORLANDC__)
   FIsEncrypted = false;
   FCalculatedSize = -1;
 }
 
 TRemoteFile::~TRemoteFile() noexcept = default;
-/*{
-  SAFE_DESTROY(FRights);
-  SAFE_DESTROY(FLinkedFile);
-}*/
+#if defined(__BORLANDC__)
+{
+  delete FRights;
+  delete FLinkedFile;
+}
+#endif // defined(__BORLANDC__)
 
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
+
   std::unique_ptr<TRemoteFile> Result(std::make_unique<TRemoteFile>());
   try__catch
   {
@@ -919,8 +936,10 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
   }
   __catch__removed
   {
-    // delete Result;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Result;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Result.release();
 }
@@ -928,7 +947,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
-#if 0
+#if defined(__BORLANDC__)
   uint32_t Attrs = INVALID_FILE_ATTRIBUTES;
   if (GetIsDirectory())
   {
@@ -942,7 +961,7 @@ void TRemoteFile::LoadTypeInfo() const
   UnicodeString DumbFileName = (GetIsSymLink() && !GetLinkTo().IsEmpty() ? GetLinkTo() : GetFileName());
 
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TRemoteFile::Init()
@@ -1075,7 +1094,7 @@ bool TRemoteFile::GetBrokenLink() const
   DebugAssert(GetTerminal());
   // If file is symlink but we couldn't find linked file we assume broken link
   return (GetIsSymLink() && (FCyclicLink || !FLinkedFile) &&
-      GetTerminal()->GetResolvingSymlinks());
+    GetTerminal()->GetResolvingSymlinks());
   // "!FLinkTo.IsEmpty()" removed because it does not work with SFTP
 }
 
@@ -1472,6 +1491,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       {
         FSize = ASize;
 
+        // int P;
+
         FLinkTo.Clear();
         if (GetIsSymLink())
         {
@@ -1491,8 +1512,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
     }
 
-    // #undef GETNCOL
-    // #undef GETCOL
+#if defined(__BORLANDC__)
+    #undef GETNCOL
+    #undef GETCOL
+#endif // defined(__BORLANDC__)
   }
   catch(Exception & E)
   {
@@ -1539,7 +1562,7 @@ void TRemoteFile::FindLinkedFile()
       {
         // this is currently redundant information, because it is used only to
         // detect broken symlink, which would be otherwise detected
-        // by FLinkedFile == nullptr
+        // by FLinkedFile == NULL
         FCyclicLink = true;
         break;
       }
@@ -1806,8 +1829,7 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 }
 //=== TRemoteDirectory ------------------------------------------------------
 TRemoteDirectory::TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template) noexcept :
-  TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
-  FTerminal(ATerminal)
+  TRemoteFileList(OBJECT_CLASS_TRemoteDirectory), FTerminal(ATerminal)
 {
   FThisDirectory = nullptr;
   FParentDirectory = nullptr;
@@ -1926,7 +1948,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
   }
 }
 //===========================================================================
-TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept
+TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept : TStringList()
 {
   TStringList::SetSorted(true);
   SetDuplicates(dupError);
@@ -2198,7 +2220,9 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
     }
     __finally__removed
     {
-      // delete Limited;
+#if defined(__BORLANDC__)
+      delete Limited;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   else
@@ -2243,21 +2267,34 @@ bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
   return Result;
 }
 //=== TRights ---------------------------------------------------------------
-// const wchar_t TRights::BasicSymbols[] = L"rwxrwxrwx";
-// const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
-// const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
-// const wchar_t TRights::ModeGroups[] = L"ugo";
+#if defined(__BORLANDC__)
+const wchar_t TRights::BasicSymbols[] = L"rwxrwxrwx";
+const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
+const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
+const wchar_t TRights::ModeGroups[] = L"ugo";
+#endif // defined(__BORLANDC__)
 
 TRights::TRights() noexcept
 {
   SetNumber(0);
   FAllowUndef = false;
+#if defined(__BORLANDC__)
+  FSet = 0;
+  FUnset = 0;
+  Number = 0;
+  FUnknown = true;
+#endif // defined(__BORLANDC__)
 }
 
 TRights::TRights(uint16_t ANumber) noexcept
 {
   SetNumber(ANumber);
   FAllowUndef = false;
+#if defined(__BORLANDC__)
+  FSet = 0;
+  FUnset = 0;
+  Number = ANumber;
+#endif // defined(__BORLANDC__)
 }
 
 TRights::TRights(const TRights & Source) noexcept
@@ -2540,6 +2577,7 @@ UnicodeString TRights::GetText() const
   else
   {
     UnicodeString Result(TextLen, 0);
+    Result.SetLength(TextLen);
 
     int32_t Flag = 00001;
     int32_t ExtendedFlag = 01000; //-V536
@@ -2876,8 +2914,7 @@ TRemoteProperties::TRemoteProperties() :
   Default();
 }
 
-TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
-  TObject(OBJECT_CLASS_TRemoteProperties),
+TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) : TObject(OBJECT_CLASS_TRemoteProperties),
   Recursive(rhp.Recursive),
   Valid(rhp.Valid),
   Rights(rhp.Rights),
@@ -3006,6 +3043,8 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
 
 TRemoteProperties & TRemoteProperties::operator =(const TRemoteProperties & other)
 {
+  if (this == &other)
+    return *this;
   Valid = other.Valid;
   Rights = other.Rights;
   Group = other.Group;
@@ -3124,7 +3163,9 @@ TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
       SAFE_DESTROY(Item);
     }
   } catch (...) {}
-//  delete FList;
+#if defined(__BORLANDC__)
+  delete FList;
+#endif // defined(__BORLANDC__)
 }
 
 void TSynchronizeChecklist::Add(TChecklistItem * Item)
@@ -3200,7 +3241,9 @@ void TSynchronizeChecklist::Delete(const TChecklistItem * Item)
   TChecklistItem * MutableItem = const_cast<TChecklistItem *>(Item);
   FList->Extract(MutableItem);
   SAFE_DESTROY(MutableItem);
-  // delete Item;
+#if defined(__BORLANDC__)
+  delete Item;
+#endif // defined(__BORLANDC__)
 }
 
 void TSynchronizeChecklist::UpdateDirectorySize(const TChecklistItem * Item, int64_t Size)

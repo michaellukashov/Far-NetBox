@@ -1147,7 +1147,19 @@ private:
   void DoGetFolderOrWorkspace(const UnicodeString & Name, TList * List, bool NoRecrypt);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
-
+//---------------------------------------------------------------------------
+UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData);
+bool GetIsSshProtocol(TFSProtocol FSProtocol);
+int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
+bool HasIP6LiteralBrackets(const UnicodeString & HostName);
+UnicodeString StripIP6LiteralBrackets(const UnicodeString & HostName);
+bool IsIPv6Literal(const UnicodeString & HostName);
+UnicodeString EscapeIPv6Literal(const UnicodeString & IP);
+TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
+bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directive, UnicodeString & Value);
+UnicodeString CutOpensshToken(UnicodeString & S);
+UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path);
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TIEProxyConfig final : public TObject
 {
   TIEProxyConfig() = default;
@@ -1166,15 +1178,4 @@ NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
 
 //template<int s> struct CheckSizeT;
 //CheckSizeT<sizeof(TSessionData)> checkSize;
-
-NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData);
-NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
-NB_CORE_EXPORT int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
-NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString & HostName);
-NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString & IP);
-NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
-bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directive, UnicodeString & Value);
-UnicodeString CutOpensshToken(UnicodeString & S);
-UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path);
-
 

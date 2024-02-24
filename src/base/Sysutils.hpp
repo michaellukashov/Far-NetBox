@@ -33,6 +33,8 @@
 
 #endif
 
+enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
+
 constexpr const wchar_t Slash = L'/';
 constexpr const wchar_t Backslash = L'\\';
 
@@ -661,3 +663,6 @@ DWORD FindNext(TSearchRec & Rec);
 DWORD FindClose(TSearchRec & Rec);
 
 } // namespace base
+
+NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
+  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);

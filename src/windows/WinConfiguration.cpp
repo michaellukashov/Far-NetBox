@@ -63,7 +63,7 @@ void TFileColorData::LoadList(const UnicodeString & S, TList & List)
   std::unique_ptr<TStringList> Strings(CommaTextToStringList(S));
 
   List.clear();
-  for (int Index = 0; Index < Strings->Count; Index++)
+  for (int32_t Index = 0; Index < Strings->Count; Index++)
   {
     TFileColorData FileColorData;
     FileColorData.Load(Strings->Strings[Index]);
@@ -228,7 +228,7 @@ UnicodeString TEditorPreferences::GetName() const
       ReformatFileNameCommand(ExternalEditor);
       SplitCommand(ExternalEditor, Program, Params, Dir);
       FName = ExtractFileName(Program);
-      int P = FName.LastDelimiter(L".");
+      int32_t P = FName.LastDelimiter(L".");
       if (P > 0)
       {
         FName.SetLength(P - 1);
@@ -285,7 +285,7 @@ TEditorList & TEditorList::operator=(const TEditorList & rhl)
 {
   Clear();
 
-  for (int Index = 0; Index < rhl.Count; Index++)
+  for (int32_t Index = 0; Index < rhl.Count; Index++)
   {
     Add(new TEditorPreferences(*rhl.Editors[Index]));
   }
@@ -300,7 +300,7 @@ bool TEditorList::operator==(const TEditorList & rhl) const
   bool Result = (Count == rhl.Count);
   if (Result)
   {
-    int i = 0;
+    int32_t i = 0;
     while ((i < Count) && Result)
     {
       Result = (*Editors[i]) == (*rhl.Editors[i]);
@@ -312,7 +312,7 @@ bool TEditorList::operator==(const TEditorList & rhl) const
 
 void TEditorList::Clear()
 {
-  for (int i = 0; i < Count; i++)
+  for (int32_t i = 0; i < Count; i++)
   {
     delete Editors[i];
   }
@@ -324,13 +324,13 @@ void TEditorList::Add(TEditorPreferences * Editor)
   Insert(Count, Editor);
 }
 
-void TEditorList::Insert(int Index, TEditorPreferences * Editor)
+void TEditorList::Insert(int32_t Index, TEditorPreferences * Editor)
 {
   FEditors->Insert(Index, reinterpret_cast<TObject *>(Editor));
   Modify();
 }
 
-void TEditorList::Change(int Index, TEditorPreferences * Editor)
+void TEditorList::Change(int32_t Index, TEditorPreferences * Editor)
 {
   if (!((*Editors[Index]) == *Editor))
   {
@@ -344,7 +344,7 @@ void TEditorList::Change(int Index, TEditorPreferences * Editor)
   }
 }
 
-void TEditorList::Move(int CurIndex, int NewIndex)
+void TEditorList::Move(int32_t CurIndex, int32_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
@@ -353,7 +353,7 @@ void TEditorList::Move(int CurIndex, int NewIndex)
   }
 }
 
-void TEditorList::Delete(int Index)
+void TEditorList::Delete(int32_t Index)
 {
   DebugAssert((Index >= 0) && (Index < Count));
   delete Editors[Index];
@@ -365,7 +365,7 @@ const TEditorPreferences * TEditorList::Find(
   const UnicodeString FileName, bool Local, const TFileMasks::TParams & Params) const
 {
   const TEditorPreferences * Result = nullptr;
-  int i = 0;
+  int32_t i = 0;
   while ((i < FEditors->Count) && (Result == nullptr))
   {
     Result = Editors[i];
@@ -380,7 +380,7 @@ const TEditorPreferences * TEditorList::Find(
 
 void TEditorList::Load(THierarchicalStorage * Storage)
 {
-  int Index = 0;
+  int32_t Index = 0;
   bool Next;
 
   do
@@ -424,7 +424,7 @@ void TEditorList::Load(THierarchicalStorage * Storage)
 void TEditorList::Save(THierarchicalStorage * Storage) const
 {
   Storage->ClearSubKeys();
-  for (int Index = 0; Index < Count; Index++)
+  for (int32_t Index = 0; Index < Count; Index++)
   {
     if (Storage->OpenSubKey(IntToStr(Index), true))
     {
@@ -440,13 +440,13 @@ void TEditorList::Save(THierarchicalStorage * Storage) const
   }
 }
 
-int TEditorList::GetCount() const
+int32_t TEditorList::GetCount() const
 {
-  int X = FEditors->Count;
+  int32_t X = FEditors->Count;
   return X;
 }
 
-const TEditorPreferences * TEditorList::GetEditor(int Index) const
+const TEditorPreferences * TEditorList::GetEditor(int32_t Index) const
 {
   return reinterpret_cast<TEditorPreferences *>(FEditors->Items[Index]);
 }
@@ -454,7 +454,7 @@ const TEditorPreferences * TEditorList::GetEditor(int Index) const
 bool TEditorList::IsDefaultList() const
 {
   bool Result = true;
-  for (int Index = 0; Result && (Index < Count); Index++)
+  for (int32_t Index = 0; Result && (Index < Count); Index++)
   {
     const TEditorPreferences * Editor = GetEditor(Index);
     if (Editor->Data->Editor == edInternal)
@@ -528,8 +528,8 @@ void TWinConfiguration::Default()
 
   TCustomWinConfiguration::Default();
 
-  int WorkAreaWidthScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaWidth);
-  int WorkAreaHeightScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaHeight);
+  int32_t WorkAreaWidthScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaWidth);
+  int32_t WorkAreaHeightScaled = DimensionToDefaultPixelsPerInch(Screen->WorkAreaHeight);
   UnicodeString PixelsPerInchToolbarValue = "PixelsPerInch=" + SaveDefaultPixelsPerInch();
 
   FDDDisableMove = false;
@@ -630,7 +630,7 @@ void TWinConfiguration::Default()
   TimeoutShellOperations = true;
   TimeoutShellIconRetrieval = false;
   UseIconUpdateThread = true;
-  AllowWindowPrint = false;
+  AllowWindowPrint32_t = false;
   StoreTransition = stInit;
   QueueTransferLimitMax = 9;
   HiContrast = false;
@@ -697,8 +697,8 @@ void TWinConfiguration::Default()
   FUpdates.DotNetVersion = L"";
   FUpdates.ConsoleVersion = L"";
 
-  int ExplorerWidth = Min(WorkAreaWidthScaled - 40, 960);
-  int ExplorerHeight = Min(WorkAreaHeightScaled - 30, 720);
+  int32_t ExplorerWidth = Min(WorkAreaWidthScaled - 40, 960);
+  int32_t ExplorerHeight = Min(WorkAreaHeightScaled - 30, 720);
   FScpExplorer.WindowParams = FormatDefaultWindowParams(ExplorerWidth, ExplorerHeight);
 
   FScpExplorer.DirViewParams = ScpExplorerDirViewParamsDefault;
@@ -726,8 +726,8 @@ void TWinConfiguration::Default()
   FScpExplorer.DriveViewWidth = 180;
   FScpExplorer.DriveViewWidthPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
 
-  int CommanderWidth = Min(WorkAreaWidthScaled - 40, 1090);
-  int CommanderHeight = Min(WorkAreaHeightScaled - 30, 700);
+  int32_t CommanderWidth = Min(WorkAreaWidthScaled - 40, 1090);
+  int32_t CommanderHeight = Min(WorkAreaHeightScaled - 30, 700);
   FScpCommander.WindowParams = FormatDefaultWindowParams(CommanderWidth, CommanderHeight);
 
   FScpCommander.LocalPanelWidth = 0.5;
@@ -1299,7 +1299,7 @@ void TWinConfiguration::LoadFrom(THierarchicalStorage * Storage)
     // Following needs to be done even if there's no Configuration key in the storage,
     // so it cannot be in LoadData
 
-    int EditorCount = FEditorList->Count;
+    int32_t EditorCount = FEditorList->Count;
     if (EditorCount == 0)
     {
       TEditorPreferences * AlternativeEditor = nullptr;
@@ -1363,7 +1363,7 @@ void TWinConfiguration::DoLoadExtensionList(
   const UnicodeString & Path, const UnicodeString & PathId, TStringList * DeletedExtensions)
 {
   TSearchRecOwned SearchRec;
-  int FindAttrs = faReadOnly | faArchive;
+  int32_t FindAttrs = faReadOnly | faArchive;
   if (FindFirstUnchecked(IncludeTrailingBackslash(Path) + L"*.*", FindAttrs, SearchRec) == 0)
   {
     do
@@ -1449,7 +1449,7 @@ UnicodeString TWinConfiguration::GetExtensionId(const UnicodeString & ExtensionP
   if (!NameId.IsEmpty())
   {
     std::unique_ptr<TStrings> ExtensionsPaths(GetExtensionsPaths());
-    for (int Index = 0; Index < ExtensionsPaths->Count; Index++)
+    for (int32_t Index = 0; Index < ExtensionsPaths->Count; Index++)
     {
       if (IsPathToSameFile(Path, ExtensionsPaths->ValueFromIndex[Index]))
       {
@@ -1462,7 +1462,7 @@ UnicodeString TWinConfiguration::GetExtensionId(const UnicodeString & ExtensionP
 
 void TWinConfiguration::ReleaseExtensionTranslations()
 {
-  for (int Index = 0; Index < FExtensionTranslations->Count; Index++)
+  for (int32_t Index = 0; Index < FExtensionTranslations->Count; Index++)
   {
     delete FExtensionTranslations->Objects[Index];
   }
@@ -1473,7 +1473,7 @@ void TWinConfiguration::LoadExtensionTranslations()
 {
   ReleaseExtensionTranslations();
   FExtensionTranslations = std::make_unique<TStringList>();
-  int Index = EXTENSION_STRINGS;
+  int32_t Index = EXTENSION_STRINGS;
   UnicodeString S;
   while (!(S = LoadStr(Index)).IsEmpty())
   {
@@ -1481,7 +1481,7 @@ void TWinConfiguration::LoadExtensionTranslations()
     UnicodeString Original = CutToChar(S, L'=', false);
     UnicodeString Translation = S;
 
-    int ExtensionIndex = FExtensionTranslations->IndexOf(ExtensionName);
+    int32_t ExtensionIndex = FExtensionTranslations->IndexOf(ExtensionName);
     if (ExtensionIndex < 0)
     {
       ExtensionIndex = FExtensionTranslations->AddObject(ExtensionName, new TStringList());
@@ -1492,7 +1492,7 @@ void TWinConfiguration::LoadExtensionTranslations()
   }
 }
 
-UnicodeString TWinConfiguration::UniqueExtensionName(const UnicodeString & ExtensionName, int Counter)
+UnicodeString TWinConfiguration::UniqueExtensionName(const UnicodeString & ExtensionName, int32_t Counter)
 {
   // See how the digits are removed in the ExtensionStringTranslation
   return ExtensionName + IntToStr(Counter);
@@ -1504,7 +1504,7 @@ UnicodeString TWinConfiguration::ExtensionStringTranslation(const UnicodeString 
   if (!ExtensionId.IsEmpty())
   {
     UnicodeString ExtensionName = ExtractFileName(ExtensionId);
-    int ExtensionIndex;
+    int32_t ExtensionIndex;
     bool Retry;
     do
     {
@@ -1522,7 +1522,7 @@ UnicodeString TWinConfiguration::ExtensionStringTranslation(const UnicodeString 
     if (ExtensionIndex >= 0)
     {
       TStrings * ExtensionTranslation = DebugNotNull(dynamic_cast<TStrings *>(FExtensionTranslations->Objects[ExtensionIndex]));
-      int StringIndex = ExtensionTranslation->IndexOfName(S);
+      int32_t StringIndex = ExtensionTranslation->IndexOfName(S);
       if (StringIndex >= 0)
       {
         Result = ExtensionTranslation->ValueFromIndex[StringIndex];
@@ -1542,7 +1542,7 @@ void TWinConfiguration::LoadExtensionList()
   FExtensionsDeleted = L"";
 
   std::unique_ptr<TStrings> ExtensionsPaths(GetExtensionsPaths());
-  for (int Index = 0; Index < ExtensionsPaths->Count; Index++)
+  for (int32_t Index = 0; Index < ExtensionsPaths->Count; Index++)
   {
     DoLoadExtensionList(ExtensionsPaths->ValueFromIndex[Index], ExtensionsPaths->Names[Index], DeletedExtensions.get());
   }
@@ -1556,7 +1556,7 @@ void TWinConfiguration::LoadExtensionList()
   {
     UnicodeString S = CutToChar(ShortCuts, L'|', false);
     TShortCut ShortCut = static_cast<TShortCut>(StrToInt(CutToChar(S, L'=', false)));
-    for (int Index = 0; Index < FExtensionList->Count; Index++)
+    for (int32_t Index = 0; Index < FExtensionList->Count; Index++)
     {
       if (FExtensionList->Commands[Index]->Id == S)
       {
@@ -1678,16 +1678,16 @@ void TWinConfiguration::ClearTemporaryLoginData()
 
 void TWinConfiguration::AddVersionToHistory()
 {
-  int CurrentVersion = CompoundVersion;
+  int32_t CurrentVersion = CompoundVersion;
   DebugAssert(ZeroBuildNumber(CurrentVersion) == CurrentVersion);
 
-  int From = 1;
+  int32_t From = 1;
   bool CurrentVersionPresent = false;
   while (!CurrentVersionPresent && (From < FVersionHistory.Length()))
   {
     UnicodeString VersionInfo = CopyToChars(FVersionHistory, From, L";", true);
     UnicodeString VersionStr = CutToChar(VersionInfo, L',', true);
-    int Version;
+    int32_t Version;
 
     if (TryStrToInt(VersionStr, Version))
     {
@@ -1722,7 +1722,7 @@ bool TWinConfiguration::GetIsBeta()
 
 bool TWinConfiguration::GetAnyBetaInVersionHistory()
 {
-  int From = 1;
+  int32_t From = 1;
   bool AnyBeta = false;
   while (!AnyBeta && (From < VersionHistory.Length()))
   {
@@ -1767,7 +1767,7 @@ bool TWinConfiguration::GetDDExtInstalled()
     else
     {
       void * DragExtRef;
-      int CreateResult =
+      int32_t CreateResult =
         CoCreateInstance(CLSID_ShellExtension, nullptr,
           CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER, IID_IUnknown,
           &DragExtRef);
@@ -1802,7 +1802,7 @@ bool TWinConfiguration::IsDDExtRunning()
 
 bool TWinConfiguration::IsDDExtBroken()
 {
-  int Build = GetWindowsBuild();
+  int32_t Build = GetWindowsBuild();
   return (Build >= 17134) && (Build < 17763);
 }
 
@@ -2006,7 +2006,7 @@ void TWinConfiguration::SetDDFakeFile(bool value)
   SET_CONFIG_PROPERTY(DDFakeFile);
 }
 
-void TWinConfiguration::SetDDExtTimeout(int value)
+void TWinConfiguration::SetDDExtTimeout(int32_t value)
 {
   SET_CONFIG_PROPERTY(DDExtTimeout);
 }
@@ -2203,13 +2203,13 @@ void TWinConfiguration::SetDarkTheme(TAutoSwitch value)
   SET_CONFIG_PROPERTY_EX(DarkTheme, ConfigureInterface());
 }
 
-static int SysDarkTheme(HKEY RootKey)
+static int32_t SysDarkTheme(HKEY RootKey)
 {
   std::unique_ptr<TRegistry> Registry(std::make_unique<TRegistry>());
   Registry->RootKey = RootKey;
   UnicodeString ThemesPersonalizeKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
   UnicodeString AppsUseLightThemeValue = L"AppsUseLightTheme";
-  int Result = -1;
+  int32_t Result = -1;
   if (Registry->OpenKeyReadOnly(ThemesPersonalizeKey) &&
       Registry->ValueExists(AppsUseLightThemeValue))
   {
@@ -2266,12 +2266,12 @@ void TWinConfiguration::SetBalloonNotifications(bool value)
   SET_CONFIG_PROPERTY(BalloonNotifications);
 }
 
-void TWinConfiguration::SetNotificationsTimeout(unsigned int value)
+void TWinConfiguration::SetNotificationsTimeout(unsigned int32_t value)
 {
   SET_CONFIG_PROPERTY(NotificationsTimeout);
 }
 
-void TWinConfiguration::SetNotificationsStickTime(unsigned int value)
+void TWinConfiguration::SetNotificationsStickTime(unsigned int32_t value)
 {
   SET_CONFIG_PROPERTY(NotificationsStickTime);
 }
@@ -2346,7 +2346,7 @@ void TWinConfiguration::SetAutoImportedFromPuttyOrFilezilla(bool value)
   SET_CONFIG_PROPERTY(AutoImportedFromPuttyOrFilezilla);
 }
 
-void TWinConfiguration::SetGenerateUrlComponents(int value)
+void TWinConfiguration::SetGenerateUrlComponents(int32_t value)
 {
   SET_CONFIG_PROPERTY(GenerateUrlComponents);
 }
@@ -2426,7 +2426,7 @@ void TWinConfiguration::SetFileColors(UnicodeString value)
   SET_CONFIG_PROPERTY(FileColors);
 }
 
-void TWinConfiguration::SetRunsSinceLastTip(int value)
+void TWinConfiguration::SetRunsSinceLastTip(int32_t value)
 {
   SET_CONFIG_PROPERTY(RunsSinceLastTip);
 }
@@ -2476,10 +2476,10 @@ void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
     std::unique_ptr<TStringList> DeletedExtensions(CreateSortedStringList());
     ParseExtensionList(DeletedExtensions.get(), FExtensionsDeleted);
 
-    for (int Index = 0; Index < ExtensionList->Count; Index++)
+    for (int32_t Index = 0; Index < ExtensionList->Count; Index++)
     {
       const TCustomCommandType * CustomCommand = ExtensionList->Commands[Index];
-      int Index = value->FindIndexByFileName(CustomCommand->FileName);
+      int32_t Index = value->FindIndexByFileName(CustomCommand->FileName);
       if (Index < 0)
       {
         if (FileExists(CustomCommand->FileName) &&
@@ -2491,12 +2491,12 @@ void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
     }
 
     FExtensionsOrder = L"";
-    for (int Index = 0; Index < value->Count; Index++)
+    for (int32_t Index = 0; Index < value->Count; Index++)
     {
       const TCustomCommandType * CustomCommand = value->Commands[Index];
       AddToList(FExtensionsOrder, CustomCommand->Id, L"|");
 
-      int DeletedIndex = DeletedExtensions->IndexOf(CustomCommand->Id);
+      int32_t DeletedIndex = DeletedExtensions->IndexOf(CustomCommand->Id);
       if (DeletedIndex >= 0)
       {
         DeletedExtensions->Delete(DeletedIndex);
@@ -2506,13 +2506,13 @@ void TWinConfiguration::SetExtensionList(TCustomCommandList * value)
     FExtensionList->Assign(value);
 
     FExtensionsDeleted = L"";
-    for (int Index = 0; Index < DeletedExtensions->Count; Index++)
+    for (int32_t Index = 0; Index < DeletedExtensions->Count; Index++)
     {
       AddToList(FExtensionsDeleted, DeletedExtensions->Strings[Index], L"|");
     }
 
     FExtensionsShortCuts = L"";
-    for (int Index = 0; Index < value->Count; Index++)
+    for (int32_t Index = 0; Index < value->Count; Index++)
     {
       const TCustomCommandType * Extension = value->Commands[Index];
       if (Extension->HasCustomShortCut())
@@ -2559,12 +2559,12 @@ UnicodeString TWinConfiguration::GetDefaultKeyFile()
   return (!FDefaultKeyFile.IsEmpty() ? FDefaultKeyFile : FTemporaryKeyFile);
 }
 
-void TWinConfiguration::SetLastMonitor(int value)
+void TWinConfiguration::SetLastMonitor(int32_t value)
 {
   ::SetLastMonitor(value);
 }
 
-int TWinConfiguration::GetLastMonitor()
+int32_t TWinConfiguration::GetLastMonitor()
 {
   return ::GetLastMonitor();
 }
@@ -2638,7 +2638,7 @@ void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
   }
 
   UnicodeString ErrorList;
-  for (int i = 0; i < Folders->Count; i++)
+  for (int32_t i = 0; i < Folders->Count; i++)
   {
     if (!RecursiveDeleteFile(Folders->Strings[i]))
     {
@@ -2656,13 +2656,13 @@ void TWinConfiguration::CleanupTemporaryFolders(TStrings * Folders)
   }
 }
 
-int TWinConfiguration::GetResourceModuleCompleteness(HINSTANCE Module)
+int32_t TWinConfiguration::GetResourceModuleCompleteness(HINSTANCE Module)
 {
   UnicodeString CompletenessStr = LoadStrFrom(Module, TRANSLATION_COMPLETENESS);
   return StrToIntDef(CompletenessStr, -1);
 }
 
-int TWinConfiguration::GetLocaleCompletenessThreshold()
+int32_t TWinConfiguration::GetLocaleCompletenessThreshold()
 {
   return 80;
 }
@@ -2794,7 +2794,7 @@ void TWinConfiguration::SetStoreTransition(TStoreTransition value)
   SET_CONFIG_PROPERTY(StoreTransition);
 }
 
-void TWinConfiguration::SetQueueTransferLimitMax(int value)
+void TWinConfiguration::SetQueueTransferLimitMax(int32_t value)
 {
   SET_CONFIG_PROPERTY(QueueTransferLimitMax);
 }
@@ -2870,7 +2870,7 @@ void TWinConfiguration::UpdateEntryInJumpList(
       if (!Name.IsEmpty())
       {
         TStringList * List = (Session ? ListSessions : ListWorkspaces).get();
-        int Index = List->IndexOf(Name);
+        int32_t Index = List->IndexOf(Name);
         if (Index >= 0)
         {
           List->Delete(Index);
@@ -2960,7 +2960,7 @@ void TWinConfiguration::UpdateStaticUsage()
   Usage->Set(L"LastMonitor", LastMonitor);
 
   UnicodeString ExternalEditors;
-  for (int Index = 0; Index < EditorList->Count; Index++)
+  for (int32_t Index = 0; Index < EditorList->Count; Index++)
   {
     const TEditorPreferences * Editor = EditorList->Editors[Index];
     if (Editor->Data->Editor == edExternal)
@@ -2976,10 +2976,10 @@ void TWinConfiguration::UpdateStaticUsage()
     LastMachineInstallations = FMachineInstallations;
   }
 
-  int ExtensionsPortable = 0;
-  int ExtensionsInstalled = 0;
-  int ExtensionsUser = 0;
-  for (int Index = 0; Index < FExtensionList->Count; Index++)
+  int32_t ExtensionsPortable = 0;
+  int32_t ExtensionsInstalled = 0;
+  int32_t ExtensionsUser = 0;
+  for (int32_t Index = 0; Index < FExtensionList->Count; Index++)
   {
     const TCustomCommandType * CustomCommand = FExtensionList->Commands[Index];
     UnicodeString PathId = ExcludeTrailingBackslash(ExtractFilePath(CustomCommand->Id));
@@ -3129,7 +3129,7 @@ const UnicodeString WinSCPExtensionExt(L".WinSCPextension");
 UnicodeString TCustomCommandType::GetExtensionId(const UnicodeString & Name)
 {
   UnicodeString Result;
-  int P = Pos(UpperCase(WinSCPExtensionExt), UpperCase(Name));
+  int32_t P = Pos(UpperCase(WinSCPExtensionExt), UpperCase(Name));
   // Ends with Ext or there's another extension after it
   if ((P > 1) &&
       ((Name.Length() == (P + WinSCPExtensionExt.Length() - 1)) || (Name[P + WinSCPExtensionExt.Length()] == L'.')))
@@ -3158,7 +3158,7 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
 
   UnicodeString ExtensionLine;
   bool Break = false;
-  for (int Index = 0; !Break && (Index < Lines->Count); Index++)
+  for (int32_t Index = 0; !Break && (Index < Lines->Count); Index++)
   {
     UnicodeString Line = Lines->Strings[Index].Trim();
     if (!Line.IsEmpty())
@@ -3208,7 +3208,7 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
 
     if (!Continuation)
     {
-      int P;
+      int32_t P;
       if (!ExtensionLine.IsEmpty() && (ExtensionLine[1] == ExtensionMark) && ((P = Pos(L" ", ExtensionLine)) >= 2))
       {
         UnicodeString Key = ExtensionLine.SubString(2, P - 2).LowerCase();
@@ -3231,7 +3231,7 @@ void TCustomCommandType::LoadExtension(TStrings * Lines, const UnicodeString & P
           bool Failed;
           if (Dependency == L"winscp")
           {
-            int Version = StrToCompoundVersion(Value);
+            int32_t Version = StrToCompoundVersion(Value);
             Failed = (Version > WinConfiguration->CompoundVersion);
           }
           else if (Dependency == L".net")
@@ -3551,12 +3551,12 @@ bool TCustomCommandType::ParseOption(const UnicodeString & Value, TOption & Opti
   return Result;
 }
 
-int TCustomCommandType::GetOptionsCount() const
+int32_t TCustomCommandType::GetOptionsCount() const
 {
   return FOptions.size();
 }
 
-const TCustomCommandType::TOption & TCustomCommandType::GetOption(int Index) const
+const TCustomCommandType::TOption & TCustomCommandType::GetOption(int32_t Index) const
 {
   return FOptions[Index];
 }
@@ -3572,10 +3572,10 @@ UnicodeString TCustomCommandType::GetOptionKey(
   return Result;
 }
 
-bool TCustomCommandType::AnyOptionWithFlag(unsigned int Flag) const
+bool TCustomCommandType::AnyOptionWithFlag(unsigned int32_t Flag) const
 {
   bool Result = false;
-  for (int Index = 0; !Result && (Index < OptionsCount); Index++)
+  for (int32_t Index = 0; !Result && (Index < OptionsCount); Index++)
   {
     const TCustomCommandType::TOption & Option = GetOption(Index);
     Result = FLAGSET(Option.Flags, Flag);
@@ -3587,7 +3587,7 @@ UnicodeString TCustomCommandType::GetCommandWithExpandedOptions(
   TStrings * CustomCommandOptions, const UnicodeString & Site) const
 {
   UnicodeString Result = Command;
-  for (int Index = 0; Index < OptionsCount; Index++)
+  for (int32_t Index = 0; Index < OptionsCount; Index++)
   {
     const TCustomCommandType::TOption & Option = GetOption(Index);
     if (Option.IsControl)
@@ -3732,7 +3732,7 @@ void TCustomCommandList::Load(THierarchicalStorage * Storage)
     try
     {
       Storage->ReadValues(Names, true);
-      for (int Index = 0; Index < Names->Count; Index++)
+      for (int32_t Index = 0; Index < Names->Count; Index++)
       {
         TCustomCommandType * Command = new TCustomCommandType();
         Command->Name = Names->Names[Index];
@@ -3749,7 +3749,7 @@ void TCustomCommandList::Load(THierarchicalStorage * Storage)
 
   if (Storage->OpenSubKey(L"CustomCommandsParams", false))
   {
-    for (int Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < FCommands->Count; Index++)
     {
       TCustomCommandType * Command = GetCommand(Index);
       Command->Params = Storage->ReadInteger(Command->Name, Command->Params);
@@ -3759,7 +3759,7 @@ void TCustomCommandList::Load(THierarchicalStorage * Storage)
 
   if (Storage->OpenSubKey(L"CustomCommandsShortCuts", false))
   {
-    for (int Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < FCommands->Count; Index++)
     {
       TCustomCommandType * Command = GetCommand(Index);
       Command->ShortCut = (Word)Storage->ReadInteger(Command->Name, Command->ShortCut);
@@ -3774,7 +3774,7 @@ void TCustomCommandList::Save(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(L"CustomCommands", true))
   {
     Storage->ClearValues();
-    for (int Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < FCommands->Count; Index++)
     {
       const TCustomCommandType * Command = Commands[Index];
       Storage->WriteString(Command->Name, Command->Command);
@@ -3784,7 +3784,7 @@ void TCustomCommandList::Save(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(L"CustomCommandsParams", true))
   {
     Storage->ClearValues();
-    for (int Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < FCommands->Count; Index++)
     {
       const TCustomCommandType * Command = Commands[Index];
       Storage->WriteInteger(Command->Name, Command->Params);
@@ -3794,7 +3794,7 @@ void TCustomCommandList::Save(THierarchicalStorage * Storage)
   if (Storage->OpenSubKey(L"CustomCommandsShortCuts", true))
   {
     Storage->ClearValues();
-    for (int Index = 0; Index < FCommands->Count; Index++)
+    for (int32_t Index = 0; Index < FCommands->Count; Index++)
     {
       const TCustomCommandType * Command = Commands[Index];
       if (Command->ShortCut != 0)
@@ -3808,7 +3808,7 @@ void TCustomCommandList::Save(THierarchicalStorage * Storage)
 
 void TCustomCommandList::Clear()
 {
-  for (int Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < FCommands->Count; Index++)
   {
     delete Commands[Index];
   }
@@ -3816,7 +3816,7 @@ void TCustomCommandList::Clear()
 }
 
 void TCustomCommandList::Add(const UnicodeString Name,
-  const UnicodeString ACommand, int Params)
+  const UnicodeString ACommand, int32_t Params)
 {
   TCustomCommandType * Command = new TCustomCommandType();
   Command->Name = Name;
@@ -3830,13 +3830,13 @@ void TCustomCommandList::Add(TCustomCommandType * Command)
   Insert(Count, Command);
 }
 
-void TCustomCommandList::Insert(int Index, TCustomCommandType * Command)
+void TCustomCommandList::Insert(int32_t Index, TCustomCommandType * Command)
 {
   FCommands->Insert(Index, Command);
   Modify();
 }
 
-void TCustomCommandList::Change(int Index, TCustomCommandType * ACommand)
+void TCustomCommandList::Change(int32_t Index, TCustomCommandType * ACommand)
 {
   TCustomCommandType * Command = GetCommand(Index);
   if (!Command->Equals(ACommand))
@@ -3851,7 +3851,7 @@ void TCustomCommandList::Change(int Index, TCustomCommandType * ACommand)
   }
 }
 
-void TCustomCommandList::Move(int CurIndex, int NewIndex)
+void TCustomCommandList::Move(int32_t CurIndex, int32_t NewIndex)
 {
   if (CurIndex != NewIndex)
   {
@@ -3860,7 +3860,7 @@ void TCustomCommandList::Move(int CurIndex, int NewIndex)
   }
 }
 
-void TCustomCommandList::Delete(int Index)
+void TCustomCommandList::Delete(int32_t Index)
 {
   DebugAssert((Index >= 0) && (Index < Count));
   delete GetCommand(Index);
@@ -3876,13 +3876,13 @@ public:
     FIds = Ids;
   }
 
-  virtual int Invoke(void * Item1, void * Item2)
+  virtual int32_t Invoke(void * Item1, void * Item2)
   {
     TCustomCommandType * CustomCommand1 = static_cast<TCustomCommandType *>(Item1);
     TCustomCommandType * CustomCommand2 = static_cast<TCustomCommandType *>(Item2);
-    int Index1 = FIds->IndexOf(CustomCommand1->Id);
-    int Index2 = FIds->IndexOf(CustomCommand2->Id);
-    int Result;
+    int32_t Index1 = FIds->IndexOf(CustomCommand1->Id);
+    int32_t Index2 = FIds->IndexOf(CustomCommand2->Id);
+    int32_t Result;
     // new items to the end
     if ((Index1 < 0) && (Index2 >= 0))
     {
@@ -3914,17 +3914,17 @@ void TCustomCommandList::SortBy(TStrings * Ids)
   FCommands->SortList(Func);
 }
 
-int TCustomCommandList::GetCount() const
+int32_t TCustomCommandList::GetCount() const
 {
   return FCommands->Count;
 }
 
-const TCustomCommandType * TCustomCommandList::GetConstCommand(int Index) const
+const TCustomCommandType * TCustomCommandList::GetConstCommand(int32_t Index) const
 {
   return static_cast<TCustomCommandType *>(FCommands->Items[Index]);
 }
 
-TCustomCommandType * TCustomCommandList::GetCommand(int Index)
+TCustomCommandType * TCustomCommandList::GetCommand(int32_t Index)
 {
   return static_cast<TCustomCommandType *>(FCommands->Items[Index]);
 }
@@ -3932,7 +3932,7 @@ TCustomCommandType * TCustomCommandList::GetCommand(int Index)
 bool TCustomCommandList::Equals(const TCustomCommandList * Other) const
 {
   bool Result = (Count == Other->Count);
-  for (int Index = 0; Result && (Index < Count); Index++)
+  for (int32_t Index = 0; Result && (Index < Count); Index++)
   {
     Result = Commands[Index]->Equals(Other->Commands[Index]);
   }
@@ -3942,7 +3942,7 @@ bool TCustomCommandList::Equals(const TCustomCommandList * Other) const
 void TCustomCommandList::Assign(const TCustomCommandList * Other)
 {
   Clear();
-  for (int Index = 0; Index < Other->Count; Index++)
+  for (int32_t Index = 0; Index < Other->Count; Index++)
   {
     Add(new TCustomCommandType(*Other->Commands[Index]));
   }
@@ -3953,7 +3953,7 @@ void TCustomCommandList::Assign(const TCustomCommandList * Other)
 
 const TCustomCommandType * TCustomCommandList::Find(const UnicodeString Name) const
 {
-  for (int Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < FCommands->Count; Index++)
   {
     if (Commands[Index]->Name == Name)
     {
@@ -3965,7 +3965,7 @@ const TCustomCommandType * TCustomCommandList::Find(const UnicodeString Name) co
 
 const TCustomCommandType * TCustomCommandList::Find(TShortCut ShortCut) const
 {
-  for (int Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < FCommands->Count; Index++)
   {
     if (Commands[Index]->ShortCut == ShortCut)
     {
@@ -3975,9 +3975,9 @@ const TCustomCommandType * TCustomCommandList::Find(TShortCut ShortCut) const
   return nullptr;
 }
 
-int TCustomCommandList::FindIndexByFileName(const UnicodeString & FileName) const
+int32_t TCustomCommandList::FindIndexByFileName(const UnicodeString & FileName) const
 {
-  for (int Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < FCommands->Count; Index++)
   {
     if (IsPathToSameFile(Commands[Index]->FileName, FileName))
     {
@@ -3989,7 +3989,7 @@ int TCustomCommandList::FindIndexByFileName(const UnicodeString & FileName) cons
 
 void TCustomCommandList::ShortCuts(TShortCuts & ShortCuts) const
 {
-  for (int Index = 0; Index < FCommands->Count; Index++)
+  for (int32_t Index = 0; Index < FCommands->Count; Index++)
   {
     const TCustomCommandType * Command = Commands[Index];
     if (Command->ShortCut != 0)

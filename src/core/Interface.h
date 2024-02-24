@@ -5,6 +5,7 @@
 #if defined(FARPLUGIN)
 #include "Configuration.h"
 #include "SessionData.h"
+// #include <typeinfo>
 #endif // FARPLUGIN
 #define HELP_NONE ""
 #define SCRIPT_SWITCH "script"
@@ -65,7 +66,7 @@ NB_CORE_EXPORT bool TextFromClipboard(UnicodeString & Text, bool Trim);
 NB_CORE_EXPORT void WinInitialize();
 NB_CORE_EXPORT void WinFinalize();
 
-#if 0
+#if defined(__BORLANDC__)
 // Order of the values also define order of the buttons/answers on the prompts
 // MessageDlg relies on these to be <= 0x0000FFFF
 const uint32_t qaYes =      0x00000001;
@@ -94,7 +95,7 @@ const int32_t qpAllowContinueOnError = 0x04;
 const int32_t qpIgnoreAbort =          0x08;
 const int32_t qpWaitInBatch =          0x10;
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 using TButtonSubmitEvent = nb::FastDelegate2<void,
   TObject * /*Sender*/, uint32_t & /*Answer*/>;
@@ -201,7 +202,7 @@ private:
   TDateTime FStart;
 };
 
-struct TClipboardHandler
+struct TClipboardHandler final
 {
   NB_DISABLE_COPY(TClipboardHandler)
 public:

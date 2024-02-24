@@ -295,7 +295,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) 
 {
 }
 
-void TWinSCPFileSystem::Init(TSecureShell * /*SecureShell*/)
+void TWinSCPFileSystem::Init(const TSecureShell * /*SecureShell*/)
 {
   TCustomFarFileSystem::Init();
 }
@@ -841,7 +841,7 @@ void TWinSCPFileSystem::TerminalCaptureLog(
   }
 }
 
-void TWinSCPFileSystem::RequireLocalPanel(TFarPanelInfo * Panel, const UnicodeString & Message)
+void TWinSCPFileSystem::RequireLocalPanel(const TFarPanelInfo * Panel, const UnicodeString & Message)
 {
   if (Panel->GetIsPlugin() || (Panel->GetType() != ptFile))
   {
@@ -2212,7 +2212,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
   nb::ClearStruct(fpd);
   fpd.StructSize = sizeof(fpd);
   fpd.Name = LocalPath.c_str();
-  if (!FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE)))
+  if (!FarControl(FCTL_SETPANELDIRECTORY, 0, &fpd, PANEL_PASSIVE))
   {
     Result = false;
   }
@@ -2229,7 +2229,7 @@ bool TWinSCPFileSystem::SynchronizeBrowsing(const UnicodeString & NewPath)
       nb::ClearStruct(fpd);
       fpd.StructSize = sizeof(fpd);
       fpd.Name = OldPath.c_str();
-      FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd, reinterpret_cast<HANDLE>(PANEL_PASSIVE));
+      FarControl(FCTL_SETPANELDIRECTORY, sizeof(fpd), &fpd, PANEL_PASSIVE);
       Result = false;
     }
     else
@@ -3093,7 +3093,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   {
     // HandleException(&E);
     bool Reopen = false;
-    EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(&E);
+    const EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(&E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
     {
       // FTerminal->ShowExtendedException(&E);
@@ -3131,6 +3131,8 @@ void TWinSCPFileSystem::Disconnect()
   DebugAssert(!FSynchronizationSaveScreenHandle);
   DebugAssert(!FFileList);
   DebugAssert(!FPanelItems);
+  if (FQueue)
+    FQueue->Close();
   SAFE_DESTROY(FQueue);
   SAFE_DESTROY(FQueueStatus);
   if (FTerminal != nullptr)
@@ -3785,7 +3787,7 @@ void TWinSCPFileSystem::QueueListUpdate(TTerminalQueue * Queue)
   }
 }
 
-void TWinSCPFileSystem::QueueItemUpdate(TTerminalQueue * Queue,
+void TWinSCPFileSystem::QueueItemUpdate(const TTerminalQueue * Queue,
   TQueueItem * Item)
 {
   if (GetQueue() == Queue)
@@ -4129,7 +4131,7 @@ void TWinSCPFileSystem::MultipleEdit()
 }
 
 void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
-  const UnicodeString & AFileName, TRemoteFile * AFile)
+  const UnicodeString & AFileName, const TRemoteFile * AFile)
 {
   DebugAssert(AFile);
   TEditHistory EditHistory;

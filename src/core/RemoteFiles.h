@@ -4,7 +4,7 @@
 #include <Sysutils.hpp>
 #include <Common.h>
 
-// enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull }; // moved to Common.h
+// enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull }; // moved to Sysutils.hpp
 
 constexpr const wchar_t * SYMLINKSTR = L" -> ";
 //constexpr const wchar_t * ROOTDIRECTORY = L"/"; // defined in sysutils.hpp

@@ -9,7 +9,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 
-class NB_CORE_EXPORT TBookmarks : public TObject
+class NB_CORE_EXPORT TBookmarks final : public TObject
 {
   NB_DISABLE_COPY(TBookmarks)
 public:
@@ -41,7 +41,7 @@ private:
 };
 
 class TBookmark;
-class NB_CORE_EXPORT TBookmarkList : public TPersistent
+class NB_CORE_EXPORT TBookmarkList final : public TPersistent
 {
   friend class TBookmarks;
   friend class TBookmark;
@@ -112,6 +112,11 @@ public:
   __property UnicodeString Node = { read = FNode, write = SetNode };
   __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
 
+  UnicodeString GetName() const { return FName; }
+  UnicodeString GetLocal() const { return FLocal; }
+  UnicodeString GetRemote() const { return FRemote; }
+  UnicodeString GetNode() const { return FNode; }
+  TShortCut GetShortCut() const { return FShortCut; }
 protected:
   TBookmarkList * FOwner{nullptr};
 
@@ -127,12 +132,6 @@ private:
   TShortCut FShortCut{};
 
 public:
-  UnicodeString GetName() const { return FName; }
-  UnicodeString GetLocal() const { return FLocal; }
-  UnicodeString GetRemote() const { return FRemote; }
-  UnicodeString GetNode() const { return FNode; }
-  TShortCut GetShortCut() const { return FShortCut; }
-
   void SetName(const UnicodeString & Value);
   void SetLocal(const UnicodeString & Value);
   void SetRemote(const UnicodeString & Value);

@@ -22,21 +22,13 @@ constexpr const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 constexpr const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 enum TAutoSwitch { asOn, asOff, asAuto }; // Has to match PuTTY FORCE_ON, FORCE_OFF, AUTO
 
-enum TFtpEncryptionSwitch_219
-{
-  fesPlainFTP,
-  fesExplicitSSL,
-  fesImplicit,
-  fesExplicitTLS,
-};
-
 class TStoredSessionList;
 class TCopyParamType;
 
-class TSshHostCA
+class TSshHostCA final
 {
 public:
-  TSshHostCA();
+  explicit TSshHostCA() noexcept;
   void Save(THierarchicalStorage * Storage) const;
   bool Load(THierarchicalStorage * Storage);
 
@@ -50,10 +42,10 @@ public:
   using TList = nb::vector_t<TSshHostCA>;
 };
 
-class TSshHostCAList
+class TSshHostCAList final
 {
 public:
-  TSshHostCAList() = default;
+  TSshHostCAList() noexcept = default;
   TSshHostCAList(const TSshHostCAList & Other) { operator =(Other); }
   explicit TSshHostCAList(const TSshHostCA::TList & List);
   TSshHostCAList & operator =(const TSshHostCAList & Other);
@@ -163,8 +155,6 @@ private:
   bool FDefaultCollectUsage{false};
 
 public:
-  virtual UnicodeString GetProductVersion() const;
-  virtual UnicodeString GetProductVersionStr() const;
   TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
   virtual UnicodeString GetVersionStr() const;
@@ -238,6 +228,8 @@ public:
   const TSshHostCAList * GetPuttySshHostCAList();
   const TSshHostCAList * GetActiveSshHostCAList();
 
+  virtual UnicodeString GetProductVersion() const;
+  virtual UnicodeString GetProductVersionStr() const;
 protected:
   mutable TStorage FStorage{stDetect};
   mutable TCriticalSection FCriticalSection;
@@ -378,7 +370,7 @@ public:
   ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   RWProperty<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
-  __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
+  __property UnicodeString StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
   ROProperty<UnicodeString> StoredSessionsSubKey{nb::bind(&TConfiguration::GetStoredSessionsSubKey, this)};
   __property UnicodeString PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
   RWProperty<UnicodeString> PuttyRegistryStorageKey{nb::bind(&TConfiguration::GetPuttyRegistryStorageKey, this), nb::bind(&TConfiguration::SetPuttyRegistryStorageKey, this)};
@@ -399,7 +391,7 @@ public:
   ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
   __property UnicodeString Version = { read=GetVersion };
   ROProperty<UnicodeString> Version {nb::bind(&TConfiguration::GetVersion, this)};
-  __property int32_t CompoundVersion = { read=GetCompoundVersion };
+  __property int CompoundVersion = { read=GetCompoundVersion };
   ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
   __property UnicodeString ProductVersion = { read=GetProductVersion };
   ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
@@ -413,11 +405,11 @@ public:
   ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
   __property bool LogFileAppend  = { read=FLogFileAppend, write=SetLogFileAppend };
   __property bool LogSensitive  = { read=FLogSensitive, write=SetLogSensitive };
-  __property int64_t LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
-  __property int32_t LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
-  __property int32_t LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
+  __property __int64 LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
+  __property int LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
+  __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   RWProperty<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
-  __property int32_t ActualLogProtocol  = { read=FActualLogProtocol };
+  __property int ActualLogProtocol  = { read=FActualLogProtocol };
   ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
   __property bool LogActionsRequired  = { read=FLogActionsRequired, write=FLogActionsRequired };
@@ -447,14 +439,14 @@ public:
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property int32_t ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
-  __property int32_t DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
+  __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
   int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
-  __property int32_t ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
-  __property int32_t QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
+  __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
+  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
   RWPropertySimple<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
-  __property int32_t ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
+  __property int ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
   int32_t& ParallelTransferThreshold{FParallelTransferThreshold};
-  __property int32_t KeyVersion = { read = FKeyVersion, write = FKeyVersion };
+  __property int KeyVersion = { read = FKeyVersion, write = FKeyVersion };
   int32_t& KeyVersion{FKeyVersion};
   __property TSshHostCAList * SshHostCAList = { read = GetSshHostCAList, write = SetSshHostCAList };
   __property TSshHostCAList * PuttySshHostCAList = { read = GetPuttySshHostCAList };
@@ -533,6 +525,7 @@ public:
 class NB_CORE_EXPORT TShortCuts final : public TObject
 {
 public:
+  TShortCuts() = default;
   void Add(const TShortCut & ShortCut);
   bool Has(const TShortCut & ShortCut) const;
 

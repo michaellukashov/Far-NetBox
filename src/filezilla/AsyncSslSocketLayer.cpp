@@ -638,14 +638,16 @@ void CAsyncSslSocketLayer::SetSession(SSL_SESSION * Session)
   {
     SSL_SESSION_free(m_sessionid);
   }
-  if (m_sessionidSerialized != nullptr)
+  bool Serialize = (m_Main == nullptr);
+  if ((m_sessionidSerialized != nullptr) && DebugAlwaysTrue(Serialize))
   {
     nb_free(m_sessionidSerialized);
     m_sessionidSerialized = nullptr;
   }
   m_sessionid = Session;
-  if (m_sessionid != nullptr)
+  if ((m_sessionid != nullptr) && Serialize)
   {
+    LogSocketMessageRaw(FZ_LOG_INFO, L"Saving session ID");
     m_sessionidSerializedLen = i2d_SSL_SESSION(m_sessionid, nullptr);
     m_sessionidSerialized = nb::ToUInt8Ptr(nb::chcalloc(m_sessionidSerializedLen));
     uint8_t * P = m_sessionidSerialized;
@@ -680,16 +682,8 @@ bool CAsyncSslSocketLayer::HandleSession(SSL_SESSION * Session)
         LogSocketMessageRaw(FZ_LOG_INFO, L"Session ID changed");
       }
 
-      if (m_Main == nullptr)
-      {
-        LogSocketMessageRaw(FZ_LOG_INFO, L"Saving session ID");
-        SetSession(Session);
-        Result = true;
-      }
-      else
-      {
-        m_sessionid = Session;
-      }
+      SetSession(Session);
+      Result = true;
     }
   }
   return Result;
