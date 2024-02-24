@@ -5412,7 +5412,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
     {
       for (int32_t Index = 0; Index < TObjectList::GetCount(); ++Index)
       {
-        if (Loaded->IndexOf(GetObj(Index)) < 0)
+        if (Loaded->IndexOf(Objects[Index]) < 0)
         {
           Delete(Index);
           Index--;
@@ -6275,7 +6275,7 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
   std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
   for (int32_t Index = 0; (Index < DataList->Count); Index++)
   {
-    Result->Add(rtti::dyn_cast_or_null<TSessionData>(DataList->GetObj(Index))->GetSessionName());
+    Result->Add(rtti::dyn_cast_or_null<TSessionData>(DataList->Objects[Index])->GetSessionName());
   }
 
   return Result.release();

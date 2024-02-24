@@ -464,7 +464,7 @@ void TStrings::AddStrings(const TStrings * AStrings)
   {
     for (int32_t Index = 0; Index < AStrings->GetCount(); ++Index)
     {
-      AddObject(AStrings->GetString(Index), AStrings->GetObj(Index));
+      AddObject(AStrings->GetString(Index), AStrings->Objects[Index]);
     }
   }
   __finally

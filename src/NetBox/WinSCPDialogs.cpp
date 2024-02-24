@@ -1391,7 +1391,7 @@ void TPasswordDialog::GeneratePrompt(bool ShowSavePassword,
   {
     GenerateLabel(Prompts->GetString(Index), Truncated);
 
-    FEdits->Add(GenerateEdit(FLAGSET(nb::ToUIntPtr(Prompts->GetObj(Index)), pupEcho)));
+    FEdits->Add(GenerateEdit(FLAGSET(nb::ToUIntPtr(Prompts->Objects[Index]), pupEcho)));
   }
 }
 
@@ -3812,7 +3812,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
 
     for (int32_t Index6 = 0; Index6 < KEX_COUNT; ++Index6)
     {
-      SessionData->SetKex(Index6, static_cast<TKex>(nb::ToUIntPtr(KexListBox->GetItems()->GetObj(Index6))));
+      SessionData->SetKex(Index6, static_cast<TKex>(nb::ToUIntPtr(KexListBox->GetItems()->Objects[Index6])));
     }
 
     // Authentication tab
@@ -8738,8 +8738,8 @@ void TQueueDialog::RefreshQueue()
 
     int32_t ILine = 0;
     while ((Index > ILine) &&
-      (GetQueueItems()->GetObj(Index) ==
-        GetQueueItems()->GetObj(Index - ILine - 1)))
+      (GetQueueItems()->Objects[Index] ==
+        GetQueueItems()->Objects[Index - ILine - 1]))
     {
       ILine++;
     }

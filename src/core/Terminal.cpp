@@ -6100,7 +6100,7 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
             CalculatedSizes->push_back(Sz);
           }
 
-          OperationFinish(&OperationProgress, AFileList->GetObj(Index), FileName, true, OnceDoneOperation);
+          OperationFinish(&OperationProgress, AFileList->Objects[Index], FileName, true, OnceDoneOperation);
         }
       }
     }
@@ -7538,7 +7538,7 @@ void TTerminal::LogTotalTransferDetails(
       int32_t Count = 0;
       for (int32_t Index = 0; Index < AFiles->GetCount(); ++Index)
       {
-        const TCollectedFileList * FileList = rtti::dyn_cast_or_null<TCollectedFileList>(AFiles->GetObj(Index));
+        const TCollectedFileList * FileList = rtti::dyn_cast_or_null<TCollectedFileList>(AFiles->Objects[Index]);
         Count += FileList->GetCount();
       }
       S += FORMAT(" - in parallel, with %d total files", Count);
@@ -7704,7 +7704,7 @@ void TTerminal::DoCopyToRemote(
     const UnicodeString FileName = AFilesToCopy->GetString(Index);
     DEBUG_PRINTF("FileName: %s", FileName);
     TSearchRecSmart * SearchRec = nullptr;
-    if (rtti::dyn_cast_or_null<TLocalFile>(AFilesToCopy->GetObj(Index)) != nullptr)
+    if (rtti::dyn_cast_or_null<TLocalFile>(AFilesToCopy->Objects[Index]) != nullptr)
     {
       TLocalFile * LocalFile = AFilesToCopy->GetAs<TLocalFile>(Index);
       SearchRec = &LocalFile->SearchRec;
@@ -7738,7 +7738,7 @@ void TTerminal::DoCopyToRemote(
     }
     __finally
     {
-      OperationFinish(AOperationProgress, AFilesToCopy->GetObj(Index), FileName, Success, OnceDoneOperation);
+      OperationFinish(AOperationProgress, AFilesToCopy->Objects[Index], FileName, Success, OnceDoneOperation);
     } end_try__finally
     Index++;
   }

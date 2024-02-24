@@ -342,15 +342,16 @@ public:
   using TList::TList;
   virtual ~TObjectList() noexcept override;
 
+  const ROIndexedProperty<const TObject *> Objects{nb::bind(&TObjectList::GetObj, this)};
   RWProperty2<bool> OwnsObjects{&FOwnsObjects};
 
   template<class T>
   T * GetAs(int32_t Index) { return cast_to<T>(Get(Index)); }
   template<class T>
-  const T * As(int32_t Index) const { return cast_to<T>(GetObj(Index)); }
+  const T * As(int32_t Index) const { return cast_to<T>(Objects[Index]); }
   virtual const TObject * operator [](int32_t Index) const override;
   const TObject * GetObj(int32_t Index) const;
-  TObject * Get(int32_t Index) { return const_cast<TObject *>(GetObj(Index)); }
+  TObject * Get(int32_t Index) { return const_cast<TObject *>(Objects[Index]); }
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Notify(TObject * Ptr, TListNotification Action) override;

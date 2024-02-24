@@ -2024,7 +2024,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   const bool Result = (Index >= 0);
   if (Result)
   {
-    DebugAssert(GetObj(Index) != nullptr);
+    DebugAssert(Objects[Index] != nullptr);
     As<TRemoteFileList>(Index)->DuplicateTo(FileList);
   }
   return Result;

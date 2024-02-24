@@ -211,9 +211,9 @@ bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
 static UnicodeString GetFileListItemPath(const TStrings * Files, int32_t Index)
 {
   UnicodeString Result;
-  if (Files->GetObj(Index) != nullptr)
+  if (Files->Objects[Index] != nullptr)
   {
-    Result = DebugNotNull(rtti::dyn_cast_or_null<TRemoteFile>(Files->GetObj(Index)))->FullFileName();
+    Result = DebugNotNull(rtti::dyn_cast_or_null<TRemoteFile>(Files->Objects[Index]))->FullFileName();
   }
   else
   {

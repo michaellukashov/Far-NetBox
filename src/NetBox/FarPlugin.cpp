@@ -206,7 +206,7 @@ void TCustomFarPlugin::GetPluginInfo(struct PluginInfo * Info)
       for (int32_t Index = 0; Index < NAME.GetCount(); Index++) \
       { \
         StringArray[Index] = DuplicateStr(NAME.GetString(Index)); \
-        Guids[Index] = *reinterpret_cast<const GUID *>(NAME.GetObj(Index)); \
+        Guids[Index] = *reinterpret_cast<const GUID *>(NAME.Objects[Index]); \
       } \
     } } while(0)
 
@@ -945,7 +945,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
     Button->SetBottom(Button->GetTop());
     Button->SetResult(Index + 1);
     Button->SetCenterGroup(true);
-    Button->SetTag(nb::ToInt32(nb::ToIntPtr(Buttons->GetObj(Index))));
+    Button->SetTag(nb::ToInt32(nb::ToIntPtr(Buttons->Objects[Index])));
     if (PrevButton != nullptr)
     {
       Button->Move(PrevButton->GetRight() - Button->GetLeft() + 1, 0);
@@ -1264,7 +1264,7 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
   int32_t Count = 0;
   for (int32_t Index = 0; Index < Items->GetCount(); ++Index)
   {
-    const uint32_t Flags2 = nb::ToUInt32(nb::ToUIntPtr(Items->GetObj(Index)));
+    const uint32_t Flags2 = nb::ToUInt32(nb::ToUIntPtr(Items->Objects[Index]));
     if (FLAGCLEAR(Flags2, MIF_HIDDEN))
     {
       nb::ClearStruct(MenuItems[Count]);
@@ -2967,7 +2967,7 @@ void TFarMenuItems::SetFlag(int32_t Index, uint32_t Flag, bool Value)
 {
   if (GetFlag(Index, Flag) != Value)
   {
-    uint32_t F = nb::ToUInt32(nb::ToUIntPtr(GetObj(Index)));
+    uint32_t F = nb::ToUInt32(nb::ToUIntPtr(Objects[Index]));
     if (Value)
     {
       F |= Flag;
@@ -2982,7 +2982,7 @@ void TFarMenuItems::SetFlag(int32_t Index, uint32_t Flag, bool Value)
 
 bool TFarMenuItems::GetFlag(int32_t Index, uint32_t Flag) const
 {
-  return (nb::ToUIntPtr(GetObj(Index)) & Flag) != 0;
+  return (nb::ToUIntPtr(Objects[Index]) & Flag) != 0;
 }
 
 TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) noexcept :
