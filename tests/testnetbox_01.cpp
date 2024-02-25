@@ -315,7 +315,7 @@ TEST_CASE_METHOD(base_fixture_t, "test2", "netbox")
     str = strings.GetText();
 //    INFO(L"str = " << str);
     CHECK(W2MB(str.c_str()) == "line 0\r\nline 1\r\nline 2\r\n");
-    strings.SetObj(0, nullptr);
+    strings.SetObject(0, nullptr);
     UnicodeString str = strings.GetString(0);
     REQUIRE(W2MB(str.c_str()) == "line 0");
   }
@@ -361,7 +361,7 @@ TEST_CASE_METHOD(base_fixture_t, "test5", "netbox")
   TStringList Lines;
   TObject obj1;
   Lines.InsertObject(0, L"line 1", &obj1);
-  REQUIRE(&obj1 == Lines.GetObj(0));
+  REQUIRE(&obj1 == Lines.Objects[0]);
 }
 
 TEST_CASE_METHOD(base_fixture_t, "test6", "netbox")
