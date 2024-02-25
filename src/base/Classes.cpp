@@ -1951,9 +1951,18 @@ void TGlobals::SetupDbgHandles(const UnicodeString & DbgFileName)
 
 void TGlobals::InitPlatformId()
 {
-  OSVERSIONINFO OSVersionInfo{};
+  OSVERSIONINFOEXW OSVersionInfo{};
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (::GetVersionEx(&OSVersionInfo) != FALSE)
+  DWORDLONG const dwlConditionMask = VerSetConditionMask(
+    VerSetConditionMask(
+      VerSetConditionMask(
+        0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+          VER_MINORVERSION, VER_GREATER_EQUAL),
+          VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+  OSVersionInfo.dwMajorVersion = HIBYTE(_WIN32_WINNT_WIN7);
+  OSVersionInfo.dwMinorVersion = LOBYTE(_WIN32_WINNT_WIN7);
+  OSVersionInfo.wServicePackMajor = 0;
+  if (VerifyVersionInfoW(&OSVersionInfo, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE)
   {
     Win32Platform = OSVersionInfo.dwPlatformId;
     Win32MajorVersion = OSVersionInfo.dwMajorVersion;
