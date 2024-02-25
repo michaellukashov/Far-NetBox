@@ -769,8 +769,10 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus *& Curr
   }
   __catch__removed
   {
-    // delete Status;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Status;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Status.release();
 }
@@ -2287,8 +2289,10 @@ TTransferQueueItem::~TTransferQueueItem() noexcept
     TObject * Object = FFilesToCopy->Get(Index);
     SAFE_DESTROY(Object);
   }
-  // delete FFilesToCopy;
-  // delete FCopyParam;
+#if defined(__BORLANDC__)
+  delete FFilesToCopy;
+  delete FCopyParam;
+#endif // defined(__BORLANDC__)
 }
 
 int32_t TTransferQueueItem::DefaultCPSLimit() const
@@ -2653,7 +2657,9 @@ TTerminalThread::~TTerminalThread() noexcept
   FTerminal->SetOnReadDirectoryProgress(std::forward<TReadDirectoryProgressEvent>(FOnReadDirectoryProgress));
   FTerminal->SetOnInitializeLog(std::forward<TNotifyEvent>(FOnInitializeLog));
 
-  // delete FSection;
+#if defined(__BORLANDC__)
+  delete FSection;
+#endif // defined(__BORLANDC__)
   if (FAbandoned)
   {
     delete FTerminal.get();
