@@ -1025,19 +1025,19 @@ void TCopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamType *
   DebugAssert(FOnTransferIn.empty());
 }
 
-#define C(Property) (Get ## Property() == rhp.Get ## Property())
-#define C2(Property) (F##Property == rhp.F##Property)
+#define C(Property) (Get ## Property() == rhs.Get ## Property())
+#define C2(Property) (F##Property == rhs.F##Property)
 
-bool TCopyParamType::operator ==(const TCopyParamType & rhp) const
+bool TCopyParamType::operator ==(const TCopyParamType & rhs) const
 {
   DebugAssert(FTransferSkipList == nullptr);
   DebugAssert(FTransferResumeFile.IsEmpty());
   DebugAssert(FOnTransferOut.empty());
   DebugAssert(FOnTransferIn.empty());
-  DebugAssert(rhp.FTransferSkipList == nullptr);
-  DebugAssert(rhp.FTransferResumeFile.IsEmpty());
-  DebugAssert(rhp.FOnTransferOut.empty());
-  DebugAssert(rhp.FOnTransferIn.empty());
+  DebugAssert(rhs.FTransferSkipList == nullptr);
+  DebugAssert(rhs.FTransferResumeFile.IsEmpty());
+  DebugAssert(rhs.FOnTransferOut.empty());
+  DebugAssert(rhs.FOnTransferIn.empty());
   return
     C(AddXToDirectories) &&
     C(AsciiFileMask) &&

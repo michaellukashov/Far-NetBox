@@ -126,7 +126,7 @@ public:
   UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
   // UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ uint32_t Attrs) const;
 
-  bool operator ==(const TCopyParamType & rhp) const;
+  bool operator ==(const TCopyParamType & rhs) const;
 
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
   TFileMasks& AsciiFileMask{FAsciiFileMask};

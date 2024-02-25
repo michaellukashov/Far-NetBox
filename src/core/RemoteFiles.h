@@ -505,24 +505,24 @@ public:
   TRights Combine(const TRights & Other) const;
   void SetTextOverride(const UnicodeString & value);
 
-  bool operator ==(const TRights & rhr) const;
-  bool operator ==(uint16_t rhr) const;
-  bool operator ==(TFlag rhr) const;
-  bool operator !=(const TRights & rhr) const;
-  bool operator !=(const TFlag rhr) const;
-  TRights & operator =(const TRights & rhr);
-  TRights & operator =(uint16_t rhr);
+  bool operator ==(const TRights & rhs) const;
+  bool operator ==(uint16_t rhs) const;
+  bool operator ==(TFlag rhs) const;
+  bool operator !=(const TRights & rhs) const;
+  bool operator !=(const TFlag rhs) const;
+  TRights & operator =(const TRights & rhs);
+  TRights & operator =(uint16_t rhs);
   TRights operator ~() const;
-  TRights operator &(uint16_t rhr) const;
-  TRights operator &(const TRights & rhr) const;
-  TRights operator &(TFlag rhr) const;
-  TRights & operator &=(uint16_t rhr);
-  TRights & operator &=(const TRights & rhr);
-  TRights & operator &=(TFlag rhr);
-  TRights operator |(uint16_t rhr) const;
-  TRights operator |(const TRights & rhr) const;
-  TRights & operator |=(uint16_t rhr);
-  TRights & operator |=(const TRights & rhr);
+  TRights operator &(uint16_t rhs) const;
+  TRights operator &(const TRights & rhs) const;
+  TRights operator &(TFlag rhs) const;
+  TRights & operator &=(uint16_t rhs);
+  TRights & operator &=(const TRights & rhs);
+  TRights & operator &=(TFlag rhs);
+  TRights operator |(uint16_t rhs) const;
+  TRights operator |(const TRights & rhs) const;
+  TRights & operator |=(uint16_t rhs);
+  TRights & operator |=(const TRights & rhs);
   operator uint16_t() const;
   operator uint32_t() const;
 
@@ -600,9 +600,9 @@ public:
   bool AddXToDirectories{false};
 
   TRemoteProperties();
-  TRemoteProperties(const TRemoteProperties & rhp);
-  bool operator ==(const TRemoteProperties & rhp) const;
-  bool operator !=(const TRemoteProperties & rhp) const;
+  TRemoteProperties(const TRemoteProperties & rhs);
+  bool operator ==(const TRemoteProperties & rhs) const;
+  bool operator !=(const TRemoteProperties & rhs) const;
   void Default();
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;

@@ -103,15 +103,15 @@ void TGUICopyParamType::Save(THierarchicalStorage * Storage, const TCopyParamTyp
   Storage->WriteBool("QueueQueueParallel", GetQueueParallel());
 }
 
-TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhp)
+TGUICopyParamType & TGUICopyParamType::operator =(const TCopyParamType & rhs)
 {
-  Assign(&rhp);
+  Assign(&rhs);
   return *this;
 }
 
-TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhp)
+TGUICopyParamType & TGUICopyParamType::operator =(const TGUICopyParamType & rhs)
 {
-  Assign(&rhp);
+  Assign(&rhs);
   return *this;
 }
 
@@ -148,8 +148,8 @@ TCopyParamRule::TCopyParamRule(const TCopyParamRule & Source) noexcept : TObject
 }
 
 #undef C
-#define C(Property) (Property == rhp.Property)
-bool TCopyParamRule::operator ==(const TCopyParamRule & rhp) const
+#define C(Property) (Property == rhs.Property)
+bool TCopyParamRule::operator ==(const TCopyParamRule & rhs) const
 {
   return
     C(FData.HostName) &&
@@ -287,21 +287,21 @@ void TCopyParamList::ValidateName(const UnicodeString & Name)
   }
 }
 
-TCopyParamList & TCopyParamList::operator =(const TCopyParamList & rhl)
+TCopyParamList & TCopyParamList::operator =(const TCopyParamList & rhs)
 {
-  if (this == &rhl)
+  if (this == &rhs)
     return *this;
   Clear();
 
-  for (int32_t Index = 0; Index < rhl.GetCount(); ++Index)
+  for (int32_t Index = 0; Index < rhs.GetCount(); ++Index)
   {
-    TCopyParamType * CopyParam = new TCopyParamType(*rhl.GetCopyParam(Index));
+    TCopyParamType * CopyParam = new TCopyParamType(*rhs.GetCopyParam(Index));
     TCopyParamRule * Rule = nullptr;
-    if (rhl.GetRule(Index) != nullptr)
+    if (rhs.GetRule(Index) != nullptr)
     {
-      Rule = new TCopyParamRule(*rhl.GetRule(Index));
+      Rule = new TCopyParamRule(*rhs.GetRule(Index));
     }
-    Add(rhl.GetName(Index), CopyParam, Rule);
+    Add(rhs.GetName(Index), CopyParam, Rule);
   }
   // there should be comparison of with the assigned list, but we rely on caller
   // to do it instead (TGUIConfiguration::SetCopyParamList)
@@ -309,17 +309,17 @@ TCopyParamList & TCopyParamList::operator =(const TCopyParamList & rhl)
   return *this;
 }
 
-bool TCopyParamList::operator ==(const TCopyParamList & rhl) const
+bool TCopyParamList::operator ==(const TCopyParamList & rhs) const
 {
-  bool Result = (GetCount() == rhl.GetCount());
+  bool Result = (GetCount() == rhs.GetCount());
   if (Result)
   {
     int32_t Index = 0;
     while ((Index < GetCount()) && Result)
     {
       Result =
-        (GetName(Index) == rhl.GetName(Index)) &&
-        CompareItem(Index, rhl.GetCopyParam(Index), rhl.GetRule(Index));
+        (GetName(Index) == rhs.GetName(Index)) &&
+        CompareItem(Index, rhs.GetCopyParam(Index), rhs.GetRule(Index));
       ++Index;
     }
   }

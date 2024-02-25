@@ -37,8 +37,8 @@ public:
 
   virtual void Default() override;
   virtual void Assign(const TCopyParamType * Source) override;
-  TGUICopyParamType & operator =(const TGUICopyParamType & rhp);
-  virtual TGUICopyParamType & operator =(const TCopyParamType & rhp) override;
+  TGUICopyParamType & operator =(const TGUICopyParamType & rhs);
+  virtual TGUICopyParamType & operator =(const TCopyParamType & rhs) override;
 
   __property bool Queue = { read = FQueue, write = FQueue };
   __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
@@ -87,7 +87,7 @@ public:
 
   UnicodeString GetInfoStr(const UnicodeString & Separator) const;
 
-  bool operator ==(const TCopyParamRule & rhp) const;
+  bool operator ==(const TCopyParamRule & rhs) const;
 
   __property TCopyParamRuleData Data = { read = FData, write = FData };
   __property bool IsEmpty = { read = GetEmpty };
@@ -127,8 +127,8 @@ public:
 
   static void ValidateName(const UnicodeString & Name);
 
-  TCopyParamList & operator =(const TCopyParamList & rhl);
-  bool operator ==(const TCopyParamList & rhl) const;
+  TCopyParamList & operator =(const TCopyParamList & rhs);
+  bool operator ==(const TCopyParamList & rhs) const;
 
   void Clear();
   void Add(const UnicodeString & Name,
