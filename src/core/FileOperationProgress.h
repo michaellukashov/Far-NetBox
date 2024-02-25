@@ -323,10 +323,10 @@ public:
 
   virtual ~TSuspendFileOperationProgress() noexcept override
   {
-    if (FOperationProgress != nullptr)
+    try { if (FOperationProgress != nullptr)
     {
       FOperationProgress->Resume();
-    }
+    } } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
 private:

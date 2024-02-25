@@ -504,12 +504,12 @@ TSessionAction::TSessionAction(TActionLog * Log, TLogAction Action) noexcept
 
 TSessionAction::~TSessionAction() noexcept
 {
-  if (FRecord != nullptr)
+  try { if (FRecord != nullptr)
   {
     TSessionActionRecord * Record = FRecord;
     FRecord = nullptr;
     Record->Commit();
-  }
+  } } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
 }
 
 void TSessionAction::Restart()
@@ -844,7 +844,7 @@ TSessionLog::TSessionLog(gsl::not_null<TSessionUI *> UI, const TDateTime & Start
 }
 
 TSessionLog::~TSessionLog() noexcept
-{
+{ try {
   // DEBUG_PRINTF("end");
   FClosed = true;
   if (FLogger)
@@ -855,6 +855,7 @@ TSessionLog::~TSessionLog() noexcept
   delete FCriticalSection;
 #endif // defined(__BORLANDC__)
   // DEBUG_PRINTF("end");
+  } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
 }
 
 void TSessionLog::SetParent(gsl::not_null<TSessionLog *> AParent, const UnicodeString & AName)
@@ -1612,13 +1613,14 @@ void TActionLog::Init(TSessionUI * UI, const TDateTime & Started, TSessionData *
 }
 
 TActionLog::~TActionLog() noexcept
-{
+{ try {
   DebugAssert(FPendingActions->GetCount() == 0);
   // delete FPendingActions;
   FClosed = true;
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
   // delete FCriticalSection;
+  } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
 }
 
 void TActionLog::Add(const UnicodeString & Line)
@@ -1878,12 +1880,12 @@ TApplicationLog::TApplicationLog()
 
 TApplicationLog::~TApplicationLog()
 {
-  if (FFile != nullptr)
+  try { if (FFile != nullptr)
   {
     Log(L"Closing log");
     fclose(static_cast<FILE *>(FFile));
     FFile = nullptr;
-  }
+  } } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   FLogging = false;
 }
 

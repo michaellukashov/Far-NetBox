@@ -283,7 +283,7 @@ public:
   }
 
   virtual ~TSFTPPacket() noexcept override
-  {
+  { try {
     if (FData != nullptr)
     {
       nb_free(FData - FSendPrefixLen);
@@ -291,7 +291,7 @@ public:
     if (FReservedBy)
     {
       FReservedBy->UnreserveResponse(this);
-    }
+    } } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
   void ChangeType(SSH_FXP_TYPE AType)
@@ -1472,8 +1472,9 @@ public:
   // #pragma option pop
 
   virtual ~TSFTPAsynchronousQueue() noexcept override
-  {
+  { try {
     UnregisterReceiveHandler();
+    } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
   virtual void Dispose(SSH_FXP_TYPE ExpectedType, SSH_FX_TYPE AllowStatus) override
@@ -1981,8 +1982,9 @@ public:
   }
 
   virtual ~TSFTPBusy() noexcept override
-  {
+  { try {
     FFileSystem->BusyEnd();
+    } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
 private:
