@@ -2283,12 +2283,12 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * ATermina
 }
 
 TTransferQueueItem::~TTransferQueueItem() noexcept
-{
+{ try {
   for (int32_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
     TObject * Object = FFilesToCopy->Get(Index);
     SAFE_DESTROY(Object);
-  }
+  } } catch(std::bad_alloc &) {} catch(...) {}
 #if defined(__BORLANDC__)
   delete FFilesToCopy;
   delete FCopyParam;
