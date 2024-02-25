@@ -4,6 +4,12 @@
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
+## [24.2.2.595] - 2024-02-25
+
+### Fixes
+
+ * FTP,WebDAV,S3: "Encryption" setting was not saved correctly
+
 ### What's Changed
 
  * <Description>
