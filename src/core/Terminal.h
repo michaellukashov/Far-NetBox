@@ -1043,13 +1043,15 @@ public:
 
   int32_t GetCount() const;
   UnicodeString GetFileName(int32_t Index) const;
-  TObject * GetObj(int32_t Index) const;
   bool IsDir(int32_t Index) const;
   bool IsRecursed(int32_t Index) const;
   int32_t GetState(int32_t Index) const;
   void SetState(int32_t Index, int32_t State);
 
+  const ROIndexedProperty<TObject *> Objects{nb::bind(&TCollectedFileList::GetObject, this)};
+
 private:
+  TObject * GetObject(int32_t Index) const;
   void Deleting(int32_t Index);
 
   struct TFileData

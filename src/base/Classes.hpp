@@ -19,6 +19,8 @@
 #include <Property.hpp>
 #include <ObjIDs.h>
 
+#undef GetObject
+
 #pragma warning(pop)
 
 namespace nb {
@@ -350,13 +352,14 @@ public:
   template<class T>
   const T * As(int32_t Index) const { return cast_to<T>(Objects[Index]); }
   virtual const TObject * operator [](int32_t Index) const override;
-  const TObject * GetObj(int32_t Index) const;
   TObject * Get(int32_t Index) { return const_cast<TObject *>(Objects[Index]); }
   bool GetOwnsObjects() const { return FOwnsObjects; }
   void SetOwnsObjects(bool Value) { FOwnsObjects = Value; }
   virtual void Notify(TObject * Ptr, TListNotification Action) override;
 
 private:
+  const TObject * GetObj(int32_t Index) const;
+
   bool FOwnsObjects{true};
 };
 
@@ -432,7 +435,7 @@ public:
   const ROProperty<UnicodeString> Text{nb::bind(&TStrings::GetText, this)};
 
 public:
-  // TODO: ROIndexedProperty<TObject *> Objects{nb::bind(&TStrings::GetObj, this)};
+  // TODO: ROIndexedProperty<TObject *> Objects{nb::bind(&TStrings::GetObject, this)};
   // TODO: ROIndexedProperty<UnicodeString> Names{nb::bind(&TStrings::GetName, this)};
   const ROIndexedProperty<UnicodeString> Strings{nb::bind(&TStrings::GetStrings, this)};
 

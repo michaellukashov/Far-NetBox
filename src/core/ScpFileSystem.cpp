@@ -1885,7 +1885,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
           }
         }
 
-        const void * Item = nb::ToPtr(AFilesToCopy->GetObj(IFile));
+        const void * Item = nb::ToPtr(AFilesToCopy->Objects[IFile]);
 
         try
         {

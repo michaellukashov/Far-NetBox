@@ -935,7 +935,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        FLAGCLEAR(nb::ToIntPtr(Prompts->GetObj(0)), pupEcho))
+        FLAGCLEAR(nb::ToIntPtr(Prompts->Objects[0]), pupEcho))
     {
       LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -1003,7 +1003,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     else
     {
       if ((Prompts->GetCount() >= 1) &&
-          (FLAGSET(nb::ToIntPtr(Prompts->GetObj(0)), pupEcho) || GetConfiguration()->GetLogSensitive()))
+          (FLAGSET(nb::ToIntPtr(Prompts->Objects[0]), pupEcho) || GetConfiguration()->GetLogSensitive()))
       {
         LogEvent(FORMAT("Response: \"%s\"", Results->GetString(0)));
       }

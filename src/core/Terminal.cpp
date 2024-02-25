@@ -684,7 +684,7 @@ UnicodeString TCollectedFileList::GetFileName(int32_t Index) const
   return FList[Index].FileName;
 }
 
-TObject * TCollectedFileList::GetObj(int32_t Index) const
+TObject * TCollectedFileList::GetObject(int32_t Index) const
 {
   return FList[Index].Object;
 }
@@ -1008,7 +1008,7 @@ bool TParallelOperation::GetOnlyFile(TStrings * FileList, UnicodeString & FileNa
     if (Result)
     {
       FileName = OnlyFileList->GetFileName(0);
-      Object = OnlyFileList->GetObj(0);
+      Object = OnlyFileList->Objects[0];
     }
   }
   return Result;
@@ -1060,7 +1060,7 @@ int32_t TParallelOperation::GetNext(
     const UnicodeString RootPath = FFileList->GetString(FListIndex);
 
     FileName = Files->GetFileName(FIndex);
-    Object = Files->GetObj(FIndex);
+    Object = Files->Objects[FIndex];
     Dir = Files->IsDir(FIndex);
     Recursed = Files->IsRecursed(FIndex);
     UnicodeString DirPath;
@@ -2069,7 +2069,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObj(0, ToObj(nb::ToIntPtr(Prompts->GetObj(0)) | pupRemember));
+      Prompts->SetObj(0, ToObj(nb::ToIntPtr(Prompts->Objects[0]) | pupRemember));
     }
 
     if (!GetOnPromptUser().empty())
@@ -2090,7 +2090,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-        (GetConfiguration()->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->GetObj(0)), pupRemember)))
+        (GetConfiguration()->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->Objects[0]), pupRemember)))
     {
       const RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
       if (FTunnelOpening)
