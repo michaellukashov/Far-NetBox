@@ -20,7 +20,7 @@ TXmlStorage::TXmlStorage(const UnicodeString & AStorage,
 void TXmlStorage::Init()
 {
   THierarchicalStorage::Init();
-  FXmlDoc = std::make_unique<tinyxml2::XMLDocument>();
+  // FXmlDoc = std::make_unique<tinyxml2::XMLDocument>();
 }
 
 TXmlStorage::~TXmlStorage() noexcept
