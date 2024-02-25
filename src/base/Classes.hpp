@@ -411,7 +411,7 @@ public:
   virtual void Assign(const TPersistent * Source) override;
 
 public:
-  virtual void SetObj(int32_t Index, TObject * AObject) = 0;
+  virtual void SetObject(int32_t Index, TObject * AObject) = 0;
   virtual bool GetSorted() const = 0;
   virtual void SetSorted(bool Value) = 0;
   virtual bool GetCaseSensitive() const = 0;
@@ -526,7 +526,7 @@ public:
   virtual int32_t GetCount() const override;
 
 public:
-  virtual void SetObj(int32_t Index, TObject * AObject) override;
+  virtual void SetObject(int32_t Index, TObject * AObject) override;
   virtual bool GetSorted() const override { return FSorted; }
   virtual void SetSorted(bool Value) override;
   virtual bool GetCaseSensitive() const override { return FCaseSensitive; }

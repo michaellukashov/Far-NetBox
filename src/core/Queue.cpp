@@ -3176,7 +3176,7 @@ int64_t TQueueFileList::GetState(int32_t Index) const
 
 void TQueueFileList::SetState(int32_t Index, int64_t State)
 {
-  FList->SetObj(Index, reinterpret_cast<TObject *>(State));
+  FList->SetObject(Index, reinterpret_cast<TObject *>(State));
 }
 
 int32_t TQueueFileList::GetCount() const

@@ -1288,9 +1288,9 @@ intptr_t TCustomFarPlugin::Menu(FARMENUFLAGS Flags, const UnicodeString & Title,
     Result = MenuItems[ResultItem].UserData;
     if (Selected >= 0)
     {
-      Items->SetObj(Selected, ToObj(nb::ToIntPtr(Items->Objects[Selected]) & ~MIF_SELECTED));
+      Items->SetObject(Selected, ToObj(nb::ToIntPtr(Items->Objects[Selected]) & ~MIF_SELECTED));
     }
-    Items->SetObj(nb::ToInt32(Result), ToObj(nb::ToIntPtr(Items->Objects[nb::ToInt32(Result)]) | MIF_SELECTED));
+    Items->SetObject(nb::ToInt32(Result), ToObj(nb::ToIntPtr(Items->Objects[nb::ToInt32(Result)]) | MIF_SELECTED));
   }
   else
   {
@@ -2912,9 +2912,9 @@ void TFarMenuItems::Delete(int32_t Index)
   TStringList::Delete(Index);
 }
 
-void TFarMenuItems::SetObj(int32_t Index, TObject * AObject)
+void TFarMenuItems::SetObject(int32_t Index, TObject * AObject)
 {
-  TStringList::SetObj(Index, AObject);
+  TStringList::SetObject(Index, AObject);
   const bool Focused = (nb::ToUIntPtr(AObject) & MIF_SEPARATOR) != 0;
   if ((Index == GetItemFocused()) && !Focused)
   {
@@ -2976,7 +2976,7 @@ void TFarMenuItems::SetFlag(int32_t Index, uint32_t Flag, bool Value)
     {
       F &= ~Flag;
     }
-    SetObj(Index, ToObj(F));
+    SetObject(Index, ToObj(F));
   }
 }
 

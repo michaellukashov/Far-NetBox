@@ -1974,7 +1974,7 @@ void TRemoteDirectoryCache::Clear()
     {
       TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
       SAFE_DESTROY(List);
-      SetObj(Index, nullptr);
+      SetObject(Index, nullptr);
     }
   }
   __finally
