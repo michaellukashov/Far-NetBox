@@ -1516,6 +1516,7 @@ public:
     tabCount
   };
 
+  TSessionDialog() = delete;
   explicit TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) noexcept;
   virtual ~TSessionDialog() noexcept override;
 
@@ -1537,6 +1538,7 @@ private:
   int32_t FSProtocolToIndex(TFSProtocol FSProtocol, bool & AllowScpFallback) const;
   TFSProtocol IndexToFSProtocol(int32_t Index, bool AllowScpFallback) const;
   TFSProtocol GetFSProtocol() const;
+  int32_t FtpsToIndex(TFtps AFtps) const;
   inline int32_t GetLastSupportedFtpProxyMethod() const;
   bool GetSupportedFtpProxyMethod(int32_t Method) const;
   TProxyMethod GetProxyMethod() const;
@@ -2878,6 +2880,7 @@ void TSessionDialog::Change()
     if (FtpEncryptionCombo->GetSetChanged(false))
     {
       FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
+      // DEBUG_PRINTF("FFtpEncryptionComboIndex: %d", FFtpEncryptionComboIndex);
       DoChange = true;
     }
     if (DoChange)
@@ -3213,10 +3216,12 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   TransferProtocolCombo->SetItemIndex(
     nb::ToInt32(FSProtocolToIndex(SessionData->GetFSProtocol(), AllowScpFallback)));
   AllowScpFallbackCheck->SetChecked(AllowScpFallback);
+  FtpEncryptionCombo->SetItemIndex(
+    nb::ToInt32(FtpsToIndex(SessionData->GetFtps())));
 
   FTransferProtocolIndex = TransferProtocolCombo->GetItemIndex();
   FFtpEncryptionComboIndex = FtpEncryptionCombo->GetItemIndex();
-
+  // DEBUG_PRINTF("FFtpEncryptionComboIndex: %d", FFtpEncryptionComboIndex);
 
   // Directories tab
   RemoteDirectoryEdit->SetText(SessionData->GetRemoteDirectory());
@@ -3557,7 +3562,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       SessionData->SetUserName(UserName);
       SessionData->SetPassword(Password);
-      SessionData->SetFtps(ftpsImplicit); // TODO: get code from TLoginDialog::PortNumberEditChange
+      // SessionData->SetFtps(ftpsImplicit); // TODO: get code from TLoginDialog::PortNumberEditChange
     }
 
     // Directories tab
@@ -3971,6 +3976,27 @@ TFSProtocol TSessionDialog::GetFSProtocol() const
     AllowScpFallbackCheck->GetChecked());
 }
 
+int32_t TSessionDialog::FtpsToIndex(TFtps AFtps) const
+{
+  int32_t Result = 0;
+  switch(AFtps)
+  {
+  case ftpsNone:
+    Result = 0;
+    break;
+  case ftpsImplicit:
+    Result = 1;
+    break;
+  case ftpsExplicitSsl:
+    Result = 2;
+    break;
+  case ftpsExplicitTls:
+    Result = 3;
+    break;
+  }
+  return Result;
+}
+
 inline int32_t TSessionDialog::GetLastSupportedFtpProxyMethod() const
 {
   return pmNone; // pmSystem;
@@ -4034,6 +4060,7 @@ TFtps TSessionDialog::GetFtps() const
 {
   // TFSProtocol AFSProtocol = GetFSProtocol();
   // const int32_t Index = (((AFSProtocol == fsWebDAV) || (AFSProtocol == fsS3)) ? 1 : FtpEncryptionCombo->GetItemIndex());
+  // DEBUG_PRINTF("FFtpEncryptionComboIndex: %d", FFtpEncryptionComboIndex);
   const int32_t Index = FFtpEncryptionComboIndex;
   TFtps Ftps;
   switch (Index)
