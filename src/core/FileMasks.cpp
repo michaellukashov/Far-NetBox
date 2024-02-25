@@ -893,9 +893,11 @@ UnicodeString TCustomCommand::Escape(const UnicodeString & S)
   return ReplaceStr(S, L"!", L"!!");
 }
 
+#if defined(__BORLANDC__)
 TCustomCommand::TCustomCommand() noexcept
 {
 }
+#endif // defined(__BORLANDC__)
 
 void TCustomCommand::GetToken(
   const UnicodeString & Command, int32_t Index, int32_t & Len, wchar_t & PatternCmd) const
@@ -1367,7 +1369,7 @@ bool TFileCustomCommand::PatternReplacement(
   {
     if (SessionData != nullptr)
     {
-      Replacement = SessionData->SessionGetUserName();
+      Replacement = SessionData->GetUserName();
     }
   }
   else if (::SameText(Pattern, L"!p"))

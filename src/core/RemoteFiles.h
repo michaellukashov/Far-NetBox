@@ -36,16 +36,16 @@ public:
   __property UnicodeString Name = { read = FName, write = FName };
   UnicodeString& Name{FName};
   __property bool NameValid = { read = GetNameValid };
-  ROProperty<bool> NameValid{nb::bind(&TRemoteToken::GetNameValid, this)};
+  const ROProperty<bool> NameValid{nb::bind(&TRemoteToken::GetNameValid, this)};
   __property uint32_t ID = { read = FID, write = SetID };
   __property bool IDValid = { read = FIDValid };
-  ROProperty<bool> IDValid{nb::bind(&TRemoteToken::GetIDValid, this)};
+  const ROProperty<bool> IDValid{nb::bind(&TRemoteToken::GetIDValid, this)};
   __property bool IsSet  = { read = GetIsSet };
-  ROProperty<bool> IsSet{nb::bind(&TRemoteToken::GetIsSet, this)};
+  const ROProperty<bool> IsSet{nb::bind(&TRemoteToken::GetIsSet, this)};
   __property UnicodeString LogText = { read = GetLogText };
-  ROProperty<UnicodeString> LogText{nb::bind(&TRemoteToken::GetLogText, this)};
+  const ROProperty<UnicodeString> LogText{nb::bind(&TRemoteToken::GetLogText, this)};
   __property UnicodeString DisplayText = { read = GetDisplayText };
-  ROProperty<UnicodeString> DisplayText{nb::bind(&TRemoteToken::GetDisplayText, this)};
+  const ROProperty<UnicodeString> DisplayText{nb::bind(&TRemoteToken::GetDisplayText, this)};
 
   UnicodeString GetName() const { return FName; }
   void SetName(const UnicodeString & Value) { FName = Value; }
@@ -193,11 +193,11 @@ public:
   TModificationFmt& ModificationFmt{FModificationFmt};
   __property TDateTime LastAccess = { read = FLastAccess, write = FLastAccess };
   __property bool IsSymLink = { read = FIsSymLink };
-  ROProperty<bool> IsSymLink{nb::bind(&TRemoteFile::GetIsSymLink, this)};
+  const ROProperty<bool> IsSymLink{nb::bind(&TRemoteFile::GetIsSymLink, this)};
   __property bool IsDirectory = { read = GetIsDirectory };
-  ROProperty<bool> IsDirectory{nb::bind(&TRemoteFile::GetIsDirectory, this)};
+  const ROProperty<bool> IsDirectory{nb::bind(&TRemoteFile::GetIsDirectory, this)};
   __property const TRemoteFile * LinkedFile = { read = GetLinkedFile };
-  ROProperty<const TRemoteFile *> LinkedFile{nb::bind(&TRemoteFile::GetLinkedFile, this)};
+  const ROProperty<const TRemoteFile *> LinkedFile{nb::bind(&TRemoteFile::GetLinkedFile, this)};
   __property UnicodeString LinkTo = { read = FLinkTo, write = FLinkTo };
   UnicodeString& LinkTo{FLinkTo};
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
@@ -215,17 +215,17 @@ public:
   __property int32_t IconIndex = { read = GetIconIndex };
   __property UnicodeString TypeName = { read = GetTypeName };
   __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
-  ROProperty<bool> IsHidden{nb::bind(&TRemoteFile::GetIsHidden, this)};
+  const ROProperty<bool> IsHidden{nb::bind(&TRemoteFile::GetIsHidden, this)};
   __property bool IsParentDirectory = { read = GetIsParentDirectory };
-  ROProperty<bool> IsParentDirectory{nb::bind(&TRemoteFile::GetIsParentDirectory, this)};
+  const ROProperty<bool> IsParentDirectory{nb::bind(&TRemoteFile::GetIsParentDirectory, this)};
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
-  ROProperty<bool> IsThisDirectory{nb::bind(&TRemoteFile::GetIsThisDirectory, this)};
+  const ROProperty<bool> IsThisDirectory{nb::bind(&TRemoteFile::GetIsThisDirectory, this)};
   __property bool IsInaccessibleDirectory  = { read=GetIsInaccessibleDirectory };
-  ROProperty<bool> IsInaccessibleDirectory{nb::bind(&TRemoteFile::GetIsInaccessibleDirectory, this)};
+  const ROProperty<bool> IsInaccessibleDirectory{nb::bind(&TRemoteFile::GetIsInaccessibleDirectory, this)};
   __property UnicodeString Extension  = { read=GetExtension };
-  ROProperty<UnicodeString> Extension{nb::bind(&TRemoteFile::GetExtension, this)};
+  const ROProperty<UnicodeString> Extension{nb::bind(&TRemoteFile::GetExtension, this)};
   __property bool IsEncrypted  = { read = FIsEncrypted };
-  ROProperty<bool> IsEncrypted{nb::bind(&TRemoteFile::GetIsEncrypted, this)};
+  const ROProperty<bool> IsEncrypted{nb::bind(&TRemoteFile::GetIsEncrypted, this)};
 
   TRemoteFileList * GetDirectory() const { return FDirectory; }
   void SetDirectory(TRemoteFileList * Value) { FDirectory = Value; }
@@ -322,15 +322,15 @@ public:
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
   // __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
-  ROIndexedProperty<TRemoteFile *> Files{nb::bind(&TRemoteFileList::GetFile, this)};
+  const ROIndexedProperty<TRemoteFile *> Files{nb::bind(&TRemoteFileList::GetFile, this)};
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
-  ROProperty<UnicodeString> FullDirectory{nb::bind(&TRemoteFileList::GetFullDirectory, this)};
+  const ROProperty<UnicodeString> FullDirectory{nb::bind(&TRemoteFileList::GetFullDirectory, this)};
   __property Boolean IsRoot = { read = GetIsRoot };
-  ROProperty<Boolean> IsRoot{nb::bind(&TRemoteFileList::GetIsRoot, this)};
+  const ROProperty<Boolean> IsRoot{nb::bind(&TRemoteFileList::GetIsRoot, this)};
   __property UnicodeString ParentPath = { read = GetParentPath };
-  ROProperty<UnicodeString> ParentPath{nb::bind(&TRemoteFileList::GetParentPath, this)};
+  const ROProperty<UnicodeString> ParentPath{nb::bind(&TRemoteFileList::GetParentPath, this)};
   __property int64_t TotalSize = { read = GetTotalSize };
-  ROProperty<int64_t> TotalSize{nb::bind(&TRemoteFileList::GetTotalSize, this)};
+  const ROProperty<int64_t> TotalSize{nb::bind(&TRemoteFileList::GetTotalSize, this)};
   __property TDateTime Timestamp = { read = FTimestamp };
   const TDateTime& Timestamp{FTimestamp};
 
@@ -505,24 +505,24 @@ public:
   TRights Combine(const TRights & Other) const;
   void SetTextOverride(const UnicodeString & value);
 
-  bool operator ==(const TRights & rhr) const;
-  bool operator ==(uint16_t rhr) const;
-  bool operator ==(TFlag rhr) const;
-  bool operator !=(const TRights & rhr) const;
-  bool operator !=(const TFlag rhr) const;
-  TRights & operator =(const TRights & rhr);
-  TRights & operator =(uint16_t rhr);
+  bool operator ==(const TRights & rhs) const;
+  bool operator ==(uint16_t rhs) const;
+  bool operator ==(TFlag rhs) const;
+  bool operator !=(const TRights & rhs) const;
+  bool operator !=(const TFlag rhs) const;
+  TRights & operator =(const TRights & rhs);
+  TRights & operator =(uint16_t rhs);
   TRights operator ~() const;
-  TRights operator &(uint16_t rhr) const;
-  TRights operator &(const TRights & rhr) const;
-  TRights operator &(TFlag rhr) const;
-  TRights & operator &=(uint16_t rhr);
-  TRights & operator &=(const TRights & rhr);
-  TRights & operator &=(TFlag rhr);
-  TRights operator |(uint16_t rhr) const;
-  TRights operator |(const TRights & rhr) const;
-  TRights & operator |=(uint16_t rhr);
-  TRights & operator |=(const TRights & rhr);
+  TRights operator &(uint16_t rhs) const;
+  TRights operator &(const TRights & rhs) const;
+  TRights operator &(TFlag rhs) const;
+  TRights & operator &=(uint16_t rhs);
+  TRights & operator &=(const TRights & rhs);
+  TRights & operator &=(TFlag rhs);
+  TRights operator |(uint16_t rhs) const;
+  TRights operator |(const TRights & rhs) const;
+  TRights & operator |=(uint16_t rhs);
+  TRights & operator |=(const TRights & rhs);
   operator uint16_t() const;
   operator uint32_t() const;
 
@@ -531,17 +531,17 @@ public:
   __property bool AllowUndef = { read = FAllowUndef, write = SetAllowUndef };
   RWPropertySimple<bool> AllowUndef{&FAllowUndef, nb::bind(&TRights::SetAllowUndef, this)};
   __property bool IsUndef = { read = GetIsUndef };
-  ROProperty<bool> IsUndef{nb::bind(&TRights::GetIsUndef, this)};
+  const ROProperty<bool> IsUndef{nb::bind(&TRights::GetIsUndef, this)};
   __property UnicodeString ModeStr = { read = GetModeStr };
-  ROProperty<UnicodeString> ModeStr{nb::bind(&TRights::GetModeStr, this)};
+  const ROProperty<UnicodeString> ModeStr{nb::bind(&TRights::GetModeStr, this)};
   __property UnicodeString Octal = { read = GetOctal, write = SetOctal };
   RWProperty<UnicodeString> Octal{nb::bind(&TRights::GetOctal, this), nb::bind(&TRights::SetOctal, this)};
   __property uint16_t Number = { read = GetNumber, write = SetNumber };
   RWProperty<uint16_t> Number{nb::bind(&TRights::GetNumber, this), nb::bind(&TRights::SetNumber, this)};
   __property uint16_t NumberSet = { read = FSet };
-  ROProperty2<uint16_t> NumberSet{&FSet};
+  const ROProperty2<uint16_t> NumberSet{&FSet};
   __property uint16_t NumberUnset = { read = FUnset };
-  ROProperty2<uint16_t> NumberUnset{&FUnset};
+  const ROProperty2<uint16_t> NumberUnset{&FUnset};
   __property uint32_t NumberDecadic = { read = GetNumberDecadic };
   __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
   // __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
@@ -600,9 +600,9 @@ public:
   bool AddXToDirectories{false};
 
   TRemoteProperties();
-  TRemoteProperties(const TRemoteProperties & rhp);
-  bool operator ==(const TRemoteProperties & rhp) const;
-  bool operator !=(const TRemoteProperties & rhp) const;
+  TRemoteProperties(const TRemoteProperties & rhs);
+  bool operator ==(const TRemoteProperties & rhs) const;
+  bool operator !=(const TRemoteProperties & rhs) const;
   void Default();
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
@@ -727,9 +727,9 @@ public:
   static bool IsItemSizeIrrelevant(TChecklistAction Action);
 
   __property int32_t Count = { read = GetCount };
-  ROProperty<int32_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
+  const ROProperty<int32_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
   __property int32_t CheckedCount = { read = GetCheckedCount };
-  ROProperty<int32_t> CheckedCount{nb::bind(&TSynchronizeChecklist::GetCheckedCount, this)};
+  const ROProperty<int32_t> CheckedCount{nb::bind(&TSynchronizeChecklist::GetCheckedCount, this)};
   // __property const TItem * Item[int32_t Index] = { read = GetItem };
 
 protected:

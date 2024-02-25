@@ -93,7 +93,7 @@ UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & APath)
 
 UnicodeString UnixCombinePaths(const UnicodeString & APath1, const UnicodeString & APath2)
 {
-  return TPath::Join(APath1, APath2);
+  return TUnixPath::Join(APath1, APath2);
 }
 
 Boolean UnixSamePath(const UnicodeString & APath1, const UnicodeString & APath2)
@@ -211,9 +211,9 @@ bool ExtractCommonPath(const TStrings * AFiles, UnicodeString & APath)
 static UnicodeString GetFileListItemPath(const TStrings * Files, int32_t Index)
 {
   UnicodeString Result;
-  if (Files->GetObj(Index) != nullptr)
+  if (Files->Objects[Index] != nullptr)
   {
-    Result = DebugNotNull(rtti::dyn_cast_or_null<TRemoteFile>(Files->GetObj(Index)))->FullFileName();
+    Result = DebugNotNull(rtti::dyn_cast_or_null<TRemoteFile>(Files->Objects[Index]))->FullFileName();
   }
   else
   {
@@ -276,7 +276,7 @@ UnicodeString AbsolutePath(const UnicodeString & Base, const UnicodeString & APa
   else
   {
     Result = base::UnixIncludeTrailingBackslash(
-      TPath::Join(Base, APath));
+      TUnixPath::Join(Base, APath));
     int32_t P;
     while ((P = Result.Pos("/../")) > 0)
     {

@@ -296,7 +296,7 @@ public:
 
   static UnicodeString GetDefaultExternalEditor();
 
-  bool operator ==(const TEditorPreferences & rhp) const;
+  bool operator ==(const TEditorPreferences & rhs) const;
 
   __property const TEditorData * Data = { read = GetConstData };
   __property UnicodeString Name = { read = GetName };
@@ -323,8 +323,8 @@ public:
   void Load(THierarchicalStorage * Storage);
   void Save(THierarchicalStorage * Storage) const;
 
-  TEditorList & operator=(const TEditorList & rhl);
-  bool operator==(const TEditorList & rhl) const;
+  TEditorList & operator=(const TEditorList & rhs);
+  bool operator==(const TEditorList & rhs) const;
 
   void Clear();
   void Add(TEditorPreferences * Editor);

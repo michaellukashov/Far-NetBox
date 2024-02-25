@@ -68,9 +68,9 @@ public:
   virtual void Flush();
 
   __property UnicodeString Storage  = { read = FStorage };
-  ROProperty<UnicodeString> Storage{nb::bind(&THierarchicalStorage::GetStorage, this)};
+  const ROProperty<UnicodeString> Storage{nb::bind(&THierarchicalStorage::GetStorage, this)};
   __property UnicodeString CurrentSubKey = { read = GetCurrentSubKey };
-  ROProperty<UnicodeString> CurrentSubKey{nb::bind(&THierarchicalStorage::GetCurrentSubKey, this)};
+  const ROProperty<UnicodeString> CurrentSubKey{nb::bind(&THierarchicalStorage::GetCurrentSubKey, this)};
   __property TStorageAccessMode AccessMode = { read = FAccessMode, write = SetAccessMode };
   RWProperty<TStorageAccessMode> AccessMode{nb::bind(&THierarchicalStorage::GetAccessMode, this), nb::bind(&THierarchicalStorage::SetAccessMode, this) };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
@@ -82,9 +82,9 @@ public:
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
   bool& MungeStringValues{FMungeStringValues};
   __property UnicodeString Source = { read = GetSource };
-  ROProperty<UnicodeString> Source{nb::bind(&THierarchicalStorage::GetSourceConst, this)};
+  const ROProperty<UnicodeString> Source{nb::bind(&THierarchicalStorage::GetSourceConst, this)};
   __property bool Temporary = { read = GetTemporary };
-  ROProperty<bool> Temporary{nb::bind(&THierarchicalStorage::GetTemporary, this)};
+  const ROProperty<bool> Temporary{nb::bind(&THierarchicalStorage::GetTemporary, this)};
   __property UnicodeString UnmungedRoot = { read = FUnmungedRoot, write = FUnmungedRoot };
   UnicodeString& UnmungedRoot{FUnmungedRoot};
 

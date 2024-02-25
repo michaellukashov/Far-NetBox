@@ -71,7 +71,7 @@ UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
 
 UnicodeString UnixCombinePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
-  return TPath::Join(Path1, Path2);
+  return TUnixPath::Join(Path1, Path2);
 }
 
 Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2)
@@ -1646,7 +1646,7 @@ UnicodeString TRemoteFile::GetFullFileName() const
     }
     else if (GetIsDirectory())
     {
-      Result = base::UnixIncludeTrailingBackslash(TPath::Join(GetDirectory()->GetFullDirectory(), GetFileName()));
+      Result = base::UnixIncludeTrailingBackslash(TUnixPath::Join(GetDirectory()->GetFullDirectory(), GetFileName()));
     }
     else
     {
@@ -1974,7 +1974,7 @@ void TRemoteDirectoryCache::Clear()
     {
       TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
       SAFE_DESTROY(List);
-      SetObj(Index, nullptr);
+      SetObject(Index, nullptr);
     }
   }
   __finally
@@ -2024,7 +2024,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   const bool Result = (Index >= 0);
   if (Result)
   {
-    DebugAssert(GetObj(Index) != nullptr);
+    DebugAssert(Objects[Index] != nullptr);
     As<TRemoteFileList>(Index)->DuplicateTo(FileList);
   }
   return Result;
@@ -2353,14 +2353,14 @@ uint16_t TRights::CalculatePermissions(TRightGroup Group, TRightLevel Level, TRi
   return Result;
 }
 
-bool TRights::operator ==(const TRights & rhr) const
+bool TRights::operator ==(const TRights & rhs) const
 {
-  if (GetAllowUndef() || rhr.GetAllowUndef())
+  if (GetAllowUndef() || rhs.GetAllowUndef())
   {
     for (int32_t Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-            rhr.GetRightUndef(static_cast<TRight>(Right)))
+            rhs.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }
@@ -2369,39 +2369,39 @@ bool TRights::operator ==(const TRights & rhr) const
   }
   else
   {
-    return GetNumber() == rhr.GetNumber();
+    return GetNumber() == rhs.GetNumber();
   }
 }
 
-bool TRights::operator ==(uint16_t rhr) const
+bool TRights::operator ==(uint16_t rhs) const
 {
-  return (GetNumber() == rhr);
+  return (GetNumber() == rhs);
 }
 
-bool TRights::operator ==(TFlag rhr) const
+bool TRights::operator ==(TFlag rhs) const
 {
-  return (GetNumber() == static_cast<uint16_t>(rhr));
+  return (GetNumber() == static_cast<uint16_t>(rhs));
 }
 
-bool TRights::operator !=(const TRights & rhr) const
+bool TRights::operator !=(const TRights & rhs) const
 {
-  return !(*this == rhr);
+  return !(*this == rhs);
 }
 
-bool TRights::operator !=(TFlag rhr) const
+bool TRights::operator !=(TFlag rhs) const
 {
-  return !(*this == rhr);
+  return !(*this == rhs);
 }
 
-TRights & TRights::operator =(uint16_t rhr)
+TRights & TRights::operator =(uint16_t rhs)
 {
-  SetNumber(rhr);
+  SetNumber(rhs);
   return *this;
 }
 
-TRights & TRights::operator =(const TRights & rhr)
+TRights & TRights::operator =(const TRights & rhs)
 {
-  Assign(&rhr);
+  Assign(&rhs);
   return *this;
 }
 
@@ -2411,35 +2411,35 @@ TRights TRights::operator ~() const
   return Result;
 }
 
-TRights TRights::operator &(uint16_t rhr) const
+TRights TRights::operator &(uint16_t rhs) const
 {
   TRights Result(*this);
-  Result &= rhr;
+  Result &= rhs;
   return Result;
 }
 
-TRights TRights::operator &(const TRights & rhr) const
+TRights TRights::operator &(const TRights & rhs) const
 {
   TRights Result(*this);
-  Result &= rhr;
+  Result &= rhs;
   return Result;
 }
 
-TRights TRights::operator &(TFlag rhr) const
+TRights TRights::operator &(TFlag rhs) const
 {
   TRights Result(*this);
-  Result &= static_cast<uint16_t>(rhr);
+  Result &= static_cast<uint16_t>(rhs);
   return Result;
 }
 
-TRights & TRights::operator &=(const TRights &  rhr)
+TRights & TRights::operator &=(const TRights &  rhs)
 {
-  if (GetAllowUndef() || rhr.GetAllowUndef())
+  if (GetAllowUndef() || rhs.GetAllowUndef())
   {
     for (int32_t Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-            rhr.GetRightUndef(static_cast<TRight>(Right)))
+            rhs.GetRightUndef(static_cast<TRight>(Right)))
       {
         SetRightUndef(static_cast<TRight>(Right), rsUndef);
       }
@@ -2447,46 +2447,46 @@ TRights & TRights::operator &=(const TRights &  rhr)
   }
   else
   {
-    SetNumber(GetNumber() & rhr.GetNumber());
+    SetNumber(GetNumber() & rhs.GetNumber());
   }
   return *this;
 }
 
-TRights & TRights::operator &=(uint16_t rhr)
+TRights & TRights::operator &=(uint16_t rhs)
 {
-  SetNumber(GetNumber() & rhr);
+  SetNumber(GetNumber() & rhs);
   return *this;
 }
 
-TRights & TRights::operator &=(TFlag rhr)
+TRights & TRights::operator &=(TFlag rhs)
 {
-  SetNumber(GetNumber() & static_cast<uint16_t>(rhr));
+  SetNumber(GetNumber() & static_cast<uint16_t>(rhs));
   return *this;
 }
 
-TRights TRights::operator |(const TRights &rhr) const
+TRights TRights::operator |(const TRights &rhs) const
 {
   TRights Result(*this);
-  Result |= rhr;
+  Result |= rhs;
   return Result;
 }
 
-TRights TRights::operator |(uint16_t rhr) const
+TRights TRights::operator |(uint16_t rhs) const
 {
   TRights Result(*this);
-  Result |= rhr;
+  Result |= rhs;
   return Result;
 }
 
-TRights & TRights::operator |=(const TRights & rhr)
+TRights & TRights::operator |=(const TRights & rhs)
 {
-  SetNumber(GetNumber() | rhr.GetNumber());
+  SetNumber(GetNumber() | rhs.GetNumber());
   return *this;
 }
 
-TRights & TRights::operator |=(uint16_t rhr)
+TRights & TRights::operator |=(uint16_t rhs)
 {
-  SetNumber(GetNumber() | rhr);
+  SetNumber(GetNumber() | rhs);
   return *this;
 }
 
@@ -2914,16 +2914,16 @@ TRemoteProperties::TRemoteProperties() :
   Default();
 }
 
-TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) : TObject(OBJECT_CLASS_TRemoteProperties),
-  Recursive(rhp.Recursive),
-  Valid(rhp.Valid),
-  Rights(rhp.Rights),
-  AddXToDirectories(rhp.AddXToDirectories),
-  Group(rhp.Group),
-  Owner(rhp.Owner),
-  Modification(rhp.Modification),
-  LastAccess(rhp.Modification),
-  Encrypt(rhp.Encrypt)
+TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhs) : TObject(OBJECT_CLASS_TRemoteProperties),
+  Recursive(rhs.Recursive),
+  Valid(rhs.Valid),
+  Rights(rhs.Rights),
+  AddXToDirectories(rhs.AddXToDirectories),
+  Group(rhs.Group),
+  Owner(rhs.Owner),
+  Modification(rhs.Modification),
+  LastAccess(rhs.Modification),
+  Encrypt(rhs.Encrypt)
 {
 }
 
@@ -2941,19 +2941,19 @@ void TRemoteProperties::Default()
   Encrypt = false;
 }
 
-bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
+bool TRemoteProperties::operator ==(const TRemoteProperties & rhs) const
 {
-  bool Result = (Valid == rhp.Valid && Recursive == rhp.Recursive);
+  bool Result = (Valid == rhs.Valid && Recursive == rhs.Recursive);
 
   if (Result)
   {
     if ((Valid.Contains(vpRights) &&
-          (Rights != rhp.Rights || AddXToDirectories != rhp.AddXToDirectories)) ||
-        (Valid.Contains(vpOwner) && (Owner != rhp.Owner)) ||
-        (Valid.Contains(vpGroup) && (Group != rhp.Group)) ||
-        (Valid.Contains(vpModification) && (Modification != rhp.Modification)) ||
-        (Valid.Contains(vpLastAccess) && (LastAccess != rhp.LastAccess)) ||
-        (Valid.Contains(vpEncrypt) && (Encrypt != rhp.Encrypt)))
+          (Rights != rhs.Rights || AddXToDirectories != rhs.AddXToDirectories)) ||
+        (Valid.Contains(vpOwner) && (Owner != rhs.Owner)) ||
+        (Valid.Contains(vpGroup) && (Group != rhs.Group)) ||
+        (Valid.Contains(vpModification) && (Modification != rhs.Modification)) ||
+        (Valid.Contains(vpLastAccess) && (LastAccess != rhs.LastAccess)) ||
+        (Valid.Contains(vpEncrypt) && (Encrypt != rhs.Encrypt)))
     {
       Result = false;
     }
@@ -2961,9 +2961,9 @@ bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
   return Result;
 }
 
-bool TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
+bool TRemoteProperties::operator !=(const TRemoteProperties & rhs) const
 {
-  return !(*this == rhp);
+  return !(*this == rhs);
 }
 
 TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)

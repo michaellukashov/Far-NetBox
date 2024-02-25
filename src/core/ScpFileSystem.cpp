@@ -1880,12 +1880,12 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
           if (base::DirectoryExists(ApiPath(::ExtractFilePath(FileName))))
           {
-            FTerminal->DirectoryModified(TPath::Join(TargetDir,
+            FTerminal->DirectoryModified(TUnixPath::Join(TargetDir,
               FileNameOnly), true);
           }
         }
 
-        const void * Item = nb::ToPtr(AFilesToCopy->GetObj(IFile));
+        const void * Item = nb::ToPtr(AFilesToCopy->Objects[IFile]);
 
         try
         {
@@ -2270,7 +2270,7 @@ void TSCPFileSystem::SCPDirectorySource(const UnicodeString & DirectoryName,
   }
   FILE_OPERATION_LOOP_END(FMTLOAD(CANT_GET_ATTRS, DirectoryName));
 
-  const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TPath::Join(TargetDir, DestFileName));
+  const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TUnixPath::Join(TargetDir, DestFileName));
 
   // UnicodeString Buf;
 

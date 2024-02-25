@@ -4,6 +4,17 @@
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
+## [24.2.2.595] - 2024-02-25
+
+### Fixes
+
+ * FTP,WebDAV,S3: "Encryption" setting was not saved correctly
+
+### What's Changed
+
+ * <Description>
+ **Full Changelog**: https://github.com/michaellukashov/Far-NetBox/compare/v24.2.2.594...v24.2.2.595
+
 
 ## [24.2.2.594] - 2024-02-24
 

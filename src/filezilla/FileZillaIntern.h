@@ -3,6 +3,8 @@
 
 #include <nbsystem.h>
 
+#undef PostMessage
+
 class TFileZillaIntf;
 
 class TFileZillaIntern // : public TObject
@@ -12,7 +14,7 @@ NB_DISABLE_COPY(TFileZillaIntern)
 public:
   explicit TFileZillaIntern(TFileZillaIntf * AOwner) noexcept;
 
-  bool FZPostMessage(WPARAM wParam, LPARAM lParam) const;
+  bool PostMessage(WPARAM wParam, LPARAM lParam) const;
   CString GetOption(int32_t OptionID) const;
   int32_t GetOptionVal(int32_t OptionID) const;
 

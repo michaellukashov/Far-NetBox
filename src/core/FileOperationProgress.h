@@ -144,12 +144,12 @@ protected:
 public:
   // common data
   __property TFileOperation Operation = { read = FOperation };
-  ROProperty<TFileOperation> Operation{nb::bind(&TFileOperationProgressType::GetOperation, this)};
+  const ROProperty<TFileOperation> Operation{nb::bind(&TFileOperationProgressType::GetOperation, this)};
   // on what side if operation being processed (local/remote), source of copy
   __property TOperationSide Side = { read = GetSide };
-  ROProperty<TOperationSide> Side{nb::bind(&TFileOperationProgressType::GetSide, this)};
+  const ROProperty<TOperationSide> Side{nb::bind(&TFileOperationProgressType::GetSide, this)};
   __property int32_t Count =  { read = FCount };
-  ROProperty<int32_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
+  const ROProperty<int32_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
   __property UnicodeString FileName =  { read = FFileName };
   const UnicodeString& FileName{FFileName};
   __property UnicodeString FullFileName = { read = FFullFileName };
@@ -182,26 +182,26 @@ public:
   __property bool FileInProgress = { read = FFileInProgress };
   const bool& FileInProgress{FFileInProgress};
   __property TCancelStatus Cancel = { read = GetCancel };
-  ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
+  const ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
   // when operation started
   __property TDateTime StartTime = { read = GetStartTime };
-  ROProperty<TDateTime> StartTime{nb::bind(&TFileOperationProgressType::GetStartTime, this)};
+  const ROProperty<TDateTime> StartTime{nb::bind(&TFileOperationProgressType::GetStartTime, this)};
   // bytes transferred
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
-  ROProperty<int64_t> TotalTransferred{nb::bind(&TFileOperationProgressType::GetTotalTransferred, this)};
+  const ROProperty<int64_t> TotalTransferred{nb::bind(&TFileOperationProgressType::GetTotalTransferred, this)};
   __property __int64 OperationTransferred = { read = GetOperationTransferred };
-  ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
+  const ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
   __property __int64 TotalSize = { read = GetTotalSize };
-  ROProperty<int64_t> TotalSize{nb::bind(&TFileOperationProgressType::GetTotalSize, this)};
+  const ROProperty<int64_t> TotalSize{nb::bind(&TFileOperationProgressType::GetTotalSize, this)};
   __property int FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
   __property TOnceDoneOperation InitialOnceDoneOperation = { read = FInitialOnceDoneOperation };
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
-  ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
+  const ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
   __property bool SkipToAll = { read = GetSkipToAll };
-  ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
+  const ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
   __property unsigned long CPSLimit = { read = GetCPSLimit };
-  ROProperty<uint64_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
+  const ROProperty<uint64_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };
   const bool& TotalSizeSet{FTotalSizeSet};

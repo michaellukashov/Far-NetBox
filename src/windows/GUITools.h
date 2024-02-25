@@ -73,7 +73,7 @@ bool CanShowTimeEstimate(TDateTime StartTime);
 class NB_CORE_EXPORT TLocalCustomCommand final : public TFileCustomCommand
 {
 public:
-  TLocalCustomCommand() noexcept;
+  TLocalCustomCommand() noexcept = default;
   explicit TLocalCustomCommand(
     const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & ALocalPath) noexcept;
   explicit TLocalCustomCommand(

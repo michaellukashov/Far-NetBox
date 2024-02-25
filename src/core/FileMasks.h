@@ -144,15 +144,15 @@ bool IsEffectiveFileNameMask(const UnicodeString & AMask);
 UnicodeString DelimitFileNameMask(const UnicodeString & AMask);
 
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
-   int32_t /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
-   bool & /*LastPass*/>;
+  int32_t /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
+  bool & /*LastPass*/>;
 
 class NB_CORE_EXPORT TCustomCommand : public TObject
 {
   friend class TInteractiveCustomCommand;
 
 public:
-  TCustomCommand() noexcept;
+  TCustomCommand() noexcept = default;
   // Needs an explicit virtual destructor, as is has virtual methods
   virtual ~TCustomCommand() override = default;
 
@@ -217,7 +217,7 @@ public:
     const UnicodeString & APassword) noexcept;
 
   __property TSessionData * SessionData = { read = GetSessionData };
-  ROProperty<TSessionData *> SessionData{nb::bind(&TCustomCommandData::GetSessionData, this)};
+  const ROProperty<TSessionData *> SessionData{nb::bind(&TCustomCommandData::GetSessionData, this)};
   TSessionData * GetSessionData() const { return GetSessionDataPrivate(); }
 
   TCustomCommandData & operator =(const TCustomCommandData & Data);

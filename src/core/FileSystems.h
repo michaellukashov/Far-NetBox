@@ -125,7 +125,7 @@ public:
   virtual void ClearCaches() = 0;
 
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-  ROProperty<UnicodeString> CurrentDirectory{nb::bind(&TCustomFileSystem::GetCurrentDirectory, this)};
+  const ROProperty<UnicodeString> CurrentDirectory{nb::bind(&TCustomFileSystem::GetCurrentDirectory, this)};
 
 protected:
   TTerminal * FTerminal{nullptr};

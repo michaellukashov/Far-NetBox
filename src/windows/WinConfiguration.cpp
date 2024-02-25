@@ -145,7 +145,7 @@ TEditorPreferences::TEditorPreferences(const TEditorData & Data) :
 {
 }
 
-bool TEditorPreferences::operator==(const TEditorPreferences & rhp) const
+bool TEditorPreferences::operator==(const TEditorPreferences & rhs) const
 {
   return (FData == rhp.FData);
 }
@@ -281,7 +281,7 @@ void TEditorList::Saved()
   FModified = false;
 }
 
-TEditorList & TEditorList::operator=(const TEditorList & rhl)
+TEditorList & TEditorList::operator=(const TEditorList & rhs)
 {
   Clear();
 
@@ -295,7 +295,7 @@ TEditorList & TEditorList::operator=(const TEditorList & rhl)
   return *this;
 }
 
-bool TEditorList::operator==(const TEditorList & rhl) const
+bool TEditorList::operator==(const TEditorList & rhs) const
 {
   bool Result = (Count == rhl.Count);
   if (Result)

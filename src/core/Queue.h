@@ -205,7 +205,7 @@ public:
   enum TStatus {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
     qsPaused, qsDone };
-  struct TInfo : public TObject
+  struct TInfo final : public TObject
   {
     TInfo() = default;
     TFileOperation Operation{foNone};
@@ -437,7 +437,7 @@ public:
   TParallelOperation * GetParallelOperation() { return FParallelOperation.get(); }
 };
 
-class NB_CORE_EXPORT TUploadQueueItem : public TTransferQueueItem
+class NB_CORE_EXPORT TUploadQueueItem final : public TTransferQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TUploadQueueItem); }
@@ -452,7 +452,7 @@ protected:
   virtual void DoTransferExecute(gsl::not_null<TTerminal *> Terminal, TParallelOperation * ParallelOperation) override;
 };
 
-class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
+class NB_CORE_EXPORT TDownloadQueueItem final : public TTransferQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TDownloadQueueItem); }

@@ -552,7 +552,7 @@ public:
   bool GetFlag(int32_t Index, uint32_t Flag) const;
 
 protected:
-  virtual void SetObj(int32_t Index, TObject * AObject) override;
+  virtual void SetObject(int32_t Index, TObject * AObject) override;
 
 private:
   int32_t FItemFocused{nb::NPOS};

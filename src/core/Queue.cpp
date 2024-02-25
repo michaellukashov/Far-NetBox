@@ -769,8 +769,10 @@ TTerminalQueueStatus * TTerminalQueue::CreateStatus(TTerminalQueueStatus *& Curr
   }
   __catch__removed
   {
-    // delete Status;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Status;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Status.release();
 }
@@ -2281,14 +2283,16 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * ATermina
 }
 
 TTransferQueueItem::~TTransferQueueItem() noexcept
-{
+{ try {
   for (int32_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
   {
     TObject * Object = FFilesToCopy->Get(Index);
     SAFE_DESTROY(Object);
-  }
-  // delete FFilesToCopy;
-  // delete FCopyParam;
+  } } catch(std::bad_alloc &) {} catch(...) {}
+#if defined(__BORLANDC__)
+  delete FFilesToCopy;
+  delete FCopyParam;
+#endif // defined(__BORLANDC__)
 }
 
 int32_t TTransferQueueItem::DefaultCPSLimit() const
@@ -2425,7 +2429,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   }
 
   FInfo->Destination =
-    TPath::Join(TargetDir, CopyParam->GetFileMask());
+    TUnixPath::Join(TargetDir, CopyParam->GetFileMask());
   FInfo->ModifiedRemote = base::UnixIncludeTrailingBackslash(TargetDir);
 }
 
@@ -2521,7 +2525,7 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
     FInfo->Source = AFilesToCopy->GetString(0);
     if (base::UnixExtractFilePath(FInfo->Source).IsEmpty())
     {
-      FInfo->Source = TPath::Join(ATerminal->GetCurrentDirectory(),
+      FInfo->Source = TUnixPath::Join(ATerminal->GetCurrentDirectory(),
         FInfo->Source);
       FInfo->ModifiedRemote = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         base::UnixIncludeTrailingBackslash(ATerminal->GetCurrentDirectory());
@@ -2653,7 +2657,9 @@ TTerminalThread::~TTerminalThread() noexcept
   FTerminal->SetOnReadDirectoryProgress(std::forward<TReadDirectoryProgressEvent>(FOnReadDirectoryProgress));
   FTerminal->SetOnInitializeLog(std::forward<TNotifyEvent>(FOnInitializeLog));
 
-  // delete FSection;
+#if defined(__BORLANDC__)
+  delete FSection;
+#endif // defined(__BORLANDC__)
   if (FAbandoned)
   {
     delete FTerminal.get();
@@ -3165,12 +3171,12 @@ UnicodeString TQueueFileList::GetFileName(int32_t Index) const
 
 int64_t TQueueFileList::GetState(int32_t Index) const
 {
-  return reinterpret_cast<int64_t>(FList->GetObj(Index));
+  return reinterpret_cast<int64_t>(FList->Objects[Index]);
 }
 
 void TQueueFileList::SetState(int32_t Index, int64_t State)
 {
-  FList->SetObj(Index, reinterpret_cast<TObject *>(State));
+  FList->SetObject(Index, reinterpret_cast<TObject *>(State));
 }
 
 int32_t TQueueFileList::GetCount() const

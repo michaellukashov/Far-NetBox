@@ -464,7 +464,7 @@ void TStrings::AddStrings(const TStrings * AStrings)
   {
     for (int32_t Index = 0; Index < AStrings->GetCount(); ++Index)
     {
-      AddObject(AStrings->GetString(Index), AStrings->GetObj(Index));
+      AddObject(AStrings->GetString(Index), AStrings->Objects[Index]);
     }
   }
   __finally
@@ -736,7 +736,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
   }
 }
 
-void TStringList::SetObj(int32_t Index, TObject * AObject)
+void TStringList::SetObject(int32_t Index, TObject * AObject)
 {
   if ((Index == nb::NPOS) || (Index >= TObjectList::GetCount()))
   {
