@@ -20,6 +20,7 @@
 #include <ObjIDs.h>
 
 #undef GetObject
+#undef GetUserName
 
 #pragma warning(pop)
 

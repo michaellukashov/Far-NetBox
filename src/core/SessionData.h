@@ -627,7 +627,7 @@ public:
   __property int32_t PortNumber  = { read=FPortNumber, write=SetPortNumber };
   RWProperty<int32_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
   __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
-  RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::SessionGetUserName, this), nb::bind(&TSessionData::SetUserName, this)};
+  RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::GetUserName, this), nb::bind(&TSessionData::SetUserName, this)};
   __property UnicodeString UserNameExpanded  = { read=GetUserNameExpanded };
   __property UnicodeString UserNameSource  = { read=GetUserNameSource };
   __property UnicodeString Password  = { read=GetPassword, write=SetPassword };
@@ -912,7 +912,7 @@ public:
   int32_t GetPortNumber() const { return FPortNumber; }
   TLoginType GetLoginType() const;
   void SetLoginType(TLoginType Value);
-  UnicodeString SessionGetUserName() const { return FUserName; }
+  UnicodeString GetUserName() const { return FUserName; }
   int32_t GetPingInterval() const { return FPingInterval; }
   bool GetTryAgent() const { return FTryAgent; }
   bool GetAgentFwd() const { return FAgentFwd; }

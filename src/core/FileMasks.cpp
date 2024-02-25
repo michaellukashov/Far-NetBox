@@ -1369,7 +1369,7 @@ bool TFileCustomCommand::PatternReplacement(
   {
     if (SessionData != nullptr)
     {
-      Replacement = SessionData->SessionGetUserName();
+      Replacement = SessionData->GetUserName();
     }
   }
   else if (::SameText(Pattern, L"!p"))

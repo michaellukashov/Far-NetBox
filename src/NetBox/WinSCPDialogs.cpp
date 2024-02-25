@@ -3205,7 +3205,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   HostNameEdit->SetText(SessionData->GetHostName());
   PortNumberEdit->SetAsInteger(SessionData->GetPortNumber());
 
-  UserNameEdit->SetText(SessionData->SessionGetUserName());
+  UserNameEdit->SetText(SessionData->GetUserName());
   PasswordEdit->SetText(SessionData->GetPassword());
   PrivateKeyEdit->SetText(SessionData->GetPublicKeyFile());
 

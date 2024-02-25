@@ -1946,7 +1946,7 @@ int32_t TWebDAVFileSystem::NeonRequestAuth(
   // will ask for username only once
   if (FileSystem->FUserName.IsEmpty())
   {
-    if (!SessionData->SessionGetUserName().IsEmpty())
+    if (!SessionData->GetUserName().IsEmpty())
     {
       FileSystem->FUserName = SessionData->GetUserNameExpanded();
     }
