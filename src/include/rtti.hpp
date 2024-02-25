@@ -761,7 +761,7 @@ template <typename To, typename From>
 {
   assert(detail::isPresent(Val) && "dyn_cast on a non-existent value");
   return CastInfo<To, std::unique_ptr<From>>::doCastIfPossible(
-      std::forward < std::unique_ptr<From>&& > (Val));
+      std::move(Val));
 }
 
 /// isa_and_present<X> - Functionally identical to isa, except that a null value
