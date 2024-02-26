@@ -4481,8 +4481,6 @@ bool TFTPFileSystem::HandleAsyncRequestNeedPass(
       }
     }
 
-    free(Data.Password);
-    Data.Password = nullptr;
     // When returning REPLY_OK, we need to return an allocated password,
     // even if we were returning and empty string we got on input.
     if (RequestResult == TFileZillaIntf::REPLY_OK)
