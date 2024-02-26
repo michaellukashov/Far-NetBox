@@ -165,8 +165,8 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
 class TPuttyCleanupThread : public TSimpleThread
 {
 public:
-    static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyCleanupThread); }
-    virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TSimpleThread::is(Kind); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyCleanupThread); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TSimpleThread::is(Kind); }
 public:
   TPuttyCleanupThread() noexcept : TSimpleThread(OBJECT_CLASS_TPuttyCleanupThread)
   {}
