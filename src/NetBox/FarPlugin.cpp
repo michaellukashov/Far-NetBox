@@ -18,7 +18,7 @@ TCustomFarPlugin * FarPlugin = nullptr;
 
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
-class TPluginIdleThread : public TSimpleThread
+class TPluginIdleThread final : public TSimpleThread
 {
   TPluginIdleThread() = delete;
 public:

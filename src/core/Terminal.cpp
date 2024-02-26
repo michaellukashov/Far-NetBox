@@ -151,7 +151,7 @@ TOverwriteFileParams::TOverwriteFileParams()
 
 #endif // defined(__BORLANDC__)
 
-class TTunnelThread : public TSimpleThread
+class TTunnelThread final : public TSimpleThread
 {
   NB_DISABLE_COPY(TTunnelThread)
 public:
