@@ -433,9 +433,11 @@ void TFTPFileSystem::Open()
     }
     __catch__removed
     {
-      // delete FFileZillaIntf;
-      // FFileZillaIntf = nullptr;
-      // throw;
+#if defined(__BORLANDC__)
+      delete FFileZillaIntf;
+      FFileZillaIntf = nullptr;
+      throw;
+#endif // defined(__BORLANDC__)
     } end_try__catch
   }
 
@@ -1930,7 +1932,9 @@ void TFTPFileSystem::DoStartup()
   }
   __finally__removed
   {
-    // delete PostLoginCommands;
+#if defined(__BORLANDC__)
+    delete PostLoginCommands;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   if (SupportsCommand(CsidCommand))
@@ -2142,7 +2146,9 @@ void TFTPFileSystem::ReadCurrentDirectory()
     }
     __finally__removed
     {
-      // delete Response;
+#if defined(__BORLANDC__)
+      delete Response;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
 }
@@ -2498,7 +2504,9 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   }
   __finally__removed
   {
-    // delete FileList;
+#if defined(__BORLANDC__)
+    delete FileList;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -2572,8 +2580,10 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
         }
         __catch__removed
         {
-          // delete FileListCache;
-          // throw;
+#if defined(__BORLANDC__)
+          delete FileListCache;
+          throw;
+#endif // defined(__BORLANDC__)
         } end_try__catch
         // set only after we successfully read the directory,
         // otherwise, when we reconnect from ReadDirectory,
@@ -4619,7 +4629,9 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       }
       catch (Exception &E)
       {
-        // delete File;
+#if defined(__BORLANDC__)
+        delete File;
+#endif // defined(__BORLANDC__)
         const UnicodeString TmStr = FORMAT("%d/%d/%d/%d", nb::ToInt32(Entry->Time.HasTime),
             nb::ToInt32(Entry->Time.HasYear), nb::ToInt32(Entry->Time.HasSeconds), nb::ToInt32(Entry->Time.HasDate));
         const UnicodeString EntryData =

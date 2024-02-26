@@ -3160,7 +3160,9 @@ bool AdjustClockForDSTEnabled()
         DynamicDaylightTimeDisabled = Registry->ReadBool("DisableAutoDaylightTimeSet");
       }
     }
-    // delete Registry;
+#if defined(__BORLANDC__)
+    delete Registry;
+#endif // defined(__BORLANDC__)
   }
   catch(...)
   {
@@ -3927,7 +3929,9 @@ UnicodeString WindowsProductName()
     {
       Result = Registry->ReadString("ProductName");
     }
-    // delete Registry;
+#if defined(__BORLANDC__)
+    delete Registry;
+#endif // defined(__BORLANDC__)
   }
   catch(...)
   {

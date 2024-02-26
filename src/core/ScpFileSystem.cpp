@@ -957,7 +957,9 @@ void TSCPFileSystem::ClearAliases()
     }
     __finally__removed
     {
-      // delete CommandList;
+#if defined(__BORLANDC__)
+      delete CommandList;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   catch(Exception & E)
@@ -1117,7 +1119,9 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         }
         __finally__removed
         {
-          // delete OutputCopy;
+#if defined(__BORLANDC__)
+          delete OutputCopy;
+#endif // defined(__BORLANDC__)
         } end_try__finally
       }
       else
@@ -1209,8 +1213,10 @@ TRemoteFile * TSCPFileSystem::CreateRemoteFile(
   }
   __catch__removed
   {
-    // delete File;
-    // throw;
+#if defined(__BORLANDC__)
+    delete File;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
 
   return File.release();

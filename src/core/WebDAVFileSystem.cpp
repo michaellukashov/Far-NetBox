@@ -197,7 +197,9 @@ TWebDAVFileSystem::~TWebDAVFileSystem() noexcept
     }
   }
 
-  // delete FNeonLockStoreSection;
+#if defined(__BORLANDC__)
+  delete FNeonLockStoreSection;
+#endif // defined(__BORLANDC__)
   // DEBUG_PRINTF("end");
 }
 

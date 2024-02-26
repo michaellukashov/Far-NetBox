@@ -1756,7 +1756,9 @@ void TTerminal::InitFileSystem()
     }
     __finally
     {
-      // delete FSecureShell;
+#if defined(__BORLANDC__)
+      delete FSecureShell;
+#endif // defined(__BORLANDC__)
       FSecureShell.reset();
     } end_try__finally
   }
@@ -2008,8 +2010,10 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   }
   __finally__removed
   {
-    // delete Prompts;
-    // delete Results;
+#if defined(__BORLANDC__)
+    delete Prompts;
+    delete Results;
+#endif // defined(__BORLANDC__)
   } end_try__finally
   return Result;
 }
@@ -2187,7 +2191,9 @@ uint32_t TTerminal::QueryUserException(const UnicodeString & AQuery,
     }
     __finally__removed
     {
-      // delete MoreMessages;
+#if defined(__BORLANDC__)
+      delete MoreMessages;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   return Result;
@@ -3097,7 +3103,9 @@ uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
     }
     __finally__removed
     {
-      // delete ECmd;
+#if defined(__BORLANDC__)
+      delete ECmd;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   else
@@ -3958,8 +3966,10 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirec
   }
   __catch__removed
   {
-    // delete FileList;
-    // throw;
+#if defined(__BORLANDC__)
+    delete FileList;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return FileList.release();
 }
@@ -4036,7 +4046,9 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
     }
     __finally__removed
     {
-      // delete FileList;
+#if defined(__BORLANDC__)
+      delete FileList;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
 }
@@ -6200,8 +6212,10 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   }
   __catch__removed
   {
-    // delete Checklist;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Checklist;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Checklist.release();
 }
@@ -6479,7 +6493,9 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
           }
           __finally__removed
           {
-            // delete ChecklistItem;
+#if defined(__BORLANDC__)
+            delete ChecklistItem;
+#endif // defined(__BORLANDC__)
           } end_try__finally
         }
         else
@@ -6787,7 +6803,9 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
     }
     __finally__removed
     {
-      // delete ChecklistItem;
+#if defined(__BORLANDC__)
+      delete ChecklistItem;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   else

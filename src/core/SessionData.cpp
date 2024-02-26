@@ -2168,7 +2168,9 @@ void TSessionData::Remove()
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -5499,7 +5501,9 @@ void TStoredSessionList::DoSave(THierarchicalStorage * Storage,
   }
   __finally__removed
   {
-    // delete FactoryDefaults;
+#if defined(__BORLANDC__)
+    delete FactoryDefaults;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -5524,7 +5528,9 @@ void TStoredSessionList::DoSave(bool All, bool Explicit,
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   Saved();
@@ -5846,7 +5852,9 @@ void TStoredSessionList::Cleanup()
     }
     __finally__removed
     {
-      // delete Storage;
+#if defined(__BORLANDC__)
+      delete Storage;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   catch(Exception & E)

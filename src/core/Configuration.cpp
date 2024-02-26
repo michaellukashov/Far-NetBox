@@ -221,7 +221,9 @@ void TConfiguration::Default()
   }
   __finally__removed
   {
-    // delete AdminStorage;
+#if defined(__BORLANDC__)
+    delete AdminStorage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
@@ -292,8 +294,10 @@ TConfiguration::~TConfiguration() noexcept
     FreeFileInfo(FApplicationInfo);
     FApplicationInfo = nullptr;
   }
-  // delete FCriticalSection;
-  // delete FUsage;
+#if defined(__BORLANDC__)
+  delete FCriticalSection;
+  delete FUsage;
+#endif // defined(__BORLANDC__)
 }
 
 void TConfiguration::ConfigurationInit()
@@ -513,7 +517,9 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   Saved();
@@ -799,7 +805,9 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -820,7 +828,9 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -1727,8 +1737,10 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACusto
       }
       __finally__removed
       {
-        // delete SourceStorage;
-        // delete TargetStorage;
+#if defined(__BORLANDC__)
+        delete SourceStorage;
+        delete TargetStorage;
+#endif // defined(__BORLANDC__)
       } end_try__finally
 
       // save all and explicit,

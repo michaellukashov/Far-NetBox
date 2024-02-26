@@ -1615,11 +1615,15 @@ void TActionLog::Init(TSessionUI * UI, const TDateTime & Started, TSessionData *
 TActionLog::~TActionLog() noexcept
 { try {
   DebugAssert(FPendingActions->GetCount() == 0);
-  // delete FPendingActions;
+#if defined(__BORLANDC__)
+  delete FPendingActions;
+#endif // defined(__BORLANDC__)
   FClosed = true;
   ReflectSettings();
   DebugAssert(FLogger == nullptr);
-  // delete FCriticalSection;
+#if defined(__BORLANDC__)
+  delete FCriticalSection;
+#endif // defined(__BORLANDC__)
   } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
 }
 
