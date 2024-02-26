@@ -995,9 +995,8 @@ UnicodeString ExceptionLogString(Exception * E)
     wchar_t Buffer[1024];
     ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, _countof(Buffer));
     return UnicodeString(Buffer);
-#else
+#endif // defined(__BORLANDC__)
     return UnicodeString(E->Message);
-#endif
   }
 }
 
@@ -3174,28 +3173,26 @@ UnicodeString StandardDatestamp()
 {
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd", ConvertTimestampToUTC(Now()));
-#else
+#endif // defined(__BORLANDC__)
   const TDateTime DT = ::ConvertTimestampToUTC(Now());
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
   UnicodeString Result = FORMAT("%04d-%02d-%02d", Y, M, D);
   return Result;
-#endif
 }
 
 UnicodeString StandardTimestamp(const TDateTime & DateTime)
 {
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
-#else
+#endif // defined(__BORLANDC__)
   const TDateTime DT = ::ConvertTimestampToUTC(DateTime);
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
   UnicodeString Result = FORMAT("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
   return Result;
-#endif
 }
 
 UnicodeString StandardTimestamp()

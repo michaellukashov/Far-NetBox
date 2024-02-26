@@ -134,7 +134,7 @@ bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName) const
   return Result;
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 TSpaceAvailable::TSpaceAvailable()
 {
@@ -148,8 +148,8 @@ TOverwriteFileParams::TOverwriteFileParams()
   SourcePrecision = mfFull;
   DestPrecision = mfFull;
 }
-#endif // if 0
 
+#endif // defined(__BORLANDC__)
 
 class TTunnelThread : public TSimpleThread
 {

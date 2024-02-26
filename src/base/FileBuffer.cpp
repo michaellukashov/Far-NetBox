@@ -31,7 +31,7 @@ TFileBuffer::TFileBuffer() noexcept :
 #if defined(__BORLANDC__)
   FMemory = new TMemoryStream();
   FSize = 0;
-#endif
+#endif // defined(__BORLANDC__)
 }
 
 TFileBuffer::~TFileBuffer() noexcept
