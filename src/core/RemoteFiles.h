@@ -673,7 +673,8 @@ public:
     saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };*/
   static const int32_t ActionCount = saDeleteLocal;
 
-#if 0
+#if defined(__BORLANDC__)
+
   class TItem
   {
   friend class TTerminal;
@@ -712,7 +713,8 @@ public:
 
     TItem();
   };
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
   using TItemList = TListBase<TChecklistItem>;
 
@@ -771,7 +773,8 @@ private:
   int64_t GetProcessed(const TFileOperationProgressType * CurrentItemOperationProgress) const;
 };
 
-#if 0
+#if defined(__BORLANDC__)
+
 // moved to Common.h
 
 bool IsUnixStyleWindowsPath(const UnicodeString & Path);
@@ -811,4 +814,4 @@ int32_t FakeFileImageIndex(const UnicodeString & FileName, uint32_t Attrs = 0,
 bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
 UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bool Unix);
 
-#endif
+#endif // defined(__BORLANDC__)

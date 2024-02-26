@@ -69,7 +69,9 @@ void TUsage::Load(THierarchicalStorage * Storage)
     }
     __finally__removed
     {
-      // delete Names;
+#if defined(__BORLANDC__)
+      delete Names;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
 
@@ -95,7 +97,9 @@ void TUsage::Load(THierarchicalStorage * Storage,
     }
     __finally__removed
     {
-      // delete Names;
+#if defined(__BORLANDC__)
+      delete Names;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
 }

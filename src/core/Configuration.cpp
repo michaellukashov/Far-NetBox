@@ -221,7 +221,9 @@ void TConfiguration::Default()
   }
   __finally__removed
   {
-    // delete AdminStorage;
+#if defined(__BORLANDC__)
+    delete AdminStorage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   SetRandomSeedFile(FDefaultRandomSeedFile);
@@ -292,8 +294,10 @@ TConfiguration::~TConfiguration() noexcept
     FreeFileInfo(FApplicationInfo);
     FApplicationInfo = nullptr;
   }
-  // delete FCriticalSection;
-  // delete FUsage;
+#if defined(__BORLANDC__)
+  delete FCriticalSection;
+  delete FUsage;
+#endif // defined(__BORLANDC__)
 }
 
 void TConfiguration::ConfigurationInit()
@@ -303,11 +307,11 @@ void TConfiguration::ConfigurationInit()
 
 void TConfiguration::UpdateStaticUsage()
 {
-#if 0
+#if defined(__BORLANDC__)
   Usage->Set(L"ConfigurationIniFile", (Storage == stIniFile));
   Usage->Set(L"ConfigurationIniFileCustom", !CustomIniFileStorageName.IsEmpty());
   Usage->Set("Unofficial", IsUnofficial);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   // this is called from here, because we are guarded from calling into
   // master password handler here, see TWinConfiguration::UpdateStaticUsage
@@ -341,10 +345,10 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   }
   else
   {
-#if 0
+#if defined(__BORLANDC__)
     UnicodeString StorageName = IniFileStorageName;
     Result = TIniFileStorage::CreateFromPath(StorageName);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
     ThrowNotImplemented(3005);
     DebugAssert(false);
   }
@@ -513,7 +517,9 @@ void TConfiguration::DoSave(bool All, bool Explicit)
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   Saved();
@@ -535,7 +541,7 @@ void TConfiguration::DoSave(bool All, bool Explicit)
 
 void TConfiguration::SaveCustomIniFileStorageName()
 {
-#if 0
+#if defined(__BORLANDC__)
   // Particularly, not to create an empty "Override" key, unless the custom INI file is ever set
   if (CustomIniFileStorageName != LoadCustomIniFileStorageName())
   {
@@ -548,13 +554,13 @@ void TConfiguration::SaveCustomIniFileStorageName()
       RegistryStorage->CloseSubKey();
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TConfiguration::Export(const UnicodeString & /*AFileName*/)
 {
   ThrowNotImplemented(3004);
-#if 0
+#if defined(__BORLANDC__)
   // not to "append" the export to an existing file
   if (base::FileExists(AFileName))
   {
@@ -583,13 +589,13 @@ void TConfiguration::Export(const UnicodeString & /*AFileName*/)
   }
 
   StoredSessions->Export(AFileName);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TConfiguration::Import(const UnicodeString & /*AFileName*/)
 {
   ThrowNotImplemented(3005);
-#if 0
+#if defined(__BORLANDC__)
   THierarchicalStorage * Storage = nullptr;
   THierarchicalStorage * ImportStorage = nullptr;
   try
@@ -623,7 +629,7 @@ void TConfiguration::Import(const UnicodeString & /*AFileName*/)
 
   // save all and explicit
   DoSave(true, true);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   FDontSave = true;
 }
 
@@ -799,7 +805,9 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -820,7 +828,9 @@ void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
   }
   __finally__removed
   {
-    // delete Storage;
+#if defined(__BORLANDC__)
+    delete Storage;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -1106,7 +1116,7 @@ void TConfiguration::CleanupRandomSeedFile()
 
 void TConfiguration::CleanupIniFile()
 {
-#if 0
+#if defined(__BORLANDC__)
   try
   {
     if (base::FileExists(ApiPath(IniFileStorageNameForReading)))
@@ -1122,7 +1132,7 @@ void TConfiguration::CleanupIniFile()
   {
     throw ExtException(&E, LoadStr(CLEANUP_INIFILE_ERROR));
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TConfiguration::DontSave()
@@ -1344,13 +1354,13 @@ UnicodeString TConfiguration::GetProductVersionStr() const
   try
   {
     const TVSFixedFileInfo * FixedApplicationInfo = GetFixedApplicationInfo();
-#if 0
+#if defined(__BORLANDC__)
     return FMTLOAD(VERSION,
       HIWORD(Info->dwFileVersionMS),
       LOWORD(Info->dwFileVersionMS),
       HIWORD(Info->dwFileVersionLS),
       LOWORD(Info->dwFileVersionLS));
-#endif // #if 0
+#endif // defined(__BORLANDC__)
     UnicodeString BuildStr;
     if (!GetIsUnofficial())
     {
@@ -1369,7 +1379,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
       BuildStr += L" " + ::IntToStr(Build);
     }
 
-#if 0
+#if defined(__BORLANDC__)
     UnicodeString BuildDate = __DATE__;
     UnicodeString MonthStr = CutToChar(BuildDate, L' ', true);
     int32_t Month = ParseShortEngMonthName(MonthStr);
@@ -1377,7 +1387,7 @@ UnicodeString TConfiguration::GetProductVersionStr() const
     int32_t Year = StrToInt64(Trim(BuildDate));
     UnicodeString DateStr = FORMAT("%d-%2.2d-%2.2d", Year, Month, Day);
     AddToList(BuildStr, DateStr, L" ");
-#endif
+#endif // defined(__BORLANDC__)
 
     Result = FMTLOAD(VERSION2, FullVersion, BuildStr);
 
@@ -1727,8 +1737,10 @@ void TConfiguration::MoveStorage(TStorage AStorage, const UnicodeString & ACusto
       }
       __finally__removed
       {
-        // delete SourceStorage;
-        // delete TargetStorage;
+#if defined(__BORLANDC__)
+        delete SourceStorage;
+        delete TargetStorage;
+#endif // defined(__BORLANDC__)
       } end_try__finally
 
       // save all and explicit,
@@ -1767,14 +1779,14 @@ TStorage TConfiguration::GetStorage() const
   const TGuard Guard(FCriticalSection);
   if (FStorage == stDetect)
   {
-#if 0
+#if defined(__BORLANDC__)
     DebugFail(); // This is never called, as the detection is completely overridden by TWinConfiguration
     if (base::FileExists(ApiPath(IniFileStorageNameForReading)))
     {
       FStorage = stIniFile;
     }
     else
-#endif // #if 0
+#endif // defined(__BORLANDC__)
     {
       FStorage = stRegistry;
     }
@@ -1987,7 +1999,7 @@ UnicodeString TConfiguration::GetDirectoryStatisticsCacheKey(
   RawOptions->Add(SessionKey);
   RawOptions->Add(base::UnixExcludeTrailingBackslash(Path));
 
-#if 0
+#if defined(__BORLANDC__)
   TCopyParamType Defaults;
   TCopyParamType FilterCopyParam;
   FilterCopyParam.IncludeFileMask = CopyParam.IncludeFileMask;
@@ -1996,8 +2008,8 @@ UnicodeString TConfiguration::GetDirectoryStatisticsCacheKey(
 
   std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(RawOptions.get(), true));
   FilterCopyParam.Save(OptionsStorage.get(), &Defaults);
+#endif // defined(__BORLANDC__)
 
-#endif // if 0
   const UTF8String RawOptionsBuf(RawOptions->GetCommaText().LowerCase());
   const UnicodeString Result = Sha256(RawOptionsBuf.c_str(), RawOptionsBuf.Length());
   return Result;

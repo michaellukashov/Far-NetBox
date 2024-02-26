@@ -60,8 +60,9 @@ public:
   void ProcessRead(int64_t Len, DWORD Result);
 };
 
-#if 0
-moved to Classes.h
+#if defined(__BORLANDC__)
+// moved to Classes.h
+
 class TSafeHandleStream : public THandleStream
 {
 public:
@@ -77,7 +78,8 @@ private:
   THandleStream * FSource;
   bool FOwned;
 };
-#endif // if 0
+
+#endif // defined(__BORLANDC__)
 
 char * EOLToStr(TEOLType EOLType);
 

@@ -31,7 +31,7 @@ TQueryButtonAlias::TQueryButtonAlias() noexcept :
   GroupWith = -1;
   ElevationRequired = false;
   MenuButton = false;
-#endif
+#endif // defined(__BORLANDC__)
 }
 
 TQueryButtonAlias TQueryButtonAlias::CreateYesToAllGroupedWithYes()
@@ -93,7 +93,7 @@ TQueryParams::TQueryParams(uint32_t AParams, const UnicodeString & AHelpKeyword)
   TimeoutResponse = 0;
   NoBatchAnswers = 0;
   HelpKeyword = AHelpKeyword;
-#endif
+#endif // defined(__BORLANDC__)
 }
 
 TQueryParams::TQueryParams(const TQueryParams & ASource) noexcept : TQueryParams(0, "")

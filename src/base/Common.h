@@ -5,7 +5,8 @@
 #include <Exceptions.h>
 
 #define EXCEPTION throw ExtException(nullptr, L"")
-#if 0
+#if defined(__BORLANDC__)
+// moved to Sysutils.hpp
 #define THROWOSIFFALSE(C) { if (!(C)) RaiseLastOSError(); }
 #define SAFE_DESTROY_EX(CLASS, OBJ) { CLASS * PObj = OBJ; OBJ = nullptr; delete PObj; }
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, OBJ)
@@ -18,7 +19,7 @@
   }
 #define SWAP(TYPE, FIRST, SECOND) \
   { TYPE __Backup = FIRST; FIRST = SECOND; SECOND = __Backup; }
-#endif // if 0
+#endif // defined(__BORLANDC__)
 
 constexpr const wchar_t * PARENTDIRECTORY = L"..";
 constexpr const wchar_t * THISDIRECTORY = L".";
@@ -299,7 +300,7 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime);
 UnicodeString FormatRelativeTime(const TDateTime & ANow, const TDateTime & AThen, bool DateOnly);
 NB_CORE_EXPORT TStrings * TlsCipherList();
 
-#if 0
+#if defined(__BORLANDC__)
 
 template<class MethodT>
 MethodT MakeMethod(void * Data, void * Code)

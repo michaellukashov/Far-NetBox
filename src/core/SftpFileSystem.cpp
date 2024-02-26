@@ -375,7 +375,7 @@ public:
   void AddString(const UnicodeString & Value, TAutoSwitch /*Utf*/)
   {
     AddStringW(Value);
-#if 0
+#if defined(__BORLANDC__)
     // asAuto: Using UTF until we receive non-UTF string from the server
     if ((Utf == asOn) || (Utf == asAuto))
     {
@@ -385,7 +385,7 @@ public:
     {
       AddString(RawByteString(AnsiString(Value)));
     }
-#endif
+#endif // defined(__BORLANDC__)
   }
 
   // now purposeless alias to AddString
@@ -661,7 +661,7 @@ public:
   UnicodeString GetString(TAutoSwitch /*Utf*/) const
   {
     return GetStringW();
-#if 0
+#if defined(__BORLANDC__)
     if (Utf != asOff)
     {
       return GetUtfString(Utf);
@@ -670,7 +670,7 @@ public:
     {
       return GetAnsiString();
     }
-#endif
+#endif // defined(__BORLANDC__)
   }
 
   // now purposeless alias to GetString(bool)
@@ -1357,7 +1357,7 @@ protected:
   TSFTPFileSystem * FFileSystem{nullptr};
   uint32_t FCodePage{0};
 
-#if 0
+#if defined(__BORLANDC__)
   class TSFTPQueuePacket : public TSFTPPacket
   {
   public:
@@ -1369,7 +1369,7 @@ protected:
 
     void * Token;
   };
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   virtual bool InitRequest(TSFTPQueuePacket * Request) = 0;
 
@@ -1990,9 +1990,9 @@ public:
 private:
   TSFTPFileSystem * FFileSystem{nullptr};
 };
-#if 0
+#if defined(__BORLANDC__)
 //===========================================================================
-moved to FileSystems.h
+// moved to FileSystems.h
 struct TOpenRemoteFileParams
 {
   UnicodeString FileName;
@@ -2011,7 +2011,7 @@ struct TOpenRemoteFileParams
   bool Recycled;
   TRights RecycledRights;
 };
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 //===========================================================================
 TSFTPFileSystem::TSFTPFileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TSFTPFileSystem, ATerminal)

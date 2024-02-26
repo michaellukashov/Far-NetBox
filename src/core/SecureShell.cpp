@@ -2092,9 +2092,9 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
   {
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
-#if 0
+#if defined(__BORLANDC__)
       LogEvent("Looking for network events"); // TODO: if LogLevel > 4 LogEvent
-#endif // #if 0
+#endif // defined(__BORLANDC__)
     }
     const uint32_t TicksBefore = ::GetTickCount();
     HandleWaitList * WaitList = nullptr;
@@ -2178,9 +2178,9 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
       {
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
-#if 0
+#if defined(__BORLANDC__)
           LogEvent("Timeout waiting for network events"); // TODO: if LogLevel > 4 LogEvent
-#endif // #if 0
+#endif // defined(__BORLANDC__)
         }
 
         MSec = 0;

@@ -134,7 +134,7 @@ bool TSynchronizeOptions::MatchesFilter(const UnicodeString & AFileName) const
   return Result;
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 TSpaceAvailable::TSpaceAvailable()
 {
@@ -148,8 +148,8 @@ TOverwriteFileParams::TOverwriteFileParams()
   SourcePrecision = mfFull;
   DestPrecision = mfFull;
 }
-#endif // if 0
 
+#endif // defined(__BORLANDC__)
 
 class TTunnelThread : public TSimpleThread
 {
@@ -1756,7 +1756,9 @@ void TTerminal::InitFileSystem()
     }
     __finally
     {
-      // delete FSecureShell;
+#if defined(__BORLANDC__)
+      delete FSecureShell;
+#endif // defined(__BORLANDC__)
       FSecureShell.reset();
     } end_try__finally
   }
@@ -2008,8 +2010,10 @@ bool TTerminal::PromptUser(TSessionData * Data, TPromptKind Kind,
   }
   __finally__removed
   {
-    // delete Prompts;
-    // delete Results;
+#if defined(__BORLANDC__)
+    delete Prompts;
+    delete Results;
+#endif // defined(__BORLANDC__)
   } end_try__finally
   return Result;
 }
@@ -2187,7 +2191,9 @@ uint32_t TTerminal::QueryUserException(const UnicodeString & AQuery,
     }
     __finally__removed
     {
-      // delete MoreMessages;
+#if defined(__BORLANDC__)
+      delete MoreMessages;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   return Result;
@@ -3097,7 +3103,9 @@ uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
     }
     __finally__removed
     {
-      // delete ECmd;
+#if defined(__BORLANDC__)
+      delete ECmd;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   else
@@ -3958,8 +3966,10 @@ TRemoteFileList * TTerminal::DoReadDirectoryListing(const UnicodeString & ADirec
   }
   __catch__removed
   {
-    // delete FileList;
-    // throw;
+#if defined(__BORLANDC__)
+    delete FileList;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return FileList.release();
 }
@@ -4036,7 +4046,9 @@ void TTerminal::ProcessDirectory(const UnicodeString & ADirName,
     }
     __finally__removed
     {
-      // delete FileList;
+#if defined(__BORLANDC__)
+      delete FileList;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
 }
@@ -4214,11 +4226,11 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
               }
               else
               {
-#if 0
+#if defined(__BORLANDC__)
                 // not used anymore
                 TProcessFileEventEx ProcessFileEx = (TProcessFileEventEx)ProcessFile;
                 ProcessFileEx(FileName, File, Param, Index);
-#endif //if 0
+#endif // defined(__BORLANDC__)
               }
               Success = true;
             }
@@ -4274,14 +4286,14 @@ bool TTerminal::ProcessFiles(TStrings * AFileList,
 }
 
 // not used anymore
-#if 0
+#if defined(__BORLANDC__)
 bool TTerminal::ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
   TProcessFileEventEx ProcessFile, void * Param, TOperationSide Side)
 {
   return ProcessFiles(FileList, Operation, TProcessFileEvent(ProcessFile),
     Param, Side, true);
 }
-#endif
+#endif // defined(__BORLANDC__)
 
 TStrings * TTerminal::GetFixedPaths() const
 {
@@ -4667,11 +4679,11 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
       const UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
-#if 0
+#if defined(__BORLANDC__)
       LogEvent(FORMAT(" - modification: \"%s\"",
         (FormatDateTime(L"dddddd tt",
            UnixToDateTime(RProperties->Modification, SessionData->DSTMode)))));
-#endif // #if 0
+#endif // defined(__BORLANDC__)
       LogEvent(FORMAT(" - modification: \"%s\"", dt));
     }
     if (RProperties->Valid.Contains(vpLastAccess))
@@ -4681,11 +4693,11 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
       DateTime.DecodeDate(Y, M, D);
       DateTime.DecodeTime(H, N, S, MS);
       const UnicodeString dt = FORMAT("%02d.%02d.%04d %02d:%02d:%02d ", D, M, Y, H, N, S);
-#if 0
+#if defined(__BORLANDC__)
       LogEvent(FORMAT(" - last access: \"%s\"",
         (FormatDateTime(L"dddddd tt",
            UnixToDateTime(RProperties->LastAccess, SessionData->DSTMode)))));
-#endif // #if 0
+#endif // defined(__BORLANDC__)
       LogEvent(FORMAT(" - last access: \"%s\"", dt));
     }
   }
@@ -5570,7 +5582,7 @@ TTerminal * TTerminal::GetCommandSession()
 void TTerminal::AnyCommand(const UnicodeString & Command,
   TCaptureOutputEvent && OutputEvent)
 {
-#if 0
+#if defined(__BORLANDC__)
 // moved to Terminal.h
   #pragma warn -inl
   class TOutputProxy
@@ -5608,7 +5620,7 @@ void TTerminal::AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent FOutputEvent;
   };
   #pragma warn .inl
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   TCallSessionAction Action(GetActionLog(), Command, GetCurrentDirectory());
   TOutputProxy ProxyOutputEvent(Action, std::move(OutputEvent));
@@ -6200,8 +6212,10 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   }
   __catch__removed
   {
-    // delete Checklist;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Checklist;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Checklist.release();
 }
@@ -6479,7 +6493,9 @@ void TTerminal::DoSynchronizeCollectDirectory(const UnicodeString & ALocalDirect
           }
           __finally__removed
           {
-            // delete ChecklistItem;
+#if defined(__BORLANDC__)
+            delete ChecklistItem;
+#endif // defined(__BORLANDC__)
           } end_try__finally
         }
         else
@@ -6787,7 +6803,9 @@ void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
     }
     __finally__removed
     {
-      // delete ChecklistItem;
+#if defined(__BORLANDC__)
+      delete ChecklistItem;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   else
@@ -7609,7 +7627,7 @@ bool TTerminal::CopyToRemote(
     {
       if (CalculatedSize)
       {
-#if 0
+#if defined(__BORLANDC__)
         if (Configuration->Usage->Collect)
         {
           int32_t CounterSize = TUsage::CalculateCounterSize(Size);
@@ -7618,7 +7636,7 @@ bool TTerminal::CopyToRemote(
           Configuration->Usage->SetMax(L"MaxUploadSize", CounterSize);
           CollectingUsage = true;
         }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
         OperationProgress.SetTotalSize(Size);
       }
 
@@ -7658,14 +7676,14 @@ bool TTerminal::CopyToRemote(
     }
     __finally
     {
-#if 0
+#if defined(__BORLANDC__)
       if (CollectingUsage)
       {
         int32_t CounterTime = TimeToSeconds(OperationProgress.TimeElapsed());
         Configuration->Usage->Inc("UploadTime", CounterTime);
         Configuration->Usage->SetMax(L"MaxUploadTime", CounterTime);
       }
-#endif //if 0
+#endif // defined(__BORLANDC__)
       OperationStop(OperationProgress);
     } end_try__finally
   }
@@ -8413,7 +8431,8 @@ void TTerminal::SinkRobust(
   } end_try__finally
 }
 
-#if 0 // moved to FileSystems.h
+#if defined(__BORLANDC__)
+// moved to FileSystems.h
 
 struct TSinkFileParams
 {
@@ -8425,7 +8444,7 @@ struct TSinkFileParams
   uint32_t Flags;
 };
 
-#endif //if 0
+#endif // defined(__BORLANDC__)
 
 void TTerminal::Sink(
   const UnicodeString & AFileName, const TRemoteFile * AFile, const UnicodeString & ATargetDir,
@@ -9568,7 +9587,7 @@ void TTerminalList::RecryptPasswords()
   }
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 TLocalFileHandle::TLocalFileHandle() noexcept
 {
@@ -9580,7 +9599,7 @@ TLocalFileHandle::TLocalFileHandle() noexcept
   Directory = false;
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 TLocalFileHandle::~TLocalFileHandle() noexcept
 {

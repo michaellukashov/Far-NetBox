@@ -84,7 +84,7 @@ UnicodeString S3SecurityProfile;
 using TS3Credentials = nb::map_t<UnicodeString, UnicodeString>;
 TS3Credentials S3Credentials;
 
-#if 0
+#if defined(__BORLANDC__)
 
 static void NeedS3Config()
 {
@@ -179,7 +179,6 @@ UnicodeString GetS3ConfigValue(
     {
       ASource = FORMAT(L"%%%s%%", Name);
     }
-#if 0
     else
     {
       NeedS3Config();
@@ -197,7 +196,6 @@ UnicodeString GetS3ConfigValue(
         }
       }
     }
-#endif // if 0
   }
   catch (Exception & E)
   {
@@ -311,10 +309,10 @@ UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * S
   return GetS3ConfigValue(Profile, AWS_SESSION_TOKEN, L"Token", Source);
 }
 
-#endif //if 0
+constexpr const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
+constexpr const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
 
-// constexpr const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
-// constexpr const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
+#endif // defined(__BORLANDC__)
 
 TS3FileSystem::TS3FileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TS3FileSystem, ATerminal),
@@ -371,13 +369,13 @@ void TS3FileSystem::Open()
   }
   if (!S3Profile.IsEmpty() && !FTerminal->SessionData->FingerprintScan)
   {
-#if 0
+#if defined(__BORLANDC__)
     std::unique_ptr<TStrings> S3Profiles(GetS3Profiles());
     if (S3Profiles->IndexOf(S3Profile) < 0)
     {
       throw Exception(MainInstructions(FMTLOAD(S3_PROFILE_NOT_EXIST, S3Profile)));
     }
-#endif //if 0
+#endif // defined(__BORLANDC__)
   }
 
   UnicodeString AccessKeyId = Data->GetUserNameExpanded();
@@ -399,9 +397,9 @@ void TS3FileSystem::Open()
   if (Password.IsEmpty() && Data->FS3CredentialsEnv)
   {
     UnicodeString PasswordSource;
-#if 0
+#if defined(__BORLANDC__)
     Password = S3EnvPassword(S3Profile, &PasswordSource);
-#endif //if 0
+#endif // defined(__BORLANDC__)
     if (!Password.IsEmpty())
     {
       FTerminal->LogEvent(FORMAT(L"Password (secret access key) read from %s", PasswordSource));
@@ -422,9 +420,9 @@ void TS3FileSystem::Open()
   if (SessionToken.IsEmpty() && Data->FS3CredentialsEnv)
   {
     UnicodeString SessionTokenSource;
-#if 0
+#if defined(__BORLANDC__)
     SessionToken = S3EnvSessionToken(S3Profile, &SessionTokenSource);
-#endif //if 0
+#endif // defined(__BORLANDC__)
     if (!SessionToken.IsEmpty())
     {
       FTerminal->LogEvent(FORMAT(L"Session token read from %s", SessionTokenSource));

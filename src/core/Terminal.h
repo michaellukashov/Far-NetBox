@@ -952,7 +952,8 @@ public:
   bool Result{true};
 };
 
-#if 0 // moved to FileSystems.h
+#if defined(__BORLANDC__)
+// moved to FileSystems.h
 struct TOverwriteFileParams
 {
   TOverwriteFileParams();
@@ -966,7 +967,8 @@ struct TOverwriteFileParams
 };
 
 typedef std::vector<TDateTime> TDateTimes;
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 struct NB_CORE_EXPORT TMakeLocalFileListParams : public TObject
 {
