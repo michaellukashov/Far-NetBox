@@ -14,8 +14,6 @@ extern "C" {
 }
 #include "plugin_version.hpp"
 
-#undef GetCurrentDirectory
-
 TCustomFarPlugin * FarPlugin = nullptr;
 
 constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
