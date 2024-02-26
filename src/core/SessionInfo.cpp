@@ -174,7 +174,7 @@ public:
   bool Record()
   {
     bool Result = (FState != Opened);
-#if 0
+#if defined(__BORLANDC__)
     if (Result)
     {
       if (FLog->FLogging && (FState != Cancelled))
@@ -234,7 +234,7 @@ public:
       }
       delete this;
     }
-#endif
+#endif // defined(__BORLANDC__)
     return Result;
   }
 
@@ -1741,13 +1741,13 @@ void TActionLog::ReflectSettings()
   if (ALogging && !FLogging)
   {
     FLogging = true;
-#if 0
+#if defined(__BORLANDC__)
     Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
     UnicodeString SessionName =
       (FSessionData != nullptr) ? XmlAttributeEscape(FSessionData->SessionName) : UnicodeString(L"nosession");
     Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",
         (SessionName, StandardTimestamp())));
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   }
   else if (!ALogging && FLogging)
   {
@@ -1758,9 +1758,9 @@ void TActionLog::ReflectSettings()
     // do not try to close the file, if it has not been opened, to avoid recursion
     if (FLogger != nullptr)
     {
-#if 0
+#if defined(__BORLANDC__)
       Add(L"</session>");
-#endif // #if 0
+#endif // defined(__BORLANDC__)
     }
     CloseLogFile();
     FLogging = false;

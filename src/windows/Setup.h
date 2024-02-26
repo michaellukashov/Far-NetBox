@@ -1,8 +1,8 @@
 
+#if defined(__BORLANDC__)
+
 #ifndef SetupH
 #define SetupH
-
-#if 0
 
 #include <Interface.h>
 #include <WinConfiguration.h>
@@ -42,6 +42,6 @@ UnicodeString GetPowerShellVersionStr();
 UnicodeString GetPowerShellCoreVersionStr();
 int ComRegistration(TConsole * Console);
 
-#endif // #if 0
-
 #endif
+
+#endif // defined(__BORLANDC__)

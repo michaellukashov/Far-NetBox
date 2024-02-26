@@ -16,7 +16,8 @@
 #include "HelpCore.h"
 #include "Cryptography.h"
 
-#if 0
+#if defined(__BORLANDC__)
+
 // moved to Common.cpp
 /* TODO 1 : Path class instead of UnicodeString (handle relativity...) */
 
@@ -585,7 +586,7 @@ UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & Target, bo
   return FMTLOAD(MULTI_FILES_TO_ONE, Name, Dir, Path);
 }
 
-#endif // if 0
+#endif // defined(__BORLANDC__)
 
 
 TRemoteToken::TRemoteToken() noexcept :

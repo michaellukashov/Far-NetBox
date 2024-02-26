@@ -434,12 +434,12 @@ void TSessionData::NonPersistent()
   PROPERTY(RemoteDirectory); \
   PROPERTY2(RequireDirectories);
 
-#if 0
+#if defined(__BORLANDC__)
   PROPERTY(UserName); \
   PROPERTY(Color); \
   PROPERTY(SynchronizeBrowsing); \
   PROPERTY(Note);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 #define ADVANCED_PROPERTIES \
   PROPERTY_HANDLER(NewPassword, F); \
@@ -3084,11 +3084,11 @@ void TSessionData::SetUserName(const UnicodeString & value)
     UnicodeString XNewPassword = FNewPassword;
     UnicodeString XEncryptKey = EncryptKey;
     SET_SESSION_PROPERTY(UserName);
-#if 0
+#if defined(__BORLANDC__)
     SetPassword(XPassword);
     FNewPassword = XNewPassword;
     EncryptKey = XEncryptKey;
-#endif // if 0
+#endif // defined(__BORLANDC__)
     Shred(XPassword);
     Shred(XNewPassword);
     Shred(XEncryptKey);
@@ -3100,9 +3100,9 @@ UnicodeString TSessionData::GetUserNameExpanded() const
   UnicodeString Result = ::ExpandEnvironmentVariables(UserName);
   if (Result.IsEmpty() && HasS3AutoCredentials())
   {
-#if 0
+#if defined(__BORLANDC__)
     Result = S3EnvUserName(S3Profile);
-#endif //if 0
+#endif // defined(__BORLANDC__)
   }
   return Result;
 }
@@ -3112,9 +3112,9 @@ UnicodeString TSessionData::GetUserNameSource() const
   UnicodeString Result;
   if (UserName().IsEmpty() && HasS3AutoCredentials())
   {
-#if 0
+#if defined(__BORLANDC__)
     S3EnvUserName(S3Profile, &Result);
-#endif //if 0
+#endif // defined(__BORLANDC__)
   }
   if (Result.IsEmpty() && (UserName() != GetUserNameExpanded()))
   {
@@ -3942,17 +3942,17 @@ void TSessionData::AddSwitch(
 void TSessionData::AddSwitch(
   UnicodeString & Result, const UnicodeString & AName, const UnicodeString & Value, bool Rtf)
 {
-#if 0
+#if defined(__BORLANDC__)
   Result += RtfSwitch(Name, ScriptCommandOpenLink, Value, Rtf);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TSessionData::AddSwitch(
   UnicodeString & Result, const UnicodeString & AName, int32_t Value, bool Rtf)
 {
-#if 0
+#if defined(__BORLANDC__)
   Result += RtfSwitch(Name, ScriptCommandOpenLink, Value, Rtf);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TSessionData::LookupLastFingerprint()
@@ -4534,7 +4534,7 @@ static void FreeIEProxyConfig(WINHTTP_CURRENT_USER_IE_PROXY_CONFIG * IEProxyConf
 void TSessionData::PrepareProxyData() const
 {
 #if 0
-//  if ((GetProxyMethod() == pmSystem) && (nullptr == FIEProxyConfig))
+  if ((GetProxyMethod() == pmSystem) && (nullptr == FIEProxyConfig))
   {
     FIEProxyConfig = new TIEProxyConfig;
     WINHTTP_CURRENT_USER_IE_PROXY_CONFIG IEProxyConfig;
@@ -4573,7 +4573,7 @@ void TSessionData::PrepareProxyData() const
       }
     }
   }
-#endif // #if 0
+#endif // if 0
 }
 
 void TSessionData::ParseIEProxyConfig() const

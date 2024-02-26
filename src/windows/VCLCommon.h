@@ -5,7 +5,7 @@
 #include "Configuration.h"
 #include "Exceptions.h"
 #include <ComCtrls.hpp>
-#if 0
+#if defined(__BORLANDC__)
 #include <HistoryComboBox.hpp>
 
 const TColor LinkColor = clBlue;
@@ -98,6 +98,5 @@ void AutoSizeButton(TButton * Button);
 namespace Tb2item { class TTBCustomItem; }
 void GiveTBItemPriority(Tb2item::TTBCustomItem * Item);
 
-
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 

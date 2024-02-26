@@ -736,7 +736,8 @@ private:
   int64_t FTicks{0};
 };
 
-#if 0
+#if defined(__BORLANDC__)
+
 class NB_CORE_EXPORT TSHFileInfo : public TObject
 {
   typedef DWORD_PTR (WINAPI *TGetFileInfo)(
@@ -761,7 +762,8 @@ private:
   TGetFileInfo FGetFileInfo;
   TLibraryLoader FSHFileInfoLoader;
 };
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 constexpr const uint32_t soFromBeginning = 0;
 constexpr const uint32_t soFromCurrent = 1;

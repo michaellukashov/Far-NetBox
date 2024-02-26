@@ -1421,11 +1421,11 @@ void TWebDAVFileSystem::Source(
       try
       {
         TDateTime ModificationUTC = ConvertTimestampToUTC(AHandle.Modification);
-#if 0
+#if defined(__BORLANDC__)
         TFormatSettings FormatSettings = GetEngFormatSettings();
         UnicodeString LastModified =
           FormatDateTime(L"ddd, d mmm yyyy hh:nn:ss 'GMT'", ModificationUTC, FormatSettings);
-#endif
+#endif // defined(__BORLANDC__)
         uint16_t Y, M, D, H, NN, S, MS;
         const TDateTime & DateTime = ModificationUTC;
         DateTime.DecodeDate(Y, M, D);

@@ -13,7 +13,7 @@
 
 // #pragma package(smart_init)
 
-#if 0
+#if defined(__BORLANDC__)
 
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
 using TIgnoredExceptions = nb::set_t<UnicodeString>;
@@ -32,7 +32,7 @@ void IgnoreException(const std::type_info & ExceptionType)
   IgnoredExceptions.insert(NormalizeClassName(UnicodeString(AnsiString(ExceptionType.name()))));
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
@@ -45,14 +45,14 @@ static bool WellKnownException(
   bool Result = true;
   const bool IgnoreException = false;
 
-#if 0
+#if defined(__BORLANDC__)
   if (!IgnoredExceptions.empty())
   {
     const TGuard Guard(*IgnoredExceptionsCriticalSection.get());
     UnicodeString ClassName = ""; // NormalizeClassName(E->QualifiedClassName());
     IgnoreException = (IgnoredExceptions.find(ClassName) != IgnoredExceptions.end());
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   if (IgnoreException)
   {
@@ -75,7 +75,7 @@ static bool WellKnownException(
     CounterName = L"AccessViolations";
     Clone = std::make_unique<EAccessViolation>(E->Message);
   }
-#if 0
+#if defined(__BORLANDC__)
   // EIntError and EMathError are EExternal
   // EClassNotFound is EFilerError
   else if ((rtti::dyn_cast_or_null<EListError>(E) != nullptr) ||
@@ -114,7 +114,7 @@ static bool WellKnownException(
     CounterName = L"HeapExceptions";
     Clone.reset(new EHeapException(E->Message));
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   else
   {
     Result = false;
@@ -173,7 +173,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
   {
     Message = FMTLOAD(REPORT_ERROR, Message);
   }
-#if 0
+#if defined(__BORLANDC__)
   if (Count && (CounterName != nullptr) && (Configuration->Usage != nullptr))
   {
     Configuration->Usage->Inc(CounterName);
@@ -181,7 +181,7 @@ static bool ExceptionMessage(const Exception * E, bool /*Count*/,
       E->ClassName() + L":" + GetExceptionDebugInfo();
     Configuration->Usage->Set(LastInternalExceptionCounter, ExceptionDebugInfo);
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 

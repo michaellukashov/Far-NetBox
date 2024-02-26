@@ -258,8 +258,8 @@ void TFileBuffer::WriteToOut(TTransferOutEvent && OnTransferOut, TObject * Sende
   FMemory->Seek(Len, TSeekOrigin::soCurrent);
 }
 
-#if 0
-moved to Classes.cpp
+#if defined(__BORLANDC__)
+// moved to Classes.cpp
 TSafeHandleStream::TSafeHandleStream(THandle AHandle) noexcept :
   THandleStream(AHandle),
   FSource(nullptr)
@@ -323,4 +323,5 @@ int64_t TSafeHandleStream::Write(const System::DynamicArray<System::Byte> Buffer
   }
   return Result;
 }
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)

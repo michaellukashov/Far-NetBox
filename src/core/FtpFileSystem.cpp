@@ -196,8 +196,9 @@ public:
 };
 
 
-#if 0
+#if defined(__BORLANDC__)
 // moved to FileSystems.h
+
 struct TFileTransferData
 {
   TFileTransferData()
@@ -215,7 +216,8 @@ struct TFileTransferData
   const TCopyParamType * CopyParam;
   TDateTime Modification;
 };
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 constexpr const wchar_t * SiteCommand = L"SITE";
 constexpr const wchar_t * SymlinkSiteCommand = L"SYMLINK";
@@ -356,17 +358,17 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
   //SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
   FFileZillaIntf.reset();
 
-#if 0
+#if defined(__BORLANDC__)
   delete FFileZillaIntf;
   FFileZillaIntf = nullptr;
 
   delete FQueue;
   FQueue = nullptr;
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   SAFE_CLOSE_HANDLE(FQueueEvent);
 
-#if 0
+#if defined(__BORLANDC__)
   delete FQueueCriticalSection;
   FQueueCriticalSection = nullptr;
   delete FTransferStatusCriticalSection;
@@ -382,7 +384,7 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
   FFeatures = nullptr;
   delete FServerCapabilities;
   FServerCapabilities = nullptr;
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   ResetCaches();
 }

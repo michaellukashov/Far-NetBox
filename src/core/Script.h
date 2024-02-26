@@ -1,6 +1,8 @@
 
 #pragma once
-#if 0
+
+#if defined(__BORLANDC__)
+
 #ifndef ScriptH
 #define ScriptH
 
@@ -277,4 +279,5 @@ protected:
 };
 
 #endif
-#endif //if 0
+
+#endif // defined(__BORLANDC__)
