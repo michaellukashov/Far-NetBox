@@ -109,8 +109,6 @@ set(NETBOX_C_WARNING_FLAGS -Wno-unknown-pragmas)
 set(NETBOX_CXX_WARNING_FLAGS ${NETBOX_C_WARNING_FLAGS} -Wno-attributes -Wno-write-strings -Wno-old-style-cast -Wno-effc++ -Wno-unknown-pragmas -Wno-unused-value)
 set(NETBOX_CXX_FLAGS ${NETBOX_CXX_FLAGS} -Woverloaded-virtual -Wnon-virtual-dtor)
 set(NETBOX_C_FLAGS ${NETBOX_C_FLAGS} -static -s -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Winit-self -Wunreachable-code)
-#-O2
-#-Weffc++
 set(NETBOX_FLAGS_RELEASE ${NETBOX_FLAGS_RELEASE})
 set(NETBOX_FLAGS_DEBUG ${NETBOX_FLAGS_DEBUG})
 
@@ -118,24 +116,6 @@ endif()
 
 set(NETBOX_C_FLAGS ${NETBOX_DEFS} ${NETBOX_C_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_C_WARNING_FLAGS})
 set(NETBOX_CXX_FLAGS ${NETBOX_DEFS} ${NETBOX_CXX_FLAGS} ${NETBOX_PLATFORM_FLAGS} ${NETBOX_CXX_WARNING_FLAGS})
-
-function(nb_replace_compiler_option var old new)
-  # Replaces a compiler option or switch `old' in `var' by `new'.
-  # If `old' is not in `var', appends `new' to `var'.
-  # Example: nb_replace_compiler_option(CMAKE_CXX_FLAGS_RELEASE "-O3" "-O2")
-  # If the option already is on the variable, don't add it:
-  if( "${${var}}" MATCHES "(^| )${new}($| )" )
-    set(n "")
-  else()
-    set(n "${new}")
-  endif()
-  if( "${${var}}" MATCHES "(^| )${old}($| )" )
-    string( REGEX REPLACE "(^| )${old}($| )" " ${n} " ${var} "${${var}}" )
-  else()
-    set( ${var} "${${var}} ${n}" )
-  endif()
-  set( ${var} "${${var}}" PARENT_SCOPE )
-endfunction(nb_replace_compiler_option)
 
 if(MSVC)
 
@@ -2790,12 +2770,6 @@ ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
 ucm_add_flags(CXX C /DDEBUG CONFIG RelWithDebInfo)
 # ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
-# ucm_add_flags(CXX /fsanitize-address-use-after-return CONFIG Debug)
-#-Ob1
-# static runtime settings
-#ucm_add_flags(CXX C /MT CONFIG Release)
-#ucm_add_flags(CXX C /MTd CONFIG Debug)
-# linker settings
 ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} CONFIG Debug)

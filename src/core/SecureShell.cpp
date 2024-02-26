@@ -2120,7 +2120,8 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         // It returns only busy handles, so the set can change with every call to run_toplevel_callbacks.
         WaitList = get_handle_wait_list(FCallbackSet.get());
         DebugAssert(WaitList->nhandles < MAXIMUM_WAIT_OBJECTS);
-        WaitList->handles[WaitList->nhandles] = FSocketEvent;
+        if (WaitList->nhandles < MAXIMUM_WAIT_OBJECTS)
+          WaitList->handles[WaitList->nhandles] = FSocketEvent;
         WaitResult = ::WaitForMultipleObjects(WaitList->nhandles + 1, WaitList->handles, FALSE, TimeoutStep);
         FUI->ProcessGUI();
         // run_toplevel_callbacks can cause processing of pending raw data, so:

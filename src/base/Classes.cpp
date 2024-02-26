@@ -1,4 +1,4 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include <Classes.hpp>
@@ -137,7 +137,7 @@ UnicodeString TStrings::GetCommaText() const
     FDelimiter = LOldDelimiter;
     FQuoteChar = LOldQuoteChar;
   };
-  UnicodeString Result = GetDelimitedText();
+  const UnicodeString Result = GetDelimitedText();
   return Result;
 }
 
@@ -153,7 +153,7 @@ UnicodeString TStrings::GetDelimitedText() const
   {
     for (int32_t Index = 0; Index < GetCount(); ++Index)
     {
-      UnicodeString Line = GetString(Index);
+      const UnicodeString Line = GetString(Index);
       Result += GetQuoteChar() + Line + GetQuoteChar() + GetDelimiter();
     }
     if (Result.Length() > 0)
@@ -384,7 +384,7 @@ int32_t TStrings::IndexOfName(const UnicodeString & Name) const
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
-    UnicodeString S = GetString(Index);
+    const UnicodeString S = GetString(Index);
     const int32_t P = ::AnsiPos(S, L'=');
     if ((P > 0) && (CompareStrings(S.SubStr(1, P - 1), Name) == 0))
     {
@@ -453,7 +453,7 @@ void TStrings::SetValue(const UnicodeString & AName, const UnicodeString & AValu
 UnicodeString TStrings::GetValueFromIndex(int32_t Index) const
 {
   const UnicodeString Name = GetName(Index);
-  UnicodeString Result = GetValue(Name);
+  const UnicodeString Result = GetValue(Name);
   return Result;
 }
 
@@ -466,10 +466,10 @@ void TStrings::AddStrings(const TStrings * AStrings)
     {
       AddObject(AStrings->GetString(Index), AStrings->Objects[Index]);
     }
-  }
+    }
   __finally
   {
-    EndUpdate();    
+    EndUpdate();
   } end_try__finally
 }
 
@@ -881,7 +881,7 @@ UnicodeString TDateTime::GetDateString() const
 {
   uint16_t Y, M, D;
   DecodeDate(Y, M, D);
-  UnicodeString Result = FORMAT("%02d.%02d.%04d", D, M, Y);
+  const UnicodeString Result = FORMAT("%02d.%02d.%04d", D, M, Y);
   return Result;
 }
 
@@ -902,7 +902,7 @@ UnicodeString TDateTime::FormatString(const wchar_t * fmt) const
   (void)fmt;
   uint16_t H, N, S, MS;
   DecodeTime(H, N, S, MS);
-  UnicodeString Result = FORMAT("%02d.%02d.%02d.%03d", H, N, S, MS);
+  const UnicodeString Result = FORMAT("%02d.%02d.%02d.%03d", H, N, S, MS);
   return Result;
 }
 
@@ -1763,7 +1763,7 @@ UnicodeString TRegistry::ReadString(const UnicodeString & Name) const
 
 UnicodeString TRegistry::ReadStringRaw(const UnicodeString & Name) const
 {
-  UnicodeString Result = ReadString(Name);
+  const UnicodeString Result = ReadString(Name);
   return Result;
 }
 
@@ -1951,9 +1951,18 @@ void TGlobals::SetupDbgHandles(const UnicodeString & DbgFileName)
 
 void TGlobals::InitPlatformId()
 {
-  OSVERSIONINFO OSVersionInfo{};
+  OSVERSIONINFOEXW OSVersionInfo{};
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (::GetVersionEx(&OSVersionInfo) != FALSE)
+  DWORDLONG const dwlConditionMask = VerSetConditionMask(
+    VerSetConditionMask(
+      VerSetConditionMask(
+        0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+          VER_MINORVERSION, VER_GREATER_EQUAL),
+          VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+  OSVersionInfo.dwMajorVersion = HIBYTE(_WIN32_WINNT_WIN7);
+  OSVersionInfo.dwMinorVersion = LOBYTE(_WIN32_WINNT_WIN7);
+  OSVersionInfo.wServicePackMajor = 0;
+  if (VerifyVersionInfoW(&OSVersionInfo, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE)
   {
     Win32Platform = OSVersionInfo.dwPlatformId;
     Win32MajorVersion = OSVersionInfo.dwMajorVersion;
