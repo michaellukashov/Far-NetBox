@@ -186,7 +186,7 @@ private:
 };
 
 std::unique_ptr<TCriticalSection> TPuttyCleanupThread::FSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
-TPuttyCleanupThread * TPuttyCleanupThread::FInstance;
+TPuttyCleanupThread * TPuttyCleanupThread::FInstance = nullptr;
 
 void TPuttyCleanupThread::Schedule()
 {
