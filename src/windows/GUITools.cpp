@@ -162,7 +162,7 @@ bool ExportSessionToPutty(TSessionData * SessionData, bool ReuseExisting, const 
   return Result;
 }
 
-class TPuttyCleanupThread : public TSimpleThread
+class TPuttyCleanupThread final : public TSimpleThread
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyCleanupThread); }
