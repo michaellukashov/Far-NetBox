@@ -90,7 +90,7 @@ public:
   int32_t GetResult() const { return FResult; }
   TPoint GetMaxSize() const;
 
-  const TFarKeyEvent & GetOnKey() const { return FOnKey; }
+  TFarKeyEvent & GetOnKey() { return FOnKey; }
   void SetOnKey(TFarKeyEvent && Value) { FOnKey = std::move(Value); }
 
   void Redraw();
@@ -398,7 +398,7 @@ public:
   void SetBrackets(TFarButtonBrackets Value);
   virtual bool GetCenterGroup() const override { return TFarDialogItem::GetCenterGroup(); }
   virtual void SetCenterGroup(bool Value) override { TFarDialogItem::SetCenterGroup(Value); }
-  virtual const TFarButtonClickEvent & GetOnClick() const { return FOnClick; }
+  virtual const TFarButtonClickEvent & GetOnClick() { return FOnClick; }
   virtual void SetOnClick(TFarButtonClickEvent && Value) { FOnClick = std::move(Value); }
 
 protected:
@@ -428,7 +428,7 @@ public:
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
   bool GetAllowGrayed() const { return GetFlag(DIF_3STATE); }
   void SetAllowGrayed(bool Value) { SetFlag(DIF_3STATE, Value); }
-  virtual const TFarAllowChangeEvent & GetOnAllowChange() const { return FOnAllowChange; }
+  virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent && Value) { FOnAllowChange = std::move(Value); }
   virtual bool GetChecked() const override { return TFarDialogItem::GetChecked(); }
   virtual void SetChecked(bool Value) override { TFarDialogItem::SetChecked(Value); }
@@ -451,7 +451,7 @@ public:
   virtual void SetChecked(bool Value) override { TFarDialogItem::SetChecked(Value); }
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
-  virtual const TFarAllowChangeEvent & GetOnAllowChange() const { return FOnAllowChange; }
+  virtual TFarAllowChangeEvent & GetOnAllowChange() { return FOnAllowChange; }
   virtual void SetOnAllowChange(TFarAllowChangeEvent && Value) { FOnAllowChange = std::move(Value); }
 
 protected:

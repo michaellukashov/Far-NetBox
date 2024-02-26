@@ -18,7 +18,7 @@
 #include <StrUtils.hpp>
 #include <FileInfo.h>
 
-#if 0
+#if defined(__BORLANDC__)
 
 #include <TbxUtils.hpp>
 #include <Math.hpp>
@@ -42,12 +42,12 @@
 #include "Animations144.h"
 #include "Animations192.h"
 
-#endif // #if 0
+#pragma package(smart_init)
 
-//#pragma package(smart_init)
+extern const UnicodeString PageantTool = L"pageant.exe";
+extern const UnicodeString PuttygenTool = L"puttygen.exe";
 
-// const UnicodeString PageantTool = L"pageant.exe";
-// const UnicodeString PuttygenTool = L"puttygen.exe";
+#endif // defined(__BORLANDC__)
 
 bool FindFile(UnicodeString & Path)
 {
@@ -168,8 +168,7 @@ public:
     static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TPuttyCleanupThread); }
     virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TPuttyCleanupThread) || TSimpleThread::is(Kind); }
 public:
-  TPuttyCleanupThread() noexcept:
-    TSimpleThread(OBJECT_CLASS_TPuttyCleanupThread)
+  TPuttyCleanupThread() noexcept : TSimpleThread(OBJECT_CLASS_TPuttyCleanupThread)
   {}
   static void Schedule();
   static void Finalize();
@@ -675,7 +674,7 @@ void ExecuteTool(const UnicodeString & AName)
   ExecuteShellChecked(Path, L"");
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uint32_t Filter, TFileChangedEvent OnChanged)
 {
@@ -738,7 +737,7 @@ TObjectList * StartCreationDirectoryMonitorsOnEachDrive(uint32_t Filter, TFileCh
   return Result.release();
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 bool DontCopyCommandToClipboard = false;
 
@@ -879,7 +878,7 @@ UnicodeString UniqTempDir(const UnicodeString & BaseDir, const UnicodeString & I
   return TempDir;
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 class TSessionColors : public TComponent
 {
@@ -1750,11 +1749,11 @@ void GetInstructionsTheme(
   }
 }
 
-#endif // #if 0
-
 TLocalCustomCommand::TLocalCustomCommand() noexcept
 {
 }
+
+#endif // defined(__BORLANDC__)
 
 TLocalCustomCommand::TLocalCustomCommand(
     const TCustomCommandData & Data, const UnicodeString & RemotePath, const UnicodeString & ALocalPath) noexcept :
@@ -1831,7 +1830,7 @@ bool TLocalCustomCommand::IsFileCommand(const UnicodeString & Command) const
 }
 
 
-#if 0
+#if defined(__BORLANDC__)
 
 typedef std::set<TDataModule *> TImagesModules;
 static TImagesModules ImagesModules;
@@ -2582,8 +2581,11 @@ void TSystemRequiredThread::ProcessEvent()
   }
 }
 
+#endif // defined(__BORLANDC__)
+
 void SystemRequired()
 {
+#if defined(__BORLANDC__)
   if (IsWin11())
   {
     TGuard Guard(SystemRequiredThreadSection.get());
@@ -2599,10 +2601,12 @@ void SystemRequired()
   {
     SetThreadExecutionState(ES_SYSTEM_REQUIRED);
   }
+#endif // defined(__BORLANDC__)
 }
 
 void GUIFinalize()
 {
+#if defined(__BORLANDC__)
   TPuttyCleanupThread::Finalize();
 
   TSystemRequiredThread * Thread;
@@ -2619,43 +2623,6 @@ void GUIFinalize()
     Thread->WaitFor();
     delete Thread;
   }
+#endif // defined(__BORLANDC__)
 }
 
-#endif // #if 0
-
-// TODO: move to Sysutils
-UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, int32_t Count, const UnicodeString & FirstItem)
-{
-  UnicodeString Result;
-  if (Count == 1)
-  {
-    Result = FORMAT(SingleItemFormat, FirstItem);
-  }
-  else
-  {
-    Result = FORMAT(MultiItemsFormat, Count);
-  }
-  return Result;
-}
-
-UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
-  const UnicodeString & MultiItemsFormat, const TStrings * Items)
-{
-  return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
-      Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
-}
-
-UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
-  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote)
-{
-  DebugAssert(AFiles != nullptr);
-  UnicodeString Item;
-  if (AFiles && (AFiles->GetCount() > 0))
-  {
-    Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
-      base::ExtractFileName(AFiles->GetString(0), true);
-  }
-  return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
-      AFiles ? AFiles->GetCount() : 0, Item);
-}

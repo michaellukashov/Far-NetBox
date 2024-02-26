@@ -20,6 +20,13 @@
 #include "SftpFileSystem.h"
 #include "S3FileSystem.h"
 #include "FileMasks.h"
+#if defined(__BORLANDC__)
+#include <Soap.EncdDecd.hpp>
+#include <StrUtils.hpp>
+#include <XMLDoc.hpp>
+#include <System.IOUtils.hpp>
+#include <algorithm>
+#endif // defined(__BORLANDC__)
 
 // #pragma package(smart_init)
 
@@ -29,11 +36,63 @@
 #define SET_SESSION_PROPERTY(PROPERTY) \
   SET_SESSION_PROPERTY_FROM(PROPERTY, value)
 
-// constexpr const wchar_t * PingTypeNames = L"Off;Null;Dummy";
-// constexpr const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List";
-// constexpr const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
+#if defined(__BORLANDC__)
+const wchar_t * PingTypeNames = L"Off;Null;Dummy";
+const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List";
+const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
+#endif // defined(__BORLANDC__)
 TIntMapping ProxyMethodMapping = CreateIntMappingFromEnumNames(LowerCase(ProxyMethodNames));
 constexpr const wchar_t * DefaultName = L"Default Settings";
+#if defined(__BORLANDC__)
+const UnicodeString CipherNames[CIPHER_COUNT] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour", L"chacha20", "aesgcm"};
+const UnicodeString KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519"};
+const UnicodeString HostKeyNames[HOSTKEY_COUNT] = {L"WARN", L"rsa", L"dsa", L"ecdsa", L"ed25519", L"ed448"};
+const UnicodeString GssLibNames[GSSLIB_COUNT] = {L"gssapi32", L"sspi", L"custom"};
+// Update also order in SshCipherList()
+const TCipher DefaultCipherList[CIPHER_COUNT] =
+  { cipAES, cipChaCha20, cipAESGCM, cip3DES, cipWarn, cipDES, cipBlowfish, cipArcfour };
+// Update also order in SshKexList()
+const TKex DefaultKexList[KEX_COUNT] =
+  { kexNTRUHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
+const THostKey DefaultHostKeyList[HOSTKEY_COUNT] =
+  { hkED448, hkED25519, hkECDSA, hkRSA, hkDSA, hkWarn };
+const TGssLib DefaultGssLibList[GSSLIB_COUNT] =
+  { gssGssApi32, gssSspi, gssCustom };
+const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV", L"S3" };
+const int SshPortNumber = 22;
+const int FtpPortNumber = 21;
+const int FtpsImplicitPortNumber = 990;
+const int HTTPPortNumber = 80;
+const int HTTPSPortNumber = 443;
+const int TelnetPortNumber = 23;
+const int DefaultSendBuf = 262144;
+const int ProxyPortNumber = 80;
+const UnicodeString AnonymousUserName(L"anonymous");
+const UnicodeString AnonymousPassword(L"anonymous@example.com");
+const UnicodeString PuttySshProtocol(L"ssh");
+const UnicodeString PuttyTelnetProtocol(L"telnet");
+const UnicodeString SftpProtocol(L"sftp");
+const UnicodeString ScpProtocol(L"scp");
+const UnicodeString FtpProtocol(L"ftp");
+const UnicodeString FtpsProtocol(L"ftps");
+const UnicodeString FtpesProtocol(L"ftpes");
+const UnicodeString WebDAVProtocol(L"dav");
+const UnicodeString WebDAVSProtocol(L"davs");
+const UnicodeString S3Protocol(L"s3");
+const UnicodeString S3PlainProtocol(L"s3plain");
+const UnicodeString SshProtocol(L"ssh");
+const UnicodeString WinSCPProtocolPrefix(L"winscp-");
+const wchar_t UrlParamSeparator = L';';
+const wchar_t UrlParamValueSeparator = L'=';
+const UnicodeString UrlHostKeyParamName(L"fingerprint");
+const UnicodeString UrlSaveParamName(L"save");
+const UnicodeString UrlRawSettingsParamNamePrefix(L"x-");
+const UnicodeString PassphraseOption(L"passphrase");
+const UnicodeString RawSettingsOption(L"rawsettings");
+const UnicodeString S3HostName(S3LibDefaultHostName());
+const UnicodeString S3GoogleCloudHostName(L"storage.googleapis.com");
+const UnicodeString OpensshHostDirective(L"Host");
+#endif // defined(__BORLANDC__)
 
 static TDateTime SecToDateTime(int32_t Sec)
 {
@@ -111,13 +170,13 @@ int32_t TSessionData::Compare(const TNamedObject * Other) const
   int32_t Result;
   // To avoid using CompareLogicalText on hex names of sessions in workspace.
   // The session 000A would be sorted before 0001.
-#if 0
+#if defined(__BORLANDC__)
   if (IsWorkspace && DebugNotNull(dynamic_cast<TSessionData *>(Other))->IsWorkspace)
   {
     Result = CompareText(Name, Other->GetName());
   }
   else
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   {
     Result = TNamedObject::Compare(Other);
   }
@@ -135,7 +194,7 @@ void TSessionData::DefaultSettings()
 {
   SetHostName("");
   SetPortNumber(SshPortNumber);
-  SessionSetUserName("");
+  SetUserName("");
   SetPassword("");
   SetNewPassword("");
   SetChangePassword(false);
@@ -376,7 +435,7 @@ void TSessionData::NonPersistent()
   PROPERTY2(RequireDirectories);
 
 #if 0
- PROPERTY(UserName); \
+  PROPERTY(UserName); \
   PROPERTY(Color); \
   PROPERTY(SynchronizeBrowsing); \
   PROPERTY(Note);
@@ -540,7 +599,7 @@ void TSessionData::Assign(const TPersistent * Source)
 
 void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
 {
-/*
+#if defined(__BORLANDC__)
   #define PROPERTY_HANDLER(P, F) \
     if (NoRecrypt) \
     { \
@@ -550,7 +609,7 @@ void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
     { \
       P = SourceData->P; \
     }
-*/
+#endif // defined(__BORLANDC__)
   #undef PROPERTY
   #undef PROPERTY2
   #undef PROPERTY_HANDLER
@@ -567,7 +626,7 @@ void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
   FModified = SourceData->FModified;
   FSaveOnly = SourceData->FSaveOnly;
 
-  SessionSetUserName(SourceData->SessionGetUserName());
+  SetUserName(SourceData->GetUserName());
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FBugs)); ++Index)
   {
     // PROPERTY(Bug[(TSshBug)Index]);
@@ -654,7 +713,7 @@ bool TSessionData::IsSame(
       Result = false; \
     }
 
-#if 0
+#if defined(__BORLANDC__)
   #define PROPERTY_HANDLER(P, F) \
     if ((Decrypted && (P != Default->P)) || \
         (!Decrypted && (F##P != Default->F##P))) \
@@ -670,7 +729,7 @@ bool TSessionData::IsSame(
       } \
       Result = false; \
     }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   if (!AdvancedOnly)
   {
@@ -725,7 +784,7 @@ bool TSessionData::IsSameSite(const TSessionData * Other) const
     (NormalizeFSProtocol(GetFSProtocol()) == NormalizeFSProtocol(Other->GetFSProtocol())) &&
     (GetHostName() == Other->GetHostName()) &&
     (GetPortNumber() == Other->GetPortNumber()) &&
-    (SessionGetUserName() == Other->SessionGetUserName());
+    (GetUserName() == Other->GetUserName());
 }
 
 bool TSessionData::IsInFolderOrWorkspace(const UnicodeString & AFolder) const
@@ -740,7 +799,7 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   // (implemented by TOptionsIniFile)
 
   SetPortNumber(Storage->ReadInteger("PortNumber", nb::ToInt32(GetPortNumber())));
-  SessionSetUserName(Storage->ReadString("UserName", SessionGetUserName()));
+  SetUserName(Storage->ReadString("UserName", GetUserName()));
   // must be loaded after UserName, because HostName may be in format user@host
   SetHostName(Storage->ReadString("HostName", GetHostName()));
 
@@ -991,11 +1050,11 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   FWebDavLiberalEscaping = Storage->ReadBool("WebDavLiberalEscaping", FWebDavLiberalEscaping);
   WebDavAuthLegacy = Storage->ReadBool("WebDavAuthLegacy", WebDavAuthLegacy);
 
-#if 0
+#if defined(__BORLANDC__)
   IsWorkspace = Storage->ReadBool(L"IsWorkspace", IsWorkspace);
   Link = Storage->ReadString(L"Link", Link);
   NameOverride = Storage->ReadString(L"NameOverride", NameOverride);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   FPuttySettings = Storage->ReadString("PuttySettings", FPuttySettings);
 
@@ -1044,11 +1103,11 @@ void TSessionData::Load(THierarchicalStorage * Storage, bool PuttyImport)
       if (Storage->OpenSubKey(GetInternalStorageKey(), true))
       {
         #define REWRITE_PASSWORD(PROP, PLAIN_NAME) \
-        do { Storage->DeleteValue(PLAIN_NAME); \
-        if (!F ## PROP.IsEmpty()) \
-        { \
-          Storage->WriteBinaryDataAsString(TEXT(#PROP), F##PROP); \
-        } } while(0)
+          do { Storage->DeleteValue(PLAIN_NAME); \
+          if (!F ## PROP.IsEmpty()) \
+          { \
+            Storage->WriteBinaryDataAsString(TEXT(#PROP), F##PROP); \
+          } } while(0)
         REWRITE_PASSWORD(Password, L"PasswordPlain");
         REWRITE_PASSWORD(TunnelPassword, L"TunnelPasswordPlain");
         REWRITE_PASSWORD(EncryptKey, L"EncryptKeyPlain");
@@ -1077,24 +1136,24 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   // Same as in TCopyParamType::Save
 #undef WRITE_DATA_EX
 #define WRITE_DATA_EX(TYPE, NAME, PROPERTY, CONV) \
-  do { if ((Default != nullptr) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
-  { \
-    Storage->DeleteValue(NAME); \
-  } \
-  else \
-  { \
-    Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
-  } } while(0)
+    do { if ((Default != nullptr) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
+    { \
+      Storage->DeleteValue(NAME); \
+    } \
+    else \
+    { \
+      Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
+    } } while(0)
 #undef WRITE_DATA_EX2
 #define WRITE_DATA_EX2(TYPE, NAME, PROPERTY, CONV) \
-  do { if ((Default != nullptr) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
-  { \
-    Storage->DeleteValue(NAME); \
-  } \
-    else \
-  { \
-    Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
-  } } while(0)
+    do { if ((Default != nullptr) && (CONV(Default->PROPERTY) == CONV(PROPERTY))) \
+    { \
+      Storage->DeleteValue(NAME); \
+    } \
+      else \
+    { \
+      Storage->Write ## TYPE(NAME, CONV(PROPERTY)); \
+    } } while(0)
 #undef WRITE_DATA_CONV
 #define WRITE_DATA_CONV(TYPE, NAME, PROPERTY) WRITE_DATA_EX(TYPE, NAME, PROPERTY, WRITE_DATA_CONV_FUNC)
 #undef WRITE_DATA
@@ -1163,7 +1222,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
 
   if (PuttyExport)
   {
-    WRITE_DATA_EX(StringRaw, "UserName", SessionGetUserName(), );
+    WRITE_DATA_EX(StringRaw, "UserName", GetUserName(), );
     // PuTTY is started in its binary directory to allow relative paths when opening PuTTY's own stored session.
     // To allow relative paths in our sessions, we have to expand them for PuTTY.
     WRITE_DATA_EX(StringRaw, "PublicKeyFile", GetPublicKeyFile(), ExpandFileName);
@@ -1171,7 +1230,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   }
   else
   {
-    WRITE_DATA_EX(String, "UserName", SessionGetUserName(), );
+    WRITE_DATA_EX(String, "UserName", GetUserName(), );
     WRITE_DATA(String, PublicKeyFile);
     WRITE_DATA_EX(String, "DetachedCertificate", FDetachedCertificate, );
     WRITE_DATA_EX2(String, "FSProtocol", GetFSProtocolStr(), );
@@ -1251,15 +1310,15 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   {
     WRITE_DATA_EX(StringRaw, "ProxyTelnetCommand", GetProxyTelnetCommand(), );
   }
-  #undef WRITE_DATA_CONV_FUNC
-  #define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
+#undef WRITE_DATA_CONV_FUNC
+#define WRITE_DATA_CONV_FUNC(X) (((X) + 2) % 3)
   WRITE_DATA_CONV(Integer, "ProxyDNS", GetProxyDNS());
 #undef WRITE_DATA_CONV_FUNC
   WRITE_DATA_EX(Bool, "ProxyLocalhost", GetProxyLocalhost(), );
 
-  #undef WRITE_DATA_CONV_FUNC
-  #define WRITE_DATA_CONV_FUNC(X) (2 - (X))
-  #define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, MB_TEXT("Bug" #BUG), GetBug(sb##BUG))
+#undef WRITE_DATA_CONV_FUNC
+#define WRITE_DATA_CONV_FUNC(X) (2 - (X))
+#define WRITE_BUG(BUG) WRITE_DATA_CONV(Integer, MB_TEXT("Bug" #BUG), GetBug(sb##BUG))
   WRITE_BUG(HMAC2);
   WRITE_BUG(DeriveKey2);
   WRITE_BUG(RSAPad2);
@@ -1336,11 +1395,11 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA3(Bool, WebDavLiberalEscaping);
     WRITE_DATA3(Bool, WebDavAuthLegacy);
 
-#if 0
+#if defined(__BORLANDC__)
     WRITE_DATA(Bool, IsWorkspace);
     WRITE_DATA(String, Link);
     WRITE_DATA(String, NameOverride);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
     WRITE_DATA4(String, PuttySettings);
 
@@ -1356,7 +1415,7 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   }
 
   // This is for collecting all keys for TSiteRawDialog::AddButtonClick.
-  // It should be enough to test for (Default == nullptr),
+  // It should be enough to test for (Default == NULL),
   // the DoNotEncryptPasswords and PuttyExport were added to limit a possible unintended impact.
   const bool SaveAll = (Default == nullptr) && DoNotEncryptPasswords && !PuttyExport;
 
@@ -1372,7 +1431,7 @@ TStrings * TSessionData::SaveToOptions(const TSessionData * Default, bool SaveNa
 {
   TODO("implement");
   ThrowNotImplemented(3041);
-#if 0
+#if defined(__BORLANDC__)
   std::unique_ptr<TStringList> Options(std::make_unique<TStringList>());
   std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(Options.get(), true, false));
   if (SaveName)
@@ -1381,7 +1440,7 @@ TStrings * TSessionData::SaveToOptions(const TSessionData * Default, bool SaveNa
   }
   DoSave(OptionsStorage.get(), PuttyExport, Default, true);
   return Options.release();
-#endif
+#endif // defined(__BORLANDC__)
   return nullptr;
 }
 
@@ -1396,7 +1455,7 @@ void TSessionData::Save(THierarchicalStorage * Storage,
   }
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 UnicodeString TSessionData::ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default)
 {
@@ -1689,7 +1748,7 @@ void TSessionData::ImportFromFilezilla(
 
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 bool OpensshBoolValue(const UnicodeString & Value)
 {
@@ -1987,9 +2046,9 @@ static UnicodeString ReadPasswordFromFile(const UnicodeString & FileName)
     else
     {
       std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
-#if 0
+#if defined(__BORLANDC__)
       LoadScriptFromFile(FileName, Lines.get());
-#endif //if 0
+#endif // defined(__BORLANDC__)
       if (Lines->Count > 0)
       {
         Result = Lines->Strings[0];
@@ -2599,11 +2658,6 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         }
         (*MaskedUrl) += OrigHostInfo + ARemoteDirectory;
       }
-
-      /*if (PSlash <= Url.Length())
-      {
-        ARemoteDirectory = Url.SubString(PSlash, Url.Length() - PSlash + 1);
-      }*/
     }
 
     if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != ROOTDIRECTORY))
@@ -2734,10 +2788,10 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
 
 void TSessionData::ApplyRawSettings(TStrings * RawSettings, bool Unsafe)
 {
-#if 0
+#if defined(__BORLANDC__)
   std::unique_ptr<TOptionsStorage> OptionsStorage(std::make_unique<TOptionsStorage>(RawSettings, false));
   ApplyRawSettings(OptionsStorage.get(), Unsafe, false);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TSessionData::ApplyRawSettings(THierarchicalStorage * Storage, bool Unsafe, bool RespectDisablePasswordStoring)
@@ -2828,7 +2882,7 @@ TSessionData * TSessionData::CreateTunnelData(int32_t TunnelLocalPortNumber)
 void TSessionData::ExpandEnvironmentVariables()
 {
   SetHostName(GetHostNameExpanded());
-  SessionSetUserName(GetUserNameExpanded());
+  SetUserName(GetUserNameExpanded());
   SetPublicKeyFile(::ExpandEnvironmentVariables(GetPublicKeyFile()));
   DetachedCertificate = ::ExpandEnvironmentVariables(DetachedCertificate);
 }
@@ -2904,7 +2958,7 @@ int32_t TSessionData::GetDefaultPort() const
 
 UnicodeString TSessionData::GetSessionKey() const
 {
-  UnicodeString Result = FORMAT("%s@%s", SessionGetUserName(), GetHostName());
+  UnicodeString Result = FORMAT("%s@%s", GetUserName(), GetHostName());
   if (GetPortNumber() != GetDefaultPort())
   {
     Result += FORMAT(":%d", GetPortNumber());
@@ -2953,7 +3007,7 @@ void TSessionData::SetHostName(const UnicodeString & AValue)
     const int32_t P = Value.LastDelimiter(L"@");
     if (P > 0)
     {
-      SessionSetUserName(Value.SubString(1, P - 1));
+      SetUserName(Value.SubString(1, P - 1));
       Value = Value.SubString(P + 1, Value.Length() - P);
     }
     FHostName = Value;
@@ -3018,7 +3072,7 @@ void TSessionData::SetUnsetNationalVars(bool value)
   SET_SESSION_PROPERTY(UnsetNationalVars);
 }
 
-void TSessionData::SessionSetUserName(const UnicodeString & value)
+void TSessionData::SetUserName(const UnicodeString & value)
 {
   // Avoid password recryption (what may popup master password prompt)
   if (FUserName != value)
@@ -3028,9 +3082,11 @@ void TSessionData::SessionSetUserName(const UnicodeString & value)
     UnicodeString XNewPassword = FNewPassword;
     UnicodeString XEncryptKey = EncryptKey;
     SET_SESSION_PROPERTY(UserName);
-    // SetPassword(XPassword);
-    // FNewPassword = XNewPassword;
-    // EncryptKey = XEncryptKey;
+#if 0
+    SetPassword(XPassword);
+    FNewPassword = XNewPassword;
+    EncryptKey = XEncryptKey;
+#endif // if 0
     Shred(XPassword);
     Shred(XNewPassword);
     Shred(XEncryptKey);
@@ -3344,7 +3400,9 @@ UnicodeString TSessionData::GetHostKeyList() const
 void TSessionData::SetGssLib(int32_t Index, TGssLib Value)
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
-  // SET_SESSION_PROPERTY(FGssLib[Index]);
+#if defined(__BORLANDC__)
+  SET_SESSION_PROPERTY(FGssLib[Index]);
+#endif // defined(__BORLANDC__)
   if (FGssLib[Index] != Value)
   {
     FGssLib[Index] = Value;
@@ -3554,7 +3612,7 @@ UnicodeString TSessionData::GetDefaultSessionName() const
 {
   UnicodeString Result;
   const UnicodeString HostName = ::TrimLeft(GetHostName());
-  const UnicodeString UserName = SessionGetUserName();
+  const UnicodeString UserName = GetUserName();
   if (IsLocalBrowser)
   {
     // See also TScpCommanderForm::GetLocalBrowserSessionTitle
@@ -3707,7 +3765,7 @@ UnicodeString TSessionData::GetProtocolUrl(bool HttpForWebDAV) const
   return Url;
 }
 
-static bool HasIP6LiteralBrackets(const UnicodeString & HostName)
+bool HasIP6LiteralBrackets(const UnicodeString & HostName)
 {
   return
     (HostName.Length() >= 2) &&
@@ -3715,7 +3773,7 @@ static bool HasIP6LiteralBrackets(const UnicodeString & HostName)
     (HostName[HostName.Length()] == L']');
 }
 
-static UnicodeString StripIP6LiteralBrackets(const UnicodeString & HostName)
+UnicodeString StripIP6LiteralBrackets(const UnicodeString & HostName)
 {
   UnicodeString Result = HostName;
   if (DebugAlwaysTrue(HasIP6LiteralBrackets(Result)))
@@ -3830,7 +3888,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
         UnicodeString(1, UrlParamValueSeparator) + S2;
     }
 
-#if 0
+#if defined(__BORLANDC__)
     if (FLAGSET(Flags, sufRawSettings))
     {
       std::unique_ptr<TStrings> RawSettings(GetRawSettingsForUrl());
@@ -3842,7 +3900,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
           UnicodeString(UrlParamValueSeparator) + EncodeUrlString(RawSettings->ValueFromIndex[Index]);
       }
     }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
     Url += "@";
   }
@@ -3867,14 +3925,16 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
   return Url;
 }
 
-// UnicodeString ScriptCommandOpenLink = ScriptCommandLink("open");
+#if defined(__BORLANDC__)
+UnicodeString ScriptCommandOpenLink = ScriptCommandLink("open");
+#endif // defined(__BORLANDC__)
 
 void TSessionData::AddSwitch(
   UnicodeString & Result, const UnicodeString & Name, bool Rtf)
 {
-#if 0
+#if defined(__BORLANDC__)
   Result += RtfSwitch(Name, ScriptCommandOpenLink, Rtf);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TSessionData::AddSwitch(
@@ -3922,7 +3982,7 @@ void TSessionData::LookupLastFingerprint()
 UnicodeString TSessionData::GenerateOpenCommandArgs(bool /*Rtf*/) const
 {
   UnicodeString Result;
-#if 0
+#if defined(__BORLANDC__)
   std::unique_ptr<TSessionData> FactoryDefaults(std::make_unique<TSessionData>(""));
   std::unique_ptr<TSessionData> SessionData(std::make_unique<TSessionData>(""));
 
@@ -3981,17 +4041,16 @@ UnicodeString TSessionData::GenerateOpenCommandArgs(bool /*Rtf*/) const
   if (RawSettings->GetCount() > 0)
   {
     TODO("implement");
-#if 0
     AddSwitch(Result, RawSettingsOption, FRtf);
 
     Result += StringsToParams(RawSettings.get());
-#endif
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   return Result;
 }
-#if 0
+
+#if defined(__BORLANDC__)
 
 UnicodeString SessionOptionsClassName(L"SessionOptions");
 
@@ -4266,7 +4325,7 @@ void TSessionData::GenerateAssemblyCode(
 
   Indent = 4; // the same for all languages so far
 }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 void TSessionData::SetTimeDifference(const TDateTime & value)
 {
@@ -5054,14 +5113,14 @@ UnicodeString TSessionData::GetInfoTip() const
   if (GetUsesSsh())
   {
     return FMTLOAD(SESSION_INFO_TIP2,
-      GetHostName(), SessionGetUserName(),
+      GetHostName(), GetUserName(),
       (GetPublicKeyFile().IsEmpty() ? LoadStr(NO_STR) : LoadStr(YES_STR)),
       GetFSProtocolStr());
   }
   else
   {
     return FMTLOAD(SESSION_INFO_TIP_NO_SSH,
-      GetHostName(), SessionGetUserName(), GetFSProtocolStr());
+      GetHostName(), GetUserName(), GetFSProtocolStr());
   }
 }
 
@@ -5114,7 +5173,7 @@ UnicodeString TSessionData::GetFolderName() const
 UnicodeString TSessionData::ComposePath(
   const UnicodeString & APath, const UnicodeString & Name)
 {
-  return TPath::Join(APath, Name);
+  return TUnixPath::Join(APath, Name);
 }
 
 void TSessionData::DisableAuthenticationsExceptPassword()
@@ -5149,7 +5208,7 @@ bool TSessionData::HasAutoCredentials() const
 
 TLoginType TSessionData::GetLoginType() const
 {
-  return (SessionGetUserName() == AnonymousUserName) && GetPassword().IsEmpty() ?
+  return (GetUserName() == AnonymousUserName) && GetPassword().IsEmpty() ?
     ltAnonymous : ltNormal;
 }
 
@@ -5159,7 +5218,7 @@ void TSessionData::SetLoginType(TLoginType value)
   if (GetLoginType() == ltAnonymous)
   {
     SetPassword(L"");
-    SessionSetUserName(AnonymousUserName);
+    SetUserName(AnonymousUserName);
   }
 }
 
@@ -5251,28 +5310,7 @@ TFSProtocol TSessionData::TranslateFSProtocol(const UnicodeString & ProtocolID) 
 TFtps TSessionData::TranslateFtpEncryptionNumber(int32_t FtpEncryption) const
 {
   TFtps Result = GetFtps();
-  if ((GetSessionVersion() < ::GetVersionNumber2110()) &&
-    (GetFSProtocol() == fsFTP) && (GetFtps() != ftpsNone))
-  {
-    switch (FtpEncryption)
-    {
-    case fesPlainFTP:
-      Result = ftpsNone;
-      break;
-    case fesExplicitSSL:
-      Result = ftpsExplicitSsl;
-      break;
-    case fesImplicit:
-      Result = ftpsImplicit;
-      break;
-    case fesExplicitTLS:
-      Result = ftpsExplicitTls;
-      break;
-    default:
-      break;
-    }
-  }
-  DebugAssert(Result != static_cast<TFtps>(-1));
+  // DebugAssert(Result != static_cast<TFtps>(-1));
   return Result;
 }
 
@@ -5374,7 +5412,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
     {
       for (int32_t Index = 0; Index < TObjectList::GetCount(); ++Index)
       {
-        if (Loaded->IndexOf(GetObj(Index)) < 0)
+        if (Loaded->IndexOf(Objects[Index]) < 0)
         {
           Delete(Index);
           Index--;
@@ -5384,11 +5422,13 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
   }
   __finally
   {
-    // FAutoSort = true;
-    // AlphaSort();
+#if defined(__BORLANDC__)
+    AutoSort = true;
+    AlphaSort();
+    delete SubKeys;
+    delete Loaded;
+#endif // defined(__BORLANDC__)
     Recount();
-    // delete SubKeys;
-    // delete Loaded;
   } end_try__finally
 }
 
@@ -5509,7 +5549,7 @@ void TStoredSessionList::Saved()
   }
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 void TStoredSessionList::ImportLevelFromFilezilla(
   _di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode)
@@ -5545,13 +5585,13 @@ void TStoredSessionList::ImportLevelFromFilezilla(
   }
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 void TStoredSessionList::ImportFromFilezilla(
   const UnicodeString & /*FileName*/, const UnicodeString & /*ConfigurationFileName*/)
 {
   ThrowNotImplemented(3004);
-#if 0
+#if defined(__BORLANDC__)
   // not sure if the document must exists if we want to use its node
   _di_IXMLDocument ConfigurationDocument;
   _di_IXMLNode SettingsNode;
@@ -5578,7 +5618,7 @@ void TStoredSessionList::ImportFromFilezilla(
       ImportLevelFromFilezilla(ServersNode, L"", SettingsNode);
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 UnicodeString FormatKnownHostName(const UnicodeString & HostName, int32_t PortNumber)
@@ -5727,7 +5767,7 @@ void TStoredSessionList::ImportFromOpenssh(TStrings * Lines)
 void TStoredSessionList::Export(const UnicodeString & /*AFileName*/)
 {
   ThrowNotImplemented(3003);
-#if 0
+#if defined(__BORLANDC__)
   THierarchicalStorage * Storage = TIniFileStorage::CreateFromPath(FileName);
   try__finally
   {
@@ -5741,8 +5781,8 @@ void TStoredSessionList::Export(const UnicodeString & /*AFileName*/)
   __finally
   {
     delete Storage;
-  };
-#endif // #if 0
+  }
+#endif // defined(__BORLANDC__)
 }
 
 void TStoredSessionList::SelectAll(bool Select)
@@ -5817,7 +5857,7 @@ void TStoredSessionList::Cleanup()
 
 void TStoredSessionList::UpdateStaticUsage()
 {
-#if 0
+#if defined(__BORLANDC__)
   int32_t SCP = 0;
   int32_t SFTP = 0;
   int32_t FTP = 0;
@@ -5947,7 +5987,7 @@ void TStoredSessionList::UpdateStaticUsage()
 
   GetConfiguration()->Usage->Set(L"UsingStoredSessionsFolders", Folders);
   GetConfiguration()->Usage->Set(L"UsingWorkspaces", Workspaces);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 const TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
@@ -6143,7 +6183,9 @@ bool TStoredSessionList::IsFolderOrWorkspace(const UnicodeString & Name) const
   return (GetFirstFolderOrWorkspaceSession(Name) != nullptr);
 }
 
-/*bool TStoredSessionList::GetIsFolder(const UnicodeString & Name) const
+#if defined(__BORLANDC__)
+
+bool TStoredSessionList::GetIsFolder(const UnicodeString & Name) const
 {
   const TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
   return (SessionData != nullptr) && !SessionData->GetIsWorkspace();
@@ -6153,7 +6195,9 @@ bool TStoredSessionList::GetIsWorkspace(const UnicodeString & Name) const
 {
   const TSessionData * SessionData = GetFirstFolderOrWorkspaceSession(Name);
   return (SessionData != nullptr) && SessionData->GetIsWorkspace();
-}*/
+}
+
+#endif // defined(__BORLANDC__)
 
 TSessionData * TStoredSessionList::CheckIsInFolderOrWorkspaceAndResolve(
   TSessionData * Data, const UnicodeString & Name)
@@ -6231,7 +6275,7 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
   std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
   for (int32_t Index = 0; (Index < DataList->Count); Index++)
   {
-    Result->Add(rtti::dyn_cast_or_null<TSessionData>(DataList->GetObj(Index))->GetSessionName());
+    Result->Add(rtti::dyn_cast_or_null<TSessionData>(DataList->Objects[Index])->GetSessionName());
   }
 
   return Result.release();
@@ -6253,7 +6297,9 @@ TStrings * TStoredSessionList::GetWorkspaces() const
   return Result.release();
 }
 
-/*void TStoredSessionList::NewWorkspace(
+#if defined(__BORLANDC__)
+
+void TStoredSessionList::NewWorkspace(
   const UnicodeString & Name, TList * DataList)
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
@@ -6278,7 +6324,9 @@ TStrings * TStoredSessionList::GetWorkspaces() const
     Data2->SetModified(true);
     Add(Data2.release());
   }
-}*/
+}
+
+#endif // defined(__BORLANDC__)
 
 bool TStoredSessionList::HasAnyWorkspace() const
 {
@@ -6302,8 +6350,10 @@ TSessionData * TStoredSessionList::ParseUrl(const UnicodeString & AUrl,
   }
   __catch__removed
   {
-    // delete Data;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Data;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Data.release();
 }

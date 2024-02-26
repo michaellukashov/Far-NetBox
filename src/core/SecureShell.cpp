@@ -167,7 +167,7 @@ void TSecureShell::UpdateSessionInfo() const
   }
 }
 
-const TSessionInfo &TSecureShell::GetSessionInfo() const
+const TSessionInfo & TSecureShell::GetSessionInfo() const
 {
   if (!FSessionInfoValid)
   {
@@ -199,7 +199,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_int(conf, CONF_ping_interval, 0);
   conf_set_bool(conf, CONF_compression, Data->GetCompression());
   conf_set_bool(conf, CONF_tryagent, Data->GetTryAgent());
-  conf_set_bool (conf, CONF_agentfwd, Data->GetAgentFwd());
+  conf_set_bool(conf, CONF_agentfwd, Data->GetAgentFwd());
   conf_set_int(conf, CONF_addressfamily, Data->GetAddressFamily());
   conf_set_str(conf, CONF_ssh_rekey_data, AnsiString(Data->GetRekeyData()).c_str());
   conf_set_int(conf, CONF_ssh_rekey_time, nb::ToInt32(Data->GetRekeyTime()));
@@ -401,7 +401,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 
   // permanent settings
   conf_set_bool(conf, CONF_nopty, TRUE);
-  conf_set_bool(conf, CONF_tcp_keepalives, true); //?false
+  conf_set_bool(conf, CONF_tcp_keepalives, true); // TODO: false?
   conf_set_bool(conf, CONF_ssh_show_banner, TRUE);
   conf_set_int(conf, CONF_proxy_log_to_term, FORCE_OFF);
 
@@ -571,6 +571,7 @@ bool TSecureShell::TryFtp()
         {
           SOCKADDR_IN Address;
 
+          // memset(&Address, 0, sizeof(Address));
           nb::ClearStruct(Address);
           Address.sin_family = AF_INET;
           const int32_t Port = FtpPortNumber;
@@ -934,7 +935,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
   {
     if (FSessionData->GetAuthKIPassword() && !FSessionData->GetPassword().IsEmpty() &&
         !FStoredPasswordTriedForKI && (Prompts->GetCount() == 1) &&
-        FLAGCLEAR(nb::ToIntPtr(Prompts->GetObj(0)), pupEcho))
+        FLAGCLEAR(nb::ToIntPtr(Prompts->Objects[0]), pupEcho))
     {
       LogEvent("Using stored password.");
       FUI->Information(LoadStr(AUTH_PASSWORD), false);
@@ -1002,7 +1003,7 @@ bool TSecureShell::PromptUser(bool /*ToServer*/,
     else
     {
       if ((Prompts->GetCount() >= 1) &&
-          (FLAGSET(nb::ToIntPtr(Prompts->GetObj(0)), pupEcho) || GetConfiguration()->GetLogSensitive()))
+          (FLAGSET(nb::ToIntPtr(Prompts->Objects[0]), pupEcho) || GetConfiguration()->GetLogSensitive()))
       {
         LogEvent(FORMAT("Response: \"%s\"", Results->GetString(0)));
       }
@@ -1199,10 +1200,10 @@ int32_t TSecureShell::Receive(uint8_t * Buf, size_t Len)
         WaitForData();
       }
 
+#if defined(__BORLANDC__)
       // This seems ambiguous
-#if 0
       if (Len <= 0) { FatalError(LoadStr(LOST_CONNECTION)); }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
     }
     __finally
     {
@@ -1212,7 +1213,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, size_t Len)
   if (GetConfiguration()->GetActualLogProtocol() >= 1)
   {
     LogEvent(FORMAT("Read %d bytes (%d pending)",
-        nb::ToInt32(Len), nb::ToInt32(PendLen)));
+      nb::ToInt32(Len), nb::ToInt32(PendLen)));
   }
   return nb::ToInt32(Len);
 }
@@ -1272,7 +1273,6 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uint32_t C
   else
   {
     // Result = AnsiToString(Input);
-//    Result = UnicodeString(AnsiString(Input.c_str(), Input.GetLength()));
     Result = ::MB2W(Input.c_str(), static_cast<UINT>(CodePage)); //TODO: AnsiToString
   }
   return Result;
@@ -1437,7 +1437,7 @@ void TSecureShell::SendLine(const UnicodeString & Line)
   }
   Str += "\n";
 
-  // FLog->Add(llInput, Line);
+  // FLog->Add(llInput, Line); // TODO: if LogLevel > 4 FLog->Add
   Send(nb::ToUInt8Ptr(Str.c_str()), Str.Length());
 }
 
@@ -1809,10 +1809,10 @@ void TSecureShell::Close()
     // (e.g. plink), otherwise it hangs in sk_localproxy_close
     SendSpecial(SS_EOF);
     // Try waiting for the EOF exchange to complete (among other to avoid packet queue memory leaks)
-    int32_t Timeout = 500;
+    int32_t Timeout = 500; // TODO: use paramerter
     while ((backend_exitcode(FBackendHandle) < 0) && (Timeout > 0))
     {
-      constexpr int32_t Step = 100;
+      constexpr int32_t Step = 100; // TODO: use paramerter
       if (!EventSelectLoop(Step, false, nullptr))
       {
         Timeout -= Step;
@@ -1891,7 +1891,7 @@ void TSecureShell::PoolForData(WSANETWORKEVENTS & Events, uint32_t & Result)
     {
       if (GetConfiguration()->GetActualLogProtocol() >= 2)
       {
-        LogEvent("Pooling for data in case they finally arrives");
+        LogEvent("Pooling for data in case they finally arrive");
       }
 
       // in extreme condition it may happen that send buffer is full, but there
@@ -1920,6 +1920,7 @@ class TPoolForDataEvent final : public TObject
 {
   NB_DISABLE_COPY(TPoolForDataEvent)
 public:
+  TPoolForDataEvent() = delete;
   TPoolForDataEvent(gsl::not_null<TSecureShell *> SecureShell, WSANETWORKEVENTS & Events) noexcept :
     FSecureShell(SecureShell),
     FEvents(Events)
@@ -1956,6 +1957,7 @@ void TSecureShell::WaitForData()
       const TAutoNestingCounter NestingCounter(FWaitingForData);
 
       WSANETWORKEVENTS Events;
+      // memset(&Events, 0, sizeof(Events));
       nb::ClearStruct(Events);
       TPoolForDataEvent Event(this, Events);
 
@@ -2074,6 +2076,7 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
   WSANETWORKEVENTS Events;
+  // memset(&Events, 0, sizeof(Events));
   nb::ClearStruct(Events);
   const bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);
@@ -2090,7 +2093,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
     if (GetConfiguration()->GetActualLogProtocol() >= 2)
     {
 #if 0
-      LogEvent("Looking for network events");
+      LogEvent("Looking for network events"); // TODO: if LogLevel > 4 LogEvent
 #endif // #if 0
     }
     const uint32_t TicksBefore = ::GetTickCount();
@@ -2117,7 +2120,8 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         // It returns only busy handles, so the set can change with every call to run_toplevel_callbacks.
         WaitList = get_handle_wait_list(FCallbackSet.get());
         DebugAssert(WaitList->nhandles < MAXIMUM_WAIT_OBJECTS);
-        WaitList->handles[WaitList->nhandles] = FSocketEvent;
+        if (WaitList->nhandles < MAXIMUM_WAIT_OBJECTS)
+          WaitList->handles[WaitList->nhandles] = FSocketEvent;
         WaitResult = ::WaitForMultipleObjects(WaitList->nhandles + 1, WaitList->handles, FALSE, TimeoutStep);
         FUI->ProcessGUI();
         // run_toplevel_callbacks can cause processing of pending raw data, so:
@@ -2165,9 +2169,9 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         }
 
         // do not use iterator because size can change
-        for (std::size_t i = 0; i < FPortFwdSockets.size(); ++i)
+        for (std::size_t I = 0; I < FPortFwdSockets.size(); ++I)
         {
-          ProcessNetworkEvents(FPortFwdSockets[i]);
+          ProcessNetworkEvents(FPortFwdSockets[I]);
         }
       }
       else if (WaitResult == WAIT_TIMEOUT)
@@ -2175,7 +2179,7 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
         if (GetConfiguration()->GetActualLogProtocol() >= 2)
         {
 #if 0
-          LogEvent("Timeout waiting for network events");
+          LogEvent("Timeout waiting for network events"); // TODO: if LogLevel > 4 LogEvent
 #endif // #if 0
         }
 
@@ -2565,7 +2569,7 @@ void TSecureShell::VerifyHostKey(
       ConfigHostKey = FSessionData->HostKey;
     }
 
-    UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
+    const UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
     bool Result = VerifyCachedHostKey(StoredKeys, KeyStr, FingerprintMD5, FingerprintSHA256);
     if (!Result && AcceptNew)
     {
@@ -2619,8 +2623,8 @@ void TSecureShell::VerifyHostKey(
       try
       {
         const UnicodeString StorageSource = StoreHostKey(Host, Port, KeyType, KeyStr);
-        StoredKeys = RetrieveHostKey(Host, Port, KeyType);
-        if (StoredKeys != KeyStr)
+        const UnicodeString StoredKeys2 = RetrieveHostKey(Host, Port, KeyType);
+        if (StoredKeys2 != KeyStr)
         {
           throw Exception(UnicodeString());
         }
@@ -2847,7 +2851,9 @@ void TSecureShell::VerifyHostKey(
         }
         __finally__removed
         {
-          // delete E;
+#if defined(__BORLANDC__)
+          delete E;
+#endif // defined(__BORLANDC__)
         } end_try__finally
       }
     }
@@ -2858,9 +2864,9 @@ void TSecureShell::VerifyHostKey(
 
 bool TSecureShell::HaveHostKey(const UnicodeString & AHost, int32_t Port, const UnicodeString & KeyType)
 {
+  UnicodeString Host = AHost;
   // Return true, if we have any host key fingerprint of a particular type
 
-  UnicodeString Host = AHost;
   GetRealHost(Host, Port);
 
   const UnicodeString StoredKeys = RetrieveHostKey(Host, Port, KeyType);
@@ -2956,7 +2962,7 @@ bool TSecureShell::GetReady() const
 
 void TSecureShell::CollectUsage()
 {
-#if 0
+#if defined(__BORLANDC__)
   if (FCollectPrivateKeyUsage)
   {
     GetConfiguration()->Usage->Inc("OpenedSessionsPrivateKey2");
@@ -3046,7 +3052,7 @@ void TSecureShell::CollectUsage()
     case CIPHER_AESGCM: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHAESGCM"); break;
     default: DebugFail(); break;
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 bool TSecureShell::CanChangePassword() const
@@ -3071,16 +3077,4 @@ void TSecureShell::SetActive(bool Value)
     }
   }
 }
-
-/*constexpr uint32_t minPacketSize = 0;
-
-uint32_t TSecureShell::MinPacketSize() const
-{
-  if (!FSessionInfoValid)
-  {
-    UpdateSessionInfo();
-  }
-
-  return winscp_query(FBackendHandle, WINSCP_QUERY_REMMAXPKT);
-}*/
 

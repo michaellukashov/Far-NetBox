@@ -50,7 +50,7 @@
 
 //const int32_t BelowNormalLogLevels = 1;
 
-TSshHostCA::TSshHostCA()
+TSshHostCA::TSshHostCA() noexcept
 {
   PermitRsaSha1 = false;
   PermitRsaSha256 = true;
@@ -1275,7 +1275,7 @@ UnicodeString TConfiguration::GetFullVersion() const
   UnicodeString Result = GetVersion();
 
   const UnicodeString AReleaseType = GetReleaseType();
-  if (DebugAlwaysTrue(!AReleaseType.IsEmpty()) &&
+  if (!AReleaseType.IsEmpty() &&
       !SameText(AReleaseType, L"stable") &&
       !SameText(AReleaseType, L"development"))
   {

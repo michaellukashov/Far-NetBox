@@ -311,7 +311,7 @@ public:
   UnicodeString GetHostNameExpanded() const;
   UnicodeString GetHostNameSource() const;
   void SetPortNumber(int32_t AValue);
-  // void SetUserName(const UnicodeString & AValue);
+  void SetUserName(const UnicodeString & AValue);
   UnicodeString GetUserNameExpanded() const;
   UnicodeString GetUserNameSource() const;
   void SetPassword(const UnicodeString & AValue);
@@ -621,13 +621,13 @@ public:
   __property UnicodeString HostName  = { read=FHostName, write=SetHostName };
   RWProperty<UnicodeString> HostName{nb::bind(&TSessionData::GetHostName, this), nb::bind(&TSessionData::SetHostName, this)};
   __property UnicodeString HostNameExpanded  = { read=GetHostNameExpanded };
-  ROProperty<UnicodeString> HostNameExpanded{nb::bind(&TSessionData::GetHostNameExpanded, this)};
+  const ROProperty<UnicodeString> HostNameExpanded{nb::bind(&TSessionData::GetHostNameExpanded, this)};
   __property UnicodeString HostNameSource = { read=GetHostNameSource };
-  ROProperty<UnicodeString> HostNameSource{nb::bind(&TSessionData::GetHostNameSource, this)};
+  const ROProperty<UnicodeString> HostNameSource{nb::bind(&TSessionData::GetHostNameSource, this)};
   __property int32_t PortNumber  = { read=FPortNumber, write=SetPortNumber };
   RWProperty<int32_t> PortNumber{nb::bind(&TSessionData::GetPortNumber, this), nb::bind(&TSessionData::SetPortNumber, this)};
   __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
-  RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::SessionGetUserName, this), nb::bind(&TSessionData::SessionSetUserName, this)};
+  RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::GetUserName, this), nb::bind(&TSessionData::SetUserName, this)};
   __property UnicodeString UserNameExpanded  = { read=GetUserNameExpanded };
   __property UnicodeString UserNameSource  = { read=GetUserNameSource };
   __property UnicodeString Password  = { read=GetPassword, write=SetPassword };
@@ -677,13 +677,13 @@ public:
   __property TFSProtocol FSProtocol  = { read=FFSProtocol, write=SetFSProtocol  };
   RWProperty<TFSProtocol> FSProtocol{nb::bind(&TSessionData::GetFSProtocol, this), nb::bind(&TSessionData::SetFSProtocol, this)};
   __property UnicodeString FSProtocolStr  = { read=GetFSProtocolStr };
-  ROProperty<UnicodeString> FSProtocolStr{nb::bind(&TSessionData::GetFSProtocolStr, this)};
+  const ROProperty<UnicodeString> FSProtocolStr{nb::bind(&TSessionData::GetFSProtocolStr, this)};
   __property bool Modified  = { read=FModified, write=FModified };
   __property bool CanLogin  = { read=GetCanLogin };
   __property bool CanOpen = { read=GetCanOpen };
-  ROProperty<bool> CanOpen{nb::bind(&TSessionData::GetCanOpen, this)};
+  const ROProperty<bool> CanOpen{nb::bind(&TSessionData::GetCanOpen, this)};
   __property bool IsLocalBrowser = { read=GetIsLocalBrowser };
-  ROProperty<bool> IsLocalBrowser{nb::bind(&TSessionData::GetIsLocalBrowser, this)};
+  const ROProperty<bool> IsLocalBrowser{nb::bind(&TSessionData::GetIsLocalBrowser, this)};
   __property bool ClearAliases = { read = FClearAliases, write = SetClearAliases };
   RWPropertySimple<bool> ClearAliases{&FClearAliases, nb::bind(&TSessionData::SetClearAliases, this)};
   __property TDateTime PingIntervalDT = { read = GetPingIntervalDT, write = SetPingIntervalDT };
@@ -692,9 +692,9 @@ public:
   __property TPingType PingType = { read = FPingType, write = SetPingType };
   RWPropertySimple<TPingType> PingType{&FPingType, nb::bind(&TSessionData::SetPingType, this)};
   __property UnicodeString SessionName  = { read=GetSessionName };
-  ROProperty<UnicodeString> SessionName{nb::bind(&TSessionData::GetSessionName, this)};
+  const ROProperty<UnicodeString> SessionName{nb::bind(&TSessionData::GetSessionName, this)};
   __property UnicodeString DefaultSessionName  = { read=GetDefaultSessionName };
-  ROProperty<UnicodeString> DefaultSessionName{nb::bind(&TSessionData::GetDefaultSessionName, this)};
+  const ROProperty<UnicodeString> DefaultSessionName{nb::bind(&TSessionData::GetDefaultSessionName, this)};
   __property UnicodeString LocalDirectory  = { read=FLocalDirectory, write=SetLocalDirectory };
   RWPropertySimple<UnicodeString> LocalDirectory{&FLocalDirectory, nb::bind(&TSessionData::SetLocalDirectory, this) };
   __property UnicodeString LocalDirectoryExpanded = { read = GetLocalDirectoryExpanded };
@@ -866,7 +866,7 @@ public:
   __property bool FingerprintScan = { read = FFingerprintScan, write = FFingerprintScan };
   RWProperty2<bool> FingerprintScan{&FFingerprintScan};
   __property bool OverrideCachedHostKey = { read = FOverrideCachedHostKey };
-  ROProperty2<bool> OverrideCachedHostKey{&FOverrideCachedHostKey};
+  const ROProperty2<bool> OverrideCachedHostKey{&FOverrideCachedHostKey};
   __property UnicodeString Note = { read = FNote, write = SetNote };
   __property UnicodeString WinTitle = { read = FWinTitle, write = SetWinTitle };
   __property UnicodeString EncryptKey = { read = GetEncryptKey, write = SetEncryptKey };
@@ -877,19 +877,19 @@ public:
   RWPropertySimple<bool> WebDavAuthLegacy{&FWebDavAuthLegacy, nb::bind(&TSessionData::SetWebDavAuthLegacy, this) };
 
   __property UnicodeString StorageKey = { read = GetStorageKey };
-  ROProperty<UnicodeString> StorageKey{nb::bind(&TSessionData::GetStorageKey, this)};
+  const ROProperty<UnicodeString> StorageKey{nb::bind(&TSessionData::GetStorageKey, this)};
   __property UnicodeString SiteKey = { read = GetSiteKey };
-  ROProperty<UnicodeString> SiteKey{nb::bind(&TSessionData::GetSiteKey, this)};
+  const ROProperty<UnicodeString> SiteKey{nb::bind(&TSessionData::GetSiteKey, this)};
   __property UnicodeString OrigHostName = { read = FOrigHostName };
   const UnicodeString& OrigHostName{FOrigHostName};
   __property int32_t OrigPortNumber = { read = FOrigPortNumber };
   const int32_t& OrigPortNumber{FOrigPortNumber};
   __property UnicodeString LocalName = { read = GetLocalName };
-  ROProperty<UnicodeString> LocalName{nb::bind(&TSessionData::GetLocalName, this)};
+  const ROProperty<UnicodeString> LocalName{nb::bind(&TSessionData::GetLocalName, this)};
   __property UnicodeString FolderName = { read = GetFolderName };
-  ROProperty<UnicodeString> FolderName{nb::bind(&TSessionData::GetFolderName, this)};
+  const ROProperty<UnicodeString> FolderName{nb::bind(&TSessionData::GetFolderName, this)};
   __property UnicodeString Source = { read = GetSource };
-  ROProperty<UnicodeString> Source{nb::bind(&TSessionData::GetSource, this)};
+  const ROProperty<UnicodeString> Source{nb::bind(&TSessionData::GetSource, this)};
   __property bool SaveOnly = { read = FSaveOnly };
   const bool& SaveOnly{FSaveOnly};
 
@@ -912,7 +912,7 @@ public:
   int32_t GetPortNumber() const { return FPortNumber; }
   TLoginType GetLoginType() const;
   void SetLoginType(TLoginType Value);
-  UnicodeString SessionGetUserName() const { return FUserName; }
+  UnicodeString GetUserName() const { return FUserName; }
   int32_t GetPingInterval() const { return FPingInterval; }
   bool GetTryAgent() const { return FTryAgent; }
   bool GetAgentFwd() const { return FAgentFwd; }
@@ -1029,7 +1029,6 @@ public:
   UnicodeString GetLogicalHostName() const { return FLogicalHostName; }
   int32_t GetOrigPortNumber() const { return FOrigPortNumber; }
   void SetPasswordless(bool Value);
-  void SessionSetUserName(const UnicodeString & AValue);
 
   void SetLogicalHostName(const UnicodeString & AValue);
   int32_t GetNumberOfRetries() const { return FNumberOfRetries; }
@@ -1147,7 +1146,19 @@ private:
   void DoGetFolderOrWorkspace(const UnicodeString & Name, TList * List, bool NoRecrypt);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
-
+//---------------------------------------------------------------------------
+UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData);
+bool GetIsSshProtocol(TFSProtocol FSProtocol);
+int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
+bool HasIP6LiteralBrackets(const UnicodeString & HostName);
+UnicodeString StripIP6LiteralBrackets(const UnicodeString & HostName);
+bool IsIPv6Literal(const UnicodeString & HostName);
+UnicodeString EscapeIPv6Literal(const UnicodeString & IP);
+TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
+bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directive, UnicodeString & Value);
+UnicodeString CutOpensshToken(UnicodeString & S);
+UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path);
+//---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TIEProxyConfig final : public TObject
 {
   TIEProxyConfig() = default;
@@ -1166,15 +1177,4 @@ NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
 
 //template<int s> struct CheckSizeT;
 //CheckSizeT<sizeof(TSessionData)> checkSize;
-
-NB_CORE_EXPORT UnicodeString GetExpandedLogFileName(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData);
-NB_CORE_EXPORT bool GetIsSshProtocol(TFSProtocol FSProtocol);
-NB_CORE_EXPORT int32_t DefaultPort(TFSProtocol FSProtocol, TFtps Ftps);
-NB_CORE_EXPORT bool IsIPv6Literal(const UnicodeString & HostName);
-NB_CORE_EXPORT UnicodeString EscapeIPv6Literal(const UnicodeString & IP);
-NB_CORE_EXPORT TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
-bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directive, UnicodeString & Value);
-UnicodeString CutOpensshToken(UnicodeString & S);
-UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path);
-
 

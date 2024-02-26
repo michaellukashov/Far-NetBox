@@ -283,7 +283,7 @@ public:
   }
 
   virtual ~TSFTPPacket() noexcept override
-  {
+  { try {
     if (FData != nullptr)
     {
       nb_free(FData - FSendPrefixLen);
@@ -291,7 +291,7 @@ public:
     if (FReservedBy)
     {
       FReservedBy->UnreserveResponse(this);
-    }
+    } } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
   void ChangeType(SSH_FXP_TYPE AType)
@@ -917,7 +917,9 @@ public:
     }
     __finally__removed
     {
-      // delete DumpLines;
+#if defined(__BORLANDC__)
+      delete DumpLines;
+#endif // defined(__BORLANDC__)
     } end_try__finally
 
     SetCapacity(20 * 1024);
@@ -982,13 +984,13 @@ public:
   __property uint32_t SendLength = { read = GetSendLength };
   __property uint32_t Capacity = { read = FCapacity, write = SetCapacity };
   __property uint8_t Type = { read = FType };
-  ROProperty2<SSH_FXP_TYPE> Type{&FType};
+  const ROProperty2<SSH_FXP_TYPE> Type{&FType};
   __property uint8_t RequestType = { read = GetRequestType };
   __property uint32_t MessageNumber = { read = FMessageNumber, write = FMessageNumber };
   RWProperty2<uint32_t> MessageNumber{&FMessageNumber};
   __property TSFTPFileSystem * ReservedBy = { read = FReservedBy, write = FReservedBy };
   __property UnicodeString TypeName = { read = GetTypeName };
-  ROProperty<UnicodeString> TypeName{nb::bind(&TSFTPPacket::GetTypeName, this)};
+  const ROProperty<UnicodeString> TypeName{nb::bind(&TSFTPPacket::GetTypeName, this)};
 
   uint32_t GetLength() const { return FLength; }
   uint8_t * GetData() const { return FData; }
@@ -1335,8 +1337,10 @@ public:
     }
     __finally__removed
     {
-      // delete Request;
-      // delete Response;
+#if defined(__BORLANDC__)
+      delete Request;
+      delete Response;
+#endif // defined(__BORLANDC__)
     } end_try__finally
 
     return Result;
@@ -1398,8 +1402,10 @@ protected:
     }
     __catch__removed
     {
-      // delete Request;
-      // throw;
+#if defined(__BORLANDC__)
+      delete Request;
+      throw;
+#endif // defined(__BORLANDC__)
     } end_try__catch
 
     if (Request != nullptr)
@@ -1466,8 +1472,9 @@ public:
   // #pragma option pop
 
   virtual ~TSFTPAsynchronousQueue() noexcept override
-  {
+  { try {
     UnregisterReceiveHandler();
+    } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
   virtual void Dispose(SSH_FXP_TYPE ExpectedType, SSH_FX_TYPE AllowStatus) override
@@ -1975,8 +1982,9 @@ public:
   }
 
   virtual ~TSFTPBusy() noexcept override
-  {
+  { try {
     FFileSystem->BusyEnd();
+    } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
 private:
@@ -2044,34 +2052,33 @@ void TSFTPFileSystem::Init(void * Data /* TSecureShell*/)
 
 TSFTPFileSystem::~TSFTPFileSystem() noexcept
 {
-//  SAFE_DESTROY(FSupport);
-  NoPacketReservations();
-//  SAFE_DESTROY(FPacketReservations);
-//  SAFE_DESTROY(FFixedPaths);
+#if defined(__BORLANDC__)
+  delete FSupport;
+#endif // defined(__BORLANDC__)
+#if defined(__BORLANDC__)
+  delete FPacketReservations;
+  delete FFixedPaths;
+  delete FSecureShell;
+#endif // defined(__BORLANDC__)
   SAFE_DESTROY(FSecureShell);
 }
 
 void TSFTPFileSystem::Open()
 {
-  NoPacketReservations();
-  ResetConnection();
   // this is used for reconnects only
+  ResetConnection();
   FSecureShell->Open();
 }
 
-void TSFTPFileSystem::NoPacketReservations()
+void TSFTPFileSystem::Close()
 {
+  FSecureShell->Close();
   // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
   // (typically to SSH_FXP_CLOSE)
   for (int32_t I = 0; I < FPacketReservations->Count; I++)
   {
     DebugAssert(FPacketReservations->GetItem(I) == nullptr);
   }
-}
-
-void TSFTPFileSystem::Close()
-{
-  FSecureShell->Close();
 }
 
 bool TSFTPFileSystem::GetActive() const
@@ -3057,7 +3064,7 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
       try
       {
         Result = GetRealPath(Path3);
-        Result = TPath::Join(Result, Name);
+        Result = TUnixPath::Join(Result, Name);
       }
       catch(...)
       {
@@ -3131,8 +3138,10 @@ TRemoteFile * TSFTPFileSystem::LoadFile(TSFTPPacket * Packet,
   }
   __catch__removed
   {
-    // delete File;
-    // throw;
+#if defined(__BORLANDC__)
+    delete File;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return File.release();
 }
@@ -4013,8 +4022,9 @@ void TSFTPFileSystem::RenameFile(
     TargetName = LocalCanonify(ANewName);
   }
   AddPathString(Packet, TargetName, Encrypted);
-  if (UsePosixRename && (FVersion >= 5))
+  if (!UsePosixRename && (FVersion >= 5))
   {
+    // Use SSH_FXP_RENAME + SSH_FXF_RENAME_ATOMIC when UsePosixRename?
     Packet.AddCardinal(0);
   }
   SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
@@ -4246,7 +4256,9 @@ void TSFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   }
   __finally__removed
   {
-    // delete File;
+#if defined(__BORLANDC__)
+    delete File;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -4804,9 +4816,11 @@ void TSFTPFileSystem::Source(
             FORMAT("Existing file is owned by another user [%s], not doing resumable transfer.", File->GetFileOwner().GetName()));
         }
 
+#if defined(__BORLANDC__)
+        delete File;
+        File = nullptr;
+#endif // defined(__BORLANDC__)
         FilePtr.reset();
-        // delete File;
-        // File = nullptr;
       }
 
       if (ResumeAllowed)
@@ -4815,9 +4829,11 @@ void TSFTPFileSystem::Source(
         if (RemoteFileExists(DestPartialFullName, &File))
         {
           ResumeOffset = FilePtr->Resolve()->GetSize(); // Though partial file should not be symlink
+#if defined(__BORLANDC__)
+          delete File;
+          File = nullptr;
+#endif // defined(__BORLANDC__)
           FilePtr.reset();
-          // delete File;
-          // File = nullptr;
 
           bool PartialBiggerThanSource = (ResumeOffset > OperationProgress->GetLocalSize());
           if (FLAGCLEAR(Params, cpNoConfirmation) &&

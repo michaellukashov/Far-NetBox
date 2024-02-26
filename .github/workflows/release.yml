@@ -68,7 +68,6 @@ jobs:
       - name: Pack plugin
         shell: bash
         run: |
-          cp LICENSE.txt README.md README.RU.md README.PL.md ./Far3_${{ matrix.platform }}/Plugins/NetBox/
           7z a -m0=LZMA -mf=BCJ2 -mx9 ${{ env.netbox_name }} ./Far3_${{ matrix.platform }}/Plugins/* -xr!*.pdb
           if [[ -f ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb ]] ; then
             7z a -m0=LZMA -mf=off -mx9 ${{ env.netbox_pdb_name }} ./Far3_${{ matrix.platform }}/Plugins/NetBox/NetBox.pdb
@@ -80,7 +79,7 @@ jobs:
           name: FarNetBox.${{ matrix.platform }}
           path: ./*.7z
           overwrite: true
-          retention-days: 30
+          retention-days: 2
 
   create-release:
     needs: [build]
@@ -103,18 +102,17 @@ jobs:
       - name: Download archives
         uses: actions/download-artifact@v4
         with:
-          # name: FarNetBox.${{ matrix.platform }}
           pattern: FarNetBox.*
-          path: FarNetBox
+          path: FarNetBox/
           merge-multiple: true
 
       - name: Display structure of downloaded files
-        run: ls -R FarNetBox
+        run: ls -R FarNetBox/
 
       - name: Create release
         shell: bash
         run: |
-          gh release create v${{ env.version_short }} --draft --title "NetBox ${{ env.version_short }}" FarNetBox/*
+          gh release create v${{ env.version }} --draft --generate-notes --title "NetBox ${{ env.version }}" FarNetBox/*.7z
         env:
           # GITHUB_TOKEN: ${{ secrets.NETBOX_GITHUB_TOKEN }}
           GH_TOKEN: ${{ github.token }}

@@ -6,7 +6,7 @@
 #include <tinylog/LogStream.h>
 #include <tinylog/Config.h>
 //#include <tinylog/LockFreeQueue.h>
-// #include <Sysutils.hpp>
+// #include <Sysutils.hpp> // for DEBUG_PRINTF
 
 
 namespace tinylog {
@@ -95,19 +95,29 @@ void LogStream::SetFile(FILE * file)
   file_ = file;
 }
 
-int64_t LogStream::InternalWrite(const char * log_data, int64_t ToWrite)
+int64_t LogStream::InternalWrite(const char * log_data, int64_t to_write)
 {
-  const int64_t Result = ToWrite;
+  const int64_t Result = to_write;
   UpdateBaseTime();
   // queue_->Push(log);
+  char * data_to_write = (char * )log_data;
 
   pthread_mutex_lock(&mutex_);
-
+  // DEBUG_PRINTF("ToWrite: %d", (int)to_write);
   while (true)
   {
     auto & buff = drain_buffer_ ? back_buff_ : front_buff_;
     // append to the current buffer
-    if (buff->TryAppend(&tm_base_, static_cast<int64_t>(tv_base_.tv_usec), file_name_, line_, func_name_, str_log_level_, log_data) < 0)
+    int64_t need_capacity = static_cast<int64_t>(buff->Capacity() - buff->Size());
+    if (to_write > need_capacity)
+    {
+      // trunc log_data
+      tmp_buff_ = std::make_unique<Buffer>(need_capacity);
+      tmp_buff_->TryAppend(log_data, need_capacity);
+      data_to_write = tmp_buff_->Data();
+      to_write = need_capacity;
+    }
+    if (buff->TryAppend(&tm_base_, static_cast<int64_t>(tv_base_.tv_usec), file_name_, line_, func_name_, str_log_level_, data_to_write, to_write) < 0)
     {
       if (drain_buffer_)
       {
@@ -116,9 +126,10 @@ int64_t LogStream::InternalWrite(const char * log_data, int64_t ToWrite)
         pthread_mutex_unlock(&mutex_);
         while (drain_buffer_)
         {
-          // yield execution to another thread 
-          // usially it will require only one iteration
+          // yield execution to another thread
+          // usually it will require only one iteration
           Sleep(1);
+          // DEBUG_PRINTF("after Sleep");
         }
         pthread_mutex_lock(&mutex_);
       }

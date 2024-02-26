@@ -22,21 +22,13 @@ constexpr const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 constexpr const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 enum TAutoSwitch { asOn, asOff, asAuto }; // Has to match PuTTY FORCE_ON, FORCE_OFF, AUTO
 
-enum TFtpEncryptionSwitch_219
-{
-  fesPlainFTP,
-  fesExplicitSSL,
-  fesImplicit,
-  fesExplicitTLS,
-};
-
 class TStoredSessionList;
 class TCopyParamType;
 
-class TSshHostCA
+class TSshHostCA final
 {
 public:
-  TSshHostCA();
+  explicit TSshHostCA() noexcept;
   void Save(THierarchicalStorage * Storage) const;
   bool Load(THierarchicalStorage * Storage);
 
@@ -50,10 +42,10 @@ public:
   using TList = nb::vector_t<TSshHostCA>;
 };
 
-class TSshHostCAList
+class TSshHostCAList final
 {
 public:
-  TSshHostCAList() = default;
+  TSshHostCAList() noexcept = default;
   TSshHostCAList(const TSshHostCAList & Other) { operator =(Other); }
   explicit TSshHostCAList(const TSshHostCA::TList & List);
   TSshHostCAList & operator =(const TSshHostCAList & Other);
@@ -163,8 +155,6 @@ private:
   bool FDefaultCollectUsage{false};
 
 public:
-  virtual UnicodeString GetProductVersion() const;
-  virtual UnicodeString GetProductVersionStr() const;
   TVSFixedFileInfo * GetFixedApplicationInfo() const;
   void * GetApplicationInfo() const;
   virtual UnicodeString GetVersionStr() const;
@@ -238,6 +228,8 @@ public:
   const TSshHostCAList * GetPuttySshHostCAList();
   const TSshHostCAList * GetActiveSshHostCAList();
 
+  virtual UnicodeString GetProductVersion() const;
+  virtual UnicodeString GetProductVersionStr() const;
 protected:
   mutable TStorage FStorage{stDetect};
   mutable TCriticalSection FCriticalSection;
@@ -373,36 +365,36 @@ public:
 
   __property TVSFixedFileInfo * FixedApplicationInfo  = { read = GetFixedApplicationInfo };
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
-  ROProperty<void *> ApplicationInfo{nb::bind(&TConfiguration::GetApplicationInfo, this)};
+  const ROProperty<void *> ApplicationInfo{nb::bind(&TConfiguration::GetApplicationInfo, this)};
   __property TUsage * Usage = { read = FUsage };
-  ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
+  const ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   RWProperty<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
-  __property UnicodeString StoredSessionsSubKey = {read = GetStoredSessionsSubKey};
-  ROProperty<UnicodeString> StoredSessionsSubKey{nb::bind(&TConfiguration::GetStoredSessionsSubKey, this)};
+  __property UnicodeString StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
+  const ROProperty<UnicodeString> StoredSessionsSubKey{nb::bind(&TConfiguration::GetStoredSessionsSubKey, this)};
   __property UnicodeString PuttyRegistryStorageKey  = { read=FPuttyRegistryStorageKey, write=SetPuttyRegistryStorageKey };
   RWProperty<UnicodeString> PuttyRegistryStorageKey{nb::bind(&TConfiguration::GetPuttyRegistryStorageKey, this), nb::bind(&TConfiguration::SetPuttyRegistryStorageKey, this)};
   __property UnicodeString PuttySessionsKey  = { read=DoGetPuttySessionsKey };
-  ROProperty<UnicodeString> PuttySessionsKey{nb::bind(&TConfiguration::DoGetPuttySessionsKey, this)};
+  const ROProperty<UnicodeString> PuttySessionsKey{nb::bind(&TConfiguration::DoGetPuttySessionsKey, this)};
   __property UnicodeString PuttySessionsSubKey  = { read=GetPuttySessionsSubKey };
   __property UnicodeString RandomSeedFile  = { read=FRandomSeedFile, write=SetRandomSeedFile };
   __property UnicodeString RandomSeedFileName  = { read=GetRandomSeedFileName };
   __property UnicodeString SshHostKeysSubKey  = { read=GetSshHostKeysSubKey };
-  ROProperty<UnicodeString> SshHostKeysSubKey{nb::bind(&TConfiguration::GetSshHostKeysSubKey, this)};
+  const ROProperty<UnicodeString> SshHostKeysSubKey{nb::bind(&TConfiguration::GetSshHostKeysSubKey, this)};
   __property UnicodeString RootKeyStr  = { read=GetRootKeyStr };
-  ROProperty<UnicodeString> RootKeyStr{nb::bind(&TConfiguration::GetRootKeyStr, this)};
+  const ROProperty<UnicodeString> RootKeyStr{nb::bind(&TConfiguration::GetRootKeyStr, this)};
   __property UnicodeString ConfigurationSubKey  = { read=GetConfigurationSubKey };
-  ROProperty<UnicodeString> ConfigurationSubKey{nb::bind(&TConfiguration::GetConfigurationSubKey, this)};
+  const ROProperty<UnicodeString> ConfigurationSubKey{nb::bind(&TConfiguration::GetConfigurationSubKey, this)};
   __property TEOLType LocalEOLType = { read = GetLocalEOLType };
-  ROProperty<TEOLType> LocalEOLType{nb::bind(&TConfiguration::GetLocalEOLType, this)};
+  const ROProperty<TEOLType> LocalEOLType{nb::bind(&TConfiguration::GetLocalEOLType, this)};
   __property UnicodeString VersionStr = { read=GetVersionStr };
-  ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
+  const ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
   __property UnicodeString Version = { read=GetVersion };
-  ROProperty<UnicodeString> Version {nb::bind(&TConfiguration::GetVersion, this)};
-  __property int32_t CompoundVersion = { read=GetCompoundVersion };
-  ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
+  const ROProperty<UnicodeString> Version {nb::bind(&TConfiguration::GetVersion, this)};
+  __property int CompoundVersion = { read=GetCompoundVersion };
+  const ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
   __property UnicodeString ProductVersion = { read=GetProductVersion };
-  ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
+  const ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
   __property UnicodeString ProductName = { read=GetProductName };
   __property UnicodeString CompanyName = { read=GetCompanyName };
   __property bool IsUnofficial = { read = GetIsUnofficial };
@@ -410,15 +402,15 @@ public:
   RWProperty<bool> Logging{nb::bind(&TConfiguration::GetLogging, this), nb::bind(&TConfiguration::SetLogging, this)};
   __property UnicodeString LogFileName  = { read=FLogFileName, write=SetLogFileName };
   __property bool LogToFile  = { read=GetLogToFile };
-  ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
+  const ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
   __property bool LogFileAppend  = { read=FLogFileAppend, write=SetLogFileAppend };
   __property bool LogSensitive  = { read=FLogSensitive, write=SetLogSensitive };
-  __property int64_t LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
-  __property int32_t LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
-  __property int32_t LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
+  __property __int64 LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
+  __property int LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
+  __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   RWProperty<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
-  __property int32_t ActualLogProtocol  = { read=FActualLogProtocol };
-  ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
+  __property int ActualLogProtocol  = { read=FActualLogProtocol };
+  const ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
   __property bool LogActionsRequired  = { read=FLogActionsRequired, write=FLogActionsRequired };
   __property UnicodeString ActionsLogFileName  = { read=GetActionsLogFileName, write=SetActionsLogFileName };
@@ -439,7 +431,7 @@ public:
   __property UnicodeString ExternalIpAddress = { read = FExternalIpAddress, write = SetExternalIpAddress };
   __property UnicodeString CertificateStorage = { read = FCertificateStorage, write = SetCertificateStorage };
   __property UnicodeString CertificateStorageExpanded = { read = GetCertificateStorageExpanded };
-  ROProperty<UnicodeString> CertificateStorageExpanded{nb::bind(&TConfiguration::GetCertificateStorageExpanded, this)};
+  const ROProperty<UnicodeString> CertificateStorageExpanded{nb::bind(&TConfiguration::GetCertificateStorageExpanded, this)};
   __property UnicodeString AWSMetadataService = { read = FAWSMetadataService, write = SetAWSMetadataService };
   __property UnicodeString ChecksumCommands = { read = FChecksumCommands };
   __property int32_t LocalPortNumberMin = { read = FLocalPortNumberMin, write = SetLocalPortNumberMin };
@@ -447,20 +439,20 @@ public:
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property int32_t ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
-  __property int32_t DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
+  __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
   int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
-  __property int32_t ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
-  __property int32_t QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
+  __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
+  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
   RWPropertySimple<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
-  __property int32_t ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
+  __property int ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
   int32_t& ParallelTransferThreshold{FParallelTransferThreshold};
-  __property int32_t KeyVersion = { read = FKeyVersion, write = FKeyVersion };
+  __property int KeyVersion = { read = FKeyVersion, write = FKeyVersion };
   int32_t& KeyVersion{FKeyVersion};
   __property TSshHostCAList * SshHostCAList = { read = GetSshHostCAList, write = SetSshHostCAList };
   __property TSshHostCAList * PuttySshHostCAList = { read = GetPuttySshHostCAList };
-//  ROProperty<TSshHostCAList *> PuttySshHostCAList{nb::bind(&TConfiguration::GetPuttySshHostCAList, this)};
+//  const ROProperty<TSshHostCAList *> PuttySshHostCAList{nb::bind(&TConfiguration::GetPuttySshHostCAList, this)};
   __property TSshHostCAList * ActiveSshHostCAList = { read = GetActiveSshHostCAList };
-//  ROProperty<TSshHostCAList *> ActiveSshHostCAList{nb::bind(&TConfiguration::GetActiveSshHostCAList, this)};
+//  const ROProperty<TSshHostCAList *> ActiveSshHostCAList{nb::bind(&TConfiguration::GetActiveSshHostCAList, this)};
   __property bool SshHostCAsFromPuTTY = { read = FSshHostCAsFromPuTTY, write = FSshHostCAsFromPuTTY };
   __property int32_t HttpsCertificateValidation = { read = FHttpsCertificateValidation, write = FHttpsCertificateValidation };
   int32_t& HttpsCertificateValidation{FHttpsCertificateValidation};
@@ -468,11 +460,11 @@ public:
   UnicodeString& SynchronizationChecksumAlgs{FSynchronizationChecksumAlgs};
 
   __property UnicodeString TimeFormat = { read = GetTimeFormat };
-  ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetConfigurationTimeFormat, this)};
+  const ROProperty<UnicodeString> TimeFormat{nb::bind(&TConfiguration::GetConfigurationTimeFormat, this)};
   __property TStorage Storage  = { read=GetStorage };
-  ROProperty<TStorage> Storage{nb::bind(&TConfiguration::GetStorage, this)};
+  const ROProperty<TStorage> Storage{nb::bind(&TConfiguration::GetStorage, this)};
   __property UnicodeString RegistryStorageKey  = { read=GetRegistryStorageKey };
-  ROProperty<UnicodeString> RegistryStorageKey{nb::bind(&TConfiguration::GetRegistryStorageKey, this)};
+  const ROProperty<UnicodeString> RegistryStorageKey{nb::bind(&TConfiguration::GetRegistryStorageKey, this)};
   __property UnicodeString CustomIniFileStorageName  = { read=FCustomIniFileStorageName };
   __property UnicodeString ExplicitIniFileStorageName  = { read=FIniFileStorageName };
   __property UnicodeString IniFileStorageName  = { read=GetIniFileStorageNameForReadingWriting };
@@ -480,14 +472,14 @@ public:
   __property TStrings * OptionsStorage = { read = GetOptionsStorage, write = SetOptionsStorage };
   RWProperty<const TStrings *> OptionsStorage{nb::bind(&TConfiguration::GetOptionsStorage, this), nb::bind(&TConfiguration::SetOptionsStorage, this)};
   __property bool Persistent = { read = GetPersistent };
-  ROProperty<bool> Persistent{nb::bind(&TConfiguration::GetPersistent, this)};
+  const ROProperty<bool> Persistent{nb::bind(&TConfiguration::GetPersistent, this)};
   __property bool ForceSave = { read = FForceSave, write = FForceSave };
   bool& ForceSave{FForceSave};
   __property bool Scripting = { read = FScripting, write = FScripting };
   bool& Scripting{FScripting};
 
   __property UnicodeString DefaultKeyFile = { read = GetDefaultKeyFile };
-  ROProperty<UnicodeString> DefaultKeyFile{nb::bind(&TConfiguration::GetDefaultKeyFile, this)};
+  const ROProperty<UnicodeString> DefaultKeyFile{nb::bind(&TConfiguration::GetDefaultKeyFile, this)};
 
   __property bool DisablePasswordStoring = { read = FDisablePasswordStoring };
   const bool& DisablePasswordStoring{FDisablePasswordStoring};
@@ -533,6 +525,7 @@ public:
 class NB_CORE_EXPORT TShortCuts final : public TObject
 {
 public:
+  TShortCuts() = default;
   void Add(const TShortCut & ShortCut);
   bool Has(const TShortCut & ShortCut) const;
 

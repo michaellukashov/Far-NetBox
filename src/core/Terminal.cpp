@@ -684,7 +684,7 @@ UnicodeString TCollectedFileList::GetFileName(int32_t Index) const
   return FList[Index].FileName;
 }
 
-TObject * TCollectedFileList::GetObj(int32_t Index) const
+TObject * TCollectedFileList::GetObject(int32_t Index) const
 {
   return FList[Index].Object;
 }
@@ -1008,7 +1008,7 @@ bool TParallelOperation::GetOnlyFile(TStrings * FileList, UnicodeString & FileNa
     if (Result)
     {
       FileName = OnlyFileList->GetFileName(0);
-      Object = OnlyFileList->GetObj(0);
+      Object = OnlyFileList->Objects[0];
     }
   }
   return Result;
@@ -1060,7 +1060,7 @@ int32_t TParallelOperation::GetNext(
     const UnicodeString RootPath = FFileList->GetString(FListIndex);
 
     FileName = Files->GetFileName(FIndex);
-    Object = Files->GetObj(FIndex);
+    Object = Files->Objects[FIndex];
     Dir = Files->IsDir(FIndex);
     Recursed = Files->IsRecursed(FIndex);
     UnicodeString DirPath;
@@ -1427,7 +1427,7 @@ UnicodeString TTerminal::ExpandFileName(const UnicodeString & APath,
     }
     else
     {
-      Result = TPath::Join(BasePath, APath);
+      Result = TUnixPath::Join(BasePath, APath);
     }
   }
   return Result;
@@ -2069,7 +2069,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
   {
     if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
     {
-      Prompts->SetObj(0, ToObj(nb::ToIntPtr(Prompts->GetObj(0)) | pupRemember));
+      Prompts->SetObject(0, ToObj(nb::ToIntPtr(Prompts->Objects[0]) | pupRemember));
     }
 
     if (!GetOnPromptUser().empty())
@@ -2090,7 +2090,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-        (GetConfiguration()->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->GetObj(0)), pupRemember)))
+        (GetConfiguration()->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->Objects[0]), pupRemember)))
     {
       const RawByteString EncryptedPassword = EncryptPassword(Results->GetString(0));
       if (FTunnelOpening)
@@ -3419,7 +3419,7 @@ void TTerminal::FileModified(const TRemoteFile * AFile,
       // this case for scripting
       if ((AFile != nullptr) && AFile->GetIsDirectory())
       {
-        Directory = TPath::Join(ParentDirectory,
+        Directory = TUnixPath::Join(ParentDirectory,
           base::UnixExtractFileName(AFile->GetFileName()));
       }
     }
@@ -5189,7 +5189,7 @@ bool TTerminal::DoMoveFile(const UnicodeString & FileName, const TRemoteFile * F
   StartOperationWithFile(FileName, foRemoteMove, foDelete);
   DebugAssert(Param != nullptr);
   const TMoveFileParams & Params = *static_cast<const TMoveFileParams *>(Param);
-  const UnicodeString NewName = TPath::Join(Params.Target,
+  const UnicodeString NewName = TUnixPath::Join(Params.Target,
     MaskFileName(base::UnixExtractFileName(FileName), Params.FileMask));
   LogEvent(FORMAT(L"Moving file \"%s\" to \"%s\".", FileName, NewName));
   FileModified(File, FileName);
@@ -5281,7 +5281,7 @@ void TTerminal::CopyFile(const UnicodeString & AFileName,
   StartOperationWithFile(AFileName, foRemoteCopy);
   DebugAssert(Param != nullptr);
   const TMoveFileParams & Params = *static_cast<TMoveFileParams *>(Param);
-  const UnicodeString NewName = TPath::Join(Params.Target,
+  const UnicodeString NewName = TUnixPath::Join(Params.Target,
     MaskFileName(base::UnixExtractFileName(AFileName), Params.FileMask));
   LogEvent(FORMAT("Copying file \"%s\" to \"%s\".", AFileName, NewName));
   DoCopyFile(AFileName, AFile, NewName, Params.DontOverwrite);
@@ -6100,7 +6100,7 @@ bool TTerminal::CalculateLocalFilesSize(TStrings * AFileList,
             CalculatedSizes->push_back(Sz);
           }
 
-          OperationFinish(&OperationProgress, AFileList->GetObj(Index), FileName, true, OnceDoneOperation);
+          OperationFinish(&OperationProgress, AFileList->Objects[Index], FileName, true, OnceDoneOperation);
         }
       }
     }
@@ -6875,7 +6875,7 @@ void TTerminal::SynchronizeApply(
         std::unique_ptr<TStringList> FileList(std::make_unique<TStringList>());
 
         UnicodeString LocalPath = IncludeTrailingBackslash(ChecklistItem->Local.Directory) + ChecklistItem->Local.FileName;
-        UnicodeString RemotePath = TPath::Join(ChecklistItem->Remote.Directory, ChecklistItem->Remote.FileName);
+        UnicodeString RemotePath = TUnixPath::Join(ChecklistItem->Remote.Directory, ChecklistItem->Remote.FileName);
         bool Result = true;
 
         if (FLAGSET(Params, spTimestamp))
@@ -7113,7 +7113,7 @@ void TTerminal::SynchronizeRemoteTimestamp(const UnicodeString & /*AFileName*/,
     GetSessionData()->GetDSTMode());
 
   ChangeFileProperties(
-    TPath::Join(ChecklistItem->Remote.Directory, ChecklistItem->Remote.FileName),
+    TUnixPath::Join(ChecklistItem->Remote.Directory, ChecklistItem->Remote.FileName),
     nullptr, &Properties);
 }
 
@@ -7155,7 +7155,7 @@ void TTerminal::FileFind(const UnicodeString & AFileName,
         UnicodeString RealDirectory;
         if (!AFile->GetIsSymLink() || AFile->GetLinkTo().IsEmpty())
         {
-          RealDirectory = TPath::Join(AParams->RealDirectory, AFile->GetFileName());
+          RealDirectory = TUnixPath::Join(AParams->RealDirectory, AFile->GetFileName());
         }
         else
         {
@@ -7538,7 +7538,7 @@ void TTerminal::LogTotalTransferDetails(
       int32_t Count = 0;
       for (int32_t Index = 0; Index < AFiles->GetCount(); ++Index)
       {
-        const TCollectedFileList * FileList = rtti::dyn_cast_or_null<TCollectedFileList>(AFiles->GetObj(Index));
+        const TCollectedFileList * FileList = rtti::dyn_cast_or_null<TCollectedFileList>(AFiles->Objects[Index]);
         Count += FileList->GetCount();
       }
       S += FORMAT(" - in parallel, with %d total files", Count);
@@ -7569,7 +7569,7 @@ bool TTerminal::CopyToRemote(
 
   if ((!CopyParam->FOnTransferIn.empty()) && !FFileSystem->IsCapable(fcTransferIn))
   {
-    throw Exception(LoadStr(NOTSUPPORTED));
+    NotSupported();
   }
 
   TFileOperationProgressType OperationProgress(nb::bind(&TTerminal::DoProgress, this), nb::bind(&TTerminal::DoFinished, this));
@@ -7704,7 +7704,7 @@ void TTerminal::DoCopyToRemote(
     const UnicodeString FileName = AFilesToCopy->GetString(Index);
     DEBUG_PRINTF("FileName: %s", FileName);
     TSearchRecSmart * SearchRec = nullptr;
-    if (rtti::dyn_cast_or_null<TLocalFile>(AFilesToCopy->GetObj(Index)) != nullptr)
+    if (rtti::dyn_cast_or_null<TLocalFile>(AFilesToCopy->Objects[Index]) != nullptr)
     {
       TLocalFile * LocalFile = AFilesToCopy->GetAs<TLocalFile>(Index);
       SearchRec = &LocalFile->SearchRec;
@@ -7738,7 +7738,7 @@ void TTerminal::DoCopyToRemote(
     }
     __finally
     {
-      OperationFinish(AOperationProgress, AFilesToCopy->GetObj(Index), FileName, Success, OnceDoneOperation);
+      OperationFinish(AOperationProgress, AFilesToCopy->Objects[Index], FileName, Success, OnceDoneOperation);
     } end_try__finally
     Index++;
   }
@@ -7819,7 +7819,7 @@ void TTerminal::DirectorySource(
 {
   FFileSystem->TransferOnDirectory(ATargetDir, CopyParam, AParams);
 
-  const UnicodeString DestFullName = TPath::Join(ATargetDir, ADestDirectoryName);
+  const UnicodeString DestFullName = TUnixPath::Join(ATargetDir, ADestDirectoryName);
 
   AOperationProgress->SetFile(ADirectoryName);
 
@@ -8139,7 +8139,7 @@ bool TTerminal::CopyToLocal(
 
   if ((!CopyParam->FOnTransferOut.empty()) && !FFileSystem->IsCapable(fcTransferOut))
   {
-    throw Exception(LoadStr(NOTSUPPORTED));
+    NotSupported();
   }
 
   FDestFileName = "";
@@ -9172,7 +9172,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
 
     LogEvent(FORMAT(L"Adding public key line to \"%s\" file:\n%s", AuthorizedKeysFilePath, Line));
 
-    UnicodeString SshFolderAbsolutePath = TPath::Join(GetHomeDirectory(), OpensshFolderName);
+    UnicodeString SshFolderAbsolutePath = TUnixPath::Join(GetHomeDirectory(), OpensshFolderName);
     bool WrongRights = false;
     std::unique_ptr<TRemoteFile> SshFolderFile(CheckRights(L"Folder", SshFolderAbsolutePath, WrongRights));
     if (SshFolderFile == nullptr)
@@ -9194,7 +9194,7 @@ UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
     }
     const UnicodeString TemporaryAuthorizedKeysFile = IncludeTrailingBackslash(TemporaryDir) + OpensshAuthorizedKeysFileName;
 
-    const UnicodeString AuthorizedKeysFileAbsolutePath = TPath::Join(SshFolderAbsolutePath, OpensshAuthorizedKeysFileName);
+    const UnicodeString AuthorizedKeysFileAbsolutePath = TUnixPath::Join(SshFolderAbsolutePath, OpensshAuthorizedKeysFileName);
 
     bool Updated = true;
     TCopyParamType CopyParam; // Use factory defaults
@@ -9485,7 +9485,7 @@ void TSecondaryTerminal::Init(
   }
   if (!FMainTerminal->GetUserName().IsEmpty())
   {
-    GetSessionData()->SessionSetUserName(FMainTerminal->GetUserName());
+    GetSessionData()->SetUserName(FMainTerminal->GetUserName());
   }
 }
 

@@ -61,7 +61,7 @@ private:
   bool WriteXml() const;
 
 private:
-  std::unique_ptr<tinyxml2::XMLDocument> FXmlDoc;
+  std::unique_ptr<tinyxml2::XMLDocument> FXmlDoc{std::make_unique<tinyxml2::XMLDocument>()};
   nb::vector_t<tinyxml2::XMLElement *> FSubElements;
   gsl::owner<tinyxml2::XMLElement *> FCurrentElement{nullptr};
   UnicodeString FStoredSessionsSubKey;

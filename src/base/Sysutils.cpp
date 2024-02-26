@@ -1753,7 +1753,7 @@ UnicodeString TPath::Combine(const UnicodeString & APath, const UnicodeString & 
   return Result;
 }
 
-UnicodeString TPath::Join(const UnicodeString & APath, const UnicodeString & AFileName)
+UnicodeString TUnixPath::Join(const UnicodeString & APath, const UnicodeString & AFileName)
 {
   return base::UnixIncludeTrailingBackslash(APath) + AFileName;
 }
@@ -2176,3 +2176,39 @@ DWORD FindClose(TSearchRec & Rec)
 }
 
 } // namespace base
+
+static UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
+  const UnicodeString & MultiItemsFormat, int32_t Count, const UnicodeString & FirstItem)
+{
+  UnicodeString Result;
+  if (Count == 1)
+  {
+    Result = FORMAT(SingleItemFormat, FirstItem);
+  }
+  else
+  {
+    Result = FORMAT(MultiItemsFormat, Count);
+  }
+  return Result;
+}
+
+static UnicodeString ItemsFormatString(const UnicodeString & SingleItemFormat,
+  const UnicodeString & MultiItemsFormat, const TStrings * Items)
+{
+  return ItemsFormatString(SingleItemFormat, MultiItemsFormat,
+    Items->GetCount(), (Items->GetCount() > 0 ? Items->GetString(0) : UnicodeString()));
+}
+
+UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
+  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote)
+{
+  DebugAssert(AFiles != nullptr);
+  UnicodeString Item;
+  if (AFiles && (AFiles->GetCount() > 0))
+  {
+    Item = Remote ? base::UnixExtractFileName(AFiles->GetString(0)) :
+      base::ExtractFileName(AFiles->GetString(0), true);
+  }
+  return ItemsFormatString(SingleFileFormat, MultiFilesFormat,
+    AFiles ? AFiles->GetCount() : 0, Item);
+}

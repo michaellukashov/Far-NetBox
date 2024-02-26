@@ -20,8 +20,7 @@ using TFileOperationProgressEvent = nb::FastDelegate1<void,
   TFileOperationProgressType & /*ProgressData*/>;
 using TFileOperationFinishedEvent = nb::FastDelegate6<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
-  const UnicodeString & /*FileName*/, bool /*Success*/,
-  TOnceDoneOperation & /*OnceDoneOperation*/>;
+  const UnicodeString & /*FileName*/, bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/>;
 
 class TFileOperationStatistics final : public TObject
 {
@@ -145,12 +144,12 @@ protected:
 public:
   // common data
   __property TFileOperation Operation = { read = FOperation };
-  ROProperty<TFileOperation> Operation{nb::bind(&TFileOperationProgressType::GetOperation, this)};
+  const ROProperty<TFileOperation> Operation{nb::bind(&TFileOperationProgressType::GetOperation, this)};
   // on what side if operation being processed (local/remote), source of copy
   __property TOperationSide Side = { read = GetSide };
-  ROProperty<TOperationSide> Side{nb::bind(&TFileOperationProgressType::GetSide, this)};
+  const ROProperty<TOperationSide> Side{nb::bind(&TFileOperationProgressType::GetSide, this)};
   __property int32_t Count =  { read = FCount };
-  ROProperty<int32_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
+  const ROProperty<int32_t> Count{nb::bind(&TFileOperationProgressType::GetCount, this)};
   __property UnicodeString FileName =  { read = FFileName };
   const UnicodeString& FileName{FFileName};
   __property UnicodeString FullFileName = { read = FFullFileName };
@@ -166,15 +165,15 @@ public:
   const bool& Temp{FTemp};
 
   // file size to read/write
-  __property int64_t LocalSize = { read = FLocalSize };
+  __property __int64 LocalSize = { read = FLocalSize };
   const int64_t& LocalSize{FLocalSize};
-  __property int64_t LocallyUsed = { read = FLocallyUsed };
+  __property __int64 LocallyUsed = { read = FLocallyUsed };
   const int64_t& LocallyUsed{FLocallyUsed};
-  __property int64_t TransferSize = { read = FTransferSize };
-  const int64_t& TransferSize{FTransferSize};
-  __property int64_t TransferredSize = { read = FTransferredSize };
+  __property __int64 TransferSize = { read = FTransferSize };
+    const int64_t& TransferSize{FTransferSize};
+  __property __int64 TransferredSize = { read = FTransferredSize };
   const int64_t& TransferredSize{FTransferredSize};
-  __property int64_t SkippedSize = { read = FSkippedSize };
+  __property __int64 SkippedSize = { read = FSkippedSize };
   const int64_t& SkippedSize{FSkippedSize};
   __property bool InProgress = { read = FInProgress };
   const bool& InProgress{FInProgress};
@@ -183,26 +182,26 @@ public:
   __property bool FileInProgress = { read = FFileInProgress };
   const bool& FileInProgress{FFileInProgress};
   __property TCancelStatus Cancel = { read = GetCancel };
-  ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
+  const ROProperty<TCancelStatus> Cancel{nb::bind(&TFileOperationProgressType::GetCancel, this)};
   // when operation started
   __property TDateTime StartTime = { read = GetStartTime };
-  ROProperty<TDateTime> StartTime{nb::bind(&TFileOperationProgressType::GetStartTime, this)};
+  const ROProperty<TDateTime> StartTime{nb::bind(&TFileOperationProgressType::GetStartTime, this)};
   // bytes transferred
   __property int64_t TotalTransferred = { read = GetTotalTransferred };
-  ROProperty<int64_t> TotalTransferred{nb::bind(&TFileOperationProgressType::GetTotalTransferred, this)};
-  __property int64_t OperationTransferred = { read = GetOperationTransferred };
-  ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
-  __property int64_t TotalSize = { read = GetTotalSize };
-  ROProperty<int64_t> TotalSize{nb::bind(&TFileOperationProgressType::GetTotalSize, this)};
-  __property int32_t FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
+  const ROProperty<int64_t> TotalTransferred{nb::bind(&TFileOperationProgressType::GetTotalTransferred, this)};
+  __property __int64 OperationTransferred = { read = GetOperationTransferred };
+  const ROProperty<int64_t> OperationTransferred{nb::bind(&TFileOperationProgressType::GetOperationTransferred, this)};
+  __property __int64 TotalSize = { read = GetTotalSize };
+  const ROProperty<int64_t> TotalSize{nb::bind(&TFileOperationProgressType::GetTotalSize, this)};
+  __property int FilesFinishedSuccessfully = { read = FFilesFinishedSuccessfully };
   __property TOnceDoneOperation InitialOnceDoneOperation = { read = FInitialOnceDoneOperation };
 
   __property TBatchOverwrite BatchOverwrite = { read = GetBatchOverwrite };
-  ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
+  const ROProperty<TBatchOverwrite> BatchOverwrite{nb::bind(&TFileOperationProgressType::GetBatchOverwrite, this)};
   __property bool SkipToAll = { read = GetSkipToAll };
-  ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
-  __property uint32_t CPSLimit = { read = GetCPSLimit };
-  ROProperty<uint64_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
+  const ROProperty<bool> SkipToAll{nb::bind(&TFileOperationProgressType::GetSkipToAll, this)};
+  __property unsigned long CPSLimit = { read = GetCPSLimit };
+  const ROProperty<uint64_t> CPSLimit{nb::bind(&TFileOperationProgressType::GetCPSLimit, this)};
 
   __property bool TotalSizeSet = { read = FTotalSizeSet };
   const bool& TotalSizeSet{FTotalSizeSet};
@@ -324,10 +323,10 @@ public:
 
   virtual ~TSuspendFileOperationProgress() noexcept override
   {
-    if (FOperationProgress != nullptr)
+    try { if (FOperationProgress != nullptr)
     {
       FOperationProgress->Resume();
-    }
+    } } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
 private:

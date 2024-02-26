@@ -43,12 +43,13 @@ private:
 
   std::unique_ptr<Buffer> front_buff_;
   std::unique_ptr<Buffer> back_buff_;
+  std::unique_ptr<Buffer> tmp_buff_;
 //  std::unique_ptr<LockFreeQueue> queue_;
   FILE * file_{nullptr}; // TODO: use gsl::not_null
   const char * file_name_{nullptr}; // TODO: use gsl::not_null
   int32_t line_{0};
   const char * func_name_{nullptr};
-  std::string str_log_level_;
+  const char * str_log_level_;
   timeval tv_base_{};
   struct tm tm_base_{};
   pthread_mutex_t & mutex_;

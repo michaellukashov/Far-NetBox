@@ -12,6 +12,7 @@
 #include "Exceptions.h"
 #include "CoreMain.h"
 #include "TextsCore.h"
+#include <StrUtils.hpp>
 // #include <Soap.EncdDecd.hpp>
 
 char sshver[50]{};
@@ -31,12 +32,13 @@ extern "C"
 #include <windows/platform.h>
 //#include <winstuff.h>
 }
-//const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
-//const UnicodeString KittyRegistryStorageKey("Software\\9bis.com\\KiTTY");
-//const UnicodeString OriginalPuttyExecutable("putty.exe");
-//const UnicodeString KittyExecutable("kitty.exe");
-//const UnicodeString PuttyKeyExt("ppk");
-
+#if defined(__BORLANDC__)
+const UnicodeString OriginalPuttyRegistryStorageKey(PUTTY_REG_POS);
+const UnicodeString KittyRegistryStorageKey("Software\\9bis.com\\KiTTY");
+const UnicodeString OriginalPuttyExecutable("putty.exe");
+const UnicodeString KittyExecutable("kitty.exe");
+const UnicodeString PuttyKeyExt("ppk");
+#endif // defined(__BORLANDC__)
 void PuttyInitialize()
 {
   SaveRandomSeed = true;
@@ -252,8 +254,10 @@ static SeatPromptResult get_userpass_input(Seat * seat, prompts_t * p)
   }
   __finally__removed
   {
-    // delete Prompts;
-    // delete Results;
+#if defined(__BORLANDC__)
+    delete Prompts;
+    delete Results;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   return Result;
@@ -882,7 +886,8 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     if (!ppk_loadpub_s(BinarySource_UPCAST(CertLoadedFile), &AlgorithmName,
                        BinarySink_UPCAST(Pub), &CommentStr, &ErrorStr))
     {
-      throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, CertificateFileName), UnicodeString(ErrorStr));
+      // const AnsiString Error = AnsiString(ErrorStr);
+      throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, CertificateFileName), ErrorStr);
     }
     sfree(CommentStr);
   }
@@ -1050,6 +1055,7 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
       {
         ssh_gss_library * library = &List->libraries[Index];
         Ssh_gss_ctx ctx{};
+        // memset(&ctx, 0, sizeof(ctx));
         has =
           ((library->acquire_cred(library, &ctx, nullptr) == SSH_GSS_OK) &&
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;

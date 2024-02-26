@@ -10,8 +10,10 @@
 
 // #pragma package(smart_init)
 
-// const UnicodeString LastInternalExceptionCounter("LastInternalException2");
-// const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
+#if defined(__BORLANDC__)
+const UnicodeString LastInternalExceptionCounter("LastInternalException2");
+const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
+#endif // defined(__BORLANDC__)
 
 TUsage::TUsage(TConfiguration * Configuration) noexcept :
   FCriticalSection(std::make_unique<TCriticalSection>()),
@@ -26,8 +28,10 @@ TUsage::TUsage(TConfiguration * Configuration) noexcept :
 
 TUsage::~TUsage() noexcept
 {
-  // delete FValues;
-  // delete FCriticalSection;
+#if defined(__BORLANDC__)
+  delete FValues;
+  delete FCriticalSection;
+#endif // defined(__BORLANDC__)
 }
 
 void TUsage::Default()
@@ -296,7 +300,7 @@ UnicodeString TUsage::Serialize(const UnicodeString & ADelimiter, const UnicodeS
   const TGuard Guard(*FCriticalSection);
   UnicodeString Result;
 
-  UnicodeString FilterUpper = UpperCase(AFilter);
+  const UnicodeString FilterUpper = UpperCase(AFilter);
   for (int32_t Index = 0; Index < FValues->Count; Index++)
   {
     Serialize(Result, FValues->GetName(Index), FValues->GetValueFromIndex(Index), ADelimiter, FilterUpper);

@@ -68,9 +68,9 @@ public:
   virtual void Flush();
 
   __property UnicodeString Storage  = { read = FStorage };
-  ROProperty<UnicodeString> Storage{nb::bind(&THierarchicalStorage::GetStorage, this)};
+  const ROProperty<UnicodeString> Storage{nb::bind(&THierarchicalStorage::GetStorage, this)};
   __property UnicodeString CurrentSubKey = { read = GetCurrentSubKey };
-  ROProperty<UnicodeString> CurrentSubKey{nb::bind(&THierarchicalStorage::GetCurrentSubKey, this)};
+  const ROProperty<UnicodeString> CurrentSubKey{nb::bind(&THierarchicalStorage::GetCurrentSubKey, this)};
   __property TStorageAccessMode AccessMode = { read = FAccessMode, write = SetAccessMode };
   RWProperty<TStorageAccessMode> AccessMode{nb::bind(&THierarchicalStorage::GetAccessMode, this), nb::bind(&THierarchicalStorage::SetAccessMode, this) };
   __property bool Explicit = { read = FExplicit, write = FExplicit };
@@ -82,9 +82,9 @@ public:
   __property bool MungeStringValues = { read = FMungeStringValues, write = FMungeStringValues };
   bool& MungeStringValues{FMungeStringValues};
   __property UnicodeString Source = { read = GetSource };
-  ROProperty<UnicodeString> Source{nb::bind(&THierarchicalStorage::GetSourceConst, this)};
+  const ROProperty<UnicodeString> Source{nb::bind(&THierarchicalStorage::GetSourceConst, this)};
   __property bool Temporary = { read = GetTemporary };
-  ROProperty<bool> Temporary{nb::bind(&THierarchicalStorage::GetTemporary, this)};
+  const ROProperty<bool> Temporary{nb::bind(&THierarchicalStorage::GetTemporary, this)};
   __property UnicodeString UnmungedRoot = { read = FUnmungedRoot, write = FUnmungedRoot };
   UnicodeString& UnmungedRoot{FUnmungedRoot};
 
@@ -229,7 +229,7 @@ public:
   void SetFailed(int32_t Value) { FFailed = Value; }
 };
 
-#if 0
+#if defined(__BORLANDC__)
 
 class TCustomIniFileStorage : public THierarchicalStorage
 {
@@ -317,7 +317,7 @@ protected:
   virtual bool GetTemporary();
 };
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 NB_CORE_EXPORT UnicodeString PuttyMungeStr(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString PuttyUnMungeStr(const UnicodeString & Str);

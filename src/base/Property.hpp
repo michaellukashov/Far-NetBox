@@ -78,7 +78,7 @@ public:
   ROIndexedProperty(ROIndexedProperty &&) noexcept = default;
   ROIndexedProperty & operator =(const ROIndexedProperty &) = default;
   ROIndexedProperty & operator =(ROIndexedProperty &&) noexcept = default;
-  constexpr T operator [](int32_t Index)
+  constexpr T operator [](int32_t Index) const
   {
     DebugCheck(_getter);
     return _getter(Index);

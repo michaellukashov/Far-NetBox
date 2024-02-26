@@ -30,7 +30,7 @@
 #include "Tools.h"
 //#include <Vcl.AppEvnts.hpp>
 
-#if 0
+#if defined(__BORLANDC__)
 
 #pragma package(smart_init)
 
@@ -45,7 +45,7 @@ void FormHelp(TCustomForm * Form)
   InvokeHelp(Form->ActiveControl != nullptr ? Form->ActiveControl : Form);
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 HINSTANCE HInstance{nullptr};
 
@@ -147,7 +147,7 @@ void TMessageParams::Reset()
   CustomCaption = L"";
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 static bool IsPositiveAnswer(uint32_t Answer)
 {
@@ -601,17 +601,16 @@ static TStrings * StackInfoListToStrings(
   return StackTrace.release();
 }
 
-
 static std::unique_ptr<TCriticalSection> StackTraceCriticalSection(TraceInitPtr(new TCriticalSection()));
 using TStackTraceMap = rde::map<DWORD, TStrings *>;
 static TStackTraceMap StackTraceMap;
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 UnicodeString GetExceptionDebugInfo()
 {
   UnicodeString Result;
-#if 0
+#if defined(__BORLANDC__)
   const TGuard Guard(StackTraceCriticalSection.get());
   TStackTraceMap::iterator Iterator = StackTraceMap.find(GetCurrentThreadId());
   if (Iterator != StackTraceMap.end())
@@ -642,7 +641,7 @@ UnicodeString GetExceptionDebugInfo()
       }
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
@@ -650,7 +649,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 {
   bool Result = false;
 
-#if 0
+#if defined(__BORLANDC__)
 
   const TGuard Guard(StackTraceCriticalSection.get());
 
@@ -676,7 +675,7 @@ bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages)
 
     OwnedMoreMessages.release();
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
@@ -684,7 +683,7 @@ uint32_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
   const UnicodeString & /*MessageFormat*/, uint32_t /*Answers*/, const UnicodeString & /*HelpKeyword*/,
   const TMessageParams * /*Params*/)
 {
-#if 0
+#if defined(__BORLANDC__)
   TStrings * MoreMessages = nullptr;
   ExtException * EE = dynamic_cast<ExtException *>(E);
   if (EE != nullptr)
@@ -711,7 +710,7 @@ uint32_t ExceptionMessageDialog(Exception * /*E*/, TQueryType /*Type*/,
 
   return MoreMessageDialog(
     Message, MoreMessages, Type, Answers, HelpKeyword, Params);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return 0;
 }
 
@@ -719,7 +718,7 @@ uint32_t FatalExceptionMessageDialog(
   Exception * E, TQueryType Type, const UnicodeString & MessageFormat, uint32_t Answers,
   const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
-#if 0
+#if defined(__BORLANDC__)
   DebugAssert(FLAGCLEAR(Answers, qaRetry));
   Answers |= qaRetry;
 
@@ -737,7 +736,7 @@ uint32_t FatalExceptionMessageDialog(
   AParams.AliasesCount = LENOF(Aliases);
 
   return ExceptionMessageDialog(E, Type, MessageFormat, Answers, HelpKeyword, &AParams);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   ThrowNotImplemented(3017);
   return 0;
 }
@@ -746,7 +745,7 @@ uint32_t FatalExceptionMessageDialog(
 static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
   bool OSException, void * BaseOfStack)
 {
-#if 0
+#if defined(__BORLANDC__)
   if (ExceptObj != nullptr)
   {
     Exception * E = dynamic_cast<Exception *>(ExceptObj);
@@ -781,7 +780,7 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
       }
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   ThrowNotImplemented(3016);
 }
 
@@ -812,7 +811,7 @@ bool ProcessGUI(bool Force)
 {
   DebugAssert(MainThread != 0);
   bool Result = false;
-#if 0
+#if defined(__BORLANDC__)
   // Calling ProcessMessages in Azure WebJob causes access violation in VCL.
   // As we do not really need to call it in scripting/.NET, just skip it.
   if ((MainThread == GetCurrentThreadId()) && !NoGUI)
@@ -826,16 +825,11 @@ bool ProcessGUI(bool Force)
       Result = true;
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
-void SystemRequired()
-{
-
-}
-
-#if 0
+#if defined(__BORLANDC__)
 
 void CopyParamListButton(TButton * Button)
 {
@@ -1108,7 +1102,7 @@ bool TCustomCommandPromptsDialog::Execute(TUnicodeStringVector & Values)
   return Result;
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 
 TWinInteractiveCustomCommand::TWinInteractiveCustomCommand(
@@ -1128,18 +1122,18 @@ void TWinInteractiveCustomCommand::PatternHint(int32_t Index, const UnicodeStrin
     UnicodeString Default;
     bool Delimit = false;
     ParsePromptPattern(Pattern, Prompt, Default, Delimit);
-#if 0
+#if defined(__BORLANDC__)
     FIndexes.insert(std::make_pair(Index, FPrompts.size()));
     FPrompts.push_back(Prompt);
     FDefaults.push_back(Default);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   }
 }
 
 void TWinInteractiveCustomCommand::Prompt(
   int32_t /*Index*/, const UnicodeString & /*Prompt*/, UnicodeString &/*Value*/) const
 {
-#if 0
+#if defined(__BORLANDC__)
   if (DebugAlwaysTrue(FIndexes.find(Index) != FIndexes.end()))
   {
     size_t PromptIndex = FIndexes[Index];
@@ -1164,20 +1158,22 @@ void TWinInteractiveCustomCommand::Prompt(
       Value = FValues[PromptIndex];
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TWinInteractiveCustomCommand::Execute(
   const UnicodeString & Command, UnicodeString & Value) const
 {
   ThrowNotImplemented(3019);
-  // DWORD DummyExitCode;
-  // ExecuteProcessAndReadOutput(Command, Value, DummyExitCode, false);
+#if defined(__BORLANDC__)
+  DWORD DummyExitCode;
+  ExecuteProcessAndReadOutput(Command, Value, DummyExitCode, false);
+#endif // defined(__BORLANDC__)
   // trim trailing cr/lf
   Value = TrimRight(Value);
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 void MenuPopup(TPopupMenu * Menu, TButton * Button)
 {
@@ -1601,11 +1597,11 @@ static void AppGetMainFormHandle(void * /*Data*/, HWND & Handle)
   }
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 void WinInitialize()
 {
-#if 0
+#if defined(__BORLANDC__)
   if (JclHookExceptions())
   {
     JclStackTrackingOptions << stAllModules;
@@ -1613,10 +1609,10 @@ void WinInitialize()
     CallstackThread = std::make_unique<TCallstackThread>();
     CallstackThread->Start();
   }
-#endif // #if 0
 
-  // SetErrorMode(SEM_FAILCRITICALERRORS);
-  // OnApiPath = ApiPath;
+  SetErrorMode(SEM_FAILCRITICALERRORS);
+  OnApiPath = ApiPath;
+#endif // defined(__BORLANDC__)
   MainThread = GetCurrentThreadId();
   // Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
 
@@ -1624,13 +1620,13 @@ void WinInitialize()
 
 void WinFinalize()
 {
-#if 0
+#if defined(__BORLANDC__)
   CallstackThread.reset(nullptr);
   JclRemoveExceptNotifier(DoExceptNotify);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 ::TTrayIcon::TTrayIcon(uint32_t Id)
 {
@@ -1901,7 +1897,8 @@ void ::TTrayIcon::SetHint(UnicodeString value)
     Update();
   }
 }
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 bool InputDialog(const UnicodeString & ACaption,
   const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword,
@@ -1945,4 +1942,3 @@ uint32_t MoreMessageDialog(const UnicodeString & Message,
   uint32_t Result = GetGlobals()->MoreMessageDialog(Message, MoreMessages, Type, Answers, Params);
   return Result;
 }
-

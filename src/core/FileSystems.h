@@ -28,104 +28,6 @@ constexpr const int32_t dfNoRecursive = 0x01;
 constexpr const int32_t dfAlternative = 0x02;
 constexpr const int32_t dfForceDelete = 0x04;
 
-enum TOverwriteMode { omOverwrite, omAppend, omResume, omComplete };
-
-struct NB_CORE_EXPORT TSinkFileParams : public TObject
-{
-public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSinkFileParams); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSinkFileParams) || TObject::is(Kind); }
-public:
-  TSinkFileParams() noexcept : TObject(OBJECT_CLASS_TSinkFileParams), CopyParam(nullptr), OperationProgress(nullptr), Params(0), Flags(0), Skipped(false) {}
-  UnicodeString TargetDir;
-  const TCopyParamType * CopyParam{nullptr};
-  int32_t Params{0};
-  TFileOperationProgressType * OperationProgress{nullptr};
-  bool Skipped{false};
-  uint32_t Flags{0};
-};
-
-struct NB_CORE_EXPORT TFileTransferData : public TObject
-{
-  NB_DISABLE_COPY(TFileTransferData)
-public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFileTransferData); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFileTransferData) || TObject::is(Kind); }
-public:
-  TFileTransferData() : TObject(OBJECT_CLASS_TFileTransferData) {}
-  UnicodeString FileName;
-  TCopyParamType * CopyParam{nullptr};
-  TDateTime Modification{};
-  int32_t Params{0};
-  int32_t OverwriteResult{-1};
-  bool AutoResume{false};
-};
-
-struct NB_CORE_EXPORT TOverwriteFileParams : public TObject
-{
-public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TOverwriteFileParams); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOverwriteFileParams) || TObject::is(Kind); }
-public:
-  TOverwriteFileParams() noexcept :
-    TObject(OBJECT_CLASS_TOverwriteFileParams),
-    SourceSize(0),
-    DestSize(0),
-    SourcePrecision(mfFull),
-    DestPrecision(mfFull)
-  {
-  }
-
-  int64_t SourceSize{0};
-  int64_t DestSize{0};
-  TDateTime SourceTimestamp{};
-  TDateTime DestTimestamp{};
-  TModificationFmt SourcePrecision{mfFull};
-  TModificationFmt DestPrecision{mfFull};
-};
-
-struct NB_CORE_EXPORT TOpenRemoteFileParams : public TObject
-{
-  NB_DISABLE_COPY(TOpenRemoteFileParams)
-public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TOpenRemoteFileParams); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOpenRemoteFileParams) || TObject::is(Kind); }
-public:
-  TOpenRemoteFileParams() :
-    TObject(OBJECT_CLASS_TOpenRemoteFileParams),
-    LocalFileAttrs(0),
-    OperationProgress(nullptr),
-    CopyParam(nullptr),
-    Params(0),
-    Resume(false),
-    Resuming(false),
-    OverwriteMode(omOverwrite),
-    DestFileSize(0),
-    FileParams(nullptr),
-    Confirmed(false)
-  {
-  }
-  UnicodeString FileName;
-  UnicodeString RemoteFileName;
-  TFileOperationProgressType * OperationProgress{nullptr};
-  const TCopyParamType * CopyParam{nullptr};
-  int32_t Params{0};
-  bool Resume{false};
-  bool Resuming{false};
-  TOverwriteMode OverwriteMode{};
-  int64_t DestFileSize{0}; // output
-  RawByteString RemoteFileHandle; // output
-  TOverwriteFileParams * FileParams{nullptr};
-  bool Confirmed{false};
-  bool DontRecycle{false};
-  bool Recycled{false};
-  TRights RecycledRights{};
-  uint32_t LocalFileAttrs{0};
-};
-
-/** @brief Interface for custom filesystems
-  *
-  */
 class NB_CORE_EXPORT TFileSystemIntf
 {
 public:
@@ -223,7 +125,7 @@ public:
   virtual void ClearCaches() = 0;
 
   __property UnicodeString CurrentDirectory = { read = GetCurrentDirectory };
-  ROProperty<UnicodeString> CurrentDirectory{nb::bind(&TCustomFileSystem::GetCurrentDirectory, this)};
+  const ROProperty<UnicodeString> CurrentDirectory{nb::bind(&TCustomFileSystem::GetCurrentDirectory, this)};
 
 protected:
   TTerminal * FTerminal{nullptr};
@@ -232,10 +134,84 @@ protected:
   explicit TCustomFileSystem(TObjectClassId Kind) noexcept : TObject(Kind) {}
   explicit TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept;
   virtual UnicodeString GetCurrentDirectory() const = 0;
-
-  UnicodeString CreateTargetDirectory(
-    IN const UnicodeString & AFileName,
-    IN const UnicodeString & ADirectory,
-    IN const TCopyParamType * CopyParam);
 };
 
+// from FtpFileSystem.h
+enum TOverwriteMode { omOverwrite, omAppend, omResume, omComplete };
+
+// from Terminal.cpp
+struct NB_CORE_EXPORT TSinkFileParams final : public TObject
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSinkFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSinkFileParams) || TObject::is(Kind); }
+public:
+  TSinkFileParams() noexcept : TObject(OBJECT_CLASS_TSinkFileParams) {}
+  UnicodeString TargetDir;
+  const TCopyParamType * CopyParam{nullptr};
+  int32_t Params{0};
+  TFileOperationProgressType * OperationProgress{nullptr};
+  bool Skipped{false};
+  uint32_t Flags{0};
+};
+
+// from FtpFileSystem.cpp
+struct NB_CORE_EXPORT TFileTransferData final : public TObject
+{
+  NB_DISABLE_COPY(TFileTransferData)
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFileTransferData); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFileTransferData) || TObject::is(Kind); }
+public:
+  TFileTransferData() : TObject(OBJECT_CLASS_TFileTransferData) {}
+  UnicodeString FileName;
+  TCopyParamType * CopyParam{nullptr};
+  TDateTime Modification{};
+  int32_t Params{0};
+  int32_t OverwriteResult{-1};
+  bool AutoResume{false};
+};
+
+// from Terminal.h
+struct NB_CORE_EXPORT TOverwriteFileParams final : public TObject
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TOverwriteFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOverwriteFileParams) || TObject::is(Kind); }
+public:
+  TOverwriteFileParams() noexcept : TObject(OBJECT_CLASS_TOverwriteFileParams) {}
+
+  int64_t SourceSize{0};
+  int64_t DestSize{0};
+  TDateTime SourceTimestamp{};
+  TDateTime DestTimestamp{};
+  TModificationFmt SourcePrecision{mfFull};
+  TModificationFmt DestPrecision{mfFull};
+};
+
+// from SftpFileSystem.cpp
+struct NB_CORE_EXPORT TOpenRemoteFileParams final : public TObject
+{
+  NB_DISABLE_COPY(TOpenRemoteFileParams)
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TOpenRemoteFileParams); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TOpenRemoteFileParams) || TObject::is(Kind); }
+public:
+  TOpenRemoteFileParams() : TObject(OBJECT_CLASS_TOpenRemoteFileParams) {}
+  UnicodeString FileName;
+  UnicodeString RemoteFileName;
+  TFileOperationProgressType * OperationProgress{nullptr};
+  const TCopyParamType * CopyParam{nullptr};
+  int32_t Params{0};
+  bool Resume{false};
+  bool Resuming{false};
+  TOverwriteMode OverwriteMode{omOverwrite};
+  int64_t DestFileSize{0}; // output
+  RawByteString RemoteFileHandle; // output
+  TOverwriteFileParams * FileParams{nullptr};
+  bool Confirmed{false};
+  bool DontRecycle{false};
+  bool Recycled{false};
+  TRights RecycledRights{};
+  uint32_t LocalFileAttrs{0};
+};

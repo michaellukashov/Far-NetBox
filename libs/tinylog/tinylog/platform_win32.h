@@ -82,6 +82,11 @@ static int pthread_mutex_unlock(pthread_mutex_t *mtx)
   return 0;
 }
 
+static bool pthread_mutex_tryenter(pthread_mutex_t *mtx)
+{
+  return TryEnterCriticalSection(mtx) != FALSE;
+}
+
 typedef struct pthread_cond_t_
 {
   HANDLE event_;

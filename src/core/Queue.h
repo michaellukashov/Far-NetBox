@@ -12,6 +12,7 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSimpleThread); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TSimpleThread) || TObject::is(Kind); }
 public:
+  TSimpleThread() = delete;
   explicit TSimpleThread(TObjectClassId Kind) noexcept;
   virtual ~TSimpleThread() noexcept override;
   void InitSimpleThread(const UnicodeString & Name);
@@ -77,7 +78,7 @@ using TQueueEvent = nb::FastDelegate2<void,
 
 class TTerminalItem;
 
-class NB_CORE_EXPORT TTerminalQueue : public TSignalThread
+class NB_CORE_EXPORT TTerminalQueue final : public TSignalThread
 {
   friend class TQueueItem;
   friend class TQueueItemProxy;
@@ -204,7 +205,7 @@ public:
   enum TStatus {
     qsPending, qsConnecting, qsProcessing, qsPrompt, qsQuery, qsError,
     qsPaused, qsDone };
-  struct TInfo : public TObject
+  struct TInfo final : public TObject
   {
     TInfo() = default;
     TFileOperation Operation{foNone};
@@ -317,7 +318,7 @@ public:
   int64_t GetTotalTransferred() const;
 };
 
-class NB_CORE_EXPORT TTerminalQueueStatus : public TObject
+class NB_CORE_EXPORT TTerminalQueueStatus final : public TObject
 {
   friend class TTerminalQueue;
   friend class TQueueItemProxy;
@@ -436,7 +437,7 @@ public:
   TParallelOperation * GetParallelOperation() { return FParallelOperation.get(); }
 };
 
-class NB_CORE_EXPORT TUploadQueueItem : public TTransferQueueItem
+class NB_CORE_EXPORT TUploadQueueItem final : public TTransferQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TUploadQueueItem); }
@@ -451,7 +452,7 @@ protected:
   virtual void DoTransferExecute(gsl::not_null<TTerminal *> Terminal, TParallelOperation * ParallelOperation) override;
 };
 
-class NB_CORE_EXPORT TDownloadQueueItem : public TTransferQueueItem
+class NB_CORE_EXPORT TDownloadQueueItem final : public TTransferQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TDownloadQueueItem); }

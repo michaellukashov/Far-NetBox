@@ -36,7 +36,6 @@ public:
   virtual void CollectUsage() override;
   virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) override;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
   virtual void AnyCommand(const UnicodeString & Command,
     TCaptureOutputEvent && OutputEvent) override;
   virtual void ChangeDirectory(const UnicodeString & ADirectory) override;
@@ -104,6 +103,7 @@ public:
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
   virtual void ClearCaches() override;
 
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
 protected:
   // enum TOverwriteMode { omOverwrite, omResume, omComplete }; // moved to FileSystems.h
 
@@ -155,7 +155,7 @@ protected:
     uint32_t Count);
   bool HandleTransferStatus(bool Valid, int64_t TransferSize,
     int64_t Bytes, bool FileTransfer);
-  bool HandleReply(int32_t Command, int64_t Reply);
+  bool HandleReply(int32_t Command, uint32_t Reply);
   bool HandleCapabilities(TFTPServerCapabilities * ServerCapabilities);
   bool CheckError(int32_t ReturnCode, const wchar_t * Context);
   void PreserveDownloadFileTime(HANDLE AHandle, void * UserData) const;

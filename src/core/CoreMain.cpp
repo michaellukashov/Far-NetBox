@@ -12,12 +12,13 @@
 #include "FileZillaIntf.h"
 #include "NeonIntf.h"
 #include "TextsCore.h"
-// #include "WebDAVFileSystem.h"
 
 // #pragma package(smart_init)
 
-// TConfiguration * Configuration = nullptr;
-// TStoredSessionList * StoredSessions = nullptr;
+#if defined(__BORLANDC__)
+TConfiguration * Configuration = nullptr;
+TStoredSessionList * StoredSessions = nullptr;
+#endif // defined(__BORLANDC__)
 TApplicationLog * ApplicationLog = nullptr;
 bool AnySession = false;
 
@@ -133,7 +134,7 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
 bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
 {
   return
-    (Prompts->GetCount() == 1) && FLAGCLEAR(nb::ToIntPtr(Prompts->GetObj(0)), pupEcho) &&
+    (Prompts->GetCount() == 1) && FLAGCLEAR(nb::ToIntPtr(Prompts->Objects[0]), pupEcho) &&
     ((Kind == pkPassword) || (Kind == pkPassphrase) || (Kind == pkKeybInteractive) ||
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
@@ -240,7 +241,8 @@ void CoreLoad()
   // should be noop, unless exception occurred above
   ConfigStorage->CloseAll();
 
-  /* moved to GetStoredSessions()
+  // moved to GetStoredSessions()
+#if defined(__BORLANDC__)
   StoredSessions = new TStoredSessionList();
 
   try
@@ -253,7 +255,8 @@ void CoreLoad()
   catch(Exception & E)
   {
     ShowExtendedException(&E);
-  }*/
+  }
+#endif // defined(__BORLANDC__)
 }
 
 void CoreInitialize()
@@ -291,11 +294,13 @@ void CoreFinalize()
   PuttyFinalize();
 
   DeleteStoredSessions();
-  // SAFE_DESTROY(StoredSessions);
-  // StoredSessions = nullptr;
   DeleteConfiguration();
-  // delete Configuration;
-  // Configuration = nullptr;
+#if defined(__BORLANDC__)
+  delete StoredSessions;
+  StoredSessions = NULL;
+  delete Configuration;
+  Configuration = NULL;
+#endif // defined(__BORLANDC__)
 
   CryptographyFinalize();
   WinFinalize();

@@ -33,6 +33,8 @@
 
 #endif
 
+enum TModificationFmt { mfNone, mfMDHM, mfYMDHM, mfMDY, mfFull };
+
 constexpr const wchar_t Slash = L'/';
 constexpr const wchar_t Backslash = L'\\';
 
@@ -613,8 +615,13 @@ class TPath
 {
 public:
   static UnicodeString Combine(const UnicodeString & APath, const UnicodeString & AFileName);
-  static UnicodeString Join(const UnicodeString & APath, const UnicodeString & AFileName);
   static bool IsDriveRooted(const UnicodeString & /*APath*/) { return false; } // TODO: implement
+};
+
+class TUnixPath
+{
+public:
+  static UnicodeString Join(const UnicodeString & APath, const UnicodeString & AFileName);
 };
 
 extern UnicodeString EmptyStr;
@@ -661,3 +668,6 @@ DWORD FindNext(TSearchRec & Rec);
 DWORD FindClose(TSearchRec & Rec);
 
 } // namespace base
+
+NB_CORE_EXPORT UnicodeString FileNameFormatString(const UnicodeString & SingleFileFormat,
+  const UnicodeString & MultiFilesFormat, const TStrings * AFiles, bool Remote);

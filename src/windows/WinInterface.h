@@ -12,16 +12,18 @@
 #include <GUIConfiguration.h>
 #include <SynchronizeController.h>
 #endif // FARPLUGIN
-// #include <Script.h>
-// #include "HistoryComboBox.hpp"
+#if defined(__BORLANDC__)
+#include <Script.h>
+#include "HistoryComboBox.hpp"
 
 #ifdef LOCALINTERFACE
 #include <LocalInterface.h>
 #endif
 
-// #define SITE_ICON 1
-// #define SITE_FOLDER_ICON 2
-// #define WORKSPACE_ICON 3
+#define SITE_ICON 1
+#define SITE_FOLDER_ICON 2
+#define WORKSPACE_ICON 3
+#endif // defined(__BORLANDC__)
 
 class TStoredSessionList;
 class TConfiguration;
@@ -69,6 +71,7 @@ struct NB_CORE_EXPORT TMessageParams final : public TObject
 {
   NB_DISABLE_COPY(TMessageParams)
 public:
+  TMessageParams() = delete;
   explicit TMessageParams(uint32_t AParams) noexcept;
   explicit TMessageParams(const TQueryParams * AParams) noexcept;
   void Assign(const TMessageParams * AParams);
@@ -114,7 +117,8 @@ void FlashOnBackground();
 
 void TerminateApplication();
 void ShowExtendedExceptionEx(TTerminal * Terminal, Exception * E);
-// void FormHelp(TCustomForm * Form);
+#if defined(__BORLANDC__)
+void FormHelp(TCustomForm * Form);
 void SearchHelp(const UnicodeString & Message);
 void MessageWithNoHelp(const UnicodeString & Message);
 
@@ -123,7 +127,6 @@ bool CheckSafe(TProgramParams * Params);
 void CheckLogParam(TProgramParams * Params);
 bool CheckXmlLogParam(TProgramParams * Params);
 
-#if 0
 UnicodeString GetToolbarKey(const UnicodeString & ToolbarName);
 UnicodeString GetToolbarsLayoutStr(TControl * OwnerControl);
 void LoadToolbarsLayoutStr(TControl * OwnerControl, const UnicodeString & LayoutStr);
@@ -135,7 +138,7 @@ void AddMenuLabel(Tb2item::TTBCustomItem * Menu, const UnicodeString & Label);
 void ClickToolbarItem(Tb2item::TTBCustomItem * Item, bool PositionCursor);
 
 void InitiateDialogTimeout(TForm * Dialog, uint32_t Timeout, TButton * Button, uint32_t Answer = 0);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 // windows\WinHelp.cpp
 void InitializeWinHelp();
@@ -171,11 +174,11 @@ bool DoSaveWorkspaceDialog(UnicodeString & WorkspaceName,
 class TShortCuts;
 bool DoShortCutDialog(TShortCut & ShortCut,
   const TShortCuts & ShortCuts, const UnicodeString & HelpKeyword);
-#if 0
+#if defined(__BORLANDC__)
 bool DoCustomCommandOptionsDialog(
   const TCustomCommandType * Command, TStrings * CustomCommandOptions, TShortCut * ShortCut, uint32_t Flags,
   TCustomCommand * CustomCommandForOptions, const UnicodeString & Site, const TShortCuts * ShortCuts);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 void DoUsageStatisticsDialog();
 void DoSiteRawDialog(TSessionData * Data);
 bool DoSshHostCADialog(bool Add, TSshHostCA & SshHostCA);
@@ -188,9 +191,10 @@ bool DoChangeMasterPasswordDialog(UnicodeString & NewPassword);
 int32_t Execute();
 void GetLoginData(const UnicodeString & SessionName, TOptions * Options,
   TObjectList * DataList, UnicodeString & DownloadFile, bool NeedSession, /*TForm * LinkedForm,*/ int32_t Flags = 0);
+
+#if defined(__BORLANDC__)
 int32_t GetCommandLineParseUrlFlags(TProgramParams * Params);
 
-#if 0
 // forms\InputDlg.cpp
 struct TInputDialogData
 {
@@ -198,7 +202,7 @@ struct TInputDialogData
 };
 typedef void (__closure *TInputDialogInitialize)
   (TObject * Sender, TInputDialogData * Data);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 bool InputDialog(const UnicodeString & ACaption,
   const UnicodeString & APrompt, UnicodeString & Value, const UnicodeString & HelpKeyword = HELP_NONE,
   TStrings * History = nullptr, bool PathInput = false,
@@ -218,7 +222,7 @@ struct TRegistration
 };
 void DoAboutDialog(TConfiguration * Configuration,
   bool AllowLicense, TRegistration * Registration);
-// void DoAboutDialog(TConfiguration * Configuration);
+void DoAboutDialog(TConfiguration * Configuration);
 
 // forms\Cleanup.cpp
 bool DoCleanupDialog();
@@ -306,12 +310,12 @@ class TCustomCommandList;
 class TCustomCommandType;
 class TShortCuts;
 enum TCustomCommandsMode { ccmAdd, ccmEdit, ccmAdHoc };
-constexpr int32_t ccoDisableRemote = 0x01;
-constexpr int32_t ccoDisableRemoteFiles = 0x02;
-#if 0
+constexpr const int32_t ccoDisableRemote = 0x01;
+constexpr const int32_t ccoDisableRemoteFiles = 0x02;
+#if defined(__BORLANDC__)
 typedef void (__closure *TCustomCommandValidate)
   (const TCustomCommandType & Command);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 using TCustomCommandValidateEvent = nb::FastDelegate1<void,
   const TCustomCommandType & /*Command*/>;
 
@@ -335,11 +339,11 @@ bool DoCopyParamCustomDialog(TCopyParamType & CopyParam,
 class TRemoteProperties;
 class TRemoteTokenList;
 struct TCalculateSizeStats;
-constexpr int32_t cpMode =  0x01;
-constexpr int32_t cpOwner = 0x02;
-constexpr int32_t cpGroup = 0x04;
-constexpr int32_t cpAcl =   0x08;
-constexpr int32_t cpIDs =   0x10;
+constexpr const int32_t cpMode =  0x01;
+constexpr const int32_t cpOwner = 0x02;
+constexpr const int32_t cpGroup = 0x04;
+constexpr const int32_t cpAcl =   0x08;
+constexpr const int32_t cpIDs =   0x10;
 using TCalculateSizeEvent = nb::FastDelegate4<void,
   TStrings * /*FileList*/, int64_t & /*Size*/, TCalculateSizeStats & /*Stats*/,
   bool & /*Close*/>;
@@ -369,7 +373,7 @@ bool DoRemoteCopyDialog(
   bool & DirectCopy, void * CurrentSession, TDirectoryExistsEvent && OnDirectoryExists,
   bool TargetConfirmed);
 
-#if 0
+#if defined(__BORLANDC__)
 // forms\SelectMask.cpp
 bool DoSelectMaskDialog(TControl * Parent, bool Select, TFileFilter & Filter);
 bool DoFilterMaskDialog(TControl * Parent, UnicodeString & Mask);
@@ -377,12 +381,12 @@ bool DoFileColorDialog(TFileColorData & FileColorData);
 
 // forms\EditMask.cpp
 bool DoEditMaskDialog(TFileMasks & Mask);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 // forms\Synchronize.cpp
-constexpr int soDoNotUsePresets =  0x01;
-constexpr int soNoMinimize =       0x02;
-constexpr int soAllowSelectedOnly = 0x04;
+constexpr const int32_t soDoNotUsePresets =  0x01;
+constexpr const int32_t soNoMinimize =       0x02;
+constexpr const int32_t soAllowSelectedOnly = 0x04;
 using TGetSynchronizeOptionsEvent = nb::FastDelegate2<void,
   int32_t /*Params*/,
   TSynchronizeOptions & /*Options*/>;
@@ -407,10 +411,10 @@ bool DoSynchronizeDialog(TSynchronizeParamType & Params,
 // forms\FullSynchronize.cpp
 struct TUsableCopyParamAttrs;
 // enum TSynchronizeMode { smRemote, smLocal, smBoth };
-constexpr int32_t fsoDisableTimestamp = 0x01;
-constexpr int32_t fsoDoNotUsePresets =  0x02;
-constexpr int32_t fsoAllowSelectedOnly = 0x04;
-constexpr int32_t fsoDisableByChecksum = 0x08;
+constexpr const int32_t fsoDisableTimestamp = 0x01;
+constexpr const int32_t fsoDoNotUsePresets =  0x02;
+constexpr const int32_t fsoAllowSelectedOnly = 0x04;
+constexpr const int32_t fsoDisableByChecksum = 0x08;
 using TFullSynchronizeInNewWindowEvent = nb::FastDelegate5<void,
   TTerminal::TSynchronizeMode /*Mode*/, int32_t /*Params*/, const UnicodeString & /*LocalDirectory*/, const UnicodeString & /*RemoteDirectory*/,
    const TCopyParamType * /*CopyParams*/>;
@@ -423,8 +427,7 @@ bool DoFullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode, int32_t & Param
 // forms\SynchronizeChecklist.cpp
 class TSynchronizeChecklist;
 using TCustomCommandMenuEvent = nb::FastDelegate3<void,
-  void * /*Action*/, TStrings * /*LocalFileList*/,
-  TStrings * /*RemoteFileList*/>;
+  void * /*Action*/, TStrings * /*LocalFileList*/, TStrings * /*RemoteFileList*/>;
 using TFullSynchronizeEvent = nb::FastDelegate3<void,
   void * /*Token*/, TProcessedSynchronizationChecklistItem /*OnProcessedItem*/,
   TUpdatedSynchronizationChecklistItems /*OnUpdatedSynchronizationChecklistItems*/>;
@@ -441,9 +444,9 @@ bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
   TSynchronizeChecklistCalculateSizeEvent && OnSynchronizeChecklistCalculateSize, TSynchronizeMoveEvent && OnSynchronizeMove,
   TSynchronizeBrowseEvent && OnSynchronizeBrowse, void * Token);
 
-// forms\Editor.cpp
-#if 0
+#if defined(__BORLANDC__)
 
+// forms\Editor.cpp
 typedef void (__closure *TFileClosedEvent)
   (TObject * Sender, bool Forced);
 typedef void (__closure *TAnyModifiedEvent)
@@ -458,7 +461,7 @@ void EditorFormFileUploadComplete(TForm * Form);
 void EditorFormFileSave(TForm * Form);
 bool IsEditorFormModified(TForm * Form);
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 bool DoSymlinkDialog(UnicodeString & FileName, UnicodeString & PointTo,
   TOperationSide Side, bool & SymbolicLink, bool Edit, bool AllowSymbolic);
@@ -474,9 +477,9 @@ void DoFileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
   const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent && OnGetSpaceAvailable);
 
-//moved to FarInterface.h
+// moved to FarInterface.h
 
-#if 0
+#if defined(__BORLANDC__)
 
 // forms\MessageDlg.cpp
 TForm * CreateMoreMessageDialog(const UnicodeString & Msg,
@@ -498,7 +501,7 @@ extern const UnicodeString MessageLabelName;
 extern const UnicodeString YesButtonName;
 extern const UnicodeString OKButtonName;
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 // windows\Console.cpp
 enum TConsoleMode
@@ -524,7 +527,8 @@ using TFileOperationFinished2Event = nb::FastDelegate3<void,
 using TFileListOperationEvent = nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, TStrings * /*FileList*/, TFileOperationFinished2Event /*OnFileOperationFinished*/>;
 
-#if 0
+#if defined(__BORLANDC__)
+
 void ShowFileFindDialog(
   TTerminal * Terminal, UnicodeString Directory, TFindEvent OnFind, TFocusFileEvent OnFocusFile,
   TFileListOperationEvent OnDeleteFiles, TFileListOperationEvent OnDownloadFiles,
@@ -588,18 +592,18 @@ bool HandleMinimizeSysCommand(TMessage & Message);
 
 void WinInitialize();
 void WinFinalize();
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type);
-#if 0
+#if defined(__BORLANDC__)
 void InitializeShortCutCombo(TComboBox * ComboBox,
   const TShortCuts & ShortCuts);
 void SetShortCutCombo(TComboBox * ComboBox, TShortCut Value);
 TShortCut GetShortCutCombo(TComboBox * ComboBox);
 bool IsCustomShortCut(TShortCut ShortCut);
 TShortCut NormalizeCustomShortCut(TShortCut ShortCut);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 UnicodeString DumpCallstackEventName(int32_t ProcessId);
 UnicodeString DumpCallstackFileName(int32_t ProcessId);
@@ -609,7 +613,7 @@ void InterfaceStarted();
 void InterfaceStartDontMeasure();
 void AddStartupSequence(const UnicodeString & Tag);
 
-// #define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
+#define HIDDEN_WINDOW_NAME L"WinSCPHiddenWindow3"
 
 struct TCopyDataMessage
 {
@@ -632,15 +636,17 @@ struct TCopyDataMessage
 
   TCopyDataMessage() noexcept
   {
+#if defined(__BORLANDC__)
     Version = TCopyDataMessage::Version1;
-    // Command = static_cast<uint32_t>(-1);
+    Command = static_cast<uint32_t>(-1);
+#endif // defined(__BORLANDC__)
   }
 };
 
 class TWinInteractiveCustomCommand final : public TInteractiveCustomCommand
 {
-  TWinInteractiveCustomCommand() = delete;
 public:
+  TWinInteractiveCustomCommand() = delete;
   explicit TWinInteractiveCustomCommand(
     TCustomCommand * ChildCustomCommand, const UnicodeString & CustomCommandName, const UnicodeString & AHelpKeyword) noexcept;
 
@@ -660,7 +666,7 @@ private:
   UnicodeString FHelpKeyword;
 };
 
-#if 0
+#if defined(__BORLANDC__)
 
 class TTrayIcon
 {
@@ -695,7 +701,8 @@ private:
   void SetHint(const UnicodeString & value);
   void BalloonCancelled();
 };
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 enum TConsoleFlag
 {
@@ -723,7 +730,9 @@ public:
   virtual bool PendingAbort() = 0;
   virtual void SetTitle(const UnicodeString & Title) = 0;
   virtual void WaitBeforeExit() = 0;
-  // virtual void Progress(TScriptProgress & Progress) = 0;
+#if defined(__BORLANDC__)
+  virtual void Progress(TScriptProgress & Progress) = 0;
+#endif // defined(__BORLANDC__)
   virtual void TransferOut(const uint8_t * Data, size_t Len) = 0;
   virtual size_t TransferIn(uint8_t * Data, size_t Len) = 0;
   virtual UnicodeString FinalLogMessage() = 0;

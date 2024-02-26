@@ -12,7 +12,6 @@ enum TFileNameCase { ncNoChange, ncUpperCase, ncLowerCase, ncFirstUpperCase, ncL
 // TScript::OptionProc depend on the order
 enum TTransferMode { tmBinary, tmAscii, tmAutomatic };
 enum TResumeSupport { rsOn, rsSmart, rsOff };
-
 class THierarchicalStorage;
 constexpr const int32_t cpaIncludeMaskOnly = 0x01;
 constexpr const int32_t cpaNoTransferMode  = 0x02;
@@ -32,6 +31,7 @@ constexpr const int32_t cpaNoCalculateSize    = 0x4000;
 
 struct TUsableCopyParamAttrs
 {
+  CUSTOM_MEM_ALLOCATION_IMPL
   int32_t General{0};
   int32_t Upload{0};
   int32_t Download{0};
@@ -126,7 +126,7 @@ public:
   UnicodeString GenerateTransferCommandArgs(int32_t Attrs, const UnicodeString & Link) const;
   // UnicodeString GenerateAssemblyCode(/*TAssemblyLanguage Language, */ uint32_t Attrs) const;
 
-  bool operator ==(const TCopyParamType & rhp) const;
+  bool operator ==(const TCopyParamType & rhs) const;
 
   __property TFileMasks AsciiFileMask = { read = FAsciiFileMask, write = FAsciiFileMask };
   TFileMasks& AsciiFileMask{FAsciiFileMask};
@@ -143,7 +143,7 @@ public:
   __property TTransferMode TransferMode = { read = FTransferMode, write = FTransferMode };
   TTransferMode& TransferMode{FTransferMode};
   __property UnicodeString LogStr  = { read=GetLogStr };
-  ROProperty<UnicodeString> LogStr{nb::bind(&TCopyParamType::GetLogStr, this)};
+  const ROProperty<UnicodeString> LogStr{nb::bind(&TCopyParamType::GetLogStr, this)};
   __property bool AddXToDirectories  = { read=FAddXToDirectories, write=FAddXToDirectories };
   bool& AddXToDirectories{FAddXToDirectories};
   __property bool PreserveRights = { read = FPreserveRights, write = FPreserveRights };
@@ -152,7 +152,7 @@ public:
   bool& IgnorePermErrors{FIgnorePermErrors};
   __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
   TResumeSupport& ResumeSupport{FResumeSupport};
-  __property int64_t ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
+  __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
   int64_t& ResumeThreshold{FResumeThreshold};
   __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
   wchar_t& InvalidCharsReplacement{FInvalidCharsReplacement};
@@ -188,9 +188,9 @@ public:
   bool& ExcludeEmptyDirectories{FExcludeEmptyDirectories};
   __property int64_t Size = { read = FSize, write = FSize };
   int64_t& Size{FSize};
-  __property int64_t PartSize = { read = FPartSize, write = FPartSize };
+  __property __int64 PartSize = { read = FPartSize, write = FPartSize };
   int64_t& PartSize{FPartSize};
-  __property int64_t PartOffset = { read = FPartOffset, write = FPartOffset };
+  __property __int64 PartOffset = { read = FPartOffset, write = FPartOffset };
   int64_t& PartOffset{FPartOffset};
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
   TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};

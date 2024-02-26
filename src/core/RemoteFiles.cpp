@@ -71,7 +71,7 @@ UnicodeString SimpleUnixExcludeTrailingBackslash(const UnicodeString & Path)
 
 UnicodeString UnixCombinePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
-  return TPath::Join(Path1, Path2);
+  return TUnixPath::Join(Path1, Path2);
 }
 
 Boolean UnixSamePath(const UnicodeString & Path1, const UnicodeString & Path2)
@@ -737,8 +737,10 @@ TRemoteTokenList * TRemoteTokenList::Duplicate() const
   }
   __catch__removed
   {
-    // delete Result;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Result;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Result.release();
 }
@@ -869,19 +871,34 @@ TRemoteFile::TRemoteFile(TRemoteFile * ALinkedByFile) noexcept :
   TPersistent(OBJECT_CLASS_TRemoteFile)
 {
   Init();
+#if defined(__BORLANDC__)
+  FLinkedFile = NULL;
+  FRights = new TRights();
+  FIconIndex = -1;
+  FCyclicLink = false;
+  FModificationFmt = mfFull;
+#endif // defined(__BORLANDC__)
   FLinkedByFile = ALinkedByFile;
+#if defined(__BORLANDC__)
+  FTerminal = NULL;
+  FDirectory = NULL;
+  FIsHidden = -1;
+#endif // defined(__BORLANDC__)
   FIsEncrypted = false;
   FCalculatedSize = -1;
 }
 
 TRemoteFile::~TRemoteFile() noexcept = default;
-/*{
-  SAFE_DESTROY(FRights);
-  SAFE_DESTROY(FLinkedFile);
-}*/
+#if defined(__BORLANDC__)
+{
+  delete FRights;
+  delete FLinkedFile;
+}
+#endif // defined(__BORLANDC__)
 
 TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 {
+
   std::unique_ptr<TRemoteFile> Result(std::make_unique<TRemoteFile>());
   try__catch
   {
@@ -919,8 +936,10 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
   }
   __catch__removed
   {
-    // delete Result;
-    // throw;
+#if defined(__BORLANDC__)
+    delete Result;
+    throw;
+#endif // defined(__BORLANDC__)
   } end_try__catch
   return Result.release();
 }
@@ -928,7 +947,7 @@ TRemoteFile * TRemoteFile::Duplicate(bool Standalone) const
 void TRemoteFile::LoadTypeInfo() const
 {
   /* TODO : If file is link: Should be attributes taken from linked file? */
-#if 0
+#if defined(__BORLANDC__)
   uint32_t Attrs = INVALID_FILE_ATTRIBUTES;
   if (GetIsDirectory())
   {
@@ -942,7 +961,7 @@ void TRemoteFile::LoadTypeInfo() const
   UnicodeString DumbFileName = (GetIsSymLink() && !GetLinkTo().IsEmpty() ? GetLinkTo() : GetFileName());
 
   FIconIndex = FakeFileImageIndex(DumbFileName, Attrs, &FTypeName);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 }
 
 void TRemoteFile::Init()
@@ -1075,7 +1094,7 @@ bool TRemoteFile::GetBrokenLink() const
   DebugAssert(GetTerminal());
   // If file is symlink but we couldn't find linked file we assume broken link
   return (GetIsSymLink() && (FCyclicLink || !FLinkedFile) &&
-      GetTerminal()->GetResolvingSymlinks());
+    GetTerminal()->GetResolvingSymlinks());
   // "!FLinkTo.IsEmpty()" removed because it does not work with SFTP
 }
 
@@ -1472,6 +1491,8 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       {
         FSize = ASize;
 
+        // int P;
+
         FLinkTo.Clear();
         if (GetIsSymLink())
         {
@@ -1491,8 +1512,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       }
     }
 
-    // #undef GETNCOL
-    // #undef GETCOL
+#if defined(__BORLANDC__)
+    #undef GETNCOL
+    #undef GETCOL
+#endif // defined(__BORLANDC__)
   }
   catch(Exception & E)
   {
@@ -1539,7 +1562,7 @@ void TRemoteFile::FindLinkedFile()
       {
         // this is currently redundant information, because it is used only to
         // detect broken symlink, which would be otherwise detected
-        // by FLinkedFile == nullptr
+        // by FLinkedFile == NULL
         FCyclicLink = true;
         break;
       }
@@ -1623,7 +1646,7 @@ UnicodeString TRemoteFile::GetFullFileName() const
     }
     else if (GetIsDirectory())
     {
-      Result = base::UnixIncludeTrailingBackslash(TPath::Join(GetDirectory()->GetFullDirectory(), GetFileName()));
+      Result = base::UnixIncludeTrailingBackslash(TUnixPath::Join(GetDirectory()->GetFullDirectory(), GetFileName()));
     }
     else
     {
@@ -1806,8 +1829,7 @@ TRemoteFile * TRemoteFileList::FindFile(const UnicodeString & AFileName) const
 }
 //=== TRemoteDirectory ------------------------------------------------------
 TRemoteDirectory::TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template) noexcept :
-  TRemoteFileList(OBJECT_CLASS_TRemoteDirectory),
-  FTerminal(ATerminal)
+  TRemoteFileList(OBJECT_CLASS_TRemoteDirectory), FTerminal(ATerminal)
 {
   FThisDirectory = nullptr;
   FParentDirectory = nullptr;
@@ -1926,7 +1948,7 @@ void TRemoteDirectory::SetIncludeThisDirectory(Boolean Value)
   }
 }
 //===========================================================================
-TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept
+TRemoteDirectoryCache::TRemoteDirectoryCache() noexcept : TStringList()
 {
   TStringList::SetSorted(true);
   SetDuplicates(dupError);
@@ -1952,7 +1974,7 @@ void TRemoteDirectoryCache::Clear()
     {
       TRemoteFileList * List = GetAs<TRemoteFileList>(Index);
       SAFE_DESTROY(List);
-      SetObj(Index, nullptr);
+      SetObject(Index, nullptr);
     }
   }
   __finally
@@ -2002,7 +2024,7 @@ bool TRemoteDirectoryCache::GetFileList(const UnicodeString & Directory,
   const bool Result = (Index >= 0);
   if (Result)
   {
-    DebugAssert(GetObj(Index) != nullptr);
+    DebugAssert(Objects[Index] != nullptr);
     As<TRemoteFileList>(Index)->DuplicateTo(FileList);
   }
   return Result;
@@ -2198,7 +2220,9 @@ void TRemoteDirectoryChangesCache::Serialize(UnicodeString & Data) const
     }
     __finally__removed
     {
-      // delete Limited;
+#if defined(__BORLANDC__)
+      delete Limited;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
   else
@@ -2243,21 +2267,34 @@ bool TRemoteDirectoryChangesCache::DirectoryChangeKey(
   return Result;
 }
 //=== TRights ---------------------------------------------------------------
-// const wchar_t TRights::BasicSymbols[] = L"rwxrwxrwx";
-// const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
-// const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
-// const wchar_t TRights::ModeGroups[] = L"ugo";
+#if defined(__BORLANDC__)
+const wchar_t TRights::BasicSymbols[] = L"rwxrwxrwx";
+const wchar_t TRights::CombinedSymbols[] = L"--s--s--t";
+const wchar_t TRights::ExtendedSymbols[] = L"--S--S--T";
+const wchar_t TRights::ModeGroups[] = L"ugo";
+#endif // defined(__BORLANDC__)
 
 TRights::TRights() noexcept
 {
   SetNumber(0);
   FAllowUndef = false;
+#if defined(__BORLANDC__)
+  FSet = 0;
+  FUnset = 0;
+  Number = 0;
+  FUnknown = true;
+#endif // defined(__BORLANDC__)
 }
 
 TRights::TRights(uint16_t ANumber) noexcept
 {
   SetNumber(ANumber);
   FAllowUndef = false;
+#if defined(__BORLANDC__)
+  FSet = 0;
+  FUnset = 0;
+  Number = ANumber;
+#endif // defined(__BORLANDC__)
 }
 
 TRights::TRights(const TRights & Source) noexcept
@@ -2316,14 +2353,14 @@ uint16_t TRights::CalculatePermissions(TRightGroup Group, TRightLevel Level, TRi
   return Result;
 }
 
-bool TRights::operator ==(const TRights & rhr) const
+bool TRights::operator ==(const TRights & rhs) const
 {
-  if (GetAllowUndef() || rhr.GetAllowUndef())
+  if (GetAllowUndef() || rhs.GetAllowUndef())
   {
     for (int32_t Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-            rhr.GetRightUndef(static_cast<TRight>(Right)))
+            rhs.GetRightUndef(static_cast<TRight>(Right)))
       {
         return false;
       }
@@ -2332,39 +2369,39 @@ bool TRights::operator ==(const TRights & rhr) const
   }
   else
   {
-    return GetNumber() == rhr.GetNumber();
+    return GetNumber() == rhs.GetNumber();
   }
 }
 
-bool TRights::operator ==(uint16_t rhr) const
+bool TRights::operator ==(uint16_t rhs) const
 {
-  return (GetNumber() == rhr);
+  return (GetNumber() == rhs);
 }
 
-bool TRights::operator ==(TFlag rhr) const
+bool TRights::operator ==(TFlag rhs) const
 {
-  return (GetNumber() == static_cast<uint16_t>(rhr));
+  return (GetNumber() == static_cast<uint16_t>(rhs));
 }
 
-bool TRights::operator !=(const TRights & rhr) const
+bool TRights::operator !=(const TRights & rhs) const
 {
-  return !(*this == rhr);
+  return !(*this == rhs);
 }
 
-bool TRights::operator !=(TFlag rhr) const
+bool TRights::operator !=(TFlag rhs) const
 {
-  return !(*this == rhr);
+  return !(*this == rhs);
 }
 
-TRights & TRights::operator =(uint16_t rhr)
+TRights & TRights::operator =(uint16_t rhs)
 {
-  SetNumber(rhr);
+  SetNumber(rhs);
   return *this;
 }
 
-TRights & TRights::operator =(const TRights & rhr)
+TRights & TRights::operator =(const TRights & rhs)
 {
-  Assign(&rhr);
+  Assign(&rhs);
   return *this;
 }
 
@@ -2374,35 +2411,35 @@ TRights TRights::operator ~() const
   return Result;
 }
 
-TRights TRights::operator &(uint16_t rhr) const
+TRights TRights::operator &(uint16_t rhs) const
 {
   TRights Result(*this);
-  Result &= rhr;
+  Result &= rhs;
   return Result;
 }
 
-TRights TRights::operator &(const TRights & rhr) const
+TRights TRights::operator &(const TRights & rhs) const
 {
   TRights Result(*this);
-  Result &= rhr;
+  Result &= rhs;
   return Result;
 }
 
-TRights TRights::operator &(TFlag rhr) const
+TRights TRights::operator &(TFlag rhs) const
 {
   TRights Result(*this);
-  Result &= static_cast<uint16_t>(rhr);
+  Result &= static_cast<uint16_t>(rhs);
   return Result;
 }
 
-TRights & TRights::operator &=(const TRights &  rhr)
+TRights & TRights::operator &=(const TRights &  rhs)
 {
-  if (GetAllowUndef() || rhr.GetAllowUndef())
+  if (GetAllowUndef() || rhs.GetAllowUndef())
   {
     for (int32_t Right = rrFirst; Right <= rrLast; Right++)
     {
       if (GetRightUndef(static_cast<TRight>(Right)) !=
-            rhr.GetRightUndef(static_cast<TRight>(Right)))
+            rhs.GetRightUndef(static_cast<TRight>(Right)))
       {
         SetRightUndef(static_cast<TRight>(Right), rsUndef);
       }
@@ -2410,46 +2447,46 @@ TRights & TRights::operator &=(const TRights &  rhr)
   }
   else
   {
-    SetNumber(GetNumber() & rhr.GetNumber());
+    SetNumber(GetNumber() & rhs.GetNumber());
   }
   return *this;
 }
 
-TRights & TRights::operator &=(uint16_t rhr)
+TRights & TRights::operator &=(uint16_t rhs)
 {
-  SetNumber(GetNumber() & rhr);
+  SetNumber(GetNumber() & rhs);
   return *this;
 }
 
-TRights & TRights::operator &=(TFlag rhr)
+TRights & TRights::operator &=(TFlag rhs)
 {
-  SetNumber(GetNumber() & static_cast<uint16_t>(rhr));
+  SetNumber(GetNumber() & static_cast<uint16_t>(rhs));
   return *this;
 }
 
-TRights TRights::operator |(const TRights &rhr) const
+TRights TRights::operator |(const TRights &rhs) const
 {
   TRights Result(*this);
-  Result |= rhr;
+  Result |= rhs;
   return Result;
 }
 
-TRights TRights::operator |(uint16_t rhr) const
+TRights TRights::operator |(uint16_t rhs) const
 {
   TRights Result(*this);
-  Result |= rhr;
+  Result |= rhs;
   return Result;
 }
 
-TRights & TRights::operator |=(const TRights & rhr)
+TRights & TRights::operator |=(const TRights & rhs)
 {
-  SetNumber(GetNumber() | rhr.GetNumber());
+  SetNumber(GetNumber() | rhs.GetNumber());
   return *this;
 }
 
-TRights & TRights::operator |=(uint16_t rhr)
+TRights & TRights::operator |=(uint16_t rhs)
 {
-  SetNumber(GetNumber() | rhr);
+  SetNumber(GetNumber() | rhs);
   return *this;
 }
 
@@ -2540,6 +2577,7 @@ UnicodeString TRights::GetText() const
   else
   {
     UnicodeString Result(TextLen, 0);
+    Result.SetLength(TextLen);
 
     int32_t Flag = 00001;
     int32_t ExtendedFlag = 01000; //-V536
@@ -2876,17 +2914,16 @@ TRemoteProperties::TRemoteProperties() :
   Default();
 }
 
-TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhp) :
-  TObject(OBJECT_CLASS_TRemoteProperties),
-  Recursive(rhp.Recursive),
-  Valid(rhp.Valid),
-  Rights(rhp.Rights),
-  AddXToDirectories(rhp.AddXToDirectories),
-  Group(rhp.Group),
-  Owner(rhp.Owner),
-  Modification(rhp.Modification),
-  LastAccess(rhp.Modification),
-  Encrypt(rhp.Encrypt)
+TRemoteProperties::TRemoteProperties(const TRemoteProperties & rhs) : TObject(OBJECT_CLASS_TRemoteProperties),
+  Recursive(rhs.Recursive),
+  Valid(rhs.Valid),
+  Rights(rhs.Rights),
+  AddXToDirectories(rhs.AddXToDirectories),
+  Group(rhs.Group),
+  Owner(rhs.Owner),
+  Modification(rhs.Modification),
+  LastAccess(rhs.Modification),
+  Encrypt(rhs.Encrypt)
 {
 }
 
@@ -2904,19 +2941,19 @@ void TRemoteProperties::Default()
   Encrypt = false;
 }
 
-bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
+bool TRemoteProperties::operator ==(const TRemoteProperties & rhs) const
 {
-  bool Result = (Valid == rhp.Valid && Recursive == rhp.Recursive);
+  bool Result = (Valid == rhs.Valid && Recursive == rhs.Recursive);
 
   if (Result)
   {
     if ((Valid.Contains(vpRights) &&
-          (Rights != rhp.Rights || AddXToDirectories != rhp.AddXToDirectories)) ||
-        (Valid.Contains(vpOwner) && (Owner != rhp.Owner)) ||
-        (Valid.Contains(vpGroup) && (Group != rhp.Group)) ||
-        (Valid.Contains(vpModification) && (Modification != rhp.Modification)) ||
-        (Valid.Contains(vpLastAccess) && (LastAccess != rhp.LastAccess)) ||
-        (Valid.Contains(vpEncrypt) && (Encrypt != rhp.Encrypt)))
+          (Rights != rhs.Rights || AddXToDirectories != rhs.AddXToDirectories)) ||
+        (Valid.Contains(vpOwner) && (Owner != rhs.Owner)) ||
+        (Valid.Contains(vpGroup) && (Group != rhs.Group)) ||
+        (Valid.Contains(vpModification) && (Modification != rhs.Modification)) ||
+        (Valid.Contains(vpLastAccess) && (LastAccess != rhs.LastAccess)) ||
+        (Valid.Contains(vpEncrypt) && (Encrypt != rhs.Encrypt)))
     {
       Result = false;
     }
@@ -2924,9 +2961,9 @@ bool TRemoteProperties::operator ==(const TRemoteProperties & rhp) const
   return Result;
 }
 
-bool TRemoteProperties::operator !=(const TRemoteProperties & rhp) const
+bool TRemoteProperties::operator !=(const TRemoteProperties & rhs) const
 {
-  return !(*this == rhp);
+  return !(*this == rhs);
 }
 
 TRemoteProperties TRemoteProperties::CommonProperties(TStrings * AFileList)
@@ -3006,6 +3043,8 @@ TRemoteProperties TRemoteProperties::ChangedProperties(
 
 TRemoteProperties & TRemoteProperties::operator =(const TRemoteProperties & other)
 {
+  if (this == &other)
+    return *this;
   Valid = other.Valid;
   Rights = other.Rights;
   Group = other.Group;
@@ -3124,7 +3163,9 @@ TSynchronizeChecklist::~TSynchronizeChecklist() noexcept
       SAFE_DESTROY(Item);
     }
   } catch (...) {}
-//  delete FList;
+#if defined(__BORLANDC__)
+  delete FList;
+#endif // defined(__BORLANDC__)
 }
 
 void TSynchronizeChecklist::Add(TChecklistItem * Item)
@@ -3200,7 +3241,9 @@ void TSynchronizeChecklist::Delete(const TChecklistItem * Item)
   TChecklistItem * MutableItem = const_cast<TChecklistItem *>(Item);
   FList->Extract(MutableItem);
   SAFE_DESTROY(MutableItem);
-  // delete Item;
+#if defined(__BORLANDC__)
+  delete Item;
+#endif // defined(__BORLANDC__)
 }
 
 void TSynchronizeChecklist::UpdateDirectorySize(const TChecklistItem * Item, int64_t Size)

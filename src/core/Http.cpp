@@ -12,8 +12,7 @@
 
 //constexpr const int32_t BasicHttpResponseLimit = 100 * 1024;
 
-THttp::THttp() noexcept :
-  FResponseHeaders(std::make_unique<TStringList>())
+THttp::THttp() noexcept : FResponseHeaders(std::make_unique<TStringList>())
 {
   FProxyPort = 0;
   FOnDownload = nullptr;

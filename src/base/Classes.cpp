@@ -1,4 +1,4 @@
-#include <vcl.h>
+﻿#include <vcl.h>
 #pragma hdrstop
 
 #include <Classes.hpp>
@@ -464,12 +464,12 @@ void TStrings::AddStrings(const TStrings * AStrings)
   {
     for (int32_t Index = 0; Index < AStrings->GetCount(); ++Index)
     {
-      AddObject(AStrings->GetString(Index), AStrings->GetObj(Index));
+      AddObject(AStrings->GetString(Index), AStrings->Objects[Index]);
     }
-  }
+    }
   __finally
   {
-    EndUpdate();    
+    EndUpdate();
   } end_try__finally
 }
 
@@ -736,7 +736,7 @@ void TStringList::LoadFromFile(const UnicodeString & AFileName)
   }
 }
 
-void TStringList::SetObj(int32_t Index, TObject * AObject)
+void TStringList::SetObject(int32_t Index, TObject * AObject)
 {
   if ((Index == nb::NPOS) || (Index >= TObjectList::GetCount()))
   {
@@ -1951,9 +1951,18 @@ void TGlobals::SetupDbgHandles(const UnicodeString & DbgFileName)
 
 void TGlobals::InitPlatformId()
 {
-  OSVERSIONINFO OSVersionInfo{};
+  OSVERSIONINFOEXW OSVersionInfo{};
   OSVersionInfo.dwOSVersionInfoSize = sizeof(OSVersionInfo);
-  if (::GetVersionEx(&OSVersionInfo) != FALSE)
+  DWORDLONG const dwlConditionMask = VerSetConditionMask(
+    VerSetConditionMask(
+      VerSetConditionMask(
+        0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+          VER_MINORVERSION, VER_GREATER_EQUAL),
+          VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+  OSVersionInfo.dwMajorVersion = HIBYTE(_WIN32_WINNT_WIN7);
+  OSVersionInfo.dwMinorVersion = LOBYTE(_WIN32_WINNT_WIN7);
+  OSVersionInfo.wServicePackMajor = 0;
+  if (VerifyVersionInfoW(&OSVersionInfo, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE)
   {
     Win32Platform = OSVersionInfo.dwPlatformId;
     Win32MajorVersion = OSVersionInfo.dwMajorVersion;

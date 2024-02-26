@@ -54,7 +54,7 @@ protected:
   void ParamsProcessed(int32_t Position, int32_t Count);
 
 private:
-  struct TOption : public TObject
+  struct TOption final : public TObject
   {
     TOption() noexcept : Type(otParam), ValueSet(false), Used(false), SwitchMark(0) {}
     TOptionType Type{otParam};

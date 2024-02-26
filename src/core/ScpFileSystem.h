@@ -19,16 +19,12 @@ public:
   explicit TSCPFileSystem(TTerminal * ATerminal) noexcept;
   virtual ~TSCPFileSystem() noexcept;
 
-  void Init(void * /*TSecureShell * */) override;
-  void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
-
   virtual void Open() override;
   virtual void Close() override;
   virtual bool GetActive() const override;
   virtual void CollectUsage() override;
   virtual void Idle() override;
   virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) override;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
   virtual void AnyCommand(const UnicodeString & ACommand,
     TCaptureOutputEvent && OutputEvent) override;
   virtual void ChangeDirectory(const UnicodeString & ADirectory) override;
@@ -94,11 +90,14 @@ public:
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
   virtual void ClearCaches() override;
 
+  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
+  void Init(void * /*TSecureShell * */) override;
+  void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 protected:
   __property TStrings * Output = { read = FOutput.get() };
-  ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
-  __property int32_t ReturnCode = { read = FReturnCode };
-  ROProperty2<int32_t> ReturnCode{&FReturnCode};
+  const ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
+  __property int ReturnCode = { read = FReturnCode };
+  const ROProperty2<int32_t> ReturnCode{&FReturnCode};
 
   TStrings * GetOutput() const { return FOutput.get(); }
   int32_t GetReturnCode() const { return FReturnCode; }
@@ -132,7 +131,6 @@ private:
   //  int32_t size = 0, int32_t Params = -1);
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
-
   void InvalidOutputError(const UnicodeString & Command);
   void ReadCommandOutput(int32_t Params, const UnicodeString * Cmd = nullptr);
   void SCPResponse(bool * GotLastLine = nullptr);

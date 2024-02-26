@@ -4,6 +4,35 @@
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 
+## [24.2.2.595] - 2024-02-25
+
+### Fixes
+
+ * FTP,WebDAV,S3: "Encryption" setting was not saved correctly
+
+### What's Changed
+
+ * <Description>
+ **Full Changelog**: https://github.com/michaellukashov/Far-NetBox/compare/v24.2.2.594...v24.2.2.595
+
+
+## [24.2.2.594] - 2024-02-24
+
+### Fixes
+
+ - gh-411 Fix list sorting
+
+
+## [24.2.2.593] - 2024-02-24
+
+### Changes
+
+ - Upgrade WinSCP sources: WinSCP 6.3.1
+
+### Fixes
+
+ - Correction of: gh-409 Debug log loses messages
+
 
 ## [24.2.2.591] - 2024-02-23
 
@@ -58,7 +87,6 @@ https://forum.farmanager.com/viewtopic.php?p=177178#p177178 p.2
 
 ## [24.2.1.580] - 2024-02-04
 
-
 ### Changes
 
  - Upgrade dependencies: zlib-ng 2.1.6
@@ -72,7 +100,6 @@ Thanks to ssvine https://github.com/ssvine
 
 
 ## [24.2.0.578] - 2024-02-02
-
 
 ### Fixes
 
@@ -95,7 +122,6 @@ https://forum.farmanager.com/viewtopic.php?p=177022#p177022
 
 ## [24.1.1.575] - 2024-01-23
 
-
 ### Fixes
 
  - Bugfix: Crash when session option "[x] Cache visited remote directories" is set
@@ -113,7 +139,6 @@ https://forum.farmanager.com/viewtopic.php?p=176925#p176925 p.3
 
 ## [24.1.1.570] - 2024-01-07
 
-
 ### Fixes
 
  - Transfer on background: fix found issues
@@ -127,7 +152,6 @@ https://forum.farmanager.com/viewtopic.php?p=176900#p176900
 
 ## [24.1.0.566-RC7] - 2024-01-02
 
-
 ### Fixes
 
  - Fix transfer on background issues
@@ -136,14 +160,12 @@ https://forum.farmanager.com/viewtopic.php?p=176900#p176900
 
 ## [23.12.1.564-RC6] - 2023-12-30
 
-
 ### Fixes
 
  - S3: Fix Upload/Download large files
 
 
 ## [23.12.1.561-RC5] - 2023-12-27
-
 
 ### Fixes
 

@@ -90,7 +90,7 @@ CUSTOM_MEM_ALLOCATION_IMPL
 struct TNeedPassRequestData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-wchar_t * Password{nullptr};
+  wchar_t * Password{nullptr};
 };
 
 class t_server;

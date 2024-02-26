@@ -9,7 +9,7 @@ class THierarchicalStorage;
 class TBookmarkList;
 class TShortCuts;
 
-class NB_CORE_EXPORT TBookmarks : public TObject
+class NB_CORE_EXPORT TBookmarks final : public TObject
 {
   NB_DISABLE_COPY(TBookmarks)
 public:
@@ -41,7 +41,7 @@ private:
 };
 
 class TBookmark;
-class NB_CORE_EXPORT TBookmarkList : public TPersistent
+class NB_CORE_EXPORT TBookmarkList final : public TPersistent
 {
   friend class TBookmarks;
   friend class TBookmark;
@@ -67,7 +67,7 @@ public:
   void ShortCuts(TShortCuts & ShortCuts);
 
   __property int32_t Count = { read = GetCount };
-  ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
+  const ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
   // __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
   // __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 
@@ -112,12 +112,17 @@ public:
   __property UnicodeString Node = { read = FNode, write = SetNode };
   __property TShortCut ShortCut = { read = FShortCut, write = SetShortCut };
 
+  UnicodeString GetName() const { return FName; }
+  UnicodeString GetLocal() const { return FLocal; }
+  UnicodeString GetRemote() const { return FRemote; }
+  UnicodeString GetNode() const { return FNode; }
+  TShortCut GetShortCut() const { return FShortCut; }
 protected:
   TBookmarkList * FOwner{nullptr};
 
   static UnicodeString BookmarkKey(const UnicodeString & Node, const UnicodeString & Name);
   __property UnicodeString Key = { read = GetKey };
-  ROProperty<UnicodeString> Key{nb::bind(&TBookmark::GetKey, this)};
+  const ROProperty<UnicodeString> Key{nb::bind(&TBookmark::GetKey, this)};
 
 private:
   UnicodeString FName;
@@ -127,12 +132,6 @@ private:
   TShortCut FShortCut{};
 
 public:
-  UnicodeString GetName() const { return FName; }
-  UnicodeString GetLocal() const { return FLocal; }
-  UnicodeString GetRemote() const { return FRemote; }
-  UnicodeString GetNode() const { return FNode; }
-  TShortCut GetShortCut() const { return FShortCut; }
-
   void SetName(const UnicodeString & Value);
   void SetLocal(const UnicodeString & Value);
   void SetRemote(const UnicodeString & Value);
