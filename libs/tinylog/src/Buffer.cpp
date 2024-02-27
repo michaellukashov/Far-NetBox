@@ -52,37 +52,29 @@ size_t Buffer::Capacity() const
   return capacity_;
 }
 
-int32_t Buffer::Flush(FILE* file)
+bool Buffer::Flush(FILE* file)
 {
   // DebugCheck(file);
   assert(file);
   if (!size_)
     return 0;
   size_t n_write = 0;
-  while ((n_write = fwrite(data_, 1, size_ - n_write, file)) != 0)
+  size_t to_write = size_;
+  const char * buf = data_;
+
+  while (to_write > 0)
   {
-    if ((static_cast<intptr_t>(n_write) < 0) && (errno != EINTR))
+    n_write = fwrite(buf, 1, to_write, file);
+    if (n_write == 0)
     {
-      // error
       break;
     }
-    else if (n_write == size_)
-    {
-      // All write
-      break;
-    }
-    else if (n_write > 0)
-    {
-      // Half write
-    }
+    to_write -= n_write;
+    buf += n_write;
   }
 
-  // error
-  if (static_cast<intptr_t>(n_write) < 0)
-    return -1;
-
   fflush(file);
-  return 0;
+  return to_write == 0;
 }
 
 } // namespace tinylog

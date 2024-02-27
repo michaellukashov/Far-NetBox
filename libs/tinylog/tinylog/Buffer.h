@@ -21,7 +21,7 @@ public:
   size_t Size() const;
   size_t Capacity() const;
   char * Data() const { return data_; }
-  int32_t Flush(FILE* file);
+  bool Flush(FILE* file);
 
 private:
   Buffer(const Buffer&) = delete;
