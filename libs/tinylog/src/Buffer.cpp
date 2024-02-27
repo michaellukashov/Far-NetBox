@@ -1,4 +1,5 @@
 #include <io.h>
+#include <algorithm>
 #include <cassert>
 #include <memory>
 
@@ -19,78 +20,21 @@ Buffer::~Buffer()
 }
 
 /*
- * Append time and log to buffer.
+ * Append data to the buffer.
  * This function should be locked.
  * return value:
- * 0  : success
- * -1 : fail, buffer full
+ * number of bytes copied to the buffer
  */
-int32_t Buffer::TryAppend(struct tm * pt_time, int64_t u_sec, const char * file_name, int32_t line,
-  const char * func_name, const char* str_log_level, const char * log_data, int64_t to_write)
+size_t Buffer::TryAppend(const void * pt_log, size_t ToWrite)
 {
-  /*
-   * date: 11 byte
-   * time: 13 byte
-   * line number: at most 5 byte
-   * log level: 9 byte
-   */
-  const size_t prefix_len = 24 + (file_name ? strlen(file_name) : 0) + 5 +
-    (func_name ? strlen(func_name) : 0) + 9;
-  const size_t append_len = prefix_len + to_write; // strlen(log_data);
-
-  if (append_len + size_ >= capacity_)
+  const size_t available_space = capacity_ - size_;
+  size_t to_write = std::min(available_space, ToWrite);
+  if (to_write > 0)
   {
-    return -1;
+    memmove(data_ + size_, pt_log, to_write);
+    size_ += to_write;
   }
-
-  int n_append = 0;
-  if (file_name && *file_name && line > 0 && func_name && *func_name && !(strlen(str_log_level) == 0))
-  {
-    n_append = sprintf_s(data_ + size_, capacity_ - size_,
-      "%d-%02d-%02d %02d:%02d:%02d.%.03d %10s:%3d %16s %10s %s\n",
-      pt_time->tm_year + 1900, pt_time->tm_mon + 1, pt_time->tm_mday,
-      pt_time->tm_hour, pt_time->tm_min, pt_time->tm_sec, static_cast<int>(u_sec / 1000),
-      file_name ? file_name : "", line, func_name ? func_name : "", str_log_level,
-      log_data);
-  }
-  else
-  {
-    n_append = sprintf_s(data_ + size_, capacity_ - size_,
-      "%d-%02d-%02d %02d:%02d:%02d.%.03d %s\n",
-      pt_time->tm_year + 1900, pt_time->tm_mon + 1, pt_time->tm_mday,
-      pt_time->tm_hour, pt_time->tm_min, pt_time->tm_sec, static_cast<int>(u_sec / 1000),
-      log_data);
-  }
-  if (n_append > 0)
-  {
-    size_ += n_append;
-  }
-
-  return 0;
-}
-
-int32_t Buffer::TryAppend(const void * pt_log, int32_t ToWrite)
-{
-  /*
-   * date: 11 byte
-   * time: 13 byte
-   * line number: at most 5 byte
-   * log level: 9 byte
-  */
-  const size_t append_len = ToWrite; // 24 + strlen(pt_file) + 5 + strlen(pt_func) + 9 + strlen(pt_log);
-
-  if (append_len + size_ > capacity_)
-  {
-    return -1;
-  }
-  memmove(data_ + size_, pt_log, ToWrite);
-  const int32_t n_append = ToWrite;
-  if (n_append > 0)
-  {
-    size_ += n_append;
-  }
-
-  return 0;
+  return to_write;
 }
 
 void Buffer::Clear()

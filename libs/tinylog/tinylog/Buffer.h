@@ -15,9 +15,7 @@ public:
   explicit Buffer(size_t capacity);
   ~Buffer();
 
-  int32_t TryAppend(struct tm* pt_time, int64_t u_sec, const char* file_name, int32_t line,
-    const char* func_name, const char* str_log_level, const char* log_data, int64_t to_write);
-  int32_t TryAppend(const void* pt_log, int32_t ToWrite);
+  size_t TryAppend(const void* pt_log, size_t ToWrite);
 
   void Clear();
   uint64_t Size() const;

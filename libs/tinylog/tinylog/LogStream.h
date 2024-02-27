@@ -39,11 +39,11 @@ private:
   LogStream(const LogStream &) = delete;
   LogStream & operator =(const LogStream &) = delete;
 
-  int64_t InternalWrite(const char * log_data, int64_t ToWrite);
+  size_t InternalWrite(const char * log_data, size_t ToWrite);
+  size_t FormattedWrite(const char * log_data, size_t ToWrite);
 
   std::unique_ptr<Buffer> front_buff_;
   std::unique_ptr<Buffer> back_buff_;
-  std::unique_ptr<Buffer> tmp_buff_;
 //  std::unique_ptr<LockFreeQueue> queue_;
   FILE * file_{nullptr}; // TODO: use gsl::not_null
   const char * file_name_{nullptr}; // TODO: use gsl::not_null
