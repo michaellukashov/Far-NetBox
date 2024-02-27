@@ -18,8 +18,8 @@ public:
   size_t TryAppend(const void* pt_log, size_t ToWrite);
 
   void Clear();
-  uint64_t Size() const;
-  uint64_t Capacity() const;
+  size_t Size() const;
+  size_t Capacity() const;
   char * Data() const { return data_; }
   int32_t Flush(FILE* file);
 

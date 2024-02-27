@@ -42,12 +42,12 @@ void Buffer::Clear()
   size_ = 0;
 }
 
-uint64_t Buffer::Size() const
+size_t Buffer::Size() const
 {
   return size_;
 }
 
-uint64_t Buffer::Capacity() const
+size_t Buffer::Capacity() const
 {
   return capacity_;
 }

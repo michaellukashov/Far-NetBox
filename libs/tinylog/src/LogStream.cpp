@@ -35,7 +35,7 @@ LogStream::~LogStream()
   // DEBUG_PRINTF("end");
 }
 
-int64_t LogStream::Write(const char * data, int64_t ToWrite)
+size_t LogStream::Write(const char * data, size_t ToWrite)
 {
   return FormattedWrite(data, ToWrite);
 }

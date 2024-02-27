@@ -20,7 +20,7 @@ public:
   Utils::LogLevel GetLogLevel() const;
   LogStream & GetLogStream(const char * file_name, int32_t line, const char * func_name, Utils::LogLevel log_level);
 
-  int64_t Write(const char * data, int64_t ToWrite);
+  size_t Write(const char * data, size_t ToWrite);
   void Close();
 
 private:
@@ -98,7 +98,7 @@ LogStream & TinyLogImpl::GetLogStream(const char * file_name, int32_t line, cons
   return *logstream_;
 }
 
-int64_t TinyLogImpl::Write(const char * data, int64_t ToWrite)
+size_t TinyLogImpl::Write(const char * data, size_t ToWrite)
 {
   return logstream_->Write(data, ToWrite);
 }
@@ -191,7 +191,7 @@ LogStream & TinyLog::GetLogStream(const char * file_name, int32_t line_num, cons
   return impl_->GetLogStream(file_name, line_num, func_name, log_level);
 }
 
-int64_t TinyLog::Write(const char * data, int64_t ToWrite)
+size_t TinyLog::Write(const char * data, size_t ToWrite)
 {
   return impl_->Write(data, ToWrite);
 }

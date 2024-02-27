@@ -19,7 +19,7 @@ public:
   explicit LogStream(FILE * file, pthread_mutex_t & mutex, pthread_cond_t & cond, bool & already_swap);
   ~LogStream();
 
-  int64_t Write(const char * data, int64_t ToWrite);
+  size_t Write(const char * data, size_t ToWrite);
 
   void SwapBuffer();
   void WriteBuffer();
