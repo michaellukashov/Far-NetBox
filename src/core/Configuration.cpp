@@ -812,7 +812,7 @@ void TConfiguration::LoadDirectoryChangesCache(const UnicodeString & SessionKey,
 }
 
 void TConfiguration::SaveDirectoryChangesCache(const UnicodeString & SessionKey,
-  TRemoteDirectoryChangesCache * DirectoryChangesCache)
+  const TRemoteDirectoryChangesCache * DirectoryChangesCache)
 {
   std::unique_ptr<THierarchicalStorage> Storage(CreateConfigStorage());
   try__finally
@@ -1420,7 +1420,7 @@ UnicodeString TConfiguration::GetFileVersion(const UnicodeString & AFileName) co
   return Result;
 }
 
-UnicodeString TConfiguration::GetFileVersion(TVSFixedFileInfo * Info) const
+UnicodeString TConfiguration::GetFileVersion(const TVSFixedFileInfo * Info) const
 {
   const TGuard Guard(FCriticalSection);
   UnicodeString Result;
@@ -2045,7 +2045,7 @@ TStrings * TConfiguration::LoadDirectoryStatisticsCache(
 }
 
 void TConfiguration::SaveDirectoryStatisticsCache(
-  const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam, TStrings * DataList)
+  const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam, const TStrings * DataList)
 {
   std::unique_ptr<THierarchicalStorage> Storage(OpenDirectoryStatisticsCache(true));
   if (Storage != nullptr)

@@ -31,7 +31,7 @@ private:
 
 public:
   TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
-  void SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value);
+  void SetBookmarks(const UnicodeString & AIndex, const TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
   void SetSharedBookmarks(TBookmarkList * Value);
 
@@ -57,7 +57,7 @@ public:
   void Add(TBookmark * Bookmark);
   void Insert(int32_t Index, TBookmark * Bookmark);
   void InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmark);
-  void MoveTo(TBookmark * ToBookmark, const TBookmark * Bookmark, bool Before);
+  void MoveTo(const TBookmark * ToBookmark, const TBookmark * Bookmark, bool Before);
   void Delete(TBookmark *& Bookmark);
   TBookmark * FindByName(const UnicodeString & Node, const UnicodeString & Name) const;
   TBookmark * FindByShortCut(const TShortCut & ShortCut);
@@ -72,7 +72,7 @@ public:
   // __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
 
 protected:
-  int32_t IndexOf(TBookmark * Bookmark) const;
+  int32_t IndexOf(const TBookmark * Bookmark) const;
   void KeyChanged(int32_t Index);
 
   __property bool Modified = { read = FModified, write = FModified };
