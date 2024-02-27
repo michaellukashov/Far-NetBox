@@ -503,13 +503,13 @@ public:
   void DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword, bool Unsafe, bool RespectDisablePasswordStoring);
   void DoSave(THierarchicalStorage * Storage,
     bool PuttyExport, const TSessionData * Default, bool DoNotEncryptPasswords);
-#if 0
+#if defined(__BORLANDC__)
   UnicodeString ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
   int32_t ReadXmlNode(_di_IXMLNode Node, const UnicodeString & Name, int32_t Default);
   _di_IXMLNode FindSettingsNode(_di_IXMLNode Node, const UnicodeString & Name);
   UnicodeString ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, const UnicodeString & Default);
   int32_t ReadSettingsNode(_di_IXMLNode Node, const UnicodeString & Name, int32_t Default);
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   bool IsSame(const TSessionData * Default, bool AdvancedOnly, TStrings * DifferentProperties, bool Decrypted) const;
   UnicodeString GetNameWithoutHiddenPrefix() const;
   bool HasStateData() const;
@@ -526,7 +526,7 @@ public:
   static void AddSwitch(
     UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value, bool Rtf);
   static void AddSwitch(UnicodeString & Result, const UnicodeString & AName, int32_t Value, bool Rtf);
-#if 0
+#if defined(__BORLANDC__)
   static void AddAssemblyProperty(
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & Name, const UnicodeString & Value);
@@ -540,8 +540,8 @@ public:
   void AddAssemblyProperty(
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & Name, bool Value);
-#endif // #if 0
-  // TStrings * SaveToOptions(const TSessionData * Default);
+  TStrings * SaveToOptions(const TSessionData * Default);
+#endif // defined(__BORLANDC__)
   TStrings * GetRawSettingsForUrl();
   void DoCopyData(const TSessionData * SourceData, bool NoRecrypt);
   bool HasS3AutoCredentials() const;

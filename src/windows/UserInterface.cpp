@@ -479,7 +479,7 @@ static int ToolbarReadInt(const UnicodeString & ToolbarName,
     if (Storage->IndexOfName(ToolbarKey) >= 0)
     {
       Result = StrToIntDef(Storage->Values[ToolbarKey], Default);
-      #if 0
+#if defined(__BORLANDC__)
       // this does not work well, as it scales down the stretched
       // toolbars (path toolbars) too much, it has to be reimplemented smarter
       if (Value == L"DockPos")
@@ -500,7 +500,7 @@ static int ToolbarReadInt(const UnicodeString & ToolbarName,
           Result = LoadDimension(Result, PixelsPerInch);
         }
       }
-      #endif
+#endif // defined(__BORLANDC__)
     }
     else
     {

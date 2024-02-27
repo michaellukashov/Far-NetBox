@@ -183,7 +183,9 @@ void TSynchronizeController::SynchronizeChange(
         }
         __finally__removed
         {
-          // delete Checklist;
+#if defined(__BORLANDC__)
+          delete Checklist;
+#endif // defined(__BORLANDC__)
         } end_try__finally
       }
     }

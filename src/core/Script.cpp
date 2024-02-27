@@ -1,7 +1,8 @@
 
 #include <vcl.h>
 #pragma hdrstop
-#if 0
+
+#if defined(__BORLANDC__)
 
 #include <SysUtils.hpp>
 
@@ -3070,4 +3071,4 @@ void TManagementScript::ReflectSettings()
   }
 }
 
-#endif //if 0
+#endif // defined(__BORLANDC__)

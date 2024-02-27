@@ -196,8 +196,9 @@ public:
 };
 
 
-#if 0
+#if defined(__BORLANDC__)
 // moved to FileSystems.h
+
 struct TFileTransferData
 {
   TFileTransferData()
@@ -215,7 +216,8 @@ struct TFileTransferData
   const TCopyParamType * CopyParam;
   TDateTime Modification;
 };
-#endif // #if 0
+
+#endif // defined(__BORLANDC__)
 
 constexpr const wchar_t * SiteCommand = L"SITE";
 constexpr const wchar_t * SymlinkSiteCommand = L"SYMLINK";
@@ -356,17 +358,17 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
   //SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
   FFileZillaIntf.reset();
 
-#if 0
+#if defined(__BORLANDC__)
   delete FFileZillaIntf;
   FFileZillaIntf = nullptr;
 
   delete FQueue;
   FQueue = nullptr;
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   SAFE_CLOSE_HANDLE(FQueueEvent);
 
-#if 0
+#if defined(__BORLANDC__)
   delete FQueueCriticalSection;
   FQueueCriticalSection = nullptr;
   delete FTransferStatusCriticalSection;
@@ -382,7 +384,7 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
   FFeatures = nullptr;
   delete FServerCapabilities;
   FServerCapabilities = nullptr;
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
   ResetCaches();
 }
@@ -433,9 +435,11 @@ void TFTPFileSystem::Open()
     }
     __catch__removed
     {
-      // delete FFileZillaIntf;
-      // FFileZillaIntf = nullptr;
-      // throw;
+#if defined(__BORLANDC__)
+      delete FFileZillaIntf;
+      FFileZillaIntf = nullptr;
+      throw;
+#endif // defined(__BORLANDC__)
     } end_try__catch
   }
 
@@ -1930,7 +1934,9 @@ void TFTPFileSystem::DoStartup()
   }
   __finally__removed
   {
-    // delete PostLoginCommands;
+#if defined(__BORLANDC__)
+    delete PostLoginCommands;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 
   if (SupportsCommand(CsidCommand))
@@ -2142,7 +2148,9 @@ void TFTPFileSystem::ReadCurrentDirectory()
     }
     __finally__removed
     {
-      // delete Response;
+#if defined(__BORLANDC__)
+      delete Response;
+#endif // defined(__BORLANDC__)
     } end_try__finally
   }
 }
@@ -2498,7 +2506,9 @@ void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   }
   __finally__removed
   {
-    // delete FileList;
+#if defined(__BORLANDC__)
+    delete FileList;
+#endif // defined(__BORLANDC__)
   } end_try__finally
 }
 
@@ -2572,8 +2582,10 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
         }
         __catch__removed
         {
-          // delete FileListCache;
-          // throw;
+#if defined(__BORLANDC__)
+          delete FileListCache;
+          throw;
+#endif // defined(__BORLANDC__)
         } end_try__catch
         // set only after we successfully read the directory,
         // otherwise, when we reconnect from ReadDirectory,
@@ -4469,8 +4481,6 @@ bool TFTPFileSystem::HandleAsyncRequestNeedPass(
       }
     }
 
-    free(Data.Password);
-    Data.Password = nullptr;
     // When returning REPLY_OK, we need to return an allocated password,
     // even if we were returning and empty string we got on input.
     if (RequestResult == TFileZillaIntf::REPLY_OK)
@@ -4619,7 +4629,9 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
       }
       catch (Exception &E)
       {
-        // delete File;
+#if defined(__BORLANDC__)
+        delete File;
+#endif // defined(__BORLANDC__)
         const UnicodeString TmStr = FORMAT("%d/%d/%d/%d", nb::ToInt32(Entry->Time.HasTime),
             nb::ToInt32(Entry->Time.HasYear), nb::ToInt32(Entry->Time.HasSeconds), nb::ToInt32(Entry->Time.HasDate));
         const UnicodeString EntryData =

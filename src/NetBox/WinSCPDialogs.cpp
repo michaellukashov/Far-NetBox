@@ -4116,9 +4116,9 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool /*TypeOnly*
 {
   bool Result = false;
 
-//  ::VerifyKey(AFileName, TypeOnly);
-//  ::VerifyAndConvertKey(AFileName, ssh2only, false);
-#if 0
+#if defined(__BORLANDC__)
+ ::VerifyKey(AFileName, TypeOnly);
+ ::VerifyAndConvertKey(AFileName, ssh2only, false);
   if (!::Trim(AFileName).IsEmpty())
   {
     TKeyType KeyType = GetKeyType(AFileName);
@@ -4172,7 +4172,7 @@ bool TSessionDialog::VerifyKey(const UnicodeString & AFileName, bool /*TypeOnly*
             qaIgnore | qaAbort) != qaAbort);
     }
   }
-#endif
+#endif // defined(__BORLANDC__)
   return Result;
 }
 

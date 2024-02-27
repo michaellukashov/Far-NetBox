@@ -46,13 +46,13 @@ class CFileFix;
 
 #define _strlwr strlwr
 
-#if 0
+#if defined(__BORLANDC__)
 const int FILEEXISTS_OVERWRITE = 0;
 const int FILEEXISTS_RESUME = 1;
 const int FILEEXISTS_RENAME = 2;
 const int FILEEXISTS_SKIP = 3;
 const int FILEEXISTS_COMPLETE = 4;
-#endif // if 0
+#endif // defined(__BORLANDC__)
 
 class t_ffam_statusmessage
 {
@@ -132,7 +132,7 @@ extern LPCSTR _afxPchNilA;
 extern CStringDataA* _afxDataNilA;
 #define afxEmptyStringA ((CStringA&)*(CStringA*)&_afxPchNilA)
 
-#if 0
+#if defined(__BORLANDC__)
 class CStringA
 {
 public:
@@ -537,4 +537,4 @@ inline CStringA AFXAPI operator+(const CStringA & string1, char ch)
 #include <FileZillaApi.h>
 #include <FileZillaOpt.h>
 
-#endif
+#endif // defined(__BORLANDC__)

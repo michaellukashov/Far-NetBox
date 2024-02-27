@@ -542,7 +542,7 @@ int32_t GetPartialFileExtLen(const UnicodeString & FileName)
 int32_t FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs*/,
   UnicodeString * /*TypeName*/)
 {
-#if 0
+#if defined(__BORLANDC__)
   Attrs |= FILE_ATTRIBUTE_NORMAL;
 
   TSHFileInfoW SHFileInfo = {0};
@@ -582,7 +582,7 @@ int32_t FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs
   }
 
   return Icon;
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return -1;
 }
 
@@ -995,9 +995,8 @@ UnicodeString ExceptionLogString(Exception * E)
     wchar_t Buffer[1024];
     ExceptionErrorMessage(ExceptObject(), ExceptAddr(), Buffer, _countof(Buffer));
     return UnicodeString(Buffer);
-#else
+#endif // defined(__BORLANDC__)
     return UnicodeString(E->Message);
-#endif
   }
 }
 
@@ -3161,7 +3160,9 @@ bool AdjustClockForDSTEnabled()
         DynamicDaylightTimeDisabled = Registry->ReadBool("DisableAutoDaylightTimeSet");
       }
     }
-    // delete Registry;
+#if defined(__BORLANDC__)
+    delete Registry;
+#endif // defined(__BORLANDC__)
   }
   catch(...)
   {
@@ -3174,28 +3175,26 @@ UnicodeString StandardDatestamp()
 {
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd", ConvertTimestampToUTC(Now()));
-#else
+#endif // defined(__BORLANDC__)
   const TDateTime DT = ::ConvertTimestampToUTC(Now());
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
   UnicodeString Result = FORMAT("%04d-%02d-%02d", Y, M, D);
   return Result;
-#endif
 }
 
 UnicodeString StandardTimestamp(const TDateTime & DateTime)
 {
 #if defined(__BORLANDC__)
   return FormatDateTime(L"yyyy'-'mm'-'dd'T'hh':'nn':'ss'.'zzz'Z'", ConvertTimestampToUTC(DateTime));
-#else
+#endif // defined(__BORLANDC__)
   const TDateTime DT = ::ConvertTimestampToUTC(DateTime);
   uint16_t Y, M, D, H, N, S, MS;
   DT.DecodeDate(Y, M, D);
   DT.DecodeTime(H, N, S, MS);
   UnicodeString Result = FORMAT("%04d-%02d-%02dT%02d:%02d:%02d.%03dZ", Y, M, D, H, N, S, MS);
   return Result;
-#endif
 }
 
 UnicodeString StandardTimestamp()
@@ -3459,7 +3458,7 @@ uint32_t ContinueAnswer(uint32_t Answers)
   return Result;
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 TLibModule * FindModule(void * Instance)
 {
@@ -3480,7 +3479,7 @@ TLibModule * FindModule(void * Instance)
   return CurModule;
 }
 
-#endif // if 0
+#endif // defined(__BORLANDC__)
 
 static UnicodeString DoLoadStrFrom(HINSTANCE Module, int32_t Ident, uint32_t MaxLength)
 {
@@ -3930,7 +3929,9 @@ UnicodeString WindowsProductName()
     {
       Result = Registry->ReadString("ProductName");
     }
-    // delete Registry;
+#if defined(__BORLANDC__)
+    delete Registry;
+#endif // defined(__BORLANDC__)
   }
   catch(...)
   {
@@ -3998,9 +3999,9 @@ UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
     }
     else
     {
-#if 0
+#if defined(__BORLANDC__)
       const TFormatSettings FormatSettings = TFormatSettings::Create(GetDefaultLCID());
-#endif // #if 0
+#endif // defined(__BORLANDC__)
       uint16_t Hour, Min, Sec, Dummy;
       DecodeTime(DateTime, Hour, Min, Sec, Dummy);
       const int32_t TotalHours = nb::ToInt32(Hour) + (Days * HoursPerDay);
@@ -4500,7 +4501,7 @@ UnicodeString ChangeUrlProtocol(const UnicodeString & S, const UnicodeString & P
   return Protocol + ProtocolSeparator + RightStr(S, S.Length() - P - UnicodeString(ProtocolSeparator).Length() + 1);
 }
 
-#if 0
+#if defined(__BORLANDC__)
 
 const UnicodeString RtfPara(TraceInitStr(L"\\par\n"));
 const UnicodeString AssemblyNamespace(TraceInitStr(L"WinSCP"));
@@ -5066,7 +5067,7 @@ void LoadScriptFromFile(const UnicodeString & FileName, TStrings * Lines, bool F
   Lines->Text = S;
 }
 
-#endif // #if 0
+#endif // defined(__BORLANDC__)
 
 UnicodeString StripEllipsis(const UnicodeString & S)
 {
@@ -5079,18 +5080,17 @@ UnicodeString StripEllipsis(const UnicodeString & S)
   return Result;
 }
 
-UnicodeString GetFileMimeType(const UnicodeString & FileName)
+UnicodeString GetFileMimeType(const UnicodeString & /*FileName*/)
 {
-  wchar_t * MimeOut = nullptr;
   UnicodeString Result;
-#if 0
+#if defined(__BORLANDC__)
   wchar_t * MimeOut = nullptr;
   if (::FindMimeFromData(nullptr, FileName.c_str(), nullptr, 0, nullptr, FMFD_URLASFILENAME, &MimeOut, 0) == S_OK)
   {
     Result = MimeOut;
     CoTaskMemFree(MimeOut);
   }
-#endif // if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
@@ -5140,7 +5140,7 @@ DWORD GetParentProcessId(HANDLE Snapshot, DWORD ProcessId)
 {
   DWORD Result = 0;
   ThrowNotImplemented(3036);
-#if 0
+#if defined(__BORLANDC__)
   PROCESSENTRY32 ProcessEntry;
   memset(&ProcessEntry, sizeof(ProcessEntry), 0);
   ProcessEntry.dwSize = sizeof(PROCESSENTRY32);
@@ -5155,7 +5155,7 @@ DWORD GetParentProcessId(HANDLE Snapshot, DWORD ProcessId)
       }
     } while (Process32Next(Snapshot, &ProcessEntry));
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
@@ -5163,7 +5163,7 @@ static UnicodeString GetProcessName(DWORD ProcessId)
 {
   UnicodeString Result;
   ThrowNotImplemented(3037);
-#if 0
+#if defined(__BORLANDC__)
   HANDLE Process = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ProcessId);
    // is common, when the parent process is installer, so we ignore it
   if (Process)
@@ -5178,7 +5178,7 @@ static UnicodeString GetProcessName(DWORD ProcessId)
     }
     CloseHandle(Process);
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 
@@ -5188,7 +5188,7 @@ UnicodeString GetAncestorProcessName(int32_t Levels)
 {
   UnicodeString Result;
   // ThrowNotImplemented(3038);
-#if 0
+#if defined(__BORLANDC__)
   // TODO: implement
   bool Parent = (Levels == 1);
   if (Parent && !ParentProcessName.IsEmpty())
@@ -5266,7 +5266,7 @@ UnicodeString GetAncestorProcessName(int32_t Levels)
       ParentProcessName = Result;
     }
   }
-#endif // #if 0
+#endif // defined(__BORLANDC__)
   return Result;
 }
 

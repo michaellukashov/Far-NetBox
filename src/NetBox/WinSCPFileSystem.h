@@ -36,7 +36,7 @@ constexpr const char * MOVE_TO_HISTORY = "WinscpMoveTo";
 constexpr const char * WINSCP_FILE_MASK_HISTORY = "WinscpFileMask";
 constexpr const char * MAKE_SESSION_FOLDER_HISTORY = "WinscpSessionFolder";
 
-#if 0
+#if defined(__BORLANDC__)
 // for Properties dialog
 const int cpMode  = 0x01;
 const int cpOwner = 0x02;
@@ -51,7 +51,8 @@ const int soAllowSelectedOnly = 0x01;
 // for FullSynchronize dialog
 const int fsoDisableTimestamp = 0x01;
 const int fsoAllowSelectedOnly = 0x02;
-#endif //if 0
+#endif // defined(__BORLANDC__)
+
 enum TSessionActionEnum
 {
   saAdd,
