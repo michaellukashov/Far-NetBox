@@ -123,6 +123,7 @@ int64_t LogStream::InternalWrite(const char * log_data, int64_t to_write)
       {
         // we are appending to the back_buff_ and there is no more space there
         // wait until buffer is drained (very rare situation)
+        pthread_cond_signal(&cond_);
         pthread_mutex_unlock(&mutex_);
         while (drain_buffer_)
         {
