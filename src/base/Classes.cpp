@@ -469,7 +469,7 @@ void TStrings::AddStrings(const TStrings * AStrings)
   }
   __finally
   {
-    EndUpdate();    
+    EndUpdate();
   } end_try__finally
 }
 
@@ -1162,8 +1162,8 @@ int64_t THandleStream::Seek(const int64_t Offset, TSeekOrigin SeekOrigin) const
 
 void THandleStream::SetSize(int64_t NewSize)
 {
-  const auto res = Seek(NewSize, TSeekOrigin::soBeginning);
-  DebugAssert(res == NewSize);
+  const auto Res = Seek(NewSize, TSeekOrigin::soBeginning);
+  DebugAssert(Res == NewSize);
   // LARGE_INTEGER li;
   // li.QuadPart = size;
   // if (SetFilePointer(fh.get(), li.LowPart, &li.HighPart, FILE_BEGIN) == -1)
@@ -1330,8 +1330,8 @@ void TMemoryStream::SetSize(int64_t NewSize)
   FSize = NewSize;
   if (OldPosition > NewSize)
   {
-    const auto res = Seek(0, TSeekOrigin::soEnd);
-    DebugAssert(res == NewSize);
+    const auto Res = Seek(0, TSeekOrigin::soEnd);
+    DebugAssert(Res == NewSize);
   }
 }
 
@@ -1706,8 +1706,8 @@ intptr_t TRegistry::ReadIntPtr(const UnicodeString & Name) const
 {
   int32_t Result = 0;
   TRegDataType RegData = rdUnknown;
-  const auto res = GetData(Name, &Result, sizeof(Result), RegData);
-  DebugAssert(res == sizeof(Result));
+  const auto Res = GetData(Name, &Result, sizeof(Result), RegData);
+  DebugAssert(Res == sizeof(Result));
   if (RegData != rdIntPtr)
   {
     ReadError(Name);
@@ -1719,8 +1719,8 @@ int32_t TRegistry::ReadInteger(const UnicodeString & Name) const
 {
   DWORD Result{0};
   TRegDataType RegData = rdUnknown;
-  const int32_t res = GetData(Name, &Result, sizeof(Result), RegData);
-  DebugAssert(res == sizeof(Result));
+  const int32_t Res = GetData(Name, &Result, sizeof(Result), RegData);
+  DebugAssert(Res == sizeof(Result));
   if (RegData != rdInteger)
   {
     ReadError(Name);
@@ -1731,8 +1731,8 @@ int32_t TRegistry::ReadInteger(const UnicodeString & Name) const
 int64_t TRegistry::ReadInt64(const UnicodeString & Name) const
 {
   int64_t Result = 0;
-  const auto res = ReadBinaryData(Name, &Result, sizeof(Result));
-  DebugAssert(res == sizeof(Result));
+  const auto Res = ReadBinaryData(Name, &Result, sizeof(Result));
+  DebugAssert(Res == sizeof(Result));
   return Result;
 }
 
@@ -1778,8 +1778,8 @@ int32_t TRegistry::ReadBinaryData(const UnicodeString & Name,
     TRegDataType RegData = Info.RegData;
     if (((RegData == rdBinary) || (RegData == rdUnknown)) && (Result <= BufSize))
     {
-      const int32_t res = GetData(Name, Buffer, Result, RegData);
-      DebugAssert(res == Result);
+      const int32_t Res = GetData(Name, Buffer, Result, RegData);
+      DebugAssert(Res == Result);
     }
     else
     {

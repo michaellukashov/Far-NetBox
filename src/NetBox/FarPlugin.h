@@ -10,6 +10,8 @@
 #include <Common.h>
 #include "guid.h"
 
+#undef GetStartupInfo
+
 constexpr const DWORD RMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED | SHIFT_PRESSED);
 constexpr const DWORD ALTMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED);
 constexpr const DWORD CTRLMASK = (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED);
@@ -203,7 +205,6 @@ public:
   HINSTANCE GetPluginHandle() const { return FPluginHandle; }
   uint32_t GetFarThreadId() const { return FFarThreadId; }
   const FarStandardFunctions & GetFarStandardFunctions() const { return FFarStandardFunctions; }
-  #undef GetStartupInfo
   const struct PluginStartupInfo * GetStartupInfo() const { return &FStartupInfo; }
 
 protected:
