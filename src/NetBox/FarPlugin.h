@@ -304,8 +304,6 @@ protected:
   virtual UnicodeString GetCurrentDirectory() const = 0;
 
 protected:
-  gsl::not_null<TCustomFarPlugin *> FPlugin;
-  bool FClosed{false};
 
   virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
@@ -346,18 +344,22 @@ protected:
   bool GetOpenPanelInfoValid() const { return FOpenPanelInfoValid; }
 
 protected:
-  TCriticalSection FCriticalSection;
   void InvalidateOpenPanelInfo();
   TCustomFarFileSystem * GetOwnerFileSystem() { return FOwnerFileSystem; }
   void SetOwnerFileSystem(TCustomFarFileSystem * Value) { FOwnerFileSystem = Value; }
+  bool GetClosed() const { return FClosed; }
+  TCustomFarPlugin * GetPlugin() const { return FPlugin; }
 
 private:
+  TCriticalSection FCriticalSection;
   UnicodeString FNameStr;
   UnicodeString FDestPathStr;
   OpenPanelInfo FOpenPanelInfo{};
   bool FOpenPanelInfoValid{false};
   TCustomFarFileSystem * FOwnerFileSystem{nullptr};
   TFarPanelInfo * FPanelInfo[2]{};
+  gsl::not_null<TCustomFarPlugin *> FPlugin;
+  bool FClosed{false};
   static uint32_t FInstances;
 
   void ClearOpenPanelInfo(OpenPanelInfo & Info);
