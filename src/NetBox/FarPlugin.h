@@ -247,10 +247,6 @@ protected:
 
   const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
-#ifdef NETBOX_DEBUG
-public:
-  void RunTests();
-#endif
 private:
   void UpdateProgress(int32_t State, int32_t Progress) const;
   int64_t GetSystemSetting(HANDLE & Settings, const wchar_t * Name) const;

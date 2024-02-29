@@ -411,7 +411,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     const UnicodeString SessionName = GetSessionData()->GetLocalName();
     AFormat = FORMAT("netbox:%s", SessionName);
     const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
-    const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
+    // const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
     if (GetFarConfiguration()->GetSessionNameInTitle())
     {
       PanelTitle = FORMAT(" %s:%s ", SessionName, CurDir);

@@ -122,14 +122,11 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
 
   ClearPluginInfo(FPluginInfo);
   DebugAssert(FOpenedPlugins->GetCount() == 0);
-  // SAFE_DESTROY(FOpenedPlugins);
   for (int32_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
     TObject * Object = FSavedTitles->Get(Index);
     SAFE_DESTROY(Object);
   }
-  // SAFE_DESTROY(FSavedTitles);
-  // TODO: CloseFileSystem(FarFileSystem);
   // DEBUG_PRINTF("end");
 }
 
@@ -1919,16 +1916,13 @@ void TCustomFarPlugin::Initialize()
 
 void TCustomFarPlugin::Finalize()
 {
-//  TGlobalsIntf * Intf = GetGlobals();
-//  delete Intf;
-//  ::SetGlobals(nullptr);
+#if 0
+  // TODO: move to DestroyFarPlugin
+  TGlobalsIntf * Intf = GetGlobals();
+  delete Intf;
+  ::SetGlobals(nullptr);
+#endif //if 0
 }
-
-#ifdef NETBOX_DEBUG
-void TCustomFarPlugin::RunTests()
-{
-}
-#endif
 
 uint32_t TCustomFarFileSystem::FInstances = 0;
 
