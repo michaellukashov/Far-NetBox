@@ -794,7 +794,7 @@ TFileSystemInfo::TFileSystemInfo() noexcept
 }
 
 
-static FILE * LocalOpenLogFile(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
+static FILE * OpenLogFile(const UnicodeString & LogFileName, const TDateTime & Started, TSessionData * SessionData, bool Append, UnicodeString & ANewFileName)
 {
   // FILE * Result;
   const UnicodeString NewFileName = StripPathQuotes(GetExpandedLogFileName(LogFileName, Started, SessionData));
@@ -1071,7 +1071,7 @@ void TSessionLog::OpenLogFile()
     DebugAssert(FLogger == nullptr);
     DebugAssert(FConfiguration != nullptr);
     FCurrentLogFileName = FConfiguration->GetLogFileName();
-    FILE * file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
+    FILE * file = ::OpenLogFile(FCurrentLogFileName, FStarted, FSessionData, FConfiguration->GetLogFileAppend(), FCurrentFileName);
     FLogger = std::make_unique<tinylog::TinyLog>();
     FLogger->file(file);
     TSearchRec SearchRec;
@@ -1792,7 +1792,7 @@ void TActionLog::OpenLogFile()
     DebugAssert(FConfiguration != nullptr);
     DebugAssert(FLogger == nullptr);
     FCurrentLogFileName = FConfiguration->GetActionsLogFileName();
-    FILE * file = LocalOpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
+    FILE * file = ::OpenLogFile(FCurrentLogFileName, FStarted, FSessionData, false, FCurrentFileName);
     FLogger = std::make_unique<tinylog::TinyLog>();
     FLogger->file(file);
   }
@@ -1897,7 +1897,7 @@ void TApplicationLog::Enable(const UnicodeString & Path)
 {
   UnicodeString Dummy;
   FPath = Path;
-  FFile = LocalOpenLogFile(FPath, Now(), nullptr, false, Dummy);
+  FFile = OpenLogFile(FPath, Now(), nullptr, false, Dummy);
   FLogging = true;
 }
 
