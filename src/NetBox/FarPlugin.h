@@ -10,6 +10,8 @@
 #include <Common.h>
 #include "guid.h"
 
+#undef GetStartupInfo
+
 constexpr const DWORD RMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED | RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED | SHIFT_PRESSED);
 constexpr const DWORD ALTMASK = (RIGHT_ALT_PRESSED | LEFT_ALT_PRESSED);
 constexpr const DWORD CTRLMASK = (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED);
@@ -203,7 +205,6 @@ public:
   HINSTANCE GetPluginHandle() const { return FPluginHandle; }
   uint32_t GetFarThreadId() const { return FFarThreadId; }
   const FarStandardFunctions & GetFarStandardFunctions() const { return FFarStandardFunctions; }
-  #undef GetStartupInfo
   const struct PluginStartupInfo * GetStartupInfo() const { return &FStartupInfo; }
 
 protected:
@@ -246,10 +247,6 @@ protected:
 
   const TCriticalSection & GetCriticalSection() const { return FCriticalSection; }
 
-#ifdef NETBOX_DEBUG
-public:
-  void RunTests();
-#endif
 private:
   void UpdateProgress(int32_t State, int32_t Progress) const;
   int64_t GetSystemSetting(HANDLE & Settings, const wchar_t * Name) const;
@@ -307,8 +304,6 @@ protected:
   virtual UnicodeString GetCurrentDirectory() const = 0;
 
 protected:
-  gsl::not_null<TCustomFarPlugin *> FPlugin;
-  bool FClosed{false};
 
   virtual void GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     UnicodeString & HostFile, UnicodeString & CurDir, UnicodeString & Format,
@@ -349,18 +344,22 @@ protected:
   bool GetOpenPanelInfoValid() const { return FOpenPanelInfoValid; }
 
 protected:
-  TCriticalSection FCriticalSection;
   void InvalidateOpenPanelInfo();
   TCustomFarFileSystem * GetOwnerFileSystem() { return FOwnerFileSystem; }
   void SetOwnerFileSystem(TCustomFarFileSystem * Value) { FOwnerFileSystem = Value; }
+  bool GetClosed() const { return FClosed; }
+  TCustomFarPlugin * GetPlugin() const { return FPlugin; }
 
 private:
+  TCriticalSection FCriticalSection;
   UnicodeString FNameStr;
   UnicodeString FDestPathStr;
   OpenPanelInfo FOpenPanelInfo{};
   bool FOpenPanelInfoValid{false};
   TCustomFarFileSystem * FOwnerFileSystem{nullptr};
   TFarPanelInfo * FPanelInfo[2]{};
+  gsl::not_null<TCustomFarPlugin *> FPlugin;
+  bool FClosed{false};
   static uint32_t FInstances;
 
   void ClearOpenPanelInfo(OpenPanelInfo & Info);

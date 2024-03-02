@@ -58,8 +58,8 @@ public:
     const TParams * Params, bool RecurseInclude, bool & ImplicitMatch) const;
 
   void SetRoots(const UnicodeString & LocalRoot, const UnicodeString & RemoteRoot);
-  void SetRoots(TStrings * LocalFileList, const UnicodeString & RemoteRoot);
-  void SetRoots(const UnicodeString & LocalRoot, TStrings * RemoteFileList);
+  void SetRoots(const TStrings * LocalFileList, const UnicodeString & RemoteRoot);
+  void SetRoots(const UnicodeString & LocalRoot, const TStrings * RemoteFileList);
 
   __property UnicodeString Masks = { read = FStr, write = SetMasks };
   RWPropertySimple<UnicodeString> Masks{&FStr, nb::bind(&TFileMasks::SetMasks, this)};
@@ -130,7 +130,7 @@ private:
   static bool MatchesMasks(
     const UnicodeString & AFileName, bool Local, bool Directory,
     const UnicodeString & APath, const TParams * Params, const TMasks & Masks, bool Recurse);
-  static bool MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString & Str);
+  static bool MatchesMaskMask(TMask::TKind MaskKind, const Masks::TMask * MaskMask, const UnicodeString & Str);
   static Masks::TMask * DoCreateMaskMask(const UnicodeString & Str);
   void ThrowError(int32_t Start, int32_t End) const;
   bool DoMatches(
@@ -210,7 +210,7 @@ struct NB_CORE_EXPORT TCustomCommandData final : public TObject
 public:
   TCustomCommandData() noexcept;
   TCustomCommandData(const TCustomCommandData & Data) noexcept;
-  explicit TCustomCommandData(TTerminal * Terminal) noexcept;
+  explicit TCustomCommandData(const TTerminal * Terminal) noexcept;
   explicit TCustomCommandData(TSessionData * SessionData);
   explicit TCustomCommandData(
     TSessionData * SessionData, const UnicodeString & AUserName,
@@ -224,7 +224,7 @@ public:
 
 private:
   std::unique_ptr<TSessionData> FSessionData;
-  void Init(TSessionData * ASessionData);
+  void Init(const TSessionData * ASessionData);
   void Init(
     TSessionData * ASessionData, const UnicodeString & AUserName,
     const UnicodeString & APassword, const UnicodeString & AHostKey);

@@ -40,7 +40,7 @@ public:
   tinylog::Utils::LogLevel GetLogLevel() const;
   LogStream & GetLogStream(const char * file_name, int32_t line_num, const char * func_name, tinylog::Utils::LogLevel log_level);
 
-  int64_t Write(const char * data, int64_t ToWrite);
+  size_t Write(const char * data, size_t ToWrite);
   void Close();
 
   // TODO: group / groupEnd

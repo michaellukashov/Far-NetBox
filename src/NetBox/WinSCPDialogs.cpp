@@ -1435,7 +1435,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
   TStrings * Prompts,
   TStrings * Results, bool StoredCredentialsTried)
 {
-  std::unique_ptr<TPasswordDialog> Dialog(std::make_unique<TPasswordDialog>(FPlugin, SessionData->GetName(),
+  std::unique_ptr<TPasswordDialog> Dialog(std::make_unique<TPasswordDialog>(GetPlugin(), SessionData->GetName(),
     Kind, Name, Instructions, Prompts, StoredCredentialsTried));
   const bool Result = Dialog->Execute(Results);
   return Result;
@@ -1444,7 +1444,7 @@ bool TWinSCPFileSystem::PasswordDialog(TSessionData * SessionData,
 bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
   const UnicodeString & Banner, bool & NeverShowAgain, int32_t Options)
 {
-  std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(FPlugin));
+  std::unique_ptr<TWinSCPDialog> DialogPtr(std::make_unique<TWinSCPDialog>(GetPlugin()));
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetSize(TPoint(70, 21));
@@ -4405,7 +4405,7 @@ int32_t TSessionDialog::AddTab(int32_t TabID, const UnicodeString & TabCaption)
 bool TWinSCPFileSystem::SessionDialog(TSessionData * SessionData,
   TSessionActionEnum & Action)
 {
-  std::unique_ptr<TSessionDialog> Dialog(std::make_unique<TSessionDialog>(FPlugin, Action));
+  std::unique_ptr<TSessionDialog> Dialog(std::make_unique<TSessionDialog>(GetPlugin(), Action));
   const bool Result = Dialog->Execute(SessionData, Action);
   return Result;
 }
@@ -5181,7 +5181,7 @@ bool TWinSCPFileSystem::PropertiesDialog(TStrings * AFileList,
   const TRemoteTokenList * GroupList, const TRemoteTokenList * UserList,
   TRemoteProperties * Properties, int32_t AllowedChanges)
 {
-  std::unique_ptr<TPropertiesDialog> Dialog(std::make_unique<TPropertiesDialog>(FPlugin, AFileList,
+  std::unique_ptr<TPropertiesDialog> Dialog(std::make_unique<TPropertiesDialog>(GetPlugin(), AFileList,
     ADirectory, GroupList, UserList, AllowedChanges));
   const bool Result = Dialog->Execute(Properties);
   return Result;
@@ -5921,7 +5921,7 @@ bool TWinSCPFileSystem::CopyDialog(bool ToRemote,
   UnicodeString & TargetDirectory,
   TGUICopyParamType * Params)
 {
-  std::unique_ptr<TCopyDialog> Dialog(std::make_unique<TCopyDialog>(FPlugin, ToRemote,
+  std::unique_ptr<TCopyDialog> Dialog(std::make_unique<TCopyDialog>(GetPlugin(), ToRemote,
     Move, AFileList, Options, CopyParamAttrs));
   const bool Result = Dialog->Execute(TargetDirectory, Params);
   return Result;
@@ -6061,7 +6061,7 @@ bool TLinkDialog::Execute(UnicodeString & AFileName, UnicodeString & PointTo,
 bool TWinSCPFileSystem::LinkDialog(UnicodeString & AFileName,
   UnicodeString & PointTo, bool & Symbolic, bool Edit, bool AllowSymbolic)
 {
-  std::unique_ptr<TLinkDialog> Dialog(std::make_unique<TLinkDialog>(FPlugin, Edit, AllowSymbolic));
+  std::unique_ptr<TLinkDialog> Dialog(std::make_unique<TLinkDialog>(GetPlugin(), Edit, AllowSymbolic));
   const bool Result = Dialog->Execute(AFileName, PointTo, Symbolic);
   return Result;
 }
@@ -6603,7 +6603,7 @@ void TWinSCPFileSystem::FileSystemInfoDialog(
   const TSessionInfo & SessionInfo, const TFileSystemInfo & FileSystemInfo,
   const UnicodeString & SpaceAvailablePath, TGetSpaceAvailableEvent && OnGetSpaceAvailable)
 {
-  std::unique_ptr<TFileSystemInfoDialog> Dialog(std::make_unique<TFileSystemInfoDialog>(FPlugin, std::move(OnGetSpaceAvailable)));
+  std::unique_ptr<TFileSystemInfoDialog> Dialog(std::make_unique<TFileSystemInfoDialog>(GetPlugin(), std::move(OnGetSpaceAvailable)));
   Dialog->Execute(SessionInfo, FileSystemInfo, SpaceAvailablePath);
 }
 
@@ -6622,7 +6622,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
     std::unique_ptr<TList> Bookmarks(std::make_unique<TList>());
     int32_t BookmarksOffset{0};
 
-    const int32_t MaxLength = FPlugin->MaxMenuItemLength();
+    const int32_t MaxLength = GetPlugin()->MaxMenuItemLength();
     constexpr int32_t MaxHistory = 40;
     int32_t FirstHistory = 0;
 
@@ -6721,7 +6721,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       { 0, 0 }
     };
 
-    ItemFocused = nb::ToInt32(FPlugin->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
+    ItemFocused = nb::ToInt32(GetPlugin()->Menu(FMENU_REVERSEAUTOHIGHLIGHT | FMENU_SHOWAMPERSAND | FMENU_WRAPMODE,
       Caption, GetMsg(NB_OPEN_DIRECTORY_HELP), BookmarkItems.get(), BreakKeys, BreakCode));
     if (BreakCode >= 0)
     {
@@ -6747,7 +6747,7 @@ bool TWinSCPFileSystem::OpenDirectoryDialog(
       }
       else if (BreakCode == 3 || BreakCode == 4)
       {
-        FPlugin->FarCopyToClipboard(BookmarkPaths->GetString(ItemFocused));
+        GetPlugin()->FarCopyToClipboard(BookmarkPaths->GetString(ItemFocused));
         Repeat = true;
       }
     }
@@ -6930,7 +6930,7 @@ bool TApplyCommandDialog::Execute(UnicodeString & Command, int32_t & Params)
 bool TWinSCPFileSystem::ApplyCommandDialog(UnicodeString & Command,
   int32_t & Params) const
 {
-  std::unique_ptr<TApplyCommandDialog> Dialog(std::make_unique<TApplyCommandDialog>(FPlugin));
+  std::unique_ptr<TApplyCommandDialog> Dialog(std::make_unique<TApplyCommandDialog>(GetPlugin()));
   const bool Result = Dialog->Execute(Command, Params);
   return Result;
 }
@@ -7357,7 +7357,7 @@ bool TWinSCPFileSystem::FullSynchronizeDialog(TTerminal::TSynchronizeMode & Mode
   const TUsableCopyParamAttrs & CopyParamAttrs) const
 {
   std::unique_ptr<TFullSynchronizeDialog> Dialog(std::make_unique<TFullSynchronizeDialog>(
-    FPlugin, Options, CopyParamAttrs));
+    GetPlugin(), Options, CopyParamAttrs));
   const bool Result = Dialog->Execute(Mode, Params, LocalDirectory, RemoteDirectory,
     CopyParams, SaveSettings, SaveMode);
   return Result;
@@ -7958,7 +7958,7 @@ bool TWinSCPFileSystem::SynchronizeChecklistDialog(
   const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory)
 {
   std::unique_ptr<TSynchronizeChecklistDialog> Dialog(std::make_unique<TSynchronizeChecklistDialog>(
-    FPlugin, Mode, Params, LocalDirectory, RemoteDirectory));
+    GetPlugin(), Mode, Params, LocalDirectory, RemoteDirectory));
   const bool Result = Dialog->Execute(Checklist);
   return Result;
 }
@@ -8414,7 +8414,7 @@ bool TWinSCPFileSystem::SynchronizeDialog(TSynchronizeParamType & Params,
   const TCopyParamType * CopyParams, TSynchronizeStartStopEvent && OnStartStop,
   bool & SaveSettings, uint32_t Options, uint32_t CopyParamAttrs, TGetSynchronizeOptionsEvent && OnGetOptions)
 {
-  std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(FPlugin, std::move(OnStartStop),
+  std::unique_ptr<TSynchronizeDialog> Dialog(std::make_unique<TSynchronizeDialog>(GetPlugin(), std::move(OnStartStop),
     Options, CopyParamAttrs, std::move(OnGetOptions)));
   const bool Result = Dialog->Execute(Params, CopyParams, SaveSettings);
   return Result;
@@ -8428,7 +8428,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
     GetMsg(Move ? NB_REMOTE_MOVE_FILES : NB_REMOTE_COPY_FILES), AFileList, true);
 
   UnicodeString Value = TUnixPath::Join(Target, FileMask);
-  const bool Result = FPlugin->InputBox(
+  const bool Result = GetPlugin()->InputBox(
     GetMsg(Move ? NB_REMOTE_MOVE_TITLE : NB_REMOTE_COPY_TITLE), Prompt,
     Value, 0, MOVE_TO_HISTORY) && !Value.IsEmpty();
   if (Result)
@@ -8442,7 +8442,7 @@ bool TWinSCPFileSystem::RemoteTransferDialog(TStrings * AFileList,
 bool TWinSCPFileSystem::RenameFileDialog(TRemoteFile * AFile,
   UnicodeString & NewName)
 {
-  return FPlugin->InputBox(GetMsg(NB_RENAME_FILE_TITLE),
+  return GetPlugin()->InputBox(GetMsg(NB_RENAME_FILE_TITLE),
     FORMAT(GetMsg(NB_RENAME_FILE), AFile->GetFileName()), NewName, 0) &&
       !NewName.IsEmpty();
 }
@@ -8976,7 +8976,7 @@ bool TQueueDialog::Execute(TTerminalQueueStatus * Status)
 bool TWinSCPFileSystem::QueueDialog(
   TTerminalQueueStatus * Status, bool ClosingPlugin)
 {
-  std::unique_ptr<TQueueDialog> Dialog(std::make_unique<TQueueDialog>(FPlugin, this, ClosingPlugin));
+  std::unique_ptr<TQueueDialog> Dialog(std::make_unique<TQueueDialog>(GetPlugin(), this, ClosingPlugin));
   const bool Result = Dialog->Execute(Status);
   return Result;
 }
@@ -8984,7 +8984,7 @@ bool TWinSCPFileSystem::QueueDialog(
 bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
   TRemoteProperties * Properties, bool & SaveSettings)
 {
-  std::unique_ptr<TWinSCPDialog> Dialog(std::make_unique<TWinSCPDialog>(FPlugin));
+  std::unique_ptr<TWinSCPDialog> Dialog(std::make_unique<TWinSCPDialog>(GetPlugin()));
 
   Dialog->SetCaption(GetMsg(NB_CREATE_FOLDER_TITLE));
   Dialog->SetSize(TPoint(66, 15));

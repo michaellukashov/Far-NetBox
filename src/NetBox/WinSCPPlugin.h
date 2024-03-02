@@ -8,7 +8,7 @@
 class TWinSCPFileSystem;
 class TCopyParamType;
 
-class TWinSCPPlugin : public TCustomFarPlugin
+class TWinSCPPlugin final : public TCustomFarPlugin
 {
   friend class TWinSCPFileSystem;
 public:

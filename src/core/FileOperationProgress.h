@@ -272,7 +272,7 @@ public:
   void SetSkipToAll();
   UnicodeString GetLogStr(bool ADone) const;
   void Store(TPersistence & Persistence);
-  void Restore(TPersistence & Persistence);
+  void Restore(const TPersistence & Persistence);
   bool IsIndeterminate() const;
   bool IsTransfer() const;
 

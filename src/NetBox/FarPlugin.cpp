@@ -122,14 +122,11 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
 
   ClearPluginInfo(FPluginInfo);
   DebugAssert(FOpenedPlugins->GetCount() == 0);
-  // SAFE_DESTROY(FOpenedPlugins);
   for (int32_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
     TObject * Object = FSavedTitles->Get(Index);
     SAFE_DESTROY(Object);
   }
-  // SAFE_DESTROY(FSavedTitles);
-  // TODO: CloseFileSystem(FarFileSystem);
   // DEBUG_PRINTF("end");
 }
 
@@ -151,14 +148,13 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     nb::ClearStruct(FStartupInfo);
     memmove(&FStartupInfo, Info,
       Info->StructSize >= nb::ToSizeT(sizeof(FStartupInfo)) ?
-      sizeof(FStartupInfo) : nb::ToSizeT(Info->StructSize));
+        sizeof(FStartupInfo) : nb::ToSizeT(Info->StructSize));
     // the minimum we really need
     DebugAssert(FStartupInfo.GetMsg != nullptr);
     DebugAssert(FStartupInfo.Message != nullptr);
 
     nb::ClearStruct(FFarStandardFunctions);
-    const size_t FSFOffset = (static_cast<const char *>(nb::ToPtr(&Info->FSF)) -
-        static_cast<const char *>(nb::ToPtr(Info)));
+    const size_t FSFOffset = nb::ToUIntPtr(&Info->FSF) - nb::ToUIntPtr(Info);
     if (nb::ToSizeT(Info->StructSize) > FSFOffset)
     {
       memmove(&FFarStandardFunctions, Info->FSF,
@@ -1920,16 +1916,13 @@ void TCustomFarPlugin::Initialize()
 
 void TCustomFarPlugin::Finalize()
 {
-//  TGlobalsIntf * Intf = GetGlobals();
-//  delete Intf;
-//  ::SetGlobals(nullptr);
+#if 0
+  // TODO: move to DestroyFarPlugin
+  TGlobalsIntf * Intf = GetGlobals();
+  delete Intf;
+  ::SetGlobals(nullptr);
+#endif //if 0
 }
-
-#ifdef NETBOX_DEBUG
-void TCustomFarPlugin::RunTests()
-{
-}
-#endif
 
 uint32_t TCustomFarFileSystem::FInstances = 0;
 

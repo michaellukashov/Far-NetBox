@@ -131,7 +131,7 @@ bool IsAuthenticationPrompt(TPromptKind Kind)
     (Kind == pkPassword) || (Kind == pkNewPassword);
 }
 
-bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, const TStrings * Prompts)
 {
   return
     (Prompts->GetCount() == 1) && FLAGCLEAR(nb::ToIntPtr(Prompts->Objects[0]), pupEcho) &&
@@ -139,7 +139,7 @@ bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts)
      (Kind == pkTIS) || (Kind == pkCryptoCard));
 }
 
-bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts)
+bool IsPasswordPrompt(TPromptKind Kind, const TStrings * Prompts)
 {
   return
     IsPasswordOrPassphrasePrompt(Kind, Prompts) &&

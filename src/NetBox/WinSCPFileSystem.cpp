@@ -321,7 +321,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
     {
       if (GetTerminal())
         GetTerminal()->ShowExtendedException(E);
-      if (!FClosed)
+      if (!GetClosed())
       {
         ClosePanel();
       }
@@ -335,7 +335,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 
 void TWinSCPFileSystem::KeepaliveThreadCallback()
 {
-  const TGuard Guard(FCriticalSection);
+  const TGuard Guard(GetCriticalSection());
 
   if (Connected())
   {
@@ -357,14 +357,14 @@ bool TWinSCPFileSystem::Connected() const
 
 const TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin() const
 {
-  const TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<const TWinSCPPlugin>(FPlugin.get());
+  const TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<const TWinSCPPlugin>(GetPlugin());
   Ensures(WinSCPPlugin);
   return WinSCPPlugin;
 }
 
 TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin()
 {
-  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FPlugin.get());
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(GetPlugin());
   Ensures(WinSCPPlugin);
   return WinSCPPlugin;
 }
@@ -411,7 +411,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     const UnicodeString SessionName = GetSessionData()->GetLocalName();
     AFormat = FORMAT("netbox:%s", SessionName);
     const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
-    const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
+    // const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
     if (GetFarConfiguration()->GetSessionNameInTitle())
     {
       PanelTitle = FORMAT(" %s:%s ", SessionName, CurDir);
@@ -1724,7 +1724,7 @@ void TWinSCPFileSystem::Synchronize()
   {
     FSynchronizeController = nullptr;
     // plugin might have been closed during some synchronization already
-    if (!FClosed)
+    if (!GetClosed())
     {
       if (UpdatePanel())
       {
