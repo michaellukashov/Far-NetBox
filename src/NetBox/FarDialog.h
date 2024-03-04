@@ -603,7 +603,7 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarListBox) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
-  virtual ~TFarListBox() noexcept override;
+  virtual ~TFarListBox() noexcept override = default;
 
   void SetItems(const TStrings * Value, bool OwnItems = true);
 
@@ -640,7 +640,7 @@ class TFarComboBox : public TFarDialogItem
   NB_DISABLE_COPY(TFarComboBox)
 public:
   explicit TFarComboBox(TFarDialog * ADialog) noexcept;
-  virtual ~TFarComboBox() noexcept override;
+  virtual ~TFarComboBox() noexcept override = default;
 
   void ResizeToFitContent();
 
