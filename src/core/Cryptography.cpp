@@ -619,7 +619,7 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
-  srand(nb::ToUInt32(time(nullptr)) ^ nb::ToUInt32(_getpid()));
+  // srand(nb::ToUInt32(time(nullptr)) ^ nb::ToUInt32(_getpid()));
   RAND_poll();
 }
 
