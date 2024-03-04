@@ -186,7 +186,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
   }
   else if (m_ProxyData.nProxyType==PROXYTYPE_SOCKS5)
   {
-    if (m_nProxyOpState==1) //Get respone to initialization message
+    if (m_nProxyOpState==1) //Get response to initialization message
     {
       if (!m_pRecvBuffer)
         m_pRecvBuffer=nb::chcalloc(2);

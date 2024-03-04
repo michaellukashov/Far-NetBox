@@ -4436,7 +4436,7 @@ bool TFTPFileSystem::HandleAsyncRequestVerifyCertificate(
       {
         if (FTerminal->ConfirmCertificate(FSessionInfo, Data.VerificationResult, FtpsCertificateStorageKey, true))
         {
-          // FZ's VerifyCertDlg.cpp returns 2 for "cached", what we do nto distinguish here,
+          // FZ's VerifyCertDlg.cpp returns 2 for "cached", what we do not distinguish here,
           // however FZAPI takes all non-zero values equally.
           RequestResult = 1;
           FSessionInfo.CertificateVerifiedManually = true;
