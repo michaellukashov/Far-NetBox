@@ -283,7 +283,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   else
   {
     FileSystem = std::make_unique<TWinSCPFileSystem>(this);
-    FileSystem->Init(nullptr);
+    FileSystem->InitWinSCPFileSystem(nullptr);
 
     if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
       OpenFrom == OPEN_PLUGINSMENU ||
