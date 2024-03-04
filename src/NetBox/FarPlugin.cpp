@@ -2921,7 +2921,7 @@ void TFarMenuItems::SetObject(int32_t Index, TObject * AObject)
   }
 }
 
-int32_t TFarMenuItems::Add(const UnicodeString & Text, bool Visible)
+int32_t TFarMenuItems::AddString(const UnicodeString & Text, bool Visible)
 {
   const int32_t Result = TStringList::Add(Text);
   if (!Visible)
@@ -2933,7 +2933,7 @@ int32_t TFarMenuItems::Add(const UnicodeString & Text, bool Visible)
 
 void TFarMenuItems::AddSeparator(bool Visible)
 {
-  Add("");
+  AddString("");
   SetFlag(GetCount() - 1, MIF_SEPARATOR, true);
   if (!Visible)
   {
