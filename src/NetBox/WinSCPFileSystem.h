@@ -92,7 +92,7 @@ public:
 public:
   explicit TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) noexcept;
   virtual ~TWinSCPFileSystem() noexcept override;
-  void Init(const TSecureShell * SecureShell);
+  void InitWinSCPFileSystem(const TSecureShell * SecureShell);
 
   virtual void Close() override;
 

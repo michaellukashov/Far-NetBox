@@ -295,7 +295,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) 
 {
 }
 
-void TWinSCPFileSystem::Init(const TSecureShell * /*SecureShell*/)
+void TWinSCPFileSystem::InitWinSCPFileSystem(const TSecureShell * /*SecureShell*/)
 {
   TCustomFarFileSystem::Init();
 }
