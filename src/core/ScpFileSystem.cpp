@@ -559,6 +559,7 @@ void TSCPFileSystem::SendCommand(const UnicodeString & Cmd, bool NoEnsureLocatio
   FOutput->Clear();
   // We suppose, that 'Cmd' already contains command that ensures,
   // that 'LastLine' will be printed
+  FTerminal->LogEvent(FORMAT("Raw command: %s", Cmd));
   FSecureShell->SendLine(Cmd);
   FProcessingCommand = true;
 }
