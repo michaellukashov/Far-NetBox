@@ -2976,7 +2976,7 @@ bool TFarMenuItems::GetFlag(int32_t Index, uint32_t Flag) const
   return (nb::ToUIntPtr(Objects[Index]) & Flag) != 0;
 }
 
-TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) noexcept :
+TFarEditorInfo::TFarEditorInfo(gsl::not_null<EditorInfo *> Info) noexcept :
   FEditorInfo(Info)
 {
 }
