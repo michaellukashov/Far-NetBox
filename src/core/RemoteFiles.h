@@ -303,7 +303,7 @@ public:
   virtual void SetDirectory(const UnicodeString & Value);
   UnicodeString GetFullDirectory() const;
   Boolean GetIsRoot() const;
-  TRemoteFile * GetParentDirectory();
+  // TRemoteFile * GetParentDirectory() const;
   UnicodeString GetParentPath() const;
   int64_t GetTotalSize() const;
 
