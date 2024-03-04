@@ -1035,14 +1035,7 @@ void TRemoteFile::SetIsHidden(bool Value)
 
 Boolean TRemoteFile::GetIsDirectory() const
 {
-  if (IsSymLink && (FLinkedFile != nullptr))
-  {
-    return FLinkedFile->IsDirectory;
-  }
-  else
-  {
-    return (::UpCase(GetType()) == FILETYPE_DIRECTORY);
-  }
+  return (::UpCase(GetType()) == FILETYPE_DIRECTORY);
 }
 
 Boolean TRemoteFile::GetIsParentDirectory() const
@@ -1158,6 +1151,15 @@ UnicodeString TRemoteFile::GetRightsStr() const
   // note that HumanRights is typically an empty string
   // (with an exception of Perm-fact-only MLSD FTP listing)
   return FRights->GetUnknown() ? GetHumanRights() : FRights->GetText();
+}
+
+UnicodeString TRemoteFile::GetFullLinkName() const
+{
+  if (base::UnixIsAbsolutePath(FLinkTo) || FLinkedByFile == nullptr)
+  {
+    return FLinkTo;
+  }
+  return base::UnixCombinePaths(base::UnixExtractFilePath(FLinkedByFile->GetFullLinkName()), FLinkTo);
 }
 
 void TRemoteFile::SetListingStr(const UnicodeString & Value)
@@ -1590,6 +1592,8 @@ void TRemoteFile::FindLinkedFile()
       {
         TRemoteFile * File{nullptr};
         GetTerminalNotConst()->ReadSymlink(this, File);
+        SetType(File == nullptr ? FILETYPE_SYMLINK : File->GetType());
+        SetIsSymLink(true);
         FLinkedFile.reset(File);
       }
       __finally
