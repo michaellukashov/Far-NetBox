@@ -827,7 +827,7 @@ public:
   TFarMessageDialog() = delete;
   explicit TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
     gsl::not_null<TFarMessageParams *> Params);
-  void Init(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
+  void InitFarMessageDialog(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
     TStrings * Buttons);
   virtual ~TFarMessageDialog() override;
 
@@ -860,7 +860,7 @@ TFarMessageDialog::TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
   DebugAssert(FParams != nullptr);
 }
 
-void TFarMessageDialog::Init(uint32_t AFlags,
+void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons)
 {
   TFarDialog::InitDialog();
@@ -1129,7 +1129,7 @@ int32_t TCustomFarPlugin::DialogMessage(uint32_t Flags,
   gsl::not_null<TFarMessageParams *> Params)
 {
   std::unique_ptr<TFarMessageDialog> Dialog(std::make_unique<TFarMessageDialog>(this, Params));
-  Dialog->Init(Flags, Title, Message, Buttons);
+  Dialog->InitFarMessageDialog(Flags, Title, Message, Buttons);
   const int32_t Result = Dialog->Execute(Params->CheckBox);
   return Result;
 }
