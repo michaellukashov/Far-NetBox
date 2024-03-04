@@ -563,7 +563,7 @@ class TFarEditorInfo final : public TObject
   NB_DISABLE_COPY(TFarEditorInfo)
 public:
   TFarEditorInfo() = delete;
-  explicit TFarEditorInfo(EditorInfo * Info) noexcept;
+  explicit TFarEditorInfo(gsl::not_null<EditorInfo *> Info) noexcept;
   virtual ~TFarEditorInfo() noexcept override;
 
   int32_t GetEditorID() const;
