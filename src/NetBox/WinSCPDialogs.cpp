@@ -3999,7 +3999,7 @@ int32_t TSessionDialog::FtpsToIndex(TFtps AFtps) const
 
 inline int32_t TSessionDialog::GetLastSupportedFtpProxyMethod() const
 {
-  return pmNone; // pmSystem;
+  return pmHTTP;
 }
 
 bool TSessionDialog::GetSupportedFtpProxyMethod(int32_t Method) const
