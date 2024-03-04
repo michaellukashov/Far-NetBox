@@ -20,8 +20,8 @@ constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
 class TPluginIdleThread final : public TSimpleThread
 {
-  TPluginIdleThread() = delete;
 public:
+  TPluginIdleThread() = delete;
   explicit TPluginIdleThread(gsl::not_null<TCustomFarPlugin *> Plugin, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TPluginIdleThread),
     FPlugin(Plugin),
@@ -823,8 +823,8 @@ int32_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
 
 class TFarMessageDialog final : public TFarDialog
 {
-  TFarMessageDialog() = delete;
 public:
+  TFarMessageDialog() = delete;
   explicit TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
     gsl::not_null<TFarMessageParams *> Params);
   void Init(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
@@ -2397,7 +2397,7 @@ void TFarPanelModes::SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAG
   }
 }
 
-void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
+void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
 {
   if (Mode.ColumnTypes)
   {
@@ -2513,7 +2513,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   Labels[FunctionKey - 1].LongText = nullptr;
 }
 
-void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles &Titles)
+void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
   for (size_t Index = 0; Index < Titles.CountLabels; ++Index)
   {
