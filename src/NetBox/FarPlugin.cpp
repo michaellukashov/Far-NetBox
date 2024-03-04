@@ -2397,7 +2397,7 @@ void TFarPanelModes::SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAG
   }
 }
 
-void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
+void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
 {
   if (Mode.ColumnTypes)
   {
@@ -2513,7 +2513,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   Labels[FunctionKey - 1].LongText = nullptr;
 }
 
-void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles &Titles)
+void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
   for (size_t Index = 0; Index < Titles.CountLabels; ++Index)
   {

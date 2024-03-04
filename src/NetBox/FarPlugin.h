@@ -388,7 +388,7 @@ private:
 
   void FillOpenPanelInfo(struct OpenPanelInfo * Info);
   void SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAGS Flag);
-  static void ClearPanelMode(PanelMode &Mode);
+  static void ClearPanelMode(PanelMode & Mode);
   static int32_t CommaCount(const UnicodeString & ColumnTypes);
 };
 
@@ -410,7 +410,7 @@ private:
   bool FReferenced{false};
 
   void FillOpenPanelInfo(struct OpenPanelInfo * Info);
-  static void ClearKeyBarTitles(KeyBarTitles &Titles);
+  static void ClearKeyBarTitles(KeyBarTitles & Titles);
 };
 
 class TCustomFarPanelItem : public TObject
