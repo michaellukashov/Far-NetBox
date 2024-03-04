@@ -1105,8 +1105,13 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
             OutputCopy->Delete(0);
           }
 
+          auto CheckForEsc = FTerminal->GetOnCheckForEsc();
           for (int32_t Index = 0; Index < OutputCopy->GetCount(); ++Index)
           {
+            if (CheckForEsc != nullptr && CheckForEsc())
+            {
+              break;
+            }
             UnicodeString OutputLine = OutputCopy->GetString(Index);
             if (!OutputLine.IsEmpty())
             {
@@ -1232,8 +1237,9 @@ void TSCPFileSystem::CustomReadFile(const UnicodeString & AFileName,
   // the auto-detection of --full-time support is not implemented for fsListFile,
   // so we use it only if we already know that it is supported (asOn).
   const UnicodeString Options = (FLsFullTime == asOn) ? FullTimeOption : "";
+  const UnicodeString FileName = ALinkedByFile ? ALinkedByFile->GetFullLinkName() : AFileName;
   ExecCommand(fsListFile, Params,
-    FTerminal->GetSessionData()->GetListingCommand(), Options, DelimitStr(AFileName)
+    FTerminal->GetSessionData()->GetListingCommand(), Options, DelimitStr(FileName)
     );
   if (FOutput->GetCount())
   {
