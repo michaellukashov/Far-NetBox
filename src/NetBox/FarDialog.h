@@ -604,7 +604,7 @@ public:
 public:
   TFarListBox() = delete;
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
-  virtual ~TFarListBox() noexcept override;
+  virtual ~TFarListBox() noexcept override = default;
 
   void SetItems(const TStrings * Value, bool OwnItems = true);
 
@@ -642,7 +642,7 @@ class TFarComboBox final : public TFarDialogItem
 public:
   TFarComboBox() = delete;
   explicit TFarComboBox(TFarDialog * ADialog) noexcept;
-  virtual ~TFarComboBox() noexcept override;
+  virtual ~TFarComboBox() noexcept override = default;
 
   void ResizeToFitContent();
 
