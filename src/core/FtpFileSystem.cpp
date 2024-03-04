@@ -2185,12 +2185,19 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * AFileList)
   {
     CheckTimeDifference();
 
-    if ((FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
+    auto CheckForEsc = FTerminal->GetOnCheckForEsc();
+    for (int32_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      for (int32_t Index = 0; Index < AFileList->GetCount(); ++Index)
+      if (CheckForEsc != nullptr && CheckForEsc())
       {
-        ApplyTimeDifference(AFileList->GetFile(Index));
+        break;
       }
+      auto File = AFileList->GetFile(Index);
+      if ((FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
+      {
+        ApplyTimeDifference(File);
+      }
+      File->Complete();
     }
   }
 
@@ -2624,12 +2631,11 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
 void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& AFile)
 {
-  if (FForceReadSymlink && DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty()) && DebugAlwaysTrue(SymlinkFile->GetHaveFullFileName()))
+  if (DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty()))
   {
     // When we get here from TFTPFileSystem::ReadFile, it's likely the second time ReadSymlink has been called for the link.
     // The first time getting to the later branch, so IsDirectory is true and hence FullFileName ends with a slash.
-    const UnicodeString SymlinkDir = base::UnixExtractFileDir(base::UnixExcludeTrailingBackslash(SymlinkFile->FullFileName()));
-    const UnicodeString LinkTo = base::AbsolutePath(SymlinkDir, SymlinkFile->LinkTo);
+    const UnicodeString LinkTo = SymlinkFile->GetFullLinkName();
     ReadFile(LinkTo, AFile);
   }
   else
@@ -4625,7 +4631,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->SetLinkTo(Entry->LinkTarget);
 
-        File->Complete();
+        // File->Complete();
       }
       catch (Exception &E)
       {
