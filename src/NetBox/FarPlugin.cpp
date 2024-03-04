@@ -897,7 +897,7 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
 
   for (int32_t Index = 0; Index < MessageLines->GetCount(); ++Index)
   {
-    TFarText * Text = new TFarText(this);
+    TFarText * Text = MakeOwnedObject<TFarText>(this);
     Text->SetCaption(MessageLines->GetString(Index));
   }
 
@@ -906,13 +906,13 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
 
   if (FParams->MoreMessages != nullptr)
   {
-    new TFarSeparator(this);
+    MakeOwnedObject<TFarSeparator>(this);
 
-    MoreMessagesLister = new TFarLister(this);
+    MoreMessagesLister = MakeOwnedObject<TFarLister>(this);
     MoreMessagesLister->GetItems()->Assign(MoreMessageLines.get());
     MoreMessagesLister->SetLeft(GetBorderBox()->GetLeft() + 1);
 
-    MoreMessagesSeparator = new TFarSeparator(this);
+    MoreMessagesSeparator = MakeOwnedObject<TFarSeparator>(this);
   }
 
   const int32_t ButtonOffset = FParams->CheckBoxLabel.IsEmpty() ? -1 : -2;
@@ -922,7 +922,7 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
   for (int32_t Index = 0; Index < Buttons->GetCount(); ++Index)
   {
     const TFarButton * PrevButton = Button;
-    Button = new TFarButton(this);
+    Button = MakeOwnedObject<TFarButton>(this);
     Button->SetDefault(FParams->DefaultButton == Index);
     Button->SetBrackets(brNone);
     Button->SetOnClick(nb::bind(&TFarMessageDialog::ButtonClick, this));
@@ -970,7 +970,7 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
   if (!FParams->CheckBoxLabel.IsEmpty())
   {
     SetNextItemPosition(ipNewLine);
-    FCheckBox = new TFarCheckBox(this);
+    FCheckBox = MakeOwnedObject<TFarCheckBox>(this);
     FCheckBox->SetCaption(FParams->CheckBoxLabel);
 
     if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
