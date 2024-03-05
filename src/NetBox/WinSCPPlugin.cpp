@@ -136,17 +136,17 @@ bool TWinSCPPlugin::ConfigureEx(const GUID * /* Item */)
   bool Change = false;
 
   std::unique_ptr<TFarMenuItems> MenuItems(std::make_unique<TFarMenuItems>());
-  const int32_t MInterface = MenuItems->Add(GetMsg(NB_CONFIG_INTERFACE));
-  const int32_t MConfirmations = MenuItems->Add(GetMsg(NB_CONFIG_CONFIRMATIONS));
-  const int32_t MPanel = MenuItems->Add(GetMsg(NB_CONFIG_PANEL));
-  const int32_t MTransfer = MenuItems->Add(GetMsg(NB_CONFIG_TRANSFER));
-  const int32_t MBackground = MenuItems->Add(GetMsg(NB_CONFIG_BACKGROUND));
-  const int32_t MEndurance = MenuItems->Add(GetMsg(NB_CONFIG_ENDURANCE));
-  const int32_t MTransferEditor = MenuItems->Add(GetMsg(NB_CONFIG_TRANSFER_EDITOR));
-  const int32_t MLogging = MenuItems->Add(GetMsg(NB_CONFIG_LOGGING));
-  const int32_t MIntegration = MenuItems->Add(GetMsg(NB_CONFIG_INTEGRATION));
+  const int32_t MInterface = MenuItems->AddString(GetMsg(NB_CONFIG_INTERFACE));
+  const int32_t MConfirmations = MenuItems->AddString(GetMsg(NB_CONFIG_CONFIRMATIONS));
+  const int32_t MPanel = MenuItems->AddString(GetMsg(NB_CONFIG_PANEL));
+  const int32_t MTransfer = MenuItems->AddString(GetMsg(NB_CONFIG_TRANSFER));
+  const int32_t MBackground = MenuItems->AddString(GetMsg(NB_CONFIG_BACKGROUND));
+  const int32_t MEndurance = MenuItems->AddString(GetMsg(NB_CONFIG_ENDURANCE));
+  const int32_t MTransferEditor = MenuItems->AddString(GetMsg(NB_CONFIG_TRANSFER_EDITOR));
+  const int32_t MLogging = MenuItems->AddString(GetMsg(NB_CONFIG_LOGGING));
+  const int32_t MIntegration = MenuItems->AddString(GetMsg(NB_CONFIG_INTEGRATION));
   MenuItems->AddSeparator();
-  const int32_t MAbout = MenuItems->Add(GetMsg(NB_CONFIG_ABOUT));
+  const int32_t MAbout = MenuItems->AddString(GetMsg(NB_CONFIG_ABOUT));
 
   intptr_t Result;
 
@@ -283,7 +283,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
   else
   {
     FileSystem = std::make_unique<TWinSCPFileSystem>(this);
-    FileSystem->Init(nullptr);
+    FileSystem->InitWinSCPFileSystem(nullptr);
 
     if (OpenFrom == OPEN_LEFTDISKMENU || OpenFrom == OPEN_RIGHTDISKMENU ||
       OpenFrom == OPEN_PLUGINSMENU ||
@@ -434,28 +434,28 @@ void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
   const bool FSVisible = FSConnected && FromFileSystem;
   const bool AnyFSVisible = (FSConnected || AnotherFSConnected) && FromFileSystem;
 
-  const int32_t MAttributes = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_ATTRIBUTES), FSVisible);
-  const int32_t MLink = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_LINK), FSVisible);
-  const int32_t MApplyCommand = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_APPLY_COMMAND), FSVisible);
-  const int32_t MFullSynchronize = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
-  const int32_t MSynchronize = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
-  const int32_t MQueue = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_QUEUE), FSVisible);
-  const int32_t MInformation = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_INFORMATION), FSVisible);
-  const int32_t MLog = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_LOG), FSVisible);
-  const int32_t MClearCaches = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_CLEAR_CACHES), FSVisible);
-  const int32_t MPutty = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_PUTTY), FSVisible);
-  const int32_t MEditHistory = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_EDIT_HISTORY), FSConnected);
+  const int32_t MAttributes = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_ATTRIBUTES), FSVisible);
+  const int32_t MLink = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_LINK), FSVisible);
+  const int32_t MApplyCommand = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_APPLY_COMMAND), FSVisible);
+  const int32_t MFullSynchronize = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_FULL_SYNCHRONIZE), AnyFSVisible);
+  const int32_t MSynchronize = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_SYNCHRONIZE), AnyFSVisible);
+  const int32_t MQueue = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_QUEUE), FSVisible);
+  const int32_t MInformation = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_INFORMATION), FSVisible);
+  const int32_t MLog = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_LOG), FSVisible);
+  const int32_t MClearCaches = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_CLEAR_CACHES), FSVisible);
+  const int32_t MPutty = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_PUTTY), FSVisible);
+  const int32_t MEditHistory = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_EDIT_HISTORY), FSConnected);
   MenuItems->AddSeparator(FSConnected || FSVisible);
-  const int32_t MAddBookmark = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
-  const int32_t MOpenDirectory = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
-  const int32_t MHomeDirectory = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
-  const int32_t MSynchronizeBrowsing = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
+  const int32_t MAddBookmark = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_ADD_BOOKMARK), FSVisible);
+  const int32_t MOpenDirectory = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_OPEN_DIRECTORY), FSVisible);
+  const int32_t MHomeDirectory = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_HOME_DIRECTORY), FSVisible);
+  const int32_t MSynchronizeBrowsing = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_SYNCHRONIZE_BROWSING), FSVisible);
   MenuItems->AddSeparator(FSVisible);
-  const int32_t MPageant = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_PAGEANT), FromFileSystem);
-  const int32_t MPuttygen = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_PUTTYGEN), FromFileSystem);
+  const int32_t MPageant = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_PAGEANT), FromFileSystem);
+  const int32_t MPuttygen = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_PUTTYGEN), FromFileSystem);
   MenuItems->AddSeparator(FromFileSystem);
-  const int32_t MConfigure = MenuItems->Add(GetMsg(NB_MENU_COMMANDS_CONFIGURE));
-  const int32_t MAbout = MenuItems->Add(GetMsg(NB_CONFIG_ABOUT));
+  const int32_t MConfigure = MenuItems->AddString(GetMsg(NB_MENU_COMMANDS_CONFIGURE));
+  const int32_t MAbout = MenuItems->AddString(GetMsg(NB_CONFIG_ABOUT));
 
   MenuItems->SetDisabled(MLog, !FSVisible || (WinSCPFileSystem && !WinSCPFileSystem->IsLogging()));
   MenuItems->SetDisabled(MClearCaches, !FSVisible || (WinSCPFileSystem && WinSCPFileSystem->AreCachesEmpty()));

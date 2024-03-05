@@ -20,8 +20,8 @@ constexpr const wchar_t * FAR_TITLE_SUFFIX = L" - Far";
 
 class TPluginIdleThread final : public TSimpleThread
 {
-  TPluginIdleThread() = delete;
 public:
+  TPluginIdleThread() = delete;
   explicit TPluginIdleThread(gsl::not_null<TCustomFarPlugin *> Plugin, DWORD Millisecs) noexcept :
     TSimpleThread(OBJECT_CLASS_TPluginIdleThread),
     FPlugin(Plugin),
@@ -122,14 +122,11 @@ TCustomFarPlugin::~TCustomFarPlugin() noexcept
 
   ClearPluginInfo(FPluginInfo);
   DebugAssert(FOpenedPlugins->GetCount() == 0);
-  // SAFE_DESTROY(FOpenedPlugins);
   for (int32_t Index = 0; Index < FSavedTitles->GetCount(); ++Index)
   {
     TObject * Object = FSavedTitles->Get(Index);
     SAFE_DESTROY(Object);
   }
-  // SAFE_DESTROY(FSavedTitles);
-  // TODO: CloseFileSystem(FarFileSystem);
   // DEBUG_PRINTF("end");
 }
 
@@ -151,14 +148,13 @@ void TCustomFarPlugin::SetStartupInfo(const struct PluginStartupInfo * Info)
     nb::ClearStruct(FStartupInfo);
     memmove(&FStartupInfo, Info,
       Info->StructSize >= nb::ToSizeT(sizeof(FStartupInfo)) ?
-      sizeof(FStartupInfo) : nb::ToSizeT(Info->StructSize));
+        sizeof(FStartupInfo) : nb::ToSizeT(Info->StructSize));
     // the minimum we really need
     DebugAssert(FStartupInfo.GetMsg != nullptr);
     DebugAssert(FStartupInfo.Message != nullptr);
 
     nb::ClearStruct(FFarStandardFunctions);
-    const size_t FSFOffset = (static_cast<const char *>(nb::ToPtr(&Info->FSF)) -
-        static_cast<const char *>(nb::ToPtr(Info)));
+    const size_t FSFOffset = nb::ToUIntPtr(&Info->FSF) - nb::ToUIntPtr(Info);
     if (nb::ToSizeT(Info->StructSize) > FSFOffset)
     {
       memmove(&FFarStandardFunctions, Info->FSF,
@@ -827,11 +823,11 @@ int32_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
 
 class TFarMessageDialog final : public TFarDialog
 {
-  TFarMessageDialog() = delete;
 public:
+  TFarMessageDialog() = delete;
   explicit TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
     gsl::not_null<TFarMessageParams *> Params);
-  void Init(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
+  void InitFarMessageDialog(uint32_t AFlags, const UnicodeString & Title, const UnicodeString & Message,
     TStrings * Buttons);
   virtual ~TFarMessageDialog() override;
 
@@ -864,7 +860,7 @@ TFarMessageDialog::TFarMessageDialog(gsl::not_null<TCustomFarPlugin *> Plugin,
   DebugAssert(FParams != nullptr);
 }
 
-void TFarMessageDialog::Init(uint32_t AFlags,
+void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
   const UnicodeString & Title, const UnicodeString & Message, TStrings * Buttons)
 {
   TFarDialog::InitDialog();
@@ -901,7 +897,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 
   for (int32_t Index = 0; Index < MessageLines->GetCount(); ++Index)
   {
-    TFarText * Text = new TFarText(this);
+    TFarText * Text = MakeOwnedObject<TFarText>(this);
     Text->SetCaption(MessageLines->GetString(Index));
   }
 
@@ -910,13 +906,13 @@ void TFarMessageDialog::Init(uint32_t AFlags,
 
   if (FParams->MoreMessages != nullptr)
   {
-    new TFarSeparator(this);
+    MakeOwnedObject<TFarSeparator>(this);
 
-    MoreMessagesLister = new TFarLister(this);
+    MoreMessagesLister = MakeOwnedObject<TFarLister>(this);
     MoreMessagesLister->GetItems()->Assign(MoreMessageLines.get());
     MoreMessagesLister->SetLeft(GetBorderBox()->GetLeft() + 1);
 
-    MoreMessagesSeparator = new TFarSeparator(this);
+    MoreMessagesSeparator = MakeOwnedObject<TFarSeparator>(this);
   }
 
   const int32_t ButtonOffset = FParams->CheckBoxLabel.IsEmpty() ? -1 : -2;
@@ -926,7 +922,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
   for (int32_t Index = 0; Index < Buttons->GetCount(); ++Index)
   {
     const TFarButton * PrevButton = Button;
-    Button = new TFarButton(this);
+    Button = MakeOwnedObject<TFarButton>(this);
     Button->SetDefault(FParams->DefaultButton == Index);
     Button->SetBrackets(brNone);
     Button->SetOnClick(nb::bind(&TFarMessageDialog::ButtonClick, this));
@@ -974,7 +970,7 @@ void TFarMessageDialog::Init(uint32_t AFlags,
   if (!FParams->CheckBoxLabel.IsEmpty())
   {
     SetNextItemPosition(ipNewLine);
-    FCheckBox = new TFarCheckBox(this);
+    FCheckBox = MakeOwnedObject<TFarCheckBox>(this);
     FCheckBox->SetCaption(FParams->CheckBoxLabel);
 
     if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
@@ -1133,7 +1129,7 @@ int32_t TCustomFarPlugin::DialogMessage(uint32_t Flags,
   gsl::not_null<TFarMessageParams *> Params)
 {
   std::unique_ptr<TFarMessageDialog> Dialog(std::make_unique<TFarMessageDialog>(this, Params));
-  Dialog->Init(Flags, Title, Message, Buttons);
+  Dialog->InitFarMessageDialog(Flags, Title, Message, Buttons);
   const int32_t Result = Dialog->Execute(Params->CheckBox);
   return Result;
 }
@@ -1920,16 +1916,13 @@ void TCustomFarPlugin::Initialize()
 
 void TCustomFarPlugin::Finalize()
 {
-//  TGlobalsIntf * Intf = GetGlobals();
-//  delete Intf;
-//  ::SetGlobals(nullptr);
+#if 0
+  // TODO: move to DestroyFarPlugin
+  TGlobalsIntf * Intf = GetGlobals();
+  delete Intf;
+  ::SetGlobals(nullptr);
+#endif //if 0
 }
-
-#ifdef NETBOX_DEBUG
-void TCustomFarPlugin::RunTests()
-{
-}
-#endif
 
 uint32_t TCustomFarFileSystem::FInstances = 0;
 
@@ -2404,7 +2397,7 @@ void TFarPanelModes::SetFlag(PANELMODE_FLAGS & Flags, bool Value, PANELMODE_FLAG
   }
 }
 
-void TFarPanelModes::ClearPanelMode(PanelMode &Mode)
+void TFarPanelModes::ClearPanelMode(PanelMode & Mode)
 {
   if (Mode.ColumnTypes)
   {
@@ -2520,7 +2513,7 @@ void TFarKeyBarTitles::SetKeyBarTitle(TFarShiftStatus ShiftStatus,
   Labels[FunctionKey - 1].LongText = nullptr;
 }
 
-void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles &Titles)
+void TFarKeyBarTitles::ClearKeyBarTitles(KeyBarTitles & Titles)
 {
   for (size_t Index = 0; Index < Titles.CountLabels; ++Index)
   {
@@ -2928,7 +2921,7 @@ void TFarMenuItems::SetObject(int32_t Index, TObject * AObject)
   }
 }
 
-int32_t TFarMenuItems::Add(const UnicodeString & Text, bool Visible)
+int32_t TFarMenuItems::AddString(const UnicodeString & Text, bool Visible)
 {
   const int32_t Result = TStringList::Add(Text);
   if (!Visible)
@@ -2940,7 +2933,7 @@ int32_t TFarMenuItems::Add(const UnicodeString & Text, bool Visible)
 
 void TFarMenuItems::AddSeparator(bool Visible)
 {
-  Add("");
+  AddString("");
   SetFlag(GetCount() - 1, MIF_SEPARATOR, true);
   if (!Visible)
   {
@@ -2983,7 +2976,7 @@ bool TFarMenuItems::GetFlag(int32_t Index, uint32_t Flag) const
   return (nb::ToUIntPtr(Objects[Index]) & Flag) != 0;
 }
 
-TFarEditorInfo::TFarEditorInfo(EditorInfo * Info) noexcept :
+TFarEditorInfo::TFarEditorInfo(gsl::not_null<EditorInfo *> Info) noexcept :
   FEditorInfo(Info)
 {
 }

@@ -162,7 +162,7 @@ public:
   UnicodeString GetFileProductVersion() const;
   UnicodeString GetProductName() const;
   UnicodeString GetCompanyName() const;
-  UnicodeString GetFileVersion(TVSFixedFileInfo * Info) const;
+  UnicodeString GetFileVersion(const TVSFixedFileInfo * Info) const;
   UnicodeString GetStoredSessionsSubKey() const;
   UnicodeString DoGetPuttySessionsKey() const;
   UnicodeString GetPuttySessionsSubKey() const;
@@ -322,11 +322,11 @@ public:
   void LoadDirectoryChangesCache(const UnicodeString & SessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
   void SaveDirectoryChangesCache(const UnicodeString & SessionKey,
-    TRemoteDirectoryChangesCache * DirectoryChangesCache);
+    const TRemoteDirectoryChangesCache * DirectoryChangesCache);
   TStrings * LoadDirectoryStatisticsCache(
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
   void SaveDirectoryStatisticsCache(
-    const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam, TStrings * DataList);
+    const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam, const TStrings * DataList);
   bool ShowBanner(const UnicodeString & ASessionKey, const UnicodeString & ABanner, uint32_t & AParams);
   void NeverShowBanner(const UnicodeString & ASessionKey, const UnicodeString & ABanner);
   void SetBannerParams(const UnicodeString & ASessionKey, uint32_t AParams);

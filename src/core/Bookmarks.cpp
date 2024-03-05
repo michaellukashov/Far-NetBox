@@ -254,7 +254,7 @@ TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
   return nullptr;
 }
 
-void TBookmarks::SetBookmarks(const UnicodeString & AIndex, TBookmarkList * Value)
+void TBookmarks::SetBookmarks(const UnicodeString & AIndex, const TBookmarkList * Value)
 {
   int32_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
@@ -367,7 +367,7 @@ void TBookmarkList::InsertBefore(TBookmark * BeforeBookmark, TBookmark * Bookmar
   Insert(Index, Bookmark);
 }
 
-void TBookmarkList::MoveTo(TBookmark * ToBookmark,
+void TBookmarkList::MoveTo(const TBookmark * ToBookmark,
   const TBookmark * Bookmark, bool Before)
 {
   DebugAssert(ToBookmark != nullptr);
@@ -416,7 +416,7 @@ void TBookmarkList::Delete(TBookmark *& Bookmark)
   SAFE_DESTROY(Bookmark);
 }
 
-int32_t TBookmarkList::IndexOf(TBookmark * Bookmark) const
+int32_t TBookmarkList::IndexOf(const TBookmark * Bookmark) const
 {
   return FBookmarks->IndexOf(Bookmark->GetKey());
 }

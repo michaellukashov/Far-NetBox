@@ -534,7 +534,7 @@ class TFarListBox;
 class TFarComboBox;
 class TFarLister;
 
-class TFarList : public TStringList
+class TFarList final : public TStringList
 {
   friend class TFarListBox;
   friend class TFarLister;
@@ -595,15 +595,16 @@ enum TFarListBoxAutoSelect
   asNever
 };
 
-class TFarListBox : public TFarDialogItem
+class TFarListBox final : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarListBox)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarListBox); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarListBox) || TFarDialogItem::is(Kind); }
 public:
+  TFarListBox() = delete;
   explicit TFarListBox(TFarDialog * ADialog) noexcept;
-  virtual ~TFarListBox() noexcept override;
+  virtual ~TFarListBox() noexcept override = default;
 
   void SetItems(const TStrings * Value, bool OwnItems = true);
 
@@ -635,12 +636,13 @@ private:
   bool FDenyClose{false};
 };
 
-class TFarComboBox : public TFarDialogItem
+class TFarComboBox final : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarComboBox)
 public:
+  TFarComboBox() = delete;
   explicit TFarComboBox(TFarDialog * ADialog) noexcept;
-  virtual ~TFarComboBox() noexcept override;
+  virtual ~TFarComboBox() noexcept override = default;
 
   void ResizeToFitContent();
 
@@ -670,7 +672,7 @@ private:
   bool FItemChanged{false};
 };
 
-class TFarLister : public TFarDialogItem
+class TFarLister final : public TFarDialogItem
 {
   NB_DISABLE_COPY(TFarLister)
 public:

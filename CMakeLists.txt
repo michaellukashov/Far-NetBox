@@ -219,7 +219,7 @@ endif(MSVC)
 set(OPENSSL_COMPILE_FLAGS
   -DWINSCP
   -DMK1MF_BUILD -DWIN32_LEAN_AND_MEAN -DVC_EXTRALEAN -DSECURITY_WIN32
-   # -DOPENSSL_NO_LOCKING
+  # -DOPENSSL_NO_LOCKING
   -DDSO_WIN32
   -DL_ENDIAN -D_stricmp=stricmp -D_strnicmp=strnicmp
   -D_CRT_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS -D_WINSOCK_DEPRECATED_NO_WARNINGS
@@ -227,9 +227,8 @@ set(OPENSSL_COMPILE_FLAGS
   -DOPENSSL_NO_WHIRLPOOL
   -DOPENSSL_NO_SEED
   -DOPENSSL_NO_ENGINE -DOPENSSL_NO_DYNAMIC_ENGINE
-  -DOPENSSL_NO_QUIC
-  -DOPENSSL_NO_BROTLI
-  -DOPENSSL_NO_COMP
+  -DOPENSSL_NO_QUIC -DOPENSSL_NO_BROTLI -DOPENSSL_NO_COMP -DOPENSSL_NO_COMP_ALG
+  -DOPENSSL_NO_TFO -DOPENSSL_NO_ASYNC
   -DOPENSSL_NO_ERR
   -DOPENSSL_NO_CAMELLIA
   -DOPENSSL_NO_DEPRECATED_3_0
@@ -1016,7 +1015,8 @@ set(libeay32_c_files
   libs/openssl-3/crypto/async/async.c
   libs/openssl-3/crypto/async/async_err.c
   libs/openssl-3/crypto/async/async_wait.c
-  libs/openssl-3/crypto/async/arch/async_win.c
+  # libs/openssl-3/crypto/async/arch/async_win.c
+  libs/openssl-3/crypto/async/arch/async_null.c
   libs/openssl-3/crypto/kdf/hkdf.c
   libs/openssl-3/crypto/kdf/tls1_prf.c
   libs/openssl-3/crypto/kdf/kdf_err.c

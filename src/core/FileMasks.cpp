@@ -763,7 +763,7 @@ void TFileMasks::TrimEx(UnicodeString & Str, int32_t & Start, int32_t & End)
   End -= Buf.Length() - Str.Length();
 }
 
-bool TFileMasks::MatchesMaskMask(TMask::TKind MaskKind, Masks::TMask * MaskMask, const UnicodeString & Str)
+bool TFileMasks::MatchesMaskMask(TMask::TKind MaskKind, const Masks::TMask * MaskMask, const UnicodeString & Str)
 {
   bool Result;
   if (MaskKind == TMask::TKind::Any)
@@ -862,7 +862,7 @@ void TFileMasks::SetRoots(const UnicodeString & LocalRoot, const UnicodeString &
   }
 }
 
-void TFileMasks::SetRoots(TStrings * LocalFileList, const UnicodeString & RemoteRoot)
+void TFileMasks::SetRoots(const TStrings * LocalFileList, const UnicodeString & RemoteRoot)
 {
   if (FAnyRelative) // optimization
   {
@@ -872,7 +872,7 @@ void TFileMasks::SetRoots(TStrings * LocalFileList, const UnicodeString & Remote
   }
 }
 
-void TFileMasks::SetRoots(const UnicodeString & LocalRoot, TStrings * RemoteFileList)
+void TFileMasks::SetRoots(const UnicodeString & LocalRoot, const TStrings * RemoteFileList)
 {
   if (FAnyRelative) // optimization
   {
@@ -1227,7 +1227,7 @@ TCustomCommandData::TCustomCommandData(const TCustomCommandData & Data) noexcept
   Init(Data.FSessionData.get());
 }
 
-TCustomCommandData::TCustomCommandData(TTerminal * Terminal) noexcept
+TCustomCommandData::TCustomCommandData(const TTerminal * Terminal) noexcept
 {
   // Should use FillSessionDataForCode as in TCustomScpExplorerForm::SessionDataForCode
   Init(Terminal->SessionData, Terminal->UserName, Terminal->Password,
@@ -1245,7 +1245,7 @@ TCustomCommandData::TCustomCommandData(
   Init(SessionData, UserName, Password, UnicodeString());
 }
 
-void TCustomCommandData::Init(TSessionData * ASessionData)
+void TCustomCommandData::Init(const TSessionData * ASessionData)
 {
   FSessionData = std::make_unique<TSessionData>(L"");
   if (ASessionData != nullptr)

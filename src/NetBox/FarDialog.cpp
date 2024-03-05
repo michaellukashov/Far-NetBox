@@ -2490,11 +2490,6 @@ TFarListBox::TFarListBox(TFarDialog * ADialog) noexcept :
   GetDialogItem()->ListItems = FList->GetListItems();
 }
 
-TFarListBox::~TFarListBox() noexcept
-{
-//  SAFE_DESTROY(FList);
-}
-
 intptr_t TFarListBox::ItemProc(intptr_t Msg, void * Param)
 {
   intptr_t Result = 0;
@@ -2563,11 +2558,6 @@ TFarComboBox::TFarComboBox(TFarDialog * ADialog) noexcept :
 {
   GetDialogItem()->ListItems = FList->GetListItems();
   SetAutoSelect(false);
-}
-
-TFarComboBox::~TFarComboBox() noexcept
-{
-//  SAFE_DESTROY(FList);
 }
 
 void TFarComboBox::ResizeToFitContent()

@@ -295,7 +295,7 @@ TWinSCPFileSystem::TWinSCPFileSystem(gsl::not_null<TCustomFarPlugin *> APlugin) 
 {
 }
 
-void TWinSCPFileSystem::Init(const TSecureShell * /*SecureShell*/)
+void TWinSCPFileSystem::InitWinSCPFileSystem(const TSecureShell * /*SecureShell*/)
 {
   TCustomFarFileSystem::Init();
 }
@@ -321,7 +321,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
     {
       if (GetTerminal())
         GetTerminal()->ShowExtendedException(E);
-      if (!FClosed)
+      if (!GetClosed())
       {
         ClosePanel();
       }
@@ -335,7 +335,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 
 void TWinSCPFileSystem::KeepaliveThreadCallback()
 {
-  const TGuard Guard(FCriticalSection);
+  const TGuard Guard(GetCriticalSection());
 
   if (Connected())
   {
@@ -357,14 +357,14 @@ bool TWinSCPFileSystem::Connected() const
 
 const TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin() const
 {
-  const TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<const TWinSCPPlugin>(FPlugin.get());
+  const TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<const TWinSCPPlugin>(GetPlugin());
   Ensures(WinSCPPlugin);
   return WinSCPPlugin;
 }
 
 TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin()
 {
-  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FPlugin.get());
+  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(GetPlugin());
   Ensures(WinSCPPlugin);
   return WinSCPPlugin;
 }
@@ -411,7 +411,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
     const UnicodeString SessionName = GetSessionData()->GetLocalName();
     AFormat = FORMAT("netbox:%s", SessionName);
     const UnicodeString HostName = GetSessionData()->GetHostNameExpanded();
-    const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
+    // const UnicodeString Url = GetSessionData()->GenerateSessionUrl(sufComplete);
     if (GetFarConfiguration()->GetSessionNameInTitle())
     {
       PanelTitle = FORMAT(" %s:%s ", SessionName, CurDir);
@@ -471,44 +471,10 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
         FTerminal->ReloadDirectory();
       }
 
-      TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
-      bool ResolveSymlinks = GetSessionData()->GetResolveSymlinks();
       for (int32_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
         DebugAssert(File);
-        if (ResolveSymlinks && File->GetIsSymLink())
-        {
-          if (FarPlugin->CheckForEsc())
-          {
-            ResolveSymlinks = false;
-            continue;
-          };
-          // Check what kind of symlink this is
-          const UnicodeString LinkFileName = File->GetLinkTo();
-          if (!LinkFileName.IsEmpty())
-          {
-            TRemoteFile * LinkFile = nullptr;
-            try
-            {
-              FileSystem->ReadFile(LinkFileName, LinkFile);
-            }
-            catch(const Exception & /*E*/)
-            {
-              LinkFile = nullptr;
-            }
-            if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
-            {
-              File->SetType(FILETYPE_DIRECTORY);
-              File->SetIsSymLink(true);
-              if (const auto LinkedFile = File->GetLinkedFile())
-              {
-                const_cast<TRemoteFile *>(LinkedFile)->SetType(FILETYPE_DIRECTORY);
-              }
-            }
-            SAFE_DESTROY(LinkFile);
-          }
-        }
         PanelItems->Add(new TRemoteFilePanelItem(File));
       }
     }
@@ -1724,7 +1690,7 @@ void TWinSCPFileSystem::Synchronize()
   {
     FSynchronizeController = nullptr;
     // plugin might have been closed during some synchronization already
-    if (!FClosed)
+    if (!GetClosed())
     {
       if (UpdatePanel())
       {

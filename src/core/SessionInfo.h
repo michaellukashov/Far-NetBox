@@ -416,7 +416,7 @@ public:
   void SetEnabled(bool Value);
 };
 
-class TApplicationLog
+class TApplicationLog final
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:

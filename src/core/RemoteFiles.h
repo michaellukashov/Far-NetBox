@@ -132,6 +132,7 @@ public:
   void SetListingStr(const UnicodeString & Value);
   UnicodeString GetListingStr() const;
   UnicodeString GetRightsStr() const;
+  UnicodeString GetFullLinkName() const;
   wchar_t GetType() const;
   void SetType(wchar_t AType);
   void SetTerminal(const TTerminal * Value);
@@ -303,7 +304,7 @@ public:
   virtual void SetDirectory(const UnicodeString & Value);
   UnicodeString GetFullDirectory() const;
   Boolean GetIsRoot() const;
-  TRemoteFile * GetParentDirectory();
+  // TRemoteFile * GetParentDirectory() const;
   UnicodeString GetParentPath() const;
   int64_t GetTotalSize() const;
 

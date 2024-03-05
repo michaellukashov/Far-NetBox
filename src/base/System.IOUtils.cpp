@@ -3,7 +3,7 @@
 
 TFileStream * TFile::OpenRead(const UnicodeString & FileName)
 {
-  TFileStream * Result = TFileStream::Create(FileName, fmOpenRead || fmShareDenyWrite);
+  TFileStream * Result = TFileStream::Create(FileName, fmOpenRead | fmShareDenyWrite);
   return Result;
 }
 

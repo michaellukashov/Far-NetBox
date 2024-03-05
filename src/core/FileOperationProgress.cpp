@@ -1019,7 +1019,7 @@ void TFileOperationProgressType::Store(TPersistence & Persistence)
   Persistence = FPersistence;
 }
 
-void TFileOperationProgressType::Restore(TPersistence & Persistence)
+void TFileOperationProgressType::Restore(const TPersistence & Persistence)
 {
   TGuard Guard(FSection);
   FPersistence = Persistence;

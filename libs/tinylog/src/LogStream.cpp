@@ -35,9 +35,9 @@ LogStream::~LogStream()
   // DEBUG_PRINTF("end");
 }
 
-int64_t LogStream::Write(const char * data, int64_t ToWrite)
+size_t LogStream::Write(const char * data, size_t ToWrite)
 {
-  return InternalWrite(data, ToWrite);
+  return FormattedWrite(data, ToWrite);
 }
 
 /*
@@ -95,34 +95,73 @@ void LogStream::SetFile(FILE * file)
   file_ = file;
 }
 
-int64_t LogStream::InternalWrite(const char * log_data, int64_t to_write)
+size_t LogStream::FormattedWrite(const char * log_data, size_t to_write)
 {
-  const int64_t Result = to_write;
+  // max length calculation. assume max line number is 999999
+  // "2000-01-01 00:00:00.000 <file_name>:999999 <func_name> <level> <log_data>\n\0"
+  // 24 + (file or 10) + 1 + 6 + 1 + (func or 16) + 1 + (level or 10) + 1 + to_write + 2
+  // 36 + (file or 10) + (func or 16) + (level or 10) + to_write
+
+  size_t Result = 0;
+
   UpdateBaseTime();
-  // queue_->Push(log);
-  char * data_to_write = (char * )log_data;
+
+  const size_t prefix_len = 36 + (file_name_ ? strlen(file_name_) : 10) +
+    (func_name_ ? strlen(func_name_) : 16) + (str_log_level_ ? strlen(str_log_level_) : 10);
+  const size_t append_len = prefix_len + to_write;
+
+  char * buf = nb::chcalloc(append_len);
+  if (buf != nullptr)
+  {
+    int n_append = 0;
+    if (file_name_ && *file_name_ && line_ > 0 && func_name_ && *func_name_ && str_log_level_ && *str_log_level_)
+    {
+      const int32_t line_number = line_ > 999999 ? 999999 : line_;
+
+      n_append = sprintf_s(buf, append_len,
+        "%d-%02d-%02d %02d:%02d:%02d.%.03d %10s:%3d %16s %10s %.*s\n",
+        tm_base_.tm_year + 1900, tm_base_.tm_mon + 1, tm_base_.tm_mday,
+        tm_base_.tm_hour, tm_base_.tm_min, tm_base_.tm_sec, static_cast<int>(tv_base_.tv_usec / 1000),
+        file_name_ ? file_name_ : "", line_number, func_name_ ? func_name_ : "", str_log_level_,
+        static_cast<int>(to_write), log_data);
+    }
+    else
+    {
+      n_append = sprintf_s(buf, append_len,
+        "%d-%02d-%02d %02d:%02d:%02d.%.03d %.*s\n",
+        tm_base_.tm_year + 1900, tm_base_.tm_mon + 1, tm_base_.tm_mday,
+        tm_base_.tm_hour, tm_base_.tm_min, tm_base_.tm_sec, static_cast<int>(tv_base_.tv_usec / 1000),
+        static_cast<int>(to_write), log_data);
+    }
+
+    if (n_append > 0)
+    {
+      Result = InternalWrite(buf, n_append);
+    }
+    nb_free(buf);
+  }
+  return Result;
+}
+
+size_t LogStream::InternalWrite(const char * log_data, size_t to_write)
+{
+  const size_t Result = to_write;
+  size_t n_append;
 
   pthread_mutex_lock(&mutex_);
   // DEBUG_PRINTF("ToWrite: %d", (int)to_write);
-  while (true)
+  while (to_write)
   {
     auto & buff = drain_buffer_ ? back_buff_ : front_buff_;
     // append to the current buffer
-    int64_t need_capacity = static_cast<int64_t>(buff->Capacity() - buff->Size());
-    if (to_write > need_capacity)
-    {
-      // trunc log_data
-      tmp_buff_ = std::make_unique<Buffer>(need_capacity);
-      tmp_buff_->TryAppend(log_data, need_capacity);
-      data_to_write = tmp_buff_->Data();
-      to_write = need_capacity;
-    }
-    if (buff->TryAppend(&tm_base_, static_cast<int64_t>(tv_base_.tv_usec), file_name_, line_, func_name_, str_log_level_, data_to_write, to_write) < 0)
+    n_append = buff->TryAppend(log_data, to_write);
+    if (n_append == 0)
     {
       if (drain_buffer_)
       {
         // we are appending to the back_buff_ and there is no more space there
         // wait until buffer is drained (very rare situation)
+        pthread_cond_signal(&cond_);
         pthread_mutex_unlock(&mutex_);
         while (drain_buffer_)
         {
@@ -140,7 +179,8 @@ int64_t LogStream::InternalWrite(const char * log_data, int64_t to_write)
     }
     else
     {
-      break;
+      log_data += n_append;
+      to_write -= n_append;
     }
   }
 
@@ -155,14 +195,14 @@ int64_t LogStream::InternalWrite(const char * log_data, int64_t to_write)
 
 LogStream & LogStream::operator<<(const char * log_data)
 {
-  InternalWrite(log_data, strlen(log_data));
+  FormattedWrite(log_data, strlen(log_data));
 
   return *this;
 }
 
 LogStream & LogStream::operator<<(const std::string & ref_log)
 {
-  InternalWrite(ref_log.c_str(), ref_log.size());
+  FormattedWrite(ref_log.c_str(), ref_log.size());
 /*
   UpdateBaseTime();
 

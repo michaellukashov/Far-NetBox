@@ -167,7 +167,7 @@ enum TPromptKind
 enum TPromptUserParam { pupEcho = 0x01, pupRemember = 0x02 };
 
 NB_CORE_EXPORT bool IsAuthenticationPrompt(TPromptKind Kind);
-NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, TStrings * Prompts);
+NB_CORE_EXPORT bool IsPasswordOrPassphrasePrompt(TPromptKind Kind, const TStrings * Prompts);
 NB_CORE_EXPORT bool IsPasswordPrompt(TPromptKind Kind, TStrings * Prompts);
 void AnswerNameAndCaption(uint32_t Answer, UnicodeString & Name, UnicodeString & Caption);
 class TTerminal;
