@@ -3,12 +3,25 @@
 
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
+ * <Description>
+ **Full Changelog**:
+
+## [24.3.0.597] - 2024-03-05
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+ * gh-420 Fix and optimize symlink reading
+ * gh-418 Fix: cannot use proxy with FTP connection
+
+**Full Changelog**: https://github.com/michaellukashov/Far-NetBox/compare/v24.2.2.596...v24.3.0.597
+
 
 ## [24.2.3.596] - 2024-02-26
 
 ### Fixes
 
-* gh-414 FTP: Netbox always crashes while connecting
+ * gh-414 FTP: Netbox always crashes while connecting
 
 
 ## [24.2.2.595] - 2024-02-25
