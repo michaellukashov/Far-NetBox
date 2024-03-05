@@ -138,7 +138,7 @@ struct TTraceInMemory
   UTF8String Message;
 #endif // TRACE_IN_MEMORY_NO_FORMATTING
 };
-typedef nb::vector_t<TTraceInMemory> TTracesInMemory;
+using TTracesInMemory = nb::vector_t<TTraceInMemory>;
 TTracesInMemory TracesInMemory;
 
 int32_t TraceThreadProc(void *)
