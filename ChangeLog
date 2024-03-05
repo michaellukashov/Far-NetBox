@@ -14,6 +14,10 @@ Thanks to ssvine https://github.com/ssvine
  * gh-420 Fix and optimize symlink reading
  * gh-418 Fix: cannot use proxy with FTP connection
 
+### Changes
+
+ - Upgrade dependencies: expat 2.6.1
+
 **Full Changelog**: https://github.com/michaellukashov/Far-NetBox/compare/v24.2.2.596...v24.3.0.597
 
 
