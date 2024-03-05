@@ -3257,7 +3257,7 @@ void TSessionData::SetAlgoList(AlgoT * List, const AlgoT * DefaultList, const wc
   int32_t Index = 0;
   while (!Value.IsEmpty())
   {
-    UnicodeString AlgoStr = CutToChar(Value, L',', true);
+    const UnicodeString AlgoStr = CutToChar(Value, L',', true);
     for (int32_t Algo = 0; Algo < Count; ++Algo)
     {
       if (!AlgoStr.CompareIC(Names[Algo]) &&
