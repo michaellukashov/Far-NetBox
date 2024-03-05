@@ -1523,15 +1523,19 @@ void TCustomFarPlugin::ShowTerminalScreen(const UnicodeString & Command)
       nb::ClearStruct(Info);
       Info.StructSize = sizeof(Info);
       FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_ACTIVE);
-      if(Info.Flags & PFLAGS_VISIBLE)
-        goto clearall;
-      nb::ClearStruct(Info);
-      Info.StructSize = sizeof(Info);
-      FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_PASSIVE);
-      if (Info.Flags&PFLAGS_VISIBLE)
+      if (Info.Flags & PFLAGS_VISIBLE)
       {
-clearall:
         Y = 0;
+      }
+      else
+      {
+        nb::ClearStruct(Info);
+        Info.StructSize = sizeof(Info);
+        FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_PASSIVE);
+        if (Info.Flags & PFLAGS_VISIBLE)
+        {
+          Y = 0;
+        }
       }
     }
     UnicodeString Blank = ::StringOfChar(L' ', Size.x);
