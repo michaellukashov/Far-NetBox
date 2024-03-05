@@ -3218,13 +3218,16 @@ bool TSessionData::GetUsesSsh() const
 void TSessionData::SetCipher(int32_t Index, TCipher value)
 {
   DebugAssert(Index >= 0 && Index < CIPHER_COUNT);
-  SET_SESSION_PROPERTY(Ciphers[Index]);
+  if (Index >= 0 && Index < CIPHER_COUNT)
+    SET_SESSION_PROPERTY(Ciphers[Index]);
 }
 
 TCipher TSessionData::GetCipher(int32_t Index) const
 {
   DebugAssert(Index >= 0 && Index < CIPHER_COUNT);
-  return FCiphers[Index];
+  if (Index >= 0 && Index < CIPHER_COUNT)
+    return FCiphers[Index];
+  return cipWarn;
 }
 
 template<class AlgoT>
