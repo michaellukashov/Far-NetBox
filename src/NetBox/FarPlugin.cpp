@@ -1543,12 +1543,12 @@ void TCustomFarPlugin::ShowTerminalScreen(const UnicodeString & Command)
     {
       Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
     } while (++Y < Size.y);
-    if(Command.Length() && Size.x > 2)
+    if (Command.Length() && Size.x > 2)
     {
       Blank = Command;
       Blank.Insert(0, L"$ ", 2);
-      if(Blank.Length() > Size.x) Blank.SetLength(Size.x);
-      if(Cursor.y == Y-1) --Cursor.y; // !'Show key bar'
+      if (Blank.Length() > Size.x) Blank.SetLength(Size.x);
+      if (Cursor.y == Y-1) --Cursor.y; // !'Show key bar'
       Text(0, Cursor.y, 7 /*LIGHTGRAY*/, Blank);
       ++Cursor.y;
     }
