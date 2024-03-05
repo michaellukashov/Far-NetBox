@@ -3929,18 +3929,19 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 {
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
-  int64_t Timestamp;
-  tm * Tm = gmtime(&Time); // localtime(&Time);
-  if (Tm != nullptr)
+  int64_t Timestamp{};
+  tm Tm{};
+  errno_t Err = gmtime_s(&Tm, &Time); // localtime(&Time);
+  if (Err == 0)
   {
     SYSTEMTIME SystemTime;
-    SystemTime.wYear = nb::ToWord(Tm->tm_year + 1900);
-    SystemTime.wMonth = nb::ToWord(Tm->tm_mon + 1);
+    SystemTime.wYear = nb::ToWord(Tm.tm_year + 1900);
+    SystemTime.wMonth = nb::ToWord(Tm.tm_mon + 1);
     SystemTime.wDayOfWeek = 0;
-    SystemTime.wDay = nb::ToWord(Tm->tm_mday);
-    SystemTime.wHour = nb::ToWord(Tm->tm_hour);
-    SystemTime.wMinute = nb::ToWord(Tm->tm_min);
-    SystemTime.wSecond = nb::ToWord(Tm->tm_sec);
+    SystemTime.wDay = nb::ToWord(Tm.tm_mday);
+    SystemTime.wHour = nb::ToWord(Tm.tm_hour);
+    SystemTime.wMinute = nb::ToWord(Tm.tm_min);
+    SystemTime.wSecond = nb::ToWord(Tm.tm_sec);
     SystemTime.wMilliseconds = 0;
 
     FILETIME LocalTime;
