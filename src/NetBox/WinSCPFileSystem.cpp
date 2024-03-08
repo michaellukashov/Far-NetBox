@@ -1070,7 +1070,8 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
     }
 
     // Return to session panel
-    if (Focused && !Handled && ((Key == VK_RETURN) && (Focused->GetFileName() == PARENTDIRECTORY) ||
+    if (Focused && !Handled && !IsConnectedDirectly() && 
+         ((Key == VK_RETURN) && (Focused->GetFileName() == PARENTDIRECTORY) ||
          (Key == VK_PRIOR) && (ControlState & CTRLMASK)) && FLastPath == ROOTDIRECTORY)
     {
       SetDirectoryEx(PARENTDIRECTORY, 0);

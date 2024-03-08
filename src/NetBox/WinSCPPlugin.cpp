@@ -348,6 +348,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           DebugAssert(false);
           Abort();
         }
+        FileSystem->SetConnectedDirectly();
         FileSystem->Connect(Session.get());
         if (!Directory.IsEmpty())
         {
@@ -378,6 +379,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         DebugAssert(false);
         Abort();
       }
+      FileSystem->SetConnectedDirectly();
       FileSystem->Connect(Session.get());
     }
     else
