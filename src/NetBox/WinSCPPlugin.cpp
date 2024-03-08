@@ -64,11 +64,11 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   const UnicodeString DbgFileName = GetDbgPath("NETBOX_DBG");
   GetGlobals()->SetupDbgHandles(DbgFileName);
   // setup tinylog
-  g_tinylog.level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
+  g_tinylog->level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
   FILE * LogFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
   if (LogFile)
   {
-    g_tinylog.file(LogFile);
+    g_tinylog->file(LogFile);
   }
   // TODO: icecream::ic.output(logFile);
   // IC();
@@ -84,6 +84,9 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
     CoreFinalize();
     FInitialized = false;
   }
+#ifndef NDEBUG
+  SAFE_DESTROY_EX(tinylog::TinyLog, g_tinylog);
+#endif //ifndef NDEBUG
   // DEBUG_PRINTF("begin");
 }
 
