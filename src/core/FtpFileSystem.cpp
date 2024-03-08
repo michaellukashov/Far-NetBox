@@ -4505,13 +4505,13 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   if (Source.HasDate)
   {
     DateTime =
-      EncodeDateVerbose(static_cast<uint16_t>(Source.Year), static_cast<uint16_t>(Source.Month),
-        static_cast<uint16_t>(Source.Day));
+      EncodeDateVerbose(Source.Year, Source.Month,
+        Source.Day);
     if (Source.HasTime)
     {
       DateTime = DateTime + 
-        EncodeTimeVerbose(static_cast<uint16_t>(Source.Hour), static_cast<uint16_t>(Source.Minute),
-          static_cast<uint16_t>(Source.Second), 0);
+        EncodeTimeVerbose(Source.Hour, Source.Minute,
+          Source.Second, 0);
       ModificationFmt = Source.HasSeconds ? mfFull : (Source.HasYear ? mfYMDHM : mfMDHM);
 
       // With IIS, the Utc should be false only for MDTM
@@ -4535,7 +4535,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   {
     // With SCP we estimate date to be today, if we have at least time
 
-    DateTime = static_cast<double>(0.0);
+    DateTime = 0.0;
     ModificationFmt = mfNone;
   }
 }
