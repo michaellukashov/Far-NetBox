@@ -1948,7 +1948,9 @@ void TCustomFarFileSystem::Init()
 TCustomFarFileSystem::~TCustomFarFileSystem() noexcept
 {
   FInstances--;
+#ifndef NDEBUG
   TINYLOG_TRACE(g_tinylog) << repr("C %d", FInstances);
+#endif //#ifndef NDEBUG
   ResetCachedInfo();
   ClearOpenPanelInfo(FOpenPanelInfo);
 }
