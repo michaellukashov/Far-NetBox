@@ -4535,7 +4535,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   {
     // With SCP we estimate date to be today, if we have at least time
 
-    DateTime = static_cast<double>(0.0);
+    DateTime = 0.0;
     ModificationFmt = mfNone;
   }
 }
