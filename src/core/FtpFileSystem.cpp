@@ -3125,7 +3125,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   FWaitingForReply = true;
 
-  uint32_t Reply;
+  uint32_t Reply = 0;
 
   try__finally
   {
