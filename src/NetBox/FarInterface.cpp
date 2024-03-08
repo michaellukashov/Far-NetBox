@@ -68,7 +68,7 @@ HANDLE BeginThread(void * SecurityAttributes, DWORD StackSize,
   return Result;
 }
 
-void EndThread(DWORD ExitCode)
+[[noreturn]] void EndThread(DWORD ExitCode)
 {
   ::ExitThread(ExitCode);
 }
