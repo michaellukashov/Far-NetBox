@@ -272,6 +272,7 @@ int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem;
+  bool Success = true;
   CoreInitializeOnce();
   // DEBUG_PRINTF("OpenFrom: %d", (int)OpenFrom);
 
@@ -349,8 +350,8 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           Abort();
         }
         FileSystem->SetConnectedDirectly();
-        FileSystem->Connect(Session.get());
-        if (!Directory.IsEmpty())
+        Success = FileSystem->Connect(Session.get());
+        if (Success && !Directory.IsEmpty())
         {
           FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
         }
@@ -380,14 +381,17 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         Abort();
       }
       FileSystem->SetConnectedDirectly();
-      FileSystem->Connect(Session.get());
+      Success = FileSystem->Connect(Session.get());
     }
     else
     {
       DebugAssert(false);
     }
   }
-
+  if (!Success)
+  {
+    FileSystem.reset(nullptr);
+  }
   return FileSystem.release();
 }
 
