@@ -779,12 +779,12 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
           S = NextWord(nullptr);
         }
       }
-      if (!*S)
+      if (S && !*S)
       {
         S = NextWord(nullptr);
       }
 
-      if (*S)
+      if (S && *S)
       {
         /* add a new line here */
         if (Result.Length() == 0)
