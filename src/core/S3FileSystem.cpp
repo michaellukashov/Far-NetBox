@@ -1045,7 +1045,7 @@ void TS3FileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
-    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString(L"/") : FCurrentDirectory;
+    // FCurrentDirectory is set later during TTerminal::DoStartup execution
   }
   else
   {
