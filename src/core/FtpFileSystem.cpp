@@ -1329,7 +1329,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
   int32_t Index1 = 0;
   while ((Index1 < FileList->GetCount()) && !OperationProgress->GetCancel())
   {
-    TRemoteFile * File = FileList->GetAs<TRemoteFile>(Index1);
+    const TRemoteFile * File = FileList->GetAs<TRemoteFile>(Index1);
     DebugAssert(File != nullptr);
 
     if (File && !File->GetIsDirectory())
