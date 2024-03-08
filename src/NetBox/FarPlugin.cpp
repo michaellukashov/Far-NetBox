@@ -446,7 +446,6 @@ void TCustomFarPlugin::CloseFileSystem(TCustomFarFileSystem * FileSystem)
   __finally
   {
     FOpenedPlugins->Remove(FileSystem);
-    CloseFileSystem(FileSystem->GetOwnerFileSystem());
     SAFE_DESTROY(FileSystem);
   } end_try__finally
 #ifdef USE_DLMALLOC
