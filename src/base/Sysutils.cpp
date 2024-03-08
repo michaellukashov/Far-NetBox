@@ -79,7 +79,7 @@ Exception::Exception(TObjectClassId Kind, int32_t Ident) noexcept :
   Message = FMTLOAD(Ident);
 }
 
-void RaiseLastOSError(DWORD LastError)
+[[noreturn]] void RaiseLastOSError(DWORD LastError)
 {
   if (LastError == 0)
     LastError = ::GetLastError();
