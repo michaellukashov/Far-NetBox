@@ -2298,7 +2298,8 @@ DWORD FileGetAttrFix(const UnicodeString & AFileName)
     // WORKAROUND:
     // FileGetAttr when called for link with FollowLink set (default) will always fail on pre-Vista
     // as it calls InternalGetFileNameFromSymLink, which test for CheckWin32Version(6, 0)
-    Result = GetFileAttributes(AFileName.c_str());
+    const UnicodeString FileName = ApiPath(AFileName);
+    Result = GetFileAttributes(FileName.c_str());
     if ((Result >= 0) && FLAGSET(Result, faSymLink) && IsWinVista())
     {
       try
@@ -2308,7 +2309,7 @@ DWORD FileGetAttrFix(const UnicodeString & AFileName)
         // On Samba, InternalGetFileNameFromSymLink fails and returns true but empty target.
         // That confuses FileGetAttr, which returns attributes of the parent folder instead.
         // Using FileGetSymLinkTarget solves the problem, as it returns false.
-        if (!FileGetSymLinkTarget(AFileName, TargetName))
+        if (!FileGetSymLinkTarget(FileName, TargetName))
         {
           // FileGetAttr would return faInvalid (-1), but we want to allow an upload from Samba,
           // so returning the symlink attributes => noop

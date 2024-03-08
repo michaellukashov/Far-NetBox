@@ -1723,7 +1723,7 @@ void TFTPFileSystem::Sink(
   if (DestFileName != UserData.FileName)
   {
     DestFullName = TargetDir + UserData.FileName;
-    Attrs = FileGetAttrFix(ApiPath(DestFullName));
+    Attrs = FileGetAttrFix(DestFullName);
   }
 
   const UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
