@@ -471,44 +471,10 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
         FTerminal->ReloadDirectory();
       }
 
-      TCustomFileSystem * FileSystem = GetTerminal()->GetFileSystem();
-      bool ResolveSymlinks = GetSessionData()->GetResolveSymlinks();
       for (int32_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
       {
         TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
         DebugAssert(File);
-        if (ResolveSymlinks && File->GetIsSymLink())
-        {
-          if (FarPlugin->CheckForEsc())
-          {
-            ResolveSymlinks = false;
-            continue;
-          };
-          // Check what kind of symlink this is
-          const UnicodeString LinkFileName = File->GetLinkTo();
-          if (!LinkFileName.IsEmpty())
-          {
-            TRemoteFile * LinkFile = nullptr;
-            try
-            {
-              FileSystem->ReadFile(LinkFileName, LinkFile);
-            }
-            catch(const Exception & /*E*/)
-            {
-              LinkFile = nullptr;
-            }
-            if ((LinkFile != nullptr) && LinkFile->GetIsDirectory())
-            {
-              File->SetType(FILETYPE_DIRECTORY);
-              File->SetIsSymLink(true);
-              if (const auto LinkedFile = File->GetLinkedFile())
-              {
-                const_cast<TRemoteFile *>(LinkedFile)->SetType(FILETYPE_DIRECTORY);
-              }
-            }
-            SAFE_DESTROY(LinkFile);
-          }
-        }
         PanelItems->Add(new TRemoteFilePanelItem(File));
       }
     }

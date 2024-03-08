@@ -2185,12 +2185,19 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * AFileList)
   {
     CheckTimeDifference();
 
-    if ((FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
+    auto CheckForEsc = FTerminal->GetOnCheckForEsc();
+    for (int32_t Index = 0; Index < AFileList->GetCount(); ++Index)
     {
-      for (int32_t Index = 0; Index < AFileList->GetCount(); ++Index)
+      if (CheckForEsc != nullptr && CheckForEsc())
       {
-        ApplyTimeDifference(AFileList->GetFile(Index));
+        break;
       }
+      auto File = AFileList->GetFile(Index);
+      if ((FTimeDifference != 0) || !FUploadedTimes.empty())// optimization
+      {
+        ApplyTimeDifference(File);
+      }
+      File->Complete();
     }
   }
 
@@ -2624,12 +2631,11 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
 void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& AFile)
 {
-  if (FForceReadSymlink && DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty()) && DebugAlwaysTrue(SymlinkFile->GetHaveFullFileName()))
+  if (DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty()))
   {
     // When we get here from TFTPFileSystem::ReadFile, it's likely the second time ReadSymlink has been called for the link.
     // The first time getting to the later branch, so IsDirectory is true and hence FullFileName ends with a slash.
-    const UnicodeString SymlinkDir = base::UnixExtractFileDir(base::UnixExcludeTrailingBackslash(SymlinkFile->FullFileName()));
-    const UnicodeString LinkTo = base::AbsolutePath(SymlinkDir, SymlinkFile->LinkTo);
+    const UnicodeString LinkTo = SymlinkFile->GetFullLinkName();
     ReadFile(LinkTo, AFile);
   }
   else
@@ -3923,18 +3929,19 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 {
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
-  int64_t Timestamp;
-  tm * Tm = gmtime(&Time); // localtime(&Time);
-  if (Tm != nullptr)
+  int64_t Timestamp{};
+  tm Tm{};
+  errno_t Err = gmtime_s(&Tm, &Time); // localtime(&Time);
+  if (Err == 0)
   {
     SYSTEMTIME SystemTime;
-    SystemTime.wYear = nb::ToWord(Tm->tm_year + 1900);
-    SystemTime.wMonth = nb::ToWord(Tm->tm_mon + 1);
+    SystemTime.wYear = nb::ToWord(Tm.tm_year + 1900);
+    SystemTime.wMonth = nb::ToWord(Tm.tm_mon + 1);
     SystemTime.wDayOfWeek = 0;
-    SystemTime.wDay = nb::ToWord(Tm->tm_mday);
-    SystemTime.wHour = nb::ToWord(Tm->tm_hour);
-    SystemTime.wMinute = nb::ToWord(Tm->tm_min);
-    SystemTime.wSecond = nb::ToWord(Tm->tm_sec);
+    SystemTime.wDay = nb::ToWord(Tm.tm_mday);
+    SystemTime.wHour = nb::ToWord(Tm.tm_hour);
+    SystemTime.wMinute = nb::ToWord(Tm.tm_min);
+    SystemTime.wSecond = nb::ToWord(Tm.tm_sec);
     SystemTime.wMilliseconds = 0;
 
     FILETIME LocalTime;
@@ -4625,7 +4632,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->SetLinkTo(Entry->LinkTarget);
 
-        File->Complete();
+        // File->Complete();
       }
       catch (Exception &E)
       {

@@ -13,15 +13,15 @@ jobs:
       fail-fast: false
       matrix:
         build: [
-                 ninja_cl_x64_release,
-                 ninja_cl_x86_release,
-                 ninja_cl_ARM64_release,
+                 cl_x64_release,
+                 cl_x86_release,
+                 cl_ARM64_release,
                ]
 
         include:
-          - { build: ninja_cl_x64_release,    arch: amd64,       platform: x64,   }
-          - { build: ninja_cl_x86_release,    arch: amd64_x86,   platform: x86,   }
-          - { build: ninja_cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
+          - { build: cl_x64_release,    arch: amd64,       platform: x64,   }
+          - { build: cl_x86_release,    arch: amd64_x86,   platform: x86,   }
+          - { build: cl_ARM64_release,  arch: amd64_arm64, platform: ARM64, }
 
     env:
       BUILD_TYPE: RelWithDebInfo
@@ -112,7 +112,7 @@ jobs:
       - name: Create release
         shell: bash
         run: |
-          gh release create v${{ env.version }} --draft --generate-notes --title "NetBox ${{ env.version }}" FarNetBox/*.7z
+          gh release create v${{ env.version }} --draft --generate-notes --title "NetBox ${{ env.version_short }}" FarNetBox/*.7z
         env:
           # GITHUB_TOKEN: ${{ secrets.NETBOX_GITHUB_TOKEN }}
           GH_TOKEN: ${{ github.token }}

@@ -132,6 +132,7 @@ public:
   void SetListingStr(const UnicodeString & Value);
   UnicodeString GetListingStr() const;
   UnicodeString GetRightsStr() const;
+  UnicodeString GetFullLinkName() const;
   wchar_t GetType() const;
   void SetType(wchar_t AType);
   void SetTerminal(const TTerminal * Value);

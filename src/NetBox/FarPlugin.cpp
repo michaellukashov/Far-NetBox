@@ -1523,15 +1523,19 @@ void TCustomFarPlugin::ShowTerminalScreen(const UnicodeString & Command)
       nb::ClearStruct(Info);
       Info.StructSize = sizeof(Info);
       FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_ACTIVE);
-      if(Info.Flags & PFLAGS_VISIBLE)
-        goto clearall;
-      nb::ClearStruct(Info);
-      Info.StructSize = sizeof(Info);
-      FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_PASSIVE);
-      if (Info.Flags&PFLAGS_VISIBLE)
+      if (Info.Flags & PFLAGS_VISIBLE)
       {
-clearall:
         Y = 0;
+      }
+      else
+      {
+        nb::ClearStruct(Info);
+        Info.StructSize = sizeof(Info);
+        FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_PASSIVE);
+        if (Info.Flags & PFLAGS_VISIBLE)
+        {
+          Y = 0;
+        }
       }
     }
     UnicodeString Blank = ::StringOfChar(L' ', Size.x);
@@ -1539,12 +1543,12 @@ clearall:
     {
       Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
     } while (++Y < Size.y);
-    if(Command.Length() && Size.x > 2)
+    if (Command.Length() && Size.x > 2)
     {
       Blank = Command;
       Blank.Insert(0, L"$ ", 2);
-      if(Blank.Length() > Size.x) Blank.SetLength(Size.x);
-      if(Cursor.y == Y-1) --Cursor.y; // !'Show key bar'
+      if (Blank.Length() > Size.x) Blank.SetLength(Size.x);
+      if (Cursor.y == Y-1) --Cursor.y; // !'Show key bar'
       Text(0, Cursor.y, 7 /*LIGHTGRAY*/, Blank);
       ++Cursor.y;
     }

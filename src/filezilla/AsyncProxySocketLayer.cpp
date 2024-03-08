@@ -264,8 +264,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       //No auth needed
       //Send connection request
       const char *lpszAsciiHost = m_pProxyPeerHost?m_pProxyPeerHost:"";
-      char *command=nb::chcalloc(10+nb::safe_strlen(lpszAsciiHost)+1);
-      memset(command,0,10+nb::safe_strlen(lpszAsciiHost)+1);
+      char *command=nb::chcalloc(11+nb::safe_strlen(lpszAsciiHost)+1);
+      memset(command,0,11+nb::safe_strlen(lpszAsciiHost)+1);
       command[0]=5;
       command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2;
       command[2]=0;
@@ -279,7 +279,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       else
       {
         command[len]=(char)nb::safe_strlen(lpszAsciiHost);
-        strncpy_s(&command[len+1], 10+nb::safe_strlen(lpszAsciiHost)+1, lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
+        strncpy_s(&command[len+1], 11+nb::safe_strlen(lpszAsciiHost)+1, lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
         len += (int)nb::safe_strlen(lpszAsciiHost) + 1;
       }
       nbstr_memcpy(&command[len], &m_nProxyPeerPort, 2);
@@ -327,8 +327,8 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
           return;
         }
         const char * lpszAsciiHost = m_pProxyPeerHost?m_pProxyPeerHost:"";
-        char *command = nb::chcalloc(10+nb::safe_strlen(lpszAsciiHost)+1);
-        memset(command,0,10+nb::safe_strlen(lpszAsciiHost)+1);
+        char *command = nb::chcalloc(11+nb::safe_strlen(lpszAsciiHost)+1);
+        memset(command,0,11+nb::safe_strlen(lpszAsciiHost)+1);
         command[0]=5;
         command[1]=(m_nProxyOpID==PROXYOP_CONNECT)?1:2;
         command[2]=0;
@@ -342,7 +342,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         else
         {
           command[len]=(char)nb::safe_strlen(lpszAsciiHost);
-          strncpy_s(&command[len+1], 10+nb::safe_strlen(lpszAsciiHost)+1, lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
+          strncpy_s(&command[len+1], 11+nb::safe_strlen(lpszAsciiHost)+1, lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
           len+=(int)nb::safe_strlen(lpszAsciiHost)+1;
         }
         nbstr_memcpy(&command[len],&m_nProxyPeerPort,2);
