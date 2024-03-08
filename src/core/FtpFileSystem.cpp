@@ -140,7 +140,7 @@ bool TFileZillaImpl::HandleTransferStatus(bool Valid, int64_t TransferSize,
 
 bool TFileZillaImpl::HandleReply(int32_t Command, int64_t Reply)
 {
-  return FFileSystem->HandleReply(Command, Reply);
+  return FFileSystem->HandleReply(Command, nb::ToUInt32(Reply));
 }
 
 bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities * ServerCapabilities)
