@@ -489,7 +489,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   return UnicodeString();
 }
 
-UnicodeString ModificationStr(const TDateTime &DateTime,
+UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision)
 {
   uint16_t Year, Month, Day, Hour, Min, Sec, MSec;
@@ -2430,10 +2430,10 @@ struct TDateTimeParams : public TObject
 using TYearlyDateTimeParams = nb::map_t<int, TDateTimeParams>;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static TCriticalSection DateTimeParamsSection;
-static void EncodeDSTMargin(const SYSTEMTIME &Date, uint16_t Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result);
 
-static uint16_t DecodeYear(const TDateTime &DateTime)
+static uint16_t DecodeYear(const TDateTime & DateTime)
 {
   uint16_t Year, Month, Day;
   DecodeDate(DateTime, Year, Month, Day);
@@ -2811,7 +2811,7 @@ UnicodeString SizeToStr(int64_t ASize)
   return Result;
 }
 
-static int64_t DateTimeToUnix(const TDateTime &DateTime)
+static int64_t DateTimeToUnix(const TDateTime & DateTime)
 {
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 
