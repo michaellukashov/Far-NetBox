@@ -165,7 +165,7 @@ public:
   static void SetResourceModule(void * ResourceHandle);
 
   explicit TFileZillaIntf() noexcept;
-  virtual ~TFileZillaIntf() noexcept;
+  virtual ~TFileZillaIntf() noexcept override;
 
   bool Init();
   void Destroying();
