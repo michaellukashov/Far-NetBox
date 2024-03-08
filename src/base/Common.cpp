@@ -2382,36 +2382,25 @@ TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
 
 struct TDateTimeParams : public TObject
 {
-  TDateTimeParams() :
-    BaseDifference(0.0),
-    BaseDifferenceSec(0),
-    CurrentDaylightDifference(0.0),
-    CurrentDaylightDifferenceSec(0),
-    CurrentDifference(0.0),
-    CurrentDifferenceSec(0),
-    StandardDifference(0.0),
-    StandardDifferenceSec(0),
-    DaylightDifference(0.0),
-    DaylightDifferenceSec(0),
-    DaylightHack(false)
+  TDateTimeParams()
   {
     nb::ClearStruct(SystemStandardDate);
     nb::ClearStruct(SystemDaylightDate);
   }
 
   TDateTime UnixEpoch{};
-  double BaseDifference{0.};
-  int32_t BaseDifferenceSec{};
+  double BaseDifference{0.0};
+  int32_t BaseDifferenceSec{0};
   // All Current* are actually global, not per-year and
   // are valid for Year 0 (current) only
-  double CurrentDaylightDifference{};
-  int32_t CurrentDaylightDifferenceSec{};
-  double CurrentDifference{};
-  int32_t CurrentDifferenceSec{};
-  double StandardDifference{};
-  int32_t StandardDifferenceSec{};
-  double DaylightDifference{};
-  int32_t DaylightDifferenceSec{};
+  double CurrentDaylightDifference{0.0};
+  int32_t CurrentDaylightDifferenceSec{0};
+  double CurrentDifference{0.0};
+  int32_t CurrentDifferenceSec{0};
+  double StandardDifference{0.0};
+  int32_t StandardDifferenceSec{0};
+  double DaylightDifference{0.0};
+  int32_t DaylightDifferenceSec{0};
   SYSTEMTIME SystemStandardDate{};
   SYSTEMTIME SystemDaylightDate{};
   TDateTime StandardDate{};
@@ -2419,7 +2408,7 @@ struct TDateTimeParams : public TObject
   UnicodeString StandardName;
   UnicodeString DaylightName;
   // This is actually global, not per-year
-  bool DaylightHack{};
+  bool DaylightHack{false};
 
   bool HasDST() const
   {
