@@ -320,7 +320,9 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
 {
   TCustomFarFileSystem * Result{nullptr};
   const RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
+  const bool IsEmptyActiveRect = IsRectEmpty(&ActivePanelBounds);
   const RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
+  const bool IsEmptyPassiveRect = IsRectEmpty(&PassivePanelBounds);
 
   int32_t Index{0};
   while (!Result && (Index < FOpenedPlugins->GetCount()))
@@ -328,11 +330,11 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
     TCustomFarFileSystem * FarFileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
     DebugAssert(FarFileSystem);
     const RECT Bounds = GetPanelBounds(FarFileSystem);
-    if (Another && CompareRects(Bounds, PassivePanelBounds))
+    if (Another && !IsEmptyPassiveRect && CompareRects(Bounds, PassivePanelBounds))
     {
       Result = FarFileSystem;
     }
-    else if (!Another && CompareRects(Bounds, ActivePanelBounds))
+    else if (!Another && !IsEmptyActiveRect && CompareRects(Bounds, ActivePanelBounds))
     {
       Result = FarFileSystem;
     }
