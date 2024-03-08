@@ -163,7 +163,7 @@ public:
 extern void Randomize();
 extern int32_t Random(int32_t Max);
 
-NB_CORE_EXPORT void RaiseLastOSError(DWORD LastError = 0);
+NB_CORE_EXPORT [[noreturn]] void RaiseLastOSError(DWORD LastError = 0);
 //NB_CORE_EXPORT void ShowExtendedException(Exception * E);
 NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
 
