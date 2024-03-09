@@ -85,6 +85,7 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
     FInitialized = false;
   }
 #ifndef NDEBUG
+  g_tinylog->Close();
   SAFE_DESTROY_EX(tinylog::TinyLog, g_tinylog);
 #endif //ifndef NDEBUG
   // DEBUG_PRINTF("begin");

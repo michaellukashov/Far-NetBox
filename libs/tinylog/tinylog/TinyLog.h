@@ -21,19 +21,14 @@ namespace tinylog {
 
 class TinyLogImpl;
 
-class TinyLog
+class TinyLog final
 {
   CUSTOM_MEM_ALLOCATION_IMPL
 public:
   TinyLog() noexcept;
-  // explicit TinyLog(FILE * file) noexcept;
   ~TinyLog() noexcept;
 
-  static auto instance() -> TinyLog * &
-  {
-    static TinyLog * instance_ = new TinyLog();
-    return instance_;
-  }
+  static auto instance() -> TinyLog * &;
 
   void level(Utils::LogLevel log_level);
   void file(FILE * file) noexcept;
@@ -46,6 +41,7 @@ public:
   // TODO: group / groupEnd
 
 private:
+  static TinyLog * instance_;
   std::unique_ptr<TinyLogImpl> impl_;
 
 private:
