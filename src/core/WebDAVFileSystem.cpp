@@ -273,12 +273,14 @@ void TWebDAVFileSystem::OpenUrl(const UnicodeString & Url)
     CorrectedUrl = Url;
   }
   const UnicodeString ParsedPath = ParsePathFromUrl(CorrectedUrl);
+#if defined(__BORLANDC__)
   if (!ParsedPath.IsEmpty())
   {
     // this is most likely pointless as it get overwritten by
     // call to ChangeDirectory() from TTerminal::DoStartup
     FCurrentDirectory = ParsedPath;
   }
+#endif // defined(__BORLANDC__)
 }
 
 void TWebDAVFileSystem::NeonClientOpenSessionInternal(UnicodeString & CorrectedUrl, const UnicodeString & AUrl)
@@ -736,7 +738,7 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
-    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString(ROOTDIRECTORY) : FCurrentDirectory;
+    // FCurrentDirectory is set later during TTerminal::DoStartup execution
   }
   else
   {

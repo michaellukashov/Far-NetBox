@@ -144,8 +144,8 @@ UnicodeString TStrings::GetCommaText() const
 UnicodeString TStrings::GetDelimitedText() const
 {
   UnicodeString Result;
-  const int32_t Count = GetCount();
-  if ((Count == 1) && GetString(0).IsEmpty())
+  const int32_t Cnt = GetCount();
+  if ((Cnt == 1) && GetString(0).IsEmpty())
   {
     Result = GetQuoteChar() + GetQuoteChar();
   }
@@ -250,16 +250,16 @@ UnicodeString TStrings::GetText() const
 UnicodeString TStrings::GetTextStr() const
 {
   UnicodeString Result;
-  const int32_t Count = GetCount();
+  const int32_t Cnt = GetCount();
   int32_t Size = 0;
   const UnicodeString LB(L"\r\n");
-  for (int32_t Index = 0; Index < Count; ++Index)
+  for (int32_t Index = 0; Index < Cnt; ++Index)
   {
     Size += GetString(Index).Length() + LB.Length();
   }
   wchar_t * Buffer = Result.SetLength(Size);
   wchar_t * P = Buffer;
-  for (int32_t Index = 0; Index < Count; ++Index)
+  for (int32_t Index = 0; Index < Cnt; ++Index)
   {
     const UnicodeString S = GetString(Index);
     int32_t L = S.Length() * sizeof(wchar_t);

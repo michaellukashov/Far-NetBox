@@ -135,8 +135,8 @@ class TSecureShell;
 class TSessionLog;
 struct TIEProxyConfig;
 
-constexpr const uint32_t SFTPMinVersion = 0;
-constexpr const uint32_t SFTPMaxVersion = 6;
+constexpr const int32_t SFTPMinVersion = 0;
+constexpr const int32_t SFTPMaxVersion = 6;
 
 class NB_CORE_EXPORT TSessionData final : public TNamedObject
 {

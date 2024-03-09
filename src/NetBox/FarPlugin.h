@@ -349,6 +349,8 @@ protected:
   void SetOwnerFileSystem(TCustomFarFileSystem * Value) { FOwnerFileSystem = Value; }
   bool GetClosed() const { return FClosed; }
   TCustomFarPlugin * GetPlugin() const { return FPlugin; }
+  bool IsConnectedDirectly() const { return FConnectedDirectly; };
+  void SetConnectedDirectly(bool Value = true) { FConnectedDirectly = Value; }
 
 private:
   TCriticalSection FCriticalSection;
@@ -361,6 +363,7 @@ private:
   gsl::not_null<TCustomFarPlugin *> FPlugin;
   bool FClosed{false};
   static uint32_t FInstances;
+  bool FConnectedDirectly{false};
 
   void ClearOpenPanelInfo(OpenPanelInfo & Info);
   TObjectList * CreatePanelItemList(struct PluginPanelItem * PanelItem, int32_t ItemsNumber);

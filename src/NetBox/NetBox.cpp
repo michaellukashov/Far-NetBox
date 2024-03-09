@@ -9,6 +9,8 @@
 #include "FarDialog.h"
 #include "plugin_version.hpp"
 
+static HINSTANCE HInstanceDLL;
+
 // extern void InitExtensionModule(HINSTANCE HInst);
 // extern void TermExtensionModule();
 extern TCustomFarPlugin * CreateFarPlugin(HINSTANCE HInst);
@@ -23,12 +25,27 @@ public:
   }
 };
 
+void CreatePlugin()
+{
+  FarPlugin = CreateFarPlugin(HInstanceDLL);
+#if !defined(NO_FILEZILLA)
+  InitExtensionModule(HInstanceDLL);
+#endif //if !defined(NO_FILEZILLA)
+}
+
+void DestroyPlugin()
+{
+  DestroyFarPlugin(FarPlugin);
+  TermExtensionModule();
+}
+
 extern "C" {
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo * Info)
 {
   if (!Info || (Info->StructSize < sizeof(GlobalInfo)))
     return;
+  CreatePlugin();
   Info->StructSize = sizeof(*Info);
   Info->MinFarVersion = MAKEFARVERSION(FARMANAGERVERSION_MAJOR, FARMANAGERVERSION_MINOR, FARMANAGERVERSION_REVISION, FARMANAGERVERSION_BUILD, FARMANAGERVERSION_STAGE);
   Info->Version = MAKEFARVERSION(NETBOX_VERSION_MAJOR, NETBOX_VERSION_MINOR, NETBOX_VERSION_PATCH, NETBOX_VERSION_BUILD, VS_RELEASE);
@@ -51,8 +68,12 @@ void WINAPI ExitFARW(const struct ExitInfo * Info)
 {
   if (!Info || (Info->StructSize < sizeof(ExitInfo)))
     return;
-  const TFarPluginGuard Guard;
-  FarPlugin->ExitFAR();
+  {
+    const TFarPluginGuard Guard;
+    FarPlugin->ExitFAR();
+  }
+  // Now Guard is released
+  DestroyPlugin();
 }
 
 void WINAPI GetPluginInfoW(PluginInfo * Info)
@@ -225,50 +246,20 @@ HANDLE WINAPI OpenW(const struct OpenInfo * Info)
   DebugAssert(FarPlugin);
   const TFarPluginGuard Guard;
   const HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
+  if (!Handle && Info->OpenFrom == OPEN_ANALYSE)
+  {
+    return PANEL_STOP;
+  }
   return Handle;
 }
 
-static int32_t Processes = 0;
-
-BOOL DllProcessAttach(HINSTANCE HInstance)
+BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
 {
-  FarPlugin = CreateFarPlugin(HInstance);
-
-  DebugAssert(!Processes);
-  Processes++;
-#if !defined(NO_FILEZILLA)
-  InitExtensionModule(HInstance);
-#endif //if !defined(NO_FILEZILLA)
-  return TRUE;
-}
-
-BOOL DllProcessDetach()
-{
-  DebugAssert(Processes);
-  Processes--;
-  if (!Processes)
+  if (Reason == DLL_PROCESS_ATTACH)
   {
-    DebugAssert(FarPlugin);
-    DestroyFarPlugin(FarPlugin);
-    TermExtensionModule();
+    HInstanceDLL = HInstDLL;
   }
   return TRUE;
-}
-
-BOOL WINAPI DllMain(HINSTANCE HInstance, DWORD Reason, LPVOID /*ptr*/ )
-{
-  BOOL Result = TRUE;
-  switch (Reason)
-  {
-    case DLL_PROCESS_ATTACH:
-      Result = DllProcessAttach(HInstance);
-      break;
-
-    case DLL_PROCESS_DETACH:
-      Result = DllProcessDetach();
-      break;
-  }
-  return Result;
 }
 
 } // extern "C"

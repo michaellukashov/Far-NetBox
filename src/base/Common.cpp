@@ -489,7 +489,7 @@ UnicodeString UserModificationStr(const TDateTime & DateTime,
   return UnicodeString();
 }
 
-UnicodeString ModificationStr(const TDateTime &DateTime,
+UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision)
 {
   uint16_t Year, Month, Day, Hour, Min, Sec, MSec;
@@ -2298,7 +2298,8 @@ DWORD FileGetAttrFix(const UnicodeString & AFileName)
     // WORKAROUND:
     // FileGetAttr when called for link with FollowLink set (default) will always fail on pre-Vista
     // as it calls InternalGetFileNameFromSymLink, which test for CheckWin32Version(6, 0)
-    Result = GetFileAttributes(AFileName.c_str());
+    const UnicodeString FileName = ApiPath(AFileName);
+    Result = GetFileAttributes(FileName.c_str());
     if ((Result >= 0) && FLAGSET(Result, faSymLink) && IsWinVista())
     {
       try
@@ -2308,7 +2309,7 @@ DWORD FileGetAttrFix(const UnicodeString & AFileName)
         // On Samba, InternalGetFileNameFromSymLink fails and returns true but empty target.
         // That confuses FileGetAttr, which returns attributes of the parent folder instead.
         // Using FileGetSymLinkTarget solves the problem, as it returns false.
-        if (!FileGetSymLinkTarget(AFileName, TargetName))
+        if (!FileGetSymLinkTarget(FileName, TargetName))
         {
           // FileGetAttr would return faInvalid (-1), but we want to allow an upload from Samba,
           // so returning the symlink attributes => noop
@@ -2381,36 +2382,25 @@ TDateTime SystemTimeToDateTimeVerbose(const SYSTEMTIME & SystemTime)
 
 struct TDateTimeParams : public TObject
 {
-  TDateTimeParams() :
-    BaseDifference(0.0),
-    BaseDifferenceSec(0),
-    CurrentDaylightDifference(0.0),
-    CurrentDaylightDifferenceSec(0),
-    CurrentDifference(0.0),
-    CurrentDifferenceSec(0),
-    StandardDifference(0.0),
-    StandardDifferenceSec(0),
-    DaylightDifference(0.0),
-    DaylightDifferenceSec(0),
-    DaylightHack(false)
+  TDateTimeParams()
   {
     nb::ClearStruct(SystemStandardDate);
     nb::ClearStruct(SystemDaylightDate);
   }
 
   TDateTime UnixEpoch{};
-  double BaseDifference{0.};
-  int32_t BaseDifferenceSec{};
+  double BaseDifference{0.0};
+  int32_t BaseDifferenceSec{0};
   // All Current* are actually global, not per-year and
   // are valid for Year 0 (current) only
-  double CurrentDaylightDifference{};
-  int32_t CurrentDaylightDifferenceSec{};
-  double CurrentDifference{};
-  int32_t CurrentDifferenceSec{};
-  double StandardDifference{};
-  int32_t StandardDifferenceSec{};
-  double DaylightDifference{};
-  int32_t DaylightDifferenceSec{};
+  double CurrentDaylightDifference{0.0};
+  int32_t CurrentDaylightDifferenceSec{0};
+  double CurrentDifference{0.0};
+  int32_t CurrentDifferenceSec{0};
+  double StandardDifference{0.0};
+  int32_t StandardDifferenceSec{0};
+  double DaylightDifference{0.0};
+  int32_t DaylightDifferenceSec{0};
   SYSTEMTIME SystemStandardDate{};
   SYSTEMTIME SystemDaylightDate{};
   TDateTime StandardDate{};
@@ -2418,7 +2408,7 @@ struct TDateTimeParams : public TObject
   UnicodeString StandardName;
   UnicodeString DaylightName;
   // This is actually global, not per-year
-  bool DaylightHack{};
+  bool DaylightHack{false};
 
   bool HasDST() const
   {
@@ -2440,10 +2430,10 @@ struct TDateTimeParams : public TObject
 using TYearlyDateTimeParams = nb::map_t<int, TDateTimeParams>;
 static TYearlyDateTimeParams YearlyDateTimeParams;
 static TCriticalSection DateTimeParamsSection;
-static void EncodeDSTMargin(const SYSTEMTIME &Date, uint16_t Year,
+static void EncodeDSTMargin(const SYSTEMTIME & Date, uint16_t Year,
   TDateTime & Result);
 
-static uint16_t DecodeYear(const TDateTime &DateTime)
+static uint16_t DecodeYear(const TDateTime & DateTime)
 {
   uint16_t Year, Month, Day;
   DecodeDate(DateTime, Year, Month, Day);
@@ -2821,7 +2811,7 @@ UnicodeString SizeToStr(int64_t ASize)
   return Result;
 }
 
-static int64_t DateTimeToUnix(const TDateTime &DateTime)
+static int64_t DateTimeToUnix(const TDateTime & DateTime)
 {
   const TDateTimeParams * CurrentParams = GetDateTimeParams(0);
 

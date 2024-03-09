@@ -121,7 +121,7 @@ protected:
   gsl::owner<TSecureShell *> FSecureShell{nullptr};
   TFileSystemInfo FFileSystemInfo{};
   bool FFileSystemInfoValid{false};
-  uint32_t FVersion{0};
+  int32_t FVersion{0};
   UnicodeString FCurrentDirectory;
   UnicodeString FDirectoryToChangeTo;
   UnicodeString FHomeDirectory;

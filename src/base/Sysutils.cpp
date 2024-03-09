@@ -79,7 +79,7 @@ Exception::Exception(TObjectClassId Kind, int32_t Ident) noexcept :
   Message = FMTLOAD(Ident);
 }
 
-void RaiseLastOSError(DWORD LastError)
+[[noreturn]] void RaiseLastOSError(DWORD LastError)
 {
   if (LastError == 0)
     LastError = ::GetLastError();
@@ -752,7 +752,7 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
       }
 
       /* copy as many words as will fit onto the current line */
-      while (*S && (nb::StrLength(S) + 1) <= SpaceLeft)
+      while (S && *S && (nb::StrLength(S) + 1) <= SpaceLeft)
       {
         if (Result.Length() == 0)
         {
@@ -779,12 +779,12 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
           S = NextWord(nullptr);
         }
       }
-      if (!*S)
+      if (S && !*S)
       {
         S = NextWord(nullptr);
       }
 
-      if (*S)
+      if (S && *S)
       {
         /* add a new line here */
         if (Result.Length() == 0)

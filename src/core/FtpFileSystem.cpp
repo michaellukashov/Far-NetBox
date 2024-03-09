@@ -140,7 +140,7 @@ bool TFileZillaImpl::HandleTransferStatus(bool Valid, int64_t TransferSize,
 
 bool TFileZillaImpl::HandleReply(int32_t Command, int64_t Reply)
 {
-  return FFileSystem->HandleReply(Command, Reply);
+  return FFileSystem->HandleReply(Command, nb::ToUInt32(Reply));
 }
 
 bool TFileZillaImpl::HandleCapabilities(TFTPServerCapabilities * ServerCapabilities)
@@ -1321,7 +1321,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
   const UnicodeString & Alg, TStrings * FileList, TCalculatedChecksumEvent && OnCalculatedChecksum,
   TFileOperationProgressType * OperationProgress, bool FirstLevel)
 {
-  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::move(OnCalculatedChecksum), OperationProgress, FirstLevel);
+  FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, FirstLevel);
 
   int32_t Index = 0;
   TOnceDoneOperation OnceDoneOperation; // not used
@@ -1329,7 +1329,7 @@ void TFTPFileSystem::CalculateFilesChecksum(
   int32_t Index1 = 0;
   while ((Index1 < FileList->GetCount()) && !OperationProgress->GetCancel())
   {
-    TRemoteFile * File = FileList->GetAs<TRemoteFile>(Index1);
+    const TRemoteFile * File = FileList->GetAs<TRemoteFile>(Index1);
     DebugAssert(File != nullptr);
 
     if (File && !File->GetIsDirectory())
@@ -1723,7 +1723,7 @@ void TFTPFileSystem::Sink(
   if (DestFileName != UserData.FileName)
   {
     DestFullName = TargetDir + UserData.FileName;
-    Attrs = FileGetAttrFix(ApiPath(DestFullName));
+    Attrs = FileGetAttrFix(DestFullName);
   }
 
   const UnicodeString ExpandedDestFullName = ExpandUNCFileName(DestFullName);
@@ -1994,6 +1994,8 @@ void TFTPFileSystem::DoStartup()
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
   FHomeDirectory = FCurrentDirectory;
+  // clear FCurrentDirectory (it will be set later during TTerminal::DoStartup execution)
+  FCurrentDirectory.Clear();
 }
 
 void TFTPFileSystem::HomeDirectory()
@@ -3125,7 +3127,7 @@ void TFTPFileSystem::PoolForFatalNonCommandReply()
 
   FWaitingForReply = true;
 
-  uint32_t Reply;
+  uint32_t Reply = 0;
 
   try__finally
   {
@@ -3929,18 +3931,19 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
 {
   // This reverses how FZAPI converts FILETIME to time_t,
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
-  int64_t Timestamp;
-  tm * Tm = gmtime(&Time); // localtime(&Time);
-  if (Tm != nullptr)
+  int64_t Timestamp{};
+  tm Tm{};
+  errno_t Err = gmtime_s(&Tm, &Time); // localtime(&Time);
+  if (Err == 0)
   {
     SYSTEMTIME SystemTime;
-    SystemTime.wYear = nb::ToWord(Tm->tm_year + 1900);
-    SystemTime.wMonth = nb::ToWord(Tm->tm_mon + 1);
+    SystemTime.wYear = nb::ToWord(Tm.tm_year + 1900);
+    SystemTime.wMonth = nb::ToWord(Tm.tm_mon + 1);
     SystemTime.wDayOfWeek = 0;
-    SystemTime.wDay = nb::ToWord(Tm->tm_mday);
-    SystemTime.wHour = nb::ToWord(Tm->tm_hour);
-    SystemTime.wMinute = nb::ToWord(Tm->tm_min);
-    SystemTime.wSecond = nb::ToWord(Tm->tm_sec);
+    SystemTime.wDay = nb::ToWord(Tm.tm_mday);
+    SystemTime.wHour = nb::ToWord(Tm.tm_hour);
+    SystemTime.wMinute = nb::ToWord(Tm.tm_min);
+    SystemTime.wSecond = nb::ToWord(Tm.tm_sec);
     SystemTime.wMilliseconds = 0;
 
     FILETIME LocalTime;
@@ -4504,13 +4507,13 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   if (Source.HasDate)
   {
     DateTime =
-      EncodeDateVerbose(static_cast<uint16_t>(Source.Year), static_cast<uint16_t>(Source.Month),
-        static_cast<uint16_t>(Source.Day));
+      EncodeDateVerbose(Source.Year, Source.Month,
+        Source.Day);
     if (Source.HasTime)
     {
       DateTime = DateTime + 
-        EncodeTimeVerbose(static_cast<uint16_t>(Source.Hour), static_cast<uint16_t>(Source.Minute),
-          static_cast<uint16_t>(Source.Second), 0);
+        EncodeTimeVerbose(Source.Hour, Source.Minute,
+          Source.Second, 0);
       ModificationFmt = Source.HasSeconds ? mfFull : (Source.HasYear ? mfYMDHM : mfMDHM);
 
       // With IIS, the Utc should be false only for MDTM
@@ -4534,7 +4537,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
   {
     // With SCP we estimate date to be today, if we have at least time
 
-    DateTime = static_cast<double>(0.0);
+    DateTime = 0.0;
     ModificationFmt = mfNone;
   }
 }
