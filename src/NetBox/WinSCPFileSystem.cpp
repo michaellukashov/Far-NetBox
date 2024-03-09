@@ -2864,7 +2864,8 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
       {
-        const UnicodeString XmlFileName = ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName;
+        const bool Relative = ::ExtractFilePath(FileName).IsEmpty();
+        const UnicodeString XmlFileName = Relative ? ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName : FileName;
         std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
         ImportStorage->Init();
         ImportStorage->SetAccessMode(smRead);
