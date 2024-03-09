@@ -155,19 +155,23 @@ int32_t TinyLogImpl::MainLoop()
   return 0;
 }
 
+TinyLog * TinyLog::instance_ = nullptr;
+
 TinyLog::TinyLog() noexcept :
   impl_(std::make_unique<TinyLogImpl>(nullptr))
 {
 }
 
-/*TinyLog::TinyLog(FILE * file) noexcept :
-  impl_(std::make_unique<TinyLogImpl>(file))
-{
-  assert(file != nullptr);
-}*/
-
 TinyLog::~TinyLog() noexcept
 {
+  instance_ = nullptr;
+}
+
+auto TinyLog::instance() -> TinyLog * &
+{
+  if (!instance_)
+    instance_ = new TinyLog();
+  return instance_;
 }
 
 void TinyLog::level(Utils::LogLevel log_level)
