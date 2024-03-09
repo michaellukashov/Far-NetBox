@@ -29,9 +29,9 @@ public:
   // explicit TinyLog(FILE * file) noexcept;
   ~TinyLog() noexcept;
 
-  static auto instance() -> TinyLog &
+  static auto instance() -> TinyLog * &
   {
-    static TinyLog instance_;
+    static TinyLog * instance_ = new TinyLog();
     return instance_;
   }
 
@@ -107,23 +107,23 @@ protected:
 
 #define g_tinylog (tinylog::TinyLog::instance())
 
-#define TINYLOG_TRACE(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_TRACE) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_TRACE)
+#define TINYLOG_TRACE(logger) if (logger && logger->GetLogLevel() <= tinylog::Utils::LEVEL_TRACE) \
+  logger->GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_TRACE)
 
-#define TINYLOG_DEBUG(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_DEBUG) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_DEBUG)
+#define TINYLOG_DEBUG(logger) if (logger && logger->GetLogLevel() <= tinylog::Utils::LEVEL_DEBUG) \
+  logger->GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_DEBUG)
 
-#define TINYLOG_INFO(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_INFO) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_INFO)
+#define TINYLOG_INFO(logger) if (logger && logger->GetLogLevel() <= tinylog::Utils::LEVEL_INFO) \
+  logger->GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_INFO)
 
-#define TINYLOG_WARNING(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_WARNING) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_WARNING)
+#define TINYLOG_WARNING(logger) if (logger && logger->GetLogLevel() <= tinylog::Utils::LEVEL_WARNING) \
+  logger->GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_WARNING)
 
-#define TINYLOG_ERROR(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_ERROR) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_ERROR)
+#define TINYLOG_ERROR(logger) if (logger && logger->GetLogLevel() <= tinylog::Utils::LEVEL_ERROR) \
+  logger->GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_ERROR)
 
-#define TINYLOG_FATAL(logger) if (logger.GetLogLevel() <= tinylog::Utils::LEVEL_FATAL) \
-  logger.GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_FATAL)
+#define TINYLOG_FATAL(logger) if (logger && logger->GetLogLevel() <= tinylog::Utils::LEVEL_FATAL) \
+  logger->GetLogStream(__FILE__, __LINE__, __func__, tinylog::Utils::LEVEL_FATAL)
 
 template<typename... Args>
 static inline std::string repr(const char * fmt, Args &&... args)
