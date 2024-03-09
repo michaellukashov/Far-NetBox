@@ -225,6 +225,10 @@ HANDLE WINAPI OpenW(const struct OpenInfo * Info)
   DebugAssert(FarPlugin);
   const TFarPluginGuard Guard;
   const HANDLE Handle = static_cast<HANDLE>(FarPlugin->OpenPlugin(Info));
+  if (!Handle && Info->OpenFrom == OPEN_ANALYSE)
+  {
+    return PANEL_STOP;
+  }
   return Handle;
 }
 
