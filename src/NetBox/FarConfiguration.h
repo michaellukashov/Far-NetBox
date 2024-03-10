@@ -81,7 +81,7 @@ public:
   UnicodeString GetPuttygenPath() const { return FPuttygenPath; }
   void SetPuttygenPath(const UnicodeString & Value) { FPuttygenPath = Value; }
   TBookmarkList * GetBookmarks(const UnicodeString & Key);
-  void SetBookmarks(const UnicodeString & Key, TBookmarkList * Value);
+  void SetBookmarks(const UnicodeString & Key, const TBookmarkList * Value);
 
 public:
   virtual UnicodeString TemporaryDir(bool Mask = false) const override { return ""; }
