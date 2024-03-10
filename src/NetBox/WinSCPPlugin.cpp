@@ -64,11 +64,11 @@ TWinSCPPlugin::TWinSCPPlugin(HINSTANCE HInst) noexcept :
   const UnicodeString DbgFileName = GetDbgPath("NETBOX_DBG");
   GetGlobals()->SetupDbgHandles(DbgFileName);
   // setup tinylog
-  g_tinylog.level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
+  g_tinylog->level(tinylog::Utils::LEVEL_TRACE); // TODO: read from config file
   FILE * LogFile = base::LocalOpenFileForWriting("%TEMP%/netbox-dbglog.txt"); // TODO: read from config file
   if (LogFile)
   {
-    g_tinylog.file(LogFile);
+    g_tinylog->file(LogFile);
   }
   // TODO: icecream::ic.output(logFile);
   // IC();
@@ -84,6 +84,10 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
     CoreFinalize();
     FInitialized = false;
   }
+#ifndef NDEBUG
+  g_tinylog->Close();
+  SAFE_DESTROY_EX(tinylog::TinyLog, g_tinylog);
+#endif //ifndef NDEBUG
   // DEBUG_PRINTF("begin");
 }
 
@@ -272,6 +276,7 @@ int32_t TWinSCPPlugin::ProcessEditorInputEx(const INPUT_RECORD * Rec)
 TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t Item)
 {
   std::unique_ptr<TWinSCPFileSystem> FileSystem;
+  bool Success = true;
   CoreInitializeOnce();
   // DEBUG_PRINTF("OpenFrom: %d", (int)OpenFrom);
 
@@ -348,8 +353,9 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           DebugAssert(false);
           Abort();
         }
-        FileSystem->Connect(Session.get());
-        if (!Directory.IsEmpty())
+        FileSystem->SetConnectedDirectly();
+        Success = FileSystem->Connect(Session.get());
+        if (Success && !Directory.IsEmpty())
         {
           FileSystem->SetDirectoryEx(Directory, OPM_SILENT);
         }
@@ -378,14 +384,18 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         DebugAssert(false);
         Abort();
       }
-      FileSystem->Connect(Session.get());
+      FileSystem->SetConnectedDirectly();
+      Success = FileSystem->Connect(Session.get());
     }
     else
     {
       DebugAssert(false);
     }
   }
-
+  if (!Success)
+  {
+    FileSystem.reset(nullptr);
+  }
   return FileSystem.release();
 }
 

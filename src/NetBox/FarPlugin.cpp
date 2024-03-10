@@ -26,48 +26,95 @@ public:
     TSimpleThread(OBJECT_CLASS_TPluginIdleThread),
     FPlugin(Plugin),
     FMillisecs(Millisecs)
-  {}
+  {
+    pthread_mutex_init(&FMutex, nullptr);
+    pthread_cond_init(&FCond, nullptr);
+  }
 
   virtual ~TPluginIdleThread() noexcept override
   {
-    SAFE_CLOSE_HANDLE(FEvent);
     TPluginIdleThread::Terminate();
     WaitFor();
+    pthread_cond_destroy(&FCond);
+    pthread_mutex_destroy(&FMutex);
   }
 
   virtual void Execute() override
   {
+    DWORD Timeout = INFINITE;
+    pthread_mutex_lock(&FMutex);
     while (!IsFinished())
     {
-      if (::WaitForSingleObject(FEvent, FMillisecs) != WAIT_FAILED)
+      while (!FCheckCondition)
       {
-        if (!IsFinished() && FPlugin && FPlugin->GetPluginHandle())
+        const int Result = pthread_cond_timedwait(&FCond, &FMutex, Timeout);
+        if ((Result == WAIT_TIMEOUT) && IsActive() && !IsFinished() && FPlugin && FPlugin->GetPluginHandle())
+        {
           FPlugin->FarAdvControl(ACTL_SYNCHRO, 0, nullptr);
+        }
       }
+      FCheckCondition = false;
+      Timeout = IsActive() ? FMillisecs : INFINITE;
     }
-    if (!IsFinished())
-      SAFE_CLOSE_HANDLE(FEvent);
+    pthread_mutex_unlock(&FMutex);
   }
 
   virtual void Terminate() override
   {
-    // TCompThread::Terminate();
-    FFinished = true;
-    if (FEvent)
-      ::SetEvent(FEvent);
+    TCallback DoFinish = [this]
+    {
+      if (FFinished)
+      {
+        return false;
+      }
+      FFinished = true;
+      return true;
+    };
+    WakeThread(DoFinish);
   }
 
   void InitIdleThread(const UnicodeString & Name)
   {
     TSimpleThread::InitSimpleThread(Name);
-    FEvent = ::CreateEvent(nullptr, false, false, nullptr);
     Start();
   }
 
+  void SetActivation(bool Increase)
+  {
+    TCallback ChangeActivation = [this, Increase]
+    {
+      const auto OldValue = FActivations;
+      FActivations += Increase ? 1 : -1;
+      return !(OldValue > 0 && FActivations > 0);
+    };
+    WakeThread(ChangeActivation);
+  }
+
 private:
+  using TCallback = std::function<bool()>;
+  
+  void WakeThread(const TCallback & Callback)
+  {
+    pthread_mutex_lock(&FMutex);
+    if (Callback())
+    {
+      FCheckCondition = true;
+      pthread_cond_signal(&FCond);
+    }
+    pthread_mutex_unlock(&FMutex);
+  }
+
+  bool IsActive() const
+  {
+    return FActivations > 0;
+  }
+
   gsl::not_null<TCustomFarPlugin *> FPlugin;
-  HANDLE FEvent{INVALID_HANDLE_VALUE};
   DWORD FMillisecs{0};
+  int FActivations{0};
+  bool FCheckCondition{false};
+  pthread_mutex_t FMutex{nullptr};
+  pthread_cond_t FCond{nullptr};
 };
 
 TCustomFarPlugin::TCustomFarPlugin(TObjectClassId Kind, HINSTANCE HInst) noexcept :
@@ -320,7 +367,9 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
 {
   TCustomFarFileSystem * Result{nullptr};
   const RECT ActivePanelBounds = GetPanelBounds(PANEL_ACTIVE);
+  const bool IsEmptyActiveRect = IsRectEmpty(&ActivePanelBounds);
   const RECT PassivePanelBounds = GetPanelBounds(PANEL_PASSIVE);
+  const bool IsEmptyPassiveRect = IsRectEmpty(&PassivePanelBounds);
 
   int32_t Index{0};
   while (!Result && (Index < FOpenedPlugins->GetCount()))
@@ -328,11 +377,11 @@ TCustomFarFileSystem * TCustomFarPlugin::GetPanelFileSystem(bool Another,
     TCustomFarFileSystem * FarFileSystem = FOpenedPlugins->GetAs<TCustomFarFileSystem>(Index);
     DebugAssert(FarFileSystem);
     const RECT Bounds = GetPanelBounds(FarFileSystem);
-    if (Another && CompareRects(Bounds, PassivePanelBounds))
+    if (Another && !IsEmptyPassiveRect && CompareRects(Bounds, PassivePanelBounds))
     {
       Result = FarFileSystem;
     }
-    else if (!Another && CompareRects(Bounds, ActivePanelBounds))
+    else if (!Another && !IsEmptyActiveRect && CompareRects(Bounds, ActivePanelBounds))
     {
       Result = FarFileSystem;
     }
@@ -398,6 +447,7 @@ void * TCustomFarPlugin::OpenPlugin(const struct OpenInfo * Info)
         Result->SetOwnerFileSystem(GetPanelFileSystem());
       }
       FOpenedPlugins->Add(Result);
+      FTIdleThread->SetActivation(true);
     }
     else
     {
@@ -443,8 +493,8 @@ void TCustomFarPlugin::CloseFileSystem(TCustomFarFileSystem * FileSystem)
   }
   __finally
   {
+    FTIdleThread->SetActivation(false);
     FOpenedPlugins->Remove(FileSystem);
-    CloseFileSystem(FileSystem->GetOwnerFileSystem());
     SAFE_DESTROY(FileSystem);
   } end_try__finally
 #ifdef USE_DLMALLOC
@@ -1952,7 +2002,9 @@ void TCustomFarFileSystem::Init()
 TCustomFarFileSystem::~TCustomFarFileSystem() noexcept
 {
   FInstances--;
+#ifndef NDEBUG
   TINYLOG_TRACE(g_tinylog) << repr("C %d", FInstances);
+#endif //#ifndef NDEBUG
   ResetCachedInfo();
   ClearOpenPanelInfo(FOpenPanelInfo);
 }

@@ -1070,7 +1070,8 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
     }
 
     // Return to session panel
-    if (Focused && !Handled && ((Key == VK_RETURN) && (Focused->GetFileName() == PARENTDIRECTORY) ||
+    if (Focused && !Handled && !IsConnectedDirectly() && 
+         ((Key == VK_RETURN) && (Focused->GetFileName() == PARENTDIRECTORY) ||
          (Key == VK_PRIOR) && (ControlState & CTRLMASK)) && FLastPath == ROOTDIRECTORY)
     {
       SetDirectoryEx(PARENTDIRECTORY, 0);
@@ -2863,7 +2864,8 @@ bool TWinSCPFileSystem::ImportSessions(TObjectList * PanelItems, bool /*Move*/,
       FileName = PanelItem->GetFileName();
       if (PanelItem->GetIsFile())
       {
-        const UnicodeString XmlFileName = ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName;
+        const bool Relative = ::ExtractFilePath(FileName).IsEmpty();
+        const UnicodeString XmlFileName = Relative ? ::IncludeTrailingBackslash(::GetCurrentDir()) + FileName : FileName;
         std::unique_ptr<THierarchicalStorage> ImportStorage(std::make_unique<TXmlStorage>(XmlFileName, GetConfiguration()->GetStoredSessionsSubKey()));
         ImportStorage->Init();
         ImportStorage->SetAccessMode(smRead);

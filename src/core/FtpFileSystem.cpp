@@ -1994,6 +1994,8 @@ void TFTPFileSystem::DoStartup()
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
   FHomeDirectory = FCurrentDirectory;
+  // clear FCurrentDirectory (it will be set later during TTerminal::DoStartup execution)
+  FCurrentDirectory.Clear();
 }
 
 void TFTPFileSystem::HomeDirectory()
