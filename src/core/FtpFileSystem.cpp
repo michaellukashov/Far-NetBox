@@ -2085,7 +2085,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
   // and immediately after call to CWD,
   // later our current directory may be not synchronized with FZAPI current
   // directory anyway, see comments in EnsureLocation
-  if (FReadCurrentDirectory || DebugAlwaysFalse(FCurrentDirectory.IsEmpty()))
+  if (FReadCurrentDirectory || FCurrentDirectory.IsEmpty())
   {
     const UnicodeString Command = "PWD";
     SendCommand(Command);
