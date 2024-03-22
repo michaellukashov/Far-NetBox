@@ -1223,7 +1223,7 @@ UnicodeString TSecureShell::ReceiveLine()
 {
   // unsigned Index;
   RawByteString Line;
-  Boolean EOL = False;
+  bool EOL = false;
 
   do
   {
@@ -1232,11 +1232,11 @@ UnicodeString TSecureShell::ReceiveLine()
     {
       size_t Index = 0;
       // Repeat until we walk thru whole buffer or reach end-of-line
-      while ((Index < PendLen) && (!Index || (Pending[Index - 1] != '\n')))
+      while (Index < PendLen && !EOL)
       {
-        ++Index;
+        const auto Ch = Pending[Index++];
+        EOL = (Ch == '\n' || Ch == '\0');
       }
-      EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
       const int32_t PrevLen = Line.Length();
       char * Buf = Line.SetLength(nb::ToInt32(PrevLen + Index));
       Receive(nb::ToUInt8Ptr(Buf + PrevLen), nb::ToSizeT(Index));
@@ -1249,7 +1249,7 @@ UnicodeString TSecureShell::ReceiveLine()
       uint8_t Ch;
       Receive(&Ch, 1);
       Line += Ch;
-      EOL = (Ch == '\n');
+      EOL = (Ch == '\n' || Ch == '\0');
     }
   }
   while (!EOL);

@@ -39,6 +39,18 @@ void DestroyPlugin()
   TermExtensionModule();
 }
 
+[[noreturn]]
+void InvalidParameterHandler(const wchar_t * expression, const wchar_t * function,
+  const wchar_t * file, unsigned int line, uintptr_t pReserved)
+{
+  (void)expression;
+  (void)function;
+  (void)file;
+  (void)line;
+  (void)pReserved;
+  RaiseException(STATUS_INVALID_PARAMETER, 0, 0, nullptr);
+}
+
 extern "C" {
 
 void WINAPI GetGlobalInfoW(struct GlobalInfo * Info)
@@ -258,6 +270,7 @@ BOOL WINAPI DllMain(HINSTANCE HInstDLL, DWORD Reason, LPVOID /*ptr*/ )
   if (Reason == DLL_PROCESS_ATTACH)
   {
     HInstanceDLL = HInstDLL;
+    (void) _set_invalid_parameter_handler(InvalidParameterHandler);
   }
   return TRUE;
 }
