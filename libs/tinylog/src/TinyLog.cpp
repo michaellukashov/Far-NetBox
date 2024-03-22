@@ -164,7 +164,6 @@ TinyLog::TinyLog() noexcept :
 
 TinyLog::~TinyLog() noexcept
 {
-  instance_ = nullptr;
 }
 
 auto TinyLog::instance() -> TinyLog * &
