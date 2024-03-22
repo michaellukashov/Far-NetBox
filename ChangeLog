@@ -6,12 +6,20 @@
  * <Description>
  **Full Changelog**:
 
-## [24.3.0.599] - 2024-03-22
+## [24.3.1.599] - 2024-03-22
 
 ### Changes
 
  - Upgrade WinSCP sources: WinSCP 6.3.3
  - Upgrade dependencies: expat 2.6.2
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+ * gh-437 SCP: don't hang if binary data is accidentally written to the terminal
+ * gh-435 Fix several tinylog problems
+ * gh-434 Prevent silent termination under certain conditions
+ * gh-433 Fix FTP crash on certain servers
 
 
 ## [24.3.0.598] - 2024-03-09
