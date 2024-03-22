@@ -23,6 +23,7 @@ struct ScpLogPolicy;
 struct LogContext;
 struct ScpSeat;
 class TSFTPFileSystem;
+enum TSecureShellMode { ssmNone, ssmUploading, ssmDownloading };
 
 class TSecureShell : public TObject
 {
@@ -111,7 +112,7 @@ public:
   void DispatchSendBuffer(int32_t BufSize);
   void SendBuffer(uint32_t & Result);
   uint32_t TimeoutPrompt(TQueryParamsTimerEvent && PoolEvent);
-  void TimeoutAbort(uint32_t Answer);
+  void TimeoutAbort(uint32_t Answer, bool Sending);
   bool TryFtp();
   UnicodeString ConvertInput(const RawByteString & Input, uint32_t CodePage = CP_ACP) const;
   void GetRealHost(UnicodeString & Host, int32_t & Port) const;
@@ -200,6 +201,7 @@ public:
   __property bool Simple = { read = FSimple, write = FSimple };
   __property TSshImplementation SshImplementation = { read = FSshImplementation };
   __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };
+  TSecureShellMode Mode;
 
   bool GetActive() const { return FActive; }
   TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }

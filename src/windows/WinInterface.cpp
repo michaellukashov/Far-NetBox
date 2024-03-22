@@ -545,8 +545,10 @@ TForm * CreateMoreMessageDialogEx(const UnicodeString & Message, TStrings * More
 uint32_t MoreMessageDialog(const UnicodeString & Message, TStrings * MoreMessages,
   TQueryType Type, uint32_t Answers, const UnicodeString & HelpKeyword, const TMessageParams * Params)
 {
+  AppLogFmt(L"Message dialog: %s", Message);
   std::unique_ptr<TForm> Dialog(CreateMoreMessageDialogEx(Message, MoreMessages, Type, Answers, HelpKeyword, Params));
   uint32_t Result = ExecuteMessageDialog(Dialog.get(), Answers, Params);
+  AppLogFmt(L"Message dialog answer: %d", Integer(Result));
   return Result;
 }
 

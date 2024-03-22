@@ -552,6 +552,7 @@ void TConfiguration::SaveCustomIniFileStorageName()
     {
       RegistryStorage->WriteString(L"IniFile", CustomIniFileStorageName);
       RegistryStorage->CloseSubKey();
+      AppLogFmt(L"Saved custom INI file path %s", CustomIniFileStorageName);
     }
   }
 #endif // defined(__BORLANDC__)
@@ -702,6 +703,7 @@ UnicodeString TConfiguration::LoadCustomIniFileStorageName()
   if (RegistryStorage->OpenRootKey(false))
   {
     Result = RegistryStorage->ReadString("IniFile", "");
+    AppLogFmt(L"Loaded custom INI file path %s", Result);
     RegistryStorage->CloseSubKey();
   }
   RegistryStorage.reset(nullptr);

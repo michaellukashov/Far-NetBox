@@ -499,7 +499,7 @@ public:
   UnicodeString GetLocalName() const;
   UnicodeString GetFolderName() const;
   void Modify();
-  UnicodeString GetSource() const;
+  UnicodeString GetSourceName() const;
   void DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool & RewritePassword, bool Unsafe, bool RespectDisablePasswordStoring);
   void DoSave(THierarchicalStorage * Storage,
     bool PuttyExport, const TSessionData * Default, bool DoNotEncryptPasswords);
@@ -888,8 +888,10 @@ public:
   const ROProperty<UnicodeString> LocalName{nb::bind(&TSessionData::GetLocalName, this)};
   __property UnicodeString FolderName = { read = GetFolderName };
   const ROProperty<UnicodeString> FolderName{nb::bind(&TSessionData::GetFolderName, this)};
-  __property UnicodeString Source = { read = GetSource };
-  const ROProperty<UnicodeString> Source{nb::bind(&TSessionData::GetSource, this)};
+  __property TSessionSource Source = { read = FSource };
+  const TSessionSource& Source{FSource};
+  __property UnicodeString SourceName = { read = GetSourceName };
+  const ROProperty<UnicodeString> SourceName{nb::bind(&TSessionData::GetSourceName, this)};
   __property bool SaveOnly = { read = FSaveOnly };
   const bool& SaveOnly{FSaveOnly};
 
