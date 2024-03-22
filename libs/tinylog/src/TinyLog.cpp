@@ -174,6 +174,13 @@ auto TinyLog::instance() -> TinyLog * &
   return instance_;
 }
 
+auto TinyLog::instance() -> TinyLog * &
+{
+  if (!instance_)
+    instance_ = new TinyLog();
+  return instance_;
+}
+
 void TinyLog::level(Utils::LogLevel log_level)
 {
   impl_->SetLogLevel(log_level);

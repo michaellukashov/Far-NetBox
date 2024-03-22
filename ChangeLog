@@ -6,6 +6,34 @@
  * <Description>
  **Full Changelog**:
 
+## [24.3.1.599] - 2024-03-22
+
+### Changes
+
+ - Upgrade WinSCP sources: WinSCP 6.3.3
+ - Upgrade dependencies: expat 2.6.2
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+ * gh-435 Fix several tinylog problems
+ * gh-434 Prevent silent termination under certain conditions
+ * gh-433 Fix FTP crash on certain servers
+
+## [24.3.0.598] - 2024-03-09
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+ * gh-431 Fix importing session files from temporary panel
+ * gh-429 Make recursive sessions to work as expected
+ * gh-428 Send ACTL_SYNCHRO only when plugin panel is open
+ * gh-426 Make a graceful exit from the plugin
+ * gh-424 Do not start debug logger in release build
+
+**Full Changelog**: https://github.com/michaellukashov/Far-NetBox/compare/v24.2.2.597...v24.3.0.598
+
+
 ## [24.3.0.597] - 2024-03-05
 
 ### Fixes

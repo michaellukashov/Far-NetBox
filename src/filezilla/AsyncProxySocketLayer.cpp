@@ -482,7 +482,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         int32_t sz = nb::safe_strlen(tmp) + nb::safe_strlen(buffer);
         m_pStrBuffer = nb::chcalloc(sz + 1);
         strncpy_s(m_pStrBuffer, sz + 1, tmp, nb::safe_strlen(tmp));
-        strncpy_s(m_pStrBuffer + nb::safe_strlen(tmp), sz - nb::safe_strlen(buffer), buffer, nb::safe_strlen(buffer));
+        strncpy_s(m_pStrBuffer + nb::safe_strlen(tmp), sz - nb::safe_strlen(tmp) + 1, buffer, nb::safe_strlen(buffer));
         nb_free(tmp);
       }
       memset(buffer, 0, 9);
@@ -510,7 +510,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         {
           char *tmp = nb::chcalloc(pos-m_pStrBuffer + 1);
           tmp[pos-m_pStrBuffer] = 0;
-          strncpy_s(tmp, pos-m_pStrBuffer, m_pStrBuffer, nb::safe_strlen(m_pStrBuffer));
+          strncpy_s(tmp, pos-m_pStrBuffer + 1, m_pStrBuffer, nb::safe_strlen(m_pStrBuffer));
           ConnectionFailed(WSAECONNABORTED, tmp);
           return;
         }
@@ -615,7 +615,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
   {
     nb_free(m_pProxyPeerHost);
     m_pProxyPeerHost = nb::chcalloc(nb::safe_strlen(T2CA(lpszHostAddress))+1);
-    strncpy_s(m_pProxyPeerHost, nb::safe_strlen(T2CA(lpszHostAddress)), T2CA(lpszHostAddress), nb::safe_strlen(lpszHostAddress));
+    strncpy_s(m_pProxyPeerHost, nb::safe_strlen(T2CA(lpszHostAddress))+1, T2CA(lpszHostAddress), nb::safe_strlen(lpszHostAddress));
   }
   return res;
 
@@ -708,7 +708,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         command[6]=0;
         command[7]=1;
         //Add host as URL
-        strncpy_s(&command[9], nb::safe_strlen(lpszAscii), lpszAscii, nb::safe_strlen(lpszAscii));
+        strncpy_s(&command[9], nb::safe_strlen(lpszAscii)+1, lpszAscii, nb::safe_strlen(lpszAscii));
         len+=(int)nb::safe_strlen(lpszAscii)+1;
       }
       else

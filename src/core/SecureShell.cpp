@@ -100,6 +100,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FCallbackSet = std::make_unique<callback_set>();
   memset(FCallbackSet.get(), 0, sizeof(callback_set));
   FCallbackSet->ready_event = INVALID_HANDLE_VALUE;
+  Mode = ssmNone;
 }
 
 TSecureShell::~TSecureShell() noexcept
@@ -1222,7 +1223,7 @@ UnicodeString TSecureShell::ReceiveLine()
 {
   // unsigned Index;
   RawByteString Line;
-  Boolean EOL = False;
+  bool EOL = false;
 
   do
   {
@@ -1231,11 +1232,11 @@ UnicodeString TSecureShell::ReceiveLine()
     {
       size_t Index = 0;
       // Repeat until we walk thru whole buffer or reach end-of-line
-      while ((Index < PendLen) && (!Index || (Pending[Index - 1] != '\n')))
+      while (Index < PendLen && !EOL)
       {
-        ++Index;
+        const auto Ch = Pending[Index++];
+        EOL = (Ch == '\n' || Ch == '\0');
       }
-      EOL = static_cast<Boolean>(Index && (Pending[Index - 1] == '\n'));
       const int32_t PrevLen = Line.Length();
       char * Buf = Line.SetLength(nb::ToInt32(PrevLen + Index));
       Receive(nb::ToUInt8Ptr(Buf + PrevLen), nb::ToSizeT(Index));
@@ -1248,7 +1249,7 @@ UnicodeString TSecureShell::ReceiveLine()
       uint8_t Ch;
       Receive(&Ch, 1);
       Line += Ch;
-      EOL = (Ch == '\n');
+      EOL = (Ch == '\n' || Ch == '\0');
     }
   }
   while (!EOL);
@@ -1343,8 +1344,22 @@ void TSecureShell::SendBuffer(uint32_t & Result)
   }
 }
 
-void TSecureShell::TimeoutAbort(uint32_t Answer)
+void TSecureShell::TimeoutAbort(uint32_t Answer, bool Sending)
 {
+  UnicodeString CounterName;
+  if (Mode == ssmUploading)
+  {
+    CounterName = Sending ? L"TimeoutUploadingSending" : L"TimeoutUploadingReceiving";
+  }
+  else if (Mode == ssmDownloading)
+  {
+    CounterName = Sending ? L"TimeoutDownloadingSending" : L"TimeoutDownloadingReceiving";
+  }
+  if (!CounterName.IsEmpty())
+  {
+    GetConfiguration()->Usage->Inc(CounterName);
+  }
+
   FatalError(MainInstructions(LoadStr(Answer == qaAbort ? USER_TERMINATED : TIMEOUT_ERROR)));
 }
 
@@ -1387,7 +1402,7 @@ void TSecureShell::DispatchSendBuffer(int32_t BufSize)
 
         case qaAbort:
         case qaNo:
-          TimeoutAbort(Answer);
+          TimeoutAbort(Answer, true);
           break;
       }
     }
@@ -1983,7 +1998,7 @@ void TSecureShell::WaitForData()
 
         case qaAbort:
         case qaNo:
-          TimeoutAbort(Answer);
+          TimeoutAbort(Answer, false);
           break;
       }
     }

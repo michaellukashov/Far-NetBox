@@ -5271,12 +5271,14 @@ UnicodeString GetAncestorProcessNames()
   return AncestorProcessNames;
 }
 
+[[noreturn]]
 void NotImplemented()
 {
   DebugFail();
   throw Exception(L"Not implemented");
 }
 
+[[noreturn]]
 void NotSupported()
 {
   throw Exception(MainInstructions(LoadStr(NOTSUPPORTED)));

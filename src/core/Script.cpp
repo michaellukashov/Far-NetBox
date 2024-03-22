@@ -2760,7 +2760,7 @@ void TManagementScript::Connect(const UnicodeString Session,
         TScriptCommands::CheckParams(Options, false);
       }
 
-      if (!Session.IsEmpty() && !Data->Name.IsEmpty() && (Batch != TScript::BatchOff) && !Interactive)
+      if (!Session.IsEmpty() && (Data->Source != ::ssNone) && (Batch != TScript::BatchOff) && !Interactive)
       {
         std::unique_ptr<TSessionData> DataWithFingerprint(Data->Clone());
         DataWithFingerprint->LookupLastFingerprint();

@@ -99,16 +99,18 @@ size_t LogStream::FormattedWrite(const char * log_data, size_t to_write)
 {
   // max length calculation. assume max line number is 999999
   // "2000-01-01 00:00:00.000 <file_name>:999999 <func_name> <level> <log_data>\n\0"
-  // 24 + (file or 10) + 1 + 6 + 1 + (func or 16) + 1 + (level or 10) + 1 + to_write + 2
-  // 36 + (file or 10) + (func or 16) + (level or 10) + to_write
+  // 24 + max(file, 10) + 1 + 6 + 1 + max(func, 16) + 1 + max(level, 10) + 1 + to_write + 2
+  // 36 + max(file, 10) + max(func, 16) + max(level, 10) + to_write
 
   size_t Result = 0;
 
   UpdateBaseTime();
 
-  const size_t prefix_len = 36 + (file_name_ ? strlen(file_name_) : 10) +
-    (func_name_ ? strlen(func_name_) : 16) + (str_log_level_ ? strlen(str_log_level_) : 10);
+#define MAX(STR, DEF) std::max(((STR) ? strlen(STR) : 0ULL), (DEF))
+  const size_t prefix_len = 36 + MAX(file_name_, 10ULL) +
+    MAX(func_name_, 16ULL) + MAX(str_log_level_, 10ULL);
   const size_t append_len = prefix_len + to_write;
+#undef MAX
 
   char * buf = nb::chcalloc(append_len);
   if (buf != nullptr)

@@ -265,7 +265,6 @@ private:
   UnicodeString FFileListCachePath;
   UnicodeString FWelcomeMessage;
   bool FActive{false};
-  bool FOpening{false};
   bool FWaitingForReply{false};
   enum { ftaNone, ftaSkip, ftaCancel } FFileTransferAbort{ftaNone};
   bool FIgnoreFileList{false};
