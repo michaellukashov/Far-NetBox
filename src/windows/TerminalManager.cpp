@@ -80,6 +80,7 @@ TTerminalManager::TTerminalManager() :
   FPendingConfigurationChange = 0;
   FKeepAuthenticateForm = false;
   FUpdating = 0;
+  FOpeningTerminal = NULL;
 
   FApplicationsEvents = std::make_unique<TApplicationEvents>(Application);
   FApplicationsEvents->OnException = ApplicationException;
@@ -312,6 +313,8 @@ void TTerminalManager::DoConnectTerminal(TTerminal * Terminal, bool Reopen, bool
   UnicodeString OrigRemoteDirectory = Terminal->SessionData->RemoteDirectory;
   try
   {
+    TValueRestorer<TTerminal *> OpeningTerminalRestorer(FOpeningTerminal);
+    FOpeningTerminal = Terminal;
     TTerminalThread * TerminalThread = new TTerminalThread(Terminal);
     TerminalThread->AllowAbandon = (Terminal == FActiveTerminal);
     try
@@ -1297,11 +1300,12 @@ void TTerminalManager::TerminalShowExtendedException(
 static TDateTime DirectoryReadingProgressDelay(0, 0, 1, 500);
 
 void TTerminalManager::TerminalReadDirectoryProgress(
-  TObject * /*Sender*/, int32_t Progress, int32_t ResolvedLinks, bool & Cancel)
+  TObject * Sender, int32_t Progress, int32_t ResolvedLinks, bool & Cancel)
 {
+  DebugAlwaysTrue((Sender == FOpeningTerminal) == (FAuthenticateForm != NULL));
   if (Progress == 0)
   {
-    if (ScpExplorer != nullptr)
+    if ((ScpExplorer != nullptr) && (Sender != FOpeningTerminal))
     {
       // See also TCustomScpExplorerForm::RemoteDirViewBusy
       ScpExplorer->LockWindow();
@@ -1329,7 +1333,7 @@ void TTerminalManager::TerminalReadDirectoryProgress(
     }
     else
     {
-      if (ScpExplorer != nullptr)
+      if ((ScpExplorer != nullptr) && (Sender != FOpeningTerminal))
       {
         ScpExplorer->UnlockWindow();
       }

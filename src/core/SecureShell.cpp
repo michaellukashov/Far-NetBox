@@ -100,6 +100,7 @@ TSecureShell::TSecureShell(TSessionUI * UI,
   FCallbackSet = std::make_unique<callback_set>();
   memset(FCallbackSet.get(), 0, sizeof(callback_set));
   FCallbackSet->ready_event = INVALID_HANDLE_VALUE;
+  Mode = ssmNone;
 }
 
 TSecureShell::~TSecureShell() noexcept
@@ -1343,8 +1344,22 @@ void TSecureShell::SendBuffer(uint32_t & Result)
   }
 }
 
-void TSecureShell::TimeoutAbort(uint32_t Answer)
+void TSecureShell::TimeoutAbort(uint32_t Answer, bool Sending)
 {
+  UnicodeString CounterName;
+  if (Mode == ssmUploading)
+  {
+    CounterName = Sending ? L"TimeoutUploadingSending" : L"TimeoutUploadingReceiving";
+  }
+  else if (Mode == ssmDownloading)
+  {
+    CounterName = Sending ? L"TimeoutDownloadingSending" : L"TimeoutDownloadingReceiving";
+  }
+  if (!CounterName.IsEmpty())
+  {
+    GetConfiguration()->Usage->Inc(CounterName);
+  }
+
   FatalError(MainInstructions(LoadStr(Answer == qaAbort ? USER_TERMINATED : TIMEOUT_ERROR)));
 }
 
@@ -1387,7 +1402,7 @@ void TSecureShell::DispatchSendBuffer(int32_t BufSize)
 
         case qaAbort:
         case qaNo:
-          TimeoutAbort(Answer);
+          TimeoutAbort(Answer, true);
           break;
       }
     }
@@ -1983,7 +1998,7 @@ void TSecureShell::WaitForData()
 
         case qaAbort:
         case qaNo:
-          TimeoutAbort(Answer);
+          TimeoutAbort(Answer, false);
           break;
       }
     }

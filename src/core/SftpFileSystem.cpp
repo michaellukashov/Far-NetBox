@@ -2575,15 +2575,15 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
     UnicodeString MessageStr = LoadStr(Message);
     UnicodeString ServerMessage;
     UnicodeString LanguageTag;
-    if ((FVersion >= 3) ||
-        // if version is not decided yet (i.e. this is status response
-        // to the init request), go on, only if there are any more data
-        ((FVersion < 0) && (Packet->GetRemainingLength() > 0)))
+    // Message field is defined since version 3 only.
+    // We also might get the packet even before the version is established.
+    // And Cisco servers respond without message field even in version 3.
+    if (Packet->GetRemainingLength() > 0)
     {
       // message is in UTF only since SFTP specification 01 (specification 00
       // is also version 3)
       // (in other words, always use UTF unless server is known to be buggy)
-      // ServerMessage = Packet->GetString(FUtfStrings);
+      ServerMessage = Packet->GetString(FUtfStrings);
       // SSH-2.0-Maverick_SSHD and SSH-2.0-CIGNA SFTP Server Ready! omit the language tag
       // and I believe I've seen one more server doing the same.
       if (Packet->GetRemainingLength() > 0)
@@ -4976,6 +4976,8 @@ void TSFTPFileSystem::Source(
 
     TEncryption Encryption(FTerminal->GetEncryptKey());
     const bool Encrypt = FTerminal->IsFileEncrypted(DestFullName, CopyParam->EncryptNewFiles);
+    TValueRestorer<TSecureShellMode> SecureShellModeRestorer(FSecureShell->Mode);
+    FSecureShell->Mode = ssmUploading;
     TSFTPUploadQueue Queue(this, FCodePage, (Encrypt ? &Encryption : nullptr));
     try__finally
     {
@@ -5728,6 +5730,8 @@ void TSFTPFileSystem::Sink(
 
     // at end of this block queue is discarded
     {
+      TValueRestorer<TSecureShellMode> SecureShellModeRestorer(FSecureShell->Mode);
+      FSecureShell->Mode = ssmDownloading;
       TSFTPDownloadQueue Queue(this, FCodePage);
       try__finally
       {

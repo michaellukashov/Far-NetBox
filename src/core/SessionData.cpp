@@ -2113,7 +2113,7 @@ void TSessionData::Modify()
   }
 }
 
-UnicodeString TSessionData::GetSource() const
+UnicodeString TSessionData::GetSourceName() const
 {
   switch (FSource)
   {
@@ -2420,6 +2420,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   }
 
   const bool Unsafe = FLAGSET(Flags, pufUnsafe);
+  const bool ParseOnly = FLAGSET(Flags, pufParseOnly);
   if (!Url.IsEmpty())
   {
     const UnicodeString DecodedUrl = DecodeUrlChars(Url);
@@ -2479,7 +2480,6 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
 
     UnicodeString ARemoteDirectory;
 
-    const bool ParseOnly = FLAGSET(Flags, pufParseOnly);
     if (Data != nullptr)
     {
       DoCopyData(Data, ParseOnly);
@@ -2779,7 +2779,11 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         ApplyRawSettings(RawSettings.get(), Unsafe);
       }
     }
-    if (Options->FindSwitch(PASSWORDSFROMFILES_SWITCH))
+    if (Options->FindSwitch(PASSWORDSFROMFILES_SWITCH) &&
+        // Ad-hoc condition for the current only specific use of pufParseOnly
+        // (when we do not want to consume the password pipe by the current instance,
+        // in case the URL needs to be passed to another instance)
+        !ParseOnly)
     {
       ReadPasswordsFromFiles();
     }

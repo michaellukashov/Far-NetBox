@@ -279,7 +279,6 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) noexcept :
   FFileList(nullptr),
   FFileListCache(nullptr),
   FActive(false),
-  FOpening(false),
   FWaitingForReply(false),
   FFileTransferAbort(ftaNone),
   FIgnoreFileList(false),
@@ -569,7 +568,6 @@ void TFTPFileSystem::Open()
     }
 
     FPasswordFailed = false;
-    const TAutoFlag OpeningFlag(FOpening);
 
     FActive = FFileZillaIntf->Connect(
       HostName.c_str(), nb::ToInt32(Data->GetPortNumber()), UserName.c_str(),
@@ -621,19 +619,20 @@ void TFTPFileSystem::Open()
 void TFTPFileSystem::Close()
 {
   DebugAssert(FActive);
+
   bool Result = DoQuit();
-  if (!Result)
+  if (Result)
+    return;
+  bool Opening = (FTerminal->GetStatus() == ssOpening);
+  if (FFileZillaIntf->Close(Opening))
   {
-    if (FFileZillaIntf->Close(FOpening))
-    {
-      DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
-      Result = true;
-    }
-    else
-    {
-      // See TFileZillaIntf::Close
-      Result = FOpening;
-    }
+    DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
+    Result = true;
+  }
+  else
+  {
+    // See TFileZillaIntf::Close
+    Result = Opening;
   }
 
   if (DebugAlwaysTrue(Result))
