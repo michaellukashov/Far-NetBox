@@ -65,17 +65,17 @@ void CAsyncProxySocketLayer::SetProxy(int nProxyType, const char * pProxyHost, i
 
   m_ProxyData.nProxyType = nProxyType;
   m_ProxyData.pProxyHost = nb::chcalloc(nb::safe_strlen(pProxyHost)+1);
-  strncpy_s(m_ProxyData.pProxyHost, nb::safe_strlen(pProxyHost)+1, pProxyHost, nb::safe_strlen(pProxyHost));
+  strncpy(m_ProxyData.pProxyHost, pProxyHost, nb::safe_strlen(pProxyHost));
   m_ProxyData.nProxyPort=ProxyPort;
   if (pProxyUser)
   {
     m_ProxyData.pProxyUser = nb::chcalloc(nb::safe_strlen(pProxyUser)+1);
-    strncpy_s(m_ProxyData.pProxyUser, nb::safe_strlen(pProxyUser)+1, pProxyUser, nb::safe_strlen(pProxyUser));
+    strncpy(m_ProxyData.pProxyUser, pProxyUser, nb::safe_strlen(pProxyUser));
   }
   if (pProxyPass)
   {
     m_ProxyData.pProxyPass = nb::chcalloc(nb::safe_strlen(pProxyPass)+1);
-    strncpy_s(m_ProxyData.pProxyPass, nb::safe_strlen(pProxyPass)+1, pProxyPass, nb::safe_strlen(pProxyPass));
+    strncpy(m_ProxyData.pProxyPass, pProxyPass, nb::safe_strlen(pProxyPass));
   }
   m_ProxyData.bUseLogon = bUseLogon;
 }
@@ -279,7 +279,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       else
       {
         command[len]=(char)nb::safe_strlen(lpszAsciiHost);
-        strncpy_s(&command[len+1], 11+nb::safe_strlen(lpszAsciiHost)+1, lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
+        strncpy(&command[len+1], lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
         len += (int)nb::safe_strlen(lpszAsciiHost) + 1;
       }
       nbstr_memcpy(&command[len], &m_nProxyPeerPort, 2);
@@ -342,7 +342,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         else
         {
           command[len]=(char)nb::safe_strlen(lpszAsciiHost);
-          strncpy_s(&command[len+1], 11+nb::safe_strlen(lpszAsciiHost)+1, lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
+          strncpy(&command[len+1], lpszAsciiHost, nb::safe_strlen(lpszAsciiHost));
           len+=(int)nb::safe_strlen(lpszAsciiHost)+1;
         }
         nbstr_memcpy(&command[len],&m_nProxyPeerPort,2);
@@ -474,15 +474,15 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       if (!m_pStrBuffer)
       {
         m_pStrBuffer = nb::chcalloc(nb::safe_strlen(buffer) + 1);
-        strncpy_s(m_pStrBuffer, nb::safe_strlen(buffer) + 1, buffer, nb::safe_strlen(buffer));
+        strncpy(m_pStrBuffer, buffer, nb::safe_strlen(buffer));
       }
       else
       {
         char *tmp = m_pStrBuffer;
         int32_t sz = nb::safe_strlen(tmp) + nb::safe_strlen(buffer);
         m_pStrBuffer = nb::chcalloc(sz + 1);
-        strncpy_s(m_pStrBuffer, sz + 1, tmp, nb::safe_strlen(tmp));
-        strncpy_s(m_pStrBuffer + nb::safe_strlen(tmp), sz - nb::safe_strlen(tmp) + 1, buffer, nb::safe_strlen(buffer));
+        strncpy(m_pStrBuffer, tmp, nb::safe_strlen(tmp));
+        strncpy(m_pStrBuffer + nb::safe_strlen(tmp), buffer, nb::safe_strlen(buffer));
         nb_free(tmp);
       }
       memset(buffer, 0, 9);
@@ -491,7 +491,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
       {
         int32_t sz = nb::safe_strlen("No valid HTTP response");
         char *str = nb::chcalloc(sz + 1);
-        strncpy_s(str, sz + 1, "No valid HTTP response", sz);
+        strncpy(str, "No valid HTTP response", sz);
         ConnectionFailed(WSAECONNABORTED, str);
         return;
       }
@@ -510,7 +510,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         {
           char *tmp = nb::chcalloc(pos-m_pStrBuffer + 1);
           tmp[pos-m_pStrBuffer] = 0;
-          strncpy_s(tmp, pos-m_pStrBuffer + 1, m_pStrBuffer, nb::safe_strlen(m_pStrBuffer));
+          strncpy(tmp, m_pStrBuffer, pos-m_pStrBuffer);
           ConnectionFailed(WSAECONNABORTED, tmp);
           return;
         }
@@ -582,7 +582,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
     m_nProxyPeerIp = 0;
     nb_free(m_pProxyPeerHost);
     m_pProxyPeerHost = nb::chcalloc(_tcslen(lpszHostAddress)+1);
-    strncpy_s(m_pProxyPeerHost, _tcslen(lpszHostAddress)+1, T2CA(lpszHostAddress), nb::safe_strlen(lpszHostAddress));
+    strncpy(m_pProxyPeerHost, T2CA(lpszHostAddress), nb::safe_strlen(lpszHostAddress));
     m_nProxyOpID=PROXYOP_CONNECT;
     return TRUE;
   }
@@ -615,7 +615,7 @@ BOOL CAsyncProxySocketLayer::Connect( LPCTSTR lpszHostAddress, UINT nHostPort )
   {
     nb_free(m_pProxyPeerHost);
     m_pProxyPeerHost = nb::chcalloc(nb::safe_strlen(T2CA(lpszHostAddress))+1);
-    strncpy_s(m_pProxyPeerHost, nb::safe_strlen(T2CA(lpszHostAddress))+1, T2CA(lpszHostAddress), nb::safe_strlen(lpszHostAddress));
+    strncpy(m_pProxyPeerHost, T2CA(lpszHostAddress), nb::safe_strlen(lpszHostAddress));
   }
   return res;
 
@@ -708,7 +708,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
         command[6]=0;
         command[7]=1;
         //Add host as URL
-        strncpy_s(&command[9], nb::safe_strlen(lpszAscii)+1, lpszAscii, nb::safe_strlen(lpszAscii));
+        strncpy(&command[9], lpszAscii, nb::safe_strlen(lpszAscii));
         len+=(int)nb::safe_strlen(lpszAscii)+1;
       }
       else
@@ -760,7 +760,7 @@ void CAsyncProxySocketLayer::OnConnect(int nErrorCode)
       if (m_pProxyPeerHost && *m_pProxyPeerHost)
       {
         pHost = nb::chcalloc(nb::safe_strlen(m_pProxyPeerHost)+1);
-        strncpy_s(pHost, nb::safe_strlen(m_pProxyPeerHost)+1, m_pProxyPeerHost, nb::safe_strlen(m_pProxyPeerHost));
+        strncpy(pHost, m_pProxyPeerHost, nb::safe_strlen(m_pProxyPeerHost));
       }
       else
       {

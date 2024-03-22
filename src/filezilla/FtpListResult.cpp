@@ -553,8 +553,8 @@ bool CFtpListResult::ParseShortDate(const char *str, int len, t_directory::t_dir
 
   if (!numeric)
   {
-    char *tmpstr =  nb::chcalloc(i + 1);
-    strncpy_s(tmpstr, i + 1, str, i);
+    char *tmpstr = nb::chcalloc(i + 1);
+    strncpy(tmpstr, str, i);
     tmpstr[i] = 0;
     strlwr(tmpstr);
 
@@ -1334,7 +1334,7 @@ BOOL CFtpListResult::parseAsUnix(const char *line, const int linelen, t_director
     //Maybe the server has left no space between the group and the size
     //because of stupid alignment
     char *tmpstr = nb::chcalloc(tokenlen + 1);
-    strncpy_s(tmpstr, tokenlen + 1, str, tokenlen);
+    strncpy(tmpstr, str, tokenlen);
     tmpstr[tokenlen] = 0;
     strlwr(tmpstr);
 
