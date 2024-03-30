@@ -683,8 +683,8 @@ UnicodeString TWebDAVFileSystem::GetCurrentDirectory() const
 void TWebDAVFileSystem::DoStartup()
 {
   FTerminal->SetExceptionOnFail(true);
-  // retrieve initialize working directory to save it as home directory
-  ReadCurrentDirectory();
+  // ReadCurrentDirectory is called later as the result of setting
+  // FReadCurrentDirectoryPending in TTerminal::DoStartup
   FTerminal->SetExceptionOnFail(false);
 }
 
@@ -738,7 +738,7 @@ void TWebDAVFileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
-    // FCurrentDirectory is set later during TTerminal::DoStartup execution
+    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString(ROOTDIRECTORY) : FCurrentDirectory;
   }
   else
   {
