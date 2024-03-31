@@ -2085,6 +2085,18 @@ void TWinSCPFileSystem::ClearCaches()
   FTerminal->ClearCaches();
 }
 
+void TWinSCPFileSystem::ClearConnectedState()
+{
+  FPathHistory->Clear();
+  FLastPath.Clear();
+  FEditHistories.clear();
+  FMultipleEdits.clear();
+  FOriginalEditFile.Clear();
+  FLastEditFile.Clear();
+  FLastMultipleEditFile.Clear();
+  FLastEditorID = -1;
+}
+
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   DebugAssert(Connected());
@@ -3108,6 +3120,7 @@ void TWinSCPFileSystem::Disconnect()
     GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
   }
   SAFE_DESTROY(FTerminal);
+  ClearConnectedState();
 }
 
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
