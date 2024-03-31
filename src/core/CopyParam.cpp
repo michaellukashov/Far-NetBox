@@ -47,7 +47,7 @@ void TCopyParamType::Default()
   SetInvalidCharsReplacement(TokenReplacement);
   SetLocalInvalidChars(::LocalInvalidChars);
   SetCalculateSize(true);
-  SetFileMask(AnyMask);
+  SetFileMask(L"");
   GetIncludeFileMask().Masks("");
   SetTransferSkipList(nullptr);
   SetTransferResumeFile("");
