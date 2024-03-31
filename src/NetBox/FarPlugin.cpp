@@ -849,13 +849,13 @@ intptr_t TCustomFarPlugin::ProcessEditorInput(const struct ProcessEditorInputInf
 
 int32_t TCustomFarPlugin::MaxMessageLines() const
 {
-  return std::min<int32_t>(1, TerminalInfo().y - 5);
+  return std::max<int32_t>(1, TerminalInfo().y - 5);
 }
 
 int32_t TCustomFarPlugin::MaxMenuItemLength() const
 {
   // got from maximal length of path in FAR's folders history
-  return std::min<int32_t>(10, TerminalInfo().x - 13);
+  return std::max<int32_t>(10, TerminalInfo().x - 13);
 }
 
 int32_t TCustomFarPlugin::MaxLength(TStrings * Strings) const
