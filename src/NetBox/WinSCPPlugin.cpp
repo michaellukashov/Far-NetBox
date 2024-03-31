@@ -324,11 +324,16 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
         // DEBUG_PRINTF("Directory: %s", Directory);
         // DEBUG_PRINTF("CommandLine: %s", CommandLine);
 
+        UnicodeString SessionName(CommandLine);
+        if (SessionName.SubString(1, 7).LowerCase() == L"netbox:")
+        {
+          SessionName.Delete(1, 7);
+        }
         const bool Another = !(Flags & FOSF_ACTIVE);
         TWinSCPFileSystem * PanelSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
 
         if (PanelSystem && PanelSystem->Connected() &&
-          PanelSystem->GetTerminal()->GetSessionData()->GenerateSessionUrl(sufComplete) == CommandLine)
+          PanelSystem->GetTerminal()->GetSessionData()->GetSessionName() == SessionName)
         {
           PanelSystem->SetDirectoryEx(Directory, OPM_SILENT);
           if (PanelSystem->UpdatePanel(false, Another))
