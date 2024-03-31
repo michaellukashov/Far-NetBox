@@ -1364,6 +1364,7 @@ UnicodeString ValidLocalFileName(
       }
     }
 
+#if defined(__BORLANDC__)
     // Windows trim trailing space or dot, hence we must encode it to preserve it
     if (!FileName.IsEmpty() &&
         ((FileName[FileName.Length()] == L' ') ||
@@ -1381,6 +1382,7 @@ UnicodeString ValidLocalFileName(
       }
       FileName.Insert(L"%00", P);
     }
+#endif // defined(__BORLANDC__)
   }
   return FileName;
 }
@@ -1941,7 +1943,8 @@ UnicodeString MakeUnicodeLargePath(const UnicodeString & APath)
 
 UnicodeString ApiPath(const UnicodeString & APath)
 {
-  UnicodeString Path = APath;
+  // Convert "/" to "\" as we're returning NT-style path
+  UnicodeString Path = base::FromUnixPath(APath);
 
   const UnicodeString Drive = ExtractFileDrive(Path);
   // This may match even a path like "C:" or "\\server\\share", but we do not really care
@@ -1949,17 +1952,8 @@ UnicodeString ApiPath(const UnicodeString & APath)
   {
     Path = ExpandFileName(Path);
   }
-
-  // Max path for directories is 12 characters shorter than max path for files
-  if (Path.Length() >= (MAX_PATH - 12))
-  {
-    /*if (GetConfiguration() != nullptr)
-    {
-      GetConfiguration()->Usage->Inc(L"LongPath");
-    }*/
-    Path = MakeUnicodeLargePath(Path);
-  }
-  return Path;
+  // Return NT-style path unconditionally
+  return MakeUnicodeLargePath(Path);
 }
 
 UnicodeString DisplayableStr(const RawByteString & Str)
