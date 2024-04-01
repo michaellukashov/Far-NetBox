@@ -4828,6 +4828,7 @@ void TSFTPFileSystem::Source(
         FTerminal->LogEvent("Checking existence of partially transferred file.");
         if (RemoteFileExists(DestPartialFullName, &File))
         {
+          FilePtr.reset(File);
           ResumeOffset = FilePtr->Resolve()->GetSize(); // Though partial file should not be symlink
 #if defined(__BORLANDC__)
           delete File;
