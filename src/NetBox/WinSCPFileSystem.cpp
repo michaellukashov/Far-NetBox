@@ -440,7 +440,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
   }
   else
   {
-    CurDir = FSessionsFolder;
+    CurDir = ROOTDIRECTORY + FSessionsFolder;
     AFormat = "netbox";
     Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_USEATTRHIGHLIGHTING |
       OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE | OPIF_SHORTCUT;
@@ -2085,6 +2085,18 @@ void TWinSCPFileSystem::ClearCaches()
   FTerminal->ClearCaches();
 }
 
+void TWinSCPFileSystem::ClearConnectedState()
+{
+  FPathHistory->Clear();
+  FLastPath.Clear();
+  FEditHistories.clear();
+  FMultipleEdits.clear();
+  FOriginalEditFile.Clear();
+  FLastEditFile.Clear();
+  FLastMultipleEditFile.Clear();
+  FLastEditorID = -1;
+}
+
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   DebugAssert(Connected());
@@ -2545,7 +2557,10 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     FFileList.reset(CreateFileList(PanelItems, osRemote));
     try__finally
     {
-      Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
+      if (FFileList->GetCount() > 0)
+      {
+        Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
+      }
     }
     __finally
     {
@@ -2559,8 +2574,12 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString Prompt;
     if (PanelItems->GetCount() == 1)
     {
-      Prompt = FORMAT(GetMsg(NB_EXPORT_SESSION_PROMPT),
-        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
+      auto FileName = PanelItems->GetAs<TFarPanelItem>(0)->GetFileName();
+      if (FileName == PARENTDIRECTORY)
+      {
+        return Result;
+      }
+      Prompt = FORMAT(GetMsg(NB_EXPORT_SESSION_PROMPT), FileName);
     }
     else
     {
@@ -2779,7 +2798,7 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
 
 int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode)
 {
-  int32_t Result;
+  int32_t Result = -1;
   if (Connected())
   {
     FFileList.reset(CreateFileList(PanelItems, osLocal));
@@ -2788,6 +2807,10 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
       FPanelItems = nullptr;
       FFileList.reset();
     };
+    if (FFileList->GetCount() == 0)
+    {
+      return Result;
+    }
     FPanelItems = PanelItems;
 
     // if file is saved under different name, FAR tries to upload original file,
@@ -2828,20 +2851,17 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
       FTerminal->SetCurrentDirectory(CurrentDirectory);
     }
   }
-  else if (IsSessionList())
+  else if (IsSessionList() && PanelItems)
   {
-    if (!ImportSessions(PanelItems, Move, OpMode))
+    if (PanelItems->GetCount() == 1 &&
+      PanelItems->GetAs<TFarPanelItem>(0)->GetFileName() == PARENTDIRECTORY)
     {
-      Result = -1;
+      return Result;
     }
-    else
+    if (ImportSessions(PanelItems, Move, OpMode))
     {
       Result = 1;
     }
-  }
-  else
-  {
-    Result = -1;
   }
   return Result;
 }
@@ -3108,6 +3128,7 @@ void TWinSCPFileSystem::Disconnect()
     GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
   }
   SAFE_DESTROY(FTerminal);
+  ClearConnectedState();
 }
 
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
@@ -4203,7 +4224,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   else
   {
     UnicodeString TempDir;
-    TGUICopyParamType &CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+    TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
     EditViewCopyParam(CopyParam);
 
     std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
@@ -4264,9 +4285,13 @@ void TWinSCPFileSystem::EditHistory()
     const UnicodeString FullFileName =
       TUnixPath::Join(EditHistory.Directory, EditHistory.FileName);
     TRemoteFile * File = FTerminal->ReadFile(FullFileName);
+    if (File == nullptr)
+    {
+      // File is deleted, moved, etc
+      return;
+    }
     std::unique_ptr<TRemoteFile> FilePtr(File);
-    DebugAssert(FilePtr.get());
-    if (File && !File->GetHaveFullFileName())
+    if (!File->GetHaveFullFileName())
     {
       File->SetFullFileName(FullFileName);
     }

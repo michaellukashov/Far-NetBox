@@ -16,6 +16,14 @@
 ### Fixes
 
 Thanks to ssvine https://github.com/ssvine
+ * gh-437 SCP: don't hang if binary data is accidentally written to the terminal
+ * gh-435 Fix several tinylog problems
+ * gh-434 Prevent silent termination under certain conditions
+ * gh-433 Fix FTP crash on certain servers
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
  * gh-435 Fix several tinylog problems
  * gh-434 Prevent silent termination under certain conditions
  * gh-433 Fix FTP crash on certain servers
