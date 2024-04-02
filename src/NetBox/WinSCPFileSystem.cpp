@@ -2557,7 +2557,10 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     FFileList.reset(CreateFileList(PanelItems, osRemote));
     try__finally
     {
-      Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
+      if (FFileList->GetCount() > 0)
+      {
+        Result = GetFilesRemote(PanelItems, Move, DestPath, OpMode);
+      }
     }
     __finally
     {
@@ -2571,8 +2574,12 @@ int32_t TWinSCPFileSystem::GetFilesEx(TObjectList * PanelItems, bool Move,
     UnicodeString Prompt;
     if (PanelItems->GetCount() == 1)
     {
-      Prompt = FORMAT(GetMsg(NB_EXPORT_SESSION_PROMPT),
-        PanelItems->GetAs<TFarPanelItem>(0)->GetFileName());
+      auto FileName = PanelItems->GetAs<TFarPanelItem>(0)->GetFileName();
+      if (FileName == PARENTDIRECTORY)
+      {
+        return Result;
+      }
+      Prompt = FORMAT(GetMsg(NB_EXPORT_SESSION_PROMPT), FileName);
     }
     else
     {
@@ -2791,7 +2798,7 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
 
 int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERATION_MODES OpMode)
 {
-  int32_t Result;
+  int32_t Result = -1;
   if (Connected())
   {
     FFileList.reset(CreateFileList(PanelItems, osLocal));
@@ -2800,6 +2807,10 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
       FPanelItems = nullptr;
       FFileList.reset();
     };
+    if (FFileList->GetCount() == 0)
+    {
+      return Result;
+    }
     FPanelItems = PanelItems;
 
     // if file is saved under different name, FAR tries to upload original file,
@@ -2840,20 +2851,17 @@ int32_t TWinSCPFileSystem::PutFilesEx(TObjectList * PanelItems, bool Move, OPERA
       FTerminal->SetCurrentDirectory(CurrentDirectory);
     }
   }
-  else if (IsSessionList())
+  else if (IsSessionList() && PanelItems)
   {
-    if (!ImportSessions(PanelItems, Move, OpMode))
+    if (PanelItems->GetCount() == 1 &&
+      PanelItems->GetAs<TFarPanelItem>(0)->GetFileName() == PARENTDIRECTORY)
     {
-      Result = -1;
+      return Result;
     }
-    else
+    if (ImportSessions(PanelItems, Move, OpMode))
     {
       Result = 1;
     }
-  }
-  else
-  {
-    Result = -1;
   }
   return Result;
 }
