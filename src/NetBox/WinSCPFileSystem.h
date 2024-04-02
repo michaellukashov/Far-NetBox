@@ -201,6 +201,7 @@ protected:
   void RequireLocalPanel(const TFarPanelInfo * Panel, const UnicodeString & Message);
   bool AreCachesEmpty() const;
   void ClearCaches();
+  void ClearConnectedState();
   void OpenSessionInPutty();
   void QueueShow(bool ClosingPlugin);
   TTerminalQueueStatus * ProcessQueue(bool Hidden);

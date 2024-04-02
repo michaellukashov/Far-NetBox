@@ -2085,6 +2085,18 @@ void TWinSCPFileSystem::ClearCaches()
   FTerminal->ClearCaches();
 }
 
+void TWinSCPFileSystem::ClearConnectedState()
+{
+  FPathHistory->Clear();
+  FLastPath.Clear();
+  FEditHistories.clear();
+  FMultipleEdits.clear();
+  FOriginalEditFile.Clear();
+  FLastEditFile.Clear();
+  FLastMultipleEditFile.Clear();
+  FLastEditorID = -1;
+}
+
 void TWinSCPFileSystem::OpenSessionInPutty()
 {
   DebugAssert(Connected());
@@ -3108,6 +3120,7 @@ void TWinSCPFileSystem::Disconnect()
     GetSessionData()->SetSynchronizeBrowsing(FSynchronisingBrowse);
   }
   SAFE_DESTROY(FTerminal);
+  ClearConnectedState();
 }
 
 void TWinSCPFileSystem::ConnectTerminal(TTerminal * Terminal)
@@ -4263,9 +4276,13 @@ void TWinSCPFileSystem::EditHistory()
     const UnicodeString FullFileName =
       TUnixPath::Join(EditHistory.Directory, EditHistory.FileName);
     TRemoteFile * File = FTerminal->ReadFile(FullFileName);
+    if (File == nullptr)
+    {
+      // File is deleted, moved, etc
+      return;
+    }
     std::unique_ptr<TRemoteFile> FilePtr(File);
-    DebugAssert(FilePtr.get());
-    if (File && !File->GetHaveFullFileName())
+    if (!File->GetHaveFullFileName())
     {
       File->SetFullFileName(FullFileName);
     }
