@@ -14,9 +14,14 @@
 https://github.com/FarGroup/FarManager/issues/816
 
 Thanks to ssvine https://github.com/ssvine
-* gh-448 Crash on directory copy
+* gh-449 Fix SFTP crash when resuming copy from local to remote
+* gh-447 Fix crash when trying to copy parent directory entry
+* gh-446 Fix Alt-F12 history navigation
+* gh-445 Relax file naming restrictions
+* gh-444 Fix regression: closing FTP does not completely clear the session
 * gh-443 Several crashes
-* gh-440 WebDAV: Crashes on connection
+* gh-442 Fix several crashes
+* gh-441 Fix WebDAV and S3 crash under some conditions
 
 
 ## [24.3.1.599] - 2024-03-22
