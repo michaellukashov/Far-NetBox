@@ -440,7 +440,7 @@ void TWinSCPFileSystem::GetOpenPanelInfoEx(OPENPANELINFO_FLAGS & Flags,
   }
   else
   {
-    CurDir = FSessionsFolder;
+    CurDir = ROOTDIRECTORY + FSessionsFolder;
     AFormat = "netbox";
     Flags = !OPIF_DISABLESORTGROUPS | !OPIF_DISABLEHIGHLIGHTING | OPIF_USEATTRHIGHLIGHTING |
       OPIF_ADDDOTS | OPIF_SHOWPRESERVECASE | OPIF_SHORTCUT;
