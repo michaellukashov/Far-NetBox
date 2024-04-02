@@ -4215,7 +4215,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
   else
   {
     UnicodeString TempDir;
-    TGUICopyParamType &CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+    TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
     EditViewCopyParam(CopyParam);
 
     std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());

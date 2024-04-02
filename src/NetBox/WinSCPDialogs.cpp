@@ -5784,12 +5784,14 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
     const UnicodeString Directory = FToRemote ?
       base::UnixIncludeTrailingBackslash(TargetDirectory) :
       ::IncludeTrailingBackslash(TargetDirectory);
+#if defined(__BORLANDC__)
     if (FFileList->GetCount() == 1)
     {
       UnicodeString DestFileName = FFileList->GetString(0);
       DestFileName = FToRemote ? DestFileName : FCopyParams.ChangeFileName(DestFileName, osRemote, true);
       FileMask = base::ExtractFileName(DestFileName, false);
     }
+#endif // defined(__BORLANDC__)
     DirectoryEdit->SetText(Directory + FileMask);
     QueueCheck->SetChecked(Params->GetQueue());
     QueueNoConfirmationCheck->SetChecked(Params->GetQueueNoConfirmation());
