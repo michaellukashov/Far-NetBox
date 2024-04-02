@@ -621,18 +621,19 @@ void TFTPFileSystem::Close()
   DebugAssert(FActive);
 
   bool Result = DoQuit();
-  if (Result)
-    return;
-  bool Opening = (FTerminal->GetStatus() == ssOpening);
-  if (FFileZillaIntf->Close(Opening))
+  if (!Result)
   {
-    DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
-    Result = true;
-  }
-  else
-  {
-    // See TFileZillaIntf::Close
-    Result = Opening;
+    bool Opening = (FTerminal->GetStatus() == ssOpening);
+    if (FFileZillaIntf->Close(Opening))
+    {
+      DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
+      Result = true;
+    }
+    else
+    {
+      // See TFileZillaIntf::Close
+      Result = Opening;
+    }
   }
 
   if (DebugAlwaysTrue(Result))
