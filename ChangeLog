@@ -6,6 +6,19 @@
  * <Description>
  **Full Changelog**:
 
+## [24.4.0.600] - 2024-04-03
+
+### Fixes
+
+ - Fix Far Issue #816: Far silently crashes on FTP connection attempt
+https://github.com/FarGroup/FarManager/issues/816
+
+Thanks to ssvine https://github.com/ssvine
+* gh-448 Crash on directory copy
+* gh-443 Several crashes
+* gh-440 WebDAV: Crashes on connection
+
+
 ## [24.3.1.599] - 2024-03-22
 
 ### Changes
