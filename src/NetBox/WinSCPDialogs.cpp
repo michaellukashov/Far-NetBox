@@ -247,8 +247,8 @@ bool TTabbedDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
   bool Result = false;
   const WORD Key = KeyCode & 0xFFFF;
   const WORD ControlState = nb::ToWord(KeyCode >> 16);
-  if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && (ControlState & CTRLMASK) != 0) ||
-    (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && (ControlState & CTRLMASK) != 0))
+  if ((((Key == VK_NEXT) || (Key == VK_NUMPAD3)) && CheckControlMaskSet(ControlState, CTRLMASK)) ||
+    (((Key == VK_PRIOR) || (Key == VK_NUMPAD9)) && CheckControlMaskSet(ControlState, CTRLMASK)))
   {
     int32_t NewTab = FTab;
     do
@@ -7875,10 +7875,10 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
   const WORD ControlState = nb::ToWord(KeyCode >> 16);
   if (ListBox->Focused())
   {
-    if (((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0) ||
-      ((Key == VK_SUBTRACT) && (ControlState & SHIFTMASK) != 0))
+    if (((Key == VK_ADD) && CheckControlMaskSet(ControlState, SHIFTMASK)) ||
+      ((Key == VK_SUBTRACT) && CheckControlMaskSet(ControlState, SHIFTMASK)))
     {
-      CheckAll((Key == VK_ADD) && (ControlState & SHIFTMASK) != 0);
+      CheckAll((Key == VK_ADD) && CheckControlMaskSet(ControlState, SHIFTMASK));
       Result = true;
     }
     else if ((Key == VK_SPACE) || (Key == VK_INSERT) ||
@@ -7907,7 +7907,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
       }
       Result = true;
     }
-    else if ((Key == VK_LEFT) && (ControlState & ALTMASK) != 0)
+    else if ((Key == VK_LEFT) && CheckControlMaskSet(ControlState, ALTMASK))
     {
       if (FScroll > 0)
       {
@@ -8642,7 +8642,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
       }
       Result = true;
     }
-    else if ((Key == VK_UP) && (ControlState & CTRLMASK) != 0)
+    else if ((Key == VK_UP) && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       if (MoveUpButton->GetEnabled())
       {
@@ -8650,7 +8650,7 @@ bool TQueueDialog::Key(TFarDialogItem * /*Item*/, intptr_t KeyCode)
       }
       Result = true;
     }
-    else if ((Key == VK_DOWN) && (ControlState & CTRLMASK) != 0)
+    else if ((Key == VK_DOWN) && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       if (MoveDownButton->GetEnabled())
       {
