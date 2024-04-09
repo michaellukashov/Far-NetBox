@@ -7518,7 +7518,7 @@ void TSynchronizeChecklistDialog::AddColumn(UnicodeString & List,
       Width--;
     }
     List += Value.SubString(Scroll + 1, Width);
-    if (!Header && (Len - Scroll > Width))
+    if (!AHeader && (Len - Scroll > Width))
     {
       List += L'}';
       FCanScrollRight = true;
@@ -7916,7 +7916,7 @@ bool TSynchronizeChecklistDialog::Key(TFarDialogItem * Item, intptr_t KeyCode)
       }
       Result = true;
     }
-    else if (Key == VK_RIGHT)
+    else if ((Key == VK_RIGHT) && CheckControlMaskSet(ControlState, ALTMASK))
     {
       if (FCanScrollRight)
       {
