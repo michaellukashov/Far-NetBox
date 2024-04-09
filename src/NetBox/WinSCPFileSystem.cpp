@@ -4113,8 +4113,8 @@ void TWinSCPFileSystem::MultipleEdit()
   }
 }
 
-void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
-  const UnicodeString & AFileName, const TRemoteFile * AFile)
+void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
+  const UnicodeString AFileName, const TRemoteFile * AFile)
 {
   DebugAssert(AFile);
   TEditHistory EditHistory;
