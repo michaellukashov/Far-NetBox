@@ -984,7 +984,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
   }
   else if (Connected())
   {
-    if ((Key == 'F') && CheckControlMaskSet(ControlState, CTRLMASK))
+    if ((Key == 'F') && CheckControlMaskSet(ControlState, CTRLMASK, ALTMASK))
     {
       InsertFileNameOnCommandLine(true);
       Handled = true;
