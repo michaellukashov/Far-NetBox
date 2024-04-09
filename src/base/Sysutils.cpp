@@ -1402,7 +1402,7 @@ UnicodeString DateTimeToString(const UnicodeString & Format,
     return Result;
 
   AnsiString Buffer(80, 0);
-  if (0 != strftime(const_cast<char *>(Buffer.data()), sizeof(Buffer), AnsiString(Format).c_str(), &dt))
+  if (0 != strftime(const_cast<char *>(Buffer.data()), Buffer.GetLength(), AnsiString(Format).c_str(), &dt))
     Result = Buffer;
 
   return Result;
