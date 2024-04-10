@@ -2269,7 +2269,8 @@ TFarPanelInfo ** TCustomFarFileSystem::GetPanelInfo(int32_t Another)
     {
       DebugAssert(false);
     }
-    FPanelInfo[bAnother] = new TFarPanelInfo(Info, !bAnother ? this : nullptr);
+    const bool SetOwner = !bAnother || (GetOppositeFileSystem() == this);
+    FPanelInfo[bAnother] = new TFarPanelInfo(Info, SetOwner ? this : nullptr);
   }
   return &FPanelInfo[bAnother];
 }

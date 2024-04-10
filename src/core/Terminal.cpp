@@ -9634,9 +9634,8 @@ void TLocalFileHandle::Close()
 UnicodeString GetSessionUrl(const TTerminal * Terminal, bool WithUserName)
 {
   UnicodeString Result;
-  const TSessionInfo & SessionInfo = Terminal->GetSessionInfo();
   const TSessionData * SessionData = Terminal->GetSessionData();
-  UnicodeString Protocol = SessionInfo.ProtocolBaseName;
+  UnicodeString Protocol = SessionData->FSProtocolStr;
   const UnicodeString HostName = SessionData->GetHostNameExpanded();
   const UnicodeString UserName = SessionData->GetUserNameExpanded();
   const int32_t Port = Terminal->GetSessionData()->GetPortNumber();
