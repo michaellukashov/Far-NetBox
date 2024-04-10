@@ -1377,6 +1377,15 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
 UnicodeString DateTimeToString(const UnicodeString & Format,
   const TDateTime & DateTime)
 {
+  auto LocaleDeleter = [](_locale_t *Locale)
+  {
+    if (Locale && *Locale)
+    {
+      _free_locale(*Locale);
+    }
+  };
+  static std::unique_ptr<_locale_t, decltype(LocaleDeleter)> CLocale(new _locale_t(_create_locale(LC_TIME, "C")), LocaleDeleter);
+
   UnicodeString Result;
   // SYSTEMTIME st;
   // ::ZeroMemory(&st, sizeof(SYSTEMTIME));
@@ -1402,7 +1411,7 @@ UnicodeString DateTimeToString(const UnicodeString & Format,
     return Result;
 
   AnsiString Buffer(80, 0);
-  if (0 != strftime(const_cast<char *>(Buffer.data()), sizeof(Buffer), AnsiString(Format).c_str(), &dt))
+  if (0 != _strftime_l(const_cast<char *>(Buffer.data()), Buffer.GetLength(), AnsiString(Format).c_str(), &dt, *CLocale))
     Result = Buffer;
 
   return Result;
