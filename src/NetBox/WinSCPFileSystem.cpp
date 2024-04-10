@@ -916,8 +916,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
   TFarPanelInfo * const * PanelInfo = GetPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
 
-  if ((Key == 'W') && (ControlState & SHIFTMASK) &&
-    (ControlState & ALTMASK))
+  if ((Key == 'W') && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
   {
     GetWinSCPPlugin()->CommandsMenu(true);
     Handled = true;
@@ -930,13 +929,13 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       Data = cast_to<TSessionData>(ToObj(Focused->GetUserData()));
     }
 
-    if ((Key == 'F') && (ControlState & CTRLMASK))
+    if ((Key == 'F') && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       InsertSessionNameOnCommandLine();
       Handled = true;
     }
 
-    if ((Key == VK_RETURN) && (ControlState & CTRLMASK))
+    if ((Key == VK_RETURN) && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       InsertSessionNameOnCommandLine();
       Handled = true;
@@ -957,14 +956,14 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       Handled = true;
     }
 
-    if (Key == VK_F4 && (ControlState & SHIFTMASK))
+    if (Key == VK_F4 && CheckControlMaskSet(ControlState, SHIFTMASK))
     {
       EditConnectSession(nullptr, true);
       Handled = true;
     }
 
     if (((Key == VK_F5) || (Key == VK_F6)) &&
-      (ControlState & SHIFTMASK))
+      CheckControlMaskSet(ControlState, SHIFTMASK))
     {
       if (Data != nullptr)
       {
@@ -973,7 +972,7 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       Handled = true;
     }
 
-    if (Key == 'R' && (ControlState & CTRLMASK))
+    if (Key == 'R' && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       DeleteStoredSessions();
       if (UpdatePanel())
@@ -985,78 +984,74 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
   }
   else if (Connected())
   {
-    if ((Key == 'F') && (ControlState & CTRLMASK))
+    if ((Key == 'F') && CheckControlMaskSet(ControlState, CTRLMASK, ALTMASK))
     {
       InsertFileNameOnCommandLine(true);
       Handled = true;
     }
 
-    if ((Key == VK_RETURN) && (ControlState & CTRLMASK))
+    if ((Key == VK_RETURN) && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       InsertFileNameOnCommandLine(false);
       Handled = true;
     }
 
-    if ((Key == 'R') && (ControlState & CTRLMASK))
+    if ((Key == 'R') && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       FReloadDirectory = true;
     }
 
-    if ((Key == 'A') && (ControlState & CTRLMASK))
+    if ((Key == 'A') && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       FileProperties();
       Handled = true;
     }
 
-    if ((Key == 'G') && (ControlState & CTRLMASK))
+    if ((Key == 'G') && CheckControlMaskSet(ControlState, CTRLMASK))
     {
       ApplyCommand();
       Handled = true;
     }
 
-    if ((Key == 'Q') && (ControlState & SHIFTMASK) &&
-      (ControlState & ALTMASK))
+    if ((Key == 'Q') && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
     {
       QueueShow(false);
       Handled = true;
     }
 
-    if ((Key == 'B') && (ControlState & CTRLMASK) &&
-      (ControlState & ALTMASK))
+    if ((Key == 'B') && CheckControlMaskSet(ControlState, CTRLMASK, ALTMASK))
     {
       ToggleSynchronizeBrowsing();
       Handled = true;
     }
 
-    if ((Key == VK_INSERT) && (((ControlState & ALTMASK) && (ControlState & SHIFTMASK)) ||
-        (((ControlState & CTRLMASK) && (ControlState & ALTMASK)))))
+    if ((Key == VK_INSERT) && CheckControlMaskSet(ControlState, ALTMASK, SHIFTMASK))
     {
       CopyFullFileNamesToClipboard();
       Handled = true;
     }
 
-    if ((Key == VK_F6) && (ControlState & ALTMASK) && !(ControlState & SHIFTMASK))
+    if ((Key == VK_F6) && CheckControlMaskSet(ControlState, ALTMASK))
     {
       RemoteCreateLink();
       Handled = true;
     }
 
     if (Focused && ((Key == VK_F5) || (Key == VK_F6)) &&
-      (ControlState & SHIFTMASK) && !(ControlState & ALTMASK))
+      CheckControlMaskSet(ControlState, SHIFTMASK))
     {
       TransferFiles((Key == VK_F6));
       Handled = true;
     }
 
     if (Focused && (Key == VK_F6) &&
-      ((ControlState & SHIFTMASK) && (ControlState & ALTMASK)))
+      CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
     {
       RenameFile();
       Handled = true;
     }
 
-    if ((Key == VK_F12) && (ControlState & SHIFTMASK) &&
-      (ControlState & ALTMASK))
+    if ((Key == VK_F12) && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
     {
       OpenDirectory(false);
       Handled = true;
@@ -1071,8 +1066,8 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
 
     // Return to session panel
     if (Focused && !Handled && !IsConnectedDirectly() && 
-         ((Key == VK_RETURN) && (Focused->GetFileName() == PARENTDIRECTORY) ||
-         (Key == VK_PRIOR) && (ControlState & CTRLMASK)) && FLastPath == ROOTDIRECTORY)
+         ((Key == VK_RETURN) && (ControlState == 0) && (Focused->GetFileName() == PARENTDIRECTORY) ||
+         (Key == VK_PRIOR) && CheckControlMaskSet(ControlState, CTRLMASK)) && FLastPath == ROOTDIRECTORY)
     {
       SetDirectoryEx(PARENTDIRECTORY, 0);
       if (UpdatePanel())
@@ -1937,7 +1932,7 @@ void TWinSCPFileSystem::InsertTokenOnCommandLine(const UnicodeString & Token, bo
 
 void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 {
-  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
+  TFarPanelInfo * const * PanelInfo = IsActiveFileSystem() ? GetPanelInfo(): GetAnotherPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
 
   if (Focused != nullptr)
@@ -1962,7 +1957,7 @@ void TWinSCPFileSystem::InsertSessionNameOnCommandLine()
 
 void TWinSCPFileSystem::InsertFileNameOnCommandLine(bool Full)
 {
-  TFarPanelInfo * const * PanelInfo = GetPanelInfo();
+  TFarPanelInfo * const * PanelInfo = IsActiveFileSystem() ? GetPanelInfo(): GetAnotherPanelInfo();
   const TFarPanelItem * Focused = PanelInfo && *PanelInfo ? (*PanelInfo)->GetFocusedItem() : nullptr;
 
   if (Focused != nullptr)
@@ -2724,8 +2719,7 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 
-  TGUICopyParamType CopyParam;
-  CopyParam.Default();
+  TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
 
   if (Edit)
   {
@@ -4119,8 +4113,8 @@ void TWinSCPFileSystem::MultipleEdit()
   }
 }
 
-void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
-  const UnicodeString & AFileName, const TRemoteFile * AFile)
+void TWinSCPFileSystem::MultipleEdit(const UnicodeString Directory,
+  const UnicodeString AFileName, const TRemoteFile * AFile)
 {
   DebugAssert(AFile);
   TEditHistory EditHistory;
@@ -4226,6 +4220,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     UnicodeString TempDir;
     TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
     EditViewCopyParam(CopyParam);
+    FLastEditCopyParam = CopyParam;
 
     std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
     DebugAssert(!FNoProgressFinish);

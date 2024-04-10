@@ -215,7 +215,7 @@ protected:
       const UnicodeString & RealFileName, UnicodeString & DestPath);
   void LogAuthentication(TTerminal * Terminal, const UnicodeString & Msg);
   void MultipleEdit();
-  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & AFileName, const TRemoteFile * AFile);
+  void MultipleEdit(const UnicodeString Directory, const UnicodeString AFileName, const TRemoteFile * AFile);
   void EditViewCopyParam(TCopyParamType & CopyParam);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
   bool IsEditHistoryEmpty() const;

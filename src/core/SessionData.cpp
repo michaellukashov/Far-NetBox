@@ -2324,6 +2324,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   int32_t DefaultProtocolPortNumber = 0;
   TFtps AFtps = ftpsNone;
   int32_t ProtocolLen = 0;
+  bool HasNetboxPrefix = false;
   if (Url.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
@@ -2333,6 +2334,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       // Remove "//"
       Url.Delete(1, 2);
     }
+    HasNetboxPrefix = true;
   }
   bool HttpForWebdav = FLAGCLEAR(Flags, pufPreferProtocol) || (FSProtocol != fsS3);
   if (IsProtocolUrl(Url, ScpProtocol, ProtocolLen))
@@ -2364,6 +2366,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     DefaultProtocolPortNumber = FtpPortNumber;
   }
   else if (IsProtocolUrl(Url, WebDAVProtocol, ProtocolLen) ||
+           (!HasNetboxPrefix && IsProtocolUrl(Url, WebDAVAltProtocol, ProtocolLen)) ||
            (HttpForWebdav && IsProtocolUrl(Url, HttpProtocol, ProtocolLen)))
   {
     AFSProtocol = fsWebDAV;
@@ -2484,13 +2487,13 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     {
       DoCopyData(Data, ParseOnly);
       FSource = Data->FSource;
-      /*int32_t P = 1;
+      int32_t P = 1;
       while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), SessionNameWithoutFolder))
       {
         P++;
         DebugAssert(P <= Url.Length());
       }
-      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);*/
+      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
 
       if (Data->Hidden && !ParseOnly)
       {
@@ -2662,6 +2665,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
     }
 
+    ARemoteDirectory = ARemoteDirectory.TrimRight();
     if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != ROOTDIRECTORY))
     {
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != Slash) &&
@@ -2670,7 +2674,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         *AFileName = DecodeUrlChars(base::UnixExtractFileName(ARemoteDirectory));
         ARemoteDirectory = base::UnixExtractFilePath(ARemoteDirectory);
       }
-      SetRemoteDirectory(DecodeUrlChars(RemoteDirectory));
+      SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));
       // Is already true for ad-hoc URL, but we want to error even for "storedsite/path/"-style URL.
       RequireDirectories = true;
     }

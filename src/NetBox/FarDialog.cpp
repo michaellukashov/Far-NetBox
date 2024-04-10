@@ -674,7 +674,7 @@ bool TFarDialog::HotKey(uint32_t Key, uint32_t ControlState) const
 {
   bool Result = false;
   char HotKey = 0;
-  if ((ControlState & ALTMASK) &&
+  if (CheckControlMaskSet(ControlState, ALTMASK) &&
     ('A' <= Key) && (Key <= 'Z'))
   {
     Result = true;
