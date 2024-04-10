@@ -108,6 +108,7 @@ constexpr const wchar_t * FtpsProtocol = L"ftps";
 constexpr const wchar_t * FtpesProtocol = L"ftpes";
 constexpr const wchar_t * WebDAVProtocol = L"dav";
 constexpr const wchar_t * WebDAVSProtocol = L"davs";
+constexpr const wchar_t * WebDAVAltProtocol = L"webdav";
 constexpr const wchar_t * S3Protocol = L"s3";
 constexpr const wchar_t * S3PlainProtocol = L"s3plain";
 constexpr const wchar_t * SshProtocol = L"ssh";
