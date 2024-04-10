@@ -2324,6 +2324,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   int32_t DefaultProtocolPortNumber = 0;
   TFtps AFtps = ftpsNone;
   int32_t ProtocolLen = 0;
+  bool HasNetboxPrefix = false;
   if (Url.SubString(1, 7).LowerCase() == L"netbox:")
   {
     // Remove "netbox:" prefix
@@ -2333,6 +2334,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       // Remove "//"
       Url.Delete(1, 2);
     }
+    HasNetboxPrefix = true;
   }
   bool HttpForWebdav = FLAGCLEAR(Flags, pufPreferProtocol) || (FSProtocol != fsS3);
   if (IsProtocolUrl(Url, ScpProtocol, ProtocolLen))
@@ -2364,6 +2366,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     DefaultProtocolPortNumber = FtpPortNumber;
   }
   else if (IsProtocolUrl(Url, WebDAVProtocol, ProtocolLen) ||
+           (!HasNetboxPrefix && IsProtocolUrl(Url, WebDAVAltProtocol, ProtocolLen)) ||
            (HttpForWebdav && IsProtocolUrl(Url, HttpProtocol, ProtocolLen)))
   {
     AFSProtocol = fsWebDAV;
