@@ -3,7 +3,7 @@ NetBox: SFTP/FTP(S)/SCP/WebDAV клиент для Far Manager 2.0/3.0
 
 1. Общие сведения о плагине
 
-   Плагин реализует клиентскую часть протоколов SFTP, FTP, SCP, FTPS и WebDAV.  
+   Плагин реализует клиентскую часть протоколов SFTP, FTP, SCP, FTPS, WebDAV и S3.  
    SFTP, FTP, SCP, FTPS протоколы реализованы на основе плагина WinSCP [http://winscp.net/eng/download.php/](http://winscp.net/eng/download.php/)  
    Поддержка протокола WebDAV реализована на основе библиотеки neon [http://www.webdav.org/neon/](http://www.webdav.org/neon/).  
    Парсер xml работает c помощью библиотеки TinyXML [http://sourceforge.net/projects/tinyxml/] (http://sourceforge.net/projects/tinyxml/).
@@ -12,23 +12,27 @@ NetBox: SFTP/FTP(S)/SCP/WebDAV клиент для Far Manager 2.0/3.0
 
    Доступ к удалённому серверу возможен как через собственное хранилище сессий, так и через префикс.
 
-   Возможны два варианта использования префикса:  
+   Возможны три варианта использования префикса:  
      a. NetBox:Protocol://[[User]:[Password]@]HostName[:Port][/Path]  
 
-        где Protocol - имя протокола (ftp/ftps/sftp/http/https)  
+        где Protocol - имя протокола (ftp|ftps|ftpes|ssh|scp|sftp|dav|davs|http|https|s3|s3plain)  
             User - имя пользователя  
             Password - пароль пользователя  
             HostName - имя хоста  
             Port - номер порта  
             Path - путь
 
-     b. (sftp|ftp|scp|ftps|http|https)://[[User]:[Password]@]HostName[:Port][/Path]  
-        где (sftp|ftp|scp|ftps|http|https) - имя протокола  
+     b. (sftp|ftp|scp|ftps|webdav|s3)://[[User]:[Password]@]HostName[:Port][/Path]  
+        где (sftp|ftp|scp|ftps|webdav|s3) - имя протокола  
             User - имя пользователя  
             Password - пароль пользователя  
             HostName - имя хоста  
             Port - номер порта  
             Path - путь
+
+      c. NetBox:SessionName[/Path]
+         где SessionName - сохранённое имя сессии
+             Path - путь
 
     Особенности работы с FTP серверами допускающими анонимный логин.
 
