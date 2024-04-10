@@ -2588,7 +2588,6 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
       // and I believe I've seen one more server doing the same.
       if (Packet->GetRemainingLength() > 0)
       {
-        ServerMessage = Packet->GetString(FUtfStrings);
         LanguageTag = Packet->GetAnsiString();
         if ((FVersion >= 5) && (Message == SFTP_STATUS_UNKNOWN_PRINCIPAL))
         {

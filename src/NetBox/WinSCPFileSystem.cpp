@@ -2724,8 +2724,7 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
   bool Confirmed = (OpMode & OPM_SILENT);
   bool Ask = !Confirmed;
 
-  TGUICopyParamType CopyParam;
-  CopyParam.Default();
+  TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
 
   if (Edit)
   {
@@ -4225,6 +4224,7 @@ void TWinSCPFileSystem::MultipleEdit(const UnicodeString & Directory,
     UnicodeString TempDir;
     TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
     EditViewCopyParam(CopyParam);
+    FLastEditCopyParam = CopyParam;
 
     std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
     DebugAssert(!FNoProgressFinish);
