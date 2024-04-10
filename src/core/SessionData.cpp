@@ -2487,13 +2487,13 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
     {
       DoCopyData(Data, ParseOnly);
       FSource = Data->FSource;
-      /*int32_t P = 1;
+      int32_t P = 1;
       while (!AnsiSameText(DecodeUrlChars(Url.SubString(1, P)), SessionNameWithoutFolder))
       {
         P++;
         DebugAssert(P <= Url.Length());
       }
-      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);*/
+      ARemoteDirectory = Url.SubString(P + 1, Url.Length() - P);
 
       if (Data->Hidden && !ParseOnly)
       {
@@ -2665,6 +2665,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
     }
 
+    ARemoteDirectory = ARemoteDirectory.TrimRight();
     if (!ARemoteDirectory.IsEmpty() && (ARemoteDirectory != ROOTDIRECTORY))
     {
       if ((ARemoteDirectory[ARemoteDirectory.Length()] != Slash) &&
@@ -2673,7 +2674,7 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
         *AFileName = DecodeUrlChars(base::UnixExtractFileName(ARemoteDirectory));
         ARemoteDirectory = base::UnixExtractFilePath(ARemoteDirectory);
       }
-      SetRemoteDirectory(DecodeUrlChars(RemoteDirectory));
+      SetRemoteDirectory(DecodeUrlChars(ARemoteDirectory));
       // Is already true for ad-hoc URL, but we want to error even for "storedsite/path/"-style URL.
       RequireDirectories = true;
     }
