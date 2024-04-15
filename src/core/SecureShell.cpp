@@ -1794,8 +1794,10 @@ void TSecureShell::FreeBackend()
     if (CheckHandle(FCallbackSet->ready_event))
     {
       CloseHandle(FCallbackSet->ready_event);
-      FCallbackSet->ready_event = INVALID_HANDLE_VALUE;
+      DeleteCriticalSection(FCallbackSet->ready_critsec);
     }
+    memset(FCallbackSet.get(), 0, sizeof(callback_set));
+    FCallbackSet->ready_event = INVALID_HANDLE_VALUE;
   }
 }
 
