@@ -148,17 +148,16 @@ set(NETBOX_DLL_LINK_FLAGS
   /DELAYLOAD:shlwapi.dll
   /DELAYLOAD:crypt32.dll
   /MANIFEST:NO
-  /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS
-  /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS /NOLOGO
-  /INCREMENTAL:NO
+  /SUBSYSTEM:WINDOWS
+  /NOLOGO
   /ignore:4099
   /ignore:4197
   /ignore:4199
 )
 #/DELAYLOAD:gdi32.dll
 
-set(NETBOX_DLL_LINK_FLAGS_RELEASE /OPT:REF)
-set(NETBOX_DLL_LINK_FLAGS_DEBUG /DEBUG)
+set(NETBOX_DLL_LINK_FLAGS_RELEASE ${NETBOX_DLL_LINK_FLAGS} /RELEASE /INCREMENTAL:NO /OPT:REF /OPT:ICF /LTCG)
+set(NETBOX_DLL_LINK_FLAGS_DEBUG ${NETBOX_DLL_LINK_FLAGS} /DEBUG)
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 set(NETBOX_DLL_LINK_FLAGS )
@@ -2461,10 +2460,7 @@ ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
 ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
 ucm_add_flags(CXX C /DDEBUG CONFIG RelWithDebInfo)
 # ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
-ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} CONFIG Debug)
-ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /MAP CONFIG Debug)
-ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /INCREMENTAL:NO CONFIG RelWithDebInfo)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_RELEASE} CONFIG Release RelWithDebInfo MinSizeRel)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_DEBUG} CONFIG Debug)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
