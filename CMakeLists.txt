@@ -2449,16 +2449,13 @@ endif(OPT_CREATE_PLUGIN_DIR)
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
 ucm_add_flags(CXX /EHs)
-#/Ob2 /GR
-ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
-#/O1 release min size
-#/O2 release
-#/Oy - omit frame pointers
-#/Oi - enable intrinsic functions
-#/RTC1 - Run-time error checks
-ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
+# /O1 - minimize size,  implies /Og /Oy /Ob2 /GF /Gy /Os
+# /O2 - maximize speed, implies /Og /Oy /Ob2 /GF /Gy /Oi /Ot
+# /Gw - Enables whole program global data optimization
+# /GL - Enables whole program optimization
+ucm_remove_flags(CXX C /Ob1 /Ob2 CONFIG Release MinSizeRel RelWithDebInfo)
+ucm_add_flags(CXX C /fp:fast /Gw /GL CONFIG Release RelWithDebInfo MinSizeRel)
 ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
-ucm_add_flags(CXX C /DDEBUG CONFIG RelWithDebInfo)
 # ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_RELEASE} CONFIG Release RelWithDebInfo MinSizeRel)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_DEBUG} CONFIG Debug)
