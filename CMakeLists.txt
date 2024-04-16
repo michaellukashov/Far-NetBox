@@ -2452,7 +2452,7 @@ endif(OPT_CREATE_PLUGIN_DIR)
 
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
-ucm_add_flags(CXX /EHsc)
+ucm_add_flags(CXX /EHs)
 #/Ob2 /GR
 ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
 #/O1 release min size
