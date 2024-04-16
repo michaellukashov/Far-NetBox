@@ -2415,22 +2415,22 @@ file(GLOB DIST_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt
 )
 
-add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND ${CMAKE_COMMAND}
-  "-DFILE_NAME=NetBox.dll"
-  "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:NetBox>/NetBox.dll"
-  "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
-  -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
-  VERBATIM
+set(NB_TARGET_FILES
+  NetBox.dll
+  NetBox.pdb
+  NetBox.map
 )
-add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND ${CMAKE_COMMAND}
-  "-DFILE_NAME=NetBox.pdb"
-  "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:NetBox>/NetBox.pdb"
-  "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
-  -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
-  VERBATIM
-)
+
+foreach(NB_TARGET ${NB_TARGET_FILES})
+  add_custom_command(TARGET NetBox POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+    "-DFILE_NAME=${NB_TARGET}"
+    "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:NetBox>//${NB_TARGET}"
+    "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
+    VERBATIM
+  )
+endforeach()
 
 foreach(DIST_FILE ${DIST_FILES})
   get_filename_component(FILE_NAME ${DIST_FILE} NAME)
@@ -2461,5 +2461,6 @@ ucm_add_flags(CXX C /DDEBUG CONFIG RelWithDebInfo)
 # ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_RELEASE} CONFIG Release RelWithDebInfo MinSizeRel)
 ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_DEBUG} CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED /DEBUG /MAP CONFIG RelWithDebInfo)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
