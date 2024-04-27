@@ -64,8 +64,6 @@ void TFileZillaIntf::Finalize()
 #ifndef NO_IPV6
   if (wship6_module)
     ::FreeLibrary(wship6_module);
-  if (winsock2_module)
-    ::FreeLibrary(winsock2_module);
 #endif
   if (winsock_module)
     ::FreeLibrary(winsock_module);
