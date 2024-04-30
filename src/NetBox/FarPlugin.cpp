@@ -1009,9 +1009,9 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
       ButtonLines++;
     }
 
-    if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
+    if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft() + 4)
     {
-      MaxLen = Button->GetRight() - GetBorderBox()->GetLeft() + 2;
+      MaxLen = Button->GetRight() - GetBorderBox()->GetLeft() + 4;
     }
 
     SetNextItemPosition(ipRight);
@@ -1023,9 +1023,9 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
     FCheckBox = MakeOwnedObject<TFarCheckBox>(this);
     FCheckBox->SetCaption(FParams->CheckBoxLabel);
 
-    if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
+    if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft() + 4)
     {
-      MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft();
+      MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft() + 4;
     }
   }
   else
@@ -1035,7 +1035,7 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
 
   const TRect rect = GetClientRect();
   TPoint S(
-    nb::ToInt32(rect.Left + MaxLen - rect.Right),
+    nb::ToInt32(rect.Left + MaxLen - (rect.Right + 1)),
     nb::ToInt32(rect.Top + MessageLines->GetCount() +
       (FParams->MoreMessages != nullptr ? 1 : 0) + ButtonLines +
       (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
