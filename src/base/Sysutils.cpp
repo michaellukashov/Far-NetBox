@@ -702,6 +702,11 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
     MaxWidth = 5;
   }
 
+  if (nb::StrLength(Line.c_str()) <= MaxWidth)
+  {
+    return Line;
+  }
+
   /* two passes through the input. the first pass updates the buffer length.
    * the second pass creates and populates the buffer
    */
@@ -752,14 +757,8 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
       }
 
       /* copy as many words as will fit onto the current line */
-      while (S && *S && (nb::StrLength(S) + 1) <= SpaceLeft)
+      while (S && *S && nb::StrLength(S) <= SpaceLeft)
       {
-        if (Result.Length() == 0)
-        {
-          ++LenBuffer;
-        }
-        --SpaceLeft;
-
         /* then copy the word */
         while (*S)
         {
@@ -804,8 +803,6 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
 
       ++LineCount;
     }
-
-    LenBuffer += 2;
 
     if (W)
     {
