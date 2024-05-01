@@ -557,6 +557,8 @@ void TSessionData::NonPersistent()
   PROPERTY(FtpHost); \
   PROPERTY2(FtpWorkFromCwd); \
   PROPERTY2(FtpAnyCodeForPwd); \
+  PROPERTY2(CodePage); \
+  PROPERTY2(CodePageAsNumber); \
   PROPERTY(SslSessionReuse); \
   PROPERTY(TlsCertificateFile); \
   \
