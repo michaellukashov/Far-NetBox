@@ -645,10 +645,6 @@ void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
     SetKex(Index, DefaultKexList[Index]);
   }
 
-  FOverrideCachedHostKey = SourceData->GetOverrideCachedHostKey();
-  FModified = SourceData->GetModified();
-  FSaveOnly = SourceData->GetSaveOnly();
-
   FSource = SourceData->FSource;
   FNumberOfRetries = SourceData->FNumberOfRetries;
 }
