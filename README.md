@@ -11,7 +11,7 @@ Based on [WinSCP](http://winscp.net/eng/index.php) version 6.3.3 Copyright (c) 2
 
 Based on [WinSCP as FAR Plugin: SFTP/FTP/SCP client for FAR version 1.6.2](http://winscp.net/download/winscpfar162setup.exe) Copyright (c) 2000-2009 Martin Prikryl  
 
-SSH and SCP code based on PuTTY 0.80 Copyright (c) 1997-2023 Simon Tatham  
+SSH and SCP code based on PuTTY 0.81 Copyright (c) 1997-2024 Simon Tatham  
 
 FTP code based on FileZilla 2.2.32 Copyright (c) 2001-2007 Tim Kosse  
 
