@@ -1490,7 +1490,6 @@ add_library(putty STATIC
   libs/putty/windows/utils/agent_named_pipe_name.c
   libs/putty/windows/utils/cryptoapi.c
   libs/putty/windows/utils/defaults.c
-  libs/putty/windows/utils/dll_hijacking_protection.c
   libs/putty/windows/utils/escape_registry_key.c
   libs/putty/windows/utils/filename.c
   libs/putty/windows/utils/fontspec.c
