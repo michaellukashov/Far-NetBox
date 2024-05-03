@@ -1380,6 +1380,7 @@ add_library(putty STATIC
   libs/putty/crypto/prng.c
   libs/putty/crypto/pubkey-pem.c
   libs/putty/crypto/pubkey-ppk.c
+  libs/putty/crypto/rfc6979.c
   libs/putty/crypto/rsa.c
   libs/putty/crypto/sha1-common.c
   libs/putty/crypto/sha1-select.c
