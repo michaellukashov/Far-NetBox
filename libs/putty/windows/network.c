@@ -377,7 +377,7 @@ void sk_cleanup(void)
     {
         p_WSACleanup();
     }
-    if (winsock_module && winsock_module != INVALID_HANDLE_VALUE)
+    if (winsock_module)
         FreeLibrary(winsock_module);
 #ifndef NO_IPV6
     if (wship6_module)
