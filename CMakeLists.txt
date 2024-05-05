@@ -143,25 +143,21 @@ set(NETBOX_DLL_LINK_FLAGS
   /NODEFAULTLIB:KERNEL32.LIB
   /NODEFAULTLIB:USER32.LIB
   /NODEFAULTLIB:VERSION.LIB
-  /DELAYLOAD:version.dll
   /DELAYLOAD:ws2_32.dll
   /DELAYLOAD:oleaut32.dll
-  /DELAYLOAD:shell32.dll
   /DELAYLOAD:shlwapi.dll
   /DELAYLOAD:crypt32.dll
-  /DELAYLOAD:secur32.dll
   /MANIFEST:NO
-  /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS
-  /TLBID:1 /DYNAMICBASE /SUBSYSTEM:WINDOWS /NOLOGO
-  /INCREMENTAL:NO
+  /SUBSYSTEM:WINDOWS
+  /NOLOGO
   /ignore:4099
   /ignore:4197
   /ignore:4199
 )
 #/DELAYLOAD:gdi32.dll
 
-set(NETBOX_DLL_LINK_FLAGS_RELEASE /OPT:REF)
-set(NETBOX_DLL_LINK_FLAGS_DEBUG /DEBUG)
+set(NETBOX_DLL_LINK_FLAGS_RELEASE ${NETBOX_DLL_LINK_FLAGS} /RELEASE /INCREMENTAL:NO /OPT:REF /OPT:ICF /LTCG)
+set(NETBOX_DLL_LINK_FLAGS_DEBUG ${NETBOX_DLL_LINK_FLAGS} /DEBUG)
 
 elseif(CMAKE_COMPILER_IS_MINGW)
 set(NETBOX_DLL_LINK_FLAGS )
@@ -2420,22 +2416,22 @@ file(GLOB DIST_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt
 )
 
-add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND ${CMAKE_COMMAND}
-  "-DFILE_NAME=NetBox.dll"
-  "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:NetBox>/NetBox.dll"
-  "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
-  -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
-  VERBATIM
+set(NB_TARGET_FILES
+  NetBox.dll
+  NetBox.pdb
+  NetBox.map
 )
-add_custom_command(TARGET NetBox POST_BUILD
-  COMMAND ${CMAKE_COMMAND}
-  "-DFILE_NAME=NetBox.pdb"
-  "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:NetBox>/NetBox.pdb"
-  "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
-  -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
-  VERBATIM
-)
+
+foreach(NB_TARGET ${NB_TARGET_FILES})
+  add_custom_command(TARGET NetBox POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+    "-DFILE_NAME=${NB_TARGET}"
+    "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:NetBox>//${NB_TARGET}"
+    "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
+    VERBATIM
+  )
+endforeach()
 
 foreach(DIST_FILE ${DIST_FILES})
   get_filename_component(FILE_NAME ${DIST_FILE} NAME)
@@ -2452,22 +2448,17 @@ endif(OPT_CREATE_PLUGIN_DIR)
 
 #-------------------------------------------------------------------------------
 ucm_set_runtime(STATIC)
-ucm_add_flags(CXX /EHsc)
-#/Ob2 /GR
-ucm_add_flags(CXX C /Gy /GS- /fp:fast /Oy /GA /GF /Gw /GL CONFIG Release)
-#/O1 release min size
-#/O2 release
-#/Oy - omit frame pointers
-#/Oi - enable intrinsic functions
-#/RTC1 - Run-time error checks
-ucm_add_flags(CXX C /Gm- -Ox -Oi -Os CONFIG Release)
+ucm_add_flags(CXX /EHs)
+# /O1 - minimize size,  implies /Og /Oy /Ob2 /GF /Gy /Os
+# /O2 - maximize speed, implies /Og /Oy /Ob2 /GF /Gy /Oi /Ot
+# /Gw - Enables whole program global data optimization
+# /GL - Enables whole program optimization
+ucm_remove_flags(CXX C /Ob1 /Ob2 CONFIG Release MinSizeRel RelWithDebInfo)
+ucm_add_flags(CXX C /fp:fast /Gw /GL CONFIG Release RelWithDebInfo MinSizeRel)
 ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
-ucm_add_flags(CXX C /DDEBUG CONFIG RelWithDebInfo)
 # ucm_add_flags(CXX /fsanitize=address CONFIG Debug) #/sdl
-ucm_add_linker_flags(MODULE STATIC SHARED EXE /LTCG CONFIG Release)
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} /OPT:REF /OPT:ICF=6 /NXCOMPAT /DYNAMICBASE /MANIFEST:NO CONFIG Release)
-ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS} CONFIG Debug)
-ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /MAP CONFIG Debug)
-ucm_add_linker_flags(MODULE SHARED EXE /DEBUG /INCREMENTAL:NO CONFIG RelWithDebInfo)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_RELEASE} CONFIG Release RelWithDebInfo MinSizeRel)
+ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_DEBUG} CONFIG Debug)
+ucm_add_linker_flags(MODULE SHARED /DEBUG /MAP CONFIG RelWithDebInfo)
 #ucm_print_flags()
 #-------------------------------------------------------------------------------
