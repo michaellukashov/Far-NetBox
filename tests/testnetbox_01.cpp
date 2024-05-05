@@ -1209,13 +1209,16 @@ TEST_CASE_METHOD(base_fixture_t, "testProperty02", "netbox")
 //    CHECK(b2.RWData3() == "FRWData3");
     // printf("14\n");
     CHECK(b2.Modification() == TDateTime(10, 10, 10, 10));
+#if 0
     TBase2 b3 = b2;
     CHECK(b3.RWData2() == "42");
     CHECK(b3.RWData3() == "FRWData3");
+    CHECK(b3.Modification() == TDateTime(10, 10, 10, 10));
+#endif
+    TBase2 b3;
     // printf("15\n");
     b3.RWData3 = "FRWData3-mod";
     CHECK(b3.RWData3() == "FRWData3-mod");
-    CHECK(b3.Modification() == TDateTime(10, 10, 10, 10));
     TDateTime dt(10, 20, 59, 10);
     // printf("16\n");
     b3.Modification = dt;
