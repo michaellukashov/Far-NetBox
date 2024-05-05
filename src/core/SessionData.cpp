@@ -557,6 +557,8 @@ void TSessionData::NonPersistent()
   PROPERTY(FtpHost); \
   PROPERTY2(FtpWorkFromCwd); \
   PROPERTY2(FtpAnyCodeForPwd); \
+  PROPERTY2(CodePage); \
+  PROPERTY2(CodePageAsNumber); \
   PROPERTY(SslSessionReuse); \
   PROPERTY(TlsCertificateFile); \
   \
@@ -644,10 +646,6 @@ void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
   {
     SetKex(Index, DefaultKexList[Index]);
   }
-
-  FOverrideCachedHostKey = SourceData->GetOverrideCachedHostKey();
-  FModified = SourceData->GetModified();
-  FSaveOnly = SourceData->GetSaveOnly();
 
   FSource = SourceData->FSource;
   FNumberOfRetries = SourceData->FNumberOfRetries;
