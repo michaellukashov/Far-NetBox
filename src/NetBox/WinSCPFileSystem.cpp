@@ -756,7 +756,10 @@ bool TWinSCPFileSystem::ProcessPanelEventEx(intptr_t Event, void * Param)
       // we must count on having ProcessPanelEvent(FE_IDLE) called again.
       try
       {
-        FTerminal->Idle();
+        if (GetPlugin()->FTopDialog == nullptr)
+        {
+          FTerminal->Idle();
+        }
       }
       catch (EConnectionFatal & E)
       {

@@ -881,9 +881,10 @@ void TSessionLog::DoAddToSelf(TLogLineType Type, const UnicodeString & ALine)
 
     if (FLogger != nullptr)
     {
+      const UTF8String UtfLine = UTF8String(UnicodeString(1, LogLineMarks[Type]) + " " + TrimRight(ALine)); // without timestamp
+#if defined(__BORLANDC__)
       const UnicodeString Timestamp = FormatDateTime(L" yyyy-mm-dd hh:nn:ss.zzz ", Now());
       const UTF8String UtfLine = UTF8String(UnicodeString(1, LogLineMarks[Type]) + Timestamp + TrimRight(ALine)); // + "\r\n";
-#if defined(__BORLANDC__)
       for (int32_t Index = 1; Index <= UtfLine.Length(); Index++)
       {
         if ((UtfLine[Index] == '\n') &&
@@ -1349,7 +1350,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
       else
       {
-        PingType = EnumName(Data->PingType, PingTypeNames);
+        PingType = EnumName(Data->PingType(), PingTypeNames);
         PingInterval = Data->PingInterval;
       }
       ADF("Ping type: %s, Ping interval: %d sec; Timeout: %d sec",

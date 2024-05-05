@@ -1009,9 +1009,9 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
       ButtonLines++;
     }
 
-    if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft())
+    if (MaxLen < Button->GetRight() - GetBorderBox()->GetLeft() + 4)
     {
-      MaxLen = Button->GetRight() - GetBorderBox()->GetLeft() + 2;
+      MaxLen = Button->GetRight() - GetBorderBox()->GetLeft() + 4;
     }
 
     SetNextItemPosition(ipRight);
@@ -1023,9 +1023,9 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
     FCheckBox = MakeOwnedObject<TFarCheckBox>(this);
     FCheckBox->SetCaption(FParams->CheckBoxLabel);
 
-    if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft())
+    if (MaxLen < FCheckBox->GetRight() - GetBorderBox()->GetLeft() + 4)
     {
-      MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft();
+      MaxLen = FCheckBox->GetRight() - GetBorderBox()->GetLeft() + 4;
     }
   }
   else
@@ -1035,7 +1035,7 @@ void TFarMessageDialog::InitFarMessageDialog(uint32_t AFlags,
 
   const TRect rect = GetClientRect();
   TPoint S(
-    nb::ToInt32(rect.Left + MaxLen - rect.Right),
+    nb::ToInt32(rect.Left + MaxLen - (rect.Right + 1)),
     nb::ToInt32(rect.Top + MessageLines->GetCount() +
       (FParams->MoreMessages != nullptr ? 1 : 0) + ButtonLines +
       (!FParams->CheckBoxLabel.IsEmpty() ? 1 : 0) +
@@ -1270,6 +1270,10 @@ int32_t TCustomFarPlugin::Message(uint32_t Flags,
       Flags | FMSG_ALLINONE | FMSG_LEFTALIGN,
       nullptr,
       static_cast<const wchar_t * const *>(static_cast<const void *>(Items.c_str())), 0, 0));
+  }
+  if (FTerminalScreenShowing)
+  {
+    FarControl(FCTL_GETUSERSCREEN, 0, nullptr);
   }
   return Result;
 }
@@ -1560,55 +1564,8 @@ void TCustomFarPlugin::ScrollTerminalScreen(int32_t Rows)
 void TCustomFarPlugin::ShowTerminalScreen(const UnicodeString & Command)
 {
   DebugAssert(!FTerminalScreenShowing);
-  TPoint Size, Cursor;
-  TerminalInfo(&Size, &Cursor);
-
-  if (Size.y >= 2)
-  {
-    // clean menu keybar area before command output
-    int32_t Y = Size.y - 2;
-    // if any panel is visible -- clear all screen (don't scroll panel)
-    {
-      PanelInfo Info{};
-      nb::ClearStruct(Info);
-      Info.StructSize = sizeof(Info);
-      FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_ACTIVE);
-      if (Info.Flags & PFLAGS_VISIBLE)
-      {
-        Y = 0;
-      }
-      else
-      {
-        nb::ClearStruct(Info);
-        Info.StructSize = sizeof(Info);
-        FarControl(FCTL_GETPANELINFO, 0, &Info, PANEL_PASSIVE);
-        if (Info.Flags & PFLAGS_VISIBLE)
-        {
-          Y = 0;
-        }
-      }
-    }
-    UnicodeString Blank = ::StringOfChar(L' ', Size.x);
-    do
-    {
-      Text(0, Y, 7 /*LIGHTGRAY*/, Blank);
-    } while (++Y < Size.y);
-    if (Command.Length() && Size.x > 2)
-    {
-      Blank = Command;
-      Blank.Insert(0, L"$ ", 2);
-      if (Blank.Length() > Size.x) Blank.SetLength(Size.x);
-      if (Cursor.y == Y-1) --Cursor.y; // !'Show key bar'
-      Text(0, Cursor.y, 7 /*LIGHTGRAY*/, Blank);
-      ++Cursor.y;
-    }
-  }
-  FlushText();
-
-  COORD Coord{};
-  Coord.X = 0;
-  Coord.Y = static_cast<SHORT>(Cursor.y);
-  ::SetConsoleCursorPosition(FConsoleOutput, Coord);
+  FarControl(FCTL_GETUSERSCREEN, 0, nullptr);
+  FarWriteConsole(L"$ " + Command + "\n");
   FTerminalScreenShowing = true;
 }
 

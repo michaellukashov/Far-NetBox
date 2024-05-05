@@ -23,10 +23,11 @@ public:
   {
     DebugCheck(!_getter.empty());
   }
-  ROProperty(const ROProperty &) = default;
-  ROProperty(ROProperty &&) noexcept = default;
-  ROProperty & operator =(const ROProperty &) = default;
-  ROProperty & operator =(ROProperty &&) noexcept = default;
+  ROProperty(const ROProperty &) = delete;
+  ROProperty(ROProperty &&) noexcept = delete;
+  ~ROProperty() = default;
+  ROProperty & operator =(const ROProperty &) = delete;
+  ROProperty & operator =(ROProperty &&) noexcept = delete;
 
   constexpr T operator()() const
   {
@@ -74,10 +75,11 @@ public:
   {
     DebugCheck(!_getter.empty());
   }
-  ROIndexedProperty(const ROIndexedProperty &) = default;
-  ROIndexedProperty(ROIndexedProperty &&) noexcept = default;
-  ROIndexedProperty & operator =(const ROIndexedProperty &) = default;
-  ROIndexedProperty & operator =(ROIndexedProperty &&) noexcept = default;
+  ROIndexedProperty(const ROIndexedProperty &) = delete;
+  ROIndexedProperty(ROIndexedProperty &&) noexcept = delete;
+  ~ROIndexedProperty() = default;
+  ROIndexedProperty & operator =(const ROIndexedProperty &) = delete;
+  ROIndexedProperty & operator =(ROIndexedProperty &&) noexcept = delete;
   constexpr T operator [](int32_t Index) const
   {
     DebugCheck(_getter);
@@ -98,10 +100,11 @@ public:
   {
     DebugCheck(_value != nullptr);
   }
-  ROProperty2(const ROProperty2 &) = default;
-  ROProperty2(ROProperty2 &&) noexcept = default;
-  ROProperty2 & operator =(const ROProperty2 &) = default;
-  ROProperty2 & operator =(ROProperty2 &&) noexcept = default;
+  ROProperty2(const ROProperty2 &) = delete;
+  ROProperty2(ROProperty2 &&) noexcept = delete;
+  ~ROProperty2() = default;
+  ROProperty2 & operator =(const ROProperty2 &) = delete;
+  ROProperty2 & operator =(ROProperty2 &&) noexcept = delete;
 
   constexpr T operator ()() const
   {
@@ -162,10 +165,16 @@ public:
   {
     DebugCheck(!_setter.empty());
   }
-  RWProperty(const RWProperty &) = default;
-  RWProperty(RWProperty &&) noexcept = default;
-  RWProperty & operator =(const RWProperty &) = default;
-  RWProperty & operator =(RWProperty &&) noexcept = default;
+  RWProperty(const RWProperty &) = delete;
+  RWProperty(RWProperty &&) noexcept = delete;
+  ~RWProperty() = default;
+  RWProperty & operator =(const RWProperty & Value)
+  {
+    DebugCheck(_setter);
+    _setter(Value());
+    return *this;
+  }
+  RWProperty & operator =(RWProperty &&) noexcept = delete;
 
   using ROProperty<T>::operator();
   void operator()(ValueType Value)
@@ -196,10 +205,16 @@ public:
   {
     DebugCheck(_value != nullptr);
   }
-  RWProperty2(const RWProperty2 &) = default;
-  RWProperty2(RWProperty2 &&) noexcept = default;
-  RWProperty2 & operator =(const RWProperty2 &) = default;
-  RWProperty2 & operator =(RWProperty2 &&) noexcept = default;
+  RWProperty2(const RWProperty2 &) = delete;
+  RWProperty2(RWProperty2 &&) noexcept = delete;
+  ~RWProperty2() = default;
+  RWProperty2 & operator =(const RWProperty2 & Value)
+  {
+    DebugCheck(_value);
+    *_value = Value();
+    return *this;
+  }
+  RWProperty2 & operator =(RWProperty2 &&) noexcept = delete;
 
   constexpr T operator ()() const
   {
@@ -216,7 +231,7 @@ public:
   constexpr T operator ->() const
   {
     DebugCheck(_value);
-    return _value();
+    return *_value;
   }
 
   constexpr T operator ->()
@@ -271,10 +286,16 @@ public:
     DebugCheck(_value != nullptr);
     DebugCheck(!_setter.empty());
   }
-  RWPropertySimple(const RWPropertySimple &) = default;
-  RWPropertySimple(RWPropertySimple &&) noexcept = default;
-  RWPropertySimple & operator =(const RWPropertySimple &) = default;
-  RWPropertySimple & operator =(RWPropertySimple &&) noexcept = default;
+  RWPropertySimple(const RWPropertySimple &) = delete;
+  RWPropertySimple(RWPropertySimple &&) noexcept = delete;
+  ~RWPropertySimple() = default;
+  RWPropertySimple & operator =(const RWPropertySimple & Value)
+  {
+    DebugCheck(_setter);
+    _setter(Value());
+    return *this;
+  }
+  RWPropertySimple & operator =(RWPropertySimple &&) noexcept = delete;
   constexpr T operator ()() const
   {
     DebugCheck(_value);
@@ -288,7 +309,7 @@ public:
   constexpr T operator ->() const
   {
     DebugCheck(_value);
-    return _value();
+    return *_value;
   }
   constexpr T operator ->()
   {

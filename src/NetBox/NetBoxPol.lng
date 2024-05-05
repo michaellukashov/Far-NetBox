@@ -1253,7 +1253,7 @@
 
 "CORE_VARIABLE"
 "Kod SSH i SCP bazuje na PuTTY %s"
-"0.80"
+"0.81"
 "Copyright © 1997-2023 Simon Tatham"
 "http://www.chiark.greenend.org.uk/~sgtatham/putty/"
 "Kod FTP bazuje na FileZilla"
