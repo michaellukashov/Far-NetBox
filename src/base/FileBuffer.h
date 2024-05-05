@@ -56,7 +56,7 @@ public:
   char * GetPointer() const { return GetData() + GetPosition(); }
   void NeedSpace(int64_t Size);
   void SetSize(int64_t Value);
-  int64_t GetPosition() const { return nb::ToInt64(FMemory->Position); }
+  int64_t GetPosition() const { return FMemory->Position; }
   void ProcessRead(int64_t Len, DWORD Result);
 };
 

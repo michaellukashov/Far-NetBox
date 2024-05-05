@@ -1349,7 +1349,7 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       }
       else
       {
-        PingType = EnumName(Data->PingType, PingTypeNames);
+        PingType = EnumName(Data->PingType(), PingTypeNames);
         PingInterval = Data->PingInterval;
       }
       ADF("Ping type: %s, Ping interval: %d sec; Timeout: %d sec",
