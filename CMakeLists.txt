@@ -1376,6 +1376,7 @@ add_library(putty STATIC
   libs/putty/crypto/prng.c
   libs/putty/crypto/pubkey-pem.c
   libs/putty/crypto/pubkey-ppk.c
+  libs/putty/crypto/rfc6979.c
   libs/putty/crypto/rsa.c
   libs/putty/crypto/sha1-common.c
   libs/putty/crypto/sha1-select.c
@@ -1486,7 +1487,6 @@ add_library(putty STATIC
   libs/putty/windows/utils/agent_named_pipe_name.c
   libs/putty/windows/utils/cryptoapi.c
   libs/putty/windows/utils/defaults.c
-  libs/putty/windows/utils/dll_hijacking_protection.c
   libs/putty/windows/utils/escape_registry_key.c
   libs/putty/windows/utils/filename.c
   libs/putty/windows/utils/fontspec.c
