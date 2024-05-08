@@ -600,7 +600,7 @@ public:
   TRemoteFileList * CustomReadDirectoryListing(const UnicodeString & Directory, bool UseCache);
   TRemoteFile * ReadFileListing(const UnicodeString & APath);
   TRemoteFile * ReadFile(const UnicodeString & AFileName);
-  TRemoteFile * TryReadFile(const UnicodeString & AFileName, bool AExceptionOnFail = true);
+  TRemoteFile * TryReadFile(const UnicodeString & AFileName);
   bool FileExists(const UnicodeString & AFileName);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& AFile);
   bool CopyToLocal(
