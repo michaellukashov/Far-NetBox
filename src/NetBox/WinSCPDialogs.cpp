@@ -6400,6 +6400,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
       FLastListItem++;
 
       Text->SetCaption(FORMAT("%*s %s", List->MaxLen, GetMsg(Label).c_str(), Value));
+      Text->SetWidth(GetWidth() - 10);
     }
   }
 }
