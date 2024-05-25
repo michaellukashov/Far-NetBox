@@ -1964,7 +1964,7 @@ void TTerminal::Reopen(int32_t Params)
     // only peek, we may not be connected at all atm,
     // so make sure we do not try retrieving current directory from the server
     // (particularly with FTP)
-    const UnicodeString CurrentDirectoryPeeked = CurrentDirectory();
+    const UnicodeString CurrentDirectoryPeeked = PeekCurrentDirectory();
     if (!CurrentDirectoryPeeked.IsEmpty())
     {
       GetSessionData()->SetRemoteDirectory(CurrentDirectoryPeeked);
