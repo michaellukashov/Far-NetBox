@@ -302,8 +302,9 @@ ExtException::ExtException(const Exception * E, const UnicodeString & Msg, const
 }
 
 ExtException::ExtException(TObjectClassId Kind, const Exception * E, int32_t Ident) :
-  Exception(Kind, E, Ident)
+  Exception(Kind, L"", Ident)
 {
+  AddMoreMessages(E);
 }
 
 ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E) :
@@ -464,7 +465,7 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg,
 }
 
 EFatal::EFatal(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E) :
-  ExtException(Kind, Msg)
+  ExtException(Kind, Msg, E)
 {
   const EFatal * F = rtti::dyn_cast_or_null<EFatal>(E);
   if (F != nullptr)
