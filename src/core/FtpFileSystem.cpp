@@ -3453,6 +3453,15 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
         MoreMessages->Delete(0);
       }
 
+      if (MoreMessages != nullptr)
+      {
+        auto ErrorIndex = MoreMessages->IndexOf(Error);
+        if (ErrorIndex != nb::NPOS)
+        {
+          MoreMessages->Delete(ErrorIndex);
+        }
+      }
+
       if (Disconnected)
       {
         if (DoClose)
