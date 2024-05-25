@@ -3828,7 +3828,14 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
       if ((FOpening > 0) ||
           !RobustLoop.TryReopen(E))
       {
-        throw;
+        if (FOpening == 0)
+        {
+          TryReplaceAndThrow<EFatal, EAbort>(E);
+        }
+        else
+        {
+          throw;
+        }
       }
     }
   }
@@ -7787,7 +7794,7 @@ void TTerminal::SourceRobust(
         {
           RollbackAction(Action, AOperationProgress, &E);
         }
-        throw;
+        TryReplaceAndThrow<EFatal, EAbort>(E);
       }
     }
 
@@ -8402,7 +8409,7 @@ void TTerminal::SinkRobust(
           {
             RollbackAction(Action, AOperationProgress, &E);
           }
-          throw;
+          TryReplaceAndThrow<EFatal, EAbort>(E);
         }
       }
 
