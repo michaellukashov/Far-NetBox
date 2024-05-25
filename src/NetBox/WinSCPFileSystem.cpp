@@ -1306,7 +1306,8 @@ void TWinSCPFileSystem::ApplyCommand()
 
           UnicodeString TempDir;
 
-          TemporarilyDownloadFiles(FileList.get(), GetGUIConfiguration()->GetDefaultCopyParam(), TempDir);
+          TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
+          TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
           try__finally
           {
             RemoteFileList = std::make_unique<TStringList>();
