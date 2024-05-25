@@ -1,4 +1,4 @@
-﻿.Language=Russian,Russian (Русский)
+.Language=Russian,Russian (Русский)
 
 "NetBox"
 "NetBox"
@@ -595,10 +595,10 @@
 "Capa&bilities"
 "Space &available"
 "&Copy to Clipboard"
-"Remote system"
-"Session protocol"
+"Remote system:"
+"Session protocol:"
 "Protocol commands only"
-"Can calculate file checksum"
+"Can calculate file checksum:"
 
 "Путь к &Putty"
 "&Помнить пароль сессии и передавать его PuTTY"

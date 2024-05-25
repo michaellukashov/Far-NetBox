@@ -1,4 +1,4 @@
-﻿.Language=Polish,Polish (Polski)
+.Language=Polish,Polish (Polski)
 
 "NetBox"
 "NetBox"
@@ -595,10 +595,10 @@
 "&Możliwości"
 "&Dostępne miejsce"
 "&Kopiuj do Schowka"
-"Zdalny system"
-"Protokół sesji"
+"Zdalny system:"
+"Protokół sesji:"
 "Tylko polecenia protokołu"
-"Można obliczać sumy kontrolne"
+"Można obliczać sumy kontrolne:"
 
 "Ścieżka do &Putty "
 "&Zapamiętaj hasło i przekaż do PuTTY"

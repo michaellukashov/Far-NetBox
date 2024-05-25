@@ -1,4 +1,4 @@
-﻿.Language=Spanish,Spanish (Español)
+.Language=Spanish,Spanish (Español)
 
 "NetBox"
 "NetBox"
@@ -595,10 +595,10 @@
 "Capa&cidades"
 "Esp&acio disponible"
 "&Copiar al Portapapeles"
-"Sistema remoto"
-"Protocolo de sesión"
+"Sistema remoto:"
+"Protocolo de sesión:"
 "Sólo comandos de protocolo"
-"Poder calcular checksum de archivo"
+"Poder calcular checksum de archivo:"
 
 "Ruta &Putty"
 "&Recordar contraseña de sesión y pasarlo a PuTTY"

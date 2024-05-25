@@ -1,4 +1,4 @@
-﻿.Language=English,English
+.Language=English,English
 
 "NetBox"
 "NetBox"
@@ -595,10 +595,10 @@
 "Capa&bilities"
 "Space &available"
 "&Copy to Clipboard"
-"Remote system"
-"Session protocol"
+"Remote system:"
+"Session protocol:"
 "Protocol commands only"
-"Can calculate file checksum"
+"Can calculate file checksum:"
 
 "&Putty path"
 "&Remember session password and pass it to PuTTY"
