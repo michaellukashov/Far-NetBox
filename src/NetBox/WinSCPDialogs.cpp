@@ -6399,7 +6399,7 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
       TFarText * Text = List->GetAs<TFarText>(FLastListItem);
       FLastListItem++;
 
-      Text->SetCaption(FORMAT("%d-%s  %s", List->MaxLen, GetMsg(Label), Value));
+      Text->SetCaption(FORMAT("%*s %s", List->MaxLen, GetMsg(Label).c_str(), Value));
     }
   }
 }
