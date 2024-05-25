@@ -319,13 +319,17 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const
     {
       Message = Msg;
     }
-    else
+    else if (Message != Msg)
     {
       if (FMoreMessages == nullptr)
       {
         FMoreMessages = new TStringList();
       }
-      FMoreMessages->Append(UnformatMessage(Msg));
+      const auto PreparedMessage = UnformatMessage(Msg);
+      if (FMoreMessages->IndexOf(PreparedMessage) == nb::NPOS)
+      {
+        FMoreMessages->Append(PreparedMessage);
+      }
     }
   }
   // FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
