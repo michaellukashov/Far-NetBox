@@ -1592,8 +1592,10 @@ private:
   TFarEdit * HostNameEdit{nullptr};
   TFarEdit * PortNumberEdit{nullptr};
   TFarText * UserNameLabel{nullptr};
+  TFarText * S3AccessKeyIDLabel{nullptr};
   TFarEdit * UserNameEdit{nullptr};
   TFarText * PasswordLabel{nullptr};
+  TFarText * S3SecretAccessKeyLabel{nullptr};
   TFarEdit * PasswordEdit{nullptr};
   TFarEdit * PrivateKeyEdit{nullptr};
   TFarComboBox * TransferProtocolCombo{nullptr};
@@ -1897,6 +1899,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   UserNameLabel->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
   UserNameLabel->SetWidth(20);
 
+  SetNextItemPosition(ipSame);
+  S3AccessKeyIDLabel = MakeOwnedObject<TFarText>(this);
+  S3AccessKeyIDLabel->SetCaption(GetMsg(NB_LOGIN_S3_ACCESS_KEY));
+  S3AccessKeyIDLabel->SetWidth(20);
+  S3AccessKeyIDLabel->SetVisible(false);
+
   SetNextItemPosition(ipRight);
 
   UserNameEdit = MakeOwnedObject<TFarEdit>(this);
@@ -1913,6 +1921,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PasswordLabel->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
   PasswordLabel->SetWidth(20);
   PasswordLabel->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3SecretAccessKeyLabel = MakeOwnedObject<TFarText>(this);
+  S3SecretAccessKeyLabel->SetCaption(GetMsg(NB_LOGIN_S3_SECRET_ACCESS_KEY));
+  S3SecretAccessKeyLabel->SetWidth(20);
+  S3SecretAccessKeyLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
 
@@ -3048,10 +3062,10 @@ void TSessionDialog::UpdateControls()
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
 
-  UserNameLabel->SetVisible(IsMainTab && !lS3Protocol);
-  UserNameEdit->SetVisible(IsMainTab);
-  PasswordLabel->SetVisible(IsMainTab && !lS3Protocol);
-  PasswordEdit->SetVisible(IsMainTab);
+  UserNameLabel->SetVisible(!lS3Protocol);
+  S3AccessKeyIDLabel->SetVisible(lS3Protocol);
+  PasswordLabel->SetVisible(!lS3Protocol);
+  S3SecretAccessKeyLabel->SetVisible(lS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
