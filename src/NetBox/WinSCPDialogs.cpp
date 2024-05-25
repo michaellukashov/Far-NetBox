@@ -6314,10 +6314,10 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent && AddItem)
   AddItem(ServerLabels, NB_SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
   AddItem(ServerLabels, NB_SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
 
-  UnicodeString Str = FSessionInfo.CSCipher;
+  UnicodeString Str = ::TrimRight(FSessionInfo.CSCipher);
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
-    Str += FORMAT("/%s", FSessionInfo.SCCipher);
+    Str += FORMAT("/%s", ::TrimRight(FSessionInfo.SCCipher));
   }
   AddItem(ServerLabels, NB_SERVER_CIPHER, Str);
 
@@ -6439,7 +6439,8 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
   if ((!Value.IsEmpty() &&
       ((Control == nullptr) || Control->GetEnabled()) &&
       (AControl != SpaceAvailableLabels)) ||
-    SpaceAvailableSupported())
+    SpaceAvailableSupported() &&
+      (AControl == SpaceAvailableLabels))
   {
     if (FLastFedControl != AControl)
     {
