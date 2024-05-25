@@ -1,4 +1,4 @@
-.Language=Russian,Russian (Русский)
+﻿.Language=Russian,Russian (Русский)
 
 "NetBox"
 "NetBox"
@@ -571,7 +571,10 @@
 "Encryption algorithm:"
 "Compression:"
 "File transfer protocol:"
-"Server host key fingerprint:"
+"Server host key fingerprint (MD5):"
+"Server host key fingerprint (SHA256):"
+"Server certificate fingerprint (SHA1):"
+"Server certificate fingerprint (SHA256):"
 " Protocol capabilities/information "
 "Can change permissions:"
 "Can change owner/group:"

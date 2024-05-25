@@ -1,4 +1,4 @@
-.Language=Polish,Polish (Polski)
+﻿.Language=Polish,Polish (Polski)
 
 "NetBox"
 "NetBox"
@@ -571,7 +571,10 @@
 "Algorytm szyfrowania:"
 "Kompresja:"
 "Protokół przesyłania plików:"
-"Odcisk palca klucza serwera:"
+"Odcisk palca klucza serwera (MD5):"
+"Odcisk palca klucza serwera (SHA256):"
+"Server certificate fingerprint (SHA1):"
+"Server certificate fingerprint (SHA256):"
 " Możliwości protokołu/informacje "
 "Można zmieniać uprawnienia:"
 "Można zmieniać właściciela/grupę:"

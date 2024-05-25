@@ -1,4 +1,4 @@
-.Language=Spanish,Spanish (Español)
+﻿.Language=Spanish,Spanish (Español)
 
 "NetBox"
 "NetBox"
@@ -571,7 +571,10 @@
 "Algoritmo de codificación:"
 "Compresión:"
 "Protocolo de transferencia de archivo:"
-"Server host key fingerprint:"
+"Server host key fingerprint (MD5):"
+"Server host key fingerprint (SHA256):"
+"Server certificate fingerprint (SHA1):"
+"Server certificate fingerprint (SHA256):"
 " Capacidades/información de protocolo"
 "Cambiar permisos:"
 "Cambiar dueño/grupo:"

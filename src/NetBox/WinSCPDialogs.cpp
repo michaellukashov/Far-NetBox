@@ -6110,6 +6110,7 @@ protected:
   void NeedSpaceAvailable();
   bool SpaceAvailableSupported() const;
   virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
+  void TFileSystemInfoDialog::SetFingerprintControl(const TFeedFileSystemDataEvent & AddItem, const TObject * AControl);
 
 private:
   TGetSpaceAvailableEvent FOnGetSpaceAvailable;
@@ -6125,8 +6126,10 @@ private:
   gsl::owner<TLabelList *> ProtocolLabels{nullptr};
   gsl::owner<TLabelList *> SpaceAvailableLabels{nullptr};
   TTabButton * SpaceAvailableTab{nullptr};
-  TFarText * HostKeyFingerprintLabel{nullptr};
-  TFarEdit * HostKeyFingerprintEdit{nullptr};
+  TFarText * ServerFingerprintLabel{nullptr};
+  TFarEdit * ServerFingerprintEdit{nullptr};
+  TFarText * AdditionalServerFingerprintLabel{nullptr};
+  TFarEdit * AdditionalServerFingerprintEdit{nullptr};
   TFarText * InfoLabel{nullptr};
   TFarSeparator * InfoSeparator{nullptr};
   TFarLister * InfoLister{nullptr};
@@ -6184,10 +6187,13 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   MakeOwnedObject<TFarSeparator>(this);
 
-  HostKeyFingerprintLabel = MakeOwnedObject<TFarText>(this);
-  HostKeyFingerprintLabel->SetCaption(GetMsg(NB_SERVER_HOST_KEY));
-  HostKeyFingerprintEdit = MakeOwnedObject<TFarEdit>(this);
-  HostKeyFingerprintEdit->SetReadOnly(true);
+  ServerFingerprintLabel = MakeOwnedObject<TFarText>(this);
+  ServerFingerprintEdit = MakeOwnedObject<TFarEdit>(this);
+  ServerFingerprintEdit->SetReadOnly(true);
+  AdditionalServerFingerprintLabel = MakeOwnedObject<TFarText>(this);
+  AdditionalServerFingerprintLabel->Move(0, 1);
+  AdditionalServerFingerprintEdit = MakeOwnedObject<TFarEdit>(this);
+  AdditionalServerFingerprintEdit->SetReadOnly(true);
 
   // Protocol tab
 
@@ -6326,7 +6332,8 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent && AddItem)
     AddItem(ServerLabels, NB_SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
   }
 
-  AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprintSHA256);
+  SetFingerprintControl(AddItem, ServerFingerprintEdit);
+  SetFingerprintControl(AddItem, AdditionalServerFingerprintEdit);
 
   AddItem(ProtocolLabels, NB_PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
   AddItem(ProtocolLabels, NB_PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
@@ -6366,16 +6373,20 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
     FLastListItem = 0;
   }
 
-  if (AControl == HostKeyFingerprintEdit)
+  if (AControl == ServerFingerprintEdit ||
+    AControl == AdditionalServerFingerprintEdit)
   {
-    HostKeyFingerprintEdit->SetText(Value);
-    HostKeyFingerprintEdit->SetEnabled(!Value.IsEmpty());
-    if (!HostKeyFingerprintEdit->GetEnabled())
+    auto Control = cast_to<TFarEdit>(AControl);
+    Control->SetText(Value);
+    Control->SetEnabled(!Value.IsEmpty());
+    if (!Control->GetEnabled())
     {
-      HostKeyFingerprintEdit->SetVisible(false);
-      HostKeyFingerprintEdit->SetGroup(0);
-      HostKeyFingerprintLabel->SetVisible(false);
-      HostKeyFingerprintLabel->SetGroup(0);
+      Control->SetVisible(false);
+      Control->SetGroup(0);
+      auto CtlLabel = (AControl == ServerFingerprintEdit) ?
+        ServerFingerprintLabel : AdditionalServerFingerprintLabel;
+      CtlLabel->SetVisible(false);
+      CtlLabel->SetGroup(0);
     }
   }
   else if (AControl == InfoLister)
@@ -6441,9 +6452,13 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
 
     bool UseNewline = true;
     UnicodeString LabelStr;
-    if (AControl == HostKeyFingerprintEdit)
+    if (AControl == ServerFingerprintEdit)
     {
-      LabelStr = GetMsg(NB_SERVER_HOST_KEY);
+      LabelStr = ServerFingerprintLabel->GetCaption();
+    }
+    else if (AControl == AdditionalServerFingerprintEdit)
+    {
+      LabelStr = AdditionalServerFingerprintLabel->GetCaption();
     }
     else if (AControl == InfoLister)
     {
@@ -6600,6 +6615,32 @@ void TFileSystemInfoDialog::NeedSpaceAvailable()
 bool TFileSystemInfoDialog::SpaceAvailableSupported() const
 {
   return (FOnGetSpaceAvailable);
+}
+
+void TFileSystemInfoDialog::SetFingerprintControl(const TFeedFileSystemDataEvent & AddItem, const TObject * AControl)
+{
+#define SET_CONTROLS(CONTROL, HOST_HASH, CERT_HASH) \
+do { \
+  const auto UseCertificate = FSessionInfo.HostKeyFingerprint ## HOST_HASH.IsEmpty(); \
+  CONTROL ## Label->SetCaption(GetMsg(UseCertificate ? \
+    NB_SERVER_CERT_ ## CERT_HASH : NB_SERVER_HOST_KEY_ ## HOST_HASH)); \
+  AddItem(CONTROL ## Edit, 0, UseCertificate ? \
+    FSessionInfo.CertificateFingerprint ## CERT_HASH : FSessionInfo.HostKeyFingerprint ## HOST_HASH); \
+} while (0)
+      
+  if (AControl == ServerFingerprintEdit)
+  {
+    SET_CONTROLS(ServerFingerprint, MD5, SHA1);
+  }
+  else if (AControl == AdditionalServerFingerprintEdit)
+  {
+    SET_CONTROLS(AdditionalServerFingerprint, SHA256, SHA256);
+  }
+  else
+  {
+    DebugFail();
+  }
+#undef SET_CONTROLS
 }
 
 void TWinSCPFileSystem::FileSystemInfoDialog(
