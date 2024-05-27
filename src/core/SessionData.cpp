@@ -5409,6 +5409,11 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
             SessionData->Load(Storage, PuttyImport);  // gh-364
             Add(SessionData);
           }
+          else if (AsModified)
+          {
+            // import existing session: just update
+            SessionData->Load(Storage, PuttyImport);
+          }
           Loaded->Add(SessionData);
           // line moved up, gh-364: SessionData->Load(Storage, PuttyImport);
           if (AsModified)
