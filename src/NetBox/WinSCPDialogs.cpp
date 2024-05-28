@@ -566,7 +566,7 @@ bool TWinSCPPlugin::TransferConfigurationDialog()
   const UnicodeString Caption = FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)));
 
-  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
   const bool Result = CopyParamDialog(Caption, CopyParam, 0);
   if (Result)
   {
@@ -677,7 +677,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
   ResumeOnButton->SetChecked(CopyParam.GetResumeSupport() == rsOn);
   ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
   ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
@@ -778,7 +778,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     GetConfiguration()->BeginUpdate();
     try__finally
     {
-      TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+      TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
 
       FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
       CopyParam.SetQueue(QueueCheck->GetChecked());
