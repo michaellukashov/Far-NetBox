@@ -310,6 +310,8 @@ TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 
 void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
+  bool DoClose = false;
+
   if ((GetTerminal() != nullptr) && rtti::isa<EFatal>(E))
   {
     const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
@@ -319,17 +321,23 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
     }
     else
     {
-      if (GetTerminal())
-        GetTerminal()->ShowExtendedException(E);
-      if (!GetClosed())
-      {
-        ClosePanel();
-      }
+      GetTerminal()->ShowExtendedException(E);
+      DoClose = true;
     }
+  }
+  else if ((GetTerminal() != nullptr) && rtti::isa<EAbort>(E))
+  {
+    DoClose = true;
   }
   else
   {
     TCustomFarFileSystem::HandleException(E, OpMode);
+    return;
+  }
+
+  if (DoClose && !GetClosed())
+  {
+    ClosePanel();
   }
 }
 

@@ -1964,7 +1964,7 @@ void TTerminal::Reopen(int32_t Params)
     // only peek, we may not be connected at all atm,
     // so make sure we do not try retrieving current directory from the server
     // (particularly with FTP)
-    const UnicodeString CurrentDirectoryPeeked = CurrentDirectory();
+    const UnicodeString CurrentDirectoryPeeked = PeekCurrentDirectory();
     if (!CurrentDirectoryPeeked.IsEmpty())
     {
       GetSessionData()->SetRemoteDirectory(CurrentDirectoryPeeked);
@@ -3828,7 +3828,14 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
       if ((FOpening > 0) ||
           !RobustLoop.TryReopen(E))
       {
-        throw;
+        if (FOpening == 0)
+        {
+          TryReplaceAndThrow<EFatal, EAbort>(E);
+        }
+        else
+        {
+          throw;
+        }
       }
     }
   }
@@ -7787,7 +7794,7 @@ void TTerminal::SourceRobust(
         {
           RollbackAction(Action, AOperationProgress, &E);
         }
-        throw;
+        TryReplaceAndThrow<EFatal, EAbort>(E);
       }
     }
 
@@ -8402,7 +8409,7 @@ void TTerminal::SinkRobust(
           {
             RollbackAction(Action, AOperationProgress, &E);
           }
-          throw;
+          TryReplaceAndThrow<EFatal, EAbort>(E);
         }
       }
 
