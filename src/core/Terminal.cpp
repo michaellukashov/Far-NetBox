@@ -4104,12 +4104,12 @@ TRemoteFile * TTerminal::ReadFile(const UnicodeString & AFileName)
   return File.release();
 }
 
-TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName, bool AExceptionOnFail)
+TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName)
 {
   TRemoteFile * File;
   try
   {
-    SetExceptionOnFail(AExceptionOnFail);
+    SetExceptionOnFail(true);
     try__finally
     {
       File = ReadFile(base::UnixExcludeTrailingBackslash(AFileName));
@@ -7808,7 +7808,7 @@ void TTerminal::SourceRobust(
 bool TTerminal::CreateTargetDirectory(
   const UnicodeString & ADirectoryPath, uint32_t Attrs, const TCopyParamType * CopyParam)
 {
-  std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath, false));
+  std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath));
   const bool DoCreate =
     (File == nullptr) ||
     !File->IsDirectory; // just try to create and make it fail
