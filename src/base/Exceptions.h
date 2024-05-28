@@ -265,6 +265,16 @@ inline void ThrowNotImplemented(int32_t ErrorId)
   Error(SNotImplemented, ErrorId);
 }
 
+template<typename From, typename To>
+inline void TryReplaceAndThrow(Exception & E)
+{
+  if (rtti::isa<From>(&E))
+  {
+    throw To(E.Message);
+  }
+  throw; //NOSONAR
+}
+
 NB_CORE_EXPORT Exception * CloneException(Exception * E);
 NB_CORE_EXPORT void RethrowException(Exception * E);
 NB_CORE_EXPORT UnicodeString GetExceptionHelpKeyword(const Exception * E);

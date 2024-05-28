@@ -310,6 +310,8 @@ TWinSCPFileSystem::~TWinSCPFileSystem() noexcept
 
 void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
+  bool DoClose = false;
+
   if ((GetTerminal() != nullptr) && rtti::isa<EFatal>(E))
   {
     const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
@@ -319,17 +321,23 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
     }
     else
     {
-      if (GetTerminal())
-        GetTerminal()->ShowExtendedException(E);
-      if (!GetClosed())
-      {
-        ClosePanel();
-      }
+      GetTerminal()->ShowExtendedException(E);
+      DoClose = true;
     }
+  }
+  else if ((GetTerminal() != nullptr) && rtti::isa<EAbort>(E))
+  {
+    DoClose = true;
   }
   else
   {
     TCustomFarFileSystem::HandleException(E, OpMode);
+    return;
+  }
+
+  if (DoClose && !GetClosed())
+  {
+    ClosePanel();
   }
 }
 
@@ -631,7 +639,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
   const bool NewData = !Data;
   const bool FillInConnect = !Edit && Data && !Data->GetCanLogin();
-  if (NewData || FillInConnect)
+  if (NewData)
   {
     Data = new TSessionData(L"");
   }
@@ -642,7 +650,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
   }
   __finally
   {
-    if (NewData || FillInConnect)
+    if (NewData)
     {
       SAFE_DESTROY(Data);
     }
@@ -651,19 +659,22 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect)
 {
-  TSessionData * OrigData = Data;
-  if (FillInConnect && Data)
-  {
-    Data->Assign(OrigData);
-    Data->SetName(L"");
-  }
-
   TSessionActionEnum Action;
   if (Edit || FillInConnect)
   {
-    Action = (FillInConnect ? saConnect : (OrigData == nullptr ? saAdd : saEdit));
+    Action = (FillInConnect ? saConnect : (Data == nullptr ? saAdd : saEdit));
     if (SessionDialog(Data, Action))
     {
+      if (FillInConnect)
+      {
+        // nothing to add/edit, just connect
+        Action = saConnect;
+        // but check if we can login
+        if (Data && !Data->GetCanLogin())
+        {
+          return;
+        }
+      }
       if ((!NewData && !FillInConnect) || (Action != saConnect))
       {
         const TSessionData * SelectSession = nullptr;
@@ -693,12 +704,6 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
             }
           }
         }
-        else if (FillInConnect && OrigData)
-        {
-          const UnicodeString OrigName = OrigData->GetName();
-          OrigData->Assign(Data);
-          OrigData->SetName(OrigName);
-        }
 
         // modified only, explicit
         GetStoredSessions()->Save(false, true);
@@ -713,6 +718,10 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
           RedrawPanel();
         }
       }
+    }
+    else
+    {
+      return;
     }
   }
   else
@@ -1306,7 +1315,8 @@ void TWinSCPFileSystem::ApplyCommand()
 
           UnicodeString TempDir;
 
-          TemporarilyDownloadFiles(FileList.get(), GetGUIConfiguration()->GetDefaultCopyParam(), TempDir);
+          TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
+          TemporarilyDownloadFiles(FileList.get(), CopyParam, TempDir);
           try__finally
           {
             RemoteFileList = std::make_unique<TStringList>();

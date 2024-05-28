@@ -566,7 +566,7 @@ bool TWinSCPPlugin::TransferConfigurationDialog()
   const UnicodeString Caption = FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_TRANSFER)));
 
-  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
   const bool Result = CopyParamDialog(Caption, CopyParam, 0);
   if (Result)
   {
@@ -677,7 +677,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
 
   Dialog->AddStandardButtons();
 
-  TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+  TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
   ResumeOnButton->SetChecked(CopyParam.GetResumeSupport() == rsOn);
   ResumeSmartButton->SetChecked(CopyParam.GetResumeSupport() == rsSmart);
   ResumeOffButton->SetChecked(CopyParam.GetResumeSupport() == rsOff);
@@ -778,7 +778,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
     GetConfiguration()->BeginUpdate();
     try__finally
     {
-      TGUICopyParamType & CopyParam = GetGUIConfiguration()->GetDefaultCopyParam();
+      TGUICopyParamType CopyParam(GetGUIConfiguration()->GetDefaultCopyParam());
 
       FarConfiguration->SetQueueTransfersLimit(QueueTransferLimitEdit->GetAsInteger());
       CopyParam.SetQueue(QueueCheck->GetChecked());
@@ -1592,8 +1592,10 @@ private:
   TFarEdit * HostNameEdit{nullptr};
   TFarEdit * PortNumberEdit{nullptr};
   TFarText * UserNameLabel{nullptr};
+  TFarText * S3AccessKeyIDLabel{nullptr};
   TFarEdit * UserNameEdit{nullptr};
   TFarText * PasswordLabel{nullptr};
+  TFarText * S3SecretAccessKeyLabel{nullptr};
   TFarEdit * PasswordEdit{nullptr};
   TFarEdit * PrivateKeyEdit{nullptr};
   TFarComboBox * TransferProtocolCombo{nullptr};
@@ -1897,6 +1899,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   UserNameLabel->SetCaption(GetMsg(NB_LOGIN_USER_NAME));
   UserNameLabel->SetWidth(20);
 
+  SetNextItemPosition(ipSame);
+  S3AccessKeyIDLabel = MakeOwnedObject<TFarText>(this);
+  S3AccessKeyIDLabel->SetCaption(GetMsg(NB_LOGIN_S3_ACCESS_KEY));
+  S3AccessKeyIDLabel->SetWidth(20);
+  S3AccessKeyIDLabel->SetVisible(false);
+
   SetNextItemPosition(ipRight);
 
   UserNameEdit = MakeOwnedObject<TFarEdit>(this);
@@ -1913,6 +1921,12 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   PasswordLabel->SetCaption(GetMsg(NB_LOGIN_PASSWORD));
   PasswordLabel->SetWidth(20);
   PasswordLabel->SetVisible(true);
+
+  SetNextItemPosition(ipSame);
+  S3SecretAccessKeyLabel = MakeOwnedObject<TFarText>(this);
+  S3SecretAccessKeyLabel->SetCaption(GetMsg(NB_LOGIN_S3_SECRET_ACCESS_KEY));
+  S3SecretAccessKeyLabel->SetWidth(20);
+  S3SecretAccessKeyLabel->SetVisible(false);
 
   SetNextItemPosition(ipRight);
 
@@ -3048,10 +3062,10 @@ void TSessionDialog::UpdateControls()
   UserNameEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetEnabled(!LoginAnonymous);
 
-  UserNameLabel->SetVisible(IsMainTab && !lS3Protocol);
-  UserNameEdit->SetVisible(IsMainTab);
-  PasswordLabel->SetVisible(IsMainTab && !lS3Protocol);
-  PasswordEdit->SetVisible(IsMainTab);
+  UserNameLabel->SetVisible(!lS3Protocol);
+  S3AccessKeyIDLabel->SetVisible(lS3Protocol);
+  PasswordLabel->SetVisible(!lS3Protocol);
+  S3SecretAccessKeyLabel->SetVisible(lS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
@@ -3065,7 +3079,9 @@ void TSessionDialog::UpdateControls()
   }
   SshBufferSizeCheck->SetEnabled(lSshProtocol);
   PingNullPacketButton->SetEnabled(lSshProtocol);
-  IPAutoButton->SetEnabled(lSshProtocol);
+  IPAutoButton->SetEnabled(lSshProtocol || lFtpProtocol);
+  IPv4Button->SetEnabled(lSshProtocol || lFtpProtocol);
+  IPv6Button->SetEnabled(lSshProtocol || lFtpProtocol);
 
   // SFTP tab
   SftpTab->SetEnabled(lSftpProtocol);
@@ -5814,7 +5830,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
       UnicodeString NewTargetDirectory;
       if (FToRemote)
       {
-        // Params->SetFileMask(base::UnixExtractFileName(DirectoryEdit->GetText()));
+        Params->SetFileMask(base::UnixExtractFileName(DirectoryEdit->GetText()));
         NewTargetDirectory = base::UnixExtractFilePath(DirectoryEdit->GetText());
         if (!NewTargetDirectory.IsEmpty())
           TargetDirectory = NewTargetDirectory;
@@ -6116,6 +6132,7 @@ protected:
   void NeedSpaceAvailable();
   bool SpaceAvailableSupported() const;
   virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
+  void TFileSystemInfoDialog::SetFingerprintControl(const TFeedFileSystemDataEvent & AddItem, const TObject * AControl);
 
 private:
   TGetSpaceAvailableEvent FOnGetSpaceAvailable;
@@ -6131,8 +6148,10 @@ private:
   gsl::owner<TLabelList *> ProtocolLabels{nullptr};
   gsl::owner<TLabelList *> SpaceAvailableLabels{nullptr};
   TTabButton * SpaceAvailableTab{nullptr};
-  TFarText * HostKeyFingerprintLabel{nullptr};
-  TFarEdit * HostKeyFingerprintEdit{nullptr};
+  TFarText * ServerFingerprintLabel{nullptr};
+  TFarEdit * ServerFingerprintEdit{nullptr};
+  TFarText * AdditionalServerFingerprintLabel{nullptr};
+  TFarEdit * AdditionalServerFingerprintEdit{nullptr};
   TFarText * InfoLabel{nullptr};
   TFarSeparator * InfoSeparator{nullptr};
   TFarLister * InfoLister{nullptr};
@@ -6190,10 +6209,13 @@ TFileSystemInfoDialog::TFileSystemInfoDialog(TCustomFarPlugin * AFarPlugin,
 
   MakeOwnedObject<TFarSeparator>(this);
 
-  HostKeyFingerprintLabel = MakeOwnedObject<TFarText>(this);
-  HostKeyFingerprintLabel->SetCaption(GetMsg(NB_SERVER_HOST_KEY));
-  HostKeyFingerprintEdit = MakeOwnedObject<TFarEdit>(this);
-  HostKeyFingerprintEdit->SetReadOnly(true);
+  ServerFingerprintLabel = MakeOwnedObject<TFarText>(this);
+  ServerFingerprintEdit = MakeOwnedObject<TFarEdit>(this);
+  ServerFingerprintEdit->SetReadOnly(true);
+  AdditionalServerFingerprintLabel = MakeOwnedObject<TFarText>(this);
+  AdditionalServerFingerprintLabel->Move(0, 1);
+  AdditionalServerFingerprintEdit = MakeOwnedObject<TFarEdit>(this);
+  AdditionalServerFingerprintEdit->SetReadOnly(true);
 
   // Protocol tab
 
@@ -6314,10 +6336,10 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent && AddItem)
   AddItem(ServerLabels, NB_SERVER_SESSION_PROTOCOL, FSessionInfo.ProtocolName);
   AddItem(ServerLabels, NB_SERVER_SSH_IMPLEMENTATION, FSessionInfo.SshImplementation);
 
-  UnicodeString Str = FSessionInfo.CSCipher;
+  UnicodeString Str = ::TrimRight(FSessionInfo.CSCipher);
   if (FSessionInfo.CSCipher != FSessionInfo.SCCipher)
   {
-    Str += FORMAT("/%s", FSessionInfo.SCCipher);
+    Str += FORMAT("/%s", ::TrimRight(FSessionInfo.SCCipher));
   }
   AddItem(ServerLabels, NB_SERVER_CIPHER, Str);
 
@@ -6332,7 +6354,8 @@ void TFileSystemInfoDialog::Feed(TFeedFileSystemDataEvent && AddItem)
     AddItem(ServerLabels, NB_SERVER_FS_PROTOCOL, FFileSystemInfo.ProtocolName);
   }
 
-  AddItem(HostKeyFingerprintEdit, 0, FSessionInfo.HostKeyFingerprintSHA256);
+  SetFingerprintControl(AddItem, ServerFingerprintEdit);
+  SetFingerprintControl(AddItem, AdditionalServerFingerprintEdit);
 
   AddItem(ProtocolLabels, NB_PROTOCOL_MODE_CHANGING, CapabilityStr(fcModeChanging));
   AddItem(ProtocolLabels, NB_PROTOCOL_OWNER_GROUP_CHANGING, CapabilityStr(fcGroupChanging));
@@ -6372,16 +6395,20 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
     FLastListItem = 0;
   }
 
-  if (AControl == HostKeyFingerprintEdit)
+  if (AControl == ServerFingerprintEdit ||
+    AControl == AdditionalServerFingerprintEdit)
   {
-    HostKeyFingerprintEdit->SetText(Value);
-    HostKeyFingerprintEdit->SetEnabled(!Value.IsEmpty());
-    if (!HostKeyFingerprintEdit->GetEnabled())
+    auto Control = cast_to<TFarEdit>(AControl);
+    Control->SetText(Value);
+    Control->SetEnabled(!Value.IsEmpty());
+    if (!Control->GetEnabled())
     {
-      HostKeyFingerprintEdit->SetVisible(false);
-      HostKeyFingerprintEdit->SetGroup(0);
-      HostKeyFingerprintLabel->SetVisible(false);
-      HostKeyFingerprintLabel->SetGroup(0);
+      Control->SetVisible(false);
+      Control->SetGroup(0);
+      auto CtlLabel = (AControl == ServerFingerprintEdit) ?
+        ServerFingerprintLabel : AdditionalServerFingerprintLabel;
+      CtlLabel->SetVisible(false);
+      CtlLabel->SetGroup(0);
     }
   }
   else if (AControl == InfoLister)
@@ -6405,7 +6432,8 @@ void TFileSystemInfoDialog::ControlsAddItem(TObject * AControl,
       TFarText * Text = List->GetAs<TFarText>(FLastListItem);
       FLastListItem++;
 
-      Text->SetCaption(FORMAT("%d-%s  %s", List->MaxLen, GetMsg(Label), Value));
+      Text->SetCaption(FORMAT("%*s %s", List->MaxLen, GetMsg(Label).c_str(), Value));
+      Text->SetWidth(GetWidth() - 10);
     }
   }
 }
@@ -6433,7 +6461,8 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
   if ((!Value.IsEmpty() &&
       ((Control == nullptr) || Control->GetEnabled()) &&
       (AControl != SpaceAvailableLabels)) ||
-    SpaceAvailableSupported())
+    SpaceAvailableSupported() &&
+      (AControl == SpaceAvailableLabels))
   {
     if (FLastFedControl != AControl)
     {
@@ -6446,9 +6475,13 @@ void TFileSystemInfoDialog::ClipboardAddItem(TObject * AControl,
 
     bool UseNewline = true;
     UnicodeString LabelStr;
-    if (AControl == HostKeyFingerprintEdit)
+    if (AControl == ServerFingerprintEdit)
     {
-      LabelStr = GetMsg(NB_SERVER_HOST_KEY);
+      LabelStr = ServerFingerprintLabel->GetCaption();
+    }
+    else if (AControl == AdditionalServerFingerprintEdit)
+    {
+      LabelStr = AdditionalServerFingerprintLabel->GetCaption();
     }
     else if (AControl == InfoLister)
     {
@@ -6605,6 +6638,32 @@ void TFileSystemInfoDialog::NeedSpaceAvailable()
 bool TFileSystemInfoDialog::SpaceAvailableSupported() const
 {
   return (FOnGetSpaceAvailable);
+}
+
+void TFileSystemInfoDialog::SetFingerprintControl(const TFeedFileSystemDataEvent & AddItem, const TObject * AControl)
+{
+#define SET_CONTROLS(CONTROL, HOST_HASH, CERT_HASH) \
+do { \
+  const auto UseCertificate = FSessionInfo.HostKeyFingerprint ## HOST_HASH.IsEmpty(); \
+  CONTROL ## Label->SetCaption(GetMsg(UseCertificate ? \
+    NB_SERVER_CERT_ ## CERT_HASH : NB_SERVER_HOST_KEY_ ## HOST_HASH)); \
+  AddItem(CONTROL ## Edit, 0, UseCertificate ? \
+    FSessionInfo.CertificateFingerprint ## CERT_HASH : FSessionInfo.HostKeyFingerprint ## HOST_HASH); \
+} while (0)
+      
+  if (AControl == ServerFingerprintEdit)
+  {
+    SET_CONTROLS(ServerFingerprint, MD5, SHA1);
+  }
+  else if (AControl == AdditionalServerFingerprintEdit)
+  {
+    SET_CONTROLS(AdditionalServerFingerprint, SHA256, SHA256);
+  }
+  else
+  {
+    DebugFail();
+  }
+#undef SET_CONTROLS
 }
 
 void TWinSCPFileSystem::FileSystemInfoDialog(

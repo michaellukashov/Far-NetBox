@@ -1964,7 +1964,7 @@ void TTerminal::Reopen(int32_t Params)
     // only peek, we may not be connected at all atm,
     // so make sure we do not try retrieving current directory from the server
     // (particularly with FTP)
-    const UnicodeString CurrentDirectoryPeeked = CurrentDirectory();
+    const UnicodeString CurrentDirectoryPeeked = PeekCurrentDirectory();
     if (!CurrentDirectoryPeeked.IsEmpty())
     {
       GetSessionData()->SetRemoteDirectory(CurrentDirectoryPeeked);
@@ -3828,7 +3828,14 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
       if ((FOpening > 0) ||
           !RobustLoop.TryReopen(E))
       {
-        throw;
+        if (FOpening == 0)
+        {
+          TryReplaceAndThrow<EFatal, EAbort>(E);
+        }
+        else
+        {
+          throw;
+        }
       }
     }
   }
@@ -4104,12 +4111,12 @@ TRemoteFile * TTerminal::ReadFile(const UnicodeString & AFileName)
   return File.release();
 }
 
-TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName, bool AExceptionOnFail)
+TRemoteFile * TTerminal::TryReadFile(const UnicodeString & AFileName)
 {
   TRemoteFile * File;
   try
   {
-    SetExceptionOnFail(AExceptionOnFail);
+    SetExceptionOnFail(true);
     try__finally
     {
       File = ReadFile(base::UnixExcludeTrailingBackslash(AFileName));
@@ -7787,7 +7794,7 @@ void TTerminal::SourceRobust(
         {
           RollbackAction(Action, AOperationProgress, &E);
         }
-        throw;
+        TryReplaceAndThrow<EFatal, EAbort>(E);
       }
     }
 
@@ -7808,7 +7815,7 @@ void TTerminal::SourceRobust(
 bool TTerminal::CreateTargetDirectory(
   const UnicodeString & ADirectoryPath, uint32_t Attrs, const TCopyParamType * CopyParam)
 {
-  std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath, false));
+  std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath));
   const bool DoCreate =
     (File == nullptr) ||
     !File->IsDirectory; // just try to create and make it fail
@@ -8402,7 +8409,7 @@ void TTerminal::SinkRobust(
           {
             RollbackAction(Action, AOperationProgress, &E);
           }
-          throw;
+          TryReplaceAndThrow<EFatal, EAbort>(E);
         }
       }
 

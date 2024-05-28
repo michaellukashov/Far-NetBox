@@ -1,6 +1,25 @@
 ﻿# for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [24.5.0.602] - 2024-05-05
+
+### Changes
+* gh-467 Update PuTTY to 0.81
+* gh-461 Tell AppVeyour to keep build artifacts
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+* gh-469 Fix log time format
+* gh-468 Fix MFC termination
+* gh-466 Fix Charset encoding for filenames
+* gh-465 Fix dialog message
+* gh-463 Fix freeze on exit
+* gh-462 Fix possible crashes on lost connections while modal dialog is shown
+* gh-459 Fix ssh crash on reconnect
+* gh-458 Fix broken terminal output
+* gh-457 Fix properties implementation
+
 ## [24.4.1.601] - 2024-04-10
 
 ### Fixes
