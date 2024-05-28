@@ -5824,7 +5824,7 @@ bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
       UnicodeString NewTargetDirectory;
       if (FToRemote)
       {
-        // Params->SetFileMask(base::UnixExtractFileName(DirectoryEdit->GetText()));
+        Params->SetFileMask(base::UnixExtractFileName(DirectoryEdit->GetText()));
         NewTargetDirectory = base::UnixExtractFilePath(DirectoryEdit->GetText());
         if (!NewTargetDirectory.IsEmpty())
           TargetDirectory = NewTargetDirectory;
