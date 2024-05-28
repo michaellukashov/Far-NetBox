@@ -639,7 +639,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 {
   const bool NewData = !Data;
   const bool FillInConnect = !Edit && Data && !Data->GetCanLogin();
-  if (NewData || FillInConnect)
+  if (NewData)
   {
     Data = new TSessionData(L"");
   }
@@ -650,7 +650,7 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
   }
   __finally
   {
-    if (NewData || FillInConnect)
+    if (NewData)
     {
       SAFE_DESTROY(Data);
     }
@@ -659,19 +659,22 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit)
 
 void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool NewData, bool FillInConnect)
 {
-  TSessionData * OrigData = Data;
-  if (FillInConnect && Data)
-  {
-    Data->Assign(OrigData);
-    Data->SetName(L"");
-  }
-
   TSessionActionEnum Action;
   if (Edit || FillInConnect)
   {
-    Action = (FillInConnect ? saConnect : (OrigData == nullptr ? saAdd : saEdit));
+    Action = (FillInConnect ? saConnect : (Data == nullptr ? saAdd : saEdit));
     if (SessionDialog(Data, Action))
     {
+      if (FillInConnect)
+      {
+        // nothing to add/edit, just connect
+        Action = saConnect;
+        // but check if we can login
+        if (Data && !Data->GetCanLogin())
+        {
+          return;
+        }
+      }
       if ((!NewData && !FillInConnect) || (Action != saConnect))
       {
         const TSessionData * SelectSession = nullptr;
@@ -701,12 +704,6 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
             }
           }
         }
-        else if (FillInConnect && OrigData)
-        {
-          const UnicodeString OrigName = OrigData->GetName();
-          OrigData->Assign(Data);
-          OrigData->SetName(OrigName);
-        }
 
         // modified only, explicit
         GetStoredSessions()->Save(false, true);
@@ -721,6 +718,10 @@ void TWinSCPFileSystem::EditConnectSession(TSessionData * Data, bool Edit, bool 
           RedrawPanel();
         }
       }
+    }
+    else
+    {
+      return;
     }
   }
   else
