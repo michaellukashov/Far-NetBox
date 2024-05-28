@@ -2783,7 +2783,17 @@ intptr_t TFarLister::ItemProc(intptr_t Msg, void * Param)
       {
         Result = TFarDialogItem::ItemProc(Msg, Param);
       }
-      else
+      else if (FLAGSET(Event->dwEventFlags, MOUSE_WHEELED))
+      {
+        auto WheelDelta = (nb::ToInt(Event->dwButtonState) >> 16) / 120;
+        int32_t NewTopIndex = GetTopIndex() - WheelDelta;
+        if (NewTopIndex >= 0 && NewTopIndex <= GetItems()->GetCount() - GetHeight())
+        {
+          SetTopIndex(NewTopIndex);
+        }
+        Result = 1;
+      }
+      else if (Event->dwEventFlags == 0)
       {
         int32_t NewTopIndex = GetTopIndex();
 
