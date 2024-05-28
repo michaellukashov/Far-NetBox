@@ -3079,7 +3079,9 @@ void TSessionDialog::UpdateControls()
   }
   SshBufferSizeCheck->SetEnabled(lSshProtocol);
   PingNullPacketButton->SetEnabled(lSshProtocol);
-  IPAutoButton->SetEnabled(lSshProtocol);
+  IPAutoButton->SetEnabled(lSshProtocol || lFtpProtocol);
+  IPv4Button->SetEnabled(lSshProtocol || lFtpProtocol);
+  IPv6Button->SetEnabled(lSshProtocol || lFtpProtocol);
 
   // SFTP tab
   SftpTab->SetEnabled(lSftpProtocol);
