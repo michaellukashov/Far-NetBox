@@ -1548,7 +1548,7 @@ BOOL CFtpControlSocket::Send(CString str)
       if (!m_sendBuffer)
       {
         m_sendBuffer = nb::chcalloc(sendLen - res);
-        nbstr_memcpy(m_sendBuffer, lpszAsciiSend, sendLen - res);
+        nbstr_memcpy(m_sendBuffer, lpszAsciiSend + res, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else
