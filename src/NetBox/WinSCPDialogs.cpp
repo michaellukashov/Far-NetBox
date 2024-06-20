@@ -3752,9 +3752,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     {
       SessionData->SetAddressFamily(afAuto);
     }
-    SessionData->SetCodePage(
-      (CodePageEdit->GetText() == CodePageEdit->GetItems()->GetString(0)) ?
-      UnicodeString() : CodePageEdit->GetText());
+    SessionData->SetCodePage(CodePageEdit->GetText());
 
     // Proxy tab
     SessionData->SetProxyMethod(GetProxyMethod());
