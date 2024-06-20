@@ -1479,10 +1479,10 @@ BOOL CFtpControlSocket::Send(CString str)
   ShowStatus(str, FZ_LOG_COMMAND);
   str += L"\r\n";
   int res = 0;
-  if (m_bUTF8)
+  if (m_bUTF8 || m_nCodePage /* unlike WinSCP, NetBox works with code pages*/)
   {
     LPCWSTR unicode = T2CW(str);
-    int len = WideCharToMultiByte(CP_UTF8, 0, unicode, -1, 0, 0, 0, 0);
+    int len = WideCharToMultiByte(m_bUTF8 ? CP_UTF8 : m_nCodePage, 0, unicode, -1, 0, 0, 0, 0);
     if (!len)
     {
       ShowStatus(IDS_ERRORMSG_CANTSENDCOMMAND, FZ_LOG_ERROR);
@@ -1490,11 +1490,11 @@ BOOL CFtpControlSocket::Send(CString str)
       return FALSE;
     }
     char *utf8 = nb::chcalloc(len + 1);
-    WideCharToMultiByte(CP_UTF8, 0, unicode, -1, utf8, len + 1, 0, 0);
+    WideCharToMultiByte(m_bUTF8 ? CP_UTF8 : m_nCodePage, 0, unicode, -1, utf8, len + 1, 0, 0);
 
     size_t sendLen = nb::safe_strlen(utf8);
     if (!m_awaitsReply && !m_sendBuffer)
-      res = CAsyncSocketEx::Send(utf8, (int)nb::safe_strlen(utf8));
+      res = CAsyncSocketEx::Send(utf8, (int)nb::safe_strlen(utf8), 0, m_bUTF8 ? 0 : m_CurrentServer.iDupFF);
     else
       res = -2;
     if ((res == SOCKET_ERROR && GetLastError() != WSAEWOULDBLOCK) || !res)
@@ -1548,7 +1548,7 @@ BOOL CFtpControlSocket::Send(CString str)
       if (!m_sendBuffer)
       {
         m_sendBuffer = nb::chcalloc(sendLen - res);
-        nbstr_memcpy(m_sendBuffer, lpszAsciiSend, sendLen - res);
+        nbstr_memcpy(m_sendBuffer, lpszAsciiSend + res, sendLen - res);
         m_sendBufferLen = sendLen - res;
       }
       else

@@ -325,7 +325,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
       DoClose = true;
     }
   }
-  else if ((GetTerminal() != nullptr) && rtti::isa<EAbort>(E))
+  else if ((GetTerminal() != nullptr) && rtti::isa<EAbort>(E) && E->Message == EXCEPTION_MSG_REPLACED)
   {
     DoClose = true;
   }
