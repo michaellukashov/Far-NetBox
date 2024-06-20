@@ -3087,7 +3087,7 @@ uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
   else if (E && rtti::isa<EAbort>(E))
   {
     // resent EAbort exception
-    Abort();
+    Abort(E->Message);
   }
   else if (GetExceptionOnFail())
   {
