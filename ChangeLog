@@ -6,6 +6,8 @@
 ### Changes
 
  - Upgrade dependencies: OpenSSL 3.3.1
+ - Clarify .ppk file prompt: add (.ppk)
+https://forum.farmanager.com/viewtopic.php?p=177884#p177884
 
 
 ## [24.6.0.603] - 2024-06-20
