@@ -1021,7 +1021,7 @@ void TSCPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
     if (FTerminal->Active && DebugAlwaysTrue(!FCachedDirectoryChange.IsEmpty()))
     {
       Params |= ecNoEnsureLocation;
-      Directory = base::AbsolutePath(FTerminal->GetAbsolutePath(FCachedDirectoryChange, true), Directory);
+      Directory = base::AbsolutePath(FTerminal->AbsolutePath(FCachedDirectoryChange, true), Directory);
       FTerminal->LogEvent(
         FORMAT(L"Cannot locate to cached directory, assuming that target absolute path is \"%s\".", Directory));
     }
@@ -2016,7 +2016,7 @@ void TSCPFileSystem::SCPSource(const UnicodeString & AFileName,
   }
   else
   {
-    const UnicodeString AbsoluteFileName = FTerminal->GetAbsolutePath(TargetDir + DestFileName, false);
+    const UnicodeString AbsoluteFileName = FTerminal->AbsolutePath(TargetDir + DestFileName, false);
     DebugAssert(CheckHandle(LocalFileHandle.Handle));
     DebugAssert(LocalFileHandle.Handle);
     std::unique_ptr<TStream> Stream(std::make_unique<TSafeHandleStream>(static_cast<THandle>(LocalFileHandle.Handle)));
@@ -2755,7 +2755,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
         else if (Ctrl == L'C')
         {
           TDownloadSessionAction Action(FTerminal->GetActionLog());
-          Action.SetFileName(FTerminal->GetAbsolutePath(FullFileName, true));
+          Action.SetFileName(FTerminal->AbsolutePath(FullFileName, true));
 
           try
           {
