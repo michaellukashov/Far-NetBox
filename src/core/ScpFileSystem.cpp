@@ -452,12 +452,12 @@ void TSCPFileSystem::Idle()
   FSecureShell->Idle();
 }
 
-UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TSCPFileSystem *>(this)->GetAbsolutePath(APath, Local);
+  return static_cast<const TSCPFileSystem *>(this)->AbsolutePath(APath, Local);
 }
 
-UnicodeString TSCPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
+UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   return base::AbsolutePath(GetCurrentDirectory(), APath);
 }

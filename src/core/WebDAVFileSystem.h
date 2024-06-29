@@ -29,7 +29,7 @@ public:
   virtual ~TWebDAVFileSystem() noexcept override;
   virtual void Init(void *) override;
 
-  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const override;
+  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) const override;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
 
   virtual void Open() override;
@@ -37,7 +37,7 @@ public:
   virtual bool GetActive() const override;
   virtual void CollectUsage() override;
   virtual void Idle() override;
-  virtual UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) override;
+  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) override;
   virtual void AnyCommand(const UnicodeString & ACommand,
     TCaptureOutputEvent && OutputEvent) override;
   virtual void ChangeDirectory(const UnicodeString & ADirectory) override;
