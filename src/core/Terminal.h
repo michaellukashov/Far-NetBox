@@ -592,7 +592,7 @@ public:
   void CloseOnCompletion(
     TOnceDoneOperation Operation = odoDisconnect, const UnicodeString & AMessage = "",
     const UnicodeString & TargetLocalPath = "", const UnicodeString & ADestLocalFileName = "");
-  UnicodeString GetAbsolutePath(const UnicodeString & APath, bool Local) const;
+  UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) const;
   void BeginTransaction();
   void ReadCurrentDirectory();
   void ReadDirectory(bool ReloadOnly, bool ForceCache = false);

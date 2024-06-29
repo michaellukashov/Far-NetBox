@@ -4353,7 +4353,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
             DebugAssert(Packet.GetType() == SSH_FXP_EXTENDED_REPLY);
 
             OperationProgress->SetFile(File->GetFileName());
-            Action.SetFileName(FTerminal->GetAbsolutePath(File->GetFullFileName(), true));
+            Action.SetFileName(FTerminal->AbsolutePath(File->GetFullFileName(), true));
 
             // skip alg
             nb::used(Packet.GetAnsiString());
