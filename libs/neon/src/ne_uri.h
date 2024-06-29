@@ -88,7 +88,7 @@ typedef struct {
  * NULL, or point to malloc-allocated NUL-terminated strings;
  * ne_uri_free can be used to free any set fields.  On success,
  * parsed->path is guaranteed to be non-NULL. */
-int ne_uri_parse(const char *uri, ne_uri *parsed) // WINSCP
+int ne_uri_parse(const char *uri, ne_uri *parsed)
     ne_attribute((nonnull));
 int ne_uri_parse_ex(const char *uri, ne_uri *parsed, int liberal); // WINSCP
 
