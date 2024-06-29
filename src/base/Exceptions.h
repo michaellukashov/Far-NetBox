@@ -249,9 +249,9 @@ public:
   }
 };
 
-inline void Abort()
+inline void Abort(const UnicodeString & Message = "")
 {
-  throw EAbort("");
+  throw EAbort(Message);
 }
 
 inline void Error(int32_t Id, int32_t ErrorId)
@@ -263,6 +263,18 @@ inline void Error(int32_t Id, int32_t ErrorId)
 inline void ThrowNotImplemented(int32_t ErrorId)
 {
   Error(SNotImplemented, ErrorId);
+}
+
+constexpr const auto * EXCEPTION_MSG_REPLACED = L"[replaced]";
+
+template<typename From, typename To>
+inline void TryReplaceAndThrow(Exception & E)
+{
+  if (rtti::isa<From>(&E))
+  {
+    throw To(EXCEPTION_MSG_REPLACED);
+  }
+  throw; //NOSONAR
 }
 
 NB_CORE_EXPORT Exception * CloneException(Exception * E);

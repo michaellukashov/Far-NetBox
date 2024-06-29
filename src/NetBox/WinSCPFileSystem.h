@@ -201,6 +201,7 @@ protected:
   void RequireLocalPanel(const TFarPanelInfo * Panel, const UnicodeString & Message);
   bool AreCachesEmpty() const;
   void ClearCaches();
+  void ClearConnectedState();
   void OpenSessionInPutty();
   void QueueShow(bool ClosingPlugin);
   TTerminalQueueStatus * ProcessQueue(bool Hidden);
@@ -214,7 +215,7 @@ protected:
       const UnicodeString & RealFileName, UnicodeString & DestPath);
   void LogAuthentication(TTerminal * Terminal, const UnicodeString & Msg);
   void MultipleEdit();
-  void MultipleEdit(const UnicodeString & Directory, const UnicodeString & AFileName, const TRemoteFile * AFile);
+  void MultipleEdit(const UnicodeString Directory, const UnicodeString AFileName, const TRemoteFile * AFile);
   void EditViewCopyParam(TCopyParamType & CopyParam);
   bool SynchronizeBrowsing(const UnicodeString & NewPath);
   bool IsEditHistoryEmpty() const;

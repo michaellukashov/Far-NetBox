@@ -18,6 +18,15 @@ constexpr const DWORD CTRLMASK = (RIGHT_CTRL_PRESSED | LEFT_CTRL_PRESSED);
 constexpr const DWORD SHIFTMASK = (SHIFT_PRESSED);
 constexpr const wchar_t * SHORTCUT_DELIMITER = L"\1";
 
+template<typename... TMasks>
+bool CheckControlMaskSet(DWORD State, TMasks... Masks)
+{
+  const auto CtlState = State & RMASK;
+  // 1) check all individual masks are present in the ctl state
+  // 2) check all bits that are not in any mask are cleared 
+  return ((CtlState & Masks) && ...) && !(CtlState & ~(Masks | ...));
+}
+
 class TCustomFarFileSystem;
 class TFarPanelModes;
 class TFarKeyBarTitles;

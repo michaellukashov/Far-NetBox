@@ -2588,7 +2588,6 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
       // and I believe I've seen one more server doing the same.
       if (Packet->GetRemainingLength() > 0)
       {
-        ServerMessage = Packet->GetString(FUtfStrings);
         LanguageTag = Packet->GetAnsiString();
         if ((FVersion >= 5) && (Message == SFTP_STATUS_UNKNOWN_PRINCIPAL))
         {
@@ -4828,6 +4827,7 @@ void TSFTPFileSystem::Source(
         FTerminal->LogEvent("Checking existence of partially transferred file.");
         if (RemoteFileExists(DestPartialFullName, &File))
         {
+          FilePtr.reset(File);
           ResumeOffset = FilePtr->Resolve()->GetSize(); // Though partial file should not be symlink
 #if defined(__BORLANDC__)
           delete File;

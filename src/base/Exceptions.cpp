@@ -302,8 +302,9 @@ ExtException::ExtException(const Exception * E, const UnicodeString & Msg, const
 }
 
 ExtException::ExtException(TObjectClassId Kind, const Exception * E, int32_t Ident) :
-  Exception(Kind, E, Ident)
+  Exception(Kind, L"", Ident)
 {
+  AddMoreMessages(E);
 }
 
 ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E) :
@@ -318,13 +319,17 @@ ExtException::ExtException(TObjectClassId Kind, const UnicodeString & Msg, const
     {
       Message = Msg;
     }
-    else
+    else if (Message != Msg)
     {
       if (FMoreMessages == nullptr)
       {
         FMoreMessages = new TStringList();
       }
-      FMoreMessages->Append(UnformatMessage(Msg));
+      const auto PreparedMessage = UnformatMessage(Msg);
+      if (FMoreMessages->IndexOf(PreparedMessage) == nb::NPOS)
+      {
+        FMoreMessages->Append(PreparedMessage);
+      }
     }
   }
   // FHelpKeyword = MergeHelpKeyword(GetExceptionHelpKeyword(E), HelpKeyword);
@@ -464,7 +469,7 @@ EOSExtException::EOSExtException(TObjectClassId Kind, const UnicodeString & Msg,
 }
 
 EFatal::EFatal(TObjectClassId Kind, const UnicodeString & Msg, const Exception * E) :
-  ExtException(Kind, Msg)
+  ExtException(Kind, Msg, E)
 {
   const EFatal * F = rtti::dyn_cast_or_null<EFatal>(E);
   if (F != nullptr)

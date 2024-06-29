@@ -621,18 +621,19 @@ void TFTPFileSystem::Close()
   DebugAssert(FActive);
 
   bool Result = DoQuit();
-  if (Result)
-    return;
-  bool Opening = (FTerminal->GetStatus() == ssOpening);
-  if (FFileZillaIntf->Close(Opening))
+  if (!Result)
   {
-    DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
-    Result = true;
-  }
-  else
-  {
-    // See TFileZillaIntf::Close
-    Result = Opening;
+    bool Opening = (FTerminal->GetStatus() == ssOpening);
+    if (FFileZillaIntf->Close(Opening))
+    {
+      DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
+      Result = true;
+    }
+    else
+    {
+      // See TFileZillaIntf::Close
+      Result = Opening;
+    }
   }
 
   if (DebugAlwaysTrue(Result))
@@ -3450,6 +3451,15 @@ UnicodeString TFTPFileSystem::GotReply(uint32_t Reply, uint32_t Flags,
         // bit too generic assigning of main instructions, let's see how it works
         Error = MainInstructions(MoreMessages->GetString(0));
         MoreMessages->Delete(0);
+      }
+
+      if (MoreMessages != nullptr)
+      {
+        auto ErrorIndex = MoreMessages->IndexOf(Error);
+        if (ErrorIndex != nb::NPOS)
+        {
+          MoreMessages->Delete(ErrorIndex);
+        }
       }
 
       if (Disconnected)

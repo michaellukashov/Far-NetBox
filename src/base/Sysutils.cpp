@@ -702,6 +702,11 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
     MaxWidth = 5;
   }
 
+  if (nb::StrLength(Line.c_str()) <= MaxWidth)
+  {
+    return Line;
+  }
+
   /* two passes through the input. the first pass updates the buffer length.
    * the second pass creates and populates the buffer
    */
@@ -752,14 +757,8 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
       }
 
       /* copy as many words as will fit onto the current line */
-      while (S && *S && (nb::StrLength(S) + 1) <= SpaceLeft)
+      while (S && *S && nb::StrLength(S) <= SpaceLeft)
       {
-        if (Result.Length() == 0)
-        {
-          ++LenBuffer;
-        }
-        --SpaceLeft;
-
         /* then copy the word */
         while (*S)
         {
@@ -804,8 +803,6 @@ UnicodeString WrapText(const UnicodeString & Line, int32_t MaxWidth)
 
       ++LineCount;
     }
-
-    LenBuffer += 2;
 
     if (W)
     {
@@ -1377,6 +1374,15 @@ bool TryStrToDateTime(const UnicodeString & StrValue, TDateTime & Value,
 UnicodeString DateTimeToString(const UnicodeString & Format,
   const TDateTime & DateTime)
 {
+  auto LocaleDeleter = [](_locale_t *Locale)
+  {
+    if (Locale && *Locale)
+    {
+      _free_locale(*Locale);
+    }
+  };
+  static std::unique_ptr<_locale_t, decltype(LocaleDeleter)> CLocale(new _locale_t(_create_locale(LC_TIME, "C")), LocaleDeleter);
+
   UnicodeString Result;
   // SYSTEMTIME st;
   // ::ZeroMemory(&st, sizeof(SYSTEMTIME));
@@ -1402,7 +1408,7 @@ UnicodeString DateTimeToString(const UnicodeString & Format,
     return Result;
 
   AnsiString Buffer(80, 0);
-  if (0 != strftime(const_cast<char *>(Buffer.data()), sizeof(Buffer), AnsiString(Format).c_str(), &dt))
+  if (0 != _strftime_l(const_cast<char *>(Buffer.data()), Buffer.GetLength(), AnsiString(Format).c_str(), &dt, *CLocale))
     Result = Buffer;
 
   return Result;

@@ -27,5 +27,9 @@ build_script:
   - call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch%
   - CALL appveyor.bat
 
+artifacts:
+  - path: Far3_$(platform_name)/Plugins/NetBox
+    name: NetBox-$(platform_name)
+
 skip_commits:
   message: /.*\[skip appveyor\].*/
