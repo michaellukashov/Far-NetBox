@@ -5,16 +5,21 @@
 
 ### Changes
 
- - Upgrade dependencies: OpenSSL 3.3.1
- - Clarify .ppk file prompt: add (.ppk)
+ * Upgrade dependencies: OpenSSL 3.3.1
+ * Clarify .ppk file prompt: add (.ppk)
 https://forum.farmanager.com/viewtopic.php?p=177884#p177884
+
+### Fixes
+
+ * gh-485 Can not create a remote folder
+https://github.com/michaellukashov/Far-NetBox/issues/485
 
 
 ## [24.6.0.603] - 2024-06-20
 
 ### Changes
 
- - Upgrade dependencies: OpenSSL 3.2.2
+ * Upgrade dependencies: OpenSSL 3.2.2
 
 ### Fixes
 
