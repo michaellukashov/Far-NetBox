@@ -5345,7 +5345,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt)
   TRetryOperationLoop RetryLoop(this);
   do
   {
-    TMkdirSessionAction Action(GetActionLog(), AbsolutePath(ADirName, false));
+    TMkdirSessionAction Action(GetActionLog(), AbsolutePath(ADirName, true));
     try
     {
       DebugAssert(FFileSystem);
