@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2022-2024 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -481,7 +481,9 @@ OSSL_QUIC_TX_PACKETISER *ossl_quic_tx_packetiser_new(const OSSL_QUIC_TX_PACKETIS
                              get_sstream_by_id, txp,
                              on_regen_notify, txp,
                              on_confirm_notify, txp,
-                             on_sstream_updated, txp)) {
+                             on_sstream_updated, txp,
+                             args->get_qlog_cb,
+                             args->get_qlog_cb_arg)) {
         OPENSSL_free(txp);
         return NULL;
     }
@@ -623,6 +625,14 @@ void ossl_quic_tx_packetiser_set_ack_tx_cb(OSSL_QUIC_TX_PACKETISER *txp,
 {
     txp->ack_tx_cb      = cb;
     txp->ack_tx_cb_arg  = cb_arg;
+}
+
+void ossl_quic_tx_packetiser_set_qlog_cb(OSSL_QUIC_TX_PACKETISER *txp,
+                                         QLOG *(*get_qlog_cb)(void *arg),
+                                         void *get_qlog_cb_arg)
+{
+    ossl_quic_fifd_set_qlog_cb(&txp->fifd, get_qlog_cb, get_qlog_cb_arg);
+
 }
 
 int ossl_quic_tx_packetiser_discard_enc_level(OSSL_QUIC_TX_PACKETISER *txp,
@@ -1590,10 +1600,21 @@ static void on_regen_notify(uint64_t frame_type, uint64_t stream_id,
     }
 }
 
+static int txp_need_ping(OSSL_QUIC_TX_PACKETISER *txp,
+                         uint32_t pn_space,
+                         const struct archetype_data *adata)
+{
+    return adata->allow_ping
+        && (adata->require_ack_eliciting
+            || (txp->force_ack_eliciting & (1UL << pn_space)) != 0);
+}
+
 static int txp_pkt_init(struct txp_pkt *pkt, OSSL_QUIC_TX_PACKETISER *txp,
                         uint32_t enc_level, uint32_t archetype,
                         size_t running_total)
 {
+    uint32_t pn_space = ossl_quic_enc_level_to_pn_space(enc_level);
+
     if (!txp_determine_geometry(txp, archetype, enc_level,
                                 running_total, &pkt->phdr, &pkt->geom))
         return 0;
@@ -1604,7 +1625,7 @@ static int txp_pkt_init(struct txp_pkt *pkt, OSSL_QUIC_TX_PACKETISER *txp,
      */
     if (!tx_helper_init(&pkt->h, txp, enc_level,
                         pkt->geom.cmppl,
-                        pkt->geom.adata.require_ack_eliciting ? 1 : 0))
+                        txp_need_ping(txp, pn_space, &pkt->geom.adata) ? 1 : 0))
         return 0;
 
     pkt->h_valid            = 1;
@@ -1872,7 +1893,7 @@ static int txp_generate_pre_token(OSSL_QUIC_TX_PACKETISER *txp,
             pf = &f;
             pf->is_app      = 0;
             pf->frame_type  = 0;
-            pf->error_code  = QUIC_ERR_APPLICATION_ERROR;
+            pf->error_code  = OSSL_QUIC_ERR_APPLICATION_ERROR;
             pf->reason      = NULL;
             pf->reason_len  = 0;
         }
@@ -2772,11 +2793,10 @@ static int txp_generate_for_el(OSSL_QUIC_TX_PACKETISER *txp,
     /* PING */
     tx_helper_unrestrict(h);
 
-    if ((a.require_ack_eliciting
-         || (txp->force_ack_eliciting & (1UL << pn_space)) != 0)
-        && !have_ack_eliciting && a.allow_ping) {
+    if (!have_ack_eliciting && txp_need_ping(txp, pn_space, &a)) {
         WPACKET *wpkt;
 
+        assert(h->reserve > 0);
         wpkt = tx_helper_begin(h);
         if (wpkt == NULL)
             goto fatal_err;
@@ -2811,6 +2831,7 @@ static int txp_generate_for_el(OSSL_QUIC_TX_PACKETISER *txp,
     tpkt->ackm_pkt.is_pto_probe     = 0;
     tpkt->ackm_pkt.is_mtu_probe     = 0;
     tpkt->ackm_pkt.time             = txp->args.now(txp->args.now_arg);
+    tpkt->pkt_type                  = pkt->phdr.type;
 
     /* Done. */
     return rc;

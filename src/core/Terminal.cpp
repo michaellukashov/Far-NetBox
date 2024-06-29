@@ -2380,9 +2380,9 @@ bool TTerminal::GetIsCapableProtected(TFSCapability Capability) const
   }
 }
 
-UnicodeString TTerminal::GetAbsolutePath(const UnicodeString & APath, bool Local) const
+UnicodeString TTerminal::AbsolutePath(const UnicodeString & APath, bool Local) const
 {
-  return FFileSystem->GetAbsolutePath(APath, Local);
+  return FFileSystem->AbsolutePath(APath, Local);
 }
 
 void TTerminal::ReactOnCommand(int32_t ACmd)
@@ -3860,7 +3860,7 @@ TRemoteFileList * TTerminal::ReadDirectoryListing(const UnicodeString & ADirecto
   do
   {
     FileList = nullptr;
-    TLsSessionAction Action(GetActionLog(), GetAbsolutePath(ADirectory, true));
+    TLsSessionAction Action(GetActionLog(), AbsolutePath(ADirectory, true));
 
     try
     {
@@ -3903,7 +3903,7 @@ TRemoteFile * TTerminal::ReadFileListing(const UnicodeString & APath)
   do
   {
     File = nullptr;
-    TStatSessionAction Action(GetActionLog(), GetAbsolutePath(APath, true));
+    TStatSessionAction Action(GetActionLog(), AbsolutePath(APath, true));
     try
     {
       // reset caches
@@ -4468,7 +4468,7 @@ void TTerminal::DoDeleteFile(
   TRetryOperationLoop RetryLoop(this);
   do
   {
-    TRmSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true));
+    TRmSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true));
     try
     {
       DebugAssert(FileSystem != nullptr);
@@ -4487,7 +4487,7 @@ void TTerminal::DoDeleteFile(
   while (RetryLoop.Retry());
 
   // Forget if file was or was not encrypted and use user preferences, if we ever recreate it.
-  FEncryptedFileNames.erase(GetAbsolutePath(AFileName, true));
+  FEncryptedFileNames.erase(AbsolutePath(AFileName, true));
   ReactOnCommand(fsDeleteFile);
 }
 
@@ -4719,7 +4719,7 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
   TRetryOperationLoop RetryLoop(this);
   do
   {
-    TChmodSessionAction Action(GetActionLog(), GetAbsolutePath(AFileName, true));
+    TChmodSessionAction Action(GetActionLog(), AbsolutePath(AFileName, true));
     try
     {
       DebugAssert(FFileSystem);
@@ -5026,8 +5026,8 @@ bool TTerminal::DoRenameOrCopyFile(
   bool Move, bool DontOverwrite, bool IsBatchOperation)
 {
   const TBatchOverwrite BatchOverwrite = (IsBatchOperation ? OperationProgress->BatchOverwrite : boNo);
-  const UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
-  const UnicodeString AbsoluteNewName = GetAbsolutePath(NewName, true);
+  const UnicodeString AbsoluteFileName = AbsolutePath(FileName, true);
+  const UnicodeString AbsoluteNewName = AbsolutePath(NewName, true);
   bool Result = true;
   bool ExistenceKnown = false;
   std::unique_ptr<TRemoteFile> DuplicateFile;
@@ -5345,7 +5345,7 @@ void TTerminal::DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt)
   TRetryOperationLoop RetryLoop(this);
   do
   {
-    TMkdirSessionAction Action(GetActionLog(), GetAbsolutePath(ADirName, false));
+    TMkdirSessionAction Action(GetActionLog(), AbsolutePath(ADirName, true));
     try
     {
       DebugAssert(FFileSystem);
@@ -7720,7 +7720,7 @@ void TTerminal::DoCopyToRemote(
   FFileSystem->TransferOnDirectory(ATargetDir, CopyParam, AParams);
 
   // Must be local resolving, as this is outside of robust loop
-  const UnicodeString TargetDir = GetAbsolutePath(ATargetDir, true);
+  const UnicodeString TargetDir = AbsolutePath(ATargetDir, true);
   const UnicodeString FullTargetDir = base::UnixIncludeTrailingBackslash(ATargetDir);
   int32_t Index = 0;
   while ((Index < AFilesToCopy->GetCount()) && !AOperationProgress->GetCancel())
@@ -8085,7 +8085,7 @@ void TTerminal::Source(
     FFileSystem->Source(
       Handle, ATargetDir, DestFileName, CopyParam, AParams, AOperationProgress, AFlags, Action, ChildError);
 
-    LogFileDone(AOperationProgress, GetAbsolutePath(ATargetDir + DestFileName, true), Action);
+    LogFileDone(AOperationProgress, AbsolutePath(ATargetDir + DestFileName, true), Action);
     AOperationProgress->Succeeded();
   }
 
@@ -8346,7 +8346,7 @@ void TTerminal::DoCopyToLocal(
     {
       try
       {
-        const UnicodeString AbsoluteFileName = GetAbsolutePath(FileName, true);
+        const UnicodeString AbsoluteFileName = this->AbsolutePath(FileName, true);
         SinkRobust(AbsoluteFileName, File, FullTargetDir, CopyParam, AParams, AOperationProgress, AFlags | tfFirstLevel);
         Success = true;
       }

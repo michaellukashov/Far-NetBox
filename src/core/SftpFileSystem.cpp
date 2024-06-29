@@ -3084,12 +3084,12 @@ UnicodeString TSFTPFileSystem::Canonify(const UnicodeString & APath)
   return Result;
 }
 
-UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local) const
+UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local) const
 {
-  return const_cast<TSFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
+  return const_cast<TSFTPFileSystem *>(this)->AbsolutePath(APath, Local);
 }
 
-UnicodeString TSFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TSFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
   if (Local)
   {
@@ -4353,7 +4353,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
             DebugAssert(Packet.GetType() == SSH_FXP_EXTENDED_REPLY);
 
             OperationProgress->SetFile(File->GetFileName());
-            Action.SetFileName(FTerminal->GetAbsolutePath(File->GetFullFileName(), true));
+            Action.SetFileName(FTerminal->AbsolutePath(File->GetFullFileName(), true));
 
             // skip alg
             nb::used(Packet.GetAnsiString());

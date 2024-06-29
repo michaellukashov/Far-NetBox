@@ -925,12 +925,12 @@ void TFTPFileSystem::Discard()
   }
 }
 
-UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TFTPFileSystem *>(this)->GetAbsolutePath(APath, Local);
+  return static_cast<const TFTPFileSystem *>(this)->AbsolutePath(APath, Local);
 }
 
-UnicodeString TFTPFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
+UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   TODO("improve (handle .. etc.)");
   if (base::UnixIsAbsolutePath(APath))
@@ -1049,7 +1049,7 @@ void TFTPFileSystem::DoChangeDirectory(const UnicodeString & Directory)
 {
   if (FWorkFromCwd == asOn)
   {
-    const UnicodeString ADirectory = base::UnixIncludeTrailingBackslash(GetAbsolutePath(Directory, false));
+    const UnicodeString ADirectory = base::UnixIncludeTrailingBackslash(AbsolutePath(Directory, false));
 
     UnicodeString Actual = base::UnixIncludeTrailingBackslash(GetActualCurrentDirectory());
     while (!base::UnixSamePath(Actual, ADirectory))
@@ -1098,7 +1098,7 @@ void TFTPFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
   {
     if (FTerminal->GetActive())
     {
-      Directory = GetAbsolutePath(Directory, false);
+      Directory = AbsolutePath(Directory, false);
     }
     else
     {
@@ -1136,7 +1136,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 
     try__finally
     {
-      UnicodeString FileName = GetAbsolutePath(AFileName, false);
+      UnicodeString FileName = AbsolutePath(AFileName, false);
 
       if (AFile == nullptr)
       {
@@ -1837,7 +1837,7 @@ void TFTPFileSystem::Source(
 
 void TFTPFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
-  const UnicodeString DirName = GetAbsolutePath(ADirName, false);
+  const UnicodeString DirName = AbsolutePath(ADirName, false);
 
   {
     // ignore file list
@@ -1866,7 +1866,7 @@ void TFTPFileSystem::CreateLink(const UnicodeString & AFileName,
 void TFTPFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t Params, TRmSessionAction & Action)
 {
-  const UnicodeString FileName = GetAbsolutePath(AFileName, false);
+  const UnicodeString FileName = AbsolutePath(AFileName, false);
   const UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
   const UnicodeString FilePath = RemoteExtractFilePath(FileName);
 
@@ -2162,7 +2162,7 @@ void TFTPFileSystem::DoReadDirectory(TRemoteFileList * AFileList)
   UnicodeString Directory;
   if (!EnsureLocationWhenWorkFromCwd(AFileList->Directory()))
   {
-    Directory = GetAbsolutePath(AFileList->Directory(), false);
+    Directory = AbsolutePath(AFileList->Directory(), false);
   }
 
   FBytesAvailable = -1;
@@ -2246,7 +2246,7 @@ bool TFTPFileSystem::LookupUploadModificationTime(
   bool Result = false;
   if (ModificationFmt != mfFull)
   {
-    const UnicodeString AbsPath = GetAbsolutePath(AFileName, false);
+    const UnicodeString AbsPath = AbsolutePath(AFileName, false);
     const TUploadedTimes::const_iterator Iterator = FUploadedTimes.find(AbsPath);
     if (Iterator != FUploadedTimes.end())
     {
@@ -2482,7 +2482,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
 void TFTPFileSystem::DoReadFile(const UnicodeString & AFileName,
   TRemoteFile *& AFile)
 {
-  const UnicodeString FileName = GetAbsolutePath(AFileName, false);
+  const UnicodeString FileName = AbsolutePath(AFileName, false);
   UnicodeString FileNameOnly;
   UnicodeString FilePath;
   if (base::IsUnixRootPath(FileName))
@@ -2658,8 +2658,8 @@ void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
 void TFTPFileSystem::RenameFile(
   const UnicodeString & AFileName, const TRemoteFile * /*AFile*/, const UnicodeString & ANewName, bool DebugUsedArg(Overwrite))
 {
-  const UnicodeString FileName = GetAbsolutePath(AFileName, false);
-  const UnicodeString NewName = GetAbsolutePath(ANewName, false);
+  const UnicodeString FileName = AbsolutePath(AFileName, false);
+  const UnicodeString NewName = AbsolutePath(ANewName, false);
 
   const UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
   const UnicodeString FilePathOnly = RemoteExtractFilePath(FileName);
@@ -4567,7 +4567,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
   else if (FFileList)
   {
     DebugAssert(FFileList != nullptr);
-    const UnicodeString AbsPath = GetAbsolutePath(FFileList->GetDirectory(), false);
+    const UnicodeString AbsPath = AbsolutePath(FFileList->GetDirectory(), false);
     DebugAssert(FFileList->GetDirectory().IsEmpty() || base::UnixSamePath(AbsPath, Path));
     DebugUsedParam(Path);
 
