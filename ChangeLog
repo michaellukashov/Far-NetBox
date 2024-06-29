@@ -1,6 +1,13 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [24.6.1.604] - 2024-06-29
+
+### Changes
+
+ - Upgrade dependencies: OpenSSL 3.3.1
+
+
 ## [24.6.0.603] - 2024-06-20
 
 ### Changes
