@@ -95,7 +95,7 @@ static UnicodeString PathUnescape(const char * Path)
 }
 
 #define AbsolutePathToNeon(P) PathEscape(StrToNeon(P)).c_str()
-#define PathToNeonStatic(THIS, P) AbsolutePathToNeon((THIS)->GetAbsolutePath(P, false))
+#define PathToNeonStatic(THIS, P) AbsolutePathToNeon((THIS)->AbsolutePath(P, false))
 #define PathToNeon(P) PathToNeonStatic(this, P)
 
 
@@ -587,12 +587,12 @@ void TWebDAVFileSystem::Idle()
   // noop
 }
 
-UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TWebDAVFileSystem *>(this)->GetAbsolutePath(APath, Local);
+  return static_cast<const TWebDAVFileSystem *>(this)->AbsolutePath(APath, Local);
 }
 
-UnicodeString TWebDAVFileSystem::GetAbsolutePath(const UnicodeString & APath, bool /*Local*/) const
+UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
 {
   bool AddTrailingBackslash;
 
@@ -788,7 +788,7 @@ void TWebDAVFileSystem::AnnounceFileListOperation()
 
 void TWebDAVFileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
-  const UnicodeString Path = GetAbsolutePath(ADirectory, false);
+  const UnicodeString Path = AbsolutePath(ADirectory, false);
 
   // to verify existence of directory try to open it
   TryOpenDirectory(Path);
@@ -839,7 +839,7 @@ bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APat
   if (Result)
   {
     // What PathToNeon does
-    const UnicodeString OriginalPath = GetAbsolutePath(APath, false);
+    const UnicodeString OriginalPath = AbsolutePath(APath, false);
     // Handle one-step redirect
     // (for more steps we would have to implement loop detection).
     // This is mainly to handle "folder" => "folder/" redirects of Apache/mod_dav.
@@ -899,7 +899,7 @@ void TWebDAVFileSystem::NeonPropsResult(
     File->SetTerminal(Data.FileSystem->FTerminal);
     Data.FileSystem->ParsePropResultSet(File.get(), Path, Results);
 
-    const UnicodeString FileListPath = Data.FileSystem->GetAbsolutePath(Data.FileList->GetDirectory(), false);
+    const UnicodeString FileListPath = Data.FileSystem->AbsolutePath(Data.FileList->GetDirectory(), false);
     if (base::UnixSamePath(File->FullFileName, FileListPath))
     {
       File->FileName = PARENTDIRECTORY;

@@ -954,7 +954,7 @@ void TS3FileSystem::Idle()
   // noop
 }
 
-UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString & Path, bool /*Local*/) const
+UnicodeString TS3FileSystem::AbsolutePath(const UnicodeString & Path, bool /*Local*/) const
 {
   if (base::UnixIsAbsolutePath(Path))
   {
@@ -1073,7 +1073,7 @@ void TS3FileSystem::TryOpenDirectory(const UnicodeString & ADirectory)
 
 void TS3FileSystem::ChangeDirectory(const UnicodeString & ADirectory)
 {
-  const UnicodeString Path = GetAbsolutePath(ADirectory, false);
+  const UnicodeString Path = AbsolutePath(ADirectory, false);
 
   // to verify existence of directory try to open it
   TryOpenDirectory(Path);
@@ -1248,7 +1248,7 @@ bool TS3FileSystem::IsGoogleCloud() const
 void TS3FileSystem::ReadDirectoryInternal(
   const UnicodeString & APath, TRemoteFileList * FileList, int32_t MaxKeys, const UnicodeString & AFileName)
 {
-  const UnicodeString Path = base::UnixExcludeTrailingBackslash(GetAbsolutePath(APath, false));
+  const UnicodeString Path = base::UnixExcludeTrailingBackslash(AbsolutePath(APath, false));
   int32_t AMaxKeys = (MaxKeys == -1) ? 1 : MaxKeys;
   if (base::IsUnixRootPath(Path))
   {
@@ -1389,7 +1389,7 @@ void TS3FileSystem::ReadFile(const UnicodeString & AFileName,
 void TS3FileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t AParams, TRmSessionAction & Action)
 {
-  const UnicodeString FileName = GetAbsolutePath(AFileName, false);
+  const UnicodeString FileName = AbsolutePath(AFileName, false);
 
   const bool Dir = FTerminal->DeleteContentsIfDirectory(FileName, AFile, AParams, Action);
 
@@ -1460,8 +1460,8 @@ void TS3FileSystem::CopyFile(
     throw Exception(LoadStr(DUPLICATE_FOLDER_NOT_SUPPORTED));
   }
 
-  const UnicodeString FileName = GetAbsolutePath(AFileName, false);
-  const UnicodeString NewName = GetAbsolutePath(ANewName, false);
+  const UnicodeString FileName = AbsolutePath(AFileName, false);
+  const UnicodeString NewName = AbsolutePath(ANewName, false);
 
   UnicodeString SourceBucketName, SourceKey;
   ParsePath(FileName, SourceBucketName, SourceKey);
@@ -1492,7 +1492,7 @@ void TS3FileSystem::CopyFile(
 void TS3FileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*Encrypt*/)
 {
   const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
-  const UnicodeString DirName = base::UnixExcludeTrailingBackslash(GetAbsolutePath(ADirName, false));
+  const UnicodeString DirName = base::UnixExcludeTrailingBackslash(AbsolutePath(ADirName, false));
 
   UnicodeString BucketName, Key;
   ParsePath(DirName, BucketName, Key);
@@ -1580,7 +1580,7 @@ static TRights::TRightLevel S3PermissionToRightLevel(S3Permission Permission)
 bool TS3FileSystem::ParsePathForPropertiesRequests(
   const UnicodeString & Path, const TRemoteFile * File, UnicodeString & BucketName, UnicodeString & Key)
 {
-  const UnicodeString FileName = GetAbsolutePath(Path, false);
+  const UnicodeString FileName = AbsolutePath(Path, false);
 
   ParsePath(FileName, BucketName, Key);
 
@@ -2469,9 +2469,9 @@ void TS3FileSystem::ClearCaches()
   FHostNames.clear();
 }
 
-UnicodeString TS3FileSystem::GetAbsolutePath(const UnicodeString & APath, bool Local)
+UnicodeString TS3FileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TS3FileSystem *>(this)->GetAbsolutePath(APath, Local);
+  return static_cast<const TS3FileSystem *>(this)->AbsolutePath(APath, Local);
 }
 
 void TS3FileSystem::InitSslSession(ssl_st * Ssl, ne_session * Session)

@@ -2382,7 +2382,7 @@ bool TTerminal::GetIsCapableProtected(TFSCapability Capability) const
 
 UnicodeString TTerminal::AbsolutePath(const UnicodeString & APath, bool Local) const
 {
-  return FFileSystem->GetAbsolutePath(APath, Local);
+  return FFileSystem->AbsolutePath(APath, Local);
 }
 
 void TTerminal::ReactOnCommand(int32_t ACmd)
