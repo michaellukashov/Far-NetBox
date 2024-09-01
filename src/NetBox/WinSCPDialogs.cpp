@@ -3060,12 +3060,14 @@ void TSessionDialog::UpdateControls()
 //  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
+  UserNameEdit->SetVisible(IsMainTab);
   PasswordEdit->SetEnabled(!LoginAnonymous);
+  PasswordEdit->SetVisible(IsMainTab);
 
-  UserNameLabel->SetVisible(!lS3Protocol);
-  S3AccessKeyIDLabel->SetVisible(lS3Protocol);
-  PasswordLabel->SetVisible(!lS3Protocol);
-  S3SecretAccessKeyLabel->SetVisible(lS3Protocol);
+  UserNameLabel->SetVisible(IsMainTab && !lS3Protocol);
+  S3AccessKeyIDLabel->SetVisible(IsMainTab && lS3Protocol);
+  PasswordLabel->SetVisible(IsMainTab && !lS3Protocol);
+  S3SecretAccessKeyLabel->SetVisible(IsMainTab && lS3Protocol);
 
   // Connection sheet
   FtpPasvModeCheck->SetEnabled(lFtpProtocol);
