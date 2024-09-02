@@ -4893,15 +4893,17 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     SetNextItemPosition(ipNewLine);
 
     Text = MakeOwnedObject<TFarText>(this);
-    Text->SetCenterGroup(true);
     if (AFileList->GetCount() > 1)
     {
       Text->SetCaption(FORMAT(GetMsg(NB_PROPERTIES_PROMPT_FILES), AFileList->GetCount()));
     }
     else
     {
-      Text->SetCaption(base::MinimizeName(AFileList->GetString(0), nb::ToInt32(GetClientSize().x), true));
+      Text->SetCaption(AFileList->GetString(0));
     }
+    Text->SetRight(-6);
+    Text->SetFlag(DIF_CENTERTEXT, true);
+    Text->SetFlag(DIF_WORDWRAP, true);
     const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
     {
