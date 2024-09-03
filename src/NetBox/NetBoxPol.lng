@@ -52,6 +52,7 @@
 "Eksport"
 "Duplikuj"
 "Zmień nazwę"
+"EditHs"
 "OtwFolder"
 "Duplikuj"
 "PrzenDo"
@@ -563,7 +564,7 @@
 "&Kolejka                      Alt-Shift-Q"
 "&Aktualizuj zdalny folder"
 "Synchronizuj p&rzeglądanie    Ctrl-Alt-B"
-"Edytuj &historię"
+"Edytuj &historię              Alt-Shift-F11"
 
 "Informacje o serwerze i protokole"
 " Informacje o serwerze "
