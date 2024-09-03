@@ -223,6 +223,20 @@ UnicodeString TrimRight(const UnicodeString & Str)
   return Result;
 }
 
+UnicodeString RightCutToLength(const UnicodeString & Str, int32_t MaxLength, const UnicodeString & Ellipsis)
+{
+  if (MaxLength <= 0)
+    return "";
+
+  UnicodeString Result = Str;
+ 
+  if (Str.Length() <= MaxLength)
+    return Result;
+
+  const auto Dots = Ellipsis.SubStr(0, MaxLength);
+  return Result.Replace(MaxLength - Dots.Length() + 1, Str.Length() - MaxLength + Dots.Length(), Dots.c_str());
+}
+
 UnicodeString UpperCase(const UnicodeString & Str)
 {
   UnicodeString Result(Str);
