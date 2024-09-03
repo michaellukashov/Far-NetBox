@@ -52,6 +52,7 @@
 "Экспорт"
 "Дублир."
 "Переим."
+"ИстРед"
 "ОткрКат"
 "Дублир."
 "ПеремВ"
@@ -563,7 +564,7 @@
 "&Queue                        Alt-Shift-Q"
 "&Keep Remote Directory Up To Date"
 "Synchronize bro&wsing         Ctrl-Alt-B"
-"&Edit history"
+"&Edit history                 Alt-Shift-F11"
 
 "Server and protocol information"
 " Server information "

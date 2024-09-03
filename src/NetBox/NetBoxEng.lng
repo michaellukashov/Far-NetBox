@@ -52,6 +52,7 @@
 "Export"
 "Duplicate"
 "Rename"
+"EditHs"
 "OpenFld"
 "Duplicate"
 "MoveTo"
@@ -563,7 +564,7 @@
 "&Queue                        Alt-Shift-Q"
 "&Keep Remote Directory Up To Date"
 "Synchronize bro&wsing         Ctrl-Alt-B"
-"&Edit history"
+"&Edit history                 Alt-Shift-F11"
 
 "Server and protocol information"
 " Server information "
