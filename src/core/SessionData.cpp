@@ -6041,12 +6041,12 @@ TSessionData * TStoredSessionList::NewSession(
   TSessionData * DuplicateSession = rtti::dyn_cast_or_null<TSessionData>(FindByName(SessionName));
   if (!DuplicateSession)
   {
-    std::unique_ptr<TSessionData> DuplicateSession = std::make_unique<TSessionData>("");
+    DuplicateSession = new TSessionData(L"");
     DuplicateSession->Assign(Session);
     DuplicateSession->SetName(SessionName);
     // make sure, that new stored session is saved to registry
     DuplicateSession->SetModified(true);
-    Add(DuplicateSession.release());
+    Add(DuplicateSession);
   }
   else
   {
