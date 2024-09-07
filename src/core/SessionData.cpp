@@ -6575,6 +6575,25 @@ int32_t DefaultPort(TFSProtocol AFSProtocol, TFtps Ftps)
   return Result;
 }
 
+UnicodeString GetTlsVersionName(TTlsVersion TlsVersion)
+{
+  switch (TlsVersion)
+  {
+    default:
+      DebugFail();
+    case ssl2:
+    case ssl3:
+    case tls10:
+      return "TLSv1.0";
+    case tls11:
+      return "TLSv1.1";
+    case tls12:
+      return "TLSv1.2";
+    case tls13:
+      return "TLSv1.3";
+  }
+}
+
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)
 {
   if (!GetCPInfoEx(CodePage, 0, &CodePageInfoEx))

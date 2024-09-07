@@ -1161,6 +1161,7 @@ TFSProtocol NormalizeFSProtocol(TFSProtocol FSProtocol);
 bool ParseOpensshDirective(const UnicodeString & ALine, UnicodeString & Directive, UnicodeString & Value);
 UnicodeString CutOpensshToken(UnicodeString & S);
 UnicodeString ConvertPathFromOpenssh(const UnicodeString & Path);
+UnicodeString GetTlsVersionName(TTlsVersion TlsVersion);
 //---------------------------------------------------------------------------
 struct NB_CORE_EXPORT TIEProxyConfig final : public TObject
 {
