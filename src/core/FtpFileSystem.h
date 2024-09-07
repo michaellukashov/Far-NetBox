@@ -243,6 +243,7 @@ private:
   uint32_t FReply{0};
   uint32_t FCommandReply{0};
   TCommand FLastCommand{CMD_UNKNOWN};
+  mutable bool FAnyPassword{false};
   bool FPasswordFailed{false};
   bool FStoredPasswordTried{false};
   bool FMultiLineResponse{false};
