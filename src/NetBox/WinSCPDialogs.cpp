@@ -5742,9 +5742,6 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   {
     MsgText = MakeOwnedObject<TFarText>(this);
     MsgText->SetCaption(FormatPrompt());
-      DEBUG_PRINTF("FileName: %s", FileName);
-      DEBUG_PRINTF("OnlyFileName: %s", OnlyFileName);
-    DEBUG_PRINTF("Prompt: %s", Prompt);
 
     DirectoryEdit = MakeOwnedObject<TFarEdit>(this);
     DirectoryEdit->SetHistory(ToRemote ? REMOTE_DIR_HISTORY : "Copy");
