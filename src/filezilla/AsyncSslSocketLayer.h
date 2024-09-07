@@ -249,6 +249,7 @@ private:
 
   X509 * FCertificate{nullptr};
   EVP_PKEY * FPrivateKey{nullptr};
+  CFileZillaTools * m_Tools{nullptr};
 };
 
 #define SSL_INFO 0

@@ -347,7 +347,6 @@ private:
   void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
   void AddStartupInfo(bool System);
   void DoAddStartupInfo(TSessionData * Data);
-  UnicodeString GetTlsVersionName(TTlsVersion TlsVersion) const;
   UnicodeString LogSensitive(const UnicodeString & Str);
   static UnicodeString GetCmdLineLog(TConfiguration * AConfiguration);
   void CheckSize(int64_t Addition);
