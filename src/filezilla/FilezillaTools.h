@@ -15,5 +15,6 @@ public:
   virtual wchar_t * LastSysErrorMessage() const = 0;
   virtual std::wstring GetClientString() const = 0;
   virtual void SetupSsl(ssl_st * Ssl) = 0;
+  virtual std::wstring CustomReason(int Err) = 0;
 };
 
