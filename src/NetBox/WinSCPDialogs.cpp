@@ -4807,16 +4807,19 @@ protected:
   bool IsNumericOnly(int32_t Type) const { return (FAllowedChanges & cpIDs) && !(FAllowedChanges & Type); }
   bool IsNumericOrText(int32_t Type) const { return (FAllowedChanges & (cpIDs | Type)) != 0; }
   bool IsEmptyControl(int32_t Type) const;
+  intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
 
 private:
   bool FAnyDirectories{false};
   int32_t FAllowedChanges{0};
   TRemoteProperties FOrigProperties;
   bool FMultiple{false};
+  UnicodeString FFileName{};
 
   TRightsContainer * RightsContainer{nullptr};
   TFarComboBox * OwnerComboBox{nullptr};
   TFarComboBox * GroupComboBox{nullptr};
+  TFarText * MsgText{nullptr};
   TFarEdit * OwnerIDEdit{nullptr};
   TFarEdit * GroupIDEdit{nullptr};
   TFarText * OwnerNameText{nullptr};
@@ -4907,17 +4910,18 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
 
     SetNextItemPosition(ipNewLine);
 
-    Text = MakeOwnedObject<TFarText>(this);
+    MsgText = MakeOwnedObject<TFarText>(this);
     if (AFileList->GetCount() > 1)
     {
-      Text->SetCaption(FORMAT(GetMsg(NB_PROPERTIES_PROMPT_FILES), AFileList->GetCount()));
+      MsgText->SetCaption(FORMAT(GetMsg(NB_PROPERTIES_PROMPT_FILES), AFileList->GetCount()));
     }
     else
     {
-      Text->SetCaption(AFileList->GetString(0));
+      FFileName = AFileList->GetString(0);
+      MsgText->SetCaption(RightCutToLength(FFileName, nb::ToInt32(GetClientSize().x)));
     }
-    Text->SetRight(-6);
-    Text->SetFlag(DIF_CENTERTEXT, true);
+    MsgText->SetRight(-6);
+    MsgText->SetFlag(DIF_CENTERTEXT, true);
     Text->SetFlag(DIF_WORDWRAP, true);
     const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
@@ -5036,6 +5040,17 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     Button->SetResult(brCancel);
     Button->SetCenterGroup(true);
   }
+}
+
+intptr_t TPropertiesDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
+{
+  if (Msg == DN_DRAWDLGITEM && Param1 == GetItemIdx(MsgText) && !FFileName.IsEmpty())
+  {
+    MsgText->SetCaption(RightCutToLength(FFileName, nb::ToInt32(GetWidth() - 10)));
+    MsgText->SetRight(-6);
+    MsgText->SetFlag(DIF_CENTERTEXT, true);
+  }
+  return TFarDialog::DialogProc(Msg, Param1, Param2);
 }
 
 void TPropertiesDialog::Change()
@@ -5683,11 +5698,14 @@ protected:
   virtual void Change() override;
   void CustomCopyParam();
 
+  UnicodeString FormatPrompt();
+  intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2) override;
   void CopyParamListerClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   const UUID * GetDialogGuid() const override { return &CopyDialogGuid; }
 
 private:
+  TFarText * MsgText{nullptr};
   TFarEdit * DirectoryEdit{nullptr};
   TFarLister * CopyParamLister{nullptr};
   TFarCheckBox * NewerOnlyCheck{nullptr};
@@ -5700,6 +5718,7 @@ private:
   uint32_t FCopyParamAttrs{0};
   TGUICopyParamType FCopyParams;
   bool FToRemote{false};
+  bool FMove{false};
 };
 
 TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
@@ -5709,7 +5728,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   FFileList(AFileList),
   FOptions(Options),
   FCopyParamAttrs(CopyParamAttrs),
-  FToRemote(ToRemote)
+  FToRemote(ToRemote),
+  FMove(Move)
 {
   TFarDialog::InitDialog();
   DebugAssert(FFileList);
@@ -5720,24 +5740,8 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
 
   if (FLAGCLEAR(FOptions, coTempTransfer))
   {
-    UnicodeString Prompt;
-    if (FFileList->GetCount() > 1)
-    {
-      Prompt = FORMAT(GetMsg(Move ? NB_MOVE_FILES_PROMPT : NB_COPY_FILES_PROMPT), FFileList->GetCount());
-    }
-    else
-    {
-      const UnicodeString PromptMsg = GetMsg(Move ? NB_MOVE_FILE_PROMPT : NB_COPY_FILE_PROMPT);
-      const UnicodeString FileName = FFileList->GetString(0);
-      const UnicodeString OnlyFileName = ToRemote ?
-        base::ExtractFileName(FileName, false) :
-        base::UnixExtractFileName(FileName);
-      const UnicodeString MinimizedName = base::MinimizeName(OnlyFileName, DlgLength - PromptMsg.Length() - 6, false);
-      Prompt = FORMAT(PromptMsg, MinimizedName);
-    }
-
-    TFarText * Text = MakeOwnedObject<TFarText>(this);
-    Text->SetCaption(Prompt);
+    MsgText = MakeOwnedObject<TFarText>(this);
+    MsgText->SetCaption(FormatPrompt());
 
     DirectoryEdit = MakeOwnedObject<TFarEdit>(this);
     DirectoryEdit->SetHistory(ToRemote ? REMOTE_DIR_HISTORY : "Copy");
@@ -5801,6 +5805,36 @@ TCopyDialog::TCopyDialog(TCustomFarPlugin * AFarPlugin,
   Button->SetCaption(GetMsg(MSG_BUTTON_Cancel));
   Button->SetResult(brCancel);
   Button->SetCenterGroup(true);
+}
+
+UnicodeString TCopyDialog::FormatPrompt()
+{
+  UnicodeString Prompt;
+  if (FFileList->GetCount() > 1)
+  {
+    Prompt = FORMAT(GetMsg(FMove ? NB_MOVE_FILES_PROMPT : NB_COPY_FILES_PROMPT), FFileList->GetCount());
+  }
+  else
+  {      
+    const UnicodeString PromptMsg = GetMsg(FMove ? NB_MOVE_FILE_PROMPT : NB_COPY_FILE_PROMPT);
+    const UnicodeString FileName = FFileList->GetString(0);
+    const UnicodeString OnlyFileName = FToRemote ?
+      base::ExtractFileName(FileName, false) :
+      base::UnixExtractFileName(FileName);
+    const UnicodeString BareMsg = StripHotkey(FORMAT(PromptMsg, ""));
+    const UnicodeString MinimizedName = RightCutToLength(OnlyFileName, GetWidth() - BareMsg.Length() - 10);
+    Prompt = FORMAT(PromptMsg, MinimizedName);
+  }
+  return Prompt;
+}
+
+intptr_t TCopyDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
+{
+  if (Msg == DN_DRAWDLGITEM && Param1 == GetItemIdx(MsgText) && FFileList->GetCount() == 1)
+  {
+    MsgText->SetCaption(FormatPrompt());
+  }
+  return TFarDialog::DialogProc(Msg, Param1, Param2);
 }
 
 bool TCopyDialog::Execute(UnicodeString & TargetDirectory,
