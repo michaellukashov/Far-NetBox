@@ -306,6 +306,7 @@ bool TWinSCPPlugin::ConfigurationDialog()
   Dialog->SetSize(TPoint(67, 22));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTERFACE))));
+  Dialog->SetDialogGuid(&ConfigurationDialogGuid);
 
   TFarCheckBox * DisksMenuCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   DisksMenuCheck->SetCaption(GetMsg(NB_CONFIG_DISKS_MENU));
@@ -440,6 +441,7 @@ bool TWinSCPPlugin::PanelConfigurationDialog()
   Dialog->SetSize(TPoint(74, 7));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_PANEL))));
+  Dialog->SetDialogGuid(&PanelConfigurationDialogGuid);
 
   TFarCheckBox * AutoReadDirectoryAfterOpCheck = MakeOwnedObject<TFarCheckBox>(Dialog.get());
   AutoReadDirectoryAfterOpCheck->SetCaption(GetMsg(NB_CONFIG_AUTO_READ_DIRECTORY_AFTER_OP));
@@ -473,6 +475,7 @@ bool TWinSCPPlugin::LoggingConfigurationDialog()
   Dialog->SetSize(TPoint(65, 15));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_LOGGING))));
+  Dialog->SetDialogGuid(&LoggingConfigurationDialogGuid);
 
   TFarCheckBox * LoggingCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   LoggingCheck->SetCaption(GetMsg(NB_LOGGING_ENABLE));
@@ -584,6 +587,7 @@ bool TWinSCPPlugin::EnduranceConfigurationDialog()
   Dialog->SetSize(TPoint(76, 15));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_ENDURANCE))));
+  Dialog->SetDialogGuid(&EnduranceConfigurationDialogGuid);
 
   TFarSeparator * Separator = MakeOwnedObject<TFarSeparator>(Dialog);
   Separator->SetCaption(GetMsg(NB_TRANSFER_RESUME));
@@ -737,6 +741,7 @@ bool TWinSCPPlugin::QueueConfigurationDialog()
   Dialog->SetSize(TPoint(76, 11));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_BACKGROUND))));
+  Dialog->SetDialogGuid(&QueueConfigurationDialogGuid);
 
   TFarText * Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_TRANSFER_QUEUE_LIMIT));
@@ -805,6 +810,7 @@ public:
 
 protected:
   virtual void Change() override;
+  const UUID * GetDialogGuid() const override { return &TransferEditorDialogGuid; }
 
 private:
   void UpdateControls();
@@ -927,6 +933,7 @@ bool TWinSCPPlugin::ConfirmationsConfigurationDialog()
   Dialog->SetSize(TPoint(67, 10));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_CONFIRMATIONS))));
+  Dialog->SetDialogGuid(&ConfirmationsConfigurationDialogGuid);
 
   TFarCheckBox * ConfirmOverwritingCheck = MakeOwnedObject<TFarCheckBox>(Dialog);
   ConfirmOverwritingCheck->SetAllowGrayed(true);
@@ -983,6 +990,7 @@ bool TWinSCPPlugin::IntegrationConfigurationDialog()
   Dialog->SetSize(TPoint(65, 14));
   Dialog->SetCaption(FORMAT("%s - %s",
     GetMsg(NB_PLUGIN_TITLE), ::StripHotkey(GetMsg(NB_CONFIG_INTEGRATION))));
+  Dialog->SetDialogGuid(&IntegrationConfigurationDialogGuid);
 
   TFarText * Text = MakeOwnedObject<TFarText>(Dialog);
   Text->SetCaption(GetMsg(NB_INTEGRATION_PUTTY));
@@ -1040,6 +1048,9 @@ class TAboutDialog final : public TFarDialog
 {
 public:
   explicit TAboutDialog(TCustomFarPlugin * AFarPlugin);
+
+protected:
+  const UUID * GetDialogGuid() const override { return &AboutDialogGuid; }
 
 private:
   void UrlButtonClick(TFarButton * Sender, bool & Close);
@@ -1449,6 +1460,7 @@ bool TWinSCPFileSystem::BannerDialog(const UnicodeString & SessionName,
 
   Dialog->SetSize(TPoint(70, 21));
   Dialog->SetCaption(FORMAT(GetMsg(NB_BANNER_TITLE), SessionName));
+  Dialog->SetDialogGuid(&BannerDialogGuid);
 
   TFarLister * Lister = MakeOwnedObject<TFarLister>(Dialog);
   FarWrapText(Banner, Lister->GetItems(), Dialog->GetBorderBox()->GetWidth() - 4);
@@ -1527,6 +1539,7 @@ protected:
   virtual void Init() override;
   virtual bool CloseQuery() override;
   virtual void SelectTab(int32_t Tab) override;
+  const UUID * GetDialogGuid() const override { return &SessionDialogGuid; }
 
 private:
   void LoadPing(const TSessionData * SessionData);
@@ -5670,6 +5683,7 @@ protected:
 
   void CopyParamListerClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
+  const UUID * GetDialogGuid() const override { return &CopyDialogGuid; }
 
 private:
   TFarEdit * DirectoryEdit{nullptr};
@@ -5952,6 +5966,7 @@ bool TWinSCPPlugin::CopyParamDialog(const UnicodeString & Caption,
   TWinSCPDialog * Dialog = DialogPtr.get();
 
   Dialog->SetCaption(Caption);
+  Dialog->SetDialogGuid(&CopyParamDialogGuid);
 
   // temporary
   Dialog->SetSize(TPoint(78, 10));
@@ -5994,6 +6009,7 @@ public:
 
 protected:
   virtual void Change() override;
+  const UUID * GetDialogGuid() const override { return &LinkDialogGuid; }
 
 private:
   TFarEdit * FileNameEdit{nullptr};
@@ -6127,6 +6143,7 @@ protected:
   bool SpaceAvailableSupported() const;
   virtual bool Key(TFarDialogItem * Item, intptr_t KeyCode) override;
   void TFileSystemInfoDialog::SetFingerprintControl(const TFeedFileSystemDataEvent & AddItem, const TObject * AControl);
+  const UUID * GetDialogGuid() const override { return &FileSystemInfoDialogGuid; }
 
 private:
   TGetSpaceAvailableEvent FOnGetSpaceAvailable;
@@ -6838,6 +6855,7 @@ public:
 
 protected:
   virtual void Change() override;
+  const UUID * GetDialogGuid() const override { return &ApplyCommandDialogGuid; }
 
 private:
   int32_t FParams{0};
@@ -7013,6 +7031,7 @@ protected:
 
   void TransferSettingsButtonClick(TFarButton * Sender, bool & Close);
   void CopyParamListerClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
+  const UUID * GetDialogGuid() const override { return &FullSynchronizeDialogGuid; }
 
   int32_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
@@ -7439,6 +7458,7 @@ protected:
   void CheckAllButtonClick(TFarButton * Sender, bool & Close);
   void VideoModeButtonClick(TFarButton * Sender, bool & Close);
   void ListBoxClick(TFarDialogItem * Item, const MOUSE_EVENT_RECORD * Event);
+  const UUID * GetDialogGuid() const override { return &SynchronizeChecklistDialogGuid; }
 
 private:
   TFarText * Header{nullptr};
@@ -8056,6 +8076,7 @@ protected:
   TCopyParamType GetCopyParams() const;
   int32_t ActualCopyParamAttrs() const;
   void CustomCopyParam();
+  const UUID * GetDialogGuid() const override { return &SynchronizeDialogGuid; }
 
 private:
   bool FSynchronizing{false};
@@ -9049,6 +9070,7 @@ bool TWinSCPFileSystem::CreateDirectoryDialog(UnicodeString & Directory,
 
   Dialog->SetCaption(GetMsg(NB_CREATE_FOLDER_TITLE));
   Dialog->SetSize(TPoint(66, 15));
+  Dialog->SetDialogGuid(&CreateDirectoryDialogGuid);
 
   TFarText * Text = MakeOwnedObject<TFarText>(Dialog.get());
   Text->SetCaption(GetMsg(NB_CREATE_FOLDER_PROMPT));
