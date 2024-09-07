@@ -45,9 +45,6 @@ distribution.
 #include <nbglobals.h>
 
 /*
-   TODO: intern strings instead of allocation.
-*/
-/*
 	gcc:
         g++ -Wall -DTINYXML2_DEBUG tinyxml2.cpp xmltest.cpp -o gccxmltest.exe
 
@@ -66,7 +63,7 @@ distribution.
 #   pragma warning(disable: 4251)
 #endif
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 #   ifdef TINYXML2_EXPORT
 #       define TINYXML2_LIB __declspec(dllexport)
 #   elif defined(TINYXML2_IMPORT)
@@ -101,11 +98,11 @@ distribution.
 /* Versioning, past 1.0.14:
 	http://semver.org/
 */
-static const int TIXML2_MAJOR_VERSION = 9;
+static const int TIXML2_MAJOR_VERSION = 10;
 static const int TIXML2_MINOR_VERSION = 0;
 static const int TIXML2_PATCH_VERSION = 0;
 
-#define TINYXML2_MAJOR_VERSION 9
+#define TINYXML2_MAJOR_VERSION 10
 #define TINYXML2_MINOR_VERSION 0
 #define TINYXML2_PATCH_VERSION 0
 
@@ -204,7 +201,7 @@ private:
 	Has a small initial memory pool, so that low or no usage will not
 	cause a call to new/delete
 */
-template <class T, int INITIAL_SIZE>
+template <class T, size_t INITIAL_SIZE>
 class DynArray
 {
     CUSTOM_MEM_ALLOCATION_IMPL
@@ -233,9 +230,8 @@ public:
         ++_size;
     }
 
-    T* PushArr( int count ) {
-        TIXMLASSERT( count >= 0 );
-        TIXMLASSERT( _size <= INT_MAX - count );
+    T* PushArr( size_t count ) {
+        TIXMLASSERT( _size <= SIZE_MAX - count );
         EnsureCapacity( _size+count );
         T* ret = &_mem[_size];
         _size += count;
@@ -248,7 +244,7 @@ public:
         return _mem[_size];
     }
 
-    void PopArr( int count ) {
+    void PopArr( size_t count ) {
         TIXMLASSERT( _size >= count );
         _size -= count;
     }
@@ -257,13 +253,13 @@ public:
         return _size == 0;
     }
 
-    T& operator[](int i)				{
-        TIXMLASSERT( i>= 0 && i < _size );
+    T& operator[](size_t i) {
+        TIXMLASSERT( i < _size );
         return _mem[i];
     }
 
-    const T& operator[](int i) const	{
-        TIXMLASSERT( i>= 0 && i < _size );
+    const T& operator[](size_t i) const {
+        TIXMLASSERT( i < _size );
         return _mem[i];
     }
 
@@ -272,18 +268,18 @@ public:
         return _mem[ _size - 1];
     }
 
-    int Size() const					{
+    size_t Size() const {
         TIXMLASSERT( _size >= 0 );
         return _size;
     }
 
-    int Capacity() const				{
+    size_t Capacity() const {
         TIXMLASSERT( _allocated >= INITIAL_SIZE );
         return _allocated;
     }
 
-	void SwapRemove(int i) {
-		TIXMLASSERT(i >= 0 && i < _size);
+	void SwapRemove(size_t i) {
+		TIXMLASSERT(i < _size);
 		TIXMLASSERT(_size > 0);
 		_mem[i] = _mem[_size - 1];
 		--_size;
@@ -303,14 +299,14 @@ private:
     DynArray( const DynArray& ); // not supported
     void operator=( const DynArray& ); // not supported
 
-    void EnsureCapacity( int cap ) {
+    void EnsureCapacity( size_t cap ) {
         TIXMLASSERT( cap > 0 );
         if ( cap > _allocated ) {
-            TIXMLASSERT( cap <= INT_MAX / 2 );
-            const int newAllocated = cap * 2;
+            TIXMLASSERT( cap <= SIZE_MAX / 2 / sizeof(T));
+            const size_t newAllocated = cap * 2;
             T* newMem = nb::calloc<T*>(newAllocated, sizeof(T));
             TIXMLASSERT( newAllocated >= _size );
-            memcpy( newMem, _mem, sizeof(T)*_size );	// warning: not using constructors, only works for PODs
+            memcpy( newMem, _mem, sizeof(T) * _size );	// warning: not using constructors, only works for PODs
             if ( _mem != _pool ) {
                 nb_free(_mem);
             }
@@ -321,8 +317,8 @@ private:
 
     T*  _mem{nullptr};
     T   _pool[INITIAL_SIZE]{};
-    int _allocated{0};		// objects allocated
-    int _size{0};			// number objects in use
+    size_t _allocated{0};		// objects allocated
+    size_t _size{0};			// number objects in use
 };
 
 
@@ -336,7 +332,7 @@ public:
     MemPool() {}
     virtual ~MemPool() {}
 
-    virtual int ItemSize() const = 0;
+    virtual size_t ItemSize() const = 0;
     virtual void* Alloc() = 0;
     virtual void Free( void* ) = 0;
     virtual void SetTracked() = 0;
@@ -346,7 +342,7 @@ public:
 /*
 	Template child class to create pools of the correct type.
 */
-template< int ITEM_SIZE >
+template< size_t ITEM_SIZE >
 class MemPoolT : public MemPool
 {
 public:
@@ -368,21 +364,21 @@ public:
         _nUntracked = 0;
     }
 
-    virtual int ItemSize() const	{
+    virtual size_t ItemSize() const override {
         return ITEM_SIZE;
     }
-    int CurrentAllocs() const		{
+    size_t CurrentAllocs() const {
         return _currentAllocs;
     }
 
-    virtual void* Alloc() {
+    virtual void* Alloc() override {
         if ( !_root ) {
             // Need a new block.
             Block* block = new Block();
             _blockPtrs.Push( block );
 
             Item* blockItems = block->items;
-            for( int i = 0; i < ITEMS_PER_BLOCK - 1; ++i ) {
+            for( size_t i = 0; i < ITEMS_PER_BLOCK - 1; ++i ) {
                 blockItems[i].next = &(blockItems[i + 1]);
             }
             blockItems[ITEMS_PER_BLOCK - 1].next = 0;
@@ -401,7 +397,7 @@ public:
         return result;
     }
 
-    virtual void Free( void* mem ) {
+    virtual void Free( void* mem ) override {
         if ( !mem ) {
             return;
         }
@@ -419,11 +415,11 @@ public:
                 ITEM_SIZE, _nAllocs, _blockPtrs.Size() );
     }
 
-    void SetTracked() {
+    void SetTracked() override {
         --_nUntracked;
     }
 
-    int Untracked() const {
+    size_t Untracked() const {
         return _nUntracked;
     }
 
@@ -446,7 +442,7 @@ private:
 
     union Item {
         Item*   next;
-        char    itemData[ITEM_SIZE];
+        char    itemData[static_cast<size_t>(ITEM_SIZE)];
     };
     struct Block {
         CUSTOM_MEM_ALLOCATION_IMPL
@@ -455,10 +451,10 @@ private:
     DynArray< Block*, 10 > _blockPtrs;
     Item* _root;
 
-    int _currentAllocs;
-    int _nAllocs;
-    int _maxAllocs;
-    int _nUntracked;
+    size_t _currentAllocs;
+    size_t _nAllocs;
+    size_t _maxAllocs;
+    size_t _nUntracked;
 };
 
 
@@ -608,7 +604,7 @@ public:
         TIXMLASSERT( p );
         TIXMLASSERT( q );
         TIXMLASSERT( nChar >= 0 );
-        return strncmp( p, q, nChar ) == 0;
+        return strncmp( p, q, static_cast<size_t>(nChar) ) == 0;
     }
 
     inline static bool IsUTF8Continuation( const char p ) {
@@ -737,6 +733,12 @@ public:
     virtual const XMLUnknown*		ToUnknown() const		{
         return 0;
     }
+
+    // ChildElementCount was originally suggested by msteiger on the sourceforge page for TinyXML and modified by KB1SPH for TinyXML-2.
+
+    int ChildElementCount(const char *value) const;
+
+    int ChildElementCount() const;
 
     /** The meaning of 'value' changes for the specific type.
     	@verbatim
@@ -895,7 +897,7 @@ public:
 
 		If the 'target' is null, then the nodes will
 		be allocated in the current document. If 'target'
-        is specified, the memory will be allocated is the
+        is specified, the memory will be allocated in the
         specified XMLDocument.
 
 		NOTE: This is probably not the correct tool to
@@ -998,12 +1000,12 @@ class TINYXML2_LIB XMLText : public XMLNode
 {
     friend class XMLDocument;
 public:
-    virtual bool Accept( XMLVisitor* visitor ) const;
+    virtual bool Accept( XMLVisitor* visitor ) const override;
 
-    virtual XMLText* ToText()			{
+    virtual XMLText* ToText() override		{
         return this;
     }
-    virtual const XMLText* ToText() const	{
+    virtual const XMLText* ToText() const override {
         return this;
     }
 
@@ -1016,14 +1018,14 @@ public:
         return _isCData;
     }
 
-    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
-    virtual bool ShallowEqual( const XMLNode* compare ) const;
+    virtual XMLNode* ShallowClone( XMLDocument* document ) const override;
+    virtual bool ShallowEqual( const XMLNode* compare ) const override;
 
 protected:
     explicit XMLText( XMLDocument* doc )	: XMLNode( doc ), _isCData( false )	{}
     virtual ~XMLText()												{}
 
-    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr ) override;
 
 private:
     bool _isCData;
@@ -1038,23 +1040,23 @@ class TINYXML2_LIB XMLComment : public XMLNode
 {
     friend class XMLDocument;
 public:
-    virtual XMLComment*	ToComment()					{
+    virtual XMLComment*	ToComment() override		{
         return this;
     }
-    virtual const XMLComment* ToComment() const		{
+    virtual const XMLComment* ToComment() const override {
         return this;
     }
 
-    virtual bool Accept( XMLVisitor* visitor ) const;
+    virtual bool Accept( XMLVisitor* visitor ) const override;
 
-    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
-    virtual bool ShallowEqual( const XMLNode* compare ) const;
+    virtual XMLNode* ShallowClone( XMLDocument* document ) const override;
+    virtual bool ShallowEqual( const XMLNode* compare ) const override;
 
 protected:
     explicit XMLComment( XMLDocument* doc );
     virtual ~XMLComment();
 
-    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr);
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr) override;
 
 private:
     XMLComment( const XMLComment& );	// not supported
@@ -1077,23 +1079,23 @@ class TINYXML2_LIB XMLDeclaration : public XMLNode
 {
     friend class XMLDocument;
 public:
-    virtual XMLDeclaration*	ToDeclaration()					{
+    virtual XMLDeclaration*	ToDeclaration() override		{
         return this;
     }
-    virtual const XMLDeclaration* ToDeclaration() const		{
+    virtual const XMLDeclaration* ToDeclaration() const override {
         return this;
     }
 
-    virtual bool Accept( XMLVisitor* visitor ) const;
+    virtual bool Accept( XMLVisitor* visitor ) const override;
 
-    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
-    virtual bool ShallowEqual( const XMLNode* compare ) const;
+    virtual XMLNode* ShallowClone( XMLDocument* document ) const override;
+    virtual bool ShallowEqual( const XMLNode* compare ) const override;
 
 protected:
     explicit XMLDeclaration( XMLDocument* doc );
     virtual ~XMLDeclaration();
 
-    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr ) override;
 
 private:
     XMLDeclaration( const XMLDeclaration& );	// not supported
@@ -1112,23 +1114,23 @@ class TINYXML2_LIB XMLUnknown : public XMLNode
 {
     friend class XMLDocument;
 public:
-    virtual XMLUnknown*	ToUnknown()					{
+    virtual XMLUnknown*	ToUnknown() override		{
         return this;
     }
-    virtual const XMLUnknown* ToUnknown() const		{
+    virtual const XMLUnknown* ToUnknown() const override {
         return this;
     }
 
-    virtual bool Accept( XMLVisitor* visitor ) const;
+    virtual bool Accept( XMLVisitor* visitor ) const override;
 
-    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
-    virtual bool ShallowEqual( const XMLNode* compare ) const;
+    virtual XMLNode* ShallowClone( XMLDocument* document ) const override;
+    virtual bool ShallowEqual( const XMLNode* compare ) const override;
 
 protected:
     explicit XMLUnknown( XMLDocument* doc );
     virtual ~XMLUnknown();
 
-    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr ) override;
 
 private:
     XMLUnknown( const XMLUnknown& );	// not supported
@@ -1281,13 +1283,13 @@ public:
         SetValue( str, staticMem );
     }
 
-    virtual XMLElement* ToElement()				{
+    virtual XMLElement* ToElement() override	{
         return this;
     }
-    virtual const XMLElement* ToElement() const {
+    virtual const XMLElement* ToElement() const override {
         return this;
     }
-    virtual bool Accept( XMLVisitor* visitor ) const;
+    virtual bool Accept( XMLVisitor* visitor ) const override;
 
     /** Given an attribute name, Attribute() returns the value
     	for the attribute of that name, or null if none
@@ -1683,11 +1685,11 @@ public:
     ElementClosingType ClosingType() const {
         return _closingType;
     }
-    virtual XMLNode* ShallowClone( XMLDocument* document ) const;
-    virtual bool ShallowEqual( const XMLNode* compare ) const;
+    virtual XMLNode* ShallowClone( XMLDocument* document ) const override;
+    virtual bool ShallowEqual( const XMLNode* compare ) const override;
 
 protected:
-    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr );
+    char* ParseDeep( char* p, StrPair* parentEndTag, int* curLineNumPtr ) override;
 
 private:
     XMLElement( XMLDocument* doc );
@@ -1711,7 +1713,8 @@ private:
 
 enum Whitespace {
     PRESERVE_WHITESPACE,
-    COLLAPSE_WHITESPACE
+    COLLAPSE_WHITESPACE,
+    PEDANTIC_WHITESPACE
 };
 
 
@@ -1735,11 +1738,11 @@ public:
     XMLDocument( bool processEntities = true, Whitespace whitespaceMode = PRESERVE_WHITESPACE );
     ~XMLDocument();
 
-    virtual XMLDocument* ToDocument()				{
+    virtual XMLDocument* ToDocument() override		{
         TIXMLASSERT( this == _document );
         return this;
     }
-    virtual const XMLDocument* ToDocument() const	{
+    virtual const XMLDocument* ToDocument() const override {
         TIXMLASSERT( this == _document );
         return this;
     }
@@ -1836,7 +1839,7 @@ public:
     	@endverbatim
     */
     void Print( XMLPrinter* streamer=0 ) const;
-    virtual bool Accept( XMLVisitor* visitor ) const;
+    virtual bool Accept( XMLVisitor* visitor ) const override;
 
     /**
     	Create a new Element associated with
@@ -1922,15 +1925,15 @@ public:
 	void DeepCopy(XMLDocument* target) const;
 
 	// internal
-    char* Identify( char* p, XMLNode** node );
+    char* Identify( char* p, XMLNode** node, bool first );
 
 	// internal
 	void MarkInUse(const XMLNode* const);
 
-    virtual XMLNode* ShallowClone( XMLDocument* /*document*/ ) const	{
+    virtual XMLNode* ShallowClone( XMLDocument* /*document*/ ) const override {
         return 0;
     }
-    virtual bool ShallowEqual( const XMLNode* /*compare*/ ) const	{
+    virtual bool ShallowEqual( const XMLNode* /*compare*/ ) const override {
         return false;
     }
 
@@ -1984,11 +1987,11 @@ private:
 	void PushDepth();
 	void PopDepth();
 
-    template<class NodeType, int PoolElementSize>
+    template<class NodeType, size_t PoolElementSize>
     NodeType* CreateUnlinkedNode( MemPoolT<PoolElementSize>& pool );
 };
 
-template<class NodeType, int PoolElementSize>
+template<class NodeType, size_t PoolElementSize>
 inline NodeType* XMLDocument::CreateUnlinkedNode( MemPoolT<PoolElementSize>& pool )
 {
     TIXMLASSERT( sizeof( NodeType ) == PoolElementSize );
@@ -2296,18 +2299,18 @@ public:
     void PushDeclaration( const char* value );
     void PushUnknown( const char* value );
 
-    virtual bool VisitEnter( const XMLDocument& /*doc*/ );
-    virtual bool VisitExit( const XMLDocument& /*doc*/ )			{
+    virtual bool VisitEnter( const XMLDocument& /*doc*/ ) override;
+    virtual bool VisitExit( const XMLDocument& /*doc*/ ) override	{
         return true;
     }
 
-    virtual bool VisitEnter( const XMLElement& element, const XMLAttribute* attribute );
-    virtual bool VisitExit( const XMLElement& element );
+    virtual bool VisitEnter( const XMLElement& element, const XMLAttribute* attribute ) override;
+    virtual bool VisitExit( const XMLElement& element ) override;
 
-    virtual bool Visit( const XMLText& text );
-    virtual bool Visit( const XMLComment& comment );
-    virtual bool Visit( const XMLDeclaration& declaration );
-    virtual bool Visit( const XMLUnknown& unknown );
+    virtual bool Visit( const XMLText& text ) override;
+    virtual bool Visit( const XMLComment& comment ) override;
+    virtual bool Visit( const XMLDeclaration& declaration ) override;
+    virtual bool Visit( const XMLUnknown& unknown ) override;
 
     /**
     	If in print to memory mode, return a pointer to
@@ -2321,7 +2324,7 @@ public:
     	of the XML file in memory. (Note the size returned
     	includes the terminating null.)
     */
-    int CStrSize() const {
+    size_t CStrSize() const {
         return _buffer.Size();
     }
     /**
@@ -2381,7 +2384,7 @@ private:
 };
 
 
-}	// tinyxml2
+} // namespace tinyxml2
 
 #if defined(_MSC_VER)
 #   pragma warning(pop)

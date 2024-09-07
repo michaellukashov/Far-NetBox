@@ -12,13 +12,13 @@ FILETYPE 0x2
         {
             VALUE "CompanyName", "Mikhail Lukashov\0"
             VALUE "FileDescription", "NetBox: SFTP/FTP/FTPS/SCP/WebDAV/S3 client for Far Manager 3.0\0"
-            VALUE "FileVersion", "24.6.1.604\0"
+            VALUE "FileVersion", "24.9.0.604\0"
             VALUE "InternalName", "FarNetBox\0"
             VALUE "LegalCopyright", "(c) 2011, 2024 Mikhail Lukashov\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "NetBox.dll\0"
             VALUE "ProductName", "NetBox\0"
-            VALUE "ProductVersion", "24.6.1.604\0"
+            VALUE "ProductVersion", "24.9.0.604\0"
             VALUE "ReleaseType", "beta\0"
             VALUE "WWW", "https://github.com/michaellukashov/Far-NetBox\0"
         }

@@ -818,7 +818,8 @@ int CAsyncSslSocketLayer::InitSSLConnection(bool clientMode,
     return SSL_FAILURE_INITSSL;
   }
 
-  tools->SetupSsl(m_ssl);
+  m_Tools = tools;
+  m_Tools->SetupSsl(m_ssl);
 
   //Init SSL connection
   void *ssl_sessionid = nullptr;
@@ -1203,6 +1204,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
             str,
             SSL_state_string_long(s));
         pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+        pLayer->PrintLastErrorMsg();
         nb_free(buffer);
         if (!pLayer->m_bFailureSent)
         {
@@ -1850,14 +1852,26 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
   int err = ERR_get_error();
   while (err)
   {
-    char *buffer = nb::chcalloc(512);
-    const char *reason = ERR_reason_error_string(err);
-    ERR_error_string(err, buffer);
-    err = ERR_get_error();
     USES_CONVERSION;
+
+    int aerr = err;
+    err = ERR_get_error();
+
+    char *buffer = nb::chcalloc(512);
+    ERR_error_string(aerr, buffer);
     LogSocketMessageRaw(FZ_LOG_PROGRESS, A2T(buffer));
-    LogSocketMessageRaw(FZ_LOG_WARNING, A2T(reason));
     nb_free(buffer);
+
+    std::wstring CustomReason = m_Tools->CustomReason(aerr);
+    if (!CustomReason.empty())
+    {
+      LogSocketMessageRaw(FZ_LOG_WARNING, CustomReason.c_str());
+    }
+    else
+    {
+      const char * reason = ERR_reason_error_string(aerr);
+      LogSocketMessageRaw(FZ_LOG_WARNING, A2T(reason));
+    }
   }
 }
 
