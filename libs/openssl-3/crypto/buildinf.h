@@ -10,7 +10,7 @@
  * https://www.openssl.org/source/license.html
  */
 
-#define DATE "built on: Sat Jun 29 09:04:57 2024 UTC"
+#define DATE "built on: Sat Sep  7 00:23:36 2024 UTC"
 #if defined(_WIN64) || defined(OPENSSL_SYS_WIN64)
 #define PLATFORM "platform: VC-WIN64A"
 #endif

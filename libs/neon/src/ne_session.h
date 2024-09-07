@@ -38,7 +38,8 @@ typedef struct ne_session_s ne_session;
  * server. The host string must follow the definition of 'host' in RFC
  * 3986, which can be an IP-literal or registered (DNS) hostname. An
  * IPv6 literal address must be enclosed in square brackets (for
- * example "[::1]"). */
+ * example "[::1]"). The RFC 6874 syntax for IPv6 link-local literal
+ * addresses is also supported, for example "[fe80::1%25eth0]". */
 ne_session *ne_session_create(const char *scheme, const char *host,
                               unsigned int port);
 
@@ -107,6 +108,9 @@ typedef enum ne_session_flag_e {
                              * to improve interoperability with
                              * SharePoint */
 
+    NE_SESSFLAG_STRICT, /* disable this flag to parse HTTP/1.1
+                         * messages without strict requirements
+                         * introduced in RFC 7230 and later. */
     #ifdef WINSCP
     NE_SESSFLAG_LIBERAL_ESCAPING,
     SE_SESSFLAG_SNDBUF,

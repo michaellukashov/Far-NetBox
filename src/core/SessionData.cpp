@@ -6041,12 +6041,12 @@ TSessionData * TStoredSessionList::NewSession(
   TSessionData * DuplicateSession = rtti::dyn_cast_or_null<TSessionData>(FindByName(SessionName));
   if (!DuplicateSession)
   {
-    std::unique_ptr<TSessionData> DuplicateSession = std::make_unique<TSessionData>("");
+    DuplicateSession = new TSessionData(L"");
     DuplicateSession->Assign(Session);
     DuplicateSession->SetName(SessionName);
     // make sure, that new stored session is saved to registry
     DuplicateSession->SetModified(true);
-    Add(DuplicateSession.release());
+    Add(DuplicateSession);
   }
   else
   {
@@ -6573,6 +6573,25 @@ int32_t DefaultPort(TFSProtocol AFSProtocol, TFtps Ftps)
       break;
   }
   return Result;
+}
+
+UnicodeString GetTlsVersionName(TTlsVersion TlsVersion)
+{
+  switch (TlsVersion)
+  {
+    default:
+      DebugFail();
+    case ssl2:
+    case ssl3:
+    case tls10:
+      return "TLSv1.0";
+    case tls11:
+      return "TLSv1.1";
+    case tls12:
+      return "TLSv1.2";
+    case tls13:
+      return "TLSv1.3";
+  }
 }
 
 bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx)

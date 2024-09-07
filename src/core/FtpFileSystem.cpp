@@ -17,10 +17,12 @@
 #include "HelpCore.h"
 #include "WinSCPSecurity.h"
 #include "NeonIntf.h"
+#include "SessionInfo.h"
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
 #include <SessionData.h>
 #include <openssl/x509_vfy.h>
+#include <openssl/err.h>
 #include <limits>
 
 // #pragma package(smart_init)
@@ -69,7 +71,8 @@ protected:
   virtual bool GetFileModificationTimeInUtc(const wchar_t * FileName, struct tm & Time) override;
   virtual wchar_t * LastSysErrorMessage() const override;
   virtual std::wstring GetClientString() const override;
-  virtual void SetupSsl(ssl_st * Ssl);
+  virtual void SetupSsl(ssl_st * Ssl) override;
+  virtual std::wstring CustomReason(int Err) override;
 
 private:
   gsl::not_null<TFTPFileSystem *> FFileSystem;
@@ -175,7 +178,29 @@ std::wstring TFileZillaImpl::GetClientString() const
 
 void TFileZillaImpl::SetupSsl(ssl_st * Ssl)
 {
-  ::SetupSsl(Ssl, FFileSystem->FTerminal->SessionData->FMinTlsVersion, FFileSystem->FTerminal->SessionData->FMaxTlsVersion);
+  TSessionData * SessionData = FFileSystem->FTerminal->SessionData;
+  ::SetupSsl(Ssl, SessionData->FMinTlsVersion, SessionData->FMaxTlsVersion);
+}
+
+std::wstring TFileZillaImpl::CustomReason(int Err)
+{
+  std::wstring Result;
+  int Lib = ERR_GET_LIB(Err);
+  int Reason = ERR_GET_REASON(Err);
+  if ((Lib == ERR_LIB_SSL) &&
+      ((Reason == SSL_R_UNSUPPORTED_PROTOCOL) ||
+       (Reason == SSL_R_TLSV1_ALERT_PROTOCOL_VERSION) ||
+       (Reason == SSL_R_WRONG_SSL_VERSION) ||
+       (Reason == SSL_R_WRONG_VERSION_NUMBER)))
+  {
+    TSessionData * SessionData = FFileSystem->FTerminal->SessionData;
+    Result =
+      FMTLOAD(
+        TLS_UNSUPPORTED, (
+          GetTlsVersionName(SessionData->MinTlsVersion), GetTlsVersionName(SessionData->MaxTlsVersion),
+          GetTlsVersionName(tlsMin), GetTlsVersionName(tlsMax))).c_str();
+  }
+  return Result;
 }
 
 struct message_t
@@ -509,6 +534,7 @@ void TFTPFileSystem::Open()
   }
 
   FPasswordFailed = false;
+  FAnyPassword = !Password.IsEmpty();
   FStoredPasswordTried = false;
   bool PromptedForCredentials = false;
 
@@ -558,7 +584,12 @@ void TFTPFileSystem::Open()
       if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), "",
             LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
-        FTerminal->FatalError(nullptr, LoadStr(CREDENTIALS_NOT_SPECIFIED));
+        int32_t Message = FAnyPassword ? AUTHENTICATION_FAILED : CREDENTIALS_NOT_SPECIFIED;
+        FTerminal->FatalError(NULL, LoadStr(Message));
+      }
+      else if (!Password.IsEmpty())
+      {
+        FAnyPassword = true;
       }
     }
 
@@ -3678,7 +3709,9 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
     {
       FStoredPasswordTried = true;
       // 530 = "Not logged in."
-      if (FLastCode == 530)
+      // 501 = "Login incorrect." (ProFTPD empty password code)
+      if ((FLastCode == 530) ||
+          (FLastCode == 501))
       {
         FPasswordFailed = true;
       }
@@ -4492,6 +4525,10 @@ bool TFTPFileSystem::HandleAsyncRequestNeedPass(
         LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         RequestResult = TFileZillaIntf::REPLY_OK;
+        if (!Password.IsEmpty())
+        {
+          FAnyPassword = true;
+        }
       }
       else
       {

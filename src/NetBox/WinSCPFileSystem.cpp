@@ -192,6 +192,8 @@ void TRemoteFilePanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
   KeyBarTitles->ClearKeyBarTitle(fsShift, 1, 3); // archive commands
   KeyBarTitles->SetKeyBarTitle(fsShift, 5, FarPlugin->GetMsg(NB_COPY_TO_FILE_KEYBAR));
   KeyBarTitles->SetKeyBarTitle(fsShift, 6, FarPlugin->GetMsg(NB_MOVE_TO_FILE_KEYBAR));
+  KeyBarTitles->SetKeyBarTitle(fsAltShift, 11,
+    FarPlugin->GetMsg(NB_EDIT_HISTORY_KEYBAR));
   KeyBarTitles->SetKeyBarTitle(fsAltShift, 12,
     FarPlugin->GetMsg(NB_OPEN_DIRECTORY_KEYBAR));
   KeyBarTitles->SetKeyBarTitle(fsAltShift, 6,
@@ -1063,6 +1065,12 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       Handled = true;
     }
 
+    if ((Key == VK_F11) && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
+    {
+      EditHistory();
+      Handled = true;
+    }
+  
     if ((Key == VK_F12) && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
     {
       OpenDirectory(false);

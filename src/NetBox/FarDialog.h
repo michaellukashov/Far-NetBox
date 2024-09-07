@@ -98,6 +98,7 @@ public:
   void UnlockChanges();
   FarColor GetSystemColor(PaletteColors colorId);
   bool HotKey(uint32_t Key, uint32_t ControlState) const;
+  void SetDialogGuid(const UUID * Guid) { FGuid = Guid; };
 
 protected:
   TCustomFarPlugin * GetFarPlugin() const { return FFarPlugin; }
@@ -107,7 +108,7 @@ protected:
   void Add(TFarDialogItem * DialogItem);
   void Add(TFarDialogContainer * Container);
   intptr_t SendDlgMessage(intptr_t Msg, intptr_t Param1, void * Param2);
-  virtual const UUID * GetDialogGuid() const { return &DialogGuid; }
+  virtual const UUID * GetDialogGuid() const { return FGuid; }
   virtual intptr_t DialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   virtual intptr_t FailDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
   intptr_t DefaultDialogProc(intptr_t Msg, intptr_t Param1, void * Param2);
@@ -158,6 +159,7 @@ private:
   bool FNeedsSynchronize{false};
   HANDLE FSynchronizeObjects[2]{};
   TThreadMethod FSynchronizeMethod;
+  const UUID * FGuid{&DialogGuid};
 };
 
 class TFarDialogContainer : public TObject
