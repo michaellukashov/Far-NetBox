@@ -1628,10 +1628,6 @@ private:
   TFarRadioButton * DSTModeKeepCheck{nullptr};
   TFarRadioButton * DSTModeUnixCheck{nullptr};
   TFarCheckBox * CompressionCheck{nullptr};
-  TFarRadioButton * SshProt1onlyButton{nullptr};
-  TFarRadioButton * SshProt1Button{nullptr};
-  TFarRadioButton * SshProt2Button{nullptr};
-  TFarRadioButton * SshProt2onlyButton{nullptr};
   TFarListBox * CipherListBox{nullptr};
   TFarButton * CipherUpButton{nullptr};
   TFarButton * CipherDownButton{nullptr};
@@ -1675,16 +1671,12 @@ private:
   TFarEdit * TunnelPasswordEdit{nullptr};
   TFarEdit * TunnelPrivateKeyEdit{nullptr};
   TFarComboBox * TunnelLocalPortNumberEdit{nullptr};
-//  TFarComboBox * BugIgnore1Combo{nullptr};
-//  TFarComboBox * BugPlainPW1Combo{nullptr};
-//  TFarComboBox * BugRSA1Combo{nullptr};
   TFarComboBox * BugHMAC2Combo{nullptr};
   TFarComboBox * BugDeriveKey2Combo{nullptr};
   TFarComboBox * BugRSAPad2Combo{nullptr};
   TFarComboBox * BugPKSessID2Combo{nullptr};
   TFarComboBox * BugRekey2Combo{nullptr};
   TFarCheckBox * SshNoUserAuthCheck{nullptr};
-  TFarCheckBox * AuthTISCheck{nullptr};
   TFarCheckBox * TryAgentCheck{nullptr};
   TFarCheckBox * AuthKICheck{nullptr};
   TFarCheckBox * AuthKIPasswordCheck{nullptr};
@@ -2245,7 +2237,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTPMinPacketSizeEdit->SetFixed(true);
   SFTPMinPacketSizeEdit->SetMask(L"99999999");
   SFTPMinPacketSizeEdit->SetWidth(8);
-  // SFTPMinPacketSizeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2257,7 +2248,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   SFTPMaxPacketSizeEdit->SetFixed(true);
   SFTPMaxPacketSizeEdit->SetMask(L"99999999");
   SFTPMaxPacketSizeEdit->SetWidth(8);
-  // SFTPMaxPacketSizeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   // FTP tab
 
@@ -2642,23 +2632,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   CompressionCheck = MakeOwnedObject<TFarCheckBox>(this);
   CompressionCheck->SetCaption(GetMsg(NB_LOGIN_COMPRESSION));
 
-  Separator = MakeOwnedObject<TFarSeparator>(this);
-  Separator->SetCaption(GetMsg(NB_LOGIN_SSH_PROTOCOL_GROUP));
-
-  SshProt1onlyButton = MakeOwnedObject<TFarRadioButton>(this);
-  SshProt1onlyButton->SetCaption(GetMsg(NB_LOGIN_SSH1_ONLY));
-
-  SetNextItemPosition(ipRight);
-
-  SshProt1Button = MakeOwnedObject<TFarRadioButton>(this);
-  SshProt1Button->SetCaption(GetMsg(NB_LOGIN_SSH1));
-
-  SshProt2Button = MakeOwnedObject<TFarRadioButton>(this);
-  SshProt2Button->SetCaption(GetMsg(NB_LOGIN_SSH2));
-
-  SshProt2onlyButton = MakeOwnedObject<TFarRadioButton>(this);
-  SshProt2onlyButton->SetCaption(GetMsg(NB_LOGIN_SSH2_ONLY));
-
   SetNextItemPosition(ipNewLine);
 
   Separator = MakeOwnedObject<TFarSeparator>(this);
@@ -2694,7 +2667,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     Ssh2DESCheck = MakeOwnedObject<TFarCheckBox>(this);
     Ssh2DESCheck->Move(0, Pos - Ssh2DESCheck->GetTop() + 1);
     Ssh2DESCheck->SetCaption(GetMsg(NB_LOGIN_SSH2DES));
-    Ssh2DESCheck->SetEnabledDependencyNegative(SshProt1onlyButton);
   }
   else
   {
@@ -2710,7 +2682,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_KEX_REKEY_TIME));
-  Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipRight);
 
@@ -2718,19 +2689,16 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   RekeyTimeEdit->SetFixed(true);
   RekeyTimeEdit->SetMask(L"####");
   RekeyTimeEdit->SetWidth(6);
-  RekeyTimeEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipNewLine);
 
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_KEX_REKEY_DATA));
-  Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipRight);
 
   RekeyDataEdit = MakeOwnedObject<TFarEdit>(this);
   RekeyDataEdit->SetWidth(6);
-  RekeyDataEdit->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipNewLine);
 
@@ -2739,12 +2707,10 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Text = MakeOwnedObject<TFarText>(this);
   Text->SetCaption(GetMsg(NB_LOGIN_KEX_LIST));
-  Text->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   KexListBox = MakeOwnedObject<TFarListBox>(this);
   KexListBox->SetRight(KexListBox->GetRight() - 15);
   KexListBox->SetHeight(1 + KEX_COUNT + 1);
-  KexListBox->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   SetNextItemPosition(ipRight);
 
@@ -2778,9 +2744,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   TryAgentCheck = MakeOwnedObject<TFarCheckBox>(this);
   TryAgentCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_TRY_AGENT));
-
-  AuthTISCheck = MakeOwnedObject<TFarCheckBox>(this);
-  AuthTISCheck->SetCaption(GetMsg(NB_LOGIN_AUTH_TIS));
 
   AuthKICheck = MakeOwnedObject<TFarCheckBox>(this);
   AuthKICheck->SetCaption(GetMsg(NB_LOGIN_AUTH_KI));
@@ -2817,15 +2780,6 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
   Separator->SetCaption(GetMsg(NB_LOGIN_BUGS_GROUP));
 
   BUGS();
-
-//  BugIgnore1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
-  //BugPlainPW1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
-  //BugRSA1Combo->SetEnabledDependencyNegative(SshProt2onlyButton);
-  BugHMAC2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
-  BugDeriveKey2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
-  BugRSAPad2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
-  BugPKSessID2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
-  BugRekey2Combo->SetEnabledDependencyNegative(SshProt1onlyButton);
 
   // WebDAV tab
 
@@ -3114,19 +3068,14 @@ void TSessionDialog::UpdateControls()
 
   // Authentication tab
   AuthenticationTab->SetEnabled(lSshProtocol);
-  SshNoUserAuthCheck->SetEnabled(!SshProt1onlyButton->GetChecked());
-  const bool Authentication = !SshNoUserAuthCheck->GetEnabled() || !SshNoUserAuthCheck->GetChecked();
+  const bool Authentication = !SshNoUserAuthCheck->GetChecked();
   TryAgentCheck->SetEnabled(Authentication);
-  AuthTISCheck->SetEnabled(Authentication && !SshProt2onlyButton->GetChecked());
-  AuthKICheck->SetEnabled(Authentication && !SshProt1onlyButton->GetChecked());
+  AuthKICheck->SetEnabled(Authentication);
   AuthKIPasswordCheck->SetEnabled(
     Authentication &&
-    ((AuthTISCheck->GetEnabled() && AuthTISCheck->GetChecked()) ||
-      (AuthKICheck->GetEnabled() && AuthKICheck->GetChecked())));
-  AuthGSSAPICheck3->SetEnabled(
-    Authentication && !SshProt1onlyButton->GetChecked());
-  GSSAPIFwdTGTCheck->SetEnabled(
-    Authentication && !SshProt1onlyButton->GetChecked());
+    AuthKICheck->GetEnabled() && AuthKICheck->GetChecked());
+  AuthGSSAPICheck3->SetEnabled(Authentication);
+  GSSAPIFwdTGTCheck->SetEnabled(Authentication);
 
   // Directories tab
   CacheDirectoryChangesCheck->SetEnabled(
@@ -3147,7 +3096,7 @@ void TSessionDialog::UpdateControls()
     (OverwrittenToRecycleBinCheck->GetIsEnabled() && OverwrittenToRecycleBinCheck->GetChecked()));
 
   // Kex tab
-  KexTab->SetEnabled(lSshProtocol && !SshProt1onlyButton->GetChecked() &&
+  KexTab->SetEnabled(lSshProtocol &&
     (BugRekey2Combo->GetItemIndex() != 2));
   KexUpButton->SetEnabled((KexListBox->GetItems()->GetLastPosChange() > 0));
   KexDownButton->SetEnabled(
@@ -3461,22 +3410,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     Ssh2DESCheck->SetChecked(SessionData->GetSsh2DES());
   }
 
-  /*switch (SessionData->GetSshProt())
-  {
-  case ssh1only:
-    SshProt1onlyButton->SetChecked(true);
-    break;
-  case ssh1deprecated:
-    SshProt1Button->SetChecked(true);
-    break;
-  case ssh2deprecated:
-    SshProt2Button->SetChecked(true);
-    break;
-  case ssh2only:
-    SshProt2onlyButton->SetChecked(true);
-    break;
-  }*/
-
   CipherListBox->GetItems()->BeginUpdate();
   {
     try__finally
@@ -3522,7 +3455,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   // Authentication tab
   SshNoUserAuthCheck->SetChecked(SessionData->GetSshNoUserAuth());
   TryAgentCheck->SetChecked(SessionData->GetTryAgent());
-  // AuthTISCheck->SetChecked(SessionData->GetAuthTIS());
   AuthKICheck->SetChecked(SessionData->GetAuthKI());
   AuthKIPasswordCheck->SetChecked(SessionData->GetAuthKIPassword());
   AgentFwdCheck->SetChecked(SessionData->GetAgentFwd());
@@ -3816,23 +3748,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       SessionData->SetSsh2DES(Ssh2DESCheck->GetChecked());
     }
 
-    /*if (SshProt1onlyButton->GetChecked())
-    {
-      SessionData->SetSshProt(ssh1only);
-    }
-    else if (SshProt1Button->GetChecked())
-    {
-      SessionData->SetSshProt(ssh1deprecated);
-    }
-    else if (SshProt2Button->GetChecked())
-    {
-      SessionData->SetSshProt(ssh2deprecated);
-    }
-    else
-    {
-      SessionData->SetSshProt(ssh2only);
-    }*/
-
     for (int32_t Index5 = 0; Index5 < CIPHER_COUNT; ++Index5)
     {
       TObject * Obj = cast_to<TObject>(CipherListBox->GetItems()->Get(Index5));
@@ -3852,7 +3767,6 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     // Authentication tab
     SessionData->SetSshNoUserAuth(SshNoUserAuthCheck->GetChecked());
     SessionData->SetTryAgent(TryAgentCheck->GetChecked());
-    // SessionData->SetAuthTIS(AuthTISCheck->GetChecked());
     SessionData->SetAuthKI(AuthKICheck->GetChecked());
     SessionData->SetAuthKIPassword(AuthKIPasswordCheck->GetChecked());
     SessionData->SetAgentFwd(AgentFwdCheck->GetChecked());
