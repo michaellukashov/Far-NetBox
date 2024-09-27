@@ -4922,7 +4922,6 @@ TPropertiesDialog::TPropertiesDialog(TCustomFarPlugin * AFarPlugin,
     }
     MsgText->SetRight(-6);
     MsgText->SetFlag(DIF_CENTERTEXT, true);
-    Text->SetFlag(DIF_WORDWRAP, true);
     const TRemoteFile * File = AFileList->GetAs<TRemoteFile>(0);
     if (!File->GetLinkTo().IsEmpty())
     {
