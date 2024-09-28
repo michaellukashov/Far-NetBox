@@ -912,6 +912,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
       if (FTerminal->GetActive())
       {
         UpdatePanel();
+        RedrawPanel();
       }
       else
       {
