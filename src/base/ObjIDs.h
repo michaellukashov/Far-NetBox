@@ -146,5 +146,11 @@ extern const TObjectClassId OBJECT_CLASS_TRightsContainer;
 extern const TObjectClassId OBJECT_CLASS_TCopyParamsContainer;
 extern const TObjectClassId OBJECT_CLASS_TLabelList;
 
+extern const TObjectClassId OBJECT_CLASS_TTerminalItem;
+extern const TObjectClassId OBJECT_CLASS_TBackgroundTerminal;
+extern const TObjectClassId OBJECT_CLASS_TDialogIdleThread;
+extern const TObjectClassId OBJECT_CLASS_TConsoleTitleParam;
+extern const TObjectClassId OBJECT_CLASS_TKeepAliveThread;
+
 } // extern "C"
 
