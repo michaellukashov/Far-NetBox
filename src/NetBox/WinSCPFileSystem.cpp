@@ -239,7 +239,6 @@ void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString
 
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
-const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
 class TKeepAliveThread final : public TSimpleThread
 {
 public:

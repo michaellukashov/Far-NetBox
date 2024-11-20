@@ -968,7 +968,7 @@ struct depth
 template<int N>
 struct mark
 {
-  friend constexpr int adl_flag(flag<N>) { return N; }
+  friend constexpr int adl_flag(flag<N>) noexcept { return N; }
   static constexpr int value = N;
 };
 

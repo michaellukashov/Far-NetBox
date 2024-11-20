@@ -1575,7 +1575,6 @@ void TCustomFarPlugin::SaveTerminalScreen()
   FarControl(FCTL_SETUSERSCREEN, 0, nullptr);
 }
 
-const TObjectClassId OBJECT_CLASS_TConsoleTitleParam = static_cast<TObjectClassId>(nb::counter_id());
 class TConsoleTitleParam : public TObject
 {
 public:

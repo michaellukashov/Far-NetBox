@@ -151,4 +151,10 @@ const TObjectClassId OBJECT_CLASS_TRemoteFilePanelItem = static_cast<TObjectClas
 const TObjectClassId OBJECT_CLASS_TWinSCPPlugin = static_cast<TObjectClassId>(nb::counter_id());
 const TObjectClassId OBJECT_CLASS_TFarMessageData = static_cast<TObjectClassId>(nb::counter_id());
 
+const TObjectClassId OBJECT_CLASS_TTerminalItem = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TBackgroundTerminal = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TConsoleTitleParam = static_cast<TObjectClassId>(nb::counter_id());
+const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
+
 } // extern "C"

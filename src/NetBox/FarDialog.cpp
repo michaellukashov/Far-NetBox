@@ -15,7 +15,6 @@ inline TRect Rect(int32_t Left, int32_t Top, int32_t Right, int32_t Bottom)
   return TRect(Left, Top, Right, Bottom);
 }
 
-constexpr const TObjectClassId OBJECT_CLASS_TDialogIdleThread = static_cast<TObjectClassId>(nb::counter_id());
 class TFarDialogIdleThread final : public TSimpleThread
 {
 public:
