@@ -234,6 +234,10 @@ HANDLE WINAPI AnalyseW(const struct AnalyseInfo * Info)
   if (!Info || (Info->StructSize < sizeof(AnalyseInfo)))
     return nullptr;
   const TFarPluginGuard Guard;
+  if (Info->OpMode & (OPM_FIND | OPM_COMMANDS))
+  {
+    return nullptr;
+  }
   if (!Info->FileName)
   {
     return nullptr;

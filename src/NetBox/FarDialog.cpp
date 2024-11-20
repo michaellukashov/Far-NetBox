@@ -772,7 +772,7 @@ int32_t TFarDialog::ShowModal()
         GetItemCount(), 0, GetFlags(),
         TFarDialog::DialogProcGeneral,
         nb::ToPtr(this));
-      BResult = Info.DialogRun(Handle);
+      BResult = CheckHandle(Handle) ? Info.DialogRun(Handle) : -1;
     }
 
     if (BResult >= 0)
