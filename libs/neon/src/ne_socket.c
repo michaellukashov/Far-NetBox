@@ -56,9 +56,6 @@
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
 #endif
-#ifdef HAVE_NET_IF_H
-#include <net/if.h>
-#endif
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -338,11 +335,6 @@ int ne_sock_init(void)
     if (err != 0) {
 	return init_state = -1;
     }
-#ifdef HAVE_SSPI
-    if (ne_sspi_init() < 0) {
-        return init_state = -1;
-    }
-#endif
 #endif
 
 #ifdef NE_HAVE_SOCKS
@@ -364,6 +356,16 @@ int ne_sock_init(void)
 #endif
 
     init_state = 1;
+
+#ifdef WIN32    
+#ifdef HAVE_SSPI
+    // This fails on Wine, and we do not want to abort
+    // whole Neon initialization because of that
+    if (ne_sspi_init() < 0) {
+        return -2;
+    }
+#endif
+#endif
     return 0;
 }
 
@@ -1259,40 +1261,6 @@ int ne_iaddr_reverse(const ne_inet_addr *ia, char *buf, size_t bufsiz)
     }
     return -1;
 #endif
-}
-
-int ne_iaddr_set_scope(ne_inet_addr *ia, const char *scope)
-{
-#ifdef HAVE_IF_NAMETOINDEX
-    unsigned int idx;
-
-    if (ia->ai_family != AF_INET6) return EINVAL;
-
-    idx = if_nametoindex(scope);
-    if (idx) {
-        struct sockaddr_in6 *in6 = SACAST(in6, ia->ai_addr);
-        in6->sin6_scope_id = idx;
-        return 0;
-    }
-    else
-        return errno;
-#else
-    return ENODEV;
-#endif
-}
-
-char *ne_iaddr_get_scope(const ne_inet_addr *ia)
-{
-#ifdef HAVE_IF_INDEXTONAME
-    struct sockaddr_in6 *in6 = SACAST(in6, ia->ai_addr);
-    char buf[IF_NAMESIZE];
-
-    if (ia->ai_family != AF_INET6) return NULL;
-
-    if (in6->sin6_scope_id && if_indextoname(in6->sin6_scope_id, buf) == buf)
-        return ne_strdup(buf);
-#endif
-    return NULL;
 }
 
 void ne_addr_destroy(ne_sock_addr *addr)

@@ -1,6 +1,6 @@
 /* 
    HTTP request/response handling
-   Copyright (C) 1999-2024, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -92,7 +92,6 @@ struct field {
 #define HH_HV_PROXY_CONNECTION  (0x1A)
 #define HH_HV_CONTENT_LENGTH    (0x13)
 #define HH_HV_TRANSFER_ENCODING (0x07)
-#define HH_HV_LOCATION          (0x05)
 
 struct ne_request_s {
     char *method, *target; /* method and request-target */
@@ -164,7 +163,6 @@ struct ne_request_s {
     struct interim_handler *interim_handler;
 
     /*** Miscellaneous ***/
-    ne_uri *target_uri;
     unsigned int method_is_head;
     unsigned int can_persist;
 
@@ -199,7 +197,6 @@ static int aborted(ne_request *req, const char *doing, ssize_t code)
 {
     ne_session *sess = req->session;
     NE_DEBUG_WINSCP_CONTEXT(sess);
-    // int ret = NE_ERROR;
     int ret = NE_SOCKET; // WINSCP
 
     NE_DEBUG(NE_DBG_HTTP, "Aborted request (%" NE_FMT_SSIZE_T "): %s\n",
@@ -569,49 +566,6 @@ ne_request *ne_request_create(ne_session *sess, const char *method,
     return req;
 }
 
-/* Reconstruct the request target URI following RFC 9112ẞ3.3. Returns
- * zero on success or non-zero on error. */
-static int get_request_target_uri(ne_request *req, ne_uri *uri)
-{
-    if (strcmp(req->target, "*") == 0
-        || strcmp(req->method, "CONNECT") == 0) {
-        /* asterisk-form or authority-form. Since neon only ever uses
-         * authority-form with a CONNECT to the origin server (which
-         * is the session host) there is no need to re-parse
-         * req->target to extract it. */
-        ne_fill_server_uri(req->session, uri);
-        uri->path = ne_strdup("");
-        return 0;
-    }
-    else if (req->target[0] == '/') {
-        /* origin-form. */
-        ne_fill_server_uri(req->session, uri);
-        uri->path = ne_strdup(req->target);
-        return 0;
-    }
-    else {
-        /* absolute-form */
-        return ne_uri_parse(req->target, uri);
-    }
-}
-
-const ne_uri *ne_get_request_target(ne_request *req)
-{
-    if (req->target_uri == NULL) {
-        ne_uri *uri = ne_calloc(sizeof *uri);
-
-        if (get_request_target_uri(req, uri) == 0) {
-            req->target_uri = uri;
-        }
-        else {
-            ne_uri_free(uri);
-            ne_free(uri);
-        }
-    }
-
-    return req->target_uri;
-}
-
 /* Set the request body length to 'length' */
 static void set_body_length(ne_request *req, ne_off_t length)
 {
@@ -803,48 +757,6 @@ static void free_response_headers(ne_request *req)
     }
 }
 
-ne_uri *ne_get_response_location(ne_request *req, const char *fragment)
-{
-    const char *location;
-    ne_uri dest, *ret = NULL;
-    const ne_uri *base;
-
-    location = get_response_header_hv(req, HH_HV_LOCATION, "location");
-    if (location == NULL)
-	return NULL;
-
-    memset(&dest, 0, sizeof dest);
-
-    /* Location is a URI-reference (RFC9110ẞ10.2.2) relative to the
-     * request target URI; determine each of these then resolve. */
-
-    /* Parse the Location header */
-    if (ne_uri_parse(location, &dest) || !dest.path) {
-        ne_set_error(req->session, _("Could not parse redirect "
-                                     "destination URL"));
-        goto fail;
-    }
-
-    if ((base = ne_get_request_target(req)) == NULL) {
-        ne_set_error(req->session, _("Could not parse request "
-                                     "target URI"));
-        goto fail;
-    }
-
-    ret = ne_malloc(sizeof *ret);
-    ne_uri_resolve(base, &dest, ret);
-
-    /* HTTP-specific fragment handling is a MUST in RFC9110ẞ10.2.2: */
-    if (fragment && !dest.fragment) {
-        ret->fragment = ne_strdup(fragment);
-    }
-
-fail:
-    ne_uri_free(&dest);
-
-    return ret;
-}
-
 void ne_add_response_body_reader(ne_request *req, ne_accept_response acpt,
 				 ne_block_reader rdr, void *userdata)
 {
@@ -876,10 +788,6 @@ void ne_request_destroy(ne_request *req)
 
     ne_free(req->target);
     ne_free(req->method);
-    if (req->target_uri) {
-        ne_uri_free(req->target_uri);
-        ne_free(req->target_uri);
-    }
 
     for (rdr = req->body_readers; rdr != NULL; rdr = next_rdr) {
 	next_rdr = rdr->next;
@@ -914,44 +822,6 @@ void ne_request_destroy(ne_request *req)
     ne_free(req);
 }
 
-/* Read an HTTP message line following RFC 9112ẞ2.2, returning <0 on
- * error, >= 0 for line length excluding trailing CRLF. Bare CR are
- * converted to spaces. */
-static ssize_t read_message_line(ne_socket *sock, char *const buf, size_t buflen)
-{
-    ssize_t len = ne_sock_readline(sock, buf, buflen);
-
-    if (len <= 0) {
-        return len;
-    }
-
-    NE_DEBUG(NE_DBG_HTTP, "req: Line: %.*s\n", (int)len-1, buf);
-
-    if (len == 1) {
-        /* bare LF => empty line. */
-        return 0;
-    }
-    else /* len > 1 */ {
-        char *p = buf + len - 1;
-
-        *p-- = '\0';
-        len -= 1;
-
-        /* NUL terminate at the CR */
-        if (*p == '\r') {
-            *p-- = '\0';
-            len -= 1;
-        }
-
-        /* Replace any bare CRs. */
-        while (p >= buf) {
-            if (*p == '\r') *p = ' ';
-            p--;
-        }
-    }
-
-    return len;
-}
 
 /* Reads a block of the response into BUFFER, which is of size
  * *BUFLEN.  Returns zero on success or non-zero on error.  On
@@ -974,45 +844,23 @@ static int read_response_block(ne_request *req, struct ne_response *resp,
          * chunk: "CHUNK CRLF 0 CRLF".  resp.chunk.remain contains the
          * number of bytes left to read in the current chunk. */
 	if (resp->body.chunk.remain == 0) {
-            unsigned long chunk_len;
-            char *ptr;
+	    unsigned long chunk_len;
+	    char *ptr;
 
-            /* Read chunk-size. */
-            readlen = ne_sock_readline(sock, req->respbuf, sizeof req->respbuf);
-            if (readlen < 0)
-                return aborted(req, _("Could not read chunk size"), readlen);
-            /* Minimum valid line is 0<CR><LF> */
-            if (readlen < 3 || req->respbuf[(size_t)readlen - 2] != '\r')
-                return aborted(req, _("Invalid chunk-size line"), 0);
-
-            /* chunk-size is followed by chunk-ext => *(BWS ";" ...)
-             * NUL-terminate here to make the sanity-check easier.*/
-            ptr = strchr(req->respbuf, ';');
-            if (ptr) {
-                /* Iterate backwards through any BWS, if present. */
-                while (ptr > req->respbuf
-                       && (ptr[-1] == ' ' || ptr[-1] == '\t'))
-                    ptr--;
-                *ptr = '\0';
-            }
-
-            /* Reject things strtoul would otherwise allow */
-            ptr = req->respbuf;
-            if (*ptr == '\0' || *ptr == '-' || *ptr == '+'
-                || (ptr[0] == '0' && ptr[1] == 'x')) {
-                return aborted(req, _("Could not parse chunk size"), 0);
-            }
-
-            /* Limit chunk size to <= UINT_MAX, for sanity; must have
-             * a following NUL due to chunk-ext handling above. */
-            errno = 0;
+            /* Read the chunk size line into a temporary buffer. */
+            SOCK_ERR(req,
+                     ne_sock_readline(sock, req->respbuf, sizeof req->respbuf),
+                     _("Could not read chunk size"));
+            NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "[chunk] < %s", req->respbuf);
             chunk_len = strtoul(req->respbuf, &ptr, 16);
-            if (errno || ptr == req->respbuf || (*ptr != '\0' && *ptr != '\r')
-                || chunk_len == ULONG_MAX || chunk_len > UINT_MAX) {
-                return aborted(req, _("Could not parse chunk size"), 0);
-            }
-            NE_DEBUG(NE_DBG_HTTP, "req: Chunk size: %lu\n", chunk_len);
-            resp->body.chunk.remain = chunk_len;
+	    /* limit chunk size to <= UINT_MAX, so it will probably
+	     * fit in a size_t. */
+	    if (ptr == req->respbuf || 
+		chunk_len == ULONG_MAX || chunk_len > UINT_MAX) {
+		return aborted(req, _("Could not parse chunk size"), 0);
+	    }
+	    NE_DEBUG(NE_DBG_WINSCP_HTTP_DETAIL, "Got chunk size: %lu\n", chunk_len);
+	    resp->body.chunk.remain = chunk_len;
 	}
 	willread = resp->body.chunk.remain > *buflen
             ? *buflen : resp->body.chunk.remain;
@@ -1213,9 +1061,6 @@ static int read_status_line(ne_request *req, ne_status *status, int retry)
     } else if (ne_parse_statusline(buffer, status)) {
 	return aborted(req, _("Could not parse response status line"), 0);
     }
-    if (status->major_version != 1) {
-        return aborted(req, _("Incompatible HTTP version"), 0);
-    }
 
     return 0;
 }
@@ -1339,8 +1184,6 @@ static int read_message_header(ne_request *req, char *buf, size_t buflen)
     buf += n;
     buflen -= n;
 
-    /* Per RFC9112ẞ5.2, append any folded headers extended over
-     * multiple lines. */
     while (buflen > 0) {
 	char ch;
 
@@ -1410,45 +1253,6 @@ static void add_response_header(ne_request *req, unsigned int hash,
     (*nextf)->next = NULL;
 }
 
-/* HTTP token lookup per RFC9110ẞ5.6.2 - returns tolower(ch) or 0 for
- * non-token characters. */
-
-/* Generated with 'mktable http_token', do not alter here -- */
-static const unsigned char table_http_token[256] = {
-/* x00 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* x08 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* x10 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* x18 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* x20 */ 0x00, 0x21, 0x00, 0x23, 0x24, 0x25, 0x26, 0x27,
-/* x28 */ 0x00, 0x00, 0x2a, 0x2b, 0x00, 0x2d, 0x2e, 0x00,
-/* x30 */ 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-/* x38 */ 0x38, 0x39, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* x40 */ 0x00, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
-/* x48 */ 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
-/* x50 */ 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
-/* x58 */ 0x78, 0x79, 0x7a, 0x00, 0x00, 0x00, 0x5e, 0x5f,
-/* x60 */ 0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
-/* x68 */ 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f,
-/* x70 */ 0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77,
-/* x78 */ 0x78, 0x79, 0x7a, 0x00, 0x7c, 0x00, 0x7e, 0x00,
-/* x80 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* x88 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* x90 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* x98 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xA0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xA8 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xB0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xB8 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xC0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xC8 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xD0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xD8 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xE0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xE8 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xF0 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-/* xF8 */ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-}; /* -- Generated code from 'mktable http_token' ends. */
-
 /* Read response headers. If 'clear' is non-zero, clears existing
  * response header hash first. Returns NE_* code, sets session error
  * and closes connection on error. */
@@ -1461,45 +1265,41 @@ static int read_response_headers(ne_request *req, int clear)
     /* Clear any response headers from previous invocations
      * (e.g. retired requests, interim responses. */
     if (clear) free_response_headers(req);
-
+    
     while ((ret = read_message_header(req, hdr, sizeof hdr)) == NE_RETRY 
-           && ++count < MAX_HEADER_FIELDS) {
-        char *pnt, ch;
-        unsigned int hash = 0;
+	   && ++count < MAX_HEADER_FIELDS) {
+	char *pnt;
+	unsigned int hash = 0;
+	
+	/* Strip any trailing whitespace */
+	pnt = hdr + strlen(hdr) - 1;
+	while (pnt > hdr && (*pnt == ' ' || *pnt == '\t'))
+	    *pnt-- = '\0';
 
-        /* Parse field-line per RFC9110ẞ5:
-         *    field-line   = field-name ":" OWS field-value OWS
-         * where field-name is defined as a token, RFC9110ẞ5.1. */
+	/* Convert the header name to lower case and hash it. */
+	for (pnt = hdr; (*pnt != '\0' && *pnt != ':' && 
+			 *pnt != ' ' && *pnt != '\t'); pnt++) {
+	    *pnt = ne_tolower(*pnt);
+	    hash = HH_ITERATE(hash,*pnt);
+	}
 
-        /* Strip trailing OWS */
-        pnt = hdr + strlen(hdr) - 1;
-        while (pnt > hdr && (*pnt == ' ' || *pnt == '\t'))
-            *pnt-- = '\0';
+	/* Skip over any whitespace before the colon. */
+	while (*pnt == ' ' || *pnt == '\t')
+	    *pnt++ = '\0';
 
-        /* Parse and convert to lower-case a single token. */
-        for (pnt = hdr;
-             (ch = table_http_token[(unsigned char)*pnt]) != 0;
-             pnt++) {
-            *pnt = ch; /* lowercased character */
-            hash = HH_ITERATE(hash, *pnt);
-        }
+	/* ignore header lines which lack a ':'. */
+	if (*pnt != ':')
+	    continue;
+	
+	/* NUL-terminate at the colon (when no whitespace before) */
+	*pnt++ = '\0';
 
-        /* Ignore header lines where ':' is not directly after the
-         * token (per RFC9112ẞ5.1). */
-        if (pnt[0] != ':') {
-            NE_DEBUG(NE_DBG_HTTP, "req: Ignoring invalid field %s\n", hdr);
-            continue;
-        }
+	/* Skip any whitespace after the colon... */
+	while (*pnt == ' ' || *pnt == '\t')
+	    pnt++;
 
-        /* NUL-terminate field-name at the colon. */
-        *pnt++ = '\0';
-
-        /* Skip any whitespace after the colon... */
-        while (*pnt == ' ' || *pnt == '\t')
-            pnt++;
-
-        /* pnt now points to the header value. */
-        NE_DEBUG(NE_DBG_HTTP, "req: Header: [%s] = [%s]\n", hdr, pnt);
+	/* pnt now points to the header value. */
+	NE_DEBUG(NE_DBG_HTTP, "Header Name: [%s], Value: [%s]\n", hdr, pnt);
         add_response_header(req, hash, hdr, pnt);
     }
 
@@ -1565,9 +1365,12 @@ int ne_begin_request(ne_request *req)
     ne_buffer_destroy(data);
     if (ret != NE_OK) return ret == NE_RETRY ? NE_ERROR : ret;
 
-    /* HTTP/1.x is assured by read_status_line() not failing.
-     * Persistent connections supported implicitly in HTTP/1.1. */
-    req->can_persist = req->session->is_http11 = st->minor_version > 0;
+    /* Determine whether server claims HTTP/1.1 compliance. */
+    req->session->is_http11 = (st->major_version == 1 && 
+                               st->minor_version > 0) || st->major_version > 1;
+
+    /* Persistent connections supported implicitly in HTTP/1.1 */
+    if (req->session->is_http11) req->can_persist = 1;
 
     ne_set_error(req->session, "%d %s", st->code, st->reason_phrase);
 
@@ -1620,7 +1423,8 @@ int ne_begin_request(ne_request *req)
     }
 
     /* Decide which method determines the response message-length per
-     * RFC 9112§6.3, cases follow: */
+     * RFC 7230§3.3.3, method cases follow: */
+
 #ifdef NE_HAVE_SSL
     /* Case (2) is special-cased first for CONNECT: the response has
      * no body, and the connection can persist. */
@@ -1634,12 +1438,11 @@ int ne_begin_request(ne_request *req)
     if (req->method_is_head || st->code == 204 || st->code == 304) {
     	req->resp.mode = R_NO_BODY;
     }
-    /* Case (3)/(4), chunked transfer-encoding. */
+    /* Case (3), chunked transer-encoding.. */
     else if ((value = get_response_header_hv(req, HH_HV_TRANSFER_ENCODING,
                                              "transfer-encoding")) != NULL
              && ne_strcasecmp(value, "identity") != 0) {
-        /* Otherwise, fail if an unknown transfer-coding is used, no
-         * other transfer-codings are supported. */
+        /* Otherwise, fail if an unknown transfer-coding is used. */
         if (ne_strcasecmp(value, "chunked") == 0) {
             req->resp.mode = R_CHUNKED;
             req->resp.body.chunk.remain = 0;
@@ -1648,7 +1451,7 @@ int ne_begin_request(ne_request *req)
             return aborted(req, _("Unknown transfer-coding in response"), 0);
         }
     }
-    /* Case (5)/(6), content-length delimited. */
+    /* Case (4) and (5), content-length delimited. */
     else if ((value = get_response_header_hv(req, HH_HV_CONTENT_LENGTH,
                                              "content-length")) != NULL) {
         char *endptr = NULL;
@@ -1659,11 +1462,11 @@ int ne_begin_request(ne_request *req)
             req->resp.body.clen.total = req->resp.body.clen.remain = len;
         }
         else {
-            /* Per case (5), an invalid C-L MUST be treated as an error. */
+            /* Per case (4), an invalid C-L must be treated as an error. */
             return aborted(req, _("Invalid Content-Length in response"), 0);
         }
     }
-    /* Case (8), response delimited by EOF. */
+    /* Case (7), response delimited by EOF. */
     else {
         req->resp.mode = R_TILLEOF; /* otherwise: read-till-eof mode */
     }
@@ -1710,16 +1513,7 @@ int ne_end_request(ne_request *req)
 	ne_post_send_fn fn = (ne_post_send_fn)hk->fn;
 	ret = fn(req, hk->userdata, &req->status);
     }
-
-    if (ret == NE_OK && req->status.klass == 3) {
-        const char *dest;
-
-        dest = get_response_header_hv(req, HH_HV_LOCATION, "location");
-        if (dest) {
-            ne_set_error(req->session, _("Redirected to %s"), dest);
-        }
-    }
-
+    
     /* Close the connection if persistent connections are disabled or
      * not supported by the server. */
     if (!req->session->flags[NE_SESSFLAG_PERSIST] || !req->can_persist)

@@ -1068,7 +1068,6 @@ static S3Status compose_auth_header(const RequestParams *params,
          finalSignature, NULL);
 #endif
     nb_free(accessKey); // WINSCP
-    nb_free(stringToSign); // WINSCP
 
     len = 0;
     size = sizeof(values->requestSignatureHex); // WINSCP

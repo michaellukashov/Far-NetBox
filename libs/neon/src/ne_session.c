@@ -142,32 +142,15 @@ int ne_version_pre_http11(ne_session *s)
 /* Stores the "hostname[:port]" segment */
 static void set_hostport(struct host_info *host, unsigned int defaultport)
 {
-    if (host->port == defaultport) {
-        host->hostport = ne_strdup(host->hostname);
-    }
-    else {
-        char buf[512];
-
-        ne_snprintf(buf, sizeof buf, "%s:%u", host->hostname, host->port);
-        host->hostport = ne_strdup(buf);
-    }
+    size_t len = strlen(host->hostname);
+    host->hostport = ne_malloc(len + 10);
+    strcpy(host->hostport, host->hostname);
+    if (host->port != defaultport)
+	ne_snprintf(host->hostport + len, 9, ":%u", host->port);
 }
 
-#define V6_ADDR_MINLEN strlen("[::1]") /* "[::]" never valid */
-#define V6_SCOPE_SEP "%25"
-#define V6_SCOPE_SEPLEN (strlen(V6_SCOPE_SEP))
-/* Minimum length of link-local address with scope. */
-#define V6_SCOPE_MINLEN (strlen("[fe80::%251]"))
-
-/* Stores the hostname/port in *HI, setting up the "hostport" segment
- * correctly. RFC 6874 syntax is allowed here but the scope ID is
- * stripped from the hostname which is used in the Host header.  RFC
- * 9110's Host header uses uri-host, which references RFC 3986 and not
- * RFC 6874, so it is pedantically correct; the scope ID also has no
- * possible interpretation outside of the client host.
- *
- * TODO: This function also does not propagate parse failures or scope
- * mapping failures, which is bad. */
+/* Stores the hostname/port in *info, setting up the "hostport"
+ * segment correctly. */
 static void set_hostinfo(struct host_info *hi, enum proxy_type type, 
                          const char *hostname, unsigned int port)
 {
@@ -180,48 +163,15 @@ static void set_hostinfo(struct host_info *hi, enum proxy_type type,
 
     hlen = strlen(hi->hostname);
 
-    /* IP literal parsing. */
+    /* IP literal parsing */
     ia = ne_iaddr_parse(hi->hostname, ne_iaddr_ipv4);
-    if (!ia && hlen >= V6_ADDR_MINLEN
+    if (!ia && hlen > 4
         && hi->hostname[0] == '[' && hi->hostname[hlen-1] == ']') {
-        const char *v6end, *v6start = hi->hostname + 1;
-        char *v6lit, *scope = NULL;
+        char *v6lit = ne_strdup(hi->hostname + 1);
 
-        /* Parse here, see if there is a Zone ID:
-         *  IPv6addrzb => v6start = IPv6address "%25" ZoneID */
+        v6lit[hlen-2] = '\0';
 
-        if (hlen >= V6_SCOPE_MINLEN
-            && (scope = strstr(v6start, V6_SCOPE_SEP)) != NULL)
-            v6end = scope;
-        else
-            v6end = hi->hostname + hlen - 1; /* trailing ']' */
-
-        /* Extract the IPv6-literal part. */
-        v6lit = ne_strndup(v6start, v6end - v6start);
         ia = ne_iaddr_parse(v6lit, ne_iaddr_ipv6);
-        if (ia && scope) {
-            /* => scope = "%25" scope  "]" */
-            char *v6scope = ne_strndup(scope + V6_SCOPE_SEPLEN,
-                                       strlen(scope) - (V6_SCOPE_SEPLEN + 1));
-
-            if (ne_iaddr_set_scope(ia, v6scope) == 0) {
-                /* Strip scope from hostname since it's used in Host:
-                 * headers and will be rejected. This is safe since
-                 * strlen(scope) is assured by strstr() above. */
-                *scope++ = ']';
-                *scope = '\0';
-                NE_DEBUG(NE_DBG_HTTP, "sess: Using IPv6 scope '%s', "
-                         "hostname rewritten to %s.\n", v6scope,
-                         hi->hostname);
-            }
-            else {
-                NE_DEBUG(NE_DBG_HTTP, "sess: Failed to set IPv6 scope '%s' "
-                         "for address %s.\n", v6scope, v6lit);
-            }
-
-            ne_free(v6scope);
-        }
-
         ne_free(v6lit);
     }
 
@@ -240,7 +190,7 @@ ne_session *ne_session_create(const char *scheme,
     NE_DEBUG(NE_DBG_HTTP, "HTTP session to %s://%s:%d begins.\n",
 	     scheme, hostname, port);
 
-    ne_strnzcpy(sess->error, _("Unknown error."), sizeof sess->error);
+    strcpy(sess->error, "Unknown error.");
 
     /* use SSL if scheme is https */
     sess->use_ssl = !strcmp(scheme, "https");
@@ -267,7 +217,6 @@ ne_session *ne_session_create(const char *scheme,
 
     /* Set flags which default to on: */
     sess->flags[NE_SESSFLAG_PERSIST] = 1;
-    sess->flags[NE_SESSFLAG_STRICT] = 1;
 
 #ifdef NE_ENABLE_AUTO_LIBPROXY
     ne_session_system_proxy(sess, 0);
@@ -501,7 +450,13 @@ void ne_set_connect_timeout(ne_session *sess, int timeout)
 void ne_set_useragent(ne_session *sess, const char *token)
 {
     if (sess->user_agent) ne_free(sess->user_agent);
-    sess->user_agent = ne_concat(UAHDR, token, AGENT, NULL);
+    sess->user_agent = ne_malloc(strlen(UAHDR) + strlen(AGENT) + 
+                                 strlen(token) + 1);
+#ifdef HAVE_STPCPY
+    strcpy(stpcpy(stpcpy(sess->user_agent, UAHDR), token), AGENT);
+#else
+    strcat(strcat(strcpy(sess->user_agent, UAHDR), token), AGENT);
+#endif
 }
 
 const char *ne_get_server_hostport(ne_session *sess)

@@ -1,6 +1,6 @@
 /* 
    HTTP Request Handling
-   Copyright (C) 1999-2024, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2021, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -46,7 +46,7 @@ typedef struct ne_request_s ne_request;
 /***** Request Handling *****/
 
 /* Create a request in session 'sess', with given method and target.
- * 'target' is used to form the request-target (per RFC 9112ẞ3.2), and
+ * 'target' is used to form the request-target (per RFC 7230ẞ5.3), and
  * may be an absolute-path (with optional query-string), an
  * absolute-URI, or an asterisk. */
 ne_request *ne_request_create(ne_session *sess, const char *method,
@@ -175,20 +175,6 @@ void ne_print_request_header(ne_request *req, const char *name,
 			     const char *format, ...) 
     ne_attribute((format(printf, 3, 4)));
 
-/* Returns the request target URI as a malloc-allocated ne_uri object,
- * or NULL on error if the request target cannot be determined. The
- * session error string is not changed on error. */
-const ne_uri *ne_get_request_target(ne_request *req);
-
-/* If the response includes a Location header, this function parses
- * and resolves the URI-reference relative to the request target.  If
- * a fragment ("#fragment") is used for the request target, it can be
- * passed as an argument to allow relative resolution. Returns a
- * malloc-allocated ne_uri object, or NULL if the URI in the Location
- * header could not be parsed, or the Location header was not
- * present. */
-ne_uri *ne_get_response_location(ne_request *req, const char *fragment);
-
 /* ne_request_dispatch: Sends the given request, and reads the
  * response.  Returns:
  *  - NE_OK if the request was sent and response read successfully
@@ -257,6 +243,10 @@ typedef enum ne_request_flag_e {
                              * timeout when reading interim
                              * responses. */
 
+    #ifdef WINSCP
+    NE_REQFLAG_IGNOREEMPTYXML,
+    #endif
+
     NE_REQFLAG_LAST /* enum sentinel value */
 } ne_request_flag;
 
@@ -280,7 +270,7 @@ void ne_add_interim_handler(ne_request *req, ne_interim_response_fn fn,
 /**** Request hooks handling *****/
 
 /* Hook called when a request is created; passed the method and
- * request-target as used in the request-line (RFC 9112§3.2).  The
+ * request-target as used in the request-line (RFC7230§5.3).  The
  * create_request hook is called exactly once per request. */
 typedef void (*ne_create_request_fn)(ne_request *req, void *userdata,
 				     const char *method, const char *target);
