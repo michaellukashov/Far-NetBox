@@ -109,7 +109,7 @@ using namespace Pngimagelist;
 TPngImageList * GetAnimationsImages(TControl * Control);
 TImageList * GetButtonImages(TControl * Control);
 TPngImageList * GetDialogImages(TControl * Control);
-void ReleaseImagesModules();
+TCustomImageList * TreeViewImageList(TPngImageList * ImageList);
 
 class TFrameAnimation
 {
@@ -173,22 +173,6 @@ private:
   TControl * GetHintControl(void * Data);
   void SplitHint(
     TControl * HintControl, const UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
-};
-
-// Newer version rich edit that supports "Friendly name hyperlinks" and
-// allows wider range of Unicode characters: https://stackoverflow.com/q/47433656/850848
-class TNewRichEdit : public TRichEdit
-{
-public:
-  virtual TNewRichEdit(TComponent * AOwner);
-
-protected:
-  virtual void CreateParams(TCreateParams & Params);
-  virtual void CreateWnd();
-  virtual void DestroyWnd();
-
-private:
-  HINSTANCE FLibrary;
 };
 
 // Based on:

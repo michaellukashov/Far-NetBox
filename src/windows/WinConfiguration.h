@@ -1,5 +1,4 @@
 
-
 #ifndef WinConfigurationH
 #define WinConfigurationH
 
@@ -36,6 +35,7 @@ struct TScpExplorerConfiguration {
 
 struct TScpCommanderPanelConfiguration {
   UnicodeString DirViewParams;
+  int ViewStyle;
   bool StatusBar;
   bool DriveView;
   int DriveViewHeight;
@@ -44,7 +44,7 @@ struct TScpCommanderPanelConfiguration {
   int DriveViewWidthPixelsPerInch;
   UnicodeString LastPath;
   bool operator !=(TScpCommanderPanelConfiguration & rhc)
-    { return C(DirViewParams) C(StatusBar)
+    { return C(DirViewParams) C(ViewStyle) C(StatusBar)
         C(DriveView) C(DriveViewHeight) C(DriveViewHeightPixelsPerInch)
         C(DriveViewWidth) C(DriveViewWidthPixelsPerInch) C(LastPath) 0; };
 };
@@ -68,6 +68,7 @@ struct TScpCommanderConfiguration {
   bool ExplorerKeyboardShortcuts;
   bool SystemContextMenu;
   UnicodeString OtherLocalPanelDirViewParams;
+  int OtherLocalPanelViewStyle;
   UnicodeString OtherLocalPanelLastPath;
   bool operator !=(TScpCommanderConfiguration & rhc)
     { return C(WindowParams) C(LocalPanelWidth) C(ToolbarsLayout) C(ToolbarsButtons)
@@ -76,7 +77,7 @@ struct TScpCommanderConfiguration {
       C(NortonLikeMode) C(PreserveLocalDirectory)
       C(CompareBySize) C(CompareByTime) C(SwappedPanels)
       C(TreeOnLeft) C(ExplorerKeyboardShortcuts) C(SystemContextMenu)
-      C(OtherLocalPanelDirViewParams) C(OtherLocalPanelLastPath) 0; };
+      C(OtherLocalPanelDirViewParams) C(OtherLocalPanelViewStyle) C(OtherLocalPanelLastPath) 0; };
 
   TCompareCriterias CompareCriterias()
   {
@@ -132,11 +133,12 @@ struct TEditorConfiguration {
   bool WarnOnEncodingFallback;
   bool WarnOrLargeFileSize;
   bool AutoFont;
+  bool DisableSmoothScroll;
   bool operator !=(TEditorConfiguration & rhc)
     { return C(Font) C(FontColor) C(BackgroundColor) C(WordWrap) C(FindText) C(ReplaceText)
       C(FindMatchCase) C(FindWholeWord) C(FindDown) C(TabSize)
       C(MaxEditors) C(EarlyClose) C(SDIShellEditor) C(WindowParams)
-      C(Encoding) C(WarnOnEncodingFallback) C(WarnOrLargeFileSize) C(AutoFont) 0; };
+      C(Encoding) C(WarnOnEncodingFallback) C(WarnOrLargeFileSize) C(AutoFont) C(DisableSmoothScroll) 0; };
 };
 
 enum TQueueViewShow { qvShow, qvHideWhenEmpty, qvHide };
@@ -439,6 +441,7 @@ private:
   bool FCopyParamAutoSelectNotice;
   bool FLockToolbars;
   bool FSelectiveToolbarText;
+  int FLargerToolbar;
   TEditorList * FEditorList;
   TEditorPreferences * FLegacyEditor;
   UnicodeString FDefaultKeyFile;
@@ -485,6 +488,8 @@ private:
   bool FHiContrast;
   bool FEditorCheckNotModified;
   bool FSessionTabCaptionTruncation;
+  UnicodeString FRemoteThumbnailMask;
+  int FRemoteThumbnailSizeLimit;
   UnicodeString FFirstRun;
   int FDontDecryptPasswords;
   int FMasterPasswordSession;
@@ -559,7 +564,7 @@ private:
   void SetVersionHistory(UnicodeString value);
   void SetLockToolbars(bool value);
   void SetSelectiveToolbarText(bool value);
-  const TEditorList * GetEditorList();
+  void SetLargerToolbar(int value);
   void SetEditorList(const TEditorList * value);
   void SetAutoOpenInPutty(bool value);
   void SetRefreshRemotePanel(bool value);
@@ -591,8 +596,8 @@ private:
   void SetFileColors(UnicodeString value);
   void SetRunsSinceLastTip(int value);
   bool GetHonorDrivePolicy();
-  void SetHonorDrivePolicy(bool value);
-  bool GetUseABDrives();
+  int GetHonorDrivePolicy();
+  void SetHonorDrivePolicy(int value);
   void SetUseABDrives(bool value);
   bool GetIsBeta();
   TStrings * GetCustomCommandOptions();
@@ -608,6 +613,8 @@ private:
   void SetHiContrast(bool value);
   void SetEditorCheckNotModified(bool value);
   void SetSessionTabCaptionTruncation(bool value);
+  void SetLoadingTooLongLimit(int value);
+  int GetLoadingTooLongLimit();
   void SetFirstRun(const UnicodeString & value);
   int GetLocaleCompletenessThreshold();
 
@@ -768,6 +775,7 @@ public:
   __property bool CopyParamAutoSelectNotice = { read = FCopyParamAutoSelectNotice, write = SetCopyParamAutoSelectNotice };
   __property bool LockToolbars = { read = FLockToolbars, write = SetLockToolbars };
   __property bool SelectiveToolbarText = { read = FSelectiveToolbarText, write = SetSelectiveToolbarText };
+  __property int LargerToolbar = { read = FLargerToolbar, write = SetLargerToolbar };
   __property bool AutoOpenInPutty = { read = FAutoOpenInPutty, write = SetAutoOpenInPutty };
   __property bool RefreshRemotePanel = { read = FRefreshRemotePanel, write = SetRefreshRemotePanel };
   __property TDateTime RefreshRemotePanelInterval = { read = FRefreshRemotePanelInterval, write = SetRefreshRemotePanelInterval };
@@ -799,7 +807,7 @@ public:
   __property TDateTime TipsShown = { read = FTipsShown, write = SetTipsShown };
   __property UnicodeString FileColors = { read = FFileColors, write = SetFileColors };
   __property int RunsSinceLastTip = { read = FRunsSinceLastTip, write = SetRunsSinceLastTip };
-  __property bool HonorDrivePolicy = { read = GetHonorDrivePolicy, write = SetHonorDrivePolicy };
+  __property int HonorDrivePolicy = { read = GetHonorDrivePolicy, write = SetHonorDrivePolicy };
   __property bool UseABDrives = { read = GetUseABDrives, write = SetUseABDrives };
   __property TMasterPasswordPromptEvent OnMasterPasswordPrompt = { read = FOnMasterPasswordPrompt, write = FOnMasterPasswordPrompt };
   __property TStrings * CustomCommandOptions = { read = GetCustomCommandOptions, write = SetCustomCommandOptions };
@@ -813,6 +821,9 @@ public:
   __property bool HiContrast = { read = FHiContrast, write = SetHiContrast };
   __property bool EditorCheckNotModified = { read = FEditorCheckNotModified, write = SetEditorCheckNotModified };
   __property bool SessionTabCaptionTruncation = { read = FSessionTabCaptionTruncation, write = SetSessionTabCaptionTruncation };
+  __property int LoadingTooLongLimit = { read = GetLoadingTooLongLimit, write = SetLoadingTooLongLimit };
+  __property UnicodeString RemoteThumbnailMask = { read = FRemoteThumbnailMask, write = FRemoteThumbnailMask };
+  __property int RemoteThumbnailSizeLimit = { read = FRemoteThumbnailSizeLimit, write = FRemoteThumbnailSizeLimit };
   __property UnicodeString FirstRun = { read = FFirstRun, write = SetFirstRun };
   __property LCID DefaultLocale = { read = FDefaultLocale };
   __property int LocaleCompletenessThreshold = { read = GetLocaleCompletenessThreshold };
