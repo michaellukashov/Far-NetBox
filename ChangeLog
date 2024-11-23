@@ -1,13 +1,12 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [24.9.0.605] - 2024-09-07
+## [24.11.23.604] - 2024-11-23
 
 ### Changes
 
+* Upgrade dependencies: expat 2.6.4
 * Upgrade dependencies: OpenSSL 3.3.2
-* Upgrade dependencies: neon 0.34.0
-* Upgrade dependencies: expat 2.6.3
 * Upgrade dependencies: tinyxml 10.0.0
  * Clarify .ppk file prompt: add (.ppk)
 https://forum.farmanager.com/viewtopic.php?p=177884#p177884
