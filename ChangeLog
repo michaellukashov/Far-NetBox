@@ -9,18 +9,21 @@
 * Upgrade dependencies: neon 0.34.0
 * Upgrade dependencies: expat 2.6.3
 * Upgrade dependencies: tinyxml 10.0.0
-
-
-## [24.6.1.604] - 2024-06-29
-
-### Changes
-
- * Upgrade dependencies: OpenSSL 3.3.1
  * Clarify .ppk file prompt: add (.ppk)
 https://forum.farmanager.com/viewtopic.php?p=177884#p177884
 
 ### Fixes
 
+ * gh-492 Fix focusing of new and duplicated sessions
+https://github.com/michaellukashov/Far-NetBox/issues/492
+ * gh-491 Add Alt-Shift-F11 hotkey to open Edit history
+https://github.com/michaellukashov/Far-NetBox/issues/491
+ * gh-490 Truncate long file names correctly in several dialogs
+https://github.com/michaellukashov/Far-NetBox/issues/490
+ * gh-488 Add more guids for dialogs
+https://github.com/michaellukashov/Far-NetBox/issues/488
+ * gh-487 Fix user/password labels appearing on wrong tab
+https://github.com/michaellukashov/Far-NetBox/issues/487
  * gh-485 Can not create a remote folder
 https://github.com/michaellukashov/Far-NetBox/issues/485
 

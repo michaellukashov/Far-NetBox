@@ -192,6 +192,8 @@ void TRemoteFilePanelItem::SetKeyBarTitles(TFarKeyBarTitles * KeyBarTitles)
   KeyBarTitles->ClearKeyBarTitle(fsShift, 1, 3); // archive commands
   KeyBarTitles->SetKeyBarTitle(fsShift, 5, FarPlugin->GetMsg(NB_COPY_TO_FILE_KEYBAR));
   KeyBarTitles->SetKeyBarTitle(fsShift, 6, FarPlugin->GetMsg(NB_MOVE_TO_FILE_KEYBAR));
+  KeyBarTitles->SetKeyBarTitle(fsAltShift, 11,
+    FarPlugin->GetMsg(NB_EDIT_HISTORY_KEYBAR));
   KeyBarTitles->SetKeyBarTitle(fsAltShift, 12,
     FarPlugin->GetMsg(NB_OPEN_DIRECTORY_KEYBAR));
   KeyBarTitles->SetKeyBarTitle(fsAltShift, 6,
@@ -237,7 +239,6 @@ void TFarInteractiveCustomCommand::Prompt(int32_t /*Index*/, const UnicodeString
 
 // Attempt to allow keepalives from background thread.
 // Not finished nor used.
-const TObjectClassId OBJECT_CLASS_TKeepAliveThread = static_cast<TObjectClassId>(nb::counter_id());
 class TKeepAliveThread final : public TSimpleThread
 {
 public:
@@ -910,6 +911,7 @@ bool TWinSCPFileSystem::ExecuteCommand(const UnicodeString & Command)
       if (FTerminal->GetActive())
       {
         UpdatePanel();
+        RedrawPanel();
       }
       else
       {
@@ -1063,6 +1065,12 @@ bool TWinSCPFileSystem::ProcessKeyEx(int32_t Key, uint32_t ControlState)
       Handled = true;
     }
 
+    if ((Key == VK_F11) && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
+    {
+      EditHistory();
+      Handled = true;
+    }
+  
     if ((Key == VK_F12) && CheckControlMaskSet(ControlState, SHIFTMASK, ALTMASK))
     {
       OpenDirectory(false);

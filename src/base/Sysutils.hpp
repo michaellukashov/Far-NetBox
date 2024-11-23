@@ -247,6 +247,7 @@ NB_CORE_EXPORT TDateTime EncodeTime(uint32_t Hour, uint32_t Min, uint32_t Sec, u
 NB_CORE_EXPORT UnicodeString Trim(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString TrimLeft(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString TrimRight(const UnicodeString & Str);
+NB_CORE_EXPORT UnicodeString RightCutToLength(const UnicodeString& Str, int32_t MaxLength, const UnicodeString& Ellipsis = L"\u2026");
 NB_CORE_EXPORT UnicodeString UpperCase(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString LowerCase(const UnicodeString & Str);
 NB_CORE_EXPORT UnicodeString AnsiLowerCase(const UnicodeString & Str);
