@@ -15,6 +15,10 @@
 #include <openssl/x509v3.h>
 #include <openssl/err.h>
 #include <openssl/tls1.h>
+#if defined(__BORLANDC__)
+#pragma hdrstop
+#endif // defined(__BORLANDC__)
+#include <Common.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // CAsyncSslSocketLayer
@@ -1091,6 +1095,24 @@ BOOL CAsyncSslSocketLayer::ShutDownComplete()
   }
 }
 
+void CAsyncSslSocketLayer::LogSslError(const SSL *s, const char * str, const char * fmt, int nMessageType, char * debug)
+{
+  USES_CONVERSION;
+  const char * StateString = SSL_state_string_long(s);
+  if ((strcmp(StateString, "error") != 0) || (debug != NULL))
+  {
+    char * buffer = new char[4096 + ((debug != NULL) ? strlen(debug) : 0)];
+    sprintf(buffer, fmt, str, StateString);
+    if (debug != NULL)
+    {
+      sprintf(buffer + strlen(buffer), " [%s]", debug);
+      OPENSSL_free(debug);
+    }
+    LogSocketMessageRaw(nMessageType, A2T(buffer));
+    delete[] buffer;
+  }
+}
+
 void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int ret)
 {
   USES_CONVERSION;
@@ -1139,18 +1161,7 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
     {
       debug = reinterpret_cast<char *>(nb::ToIntPtr(ret));
     }
-    int32_t sz = 4096 + ((debug != nullptr) ? nb::safe_strlen(debug) : 0);
-    char *buffer = nb::chcalloc(sz);
-    sprintf_s(buffer, sz, "%s: %s",
-        str,
-        SSL_state_string_long(s));
-    if (debug != nullptr)
-    {
-      sprintf_s(buffer + nb::safe_strlen(buffer), sz - nb::safe_strlen(buffer), " [%s]", debug);
-      OPENSSL_free(debug);
-    }
-    pLayer->LogSocketMessageRaw(FZ_LOG_INFO, A2T(buffer));
-    nb_free(buffer);
+    pLayer->LogSslError(s, str, "%s: %s", FZ_LOG_INFO, debug);
   }
   else if (where & SSL_CB_ALERT)
   {
@@ -1177,41 +1188,28 @@ void CAsyncSslSocketLayer::apps_ssl_info_callback(const SSL *s, int where, int r
 
   else if (where & SSL_CB_EXIT)
   {
+    bool SendFailure = false;
     if (ret == 0)
     {
-      constexpr int32_t sz = 4 * 1024;
-      char *buffer = nb::chcalloc(sz);
-      sprintf_s(buffer, sz, "%s: failed in %s",
-          str,
-          SSL_state_string_long(s));
-      pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+      pLayer->LogSslError(s, str, "%s: failed in %s", FZ_LOG_WARNING);
       pLayer->PrintLastErrorMsg();
-      nb_free(buffer);
-      if (!pLayer->m_bFailureSent)
-      {
-        pLayer->m_bFailureSent=TRUE;
-        pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_FAILURE, pLayer->m_bSslEstablished ? SSL_FAILURE_UNKNOWN : SSL_FAILURE_ESTABLISH);
-      }
+      SendFailure = true;
     }
     else if (ret < 0)
     {
       int error = SSL_get_error(s,ret);
       if (error != SSL_ERROR_WANT_READ && error != SSL_ERROR_WANT_WRITE)
       {
-        constexpr int32_t sz = 4 * 1024;
-        char *buffer = nb::chcalloc(sz);
-        sprintf_s(buffer, sz, "%s: error in %s",
-            str,
-            SSL_state_string_long(s));
-        pLayer->LogSocketMessageRaw(FZ_LOG_WARNING, A2T(buffer));
+        pLayer->LogSslError(s, str, "%s: error in %s", FZ_LOG_WARNING);
         pLayer->PrintLastErrorMsg();
-        nb_free(buffer);
-        if (!pLayer->m_bFailureSent)
-        {
-          pLayer->m_bFailureSent=TRUE;
-          pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_FAILURE, pLayer->m_bSslEstablished ? SSL_FAILURE_UNKNOWN : SSL_FAILURE_ESTABLISH);
-        }
+        SendFailure = true;
       }
+    }
+
+    if (SendFailure && !pLayer->m_bFailureSent)
+    {
+      pLayer->m_bFailureSent = TRUE;
+      pLayer->DoLayerCallback(LAYERCALLBACK_LAYERSPECIFIC, SSL_FAILURE, pLayer->m_bSslEstablished ? SSL_FAILURE_UNKNOWN : SSL_FAILURE_ESTABLISH);
     }
   }
   if (where & SSL_CB_HANDSHAKE_DONE)
@@ -1849,12 +1847,12 @@ void CAsyncSslSocketLayer::OnClose(int nErrorCode)
 
 void CAsyncSslSocketLayer::PrintLastErrorMsg()
 {
-  int err = ERR_get_error();
+  uint32_t err = ERR_get_error();
   while (err)
   {
     USES_CONVERSION;
 
-    int aerr = err;
+    uint32_t aerr = err;
     err = ERR_get_error();
 
     char *buffer = nb::chcalloc(512);
@@ -1869,8 +1867,8 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
     }
     else
     {
-      const char * reason = ERR_reason_error_string(aerr);
-      LogSocketMessageRaw(FZ_LOG_WARNING, A2T(reason));
+      UnicodeString S = GetTlsErrorStr(aerr);
+      LogSocketMessageRaw(FZ_LOG_WARNING, S.c_str());
     }
   }
 }
