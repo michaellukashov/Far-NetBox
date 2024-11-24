@@ -1453,7 +1453,7 @@ TStrings * SshHostKeyList()
 TStrings * SshMacList()
 {
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
-  const struct ssh2_macalg ** Macs = nullptr;
+  const struct ssh2_macalg * const * Macs = nullptr;
   int32_t Count = 0;
   get_macs(&Count, &Macs);
 
