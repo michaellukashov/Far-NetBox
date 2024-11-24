@@ -124,9 +124,9 @@ struct TEditorConfiguration {
   bool FindMatchCase;
   bool FindWholeWord;
   bool FindDown;
-  unsigned int TabSize;
-  unsigned int MaxEditors;
-  unsigned int EarlyClose;
+  uint32_t TabSize;
+  uint32_t MaxEditors;
+  uint32_t EarlyClose;
   bool SDIShellEditor;
   UnicodeString WindowParams;
   int Encoding;
@@ -434,8 +434,8 @@ private:
   TSessionTabNameFormat FSessionTabNameFormat;
   bool FMinimizeToTray;
   bool FBalloonNotifications;
-  unsigned int FNotificationsTimeout;
-  unsigned int FNotificationsStickTime;
+  uint32_t FNotificationsTimeout;
+  uint32_t FNotificationsStickTime;
   TUpdatesConfiguration FUpdates;
   UnicodeString FVersionHistory;
   bool FCopyParamAutoSelectNotice;
@@ -556,8 +556,8 @@ private:
   void SetSessionTabNameFormat(TSessionTabNameFormat value);
   void SetMinimizeToTray(bool value);
   void SetBalloonNotifications(bool value);
-  void SetNotificationsTimeout(unsigned int value);
-  void SetNotificationsStickTime(unsigned int value);
+  void SetNotificationsTimeout(uint32_t value);
+  void SetNotificationsStickTime(uint32_t value);
   void SetCopyParamAutoSelectNotice(bool value);
   TUpdatesConfiguration GetUpdates();
   void SetUpdates(TUpdatesConfiguration value);
@@ -769,8 +769,8 @@ public:
   __property TSessionTabNameFormat SessionTabNameFormat = { read = FSessionTabNameFormat, write = FSessionTabNameFormat };
   __property bool MinimizeToTray = { read = FMinimizeToTray, write = SetMinimizeToTray };
   __property bool BalloonNotifications = { read = FBalloonNotifications, write = SetBalloonNotifications };
-  __property unsigned int NotificationsTimeout = { read = FNotificationsTimeout, write = SetNotificationsTimeout };
-  __property unsigned int NotificationsStickTime = { read = FNotificationsStickTime, write = SetNotificationsStickTime };
+  __property uint32_t NotificationsTimeout = { read = FNotificationsTimeout, write = SetNotificationsTimeout };
+  __property uint32_t NotificationsStickTime = { read = FNotificationsStickTime, write = SetNotificationsStickTime };
   __property UnicodeString DefaultTranslationFile = { read = FDefaultTranslationFile };
   __property bool CopyParamAutoSelectNotice = { read = FCopyParamAutoSelectNotice, write = SetCopyParamAutoSelectNotice };
   __property bool LockToolbars = { read = FLockToolbars, write = SetLockToolbars };
@@ -844,7 +844,7 @@ public:
     TOption() {}
 
     UnicodeString Id;
-    unsigned int Flags;
+    uint32_t Flags;
     TOptionKind Kind;
     UnicodeString Caption;
     UnicodeString Default;
@@ -883,7 +883,7 @@ public:
 
   __property int OptionsCount = { read = GetOptionsCount };
   const TOption & GetOption(int Index) const;
-  bool AnyOptionWithFlag(unsigned int Flag) const;
+  bool AnyOptionWithFlag(uint32_t Flag) const;
   UnicodeString GetOptionKey(const TOption & Option, const UnicodeString & Site) const;
   UnicodeString GetCommandWithExpandedOptions(
     TStrings * CustomCommandOptions, const UnicodeString & Site) const;

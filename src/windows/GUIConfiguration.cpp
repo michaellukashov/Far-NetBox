@@ -1482,14 +1482,8 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   {
     ImportSessionList->Remove(PuttySessionData);
   }
-  if (ImportSessionList->GetCount() > 0)
-  {
-    ImportSessionList->SelectSessionsToImport(Sessions, true);
-  }
-  else
-  {
-    AError = FMTLOAD(PUTTY_NO_SITES2, Source, SessionsKey);
-  }
+  const UnicodeString NoSessionsError = FMTLOAD(PUTTY_NO_SITES2, Source, SessionsKey);
+  SelectSessionsToImportIfAny(ImportSessionList.get(), Sessions, AError, NoSessionsError);
 
   return ImportSessionList.release();
 }

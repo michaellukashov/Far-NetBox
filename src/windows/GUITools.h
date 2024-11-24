@@ -3,9 +3,16 @@
 
 #include <Classes.hpp>
 #include <FileMasks.h>
+#if defined(__BORLANDC__)
+#include <Tbx.hpp>
+#endif // defined(__BORLANDC__)
 #include <DirectoryMonitor.hpp>
 
 class TSessionData;
+
+#if defined(__BORLANDC__)
+typedef void (__closure* TProcessMessagesEvent)();
+#endif // defined(__BORLANDC__)
 
 using TProcessMessagesEvent = nb::FastDelegate0<void>;
 
@@ -45,8 +52,17 @@ void CopyImageList(TImageList * TargetList, TImageList * SourceList);
 void LoadDialogImage(TImage * Image, const UnicodeString & ImageName);
 int DialogImageSize(TForm * Form);
 int NormalizePixelsPerInch(int PixelsPerInch);
-void HideComponentsPanel(TForm * Form);
-UnicodeString FormatIncrementalSearchStatus(const UnicodeString & Text, bool HaveNext);
+int LargerPixelsPerInch(int PixelsPerInch, int Larger);
+struct TIncrementalSearchState
+{
+  TIncrementalSearchState();
+  void Reset();
+
+  bool Searching;
+  UnicodeString Text;
+  bool HaveNext;
+};
+UnicodeString FormatIncrementalSearchStatus(const TIncrementalSearchState & SearchState);
 namespace Webbrowserex
 {
   class TWebBrowserEx;
@@ -200,7 +216,6 @@ void FindComponentClass(
       PARENT::ReadState(Reader); \
     }
 #define INTERFACE_HOOK INTERFACE_HOOK_CUSTOM(TForm)
-
 
 #endif // defined(__BORLANDC__)
 
