@@ -80,7 +80,7 @@
   #define BIGNUM_INT_BITS_BITS 6
   #define DEFINE_BIGNUMDBLINT typedef __uint128_t BignumDblInt
 
-#elif defined _MSC_VER && defined _M_AMD64 && BB_OK(6)
+#elif defined _MSC_VER && defined _M_AMD64 && BB_OK(6) && !defined(MPEXT)
 
   /*
    * 64-bit BignumInt, using Visual Studio x86-64 compiler intrinsics.

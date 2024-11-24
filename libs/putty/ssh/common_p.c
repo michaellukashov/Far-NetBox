@@ -850,7 +850,9 @@ void ssh2_bpp_queue_disconnect(BinaryPacketProtocol *bpp,
 
 bool ssh2_bpp_check_unimplemented(BinaryPacketProtocol *bpp, PktIn *pktin)
 {
-    // #pragma warn -osh
+#if defined(__BORLANDC__)
+    #pragma warn -osh
+#endif // defined(__BORLANDC__)
     static const unsigned valid_bitmap[] = {
         SSH2_BITMAP_WORD(0),
         SSH2_BITMAP_WORD(1),
@@ -861,7 +863,9 @@ bool ssh2_bpp_check_unimplemented(BinaryPacketProtocol *bpp, PktIn *pktin)
         SSH2_BITMAP_WORD(6),
         SSH2_BITMAP_WORD(7),
     };
-    // #pragma warn +osh
+#if defined(__BORLANDC__)
+    #pragma warn +osh
+#endif // defined(__BORLANDC__)
 
     if (pktin->type < 0x100 &&
         !((valid_bitmap[pktin->type >> 5] >> (pktin->type & 0x1F)) & 1)) {

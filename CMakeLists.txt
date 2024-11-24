@@ -1423,7 +1423,6 @@ add_library(putty STATIC
   libs/putty/ssh/zlib.c
   libs/putty/sshpubk.c
   libs/putty/sshrand.c
-  libs/putty/stubs/nullplug.c
   libs/putty/utils/antispoof.c
   libs/putty/utils/backend_socket_log.c
   libs/putty/utils/base64_decode_atom.c
@@ -1448,8 +1447,13 @@ add_library(putty STATIC
   libs/putty/utils/marshal.c
   libs/putty/utils/memory.c
   libs/putty/utils/memxor.c
-  libs/putty/utils/null_lp.c
-  libs/putty/utils/nullseat.c
+  libs/putty/stubs/null-lp.c
+  libs/putty/stubs/null-mac.c
+  libs/putty/stubs/null-opener.c
+  libs/putty/stubs/null-plug.c
+  libs/putty/stubs/null-seat.c
+  libs/putty/stubs/null-cipher.c
+  libs/putty/stubs/null-key.c
   libs/putty/utils/nullstrcmp.c
   libs/putty/utils/out_of_memory.c
   libs/putty/utils/parse_blocksize.c
@@ -1506,13 +1510,6 @@ add_library(putty STATIC
   libs/putty/crypto/aesgcm.h
   libs/putty/crypto/ntru.c
   libs/putty/crypto/openssh-certs.c
-  libs/putty/stubs/null-cipher.c
-  libs/putty/stubs/null-key.c
-#  libs/putty/stubs/null-lp.c
-  libs/putty/stubs/null-mac.c
-  libs/putty/stubs/null-opener.c
-#  libs/putty/stubs/null-plug.c
-#  libs/putty/stubs/null-seat.c
   libs/putty/utils/base64_decode.c
   libs/putty/utils/base64_encode.c
   libs/putty/utils/cert-expr.c

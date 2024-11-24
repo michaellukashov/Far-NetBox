@@ -892,7 +892,9 @@ enum kexlist {
     NKEXLIST
 };
 
-//#pragma option push -w-mnc // WINSCP
+#if defined(__BORLANDC__)
+#pragma option push -w-mnc // WINSCP
+#endif // defined(__BORLANDC__)
 struct ssh_keyalg {
     /* Constructors that create an ssh_key */
     ssh_key *(*new_pub) (const ssh_keyalg *self, ptrlen pub);
@@ -936,7 +938,9 @@ struct ssh_keyalg {
     bool is_certificate;   /* is this a certified key type? */
     const ssh_keyalg *base_alg; /* if so, for what underlying key alg? */
 };
-//#pragma option pop // WINSCP
+#if defined(__BORLANDC__)
+#pragma option pop // WINSCP
+#endif // defined(__BORLANDC__)
 
 static inline ssh_key *ssh_key_new_pub(const ssh_keyalg *self, ptrlen pub)
 { return self->new_pub(self, pub); }
@@ -1253,6 +1257,7 @@ extern const ssh2_macalg ssh_hmac_sha1_buggy;
 extern const ssh2_macalg ssh_hmac_sha1_96;
 extern const ssh2_macalg ssh_hmac_sha1_96_buggy;
 extern const ssh2_macalg ssh_hmac_sha256;
+extern const ssh2_macalg ssh_hmac_sha384;
 extern const ssh2_macalg ssh_hmac_sha512;
 extern const ssh2_macalg ssh2_poly1305;
 #endif //ifndef WINSCP_VS
