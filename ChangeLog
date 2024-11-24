@@ -1,6 +1,27 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [24.12.1.606] - 2024-12-01
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+ * gh-498 Fix RTTI class IDs
+https://github.com/michaellukashov/Far-NetBox/pull/498
+ * gh-496 Fix SCP terminal command execution
+https://github.com/michaellukashov/Far-NetBox/pull/496
+ * gh-495 Remove SSH-1 remainings from the Session dialog
+https://github.com/michaellukashov/Far-NetBox/pull/495
+ * gh-494 Don't treat netbox file as archive when searching in archives
+https://github.com/michaellukashov/Far-NetBox/pull/494
+
+### Changes
+
+ * Upgrade WinSCP sources: WinSCP 6.3.6
+ * Upgrade dependencies: zlib-ng 2.2.2
+ * Upgrade dependencies: expat 2.6.4
+
+
 ## [24.11.1.605] - 2024-11-25
 
 ### Fixes
