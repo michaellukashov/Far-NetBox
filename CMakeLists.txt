@@ -1703,7 +1703,7 @@ set(ZLIB_SOURCES
   libs/zlib-ng/deflate_fast.c
   libs/zlib-ng/crc32.c
   libs/zlib-ng/arch/generic/crc32_fold_c.c
-  libs/zlib-ng/arch/generic/insert_string_c.c
+  # libs/zlib-ng/arch/generic/insert_string_c.c
   libs/zlib-ng/arch/generic/slide_hash_c.c
   libs/zlib-ng/arch/generic/chunkset_c.c
   libs/zlib-ng/arch/generic/compare256_c.c
@@ -1726,7 +1726,7 @@ set(ZLIB_SOURCES ${ZLIB_SOURCES}
 else()
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   libs/zlib-ng/arch/x86/x86_features.c
-  libs/zlib-ng/arch/x86/insert_string_sse42.c
+  # libs/zlib-ng/arch/x86/insert_string_sse42.c
   libs/zlib-ng/arch/x86/slide_hash_avx2.c
   libs/zlib-ng/arch/x86/slide_hash_sse2.c
   libs/zlib-ng/arch/x86/crc32_pclmulqdq.c
@@ -1760,7 +1760,7 @@ target_compile_options(zlib PRIVATE
 
 target_compile_definitions(zlib PRIVATE
   # -DUNALIGNED_OK
-  -DZLIB_INTERNAL=
+  # -DZLIB_INTERNAL=
   -DZLIB_COMPAT
   -DZLIB_NAME_MANGLING_H
   -DMEMCPY=memcpy
