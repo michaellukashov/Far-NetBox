@@ -15,6 +15,13 @@
 #else
 // Newer versions of GCC and clang come with cpuid.h
 #  include <cpuid.h>
+#  ifdef X86_HAVE_XSAVE_INTRIN
+#    if __GNUC__ == 8
+#      include <xsaveintrin.h>
+#    else
+#      include <immintrin.h>
+#    endif
+#  endif
 #endif
 
 #include <string.h>
@@ -50,7 +57,7 @@ static inline void cpuidex(int info, int subinfo, unsigned* eax, unsigned* ebx, 
 }
 
 static inline uint64_t xgetbv(unsigned int xcr) {
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(X86_HAVE_XSAVE_INTRIN)
     return _xgetbv(xcr);
 #else
     uint32_t eax, edx;
@@ -92,7 +99,16 @@ void Z_INTERNAL x86_check_features(struct x86_cpu_features *features) {
 
         // check AVX512 bits if the OS supports saving ZMM registers
         if (features->has_os_save_zmm) {
-            features->has_avx512 = ebx & 0x00010000;
+            features->has_avx512f = ebx & 0x00010000;
+            if (features->has_avx512f) {
+                // According to the Intel Software Developer's Manual, AVX512F must be enabled too in order to enable
+                // AVX512(DQ,BW,VL).
+                features->has_avx512dq = ebx & 0x00020000;
+                features->has_avx512bw = ebx & 0x40000000;
+                features->has_avx512vl = ebx & 0x80000000;
+            }
+            features->has_avx512_common = features->has_avx512f && features->has_avx512dq && features->has_avx512bw \
+              && features->has_avx512vl;
             features->has_avx512vnni = ecx & 0x800;
         }
     }
