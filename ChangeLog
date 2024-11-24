@@ -1,26 +1,43 @@
 ﻿# for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [24.9.0.605] - 2024-09-07
+## [24.11.1.605] - 2024-11-25
+
+### Fixes
+
+Thanks to ssvine https://github.com/ssvine
+ * gh-498 Fix RTTI class IDs
+https://github.com/michaellukashov/Far-NetBox/pull/498
+ * gh-496 Fix SCP terminal command execution
+https://github.com/michaellukashov/Far-NetBox/pull/496
+ * gh-495 Remove SSH-1 remainings from the Session dialog
+https://github.com/michaellukashov/Far-NetBox/pull/495
+ * gh-494 Don't treat netbox file as archive when searching in archives
+https://github.com/michaellukashov/Far-NetBox/pull/494
+
+
+## [24.9.0.604] - 2024-09-07
 
 ### Changes
 
-* Upgrade dependencies: OpenSSL 3.3.2
-* Upgrade dependencies: neon 0.34.0
-* Upgrade dependencies: expat 2.6.3
-* Upgrade dependencies: tinyxml 10.0.0
-
-
-## [24.6.1.604] - 2024-06-29
-
-### Changes
-
- * Upgrade dependencies: OpenSSL 3.3.1
+ * Upgrade dependencies: OpenSSL 3.3.2
+ * Upgrade dependencies: expat 2.6.3
+ * Upgrade dependencies: tinyxml 10.0.0
  * Clarify .ppk file prompt: add (.ppk)
 https://forum.farmanager.com/viewtopic.php?p=177884#p177884
 
 ### Fixes
 
+ * gh-492 Fix focusing of new and duplicated sessions
+https://github.com/michaellukashov/Far-NetBox/issues/492
+ * gh-491 Add Alt-Shift-F11 hotkey to open Edit history
+https://github.com/michaellukashov/Far-NetBox/issues/491
+ * gh-490 Truncate long file names correctly in several dialogs
+https://github.com/michaellukashov/Far-NetBox/issues/490
+ * gh-488 Add more guids for dialogs
+https://github.com/michaellukashov/Far-NetBox/issues/488
+ * gh-487 Fix user/password labels appearing on wrong tab
+https://github.com/michaellukashov/Far-NetBox/issues/487
  * gh-485 Can not create a remote folder
 https://github.com/michaellukashov/Far-NetBox/issues/485
 

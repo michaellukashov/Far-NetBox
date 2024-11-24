@@ -32,6 +32,7 @@ constexpr int32_t ecIgnoreWarnings = 0x02;
 constexpr int32_t ecReadProgress = 0x04;
 constexpr int32_t ecIgnoreStdErr = 0x08;
 constexpr int32_t ecNoEnsureLocation = 0x10;
+constexpr int32_t ecOnlyReturnCode = 0x20;
 constexpr int32_t ecDefault = ecRaiseExcept;
 //---------------------------------------------------------------------------
 DERIVE_EXT_EXCEPTION(EScpFileSkipped, ESkipFile);
@@ -731,6 +732,7 @@ void TSCPFileSystem::ExecCommand(TFSCommand Cmd, int32_t Params,
   const int32_t COParams =
     coWaitForLastLine |
     FLAGMASK(FLAGSET(Params, ecRaiseExcept), coRaiseExcept) |
+    FLAGMASK(FLAGSET(Params, ecOnlyReturnCode), coOnlyReturnCode) |
     FLAGMASK(FLAGSET(Params, ecIgnoreWarnings), coIgnoreWarnings) |
     FLAGMASK(FLAGSET(Params, ecReadProgress), coReadProgress) |
     FLAGMASK(FLAGSET(Params, ecIgnoreStdErr), coIgnoreStdErr);
@@ -1627,7 +1629,7 @@ void TSCPFileSystem::AnyCommand(const UnicodeString & Command,
   try__finally
   {
     const int32_t Params =
-      ecDefault |
+       ecDefault | ecOnlyReturnCode |
       (FTerminal->SessionData->GetExitCode1IsError() ? ecIgnoreStdErr : ecIgnoreWarnings);
 
     ExecCommand(fsAnyCommand, Params, Command);
