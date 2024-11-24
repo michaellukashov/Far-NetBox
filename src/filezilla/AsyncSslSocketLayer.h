@@ -66,7 +66,7 @@ If you want to use this class in a commercial application, a short message
 to tim.kosse@filezilla-project.org would be appreciated but is not required.
 
 This product includes software developed by the OpenSSL Project
-for use in the OpenSSL Toolkit. (https://www.openssl.org/)
+for use in the OpenSSL Toolkit. (https://openssl-library.org/)
 */
 
 #pragma once
@@ -180,6 +180,7 @@ private:
   int ProcessSendBuffer();
 
   void TriggerEvents();
+  void LogSslError(const SSL *s, const char * str, const char * fmt, int nMessageType, char * debug = NULL);
 
   // Will be called from the OpenSSL library
   static void apps_ssl_info_callback(const SSL * s, int where, int ret);
