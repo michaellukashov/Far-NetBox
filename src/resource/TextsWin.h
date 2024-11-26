@@ -56,7 +56,6 @@
 #define CONSOLE_SEND_PIPE       6172
 #define WORKSPACE_NOT_FOLDER    6173
 #define FOLDER_NOT_WORKSPACE    6174
-#define SHELL_PATTERN_ERROR     6175
 #define PATH_ENV_TOO_LONG       6176
 #define STACK_TRACE             6177
 #define PUTTY_NO_SITES2         6180
@@ -692,6 +691,10 @@
 #define SSH_HOST_CA_NO_HOSTS    7204
 #define SSH_HOST_CA_HOSTS_INVALID 7205
 #define LOGIN_NOT_SHOWING_AGAIN 7206
+#define IMPORT_INI_TITLE        7207
+#define INC_SEARCH_TYPE         7208
+#define SEARCH_EDIT             7209
+#define SEARCH_NO_RESULTS       7210
 
 // 2xxx is reserved for TextsFileZilla.h
 
