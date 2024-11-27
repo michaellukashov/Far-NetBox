@@ -295,7 +295,7 @@ UnicodeString TXmlStorage::GetValue(const tinyxml2::XMLElement * Element) const
   return Result;
 }
 
-bool TXmlStorage::DoValueExists(const UnicodeString & Value)
+bool TXmlStorage::DoValueExists(const UnicodeString & Value, bool ForceAnsi)
 {
   bool Result = false;
   const tinyxml2::XMLElement * Element = FindElement(Value);

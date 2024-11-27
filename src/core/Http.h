@@ -28,14 +28,17 @@ public:
   bool IsCertificateError() const;
 
   __property UnicodeString URL = { read = FURL, write = FURL };
+  RWPropertySimple<UnicodeString> URL{&FURL, nb::bind(&THttp::SetURL, this)};
   __property UnicodeString ProxyHost = { read = FProxyHost, write = FProxyHost };
   __property int32_t ProxyPort = { read = FProxyPort, write = FProxyPort };
   __property TStrings * RequestHeaders = { read = FRequestHeaders, write = FRequestHeaders };
   __property UnicodeString Response = { read = GetResponse };
+  ROProperty<UnicodeString> Response{nb::bind(&THttp::GetResponse, this)};
   __property RawByteString ResponseRaw = { read = FResponse };
   __property TStrings * ResponseHeaders = { read = FResponseHeaders };
   __property int64_t ResponseLength = { read = GetResponseLength };
   __property int64_t ResponseLimit = { read = FResponseLimit, write = FResponseLimit };
+  RWPropertySimple<int64_t> ResponseLimit{&FResponseLimit, nb::bind(&THttp::SetResponseLimit, this)};
   __property THttpDownloadEvent OnDownload = { read = FOnDownload, write = FOnDownload };
   __property THttpErrorEvent OnError = { read = FOnError, write = FOnError };
   __property UnicodeString Certificate = { read = FCertificate, write = FCertificate };

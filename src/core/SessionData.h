@@ -40,6 +40,7 @@ enum TTlsVersion { ssl2 = 2, ssl3 = 3, tls10 = 10, tls11 = 11, tls12 = 12, tls13
 // has to match libs3 S3UriStyle
 enum TS3UrlStyle { s3usVirtualHost, s3usPath };
 enum TSessionSource { ssNone, ssStored, ssStoredModified };
+constexpr const int32_t SFTPMaxVersionAuto = -1;
 enum TSessionUrlFlags
 {
   sufSpecific = 0x01,
@@ -283,6 +284,8 @@ private:
   int32_t FInternalEditorEncoding{0};
   UnicodeString FS3DefaultRegion;
   UnicodeString FS3SessionToken;
+  UnicodeString FS3RoleArn;
+  UnicodeString FS3RoleSessionName;
   UnicodeString FS3Profile;
   TS3UrlStyle FS3UrlStyle;
   TAutoSwitch FS3MaxKeys;
@@ -479,6 +482,8 @@ public:
   void SetInternalEditorEncoding(int32_t AValue);
   void SetS3DefaultRegion(const UnicodeString & AValue);
   void SetS3SessionToken(const UnicodeString & AValue);
+  void SetS3RoleArn(const UnicodeString & AValue);
+  void SetS3RoleSessionName(const UnicodeString & value);
   void SetS3Profile(const UnicodeString & AValue);
   void SetS3UrlStyle(TS3UrlStyle AValue);
   void SetS3MaxKeys(TAutoSwitch AValue);
@@ -851,6 +856,10 @@ public:
   RWProperty<UnicodeString> S3DefaultRegion{nb::bind(&TSessionData::GetS3DefaultRegion, this), nb::bind(&TSessionData::SetS3DefaultRegion, this)};
   __property UnicodeString S3SessionToken = { read = FS3SessionToken, write = SetS3SessionToken };
   RWPropertySimple<UnicodeString> S3SessionToken{&FS3SessionToken, nb::bind(&TSessionData::SetS3SessionToken, this)};
+  __property UnicodeString S3RoleArn = { read = FS3RoleArn, write = SetS3RoleArn };
+  RWPropertySimple<UnicodeString> S3RoleArn{&FS3RoleArn, nb::bind(&TSessionData::SetS3RoleArn, this) };
+  __property UnicodeString S3RoleSessionName = { read = FS3RoleSessionName, write = SetS3RoleSessionName };
+  RWPropertySimple<UnicodeString> S3RoleSessionName{&FS3RoleSessionName, nb::bind(&TSessionData::SetS3RoleSessionName, this) };
   __property UnicodeString S3Profile = { read = FS3Profile, write = SetS3Profile };
   RWPropertySimple<UnicodeString> S3Profile{&FS3Profile, nb::bind(&TSessionData::SetS3Profile, this) };
   __property TS3UrlStyle S3UrlStyle = { read = FS3UrlStyle, write = SetS3UrlStyle };
@@ -1086,7 +1095,7 @@ public:
     bool UseDefaults = false, bool PuttyImport = false);
   void Save(THierarchicalStorage * Storage, bool All = false);
   void SelectAll(bool Select);
-  void Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
+  bool Import(TStoredSessionList * From, bool OnlySelected, TList * Imported);
   void RecryptPasswords(TStrings * RecryptPasswordErrors);
   TSessionData * AtSession(int32_t Index)
   { return static_cast<TSessionData *>(AtObject(Index)); }
@@ -1116,8 +1125,8 @@ public:
 
   static int32_t ImportHostKeys(
     THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected);
-  static void ImportHostKeys(
-    const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected);
+  static void ImportHostKeys(THierarchicalStorage * SourceStorage, TStoredSessionList * Sessions, bool OnlySelected);
+  static void ImportHostKeys(const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected);
   static void ImportSelectedKnownHosts(TStoredSessionList * Sessions);
   static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
   static void SelectKnownHostsForSelectedSessions(TStoredSessionList * KnownHosts, TStoredSessionList * Sessions);

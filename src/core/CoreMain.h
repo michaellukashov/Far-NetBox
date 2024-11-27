@@ -4,11 +4,14 @@
 #include <Common.h>
 #include "SessionInfo.h"
 
-//extern TConfiguration * Configuration;
-// NB_CORE_EXPORT extern TStoredSessionList * StoredSessions;
+#if defined(__BORLANDC__)
+extern TConfiguration * Configuration;
+extern TStoredSessionList * StoredSessions;
+#endif // defined(__BORLANDC__)
 extern bool AnySession;
 extern TApplicationLog * ApplicationLog;
-#define AppLog(S) if (ApplicationLog && ApplicationLog->Logging) ApplicationLog->Log(S)
+#define APPLOG_INTERNAL(S) if (ApplicationLog && ApplicationLog->Logging) ApplicationLog->Log(S)
+#define AppLog(S) APPLOG_INTERNAL(S)
 #define AppLogFmt(S, ...) AppLog(FORMAT(S, __VA_ARGS__))
 
 NB_CORE_EXPORT void CoreInitialize();

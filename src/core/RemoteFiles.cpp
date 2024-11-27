@@ -3135,20 +3135,32 @@ int64_t TChecklistItem::GetSize(TChecklistAction AAction) const
   }
   else
   {
-    switch (AAction)
-    {
-      case saUploadNew:
-      case saUploadUpdate:
-        return Local.Size;
+    return GetBaseSize(AAction);
+  }
+}
 
-      case saDownloadNew:
-      case saDownloadUpdate:
-        return Remote.Size;
+int64_t TChecklistItem::GetBaseSize() const
+{
+  return GetBaseSize(Action);
+}
 
-      default:
-        DebugFail();
-        return 0;
-    }
+int64_t TChecklistItem::GetBaseSize(TChecklistAction AAction) const
+{
+  switch (AAction)
+  {
+    case saUploadNew:
+    case saUploadUpdate:
+    case saDeleteLocal:
+      return Local.Size;
+
+    case saDownloadNew:
+    case saDownloadUpdate:
+    case saDeleteRemote:
+      return Remote.Size;
+
+    default:
+      DebugFail();
+      return 0;
   }
 }
 

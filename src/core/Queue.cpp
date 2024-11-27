@@ -263,6 +263,7 @@ public:
   void Idle();
   bool Pause();
   bool Resume();
+  bool IsCancelled() const;
 
 protected:
   gsl::not_null<TTerminalQueue *> FQueue;
@@ -1287,7 +1288,7 @@ void TBackgroundTerminal::Init(gsl::not_null<TTerminal *> MainTerminal, gsl::not
 bool TBackgroundTerminal::DoQueryReopen(Exception * /*E*/)
 {
   bool Result;
-  if (FItem->FTerminated || FItem->FCancel)
+  if (FItem->IsCancelled())
   {
     // avoid reconnection if we are closing
     Result = false;
@@ -1394,7 +1395,7 @@ void TTerminalItem::ProcessEvent()
 
       FItem->SetStatus(TQueueItem::qsProcessing);
 
-      FItem->Execute(this);
+      FItem->Execute();
     }
   }
   catch (Exception &E)
@@ -1640,8 +1641,9 @@ void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
 void TTerminalItem::OperationProgress(
   TFileOperationProgressType & ProgressData)
 {
-  if (FPause && !FTerminated && !FCancel && FItem)
+  if (FPause && !IsCancelled() && !FItem)
   {
+    DebugAssert(FItem != nullptr);
     const TQueueItem::TStatus PrevStatus = FItem->GetStatus();
     DebugAssert(PrevStatus == TQueueItem::qsProcessing);
     // must be set before TFileOperationProgressType::Suspend(), because
@@ -1662,7 +1664,7 @@ void TTerminalItem::OperationProgress(
     } end_try__finally
   }
 
-  if (FTerminated || FCancel)
+  if (IsCancelled())
   {
     if (ProgressData.GetTransferringFile())
     {
@@ -1688,6 +1690,11 @@ bool TTerminalItem::OverrideItemStatus(TQueueItem::TStatus & ItemStatus) const
     ItemStatus = TQueueItem::qsConnecting;
   }
   return Result;
+}
+
+bool TTerminalItem::IsCancelled() const
+{
+  return FTerminated || FCancel;
 }
 
 // TQueueItem
@@ -1816,14 +1823,19 @@ bool TQueueItem::UpdateFileList(TQueueFileList *)
   return false;
 }
 
-void TQueueItem::Execute(gsl::not_null<TTerminalItem *> TerminalItem)
+bool TQueueItem::IsExecutionCancelled() const
+{
+  return DebugAlwaysTrue(FTerminalItem != NULL) ? FTerminalItem->IsCancelled() : true;
+}
+
+void TQueueItem::Execute()
 {
   {
     DebugAssert(FProgressData == nullptr);
     const TGuard Guard(FSection);
     FProgressData = new TFileOperationProgressType();
   }
-  DoExecute(TerminalItem->FTerminal.get());
+  DoExecute(FTerminalItem->FTerminal.get());
 }
 
 void TQueueItem::SetCPSLimit(int32_t CPSLimit)
@@ -2255,40 +2267,45 @@ TTransferQueueItem::TTransferQueueItem(TObjectClassId Kind, TTerminal * ATermina
   FInfo->Side = Side;
   FInfo->SingleFile = SingleFile;
 
-  DebugAssert(AFilesToCopy != nullptr);
-  if (!AFilesToCopy)
-    return;
-  FFilesToCopy = std::make_unique<TStringList>();
-  for (int32_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
+  if (AFilesToCopy != nullptr)
   {
-    const UnicodeString & FileName = AFilesToCopy->GetString(Index);
-    const TRemoteFile * File = AFilesToCopy->As<TRemoteFile>(Index);
-    FFilesToCopy->AddObject(FileName, ((File == nullptr) || (Side == osLocal)) ? nullptr : File->Duplicate());
+    FFilesToCopy = std::make_unique<TStringList>();
+    for (int32_t Index = 0; Index < AFilesToCopy->GetCount(); ++Index)
+    {
+      const UnicodeString & FileName = AFilesToCopy->GetString(Index);
+      const TRemoteFile * File = AFilesToCopy->As<TRemoteFile>(Index);
+      FFilesToCopy->AddObject(FileName, ((File == nullptr) || (Side == osLocal)) ? nullptr : File->Duplicate());
+    }
   }
 
   FTargetDir = TargetDir;
 
   DebugAssert(CopyParam != nullptr);
-  if (CopyParam)
-  {
-    FCopyParam = std::make_unique<TCopyParamType>(*CopyParam);
+  if (!CopyParam)
+    return;
+  FCopyParam = std::make_unique<TCopyParamType>(*CopyParam);
 
-    FParams = Params;
+  FParams = Params;
 
-    FParallel = Parallel;
-    FLastParallelOperationAdded = GetTickCount();
-  }
+  FParallel = Parallel;
+  FLastParallelOperationAdded = GetTickCount();
+
 }
 
 TTransferQueueItem::~TTransferQueueItem() noexcept
 { try {
-  for (int32_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
+  if (FFilesToCopy != nullptr)
   {
-    TObject * Object = FFilesToCopy->Get(Index);
-    SAFE_DESTROY(Object);
+    for (int32_t Index = 0; Index < FFilesToCopy->GetCount(); ++Index)
+    {
+      TObject * Object = FFilesToCopy->Get(Index);
+      SAFE_DESTROY(Object);
+    }
+#if defined(__BORLANDC__)
+    delete FFilesToCopy;
+#endif // defined(__BORLANDC__)
   } } catch(std::bad_alloc &) {} catch(...) {}
 #if defined(__BORLANDC__)
-  delete FFilesToCopy;
   delete FCopyParam;
 #endif // defined(__BORLANDC__)
 }
@@ -2820,6 +2837,9 @@ void TTerminalThread::ProcessEvent()
 {
   DebugAssert(FEvent != nullptr);
   DebugAssert(FException == nullptr);
+
+  // Needed at least for TXMLDocument use in TS3FileSystem
+  CoInitialize(nullptr);
 
   try
   {
