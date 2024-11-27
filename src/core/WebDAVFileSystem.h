@@ -175,7 +175,7 @@ protected:
   struct TSessionContext
   {
     CUSTOM_MEM_ALLOCATION_IMPL
-    TSessionContext() = default;
+    TSessionContext();
     ~TSessionContext();
     TWebDAVFileSystem * FileSystem{nullptr};
     ne_session_s * NeonSession{nullptr}; // The main one (there might be aux session for the same context)
@@ -191,6 +191,7 @@ private:
   UnicodeString FLastAuthorizationProtocol;
   bool FAuthenticationRetry{false};
   bool FOneDrive{false};
+  enum { odiUnknown, odiUpperCase, odiLowerCase } FOneDriveInterface;
 
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
@@ -204,6 +205,7 @@ private:
   int32_t ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList);
   int32_t RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
   int32_t CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
+  bool IsRedirect(int32_t NeonStatus) const;
   bool IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const;
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * AFile) const;

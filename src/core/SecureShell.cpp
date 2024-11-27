@@ -23,7 +23,9 @@
 #define SIO_IDEAL_SEND_BACKLOG_CHANGE   _IO('t', 122)
 #endif
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
 
@@ -665,7 +667,7 @@ UnicodeString TSecureShell::ConvertFromPutty(const char * Str, int32_t Length) c
   if ((Length >= BomLength) &&
       (strncmp(Str, WINSCP_BOM, BomLength) == 0))
   {
-    return UTF8ToString(Str + BomLength, Length - BomLength);
+    return UTF8ArrayToString(Str + BomLength, Length - BomLength - 1);
   }
   else
   {
@@ -2356,8 +2358,7 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, int32_t 
   Storage->AccessMode = smRead;
   TGuard Guard(*PuttyStorageSection.get());
   DebugAssert(PuttyStorage == nullptr);
-  TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage);
-  PuttyStorage = Storage.get();
+  TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage, Storage.get());
 
   AnsiString AnsiStoredKeys;
   AnsiStoredKeys.SetLength(10240);
@@ -2517,10 +2518,9 @@ UnicodeString TSecureShell::StoreHostKey(
 {
   TGuard Guard(*PuttyStorageSection.get());
   DebugAssert(PuttyStorage == nullptr);
-  TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage);
   std::unique_ptr<THierarchicalStorage> Storage(GetHostKeyStorage());
   Storage->AccessMode = smReadWrite;
-  PuttyStorage = Storage.get();
+  TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage, Storage.get());
   store_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr).c_str());
   return Storage->Source;
 }

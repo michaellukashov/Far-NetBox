@@ -16,9 +16,10 @@ struct TSFTPSupport;
 class TSecureShell;
 class TEncryption;
 
+#if defined(__BORLANDC__)
 // moved to FileSystems.h
-// enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
-// extern const int32_t SFTPMaxVersion;
+enum TSFTPOverwriteMode { omOverwrite, omAppend, omResume };
+#endif // defined(__BORLANDC__)
 
 class NB_CORE_EXPORT TSFTPFileSystem final : public TCustomFileSystem
 {

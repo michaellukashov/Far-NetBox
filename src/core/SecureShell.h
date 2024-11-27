@@ -200,8 +200,9 @@ public:
   __property UnicodeString UserName = { read = FUserName };
   __property bool Simple = { read = FSimple, write = FSimple };
   __property TSshImplementation SshImplementation = { read = FSshImplementation };
+  ROProperty2<TSshImplementation> SshImplementation{&FSshImplementation};
   __property bool UtfStrings = { read = FUtfStrings, write = FUtfStrings };
-  TSecureShellMode Mode;
+  TSecureShellMode Mode{ssmNone};
 
   bool GetActive() const { return FActive; }
   TCaptureOutputEvent & GetOnCaptureOutput() { return FOnCaptureOutput; }

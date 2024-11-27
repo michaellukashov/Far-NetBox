@@ -172,8 +172,10 @@ constexpr const char * SFTP_EXT_POSIX_RENAME = "posix-rename@openssh.com";
 constexpr wchar_t OGQ_LIST_OWNERS = 0x01;
 constexpr wchar_t OGQ_LIST_GROUPS = 0x02;
 
-// const int32_t SFTPMinVersion = 0;
-// const int32_t SFTPMaxVersion = 6;
+#if defined(__BORLANDC__)
+const int32_t SFTPMinVersion = 0;
+#endif // defined(__BORLANDC__)
+constexpr uint32_t SFTPStandardVersion = 3;
 constexpr uint32_t SFTPNoMessageNumber = nb::ToUInt32(-1);
 
 constexpr SSH_FX_TYPE asNo =            0;
@@ -1244,11 +1246,11 @@ public:
     return SendRequests();
   }
 
-  virtual void Dispose(SSH_FXP_TYPE ExpectedType, SSH_FX_TYPE AllowStatus)
+  void DisposeUntil(int32_t Count, SSH_FXP_TYPE ExpectedType)
   {
     DebugAssert(FFileSystem->FTerminal->GetActive());
 
-    while (FRequests->GetCount())
+    while (FRequests->GetCount() > Count)
     {
       DebugAssert(FResponses->GetCount());
 
@@ -1261,11 +1263,11 @@ public:
 
       try
       {
-        ReceiveResponse(Request.get(), Response.get(), ExpectedType, AllowStatus);
+        ReceiveResponse(Request.get(), Response.get(), ExpectedType, -1);
       }
       catch(Exception & E)
       {
-        if (ExpectedType < 0)
+        if ((ExpectedType < 0) && (Count == 0))
         {
           if (FFileSystem->FTerminal->GetActive())
           {
@@ -1286,11 +1288,16 @@ public:
     }
   }
 
-  void DisposeSafe(SSH_FXP_TYPE ExpectedType = -1, SSH_FX_TYPE AllowStatus = -1)
+  virtual void Dispose(SSH_FXP_TYPE ExpectedType)
+  {
+    DisposeUntil(0, ExpectedType);
+  }
+
+  void DisposeSafe(SSH_FXP_TYPE ExpectedType = -1)
   {
     if (FFileSystem->FTerminal->GetActive())
     {
-      Dispose(ExpectedType, AllowStatus);
+      Dispose(ExpectedType);
     }
   }
 
@@ -1413,8 +1420,12 @@ protected:
       TSFTPPacket * Response = new TSFTPPacket(SSH_FXP_NONE, FCodePage);
       FRequests->Add(Request.get());
       FResponses->Add(Response);
+      if (FFileSystem->FTerminal->Configuration->ActualLogProtocol >= 1)
+      {
+        FFileSystem->FTerminal->LogEvent(FORMAT(L"Queue len: %d", FRequests->Count));
+      }
 
-      // make sure the response is reserved before actually ending the message
+      // make sure the response is reserved before actually sending the message
       // as we may receive response asynchronously before SendPacket finishes
       FFileSystem->ReserveResponse(Request.get(), Response);
       SendPacket(Request.release());
@@ -1463,13 +1474,10 @@ class TSFTPAsynchronousQueue : public TSFTPQueue
 {
 public:
   TSFTPAsynchronousQueue() = delete;
-  // #pragma option push -vi- // WORKAROUND for internal compiler errors
   explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept : TSFTPQueue(AFileSystem, CodePage)
   {
-    FFileSystem->FSecureShell->RegisterReceiveHandler(nb::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this));
-    FReceiveHandlerRegistered = true;
+    RegisterReceiveHandler();
   }
-  // #pragma option pop
 
   virtual ~TSFTPAsynchronousQueue() noexcept override
   { try {
@@ -1477,12 +1485,12 @@ public:
     } catch(const std::exception &) { DEBUG_PRINTF("Error"); }
   }
 
-  virtual void Dispose(SSH_FXP_TYPE ExpectedType, SSH_FX_TYPE AllowStatus) override
+  virtual void Dispose(SSH_FXP_TYPE ExpectedType) override
   {
     // we do not want to receive asynchronous notifications anymore,
     // while waiting synchronously for pending responses
     UnregisterReceiveHandler();
-    TSFTPQueue::Dispose(ExpectedType, AllowStatus);
+    TSFTPQueue::Dispose(ExpectedType);
   }
 
   bool Continue()
@@ -1520,16 +1528,28 @@ protected:
     return true;
   }
 
-  // #pragma option push -vi- // See pragma at constructor
-  void UnregisterReceiveHandler()
+#if defined(__BORLANDC__)
+  #pragma option push -vi- // WORKAROUND for internal compiler errors
+#endif // defined(__BORLANDC__)
+  bool UnregisterReceiveHandler()
   {
-    if (FReceiveHandlerRegistered)
+    bool Result = FReceiveHandlerRegistered;
+    if (Result)
     {
       FReceiveHandlerRegistered = false;
       FFileSystem->FSecureShell->UnregisterReceiveHandler(nb::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this));
     }
+    return Result;
   }
-  // #pragma option pop
+
+  void RegisterReceiveHandler()
+  {
+    FFileSystem->FSecureShell->RegisterReceiveHandler(nb::bind(&TSFTPAsynchronousQueue::ReceiveHandler, this));
+    FReceiveHandlerRegistered = true;
+  }
+#if defined(__BORLANDC__)
+  #pragma option pop
+#endif // defined(__BORLANDC__)
 
 private:
   bool FReceiveHandlerRegistered{false};
@@ -1622,7 +1642,7 @@ class TSFTPUploadQueue final : public TSFTPAsynchronousQueue
   NB_DISABLE_COPY(TSFTPUploadQueue)
 public:
   TSFTPUploadQueue() = delete;
-  explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uint32_t ACodePage, TEncryption * Encryption) noexcept :
+  explicit TSFTPUploadQueue(TSFTPFileSystem * AFileSystem, uint32_t ACodePage, TEncryption * Encryption, int32_t QueueMaxLen) noexcept :
     TSFTPAsynchronousQueue(AFileSystem, ACodePage),
     FEncryption(Encryption)
   {
@@ -1632,6 +1652,7 @@ public:
     FLastBlockSize = 0;
     FEnd = false;
     FConvertToken = false;
+    FQueueMaxLen = QueueMaxLen;
   }
 
   virtual ~TSFTPUploadQueue() noexcept override = default;
@@ -1670,7 +1691,7 @@ protected:
     // Buffer for one block of data
     TFileBuffer BlockBuf;
 
-    const uint32_t BlockSize = GetBlockSize();
+    const uint32_t BlockSize = FFileSystem->UploadBlockSize(FHandle, OperationProgress);
     bool Result = (BlockSize > 0);
 
     if (Result)
@@ -1773,14 +1794,28 @@ protected:
     return Result;
   }
 
-  uint32_t GetBlockSize() const
-  {
-    return FFileSystem->UploadBlockSize(FHandle, OperationProgress);
-  }
-
   virtual bool End(TSFTPPacket * /*Response*/) override
   {
     return FEnd;
+  }
+
+  virtual bool SendRequest()
+  {
+    bool Result = TSFTPAsynchronousQueue::SendRequest();
+    if (FRequests->Count >= FQueueMaxLen)
+    {
+      FFileSystem->FTerminal->LogEvent(1, L"Too many outstanding requests, waiting for responses...");
+      DebugCheck(UnregisterReceiveHandler());
+      try__finally
+      {
+        DisposeUntil(FQueueMaxLen - 1, SSH_FXP_STATUS);
+      }
+      __finally
+      {
+        RegisterReceiveHandler();
+      } end_try__finally
+    }
+    return Result;
   }
 
 private:
@@ -1796,6 +1831,7 @@ private:
   bool FConvertToken{false};
   int32_t FConvertParams{0};
   TEncryption * FEncryption{nullptr};
+  int32_t FQueueMaxLen{0};
 };
 
 class TSFTPLoadFilesPropertiesQueue final : public TSFTPFixedLenQueue
@@ -2055,6 +2091,12 @@ TSFTPFileSystem::~TSFTPFileSystem() noexcept
 #if defined(__BORLANDC__)
   delete FSupport;
 #endif // defined(__BORLANDC__)
+  // After closing, we can only possibly have "discard" reservations of the not-read responses to the last requests
+  // (typically to SSH_FXP_CLOSE)
+  for (int32_t i = 0; i < FPacketReservations->Count; i++)
+  {
+    DebugAssert(FPacketReservations->Items[i] == nullptr);
+  }
 #if defined(__BORLANDC__)
   delete FPacketReservations;
   delete FFixedPaths;
@@ -3157,6 +3199,20 @@ void TSFTPFileSystem::DoStartup()
   FFileSystemInfoValid = false;
   TSFTPPacket Packet1(SSH_FXP_INIT, FCodePage);
   uint32_t MaxVersion = GetSessionData()->GetSFTPMaxVersion();
+  if (MaxVersion == SFTPMaxVersionAuto)
+  {
+    TSshImplementation SshImplementation = FSecureShell->SshImplementation;
+    if ((SshImplementation == sshiOpenSSH) || (SshImplementation == sshiProFTPD) || (SshImplementation == sshiBitvise))
+    {
+      MaxVersion = SFTPMaxVersion;
+      FTerminal->LogEvent(FORMAT(L"Well known server, allowing SFTP version %d.", MaxVersion));
+    }
+    else
+    {
+      MaxVersion = SFTPStandardVersion;
+      FTerminal->LogEvent(FORMAT(L"Not well known server, limiting to safe SFTP version %d.", MaxVersion));
+    }
+  }
   if (MaxVersion > SFTPMaxVersion)
   {
     MaxVersion = SFTPMaxVersion;
@@ -4077,6 +4133,18 @@ void TSFTPFileSystem::CopyFile(
       Packet.AddString(DestRemoteHandle);
       Packet.AddInt64(0);
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_STATUS);
+
+      if (DebugAlwaysTrue(AFile != nullptr))
+      {
+        TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT, FCodePage);
+        AddPathString(PropertiesRequest, NewNameCanonical);
+
+        uint16_t Rights = AFile->Rights->NumberSet;
+        TDSTMode DSTMode = FTerminal->SessionData->DSTMode;
+        int64_t MTime = ConvertTimestampToUnix(DateTimeToFileTime(AFile->Modification, DSTMode), DSTMode);
+        PropertiesRequest.AddProperties(&Rights, nullptr, nullptr, &MTime, nullptr, nullptr, false, FVersion, FUtfStrings);
+        SendPacketAndReceiveResponse(&PropertiesRequest, &Packet, SSH_FXP_STATUS);
+      }
     }
     __finally
     {
@@ -4881,11 +4949,13 @@ void TSFTPFileSystem::Source(
   }
 
   // will the transfer be resumable?
-  bool DoResume = (ResumeAllowed && (OpenParams.OverwriteMode == omOverwrite));
+  bool IntendedResume = (ResumeAllowed && (OpenParams.OverwriteMode == omOverwrite));
+  bool DoResume = IntendedResume;
 
   const UnicodeString RemoteFileName = DoResume ? DestPartialFullName : DestFullName;
   OpenParams.FileName = AHandle.FileName;
   OpenParams.RemoteFileName = RemoteFileName;
+  OpenParams.RemoteFullFileName = DestFullName;
   OpenParams.Resume = DoResume;
   OpenParams.Resuming = ResumeTransfer;
   OpenParams.OperationProgress = OperationProgress;
@@ -4902,13 +4972,17 @@ void TSFTPFileSystem::Source(
     &OpenParams);
   OperationProgress->Progress();
 
+  DoResume = OpenParams.Resume;
+
   if (OpenParams.RemoteFileName != RemoteFileName)
   {
     DebugAssert(!DoResume);
     DebugAssert(base::UnixExtractFilePath(OpenParams.RemoteFileName) == base::UnixExtractFilePath(RemoteFileName));
     DestFullName = OpenParams.RemoteFileName;
     const UnicodeString NewFileName = base::UnixExtractFileName(DestFullName);
-    DebugAssert(ADestFileName != NewFileName);
+    // We can get here either when user change target name or
+    // when we intended to transfer via temporary file but we fails to create it in the end
+    DebugAssert(ADestFileName != NewFileName || (IntendedResume && !DoResume));
     ADestFileName = NewFileName;
   }
 
@@ -4978,7 +5052,7 @@ void TSFTPFileSystem::Source(
     const bool Encrypt = FTerminal->IsFileEncrypted(DestFullName, CopyParam->EncryptNewFiles);
     TValueRestorer<TSecureShellMode> SecureShellModeRestorer(FSecureShell->Mode);
     FSecureShell->Mode = ssmUploading;
-    TSFTPUploadQueue Queue(this, FCodePage, (Encrypt ? &Encryption : nullptr));
+    TSFTPUploadQueue Queue(this, FCodePage, (Encrypt ? &Encryption : nullptr), FTerminal->SessionData->FSFTPUploadQueue);
     try__finally
     {
       const int32_t ConvertParams =
@@ -5270,7 +5344,15 @@ int32_t TSFTPFileSystem::SFTPOpenRemote(void * AOpenParams, void * /*Param2*/)
     }
     catch(Exception & E)
     {
-      if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->GetActive())
+      if (OpenParams->Resume && !OpenParams->Resuming &&
+          (OpenParams->RemoteFileName != OpenParams->RemoteFullFileName) &&
+          (OpenParams->CopyParam->ResumeSupport == rsSmart) && FTerminal->Active)
+      {
+        FTerminal->LogEvent(FORMAT(L"Cannot create new partial file \"%s\", trying to create target file \"%s\"", OpenParams->RemoteFileName, OpenParams->RemoteFullFileName));
+        OpenParams->RemoteFileName = OpenParams->RemoteFullFileName;
+        OpenParams->Resume = false;
+      }
+      else if (!OpenParams->Confirmed && (OpenType & SSH_FXF_EXCL) && FTerminal->GetActive())
       {
         FTerminal->LogEvent(FORMAT("Cannot create new file \"%s\", checking if it exists already", OpenParams->RemoteFileName));
 

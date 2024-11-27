@@ -142,7 +142,7 @@ bool TFar3Storage::DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi)
   return Result;
 }
 
-bool TFar3Storage::DoValueExists(const UnicodeString & Value)
+bool TFar3Storage::DoValueExists(const UnicodeString & Value, bool ForceAnsi)
 {
   const bool Result = FPluginSettings.ValueExists(FRoot, Value.c_str());
   return Result;

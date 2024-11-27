@@ -384,7 +384,6 @@ public:
   Boolean GetIncludeThisDirectory() const { return FIncludeThisDirectory; }
   TRemoteFile * GetParentDirectory() const { return FParentDirectory; }
   TRemoteFile * GetThisDirectory() const { return FThisDirectory; }
-  TStrings * GetSelectedFiles() const;
 };
 
 class TRemoteDirectoryCache final : private TStringList
@@ -651,6 +650,7 @@ public:
   bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
   bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
   bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
+  int64_t GetBaseSize() const;
   int64_t GetSize() const;
   int64_t GetSize(TChecklistAction AAction) const;
 
@@ -661,7 +661,8 @@ private:
   FILETIME FLocalLastWriteTime{};
   bool FDirectoryHasSize{false};
 
-//  TChecklistItem() noexcept;
+  // TChecklistItem() noexcept;
+  int64_t GetBaseSize(TChecklistAction AAction) const;
 };
 
 class NB_CORE_EXPORT TSynchronizeChecklist final : public TObject
@@ -675,7 +676,7 @@ public:
   static const int32_t ActionCount = saDeleteLocal;
 
 #if defined(__BORLANDC__)
-
+// renamed to TChecklistItem
   class TItem
   {
   friend class TTerminal;
@@ -703,6 +704,7 @@ public:
     bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
     bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
     bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
+    int64_t GetBaseSize() const;
     int64_t GetSize() const;
     int64_t GetSize(TAction AAction) const;
 
@@ -713,6 +715,7 @@ public:
     bool FDirectoryHasSize;
 
     TItem();
+    int64_t GetBaseSize(TAction AAction) const;
   };
 
 #endif // defined(__BORLANDC__)

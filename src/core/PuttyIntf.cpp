@@ -1214,13 +1214,13 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_k
   BinarySource Source[1]{};
   BinarySource_BARE_INIT(Source, UtfLine.c_str(), UtfLine.Length());
   UnicodeString Result;
-  if (!openssh_loadpub(Source, &AlgorithmName, BinarySink_UPCAST(PubBlobBuf), &CommentPtr, &ErrorStr))
+  try__finally
   {
-    throw Exception(UnicodeString(ErrorStr));
-  }
-  else
-  {
-    try__finally
+    if (!openssh_loadpub(Source, &AlgorithmName, BinarySink_UPCAST(PubBlobBuf), &CommentPtr, &ErrorStr))
+    {
+      throw Exception(UnicodeString(ErrorStr));
+    }
+    else
     {
       Algorithm = find_pubkey_alg(AlgorithmName);
       if (Algorithm == nullptr)
@@ -1239,13 +1239,13 @@ UnicodeString ParseOpenSshPubLine(const UnicodeString & Line, const struct ssh_k
       sfree(FmtKey);
       Algorithm->freekey(Key);
     }
-    __finally
-    {
-      strbuf_free(PubBlobBuf);
-      sfree(AlgorithmName);
-      sfree(CommentPtr);
-    } end_try__finally
   }
+  __finally
+  {
+    strbuf_free(PubBlobBuf);
+    sfree(AlgorithmName);
+    sfree(CommentPtr);
+  } end_try__finally
   return Result;
 }
 
@@ -1453,7 +1453,7 @@ TStrings * SshHostKeyList()
 TStrings * SshMacList()
 {
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
-  const struct ssh2_macalg ** Macs = nullptr;
+  const struct ssh2_macalg * const * Macs = nullptr;
   int32_t Count = 0;
   get_macs(&Count, &Macs);
 
@@ -1501,8 +1501,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
   if (PuttyRegistryTypes.empty())
   {
     TGuard Guard(PuttyRegistrySection);
-    TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode);
-    PuttyRegistryMode = prmCollect;
+    TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmCollect);
     Conf * conf = conf_new();
     try__finally
     {
@@ -1547,16 +1546,14 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
 void PuttyDefaults(Conf * conf)
 {
   TGuard Guard(PuttyRegistrySection);
-  TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode);
-  PuttyRegistryMode = prmFail;
+  TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmFail);
   do_defaults(nullptr, conf);
 }
 
 void SavePuttyDefaults(const UnicodeString & Name)
 {
   TGuard Guard(PuttyRegistrySection);
-  TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode);
-  PuttyRegistryMode = prmPass;
+  TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmPass);
   Conf * conf = conf_new();
   try__finally
   {

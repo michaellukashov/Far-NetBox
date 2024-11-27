@@ -259,6 +259,9 @@ public:
   THierarchicalStorage * OpenDirectoryStatisticsCache(bool CanCreate);
   UnicodeString GetDirectoryStatisticsCacheKey(
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
+  void SelectSessionsToImportIfAny(
+    TStoredSessionList * ImportSessionList, TStoredSessionList * Sessions,
+    UnicodeString & Error, const UnicodeString & NoSessionsError);
 
   virtual bool GetConfirmOverwriting() const;
   virtual void SetConfirmOverwriting(bool Value);
@@ -360,6 +363,7 @@ public:
   TStoredSessionList * SelectKnownHostsSessionsForImport(
     TStrings * Lines, TStoredSessionList * Sessions, UnicodeString & Error);
   TStoredSessionList * SelectOpensshSessionsForImport(TStoredSessionList * Sessions, UnicodeString & Error);
+  TStoredSessionList * SelectSessionsForImport(TStoredSessionList * Sessions, const UnicodeString & FileName, UnicodeString & Error);
   UnicodeString GetPuttySessionsKey(const UnicodeString & RootKey) const;
   void RefreshPuttySshHostCAList();
 

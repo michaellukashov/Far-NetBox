@@ -5,6 +5,7 @@
 
 void CryptographyInitialize();
 void CryptographyFinalize();
+void RequireTls();
 RawByteString ScramblePassword(const UnicodeString & Password);
 bool UnscramblePassword(const RawByteString & Scrambled, const UnicodeString & Password);
 void AES256EncryptWithMAC(const RawByteString & Input, const UnicodeString & Password,

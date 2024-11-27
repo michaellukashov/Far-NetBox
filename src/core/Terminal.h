@@ -300,8 +300,6 @@ public:
   bool GetStoredCredentialsTried() const;
   bool InTransaction() const;
   void SaveCapabilities(TFileSystemInfo & FileSystemInfo);
-  bool CreateTargetDirectory(const UnicodeString & DirectoryPath, uint32_t Attrs, const TCopyParamType * CopyParam);
-  UnicodeString CutFeature(UnicodeString & Buf);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(int32_t Params);
 
@@ -602,6 +600,7 @@ public:
   TRemoteFile * ReadFile(const UnicodeString & AFileName);
   TRemoteFile * TryReadFile(const UnicodeString & AFileName);
   bool FileExists(const UnicodeString & AFileName);
+  bool DirectoryExists(const UnicodeString & FileName);
   void ReadSymlink(TRemoteFile * SymlinkFile, TRemoteFile *& AFile);
   bool CopyToLocal(
     TStrings * AFilesToCopy, const UnicodeString & ATargetDir, const TCopyParamType * CopyParam, int32_t AParams,
@@ -612,6 +611,7 @@ public:
   int32_t CopyToParallel(TParallelOperation * ParallelOperation, TFileOperationProgressType * AOperationProgress);
   void LogParallelTransfer(TParallelOperation * ParallelOperation);
   void CreateDirectory(const UnicodeString & ADirName, const TRemoteProperties * Properties = nullptr);
+  bool CreateTargetDirectory(const UnicodeString & ADirectoryPath, uint32_t Attrs, const TCopyParamType * ACopyParam);
   void CreateLink(const UnicodeString & AFileName, const UnicodeString & APointTo, bool Symbolic);
   void DeleteFile(const UnicodeString & AFileName,
     const TRemoteFile * AFile = nullptr, void * AParams = nullptr);

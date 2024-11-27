@@ -227,6 +227,7 @@ void TWebDAVFileSystem::Open()
   if (FOneDrive)
   {
     FTerminal->LogEvent(L"OneDrive host detected.");
+    FOneDriveInterface = odiUnknown;
   }
 
   const int32_t Port = Data->GetPortNumber();
@@ -478,6 +479,11 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
   FTerminal->SaveCapabilities(FFileSystemInfo);
 }
 
+TWebDAVFileSystem::TSessionContext::TSessionContext() :
+  NeonSession(NULL)
+{
+}
+
 TWebDAVFileSystem::TSessionContext::~TSessionContext()
 {
   if (NeonSession != nullptr)
@@ -536,6 +542,18 @@ void TWebDAVFileSystem::CollectUsage()
   }
 
   const UnicodeString RemoteSystem = FFileSystemInfo.RemoteSystem;
+  if (FOneDrive)
+  {
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsWebDAVOneDrive");
+    if (FOneDriveInterface == odiUpperCase)
+    {
+      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsWebDAVOneDriveUpperCase");
+    }
+    else if (FOneDriveInterface == odiLowerCase)
+    {
+      FTerminal->Configuration->Usage->Inc(L"OpenedSessionsWebDAVOneDriveLowerCase");
+    }
+  }
   if (ContainsText(RemoteSystem, "Microsoft-IIS"))
   {
 //    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVIIS");
@@ -833,9 +851,15 @@ int32_t TWebDAVFileSystem::ReadDirectoryInternal(
   return Result;
 }
 
+bool TWebDAVFileSystem::IsRedirect(int32_t NeonStatus) const
+{
+  return (NeonStatus == NE_REDIRECT);
+}
+
+
 bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const
 {
-  bool Result = (NeonStatus == NE_REDIRECT);
+  bool Result = IsRedirect(NeonStatus);
   if (Result)
   {
     // What PathToNeon does
@@ -846,7 +870,6 @@ bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APat
     const UnicodeString RedirectUrl = GetRedirectUrl();
     // We should test if the redirect is not for another server,
     // though not sure how to do this reliably (domain aliases, IP vs. domain, etc.)
-    // If this ever gets implemented, beware of use from Sink(), where we support redirects to another server.
     const UnicodeString RedirectPath = ParsePathFromUrl(RedirectUrl);
     Result =
       !RedirectPath.IsEmpty() &&
@@ -893,24 +916,89 @@ void TWebDAVFileSystem::NeonPropsResult(
   const UnicodeString Path = PathUnescape(Uri->path).c_str();
 
   const TReadFileData & Data = *static_cast<TReadFileData *>(UserData);
+  TWebDAVFileSystem * FileSystem = Data.FileSystem;
   if (Data.FileList != nullptr)
   {
     std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>());
-    File->SetTerminal(Data.FileSystem->FTerminal);
-    Data.FileSystem->ParsePropResultSet(File.get(), Path, Results);
+    TTerminal * Terminal = FileSystem->FTerminal;
+    File->SetTerminal(Terminal);
+    FileSystem->ParsePropResultSet(File.get(), Path, Results);
 
-    const UnicodeString FileListPath = Data.FileSystem->AbsolutePath(Data.FileList->GetDirectory(), false);
+    const UnicodeString FileListPath = base::UnixIncludeTrailingBackslash(FileSystem->AbsolutePath(Data.FileList->GetDirectory(), false));
+    if (FileSystem->FOneDrive)
+    {
+      const UnicodeString FullFileName = base::UnixIncludeTrailingBackslash(File->FullFileName);
+      if (GetConfiguration()->Usage->Collect && (FileSystem->FOneDriveInterface == odiUnknown) && !base::IsUnixRootPath(FullFileName))
+      {
+        UnicodeString Cid = FullFileName;
+        if (DebugAlwaysTrue(StartsStr(L"/", Cid)))
+        {
+          Cid.Delete(1, 1);
+          int32_t P = Cid.Pos(L"/");
+          if (P > 0)
+          {
+            Cid.SetLength(P - 1);
+          }
+          UnicodeString CidUpper = UpperCase(Cid);
+          UnicodeString CidLower = LowerCase(Cid);
+          if (CidUpper != CidLower)
+          {
+            if (Cid == CidUpper)
+            {
+              FileSystem->FOneDriveInterface = odiUpperCase;
+              Terminal->LogEvent(L"Detected upper-case OneDrive interface");
+            }
+            else if (Cid == CidLower)
+            {
+              FileSystem->FOneDriveInterface = odiLowerCase;
+              Terminal->LogEvent(L"Detected lower-case OneDrive interface");
+            }
+          }
+        }
+      }
+      // OneDrive is case insensitive and when we enter the directory using a different case, it returns results with the actual case
+      if (StartsText(FileListPath, FullFileName))
+      {
+        File->FullFileName = FileListPath + MidStr(FullFileName, FileListPath.Length() + 1);
+      }
+    }
     if (base::UnixSamePath(File->FullFileName, FileListPath))
     {
       File->FileName = PARENTDIRECTORY;
       File->FullFileName = base::UnixCombinePaths(Path, PARENTDIRECTORY);
     }
+    else
+    {
+      // Quick and dirty hack. The following tests do not work on OneDrive, as the directory path may be escaped,
+      // and we do not correctly unescape full `Path`, only its filename (so path in FullFileName may not be not correct).
+      // Until it's real problem somewhere else, we skip this test, as we otherwise trust OneDrive not to return nonsense contents.
+      if (!FileSystem->FOneDrive)
+      {
+        if (!StartsStr(FileListPath, File->FullFileName))
+        {
+          Terminal->LogEvent(FORMAT(L"Discarding entry \"%s\" with absolute path \"%s\" because it is not descendant of directory \"%s\".", (Path, File->FullFileName, FileListPath)));
+          File.reset(nullptr);
+        }
+        else
+        {
+          const UnicodeString FileName = MidStr(File->FullFileName, FileListPath.Length() + 1);
+          if (!base::UnixExtractFileDir(FileName).IsEmpty())
+          {
+            Terminal->LogEvent(FORMAT(L"Discarding entry \"%s\" with absolute path \"%s\" because it is not direct child of directory \"%s\".", (Path, File->FullFileName, FileListPath)));
+            File.reset(nullptr);
+          }
+        }
+      }
+    }
 
-    Data.FileList->AddFile(File.release());
+    if (File.get() != nullptr)
+    {
+      Data.FileList->AddFile(File.release());
+    }
   }
   else
   {
-    Data.FileSystem->ParsePropResultSet(Data.File, Path, Results);
+    FileSystem->ParsePropResultSet(Data.File, Path, Results);
   }
 }
 
@@ -1012,7 +1100,9 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     // so if we see one in the display name, take the name from there.
     // * and % won't help, as OneDrive seem to have bug with % at the end of the filename,
     // and the * (and others) is removed from file names.
+
     // Filenames with commas (,) get as many additional characters at the end of the filename as there are commas.
+    // (not true anymore in the new interface).
     if (FOneDrive &&
         (ContainsText(AFile->FileName, L"^") || ContainsText(AFile->FileName, L",") || (wcspbrk(AFile->GetDisplayName().c_str(), L"&,+#[]%*") != nullptr)))
     {
@@ -1818,8 +1908,8 @@ void TWebDAVFileSystem::Sink(
 
       ClearNeonError();
       int32_t NeonStatus = ne_get(FSessionContext->NeonSession, PathToNeon(AFileName), FD);
-      UnicodeString DiscardPath = AFileName;
-      if (IsValidRedirect(NeonStatus, DiscardPath))
+      // Contrary to other actions, for "GET" we support any redirect
+      if (IsRedirect(NeonStatus))
       {
         const UnicodeString CorrectedUrl = GetRedirectUrl();
         UTF8String CorrectedFileName, Query;

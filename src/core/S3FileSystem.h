@@ -136,6 +136,9 @@ protected:
   UnicodeString FTlsVersionStr;
   UnicodeString FResponse;
   bool FResponseIgnore{false};
+#if defined(__BORLANDC__)
+  typedef std::map<UnicodeString, UnicodeString> TRegions;
+#endif // defined(__BORLANDC__)
   using TRegions = nb::map_t<UnicodeString, UnicodeString>;
   TRegions FRegions;
   TRegions FHostNames;

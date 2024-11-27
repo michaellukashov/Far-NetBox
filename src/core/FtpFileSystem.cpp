@@ -18,6 +18,7 @@
 #include "WinSCPSecurity.h"
 #include "NeonIntf.h"
 #include "SessionInfo.h"
+#include "Cryptography.h"
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
 #include <SessionData.h>
@@ -72,7 +73,7 @@ protected:
   virtual wchar_t * LastSysErrorMessage() const override;
   virtual std::wstring GetClientString() const override;
   virtual void SetupSsl(ssl_st * Ssl) override;
-  virtual std::wstring CustomReason(int Err) override;
+  virtual std::wstring CustomReason(int32_t Err) override;
 
 private:
   gsl::not_null<TFTPFileSystem *> FFileSystem;
@@ -486,30 +487,35 @@ void TFTPFileSystem::Open()
   const UnicodeString Account = Data->GetFtpAccount();
   const UnicodeString Path = Data->GetRemoteDirectory();
   int32_t ServerType = 0;
-  switch (Data->GetFtps())
+  if (Data->Ftps == ftpsNone)
   {
-    case ftpsNone:
-      ServerType = TFileZillaIntf::SERVER_FTP;
-      break;
+    ServerType = TFileZillaIntf::SERVER_FTP;
+  }
+  else
+  {
+    switch (Data->GetFtps())
+    {
+      case ftpsImplicit:
+        ServerType = TFileZillaIntf::SERVER_FTP_SSL_IMPLICIT;
+        FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
+        break;
 
-    case ftpsImplicit:
-      ServerType = TFileZillaIntf::SERVER_FTP_SSL_IMPLICIT;
-      FSessionInfo.SecurityProtocolName = LoadStr(FTPS_IMPLICIT);
-      break;
+      case ftpsExplicitSsl:
+        ServerType = TFileZillaIntf::SERVER_FTP_SSL_EXPLICIT;
+        FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
+        break;
 
-    case ftpsExplicitSsl:
-      ServerType = TFileZillaIntf::SERVER_FTP_SSL_EXPLICIT;
-      FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
-      break;
+      case ftpsExplicitTls:
+        ServerType = TFileZillaIntf::SERVER_FTP_TLS_EXPLICIT;
+        FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
+        break;
 
-    case ftpsExplicitTls:
-      ServerType = TFileZillaIntf::SERVER_FTP_TLS_EXPLICIT;
-      FSessionInfo.SecurityProtocolName = LoadStr(FTPS_EXPLICIT);
-      break;
+      default:
+        DebugFail();
+        break;
+    }
 
-    default:
-      DebugFail();
-      break;
+    RequireTls();
   }
 
   const int32_t Pasv = (Data->GetFtpPasvMode() ? 1 : 2);
@@ -654,7 +660,7 @@ void TFTPFileSystem::Close()
   bool Result = DoQuit();
   if (!Result)
   {
-    bool Opening = (FTerminal->GetStatus() == ssOpening);
+    const bool Opening = (FTerminal->GetStatus() == ssOpening);
     if (FFileZillaIntf->Close(Opening))
     {
       DebugCheck(FLAGSET(WaitForCommandReply(false), TFileZillaIntf::REPLY_DISCONNECTED));
@@ -2161,7 +2167,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Result)
         {
-          if ((Path.Length() > 0) && !base::UnixIsAbsolutePath(Path))
+          if (Path.IsEmpty() || !base::UnixIsAbsolutePath(Path))
           {
             Path = UnicodeString(ROOTDIRECTORY) + Path;
           }
@@ -3199,14 +3205,14 @@ bool TFTPFileSystem::KeepWaitingForReply(uint32_t & ReplyToAwait, bool WantLastC
 
   // Though make sure that disconnect makes it through always. As for example when connection is closed already,
   // when sending commands, we may get REPLY_DISCONNECTED as a command response and no other response after,
-  // what would cause a hang.
+  // which would cause a hang.
   return
      (FReply == 0) &&
      ((ReplyToAwait == 0) ||
       (WantLastCode && NoFinalLastCode() && FLAGCLEAR(ReplyToAwait, TFileZillaIntf::REPLY_DISCONNECTED)));
 }
 
-void TFTPFileSystem::DoWaitForReply(uint32_t &ReplyToAwait, bool WantLastCode)
+void TFTPFileSystem::DoWaitForReply(uint32_t & ReplyToAwait, bool WantLastCode)
 {
   try
   {
@@ -3231,7 +3237,7 @@ void TFTPFileSystem::DoWaitForReply(uint32_t &ReplyToAwait, bool WantLastCode)
   catch (...)
   {
     // even if non-fatal error happens, we must process pending message,
-    // so that we "eat" the reply message, so that it gets not mistakenly
+    // so that we "eat" the reply message, and it doesn't get mistakenly
     // associated with future connect
     if (FTerminal->GetActive())
     {
@@ -4631,7 +4637,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
         }
         catch (...)
         {
-          // ignore permissions errors with FTP
+          // ignore permission errors with FTP
         }
 
         File->SetHumanRights(Entry->HumanPerm);
@@ -4742,7 +4748,7 @@ bool TFTPFileSystem::HandleReply(int32_t Command, uint32_t Reply)
     }
 
     // reply with Command 0 is not associated with current operation
-    // so do not treat is as a reply
+    // so do not treat it as a reply
     // (it is typically used asynchronously to notify about disconnects)
     if (Command != 0)
     {
