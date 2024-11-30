@@ -1360,10 +1360,9 @@ void TFTPFileSystem::CalculateFilesChecksum(
 {
   FTerminal->CalculateSubFoldersChecksum(Alg, FileList, std::forward<TCalculatedChecksumEvent>(OnCalculatedChecksum), OperationProgress, FirstLevel);
 
-  int32_t Index = 0;
+  int32_t Index1 = 0;
   TOnceDoneOperation OnceDoneOperation; // not used
 
-  int32_t Index1 = 0;
   while ((Index1 < FileList->GetCount()) && !OperationProgress->GetCancel())
   {
     const TRemoteFile * File = FileList->GetAs<TRemoteFile>(Index1);
