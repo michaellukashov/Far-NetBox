@@ -198,7 +198,9 @@ bool TCommandSet::GetChangesDirectory(TFSCommand Cmd) const
 bool TCommandSet::GetInteractiveCommand(TFSCommand Cmd) const
 {
   CHECK_CMD;
-  return CommandSet[Cmd].InteractiveCommand;
+  if ((Cmd >=0) && (Cmd <= MaxShellCommand))
+    return CommandSet[Cmd].InteractiveCommand;
+  return false;
 }
 
 bool TCommandSet::GetOneLineCommand(TFSCommand /*Cmd*/) const
