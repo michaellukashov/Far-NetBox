@@ -890,8 +890,8 @@ UnicodeString TTerminalManager::FormatFormCaptionWithSession(TCustomForm * Form,
 UnicodeString TTerminalManager::GetAppProgressTitle()
 {
   UnicodeString Result;
-  UnicodeString QueueProgressTitle;
-  UnicodeString ProgressTitle = !FProgressTitle.IsEmpty() ? FProgressTitle : ScpExplorer->GetProgressTitle();
+  const UnicodeString ProgressTitle = !FProgressTitle.IsEmpty() ? FProgressTitle : ScpExplorer->GetProgressTitle();
+  const UnicodeString QueueProgressTitle = ScpExplorer->GetQueueProgressTitle();
   if (!FForegroundProgressTitle.IsEmpty())
   {
     Result = FForegroundProgressTitle;
@@ -901,7 +901,7 @@ UnicodeString TTerminalManager::GetAppProgressTitle()
     Result = ProgressTitle;
   }
   else if (ShouldDisplayQueueStatusOnAppTitle() &&
-           !(QueueProgressTitle = ScpExplorer->GetQueueProgressTitle()).IsEmpty())
+           !QueueProgressTitle.IsEmpty())
   {
     Result = QueueProgressTitle;
   }
