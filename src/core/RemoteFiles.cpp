@@ -860,8 +860,8 @@ const TRemoteToken * TRemoteTokenList::Token(int32_t Index) const
 TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) noexcept :
   TPersistent(Kind),
   FModificationFmt(mfFull),
-  FLinkedByFile(ALinkedByFile),
   FIconIndex(-1),
+  FLinkedByFile(ALinkedByFile),
   FIsHidden(-1)
 {
   Init();
@@ -2105,7 +2105,7 @@ void TRemoteDirectoryChangesCache::Clear()
 
 bool TRemoteDirectoryChangesCache::GetIsEmptyPrivate() const
 {
-  return (const_cast<TRemoteDirectoryChangesCache *>(this)->GetCount() == 0);
+  return GetCount() == 0;
 }
 
 void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
@@ -2302,7 +2302,7 @@ TRights::TRights(uint16_t ANumber) noexcept
 #endif // defined(__BORLANDC__)
 }
 
-TRights::TRights(const TRights & Source) noexcept
+TRights::TRights(const TRights & Source) noexcept : TObject()
 {
   Assign(&Source);
 }

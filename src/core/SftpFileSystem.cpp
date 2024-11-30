@@ -401,8 +401,8 @@ public:
     return (Version >= 6) ? SSH_FILEXFER_ATTR_ALLOCATION_SIZE : SSH_FILEXFER_ATTR_SIZE;
   }
 
-  void AddProperties(const uint16_t * Rights, TRemoteToken * Owner,
-    TRemoteToken * Group, const int64_t * MTime, const int64_t * ATime,
+  void AddProperties(const uint16_t * Rights, const TRemoteToken * Owner,
+    const TRemoteToken * Group, const int64_t * MTime, const int64_t * ATime,
     const int64_t * Size, bool IsDirectory, int32_t Version, TAutoSwitch Utf)
   {
     SSH_FILEXFER_ATTR_TYPE Flags = 0;
@@ -619,7 +619,7 @@ public:
   RawByteString GetRawByteString() const
   {
     RawByteString Result;
-    uint32_t Len = GetCardinal();
+    const uint32_t Len = GetCardinal();
     Need(Len);
     // cannot happen anyway as Need() would raise exception
     DebugAssert(Len < SFTP_MAX_PACKET_LEN);
@@ -2402,7 +2402,7 @@ constexpr const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
 
 uint32_t TSFTPFileSystem::TransferBlockSize(
   uint32_t Overhead, TFileOperationProgressType * OperationProgress,
-  uint32_t AMinPacketSize, uint32_t AMaxPacketSize) const
+  [[maybe_unused]] uint32_t AMinPacketSize, [[maybe_unused]] uint32_t AMaxPacketSize) const
 {
   constexpr const uint32_t MinPacketSize = 32 * 1024;
   uint32_t MaxPacketSize = FSecureShell->MaxPacketSize();
@@ -4139,9 +4139,9 @@ void TSFTPFileSystem::CopyFile(
         TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT, FCodePage);
         AddPathString(PropertiesRequest, NewNameCanonical);
 
-        uint16_t Rights = AFile->Rights->NumberSet;
-        TDSTMode DSTMode = FTerminal->SessionData->DSTMode;
-        int64_t MTime = ConvertTimestampToUnix(DateTimeToFileTime(AFile->Modification, DSTMode), DSTMode);
+        const uint16_t Rights = AFile->Rights->NumberSet;
+        const TDSTMode DSTMode = FTerminal->SessionData->DSTMode;
+        const int64_t MTime = ConvertTimestampToUnix(DateTimeToFileTime(AFile->Modification, DSTMode), DSTMode);
         PropertiesRequest.AddProperties(&Rights, nullptr, nullptr, &MTime, nullptr, nullptr, false, FVersion, FUtfStrings);
         SendPacketAndReceiveResponse(&PropertiesRequest, &Packet, SSH_FXP_STATUS);
       }

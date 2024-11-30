@@ -384,7 +384,6 @@ public:
   Boolean GetIncludeThisDirectory() const { return FIncludeThisDirectory; }
   TRemoteFile * GetParentDirectory() const { return FParentDirectory; }
   TRemoteFile * GetThisDirectory() const { return FThisDirectory; }
-  TStrings * GetSelectedFiles() const;
 };
 
 class TRemoteDirectoryCache final : private TStringList

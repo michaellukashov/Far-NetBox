@@ -223,8 +223,8 @@ NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, const UnicodeString & Value);
 UnicodeString GetAncestorProcessName(int32_t Levels = 1);
 UnicodeString GetAncestorProcessNames();
-void NotSupported();
-void NotImplemented();
+[[noreturn]] void NotSupported();
+[[noreturn]] void NotImplemented();
 UnicodeString GetDividerLine();
 TStrings * ProcessFeatures(TStrings * Features, const UnicodeString & FeaturesOverride);
 
@@ -659,7 +659,7 @@ NB_CORE_EXPORT UnicodeString ModificationStr(const TDateTime & DateTime,
   TModificationFmt Precision);
 int32_t GetPartialFileExtLen(const UnicodeString & FileName);
 NB_CORE_EXPORT int32_t FakeFileImageIndex(const UnicodeString & AFileName, uint32_t Attrs = INVALID_FILE_ATTRIBUTES,
-  UnicodeString * TypeName = nullptr);
+  const UnicodeString * TypeName = nullptr);
 NB_CORE_EXPORT bool SameUserName(const UnicodeString & UserName1, const UnicodeString & UserName2);
 NB_CORE_EXPORT UnicodeString FormatMultiFilesToOneConfirmation(const UnicodeString & ATarget, bool Unix);
 
