@@ -219,7 +219,9 @@ void TCommandSet::SetCommands(TFSCommand Cmd, const UnicodeString & Value)
 UnicodeString TCommandSet::GetCommands(TFSCommand Cmd) const
 {
   CHECK_CMD;
-  return CommandSet[Cmd].Command;
+  if ((Cmd >=0) && (Cmd <= MaxShellCommand))
+    return CommandSet[Cmd].Command;
+  return EmptyStr;
 }
 
 UnicodeString TCommandSet::Command(TFSCommand Cmd, fmt::ArgList args)
