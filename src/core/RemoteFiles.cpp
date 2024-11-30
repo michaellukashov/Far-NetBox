@@ -2105,7 +2105,7 @@ void TRemoteDirectoryChangesCache::Clear()
 
 bool TRemoteDirectoryChangesCache::GetIsEmptyPrivate() const
 {
-  return (const_cast<TRemoteDirectoryChangesCache *>(this)->GetCount() == 0);
+  return GetCount() == 0;
 }
 
 void TRemoteDirectoryChangesCache::SetValue(const UnicodeString & Name,
