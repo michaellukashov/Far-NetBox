@@ -2895,8 +2895,10 @@ const wchar_t * TFTPFileSystem::GetOption(int32_t OptionID) const
 int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
 {
   const TSessionData * Data = FTerminal ? FTerminal->GetSessionData() : nullptr;
+  if (!Data)
+    return 0;
   const TConfiguration * Configuration = FTerminal ? FTerminal->GetConfiguration() : nullptr;
-  int32_t Result;
+  int32_t Result = 0;
   TProxyMethod method;
 
   switch (OptionID)
