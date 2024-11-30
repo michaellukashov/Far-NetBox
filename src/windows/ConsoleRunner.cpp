@@ -491,7 +491,7 @@ void TOwnConsole::WaitBeforeExit()
   {
     if (PeekConsoleInput(FInput, &Record, 1, &Read) && (Read == 1) &&
         ReadConsoleInput(FInput, &Record, 1, &Read) &&
-        (Read == 1) && (Record.EventType == KEY_EVENT) &&
+        (Record.EventType == KEY_EVENT) &&
         (Record.Event.KeyEvent.uChar.UnicodeChar != 0) &&
         Record.Event.KeyEvent.bKeyDown)
     {
