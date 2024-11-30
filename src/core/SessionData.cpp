@@ -4738,7 +4738,9 @@ void TSessionData::SetBug(TSshBug Bug, TAutoSwitch value)
 TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
 {
   DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FBugs));
-  return FBugs[Bug];
+  if (Bug >= 0 && nb::ToUInt32(Bug) < _countof(FBugs))
+    return FBugs[Bug];
+  return asAuto;
 }
 
 void TSessionData::SetPuttySettings(const UnicodeString & value)
