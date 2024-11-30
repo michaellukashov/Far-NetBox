@@ -663,7 +663,7 @@ public:
   void SetDropDownList(bool Value) { SetFlag(DIF_DROPDOWNLIST, Value); }
   int32_t GetItemIndex() const { return FList->GetSelected(); }
   void SetItemIndex(int32_t Index) { FList->SetSelected(Index); }
-  bool GetSetChanged(bool Value) { bool OldValue = FItemChanged; FItemChanged = Value; return OldValue; }
+  bool GetSetChanged(bool Value) { const bool OldValue = FItemChanged; FItemChanged = Value; return OldValue; }
 
 protected:
   virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
