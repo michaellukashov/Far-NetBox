@@ -860,8 +860,8 @@ const TRemoteToken * TRemoteTokenList::Token(int32_t Index) const
 TRemoteFile::TRemoteFile(TObjectClassId Kind, TRemoteFile * ALinkedByFile) noexcept :
   TPersistent(Kind),
   FModificationFmt(mfFull),
-  FLinkedByFile(ALinkedByFile),
   FIconIndex(-1),
+  FLinkedByFile(ALinkedByFile),
   FIsHidden(-1)
 {
   Init();
