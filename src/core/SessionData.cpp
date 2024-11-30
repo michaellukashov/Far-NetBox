@@ -3371,7 +3371,9 @@ void TSessionData::SetKex(int32_t Index, TKex value)
 TKex TSessionData::GetKex(int32_t Index) const
 {
   DebugAssert(Index >= 0 && Index < KEX_COUNT);
-  return FKex[Index];
+  if (Index >= 0 && Index < KEX_COUNT)
+    return FKex[Index];
+  return kexWarn;
 }
 
 void TSessionData::SetKexList(const UnicodeString & Value)
