@@ -3432,7 +3432,9 @@ void TSessionData::SetGssLib(int32_t Index, TGssLib Value)
 TGssLib TSessionData::GetGssLib(int32_t Index) const
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
-  return FGssLib[Index];
+  if (Index >= 0 && Index < GSSLIB_COUNT)
+    return FGssLib[Index];
+  return gssCustom;
 }
 
 void TSessionData::SetGssLibList(const UnicodeString & Value)
