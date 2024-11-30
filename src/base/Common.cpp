@@ -540,7 +540,7 @@ int32_t GetPartialFileExtLen(const UnicodeString & FileName)
 }
 
 int32_t FakeFileImageIndex(const UnicodeString & /*AFileName*/, uint32_t /*Attrs*/,
-  UnicodeString * /*TypeName*/)
+  const UnicodeString * /*TypeName*/)
 {
 #if defined(__BORLANDC__)
   Attrs |= FILE_ATTRIBUTE_NORMAL;
