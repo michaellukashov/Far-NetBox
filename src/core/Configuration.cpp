@@ -1023,7 +1023,7 @@ void TConfiguration::CleanupRegistry(const UnicodeString & RegistryPath)
     Registry->UnmungedRoot = RegistryStorageSubKey;
 
     AppLogFmt(L"Cleaning up registry key %s", RegistryPath);
-    const UnicodeString ARegistryPath = TPath::Combine(RegistryStorageSubKey, RegistryPath);
+    const UnicodeString ARegistryPath = CombinePaths(RegistryStorageSubKey, RegistryPath);
     UnicodeString Buf = ARegistryPath;
     while (!Buf.IsEmpty())
     {
@@ -1063,9 +1063,9 @@ TStrings * TConfiguration::GetCaches() const
   Result->Add(FtpsCertificateStorageKey);
   Result->Add(HttpsCertificateStorageKey);
   Result->Add(DirectoryStatisticsCacheKey);
-  Result->Add(TPath::Combine(ConfigurationSubKey, CDCacheKey));
-  Result->Add(TPath::Combine(ConfigurationSubKey, BannersKey));
-  Result->Add(TPath::Combine(ConfigurationSubKey, LastFingerprintsStorageKey));
+  Result->Add(CombinePaths(ConfigurationSubKey, CDCacheKey));
+  Result->Add(CombinePaths(ConfigurationSubKey, BannersKey));
+  Result->Add(CombinePaths(ConfigurationSubKey, LastFingerprintsStorageKey));
   return Result.release();
 }
 
@@ -1803,14 +1803,28 @@ static TStoredSessionList * CreateSessionsForImport(TStoredSessionList * Session
   return Result.release();
 }
 
+void TConfiguration::SelectSessionsToImportIfAny(
+  TStoredSessionList * ImportSessionList, TStoredSessionList * Sessions,
+  UnicodeString & Error, const UnicodeString & NoSessionsError)
+{
+  if (ImportSessionList->Count > 0)
+  {
+    ImportSessionList->SelectSessionsToImport(Sessions, true);
+  }
+  else
+  {
+    Error = NoSessionsError;
+  }
+}
+
 TStoredSessionList * TConfiguration::SelectFilezillaSessionsForImport(
   TStoredSessionList * Sessions, UnicodeString & Error)
 {
   std::unique_ptr<TStoredSessionList> ImportSessionList(CreateSessionsForImport(Sessions));
 
   const UnicodeString AppDataPath = GetShellFolderPath(CSIDL_APPDATA);
-  const UnicodeString FilezillaSiteManagerFile = TPath::Combine(AppDataPath, L"FileZilla\\sitemanager.xml");
-  const UnicodeString FilezillaConfigurationFile = TPath::Combine(AppDataPath, L"FileZilla\\filezilla.xml");
+  const UnicodeString FilezillaSiteManagerFile = CombinePaths(AppDataPath, L"FileZilla\\sitemanager.xml");
+  const UnicodeString FilezillaConfigurationFile = CombinePaths(AppDataPath, L"FileZilla\\filezilla.xml");
 
   if (base::FileExists(ApiPath(FilezillaSiteManagerFile)))
   {
@@ -1927,7 +1941,7 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
               // If path does not exist, try if it works relatively to .ssh/
               if (!base::FileExists(ApiPath(IncludePath)))
               {
-                IncludePath = TPath::Combine(GetOpensshFolder(), IncludePath);
+                IncludePath = CombinePaths(GetOpensshFolder(), IncludePath);
               }
 
               if (base::FileExists(ApiPath(IncludePath)))
@@ -1948,26 +1962,56 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
 
       ImportSessionList->ImportFromOpenssh(Lines.get());
 
-      if (ImportSessionList->Count > 0)
-      {
-        ImportSessionList->SelectSessionsToImport(Sessions, true);
-      }
-      else
-      {
-        throw Exception(LoadStr(OPENSSH_CONFIG_NO_SITES));
-      }
+      const UnicodeString NoSessionsError = FORMAT(L"%s\n(%s)", LoadStr(OPENSSH_CONFIG_NO_SITES), ConfigFile);
+      SelectSessionsToImportIfAny(ImportSessionList.get(), Sessions, Error, NoSessionsError);
     }
     else
     {
       throw Exception(LoadStr(OPENSSH_CONFIG_NOT_FOUND));
     }
   }
-  catch(Exception & E)
+  catch (Exception & E)
   {
     Error = FORMAT(L"%s\n(%s)", E.Message, ConfigFile);
   }
 
   return ImportSessionList.release();
+}
+
+TStoredSessionList * TConfiguration::SelectSessionsForImport(
+  TStoredSessionList * Sessions, const UnicodeString & FileName, UnicodeString & Error)
+{
+#if defined(__BORLANDC__)
+  std::unique_ptr<TStoredSessionList> ImportSessionList(CreateSessionsForImport(Sessions));
+
+  try
+  {
+    if (FileName.IsEmpty())
+    {
+      throw Exception(LoadStr(INI_SELECT));
+    }
+    else
+    {
+      std::unique_ptr<THierarchicalStorage> ImportStorage(TIniFileStorage::CreateFromPath(FileName));
+      ImportStorage->AccessMode = smRead;
+
+      if (ImportStorage->OpenSubKey(Configuration->StoredSessionsSubKey, false))
+      {
+        ImportSessionList->Load(ImportStorage.get());
+      }
+
+      const UnicodeString NoSessionsError = FMTLOAD(INI_NO_SITES, (FileName));
+      SelectSessionsToImportIfAny(ImportSessionList.get(), Sessions, Error, NoSessionsError);
+    }
+  }
+  catch (Exception & E)
+  {
+    Error = E.Message;
+  }
+
+  return ImportSessionList.release();
+#endif // defined(__BORLANDC__)
+  return nullptr;
 }
 
 void TConfiguration::SetRandomSeedFile(const UnicodeString & Value)

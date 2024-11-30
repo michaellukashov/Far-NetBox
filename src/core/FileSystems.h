@@ -200,6 +200,7 @@ public:
   TOpenRemoteFileParams() : TObject(OBJECT_CLASS_TOpenRemoteFileParams) {}
   UnicodeString FileName;
   UnicodeString RemoteFileName;
+  UnicodeString RemoteFullFileName;
   TFileOperationProgressType * OperationProgress{nullptr};
   const TCopyParamType * CopyParam{nullptr};
   int32_t Params{0};

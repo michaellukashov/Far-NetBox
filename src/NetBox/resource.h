@@ -25,6 +25,6 @@
 #define WINSCP_PLUGIN_VERSION_WTXT  L"1.6.2.151"
 #define PUTTY_VERSION_WTXT          L"0.81"
 #define FILEZILLA_VERSION_WTXT      L"2.2.32"
-#define ZLIB_VERSION_WTXT           L"zlib-ng 2.1.6"
+#define ZLIB_VERSION_WTXT           L"zlib-ng 2.2.2"
 #define OPENSSL_VERSION_WTXT        L"3.3.2"
-#define WINSCP_VERSION_WTXT         L"6.3.3"
+#define WINSCP_VERSION_WTXT         L"6.3.6"

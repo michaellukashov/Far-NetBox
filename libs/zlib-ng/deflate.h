@@ -14,6 +14,11 @@
 #include "zendian.h"
 #include "crc32.h"
 
+#ifdef S390_DFLTCC_DEFLATE
+#  include "arch/s390/dfltcc_common.h"
+#  define HAVE_ARCH_DEFLATE_STATE
+#endif
+
 /* define NO_GZIP when compiling if you want to disable gzip header and
    trailer creation by deflate().  NO_GZIP would be used to avoid linking in
    the crc code when it is not needed.  For shared libraries, gzip encoding
@@ -113,11 +118,30 @@ typedef uint16_t Pos;
 /* Type definitions for hash callbacks */
 typedef struct internal_state deflate_state;
 
-typedef uint32_t (* update_hash_cb)        (deflate_state *const s, uint32_t h, uint32_t val);
+typedef uint32_t (* update_hash_cb)        (uint32_t h, uint32_t val);
 typedef void     (* insert_string_cb)      (deflate_state *const s, uint32_t str, uint32_t count);
 typedef Pos      (* quick_insert_string_cb)(deflate_state *const s, uint32_t str);
 
-struct internal_state {
+uint32_t update_hash             (uint32_t h, uint32_t val);
+void     insert_string           (deflate_state *const s, uint32_t str, uint32_t count);
+Pos      quick_insert_string     (deflate_state *const s, uint32_t str);
+
+uint32_t update_hash_roll        (uint32_t h, uint32_t val);
+void     insert_string_roll      (deflate_state *const s, uint32_t str, uint32_t count);
+Pos      quick_insert_string_roll(deflate_state *const s, uint32_t str);
+
+/* Struct for memory allocation handling */
+typedef struct deflate_allocs_s {
+    char            *buf_start;
+    free_func        zfree;
+    deflate_state   *state;
+    unsigned char   *window;
+    unsigned char   *pending_buf;
+    Pos             *prev;
+    Pos             *head;
+} deflate_allocs;
+
+struct ALIGNED_(64) internal_state {
     PREFIX3(stream)      *strm;            /* pointer back to this zlib stream */
     unsigned char        *pending_buf;     /* output still pending */
     unsigned char        *pending_out;     /* next pending byte to output to the stream */
@@ -219,6 +243,10 @@ struct internal_state {
 
     int nice_match; /* Stop searching when current match exceeds this */
 
+#if defined(_M_IX86) || defined(_M_ARM)
+    int padding[2];
+#endif
+
     struct crc32_fold_s ALIGNED_(16) crc_fold;
 
                 /* used by trees.c: */
@@ -286,8 +314,11 @@ struct internal_state {
     unsigned long compressed_len; /* total bit length of compressed file mod 2^32 */
     unsigned long bits_sent;      /* bit length of compressed data sent mod 2^32 */
 
-    /* Reserved for future use and alignment purposes */
-    char *reserved_p;
+    deflate_allocs *alloc_bufs;
+
+#ifdef HAVE_ARCH_DEFLATE_STATE
+    arch_deflate_state arch;      /* architecture-specific extensions */
+#endif
 
     uint64_t bi_buf;
     /* Output buffer. bits are inserted starting at the bottom (least significant bits). */
@@ -296,8 +327,11 @@ struct internal_state {
     /* Number of valid bits in bi_buf.  All bits above the last valid bit are always zero. */
 
     /* Reserved for future use and alignment purposes */
-    int32_t reserved[11];
-} ALIGNED_(8);
+    int32_t reserved[19];
+#if defined(_M_IX86) || defined(_M_ARM)
+    int32_t padding2[4];
+#endif
+};
 
 typedef enum {
     need_more,      /* block not completed, need more input or more output */

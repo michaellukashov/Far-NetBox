@@ -1,6 +1,15 @@
 ﻿# for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [24.11.2.606] - 2024-11-28
+
+### Changes
+
+ * Upgrade WinSCP sources: WinSCP 6.3.6
+ * Upgrade dependencies: zlib-ng 2.2.2
+ * Upgrade dependencies: expat 2.6.4
+
+
 ## [24.11.1.605] - 2024-11-25
 
 ### Fixes

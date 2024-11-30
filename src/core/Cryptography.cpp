@@ -10,8 +10,14 @@
 #include "Cryptography.h"
 #include "FileBuffer.h"
 #include "TextsCore.h"
-#include <openssl\rand.h>
-// #include <Soap.EncdDecd.hpp>
+#include "CoreMain.h"
+#include "Exceptions.h"
+#include <openssl/rand.h>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+#if defined(__BORLANDC__)
+#include <Soap.EncdDecd.hpp>
+#endif // defined(__BORLANDC__)
 #include <System.StrUtils.hpp>
 
 /*
@@ -71,13 +77,17 @@ struct hmac_ctx
   hmac_ctx()
   {
     // memset(this, 0, sizeof(*this));
-    memset(key, 0, IN_BLOCK_LENGTH);
-    ctx = nullptr;
-    klen = 0;
+    Clear();
   }
   ~hmac_ctx()
   {
     if (ctx != nullptr) ssh_hash_free(ctx);
+  }
+  void Clear()
+  {
+    memset(key, 0, IN_BLOCK_LENGTH);
+    ctx = nullptr;
+    klen = 0;
   }
   void CopyFrom(hmac_ctx * Source)
   {
@@ -99,7 +109,8 @@ struct hmac_ctx
 /* initialise the HMAC context to zero */
 static void hmac_sha1_begin(hmac_ctx cx[1])
 {
-  ::ZeroMemory(cx, sizeof(hmac_ctx));
+  // ::ZeroMemory(cx, sizeof(hmac_ctx));
+  cx->Clear();
 }
 
 /* input the HMAC key (can be called multiple times)    */
@@ -319,8 +330,9 @@ static void encr_data(uint8_t data[], uint32_t d_len, fcrypt_ctx cx[1])
     {
       uint32_t j = 0;
       /* increment encryption nonce   */
-      while (j < 8 && !++cx->nonce[j])
-        ++j;
+      while (j < 8)
+        if (!++cx->nonce[j])
+          ++j;
       /* encrypt the nonce to form next xor buffer    */
       aes_encrypt_block(cx->nonce, cx->encr_bfr, cx->encr_ctx);
       pos = 0;
@@ -611,6 +623,19 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
   return Result;
 }
 
+UnicodeString OpensslInitializationErrors;
+
+static bool InitOpenssl()
+{
+  // RAND_poll already calls OPENSSL_init_crypto with OPENSSL_INIT_LOAD_CONFIG and other flags.
+  // OPENSSL_init_ssl does not do much more, so it is not really big overhead.
+  // And we need to call OPENSSL_init_ssl, as it we need to use OPENSSL_INIT_LOAD_SSL_STRINGS to match what SSL_CTX_new does
+  // OPENSSL_init_ssl passes all flags to OPENSSL_init_crypto (even those it does not understand, like the very  OPENSSL_INIT_LOAD_SSL_STRINGS).
+  // And OPENSSL_init_ssl caches the initialization results based on the flags
+  ERR_clear_error();
+  return OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, NULL);
+}
+
 void CryptographyInitialize()
 {
   ScrambleTable = SScrambleTable;
@@ -619,7 +644,40 @@ void CryptographyInitialize()
   {
     UnscrambleTable[SScrambleTable[Index]] = static_cast<uint8_t>(Index);
   }
-  // srand(nb::ToUInt32(time(nullptr)) ^ nb::ToUInt32(_getpid()));
+  srand(nb::ToUInt32(time(nullptr)) ^ nb::ToUInt32(_getpid()));
+
+  // The results are partly cached. So when later some OpenSSL function is called, which internally
+  // calls OPENSSL_init_crypto, it will fail, without doing full initialization. So afterwards
+  // the ERR_get_error might return 0, even if the function itself returns failure.
+  // So we have to remember here what went wrong.
+  // But there seems to be an issue in OpenSSL that when OPENSSL_init_crypto is called again
+  // with OPENSSL_INIT_LOAD_CONFIG, after the loading failed before, _from the same thread_, the
+  // initialization succeeds. It seems to be because the in_init_config_local recursion fuest is never cleared.
+  // So for example, is the configuration is invalid, the foreground updates check still work,
+  // as the foreground thread always initialized OpenSSL here (via RAND_poll), and the later
+  // OPENSSL_init_crypto from withing updates TLS code succeeds. Similarly scripting TLS connections work.
+  // But opening GUI TLS connections (WebDAV, S3...) fail, as they are opened on background thread,
+  // and there the OPENSSL_init_crypto is first called from TLS connection.
+  // Clean solution would be to fail any TLS connection,
+  // if OPENSSL_init_crypto failed when called the firts time, but that would be regression.
+  // But let's be prepared that this happens if OpenSSL is ever fixed.
+  if (!InitOpenssl())
+  {
+    OpensslInitializationErrors = GetTlsErrorStrs();
+    AppLogFmt(L"OpenSSL initialization failed (possibly wrong configuration file) - TLS connections might be failing:\n%s", (OpensslInitializationErrors));
+    char * ConfigPathBuf = CONF_get1_default_config_file();
+    UnicodeString ConfigPath = UnicodeString(UTF8String(ConfigPathBuf));
+    if (!ConfigPath.IsEmpty() && FileExists(ApiPath(ConfigPath)))
+    {
+      AppLogFmt(L"OpenSSL configuration file: %s", (ConfigPath));
+    }
+    OPENSSL_free(ConfigPathBuf);
+  }
+  else
+  {
+    AppLog(L"OpenSSL initialization succeeded");
+  }
+
   RAND_poll();
 }
 
@@ -628,6 +686,15 @@ void CryptographyFinalize()
   nb_free(UnscrambleTable);
   UnscrambleTable = nullptr;
   ScrambleTable = nullptr;
+}
+
+void RequireTls()
+{
+  if (!InitOpenssl())
+  {
+    UnicodeString Errors = DefaultStr(GetTlsErrorStrs(), OpensslInitializationErrors);
+    throw ExtException(MainInstructions(LoadStr(OPENSSL_INIT_ERROR)), OpensslInitializationErrors);
+  }
 }
 
 int32_t PasswordMaxLength()

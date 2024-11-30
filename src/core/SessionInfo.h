@@ -301,6 +301,7 @@ public:
   void AddSystemInfo();
   void AddStartupInfo();
   void AddException(Exception * E);
+  static UnicodeString GetSeparator();
   void AddSeparator();
 
   void ReflectSettings();
@@ -433,6 +434,9 @@ private:
   UnicodeString FPath;
   gsl::owner<void *> FFile{nullptr};
   bool FLogging{false};
+  TDateTime FLastMemoryCheck{};
+  size_t FPeekReservedMemory{0};
+  size_t FPeekCommittedMemory{0};
   TCriticalSection FCriticalSection;
 };
 

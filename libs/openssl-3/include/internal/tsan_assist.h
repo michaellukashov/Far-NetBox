@@ -115,6 +115,7 @@
 #  pragma intrinsic(_InterlockedExchangeAdd)
 #  ifdef _WIN64
 #   pragma intrinsic(_InterlockedExchangeAdd64)
+#   pragma intrinsic(_InterlockedExchangeAdd)
 #   define tsan_add(ptr, n) (sizeof(*(ptr)) == 8 ? _InterlockedExchangeAdd64((ptr), (n)) \
                                                 : _InterlockedExchangeAdd((ptr), (n)))
 #  else

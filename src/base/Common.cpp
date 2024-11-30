@@ -1349,11 +1349,11 @@ UnicodeString ValidLocalFileName(
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
       const int32_t Pos = nb::ToInt32(InvalidChar - FileName.c_str() + 1);
-      wchar_t Char;
+      wchar_t Char = (FileName.Length() - Pos) <= 1 ? 0 : static_cast<wchar_t>(HexToByte(FileName.SubString(Pos + 1, 2)));
       if (ATokenReplacement &&
           (*InvalidChar == TokenPrefix) &&
           (((FileName.Length() - Pos) <= 1) ||
-           (((Char = static_cast<wchar_t>(HexToByte(FileName.SubString(Pos + 1, 2)))) == L'\0') ||
+           ((Char == L'\0') ||
             (ATokenizibleChars.Pos(Char) == 0))))
       {
         InvalidChar++;
@@ -1603,6 +1603,17 @@ bool SamePaths(const UnicodeString & Path1, const UnicodeString & Path2)
 {
   // TODO: ExpandUNCFileName
   return AnsiSameText(IncludeTrailingBackslash(Path1), IncludeTrailingBackslash(Path2));
+}
+
+UnicodeString CombinePaths(const UnicodeString & Path1, const UnicodeString & Path2)
+{
+  // Make sure that C: + foo => C:\foo and not C:foo
+  UnicodeString Path1Terminated = Path1;
+  if (EndsStr(L":", Path1Terminated))
+  {
+    Path1Terminated = IncludeTrailingBackslash(Path1Terminated);
+  }
+  return TPath::Combine(Path1Terminated, Path2);
 }
 
 int32_t CompareLogicalText(
@@ -1962,7 +1973,7 @@ UnicodeString DisplayableStr(const RawByteString & Str)
   int32_t Index1 = 1;
   while ((Index1 <= Str.Length()) && Displayable)
   {
-    if (((Str[Index1] < '\x20') || (static_cast<uint8_t>(Str[Index1]) >= static_cast<uint8_t >('\x80'))) &&
+    if (((Str[Index1] < '\x20') || IsWideChar(Str[Index1])) &&
         (Str[Index1] != '\n') && (Str[Index1] != '\r') && (Str[Index1] != '\t') && (Str[Index1] != '\b'))
     {
       Displayable = false;
@@ -2050,7 +2061,8 @@ UnicodeString BytesToHex(const RawByteString & Str, bool UpperCase, wchar_t Sepa
 
 UnicodeString CharToHex(wchar_t Ch, bool UpperCase)
 {
-  return BytesToHex(nb::ToUInt8Ptr(&Ch), sizeof(Ch), UpperCase);
+  // BytesToHex would encode with opposite/unexpected endianness
+  return ByteToHex(Ch >> 8, UpperCase) + ByteToHex(Ch & 0xFF, UpperCase);
 }
 
 RawByteString HexToBytes(const UnicodeString & Hex)
@@ -2164,7 +2176,7 @@ bool TSearchRecSmart::IsHidden() const
 
 UnicodeString TSearchRecChecked::GetFilePath() const
 {
-  return TPath::Combine(Dir, Name);
+  return CombinePaths(Dir, Name);
 }
 
 TSearchRecOwned::~TSearchRecOwned() noexcept
@@ -2268,7 +2280,7 @@ void ProcessLocalDirectory(const UnicodeString & ADirName,
 
   TSearchRecOwned SearchRec;
   // DEBUG_PRINTF("ADirName: %s", ADirName);
-  if (FindFirstChecked(TPath::Combine(ADirName, AnyMask), FindAttrs, SearchRec) == 0)
+  if (FindFirstChecked(CombinePaths(ADirName, AnyMask), FindAttrs, SearchRec) == 0)
   {
     do
     {
@@ -2846,6 +2858,7 @@ FILETIME DateTimeToFileTime(const TDateTime & DateTime,
   return Result;
 }
 
+// This can be replaced with TSearchRec.TimeStamp
 TDateTime FileTimeToDateTime(const FILETIME & FileTime)
 {
   // duplicated in DirView.pas
@@ -3557,6 +3570,7 @@ UnicodeString DoEncodeUrl(const UnicodeString & S, const UnicodeString & DoNotEn
     {
       UTF8String UtfS(Result.SubString(Index, 1));
       UnicodeString H;
+      // BytesToHex with separator would do the same
       for (int32_t Index2 = 1; Index2 <= UtfS.Length(); ++Index2)
       {
         H += L"%" + ByteToHex(static_cast<uint8_t>(UtfS[Index2]));
@@ -3879,7 +3893,7 @@ UnicodeString DefaultEncodingName()
   return ADefaultEncodingName;
 }
 
-bool GetWindowsProductType(DWORD &Type)
+bool GetWindowsProductType(DWORD & Type)
 {
   bool Result;
   const HINSTANCE Kernel32 = ::GetModuleHandle(L"kernel32.dll");
@@ -4232,12 +4246,35 @@ UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents)
   return Ident;
 }
 
-static UnicodeString GetTlsErrorStr(int32_t Err)
+UnicodeString GetTlsErrorStr(uint32_t Err)
 {
-  char Buffer[512];
-  ERR_error_string(Err, Buffer);
-  // not sure about the UTF8
-  return UnicodeString(UTF8String(Buffer));
+  char Buffer[512]{};
+  ERR_error_string_n(Err, Buffer, sizeof(Buffer));
+  UnicodeString S = UnicodeString(UTF8String(Buffer));
+  for (int32_t I = 0; I < 4; I++)
+  {
+    CutToChar(S, L':', false);
+  }
+  UnicodeString ErrStr = IntToHex(static_cast<unsigned int>(Err));
+  return FORMAT(L"OpenSSL %s: %s", ErrStr, S.TrimRight());
+}
+
+UnicodeString GetTlsErrorStrs()
+{
+  UnicodeString Result;
+  int32_t Error;
+  const char * Data;
+  while ((Error = ERR_get_error_all(NULL, NULL, NULL, &Data, NULL)) != 0)
+  {
+    UnicodeString S = GetTlsErrorStr(Error);
+    if ((Data != nullptr) && (strlen(Data) > 0))
+    {
+      const UnicodeString DataStr = UnicodeString(UTF8String(Data)).TrimRight();
+      S += FORMAT(L" (%s)", DataStr);
+    }
+    AddToList(Result, S, L"\n");
+  }
+  return Result;
 }
 
 static FILE * OpenCertificate(const UnicodeString & Path)
@@ -5281,4 +5318,84 @@ void NotSupported()
 UnicodeString GetDividerLine()
 {
   return UnicodeString::StringOfChar(L'-', 27);
+}
+
+static UnicodeString CutFeature(UnicodeString & Buf)
+{
+  UnicodeString Result;
+  if (Buf.SubString(1, 1) == L"\"")
+  {
+    Buf.Delete(1, 1);
+    int32_t P = Buf.Pos(L"\",");
+    if (P == 0)
+    {
+      Result = Buf;
+      Buf = UnicodeString();
+      // there should be the ending quote, but if not, just do nothing
+      if (Result.SubString(Result.Length(), 1) == L"\"")
+      {
+        Result.SetLength(Result.Length() - 1);
+      }
+    }
+    else
+    {
+      Result = Buf.SubString(1, P - 1);
+      Buf.Delete(1, P + 1);
+    }
+    Buf = Buf.TrimLeft();
+  }
+  else
+  {
+    Result = CutToChar(Buf, L',', true);
+  }
+  return Result;
+}
+
+TStrings * ProcessFeatures(TStrings * Features, const UnicodeString & AFeaturesOverride)
+{
+  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
+  UnicodeString FeaturesOverride = AFeaturesOverride;
+  if (FeaturesOverride.SubString(1, 1) == L"*")
+  {
+    FeaturesOverride.Delete(1, 1);
+    while (!FeaturesOverride.IsEmpty())
+    {
+      const UnicodeString Feature = CutFeature(FeaturesOverride);
+      Result->Add(Feature);
+    }
+  }
+  else
+  {
+    std::unique_ptr<TStrings> DeleteFeatures(CreateSortedStringList());
+    std::unique_ptr<TStrings> AddFeatures(std::make_unique<TStringList>());
+    while (!FeaturesOverride.IsEmpty())
+    {
+      UnicodeString Feature = CutFeature(FeaturesOverride);
+      if (Feature.SubString(1, 1) == L"-")
+      {
+        Feature.Delete(1, 1);
+        DeleteFeatures->Add(Feature.LowerCase());
+      }
+      else
+      {
+        if (Feature.SubString(1, 1) == L"+")
+        {
+          Feature.Delete(1, 1);
+        }
+        AddFeatures->Add(Feature);
+      }
+    }
+
+    for (int32_t Index = 0; Index < Features->Count; Index++)
+    {
+      UnicodeString Feature = Features->Strings[Index];
+      if (DeleteFeatures->IndexOf(Feature) < 0)
+      {
+        Result->Add(Feature);
+      }
+    }
+
+    Result->AddStrings(AddFeatures.get());
+  }
+  return Result.release();
 }

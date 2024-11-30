@@ -126,13 +126,14 @@ protected:
   UnicodeString GetCurrentSubKeyMunged() const;
   virtual void SetAccessModeProtected(TStorageAccessMode Value);
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) = 0;
-  virtual bool DoValueExists(const UnicodeString & Value) = 0;
+  virtual bool DoValueExists(const UnicodeString & Value, bool ForceAnsi) = 0;
   static UnicodeString IncludeTrailingBackslash(const UnicodeString & S);
   static UnicodeString ExcludeTrailingBackslash(const UnicodeString & S);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) = 0;
   virtual void DoCloseSubKey() = 0;
   bool MungingKeyName(const UnicodeString & Key) const;
   UnicodeString MungeKeyName(const UnicodeString & Key);
+  UnicodeString MungeIniName(const UnicodeString & Str);
   virtual UnicodeString GetSource() const = 0;
   virtual bool GetTemporary() const;
   virtual bool DoDeleteSubKey(const UnicodeString & SubKey) = 0;
@@ -193,7 +194,7 @@ public:
 protected:
   virtual void SetAccessModeProtected(TStorageAccessMode value) override;
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi) override;
-  virtual bool DoValueExists(const UnicodeString & Value) override;
+  virtual bool DoValueExists(const UnicodeString & Value, bool ForceAnsi) override;
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate) override;
   virtual void DoCloseSubKey() override;
   virtual UnicodeString GetSource() const override;
@@ -244,7 +245,7 @@ private:
   UnicodeString GetCurrentSection();
   inline bool HandleByMasterStorage();
   inline bool HandleReadByMasterStorage(const UnicodeString & Name);
-  inline bool DoValueExistsInternal(const UnicodeString & Value);
+  inline bool DoValueExistsInternal(const UnicodeString & Value, bool ForceAnsi);
   void DoWriteStringRawInternal(const UnicodeString & Name, const UnicodeString & Value);
   int32_t DoReadIntegerWithMapping(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping);
 
@@ -258,7 +259,7 @@ protected:
   __property UnicodeString CurrentSection = { read = GetCurrentSection };
   virtual void SetAccessMode(TStorageAccessMode value);
   virtual bool DoKeyExists(const UnicodeString & SubKey, bool ForceAnsi);
-  virtual bool DoValueExists(const UnicodeString & Value);
+  virtual bool DoValueExists(const UnicodeString & Value, bool ForceAnsi);
   virtual bool DoOpenSubKey(const UnicodeString & SubKey, bool CanCreate);
   virtual void DoCloseSubKey();
   virtual UnicodeString GetSource();

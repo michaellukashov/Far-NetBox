@@ -287,7 +287,11 @@
 #define SSH_HOST_CA_NO_KEY_TYPE 4368
 #define SSH_HOST_CA_CERTIFICATE 4369
 #define SSH_HOST_CA_INVALID     4370
-#define TLS_UNSUPPORTED         4371
+#define S3_ASSUME_ROLE_ERROR    4371
+#define S3_ASSUME_ROLE_RESPONSE_ERROR 4372
+#define INI_NO_SITES            4373
+#define TLS_UNSUPPORTED         4374
+#define OPENSSL_INIT_ERROR      4375
 
 #define CORE_CONFIRMATION_STRINGS 4400
 #define CONFIRM_PROLONG_TIMEOUT3 4401
@@ -535,6 +539,7 @@
 #define PUBLIC_KEY_PERMISSIONS            4668
 #define TIME_RELATIVE                     4669
 #define DAYS_SPAN                         4670
+#define INI_SELECT              4671
 
 #define CORE_VARIABLE_STRINGS   4700
 #define PUTTY_BASED_ON          4701

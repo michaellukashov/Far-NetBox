@@ -43,6 +43,10 @@ extern "C" {
 
 #if defined(_WIN64) || defined(_WIN32)
 
+# define OPENSSL_CONFIGURED_API 30100
+# ifndef OPENSSL_RAND_SEED_OS
+#  define OPENSSL_RAND_SEED_OS
+# endif
 # ifndef OPENSSL_THREADS
 #  define OPENSSL_THREADS
 # endif
@@ -53,10 +57,6 @@ extern "C" {
 
 #endif
 
-# define OPENSSL_CONFIGURED_API 30300
-# ifndef OPENSSL_RAND_SEED_OS
-#  define OPENSSL_RAND_SEED_OS
-# endif
 # ifndef OPENSSL_NO_ACVP_TESTS
 #  define OPENSSL_NO_ACVP_TESTS
 # endif
@@ -117,8 +117,14 @@ extern "C" {
 # ifndef OPENSSL_NO_RC5
 #  define OPENSSL_NO_RC5
 # endif
+# ifndef OPENSSL_NO_RFC3779
+#  define OPENSSL_NO_RFC3779
+# endif
 # ifndef OPENSSL_NO_SCTP
 #  define OPENSSL_NO_SCTP
+# endif
+# ifndef OPENSSL_NO_SSL_TRACE
+#  define OPENSSL_NO_SSL_TRACE
 # endif
 # ifndef OPENSSL_NO_SSL3
 #  define OPENSSL_NO_SSL3

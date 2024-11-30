@@ -33,9 +33,9 @@
 #include <stdio.h>
 #include "putty.h"
 
-#if 0
+#if defined(__BORLANDC__)
 const char *const appname = STR(APPNAME);
-#endif //if 0
+#endif // defined(__BORLANDC__)
 
 /*
  * Define the default protocol for the application. This is always a

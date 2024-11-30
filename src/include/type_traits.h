@@ -91,7 +91,7 @@ template<typename T> union move_construction_triviality_helper
 {
   T t;
   move_construction_triviality_helper() = default;
-  move_construction_triviality_helper(move_construction_triviality_helper&&) = default;
+  move_construction_triviality_helper(move_construction_triviality_helper&&) noexcept = default;
   ~move_construction_triviality_helper() = default;
 };
 

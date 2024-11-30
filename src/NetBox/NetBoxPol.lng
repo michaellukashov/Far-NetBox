@@ -1263,7 +1263,7 @@
 "3.3.2"
 "http://www.openssl.org/"
 "Kod WebDAV bazuje na bibliotece Neon %s"
-"Copyright © 1999-2021 Joe Orton"
+"Copyright © 1999-2024 Joe Orton"
 "http://www.webdav.org/neon/"
 "Biblioteka eXpat %s"
 "http://www.libexpat.org/"
@@ -1272,7 +1272,7 @@
 "$$"
 
 "WinSCP"
-"6.3.3"
+"6.3.6"
 "1.6.2"
 "Bazuje na WinSCPFar: SFTP/FTP/SCP klient dla Far 1.75"
 " Wersja %s"

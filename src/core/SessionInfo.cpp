@@ -19,8 +19,10 @@
 #include "CoreMain.h"
 #include "Script.h"
 #include <System.IOUtils.hpp>
-
-// #pragma package(smart_init)
+#include <DateUtils.hpp>
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
 {
@@ -28,7 +30,9 @@ static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
   for (int32_t Index = 1; Index <= Str.Length(); ++Index)
   {
     UnicodeString Repl;
-    switch (Str[Index])
+    wchar_t Ch = Str[Index];
+    switch (Ch)
+    switch (Ch)
     {
       case L'\x00': // \0 Is not valid in XML anyway
       case L'\x01':
@@ -61,7 +65,12 @@ static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
       case L'\x1D':
       case L'\x1E':
       case L'\x1F':
-        Repl = L"#x" + ByteToHex(static_cast<uint8_t>(Str[Index])) + L";";
+        Repl = L"#x" + ByteToHex(static_cast<uint8_t>(Ch)) + L";";
+        break;
+
+      case L'\xFFFE':
+      case L'\xFFFF':
+        Repl = L"#x" + CharToHex(Ch) + L";";
         break;
 
       case L'&':
@@ -380,13 +389,17 @@ public:
 
     if (RecordLocal)
     {
-      UnicodeString FileName = TPath::Combine(Item->Local.Directory, Item->Local.FileName);
-      // SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Local);
+      UnicodeString FileName = CombinePaths(Item->Local.Directory, Item->Local.FileName);
+#if defined(__BORLANDC__)
+      SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Local);
+#endif // defined(__BORLANDC__)
     }
     if (RecordRemote)
     {
       UnicodeString FileName = base::UnixCombinePaths(Item->Remote.Directory, Item->Remote.FileName);
-      // SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Remote);
+#if defined(__BORLANDC__)
+      SynchronizeChecklistItemFileInfo(FileName, Item->IsDirectory, Item->Remote);
+#endif // defined(__BORLANDC__)
     }
   }
 
@@ -1485,6 +1498,10 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       {
         ADF(L"S3: Session token: %s", Data->FS3SessionToken);
       }
+      if (!Data->FS3RoleArn.IsEmpty())
+      {
+        ADF(L"S3: Role ARN: %s (session name: %s)", Data->S3RoleArn, DefaultStr(Data->S3RoleSessionName, L"default"));
+      }
       if (Data->S3CredentialsEnv)
       {
         ADF(L"S3: Credentials from AWS environment: %s", DefaultStr(Data->S3Profile, L"General"));
@@ -1548,9 +1565,14 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
 #undef ADF
 #undef ADSTR
 
+UnicodeString TSessionLog::GetSeparator()
+{
+  return L"--------------------------------------------------------------------------";
+}
+
 void TSessionLog::AddSeparator()
 {
-  Add(llMessage, L"--------------------------------------------------------------------------");
+  Add(llMessage, GetSeparator());
 }
 
 
@@ -1859,6 +1881,7 @@ TApplicationLog::TApplicationLog()
 {
   FFile = nullptr;
   FLogging = false;
+  FPeekReservedMemory = 0;
 #if defined(__BORLANDC__)
   FCriticalSection.reset(new TCriticalSection());
 #endif // defined(__BORLANDC__)
@@ -1888,7 +1911,9 @@ void TApplicationLog::AddStartupInfo()
   if (Logging)
   {
     // TODO: implement
-    // TSessionLog::DoAddStartupInfo(nb::bind(&TApplicationLog::Log, this), Configuration, true);
+#if defined(__BORLANDC__)
+    TSessionLog::DoAddStartupInfo(nb::bind(&TApplicationLog::Log, this), Configuration, true);
+#endif // defined(__BORLANDC__)
   }
 }
 
@@ -1896,11 +1921,66 @@ void TApplicationLog::Log(const UnicodeString & S)
 {
   if (FFile != nullptr)
   {
-    const UnicodeString Timestamp = FormatDateTime(L"yyyy-mm-dd hh:nn:ss.zzz", Now());
-    const UnicodeString Line = FORMAT(L"[%s] [%x] %s\r\n", Timestamp, nb::ToInt(GetCurrentThreadId()), S);
+    TDateTime N = Now();
+    const UnicodeString Timestamp = FormatDateTime(L"yyyy-mm-dd hh:nn:ss.zzz", N);
+    const UnicodeString Line = FORMAT(L"[%s] [%x] %s\r\n", Timestamp, nb::ToInt32(GetCurrentThreadId()), S);
     const UTF8String UtfLine = UTF8String(Line);
     const int32_t Writing = UtfLine.Length();
-    const TGuard Guard(FCriticalSection);
-    fwrite(UtfLine.c_str(), 1, Writing, static_cast<FILE *>(FFile));
+
+    bool CheckMemory;
+
+    {
+      const TGuard Guard(FCriticalSection);
+      fwrite(UtfLine.c_str(), 1, Writing, static_cast<FILE *>(FFile));
+      int64_t SecondsSinceLastMemoryCheck = SecondsBetween(N, FLastMemoryCheck);
+      CheckMemory = (SecondsSinceLastMemoryCheck >= 10);
+      if (CheckMemory)
+      {
+        FLastMemoryCheck = N;
+      }
+    }
+
+    if (CheckMemory)
+    {
+      BYTE * Address = NULL;
+      MEMORY_BASIC_INFORMATION MemoryInfo;
+      size_t ReservedMemory = 0;
+      size_t CommittedMemory = 0;
+      while (VirtualQuery(Address, &MemoryInfo, sizeof(MemoryInfo)) == sizeof(MemoryInfo))
+      {
+        if ((MemoryInfo.State == MEM_RESERVE) || (MemoryInfo.State == MEM_COMMIT))
+        {
+          ReservedMemory += MemoryInfo.RegionSize;
+        }
+        if ((MemoryInfo.State == MEM_COMMIT) && (MemoryInfo.Type == MEM_PRIVATE))
+        {
+          CommittedMemory += MemoryInfo.RegionSize;
+        }
+
+        Address += MemoryInfo.RegionSize;
+      }
+
+      bool NewMemoryPeek;
+      {
+        TGuard Guard(FCriticalSection);
+        const size_t Threshold = 10 * 1024 * 1024;
+        NewMemoryPeek =
+          ((ReservedMemory > FPeekReservedMemory) &&
+           ((ReservedMemory - FPeekReservedMemory) > Threshold)) |
+          ((CommittedMemory > FPeekCommittedMemory) &&
+           ((CommittedMemory - FPeekCommittedMemory) > Threshold));
+        if (NewMemoryPeek)
+        {
+          FPeekReservedMemory = ReservedMemory;
+          FPeekCommittedMemory = CommittedMemory;
+        }
+      }
+
+      if (NewMemoryPeek)
+      {
+        Log(FORMAT(L"Memory increased: Reserved address space: %s, Committed private: %s",
+              (FormatNumber(__int64(ReservedMemory)), FormatNumber(__int64(CommittedMemory)))));
+      }
+    }
   }
 }

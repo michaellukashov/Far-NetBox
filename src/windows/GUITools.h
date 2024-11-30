@@ -3,9 +3,16 @@
 
 #include <Classes.hpp>
 #include <FileMasks.h>
+#if defined(__BORLANDC__)
+#include <Tbx.hpp>
+#endif // defined(__BORLANDC__)
 #include <DirectoryMonitor.hpp>
 
 class TSessionData;
+
+#if defined(__BORLANDC__)
+typedef void (__closure* TProcessMessagesEvent)();
+#endif // defined(__BORLANDC__)
 
 using TProcessMessagesEvent = nb::FastDelegate0<void>;
 
@@ -45,8 +52,17 @@ void CopyImageList(TImageList * TargetList, TImageList * SourceList);
 void LoadDialogImage(TImage * Image, const UnicodeString & ImageName);
 int DialogImageSize(TForm * Form);
 int NormalizePixelsPerInch(int PixelsPerInch);
-void HideComponentsPanel(TForm * Form);
-UnicodeString FormatIncrementalSearchStatus(const UnicodeString & Text, bool HaveNext);
+int LargerPixelsPerInch(int PixelsPerInch, int Larger);
+struct TIncrementalSearchState
+{
+  TIncrementalSearchState();
+  void Reset();
+
+  bool Searching;
+  UnicodeString Text;
+  bool HaveNext;
+};
+UnicodeString FormatIncrementalSearchStatus(const TIncrementalSearchState & SearchState);
 namespace Webbrowserex
 {
   class TWebBrowserEx;
@@ -109,7 +125,7 @@ using namespace Pngimagelist;
 TPngImageList * GetAnimationsImages(TControl * Control);
 TImageList * GetButtonImages(TControl * Control);
 TPngImageList * GetDialogImages(TControl * Control);
-void ReleaseImagesModules();
+TCustomImageList * TreeViewImageList(TPngImageList * ImageList);
 
 class TFrameAnimation
 {
@@ -175,22 +191,6 @@ private:
     TControl * HintControl, const UnicodeString & Hint, UnicodeString & ShortHint, UnicodeString & LongHint);
 };
 
-// Newer version rich edit that supports "Friendly name hyperlinks" and
-// allows wider range of Unicode characters: https://stackoverflow.com/q/47433656/850848
-class TNewRichEdit : public TRichEdit
-{
-public:
-  virtual TNewRichEdit(TComponent * AOwner);
-
-protected:
-  virtual void CreateParams(TCreateParams & Params);
-  virtual void CreateWnd();
-  virtual void DestroyWnd();
-
-private:
-  HINSTANCE FLibrary;
-};
-
 // Based on:
 // https://stackoverflow.com/q/6912424/850848
 // https://stackoverflow.com/q/4685863/850848
@@ -216,7 +216,6 @@ void FindComponentClass(
       PARENT::ReadState(Reader); \
     }
 #define INTERFACE_HOOK INTERFACE_HOOK_CUSTOM(TForm)
-
 
 #endif // defined(__BORLANDC__)
 

@@ -9,26 +9,26 @@
 #include <HistoryComboBox.hpp>
 
 const TColor LinkColor = clBlue;
-
+extern const UnicodeString ContextSeparator;
 void FixListColumnWidth(TListView * TListView, int Index);
 void AutoSizeListColumnsWidth(TListView * ListView, int ColumnToShrinkIndex = -1);
-void EnableControl(TControl * Control, bool Enable);
+void EnableControl(TControl* Control, bool Enable);
 void ReadOnlyControl(TControl * Control, bool ReadOnly = true);
 void ReadOnlyAndEnabledControl(TControl * Control, bool ReadOnly, bool Enabled);
 int CalculateCheckBoxWidth(TControl * Control, const UnicodeString & Caption);
 void AutoSizeCheckBox(TCheckBox * CheckBox);
 void InitializeSystemSettings();
 void FinalizeSystemSettings();
-void LocalSystemSettings(TCustomForm * Control);
-void UseSystemSettingsPre(TCustomForm * Control);
-void UseSystemSettingsPost(TCustomForm * Control);
-void UseSystemSettings(TCustomForm * Control);
-void ResetSystemSettings(TCustomForm * Control);
-void LinkLabel(TStaticText * StaticText, const UnicodeString & Url = L"",
+void LocalSystemSettings(TForm * Control);
+void UseSystemSettingsPre(TForm * Control);
+void UseSystemSettingsPost(TForm * Control);
+void UseSystemSettings(TForm * Control);
+void ResetSystemSettings(TForm * Control);
+void LinkLabel(TStaticText * StaticText, UnicodeString Url = L"",
   TNotifyEvent OnEnter = nullptr);
 void LinkActionLabel(TStaticText * StaticText);
 void LinkAppLabel(TStaticText * StaticText);
-void HintLabel(TStaticText * StaticText, const UnicodeString & Hint = L"");
+void HintLabel(TStaticText * StaticText, UnicodeString Hint = L"");
 void HotTrackLabel(TLabel * Label);
 void SetLabelHintPopup(TLabel * Label, const UnicodeString & Hint);
 bool HasLabelHintPopup(TControl * Control, const UnicodeString & HintStr);
@@ -37,7 +37,7 @@ void ShowAsModal(TForm * Form, void *& Storage, bool BringToFront = true, bool T
 void HideAsModal(TForm * Form, void *& Storage);
 bool ReleaseAsModal(TForm * Form, void *& Storage);
 bool IsMainFormLike(TCustomForm * Form);
-bool SelectDirectory(UnicodeString & Path, const UnicodeString & Prompt,
+bool SelectDirectory(UnicodeString & Path, const UnicodeString Prompt,
   bool PreserveFileName);
 void SelectDirectoryForEdit(THistoryComboBox * Edit);
 enum TListViewCheckAll { caCheck, caUncheck, caToggle };
@@ -62,8 +62,8 @@ void SetCorrectFormParent(TForm * Form);
 void InvokeHelp(TWinControl * Control);
 void FixFormIcons(TForm * Form);
 Forms::TMonitor *  FormMonitor(TCustomForm * Form);
-int32_t GetLastMonitor();
-void SetLastMonitor(int32_t MonitorNum);
+int GetLastMonitor();
+void SetLastMonitor(int MonitorNum);
 TForm * _SafeFormCreate(TMetaClass * FormClass, TComponent * Owner);
 template<class FormType>
 FormType * SafeFormCreate(TComponent * Owner = nullptr)
@@ -89,7 +89,7 @@ TPanel * CreateBlankPanel(TComponent * Owner);
 typedef void (*TRescaleEvent)(TComponent * Sender, TObject * Token);
 void SetRescaleFunction(
   TComponent * Component, TRescaleEvent OnRescale, TObject * Token = nullptr, bool OwnsToken = false);
-void RecordFormImplicitRescale(TForm * Form);
+TWindowState GetWindowStateBeforeMimimize(TForm * Form);
 void CountClicksForWindowPrint(TForm * Form);
 bool IsButtonBeingClicked(TButtonControl * Button);
 bool IsCancelButtonBeingClicked(TControl * Control);
@@ -97,6 +97,8 @@ TCanvas * CreateControlCanvas(TControl * Control);
 void AutoSizeButton(TButton * Button);
 namespace Tb2item { class TTBCustomItem; }
 void GiveTBItemPriority(Tb2item::TTBCustomItem * Item);
+void DeleteChildren(TWinControl * Control);
+void AutoSizeLabel(TLabel * Label);
+void AutoSizeLabel(TStaticText * Label);
 
 #endif // defined(__BORLANDC__)
-

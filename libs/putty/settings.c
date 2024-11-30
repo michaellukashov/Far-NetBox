@@ -110,7 +110,7 @@ const struct BackendVtable *backend_vt_from_proto(int proto)
     return NULL;
 }
 
-#if 0
+#if defined(__BORLANDC__)
 char *get_remote_username(Conf *conf)
 {
     char *username = conf_get_str(conf, CONF_username);
@@ -123,7 +123,7 @@ char *get_remote_username(Conf *conf)
         return NULL;
     }
 }
-#endif //if 0
+#endif // defined(__BORLANDC__)
 
 static char *gpps_raw(settings_r *sesskey, const char *name, const char *def)
 {

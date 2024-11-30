@@ -2836,7 +2836,7 @@ void get_hostkey_algs(int type, int * count, cp_ssh_keyalg ** sign_keys)
     int i;
     int max = lenof(ssh2_hostkey_algs);
     *count = 0;
-    *sign_keys = snewn(max, cp_ssh_keyalg *);
+    *sign_keys = snewn(max, cp_ssh_keyalg);
     for (i = 0; i < max; i++)
     {
         if ((type < 0) || (ssh2_hostkey_algs[i].id == type))
@@ -2848,7 +2848,7 @@ void get_hostkey_algs(int type, int * count, cp_ssh_keyalg ** sign_keys)
 }
 
 // WINSCP
-void get_macs(int * count, const struct ssh2_macalg *** amacs)
+void get_macs(int * count, const struct ssh2_macalg * const ** amacs)
 {
     *amacs = macs;
     *count = lenof(macs);

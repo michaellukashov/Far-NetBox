@@ -433,8 +433,8 @@ using TFullSynchronizeEvent = nb::FastDelegate3<void,
   TUpdatedSynchronizationChecklistItems /*OnUpdatedSynchronizationChecklistItems*/>;
 using TSynchronizeChecklistCalculateSizeEvent = nb::FastDelegate3<void,
   TSynchronizeChecklist * /*Checklist*/, const TSynchronizeChecklist::TItemList & /*Items*/, void * /*Token*/>;
-using TSynchronizeMoveEvent = nb::FastDelegate4<void,
-  TOperationSide /*Side*/, const UnicodeString & /*FileName*/, const UnicodeString & /*NewFileName*/, TRemoteFile * /*RemoteFile*/>;
+using TSynchronizeMoveEvent = nb::FastDelegate5<void,
+  TOperationSide /*Side*/, TStrings * /*FileList*/, const UnicodeString & /*NewFileName*/, bool /*TargetIsDirectory*/, void * /*Token*/>;
 using TSynchronizeBrowseEvent = nb::FastDelegate3<void,
   TOperationSide /*Side*/, TChecklistAction /*Action*/, const TChecklistItem * /*Item*/>;
 bool DoSynchronizeChecklistDialog(TSynchronizeChecklist * Checklist,
@@ -578,8 +578,6 @@ UnicodeString StoreColor(TColor Color);
 void FixButtonImage(TButton * Button);
 void CenterButtonImage(TButton * Button);
 
-void UpgradeSpeedButton(TSpeedButton * Button);
-
 int AdjustLocaleFlag(const UnicodeString & S, TLocaleFlagOverride LocaleFlagOverride, bool Recommended, int On, int Off);
 
 void SetGlobalMinimizeHandler(TCustomForm * Form, TNotifyEvent OnMinimize);
@@ -596,6 +594,7 @@ void WinFinalize();
 
 void ShowNotification(TTerminal * Terminal, const UnicodeString & Str,
   TQueryType Type);
+
 #if defined(__BORLANDC__)
 void InitializeShortCutCombo(TComboBox * ComboBox,
   const TShortCuts & ShortCuts);

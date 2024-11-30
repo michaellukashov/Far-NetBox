@@ -66,27 +66,30 @@ void FaultHandler(const wchar_t * Filename, int32_t LineNumber);
 }
 #endif
 
-#if !defined(_DEBUG) || defined(DESIGN_ONLY)
-
+#if defined(_DEBUG) && !defined(DESIGN_ONLY)
+#define DODEBUGGING
+#endif
+#ifndef DODEBUGGING
 #define DebugAssert(p)   (void)(p)
 #define DebugCheck(p)    (p)
 #define DebugFail()      (void)0
 
-#else // if !defined(_DEBUG) || defined(DESIGN_ONLY)
+#else // ifndef DODEBUGGING
 
 NB_CORE_EXPORT void DoAssert(const wchar_t * Message, const wchar_t * Filename, int32_t LineNumber);
 NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_t LineNumber);
 #define DebugAssert(p) ((p) ? (void)0 : DoAssert(NB_TEXT(#p), NB_TEXT(__FILE__), __LINE__))
 #define DebugCheck(p) { bool __CHECK_RESULT__ = (p); DebugAssert(__CHECK_RESULT__); }
 #define DebugFail() DebugAssert(false)
-#endif // if !defined(_DEBUG) || defined(DESIGN_ONLY)
+#endif // ifndef DODEBUGGING
 
 #define DebugAlwaysTrue(p) (p)
 #define DebugAlwaysFalse(p) (p)
 #define DebugNotNull(p) (p)
 #define TraceInitPtr(p) (p)
 #define TraceInitStr(p) (p)
-#define DebugUsedParam(p) (void)(p)
+#define DebugUsedParam2(p1, p2) ((&p1) == (&p2))
+#define DebugUsedParam(p) DebugUsedParam2(p, p)
 #define DebugUsedArg(p)
 
 #if defined(_DEBUG)

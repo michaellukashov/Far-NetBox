@@ -456,6 +456,11 @@ UnicodeString UTF8ToString(const char * Str, int32_t Len)
   return Result;
 }
 
+UnicodeString UTF8ArrayToString(const char * Str, int32_t Len)
+{
+  return UTF8ToString(Str, Len);
+}
+
 double StrToFloat(const UnicodeString & Value)
 {
   return StrToFloatDef(Value, 0.0);

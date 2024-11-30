@@ -11,6 +11,7 @@
 #include "Exceptions.h"
 #include "WinSCPSecurity.h"
 #include "Terminal.h"
+#include "Cryptography.h"
 #include <TextsCore.h>
 #ifndef WINSCP
 #define WINSCP
@@ -25,7 +26,9 @@ extern "C"
 
 constexpr const char * SESSION_PROXY_AUTH_KEY = "proxyauth";
 constexpr const char * SESSION_TLS_INIT_KEY = "tlsinit";
-// #define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
+#if defined(__BORLANDC__)
+#define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
+#endif // defined(__BORLANDC__)
 constexpr const char * SESSION_TERMINAL_KEY = "terminal";
 
 void NeonParseUrl(const UnicodeString & Url, ne_uri &uri)
@@ -80,6 +83,10 @@ static int32_t NeonProxyAuth(
 
 ne_session * CreateNeonSession(const ne_uri & uri)
 {
+  if (IsTlsUri(uri))
+  {
+    RequireTls();
+  }
   return ne_session_create(uri.scheme, uri.host, uri.port);
 }
 
@@ -282,8 +289,9 @@ void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal 
   TMethod & Method = *(TMethod*)&OnNeonTlsInit;
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, Method.Code);
   ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
-#endif
+#else
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, nb::ToPtr(OnNeonTlsInit));
+#endif
 }
 
 void InitNeonTls(
@@ -521,12 +529,12 @@ void RetrieveNeonCertificateData(
 
   Data.AsciiCert = NeonExportCertificate(Certificate);
 
-  char * Subject = ne_ssl_readable_dname(ne_ssl_cert_subject(Certificate));
+  const char * Subject = ne_ssl_readable_dname(ne_ssl_cert_subject(Certificate));
   Data.Subject = StrFromNeon(Subject);
-  ne_free(Subject);
-  char * Issuer = ne_ssl_readable_dname(ne_ssl_cert_issuer(Certificate));
+  ne_free((void *)Subject);
+  const char * Issuer = ne_ssl_readable_dname(ne_ssl_cert_issuer(Certificate));
   Data.Issuer = StrFromNeon(Issuer);
-  ne_free(Issuer);
+  ne_free((void *)Issuer);
 
   Data.Failures = Failures;
 

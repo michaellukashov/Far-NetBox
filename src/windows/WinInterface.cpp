@@ -51,6 +51,7 @@ HINSTANCE HInstance{nullptr};
 
 TMessageParams::TMessageParams(uint32_t AParams) noexcept : TMessageParams(nullptr)
 {
+  Reset();
   Params = AParams;
 }
 
@@ -776,7 +777,7 @@ static void DoExceptNotify(TObject * ExceptObj, void * ExceptAddr,
           StackTraceMap.insert(std::make_pair(ThreadID, StackTrace.release()));
         }
 
-        // this chains so that JclLastExceptStackList() returns nullptr the next time
+        // this chains so that JclLastExceptStackList() returns NULL the next time
         // for the current thread
         delete StackInfoList;
       }
@@ -1000,22 +1001,6 @@ int CopyParamListPopupClick(TObject * Sender,
   else if (Item->Tag == cpiGenerateCode)
   {
     Result = -cplGenerateCode;
-  }
-  else if (Item->Tag == cpiSavePreset)
-  {
-    std::unique_ptr<TCopyParamList> CopyParamList(new TCopyParamList());
-    *CopyParamList = *GUIConfiguration->CopyParamList;
-    int Index = -1;
-    if (DoCopyParamPresetDialog(CopyParamList.get(), Index, cpmAdd, nullptr, Param))
-    {
-      GUIConfiguration->CopyParamList = CopyParamList.get();
-      // If saved unmodified, then make this the selected preset
-      if (*CopyParamList->CopyParams[Index] == Param)
-      {
-        Preset = CopyParamList->Names[Index];
-      }
-    }
-    Result = 0;
   }
   else
   {
@@ -1273,7 +1258,7 @@ void CenterButtonImage(TButton * Button)
     UnicodeString Caption;
     // Centering unlinks the caption from the action
     TAction * Action = dynamic_cast<TAction *>(Button->Action);
-    if (Action != NULL)
+    if (Action != nullptr)
     {
       Caption = Action->Caption;
     }
@@ -1731,7 +1716,7 @@ void ::TTrayIcon::PopupBalloon(UnicodeString Title,
   delete FBalloonUserData;
   FBalloonUserData = BalloonUserData;
 
-  // Clearing the flag ensures that subsequent updates does not hide the balloon
+  // Clearing the flag ensures that subsequent updates does not hide the baloon
   // unless CancelBalloon is called explicitly
   FTrayIcon->uFlags = FTrayIcon->uFlags & ~NIF_INFO;
 }

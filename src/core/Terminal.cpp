@@ -9,6 +9,11 @@
 #include <System.IOUtils.hpp>
 #include <StrUtils.hpp>
 
+#if defined(__BORLANDC__)
+#include "Common.h"
+#include "PuttyTools.h"
+#include "FileBuffer.h"
+#endif // defined(__BORLANDC__)
 #include "Interface.h"
 #include "RemoteFiles.h"
 #include "SecureShell.h"
@@ -902,7 +907,7 @@ void TParallelOperation::Done(
 
               try
               {
-                const UnicodeString TargetName = TPath::Combine(TargetDir, FParallelFileTargetName);
+                const UnicodeString TargetName = CombinePaths(TargetDir, FParallelFileTargetName);
                 const UnicodeString TargetNamePartial = TargetName + PartialExt;
                 const UnicodeString TargetNamePartialOnly = base::UnixExtractFileName(TargetNamePartial);
 
@@ -919,7 +924,7 @@ void TParallelOperation::Done(
                     UnicodeString FileNameOnly = base::UnixExtractFileName(FileName);
                     // Safe as write access to FParallelFileMerged is guarded by FParallelFileMerging
                     const int32_t Index = FParallelFileMerged;
-                    UnicodeString TargetPartName = GetPartPrefix(TPath::Combine(TargetDir, FileNameOnly)) + IntToStr(Index);
+                    UnicodeString TargetPartName = GetPartPrefix(CombinePaths(TargetDir, FileNameOnly)) + IntToStr(Index);
 
                     if ((CopyParam->PartSize >= 0) && (Terminal->OperationProgress->TransferredSize != CopyParam->PartSize))
                     {
@@ -1124,7 +1129,7 @@ int32_t TParallelOperation::GetNext(
         }
         else
         {
-          DirectoryData.OppositePath = TPath::Combine(TargetDir, OnlyFileName);
+          DirectoryData.OppositePath = CombinePaths(TargetDir, OnlyFileName);
         }
 
         DirectoryData.Exists = false;
@@ -3803,6 +3808,8 @@ void TTerminal::CustomReadDirectory(TRemoteFileList * AFileList)
   DebugAssert(AFileList);
   DebugAssert(FFileSystem);
 
+  AppLogFmt(L"Reading directory %s", AFileList->Directory);
+
   // To match FTP upload/download, we also limit directory listing.
   // For simplicity, we limit it unconditionally, for all protocols for any kind of errors.
   bool FileTransferAny = false;
@@ -4144,6 +4151,14 @@ bool TTerminal::FileExists(const UnicodeString & FileName)
 {
   std::unique_ptr<TRemoteFile> File(TryReadFile(FileName));
   return (File != nullptr);
+}
+
+bool TTerminal::DirectoryExists(const UnicodeString & FileName)
+{
+  std::unique_ptr<TRemoteFile> File(TryReadFile(FileName));
+  return
+    (File.get() != NULL) &&
+    File->IsDirectory;
 }
 
 void TTerminal::AnnounceFileListOperation()
@@ -4493,10 +4508,9 @@ void TTerminal::DoDeleteFile(
 
 bool TTerminal::DeleteFiles(TStrings * AFilesToDelete, int32_t Params)
 {
-  const TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
-  FUseBusyCursor = false;
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
 
-  TODO("avoid resolving symlinks while reading subdirectories.");
+  // TODO: avoid resolving symlinks while reading subdirectories.
   // Resolving does not work anyway for relative symlinks in subdirectories
   // (at least for SFTP).
   return this->ProcessFiles(AFilesToDelete, foDelete, nb::bind(&TTerminal::DeleteFile, this), &Params);
@@ -4736,8 +4750,7 @@ void TTerminal::DoChangeFileProperties(const UnicodeString & AFileName,
 void TTerminal::ChangeFilesProperties(TStrings * AFileList,
   const TRemoteProperties * Properties)
 {
-  const TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
-  FUseBusyCursor = false;
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
 
   AnnounceFileListOperation();
   ProcessFiles(AFileList, foSetProperties, nb::bind(&TTerminal::ChangeFileProperties, this), const_cast<void *>(nb::ToPtr(Properties)));
@@ -4745,8 +4758,7 @@ void TTerminal::ChangeFilesProperties(TStrings * AFileList,
 
 bool TTerminal::LoadFilesProperties(TStrings * AFileList)
 {
-  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
-  FUseBusyCursor = false;
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
 
   // see comment in TSFTPFileSystem::IsCapable
   const bool Result =
@@ -4921,8 +4933,7 @@ bool TTerminal::CalculateFilesSize(TStrings * AFileList, int64_t & Size, TCalcul
   // draft-peterson-streamlined-ftp-command-extensions-10
   // Implemented by Serv-U FTP.
 
-  const TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
-  FUseBusyCursor = false;
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
 
   ProcessFiles(AFileList, foCalculateSize, nb::bind(&TTerminal::DoCalculateFileSize, this), &Params);
   Size = Params.Size;
@@ -5686,9 +5697,9 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
       // save the error, otherwise it gets overwritten by call to FileExists
       const int32_t LastError = ::GetLastError();
       // int32_t FileAttr;
-      DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
+      DWORD LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName));
       if (base::FileExists(ApiPath(AFileName)) &&
-        (((LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName))) & (faReadOnly | faHidden)) != 0))
+        ((LocalFileAttrs & (faReadOnly | faHidden)) != 0))
       {
         if (FLAGSET(LocalFileAttrs, faReadOnly))
         {
@@ -6206,8 +6217,7 @@ TSynchronizeChecklist * TTerminal::SynchronizeCollect(const UnicodeString & Loca
   TSynchronizeDirectoryEvent && OnSynchronizeDirectory,
   TSynchronizeOptions * Options)
 {
-  const TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor);
-  FUseBusyCursor = false;
+  TValueRestorer<bool> UseBusyCursorRestorer(FUseBusyCursor, false);
 
   std::unique_ptr<TSynchronizeChecklist> Checklist(std::make_unique<TSynchronizeChecklist>());
   try__catch
@@ -7815,11 +7825,7 @@ void TTerminal::SourceRobust(
 bool TTerminal::CreateTargetDirectory(
   const UnicodeString & ADirectoryPath, uint32_t Attrs, const TCopyParamType * CopyParam)
 {
-  std::unique_ptr<TRemoteFile> File(TryReadFile(ADirectoryPath));
-  const bool DoCreate =
-    (File == nullptr) ||
-    !File->IsDirectory; // just try to create and make it fail
-  File.reset(nullptr);
+  const bool DoCreate = !DirectoryExists(ADirectoryPath);
   if (DoCreate)
   {
     TRemoteProperties Properties;
@@ -8117,7 +8123,7 @@ void TTerminal::CheckParallelFileTransfer(
         {
           ParallelFileSize = UltimateFile->Size;
           const UnicodeString TargetFileName = CopyParam->ChangeFileName(base::UnixExtractFileName(ParallelFileName), osRemote, true);
-          const UnicodeString DestFullName = TPath::Combine(TargetDir, TargetFileName);
+          const UnicodeString DestFullName = CombinePaths(TargetDir, TargetFileName);
 
           if (base::FileExists(ApiPath(DestFullName)))
           {
@@ -9308,84 +9314,9 @@ bool TTerminal::IsValidFile(TRemoteFile * File) const
     (base::IsUnixRootPath(File->FileName()) || base::UnixExtractFileDir(File->FileName()).IsEmpty());
 }
 
-UnicodeString TTerminal::CutFeature(UnicodeString & Buf)
-{
-  UnicodeString Result;
-  if (Buf.SubString(1, 1) == L"\"")
-  {
-    Buf.Delete(1, 1);
-    const int32_t P = Buf.Pos(L"\",");
-    if (P == 0)
-    {
-      Result = Buf;
-      Buf = UnicodeString();
-      // there should be the ending quote, but if not, just do nothing
-      if (Result.SubString(Result.Length(), 1) == L"\"")
-      {
-        Result.SetLength(Result.Length() - 1);
-      }
-    }
-    else
-    {
-      Result = Buf.SubString(1, P - 1);
-      Buf.Delete(1, P + 1);
-    }
-    Buf = Buf.TrimLeft();
-  }
-  else
-  {
-    Result = CutToChar(Buf, L',', true);
-  }
-  return Result;
-}
-
 TStrings * TTerminal::ProcessFeatures(TStrings * Features)
 {
-  std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
-  UnicodeString FeaturesOverride = SessionData->ProtocolFeatures().Trim();
-  if (FeaturesOverride.SubString(1, 1) == L"*")
-  {
-    FeaturesOverride.Delete(1, 1);
-    while (!FeaturesOverride.IsEmpty())
-    {
-      UnicodeString Feature = CutFeature(FeaturesOverride);
-      Result->Add(Feature);
-    }
-  }
-  else
-  {
-    std::unique_ptr<TStrings> DeleteFeatures(CreateSortedStringList());
-    std::unique_ptr<TStrings> AddFeatures(std::make_unique<TStringList>());
-    while (!FeaturesOverride.IsEmpty())
-    {
-      UnicodeString Feature = CutFeature(FeaturesOverride);
-      if (Feature.SubString(1, 1) == L"-")
-      {
-        Feature.Delete(1, 1);
-        DeleteFeatures->Add(Feature.LowerCase());
-      }
-      else
-      {
-        if (Feature.SubString(1, 1) == L"+")
-        {
-          Feature.Delete(1, 1);
-        }
-        AddFeatures->Add(Feature);
-      }
-    }
-
-    for (int32_t Index = 0; Index < Features->Count; Index++)
-    {
-      UnicodeString Feature = Features->Strings[Index];
-      if (DeleteFeatures->IndexOf(Feature) < 0)
-      {
-        Result->Add(Feature);
-      }
-    }
-
-    Result->AddStrings(AddFeatures.get());
-  }
-  return Result.release();
+  return ::ProcessFeatures(Features, SessionData->ProtocolFeatures().Trim());
 }
 
 void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,

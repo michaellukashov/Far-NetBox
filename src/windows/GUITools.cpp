@@ -1125,8 +1125,8 @@ void ApplyTabs(
 static void DoSelectScaledImageList(TImageList * ImageList)
 {
   TImageList * MatchingList = nullptr;
-  int MatchingPixelsPerInch = 0;
-  int PixelsPerInch = GetComponentPixelsPerInch(ImageList);
+  int MachingPixelsPerInch = 0;
+  int PixelsPerInch = LargerPixelsPerInch(GetComponentPixelsPerInch(ImageList), WinConfiguration->LargerToolbar);
 
   for (int Index = 0; Index < ImageList->Owner->ComponentCount; Index++)
   {
@@ -1191,7 +1191,8 @@ void SelectScaledImageList(TImageList * ImageList)
 
 void CopyImageList(TImageList * TargetList, TImageList * SourceList)
 {
-  // Maybe this is not necessary, once the TPngImageList::Assign was fixed
+  // Maybe this is not necessary, once the TPngImageList::Assign was fixed.
+  // But if we ever use Assign, make sure the target keeps its Scaled property.
   TPngImageList * PngTargetList = dynamic_cast<TPngImageList *>(TargetList);
   TPngImageList * PngSourceList = dynamic_cast<TPngImageList *>(SourceList);
 
@@ -1308,7 +1309,19 @@ void HideComponentsPanel(TForm * Form)
   }
 }
 
-UnicodeString FormatIncrementalSearchStatus(const UnicodeString & Text, bool HaveNext)
+TIncrementalSearchState::TIncrementalSearchState()
+{
+  Reset();
+}
+
+void TIncrementalSearchState::Reset()
+{
+  Searching = false;
+  Text = EmptyStr;
+  HaveNext = false;
+}
+
+UnicodeString FormatIncrementalSearchStatus(const TIncrementalSearchState & SearchState)
 {
   UnicodeString Result =
     L" " + FMTLOAD(INC_SEARCH, AText) +
@@ -1838,7 +1851,7 @@ static std::map<int, TPngImageList *> AnimationsImages;
 static std::map<int, TImageList *> ButtonImages;
 static std::map<int, TPngImageList *> DialogImages;
 
-int NormalizePixelsPerInch(int PixelsPerInch)
+int DoNormalizePixelsPerInch(int PixelsPerInch, bool Larger)
 {
   if (PixelsPerInch >= 192)
   {
@@ -1846,17 +1859,33 @@ int NormalizePixelsPerInch(int PixelsPerInch)
   }
   else if (PixelsPerInch >= 144)
   {
-    PixelsPerInch = 144;
+    PixelsPerInch = Larger ? 192 : 144;
   }
   else if (PixelsPerInch >= 120)
   {
-    PixelsPerInch = 120;
+    PixelsPerInch = Larger ? 144 : 120;
   }
   else
   {
-    PixelsPerInch = 96;
+    PixelsPerInch = Larger ? 120 : 96;
   }
   return PixelsPerInch;
+}
+
+int NormalizePixelsPerInch(int PixelsPerInch)
+{
+  return DoNormalizePixelsPerInch(PixelsPerInch, false);
+}
+
+int LargerPixelsPerInch(int PixelsPerInch, int Larger)
+{
+  int Result = PixelsPerInch;
+  while (Larger > 0)
+  {
+    Result = DoNormalizePixelsPerInch(Result, true);
+    Larger--;
+  }
+  return Result;
 }
 
 static int NeedImagesModule(TControl * Control)
@@ -2222,6 +2251,8 @@ TRect TScreenTipHintWindow::CalcHintRect(int MaxWidth, const UnicodeString AHint
 
   Canvas->Font->Assign(GetFont(HintControl, AHint));
 
+  // from XE6 Vcl.ScreenTips.pas, but absent in 11
+  const cScreenTipTextOnlyWidth = 210;
   const int ScreenTipTextOnlyWidth = ScaleByTextHeight(HintControl, cScreenTipTextOnlyWidth);
 
   int LongHintMargin = 0; // shut up
@@ -2395,54 +2426,6 @@ void TScreenTipHintWindow::Paint()
     Rect.Left += FMargin * 3 / 2;
     Rect.Top += ShortRect.Height() + (FMargin / 3 * 5);
     DrawText(Canvas->Handle, FLongHint.c_str(), -1, &Rect, Flags);
-  }
-}
-
-
-TNewRichEdit::TNewRichEdit(TComponent * AOwner) :
-  TRichEdit(AOwner),
-  FLibrary(0)
-{
-}
-
-void TNewRichEdit::CreateParams(TCreateParams & Params)
-{
-  UnicodeString RichEditModuleName(L"MSFTEDIT.DLL");
-  long int OldError;
-
-  OldError = SetErrorMode(SEM_NOOPENFILEERRORBOX);
-  FLibrary = LoadLibrary(RichEditModuleName.c_str());
-  SetErrorMode(OldError);
-
-  // No fallback, MSFTEDIT.DLL is available since Windows XP
-  // https://learn.microsoft.com/en-us/archive/blogs/murrays/richedit-versions
-  if (FLibrary == 0)
-  {
-    throw Exception(FORMAT(L"Cannot load %s", RichEditModuleName));
-  }
-
-  TCustomMemo::CreateParams(Params);
-  // MSDN says that we should use MSFTEDIT_CLASS to load Rich Edit 4.1:
-  // https://learn.microsoft.com/en-us/windows/win32/controls/about-rich-edit-controls
-  // But MSFTEDIT_CLASS is defined as "RICHEDIT50W",
-  // so not sure what version we are loading.
-  // Seem to work on Windows XP SP3.
-  CreateSubClass(Params, MSFTEDIT_CLASS);
-}
-
-void TNewRichEdit::CreateWnd()
-{
-  TRichEdit::CreateWnd();
-  SendMessage(Handle, EM_SETEDITSTYLEEX, 0, SES_EX_HANDLEFRIENDLYURL);
-}
-
-void TNewRichEdit::DestroyWnd()
-{
-  TRichEdit::DestroyWnd();
-
-  if (FLibrary != 0)
-  {
-    FreeLibrary(FLibrary);
   }
 }
 
@@ -2626,3 +2609,13 @@ void GUIFinalize()
 #endif // defined(__BORLANDC__)
 }
 
+#if defined(__BORLANDC__)
+
+TCustomImageList * TreeViewImageList(TPngImageList * ImageList)
+{
+  // WORKAROUND Prevent DPI scaling, see TCustomTreeView.SetImages
+  ImageList->Scaled = true;
+  return ImageList;
+}
+
+#endif // defined(__BORLANDC__)

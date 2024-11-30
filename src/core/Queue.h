@@ -245,7 +245,7 @@ protected:
 public:
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
-  void Execute(gsl::not_null<TTerminalItem *> TerminalItem);
+  void Execute();
   virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) = 0;
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy) const;
@@ -258,6 +258,7 @@ protected:
   virtual void ProgressUpdated();
   virtual TQueueItem * CreateParallelOperation();
   virtual bool Complete();
+  bool IsExecutionCancelled() const;
 };
 
 class NB_CORE_EXPORT TQueueItemProxy : public TObject

@@ -1424,7 +1424,6 @@ add_library(putty STATIC
   libs/putty/ssh/zlib.c
   libs/putty/sshpubk.c
   libs/putty/sshrand.c
-  libs/putty/stubs/nullplug.c
   libs/putty/utils/antispoof.c
   libs/putty/utils/backend_socket_log.c
   libs/putty/utils/base64_decode_atom.c
@@ -1449,8 +1448,13 @@ add_library(putty STATIC
   libs/putty/utils/marshal.c
   libs/putty/utils/memory.c
   libs/putty/utils/memxor.c
-  libs/putty/utils/null_lp.c
-  libs/putty/utils/nullseat.c
+  libs/putty/stubs/null-lp.c
+  libs/putty/stubs/null-mac.c
+  libs/putty/stubs/null-opener.c
+  libs/putty/stubs/null-plug.c
+  libs/putty/stubs/null-seat.c
+  libs/putty/stubs/null-cipher.c
+  libs/putty/stubs/null-key.c
   libs/putty/utils/nullstrcmp.c
   libs/putty/utils/out_of_memory.c
   libs/putty/utils/parse_blocksize.c
@@ -1507,13 +1511,6 @@ add_library(putty STATIC
   libs/putty/crypto/aesgcm.h
   libs/putty/crypto/ntru.c
   libs/putty/crypto/openssh-certs.c
-  libs/putty/stubs/null-cipher.c
-  libs/putty/stubs/null-key.c
-#  libs/putty/stubs/null-lp.c
-  libs/putty/stubs/null-mac.c
-  libs/putty/stubs/null-opener.c
-#  libs/putty/stubs/null-plug.c
-#  libs/putty/stubs/null-seat.c
   libs/putty/utils/base64_decode.c
   libs/putty/utils/base64_encode.c
   libs/putty/utils/cert-expr.c
@@ -1707,7 +1704,7 @@ set(ZLIB_SOURCES
   libs/zlib-ng/deflate_fast.c
   libs/zlib-ng/crc32.c
   libs/zlib-ng/arch/generic/crc32_fold_c.c
-  libs/zlib-ng/arch/generic/insert_string_c.c
+  # libs/zlib-ng/arch/generic/insert_string_c.c
   libs/zlib-ng/arch/generic/slide_hash_c.c
   libs/zlib-ng/arch/generic/chunkset_c.c
   libs/zlib-ng/arch/generic/compare256_c.c
@@ -1730,7 +1727,7 @@ set(ZLIB_SOURCES ${ZLIB_SOURCES}
 else()
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   libs/zlib-ng/arch/x86/x86_features.c
-  libs/zlib-ng/arch/x86/insert_string_sse42.c
+  # libs/zlib-ng/arch/x86/insert_string_sse42.c
   libs/zlib-ng/arch/x86/slide_hash_avx2.c
   libs/zlib-ng/arch/x86/slide_hash_sse2.c
   libs/zlib-ng/arch/x86/crc32_pclmulqdq.c
@@ -1764,7 +1761,7 @@ target_compile_options(zlib PRIVATE
 
 target_compile_definitions(zlib PRIVATE
   # -DUNALIGNED_OK
-  -DZLIB_INTERNAL=
+  # -DZLIB_INTERNAL=
   -DZLIB_COMPAT
   -DZLIB_NAME_MANGLING_H
   -DMEMCPY=memcpy

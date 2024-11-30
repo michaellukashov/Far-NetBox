@@ -227,7 +227,9 @@ SockAddr *sk_addr_dup(SockAddr *addr);
 
 /* NB, control of 'addr' is passed via sk_new, which takes responsibility
  * for freeing it, as for new_connection() */
+#if defined(__BORLANDC__)
 #undef sk_new
+#endif // defined(__BORLANDC__)
 Socket *sk_new(SockAddr *addr, int port, bool privport, bool oobinline,
                bool nodelay, bool keepalive, Plug *p,
 #ifdef MPEXT
@@ -251,11 +253,15 @@ static inline size_t sk_write_oob(Socket *s, const void *data, size_t len)
 static inline void sk_write_eof(Socket *s)
 { s->vt->write_eof(s); }
 
-//#pragma option push -w-bei // WINSCP
+#if defined(__BORLANDC__)
+#pragma option push -w-bei // WINSCP
+#endif // defined(__BORLANDC__)
 static inline void plug_log(
     Plug *p, int type, SockAddr *addr, int port, const char *msg, int code)
 { p->vt->log(p, (PlugLogType)type, addr, port, msg, code); }
-//#pragma option pop // WINSCP
+#if defined(__BORLANDC__)
+#pragma option pop // WINSCP
+#endif // defined(__BORLANDC__)
 static inline void plug_closing(Plug *p, PlugCloseType type, const char *msg)
 { p->vt->closing(p, type, msg); }
 static inline void plug_closing_normal(Plug *p)

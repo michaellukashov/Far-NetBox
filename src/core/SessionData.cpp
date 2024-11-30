@@ -319,6 +319,8 @@ void TSessionData::DefaultSettings()
   // S3
   S3DefaultRegion = EmptyStr;
   S3SessionToken = EmptyStr;
+  S3RoleArn = EmptyStr;
+  S3RoleSessionName = EmptyStr;
   S3Profile = EmptyStr;
   FS3UrlStyle = s3usVirtualHost;
   FS3MaxKeys = asAuto;
@@ -328,9 +330,9 @@ void TSessionData::DefaultSettings()
   // SFTP
   SetSftpServer("");
   SetSFTPDownloadQueue(32);
-  SetSFTPUploadQueue(32);
+  SetSFTPUploadQueue(64);
   SetSFTPListingQueue(2);
-  SetSFTPMaxVersion(::SFTPMaxVersion);
+  SetSFTPMaxVersion(::SFTPMaxVersionAuto);
   SetSFTPMaxPacketSize(0);
   SetSFTPMinPacketSize(0);
   FSFTPRealPath = asAuto;
@@ -510,6 +512,8 @@ void TSessionData::NonPersistent()
   \
   PROPERTY2(S3DefaultRegion); \
   PROPERTY2(S3SessionToken); \
+  PROPERTY2(S3RoleArn); \
+  PROPERTY2(S3RoleSessionName); \
   PROPERTY2(S3Profile); \
   PROPERTY2(S3UrlStyle); \
   PROPERTY2(S3MaxKeys); \
@@ -918,6 +922,8 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
 
   FS3DefaultRegion = Storage->ReadString("S3DefaultRegion", FS3DefaultRegion);
   FS3SessionToken = Storage->ReadString("S3SessionToken", FS3SessionToken);
+  FS3RoleArn = Storage->ReadString("S3RoleArn", FS3RoleArn);
+  FS3RoleSessionName = Storage->ReadString("S3RoleSessionName", FS3RoleSessionName);
   S3Profile = Storage->ReadString("S3Profile", S3Profile);
   FS3UrlStyle = static_cast<TS3UrlStyle>(Storage->ReadInteger(L"S3UrlStyle", FS3UrlStyle));
   FS3MaxKeys = Storage->ReadEnum("S3MaxKeys", FS3MaxKeys, AutoSwitchMapping);
@@ -1285,6 +1291,8 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA2(Integer, InternalEditorEncoding);
     WRITE_DATA(String, S3DefaultRegion);
     WRITE_DATA4(String, S3SessionToken);
+    WRITE_DATA4(String, S3RoleArn);
+    WRITE_DATA4(String, S3RoleSessionName);
     WRITE_DATA4(String, S3Profile);
     WRITE_DATA3(Integer, S3UrlStyle);
     WRITE_DATA3(Integer, S3MaxKeys);
@@ -2543,7 +2551,8 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
 
       const UnicodeString OrigHostInfo = HostInfo;
-      if ((HostInfo.Length() >= 2) && (HostInfo[1] == L'[') && ((P = HostInfo.Pos(L"]")) > 0))
+      P = HostInfo.Pos(L"]");
+      if ((HostInfo.Length() >= 2) && (HostInfo[1] == L'[') && (P > 0))
       {
         SetHostName(HostInfo.SubString(2, P - 2));
         HostInfo.Delete(1, P);
@@ -3363,7 +3372,9 @@ void TSessionData::SetKex(int32_t Index, TKex value)
 TKex TSessionData::GetKex(int32_t Index) const
 {
   DebugAssert(Index >= 0 && Index < KEX_COUNT);
-  return FKex[Index];
+  if (Index >= 0 && Index < KEX_COUNT)
+    return FKex[Index];
+  return kexWarn;
 }
 
 void TSessionData::SetKexList(const UnicodeString & Value)
@@ -3390,7 +3401,9 @@ void TSessionData::SetHostKeys(int32_t Index, THostKey value)
 THostKey TSessionData::GetHostKeys(int32_t Index) const
 {
   DebugAssert(Index >= 0 && Index < HOSTKEY_COUNT);
-  return FHostKeys[Index];
+  if (Index >= 0 && Index < HOSTKEY_COUNT)
+    return FHostKeys[Index];
+  return hkWarn;
 }
 
 void TSessionData::SetHostKeyList(const UnicodeString & Value)
@@ -3414,7 +3427,7 @@ void TSessionData::SetGssLib(int32_t Index, TGssLib Value)
 #if defined(__BORLANDC__)
   SET_SESSION_PROPERTY(FGssLib[Index]);
 #endif // defined(__BORLANDC__)
-  if (FGssLib[Index] != Value)
+  if ((Index >= 0 && Index < GSSLIB_COUNT) && (FGssLib[Index] != Value))
   {
     FGssLib[Index] = Value;
   }
@@ -3424,7 +3437,9 @@ void TSessionData::SetGssLib(int32_t Index, TGssLib Value)
 TGssLib TSessionData::GetGssLib(int32_t Index) const
 {
   DebugAssert(Index >= 0 && Index < GSSLIB_COUNT);
-  return FGssLib[Index];
+  if (Index >= 0 && Index < GSSLIB_COUNT)
+    return FGssLib[Index];
+  return gssCustom;
 }
 
 void TSessionData::SetGssLibList(const UnicodeString & Value)
@@ -3540,7 +3555,7 @@ UnicodeString TSessionData::GetFSProtocolStr() const
 {
   UnicodeString Result;
   DebugAssert(GetFSProtocol() >= 0);
-  if (GetFSProtocol() < FSPROTOCOL_COUNT)
+  if ((GetFSProtocol() >= 0) && (GetFSProtocol() < FSPROTOCOL_COUNT))
   {
     Result = UnicodeString(FSProtocolNames[GetFSProtocol()]);
   }
@@ -4730,7 +4745,9 @@ void TSessionData::SetBug(TSshBug Bug, TAutoSwitch value)
 TAutoSwitch TSessionData::GetBug(TSshBug Bug) const
 {
   DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FBugs));
-  return FBugs[Bug];
+  if (Bug >= 0 && nb::ToUInt32(Bug) < _countof(FBugs))
+    return FBugs[Bug];
+  return asAuto;
 }
 
 void TSessionData::SetPuttySettings(const UnicodeString & value)
@@ -4792,7 +4809,9 @@ void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch value)
 TAutoSwitch TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
   DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FSFTPBugs));
-  return FSFTPBugs[Bug];
+  if (Bug >= 0 && nb::ToUInt32(Bug) < _countof(FSFTPBugs))
+    return FSFTPBugs[Bug];
+  return asAuto;
 }
 
 void TSessionData::SetSCPLsFullTime(TAutoSwitch value)
@@ -5021,6 +5040,16 @@ void TSessionData::SetS3DefaultRegion(const UnicodeString & value)
 void TSessionData::SetS3SessionToken(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(S3SessionToken);
+}
+
+void TSessionData::SetS3RoleArn(const UnicodeString & value)
+{
+  SET_SESSION_PROPERTY(S3RoleArn);
+}
+
+void TSessionData::SetS3RoleSessionName(const UnicodeString & value)
+{
+  SET_SESSION_PROPERTY(S3RoleSessionName);
 }
 
 void TSessionData::SetS3Profile(const UnicodeString & value)
@@ -5813,9 +5842,10 @@ void TStoredSessionList::SelectAll(bool Select)
   }
 }
 
-void TStoredSessionList::Import(TStoredSessionList * From,
+bool TStoredSessionList::Import(TStoredSessionList * From,
   bool OnlySelected, TList * Imported)
 {
+  bool Result = false;
   for (int32_t Index = 0; Index < From->GetCount(); ++Index)
   {
     if (!OnlySelected || From->GetSession(Index)->GetSelected())
@@ -5824,6 +5854,8 @@ void TStoredSessionList::Import(TStoredSessionList * From,
       Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
+      // Add(Session);
+      Result = true;
       if (Imported != nullptr)
       {
         Imported->Add(Session.get());
@@ -5833,6 +5865,7 @@ void TStoredSessionList::Import(TStoredSessionList * From,
   }
   // only modified, explicit
   Save(false, true);
+  return Result;
 }
 
 void TStoredSessionList::SelectSessionsToImport(
@@ -6078,9 +6111,7 @@ void TStoredSessionList::SetDefaultSettings(const TSessionData * Value)
 
 bool TStoredSessionList::OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate)
 {
-  return
-    Storage->OpenRootKey(CanCreate) &&
-    Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
+  return Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
 }
 
 THierarchicalStorage * TStoredSessionList::CreateHostKeysStorageForWriting()
@@ -6125,14 +6156,19 @@ int32_t TStoredSessionList::ImportHostKeys(
 }
 
 void TStoredSessionList::ImportHostKeys(
-  const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected)
+  THierarchicalStorage * SourceStorage, TStoredSessionList * Sessions, bool OnlySelected)
 {
   std::unique_ptr<THierarchicalStorage> TargetStorage(CreateHostKeysStorageForWriting());
-  TargetStorage->Init();
-  std::unique_ptr<THierarchicalStorage> SourceStorage(std::make_unique<TRegistryStorage>(SourceKey));
-  SourceStorage->Init();
 
-  ImportHostKeys(SourceStorage.get(), TargetStorage.get(), Sessions, OnlySelected);
+  ImportHostKeys(SourceStorage, TargetStorage.get(), Sessions, OnlySelected);
+}
+
+void TStoredSessionList::ImportHostKeys(
+  const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected)
+{
+  std::unique_ptr<THierarchicalStorage> SourceStorage(std::make_unique<TRegistryStorage>(SourceKey));
+
+  ImportHostKeys(SourceStorage.get(), Sessions, OnlySelected);
 }
 
 void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList * Sessions)

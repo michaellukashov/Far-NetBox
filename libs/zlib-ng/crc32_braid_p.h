@@ -24,7 +24,7 @@
 #  endif
 #else
 #  ifndef W
-#    if defined(__x86_64__) || defined(__aarch64__) || defined(__powerpc64__)
+#    if defined(__x86_64__) || defined(_M_AMD64) || defined(__aarch64__) || defined(_M_ARM64) || defined(__powerpc64__)
 #      define W 8
 #    else
 #      define W 4
@@ -60,7 +60,5 @@
 
 /* CRC polynomial. */
 #define POLY 0xedb88320         /* p(x) reflected, with x^32 implied */
-
-extern uint32_t PREFIX(crc32_braid)(uint32_t crc, const uint8_t *buf, size_t len);
 
 #endif /* CRC32_BRAID_P_H_ */

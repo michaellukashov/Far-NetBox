@@ -116,6 +116,7 @@ NB_CORE_EXPORT UnicodeString EscapePuttyCommandParam(const UnicodeString & APara
 NB_CORE_EXPORT UnicodeString StringsToParams(const TStrings * Strings);
 NB_CORE_EXPORT UnicodeString ExpandEnvironmentVariables(const UnicodeString & Str);
 NB_CORE_EXPORT bool SamePaths(const UnicodeString & APath1, const UnicodeString & APath2);
+UnicodeString CombinePaths(const UnicodeString & APath1, const UnicodeString & APath2);
 UnicodeString GetNormalizedPath(const UnicodeString & Path);
 UnicodeString GetCanonicalPath(const UnicodeString & Path);
 NB_CORE_EXPORT bool IsPathToSameFile(const UnicodeString & APath1, const UnicodeString & APath2);
@@ -125,6 +126,7 @@ int32_t CompareNumber(int64_t Value1, int64_t Value2);
 NB_CORE_EXPORT bool ContainsTextSemiCaseSensitive(const UnicodeString & Text, const UnicodeString & SubText);
 NB_CORE_EXPORT bool IsReservedName(const UnicodeString & AFileName);
 NB_CORE_EXPORT UnicodeString ApiPath(const UnicodeString & APath);
+constexpr bool IsWideChar(wchar_t Ch) { return (Ch >= L'\x80'); }
 NB_CORE_EXPORT UnicodeString DisplayableStr(const RawByteString & Str);
 NB_CORE_EXPORT UnicodeString ByteToHex(uint8_t B, bool UpperCase = true);
 NB_CORE_EXPORT UnicodeString BytesToHex(const uint8_t * B, uint32_t Length, bool UpperCase = true, wchar_t Separator = L'\0');
@@ -198,7 +200,11 @@ NB_CORE_EXPORT int32_t ParseShortEngMonthName(const UnicodeString & MonthStr);
 // The defaults are equal to defaults of TStringList class (except for Sorted)
 NB_CORE_EXPORT TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
+UnicodeString GetTlsErrorStr(uint32_t Err);
+UnicodeString GetTlsErrorStrs();
 bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
+UnicodeString GetTlsErrorStr(uint32_t Err);
+UnicodeString GetTlsErrorStrs();
 NB_CORE_EXPORT void CheckCertificate(const UnicodeString & Path);
 using X509 = struct x509_st;
 using EVP_PKEY = struct evp_pkey_st;
@@ -220,6 +226,7 @@ UnicodeString GetAncestorProcessNames();
 void NotSupported();
 void NotImplemented();
 UnicodeString GetDividerLine();
+TStrings * ProcessFeatures(TStrings * Features, const UnicodeString & FeaturesOverride);
 
 struct NB_CORE_EXPORT TSearchRecSmart : public TSearchRec
 {
@@ -388,8 +395,10 @@ public:
 
   TValueRestorer(T & Target, const T & Value) :
     FTarget(Target),
-    FValue(Value)
+    FValue(Target),
+    FArmed(true)
   {
+    FTarget = Value;
   }
 
   void Release()
@@ -418,10 +427,9 @@ class TAutoNestingCounter : public TValueRestorer<int32_t>
 public:
   TAutoNestingCounter() = delete;
   inline explicit TAutoNestingCounter(int32_t & Target) :
-    parent(Target)
+    parent(Target, Target + 1)
   {
-    DebugAssert(Target >= 0);
-    ++Target;
+    DebugAssert(FValue >= 0);
   }
 
   inline ~TAutoNestingCounter()
@@ -436,10 +444,9 @@ class TAutoFlag : public TValueRestorer<bool>
 public:
   TAutoFlag() = default;
   explicit TAutoFlag(bool & Target) :
-    parent(Target)
+    parent(Target, true)
   {
-    DebugAssert(!Target);
-    Target = true;
+    DebugAssert(!FValue);
   }
 
   ~TAutoFlag()

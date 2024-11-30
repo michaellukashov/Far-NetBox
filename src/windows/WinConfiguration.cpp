@@ -19,10 +19,10 @@
 #include <DragExt.h>
 #include <Math.hpp>
 #include <StrUtils.hpp>
-#include <Generics.Defaults.hpp>
 #include <OperationWithTimeout.hpp>
 #include "FileInfo.h"
 #include "CoreMain.h"
+#include "DriveView.hpp"
 
 #pragma package(smart_init)
 
@@ -586,6 +586,7 @@ void TWinConfiguration::Default()
   FCopyParamAutoSelectNotice = true;
   FLockToolbars = false;
   FSelectiveToolbarText = true;
+  FLargerToolbar = 1;
   FAutoOpenInPutty = false;
   FRefreshRemotePanel = false;
   FRefreshRemotePanelInterval = TDateTime(0, 1, 0, 0);
@@ -626,17 +627,20 @@ void TWinConfiguration::Default()
   FExtensionsDeleted = L"";
   FLockedInterface = false;
 
-  HonorDrivePolicy = true;
+  HonorDrivePolicy = 1;
   UseABDrives = true;
   TimeoutShellOperations = true;
   TimeoutShellIconRetrieval = false;
   UseIconUpdateThread = true;
-  AllowWindowPrint32_t = false;
+  AllowWindowPrint = false;
   StoreTransition = stInit;
   QueueTransferLimitMax = 9;
   HiContrast = false;
   EditorCheckNotModified = false;
   SessionTabCaptionTruncation = true;
+  LoadingTooLongLimit = 15;
+  RemoteThumbnailMask = EmptyStr;
+  RemoteThumbnailSizeLimit = 50 * 1024;
   FirstRun = StandardDatestamp();
 
   FEditor.Font.FontName = DefaultFixedWidthFontName;
@@ -660,6 +664,7 @@ void TWinConfiguration::Default()
   FEditor.WarnOnEncodingFallback = true;
   FEditor.WarnOrLargeFileSize = true;
   FEditor.AutoFont = true;
+  FEditor.DisableSmoothScroll = false;
 
   FQueueView.Height = 140;
   FQueueView.HeightPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
@@ -769,6 +774,7 @@ void TWinConfiguration::Default()
   FScpCommander.ExplorerKeyboardShortcuts = false;
   FScpCommander.SystemContextMenu = false;
   FScpCommander.RemotePanel.DirViewParams = ScpCommanderRemotePanelDirViewParamsDefault;
+  FScpCommander.RemotePanel.ViewStyle = dvsReport;
   FScpCommander.RemotePanel.StatusBar = true;
   FScpCommander.RemotePanel.DriveView = false;
   FScpCommander.RemotePanel.DriveViewHeight = 100;
@@ -777,6 +783,7 @@ void TWinConfiguration::Default()
   FScpCommander.RemotePanel.DriveViewWidthPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
   FScpCommander.RemotePanel.LastPath = UnicodeString();
   FScpCommander.LocalPanel.DirViewParams = ScpCommanderLocalPanelDirViewParamsDefault;
+  FScpCommander.LocalPanel.ViewStyle = dvsReport;
   FScpCommander.LocalPanel.StatusBar = true;
   FScpCommander.LocalPanel.DriveView = false;
   FScpCommander.LocalPanel.DriveViewHeight = 100;
@@ -785,6 +792,7 @@ void TWinConfiguration::Default()
   FScpCommander.LocalPanel.DriveViewWidthPixelsPerInch = USER_DEFAULT_SCREEN_DPI;
   FScpCommander.LocalPanel.LastPath = UnicodeString();
   FScpCommander.OtherLocalPanelDirViewParams = FScpCommander.LocalPanel.DirViewParams;
+  FScpCommander.OtherLocalPanelViewStyle = FScpCommander.LocalPanel.ViewStyle;
   FScpCommander.OtherLocalPanelLastPath = UnicodeString();
 
   FBookmarks->Clear();
@@ -2283,12 +2291,12 @@ void TWinConfiguration::SetBalloonNotifications(bool value)
   SET_CONFIG_PROPERTY(BalloonNotifications);
 }
 
-void TWinConfiguration::SetNotificationsTimeout(unsigned int32_t value)
+void TWinConfiguration::SetNotificationsTimeout(uint32_t value)
 {
   SET_CONFIG_PROPERTY(NotificationsTimeout);
 }
 
-void TWinConfiguration::SetNotificationsStickTime(unsigned int32_t value)
+void TWinConfiguration::SetNotificationsStickTime(uint32_t value)
 {
   SET_CONFIG_PROPERTY(NotificationsStickTime);
 }
@@ -2308,7 +2316,11 @@ void TWinConfiguration::SetSelectiveToolbarText(bool value)
   SET_CONFIG_PROPERTY(SelectiveToolbarText);
 }
 
-void TWinConfiguration::SetAutoOpenInPutty(bool value)
+void TWinConfiguration::SetLargerToolbar(int value)
+{
+  SET_CONFIG_PROPERTY(LargerToolbar);
+}
+
 {
   SET_CONFIG_PROPERTY(AutoOpenInPutty);
 }
@@ -2448,12 +2460,12 @@ void TWinConfiguration::SetRunsSinceLastTip(int32_t value)
   SET_CONFIG_PROPERTY(RunsSinceLastTip);
 }
 
-bool TWinConfiguration::GetHonorDrivePolicy()
+int TWinConfiguration::GetHonorDrivePolicy()
 {
   return DriveInfo->HonorDrivePolicy;
 }
 
-void TWinConfiguration::SetHonorDrivePolicy(bool value)
+void TWinConfiguration::SetHonorDrivePolicy(int value)
 {
   if (HonorDrivePolicy != value)
   {
@@ -2831,6 +2843,16 @@ void TWinConfiguration::SetSessionTabCaptionTruncation(bool value)
   SET_CONFIG_PROPERTY(SessionTabCaptionTruncation);
 }
 
+void TWinConfiguration::SetLoadingTooLongLimit(int value)
+{
+  DriveViewLoadingTooLongLimit = value;
+}
+
+int TWinConfiguration::GetLoadingTooLongLimit()
+{
+  return DriveViewLoadingTooLongLimit;
+}
+
 void TWinConfiguration::SetFirstRun(const UnicodeString & value)
 {
   SET_CONFIG_PROPERTY(FirstRun);
@@ -2961,6 +2983,7 @@ void TWinConfiguration::UpdateStaticUsage()
   Usage->Set(L"MinimizeToTray", MinimizeToTray);
   UnicodeString ToolbarsButtons = (Interface == ifExplorer) ? ScpExplorer.ToolbarsButtons : ScpCommander.ToolbarsButtons;
   Usage->Set(L"AnyHiddenToolbarButtons", !ToolbarsButtons.IsEmpty());
+  Usage->Set(L"LargerToolbar", LargerToolbar);
   Usage->Set(L"FileColors", !FileColors.IsEmpty());
   Usage->Set(L"DragDropDrives", !DDDrives.IsEmpty());
   Usage->Set(L"ShowingTips", ShowTips);
@@ -3589,7 +3612,7 @@ UnicodeString TCustomCommandType::GetOptionKey(
   return Result;
 }
 
-bool TCustomCommandType::AnyOptionWithFlag(unsigned int32_t Flag) const
+bool TCustomCommandType::AnyOptionWithFlag(uint32_t Flag) const
 {
   bool Result = false;
   for (int32_t Index = 0; !Result && (Index < OptionsCount); Index++)
