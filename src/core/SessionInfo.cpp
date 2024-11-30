@@ -32,7 +32,6 @@ static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
     UnicodeString Repl;
     wchar_t Ch = Str[Index];
     switch (Ch)
-    switch (Ch)
     {
       case L'\x00': // \0 Is not valid in XML anyway
       case L'\x01':
