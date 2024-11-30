@@ -2551,7 +2551,8 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       }
 
       const UnicodeString OrigHostInfo = HostInfo;
-      if ((HostInfo.Length() >= 2) && (HostInfo[1] == L'[') && ((P = HostInfo.Pos(L"]")) > 0))
+      P = HostInfo.Pos(L"]");
+      if ((HostInfo.Length() >= 2) && (HostInfo[1] == L'[') && (P > 0))
       {
         SetHostName(HostInfo.SubString(2, P - 2));
         HostInfo.Delete(1, P);
