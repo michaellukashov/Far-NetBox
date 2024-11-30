@@ -619,7 +619,7 @@ public:
   RawByteString GetRawByteString() const
   {
     RawByteString Result;
-    uint32_t Len = GetCardinal();
+    const uint32_t Len = GetCardinal();
     Need(Len);
     // cannot happen anyway as Need() would raise exception
     DebugAssert(Len < SFTP_MAX_PACKET_LEN);
@@ -4139,9 +4139,9 @@ void TSFTPFileSystem::CopyFile(
         TSFTPPacket PropertiesRequest(SSH_FXP_SETSTAT, FCodePage);
         AddPathString(PropertiesRequest, NewNameCanonical);
 
-        uint16_t Rights = AFile->Rights->NumberSet;
-        TDSTMode DSTMode = FTerminal->SessionData->DSTMode;
-        int64_t MTime = ConvertTimestampToUnix(DateTimeToFileTime(AFile->Modification, DSTMode), DSTMode);
+        const uint16_t Rights = AFile->Rights->NumberSet;
+        const TDSTMode DSTMode = FTerminal->SessionData->DSTMode;
+        const int64_t MTime = ConvertTimestampToUnix(DateTimeToFileTime(AFile->Modification, DSTMode), DSTMode);
         PropertiesRequest.AddProperties(&Rights, nullptr, nullptr, &MTime, nullptr, nullptr, false, FVersion, FUtfStrings);
         SendPacketAndReceiveResponse(&PropertiesRequest, &Packet, SSH_FXP_STATUS);
       }
