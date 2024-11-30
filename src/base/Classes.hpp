@@ -650,8 +650,8 @@ public:
   double GetTotalMilliseconds() const { return nb::ToDouble(FTicks / TicksPerMillisecond); }
   // static TTimeSpan GetScaledInterval(double Value, int32_t Scale);
 private:
-  static constexpr const int64_t FMinValue = -9223372036854775808LL;
-  static constexpr const int64_t FMaxValue = 0x7FFFFFFFFFFFFFFFLL;
+  static constexpr const int64_t FMinValue = INT64_MIN; // (-9223372036854775807i64 - 1)
+  static constexpr const int64_t FMaxValue = INT64_MAX; // 9223372036854775807i64
   static constexpr const int64_t FZero = 0;
 
 private:
