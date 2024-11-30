@@ -77,13 +77,17 @@ struct hmac_ctx
   hmac_ctx()
   {
     // memset(this, 0, sizeof(*this));
-    memset(key, 0, IN_BLOCK_LENGTH);
-    ctx = nullptr;
-    klen = 0;
+    Clear();
   }
   ~hmac_ctx()
   {
     if (ctx != nullptr) ssh_hash_free(ctx);
+  }
+  void Clear()
+  {
+    memset(key, 0, IN_BLOCK_LENGTH);
+    ctx = nullptr;
+    klen = 0;
   }
   void CopyFrom(hmac_ctx * Source)
   {
@@ -105,7 +109,8 @@ struct hmac_ctx
 /* initialise the HMAC context to zero */
 static void hmac_sha1_begin(hmac_ctx cx[1])
 {
-  ::ZeroMemory(cx, sizeof(hmac_ctx));
+  // ::ZeroMemory(cx, sizeof(hmac_ctx));
+  cx->Clear();
 }
 
 /* input the HMAC key (can be called multiple times)    */
