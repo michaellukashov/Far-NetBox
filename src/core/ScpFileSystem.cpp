@@ -174,7 +174,9 @@ void TCommandSet::Default()
 int32_t TCommandSet::GetMaxLines(TFSCommand Cmd) const
 {
   CHECK_CMD;
-  return CommandSet[Cmd].MaxLines;
+  if ((Cmd >=0) && (Cmd <= MaxShellCommand))
+    return CommandSet[Cmd].MaxLines;
+  return 0;
 }
 
 int32_t TCommandSet::GetMinLines(TFSCommand Cmd) const
