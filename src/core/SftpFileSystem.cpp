@@ -401,8 +401,8 @@ public:
     return (Version >= 6) ? SSH_FILEXFER_ATTR_ALLOCATION_SIZE : SSH_FILEXFER_ATTR_SIZE;
   }
 
-  void AddProperties(const uint16_t * Rights, TRemoteToken * Owner,
-    TRemoteToken * Group, const int64_t * MTime, const int64_t * ATime,
+  void AddProperties(const uint16_t * Rights, const TRemoteToken * Owner,
+    const TRemoteToken * Group, const int64_t * MTime, const int64_t * ATime,
     const int64_t * Size, bool IsDirectory, int32_t Version, TAutoSwitch Utf)
   {
     SSH_FILEXFER_ATTR_TYPE Flags = 0;
