@@ -3398,7 +3398,9 @@ void TSessionData::SetHostKeys(int32_t Index, THostKey value)
 THostKey TSessionData::GetHostKeys(int32_t Index) const
 {
   DebugAssert(Index >= 0 && Index < HOSTKEY_COUNT);
-  return FHostKeys[Index];
+  if (Index >= 0 && Index < HOSTKEY_COUNT)
+    return FHostKeys[Index];
+  return hkWarn;
 }
 
 void TSessionData::SetHostKeyList(const UnicodeString & Value)
