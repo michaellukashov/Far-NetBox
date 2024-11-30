@@ -38,7 +38,7 @@ public:
   virtual void Default() override;
   virtual void Assign(const TCopyParamType * Source) override;
   TGUICopyParamType & operator =(const TGUICopyParamType & rhs);
-  virtual TGUICopyParamType & operator =(const TCopyParamType & rhs) override;
+  TGUICopyParamType & operator =(const TCopyParamType & rhs);
 
   __property bool Queue = { read = FQueue, write = FQueue };
   __property bool QueueNoConfirmation = { read = FQueueNoConfirmation, write = FQueueNoConfirmation };
