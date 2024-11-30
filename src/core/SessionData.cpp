@@ -3422,7 +3422,7 @@ void TSessionData::SetGssLib(int32_t Index, TGssLib Value)
 #if defined(__BORLANDC__)
   SET_SESSION_PROPERTY(FGssLib[Index]);
 #endif // defined(__BORLANDC__)
-  if (FGssLib[Index] != Value)
+  if ((Index >= 0 && Index < GSSLIB_COUNT) && (FGssLib[Index] != Value))
   {
     FGssLib[Index] = Value;
   }
