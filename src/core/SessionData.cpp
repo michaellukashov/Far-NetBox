@@ -4800,7 +4800,9 @@ void TSessionData::SetSFTPBug(TSftpBug Bug, TAutoSwitch value)
 TAutoSwitch TSessionData::GetSFTPBug(TSftpBug Bug) const
 {
   DebugAssert(Bug >= 0 && nb::ToUInt32(Bug) < _countof(FSFTPBugs));
-  return FSFTPBugs[Bug];
+  if (Bug >= 0 && nb::ToUInt32(Bug) < _countof(FSFTPBugs))
+    return FSFTPBugs[Bug];
+  return asAuto;
 }
 
 void TSessionData::SetSCPLsFullTime(TAutoSwitch value)
