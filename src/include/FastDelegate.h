@@ -610,8 +610,8 @@ public:
   DelegateMemento() = default;
   void clear() { m_pthis = nullptr; m_pFunction = nullptr; }
 #endif
-  DelegateMemento(DelegateMemento&&) = default;
-  DelegateMemento& operator=(DelegateMemento&&) = default;
+  DelegateMemento(DelegateMemento&&) noexcept = default;
+  DelegateMemento& operator=(DelegateMemento&&) noexcept = default;
 public:
 #if !defined(FASTDELEGATE_USESTATICFUNCTIONHACK)
   inline bool IsEqual (const DelegateMemento& x) const
@@ -1047,8 +1047,8 @@ public:
     m_Closure.bindstaticfunc(this, &FastDelegate0::InvokeStaticFunction, detail::get_wrapper<nb::counter_id()>(x));
   }
 #endif // #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
-  FastDelegate0(FastDelegate0&&) = default;
-  FastDelegate0& operator=(FastDelegate0&&) = default;
+  FastDelegate0(FastDelegate0&&) noexcept = default;
+  FastDelegate0& operator=(FastDelegate0&&) noexcept = default;
   FastDelegate0(const FastDelegate0& x)
   {
     m_Closure.CopyFrom(this, x.m_Closure);
@@ -1183,8 +1183,8 @@ public:
     m_Closure.bindstaticfunc(this, &FastDelegate1::InvokeStaticFunction, rf1.get_raw_ptr());
   }
 #endif // #ifdef FASTDELEGATE_STDFUNCTION_SUPPORT
-  FastDelegate1(FastDelegate1&&) = default;
-  FastDelegate1& operator=(FastDelegate1&&) = default;
+  FastDelegate1(FastDelegate1&&) noexcept = default;
+  FastDelegate1& operator=(FastDelegate1&&) noexcept = default;
   FastDelegate1(const FastDelegate1& x)
   {
     m_Closure.CopyFrom(this, x.m_Closure);
@@ -1320,8 +1320,8 @@ public:
   {
     m_Closure.CopyFrom(this, x.m_Closure); return *this;
   }
-  FastDelegate2(FastDelegate2&&) = default;
-  FastDelegate2& operator=(FastDelegate2&&) = default;
+  FastDelegate2(FastDelegate2&&) noexcept = default;
+  FastDelegate2& operator=(FastDelegate2&&) noexcept = default;
   ~FastDelegate2() = default;
   bool operator==(const FastDelegate2& x) const
   {
@@ -1449,8 +1449,8 @@ public:
   {
     m_Closure.CopyFrom(this, x.m_Closure); return *this;
   }
-  FastDelegate3(FastDelegate3&&) = default;
-  FastDelegate3& operator=(FastDelegate3&&) = default;
+  FastDelegate3(FastDelegate3&&) noexcept = default;
+  FastDelegate3& operator=(FastDelegate3&&) noexcept = default;
   ~FastDelegate3() = default;
   bool operator==(const FastDelegate3& x) const
   {
@@ -1578,8 +1578,8 @@ public:
   {
     m_Closure.CopyFrom(this, x.m_Closure); return *this;
   }
-  FastDelegate4(FastDelegate4&&) = default;
-  FastDelegate4& operator=(FastDelegate4&&) = default;
+  FastDelegate4(FastDelegate4&&) noexcept = default;
+  FastDelegate4& operator=(FastDelegate4&&) noexcept = default;
   ~FastDelegate4() = default;
   bool operator==(const FastDelegate4& x) const
   {
@@ -1707,8 +1707,8 @@ public:
   {
     m_Closure.CopyFrom(this, x.m_Closure); return *this;
   }
-  FastDelegate5(FastDelegate5&&) = default;
-  FastDelegate5& operator=(FastDelegate5&&) = default;
+  FastDelegate5(FastDelegate5&&) noexcept = default;
+  FastDelegate5& operator=(FastDelegate5&&) noexcept = default;
   ~FastDelegate5() = default;
   bool operator==(const FastDelegate5& x) const
   {
@@ -1836,8 +1836,8 @@ public:
   {
     m_Closure.CopyFrom(this, x.m_Closure); return *this;
   }
-  FastDelegate6(FastDelegate6&&) = default;
-  FastDelegate6& operator=(FastDelegate6&&) = default;
+  FastDelegate6(FastDelegate6&&) noexcept = default;
+  FastDelegate6& operator=(FastDelegate6&&) noexcept = default;
   ~FastDelegate6() = default;
   bool operator==(const FastDelegate6& x) const
   {
@@ -1965,8 +1965,8 @@ public:
   {
     m_Closure.CopyFrom(this, x.m_Closure); return *this;
   }
-  FastDelegate7(FastDelegate7&&) = default;
-  FastDelegate7& operator=(FastDelegate7&&) = default;
+  FastDelegate7(FastDelegate7&&) noexcept = default;
+  FastDelegate7& operator=(FastDelegate7&&) noexcept = default;
   ~FastDelegate7() = default;
   bool operator==(const FastDelegate7& x) const
   {
@@ -2094,8 +2094,8 @@ public:
   {
     m_Closure.CopyFrom(this, x.m_Closure); return *this;
   }
-  FastDelegate8(FastDelegate8&&) = default;
-  FastDelegate8& operator=(FastDelegate8&&) = default;
+  FastDelegate8(FastDelegate8&&) noexcept = default;
+  FastDelegate8& operator=(FastDelegate8&&) noexcept = default;
   ~FastDelegate8() = default;
   bool operator==(const FastDelegate8& x) const
   {
