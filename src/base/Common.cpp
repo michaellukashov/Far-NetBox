@@ -1349,11 +1349,11 @@ UnicodeString ValidLocalFileName(
     while ((InvalidChar = wcspbrk(InvalidChar, Chars)) != nullptr)
     {
       const int32_t Pos = nb::ToInt32(InvalidChar - FileName.c_str() + 1);
-      wchar_t Char;
+      wchar_t Char = (FileName.Length() - Pos) <= 1 ? 0 : static_cast<wchar_t>(HexToByte(FileName.SubString(Pos + 1, 2)));
       if (ATokenReplacement &&
           (*InvalidChar == TokenPrefix) &&
           (((FileName.Length() - Pos) <= 1) ||
-           (((Char = static_cast<wchar_t>(HexToByte(FileName.SubString(Pos + 1, 2)))) == L'\0') ||
+           ((Char == L'\0') ||
             (ATokenizibleChars.Pos(Char) == 0))))
       {
         InvalidChar++;
