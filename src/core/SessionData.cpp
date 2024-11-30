@@ -3548,7 +3548,7 @@ UnicodeString TSessionData::GetFSProtocolStr() const
 {
   UnicodeString Result;
   DebugAssert(GetFSProtocol() >= 0);
-  if (GetFSProtocol() < FSPROTOCOL_COUNT)
+  if ((GetFSProtocol() >= 0) && (GetFSProtocol() < FSPROTOCOL_COUNT))
   {
     Result = UnicodeString(FSProtocolNames[GetFSProtocol()]);
   }
