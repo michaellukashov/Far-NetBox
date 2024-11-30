@@ -86,7 +86,7 @@ TWinSCPPlugin::~TWinSCPPlugin() noexcept
   }
 #ifndef NDEBUG
   g_tinylog->Close();
-  SAFE_DESTROY_EX(tinylog::TinyLog, g_tinylog);
+  { tinylog::TinyLog * PObj = g_tinylog; delete PObj; }
 #endif //ifndef NDEBUG
   // DEBUG_PRINTF("begin");
 }
