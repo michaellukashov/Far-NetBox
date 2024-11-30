@@ -1678,8 +1678,8 @@ static void InsertDonateLink(void * /*Data*/, TObject * Sender)
     UnicodeString StoreLink = FORMAT(L"<a href=\"%s\">%s</a>", (StoreUrl, StoreButton));
 
     UnicodeString PlainBody = HTMLDecode(DocumentBody);
-    int P1, P2;
-    while (((P1 = PlainBody.Pos(L"<")) > 0) && ((P2 = PlainBody.Pos(L">")) > 0) && (P1 < P2))
+    int P1 = PlainBody.Pos(L"<"); int P2 = PlainBody.Pos(L">");
+    while ((P1 > 0) && (P2 > 0) && (P1 < P2))
     {
       PlainBody.Delete(P1, P2 - P1 + 1);
     }
