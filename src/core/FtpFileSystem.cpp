@@ -2982,7 +2982,7 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       break;
 
     case OPTION_KEEPALIVE:
-      Result = Data ? ((Data->GetFtpPingType() != ptOff) ? TRUE : FALSE) : 0;
+      Result = Data ? ((Data->GetFtpPingType() != fptOff) ? TRUE : FALSE) : 0;
       break;
 
     case OPTION_INTERVALLOW:
