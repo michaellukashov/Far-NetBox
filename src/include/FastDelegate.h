@@ -917,7 +917,7 @@ public:
   this_type& operator=(const this_type&) = delete;
   this_type& operator=(this_type&& rhs) = delete;
 
-  scoped_raw_bind(this_type&& rhs) : m_owning(rhs.m_owning)
+  scoped_raw_bind(this_type&& rhs) noexcept : m_owning(rhs.m_owning)
   {
     rhs.m_owning = false;
   }
