@@ -2302,7 +2302,7 @@ TRights::TRights(uint16_t ANumber) noexcept
 #endif // defined(__BORLANDC__)
 }
 
-TRights::TRights(const TRights & Source) noexcept
+TRights::TRights(const TRights & Source) noexcept : TObject()
 {
   Assign(&Source);
 }
