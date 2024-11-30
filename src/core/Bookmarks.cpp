@@ -407,6 +407,8 @@ void TBookmarkList::Insert(int32_t Index, TBookmark * Bookmark)
 void TBookmarkList::Delete(TBookmark *& Bookmark)
 {
   DebugAssert(Bookmark);
+  if (!Bookmark)
+    return;
   DebugAssert(Bookmark->FOwner == this);
   int32_t Index = IndexOf(Bookmark);
   DebugAssert(Index >= 0);
