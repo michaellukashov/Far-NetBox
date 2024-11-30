@@ -12,9 +12,9 @@
 #include "TextsCore.h"
 #include "CoreMain.h"
 #include "Exceptions.h"
-#include <openssl\rand.h>
-#include <openssl\err.h>
-#include <openssl\ssl.h>
+#include <openssl/rand.h>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
 #if defined(__BORLANDC__)
 #include <Soap.EncdDecd.hpp>
 #endif // defined(__BORLANDC__)
