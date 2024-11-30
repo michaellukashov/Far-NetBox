@@ -223,8 +223,8 @@ NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, const UnicodeString & Value);
 UnicodeString GetAncestorProcessName(int32_t Levels = 1);
 UnicodeString GetAncestorProcessNames();
-void NotSupported();
-void NotImplemented();
+[[noreturn]] void NotSupported();
+[[noreturn]] void NotImplemented();
 UnicodeString GetDividerLine();
 TStrings * ProcessFeatures(TStrings * Features, const UnicodeString & FeaturesOverride);
 
