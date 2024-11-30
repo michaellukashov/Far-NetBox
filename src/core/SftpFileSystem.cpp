@@ -2402,7 +2402,7 @@ constexpr const uint32_t SFTPPacketOverhead = 4 + 4 + 1;
 
 uint32_t TSFTPFileSystem::TransferBlockSize(
   uint32_t Overhead, TFileOperationProgressType * OperationProgress,
-  uint32_t AMinPacketSize, uint32_t AMaxPacketSize) const
+  [[maybe_unused]] uint32_t AMinPacketSize, [[maybe_unused]] uint32_t AMaxPacketSize) const
 {
   constexpr const uint32_t MinPacketSize = 32 * 1024;
   uint32_t MaxPacketSize = FSecureShell->MaxPacketSize();
