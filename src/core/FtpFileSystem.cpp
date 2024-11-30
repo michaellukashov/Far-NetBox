@@ -2585,11 +2585,11 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
     {
       const UnicodeString Path = RemoteExtractFilePath(AFileName);
       UnicodeString NameOnly;
-      int32_t P = 0;
+      int32_t P = AFileName.Pos(L".");
       const bool MVSPath =
         FMVS && Path.IsEmpty() &&
         (AFileName.SubString(1, 1) == L"'") && (AFileName.SubString(AFileName.Length(), 1) == L"'") &&
-        ((P = AFileName.Pos(L".")) > 0);
+        (P > 0);
       if (!MVSPath)
       {
         NameOnly = base::UnixExtractFileName(AFileName);
