@@ -5697,9 +5697,9 @@ bool TTerminal::DoCreateLocalFile(const UnicodeString & AFileName,
       // save the error, otherwise it gets overwritten by call to FileExists
       const int32_t LastError = ::GetLastError();
       // int32_t FileAttr;
-      DWORD LocalFileAttrs = INVALID_FILE_ATTRIBUTES;
+      DWORD LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName));
       if (base::FileExists(ApiPath(AFileName)) &&
-        (((LocalFileAttrs = GetLocalFileAttributes(ApiPath(AFileName))) & (faReadOnly | faHidden)) != 0))
+        ((LocalFileAttrs & (faReadOnly | faHidden)) != 0))
       {
         if (FLAGSET(LocalFileAttrs, faReadOnly))
         {
