@@ -1101,7 +1101,7 @@ void CAsyncSslSocketLayer::LogSslError(const SSL *s, const char * str, const cha
   const char * StateString = SSL_state_string_long(s);
   if ((strcmp(StateString, "error") != 0) || (debug != nullptr))
   {
-    char * buffer = new char[4096 + ((debug != nullptr) ? strlen(debug) : 0)];
+    char * buffer = nb::chcalloc(4096 + ((debug != nullptr) ? strlen(debug) : 0));
     sprintf(buffer, fmt, str, StateString);
     if (debug != nullptr)
     {
@@ -1109,7 +1109,7 @@ void CAsyncSslSocketLayer::LogSslError(const SSL *s, const char * str, const cha
       OPENSSL_free(debug);
     }
     LogSocketMessageRaw(nMessageType, A2T(buffer));
-    delete[] buffer;
+    nb_free(buffer);
   }
 }
 
