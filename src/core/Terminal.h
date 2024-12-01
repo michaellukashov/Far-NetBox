@@ -523,7 +523,7 @@ protected:
     TFileOperationProgressType * AOperationProgress, uint32_t AFlags);
   bool UseAsciiTransfer(
     const UnicodeString & BaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
-    const TFileMasks::TParams & MaskParams);
+    const TFileMasks::TParams & MaskParams) const;
   void SelectTransferMode(
     const UnicodeString & ABaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
     const TFileMasks::TParams & MaskParams);
