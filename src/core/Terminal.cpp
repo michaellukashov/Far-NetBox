@@ -3075,7 +3075,7 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & AMsg, const Unic
   if (GetActive() || SecureShellActive)
   {
     // We log this instead of exception handler, because Close() would
-    // probably cause exception handler to lose pointer to TShellLog()
+    // probably cause exception handler to loose pointer to TShellLog()
     LogEvent("Attempt to close connection due to fatal exception:");
     GetLog()->Add(llException, AMsg);
     GetLog()->AddException(E);

@@ -1684,7 +1684,7 @@ void TWebDAVFileSystem::HttpAuthenticationFailed(TSessionContext * SessionContex
       // Next time do not try Negotiate (NTLM/GSSAPI),
       // otherwise we end up in an endless loop.
       // If the server returns all other challenges in the response, removing the Negotiate
-      // protocol will itself ensure that other protocols are tried (we haven't seen this behaviour).
+      // protocol will itself ensure that other protocols are tried (we haven't seen this behavior).
       // IIS will return only Negotiate response if the request was Negotiate, so there's no fallback.
       // We have to retry with a fresh request. That's what FAuthenticationRetry does.
       FTerminal->LogEvent(FORMAT("%s challenge failed, will try different challenge", SessionContext->AuthorizationProtocol));
