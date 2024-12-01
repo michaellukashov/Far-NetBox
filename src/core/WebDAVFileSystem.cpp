@@ -480,7 +480,7 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
 }
 
 TWebDAVFileSystem::TSessionContext::TSessionContext() :
-  NeonSession(NULL)
+  NeonSession(nullptr)
 {
 }
 

@@ -591,7 +591,7 @@ void TFTPFileSystem::Open()
             LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         int32_t Message = FAnyPassword ? AUTHENTICATION_FAILED : CREDENTIALS_NOT_SPECIFIED;
-        FTerminal->FatalError(NULL, LoadStr(Message));
+        FTerminal->FatalError(nullptr, LoadStr(Message));
       }
       else if (!Password.IsEmpty())
       {
