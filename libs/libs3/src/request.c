@@ -238,7 +238,7 @@ static ssize_t neon_read_func(void * userdata, char * buf, size_t len)
     }
     else {
         if (ret > request->toS3CallbackBytesRemaining) {
-            ret = (int)request->toS3CallbackBytesRemaining;
+            ret = (ssize_t)request->toS3CallbackBytesRemaining;
         }
         request->toS3CallbackBytesRemaining -= ret;
         return ret;
@@ -993,7 +993,7 @@ static S3Status compose_auth_header(const RequestParams *params,
     const unsigned char *rqstData = (const unsigned char*) canonicalRequest;
     SHA256(rqstData, strlen(canonicalRequest), canonicalRequestHash);
 #endif
-    nb_free(canonicalRequest); // WINSCP
+    nb_free(canonicalRequest); // WINSCP (heap allocation)
     char canonicalRequestHashHex[2 * S3_SHA256_DIGEST_LENGTH + 1];
     size = sizeof(canonicalRequestHashHex); // WINSCP
     canonicalRequestHashHex[0] = '\0';
@@ -1006,14 +1006,15 @@ static S3Status compose_auth_header(const RequestParams *params,
     if (params->bucketContext.authRegion) {
         awsRegion = params->bucketContext.authRegion;
     }
-    char scope[sizeof(values->requestDateISO8601) + sizeof(awsRegion) +
-               sizeof("//s3/aws4_request") + 1];
-    snprintf(scope, sizeof(scope), "%.8s/%s/s3/aws4_request",
-             values->requestDateISO8601, awsRegion);
+    const char * service = (params->bucketContext.service != NULL) ? params->bucketContext.service : S3_SERVICE; // WINSCP
+    int scopeSize = 8 + strlen(awsRegion) + strlen(service) + sizeof("///aws4_request"); // WINSCP
+    char * scope = (char *)nb_calloc(scopeSize, 1); // WINSCP
+    snprintf(scope, scopeSize, "%.8s/%s/%s/aws4_request",
+             values->requestDateISO8601, awsRegion, service); // WINSCP
 
     const int stringToSignLen = 17 + 17 + sizeof(values->requestDateISO8601) +
-        sizeof(scope) + sizeof(canonicalRequestHashHex) + 1; // WINSCP (heap allocation)
-    char * stringToSign = (char *)nb_calloc(stringToSignLen, sizeof(char));
+        scopeSize - 1 + sizeof(canonicalRequestHashHex) + 1; // WINSCP (heap allocation)
+    char * stringToSign = (char *)nb_calloc(stringToSignLen, sizeof(char)); // WINSCP (heap allocation)
     snprintf(stringToSign, stringToSignLen, "AWS4-HMAC-SHA256\n%s\n%s\n%s",
              values->requestDateISO8601, scope, canonicalRequestHashHex);
 
@@ -1034,7 +1035,7 @@ static S3Status compose_auth_header(const RequestParams *params,
     CCHmac(kCCHmacAlgSHA256, dateKey, S3_SHA256_DIGEST_LENGTH, awsRegion,
            strlen(awsRegion), dateRegionKey);
     unsigned char dateRegionServiceKey[S3_SHA256_DIGEST_LENGTH];
-    CCHmac(kCCHmacAlgSHA256, dateRegionKey, S3_SHA256_DIGEST_LENGTH, "s3", 2,
+    CCHmac(kCCHmacAlgSHA256, dateRegionKey, S3_SHA256_DIGEST_LENGTH, "s3", 2, // not updated to WINSCP
            dateRegionServiceKey);
     unsigned char signingKey[S3_SHA256_DIGEST_LENGTH];
     CCHmac(kCCHmacAlgSHA256, dateRegionServiceKey, S3_SHA256_DIGEST_LENGTH,
@@ -1055,7 +1056,7 @@ static S3Status compose_auth_header(const RequestParams *params,
          NULL);
     unsigned char dateRegionServiceKey[S3_SHA256_DIGEST_LENGTH];
     HMAC(sha256evp, dateRegionKey, S3_SHA256_DIGEST_LENGTH,
-         (const unsigned char*) "s3", 2, dateRegionServiceKey, NULL);
+         (const unsigned char*) service, strlen(service), dateRegionServiceKey, NULL); // WINSCP
     unsigned char signingKey[S3_SHA256_DIGEST_LENGTH];
     HMAC(sha256evp, dateRegionServiceKey, S3_SHA256_DIGEST_LENGTH,
          (const unsigned char*) "aws4_request", strlen("aws4_request"),
@@ -1067,8 +1068,8 @@ static S3Status compose_auth_header(const RequestParams *params,
          (const unsigned char*) stringToSign, strlen(stringToSign),
          finalSignature, NULL);
 #endif
+    nb_free(stringToSign); // WINSCP (heap allocation)
     nb_free(accessKey); // WINSCP
-    nb_free(stringToSign); // WINSCP
 
     len = 0;
     size = sizeof(values->requestSignatureHex); // WINSCP
@@ -1078,8 +1079,9 @@ static S3Status compose_auth_header(const RequestParams *params,
     }
 
     snprintf(values->authCredential, sizeof(values->authCredential),
-             "%s/%.8s/%s/s3/aws4_request", params->bucketContext.accessKeyId,
-             values->requestDateISO8601, awsRegion);
+             "%s/%.8s/%s/%s/aws4_request", params->bucketContext.accessKeyId,
+             values->requestDateISO8601, awsRegion, service); // WINSCP
+    nb_free(scope); // WINSCP
 
     snprintf(values->authorizationHeader,
              sizeof(values->authorizationHeader),
