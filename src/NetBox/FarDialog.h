@@ -98,7 +98,7 @@ public:
   void UnlockChanges();
   FarColor GetSystemColor(PaletteColors colorId);
   bool HotKey(uint32_t Key, uint32_t ControlState) const;
-  void SetDialogGuid(const UUID * Guid) { FGuid = Guid; };
+  void SetDialogGuid(const UUID * Guid) { FGuid = Guid; }
 
 protected:
   TCustomFarPlugin * GetFarPlugin() const { return FFarPlugin; }
