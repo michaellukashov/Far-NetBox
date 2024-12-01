@@ -466,7 +466,7 @@ void TStrings::AddStrings(const TStrings * AStrings)
     {
       AddObject(AStrings->GetString(Index), AStrings->Objects[Index]);
     }
-    }
+  }
   __finally
   {
     EndUpdate();
