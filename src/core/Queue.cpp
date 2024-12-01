@@ -1825,7 +1825,7 @@ bool TQueueItem::UpdateFileList(TQueueFileList *)
 
 bool TQueueItem::IsExecutionCancelled() const
 {
-  return DebugAlwaysTrue(FTerminalItem != NULL) ? FTerminalItem->IsCancelled() : true;
+  return DebugAlwaysTrue(FTerminalItem != nullptr) ? FTerminalItem->IsCancelled() : true;
 }
 
 void TQueueItem::Execute()

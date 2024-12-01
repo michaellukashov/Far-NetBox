@@ -12,7 +12,7 @@ void InitExtensionModule(HINSTANCE HInstance)
 
 void TermExtensionModule()
 {
-  AfxTermLocalData(NULL, TRUE);
+  AfxTermLocalData(nullptr, TRUE);
   AfxCriticalTerm();
 
   // Release the reference to Thread Local Storage data.

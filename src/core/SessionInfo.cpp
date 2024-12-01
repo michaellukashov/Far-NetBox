@@ -1941,7 +1941,7 @@ void TApplicationLog::Log(const UnicodeString & S)
 
     if (CheckMemory)
     {
-      BYTE * Address = NULL;
+      BYTE * Address = nullptr;
       MEMORY_BASIC_INFORMATION MemoryInfo;
       size_t ReservedMemory = 0;
       size_t CommittedMemory = 0;
