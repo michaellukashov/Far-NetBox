@@ -203,7 +203,7 @@ int CAsyncSslSocketLayer::ProcessSendBuffer()
   int numwrite = BIO_write(m_sslbio, m_pRetrySendBuffer, m_nRetrySendBufferLen);
   if (numwrite >= 0)
   {
-    BIO_ctrl(m_sslbio, BIO_CTRL_FLUSH, 0, NULL);
+    BIO_ctrl(m_sslbio, BIO_CTRL_FLUSH, 0, nullptr);
     nb_free(m_pRetrySendBuffer);
     m_pRetrySendBuffer = 0;
     return numwrite;
@@ -1099,11 +1099,11 @@ void CAsyncSslSocketLayer::LogSslError(const SSL *s, const char * str, const cha
 {
   USES_CONVERSION;
   const char * StateString = SSL_state_string_long(s);
-  if ((strcmp(StateString, "error") != 0) || (debug != NULL))
+  if ((strcmp(StateString, "error") != 0) || (debug != nullptr))
   {
-    char * buffer = new char[4096 + ((debug != NULL) ? strlen(debug) : 0)];
+    char * buffer = new char[4096 + ((debug != nullptr) ? strlen(debug) : 0)];
     sprintf(buffer, fmt, str, StateString);
-    if (debug != NULL)
+    if (debug != nullptr)
     {
       sprintf(buffer + strlen(buffer), " [%s]", debug);
       OPENSSL_free(debug);
