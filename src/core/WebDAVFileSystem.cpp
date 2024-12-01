@@ -2293,11 +2293,6 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
         Unlock = Lock2;
       }
       CheckStatus(ne_unlock(FSessionContext->NeonSession, Unlock));
-      /*if (Lock2 == nullptr)
-      {
-        ne_lock_free(Unlock);
-        ne_lock_destroy(Unlock);
-      }*/
 
       DiscardLock(Path);
     }
