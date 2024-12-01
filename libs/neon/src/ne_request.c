@@ -1221,7 +1221,7 @@ static int read_message_header(ne_request *req, char *buf, size_t buflen)
     return NE_ERROR;
 }
 
-#define MAX_HEADER_LEN (8192)
+#define MAX_HEADER_LEN (16384)
 
 /* Add a respnose header field for the given request, using
  * precalculated hash value. */
@@ -1442,7 +1442,7 @@ int ne_begin_request(ne_request *req)
     else if ((value = get_response_header_hv(req, HH_HV_TRANSFER_ENCODING,
                                              "transfer-encoding")) != NULL
              && ne_strcasecmp(value, "identity") != 0) {
-        /* Otherwise, fail iff an unknown transfer-coding is used. */
+        /* Otherwise, fail if an unknown transfer-coding is used. */
         if (ne_strcasecmp(value, "chunked") == 0) {
             req->resp.mode = R_CHUNKED;
             req->resp.body.chunk.remain = 0;
