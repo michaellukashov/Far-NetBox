@@ -185,11 +185,11 @@ void TFileZillaImpl::SetupSsl(ssl_st * Ssl)
   ::SetupSsl(Ssl, SessionData->FMinTlsVersion, SessionData->FMaxTlsVersion);
 }
 
-std::wstring TFileZillaImpl::CustomReason(int Err)
+std::wstring TFileZillaImpl::CustomReason(int32_t Err)
 {
   std::wstring Result;
-  int Lib = ERR_GET_LIB(Err);
-  int Reason = ERR_GET_REASON(Err);
+  const int32_t Lib = ERR_GET_LIB(Err);
+  const int32_t Reason = ERR_GET_REASON(Err);
   if ((Lib == ERR_LIB_SSL) &&
       ((Reason == SSL_R_UNSUPPORTED_PROTOCOL) ||
        (Reason == SSL_R_TLSV1_ALERT_PROTOCOL_VERSION) ||
@@ -592,7 +592,7 @@ void TFTPFileSystem::Open()
       if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), "",
             LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
-        int32_t Message = FAnyPassword ? AUTHENTICATION_FAILED : CREDENTIALS_NOT_SPECIFIED;
+        const int32_t Message = FAnyPassword ? AUTHENTICATION_FAILED : CREDENTIALS_NOT_SPECIFIED;
         FTerminal->FatalError(nullptr, LoadStr(Message));
       }
       else if (!Password.IsEmpty())
@@ -650,7 +650,7 @@ void TFTPFileSystem::Open()
   // see also TWebDAVFileSystem::CollectTLSSessionInfo()
   FSessionInfo.CSCipher = FFileZillaIntf->GetCipherName().c_str();
   FSessionInfo.SCCipher = FSessionInfo.CSCipher;
-  UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
+  const UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
   AddToList(FSessionInfo.SecurityProtocolName, TlsVersionStr, L", ");
   FLoggedIn = true;
 }
@@ -3984,7 +3984,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
   int64_t Timestamp{};
   tm Tm{};
-  errno_t Err = gmtime_s(&Tm, &Time); // localtime(&Time);
+  const errno_t Err = gmtime_s(&Tm, &Time); // localtime(&Time);
   if (Err == 0)
   {
     SYSTEMTIME SystemTime;

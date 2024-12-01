@@ -929,7 +929,7 @@ void TWebDAVFileSystem::NeonPropsResult(
         if (DebugAlwaysTrue(StartsStr(L"/", Cid)))
         {
           Cid.Delete(1, 1);
-          int32_t P = Cid.Pos(L"/");
+          const int32_t P = Cid.Pos(L"/");
           if (P > 0)
           {
             Cid.SetLength(P - 1);
@@ -1958,7 +1958,7 @@ void TWebDAVFileSystem::Sink(
   FTerminal->UpdateTargetAttrs(DestFullName, AFile, CopyParam, Attrs);
 }
 
-bool TWebDAVFileSystem::VerifyCertificate(TSessionContext * SessionContext, TNeonCertificateData & Data, bool Aux)
+bool TWebDAVFileSystem::VerifyCertificate(TSessionContext * SessionContext, const TNeonCertificateData & Data, bool Aux)
 {
   const bool Result =
     FTerminal->VerifyOrConfirmHttpCertificate(
@@ -2159,7 +2159,7 @@ void TWebDAVFileSystem::NeonNotifier(void * UserData, ne_session_status Status, 
 
 void TWebDAVFileSystem::InitSslSession(ssl_st * Ssl, ne_session * Session)
 {
-  TWebDAVFileSystem * FileSystem =
+  const TWebDAVFileSystem * FileSystem =
     static_cast<TWebDAVFileSystem *>(ne_get_session_private(Session, SESSION_FS_KEY));
   FileSystem->InitSslSessionImpl(Ssl);
 }

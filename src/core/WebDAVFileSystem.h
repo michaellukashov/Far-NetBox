@@ -197,7 +197,7 @@ private:
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   int32_t CustomReadFileInternal(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
-  bool VerifyCertificate(TSessionContext * SessionContext, TNeonCertificateData & Data, bool Aux);
+  bool VerifyCertificate(TSessionContext * SessionContext, const TNeonCertificateData & Data, bool Aux);
   void OpenUrl(const UnicodeString & Url);
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;
