@@ -1263,7 +1263,7 @@
 "3.3.2"
 "http://www.openssl.org/"
 "Kod WebDAV bazuje na bibliotece Neon %s"
-"Copyright © 1999-2021 Joe Orton"
+"Copyright © 1999-2024 Joe Orton"
 "http://www.webdav.org/neon/"
 "Biblioteka eXpat %s"
 "http://www.libexpat.org/"
