@@ -570,11 +570,11 @@ public:
 
 protected:
   virtual void Changed() override;
-  virtual int32_t ItemProc(intptr_t Msg, void * Param);
-  virtual void Init();
+  int32_t ItemProc(intptr_t Msg, void * Param);
+  void Init();
   void UpdatePosition(int32_t Position);
   int32_t GetPosition() const;
-  virtual void Put(int32_t Index, const UnicodeString & Str);
+  void Put(int32_t Index, const UnicodeString & Str);
   void SetCurPos(int32_t Position, int32_t TopIndex);
   void UpdateItem(int32_t Index);
 
@@ -655,8 +655,8 @@ public:
   bool GetWrapMode() const { return GetFlag(DIF_LISTWRAPMODE); }
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
   TFarList * GetItems() const { return FList.get(); }
-  virtual UnicodeString GetText() const { return GetData(); }
-  virtual void SetText(const UnicodeString & Value) { SetData(Value); }
+  UnicodeString GetText() const { return GetData(); }
+  void SetText(const UnicodeString & Value) { SetData(Value); }
   bool GetAutoSelect() const { return GetFlag(DIF_SELECTONENTRY); }
   void SetAutoSelect(bool Value) { SetFlag(DIF_SELECTONENTRY, Value); }
   bool GetDropDownList() const { return GetFlag(DIF_DROPDOWNLIST); }
