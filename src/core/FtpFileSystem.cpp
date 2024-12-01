@@ -4566,7 +4566,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
         Source.Day);
     if (Source.HasTime)
     {
-      DateTime = DateTime + 
+      DateTime = DateTime +
         EncodeTimeVerbose(Source.Hour, Source.Minute,
           Source.Second, 0);
       ModificationFmt = Source.HasSeconds ? mfFull : (Source.HasYear ? mfYMDHM : mfMDHM);

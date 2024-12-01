@@ -312,7 +312,7 @@ public:
     }
   }
 
-  void ExitCode(int ExitCode)
+  void ExitCode(int32_t ExitCode)
   {
     Parameter(L"exitcode", ::IntToStr(ExitCode));
   }
@@ -1978,7 +1978,7 @@ void TApplicationLog::Log(const UnicodeString & S)
       if (NewMemoryPeek)
       {
         Log(FORMAT(L"Memory increased: Reserved address space: %s, Committed private: %s",
-              FormatNumber(__int64(ReservedMemory)), FormatNumber(__int64(CommittedMemory))));
+              FormatNumber(int64_t(ReservedMemory)), FormatNumber(int64_t(CommittedMemory))));
       }
     }
   }
