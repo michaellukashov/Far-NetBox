@@ -166,7 +166,7 @@ public:
   TTunnelThread() = delete;
   explicit TTunnelThread(TSecureShell * SecureShell) noexcept;
   virtual ~TTunnelThread() noexcept override;
-  virtual void InitTunnelThread();
+  void InitTunnelThread();
 
   virtual void Terminate() override;
 
@@ -546,11 +546,16 @@ private:
   void DoError(Exception & E, TSessionAction * Action, const UnicodeString & Message);
 };
 
-TRetryOperationLoop::TRetryOperationLoop(TTerminal * Terminal) noexcept
+TRetryOperationLoop::TRetryOperationLoop(TTerminal * Terminal) noexcept :
+  FTerminal(Terminal),
+  FRetry(false),
+  FSucceeded(true)
 {
+#if defined(__BORLANDC__)
   FTerminal = Terminal;
   FRetry = false;
   FSucceeded = true;
+#endif // defined(__BORLANDC__)
 }
 
 void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, const UnicodeString & Message)
@@ -7948,7 +7953,7 @@ void TTerminal::DirectorySource(
 
 bool TTerminal::UseAsciiTransfer(
   const UnicodeString & BaseFileName, TOperationSide Side, const TCopyParamType * CopyParam,
-  const TFileMasks::TParams & MaskParams)
+  const TFileMasks::TParams & MaskParams) const
 {
   return
       GetIsCapable(fcTextMode) &&

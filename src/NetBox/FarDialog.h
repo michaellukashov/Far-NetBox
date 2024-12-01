@@ -98,7 +98,7 @@ public:
   void UnlockChanges();
   FarColor GetSystemColor(PaletteColors colorId);
   bool HotKey(uint32_t Key, uint32_t ControlState) const;
-  void SetDialogGuid(const UUID * Guid) { FGuid = Guid; };
+  void SetDialogGuid(const UUID * Guid) { FGuid = Guid; }
 
 protected:
   TCustomFarPlugin * GetFarPlugin() const { return FFarPlugin; }
@@ -570,11 +570,11 @@ public:
 
 protected:
   virtual void Changed() override;
-  virtual int32_t ItemProc(intptr_t Msg, void * Param);
-  virtual void Init();
+  int32_t ItemProc(intptr_t Msg, void * Param);
+  void Init();
   void UpdatePosition(int32_t Position);
   int32_t GetPosition() const;
-  virtual void Put(int32_t Index, const UnicodeString & Str);
+  void Put(int32_t Index, const UnicodeString & Str);
   void SetCurPos(int32_t Position, int32_t TopIndex);
   void UpdateItem(int32_t Index);
 
@@ -655,15 +655,15 @@ public:
   bool GetWrapMode() const { return GetFlag(DIF_LISTWRAPMODE); }
   void SetWrapMode(bool Value) { SetFlag(DIF_LISTWRAPMODE, Value); }
   TFarList * GetItems() const { return FList.get(); }
-  virtual UnicodeString GetText() const { return GetData(); }
-  virtual void SetText(const UnicodeString & Value) { SetData(Value); }
+  UnicodeString GetText() const { return GetData(); }
+  void SetText(const UnicodeString & Value) { SetData(Value); }
   bool GetAutoSelect() const { return GetFlag(DIF_SELECTONENTRY); }
   void SetAutoSelect(bool Value) { SetFlag(DIF_SELECTONENTRY, Value); }
   bool GetDropDownList() const { return GetFlag(DIF_DROPDOWNLIST); }
   void SetDropDownList(bool Value) { SetFlag(DIF_DROPDOWNLIST, Value); }
   int32_t GetItemIndex() const { return FList->GetSelected(); }
   void SetItemIndex(int32_t Index) { FList->SetSelected(Index); }
-  bool GetSetChanged(bool Value) { bool OldValue = FItemChanged; FItemChanged = Value; return OldValue; }
+  bool GetSetChanged(bool Value) { const bool OldValue = FItemChanged; FItemChanged = Value; return OldValue; }
 
 protected:
   virtual intptr_t ItemProc(intptr_t Msg, void * Param) override;
