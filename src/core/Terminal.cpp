@@ -546,11 +546,16 @@ private:
   void DoError(Exception & E, TSessionAction * Action, const UnicodeString & Message);
 };
 
-TRetryOperationLoop::TRetryOperationLoop(TTerminal * Terminal) noexcept
+TRetryOperationLoop::TRetryOperationLoop(TTerminal * Terminal) noexcept :
+  FTerminal(Terminal),
+  FRetry(false),
+  FSucceeded(true)
 {
+#if defined(__BORLANDC__)
   FTerminal = Terminal;
   FRetry = false;
   FSucceeded = true;
+#endif // defined(__BORLANDC__)
 }
 
 void TRetryOperationLoop::DoError(Exception & E, TSessionAction * Action, const UnicodeString & Message)
