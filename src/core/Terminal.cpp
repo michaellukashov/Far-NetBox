@@ -166,7 +166,7 @@ public:
   TTunnelThread() = delete;
   explicit TTunnelThread(TSecureShell * SecureShell) noexcept;
   virtual ~TTunnelThread() noexcept override;
-  virtual void InitTunnelThread();
+  void InitTunnelThread();
 
   virtual void Terminate() override;
 
