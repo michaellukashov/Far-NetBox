@@ -527,18 +527,18 @@ void TWebDAVFileSystem::CollectUsage()
 
   if (!FTerminal->GetSessionData()->GetTlsCertificateFile().IsEmpty())
   {
-//    GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVSCertificate");
+    GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVSCertificate");
   }
 
   // The Authorization header for passport method is included only in the first request,
   // so we have to use FLastAuthorizationProtocol
   if (SameText(FLastAuthorizationProtocol, "Passport1.4"))
   {
-//    Configuration->Usage->Inc("OpenedSessionsWebDAVSPassport");
+    GetConfiguration()->Usage->Inc("OpenedSessionsWebDAVSPassport");
   }
   else if (SameText(FLastAuthorizationProtocol, L"Basic"))
   {
-//    Configuration->Usage->Inc(L"OpenedSessionsWebDAVAuthBasic");
+    GetConfiguration()->Usage->Inc(L"OpenedSessionsWebDAVAuthBasic");
   }
 
   const UnicodeString RemoteSystem = FFileSystemInfo.RemoteSystem;
@@ -556,21 +556,21 @@ void TWebDAVFileSystem::CollectUsage()
   }
   if (ContainsText(RemoteSystem, "Microsoft-IIS"))
   {
-//    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVIIS");
+    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVIIS");
   }
   else if (ContainsText(RemoteSystem, "IT Hit WebDAV Server"))
   {
-//    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVITHit");
+    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVITHit");
   }
   // e.g. brickftp.com
   else if (ContainsText(RemoteSystem, "nginx"))
   {
-//    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVNginx");
+    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVNginx");
   }
   else
   {
     // We also know OpenDrive, Yandex, iFiles (iOS), Swapper (iOS), SafeSync
-//    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVOther");
+    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVOther");
   }
 }
 
@@ -701,8 +701,8 @@ UnicodeString TWebDAVFileSystem::GetCurrentDirectory() const
 void TWebDAVFileSystem::DoStartup()
 {
   FTerminal->SetExceptionOnFail(true);
-  // ReadCurrentDirectory is called later as the result of setting
-  // FReadCurrentDirectoryPending in TTerminal::DoStartup
+  // retrieve initialize working directory to save it as home directory
+  ReadCurrentDirectory();
   FTerminal->SetExceptionOnFail(false);
 }
 
@@ -851,15 +851,9 @@ int32_t TWebDAVFileSystem::ReadDirectoryInternal(
   return Result;
 }
 
-bool TWebDAVFileSystem::IsRedirect(int32_t NeonStatus) const
-{
-  return (NeonStatus == NE_REDIRECT);
-}
-
-
 bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const
 {
-  bool Result = IsRedirect(NeonStatus);
+  bool Result = (NeonStatus == NE_REDIRECT);
   if (Result)
   {
     // What PathToNeon does
@@ -870,6 +864,7 @@ bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APat
     const UnicodeString RedirectUrl = GetRedirectUrl();
     // We should test if the redirect is not for another server,
     // though not sure how to do this reliably (domain aliases, IP vs. domain, etc.)
+    // If this ever gets implemented, beware of use from Sink(), where we support redirects to another server.
     const UnicodeString RedirectPath = ParsePathFromUrl(RedirectUrl);
     Result =
       !RedirectPath.IsEmpty() &&
@@ -939,8 +934,8 @@ void TWebDAVFileSystem::NeonPropsResult(
           {
             Cid.SetLength(P - 1);
           }
-          UnicodeString CidUpper = UpperCase(Cid);
-          UnicodeString CidLower = LowerCase(Cid);
+          const UnicodeString CidUpper = UpperCase(Cid);
+          const UnicodeString CidLower = LowerCase(Cid);
           if (CidUpper != CidLower)
           {
             if (Cid == CidUpper)
@@ -976,7 +971,7 @@ void TWebDAVFileSystem::NeonPropsResult(
       {
         if (!StartsStr(FileListPath, File->FullFileName))
         {
-          Terminal->LogEvent(FORMAT(L"Discarding entry \"%s\" with absolute path \"%s\" because it is not descendant of directory \"%s\".", (Path, File->FullFileName, FileListPath)));
+          Terminal->LogEvent(FORMAT(L"Discarding entry \"%s\" with absolute path \"%s\" because it is not descendant of directory \"%s\".", Path, File->FullFileName, FileListPath));
           File.reset(nullptr);
         }
         else
@@ -984,7 +979,7 @@ void TWebDAVFileSystem::NeonPropsResult(
           const UnicodeString FileName = MidStr(File->FullFileName, FileListPath.Length() + 1);
           if (!base::UnixExtractFileDir(FileName).IsEmpty())
           {
-            Terminal->LogEvent(FORMAT(L"Discarding entry \"%s\" with absolute path \"%s\" because it is not direct child of directory \"%s\".", (Path, File->FullFileName, FileListPath)));
+            Terminal->LogEvent(FORMAT(L"Discarding entry \"%s\" with absolute path \"%s\" because it is not direct child of directory \"%s\".", Path, File->FullFileName, FileListPath));
             File.reset(nullptr);
           }
         }
@@ -1101,7 +1096,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     // * and % won't help, as OneDrive seem to have bug with % at the end of the filename,
     // and the * (and others) is removed from file names.
 
-    // Filenames with commas (,) get as many additional characters at the end of the filename as there are commas.
+    // Filenames with commas (,) get as many additional characters at the end of the filename as there are commas
     // (not true anymore in the new interface).
     if (FOneDrive &&
         (ContainsText(AFile->FileName, L"^") || ContainsText(AFile->FileName, L",") || (wcspbrk(AFile->GetDisplayName().c_str(), L"&,+#[]%*") != nullptr)))
@@ -1147,7 +1142,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     if (IsWin8())
     {
       // The "lock" character is supported since Windows 8
-//      LockRights = L"\uD83D\uDD12" + Owner2;
+      // LockRights = L"\uD83D\uDD12" + Owner2;
     }
     else
     {
@@ -1407,7 +1402,9 @@ void TWebDAVFileSystem::SpaceAvailable(const UnicodeString & APath,
   const UnicodeString Path = DirectoryPath(APath);
 
   ne_propname QuotaProps[3];
-  // memset(QuotaProps, 0, sizeof(QuotaProps));
+#if defined(__BORLANDC__)
+  memset(QuotaProps, 0, sizeof(QuotaProps));
+#endif // defined(__BORLANDC__)
   nb::ClearArray(QuotaProps);
   QuotaProps[0].nspace = DAV_PROP_NAMESPACE;
   QuotaProps[0].name = PROP_QUOTA_AVAILABLE;
@@ -1523,6 +1520,9 @@ void TWebDAVFileSystem::Source(
         const UTF8String NeonLastModified(LastModified);
         // second element is "NULL-terminating"
         ne_proppatch_operation Operations[2];
+#if defined(__BORLANDC__)
+        memset(Operations, 0, sizeof(Operations));
+#endif // defined(__BORLANDC__)
         nb::ClearArray(Operations);
         ne_propname LastModifiedProp;
         nb::ClearStruct(LastModifiedProp);
@@ -1577,7 +1577,6 @@ void TWebDAVFileSystem::CopyToLocal(TStrings * AFilesToCopy,
   TOnceDoneOperation & OnceDoneOperation)
 {
   Params &= ~cpAppend;
-  // Params |= FLAGSET(Params, cpFirstLevel) ? tfFirstLevel : 0;
 
   FTerminal->DoCopyToLocal(AFilesToCopy, TargetDir, CopyParam, Params, OperationProgress, tfNone, OnceDoneOperation);
 }
@@ -1908,8 +1907,8 @@ void TWebDAVFileSystem::Sink(
 
       ClearNeonError();
       int32_t NeonStatus = ne_get(FSessionContext->NeonSession, PathToNeon(AFileName), FD);
-      // Contrary to other actions, for "GET" we support any redirect
-      if (IsRedirect(NeonStatus))
+      UnicodeString DiscardPath = AFileName;
+      if (IsValidRedirect(NeonStatus, DiscardPath))
       {
         const UnicodeString CorrectedUrl = GetRedirectUrl();
         UTF8String CorrectedFileName, Query;
