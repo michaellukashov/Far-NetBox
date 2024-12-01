@@ -1978,7 +1978,7 @@ void TApplicationLog::Log(const UnicodeString & S)
       if (NewMemoryPeek)
       {
         Log(FORMAT(L"Memory increased: Reserved address space: %s, Committed private: %s",
-              (FormatNumber(__int64(ReservedMemory)), FormatNumber(__int64(CommittedMemory)))));
+              FormatNumber(__int64(ReservedMemory)), FormatNumber(__int64(CommittedMemory))));
       }
     }
   }
