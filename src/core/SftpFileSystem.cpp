@@ -175,7 +175,8 @@ constexpr wchar_t OGQ_LIST_GROUPS = 0x02;
 #if defined(__BORLANDC__)
 const int32_t SFTPMinVersion = 0;
 #endif // defined(__BORLANDC__)
-constexpr uint32_t SFTPStandardVersion = 3;
+constexpr int32_t SFTPMinVersion = 0;
+constexpr int32_t SFTPMaxVersion = 6;
 constexpr uint32_t SFTPNoMessageNumber = nb::ToUInt32(-1);
 
 constexpr SSH_FX_TYPE asNo =            0;
@@ -200,7 +201,9 @@ constexpr SSH_FX_TYPE asAll = static_cast<SSH_FX_TYPE>(0xFFFF);
 
 constexpr uint32_t SFTP_PACKET_ALLOC_DELTA = 256;
 
-// #pragma warn -inl
+#if defined(__BORLANDC__)
+#pragma warn -inl
+#endif // defined(__BORLANDC__)
 
 struct TSFTPSupport final : public TObject
 {
@@ -213,9 +216,11 @@ public:
   }
 
   virtual ~TSFTPSupport() noexcept override = default;
-  /*{
-    SAFE_DESTROY(AttribExtensions);
-  }*/
+#if defined(__BORLANDC__)
+  {
+    delete AttribExtensions;
+  }
+#endif // defined(__BORLANDC__)
 
   void Reset()
   {
@@ -320,7 +325,7 @@ public:
     uint8_t Buf[4]{};
     PUT_32BIT(Buf, FMessageNumber);
 
-    memmove(FData + 1, Buf, sizeof(Buf));
+    nbstr_memcpy(FData + 1, Buf, sizeof(Buf));
   }
 
   void AddByte(uint8_t Value)
@@ -1473,11 +1478,17 @@ protected:
 class TSFTPAsynchronousQueue : public TSFTPQueue
 {
 public:
+#if defined(__BORLANDC__)
+  #pragma option push -vi- // WORKAROUND for internal compiler errors
+#endif // defined(__BORLANDC__)
   TSFTPAsynchronousQueue() = delete;
   explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept : TSFTPQueue(AFileSystem, CodePage)
   {
     RegisterReceiveHandler();
   }
+#if defined(__BORLANDC__)
+  #pragma option pop
+#endif // defined(__BORLANDC__)
 
   virtual ~TSFTPAsynchronousQueue() noexcept override
   { try {
@@ -2002,7 +2013,9 @@ private:
   int32_t FIndex{0};
 };
 
-// #pragma warn .inl
+#if defined(__BORLANDC__)
+#pragma warn .inl
+#endif // defined(__BORLANDC__)
 
 class TSFTPBusy final : public TObject
 {
@@ -5684,7 +5697,7 @@ void TSFTPFileSystem::Sink(
       OperationProgress->Progress();
     }
 
-    // first open source file, not to lose the destination file,
+    // first open source file, not to loose the destination file,
     // if we cannot open the source one in the first place
     FTerminal->LogEvent("Opening remote file.");
     FILE_OPERATION_LOOP_BEGIN
