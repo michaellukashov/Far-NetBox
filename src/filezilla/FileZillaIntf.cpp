@@ -460,7 +460,6 @@ bool TFileZillaIntf::HandleMessage(WPARAM wParam, LPARAM lParam)
         try
         {
             TNeedPassRequestData Data;
-            Data.Password = nullptr;
             Data.Password = AData->Password.GetBuffer(AData->Password.GetLength());
             Result = HandleAsyncRequestNeedPass(Data, RequestResult);
             AData->Password.ReleaseBuffer(AData->Password.GetLength());

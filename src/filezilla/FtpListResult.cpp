@@ -1048,7 +1048,7 @@ BOOL CFtpListResult::parseAsMlsd(const char *line, const int linelen, t_director
     {
       direntry.size = 0;
 
-      for (int i = 0; i < value.GetLength(); ++i)
+      for (int32_t i = 0; i < value.GetLength(); ++i)
       {
         if (value[i] < '0' || value[i] > '9')
         {

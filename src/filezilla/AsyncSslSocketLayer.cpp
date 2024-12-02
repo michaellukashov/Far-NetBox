@@ -1379,9 +1379,9 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       default:
         if ( !OBJ_nid2sn(OBJ_obj2nid(pObject)) )
         {
-          TCHAR tmp[20];
+          TCHAR tmp[20]{};
           _stprintf(tmp, L"%d", OBJ_obj2nid(pObject));
-          size_t  maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
+          size_t maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
           _tcsncpy(SslCertData.subject.Other+_tcslen(SslCertData.subject.Other), tmp, maxlen);
 
           maxlen = 1024 - _tcslen(SslCertData.subject.Other)-1;
@@ -1429,7 +1429,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
 
       CString str;
 
-      uint8_t *out;
+      uint8_t *out = nullptr;
       int len = ASN1_STRING_to_UTF8(&out, pString);
       if (len > 0)
       {
@@ -1488,7 +1488,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
       default:
         if ( !OBJ_nid2sn(OBJ_obj2nid(pObject)) )
         {
-          TCHAR tmp[20];
+          TCHAR tmp[20]{};
           _stprintf(tmp, L"%d", OBJ_obj2nid(pObject));
           size_t maxlen = 1024 - _tcslen(SslCertData.issuer.Other)-1;
           _tcsncpy(SslCertData.issuer.Other+_tcslen(SslCertData.issuer.Other), tmp, maxlen);
@@ -1566,7 +1566,7 @@ BOOL CAsyncSslSocketLayer::GetPeerCertificateData(t_SslCertData &SslCertData, LP
     if (X509V3_EXT_print(subjectAltNameBio, subjectAltNameExtension, 0, 0) == 1)
     {
       USES_CONVERSION;
-      u_char *data;
+      u_char *data = nullptr;
       int len = BIO_get_mem_data(subjectAltNameBio, &data);
       char * buf = nb::chcalloc(len + 1);
 
@@ -1832,7 +1832,7 @@ BOOL CAsyncSslSocketLayer::SetCertStorage(CString file)
 void CAsyncSslSocketLayer::OnClose(int nErrorCode)
 {
   m_onCloseCalled = true;
-  if (m_bUseSSL) // && BIO_ctrl)
+  if (m_bUseSSL && BIO_ctrl)
   {
     size_t pending = BIO_ctrl_pending(m_sslbio);
     if (pending > 0)
@@ -1867,7 +1867,7 @@ void CAsyncSslSocketLayer::PrintLastErrorMsg()
     }
     else
     {
-      UnicodeString S = GetTlsErrorStr(aerr);
+      const UnicodeString S = GetTlsErrorStr(aerr);
       LogSocketMessageRaw(FZ_LOG_WARNING, S.c_str());
     }
   }
@@ -1903,7 +1903,7 @@ void CAsyncSslSocketLayer::TriggerEvents()
   }
   else
   {
-    size_t len = BIO_ctrl_get_write_guarantee(m_nbio);
+    const size_t len = BIO_ctrl_get_write_guarantee(m_nbio);
     if (len > 0 && m_mayTriggerRead)
     {
       m_mayTriggerRead = false;

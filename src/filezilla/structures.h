@@ -5,7 +5,7 @@
 
 class CServerPath;
 
-class t_directory //: public TObject
+class t_directory
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -14,7 +14,7 @@ public:
   ~t_directory();
   CServerPath path;
   size_t num{0};
-  class t_direntry // : public TObject
+  class t_direntry
   {
   CUSTOM_MEM_ALLOCATION_IMPL
   public:
