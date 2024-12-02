@@ -139,6 +139,7 @@ struct TIEProxyConfig;
 
 constexpr const int32_t SFTPMinVersion = 0;
 constexpr const int32_t SFTPMaxVersion = 6;
+constexpr const int32_t SFTPStandardVersion = 3;
 
 class NB_CORE_EXPORT TSessionData final : public TNamedObject
 {
