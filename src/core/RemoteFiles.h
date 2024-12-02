@@ -147,11 +147,11 @@ public:
   bool GetIsThisDirectory() const;
   bool GetIsInaccessibleDirectory() const;
   UnicodeString GetExtension() const;
-  bool GetIsEncrypted() const { return FIsEncrypted; }
   UnicodeString GetUserModificationStr() const;
   void LoadTypeInfo() const;
   int64_t GetSize() const;
 
+  bool GetIsEncrypted() const { return FIsEncrypted; }
 protected:
   void FindLinkedFile();
 

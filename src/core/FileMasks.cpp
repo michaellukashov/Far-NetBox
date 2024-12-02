@@ -891,8 +891,10 @@ void TFileMasks::SetRoots(const UnicodeString & LocalRoot, const TStrings * Remo
 
 #define TEXT_TOKEN L'\255'
 
-// const wchar_t TCustomCommand::NoQuote = L'\0';
-// const UnicodeString TCustomCommand::Quotes = L"\"'";
+#if defined(__BORLANDC__)
+const wchar_t TCustomCommand::NoQuote = L'\0';
+const UnicodeString TCustomCommand::Quotes = L"\"'";
+#endif // defined(__BORLANDC__)
 
 UnicodeString TCustomCommand::Escape(const UnicodeString & S)
 {
@@ -900,7 +902,7 @@ UnicodeString TCustomCommand::Escape(const UnicodeString & S)
 }
 
 #if defined(__BORLANDC__)
-TCustomCommand::TCustomCommand() noexcept
+TCustomCommand::TCustomCommand()
 {
 }
 #endif // defined(__BORLANDC__)
@@ -1359,9 +1361,9 @@ bool TFileCustomCommand::PatternReplacement(
   }
   else if (SameText(Pattern, L"!e"))
   {
-    if (FData.SessionData != nullptr)
+    if (SessionData != nullptr)
     {
-      Replacement = FData.SessionData->GenerateSessionUrl(sufComplete);
+      Replacement = SessionData->GenerateSessionUrl(sufComplete);
     }
   }
   else if (Pattern == L"!@")
@@ -1387,7 +1389,7 @@ bool TFileCustomCommand::PatternReplacement(
   }
   else if (::SameText(Pattern, L"!#"))
   {
-    if (FData.SessionData != nullptr)
+    if (SessionData != nullptr)
     {
       Replacement = IntToStr(FData.SessionData->PortNumber);
     }

@@ -172,7 +172,9 @@ void EnableUWPTestMode();
 bool IsUWP();
 UnicodeString GetPackageName();
 bool IsOfficialPackage();
-// TLibModule * FindModule(void * Instance);
+#if defined(__BORLANDC__)
+TLibModule * FindModule(void * Instance);
+#endif // defined(__BORLANDC__)
 NB_CORE_EXPORT int64_t Round(double Number);
 NB_CORE_EXPORT bool TryRelativeStrToDateTime(const UnicodeString & AStr, TDateTime & DateTime, bool Add);
 NB_CORE_EXPORT bool TryStrToDateTimeStandard(const UnicodeString & S, TDateTime & Value);
@@ -374,12 +376,12 @@ UnicodeString AssemblyAddRawSettings(
   TAssemblyLanguage Language, TStrings * RawSettings, const UnicodeString & ClassName,
   const UnicodeString & MethodName);
 
-#endif // if 0
+#endif // defined(__BORLANDC__)
 
 #pragma warning(push)
-// #pragma warning(disable: 4512) // assignment operator could not be generated
+#pragma warning(disable: 4512) // assignment operator could not be generated
 
-// #include "Global.h"
+#include "Global.h"
 
 template<typename T>
 class TValueRestorer // : public TObject
@@ -457,7 +459,9 @@ public:
 
 #pragma warning(pop)
 
-// #include <map>
+#if defined(__BORLANDC__)
+#include <map>
+#endif // defined(__BORLANDC__)
 
 template<class T1, class T2>
 class BiDiMap
@@ -537,7 +541,9 @@ public:
     }
   }
 
-  // #pragma warn -inl
+#if defined(__BORLANDC__)
+  #pragma warn -inl
+#endif // defined(__BORLANDC__)
   template<typename P>
   void Invoke(const P & p)
   {
@@ -548,7 +554,9 @@ public:
       ++I;
     }
   }
-  // #pragma warn .inl
+#if defined(__BORLANDC__)
+  #pragma warn .inl
+#endif // defined(__BORLANDC__)
 
   bool Contains(T EventHandler)
   {

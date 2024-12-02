@@ -5723,7 +5723,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
           }
 
           const struct ssh_keyalg * Algorithm;
-          UnicodeString Key = ParseOpenSshPubLine(Line, Algorithm);
+          const UnicodeString Key = ParseOpenSshPubLine(Line, Algorithm);
           const UnicodeString KeyKey =
             FORMAT(L"%s@%d:%s", Algorithm->cache_id, SessionData->PortNumber, HostNameStr);
           const UnicodeString HostKey =
@@ -5836,7 +5836,9 @@ bool TStoredSessionList::Import(TStoredSessionList * From,
       Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
-      // Add(Session);
+#if defined(__BORLANDC__)
+      Add(Session);
+#endif // defined(__BORLANDC__)
       Result = true;
       if (Imported != nullptr)
       {
@@ -6093,7 +6095,9 @@ void TStoredSessionList::SetDefaultSettings(const TSessionData * Value)
 
 bool TStoredSessionList::OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate)
 {
-  return Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
+  return
+    Storage->OpenRootKey(CanCreate) &&
+    Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
 }
 
 THierarchicalStorage * TStoredSessionList::CreateHostKeysStorageForWriting()

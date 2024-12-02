@@ -68,7 +68,6 @@ private:
   TCommandType CommandSet[ShellCommandCount]{};
   TSessionData * FSessionData{nullptr};
   UnicodeString FReturnVar;
-
 public:
   int32_t GetMaxLines(TFSCommand Cmd) const;
   int32_t GetMinLines(TFSCommand Cmd) const;
@@ -485,7 +484,6 @@ bool TSCPFileSystem::IsCapable(int32_t Capability) const
     case fcPreservingTimestampUpload:
     case fcGroupChanging:
     case fcOwnerChanging:
-    case fcGroupOwnerChangingByID:
     case fcAnyCommand:
     case fcShellAnyCommand:
     case fcHardLink:
@@ -511,6 +509,7 @@ bool TSCPFileSystem::IsCapable(int32_t Capability) const
     case fcCheckingSpaceAvailable:
     case fcIgnorePermErrors:
     case fcSecondaryShell: // has fcShellAnyCommand
+    case fcGroupOwnerChangingByID: // by name
     case fcMoveToQueue:
     case fcLocking:
     case fcPreservingTimestampDirs:
@@ -1472,7 +1471,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
         BatchSize += File->Size;
         if (!FileListCommandLineBak.IsEmpty() &&
             ((FileListCommandLine.Length() > 2048) ||
-             (BatchSize > (512 * 1024 * 1024))))
+             (BatchSize > (1024 * 1024 * 1024))))
         {
           FileListCommandLine = FileListCommandLineBak;
           break;

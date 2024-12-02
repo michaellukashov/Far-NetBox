@@ -25,6 +25,9 @@
 
 #if defined(__BORLANDC__)
 #pragma package(smart_init)
+
+#define MAX_BUFSIZE 32768
+
 #endif // defined(__BORLANDC__)
 
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
@@ -114,6 +117,10 @@ TSecureShell::~TSecureShell() noexcept
     Close();
   }
   ResetConnection();
+#if defined(__BORLANDC__)
+  CloseHandle(FSocketEvent);
+  delete FCallbackSet;
+#endif // defined(__BORLANDC__)
   SAFE_CLOSE_HANDLE(FSocketEvent); } catch(...) { DEBUG_PRINTF("Error"); }
 }
 
@@ -133,6 +140,12 @@ void TSecureShell::ResetConnection()
   FStoredPasswordTriedForKI = false;
   FStoredPassphraseTried = false;
   FAuthenticationCancelled = false;
+#if defined(__BORLANDC__)
+  delete FLogPolicy;
+  FLogPolicy = nullptr;
+  delete FSeat;
+  FSeat = nullptr;
+#endif // defined(__BORLANDC__)
   FLogPolicy.reset();
   FSeat.reset();
   if (FLogCtx != nullptr)
@@ -1205,7 +1218,7 @@ int32_t TSecureShell::Receive(uint8_t * Buf, size_t Len)
 
 #if defined(__BORLANDC__)
       // This seems ambiguous
-      if (Len <= 0) { FatalError(LoadStr(LOST_CONNECTION)); }
+      if (Len <= 0) FatalError(LoadStr(LOST_CONNECTION));
 #endif // defined(__BORLANDC__)
     }
     __finally
@@ -1223,7 +1236,9 @@ int32_t TSecureShell::Receive(uint8_t * Buf, size_t Len)
 
 UnicodeString TSecureShell::ReceiveLine()
 {
-  // unsigned Index;
+#if defined(__BORLANDC__)
+  unsigned Index;
+#endif // defined(__BORLANDC__)
   RawByteString Line;
   bool EOL = false;
 
@@ -1270,7 +1285,9 @@ UnicodeString TSecureShell::ConvertInput(const RawByteString & Input, uint32_t C
   UnicodeString Result;
   if (GetUtfStrings())
   {
-    // Result = UTF8ToString(Input);
+#if defined(__BORLANDC__)
+    Result = UTF8ToString(Input);
+#endif // defined(__BORLANDC__)
     Result = UnicodeString(UTF8String(Input.c_str(), Input.GetLength())); //TODO: UTF8ToString
   }
   else
@@ -1522,7 +1539,6 @@ int32_t TSecureShell::TranslateAuthenticationMessage(
 
   if ((Result == 2) || (Result == 3) || (Result == 4))
   {
-    // GetConfiguration()->GetUsage()->Inc("OpenedSessionsPrivateKey2");
     FCollectPrivateKeyUsage = true;
   }
 
@@ -1539,7 +1555,9 @@ void TSecureShell::AddStdError(const uint8_t * Data, size_t Length)
   // We send only whole line at once to log, so we have to cache
   // incoming std error data
   FStdErrorTemp += Str;
-  // UnicodeString Line;
+#if defined(__BORLANDC__)
+  UnicodeString Line;
+#endif // defined(__BORLANDC__)
   // Do we have at least one complete line in std error cache?
   while ((P = FStdErrorTemp.Pos(L"\n")) > 0)
   {
@@ -1828,10 +1846,10 @@ void TSecureShell::Close()
     // (e.g. plink), otherwise it hangs in sk_localproxy_close
     SendSpecial(SS_EOF);
     // Try waiting for the EOF exchange to complete (among other to avoid packet queue memory leaks)
-    int32_t Timeout = 500; // TODO: use paramerter
+    int32_t Timeout = 500; // TODO: use config parameter
     while ((backend_exitcode(FBackendHandle) < 0) && (Timeout > 0))
     {
-      constexpr int32_t Step = 100; // TODO: use paramerter
+      constexpr int32_t Step = 100; // TODO: use parameter
       if (!EventSelectLoop(Step, false, nullptr))
       {
         Timeout -= Step;
@@ -1976,7 +1994,9 @@ void TSecureShell::WaitForData()
       const TAutoNestingCounter NestingCounter(FWaitingForData);
 
       WSANETWORKEVENTS Events;
-      // memset(&Events, 0, sizeof(Events));
+#if defined(__BORLANDC__)
+      memset(&Events, 0, sizeof(Events));
+#endif // defined(__BORLANDC__)
       nb::ClearStruct(Events);
       TPoolForDataEvent Event(this, Events);
 
@@ -2083,9 +2103,13 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
         LogEvent(FORMAT("Handling network %s event on socket %d with error %d",
           EventTypes[Event].Desc, nb::ToInt32(Socket), Err));
       }
-      // #pragma option push -w-prc
+#if defined(__BORLANDC__)
+      #pragma option push -w-prc
+#endif // defined(__BORLANDC__)
       const LPARAM SelectEvent = WSAMAKESELECTREPLY(EventTypes[Event].Mask, Err);
-      // #pragma option pop
+#if defined(__BORLANDC__)
+      #pragma option pop
+#endif // defined(__BORLANDC__)
       select_result(static_cast<WPARAM>(Socket), SelectEvent);
       CheckConnection();
     }
@@ -2187,10 +2211,12 @@ bool TSecureShell::EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
           }
         }
 
-        // do not use iterator because size can change
-        for (std::size_t I = 0; I < FPortFwdSockets.size(); ++I)
         {
-          ProcessNetworkEvents(FPortFwdSockets[I]);
+          // do not use iterator because size can change
+          for (std::size_t I = 0; I < FPortFwdSockets.size(); ++I)
+          {
+            ProcessNetworkEvents(FPortFwdSockets[I]);
+          }
         }
       }
       else if (WaitResult == WAIT_TIMEOUT)
@@ -2359,6 +2385,7 @@ UnicodeString TSecureShell::RetrieveHostKey(const UnicodeString & Host, int32_t 
   TGuard Guard(*PuttyStorageSection.get());
   DebugAssert(PuttyStorage == nullptr);
   TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage, Storage.get());
+  PuttyStorage = Storage.get();
 
   AnsiString AnsiStoredKeys;
   AnsiStoredKeys.SetLength(10240);
@@ -2518,9 +2545,10 @@ UnicodeString TSecureShell::StoreHostKey(
 {
   TGuard Guard(*PuttyStorageSection.get());
   DebugAssert(PuttyStorage == nullptr);
+  TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage);
   std::unique_ptr<THierarchicalStorage> Storage(GetHostKeyStorage());
   Storage->AccessMode = smReadWrite;
-  TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage, Storage.get());
+  PuttyStorage = Storage.get();
   store_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr).c_str());
   return Storage->Source;
 }
@@ -2669,7 +2697,7 @@ void TSecureShell::VerifyHostKey(
       }
       else
       {
-        // We should not offer caching if !GetConfiguration()->Persistent,
+        // We should not offer caching if !Configuration->Persistent,
         // but as scripting mode is handled earlier and in GUI it hardly happens,
         // it's a small issue.
         TClipboardHandler ClipboardHandler;
@@ -2979,7 +3007,6 @@ bool TSecureShell::GetReady() const
 
 void TSecureShell::CollectUsage()
 {
-#if defined(__BORLANDC__)
   if (FCollectPrivateKeyUsage)
   {
     GetConfiguration()->Usage->Inc("OpenedSessionsPrivateKey2");
@@ -3069,7 +3096,6 @@ void TSecureShell::CollectUsage()
     case CIPHER_AESGCM: GetConfiguration()->Usage->Inc(L"OpenedSessionsSSHAESGCM"); break;
     default: DebugFail(); break;
   }
-#endif // defined(__BORLANDC__)
 }
 
 bool TSecureShell::CanChangePassword() const

@@ -24,8 +24,12 @@
 #include <CoreMain.h>
 #include <SessionInfo.h>
 #include <Soap.EncdDecd.hpp>
-
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#include <openssl/pkcs12.h>
+#include <openssl/pem.h>
+#include <openssl/err.h>
+#include <openssl/ssl.h>
+#endif // defined(__BORLANDC__)
 
 #pragma warning(disable: 4996) // https://msdn.microsoft.com/en-us/library/ttcz0bys.aspx The compiler encountered a deprecated declaration
 
@@ -657,8 +661,9 @@ UnicodeString GetEnvironmentVariable(const UnicodeString & AEnvVarName)
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 
-//#pragma package(smart_init)
-/*
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+
 const wchar_t * DSTModeNames = L"Win;Unix;Keep";
 
 
@@ -676,7 +681,8 @@ const UnicodeString PasswordMask(TraceInitStr(L"***"));
 const UnicodeString Ellipsis(TraceInitStr(L"..."));
 const UnicodeString TitleSeparator(TraceInitStr(L" \u2013 ")); // En-Dash
 const UnicodeString OfficialPackage(TraceInitStr(L"MartinPrikryl.WinSCP_tvv458r3h9r5m"));
-*/
+#endif // defined(__BORLANDC__)
+
 UnicodeString ReplaceChar(const UnicodeString & Str, wchar_t A, wchar_t B)
 {
   UnicodeString Result = Str;
@@ -1157,7 +1163,9 @@ UnicodeString Base64ToUrlSafe(const UnicodeString & S)
   return Result;
 }
 
-// const wchar_t NormalizedFingerprintSeparator = L'-';
+#if defined(__BORLANDC__)
+const wchar_t NormalizedFingerprintSeparator = L'-';
+#endif // defined(__BORLANDC__)
 
 UnicodeString MD5ToUrlSafe(const UnicodeString & S)
 {
@@ -2142,7 +2150,9 @@ void TSearchRecSmart::Clear()
   Name = TFileName();
   ExcludeAttr = 0;
   FindHandle = INVALID_HANDLE_VALUE;
-  //memset(&FindData, 0, sizeof(FindData));
+#if defined(__BORLANDC__)
+  memset(&FindData, 0, sizeof(FindData));
+#endif // defined(__BORLANDC__)
   nb::ClearStruct(FindData);
   FLastWriteTimeSource.dwLowDateTime = 0;
   FLastWriteTimeSource.dwHighDateTime = 0;
@@ -3312,6 +3322,9 @@ static bool DoRecursiveDeleteFile(
   {
     SHFILEOPSTRUCT Data;
 
+#if defined(__BORLANDC__)
+    memset(&Data, 0, sizeof(Data));
+#endif // defined(__BORLANDC__)
     nb::ClearStruct(Data);
     Data.hwnd = nullptr;
     Data.wFunc = FO_DELETE;
@@ -3638,6 +3651,7 @@ bool IsDomainOrSubdomain(const UnicodeString & FullDomain, const UnicodeString &
     SameText(FullDomain, Domain) ||
     EndsText(L"." + Domain, FullDomain);
 }
+
 UnicodeString EscapeHotkey(const UnicodeString & Caption)
 {
   return ReplaceStr(Caption, L"&", L"&&");
@@ -3782,6 +3796,9 @@ bool IsWin10()
 static OSVERSIONINFO GetWindowsVersion()
 {
   OSVERSIONINFO Result;
+#if defined(__BORLANDC__)
+  memset(&Result, 0, sizeof(Result));
+#endif // defined(__BORLANDC__)
   nb::ClearStruct(Result);
   Result.dwOSVersionInfoSize = sizeof(Result);
   // Cannot use the VCL Win32MajorVersion+Win32MinorVersion+Win32BuildNumber as
@@ -4338,10 +4355,12 @@ void ParseCertificate(const UnicodeString & Path,
   WrongPassphrase = false;
   const bool HasPassphrase = !Passphrase.IsEmpty();
 
-  // FILE * File;
+#if defined(__BORLANDC__)
+  FILE * File;
+#endif // defined(__BORLANDC__)
 
   // Inspired by neon's ne_ssl_clicert_read
-  FILE* File = OpenCertificate(Path);
+  FILE * File = OpenCertificate(Path);
   // openssl pkcs12 -inkey cert.pem -in cert.crt -export -out cert.pfx
   // Binary file
   PKCS12 * Pkcs12 = d2i_PKCS12_fp(File, nullptr);
@@ -4635,6 +4654,7 @@ UnicodeString RtfSwitch(
 {
   return RtfSwitchValue(Name, Link, RtfText(FORMAT("\"%s\"", (EscapeParam(Value))), Rtf), Rtf);
 }
+
 UnicodeString RtfSwitch(
   const UnicodeString & Name, const UnicodeString & Link, int32_t Value, bool Rtf)
 {

@@ -24,11 +24,14 @@ extern "C"
 #include <StrUtils.hpp>
 #include <openssl/ssl.h>
 
+#if defined(__BORLANDC__)
+#define SESSION_PROXY_AUTH_KEY "proxyauth"
+#define SESSION_TLS_INIT_KEY "tlsinit"
+#define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
+#define SESSION_TERMINAL_KEY "terminal"
+#endif // defined(__BORLANDC__)
 constexpr const char * SESSION_PROXY_AUTH_KEY = "proxyauth";
 constexpr const char * SESSION_TLS_INIT_KEY = "tlsinit";
-#if defined(__BORLANDC__)
-#define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
-#endif // defined(__BORLANDC__)
 constexpr const char * SESSION_TERMINAL_KEY = "terminal";
 
 void NeonParseUrl(const UnicodeString & Url, ne_uri &uri)
@@ -228,6 +231,9 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session)
   return Result;
 }
 
+#if defined(__BORLANDC__)
+#define MAX_REDIRECT_ATTEMPTS 5
+#endif // defined(__BORLANDC__)
 constexpr int32_t MAX_REDIRECT_ATTEMPTS = 5;
 
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls)

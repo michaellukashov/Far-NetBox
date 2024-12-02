@@ -7,9 +7,11 @@
 #include "SessionInfo.h"
 
 #ifndef PuttyIntfH
-// struct Backend_vtable;
-// struct Backend;
-// struct Conf;
+#if defined(__BORLANDC__)
+struct Backend_vtable;
+struct Backend;
+struct Conf;
+#endif // defined(__BORLANDC__)
 #endif
 
 struct _WSANETWORKEVENTS;
@@ -37,7 +39,7 @@ public:
 
   mutable gsl::owner<const uint32_t *> FMinPacketSize{nullptr};
   mutable gsl::owner<const uint32_t *> FMaxPacketSize{nullptr};
-  //uint32_t MinPacketSize() const;
+
 private:
   SOCKET FSocket{INVALID_SOCKET};
   HANDLE FSocketEvent{};
