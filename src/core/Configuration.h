@@ -298,7 +298,7 @@ public:
 public:
   TConfiguration() = delete;
   explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration) noexcept;
-  virtual ~TConfiguration() noexcept;
+  virtual ~TConfiguration() noexcept override;
   virtual void ConfigurationInit();
   virtual void Default();
   virtual void UpdateStaticUsage();
