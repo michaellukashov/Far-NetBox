@@ -2935,7 +2935,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
           {
             FileData.LocalFileAttrs = faArchive;
           }
-          DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
+          const DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
             FILE_OPERATION_LOOP_BEGIN
