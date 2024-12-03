@@ -1006,7 +1006,7 @@ void TFarDialogContainer::Remove(TFarDialogItem * Item)
   FItems->Remove(Item);
   if (FItems->GetCount() == 0)
   {
-    delete this;
+    std::destroy_at(this);
   }
 }
 

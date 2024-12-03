@@ -3153,7 +3153,7 @@ bool TTerminalThread::Release()
   const bool Result = !FAbandoned;
   if (Result)
   {
-    delete this;
+    std::destroy_at(this);
   }
   return Result;
 }
