@@ -78,6 +78,16 @@ using TQueueEvent = nb::FastDelegate2<void,
 
 class TTerminalItem;
 
+#if defined(__BORLANDC__)
+typedef void (__closure * TQueueListUpdate)
+  (TTerminalQueue * Queue);
+typedef void (__closure * TQueueItemUpdateEvent)
+  (TTerminalQueue * Queue, TQueueItem * Item);
+enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
+typedef void (__closure * TQueueEventEvent)
+  (TTerminalQueue * Queue, TQueueEvent Event);
+#endif // defined(__BORLANDC__)
+
 class NB_CORE_EXPORT TTerminalQueue final : public TSignalThread
 {
   friend class TQueueItem;
@@ -226,7 +236,6 @@ public:
 
   HANDLE GetCompleteEvent() const { return FCompleteEvent; }
   void SetCompleteEvent(HANDLE Value) { FCompleteEvent = Value; }
-  // void SetMasks(const UnicodeString & Value);
 
 protected:
   TStatus FStatus{qsPending};
@@ -252,6 +261,7 @@ public:
   virtual bool UpdateFileList(TQueueFileList * FileList);
   void SetCPSLimit(int32_t CPSLimit);
   int32_t GetCPSLimit() const;
+
 protected:
   virtual int32_t DefaultCPSLimit() const;
   virtual UnicodeString GetStartupDirectory() const = 0;
@@ -271,6 +281,7 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TQueueItemProxy); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TQueueItemProxy) || TObject::is(Kind); }
 public:
+  TQueueItemProxy() = delete;
   bool Update();
   bool UpdateFileList(TQueueFileList * FileList);
   bool ProcessUserAction();
@@ -297,7 +308,6 @@ public:
   void * GetUserData() const { return FUserData; }
   void * GetUserData() { return FUserData; }
   void SetUserData(void * Value) { FUserData = Value; }
-  // void SetMasks(const UnicodeString & Value);
   TQueueItemProxy * Clone() { return new TQueueItemProxy(FQueue, FQueueItem); }
 
 private:
@@ -310,7 +320,6 @@ private:
   bool FProcessingUserAction{false};
   void * FUserData{nullptr};
 
-  TQueueItemProxy() = delete;
   explicit TQueueItemProxy(gsl::not_null<TTerminalQueue *> Queue, gsl::not_null<TQueueItem *> QueueItem) noexcept;
   virtual ~TQueueItemProxy() noexcept override;
 public:
@@ -363,11 +372,10 @@ public:
   int32_t GetDoneAndActiveCount() const;
   int32_t GetActivePrimaryCount() const;
   int32_t GetActiveAndPendingPrimaryCount() const;
+  void SetDoneCount(int32_t Value);
   TQueueItemProxy * GetItem(int32_t Index);
   TQueueItemProxy * GetItem(int32_t Index) const;
-public:
   int32_t GetDoneCount() const { return FDoneCount; }
-  void SetDoneCount(int32_t Value);
 };
 
 class TBootstrapQueueItem final : public TQueueItem
