@@ -2800,6 +2800,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
                     case qaCancel:
                       OperationProgress->SetCancel(csCancel); // continue on next case
                     // FALLTHROUGH
+                      [[fallthrough]];
                     case qaNo:
                       SkipConfirmed = true;
                       ThrowExtException();
