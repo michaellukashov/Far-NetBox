@@ -537,10 +537,8 @@ private:
   nb::vector_t<TShortCut> FShortCuts;
 };
 
-extern "C"
-{
+extern "C" { 
 #include <windows/platform.h>
-//#include <winstuff.h>
 }
 
 constexpr const char * OriginalPuttyRegistryStorageKey = PUTTY_REG_POS;

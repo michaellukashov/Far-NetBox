@@ -105,7 +105,7 @@ public:
   void ResetSessionInfo();
   void SocketEventSelect(SOCKET Socket, HANDLE Event, bool Enable);
   bool EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
-  void HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events);
+  void HandleNetworkEvents(SOCKET Socket, const WSANETWORKEVENTS & Events);
   bool ProcessNetworkEvents(SOCKET Socket);
   bool EventSelectLoop(uint32_t MSec, bool ReadEventRequired,
     WSANETWORKEVENTS * Events);

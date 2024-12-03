@@ -631,13 +631,17 @@ void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
   SetUserName(SourceData->GetUserName());
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FBugs)); ++Index)
   {
-    // PROPERTY(Bug[(TSshBug)Index]);
+#if defined(__BORLANDC__)
+    PROPERTY(Bug[(TSshBug)Index]);
+#endif // defined(__BORLANDC__)
     SetBug(static_cast<TSshBug>(Index),
       SourceData->GetBug(static_cast<TSshBug>(Index)));
   }
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
-    // PROPERTY(SFTPBug[(TSftpBug)Index]);
+#if defined(__BORLANDC__)
+    PROPERTY(SFTPBug[(TSftpBug)Index]);
+#endif // defined(__BORLANDC__)
     SetSFTPBug(static_cast<TSftpBug>(Index),
       SourceData->GetSFTPBug(static_cast<TSftpBug>(Index)));
   }
@@ -2018,7 +2022,6 @@ void TSessionData::RecryptPasswords()
   SetPassword(GetPassword());
   SetNewPassword(GetNewPassword());
   SetProxyPassword(GetProxyPassword());
-  // FTunnelPassword = FTunnelPassword; // TODO: SetTunnelPassword(GetTunnelPassword)
   SetTunnelPassword(GetTunnelPassword());
   SetPassphrase(GetPassphrase());
   SetEncryptKey(GetEncryptKey());

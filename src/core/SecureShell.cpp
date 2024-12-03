@@ -587,7 +587,9 @@ bool TSecureShell::TryFtp()
         {
           SOCKADDR_IN Address;
 
-          // memset(&Address, 0, sizeof(Address));
+#if defined(__BORLANDC__)
+          memset(&Address, 0, sizeof(Address));
+#endif // defined(__BORLANDC__)
           nb::ClearStruct(Address);
           Address.sin_family = AF_INET;
           const int32_t Port = FtpPortNumber;
@@ -2078,7 +2080,7 @@ bool TSecureShell::EnumNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
   return Result;
 }
 
-void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
+void TSecureShell::HandleNetworkEvents(SOCKET Socket, const WSANETWORKEVENTS & Events)
 {
   static constexpr struct { int32_t Bit, Mask; const wchar_t * Desc; } EventTypes[] =
   {
@@ -2119,7 +2121,9 @@ void TSecureShell::HandleNetworkEvents(SOCKET Socket, WSANETWORKEVENTS & Events)
 bool TSecureShell::ProcessNetworkEvents(SOCKET Socket)
 {
   WSANETWORKEVENTS Events;
-  // memset(&Events, 0, sizeof(Events));
+#if defined(__BORLANDC__)
+  memset(&Events, 0, sizeof(Events));
+#endif // defined(__BORLANDC__)
   nb::ClearStruct(Events);
   const bool Result = EnumNetworkEvents(Socket, Events);
   HandleNetworkEvents(Socket, Events);

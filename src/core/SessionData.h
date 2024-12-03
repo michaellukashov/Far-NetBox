@@ -796,7 +796,9 @@ public:
   __property TAutoSwitch SFTPRealPath = { read = FSFTPRealPath, write = SetSFTPRealPath };
   __property bool UsePosixRename = { read = FUsePosixRename, write = SetUsePosixRename };
   RWPropertySimple<bool> UsePosixRename{&FUsePosixRename, nb::bind(&TSessionData::SetUsePosixRename, this)};
-  // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
+#if defined(__BORLANDC__)
+  __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
+#endif // defined(__BORLANDC__)
   __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
   __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
   __property TAutoSwitch FtpHost = { read = FFtpHost, write = SetFtpHost };
@@ -1192,7 +1194,3 @@ struct NB_CORE_EXPORT TIEProxyConfig final : public TObject
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
 NB_CORE_EXPORT uint32_t GetCodePageAsNumber(const UnicodeString & CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
-
-//template<int s> struct CheckSizeT;
-//CheckSizeT<sizeof(TSessionData)> checkSize;
-
