@@ -393,7 +393,7 @@ public:
   virtual int32_t GetResult() const { return FResult; }
   virtual void SetResult(int32_t Value) { FResult = Value; }
   virtual UnicodeString GetData() const override;
-  virtual UnicodeString GetData() override { return static_cast<const TFarButton *>(this)->GetData(); }
+  virtual UnicodeString GetData() override { return std::as_const(*this).GetData(); }
   bool GetDefault() const;
   void SetDefault(bool Value);
   TFarButtonBrackets GetBrackets() const { return FBrackets; }

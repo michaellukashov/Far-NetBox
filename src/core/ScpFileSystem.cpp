@@ -466,7 +466,7 @@ void TSCPFileSystem::Idle()
 
 UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TSCPFileSystem *>(this)->AbsolutePath(APath, Local);
+  return std::as_const(*this).AbsolutePath(APath, Local);
 }
 
 UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const

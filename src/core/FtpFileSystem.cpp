@@ -973,7 +973,7 @@ void TFTPFileSystem::Discard()
 
 UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TFTPFileSystem *>(this)->AbsolutePath(APath, Local);
+  return std::as_const(*this).AbsolutePath(APath, Local);
 }
 
 UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const

@@ -607,7 +607,7 @@ void TWebDAVFileSystem::Idle()
 
 UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TWebDAVFileSystem *>(this)->AbsolutePath(APath, Local);
+  return std::as_const(*this).AbsolutePath(APath, Local);
 }
 
 UnicodeString TWebDAVFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
