@@ -171,6 +171,10 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialogContainer); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogContainer) || TObject::is(Kind); }
 public:
+  TFarDialogContainer() = delete;
+  explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog) noexcept;
+  virtual ~TFarDialogContainer() noexcept override;
+
   int32_t GetLeft() const { return FLeft; }
   void SetLeft(int32_t Value) { SetPosition(0, Value); }
   int32_t GetTop() const { return FTop; }
@@ -181,10 +185,6 @@ public:
   int32_t GetItemCount() const;
 
 protected:
-  TFarDialogContainer() = delete;
-  explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog) noexcept;
-  virtual ~TFarDialogContainer() noexcept override;
-
   TFarDialog * GetDialog() const { return FDialog; }
   TFarDialog * GetDialog() { return FDialog; }
 
