@@ -284,6 +284,7 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
       if (numsent == SOCKET_ERROR || numsent < numread)
       {
         if (numsent == SOCKET_ERROR)
+        {
           if (GetLastError() != WSAEWOULDBLOCK && GetLastError() != WSAENOTCONN)
           {
             m_nNetworkError = GetLastError();
@@ -291,7 +292,10 @@ void CAsyncSslSocketLayer::OnSend(int nErrorCode)
             return;
           }
           else
+          {
             numsent = 0;
+          }
+        }
 
         // Add all data that was retrieved from the network bio but could not be sent to the send buffer.
         if (m_nNetworkSendBufferMaxLen < (m_nNetworkSendBufferLen + numread - numsent))
