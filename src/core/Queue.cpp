@@ -313,7 +313,7 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
   if (!SimpleThread->Finished())
   {
     SimpleThread->Close();
-    delete SimpleThread;
+    std::destroy_at(SimpleThread);
   }
   return 0;
 }
@@ -2677,7 +2677,7 @@ TTerminalThread::~TTerminalThread() noexcept
 #endif // defined(__BORLANDC__)
   if (FAbandoned)
   {
-    delete FTerminal.get();
+    std::destroy_at(FTerminal.get());
   }
 }
 
