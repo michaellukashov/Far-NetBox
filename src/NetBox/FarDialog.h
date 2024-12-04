@@ -681,7 +681,7 @@ public:
   TFarLister() = delete;
   explicit TFarLister(TFarDialog * ADialog) noexcept;
   virtual ~TFarLister() noexcept override;
-
+ 
   TStrings * GetItems() const;
   void SetItems(const TStrings * Value);
   int32_t GetTopIndex() const { return FTopIndex; }
