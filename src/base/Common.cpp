@@ -4518,9 +4518,11 @@ void CheckCertificate(const UnicodeString & Path)
   }
 }
 
-//const UnicodeString HttpProtocol(L"http");
-//const UnicodeString HttpsProtocol(L"https");
-//const UnicodeString ProtocolSeparator(L"://");
+#if defined(__BORLANDC__)
+const UnicodeString HttpProtocol(L"http");
+const UnicodeString HttpsProtocol(L"https");
+const UnicodeString ProtocolSeparator(L"://");
+#endif // defined(__BORLANDC__)
 
 bool IsHttpUrl(const UnicodeString & S)
 {
@@ -4572,7 +4574,7 @@ UnicodeString RtfText(const UnicodeString & Text, bool Rtf)
       }
       else if (Ch >= 0x0080)
       {
-        Replacement = FORMAT(L"\\u%d?", int(Ch));
+        Replacement = FORMAT(L"\\u%d?", int32_t(Ch));
       }
 
       if (!Replacement.IsEmpty())
