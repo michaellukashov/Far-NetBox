@@ -2139,11 +2139,6 @@ int32_t TTerminalQueueStatus::GetCount() const
 
 TQueueItemProxy * TTerminalQueueStatus::GetItem(int32_t Index) const
 {
-  return const_cast<TTerminalQueueStatus *>(this)->GetItem(Index);
-}
-
-TQueueItemProxy * TTerminalQueueStatus::GetItem(int32_t Index)
-{
   return FList->GetAs<TQueueItemProxy>(Index);
 }
 

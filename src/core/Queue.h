@@ -373,7 +373,7 @@ public:
   int32_t GetActivePrimaryCount() const;
   int32_t GetActiveAndPendingPrimaryCount() const;
   void SetDoneCount(int32_t Value);
-  TQueueItemProxy * GetItem(int32_t Index);
+  TQueueItemProxy * GetItem(int32_t Index) { return std::as_const(*this).GetItem(Index); }
   TQueueItemProxy * GetItem(int32_t Index) const;
   int32_t GetDoneCount() const { return FDoneCount; }
 };
