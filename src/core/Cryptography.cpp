@@ -664,12 +664,12 @@ void CryptographyInitialize()
   if (!InitOpenssl())
   {
     OpensslInitializationErrors = GetTlsErrorStrs();
-    AppLogFmt(L"OpenSSL initialization failed (possibly wrong configuration file) - TLS connections might be failing:\n%s", (OpensslInitializationErrors));
+    AppLogFmt(L"OpenSSL initialization failed (possibly wrong configuration file) - TLS connections might be failing:\n%s", OpensslInitializationErrors);
     char * ConfigPathBuf = CONF_get1_default_config_file();
     UnicodeString ConfigPath = UnicodeString(UTF8String(ConfigPathBuf));
     if (!ConfigPath.IsEmpty() && FileExists(ApiPath(ConfigPath)))
     {
-      AppLogFmt(L"OpenSSL configuration file: %s", (ConfigPath));
+      AppLogFmt(L"OpenSSL configuration file: %s", ConfigPath);
     }
     OPENSSL_free(ConfigPathBuf);
   }
