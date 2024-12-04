@@ -1581,7 +1581,7 @@ struct host_ca_enum
 host_ca_enum * enum_host_ca_start()
 {
   GetConfiguration()->RefreshPuttySshHostCAList();
-  host_ca_enum * Result = new host_ca_enum();
+  host_ca_enum * Result = nb::calloc<host_ca_enum *>(1, sizeof(host_ca_enum)); // new host_ca_enum();
   Result->Index = 0;
   return Result;
 }
@@ -1600,7 +1600,7 @@ bool enum_host_ca_next(host_ca_enum * Enum, strbuf * StrBuf)
 
 void enum_host_ca_finish(host_ca_enum * Enum)
 {
-  delete Enum;
+  nb_free(Enum);
 }
 
 host_ca * host_ca_load(const char * NameStr)
