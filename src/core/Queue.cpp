@@ -129,6 +129,11 @@ public:
   }
 
   virtual ~TPromptUserAction() override = default;
+#if defined(__BORLANDC__)
+  {
+    delete Results;
+  }
+#endif // defined(__BORLANDC__)
 
   virtual void Execute(void * Arg) override
   {
@@ -158,7 +163,7 @@ public:
   {
   }
 
-  void Execute(void * Arg) override
+  virtual void Execute(void * Arg) override
   {
     if (!OnShowExtendedException.empty())
     {
@@ -342,6 +347,11 @@ TSimpleThread::~TSimpleThread() noexcept
   {
     SAFE_CLOSE_HANDLE(FThread);
   }
+}
+
+bool TSimpleThread::IsFinished() const
+{
+  return FFinished;
 }
 
 void TSimpleThread::Start()
@@ -1064,7 +1074,9 @@ bool TTerminalQueue::WaitForEvent()
 void TTerminalQueue::ProcessEvent()
 {
   TTerminalItem * TerminalItem;
-  // TQueueItem * Item;
+#if defined(__BORLANDC__)
+  TQueueItem * Item;
+#endif // defined(__BORLANDC__)
 
   do
   {
@@ -1371,7 +1383,9 @@ void TTerminalItem::ProcessEvent()
 
   FCancel = false;
   FPause = false;
-  // FItem->FTerminalItem = this;
+#if defined(__BORLANDC__)
+  FItem->FTerminalItem = this;
+#endif // defined(__BORLANDC__)
 
   try
   {
@@ -2145,7 +2159,9 @@ TQueueItemProxy * TTerminalQueueStatus::GetItem(int32_t Index) const
 TQueueItemProxy * TTerminalQueueStatus::FindByQueueItem(
   const TQueueItem * QueueItem)
 {
-  // TQueueItemProxy * Item;
+#if defined(__BORLANDC__)
+  TQueueItemProxy * Item;
+#endif // defined(__BORLANDC__)
   for (int32_t Index = 0; Index < FList->GetCount(); ++Index)
   {
     TQueueItemProxy * Item = GetItem(Index);
@@ -2607,7 +2623,9 @@ TTerminalThread::TTerminalThread(gsl::not_null<TTerminal *> Terminal) noexcept :
   FAbandoned = false;
   FAllowAbandon = false;
   FMainThread = GetCurrentThreadId();
-  // FSection = new TCriticalSection();
+#if defined(__BORLANDC__)
+  FSection = new TCriticalSection();
+#endif // defined(__BORLANDC__)
 }
 
 void TTerminalThread::InitTerminalThread()
@@ -2770,8 +2788,8 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
               }
               Wait = nb::Min(Wait + 10, MaxWait);
             }
+            break;
           }
-          break;
 
           default:
             throw Exception("Error waiting for background session task to complete");

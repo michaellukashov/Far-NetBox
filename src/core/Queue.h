@@ -21,7 +21,7 @@ public:
   void WaitFor(DWORD Milliseconds = INFINITE) const;
   virtual void Terminate() = 0;
   virtual void Close();
-  bool IsFinished() const { return FFinished; }
+  bool IsFinished() const;
 
 protected:
   HANDLE FThread{nullptr};
@@ -68,16 +68,6 @@ class TQueueItemProxy;
 class TTerminalQueueStatus;
 class TQueueFileList;
 
-using TQueueListUpdateEvent = nb::FastDelegate1<void,
-  TTerminalQueue * /*Queue*/>;
-using TQueueItemUpdateEvent = nb::FastDelegate2<void,
-  const TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/>;
-enum TQueueEventType { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
-using TQueueEvent = nb::FastDelegate2<void,
-  TTerminalQueue * /*Queue*/, TQueueEventType /*Event*/>;
-
-class TTerminalItem;
-
 #if defined(__BORLANDC__)
 typedef void (__closure * TQueueListUpdate)
   (TTerminalQueue * Queue);
@@ -87,6 +77,16 @@ enum TQueueEvent { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 typedef void (__closure * TQueueEventEvent)
   (TTerminalQueue * Queue, TQueueEvent Event);
 #endif // defined(__BORLANDC__)
+
+using TQueueListUpdateEvent = nb::FastDelegate1<void,
+  TTerminalQueue * /*Queue*/>;
+using TQueueItemUpdateEvent = nb::FastDelegate2<void,
+  const TTerminalQueue * /*Queue*/, TQueueItem * /*Item*/>;
+enum TQueueEventType { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
+using TQueueEvent = nb::FastDelegate2<void,
+  TTerminalQueue * /*Queue*/, TQueueEventType /*Event*/>;
+
+class TTerminalItem;
 
 class NB_CORE_EXPORT TTerminalQueue final : public TSignalThread
 {

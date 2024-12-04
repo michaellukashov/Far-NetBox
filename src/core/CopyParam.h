@@ -153,6 +153,7 @@ public:
   __property TResumeSupport ResumeSupport = { read = FResumeSupport, write = FResumeSupport };
   TResumeSupport& ResumeSupport{FResumeSupport};
   __property __int64 ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
+  __property int64_t ResumeThreshold = { read = FResumeThreshold, write = FResumeThreshold };
   int64_t& ResumeThreshold{FResumeThreshold};
   __property wchar_t InvalidCharsReplacement = { read = FInvalidCharsReplacement, write = FInvalidCharsReplacement };
   wchar_t& InvalidCharsReplacement{FInvalidCharsReplacement};
