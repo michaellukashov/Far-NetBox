@@ -10,9 +10,11 @@
 
 #include <Global.h>
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
 
-// const UnicodeString EmptyString(TraceInitStr(L"\1\1\1")); // magic
+const UnicodeString EmptyString(TraceInitStr(L"\1\1\1")); // magic
+#endif // defined(__BORLANDC__)
 
 UnicodeString NormalizeString(const UnicodeString & S)
 {
