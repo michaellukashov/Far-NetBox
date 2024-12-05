@@ -866,10 +866,12 @@ public:
   __property UnicodeString S3Profile = { read = FS3Profile, write = SetS3Profile };
   RWPropertySimple<UnicodeString> S3Profile{&FS3Profile, nb::bind(&TSessionData::SetS3Profile, this) };
   __property TS3UrlStyle S3UrlStyle = { read = FS3UrlStyle, write = SetS3UrlStyle };
+  RWPropertySimple<TS3UrlStyle> S3UrlStyle{&FS3UrlStyle, nb::bind(&TSessionData::SetS3UrlStyle, this) };
   __property TAutoSwitch S3MaxKeys = { read = FS3MaxKeys, write = SetS3MaxKeys };
   __property bool S3CredentialsEnv = { read = FS3CredentialsEnv, write = SetS3CredentialsEnv };
   RWPropertySimple<bool> S3CredentialsEnv{&FS3CredentialsEnv, nb::bind(&TSessionData::SetS3CredentialsEnv, this) };
   __property bool S3RequesterPays = { read = FS3RequesterPays, write = SetS3RequesterPays };
+  RWPropertySimple<bool> S3RequesterPays{&FS3RequesterPays, nb::bind(&TSessionData::SetS3RequesterPays, this) };
   __property bool IsWorkspace = { read = FIsWorkspace, write = SetIsWorkspace };
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString NameOverride = { read = FNameOverride, write = SetNameOverride };

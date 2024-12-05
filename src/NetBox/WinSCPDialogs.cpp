@@ -1517,6 +1517,7 @@ public:
     tabSFTP,
     tabSCP,
     tabFTP,
+    tabS3,
     tabConnection,
     tabTunnel,
     tabProxy,
@@ -1574,6 +1575,7 @@ private:
   void CodePageEditAdd(uint32_t Cp);
   void FtpProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType);
   void SshProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMethod ProxyType);
+  void S3DefaultReqionComboAddNewItem(const UnicodeString &Region, int32_t Idx);
   static bool IsSshProtocol(TFSProtocol FSProtocol);
   bool IsWebDAVProtocol(TFSProtocol FSProtocol) const;
   bool IsSshOrWebDAVProtocol(TFSProtocol FSProtocol) const;
@@ -1598,6 +1600,7 @@ private:
   TTabButton * ScpTab{nullptr};
   TTabButton * SftpTab{nullptr};
   TTabButton * FtpTab{nullptr};
+  TTabButton * S3Tab{nullptr};
   TTabButton * TunnelTab{nullptr};
   TTabButton * PrevTab{nullptr};
   TTabButton * NextTab{nullptr};
@@ -1708,6 +1711,12 @@ private:
   TFarCheckBox * FtpUndupFFCheck{nullptr};
   TFarCheckBox * SslSessionReuseCheck{nullptr};
   TFarCheckBox * WebDAVCompressionCheck{nullptr};
+
+  TFarComboBox * S3UrlStyleCombo{nullptr};
+  TFarComboBox * S3DefaultRegionCombo{nullptr};
+  TFarCheckBox * S3RequesterPaysCheck{nullptr};
+  // TFarEdit * S3SessionTokenEdits[3]{nullptr};
+
   std::unique_ptr<TObjectList> FTabs{std::make_unique<TObjectList>()};
   int32_t FFirstVisibleTabIndex{0};
 };
@@ -1729,6 +1738,47 @@ private:
   BUG(SignedTS, NB_LOGIN_SFTP_BUGS_SIGNED_TS, SFTP)
 
 static constexpr TFSProtocol FSOrder[] = { fsSFTPonly, fsSCPonly, fsFTP, fsWebDAV, fsS3 };
+static constexpr const char * S3Regions[] = {
+  "af-south-1",
+  "ap-east-1",
+  "ap-northeast-1",
+  "ap-northeast-2",
+  "ap-northeast-3",
+  "ap-south-1",
+  "ap-south-2",
+  "ap-southeast-1",
+  "ap-southeast-2",
+  "ap-southeast-3",
+  "ap-southeast-4",
+  "ap-southeast-5",
+  "ca-central-1",
+  "ca-west-1",
+  "cn-north-1",
+  "cn-northwest-1",
+  "eu-central-1",
+  "eu-central-2",
+  "eu-north-1",
+  "eu-south-1",
+  "eu-south-2",
+  "eu-west-1",
+  "eu-west-2",
+  "eu-west-3",
+  "il-central-1",
+  "me-central-1",
+  "me-south-1",
+  "sa-east-1",
+  "us-east-1",
+  "us-east-2",
+  "us-gov-ea",
+  "us-gov-we",
+  "us-west-1",
+  "us-west-2"
+};
+
+static constexpr const char * S3URLStyles[] = {
+  "Virtual Host",
+  "Path"
+};
 
 TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum Action) noexcept :
   TTabbedDialog(AFarPlugin, tabCount),
@@ -1803,6 +1853,9 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
 
   Index1 = AddTab(tabFTP, GetMsg(NB_LOGIN_TAB_FTP));
   FtpTab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
+
+  Index1 = AddTab(tabS3, GetMsg(NB_LOGIN_TAB_S3));
+  S3Tab = rtti::dyn_cast_or_null<TTabButton>(GetItem(Index1));
 
   Index1 = AddTab(tabConnection, GetMsg(NB_LOGIN_TAB_CONNECTION));
 
@@ -2294,6 +2347,58 @@ TSessionDialog::TSessionDialog(TCustomFarPlugin * AFarPlugin, TSessionActionEnum
     TFarEdit * Edit = MakeOwnedObject<TFarEdit>(this);
     PostLoginCommandsEdits[Index3] = Edit;
   }
+
+  MakeOwnedObject<TFarSeparator>(this);
+
+  // S3 tab
+  SetNextItemPosition(ipNewLine);
+  SetDefaultGroup(tabS3);
+
+  Separator = MakeOwnedObject<TFarSeparator>(this);
+  Separator->SetPosition(GroupTop);
+  Separator->SetCaption(GetMsg(NB_LOGIN_FTP_GROUP));
+
+  // Default region
+  SetNextItemPosition(ipNewLine);
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_S3_DEFAULTREGION));
+
+  SetNextItemPosition(ipRight);
+  S3DefaultRegionCombo = MakeOwnedObject<TFarComboBox>(this);
+  S3DefaultRegionCombo->SetDropDownList(true);
+  for (int32_t Index1 = 0; Index1 < _countof(S3Regions); Index1++)
+    S3DefaultReqionComboAddNewItem(S3Regions[Index1], Index1);
+  // S3DefaultRegionCombo->SetWidth(20);
+
+  // URL style
+  SetNextItemPosition(ipNewLine);
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_S3_URLSTYLE));
+  SetNextItemPosition(ipRight);
+  S3UrlStyleCombo = MakeOwnedObject<TFarComboBox>(this);
+  S3UrlStyleCombo->SetDropDownList(true);
+  for (int32_t Index1 = 0; Index1 < _countof(S3URLStyles); Index1++)
+    S3UrlStyleCombo->GetItems()->AddObject(S3URLStyles[Index1], ToObj(nb::ToPtr(Index1)));
+  // S3UrlStyleCombo->SetWidth(20);
+
+  // Requester pays
+  SetNextItemPosition(ipNewLine);
+  S3RequesterPaysCheck = MakeOwnedObject<TFarCheckBox>(this);
+  S3RequesterPaysCheck->SetCaption(GetMsg(NB_S3_REQUESTERPAYS));
+
+  // Authentication
+  /*SetNextItemPosition(ipNewLine);
+  Separator = MakeOwnedObject<TFarSeparator>(this);
+  Separator->SetCaption(GetMsg(NB_S3_AUTHENTICATION));
+  // Session token
+  Text = MakeOwnedObject<TFarText>(this);
+  Text->SetCaption(GetMsg(NB_S3_SESSIONTOKEN));
+
+  for (int32_t Index3 = 0; Index3 < nb::ToInt32(_countof(S3SessionTokenEdits)); ++Index3)
+  {
+    TFarEdit * Edit = MakeOwnedObject<TFarEdit>(this);
+    S3SessionTokenEdits[Index3] = Edit;
+  }*/
 
   MakeOwnedObject<TFarSeparator>(this);
 
@@ -2837,6 +2942,11 @@ void TSessionDialog::SshProxyMethodComboAddNewItem(int32_t ProxyTypeId, TProxyMe
     ToObj(nb::ToPtr(ProxyType)));
 }
 
+void TSessionDialog::S3DefaultReqionComboAddNewItem(const UnicodeString & Region, int32_t Idx)
+{
+  S3DefaultRegionCombo->GetItems()->AddObject(Region, ToObj(nb::ToPtr(Idx)));
+}
+
 TSessionDialog::~TSessionDialog() noexcept
 {
 //  SAFE_DESTROY(FTabs);
@@ -3003,12 +3113,12 @@ void TSessionDialog::UpdateControls()
   const bool InternalSshProtocol = IsSshProtocol(FSProtocol);
   const bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
   const bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
-  const bool aS3Protocol = (FSProtocol == fsS3);
   const bool aSshProtocol = InternalSshProtocol;
   const bool aSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   const bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
   const bool aFtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
   const bool aFtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
+  const bool aS3Protocol = (FSProtocol == fsS3);
   const bool LoginAnonymous = false;
   const bool IsMainTab = GetTab() == TransferProtocolCombo->GetGroup();
 
@@ -3059,6 +3169,12 @@ void TSessionDialog::UpdateControls()
   FtpTab->SetEnabled(aFtpProtocol || aFtpsProtocol);
   FtpAllowEmptyPasswordCheck->SetEnabled(aFtpProtocol || aFtpsProtocol);
   SslSessionReuseCheck->SetEnabled(aFtpsProtocol);
+
+  // S3 tab
+  S3Tab->Enabled = aS3Protocol;
+  S3UrlStyleCombo->Enabled = aS3Protocol;
+  S3DefaultRegionCombo->Enabled = aS3Protocol;
+  S3RequesterPaysCheck->Enabled = aS3Protocol;
 
   // SSH tab
   SshTab->SetEnabled(aSshProtocol);
@@ -3328,6 +3444,26 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
     FtpEncryptionCombo->SetItemIndex(0);
     break;
   }
+
+  // S3 tab
+  S3DefaultRegionCombo->Text = FSessionData->S3DefaultRegion;
+  if (FSessionData->S3UrlStyle == s3usPath)
+  {
+    S3UrlStyleCombo->ItemIndex = 1;
+  }
+  else
+  {
+    S3UrlStyleCombo->ItemIndex = 0;
+  }
+  S3RequesterPaysCheck->Checked = FSessionData->S3RequesterPays;
+  /*std::unique_ptr<TStrings> S3SessionToken(std::make_unique<TStringList>());
+  S3SessionToken->SetText(SessionData->S3SessionToken());
+  for (int32_t Index = 0; (Index < S3SessionToken->GetCount()) &&
+    (Index < nb::ToInt32(_countof(S3SessionTokenEdits))); ++Index)
+  {
+    S3SessionTokenEdits[Index]->SetText(S3SessionToken->GetString(Index));
+  }*/
+
 
   // Connection tab
   FtpPasvModeCheck->SetChecked(SessionData->GetFtpPasvMode());
@@ -3640,6 +3776,21 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
       SessionData->SetFtps(ftpsNone);
       break;
     }
+
+    // S3 tab
+    FSessionData->S3DefaultRegion = S3DefaultRegionCombo->Text;
+    FSessionData->S3UrlStyle = S3UrlStyleCombo->ItemIndex == 0 ? s3usVirtualHost : s3usPath;
+    FSessionData->S3RequesterPays = S3RequesterPaysCheck->Checked;
+    /*std::unique_ptr<TStrings> S3SessionTokens(std::make_unique<TStringList>());
+    for (int32_t Index4 = 0; Index4 < nb::ToInt32(_countof(S3SessionTokenEdits)); ++Index4)
+    {
+      UnicodeString Text = S3SessionTokenEdits[Index4]->GetText();
+      if (!Text.IsEmpty())
+      {
+        S3SessionTokens->Add(S3SessionTokenEdits[Index4]->GetText());
+      }
+    }
+    SessionData->S3SessionToken = S3SessionTokens->Text;*/
 
     // Connection tab
     SessionData->SetFtpPasvMode(FtpPasvModeCheck->GetChecked());
