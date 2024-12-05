@@ -304,7 +304,9 @@ public:
   virtual void SetDirectory(const UnicodeString & Value);
   UnicodeString GetFullDirectory() const;
   Boolean GetIsRoot() const;
-  // TRemoteFile * GetParentDirectory() const;
+#if defined(__BORLANDC__)
+  TRemoteFile * GetParentDirectory();
+#endif // defined(__BORLANDC__)
   UnicodeString GetParentPath() const;
   int64_t GetTotalSize() const;
 
@@ -322,7 +324,9 @@ public:
 
   __property UnicodeString Directory = { read = FDirectory, write = SetDirectory };
   RWProperty<UnicodeString> Directory{nb::bind(&TRemoteFileList::GetDirectory, this), nb::bind(&TRemoteFileList::SetDirectory, this)};
-  // __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
+#if defined(__BORLANDC__)
+  __property TRemoteFile * Files[Integer Index] = { read = GetFiles };
+#endif // defined(__BORLANDC__)
   const ROIndexedProperty<TRemoteFile *> Files{nb::bind(&TRemoteFileList::GetFile, this)};
   __property UnicodeString FullDirectory  = { read=GetFullDirectory };
   const ROProperty<UnicodeString> FullDirectory{nb::bind(&TRemoteFileList::GetFullDirectory, this)};
@@ -544,8 +548,10 @@ public:
   const ROProperty2<uint16_t> NumberUnset{&FUnset};
   __property uint32_t NumberDecadic = { read = GetNumberDecadic };
   __property bool ReadOnly = { read = GetReadOnly, write = SetReadOnly };
-  // __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
-  // __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
+#if defined(__BORLANDC__)
+  __property bool Right[TRight Right] = { read = GetRight, write = SetRight };
+  __property TState RightUndef[TRight Right] = { read = GetRightUndef, write = SetRightUndef };
+#endif // defined(__BORLANDC__)
   __property UnicodeString Text = { read = GetText, write = SetText };
   RWProperty<UnicodeString> Text{nb::bind(&TRights::GetText, this), nb::bind(&TRights::SetText, this)};
   __property bool Unknown = { read = FUnknown };
@@ -582,7 +588,9 @@ public:
 };
 
 enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20 };
-// typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
+#if defined(__BORLANDC__)
+typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
+#endif // defined(__BORLANDC__)
 class TRemoteProperties final : public TObject
 {
 public:
@@ -671,11 +679,12 @@ class NB_CORE_EXPORT TSynchronizeChecklist final : public TObject
   friend class TTerminal;
 
 public:
-  /*enum TAction { // renamed to TChecklistAction
-    saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };*/
   static const int32_t ActionCount = saDeleteLocal;
-
 #if defined(__BORLANDC__)
+  enum TAction { // renamed to TChecklistAction
+    saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
+  static const int ActionCount = saDeleteLocal;
+
 // renamed to TChecklistItem
   class TItem
   {
@@ -704,7 +713,6 @@ public:
     bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
     bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
     bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
-    int64_t GetBaseSize() const;
     int64_t GetSize() const;
     int64_t GetSize(TAction AAction) const;
 
@@ -718,6 +726,7 @@ public:
     int64_t GetBaseSize(TAction AAction) const;
   };
 
+  typedef std::vector<const TSynchronizeChecklist::TItem *> TItemList;
 #endif // defined(__BORLANDC__)
 
   using TItemList = TListBase<TChecklistItem>;
@@ -736,10 +745,14 @@ public:
   const ROProperty<int32_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
   __property int32_t CheckedCount = { read = GetCheckedCount };
   const ROProperty<int32_t> CheckedCount{nb::bind(&TSynchronizeChecklist::GetCheckedCount, this)};
-  // __property const TItem * Item[int32_t Index] = { read = GetItem };
+#if defined(__BORLANDC__)
+  __property const TItem * Item[int32_t Index] = { read = GetItem };
+#endif // defined(__BORLANDC__)
 
 protected:
-  // TSynchronizeChecklist() noexcept;
+#if defined(__BORLANDC__)
+  TSynchronizeChecklist();
+#endif // defined(__BORLANDC__)
 
   void Sort();
   void Add(TChecklistItem * Item);

@@ -1485,7 +1485,9 @@ void TTerminal::ResetConnection()
 
   if (FDirectoryChangesCache != nullptr)
   {
-//    delete FDirectoryChangesCache;
+#if defined(__BORLANDC__)
+    delete FDirectoryChangesCache;
+#endif // defined(__BORLANDC__)
     FDirectoryChangesCache.reset();
   }
 
