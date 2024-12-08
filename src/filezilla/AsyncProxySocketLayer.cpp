@@ -130,7 +130,7 @@ void CAsyncProxySocketLayer::OnReceive(int nErrorCode)
         {
           //Listen socket created
           m_nProxyOpState++;
-          unsigned long ip;
+          unsigned long ip = 0;
           int port = 0;
           nbstr_memcpy(&ip,&m_pRecvBuffer[4],4);
           if (!ip)

@@ -36,14 +36,14 @@ DECL_WINDOWS_FUNCTION(static, int, getnameinfo,
 // functions which is easier.
 // See below for a list of supported commands and their parameters.
 
-struct t_command //: public TObject
+struct t_command
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   t_command() : id(0), param4(0) {}
-  int id; // Type of command, see below
+  int id{0}; // Type of command, see below
   CString param1; // Parameters for this command
   CString param2;
-  int  param4;
+  int  param4{0};
   CServerPath path;
   CServerPath newPath; // Used for rename
   t_transferfile transferfile{};
@@ -112,14 +112,14 @@ CUSTOM_MEM_ALLOCATION_IMPL
 #endif
 #define FZ_ASYNCREQUEST_NEEDPASS 10
 
-class CAsyncRequestData // : public TObject
+class CAsyncRequestData
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
   CAsyncRequestData();
   virtual ~CAsyncRequestData();
-  int nRequestType;
-  int64_t nRequestID; //Unique for every request sent
+  int nRequestType{0};
+  int64_t nRequestID{0}; //Unique for every request sent
   int nRequestResult;
 };
 
@@ -131,12 +131,12 @@ public:
   CString FileName1;
   CString FileName2;
   CString path1,path2;
-  int64_t size1;
-  int64_t size2;
-  CTime * localtime;
-  HANDLE localFileHandle;
+  int64_t size1{0};
+  int64_t size2{0};
+  CTime * localtime{nullptr};
+  HANDLE localFileHandle{};
   t_directory::t_direntry::t_date remotetime;
-  const t_transferfile * pTransferFile;
+  const t_transferfile * pTransferFile{nullptr};
 };
 
 class CVerifyCertRequestData : public CAsyncRequestData
@@ -144,7 +144,7 @@ class CVerifyCertRequestData : public CAsyncRequestData
 public:
   CVerifyCertRequestData();
   virtual ~CVerifyCertRequestData();
-  t_SslCertData * pCertData;
+  t_SslCertData * pCertData{nullptr};
 };
 
 class CNeedPassRequestData : public CAsyncRequestData
@@ -153,7 +153,7 @@ public:
   CNeedPassRequestData();
   virtual ~CNeedPassRequestData();
   CString Password;
-  int nOldOpState;
+  int nOldOpState{0};
 };
 
 #ifndef MPEXT_NO_GSS
@@ -163,7 +163,7 @@ public:
   CGssNeedPassRequestData();
   virtual ~CGssNeedPassRequestData();
   CString pass;
-  int nOldOpState;
+  int nOldOpState{0};
 };
 
 class CGssNeedUserRequestData : public CAsyncRequestData
@@ -172,7 +172,7 @@ public:
   CGssNeedUserRequestData();
   virtual ~CGssNeedUserRequestData();
   CString user;
-  int nOldOpState;
+  int nOldOpState{0};
 };
 #endif
 
@@ -240,7 +240,7 @@ public:
 class CMainThread;
 class CFileZillaTools;
 
-class CFileZillaApi //: public TObject
+class CFileZillaApi
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:

@@ -107,10 +107,12 @@ public:
   // MFC allocates CObject (ancestor of CFile) with new, but deallocates with free,
   // what codeguard dislikes, this is fix, not sure if it is necessary for
   // release version, but probably causes no harm
-  /*void operator delete(void * p)
+#if defined(__BORLANDC__)
+  void PASCAL operator delete(void * p)
   {
     delete p;
-  }*/
+  }
+#endif // defined(__BORLANDC__)
 };
 
 #define CFile CFileFix
@@ -122,7 +124,7 @@ struct CStringDataA
   int nAllocLength;       // length of allocation
   // char data[nAllocLength];
 
-  CHAR *data()           // CHAR * to managed data
+  CHAR * data()           // CHAR * to managed data
   {
     return (CHAR *)(this + 1);
   }
@@ -131,7 +133,6 @@ struct CStringDataA
 extern LPCSTR _afxPchNilA;
 extern CStringDataA* _afxDataNilA;
 #define afxEmptyStringA ((CStringA&)*(CStringA*)&_afxPchNilA)
-
 #if defined(__BORLANDC__)
 class CStringA
 {

@@ -63,13 +63,13 @@ CAsyncSocketExLayer *CAsyncSocketExLayer::AddLayer(CAsyncSocketExLayer *pLayer, 
 
 int CAsyncSocketExLayer::Receive(void * lpBuf, int nBufLen, int nFlags /*=0*/)
 {
-  int Result = ReceiveNext(lpBuf, nBufLen, nFlags);
+  const int Result = ReceiveNext(lpBuf, nBufLen, nFlags);
   return Result;
 }
 
 int CAsyncSocketExLayer::Send(const void * lpBuf, int nBufLen, int nFlags /*=0*/)
 {
-  int Result = SendNext(lpBuf, nBufLen, nFlags);
+  const int Result = SendNext(lpBuf, nBufLen, nFlags);
   return Result;
 }
 
@@ -318,7 +318,7 @@ BOOL CAsyncSocketExLayer::ConnectNext(LPCTSTR lpszHostAddress, UINT nHostPort)
 
     DebugAssert(lpszHostAddress != nullptr);
 
-    addrinfo hints, *res0 = 0, *res1;
+    addrinfo hints, *res0 = nullptr, *res1 = nullptr;
     SOCKET hSocket;
     int error;
     char port[10];

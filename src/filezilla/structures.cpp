@@ -11,13 +11,13 @@ AFX_COMDAT LPCSTR _afxPchNilA = (LPCSTR)(((BYTE*)&_afxInitDataA)+sizeof(CStringD
 
 t_directory::t_directory() :
   num(0),
-  direntry(0)
+  direntry(nullptr)
 {
 }
 
 t_directory::t_directory(const t_directory & a) :
   num(0),
-  direntry(0)
+  direntry(nullptr)
 {
   this->operator=(a);
 }

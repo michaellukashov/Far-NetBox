@@ -2354,7 +2354,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
   {
     if (!m_pTransferSocket)
     {
-      LogMessage(FZ_LOG_APIERROR, L"Error: m_pTransferSocket==nullptr" );
+      LogMessage(FZ_LOG_APIERROR, L"Error: m_pTransferSocket==NULL" );
       ResetOperation(FZ_REPLY_ERROR);
       return;
     }
