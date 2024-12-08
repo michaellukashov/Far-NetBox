@@ -5,7 +5,7 @@
 #include <Classes.hpp>
 
 #define THROWOSIFFALSE(C) do { if (!(C)) ::RaiseLastOSError(); } while(0)
-#define SAFE_DESTROY_EX(CLASS, OBJ) do { if ((OBJ)) { CLASS * PObj = (OBJ); (OBJ) = nullptr; delete PObj; } } while(0)
+#define SAFE_DESTROY_EX(CLASS, OBJ) do { if ((OBJ)) { CLASS * PObj = (OBJ); (OBJ) = nullptr; std::destroy_at(PObj); } } while(0)
 #define SAFE_DESTROY(OBJ) SAFE_DESTROY_EX(TObject, (OBJ))
 #define SAFE_CLOSE_HANDLE(H) do { if ((H) && (H) != INVALID_HANDLE_VALUE) { HANDLE HH = (H); (H) = nullptr; if (HH != nullptr) { ::CloseHandle(HH); } } } while (0)
 #define NULL_TERMINATE(S) S[LENOF(S) - 1] = L'\0'
