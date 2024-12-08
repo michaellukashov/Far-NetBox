@@ -424,12 +424,12 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
 
   if (!m_bInitialized)
   {
-    delete pData;
+    std::destroy_at(pData);
     return FZ_REPLY_NOTINITIALIZED;
   }
   if (IsConnected()==FZ_REPLY_NOTCONNECTED)
   {
-    delete pData;
+    std::destroy_at(pData);
     return FZ_REPLY_NOTCONNECTED;
   }
 
@@ -440,7 +440,7 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
   case FZ_ASYNCREQUEST_VERIFYCERT:
     if (!(static_cast<CVerifyCertRequestData *>(pData))->pCertData)
     {
-      delete pData;
+      std::destroy_at(pData);
       return FZ_REPLY_INVALIDPARAM;
     }
     break;
@@ -453,13 +453,13 @@ int CFileZillaApi::SetAsyncRequestResult(int nAction, CAsyncRequestData *pData)
     break;
 #endif
   default:
-    delete pData;
+    std::destroy_at(pData);
     return FZ_REPLY_INVALIDPARAM;
   }
   pData->nRequestResult = nAction;
   if (!m_pMainThread)
   {
-    delete pData;
+    std::destroy_at(pData);
     return FZ_REPLY_NOTINITIALIZED;
   }
 
@@ -519,8 +519,8 @@ COverwriteRequestData::COverwriteRequestData()
 
 COverwriteRequestData::~COverwriteRequestData()
 {
-  delete pTransferFile;
-  delete localtime;
+  std::destroy_at(pTransferFile);
+  std::destroy_at(localtime);
 }
 
 CVerifyCertRequestData::CVerifyCertRequestData()
@@ -531,7 +531,7 @@ CVerifyCertRequestData::CVerifyCertRequestData()
 
 CVerifyCertRequestData::~CVerifyCertRequestData()
 {
-  delete pCertData;
+  std::destroy_at(pCertData);
 }
 
 CNeedPassRequestData::CNeedPassRequestData()

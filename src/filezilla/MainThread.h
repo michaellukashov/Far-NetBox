@@ -20,6 +20,7 @@ protected:
   CMainThread();
 
 public:
+  virtual ~CMainThread();
   DWORD m_dwThreadId;
   HANDLE m_hThread;
   static CMainThread * Create(int nPriority, DWORD dwCreateFlags);
@@ -71,7 +72,6 @@ protected:
   t_command * m_pPostKeepAliveCommand{nullptr};
   CServerPath m_CurrentPath;
   UINT_PTR m_nTimerID{0};
-  virtual ~CMainThread();
   bool m_Started{false};
 };
 

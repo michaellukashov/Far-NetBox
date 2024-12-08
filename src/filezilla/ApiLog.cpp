@@ -72,7 +72,7 @@ void CApiLog::SendLogMessage(int nMessageType, LPCTSTR pMsg) const
   pStatus->status = pMsg;
   pStatus->type = nMessageType;
   if (!FIntern->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)pStatus))
-    delete pStatus;
+    std::destroy_at(pStatus);
 }
 
 CString CApiLog::GetOption(int OptionID) const

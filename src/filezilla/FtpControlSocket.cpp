@@ -38,7 +38,7 @@ public:
   ~CFileTransferData()
   {
     if (pDirectoryListing)
-      delete pDirectoryListing;
+      std::destroy_at(pDirectoryListing);
     pDirectoryListing=0;
     nb_free(pFileSize);
   }
@@ -99,7 +99,7 @@ public:
   virtual ~CListData()
   {
     if (pDirectoryListing)
-      delete pDirectoryListing;
+      std::destroy_at(pDirectoryListing);
   }
   CString rawpwd;
   CServerPath path;
@@ -220,12 +220,12 @@ CFtpControlSocket::~CFtpControlSocket()
   if (m_pTransferSocket)
   {
     m_pTransferSocket->Close();
-    delete m_pTransferSocket;
+    std::destroy_at(m_pTransferSocket);
     m_pTransferSocket=0;
   }
   if (m_pDataFile)
   {
-    delete m_pDataFile;
+    std::destroy_at(m_pDataFile);
     m_pDataFile=0;
   }
   CFtpControlSocket::Close();
@@ -280,15 +280,15 @@ void CFtpControlSocket::Close()
 {
   if (m_pDirectoryListing)
   {
-    delete m_pDirectoryListing;
+    std::destroy_at(m_pDirectoryListing);
   }
   m_pDirectoryListing=0;
   CAsyncSocketEx::Close();
 
-  delete m_pProxyLayer;
+  std::destroy_at(m_pProxyLayer);
   m_pProxyLayer = nullptr;
 
-  delete m_pSslLayer;
+  std::destroy_at(m_pSslLayer);
   m_pSslLayer = nullptr;
 
 #ifndef MPEXT_NO_GSS
@@ -321,7 +321,7 @@ BOOL CFtpControlSocket::Connect(CString hostAddress, UINT nHostPort)
 void CFtpControlSocket::SetDirectoryListing(t_directory *pDirectory, bool bSetWorkingDir /*=true*/)
 {
   if (m_pDirectoryListing)
-    delete m_pDirectoryListing;
+    std::destroy_at(m_pDirectoryListing);
   m_CurrentServer=pDirectory->server;
   m_pDirectoryListing=new t_directory;
   *m_pDirectoryListing=*pDirectory;
@@ -1106,7 +1106,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         m_Operation.nOpState = CONNECT_NEEDPASS;
         if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_NEEDPASS), (LPARAM)pNeedPassRequestData))
         {
-          delete pNeedPassRequestData;
+          std::destroy_at(pNeedPassRequestData);
           ResetOperation(FZ_REPLY_ERROR);
         }
         else
@@ -1161,7 +1161,7 @@ void CFtpControlSocket::LogOnToServer(BOOL bSkipReply /*=FALSE*/)
         m_Operation.nOpState = CONNECT_NEEDPASS;
         if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_NEEDPASS), (LPARAM)pNeedPassRequestData))
         {
-          delete pNeedPassRequestData;
+          std::destroy_at(pNeedPassRequestData);
           ResetOperation(FZ_REPLY_ERROR);
         }
         else
@@ -1777,7 +1777,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 
   if (nError)
   {
-    delete m_pTransferSocket;
+    std::destroy_at(m_pTransferSocket);
     m_pTransferSocket=0;
     if (nError&CSMODE_TRANSFERTIMEOUT)
       DoClose();
@@ -1792,9 +1792,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
   {
     if (!m_pTransferSocket || m_pTransferSocket->m_bListening)
     {
-      delete m_pDirectoryListing;
+      std::destroy_at(m_pDirectoryListing);
       m_pDirectoryListing = 0;
-      delete m_pTransferSocket;
+      std::destroy_at(m_pTransferSocket);
       m_pTransferSocket = 0;
       ResetOperation(FZ_REPLY_ERROR);
       return;
@@ -1813,9 +1813,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     {
       if (!pData->pDirectoryListing->path.SetPath(pData->rawpwd))
       {
-        delete m_pDirectoryListing;
+        std::destroy_at(m_pDirectoryListing);
         m_pDirectoryListing=0;
-        delete m_pTransferSocket;
+        std::destroy_at(m_pTransferSocket);
         m_pTransferSocket=0;
         ResetOperation(FZ_REPLY_ERROR);
         return;
@@ -1831,7 +1831,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     }
     else
     {
-      delete m_pTransferSocket;
+      std::destroy_at(m_pTransferSocket);
       m_pTransferSocket=0;
     }
   }
@@ -1854,7 +1854,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     else
     {
       if (m_pTransferSocket)
-        delete m_pTransferSocket;
+        std::destroy_at(m_pTransferSocket);
       m_pTransferSocket=0;
     }
     if (pData->nFinish==0)
@@ -2092,7 +2092,7 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
     pData->nFinish=-1;
     if (m_pDirectoryListing)
     {
-      delete m_pDirectoryListing;
+      std::destroy_at(m_pDirectoryListing);
       m_pDirectoryListing=0;
     }
 
@@ -2483,7 +2483,7 @@ void CFtpControlSocket::ListFile(CString filename, const CServerPath &path)
       pData->direntry = pListResult->getList(num);
       if (pListResult->m_server.nServerType & FZ_SERVERTYPE_SUB_FTP_VMS && m_CurrentServer.nServerType & FZ_SERVERTYPE_FTP)
         m_CurrentServer.nServerType |= FZ_SERVERTYPE_SUB_FTP_VMS;
-      delete pListResult;
+      std::destroy_at(pListResult);
     }
     break;
   case LISTFILE_PWD:
@@ -2630,7 +2630,7 @@ void CFtpControlSocket::OnClose(int nErrorCode)
   {
     m_pTransferSocket->OnClose(0);
     m_pTransferSocket->Close();
-    delete m_pTransferSocket;
+    std::destroy_at(m_pTransferSocket);
     m_pTransferSocket=0;
     DoClose();
     return;
@@ -2656,7 +2656,7 @@ void CFtpControlSocket::ResetTransferSocket(int Error)
     DebugAlwaysTrue(m_pTransferSocket != nullptr) &&
     (m_pTransferSocket->m_uploaded > 0) &&
     FLAGCLEAR(Error, FZ_REPLY_CANCEL);
-  delete m_pTransferSocket;
+  std::destroy_at(m_pTransferSocket);
   m_pTransferSocket = nullptr;
   if (Close)
   {
@@ -2893,7 +2893,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
       { //Don't abort operation, use fallback to SIZE and MDTM (when actual LIST reply comes in)
         if (m_pTransferSocket)
           m_pTransferSocket=0;
-        delete m_pDirectoryListing;
+        std::destroy_at(m_pDirectoryListing);
         m_pDirectoryListing=0;
       }
       else if (nError&CSMODE_TRANSFERTIMEOUT)
@@ -2918,7 +2918,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
     {
       if (!m_pTransferSocket || m_pTransferSocket->m_bListening)
       {
-        delete m_pDirectoryListing;
+        std::destroy_at(m_pDirectoryListing);
         m_pDirectoryListing=0;
         ResetOperation(FZ_REPLY_ERROR);
         return;
@@ -2937,9 +2937,9 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
       {
         if (!pData->pDirectoryListing->path.SetPath(pData->rawpwd))
         {
-          delete m_pDirectoryListing;
+          std::destroy_at(m_pDirectoryListing);
           m_pDirectoryListing=0;
-          delete m_pTransferSocket;
+          std::destroy_at(m_pTransferSocket);
           m_pTransferSocket=0;
           ResetOperation(FZ_REPLY_ERROR);
           return;
@@ -3034,7 +3034,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
           if (m_pDirectoryListing->direntry[i].name==remotefile &&
             ( m_pDirectoryListing->direntry[i].bUnsure || m_pDirectoryListing->direntry[i].size==-1 ))
           {
-            delete m_pDirectoryListing;
+            std::destroy_at(m_pDirectoryListing);
             m_pDirectoryListing=0;
             m_Operation.nOpState = FileTransferListState(transferfile->get);
             break;
@@ -3436,9 +3436,9 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
         {
           if (!listing.path.SetPath(pData->rawpwd))
           {
-            delete m_pDirectoryListing;
+            std::destroy_at(m_pDirectoryListing);
             m_pDirectoryListing = 0;
-            delete m_pTransferSocket;
+            std::destroy_at(m_pTransferSocket);
             m_pTransferSocket = 0;
             ResetOperation(FZ_REPLY_ERROR);
             return;
@@ -3658,7 +3658,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
 
         if (m_pDataFile != nullptr)
         {
-          delete m_pDataFile;
+          std::destroy_at(m_pDataFile);
           m_pDataFile = nullptr;
         }
 
@@ -3820,9 +3820,9 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
         if (!pData->transferfile.get && pData->transferdata.bResume && pData->askOnResumeFail)
         {
           pData->askOnResumeFail = false;
-          delete m_pTransferSocket;
+          std::destroy_at(m_pTransferSocket);
           m_pTransferSocket = 0;
-          delete m_pDataFile;
+          std::destroy_at(m_pDataFile);
           m_pDataFile = 0;
           pData->nGotTransferEndReply = 0;
           nReplyError = CheckOverwriteFile();
@@ -4006,7 +4006,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
 #endif
     break;
   case FILETRANSFER_LIST_PORTPASV:
-    delete m_pDirectoryListing;
+    std::destroy_at(m_pDirectoryListing);
     m_pDirectoryListing=0;
     if (pData->bPasv)
     {
@@ -4017,7 +4017,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
     {
       if (m_pTransferSocket)
       {
-        delete m_pTransferSocket;
+        std::destroy_at(m_pTransferSocket);
       }
       m_pTransferSocket = new CTransferSocket(this, CSMODE_LIST);
 #ifndef MPEXT_NO_ZLIB
@@ -4249,7 +4249,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
     {
       if (m_pTransferSocket)
       {
-        delete m_pTransferSocket;
+        std::destroy_at(m_pTransferSocket);
       }
       m_pTransferSocket=new CTransferSocket(this, m_Operation.nOpMode);
 #ifndef MPEXT_NO_ZLIB
@@ -4454,7 +4454,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
 void CFtpControlSocket::TransferHandleListError()
 {
   if (m_pTransferSocket)
-    delete m_pTransferSocket;
+    std::destroy_at(m_pTransferSocket);
   m_pTransferSocket=0;
   m_Operation.nOpState = FILETRANSFER_NOLIST_SIZE;
 }
@@ -4656,7 +4656,7 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
   }
 
   if (m_pDataFile)
-    delete m_pDataFile;
+    std::destroy_at(m_pDataFile);
   m_pDataFile=0;
 
   if (m_Operation.nOpMode)
@@ -4795,7 +4795,7 @@ void CFtpControlSocket::ResetOperation(int nSuccessful /*=FALSE*/)
   m_Operation.nOpState=-1;
 
   if (m_Operation.pData)
-    delete m_Operation.pData;
+    std::destroy_at(m_Operation.pData);
   m_Operation.pData=0;
 }
 
@@ -5020,7 +5020,7 @@ int CFtpControlSocket::FileTransferHandleDirectoryListing(t_directory * pDirecto
   SetDirectoryListing(pDirectory);
 
   m_Operation.nOpState = FILETRANSFER_TYPE;
-  delete m_pTransferSocket;
+  std::destroy_at(m_pTransferSocket);
   m_pTransferSocket = 0;
 
   return CheckOverwriteFileAndCreateTarget();
@@ -5174,7 +5174,7 @@ int CFtpControlSocket::CheckOverwriteFile()
         pOverwriteData->nRequestID = m_pOwner->GetNextAsyncRequestID();
         if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_OVERWRITE), (LPARAM)pOverwriteData))
         {
-          delete pOverwriteData;
+          std::destroy_at(pOverwriteData);
           nReplyError = FZ_REPLY_ERROR;
         }
         else
@@ -5186,7 +5186,7 @@ int CFtpControlSocket::CheckOverwriteFile()
       else
       {
         m_Operation.nOpState = FILETRANSFER_TYPE;
-        delete localtime;
+        std::destroy_at(localtime);
       }
     }
   }
@@ -5917,8 +5917,8 @@ int CFtpControlSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
 
             if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_ASYNCREQUEST, FZ_ASYNCREQUEST_VERIFYCERT), (LPARAM)pRequestData))
             {
-              delete pRequestData->pCertData;
-              delete pRequestData;
+              std::destroy_at(pRequestData->pCertData);
+              std::destroy_at(pRequestData);
               ResetOperation(FZ_REPLY_ERROR);
             }
             else
@@ -5930,7 +5930,7 @@ int CFtpControlSocket::OnLayerCallback(nb::list_t<t_callbackMsg>& callbacks)
           }
           else
           {
-            delete pData;
+            std::destroy_at(pData);
             nb_free(iter->str);
             CString str;
             str.Format(TLS_CERT_DECODE_ERROR, CertError);
