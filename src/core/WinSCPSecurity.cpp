@@ -7,7 +7,14 @@
 #include <Common.h>
 #include "WinSCPSecurity.h"
 
-//#pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+
+#define PWALG_SIMPLE_INTERNAL 0x00
+#define PWALG_SIMPLE_EXTERNAL 0x01
+#define PWALG_SIMPLE_INTERNAL2 0x02
+RawByteString PWALG_SIMPLE_STRING("0123456789ABCDEF");
+#endif // defined(__BORLANDC__)
 
 constexpr const uint8_t PWALG_SIMPLE_INTERNAL = 0x00;
 constexpr const uint8_t PWALG_SIMPLE_EXTERNAL = 0x01;
@@ -165,22 +172,28 @@ bool WindowsValidateCertificate(const uint8_t * Certificate, size_t Len, Unicode
     CERT_CHAIN_PARA ChainPara{};
     // Retrieve the certificate chain of the certificate
     // (a certificate without a valid root does not have a chain).
-    // memset(&ChainPara, 0, sizeof(ChainPara));
+#if defined(__BORLANDC__)
+    memset(&ChainPara, 0, sizeof(ChainPara));
+#endif // defined(__BORLANDC__)
     nb::ClearStruct(ChainPara);
     ChainPara.cbSize = sizeof(ChainPara);
 
     CERT_CHAIN_ENGINE_CONFIG ChainConfig{};
 
-    // memset(&ChainConfig, 0, sizeof(ChainConfig));
+#if defined(__BORLANDC__)
+    memset(&ChainConfig, 0, sizeof(ChainConfig));
+#endif // defined(__BORLANDC__)
     nb::ClearStruct(ChainConfig);
-    /*const size_t ChainConfigSize =
+#if defined(__BORLANDC__)
+s    const size_t ChainConfigSize =
       reinterpret_cast<const char *>(&ChainConfig.CycleDetectionModulus) + sizeof(ChainConfig.CycleDetectionModulus) -
       reinterpret_cast<const char *>(&ChainConfig);
     // The hExclusiveRoot and hExclusiveTrustedPeople were added in Windows 7.
     // The CertGetCertificateChain fails with E_INVALIDARG when we include them to ChainConfig.cbSize.
     // The dwExclusiveFlags was added in Windows 8
     DebugAssert(ChainConfigSize == 40);
-    DebugAssert(ChainConfigSize == sizeof(CERT_CHAIN_ENGINE_CONFIG) - sizeof(ChainConfig.hExclusiveRoot) - sizeof(ChainConfig.hExclusiveTrustedPeople) - sizeof(ChainConfig.dwExclusiveFlags));*/
+    DebugAssert(ChainConfigSize == sizeof(CERT_CHAIN_ENGINE_CONFIG) - sizeof(ChainConfig.hExclusiveRoot) - sizeof(ChainConfig.hExclusiveTrustedPeople) - sizeof(ChainConfig.dwExclusiveFlags));
+#endif // defined(__BORLANDC__)
     ChainConfig.cbSize = sizeof(CERT_CHAIN_ENGINE_CONFIG);
     ChainConfig.hRestrictedRoot = nullptr;
     ChainConfig.hRestrictedTrust = nullptr;

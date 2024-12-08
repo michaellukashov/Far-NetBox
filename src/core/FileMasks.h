@@ -1,9 +1,10 @@
 
 #pragma once
 
-// #include <vector>
+#if defined(__BORLANDC__)
+#include <vector>
+#endif // defined(__BORLANDC__)
 #include <Masks.hpp>
-#include <Exceptions.h>
 #include "SessionData.h"
 
 class NB_CORE_EXPORT EFileMasksException final : public Exception
@@ -265,5 +266,5 @@ private:
 };
 
 using TRemoteCustomCommand = TFileCustomCommand;
-extern UnicodeString FileMasksDelimiters;
+extern const UnicodeString FileMasksDelimiters;
 

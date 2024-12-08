@@ -26,7 +26,9 @@
 #include <openssl/err.h>
 #include <limits>
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
@@ -54,8 +56,7 @@ protected:
     wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
     const wchar_t * Path1, const wchar_t * Path2,
     int64_t Size1, int64_t Size2, time_t LocalTime,
-    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
-    HANDLE & LocalFileHandle, int32_t & RequestResult) override;
+    bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, HANDLE & LocalFileHandle, int32_t & RequestResult) override;
   virtual bool HandleAsyncRequestVerifyCertificate(
     const TFtpsCertificateData & Data, int32_t & RequestResult) override;
   virtual bool HandleAsyncRequestNeedPass(
@@ -109,9 +110,7 @@ bool TFileZillaImpl::HandleAsyncRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
   const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData,
-  HANDLE & LocalFileHandle,
-  int32_t & RequestResult)
+  bool HasLocalTime, const TRemoteFileTime & RemoteTime, void * UserData, HANDLE & LocalFileHandle, int32_t & RequestResult)
 {
   return FFileSystem->HandleAsyncRequestOverwrite(
     FileName1, FileName1Len, FileName2, Path1, Path2, Size1, Size2, LocalTime,
@@ -183,11 +182,11 @@ void TFileZillaImpl::SetupSsl(ssl_st * Ssl)
   ::SetupSsl(Ssl, SessionData->FMinTlsVersion, SessionData->FMaxTlsVersion);
 }
 
-std::wstring TFileZillaImpl::CustomReason(int Err)
+std::wstring TFileZillaImpl::CustomReason(int32_t Err)
 {
   std::wstring Result;
-  int Lib = ERR_GET_LIB(Err);
-  int Reason = ERR_GET_REASON(Err);
+  const int32_t Lib = ERR_GET_LIB(Err);
+  const int32_t Reason = ERR_GET_REASON(Err);
   if ((Lib == ERR_LIB_SSL) &&
       ((Reason == SSL_R_UNSUPPORTED_PROTOCOL) ||
        (Reason == SSL_R_TLSV1_ALERT_PROTOCOL_VERSION) ||
@@ -197,9 +196,9 @@ std::wstring TFileZillaImpl::CustomReason(int Err)
     TSessionData * SessionData = FFileSystem->FTerminal->SessionData;
     Result =
       FMTLOAD(
-        TLS_UNSUPPORTED, (
+        TLS_UNSUPPORTED, 
           GetTlsVersionName(SessionData->MinTlsVersion), GetTlsVersionName(SessionData->MaxTlsVersion),
-          GetTlsVersionName(tlsMin), GetTlsVersionName(tlsMax))).c_str();
+          GetTlsVersionName(tlsMin), GetTlsVersionName(tlsMax)).c_str();
   }
   return Result;
 }
@@ -245,6 +244,18 @@ struct TFileTransferData
 
 #endif // defined(__BORLANDC__)
 
+#if defined(__BORLANDC__)
+const UnicodeString SiteCommand(L"SITE");
+const UnicodeString SymlinkSiteCommand(L"SYMLINK");
+const UnicodeString CopySiteCommand(L"COPY");
+const UnicodeString HashCommand(L"HASH"); // Cerberos + FileZilla servers
+const UnicodeString AvblCommand(L"AVBL");
+const UnicodeString XQuotaCommand(L"XQUOTA");
+const UnicodeString MdtmCommand(L"MDTM");
+const UnicodeString SizeCommand(L"SIZE");
+const UnicodeString CsidCommand(L"CSID");
+const UnicodeString DirectoryHasBytesPrefix(L"226-Directory has");
+#endif // defined(__BORLANDC__)
 constexpr const wchar_t * SiteCommand = L"SITE";
 constexpr const wchar_t * SymlinkSiteCommand = L"SYMLINK";
 constexpr const wchar_t * CopySiteCommand = L"COPY";
@@ -380,9 +391,6 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
     DiscardMessages();
   }
 
-  //SAFE_DESTROY_EX(CFileZillaTools, FFileZillaIntf);
-  FFileZillaIntf.reset();
-
 #if defined(__BORLANDC__)
   delete FFileZillaIntf;
   FFileZillaIntf = nullptr;
@@ -391,6 +399,7 @@ TFTPFileSystem::~TFTPFileSystem() noexcept
   FQueue = nullptr;
 #endif // defined(__BORLANDC__)
 
+  FFileZillaIntf.reset();
   SAFE_CLOSE_HANDLE(FQueueEvent);
 
 #if defined(__BORLANDC__)
@@ -590,7 +599,7 @@ void TFTPFileSystem::Open()
       if (!FTerminal->PromptUser(Data, pkPassword, LoadStr(PASSWORD_TITLE), "",
             LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
-        int32_t Message = FAnyPassword ? AUTHENTICATION_FAILED : CREDENTIALS_NOT_SPECIFIED;
+        const int32_t Message = FAnyPassword ? AUTHENTICATION_FAILED : CREDENTIALS_NOT_SPECIFIED;
         FTerminal->FatalError(nullptr, LoadStr(Message));
       }
       else if (!Password.IsEmpty())
@@ -648,7 +657,7 @@ void TFTPFileSystem::Open()
   // see also TWebDAVFileSystem::CollectTLSSessionInfo()
   FSessionInfo.CSCipher = FFileZillaIntf->GetCipherName().c_str();
   FSessionInfo.SCCipher = FSessionInfo.CSCipher;
-  UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
+  const UnicodeString TlsVersionStr = FFileZillaIntf->GetTlsVersionStr().c_str();
   AddToList(FSessionInfo.SecurityProtocolName, TlsVersionStr, L", ");
   FLoggedIn = true;
 }
@@ -964,7 +973,7 @@ void TFTPFileSystem::Discard()
 
 UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TFTPFileSystem *>(this)->AbsolutePath(APath, Local);
+  return std::as_const(*this).AbsolutePath(APath, Local);
 }
 
 UnicodeString TFTPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
@@ -1055,6 +1064,10 @@ void TFTPFileSystem::AnyCommand(const UnicodeString & Command,
 
 void TFTPFileSystem::ResetCaches()
 {
+#if defined(__BORLANDC__)
+  delete FFileListCache;
+  FFileListCache = nullptr;
+#endif // defined(__BORLANDC__)
   SAFE_DESTROY(FFileListCache);
 }
 
@@ -1516,7 +1529,7 @@ bool TFTPFileSystem::ConfirmOverwrite(
     case qaIgnore:
     {
       if (FTerminal->PromptUser(FTerminal->GetSessionData(), pkFileName,
-          LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
+            LoadStr(RENAME_TITLE), L"", LoadStr(RENAME_PROMPT2), true, 0, ATargetFileName))
       {
         OverwriteMode = omOverwrite;
       }
@@ -2669,11 +2682,12 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
 void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& AFile)
 {
-  if (DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty()))
+  if (FForceReadSymlink && DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty()) && DebugAlwaysTrue(SymlinkFile->GetHaveFullFileName()))
   {
     // When we get here from TFTPFileSystem::ReadFile, it's likely the second time ReadSymlink has been called for the link.
     // The first time getting to the later branch, so IsDirectory is true and hence FullFileName ends with a slash.
-    const UnicodeString LinkTo = SymlinkFile->GetFullLinkName();
+    const UnicodeString SymlinkDir = base::UnixExtractFileDir(base::UnixExcludeTrailingBackslash(SymlinkFile->GetFullFileName()));
+    const UnicodeString LinkTo = base::AbsolutePath(SymlinkDir, SymlinkFile->LinkTo);
     ReadFile(LinkTo, AFile);
   }
   else
@@ -3982,7 +3996,7 @@ TDateTime TFTPFileSystem::ConvertLocalTimestamp(time_t Time)
   // before passing it to FZ_ASYNCREQUEST_OVERWRITE.
   int64_t Timestamp{};
   tm Tm{};
-  errno_t Err = gmtime_s(&Tm, &Time); // localtime(&Time);
+  const errno_t Err = gmtime_s(&Tm, &Time); // localtime(&Time);
   if (Err == 0)
   {
     SYSTEMTIME SystemTime;
@@ -4014,9 +4028,7 @@ bool TFTPFileSystem::HandleAsyncRequestOverwrite(
   wchar_t * FileName1, size_t FileName1Len, const wchar_t * FileName2,
   const wchar_t * Path1, const wchar_t * Path2,
   int64_t Size1, int64_t Size2, time_t LocalTime,
-  bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData,
-  HANDLE & ALocalFileHandle,
-  int32_t & RequestResult)
+  bool /*HasLocalTime*/, const TRemoteFileTime & RemoteTime, void * AUserData, HANDLE & ALocalFileHandle, int32_t & RequestResult)
 {
   if (!FActive)
   {
@@ -4564,7 +4576,7 @@ void TFTPFileSystem::RemoteFileTimeToDateTimeAndPrecision(const TRemoteFileTime 
         Source.Day);
     if (Source.HasTime)
     {
-      DateTime = DateTime + 
+      DateTime = DateTime +
         EncodeTimeVerbose(Source.Hour, Source.Minute,
           Source.Second, 0);
       ModificationFmt = Source.HasSeconds ? mfFull : (Source.HasYear ? mfYMDHM : mfMDHM);
@@ -4687,9 +4699,9 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->SetLinkTo(Entry->LinkTarget);
 
-        // File->Complete();
+        File->Complete();
       }
-      catch (Exception &E)
+      catch (Exception & E)
       {
 #if defined(__BORLANDC__)
         delete File;

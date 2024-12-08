@@ -238,7 +238,7 @@ int32_t TUsage::Inc(const UnicodeString & AKey, int32_t Increment)
 
 int32_t TUsage::Inc(const UnicodeString & AKey, TCounters & Counters, int32_t Increment)
 {
-  int Result;
+  int32_t Result;
   TCounters::iterator i = Counters.find(AKey);
   if (i != Counters.end())
   {

@@ -19,36 +19,38 @@
 #include <System.StrUtils.hpp>
 #include <System.DateUtils.hpp>
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
 
-// const wchar_t * AutoSwitchNames = L"On;Off;Auto";
-// const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
+const wchar_t * AutoSwitchNames = L"On;Off;Auto";
+const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 
 // See https://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
-//const UnicodeString Sha1ChecksumAlg("sha-1");
-//const UnicodeString Sha224ChecksumAlg("sha-224");
-//const UnicodeString Sha256ChecksumAlg("sha-256");
-//const UnicodeString Sha384ChecksumAlg("sha-384");
-//const UnicodeString Sha512ChecksumAlg("sha-512");
-//const UnicodeString Md5ChecksumAlg("md5");
-//// Not defined by IANA
-//const UnicodeString Crc32ChecksumAlg("crc32");
+const UnicodeString Sha1ChecksumAlg("sha-1");
+const UnicodeString Sha224ChecksumAlg("sha-224");
+const UnicodeString Sha256ChecksumAlg("sha-256");
+const UnicodeString Sha384ChecksumAlg("sha-384");
+const UnicodeString Sha512ChecksumAlg("sha-512");
+const UnicodeString Md5ChecksumAlg("md5");
+// Not defined by IANA
+const UnicodeString Crc32ChecksumAlg("crc32");
 
-//const UnicodeString SshFingerprintType("ssh");
-//const UnicodeString TlsFingerprintType("tls");
+const UnicodeString SshFingerprintType("ssh");
+const UnicodeString TlsFingerprintType("tls");
 
-//const UnicodeString FtpsCertificateStorageKey(L"FtpsCertificates");
-//const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
-//const UnicodeString LastFingerprintsStorageKey(L"LastFingerprints");
-//const UnicodeString DirectoryStatisticsCacheKey(L"DirectoryStatisticsCache");
-//const UnicodeString SshHostCAsKey(L"SshHostCAs");
-//const UnicodeString CDCacheKey(L"CDCache");
-//const UnicodeString BannersKey(L"Banners");
+const UnicodeString FtpsCertificateStorageKey(L"FtpsCertificates");
+const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
+const UnicodeString LastFingerprintsStorageKey(L"LastFingerprints");
+const UnicodeString DirectoryStatisticsCacheKey(L"DirectoryStatisticsCache");
+const UnicodeString SshHostCAsKey(L"SshHostCAs");
+const UnicodeString CDCacheKey(L"CDCache");
+const UnicodeString BannersKey(L"Banners");
 
-//const UnicodeString OpensshFolderName(L".ssh");
-//const UnicodeString OpensshAuthorizedKeysFileName(L"authorized_keys");
+const UnicodeString OpensshFolderName(L".ssh");
+const UnicodeString OpensshAuthorizedKeysFileName(L"authorized_keys");
 
-//const int32_t BelowNormalLogLevels = 1;
+const int32_t BelowNormalLogLevels = 1;
+#endif // defined(__BORLANDC__)
 
 TSshHostCA::TSshHostCA() noexcept
 {
@@ -77,14 +79,18 @@ void TSshHostCA::Save(THierarchicalStorage * Storage) const
 }
 
 
-/*TSshHostCAList::TSshHostCAList()
+#if defined(__BORLANDC__)
+TSshHostCAList::TSshHostCAList()
 {
-}*/
+}
+#endif // defined(__BORLANDC__)
 
 TSshHostCAList::TSshHostCAList(const TSshHostCA::TList & List) :
   FList(List)
 {
-  // FList = List;
+#if defined(__BORLANDC__)
+  FList = List;
+#endif // defined(__BORLANDC__)
 }
 
 void TSshHostCAList::Default()
@@ -170,13 +176,17 @@ TSshHostCAList & TSshHostCAList::operator =(const TSshHostCAList & Other)
 TConfiguration::TConfiguration(TObjectClassId Kind) noexcept :
   TObject(Kind)
 {
-  // FCriticalSection = new TCriticalSection();
+#if defined(__BORLANDC__)
+  FCriticalSection = new TCriticalSection();
+#endif // defined(__BORLANDC__)
   FUpdating = 0;
   FStorage = stDetect;
   FDontSave = false;
   FForceSave = false;
   FApplicationInfo = nullptr;
-  // FUsage = std::make_unique<TUsage>(this);
+#if defined(__BORLANDC__)
+  FUsage = std::make_unique<TUsage>(this);
+#endif // defined(__BORLANDC__)
   FDefaultCollectUsage = false; // IsUWP();
   FScripting = false;
   FSshHostCAList = std::make_unique<TSshHostCAList>();
@@ -289,15 +299,16 @@ void TConfiguration::Default()
 TConfiguration::~TConfiguration() noexcept
 {
   DebugAssert(!FUpdating);
+#if defined(__BORLANDC__)
+  if (FApplicationInfo) FreeFileInfo(FApplicationInfo);
+  delete FCriticalSection;
+  delete FUsage;
+#endif // defined(__BORLANDC__)
   if (FApplicationInfo)
   {
     FreeFileInfo(FApplicationInfo);
     FApplicationInfo = nullptr;
   }
-#if defined(__BORLANDC__)
-  delete FCriticalSection;
-  delete FUsage;
-#endif // defined(__BORLANDC__)
 }
 
 void TConfiguration::ConfigurationInit()
@@ -339,7 +350,9 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   }
   else if (GetStorage() == stNul)
   {
-    // Result = TIniFileStorage::CreateNul();
+#if defined(__BORLANDC__)
+    Result = TIniFileStorage::CreateNul();
+#endif // defined(__BORLANDC__)
     ThrowNotImplemented(3005);
     DebugAssert(false);
   }
@@ -357,7 +370,9 @@ THierarchicalStorage * TConfiguration::CreateScpStorage(bool & SessionList)
   {
     if (!SessionList)
     {
-      // Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
+#if defined(__BORLANDC__)
+      Result = new TOptionsStorage(FOptionsStorage.get(), ConfigurationSubKey, Result);
+#endif // defined(__BORLANDC__)
     }
     else
     {
@@ -1460,6 +1475,11 @@ UnicodeString TConfiguration::GetFileFileInfoString(const UnicodeString & AKey,
     {
       if ((Info != nullptr) && (GetTranslationCount(Info) > 0))
       {
+#if defined(__BORLANDC__)
+      TTranslation Translation;
+      Translation = GetTranslation(Info, 0);
+      Result = ::GetFileInfoString(Info, Translation, Key, AllowEmpty);
+#endif // defined(__BORLANDC__)
         const TTranslation Translation = GetTranslation(Info, 0);
         Result = ::GetFileInfoString(Info, Translation, AKey, AllowEmpty);
       }
@@ -1566,6 +1586,9 @@ UnicodeString TConfiguration::GetIniFileStorageNameForReadingWriting() const
 
 UnicodeString TConfiguration::GetAutomaticIniFileStorageName(bool ReadingOnly) const
 {
+#if defined(__BORLANDC__)
+  UnicodeString ProgramPath = ParamStr(0);
+#endif // defined(__BORLANDC__)
   UnicodeString ProgramPath = ""; // TODO: ParamStr(0);
 
   const UnicodeString ProgramIniPath = ChangeFileExt(ProgramPath, L".ini");
@@ -1879,7 +1902,9 @@ TStoredSessionList * TConfiguration::SelectKnownHostsSessionsForImport(
     if (base::FileExists(ApiPath(KnownHostsFile)))
     {
       std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
-      // LoadScriptFromFile(KnownHostsFile, Lines.get(), true);
+#if defined(__BORLANDC__)
+      LoadScriptFromFile(KnownHostsFile, Lines.get(), true);
+#endif // defined(__BORLANDC__)
       ImportSessionList->ImportFromKnownHosts(Lines.get());
     }
     else
@@ -1923,7 +1948,9 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
     if (base::FileExists(ApiPath(ConfigFile)))
     {
       std::unique_ptr<TStrings> Lines(std::make_unique<TStringList>());
-      // LoadScriptFromFile(ConfigFile, Lines.get(), true);
+#if defined(__BORLANDC__)
+      LoadScriptFromFile(ConfigFile, Lines.get(), true);
+#endif // defined(__BORLANDC__)
 
       const UnicodeString OpensshIncludeDirective(L"Include");
       for (int32_t Index = 0; Index < Lines->Count; Index++)
@@ -1947,7 +1974,9 @@ TStoredSessionList * TConfiguration::SelectOpensshSessionsForImport(
               if (base::FileExists(ApiPath(IncludePath)))
               {
                 std::unique_ptr <TStrings> LinesToInclude(std::make_unique<TStringList>());
-                // LoadScriptFromFile(IncludePath, LinesToInclude.get(), true);
+#if defined(__BORLANDC__)
+                LoadScriptFromFile(IncludePath, LinesToInclude.get(), true);
+#endif // defined(__BORLANDC__)
                 Lines->Delete(Index); // Not really needed
                 for (int32_t Index2 = 0; Index2 < LinesToInclude->Count; Index2++)
                 {
@@ -2258,6 +2287,12 @@ void TConfiguration::SetLogFileName(const UnicodeString & Value)
   }
 }
 
+UnicodeString TConfiguration::GetLogFileName() const
+{
+  TGuard Guard(FCriticalSection);
+  return FPermanentLogFileName;
+}
+
 void TConfiguration::SetActionsLogFileName(const UnicodeString & Value)
 {
   const TGuard Guard(FCriticalSection);
@@ -2522,12 +2557,6 @@ bool TShortCuts::Has(const TShortCut &ShortCut) const
 void TConfiguration::SetSessionReopenAutoMaximumNumberOfRetries(int32_t Value)
 {
   SET_CONFIG_PROPERTY(SessionReopenAutoMaximumNumberOfRetries);
-}
-
-UnicodeString  TConfiguration::GetLogFileName() const
-{
-  const TGuard Guard(FCriticalSection);
-  return FPermanentLogFileName;
 }
 
 UnicodeString TConfiguration::GetProductVersion() const

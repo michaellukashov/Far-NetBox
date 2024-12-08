@@ -122,7 +122,9 @@ static UnicodeString XmlAttributeEscape(const UnicodeString & Str)
 }
 
 
-// #pragma warn -inl
+#if defined(__BORLANDC__)
+#pragma warn -inl
+#endif // defined(__BORLANDC__)
 class TSessionActionRecord : public TObject
 {
 public:
@@ -154,8 +156,6 @@ public:
     delete FFile;
 #endif
     SAFE_DESTROY(FErrorMessages);
-//    SAFE_DESTROY(FNames);
-//    SAFE_DESTROY(FValues);
     SAFE_DESTROY(FFileList);
     SAFE_DESTROY(FFile);
   }
@@ -187,7 +187,7 @@ public:
     {
       if (FLog->FLogging && (FState != Cancelled))
       {
-        const wchar_t *Name = ActionName();
+        const wchar_t * Name = ActionName();
         UnicodeString Attrs;
         if (FRecursive)
         {
@@ -312,7 +312,7 @@ public:
     }
   }
 
-  void ExitCode(int ExitCode)
+  void ExitCode(int32_t ExitCode)
   {
     Parameter(L"exitcode", ::IntToStr(ExitCode));
   }
@@ -498,7 +498,9 @@ private:
   TRemoteFileList * FFileList{nullptr};
   TRemoteFile * FFile{nullptr};
 };
-// #pragma warn .inl
+#if defined(__BORLANDC__)
+#pragma warn .inl
+#endif // defined(__BORLANDC__)
 
 
 TSessionAction::TSessionAction(TActionLog * Log, TLogAction Action) noexcept
@@ -1193,8 +1195,10 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
 
   return L"(unknown)";
 }
-//#define ADSTR(S) AddLogEntry(S)
-//#define ADF(S, F) ADSTR(FORMAT(S, F));
+#if defined(__BORLANDC__)
+#define ADSTR(S) AddLogEntry(S)
+#define ADF(S, F) ADSTR(FORMAT(S, F));
+#endif // defined(__BORLANDC__)
 #define ADSTR(S) DoAdd(llMessage, S, nb::bind(&TSessionLog::DoAddToSelf, this))
 #define ADF(S, ...) DoAdd(llMessage, FORMAT(S, __VA_ARGS__), nb::bind(&TSessionLog::DoAddToSelf, this))
 
@@ -1496,10 +1500,6 @@ void TSessionLog::DoAddStartupInfo(TSessionData * Data)
       if (!Data->FS3SessionToken.IsEmpty())
       {
         ADF(L"S3: Session token: %s", Data->FS3SessionToken);
-      }
-      if (!Data->FS3RoleArn.IsEmpty())
-      {
-        ADF(L"S3: Role ARN: %s (session name: %s)", Data->S3RoleArn, DefaultStr(Data->S3RoleSessionName, L"default"));
       }
       if (Data->S3CredentialsEnv)
       {
@@ -1978,7 +1978,7 @@ void TApplicationLog::Log(const UnicodeString & S)
       if (NewMemoryPeek)
       {
         Log(FORMAT(L"Memory increased: Reserved address space: %s, Committed private: %s",
-              (FormatNumber(__int64(ReservedMemory)), FormatNumber(__int64(CommittedMemory)))));
+              FormatNumber(int64_t(ReservedMemory)), FormatNumber(int64_t(CommittedMemory))));
       }
     }
   }

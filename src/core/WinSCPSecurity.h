@@ -3,6 +3,13 @@
 
 #include <Classes.hpp>
 
+#if defined(__BORLANDC__)
+#define PWALG_SIMPLE 1
+#define PWALG_SIMPLE_MAGIC 0xA3
+#define PWALG_SIMPLE_MAXLEN 50
+#define PWALG_SIMPLE_FLAG 0xFF
+#endif // defined(__BORLANDC__)
+
 constexpr const int32_t PWALG_SIMPLE = 1;
 constexpr const int32_t PWALG_SIMPLE_MAGIC = 0xA3;
 constexpr const int32_t PWALG_SIMPLE_MAXLEN = 50;

@@ -2480,7 +2480,7 @@ void TS3FileSystem::ClearCaches()
 
 UnicodeString TS3FileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TS3FileSystem *>(this)->AbsolutePath(APath, Local);
+  return std::as_const(*this).AbsolutePath(APath, Local);
 }
 
 void TS3FileSystem::InitSslSession(ssl_st * Ssl, ne_session * Session)

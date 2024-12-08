@@ -277,7 +277,7 @@ public:
 };
 
 using TAddLogEntryEvent = nb::FastDelegate1<void,
-    const UnicodeString & /*S*/>;
+  const UnicodeString & /*S*/>;
 
 using TDoAddLogEvent = nb::FastDelegate2<void,
   TLogLineType /*Type*/, const UnicodeString & /*Line*/>;

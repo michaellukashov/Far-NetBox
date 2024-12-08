@@ -197,7 +197,7 @@ private:
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   int32_t CustomReadFileInternal(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
-  bool VerifyCertificate(TSessionContext * SessionContext, TNeonCertificateData & Data, bool Aux);
+  bool VerifyCertificate(TSessionContext * SessionContext, const TNeonCertificateData & Data, bool Aux);
   void OpenUrl(const UnicodeString & Url);
   void CollectTLSSessionInfo();
   UnicodeString GetRedirectUrl() const;
@@ -205,7 +205,6 @@ private:
   int32_t ReadDirectoryInternal(const UnicodeString & APath, TRemoteFileList * AFileList);
   int32_t RenameFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
   int32_t CopyFileInternal(const UnicodeString & AFileName, const UnicodeString & ANewName, bool Overwrite);
-  bool IsRedirect(int32_t NeonStatus) const;
   bool IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const;
   UnicodeString DirectoryPath(const UnicodeString & APath) const;
   UnicodeString FilePath(const TRemoteFile * AFile) const;

@@ -483,23 +483,21 @@ void TCopyParamType::DoGetInfoStr(
         Value = IntToStr(ResumeThresholdKB);
         break;
     }
-//    ScriptArgs += RtfSwitchValue(RESUMESUPPORT_SWITCH, Link, Value);
-
 #if defined(__BORLANDC__)
+    ScriptArgs += RtfSwitchValue(RESUMESUPPORT_SWITCH, Link, Value);
+
     const UnicodeString ResumeSupportClassName = "TransferResumeSupport";
     const bool Inline = true;
     UnicodeString ResumeSupportCode =
       AssemblyNewClassInstanceStart(Language, ResumeSupportClassName, Inline);
-#endif // defined(__BORLANDC__)
-    if (GetResumeSupport() == rsSmart)
+    if (ResumeSupport == rsSmart)
     {
-//      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, "Threshold", ResumeThresholdKB, Inline);
+      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, L"Threshold", ResumeThresholdKB, Inline);
     }
     else
     {
-//      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, "State", "TransferResumeSupportState", CodeState, Inline);
+      ResumeSupportCode += AssemblyProperty(Language, ResumeSupportClassName, L"State", L"TransferResumeSupportState", CodeState, Inline);
     }
-#if defined(__BORLANDC__)
     ResumeSupportCode += AssemblyNewClassInstanceEnd(Language, Inline);
 
     AssemblyCode += AssemblyPropertyRaw(Language, TransferOptionsClassName, "ResumeSupport", ResumeSupportCode, false);
@@ -867,7 +865,7 @@ bool TCopyParamType::AllowTransfer(const UnicodeString & AFileName,
   else if (!IncludeFileMask.Masks().IsEmpty())
   {
     Result = GetIncludeFileMask().Matches(AFileName, (Side == osLocal),
-        Directory, &Params);
+      Directory, &Params);
   }
   return Result;
 }
@@ -1074,8 +1072,10 @@ bool TCopyParamType::operator ==(const TCopyParamType & rhs) const
 #undef C2
 #undef C
 
-// const unsigned long MinSpeed = 8 * 1024;
-// const unsigned long MaxSpeed = 8 * 1024 * 1024;
+#if defined(__BORLANDC__)
+const uint32_t MinSpeed = 8 * 1024;
+const uint32_t MaxSpeed = 8 * 1024 * 1024;
+#endif // defined(__BORLANDC__)
 
 static bool TryGetSpeedLimit(const UnicodeString & Text, uint32_t & Speed)
 {

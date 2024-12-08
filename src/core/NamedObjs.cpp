@@ -7,7 +7,9 @@
 #include <StrUtils.hpp>
 #include "NamedObjs.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 int32_t NamedObjectSortProc(const void * Item1, const void * Item2)
 {
