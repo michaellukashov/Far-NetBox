@@ -180,7 +180,7 @@ BOOL CAsyncSocketExLayer::TriggerEvent(long lEvent, int nErrorCode, BOOL bPassTh
   BOOL res=::PostMessageW(m_pOwnerSocket->GetHelperWindowHandle(), WM_USER, (WPARAM)m_pOwnerSocket->m_SocketData.nSocketIndex, (LPARAM)pMsg);
   if (!res)
   {
-    std::destroy_at(pMsg);
+    delete pMsg;
   }
   return res;
 }
@@ -487,11 +487,11 @@ BOOL CAsyncSocketExLayer::GetPeerNameNext( CString& rPeerAddress, UINT& rPeerPor
       }
       else
       {
-        std::destroy_at(sockAddr);
+        delete sockAddr;
         return FALSE;
       }
     }
-    std::destroy_at(sockAddr);
+    delete sockAddr;
 
     return bResult;
   }
@@ -568,11 +568,11 @@ BOOL CAsyncSocketExLayer::GetSockNameNext( CString& rSockAddress, UINT& rSockPor
       }
       else
       {
-        std::destroy_at(sockAddr);
+        delete sockAddr;
         return FALSE;
       }
     }
-    std::destroy_at(sockAddr);
+    delete sockAddr;
 
     return bResult;
   }

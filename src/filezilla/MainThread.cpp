@@ -29,7 +29,7 @@ CMainThread::CMainThread()
 
 CMainThread::~CMainThread()
 {
-  std::destroy_at(m_pWorkingDir);
+  delete m_pWorkingDir;
   ::CloseHandle(m_hThread);
 }
 
@@ -66,7 +66,7 @@ DWORD CMainThread::ExitInstance()
 {
   KillTimer(0,m_nTimerID);
   if (m_pControlSocket)
-    std::destroy_at(m_pControlSocket);
+    delete m_pControlSocket;
   return 1;
 }
 
@@ -145,7 +145,7 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
           m_pControlSocket->Chmod(pCommand->param1, pCommand->path, pCommand->param4);
           break;
         }
-        std::destroy_at(pCommand);
+        delete pCommand;
       }
     }
     else if (wParam==FZAPI_THREADMSG_PROCESSREPLY)
@@ -173,7 +173,7 @@ BOOL CMainThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
           LogMessage(FZ_LOG_INFO, L"Ignoring old request ID");
         else
           m_pControlSocket->SetAsyncRequestResult(pData->nRequestResult, pData);
-        std::destroy_at(pData);
+        delete pData;
       }
       else
         LogMessage(FZ_LOG_WARNING, L"Request reply without data");
@@ -333,7 +333,7 @@ void CMainThread::SetWorkingDir(t_directory *pWorkingDir)
   if (!pWorkingDir)
   {
     ECS;
-    std::destroy_at(m_pWorkingDir);
+    delete m_pWorkingDir;
     m_pWorkingDir=0;
     LCS;
   }
@@ -359,7 +359,7 @@ void CMainThread::SendDirectoryListing(t_directory * pDirectoryToSend)
 {
   if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_LISTDATA, 0), (LPARAM)pDirectoryToSend))
   {
-    std::destroy_at(pDirectoryToSend);
+    delete pDirectoryToSend;
   }
 }
 
@@ -379,7 +379,7 @@ CMainThread* CMainThread::Create(int nPriority, DWORD dwCreateFlags)
   pMainThread->m_hThread=CreateThread(0, 0, ThreadProc, pMainThread, dwCreateFlags, &pMainThread->m_dwThreadId);
   if (!pMainThread->m_hThread)
   {
-    std::destroy_at(pMainThread);
+    delete pMainThread;
     return nullptr;
   }
   ::SetThreadPriority(pMainThread->m_hThread, nPriority);
@@ -428,6 +428,6 @@ DWORD CMainThread::Run()
     DispatchMessage(&msg);
   }
   DWORD res = ExitInstance();
-  std::destroy_at(this);
+  delete this;
   return res;
 }

@@ -417,7 +417,7 @@ void CFtpListResult::SendLineToMessageLog(const RawByteString & Line)
     Status->type = FZ_LOG_INFO;
     if (!GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_STATUS, 0), (LPARAM)Status))
     {
-      std::destroy_at(Status);
+      delete Status;
     }
   }
 }

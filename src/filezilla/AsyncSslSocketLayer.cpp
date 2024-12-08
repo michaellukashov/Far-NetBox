@@ -956,7 +956,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
   if (cur->pLayer == this)
   {
     m_pSslLayerList = cur->pNext;
-    std::destroy_at(cur);
+    delete cur;
   }
   else
     while (cur->pNext)
@@ -965,7 +965,7 @@ void CAsyncSslSocketLayer::ResetSslSession()
       {
         t_SslLayerList *tmp = cur->pNext;
         cur->pNext = cur->pNext->pNext;
-        std::destroy_at(tmp);
+        delete tmp;
 
         return;
       }

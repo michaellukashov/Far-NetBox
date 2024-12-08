@@ -80,14 +80,14 @@ CTransferSocket::~CTransferSocket()
   GetIntern()->PostMessage(FZ_MSG_MAKEMSG(FZ_MSG_TRANSFERSTATUS, 0), 0);
   CTransferSocket::Close();
   RemoveAllLayers();
-  std::destroy_at(m_pProxyLayer);
-  std::destroy_at(m_pSslLayer);
+  delete m_pProxyLayer;
+  delete m_pSslLayer;
 #ifndef MPEXT_NO_GSS
   delete m_pGssLayer;
 #endif
   m_pOwner->RemoveActiveTransfer();
 
-  std::destroy_at(m_pListResult);
+  delete m_pListResult;
 
 #ifndef MPEXT_NO_ZLIB
   if (m_useZlib)

@@ -173,7 +173,7 @@ public:
       CAsyncSocketExLayer::t_LayerNotifyMsg *pMsg=(CAsyncSocketExLayer::t_LayerNotifyMsg *)msg.lParam;
       if (!pMsg || !pSocket || pSocket == pOrigSocket || pSocket->m_SocketData.hSocket != pMsg->hSocket)
       {
-        std::destroy_at(pMsg);
+        delete pMsg;
         continue;
       }
 
@@ -402,7 +402,7 @@ public:
       CAsyncSocketExLayer::t_LayerNotifyMsg *pMsg=(CAsyncSocketExLayer::t_LayerNotifyMsg *)lParam;
       if (!pMsg || !pSocket || pSocket->m_SocketData.hSocket != pMsg->hSocket)
       {
-        std::destroy_at(pMsg);
+        delete pMsg;
         return 0;
       }
       int nEvent=pMsg->lEvent&0xFFFF;
@@ -518,7 +518,7 @@ public:
           break;
         }
       }
-      std::destroy_at(pMsg);
+      delete pMsg;
       return 0;
     }
     else if (message == WM_USER+1)
@@ -989,13 +989,13 @@ void CAsyncSocketEx::FreeAsyncSocketExInstance()
       //If so, destroy helper window
       if (!m_pLocalAsyncSocketExThreadData->nInstanceCount)
       {
-        std::destroy_at(m_pLocalAsyncSocketExThreadData->m_pHelperWindow);
-        std::destroy_at(m_pLocalAsyncSocketExThreadData);
+        delete m_pLocalAsyncSocketExThreadData->m_pHelperWindow;
+        delete m_pLocalAsyncSocketExThreadData;
         if (pPrev)
           pPrev->pNext=pList->pNext;
         else
           m_spAsyncSocketExThreadDataList=pList->pNext;
-        std::destroy_at(pList);
+        delete pList;
         break;
       }
 
@@ -1268,11 +1268,11 @@ BOOL CAsyncSocketEx::GetPeerName( CString& rPeerAddress, UINT& rPeerPort )
     }
     else
     {
-      std::destroy_at(sockAddr);
+      delete sockAddr;
       return FALSE;
     }
   }
-  std::destroy_at(sockAddr);
+  delete sockAddr;
 
   return bResult;
 }
@@ -1332,11 +1332,11 @@ BOOL CAsyncSocketEx::GetSockName(CString& rSocketAddress, UINT& rSocketPort)
     }
     else
     {
-      std::destroy_at(sockAddr);
+      delete sockAddr;
       return FALSE;
     }
   }
-  std::destroy_at(sockAddr);
+  delete sockAddr;
 
   return bResult;
 }
@@ -1475,7 +1475,7 @@ BOOL CAsyncSocketEx::TriggerEvent(long lEvent)
     pMsg->pLayer=0;
     BOOL res=::PostMessageW(GetHelperWindowHandle(), WM_USER, (WPARAM)m_SocketData.nSocketIndex, (LPARAM)pMsg);
     if (!res)
-      std::destroy_at(pMsg);
+      delete pMsg;
     return res;
   }
   else
