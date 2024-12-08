@@ -34,7 +34,7 @@ public:
   virtual ~TPluginIdleThread() noexcept override
   {
     TPluginIdleThread::Terminate();
-    WaitFor();
+    WaitFor(FMillisecs);
     pthread_cond_destroy(&FCond);
     pthread_mutex_destroy(&FMutex);
   }
