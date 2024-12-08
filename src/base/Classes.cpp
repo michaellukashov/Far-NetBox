@@ -662,12 +662,12 @@ void TStringList::InsertItem(int32_t Index, const UnicodeString & S, const TObje
   if (Index == GetCount())
   {
     FStrings.push_back(S);
-    TObjectList::Add(const_cast<TObject*>(AObject));
+    TObjectList::Add(const_cast<TObject *>(AObject));
   }
   else
   {
     FStrings.insert(FStrings.begin() + Index, 1, S);
-    TObjectList::Insert(Index, const_cast<TObject*>(AObject));
+    TObjectList::Insert(Index, const_cast<TObject *>(AObject));
   }
   Changed();
 }
@@ -769,7 +769,7 @@ void TStringList::Changing()
 
 void TStringList::Changed()
 {
-  if (GetUpdateCount() == 0 && FOnChange)
+  if ((GetUpdateCount() == 0) && FOnChange)
   {
     FOnChange(this);
   }
