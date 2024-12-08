@@ -3003,12 +3003,12 @@ void TSessionDialog::UpdateControls()
   const bool InternalSshProtocol = IsSshProtocol(FSProtocol);
   const bool InternalWebDAVProtocol = IsWebDAVProtocol(FSProtocol);
   const bool HTTPSProtocol = (FSProtocol == fsWebDAV) && (Ftps != ftpsNone);
-  const bool lS3Protocol = (FSProtocol == fsS3);
-  const bool lSshProtocol = InternalSshProtocol;
-  const bool lSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
+  const bool aS3Protocol = (FSProtocol == fsS3);
+  const bool aSshProtocol = InternalSshProtocol;
+  const bool aSftpProtocol = (FSProtocol == fsSFTPonly) || (FSProtocol == fsSFTP);
   const bool ScpOnlyProtocol = (FSProtocol == fsSCPonly);
-  const bool lFtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
-  const bool lFtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
+  const bool aFtpProtocol = (FSProtocol == fsFTP) && (Ftps == ftpsNone);
+  const bool aFtpsProtocol = (FSProtocol == fsFTP) && (Ftps != ftpsNone);
   const bool LoginAnonymous = false;
   const bool IsMainTab = GetTab() == TransferProtocolCombo->GetGroup();
 
@@ -3017,13 +3017,13 @@ void TSessionDialog::UpdateControls()
   // Basic tab
   AllowScpFallbackCheck->SetVisible(
     TransferProtocolCombo->GetVisible() &&
-    lSftpProtocol);
-  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !lSshProtocol && !lFtpsProtocol && !HTTPSProtocol && !lS3Protocol);
+    aSftpProtocol);
+  InsecureLabel->SetVisible(TransferProtocolCombo->GetVisible() && !aSshProtocol && !aFtpsProtocol && !HTTPSProtocol && !aS3Protocol);
   const bool FtpEncryptionVisible = (GetTab() == FtpEncryptionCombo->GetGroup()) &&
-    (lFtpProtocol || lFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || lS3Protocol);
+    (aFtpProtocol || aFtpsProtocol || InternalWebDAVProtocol || HTTPSProtocol || aS3Protocol);
   FtpEncryptionLabel->SetVisible(FtpEncryptionVisible);
   FtpEncryptionCombo->SetVisible(FtpEncryptionVisible);
-  PrivateKeyEdit->SetEnabled(lSshProtocol || lFtpsProtocol || HTTPSProtocol);
+  PrivateKeyEdit->SetEnabled(aSshProtocol || aFtpsProtocol || HTTPSProtocol);
 //  HostNameLabel->SetCaption(GetMsg(NB_LOGIN_HOST_NAME));
 
   UserNameEdit->SetEnabled(!LoginAnonymous);
@@ -3031,14 +3031,14 @@ void TSessionDialog::UpdateControls()
   PasswordEdit->SetEnabled(!LoginAnonymous);
   PasswordEdit->SetVisible(IsMainTab);
 
-  UserNameLabel->SetVisible(IsMainTab && !lS3Protocol);
-  S3AccessKeyIDLabel->SetVisible(IsMainTab && lS3Protocol);
-  PasswordLabel->SetVisible(IsMainTab && !lS3Protocol);
-  S3SecretAccessKeyLabel->SetVisible(IsMainTab && lS3Protocol);
+  UserNameLabel->SetVisible(IsMainTab && !aS3Protocol);
+  S3AccessKeyIDLabel->SetVisible(IsMainTab && aS3Protocol);
+  PasswordLabel->SetVisible(IsMainTab && !aS3Protocol);
+  S3SecretAccessKeyLabel->SetVisible(IsMainTab && aS3Protocol);
 
   // Connection sheet
-  FtpPasvModeCheck->SetEnabled(lFtpProtocol);
-  if (lFtpProtocol && (FProxyComboIndex != pmNone) && !FtpPasvModeCheck->GetChecked())
+  FtpPasvModeCheck->SetEnabled(aFtpProtocol);
+  if (aFtpProtocol && (FProxyComboIndex != pmNone) && !FtpPasvModeCheck->GetChecked())
   {
     FtpPasvModeCheck->SetChecked(true);
     TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
@@ -3046,28 +3046,28 @@ void TSessionDialog::UpdateControls()
     WinSCPPlugin->MoreMessageDialog(GetMsg(NB_FTP_PASV_MODE_REQUIRED),
       nullptr, qtInformation, qaOK);
   }
-  SshBufferSizeCheck->SetEnabled(lSshProtocol);
-  PingNullPacketButton->SetEnabled(lSshProtocol);
-  IPAutoButton->SetEnabled(lSshProtocol || lFtpProtocol);
-  IPv4Button->SetEnabled(lSshProtocol || lFtpProtocol);
-  IPv6Button->SetEnabled(lSshProtocol || lFtpProtocol);
+  SshBufferSizeCheck->SetEnabled(aSshProtocol);
+  PingNullPacketButton->SetEnabled(aSshProtocol);
+  IPAutoButton->SetEnabled(aSshProtocol || aFtpProtocol);
+  IPv4Button->SetEnabled(aSshProtocol || aFtpProtocol);
+  IPv6Button->SetEnabled(aSshProtocol || aFtpProtocol);
 
   // SFTP tab
-  SftpTab->SetEnabled(lSftpProtocol);
+  SftpTab->SetEnabled(aSftpProtocol);
 
   // FTP tab
-  FtpTab->SetEnabled(lFtpProtocol || lFtpsProtocol);
-  FtpAllowEmptyPasswordCheck->SetEnabled(lFtpProtocol || lFtpsProtocol);
-  SslSessionReuseCheck->SetEnabled(lFtpsProtocol);
+  FtpTab->SetEnabled(aFtpProtocol || aFtpsProtocol);
+  FtpAllowEmptyPasswordCheck->SetEnabled(aFtpProtocol || aFtpsProtocol);
+  SslSessionReuseCheck->SetEnabled(aFtpsProtocol);
 
   // SSH tab
-  SshTab->SetEnabled(lSshProtocol);
+  SshTab->SetEnabled(aSshProtocol);
   CipherUpButton->SetEnabled(CipherListBox->GetItems()->GetLastPosChange() != 0);
   CipherDownButton->SetEnabled(
     CipherListBox->GetItems()->GetLastPosChange() < CipherListBox->GetItems()->GetCount() - 1);
 
   // Authentication tab
-  AuthenticationTab->SetEnabled(lSshProtocol);
+  AuthenticationTab->SetEnabled(aSshProtocol);
   const bool Authentication = !SshNoUserAuthCheck->GetChecked();
   TryAgentCheck->SetEnabled(Authentication);
   AuthKICheck->SetEnabled(Authentication);
@@ -3082,28 +3082,28 @@ void TSessionDialog::UpdateControls()
     (FSProtocol != fsSCPonly) || CacheDirectoriesCheck->GetChecked());
   PreserveDirectoryChangesCheck->SetEnabled(
     CacheDirectoryChangesCheck->GetIsEnabled() && CacheDirectoryChangesCheck->GetChecked());
-  ResolveSymlinksCheck->SetEnabled(!InternalWebDAVProtocol && !lS3Protocol);
+  ResolveSymlinksCheck->SetEnabled(!InternalWebDAVProtocol && !aS3Protocol);
 
   // Environment tab
-  DSTModeUnixCheck->SetEnabled(!lFtpProtocol);
-  TimeDifferenceEdit->SetEnabled((lFtpProtocol || (FSProtocol == fsSCPonly)));
+  DSTModeUnixCheck->SetEnabled(!aFtpProtocol);
+  TimeDifferenceEdit->SetEnabled((aFtpProtocol || (FSProtocol == fsSCPonly)));
 
   // Recycle bin tab
   OverwrittenToRecycleBinCheck->SetEnabled((FSProtocol != fsSCPonly) &&
-    !lFtpProtocol);
+    !aFtpProtocol);
   RecycleBinPathEdit->SetEnabled(
     (DeleteToRecycleBinCheck->GetIsEnabled() && DeleteToRecycleBinCheck->GetChecked()) ||
     (OverwrittenToRecycleBinCheck->GetIsEnabled() && OverwrittenToRecycleBinCheck->GetChecked()));
 
   // Kex tab
-  KexTab->SetEnabled(lSshProtocol &&
+  KexTab->SetEnabled(aSshProtocol &&
     (BugRekey2Combo->GetItemIndex() != 2));
   KexUpButton->SetEnabled((KexListBox->GetItems()->GetLastPosChange() > 0));
   KexDownButton->SetEnabled(
     (KexListBox->GetItems()->GetLastPosChange() < KexListBox->GetItems()->GetCount() - 1));
 
   // Bugs tab
-  BugsTab->SetEnabled(lSshProtocol);
+  BugsTab->SetEnabled(aSshProtocol);
 
   // WebDAV tab
   WebDAVTab->SetEnabled(InternalWebDAVProtocol);
@@ -3140,7 +3140,7 @@ void TSessionDialog::UpdateControls()
       ::AnsiContainsText(ProxyCommand, L"%proxyport")));
   ProxyUsernameEdit->SetEnabled(Proxy &&
     // FZAPI does not support username for SOCKS4
-    (((ProxyMethod == pmSocks4) && lSshProtocol) ||
+    (((ProxyMethod == pmSocks4) && aSshProtocol) ||
       (ProxyMethod == pmSocks5) ||
       (ProxyMethod == pmHTTP) ||
       (((ProxyMethod == pmTelnet) ||
@@ -3154,7 +3154,7 @@ void TSessionDialog::UpdateControls()
         (ProxyMethod == pmCmd)) &&
         ::AnsiContainsText(ProxyCommand, L"%pass")) /*||
       (ProxyMethod == pmSystem)*/));
-  const bool ProxySettings = Proxy && lSshProtocol;
+  const bool ProxySettings = Proxy && aSshProtocol;
   ProxyTelnetCommandEdit->SetEnabled(ProxySettings && (ProxyMethod == pmTelnet));
   ProxyLocalCommandEdit->SetVisible((GetTab() == ProxyMethodCombo->GetGroup()) && (ProxyMethod == pmCmd));
   ProxyLocalCommandLabel->SetVisible(ProxyLocalCommandEdit->GetVisible());
