@@ -79,7 +79,7 @@ jobs:
           name: FarNetBox.${{ matrix.platform }}
           path: ./*.7z
           overwrite: true
-          retention-days: 2
+          retention-days: 30
 
   create-release:
     needs: [build]
