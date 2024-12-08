@@ -92,7 +92,7 @@ public:
 
 private:
   using TCallback = std::function<bool()>;
-  
+
   void WakeThread(const TCallback & Callback)
   {
     pthread_mutex_lock(&FMutex);
