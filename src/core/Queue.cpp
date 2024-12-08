@@ -1641,7 +1641,7 @@ void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
 void TTerminalItem::OperationProgress(
   TFileOperationProgressType & ProgressData)
 {
-  if (FPause && !IsCancelled() && !FItem)
+  if (FPause && !FTerminated && !FCancel && FItem)
   {
     DebugAssert(FItem != nullptr);
     const TQueueItem::TStatus PrevStatus = FItem->GetStatus();
@@ -1825,7 +1825,7 @@ bool TQueueItem::UpdateFileList(TQueueFileList *)
 
 bool TQueueItem::IsExecutionCancelled() const
 {
-  return DebugAlwaysTrue(FTerminalItem != NULL) ? FTerminalItem->IsCancelled() : true;
+  return DebugAlwaysTrue(FTerminalItem != nullptr) ? FTerminalItem->IsCancelled() : true;
 }
 
 void TQueueItem::Execute()

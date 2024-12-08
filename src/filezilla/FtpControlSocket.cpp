@@ -1289,7 +1289,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
         else if (m_nCodePage)
         {
           LPCSTR str = (LPCSTR)m_RecvBuffer.back();
-          int len = MultiByteToWideChar(m_nCodePage, 0, str, -1, NULL, 0);
+          int len = MultiByteToWideChar(m_nCodePage, 0, str, -1, nullptr, 0);
           if (!len)
             m_RecvBuffer.back() = "";
           else
@@ -2672,7 +2672,7 @@ int32_t CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
   bool res;
   if (pData->transferfile.get)
   {
-    if (pData->transferfile.OnTransferOut == NULL)
+    if (pData->transferfile.OnTransferOut == nullptr)
     {
       m_pDataFile = new CFile();
       if (pData->transferdata.bResume)
@@ -2687,7 +2687,7 @@ int32_t CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
   }
   else
   {
-    if (pData->transferfile.OnTransferIn == NULL)
+    if (pData->transferfile.OnTransferIn == nullptr)
     {
       m_pDataFile = new CFile();
       res = m_pDataFile->Open(pData->transferfile.localfile,CFile::modeRead|CFile::shareDenyNone);
@@ -2722,7 +2722,7 @@ int32_t CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
 int32_t CFtpControlSocket::ActivateTransferSocket(CFileTransferData * pData)
 {
   int nReplyError = 0;
-  if (pData->transferfile.get && (m_pDataFile == NULL))
+  if (pData->transferfile.get && (m_pDataFile == nullptr))
   {
     nReplyError = OpenTransferFile(pData);
   }

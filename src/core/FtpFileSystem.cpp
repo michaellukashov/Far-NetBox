@@ -591,7 +591,7 @@ void TFTPFileSystem::Open()
             LoadStr(PASSWORD_PROMPT), false, 0, Password))
       {
         int32_t Message = FAnyPassword ? AUTHENTICATION_FAILED : CREDENTIALS_NOT_SPECIFIED;
-        FTerminal->FatalError(NULL, LoadStr(Message));
+        FTerminal->FatalError(nullptr, LoadStr(Message));
       }
       else if (!Password.IsEmpty())
       {
@@ -4210,8 +4210,8 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
   bool Result = true;
   UnicodeString Name = AName;
   UnicodeString Mask = AMask;
-  int32_t Pos = 0;
-  while (Result && (Pos = Mask.Pos(L"*")) > 0)
+  int32_t Pos = Mask.Pos(L"*");
+  while (Result && (Pos > 0))
   {
     // Pos will typically be 1 here, so not actual comparison is done
     Result = ::SameText(Mask.SubString(1, Pos - 1), Name.SubString(1, Pos - 1));

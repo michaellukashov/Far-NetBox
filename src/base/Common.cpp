@@ -4264,10 +4264,10 @@ UnicodeString GetTlsErrorStrs()
   UnicodeString Result;
   int32_t Error;
   const char * Data;
-  while ((Error = ERR_get_error_all(NULL, NULL, NULL, &Data, NULL)) != 0)
+  while ((Error = ERR_get_error_all(nullptr, nullptr, nullptr, &Data, nullptr)) != 0)
   {
     UnicodeString S = GetTlsErrorStr(Error);
-    if ((Data != nullptr) && (strlen(Data) > 0))
+    if ((Data != nullptr) && (nb::safe_strlen(Data) > 0))
     {
       const UnicodeString DataStr = UnicodeString(UTF8String(Data)).TrimRight();
       S += FORMAT(L" (%s)", DataStr);

@@ -633,7 +633,7 @@ static bool InitOpenssl()
   // OPENSSL_init_ssl passes all flags to OPENSSL_init_crypto (even those it does not understand, like the very  OPENSSL_INIT_LOAD_SSL_STRINGS).
   // And OPENSSL_init_ssl caches the initialization results based on the flags
   ERR_clear_error();
-  return OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, NULL);
+  return OPENSSL_init_ssl(OPENSSL_INIT_LOAD_SSL_STRINGS, nullptr);
 }
 
 void CryptographyInitialize()

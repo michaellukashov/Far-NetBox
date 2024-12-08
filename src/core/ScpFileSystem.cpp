@@ -182,19 +182,25 @@ int32_t TCommandSet::GetMaxLines(TFSCommand Cmd) const
 int32_t TCommandSet::GetMinLines(TFSCommand Cmd) const
 {
   CHECK_CMD;
-  return CommandSet[Cmd].MinLines;
+  if ((Cmd >=0) && (Cmd <= MaxShellCommand))
+    return CommandSet[Cmd].MinLines;
+  return 0;
 }
 
 bool TCommandSet::GetModifiesFiles(TFSCommand Cmd) const
 {
   CHECK_CMD;
-  return CommandSet[Cmd].ModifiesFiles;
+  if ((Cmd >=0) && (Cmd <= MaxShellCommand))
+    return CommandSet[Cmd].ModifiesFiles;
+  return false;
 }
 
 bool TCommandSet::GetChangesDirectory(TFSCommand Cmd) const
 {
   CHECK_CMD;
-  return CommandSet[Cmd].ChangesDirectory;
+  if ((Cmd >=0) && (Cmd <= MaxShellCommand))
+    return CommandSet[Cmd].ChangesDirectory;
+  return false;
 }
 
 bool TCommandSet::GetInteractiveCommand(TFSCommand Cmd) const

@@ -4162,7 +4162,7 @@ bool TTerminal::DirectoryExists(const UnicodeString & FileName)
 {
   std::unique_ptr<TRemoteFile> File(TryReadFile(FileName));
   return
-    (File.get() != NULL) &&
+    (File.get() != nullptr) &&
     File->IsDirectory;
 }
 
