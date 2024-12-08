@@ -318,7 +318,7 @@ int32_t TSimpleThread::ThreadProc(void * Thread)
   if (!SimpleThread->Finished())
   {
     SimpleThread->Close();
-    std::destroy_at(SimpleThread);
+    SAFE_DESTROY(SimpleThread);
   }
   return 0;
 }

@@ -671,7 +671,7 @@ TCollectedFileList::~TCollectedFileList()
 
 void TCollectedFileList::Deleting(int32_t Index)
 {
-  std::destroy_at(FList[Index].Object);
+  SAFE_DESTROY(FList[Index].Object);
 }
 
 int32_t TCollectedFileList::Add(const UnicodeString & FileName, TObject * Object, bool Dir)

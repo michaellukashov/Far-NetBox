@@ -55,7 +55,7 @@ void TCustomWinConfiguration::ClearHistory()
   {
     HistoryStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[Index]);
     FHistory->Objects[Index] = nullptr;
-    std::destroy_at(HistoryStrings);
+    SAFE_DESTROY(HistoryStrings);
   }
   FHistory->Clear();
 }
@@ -307,7 +307,7 @@ void TCustomWinConfiguration::LoadData(
             if (HIndex >= 0)
             {
               THistoryStrings * DefaultStrings = dynamic_cast<THistoryStrings *>(FHistory->Objects[HIndex]);
-              std::destroy_at(DefaultStrings);
+              SAFE_DESTROY(DefaultStrings);
               FHistory->Delete(HIndex);
             }
 
@@ -319,7 +319,7 @@ void TCustomWinConfiguration::LoadData(
           __finally
           {
             Storage->CloseSubKey();
-            std::destroy_at(HistoryStrings);
+            SAFE_DESTROY(HistoryStrings);
           }
         }
       }
@@ -327,7 +327,7 @@ void TCustomWinConfiguration::LoadData(
     __finally
     {
       Storage->CloseSubKey();
-      std::destroy_at(Names);
+      SAFE_DESTROY(Names);
     }
   }
 
