@@ -345,8 +345,14 @@ void TCopyParamList::Clear()
 {
   for (int32_t Index = 0; Index < GetCount(); ++Index)
   {
-    delete GetCopyParam(Index);
-    delete GetRule(Index);
+    const TCopyParamType * CopyParam = GetCopyParam(Index);
+    if (CopyParam)
+      std::destroy_at(CopyParam);
+    FCopyParams->SetItem(Index, nullptr);
+    const TCopyParamRule * Rule = GetRule(Index);
+    if (Rule)
+      std::destroy_at(Rule);
+    FRules->SetItem(Index, nullptr);
   }
   FCopyParams->Clear();
   FRules->Clear();
@@ -376,9 +382,11 @@ void TCopyParamList::Change(int32_t Index, const UnicodeString & Name,
   if ((Name != GetName(Index)) || !CompareItem(Index, CopyParam, Rule))
   {
     FNames->SetString(Index, Name);
-    delete GetCopyParam(Index);
+    if (GetCopyParam(Index))
+      std::destroy_at(GetCopyParam(Index));
     FCopyParams->SetItem(Index, CopyParam);
-    delete GetRule(Index);
+    if (GetRule(Index))
+      std::destroy_at(GetRule(Index));
     FRules->SetItem(Index, Rule);
     Modify();
   }
@@ -404,9 +412,13 @@ void TCopyParamList::Delete(int32_t Index)
 {
   DebugAssert((Index >= 0) && (Index < GetCount()));
   FNames->Delete(Index);
-  delete GetCopyParam(Index);
+  if (GetCopyParam(Index))
+    std::destroy_at(GetCopyParam(Index));
+  FCopyParams->SetItem(Index, nullptr);
   FCopyParams->Delete(Index);
-  delete GetRule(Index);
+  if (GetRule(Index))
+    std::destroy_at(GetRule(Index));
+  FRules->SetItem(Index, nullptr);
   FRules->Delete(Index);
   Modify();
 }

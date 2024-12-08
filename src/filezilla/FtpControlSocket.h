@@ -203,13 +203,13 @@ protected:
   class CMakeDirData;
 
 #ifndef MPEXT_NO_ZLIB
-  bool m_useZlib;
-  bool m_zlibSupported;
-  int m_zlibLevel;
+  bool m_useZlib{false};
+  bool m_zlibSupported{false};
+  int m_zlibLevel{0};
 #endif
 
   bool m_bUTF8{false};
-  int m_nCodePage{0};
+  int32_t m_nCodePage{0};
   bool m_bAnnouncesUTF8{false};
   bool m_hasClntCmd{false};
   TFTPServerCapabilities m_serverCapabilities;
@@ -231,8 +231,8 @@ protected:
   struct t_operation
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    int nOpMode{0};
-    int nOpState{0};
+    int32_t nOpMode{0};
+    int32_t nOpState{0};
     class COpData //: public TObject //Base class which will store operation specific parameters.
     {
     CUSTOM_MEM_ALLOCATION_IMPL
@@ -249,7 +249,7 @@ protected:
   CAsyncProxySocketLayer * m_pProxyLayer{nullptr};
   CAsyncSslSocketLayer * m_pSslLayer{nullptr};
 #ifndef MPEXT_NO_GSS
-  CAsyncGssSocketLayer * m_pGssLayer;
+  CAsyncGssSocketLayer * m_pGssLayer{nullptr};
 #endif
   t_server m_CurrentServer;
 

@@ -76,11 +76,11 @@ class CCriticalSectionWrapper;
 struct t_callbackMsg
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-  CAsyncSocketExLayer* pLayer;
-  int32_t nType;
-  int32_t nParam1;
-  intptr_t nParam2;
-  char* str;
+  CAsyncSocketExLayer* pLayer{nullptr};
+  int32_t nType{0};
+  int32_t nParam1{0};
+  intptr_t nParam2{0};
+  char* str{nullptr};
 };
 
 class CAsyncSocketEx

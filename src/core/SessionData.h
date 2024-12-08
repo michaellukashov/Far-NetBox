@@ -139,6 +139,7 @@ struct TIEProxyConfig;
 
 constexpr const int32_t SFTPMinVersion = 0;
 constexpr const int32_t SFTPMaxVersion = 6;
+constexpr const int32_t SFTPStandardVersion = 3;
 
 class NB_CORE_EXPORT TSessionData final : public TNamedObject
 {
@@ -284,8 +285,6 @@ private:
   int32_t FInternalEditorEncoding{0};
   UnicodeString FS3DefaultRegion;
   UnicodeString FS3SessionToken;
-  UnicodeString FS3RoleArn;
-  UnicodeString FS3RoleSessionName;
   UnicodeString FS3Profile;
   TS3UrlStyle FS3UrlStyle;
   TAutoSwitch FS3MaxKeys;
@@ -482,13 +481,12 @@ public:
   void SetInternalEditorEncoding(int32_t AValue);
   void SetS3DefaultRegion(const UnicodeString & AValue);
   void SetS3SessionToken(const UnicodeString & AValue);
-  void SetS3RoleArn(const UnicodeString & AValue);
-  void SetS3RoleSessionName(const UnicodeString & value);
   void SetS3Profile(const UnicodeString & AValue);
   void SetS3UrlStyle(TS3UrlStyle AValue);
   void SetS3MaxKeys(TAutoSwitch AValue);
   void SetS3CredentialsEnv(bool AValue);
   void SetS3RequesterPays(bool AValue);
+  void SetLogicalHostName(const UnicodeString & AValue);
   void SetIsWorkspace(bool AValue);
   void SetLink(const UnicodeString & AValue);
   void SetNameOverride(const UnicodeString & AValue);
@@ -546,7 +544,6 @@ public:
   void AddAssemblyProperty(
     UnicodeString & Result, TAssemblyLanguage Language,
     const UnicodeString & Name, bool Value);
-  TStrings * SaveToOptions(const TSessionData * Default);
 #endif // defined(__BORLANDC__)
   TStrings * GetRawSettingsForUrl();
   void DoCopyData(const TSessionData * SourceData, bool NoRecrypt);
@@ -569,7 +566,9 @@ public:
   void Load(THierarchicalStorage * Storage, bool PuttyImport);
   void ApplyRawSettings(TStrings * RawSettings, bool Unsafe);
   void ApplyRawSettings(THierarchicalStorage * Storage, bool Unsafe, bool RespectDisablePasswordStoring);
-  // void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
+#if defined(__BORLANDC__)
+  void ImportFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
+#endif // defined(__BORLANDC__)
   void ImportFromOpenssh(TStrings * Lines);
   void Save(THierarchicalStorage * Storage, bool PuttyExport,
     const TSessionData * Default = nullptr);
@@ -609,7 +608,9 @@ public:
   UnicodeString GetSessionPasswordEncryptionKey() const;
 
   UnicodeString GenerateOpenCommandArgs(bool Rtf) const;
-  // void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
+#if defined(__BORLANDC__)
+  void GenerateAssemblyCode(TAssemblyLanguage Language, UnicodeString & Head, UnicodeString & Tail, int & Indent);
+#endif // defined(__BORLANDC__)
   void LookupLastFingerprint();
   bool GetIsSecure() const;
   static void ValidatePath(const UnicodeString & Path);
@@ -666,10 +667,12 @@ public:
   RWPropertySimple<bool> Ssh2DES{&FSsh2DES, nb::bind(&TSessionData::SetSsh2DES, this)};
   __property bool SshNoUserAuth  = { read=FSshNoUserAuth, write=SetSshNoUserAuth };
   RWPropertySimple<bool> SshNoUserAuth{&FSshNoUserAuth, nb::bind(&TSessionData::SetSshNoUserAuth, this)};
-  // __property TCipher Cipher[int32_t Index] = { read=GetCipher, write=SetCipher };
-  // __property TKex Kex[int32_t Index] = { read=GetKex, write=SetKex };
-  // __property THostKey HostKeys[int32_t Index] = { read=GetHostKeys, write=SetHostKeys };
-  // __property TGssLib GssLib[int32_t Index] = { read=GetGssLib, write=SetGssLib };
+#if defined(__BORLANDC__)
+  __property TCipher Cipher[int32_t Index] = { read=GetCipher, write=SetCipher };
+  __property TKex Kex[int32_t Index] = { read=GetKex, write=SetKex };
+  __property THostKey HostKeys[int32_t Index] = { read=GetHostKeys, write=SetHostKeys };
+  __property TGssLib GssLib[int32_t Index] = { read=GetGssLib, write=SetGssLib };
+#endif // defined(__BORLANDC__)
   __property UnicodeString GssLibCustom = { read=FGssLibCustom, write=SetGssLibCustom };
   RWPropertySimple<UnicodeString> GssLibCustom{&FGssLibCustom, nb::bind(&TSessionData::SetGssLibCustom, this)};
   __property UnicodeString PublicKeyFile  = { read=FPublicKeyFile, write=SetPublicKeyFile };
@@ -774,7 +777,9 @@ public:
   __property TAutoSwitch ProxyDNS  = { read=FProxyDNS, write=SetProxyDNS };
   __property bool ProxyLocalhost  = { read=FProxyLocalhost, write=SetProxyLocalhost };
   __property int32_t FtpProxyLogonType  = { read=FFtpProxyLogonType, write=SetFtpProxyLogonType };
-  // __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
+#if defined(__BORLANDC__)
+  __property TAutoSwitch Bug[TSshBug Bug]  = { read=GetBug, write=SetBug };
+#endif // defined(__BORLANDC__)
   __property UnicodeString PuttySettings = { read = FPuttySettings, write = SetPuttySettings };
   __property UnicodeString CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
   __property UnicodeString CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
@@ -791,7 +796,9 @@ public:
   __property TAutoSwitch SFTPRealPath = { read = FSFTPRealPath, write = SetSFTPRealPath };
   __property bool UsePosixRename = { read = FUsePosixRename, write = SetUsePosixRename };
   RWPropertySimple<bool> UsePosixRename{&FUsePosixRename, nb::bind(&TSessionData::SetUsePosixRename, this)};
-  // __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
+#if defined(__BORLANDC__)
+  __property TAutoSwitch SFTPBug[TSftpBug Bug]  = { read=GetSFTPBug, write=SetSFTPBug };
+#endif // defined(__BORLANDC__)
   __property TAutoSwitch SCPLsFullTime = { read = FSCPLsFullTime, write = SetSCPLsFullTime };
   __property TAutoSwitch FtpListAll = { read = FFtpListAll, write = SetFtpListAll };
   __property TAutoSwitch FtpHost = { read = FFtpHost, write = SetFtpHost };
@@ -856,17 +863,15 @@ public:
   RWProperty<UnicodeString> S3DefaultRegion{nb::bind(&TSessionData::GetS3DefaultRegion, this), nb::bind(&TSessionData::SetS3DefaultRegion, this)};
   __property UnicodeString S3SessionToken = { read = FS3SessionToken, write = SetS3SessionToken };
   RWPropertySimple<UnicodeString> S3SessionToken{&FS3SessionToken, nb::bind(&TSessionData::SetS3SessionToken, this)};
-  __property UnicodeString S3RoleArn = { read = FS3RoleArn, write = SetS3RoleArn };
-  RWPropertySimple<UnicodeString> S3RoleArn{&FS3RoleArn, nb::bind(&TSessionData::SetS3RoleArn, this) };
-  __property UnicodeString S3RoleSessionName = { read = FS3RoleSessionName, write = SetS3RoleSessionName };
-  RWPropertySimple<UnicodeString> S3RoleSessionName{&FS3RoleSessionName, nb::bind(&TSessionData::SetS3RoleSessionName, this) };
   __property UnicodeString S3Profile = { read = FS3Profile, write = SetS3Profile };
   RWPropertySimple<UnicodeString> S3Profile{&FS3Profile, nb::bind(&TSessionData::SetS3Profile, this) };
   __property TS3UrlStyle S3UrlStyle = { read = FS3UrlStyle, write = SetS3UrlStyle };
+  RWPropertySimple<TS3UrlStyle> S3UrlStyle{&FS3UrlStyle, nb::bind(&TSessionData::SetS3UrlStyle, this) };
   __property TAutoSwitch S3MaxKeys = { read = FS3MaxKeys, write = SetS3MaxKeys };
   __property bool S3CredentialsEnv = { read = FS3CredentialsEnv, write = SetS3CredentialsEnv };
   RWPropertySimple<bool> S3CredentialsEnv{&FS3CredentialsEnv, nb::bind(&TSessionData::SetS3CredentialsEnv, this) };
   __property bool S3RequesterPays = { read = FS3RequesterPays, write = SetS3RequesterPays };
+  RWPropertySimple<bool> S3RequesterPays{&FS3RequesterPays, nb::bind(&TSessionData::SetS3RequesterPays, this) };
   __property bool IsWorkspace = { read = FIsWorkspace, write = SetIsWorkspace };
   __property UnicodeString Link = { read = FLink, write = SetLink };
   __property UnicodeString NameOverride = { read = FNameOverride, write = SetNameOverride };
@@ -917,8 +922,6 @@ public:
 
   bool GetTimeDifferenceAuto() const { return FTimeDifferenceAuto; }
   UnicodeString GetNote() const { return FNote; }
-  // UnicodeString GetProtocolStr() const;
-  // void SetProtocolStr(const UnicodeString & Value);
 
   UnicodeString GetHostName() const { return FHostName; }
   int32_t GetPortNumber() const { return FPortNumber; }
@@ -1042,13 +1045,11 @@ public:
   int32_t GetOrigPortNumber() const { return FOrigPortNumber; }
   void SetPasswordless(bool Value);
 
-  void SetLogicalHostName(const UnicodeString & AValue);
   int32_t GetNumberOfRetries() const { return FNumberOfRetries; }
   void SetNumberOfRetries(int32_t Value) { FNumberOfRetries = Value; }
   uint32_t GetSessionVersion() const { return FSessionVersion; }
   void SetSessionVersion(uint32_t Value) { FSessionVersion = Value; }
   void RemoveProtocolPrefix(UnicodeString & HostName) const;
-  // static void AddSwitchValue(UnicodeString & Result, const UnicodeString & Name, const UnicodeString & Value);
 
 private:
   uint32_t GetDefaultVersion() const { return ::GetCurrentVersionNumber(); }
@@ -1105,9 +1106,11 @@ public:
   int32_t IndexOf(TSessionData * Data) const;
   const TSessionData * FindSame(TSessionData * Data);
   TSessionData * NewSession(const UnicodeString & SessionName, TSessionData * Session);
-  // void NewWorkspace(const UnicodeString & Name, TList * DataList);
-  // bool GetIsFolder(const UnicodeString & Name) const;
-  // bool GetIsWorkspace(const UnicodeString & Name) const;
+  void NewWorkspace(const UnicodeString & Name, TList * DataList);
+#if defined(__BORLANDC__)
+  bool IsFolder(const UnicodeString & Name) const;
+  bool IsWorkspace(const UnicodeString & Name) const;
+#endif // defined(__BORLANDC__)
   bool IsFolderOrWorkspace(const UnicodeString & Name) const;
   TSessionData * ParseUrl(const UnicodeString & AUrl, TOptions * Options, bool & DefaultsOnly,
     UnicodeString * AFileName = nullptr, bool * AProtocolDefined = nullptr, UnicodeString * MaskedUrl = nullptr, int32_t Flags = 0);
@@ -1119,14 +1122,16 @@ public:
   bool HasAnyWorkspace() const;
   TSessionData * SaveWorkspaceData(TSessionData * Data, int32_t Index);
   virtual ~TStoredSessionList() noexcept override;
-  // __property TSessionData * Sessions[int32_t Index]  = { read=AtSession };
+#if defined(__BORLANDC__)
+  __property TSessionData * Sessions[int32_t Index]  = { read=AtSession };
+#endif // defined(__BORLANDC__)
   __property TSessionData * DefaultSettings  = { read=FDefaultSettings, write=SetDefaultSettings };
   RWProperty<const TSessionData *> DefaultSettings{nb::bind(&TStoredSessionList::GetDefaultSettingsConst, this), nb::bind(&TStoredSessionList::SetDefaultSettings, this)};
 
   static int32_t ImportHostKeys(
     THierarchicalStorage * SourceStorage, THierarchicalStorage * TargetStorage, TStoredSessionList * Sessions, bool OnlySelected);
-  static void ImportHostKeys(THierarchicalStorage * SourceStorage, TStoredSessionList * Sessions, bool OnlySelected);
-  static void ImportHostKeys(const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected);
+  static void ImportHostKeys(
+    const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected);
   static void ImportSelectedKnownHosts(TStoredSessionList * Sessions);
   static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
   static void SelectKnownHostsForSelectedSessions(TStoredSessionList * KnownHosts, TStoredSessionList * Sessions);
@@ -1142,7 +1147,9 @@ private:
   std::unique_ptr<TSessionData> FDefaultSettings;
   bool FReadOnly{false};
   std::unique_ptr<TStrings> FPendingRemovals;
-  // void SetDefaultSettings(TSessionData * AValue);
+#if defined(__BORLANDC__)
+  void SetDefaultSettings(TSessionData * AValue);
+#endif // defined(__BORLANDC__)
   void DoSave(THierarchicalStorage * Storage, bool All,
     bool RecryptPasswordOnly, TStrings * RecryptPasswordErrors);
   void DoSave(bool All, bool Explicit, bool RecryptPasswordOnly,
@@ -1154,7 +1161,9 @@ private:
   const TSessionData * GetFirstFolderOrWorkspaceSession(const UnicodeString & Name) const;
   TSessionData * CheckIsInFolderOrWorkspaceAndResolve(
     TSessionData * Data, const UnicodeString & Name);
-  // void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
+#if defined(__BORLANDC__)
+  void ImportLevelFromFilezilla(_di_IXMLNode Node, const UnicodeString & Path, _di_IXMLNode SettingsNode);
+#endif // defined(__BORLANDC__)
   void DoGetFolderOrWorkspace(const UnicodeString & Name, TList * List, bool NoRecrypt);
   static THierarchicalStorage * CreateHostKeysStorageForWriting();
 };
@@ -1187,7 +1196,3 @@ struct NB_CORE_EXPORT TIEProxyConfig final : public TObject
 NB_CORE_EXPORT bool GetCodePageInfo(UINT CodePage, CPINFOEX & CodePageInfoEx);
 NB_CORE_EXPORT uint32_t GetCodePageAsNumber(const UnicodeString & CodePage);
 NB_CORE_EXPORT UnicodeString GetCodePageAsString(uint32_t CodePage);
-
-//template<int s> struct CheckSizeT;
-//CheckSizeT<sizeof(TSessionData)> checkSize;
-

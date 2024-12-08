@@ -2,22 +2,26 @@
 #include <vcl.h>
 #pragma hdrstop
 
-#include <Common.h>
 #include <StrUtils.hpp>
+#include <Exceptions.h>
 
 #include "FileMasks.h"
 
+#include "Common.h"
 #include "TextsCore.h"
-// #include "RemoteFiles.h"
+#include "RemoteFiles.h"
 #include "PuttyTools.h"
 #include "Terminal.h"
+#include <StrUtils.hpp>
 
-// extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
-UnicodeString FileMasksDelimiters = L";,";
-static UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
-static UnicodeString DirectoryMaskDelimiters = L"/\\";
-static UnicodeString FileMasksDelimiterStr = UnicodeString(1, FileMasksDelimiters[1]) + L' ';
-static UnicodeString MaskSymbols = L"?*[";
+#if defined(__BORLANDC__)
+extern const wchar_t IncludeExcludeFileMasksDelimiter = L'|';
+#endif // defined(__BORLANDC__)
+const UnicodeString FileMasksDelimiters = L";,";
+static const UnicodeString AllFileMasksDelimiters = FileMasksDelimiters + IncludeExcludeFileMasksDelimiter;
+static const UnicodeString DirectoryMaskDelimiters = L"/\\";
+static const UnicodeString FileMasksDelimiterStr = UnicodeString(1, FileMasksDelimiters[1]) + L' ';
+static const UnicodeString MaskSymbols = L"?*[";
 
 EFileMasksException::EFileMasksException(
   const UnicodeString & AMessage, int32_t AErrorStart, int32_t AErrorLen) noexcept :
@@ -25,8 +29,10 @@ EFileMasksException::EFileMasksException(
   ErrorStart(AErrorStart),
   ErrorLen(AErrorLen)
 {
-  // ErrorStart = AErrorStart;
-  // ErrorLen = AErrorLen;
+#if defined(__BORLANDC__)
+  ErrorStart = AErrorStart;
+  ErrorLen = AErrorLen;
+#endif // defined(__BORLANDC__)
 }
 
 static UnicodeString MaskFilePart(const UnicodeString & Part, const UnicodeString & Mask, bool& Masked)
@@ -263,7 +269,7 @@ TFileMasks::TFileMasks(int32_t ForceDirectoryMasks) noexcept
   FForceDirectoryMasks = ForceDirectoryMasks;
 }
 
-TFileMasks::TFileMasks(const TFileMasks & Source) noexcept
+TFileMasks::TFileMasks(const TFileMasks & Source) noexcept : TObject(Source)
 {
   TFileMasks::Init();
   DoCopy(Source);
@@ -347,7 +353,7 @@ bool TFileMasks::MatchesMasks(
   while (!Result && (it != Masks.end()))
   {
     const TMask & Mask = *it;
-    Masks::TMask * DirectoryMask = Local ? Mask.LocalDirectoryMask : Mask.RemoteDirectoryMask;
+    const Masks::TMask * DirectoryMask = Local ? Mask.LocalDirectoryMask : Mask.RemoteDirectoryMask;
     Result =
       MatchesMaskMask(Mask.DirectoryMaskKind, DirectoryMask, Path) &&
       MatchesMaskMask(Mask.FileNameMaskKind, Mask.FileNameMask, FileName);
@@ -885,8 +891,10 @@ void TFileMasks::SetRoots(const UnicodeString & LocalRoot, const TStrings * Remo
 
 #define TEXT_TOKEN L'\255'
 
-// const wchar_t TCustomCommand::NoQuote = L'\0';
-// const UnicodeString TCustomCommand::Quotes = L"\"'";
+#if defined(__BORLANDC__)
+const wchar_t TCustomCommand::NoQuote = L'\0';
+const UnicodeString TCustomCommand::Quotes = L"\"'";
+#endif // defined(__BORLANDC__)
 
 UnicodeString TCustomCommand::Escape(const UnicodeString & S)
 {
@@ -894,7 +902,7 @@ UnicodeString TCustomCommand::Escape(const UnicodeString & S)
 }
 
 #if defined(__BORLANDC__)
-TCustomCommand::TCustomCommand() noexcept
+TCustomCommand::TCustomCommand()
 {
 }
 #endif // defined(__BORLANDC__)
@@ -1353,9 +1361,9 @@ bool TFileCustomCommand::PatternReplacement(
   }
   else if (SameText(Pattern, L"!e"))
   {
-    if (FData.SessionData != nullptr)
+    if (SessionData != nullptr)
     {
-      Replacement = FData.SessionData->GenerateSessionUrl(sufComplete);
+      Replacement = SessionData->GenerateSessionUrl(sufComplete);
     }
   }
   else if (Pattern == L"!@")
@@ -1381,7 +1389,7 @@ bool TFileCustomCommand::PatternReplacement(
   }
   else if (::SameText(Pattern, L"!#"))
   {
-    if (FData.SessionData != nullptr)
+    if (SessionData != nullptr)
     {
       Replacement = IntToStr(FData.SessionData->PortNumber);
     }

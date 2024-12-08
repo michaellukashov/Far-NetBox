@@ -1149,7 +1149,7 @@ int CTransferSocket::ReadDataFromFile(char *buffer, int len)
     const char Bom[4] = "\xEF\xBB\xBF";
     int read = ReadData(buffer, len);
     if (GetOptionVal(OPTION_MPEXT_REMOVE_BOM) &&
-        m_transferdata.bType && (read >= sizeof(Bom)) && (memcmp(buffer, Bom, sizeof(Bom)) == 0))
+        m_transferdata.bType && (read >= sizeof(Bom)) && (memcmp(buffer, Bom, 3) == 0))
     {
       memmove(buffer, buffer + 3, read - 3);
       read -= 3;

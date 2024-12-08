@@ -1383,7 +1383,9 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
               FullTime = true;
             }
           }
-          // #undef COL2MONTH
+#if defined(__BORLANDC__)
+          #undef COL2MONTH
+#endif // defined(__BORLANDC__)
 
           if (Day == 0)
           {
@@ -1494,7 +1496,9 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
       {
         FSize = ASize;
 
-        // int P;
+#if defined(__BORLANDC__)
+        int P;
+#endif // defined(__BORLANDC__)
 
         FLinkTo.Clear();
         if (GetIsSymLink())
@@ -1860,12 +1864,12 @@ void TRemoteDirectory::ReleaseRelativeDirectories()
   if ((GetThisDirectory() != nullptr) && !GetIncludeThisDirectory())
   {
     SAFE_DESTROY(FThisDirectory);
-    // FThisDirectory = nullptr;
+    FThisDirectory = nullptr;
   }
   if ((GetParentDirectory() != nullptr) && !GetIncludeParentDirectory())
   {
     SAFE_DESTROY(FParentDirectory);
-    // FParentDirectory = nullptr;
+    FParentDirectory = nullptr;
   }
 }
 

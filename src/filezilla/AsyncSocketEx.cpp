@@ -27,7 +27,7 @@ CAsyncSocketEx::t_AsyncSocketExThreadDataList *CAsyncSocketEx::m_spAsyncSocketEx
 #define WM_SOCKETEX_NOTIFY (WM_USER+3)
 #define MAX_SOCKETS (0xBFFF-WM_SOCKETEX_NOTIFY+1)
 
-class CAsyncSocketExHelperWindow // : public TObject
+class CAsyncSocketExHelperWindow
 {
 CUSTOM_MEM_ALLOCATION_IMPL
 public:
@@ -603,22 +603,22 @@ public:
     return DefWindowProc(hWnd, message, wParam, lParam);
   }
 
-  HWND GetHwnd()
+  HWND GetHwnd() const
   {
     return m_hWnd;
   }
 
 private:
-  HWND m_hWnd;
+  HWND m_hWnd{};
   struct t_AsyncSocketExWindowData
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    CAsyncSocketEx *m_pSocket;
-  } *m_pAsyncSocketExWindowData;
-  int m_nWindowDataSize;
-  int m_nWindowDataPos;
-  int m_nSocketCount;
-  CAsyncSocketEx::t_AsyncSocketExThreadData* m_pThreadData;
+    CAsyncSocketEx *m_pSocket{nullptr};
+  } *m_pAsyncSocketExWindowData{nullptr};
+  int m_nWindowDataSize{0};
+  int m_nWindowDataPos{0};
+  int m_nSocketCount{0};
+  CAsyncSocketEx::t_AsyncSocketExThreadData* m_pThreadData{nullptr};
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -786,9 +786,9 @@ BOOL CAsyncSocketEx::Bind(UINT nSocketPort, LPCTSTR lpszSocketAddress)
 
   if ((m_SocketData.nFamily == AF_INET6 || m_SocketData.nFamily == AF_INET) && lpszAscii)
   {
-    addrinfo hints, *res0 = 0, *res;
-    int error;
-    char port[10];
+    addrinfo hints, *res0 = nullptr, *res = nullptr;
+    int error = 0;
+    char port[10]{};
     BOOL ret = FALSE;
 
     memset(&hints, 0, sizeof(addrinfo));
@@ -1107,9 +1107,9 @@ BOOL CAsyncSocketEx::Connect(LPCTSTR lpszHostAddress, UINT nHostPort)
       m_SocketData.nextAddr = 0;
     }
 
-    addrinfo hints;
-    int error;
-    BOOL ret;
+    addrinfo hints{};
+    int error = 0;
+    BOOL ret = FALSE;
     char port[10]{};
 
     memset(&hints, 0, sizeof(addrinfo));

@@ -194,6 +194,7 @@
 "FTP(S)"
 "FTPS"
 "SSH"
+"S3"
 "Соединение"
 "Туннель"
 "Прокси"
@@ -1316,3 +1317,9 @@
 "Stack trace:"
 
 "No files selected"
+
+"&Default region:"
+"&URL style:"
+"Requester &pays"
+"Authentication"
+"&Session token:"

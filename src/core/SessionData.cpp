@@ -26,9 +26,9 @@
 #include <XMLDoc.hpp>
 #include <System.IOUtils.hpp>
 #include <algorithm>
-#endif // defined(__BORLANDC__)
 
-// #pragma package(smart_init)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 #define SET_SESSION_PROPERTY_FROM(PROPERTY, FROM) \
   do { if (F##PROPERTY != (FROM)) { F##PROPERTY = (FROM); Modify(); } } while(0)
@@ -319,8 +319,6 @@ void TSessionData::DefaultSettings()
   // S3
   S3DefaultRegion = EmptyStr;
   S3SessionToken = EmptyStr;
-  S3RoleArn = EmptyStr;
-  S3RoleSessionName = EmptyStr;
   S3Profile = EmptyStr;
   FS3UrlStyle = s3usVirtualHost;
   FS3MaxKeys = asAuto;
@@ -512,8 +510,6 @@ void TSessionData::NonPersistent()
   \
   PROPERTY2(S3DefaultRegion); \
   PROPERTY2(S3SessionToken); \
-  PROPERTY2(S3RoleArn); \
-  PROPERTY2(S3RoleSessionName); \
   PROPERTY2(S3Profile); \
   PROPERTY2(S3UrlStyle); \
   PROPERTY2(S3MaxKeys); \
@@ -635,13 +631,17 @@ void TSessionData::DoCopyData(const TSessionData * SourceData, bool NoRecrypt)
   SetUserName(SourceData->GetUserName());
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FBugs)); ++Index)
   {
-    // PROPERTY(Bug[(TSshBug)Index]);
+#if defined(__BORLANDC__)
+    PROPERTY(Bug[(TSshBug)Index]);
+#endif // defined(__BORLANDC__)
     SetBug(static_cast<TSshBug>(Index),
       SourceData->GetBug(static_cast<TSshBug>(Index)));
   }
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(FSFTPBugs)); ++Index)
   {
-    // PROPERTY(SFTPBug[(TSftpBug)Index]);
+#if defined(__BORLANDC__)
+    PROPERTY(SFTPBug[(TSftpBug)Index]);
+#endif // defined(__BORLANDC__)
     SetSFTPBug(static_cast<TSftpBug>(Index),
       SourceData->GetSFTPBug(static_cast<TSftpBug>(Index)));
   }
@@ -922,8 +922,6 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
 
   FS3DefaultRegion = Storage->ReadString("S3DefaultRegion", FS3DefaultRegion);
   FS3SessionToken = Storage->ReadString("S3SessionToken", FS3SessionToken);
-  FS3RoleArn = Storage->ReadString("S3RoleArn", FS3RoleArn);
-  FS3RoleSessionName = Storage->ReadString("S3RoleSessionName", FS3RoleSessionName);
   S3Profile = Storage->ReadString("S3Profile", S3Profile);
   FS3UrlStyle = static_cast<TS3UrlStyle>(Storage->ReadInteger(L"S3UrlStyle", FS3UrlStyle));
   FS3MaxKeys = Storage->ReadEnum("S3MaxKeys", FS3MaxKeys, AutoSwitchMapping);
@@ -1291,8 +1289,6 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
     WRITE_DATA2(Integer, InternalEditorEncoding);
     WRITE_DATA(String, S3DefaultRegion);
     WRITE_DATA4(String, S3SessionToken);
-    WRITE_DATA4(String, S3RoleArn);
-    WRITE_DATA4(String, S3RoleSessionName);
     WRITE_DATA4(String, S3Profile);
     WRITE_DATA3(Integer, S3UrlStyle);
     WRITE_DATA3(Integer, S3MaxKeys);
@@ -2026,7 +2022,6 @@ void TSessionData::RecryptPasswords()
   SetPassword(GetPassword());
   SetNewPassword(GetNewPassword());
   SetProxyPassword(GetProxyPassword());
-  // FTunnelPassword = FTunnelPassword; // TODO: SetTunnelPassword(GetTunnelPassword)
   SetTunnelPassword(GetTunnelPassword());
   SetPassphrase(GetPassphrase());
   SetEncryptKey(GetEncryptKey());
@@ -2068,7 +2063,7 @@ static UnicodeString ReadPasswordFromFile(const UnicodeString & FileName)
 void TSessionData::ReadPasswordsFromFiles()
 {
   Password = ReadPasswordFromFile(Password);
-  NewPassword = ReadPasswordFromFile(NewPassword);
+  NewPassword = ReadPasswordFromFile(NewPassword());
   ProxyPassword = ReadPasswordFromFile(ProxyPassword);
   TunnelPassword = ReadPasswordFromFile(TunnelPassword);
   TunnelPassphrase = ReadPasswordFromFile(TunnelPassphrase);
@@ -5042,16 +5037,6 @@ void TSessionData::SetS3SessionToken(const UnicodeString & value)
   SET_SESSION_PROPERTY(S3SessionToken);
 }
 
-void TSessionData::SetS3RoleArn(const UnicodeString & value)
-{
-  SET_SESSION_PROPERTY(S3RoleArn);
-}
-
-void TSessionData::SetS3RoleSessionName(const UnicodeString & value)
-{
-  SET_SESSION_PROPERTY(S3RoleSessionName);
-}
-
 void TSessionData::SetS3Profile(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(S3Profile);
@@ -5741,7 +5726,7 @@ void TStoredSessionList::ImportFromKnownHosts(TStrings * Lines)
           }
 
           const struct ssh_keyalg * Algorithm;
-          UnicodeString Key = ParseOpenSshPubLine(Line, Algorithm);
+          const UnicodeString Key = ParseOpenSshPubLine(Line, Algorithm);
           const UnicodeString KeyKey =
             FORMAT(L"%s@%d:%s", Algorithm->cache_id, SessionData->PortNumber, HostNameStr);
           const UnicodeString HostKey =
@@ -5854,7 +5839,9 @@ bool TStoredSessionList::Import(TStoredSessionList * From,
       Session->Assign(From->GetSession(Index));
       Session->SetModified(true);
       Session->MakeUniqueIn(this);
-      // Add(Session);
+#if defined(__BORLANDC__)
+      Add(Session);
+#endif // defined(__BORLANDC__)
       Result = true;
       if (Imported != nullptr)
       {
@@ -6111,7 +6098,9 @@ void TStoredSessionList::SetDefaultSettings(const TSessionData * Value)
 
 bool TStoredSessionList::OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate)
 {
-  return Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
+  return
+    Storage->OpenRootKey(CanCreate) &&
+    Storage->OpenSubKey(GetConfiguration()->GetSshHostKeysSubKey(), CanCreate);
 }
 
 THierarchicalStorage * TStoredSessionList::CreateHostKeysStorageForWriting()
@@ -6156,19 +6145,12 @@ int32_t TStoredSessionList::ImportHostKeys(
 }
 
 void TStoredSessionList::ImportHostKeys(
-  THierarchicalStorage * SourceStorage, TStoredSessionList * Sessions, bool OnlySelected)
-{
-  std::unique_ptr<THierarchicalStorage> TargetStorage(CreateHostKeysStorageForWriting());
-
-  ImportHostKeys(SourceStorage, TargetStorage.get(), Sessions, OnlySelected);
-}
-
-void TStoredSessionList::ImportHostKeys(
   const UnicodeString & SourceKey, TStoredSessionList * Sessions, bool OnlySelected)
 {
+  std::unique_ptr<THierarchicalStorage> TargetStorage(CreateHostKeysStorageForWriting());
   std::unique_ptr<THierarchicalStorage> SourceStorage(std::make_unique<TRegistryStorage>(SourceKey));
 
-  ImportHostKeys(SourceStorage.get(), Sessions, OnlySelected);
+  ImportHostKeys(SourceStorage.get(), TargetStorage.get(), Sessions, OnlySelected);
 }
 
 void TStoredSessionList::ImportSelectedKnownHosts(TStoredSessionList * Sessions)

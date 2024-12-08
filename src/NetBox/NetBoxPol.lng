@@ -194,6 +194,7 @@
 "FTP(S)"
 "FTPS"
 "SSH"
+"S3"
 "Połączenie"
 "Tunel"
 "Proxy"
@@ -1316,3 +1317,9 @@
 "Śledzenie stosu:"
 
 "Nie wybrano plików"
+
+"&Default region:"
+"&URL style:"
+"Requester &pays"
+"Authentication"
+"&Session token:"

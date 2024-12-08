@@ -67,7 +67,7 @@ to tim.kosse@gmx.de
 
 class CAsyncSocketEx;
 
-class CAsyncSocketExLayer // : public TObject
+class CAsyncSocketExLayer
 {
 CUSTOM_MEM_ALLOCATION_IMPL
   friend class CAsyncSocketEx;
@@ -117,7 +117,7 @@ protected:
   int32_t ReceiveNext(void * lpBuf, int nBufLen, int nFlags = 0);
   int32_t SendNext(const void * lpBuf, int nBufLen, int nFlags = 0);
 
-  CAsyncSocketEx *m_pOwnerSocket;
+  CAsyncSocketEx *m_pOwnerSocket{nullptr};
   int32_t m_nCriticalError;
 
   // Calls OnLayerCallback on owner socket
@@ -142,19 +142,19 @@ protected:
 private:
   // Layer state can't be set directly from derived classes
   void SetLayerState(int nLayerState);
-  int m_nLayerState;
+  int m_nLayerState{0};
 
-  int m_nFamily;
-  int m_lEvent;
-  LPTSTR m_lpszSocketAddress;
-  UINT m_nSocketPort;
+  int m_nFamily{0};
+  int m_lEvent{0};
+  LPTSTR m_lpszSocketAddress{nullptr};
+  UINT m_nSocketPort{0};
 
-  addrinfo * m_addrInfo, * m_nextAddr;
+  addrinfo * m_addrInfo{nullptr}, * m_nextAddr{nullptr};
 
   // Called by helper window, dispatches event notification and updated layer state
   void CallEvent(int nEvent, int nErrorCode);
 
-  int m_nPendingEvents;
+  int m_nPendingEvents{0};
 
   void Init(CAsyncSocketExLayer * pPrevLayer, CAsyncSocketEx * pOwnerSocket);
   CAsyncSocketExLayer * AddLayer(CAsyncSocketExLayer * pLayer, CAsyncSocketEx * pOwnerSocket);
@@ -162,12 +162,12 @@ private:
   CAsyncSocketExLayer * m_pNextLayer;
   CAsyncSocketExLayer * m_pPrevLayer;
 
-  struct t_LayerNotifyMsg // : public TObject
+  struct t_LayerNotifyMsg
   {
   CUSTOM_MEM_ALLOCATION_IMPL
-    SOCKET hSocket;
-    CAsyncSocketExLayer * pLayer;
-    long lEvent;
+    SOCKET hSocket{};
+    CAsyncSocketExLayer * pLayer{nullptr};
+    long lEvent{0};
   };
 };
 

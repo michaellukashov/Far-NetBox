@@ -127,8 +127,6 @@ constexpr const int32_t cpNoConfirmation = 0x08;
 constexpr const int32_t cpAppend = 0x20;
 constexpr const int32_t cpResume = 0x40;
 constexpr const int32_t cpNoRecurse = 0x80;
-//constexpr const int32_t cpNewerOnly = 0x100;
-//constexpr const int32_t cpFirstLevel = 0x200;
 
 constexpr const int32_t ccApplyToDirectories = 0x01;
 constexpr const int32_t ccRecursive = 0x02;
@@ -266,6 +264,9 @@ private:
   UnicodeString FDestFileName;
   bool FMultipleDestinationFiles{false};
   bool FFileTransferAny{true};
+#if defined(__BORLANDC__)
+  typedef std::map<UnicodeString, UnicodeString> TEncryptedFileNames;
+#endif // defined(__BORLANDC__)
   using TEncryptedFileNames = nb::map_t<UnicodeString, UnicodeString>;
   TEncryptedFileNames FEncryptedFileNames;
   nb::set_t<UnicodeString> FFoldersScannedForEncryptedFiles;
@@ -300,6 +301,8 @@ public:
   bool GetStoredCredentialsTried() const;
   bool InTransaction() const;
   void SaveCapabilities(TFileSystemInfo & FileSystemInfo);
+  bool CreateTargetDirectory(const UnicodeString & DirectoryPath, int32_t Attrs, const TCopyParamType * CopyParam);
+  UnicodeString CutFeature(UnicodeString & Buf);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(int32_t Params);
 
@@ -341,8 +344,10 @@ protected:
   bool ProcessFiles(TStrings * AFileList, TFileOperation Operation,
     TProcessFileEvent && ProcessFile, void * Param = nullptr, TOperationSide Side = osRemote,
     bool Ex = false);
-  // bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
-  //  TProcessFileEventEx ProcessFile, void * AParam = nullptr, TOperationSide Side = osRemote);
+#if defined(__BORLANDC__)
+  bool ProcessFilesEx(TStrings * FileList, TFileOperation Operation,
+    TProcessFileEventEx ProcessFile, void * AParam = nullptr, TOperationSide Side = osRemote);
+#endif // defined(__BORLANDC__)
   void ProcessDirectory(const UnicodeString & ADirName,
     TProcessFileEvent && CallBackFunc, void * AParam = nullptr, bool UseCache = false,
     bool IgnoreErrors = false);
@@ -896,7 +901,9 @@ public:
   void FreeAndNullTerminal(TTerminal *& Terminal);
   void RecryptPasswords();
 
-  // __property TTerminal * Terminals[int32_t Index]  = { read = GetTerminal };
+#if defined(__BORLANDC__)
+  __property TTerminal * Terminals[int32_t Index]  = { read=GetTerminal };
+#endif // defined(__BORLANDC__)
 
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
@@ -945,7 +952,10 @@ public:
   TCalculateSizeStats * Stats{nullptr};
   bool AllowDirs{true};
   bool UseCache{false};
-// private:
+
+#if defined(__BORLANDC__)
+private:
+#endif // defined(__BORLANDC__)
   TCollectedFileList * Files{nullptr};
   UnicodeString LastDirPath;
   int64_t Size{0};
@@ -958,8 +968,8 @@ struct TOverwriteFileParams
 {
   TOverwriteFileParams();
 
-  __int64 SourceSize;
-  __int64 DestSize;
+  int64_t SourceSize;
+  int64_t DestSize;
   TDateTime SourceTimestamp;
   TDateTime DestTimestamp;
   TModificationFmt SourcePrecision;
@@ -994,7 +1004,7 @@ public:
   std::unique_ptr<TStringList> Filter;
   int32_t Files{0};
 
-  // bool FilterFind(const UnicodeString & AFileName) const;
+  bool FilterFind(const UnicodeString & AFileName) const;
   bool MatchesFilter(const UnicodeString & AFileName) const;
 };
 
@@ -1045,6 +1055,9 @@ public:
 
   int32_t GetCount() const;
   UnicodeString GetFileName(int32_t Index) const;
+#if defined(__BORLANDC__)
+  TObject * GetObject(int32_t Index) const;
+#endif // defined(__BORLANDC__)
   bool IsDir(int32_t Index) const;
   bool IsRecursed(int32_t Index) const;
   int32_t GetState(int32_t Index) const;

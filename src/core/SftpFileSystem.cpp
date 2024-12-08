@@ -174,8 +174,8 @@ constexpr wchar_t OGQ_LIST_GROUPS = 0x02;
 
 #if defined(__BORLANDC__)
 const int32_t SFTPMinVersion = 0;
+const int32_t SFTPMaxVersion = 6;
 #endif // defined(__BORLANDC__)
-constexpr uint32_t SFTPStandardVersion = 3;
 constexpr uint32_t SFTPNoMessageNumber = nb::ToUInt32(-1);
 
 constexpr SSH_FX_TYPE asNo =            0;
@@ -200,7 +200,9 @@ constexpr SSH_FX_TYPE asAll = static_cast<SSH_FX_TYPE>(0xFFFF);
 
 constexpr uint32_t SFTP_PACKET_ALLOC_DELTA = 256;
 
-// #pragma warn -inl
+#if defined(__BORLANDC__)
+#pragma warn -inl
+#endif // defined(__BORLANDC__)
 
 struct TSFTPSupport final : public TObject
 {
@@ -213,9 +215,11 @@ public:
   }
 
   virtual ~TSFTPSupport() noexcept override = default;
-  /*{
-    SAFE_DESTROY(AttribExtensions);
-  }*/
+#if defined(__BORLANDC__)
+  {
+    delete AttribExtensions;
+  }
+#endif // defined(__BORLANDC__)
 
   void Reset()
   {
@@ -274,7 +278,7 @@ public:
   {
     FLength = Len;
     SetCapacity(FLength);
-    memmove(GetData(), Source, Len);
+    nbstr_memcpy(GetData(), Source, Len);
   }
 
   explicit TSFTPPacket(const RawByteString & Source, uint32_t CodePage) noexcept : TSFTPPacket(OBJECT_CLASS_TSFTPPacket, CodePage)
@@ -320,7 +324,7 @@ public:
     uint8_t Buf[4]{};
     PUT_32BIT(Buf, FMessageNumber);
 
-    memmove(FData + 1, Buf, sizeof(Buf));
+    nbstr_memcpy(FData + 1, Buf, sizeof(Buf));
   }
 
   void AddByte(uint8_t Value)
@@ -499,6 +503,10 @@ public:
     uint16_t BaseRights, bool IsDirectory, int32_t Version, TAutoSwitch Utf,
     TChmodSessionAction * Action)
   {
+#if defined(__BORLANDC__)
+    enum TValid { valNone = 0, valRights = 0x01, valOwner = 0x02, valGroup = 0x04,
+      valMTime = 0x08, valATime = 0x10 } Valid = valNone;
+#endif // defined(__BORLANDC__)
     enum TValid
     {
       valNone = 0,
@@ -598,6 +606,9 @@ public:
 
   uint32_t GetSmallCardinal() const
   {
+#if defined(__BORLANDC__)
+    uint32_t Result;
+#endif // defined(__BORLANDC__)
     Need(2);
     const uint32_t Result = (FData[FPosition] << 8) + FData[FPosition + 1];
     DataConsumed(2);
@@ -629,7 +640,7 @@ public:
     return Result;
   }
 
-  bool CanGetString(uint32_t &Size) const
+  bool CanGetString(uint32_t & Size) const
   {
     bool Result = CanGetCardinal();
     if (Result)
@@ -684,6 +695,9 @@ public:
   void GetFile(TRemoteFile * AFile, int32_t Version, TDSTMode DSTMode, TAutoSwitch & Utf, bool SignedTS, bool Complete)
   {
     DebugAssert(AFile);
+#if defined(__BORLANDC__)
+    uint32_t Flags;
+#endif // defined(__BORLANDC__)
     UnicodeString ListingStr;
     uint32_t Permissions = 0;
     bool ParsingFailed = false;
@@ -926,6 +940,9 @@ public:
 
     SetCapacity(20 * 1024);
     uint8_t Byte[3];
+#if defined(__BORLANDC__)
+    memset(Byte, '\0', sizeof(Byte));
+#endif // defined(__BORLANDC__)
     nb::ClearArray(Byte);
     int32_t Index = 1;
     uint32_t Length = 0;
@@ -944,6 +961,9 @@ public:
           DebugAssert(Length < GetCapacity());
           GetData()[Length] = HexToByte(UnicodeString(reinterpret_cast<char *>(Byte)));
           Length++;
+#if defined(__BORLANDC__)
+          memset(Byte, '\0', sizeof(Byte));
+#endif // defined(__BORLANDC__)
           nb::ClearArray(Byte);
         }
       }
@@ -1004,10 +1024,16 @@ public:
   void SetReservedBy(TSFTPFileSystem * Value) { FReservedBy = Value; }
 
 private:
+#if defined(__BORLANDC__)
+  unsigned char * FData;
+#endif // defined(__BORLANDC__)
   uint8_t * FData{nullptr};
   uint32_t FLength{0};
   uint32_t FCapacity{0};
   mutable uint32_t FPosition{0};
+#if defined(__BORLANDC__)
+  unsigned char FType;
+#endif // defined(__BORLANDC__)
   SSH_FXP_TYPE FType{SSH_FXP_NONE};
   uint32_t FMessageNumber{SFTPNoMessageNumber};
   TSFTPFileSystem * FReservedBy{nullptr};
@@ -1054,7 +1080,7 @@ public:
     {
       SetCapacity(GetLength() + ALength + SFTP_PACKET_ALLOC_DELTA);
     }
-    memmove(FData + GetLength(), AData, ALength);
+    nbstr_memcpy(FData + GetLength(), AData, ALength);
     FLength += ALength;
   }
 
@@ -1069,7 +1095,7 @@ public:
         NData += FSendPrefixLen;
         if (FData)
         {
-          memmove(NData - FSendPrefixLen, FData - FSendPrefixLen,
+          nbstr_memcpy(NData - FSendPrefixLen, FData - FSendPrefixLen,
             (FLength < FCapacity ? FLength : FCapacity) + FSendPrefixLen);
           nb_free(FData - FSendPrefixLen);
         }
@@ -1221,11 +1247,23 @@ public:
     FFileSystem(AFileSystem),
     FCodePage(CodePage)
   {
+#if defined(__BORLANDC__)
+    FFileSystem = AFileSystem;
+#endif // defined(__BORLANDC__)
     DebugAssert(FFileSystem);
+#if defined(__BORLANDC__)
+    FRequests = new TList();
+    FResponses = new TList();
+#endif // defined(__BORLANDC__)
   }
 
   virtual ~TSFTPQueue() noexcept override
   {
+#if defined(__BORLANDC__)
+    TSFTPQueuePacket * Request;
+    TSFTPPacket * Response;
+#endif // defined(__BORLANDC__)
+
     DebugAssert(FResponses->GetCount() == FRequests->GetCount());
     for (int32_t Index = 0; Index < FRequests->GetCount(); ++Index)
     {
@@ -1237,8 +1275,10 @@ public:
       DebugAssert(Response);
       SAFE_DESTROY(Response);
     }
-//    SAFE_DESTROY(FRequests);
-//    SAFE_DESTROY(FResponses);
+#if defined(__BORLANDC__)
+    delete FRequests;
+    delete FResponses;
+#endif // defined(__BORLANDC__)
   }
 
   bool Init()
@@ -1306,6 +1346,10 @@ public:
   {
     DebugAssert(FRequests->GetCount());
     bool Result;
+#if defined(__BORLANDC__)
+    TSFTPQueuePacket * Request = nullptr;
+    TSFTPPacket * Response = nullptr;
+#endif // defined(__BORLANDC__)
     std::unique_ptr<TSFTPQueuePacket> Request(FRequests->GetAs<TSFTPQueuePacket>(0));
     try__finally
     {
@@ -1473,11 +1517,17 @@ protected:
 class TSFTPAsynchronousQueue : public TSFTPQueue
 {
 public:
+#if defined(__BORLANDC__)
+  #pragma option push -vi- // WORKAROUND for internal compiler errors
+#endif // defined(__BORLANDC__)
   TSFTPAsynchronousQueue() = delete;
   explicit TSFTPAsynchronousQueue(TSFTPFileSystem * AFileSystem, uint32_t CodePage) noexcept : TSFTPQueue(AFileSystem, CodePage)
   {
     RegisterReceiveHandler();
   }
+#if defined(__BORLANDC__)
+  #pragma option pop
+#endif // defined(__BORLANDC__)
 
   virtual ~TSFTPAsynchronousQueue() noexcept override
   { try {
@@ -2002,7 +2052,9 @@ private:
   int32_t FIndex{0};
 };
 
-// #pragma warn .inl
+#if defined(__BORLANDC__)
+#pragma warn .inl
+#endif // defined(__BORLANDC__)
 
 class TSFTPBusy final : public TObject
 {
@@ -2296,7 +2348,9 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
     case fcOwnerChanging:
     case fcGroupChanging:
       return
-        // (FVersion <= 3) ||
+#if defined(__BORLANDC__)
+        (FVersion <= 3) ||
+#endif // defined(__BORLANDC__)
         ((FVersion >= 4) &&
          (!FSupport->Loaded ||
           FLAGSET(FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP)));
@@ -2602,7 +2656,9 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
     SFTP_STATUS_GROUP_INVALID,
     SFTP_STATUS_NO_MATCHING_BYTE_RANGE_LOCK
   };
-
+#if defined(__BORLANDC__)
+  int32_t Message;
+#endif // defined(__BORLANDC__)
   if ((AllowStatus & (0x01LL << Code)) == 0)
   {
     int32_t Message;
@@ -2690,6 +2746,7 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
         FTerminal->Log->Add(llOutput, FORMAT("Status code: %d", Code));
       }
     }
+    return Code;
   }
   return Code;
 }
@@ -2734,6 +2791,9 @@ const TSessionData * TSFTPFileSystem::GetSessionData() const
 
 bool TSFTPFileSystem::PeekPacket()
 {
+#if defined(__BORLANDC__)
+  bool Result;
+#endif // defined(__BORLANDC__)
   uint8_t * Buf = nullptr;
   bool Result = FSecureShell->Peek(Buf, 4);
   if (Result)
@@ -2806,6 +2866,10 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
         if ((Reservation < 0) ||
             Packet->GetMessageNumber() != FPacketNumbers[Reservation])
         {
+#if defined(__BORLANDC__)
+          TSFTPPacket * ReservedPacket;
+          uint32_t MessageNumber;
+#endif // defined(__BORLANDC__)
           for (int32_t Index = 0; Index < FPacketReservations->GetCount(); ++Index)
           {
             const uint32_t MessageNumber = nb::ToUInt32(FPacketNumbers[Index]);
@@ -3492,6 +3556,10 @@ void TSFTPFileSystem::DoStartup()
       FTerminal->LogEvent("We will use UTF-8 strings as configured");
       break;
 
+#if defined(__BORLANDC__)
+    default:
+      DebugFail();
+#endif // defined(__BORLANDC__)
     case asAuto:
       // Nb, Foxit server does not exist anymore
       if (GetSessionInfo().SshImplementation.Pos("Foxit-WAC-Server") == 1)
@@ -3610,7 +3678,7 @@ void TSFTPFileSystem::LookupUsersGroups()
     ReceiveResponse(Packet, Packet, SSH_FXP_EXTENDED_REPLY, asOpUnsupported);
 
     if ((Packet->GetType() != SSH_FXP_EXTENDED_REPLY) ||
-      (Packet->GetAnsiString() != SFTP_EXT_OWNER_GROUP_REPLY))
+        (Packet->GetAnsiString() != SFTP_EXT_OWNER_GROUP_REPLY))
     {
       FTerminal->LogEvent(FORMAT("Invalid response to %s", SFTP_EXT_OWNER_GROUP));
     }
@@ -3683,6 +3751,9 @@ void TSFTPFileSystem::AnnounceFileListOperation()
 
 void TSFTPFileSystem::ChangeDirectory(const UnicodeString & Directory)
 {
+#if defined(__BORLANDC__)
+  UnicodeString Path, Current;
+#endif // defined(__BORLANDC__)
   const UnicodeString Current = !FDirectoryToChangeTo.IsEmpty() ? FDirectoryToChangeTo : FCurrentDirectory;
   const UnicodeString Path = GetRealPath(Directory, Current);
 
@@ -4434,7 +4505,7 @@ void TSFTPFileSystem::CalculateFilesChecksum(
 
             Success = true;
           }
-          catch(Exception & E)
+          catch (Exception & E)
           {
             FTerminal->RollbackAction(Action, OperationProgress, &E);
 
@@ -4446,7 +4517,6 @@ void TSFTPFileSystem::CalculateFilesChecksum(
             TODO("retries? resume?");
             Next = false;
           }
-
         }
         __finally
         {
@@ -4692,7 +4762,7 @@ void TSFTPFileSystem::SFTPConfirmOverwrite(
             OperationProgress->SetBatchOverwrite(boAlternateResume);
             break;
 
-          default: DebugFail();
+          default: DebugFail(); //fallthru
             [[fallthrough]];
           case qaCancel:
             OperationProgress->SetCancelAtLeast(csCancel);
@@ -5208,7 +5278,7 @@ void TSFTPFileSystem::Source(
           ReceiveResponse(&PropertiesRequest, Response, SSH_FXP_STATUS,
             asOK | FLAGMASK(CopyParam->GetIgnorePermErrors(), asPermDenied));
         }
-        catch(...)
+        catch (...)
         {
           if (FTerminal->GetActive() &&
               (!PreserveRights && !PreserveTime))
@@ -5684,7 +5754,7 @@ void TSFTPFileSystem::Sink(
       OperationProgress->Progress();
     }
 
-    // first open source file, not to lose the destination file,
+    // first open source file, not to loose the destination file,
     // if we cannot open the source one in the first place
     FTerminal->LogEvent("Opening remote file.");
     FILE_OPERATION_LOOP_BEGIN

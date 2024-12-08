@@ -68,7 +68,6 @@ private:
   TCommandType CommandSet[ShellCommandCount]{};
   TSessionData * FSessionData{nullptr};
   UnicodeString FReturnVar;
-
 public:
   int32_t GetMaxLines(TFSCommand Cmd) const;
   int32_t GetMinLines(TFSCommand Cmd) const;
@@ -467,7 +466,7 @@ void TSCPFileSystem::Idle()
 
 UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool Local)
 {
-  return static_cast<const TSCPFileSystem *>(this)->AbsolutePath(APath, Local);
+  return std::as_const(*this).AbsolutePath(APath, Local);
 }
 
 UnicodeString TSCPFileSystem::AbsolutePath(const UnicodeString & APath, bool /*Local*/) const
@@ -485,7 +484,6 @@ bool TSCPFileSystem::IsCapable(int32_t Capability) const
     case fcPreservingTimestampUpload:
     case fcGroupChanging:
     case fcOwnerChanging:
-    case fcGroupOwnerChangingByID:
     case fcAnyCommand:
     case fcShellAnyCommand:
     case fcHardLink:
@@ -511,6 +509,7 @@ bool TSCPFileSystem::IsCapable(int32_t Capability) const
     case fcCheckingSpaceAvailable:
     case fcIgnorePermErrors:
     case fcSecondaryShell: // has fcShellAnyCommand
+    case fcGroupOwnerChangingByID: // by name
     case fcMoveToQueue:
     case fcLocking:
     case fcPreservingTimestampDirs:
@@ -1472,7 +1471,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
         BatchSize += File->Size;
         if (!FileListCommandLineBak.IsEmpty() &&
             ((FileListCommandLine.Length() > 2048) ||
-             (BatchSize > (512 * 1024 * 1024))))
+             (BatchSize > (1024 * 1024 * 1024))))
         {
           FileListCommandLine = FileListCommandLineBak;
           break;
@@ -2801,6 +2800,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
                     case qaCancel:
                       OperationProgress->SetCancel(csCancel); // continue on next case
                     // FALLTHROUGH
+                      [[fallthrough]];
                     case qaNo:
                       SkipConfirmed = true;
                       ThrowExtException();
@@ -2936,7 +2936,7 @@ void TSCPFileSystem::SCPSink(const UnicodeString & TargetDir,
           {
             FileData.LocalFileAttrs = faArchive;
           }
-          DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
+          const DWORD NewAttrs = CopyParam->LocalFileAttrs(FileData.RemoteRights);
           if ((NewAttrs & FileData.LocalFileAttrs) != NewAttrs)
           {
             FILE_OPERATION_LOOP_BEGIN

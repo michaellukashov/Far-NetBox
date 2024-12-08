@@ -469,7 +469,9 @@ ScpSeat::ScpSeat(TSecureShell * ASecureShell)
   vt = &ScpSeatVtable;
 }
 
-//static std::unique_ptr<TCriticalSection> PuttyRegistrySection(TraceInitPtr(new TCriticalSection()));
+#if defined(__BORLANDC__)
+static std::unique_ptr<TCriticalSection> PuttyRegistrySection(TraceInitPtr(new TCriticalSection()));
+#endif // defined(__BORLANDC__)
 static TCriticalSection PuttyRegistrySection;
 enum TPuttyRegistryMode { prmPass, prmRedirect, prmCollect, prmFail };
 static TPuttyRegistryMode PuttyRegistryMode = prmRedirect;
@@ -886,7 +888,9 @@ void AddCertificateToKey(TPrivateKey * PrivateKey, const UnicodeString & Certifi
     if (!ppk_loadpub_s(BinarySource_UPCAST(CertLoadedFile), &AlgorithmName,
                        BinarySink_UPCAST(Pub), &CommentStr, &ErrorStr))
     {
-      // const AnsiString Error = AnsiString(ErrorStr);
+#if defined(__BORLANDC__)
+      UnicodeString Error = AnsiString(ErrorStr);
+#endif // defined(__BORLANDC__)
       throw ExtException(FMTLOAD(CERTIFICATE_LOAD_ERROR, CertificateFileName), ErrorStr);
     }
     sfree(CommentStr);
@@ -1055,7 +1059,9 @@ bool HasGSSAPI(const UnicodeString & CustomPath)
       {
         ssh_gss_library * library = &List->libraries[Index];
         Ssh_gss_ctx ctx{};
-        // memset(&ctx, 0, sizeof(ctx));
+#if defined(__BORLANDC__)
+        memset(&ctx, 0, sizeof(ctx));
+#endif // defined(__BORLANDC__)
         has =
           ((library->acquire_cred(library, &ctx, nullptr) == SSH_GSS_OK) &&
            (library->release_cred(library, &ctx) == SSH_GSS_OK)) ? 1 : 0;
@@ -1408,9 +1414,9 @@ TStrings * SshKexList()
   return Result.release();
 }
 
-int HostKeyToPutty(THostKey HostKey)
+int32_t HostKeyToPutty(THostKey HostKey)
 {
-  int Result;
+  int32_t Result;
   switch (HostKey)
   {
     case hkWarn: Result = HK_WARN; break;
@@ -1528,7 +1534,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
     TPuttyRegistryTypes::const_iterator IType = PuttyRegistryTypes.find(Name);
     if (IType != PuttyRegistryTypes.end())
     {
-      UnicodeString Value = Settings->GetValueFromIndex(Index);
+      const UnicodeString Value = Settings->GetValueFromIndex(Index);
       int32_t I{0};
       if (IType->second == REG_SZ)
       {
@@ -1575,7 +1581,7 @@ struct host_ca_enum
 host_ca_enum * enum_host_ca_start()
 {
   GetConfiguration()->RefreshPuttySshHostCAList();
-  host_ca_enum * Result = new host_ca_enum();
+  host_ca_enum * Result = nb::calloc<host_ca_enum *>(1, sizeof(host_ca_enum)); // new host_ca_enum();
   Result->Index = 0;
   return Result;
 }
@@ -1594,7 +1600,7 @@ bool enum_host_ca_next(host_ca_enum * Enum, strbuf * StrBuf)
 
 void enum_host_ca_finish(host_ca_enum * Enum)
 {
-  delete Enum;
+  nb_free(Enum);
 }
 
 host_ca * host_ca_load(const char * NameStr)

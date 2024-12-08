@@ -34,7 +34,7 @@ public:
   virtual ~TPluginIdleThread() noexcept override
   {
     TPluginIdleThread::Terminate();
-    WaitFor();
+    WaitFor(FMillisecs);
     pthread_cond_destroy(&FCond);
     pthread_mutex_destroy(&FMutex);
   }
@@ -92,7 +92,7 @@ public:
 
 private:
   using TCallback = std::function<bool()>;
-  
+
   void WakeThread(const TCallback & Callback)
   {
     pthread_mutex_lock(&FMutex);

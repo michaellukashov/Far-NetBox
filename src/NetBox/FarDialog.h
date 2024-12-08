@@ -171,6 +171,10 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialogContainer); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogContainer) || TObject::is(Kind); }
 public:
+  TFarDialogContainer() = delete;
+  explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog) noexcept;
+  virtual ~TFarDialogContainer() noexcept override;
+
   int32_t GetLeft() const { return FLeft; }
   void SetLeft(int32_t Value) { SetPosition(0, Value); }
   int32_t GetTop() const { return FTop; }
@@ -181,10 +185,6 @@ public:
   int32_t GetItemCount() const;
 
 protected:
-  TFarDialogContainer() = delete;
-  explicit TFarDialogContainer(TObjectClassId Kind, TFarDialog * ADialog) noexcept;
-  virtual ~TFarDialogContainer() noexcept override;
-
   TFarDialog * GetDialog() const { return FDialog; }
   TFarDialog * GetDialog() { return FDialog; }
 
@@ -214,6 +214,8 @@ public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TFarDialogItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarDialogItem) || TObject::is(Kind); }
 public:
+  RWProperty<bool> Enabled{nb::bind(&TFarDialogItem::GetEnabled, this), nb::bind(&TFarDialogItem::SetEnabled, this)};
+
   TRect GetBounds() const { return FBounds; }
   TRect GetActualBounds() const;
   int32_t GetLeft() const { return GetCoordinate(0); }
@@ -393,7 +395,7 @@ public:
   virtual int32_t GetResult() const { return FResult; }
   virtual void SetResult(int32_t Value) { FResult = Value; }
   virtual UnicodeString GetData() const override;
-  virtual UnicodeString GetData() override { return static_cast<const TFarButton *>(this)->GetData(); }
+  virtual UnicodeString GetData() override { return std::as_const(*this).GetData(); }
   bool GetDefault() const;
   void SetDefault(bool Value);
   TFarButtonBrackets GetBrackets() const { return FBrackets; }
@@ -425,6 +427,8 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarCheckBox) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarCheckBox(TFarDialog * ADialog) noexcept;
+
+  RWProperty<bool> Checked{nb::bind(&TFarCheckBox::GetChecked, this), nb::bind(&TFarCheckBox::SetChecked, this)};
 
   virtual UnicodeString GetCaption() const { return GetData(); }
   virtual void SetCaption(const UnicodeString & Value) { SetData(Value); }
@@ -470,6 +474,8 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TFarEdit) || TFarDialogItem::is(Kind); }
 public:
   explicit TFarEdit(TFarDialog * ADialog) noexcept;
+
+  RWProperty<UnicodeString> Text{nb::bind(&TFarEdit::GetText, this), nb::bind(&TFarEdit::SetText, this)};
 
   virtual UnicodeString GetText() const { return GetData(); }
   virtual void SetText(const UnicodeString & Value) { SetData(Value); }
@@ -648,6 +654,9 @@ public:
 
   void ResizeToFitContent();
 
+  RWProperty<int32_t> ItemIndex{nb::bind(&TFarComboBox::GetItemIndex, this), nb::bind(&TFarComboBox::SetItemIndex, this)};
+  RWProperty<UnicodeString> Text{nb::bind(&TFarComboBox::GetText, this), nb::bind(&TFarComboBox::SetText, this)};
+
   bool GetNoAmpersand() const { return GetFlag(DIF_LISTNOAMPERSAND); }
   void SetNoAmpersand(bool Value) { SetFlag(DIF_LISTNOAMPERSAND, Value); }
   bool GetAutoHighlight() const { return GetFlag(DIF_LISTAUTOHIGHLIGHT); }
@@ -681,7 +690,7 @@ public:
   TFarLister() = delete;
   explicit TFarLister(TFarDialog * ADialog) noexcept;
   virtual ~TFarLister() noexcept override;
-
+ 
   TStrings * GetItems() const;
   void SetItems(const TStrings * Value);
   int32_t GetTopIndex() const { return FTopIndex; }

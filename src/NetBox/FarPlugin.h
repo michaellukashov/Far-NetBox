@@ -515,7 +515,7 @@ public:
   virtual ~TFarPanelInfo() noexcept override;
 
   TObjectList * GetItems() const;
-  TObjectList * GetItems() { return static_cast<const TFarPanelInfo *>(this)->GetItems(); }
+  TObjectList * GetItems() { return std::as_const(*this).GetItems(); }
   int32_t GetItemCount() const;
   const TFarPanelItem * GetFocusedItem() const;
   void SetFocusedItem(const TFarPanelItem * Value);

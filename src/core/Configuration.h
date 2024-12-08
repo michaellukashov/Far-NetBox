@@ -298,7 +298,7 @@ public:
 public:
   TConfiguration() = delete;
   explicit TConfiguration(TObjectClassId Kind = OBJECT_CLASS_TConfiguration) noexcept;
-  virtual ~TConfiguration() noexcept;
+  virtual ~TConfiguration() noexcept override;
   virtual void ConfigurationInit();
   virtual void Default();
   virtual void UpdateStaticUsage();
@@ -537,10 +537,8 @@ private:
   nb::vector_t<TShortCut> FShortCuts;
 };
 
-extern "C"
-{
+extern "C" { 
 #include <windows/platform.h>
-//#include <winstuff.h>
 }
 
 constexpr const char * OriginalPuttyRegistryStorageKey = PUTTY_REG_POS;

@@ -1583,7 +1583,7 @@ using function_view = function_base<false, true, capacity_default, //
 /// Exception type that is thrown when invoking empty function objects
 /// and exception support isn't disabled.
 ///
-/// Exception suport is enabled if
+/// Exception support is enabled if
 /// the template parameter 'Throwing' is set to true (default).
 ///
 /// This type will default to std::bad_function_call if the

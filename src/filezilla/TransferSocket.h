@@ -64,24 +64,24 @@ protected:
   bool Activate();
   void Start();
 
-  CFtpControlSocket * m_pOwner;
-  CAsyncProxySocketLayer * m_pProxyLayer;
-  CAsyncSslSocketLayer * m_pSslLayer;
+  CFtpControlSocket * m_pOwner{nullptr};
+  CAsyncProxySocketLayer * m_pProxyLayer{nullptr};
+  CAsyncSslSocketLayer * m_pSslLayer{nullptr};
 #ifndef MPEXT_NO_GSS
-  CAsyncGssSocketLayer * m_pGssLayer;
+  CAsyncGssSocketLayer * m_pGssLayer{nullptr};
 #endif
   void UpdateStatusBar(bool forceUpdate);
   BOOL m_bSentClose{FALSE};
-  int m_bufferpos{0};
+  int32_t m_bufferpos{0};
   char * m_pBuffer{nullptr};
 #ifndef MPEXT_NO_ZLIB
   char * m_pBuffer2; // Used by zlib transfers
 #endif
   BOOL m_bCheckTimeout{FALSE};
   CTime m_LastActiveTime;
-  int m_nTransferState{0};
-  int m_nMode{0};
-  int m_nNotifyWaiting{0};
+  int32_t m_nTransferState{0};
+  int32_t m_nMode{0};
+  int32_t m_nNotifyWaiting{0};
   bool m_bActivationPending{false};
 
   void CloseAndEnsureSendClose(int Mode);

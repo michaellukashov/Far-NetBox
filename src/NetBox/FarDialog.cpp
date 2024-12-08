@@ -1006,7 +1006,7 @@ void TFarDialogContainer::Remove(TFarDialogItem * Item)
   FItems->Remove(Item);
   if (FItems->GetCount() == 0)
   {
-    delete this;
+    std::destroy_at(this);
   }
 }
 
@@ -1219,7 +1219,7 @@ void TFarDialogItem::UpdateData(const UnicodeString & Value)
 
 UnicodeString TFarDialogItem::GetData()
 {
-  return static_cast<const TFarDialogItem *>(this)->GetData();
+  return std::as_const(*this).GetData();
 }
 
 UnicodeString TFarDialogItem::GetData() const

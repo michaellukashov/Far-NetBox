@@ -10,7 +10,9 @@
 #include "TextsCore.h"
 #include <openssl/ssl.h>
 
-//constexpr const int32_t BasicHttpResponseLimit = 100 * 1024;
+#if defined(__BORLANDC__)
+const int32_t BasicHttpResponseLimit = 102400;
+#endif // defined(__BORLANDC__)
 
 THttp::THttp() noexcept : FResponseHeaders(std::make_unique<TStringList>())
 {
@@ -95,7 +97,9 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
           }
         }
 
-        // UTF8String RequestUtf;
+#if defined(__BORLANDC__)
+        UTF8String RequestUtf;
+#endif // defined(__BORLANDC__)
         if (!Request.IsEmpty())
         {
           UTF8String RequestUtf = UTF8String(Request);
