@@ -1,10 +1,11 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [24.12.1.606] - 2024-12-01
+## [24.12.1.607] - 2024-12-08
 
 ### Changes
 
+ * S3: Session dialog: add "S3" tab
  * Upgrade WinSCP sources: WinSCP 6.3.6
  * Upgrade dependencies: zlib-ng 2.2.2
  * Upgrade dependencies: expat 2.6.4

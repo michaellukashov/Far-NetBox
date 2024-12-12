@@ -258,7 +258,8 @@ void TCopyParamList::Init()
 
 TCopyParamList::~TCopyParamList() noexcept
 {
-  Clear();
+  try { Clear();
+  } catch(...) {}
 #if defined(__BORLANDC__)
   delete FCopyParams;
   delete FRules;

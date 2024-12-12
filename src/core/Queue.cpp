@@ -1655,7 +1655,7 @@ void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
 void TTerminalItem::OperationProgress(
   TFileOperationProgressType & ProgressData)
 {
-  if (FPause && !IsCancelled() && !FItem)
+  if (FPause && !IsCancelled() && FItem)
   {
     DebugAssert(FItem != nullptr);
     const TQueueItem::TStatus PrevStatus = FItem->GetStatus();
