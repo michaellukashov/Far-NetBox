@@ -2179,7 +2179,7 @@ void TFTPFileSystem::ReadCurrentDirectory()
 
         if (Result)
         {
-          if (Path.IsEmpty() || !base::UnixIsAbsolutePath(Path))
+          if (!Path.IsEmpty() && !base::UnixIsAbsolutePath(Path))
           {
             Path = UnicodeString(ROOTDIRECTORY) + Path;
           }
@@ -4221,9 +4221,12 @@ static bool VerifyNameMask(const UnicodeString & AName, const UnicodeString & AM
   bool Result = true;
   UnicodeString Name = AName;
   UnicodeString Mask = AMask;
-  int32_t Pos = Mask.Pos(L"*");
-  while (Result && (Pos > 0))
+  int32_t Pos = 0;
+  while (Result)
   {
+    Pos = Mask.Pos(L"*");
+    if (Pos <= 0)
+        break;
     // Pos will typically be 1 here, so not actual comparison is done
     Result = ::SameText(Mask.SubString(1, Pos - 1), Name.SubString(1, Pos - 1));
     if (Result)
