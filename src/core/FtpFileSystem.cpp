@@ -2682,12 +2682,11 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
 void TFTPFileSystem::ReadSymlink(TRemoteFile * SymlinkFile,
   TRemoteFile *& AFile)
 {
-  if (FForceReadSymlink && DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty()) && DebugAlwaysTrue(SymlinkFile->GetHaveFullFileName()))
+  if (DebugAlwaysTrue(!SymlinkFile->LinkTo.IsEmpty())) // NETBOX: gh-420
   {
     // When we get here from TFTPFileSystem::ReadFile, it's likely the second time ReadSymlink has been called for the link.
     // The first time getting to the later branch, so IsDirectory is true and hence FullFileName ends with a slash.
-    const UnicodeString SymlinkDir = base::UnixExtractFileDir(base::UnixExcludeTrailingBackslash(SymlinkFile->GetFullFileName()));
-    const UnicodeString LinkTo = base::AbsolutePath(SymlinkDir, SymlinkFile->LinkTo);
+    const UnicodeString LinkTo = SymlinkFile->GetFullLinkName(); // NETBOX: gh-420
     ReadFile(LinkTo, AFile);
   }
   else
@@ -4699,7 +4698,7 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
 
         File->SetLinkTo(Entry->LinkTarget);
 
-        File->Complete();
+        // File->Complete(); /*NETBOX: gh-420, line is commented*/
       }
       catch (Exception & E)
       {
