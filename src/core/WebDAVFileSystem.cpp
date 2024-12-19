@@ -700,10 +700,12 @@ UnicodeString TWebDAVFileSystem::GetCurrentDirectory() const
 
 void TWebDAVFileSystem::DoStartup()
 {
+  /* === NETBOX: gh-441 ===
   FTerminal->SetExceptionOnFail(true);
   // retrieve initialize working directory to save it as home directory
   ReadCurrentDirectory();
   FTerminal->SetExceptionOnFail(false);
+  */
 }
 
 void TWebDAVFileSystem::ClearNeonError()
