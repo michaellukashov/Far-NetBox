@@ -189,6 +189,12 @@ int ne_has_support(int feature)
 #ifdef HAVE_SSPI
     case NE_FEATURE_SSPI:
 #endif
+#ifdef NE_HAVE_GSSAPI
+    case NE_FEATURE_GSSAPI:
+#endif
+#ifdef NE_HAVE_LIBPXY
+    case NE_FEATURE_LIBPXY:
+#endif
         return 1;
 #endif /* NE_HAVE_* */
     default:

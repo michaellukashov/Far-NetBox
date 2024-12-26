@@ -1265,7 +1265,7 @@ static int read_response_headers(ne_request *req, int clear)
     /* Clear any response headers from previous invocations
      * (e.g. retired requests, interim responses. */
     if (clear) free_response_headers(req);
-    
+
     while ((ret = read_message_header(req, hdr, sizeof hdr)) == NE_RETRY 
 	   && ++count < MAX_HEADER_FIELDS) {
 	char *pnt;
@@ -1513,7 +1513,7 @@ int ne_end_request(ne_request *req)
 	ne_post_send_fn fn = (ne_post_send_fn)hk->fn;
 	ret = fn(req, hk->userdata, &req->status);
     }
-    
+
     /* Close the connection if persistent connections are disabled or
      * not supported by the server. */
     if (!req->session->flags[NE_SESSFLAG_PERSIST] || !req->can_persist)
