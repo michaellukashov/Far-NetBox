@@ -1,7 +1,9 @@
 #pragma once
 
-// #include <set>
-// #include <list>
+#if defined(__BORLANDC__)
+#include <set>
+#include <list>
+#endif // defined(__BORLANDC__)
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"

@@ -44,8 +44,10 @@ NB_CORE_EXPORT TOptions * GetGlobalOptions();
 
 NB_CORE_EXPORT void ShowExtendedException(Exception * E);
 NB_CORE_EXPORT bool AppendExceptionStackTraceAndForget(TStrings *& MoreMessages);
-// void IgnoreException(const std::type_info & ExceptionType);
-// UnicodeString GetExceptionDebugInfo();
+#if defined(__BORLANDC__)
+void IgnoreException(const std::type_info & ExceptionType);
+UnicodeString GetExceptionDebugInfo();
+#endif // defined(__BORLANDC__)
 
 NB_CORE_EXPORT UnicodeString GetCompanyRegistryKey();
 NB_CORE_EXPORT UnicodeString GetRegistryKey();

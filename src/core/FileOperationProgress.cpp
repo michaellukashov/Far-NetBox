@@ -82,22 +82,28 @@ TFileOperationProgressType::~TFileOperationProgressType() noexcept
 {
   DebugAssert(!GetInProgress() || FReset);
   DebugAssert(!GetSuspended() || FReset);
-  // SAFE_DESTROY_EX(TCriticalSection, FSection);
-  // SAFE_DESTROY_EX(TCriticalSection, FUserSelectionsSection);
+#if defined(__BORLANDC__)
+  SAFE_DESTROY(FSection);
+  SAFE_DESTROY(FUserSelectionsSection);
+#endif // defined(__BORLANDC__)
 }
 
 void TFileOperationProgressType::Init()
 {
-  // FSection = new TCriticalSection();
-  // FUserSelectionsSection = new TCriticalSection();
+#if defined(__BORLANDC__)
+  FSection = new TCriticalSection();
+  FUserSelectionsSection = new TCriticalSection();
+#endif // defined(__BORLANDC__)
   FRestored = false;
   FPersistence.Side = osCurrent; // = undefined value
 }
 
 void TFileOperationProgressType::Assign(const TFileOperationProgressType & Other)
 {
-  // const TValueRestorer<TCriticalSection *> SectionRestorer(&FSection);
-  // const TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(&FUserSelectionsSection);
+#if defined(__BORLANDC__)
+  TValueRestorer<TCriticalSection *> SectionRestorer(FSection);
+  TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(FUserSelectionsSection);
+#endif // defined(__BORLANDC__)
   const TGuard Guard(FSection);
   const TGuard OtherGuard(Other.FSection);
 

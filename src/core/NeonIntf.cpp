@@ -453,7 +453,9 @@ void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
       Message = TrimRight(UnicodeString(UTFMessage.c_str(), UTFMessage.GetLength(), CP_ACP));
     }
 
-    // if (DoLog)
+#if defined(__BORLANDC__)
+    if (DoLog)
+#endif // defined(__BORLANDC__)
     {
       // Note that this gets called for THttp sessions too.
       // It does no harm atm.

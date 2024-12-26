@@ -21,7 +21,9 @@ public:
   void ModifyAll(bool Modify);
   void Clear();
 
-  // __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
+#if defined(__BORLANDC__)
+  __property TBookmarkList * Bookmarks[UnicodeString Index] = { read = GetBookmarks, write = SetBookmarks };
+#endif // defined(__BORLANDC__)
   __property TBookmarkList * SharedBookmarks = { read = GetSharedBookmarks, write = SetSharedBookmarks };
 
 private:
@@ -68,8 +70,10 @@ public:
 
   __property int32_t Count = { read = GetCount };
   const ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
-  // __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
-  // __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+#if defined(__BORLANDC__)
+  __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
+  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+#endif // defined(__BORLANDC__)
 
 protected:
   int32_t IndexOf(const TBookmark * Bookmark) const;

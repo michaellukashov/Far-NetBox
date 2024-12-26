@@ -62,7 +62,9 @@ private:
   bool FIgnorePermErrors{false};
   TResumeSupport FResumeSupport{rsOn};
   int64_t FResumeThreshold{0};
-  // UnicodeString GetLogStr() const;
+#if defined(__BORLANDC__)
+  UnicodeString GetLogStr() const;
+#endif // defined(__BORLANDC__)
   wchar_t FInvalidCharsReplacement{L'-'};
   UnicodeString FLocalInvalidChars;
   UnicodeString FTokenizibleChars;
@@ -177,7 +179,7 @@ public:
   bool& RemoveCtrlZ{FRemoveCtrlZ};
   __property bool RemoveBOM = { read = FRemoveBOM, write = FRemoveBOM };
   bool& RemoveBOM{FRemoveBOM};
-  __property unsigned long CPSLimit = { read = FCPSLimit, write = FCPSLimit };
+  __property uint32_t CPSLimit = { read = FCPSLimit, write = FCPSLimit };
   uint32_t& CPSLimit{FCPSLimit};
   __property bool NewerOnly = { read = FNewerOnly, write = FNewerOnly };
   bool& NewerOnly{FNewerOnly};
@@ -189,9 +191,9 @@ public:
   bool& ExcludeEmptyDirectories{FExcludeEmptyDirectories};
   __property int64_t Size = { read = FSize, write = FSize };
   int64_t& Size{FSize};
-  __property __int64 PartSize = { read = FPartSize, write = FPartSize };
+  __property int64_t PartSize = { read = FPartSize, write = FPartSize };
   int64_t& PartSize{FPartSize};
-  __property __int64 PartOffset = { read = FPartOffset, write = FPartOffset };
+  __property int64_t PartOffset = { read = FPartOffset, write = FPartOffset };
   int64_t& PartOffset{FPartOffset};
   __property TOnceDoneOperation OnceDoneOperation = { read = FOnceDoneOperation, write = FOnceDoneOperation };
   TOnceDoneOperation& OnceDoneOperation{FOnceDoneOperation};

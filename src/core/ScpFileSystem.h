@@ -94,9 +94,9 @@ public:
   void Init(void * /*TSecureShell * */) override;
   void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 protected:
-  __property TStrings * Output = { read = FOutput.get() };
+  __property TStrings * Output = { read = FOutput };
   const ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
-  __property int ReturnCode = { read = FReturnCode };
+  __property int32_t ReturnCode = { read = FReturnCode };
   const ROProperty2<int32_t> ReturnCode{&FReturnCode};
 
   TStrings * GetOutput() const { return FOutput.get(); }
@@ -127,8 +127,10 @@ private:
   bool IsLastLine(UnicodeString & Line);
   static bool IsTotalListingLine(const UnicodeString & ALine);
   void EnsureLocation();
-  // void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
-  //  int32_t size = 0, int32_t Params = -1);
+#if defined(__BORLANDC__)
+  void ExecCommand(TFSCommand Cmd, const TVarRec * args = nullptr,
+    int32_t size = 0, int32_t Params = -1);
+#endif // defined(__BORLANDC__)
   void ExecCommand(TFSCommand Cmd, int32_t Params, fmt::ArgList args);
   FMT_VARIADIC_W(void, ExecCommand, TFSCommand, int32_t)
   void InvalidOutputError(const UnicodeString & Command);

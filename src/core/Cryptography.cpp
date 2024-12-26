@@ -109,8 +109,10 @@ struct hmac_ctx
 /* initialise the HMAC context to zero */
 static void hmac_sha1_begin(hmac_ctx cx[1])
 {
-  // ::ZeroMemory(cx, sizeof(hmac_ctx));
-  cx->Clear();
+#if defined(__BORLANDC__)
+    memset(cx, 0, sizeof(hmac_ctx));
+#endif // defined(__BORLANDC__)
+    cx->Clear();
 }
 
 /* input the HMAC key (can be called multiple times)    */
@@ -151,7 +153,7 @@ static void hmac_sha1_data(const uint8_t data[], uint32_t data_len, hmac_ctx cx[
 
         /* xor ipad into key value  */
         for(int32_t i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-            ((unsigned long*)cx->key)[i] ^= 0x36363636;
+            ((uint32_t*)cx->key)[i] ^= 0x36363636;
 
         /* and start hash operation */
         sha1_begin(cx->ctx);
@@ -179,7 +181,7 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
 
     /* set outer key value using opad and removing ipad */
     for(i = 0; i < (IN_BLOCK_LENGTH >> 2); ++i)
-        reinterpret_cast<unsigned long*>(cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
+        reinterpret_cast<uint32_t*>(cx->key)[i] ^= 0x36363636 ^ 0x5c5c5c5c;
 
     /* perform the outer hash operation */
     sha1_begin(cx->ctx);
@@ -192,7 +194,7 @@ static void hmac_sha1_end(uint8_t mac[], uint32_t mac_len, hmac_ctx cx[1])
         mac[i] = dig[i];
 }
 
-constexpr const int32_t BLOCK_SIZE  = 16;
+constexpr const int32_t BLOCK_SIZE = 16;
 
 void aes_set_encrypt_key(const unsigned char in_key[], uint32_t klen, void * cx)
 {
@@ -213,7 +215,7 @@ void aes_encrypt_block(const unsigned char in_blk[], unsigned char out_blk[], vo
     out_blk[Index * 4 + 1] = out_blk[Index * 4 + 2];
     out_blk[Index * 4 + 2] = t;
   }
-  call_aesold_encrypt(cx, reinterpret_cast<unsigned int*>(out_blk));
+  call_aesold_encrypt(cx, reinterpret_cast<uint32_t*>(out_blk));
   for (Index = 0; Index < 4; Index++)
   {
     unsigned char t;
