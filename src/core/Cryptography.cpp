@@ -331,8 +331,11 @@ static void encr_data(uint8_t data[], uint32_t d_len, fcrypt_ctx cx[1])
       uint32_t j = 0;
       /* increment encryption nonce   */
       while (j < 8)
-        if (!++cx->nonce[j])
-          ++j;
+      {
+        if (++cx->nonce[j])
+          break;
+        ++j;
+      }
       /* encrypt the nonce to form next xor buffer    */
       aes_encrypt_block(cx->nonce, cx->encr_bfr, cx->encr_ctx);
       pos = 0;
