@@ -1526,7 +1526,7 @@ target_include_directories(putty PRIVATE
   libs/putty
   libs/putty/windows
 )
-
+# set_source_files_properties(${NEON_LIB_SOURCES} PROPERTIES LANGUAGE CXX)
 set(PUTTY_COMPILE_FLAGS
   -DLibrary -D_MT -DMPEXT -DNET_SETUP_DIAGNOSTICS
   -DSECURITY_WIN32 -DWINSCP -DMPEXT -DPLATFORM_HAS_SMEMCLR -D_WINDOWS

@@ -200,7 +200,7 @@ void TSecureShell::GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString &
 
 Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 {
-  Conf * conf = conf_new();
+  struct Conf * conf = conf_new();
 
   PuttyDefaults(conf);
 
