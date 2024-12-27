@@ -141,4 +141,3 @@ FILE *f_open(const Filename *fn, const char *mode, bool isprivate)
     sfree(wmode);
     return fp;
 }
-

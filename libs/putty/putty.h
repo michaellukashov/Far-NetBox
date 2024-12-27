@@ -1883,10 +1883,10 @@ struct ConfKeyInfo {
     bool not_saved : 1;
 
     const char *save_keyword;
-    const ConfSaveEnumType *storage_enum;
+    const struct ConfSaveEnumType *storage_enum;
 };
 struct ConfSaveEnumType {
-    const ConfSaveEnumValue *values;
+    const struct ConfSaveEnumValue *values;
     size_t nvalues;
 };
 struct ConfSaveEnumValue {
@@ -1894,17 +1894,17 @@ struct ConfSaveEnumValue {
     bool obsolete;
 };
 
-extern const ConfKeyInfo conf_key_info[];
-bool conf_enum_map_to_storage(const ConfSaveEnumType *etype,
+extern const struct ConfKeyInfo conf_key_info[];
+bool conf_enum_map_to_storage(const struct ConfSaveEnumType *etype,
                               int confval, int *storageval_out);
-bool conf_enum_map_from_storage(const ConfSaveEnumType *etype,
+bool conf_enum_map_from_storage(const struct ConfSaveEnumType *etype,
                                 int storageval, int *confval_out);
 
 /* Functions handling configuration structures. */
-Conf *conf_new(void);                  /* create an empty configuration */
-void conf_free(Conf *conf);
-void conf_clear(Conf *conf);    /* likely only useful for test programs */
-Conf *conf_copy(Conf *oldconf);
+struct Conf *conf_new(void);                  /* create an empty configuration */
+void conf_free(struct Conf *conf);
+void conf_clear(struct Conf *conf);    /* likely only useful for test programs */
+struct Conf *conf_copy(struct Conf *oldconf);
 void conf_copy_into(Conf *dest, Conf *src);
 /* Mandatory accessor functions: enforce by assertion that keys exist. */
 bool conf_get_bool(Conf *conf, int key);
@@ -2241,7 +2241,7 @@ void ldisc_configure(Ldisc *, Conf *);
 void ldisc_free(Ldisc *);
 void ldisc_send(Ldisc *, const void *buf, int len, bool interactive);
 void ldisc_echoedit_update(Ldisc *);
-void ldisc_provide_userpass_le(Ldisc *, TermLineEditor *);
+void ldisc_provide_userpass_le(Ldisc *, struct TermLineEditor *);
 void ldisc_check_sendok(Ldisc *);
 
 /*
@@ -2418,7 +2418,7 @@ void printer_finish_job(printer_job *);
 struct cmdline_get_passwd_input_state { bool tried; };
 #define CMDLINE_GET_PASSWD_INPUT_STATE_INIT { .tried = false }
 extern const cmdline_get_passwd_input_state cmdline_get_passwd_input_state_new;
-int cmdline_process_param(CmdlineArg *, CmdlineArg *, int, Conf *);
+int cmdline_process_param(struct CmdlineArg *, struct CmdlineArg *, int, struct Conf *);
 void cmdline_run_saved(Conf *);
 void cmdline_cleanup(void);
 SeatPromptResult cmdline_get_passwd_input(
@@ -2440,19 +2440,19 @@ struct CmdlineArgList {
      * can be invented to add to the array after that, in which case
      * they'll be freed with the rest of the CmdlineArgList, but
      * aren't logically part of the original command line. */
-    CmdlineArg **args;
+    struct CmdlineArg **args;
     size_t nargs, argssize;
 };
 struct CmdlineArg {
-    CmdlineArgList *list;
+    struct CmdlineArgList *list;
 };
-const char *cmdline_arg_to_utf8(CmdlineArg *arg); /* may fail */
-const char *cmdline_arg_to_str(CmdlineArg *arg);  /* must not fail */
-Filename *cmdline_arg_to_filename(CmdlineArg *arg);  /* caller must free */
-void cmdline_arg_wipe(CmdlineArg *arg);
-CmdlineArg *cmdline_arg_from_str(CmdlineArgList *list, const char *string);
+const char *cmdline_arg_to_utf8(struct CmdlineArg *arg); /* may fail */
+const char *cmdline_arg_to_str(struct CmdlineArg *arg);  /* must not fail */
+Filename *cmdline_arg_to_filename(struct CmdlineArg *arg);  /* caller must free */
+void cmdline_arg_wipe(struct CmdlineArg *arg);
+struct CmdlineArg *cmdline_arg_from_str(struct CmdlineArgList *list, const char *string);
 /* Platforms provide their own constructors for CmdlineArgList */
-void cmdline_arg_list_free(CmdlineArgList *list);
+void cmdline_arg_list_free(struct CmdlineArgList *list);
 
 /*
  * Here we have a flags word provided by each tool, which describes
