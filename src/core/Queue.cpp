@@ -47,7 +47,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnNotify.empty())
     {
@@ -68,7 +68,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnInformation.empty())
     {
@@ -185,7 +185,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnDisplayBanner.empty())
     {
@@ -211,7 +211,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnReadDirectory.empty())
     {
@@ -233,7 +233,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnReadDirectoryProgress.empty())
     {
@@ -385,7 +385,8 @@ void TSimpleThread::WaitFor(DWORD Milliseconds) const
 // TSignalThread
 
 TSignalThread::TSignalThread(TObjectClassId Kind) noexcept :
-  TSimpleThread(Kind)
+  TSimpleThread(Kind),
+  FEvent(nullptr), FTerminated(true)
 {
 }
 
@@ -818,7 +819,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
   bool Result = !FFinished;
   if (Result)
   {
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem * TerminalItem = nullptr; // shut up
 
     {
       const TGuard Guard(FItemsSection);
@@ -968,7 +969,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
   bool Result = !FFinished;
   if (Result)
   {
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem * TerminalItem = nullptr; // shut up
 
     {
       const TGuard Guard(FItemsSection);
@@ -2417,6 +2418,20 @@ bool TTransferQueueItem::UpdateFileList(TQueueFileList * FileList)
 
 // TUploadQueueItem
 
+static void ExtractLocalSourcePath(TStrings * Files, UnicodeString & Path)
+{
+  ExtractCommonPath(Files, Path);
+  // this way the trailing backslash is preserved for root directories like "D:\"
+  Path = ExtractFileDir(IncludeTrailingBackslash(Path));
+}
+
+static bool IsSingleFileUpload(TStrings * FilesToCopy)
+{
+  return
+    (FilesToCopy->Count == 1) &&
+    FileExists(ApiPath(FilesToCopy->Strings[0]));
+}
+
 TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
   const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
@@ -2736,6 +2751,11 @@ void TTerminalThread::TerminalReopen()
   RunAction(nb::bind(&TTerminalThread::TerminalReopenEvent, this));
 }
 
+void TTerminalThread::DiscardException()
+{
+  SAFE_DESTROY(FException);
+}
+
 void TTerminalThread::RunAction(TNotifyEvent && Action)
 {
   DebugAssert(!FAction.empty());
@@ -2817,7 +2837,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
     __finally
     {
       FAction = nullptr;
-      SAFE_DESTROY_EX(Exception, FException);
+      DiscardException();
     } end_try__finally
   }
   catch(...)
@@ -3000,7 +3020,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     __finally
     {
       FUserAction = PrevUserAction;
-      SAFE_DESTROY_EX(Exception, FException);
+      DiscardException();
     } end_try__finally
 
     // Contrary to a call before, this is unconditional,

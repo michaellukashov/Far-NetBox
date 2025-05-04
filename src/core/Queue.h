@@ -67,6 +67,7 @@ class TTerminalQueue;
 class TQueueItemProxy;
 class TTerminalQueueStatus;
 class TQueueFileList;
+class TTerminalItem;
 
 #if defined(__BORLANDC__)
 typedef void (__closure * TQueueListUpdate)
@@ -85,8 +86,6 @@ using TQueueItemUpdateEvent = nb::FastDelegate2<void,
 enum TQueueEventType { qeEmpty, qeEmptyButMonitored, qePendingUserAction };
 using TQueueEvent = nb::FastDelegate2<void,
   TTerminalQueue * /*Queue*/, TQueueEventType /*Event*/>;
-
-class TTerminalItem;
 
 class NB_CORE_EXPORT TTerminalQueue final : public TSignalThread
 {
@@ -300,14 +299,15 @@ public:
   __property TQueueItem::TStatus Status = { read = FStatus };
   __property bool ProcessingUserAction = { read = FProcessingUserAction };
   __property int32_t Index = { read = GetIndex };
-  __property void * UserData = { read = FUserData, write = FUserData };
+  // Clang warns on property backed by private field which is never used
+  void * UserData{nullptr};
 
   TQueueItem::TInfo * GetInfo() const { return FInfo.get(); }
   TQueueItem::TStatus GetStatus() const { return FStatus; }
   bool GetProcessingUserAction() const { return FProcessingUserAction; }
-  void * GetUserData() const { return FUserData; }
-  void * GetUserData() { return FUserData; }
-  void SetUserData(void * Value) { FUserData = Value; }
+  void * GetUserData() const { return UserData; }
+  void * GetUserData() { return UserData; }
+  void SetUserData(void * Value) { UserData = Value; }
   TQueueItemProxy * Clone() { return new TQueueItemProxy(FQueue, FQueueItem); }
 
 private:
@@ -318,7 +318,6 @@ private:
   TTerminalQueueStatus * FQueueStatus{nullptr};
   std::unique_ptr<TQueueItem::TInfo> FInfo;
   bool FProcessingUserAction{false};
-  void * FUserData{nullptr};
 
   explicit TQueueItemProxy(gsl::not_null<TTerminalQueue *> Queue, gsl::not_null<TQueueItem *> QueueItem) noexcept;
   virtual ~TQueueItemProxy() noexcept override;
@@ -584,6 +583,7 @@ private:
   void TerminalStartReadDirectory(TObject * Sender);
   void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
   void TerminalInitializeLog(TObject * Sender);
+  void DiscardException();
 };
 
 enum TQueueFileState { qfsQueued = 0, qfsProcessed = 1 };
