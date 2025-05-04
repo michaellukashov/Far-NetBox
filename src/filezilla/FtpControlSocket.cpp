@@ -267,7 +267,7 @@ void CFtpControlSocket::ShowTimeoutError(UINT nID) const
   CString str2;
   str2.LoadString(nID);
   CString message;
-  message.Format(L"%s (%s)", str1, str2);
+  message.Format(L"%s (%s)", (LPCTSTR)str1, (LPCTSTR)str2);
   ShowStatus(message, FZ_LOG_ERROR);
 }
 
@@ -1214,7 +1214,7 @@ void CFtpControlSocket::OnReceive(int nErrorCode)
     }
     m_MultiLine = "";
     CString str;
-    str.Format(IDS_STATUSMSG_CONNECTEDWITH, m_ServerName);
+    str.Format(IDS_STATUSMSG_CONNECTEDWITH, (LPCTSTR)m_ServerName);
     ShowStatus(str, FZ_LOG_PROGRESS);
     m_pOwner->SetConnected(TRUE);
   }
@@ -1444,7 +1444,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
       CString str;
       str.Format(
         m_pSslLayer ? IDS_STATUSMSG_CONNECTEDWITHSSL : IDS_STATUSMSG_CONNECTEDWITH,
-        m_ServerName);
+        (LPCTSTR)m_ServerName);
       ShowStatus(str,FZ_LOG_PROGRESS);
     }
   }
@@ -1453,7 +1453,7 @@ void CFtpControlSocket::OnConnect(int nErrorCode)
     if (nErrorCode == WSAHOST_NOT_FOUND)
     {
       CString str;
-      str.Format(IDS_ERRORMSG_CANTRESOLVEHOST2, m_ServerName);
+      str.Format(IDS_ERRORMSG_CANTRESOLVEHOST2, (LPCTSTR)m_ServerName);
       ShowStatus(str, FZ_LOG_ERROR);
     }
     else
@@ -2384,9 +2384,9 @@ void CFtpControlSocket::List(BOOL bFinish, int nError /*=FALSE*/, CServerPath pa
 bool CFtpControlSocket::ConnectTransferSocket(const CString & host, UINT port)
 {
   CString hostname;
-  hostname.Format(L"%s:%d", host, port);
+  hostname.Format(L"%s:%d", (LPCTSTR)host, port);
   CString str;
-  str.Format(IDS_STATUSMSG_CONNECTING, hostname);
+  str.Format(IDS_STATUSMSG_CONNECTING, (LPCTSTR)hostname);
   ShowStatus(str, FZ_LOG_PROGRESS);
 
   bool result = true;
@@ -2702,7 +2702,7 @@ int32_t CFtpControlSocket::OpenTransferFile(CFileTransferData * pData)
     wchar_t * Error = m_pTools->LastSysErrorMessage();
     //Error opening the file
     CString str;
-    str.Format(IDS_ERRORMSG_FILEOPENFAILED,pData->transferfile.localfile);
+    str.Format(IDS_ERRORMSG_FILEOPENFAILED,(LPCTSTR)pData->transferfile.localfile);
     str += L"\n";
     str += Error;
     nb_free(Error);
@@ -2988,7 +2988,7 @@ void CFtpControlSocket::FileTransfer(t_transferfile * transferfile/*=0*/, BOOL b
     {
       CString str;
       str.Format(transferfile->get?IDS_STATUSMSG_DOWNLOADSTART:IDS_STATUSMSG_UPLOADSTART,
-            transferfile->get ? transferfile->remotepath.FormatFilename(transferfile->remotefile) : transferfile->localfile);
+            transferfile->get ? (LPCTSTR)transferfile->remotepath.FormatFilename(transferfile->remotefile) : (LPCTSTR)transferfile->localfile);
       ShowStatus(str,FZ_LOG_STATUS);
     }
 
@@ -5636,7 +5636,7 @@ void CFtpControlSocket::SetVerifyCertResult(int nResult, t_SslCertData *pData)
   DebugAssert(pData);
   if (!m_pSslLayer)
     return;
-  if (!(m_Operation.nOpMode == CSMODE_CONNECT))
+  if (DebugAlwaysFalse(m_Operation.nOpMode != CSMODE_CONNECT))
     return;
   m_bCheckForTimeout = TRUE;
   m_pSslLayer->SetNotifyReply(pData->priv_data, SSL_VERIFY_CERT, nResult);
@@ -5674,7 +5674,7 @@ void CFtpControlSocket::Chmod(CString filename, const CServerPath &path, int nVa
 {
   m_Operation.nOpMode=CSMODE_CHMOD;
   CString str;
-  str.Format( L"SITE CHMOD %03d %s", nValue, path.FormatFilename(filename));
+  str.Format( L"SITE CHMOD %03d %s", nValue, (LPCTSTR)path.FormatFilename(filename));
   Send(str);
 }
 
@@ -6141,6 +6141,7 @@ CString CFtpControlSocket::ConvertDomainName(CString domain)
 
   LPCWSTR buffer = T2CW(domain);
   int32_t sz = nb::StrLength(buffer) * 2 + 2;
+
   char *utf8 = nb::chcalloc(sz);
   if (!WideCharToMultiByte(CP_UTF8, 0, buffer, -1, utf8, sz, 0, 0))
   {
@@ -6476,7 +6477,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
 
       if (ahost != host)
       {
-        LogMessage(FZ_LOG_WARNING, L"Using host address %s instead of the one suggested by the server: %s", ahost, host);
+        LogMessage(FZ_LOG_WARNING, L"Using host address %s instead of the one suggested by the server: %s", (LPCTSTR)ahost, (LPCTSTR)host);
         host = ahost;
       }
       break;
@@ -6492,7 +6493,7 @@ bool CFtpControlSocket::CheckForcePasvIp(CString & host)
       }
       else if (!IsRoutableAddress(host) && IsRoutableAddress(ahost))
       {
-        LogMessage(FZ_LOG_WARNING, L"Server sent passive reply with unroutable address %s, using host address instead.", host, ahost);
+        LogMessage(FZ_LOG_WARNING, L"Server sent passive reply with unroutable address %s, using host address instead.", (LPCTSTR)host);
         host = ahost;
       }
       break;
