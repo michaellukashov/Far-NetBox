@@ -3,7 +3,7 @@ CFLAG=-DWIN32 -DWIN32_LEAN_AND_MEAN -DWINSCP -DNE_LFS -q-c -tWC -tWM -P
 CFLAG = $(CFLAG) -w-aus -w-par
 
 # The output directory for everything interesting
-OUT_D=..\lib
+OUT_D=$(LIB_PATH)
 # The output directory for all the temporary muck
 TMP_D=tmp
 
@@ -17,7 +17,7 @@ MKLIB=tlib /P64 /C
 
 # OBJ_D  - temp object file directory
 OBJ_D=$(TMP_D)
-INCL=inc;inc/mingw;../openssl;../expat/lib;../neon/src
+INCL=inc;inc/mingw;../openssl/include;../expat/lib;../neon/src
 
 O_LIBS3=$(OUT_D)\libs3.lib
 
