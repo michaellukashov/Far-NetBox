@@ -757,17 +757,8 @@ TEncryption::TEncryption(const RawByteString & AKey) noexcept
   }
 }
 
-TEncryption::~TEncryption() EXCEPT
+TEncryption::~TEncryption()
 {
-  if (FContext != nullptr)
-  {
-    aes_free_context(FContext);
-  }
-  Shred(FKey);
-  if ((FInputHeader.Length() > 0) && (FInputHeader.Length() < GetOverhead()))
-  {
-    throw Exception(LoadStr(UNKNOWN_FILE_ENCRYPTION));
-  }
 }
 
 void TEncryption::Finalize()

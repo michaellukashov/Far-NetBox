@@ -27,7 +27,6 @@ static char appname_[50]{};
 const char * const appname = appname_;
 extern "C" const bool share_can_be_downstream = false;
 extern "C" const bool share_can_be_upstream = false;
-THierarchicalStorage * PuttyStorage = nullptr;
 
 extern "C"
 {
@@ -272,6 +271,13 @@ static void connection_fatal(Seat * seat, const char * message)
   SecureShell->PuttyFatalError(UnicodeString(AnsiString(message)));
 }
 
+static void nonfatal(Seat *, const char * message)
+{
+  // there's no place in our putty code, where this is called
+  DebugFail();
+  AppLog(UnicodeString(AnsiString(message)));
+}
+
 SeatPromptResult confirm_ssh_host_key(Seat * seat, const char * host, int32_t port, const char * keytype,
   char * keystr, SeatDialogText *, HelpCtx,
   void (*DebugUsedArg(callback))(void *ctx, SeatPromptResult result), void * DebugUsedArg(ctx),
@@ -435,6 +441,7 @@ static const SeatVtable ScpSeatVtable =
     nullseat_notify_remote_exit,
     nullseat_notify_remote_disconnect,
     connection_fatal,
+    nonfatal,
     nullseat_update_specials_menu,
     nullseat_get_ttymode,
     nullseat_set_busy_status,
@@ -462,11 +469,8 @@ ScpSeat::ScpSeat(TSecureShell * ASecureShell)
   vt = &ScpSeatVtable;
 }
 
-#if defined(__BORLANDC__)
-static std::unique_ptr<TCriticalSection> PuttyRegistrySection(TraceInitPtr(new TCriticalSection()));
+static std::unique_ptr<TCriticalSection> PuttyStorageSection(TraceInitPtr(new TCriticalSection()));
 THierarchicalStorage * PuttyStorage = nullptr;
-#endif // defined(__BORLANDC__)
-static TCriticalSection PuttyRegistrySection;
 enum TPuttyRegistryMode { prmPass, prmRedirect, prmCollect, prmFail };
 static TPuttyRegistryMode PuttyRegistryMode = prmRedirect;
 using TPuttyRegistryTypes = nb::map_t<UnicodeString, uint32_t>;
@@ -1516,7 +1520,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
 {
   if (PuttyRegistryTypes.empty())
   {
-    TGuard Guard(PuttyRegistrySection);
+    TGuard Guard(*PuttyStorageSection.get());
     TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmCollect);
     Conf * conf = conf_new();
     try__finally
@@ -1561,14 +1565,14 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
 
 void PuttyDefaults(Conf * conf)
 {
-  TGuard Guard(PuttyRegistrySection);
+  TGuard Guard(*PuttyStorageSection.get());
   TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmFail);
   do_defaults(nullptr, conf);
 }
 
 void SavePuttyDefaults(const UnicodeString & Name)
 {
-  TGuard Guard(PuttyRegistrySection);
+  TGuard Guard(*PuttyStorageSection.get());
   TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmPass);
   Conf * conf = conf_new();
   try__finally

@@ -217,7 +217,7 @@ static UnicodeString GetS3ConfigValue(
     Result = File->ReadString(ConfigSection, Name, EmptyStr);
     if (!Result.IsEmpty())
     {
-      Source = FORMAT(L"%s/%s", (ExtractFileName(File->FileName), Profile));
+      Source = FORMAT("%s/%s", ExtractFileName(File->FileName), Profile);
     }
   }
   return Result;
@@ -251,7 +251,7 @@ static UnicodeString GetS3ConfigValue(
     }
     if (!Result.IsEmpty())
     {
-      ASource = FORMAT(L"%%%s%%", EnvName);
+      ASource = FORMAT("%%%s%%", EnvName);
     }
     else if (!AConfigName.IsEmpty())
     {
@@ -288,7 +288,7 @@ static UnicodeString GetS3ConfigValue(
 
         if (!Result.IsEmpty())
         {
-          ASource = FORMAT(L"%s=>%s", SourceSource, ASource);
+          ASource = FORMAT("%s=>%s", SourceSource, ASource);
         }
       }
     }
@@ -359,7 +359,7 @@ static UnicodeString GetS3ConfigValue(
           TJSONObject * ProfileData = dynamic_cast<TJSONObject *>(ProfileDataValue.get());
           if (ProfileData == nullptr)
           {
-            throw new Exception(FORMAT(L"Unexpected response: %s", ProfileDataStr.SubString(1, 1000)));
+            throw new Exception(FORMAT("Unexpected response: %s", ProfileDataStr.SubString(1, 1000)));
           }
           TJSONValue * CodeValue = ProfileData->Values[L"Code"];
           if (CodeValue == nullptr)
@@ -369,7 +369,7 @@ static UnicodeString GetS3ConfigValue(
           UnicodeString Code = CodeValue->Value();
           if (!SameText(Code, L"Success"))
           {
-            throw new Exception(FORMAT(L"Received non-success code: %s", Code));
+            throw new Exception(FORMAT("Received non-success code: %s", Code));
           }
           TJSONValue * ExpirationValue = ProfileData->Values[L"Expiration"];
           if (ExpirationValue == nullptr)
@@ -409,7 +409,7 @@ static UnicodeString GetS3ConfigValue(
     if (I != S3Credentials.end())
     {
       Result = I->second;
-      ASource = FORMAT(L"meta-data/%s", S3SecurityProfile);
+      ASource = FORMAT("meta-data/%s", S3SecurityProfile);
     }
   }
 
@@ -551,7 +551,7 @@ void TS3FileSystem::Open()
 #endif // defined(__BORLANDC__)
     if (!SessionToken.IsEmpty())
     {
-      FTerminal->LogEvent(FORMAT(L"Session token read from %s", SessionTokenSource));
+      FTerminal->LogEvent(FORMAT("Session token read from %s", SessionTokenSource));
     }
   }
   if (!SessionToken.IsEmpty())
@@ -566,7 +566,7 @@ void TS3FileSystem::Open()
   DebugAssert((ADefaultPort == HTTPSPortNumber) || (ADefaultPort == HTTPPortNumber));
   if (Data->PortNumber != ADefaultPort)
   {
-    FPortSuffix = UTF8String(FORMAT(L":%d", Data->PortNumber));
+    FPortSuffix = UTF8String(FORMAT(":%d", Data->PortNumber));
   }
   FTimeout = Data->Timeout;
 
@@ -853,8 +853,9 @@ struct TLibS3XmlCallbackData : TLibS3CallbackData
 };
 
 const UnicodeString AssumeRoleVersion(TraceInitStr(L"2011-06-15"));
-const UnicodeString AssumeRoleNamespace(TraceInitStr(FORMAT(L"https://sts.amazonaws.com/doc/%s/", (AssumeRoleVersion))));
+const UnicodeString AssumeRoleNamespace(TraceInitStr(FORMAT("https://sts.amazonaws.com/doc/%s/", AssumeRoleVersion)));
 
+#if defined(__BORLANDC__)
 static _di_IXMLNode NeedNode(const _di_IXMLNodeList & NodeList, const UnicodeString & Name, const UnicodeString & Namespace)
 {
   _di_IXMLNode Result = NodeList->FindNode(Name, Namespace);
@@ -878,26 +879,27 @@ static const _di_IXMLDocument CreateDocumentFromXML(const TLibS3XmlCallbackData 
   Result->LoadFromXML(UTFToString(Data.Contents));
   return Result;
 }
+#endif // defined(__BORLANDC__)
 
 void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
 {
   // According to AWS cli does, AWS_ROLE_SESSION_NAME does not apply here
-  UnicodeString RoleSessionName = DefaultStr(FTerminal->SessionData->S3RoleSessionName, AppNameString());
+  const UnicodeString RoleSessionName = DefaultStr(FTerminal->SessionData->S3RoleSessionName, AppNameString());
 
   try
   {
     TLibS3XmlCallbackData Data;
     RequestInit(Data);
 
-    UnicodeString QueryParams =
-      FORMAT(L"Version=%s&Action=AssumeRole&RoleSessionName=%s&RoleArn=%s", (
-        AssumeRoleVersion, EncodeUrlString(RoleSessionName), EncodeUrlString(RoleArn)));
+    const UnicodeString QueryParams =
+      FORMAT("Version=%s&Action=AssumeRole&RoleSessionName=%s&RoleArn=%s",
+        AssumeRoleVersion, EncodeUrlString(RoleSessionName), EncodeUrlString(RoleArn));
 
-    UTF8String AuthRegionBuf = UTF8String(FAuthRegion);
-    UTF8String QueryParamsBuf = UTF8String(QueryParams);
-    UTF8String StsService = L"sts";
-    AnsiString StsHostName =
-      AnsiString(ReplaceStr(S3LibDefaultHostName(), FORMAT(L"%s.", (UnicodeString(S3_SERVICE))), FORMAT(L"%s.", (UnicodeString(StsService)))));
+    const UTF8String AuthRegionBuf = UTF8String(FAuthRegion);
+    const UTF8String QueryParamsBuf = UTF8String(QueryParams);
+    const UTF8String StsService = L"sts";
+    const AnsiString StsHostName =
+      AnsiString(ReplaceStr(S3LibDefaultHostName(), FORMAT("%s.", UnicodeString(S3_SERVICE)), FORMAT("%s.", UnicodeString(StsService))));
     DebugAssert(StsHostName != S3LibDefaultHostName());
 
     RequestParams AssumeRoleRequestParams =
@@ -936,17 +938,17 @@ void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
     UnicodeString SessionToken = AssumeRoleNeedNode(CredentialsNode->ChildNodes, L"SessionToken")->Text;
     UnicodeString ExpirationStr = AssumeRoleNeedNode(CredentialsNode->ChildNodes, L"Expiration")->Text;
 
-    FTerminal->LogEvent(FORMAT(L"Assumed role \"%s\".", (RoleArn)));
-    FTerminal->LogEvent(FORMAT(L"New acess key is: %s", (AccessKeyId)));
+    FTerminal->LogEvent(FORMAT("Assumed role \"%s\".", RoleArn));
+    FTerminal->LogEvent(FORMAT("New acess key is: %s", AccessKeyId));
     if (Configuration->LogSensitive)
     {
-      FTerminal->LogEvent(FORMAT(L"Secret access key: %s", (SecretAccessKey)));
-      FTerminal->LogEvent(FORMAT(L"Session token: %s", (SessionToken)));
+      FTerminal->LogEvent(FORMAT("Secret access key: %s", SecretAccessKey));
+      FTerminal->LogEvent(FORMAT("Session token: %s", SessionToken));
     }
 
     // Only logged for now
     TDateTime Expiration = ParseExpiration(ExpirationStr);
-    FTerminal->LogEvent(FORMAT(L"Credentials expiration: %s", (StandardTimestamp(Expiration))));
+    FTerminal->LogEvent(FORMAT("Credentials expiration: %s", StandardTimestamp(Expiration)));
 
     SetCredentials(AccessKeyId, SecretAccessKey, SessionToken);
   }
@@ -1857,7 +1859,7 @@ bool TS3FileSystem::ParsePathForPropertiesRequests(
 }
 
 const UnicodeString S3Version(TraceInitStr(L"2006-03-01"));
-const UnicodeString S3Namespace(TraceInitStr(FORMAT(L"http://s3.amazonaws.com/doc/%s/", (S3Version))));
+const UnicodeString S3Namespace(TraceInitStr(FORMAT("http://s3.amazonaws.com/doc/%s/", S3Version)));
 
 static _di_IXMLNode S3NeedNode(const _di_IXMLNodeList & NodeList, const UnicodeString & Name)
 {
@@ -2062,7 +2064,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
       {
         UnicodeString Key = Tags->Strings[Index];
         UnicodeString Value = Tags->Strings[Index + 1];
-        Xml += Indent + Indent + FORMAT(L"<Tag><Key>%s</Key><Value>%s</Value></Tag>", (XmlEscape(Key), XmlEscape(Value))) + NewLine;
+        Xml += Indent + Indent + FORMAT("<Tag><Key>%s</Key><Value>%s</Value></Tag>", XmlEscape(Key), XmlEscape(Value)) + NewLine;
       }
 
       Xml +=
@@ -2114,7 +2116,7 @@ uint16_t TS3FileSystem::AclGrantToPermissions(S3AclGrant & AclGrant, const TS3Fi
     }
     else
     {
-      FTerminal->LogEvent(1, FORMAT(L"Unsupported permission for canonical user %s", StrFromS3(Properties.OwnerId)));
+      FTerminal->LogEvent(1, FORMAT("Unsupported permission for canonical user %s", StrFromS3(Properties.OwnerId)));
     }
   }
   else if (AclGrant.granteeType == S3GranteeTypeAllAwsUsers)

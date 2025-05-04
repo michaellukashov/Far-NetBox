@@ -7,7 +7,9 @@
 #include "Configuration.h"
 #include "CopyParam.h"
 #include "Exceptions.h"
-//#include <vector>
+#if defined(__BORLANDC__)
+#include <vector>
+#endif // defined(__BORLANDC__)
 
 class TFileOperationProgressType;
 enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,

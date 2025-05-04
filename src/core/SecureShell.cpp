@@ -234,7 +234,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case cipArcfour: pcipher = CIPHER_ARCFOUR; break;
       case cipChaCha20: pcipher = CIPHER_CHACHA20; break;
       case cipAESGCM: pcipher = CIPHER_AESGCM; break;
-      default: DebugFail(); pcipher = nullptr; // shut up
+      default: DebugFail(); pcipher = 0; // shut up
     }
     conf_set_int_int(conf, CONF_ssh_cipherlist, c, pcipher);
   }
@@ -257,7 +257,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case kexNTRUHybrid: pkex = KEX_NTRU_HYBRID; break;
       case kexMLKEM25519Hybrid: pkex = KEX_MLKEM_25519_HYBRID; break;
       case kexMLKEMNISTHybrid: pkex = KEX_MLKEM_NIST_HYBRID; break;
-      default: DebugFail(); pkex = nullptr; // shutup
+      default: DebugFail(); pkex = 0; // shutup
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }
@@ -2555,7 +2555,7 @@ UnicodeString TSecureShell::StoreHostKey(
   std::unique_ptr<THierarchicalStorage> Storage(GetHostKeyStorage());
   Storage->AccessMode = smReadWrite;
   PuttyStorage = Storage.get();
-  store_host_key(AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr).c_str());
+  store_host_key(FSeat.get(), AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr).c_str());
   return Storage->Source;
 }
 

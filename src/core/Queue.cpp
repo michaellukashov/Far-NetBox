@@ -2420,9 +2420,9 @@ bool TTransferQueueItem::UpdateFileList(TQueueFileList * FileList)
 
 static void ExtractLocalSourcePath(TStrings * Files, UnicodeString & Path)
 {
-  ExtractCommonPath(Files, Path);
+  base::ExtractCommonPath(Files, Path);
   // this way the trailing backslash is preserved for root directories like "D:\"
-  Path = ExtractFileDir(IncludeTrailingBackslash(Path));
+  Path = ::ExtractFileDir(::IncludeTrailingBackslash(Path));
 }
 
 static bool IsSingleFileUpload(TStrings * FilesToCopy)
@@ -2753,7 +2753,7 @@ void TTerminalThread::TerminalReopen()
 
 void TTerminalThread::DiscardException()
 {
-  SAFE_DESTROY(FException);
+  SAFE_DESTROY_EX(Exception, FException);
 }
 
 void TTerminalThread::RunAction(TNotifyEvent && Action)

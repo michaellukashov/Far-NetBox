@@ -33,7 +33,7 @@ UnicodeString DenormalizeString(const UnicodeString & S)
   UnicodeString Result = S;
   if (Result.IsEmpty())
   {
-    Result = EmptyString;
+    Result = EmptyStr;
   }
   return Result;
 }

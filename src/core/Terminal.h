@@ -32,6 +32,7 @@ class TParallelOperation;
 class TCollectedFileList;
 struct TLocalFileHandle;
 struct TNeonCertificateData;
+class TQueueItem;
 using TCalculatedSizes = nb::vector_t<int64_t>;
 
 using TQueryUserEvent = nb::FastDelegate8<void,
@@ -667,7 +668,7 @@ public:
     TUpdatedSynchronizationChecklistItems && OnUpdatedSynchronizationChecklistItems, void * Token,
     TFileOperationStatistics * Statistics);
   TQueueItem * SynchronizeToQueue(
-    const TSynchronizeChecklist::TItem * ChecklistItem, const TCopyParamType * CopyParam, int32_t Params, bool Parallel);
+    const TChecklistItem * ChecklistItem, const TCopyParamType * CopyParam, int32_t Params, bool Parallel);
   void SynchronizeChecklistCalculateSize(
     TSynchronizeChecklist * Checklist, const TSynchronizeChecklist::TItemList & Items,
     const TCopyParamType * CopyParam);

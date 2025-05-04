@@ -43,7 +43,7 @@ void TBookmarks::Load(THierarchicalStorage * Storage)
 {
   for (int32_t Idx = 0; Idx <= 3; ++Idx)
   {
-    if (Storage->OpenSubKey(Keys[Idx].data(), false))
+    if (Storage->OpenSubKey(Keys[Idx], false))
     {
       std::unique_ptr<TStrings> BookmarkKeys(std::make_unique<TStringList>());
       try__finally
@@ -168,7 +168,7 @@ void TBookmarks::Save(THierarchicalStorage * Storage, bool All)
 {
   for (int32_t Idx = 0; Idx <= 3; Idx++)
   {
-    if (Storage->OpenSubKey(Keys[Idx].data(), true))
+    if (Storage->OpenSubKey(Keys[Idx], true))
     {
       for (int32_t Index = 0; Index < FBookmarkLists->GetCount(); ++Index)
       {

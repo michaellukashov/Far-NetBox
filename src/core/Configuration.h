@@ -1,7 +1,9 @@
 #pragma once
 
-// #include <set>
-// #include <list>
+#if defined(__BORLANDC__)
+#include <set>
+#include <list>
+#endif // defined(__BORLANDC__)
 #include "RemoteFiles.h"
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
@@ -503,7 +505,6 @@ public:
   int32_t GetLogProtocol() const { return FLogProtocol; }
   int32_t GetActualLogProtocol() const { return FActualLogProtocol; }
   bool GetLogActionsRequired() const { return FLogActionsRequired; }
-  int32_t GetLogWindowLines() const { return FLogWindowLines; }
   TNotifyEvent & GetOnChange() { return FOnChange; }
   void SetOnChange(TNotifyEvent && Value) { FOnChange = std::move(Value); }
   int32_t GetSessionReopenAuto() const { return FSessionReopenAuto; }
@@ -536,8 +537,8 @@ private:
   nb::vector_t<TShortCut> FShortCuts;
 };
 
-extern "C" { 
-#include <windows/platform.h>
+extern "C" {
+#include <putty.h>
 }
 
 constexpr const char * OriginalPuttyRegistryStorageKey = PUTTY_REG_POS;
