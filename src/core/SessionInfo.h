@@ -51,6 +51,7 @@ enum TFSCapability { fcUserGroupListing = 0, fcModeChanging, fcAclChangingFiles,
   fcBackgroundTransfers,
   fcTransferOut, fcTransferIn,
   fcMoveOverExistingFile,
+  fcTags,
   fcCount };
 
 struct NB_CORE_EXPORT TFileSystemInfo
@@ -440,3 +441,4 @@ private:
   TCriticalSection FCriticalSection;
 };
 
+UnicodeString XmlEscape(const UnicodeString & Str);

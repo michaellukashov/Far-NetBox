@@ -445,30 +445,33 @@ protected:
 #if defined(__BORLANDC__)
   void RecordFile(const UnicodeString & AIndent, TRemoteFile * AFile, bool IncludeFileName)
   {
-    FLog->AddIndented(AIndent + L"<file>");
-    FLog->AddIndented(AIndent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(AFile->FileName))));
-    FLog->AddIndented(AIndent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(towupper(AFile->Type)))));
-    if (!AFile->IsDirectory)
+    FLog->AddIndented(Indent + L"<file>");
+    if (IncludeFileName)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(AFile->Size))));
+      FLog->AddIndented(Indent + FORMAT(L"  <filename value=\"%s\" />", (XmlAttributeEscape(File->FileName))));
     }
-    if (AFile->ModificationFmt != mfNone)
+    FLog->AddIndented(Indent + FORMAT(L"  <type value=\"%s\" />", (XmlAttributeEscape(towupper(File->Type)))));
+    if (!File->IsDirectory)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(AFile->Modification))));
+      FLog->AddIndented(Indent + FORMAT(L"  <size value=\"%s\" />", (IntToStr(File->Size))));
     }
-    if (!AFile->Rights->Unknown)
+    if (File->ModificationFmt != mfNone)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(AFile->Rights->Text))));
+      FLog->AddIndented(Indent + FORMAT(L"  <modification value=\"%s\" />", (StandardTimestamp(File->Modification))));
     }
-    if (AFile->Owner.IsSet)
+    if (!File->Rights->Unknown)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(AFile->Owner.DisplayText))));
+      FLog->AddIndented(Indent + FORMAT(L"  <permissions value=\"%s\" />", (XmlAttributeEscape(File->Rights->Text))));
     }
-    if (AFile->Group.IsSet)
+    if (File->Owner.IsSet)
     {
-      FLog->AddIndented(AIndent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(AFile->Group.DisplayText))));
+      FLog->AddIndented(Indent + FORMAT(L"  <owner value=\"%s\" />", (XmlAttributeEscape(File->Owner.DisplayText))));
     }
-    FLog->AddIndented(AIndent + L"</file>");
+    if (File->Group.IsSet)
+    {
+      FLog->AddIndented(Indent + FORMAT(L"  <group value=\"%s\" />", (XmlAttributeEscape(File->Group.DisplayText))));
+    }
+    FLog->AddIndented(Indent + L"</file>");
   }
 
   void SynchronizeChecklistItemFileInfo(
@@ -827,7 +830,7 @@ static FILE * OpenLogFile(const UnicodeString & LogFileName, const TDateTime & S
 }
 
 
-constexpr wchar_t * LogLineMarks = L"<>!.*";
+constexpr const wchar_t * LogLineMarks = L"<>!.*";
 TSessionLog::TSessionLog(gsl::not_null<TSessionUI *> UI, const TDateTime & Started, gsl::not_null<TSessionData *> SessionData,
   TConfiguration * Configuration) noexcept :
   FConfiguration(Configuration),
@@ -1745,7 +1748,7 @@ void TActionLog::ReflectSettings()
   {
     FLogging = true;
 #if defined(__BORLANDC__)
-    Add(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    Add(XmlDeclaration);
     UnicodeString SessionName =
       (FSessionData != nullptr) ? XmlAttributeEscape(FSessionData->SessionName) : UnicodeString(L"nosession");
     Add(FORMAT(L"<session xmlns=\"http://winscp.net/schema/session/1.0\" name=\"%s\" start=\"%s\">",

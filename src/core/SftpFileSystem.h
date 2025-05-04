@@ -204,7 +204,7 @@ protected:
     TOverwriteMode & OverwriteMode, const TOverwriteFileParams * FileParams);
   bool SFTPConfirmResume(const UnicodeString & DestFileName, bool PartialBiggerThanSource,
     TFileOperationProgressType * OperationProgress);
-  char * GetEOL() const;
+  const char * GetEOL() const;
   void BusyStart();
   void BusyEnd();
   uint32_t TransferBlockSize(

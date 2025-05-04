@@ -62,14 +62,12 @@ constexpr SSH_FXP_TYPE
   SSH_FXP_ATTRS = 105,
   SSH_FXP_EXTENDED = 200,
   SSH_FXP_EXTENDED_REPLY = 201;
-  // SSH_FXP_ATTRS = 105;
 
 constexpr SSH_FILEXFER_ATTR_TYPE
   SSH_FILEXFER_ATTR_SIZE = 0x00000001,
   SSH_FILEXFER_ATTR_UIDGID = 0x00000002,
   SSH_FILEXFER_ATTR_PERMISSIONS = 0x00000004,
   SSH_FILEXFER_ATTR_ACMODTIME = 0x00000008,
-  SSH_FILEXFER_ATTR_EXTENDED = 0x80000000,
   SSH_FILEXFER_ATTR_ACCESSTIME = 0x00000008,
   SSH_FILEXFER_ATTR_CREATETIME = 0x00000010,
   SSH_FILEXFER_ATTR_MODIFYTIME = 0x00000020,
@@ -93,10 +91,10 @@ SSH_FILEXFER_ATTR_COMMON =
 
 constexpr SSH_FILEXFER_TYPE
   SSH_FILEXFER_TYPE_REGULAR = 1,
-  SSH_FILEXFER_TYPE_DIRECTORY = 2,
-  SSH_FILEXFER_TYPE_SYMLINK = 3,
-  SSH_FILEXFER_TYPE_SPECIAL = 4,
-  SSH_FILEXFER_TYPE_UNKNOWN = 5;
+  SSH_FILEXFER_TYPE_DIRECTORY = 2;
+  // SSH_FILEXFER_TYPE_SYMLINK = 3,
+  // SSH_FILEXFER_TYPE_SPECIAL = 4,
+  // SSH_FILEXFER_TYPE_UNKNOWN = 5;
 
 constexpr SSH_FXF_TYPE
   SSH_FXF_READ = 0x00000001,
@@ -107,40 +105,40 @@ constexpr SSH_FXF_TYPE
   SSH_FXF_EXCL = 0x00000020,
   SSH_FXF_TEXT = 0x00000040,
 
-  SSH_FXF_ACCESS_DISPOSITION = 0x00000007,
+  // SSH_FXF_ACCESS_DISPOSITION = 0x00000007,
   SSH_FXF_CREATE_NEW = 0x00000000,
   SSH_FXF_CREATE_TRUNCATE = 0x00000001,
   SSH_FXF_OPEN_EXISTING = 0x00000002,
   SSH_FXF_OPEN_OR_CREATE = 0x00000003,
-  SSH_FXF_TRUNCATE_EXISTING = 0x00000004,
+  // SSH_FXF_TRUNCATE_EXISTING = 0x00000004,
   SSH_FXF_ACCESS_APPEND_DATA = 0x00000008,
-  SSH_FXF_ACCESS_APPEND_DATA_ATOMIC = 0x00000010,
+  // SSH_FXF_ACCESS_APPEND_DATA_ATOMIC = 0x00000010,
   SSH_FXF_ACCESS_TEXT_MODE = 0x00000020;
 
 constexpr ACE4_TYPE
   ACE4_READ_DATA = 0x00000001,
-  ACE4_LIST_DIRECTORY = 0x00000001,
+  // ACE4_LIST_DIRECTORY = 0x00000001,
   ACE4_WRITE_DATA = 0x00000002,
-  ACE4_ADD_FILE = 0x00000002,
+  // ACE4_ADD_FILE = 0x00000002,
   ACE4_APPEND_DATA = 0x00000004,
-  ACE4_ADD_SUBDIRECTORY = 0x00000004,
-  ACE4_READ_NAMED_ATTRS = 0x00000008,
-  ACE4_WRITE_NAMED_ATTRS = 0x00000010,
-  ACE4_EXECUTE = 0x00000020,
-  ACE4_DELETE_CHILD = 0x00000040,
-  ACE4_READ_ATTRIBUTES = 0x00000080,
-  ACE4_WRITE_ATTRIBUTES = 0x00000100,
-  ACE4_DELETE = 0x00010000,
-  ACE4_READ_ACL = 0x00020000,
-  ACE4_WRITE_ACL = 0x00040000,
-  ACE4_WRITE_OWNER = 0x00080000,
-  ACE4_SYNCHRONIZE = 0x00100000;
+  // ACE4_ADD_SUBDIRECTORY = 0x00000004,
+  // ACE4_READ_NAMED_ATTRS = 0x00000008,
+  // ACE4_WRITE_NAMED_ATTRS = 0x00000010,
+  // ACE4_EXECUTE = 0x00000020,
+  // ACE4_DELETE_CHILD = 0x00000040,
+  // ACE4_READ_ATTRIBUTES = 0x00000080,
+  // ACE4_WRITE_ATTRIBUTES = 0x00000100,
+  // ACE4_DELETE = 0x00010000,
+  // ACE4_READ_ACL = 0x00020000,
+  // ACE4_WRITE_ACL = 0x00040000,
+  // ACE4_WRITE_OWNER = 0x00080000,
+  // ACE4_SYNCHRONIZE = 0x00100000;
 
 constexpr uint32_t SSH_FILEXFER_ATTR_FLAGS_HIDDEN = 0x00000004;
 
 using SSH_FXP_REALPATH_TYPE = uint8_t;
 constexpr SSH_FXP_REALPATH_TYPE
-  SSH_FXP_REALPATH_NO_CHECK = 0x00000001,
+  // SSH_FXP_REALPATH_NO_CHECK = 0x00000001,
   SSH_FXP_REALPATH_STAT_IF = 0x00000002,
   SSH_FXP_REALPATH_STAT_ALWAYS = 0x00000003;
 
@@ -1928,7 +1926,7 @@ protected:
         (FFileSystem->FSecureShell->GetSshImplementation() == sshiBitvise) ||
         ((FFileSystem->FSupport->Loaded &&
          FLAGSET(FFileSystem->FSupport->AttributeMask, SSH_FILEXFER_ATTR_OWNERGROUP) &&
-         !File->GetFileOwner().GetIsSet()) || !File->GetFileGroup().GetIsSet());
+         (!File->GetFileOwner().GetIsSet()) || !File->GetFileGroup().GetIsSet()));
 
       Result = (MissingRights || MissingOwnerGroup);
       if (Result)
@@ -2308,6 +2306,7 @@ bool TSFTPFileSystem::IsCapable(int32_t Capability) const
     case fcLocking:
     case fcAclChangingFiles: // pending implementation
     case fcMoveOverExistingFile:
+    case fcTags:
       return false;
 
     case fcNewerOnlyUpload:
@@ -2735,7 +2734,7 @@ SSH_FX_TYPE TSFTPFileSystem::GotStatusPacket(
       Error += L"\n\n" + LoadStr(SFTP_STATUS_4);
     }
     FTerminal->TerminalError(nullptr, Error, HelpKeyword);
-    return 0;
+    UNREACHABLE_AFTER_NORETURN(return 0);
   }
   else
   {
@@ -2811,7 +2810,7 @@ SSH_FX_TYPE TSFTPFileSystem::ReceivePacket(TSFTPPacket * Packet,
 
   SSH_FX_TYPE Result = SSH_FX_OK;
   int32_t Reservation = FPacketReservations->IndexOf(Packet);
-  bool NotLogged{false};
+  bool NotLogged{false}; // shut up
 
   if ((Reservation < 0) || (Packet->GetCapacity() == 0))
   {
@@ -3603,7 +3602,7 @@ void TSFTPFileSystem::DoStartup()
       TSFTPPacket Packet(SSH_FXP_EXTENDED, FCodePage);
       Packet.AddString(RawByteString(SFTP_EXT_LIMITS));
       SendPacketAndReceiveResponse(&Packet, &Packet, SSH_FXP_EXTENDED_REPLY);
-      uint32_t MaxPacketSize = nb::ToUInt32(std::min(std::numeric_limits<int64_t>::max(), Packet.GetInt64()));
+      uint32_t MaxPacketSize = nb::ToUInt32(std::min(static_cast<int64_t>(std::numeric_limits<uint32_t>::max()), Packet.GetInt64()));
       FTerminal->LogEvent(FORMAT(L"Limiting packet size to server's limit of %d + %d bytes",
         nb::ToInt32(MaxPacketSize), nb::ToInt32(PacketPayload)));
       FMaxPacketSize = MaxPacketSize + PacketPayload;
@@ -3641,7 +3640,7 @@ void TSFTPFileSystem::DoStartup()
 
 }
 
-char * TSFTPFileSystem::GetEOL() const
+const char * TSFTPFileSystem::GetEOL() const
 {
   if (FVersion >= 4)
   {
@@ -3660,7 +3659,7 @@ void TSFTPFileSystem::LookupUsersGroups()
 
   TSFTPPacket * Packets[] = { &PacketOwners, &PacketGroups };
   TRemoteTokenList * Lists[] = { FTerminal->GetUsers(), FTerminal->GetGroups() };
-  constexpr wchar_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
+  constexpr uchar8_t ListTypes[] = { OGQ_LIST_OWNERS, OGQ_LIST_GROUPS };
 
   for (int32_t Index = 0; Index < nb::ToIntPtr(_countof(Packets)); ++Index)
   {
@@ -4855,7 +4854,9 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
         break;
 
       case qaCancel:
+      default:
         OperationProgress->SetCancelAtLeast(csCancel);
+        ResumeTransfer = false; // shut up
         Abort();
         break;
     }
@@ -4869,9 +4870,10 @@ bool TSFTPFileSystem::SFTPConfirmResume(const UnicodeString & DestFileName,
 
 bool TSFTPFileSystem::DoesFileLookLikeSymLink(TRemoteFile * File) const
 {
+  uint16_t AllInt = static_cast<uint16_t>(TRights::rfAll);
   return
     (FVersion < 4) &&
-    ((*File->Rights() & TRights::rfAll) == TRights::rfAll) &&
+    ((*File->Rights() & AllInt) == AllInt) &&
     (File->Size < 100);
 }
 
@@ -4888,7 +4890,7 @@ void TSFTPFileSystem::Source(
   bool DestFileExists = false;
   TRights DestRights;
 
-  int64_t ResumeOffset = 0;
+  int64_t ResumeOffset = 0; // shut up
 
   // should we check for interrupted transfer?
   ResumeAllowed =
@@ -5908,7 +5910,7 @@ void TSFTPFileSystem::Sink(
         int32_t GapCount = 0;
         uint32_t Missing = 0;
         uint32_t DataLen = 0;
-        uint32_t BlockSize = 0;
+        uint32_t BlockSize = 0; // shut up
         bool ConvertToken = false;
         TEncryption Encryption(FTerminal->GetEncryptKey());
         const bool Decrypt = FTerminal->IsFileEncrypted(AFileName);
