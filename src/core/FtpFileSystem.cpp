@@ -2,6 +2,10 @@
 #include <vcl.h>
 #pragma hdrstop
 
+
+#if defined(__BORLANDC__)
+#include <list>
+#endif // defined(__BORLANDC__)
 #ifndef MPEXT
 #define MPEXT
 #endif
@@ -35,7 +39,6 @@
 
 constexpr const int32_t DummyCodeClass = 8;
 constexpr const int32_t DummyTimeoutCode = 801;
-constexpr const int32_t DummyCancelCode = 802;
 constexpr const int32_t DummyDisconnectCode = 803;
 
 class TFileZillaImpl final : public TFileZillaIntf
@@ -300,6 +303,7 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) noexcept :
   FQueue(std::make_unique<TMessageQueue>()),
   FReply(0),
   FQueueEvent(::CreateEvent(nullptr, true, false, nullptr)),
+  FFileSystemInfoValid(false),
   FCommandReply(0),
   FLastCommand(CMD_UNKNOWN),
   FPasswordFailed(false),
@@ -520,6 +524,7 @@ void TFTPFileSystem::Open()
         break;
 
       default:
+        ServerType = int32_t(); // shutup
         DebugFail();
         break;
     }
@@ -2115,6 +2120,7 @@ bool TFTPFileSystem::IsCapable(int32_t Capability) const
     case fcResumeSupport:
     case fcChangePassword:
     case fcParallelFileTransfers:
+    case fcTags:
       return false;
 
     default:
@@ -2367,7 +2373,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
           ReadFile(File->GetFullFileName(), UtcFile);
           UtcFilePtr.reset(UtcFile);
         }
-        catch (Exception & /*E*/)
+        catch (Exception &)
         {
           FDetectTimeDifference = false;
           if (!FTerminal->GetActive())
@@ -2404,7 +2410,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(const TRemoteFileList * FileList)
           // Time difference between timestamp retrieved using MDTM (UTC converted to local timezone)
           // and using LIST (no conversion, expecting the server uses the same timezone as the client).
           // Note that FormatTimeZone reverses the value.
-          FTimeDifference = nb::ToInt64(SecsPerDay * (UtcModification - File->GetModification()));
+          FTimeDifference = nb::ToInt64(SecsPerDay * nb::ToInt64(UtcModification - File->GetModification()));
           const double Hours = TTimeSpan::FromSeconds(nb::ToDouble(FTimeDifference)).GetTotalHours();
 
           UnicodeString FileLog =
@@ -2445,7 +2451,7 @@ void TFTPFileSystem::AutoDetectTimeDifference(
       // do we need FTimeDifference for the operation?
       // (tmAutomatic - AsciiFileMask can theoretically include time constraints, while it is unlikely)
       (!FLAGSET(Params, cpNoConfirmation) ||
-       CopyParam->GetNewerOnly() || (!(CopyParam->GetTransferMode() == tmAutomatic)) || !CopyParam->GetIncludeFileMask().Masks().IsEmpty()))
+       CopyParam->GetNewerOnly() || (CopyParam->GetTransferMode() == tmAutomatic) || !CopyParam->GetIncludeFileMask().Masks().IsEmpty()))
   {
     FTerminal->LogEvent("Retrieving listing to detect timezone difference");
     DummyReadDirectory(ADirectory);
@@ -2598,7 +2604,7 @@ void TFTPFileSystem::ReadFile(const UnicodeString & AFileName,
     {
       const UnicodeString Path = RemoteExtractFilePath(AFileName);
       UnicodeString NameOnly;
-      int32_t P = AFileName.Pos(L".");
+      int32_t P = AFileName.Pos(L"."); // shut up
       const bool MVSPath =
         FMVS && Path.IsEmpty() &&
         (AFileName.SubString(1, 1) == L"'") && (AFileName.SubString(AFileName.Length(), 1) == L"'") &&
@@ -3594,8 +3600,6 @@ void TFTPFileSystem::StoreLastResponse(const UnicodeString & Text)
 
 void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 {
-  int64_t Code = 0;
-
   if (FOnCaptureOutput != nullptr)
   {
     FOnCaptureOutput(Response, cotOutput);
@@ -3637,6 +3641,7 @@ void TFTPFileSystem::HandleReplyStatus(const UnicodeString & Response)
 
   // Partially duplicated in CFtpControlSocket::OnReceive
 
+  int64_t Code = 0; // shut up
   const bool HasCodePrefix =
     (Response.Length() >= 3) &&
     ::TryStrToInt64(Response.SubString(1, 3), Code) &&
@@ -4832,7 +4837,7 @@ bool TFTPFileSystem::Unquote(UnicodeString & Str)
   DebugAssert((Str.Length() > 0) && ((Str[1] == L'"') || (Str[1] == L'\'')));
 
   int32_t Index = 1;
-  wchar_t Quote = 0;
+  wchar_t Quote = 0; // shut up
   while (Index <= Str.Length())
   {
     switch (State)
