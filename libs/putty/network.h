@@ -34,7 +34,7 @@ struct SocketVtable {
     void (*set_frozen) (Socket *s, bool is_frozen);
     /* ignored by tcp, but vital for ssl */
     const char *(*socket_error) (Socket *s);
-    SocketPeerInfo *(*peer_info) (Socket *s);
+    SocketEndpointInfo *(*endpoint_info) (Socket *s, bool peer);
 };
 
 typedef union { void *p; int i; } accept_ctx_t;
@@ -91,7 +91,7 @@ struct PlugVtable {
      * all Plugs must implement this method, even if only to ignore
      * the logged events.
      */
-    void (*log)(Plug *p, PlugLogType type, SockAddr *addr, int port,
+    void (*log)(Plug *p, Socket *s, PlugLogType type, SockAddr *addr, int port,
                 const char *error_msg, int error_code);
 
     /*
@@ -227,10 +227,7 @@ SockAddr *sk_addr_dup(SockAddr *addr);
 
 /* NB, control of 'addr' is passed via sk_new, which takes responsibility
  * for freeing it, as for new_connection() */
-#if defined(sk_new)
-#undef sk_new
-#endif
-Socket *sk_new(SockAddr *addr, int port, bool privport, bool oobinline,
+Socket *putty_sk_new(SockAddr *addr, int port, bool privport, bool oobinline,
                bool nodelay, bool keepalive, Plug *p,
 #ifdef MPEXT
               int timeout,
@@ -253,15 +250,15 @@ static inline size_t sk_write_oob(Socket *s, const void *data, size_t len)
 static inline void sk_write_eof(Socket *s)
 { s->vt->write_eof(s); }
 
-#if defined(__BORLANDC__)
-#pragma option push -w-bei // WINSCP
-#endif // defined(__BORLANDC__)
+#ifdef __cplusplus
+#define WINSCP_ENUM_CAST(TYPE, EXPR) static_cast<TYPE>(EXPR)
+#else
+#define WINSCP_ENUM_CAST(TYPE, EXPR) (EXPR)
+#endif
 static inline void plug_log(
-    Plug *p, int type, SockAddr *addr, int port, const char *msg, int code)
-{ p->vt->log(p, (PlugLogType)type, addr, port, msg, code); }
-#if defined(__BORLANDC__)
-#pragma option pop // WINSCP
-#endif // defined(__BORLANDC__)
+    Plug *p, Socket *s, int type, SockAddr *addr, int port,
+    const char *msg, int code)
+{ p->vt->log(p, s, WINSCP_ENUM_CAST(PlugLogType, type), addr, port, msg, code); }
 static inline void plug_closing(Plug *p, PlugCloseType type, const char *msg)
 { p->vt->closing(p, type, msg); }
 static inline void plug_closing_normal(Plug *p)
@@ -307,23 +304,25 @@ static inline void sk_set_frozen(Socket *s, bool is_frozen)
 { s->vt->set_frozen(s, is_frozen); }
 
 /*
- * Return a structure giving some information about the other end of
+ * Return a structure giving some information about one end of
  * the socket. May be NULL, if nothing is available at all. If it is
  * not NULL, then it is dynamically allocated, and should be freed by
- * a call to sk_free_peer_info(). See below for the definition.
+ * a call to sk_free_endpoint_info(). See below for the definition.
  */
-static inline SocketPeerInfo *sk_peer_info(Socket *s)
-{ return s->vt->peer_info(s); }
+static inline SocketEndpointInfo *sk_endpoint_info(Socket *s, bool peer)
+{ return s->vt->endpoint_info(s, peer); }
+static inline SocketEndpointInfo *sk_peer_info(Socket *s)
+{ return sk_endpoint_info(s, true); }
 
 /*
- * The structure returned from sk_peer_info, and a function to free
+ * The structure returned from sk_endpoint_info, and a function to free
  * one (in utils).
  */
-struct SocketPeerInfo {
+struct SocketEndpointInfo {
     int addressfamily;
 
     /*
-     * Text form of the IPv4 or IPv6 address of the other end of the
+     * Text form of the IPv4 or IPv6 address of the specified end of the
      * socket, if available, in the standard text representation.
      */
     const char *addr_text;
@@ -352,7 +351,7 @@ struct SocketPeerInfo {
      */
     const char *log_text;
 };
-void sk_free_peer_info(SocketPeerInfo *pi);
+void sk_free_endpoint_info(SocketEndpointInfo *ei);
 
 /*
  * Simple wrapper on getservbyname(), needed by portfwd.c. Returns the
@@ -392,11 +391,16 @@ extern Plug *const nullplug;
  * In particular, nullplug_log is useful to Plugs that don't need to
  * worry about logging.
  */
-void nullplug_log(Plug *plug, PlugLogType type, SockAddr *addr,
+void nullplug_log(Plug *plug, Socket *s, PlugLogType type, SockAddr *addr,
                   int port, const char *err_msg, int err_code);
 void nullplug_closing(Plug *plug, PlugCloseType type, const char *error_msg);
 void nullplug_receive(Plug *plug, int urgent, const char *data, size_t len);
 void nullplug_sent(Plug *plug, size_t bufsize);
+
+/*
+ * Similar no-op socket function.
+ */
+SocketEndpointInfo *nullsock_endpoint_info(Socket *s, bool peer);
 
 /* ----------------------------------------------------------------------
  * Functions defined outside the network code, which have to be
@@ -404,7 +408,7 @@ void nullplug_sent(Plug *plug, size_t bufsize);
  * they use types defined here.
  */
 
-void backend_socket_log(Seat *seat, LogContext *logctx,
+void backend_socket_log(Seat *seat, LogContext *logctx, Socket *sock,
                         PlugLogType type, SockAddr *addr, int port,
                         const char *error_msg, int error_code, Conf *conf,
                         bool session_started);
@@ -416,8 +420,8 @@ typedef struct ProxyStderrBuf {
 } ProxyStderrBuf;
 void psb_init(ProxyStderrBuf *psb);
 void psb_set_prefix(ProxyStderrBuf *psb, const char *prefix);
-void log_proxy_stderr(
-    Plug *plug, ProxyStderrBuf *psb, const void *vdata, size_t len);
+void log_proxy_stderr(Plug *plug, Socket *sock, ProxyStderrBuf *psb,
+                      const void *vdata, size_t len);
 
 /* ----------------------------------------------------------------------
  * The DeferredSocketOpener trait. This is a thing that some Socket

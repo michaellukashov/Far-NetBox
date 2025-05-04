@@ -41,7 +41,7 @@ static void proxy_activate(ProxySocket *ps)
 
     proxy_negotiator_cleanup(ps);
 
-    plug_log(ps->plug, PLUGLOG_CONNECT_SUCCESS, NULL, 0, NULL, 0);
+    plug_log(ps->plug, &ps->sock, PLUGLOG_CONNECT_SUCCESS, NULL, 0, NULL, 0);
 
     /* we want to ignore new receive events until we have sent
      * all of our buffered receive data.
@@ -189,12 +189,13 @@ static const char *sk_proxy_socket_error (Socket *s)
 
 /* basic proxy plug functions */
 
-static void plug_proxy_log(Plug *plug, PlugLogType type, SockAddr *addr,
-                           int port, const char *error_msg, int error_code)
+static void plug_proxy_log(Plug *plug, Socket *s, PlugLogType type,
+                           SockAddr *addr, int port,
+                           const char *error_msg, int error_code)
 {
     ProxySocket *ps = container_of(plug, ProxySocket, plugimpl);
 
-    plug_log(ps->plug, type, addr, port, error_msg, error_code);
+    plug_log(ps->plug, &ps->sock, type, addr, port, error_msg, error_code);
 }
 
 static void plug_proxy_closing(Plug *p, PlugCloseType type,
@@ -228,7 +229,7 @@ static void proxy_negotiate(ProxySocket *ps)
         sk_close(ps->sub_socket);
         { // WINSCP
         SockAddr *proxy_addr = sk_addr_dup(ps->proxy_addr);
-        ps->sub_socket = sk_new(proxy_addr, ps->proxy_port,
+        ps->sub_socket = putty_sk_new(proxy_addr, ps->proxy_port,
                                 ps->proxy_privport, ps->proxy_oobinline,
                                 ps->proxy_nodelay, ps->proxy_keepalive,
                                 &ps->plugimpl,
@@ -422,6 +423,24 @@ SockAddr *name_lookup(const char *host, int port, char **canonicalname,
     }
 }
 
+static SocketEndpointInfo *sk_proxy_endpoint_info(Socket *s, bool peer)
+{
+    ProxySocket *ps = container_of(s, ProxySocket, sock);
+
+    /* We can't reliably find out where we ended up connecting _to_:
+     * that's at the far end of the proxy, and might be anything. */
+    if (peer)
+        return NULL;
+
+    #ifdef WINSCP
+    // if proxy is connected synchronously, we get here from sk_new even before ps->sub_socket is assigned
+    if (ps->sub_socket == NULL) return NULL;
+    #endif
+
+    /* But we can at least tell where we're coming _from_. */
+    return sk_endpoint_info(ps->sub_socket, false);
+}
+
 static const SocketVtable ProxySocket_sockvt = {
     // WINSCP
     /*.plug =*/ sk_proxy_plug,
@@ -431,7 +450,7 @@ static const SocketVtable ProxySocket_sockvt = {
     /*.write_eof =*/ sk_proxy_write_eof,
     /*.set_frozen =*/ sk_proxy_set_frozen,
     /*.socket_error =*/ sk_proxy_socket_error,
-    /*.peer_info =*/ NULL,
+    /*.endpoint_info =*/ sk_proxy_endpoint_info,
 };
 
 static const PlugVtable ProxySocket_plugvt = {
@@ -509,8 +528,7 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
     int type = conf_get_int(conf, CONF_proxy_type);
 
     if (type != PROXY_NONE &&
-        proxy_for_destination(addr, hostname, port, conf))
-    {
+        proxy_for_destination(addr, hostname, port, conf)) {
         ProxySocket *ps;
         SockAddr *proxy_addr;
         char *proxy_canonical_name;
@@ -596,7 +614,7 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
                                      conf_get_str(conf, CONF_proxy_host),
                                      conf_get_int(conf, CONF_proxy_port),
                                      hostname, port);
-            plug_log(plug, PLUGLOG_PROXY_MSG, NULL, 0, logmsg, 0);
+            plug_log(plug, &ps->sock, PLUGLOG_PROXY_MSG, NULL, 0, logmsg, 0);
             sfree(logmsg);
         }
 
@@ -604,7 +622,7 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
             char *logmsg = dns_log_msg(conf_get_str(conf, CONF_proxy_host),
                                        conf_get_int(conf, CONF_addressfamily),
                                        "proxy");
-            plug_log(plug, PLUGLOG_PROXY_MSG, NULL, 0, logmsg, 0);
+            plug_log(plug, &ps->sock, PLUGLOG_PROXY_MSG, NULL, 0, logmsg, 0);
             sfree(logmsg);
         }
 
@@ -625,7 +643,7 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
             logmsg = dupprintf("Connecting to %s proxy at %s port %d",
                                vt->type, addrbuf,
                                conf_get_int(conf, CONF_proxy_port));
-            plug_log(plug, PLUGLOG_PROXY_MSG, NULL, 0, logmsg, 0);
+            plug_log(plug, &ps->sock, PLUGLOG_PROXY_MSG, NULL, 0, logmsg, 0);
             sfree(logmsg);
         }
 
@@ -638,7 +656,7 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
         ps->proxy_oobinline = oobinline;
         ps->proxy_nodelay = nodelay;
         ps->proxy_keepalive = keepalive;
-        ps->sub_socket = sk_new(proxy_addr, ps->proxy_port,
+        ps->sub_socket = putty_sk_new(proxy_addr, ps->proxy_port,
                                 ps->proxy_privport, ps->proxy_oobinline,
                                 ps->proxy_nodelay, ps->proxy_keepalive,
                                 &ps->plugimpl,
@@ -659,7 +677,7 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
     }
 
     /* no proxy, so just return the direct socket */
-    return sk_new(addr, port, privport, oobinline, nodelay, keepalive, plug,
+    return putty_sk_new(addr, port, privport, oobinline, nodelay, keepalive, plug,
         #ifdef WINSCP
         conf_get_int(conf, CONF_connect_timeout), conf_get_int(conf, CONF_sndbuf),
         conf_get_str(conf, CONF_srcaddr)
