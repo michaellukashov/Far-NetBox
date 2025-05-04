@@ -182,8 +182,6 @@ void THttp::Put(const UnicodeString & Request)
 
 UnicodeString THttp::GetResponse() const
 {
-  /*UTF8String UtfResponse(FResponse.c_str(), FResponse.GetLength());
-  return UnicodeString(UtfResponse);*/
   return UTFToString(FResponse);
 }
 

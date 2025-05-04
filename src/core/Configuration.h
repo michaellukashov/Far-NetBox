@@ -92,7 +92,6 @@ private:
   bool FPermanentLogging{false};
   UnicodeString FLogFileName;
   UnicodeString FPermanentLogFileName;
-  int32_t FLogWindowLines{0};
   bool FLogFileAppend{false};
   bool FLogSensitive{false};
   bool FPermanentLogSensitive{false};

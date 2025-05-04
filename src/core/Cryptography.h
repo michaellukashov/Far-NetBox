@@ -27,7 +27,7 @@ class TEncryption final : public TObject
   TEncryption() = delete;
 public:
   explicit TEncryption(const RawByteString & AKey) noexcept;
-  virtual ~TEncryption() = default;
+  virtual ~TEncryption() EXCEPT;
   void Finalize();
 
   static bool IsEncryptedFileName(const UnicodeString & AFileName);

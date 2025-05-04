@@ -5,6 +5,7 @@
 #include <vector>
 #endif // defined(__BORLANDC__)
 #include <Masks.hpp>
+#include <Global.h>
 #include "SessionData.h"
 
 class NB_CORE_EXPORT EFileMasksException final : public Exception
@@ -133,7 +134,7 @@ private:
     const UnicodeString & APath, const TParams * Params, const TMasks & Masks, bool Recurse);
   static bool MatchesMaskMask(TMask::TKind MaskKind, const Masks::TMask * MaskMask, const UnicodeString & Str);
   static Masks::TMask * DoCreateMaskMask(const UnicodeString & Str);
-  void ThrowError(int32_t Start, int32_t End) const;
+  NORETURN void ThrowError(int32_t Start, int32_t End) const;
   bool DoMatches(
     const UnicodeString & FileName, bool Local, bool Directory, const UnicodeString & Path, const TParams * Params,
     bool RecurseInclude, bool & ImplicitMatch) const;

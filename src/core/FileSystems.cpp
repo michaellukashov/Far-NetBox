@@ -27,11 +27,23 @@ TCustomFileSystem::~TCustomFileSystem() noexcept
 UnicodeString TCustomFileSystem::GetHomeDirectory()
 {
   NotImplemented();
-  return EmptyStr;
+  UNREACHABLE_AFTER_NORETURN(return EmptyStr);
 }
 
 UnicodeString TCustomFileSystem::CalculateFilesChecksumInitialize(const UnicodeString & DebugUsedArg(Alg))
 {
   NotImplemented();
-  return EmptyStr;
+  UNREACHABLE_AFTER_NORETURN(return EmptyStr);
+}
+
+void TCustomFileSystem::TransferOnDirectory(
+  const UnicodeString & Directory, const TCopyParamType *, int32_t Params)
+{
+  DebugUsedParam2(Directory, Params);
+}
+
+void TCustomFileSystem::DirectorySunk(
+  const UnicodeString & DestFullName, const TRemoteFile *, const TCopyParamType *)
+{
+  DebugUsedParam(DestFullName);
 }

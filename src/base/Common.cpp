@@ -3,12 +3,13 @@
 #define NO_WIN32_LEAN_AND_MEAN
 #endif
 #include <vcl.h>
-// #pragma hdrstop
+#if defined(__BORLANDC__)
+#pragma hdrstop
+#endif // defined(__BORLANDC__)
 
 #include <System.ShlObj.hpp>
 #include <Exceptions.h>
 #include <TextsCore.h>
-//#include <Interface.h>
 #include <Common.h>
 #include <Global.h>
 #include <StrUtils.hpp>
@@ -18,6 +19,7 @@
 #include <ShlObj.h>
 #include <limits>
 #include <algorithm>
+#include <memory>
 #include <Shlwapi.h>
 #include <TLHelp32.h>
 #include <Psapi.h>
@@ -671,7 +673,10 @@ const UnicodeString AnyMask = L"*.*";
 const wchar_t EngShortMonthNames[12][4] =
   {L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
    L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"};
-const char Bom[3] = "\xEF\xBB\xBF";
+#if defined(__BORLANDC__)
+const char Bom[4] = "\xEF\xBB\xBF";
+const UnicodeString XmlDeclaration(TraceInitStr(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
+#endif // defined(__BORLANDC__)
 const wchar_t TokenPrefix = L'%';
 const wchar_t NoReplacement = wchar_t(false);
 const wchar_t TokenReplacement = wchar_t(true);
@@ -733,6 +738,7 @@ void DoShred(T & Str)
 {
   if (!Str.IsEmpty())
   {
+    // Should instead test for (StringRefCount(Str) == 1) to prevent Unique making yet another copy
     Str.Unique();
     ::ZeroMemory(nb::ToPtr(Str.c_str()), Str.Length() * sizeof(*Str.c_str()));
     Str = L"";
@@ -767,6 +773,12 @@ UnicodeString AnsiToString(const RawByteString & S)
 UnicodeString AnsiToString(const char * S, int32_t Len)
 {
   return UnicodeString(AnsiString(S, Len));
+}
+
+UnicodeString UTFToString(const RawByteString & S)
+{
+  // Simply casting RawByteString to UTF8String does not work
+  return UnicodeString(UTF8String(S.c_str(), S.Length()));
 }
 
 // Note similar function ValidLocalFileName
@@ -2903,7 +2915,7 @@ int64_t ConvertTimestampToUnix(const FILETIME & FileTime,
   TDSTMode DSTMode)
 {
   NB_STATIC_ASSERT(sizeof(FILETIME) == sizeof(int64_t), "ConvertTimestampToUnix: unexpected FILETIME size");
-  int64_t Result = *reinterpret_cast<int64_t *>(const_cast<FILETIME *>(&(FileTime))) / 10000000LL - 11644473600LL;
+  int64_t Result = *reinterpret_cast<const int64_t *>(const_cast<FILETIME *>(&(FileTime))) / 10000000LL - 11644473600LL;
   if (UsesDaylightHack())
   {
     if ((DSTMode == dstmUnix) || (DSTMode == dstmKeep))
@@ -3831,8 +3843,8 @@ bool IsWine()
     (::GetProcAddress(NtDll, "wine_get_version") != nullptr);
 }
 
-int32_t GIsUWP = -1;
-UnicodeString GPackageName;
+static int32_t GIsUWP = -1;
+static UnicodeString GPackageName;
 
 void EnableUWPTestMode()
 {
@@ -4004,7 +4016,7 @@ UnicodeString FormatSize(int64_t ASize)
 UnicodeString FormatDateTimeSpan(const TDateTime & DateTime)
 {
   UnicodeString Result;
-  if ((0 <= DateTime) && (DateTime <= MaxDateTime))
+  if ((TDateTime() <= DateTime) && (DateTime <= MaxDateTime))
   {
     const TTimeStamp TimeStamp = DateTimeToTimeStamp(DateTime);
     const int32_t Days = TimeStamp.Date - DateDelta;
@@ -4707,7 +4719,7 @@ UnicodeString RtfEscapeParam(const UnicodeString & Param, bool PowerShellEscape)
     else
     {
       int32_t P2 = PosEx(RtfHyperlinkFieldPrefix, Param, Index);
-      int32_t P3;
+      int32_t P3 = 0;
       if ((P2 > 0) && (P2 < P1) && ((P3 = PosEx(RtfHyperlinkFieldSuffix, Param, P2)) > 0))
       {
         // skip HYPERLINK
@@ -5225,7 +5237,7 @@ static UnicodeString GetProcessName(DWORD ProcessId)
   return Result;
 }
 
-UnicodeString ParentProcessName;
+static UnicodeString ParentProcessName;
 
 UnicodeString GetAncestorProcessName(int32_t Levels)
 {
@@ -5313,7 +5325,7 @@ UnicodeString GetAncestorProcessName(int32_t Levels)
   return Result;
 }
 
-UnicodeString AncestorProcessNames;
+static UnicodeString AncestorProcessNames;
 
 UnicodeString GetAncestorProcessNames()
 {
@@ -5324,15 +5336,13 @@ UnicodeString GetAncestorProcessNames()
   return AncestorProcessNames;
 }
 
-[[noreturn]]
-void NotImplemented()
+NORETURN void NotImplemented()
 {
   DebugFail();
   throw Exception(L"Not implemented");
 }
 
-[[noreturn]]
-void NotSupported()
+NORETURN void NotSupported()
 {
   throw Exception(MainInstructions(LoadStr(NOTSUPPORTED)));
 }

@@ -16,7 +16,7 @@ TBookmarks::TBookmarks() noexcept : TObject(OBJECT_CLASS_TBookmarks),
 #if defined(__BORLANDC__)
   FSharedKey = TNamedObjectList::HiddenPrefix + L"shared";
 #endif // defined(__BORLANDC__)
-  FBookmarkLists = CreateSortedStringList(false, dupError);
+  FBookmarkLists = CreateSortedStringList(false, TDuplicatesEnum::dupError);
 }
 
 TBookmarks::~TBookmarks() noexcept

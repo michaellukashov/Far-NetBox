@@ -38,7 +38,7 @@ static bool WellKnownException(
   const Exception * E, UnicodeString * AMessage, const wchar_t ** ACounterName, Exception ** AClone, bool Rethrow)
 {
   UnicodeString Message;
-  const wchar_t *CounterName = nullptr;
+  const wchar_t * CounterName = nullptr; // shut up
   std::unique_ptr<Exception> Clone;
 
 

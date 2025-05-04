@@ -1,7 +1,10 @@
 
 #pragma once
 
-#include <Global.h>
+#if defined(__BORLANDC__)
+#include <vector>
+#endif // defined(__BORLANDC__)
+#include "Global.h"
 #include <Exceptions.h>
 
 #define EXCEPTION throw ExtException(nullptr, L"")
@@ -30,15 +33,16 @@ constexpr const wchar_t * QUOTE = L"\'";
 constexpr const wchar_t * DOUBLEQUOTE = L"\"";
 
 constexpr const wchar_t * AnyMask = L"*.*";
-//extern const wchar_t EngShortMonthNames[12][4];
+// extern const wchar_t EngShortMonthNames[12][4];
 constexpr const wchar_t EngShortMonthNames[12][4] =
 {
   L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
   L"Jul", L"Aug", L"Sep", L"Oct", L"Nov", L"Dec"
 };
 
-// extern const char Bom[3];
 constexpr const char * CONST_BOM = "\xEF\xBB\xBF";
+// extern const char Bom[4];
+extern const UnicodeString XmlDeclaration;
 constexpr const wchar_t TokenPrefix = L'%';
 constexpr const wchar_t NoReplacement = static_cast<wchar_t>(0);
 constexpr const wchar_t TokenReplacement = static_cast<wchar_t>(1);
@@ -63,6 +67,7 @@ NB_CORE_EXPORT void Shred(AnsiString & Str);
 NB_CORE_EXPORT void Shred(RawByteString & Str);
 NB_CORE_EXPORT UnicodeString AnsiToString(const RawByteString & S);
 NB_CORE_EXPORT UnicodeString AnsiToString(const char * S, int32_t Len);
+UnicodeString UTFToString(const RawByteString & S);
 NB_CORE_EXPORT UnicodeString MakeValidFileName(const UnicodeString & AFileName);
 UnicodeString RootKeyToStr(HKEY RootKey, const UnicodeString & Default = EmptyStr);
 UnicodeString BooleanToStr(bool B);
@@ -200,7 +205,8 @@ NB_CORE_EXPORT UnicodeString FormatVersion(int32_t MajorVersion, int32_t MinorVe
 NB_CORE_EXPORT TFormatSettings GetEngFormatSettings();
 NB_CORE_EXPORT int32_t ParseShortEngMonthName(const UnicodeString & MonthStr);
 // The defaults are equal to defaults of TStringList class (except for Sorted)
-NB_CORE_EXPORT TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = dupIgnore);
+NB_CORE_EXPORT TStringList * CreateSortedStringList(bool CaseSensitive = false, TDuplicatesEnum Duplicates = TDuplicatesEnum::dupIgnore);
+bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
 UnicodeString GetTlsErrorStr(uint32_t Err);
 UnicodeString GetTlsErrorStrs();
@@ -225,8 +231,8 @@ NB_CORE_EXPORT UnicodeString GetEnvironmentInfo();
 void SetStringValueEvenIfEmpty(TStrings * Strings, const UnicodeString & Name, const UnicodeString & Value);
 UnicodeString GetAncestorProcessName(int32_t Levels = 1);
 UnicodeString GetAncestorProcessNames();
-[[noreturn]] void NotSupported();
-[[noreturn]] void NotImplemented();
+NORETURN void NotSupported();
+NORETURN void NotImplemented();
 UnicodeString GetDividerLine();
 TStrings * ProcessFeatures(TStrings * Features, const UnicodeString & FeaturesOverride);
 
@@ -380,8 +386,6 @@ UnicodeString AssemblyAddRawSettings(
 
 #pragma warning(push)
 #pragma warning(disable: 4512) // assignment operator could not be generated
-
-#include "Global.h"
 
 template<typename T>
 class TValueRestorer // : public TObject
