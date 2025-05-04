@@ -116,6 +116,7 @@ private:
   UnicodeString FHumanRights;
   const TTerminal * FTerminal{nullptr};
   wchar_t FType{0};
+  UnicodeString FTags;
   bool FCyclicLink{false};
   UnicodeString FFullFileName;
   int32_t FIsHidden{0};
@@ -215,6 +216,8 @@ public:
   __property bool HaveFullFileName  = { read = GetHaveFullFileName };
   __property int32_t IconIndex = { read = GetIconIndex };
   __property UnicodeString TypeName = { read = GetTypeName };
+  __property UnicodeString Tags = { read = FTags, write = FTags };
+  UnicodeString& Tags{FTags};
   __property bool IsHidden = { read = GetIsHidden, write = SetIsHidden };
   const ROProperty<bool> IsHidden{nb::bind(&TRemoteFile::GetIsHidden, this)};
   __property bool IsParentDirectory = { read = GetIsParentDirectory };
@@ -318,6 +321,7 @@ public:
   TRemoteFile * FindFile(const UnicodeString & AFileName) const;
   virtual void DuplicateTo(TRemoteFileList * Copy) const;
   virtual void AddFile(TRemoteFile * AFile);
+  virtual void ExtractFile(TRemoteFile * AFile);
 
   static TStrings * CloneStrings(TStrings * List);
   static bool AnyDirectory(TStrings * List);
@@ -587,9 +591,9 @@ public:
   bool GetUnknown() const { return FUnknown; }
 };
 
-enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20 };
+enum TValidProperty { vpRights = 0x1, vpGroup = 0x2, vpOwner = 0x4, vpModification = 0x8, vpLastAccess = 0x10, vpEncrypt = 0x20, vpTags = 0x40 };
 #if defined(__BORLANDC__)
-typedef Set<TValidProperty, vpRights, vpEncrypt> TValidProperties;
+typedef Set<TValidProperty, vpRights, vpTags> TValidProperties;
 #endif // defined(__BORLANDC__)
 class TRemoteProperties final : public TObject
 {
@@ -598,12 +602,19 @@ public:
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteProperties) || TObject::is(Kind); }
 public:
   TValidProperties<TValidProperty> Valid;
+#if defined(__BORLANDC__)
+  bool Recursive;
+#endif // defined(__BORLANDC__)
   TRights Rights;
+#if defined(__BORLANDC__)
+  bool AddXToDirectories;
+#endif // defined(__BORLANDC__)
   TRemoteToken Group;
   TRemoteToken Owner;
   int64_t Modification{0}; // unix time
   int64_t LastAccess{0}; // unix time
   bool Encrypt{false};
+  UnicodeString Tags;
   bool Recursive{false};
   bool AddXToDirectories{false};
 
