@@ -368,6 +368,8 @@
 "RSA-based key exchange"
 "ECDH key exchange"
 "NTRU Prime / Curve25519 hybrid kex"
+"ML-KEM / Curve25519 hybrid kex"
+"ML-KEM / NIST ECDH hybrid kex"
 "**This key contains an OpenSSH certificate.**\nIt is not supposed to be added to OpenSSH authorized_keys file."
 "Matching certificate was detected in '%s' and added to the converted key file."
 "Edit trusted host certificate authority"
