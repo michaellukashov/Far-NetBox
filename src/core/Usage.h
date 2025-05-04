@@ -16,6 +16,7 @@ public:
   void Set(const UnicodeString & AKey, bool Value);
   int32_t Inc(const UnicodeString & AKey, int32_t Increment = 1);
   void SetMax(const UnicodeString & AKey, int32_t Value);
+  void IncAndSetMax(const UnicodeString & IncKey, const UnicodeString & MaxKey, int32_t Value);
   UnicodeString Get(const UnicodeString & AKey) const;
 
   void UpdateCurrentVersion();

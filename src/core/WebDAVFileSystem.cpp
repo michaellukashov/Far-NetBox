@@ -42,7 +42,9 @@
 #include <StrUtils.hpp>
 #include "NeonIntf.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
@@ -90,6 +92,7 @@ static UnicodeString PathUnescape(const char * Path)
     // In such case, take the path as is and we will probably overwrite the name with "display name".
     UtfResult = Path;
   }
+  // UnicodeString Result = UnicodeString(UtfResult);
   const UnicodeString Result = StrFromNeon(UtfResult.data());
   return Result;
 }
@@ -167,12 +170,16 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
-  // FSessionContext(nullptr),
   FNeonLockStore(nullptr),
-  // FNeonLockStoreSection(new TCriticalSection()),
   FUploading(false),
   FDownloading(false),
+#if defined(__BORLANDC__)
+  FNeonLockStoreSection(new TCriticalSection()),
+#endif // defined(__BORLANDC__)
   FInitialHandshake(false),
+#if defined(__BORLANDC__)
+  FSessionContext(nullptr),
+#endif // defined(__BORLANDC__)
   FIgnoreAuthenticationFailure(iafNo)
 {
 }
@@ -342,6 +349,10 @@ void TWebDAVFileSystem::InitSession(TSessionContext * SessionContext, ne_session
 
   ne_set_read_timeout(Session, nb::ToInt32(Data->GetTimeout()));
 
+  // The ne_set_connect_timeout was called here previously, but as neon does not support non-blocking
+  // connection on Windows, it was noop.
+  // Restore the call once ours non-blocking connection implementation proves working.
+
   ne_set_connect_timeout(Session, nb::ToInt32(Data->GetTimeout()));
 
   ne_set_session_private(Session, SESSION_CONTEXT_KEY, SessionContext);
@@ -438,9 +449,9 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
   ClearNeonError();
 
   int32_t NeonStatus;
-  FAuthenticationRetry = false;
   do
   {
+    FAuthenticationRetry = false;
     NeonStatus = ne_options2(FSessionContext->NeonSession, APath, &FCapabilities);
   }
   while ((NeonStatus == NE_AUTH) && FAuthenticationRetry);
@@ -682,6 +693,7 @@ bool TWebDAVFileSystem::IsCapable(int32_t Capability) const
     case fcTransferOut:
     case fcTransferIn:
     case fcParallelFileTransfers:
+    case fcTags:
       return false;
 
     case fcLocking:
@@ -1144,7 +1156,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     if (IsWin8())
     {
       // The "lock" character is supported since Windows 8
-      // LockRights = L"\uD83D\uDD12" + Owner2;
+      LockRights = U"\U0001F512" + Owner;
     }
     else
     {
@@ -1197,6 +1209,7 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
 void TWebDAVFileSystem::DeleteFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * AFile, int32_t /*Params*/, TRmSessionAction & Action)
 {
+  DebugUsedParam(FileName);
   Action.Recursive();
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->UseBusyCursor);
@@ -1267,6 +1280,7 @@ void TWebDAVFileSystem::CreateLink(const UnicodeString & /*AFileName*/,
   const UnicodeString & /*PointTo*/, bool /*Symbolic*/)
 {
   DebugFail();
+  DebugUsedParam2(FileName, PointTo);
   // ThrowNotImplemented(1014);
 }
 
@@ -1275,6 +1289,7 @@ void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/
   TChmodSessionAction & /*Action*/)
 {
   DebugFail();
+  DebugUsedParam(FileName);
   // ThrowNotImplemented(1006);
 }
 
@@ -1344,12 +1359,14 @@ void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
   const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, int32_t /*Params*/, TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
+  DebugUsedParam2(FileName, Command);
 }
 
 void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
   TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
+  DebugUsedParam(Command);
 }
 
 TStrings * TWebDAVFileSystem::GetFixedPaths() const
@@ -1599,6 +1616,7 @@ void TWebDAVFileSystem::NeonPreSend(
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(SessionContext->FileSystem);
 
   SessionContext->AuthorizationProtocol = "";
+  // UnicodeString HeaderBuf(UnicodeString(AnsiString(Header->data, Header->used)));
   const UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, nb::ToInt32(Header->used)).data()));
   const UnicodeString AuthorizationHeaderName("Authorization:");
   int32_t P = HeaderBuf.Pos(AuthorizationHeaderName);
