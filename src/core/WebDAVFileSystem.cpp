@@ -244,7 +244,7 @@ void TWebDAVFileSystem::Open()
   const UnicodeString EscapedPath = StrFromNeon(PathEscape(StrToNeon(Path)).c_str());
   const UnicodeString Url = FORMAT("%s://%s:%d%s", ProtocolName, HostName, Port, EscapedPath);
 
-  FTerminal->Information(LoadStr(STATUS_CONNECT), true);
+  FTerminal->Information(LoadStr(STATUS_CONNECT));
   FActive = false;
   try
   {
@@ -1153,12 +1153,14 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
       Owner2 = StrFromNeon(Lock->owner).Trim();
     }
     UnicodeString LockRights;
+#if 0
     if (IsWin8())
     {
       // The "lock" character is supported since Windows 8
-      LockRights = U"\U0001F512" + Owner;
+      LockRights = UnicodeString(U"\U0001F512") + Owner;
     }
     else
+#endif
     {
       LockRights = LoadStr(LOCKED);
       if (!Owner2.IsEmpty())
@@ -1206,10 +1208,10 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::DeleteFile(const UnicodeString & /*AFileName*/,
+void TWebDAVFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t /*Params*/, TRmSessionAction & Action)
 {
-  DebugUsedParam(FileName);
+  DebugUsedParam(AFileName);
   Action.Recursive();
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->UseBusyCursor);
@@ -1276,20 +1278,21 @@ void TWebDAVFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*E
   CheckStatus(ne_mkcol(FSessionContext->NeonSession, PathToNeon(ADirName)));
 }
 
-void TWebDAVFileSystem::CreateLink(const UnicodeString & /*AFileName*/,
-  const UnicodeString & /*PointTo*/, bool /*Symbolic*/)
+void TWebDAVFileSystem::CreateLink(const UnicodeString & AFileName,
+  const UnicodeString & PointTo, bool /*Symbolic*/)
 {
   DebugFail();
-  DebugUsedParam2(FileName, PointTo);
+  DebugUsedParam(AFileName);
+  DebugUsedParam(PointTo);
   // ThrowNotImplemented(1014);
 }
 
-void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/,
+void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * /*AFile*/, const TRemoteProperties * /*Properties*/,
   TChmodSessionAction & /*Action*/)
 {
   DebugFail();
-  DebugUsedParam(FileName);
+  DebugUsedParam(AFileName);
   // ThrowNotImplemented(1006);
 }
 
@@ -1355,18 +1358,19 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   }
 }
 
-void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
-  const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, int32_t /*Params*/, TCaptureOutputEvent && /*OutputEvent*/)
+void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
+  const TRemoteFile * /*AFile*/, const UnicodeString & ACommand, int32_t /*Params*/, TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
-  DebugUsedParam2(FileName, Command);
+  DebugUsedParam(AFileName);
+  DebugUsedParam(ACommand);
 }
 
-void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
+void TWebDAVFileSystem::AnyCommand(const UnicodeString & ACommand,
   TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
-  DebugUsedParam(Command);
+  DebugUsedParam(ACommand);
 }
 
 TStrings * TWebDAVFileSystem::GetFixedPaths() const
@@ -1783,7 +1787,7 @@ int32_t TWebDAVFileSystem::NeonBodyAccepter(void * UserData, ne_request * Reques
 
     if (!Line.IsEmpty())
     {
-      FileSystem->FTerminal->Information(Line, true);
+      FileSystem->FTerminal->Information(Line);
     }
 
     UnicodeString RemoteSystem;

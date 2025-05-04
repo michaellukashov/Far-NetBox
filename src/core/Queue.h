@@ -477,13 +477,29 @@ protected:
   virtual void DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation) override;
 };
 
-class TDeleteQueueItem : public TLocatedQueueItem
+class TRemoteDeleteQueueItem : public TLocatedQueueItem
 {
 public:
-  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TDeleteQueueItem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TDeleteQueueItem) || TLocatedQueueItem::is(Kind); }
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteDeleteQueueItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDeleteQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
-  explicit TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept;
+  explicit TRemoteDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int Params);
+
+protected:
+  virtual void DoExecute(TTerminal * Terminal);
+
+private:
+  std::unique_ptr<TStrings> FFilesToDelete;
+  int32_t FParams{0};
+};
+
+class TLocalDeleteQueueItem : public TLocatedQueueItem
+{
+public:
+  static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocalDeleteQueueItem); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocalDeleteQueueItem) || TLocatedQueueItem::is(Kind); }
+public:
+  explicit TLocalDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept;
 
 protected:
   virtual void DoExecute(TTerminal * Terminal);
@@ -494,6 +510,8 @@ private:
 };
 
 class TUserAction;
+class TInformationUserAction;
+enum TTerminalReopenResult { trrPending, trrSucceeded, trrFailed, trrNeedsInteraction };
 class NB_CORE_EXPORT TTerminalThread : public TSignalThread
 {
   NB_DISABLE_COPY(TTerminalThread)
@@ -505,6 +523,10 @@ public:
 
   void TerminalOpen();
   void TerminalReopen();
+  void StartTerminalReopenNonInteractive();
+  TTerminalReopenResult IsTerminalReopenComplete();
+  void ContinueTerminalReopenInteractive();
+  bool Abandoned();
 
   void Cancel();
   bool Release();
@@ -550,11 +572,17 @@ private:
   bool FCancelled{false};
   bool FPendingIdle{false};
   bool FAllowAbandon{false};
+  bool FNonInteractive{false};
+  bool FNeedsInteraction{false};
+  // typedef std::list<TInformationUserAction *> TInformationList;
+  using TInformationList = nb::list<TInformationUserAction *>;
+  TInformationList FNonInteractiveInformation;
 
   DWORD FMainThread{0};
   TCriticalSection FSection;
 
   void WaitForUserAction(TUserAction * UserAction);
+  void StartAction(TNotifyEvent Action);
   void RunAction(TNotifyEvent && Action);
 
   static void SaveException(Exception & E, Exception *& Exception);
@@ -566,7 +594,7 @@ private:
   void TerminalReopenEvent(TObject * Sender);
 
   void TerminalInformation(
-    TTerminal * Terminal, const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
+    TTerminal * Terminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
     const TQueryParams * Params, uint32_t & Answer, TQueryType Type, void * Arg);

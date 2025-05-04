@@ -24,6 +24,13 @@ extern "C"
 #include <StrUtils.hpp>
 #include <openssl/ssl.h>
 
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
+
 #if defined(__BORLANDC__)
 #define SESSION_PROXY_AUTH_KEY "proxyauth"
 #define SESSION_TLS_INIT_KEY "tlsinit"

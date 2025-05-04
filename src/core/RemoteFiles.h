@@ -672,6 +672,12 @@ public:
   int64_t GetBaseSize() const;
   int64_t GetSize() const;
   int64_t GetSize(TChecklistAction AAction) const;
+  UnicodeString GetLocalPath() const;
+  // Contrary to RemoteFile->FullFileName, this does not include trailing slash for directories
+  UnicodeString GetRemotePath() const;
+  UnicodeString GetLocalTarget() const;
+  UnicodeString GetRemoteTarget() const;
+  TStrings * GetFileList() const;
 
   TChecklistItem() noexcept;
   ~TChecklistItem() noexcept;
@@ -724,8 +730,15 @@ public:
     bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
     bool IsLocalOnly() const { return (Action == saUploadNew) || (Action == saDeleteLocal); }
     bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
+    int64_t GetBaseSize() const;
     int64_t GetSize() const;
     int64_t GetSize(TAction AAction) const;
+    UnicodeString GetLocalPath() const;
+    // Contrary to RemoteFile->FullFileName, this does not include trailing slash for directories
+    UnicodeString GetRemotePath() const;
+    UnicodeString GetLocalTarget() const;
+    UnicodeString GetRemoteTarget() const;
+    TStrings * GetFileList() const;
 
     ~TItem();
 
@@ -751,6 +764,7 @@ public:
 
   static TChecklistAction Reverse(TChecklistAction Action);
   static bool IsItemSizeIrrelevant(TChecklistAction Action);
+  bool GetNextChecked(int32_t & Index, const TChecklistItem *& Item) const;
 
   __property int32_t Count = { read = GetCount };
   const ROProperty<int32_t> Count{nb::bind(&TSynchronizeChecklist::GetCount, this)};
@@ -759,6 +773,9 @@ public:
 #if defined(__BORLANDC__)
   __property const TItem * Item[int32_t Index] = { read = GetItem };
 #endif // defined(__BORLANDC__)
+  const ROIndexedProperty<const TChecklistItem *> Item{nb::bind(&TSynchronizeChecklist::GetItem, this)};
+
+  static int32_t Compare(const TChecklistItem * Item1, const TChecklistItem * Item2);
 
 protected:
 #if defined(__BORLANDC__)

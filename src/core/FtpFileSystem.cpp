@@ -30,6 +30,13 @@
 #include <openssl/err.h>
 #include <limits>
 
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
+
 #if defined(__BORLANDC__)
 #pragma package(smart_init)
 #endif // defined(__BORLANDC__)
@@ -331,7 +338,6 @@ TFTPFileSystem::TFTPFileSystem(TTerminal * ATerminal) noexcept :
   FFileTransferCPSLimit(0),
   FAwaitingProgress(false),
   FOnCaptureOutput(nullptr),
-  FFileSystemInfoValid(false),
   FDoListAll(false),
   FListAll(asOn),
   FServerCapabilities(std::make_unique<TFTPServerCapabilities>()),
@@ -578,7 +584,7 @@ void TFTPFileSystem::Open()
 
       if (!FPasswordFailed && !PromptedForCredentials)
       {
-        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT), false);
+        FTerminal->Information(LoadStr(FTP_CREDENTIAL_PROMPT));
         PromptedForCredentials = true;
       }
 
@@ -645,7 +651,7 @@ void TFTPFileSystem::Open()
     {
       if (FPasswordFailed)
       {
-        FTerminal->Information(LoadStr(FTP_ACCESS_DENIED), false);
+        FTerminal->Information(LoadStr(FTP_ACCESS_DENIED));
       }
       else
       {
@@ -3903,7 +3909,7 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int32_t Type)
   switch (Type)
   {
     case TFileZillaIntf::LOG_STATUS:
-      FTerminal->Information(Status, true);
+      FTerminal->Information(Status);
       LogType = llMessage;
       break;
 

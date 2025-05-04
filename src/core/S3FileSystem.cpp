@@ -35,8 +35,19 @@
 #include <limits>
 #include "CoreMain.h"
 #include "Http.h"
+#include "Cryptography.h"
 #include <System.JSON.hpp>
 #include <System.DateUtils.hpp>
+#include <request.h>
+#include <XMLDoc.hpp>
+
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
+
 #if defined(__BORLANDC__)
 #pragma package(smart_init)
 #endif // defined(__BORLANDC__)
@@ -479,7 +490,7 @@ void TS3FileSystem::Open()
 
   RequireNeon(FTerminal);
 
-  FTerminal->Information(LoadStr(STATUS_CONNECT), true);
+  FTerminal->Information(LoadStr(STATUS_CONNECT));
 
   TSessionData * Data = FTerminal->GetSessionData();
 
@@ -861,7 +872,7 @@ static _di_IXMLNode NeedNode(const _di_IXMLNodeList & NodeList, const UnicodeStr
   _di_IXMLNode Result = NodeList->FindNode(Name, Namespace);
   if (Result == nullptr)
   {
-    throw Exception(FMTLOAD(S3_RESPONSE_ERROR, (Name)));
+    throw Exception(FMTLOAD(S3_RESPONSE_ERROR, Name));
   }
   return Result;
 }
@@ -884,7 +895,7 @@ static const _di_IXMLDocument CreateDocumentFromXML(const TLibS3XmlCallbackData 
 void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
 {
   // According to AWS cli does, AWS_ROLE_SESSION_NAME does not apply here
-  const UnicodeString RoleSessionName = DefaultStr(FTerminal->SessionData->S3RoleSessionName, AppNameString());
+  const UnicodeString RoleSessionName = DefaultStr(FTerminal->SessionData->S3RoleSessionName, GetAppNameString());
 
   try
   {
@@ -900,7 +911,7 @@ void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
     const UTF8String StsService = L"sts";
     const AnsiString StsHostName =
       AnsiString(ReplaceStr(S3LibDefaultHostName(), FORMAT("%s.", UnicodeString(S3_SERVICE)), FORMAT("%s.", UnicodeString(StsService))));
-    DebugAssert(StsHostName != S3LibDefaultHostName());
+    DebugAssert(UnicodeString(StsHostName) != S3LibDefaultHostName());
 
     RequestParams AssumeRoleRequestParams =
     {
@@ -929,6 +940,7 @@ void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
 
     CheckLibS3Error(Data);
 
+#if defined(__BORLANDC__)
     const _di_IXMLDocument Document = CreateDocumentFromXML(Data, TParseOptions());
     _di_IXMLNode ResponseNode = AssumeRoleNeedNode(Document->ChildNodes, L"AssumeRoleResponse");
     _di_IXMLNode ResultNode = AssumeRoleNeedNode(ResponseNode->ChildNodes, L"AssumeRoleResult");
@@ -940,7 +952,7 @@ void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
 
     FTerminal->LogEvent(FORMAT("Assumed role \"%s\".", RoleArn));
     FTerminal->LogEvent(FORMAT("New acess key is: %s", AccessKeyId));
-    if (Configuration->LogSensitive)
+    if (FTerminal->Configuration->LogSensitive)
     {
       FTerminal->LogEvent(FORMAT("Secret access key: %s", SecretAccessKey));
       FTerminal->LogEvent(FORMAT("Session token: %s", SessionToken));
@@ -951,10 +963,11 @@ void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
     FTerminal->LogEvent(FORMAT("Credentials expiration: %s", StandardTimestamp(Expiration)));
 
     SetCredentials(AccessKeyId, SecretAccessKey, SessionToken);
+#endif // defined(__BORLANDC__)
   }
   catch (Exception & E)
   {
-    throw ExtException(MainInstructions(FMTLOAD(S3_ASSUME_ROLE_ERROR, (RoleArn))), &E);
+    throw ExtException(&E, MainInstructions(FMTLOAD(S3_ASSUME_ROLE_ERROR, RoleArn)));
   }
 }
 
@@ -972,13 +985,13 @@ S3Status TS3FileSystem::LibS3XmlDataCallback(int32_t BufferSize, const char * Bu
 int32_t TS3FileSystem::LibS3XmlDataToCallback(int32_t BufferSize, char * Buffer, void * CallbackData)
 {
   TLibS3XmlCallbackData & Data = *static_cast<TLibS3XmlCallbackData *>(CallbackData);
-  int32_t Len = std::min(Data.Contents.Length(), BufferSize);
-  memcpy(Buffer, Data.Contents.c_str(), Len);
+  const int32_t Len = std::min(Data.Contents.Length(), BufferSize);
+  nbstr_memcpy(Buffer, Data.Contents.c_str(), Len);
   Data.Contents.Delete(1, Len);
   return Len;
 }
 
-UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString & Key)
+UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString & AKey) const
 {
   return AKey + L"/";
 }
@@ -1861,10 +1874,12 @@ bool TS3FileSystem::ParsePathForPropertiesRequests(
 const UnicodeString S3Version(TraceInitStr(L"2006-03-01"));
 const UnicodeString S3Namespace(TraceInitStr(FORMAT("http://s3.amazonaws.com/doc/%s/", S3Version)));
 
+#if defined(__BORLANDC__)
 static _di_IXMLNode S3NeedNode(const _di_IXMLNodeList & NodeList, const UnicodeString & Name)
 {
   return NeedNode(NodeList, Name, S3Namespace);
 }
+#endif // defined(__BORLANDC__)
 
 #define COPY_BUCKET_CONTEXT(BucketContext) \
   { BucketContext.hostName, BucketContext.bucketName, BucketContext.protocol, BucketContext.uriStyle, \
@@ -1872,7 +1887,7 @@ static _di_IXMLNode S3NeedNode(const _di_IXMLNodeList & NodeList, const UnicodeS
     BucketContext.service }
 
 bool TS3FileSystem::DoLoadFileProperties(
-  const UnicodeString & AFileName, const TRemoteFile * File, TS3FileProperties & Properties)
+  const UnicodeString & AFileName, const TRemoteFile * File, TS3FileProperties & Properties, bool LoadTags)
 {
   UnicodeString BucketName, Key;
   const bool Result = ParsePathForPropertiesRequests(AFileName, File, BucketName, Key);
@@ -1920,6 +1935,7 @@ bool TS3FileSystem::DoLoadFileProperties(
       {
         CheckLibS3Error(TagsData);
 
+#if defined(__BORLANDC__)
         const _di_IXMLDocument Document = CreateDocumentFromXML(TagsData, TParseOptions() << poPreserveWhiteSpace);
         _di_IXMLNode TaggingNode = S3NeedNode(Document->ChildNodes, L"Tagging");
         _di_IXMLNode TagSetNode = S3NeedNode(TaggingNode->ChildNodes, L"TagSet");
@@ -1935,6 +1951,7 @@ bool TS3FileSystem::DoLoadFileProperties(
         }
 
         Properties.Tags = Tags->Text;
+#endif // defined(__BORLANDC__)
       }
     }
   }
@@ -2161,7 +2178,7 @@ struct TLoadFilePropertiesData
   bool LoadTags;
 };
 
-void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, void * Param)
+void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * AFile, void * Param)
 {
   TRemoteFile * File = const_cast<TRemoteFile *>(AFile);
   TLoadFilePropertiesData & Data = *static_cast<TLoadFilePropertiesData *>(Param);
@@ -2235,19 +2252,18 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
 
     const_cast<TRemoteFile *>(File)->GetRightsNotConst()->Number = Permissions;
     const_cast<TRemoteFile *>(File)->GetRightsNotConst()->SetTextOverride(HumanRights);
-    Result = true;
   }
 }
 
 bool TS3FileSystem::LoadFilesProperties(TStrings * FileList)
 {
-  TLoadFilePropertiesData Data;
+  TLoadFilePropertiesData Data{};
   Data.Result = false;
   Data.LoadTags = (FileList->Count == 1);
   FTerminal->BeginTransaction();
   try__finally
   {
-    FTerminal->ProcessFiles(FileList, foGetProperties, nb::bind(&TS3FileSystem::LoadFileProperties, this), &Result);
+    FTerminal->ProcessFiles(FileList, foGetProperties, nb::bind(&TS3FileSystem::LoadFileProperties, this), &Data);
   }
   __finally
   {
@@ -2263,10 +2279,11 @@ void TS3FileSystem::CalculateFilesChecksum(
   DebugFail();
 }
 
-void TS3FileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
-  const TRemoteFile * /*AFile*/, const UnicodeString & /*ACommand*/, int32_t /*AParams*/, TCaptureOutputEvent && /*OutputEvent*/)
+void TS3FileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
+  const TRemoteFile * /*AFile*/, const UnicodeString & ACommand, int32_t /*AParams*/, TCaptureOutputEvent && /*OutputEvent*/)
 {
-  DebugUsedParam2(FileName, Command);
+  DebugUsedParam(AFileName);
+  DebugUsedParam(ACommand);
   DebugFail();
 }
 

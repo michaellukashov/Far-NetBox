@@ -1754,7 +1754,7 @@ void TRemoteFileList::ExtractFile(TRemoteFile * AFile)
   if (AFile)
   {
     Extract(AFile);
-    AFile->Directory = nullptr;
+    AFile->SetDirectory(nullptr);
   }
 }
 
@@ -3199,7 +3199,7 @@ UnicodeString TChecklistItem::GetLocalPath() const
 
 UnicodeString TChecklistItem::GetRemotePath() const
 {
-  return UnixCombinePaths(Remote.Directory, Remote.FileName);
+  return base::UnixCombinePaths(Remote.Directory, Remote.FileName);
 }
 
 UnicodeString TChecklistItem::GetLocalTarget() const
@@ -3209,7 +3209,7 @@ UnicodeString TChecklistItem::GetLocalTarget() const
 
 UnicodeString TChecklistItem::GetRemoteTarget() const
 {
-  return UnixIncludeTrailingBackslash(Remote.Directory);
+  return base::UnixIncludeTrailingBackslash(Remote.Directory);
 };
 
 TStrings * TChecklistItem::GetFileList() const
@@ -3217,15 +3217,15 @@ TStrings * TChecklistItem::GetFileList() const
   std::unique_ptr<TStrings> FileList(std::make_unique<TStringList>());
   switch (Action)
   {
-    case TSynchronizeChecklist::saDownloadNew:
-    case TSynchronizeChecklist::saDownloadUpdate:
-    case TSynchronizeChecklist::saDeleteRemote:
+    case TChecklistAction::saDownloadNew:
+    case TChecklistAction::saDownloadUpdate:
+    case TChecklistAction::saDeleteRemote:
       FileList->AddObject(GetRemotePath(), RemoteFile);
       break;
 
-    case TSynchronizeChecklist::saUploadNew:
-    case TSynchronizeChecklist::saUploadUpdate:
-    case TSynchronizeChecklist::saDeleteLocal:
+    case TChecklistAction::saUploadNew:
+    case TChecklistAction::saUploadUpdate:
+    case TChecklistAction::saDeleteLocal:
       FileList->Add(GetLocalPath());
       break;
 
@@ -3308,6 +3308,22 @@ int32_t TSynchronizeChecklist::GetCheckedCount() const
     }
   }
   return Result;
+}
+
+bool TSynchronizeChecklist::GetNextChecked(int32_t & Index, const TChecklistItem *& AItem) const
+{
+  while (Index < Count)
+  {
+    const TChecklistItem * TheItem = Item[Index];
+    Index++;
+    if (TheItem->Checked)
+    {
+      AItem = TheItem;
+      return true;
+    }
+  }
+  AItem = nullptr;
+  return false;
 }
 
 const TChecklistItem * TSynchronizeChecklist::GetItem(int32_t Index) const

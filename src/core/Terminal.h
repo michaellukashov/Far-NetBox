@@ -68,8 +68,8 @@ using TDeleteLocalFileEvent = nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, bool /*Alternative*/, int32_t & /*Deleted*/>;
 using TDirectoryModifiedEvent = nb::FastDelegate3<int,
   TTerminal * /*Terminal*/, const UnicodeString & /*Directory*/, bool /*SubDirs*/>;
-using TInformationEvent = nb::FastDelegate5<void,
-  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, bool /*Status*/, int32_t /*Phase*/, const UnicodeString & /*Additional*/>;
+using TInformationEvent = nb::FastDelegate4<void,
+  TTerminal * /*Terminal*/, const UnicodeString & /*Str*/, int32_t /*Phase*/, const UnicodeString & /*Additional*/>;
 using TCustomCommandEvent = nb::FastDelegate3<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*Command*/, bool & /*Handled*/>;
 
@@ -302,8 +302,7 @@ public:
   bool GetStoredCredentialsTried() const;
   bool InTransaction() const;
   void SaveCapabilities(TFileSystemInfo & FileSystemInfo);
-  bool CreateTargetDirectory(const UnicodeString & DirectoryPath, int32_t Attrs, const TCopyParamType * CopyParam);
-  UnicodeString CutFeature(UnicodeString & Buf);
+  void LogAndInformation(const UnicodeString & S);
   static UnicodeString SynchronizeModeStr(TSynchronizeMode Mode);
   static UnicodeString SynchronizeParamsStr(int32_t Params);
 
@@ -430,7 +429,7 @@ protected:
   void OpenTunnel();
   void CloseTunnel();
   void DoInformation(
-    const UnicodeString & AStr, bool Status, int32_t Phase = -1, const UnicodeString & Additional = UnicodeString());
+    const UnicodeString & AStr, int32_t Phase = -1, const UnicodeString & Additional = UnicodeString());
   bool PromptUser(TSessionData * Data, TPromptKind Kind,
     const UnicodeString & AName, const UnicodeString & AInstructions, const UnicodeString & Prompt, bool Echo,
     int32_t MaxLen, UnicodeString & AResult);
@@ -452,7 +451,7 @@ protected:
     TFileOperationProgressType & Progress, TFileOperation Operation, TOperationSide Side, int32_t Count,
     bool Temp, const UnicodeString & ADirectory, uint32_t CPSLimit, TOnceDoneOperation OnceDoneOperation);
   void OperationStop(TFileOperationProgressType & Progress);
-  virtual void Information(const UnicodeString & AStr, bool Status) override;
+  virtual void Information(const UnicodeString & AStr) override;
   virtual uint32_t QueryUser(const UnicodeString & AQuery,
     TStrings * MoreMessages, uint32_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) override;

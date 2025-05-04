@@ -103,6 +103,7 @@ public:
   __property UnicodeString FirstLine = { read = GetFirstLine };
   __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };*/
   __property UnicodeString LastLine  = { read=GetLastLine };
+  const ROProperty<UnicodeString> LastLine{nb::bind(&TCommandSet::GetLastLine , this)};
   __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
   __property UnicodeString ReturnVar  = { read=GetReturnVar, write=FReturnVar };
 
@@ -616,7 +617,7 @@ bool TSCPFileSystem::RemoveLastLine(UnicodeString & Line,
   return IsLastLine;
 }
 
-bool TSCPFileSystem::TryRemoveLastLine(UnicodeString & ALine)
+bool TSCPFileSystem::TryRemoveLastLine(UnicodeString & ALine) const
 {
   bool Result = false;
   try

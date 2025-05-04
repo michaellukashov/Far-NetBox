@@ -111,7 +111,7 @@ private:
   TFileSystemInfo FFileSystemInfo;
   UnicodeString FCurrentDirectory;
   std::unique_ptr<TStrings> FOutput;
-  int32_t FReturnCode{0};
+  mutable int32_t FReturnCode{0};
   UnicodeString FCachedDirectoryChange;
   bool FProcessingCommand{false};
   int32_t FLsFullTime{asAuto};
@@ -124,7 +124,7 @@ private:
   void CustomReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile, TRemoteFile * ALinkedByFile);
   void DetectReturnVar();
-  bool TryRemoveLastLine(UnicodeString & ALine);
+  bool TryRemoveLastLine(UnicodeString & ALine) const;
   bool IsLastLine(const UnicodeString & ALine) const;
   static bool IsTotalListingLine(const UnicodeString & ALine);
   void EnsureLocation();

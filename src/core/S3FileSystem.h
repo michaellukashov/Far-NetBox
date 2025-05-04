@@ -160,7 +160,7 @@ protected:
   void DoListBucket(
     const UnicodeString & APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext & BucketContext,
     TLibS3ListBucketCallbackData & Data);
-  UnicodeString GetFolderKey(const UnicodeString & AKey);
+  UnicodeString GetFolderKey(const UnicodeString & AKey) const;
   void HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry);
   void DoReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);
   void ConfirmOverwrite(

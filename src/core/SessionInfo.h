@@ -74,7 +74,7 @@ public:
 public:
   explicit TSessionUI(TObjectClassId Kind) noexcept : TObject(Kind) {}
   virtual ~TSessionUI() noexcept override = default;
-  virtual void Information(const UnicodeString & AStr, bool Status) = 0;
+  virtual void Information(const UnicodeString & AStr) = 0;
   virtual uint32_t QueryUser(const UnicodeString & AQuery,
     TStrings * MoreMessages, uint32_t Answers, const TQueryParams * Params,
     TQueryType QueryType = qtConfirmation) = 0;

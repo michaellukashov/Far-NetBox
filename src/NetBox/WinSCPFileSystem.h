@@ -241,7 +241,7 @@ private:
   void TerminalReadDirectoryProgress(TObject * Sender, int32_t Progress,
     int32_t ResolvedLinks, bool & Cancel);
   void TerminalInformation(TTerminal * Terminal,
-    const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional);
+    const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
     const TQueryParams * AParams, uint32_t & Answer, TQueryType Type, void * Arg);

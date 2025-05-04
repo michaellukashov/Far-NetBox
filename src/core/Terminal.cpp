@@ -242,7 +242,7 @@ public:
   explicit TTunnelUI(TTerminal * Terminal) noexcept;
   virtual ~TTunnelUI() override = default;
 
-  virtual void Information(const UnicodeString & AStr, bool Status) override;
+  virtual void Information(const UnicodeString & AStr) override;
   virtual uint32_t QueryUser(const UnicodeString & AQuery,
     TStrings * MoreMessages, uint32_t Answers, const TQueryParams * Params,
     TQueryType QueryType) override;
@@ -270,11 +270,11 @@ TTunnelUI::TTunnelUI(TTerminal * Terminal) noexcept :
   FTerminalThreadID = GetCurrentThreadId();
 }
 
-void TTunnelUI::Information(const UnicodeString & AStr, bool Status)
+void TTunnelUI::Information(const UnicodeString & AStr)
 {
   if (GetCurrentThreadId() == FTerminalThreadID)
   {
-    FTerminal->Information(AStr, Status);
+    FTerminal->Information(AStr);
   }
 }
 
@@ -1538,7 +1538,7 @@ void TTerminal::Open()
       ValidateEncryptKey(FEncryptKey);
     }
 
-    DoInformation("", true, 1);
+    DoInformation("", 1);
     try__finally
     {
       FRememberedPasswordUsed = false;
@@ -1548,7 +1548,7 @@ void TTerminal::Open()
     {
       // This does not make it through, if terminal thread is abandoned,
       // see also TTerminalManager::DoConnectTerminal
-      DoInformation("", true, 0);
+      DoInformation("", 0);
     } end_try__finally
   }
   catch(EFatal &)
@@ -2133,7 +2133,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     if (Result && PasswordOrPassphrasePrompt &&
         (GetConfiguration()->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->Objects[0]), pupRemember)))
     {
-      const UnicodeString Password = DenormalizeString(Results->Strings[0]);
+      UnicodeString Password = DenormalizeString(Results->Strings[0]);
       const RawByteString EncryptedPassword = EncryptPassword(Password);
       Shred(Password);
       if (FTunnelOpening)
@@ -2314,14 +2314,14 @@ void TTerminal::ShowExtendedException(Exception * E)
 }
 
 void TTerminal::DoInformation(
-  const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional)
+  const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional)
 {
   if (GetOnInformation())
   {
     TCallbackGuard Guard(this);
     try
     {
-      GetOnInformation()(this, AStr, Status, Phase, Additional);
+      GetOnInformation()(this, AStr, Phase, Additional);
       Guard.Verify();
     }
     catch(Exception & E)
@@ -2334,9 +2334,9 @@ void TTerminal::DoInformation(
   }
 }
 
-void TTerminal::Information(const UnicodeString & AStr, bool Status)
+void TTerminal::Information(const UnicodeString & AStr)
 {
-  DoInformation(AStr, Status);
+  DoInformation(AStr);
 }
 
 void TTerminal::DoProgress(TFileOperationProgressType & ProgressData)
@@ -3030,7 +3030,7 @@ void TTerminal::DoEndTransaction(bool Inform)
         {
           if (Inform)
           {
-            DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), true, -1, CurrentDirectory());
+            DoInformation(LoadStr(STATUS_OPEN_DIRECTORY), -1, CurrentDirectory());
           }
           ReadDirectory(!FReadCurrentDirectoryPending);
         }
@@ -3698,7 +3698,7 @@ void TTerminal::DoReadDirectoryFinish(TRemoteDirectory * Files, bool ReloadOnly)
 {
   // Factored out to solve Clang ICE
   std::unique_ptr<TRemoteDirectory> OldFiles(FFiles.release());
-  FFiles = std::move(Files);
+  FFiles.reset(Files);
   try__finally
   {
     DoReadDirectory(ReloadOnly);
@@ -3769,7 +3769,6 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
         DoReadDirectoryProgress(-1, 0, Cancel);
         FReadingCurrentDirectory = false;
         DoReadDirectoryFinish(FFiles.release(), ReloadOnly);
-        } end_try__finally
         if (GetActive())
         {
           if (GetSessionData()->GetCacheDirectories())
@@ -6411,8 +6410,7 @@ void DestroyLocalFileList(TStringList * LocalFileList)
   {
     for (int32_t Index = 0; Index < LocalFileList->GetCount(); ++Index)
     {
-      TSynchronizeFileData * FileData = reinterpret_cast<TSynchronizeFileData*>
-        (Data.LocalFileList->Objects[Index]);
+      TSynchronizeFileData * FileData = LocalFileList->GetAs<TSynchronizeFileData>(Index);
       SAFE_DESTROY(FileData);
     }
     SAFE_DESTROY(LocalFileList);
@@ -6686,7 +6684,7 @@ bool TTerminal::SameFileChecksum(const UnicodeString & LocalFileName, const TRem
 void TTerminal::DoSynchronizeCollectFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, /*TSynchronizeData*/ void * Param)
 {
-  DebugUsedParam(FileName);
+  DebugUsedParam(AFileName);
   TSynchronizeData * Data = static_cast<TSynchronizeData *>(Param);
   Expects(Data != nullptr);
 
@@ -6910,7 +6908,7 @@ int32_t TTerminal::GetSynchronizeCopyParams(int32_t Params)
 }
 
 TQueueItem * TTerminal::SynchronizeToQueue(
-  const TSynchronizeChecklist::TItem * ChecklistItem, const TCopyParamType * CopyParam, int32_t Params, bool Parallel)
+  const TChecklistItem * ChecklistItem, const TCopyParamType * CopyParam, int32_t Params, bool Parallel)
 {
   TQueueItem * Result;
   if (DebugAlwaysFalse(FLAGSET(Params, spTimestamp)))
@@ -6922,21 +6920,21 @@ TQueueItem * TTerminal::SynchronizeToQueue(
     std::unique_ptr<TStrings> FileList(ChecklistItem->GetFileList());
     switch (ChecklistItem->Action)
     {
-      case TSynchronizeChecklist::saDownloadNew:
-      case TSynchronizeChecklist::saDownloadUpdate:
+      case TChecklistAction::saDownloadNew:
+      case TChecklistAction::saDownloadUpdate:
         Result = new TDownloadQueueItem(this, FileList.get(), ChecklistItem->GetLocalTarget(), CopyParam, Params, Parallel);
         break;
 
-      case TSynchronizeChecklist::saDeleteRemote:
+      case TChecklistAction::saDeleteRemote:
         Result = new TRemoteDeleteQueueItem(this, FileList.get(), 0);
         break;
 
-      case TSynchronizeChecklist::saUploadNew:
-      case TSynchronizeChecklist::saUploadUpdate:
+      case TChecklistAction::saUploadNew:
+      case TChecklistAction::saUploadUpdate:
         Result = new TUploadQueueItem(this, FileList.get(), ChecklistItem->GetRemoteTarget(), CopyParam, Params, Parallel);
         break;
 
-      case TSynchronizeChecklist::saDeleteLocal:
+      case TChecklistAction::saDeleteLocal:
         Result = new TLocalDeleteQueueItem(FileList.get(), 0);
         break;
 
@@ -8914,7 +8912,7 @@ bool TTerminal::VerifyCertificate(
       if (ExpectedKey == L"*")
       {
         UnicodeString Message = LoadStr(ANY_CERTIFICATE);
-        Information(Message, true);
+        Information(Message);
         GetLog()->Add(llException, Message);
         Result = true;
       }
@@ -9111,11 +9109,11 @@ bool TTerminal::LoadTlsCertificate(X509 *& Certificate, EVP_PKEY *& PrivateKey)
         if (Passphrase.IsEmpty())
         {
           LogEvent("Certificate is encrypted, need passphrase");
-          Information(LoadStr(CLIENT_CERTIFICATE_LOADING), false);
+          Information(LoadStr(CLIENT_CERTIFICATE_LOADING));
         }
         else
         {
-          Information(LoadStr(CERTIFICATE_DECODE_ERROR_INFO), false);
+          Information(LoadStr(CERTIFICATE_DECODE_ERROR_INFO));
         }
 
         Passphrase = "";
@@ -9309,7 +9307,7 @@ void TTerminal::LogAndInformation(const UnicodeString & S)
 
 UnicodeString TTerminal::UploadPublicKey(const UnicodeString & FileName)
 {
-  if (FSProtocol != cfsSFTP)
+  if (FFSProtocol != cfsSFTP)
   {
     NotSupported();
   }
@@ -9446,39 +9444,9 @@ bool TTerminal::IsValidFile(TRemoteFile * File) const
     (base::IsUnixRootPath(File->FileName()) || base::UnixExtractFileDir(File->FileName()).IsEmpty());
 }
 
-UnicodeString TTerminal::CutFeature(UnicodeString & Buf)
-{
-  UnicodeString Result;
-  if (Buf.SubString(1, 1) == L"\"")
-  {
-    Buf.Delete(1, 1);
-    const int32_t P = Buf.Pos(L"\",");
-    if (P == 0)
-    {
-      Result = Buf;
-      Buf = UnicodeString();
-      // there should be the ending quote, but if not, just do nothing
-      if (Result.SubString(Result.Length(), 1) == L"\"")
-      {
-        Result.SetLength(Result.Length() - 1);
-      }
-    }
-    else
-    {
-      Result = Buf.SubString(1, P - 1);
-      Buf.Delete(1, P + 1);
-    }
-    Buf = Buf.TrimLeft();
-  }
-  else
-  {
-    Result = CutToChar(Buf, L',', true);
-  }
-  return Result;
-}
-
 TStrings * TTerminal::ProcessFeatures(TStrings * Features)
 {
+#if 0
   std::unique_ptr<TStrings> Result(std::make_unique<TStringList>());
   UnicodeString FeaturesOverride = SessionData->ProtocolFeatures().Trim();
   if (FeaturesOverride.SubString(1, 1) == L"*")
@@ -9524,6 +9492,8 @@ TStrings * TTerminal::ProcessFeatures(TStrings * Features)
     Result->AddStrings(AddFeatures.get());
   }
   return Result.release();
+#endif
+  return ::ProcessFeatures(Features, ::Trim(SessionData->ProtocolFeatures));
 }
 
 void TTerminal::SetLocalFileTime(const UnicodeString & LocalFileName,

@@ -72,7 +72,7 @@ public:
   {
     if (!OnInformation.empty())
     {
-      OnInformation(Terminal, Str, Status, Phase, Additional);
+      OnInformation(Terminal, Str, Phase, Additional);
     }
   }
 
@@ -2597,7 +2597,7 @@ void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal,
 }
 
 
-TDeleteQueueItem::TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept :
+TLocalDeleteQueueItem::TLocalDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept :
   TLocatedQueueItem(Kind, Terminal)
 {
   FInfo->Operation = foDelete;
@@ -2612,7 +2612,7 @@ TDeleteQueueItem::TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TS
   FParams = Params;
 }
 
-void TDeleteQueueItem::DoExecute(TTerminal * Terminal)
+void TLocalDeleteQueueItem::DoExecute(TTerminal * Terminal)
 {
   TLocatedQueueItem::DoExecute(Terminal);
 
@@ -3034,16 +3034,23 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 }
 
 void TTerminalThread::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional)
+  TTerminal * Terminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional)
 {
   TInformationUserAction Action(std::forward<TInformationEvent>(FOnInformation));
   Action.Terminal = Terminal;
   Action.Str = AStr;
-  Action.Status = Status;
+  // Action.Status = Status;
   Action.Phase = Phase;
   Action.Additional = Additional;
 
-  WaitForUserAction(&Action);
+  if (!FNonInteractive)
+  {
+    WaitForUserAction(Action.get());
+  }
+  else
+  {
+    FNonInteractiveInformation.push_back(Action.release());
+  }
 }
 
 void TTerminalThread::TerminalQueryUser(TObject * Sender,

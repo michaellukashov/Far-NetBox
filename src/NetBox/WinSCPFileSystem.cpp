@@ -3197,7 +3197,7 @@ void TWinSCPFileSystem::LogAuthentication(
 }
 
 void TWinSCPFileSystem::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & AStr, bool /*Status*/, int32_t Phase, const UnicodeString & /*Additional*/)
+  TTerminal * Terminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & /*Additional*/)
 {
   if (Phase != 0)
   {
