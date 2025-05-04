@@ -57,7 +57,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
   {
     while (List->FindByName(GetName()))
     {
-      int64_t N = 0;
+      int64_t N = 0; // P CLANG_INITIALIZE(0);
       // If name already contains number parenthesis remove it (and remember it)
       UnicodeString AName = GetName();
       int32_t P = AName.LastDelimiter(UnicodeString(1, L'('));
@@ -69,7 +69,7 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
           AName.Delete(P, AName.Length() - P + 1);
           SetName(AName.TrimRight());
         }
-        catch(Exception &)
+        catch (Exception &)
         {
           N = 0;
         }
@@ -79,7 +79,9 @@ void TNamedObject::MakeUniqueIn(TNamedObjectList * List)
   }
 }
 //--- TNamedObjectList ------------------------------------------------------
-// const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
+#if defined(__BORLANDC__)
+const UnicodeString TNamedObjectList::HiddenPrefix = "_!_";
+#endif // defined(__BORLANDC__)
 
 TNamedObjectList::TNamedObjectList(TObjectClassId Kind) noexcept :
   TObjectList(Kind)
