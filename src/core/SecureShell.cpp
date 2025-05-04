@@ -234,7 +234,7 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case cipArcfour: pcipher = CIPHER_ARCFOUR; break;
       case cipChaCha20: pcipher = CIPHER_CHACHA20; break;
       case cipAESGCM: pcipher = CIPHER_AESGCM; break;
-      default: DebugFail();
+      default: DebugFail(); pcipher = nullptr; // shut up
     }
     conf_set_int_int(conf, CONF_ssh_cipherlist, c, pcipher);
   }
@@ -255,7 +255,9 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
       case kexRSA: pkex = KEX_RSA; break;
       case kexECDH: pkex = KEX_ECDH; break;
       case kexNTRUHybrid: pkex = KEX_NTRU_HYBRID; break;
-      default: DebugFail();
+      case kexMLKEM25519Hybrid: pkex = KEX_MLKEM_25519_HYBRID; break;
+      case kexMLKEMNISTHybrid: pkex = KEX_MLKEM_NIST_HYBRID; break;
+      default: DebugFail(); pkex = nullptr; // shutup
     }
     conf_set_int_int(conf, CONF_ssh_kexlist, k, pkex);
   }
@@ -279,15 +281,15 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
     }
     conf_set_int_int(conf, CONF_ssh_gsslist, g, pgsslib);
   }
-  Filename * GssLibCustomFileName = filename_from_str(UTF8String(Data->GetGssLibCustom()).c_str());
+  Filename * GssLibCustomFileName = filename_from_utf8(UTF8String(Data->GetGssLibCustom()).c_str());
   conf_set_filename(conf, CONF_ssh_gss_custom, GssLibCustomFileName);
   filename_free(GssLibCustomFileName);
 
-  Filename * AFileName = filename_from_str(UTF8String(Data->ResolvePublicKeyFile()).c_str());
+  Filename * AFileName = filename_from_utf8(UTF8String(Data->ResolvePublicKeyFile()).c_str());
   conf_set_filename(conf, CONF_keyfile, AFileName);
   filename_free(AFileName);
 
-  AFileName = filename_from_str(UTF8String(ExpandEnvironmentVariables(Data->DetachedCertificate)).c_str());
+  AFileName = filename_from_utf8(UTF8String(ExpandEnvironmentVariables(Data->DetachedCertificate)).c_str());
   conf_set_filename(conf, CONF_detached_cert, AFileName);
   filename_free(AFileName);
 
