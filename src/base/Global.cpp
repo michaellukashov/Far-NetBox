@@ -1,6 +1,8 @@
 
 #include <vcl.h>
-//#pragma hdrstop
+#if defined(__BORLANDC__)
+#pragma hdrstop
+#endif // defined(__BORLANDC__)
 
 #ifdef _DEBUG
 //#include <cstdio>
@@ -8,7 +10,7 @@
 #include <Interface.h>
 #endif // ifdef _DEBUG
 
-#include <Global.h>
+#include "Global.h"
 
 #if defined(__BORLANDC__)
 #pragma package(smart_init)
@@ -22,6 +24,16 @@ UnicodeString NormalizeString(const UnicodeString & S)
   if (Result == L"\1\1\1")
   {
     Result = UnicodeString();
+  }
+  return Result;
+}
+
+UnicodeString DenormalizeString(const UnicodeString & S)
+{
+  UnicodeString Result = S;
+  if (Result.IsEmpty())
+  {
+    Result = EmptyString;
   }
   return Result;
 }

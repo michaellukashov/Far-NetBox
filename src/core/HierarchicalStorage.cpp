@@ -86,7 +86,7 @@ static UnicodeString UnMungeStr(const UnicodeString & Str)
   RawByteString Dest(sb->s);
   strbuf_free(sb);
   UnicodeString Result;
-  const AnsiString Bom(CONST_BOM);
+  static const AnsiString Bom(CONST_BOM);
   DebugAssert(Bom.Length() == 3);
   DebugAssert(strlen(CONST_BOM) == 3);
   if (Dest.SubString(1, Bom.Length()) == Bom)
@@ -134,7 +134,7 @@ UnicodeString MungeIniName(const UnicodeString & Str, bool ForceAnsi)
   return Result;
 }
 
-UnicodeString EscapedBom(TraceInitStr(PuttyEscape(CONST_BOM, false)));
+static UnicodeString EscapedBom(TraceInitStr(PuttyEscape(CONST_BOM, false)));
 
 UnicodeString UnMungeIniName(const UnicodeString & Str)
 {
@@ -147,7 +147,7 @@ UnicodeString UnMungeIniName(const UnicodeString & Str)
   {
     // Backward compatibility only, with versions that did not Unicode-encoded strings with =.
     // Can be dropped eventually.
-    int P = Str.Pos(L"%3D");
+    int32_t P = Str.Pos(L"%3D");
     if (P > 0)
     {
       Result = ReplaceStr(Str, L"%3D", L"=");
@@ -203,10 +203,10 @@ TIntMapping CreateIntMappingFromEnumNames(const UnicodeString & ANames)
 
 TIntMapping AutoSwitchMapping = CreateIntMapping(L"on", asOn, L"off", asOff, L"auto", asAuto);
 TIntMapping AutoSwitchReversedMapping = CreateIntMapping(L"on", asOff, L"off", asOn, L"auto", asAuto);
-TIntMapping BoolMapping = CreateIntMapping(L"on", true, L"off", false);
+static TIntMapping BoolMapping = CreateIntMapping(L"on", true, L"off", false);
 //===========================================================================
-UnicodeString AccessValueName(L"Access");
-UnicodeString DefaultAccessString(L"inherit");
+static UnicodeString AccessValueName(L"Access");
+static UnicodeString DefaultAccessString(L"inherit");
 
 THierarchicalStorage::THierarchicalStorage(const UnicodeString & AStorage) noexcept :
   FStorage(AStorage)
@@ -381,7 +381,7 @@ uint32_t THierarchicalStorage::GetCurrentAccess()
 bool THierarchicalStorage::OpenSubKeyPath(const UnicodeString & KeyPath, bool CanCreate)
 {
   DebugAssert(!KeyPath.IsEmpty() && (KeyPath[KeyPath.Length()] != Backslash));
-  bool Result{false};
+  bool Result{false}; // shut up
   UnicodeString Buf(KeyPath);
   int32_t Opens = 0;
   while (!Buf.IsEmpty())
@@ -1496,7 +1496,7 @@ bool TCustomIniFileStorage::DoReadBool(const UnicodeString & Name, bool Default)
 
 int32_t TCustomIniFileStorage::DoReadIntegerWithMapping(const UnicodeString & Name, int32_t Default, const TIntMapping * Mapping)
 {
-  int32_t Result;
+  int32_t Result = 0; // shut up
   bool ReadAsInteger = true;
   UnicodeString MungedName = MungeIniName(Name);
   if (Mapping != nullptr) // optimization
@@ -1978,7 +1978,7 @@ bool TOptionsIniFile::AllowWrite()
 
     case wmFail:
       NotImplemented();
-      return false; // never gets here
+      UNREACHABLE_AFTER_NORETURN(return false);
 
     case wmIgnore:
       return false;
@@ -2039,7 +2039,7 @@ UnicodeString TOptionsIniFile::ReadString(const UnicodeString & Section, const U
   return Value;
 }
 
-void TOptionsIniFile::WriteString(const UnicodeString Section, const UnicodeString Ident, const UnicodeString Value)
+void TOptionsIniFile::WriteString(const UnicodeString & Section, const UnicodeString Ident, const UnicodeString & Value)
 {
   if (AllowWrite() &&
       DebugAlwaysTrue(AllowSection(Section)))
@@ -2100,20 +2100,22 @@ void TOptionsIniFile::ReadSections(TStrings * Strings)
   }
 }
 
-void TOptionsIniFile::ReadSectionValues(const UnicodeString Section, TStrings * /*Strings*/)
+void TOptionsIniFile::ReadSectionValues(const UnicodeString & Section, TStrings * /*Strings*/)
 {
+  DebugUsedParam(Section);
   NotImplemented();
 }
 
-void TOptionsIniFile::EraseSection(const UnicodeString Section)
+void TOptionsIniFile::EraseSection(const UnicodeString & Section)
 {
+  DebugUsedParam(Section);
   if (AllowWrite())
   {
     NotImplemented();
   }
 }
 
-void TOptionsIniFile::DeleteKey(const UnicodeString Section, const UnicodeString Ident)
+void TOptionsIniFile::DeleteKey(const UnicodeString & Section, const UnicodeString Ident)
 {
   if (AllowWrite() &&
       DebugAlwaysTrue(AllowSection(Section)))

@@ -22,6 +22,7 @@
 #include <System.SyncObjs.hpp>
 
 UnicodeString NormalizeString(const UnicodeString & S);
+UnicodeString DenormalizeString(const UnicodeString & S);
 
 class NB_CORE_EXPORT TGuard
 {
