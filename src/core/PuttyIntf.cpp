@@ -13,15 +13,17 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include <StrUtils.hpp>
-// #include <Soap.EncdDecd.hpp>
+#if defined(__BORLANDC__)
+#include <Soap.EncdDecd.hpp>
+#endif // defined(__BORLANDC__)
 
 char sshver[50]{};
 extern const char commitid[] = "";
 const bool platform_uses_x11_unix_by_default = true;
 CRITICAL_SECTION putty_section;
-bool SaveRandomSeed;
-bool HadRandomSeed;
-char appname_[50]{};
+static bool SaveRandomSeed;
+static bool HadRandomSeed;
+static char appname_[50]{};
 const char * const appname = appname_;
 extern "C" const bool share_can_be_downstream = false;
 extern "C" const bool share_can_be_upstream = false;
@@ -325,6 +327,7 @@ const SeatDialogPromptDescriptions * prompt_descriptions(Seat *)
         /*.hk_connect_once_action =*/ "",
         /*.hk_cancel_action =*/ "",
         /*.hk_cancel_action_Participle =*/ "",
+        nullptr, nullptr,
     };
     return &descs;
 }
@@ -342,17 +345,7 @@ size_t banner(Seat * seat, const void * data, size_t len)
   return 0; // PuTTY never uses the value
 }
 
-uintmax_t strtoumax_(const char * nptr, char ** endptr, int32_t base)
-{
-  if (DebugAlwaysFalse(endptr != nullptr) ||
-      DebugAlwaysFalse(base != 10))
-  {
-    Abort();
-  }
-  return StrToInt64(UnicodeString(AnsiString(nptr)));
-}
-
-static void SSHFatalError(const char * Format, va_list Param)
+NORETURN static void SSHFatalError(const char * Format, va_list Param)
 {
   char Buf[200]{};
   vsnprintf(Buf, LENOF(Buf), Format, Param);
@@ -471,17 +464,34 @@ ScpSeat::ScpSeat(TSecureShell * ASecureShell)
 
 #if defined(__BORLANDC__)
 static std::unique_ptr<TCriticalSection> PuttyRegistrySection(TraceInitPtr(new TCriticalSection()));
+THierarchicalStorage * PuttyStorage = nullptr;
 #endif // defined(__BORLANDC__)
 static TCriticalSection PuttyRegistrySection;
 enum TPuttyRegistryMode { prmPass, prmRedirect, prmCollect, prmFail };
 static TPuttyRegistryMode PuttyRegistryMode = prmRedirect;
 using TPuttyRegistryTypes = nb::map_t<UnicodeString, uint32_t>;
-TPuttyRegistryTypes PuttyRegistryTypes;
-HKEY RandSeedFileStorage = reinterpret_cast<HKEY>(1);
+static TPuttyRegistryTypes PuttyRegistryTypes;
+static HKEY RandSeedFileStorage = reinterpret_cast<HKEY>(1);
 
 int32_t reg_override_winscp()
 {
   return (PuttyRegistryMode != prmPass);
+}
+
+void putty_registry_pass(bool enable)
+{
+  if (enable)
+  {
+    PuttyStorageSection->Enter();
+    DebugAssert(PuttyRegistryMode == prmRedirect);
+    PuttyRegistryMode = prmPass;
+  }
+  else
+  {
+    DebugAssert(PuttyRegistryMode == prmPass);
+    PuttyRegistryMode = prmRedirect;
+    PuttyStorageSection->Leave();
+  }
 }
 
 HKEY open_regkey_fn_winscp(bool Create, bool Write, HKEY Key, const char * Path, ...)
@@ -495,7 +505,7 @@ HKEY open_regkey_fn_winscp(bool Create, bool Write, HKEY Key, const char * Path,
   }
   else if (PuttyRegistryMode == prmFail)
   {
-    Result = nullptr;
+    Result = reinterpret_cast<HKEY>(false);
   }
   else if (PuttyRegistryMode == prmRedirect)
   {
@@ -1181,7 +1191,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
     throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, (Alg)));
   }
 
-  UnicodeString Result;
+  RawByteString Buf;
   ssh_hash * Hash = ssh_hash_new(HashAlg);
   try__finally
   {
@@ -1201,11 +1211,11 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
   }
   __finally
   {
-    RawByteString Buf;
     Buf.SetLength(nb::ToInt32(ssh_hash_alg(Hash)->hlen));
     ssh_hash_final(Hash, nb::ToUInt8Ptr(nb::ToPtr(Buf.c_str())));
-    Result = BytesToHex(Buf);
   } end_try__finally
+
+  UnicodeString Result = BytesToHex(Buf);
 
   return Result;
 }
@@ -1349,7 +1359,7 @@ struct TCipherGroup
   int32_t CipherGroup;
   const ssh2_ciphers * Cipher;
 };
-TCipherGroup Ciphers[] =
+static TCipherGroup Ciphers[] =
   {
     { CIPHER_AES, &ssh2_aes },
     { CIPHER_CHACHA20, &ssh2_ccp },
@@ -1535,7 +1545,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
     if (IType != PuttyRegistryTypes.end())
     {
       const UnicodeString Value = Settings->GetValueFromIndex(Index);
-      int32_t I{0};
+      int32_t I{0}; // shut up
       if (IType->second == REG_SZ)
       {
         Storage->WriteStringRaw(Name, Value);
