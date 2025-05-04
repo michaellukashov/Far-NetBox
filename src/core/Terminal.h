@@ -316,6 +316,7 @@ protected:
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
+  void DoReadDirectoryFinish(TRemoteDirectory * Files, bool ReloadOnly);
   void DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt);
   void DoDeleteFile(
     TCustomFileSystem * FileSystem, const UnicodeString & AFileName, const TRemoteFile * AFile, int32_t Params);
@@ -636,8 +637,8 @@ public:
   void ChangeFilesProperties(TStrings * AFileList,
     const TRemoteProperties * Properties);
   bool LoadFilesProperties(TStrings * AFileList);
-  void TerminalError(const UnicodeString & Msg);
-  void TerminalError(Exception * E, const UnicodeString & AMsg, const UnicodeString & AHelpKeyword = L"");
+  NORETURN void TerminalError(const UnicodeString & Msg);
+  NORETURN void TerminalError(Exception * E, const UnicodeString & AMsg, const UnicodeString & AHelpKeyword = L"");
   void ReloadDirectory();
   void RefreshDirectory();
   void RenameFile(const TRemoteFile * AFile, const UnicodeString & ANewName);
@@ -665,9 +666,13 @@ public:
     TSynchronizeDirectoryEvent && OnSynchronizeDirectory, TProcessedSynchronizationChecklistItem && OnProcessedItem,
     TUpdatedSynchronizationChecklistItems && OnUpdatedSynchronizationChecklistItems, void * Token,
     TFileOperationStatistics * Statistics);
+  TQueueItem * SynchronizeToQueue(
+    const TSynchronizeChecklist::TItem * ChecklistItem, const TCopyParamType * CopyParam, int32_t Params, bool Parallel);
   void SynchronizeChecklistCalculateSize(
     TSynchronizeChecklist * Checklist, const TSynchronizeChecklist::TItemList & Items,
     const TCopyParamType * CopyParam);
+  static TCopyParamType GetSynchronizeCopyParam(const TCopyParamType * CopyParam, int32_t Params);
+  static int32_t GetSynchronizeCopyParams(int32_t Params);
   void FilesFind(const UnicodeString & Directory, const TFileMasks & FileMask,
     TFileFoundEvent && OnFileFound, TFindingFileEvent && OnFindingFile);
   void SpaceAvailable(const UnicodeString & APath, TSpaceAvailable & ASpaceAvailable);
