@@ -75,15 +75,16 @@ enum TLoginType
   ltNormal = 1,
 };
 
+// moved from SessionData.cpp
 constexpr const wchar_t * CipherNames[CIPHER_COUNT] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour", L"chacha20", L"aesgcm"};
-constexpr const wchar_t * KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519"};
+constexpr const wchar_t * KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519", L"mlkem-curve25519", L"mlkem-nist"};
 constexpr const wchar_t * HostKeyNames[HOSTKEY_COUNT] = {L"WARN", L"rsa", L"dsa", L"ecdsa", L"ed25519", L"ed448"};
 constexpr const wchar_t * GssLibNames[GSSLIB_COUNT] = {L"gssapi32", L"sspi", L"custom"};
 constexpr const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipChaCha20, cipAESGCM, cip3DES, cipWarn, cipDES, cipBlowfish, cipArcfour };
 // Update also order in SshKexList()
 constexpr const TKex DefaultKexList[KEX_COUNT] =
-  { kexNTRUHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
+  { kexNTRUHybrid, kexMLKEM25519Hybrid, kexMLKEMNISTHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
 constexpr const THostKey DefaultHostKeyList[HOSTKEY_COUNT] =
   { hkED448, hkED25519, hkECDSA, hkRSA, hkDSA, hkWarn };
 constexpr const TGssLib DefaultGssLibList[GSSLIB_COUNT] =

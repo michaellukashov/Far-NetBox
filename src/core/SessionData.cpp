@@ -41,11 +41,12 @@ const wchar_t * PingTypeNames = L"Off;Null;Dummy";
 const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List";
 const wchar_t * ProxyMethodNames = L"None;SOCKS4;SOCKS5;HTTP;Telnet;Cmd";
 #endif // defined(__BORLANDC__)
-TIntMapping ProxyMethodMapping = CreateIntMappingFromEnumNames(LowerCase(ProxyMethodNames));
+static TIntMapping ProxyMethodMapping = CreateIntMappingFromEnumNames(LowerCase(ProxyMethodNames));
 constexpr const wchar_t * DefaultName = L"Default Settings";
 #if defined(__BORLANDC__)
+// moved to SessionData.h
 const UnicodeString CipherNames[CIPHER_COUNT] = {L"WARN", L"3des", L"blowfish", L"aes", L"des", L"arcfour", L"chacha20", "aesgcm"};
-const UnicodeString KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519"};
+const UnicodeString KexNames[KEX_COUNT] = {L"WARN", L"dh-group1-sha1", L"dh-group14-sha1", L"dh-group15-sha512", L"dh-group16-sha512", L"dh-group17-sha512", L"dh-group18-sha512", L"dh-gex-sha1", L"rsa", L"ecdh", L"ntru-curve25519", L"mlkem-curve25519", L"mlkem-nist"};
 const UnicodeString HostKeyNames[HOSTKEY_COUNT] = {L"WARN", L"rsa", L"dsa", L"ecdsa", L"ed25519", L"ed448"};
 const UnicodeString GssLibNames[GSSLIB_COUNT] = {L"gssapi32", L"sspi", L"custom"};
 // Update also order in SshCipherList()
@@ -53,20 +54,20 @@ const TCipher DefaultCipherList[CIPHER_COUNT] =
   { cipAES, cipChaCha20, cipAESGCM, cip3DES, cipWarn, cipDES, cipBlowfish, cipArcfour };
 // Update also order in SshKexList()
 const TKex DefaultKexList[KEX_COUNT] =
-  { kexNTRUHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
+  { kexNTRUHybrid, kexMLKEM25519Hybrid, kexMLKEMNISTHybrid, kexECDH, kexDHGEx, kexDHGroup18, kexDHGroup17, kexDHGroup16, kexDHGroup15, kexDHGroup14, kexRSA, kexWarn, kexDHGroup1 };
 const THostKey DefaultHostKeyList[HOSTKEY_COUNT] =
   { hkED448, hkED25519, hkECDSA, hkRSA, hkDSA, hkWarn };
 const TGssLib DefaultGssLibList[GSSLIB_COUNT] =
   { gssGssApi32, gssSspi, gssCustom };
 const wchar_t FSProtocolNames[FSPROTOCOL_COUNT][16] = { L"SCP", L"SFTP (SCP)", L"SFTP", L"", L"", L"FTP", L"WebDAV", L"S3" };
-const int SshPortNumber = 22;
-const int FtpPortNumber = 21;
-const int FtpsImplicitPortNumber = 990;
-const int HTTPPortNumber = 80;
-const int HTTPSPortNumber = 443;
-const int TelnetPortNumber = 23;
-const int DefaultSendBuf = 262144;
-const int ProxyPortNumber = 80;
+const int32_t SshPortNumber = 22;
+const int32_t FtpPortNumber = 21;
+const int32_t FtpsImplicitPortNumber = 990;
+const int32_t HTTPPortNumber = 80;
+const int32_t HTTPSPortNumber = 443;
+const int32_t TelnetPortNumber = 23;
+const int32_t DefaultSendBuf = 262144;
+const int32_t ProxyPortNumber = 80;
 const UnicodeString AnonymousUserName(L"anonymous");
 const UnicodeString AnonymousPassword(L"anonymous@example.com");
 const UnicodeString PuttySshProtocol(L"ssh");
@@ -2321,8 +2322,8 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
   UnicodeString Url = AUrl;
   bool ProtocolDefined = true;
   bool PortNumberDefined = false;
-  TFSProtocol AFSProtocol = fsSCPonly;
-  int32_t DefaultProtocolPortNumber = 0;
+  TFSProtocol AFSProtocol = fsSCPonly; // shut up
+  int32_t DefaultProtocolPortNumber = 0; // shut up
   TFtps AFtps = ftpsNone;
   int32_t ProtocolLen = 0;
   bool HasNetboxPrefix = false;
@@ -2630,9 +2631,9 @@ bool TSessionData::ParseUrl(const UnicodeString & AUrl, TOptions * Options,
       UserName = DecodeUrlChars(RawUserName);
 
       SetPassword(DecodeUrlChars(UserInfo));
-      if (HasPassword && Password().IsEmpty())
+      if (HasPassword)
       {
-        Password = L""; //EmptyString;
+        Password = DenormalizeString(Password);
       }
 
       UnicodeString RemoteDirectoryWithSessionParams = Url.SubString(PSlash, Url.Length() - PSlash + 1);
@@ -2899,8 +2900,9 @@ void TSessionData::ExpandEnvironmentVariables()
   DetachedCertificate = ::ExpandEnvironmentVariables(DetachedCertificate);
 }
 
-void TSessionData::ValidatePath(const UnicodeString & /*APath*/)
+void TSessionData::ValidatePath(const UnicodeString & APath)
 {
+  DebugUsedParam(APath);
   // noop
 }
 
@@ -3549,7 +3551,7 @@ void TSessionData::SetFSProtocol(TFSProtocol value)
 UnicodeString TSessionData::GetFSProtocolStr() const
 {
   UnicodeString Result;
-  DebugAssert(GetFSProtocol() >= 0);
+  DebugAssert(FSProtocol >= 0 && static_cast<int32_t>(FSProtocol) < FSPROTOCOL_COUNT);
   if ((GetFSProtocol() >= 0) && (GetFSProtocol() < FSPROTOCOL_COUNT))
   {
     Result = UnicodeString(FSProtocolNames[GetFSProtocol()]);
@@ -3947,7 +3949,7 @@ UnicodeString TSessionData::GenerateSessionUrl(uint32_t Flags) const
 }
 
 #if defined(__BORLANDC__)
-UnicodeString ScriptCommandOpenLink = ScriptCommandLink("open");
+static UnicodeString ScriptCommandOpenLink(TraceInitStr(ScriptCommandLink(L"open")));
 #endif // defined(__BORLANDC__)
 
 void TSessionData::AddSwitch(
@@ -4073,7 +4075,7 @@ UnicodeString TSessionData::GenerateOpenCommandArgs(bool /*Rtf*/) const
 
 #if defined(__BORLANDC__)
 
-UnicodeString SessionOptionsClassName(L"SessionOptions");
+static UnicodeString SessionOptionsClassName(L"SessionOptions");
 
 void TSessionData::AddAssemblyProperty(
   UnicodeString & Result, TAssemblyLanguage Language,
@@ -4176,7 +4178,7 @@ void TSessionData::GenerateAssemblyCode(
     AddAssemblyProperty(Head, Language, L"HostName", HostName);
     SessionData->HostName = FactoryDefaults->HostName;
   }
-  int32_t ADefaultPort = DefaultPort(FSProtocol, Ftps);
+  int32_t ADefaultPort = GetDefaultPort();
   if (SessionData->PortNumber != ADefaultPort)
   {
     AddAssemblyProperty(Head, Language, L"PortNumber", PortNumber);
