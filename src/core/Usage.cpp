@@ -8,9 +8,9 @@
 #include <Usage.h>
 #include <FileInfo.h>
 
-// #pragma package(smart_init)
-
 #if defined(__BORLANDC__)
+#pragma package(smart_init)
+
 const UnicodeString LastInternalExceptionCounter("LastInternalException2");
 const UnicodeString LastUpdateExceptionCounter("LastUpdateException");
 #endif // defined(__BORLANDC__)

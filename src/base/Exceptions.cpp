@@ -11,9 +11,8 @@
 #endif // FARPLUGIN
 #include "rtlconsts.h"
 
-// #pragma package(smart_init)
-
 #if defined(__BORLANDC__)
+#pragma package(smart_init)
 
 static std::unique_ptr<TCriticalSection> IgnoredExceptionsCriticalSection(std::make_unique<TCriticalSection>());
 using TIgnoredExceptions = nb::set_t<UnicodeString>;

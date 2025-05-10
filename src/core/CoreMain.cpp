@@ -13,9 +13,9 @@
 #include "NeonIntf.h"
 #include "TextsCore.h"
 
-// #pragma package(smart_init)
-
 #if defined(__BORLANDC__)
+#pragma package(smart_init)
+
 TConfiguration * Configuration = nullptr;
 TStoredSessionList * StoredSessions = nullptr;
 #endif // defined(__BORLANDC__)

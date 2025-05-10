@@ -8,7 +8,9 @@
 #include "HierarchicalStorage.h"
 #include "TextsCore.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 TBookmarks::TBookmarks() noexcept : TObject(OBJECT_CLASS_TBookmarks),
   FSharedKey(UnicodeString(CONST_HIDDEN_PREFIX) + "shared")

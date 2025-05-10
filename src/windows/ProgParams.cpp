@@ -5,7 +5,9 @@
 #include <Common.h>
 #include "ProgParams.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 std::unique_ptr<TProgramParams> ProgramParamsOwner;
 

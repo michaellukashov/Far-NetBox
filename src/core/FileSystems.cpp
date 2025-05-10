@@ -6,9 +6,11 @@
 
 #include "FileSystems.h"
 #include "RemoteFiles.h"
-#include "CopyParam.h"
+//#include "CopyParam.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept : TObject(Kind),
   FTerminal(ATerminal)
