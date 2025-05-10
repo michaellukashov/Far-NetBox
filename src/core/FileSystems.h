@@ -18,7 +18,7 @@ struct TLocalFileHandle;
 
 enum TFSCommand { fsNull = 0, fsVarValue, fsLastLine, fsFirstLine,
   fsCurrentDirectory, fsChangeDirectory, fsListDirectory, fsListCurrentDirectory,
-  fsListFile, fsLookupUsersGroups, fsWhoami, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
+  fsListFile, fsLookupUsersGroups, fsCopyToRemote, fsCopyToLocal, fsDeleteFile,
   fsRenameFile, fsCreateDirectory, fsChangeMode, fsChangeGroup, fsChangeOwner,
   fsHomeDirectory, fsUnset, fsUnalias, fsCreateLink, fsCopyFile,
   fsAnyCommand, fsLang, fsReadSymlink, fsChangeProperties, fsMoveFile,
@@ -52,7 +52,6 @@ public:
   virtual void CollectUsage() = 0;
   virtual void Idle() = 0;
   virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) = 0;
-  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) const = 0;
   virtual void AnyCommand(const UnicodeString & ACommand,
     TCaptureOutputEvent && OutputEvent) = 0;
   virtual void ChangeDirectory(const UnicodeString & ADirectory) = 0;
@@ -75,14 +74,14 @@ public:
     int32_t AParams, TFileOperationProgressType * OperationProgress,
     TOnceDoneOperation & OnceDoneOperation) = 0;
   virtual void TransferOnDirectory(
-    const UnicodeString & /*ADirectory*/, const TCopyParamType * /*CopyParam*/, int32_t /*AParams*/);
+    const UnicodeString & ADirectory, const TCopyParamType * ACopyParam, int32_t AParams);
   virtual void Source(
     TLocalFileHandle & AHandle, const UnicodeString & ATargetDir, UnicodeString & ADestFileName,
     const TCopyParamType * CopyParam, int32_t AParams,
     TFileOperationProgressType * OperationProgress, uint32_t AFlags,
     TUploadSessionAction & Action, bool & ChildError) = 0;
   virtual void DirectorySunk(
-    const UnicodeString & /*ADestFullName*/, const TRemoteFile * /*AFile*/, const TCopyParamType * /*ACopyParam*/);
+    const UnicodeString & ADestFullName, const TRemoteFile * AFile, const TCopyParamType * ACopyParam);
   virtual void Sink(
     const UnicodeString & AFileName, const TRemoteFile * AFile,
     const UnicodeString & ATargetDir, UnicodeString & ADestFileName, int32_t Attrs,
@@ -134,6 +133,7 @@ protected:
   explicit TCustomFileSystem(TObjectClassId Kind) noexcept : TObject(Kind) {}
   explicit TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept;
   virtual UnicodeString GetCurrentDirectory() const = 0;
+  virtual UnicodeString AbsolutePath(const UnicodeString & APath, bool Local) const = 0;
 };
 
 // from FtpFileSystem.h
