@@ -33,7 +33,9 @@ constexpr const wchar_t * QUOTE = L"\'";
 constexpr const wchar_t * DOUBLEQUOTE = L"\"";
 
 constexpr const wchar_t * AnyMask = L"*.*";
-// extern const wchar_t EngShortMonthNames[12][4];
+#if defined(__BORLANDC__)
+extern const wchar_t EngShortMonthNames[12][4];
+#endif // defined(__BORLANDC__)
 constexpr const wchar_t EngShortMonthNames[12][4] =
 {
   L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
@@ -41,8 +43,10 @@ constexpr const wchar_t EngShortMonthNames[12][4] =
 };
 
 constexpr const char * CONST_BOM = "\xEF\xBB\xBF";
-// extern const char Bom[4];
-extern const UnicodeString XmlDeclaration;
+#if defined(__BORLANDC__)
+extern const char Bom[4];
+#endif // defined(__BORLANDC__)
+constexpr const wchar_t * XmlDeclaration = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 constexpr const wchar_t TokenPrefix = L'%';
 constexpr const wchar_t NoReplacement = static_cast<wchar_t>(0);
 constexpr const wchar_t TokenReplacement = static_cast<wchar_t>(1);

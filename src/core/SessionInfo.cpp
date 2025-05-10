@@ -111,7 +111,7 @@ static UnicodeString DoXmlEscape(const UnicodeString & AStr, bool NewLine)
   return Str;
 }
 
-static UnicodeString XmlEscape(const UnicodeString & Str)
+UnicodeString XmlEscape(const UnicodeString & Str)
 {
   return DoXmlEscape(Str, false);
 }

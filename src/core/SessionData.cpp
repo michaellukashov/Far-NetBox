@@ -4,6 +4,13 @@
 
 #include <winhttp.h>
 
+#if defined(__BORLANDC__)
+#include "SessionData.h"
+
+#include "Common.h"
+#include "Exceptions.h"
+#include "FileBuffer.h"
+#endif // defined(__BORLANDC__)
 #include <Common.h>
 #include <Exceptions.h>
 #include <FileBuffer.h>
@@ -5037,6 +5044,16 @@ void TSessionData::SetS3DefaultRegion(const UnicodeString & value)
 void TSessionData::SetS3SessionToken(const UnicodeString & value)
 {
   SET_SESSION_PROPERTY(S3SessionToken);
+}
+
+void TSessionData::SetS3RoleArn(const UnicodeString & value)
+{
+  SET_SESSION_PROPERTY(S3RoleArn);
+}
+
+void TSessionData::SetS3RoleSessionName(const UnicodeString & value)
+{
+  SET_SESSION_PROPERTY(S3RoleSessionName);
 }
 
 void TSessionData::SetS3Profile(const UnicodeString & value)

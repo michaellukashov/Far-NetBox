@@ -38,7 +38,9 @@
 #include "Cryptography.h"
 #include <System.JSON.hpp>
 #include <System.DateUtils.hpp>
+extern "C" {
 #include <request.h>
+} // extern "C"
 #include <XMLDoc.hpp>
 
 #ifdef max
@@ -1004,7 +1006,9 @@ void TS3FileSystem::ParsePath(const UnicodeString & APath, UnicodeString & Bucke
     Path.Delete(1, 1);
   }
   const int32_t P = Path.Pos(L"/");
-  // UnicodeString Result;
+#if defined(__BORLANDC__)
+  UnicodeString Result;
+#endif // defined(__BORLANDC__)
   if (P == 0)
   {
     BucketName = Path;
@@ -2069,10 +2073,10 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
     {
       ValidProperties >> vpTags;
 
-      UnicodeString NewLine = L"\n";
-      UnicodeString Indent = L"  ";
+      const UnicodeString NewLine = L"\n";
+      const UnicodeString Indent = L"  ";
       UnicodeString Xml =
-        XmlDeclaration + NewLine +
+        UnicodeString(XmlDeclaration) + NewLine +
         L"<Tagging>" + NewLine +
         Indent + L"<TagSet>" + NewLine;
 
@@ -2090,12 +2094,12 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
 
       FTerminal->Log->Add(llOutput, Xml);
 
-      TLibS3XmlCallbackData Data;
+      TLibS3XmlCallbackData Data{};
       RequestInit(Data);
 
       Data.Contents = StrToS3(Xml);
 
-      UTF8String KeyBuf = UTF8String(Key);
+      const UTF8String KeyBuf = UTF8String(Key);
       RequestParams TaggingRequestParams =
       {
         HttpRequestTypePUT,
