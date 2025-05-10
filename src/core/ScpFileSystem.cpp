@@ -88,28 +88,33 @@ public:
   explicit TCommandSet(TSessionData * ASessionData);
   void Default();
   void CopyFrom(TCommandSet * Source);
+#if defined(__BORLANDC__)
+  UnicodeString Command(TFSCommand Cmd, const TVarRec * args, int32_t size);
+#endif // defined(__BORLANDC__)
   UnicodeString Command(TFSCommand Cmd, fmt::ArgList args);
   FMT_VARIADIC_W(UnicodeString, Command, TFSCommand)
   TStrings * CreateCommandList() const;
 #if defined(__BORLANDC__)
   UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int32_t size);
 #endif // defined(__BORLANDC__)
-  UnicodeString FullCommand(TFSCommand Cmd, fmt::ArgList args);
-  FMT_VARIADIC_W(UnicodeString, FullCommand, TFSCommand)
   static UnicodeString ExtractCommand(const UnicodeString & ACommand);
-  /*__property int MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
-  __property int MinLines[TFSCommand Cmd]  = { read=GetMinLines };
+#if defined(__BORLANDC__)
+  __property int32_t MaxLines[TFSCommand Cmd]  = { read=GetMaxLines};
+  __property int32_t MinLines[TFSCommand Cmd]  = { read=GetMinLines };
   __property bool ModifiesFiles[TFSCommand Cmd]  = { read=GetModifiesFiles };
   __property bool ChangesDirectory[TFSCommand Cmd]  = { read=GetChangesDirectory };
   __property bool OneLineCommand[TFSCommand Cmd]  = { read=GetOneLineCommand };
   __property UnicodeString Commands[TFSCommand Cmd]  = { read=GetCommands, write=SetCommands };
   __property UnicodeString FirstLine = { read = GetFirstLine };
-  __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };*/
+  __property bool InteractiveCommand[TFSCommand Cmd] = { read = GetInteractiveCommand };
+#endif // defined(__BORLANDC__)
   __property UnicodeString LastLine  = { read=GetLastLine };
   const ROProperty<UnicodeString> LastLine{nb::bind(&TCommandSet::GetLastLine , this)};
   __property TSessionData * SessionData  = { read=FSessionData, write=FSessionData };
   __property UnicodeString ReturnVar  = { read=GetReturnVar, write=FReturnVar };
 
+  UnicodeString FullCommand(TFSCommand Cmd, fmt::ArgList args);
+  FMT_VARIADIC_W(UnicodeString, FullCommand, TFSCommand)
   TSessionData * GetSessionData() const { return FSessionData; }
   void SetSessionData(TSessionData * Value) { FSessionData = Value; }
   void SetReturnVar(const UnicodeString & Value) { FReturnVar = Value; }
