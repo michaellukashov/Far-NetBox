@@ -265,7 +265,7 @@ private:
   void OperationProgress(
     TFileOperationProgressType & ProgressData);
   void OperationFinished(TFileOperation Operation,
-    TOperationSide Side, bool DragDrop, const UnicodeString & AFileName, bool Success,
+    TOperationSide Side, bool DragDrop, const UnicodeString & AFileName, bool Success, bool NotCancelled,
     TOnceDoneOperation & DisconnectWhenComplete);
   void CancelConfiguration(TFileOperationProgressType & ProgressData);
   TStrings * CreateFileList(TObjectList * PanelItems,

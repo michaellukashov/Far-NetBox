@@ -3502,7 +3502,7 @@ void TWinSCPFileSystem::OperationProgress(
 }
 
 void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
-  TOperationSide Side, bool /*Temp*/, const UnicodeString & AFileName, bool Success,
+  TOperationSide Side, bool /*Temp*/, const UnicodeString & AFileName, bool Success, bool /*NotCancelled*/,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
   DebugUsedParam(Side);
