@@ -6910,7 +6910,7 @@ int32_t TTerminal::GetSynchronizeCopyParams(int32_t Params)
 TQueueItem * TTerminal::SynchronizeToQueue(
   const TChecklistItem * ChecklistItem, const TCopyParamType * CopyParam, int32_t Params, bool Parallel)
 {
-  TQueueItem * Result;
+  TQueueItem * Result{nullptr};
   if (DebugAlwaysFalse(FLAGSET(Params, spTimestamp)))
   {
     NotImplemented();

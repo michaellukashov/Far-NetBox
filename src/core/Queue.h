@@ -254,7 +254,7 @@ public:
   void SetStatus(TStatus Status);
   TStatus GetStatus() const;
   void Execute();
-  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) = 0;
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) = 0;
   void SetProgress(TFileOperationProgressType & ProgressData);
   void GetData(TQueueItemProxy * Proxy) const;
   virtual bool UpdateFileList(TQueueFileList * FileList);
@@ -263,7 +263,7 @@ public:
 
 protected:
   virtual int32_t DefaultCPSLimit() const;
-  virtual UnicodeString GetStartupDirectory() const = 0;
+  virtual UnicodeString GetStartupDirectory() const;
   virtual void ProgressUpdated();
   virtual TQueueItem * CreateParallelOperation();
   virtual bool Complete();
@@ -388,7 +388,7 @@ public:
   virtual ~TBootstrapQueueItem() noexcept override;
 
 protected:
-  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
   virtual UnicodeString GetStartupDirectory() const override;
   virtual bool Complete() override;
 };
@@ -406,7 +406,7 @@ protected:
   explicit TLocatedQueueItem(TObjectClassId Kind, const UnicodeString & ACurrentDir) noexcept;
   virtual ~TLocatedQueueItem() override = default;
 
-  virtual void DoExecute(gsl::not_null<TTerminal *> Terminal) override;
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
   virtual UnicodeString GetStartupDirectory() const override;
 
 private:
@@ -455,7 +455,7 @@ public:
 public:
   explicit TUploadQueueItem(TTerminal * ATerminal,
     const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
-    const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
+    const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept;
   virtual ~TUploadQueueItem() override = default;
 
 protected:
@@ -470,39 +470,39 @@ public:
 public:
   explicit TDownloadQueueItem(TTerminal * ATerminal,
     const TStrings * AFilesToCopy, const UnicodeString & ATargetDir,
-    const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept;
+    const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept;
   virtual ~TDownloadQueueItem() override = default;
 
 protected:
   virtual void DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation) override;
 };
 
-class TRemoteDeleteQueueItem : public TLocatedQueueItem
+class TRemoteDeleteQueueItem final : public TLocatedQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TRemoteDeleteQueueItem); }
   virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TRemoteDeleteQueueItem) || TLocatedQueueItem::is(Kind); }
 public:
-  explicit TRemoteDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int Params);
+  explicit TRemoteDeleteQueueItem(TTerminal * ATerminal, TStrings * AFilesToDelete, int32_t AParams);
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal);
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
 
 private:
   std::unique_ptr<TStrings> FFilesToDelete;
   int32_t FParams{0};
 };
 
-class TLocalDeleteQueueItem : public TLocatedQueueItem
+class TLocalDeleteQueueItem final : public TQueueItem
 {
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TLocalDeleteQueueItem); }
-  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocalDeleteQueueItem) || TLocatedQueueItem::is(Kind); }
+  virtual bool is(TObjectClassId Kind) const override { return (Kind == OBJECT_CLASS_TLocalDeleteQueueItem) || TQueueItem::is(Kind); }
 public:
-  explicit TLocalDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept;
+  explicit TLocalDeleteQueueItem(TStrings * AFilesToDelete, int32_t AParams) noexcept;
 
 protected:
-  virtual void DoExecute(TTerminal * Terminal);
+  virtual void DoExecute(gsl::not_null<TTerminal *> ATerminal) override;
 
 private:
   std::unique_ptr<TStrings> FFilesToDelete;

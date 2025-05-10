@@ -1888,6 +1888,11 @@ TQueueItem * TQueueItem::CreateParallelOperation()
   return nullptr;
 }
 
+UnicodeString TQueueItem::GetStartupDirectory() const
+{
+  return EmptyStr;
+}
+
 // TQueueItemProxy
 
 TQueueItemProxy::TQueueItemProxy(gsl::not_null<TTerminalQueue *> Queue,
@@ -2261,11 +2266,11 @@ UnicodeString TLocatedQueueItem::GetStartupDirectory() const
   return FCurrentDir;
 }
 
-void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
+void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
 {
-  DebugAssert(Terminal != nullptr);
-  if (Terminal)
-    Terminal->SetCurrentDirectory(FCurrentDir);
+  DebugAssert(ATerminal != nullptr);
+  if (ATerminal)
+    ATerminal->SetCurrentDirectory(FCurrentDir);
 }
 
 // TTransferQueueItem
@@ -2420,24 +2425,25 @@ bool TTransferQueueItem::UpdateFileList(TQueueFileList * FileList)
 
 // TUploadQueueItem
 
-static void ExtractLocalSourcePath(TStrings * Files, UnicodeString & Path)
+static void ExtractLocalSourcePath(const TStrings * Files, UnicodeString & APath)
 {
-  base::ExtractCommonPath(Files, Path);
+  base::ExtractCommonPath(Files, APath);
   // this way the trailing backslash is preserved for root directories like "D:\"
-  Path = ::ExtractFileDir(::IncludeTrailingBackslash(Path));
+  APath = ::ExtractFileDir(::IncludeTrailingBackslash(APath));
 }
 
-static bool IsSingleFileUpload(TStrings * FilesToCopy)
+static bool IsSingleFileUpload(const TStrings * AFilesToCopy)
 {
   return
-    (FilesToCopy->Count == 1) &&
-    FileExists(ApiPath(FilesToCopy->Strings[0]));
+    (AFilesToCopy->Count == 1) &&
+    FileExists(ApiPath(AFilesToCopy->Strings[0]));
 }
 
 TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
-  TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem, ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile, Parallel)
+  const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept :
+  TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem,
+    ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, IsSingleFileUpload(AFilesToCopy), Parallel)
 {
   if (AFilesToCopy->GetCount() > 1)
   {
@@ -2448,9 +2454,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
     }
     else
     {
-      base::ExtractCommonPath(AFilesToCopy, FInfo->Source);
-      // this way the trailing backslash is preserved for root directories like "D:\\"
-      FInfo->Source = ::ExtractFileDir(::IncludeTrailingBackslash(FInfo->Source));
+      ExtractLocalSourcePath(AFilesToCopy, FInfo->Source);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         ::IncludeTrailingBackslash(FInfo->Source);
     }
@@ -2542,19 +2546,27 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 
 // TDownloadQueueItem
 
-static void ExtractRemoteSourcePath(const TTerminal * ATerminal, const TStrings * Files, UnicodeString & Path)
+static void ExtractRemoteSourcePath(const TTerminal * ATerminal, const TStrings * AFiles, UnicodeString & APath)
 {
-  if (ATerminal && !base::UnixExtractCommonPath(Files, Path))
+  if (ATerminal && !base::UnixExtractCommonPath(AFiles, APath))
   {
-    Path = ATerminal->CurrentDirectory;
+    APath = ATerminal->CurrentDirectory;
   }
-  Path = base::UnixExcludeTrailingBackslash(Path);
+  APath = base::UnixExcludeTrailingBackslash(APath);
+}
+
+static bool IsSingleFileDownload(const TStrings * AFilesToCopy)
+{
+  return
+    (AFilesToCopy->Count == 1) &&
+    !AFilesToCopy->As<TRemoteFile>(0)->IsDirectory;
 }
 
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
-  TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem, ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile, Parallel)
+  const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept :
+  TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem,
+    ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, IsSingleFileUpload(AFilesToCopy), Parallel)
 {
   if (AFilesToCopy->Count > 1)
   {
@@ -2592,34 +2604,56 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
-void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation)
+void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * AParallelOperation)
 {
   DebugAssert(ATerminal != nullptr);
-  ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
+  ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, AParallelOperation);
 }
 
 
-TLocalDeleteQueueItem::TLocalDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept :
-  TLocatedQueueItem(Kind, Terminal)
+TRemoteDeleteQueueItem::TRemoteDeleteQueueItem(TTerminal * ATerminal, TStrings * AFilesToDelete, int32_t AParams) :
+  TLocatedQueueItem(OBJECT_CLASS_TRemoteDeleteQueueItem, ATerminal)
 {
   FInfo->Operation = foDelete;
   FInfo->Side = osRemote;
 
-  DebugAssert(FilesToDelete != nullptr);
-  FFilesToDelete.reset(TRemoteFileList::CloneStrings(FilesToDelete));
-  ExtractRemoteSourcePath(Terminal, FilesToDelete, FInfo->Source);
+  DebugAssert(AFilesToDelete != nullptr);
+  FFilesToDelete.reset(TRemoteFileList::CloneStrings(AFilesToDelete));
+  ExtractRemoteSourcePath(ATerminal, AFilesToDelete, FInfo->Source);
 
   FInfo->ModifiedRemote = FInfo->Source;
 
-  FParams = Params;
+  FParams = AParams;
 }
 
-void TLocalDeleteQueueItem::DoExecute(TTerminal * Terminal)
+void TRemoteDeleteQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
 {
-  TLocatedQueueItem::DoExecute(Terminal);
+  TLocatedQueueItem::DoExecute(ATerminal);
 
-  DebugAssert(Terminal != nullptr);
-  Terminal->DeleteFiles(FFilesToDelete.get(), FParams);
+  DebugAssert(ATerminal != nullptr);
+  ATerminal->DeleteFiles(FFilesToDelete.get(), FParams);
+}
+
+
+TLocalDeleteQueueItem::TLocalDeleteQueueItem(TStrings * AFilesToDelete, int32_t AParams) noexcept :
+  TQueueItem(OBJECT_CLASS_TLocalDeleteQueueItem)
+{
+  FInfo->Operation = foDelete;
+  FInfo->Side = osLocal;
+
+  DebugAssert(AFilesToDelete != nullptr);
+  FFilesToDelete.reset(TRemoteFileList::CloneStrings(AFilesToDelete));
+  ExtractLocalSourcePath(AFilesToDelete, FInfo->Source);
+
+  FInfo->ModifiedLocal = FInfo->Source;
+
+  FParams = AParams;
+}
+
+void TLocalDeleteQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
+{
+  DebugAssert(ATerminal != nullptr);
+  ATerminal->DeleteLocalFiles(FFilesToDelete.get(), FParams);
 }
 
 // TTerminalThread

@@ -2653,7 +2653,7 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
         FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation);
         // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly)
       QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList.get(),
-          DestPath, &CopyParam, Params, false, false));
+          DestPath, &CopyParam, Params, false));
       Confirmed = false;
     }
   }
@@ -2778,7 +2778,7 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
         FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation);
         // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       QueueAddItem(new TUploadQueueItem(FTerminal, FFileList.get(),
-          DestPath, &CopyParam, Params, false, false));
+          DestPath, &CopyParam, Params, false));
       Confirmed = false;
     }
   }
