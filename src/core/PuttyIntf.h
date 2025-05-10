@@ -46,6 +46,7 @@ struct ScpSeat final : public Seat
   explicit ScpSeat(TSecureShell * SecureShell);
 };
 
+extern std::unique_ptr<TCriticalSection> PuttyStorageSection;
 extern THierarchicalStorage * PuttyStorage;
 
 

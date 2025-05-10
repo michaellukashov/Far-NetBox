@@ -27,13 +27,11 @@
 #pragma package(smart_init)
 
 #define MAX_BUFSIZE 32768
-
 #endif // defined(__BORLANDC__)
 
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
 
 constexpr const wchar_t HostKeyDelimiter = L';';
-static std::unique_ptr<TCriticalSection> PuttyStorageSection(TraceInitPtr(std::make_unique<TCriticalSection>()));
 
 struct TPuttyTranslation
 {
@@ -2551,10 +2549,9 @@ UnicodeString TSecureShell::StoreHostKey(
 {
   TGuard Guard(*PuttyStorageSection.get());
   DebugAssert(PuttyStorage == nullptr);
-  TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage);
   std::unique_ptr<THierarchicalStorage> Storage(GetHostKeyStorage());
   Storage->AccessMode = smReadWrite;
-  PuttyStorage = Storage.get();
+  TValueRestorer<THierarchicalStorage *> StorageRestorer(PuttyStorage, Storage.get());
   store_host_key(FSeat.get(), AnsiString(Host).c_str(), Port, AnsiString(KeyType).c_str(), AnsiString(KeyStr).c_str());
   return Storage->Source;
 }

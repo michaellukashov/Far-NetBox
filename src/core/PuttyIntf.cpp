@@ -469,10 +469,13 @@ ScpSeat::ScpSeat(TSecureShell * ASecureShell)
   vt = &ScpSeatVtable;
 }
 
-static std::unique_ptr<TCriticalSection> PuttyStorageSection(TraceInitPtr(new TCriticalSection()));
+std::unique_ptr<TCriticalSection> PuttyStorageSection(std::make_unique<TCriticalSection>());
 THierarchicalStorage * PuttyStorage = nullptr;
 enum TPuttyRegistryMode { prmPass, prmRedirect, prmCollect, prmFail };
 static TPuttyRegistryMode PuttyRegistryMode = prmRedirect;
+#if defined(__BORLANDC__)
+typedef std::map<UnicodeString, uint32_t> TPuttyRegistryTypes;
+#endif // defined(__BORLANDC__)
 using TPuttyRegistryTypes = nb::map_t<UnicodeString, uint32_t>;
 static TPuttyRegistryTypes PuttyRegistryTypes;
 static HKEY RandSeedFileStorage = reinterpret_cast<HKEY>(1);
