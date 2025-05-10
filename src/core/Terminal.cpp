@@ -2376,14 +2376,14 @@ void TTerminal::DoProgress(TFileOperationProgressType & ProgressData)
 }
 
 void TTerminal::DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
-  const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation)
+  const UnicodeString & AFileName, bool Success, bool NotCancelled, TOnceDoneOperation & OnceDoneOperation)
 {
   if (!GetOnFinished().empty())
   {
     TCallbackGuard Guard(this);
     try
     {
-      GetOnFinished()(Operation, Side, Temp, AFileName, Success, OnceDoneOperation);
+      GetOnFinished()(Operation, Side, Temp, AFileName, Success, NotCancelled, OnceDoneOperation);
       Guard.Verify();
     }
     catch(Exception & E)

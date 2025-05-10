@@ -18,11 +18,18 @@ enum TFileOperation { foNone, foCopy, foMove, foDelete, foSetProperties,
 // csCancelTransfer and csRemoteAbort are used with SCP only
 enum TCancelStatus { csContinue = 0, csCancelFile, csCancel, csCancelTransfer, csRemoteAbort };
 enum TBatchOverwrite { boNo, boAll, boNone, boOlder, boAlternateResume, boAppend, boResume };
+#if defined(__BORLANDC__)
+typedef void (__closure *TFileOperationProgressEvent)
+  (TFileOperationProgressType & ProgressData);
+typedef void (__closure *TFileOperationFinished)
+  (TFileOperation Operation, TOperationSide Side, bool Temp,
+   const UnicodeString & FileName, bool Success, bool NotCancelled, TOnceDoneOperation & OnceDoneOperation);
+#endif // defined(__BORLANDC__)
 using TFileOperationProgressEvent = nb::FastDelegate1<void,
   TFileOperationProgressType & /*ProgressData*/>;
-using TFileOperationFinishedEvent = nb::FastDelegate6<void,
+using TFileOperationFinishedEvent = nb::FastDelegate7<void,
   TFileOperation /*Operation*/, TOperationSide /*Side*/, bool /*Temp*/,
-  const UnicodeString & /*FileName*/, bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/>;
+  const UnicodeString & /*FileName*/, bool /*Success*/, bool /*NotCancelled*/, TOnceDoneOperation & /*OnceDoneOperation*/>;
 
 class TFileOperationStatistics final : public TObject
 {
@@ -316,7 +323,9 @@ public:
   explicit TSuspendFileOperationProgress(TFileOperationProgressType * AOperationProgress) noexcept :
     FOperationProgress(AOperationProgress)
   {
-    // FOperationProgress = OperationProgress;
+#if defined(__BORLANDC__)
+    FOperationProgress = OperationProgress;
+#endif // defined(__BORLANDC__)
     if (FOperationProgress != nullptr)
     {
       FOperationProgress->Suspend();

@@ -468,7 +468,7 @@ protected:
   bool IsListenerFree(uint32_t PortNumber) const;
   void DoProgress(TFileOperationProgressType & ProgressData);
   void DoFinished(TFileOperation Operation, TOperationSide Side, bool Temp,
-    const UnicodeString & AFileName, bool Success, TOnceDoneOperation & OnceDoneOperation);
+    const UnicodeString & AFileName, bool Success, bool NotCancelled, TOnceDoneOperation & OnceDoneOperation);
   void RollbackAction(TSessionAction & Action,
     TFileOperationProgressType * AOperationProgress, Exception * E = nullptr);
   void DoAnyCommand(const UnicodeString & ACommand, TCaptureOutputEvent && OutputEvent,

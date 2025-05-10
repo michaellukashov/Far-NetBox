@@ -110,6 +110,9 @@ private:
     UnicodeString UserStr;
   };
 
+#if defined(__BORLANDC__)
+  typedef std::vector<TMask> TMasks;
+#endif // defined(__BORLANDC__)
   using TMasks = nb::vector_t<TMask>;
   TMasks FMasks[4];
   mutable TStrings * FMasksStr[4]{};
@@ -145,6 +148,11 @@ bool IsFileNameMask(const UnicodeString & AMask);
 bool IsEffectiveFileNameMask(const UnicodeString & AMask);
 UnicodeString DelimitFileNameMask(const UnicodeString & AMask);
 
+#if defined(__BORLANDC__)
+typedef void (__closure * TCustomCommandPatternEvent)
+  (int32_t Index, const UnicodeString Pattern, void * Arg, UnicodeString & Replacement,
+   bool & LastPass);
+#endif // defined(__BORLANDC__)
 using TCustomCommandPatternEvent = nb::FastDelegate5<void,
   int32_t /*Index*/, const UnicodeString & /*Pattern*/, void * /*Arg*/, UnicodeString & /*Replacement*/,
   bool & /*LastPass*/>;
