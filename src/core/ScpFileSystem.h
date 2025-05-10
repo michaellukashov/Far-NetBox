@@ -96,7 +96,7 @@ public:
 protected:
   __property TStrings * Output = { read = FOutput.get() };
   const ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
-  __property int ReturnCode = { read = FReturnCode };
+  __property int32_t ReturnCode = { read = FReturnCode };
   const ROProperty2<int32_t> ReturnCode{&FReturnCode};
 
   TStrings * GetOutput() const { return FOutput.get(); }

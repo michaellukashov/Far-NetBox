@@ -91,6 +91,9 @@ public:
   UnicodeString Command(TFSCommand Cmd, fmt::ArgList args);
   FMT_VARIADIC_W(UnicodeString, Command, TFSCommand)
   TStrings * CreateCommandList() const;
+#if defined(__BORLANDC__)
+  UnicodeString FullCommand(TFSCommand Cmd, const TVarRec * args, int32_t size);
+#endif // defined(__BORLANDC__)
   UnicodeString FullCommand(TFSCommand Cmd, fmt::ArgList args);
   FMT_VARIADIC_W(UnicodeString, FullCommand, TFSCommand)
   static UnicodeString ExtractCommand(const UnicodeString & ACommand);
@@ -135,7 +138,6 @@ const TCommandType DefaultCommandSet[ShellCommandCount] =
   /*ListCurrentDirectory*/{ -1, -1, F, F, F, "%s %s" /* listing command, options */ },
   /*ListFile*/            {  1,  1, F, F, F, "%s -d %s \"%s\"" /* listing command, options, file/directory */ },
   /*LookupUsersGroups*/   {  0,  1, F, F, F, "groups" },
-  /*Whoami*/              {  0,  1, F, F, F, "whoami" },
   /*CopyToRemote*/        { -1, -1, T, F, T, "scp -r %s -d -t \"%s\"" /* options, directory */ },
   /*CopyToLocal*/         { -1, -1, F, F, T, "scp -r %s -d -f \"%s\"" /* options, file */ },
   /*DeleteFile*/          {  0,  0, T, F, F, "rm -f -r \"%s\"" /* file/directory */},
@@ -878,14 +880,9 @@ void TSCPFileSystem::SkipStartupMessage()
 
 void TSCPFileSystem::LookupUsersGroups()
 {
-  ExecCommand(fsWhoami, 0);
-  FTerminal->GetUsers()->Clear();
-  if (FOutput->GetCount() > 0)
-  {
-    const UnicodeString CurrentUser = FOutput->GetString(0);
-    FTerminal->GetUsers()->Add(TRemoteToken(CurrentUser));
-  }
   ExecCommand(fsLookupUsersGroups, 0);
+  FTerminal->GetUsers()->Clear();
+  FTerminal->GetGroups()->Clear();
   FTerminal->GetGroups()->Clear();
   if (FOutput->GetCount() > 0)
   {

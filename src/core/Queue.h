@@ -574,8 +574,10 @@ private:
   bool FAllowAbandon{false};
   bool FNonInteractive{false};
   bool FNeedsInteraction{false};
-  // typedef std::list<TInformationUserAction *> TInformationList;
-  using TInformationList = nb::list<TInformationUserAction *>;
+#if defined(__BORLANDC__)
+  typedef std::list<TInformationUserAction *> TInformationList;
+#endif // defined(__BORLANDC__)
+  using TInformationList = nb::list_t<TInformationUserAction *>;
   TInformationList FNonInteractiveInformation;
 
   DWORD FMainThread{0};
@@ -594,7 +596,7 @@ private:
   void TerminalReopenEvent(TObject * Sender);
 
   void TerminalInformation(
-    TTerminal * Terminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional);
+    TTerminal * ATerminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional);
   void TerminalQueryUser(TObject * Sender,
     const UnicodeString & AQuery, TStrings * MoreMessages, uint32_t Answers,
     const TQueryParams * Params, uint32_t & Answer, TQueryType Type, void * Arg);

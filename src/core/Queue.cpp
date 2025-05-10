@@ -3036,23 +3036,15 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 }
 
 void TTerminalThread::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional)
+  TTerminal * ATerminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional)
 {
   TInformationUserAction Action(std::forward<TInformationEvent>(FOnInformation));
-  Action.Terminal = Terminal;
+  Action.Terminal = ATerminal;
   Action.Str = AStr;
-  // Action.Status = Status;
   Action.Phase = Phase;
   Action.Additional = Additional;
 
-  if (!FNonInteractive)
-  {
-    WaitForUserAction(Action.get());
-  }
-  else
-  {
-    FNonInteractiveInformation.push_back(Action.release());
-  }
+  WaitForUserAction(&Action);
 }
 
 void TTerminalThread::TerminalQueryUser(TObject * Sender,
