@@ -1489,7 +1489,7 @@ void TSCPFileSystem::CalculateFilesChecksum(
         BatchSize += File->Size;
         if (!FileListCommandLineBak.IsEmpty() &&
             ((FileListCommandLine.Length() > 2048) ||
-             (BatchSize > (1024 * 1024 * 1024))))
+             (BatchSize > int64_t(1024 * 1024 * 1024))))
         {
           FileListCommandLine = FileListCommandLineBak;
           break;
