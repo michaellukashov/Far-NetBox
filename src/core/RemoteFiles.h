@@ -224,7 +224,7 @@ public:
   const ROProperty<bool> IsParentDirectory{nb::bind(&TRemoteFile::GetIsParentDirectory, this)};
   __property bool IsThisDirectory = { read = GetIsThisDirectory };
   const ROProperty<bool> IsThisDirectory{nb::bind(&TRemoteFile::GetIsThisDirectory, this)};
-  __property bool IsInaccessibleDirectory  = { read=GetIsInaccessibleDirectory };
+  __property bool IsInaccesibleDirectory  = { read=GetIsInaccessibleDirectory };
   const ROProperty<bool> IsInaccessibleDirectory{nb::bind(&TRemoteFile::GetIsInaccessibleDirectory, this)};
   __property UnicodeString Extension  = { read=GetExtension };
   const ROProperty<UnicodeString> Extension{nb::bind(&TRemoteFile::GetExtension, this)};
@@ -495,7 +495,7 @@ public:
     rfS3Read = rfOtherRead, rfS3Write = rfOtherWrite, rfS3ReadACP = rfOtherExec, rfS3WriteACP = rfStickyBit,
   };
   enum TUnsupportedFlag {
-    rfDirectory = 040000 };
+    rfDirectory  = 040000 };
   enum TState { rsNo, rsYes, rsUndef };
 
 public:
@@ -686,7 +686,6 @@ private:
   FILETIME FLocalLastWriteTime{};
   bool FDirectoryHasSize{false};
 
-  // TChecklistItem() noexcept;
   int64_t GetBaseSize(TChecklistAction AAction) const;
 };
 
@@ -696,11 +695,11 @@ class NB_CORE_EXPORT TSynchronizeChecklist final : public TObject
   friend class TTerminal;
 
 public:
-  static const int32_t ActionCount = saDeleteLocal;
 #if defined(__BORLANDC__)
-  enum TAction { // renamed to TChecklistAction
+  enum TAction {
     saNone, saUploadNew, saDownloadNew, saUploadUpdate, saDownloadUpdate, saDeleteRemote, saDeleteLocal };
-  static const int ActionCount = saDeleteLocal;
+#endif // defined(__BORLANDC__)
+  static const int32_t ActionCount = saDeleteLocal;
 
 // renamed to TChecklistItem
   class TItem
@@ -715,16 +714,16 @@ public:
       UnicodeString Directory;
       TDateTime Modification;
       TModificationFmt ModificationFmt;
-      int64_t Size;
+      int64_t Size{0};
     };
 
-    TAction Action;
-    bool IsDirectory;
+    TChecklistAction Action;
+    bool IsDirectory{false};
     TFileInfo Local;
     TFileInfo Remote;
-    int32_t ImageIndex;
-    bool Checked;
-    TRemoteFile * RemoteFile;
+    int32_t ImageIndex{0};
+    bool Checked{false};
+    TRemoteFile * RemoteFile{nullptr};
 
     const UnicodeString& GetFileName() const;
     bool IsRemoteOnly() const { return (Action == saDownloadNew) || (Action == saDeleteRemote); }
@@ -732,7 +731,7 @@ public:
     bool HasSize() const { return !IsDirectory || FDirectoryHasSize; }
     int64_t GetBaseSize() const;
     int64_t GetSize() const;
-    int64_t GetSize(TAction AAction) const;
+    int64_t GetSize(TChecklistAction AAction) const;
     UnicodeString GetLocalPath() const;
     // Contrary to RemoteFile->FullFileName, this does not include trailing slash for directories
     UnicodeString GetRemotePath() const;
@@ -747,12 +746,12 @@ public:
     bool FDirectoryHasSize;
 
     TItem();
-    int64_t GetBaseSize(TAction AAction) const;
+    int64_t GetBaseSize(TChecklistAction AAction) const;
   };
 
+#if defined(__BORLANDC__)
   typedef std::vector<const TSynchronizeChecklist::TItem *> TItemList;
 #endif // defined(__BORLANDC__)
-
   using TItemList = TListBase<TChecklistItem>;
 
   TSynchronizeChecklist() noexcept;

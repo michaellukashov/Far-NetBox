@@ -142,7 +142,7 @@ private:
   int32_t FQueueTransfersLimit{0};
   int32_t FParallelTransferThreshold{0};
   UnicodeString FCertificateStorage;
-  UnicodeString FAWSMetadataService;
+  UnicodeString FAWSAPI;
   UnicodeString FChecksumCommands;
   std::unique_ptr<TSshHostCAList> FSshHostCAList;
   std::unique_ptr<TSshHostCAList> FPuttySshHostCAList;
@@ -216,7 +216,7 @@ public:
   void SetMimeTypes(const UnicodeString & Value);
   void SetCertificateStorage(const UnicodeString & value);
   UnicodeString GetCertificateStorageExpanded() const;
-  void SetAWSMetadataService(const UnicodeString & Value);
+  void SetAWSAPI(const UnicodeString & Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;
@@ -437,21 +437,21 @@ public:
   __property UnicodeString CertificateStorage = { read = FCertificateStorage, write = SetCertificateStorage };
   __property UnicodeString CertificateStorageExpanded = { read = GetCertificateStorageExpanded };
   const ROProperty<UnicodeString> CertificateStorageExpanded{nb::bind(&TConfiguration::GetCertificateStorageExpanded, this)};
-  __property UnicodeString AWSMetadataService = { read = FAWSMetadataService, write = SetAWSMetadataService };
+  __property UnicodeString AWSAPI = { read = FAWSAPI, write = SetAWSAPI };
   __property UnicodeString ChecksumCommands = { read = FChecksumCommands };
   __property int32_t LocalPortNumberMin = { read = FLocalPortNumberMin, write = SetLocalPortNumberMin };
   __property int32_t LocalPortNumberMax = { read = FLocalPortNumberMax, write = SetLocalPortNumberMax };
   __property bool TryFtpWhenSshFails = { read = FTryFtpWhenSshFails, write = SetTryFtpWhenSshFails };
   __property int32_t ParallelDurationThreshold = { read = FParallelDurationThreshold, write = SetParallelDurationThreshold };
   __property UnicodeString MimeTypes = { read = FMimeTypes, write = SetMimeTypes };
-  __property int DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
+  __property int32_t DontReloadMoreThanSessions = { read = FDontReloadMoreThanSessions, write = FDontReloadMoreThanSessions };
   int32_t& DontReloadMoreThanSessions{FDontReloadMoreThanSessions};
-  __property int ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
-  __property int QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
+  __property int32_t ScriptProgressFileNameLimit = { read = FScriptProgressFileNameLimit, write = FScriptProgressFileNameLimit };
+  __property int32_t QueueTransfersLimit = { read = FQueueTransfersLimit, write = SetQueueTransfersLimit };
   RWPropertySimple<int32_t> QueueTransfersLimit{&FQueueTransfersLimit, nb::bind(&TConfiguration::SetQueueTransfersLimit, this)};
-  __property int ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
+  __property int32_t ParallelTransferThreshold = { read = FParallelTransferThreshold, write = FParallelTransferThreshold };
   int32_t& ParallelTransferThreshold{FParallelTransferThreshold};
-  __property int KeyVersion = { read = FKeyVersion, write = FKeyVersion };
+  __property int32_t KeyVersion = { read = FKeyVersion, write = FKeyVersion };
   int32_t& KeyVersion{FKeyVersion};
   __property TSshHostCAList * SshHostCAList = { read = GetSshHostCAList, write = SetSshHostCAList };
   __property TSshHostCAList * PuttySshHostCAList = { read = GetPuttySshHostCAList };
@@ -553,7 +553,6 @@ constexpr const char * Sha256ChecksumAlg = "sha-256";
 constexpr const char * Sha384ChecksumAlg = "sha-384";
 constexpr const char * Sha512ChecksumAlg = "sha-512";
 constexpr const char * Md5ChecksumAlg = "md5";
-// Not defined by IANA
 constexpr const char * Crc32ChecksumAlg = "crc32";
 
 constexpr const char * SshFingerprintType = "ssh";

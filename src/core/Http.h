@@ -10,6 +10,10 @@ struct ne_ssl_certificate_s;
 struct ssl_st;
 
 class THttp;
+#if defined(__BORLANDC__)
+typedef void (__closure * THttpDownloadEvent)(THttp * Sender, int64_t Size, bool & Cancel);
+typedef void (__closure * THttpErrorEvent)(THttp * Sender, int32_t Status, const UnicodeString & Message);
+#endif // defined(__BORLANDC__)
 using THttpDownloadEvent = nb::FastDelegate3<void,
   THttp * /*Sender*/, int64_t /*Size*/, bool & /*Cancel*/>;
 using THttpErrorEvent = nb::FastDelegate3<void,

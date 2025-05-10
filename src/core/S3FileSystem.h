@@ -209,8 +209,10 @@ private:
 UnicodeString S3LibVersion();
 UnicodeString S3LibDefaultHostName();
 UnicodeString S3LibDefaultRegion();
+bool IsAmazonS3SessionData(TSessionData * Data);
 TStrings * GetS3Profiles();
-UnicodeString S3EnvUserName(const UnicodeString & Profile, UnicodeString * Source = nullptr);
-UnicodeString S3EnvPassword(const UnicodeString & Profile, UnicodeString * Source = nullptr);
-UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * Source = nullptr);
+UnicodeString S3EnvUserName(const UnicodeString & Profile, UnicodeString * Source = nullptr, bool OnlyCached = false);
+UnicodeString S3EnvPassword(const UnicodeString & Profile, UnicodeString * Source = nullptr, bool OnlyCached = false);
+UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * Source = nullptr, bool OnlyCached = false);
+UnicodeString S3EnvRoleArn(const UnicodeString & Profile, UnicodeString * Source = nullptr, bool OnlyCached = false);
 

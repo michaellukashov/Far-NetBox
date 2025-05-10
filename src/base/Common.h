@@ -33,9 +33,6 @@ constexpr const wchar_t * QUOTE = L"\'";
 constexpr const wchar_t * DOUBLEQUOTE = L"\"";
 
 constexpr const wchar_t * AnyMask = L"*.*";
-#if defined(__BORLANDC__)
-extern const wchar_t EngShortMonthNames[12][4];
-#endif // defined(__BORLANDC__)
 constexpr const wchar_t EngShortMonthNames[12][4] =
 {
   L"Jan", L"Feb", L"Mar", L"Apr", L"May", L"Jun",
@@ -44,7 +41,13 @@ constexpr const wchar_t EngShortMonthNames[12][4] =
 
 constexpr const char * CONST_BOM = "\xEF\xBB\xBF";
 #if defined(__BORLANDC__)
+#define PARENTDIRECTORY L".."
+#define THISDIRECTORY L"."
+
+extern const UnicodeString AnyMask;
+extern const wchar_t EngShortMonthNames[12][4];
 extern const char Bom[4];
+extern const UnicodeString XmlDeclaration;
 #endif // defined(__BORLANDC__)
 constexpr const wchar_t * XmlDeclaration = L"<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 constexpr const wchar_t TokenPrefix = L'%';
@@ -192,8 +195,7 @@ NB_CORE_EXPORT UnicodeString SizeToStr(int64_t ASize);
 NB_CORE_EXPORT LCID GetDefaultLCID();
 NB_CORE_EXPORT UnicodeString DefaultEncodingName();
 NB_CORE_EXPORT UnicodeString WindowsProductName();
-NB_CORE_EXPORT bool GetWindowsProductType(DWORD & Type);
-NB_CORE_EXPORT int32_t GetWindowsBuild();
+NB_CORE_EXPORT DWORD GetWindowsProductType();
 NB_CORE_EXPORT UnicodeString WindowsVersion();
 NB_CORE_EXPORT UnicodeString WindowsVersionLong();
 NB_CORE_EXPORT bool IsDirectoryWriteable(const UnicodeString & APath);
@@ -214,10 +216,11 @@ bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
 UnicodeString FindIdent(const UnicodeString & Ident, TStrings * Idents);
 UnicodeString GetTlsErrorStr(uint32_t Err);
 UnicodeString GetTlsErrorStrs();
-bool SameIdent(const UnicodeString & Ident1, const UnicodeString & Ident2);
-UnicodeString GetTlsErrorStr(uint32_t Err);
-UnicodeString GetTlsErrorStrs();
-NB_CORE_EXPORT void CheckCertificate(const UnicodeString & Path);
+void CheckCertificate(const UnicodeString & Path);
+#if defined(__BORLANDC__)
+typedef struct x509_st X509;
+typedef struct evp_pkey_st EVP_PKEY;
+#endif // defined(__BORLANDC__)
 using X509 = struct x509_st;
 using EVP_PKEY = struct evp_pkey_st;
 NB_CORE_EXPORT void ParseCertificate(const UnicodeString & Path,
@@ -256,7 +259,6 @@ private:
 
 using TProcessLocalFileEvent = nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const TSearchRecSmart & /*Rec*/, void * /*Param*/>;
-
 NB_CORE_EXPORT bool FileSearchRec(const UnicodeString & FileName, TSearchRec & Rec);
 NB_CORE_EXPORT void CopySearchRec(const TSearchRec & Source, TSearchRec & Dest);
 struct NB_CORE_EXPORT TSearchRecChecked : public TSearchRecSmart
@@ -397,18 +399,19 @@ class TValueRestorer // : public TObject
 public:
   TValueRestorer() = delete;
   TValueRestorer(const TValueRestorer &) = delete;
-  TValueRestorer(T & Target) :
-    FTarget(Target),
-    FValue(Target)
-  {
-  }
-
-  TValueRestorer(T & Target, const T & Value) :
+  explicit TValueRestorer(T & Target, const T & Value) :
     FTarget(Target),
     FValue(Target),
     FArmed(true)
   {
-    FTarget = Value;
+    // FTarget = Value;
+  }
+
+  TValueRestorer(T & Target) :
+    FTarget(Target),
+    FValue(Target),
+    FArmed(true)
+  {
   }
 
   void Release()

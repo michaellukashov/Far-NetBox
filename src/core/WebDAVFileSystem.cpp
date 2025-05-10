@@ -57,7 +57,6 @@ constexpr const char * DAV_PROP_NAMESPACE = "DAV:";
 constexpr const char * MODDAV_PROP_NAMESPACE = "http://apache.org/dav/props/";
 constexpr const char * PROP_CONTENT_LENGTH = "getcontentlength";
 constexpr const char * PROP_LAST_MODIFIED = "getlastmodified";
-constexpr const char * PROP_CREATIONDATE = "creationdate";
 constexpr const char * PROP_RESOURCE_TYPE = "resourcetype";
 constexpr const char * PROP_HIDDEN = "ishidden";
 constexpr const char * PROP_QUOTA_AVAILABLE = "quota-available-bytes";
@@ -865,9 +864,14 @@ int32_t TWebDAVFileSystem::ReadDirectoryInternal(
   return Result;
 }
 
+bool TWebDAVFileSystem::IsRedirect(int32_t NeonStatus) const
+{
+  return (NeonStatus == NE_REDIRECT);
+}
+
 bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const
 {
-  bool Result = (NeonStatus == NE_REDIRECT);
+  bool Result = IsRedirect(NeonStatus);
   if (Result)
   {
     // What PathToNeon does
@@ -1035,8 +1039,6 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     AFile->SetSize(StrToInt64Def(ContentLength, 0));
   }
   const char * LastModified = GetNeonProp(Results, PROP_LAST_MODIFIED);
-  const char * CreationDate = GetNeonProp(Results, PROP_CREATIONDATE);
-  const char * Modified = LastModified ? LastModified : CreationDate;
   // We've seen a server (t=24891) that does not set "getlastmodified" for the "this" folder entry.
   AFile->ModificationFmt = mfNone; // fallback
   if (LastModified != nullptr)
@@ -1931,8 +1933,8 @@ void TWebDAVFileSystem::Sink(
 
       ClearNeonError();
       int32_t NeonStatus = ne_get(FSessionContext->NeonSession, PathToNeon(AFileName), FD);
-      UnicodeString DiscardPath = AFileName;
-      if (IsValidRedirect(NeonStatus, DiscardPath))
+      // Contrary to other actions, for "GET" we support any redirect
+      if (IsRedirect(NeonStatus))
       {
         const UnicodeString CorrectedUrl = GetRedirectUrl();
         UTF8String CorrectedFileName, Query;
