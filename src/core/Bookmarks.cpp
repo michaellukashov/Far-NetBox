@@ -246,9 +246,9 @@ void TBookmarks::ModifyAll(bool Modify)
   }
 }
 
-TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
+TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex) const
 {
-  int32_t Index = FBookmarkLists->IndexOf(AIndex);
+  const int32_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
     return FBookmarkLists->GetAs<TBookmarkList>(Index);
@@ -258,7 +258,7 @@ TBookmarkList * TBookmarks::GetBookmarks(const UnicodeString & AIndex)
 
 void TBookmarks::SetBookmarks(const UnicodeString & AIndex, const TBookmarkList * Value)
 {
-  int32_t Index = FBookmarkLists->IndexOf(AIndex);
+  const int32_t Index = FBookmarkLists->IndexOf(AIndex);
   if (Index >= 0)
   {
 #if defined(__BORLANDC__)
@@ -281,7 +281,7 @@ TBookmarkList * TBookmarks::GetSharedBookmarks()
   return GetBookmarks(FSharedKey);
 }
 
-void TBookmarks::SetSharedBookmarks(TBookmarkList * Value)
+void TBookmarks::SetSharedBookmarks(const TBookmarkList * Value)
 {
   SetBookmarks(FSharedKey, Value);
 }

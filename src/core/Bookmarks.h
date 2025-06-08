@@ -31,10 +31,10 @@ private:
   static constexpr const char * Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
 
 public:
-  TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
+  TBookmarkList * GetBookmarks(const UnicodeString & AIndex) const;
   void SetBookmarks(const UnicodeString & AIndex, const TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
-  void SetSharedBookmarks(TBookmarkList * Value);
+  void SetSharedBookmarks(const TBookmarkList * Value);
 
 private:
   void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
