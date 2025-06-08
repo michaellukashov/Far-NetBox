@@ -3316,6 +3316,8 @@ static bool DoRecursiveDeleteFile(
           }
           while (Result && (FindNextUnchecked(SearchRec) == 0));
 
+          SearchRec.Close();
+
           if (Result)
           {
             Result = ::RemoveDir(ApiPath(AFileName));
