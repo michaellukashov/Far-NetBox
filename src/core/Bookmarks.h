@@ -70,8 +70,10 @@ public:
 
   __property int32_t Count = { read = GetCount };
   const ROProperty<int32_t> Count{nb::bind(&TBookmarkList::GetCount, this)};
-  // __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
-  // __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+#if defined(__BORLANDC__)
+  __property TBookmark * Bookmarks[int32_t Index] = { read = GetBookmarks };
+  __property bool NodeOpened[UnicodeString Index] = { read = GetNodeOpened, write = SetNodeOpened };
+#endif // defined(__BORLANDC__)
 
 protected:
   int32_t IndexOf(const TBookmark * Bookmark) const;

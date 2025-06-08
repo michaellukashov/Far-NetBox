@@ -3694,11 +3694,11 @@ void TTerminal::ReadCurrentDirectory()
   }
 }
 
-void TTerminal::DoReadDirectoryFinish(TRemoteDirectory * Files, bool ReloadOnly)
+void TTerminal::DoReadDirectoryFinish(TRemoteDirectory * AFiles, bool ReloadOnly)
 {
   // Factored out to solve Clang ICE
   std::unique_ptr<TRemoteDirectory> OldFiles(FFiles.release());
-  FFiles.reset(Files);
+  FFiles.reset(AFiles);
   try__finally
   {
     DoReadDirectory(ReloadOnly);
@@ -3768,7 +3768,7 @@ void TTerminal::ReadDirectory(bool ReloadOnly, bool ForceCache)
       {
         DoReadDirectoryProgress(-1, 0, Cancel);
         FReadingCurrentDirectory = false;
-        DoReadDirectoryFinish(FFiles.release(), ReloadOnly);
+        DoReadDirectoryFinish(Files.release(), ReloadOnly);
         if (GetActive())
         {
           if (GetSessionData()->GetCacheDirectories())

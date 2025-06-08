@@ -316,7 +316,7 @@ protected:
   void DoStartReadDirectory();
   void DoReadDirectoryProgress(int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
   void DoReadDirectory(bool ReloadOnly);
-  void DoReadDirectoryFinish(TRemoteDirectory * Files, bool ReloadOnly);
+  void DoReadDirectoryFinish(TRemoteDirectory * AFiles, bool ReloadOnly);
   void DoCreateDirectory(const UnicodeString & ADirName, bool Encrypt);
   void DoDeleteFile(
     TCustomFileSystem * FileSystem, const UnicodeString & AFileName, const TRemoteFile * AFile, int32_t Params);

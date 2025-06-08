@@ -399,22 +399,22 @@ class TValueRestorer // : public TObject
 public:
   TValueRestorer() = delete;
   TValueRestorer(const TValueRestorer &) = delete;
-  explicit TValueRestorer(T & Target, const T & Value) :
+  inline explicit TValueRestorer(T & Target, const T & Value) :
     FTarget(Target),
     FValue(Target),
     FArmed(true)
   {
-    // FTarget = Value;
+    FTarget = Value;
   }
 
-  TValueRestorer(T & Target) :
+  inline TValueRestorer(T & Target) :
     FTarget(Target),
     FValue(Target),
     FArmed(true)
   {
   }
 
-  void Release()
+  inline void Release()
   {
     if (FArmed)
     {
@@ -456,13 +456,13 @@ class TAutoFlag : public TValueRestorer<bool>
   using parent = TValueRestorer<bool>;
 public:
   TAutoFlag() = default;
-  explicit TAutoFlag(bool & Target) :
+  inline explicit TAutoFlag(bool & Target) :
     parent(Target, true)
   {
     DebugAssert(!FValue);
   }
 
-  ~TAutoFlag()
+  inline ~TAutoFlag()
   {
     DebugAssert(!FArmed || FTarget);
   }
