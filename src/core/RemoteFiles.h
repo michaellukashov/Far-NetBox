@@ -371,7 +371,7 @@ public:
   Boolean GetLoaded() const;
   void SetIncludeParentDirectory(Boolean Value);
   void SetIncludeThisDirectory(Boolean Value);
-  void ReleaseRelativeDirectories();
+  virtual void ReleaseRelativeDirectories();
 public:
   explicit TRemoteDirectory(TTerminal * ATerminal, TRemoteDirectory * Template = nullptr) noexcept;
   virtual ~TRemoteDirectory() noexcept override;
