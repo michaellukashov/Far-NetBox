@@ -414,6 +414,7 @@ void platform_get_x11_auth(struct X11Display * /*display*/, Conf * /*conf*/)
   // nothing, therefore no auth.
 }
 
+#if defined(__BORLANDC__)
 // Based on PuTTY's settings.c
 char * get_remote_username(Conf * conf)
 {
@@ -429,6 +430,7 @@ char * get_remote_username(Conf * conf)
   }
   return result;
 }
+#endif // defined(__BORLANDC__)
 
 static const SeatVtable ScpSeatVtable =
   {
