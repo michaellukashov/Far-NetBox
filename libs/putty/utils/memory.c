@@ -44,6 +44,7 @@ void *safemalloc(size_t factor1, size_t factor2, size_t addend)
         (size + ALLOCATION_ALIGNMENT - 1) & ~(ALLOCATION_ALIGNMENT-1));
 #else
     p = malloc(size);
+    smemclr(p, size);
 #endif
 
     if (!p)
