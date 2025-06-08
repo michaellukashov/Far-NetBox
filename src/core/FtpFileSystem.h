@@ -80,7 +80,7 @@ public:
   virtual bool IsCapable(int32_t Capability) const override;
   virtual void LookupUsersGroups() override;
   virtual void ReadCurrentDirectory() override;
-  virtual void ReadDirectory(TRemoteFileList * FileList) override;
+  virtual void ReadDirectory(TRemoteFileList * AFileList) override;
   virtual void ReadFile(const UnicodeString & AFileName,
     TRemoteFile *& AFile) override;
   virtual void ReadSymlink(TRemoteFile * SymlinkFile,

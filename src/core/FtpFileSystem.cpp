@@ -2464,13 +2464,13 @@ void TFTPFileSystem::AutoDetectTimeDifference(
   }
 }
 
-void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
+void TFTPFileSystem::ReadDirectory(TRemoteFileList * AFileList)
 {
   // whole below "-a" logic is for LIST,
   // if we know we are going to use MLSD, skip it
   if (FFileZillaIntf->UsingMlsd())
   {
-    DoReadDirectory(FileList);
+    DoReadDirectory(AFileList);
   }
   else
   {
@@ -2483,11 +2483,11 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
       try
       {
         FDoListAll = (FListAll == asAuto) || (FListAll == asOn);
-        DoReadDirectory(FileList);
+        DoReadDirectory(AFileList);
 
         // We got no files with "-a", but again no files w/o "-a",
         // so it was not "-a"'s problem, revert to auto and let it decide the next time
-        if (GotNoFilesForAll && (FileList->GetCount() == 0))
+        if (GotNoFilesForAll && (AFileList->GetCount() == 0))
         {
           DebugAssert(FListAll == asOff);
           FListAll = asAuto;
@@ -2495,7 +2495,7 @@ void TFTPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         else if (FListAll == asAuto)
         {
           // some servers take "-a" as a mask and return empty directory listing
-          if (IsEmptyFileList(FileList))
+          if (IsEmptyFileList(AFileList))
           {
             Repeat = true;
             FListAll = asOff;
