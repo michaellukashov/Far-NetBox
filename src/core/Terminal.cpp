@@ -451,7 +451,8 @@ bool TCallbackGuard::Verify(Exception * E)
     (rtti::dyn_cast_or_null<ECallbackGuardAbort>(E) != nullptr);
   if (Result)
   {
-    DebugAssert(FGuarding && (FFatalError != nullptr));
+    DebugAssert(FGuarding);
+    DebugAssert(FFatalError != nullptr);
     Verify();
   }
   return Result;
