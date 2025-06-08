@@ -153,7 +153,7 @@ template <typename T>
 class RWProperty : public ROProperty<T>
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = ROProperty<T>::ValueType;
+using ValueType = typename ROProperty<T>::ValueType;
 using TSetter = fastdelegate::FastDelegate1<void, ValueType>;
 private:
   TSetter _setter;
