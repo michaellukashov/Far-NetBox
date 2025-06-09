@@ -349,11 +349,6 @@ int ne_sock_init(void)
     if (err != 0) {
 	return init_state = -1;
     }
-#ifdef HAVE_SSPI
-    if (ne_sspi_init() < 0) {
-        return init_state = -1;
-    }
-#endif
 #endif
 
 #ifdef NE_HAVE_SOCKS
