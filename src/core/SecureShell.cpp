@@ -27,6 +27,7 @@
 #pragma package(smart_init)
 
 #define MAX_BUFSIZE 32768
+
 #endif // defined(__BORLANDC__)
 
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;
@@ -198,7 +199,7 @@ void TSecureShell::GetHostKeyFingerprint(UnicodeString & SHA256, UnicodeString &
 
 Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
 {
-  struct Conf * conf = conf_new();
+  Conf * conf = conf_new();
 
   PuttyDefaults(conf);
 

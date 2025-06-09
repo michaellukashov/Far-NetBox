@@ -9,8 +9,6 @@
 #include <Windows.hpp>
 #include <Math.hpp>
 #include "FileInfo.h"
-#if defined(__BORLANDC__)
-#include "FileBuffer.h"
 
 #if defined(__BORLANDC__)
 #pragma package(smart_init)
