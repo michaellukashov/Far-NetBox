@@ -5,7 +5,6 @@
 #include <Common.h>
 
 #include "FileOperationProgress.h"
-#include "CoreMain.h"
 #include "Interface.h"
 
 constexpr const int64_t TRANSFER_BUF_SIZE = 32 * 1024;
