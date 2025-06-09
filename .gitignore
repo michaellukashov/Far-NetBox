@@ -62,3 +62,5 @@ cov-int/
 *.VC.opendb
 ReSharper.DotSettings
 *.PVS-Studio.*
+
+/CMakeSettings.json
