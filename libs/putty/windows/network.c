@@ -936,6 +936,7 @@ static DWORD try_connect(NetSocket *sock,
     int family;
 #ifdef MPEXT
     struct timeval rcvtimeo;
+    int optlen = sizeof(rcvtimeo);
 #endif
 
     if (sock->s != INVALID_SOCKET) {
@@ -1104,7 +1105,8 @@ static DWORD try_connect(NetSocket *sock,
 #ifdef MPEXT
     if (timeout > 0)
     {
-        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, (int *)&rcvtimeo) < 0)
+        // Actually, on Windows SO_RCVTIMEO uses int, so only rcvtimeo.tv_sec is used
+        if (p_getsockopt (s, SOL_SOCKET, SO_RCVTIMEO, (char *)&rcvtimeo, &optlen) < 0)
         {
             rcvtimeo.tv_sec = -1;
         }
@@ -1159,7 +1161,7 @@ static DWORD try_connect(NetSocket *sock,
 #ifdef MPEXT
     if ((timeout > 0) && (rcvtimeo.tv_sec >= 0))
     {
-        p_setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (void *) &rcvtimeo, sizeof(rcvtimeo));
+        p_setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, (void *) &rcvtimeo, optlen);
     }
 
     // MP: Calling EventSelect only after connect makes sure we receive FD_CLOSE.
@@ -1193,7 +1195,7 @@ static DWORD try_connect(NetSocket *sock,
     return err;
 }
 
-Socket *sk_new(SockAddr *addr, int port, bool privport, bool oobinline,
+Socket *putty_sk_new(SockAddr *addr, int port, bool privport, bool oobinline,
                bool nodelay, bool keepalive, Plug *plug,
 #ifdef MPEXT
               int timeout,

@@ -8,7 +8,9 @@
 
 #include "Queue.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 class TBackgroundTerminal;
 
@@ -47,7 +49,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnNotify.empty())
     {
@@ -68,11 +70,11 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnInformation.empty())
     {
-      OnInformation(Terminal, Str, Status, Phase, Additional);
+      OnInformation(Terminal, Str, Phase, Additional);
     }
   }
 
@@ -185,7 +187,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnDisplayBanner.empty())
     {
@@ -211,7 +213,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnReadDirectory.empty())
     {
@@ -233,7 +235,7 @@ public:
   {
   }
 
-  virtual void Execute(void * /*Arg*/) override
+  virtual void Execute(void *) override
   {
     if (!OnReadDirectoryProgress.empty())
     {
@@ -293,7 +295,7 @@ protected:
   void TerminalShowExtendedException(TTerminal * ATerminal,
     Exception * E, void * Arg);
   void OperationFinished(TFileOperation Operation, TOperationSide Side,
-    bool Temp, const UnicodeString & AFileName, bool Success,
+    bool Temp, const UnicodeString & AFileName, bool Success, bool NotCancelled,
     TOnceDoneOperation & OnceDoneOperation);
   void OperationProgress(TFileOperationProgressType & ProgressData);
 };
@@ -385,7 +387,8 @@ void TSimpleThread::WaitFor(DWORD Milliseconds) const
 // TSignalThread
 
 TSignalThread::TSignalThread(TObjectClassId Kind) noexcept :
-  TSimpleThread(Kind)
+  TSimpleThread(Kind),
+  FEvent(nullptr), FTerminated(true)
 {
 }
 
@@ -818,7 +821,7 @@ bool TTerminalQueue::ItemProcessUserAction(TQueueItem * Item, void * Arg)
   bool Result = !FFinished;
   if (Result)
   {
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem * TerminalItem = nullptr; // shut up
 
     {
       const TGuard Guard(FItemsSection);
@@ -968,7 +971,7 @@ bool TTerminalQueue::ItemPause(TQueueItem * Item, bool Pause)
   bool Result = !FFinished;
   if (Result)
   {
-    TTerminalItem * TerminalItem = nullptr;
+    TTerminalItem * TerminalItem = nullptr; // shut up
 
     {
       const TGuard Guard(FItemsSection);
@@ -1647,7 +1650,7 @@ void TTerminalItem::TerminalShowExtendedException(
 
 void TTerminalItem::OperationFinished(TFileOperation /*Operation*/,
   TOperationSide /*Side*/, bool /*Temp*/, const UnicodeString & /*AFileName*/,
-  bool /*Success*/, TOnceDoneOperation & /*OnceDoneOperation*/)
+  bool /*Success*/, bool /*NotCancelled*/, TOnceDoneOperation & /*OnceDoneOperation*/)
 {
   // nothing
 }
@@ -1883,6 +1886,11 @@ int32_t TQueueItem::GetCPSLimit() const
 TQueueItem * TQueueItem::CreateParallelOperation()
 {
   return nullptr;
+}
+
+UnicodeString TQueueItem::GetStartupDirectory() const
+{
+  return EmptyStr;
 }
 
 // TQueueItemProxy
@@ -2258,11 +2266,11 @@ UnicodeString TLocatedQueueItem::GetStartupDirectory() const
   return FCurrentDir;
 }
 
-void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
+void TLocatedQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
 {
-  DebugAssert(Terminal != nullptr);
-  if (Terminal)
-    Terminal->SetCurrentDirectory(FCurrentDir);
+  DebugAssert(ATerminal != nullptr);
+  if (ATerminal)
+    ATerminal->SetCurrentDirectory(FCurrentDir);
 }
 
 // TTransferQueueItem
@@ -2417,10 +2425,25 @@ bool TTransferQueueItem::UpdateFileList(TQueueFileList * FileList)
 
 // TUploadQueueItem
 
+static void ExtractLocalSourcePath(const TStrings * Files, UnicodeString & APath)
+{
+  base::ExtractCommonPath(Files, APath);
+  // this way the trailing backslash is preserved for root directories like "D:\"
+  APath = ::ExtractFileDir(::IncludeTrailingBackslash(APath));
+}
+
+static bool IsSingleFileUpload(const TStrings * AFilesToCopy)
+{
+  return
+    (AFilesToCopy->Count == 1) &&
+    FileExists(ApiPath(AFilesToCopy->Strings[0]));
+}
+
 TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
-  TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem, ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, SingleFile, Parallel)
+  const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept :
+  TTransferQueueItem(OBJECT_CLASS_TUploadQueueItem,
+    ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osLocal, IsSingleFileUpload(AFilesToCopy), Parallel)
 {
   if (AFilesToCopy->GetCount() > 1)
   {
@@ -2431,9 +2454,7 @@ TUploadQueueItem::TUploadQueueItem(TTerminal * ATerminal,
     }
     else
     {
-      base::ExtractCommonPath(AFilesToCopy, FInfo->Source);
-      // this way the trailing backslash is preserved for root directories like "D:\\"
-      FInfo->Source = ::ExtractFileDir(::IncludeTrailingBackslash(FInfo->Source));
+      ExtractLocalSourcePath(AFilesToCopy, FInfo->Source);
       FInfo->ModifiedLocal = FLAGCLEAR(Params, cpDelete) ? UnicodeString() :
         ::IncludeTrailingBackslash(FInfo->Source);
     }
@@ -2525,19 +2546,27 @@ void TParallelTransferQueueItem::DoExecute(gsl::not_null<TTerminal *> Terminal)
 
 // TDownloadQueueItem
 
-static void ExtractRemoteSourcePath(const TTerminal * ATerminal, const TStrings * Files, UnicodeString & Path)
+static void ExtractRemoteSourcePath(const TTerminal * ATerminal, const TStrings * AFiles, UnicodeString & APath)
 {
-  if (ATerminal && !base::UnixExtractCommonPath(Files, Path))
+  if (ATerminal && !base::UnixExtractCommonPath(AFiles, APath))
   {
-    Path = ATerminal->CurrentDirectory;
+    APath = ATerminal->CurrentDirectory;
   }
-  Path = base::UnixExcludeTrailingBackslash(Path);
+  APath = base::UnixExcludeTrailingBackslash(APath);
+}
+
+static bool IsSingleFileDownload(const TStrings * AFilesToCopy)
+{
+  return
+    (AFilesToCopy->Count == 1) &&
+    !AFilesToCopy->As<TRemoteFile>(0)->IsDirectory;
 }
 
 TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   const TStrings * AFilesToCopy, const UnicodeString & TargetDir,
-  const TCopyParamType * CopyParam, int32_t Params, bool SingleFile, bool Parallel) noexcept :
-  TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem, ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, SingleFile, Parallel)
+  const TCopyParamType * CopyParam, int32_t Params, bool Parallel) noexcept :
+  TTransferQueueItem(OBJECT_CLASS_TDownloadQueueItem,
+    ATerminal, AFilesToCopy, TargetDir, CopyParam, Params, osRemote, IsSingleFileUpload(AFilesToCopy), Parallel)
 {
   if (AFilesToCopy->Count > 1)
   {
@@ -2575,34 +2604,56 @@ TDownloadQueueItem::TDownloadQueueItem(TTerminal * ATerminal,
   FInfo->ModifiedLocal = ::IncludeTrailingBackslash(TargetDir);
 }
 
-void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * ParallelOperation)
+void TDownloadQueueItem::DoTransferExecute(gsl::not_null<TTerminal *> ATerminal, TParallelOperation * AParallelOperation)
 {
   DebugAssert(ATerminal != nullptr);
-  ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, ParallelOperation);
+  ATerminal->CopyToLocal(FFilesToCopy.get(), FTargetDir, FCopyParam.get(), FParams, AParallelOperation);
 }
 
 
-TDeleteQueueItem::TDeleteQueueItem(TObjectClassId Kind, TTerminal * Terminal, TStrings * FilesToDelete, int32_t Params) noexcept :
-  TLocatedQueueItem(Kind, Terminal)
+TRemoteDeleteQueueItem::TRemoteDeleteQueueItem(TTerminal * ATerminal, TStrings * AFilesToDelete, int32_t AParams) :
+  TLocatedQueueItem(OBJECT_CLASS_TRemoteDeleteQueueItem, ATerminal)
 {
   FInfo->Operation = foDelete;
   FInfo->Side = osRemote;
 
-  DebugAssert(FilesToDelete != nullptr);
-  FFilesToDelete.reset(TRemoteFileList::CloneStrings(FilesToDelete));
-  ExtractRemoteSourcePath(Terminal, FilesToDelete, FInfo->Source);
+  DebugAssert(AFilesToDelete != nullptr);
+  FFilesToDelete.reset(TRemoteFileList::CloneStrings(AFilesToDelete));
+  ExtractRemoteSourcePath(ATerminal, AFilesToDelete, FInfo->Source);
 
   FInfo->ModifiedRemote = FInfo->Source;
 
-  FParams = Params;
+  FParams = AParams;
 }
 
-void TDeleteQueueItem::DoExecute(TTerminal * Terminal)
+void TRemoteDeleteQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
 {
-  TLocatedQueueItem::DoExecute(Terminal);
+  TLocatedQueueItem::DoExecute(ATerminal);
 
-  DebugAssert(Terminal != nullptr);
-  Terminal->DeleteFiles(FFilesToDelete.get(), FParams);
+  DebugAssert(ATerminal != nullptr);
+  ATerminal->DeleteFiles(FFilesToDelete.get(), FParams);
+}
+
+
+TLocalDeleteQueueItem::TLocalDeleteQueueItem(TStrings * AFilesToDelete, int32_t AParams) noexcept :
+  TQueueItem(OBJECT_CLASS_TLocalDeleteQueueItem)
+{
+  FInfo->Operation = foDelete;
+  FInfo->Side = osLocal;
+
+  DebugAssert(AFilesToDelete != nullptr);
+  FFilesToDelete.reset(TRemoteFileList::CloneStrings(AFilesToDelete));
+  ExtractLocalSourcePath(AFilesToDelete, FInfo->Source);
+
+  FInfo->ModifiedLocal = FInfo->Source;
+
+  FParams = AParams;
+}
+
+void TLocalDeleteQueueItem::DoExecute(gsl::not_null<TTerminal *> ATerminal)
+{
+  DebugAssert(ATerminal != nullptr);
+  ATerminal->DeleteLocalFiles(FFilesToDelete.get(), FParams);
 }
 
 // TTerminalThread
@@ -2736,6 +2787,11 @@ void TTerminalThread::TerminalReopen()
   RunAction(nb::bind(&TTerminalThread::TerminalReopenEvent, this));
 }
 
+void TTerminalThread::DiscardException()
+{
+  SAFE_DESTROY_EX(Exception, FException);
+}
+
 void TTerminalThread::RunAction(TNotifyEvent && Action)
 {
   DebugAssert(!FAction.empty());
@@ -2817,7 +2873,7 @@ void TTerminalThread::RunAction(TNotifyEvent && Action)
     __finally
     {
       FAction = nullptr;
-      SAFE_DESTROY_EX(Exception, FException);
+      DiscardException();
     } end_try__finally
   }
   catch(...)
@@ -3000,7 +3056,7 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
     __finally
     {
       FUserAction = PrevUserAction;
-      SAFE_DESTROY_EX(Exception, FException);
+      DiscardException();
     } end_try__finally
 
     // Contrary to a call before, this is unconditional,
@@ -3014,12 +3070,11 @@ void TTerminalThread::WaitForUserAction(TUserAction * UserAction)
 }
 
 void TTerminalThread::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & AStr, bool Status, int32_t Phase, const UnicodeString & Additional)
+  TTerminal * ATerminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & Additional)
 {
   TInformationUserAction Action(std::forward<TInformationEvent>(FOnInformation));
-  Action.Terminal = Terminal;
+  Action.Terminal = ATerminal;
   Action.Str = AStr;
-  Action.Status = Status;
   Action.Phase = Phase;
   Action.Additional = Additional;
 

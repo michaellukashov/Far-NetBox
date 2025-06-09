@@ -98,7 +98,13 @@ static void sk_proxy_close (Socket *s)
 {
     ProxySocket *ps = container_of(s, ProxySocket, sock);
 
+    #ifdef WINSCP
+    if (ps->sub_socket != NULL)
+    #endif
     sk_close(ps->sub_socket);
+    #ifdef WINSCP
+    if (ps->proxy_addr != NULL)
+    #endif
     sk_addr_free(ps->proxy_addr);
     sk_addr_free(ps->remote_addr);
     proxy_negotiator_cleanup(ps);
@@ -229,7 +235,7 @@ static void proxy_negotiate(ProxySocket *ps)
         sk_close(ps->sub_socket);
         { // WINSCP
         SockAddr *proxy_addr = sk_addr_dup(ps->proxy_addr);
-        ps->sub_socket = sk_new(proxy_addr, ps->proxy_port,
+        ps->sub_socket = putty_sk_new(proxy_addr, ps->proxy_port,
                                 ps->proxy_privport, ps->proxy_oobinline,
                                 ps->proxy_nodelay, ps->proxy_keepalive,
                                 &ps->plugimpl,
@@ -567,6 +573,10 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
 
         ps->sub_socket = NULL;
 
+        #ifdef WINSCP
+        ps->proxy_addr = NULL;
+        #endif
+
         /*
          * If we've been given an Interactor by the caller, set ourselves
          * up to work with it.
@@ -656,7 +666,7 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
         ps->proxy_oobinline = oobinline;
         ps->proxy_nodelay = nodelay;
         ps->proxy_keepalive = keepalive;
-        ps->sub_socket = sk_new(proxy_addr, ps->proxy_port,
+        ps->sub_socket = putty_sk_new(proxy_addr, ps->proxy_port,
                                 ps->proxy_privport, ps->proxy_oobinline,
                                 ps->proxy_nodelay, ps->proxy_keepalive,
                                 &ps->plugimpl,
@@ -677,7 +687,7 @@ Socket *new_connection(SockAddr *addr, const char *hostname,
     }
 
     /* no proxy, so just return the direct socket */
-    return sk_new(addr, port, privport, oobinline, nodelay, keepalive, plug,
+    return putty_sk_new(addr, port, privport, oobinline, nodelay, keepalive, plug,
         #ifdef WINSCP
         conf_get_int(conf, CONF_connect_timeout), conf_get_int(conf, CONF_sndbuf),
         conf_get_str(conf, CONF_srcaddr)

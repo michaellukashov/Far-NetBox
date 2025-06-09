@@ -64,6 +64,8 @@ extern HINSTANCE HInstance;
 #define STDIN_SWITCH L"StdIn"
 #define STDINOUT_BINARY_VALUE L"binary"
 #define STDINOUT_CHUNKED_VALUE L"chunked"
+#define COPYID_SWITCH L"CopyId"
+#define IDENTITY_SWITCH L"Identity"
 
 #define DUMPCALLSTACK_EVENT L"WinSCPCallstack%d"
 
@@ -182,6 +184,7 @@ bool DoCustomCommandOptionsDialog(
 void DoUsageStatisticsDialog();
 void DoSiteRawDialog(TSessionData * Data);
 bool DoSshHostCADialog(bool Add, TSshHostCA & SshHostCA);
+bool DoTagDialog(bool Add, TStrings * Tags, UnicodeString & Key, UnicodeString & Value);
 
 // windows\UserInterface.cpp
 bool DoMasterPasswordDialog();
@@ -344,6 +347,18 @@ constexpr const int32_t cpOwner = 0x02;
 constexpr const int32_t cpGroup = 0x04;
 constexpr const int32_t cpAcl =   0x08;
 constexpr const int32_t cpIDs =   0x10;
+constexpr const int32_t poUserGroupByID = 0x01;
+constexpr const int32_t poTags =          0x02;
+#if defined(__BORLANDC__)
+typedef void (__closure *TCalculateSizeEvent)
+  (TStrings * FileList, int64_t & Size, TCalculateSizeStats & Stats,
+   bool & Close);
+typedef void (__closure *TCalculatedChecksumCallbackEvent)(
+  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+typedef void (__closure *TCalculateChecksumEvent)
+  (const UnicodeString & Alg, TStrings * FileList,
+   TCalculatedChecksumCallbackEvent OnCalculatedChecksum, bool & Close);
+#endif // defined(__BORLANDC__)
 using TCalculateSizeEvent = nb::FastDelegate4<void,
   TStrings * /*FileList*/, int64_t & /*Size*/, TCalculateSizeStats & /*Stats*/,
   bool & /*Close*/>;
@@ -354,14 +369,16 @@ using TCalculateChecksumEvent = nb::FastDelegate4<void,
   const UnicodeString & /*Alg*/, TStrings * /*FileList*/,
   TCalculatedChecksumCallbackEvent && /*OnCalculatedChecksum*/,
   bool & /*Close*/>;
-
 bool DoPropertiesDialog(TStrings * FileList,
     const UnicodeString & Directory, const TRemoteTokenList * GroupList,
     const TRemoteTokenList * UserList, TStrings * ChecksumAlgs,
     TRemoteProperties * Properties,
-    int32_t AllowedChanges, bool UserGroupByID, TCalculateSizeEvent && OnCalculateSize,
+    int32_t AllowedChanges, int32_t Options, TCalculateSizeEvent && OnCalculateSize,
     TCalculateChecksumEvent && OnCalculateChecksum);
 
+#if defined(__BORLANDC__)
+typedef bool (__closure * TDirectoryExistsEvent)(void * Session, const UnicodeString & Directory);
+#endif // defined(__BORLANDC__)
 using TDirectoryExistsEvent = nb::FastDelegate4<bool,
   void * /*Session*/, const UnicodeString & /*Directory*/>;
 bool DoRemoteMoveDialog(

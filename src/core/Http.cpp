@@ -20,6 +20,7 @@ THttp::THttp() noexcept : FResponseHeaders(std::make_unique<TStringList>())
   FOnDownload = nullptr;
   FOnError = nullptr;
   FResponseLimit = -1;
+  FConnectTimeout = 0;
 #if defined(__BORLANDC__)
   FRequestHeaders = nullptr;
   FResponseHeaders = new TStringList();
@@ -77,6 +78,7 @@ void THttp::SendRequest(const char * Method, const UnicodeString & Request)
     {
       TProxyMethod ProxyMethod = GetProxyHost().IsEmpty() ? ::pmNone : pmHTTP;
       InitNeonSession(NeonSession, ProxyMethod, GetProxyHost(), GetProxyPort(), UnicodeString(), UnicodeString(), nullptr);
+      ne_set_connect_timeout(NeonSession, ConnectTimeout);
 
       if (IsTls)
       {
@@ -173,10 +175,14 @@ void THttp::Post(const UnicodeString & Request)
   SendRequest("POST", Request);
 }
 
+void THttp::Put(const UnicodeString & Request)
+{
+  SendRequest("PUT", Request);
+}
+
 UnicodeString THttp::GetResponse() const
 {
-  UTF8String UtfResponse(FResponse.c_str(), FResponse.GetLength());
-  return UnicodeString(UtfResponse);
+  return UTFToString(FResponse);
 }
 
 int32_t THttp::NeonBodyReaderImpl(const char * Buf, size_t Len)

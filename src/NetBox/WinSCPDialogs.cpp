@@ -24,6 +24,13 @@
 #include "plugin_version.hpp"
 #include "resource.h"
 
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
+
 enum TButtonResult
 {
   brCancel = -1,
@@ -3575,7 +3582,7 @@ bool TSessionDialog::Execute(TSessionData * SessionData, TSessionActionEnum & Ac
   try__finally
   {
     KexListBox->GetItems()->Clear();
-    static_assert(NB_KEX_NAME_WARN + KEX_COUNT - 1 == NB_KEX_NAME_NTRU_HYBRID, "KEX_COUNT");
+    static_assert(NB_KEX_NAME_WARN + KEX_COUNT - 1 == NB_KEX_NAME_MLKEM_NIST_HYBRID, "KEX_COUNT");
     for (int32_t Index3 = 0; Index3 < KEX_COUNT; ++Index3)
     {
       KexListBox->GetItems()->AddObject(

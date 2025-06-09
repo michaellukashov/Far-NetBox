@@ -378,6 +378,6 @@ struct buffer_sink {
 };
 void stdio_sink_init(stdio_sink *sink, FILE *fp);
 void bufchain_sink_init(bufchain_sink *sink, bufchain *ch);
-void buffer_sink_init(struct buffer_sink *sink, void *buffer, size_t len);
+void buffer_sink_init(buffer_sink *sink, void *buffer, size_t len);
 
 #endif /* PUTTY_MARSHAL_H */

@@ -160,7 +160,7 @@ protected:
   void DoListBucket(
     const UnicodeString & APrefix, TRemoteFileList * FileList, int32_t MaxKeys, const TLibS3BucketContext & BucketContext,
     TLibS3ListBucketCallbackData & Data);
-  UnicodeString GetFolderKey(const UnicodeString & AKey);
+  UnicodeString GetFolderKey(const UnicodeString & AKey) const;
   void HandleNonBucketStatus(TLibS3CallbackData & Data, bool & Retry);
   void DoReadFile(const UnicodeString & AFileName, TRemoteFile *& AFile);
   void ConfirmOverwrite(
@@ -172,10 +172,13 @@ protected:
   bool ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & Data);
   bool IsGoogleCloud() const;
   void LoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, void * Param);
-  bool DoLoadFileProperties(const UnicodeString & AFileName, const TRemoteFile * File, TS3FileProperties & Properties);
+  bool DoLoadFileProperties(
+    const UnicodeString & AFileName, const TRemoteFile * File, TS3FileProperties & Properties, bool LoadTags);
   uint16_t AclGrantToPermissions(S3AclGrant & AclGrant, const TS3FileProperties & Properties);
   bool ParsePathForPropertiesRequests(
     const UnicodeString & Path, const TRemoteFile * File, UnicodeString & BucketName, UnicodeString & Key);
+  void AssumeRole(const UnicodeString & RoleArn);
+  void SetCredentials(const UnicodeString & AccessKeyId, const UnicodeString & SecretAccessKey, const UnicodeString & SessionToken);
 
   static TS3FileSystem * GetFileSystem(void * CallbackData);
   static void LibS3SessionCallback(ne_session_s * Session, void * CallbackData);
@@ -194,6 +197,8 @@ protected:
   static int32_t LibS3MultipartCommitPutObjectDataCallback(int32_t BufferSize, char * Buffer, void * CallbackData);
   static S3Status LibS3MultipartResponsePropertiesCallback(const S3ResponseProperties * Properties, void * CallbackData);
   static S3Status LibS3GetObjectDataCallback(int32_t BufferSize, const char * Buffer, void * CallbackData);
+  static S3Status LibS3XmlDataCallback(int32_t BufferSize, const char * Buffer, void * CallbackData);
+  static int32_t LibS3XmlDataToCallback(int32_t BufferSize, char * Buffer, void * CallbackData);
 
   static constexpr const int32_t S3MinMultiPartChunkSize = 5 * 1024 * 1024;
   static constexpr const int32_t S3MaxMultiPartChunks = 10000;
@@ -204,8 +209,10 @@ private:
 UnicodeString S3LibVersion();
 UnicodeString S3LibDefaultHostName();
 UnicodeString S3LibDefaultRegion();
+bool IsAmazonS3SessionData(TSessionData * Data);
 TStrings * GetS3Profiles();
-UnicodeString S3EnvUserName(const UnicodeString & Profile, UnicodeString * Source = nullptr);
-UnicodeString S3EnvPassword(const UnicodeString & Profile, UnicodeString * Source = nullptr);
-UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * Source = nullptr);
+UnicodeString S3EnvUserName(const UnicodeString & Profile, UnicodeString * Source = nullptr, bool OnlyCached = false);
+UnicodeString S3EnvPassword(const UnicodeString & Profile, UnicodeString * Source = nullptr, bool OnlyCached = false);
+UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * Source = nullptr, bool OnlyCached = false);
+UnicodeString S3EnvRoleArn(const UnicodeString & Profile, UnicodeString * Source = nullptr, bool OnlyCached = false);
 

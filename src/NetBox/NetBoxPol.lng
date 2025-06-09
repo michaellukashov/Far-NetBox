@@ -368,6 +368,8 @@
 "RSA-based key exchange"
 "ECDH key exchange"
 "NTRU Prime / Curve25519 hybrid kex"
+"ML-KEM / Curve25519 hybrid kex"
+"ML-KEM / NIST ECDH hybrid kex"
 "**This key contains an OpenSSH certificate.**\nIt is not supposed to be added to OpenSSH authorized_keys file."
 "Matching certificate was detected in '%s' and added to the converted key file."
 "Edit trusted host certificate authority"
@@ -1264,7 +1266,7 @@
 "3.3.2"
 "http://www.openssl.org/"
 "Kod WebDAV bazuje na bibliotece Neon %s"
-"Copyright © 1999-2024 Joe Orton"
+"Copyright © 1999-2025 Joe Orton"
 "http://www.webdav.org/neon/"
 "Biblioteka eXpat %s"
 "http://www.libexpat.org/"
@@ -1273,11 +1275,11 @@
 "$$"
 
 "WinSCP"
-"6.3.6"
+"6.5.1"
 "1.6.2"
 "Bazuje na WinSCPFar: SFTP/FTP/SCP klient dla Far 1.75"
 " Wersja %s"
-"Copyright © 2000-2024 Martin Přikryl"
+"Copyright © 2000-2025 Martin Přikryl"
 
 
 "**Kontynuować połączenie do nieznanego serwera i dodać jego klucz do pamięci podręcznej?**\n\nKlucz serwera nie został znaleziony w pamięci podręcznej. Nie ma gwarancji, że serwer jest właściwym serwerem do połączenia.\n\nOdcisk klucza serwera to:\n%s\n\nJeżeli ufasz temu serwerowi, naciśnij 'Tak'. Aby połączyć bez zapisywania klucza w pamięci podręcznej, kliknij 'Nie'. Aby przerwać połączenie, naciśnij 'Anuluj'."

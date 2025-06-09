@@ -11,6 +11,15 @@
 #ifndef PUTTY_DEFS_H
 #define PUTTY_DEFS_H
 
+#ifdef WINSCP
+#define HAVE_AES_NI 1
+#define HAVE_WMEMCHR 1
+#define HAVE_CMAKE_H 0
+#define HAVE_NO_STDINT_H 0
+#define HAVE_ARM_DIT 0
+#define HAVE_STRTOUMAX 1
+#endif
+
 #ifndef WINSCP
 #ifdef NDEBUG
 /*
@@ -33,14 +42,11 @@
 #include <stdio.h>                     /* for __MINGW_PRINTF_FORMAT */
 #include <stdbool.h>
 
-#ifdef WINSCP
 #if defined(_M_ARM) || defined (_M_ARM64)
+#undef HAVE_AES_NI
 #define HAVE_AES_NI 0
 #else
-#define HAVE_AES_NI 1
 #endif
-#endif
-
 #if (!defined WINSCP) && defined _MSC_VER && _MSC_VER < 1800
 /* Work around lack of inttypes.h and strtoumax in older MSVC */
 #define PRIx32 "x"
@@ -67,6 +73,11 @@
 #define SIZEu "zu"
 #endif
 uintmax_t strtoumax(const char *nptr, char **endptr, int base);
+
+#if !HAVE_WMEMCHR
+/* Work around lack of wmemchr in older MSVC */
+wchar_t *wmemchr(const wchar_t *s, wchar_t c, size_t n);
+#endif
 
 #if defined __GNUC__ || defined __clang__
 /*
@@ -202,10 +213,13 @@ typedef struct ssh2_ciphers ssh2_ciphers;
 typedef struct dh_ctx dh_ctx;
 typedef struct ecdh_key ecdh_key;
 typedef struct ecdh_keyalg ecdh_keyalg;
+typedef struct pq_kemalg pq_kemalg;
+typedef struct pq_kem_dk pq_kem_dk;
 typedef struct NTRUKeyPair NTRUKeyPair;
 typedef struct NTRUEncodeSchedule NTRUEncodeSchedule;
 typedef struct RFC6979 RFC6979;
 typedef struct RFC6979Result RFC6979Result;
+typedef struct ShakeXOF ShakeXOF;
 
 typedef struct dlgparam dlgparam;
 typedef struct dlgcontrol dlgcontrol;
@@ -252,6 +266,7 @@ struct unicode_data;
     TYPECHECK(object == &((type *)0)->field,                            \
               ((type *)(((char *)(object)) - offsetof(type, field))))
 
+#undef NORETURN // WINSCP
 #if defined __GNUC__ || defined __clang__
 #define NORETURN __attribute__((__noreturn__))
 #elif defined _MSC_VER

@@ -13,19 +13,20 @@
 #include "CoreMain.h"
 #include "TextsCore.h"
 #include <StrUtils.hpp>
-// #include <Soap.EncdDecd.hpp>
+#if defined(__BORLANDC__)
+#include <Soap.EncdDecd.hpp>
+#endif // defined(__BORLANDC__)
 
 char sshver[50]{};
 extern const char commitid[] = "";
 const bool platform_uses_x11_unix_by_default = true;
 CRITICAL_SECTION putty_section;
-bool SaveRandomSeed;
-bool HadRandomSeed;
-char appname_[50]{};
+static bool SaveRandomSeed;
+static bool HadRandomSeed;
+static char appname_[50]{};
 const char * const appname = appname_;
 extern "C" const bool share_can_be_downstream = false;
 extern "C" const bool share_can_be_upstream = false;
-THierarchicalStorage * PuttyStorage = nullptr;
 
 extern "C"
 {
@@ -270,6 +271,13 @@ static void connection_fatal(Seat * seat, const char * message)
   SecureShell->PuttyFatalError(UnicodeString(AnsiString(message)));
 }
 
+static void nonfatal(Seat *, const char * message)
+{
+  // there's no place in our putty code, where this is called
+  DebugFail();
+  AppLog(UnicodeString(AnsiString(message)));
+}
+
 SeatPromptResult confirm_ssh_host_key(Seat * seat, const char * host, int32_t port, const char * keytype,
   char * keystr, SeatDialogText *, HelpCtx,
   void (*DebugUsedArg(callback))(void *ctx, SeatPromptResult result), void * DebugUsedArg(ctx),
@@ -325,6 +333,7 @@ const SeatDialogPromptDescriptions * prompt_descriptions(Seat *)
         /*.hk_connect_once_action =*/ "",
         /*.hk_cancel_action =*/ "",
         /*.hk_cancel_action_Participle =*/ "",
+        nullptr, nullptr,
     };
     return &descs;
 }
@@ -342,17 +351,7 @@ size_t banner(Seat * seat, const void * data, size_t len)
   return 0; // PuTTY never uses the value
 }
 
-uintmax_t strtoumax_(const char * nptr, char ** endptr, int32_t base)
-{
-  if (DebugAlwaysFalse(endptr != nullptr) ||
-      DebugAlwaysFalse(base != 10))
-  {
-    Abort();
-  }
-  return StrToInt64(UnicodeString(AnsiString(nptr)));
-}
-
-static void SSHFatalError(const char * Format, va_list Param)
+NORETURN static void SSHFatalError(const char * Format, va_list Param)
 {
   char Buf[200]{};
   vsnprintf(Buf, LENOF(Buf), Format, Param);
@@ -415,6 +414,7 @@ void platform_get_x11_auth(struct X11Display * /*display*/, Conf * /*conf*/)
   // nothing, therefore no auth.
 }
 
+#if defined(__BORLANDC__)
 // Based on PuTTY's settings.c
 char * get_remote_username(Conf * conf)
 {
@@ -430,6 +430,7 @@ char * get_remote_username(Conf * conf)
   }
   return result;
 }
+#endif // defined(__BORLANDC__)
 
 static const SeatVtable ScpSeatVtable =
   {
@@ -442,6 +443,7 @@ static const SeatVtable ScpSeatVtable =
     nullseat_notify_remote_exit,
     nullseat_notify_remote_disconnect,
     connection_fatal,
+    nonfatal,
     nullseat_update_specials_menu,
     nullseat_get_ttymode,
     nullseat_set_busy_status,
@@ -469,19 +471,36 @@ ScpSeat::ScpSeat(TSecureShell * ASecureShell)
   vt = &ScpSeatVtable;
 }
 
-#if defined(__BORLANDC__)
-static std::unique_ptr<TCriticalSection> PuttyRegistrySection(TraceInitPtr(new TCriticalSection()));
-#endif // defined(__BORLANDC__)
-static TCriticalSection PuttyRegistrySection;
+std::unique_ptr<TCriticalSection> PuttyStorageSection(std::make_unique<TCriticalSection>());
+THierarchicalStorage * PuttyStorage = nullptr;
 enum TPuttyRegistryMode { prmPass, prmRedirect, prmCollect, prmFail };
 static TPuttyRegistryMode PuttyRegistryMode = prmRedirect;
+#if defined(__BORLANDC__)
+typedef std::map<UnicodeString, uint32_t> TPuttyRegistryTypes;
+#endif // defined(__BORLANDC__)
 using TPuttyRegistryTypes = nb::map_t<UnicodeString, uint32_t>;
-TPuttyRegistryTypes PuttyRegistryTypes;
-HKEY RandSeedFileStorage = reinterpret_cast<HKEY>(1);
+static TPuttyRegistryTypes PuttyRegistryTypes;
+static HKEY RandSeedFileStorage = reinterpret_cast<HKEY>(1);
 
 int32_t reg_override_winscp()
 {
   return (PuttyRegistryMode != prmPass);
+}
+
+void putty_registry_pass(bool enable)
+{
+  if (enable)
+  {
+    PuttyStorageSection->Enter();
+    DebugAssert(PuttyRegistryMode == prmRedirect);
+    PuttyRegistryMode = prmPass;
+  }
+  else
+  {
+    DebugAssert(PuttyRegistryMode == prmPass);
+    PuttyRegistryMode = prmRedirect;
+    PuttyStorageSection->Leave();
+  }
 }
 
 HKEY open_regkey_fn_winscp(bool Create, bool Write, HKEY Key, const char * Path, ...)
@@ -495,7 +514,7 @@ HKEY open_regkey_fn_winscp(bool Create, bool Write, HKEY Key, const char * Path,
   }
   else if (PuttyRegistryMode == prmFail)
   {
-    Result = nullptr;
+    Result = reinterpret_cast<HKEY>(false);
   }
   else if (PuttyRegistryMode == prmRedirect)
   {
@@ -1181,7 +1200,7 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
     throw Exception(FMTLOAD(UNKNOWN_CHECKSUM, (Alg)));
   }
 
-  UnicodeString Result;
+  RawByteString Buf;
   ssh_hash * Hash = ssh_hash_new(HashAlg);
   try__finally
   {
@@ -1201,11 +1220,11 @@ UnicodeString CalculateFileChecksum(TStream * Stream, const UnicodeString & Alg)
   }
   __finally
   {
-    RawByteString Buf;
     Buf.SetLength(nb::ToInt32(ssh_hash_alg(Hash)->hlen));
     ssh_hash_final(Hash, nb::ToUInt8Ptr(nb::ToPtr(Buf.c_str())));
-    Result = BytesToHex(Buf);
   } end_try__finally
+
+  UnicodeString Result = BytesToHex(Buf);
 
   return Result;
 }
@@ -1349,7 +1368,7 @@ struct TCipherGroup
   int32_t CipherGroup;
   const ssh2_ciphers * Cipher;
 };
-TCipherGroup Ciphers[] =
+static TCipherGroup Ciphers[] =
   {
     { CIPHER_AES, &ssh2_aes },
     { CIPHER_CHACHA20, &ssh2_ccp },
@@ -1506,7 +1525,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
 {
   if (PuttyRegistryTypes.empty())
   {
-    TGuard Guard(PuttyRegistrySection);
+    TGuard Guard(*PuttyStorageSection.get());
     TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmCollect);
     Conf * conf = conf_new();
     try__finally
@@ -1535,7 +1554,7 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
     if (IType != PuttyRegistryTypes.end())
     {
       const UnicodeString Value = Settings->GetValueFromIndex(Index);
-      int32_t I{0};
+      int32_t I{0}; // shut up
       if (IType->second == REG_SZ)
       {
         Storage->WriteStringRaw(Name, Value);
@@ -1551,14 +1570,14 @@ void WritePuttySettings(THierarchicalStorage * Storage, const UnicodeString & AS
 
 void PuttyDefaults(Conf * conf)
 {
-  TGuard Guard(PuttyRegistrySection);
+  TGuard Guard(*PuttyStorageSection.get());
   TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmFail);
   do_defaults(nullptr, conf);
 }
 
 void SavePuttyDefaults(const UnicodeString & Name)
 {
-  TGuard Guard(PuttyRegistrySection);
+  TGuard Guard(*PuttyStorageSection.get());
   TValueRestorer<TPuttyRegistryMode> PuttyRegistryModeRestorer(PuttyRegistryMode, prmPass);
   Conf * conf = conf_new();
   try__finally

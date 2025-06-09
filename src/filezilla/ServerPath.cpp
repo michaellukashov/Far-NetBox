@@ -418,9 +418,6 @@ const bool CServerPath::operator==(const CServerPath &op) const
 
 const bool CServerPath::operator!=(const CServerPath &op) const
 {
-  if (!this)
-    return false;
-
   if (*this == op)
     return false;
   else

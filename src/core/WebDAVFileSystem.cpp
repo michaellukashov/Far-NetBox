@@ -42,7 +42,9 @@
 #include <StrUtils.hpp>
 #include "NeonIntf.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 #undef FILE_OPERATION_LOOP_TERMINAL
 #define FILE_OPERATION_LOOP_TERMINAL FTerminal
@@ -55,7 +57,6 @@ constexpr const char * DAV_PROP_NAMESPACE = "DAV:";
 constexpr const char * MODDAV_PROP_NAMESPACE = "http://apache.org/dav/props/";
 constexpr const char * PROP_CONTENT_LENGTH = "getcontentlength";
 constexpr const char * PROP_LAST_MODIFIED = "getlastmodified";
-constexpr const char * PROP_CREATIONDATE = "creationdate";
 constexpr const char * PROP_RESOURCE_TYPE = "resourcetype";
 constexpr const char * PROP_HIDDEN = "ishidden";
 constexpr const char * PROP_QUOTA_AVAILABLE = "quota-available-bytes";
@@ -90,6 +91,7 @@ static UnicodeString PathUnescape(const char * Path)
     // In such case, take the path as is and we will probably overwrite the name with "display name".
     UtfResult = Path;
   }
+  // UnicodeString Result = UnicodeString(UtfResult);
   const UnicodeString Result = StrFromNeon(UtfResult.data());
   return Result;
 }
@@ -167,12 +169,16 @@ TWebDAVFileSystem::TWebDAVFileSystem(TTerminal * ATerminal) noexcept :
   TCustomFileSystem(OBJECT_CLASS_TWebDAVFileSystem, ATerminal),
   FActive(false),
   FHasTrailingSlash(false),
-  // FSessionContext(nullptr),
   FNeonLockStore(nullptr),
-  // FNeonLockStoreSection(new TCriticalSection()),
   FUploading(false),
   FDownloading(false),
+#if defined(__BORLANDC__)
+  FNeonLockStoreSection(new TCriticalSection()),
+#endif // defined(__BORLANDC__)
   FInitialHandshake(false),
+#if defined(__BORLANDC__)
+  FSessionContext(nullptr),
+#endif // defined(__BORLANDC__)
   FIgnoreAuthenticationFailure(iafNo)
 {
 }
@@ -237,7 +243,7 @@ void TWebDAVFileSystem::Open()
   const UnicodeString EscapedPath = StrFromNeon(PathEscape(StrToNeon(Path)).c_str());
   const UnicodeString Url = FORMAT("%s://%s:%d%s", ProtocolName, HostName, Port, EscapedPath);
 
-  FTerminal->Information(LoadStr(STATUS_CONNECT), true);
+  FTerminal->Information(LoadStr(STATUS_CONNECT));
   FActive = false;
   try
   {
@@ -342,6 +348,10 @@ void TWebDAVFileSystem::InitSession(TSessionContext * SessionContext, ne_session
 
   ne_set_read_timeout(Session, nb::ToInt32(Data->GetTimeout()));
 
+  // The ne_set_connect_timeout was called here previously, but as neon does not support non-blocking
+  // connection on Windows, it was noop.
+  // Restore the call once ours non-blocking connection implementation proves working.
+
   ne_set_connect_timeout(Session, nb::ToInt32(Data->GetTimeout()));
 
   ne_set_session_private(Session, SESSION_CONTEXT_KEY, SessionContext);
@@ -438,9 +448,9 @@ void TWebDAVFileSystem::ExchangeCapabilities(const char * APath, UnicodeString &
   ClearNeonError();
 
   int32_t NeonStatus;
-  FAuthenticationRetry = false;
   do
   {
+    FAuthenticationRetry = false;
     NeonStatus = ne_options2(FSessionContext->NeonSession, APath, &FCapabilities);
   }
   while ((NeonStatus == NE_AUTH) && FAuthenticationRetry);
@@ -682,6 +692,7 @@ bool TWebDAVFileSystem::IsCapable(int32_t Capability) const
     case fcTransferOut:
     case fcTransferIn:
     case fcParallelFileTransfers:
+    case fcTags:
       return false;
 
     case fcLocking:
@@ -853,9 +864,14 @@ int32_t TWebDAVFileSystem::ReadDirectoryInternal(
   return Result;
 }
 
+bool TWebDAVFileSystem::IsRedirect(int32_t NeonStatus) const
+{
+  return (NeonStatus == NE_REDIRECT);
+}
+
 bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APath) const
 {
-  bool Result = (NeonStatus == NE_REDIRECT);
+  bool Result = IsRedirect(NeonStatus);
   if (Result)
   {
     // What PathToNeon does
@@ -1023,8 +1039,6 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     AFile->SetSize(StrToInt64Def(ContentLength, 0));
   }
   const char * LastModified = GetNeonProp(Results, PROP_LAST_MODIFIED);
-  const char * CreationDate = GetNeonProp(Results, PROP_CREATIONDATE);
-  const char * Modified = LastModified ? LastModified : CreationDate;
   // We've seen a server (t=24891) that does not set "getlastmodified" for the "this" folder entry.
   AFile->ModificationFmt = mfNone; // fallback
   if (LastModified != nullptr)
@@ -1141,12 +1155,14 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
       Owner2 = StrFromNeon(Lock->owner).Trim();
     }
     UnicodeString LockRights;
+#if 0
     if (IsWin8())
     {
       // The "lock" character is supported since Windows 8
-      // LockRights = L"\uD83D\uDD12" + Owner2;
+      LockRights = UnicodeString(U"\U0001F512") + Owner;
     }
     else
+#endif
     {
       LockRights = LoadStr(LOCKED);
       if (!Owner2.IsEmpty())
@@ -1194,9 +1210,10 @@ void TWebDAVFileSystem::CustomReadFile(const UnicodeString & AFileName,
   CheckStatus(NeonStatus);
 }
 
-void TWebDAVFileSystem::DeleteFile(const UnicodeString & /*AFileName*/,
+void TWebDAVFileSystem::DeleteFile(const UnicodeString & AFileName,
   const TRemoteFile * AFile, int32_t /*Params*/, TRmSessionAction & Action)
 {
+  DebugUsedParam(AFileName);
   Action.Recursive();
   ClearNeonError();
   TOperationVisualizer Visualizer(FTerminal->UseBusyCursor);
@@ -1263,18 +1280,21 @@ void TWebDAVFileSystem::CreateDirectory(const UnicodeString & ADirName, bool /*E
   CheckStatus(ne_mkcol(FSessionContext->NeonSession, PathToNeon(ADirName)));
 }
 
-void TWebDAVFileSystem::CreateLink(const UnicodeString & /*AFileName*/,
-  const UnicodeString & /*PointTo*/, bool /*Symbolic*/)
+void TWebDAVFileSystem::CreateLink(const UnicodeString & AFileName,
+  const UnicodeString & PointTo, bool /*Symbolic*/)
 {
   DebugFail();
+  DebugUsedParam(AFileName);
+  DebugUsedParam(PointTo);
   // ThrowNotImplemented(1014);
 }
 
-void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & /*AFileName*/,
+void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
   const TRemoteFile * /*AFile*/, const TRemoteProperties * /*Properties*/,
   TChmodSessionAction & /*Action*/)
 {
   DebugFail();
+  DebugUsedParam(AFileName);
   // ThrowNotImplemented(1006);
 }
 
@@ -1340,16 +1360,19 @@ void TWebDAVFileSystem::ConfirmOverwrite(
   }
 }
 
-void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & /*AFileName*/,
-  const TRemoteFile * /*AFile*/, const UnicodeString & /*Command*/, int32_t /*Params*/, TCaptureOutputEvent && /*OutputEvent*/)
+void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
+  const TRemoteFile * /*AFile*/, const UnicodeString & ACommand, int32_t /*Params*/, TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
+  DebugUsedParam(AFileName);
+  DebugUsedParam(ACommand);
 }
 
-void TWebDAVFileSystem::AnyCommand(const UnicodeString & /*Command*/,
+void TWebDAVFileSystem::AnyCommand(const UnicodeString & ACommand,
   TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
+  DebugUsedParam(ACommand);
 }
 
 TStrings * TWebDAVFileSystem::GetFixedPaths() const
@@ -1599,6 +1622,7 @@ void TWebDAVFileSystem::NeonPreSend(
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(SessionContext->FileSystem);
 
   SessionContext->AuthorizationProtocol = "";
+  // UnicodeString HeaderBuf(UnicodeString(AnsiString(Header->data, Header->used)));
   const UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, nb::ToInt32(Header->used)).data()));
   const UnicodeString AuthorizationHeaderName("Authorization:");
   int32_t P = HeaderBuf.Pos(AuthorizationHeaderName);
@@ -1765,7 +1789,7 @@ int32_t TWebDAVFileSystem::NeonBodyAccepter(void * UserData, ne_request * Reques
 
     if (!Line.IsEmpty())
     {
-      FileSystem->FTerminal->Information(Line, true);
+      FileSystem->FTerminal->Information(Line);
     }
 
     UnicodeString RemoteSystem;
@@ -1909,8 +1933,8 @@ void TWebDAVFileSystem::Sink(
 
       ClearNeonError();
       int32_t NeonStatus = ne_get(FSessionContext->NeonSession, PathToNeon(AFileName), FD);
-      UnicodeString DiscardPath = AFileName;
-      if (IsValidRedirect(NeonStatus, DiscardPath))
+      // Contrary to other actions, for "GET" we support any redirect
+      if (IsRedirect(NeonStatus))
       {
         const UnicodeString CorrectedUrl = GetRedirectUrl();
         UTF8String CorrectedFileName, Query;

@@ -6,9 +6,11 @@
 
 #include "FileSystems.h"
 #include "RemoteFiles.h"
-#include "CopyParam.h"
+//#include "CopyParam.h"
 
-// #pragma package(smart_init)
+#if defined(__BORLANDC__)
+#pragma package(smart_init)
+#endif // defined(__BORLANDC__)
 
 TCustomFileSystem::TCustomFileSystem(TObjectClassId Kind, TTerminal * ATerminal) noexcept : TObject(Kind),
   FTerminal(ATerminal)
@@ -27,11 +29,24 @@ TCustomFileSystem::~TCustomFileSystem() noexcept
 UnicodeString TCustomFileSystem::GetHomeDirectory()
 {
   NotImplemented();
-  return EmptyStr;
+  UNREACHABLE_AFTER_NORETURN(return EmptyStr);
 }
 
 UnicodeString TCustomFileSystem::CalculateFilesChecksumInitialize(const UnicodeString & DebugUsedArg(Alg))
 {
   NotImplemented();
-  return EmptyStr;
+  UNREACHABLE_AFTER_NORETURN(return EmptyStr);
+}
+
+void TCustomFileSystem::TransferOnDirectory(
+  const UnicodeString & ADirectory, const TCopyParamType *, int32_t AParams)
+{
+  DebugUsedParam(ADirectory);
+  DebugUsedParam(AParams);
+}
+
+void TCustomFileSystem::DirectorySunk(
+  const UnicodeString & DestFullName, const TRemoteFile *, const TCopyParamType *)
+{
+  DebugUsedParam(DestFullName);
 }

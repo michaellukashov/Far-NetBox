@@ -4,6 +4,23 @@
 #include <stddef.h>                    /* for wchar_t */
 #include <limits.h>                    /* for INT_MAX */
 
+/*
+ * Declared before including platform.h, because that will refer to it
+ *
+ * An enum for different types of file that a GUI file requester might
+ * focus on. (Our requesters never _insist_ on a particular file type
+ * or extension - there's always an escape hatch to select any file
+ * you want - but the default can be configured.)
+ */
+typedef enum {
+    FILTER_ALL_FILES, /* no particular focus */
+    FILTER_KEY_FILES, /* .ppk */
+    FILTER_DYNLIB_FILES, /* whatever the host platform uses as shared libs */
+    FILTER_SOUND_FILES, /* whatever kind of sound file we can use as bell */
+} FilereqFilter;
+
+struct callback_set;
+
 #include "defs.h"
 #include "platform.h"
 #include "network.h"
@@ -388,6 +405,8 @@ enum {
     KEX_RSA,
     KEX_ECDH,
     KEX_NTRU_HYBRID,
+    KEX_MLKEM_25519_HYBRID,
+    KEX_MLKEM_NIST_HYBRID,
     KEX_MAX
 };
 
@@ -1789,7 +1808,7 @@ static inline void win_unthrottle(TermWin *win, size_t size)
 /*
  * Global functions not specific to a connection instance.
  */
-void nonfatal(const char *, ...) PRINTF_LIKE(1, 2);
+NORETURN void nonfatal(const char *, ...) PRINTF_LIKE(1, 2); // WINSCP
 NORETURN void modalfatalbox(const char *, ...) PRINTF_LIKE(1, 2);
 NORETURN void cleanup_exit(int);
 
@@ -1883,10 +1902,10 @@ struct ConfKeyInfo {
     bool not_saved : 1;
 
     const char *save_keyword;
-    const struct ConfSaveEnumType *storage_enum;
+    const ConfSaveEnumType *storage_enum;
 };
 struct ConfSaveEnumType {
-    const struct ConfSaveEnumValue *values;
+    const ConfSaveEnumValue *values;
     size_t nvalues;
 };
 struct ConfSaveEnumValue {
@@ -1894,17 +1913,17 @@ struct ConfSaveEnumValue {
     bool obsolete;
 };
 
-extern const struct ConfKeyInfo conf_key_info[];
-bool conf_enum_map_to_storage(const struct ConfSaveEnumType *etype,
+extern const ConfKeyInfo conf_key_info[];
+bool conf_enum_map_to_storage(const ConfSaveEnumType *etype,
                               int confval, int *storageval_out);
-bool conf_enum_map_from_storage(const struct ConfSaveEnumType *etype,
+bool conf_enum_map_from_storage(const ConfSaveEnumType *etype,
                                 int storageval, int *confval_out);
 
 /* Functions handling configuration structures. */
-struct Conf *conf_new(void);                  /* create an empty configuration */
-void conf_free(struct Conf *conf);
-void conf_clear(struct Conf *conf);    /* likely only useful for test programs */
-struct Conf *conf_copy(struct Conf *oldconf);
+Conf *conf_new(void);                  /* create an empty configuration */
+void conf_free(Conf *conf);
+void conf_clear(Conf *conf);    /* likely only useful for test programs */
+Conf *conf_copy(Conf *oldconf);
 void conf_copy_into(Conf *dest, Conf *src);
 /* Mandatory accessor functions: enforce by assertion that keys exist. */
 bool conf_get_bool(Conf *conf, int key);
@@ -2241,7 +2260,7 @@ void ldisc_configure(Ldisc *, Conf *);
 void ldisc_free(Ldisc *);
 void ldisc_send(Ldisc *, const void *buf, int len, bool interactive);
 void ldisc_echoedit_update(Ldisc *);
-void ldisc_provide_userpass_le(Ldisc *, struct TermLineEditor *);
+void ldisc_provide_userpass_le(Ldisc *, TermLineEditor *);
 void ldisc_check_sendok(Ldisc *);
 
 /*
@@ -2418,7 +2437,7 @@ void printer_finish_job(printer_job *);
 struct cmdline_get_passwd_input_state { bool tried; };
 #define CMDLINE_GET_PASSWD_INPUT_STATE_INIT { .tried = false }
 extern const cmdline_get_passwd_input_state cmdline_get_passwd_input_state_new;
-int cmdline_process_param(struct CmdlineArg *, struct CmdlineArg *, int, struct Conf *);
+int cmdline_process_param(CmdlineArg *, CmdlineArg *, int, Conf *);
 void cmdline_run_saved(Conf *);
 void cmdline_cleanup(void);
 SeatPromptResult cmdline_get_passwd_input(
@@ -2440,19 +2459,19 @@ struct CmdlineArgList {
      * can be invented to add to the array after that, in which case
      * they'll be freed with the rest of the CmdlineArgList, but
      * aren't logically part of the original command line. */
-    struct CmdlineArg **args;
+    CmdlineArg **args;
     size_t nargs, argssize;
 };
 struct CmdlineArg {
-    struct CmdlineArgList *list;
+    CmdlineArgList *list;
 };
-const char *cmdline_arg_to_utf8(struct CmdlineArg *arg); /* may fail */
-const char *cmdline_arg_to_str(struct CmdlineArg *arg);  /* must not fail */
-Filename *cmdline_arg_to_filename(struct CmdlineArg *arg);  /* caller must free */
-void cmdline_arg_wipe(struct CmdlineArg *arg);
-struct CmdlineArg *cmdline_arg_from_str(struct CmdlineArgList *list, const char *string);
+const char *cmdline_arg_to_utf8(CmdlineArg *arg); /* may fail */
+const char *cmdline_arg_to_str(CmdlineArg *arg);  /* must not fail */
+Filename *cmdline_arg_to_filename(CmdlineArg *arg);  /* caller must free */
+void cmdline_arg_wipe(CmdlineArg *arg);
+CmdlineArg *cmdline_arg_from_str(CmdlineArgList *list, const char *string);
 /* Platforms provide their own constructors for CmdlineArgList */
-void cmdline_arg_list_free(struct CmdlineArgList *list);
+void cmdline_arg_list_free(CmdlineArgList *list);
 
 /*
  * Here we have a flags word provided by each tool, which describes
@@ -2501,6 +2520,8 @@ void conf_filesel_handler(dlgcontrol *ctrl, dlgparam *dlg,
 void conf_fontsel_handler(dlgcontrol *ctrl, dlgparam *dlg,
                           void *data, int event);
 
+// to avoid "[bcc32c Warning] anonymous types declared in an anonymous union are an extension"
+#ifndef WINSCP
 struct conf_editbox_handler_type {
     /* Structure passed as context2 to conf_editbox_handler */
     enum { EDIT_STR, EDIT_INT, EDIT_FIXEDPOINT } type;
@@ -2535,6 +2556,7 @@ extern const struct conf_editbox_handler_type conf_editbox_str;
 extern const struct conf_editbox_handler_type conf_editbox_int;
 #define ED_STR CP(&conf_editbox_str)
 #define ED_INT CP(&conf_editbox_int)
+#endif
 
 void setup_config_box(struct controlbox *b, bool midsession,
                       int protocol, int protcfginfo);

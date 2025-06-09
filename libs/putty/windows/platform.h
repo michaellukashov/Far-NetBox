@@ -76,6 +76,7 @@ struct Filename {
 };
 void ptrace(const char* msg);
 Filename *filename_from_wstr(const wchar_t *str);
+const wchar_t *filename_to_wstr(const Filename *fn);
 FILE *f_open(const Filename *filename, const char *mode, bool isprivate);
 
 #ifndef SUPERSEDE_FONTSPEC_FOR_TESTING
@@ -135,12 +136,10 @@ struct FontSpec *fontspec_new(
 #define LONG_PTR LONG
 #endif
 
-#ifndef WINSCP
 #if !HAVE_STRTOUMAX
 /* Work around lack of strtoumax in older MSVC libraries */
 static inline uintmax_t strtoumax(const char *nptr, char **endptr, int base)
 { return _strtoui64(nptr, endptr, base); }
-#endif
 #endif
 
 typedef INT_PTR (*ShinyDlgProc)(HWND hwnd, UINT msg, WPARAM wParam,
@@ -314,27 +313,6 @@ void write_aclip(HWND hwnd, int clipboard, char *, int);
 #define sk_getxdmdata(socket, lenp) (NULL)
 
 /*
- * File-selector filter strings used in the config box. On Windows,
- * these strings are of exactly the type needed to go in
- * `lpstrFilter' in an OPENFILENAME structure.
- */
-typedef const wchar_t *FILESELECT_FILTER_TYPE;
-#define FILTER_KEY_FILES (L"PuTTY Private Key Files (*.ppk)\0*.ppk\0" \
-                          L"All Files (*.*)\0*\0\0\0")
-#define FILTER_WAVE_FILES (L"Wave Files (*.wav)\0*.WAV\0"       \
-                           L"All Files (*.*)\0*\0\0\0")
-#define FILTER_DYNLIB_FILES (L"Dynamic Library Files (*.dll)\0*.dll\0" \
-                             L"All Files (*.*)\0*\0\0\0")
-
-/* char-based versions of the above, for outlying uses of file selectors. */
-#define FILTER_KEY_FILES_C ("PuTTY Private Key Files (*.ppk)\0*.ppk\0" \
-                            "All Files (*.*)\0*\0\0\0")
-#define FILTER_WAVE_FILES_C ("Wave Files (*.wav)\0*.WAV\0" \
-                             "All Files (*.*)\0*\0\0\0")
-#define FILTER_DYNLIB_FILES_C ("Dynamic Library Files (*.dll)\0*.dll\0" \
-                               "All Files (*.*)\0*\0\0\0")
-
-/*
  * Exports from network.c.
  */
 /* Report an event notification from WSA*Select */
@@ -434,12 +412,23 @@ void init_common_controls(void);       /* also does some DLL-loading */
 /*
  * Exports from utils.
  */
-typedef struct filereq_tag filereq; /* cwd for file requester */
-bool request_file(filereq *state, OPENFILENAME *of, bool preserve, bool save);
-bool request_file_w(filereq *state, OPENFILENAMEW *of,
-                    bool preserve, bool save);
-filereq *filereq_new(void);
-void filereq_free(filereq *state);
+typedef struct filereq_saved_dir filereq_saved_dir;
+filereq_saved_dir *filereq_saved_dir_new(void);
+void filereq_saved_dir_free(filereq_saved_dir *state);
+#ifndef WINSCP
+Filename *request_file(
+    HWND hwnd, const char *title, Filename *initial, bool save,
+    filereq_saved_dir *dir, bool preserve_cwd, FilereqFilter filter);
+struct request_multi_file_return {
+    Filename **filenames;
+    size_t nfilenames;
+};
+#endif
+struct request_multi_file_return *request_multi_file(
+    HWND hwnd, const char *title, Filename *initial, bool save,
+    filereq_saved_dir *dir, bool preserve_cwd, FilereqFilter filter);
+void request_multi_file_free(struct request_multi_file_return *);
+
 void pgp_fingerprints_msgbox(HWND owner);
 int message_box(HWND owner, LPCTSTR text, LPCTSTR caption, DWORD style,
                 bool utf8, DWORD helpctxid);

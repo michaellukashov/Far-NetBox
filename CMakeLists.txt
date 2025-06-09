@@ -1389,6 +1389,8 @@ add_library(putty STATIC
   libs/putty/crypto/sha512-common.c
   libs/putty/crypto/sha512-select.c
   libs/putty/crypto/sha512-sw.c
+  libs/putty/crypto/kex-hybrid.c
+  libs/putty/crypto/mlkem.c
   libs/putty/errsock.c
   libs/putty/import.c
   libs/putty/logging.c
@@ -1455,6 +1457,7 @@ add_library(putty STATIC
   libs/putty/stubs/null-seat.c
   libs/putty/stubs/null-cipher.c
   libs/putty/stubs/null-key.c
+  libs/putty/stubs/null-socket.c
   libs/putty/utils/nullstrcmp.c
   libs/putty/utils/out_of_memory.c
   libs/putty/utils/parse_blocksize.c
@@ -1477,6 +1480,16 @@ add_library(putty STATIC
   libs/putty/utils/write_c_string_literal.c
   libs/putty/utils/conf_dest.c
   libs/putty/utils/base64_valid.c
+  libs/putty/utils/decode_utf8.c
+  libs/putty/utils/decode_utf8_to_wchar.c
+  libs/putty/utils/decode_utf8_to_wide_string.c
+  libs/putty/utils/dup_wc_to_mb.c
+  libs/putty/utils/dupwcs.c
+  libs/putty/utils/encode_utf8.c
+  libs/putty/utils/encode_wide_string_as_utf8.c
+  libs/putty/utils/logeventf.c
+  libs/putty/utils/conf_data.c
+  libs/putty/utils/burnwcs.c
   libs/putty/windows/agent-client.c
   libs/putty/windows/gss.c
   libs/putty/windows/handle-io.c
@@ -1502,8 +1515,9 @@ add_library(putty STATIC
   libs/putty/windows/utils/open_for_write_would_lose_data.c
   libs/putty/windows/utils/security_p.c
   libs/putty/windows/utils/win_strerror.c
+  # libs/putty/windows/utils/dll_hijacking_protection.c
 #  libs/putty/ldisc.c
-  libs/putty/crypto/aesgcm-common.c
+#  libs/putty/crypto/aesgcm-common.c
   libs/putty/crypto/aesgcm-footer.h
   libs/putty/crypto/aesgcm-ref-poly.c
   libs/putty/crypto/aesgcm-select.c
@@ -1516,8 +1530,8 @@ add_library(putty STATIC
   libs/putty/utils/cert-expr.c
   libs/putty/utils/host_ca_new_free.c
   libs/putty/utils/key_components.c
-  libs/putty/utils/percent_decode.c
-  libs/putty/utils/percent_encode.c
+#  libs/putty/utils/percent_decode.c
+#  libs/putty/utils/percent_encode.c
   libs/putty/utils/seat_dialog_text.c
   libs/putty/windows/utils/registry.c
 )

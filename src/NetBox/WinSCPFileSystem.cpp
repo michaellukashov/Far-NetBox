@@ -2653,7 +2653,7 @@ int32_t TWinSCPFileSystem::GetFilesRemote(TObjectList * PanelItems, bool Move,
         FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation);
         // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly)
       QueueAddItem(new TDownloadQueueItem(FTerminal, FFileList.get(),
-          DestPath, &CopyParam, Params, false, false));
+          DestPath, &CopyParam, Params, false));
       Confirmed = false;
     }
   }
@@ -2778,7 +2778,7 @@ int32_t TWinSCPFileSystem::UploadFiles(bool Move, OPERATION_MODES OpMode, bool E
         FLAGMASK(CopyParam.GetQueueNoConfirmation(), cpNoConfirmation);
         // | FLAGMASK(CopyParam.GetNewerOnly(), cpNewerOnly);
       QueueAddItem(new TUploadQueueItem(FTerminal, FFileList.get(),
-          DestPath, &CopyParam, Params, false, false));
+          DestPath, &CopyParam, Params, false));
       Confirmed = false;
     }
   }
@@ -3197,7 +3197,7 @@ void TWinSCPFileSystem::LogAuthentication(
 }
 
 void TWinSCPFileSystem::TerminalInformation(
-  TTerminal * Terminal, const UnicodeString & AStr, bool /*Status*/, int32_t Phase, const UnicodeString & /*Additional*/)
+  TTerminal * Terminal, const UnicodeString & AStr, int32_t Phase, const UnicodeString & /*Additional*/)
 {
   if (Phase != 0)
   {
@@ -3502,7 +3502,7 @@ void TWinSCPFileSystem::OperationProgress(
 }
 
 void TWinSCPFileSystem::OperationFinished(TFileOperation Operation,
-  TOperationSide Side, bool /*Temp*/, const UnicodeString & AFileName, bool Success,
+  TOperationSide Side, bool /*Temp*/, const UnicodeString & AFileName, bool Success, bool /*NotCancelled*/,
   TOnceDoneOperation & /*DisconnectWhenComplete*/)
 {
   DebugUsedParam(Side);

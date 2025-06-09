@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string_view>
 #include <Classes.hpp>
 
 #include <CopyParam.h>
@@ -29,13 +28,13 @@ public:
 private:
   gsl::owner<TStringList *> FBookmarkLists;
   UnicodeString FSharedKey;
-  static constexpr const std::string_view Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
+  static constexpr const char * Keys[] = {"Local", "Remote", "ShortCuts", "Options"};
 
 public:
-  TBookmarkList * GetBookmarks(const UnicodeString & AIndex);
+  TBookmarkList * GetBookmarks(const UnicodeString & AIndex) const;
   void SetBookmarks(const UnicodeString & AIndex, const TBookmarkList * Value);
   TBookmarkList * GetSharedBookmarks();
-  void SetSharedBookmarks(TBookmarkList * Value);
+  void SetSharedBookmarks(const TBookmarkList * Value);
 
 private:
   void LoadLevel(THierarchicalStorage * Storage, const UnicodeString & Key,
@@ -43,6 +42,7 @@ private:
 };
 
 class TBookmark;
+
 class NB_CORE_EXPORT TBookmarkList final : public TPersistent
 {
   friend class TBookmarks;

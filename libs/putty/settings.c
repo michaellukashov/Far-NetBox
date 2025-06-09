@@ -30,6 +30,8 @@ static const struct keyvalwhere ciphernames[] = {
  * in sync with those. */
 static const struct keyvalwhere kexnames[] = {
     { "ntru-curve25519",    KEX_NTRU_HYBRID, -1, +1 },
+    { "mlkem-curve25519",   KEX_MLKEM_25519_HYBRID, KEX_NTRU_HYBRID, +1 },
+    { "mlkem-nist",         KEX_MLKEM_NIST_HYBRID, KEX_MLKEM_25519_HYBRID, +1 },
     { "ecdh",               KEX_ECDH,       -1, +1 },
     /* This name is misleading: it covers both SHA-256 and SHA-1 variants */
     { "dh-gex-sha1",        KEX_DHGEX,      -1, -1 },
@@ -110,7 +112,6 @@ const struct BackendVtable *backend_vt_from_proto(int proto)
     return NULL;
 }
 
-#if defined(__BORLANDC__)
 char *get_remote_username(Conf *conf)
 {
     /* We don't worry about whether the username is stored as UTF-8,
@@ -125,7 +126,6 @@ char *get_remote_username(Conf *conf)
         return NULL;
     }
 }
-#endif // defined(__BORLANDC__)
 
 static char *gpps_raw(settings_r *sesskey, const char *name, const char *def)
 {
@@ -172,7 +172,7 @@ static void gppfile(settings_r *sesskey, const char *name,
 static bool gppb_raw(settings_r *sesskey, const char *name, bool def)
 {
     def = platform_default_b(name, def);
-    return sesskey ? read_setting_i(sesskey, name, def) != 0 : def;
+    return read_setting_i(sesskey, name, def) != 0;
 }
 
 static void gppb(settings_r *sesskey, const char *name, bool def,

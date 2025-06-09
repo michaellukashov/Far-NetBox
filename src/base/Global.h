@@ -22,6 +22,7 @@
 #include <System.SyncObjs.hpp>
 
 UnicodeString NormalizeString(const UnicodeString & S);
+UnicodeString DenormalizeString(const UnicodeString & S);
 
 class NB_CORE_EXPORT TGuard
 {
@@ -48,6 +49,18 @@ public:
 private:
   TCriticalSection & FCriticalSection;
 };
+
+#if defined(__clang__) | defined(_MSC_VER)
+#define CLANG_INITIALIZE(V) = (V)
+#define NORETURN [[noreturn]]
+#define UNREACHABLE_AFTER_NORETURN(STATEMENT)
+#define EXCEPT noexcept(false)
+#else
+#define CLANG_INITIALIZE(V)
+#define NORETURN
+#define UNREACHABLE_AFTER_NORETURN(STATEMENT) STATEMENT
+#define EXCEPT
+#endif
 
 #ifdef __cplusplus
 extern "C" {

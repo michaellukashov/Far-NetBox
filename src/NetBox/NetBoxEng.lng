@@ -368,6 +368,8 @@
 "RSA-based key exchange"
 "ECDH key exchange"
 "NTRU Prime / Curve25519 hybrid kex"
+"ML-KEM / Curve25519 hybrid kex"
+"ML-KEM / NIST ECDH hybrid kex"
 "**This key contains an OpenSSH certificate.**\nIt is not supposed to be added to OpenSSH authorized_keys file."
 "Matching certificate was detected in '%s' and added to the converted key file."
 "Edit trusted host certificate authority"
@@ -1264,7 +1266,7 @@
 "3.3.2"
 "http://www.openssl.org/"
 "WebDAV code based on neon library %s"
-"Copyright © 1999-2024 Joe Orton"
+"Copyright © 1999-2025 Joe Orton"
 "http://www.webdav.org/neon/"
 "eXpat library %s"
 "http://www.libexpat.org/"
@@ -1273,11 +1275,11 @@
 "$$"
 
 "WinSCP"
-"6.3.6"
+"6.5.1"
 "1.6.2"
 "Based on WinSCPFar: SFTP/FTP/SCP client for Far 1.75"
 " Version %s"
-"Copyright © 2000-2024 Martin Přikryl"
+"Copyright © 2000-2025 Martin Přikryl"
 
 
 "**Continue connecting to an unknown server and \nadd its host key to a cache?**\n\nThe server's host key was not found in the cache. You have no guarantee that the server is the computer you think it is.\n\nThe server's %s key details are:\n\n%s\n\nIf you trust this host, press Yes. To connect without adding host key to the cache, press No. To abandon the connection press Cancel."

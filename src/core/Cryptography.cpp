@@ -547,8 +547,8 @@ static uint8_t SScrambleTable[256] =
   206, 222, 188, 152, 210, 243,  96,  41,  86, 180, 101, 177, 166, 141, 212, 116
 };
 
-uint8_t * ScrambleTable{nullptr};
-uint8_t * UnscrambleTable{nullptr};
+static uint8_t * ScrambleTable{nullptr};
+static uint8_t * UnscrambleTable{nullptr};
 
 RawByteString ScramblePassword(const UnicodeString & Password)
 {
@@ -628,7 +628,7 @@ bool UnscramblePassword(const RawByteString & Scrambled, UnicodeString & Passwor
   return Result;
 }
 
-UnicodeString OpensslInitializationErrors;
+static UnicodeString OpensslInitializationErrors;
 
 static bool InitOpenssl()
 {
@@ -759,11 +759,16 @@ TEncryption::TEncryption(const RawByteString & AKey) noexcept
   }
 }
 
+TEncryption::~TEncryption()
+{
+}
+
 void TEncryption::Finalize()
 {
   if (FContext != nullptr)
   {
     aes_free_context(FContext);
+    FContext = nullptr;
   }
   Shred(FKey);
   if ((FInputHeader.Length() > 0) && (FInputHeader.Length() < GetOverhead()))
@@ -820,7 +825,7 @@ void TEncryption::Aes(TFileBuffer & Buffer, bool Last)
     FOverflowBuffer.SetLength(0);
   }
 
-  int64_t Size{0};
+  int64_t Size{0}; // shut up
   if (Last)
   {
     Size = Buffer.Size;

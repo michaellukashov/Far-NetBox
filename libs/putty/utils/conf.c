@@ -201,7 +201,7 @@ static void free_entry(struct conf_entry *entry)
     sfree(entry);
 }
 
-struct Conf *conf_new(void)
+Conf *conf_new(void)
 {
     Conf *conf = snew(struct conf_tag);
 
@@ -210,7 +210,7 @@ struct Conf *conf_new(void)
     return conf;
 }
 
-void conf_clear(struct Conf *conf)
+void conf_clear(Conf *conf)
 {
     struct conf_entry *entry;
 
@@ -218,7 +218,7 @@ void conf_clear(struct Conf *conf)
         free_entry(entry);
 }
 
-void conf_free(struct Conf *conf)
+void conf_free(Conf *conf)
 {
     conf_clear(conf);
     freetree234(conf->tree);
@@ -252,7 +252,7 @@ void conf_copy_into(Conf *newconf, Conf *oldconf)
     }
 }
 
-struct Conf *conf_copy(struct Conf *oldconf)
+Conf *conf_copy(Conf *oldconf)
 {
     Conf *newconf = conf_new();
 

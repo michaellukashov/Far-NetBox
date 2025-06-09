@@ -39,6 +39,8 @@ const UnicodeString ScpCommanderRemotePanelDirViewParamsDefault = ScpExplorerDir
 const UnicodeString ScpCommanderLocalPanelDirViewParamsDefault =
   L"0;1;0|150,1;70,1;120,1;150,1;55,0;55,0;@" + SaveDefaultPixelsPerInch() + L"|5;0;1;2;3;4";
 UnicodeString QueueViewLayoutDefault;
+UnicodeString ScpCommanderWindowParamsDefault;
+UnicodeString ScpExplorerWindowParamsDefault;
 
 static const wchar_t FileColorDataSeparator = L':';
 TFileColorData::TFileColorData() :
@@ -133,6 +135,9 @@ void TEditorData::ExternalEditorOptionsAutodetect()
     // A notable exception is Windows Notepad before Windows 10 1809, so here's an exception for it.
     ExternalEditorText = !IsWin10Build(17763);
 
+    // While on Windows 11, the notepad.exe open the MDI Store Windows Notepad,
+    // the notepad.exe process runs as long as the Windows Notepad tab is opened,
+    // so technically the notepad.exe is stil SDI
     SDIExternalEditor = true;
   }
 }
@@ -705,7 +710,11 @@ void TWinConfiguration::Default()
 
   int32_t ExplorerWidth = Min(WorkAreaWidthScaled - 40, 960);
   int32_t ExplorerHeight = Min(WorkAreaHeightScaled - 30, 720);
-  FScpExplorer.WindowParams = FormatDefaultWindowParams(ExplorerWidth, ExplorerHeight);
+  if (ScpExplorerWindowParamsDefault.IsEmpty())
+  {
+    ScpExplorerWindowParamsDefault = FormatDefaultWindowParams(ExplorerWidth, ExplorerHeight);
+  }
+  FScpExplorer.WindowParams = ScpExplorerWindowParamsDefault;
 
   FScpExplorer.DirViewParams = ScpExplorerDirViewParamsDefault;
   FScpExplorer.ToolbarsLayout =
@@ -734,7 +743,11 @@ void TWinConfiguration::Default()
 
   int32_t CommanderWidth = Min(WorkAreaWidthScaled - 40, 1090);
   int32_t CommanderHeight = Min(WorkAreaHeightScaled - 30, 700);
-  FScpCommander.WindowParams = FormatDefaultWindowParams(CommanderWidth, CommanderHeight);
+  if (ScpCommanderWindowParamsDefault.IsEmpty())
+  {
+    ScpCommanderWindowParamsDefault = FormatDefaultWindowParams(CommanderWidth, CommanderHeight);
+  }
+  FScpCommander.WindowParams = ScpCommanderWindowParamsDefault;
 
   FScpCommander.LocalPanelWidth = 0.5;
   FScpCommander.SwappedPanels = false;

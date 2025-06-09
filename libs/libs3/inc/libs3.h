@@ -34,7 +34,9 @@
 #define LIBS3_H
 
 #include <stdint.h>
-#ifdef WINSCP
+#ifndef WINSCP
+#include <sys/select.h>
+#else
 #ifndef _WINSOCKAPI_
 #define _WINSOCKAPI_
 #endif
@@ -42,8 +44,6 @@
 #include <WS2tcpip.h>
 
 #include <nbglobals.h>
-#else
-#include <sys/select.h>
 #endif
 
 #ifdef WINSCP

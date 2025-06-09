@@ -5,7 +5,9 @@
 #if defined(FARPLUGIN)
 #include "Configuration.h"
 #include "SessionData.h"
-// #include <typeinfo>
+#if defined(__BORLANDC__)
+#include <typeinfo>
+#endif // defined(__BORLANDC__)
 #endif // FARPLUGIN
 #define HELP_NONE ""
 #define SCRIPT_SWITCH "script"
@@ -97,6 +99,8 @@ const int32_t qpAllowContinueOnError = 0x04;
 const int32_t qpIgnoreAbort =          0x08;
 const int32_t qpWaitInBatch =          0x10;
 
+typedef void (__closure *TButtonSubmitEvent)(TObject * Sender, uint32_t & Answer);
+
 #endif // defined(__BORLANDC__)
 
 using TButtonSubmitEvent = nb::FastDelegate2<void,
@@ -122,9 +126,14 @@ struct NB_CORE_EXPORT TQueryButtonAlias final : public TObject
   static TQueryButtonAlias CreateIgnoreAsRenameGroupedWithNo();
 };
 
+#if defined(__BORLANDC__)
+typedef void (__closure *TQueryParamsTimerEvent)(uint32_t & Result);
+#endif // defined(__BORLANDC__)
 using TQueryParamsTimerEvent = nb::FastDelegate1<void,
   uint32_t & /*Result*/>;
-// enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
+#if defined(__BORLANDC__)
+enum TQueryType { qtConfirmation, qtWarning, qtError, qtInformation };
+#endif // defined(__BORLANDC__)
 
 struct NB_CORE_EXPORT TQueryParams : public TObject
 {
@@ -175,6 +184,13 @@ void AnswerNameAndCaption(uint32_t Answer, UnicodeString & Name, UnicodeString &
 class TTerminal;
 class TRemoteFile;
 
+#if defined(__BORLANDC__)
+typedef void (__closure *TFileFoundEvent)
+  (TTerminal * Terminal, const UnicodeString FileName, const TRemoteFile * File,
+   bool & Cancel);
+typedef void (__closure *TFindingFileEvent)
+  (TTerminal * Terminal, const UnicodeString Directory, bool & Cancel);
+#endif // defined(__BORLANDC__)
 using TFileFoundEvent = nb::FastDelegate4<void,
   TTerminal * /*Terminal*/, const UnicodeString & /*FileName*/, const TRemoteFile * /*File*/,
   bool & /*Cancel*/>;

@@ -257,7 +257,7 @@ void TConfiguration::Default()
   SetCollectUsage(FDefaultCollectUsage);
   FMimeTypes = UnicodeString();
   FCertificateStorage = EmptyStr;
-  FAWSMetadataService = EmptyStr;
+  FAWSAPI = EmptyStr;
   FChecksumCommands = EmptyStr;
   FDontReloadMoreThanSessions = 1000;
   FScriptProgressFileNameLimit = 25;
@@ -450,7 +450,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
     KEY(Bool,     CollectUsage); \
     KEY3(Integer,  SessionReopenAutoMaximumNumberOfRetries); \
     KEY5(String,   CertificateStorage); \
-    KEY5(String,   AWSMetadataService); \
+    KEY5(String,   AWSAPI); \
   ); \
   BLOCK("Logging", CANCREATE, \
     KEYEX(Bool,  PermanentLogging, Logging); \
@@ -2181,9 +2181,9 @@ UnicodeString TConfiguration::GetCertificateStorageExpanded() const
   return Result;
 }
 
-void TConfiguration::SetAWSMetadataService(const UnicodeString & Value)
+void TConfiguration::SetAWSAPI(const UnicodeString & Value)
 {
-  SET_CONFIG_PROPERTY2(AWSMetadataService);
+  SET_CONFIG_PROPERTY2(AWSAPI);
 }
 
 void TConfiguration::SetTryFtpWhenSshFails(bool Value)

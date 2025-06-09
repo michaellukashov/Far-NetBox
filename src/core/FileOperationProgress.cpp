@@ -5,7 +5,6 @@
 #include <Common.h>
 
 #include "FileOperationProgress.h"
-#include "CoreMain.h"
 #include "Interface.h"
 
 constexpr const int64_t TRANSFER_BUF_SIZE = 32 * 1024;
@@ -101,8 +100,8 @@ void TFileOperationProgressType::Init()
 void TFileOperationProgressType::Assign(const TFileOperationProgressType & Other)
 {
 #if defined(__BORLANDC__)
-  TValueRestorer<TCriticalSection *> SectionRestorer(FSection);
-  TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(FUserSelectionsSection);
+  const TValueRestorer<TCriticalSection *> SectionRestorer(&FSection);
+  const TValueRestorer<TCriticalSection *> UserSelectionsSectionRestorer(&FUserSelectionsSection);
 #endif // defined(__BORLANDC__)
   const TGuard Guard(FSection);
   const TGuard OtherGuard(Other.FSection);
@@ -351,8 +350,8 @@ void TFileOperationProgressType::Finish(const UnicodeString & AFileName,
   DebugAssert(FInProgress);
 
   // Cancel reader is guarded
-  FOnFinished(FOperation, Side(), FTemp, AFileName,
-    Success && (FCancel == csContinue), OnceDoneOperation);
+  const bool NotCancelled = (Cancel == csContinue);
+  FOnFinished(FOperation, Side(), FTemp, AFileName, Success, NotCancelled, OnceDoneOperation);
   FFilesFinished++;
   if (Success)
   {

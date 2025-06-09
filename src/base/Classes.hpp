@@ -851,7 +851,6 @@ public:
   virtual int64_t Write(const void * Buffer, int64_t Count) override;
 private:
   gsl::owner<THandleStream *> FSource{nullptr};
-  bool FOwned{false};
 };
 
 class NB_CORE_EXPORT EReadError : public std::runtime_error
