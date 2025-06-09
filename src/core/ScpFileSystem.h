@@ -94,7 +94,7 @@ public:
   void Init(void * /*TSecureShell * */) override;
   void FileTransferProgress(int64_t /*TransferSize*/, int64_t /*Bytes*/) override {}
 protected:
-  __property TStrings * Output = { read = FOutput.get() };
+  __property TStrings * Output = { read = FOutput };
   const ROProperty<TStrings *> Output{nb::bind(&TSCPFileSystem::GetOutput, this)};
   __property int32_t ReturnCode = { read = FReturnCode };
   const ROProperty2<int32_t> ReturnCode{&FReturnCode};

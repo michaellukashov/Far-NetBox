@@ -267,9 +267,11 @@ void CoreInitialize()
 
   // we do not expect configuration re-creation
   DebugAssert(GetConfiguration() != nullptr);
+#if defined(__BORLANDC__)
   // configuration needs to be created and loaded before putty is initialized,
   // so that random seed path is known
-//  Configuration = CreateConfiguration();
+  Configuration = CreateConfiguration();
+#endif // defined(__BORLANDC__)
 
   PuttyInitialize();
   TFileZillaIntf::Initialize();
@@ -282,7 +284,9 @@ void CoreFinalize()
 {
   try
   {
-    // GetConfiguration()->Save();
+#if defined(__BORLANDC__)
+    Configuration->Save();
+#endif // defined(__BORLANDC__)
   }
   catch(Exception & E)
   {
@@ -297,9 +301,9 @@ void CoreFinalize()
   DeleteConfiguration();
 #if defined(__BORLANDC__)
   delete StoredSessions;
-  StoredSessions = NULL;
+  StoredSessions = nullptr;
   delete Configuration;
-  Configuration = NULL;
+  Configuration = nullptr;
 #endif // defined(__BORLANDC__)
 
   CryptographyFinalize();

@@ -418,7 +418,9 @@ void TCopyParamType::DoGetInfoStr(
     {
       if (ADD(StripHotkey(LoadStr(COPY_PARAM_NEWER_ONLY)), cpaIncludeMaskOnly | cpaNoNewerOnly))
       {
-//        ScriptArgs += RtfSwitch(NEWERONLY_SWITCH, Link);
+#if defined(__BORLANDC__)
+        ScriptArgs += RtfSwitch(NEWERONLY_SWITCH, Link);
+#endif // defined(__BORLANDC__)
         CodeNonDefaults.NewerOnly = NewerOnly;
       }
     }
@@ -506,11 +508,11 @@ void TCopyParamType::DoGetInfoStr(
 
 #if defined(__BORLANDC__)
   std::unique_ptr<TStringList> RawOptions;
-  // std::unique_ptr<TOptionsStorage> OptionsStorage;
+  std::unique_ptr<TOptionsStorage> OptionsStorage;
 
   RawOptions = std::make_unique<TStringList>();
-  // OptionsStorage = std::make_unique<TOptionsStorage>(RawOptions.get(), true);
-  // ScriptNonDefaults.Save(OptionsStorage.get(), &Defaults);
+  OptionsStorage = std::make_unique<TOptionsStorage>(RawOptions.get(), true);
+  ScriptNonDefaults.Save(OptionsStorage.get(), &Defaults);
 
   if (RawOptions->Count > 0)
   {
