@@ -27,6 +27,7 @@
 #pragma package(smart_init)
 
 #define MAX_BUFSIZE 32768
+
 #endif // defined(__BORLANDC__)
 
 constexpr const int32_t MAX_BUFSIZE = 32 * 1024;

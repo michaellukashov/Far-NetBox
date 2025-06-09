@@ -153,6 +153,7 @@ void * CreateFileInfo(const UnicodeString & AFileName)
 {
   DWORD Handle;
   void * Result = nullptr;
+
   // Get file version info block size
   const uint32_t Size = GetFileVersionInfoSizeFix(AFileName.c_str(), &Handle);
   // If size is valid
