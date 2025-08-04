@@ -1155,9 +1155,14 @@ UnicodeString EncodeStrToBase64(const RawByteString & Str)
 RawByteString DecodeBase64ToStr(const UnicodeString & Str)
 {
   TBytes Bytes = DecodeBase64(Str);
-  // This might be the same as TEncoding::ASCII->GetString.
-  // const_cast: The operator[] const is (badly?) implemented to return by value
-  return RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), nb::ToInt32(Bytes.size()));
+  RawByteString Result;
+  if (Bytes.size() > 0)
+  {
+    // This might be the same as TEncoding::ASCII->GetString.
+    // const_cast: The operator[] const is (badly?) implemented to return by value
+    Result = RawByteString(reinterpret_cast<const char *>(&const_cast<TBytes &>(Bytes)[0]), Bytes.size());
+  }
+  return Result;
 }
 
 UnicodeString Base64ToUrlSafe(const UnicodeString & S)

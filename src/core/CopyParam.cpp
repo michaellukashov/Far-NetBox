@@ -11,7 +11,7 @@
 
 #if defined(__BORLANDC__)
 const wchar_t * TransferModeNames[] = { L"binary", L"ascii", L"automatic" };
-const int TransferModeNamesCount = LENOF(TransferModeNames);
+const int32_t TransferModeNamesCount = LENOF(TransferModeNames);
 #endif // defined(__BORLANDC__)
 
 TCopyParamType::TCopyParamType(TObjectClassId Kind) noexcept : TObject(Kind)
