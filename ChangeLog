@@ -1,9 +1,10 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
-## [25.5.1.609] - 2025-05-10
+## [25.8.1.609] - 2025-08-05
 
- * Upgrade WinSCP sources: WinSCP 6.5.1
+ * Upgrade WinSCP sources: WinSCP 6.5.3
+ * Upgrade openssl sources: openssl 3.3.4
 
 ## [24.12.2.608] - 2024-12-20
 
