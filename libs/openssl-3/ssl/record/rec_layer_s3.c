@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2025 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -547,6 +547,10 @@ int ossl_tls_handle_rlayer_return(SSL_CONNECTION *s, int writing, int ret,
     return ret;
 }
 
+/*
+ * Release data from a record.
+ * If length == 0 then we will release the entire record.
+ */
 int ssl_release_record(SSL_CONNECTION *s, TLS_RECORD *rr, size_t length)
 {
     assert(rr->length >= length);
@@ -568,6 +572,7 @@ int ssl_release_record(SSL_CONNECTION *s, TLS_RECORD *rr, size_t length)
         /* We allocated the buffers for this record (only happens with DTLS) */
         OPENSSL_free(rr->allocdata);
         rr->allocdata = NULL;
+        s->rlayer.curr_rec++;
     }
     rr->length -= length;
     if (rr->length > 0)
@@ -916,10 +921,10 @@ int ssl3_read_bytes(SSL *ssl, uint8_t type, uint8_t *recvd_type,
             /*
              * This is a warning but we receive it if we requested
              * renegotiation and the peer denied it. Terminate with a fatal
-             * alert because if application tried to renegotiate it
+             * alert because if the application tried to renegotiate it
              * presumably had a good reason and expects it to succeed. In
-             * future we might have a renegotiation where we don't care if
-             * the peer refused it where we carry on.
+             * the future we might have a renegotiation where we don't care
+             * if the peer refused it where we carry on.
              */
             SSLfatal(s, SSL_AD_HANDSHAKE_FAILURE, SSL_R_NO_RENEGOTIATION);
             return -1;
@@ -1128,7 +1133,7 @@ static void rlayer_msg_callback_wrapper(int write_p, int version,
                                         size_t len, void *cbarg)
 {
     SSL_CONNECTION *s = cbarg;
-    SSL *ssl = SSL_CONNECTION_GET_SSL(s);
+    SSL *ssl = SSL_CONNECTION_GET_USER_SSL(s);
 
     if (s->msg_callback != NULL)
         s->msg_callback(write_p, version, content_type, buf, len, ssl,
@@ -1148,7 +1153,7 @@ static OSSL_FUNC_rlayer_padding_fn rlayer_padding_wrapper;
 static size_t rlayer_padding_wrapper(void *cbarg, int type, size_t len)
 {
     SSL_CONNECTION *s = cbarg;
-    SSL *ssl = SSL_CONNECTION_GET_SSL(s);
+    SSL *ssl = SSL_CONNECTION_GET_USER_SSL(s);
 
     return s->rlayer.record_padding_cb(ssl, type, len,
                                        s->rlayer.record_padding_arg);

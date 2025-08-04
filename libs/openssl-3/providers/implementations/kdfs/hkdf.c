@@ -1,5 +1,5 @@
 /*
- * Copyright 2016-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2016-2025 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -263,13 +263,11 @@ static int hkdf_common_set_ctx_params(KDF_HKDF *ctx, const OSSL_PARAM params[])
     }
 
     if ((p = OSSL_PARAM_locate_const(params, OSSL_KDF_PARAM_SALT)) != NULL) {
-        if (p->data_size != 0 && p->data != NULL) {
-            OPENSSL_free(ctx->salt);
-            ctx->salt = NULL;
-            if (!OSSL_PARAM_get_octet_string(p, (void **)&ctx->salt, 0,
-                                             &ctx->salt_len))
-                return 0;
-        }
+        OPENSSL_free(ctx->salt);
+        ctx->salt = NULL;
+        if (!OSSL_PARAM_get_octet_string(p, (void **)&ctx->salt, 0,
+                                         &ctx->salt_len))
+            return 0;
     }
 
     return 1;
@@ -646,7 +644,7 @@ static int prov_tls13_hkdf_generate_secret(OSSL_LIB_CTX *libctx,
         EVP_MD_CTX_free(mctx);
 
         /* Generate the pre-extract secret */
-        if (!prov_tls13_hkdf_expand(md, prevsecret, mdlen,
+        if (!prov_tls13_hkdf_expand(md, prevsecret, prevsecretlen,
                                     prefix, prefixlen, label, labellen,
                                     hash, mdlen, preextractsec, mdlen))
             return 0;

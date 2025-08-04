@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2005-2025 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -15,9 +15,6 @@
 #include "statem_local.h"
 #include "internal/cryptlib.h"
 #include <openssl/buffer.h>
-#include <openssl/objects.h>
-#include <openssl/evp.h>
-#include <openssl/x509.h>
 
 #define RSMBLY_BITMASK_SIZE(msg_len) (((msg_len) + 7) / 8)
 
@@ -112,6 +109,8 @@ int dtls1_do_write(SSL_CONNECTION *s, uint8_t type)
     int retry = 1;
     size_t len, frag_off, overhead, used_len;
     SSL *ssl = SSL_CONNECTION_GET_SSL(s);
+    SSL *ussl = SSL_CONNECTION_GET_USER_SSL(s);
+    uint8_t saved_payload[DTLS1_HM_HEADER_LENGTH];
 
     if (!dtls1_query_mtu(s))
         return -1;
@@ -214,6 +213,15 @@ int dtls1_do_write(SSL_CONNECTION *s, uint8_t type)
             }
             dtls1_fix_message_header(s, frag_off, len - DTLS1_HM_HEADER_LENGTH);
 
+            /*
+             * Save the data that will be overwritten by
+             * dtls1_write_messsage_header so no corruption occurs when using
+             * a msg callback.
+             */
+            if (s->msg_callback && s->init_off != 0)
+                memcpy(saved_payload, &s->init_buf->data[s->init_off],
+                       sizeof(saved_payload));
+
             dtls1_write_message_header(s,
                                        (unsigned char *)&s->init_buf->
                                        data[s->init_off]);
@@ -221,6 +229,11 @@ int dtls1_do_write(SSL_CONNECTION *s, uint8_t type)
 
         ret = dtls1_write_bytes(s, type, &s->init_buf->data[s->init_off], len,
                                 &written);
+
+        if (type == SSL3_RT_HANDSHAKE && s->msg_callback && s->init_off != 0)
+            memcpy(&s->init_buf->data[s->init_off], saved_payload,
+                   sizeof(saved_payload));
+
         if (ret <= 0) {
             /*
              * might need to update MTU here, but we don't know which
@@ -293,7 +306,7 @@ int dtls1_do_write(SSL_CONNECTION *s, uint8_t type)
             if (written == s->init_num) {
                 if (s->msg_callback)
                     s->msg_callback(1, s->version, type, s->init_buf->data,
-                                    (size_t)(s->init_off + s->init_num), ssl,
+                                    s->init_off + s->init_num, ussl,
                                     s->msg_callback_arg);
 
                 s->init_off = 0; /* done writing this message */
@@ -346,7 +359,7 @@ int dtls_get_message(SSL_CONNECTION *s, int *mt)
     if (*mt == SSL3_MT_CHANGE_CIPHER_SPEC) {
         if (s->msg_callback) {
             s->msg_callback(0, s->version, SSL3_RT_CHANGE_CIPHER_SPEC,
-                            p, 1, SSL_CONNECTION_GET_SSL(s),
+                            p, 1, SSL_CONNECTION_GET_USER_SSL(s),
                             s->msg_callback_arg);
         }
         /*
@@ -407,7 +420,7 @@ int dtls_get_message_body(SSL_CONNECTION *s, size_t *len)
     if (s->msg_callback)
         s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE,
                         s->init_buf->data, s->init_num + DTLS1_HM_HEADER_LENGTH,
-                        SSL_CONNECTION_GET_SSL(s), s->msg_callback_arg);
+                        SSL_CONNECTION_GET_USER_SSL(s), s->msg_callback_arg);
 
  end:
     *len = s->init_num;
@@ -806,6 +819,7 @@ static int dtls_get_reassembled_message(SSL_CONNECTION *s, int *errtype,
     struct hm_header_st msg_hdr;
     size_t readbytes;
     SSL *ssl = SSL_CONNECTION_GET_SSL(s);
+    SSL *ussl = SSL_CONNECTION_GET_USER_SSL(s);
     int chretran = 0;
     unsigned char *p;
 
@@ -911,7 +925,7 @@ static int dtls_get_reassembled_message(SSL_CONNECTION *s, int *errtype,
         if (p[1] == 0 && p[2] == 0 && p[3] == 0) {
             if (s->msg_callback)
                 s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE,
-                                p, DTLS1_HM_HEADER_LENGTH, ssl,
+                                p, DTLS1_HM_HEADER_LENGTH, ussl,
                                 s->msg_callback_arg);
 
             s->init_num = 0;

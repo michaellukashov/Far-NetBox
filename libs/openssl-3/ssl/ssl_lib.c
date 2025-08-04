@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2025 The OpenSSL Project Authors. All Rights Reserved.
  * Copyright (c) 2002, Oracle and/or its affiliates. All rights reserved
  * Copyright 2005 Nokia. All rights reserved.
  *
@@ -720,7 +720,8 @@ int ossl_ssl_init(SSL *ssl, SSL_CTX *ctx, const SSL_METHOD *method, int type)
     return 1;
 }
 
-SSL *ossl_ssl_connection_new_int(SSL_CTX *ctx, const SSL_METHOD *method)
+SSL *ossl_ssl_connection_new_int(SSL_CTX *ctx, SSL *user_ssl,
+                                 const SSL_METHOD *method)
 {
     SSL_CONNECTION *s;
     SSL *ssl;
@@ -730,6 +731,8 @@ SSL *ossl_ssl_connection_new_int(SSL_CTX *ctx, const SSL_METHOD *method)
         return NULL;
 
     ssl = &s->ssl;
+    s->user_ssl = (user_ssl == NULL) ? ssl : user_ssl;
+
     if (!ossl_ssl_init(ssl, ctx, method, SSL_TYPE_SSL_CONNECTION)) {
         OPENSSL_free(s);
         s = NULL;
@@ -924,7 +927,7 @@ SSL *ossl_ssl_connection_new_int(SSL_CTX *ctx, const SSL_METHOD *method)
 
 SSL *ossl_ssl_connection_new(SSL_CTX *ctx)
 {
-    return ossl_ssl_connection_new_int(ctx, ctx->method);
+    return ossl_ssl_connection_new_int(ctx, NULL, ctx->method);
 }
 
 int SSL_is_dtls(const SSL *s)
@@ -973,7 +976,7 @@ int SSL_up_ref(SSL *s)
     if (CRYPTO_UP_REF(&s->references, &i) <= 0)
         return 0;
 
-    REF_PRINT_COUNT("SSL", s);
+    REF_PRINT_COUNT("SSL", i, s);
     REF_ASSERT_ISNT(i < 2);
     return ((i > 1) ? 1 : 0);
 }
@@ -1376,7 +1379,7 @@ void SSL_free(SSL *s)
     if (s == NULL)
         return;
     CRYPTO_DOWN_REF(&s->references, &i);
-    REF_PRINT_COUNT("SSL", s);
+    REF_PRINT_COUNT("SSL", i, s);
     if (i > 0)
         return;
     REF_ASSERT_ISNT(i < 0);
@@ -3337,7 +3340,7 @@ int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str)
      */
     if (sk == NULL)
         return 0;
-    else if (cipher_list_tls12_num(sk) == 0) {
+    if (ctx->method->num_ciphers() > 0 && cipher_list_tls12_num(sk) == 0) {
         ERR_raise(ERR_LIB_SSL, SSL_R_NO_CIPHER_MATCH);
         return 0;
     }
@@ -3349,17 +3352,19 @@ int SSL_set_cipher_list(SSL *s, const char *str)
 {
     STACK_OF(SSL_CIPHER) *sk;
     SSL_CONNECTION *sc = SSL_CONNECTION_FROM_SSL(s);
+    SSL_CTX *ctx;
 
     if (sc == NULL)
         return 0;
 
-    sk = ssl_create_cipher_list(s->ctx, sc->tls13_ciphersuites,
+    ctx = s->ctx;
+    sk = ssl_create_cipher_list(ctx, sc->tls13_ciphersuites,
                                 &sc->cipher_list, &sc->cipher_list_by_id, str,
                                 sc->cert);
     /* see comment in SSL_CTX_set_cipher_list */
     if (sk == NULL)
         return 0;
-    else if (cipher_list_tls12_num(sk) == 0) {
+    if (ctx->method->num_ciphers() > 0 && cipher_list_tls12_num(sk) == 0) {
         ERR_raise(ERR_LIB_SSL, SSL_R_NO_CIPHER_MATCH);
         return 0;
     }
@@ -4128,7 +4133,7 @@ int SSL_CTX_up_ref(SSL_CTX *ctx)
     if (CRYPTO_UP_REF(&ctx->references, &i) <= 0)
         return 0;
 
-    REF_PRINT_COUNT("SSL_CTX", ctx);
+    REF_PRINT_COUNT("SSL_CTX", i, ctx);
     REF_ASSERT_ISNT(i < 2);
     return ((i > 1) ? 1 : 0);
 }
@@ -4142,7 +4147,7 @@ void SSL_CTX_free(SSL_CTX *a)
         return;
 
     CRYPTO_DOWN_REF(&a->references, &i);
-    REF_PRINT_COUNT("SSL_CTX", a);
+    REF_PRINT_COUNT("SSL_CTX", i, a);
     if (i > 0)
         return;
     REF_ASSERT_ISNT(i < 0);
@@ -4538,7 +4543,7 @@ void ssl_update_cache(SSL_CONNECTION *s, int mode)
          */
         if (s->session_ctx->new_session_cb != NULL) {
             SSL_SESSION_up_ref(s->session);
-            if (!s->session_ctx->new_session_cb(SSL_CONNECTION_GET_SSL(s),
+            if (!s->session_ctx->new_session_cb(SSL_CONNECTION_GET_USER_SSL(s),
                                                 s->session))
                 SSL_SESSION_free(s->session);
         }
@@ -4729,6 +4734,9 @@ int SSL_do_handshake(SSL *s)
     if (IS_QUIC(s))
         return ossl_quic_do_handshake(s);
 #endif
+
+    if (sc == NULL)
+        return -1;
 
     if (sc->handshake_func == NULL) {
         ERR_raise(ERR_LIB_SSL, SSL_R_CONNECTION_TYPE_NOT_SET);
@@ -6750,7 +6758,7 @@ static int nss_keylog_int(const char *prefix,
     }
     *cursor = '\0';
 
-    sctx->keylog_callback(SSL_CONNECTION_GET_SSL(sc), (const char *)out);
+    sctx->keylog_callback(SSL_CONNECTION_GET_USER_SSL(sc), (const char *)out);
     OPENSSL_clear_free(out, out_len);
     return 1;
 
@@ -6798,7 +6806,7 @@ int ssl_cache_cipherlist(SSL_CONNECTION *s, PACKET *cipher_suites, int sslv2form
     n = sslv2format ? SSLV2_CIPHER_LEN : TLS_CIPHER_LEN;
 
     if (PACKET_remaining(cipher_suites) == 0) {
-        SSLfatal(s, SSL_AD_ILLEGAL_PARAMETER, SSL_R_NO_CIPHERS_SPECIFIED);
+        SSLfatal(s, SSL_AD_DECODE_ERROR, SSL_R_NO_CIPHERS_SPECIFIED);
         return 0;
     }
 

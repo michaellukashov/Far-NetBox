@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2025 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -2288,7 +2288,8 @@ SSL_TICKET_STATUS tls_decrypt_ticket(SSL_CONNECTION *s,
         int rv = 0;
 
         if (tctx->ext.ticket_key_evp_cb != NULL)
-            rv = tctx->ext.ticket_key_evp_cb(SSL_CONNECTION_GET_SSL(s), nctick,
+            rv = tctx->ext.ticket_key_evp_cb(SSL_CONNECTION_GET_USER_SSL(s),
+                                             nctick,
                                              nctick + TLSEXT_KEYNAME_LENGTH,
                                              ctx,
                                              ssl_hmac_get0_EVP_MAC_CTX(hctx),
@@ -2296,7 +2297,7 @@ SSL_TICKET_STATUS tls_decrypt_ticket(SSL_CONNECTION *s,
 #ifndef OPENSSL_NO_DEPRECATED_3_0
         else if (tctx->ext.ticket_key_cb != NULL)
             /* if 0 is returned, write an empty ticket */
-            rv = tctx->ext.ticket_key_cb(SSL_CONNECTION_GET_SSL(s), nctick,
+            rv = tctx->ext.ticket_key_cb(SSL_CONNECTION_GET_USER_SSL(s), nctick,
                                          nctick + TLSEXT_KEYNAME_LENGTH,
                                          ctx, ssl_hmac_get0_HMAC_CTX(hctx), 0);
 #endif
@@ -2980,9 +2981,8 @@ int tls1_set_sigalgs_list(SSL_CTX *ctx, CERT *c, const char *str, int client)
     sig_cb_st sig;
     sig.sigalgcnt = 0;
 
-    if (ctx != NULL && ssl_load_sigalgs(ctx)) {
+    if (ctx != NULL)
         sig.ctx = ctx;
-    }
     if (!CONF_parse_list(str, ':', 1, sig_cb, &sig))
         return 0;
     if (sig.sigalgcnt == 0) {
