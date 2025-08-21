@@ -154,7 +154,7 @@ void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 {
   DebugAssert(IsTracing);
 
-  UnicodeString Message = nb::Format(AFormat, args);
+  const UnicodeString Message = nb::Format(AFormat, args);
   DoTrace(SourceFile, Func, Line, Message.c_str());
 }
 
