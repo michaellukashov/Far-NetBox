@@ -29,7 +29,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get version
         shell: bash
@@ -87,7 +87,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get plugin version
         shell: bash
@@ -100,7 +100,7 @@ jobs:
           echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
 
       - name: Download archives
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: FarNetBox.*
           path: FarNetBox/
