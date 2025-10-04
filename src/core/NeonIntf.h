@@ -10,7 +10,7 @@
 
 #define StrToNeon(S) UTF8String((S)).c_str()
 // Should be used with character pointer only
-#define StrFromNeon(S) UnicodeString((S), NBChTraitsCRT<char>::GetBaseTypeLength((S)), CP_UTF8)
+#define StrFromNeon(S) UnicodeString((S), S ? NBChTraitsCRT<char>::GetBaseTypeLength((S)) : 0, CP_UTF8)
 
 constexpr const char * SESSION_FS_KEY = "filesystem";
 
