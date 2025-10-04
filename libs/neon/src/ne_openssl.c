@@ -441,10 +441,6 @@ static ne_ssl_certificate *make_chain(STACK_OF(X509) *chain)
     return top;
 }
 
-#ifdef WINSCP
-void ne_fill_real_server_uri(ne_session *sess, ne_uri *uri);
-#endif
-
 /* Verifies an SSL server certificate. */
 static int check_certificate(ne_session *sess, SSL *ssl, ne_ssl_certificate *chain)
 {
@@ -593,21 +589,6 @@ ne_ssl_context *ne_ssl_context_create(int mode)
 
 void ne_ssl_context_set_flag(ne_ssl_context *ctx, int flag, int value)
 {
-    long opts = (long)SSL_CTX_get_options(ctx->ctx);
-
-    switch (flag) {
-    case NE_SSL_CTX_SSLv2:
-        if (value) { 
-            /* Enable SSLv2 support; clear the "no SSLv2" flag. */
-            opts &= ~SSL_OP_NO_SSLv2;
-        } else {
-            /* Disable it: set the flag. */
-            opts |= SSL_OP_NO_SSLv2;
-        }
-        break;
-    }
-
-    SSL_CTX_set_options(ctx->ctx, opts);
 }
 
 int ne_ssl_context_get_flag(ne_ssl_context *ctx, int flag)
