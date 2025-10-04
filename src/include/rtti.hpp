@@ -58,12 +58,7 @@ template <typename From> struct simplify_type<const From>
 //===----------------------------------------------------------------------===//
 // isa_impl
 //===----------------------------------------------------------------------===//
-/*
-template <typename To, typename From> struct isa_impl_p
-{
-  static inline bool doit(const From * Val) { return To::classof(Val); }
-};
-*/
+
 // The core of the implementation of isa<X> is here; To and From should be
 // the names of classes.  This template can be specialized to customize the
 // implementation of isa<> without rewriting it from scratch.
@@ -610,19 +605,12 @@ template <typename To, typename From>
 struct CastInfo<To, std::optional<From>> : public OptionalValueCast<To, From>
 {
 };
-/*
+
 /// isa<X> - Return true if the parameter to the template is an instance of one
 /// of the template type arguments.  Used like this:
 ///
 ///  if (isa<Type>(myVal)) { ... }
 ///  if (isa<Type0, Type1, Type2>(myVal)) { ... }
-
-template <typename To, typename From>
-[[nodiscard]] inline bool isa(const From Val)
-{
-  return isa_impl_cl<To, From>::doit(Val);
-}
-*/
 template <typename... To, typename From>
 [[nodiscard]] inline bool isa(const From& Val)
 {
@@ -961,32 +949,6 @@ inline constexpr detail::IsaAndPresentCheckPredicate<Types...>
 IsaAndPresentPred{};
 
 } // namespace nb
-
-/*
-template <class X, class Y>
-inline bool isa(const Y * Val)
-{
-  return nb::isa<X, Y>(Val);
-}
-
-template <class X, class Y>
-inline const X * dyn_cast(const Y * Val)
-{
-  return nb::dyn_cast_or_null<X>(Val);
-  // if (Val && nb::isa<X, Y>(Val))
-  //   return static_cast<const X *>(Val);
-  return nullptr;
-}
-
-template <class X, class Y>
-inline X * dyn_cast(Y * Val)
-{
-   return nb::dyn_cast_or_null<X>(Val);
-  // if (Val && nb::isa<X, Y>(Val))
-  //   return static_cast<X *>(Val);
-  return nullptr;
-}
-*/
 
 namespace nb {
 // generate unique IDs at compile-time
