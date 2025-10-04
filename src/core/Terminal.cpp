@@ -411,7 +411,7 @@ NORETURN void TCallbackGuard::FatalError(Exception * E, const UnicodeString & Ms
   // make sure we do not bother about getting back the silent abort exception
   // we issued ourselves. this may happen when there is an exception handler
   // that converts any exception to fatal one (such as in TTerminal::Open).
-  if (rtti::isa<ECallbackGuardAbort>(E))
+  if (nb::isa<ECallbackGuardAbort>(E))
   {
     SAFE_DESTROY_EX(Exception, FFatalError);
     FFatalError = new ExtException(E, Msg, HelpKeyword);
@@ -448,7 +448,7 @@ void TCallbackGuard::Verify()
 bool TCallbackGuard::Verify(Exception * E)
 {
   const bool Result =
-    (rtti::dyn_cast_or_null<ECallbackGuardAbort>(E) != nullptr);
+    (nb::dyn_cast_or_null<ECallbackGuardAbort>(E) != nullptr);
   if (Result)
   {
     DebugAssert(FGuarding);
@@ -489,7 +489,7 @@ bool TRobustOperationLoop::TryReopen(Exception & E)
   {
     FRetry = false;
   }
-  else if (rtti::dyn_cast_or_null<ESkipFile>(&E) != nullptr)
+  else if (nb::dyn_cast_or_null<ESkipFile>(&E) != nullptr)
   {
     FRetry = false;
   }
@@ -2204,7 +2204,7 @@ uint32_t TTerminal::QueryUserException(const UnicodeString & AQuery,
         MoreMessages->Add(UnformatMessage(ExMessage));
       }
 
-      const ExtException * EE = rtti::dyn_cast_or_null<ExtException>(E);
+      const ExtException * EE = nb::dyn_cast_or_null<ExtException>(E);
       if ((EE != nullptr) && (EE->GetMoreMessages() != nullptr))
       {
         MoreMessages->AddStrings(EE->GetMoreMessages());
@@ -2505,7 +2505,7 @@ NORETURN void TTerminal::TerminalError(
 
 bool TTerminal::DoQueryReopen(Exception * E)
 {
-  EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(E);
+  EFatal * Fatal = nb::dyn_cast_or_null<EFatal>(E);
   DebugAssert(Fatal != nullptr);
   bool Result = false;
   if ((Fatal != nullptr) && Fatal->GetReopenQueried())
@@ -2678,12 +2678,12 @@ void TTerminal::FileOperationLoopEnd(Exception & E,
   TFileOperationProgressType * AOperationProgress, const UnicodeString & AMessage,
   uint32_t AFlags, const UnicodeString & ASpecialRetry, const UnicodeString & AHelpKeyword)
 {
-  if (rtti::isa<EAbort>(&E) ||
-      rtti::isa<ESkipFile>(&E))
+  if (nb::isa<EAbort>(&E) ||
+      nb::isa<ESkipFile>(&E))
   {
     RethrowException(&E);
   }
-  else if (rtti::isa<EFatal>(&E))
+  else if (nb::isa<EFatal>(&E))
   {
     if (FLAGCLEAR(AFlags, folRetryOnFatal))
     {
@@ -3126,11 +3126,11 @@ uint32_t TTerminal::CommandError(Exception * E, const UnicodeString & AMsg,
   // from within OnShowExtendedException handler
   DebugAssert(FCallbackGuard == nullptr);
   uint32_t Result = 0;
-  if (E && rtti::isa<EFatal>(E))
+  if (E && nb::isa<EFatal>(E))
   {
     FatalError(E, AMsg, AHelpKeyword);
   }
-  else if (E && rtti::isa<EAbort>(E))
+  else if (E && nb::isa<EAbort>(E))
   {
     // resent EAbort exception
     Abort(E->Message);
@@ -3593,7 +3593,7 @@ void TTerminal::RollbackAction(TSessionAction & Action,
   // and we do not want to record skipped actions.
   // But ESkipFile with "cancel" is abort and we want to record that.
   // Note that TScpFileSystem modifies the logic of RollbackAction little bit.
-  if (rtti::isa<ESkipFile>(E) &&
+  if (nb::isa<ESkipFile>(E) &&
       ((AOperationProgress == nullptr) ||
        (AOperationProgress->GetCancel() == csContinue)))
   {
@@ -5728,7 +5728,7 @@ void TTerminal::DoAnyCommand(const UnicodeString & ACommand,
     {
       RollbackAction(*Action, nullptr, &E);
     }
-    if (ExceptionOnFail || (rtti::isa<EFatal>(&E))) throw;
+    if (ExceptionOnFail || (nb::isa<EFatal>(&E))) throw;
       else HandleExtendedException(&E);
   }
 }
@@ -7690,7 +7690,7 @@ void TTerminal::LogTotalTransferDetails(
       int32_t Count = 0;
       for (int32_t Index = 0; Index < AFiles->GetCount(); ++Index)
       {
-        const TCollectedFileList * FileList = rtti::dyn_cast_or_null<TCollectedFileList>(AFiles->Objects[Index]);
+        const TCollectedFileList * FileList = nb::dyn_cast_or_null<TCollectedFileList>(AFiles->Objects[Index]);
         Count += FileList->GetCount();
       }
       S += FORMAT(" - in parallel, with %d total files", Count);
@@ -7855,7 +7855,7 @@ void TTerminal::DoCopyToRemote(
     const UnicodeString FileName = AFilesToCopy->GetString(Index);
     DEBUG_PRINTF("FileName: %s", FileName);
     TSearchRecSmart * SearchRec = nullptr;
-    if (rtti::dyn_cast_or_null<TLocalFile>(AFilesToCopy->Objects[Index]) != nullptr)
+    if (nb::dyn_cast_or_null<TLocalFile>(AFilesToCopy->Objects[Index]) != nullptr)
     {
       TLocalFile * LocalFile = AFilesToCopy->GetAs<TLocalFile>(Index);
       SearchRec = &LocalFile->SearchRec;

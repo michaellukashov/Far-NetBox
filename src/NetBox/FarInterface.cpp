@@ -21,7 +21,7 @@ TConfiguration * CreateConfiguration()
 void ShowExtendedException(Exception * E)
 {
   Ensures(FarPlugin != nullptr);
-  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
+  TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(FarPlugin);
   Ensures(WinSCPPlugin != nullptr);
   WinSCPPlugin->ShowExtendedException(E);
 }

@@ -313,7 +313,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
   bool DoClose = false;
 
-  if ((GetTerminal() != nullptr) && rtti::isa<EFatal>(E))
+  if ((GetTerminal() != nullptr) && nb::isa<EFatal>(E))
   {
     const bool Reopen = GetTerminal()->QueryReopen(E, 0, nullptr);
     if (Reopen)
@@ -326,7 +326,7 @@ void TWinSCPFileSystem::HandleException(Exception * E, OPERATION_MODES OpMode)
       DoClose = true;
     }
   }
-  else if ((GetTerminal() != nullptr) && rtti::isa<EAbort>(E) && E->Message == EXCEPTION_MSG_REPLACED)
+  else if ((GetTerminal() != nullptr) && nb::isa<EAbort>(E) && E->Message == EXCEPTION_MSG_REPLACED)
   {
     DoClose = true;
   }
@@ -366,14 +366,14 @@ bool TWinSCPFileSystem::Connected() const
 
 const TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin() const
 {
-  const TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<const TWinSCPPlugin>(GetPlugin());
+  const TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<const TWinSCPPlugin>(GetPlugin());
   Ensures(WinSCPPlugin);
   return WinSCPPlugin;
 }
 
 TWinSCPPlugin * TWinSCPFileSystem::GetWinSCPPlugin()
 {
-  TWinSCPPlugin * WinSCPPlugin = rtti::dyn_cast_or_null<TWinSCPPlugin>(GetPlugin());
+  TWinSCPPlugin * WinSCPPlugin = nb::dyn_cast_or_null<TWinSCPPlugin>(GetPlugin());
   Ensures(WinSCPPlugin);
   return WinSCPPlugin;
 }
@@ -549,7 +549,7 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
     }
 
     const TWinSCPFileSystem * OppositeFileSystem =
-      rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetOppositeFileSystem());
+      nb::dyn_cast_or_null<TWinSCPFileSystem>(GetOppositeFileSystem());
     if ((OppositeFileSystem != nullptr) && !OppositeFileSystem->Connected() &&
       !OppositeFileSystem->FLoadingSessionList)
     {
@@ -3030,7 +3030,7 @@ void TWinSCPFileSystem::SaveSession()
   {
     GetSessionData()->SetRemoteDirectory(FTerminal->GetCurrentDirectory());
 
-    TSessionData * Data = rtti::dyn_cast_or_null<TSessionData>(GetStoredSessions()->FindByName(GetSessionData()->GetName()));
+    TSessionData * Data = nb::dyn_cast_or_null<TSessionData>(GetStoredSessions()->FindByName(GetSessionData()->GetName()));
     if (Data)
     {
       bool Changed = false;
@@ -3096,7 +3096,7 @@ bool TWinSCPFileSystem::Connect(TSessionData * Data)
   {
     // HandleException(&E);
     bool Reopen = false;
-    const EFatal * Fatal = rtti::dyn_cast_or_null<EFatal>(&E);
+    const EFatal * Fatal = nb::dyn_cast_or_null<EFatal>(&E);
     if ((Fatal == nullptr) || !Fatal->GetReopenQueried())
     {
       // FTerminal->ShowExtendedException(&E);

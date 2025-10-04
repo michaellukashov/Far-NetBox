@@ -836,9 +836,9 @@ UnicodeString TranslateExceptionMessage(Exception * E)
 {
   if (E)
   {
-    if (rtti::isa<Exception>(E))
+    if (nb::isa<Exception>(E))
     {
-      return rtti::dyn_cast_or_null<Exception>(E)->Message;
+      return nb::dyn_cast_or_null<Exception>(E)->Message;
     }
     return E->Message;
   }

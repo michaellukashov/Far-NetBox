@@ -332,6 +332,6 @@ TBookmarkList * TFarConfiguration::GetBookmarks(const UnicodeString & Key)
 
 TFarConfiguration * GetFarConfiguration()
 {
-  return rtti::dyn_cast_or_null<TFarConfiguration>(GetConfiguration());
+  return nb::dyn_cast_or_null<TFarConfiguration>(GetConfiguration());
 }
 

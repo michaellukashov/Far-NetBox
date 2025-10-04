@@ -270,7 +270,7 @@ constexpr const auto * EXCEPTION_MSG_REPLACED = L"[replaced]";
 template<typename From, typename To>
 inline void TryReplaceAndThrow(Exception & E)
 {
-  if (rtti::isa<From>(&E))
+  if (nb::isa<From>(&E))
   {
     throw To(EXCEPTION_MSG_REPLACED);
   }

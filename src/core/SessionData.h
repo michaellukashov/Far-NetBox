@@ -1145,8 +1145,8 @@ public:
   static bool OpenHostKeysSubKey(THierarchicalStorage * Storage, bool CanCreate);
   static void SelectKnownHostsForSelectedSessions(TStoredSessionList * KnownHosts, TStoredSessionList * Sessions);
 
-  const TSessionData * GetSession(int32_t Index) const { return rtti::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
-  TSessionData * GetSession(int32_t Index) { return rtti::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
+  const TSessionData * GetSession(int32_t Index) const { return nb::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
+  TSessionData * GetSession(int32_t Index) { return nb::dyn_cast_or_null<TSessionData>(AtObject(Index)); }
   const TSessionData * GetDefaultSettingsConst() const { return FDefaultSettings.get(); }
   TSessionData * GetDefaultSettings() { return FDefaultSettings.get(); }
   void SetDefaultSettings(const TSessionData * Value);

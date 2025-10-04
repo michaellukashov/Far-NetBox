@@ -329,7 +329,7 @@ TCustomFarFileSystem * TWinSCPPlugin::OpenPluginEx(OPENFROM OpenFrom, intptr_t I
           SessionName.Delete(1, 7);
         }
         const bool Another = !(Flags & FOSF_ACTIVE);
-        TWinSCPFileSystem * PanelSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
+        TWinSCPFileSystem * PanelSystem = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
 
         if (PanelSystem && PanelSystem->Connected() &&
           PanelSystem->GetTerminal()->GetSessionData()->GetSessionName() == SessionName)
@@ -441,8 +441,8 @@ void TWinSCPPlugin::ParseCommandLine(UnicodeString & CommandLine,
 void TWinSCPPlugin::CommandsMenu(bool FromFileSystem)
 {
   std::unique_ptr<TFarMenuItems> MenuItems(std::make_unique<TFarMenuItems>());
-  TWinSCPFileSystem * WinSCPFileSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
-  TWinSCPFileSystem * AnotherFileSystem = rtti::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem(true));
+  TWinSCPFileSystem * WinSCPFileSystem = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem());
+  TWinSCPFileSystem * AnotherFileSystem = nb::dyn_cast_or_null<TWinSCPFileSystem>(GetPanelFileSystem(true));
   const bool FSConnected = (WinSCPFileSystem != nullptr) && WinSCPFileSystem->Connected();
   const bool AnotherFSConnected = (AnotherFileSystem != nullptr) && AnotherFileSystem->Connected();
   const bool FSVisible = FSConnected && FromFileSystem;
@@ -595,12 +595,12 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 {
   if (E && !E->Message.IsEmpty())
   {
-    const TQueryType Type = rtti::isa<ETerminate>(E) ? qtInformation : qtError;
+    const TQueryType Type = nb::isa<ETerminate>(E) ? qtInformation : qtError;
 
     TStrings * MoreMessages = nullptr;
-    if (rtti::isa<ExtException>(E))
+    if (nb::isa<ExtException>(E))
     {
-      MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
+      MoreMessages = nb::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
     }
     const UnicodeString Message = TranslateExceptionMessage(E);
     MoreMessageDialog(Message, MoreMessages, Type, qaOK);
@@ -609,7 +609,7 @@ void TWinSCPPlugin::ShowExtendedException(Exception * E)
 
 void TWinSCPPlugin::HandleException(Exception * E, OPERATION_MODES OpMode)
 {
-  if (((OpMode & OPM_FIND) == 0) || rtti::isa<EFatal>(E))
+  if (((OpMode & OPM_FIND) == 0) || nb::isa<EFatal>(E))
   {
     ShowExtendedException(E);
   }

@@ -327,7 +327,7 @@ void TBookmarkList::Assign(const TPersistent * Source)
   TBookmarkList * SourceList;
   SourceList = dynamic_cast<TBookmarkList *>(Source);
 #endif // defined(__BORLANDC__)
-  const TBookmarkList * SourceList = rtti::dyn_cast_or_null<TBookmarkList>(Source);
+  const TBookmarkList * SourceList = nb::dyn_cast_or_null<TBookmarkList>(Source);
   if (SourceList)
   {
     Clear();
@@ -515,7 +515,7 @@ void TBookmark::Assign(const TPersistent * Source)
   TBookmark * SourceBookmark;
   SourceBookmark = dynamic_cast<TBookmark *>(Source);
 #endif // defined(__BORLANDC__)
-  const TBookmark * SourceBookmark = rtti::dyn_cast_or_null<TBookmark>(Source);
+  const TBookmark * SourceBookmark = nb::dyn_cast_or_null<TBookmark>(Source);
   if (SourceBookmark)
   {
     SetName(SourceBookmark->GetName());

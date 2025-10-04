@@ -2331,7 +2331,7 @@ void TWebDAVFileSystem::UnlockFile(const UnicodeString & AFileName, const TRemot
 
 void TWebDAVFileSystem::UpdateFromMain(TCustomFileSystem * AMainFileSystem)
 {
-  const TWebDAVFileSystem * MainFileSystem = rtti::dyn_cast_or_null<TWebDAVFileSystem>(AMainFileSystem);
+  const TWebDAVFileSystem * MainFileSystem = nb::dyn_cast_or_null<TWebDAVFileSystem>(AMainFileSystem);
   if (DebugAlwaysTrue(MainFileSystem != nullptr))
   {
     const TGuard Guard(FNeonLockStoreSection);

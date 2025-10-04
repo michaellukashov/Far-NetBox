@@ -594,9 +594,9 @@ void TSessionData::NonPersistent()
 
 void TSessionData::Assign(const TPersistent * Source)
 {
-  if (Source && rtti::isa<TSessionData>(Source))
+  if (Source && nb::isa<TSessionData>(Source))
   {
-    const TSessionData * SourceData = rtti::dyn_cast_or_null<TSessionData>(const_cast<TPersistent *>(Source));
+    const TSessionData * SourceData = nb::dyn_cast_or_null<TSessionData>(const_cast<TPersistent *>(Source));
     // Master password prompt shows implicitly here, when cloning the session data for a new terminal
     CopyData(SourceData);
     FSource = SourceData->FSource;
@@ -5425,7 +5425,7 @@ void TStoredSessionList::Load(THierarchicalStorage * Storage,
           }
           else
           {
-            SessionData = rtti::dyn_cast_or_null<TSessionData>(FindByName(SessionName));
+            SessionData = nb::dyn_cast_or_null<TSessionData>(FindByName(SessionName));
           }
         }
 
@@ -6057,7 +6057,7 @@ const TSessionData * TStoredSessionList::FindSame(TSessionData * Data)
   if (!(Data->GetHidden() || Data->GetName().IsEmpty())) // || Data->GetIsWorkspace())
   {
     const TNamedObject * Obj = FindByName(Data->GetName());
-    Result = rtti::dyn_cast_or_null<TSessionData>(Obj);
+    Result = nb::dyn_cast_or_null<TSessionData>(Obj);
   }
   return Result;
 }
@@ -6077,7 +6077,7 @@ int32_t TStoredSessionList::IndexOf(TSessionData * Data) const
 TSessionData * TStoredSessionList::NewSession(
   const UnicodeString & SessionName, TSessionData * Session)
 {
-  TSessionData * DuplicateSession = rtti::dyn_cast_or_null<TSessionData>(FindByName(SessionName));
+  TSessionData * DuplicateSession = nb::dyn_cast_or_null<TSessionData>(FindByName(SessionName));
   if (!DuplicateSession)
   {
     DuplicateSession = new TSessionData(L"");
@@ -6210,7 +6210,7 @@ void TStoredSessionList::SelectKnownHostsForSelectedSessions(
       {
         Key = FormatKnownHostName(Key, Session->FPortNumber);
       }
-      TSessionData * KnownHost = rtti::dyn_cast_or_null<TSessionData>(KnownHosts->FindByName(Key));
+      TSessionData * KnownHost = nb::dyn_cast_or_null<TSessionData>(KnownHosts->FindByName(Key));
       if (KnownHost != nullptr)
       {
         KnownHost->Selected = true;
@@ -6334,7 +6334,7 @@ TStrings * TStoredSessionList::GetFolderOrWorkspaceList(
   std::unique_ptr<TStringList> Result(std::make_unique<TStringList>());
   for (int32_t Index = 0; (Index < DataList->Count); Index++)
   {
-    Result->Add(rtti::dyn_cast_or_null<TSessionData>(DataList->Objects[Index])->GetSessionName());
+    Result->Add(nb::dyn_cast_or_null<TSessionData>(DataList->Objects[Index])->GetSessionName());
   }
 
   return Result.release();
@@ -6430,7 +6430,7 @@ TSessionData * TStoredSessionList::ResolveWorkspaceData(TSessionData * Data)
 {
   if (!Data->GetLink().IsEmpty())
   {
-    Data = rtti::dyn_cast_or_null<TSessionData>(FindByName(Data->GetLink()));
+    Data = nb::dyn_cast_or_null<TSessionData>(FindByName(Data->GetLink()));
     if (Data != nullptr)
     {
       Data = ResolveWorkspaceData(Data);

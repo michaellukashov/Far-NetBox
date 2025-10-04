@@ -493,7 +493,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
       if (!Result && (Msg == DN_CONTROLINPUT) &&
         (nb::ToIntPtr(Param2) == VK_RETURN) &&
         ((Param1 < 0) ||
-          !rtti::isa<TFarButton>(GetItem(nb::ToInt32(Param1)))) &&
+          !nb::isa<TFarButton>(GetItem(nb::ToInt32(Param1)))) &&
         GetDefaultButton()->GetEnabled() &&
         (GetDefaultButton()->GetOnClick()))
       {
@@ -538,7 +538,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
         Result = 1;
         if (Param1 >= 0)
         {
-          TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(Param1)));
+          TFarButton * Button = nb::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(Param1)));
           // FAR WORKAROUND
           // FAR 1.70 alpha 6 calls DN_CLOSE even for non-button dialog items
           // (list boxes in particular), while FAR 1.70 beta 5 used ID of
@@ -547,7 +547,7 @@ intptr_t TFarDialog::DialogProc(intptr_t Msg, intptr_t Param1, void * Param2)
           // flag DIF_LISTNOCLOSE.
           if (Button == nullptr)
           {
-            DebugAssert(rtti::isa<TFarListBox>(GetItem(nb::ToInt32(Param1))));
+            DebugAssert(nb::isa<TFarListBox>(GetItem(nb::ToInt32(Param1))));
             Result = nb::ToIntPtr(false);
           }
           else
@@ -776,7 +776,7 @@ int32_t TFarDialog::ShowModal()
 
     if (BResult >= 0)
     {
-      const TFarButton * Button = rtti::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
+      const TFarButton * Button = nb::dyn_cast_or_null<TFarButton>(GetItem(nb::ToInt32(BResult)));
       DebugAssert(Button);
       if (Button)
       {
@@ -2170,7 +2170,7 @@ void TFarList::Assign(const TPersistent * Source)
 {
   TStringList::Assign(Source);
 
-  const TFarList * FarList = rtti::dyn_cast_or_null<TFarList>(Source);
+  const TFarList * FarList = nb::dyn_cast_or_null<TFarList>(Source);
   if (FarList != nullptr)
   {
     for (int32_t Index = 0; Index < FarList->GetCount(); ++Index)

@@ -54,7 +54,7 @@ void TGUICopyParamType::Assign(const TCopyParamType * Source)
 {
   TCopyParamType::Assign(Source);
 
-  const TGUICopyParamType * GUISource = rtti::dyn_cast_or_null<TGUICopyParamType>(Source);
+  const TGUICopyParamType * GUISource = nb::dyn_cast_or_null<TGUICopyParamType>(Source);
   if (GUISource != nullptr)
   {
     GUIAssign(GUISource);
@@ -1490,7 +1490,7 @@ TStoredSessionList * TGUIConfiguration::SelectPuttySessionsForImport(
   }
 
   const TSessionData * PuttySessionData =
-    rtti::dyn_cast_or_null<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
+    nb::dyn_cast_or_null<TSessionData>(ImportSessionList->FindByName(GetPuttySession()));
   if (PuttySessionData != nullptr)
   {
     ImportSessionList->Remove(PuttySessionData);
@@ -1558,6 +1558,6 @@ void TGUIConfiguration::SetChecksumAlg(const UnicodeString & Value)
 
 TGUIConfiguration * GetGUIConfiguration()
 {
-  return rtti::dyn_cast_or_null<TGUIConfiguration>(GetConfiguration());
+  return nb::dyn_cast_or_null<TGUIConfiguration>(GetConfiguration());
 }
 

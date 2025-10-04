@@ -219,7 +219,7 @@ static UnicodeString GetFileListItemPath(const TStrings * Files, int32_t Index)
   UnicodeString Result;
   if (Files->Objects[Index] != nullptr)
   {
-    Result = DebugNotNull(rtti::dyn_cast_or_null<TRemoteFile>(Files->Objects[Index]))->FullFileName();
+    Result = DebugNotNull(nb::dyn_cast_or_null<TRemoteFile>(Files->Objects[Index]))->FullFileName();
   }
   else
   {
@@ -991,12 +991,12 @@ UnicodeString ExceptionLogString(Exception * E)
 {
   DebugAssert(OBJECT_CLASS_ExtException != OBJECT_CLASS_Exception);
   DebugAssert(E);
-  if (rtti::isa<Exception>(E))
+  if (nb::isa<Exception>(E))
   {
     UnicodeString Msg = E->Message; // FORMAT("%s", E->Message);
-    if (rtti::isa<ExtException>(E))
+    if (nb::isa<ExtException>(E))
     {
-      const TStrings * MoreMessages = rtti::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
+      const TStrings * MoreMessages = nb::dyn_cast_or_null<ExtException>(E)->GetMoreMessages();
       if (MoreMessages)
       {
         Msg += L"\n";

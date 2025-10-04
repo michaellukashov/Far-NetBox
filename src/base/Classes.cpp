@@ -215,7 +215,7 @@ int32_t TStrings::CompareStrings(const UnicodeString & S1, const UnicodeString &
 
 void TStrings::Assign(const TPersistent * Source)
 {
-  const TStrings * pStrings = rtti::dyn_cast_or_null<TStrings>(Source);
+  const TStrings * pStrings = nb::dyn_cast_or_null<TStrings>(Source);
   if (pStrings != nullptr)
   {
     BeginUpdate();
