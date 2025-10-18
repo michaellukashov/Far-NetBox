@@ -967,7 +967,7 @@ static ossl_inline void ssl_tsan_decr(const SSL_CTX *ctx,
                                       TSAN_QUALIFIER int *stat)
 {
     if (ssl_tsan_lock(ctx)) {
-        tsan_decr(stat);
+        tsan_decr((volatile LONG *)stat);
         ssl_tsan_unlock(ctx);
     }
 }
