@@ -5404,7 +5404,7 @@ namespace detail {
             , arg_names_(arg_names)
         {}
 
-        // Used by compilers that expand an empyt __VA_ARGS__ in
+        // Used by compilers that expand an empty __VA_ARGS__ in
         // Dispatcher{bla, #__VA_ARGS__} to Dispatcher{bla, }
         Dispatcher(
             bool is_ic_apply,
