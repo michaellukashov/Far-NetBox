@@ -154,7 +154,7 @@ void DoTraceFmt(const wchar_t * SourceFile, const wchar_t * Func,
 {
   DebugAssert(IsTracing);
 
-  UnicodeString Message = nb::Format(AFormat, args);
+  const UnicodeString Message = nb::Format(AFormat, args);
   DoTrace(SourceFile, Func, Line, Message.c_str());
 }
 
@@ -180,7 +180,7 @@ NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_
 namespace os::debug
 {
 
-void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name)
+void SetThreadName(HANDLE ThreadHandle, const UnicodeString & AName)
 {
   // from osquery\osquery\core\system.cpp
 #if defined(WIN32)
@@ -192,7 +192,7 @@ void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name)
     GetProcAddress(GetModuleHandleA("Kernel32.dll"), "SetThreadDescription"));
   if (pfnSetThreadDescription != nullptr)
   {
-    HRESULT hr = pfnSetThreadDescription(ThreadHandle, Name.c_str());
+    HRESULT hr = pfnSetThreadDescription(ThreadHandle, AName.c_str());
     if (!FAILED(hr))
     {
       // DEBUG_PRINTF("SetThreadDescription: success");

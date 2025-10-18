@@ -179,7 +179,7 @@ using TBytes = nb::vector_t<uint8_t>;
 
 namespace os::debug {
 
-void SetThreadName(HANDLE ThreadHandle, const UnicodeString & Name);
+void SetThreadName(HANDLE ThreadHandle, const UnicodeString & AName);
 UnicodeString GetThreadName(HANDLE ThreadHandle);
 
 } // namespace os::debug
