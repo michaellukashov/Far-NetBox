@@ -7490,7 +7490,7 @@ TStrings * TTerminal::GetShellChecksumAlgDefs()
       AddToList(ChecksumCommandsDef, UnicodeString(Sha256ChecksumAlg) + L"=sha256sum", Delimiter);
       AddToList(ChecksumCommandsDef, UnicodeString(Sha224ChecksumAlg) + L"=sha224sum", Delimiter);
       AddToList(ChecksumCommandsDef, UnicodeString(Sha1ChecksumAlg) + L"=sha1sum", Delimiter);
-      AddToList(ChecksumCommandsDef, UnicodeString(Md5ChecksumAlg) + L"=md5sums", Delimiter);
+      AddToList(ChecksumCommandsDef, UnicodeString(Md5ChecksumAlg) + L"=md5sum", Delimiter);
     }
 
     FShellChecksumAlgDefs.reset(CommaTextToStringList(ChecksumCommandsDef));
