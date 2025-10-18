@@ -97,21 +97,21 @@
     #endif
 #endif
 
-#if defined(__has_include) && __has_include(<ranges>)
+#if defined(__has_include) && __has_include(<ranges>) && (__cplusplus >= 201703L)
     #include <ranges>
     #if defined(__cpp_lib_ranges)
         #define ICECREAM_LIB_RANGES
     #endif
 #endif
 
-#if !defined(__APPLE__) && defined(__has_include) && __has_include(<source_location>)
+#if !defined(__APPLE__) && defined(__has_include) && __has_include(<source_location>) && (__cplusplus >= 201703L)
     #include <source_location>
     #if defined(__cpp_lib_source_location)
         #define ICECREAM_SOURCE_LOCATION
     #endif
 #endif
 
-#if defined(__has_include) && __has_include(<format>)
+#if defined(__has_include) && __has_include(<format>) && (__cplusplus >= 201703L)
     #include <format>
     #if defined(__cpp_lib_format) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 170000 && __cplusplus >= 202002L)
         // libc++ just defines the '__cpp_lib_format' macro start from version 19. However
@@ -129,7 +129,7 @@
 // The "defined()" test for FMT_VERSION macro is an attempt to check if any {fmt} header
 // was "#included" before the including of this Icecream-cpp header. If so, the {fmt}
 // support will be enabled.
-#if defined(ICECREAM_FMT) || defined(FMT_VERSION)
+#if (defined(ICECREAM_FMT) || defined(FMT_VERSION)) && (__cplusplus >= 201703L)
     // All the {fmt} headers from supoorted versions (5.0 and newer) will directly or
     // indirectly include a source file where FMT_VERSION is defined.
     #include <fmt/format.h>
