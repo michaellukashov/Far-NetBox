@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2025 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -44,7 +44,7 @@ int X509_STORE_lock(X509_STORE *xs)
     return CRYPTO_THREAD_write_lock(xs->lock);
 }
 
-static int x509_store_read_lock(X509_STORE *xs)
+int ossl_x509_store_read_lock(X509_STORE *xs)
 {
     return CRYPTO_THREAD_read_lock(xs->lock);
 }
@@ -232,7 +232,7 @@ void X509_STORE_free(X509_STORE *xs)
     if (xs == NULL)
         return;
     CRYPTO_DOWN_REF(&xs->references, &i);
-    REF_PRINT_COUNT("X509_STORE", xs);
+    REF_PRINT_COUNT("X509_STORE", i, xs);
     if (i > 0)
         return;
     REF_ASSERT_ISNT(i < 0);
@@ -260,7 +260,7 @@ int X509_STORE_up_ref(X509_STORE *xs)
     if (CRYPTO_UP_REF(&xs->references, &i) <= 0)
         return 0;
 
-    REF_PRINT_COUNT("X509_STORE", xs);
+    REF_PRINT_COUNT("X509_STORE", i, xs);
     REF_ASSERT_ISNT(i < 2);
     return i > 1 ? 1 : 0;
 }
@@ -333,7 +333,7 @@ static int ossl_x509_store_ctx_get_by_subject(const X509_STORE_CTX *ctx,
     stmp.type = X509_LU_NONE;
     stmp.data.ptr = NULL;
 
-    if (!x509_store_read_lock(store))
+    if (!ossl_x509_store_read_lock(store))
         return 0;
     /* Should already be sorted...but just in case */
     if (!sk_X509_OBJECT_is_sorted(store->objs)) {
@@ -408,7 +408,6 @@ static int x509_store_add(X509_STORE *store, void *x, int crl)
     }
 
     if (!X509_STORE_lock(store)) {
-        obj->type = X509_LU_NONE;
         X509_OBJECT_free(obj);
         return 0;
     }
@@ -604,7 +603,7 @@ STACK_OF(X509_OBJECT) *X509_STORE_get1_objects(X509_STORE *store)
         return NULL;
     }
 
-    if (!x509_store_read_lock(store))
+    if (!ossl_x509_store_read_lock(store))
         return NULL;
 
     objs = sk_X509_OBJECT_deep_copy(store->objs, x509_object_dup,

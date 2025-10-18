@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 2022-2025 The OpenSSL Project Authors. All Rights Reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
  * this file except in compliance with the License.  You can obtain a copy
@@ -143,7 +143,7 @@ int tls_setup_write_buffer(OSSL_RECORD_LAYER *rl, size_t numwpipes,
                            size_t firstlen, size_t nextlen)
 {
     unsigned char *p;
-    size_t align = 0, headerlen;
+    size_t maxalign = 0, headerlen;
     TLS_BUFFER *wb;
     size_t currpipe;
     size_t defltlen = 0;
@@ -160,10 +160,10 @@ int tls_setup_write_buffer(OSSL_RECORD_LAYER *rl, size_t numwpipes,
             contenttypelen = 1;
 
 #if defined(SSL3_ALIGN_PAYLOAD) && SSL3_ALIGN_PAYLOAD != 0
-        align = SSL3_ALIGN_PAYLOAD - 1;
+        maxalign = SSL3_ALIGN_PAYLOAD - 1;
 #endif
 
-        defltlen = align + headerlen + rl->eivlen + rl->max_frag_len
+        defltlen = maxalign + headerlen + rl->eivlen + rl->max_frag_len
                    + contenttypelen + SSL3_RT_SEND_MAX_ENCRYPTED_OVERHEAD;
 #ifndef OPENSSL_NO_COMP
         if (tls_allow_compression(rl))
@@ -175,7 +175,7 @@ int tls_setup_write_buffer(OSSL_RECORD_LAYER *rl, size_t numwpipes,
          * always be 0 in these protocol versions
          */
         if ((rl->options & SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS) == 0)
-            defltlen += headerlen + align + SSL3_RT_SEND_MAX_ENCRYPTED_OVERHEAD;
+            defltlen += headerlen + maxalign + SSL3_RT_SEND_MAX_ENCRYPTED_OVERHEAD;
     }
 
     wb = rl->wbuf;
@@ -229,7 +229,7 @@ static void tls_release_write_buffer(OSSL_RECORD_LAYER *rl)
 int tls_setup_read_buffer(OSSL_RECORD_LAYER *rl)
 {
     unsigned char *p;
-    size_t len, align = 0, headerlen;
+    size_t len, maxalign = 0, headerlen;
     TLS_BUFFER *b;
 
     b = &rl->rbuf;
@@ -240,12 +240,12 @@ int tls_setup_read_buffer(OSSL_RECORD_LAYER *rl)
         headerlen = SSL3_RT_HEADER_LENGTH;
 
 #if defined(SSL3_ALIGN_PAYLOAD) && SSL3_ALIGN_PAYLOAD != 0
-    align = (-SSL3_RT_HEADER_LENGTH) & (SSL3_ALIGN_PAYLOAD - 1);
+    maxalign = SSL3_ALIGN_PAYLOAD - 1;
 #endif
 
     if (b->buf == NULL) {
         len = rl->max_frag_len
-              + SSL3_RT_MAX_ENCRYPTED_OVERHEAD + headerlen + align;
+              + SSL3_RT_MAX_ENCRYPTED_OVERHEAD + headerlen + maxalign;
 #ifndef OPENSSL_NO_COMP
         if (tls_allow_compression(rl))
             len += SSL3_RT_MAX_COMPRESSED_OVERHEAD;
@@ -1090,9 +1090,12 @@ int tls13_common_post_process_record(OSSL_RECORD_LAYER *rl, TLS_RL_RECORD *rec)
         return 0;
     }
 
-    if (rl->msg_callback != NULL)
-        rl->msg_callback(0, rl->version, SSL3_RT_INNER_CONTENT_TYPE, &rec->type,
-                        1, rl->cbarg);
+    if (rl->msg_callback != NULL) {
+        unsigned char ctype = (unsigned char)rec->type;
+
+        rl->msg_callback(0, rl->version, SSL3_RT_INNER_CONTENT_TYPE, &ctype,
+                         1, rl->cbarg);
+    }
 
     /*
      * TLSv1.3 alert and handshake records are required to be non-zero in

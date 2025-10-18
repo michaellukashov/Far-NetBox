@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2025 The OpenSSL Project Authors. All Rights Reserved.
  * Copyright (c) 2002, Oracle and/or its affiliates. All rights reserved
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
@@ -63,6 +63,7 @@ int ssl3_do_write(SSL_CONNECTION *s, uint8_t type)
     int ret;
     size_t written = 0;
     SSL *ssl = SSL_CONNECTION_GET_SSL(s);
+    SSL *ussl = SSL_CONNECTION_GET_USER_SSL(s);
 
     /*
      * If we're running the test suite then we may need to mutate the message
@@ -112,7 +113,7 @@ int ssl3_do_write(SSL_CONNECTION *s, uint8_t type)
         s->statem.write_in_progress = 0;
         if (s->msg_callback)
             s->msg_callback(1, s->version, type, s->init_buf->data,
-                            (size_t)(s->init_off + s->init_num), ssl,
+                            (size_t)(s->init_off + s->init_num), ussl,
                             s->msg_callback_arg);
         return 1;
     }
@@ -1411,7 +1412,7 @@ WORK_STATE tls_finish_handshake(SSL_CONNECTION *s, ossl_unused WORK_STATE wst,
 {
     void (*cb) (const SSL *ssl, int type, int val) = NULL;
     int cleanuphand = s->statem.cleanuphand;
-    SSL *ssl = SSL_CONNECTION_GET_SSL(s);
+    SSL *ssl = SSL_CONNECTION_GET_USER_SSL(s);
     SSL_CTX *sctx = SSL_CONNECTION_GET_CTX(s);
 
     if (clearbufs) {
@@ -1423,7 +1424,7 @@ WORK_STATE tls_finish_handshake(SSL_CONNECTION *s, ossl_unused WORK_STATE wst,
              * MUST NOT be used.
              * Hence the init_buf can be cleared when DTLS over SCTP as transport is used.
              */
-            || BIO_dgram_is_sctp(SSL_get_wbio(ssl))
+            || BIO_dgram_is_sctp(SSL_get_wbio(SSL_CONNECTION_GET_SSL(s)))
 #endif
             ) {
             /*
@@ -1535,6 +1536,7 @@ int tls_get_message_header(SSL_CONNECTION *s, int *mt)
     unsigned char *p;
     size_t l, readbytes;
     SSL *ssl = SSL_CONNECTION_GET_SSL(s);
+    SSL *ussl = SSL_CONNECTION_GET_USER_SSL(s);
 
     p = (unsigned char *)s->init_buf->data;
 
@@ -1598,7 +1600,7 @@ int tls_get_message_header(SSL_CONNECTION *s, int *mt)
 
                     if (s->msg_callback)
                         s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE,
-                                        p, SSL3_HM_HEADER_LENGTH, ssl,
+                                        p, SSL3_HM_HEADER_LENGTH, ussl,
                                         s->msg_callback_arg);
                 }
     } while (skip_message);
@@ -1643,6 +1645,7 @@ int tls_get_message_body(SSL_CONNECTION *s, size_t *len)
     unsigned char *p;
     int i;
     SSL *ssl = SSL_CONNECTION_GET_SSL(s);
+    SSL *ussl = SSL_CONNECTION_GET_USER_SSL(s);
 
     if (s->s3.tmp.message_type == SSL3_MT_CHANGE_CIPHER_SPEC) {
         /* We've already read everything in */
@@ -1684,7 +1687,7 @@ int tls_get_message_body(SSL_CONNECTION *s, size_t *len)
         }
         if (s->msg_callback)
             s->msg_callback(0, SSL2_VERSION, 0, s->init_buf->data,
-                            (size_t)s->init_num, ssl, s->msg_callback_arg);
+                            (size_t)s->init_num, ussl, s->msg_callback_arg);
     } else {
         /*
          * We defer feeding in the HRR until later. We'll do it as part of
@@ -1712,7 +1715,7 @@ int tls_get_message_body(SSL_CONNECTION *s, size_t *len)
         }
         if (s->msg_callback)
             s->msg_callback(0, s->version, SSL3_RT_HANDSHAKE, s->init_buf->data,
-                            (size_t)s->init_num + SSL3_HM_HEADER_LENGTH, ssl,
+                            (size_t)s->init_num + SSL3_HM_HEADER_LENGTH, ussl,
                             s->msg_callback_arg);
     }
 
@@ -2361,23 +2364,24 @@ int ssl_choose_client_version(SSL_CONNECTION *s, int version,
         real_max = ver_max;
 
     /* Check for downgrades */
-    if (s->version == TLS1_2_VERSION && real_max > s->version) {
-        if (memcmp(tls12downgrade,
+    /* TODO(DTLSv1.3): Update this code for DTLSv1.3 */
+    if (!SSL_CONNECTION_IS_DTLS(s) && real_max > s->version) {
+        /* Signal applies to all versions */
+        if (memcmp(tls11downgrade,
                    s->s3.server_random + SSL3_RANDOM_SIZE
-                                        - sizeof(tls12downgrade),
-                   sizeof(tls12downgrade)) == 0) {
+                   - sizeof(tls11downgrade),
+                   sizeof(tls11downgrade)) == 0) {
             s->version = origv;
             SSLfatal(s, SSL_AD_ILLEGAL_PARAMETER,
                      SSL_R_INAPPROPRIATE_FALLBACK);
             return 0;
         }
-    } else if (!SSL_CONNECTION_IS_DTLS(s)
-               && s->version < TLS1_2_VERSION
-               && real_max > s->version) {
-        if (memcmp(tls11downgrade,
-                   s->s3.server_random + SSL3_RANDOM_SIZE
-                                        - sizeof(tls11downgrade),
-                   sizeof(tls11downgrade)) == 0) {
+        /* Only when accepting TLS1.3 */
+        if (real_max == TLS1_3_VERSION
+            && memcmp(tls12downgrade,
+                      s->s3.server_random + SSL3_RANDOM_SIZE
+                      - sizeof(tls12downgrade),
+                      sizeof(tls12downgrade)) == 0) {
             s->version = origv;
             SSLfatal(s, SSL_AD_ILLEGAL_PARAMETER,
                      SSL_R_INAPPROPRIATE_FALLBACK);
@@ -2859,7 +2863,7 @@ MSG_PROCESS_RETURN tls13_process_compressed_certificate(SSL_CONNECTION *sc,
             }
         }
         if (!found) {
-            SSLfatal(sc, SSL_AD_BAD_CERTIFICATE, SSL_R_BAD_COMPRESSION_ALGORITHM);
+            SSLfatal(sc, SSL_AD_ILLEGAL_PARAMETER, SSL_R_BAD_COMPRESSION_ALGORITHM);
             goto err;
         }
     }
@@ -2884,9 +2888,17 @@ MSG_PROCESS_RETURN tls13_process_compressed_certificate(SSL_CONNECTION *sc,
 
     if ((comp = COMP_CTX_new(method)) == NULL
         || !PACKET_get_net_3_len(pkt, &expected_length)
-        || !PACKET_get_net_3_len(pkt, &comp_length)
-        || PACKET_remaining(pkt) != comp_length
-        || !BUF_MEM_grow(buf, expected_length)
+        || !PACKET_get_net_3_len(pkt, &comp_length)) {
+        SSLfatal(sc, SSL_AD_BAD_CERTIFICATE, SSL_R_BAD_DECOMPRESSION);
+        goto err;
+    }
+
+    if (PACKET_remaining(pkt) != comp_length || comp_length == 0) {
+        SSLfatal(sc, SSL_AD_DECODE_ERROR, SSL_R_BAD_DECOMPRESSION);
+        goto err;
+    }
+
+    if (!BUF_MEM_grow(buf, expected_length)
         || !PACKET_buf_init(tmppkt, (unsigned char *)buf->data, expected_length)
         || COMP_expand_block(comp, (unsigned char *)buf->data, expected_length,
                              (unsigned char*)PACKET_data(pkt), comp_length) != (int)expected_length) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 1995-2024 The OpenSSL Project Authors. All Rights Reserved.
+ * Copyright 1995-2025 The OpenSSL Project Authors. All Rights Reserved.
  * Copyright 2005 Nokia. All rights reserved.
  *
  * Licensed under the Apache License 2.0 (the "License").  You may not use
@@ -521,7 +521,7 @@ SSL_SESSION *lookup_sess_in_cache(SSL_CONNECTION *s,
     if (ret == NULL && s->session_ctx->get_session_cb != NULL) {
         int copy = 1;
 
-        ret = s->session_ctx->get_session_cb(SSL_CONNECTION_GET_SSL(s),
+        ret = s->session_ctx->get_session_cb(SSL_CONNECTION_GET_USER_SSL(s),
                                              sess_id, sess_id_len, &copy);
 
         if (ret != NULL) {
@@ -590,6 +590,8 @@ int ssl_get_prev_session(SSL_CONNECTION *s, CLIENTHELLO_MSG *hello)
     SSL_TICKET_STATUS r;
 
     if (SSL_CONNECTION_IS_TLS13(s)) {
+        SSL_SESSION_free(s->session);
+        s->session = NULL;
         /*
          * By default we will send a new ticket. This can be overridden in the
          * ticket processing.
@@ -602,6 +604,7 @@ int ssl_get_prev_session(SSL_CONNECTION *s, CLIENTHELLO_MSG *hello)
                                         hello->pre_proc_exts, NULL, 0))
             return -1;
 
+        /* If we resumed, s->session will now be set */
         ret = s->session;
     } else {
         /* sets s->ext.ticket_expected */
@@ -843,7 +846,7 @@ void SSL_SESSION_free(SSL_SESSION *ss)
     if (ss == NULL)
         return;
     CRYPTO_DOWN_REF(&ss->references, &i);
-    REF_PRINT_COUNT("SSL_SESSION", ss);
+    REF_PRINT_COUNT("SSL_SESSION", i, ss);
     if (i > 0)
         return;
     REF_ASSERT_ISNT(i < 0);
@@ -877,7 +880,7 @@ int SSL_SESSION_up_ref(SSL_SESSION *ss)
     if (CRYPTO_UP_REF(&ss->references, &i) <= 0)
         return 0;
 
-    REF_PRINT_COUNT("SSL_SESSION", ss);
+    REF_PRINT_COUNT("SSL_SESSION", i, ss);
     REF_ASSERT_ISNT(i < 2);
     return ((i > 1) ? 1 : 0);
 }
