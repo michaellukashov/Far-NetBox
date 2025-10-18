@@ -1945,7 +1945,7 @@ void TGlobals::SetupDbgHandles(const UnicodeString & DbgFileName)
       perror("freopen stderr");*/
     dbgstream_.open(DbgFileName.c_str(), std::ios_base::out|std::ios_base::trunc);
     if (!dbgstream_.bad())
-      icecream::ic.output(dbgstream_);
+      IC_CONFIG.output(dbgstream_);
   }
 }
 
