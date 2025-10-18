@@ -1717,8 +1717,8 @@ set(ZLIB_SOURCES
   libs/zlib-ng/deflate_medium.c
   libs/zlib-ng/deflate_fast.c
   libs/zlib-ng/crc32.c
+  libs/zlib-ng/insert_string.c
   libs/zlib-ng/arch/generic/crc32_fold_c.c
-  # libs/zlib-ng/arch/generic/insert_string_c.c
   libs/zlib-ng/arch/generic/slide_hash_c.c
   libs/zlib-ng/arch/generic/chunkset_c.c
   libs/zlib-ng/arch/generic/compare256_c.c
@@ -1731,7 +1731,6 @@ if(PROJECT_PLATFORM STREQUAL "ARM64")
 set(ZLIB_SOURCES ${ZLIB_SOURCES}
   libs/zlib-ng/arch/arm/slide_hash_neon.c
   libs/zlib-ng/arch/arm/crc32_acle.c
-  libs/zlib-ng/arch/arm/insert_string_acle.c
   libs/zlib-ng/arch/arm/slide_hash_armv6.c
   libs/zlib-ng/arch/arm/chunkset_neon.c
   libs/zlib-ng/arch/arm/compare256_neon.c
@@ -1748,9 +1747,10 @@ set(ZLIB_SOURCES ${ZLIB_SOURCES}
   libs/zlib-ng/arch/x86/crc32_vpclmulqdq.c
   libs/zlib-ng/arch/x86/compare256_avx2.c
   libs/zlib-ng/arch/x86/compare256_sse2.c
-  libs/zlib-ng/arch/x86/chunkset_avx2.c
   libs/zlib-ng/arch/x86/chunkset_sse2.c
   libs/zlib-ng/arch/x86/chunkset_ssse3.c
+  libs/zlib-ng/arch/x86/chunkset_avx2.c
+  libs/zlib-ng/arch/x86/chunkset_avx512.c
   libs/zlib-ng/arch/x86/adler32_avx512_vnni.c
   libs/zlib-ng/arch/x86/adler32_sse42.c
   libs/zlib-ng/arch/x86/adler32_ssse3.c
