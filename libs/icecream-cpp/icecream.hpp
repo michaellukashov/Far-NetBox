@@ -2193,8 +2193,8 @@ namespace icecream{ namespace detail
         auto operator()(StringView str) -> void
         {
             static_assert(
-                sizeof(std::streamsize) <= sizeof(size_t),
-                "std::streamsize must not be wider than size_t"
+                sizeof(std::streamsize) <= sizeof(long long),
+                "std::streamsize must not be wider than long long"
                 "Please report a bug on https://github.com/renatoGarcia/icecream-cpp/issues"
             );
 
@@ -2206,7 +2206,7 @@ namespace icecream{ namespace detail
                 // This will handle the unlikely situation where a huge str is big
                 // enough to its size overflow when converted to a `std::streamsize`
                 auto chunk_size =
-                    (remaining > static_cast<size_t>(std::numeric_limits<std::streamsize>::max()))
+                    (remaining > static_cast<long long>(std::numeric_limits<std::streamsize>::max()))
                         ? std::numeric_limits<std::streamsize>::max()
                         : static_cast<std::streamsize>(remaining);
 
