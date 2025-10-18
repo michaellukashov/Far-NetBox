@@ -14,23 +14,30 @@
 #include <HelpCore.h>
 #include <Interface.h>
 #include <VCLCommon.h>
-// #include <Glyphs.h>
+#if defined(__BORLANDC__)
+#include <Glyphs.h>
+#endif // defined(__BORLANDC__)
 #include <PasTools.hpp>
 #include <DateUtils.hpp>
-// #include <Custom.h>
-// #include <HistoryComboBox.hpp>
+#if defined(__BORLANDC__)
+#include <Custom.h>
+#include <HistoryComboBox.hpp>
+#endif // defined(__BORLANDC__)
 
 #include "WinInterface.h"
 #include "GUITools.h"
-// #include "JclDebug.hpp"
-// #include "JclHookExcept.hpp"
+#if defined(__BORLANDC__)
+#include "JclDebug.hpp"
+#include "JclHookExcept.hpp"
+#endif // defined(__BORLANDC__)
 #include <System.IOUtils.hpp>
 #include <StrUtils.hpp>
-// #include <WinApi.h>
-#include "Tools.h"
-//#include <Vcl.AppEvnts.hpp>
-
 #if defined(__BORLANDC__)
+#include <WinApi.h>
+#endif // defined(__BORLANDC__)
+#include "Tools.h"
+#if defined(__BORLANDC__)
+#include <Vcl.AppEvnts.hpp>
 
 #pragma package(smart_init)
 
@@ -1407,7 +1414,28 @@ static void DoApplicationMinimizeRestore(bool Minimize)
     {
       if (Minimize)
       {
-        Application->Minimize();
+        // WORKAROUND:
+        // VCL enables minimized windows (why?) and restores the previous disabled state on restore.
+        // But if we meanwhile re-enable the window (like when transfer finishes while minimized),
+        // the VCL will re-disable the window on restore.
+        // (This does not help in scenario, then the main window is minimized with its own title's minimize window,
+        // but then it should not be disabled in the first place)
+        bool WasDisabled = !MainForm->Enabled;
+        if (WasDisabled)
+        {
+          MainForm->Enabled = true;
+        }
+        try
+        {
+          Application->Minimize();
+        }
+        __finally
+        {
+          if (WasDisabled)
+          {
+            MainForm->Enabled = false;
+          }
+        }
         MinimizedToTray = WinConfiguration->MinimizeToTray;
       }
       else
@@ -1470,8 +1498,8 @@ void ClickToolbarItem(TTBCustomItem * Item, bool PositionCursor)
   TTBItemViewer * Viewer = Toolbar->View->Find(Item);
   DebugAssert(Viewer != nullptr);
 
-  int X = Viewer->BoundsRect.Left + (Viewer->BoundsRect.Width() / 2);
-  int Y = Viewer->BoundsRect.Top + (Viewer->BoundsRect.Height() / 2);
+  int32_t X = Viewer->BoundsRect.Left + (Viewer->BoundsRect.Width() / 2);
+  int32_t Y = Viewer->BoundsRect.Top + (Viewer->BoundsRect.Height() / 2);
 
   if (PositionCursor)
   {
@@ -1500,7 +1528,7 @@ void CheckConfigurationForceSave()
       (Configuration->Storage == stIniFile) && base::FileExists(ApiPath(Configuration->IniFileStorageName)) &&
       !Configuration->ForceSave)
   {
-    int Attr = GetFileAttributes(ApiPath(Configuration->IniFileStorageName).c_str());
+    int32_t Attr = GetFileAttributes(ApiPath(Configuration->IniFileStorageName).c_str());
     if (FLAGSET(Attr, FILE_ATTRIBUTE_READONLY))
     {
       UnicodeString Message = FMTLOAD(READONLY_INI_FILE_OVERWRITE, Configuration->IniFileStorageName);
@@ -1601,8 +1629,9 @@ void WinInitialize()
   OnApiPath = ApiPath;
 #endif // defined(__BORLANDC__)
   MainThread = GetCurrentThreadId();
-  // Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
-
+#if defined(__BORLANDC__)
+  Application->OnGetMainFormHandle = MakeMethod<TGetHandleEvent>(nullptr, AppGetMainFormHandle);
+#endif // defined(__BORLANDC__)
 }
 
 void WinFinalize()
