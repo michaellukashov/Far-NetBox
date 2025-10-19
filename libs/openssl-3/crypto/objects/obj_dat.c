@@ -227,7 +227,7 @@ void ossl_obj_cleanup_int(void)
  */
 static int obj_new_nid_unlocked(int num)
 {
-    static TSAN_QUALIFIER int new_nid = NUM_NID;
+    static TSAN_QUALIFIER LONG new_nid = NUM_NID;
 #ifdef TSAN_REQUIRES_LOCKING
     int i;
 
@@ -236,7 +236,7 @@ static int obj_new_nid_unlocked(int num)
 
     return i;
 #else
-    return tsan_add(&new_nid, num);
+    return tsan_add((volatile LONG *)&new_nid, num);
 #endif
 }
 
