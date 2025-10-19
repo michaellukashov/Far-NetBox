@@ -1,19 +1,29 @@
-From 3a3ec1d1fb117586c6b524c87de252dd3f9f90e9 Mon Sep 17 00:00:00 2001
-From: Mikhail Lukashov <michael.lukashov@gmail.com>
-Date: Sat, 18 Oct 2025 10:45:26 +0300
-Subject: [PATCH] openssl: NetBox patches
-
----
- libs/openssl-3/crypto/cryptlib.c              |   2 +-
- libs/openssl-3/include/internal/tsan_assist.h |   1 +
- .../openssl-3/include/openssl/configuration.h | 124 ++++++++++++++++--
- libs/openssl-3/ssl/statem/extensions.c        |   2 +-
- 4 files changed, 117 insertions(+), 12 deletions(-)
-
-diff --git a/libs/openssl-3/crypto/cryptlib.c b/libs/openssl-3/crypto/cryptlib.c
+diff --git libs/openssl-3/crypto/core_namemap.c libs/openssl-3/crypto/core_namemap.c
+index 1dcf390fc..54bec9059 100644
+--- libs/openssl-3/crypto/core_namemap.c
++++ libs/openssl-3/crypto/core_namemap.c
+@@ -103,7 +103,7 @@ int ossl_namemap_empty(OSSL_NAMEMAP *namemap)
+     return rv;
+ #else
+     /* Have TSAN support */
+-    return namemap == NULL || tsan_load(&namemap->max_number) == 0;
++    return namemap == NULL || tsan_load((volatile LONG *)&namemap->max_number) == 0;
+ #endif
+ }
+ 
+@@ -262,7 +262,7 @@ static int namemap_add_name(OSSL_NAMEMAP *namemap, int number,
+ 
+     /* The tsan_counter use here is safe since we're under lock */
+     namenum->number =
+-        number != 0 ? number : 1 + tsan_counter(&namemap->max_number);
++        number != 0 ? number : 1 + tsan_counter((volatile LONG *)&namemap->max_number);
+     (void)lh_NAMENUM_ENTRY_insert(namemap->namenum, namenum);
+ 
+     if (lh_NAMENUM_ENTRY_error(namemap->namenum))
+diff --git libs/openssl-3/crypto/cryptlib.c libs/openssl-3/crypto/cryptlib.c
 index 312a859a4..09647fced 100644
---- a/libs/openssl-3/crypto/cryptlib.c
-+++ b/libs/openssl-3/crypto/cryptlib.c
+--- libs/openssl-3/crypto/cryptlib.c
++++ libs/openssl-3/crypto/cryptlib.c
 @@ -42,7 +42,7 @@ int OPENSSL_isservice(void)
      WCHAR *name;
      static union {
@@ -23,10 +33,84 @@ index 312a859a4..09647fced 100644
      } _OPENSSL_isservice = {
          NULL
      };
-diff --git a/libs/openssl-3/include/internal/tsan_assist.h b/libs/openssl-3/include/internal/tsan_assist.h
+diff --git libs/openssl-3/crypto/objects/obj_dat.c libs/openssl-3/crypto/objects/obj_dat.c
+index 8bc4fa8ec..efd509bb7 100644
+--- libs/openssl-3/crypto/objects/obj_dat.c
++++ libs/openssl-3/crypto/objects/obj_dat.c
+@@ -227,7 +227,7 @@ void ossl_obj_cleanup_int(void)
+  */
+ static int obj_new_nid_unlocked(int num)
+ {
+-    static TSAN_QUALIFIER int new_nid = NUM_NID;
++    static TSAN_QUALIFIER LONG new_nid = NUM_NID;
+ #ifdef TSAN_REQUIRES_LOCKING
+     int i;
+ 
+@@ -236,7 +236,7 @@ static int obj_new_nid_unlocked(int num)
+ 
+     return i;
+ #else
+-    return tsan_add(&new_nid, num);
++    return tsan_add((volatile LONG *)&new_nid, num);
+ #endif
+ }
+ 
+diff --git libs/openssl-3/crypto/property/property.c libs/openssl-3/crypto/property/property.c
+index 464d91b31..82393063a 100644
+--- libs/openssl-3/crypto/property/property.c
++++ libs/openssl-3/crypto/property/property.c
+@@ -683,7 +683,7 @@ static void ossl_method_cache_flush_some(OSSL_METHOD_STORE *store)
+     store->cache_nelem = state.nelem;
+     /* Without a timer, update the global seed */
+     if (state.using_global_seed)
+-        tsan_add(&global_seed, state.seed);
++        tsan_add((volatile LONG *)&global_seed, (LONG64)state.seed);
+ }
+ 
+ int ossl_method_store_cache_get(OSSL_METHOD_STORE *store, OSSL_PROVIDER *prov,
+diff --git libs/openssl-3/include/crypto/bn_conf.h libs/openssl-3/include/crypto/bn_conf.h
+index c87cbc4ba..7ac6eb2df 100644
+--- libs/openssl-3/include/crypto/bn_conf.h
++++ libs/openssl-3/include/crypto/bn_conf.h
+@@ -22,8 +22,20 @@
+ /* Should we define BN_DIV2W here? */
+ 
+ /* Only one for the following should be defined */
++#if defined(_WIN64) || defined(OPENSSL_SYS_WIN64) || defined(_M_ARM64)
++#undef SIXTY_FOUR_BIT_LONG
++#define SIXTY_FOUR_BIT
++#undef THIRTY_TWO_BIT
++
++#else
++
++#if defined(_WIN32) || defined(OPENSSL_SYS_WIN32)
+ #undef SIXTY_FOUR_BIT_LONG
+ #undef SIXTY_FOUR_BIT
+ #define THIRTY_TWO_BIT
+ 
+ #endif
++
++#endif
++
++#endif
+diff --git libs/openssl-3/include/internal/rcu.h libs/openssl-3/include/internal/rcu.h
+index 90160e8da..f302cec79 100644
+--- libs/openssl-3/include/internal/rcu.h
++++ libs/openssl-3/include/internal/rcu.h
+@@ -27,7 +27,9 @@ void ossl_synchronize_rcu(CRYPTO_RCU_LOCK *lock);
+ int ossl_rcu_call(CRYPTO_RCU_LOCK *lock, rcu_cb_fn cb, void *data);
+ void *ossl_rcu_uptr_deref(void **p);
+ void ossl_rcu_assign_uptr(void **p, void **v);
++#ifndef WINSCP
+ #define ossl_rcu_deref(p) ossl_rcu_uptr_deref((void **)p)
+ #define ossl_rcu_assign_ptr(p,v) ossl_rcu_assign_uptr((void **)p, (void **)v)
++#endif
+ 
+ #endif
+diff --git libs/openssl-3/include/internal/tsan_assist.h libs/openssl-3/include/internal/tsan_assist.h
 index a840df0b2..46d506e82 100644
---- a/libs/openssl-3/include/internal/tsan_assist.h
-+++ b/libs/openssl-3/include/internal/tsan_assist.h
+--- libs/openssl-3/include/internal/tsan_assist.h
++++ libs/openssl-3/include/internal/tsan_assist.h
 @@ -115,6 +115,7 @@
  #  pragma intrinsic(_InterlockedExchangeAdd)
  #  ifdef _WIN64
@@ -35,11 +119,11 @@ index a840df0b2..46d506e82 100644
  #   define tsan_add(ptr, n) (sizeof(*(ptr)) == 8 ? _InterlockedExchangeAdd64((ptr), (n)) \
                                                  : _InterlockedExchangeAdd((ptr), (n)))
  #  else
-diff --git a/libs/openssl-3/include/openssl/configuration.h b/libs/openssl-3/include/openssl/configuration.h
-index ebe4226d9..8c426ae54 100644
---- a/libs/openssl-3/include/openssl/configuration.h
-+++ b/libs/openssl-3/include/openssl/configuration.h
-@@ -27,16 +27,35 @@ extern "C" {
+diff --git libs/openssl-3/include/openssl/configuration.h libs/openssl-3/include/openssl/configuration.h
+index ebe4226d9..d55c75b17 100644
+--- libs/openssl-3/include/openssl/configuration.h
++++ libs/openssl-3/include/openssl/configuration.h
+@@ -27,9 +27,20 @@ extern "C" {
   * OpenSSL was configured with the following options:
   */
  
@@ -57,28 +141,10 @@ index ebe4226d9..8c426ae54 100644
 +
 +#endif
 +
-+#if defined(_WIN64) || defined(_WIN32)
-+
-+# ifndef OPENSSL_THREADS
-+#  define OPENSSL_THREADS
-+# endif
-+
-+#define OPENSSL_SYS_WINDOWS
-+#define OPENSSL_NO_TS
-+
-+#endif
-+
  # define OPENSSL_CONFIGURED_API 30100
  # ifndef OPENSSL_RAND_SEED_OS
  #  define OPENSSL_RAND_SEED_OS
- # endif
--# ifndef OPENSSL_THREADS
--#  define OPENSSL_THREADS
--# endif
- # ifndef OPENSSL_NO_ACVP_TESTS
- #  define OPENSSL_NO_ACVP_TESTS
- # endif
-@@ -46,19 +65,24 @@ extern "C" {
+@@ -46,6 +57,12 @@ extern "C" {
  # ifndef OPENSSL_NO_ASAN
  #  define OPENSSL_NO_ASAN
  # endif
@@ -91,52 +157,7 @@ index ebe4226d9..8c426ae54 100644
  # ifndef OPENSSL_NO_CRYPTO_MDEBUG
  #  define OPENSSL_NO_CRYPTO_MDEBUG
  # endif
- # ifndef OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
- #  define OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
- # endif
-+# ifndef OPENSSL_NO_DEFAULT_THREAD_POOL
-+#  define OPENSSL_NO_DEFAULT_THREAD_POOL
-+# endif
- # ifndef OPENSSL_NO_DEVCRYPTOENG
- #  define OPENSSL_NO_DEVCRYPTOENG
- # endif
--
--#define OPENSSL_SYS_WINDOWS
--#define OPENSSL_NO_TS
--
- # ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
- #  define OPENSSL_NO_EC_NISTP_64_GCC_128
- # endif
-@@ -80,6 +104,9 @@ extern "C" {
- # ifndef OPENSSL_NO_KTLS
- #  define OPENSSL_NO_KTLS
- # endif
-+# ifndef OPENSSL_NO_LOADERENG
-+#  define OPENSSL_NO_LOADERENG
-+# endif
- # ifndef OPENSSL_NO_MD2
- #  define OPENSSL_NO_MD2
- # endif
-@@ -104,6 +131,12 @@ extern "C" {
- # ifndef OPENSSL_NO_SSL3_METHOD
- #  define OPENSSL_NO_SSL3_METHOD
- # endif
-+# ifndef OPENSSL_NO_TFO
-+#  define OPENSSL_NO_TFO
-+# endif
-+# ifndef OPENSSL_NO_THREAD_POOL
-+#  define OPENSSL_NO_THREAD_POOL
-+# endif
- # ifndef OPENSSL_NO_TRACE
- #  define OPENSSL_NO_TRACE
- # endif
-@@ -113,37 +146,108 @@ extern "C" {
- # ifndef OPENSSL_NO_UNIT_TEST
- #  define OPENSSL_NO_UNIT_TEST
- # endif
-+# ifndef OPENSSL_NO_UPLINK
-+#  define OPENSSL_NO_UPLINK
-+# endif
+@@ -116,34 +133,102 @@ extern "C" {
  # ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
  #  define OPENSSL_NO_WEAK_SSL_CIPHERS
  # endif
@@ -242,12 +263,29 @@ index ebe4226d9..8c426ae54 100644
  # ifdef  __cplusplus
  }
  # endif
-diff --git a/libs/openssl-3/ssl/statem/extensions.c b/libs/openssl-3/ssl/statem/extensions.c
-index 23ec808fd..62358ce4c 100644
---- a/libs/openssl-3/ssl/statem/extensions.c
-+++ b/libs/openssl-3/ssl/statem/extensions.c
-@@ -967,7 +967,7 @@ static ossl_inline void ssl_tsan_decr(const SSL_CTX *ctx,
-                                       TSAN_QUALIFIER int *stat)
+diff --git libs/openssl-3/ssl/ssl_lib.c libs/openssl-3/ssl/ssl_lib.c
+index 7c90165a4..768a771c1 100644
+--- libs/openssl-3/ssl/ssl_lib.c
++++ libs/openssl-3/ssl/ssl_lib.c
+@@ -3048,7 +3048,7 @@ static int ssl_tsan_load(SSL_CTX *ctx, TSAN_QUALIFIER int *stat)
+     int res = 0;
+ 
+     if (ssl_tsan_lock(ctx)) {
+-        res = tsan_load(stat);
++        res = tsan_load((volatile LONG64 *)stat);
+         ssl_tsan_unlock(ctx);
+     }
+     return res;
+diff --git libs/openssl-3/ssl/statem/extensions.c libs/openssl-3/ssl/statem/extensions.c
+index 23ec808fd..59d586219 100644
+--- libs/openssl-3/ssl/statem/extensions.c
++++ libs/openssl-3/ssl/statem/extensions.c
+@@ -964,10 +964,10 @@ static int final_renegotiate(SSL_CONNECTION *s, unsigned int context, int sent)
+ }
+ 
+ static ossl_inline void ssl_tsan_decr(const SSL_CTX *ctx,
+-                                      TSAN_QUALIFIER int *stat)
++                                      TSAN_QUALIFIER LONG *stat)
  {
      if (ssl_tsan_lock(ctx)) {
 -        tsan_decr(stat);
@@ -255,6 +293,12 @@ index 23ec808fd..62358ce4c 100644
          ssl_tsan_unlock(ctx);
      }
  }
--- 
-2.48.1.windows.1
-
+@@ -1033,7 +1033,7 @@ static int final_server_name(SSL_CONNECTION *s, unsigned int context, int sent)
+     if (SSL_IS_FIRST_HANDSHAKE(s) && sctx != s->session_ctx
+             && s->hello_retry_request == SSL_HRR_NONE) {
+         ssl_tsan_counter(sctx, &sctx->stats.sess_accept);
+-        ssl_tsan_decr(s->session_ctx, &s->session_ctx->stats.sess_accept);
++        ssl_tsan_decr(s->session_ctx, (volatile LONG *)&s->session_ctx->stats.sess_accept);
+     }
+ 
+     /*
