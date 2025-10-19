@@ -115,6 +115,7 @@ public:
   virtual void UpdateFromMain(TCustomFileSystem * MainFileSystem) override;
   virtual void ClearCaches() override;
 
+public:
   virtual void Init(void *) override;
   virtual void FileTransferProgress(int64_t TransferSize, int64_t Bytes) override;
 protected:
@@ -138,8 +139,9 @@ protected:
   bool FResponseIgnore{false};
 #if defined(__BORLANDC__)
   typedef std::map<UnicodeString, UnicodeString> TRegions;
-#endif // defined(__BORLANDC__)
+#else
   using TRegions = nb::map_t<UnicodeString, UnicodeString>;
+#endif // defined(__BORLANDC__)
   TRegions FRegions;
   TRegions FHostNames;
   UnicodeString FAuthRegion;
@@ -202,6 +204,7 @@ protected:
 
   static constexpr const int32_t S3MinMultiPartChunkSize = 5 * 1024 * 1024;
   static constexpr const int32_t S3MaxMultiPartChunks = 10000;
+
 private:
   void InitSslSessionImpl(ssl_st * Ssl, void * /*Session*/);
 };

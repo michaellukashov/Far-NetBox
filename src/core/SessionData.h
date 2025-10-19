@@ -641,6 +641,7 @@ public:
   __property UnicodeString UserName  = { read=FUserName, write=SetUserName };
   RWProperty<UnicodeString> UserName{nb::bind(&TSessionData::GetUserName, this), nb::bind(&TSessionData::SetUserName, this)};
   __property UnicodeString UserNameExpanded  = { read=GetUserNameExpanded };
+  const ROProperty<UnicodeString> UserNameExpanded{nb::bind(&TSessionData::GetUserNameExpanded, this)};
   __property UnicodeString UserNameSource  = { read=GetUserNameSource };
   __property UnicodeString Password  = { read=GetPassword, write=SetPassword };
   RWProperty<UnicodeString> Password{nb::bind(&TSessionData::GetPassword, this), nb::bind(&TSessionData::SetPassword, this)};
@@ -789,6 +790,7 @@ public:
   __property UnicodeString CustomParam1 = { read = FCustomParam1, write = SetCustomParam1 };
   __property UnicodeString CustomParam2 = { read = FCustomParam2, write = SetCustomParam2 };
   __property UnicodeString SessionKey = { read = GetSessionKey };
+  ROProperty<UnicodeString> SessionKey{nb::bind(&TSessionData::GetSessionKey, this)};
   __property bool ResolveSymlinks = { read = FResolveSymlinks, write = SetResolveSymlinks };
   RWPropertySimple<bool> ResolveSymlinks{&FResolveSymlinks, nb::bind(&TSessionData::SetResolveSymlinks, this)};
   __property bool FollowDirectorySymlinks = { read = FFollowDirectorySymlinks, write = SetFollowDirectorySymlinks };

@@ -1528,7 +1528,7 @@ void TTerminal::FingerprintScan(UnicodeString & SHA256, UnicodeString & SHA1, Un
 void TTerminal::Open()
 {
   AnySession = true;
-  GetConfiguration()->Usage->Inc(L"SessionOpens");
+  Configuration->Usage->Inc(L"SessionOpens");
   TAutoNestingCounter OpeningCounter(FOpening);
   ReflectSettings();
   try
@@ -1643,9 +1643,9 @@ void TTerminal::InternalDoTryOpen()
 {
   if (FFileSystem == nullptr)
   {
-    GetLog()->AddSystemInfo();
+    Log->AddSystemInfo();
     DoInitializeLog();
-    GetLog()->AddStartupInfo();
+    Log->AddStartupInfo();
   }
 
   DebugAssert(FTunnel == nullptr);
@@ -1654,7 +1654,7 @@ void TTerminal::InternalDoTryOpen()
     DoInformation(LoadStr(OPEN_TUNNEL), true);
     LogEvent("Opening tunnel.");
     OpenTunnel();
-    GetLog()->AddSeparator();
+    Log->AddSeparator();
 
     FSessionData->ConfigureTunnel(FTunnelLocalPortNumber);
 
@@ -1691,7 +1691,7 @@ void TTerminal::InitFileSystem()
     FFileSystem = std::make_unique<TFTPFileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
-    GetLog()->AddSeparator();
+    Log->AddSeparator();
     LogEvent("Using FTP protocol.");
 #endif
   }
@@ -1705,7 +1705,7 @@ void TTerminal::InitFileSystem()
     FFileSystem = std::make_unique<TFTPFileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
-    GetLog()->AddSeparator();
+    Log->AddSeparator();
     LogEvent("Using FTPS protocol.");
 #endif
   }
@@ -1715,7 +1715,7 @@ void TTerminal::InitFileSystem()
     FFileSystem = std::make_unique<TWebDAVFileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
-    GetLog()->AddSeparator();
+    Log->AddSeparator();
     LogEvent("Using WebDAV protocol.");
   }
   else if (FSProtocol == fsS3)
@@ -1724,7 +1724,7 @@ void TTerminal::InitFileSystem()
     FFileSystem = std::make_unique<TS3FileSystem>(this);
     FFileSystem->Init(nullptr);
     FFileSystem->Open();
-    GetLog()->AddSeparator();
+    Log->AddSeparator();
     LogEvent("Using S3 protocol.");
   }
   else
@@ -1761,7 +1761,7 @@ void TTerminal::InitFileSystem()
         }
       }
 
-      GetLog()->AddSeparator();
+      Log->AddSeparator();
 
       if ((FSProtocol == fsSCPonly) ||
           ((FSProtocol == fsSFTP) && FSecureShell->SshFallbackCmd()))
@@ -1821,7 +1821,7 @@ void TTerminal::SetupTunnelLocalPortNumber()
   {
     // Randomizing the port selection to reduce a chance of conflicts.
     nb::vector_t<int32_t> Ports;
-    for (int32_t Port = GetConfiguration()->FTunnelLocalPortNumberLow; Port <= GetConfiguration()->FTunnelLocalPortNumberHigh; Port++)
+    for (int32_t Port = Configuration->FTunnelLocalPortNumberLow; Port <= Configuration->FTunnelLocalPortNumberHigh; Port++)
     {
       Ports.push_back(Port);
     }
@@ -2109,7 +2109,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
 
   if (!Result)
   {
-    if (PasswordOrPassphrasePrompt && !GetConfiguration()->GetRememberPassword())
+    if (PasswordOrPassphrasePrompt && !Configuration->GetRememberPassword())
     {
       Prompts->SetObject(0, ToObj(nb::ToIntPtr(Prompts->Objects[0]) | pupRemember));
     }
@@ -2132,7 +2132,7 @@ bool TTerminal::DoPromptUser(TSessionData * /*Data*/, TPromptKind Kind,
     }
 
     if (Result && PasswordOrPassphrasePrompt &&
-        (GetConfiguration()->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->Objects[0]), pupRemember)))
+        (Configuration->GetRememberPassword() || FLAGSET(nb::ToIntPtr(Prompts->Objects[0]), pupRemember)))
     {
       UnicodeString Password = DenormalizeString(Results->Strings[0]);
       const RawByteString EncryptedPassword = EncryptPassword(Password);
@@ -2248,8 +2248,8 @@ void TTerminal::DisplayBanner(const UnicodeString & ABanner)
   if (!GetOnDisplayBanner().empty())
   {
     uint32_t Params = 0; // shut up
-    if (GetConfiguration()->ShowBanner(GetSessionData()->GetSessionKey(), ABanner, Params) ||
-        GetConfiguration()->GetForceBanners())
+    if (Configuration->ShowBanner(SessionData->SessionKey, ABanner, Params) ||
+        Configuration->GetForceBanners())
     {
       bool NeverShowAgain = false;
       const int32_t Options =
@@ -2284,7 +2284,7 @@ void TTerminal::DisplayBanner(const UnicodeString & ABanner)
 
 void TTerminal::HandleExtendedException(Exception * E)
 {
-  GetLog()->AddException(E);
+  Log->AddException(E);
   if (!GetOnShowExtendedException().empty())
   {
     TCallbackGuard Guard(this);
@@ -2307,7 +2307,7 @@ void TTerminal::HandleExtendedException(Exception * E)
 
 void TTerminal::ShowExtendedException(Exception * E)
 {
-  GetLog()->AddException(E);
+  Log->AddException(E);
   if (!GetOnShowExtendedException().empty())
   {
     GetOnShowExtendedException()(this, E, nullptr);
@@ -2596,7 +2596,7 @@ bool TTerminal::FileOperationLoopQuery(Exception & E,
   uint32_t AFlags, const UnicodeString & SpecialRetry, const UnicodeString & HelpKeyword)
 {
   bool Result{false};
-  GetLog()->AddException(&E);
+  Log->AddException(&E);
   uint32_t Answer{0};
   const bool AllowSkip = FLAGSET(AFlags, folAllowSkip);
   const bool SkipToAllPossible = AllowSkip && (AOperationProgress != nullptr);
@@ -3087,8 +3087,8 @@ void TTerminal::FatalError(Exception * E, const UnicodeString & AMsg, const Unic
     // We log this instead of exception handler, because Close() would
     // probably cause exception handler to loose pointer to TShellLog()
     LogEvent("Attempt to close connection due to fatal exception:");
-    GetLog()->Add(llException, AMsg);
-    GetLog()->AddException(E);
+    Log->Add(llException, AMsg);
+    Log->AddException(E);
 
     if (GetActive())
     {
@@ -3194,7 +3194,7 @@ bool TTerminal::HandleException(Exception * E)
   }
   else
   {
-    GetLog()->AddException(E);
+    Log->AddException(E);
     return true;
   }
 }
@@ -3572,9 +3572,9 @@ void TTerminal::EnsureNonExistence(const UnicodeString & AFileName)
 
 void TTerminal::LogEvent(const UnicodeString & AStr)
 {
-  if (GetLog()->GetLogging())
+  if (Log->GetLogging())
   {
-    GetLog()->Add(llMessage, AStr);
+    Log->Add(llMessage, AStr);
   }
 }
 
@@ -3798,7 +3798,7 @@ UnicodeString TTerminal::GetRemoteFileInfo(TRemoteFile * AFile) const
 void TTerminal::LogRemoteFile(TRemoteFile * AFile)
 {
   // optimization
-  if (GetLog()->GetLogging() && AFile)
+  if (Log->GetLogging() && AFile)
   {
     LogEvent(GetRemoteFileInfo(AFile));
   }
@@ -3824,7 +3824,7 @@ UnicodeString TTerminal::FormatFileDetailsForLog(
 void TTerminal::LogFileDetails(const UnicodeString & AFileName, const TDateTime & AModification, int64_t Size, const TRemoteFile * LinkedFile)
 {
   // optimization
-  if (GetLog()->GetLogging())
+  if (Log->GetLogging())
   {
     LogEvent(FORMAT("File: %s", FormatFileDetailsForLog(AFileName, AModification, Size, LinkedFile)));
   }
@@ -3845,7 +3845,7 @@ void TTerminal::LogFileDone(
 
   const int64_t Size = AOperationProgress->TransferredSize;
   // optimization
-  if (GetLog()->GetLogging())
+  if (Log->GetLogging())
   {
     LogEvent(FORMAT("Transfer done: '%s' => '%s' [%s]", AOperationProgress->GetFullFileName(), DestFileName, Int64ToStr(Size)));
   }
@@ -4732,7 +4732,7 @@ void TTerminal::ChangeFileProperties(const UnicodeString & AFileName,
     LocalFileName = AFile->GetFileName();
   }
   StartOperationWithFile(LocalFileName, foSetProperties);
-  if (GetLog()->GetLogging() && RProperties)
+  if (Log->GetLogging() && RProperties)
   {
     LogEvent(FORMAT("Changing properties of \"%s\" (%s)",
       LocalFileName, BooleanToEngStr(RProperties->Recursive)));
@@ -5531,7 +5531,7 @@ void TTerminal::LookupUsersGroups()
       FFileSystem->LookupUsersGroups();
       ReactOnCommand(fsLookupUsersGroups);
 
-      if (GetLog()->GetLogging())
+      if (Log->GetLogging())
       {
         FGroups.Log(this, L"groups");
         FMembership.Log(this, L"membership");
@@ -6021,7 +6021,7 @@ bool TTerminal::AllowLocalFileTransfer(
 {
   bool Result = true;
   // optimization (though in most uses of the method, the caller actually knows TSearchRec already, so it passes it here
-  if (GetLog()->GetLogging() || !CopyParam->AllowAnyTransfer())
+  if (Log->GetLogging() || !CopyParam->AllowAnyTransfer())
   {
     TSearchRecSmart ASearchRec;
     if (SearchRec == nullptr)
@@ -7784,7 +7784,7 @@ bool TTerminal::CopyToRemote(
         if (Parallel)
         {
           // OnceDoneOperation is not supported
-          ParallelOperation->Init(Files.release(), ATargetDir, CopyParam, AParams, &OperationProgress, GetLog()->GetName(), -1);
+          ParallelOperation->Init(Files.release(), ATargetDir, CopyParam, AParams, &OperationProgress, Log->GetName(), -1);
           CopyParallel(ParallelOperation, &OperationProgress);
         }
         else
@@ -8720,7 +8720,7 @@ void TTerminal::UpdateTargetAttrs(
   {
     Attrs = faArchive;
   }
-  const uint32_t NewAttrs = CopyParam->LocalFileAttrs(*AFile->GetRights());
+  const uint32_t NewAttrs = CopyParam->LocalFileAttrs(*AFile->Rights());
   if ((NewAttrs & Attrs) != NewAttrs)
   {
     FILE_OPERATION_LOOP_BEGIN
@@ -8830,12 +8830,12 @@ void TTerminal::CollectUsage()
       break;
   }
 
-  if (GetConfiguration()->GetLogging() && GetConfiguration()->GetLogToFile())
+  if (Configuration->GetLogging() && Configuration->GetLogToFile())
   {
 //    Configuration->Usage->Inc("OpenedSessionsLogToFile2");
   }
 
-  if (GetConfiguration()->GetLogActions())
+  if (Configuration->GetLogActions())
   {
 //    Configuration->Usage->Inc("OpenedSessionsXmlLog");
   }
@@ -8882,8 +8882,8 @@ bool TTerminal::VerifyCertificate(
   const UnicodeString CertificateDataSHA1 = FormatCertificateData(FingerprintSHA1, Failures);
   const UnicodeString CertificateDataSHA256 = FormatCertificateData(FingerprintSHA256, Failures);
 
-  const std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateConfigStorage());
-  Storage->SetAccessMode(smRead);
+  const std::unique_ptr<THierarchicalStorage> Storage(Configuration->CreateConfigStorage());
+  Storage->AccessMode = smRead;
 
   if (Storage->OpenSubKey(CertificateStorageKey, false))
   {
@@ -8906,15 +8906,15 @@ bool TTerminal::VerifyCertificate(
 
   if (!Result)
   {
-    UnicodeString Buf = GetSessionData()->GetHostKey();
+    UnicodeString Buf = SessionData->HostKey;
     while (!Result && !Buf.IsEmpty())
     {
-      UnicodeString ExpectedKey = CutToChar(Buf, L';', false);
+      const UnicodeString ExpectedKey = CutToChar(Buf, L';', false);
       if (ExpectedKey == L"*")
       {
-        UnicodeString Message = LoadStr(ANY_CERTIFICATE);
+        const UnicodeString Message = LoadStr(ANY_CERTIFICATE);
         Information(Message);
-        GetLog()->Add(llException, Message);
+        Log->Add(llException, Message);
         Result = true;
       }
       else if (SameChecksum(ExpectedKey, FingerprintSHA1, false) ||
@@ -8957,7 +8957,7 @@ bool TTerminal::ConfirmCertificate(
   {
     case qaYes:
       CacheCertificate(
-        CertificateStorageKey, GetSessionData()->GetSiteKey(),
+        CertificateStorageKey, SessionData->SiteKey,
         SessionInfo.CertificateFingerprintSHA1, SessionInfo.CertificateFingerprintSHA256, Failures);
       Result = true;
       break;
@@ -8980,8 +8980,8 @@ bool TTerminal::ConfirmCertificate(
   // Cache only if the certificate was accepted manually
   if (Result && CanRemember)
   {
-    GetConfiguration()->RememberLastFingerprint(
-      GetSessionData()->GetSiteKey(), TlsFingerprintType, SessionInfo.CertificateFingerprintSHA256);
+    Configuration->RememberLastFingerprint(
+      SessionData->SiteKey, TlsFingerprintType, SessionInfo.CertificateFingerprintSHA256);
   }
   return Result;
 }
@@ -8992,8 +8992,8 @@ void TTerminal::CacheCertificate(
 {
   const UnicodeString CertificateData = FormatCertificateData(FingerprintSHA256, Failures);
 
-  std::unique_ptr<THierarchicalStorage> Storage(GetConfiguration()->CreateConfigStorage());
-  Storage->SetAccessMode(smReadWrite);
+  std::unique_ptr<THierarchicalStorage> Storage(Configuration->CreateConfigStorage());
+  Storage->AccessMode = smReadWrite;
 
   if (Storage->OpenSubKey(CertificateStorageKey, true))
   {
@@ -9611,16 +9611,16 @@ void TSecondaryTerminal::Init(
   FMainTerminal = MainTerminal;
   DebugAssert(FMainTerminal != nullptr);
   TTerminal::Init(ASessionData, AConfiguration, ActionLog);
-  GetLog()->SetParent(FMainTerminal->GetLog(), AName);
-  GetSessionData()->NonPersistent();
+  Log->SetParent(FMainTerminal->GetLog(), AName);
+  SessionData->NonPersistent();
   FMainTerminal->FSecondaryTerminals++;
   if (SessionData->FTunnelLocalPortNumber != 0)
   {
     SessionData->FTunnelLocalPortNumber = SessionData->FTunnelLocalPortNumber + FMainTerminal->FSecondaryTerminals;
   }
-  if (!FMainTerminal->GetUserName().IsEmpty())
+  if (!FMainTerminal->UserName().IsEmpty())
   {
-    GetSessionData()->SetUserName(FMainTerminal->GetUserName());
+    SessionData->UserName = FMainTerminal->UserName;
   }
 }
 

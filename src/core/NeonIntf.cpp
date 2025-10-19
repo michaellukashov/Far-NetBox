@@ -36,12 +36,13 @@ extern "C"
 #define SESSION_TLS_INIT_KEY "tlsinit"
 #define SESSION_TLS_INIT_DATA_KEY "tlsinitdata"
 #define SESSION_TERMINAL_KEY "terminal"
-#endif // defined(__BORLANDC__)
+#else
 constexpr const char * SESSION_PROXY_AUTH_KEY = "proxyauth";
 constexpr const char * SESSION_TLS_INIT_KEY = "tlsinit";
 constexpr const char * SESSION_TERMINAL_KEY = "terminal";
+#endif // defined(__BORLANDC__)
 
-void NeonParseUrl(const UnicodeString & Url, ne_uri &uri)
+void NeonParseUrl(const UnicodeString & Url, ne_uri & uri)
 {
   if (ne_uri_parse(StrToNeon(Url), &uri) != 0)
   {
@@ -64,7 +65,6 @@ bool IsTlsUri(const ne_uri & uri)
 struct TProxyAuthData
 {
   CUSTOM_MEM_ALLOCATION_IMPL
-
   UnicodeString UserName;
   UnicodeString Password;
 };
@@ -240,8 +240,9 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session)
 
 #if defined(__BORLANDC__)
 #define MAX_REDIRECT_ATTEMPTS 5
-#endif // defined(__BORLANDC__)
+#else
 constexpr int32_t MAX_REDIRECT_ATTEMPTS = 5;
+#endif // defined(__BORLANDC__)
 
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls)
 {
@@ -269,9 +270,10 @@ void ne_init_ssl_session(struct ssl_st * Ssl, ne_session * Session)
   void * Code = ne_get_session_private(Session, SESSION_TLS_INIT_KEY);
   void * Data = ne_get_session_private(Session, SESSION_TLS_INIT_DATA_KEY);
   TNeonTlsInit OnNeonTlsInit = MakeMethod<TNeonTlsInit>(Data, Code);
- #endif
+#else
   TNeonTlsInit OnNeonTlsInit =
     reinterpret_cast<TNeonTlsInit>(ne_get_session_private(Session, SESSION_TLS_INIT_KEY));
+#endif // defined(__BORLANDC__)
   if (DebugAlwaysTrue(OnNeonTlsInit != nullptr))
   {
     OnNeonTlsInit(Ssl, Session);
@@ -289,8 +291,10 @@ void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal 
   }
   if (!CertificateStorage.IsEmpty())
   {
-    if (Session) // && Session->ssl_context)
+    if (Session)
+    {
       ne_ssl_set_certificates_storage(Session, StrToNeon(CertificateStorage));
+    }
     if (Terminal != nullptr)
     {
       Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", CertificateStorage));
@@ -304,7 +308,7 @@ void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal 
   ne_set_session_private(Session, SESSION_TLS_INIT_DATA_KEY, Method.Data);
 #else
   ne_set_session_private(Session, SESSION_TLS_INIT_KEY, nb::ToPtr(OnNeonTlsInit));
-#endif
+#endif // defined(__BORLANDC__)
 }
 
 void InitNeonTls(
@@ -448,6 +452,15 @@ void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
   if (DoLog)
   #endif
   {
+#if defined(__BORLANDC__)
+    va_list Args;
+    va_start(Args, Format);
+    UTF8String UTFMessage;
+    UTFMessage.vprintf(Format, Args);
+    va_end(Args);
+
+    UnicodeString Message = TrimRight(UTFMessage);
+#else
     int32_t Size{0};
     AnsiString Str(4 * 1024, 0);
     UnicodeString Message;
@@ -458,9 +471,10 @@ void ne_debug(void * Context, int32_t Channel, const char * Format, ...)
       va_end(Args);
       const UTF8String UTFMessage(Str.data(), (Size == -1) ? 4 * 1024 : Size);
       Message = TrimRight(UnicodeString(UTFMessage.c_str(), UTFMessage.GetLength(), CP_ACP));
+#endif // defined(__BORLANDC__)
     }
 
-#if defined(__BORLANDC__)
+#if defined(_DEBUG)
     if (DoLog)
 #endif // defined(__BORLANDC__)
     {
@@ -504,7 +518,9 @@ void UnregisterFromNeonDebug(TTerminal * Terminal)
 {
   const TGuard Guard(*DebugSection.get());
   if (NeonTerminals.find(Terminal) != NeonTerminals.end())
+  {
     NeonTerminals.erase(Terminal);
+  }
 }
 
 void RetrieveNeonCertificateData(
@@ -607,20 +623,30 @@ UnicodeString NeonTlsSessionInfo(
   return FORMAT("Using %s, cipher %s", TlsVersionStr, Cipher);
 }
 
+static int32_t TlsVersionToOpenssl(TTlsVersion TlsVersion)
+{
+  TlsVersion = (TTlsVersion)std::min((TTlsVersion)std::max(TlsVersion, tlsMin), tlsMax);
+  switch (TlsVersion)
+  {
+    case tls10: return TLS1_VERSION;
+    case tls11: return TLS1_1_VERSION;
+    case tls12: return TLS1_2_VERSION;
+    case tls13: return TLS1_3_VERSION;
+    default:
+      return 0;
+  }
+}
+
 void SetupSsl(ssl_st * Ssl, TTlsVersion MinTlsVersion, TTlsVersion MaxTlsVersion)
 {
-  MaxTlsVersion = static_cast<TTlsVersion>(std::max(MaxTlsVersion, tlsMin)); // the lowest currently supported version
-  #define MASK_TLS_VERSION(VERSION, FLAG) ((MinTlsVersion > (VERSION)) || (MaxTlsVersion < (VERSION)) ? (FLAG) : 0)
-  const uint32_t Options =
-    MASK_TLS_VERSION(tls10, SSL_OP_NO_TLSv1) |
-    MASK_TLS_VERSION(tls11, SSL_OP_NO_TLSv1_1) |
-    MASK_TLS_VERSION(tls12, SSL_OP_NO_TLSv1_2) |
-    MASK_TLS_VERSION(tls13, SSL_OP_NO_TLSv1_3);
-  // adds flags (not sets)
-  SSL_set_options(Ssl, Options);
+  // With Neon, we could use ne_ssl_set_protovers, but we share this with FTP
+  int32_t MinVersion = TlsVersionToOpenssl(MinTlsVersion);
+  SSL_set_min_proto_version(Ssl, MinVersion);
+  int32_t MaxVersion = TlsVersionToOpenssl(MaxTlsVersion);
+  SSL_set_max_proto_version(Ssl, MaxVersion);
 
   // Since OpenSSL 3, SSL 3.0, TLS 1.0 and 1.1 are enabled on security level 0 only
-  if (MinTlsVersion <= tls11)
+  if (MinVersion <= TLS1_1_VERSION)
   {
     SSL_set_security_level(Ssl, 0);
   }

@@ -44,8 +44,9 @@ UnicodeString GetNeonRedirectUrl(ne_session * Session);
 void CheckRedirectLoop(const UnicodeString & RedirectUrl, TStrings * AttemptedUrls);
 #if defined(__BORLANDC__)
 typedef void (__closure* TNeonTlsInit)(struct ssl_st * Ssl, ne_session * Session);
-#endif // defined(__BORLANDC__)
+#else
 using TNeonTlsInit = void(* )(struct ssl_st * Ssl, ne_session * Session);
+#endif // defined(__BORLANDC__)
 void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal * Terminal);
 void InitNeonTls(
   ne_session * Session, TNeonTlsInit OnNeonTlsInit, ne_ssl_verify_fn VerifyCallback, void * VerifyContext,

@@ -41,8 +41,7 @@ UnicodeString TCustomFileSystem::CalculateFilesChecksumInitialize(const UnicodeS
 void TCustomFileSystem::TransferOnDirectory(
   const UnicodeString & ADirectory, const TCopyParamType *, int32_t AParams)
 {
-  DebugUsedParam(ADirectory);
-  DebugUsedParam(AParams);
+  DebugUsedParam2(ADirectory, AParams);
 }
 
 void TCustomFileSystem::DirectorySunk(

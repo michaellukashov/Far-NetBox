@@ -697,7 +697,9 @@ void RequireTls()
 {
   if (!InitOpenssl())
   {
+#if defined(__BORLANDC__)
     UnicodeString Errors = DefaultStr(GetTlsErrorStrs(), OpensslInitializationErrors);
+#endif //if 0
     throw ExtException(MainInstructions(LoadStr(OPENSSL_INIT_ERROR)), OpensslInitializationErrors);
   }
 }

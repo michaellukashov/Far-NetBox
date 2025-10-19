@@ -864,7 +864,7 @@ public:
       wchar_t AType = FILETYPE_DEFAULT;
       if (FLAGSET(Flags, SSH_FILEXFER_ATTR_PERMISSIONS))
       {
-        AFile->GetRightsNotConst()->SetNumber(static_cast<uint16_t>(Permissions & TRights::rfAllSpecials));
+        AFile->Rights->Number = static_cast<uint16_t>(Permissions & TRights::rfAllSpecials);
         if (FLAGSET(Permissions, TRights::rfDirectory))
         {
           AType = FILETYPE_DIRECTORY;
@@ -3381,7 +3381,7 @@ void TSFTPFileSystem::DoStartup()
           }
         }
 
-        if (FTerminal->GetLog()->GetLogging())
+        if (FTerminal->Log->Logging)
         {
           FTerminal->LogEvent(FORMAT(
             "Server support information (%s):\n"
