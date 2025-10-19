@@ -3012,7 +3012,7 @@ static int ssl_tsan_load(SSL_CTX *ctx, TSAN_QUALIFIER int *stat)
     int res = 0;
 
     if (ssl_tsan_lock(ctx)) {
-        res = tsan_load(stat);
+        res = tsan_load((volatile LONG64 *)stat);
         ssl_tsan_unlock(ctx);
     }
     return res;

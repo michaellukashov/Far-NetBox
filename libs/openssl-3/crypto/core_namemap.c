@@ -103,7 +103,7 @@ int ossl_namemap_empty(OSSL_NAMEMAP *namemap)
     return rv;
 #else
     /* Have TSAN support */
-    return namemap == NULL || tsan_load(&namemap->max_number) == 0;
+    return namemap == NULL || tsan_load((volatile LONG *)&namemap->max_number) == 0;
 #endif
 }
 

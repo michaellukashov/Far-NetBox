@@ -27,9 +27,20 @@ extern "C" {
  * OpenSSL was configured with the following options:
  */
 
+#if defined(_WIN64)
+
+# ifndef OPENSSL_SYS_WIN64A
+#  define OPENSSL_SYS_WIN64A 1
+# endif
+
+#elif defined(_WIN32)
+
 # ifndef OPENSSL_SYS_WIN32
 #  define OPENSSL_SYS_WIN32 1
 # endif
+
+#endif
+
 # define OPENSSL_CONFIGURED_API 30100
 # ifndef OPENSSL_RAND_SEED_OS
 #  define OPENSSL_RAND_SEED_OS
