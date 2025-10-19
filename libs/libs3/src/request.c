@@ -833,7 +833,7 @@ static void sort_query_string(const char *queryString, char *result,
 
     // Where did strdup go?!??
     int queryStringLen = (int)strlen(queryString);
-    char *buf = (char *) nb_calloc(queryStringLen + 1, 1);
+    char *buf = (char *) nb_calloc(queryStringLen + 1, sizeof(char));
     char *tok = buf;
     strcpy(tok, queryString);
     const char *token = NULL;
@@ -885,7 +885,7 @@ static void canonicalize_query_string(const char *queryParams,
 
     if (queryParams && queryParams[0]) {
         int sortedLen = (int)strlen(queryParams) * 2;
-        char * sorted = (char *)nb_calloc(strlen(queryParams) * 2, sizeof(char)); // WINSCP (heap allocation)
+        char * sorted = (char *)nb_calloc(sortedLen, sizeof(char)); // WINSCP (heap allocation)
         sorted[0] = '\0';
         sort_query_string(queryParams, sorted, sortedLen);
         append(sorted);
@@ -995,7 +995,7 @@ static S3Status compose_auth_header(const RequestParams *params,
     const unsigned char *rqstData = (const unsigned char*) canonicalRequest;
     SHA256(rqstData, strlen(canonicalRequest), canonicalRequestHash);
 #endif
-    nb_free(canonicalRequest); // WINSCP (heap allocation)
+    nb_free(canonicalRequest); // WINSCP
     char canonicalRequestHashHex[2 * S3_SHA256_DIGEST_LENGTH + 1];
     size = sizeof(canonicalRequestHashHex); // WINSCP
     canonicalRequestHashHex[0] = '\0';
@@ -1010,7 +1010,7 @@ static S3Status compose_auth_header(const RequestParams *params,
     }
     const char * service = (params->bucketContext.service != NULL) ? params->bucketContext.service : S3_SERVICE; // WINSCP
     int scopeSize = 8 + strlen(awsRegion) + strlen(service) + sizeof("///aws4_request"); // WINSCP
-    char * scope = (char *)nb_calloc(scopeSize, 1); // WINSCP
+    char * scope = (char *)nb_calloc(scopeSize, sizeof(char)); // WINSCP
     snprintf(scope, scopeSize, "%.8s/%s/%s/aws4_request",
              values->requestDateISO8601, awsRegion, service); // WINSCP
 
@@ -1070,8 +1070,8 @@ static S3Status compose_auth_header(const RequestParams *params,
          (const unsigned char*) stringToSign, strlen(stringToSign),
          finalSignature, NULL);
 #endif
-    nb_free(stringToSign); // WINSCP (heap allocation)
     nb_free(accessKey); // WINSCP
+    nb_free(stringToSign); // WINSCP
 
     len = 0;
     size = sizeof(values->requestSignatureHex); // WINSCP
@@ -1208,6 +1208,7 @@ static S3Status setup_neon(Request *request,
     }
 
     char method[64];
+    memset(method, 0, sizeof(method));
     strcpy(method, "GET");
     switch (params->httpRequestType) {
     case HttpRequestTypeHEAD:

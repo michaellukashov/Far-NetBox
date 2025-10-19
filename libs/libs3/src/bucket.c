@@ -484,7 +484,7 @@ static S3Status make_list_bucket_callback(ListBucketData *lbData)
                        !strcmp(lbData->isTruncated, "1")) ? 1 : 0;
 
     // Convert the contents
-    S3ListBucketContent * contents = (S3ListBucketContent *)nb_calloc(sizeof(S3ListBucketContent), lbData->contentsCount); // WINSCP (heap allocation)
+    S3ListBucketContent * contents = (S3ListBucketContent *)nb_calloc(lbData->contentsCount, sizeof(S3ListBucketContent)); // WINSCP (heap allocation)
 
     int contentsCount = lbData->contentsCount;
     for (i = 0; i < contentsCount; i++) {
