@@ -266,7 +266,7 @@ private:
   std::unique_ptr<TSecureShell> FSecureShell;
   UnicodeString FLastDirectoryChange;
   TCurrentFSProtocol FFSProtocol{cfsUnknown};
-  TTerminal * FCommandSession{nullptr};
+  gsl::owner<TTerminal *> FCommandSession{nullptr};
   bool FAutoReadDirectory{true};
   bool FReadingCurrentDirectory{false};
   gsl::owner<bool *> FClosedOnCompletion{nullptr};
