@@ -691,8 +691,13 @@ void TS3FileSystem::SetCredentials(
   }
   FSecretAccessKey = UTF8String(SecretAccessKey);
 
-  FSecurityTokenBuf = UTF8String(SessionToken);
-  FSecurityToken = static_cast<const char *>(FSecurityTokenBuf.data());
+  // without this check, error occurs:
+  // There were headers present in the request which were not signed
+  if (!SessionToken.IsEmpty())
+  {
+    FSecurityTokenBuf = UTF8String(SessionToken);
+    FSecurityToken = FSecurityTokenBuf.data();
+  }
 }
 
 struct TLibS3CallbackData
@@ -727,13 +732,11 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FileSystem->FTerminal);
 
-  ne_set_session_private(Session, SESSION_FS_KEY, FileSystem);
-  // ne_set_read_timeout(Session, nb::ToInt32(Data->GetTimeout()));
-  // ne_set_connect_timeout(Session, nb::ToInt32(Data->GetTimeout()));
-
   SetNeonTlsInit(Session, TS3FileSystem::InitSslSession, FileSystem->FTerminal);
 
   ne_set_session_flag(Session, SE_SESSFLAG_SNDBUF, Data->FSendBuf);
+
+  ne_set_session_private(Session, SESSION_FS_KEY, FileSystem);
 
   // Data->Timeout is propagated via timeoutMs parameter of functions like S3_list_service
 
@@ -788,7 +791,7 @@ void TS3FileSystem::LibS3ResponseDataCallback(const char * Data, size_t Size, vo
   TS3FileSystem * FileSystem = static_cast<TS3FileSystem *>(CallbackData);
   if (FileSystem->FTerminal->Log->Logging && !FileSystem->FResponseIgnore)
   {
-    const UnicodeString Content = UnicodeString(UTF8String(Data, static_cast<int32_t>(Size))).Trim();
+    const UnicodeString Content = UnicodeString(UTF8String(Data, nb::ToInt32(Size))).Trim();
     FileSystem->FResponse += Content;
   }
 }
@@ -1473,11 +1476,11 @@ S3Status TS3FileSystem::LibS3ListServiceCallback(
   {
     std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
     const TTerminal * Terminal = Data.FileSystem->FTerminal;
-    File->SetTerminal(Terminal);
-    File->SetFileName(StrFromS3(BucketName));
-    File->SetType(FILETYPE_DIRECTORY);
+    File->Terminal = Terminal;
+    File->FileName = StrFromS3(BucketName);
+    File->Type = FILETYPE_DIRECTORY;
     File->SetFileOwner(Data.FileSystem->MakeRemoteToken(OwnerId, OwnerDisplayName));
-    File->SetModificationFmt(mfNone);
+    File->ModificationFmt = mfNone;
     if (Terminal->IsValidFile(File.get()))
     {
       Data.FileList->AddFile(File.release());
@@ -1530,14 +1533,14 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
           EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
           EncodeTimeVerbose(static_cast<uint16_t>(Hour), static_cast<uint16_t>(Min), static_cast<uint16_t>(Sec), 0);
         File->Modification = ConvertTimestampFromUTC(Modification);
-        File->SetModificationFmt(mfFull);
+        File->ModificationFmt = mfFull;
       }
       else
       {
-        File->SetModificationFmt(mfNone);
+        File->ModificationFmt = mfNone;
       }
 
-      File->SetSize(static_cast<int64_t>(Content->size));
+      File->Size = static_cast<int64_t>(Content->size);
       File->SetFileOwner(Data.FileSystem->MakeRemoteToken(Content->ownerId, Content->ownerDisplayName));
       if (Terminal->IsValidFile(File.get()))
       {
@@ -2916,7 +2919,7 @@ void TS3FileSystem::Sink(
       if (CopyParam->PreserveTime())
       {
         FTerminal->UpdateTargetTime(
-          LocalFileHandle, AFile->Modification(), AFile->GetModificationFmt(), FTerminal->SessionData->GetDSTMode());
+          LocalFileHandle, AFile->Modification(), AFile->ModificationFmt, FTerminal->SessionData->GetDSTMode());
       }
     }
     __finally
