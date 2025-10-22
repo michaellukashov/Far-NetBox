@@ -480,9 +480,9 @@ bool TWinSCPFileSystem::GetFindDataEx(TObjectList * PanelItems, OPERATION_MODES 
         FTerminal->ReloadDirectory();
       }
 
-      for (int32_t Index = 0; Index < GetTerminal()->GetFiles()->GetCount(); ++Index)
+      for (int32_t Index = 0; Index < GetTerminal()->Files->Count; ++Index)
       {
-        TRemoteFile * File = GetTerminal()->GetFiles()->GetFile(Index);
+        TRemoteFile * File = GetTerminal()->Files->GetFile(Index);
         DebugAssert(File);
         PanelItems->Add(new TRemoteFilePanelItem(File));
       }
