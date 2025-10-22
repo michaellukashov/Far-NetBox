@@ -395,7 +395,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
   // no longer useful
   const int32_t P = Property.LastDelimiter(L".>");
   UnicodeString Result = Property.SubString(P + 1, Property.Length() - P);
-  if ((Result[1] == L'F') && (towupper(Result[2]) == Result[2]))
+  if ((Result[1] == L'F') && (::UpCase(Result[2]) == Result[2]))
   {
     Result.Delete(1, 1);
   }
