@@ -74,7 +74,7 @@ jobs:
           fi
 
       - name: Upload result
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+        uses: actions/upload-artifact@v5
         with:
           name: FarNetBox.${{ matrix.platform }}
           path: ./*.7z
@@ -100,7 +100,7 @@ jobs:
           echo "VERSION=$VERSION_MAJOR.$VERSION_MINOR.$VERSION_PATCH.$VERSION_BUILD.$GITHUB_RUN_NUMBER">> $GITHUB_ENV
 
       - name: Download archives
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           pattern: FarNetBox.*
           path: FarNetBox/
