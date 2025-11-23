@@ -137,7 +137,7 @@ public:
   wchar_t GetType() const;
   void SetType(wchar_t AType);
   void SetTerminal(const TTerminal * Value);
-  void SetRights(const TRights * Value);
+  void SetRights(TRights * Value);
   UnicodeString GetFullFileName() const;
   bool GetHaveFullFileName() const;
   int32_t GetIconIndex() const;
@@ -205,7 +205,8 @@ public:
   __property UnicodeString ListingStr = { read = GetListingStr, write = SetListingStr };
   RWProperty<UnicodeString> ListingStr{nb::bind(&TRemoteFile::GetListingStr, this), nb::bind(&TRemoteFile::SetListingStr, this)};
   __property TRights * Rights = { read = FRights, write = SetRights };
-  RWProperty<const TRights *> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
+  const ROProperty<const TRights *> RightsConst{nb::bind(&TRemoteFile::GetRightsConst, this)};
+  RWProperty<TRights *> Rights{nb::bind(&TRemoteFile::GetRights, this), nb::bind(&TRemoteFile::SetRights, this)};
   __property UnicodeString HumanRights = { read = FHumanRights, write = FHumanRights };
   __property TTerminal * Terminal = { read = FTerminal, write = SetTerminal };
   RWProperty<const TTerminal *> Terminal{nb::bind(&TRemoteFile::GetTerminal, this), nb::bind(&TRemoteFile::SetTerminal, this)};
@@ -253,8 +254,8 @@ public:
   void SetIsSymLink(bool Value) { FIsSymLink = Value; }
   UnicodeString GetLinkTo() const { return FLinkTo; }
   void SetLinkTo(const UnicodeString & Value) { FLinkTo = Value; }
-  const TRights * GetRights() const { return FRights.get(); }
-  TRights * GetRightsNotConst() { return FRights.get(); }
+  const TRights * GetRightsConst() const { return FRights.get(); }
+  TRights * GetRights() { return FRights.get(); }
   UnicodeString GetHumanRights() const { return FHumanRights; }
   void SetHumanRights(const UnicodeString & Value) { FHumanRights = Value; }
   const TTerminal * GetTerminal() const { return FTerminal; }

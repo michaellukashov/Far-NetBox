@@ -1224,7 +1224,7 @@ void TFTPFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
       TRights Rights;
       if (AFile != nullptr)
       {
-        Rights = *AFile->GetRights();
+        Rights = *AFile->Rights();
       }
       Rights |= Properties->Rights.GetNumberSet();
       Rights &= static_cast<uint16_t>(~Properties->Rights.GetNumberUnset());
@@ -3992,9 +3992,9 @@ bool TFTPFileSystem::HandleStatus(const wchar_t * AStatus, int32_t Type)
       break;
   }
 
-  if (FTerminal->GetLog()->GetLogging() && (LogType != static_cast<TLogLineType>(-1)))
+  if (FTerminal->Log->Logging && (LogType != static_cast<TLogLineType>(-1)))
   {
-    FTerminal->GetLog()->Add(LogType, Status);
+    FTerminal->Log->Add(LogType, Status);
   }
 
   return true;
@@ -4654,11 +4654,11 @@ bool TFTPFileSystem::HandleListData(const wchar_t * Path,
           const int32_t PermissionsLen = nb::StrLength(Entry->Permissions);
           if (PermissionsLen >= 10)
           {
-            File->GetRightsNotConst()->SetText(Entry->Permissions + 1);
+            File->Rights->Text = Entry->Permissions + 1;
           }
           else if ((PermissionsLen == 3) || (PermissionsLen == 4))
           {
-            File->GetRightsNotConst()->SetOctal(Entry->Permissions);
+            File->Rights->Octal = Entry->Permissions;
           }
         }
         catch (...)

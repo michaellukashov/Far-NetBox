@@ -2790,7 +2790,7 @@ bool TryStrToSize(const UnicodeString & ASizeStr, int64_t & ASize)
       Result = (SizeStr.Length() == 1);
       if (Result)
       {
-        const wchar_t Unit = towupper(SizeStr[1]);
+        const wchar_t Unit = ::UpCase(SizeStr[1]);
         switch (Unit)
         {
           case GigaSize:

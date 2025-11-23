@@ -15,7 +15,7 @@
 
 /* Define to 1 if you have the `arc4random_buf' function. */
 // WINSCP
-#undef HAVE_ARC4RANDOM_BUF
+/* #undef HAVE_ARC4RANDOM_BUF */
 
 /* define if the compiler supports basic C++11 syntax */
 #define HAVE_CXX11 1

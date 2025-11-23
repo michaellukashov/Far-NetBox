@@ -816,6 +816,7 @@ expat_heap_increase_tolerable(XML_Parser rootParser, XmlBigCount increase,
   assert(rootParser != NULL);
   assert(increase > 0);
 
+  { // WINSCP
   XmlBigCount newTotal = 0;
   bool tolerable = true;
 
@@ -828,12 +829,14 @@ expat_heap_increase_tolerable(XML_Parser rootParser, XmlBigCount increase,
     if (newTotal >= rootParser->m_alloc_tracker.activationThresholdBytes) {
       assert(newTotal > 0);
       // NOTE: This can be +infinity when dividing by zero but not -nan
+      { // WINSCP
       const float amplification
           = (float)newTotal / (float)rootParser->m_accounting.countBytesDirect;
       if (amplification
           > rootParser->m_alloc_tracker.maximumAmplificationFactor) {
         tolerable = false;
       }
+      } // WINSCP
     }
   }
 
@@ -842,6 +845,7 @@ expat_heap_increase_tolerable(XML_Parser rootParser, XmlBigCount increase,
   }
 
   return tolerable;
+  } // WINSCP
 }
 
 #  if defined(XML_TESTING)
@@ -855,9 +859,11 @@ expat_malloc(XML_Parser parser, size_t size, int sourceLine) {
     return NULL;
   }
 
+  { // WINSCP
   const XML_Parser rootParser = getRootParserOf(parser, NULL);
   assert(rootParser->m_parentParser == NULL);
 
+  { // WINSCP
   const size_t bytesToAllocate = sizeof(size_t) + EXPAT_MALLOC_PADDING + size;
 
   if ((XmlBigCount)-1 - rootParser->m_alloc_tracker.bytesAllocated
@@ -870,6 +876,7 @@ expat_malloc(XML_Parser parser, size_t size, int sourceLine) {
     return NULL; // i.e. signal violation as out-of-memory
   }
 
+  { // WINSCP
   // Actually allocate
   void *const mallocedPtr = parser->m_mem.malloc_fcn(bytesToAllocate);
 
@@ -896,6 +903,9 @@ expat_malloc(XML_Parser parser, size_t size, int sourceLine) {
   }
 
   return (char *)mallocedPtr + sizeof(size_t) + EXPAT_MALLOC_PADDING;
+  } // WINSCP
+  } // WINSCP
+  } // WINSCP
 }
 
 #  if defined(XML_TESTING)
@@ -910,9 +920,11 @@ expat_free(XML_Parser parser, void *ptr, int sourceLine) {
     return;
   }
 
+  { // WINSCP
   const XML_Parser rootParser = getRootParserOf(parser, NULL);
   assert(rootParser->m_parentParser == NULL);
 
+  { // WINSCP
   // Extract size (to the eyes of malloc_fcn/realloc_fcn) and
   // the original pointer returned by malloc/realloc
   void *const mallocedPtr = (char *)ptr - EXPAT_MALLOC_PADDING - sizeof(size_t);
@@ -932,6 +944,8 @@ expat_free(XML_Parser parser, void *ptr, int sourceLine) {
 
   // NOTE: This may be freeing rootParser, so freeing has to come last
   parser->m_mem.free_fcn(mallocedPtr);
+  } // WINSCP
+  } // WINSCP
 }
 
 #  if defined(XML_TESTING)
@@ -951,9 +965,11 @@ expat_realloc(XML_Parser parser, void *ptr, size_t size, int sourceLine) {
     return NULL;
   }
 
+  { // WINSCP
   const XML_Parser rootParser = getRootParserOf(parser, NULL);
   assert(rootParser->m_parentParser == NULL);
 
+  { // WINSCP
   // Extract original size (to the eyes of the caller) and the original
   // pointer returned by malloc/realloc
   void *mallocedPtr = (char *)ptr - EXPAT_MALLOC_PADDING - sizeof(size_t);
@@ -1009,6 +1025,8 @@ expat_realloc(XML_Parser parser, void *ptr, size_t size, int sourceLine) {
   *(size_t *)mallocedPtr = size;
 
   return (char *)mallocedPtr + sizeof(size_t) + EXPAT_MALLOC_PADDING;
+  } // WINSCP
+  } // WINSCP
 }
 #endif // XML_GE == 1
 
@@ -1019,12 +1037,13 @@ XML_ParserCreate(const XML_Char *encodingName) {
 
 XML_Parser XMLCALL
 XML_ParserCreateNS(const XML_Char *encodingName, XML_Char nsSep) {
-  XML_Char tmp[2] = {nsSep, 0};
 #if defined(__BORLANDC__)
   // WINSCP
   XML_Char tmp[2];
   tmp[0] = nsSep;
   tmp[1] = 0;
+#else
+  XML_Char tmp[2] = {nsSep, 0};
 #endif // defined(__BORLANDC__)
   return XML_ParserCreate_MM(encodingName, NULL, tmp);
 }
@@ -1154,7 +1173,7 @@ __declspec(dllimport) int rand_s(unsigned int *);
  */
 static int
 writeRandomBytes_rand_s(void *target, size_t count) {
-  // WINSCP, we do not have rand_s in C++Builder
+  // WINSCP, we do not have rand_s in C++ Builder
   int success = 0;  /* full count bytes written? */
   const HMODULE advapi32 = _Expat_LoadLibrary(TEXT("ADVAPI32.DLL"));
 
@@ -1432,6 +1451,7 @@ parserCreate(const XML_Char *encodingName,
     parser->m_parentParser = parentParser;
   }
 
+  { // WINSCP
   // Record XML_ParserStruct allocation we did a few lines up before
   const XML_Parser rootParser = getRootParserOf(parser, NULL);
   assert(rootParser->m_parentParser == NULL);
@@ -1545,6 +1565,7 @@ parserCreate(const XML_Char *encodingName,
   }
 
   return parser;
+  } // WINSCP
 }
 
 static void
@@ -1848,6 +1869,12 @@ XML_ExternalEntityParserCreate(XML_Parser oldParser, const XML_Char *context,
   */
   if (parser->m_ns) {
     XML_Char tmp[2] = {parser->m_namespaceSeparator, 0};
+    // WINSCP
+#if defined(__BORLANDC__)
+    XML_Char tmp[2];
+    tmp[0] = parser->m_namespaceSeparator;
+    tmp[1] = 0;
+#endif // defined(__BORLANDC__)
     parser = parserCreate(encodingName, &parser->m_mem, tmp, newDtd, oldParser);
   } else {
     parser
@@ -2336,6 +2363,7 @@ XML_SetHashSalt(XML_Parser parser, unsigned long hash_salt) {
   if (parser == NULL)
     return 0;
 
+  { // WINSCP
   const XML_Parser rootParser = getRootParserOf(parser, NULL);
   assert(! rootParser->m_parentParser);
 
@@ -2344,6 +2372,7 @@ XML_SetHashSalt(XML_Parser parser, unsigned long hash_salt) {
     return 0;
   rootParser->m_hash_secret_salt = hash_salt;
   return 1;
+  } // WINSCP
 }
 
 enum XML_Status XMLCALL
@@ -4526,8 +4555,8 @@ addBinding(XML_Parser parser, PREFIX *prefix, const ATTRIBUTE_ID *attId,
 #endif
 
       { // WINSCP
-      XML_Char *temp = (XML_Char *)REALLOC(
-          parser, b->uri, sizeof(XML_Char) * (len + EXPAND_SPARE));
+      XML_Char *temp
+          = (XML_Char *)REALLOC(parser, b->uri, sizeof(XML_Char) * (len + EXPAND_SPARE));
       if (temp == NULL)
         return XML_ERROR_NO_MEMORY;
       b->uri = temp;
@@ -4554,8 +4583,7 @@ addBinding(XML_Parser parser, PREFIX *prefix, const ATTRIBUTE_ID *attId,
     }
 #endif
 
-    b->uri
-        = (XML_Char *)MALLOC(parser, sizeof(XML_Char) * (len + EXPAND_SPARE));
+    b->uri = (XML_Char *)MALLOC(parser, sizeof(XML_Char) * (len + EXPAND_SPARE));
     if (! b->uri) {
       FREE(parser, b);
       return XML_ERROR_NO_MEMORY;
@@ -5928,7 +5956,7 @@ doProlog(XML_Parser parser, const ENCODING *enc, const char *s, const char *end,
             }
 
             { // WINSCP
-            char *const new_connector = (char *)REALLOC(
+            char *const new_connector = (char *const)REALLOC(
                 parser, parser->m_groupConnector, parser->m_groupSize *= 2);
             if (new_connector == NULL) {
               parser->m_groupSize /= 2;
@@ -5950,7 +5978,7 @@ doProlog(XML_Parser parser, const ENCODING *enc, const char *s, const char *end,
 #endif
 
             { // WINSCP
-            int *const new_scaff_index = (int *)REALLOC(
+            int *const new_scaff_index = (int *const)REALLOC(
                 parser, dtd->scaffIndex, parser->m_groupSize * sizeof(int));
             if (new_scaff_index == NULL)
               return XML_ERROR_NO_MEMORY;
@@ -6397,8 +6425,7 @@ processEntity(XML_Parser parser, ENTITY *entity, XML_Bool betweenDecl,
     openEntity = *freeEntityList;
     *freeEntityList = openEntity->next;
   } else {
-    openEntity
-        = (OPEN_INTERNAL_ENTITY *)MALLOC(parser, sizeof(OPEN_INTERNAL_ENTITY));
+    openEntity = (OPEN_INTERNAL_ENTITY *)MALLOC(parser, sizeof(OPEN_INTERNAL_ENTITY));
     if (! openEntity)
       return XML_ERROR_NO_MEMORY;
   }
@@ -7207,8 +7234,8 @@ defineAttribute(ELEMENT_TYPE *type, ATTRIBUTE_ID *attId, XML_Bool isCdata,
   if (type->nDefaultAtts == type->allocDefaultAtts) {
     if (type->allocDefaultAtts == 0) {
       type->allocDefaultAtts = 8;
-      type->defaultAtts = (DEFAULT_ATTRIBUTE *)MALLOC(
-          parser, type->allocDefaultAtts * sizeof(DEFAULT_ATTRIBUTE));
+      type->defaultAtts
+          = (DEFAULT_ATTRIBUTE *)MALLOC(parser, type->allocDefaultAtts * sizeof(DEFAULT_ATTRIBUTE));
       if (! type->defaultAtts) {
         type->allocDefaultAtts = 0;
         return 0;
@@ -7235,7 +7262,7 @@ defineAttribute(ELEMENT_TYPE *type, ATTRIBUTE_ID *attId, XML_Bool isCdata,
 #endif
 
       temp = (DEFAULT_ATTRIBUTE *)REALLOC(parser, type->defaultAtts,
-                                          (count * sizeof(DEFAULT_ATTRIBUTE)));
+                     (count * sizeof(DEFAULT_ATTRIBUTE)));
       if (temp == NULL)
         return 0;
       type->allocDefaultAtts = count;
@@ -9252,7 +9279,7 @@ unsignedCharToPrintable(unsigned char c) {
     assert(0); /* never gets here */
     return "dead code";
   }
-  assert(0); /* never gets here */
+  // WINSCP assert(0); /* never gets here */
   // LCOV_EXCL_STOP
 }
 
@@ -9270,6 +9297,7 @@ getDebugLevel(const char *variableName, unsigned long defaultDebugLevel) {
   errno = 0;
   { // WINSCP
   char *afterValue = NULL;
+
   unsigned long debugLevel = strtoul(value, &afterValue, 10);
   if ((errno != 0) || (afterValue == value) || (afterValue[0] != '\0')) {
     errno = 0;

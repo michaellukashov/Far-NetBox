@@ -101,8 +101,8 @@ NB_CORE_EXPORT extern "C" void DoAssertC(char * Message, char * Filename, int32_
 #define DebugNotNull(p) (p)
 #define TraceInitPtr(p) (p)
 #define TraceInitStr(p) (p)
-#define DebugUsedParam2(p1, p2) ((&p1) == (&p2))
-#define DebugUsedParam(p) DebugUsedParam2(p, p)
+#define DebugUsedParam2(p1, p2) nb::used((p1)); nb::used((p2))
+#define DebugUsedParam(p) nb::used((p))
 #define DebugUsedArg(p)
 
 #if defined(_DEBUG)

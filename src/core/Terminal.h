@@ -33,6 +33,45 @@ class TCollectedFileList;
 struct TLocalFileHandle;
 struct TNeonCertificateData;
 class TQueueItem;
+#if defined(__BORLANDC__)
+typedef std::vector<int64_t> TCalculatedSizes;
+
+typedef void (__closure *TQueryUserEvent)
+  (TObject * Sender, const UnicodeString Query, TStrings * MoreMessages, uint32_t Answers,
+   const TQueryParams * Params, uint32_t & Answer, TQueryType QueryType, void * Arg);
+typedef void (__closure *TPromptUserEvent)
+  (TTerminal * Terminal, TPromptKind Kind, UnicodeString Name, UnicodeString Instructions,
+   TStrings * Prompts, TStrings * Results, bool & Result, void * Arg);
+typedef void (__closure *TDisplayBannerEvent)
+  (TTerminal * Terminal, UnicodeString SessionName, const UnicodeString & Banner,
+   bool & NeverShowAgain, int32_t Options, uint32_t & Params);
+typedef void (__closure *TExtendedExceptionEvent)
+  (TTerminal * Terminal, Exception * E, void * Arg);
+typedef void (__closure *TReadDirectoryEvent)(System::TObject * Sender, Boolean ReloadOnly);
+typedef void (__closure *TReadDirectoryProgressEvent)(
+  System::TObject* Sender, int32_t Progress, int32_t ResolvedLinks, bool & Cancel);
+typedef void (__closure *TProcessFileEvent)
+  (const UnicodeString FileName, const TRemoteFile * File, void * Param);
+typedef void (__closure *TProcessFileEventEx)
+  (const UnicodeString FileName, const TRemoteFile * File, void * Param, int32_t Index);
+typedef int32_t (__closure *TFileOperationEvent)
+  (void * Param1, void * Param2);
+typedef void (__closure *TSynchronizeDirectory)
+  (const UnicodeString & LocalDirectory, const UnicodeString & RemoteDirectory,
+   bool & Continue, bool Collect, const TSynchronizeOptions * Options);
+typedef void (__closure *TUpdatedSynchronizationChecklistItems)(
+  const TSynchronizeChecklist::TItemList & Items);
+typedef void (__closure *TProcessedSynchronizationChecklistItem)(
+  void * Token, const TSynchronizeChecklist::TItem * Item);
+typedef void (__closure *TDeleteLocalFileEvent)(
+  const UnicodeString FileName, bool Alternative, int32_t & Deleted);
+typedef int32_t (__closure *TDirectoryModifiedEvent)
+  (TTerminal * Terminal, const UnicodeString Directory, bool SubDirs);
+typedef void (__closure *TInformationEvent)
+  (TTerminal * Terminal, const UnicodeString & Str, int32_t Phase, const UnicodeString & Additional);
+typedef void (__closure *TCustomCommandEvent)
+  (TTerminal * Terminal, const UnicodeString & Command, bool & Handled);
+#else
 using TCalculatedSizes = nb::vector_t<int64_t>;
 
 using TQueryUserEvent = nb::FastDelegate8<void,
@@ -90,6 +129,7 @@ using TCreateLocalDirectoryEvent = nb::FastDelegate2<bool,
   const UnicodeString & /*ALocalDirName*/,
   LPSECURITY_ATTRIBUTES /*SecurityAttributes*/>;
 using TCheckForEscEvent = nb::FastDelegate0<bool>;
+#endif // defined(__BORLANDC__)
 
 constexpr const uint32_t folNone = 0x00;
 constexpr const uint32_t folAllowSkip = 0x01;
@@ -226,7 +266,7 @@ private:
   std::unique_ptr<TSecureShell> FSecureShell;
   UnicodeString FLastDirectoryChange;
   TCurrentFSProtocol FFSProtocol{cfsUnknown};
-  TTerminal * FCommandSession{nullptr};
+  gsl::owner<TTerminal *> FCommandSession{nullptr};
   bool FAutoReadDirectory{true};
   bool FReadingCurrentDirectory{false};
   gsl::owner<bool *> FClosedOnCompletion{nullptr};
@@ -267,8 +307,9 @@ private:
   bool FFileTransferAny{true};
 #if defined(__BORLANDC__)
   typedef std::map<UnicodeString, UnicodeString> TEncryptedFileNames;
-#endif // defined(__BORLANDC__)
+#else
   using TEncryptedFileNames = nb::map_t<UnicodeString, UnicodeString>;
+#endif // defined(__BORLANDC__)
   TEncryptedFileNames FEncryptedFileNames;
   nb::set_t<UnicodeString> FFoldersScannedForEncryptedFiles;
   RawByteString FEncryptKey;
@@ -723,7 +764,8 @@ public:
   __property TActionLog * ActionLog = { read = FActionLog };
   const ROProperty<TActionLog *> ActionLog{nb::bind(&TTerminal::GetActionLog, this)};
   __property TConfiguration * Configuration = { read = FConfiguration };
-  const ROProperty<const TConfiguration *> Configuration{nb::bind(&TTerminal::GetConfigurationConst, this)};
+  const ROProperty<TConfiguration *> Configuration{nb::bind(&TTerminal::GetConfiguration, this)};
+  const ROProperty<const TConfiguration *> ConfigurationConst{nb::bind(&TTerminal::GetConfigurationConst, this)};
   __property bool Active = { read = GetActive };
   const ROProperty<bool> Active{nb::bind(&TTerminal::GetActive, this)};
   __property TSessionStatus Status = { read = FStatus };
@@ -732,6 +774,7 @@ public:
   __property bool ExceptionOnFail = { read = GetExceptionOnFail, write = SetExceptionOnFail };
   RWProperty<bool> ExceptionOnFail{nb::bind(&TTerminal::GetExceptionOnFail, this), nb::bind(&TTerminal::SetExceptionOnFail, this)};
   __property TRemoteDirectory * Files = { read = FFiles };
+  ROProperty<TRemoteDirectory *> Files{nb::bind(&TTerminal::GetFiles, this)};
   __property TNotifyEvent OnChangeDirectory = { read = FOnChangeDirectory, write = FOnChangeDirectory };
   __property TReadDirectoryEvent OnReadDirectory = { read = FOnReadDirectory, write = FOnReadDirectory };
   __property TNotifyEvent OnStartReadDirectory = { read = FOnStartReadDirectory, write = FOnStartReadDirectory };
@@ -749,7 +792,9 @@ public:
   bool& UseBusyCursor{FUseBusyCursor};
   __property UnicodeString UserName = { read=GetUserName };
   const ROProperty<UnicodeString> UserName{nb::bind(&TTerminal::GetUserName, this)};
-  // __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
+#if defined(__BORLANDC__)
+  __property bool IsCapable[TFSCapability Capability] = { read = GetIsCapable };
+#endif // defined(__BORLANDC__)
   __property bool AreCachesEmpty = { read = GetAreCachesEmpty };
   __property bool CommandSessionOpened = { read = GetCommandSessionOpened };
   __property TTerminal * CommandSession = { read = GetCommandSession };
@@ -860,8 +905,6 @@ private:
   void InternalTryOpen();
   void InternalDoTryOpen();
   void InitFileSystem();
-
-  // void AfterMoveFiles(TStrings * AFileList);
 };
 
 class NB_CORE_EXPORT TSecondaryTerminal : public TTerminal
@@ -887,9 +930,9 @@ protected:
   virtual void DirectoryLoaded(TRemoteFileList * FileList) override;
   virtual void DirectoryModified(const UnicodeString & APath,
     bool SubDirs) override;
-  virtual const TTerminal * GetPasswordSource() const override { return FMainTerminal; }
   virtual TTerminal * GetPrimaryTerminal() override;
 
+  virtual const TTerminal * GetPasswordSource() const override { return FMainTerminal; }
 private:
   TTerminal * FMainTerminal{nullptr};
 };
@@ -909,6 +952,7 @@ public:
 #if defined(__BORLANDC__)
   __property TTerminal * Terminals[int32_t Index]  = { read=GetTerminal };
 #endif // defined(__BORLANDC__)
+  const ROIndexedProperty<TTerminal *> Terminals{nb::bind(&TTerminalList::GetTerminal, this)};
 
 protected:
   virtual TTerminal * CreateTerminal(TSessionData * Data);
@@ -1083,7 +1127,11 @@ private:
     bool Recursed{false};
     int32_t State{0};
   };
+#if defined(__BORLANDC__)
+  typedef std::vector<TFileData> TFileDataList;
+#else
   using TFileDataList = nb::vector_t<TFileData>;
+#endif // defined(__BORLANDC__)
   TFileDataList FList;
 };
 

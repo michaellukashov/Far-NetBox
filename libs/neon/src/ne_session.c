@@ -121,7 +121,7 @@ void ne_session_destroy(ne_session *sess)
     if (sess->socks_password) ne_free(sess->socks_password);
 
 #ifdef NE_HAVE_SSL
-    if (sess->ssl_context && sess->ssl_context->ctx)
+    if (sess->ssl_context)
         ne_ssl_context_destroy(sess->ssl_context);
 
     if (sess->server_cert)

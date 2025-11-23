@@ -9,19 +9,29 @@
 #include "HierarchicalStorage.h"
 #include "Usage.h"
 
+#if defined(__BORLANDC__)
+#define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
+  if (PROPERTY != value) { F ## PROPERTY = value; Changed(); APPLY; }
+#else
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
   do { if (Get ## PROPERTY() != Value) { F ## PROPERTY = Value; Changed(); APPLY; } } while(0)
 #define SET_CONFIG_PROPERTY_EX2(PROPERTY, APPLY) \
   do { if (F ## PROPERTY != Value) { F ## PROPERTY = Value; Changed(); APPLY; } } while(0)
+#endif // defined(__BORLANDC__)
 #define SET_CONFIG_PROPERTY(PROPERTY) \
   SET_CONFIG_PROPERTY_EX(PROPERTY, )
 #define SET_CONFIG_PROPERTY2(PROPERTY) \
   SET_CONFIG_PROPERTY_EX2(PROPERTY, )
 
+#if defined(__BORLANDC__)
+extern const wchar_t * AutoSwitchNames;
+extern const wchar_t * NotAutoSwitchNames;
+#else
 constexpr const int32_t CONST_DEFAULT_NUMBER_OF_RETRIES = 2;
 
 constexpr const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 constexpr const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
+#endif // defined(__BORLANDC__)
 enum TAutoSwitch { asOn, asOff, asAuto }; // Has to match PuTTY FORCE_ON, FORCE_OFF, AUTO
 
 class TStoredSessionList;
@@ -49,7 +59,6 @@ class TSshHostCAList final
 public:
   TSshHostCAList() noexcept = default;
   TSshHostCAList(const TSshHostCAList & Other) { operator =(Other); }
-  explicit TSshHostCAList(const TSshHostCA::TList & List);
   TSshHostCAList & operator =(const TSshHostCAList & Other);
   void Default();
   const TSshHostCA::TList & GetList() const;
@@ -60,6 +69,7 @@ public:
   void Save(THierarchicalStorage * Storage);
   void Load(THierarchicalStorage * Storage);
 
+  explicit TSshHostCAList(const TSshHostCA::TList & List);
 private:
   TSshHostCA::TList FList;
 };
@@ -323,9 +333,9 @@ public:
   void BeginUpdate();
   void EndUpdate();
   void DontSave();
-  void LoadDirectoryChangesCache(const UnicodeString & SessionKey,
+  void LoadDirectoryChangesCache(const UnicodeString & ASessionKey,
     TRemoteDirectoryChangesCache * DirectoryChangesCache);
-  void SaveDirectoryChangesCache(const UnicodeString & SessionKey,
+  void SaveDirectoryChangesCache(const UnicodeString & ASessionKey,
     const TRemoteDirectoryChangesCache * DirectoryChangesCache);
   TStrings * LoadDirectoryStatisticsCache(
     const UnicodeString & SessionKey, const UnicodeString & Path, const TCopyParamType & CopyParam);
@@ -372,7 +382,7 @@ public:
   __property void * ApplicationInfo  = { read=GetApplicationInfo };
   const ROProperty<void *> ApplicationInfo{nb::bind(&TConfiguration::GetApplicationInfo, this)};
   __property TUsage * Usage = { read = FUsage };
-  const ROProperty<TUsage*> Usage{nb::bind(&TConfiguration::GetUsage, this)};
+  const ROProperty<TUsage *> Usage{nb::bind(&TConfiguration::GetUsage, this)};
   __property bool CollectUsage = { read = GetCollectUsage, write = SetCollectUsage };
   RWProperty<bool> CollectUsage{nb::bind(&TConfiguration::GetCollectUsage, this), nb::bind(&TConfiguration::SetCollectUsage, this)};
   __property UnicodeString StoredSessionsSubKey = {read=GetStoredSessionsSubKey};
@@ -396,7 +406,7 @@ public:
   const ROProperty<UnicodeString> VersionStr{nb::bind(&TConfiguration::GetVersionStr, this)};
   __property UnicodeString Version = { read=GetVersion };
   const ROProperty<UnicodeString> Version {nb::bind(&TConfiguration::GetVersion, this)};
-  __property int CompoundVersion = { read=GetCompoundVersion };
+  __property int32_t CompoundVersion = { read=GetCompoundVersion };
   const ROProperty<int32_t> CompoundVersion{nb::bind(&TConfiguration::GetCompoundVersion, this)};
   __property UnicodeString ProductVersion = { read=GetProductVersion };
   const ROProperty<UnicodeString> ProductVersion{nb::bind(&TConfiguration::GetProductVersionStr, this)};
@@ -410,11 +420,11 @@ public:
   const ROProperty<bool> LogToFile{nb::bind(&TConfiguration::GetLogToFile, this)};
   __property bool LogFileAppend  = { read=FLogFileAppend, write=SetLogFileAppend };
   __property bool LogSensitive  = { read=FLogSensitive, write=SetLogSensitive };
-  __property __int64 LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
-  __property int LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
-  __property int LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
+  __property int64_t LogMaxSize  = { read=FLogMaxSize, write=SetLogMaxSize };
+  __property int32_t LogMaxCount  = { read=FLogMaxCount, write=SetLogMaxCount };
+  __property int32_t LogProtocol  = { read=FLogProtocol, write=SetLogProtocol };
   RWProperty<int32_t> LogProtocol{nb::bind(&TConfiguration::GetLogProtocol, this), nb::bind(&TConfiguration::SetLogProtocol, this)};
-  __property int ActualLogProtocol  = { read=FActualLogProtocol };
+  __property int32_t ActualLogProtocol  = { read=FActualLogProtocol };
   const ROProperty<int32_t> ActualLogProtocol{nb::bind(&TConfiguration::GetActualLogProtocol, this)};
   __property bool LogActions  = { read=FLogActions, write=SetLogActions };
   __property bool LogActionsRequired  = { read=FLogActionsRequired, write=FLogActionsRequired };

@@ -95,6 +95,44 @@ UnicodeString S3LibDefaultRegion()
   return StrFromS3(S3_DEFAULT_REGION);
 }
 
+bool IsAmazonS3SessionData(TSessionData * Data)
+{
+  return IsDomainOrSubdomain(Data->HostNameExpanded, S3HostName);
+}
+
+#if defined(__BORLANDC__)
+
+static void NeedS3Config(
+  UnicodeString & FileName, TDateTime & TimeStamp, std::unique_ptr<TCustomIniFile> & File,
+  const UnicodeString & DefaultName, const UnicodeString & EnvName)
+{
+  if (FileName.IsEmpty())
+  {
+    FileName = GetEnvironmentVariable(EnvName);
+    if (FileName.IsEmpty())
+    {
+      UnicodeString ProfilePath = GetShellFolderPath(CSIDL_PROFILE);
+      UnicodeString DefaultFileName = IncludeTrailingBackslash(ProfilePath) + L".aws\\" + DefaultName;
+      if (FileExists(DefaultFileName))
+      {
+        FileName = DefaultFileName;
+      }
+    }
+  }
+
+  TDateTime CurrentTimestamp;
+  FileAge(FileName, CurrentTimestamp);
+  if (TimeStamp != CurrentTimestamp)
+  {
+    TimeStamp = CurrentTimestamp;
+    // TMemIniFile silently ignores empty paths or non-existing files
+    AppLogFmt("Reading AWS '%s' file", FileName);
+    File.reset(new TMemIniFile(FileName));
+  }
+}
+
+#endif // defined(__BORLANDC__)
+
 static UnicodeString S3CredentialsFileName;
 static TDateTime S3CredentialsTimestamp;
 #if defined(__BORLANDC__)
@@ -315,7 +353,7 @@ static UnicodeString GetS3ConfigValue(
   {
     if (S3SecurityProfileChecked && (S3CredentialsExpiration != TDateTime()) && (IncHour(S3CredentialsExpiration, -1) < Now()))
     {
-      AppLog(L"AWS session token or security credentials have expired or are close to expiration, will retrieve new");
+      AppLog("AWS session token or security credentials have expired or are close to expiration, will retrieve new");
       S3SecurityProfileChecked = false;
     }
 
@@ -330,10 +368,10 @@ static UnicodeString GetS3ConfigValue(
       {
         const UnicodeString AWSAPI = DefaultStr(Configuration->AWSAPI, L"http://169.254.169.254/latest/");
 
-        int32_t ConnectTimeout = StrToIntDef(GetEnvironmentVariable(L"AWS_METADATA_SERVICE_TIMEOUT"), 1);
+        int32_t ConnectTimeout = StrToIntDef(GetEnvironmentVariable("AWS_METADATA_SERVICE_TIMEOUT"), 1);
         UnicodeString TokenUrl = AWSAPI + L"api/token";
 
-        AppLogFmt(L"Trying to create IMDSv2 session token via %s", (TokenUrl));
+        AppLogFmt("Trying to create IMDSv2 session token via %s", TokenUrl);
         try
         {
           std::unique_ptr<THttp> Http(CreateHttp(TokenUrl, ConnectTimeout));
@@ -345,27 +383,27 @@ static UnicodeString GetS3ConfigValue(
           Http->Put(EmptyStr);
           S3SessionToken = Http->Response.Trim();
           S3CredentialsExpiration = TokenExpiration;
-          AppLogFmt(L"Created IMDSv2 session token: %s, with expiration: %s", (S3SessionToken, StandardTimestamp(TokenExpiration)));
+          AppLogFmt("Created IMDSv2 session token: %s, with expiration: %s", S3SessionToken, StandardTimestamp(TokenExpiration));
         }
         catch (Exception & E)
         {
           UnicodeString Message;
           ExceptionMessage(&E, Message);
-          AppLogFmt(L"Error creating IMDSv2 session token: %s", (Message));
+          AppLogFmt("Error creating IMDSv2 session token: %s", Message);
         }
 
         const UnicodeString SecurityCredentialsUrl = AWSAPI + L"meta-data/iam/security-credentials/";
-        AppLogFmt(L"Retrieving AWS security credentials from %s", (SecurityCredentialsUrl));
+        AppLogFmt("Retrieving AWS security credentials from %s", SecurityCredentialsUrl);
         S3SecurityProfile = ReadSecurityUrl(SecurityCredentialsUrl, ConnectTimeout);
 
         if (S3SecurityProfile.IsEmpty())
         {
-          AppLog(L"No AWS security credentials role detected");
+          AppLog("No AWS security credentials role detected");
         }
         else
         {
           UnicodeString SecurityProfileUrl = SecurityCredentialsUrl + EncodeUrlString(S3SecurityProfile);
-          AppLogFmt(L"AWS security credentials role detected: %s, retrieving %s", S3SecurityProfile, SecurityProfileUrl);
+          AppLogFmt("AWS security credentials role detected: %s, retrieving %s", S3SecurityProfile, SecurityProfileUrl);
           const UnicodeString ProfileDataStr = ReadSecurityUrl(SecurityProfileUrl);
 
           std::unique_ptr<TJSONValue> ProfileDataValue(TJSONObject::ParseJSONValue(ProfileDataStr));
@@ -377,7 +415,7 @@ static UnicodeString GetS3ConfigValue(
           TJSONValue * CodeValue = ProfileData->Values[L"Code"];
           if (CodeValue == nullptr)
           {
-            throw new Exception(L"Missing \"Code\" value");
+            throw new Exception("Missing \"Code\" value");
           }
           UnicodeString Code = CodeValue->Value();
           if (!SameText(Code, L"Success"))
@@ -387,11 +425,11 @@ static UnicodeString GetS3ConfigValue(
           TJSONValue * ExpirationValue = ProfileData->Values[L"Expiration"];
           if (ExpirationValue == nullptr)
           {
-            throw new Exception(L"Missing \"Expiration\" value");
+            throw new Exception("Missing \"Expiration\" value");
           }
           UnicodeString ExpirationStr = ExpirationValue->Value();
           TDateTime CredentialsExpiration = ParseExpiration(ExpirationStr);
-          AppLogFmt(L"Credentials expiration: %s", (StandardTimestamp(CredentialsExpiration)));
+          AppLogFmt("Credentials expiration: %s", StandardTimestamp(CredentialsExpiration));
           if ((S3CredentialsExpiration == TDateTime()) ||
               (CredentialsExpiration < S3CredentialsExpiration))
           {
@@ -407,14 +445,14 @@ static UnicodeString GetS3ConfigValue(
             S3Credentials.insert(std::make_pair(Name, Pair->JsonValue->Value()));
             AddToList(Names, Name, L", ");
           }
-          AppLogFmt(L"Response contains following values: %s", Names);
+          AppLogFmt("Response contains following values: %s", Names);
         }
       }
       catch (Exception & E)
       {
         UnicodeString Message;
         ExceptionMessage(&E, Message);
-        AppLogFmt(L"Error retrieving AWS security credentials role: %s", Message);
+        AppLogFmt("Error retrieving AWS security credentials role: %s", Message);
       }
     }
 
@@ -447,6 +485,12 @@ UnicodeString S3EnvSessionToken(const UnicodeString & Profile, UnicodeString * S
 {
   return GetS3ConfigValue(Profile, AWS_SESSION_TOKEN, L"Token", Source);
 }
+
+UnicodeString S3EnvRoleArn(const UnicodeString & Profile, UnicodeString * Source, bool OnlyCached)
+{
+  return GetS3ConfigValue(Profile, AWS_ROLE_ARN, AWS_ROLE_ARN_KEY, EmptyStr, Source, OnlyCached);
+}
+
 
 constexpr const int32_t TS3FileSystem::S3MinMultiPartChunkSize = 5 * 1024 * 1024;
 constexpr const int32_t TS3FileSystem::S3MaxMultiPartChunks = 10000;
@@ -499,10 +543,18 @@ void TS3FileSystem::Open()
   FSessionInfo.LoginTime = Now();
   FSessionInfo.CertificateVerifiedManually = false;
 
-  FLibS3Protocol = (Data->GetFtps() != ftpsNone) ? S3ProtocolHTTPS : S3ProtocolHTTP;
+  if (Data->Ftps != ftpsNone)
+  {
+    FLibS3Protocol = S3ProtocolHTTPS;
+    RequireTls();
+  }
+  else
+  {
+    FLibS3Protocol = S3ProtocolHTTP;
+  }
 
   UnicodeString S3Profile;
-  if (Data->FS3CredentialsEnv)
+  if (Data->S3CredentialsEnv)
   {
     S3Profile = Data->S3Profile;
   }
@@ -517,7 +569,7 @@ void TS3FileSystem::Open()
 #endif // defined(__BORLANDC__)
   }
 
-  UnicodeString AccessKeyId = Data->GetUserNameExpanded();
+  UnicodeString AccessKeyId = Data->UserNameExpanded;
   if (AccessKeyId.IsEmpty() && !Data->FingerprintScan)
   {
     if (!FTerminal->PromptUser(Data, pkUserName, LoadStr(S3_ACCESS_KEY_ID_TITLE), L"",
@@ -526,23 +578,18 @@ void TS3FileSystem::Open()
       FTerminal->FatalError(nullptr, LoadStr(CREDENTIALS_NOT_SPECIFIED));
     }
   }
-  FAccessKeyId = UTF8String(AccessKeyId);
-  if (FAccessKeyId.Length() > S3_MAX_ACCESS_KEY_ID_LENGTH)
-  {
-    FAccessKeyId.SetLength(S3_MAX_ACCESS_KEY_ID_LENGTH);
-  }
 
   UnicodeString Password = Data->Password;
   if (Password.IsEmpty() && Data->FS3CredentialsEnv)
   {
-    UnicodeString PasswordSource;
 #if defined(__BORLANDC__)
+    UnicodeString PasswordSource;
     Password = S3EnvPassword(S3Profile, &PasswordSource);
-#endif // defined(__BORLANDC__)
     if (!Password.IsEmpty())
     {
       FTerminal->LogEvent(FORMAT("Password (secret access key) read from %s", PasswordSource));
     }
+#endif // defined(__BORLANDC__)
   }
   UnicodeString SecretAccessKey = UTF8String(NormalizeString(Password)).data();
   if (SecretAccessKey.IsEmpty() && !Data->FingerprintScan)
@@ -553,10 +600,9 @@ void TS3FileSystem::Open()
       FTerminal->FatalError(nullptr, LoadStr(CREDENTIALS_NOT_SPECIFIED));
     }
   }
-  FSecretAccessKey = UTF8String(SecretAccessKey);
 
-  UnicodeString SessionToken = Data->FS3SessionToken;
-  if (SessionToken.IsEmpty() && Data->FS3CredentialsEnv)
+  UnicodeString SessionToken = Data->S3SessionToken;
+  if (SessionToken.IsEmpty() && Data->S3CredentialsEnv)
   {
     UnicodeString SessionTokenSource;
 #if defined(__BORLANDC__)
@@ -567,11 +613,8 @@ void TS3FileSystem::Open()
       FTerminal->LogEvent(FORMAT("Session token read from %s", SessionTokenSource));
     }
   }
-  if (!SessionToken.IsEmpty())
-  {
-    FSecurityTokenBuf = UTF8String(SessionToken);
-    FSecurityToken = FSecurityTokenBuf.data();
-  }
+
+  SetCredentials(AccessKeyId, SecretAccessKey, SessionToken);
 
   FHostName = UTF8String(Data->HostNameExpanded);
   FPortSuffix = UTF8String();
@@ -593,10 +636,31 @@ void TS3FileSystem::Open()
 
   if (IsGoogleCloud())
   {
-    FTerminal->LogEvent(L"Google Cloud detected.");
+    FTerminal->LogEvent("Google Cloud detected.");
   }
 
-  S3_set_request_context_requester_pays(FRequestContext, Data->FS3RequesterPays);
+  S3_set_request_context_requester_pays(FRequestContext, (int)Data->S3RequesterPays());
+
+  if (IsAmazonS3SessionData(Data))
+  {
+    UnicodeString RoleArn = Data->S3RoleArn;
+    if (RoleArn.IsEmpty())
+    {
+#if defined(__BORLANDC__)
+      UnicodeString RoleArnSource;
+      RoleArn = S3EnvRoleArn(S3Profile, &RoleArnSource);
+      if (!RoleArn.IsEmpty())
+      {
+        FTerminal->LogEvent(FORMAT("Role ARN read from %s", RoleArnSource));
+      }
+#endif // defined(__BORLANDC__)
+    }
+
+    if (!RoleArn.IsEmpty())
+    {
+      AssumeRole(RoleArn);
+    }
+  }
 
   FActive = false;
   try
@@ -615,6 +679,25 @@ void TS3FileSystem::Open()
     FTerminal->FatalError(&E, LoadStr(CONNECTION_FAILED));
   }
   FActive = true;
+}
+
+void TS3FileSystem::SetCredentials(
+  const UnicodeString & AccessKeyId, const UnicodeString & SecretAccessKey, const UnicodeString & SessionToken)
+{
+  FAccessKeyId = UTF8String(AccessKeyId);
+  if (FAccessKeyId.Length() > S3_MAX_ACCESS_KEY_ID_LENGTH)
+  {
+    FAccessKeyId.SetLength(S3_MAX_ACCESS_KEY_ID_LENGTH);
+  }
+  FSecretAccessKey = UTF8String(SecretAccessKey);
+
+  // without this check, error occurs:
+  // There were headers present in the request which were not signed
+  if (!SessionToken.IsEmpty())
+  {
+    FSecurityTokenBuf = UTF8String(SessionToken);
+    FSecurityToken = FSecurityTokenBuf.data();
+  }
 }
 
 struct TLibS3CallbackData
@@ -649,14 +732,11 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
     Session, Data->GetProxyMethod(), Data->GetProxyHost(), Data->GetProxyPort(),
     Data->GetProxyUsername(), Data->GetProxyPassword(), FileSystem->FTerminal);
 
-  ne_set_read_timeout(Session, nb::ToInt32(Data->GetTimeout()));
-  ne_set_connect_timeout(Session, nb::ToInt32(Data->GetTimeout()));
-
-  ne_set_session_private(Session, SESSION_FS_KEY, FileSystem);
-
   SetNeonTlsInit(Session, TS3FileSystem::InitSslSession, FileSystem->FTerminal);
 
   ne_set_session_flag(Session, SE_SESSFLAG_SNDBUF, Data->FSendBuf);
+
+  ne_set_session_private(Session, SESSION_FS_KEY, FileSystem);
 
   // Data->Timeout is propagated via timeoutMs parameter of functions like S3_list_service
 
@@ -665,7 +745,7 @@ void TS3FileSystem::LibS3SessionCallback(ne_session_s * Session, void * Callback
 
 void TS3FileSystem::InitSslSessionImpl(ssl_st * Ssl, void * /* ne_session * Session */)
 {
-  SetupSsl(Ssl, FTerminal->GetSessionData()->GetMinTlsVersion(), FTerminal->GetSessionData()->GetMaxTlsVersion());
+  SetupSsl(Ssl, FTerminal->SessionData->MinTlsVersion, FTerminal->SessionData->MaxTlsVersion);
 }
 
 int32_t TS3FileSystem::LibS3SslCallback(int32_t Failures, const ne_ssl_certificate_s * Certificate, void * CallbackData)
@@ -709,9 +789,9 @@ S3Status TS3FileSystem::LibS3ResponsePropertiesCallback(const S3ResponseProperti
 void TS3FileSystem::LibS3ResponseDataCallback(const char * Data, size_t Size, void * CallbackData)
 {
   TS3FileSystem * FileSystem = static_cast<TS3FileSystem *>(CallbackData);
-  if (FileSystem->FTerminal->GetLog()->GetLogging() && !FileSystem->FResponseIgnore)
+  if (FileSystem->FTerminal->Log->Logging && !FileSystem->FResponseIgnore)
   {
-    const UnicodeString Content = UnicodeString(UTF8String(Data, static_cast<int32_t>(Size))).Trim();
+    const UnicodeString Content = UnicodeString(UTF8String(Data, nb::ToInt32(Size))).Trim();
     FileSystem->FResponse += Content;
   }
 }
@@ -738,11 +818,11 @@ void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3Error
     UnicodeString ErrorDetails;
     if (Error->resource != nullptr)
     {
-      AddToList(ErrorDetails, FMTLOAD(S3_ERROR_RESOURCE, StrFromS3(Error->resource)), L"\n");
+      AddToList(ErrorDetails, FMTLOAD(S3_ERROR_RESOURCE, StrFromS3(Error->resource)), "\n");
     }
     if (Error->furtherDetails != nullptr)
     {
-      AddToList(ErrorDetails, FMTLOAD(S3_ERROR_FURTHER_DETAILS, StrFromS3(Error->furtherDetails)), L"\n");
+      AddToList(ErrorDetails, FMTLOAD(S3_ERROR_FURTHER_DETAILS, StrFromS3(Error->furtherDetails)), "\n");
     }
     if (Error->extraDetailsCount)
     {
@@ -751,17 +831,17 @@ void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3Error
       {
         UnicodeString DetailName = StrFromS3(Error->extraDetails[I].name);
         UnicodeString DetailValue = StrFromS3(Error->extraDetails[I].value);
-        if (SameText(DetailName, L"Region"))
+        if (SameText(DetailName, "Region"))
         {
           Data.RegionDetail = DetailValue;
         }
-        else if (SameText(DetailName, L"Endpoint"))
+        else if (SameText(DetailName, "Endpoint"))
         {
           Data.EndpointDetail = DetailValue;
         }
-        AddToList(ExtraDetails, FORMAT("%s: %s", DetailName, DetailValue), L", ");
+        AddToList(ExtraDetails, FORMAT("%s: %s", DetailName, DetailValue), ", ");
       }
-      AddToList(ErrorDetails, LoadStr(S3_ERROR_EXTRA_DETAILS) + ExtraDetails, L"\n");
+      AddToList(ErrorDetails, LoadStr(S3_ERROR_EXTRA_DETAILS) + ExtraDetails, "\n");
     }
 
     if (!ErrorDetails.IsEmpty())
@@ -773,7 +853,7 @@ void TS3FileSystem::LibS3ResponseCompleteCallback(S3Status Status, const S3Error
 
   if (!FileSystem->FResponse.IsEmpty() && (FileSystem->FTerminal->Configuration->ActualLogProtocol >= 0))
   {
-    FileSystem->FTerminal->GetLog()->Add(llOutput, FileSystem->FResponse);
+    FileSystem->FTerminal->Log->Add(llOutput, FileSystem->FResponse);
   }
 }
 
@@ -805,7 +885,7 @@ void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData & Data, bool FatalO
         break;
 
       case S3StatusNameLookupError:
-        Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), L"%HOST%", FTerminal->GetSessionData()->GetHostNameExpanded());
+        Error = ReplaceStr(LoadStr(NET_TRANSL_HOST_NOT_EXIST2), "%HOST%", FTerminal->SessionData->HostNameExpanded);
         FatalCandidate = true;
         break;
 
@@ -823,7 +903,7 @@ void TS3FileSystem::CheckLibS3Error(const TLibS3CallbackData & Data, bool FatalO
     if (!Error.IsEmpty())
     {
       Details = Data.ErrorMessage;
-      AddToList(Details, Data.ErrorDetails, L"\n");
+      AddToList(Details, Data.ErrorDetails, "\n");
     }
     else
     {
@@ -865,10 +945,11 @@ struct TLibS3XmlCallbackData : TLibS3CallbackData
   RawByteString Contents;
 };
 
-const UnicodeString AssumeRoleVersion(TraceInitStr(L"2011-06-15"));
+const UnicodeString AssumeRoleVersion(TraceInitStr("2011-06-15"));
 const UnicodeString AssumeRoleNamespace(TraceInitStr(FORMAT("https://sts.amazonaws.com/doc/%s/", AssumeRoleVersion)));
 
 #if defined(__BORLANDC__)
+
 static _di_IXMLNode NeedNode(const _di_IXMLNodeList & NodeList, const UnicodeString & Name, const UnicodeString & Namespace)
 {
   _di_IXMLNode Result = NodeList->FindNode(Name, Namespace);
@@ -892,6 +973,7 @@ static const _di_IXMLDocument CreateDocumentFromXML(const TLibS3XmlCallbackData 
   Result->LoadFromXML(UTFToString(Data.Contents));
   return Result;
 }
+
 #endif // defined(__BORLANDC__)
 
 void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
@@ -944,17 +1026,17 @@ void TS3FileSystem::AssumeRole(const UnicodeString & RoleArn)
 
 #if defined(__BORLANDC__)
     const _di_IXMLDocument Document = CreateDocumentFromXML(Data, TParseOptions());
-    _di_IXMLNode ResponseNode = AssumeRoleNeedNode(Document->ChildNodes, L"AssumeRoleResponse");
-    _di_IXMLNode ResultNode = AssumeRoleNeedNode(ResponseNode->ChildNodes, L"AssumeRoleResult");
-    _di_IXMLNode CredentialsNode = AssumeRoleNeedNode(ResultNode->ChildNodes, L"Credentials");
-    UnicodeString AccessKeyId = AssumeRoleNeedNode(CredentialsNode->ChildNodes, L"AccessKeyId")->Text;
-    UnicodeString SecretAccessKey = AssumeRoleNeedNode(CredentialsNode->ChildNodes, L"SecretAccessKey")->Text;
-    UnicodeString SessionToken = AssumeRoleNeedNode(CredentialsNode->ChildNodes, L"SessionToken")->Text;
-    UnicodeString ExpirationStr = AssumeRoleNeedNode(CredentialsNode->ChildNodes, L"Expiration")->Text;
+    _di_IXMLNode ResponseNode = AssumeRoleNeedNode(Document->ChildNodes, "AssumeRoleResponse");
+    _di_IXMLNode ResultNode = AssumeRoleNeedNode(ResponseNode->ChildNodes, "AssumeRoleResult");
+    _di_IXMLNode CredentialsNode = AssumeRoleNeedNode(ResultNode->ChildNodes, "Credentials");
+    UnicodeString AccessKeyId = AssumeRoleNeedNode(CredentialsNode->ChildNodes, "AccessKeyId")->Text;
+    UnicodeString SecretAccessKey = AssumeRoleNeedNode(CredentialsNode->ChildNodes, "SecretAccessKey")->Text;
+    UnicodeString SessionToken = AssumeRoleNeedNode(CredentialsNode->ChildNodes, "SessionToken")->Text;
+    UnicodeString ExpirationStr = AssumeRoleNeedNode(CredentialsNode->ChildNodes, "Expiration")->Text;
 
     FTerminal->LogEvent(FORMAT("Assumed role \"%s\".", RoleArn));
     FTerminal->LogEvent(FORMAT("New acess key is: %s", AccessKeyId));
-    if (FTerminal->Configuration->LogSensitive)
+    if (Configuration->LogSensitive)
     {
       FTerminal->LogEvent(FORMAT("Secret access key: %s", SecretAccessKey));
       FTerminal->LogEvent(FORMAT("Session token: %s", SessionToken));
@@ -978,7 +1060,7 @@ S3Status TS3FileSystem::LibS3XmlDataCallback(int32_t BufferSize, const char * Bu
   TLibS3XmlCallbackData & Data = *static_cast<TLibS3XmlCallbackData *>(CallbackData);
   if (Data.Contents.Length() + BufferSize > 1024 * 1024)
   {
-    throw Exception(L"Too much data");
+    throw Exception("Too much data");
   }
   Data.Contents += RawByteString(Buffer, BufferSize);
   return S3StatusOK;
@@ -995,7 +1077,7 @@ int32_t TS3FileSystem::LibS3XmlDataToCallback(int32_t BufferSize, char * Buffer,
 
 UnicodeString TS3FileSystem::GetFolderKey(const UnicodeString & AKey) const
 {
-  return AKey + L"/";
+  return AKey + "/";
 }
 
 void TS3FileSystem::ParsePath(const UnicodeString & APath, UnicodeString & BucketName, UnicodeString & AKey)
@@ -1005,14 +1087,13 @@ void TS3FileSystem::ParsePath(const UnicodeString & APath, UnicodeString & Bucke
   {
     Path.Delete(1, 1);
   }
-  const int32_t P = Path.Pos(L"/");
-#if defined(__BORLANDC__)
+  const int32_t P = Path.Pos("/");
   UnicodeString Result;
-#endif // defined(__BORLANDC__)
+  nb::used(Result);
   if (P == 0)
   {
     BucketName = Path;
-    AKey = L"";
+    AKey = "";
   }
   else
   {
@@ -1096,7 +1177,7 @@ TLibS3BucketContext TS3FileSystem::GetBucketContext(const UnicodeString & ABucke
     if (I != FHostNames.end())
     {
       HostName = I->second;
-      if (SameText(HostName.SubString(1, ABucketName.Length() + 1), ABucketName + L"."))
+      if (SameText(HostName.SubString(1, ABucketName.Length() + 1), ABucketName + "."))
       {
         HostName.Delete(1, ABucketName.Length() + 1);
         // Even when using path-style URL Amazon seems to redirect us to bucket hostname and
@@ -1188,13 +1269,13 @@ bool TS3FileSystem::GetActive() const
 
 void TS3FileSystem::CollectUsage()
 {
-  if (IsDomainOrSubdomain(FTerminal->SessionData->HostNameExpanded, S3HostName))
+  if (IsAmazonS3SessionData(FTerminal->SessionData))
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsS3Amazon");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsS3Amazon");
   }
   else
   {
-    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsS3Other");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsS3Other");
   }
 }
 
@@ -1216,7 +1297,7 @@ bool TS3FileSystem::TemporaryTransferFile(const UnicodeString & /*AFileName*/)
 bool TS3FileSystem::GetStoredCredentialsTried() const
 {
   // if we have one, we always try it
-  return !FTerminal->GetSessionData()->GetPassword().IsEmpty();
+  return !FTerminal->SessionData->Password().IsEmpty();
 }
 
 UnicodeString TS3FileSystem::GetUserName() const
@@ -1323,18 +1404,18 @@ void TS3FileSystem::ReadCurrentDirectory()
 {
   if (FCachedDirectoryChange.IsEmpty())
   {
-    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString(L"/") : FCurrentDirectory;
+    FCurrentDirectory = FCurrentDirectory.IsEmpty() ? UnicodeString("/") : FCurrentDirectory;
   }
   else
   {
     FCurrentDirectory = FCachedDirectoryChange;
-    FCachedDirectoryChange = L"";
+    FCachedDirectoryChange = "";
   }
 }
 
 void TS3FileSystem::HomeDirectory()
 {
-  ChangeDirectory(L"/");
+  ChangeDirectory("/");
 }
 
 void TS3FileSystem::AnnounceFileListOperation()
@@ -1395,11 +1476,11 @@ S3Status TS3FileSystem::LibS3ListServiceCallback(
   {
     std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
     const TTerminal * Terminal = Data.FileSystem->FTerminal;
-    File->SetTerminal(Terminal);
-    File->SetFileName(StrFromS3(BucketName));
-    File->SetType(FILETYPE_DIRECTORY);
+    File->Terminal = Terminal;
+    File->FileName = StrFromS3(BucketName);
+    File->Type = FILETYPE_DIRECTORY;
     File->SetFileOwner(Data.FileSystem->MakeRemoteToken(OwnerId, OwnerDisplayName));
-    File->SetModificationFmt(mfNone);
+    File->ModificationFmt = mfNone;
     if (Terminal->IsValidFile(File.get()))
     {
       Data.FileList->AddFile(File.release());
@@ -1452,14 +1533,14 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
           EncodeDateVerbose(static_cast<uint16_t>(Year), static_cast<uint16_t>(Month), static_cast<uint16_t>(Day)) +
           EncodeTimeVerbose(static_cast<uint16_t>(Hour), static_cast<uint16_t>(Min), static_cast<uint16_t>(Sec), 0);
         File->Modification = ConvertTimestampFromUTC(Modification);
-        File->SetModificationFmt(mfFull);
+        File->ModificationFmt = mfFull;
       }
       else
       {
-        File->SetModificationFmt(mfNone);
+        File->ModificationFmt = mfNone;
       }
 
-      File->SetSize(static_cast<int64_t>(Content->size));
+      File->Size = static_cast<int64_t>(Content->size);
       File->SetFileOwner(Data.FileSystem->MakeRemoteToken(Content->ownerId, Content->ownerDisplayName));
       if (Terminal->IsValidFile(File.get()))
       {
@@ -1477,10 +1558,10 @@ S3Status TS3FileSystem::LibS3ListBucketCallback(
     if (!FileName.IsEmpty())
     {
       std::unique_ptr<TRemoteFile> File(std::make_unique<TRemoteFile>(nullptr));
-      File->SetTerminal(Data.FileSystem->FTerminal);
-      File->SetFileName(FileName);
-      File->SetType(FILETYPE_DIRECTORY);
-      File->SetModificationFmt(mfNone);
+      File->Terminal = Data.FileSystem->FTerminal;
+      File->FileName = FileName;
+      File->Type = FILETYPE_DIRECTORY;
+      File->ModificationFmt = mfNone;
       if (Terminal->IsValidFile(File.get()))
       {
         Data.FileList->AddFile(File.release());
@@ -1549,7 +1630,7 @@ void TS3FileSystem::ReadDirectoryInternal(
       {
         if (AMaxKeys != 0)
         {
-          FTerminal->LogEvent(1, L"Not limiting keys.");
+          FTerminal->LogEvent(1, "Not limiting keys.");
           AMaxKeys = 0;
         }
       }
@@ -1628,7 +1709,7 @@ void TS3FileSystem::ReadDirectoryInternal(
 void TS3FileSystem::ReadDirectory(TRemoteFileList * FileList)
 {
   const TOperationVisualizer Visualizer(FTerminal->GetUseBusyCursor());
-  ReadDirectoryInternal(FileList->GetDirectory(), FileList, 0, UnicodeString());
+  ReadDirectoryInternal(FileList->Directory, FileList, 0, UnicodeString());
 }
 
 void TS3FileSystem::ReadSymlink(TRemoteFile * /*SymlinkFile*/,
@@ -1708,7 +1789,7 @@ void TS3FileSystem::DeleteFile(const UnicodeString & AFileName,
       {
         // Amazon silently ignores attempts to delete non existing folders,
         // But Google Cloud fails that.
-        FTerminal->LogEvent(L"Folder does not exist anymore, it was probably only virtual");
+        FTerminal->LogEvent("Folder does not exist anymore, it was probably only virtual");
       }
       else
       {
@@ -1726,7 +1807,7 @@ void TS3FileSystem::RenameFile(
     NotSupported();
   }
   CopyFile(AFileName, AFile, ANewName, Overwrite);
-  TRmSessionAction DummyAction(FTerminal->GetActionLog(), AFileName);
+  TRmSessionAction DummyAction(FTerminal->ActionLog, AFileName);
   DeleteFile(AFileName, AFile, dfForceDelete, DummyAction);
   DummyAction.Cancel();
 }
@@ -1875,7 +1956,7 @@ bool TS3FileSystem::ParsePathForPropertiesRequests(
   return Result;
 }
 
-const UnicodeString S3Version(TraceInitStr(L"2006-03-01"));
+const UnicodeString S3Version(TraceInitStr("2006-03-01"));
 const UnicodeString S3Namespace(TraceInitStr(FORMAT("http://s3.amazonaws.com/doc/%s/", S3Version)));
 
 #if defined(__BORLANDC__)
@@ -1941,16 +2022,16 @@ bool TS3FileSystem::DoLoadFileProperties(
 
 #if defined(__BORLANDC__)
         const _di_IXMLDocument Document = CreateDocumentFromXML(TagsData, TParseOptions() << poPreserveWhiteSpace);
-        _di_IXMLNode TaggingNode = S3NeedNode(Document->ChildNodes, L"Tagging");
-        _di_IXMLNode TagSetNode = S3NeedNode(TaggingNode->ChildNodes, L"TagSet");
+        _di_IXMLNode TaggingNode = S3NeedNode(Document->ChildNodes, "Tagging");
+        _di_IXMLNode TagSetNode = S3NeedNode(TaggingNode->ChildNodes, "TagSet");
         _di_IXMLNodeList TagNodeList = TagSetNode->GetChildNodes();
         std::unique_ptr<TStrings> Tags(new TStringList());
         for (int32_t Index = 0; Index < TagNodeList->Count; Index++)
         {
           _di_IXMLNode TagNode = TagNodeList->Get(Index);
-          UnicodeString Key = S3NeedNode(TagNode->ChildNodes, L"Key")->Text;
+          UnicodeString Key = S3NeedNode(TagNode->ChildNodes, "Key")->Text;
           Tags->Add(Key);
-          UnicodeString Value = S3NeedNode(TagNode->ChildNodes, L"Value")->Text;
+          UnicodeString Value = S3NeedNode(TagNode->ChildNodes, "Value")->Text;
           Tags->Add(Value);
         }
 
@@ -2073,12 +2154,12 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
     {
       ValidProperties >> vpTags;
 
-      const UnicodeString NewLine = L"\n";
-      const UnicodeString Indent = L"  ";
+      const UnicodeString NewLine = "\n";
+      const UnicodeString Indent = "  ";
       UnicodeString Xml =
         UnicodeString(XmlDeclaration) + NewLine +
-        L"<Tagging>" + NewLine +
-        Indent + L"<TagSet>" + NewLine;
+        "<Tagging>" + NewLine +
+        Indent + "<TagSet>" + NewLine;
 
       std::unique_ptr<TStrings> Tags(TextToStringList(Properties->Tags));
       for (int32_t Index = 0; Index < Tags->Count; Index += 2)
@@ -2089,7 +2170,7 @@ void TS3FileSystem::ChangeFileProperties(const UnicodeString & FileName,
       }
 
       Xml +=
-        Indent + L"</TagSet>" + NewLine +
+        Indent + "</TagSet>" + NewLine +
         "</Tagging>" + NewLine;
 
       FTerminal->Log->Add(llOutput, Xml);
@@ -2206,7 +2287,7 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
       }
     }
 
-    const UnicodeString Delimiter(L",");
+    const UnicodeString Delimiter(",");
     UnicodeString HumanRights;
     for (int32_t GroupI = TRights::rgFirst; GroupI <= TRights::rgLast; GroupI++)
     {
@@ -2219,14 +2300,14 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
       UnicodeString Desc;
       if (ReadRight && ReadACPRight && WriteACPRight)
       {
-        Desc = L"F";
+        Desc = "F";
       }
       else if (ReadRight)
       {
-        Desc = L"R";
+        Desc = "R";
         if (ReadACPRight || WriteACPRight || WriteRight)
         {
-          Desc += L"+";
+          Desc += "+";
         }
       }
 
@@ -2235,15 +2316,15 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
         UnicodeString GroupDesc;
         switch (Group)
         {
-          case TRights::rgUser: GroupDesc = L"O"; break;
-          case TRights::rgS3AllAwsUsers: GroupDesc = L"U"; break;
-          case TRights::rgS3AllUsers: GroupDesc = L"E"; break;
+          case TRights::rgUser: GroupDesc = "O"; break;
+          case TRights::rgS3AllAwsUsers: GroupDesc = "U"; break;
+          case TRights::rgS3AllUsers: GroupDesc = "E"; break;
           default: DebugFail(); break;
         }
 
         if (!GroupDesc.IsEmpty())
         {
-          Desc = GroupDesc + L":" + Desc;
+          Desc = GroupDesc + ":" + Desc;
           AddToList(HumanRights, Desc, Delimiter);
         }
       }
@@ -2251,11 +2332,11 @@ void TS3FileSystem::LoadFileProperties(const UnicodeString & AFileName, const TR
 
     if (AdditionalRights)
     {
-      AddToList(HumanRights, L"+", Delimiter);
+      AddToList(HumanRights, "+", Delimiter);
     }
 
-    const_cast<TRemoteFile *>(File)->GetRightsNotConst()->Number = Permissions;
-    const_cast<TRemoteFile *>(File)->GetRightsNotConst()->SetTextOverride(HumanRights);
+    File->Rights->Number = Permissions;
+    File->Rights->SetTextOverride(HumanRights);
   }
 }
 
@@ -2286,8 +2367,7 @@ void TS3FileSystem::CalculateFilesChecksum(
 void TS3FileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * /*AFile*/, const UnicodeString & ACommand, int32_t /*AParams*/, TCaptureOutputEvent && /*OutputEvent*/)
 {
-  DebugUsedParam(AFileName);
-  DebugUsedParam(ACommand);
+  DebugUsedParam2(AFileName, ACommand);
   DebugFail();
 }
 
@@ -2324,7 +2404,7 @@ void TS3FileSystem::ConfirmOverwrite(
   TFileOperationProgressType * AOperationProgress, const TOverwriteFileParams * FileParams,
   const TCopyParamType * CopyParam, int32_t AParams)
 {
-  constexpr uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
+  constexpr const uint32_t Answers = qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll;
   nb::vector_t<TQueryButtonAlias> Aliases(2);
   Aliases.emplace_back(TQueryButtonAlias::CreateYesToAllGroupedWithYes());
   Aliases.emplace_back(TQueryButtonAlias::CreateNoToAllGroupedWithNo());
@@ -2398,7 +2478,7 @@ bool TS3FileSystem::ShouldCancelTransfer(TLibS3TransferObjectDataCallbackData & 
     }
     else
     {
-      Data.Exception = std::make_unique<EAbort>(L"");
+      Data.Exception = std::make_unique<EAbort>("");
     }
   }
   return Result;
@@ -2839,7 +2919,7 @@ void TS3FileSystem::Sink(
       if (CopyParam->PreserveTime())
       {
         FTerminal->UpdateTargetTime(
-          LocalFileHandle, AFile->Modification(), AFile->GetModificationFmt(), FTerminal->SessionData->GetDSTMode());
+          LocalFileHandle, AFile->Modification(), AFile->ModificationFmt, FTerminal->SessionData->GetDSTMode());
       }
     }
     __finally

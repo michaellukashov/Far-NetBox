@@ -12,7 +12,8 @@ template <typename T>
 class ROProperty
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
+using ValueType = std::conditional_t<sizeof(T) <= 2*sizeof(void*) && std::is_trivially_copyable_v<T>,
+  T, const T&>;
 using TGetter = fastdelegate::FastDelegate0<T>;
 private:
   TGetter _getter;
@@ -195,7 +196,8 @@ template <typename T>
 class RWProperty2
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
+using ValueType = std::conditional_t<sizeof(T) <= 2*sizeof(void*) && std::is_trivially_copyable_v<T>,
+  T, const T&>;
 private:
   T * _value{nullptr};
 public:
@@ -272,7 +274,8 @@ template <typename T>
 class RWPropertySimple
 {
 CUSTOM_MEM_ALLOCATION_IMPL
-using ValueType = std::conditional_t<std::is_trivially_copyable_v<T>, T, const T&>;
+using ValueType = std::conditional_t<sizeof(T) <= 2*sizeof(void*) && std::is_trivially_copyable_v<T>,
+  T, const T&>;
 using TSetter = fastdelegate::FastDelegate1<void, ValueType>;
 private:
   T * _value{nullptr};

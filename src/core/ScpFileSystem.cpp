@@ -1168,7 +1168,7 @@ void TSCPFileSystem::ReadDirectory(TRemoteFileList * FileList)
         {
           // Empty file list -> probably "permission denied", we
           // at least get link to parent directory ("..")
-          TRemoteFile * File = FTerminal->ReadFile(base::UnixCombinePaths(FTerminal->GetFiles()->GetDirectory(), PARENTDIRECTORY));
+          TRemoteFile * File = FTerminal->ReadFile(base::UnixCombinePaths(FTerminal->Files->Directory, PARENTDIRECTORY));
           Empty = (File == nullptr);
           if (!Empty)
           {
@@ -1794,14 +1794,14 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
   DebugAssert(AFilesToCopy && OperationProgress);
 
   Params &= ~(cpAppend | cpResume);
-  // UnicodeString Options = L"";
-  const bool CheckExistence = base::UnixSamePath(TargetDir, FTerminal->GetCurrentDirectory()) &&
-    (FTerminal->GetFiles() != nullptr) && FTerminal->GetFiles()->GetLoaded();
+#if defined(__BORLANDC__)
+  UnicodeString Options = L"";
+#endif // defined(__BORLANDC__)
+  const bool CheckExistence = base::UnixSamePath(TargetDir, FTerminal->CurrentDirectory) &&
+    (FTerminal->Files != nullptr) && FTerminal->Files->GetLoaded();
   bool CopyBatchStarted = false;
   bool Failed = true;
   bool GotLastLine = false;
-  TCopyParamType CopyParamCur;
-  CopyParamCur.Assign(CopyParam);
 
   const UnicodeString TargetDirFull = base::UnixIncludeTrailingBackslash(TargetDir);
 
@@ -1860,9 +1860,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
         if (File2 != nullptr)
         {
           uint32_t Answer;
-          if (!CopyParam->GetPreserveRights())
-            CopyParamCur.SetRights(*File2->GetRights());
-          if (File2->GetIsDirectory())
+          if (File2->IsDirectory)
           {
             UnicodeString Message = MainInstructions(FMTLOAD(DIRECTORY_OVERWRITE, FileNameOnly));
             TQueryParams QueryParams(qpNeverAskAgainCheck);
@@ -1871,7 +1869,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
             Answer = FTerminal->ConfirmFileOverwrite(
               FileName, FileNameOnly, nullptr,
               qaYes | qaNo | qaCancel | qaYesToAll | qaNoToAll,
-              &QueryParams, osRemote, &CopyParamCur, Params, OperationProgress, Message);
+              &QueryParams, osRemote, CopyParam, Params, OperationProgress, Message);
           }
           else
           {
@@ -1881,11 +1879,11 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
               nullptr, nullptr, nullptr, &MTime, nullptr,
               &FileParams.SourceSize);
             FileParams.SourceTimestamp = ::UnixToDateTime(MTime,
-              FTerminal->GetSessionData()->GetDSTMode());
-            FileParams.DestSize = File2->GetSize();
-            FileParams.DestTimestamp = File2->GetModification();
+              FTerminal->SessionData->DSTMode);
+            FileParams.DestSize = File2->Size;
+            FileParams.DestTimestamp = File2->Modification;
             Answer = ConfirmOverwrite(FileName, FileNameOnly, osRemote,
-              &FileParams, &CopyParamCur, Params, OperationProgress);
+              &FileParams, CopyParam, Params, OperationProgress);
           }
 
           switch (Answer)
@@ -1920,7 +1918,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
 
       if (CanProceed)
       {
-        if (FTerminal->GetSessionData()->GetCacheDirectories())
+        if (FTerminal->SessionData->CacheDirectories)
         {
           FTerminal->DirectoryModified(TargetDir, false);
 
@@ -1936,7 +1934,7 @@ void TSCPFileSystem::CopyToRemote(TStrings * AFilesToCopy,
         try
         {
           SCPSource(FileName, TargetDirFull,
-            &CopyParamCur, Params, OperationProgress, 0);
+            CopyParam, Params, OperationProgress, 0);
           FTerminal->OperationFinish(OperationProgress, Item, FileName, true, OnceDoneOperation);
         }
         catch(EScpFileSkipped & E)

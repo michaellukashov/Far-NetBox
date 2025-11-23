@@ -1055,10 +1055,10 @@ Boolean TRemoteFile::GetIsInaccessibleDirectory() const
     DebugAssert(GetTerminal());
     Result = !
        (base::SameUserName(GetTerminal()->GetUserName(), L"root")) ||
-        (((GetRights()->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
-        ((GetRights()->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
+        (((Rights->GetRightUndef(TRights::rrOtherExec) != TRights::rsNo)) ||
+        ((Rights->GetRight(TRights::rrGroupExec) != TRights::rsNo) &&
           GetTerminal()->GetMembership()->Exists(GetFileGroup().GetName())) ||
-        ((GetRights()->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
+        ((Rights->GetRight(TRights::rrUserExec) != TRights::rsNo) &&
           (base::SameUserName(GetTerminal()->GetUserName(), GetFileOwner().GetName()))));
   }
     // else Result = False;
@@ -1140,7 +1140,7 @@ UnicodeString TRemoteFile::GetExtension() const
   return base::UnixExtractFileExt(FFileName);
 }
 
-void TRemoteFile::SetRights(const TRights * Value)
+void TRemoteFile::SetRights(TRights * Value)
 {
   FRights->Assign(Value);
 }
@@ -1201,10 +1201,10 @@ void TRemoteFile::SetListingStr(const UnicodeString & Value)
 
     // Rights string may contain special permission attributes (S,t, ...)
     TODO("maybe no longer necessary, once we can handle the special permissions");
-    GetRightsNotConst()->SetAllowUndef(True);
+    Rights->SetAllowUndef(True);
     // On some system there is no space between permissions and node blocks count columns
     // so we get only first 9 characters and trim all following spaces (if any)
-    GetRightsNotConst()->SetText(Line.SubString(1, 9));
+    Rights->Text = Line.SubString(1, 9);
     Line.Delete(1, 9);
     // Rights column maybe followed by '+', '@' or '.' signs, we ignore them
     // (On MacOS, there may be a space in between)
@@ -1635,7 +1635,7 @@ UnicodeString TRemoteFile::GetListingStr() const
     LinkPart = UnicodeString(SYMLINKSTR) + GetLinkTo();
   }
   return FORMAT("%s%s %3s %-8s %-8s %9s %-12s %s%s",
-    GetType(), GetRights()->GetText(), ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
+    GetType(), Rights->Text, ::Int64ToStr(FINodeBlocks), GetFileOwner().GetName(), GetFileGroup().GetName(),
     ::Int64ToStr(GetSize()),  // explicitly using size even for directories
     GetModificationStr(), GetFileName(),
     LinkPart);
@@ -1676,7 +1676,7 @@ bool TRemoteFile::GetHaveFullFileName() const
 int32_t TRemoteFile::GetAttr() const
 {
   int32_t Result = 0;
-  if (GetRights()->GetReadOnly())
+  if (Rights->GetReadOnly())
   {
     Result |= faReadOnly;
   }

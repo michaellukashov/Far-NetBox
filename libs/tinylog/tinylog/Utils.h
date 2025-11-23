@@ -1,6 +1,7 @@
 #pragma once
 
 #include <nbglobals.h>
+#include <string>
 
 namespace tinylog {
 

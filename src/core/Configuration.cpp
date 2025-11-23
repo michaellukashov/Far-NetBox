@@ -26,17 +26,17 @@ const wchar_t * AutoSwitchNames = L"On;Off;Auto";
 const wchar_t * NotAutoSwitchNames = L"Off;On;Auto";
 
 // See https://www.iana.org/assignments/hash-function-text-names/hash-function-text-names.xhtml
-const UnicodeString Sha1ChecksumAlg("sha-1");
-const UnicodeString Sha224ChecksumAlg("sha-224");
-const UnicodeString Sha256ChecksumAlg("sha-256");
-const UnicodeString Sha384ChecksumAlg("sha-384");
-const UnicodeString Sha512ChecksumAlg("sha-512");
-const UnicodeString Md5ChecksumAlg("md5");
+const UnicodeString Sha1ChecksumAlg(L"sha-1");
+const UnicodeString Sha224ChecksumAlg(L"sha-224");
+const UnicodeString Sha256ChecksumAlg(L"sha-256");
+const UnicodeString Sha384ChecksumAlg(L"sha-384");
+const UnicodeString Sha512ChecksumAlg(L"sha-512");
+const UnicodeString Md5ChecksumAlg(L"md5");
 // Not defined by IANA
-const UnicodeString Crc32ChecksumAlg("crc32");
+const UnicodeString Crc32ChecksumAlg(L"crc32");
 
-const UnicodeString SshFingerprintType("ssh");
-const UnicodeString TlsFingerprintType("tls");
+const UnicodeString SshFingerprintType(L"ssh");
+const UnicodeString TlsFingerprintType(L"tls");
 
 const UnicodeString FtpsCertificateStorageKey(L"FtpsCertificates");
 const UnicodeString HttpsCertificateStorageKey(L"HttpsCertificates");
@@ -395,7 +395,7 @@ UnicodeString TConfiguration::PropertyToKey(const UnicodeString & Property)
   // no longer useful
   const int32_t P = Property.LastDelimiter(L".>");
   UnicodeString Result = Property.SubString(P + 1, Property.Length() - P);
-  if ((Result[1] == L'F') && (towupper(Result[2]) == Result[2]))
+  if ((Result[1] == L'F') && (::UpCase(Result[2]) == Result[2]))
   {
     Result.Delete(1, 1);
   }

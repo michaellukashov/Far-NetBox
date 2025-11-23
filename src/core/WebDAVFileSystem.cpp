@@ -2,7 +2,6 @@
 #include <vcl.h>
 #pragma hdrstop
 
-//#include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
 #include <wincrypt.h>
@@ -91,7 +90,9 @@ static UnicodeString PathUnescape(const char * Path)
     // In such case, take the path as is and we will probably overwrite the name with "display name".
     UtfResult = Path;
   }
-  // UnicodeString Result = UnicodeString(UtfResult);
+#if defined(__BORLANDC__)
+  UnicodeString Result = UnicodeString(UtfResult);
+#endif // defined(__BORLANDC__)
   const UnicodeString Result = StrFromNeon(UtfResult.data());
   return Result;
 }
@@ -537,18 +538,18 @@ void TWebDAVFileSystem::CollectUsage()
 
   if (!FTerminal->GetSessionData()->GetTlsCertificateFile().IsEmpty())
   {
-    GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVSCertificate");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsWebDAVSCertificate");
   }
 
   // The Authorization header for passport method is included only in the first request,
   // so we have to use FLastAuthorizationProtocol
   if (SameText(FLastAuthorizationProtocol, "Passport1.4"))
   {
-    GetConfiguration()->Usage->Inc("OpenedSessionsWebDAVSPassport");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsWebDAVSPassport");
   }
   else if (SameText(FLastAuthorizationProtocol, L"Basic"))
   {
-    GetConfiguration()->Usage->Inc(L"OpenedSessionsWebDAVAuthBasic");
+    FTerminal->Configuration->Usage->Inc(L"OpenedSessionsWebDAVAuthBasic");
   }
 
   const UnicodeString RemoteSystem = FFileSystemInfo.RemoteSystem;
@@ -566,21 +567,21 @@ void TWebDAVFileSystem::CollectUsage()
   }
   if (ContainsText(RemoteSystem, "Microsoft-IIS"))
   {
-    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVIIS");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsWebDAVIIS");
   }
   else if (ContainsText(RemoteSystem, "IT Hit WebDAV Server"))
   {
-    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVITHit");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsWebDAVITHit");
   }
   // e.g. brickftp.com
   else if (ContainsText(RemoteSystem, "nginx"))
   {
-    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVNginx");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsWebDAVNginx");
   }
   else
   {
     // We also know OpenDrive, Yandex, iFiles (iOS), Swapper (iOS), SafeSync
-    FTerminal->GetConfiguration()->GetUsage()->Inc("OpenedSessionsWebDAVOther");
+    FTerminal->Configuration->Usage->Inc("OpenedSessionsWebDAVOther");
   }
 }
 
@@ -882,7 +883,6 @@ bool TWebDAVFileSystem::IsValidRedirect(int32_t NeonStatus, UnicodeString & APat
     const UnicodeString RedirectUrl = GetRedirectUrl();
     // We should test if the redirect is not for another server,
     // though not sure how to do this reliably (domain aliases, IP vs. domain, etc.)
-    // If this ever gets implemented, beware of use from Sink(), where we support redirects to another server.
     const UnicodeString RedirectPath = ParsePathFromUrl(RedirectUrl);
     Result =
       !RedirectPath.IsEmpty() &&
@@ -1078,7 +1078,7 @@ void TWebDAVFileSystem::ParsePropResultSet(TRemoteFile * AFile,
     if (ResourceType != nullptr)
     {
       // property has XML value
-      // UnicodeString AResourceType = ResourceType;
+      UnicodeString AResourceType = ResourceType;
       // this is very poor parsing
       if (ContainsText(ResourceType, "<DAV:collection"))
       {
@@ -1284,9 +1284,7 @@ void TWebDAVFileSystem::CreateLink(const UnicodeString & AFileName,
   const UnicodeString & PointTo, bool /*Symbolic*/)
 {
   DebugFail();
-  DebugUsedParam(AFileName);
-  DebugUsedParam(PointTo);
-  // ThrowNotImplemented(1014);
+  DebugUsedParam2(AFileName, PointTo);
 }
 
 void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
@@ -1295,7 +1293,6 @@ void TWebDAVFileSystem::ChangeFileProperties(const UnicodeString & AFileName,
 {
   DebugFail();
   DebugUsedParam(AFileName);
-  // ThrowNotImplemented(1006);
 }
 
 bool TWebDAVFileSystem::LoadFilesProperties(TStrings * /*FileList*/)
@@ -1364,8 +1361,7 @@ void TWebDAVFileSystem::CustomCommandOnFile(const UnicodeString & AFileName,
   const TRemoteFile * /*AFile*/, const UnicodeString & ACommand, int32_t /*Params*/, TCaptureOutputEvent && /*OutputEvent*/)
 {
   DebugFail();
-  DebugUsedParam(AFileName);
-  DebugUsedParam(ACommand);
+  DebugUsedParam2(AFileName, ACommand);
 }
 
 void TWebDAVFileSystem::AnyCommand(const UnicodeString & ACommand,
@@ -1475,8 +1471,8 @@ void TWebDAVFileSystem::Source(
       const TValueRestorer<TIgnoreAuthenticationFailure> IgnoreAuthenticationFailureRestorer(FIgnoreAuthenticationFailure);
       FIgnoreAuthenticationFailure = iafWaiting;
 
-      // this should not throw
       TRemoteFile * RemoteFilePtr = nullptr;
+      // this should not throw
       CustomReadFileInternal(DestFullName, RemoteFilePtr, nullptr);
       RemoteFile.reset(RemoteFilePtr);
     }
@@ -1622,7 +1618,9 @@ void TWebDAVFileSystem::NeonPreSend(
   TWebDAVFileSystem * FileSystem = static_cast<TWebDAVFileSystem *>(SessionContext->FileSystem);
 
   SessionContext->AuthorizationProtocol = "";
-  // UnicodeString HeaderBuf(UnicodeString(AnsiString(Header->data, Header->used)));
+#if defined(__BORLANDC__)
+  UnicodeString HeaderBuf(UnicodeString(AnsiString(Header->data, Header->used)));
+#endif // defined(__BORLANDC__)
   const UnicodeString HeaderBuf(StrFromNeon(UTF8String(Header->data, nb::ToInt32(Header->used)).data()));
   const UnicodeString AuthorizationHeaderName("Authorization:");
   int32_t P = HeaderBuf.Pos(AuthorizationHeaderName);
@@ -1656,7 +1654,7 @@ void TWebDAVFileSystem::NeonPreSend(
   }
 
   const UnicodeString ContentTypeHeaderPrefix("Content-Type: ");
-  if (FileSystem->FTerminal->GetLog()->GetLogging())
+  if (FileSystem->FTerminal->Log->Logging)
   {
     const char * Buffer{nullptr};
     size_t Size{0};
@@ -1664,7 +1662,7 @@ void TWebDAVFileSystem::NeonPreSend(
     {
       // all neon request types that use ne_add_request_header
       // use XML content-type, so it's text-based
-      DebugAssert(AnsiContainsText(HeaderBuf, ContentTypeHeaderPrefix + NE_XML_MEDIA_TYPE));
+      DebugAssert(ContainsStr(HeaderBuf, ContentTypeHeaderPrefix + NE_XML_MEDIA_TYPE));
       FileSystem->FTerminal->GetLog()->Add(llInput, UnicodeString(UTF8String(Buffer, nb::ToInt32(Size))));
     }
   }
@@ -1860,7 +1858,7 @@ int32_t TWebDAVFileSystem::NeonBodyReader(void * UserData, const char * Buf, siz
   TSessionContext * SessionContext = static_cast<TSessionContext *>(ne_get_request_private(Request, SESSION_CONTEXT_KEY));
   TWebDAVFileSystem * FileSystem = SessionContext->FileSystem;
 
-  if (FileSystem->FTerminal->GetLog()->GetLogging())
+  if (FileSystem->FTerminal->Log->Logging)
   {
     ne_content_type ContentType;
     if (ne_get_content_type(Request, &ContentType) == 0)

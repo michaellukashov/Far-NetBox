@@ -99,10 +99,17 @@ enum TLogAction
 };
 
 enum TCaptureOutputType { cotOutput, cotError, cotExitCode };
+#if defined(__BORLANDC__)
+typedef void (__closure *TCaptureOutputEvent)(
+  const UnicodeString & Str, TCaptureOutputType OutputType);
+typedef void (__closure *TCalculatedChecksumEvent)(
+  const UnicodeString & FileName, const UnicodeString & Alg, const UnicodeString & Hash);
+#else
 using TCaptureOutputEvent = nb::FastDelegate2<void,
   const UnicodeString & /*Str*/, TCaptureOutputType /*OutputType*/>;
 using TCalculatedChecksumEvent = nb::FastDelegate3<void,
   const UnicodeString & /*FileName*/, const UnicodeString & /*Alg*/, const UnicodeString & /*Hash*/>;
+#endif // defined(__BORLANDC__)
 
 class TSessionActionRecord;
 class TActionLog;
@@ -277,11 +284,15 @@ public:
   explicit TDifferenceSessionAction(TActionLog * Log, const TChecklistItem * Item) noexcept;
 };
 
+#if defined(__BORLANDC__)
+typedef void (__closure *TAddLogEntryEvent)(const UnicodeString & S);
+#else
 using TAddLogEntryEvent = nb::FastDelegate1<void,
   const UnicodeString & /*S*/>;
 
 using TDoAddLogEvent = nb::FastDelegate2<void,
   TLogLineType /*Type*/, const UnicodeString & /*Line*/>;
+#endif // defined(__BORLANDC__)
 
 class NB_CORE_EXPORT TSessionLog
 {
@@ -330,7 +341,9 @@ private:
   TCriticalSection FCriticalSection;
   bool FLogging{false};
   std::unique_ptr<tinylog::TinyLog> FLogger; //void * FFile{nullptr};
-  // void * FFile;
+#if defined(__BORLANDC__)
+  void * FFile;
+#endif // defined(__BORLANDC__)
   UnicodeString FCurrentLogFileName;
   UnicodeString FCurrentFileName;
   int64_t FCurrentFileSize{0};
@@ -343,8 +356,11 @@ private:
   void OpenLogFile();
   UnicodeString GetLogFileNamePrivate() const { return GetLogFileName(); }
   void DoAdd(TLogLineType AType, const UnicodeString & ALine,
+#if defined(__BORLANDC__)
+    void (__closure *f)(TLogLineType Type, const UnicodeString & Line));
+#else
     TDoAddLogEvent && Event);
-  // void (__closure *f)(TLogLineType Type, const UnicodeString & Line);
+#endif // defined(__BORLANDC__)
   void DoAddToParent(TLogLineType AType, const UnicodeString & ALine);
   void DoAddToSelf(TLogLineType AType, const UnicodeString & ALine);
   void AddStartupInfo(bool System);
@@ -441,4 +457,4 @@ private:
   TCriticalSection FCriticalSection;
 };
 
-UnicodeString XmlEscape(const UnicodeString & Str);
+UnicodeString XmlEscape(const UnicodeString & AStr);

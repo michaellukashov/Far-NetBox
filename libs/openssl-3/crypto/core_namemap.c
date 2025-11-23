@@ -103,7 +103,7 @@ int ossl_namemap_empty(OSSL_NAMEMAP *namemap)
     return rv;
 #else
     /* Have TSAN support */
-    return namemap == NULL || tsan_load(&namemap->max_number) == 0;
+    return namemap == NULL || tsan_load((volatile LONG *)&namemap->max_number) == 0;
 #endif
 }
 
@@ -262,7 +262,7 @@ static int namemap_add_name(OSSL_NAMEMAP *namemap, int number,
 
     /* The tsan_counter use here is safe since we're under lock */
     namenum->number =
-        number != 0 ? number : 1 + tsan_counter(&namemap->max_number);
+        number != 0 ? number : 1 + tsan_counter((volatile LONG *)&namemap->max_number);
     (void)lh_NAMENUM_ENTRY_insert(namemap->namenum, namenum);
 
     if (lh_NAMENUM_ENTRY_error(namemap->namenum))
