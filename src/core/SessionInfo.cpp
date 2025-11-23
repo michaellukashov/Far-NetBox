@@ -1183,7 +1183,8 @@ UnicodeString TSessionLog::GetCmdLineLog(TConfiguration * AConfiguration)
 template <typename T>
 UnicodeString EnumName(T Value, const UnicodeString & ANames)
 {
-  int32_t N = nb::ToInt32(Value);
+  int32_t ValueI = nb::ToInt32(Value);
+  int32_t N = ValueI;
   UnicodeString Names = ANames;
   do
   {
@@ -1196,7 +1197,7 @@ UnicodeString EnumName(T Value, const UnicodeString & ANames)
   }
   while ((N >= 0) && !Names.IsEmpty());
 
-  return L"(unknown)";
+  return FORMAT(L"(unknown %d)", ValueI);
 }
 #if defined(__BORLANDC__)
 #define ADSTR(S) AddLogEntry(S)
