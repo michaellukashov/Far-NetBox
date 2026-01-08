@@ -146,7 +146,7 @@ void path_reg_propagate()
                              5000, &send_message_result);
     if (ret != ERROR_SUCCESS && GetLastError() != 0)
     {
-      err_out_sys(_T("Cannot propagate the new enviroment to ")
+      err_out_sys(_T("Cannot propagate the new environment to ")
                   _T("other processes. The new value will be ")
                   _T("available after a reboot."), GetLastError());
       SimpleErrorDialog(LastPathError);
