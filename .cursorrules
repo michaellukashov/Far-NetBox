@@ -1,0 +1,89 @@
+# NetBox Project Rules and Guidelines
+
+## Project Overview
+- **Name**: Far-NetBox (NetBox)
+- **Purpose**: SFTP/FTP/SCP/WebDAV/S3 client plugin for Far Manager 3.0
+- **Platforms**: Windows (x86, x64, ARM64)
+- **License**: GNU General Public License v3 (GPL-3.0)
+
+## Code Style and Formatting
+- **Style**: Allman/BSD style braces
+- **Indentation**: 2 spaces (not tabs)
+- **Line Endings**: Windows (CRLF)
+- **Pointer Alignment**: Middle (`int * ptr`, not `int* ptr` or `int *ptr`)
+- **Reference Alignment**: Middle (`int & ref`, not `int& ref` or `int &ref`)
+- Use `//` for single-line comments
+- Use `/* */` for multi-line comments
+- Mark TODOs with `// TODO: description`
+- Mark FIXMEs with `// FIXME: description`
+
+## Naming Conventions
+- **Classes**: PascalCase with T prefix (e.g., `TSessionData`, `TSecureShell`)
+- **Functions/Methods**: PascalCase (e.g., `GetSessionData()`, `ConnectToServer()`)
+- **Member Variables**: PascalCase with F prefix (e.g., `FSessionData`, `FConfiguration`)
+- **Local Variables**: camelCase (e.g., `sessionData`, `configValue`)
+- **Constants**: UPPER_CASE (e.g., `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT`)
+- **Macros**: UPPER_CASE (e.g., `SET_SESSION_PROPERTY`, `NETBOX_DEFS`)
+
+## Compiler Settings
+Required Defines:
+- `NOMINMAX`, `MPEXT`, `WINSCP`, `FARPLUGIN`
+- `_UNICODE`, `UNICODE` for Unicode support
+- `_WIN32_WINNT=0x0501` for Windows XP+ compatibility
+- `_LIB`, `_WINDOWS`, `WIN32` for Windows platform
+
+Warning Suppressions:
+- `_SCL_SECURE_NO_WARNINGS`, `_CRT_SECURE_NO_WARNINGS`
+- `_WINSOCK_DEPRECATED_NO_WARNINGS`
+- `_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING`
+- `_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS`
+- `_DISABLE_VECTOR_ANNOTATION`
+
+## File Organization
+- Use `#pragma once` for include guards
+- Include order: System headers (`<...>`), Project headers (`"..."`), Local headers
+- Header files: `.h` or `.hpp`
+- Source files: `.cpp`
+- Resources: `.rc`, `.lng`
+
+## Dependencies
+- **C++ Standard**: C++17 (required, no extensions)
+- **Compiler**: Visual Studio 2022 (MSVC)
+- **Build System**: CMake 3.15 or later
+- Third-party libraries in `libs/` directory (PuTTY, FileZilla, OpenSSL, neon, libs3, expat, zlib-ng, tinyxml2, fmt, tinylog)
+- Do not modify third-party library code directly
+
+## Build System
+- Use CMake with minimum version 3.15
+- Build types: `Debug`, `Release`, or `RelWithDebugInfo` (default)
+- Use provided build scripts in `scripts/` directory
+- Output to `Far3_<platform>/Plugins/NetBox/`
+
+## Version Control
+- Main branch: `main` (protected)
+- Use feature branches with naming: `feature/description`, `fix/description`, `refactor/description`
+- Write clear, descriptive commit messages
+- No compiler warnings allowed
+- Include debug logging with `ADF()` macro
+- Use assertions (`DebugAssert()`) for invariants
+
+## Code Quality
+- No compiler warnings
+- No memory leaks - Use RAII and smart pointers
+- Exception safety - Handle exceptions appropriately
+- Unicode correctness - Always use wide strings for user-facing text
+- Follow protocol specifications (SSH, FTP, etc.)
+- Maintain compatibility with standard implementations
+
+## Licensing
+- NetBox Code: GNU General Public License v3 (GPL-3.0)
+- Respect third-party library licenses
+- Include appropriate copyright headers in new files
+- Maintain attribution to original authors (WinSCP, PuTTY, FileZilla)
+
+## Special Considerations
+- This project is based on WinSCP, PuTTY, and FileZilla codebases
+- When modifying code from these sources, maintain compatibility and respect original design patterns
+- Support Windows XP+ (`_WIN32_WINNT=0x0501`)
+- Test on all target platforms (x86, x64, ARM64)
+- Use `UnicodeString` for wide strings and `AnsiString` for narrow strings when needed
