@@ -3,22 +3,6 @@
 This document provides guidelines for AI agents working on the NetBox project (Far-NetBox SFTP/FTP/SCP/WebDAV/S3 client plugin for Far Manager).
 
 ## Build Commands
-
-### Windows (Visual Studio 2022)
-
-**Debug build (x86):**
-```cmd
-scripts\build_netbox.cmd
-```
-
-**Release build (x86):**
-```cmd
-scripts\build_netbox_release.cmd
-```
-
-**Release build (x64):**
-```cmd
-scripts\build_netbox_release.cmd x64
 ```
 
 **Manual CMake build:**
@@ -36,16 +20,6 @@ cmake --build build
 
 ### Code Formatting
 
-**Run astyle on specific files:**
-```cmd
-scripts\run_astyle.bat src\NetBox\SomeFile.cpp
-```
-
-**Run astyle on all source files:**
-```cmd
-scripts\run_astyle.bat src\**\*.cpp src\**\*.h
-```
-
 ### Environment Setup
 
 ```cmd
@@ -53,6 +27,12 @@ scripts\run_astyle.bat src\**\*.cpp src\**\*.h
 ```
 
 ## Code Style Guidelines
+
+### Compiler Requirements
+
+- **C++ Standard**: C++17 (required, no extensions)
+- **Compiler**: Visual Studio 2022 (MSVC)
+- **Build System**: CMake 3.15 or later
 
 ### Formatting
 
@@ -92,24 +72,6 @@ scripts\run_astyle.bat src\**\*.cpp src\**\*.h
 - Headers: `.h` or `.hpp`
 - Sources: `.cpp`
 - Resources: `.rc`, `.lng`
-
-## Compiler Defines
-
-### Required
-- `NOMINMAX` - Prevent Windows.h min/max macros
-- `MPEXT` - NetBox extensions
-- `WINSCP` - WinSCP compatibility
-- `FARPLUGIN` - Far Manager plugin
-- `_UNICODE`, `UNICODE` - Unicode support
-- `_WIN32_WINNT=0x0501` - Windows XP+ compatibility
-
-### Warning Suppressions
-- `_SCL_SECURE_NO_WARNINGS`
-- `_CRT_SECURE_NO_WARNINGS`
-- `_WINSOCK_DEPRECATED_NO_WARNINGS`
-- `_SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING`
-- `_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS`
-- `_DISABLE_VECTOR_ANNOTATION`
 
 ## Error Handling
 
@@ -169,6 +131,13 @@ There are no automated unit tests. Manual testing is required:
 4. Test file operations (upload, download, delete, rename)
 5. Test authentication methods
 
+## Language Files
+
+- English: `NetBoxEng.lng` (primary)
+- Other languages: `NetBoxRus.lng`, `NetBoxPol.lng`, etc.
+- Use message IDs from `MsgIDs.h`
+- Keep translations synchronized when modifying UI strings
+
 ## Build Output
 
 - Plugin location: `Far3_<platform>/Plugins/NetBox/`
@@ -180,6 +149,10 @@ There are no automated unit tests. Manual testing is required:
 - **Branch naming**: `feature/description`, `fix/description`, `refactor/description`
 - **Commit messages**: Clear, descriptive, 50 chars or less for summary
 - **Skip CI**: Include `[skip appveyor]` in commit message
+
+### CI/CD
+- **AppVeyor**: Automated builds on Windows
+- **GitHub Actions**: Release workflows
 
 ## Code Quality Requirements
 
