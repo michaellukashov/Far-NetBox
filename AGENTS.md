@@ -3,9 +3,9 @@
 This document provides guidelines for AI agents working on the NetBox project (Far-NetBox SFTP/FTP/SCP/WebDAV/S3 client plugin for Far Manager).
 
 ## Build Commands
-```
 
-**Manual CMake build:**
+### Manual CMake Build
+
 ```cmd
 cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
 cmake --build build
@@ -18,13 +18,69 @@ cmake --build build
 - `OPT_CREATE_PLUGIN_DIR`: Create plugin directory structure (`ON`/`OFF`)
 - `OPT_USE_UNITY_BUILD`: Enable unity builds for faster compilation (x86 Release only)
 
-### Code Formatting
+### CMake Build Configuration
+
+#### x86 Release Build (Unity)
+
+```cmd
+cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build --config Release
+```
+
+#### x64 Debug Build
+
+```cmd
+cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DPROJECT_PLATFORM=x64 -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build
+```
+
+#### ARM64 Build
+
+```cmd
+cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DPROJECT_PLATFORM=ARM64 -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build
+```
+
+## Code Formatting
+
+### clang-format
+
+Format source files before committing:
+
+```cmd
+# Format source files
+clang-format -i src/**/*.cpp src/**/*.h
+```
+
+Configure your IDE to format on save.
+
+### Manual Formatting Rules
+
+When clang-format is not available, follow these rules:
+
+- **Brace style**: Allman/BSD (opening brace on new line)
+- **Indentation**: 2 spaces (not tabs)
+- **Line endings**: Windows CRLF
+- **Pointer alignment**: Middle (`int * ptr`)
+- **Reference alignment**: Middle (`int & ref`)
+- **Max line length**: 120 characters
+
+## Development Environment
 
 ### Environment Setup
 
+Configure Visual Studio 2022 build environment:
+
 ```cmd
-"%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 ```
+
+### Required Tools
+
+- CMake 3.15+
+- Ninja build system
+- Visual Studio 2022 (MSVC)
+- Git
 
 ## Code Style Guidelines
 
@@ -33,15 +89,6 @@ cmake --build build
 - **C++ Standard**: C++17 (required, no extensions)
 - **Compiler**: Visual Studio 2022 (MSVC)
 - **Build System**: CMake 3.15 or later
-
-### Formatting
-
-- **Brace style**: Allman/BSD (opening brace on new line)
-- **Indentation**: 2 spaces (not tabs)
-- **Line endings**: Windows CRLF
-- **Pointer alignment**: Middle (`int * ptr`)
-- **Reference alignment**: Middle (`int & ref`)
-- **Max line length**: 120 characters
 
 ### Naming Conventions
 
@@ -151,6 +198,7 @@ There are no automated unit tests. Manual testing is required:
 - **Skip CI**: Include `[skip appveyor]` in commit message
 
 ### CI/CD
+
 - **AppVeyor**: Automated builds on Windows
 - **GitHub Actions**: Release workflows
 
@@ -163,9 +211,34 @@ There are no automated unit tests. Manual testing is required:
 - Thread safety documentation
 - Protocol specification compliance
 
+## Troubleshooting
+
+### Common Build Errors
+
+**Missing vcvarsall.bat**:
+Ensure Visual Studio 2022 is installed with "Desktop development with C++" workload.
+
+**Ninja not found**:
+Install Ninja via `winget install Ninja-build.ninja` or Chocolatey.
+
+**Unity build errors**:
+Disable unity builds: `-DOPT_USE_UNITY_BUILD=OFF`
+
+### Runtime Issues
+
+**Plugin fails to load**:
+- Verify plugin DLL matches Far Manager architecture (x86/x64)
+- Check Far Manager plugin directory permissions
+- Review Windows Event Viewer for error details
+
+**Connection failures**:
+- Verify firewall settings allow outbound connections
+- Check server accessibility with `ping` and `telnet`
+- Review Far Manager plugin log for detailed error messages
+
 ## Special Considerations
 
 - This project is based on WinSCP, PuTTY, and FileZilla codebases
 - Maintain compatibility with original design patterns
-- Support Windows XP+ (`_WIN32_WINNT=0x0501`)
+- Support Windows 10+ (`_WIN32_WINNT=0x0A00`)
 - Test on all target platforms (x86, x64, ARM64)
