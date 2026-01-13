@@ -1100,7 +1100,8 @@ target_include_directories(libeay32 SYSTEM BEFORE PRIVATE
     # ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/providers/common/include
     ${CMAKE_CURRENT_SOURCE_DIR}/providers/implementations/include
-    # ${CMAKE_CURRENT_SOURCE_DIR}/include/internal
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/internal
 )
 
 #-------------------------------------------------------------------------------
@@ -1108,7 +1109,7 @@ target_include_directories(libeay32 SYSTEM BEFORE PRIVATE
 #-------------------------------------------------------------------------------
 
 message(STATUS "OpenSSL Configuration:")
-message(STATUS "  SSL sources: ${SSL_SOURCES}")
-message(STATUS "  Crypto sources: ${CRYPTO_SOURCES}")
-message(STATUS "  Platform-specific sources: ${CRYPTO_PLATFORM_SOURCES}")
-message(STATUS "  ASM objects: ${ASM_OBJECTS}")
+# message(STATUS "  SSL sources: ${SSL_SOURCES}")
+# message(STATUS "  Crypto sources: ${CRYPTO_SOURCES}")
+# message(STATUS "  Platform-specific sources: ${CRYPTO_PLATFORM_SOURCES}")
+# message(STATUS "  ASM objects: ${ASM_OBJECTS}")
