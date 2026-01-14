@@ -75,6 +75,8 @@ set(SSL_SOURCES
 # This handles ~400+ files automatically
 # ucm_add_dirs(RECURSIVE TO CRYPTO_SOURCES crypto)
 set(CRYPTO_SOURCES
+    crypto/cryptlib.c
+    crypto/params.c
     crypto/params_from_text.c
     crypto/bsearch.c
     crypto/ex_data.c
@@ -935,7 +937,7 @@ ucm_remove_files(FROM CRYPTO_SOURCES
     crypto/async/arch/async_win.c
     crypto/ec/curve448/arch_64/f_impl64.c
     crypto/ec/curve448/arch_32/f_impl.c
-    crypto/ec/curve448/arch_32/f_impl32.c
+    # crypto/ec/curve448/arch_32/f_impl32.c
     crypto/curve448/arch_64/f_impl64.c
     crypto/des/des_enc.c
     crypto/bf/bf_enc.c
@@ -974,103 +976,6 @@ endif()
 # Setup ASM files
 #-------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------
-# Function: openssl_setup_asm_files
-#
-# Sets up platform-specific ASM files for OpenSSL
-#
-# Arguments:
-#   RESULT_VAR - Variable name to store ASM file list
-#
-# Output:
-#   Sets RESULT_VAR with list of ASM object files
-#-------------------------------------------------------------------------------
-function(openssl_setup_asm_files RESULT_VAR)
-    set(_asm_files )
-
-    if(PROJECT_PLATFORM STREQUAL "x64")
-        set(_nasm_args win64)
-        set(_asm_file_list
-            crypto/sha/sha512-x86_64.asm
-            crypto/sha/sha256-x86_64.asm
-            crypto/sha/sha256-mb-x86_64.asm
-            crypto/sha/sha1-x86_64.asm
-            crypto/sha/sha1-mb-x86_64.asm
-            crypto/sha/keccak1600-x86_64.asm
-            crypto/md5/md5-x86_64.asm
-            crypto/ec/x25519-x86_64.asm
-            crypto/ec/ecp_nistz256-x86_64.asm
-            crypto/poly1305/poly1305-x86_64.asm
-            crypto/aes/vpaes-x86_64.asm
-            crypto/aes/bsaes-x86_64.asm
-            crypto/aes/aesni-x86_64.asm
-            crypto/aes/aesni-sha256-x86_64.asm
-            crypto/aes/aesni-sha1-x86_64.asm
-            crypto/aes/aesni-mb-x86_64.asm
-            crypto/aes/aes-x86_64.asm
-            crypto/bn/x86_64-mont5.asm
-            crypto/bn/x86_64-mont.asm
-            crypto/bn/x86_64-gf2m.asm
-            crypto/bn/rsaz-x86_64.asm
-            crypto/bn/rsaz-avx2.asm
-            crypto/bn/rsaz-4k-avx512.asm
-            crypto/bn/rsaz-3k-avx512.asm
-            crypto/bn/rsaz-2k-avx512.asm
-            crypto/modes/ghash-x86_64.asm
-            crypto/modes/aesni-gcm-x86_64.asm
-            crypto/modes/aes-gcm-avx512.asm
-        )
-    elseif(PROJECT_PLATFORM STREQUAL "x86")
-        set(_nasm_args win32)
-        set(_asm_file_list
-            crypto/aes/libcrypto-lib-vpaes-x86.obj.asm
-            crypto/aes/libcrypto-lib-aesni-x86.obj.asm
-            crypto/aes/libcrypto-lib-aes-586.obj.asm
-            crypto/bf/libcrypto-lib-bf-586.obj.asm
-            crypto/bn/libcrypto-lib-x86-mont.obj.asm
-            crypto/bn/libcrypto-lib-x86-gf2m.obj.asm
-            crypto/camellia/libcrypto-lib-cmll-x86.obj.asm
-            crypto/cast/libcrypto-lib-cast-586.obj.asm
-            crypto/des/libcrypto-lib-des-586.obj.asm
-            crypto/des/libcrypto-lib-crypt586.obj.asm
-            crypto/ec/libcrypto-lib-ecp_nistz256-x86.obj.asm
-            crypto/md5/libcrypto-lib-md5-586.obj.asm
-            crypto/modes/libcrypto-lib-ghash-x86.obj.asm
-            crypto/poly1305/libcrypto-lib-poly1305-x86.obj.asm
-            crypto/rc4/libcrypto-lib-rc4-586.obj.asm
-            crypto/ripemd/libcrypto-lib-rmd-586.obj.asm
-            crypto/sha/libcrypto-lib-sha512-586.obj.asm
-            crypto/sha/libcrypto-lib-sha256-586.obj.asm
-            crypto/sha/libcrypto-lib-sha1-586.obj.asm
-            crypto/whrlpool/libcrypto-lib-wp-mmx.obj.asm
-        )
-    elseif(PROJECT_PLATFORM STREQUAL "ARM64")
-        # ARM64 has no ASM files in this configuration
-        set(_nasm_args "")
-        set(_asm_file_list )
-    endif()
-
-    # Compile ASM files
-    if(MSVC AND NOT PROJECT_PLATFORM STREQUAL "ARM64" AND _asm_file_list)
-        set(NASM_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/../../buildtools/tools/nasm.exe)
-
-        foreach(_asm_file ${_asm_file_list})
-            get_filename_component(_asm_file_fn ${_asm_file} NAME)
-            # message("_asm_file: ${_asm_file}")
-            set(_asm_object ${CMAKE_CURRENT_BINARY_DIR}/${_asm_file_fn}.obj)
-            add_custom_command(
-                OUTPUT ${_asm_object}
-                COMMAND ${NASM_EXECUTABLE}
-                ARGS -f ${_nasm_args} -o ${_asm_object} ${CMAKE_CURRENT_SOURCE_DIR}/${_asm_file}
-                DEPENDS ${_asm_file}
-            )
-            list(APPEND _asm_files ${_asm_object})
-        endforeach()
-    endif()
-
-    set(${RESULT_VAR} ${_asm_files} PARENT_SCOPE)
-endfunction()
-
 openssl_setup_asm_files(ASM_OBJECTS)
 
 #-------------------------------------------------------------------------------
@@ -1096,12 +1001,9 @@ add_library(libeay32 STATIC
 openssl_apply_compile_options(libeay32)
 
 # Additional include directories for providers (only needed by libeay32)
-target_include_directories(libeay32 SYSTEM BEFORE PRIVATE
-    # ${CMAKE_CURRENT_SOURCE_DIR}
+target_include_directories(libeay32 SYSTEM AFTER PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/providers/common/include
     ${CMAKE_CURRENT_SOURCE_DIR}/providers/implementations/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/internal
 )
 
 #-------------------------------------------------------------------------------
