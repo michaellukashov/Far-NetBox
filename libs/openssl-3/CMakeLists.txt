@@ -1,83 +1,29 @@
-#-------------------------------------------------------------------------------
 # OpenSSL 3.0 Library Build Configuration
-#
-# Builds libeay32 (crypto) and ssleay32 (SSL) static libraries
-#-------------------------------------------------------------------------------
-
 cmake_minimum_required(VERSION 3.15)
-
-# Include parent's ucm.cmake for utility functions
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/OpenSSL.cmake)
 
-#-------------------------------------------------------------------------------
-# Discover OpenSSL source files
-#-------------------------------------------------------------------------------
-
 # SSL library sources (ssleay32)
-# Using explicit list for SSL layer as it's smaller and stable
 set(SSL_SOURCES
-    ssl/pqueue.c
-    ssl/ssl_rsa_legacy.c
-    ssl/s3_lib.c
-    ssl/s3_enc.c
-    ssl/s3_msg.c
-    ssl/methods.c
-    ssl/t1_lib.c
-    ssl/t1_enc.c
-    ssl/tls13_enc.c
-    ssl/d1_lib.c
-    ssl/d1_msg.c
-    ssl/d1_srtp.c
-    ssl/ssl_lib.c
-    ssl/ssl_cert.c
-    ssl/ssl_sess.c
-    ssl/ssl_ciph.c
-    ssl/ssl_stat.c
-    ssl/ssl_rsa.c
-    ssl/ssl_asn1.c
-    ssl/ssl_txt.c
-    ssl/ssl_init.c
-    ssl/ssl_conf.c
-    ssl/ssl_mcnf.c
-    ssl/bio_ssl.c
-    ssl/ssl_err.c
-    ssl/ssl_err_legacy.c
-    ssl/tls_srp.c
-    ssl/t1_trce.c
-    ssl/ssl_utst.c
-    ssl/tls_depr.c
-    ssl/ssl_cert_comp.c
-    ssl/record/methods/ssl3_cbc.c
-    ssl/record/methods/tls_pad.c
-    ssl/record/methods/dtls_meth.c
-    ssl/record/methods/tls_common.c
-    ssl/record/methods/tlsany_meth.c
-    ssl/record/methods/tls13_meth.c
-    ssl/record/methods/tls1_meth.c
-    ssl/record/methods/ssl3_meth.c
-    ssl/record/methods/tls_multib.c
-    ssl/record/rec_layer_s3.c
-    ssl/record/rec_layer_d1.c
-    ssl/statem/statem_lib.c
-    ssl/statem/statem_srvr.c
-    ssl/statem/statem_clnt.c
-    ssl/statem/extensions.c
-    ssl/statem/extensions_srvr.c
-    ssl/statem/extensions_clnt.c
-    ssl/statem/extensions_cust.c
-    ssl/statem/statem_dtls.c
-    ssl/statem/statem.c
+    ssl/pqueue.c ssl/ssl_rsa_legacy.c ssl/s3_lib.c ssl/s3_enc.c ssl/s3_msg.c
+    ssl/methods.c ssl/t1_lib.c ssl/t1_enc.c ssl/tls13_enc.c ssl/d1_lib.c
+    ssl/d1_msg.c ssl/d1_srtp.c ssl/ssl_lib.c ssl/ssl_cert.c ssl/ssl_sess.c
+    ssl/ssl_ciph.c ssl/ssl_stat.c ssl/ssl_rsa.c ssl/ssl_asn1.c ssl/ssl_txt.c
+    ssl/ssl_init.c ssl/ssl_conf.c ssl/ssl_mcnf.c ssl/bio_ssl.c ssl/ssl_err.c
+    ssl/ssl_err_legacy.c ssl/tls_srp.c ssl/t1_trce.c ssl/ssl_utst.c
+    ssl/ssl_cert_comp.c ssl/record/methods/ssl3_cbc.c ssl/record/methods/tls_pad.c
+    ssl/record/methods/dtls_meth.c ssl/record/methods/tls_common.c
+    ssl/record/methods/tlsany_meth.c ssl/record/methods/tls13_meth.c
+    ssl/record/methods/tls1_meth.c ssl/record/methods/ssl3_meth.c
+    ssl/record/methods/tls_multib.c ssl/record/rec_layer_s3.c ssl/record/rec_layer_d1.c
+    ssl/statem/statem_lib.c ssl/statem/statem_srvr.c ssl/statem/statem_clnt.c
+    ssl/statem/extensions.c ssl/statem/extensions_srvr.c ssl/statem/extensions_clnt.c
+    ssl/statem/extensions_cust.c ssl/statem/statem_dtls.c ssl/statem/statem.c
 )
 
 # Crypto library sources (libeay32)
-# Use ucm_add_dirs to auto-discover all crypto/*.c files
-# This handles ~400+ files automatically
-# ucm_add_dirs(RECURSIVE TO CRYPTO_SOURCES crypto)
 set(CRYPTO_SOURCES
-    crypto/cryptlib.c
-    crypto/params.c
-    crypto/params_from_text.c
+    crypto/cryptlib.c crypto/params.c crypto/params_from_text.c
     crypto/bsearch.c
     crypto/ex_data.c
     crypto/threads_pthread.c
@@ -1010,7 +956,7 @@ target_include_directories(libeay32 SYSTEM AFTER PRIVATE
 # Debug output (optional, for verification)
 #-------------------------------------------------------------------------------
 
-message(STATUS "OpenSSL Configuration:")
+# message(STATUS "OpenSSL Configuration:")
 # message(STATUS "  SSL sources: ${SSL_SOURCES}")
 # message(STATUS "  Crypto sources: ${CRYPTO_SOURCES}")
 # message(STATUS "  Platform-specific sources: ${CRYPTO_PLATFORM_SOURCES}")
