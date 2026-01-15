@@ -190,6 +190,49 @@ There are no automated unit tests. Manual testing is required:
 - Plugin location: `Far3_<platform>/Plugins/NetBox/`
 - Platforms: `Far3_x86/`, `Far3_x64/`, `Far3_ARM64/`
 
+## CMake Structure
+
+The NetBox project uses a modular CMake structure:
+
+```
+CMakeLists.txt (main - 100 lines)
+├── cmake/NetBox.cmake (compiler/linker flags)
+├── cmake/Install.cmake (post-build installation)
+├── cmake/[Library].cmake (library configurations)
+├── cmake/README.md (documentation)
+│
+├── libs/*/CMakeLists.txt (library builds)
+└── src/CMakeLists.txt (plugin build - 530 lines)
+```
+
+### Key CMake Files
+
+| File | Purpose |
+|------|---------|
+| `cmake/NetBox.cmake` | Centralized compiler flags and defines |
+| `cmake/Install.cmake` | Plugin installation and post-build commands |
+| `cmake/[Library].make` | Library-specific configurations |
+
+### Adding/Modifying Libraries
+
+1. **Create library config**: `cmake/NewLib.cmake`
+2. **Create library build**: `libs/newlib/CMakeLists.txt`
+3. **Add to main build**: `add_subdirectory(libs/newlib)` in `CMakeLists.txt`
+4. **Link to plugin**: Add `newlib` to `NETBOX_LIBRARIES` in `src/CMakeLists.txt`
+
+### Build Verification
+
+```cmd
+# Configure (check for CMake errors)
+cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
+
+# Build (check for compilation errors)
+cmake --build build
+
+# Clean build
+cmake --build build --clean-first
+```
+
 ## Git Workflow
 
 - **Main branch**: `main` (protected)
