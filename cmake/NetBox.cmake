@@ -243,6 +243,51 @@ elseif(CMAKE_COMPILER_IS_MINGW)
 endif()
 
 #===============================================================================
+# MSVC Compiler and Linker Flags
+#
+# Purpose: Centralized MSVC-specific configuration for NetBox
+#
+# Provides:
+#   - MSVC runtime library configuration (static)
+#   - Linker flags for DLL builds
+#===============================================================================
+
+if(MSVC)
+
+  #-------------------------------------------------------------------------------
+  # Static Runtime Library
+  #-------------------------------------------------------------------------------
+  # Static runtime for all configurations (avoids DLL dependency issues)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:>$<IF:$<CONFIG:Debug>,,>")
+
+  #-------------------------------------------------------------------------------
+  # Compiler Flags
+  #-------------------------------------------------------------------------------
+
+  # Multi-processor compilation and debug info
+  # ucm_add_flags(CXX C /MP /Zi)
+
+  # Optimization flags for non-Debug builds
+  # ucm_add_flags(CXX /EHs)
+  # ucm_add_flags(CXX C /fp:fast /Gw /GL)
+
+  # Remove /Ob1, /Ob2 in non-Debug configs (already optimized via /GL)
+  ucm_remove_flags(CXX C /Ob1 /Ob2 CONFIG Release MinSizeRel RelWithDebInfo)
+
+  # Debug flags
+  # ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
+
+  #-------------------------------------------------------------------------------
+  # Linker Flags
+  #-------------------------------------------------------------------------------
+
+  ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_RELEASE} CONFIG Release RelWithDebInfo MinSizeRel)
+  ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_DEBUG} CONFIG Debug)
+  ucm_add_linker_flags(MODULE SHARED /DEBUG /MAP CONFIG RelWithDebInfo)
+
+endif()
+
+#===============================================================================
 # Helper Functions
 #===============================================================================
 
