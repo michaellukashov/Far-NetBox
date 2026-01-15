@@ -15,6 +15,9 @@ message("Build type: ${CMAKE_BUILD_TYPE}")
 # message("CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 if(MSVC)
+  # Set the desired runtime library for all configurations (Debug, Release, etc.)
+  set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:>$<IF:$<CONFIG:Debug>,,>")
+
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP /Zi")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MP /Zi")
   # /MP Multi-processor compilation
@@ -99,3 +102,19 @@ add_subdirectory(libs/libs3)
 #===============================================================================
 
 add_subdirectory(src)
+
+#===============================================================================
+# Compiler and Linker Flags (using ucm.cmake)
+#===============================================================================
+
+if(MSVC)
+  ucm_set_runtime(STATIC)
+  ucm_add_flags(CXX /EHs)
+  ucm_remove_flags(CXX C /Ob1 /Ob2 CONFIG Release MinSizeRel RelWithDebInfo)
+  ucm_add_flags(CXX C /fp:fast /Gw /GL CONFIG Release RelWithDebInfo MinSizeRel)
+  ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
+  ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_RELEASE} CONFIG Release RelWithDebInfo MinSizeRel)
+  ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_DEBUG} CONFIG Debug)
+  ucm_add_linker_flags(MODULE SHARED /DEBUG /MAP CONFIG RelWithDebInfo)
+endif()
+# ucm_print_flags()

@@ -26,9 +26,9 @@ include(${CMAKE_SOURCE_DIR}/cmake/Install.cmake)
 if(OPT_USE_UNITY_BUILD)
 
 set(NETBOX_SOURCES
-  src/NetBox/UnityBuildCore.cpp
-  src/NetBox/UnityBuildFilezilla.cpp
-  src/NetBox/UnityBuildMain.cpp
+  NetBox/UnityBuildCore.cpp
+  NetBox/UnityBuildFilezilla.cpp
+  NetBox/UnityBuildMain.cpp
 )
 
 else(OPT_USE_UNITY_BUILD)
@@ -38,52 +38,52 @@ else(OPT_USE_UNITY_BUILD)
 #===============================================================================
 
 set(Base_SOURCES
-  src/nbcore/nbstring.cpp
-  src/nbcore/nbmemory.cpp
-  src/nbcore/nbutils.cpp
+  nbcore/nbstring.cpp
+  nbcore/nbmemory.cpp
+  nbcore/nbutils.cpp
 
-  src/base/UnicodeString.cpp
-  src/base/Classes.cpp
-  src/base/Masks.cpp
-  src/base/Sysutils.cpp
-  src/base/StrUtils.cpp
-  src/base/WideStrUtils.cpp
-  src/base/LibraryLoader.cpp
+  base/UnicodeString.cpp
+  base/Classes.cpp
+  base/Masks.cpp
+  base/Sysutils.cpp
+  base/StrUtils.cpp
+  base/WideStrUtils.cpp
+  base/LibraryLoader.cpp
 )
 
 set(Base_HEADERS
-  src/nbcore/stdafx.h
+  nbcore/stdafx.h
 
-  src/base/Classes.hpp
-  src/base/Sysutils.hpp
-  src/base/Property.hpp
-  src/base/function2.hpp
-  src/base/UnicodeString.hpp
-  src/base/Masks.hpp
-  src/base/System.StrUtils.hpp
-  src/base/StrUtils.hpp
-  src/base/DirectoryMonitor.hpp
-  src/base/System.SyncObjs.hpp
-  src/base/Windows.hpp
-  src/base/Xml.XMLIntf.hpp
-  src/base/LibraryLoader.hpp
-  src/base/DynamicQueue.hpp
-  src/base/System.IOUtils.hpp
-  src/base/System.ShlObj.hpp
-  src/base/WideStrUtils.hpp
-  src/base/Math.hpp
-  src/base/PasTools.hpp
-  src/base/System.DateUtils.hpp
-  src/base/ComCtrls.hpp
-  src/base/registry.hpp
-  src/base/contnrs.hpp
-  src/base/SysInit.hpp
-  src/base/System.hpp
-  src/base/LanguagesDEPfix.hpp
-  src/base/FileCtrl.hpp
-  src/base/CompThread.hpp
-  src/base/DateUtils.hpp
-  src/base/DiscMon.hpp
+  base/Classes.hpp
+  base/Sysutils.hpp
+  base/Property.hpp
+  base/function2.hpp
+  base/UnicodeString.hpp
+  base/Masks.hpp
+  base/System.StrUtils.hpp
+  base/StrUtils.hpp
+  base/DirectoryMonitor.hpp
+  base/System.SyncObjs.hpp
+  base/Windows.hpp
+  base/Xml.XMLIntf.hpp
+  base/LibraryLoader.hpp
+  base/DynamicQueue.hpp
+  base/System.IOUtils.hpp
+  base/System.ShlObj.hpp
+  base/WideStrUtils.hpp
+  base/Math.hpp
+  base/PasTools.hpp
+  base/System.DateUtils.hpp
+  base/ComCtrls.hpp
+  base/registry.hpp
+  base/contnrs.hpp
+  base/SysInit.hpp
+  base/System.hpp
+  base/LanguagesDEPfix.hpp
+  base/FileCtrl.hpp
+  base/CompThread.hpp
+  base/DateUtils.hpp
+  base/DiscMon.hpp
 )
 
 #===============================================================================
@@ -91,47 +91,47 @@ set(Base_HEADERS
 #===============================================================================
 
 set(Filezilla_HEADERS
-  src/filezilla/AsyncSslSocketLayer.h
-  src/filezilla/structures.h
-  src/filezilla/stdafx.h
-  src/filezilla/TransferSocket.h
-  src/filezilla/ServerPath.h
-  src/filezilla/MainThread.h
-  src/filezilla/MFC64bitFix.h
-  src/filezilla/FzApiStructures.h
-  src/filezilla/FtpListResult.h
-  src/filezilla/FtpControlSocket.h
-  src/filezilla/FilezillaTools.h
-  src/filezilla/FileZillaOpt.h
-  src/filezilla/FileZillaIntf.h
-  src/filezilla/FileZillaIntern.h
-  src/filezilla/FileZillaApi.h
-  src/filezilla/AsyncSocketExLayer.h
-  src/filezilla/AsyncSocketEx.h
-  src/filezilla/AsyncProxySocketLayer.h
-  src/filezilla/ApiLog.h
-  src/filezilla/afxdll.h
+  filezilla/AsyncSslSocketLayer.h
+  filezilla/structures.h
+  filezilla/stdafx.h
+  filezilla/TransferSocket.h
+  filezilla/ServerPath.h
+  filezilla/MainThread.h
+  filezilla/MFC64bitFix.h
+  filezilla/FzApiStructures.h
+  filezilla/FtpListResult.h
+  filezilla/FtpControlSocket.h
+  filezilla/FilezillaTools.h
+  filezilla/FileZillaOpt.h
+  filezilla/FileZillaIntf.h
+  filezilla/FileZillaIntern.h
+  filezilla/FileZillaApi.h
+  filezilla/AsyncSocketExLayer.h
+  filezilla/AsyncSocketEx.h
+  filezilla/AsyncProxySocketLayer.h
+  filezilla/ApiLog.h
+  filezilla/afxdll.h
 )
 
 set(Filezilla_SOURCES
-  src/filezilla/afxdll.cpp
-  src/filezilla/FileZillaIntf.cpp
-  src/filezilla/FileZillaIntern.cpp
-  src/filezilla/ApiLog.cpp
-  src/filezilla/ServerPath.cpp
-  src/filezilla/AsyncSslSocketLayer.cpp
-  src/filezilla/AsyncSocketExLayer.cpp
-  src/filezilla/AsyncSocketEx.cpp
-  src/filezilla/FileZillaApi.cpp
-  src/filezilla/FzApiStructures.cpp
-  src/filezilla/FtpControlSocket.cpp
-  src/filezilla/MainThread.cpp
-  src/filezilla/TransferSocket.cpp
-  src/filezilla/FtpListResult.cpp
-  src/filezilla/AsyncProxySocketLayer.cpp
-  src/filezilla/structures.cpp
-  src/filezilla/MFC64bitFix.cpp
-  src/filezilla/misc/CBase64Coding.cpp
+  filezilla/afxdll.cpp
+  filezilla/FileZillaIntf.cpp
+  filezilla/FileZillaIntern.cpp
+  filezilla/ApiLog.cpp
+  filezilla/ServerPath.cpp
+  filezilla/AsyncSslSocketLayer.cpp
+  filezilla/AsyncSocketExLayer.cpp
+  filezilla/AsyncSocketEx.cpp
+  filezilla/FileZillaApi.cpp
+  filezilla/FzApiStructures.cpp
+  filezilla/FtpControlSocket.cpp
+  filezilla/MainThread.cpp
+  filezilla/TransferSocket.cpp
+  filezilla/FtpListResult.cpp
+  filezilla/AsyncProxySocketLayer.cpp
+  filezilla/structures.cpp
+  filezilla/MFC64bitFix.cpp
+  filezilla/misc/CBase64Coding.cpp
 )
 
 #===============================================================================
@@ -139,98 +139,98 @@ set(Filezilla_SOURCES
 #===============================================================================
 
 set(WinSCP_SOURCES
-  src/base/Common.cpp
-  src/base/Exceptions.cpp
-  src/base/FileBuffer.cpp
-  src/base/System.IOUtils.cpp
-  src/base/Global.cpp
-  src/base/System.SyncObjs.cpp
-  src/base/FormatUtils.cpp
-  src/base/ObjIDs.cpp
+  base/Common.cpp
+  base/Exceptions.cpp
+  base/FileBuffer.cpp
+  base/System.IOUtils.cpp
+  base/Global.cpp
+  base/System.SyncObjs.cpp
+  base/FormatUtils.cpp
+  base/ObjIDs.cpp
 
-  src/core/RemoteFiles.cpp
-  src/core/Terminal.cpp
-  src/core/FileOperationProgress.cpp
-  src/core/Queue.cpp
-  src/core/SecureShell.cpp
-  src/core/SessionInfo.cpp
-  src/core/Script.cpp
-  src/core/CoreMain.cpp
-  src/core/FileMasks.cpp
-  src/core/CopyParam.cpp
-  src/core/SessionData.cpp
-  src/core/Usage.cpp
-  src/core/Configuration.cpp
-  src/core/ScpFileSystem.cpp
-  src/core/FtpFileSystem.cpp
-  src/core/SftpFileSystem.cpp
-  src/core/WebDAVFileSystem.cpp
-  src/core/S3FileSystem.cpp
-  src/core/PuttyIntf.cpp
-  src/core/Cryptography.cpp
-  src/core/NamedObjs.cpp
-  src/core/HierarchicalStorage.cpp
-  src/core/Option.cpp
-  src/core/FileInfo.cpp
-  src/core/FileSystems.cpp
-  src/core/Bookmarks.cpp
-  src/core/WinSCPSecurity.cpp
-  src/core/Http.cpp
-  src/core/NeonIntf.cpp
+  core/RemoteFiles.cpp
+  core/Terminal.cpp
+  core/FileOperationProgress.cpp
+  core/Queue.cpp
+  core/SecureShell.cpp
+  core/SessionInfo.cpp
+  core/Script.cpp
+  core/CoreMain.cpp
+  core/FileMasks.cpp
+  core/CopyParam.cpp
+  core/SessionData.cpp
+  core/Usage.cpp
+  core/Configuration.cpp
+  core/ScpFileSystem.cpp
+  core/FtpFileSystem.cpp
+  core/SftpFileSystem.cpp
+  core/WebDAVFileSystem.cpp
+  core/S3FileSystem.cpp
+  core/PuttyIntf.cpp
+  core/Cryptography.cpp
+  core/NamedObjs.cpp
+  core/HierarchicalStorage.cpp
+  core/Option.cpp
+  core/FileInfo.cpp
+  core/FileSystems.cpp
+  core/Bookmarks.cpp
+  core/WinSCPSecurity.cpp
+  core/Http.cpp
+  core/NeonIntf.cpp
 
-  src/windows/SynchronizeController.cpp
-  src/windows/GUITools.cpp
-  src/windows/GUIConfiguration.cpp
-  src/windows/Tools.cpp
-  src/windows/ProgParams.cpp
-  src/windows/UserInterface.cpp
-  src/windows/WinInterface.cpp
+  windows/SynchronizeController.cpp
+  windows/GUITools.cpp
+  windows/GUIConfiguration.cpp
+  windows/Tools.cpp
+  windows/ProgParams.cpp
+  windows/UserInterface.cpp
+  windows/WinInterface.cpp
 )
 
 set(WinSCP_HEADERS
-  src/core/FileMasks.h
-  src/core/Bookmarks.h
-  src/core/HierarchicalStorage.h
-  src/core/Configuration.h
-  src/core/Usage.h
-  src/core/Terminal.h
-  src/core/SessionData.h
-  src/core/NamedObjs.h
-  src/core/SessionInfo.h
-  src/core/CopyParam.h
-  src/core/SecureShell.h
-  src/core/FileSystems.h
-  src/core/ScpFileSystem.h
-  src/core/WebDAVFileSystem.h
-  src/core/SftpFileSystem.h
-  src/core/FtpFileSystem.h
-  src/core/S3FileSystem.h
-  src/core/Queue.h
-  src/core/RemoteFiles.h
-  src/core/Cryptography.h
-  src/core/Http.h
-  src/core/FileOperationProgress.h
-  src/core/Option.h
-  src/core/Interface.h
-  src/core/NeonIntf.h
-  src/core/Script.h
-  src/core/PuttyTools.h
-  src/core/WinSCPSecurity.h
-  src/core/PuttyIntf.h
-  src/core/FileInfo.h
-  src/core/CoreMain.h
+  core/FileMasks.h
+  core/Bookmarks.h
+  core/HierarchicalStorage.h
+  core/Configuration.h
+  core/Usage.h
+  core/Terminal.h
+  core/SessionData.h
+  core/NamedObjs.h
+  core/SessionInfo.h
+  core/CopyParam.h
+  core/SecureShell.h
+  core/FileSystems.h
+  core/ScpFileSystem.h
+  core/WebDAVFileSystem.h
+  core/SftpFileSystem.h
+  core/FtpFileSystem.h
+  core/S3FileSystem.h
+  core/Queue.h
+  core/RemoteFiles.h
+  core/Cryptography.h
+  core/Http.h
+  core/FileOperationProgress.h
+  core/Option.h
+  core/Interface.h
+  core/NeonIntf.h
+  core/Script.h
+  core/PuttyTools.h
+  core/WinSCPSecurity.h
+  core/PuttyIntf.h
+  core/FileInfo.h
+  core/CoreMain.h
 
-  src/windows/WinInterface.h
-  src/windows/GUIConfiguration.h
-  src/windows/TerminalManager.h
-  src/windows/Tools.h
-  src/windows/GUITools.h
-  src/windows/VCLCommon.h
-  src/windows/Setup.h
-  src/windows/ProgParams.h
-  src/windows/CustomWinConfiguration.h
-  src/windows/WinConfiguration.h
-  src/windows/SynchronizeController.h
+  windows/WinInterface.h
+  windows/GUIConfiguration.h
+  windows/TerminalManager.h
+  windows/Tools.h
+  windows/GUITools.h
+  windows/VCLCommon.h
+  windows/Setup.h
+  windows/ProgParams.h
+  windows/CustomWinConfiguration.h
+  windows/WinConfiguration.h
+  windows/SynchronizeController.h
 )
 
 #===============================================================================
@@ -238,32 +238,32 @@ set(WinSCP_HEADERS
 #===============================================================================
 
 set(NetBox_SOURCES
-  src/NetBox/NetBox.cpp
-  src/NetBox/FarDialog.cpp
-  src/NetBox/FarPlugin.cpp
-  src/NetBox/FarUtils.cpp
-  src/NetBox/WinSCPFileSystem.cpp
-  src/NetBox/WinSCPDialogs.cpp
-  src/NetBox/WinSCPPlugin.cpp
-  src/NetBox/FarConfiguration.cpp
-  src/NetBox/FarInterface.cpp
-  src/NetBox/XmlStorage.cpp
-  src/NetBox/Far3Storage.cpp
-  src/NetBox/FarPluginStrings.cpp
-  src/NetBox/MessageDlg.cpp
+  NetBox/NetBox.cpp
+  NetBox/FarDialog.cpp
+  NetBox/FarPlugin.cpp
+  NetBox/FarUtils.cpp
+  NetBox/WinSCPFileSystem.cpp
+  NetBox/WinSCPDialogs.cpp
+  NetBox/WinSCPPlugin.cpp
+  NetBox/FarConfiguration.cpp
+  NetBox/FarInterface.cpp
+  NetBox/XmlStorage.cpp
+  NetBox/Far3Storage.cpp
+  NetBox/FarPluginStrings.cpp
+  NetBox/MessageDlg.cpp
 )
 
 set(NetBox_HEADERS
-  src/NetBox/FarUtils.h
-  src/NetBox/FarPlugin.h
-  src/NetBox/FarConfiguration.h
-  src/NetBox/WinSCPPlugin.h
-  src/NetBox/WinSCPFileSystem.h
-  src/NetBox/FarDialog.h
-  src/NetBox/XmlStorage.h
-  src/NetBox/FarInterface.h
-  src/NetBox/resource.h
-  src/NetBox/FarPluginStrings.h
+  NetBox/FarUtils.h
+  NetBox/FarPlugin.h
+  NetBox/FarConfiguration.h
+  NetBox/WinSCPPlugin.h
+  NetBox/WinSCPFileSystem.h
+  NetBox/FarDialog.h
+  NetBox/XmlStorage.h
+  NetBox/FarInterface.h
+  NetBox/resource.h
+  NetBox/FarPluginStrings.h
 )
 
 # Combine all sources for non-unity build
@@ -298,13 +298,13 @@ add_library(baselib STATIC
 )
 
 target_include_directories(baselib PRIVATE
-  libs
-  libs/fmt
-  libs/tinylog
-  libs/GSL/include
-  src/include
-  src/base
-  src/resource
+  ${CMAKE_SOURCE_DIR}/libs
+  ${CMAKE_SOURCE_DIR}/libs/fmt
+  ${CMAKE_SOURCE_DIR}/libs/tinylog
+  ${CMAKE_SOURCE_DIR}/libs/GSL/include
+  include
+  base
+  resource
 )
 
 target_compile_options(baselib PRIVATE
@@ -327,83 +327,83 @@ set(NETBOX_SOURCES
   ${NETBOX_SOURCES}
   ${NetBox_HEADERS}
 
-  src/include/FastDelegateBind.h
-  src/include/FastDelegate.h
-  src/include/type_traits.h
-  src/include/rtti.hpp
-  src/include/nbtypes.h
-  src/include/nbglobals.h
-  src/include/nbsystem.h
-  src/include/nbcore.h
-  src/include/nbstring.h
-  src/include/nbstring.inl
-  src/include/nbutils.h
+  include/FastDelegateBind.h
+  include/FastDelegate.h
+  include/type_traits.h
+  include/rtti.hpp
+  include/nbtypes.h
+  include/nbglobals.h
+  include/nbsystem.h
+  include/nbcore.h
+  include/nbstring.h
+  include/nbstring.inl
+  include/nbutils.h
 
-  src/base/Property.hpp
-  src/base/Global.h
-  src/base/Common.h
-  src/base/UnicodeString.hpp
-  src/base/Exceptions.h
-  src/base/Sysutils.hpp
-  src/base/StrUtils.hpp
-  src/base/MsgIDs.h
-  src/base/vcl.h
-  src/base/FileBuffer.h
-  src/base/System.IOUtils.hpp
-  src/base/FormatUtils.h
-  src/base/ObjIDs.h
+  base/Property.hpp
+  base/Global.h
+  base/Common.h
+  base/UnicodeString.hpp
+  base/Exceptions.h
+  base/Sysutils.hpp
+  base/StrUtils.hpp
+  base/MsgIDs.h
+  base/vcl.h
+  base/FileBuffer.h
+  base/System.IOUtils.hpp
+  base/FormatUtils.h
+  base/ObjIDs.h
 
-  src/core/WebDAVFileSystem.h
-  src/core/S3FileSystem.h
-  src/core/Queue.h
-  src/core/Terminal.h
-  src/core/FileSystems.h
-  src/core/SessionInfo.h
-  src/core/SessionData.h
-  src/core/RemoteFiles.h
-  src/core/Http.h
-  src/core/FtpFileSystem.h
-  src/core/FileMasks.h
-  src/core/Configuration.h
-  src/core/WinSCPSecurity.h
-  src/core/SecureShell.h
-  src/core/ScpFileSystem.h
-  src/core/NeonIntf.h
-  src/core/Interface.h
-  src/core/FileInfo.h
-  src/core/CopyParam.h
-  src/core/SftpFileSystem.h
-  src/core/PuttyIntf.h
-  src/core/Option.h
-  src/core/HierarchicalStorage.h
-  src/core/Cryptography.h
-  src/core/PuttyTools.h
-  src/core/NamedObjs.h
-  src/core/FileOperationProgress.h
-  src/core/Bookmarks.h
-  src/core/CoreMain.h
+  core/WebDAVFileSystem.h
+  core/S3FileSystem.h
+  core/Queue.h
+  core/Terminal.h
+  core/FileSystems.h
+  core/SessionInfo.h
+  core/SessionData.h
+  core/RemoteFiles.h
+  core/Http.h
+  core/FtpFileSystem.h
+  core/FileMasks.h
+  core/Configuration.h
+  core/WinSCPSecurity.h
+  core/SecureShell.h
+  core/ScpFileSystem.h
+  core/NeonIntf.h
+  core/Interface.h
+  core/FileInfo.h
+  core/CopyParam.h
+  core/SftpFileSystem.h
+  core/PuttyIntf.h
+  core/Option.h
+  core/HierarchicalStorage.h
+  core/Cryptography.h
+  core/PuttyTools.h
+  core/NamedObjs.h
+  core/FileOperationProgress.h
+  core/Bookmarks.h
+  core/CoreMain.h
 
-  src/windows/WinInterface.h
-  src/windows/GUITools.h
-  src/windows/GUIConfiguration.h
-  src/windows/Tools.h
-  src/windows/ProgParams.h
-  src/windows/SynchronizeController.h
+  windows/WinInterface.h
+  windows/GUITools.h
+  windows/GUIConfiguration.h
+  windows/Tools.h
+  windows/ProgParams.h
+  windows/SynchronizeController.h
 
-  src/resource/TextsCore.h
-  src/resource/rtlconsts.h
-  src/resource/HelpCore.h
-  src/resource/TextsFileZilla.h
-  src/PluginSDK/Far3/plugin.hpp
-  src/PluginSDK/Far3/farcolor.hpp
-  src/PluginSDK/Far3/PluginSettings.hpp
+  resource/TextsCore.h
+  resource/rtlconsts.h
+  resource/HelpCore.h
+  resource/TextsFileZilla.h
+  PluginSDK/Far3/plugin.hpp
+  PluginSDK/Far3/farcolor.hpp
+  PluginSDK/Far3/PluginSettings.hpp
 
-  src/resource/TextsFileZilla.rc
-  src/resource/TextsCore1.rc
-  src/resource/rtlconsts.rc
-  src/resource/TextsWin1.rc
-  src/NetBox/NetBox.rc
-  src/NetBox/NetBox.def
+  resource/TextsFileZilla.rc
+  resource/TextsCore1.rc
+  resource/rtlconsts.rc
+  resource/TextsWin1.rc
+  NetBox/NetBox.rc
+  NetBox/NetBox.def
 )
 
 #-------------------------------------------------------------------------------
@@ -411,18 +411,18 @@ set(NETBOX_SOURCES
 #-------------------------------------------------------------------------------
 
 add_custom_target(NetBoxResources SOURCES
-  src/NetBox/NetBoxEng.lng
-  src/NetBox/NetBoxRus.lng
-  src/NetBox/NetBoxPol.lng
-  src/NetBox/NetBoxSpa.lng
-  src/NetBox/resource.h.template
-  src/NetBox/NetBox.rc
-  src/NetBox/NetBox.rc.template
-  .github/workflows/release.yml
-  appveyor.yml
-  appveyor.bat
-  ChangeLog
-  README.md
+  NetBox/NetBoxEng.lng
+  NetBox/NetBoxRus.lng
+  NetBox/NetBoxPol.lng
+  NetBox/NetBoxSpa.lng
+  NetBox/resource.h.template
+  NetBox/NetBox.rc
+  NetBox/NetBox.rc.template
+  ${CMAKE_SOURCE_DIR}/.github/workflows/release.yml
+  ${CMAKE_SOURCE_DIR}/appveyor.yml
+  ${CMAKE_SOURCE_DIR}/appveyor.bat
+  ${CMAKE_SOURCE_DIR}/ChangeLog
+  ${CMAKE_SOURCE_DIR}/README.md
 )
 
 #===============================================================================
@@ -476,26 +476,25 @@ add_library(NetBox SHARED
 )
 
 target_include_directories(NetBox PRIVATE
-  libs
-  libs/openssl-3/include
-  libs/putty
-  libs/putty/windows
-  libs/neon/src
-  libs/tinyxml2
-  libs/expat/lib
-  libs/atlmfc/include
-  libs/fmt
-  libs/tinylog
-  libs/libs3/inc
-  libs/GSL/include
-  src/include
-  src/filezilla
-  src/base
-  src/core
-  src/windows
-  src/resource
-  src/include
-  src/PluginSDK/Far3
+  ${CMAKE_SOURCE_DIR}/libs
+  ${CMAKE_SOURCE_DIR}/libs/openssl-3/include
+  ${CMAKE_SOURCE_DIR}/libs/putty
+  ${CMAKE_SOURCE_DIR}/libs/putty/windows
+  ${CMAKE_SOURCE_DIR}/libs/neon/src
+  ${CMAKE_SOURCE_DIR}/libs/tinyxml2
+  ${CMAKE_SOURCE_DIR}/libs/expat/lib
+  ${CMAKE_SOURCE_DIR}/libs/atlmfc/include
+  ${CMAKE_SOURCE_DIR}/libs/fmt
+  ${CMAKE_SOURCE_DIR}/libs/tinylog
+  ${CMAKE_SOURCE_DIR}/libs/libs3/inc
+  ${CMAKE_SOURCE_DIR}/libs/GSL/include
+  include
+  filezilla
+  base
+  core
+  windows
+  resource
+  PluginSDK/Far3
 )
 
 target_link_libraries(NetBox PRIVATE
@@ -522,9 +521,3 @@ target_compile_options(NetBox PRIVATE
 #===============================================================================
 
 netbox_setup_plugin_installation(NetBox)
-
-#===============================================================================
-# Compiler and Linker Flags (using ucm.cmake)
-#===============================================================================
-
-netbox_add_post_build_customizations(NetBox)

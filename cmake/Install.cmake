@@ -57,20 +57,3 @@ function(netbox_setup_plugin_installation TARGET)
 
   endif()
 endfunction()
-
-#===============================================================================
-# Post-Build Customization Hooks
-#===============================================================================
-
-function(netbox_add_post_build_customizations TARGET)
-  if(MSVC)
-    ucm_set_runtime(STATIC)
-    ucm_add_flags(CXX /EHs)
-    ucm_remove_flags(CXX C /Ob1 /Ob2 CONFIG Release MinSizeRel RelWithDebInfo)
-    ucm_add_flags(CXX C /fp:fast /Gw /GL CONFIG Release RelWithDebInfo MinSizeRel)
-    ucm_add_flags(CXX C /RTC1 /DDEBUG CONFIG Debug)
-    ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_RELEASE} CONFIG Release RelWithDebInfo MinSizeRel)
-    ucm_add_linker_flags(MODULE SHARED ${NETBOX_DLL_LINK_FLAGS_DEBUG} CONFIG Debug)
-    ucm_add_linker_flags(MODULE SHARED /DEBUG /MAP CONFIG RelWithDebInfo)
-  endif()
-endfunction()
