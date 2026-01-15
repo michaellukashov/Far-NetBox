@@ -261,7 +261,8 @@ set(CRYPTO_SOURCES
     crypto/bio/bss_sock.c
     crypto/bio/bss_conn.c
     crypto/bio/bss_acpt.c
-    crypto/bio/bss_dgram.c
+    # crypto/bio/bss_dgram.c
+    # crypto/bio/bss_dgram_pair.c
     crypto/bio/bss_log.c
     crypto/bio/bss_core.c
     crypto/bio/bf_null.c
@@ -270,8 +271,6 @@ set(CRYPTO_SOURCES
     crypto/bio/bf_nbio.c
     crypto/bio/bf_prefix.c
     crypto/bio/bf_readbuff.c
-    crypto/bio/bss_dgram.c
-    crypto/bio/bss_dgram_pair.c
     crypto/stack/stack.c
     crypto/lhash/lhash.c
     crypto/lhash/lh_stats.c
