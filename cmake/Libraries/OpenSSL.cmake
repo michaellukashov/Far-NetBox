@@ -48,11 +48,11 @@ function(openssl_apply_compile_options TARGET)
     )
 
     target_include_directories(${TARGET} SYSTEM BEFORE PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/openssl-3/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/openssl-3/include/crypto
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/openssl-3/crypto/modes
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/openssl-3/crypto/ec/curve448
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/openssl-3
+        ${CMAKE_SOURCE_DIR}/libs/openssl-3/include
+        ${CMAKE_SOURCE_DIR}/libs/openssl-3/include/crypto
+        ${CMAKE_SOURCE_DIR}/libs/openssl-3/crypto/modes
+        ${CMAKE_SOURCE_DIR}/libs/openssl-3/crypto/ec/curve448
+        ${CMAKE_SOURCE_DIR}/libs/openssl-3
     )
 endfunction()
 
@@ -134,7 +134,7 @@ function(openssl_setup_asm_files RESULT_VAR)
 
     # Compile ASM files
     if(MSVC AND NOT PROJECT_PLATFORM STREQUAL "ARM64" AND _asm_file_list)
-        set(NASM_EXECUTABLE ${CMAKE_CURRENT_SOURCE_DIR}/../../buildtools/tools/nasm.exe)
+        set(NASM_EXECUTABLE ${CMAKE_SOURCE_DIR}/buildtools/tools/nasm.exe)
 
         foreach(_asm_file ${_asm_file_list})
             get_filename_component(_asm_file_fn ${_asm_file} NAME)
