@@ -50,4 +50,4 @@ target_compile_options(puttyvs PRIVATE
 
 message(STATUS "PuTTY Configuration:")
 # message(STATUS "  putty sources: ${PUTTY_SOURCES}")
-message(STATUS "  puttyvs sources: ${PUTTYVS_SOURCES}")
+# message(STATUS "  puttyvs sources: ${PUTTYVS_SOURCES}")
