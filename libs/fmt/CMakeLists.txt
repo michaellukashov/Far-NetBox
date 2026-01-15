@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 3.15)
 
 # Include parent's ucm.cmake for utility functions
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/Libraries/FMT.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/FMT.cmake)
 
 #-------------------------------------------------------------------------------
 # Build fmt library

@@ -210,19 +210,19 @@ endif(MSVC)
 #-------------------------------------------------------------------------------
 
 # OpenSSL - now built from libs/openssl-3/CMakeLists.txt
-# See cmake/Libraries/OpenSSL.cmake for configuration
+# See cmake/OpenSSL.cmake for configuration
 #-------------------------------------------------------------------------------
 
 # Add OpenSSL subdirectory
 add_subdirectory(libs/openssl-3)
 
 # OpenSSL libraries are now built from libs/openssl-3/CMakeLists.txt
-# See cmake/Libraries/OpenSSL.cmake for configuration
+# See cmake/OpenSSL.cmake for configuration
 
 #-------------------------------------------------------------------------------
 # Third-party Libraries (modularized in Phase 3)
 # Each library is now built from its own libs/[library]/CMakeLists.txt
-# See cmake/Libraries/[Library].cmake for configuration
+# See cmake/[Library].cmake for configuration
 #-------------------------------------------------------------------------------
 
 add_subdirectory(libs/atlmfc)

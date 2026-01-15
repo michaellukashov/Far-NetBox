@@ -25,15 +25,14 @@ Refactoring NetBox's monolithic `CMakeLists.txt` (2478 lines) into modular, main
 cmake/
 ├── ucm.cmake (existing - useful cmake macros)
 ├── copy_file.cmake (existing - copy utilities)
-└── Libraries/ (NEW)
-    └── OpenSSL.cmake (NEW - modular OpenSSL configuration)
+└── OpenSSL.cmake (NEW - modular OpenSSL configuration)
 ```
 
 ### Key Changes
 
-1. **Created** `cmake/Libraries/` directory
-   - Prepared structure for library-specific CMake modules
-   - Each library will get its own `.cmake` file
+1. **Created** `cmake/` directory for library CMake modules
+    - Library-specific configuration files reside directly in cmake/
+    - Each library gets its own `.cmake` file
 
 2. **Infrastructure Benefits**
    - Centralized library configuration management
@@ -53,7 +52,7 @@ cmake/
 
 ### Files Created
 
-#### 1. `cmake/Libraries/OpenSSL.cmake` (NEW)
+#### 1. `cmake/OpenSSL.cmake` (NEW)
 **Purpose**: Centralized OpenSSL library configuration
 
 **Contents**:
@@ -113,7 +112,7 @@ cmake/
 
 ### Files Created
 
-#### cmake/Libraries/*.cmake (10 files)
+#### cmake/*.cmake (11 files - all library configs)
 
 1. **PuTTY.cmake** - PuTTY SSH library configuration
    - Compile flags: `PUTTY_COMPILE_FLAGS`
@@ -201,7 +200,7 @@ cmake/
 | Library definitions | Scattered in main file | Modularized in library files | **Major improvement** |
 | Update difficulty | Complex (find/replace) | Simple (edit library file) | **Major improvement** |
 | Source file organization | Manual lists | Reusable functions | **Significant improvement** |
-| Compile flags management | Duplicated | Centralized in cmake/Libraries | **Major improvement** |
+| Compile flags management | Duplicated | Centralized in cmake/ | **Major improvement** |
 | Library independence | Tightly coupled | Independent CMakeLists.txt | **Major improvement** |
 
 ### Libraries Modularized
@@ -319,7 +318,7 @@ Create `src/CMakeLists.txt` for the main NetBox plugin DLL.
 
 ### Phase 3: Extract Other Libraries
 - ✅ All third-party libraries modularized (10 libraries)
-- ✅ Centralized compile flags in cmake/Libraries/
+- ✅ Centralized compile flags in cmake/
 - ✅ Independent library build configurations
 - ✅ Easier library updates (edit 1 file vs scattered definitions)
 - ✅ 45% reduction in main CMakeLists.txt size
@@ -331,7 +330,7 @@ Create `src/CMakeLists.txt` for the main NetBox plugin DLL.
 - 🔧 **Easier updates** (edit 1 library file vs scattered definitions)
 - ⏱️ **30% faster builds** (when unity build implemented)
 - 🎯 **Testability** (libraries build independently)
-- 📁 **Clear structure** (libraries organized in libs/, configs in cmake/Libraries/)
+- 📁 **Clear structure** (libraries organized in libs/, configs in cmake/)
 
 ---
 

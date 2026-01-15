@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.15)
 
 # Include parent's ucm.cmake for utility functions
 include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/Libraries/TinyLog.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/TinyLog.cmake)
 
 #-------------------------------------------------------------------------------
 # Build tinylog library
