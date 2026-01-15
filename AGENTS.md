@@ -233,6 +233,34 @@ cmake --build build
 cmake --build build --clean-first
 ```
 
+## CMake Library Build Template
+
+The project includes `cmake/Library.cmake` for standardized library builds:
+
+### Functions Available
+
+| Function | Purpose |
+|----------|---------|
+| `netbox_add_library()` | Flexible library creation with options |
+| `netbox_simple_library()` | Macro for common library builds |
+| `netbox_add_platform_sources()` | Add platform-specific sources |
+| `netbox_check_lib_config()` | Validate library configuration |
+
+### Example Library CMakeLists.txt
+
+```cmake
+cmake_minimum_required(VERSION 3.15)
+include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/NewLib.cmake)
+
+newlib_get_sources(NEWLIB_SOURCES)
+newlib_get_include_dirs(NEWLIB_INCLUDE_DIRS)
+
+add_library(newlib STATIC ${NEWLIB_SOURCES})
+target_include_directories(newlib PRIVATE ${NEWLIB_INCLUDE_DIRS})
+newlib_apply_compile_options(newlib)
+```
+
 ## Git Workflow
 
 - **Main branch**: `main` (protected)
