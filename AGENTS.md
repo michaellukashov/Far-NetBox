@@ -13,10 +13,11 @@ cmake --build build
 
 ### Build Options
 
-- `PROJECT_PLATFORM`: `x86`, `x64`, or `ARM64` (defaults to x86)
+- `PROJECT_PLATFORM`: `x86`, `x64`, or `ARM64` (auto-detected if not specified)
 - `CMAKE_BUILD_TYPE`: `Debug`, `Release`, or `RelWithDebugInfo`
 - `OPT_CREATE_PLUGIN_DIR`: Create plugin directory structure (`ON`/`OFF`)
-- `OPT_USE_UNITY_BUILD`: Enable unity builds for faster compilation (x86 Release only)
+- `OPT_USE_UNITY_BUILD`: Enable unity builds for faster compilation (auto-enabled for x86 Release)
+- `OPT_COMPILE_COMMANDS`: Generate `compile_commands.json` for IDE support (`ON`/`OFF`)
 
 ### CMake Build Configuration
 
@@ -45,14 +46,7 @@ cmake --build build
 
 ### clang-format
 
-Format source files before committing:
-
-```cmd
-# Format source files
-clang-format -i src/**/*.cpp src/**/*.h
-```
-
-Configure your IDE to format on save.
+The project does not include a `.clang-format` file. Follow the manual formatting rules below.
 
 ### Manual Formatting Rules
 
@@ -150,12 +144,31 @@ Third-party libraries are in `libs/`:
 - OpenSSL 3 (`libs/openssl-3/`) - Cryptography
 - neon (`libs/neon/`) - WebDAV
 - libs3 (`libs/libs3/`) - S3
-- expat, zlib-ng, tinyxml2, fmt, tinylog
+- ATL/MFC (`libs/atlmfc/`) - Minimal MFC subset
+- dlmalloc (`libs/dlmalloc/`) - Memory allocator
+- expat (`libs/expat/`) - XML parsing
+- zlib-ng (`libs/zlib-ng/`) - Compression
+- tinyxml2 (`libs/tinyxml2/`) - XML parser
+- fmt (`libs/fmt/`) - String formatting
+- tinylog (`libs/tinylog/`) - Logging
+- GSL (`libs/GSL/`) - Guidelines Support Library
+- icecream-cpp (`libs/icecream-cpp/`) - Debug logging
 
 **Do not modify third-party library code directly.** Use patches if needed.
 
 ## Project Structure
 
+```
+src/
+├── base/        # Base classes and utilities (UnicodeString, Classes, etc.)
+├── core/        # Core functionality (SSH, FTP, SCP, S3, WebDAV, Terminal)
+├── filezilla/   # FileZilla-based FTP implementation
+├── include/     # Public headers (nbtypes.h, rtti.hpp, etc.)
+├── nbcore/      # NetBox core utilities (string, memory, utils)
+├── NetBox/      # Plugin implementation (Far plugin interface)
+├── PluginSDK/   # Far Manager plugin SDK (Far3 headers)
+├── resource/    # Resources (RC, LNG, licenses)
+└── windows/     # Windows-specific code (GUI, dialogs, tools)
 ```
 src/
 ├── base/          # Base classes and utilities
@@ -235,43 +248,36 @@ cmake --build build --clean-first
 
 ## CMake Library Build Template
 
-The project includes `cmake/Library.cmake` for standardized library builds:
+Library configurations are in `cmake/[Library].cmake` files. Each third-party library in `libs/` has its own `CMakeLists.txt`.
 
-### Functions Available
+### Library Configuration Files
 
-| Function | Purpose |
-|----------|---------|
-| `netbox_add_library()` | Flexible library creation with options |
-| `netbox_simple_library()` | Macro for common library builds |
-| `netbox_add_platform_sources()` | Add platform-specific sources |
-| `netbox_check_lib_config()` | Validate library configuration |
+| File | Purpose |
+|------|---------|
+| `cmake/NetBox.cmake` | Centralized compiler flags and defines |
+| `cmake/Install.cmake` | Plugin installation and post-build commands |
+| `cmake/ucm.cmake` | CMake utilities (from UCM project) |
+| `cmake/[Library].cmake` | Library-specific configurations (OpenSSL, PuTTY, etc.) |
 
-### Example Library CMakeLists.txt
+### Adding a New Library
 
-```cmake
-cmake_minimum_required(VERSION 3.15)
-include(${CMAKE_SOURCE_DIR}/cmake/ucm.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/NewLib.cmake)
-
-newlib_get_sources(NEWLIB_SOURCES)
-newlib_get_include_dirs(NEWLIB_INCLUDE_DIRS)
-
-add_library(newlib STATIC ${NEWLIB_SOURCES})
-target_include_directories(newlib PRIVATE ${NEWLIB_INCLUDE_DIRS})
-newlib_apply_compile_options(newlib)
-```
+1. **Create library build**: `libs/newlib/CMakeLists.txt`
+2. **Add to main build**: `add_subdirectory(libs/newlib)` in `CMakeLists.txt`
+3. **Link to plugin**: Add `newlib` to target_link_libraries in `src/CMakeLists.txt`
 
 ## Git Workflow
 
 - **Main branch**: `main` (protected)
 - **Branch naming**: `feature/description`, `fix/description`, `refactor/description`
 - **Commit messages**: Clear, descriptive, 50 chars or less for summary
-- **Skip CI**: Include `[skip appveyor]` in commit message
+- **Skip CI**: Include `[skip ci]` or `[ci skip]` in commit message to skip CI
 
 ### CI/CD
 
-- **AppVeyor**: Automated builds on Windows
-- **GitHub Actions**: Release workflows
+- **GitHub Actions**: Automated builds and releases (`.github/workflows/release.yml`)
+- **AppVeyor**: Legacy CI configuration (`appveyor.yml`)
+
+To skip CI in a commit message, include `[skip ci]` or `[ci skip]`.
 
 ## Code Quality Requirements
 
