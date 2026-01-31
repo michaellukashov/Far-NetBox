@@ -40,7 +40,7 @@
             _T("Session Manager\\Environment")
 // when the PATH registry key is over aprox 2048 characters,
 // PATH as well as WINDIR variables are actually not set, breaking the system
-#define MAX_PATH_LEN 2000
+constexpr const size_t MAX_PATH_LEN = 2000;
 
 /* Command line options. */
 UnicodeString LastPathError;
