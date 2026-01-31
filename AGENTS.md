@@ -7,6 +7,7 @@ This document provides guidelines for AI agents working on the NetBox project (F
 ### First-Time Setup
 
 1. **Clone the repository**:
+
    ```cmd
    git clone https://github.com/michaellukashov/Far-NetBox.git
    cd Far-NetBox
@@ -19,11 +20,13 @@ This document provides guidelines for AI agents working on the NetBox project (F
    - Git
 
 3. **Configure build environment**:
+
    ```cmd
    call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
    ```
 
 4. **Configure and build**:
+
    ```cmd
    cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
    cmake --build build
@@ -90,6 +93,7 @@ The project uses compiler warnings as the primary linting mechanism. MSVC is con
 - Disabled specific deprecation warnings for legacy code compatibility
 
 **Enable strict warnings during build**:
+
 ```cmd
 cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
 cmake --build build 2>&1 | findstr /C:"warning"
@@ -114,6 +118,7 @@ For additional code analysis, you can integrate:
 - **Clang-Tidy** (requires Clang installation)
 
 Enable Clang-Tidy in CMake:
+
 ```cmd
 cmake -S . -B build -G "Ninja" -DCMAKE_CXX_CLANG_TIDY="clang-tidy"
 ```
@@ -151,11 +156,13 @@ When clang-format is not available, follow these rules:
 **To debug the plugin in Visual Studio**:
 
 1. **Generate VS2022 solution**:
+
    ```cmd
    cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
    ```
 
 2. **Open the solution**:
+
    ```cmd
    start build\NetBox.sln
    ```
@@ -388,6 +395,7 @@ cmake --build build --clean-first
 ### Pull Request Process
 
 1. **Create a feature branch**:
+
    ```cmd
    git checkout -b feature/your-feature-name
    # or
@@ -397,6 +405,7 @@ cmake --build build --clean-first
 2. **Make your changes** following the code style guidelines
 
 3. **Build and test**:
+
    ```cmd
    cmake --build build --clean-first
    # Test in Far Manager
@@ -405,6 +414,7 @@ cmake --build build --clean-first
 4. **Commit your changes** with clear, descriptive messages (50 chars or less for summary)
 
 5. **Push to your fork**:
+
    ```cmd
    git push origin feature/your-feature-name
    ```
