@@ -67,15 +67,15 @@ cmake --build ../build-RelWithDebugInfo -j
 #### x86 Release Build (Unity)
 
 ```cmd
-cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-RelWithDebugInfo -j
+cmake -S . -B ../build-Release -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build ../build-Release -j
 ```
 
 #### x64 Debug Build
 
 ```cmd
-cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DPROJECT_PLATFORM=x64 -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-RelWithDebugInfo -j
+cmake -S . -B ../build-Debug -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DPROJECT_PLATFORM=x64 -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build ../build-Debug -j
 ```
 
 #### ARM64 Build
@@ -97,8 +97,8 @@ The project uses compiler warnings as the primary linting mechanism. MSVC is con
 **Enable strict warnings during build**:
 
 ```cmd
-cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
-cmake --build ../build-RelWithDebugInfo -j 2>&1 | findstr /C:"warning"
+cmake -S . -B ../build-Debug -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
+cmake --build ../build-Debug -j 2>&1 | findstr /C:"warning"
 ```
 
 ### Quality Verification Commands
@@ -123,7 +123,7 @@ For additional code analysis, you can integrate:
 Enable Clang-Tidy in CMake:
 
 ```cmd
-cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_CXX_CLANG_TIDY="clang-tidy"
+cmake -S . -B ../build-Ninja -G "Ninja" -DCMAKE_CXX_CLANG_TIDY="clang-tidy"
 ```
 
 ### Build Quality Checklist
@@ -163,7 +163,7 @@ When clang-format is not available, follow these rules:
 1. **Generate VS2022 solution**:
 
    ```cmd
-   cmake -S . -B ../build-Debug -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+   cmake -S . -B ../build-VS2022Debug -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
    ```
 
 2. **Open the solution**:
