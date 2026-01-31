@@ -2,6 +2,45 @@
 
 This document provides guidelines for AI agents working on the NetBox project (Far-NetBox SFTP/FTP/SCP/WebDAV/S3 client plugin for Far Manager).
 
+## Getting Started
+
+### First-Time Setup
+
+1. **Clone the repository**:
+   ```cmd
+   git clone https://github.com/michaellukashov/Far-NetBox.git
+   cd Far-NetBox
+   ```
+
+2. **Install required tools**:
+   - Visual Studio 2022 (Desktop development with C++ workload)
+   - CMake 3.15 or later
+   - Ninja build system (optional but recommended)
+   - Git
+
+3. **Configure build environment**:
+   ```cmd
+   call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+   ```
+
+4. **Configure and build**:
+   ```cmd
+   cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+   cmake --build build
+   ```
+
+5. **Install to Far Manager**:
+   - Copy `Far3_x64/Plugins/NetBox/` to your Far Manager plugins directory
+   - Or set `OPT_CREATE_PLUGIN_DIR=ON` during configuration
+
+### Quick Verification
+
+After building, verify the plugin works:
+1. Start Far Manager
+2. Press `Alt+F1` to open the disk menu
+3. Select NetBox from the plugins list
+4. Configure a connection and connect to test
+
 ## Build Commands
 
 ### Manual CMake Build
@@ -42,6 +81,52 @@ cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DPROJECT_PLA
 cmake --build build
 ```
 
+## Linting and Quality Checks
+
+### Compiler Warnings
+
+The project uses compiler warnings as the primary linting mechanism. MSVC is configured with:
+- Warning level 4 (W4) for comprehensive error detection
+- Disabled specific deprecation warnings for legacy code compatibility
+
+**Enable strict warnings during build**:
+```cmd
+cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
+cmake --build build 2>&1 | findstr /C:"warning"
+```
+
+### Quality Verification Commands
+
+Before committing changes, verify code quality:
+
+```cmd
+# Clean rebuild to catch all warnings
+cmake --build build --clean-first
+
+# Check for specific warning patterns (PowerShell)
+cmake --build build | Select-String "warning" | Select-String -NotMatch "third-party|libs/"
+```
+
+### Static Analysis (Optional)
+
+For additional code analysis, you can integrate:
+- **Visual Studio's built-in Code Analysis** (Ctrl+Shift+Alt+M in VS)
+- **Clang-Tidy** (requires Clang installation)
+
+Enable Clang-Tidy in CMake:
+```cmd
+cmake -S . -B build -G "Ninja" -DCMAKE_CXX_CLANG_TIDY="clang-tidy"
+```
+
+### Build Quality Checklist
+
+Before submitting changes:
+- [ ] Build completes with no errors
+- [ ] No warnings in project source files (third-party libs excluded)
+- [ ] Debug and Release builds both succeed
+- [ ] Plugin loads in Far Manager
+- [ ] Manual test of affected functionality
+
 ## Code Formatting
 
 ### clang-format
@@ -58,6 +143,58 @@ When clang-format is not available, follow these rules:
 - **Pointer alignment**: Middle (`int * ptr`)
 - **Reference alignment**: Middle (`int & ref`)
 - **Max line length**: 120 characters
+
+## Debugging
+
+### Visual Studio Debugging
+
+**To debug the plugin in Visual Studio**:
+
+1. **Generate VS2022 solution**:
+   ```cmd
+   cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+   ```
+
+2. **Open the solution**:
+   ```cmd
+   start build\NetBox.sln
+   ```
+
+3. **Configure debugger**:
+   - Right-click the NetBox project → Properties
+   - Go to Configuration Properties → Debugging
+   - Set Command to your Far Manager executable path
+     - Example: `C:\Program Files\Far Manager\Far.exe`
+   - Set Working Directory to Far Manager's directory
+   - Set Command Arguments to plugins path if needed
+
+4. **Set breakpoints and start debugging** (F5)
+
+### Remote Debugging
+
+For debugging on another machine:
+1. Install Remote Tools for Visual Studio on target machine
+2. Copy the plugin DLL and PDB to the target
+3. Attach to `Far.exe` process on the target machine
+
+### Debug Logging
+
+Use the project's logging facilities:
+- `ADF()` macro for debug output
+- `DebugAssert()` for invariants
+- Built-in logging via `tinylog` library (see `src/nbcore/logging.cpp`)
+
+### Common Debugging Scenarios
+
+**Plugin fails to load**:
+- Check architecture compatibility (x86 vs x64)
+- Verify dependencies are available (OpenSSL DLLs, etc.)
+- Check Windows Event Viewer for detailed error messages
+
+**Connection issues**:
+- Enable debug logging in plugin settings
+- Review Far Manager plugin log
+- Test connectivity with external tools (ping, telnet, etc.)
 
 ## Development Environment
 
@@ -103,6 +240,7 @@ call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 ### File Organization
 
 **Include order in headers:**
+
 1. System headers (`<...>`)
 2. Project headers (`"..."`)
 3. Local headers
@@ -110,6 +248,7 @@ call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 **Include guards:** Use `#pragma once`
 
 **File extensions:**
+
 - Headers: `.h` or `.hpp`
 - Sources: `.cpp`
 - Resources: `.rc`, `.lng`
@@ -139,6 +278,7 @@ call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
 ## Dependencies
 
 Third-party libraries are in `libs/`:
+
 - PuTTY (`libs/putty/`) - SSH/SCP
 - FileZilla (in `src/filezilla/`) - FTP
 - OpenSSL 3 (`libs/openssl-3/`) - Cryptography
@@ -158,7 +298,7 @@ Third-party libraries are in `libs/`:
 
 ## Project Structure
 
-```
+```text
 src/
 ├── base/        # Base classes and utilities (UnicodeString, Classes, etc.)
 ├── core/        # Core functionality (SSH, FTP, SCP, S3, WebDAV, Terminal)
@@ -169,17 +309,6 @@ src/
 ├── PluginSDK/   # Far Manager plugin SDK (Far3 headers)
 ├── resource/    # Resources (RC, LNG, licenses)
 └── windows/     # Windows-specific code (GUI, dialogs, tools)
-```
-src/
-├── base/          # Base classes and utilities
-├── core/          # Core functionality (SSH, FTP, etc.)
-├── filezilla/     # FileZilla-based FTP implementation
-├── include/       # Public headers
-├── nbcore/        # NetBox core utilities
-├── NetBox/        # Plugin implementation
-├── PluginSDK/     # Far Manager plugin SDK
-├── resource/      # Resources (RC, LNG)
-└── windows/       # Windows-specific code
 ```
 
 ## Testing
@@ -221,10 +350,10 @@ CMakeLists.txt (main - 100 lines)
 ### Key CMake Files
 
 | File | Purpose |
-|------|---------|
+| ---- | -------- |
 | `cmake/NetBox.cmake` | Centralized compiler flags and defines |
 | `cmake/Install.cmake` | Plugin installation and post-build commands |
-| `cmake/[Library].make` | Library-specific configurations |
+| `cmake/[Library].cmake` | Library-specific configurations |
 
 ### Adding/Modifying Libraries
 
@@ -246,24 +375,52 @@ cmake --build build
 cmake --build build --clean-first
 ```
 
-## CMake Library Build Template
+## Contribution Guidelines
 
-Library configurations are in `cmake/[Library].cmake` files. Each third-party library in `libs/` has its own `CMakeLists.txt`.
+### Before Contributing
 
-### Library Configuration Files
+1. **Search existing issues**: Check if your feature request or bug report already exists
+2. **Discuss major changes**: For significant modifications, open an issue first to discuss the approach
+3. **Follow coding standards**: Adhere to the code style guidelines in this document
+4. **Test thoroughly**: Ensure manual testing covers the changed functionality
+5. **Check build quality**: Verify builds complete without warnings
 
-| File | Purpose |
-|------|---------|
-| `cmake/NetBox.cmake` | Centralized compiler flags and defines |
-| `cmake/Install.cmake` | Plugin installation and post-build commands |
-| `cmake/ucm.cmake` | CMake utilities (from UCM project) |
-| `cmake/[Library].cmake` | Library-specific configurations (OpenSSL, PuTTY, etc.) |
+### Pull Request Process
 
-### Adding a New Library
+1. **Create a feature branch**:
+   ```cmd
+   git checkout -b feature/your-feature-name
+   # or
+   git checkout -b fix/your-bug-fix
+   ```
 
-1. **Create library build**: `libs/newlib/CMakeLists.txt`
-2. **Add to main build**: `add_subdirectory(libs/newlib)` in `CMakeLists.txt`
-3. **Link to plugin**: Add `newlib` to target_link_libraries in `src/CMakeLists.txt`
+2. **Make your changes** following the code style guidelines
+
+3. **Build and test**:
+   ```cmd
+   cmake --build build --clean-first
+   # Test in Far Manager
+   ```
+
+4. **Commit your changes** with clear, descriptive messages (50 chars or less for summary)
+
+5. **Push to your fork**:
+   ```cmd
+   git push origin feature/your-feature-name
+   ```
+
+6. **Open a pull request**:
+   - Describe the changes clearly
+   - Reference related issues
+   - Include screenshots for UI changes
+   - List testing performed
+
+### Code Review Process
+
+- All contributions require review before merging
+- Address review comments promptly
+- Keep PRs focused on a single concern
+- Squash commits if necessary before merging
 
 ## Git Workflow
 
@@ -277,8 +434,6 @@ Library configurations are in `cmake/[Library].cmake` files. Each third-party li
 - **GitHub Actions**: Automated builds and releases (`.github/workflows/release.yml`)
 - **AppVeyor**: Legacy CI configuration (`appveyor.yml`)
 
-To skip CI in a commit message, include `[skip ci]` or `[ci skip]`.
-
 ## Code Quality Requirements
 
 - No compiler warnings
@@ -287,28 +442,50 @@ To skip CI in a commit message, include `[skip ci]` or `[ci skip]`.
 - Unicode correctness
 - Thread safety documentation
 - Protocol specification compliance
+- **No spelling/grammar typos in comments and documentation**
+
+### Code Quality Verification
+
+Regular quality checks should be performed:
+
+1. **Build Verification**: Ensure clean compilation without warnings
+2. **Typo Checking**: Check for common spelling errors in source files:
+   - `loose` vs `lose` (common error)
+   - `connexion` vs `connection`
+   - `authentification` vs `authentication`
+   - `occured` vs `occurred`
+   - `recieve` vs `receive`
+   - `seperate` vs `separate`
+   - And other common typos
+
+3. **Comment Quality**: Ensure comments are clear, grammatically correct, and use proper English terminology
 
 ## Troubleshooting
 
 ### Common Build Errors
 
 **Missing vcvarsall.bat**:
+
 Ensure Visual Studio 2022 is installed with "Desktop development with C++" workload.
 
 **Ninja not found**:
+
 Install Ninja via `winget install Ninja-build.ninja` or Chocolatey.
 
 **Unity build errors**:
+
 Disable unity builds: `-DOPT_USE_UNITY_BUILD=OFF`
 
 ### Runtime Issues
 
 **Plugin fails to load**:
+
 - Verify plugin DLL matches Far Manager architecture (x86/x64)
 - Check Far Manager plugin directory permissions
 - Review Windows Event Viewer for error details
 
 **Connection failures**:
+
 - Verify firewall settings allow outbound connections
 - Check server accessibility with `ping` and `telnet`
 - Review Far Manager plugin log for detailed error messages
