@@ -39,7 +39,7 @@ function(netbox_setup_plugin_installation TARGET)
         "-DFILE_NAME=${NB_TARGET}"
         "-DFULL_FILE_NAME=$<TARGET_FILE_DIR:${TARGET}>//${NB_TARGET}"
         "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
-        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
+        -P "${CMAKE_SOURCE_DIR}/cmake/copy_file.cmake"
         VERBATIM
       )
     endforeach()
@@ -51,7 +51,7 @@ function(netbox_setup_plugin_installation TARGET)
         "-DFILE_NAME=${FILE_NAME}"
         "-DFULL_FILE_NAME=${DIST_FILE}"
         "-DNETBOX_PLUGIN_DIR=${NETBOX_PLUGIN_DIR}"
-        -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/copy_file.cmake"
+        -P "${CMAKE_SOURCE_DIR}/cmake/copy_file.cmake"
       )
     endforeach()
 
