@@ -49,7 +49,7 @@ endfunction()
 #-------------------------------------------------------------------------------
 # Function: tinylog_apply_compile_options
 #
-# Applies TinyLog compile options to a target
+# Applies TinyLog compile options to a targe
 #
 # Arguments:
 #   TARGET - The CMake target to apply options to
@@ -62,7 +62,7 @@ function(tinylog_apply_compile_options TARGET)
     )
 
     target_compile_definitions(${TARGET} PRIVATE
-        -DTINYLOG_EXPORT
+        -DTINYLOG_EXPOR
     )
 endfunction()
 

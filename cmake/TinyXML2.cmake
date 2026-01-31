@@ -25,7 +25,7 @@ endfunction()
 #-------------------------------------------------------------------------------
 # Function: tinyxml2_apply_compile_options
 #
-# Applies TinyXML2 compile options to a target
+# Applies TinyXML2 compile options to a targe
 #
 # Arguments:
 #   TARGET - The CMake target to apply options to

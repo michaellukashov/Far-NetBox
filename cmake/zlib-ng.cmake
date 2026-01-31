@@ -111,7 +111,7 @@ endfunction()
 #-------------------------------------------------------------------------------
 # Function: zlib_apply_compile_options
 #
-# Applies zlib-ng compile options to a target
+# Applies zlib-ng compile options to a targe
 #
 # Arguments:
 #   TARGET - The CMake target to apply options to
@@ -123,10 +123,10 @@ function(zlib_apply_compile_options TARGET)
     )
 
     target_compile_definitions(${TARGET} PRIVATE
-        -DZLIB_COMPAT
+        -DZLIB_COMPA
         -DZLIB_NAME_MANGLING_H
         -DMEMCPY=memcpy
-        -DMEMSET=memset
+        -DMEMSET=memse
     )
 
     if(PROJECT_PLATFORM STREQUAL "ARM64")
