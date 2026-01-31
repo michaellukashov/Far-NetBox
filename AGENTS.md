@@ -28,8 +28,8 @@ This document provides guidelines for AI agents working on the NetBox project (F
 4. **Configure and build**:
 
    ```cmd
-   cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-   cmake --build build
+   cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+   cmake --build ../build-RelWithDebugInfo -j
    ```
 
 5. **Install to Far Manager**:
@@ -39,6 +39,7 @@ This document provides guidelines for AI agents working on the NetBox project (F
 ### Quick Verification
 
 After building, verify the plugin works:
+
 1. Start Far Manager
 2. Press `Alt+F1` to open the disk menu
 3. Select NetBox from the plugins list
@@ -49,8 +50,8 @@ After building, verify the plugin works:
 ### Manual CMake Build
 
 ```cmd
-cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build
+cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build ../build-RelWithDebugInfo -j
 ```
 
 ### Build Options
@@ -66,22 +67,22 @@ cmake --build build
 #### x86 Release Build (Unity)
 
 ```cmd
-cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build --config Release
+cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build ../build-RelWithDebugInfo -j
 ```
 
 #### x64 Debug Build
 
 ```cmd
-cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DPROJECT_PLATFORM=x64 -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build
+cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DPROJECT_PLATFORM=x64 -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build ../build-RelWithDebugInfo -j
 ```
 
 #### ARM64 Build
 
 ```cmd
-cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DPROJECT_PLATFORM=ARM64 -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build
+cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DPROJECT_PLATFORM=ARM64 -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build ../build-RelWithDebugInfo -j
 ```
 
 ## Linting and Quality Checks
@@ -89,14 +90,15 @@ cmake --build build
 ### Compiler Warnings
 
 The project uses compiler warnings as the primary linting mechanism. MSVC is configured with:
+
 - Warning level 4 (W4) for comprehensive error detection
 - Disabled specific deprecation warnings for legacy code compatibility
 
 **Enable strict warnings during build**:
 
 ```cmd
-cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
-cmake --build build 2>&1 | findstr /C:"warning"
+cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
+cmake --build ../build-RelWithDebugInfo -j 2>&1 | findstr /C:"warning"
 ```
 
 ### Quality Verification Commands
@@ -105,27 +107,29 @@ Before committing changes, verify code quality:
 
 ```cmd
 # Clean rebuild to catch all warnings
-cmake --build build --clean-first
+cmake --build ../build-RelWithDebugInfo --clean-first
 
 # Check for specific warning patterns (PowerShell)
-cmake --build build | Select-String "warning" | Select-String -NotMatch "third-party|libs/"
+cmake --build ../build-RelWithDebugInfo | Select-String "warning" | Select-String -NotMatch "third-party|libs/"
 ```
 
 ### Static Analysis (Optional)
 
 For additional code analysis, you can integrate:
+
 - **Visual Studio's built-in Code Analysis** (Ctrl+Shift+Alt+M in VS)
 - **Clang-Tidy** (requires Clang installation)
 
 Enable Clang-Tidy in CMake:
 
 ```cmd
-cmake -S . -B build -G "Ninja" -DCMAKE_CXX_CLANG_TIDY="clang-tidy"
+cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_CXX_CLANG_TIDY="clang-tidy"
 ```
 
 ### Build Quality Checklist
 
 Before submitting changes:
+
 - [ ] Build completes with no errors
 - [ ] No warnings in project source files (third-party libs excluded)
 - [ ] Debug and Release builds both succeed
@@ -148,6 +152,7 @@ When clang-format is not available, follow these rules:
 - **Pointer alignment**: Middle (`int * ptr`)
 - **Reference alignment**: Middle (`int & ref`)
 - **Max line length**: 120 characters
+- All sources and cmake files should not contain trailing whitespaces
 
 ## Debugging
 
@@ -158,7 +163,7 @@ When clang-format is not available, follow these rules:
 1. **Generate VS2022 solution**:
 
    ```cmd
-   cmake -S . -B build -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+   cmake -S . -B ../build-Debug -G "Visual Studio 17 2022" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
    ```
 
 2. **Open the solution**:
@@ -180,6 +185,7 @@ When clang-format is not available, follow these rules:
 ### Remote Debugging
 
 For debugging on another machine:
+
 1. Install Remote Tools for Visual Studio on target machine
 2. Copy the plugin DLL and PDB to the target
 3. Attach to `Far.exe` process on the target machine
@@ -187,6 +193,7 @@ For debugging on another machine:
 ### Debug Logging
 
 Use the project's logging facilities:
+
 - `ADF()` macro for debug output
 - `DebugAssert()` for invariants
 - Built-in logging via `tinylog` library (see `src/nbcore/logging.cpp`)
@@ -194,11 +201,13 @@ Use the project's logging facilities:
 ### Common Debugging Scenarios
 
 **Plugin fails to load**:
+
 - Check architecture compatibility (x86 vs x64)
 - Verify dependencies are available (OpenSSL DLLs, etc.)
 - Check Windows Event Viewer for detailed error messages
 
 **Connection issues**:
+
 - Enable debug logging in plugin settings
 - Review Far Manager plugin log
 - Test connectivity with external tools (ping, telnet, etc.)
@@ -321,6 +330,7 @@ src/
 ## Testing
 
 There are no automated unit tests. Manual testing is required:
+
 1. Build compiles without warnings
 2. Plugin loads correctly in Far Manager
 3. Test SFTP/FTP/SCP/WebDAV/S3 connections
@@ -343,7 +353,7 @@ There are no automated unit tests. Manual testing is required:
 
 The NetBox project uses a modular CMake structure:
 
-```
+```text
 CMakeLists.txt (main - 100 lines)
 ├── cmake/NetBox.cmake (compiler/linker flags)
 ├── cmake/Install.cmake (post-build installation)
@@ -373,13 +383,13 @@ CMakeLists.txt (main - 100 lines)
 
 ```cmd
 # Configure (check for CMake errors)
-cmake -S . -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
+cmake -S . -B ../build-Debug -G "Ninja" -DCMAKE_BUILD_TYPE=Debug
 
 # Build (check for compilation errors)
-cmake --build build
+cmake --build ../build-Debug -j
 
 # Clean build
-cmake --build build --clean-first
+cmake --build ../build-Debug --clean-first
 ```
 
 ## Contribution Guidelines
@@ -407,7 +417,7 @@ cmake --build build --clean-first
 3. **Build and test**:
 
    ```cmd
-   cmake --build build --clean-first
+   cmake --build ../build-Debug --clean-first
    # Test in Far Manager
    ```
 
