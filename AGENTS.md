@@ -37,7 +37,7 @@ Use skills if available:
 - [ ] Understand the task and locate relevant files
 - [ ] Read existing code to match patterns and conventions
 - [ ] Make minimal, focused changes
-- [ ] Build succeeds with no warnings (`cmake --build ../build-RelWithDebugInfo --clean-first`)
+- [ ] Build succeeds with no warnings (`cmake --build ../build-RelWithDebugInfo --clean-first -- -j4`)
 - [ ] No trailing whitespaces introduced
 - [ ] No spelling/grammar errors in comments
 
@@ -75,7 +75,7 @@ cmake --build ../build-Release -j
 ### Verify No Warnings
 
 ```cmd
-cmake --build ../build-RelWithDebugInfo --clean-first
+cmake --build ../build-RelWithDebugInfo --clean-first -- -j4
 ```
 
 ## Build Configuration
@@ -258,6 +258,7 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 
 ## Agent Rules
 
+- do not use "2>/dev/null" when calling shell scripts
 - Never combine shell commands with `&&`, `||`, or `;` — execute each command as a separate Bash tool call. This applies even when a skill, plan, or instruction provides a combined command — always decompose it into individual calls.
   - ❌ Wrong: `git checkout <configured-base-branch> && git pull`
   - ✅ Right: Two separate Bash tool calls — first `git checkout <configured-base-branch>`, then `git pull origin <configured-base-branch>`
