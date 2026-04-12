@@ -36,6 +36,17 @@ Compile Far-NetBox plugin on the command line as follows:
 
 ```batch
 "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
+```
+
+Or use the full path to Visual Studio 2022 Professional:
+
+```batch
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x86_amd64
+```
+
+Then configure and build:
+
+```batch
 cmake -S C:/src/Far-NetBox -B C:/build/Far-NetBox -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
 cmake --build C:/build/Far-NetBox -j
 ```
