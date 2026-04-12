@@ -267,8 +267,10 @@ if(MSVC)
   # Multi-processor compilation and debug info
   # ucm_add_flags(CXX C /MP /Zi)
 
+  # Enable C++ exception handling with unwind semantics (required for try/catch)
+  ucm_add_flags(CXX /EHsc)
+
   # Optimization flags for non-Debug builds
-  # ucm_add_flags(CXX /EHs)
   # ucm_add_flags(CXX C /fp:fast /Gw /GL)
 
   # Remove /Ob1, /Ob2 in non-Debug configs (already optimized via /GL)
