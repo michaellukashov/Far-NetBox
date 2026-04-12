@@ -1,6 +1,12 @@
 # for this file format description,
 # see https://github.com/olivierlacan/keep-a-changelog
 
+## [Unreleased]
+
+### Security
+
+ * Upgrade dependencies: expat 2.7.5 (security fixes: CVE-2026-32776, CVE-2026-32777, CVE-2026-32778)
+
 ## [25.10.1.609] - 2025-10-18
 
  * Upgrade WinSCP sources: WinSCP 6.5.4
