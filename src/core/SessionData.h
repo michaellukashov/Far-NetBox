@@ -1,4 +1,4 @@
-﻿
+
 #pragma once
 
 #include <Common.h>
@@ -31,8 +31,8 @@ enum TSftpBug { sbSymlink, sbSignedTS };
 constexpr const int32_t SFTP_BUG_COUNT = sbSignedTS + 1;
 constexpr const wchar_t * PingTypeNames = L"Off;Null;Dummy";
 enum TPingType { ptOff, ptNullPacket, ptDummyCommand };
-constexpr const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List";
-enum TFtpPingType { fptOff, fptDummyCommand0, fptDummyCommand, fptDirectoryListing };
+constexpr const wchar_t * FtpPingTypeNames = L"Off;Dummy;Dummy;List;Noop";
+enum TFtpPingType { fptOff, fptDummyCommand0, fptDummyCommand, fptDirectoryListing, fptNoop };
 enum TAddressFamily { afAuto, afIPv4, afIPv6 };
 enum TFtps { ftpsNone, ftpsImplicit, ftpsExplicitSsl, ftpsExplicitTls };
 // ssl2 and ssh3 are equivalent of tls10 now

@@ -5283,12 +5283,21 @@ void CFtpControlSocket::SetFileExistsAction(int nAction, COverwriteRequestData *
 
 void CFtpControlSocket::SendKeepAliveCommand()
 {
-  ShowStatus(L"Sending dummy command to keep session alive.", FZ_LOG_PROGRESS);
-  m_bKeepAliveActive=TRUE;
-  //Choose a random command from the list
-  TCHAR commands[4][7]={L"PWD",L"REST 0",L"TYPE A",L"TYPE I"};
-  int choice=(rand()*4)/(RAND_MAX+1);
-  Send(commands[choice]);
+  if (GetOptionVal(OPTION_HEARTBEAT_TYPE))
+  {
+    ShowStatus(L"Sending NOOP to keep session alive.", FZ_LOG_PROGRESS);
+    ADF("Heartbeat: Sending NOOP command");
+    Send(L"NOOP");
+  }
+  else
+  {
+    ShowStatus(L"Sending dummy command to keep session alive.", FZ_LOG_PROGRESS);
+    // Choose a random command from the list
+    TCHAR commands[4][7] = {L"PWD", L"REST 0", L"TYPE A", L"TYPE I"};
+    int choice = (rand() * 4) / (RAND_MAX + 1);
+    Send(commands[choice]);
+  }
+  m_bKeepAliveActive = TRUE;
 }
 
 void CFtpControlSocket::MakeDir(const CServerPath &path)

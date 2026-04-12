@@ -3006,9 +3006,13 @@ int32_t TFTPFileSystem::GetOptionVal(int32_t OptionID) const
       Result = Data ? ((Data->GetAddressFamily() != afIPv4) ? TRUE : FALSE) : 0;
       break;
 
-    case OPTION_KEEPALIVE:
-      Result = Data ? ((Data->GetFtpPingType() != fptOff) ? TRUE : FALSE) : 0;
-      break;
+  case OPTION_KEEPALIVE:
+    Result = Data ? ((Data->GetFtpPingType() != fptOff) ? TRUE : FALSE) : 0;
+    break;
+
+  case OPTION_HEARTBEAT_TYPE:
+    Result = Data ? ((Data->GetFtpPingType() == fptNoop) ? 1 : 0) : 0;
+    break;
 
     case OPTION_INTERVALLOW:
     case OPTION_INTERVALHIGH:
