@@ -234,6 +234,28 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 | Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
 | Connection failures | Check firewall, test with `ping`/`telnet`, review plugin log |
 
+## AI Context Files
+
+| File | Purpose |
+|------|---------|
+| AGENTS.md | This file — project structure map and AI agent guide |
+| .ai-factory/DESCRIPTION.md | Project specification and tech stack |
+| .ai-factory/ARCHITECTURE.md | Architecture decisions and guidelines |
+| .ai-factory/config.yaml | AI Factory configuration (paths, workflow, git) |
+| .ai-factory/rules/base.md | Auto-detected project conventions |
+| PROJECT.md | Project requirements and scope |
+| CODEBASE.md | Codebase documentation index |
+| DEPENDENCIES.md | Third-party library documentation |
+
+## Agent Rules
+
+- Never combine shell commands with `&&`, `||`, or `;` — execute each command as a separate Bash tool call. This applies even when a skill, plan, or instruction provides a combined command — always decompose it into individual calls.
+  - ❌ Wrong: `git checkout <configured-base-branch> && git pull`
+  - ✅ Right: Two separate Bash tool calls — first `git checkout <configured-base-branch>`, then `git pull origin <configured-base-branch>`
+- **CRITICAL:** Always read `.ai-factory/rules/base.md` before making changes — it contains auto-detected project conventions
+- **CRITICAL:** Never modify third-party code in `libs/` — use patches instead
+- **CRITICAL:** Build must succeed with NO warnings (MSVC W4) before declaring task complete
+
 ## Code Quality Checklist
 
 - [ ] No compiler warnings (MSVC W4)
