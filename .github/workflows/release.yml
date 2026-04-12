@@ -104,7 +104,7 @@ jobs:
       - name: Build
         working-directory: build
         shell: bash
-        run: cmake --build . --config $BUILD_TYPE --target all
+        run: cmake --build . --config $BUILD_TYPE --target all -j4
 
       - name: Pack artifacts
         shell: bash
