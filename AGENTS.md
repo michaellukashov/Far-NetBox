@@ -37,7 +37,7 @@ Use skills if available:
 - [ ] Understand the task and locate relevant files
 - [ ] Read existing code to match patterns and conventions
 - [ ] Make minimal, focused changes
-- [ ] Build succeeds with no warnings (`cmake --build ../build-RelWithDebugInfo --clean-first`)
+- [ ] Build succeeds with no warnings (`cmake --build ../build-RelWithDebugInfo --clean-first -- -j4`)
 - [ ] No trailing whitespaces introduced
 - [ ] No spelling/grammar errors in comments
 
@@ -75,7 +75,7 @@ cmake --build ../build-Release -j
 ### Verify No Warnings
 
 ```cmd
-cmake --build ../build-RelWithDebugInfo --clean-first
+cmake --build ../build-RelWithDebugInfo --clean-first -- -j4
 ```
 
 ## Build Configuration
