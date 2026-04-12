@@ -5286,7 +5286,6 @@ void CFtpControlSocket::SendKeepAliveCommand()
   if (GetOptionVal(OPTION_HEARTBEAT_TYPE))
   {
     ShowStatus(L"Sending NOOP to keep session alive.", FZ_LOG_PROGRESS);
-    ADF("Heartbeat: Sending NOOP command");
     Send(L"NOOP");
   }
   else

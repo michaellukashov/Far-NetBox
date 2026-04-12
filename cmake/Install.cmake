@@ -43,7 +43,6 @@ endfunction()
 function(netbox_define_distribution_files)
   set(DIST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.lng
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/cacert.pem
     ${CMAKE_CURRENT_SOURCE_DIR}/README*.md
     ${CMAKE_CURRENT_SOURCE_DIR}/src/NetBox/*.hlf
     ${CMAKE_CURRENT_SOURCE_DIR}/ChangeLog
@@ -52,6 +51,7 @@ function(netbox_define_distribution_files)
 endfunction()
 
 function(netbox_define_target_files)
+
   set(NB_TARGET_FILES
     NetBox.dll
     NetBox.pdb

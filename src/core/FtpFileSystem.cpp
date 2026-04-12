@@ -23,6 +23,7 @@
 #include "NeonIntf.h"
 #include "SessionInfo.h"
 #include "Cryptography.h"
+#include "Certificates.hpp"
 #include <StrUtils.hpp>
 #include <DateUtils.hpp>
 #include <SessionData.h>

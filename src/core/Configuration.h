@@ -8,6 +8,7 @@
 #include "FileBuffer.h"
 #include "HierarchicalStorage.h"
 #include "Usage.h"
+#include "Certificates.hpp"
 
 #if defined(__BORLANDC__)
 #define SET_CONFIG_PROPERTY_EX(PROPERTY, APPLY) \
@@ -223,10 +224,10 @@ public:
   void SetExternalIpAddress(const UnicodeString & Value);
   void SetTryFtpWhenSshFails(bool Value);
   void SetParallelDurationThreshold(int32_t Value);
-  void SetMimeTypes(const UnicodeString & Value);
-  void SetCertificateStorage(const UnicodeString & value);
-  UnicodeString GetCertificateStorageExpanded() const;
-  void SetAWSAPI(const UnicodeString & Value);
+void SetMimeTypes(const UnicodeString & Value);
+void SetCertificateStorage(const UnicodeString & value);
+UnicodeString GetCertificateStorageExpanded() const;
+void SetAWSAPI(const UnicodeString & Value);
   bool GetCollectUsage() const;
   void SetCollectUsage(bool Value);
   bool GetIsUnofficial() const;

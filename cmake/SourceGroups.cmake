@@ -157,6 +157,7 @@ function(netbox_define_core_sources)
     core/SessionData.cpp
     core/Usage.cpp
     core/Configuration.cpp
+    core/Certificates.cpp
     core/ScpFileSystem.cpp
     core/FtpFileSystem.cpp
     core/SftpFileSystem.cpp

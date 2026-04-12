@@ -2167,18 +2167,58 @@ void TConfiguration::SetCertificateStorage(const UnicodeString & Value)
   SET_CONFIG_PROPERTY2(CertificateStorage);
 }
 
+// Static variable to cache the temporary certificate file path
+static UnicodeString CachedCertFile;
+
 UnicodeString TConfiguration::GetCertificateStorageExpanded() const
 {
-  UnicodeString Result = FCertificateStorage;
-  if (Result.IsEmpty())
+  // If user has configured a custom certificate storage path, use it
+  if (!FCertificateStorage.IsEmpty())
   {
-    const UnicodeString DefaultCertificateStorage = TPath::Combine(ExtractFilePath(ModuleFileName()), L"cacert.pem");
-    if (base::FileExists(DefaultCertificateStorage))
+    return FCertificateStorage;
+  }
+  
+  // If we've already created a temp file from embedded certs, use it
+  if (!CachedCertFile.IsEmpty() && base::FileExists(CachedCertFile))
+  {
+    return CachedCertFile;
+  }
+  
+  // Check for cacert.pem in the application directory (backward compatibility)
+  const UnicodeString DefaultCertificateStorage = TPath::Combine(ExtractFilePath(ModuleFileName()), L"cacert.pem");
+  if (base::FileExists(DefaultCertificateStorage))
+  {
+    return DefaultCertificateStorage;
+  }
+  
+   // Create a temporary file from embedded certificates
+   // This is a one-time operation on first use
+   try
+   {
+     const UnicodeString TempCertFile = IncludeTrailingBackslash(SystemTemporaryDirectory()) + L"netbox_cacert.pem";
+     if (!base::FileExists(TempCertFile))
+     {
+       // Write embedded certificate data to temp file
+       std::unique_ptr<TStream> Stream(std::make_unique<TFileStream>(TempCertFile, fmCreate));
+      if (Stream)
+      {
+        Stream->Write(EmbeddedCacertPem, strlen(EmbeddedCacertPem));
+        CachedCertFile = TempCertFile;
+        return TempCertFile;
+      }
+    }
+    else
     {
-      Result = DefaultCertificateStorage;
+      CachedCertFile = TempCertFile;
+      return TempCertFile;
     }
   }
-  return Result;
+  catch (...)
+  {
+    // If we can't create the temp file, fall back to empty (SSL will use system certs)
+  }
+  
+  return EmptyStr;
 }
 
 void TConfiguration::SetAWSAPI(const UnicodeString & Value)

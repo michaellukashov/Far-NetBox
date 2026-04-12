@@ -12,6 +12,7 @@
 #include "WinSCPSecurity.h"
 #include "Terminal.h"
 #include "Cryptography.h"
+#include "Certificates.hpp"
 #include <TextsCore.h>
 #ifndef WINSCP
 #define WINSCP
@@ -287,7 +288,14 @@ void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal 
   const UnicodeString CertificateStorage = GetConfiguration()->CertificateStorageExpanded;
   if (Terminal != nullptr)
   {
-    Terminal->LogEvent(FORMAT(L"Check certificate store \"%s\"", CertificateStorage));
+    if (CertificateStorage.IsEmpty())
+    {
+      Terminal->LogEvent(L"No certificate storage configured, using system certificates");
+    }
+    else
+    {
+      Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", CertificateStorage));
+    }
   }
   if (!CertificateStorage.IsEmpty())
   {
@@ -297,7 +305,7 @@ void SetNeonTlsInit(ne_session * Session, TNeonTlsInit OnNeonTlsInit, TTerminal 
     }
     if (Terminal != nullptr)
     {
-      Terminal->LogEvent(FORMAT(L"Using certificate store \"%s\"", CertificateStorage));
+      Terminal->LogEvent(L"Certificate store loaded successfully");
     }
   }
 
