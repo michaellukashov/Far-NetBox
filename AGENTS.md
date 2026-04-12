@@ -16,12 +16,21 @@ This document provides guidelines for AI coding assistants working on the NetBox
 
 ### Core Principles
 
-1. **Read before writing** - Understand existing patterns before modifying code
-2. **Edit, don't rewrite** - Make minimal surgical changes to existing files
-3. **Don't re-read unnecessarily** - Remember files you've already read unless they may have changed
-4. **Verify before declaring done** - Build and check your changes
-5. **Be concise** - No fluff, no summaries, just the work
-6. **User instructions override this file** - Always follow explicit user direction
+1. **Read before writing** — Understand existing patterns before modifying code
+2. **Edit, don't rewrite** — Make minimal surgical changes to existing files
+3. **Don't re-read unnecessarily** — Remember files you've already read unless they may have changed
+4. **Verify before declaring done** — Build and check your changes
+5. **Be concise** — No fluff, no summaries, just the work
+6. **User instructions override this file** — Always follow explicit user direction
+
+Use skills if available:
+
+- cpp-coding-standards
+- cpp-expert
+- memory-safety-patterns
+- cpp-modern-features
+- git-commit
+
 
 ### Task Execution Checklist
 
