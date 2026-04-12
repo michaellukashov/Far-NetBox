@@ -459,7 +459,7 @@ void ProperExitCleanup() {
 |----------|-------|
 | Framework | Manual testing + static analysis |
 | Config file | Visual Studio project settings |
-| Quick run command | `cmake --build ../build-Debug -j -v` |
+| Quick run command | `cmake --build build-Debug -j -v` |
 | Full suite command | Build Debug + Release + run manual tests |
 
 ### Phase Requirements → Test Map

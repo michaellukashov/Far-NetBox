@@ -66,8 +66,8 @@ Far-NetBox/
 **Quick Start**:
 ```cmd
 call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-RelWithDebugInfo -j
+cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-RelWithDebugInfo -j
 ```
 
 **Platform Options**:

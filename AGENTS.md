@@ -37,7 +37,7 @@ Use skills if available:
 - [ ] Understand the task and locate relevant files
 - [ ] Read existing code to match patterns and conventions
 - [ ] Make minimal, focused changes
-- [ ] Build succeeds with no warnings (`cmake --build ../build-RelWithDebugInfo --clean-first -- -j4`)
+- [ ] Build succeeds with no warnings (`cmake --build build-RelWithDebugInfo --clean-first -- -j4`)
 - [ ] No trailing whitespaces introduced
 - [ ] No spelling/grammar errors in comments
 
@@ -54,28 +54,28 @@ Use skills if available:
 
 ```cmd
 call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86_amd64
-cmake -S . -B ../build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-RelWithDebugInfo -j
+cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugInfo -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-RelWithDebugInfo -j
 ```
 
 ### Debug Build
 
 ```cmd
-cmake -S . -B ../build-Debug -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-Debug -j
+cmake -S . -B build-Debug -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug -j
 ```
 
 ### Release Build (x86, Unity)
 
 ```cmd
-cmake -S . -B ../build-Release -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build ../build-Release -j
+cmake -S . -B build-Release -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Release -j
 ```
 
 ### Verify No Warnings
 
 ```cmd
-cmake --build ../build-RelWithDebugInfo --clean-first -- -j4
+cmake --build build-RelWithDebugInfo --clean-first -- -j4
 ```
 
 ## Build Configuration

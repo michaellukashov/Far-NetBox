@@ -64,6 +64,7 @@ ReSharper.DotSettings
 *.PVS-Studio.*
 
 /CMakeSettings.json
+build-*/
 build-test/CMakeCache.txt
 build-test/CMakeFiles/cmake.check_cache
 test-openssl/CMakeCache.txt
