@@ -1,0 +1,43 @@
+# AI Factory Configuration
+# Generated: 2026-04-11
+# Project: Far-NetBox (Far Manager 3.0 SFTP/FTP/SCP/WebDAV/S3 client)
+
+language:
+  ui: en              # Communication language (English for this project)
+  artifacts: en       # Generated artifacts language
+  technical_terms: keep  # Keep technical terms in English
+
+paths:
+  description: .ai-factory/DESCRIPTION.md
+  architecture: .ai-factory/ARCHITECTURE.md
+  docs: docs/
+  roadmap: .ai-factory/ROADMAP.md
+  research: .ai-factory/RESEARCH.md
+  rules_file: .ai-factory/RULES.md
+  plan: .ai-factory/PLAN.md
+  plans: .ai-factory/plans/
+  fix_plan: .ai-factory/FIX_PLAN.md
+  security: .ai-factory/SECURITY.md
+  references: .ai-factory/references/
+  patches: .ai-factory/patches/
+  evolutions: .ai-factory/evolutions/
+  evolution: .ai-factory/evolution/
+  specs: .ai-factory/specs/
+  rules: .ai-factory/rules/
+
+workflow:
+  auto_create_dirs: true
+  plan_id_format: slug
+  analyze_updates_architecture: true
+  architecture_updates_roadmap: true
+  verify_mode: normal
+
+git:
+  enabled: true
+  base_branch: main
+  create_branches: true
+  branch_prefix: feature/
+  skip_push_after_commit: false
+
+rules:
+  base: .ai-factory/rules/base.md
