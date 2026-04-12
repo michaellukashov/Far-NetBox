@@ -57,6 +57,9 @@
 #include "../core/WinSCPSecurity.cpp"
 #include "../core/Http.cpp"
 #include "../core/NeonIntf.cpp"
+#include "../core/Certificates.cpp"
+#include "../core/KittyKeyboard.cpp"
+#include "../core/Win32Input.cpp"
 
 #include "../windows/SynchronizeController.cpp"
 #include "../windows/GUITools.cpp"

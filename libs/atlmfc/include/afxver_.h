@@ -187,7 +187,7 @@
  * Historically, all core controls could be created ANSI (CreateWindowA) or 
  * UNICODE (CreateWindowW). /DUNICODE builds of MFC used CreateWindowW and 
  * hence got UNICODE controls. But the set of functions and messages available 
- * for the controls wasn’t different between the two modes.
+ * for the controls wasnï¿½t different between the two modes.
  * 
  * [Side note: There are some exceptions to this rule, both in MFC and Win32].
  * 
@@ -198,7 +198,7 @@
  * Windows XP "themed" look and feel applied to them, which made them very 
  * appealing to developers who wanted their apps to look up to date
  * 
- * To ensure that the new controls didn’t break existing apps, you have to opt 
+ * To ensure that the new controls didnï¿½t break existing apps, you have to opt 
  * in to using comctrl version 6 (via a dependency entry in your Win32 XML 
  * manifest). 
  * 
@@ -221,9 +221,9 @@
  * generation scheme.
  * 
  * Another mistake we made in VC7 was to provide wrappers for the new 
- * control’s new messages that were available in ANSI builds. This again 
+ * controlï¿½s new messages that were available in ANSI builds. This again 
  * allowed you to call some of these new methods on ANSI controls even though 
- * several of them wouldn’t even work.
+ * several of them wouldnï¿½t even work.
  * 
  * In VC9 we are fixing this issue and bringing our projects and wrappers into 
  * line with the supported OS behaviour for Windows XP and Windows Vista. 
@@ -231,7 +231,7 @@
  * Messages and functions that are only supposed to work on UNICODE controls 
  * are now only available on UNICODE controls. You will see a deprecation 
  * message if you use one of these unsupported messages. If you want to use 
- * the new control features that have been added since Windows XP, you’ll need 
+ * the new control features that have been added since Windows XP, youï¿½ll need 
  * to compile your MFC-based project as UNICODE, and set appropriate values 
  * for the OS minimum version control macros (_WIN32_WINNT, _WIN32_IE, 
  * _NTDDI_VERSION, etc).
@@ -265,7 +265,11 @@
 
 // AFXAPI is used on global public functions
 #ifndef AFXAPI
-	#define AFXAPI __stdcall
+#ifdef _M_IX86
+ #define AFXAPI __cdecl
+#else
+ #define AFXAPI __stdcall
+#endif
 #endif
 
 // AFXOLEAPI is used for some special OLE functions
