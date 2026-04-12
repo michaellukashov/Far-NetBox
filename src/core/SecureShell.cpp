@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -417,7 +417,10 @@ Conf * TSecureShell::StoreToConfig(TSessionData * Data, bool Simple)
   conf_set_str(conf, CONF_srcaddr, AnsiString(Data->FSourceAddress).c_str());
 
   // permanent settings
-  conf_set_bool(conf, CONF_nopty, TRUE);
+  conf_set_bool(conf, CONF_nopty, !Data->GetInteractiveTerminal());
+  conf_set_str(conf, CONF_termtype, AnsiString(Data->GetTerminalType()).c_str());
+  conf_set_int(conf, CONF_width, Data->GetTerminalWidth());
+  conf_set_int(conf, CONF_height, Data->GetTerminalHeight());
   conf_set_bool(conf, CONF_tcp_keepalives, true); // TODO: false?
   conf_set_bool(conf, CONF_ssh_show_banner, TRUE);
   conf_set_int(conf, CONF_proxy_log_to_term, FORCE_OFF);
@@ -464,6 +467,18 @@ void TSecureShell::Open()
     const char * InitError{nullptr};
     Conf * conf = StoreToConfig(FSessionData, GetSimple());
     FSendBuf = FSessionData->GetSendBuf();
+    FInteractive = FSessionData->GetInteractiveTerminal();
+    FTerminalWidth = FSessionData->GetTerminalWidth();
+    FTerminalHeight = FSessionData->GetTerminalHeight();
+    FTerminalType = FSessionData->GetTerminalType();
+    FWin32InputMode = FSessionData->GetWin32InputMode();
+    if (FSessionData->GetKittyKeyboardProtocol())
+    {
+      FKittyKeyboard.SetFlags(TKittyKeyboardProtocolFlags::All, TKittyKeyboardProtocolMode::Replace);
+    }
+    LogEvent(FORMAT("Terminal: interactive=%d, termtype=%s, size=%dx%d, kitty=%d, win32=%d",
+      FInteractive, FTerminalType, FTerminalWidth, FTerminalHeight,
+      FSessionData->GetKittyKeyboardProtocol(), FWin32InputMode));
     FSeat = std::make_unique<ScpSeat>(this);
     FLogPolicy = std::make_unique<ScpLogPolicy>();
     FLogPolicy->vt = &ScpLogPolicyVTable;
@@ -1159,6 +1174,12 @@ void TSecureShell::FromBackend(const uint8_t * Data, size_t Length)
       FDataWhileFrozen = true;
     }
   }
+
+  // Process raw input data if enabled
+  if (FRawInput)
+  {
+    ProcessRawInput();
+  }
 }
 
 bool TSecureShell::Peek(uint8_t *& Buf, size_t Len) const
@@ -1458,6 +1479,170 @@ void TSecureShell::SendNull()
   LogEvent("Sending nullptr.");
   const uint8_t Null = 0;
   Send(&Null, 1);
+}
+
+void TSecureShell::SetTerminalSize(int32_t Width, int32_t Height)
+{
+  if (Width <= 0 || Height <= 0)
+  {
+    LogEvent(FORMAT("SetTerminalSize: invalid size %dx%d, ignoring", Width, Height));
+    return;
+  }
+  FTerminalWidth = Width;
+  FTerminalHeight = Height;
+  LogEvent(FORMAT("SetTerminalSize(%d, %d)", Width, Height));
+  if (FBackendHandle != nullptr && FActive)
+  {
+    backend_size(FBackendHandle, Width, Height);
+    LogEvent(FORMAT("backend_size(%d, %d) called", Width, Height));
+  }
+}
+
+void TSecureShell::SendChar(const uint8_t * Buf, size_t Length)
+{
+  if (!FRawInput)
+  {
+    LogEvent("SendChar: raw input mode not enabled, ignoring");
+    return;
+  }
+  LogEvent(FORMAT("SendChar(%zu bytes)", Length));
+  Send(Buf, Length);
+}
+
+void TSecureShell::ProcessRawInput()
+{
+  if (!FRawInput)
+  {
+    return;
+  }
+  if (PendLen > 0 && !FOnRawInput.empty())
+  {
+    LogEvent(FORMAT("ProcessRawInput: %zu bytes available", PendLen));
+    FOnRawInput(nullptr);
+  }
+}
+
+void TSecureShell::ParseKittySequence(const UnicodeString & Sequence)
+{
+  // Parse KiTTY keyboard protocol VT sequences from incoming data.
+  // Supported patterns:
+  //   CSI ? {flags} u          — Query response (we receive this from terminal)
+  //   CSI ? {flags} ; {mode} u — Set flags (mode: 1=replace, 2=set, 3=reset)
+  //   CSI > {flags} u          — Push current flags, set new
+  //   CSI {count} u            — Pop count entries from stack
+  //
+  // CSI = \x1b[ (ESC [)
+
+  if (Sequence.Length() < 4)
+  {
+    return;
+  }
+
+  // Check for CSI prefix
+  if (Sequence[1] != L'\x1b' || Sequence[2] != L'[')
+  {
+    return;
+  }
+
+  // Check for 'u' final
+  if (Sequence[Sequence.Length()] != L'u')
+  {
+    return;
+  }
+
+  // Extract the content between CSI and 'u'
+  UnicodeString Content = Sequence.SubString(3, Sequence.Length() - 3);
+
+  if (Content.IsEmpty())
+  {
+    return;
+  }
+
+  try
+  {
+    if (Content[1] == L'?')
+    {
+      // Query or Set: ?flags or ?flags;mode
+      UnicodeString Params = Content.SubString(2, Content.Length() - 1);
+      int32_t SemicolonPos = Params.Pos(L';');
+
+      if (SemicolonPos > 0)
+      {
+        // ?flags;mode
+        int32_t Flags = StrToIntDef(Params.SubString(1, SemicolonPos - 1), 0);
+        int32_t Mode = StrToIntDef(Params.SubString(SemicolonPos + 1, Params.Length() - SemicolonPos), 1);
+        FKittyKeyboard.SetFlags(static_cast<uint8_t>(Flags), static_cast<TKittyKeyboardProtocolMode>(Mode));
+        LogEvent(FORMAT("KittyKeyboard: SetFlags(0x%02x, mode=%d)", Flags, Mode));
+      }
+      else
+      {
+        // Query response: ?flags — we don't need to do anything, this is terminal → app
+        int32_t Flags = StrToIntDef(Params, 0);
+        LogEvent(FORMAT("KittyKeyboard: Query response flags=0x%02x", Flags));
+      }
+    }
+    else if (Content[1] == L'>')
+    {
+      // Push: >flags
+      int32_t Flags = StrToIntDef(Content.SubString(2, Content.Length() - 1), 0);
+      FKittyKeyboard.PushFlags(static_cast<uint8_t>(Flags));
+      LogEvent(FORMAT("KittyKeyboard: PushFlags(0x%02x)", Flags));
+    }
+    else
+    {
+      // Pop: count
+      int32_t Count = StrToIntDef(Content, 1);
+      FKittyKeyboard.PopFlags(static_cast<size_t>(Count));
+      LogEvent(FORMAT("KittyKeyboard: PopFlags(%d), current=0x%02x", Count, FKittyKeyboard.GetFlags()));
+    }
+  }
+  catch (Exception & E)
+  {
+    LogEvent(FORMAT("KittyKeyboard: Failed to parse sequence '%s': %s", Sequence, E.Message));
+  }
+}
+
+void TSecureShell::SendInputRecord(const INPUT_RECORD & Record)
+{
+  if (!FWin32InputMode)
+  {
+    LogEvent("SendInputRecord: Win32 input mode not enabled, ignoring");
+    return;
+  }
+
+  UnicodeString Sequence = TWin32Input::Encode(Record);
+  if (Sequence.IsEmpty())
+  {
+    return;
+  }
+
+  LogEvent(FORMAT("SendInputRecord: %s", Sequence));
+
+  // Send as UTF-8 bytes
+  RawByteString Utf8 = UTF8String(Sequence);
+  Send(nb::ToUInt8Ptr(Utf8.c_str()), Utf8.Length());
+}
+
+void TSecureShell::ParseWin32Sequence(const UnicodeString & Sequence)
+{
+  INPUT_RECORD Record;
+  if (TWin32Input::Decode(Sequence, Record))
+  {
+    LogEvent(FORMAT("Win32 input decoded: VK=0x%04x, SC=0x%04x, UC=0x%04x, Down=%d",
+      Record.Event.KeyEvent.wVirtualKeyCode,
+      Record.Event.KeyEvent.wVirtualScanCode,
+      Record.Event.KeyEvent.uChar.UnicodeChar,
+      Record.Event.KeyEvent.bKeyDown));
+
+    if (!FOnWin32Input.empty())
+    {
+      FOnWin32Input(nullptr);
+    }
+  }
+  else
+  {
+    LogEvent(FORMAT("Win32 input decode failed: %s", Sequence));
+  }
 }
 
 void TSecureShell::SendLine(const UnicodeString & Line)

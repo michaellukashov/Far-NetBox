@@ -1,4 +1,4 @@
-#===============================================================================
+﻿#===============================================================================
 # NetBox Source Groups Configuration Module
 #
 # Purpose: Define source file groups for different components
@@ -163,6 +163,8 @@ function(netbox_define_core_sources)
     core/WebDAVFileSystem.cpp
     core/S3FileSystem.cpp
     core/PuttyIntf.cpp
+    core/KittyKeyboard.cpp
+    core/Win32Input.cpp
     core/Cryptography.cpp
     core/NamedObjs.cpp
     core/HierarchicalStorage.cpp

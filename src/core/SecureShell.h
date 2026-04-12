@@ -1,10 +1,12 @@
-
+﻿
 #pragma once
 
 #include "PuttyIntf.h"
 #include "Configuration.h"
 #include "SessionData.h"
 #include "SessionInfo.h"
+#include "KittyKeyboard.h"
+#include "Win32Input.h"
 
 #ifndef PuttyIntfH
 #if defined(__BORLANDC__)
@@ -32,6 +34,7 @@ class TSecureShell : public TObject
   friend class TPoolForDataEvent;
   friend class TTerminal;
   friend class TSFTPFileSystem;
+  friend struct ScpSeat;
   NB_DISABLE_COPY(TSecureShell)
 public:
   static bool classof(const TObject * Obj) { return Obj->is(OBJECT_CLASS_TSecureShell); }
@@ -85,6 +88,15 @@ private:
   bool FUtfStrings{false};
   DWORD FLastSendBufferUpdate{0};
   int32_t FSendBuf{0};
+  bool FInteractive{false};
+  int32_t FTerminalWidth{80};
+  int32_t FTerminalHeight{24};
+  UnicodeString FTerminalType{"xterm"};
+  bool FRawInput{false};
+  TNotifyEvent FOnRawInput{nullptr};
+  TKittyKeyboard FKittyKeyboard;
+  bool FWin32InputMode{false};
+  TNotifyEvent FOnWin32Input{nullptr};
   std::unique_ptr<callback_set> FCallbackSet;
   std::unique_ptr<ScpLogPolicy> FLogPolicy{nullptr};
   std::unique_ptr<ScpSeat> FSeat{nullptr};
@@ -217,5 +229,27 @@ public:
   TSshImplementation GetSshImplementation() const { return FSshImplementation; }
   bool GetUtfStrings() const { return FUtfStrings; }
   void SetUtfStrings(bool Value) { FUtfStrings = Value; }
+  bool GetInteractive() const { return FInteractive; }
+  void SetInteractive(bool Value) { FInteractive = Value; }
+  int32_t GetTerminalWidth() const { return FTerminalWidth; }
+  int32_t GetTerminalHeight() const { return FTerminalHeight; }
+  void SetTerminalSize(int32_t Width, int32_t Height);
+  UnicodeString GetTerminalType() const { return FTerminalType; }
+  void SetTerminalType(const UnicodeString & Value) { FTerminalType = Value; }
+  bool GetRawInput() const { return FRawInput; }
+  void SetRawInput(bool Value) { FRawInput = Value; }
+  void SendChar(const uint8_t * Buf, size_t Length);
+  void ProcessRawInput();
+  TNotifyEvent GetOnRawInput() const { return FOnRawInput; }
+  void SetOnRawInput(TNotifyEvent && Value) { FOnRawInput = std::move(Value); }
+  TKittyKeyboard & GetKittyKeyboard() { return FKittyKeyboard; }
+  const TKittyKeyboard & GetKittyKeyboard() const { return FKittyKeyboard; }
+  void ParseKittySequence(const UnicodeString & Sequence);
+  bool GetWin32InputMode() const { return FWin32InputMode; }
+  void SetWin32InputMode(bool Value) { FWin32InputMode = Value; }
+  void SendInputRecord(const INPUT_RECORD & Record);
+  void ParseWin32Sequence(const UnicodeString & Sequence);
+  TNotifyEvent GetOnWin32Input() const { return FOnWin32Input; }
+  void SetOnWin32Input(TNotifyEvent && Value) { FOnWin32Input = std::move(Value); }
 };
 

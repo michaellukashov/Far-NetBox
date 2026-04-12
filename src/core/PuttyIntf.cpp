@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -432,6 +432,81 @@ char * get_remote_username(Conf * conf)
 }
 #endif // defined(__BORLANDC__)
 
+// --- Interactive Seat Methods ---
+
+static bool scp_interactive(Seat * seat)
+{
+  TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
+  return SecureShell->GetInteractive();
+}
+
+static char * scp_get_ttymode(Seat * seat, const char * mode)
+{
+  TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
+
+  if (!SecureShell->GetInteractive())
+  {
+    return nullptr;
+  }
+
+  // Return TTY mode settings for interactive terminal
+  if (strcmp(mode, "echo") == 0) return dupstr("1");
+  if (strcmp(mode, "edit") == 0) return dupstr("1");
+  if (strcmp(mode, "pty") == 0) return dupstr("1");
+  if (strcmp(mode, "opost") == 0) return dupstr("1");
+  if (strcmp(mode, "onlcr") == 0) return dupstr("1");
+  if (strcmp(mode, "icrnl") == 0) return dupstr("1");
+  if (strcmp(mode, "ocrnl") == 0) return dupstr("0");
+  if (strcmp(mode, "erasure") == 0) return dupstr("\x7F"); // DEL
+  if (strcmp(mode, "kill") == 0) return dupstr("\x15");     // Ctrl+U
+  if (strcmp(mode, "intr") == 0) return dupstr("\x03");     // Ctrl+C
+  if (strcmp(mode, "quit") == 0) return dupstr("\x1C");     // Ctrl+backslash
+  if (strcmp(mode, "eof") == 0) return dupstr("\x04");      // Ctrl+D
+  if (strcmp(mode, "susp") == 0) return dupstr("\x1A");     // Ctrl+Z
+  if (strcmp(mode, "rprnt") == 0) return dupstr("\x12");    // Ctrl+R
+  if (strcmp(mode, "werase") == 0) return dupstr("\x17");   // Ctrl+W
+  if (strcmp(mode, "lnext") == 0) return dupstr("\x16");    // Ctrl+V
+
+  return nullptr;
+}
+
+static void scp_echoedit_update(Seat * seat, bool echoing, bool editing)
+{
+  // Local echo state is managed by the external terminal
+  nb::used(echoing);
+  nb::used(editing);
+}
+
+static bool scp_get_cursor_position(Seat * seat, int * x, int * y)
+{
+  nb::used(seat);
+  nb::used(x);
+  nb::used(y);
+  // Stub: we don't track cursor position in the SCP seat
+  // The external terminal (KiTTY/PuTTY) handles this
+  return false;
+}
+
+static bool scp_get_window_pixel_size(Seat * seat, int * width, int * height)
+{
+  TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
+  if (width != nullptr) *width = SecureShell->GetTerminalWidth() * 8;  // Approximate char width
+  if (height != nullptr) *height = SecureShell->GetTerminalHeight() * 16; // Approximate char height
+  return true;
+}
+
+static void scp_notify_session_started(Seat * seat)
+{
+  TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
+  SecureShell->SetActive(true);
+}
+
+static void scp_notify_remote_exit(Seat * seat)
+{
+  TSecureShell * SecureShell = static_cast<ScpSeat *>(seat)->SecureShell;
+  SecureShell->SetActive(false);
+}
+
 static const SeatVtable ScpSeatVtable =
   {
     output,
@@ -439,30 +514,30 @@ static const SeatVtable ScpSeatVtable =
     nullseat_sent,
     banner,
     get_userpass_input,
-    nullseat_notify_session_started,
-    nullseat_notify_remote_exit,
+    scp_notify_session_started,
+    scp_notify_remote_exit,
     nullseat_notify_remote_disconnect,
     connection_fatal,
     nonfatal,
     nullseat_update_specials_menu,
-    nullseat_get_ttymode,
+    scp_get_ttymode,
     nullseat_set_busy_status,
     confirm_ssh_host_key,
     confirm_weak_crypto_primitive,
     confirm_weak_cached_hostkey,
     prompt_descriptions,
     nullseat_is_always_utf8,
-    nullseat_echoedit_update,
+    scp_echoedit_update,
     nullseat_get_x_display,
     nullseat_get_windowid,
-    nullseat_get_window_pixel_size,
+    scp_get_window_pixel_size,
     nullseat_stripctrl_new,
     nullseat_set_trust_status,
     nullseat_can_set_trust_status_yes,
     nullseat_has_mixed_input_stream_yes,
     nullseat_verbose_yes,
-    nullseat_interactive_no,
-    nullseat_get_cursor_position,
+    scp_interactive,
+    scp_get_cursor_position,
   };
 
 ScpSeat::ScpSeat(TSecureShell * ASecureShell)

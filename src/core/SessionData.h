@@ -1,4 +1,4 @@
-
+﻿
 #pragma once
 
 #include <Common.h>
@@ -212,6 +212,12 @@ private:
   UnicodeString FShell;
   UnicodeString FSftpServer;
   int32_t FTimeout{0};
+  bool FInteractiveTerminal{false};
+  UnicodeString FTerminalType{"xterm"};
+  int32_t FTerminalWidth{80};
+  int32_t FTerminalHeight{24};
+  bool FKittyKeyboardProtocol{false};
+  bool FWin32InputMode{false};
   bool FUnsetNationalVars{false};
   bool FIgnoreLsWarnings{false};
   bool FTcpNoDelay{false};
@@ -978,6 +984,18 @@ public:
   UnicodeString GetShell() const { return FShell; }
   UnicodeString GetSftpServer() const { return FSftpServer; }
   int32_t GetTimeout() const { return FTimeout; }
+  bool GetInteractiveTerminal() const { return FInteractiveTerminal; }
+  void SetInteractiveTerminal(bool Value) { FInteractiveTerminal = Value; }
+  UnicodeString GetTerminalType() const { return FTerminalType; }
+  void SetTerminalType(const UnicodeString & Value) { FTerminalType = Value; }
+  int32_t GetTerminalWidth() const { return FTerminalWidth; }
+  void SetTerminalWidth(int32_t Value) { FTerminalWidth = Value; }
+  int32_t GetTerminalHeight() const { return FTerminalHeight; }
+  void SetTerminalHeight(int32_t Value) { FTerminalHeight = Value; }
+  bool GetKittyKeyboardProtocol() const { return FKittyKeyboardProtocol; }
+  void SetKittyKeyboardProtocol(bool Value) { FKittyKeyboardProtocol = Value; }
+  bool GetWin32InputMode() const { return FWin32InputMode; }
+  void SetWin32InputMode(bool Value) { FWin32InputMode = Value; }
   bool GetUnsetNationalVars() const { return FUnsetNationalVars; }
   bool GetIgnoreLsWarnings() const { return FIgnoreLsWarnings; }
   bool GetTcpNoDelay() const { return FTcpNoDelay; }

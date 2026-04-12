@@ -1,4 +1,4 @@
-
+﻿
 #include <vcl.h>
 #pragma hdrstop
 
@@ -991,6 +991,12 @@ void TSessionData::DoLoad(THierarchicalStorage * Storage, bool PuttyImport, bool
   {
     SetSftpServer(Storage->ReadString("SftpServer", GetSftpServer()));
   }
+  FInteractiveTerminal = Storage->ReadBool("InteractiveTerminal", FInteractiveTerminal);
+  FTerminalType = Storage->ReadString("TerminalType", FTerminalType);
+  FTerminalWidth = Storage->ReadInteger("TerminalWidth", FTerminalWidth);
+  FTerminalHeight = Storage->ReadInteger("TerminalHeight", FTerminalHeight);
+  FKittyKeyboardProtocol = Storage->ReadBool("KittyKeyboardProtocol", FKittyKeyboardProtocol);
+  FWin32InputMode = Storage->ReadBool("Win32InputMode", FWin32InputMode);
 #define READ_SFTP_BUG(BUG) \
     SetSFTPBug(sb##BUG, TAutoSwitch(Storage->ReadEnum(MB_TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), AutoSwitchMapping)))
   READ_SFTP_BUG(Symlink);
@@ -1354,6 +1360,12 @@ void TSessionData::DoSave(THierarchicalStorage * Storage,
   if (!PuttyExport)
   {
     WRITE_DATA(String, SftpServer);
+    WRITE_DATA(Bool, InteractiveTerminal);
+    WRITE_DATA(String, TerminalType);
+    WRITE_DATA2(Integer, TerminalWidth);
+    WRITE_DATA2(Integer, TerminalHeight);
+    WRITE_DATA(Bool, KittyKeyboardProtocol);
+    WRITE_DATA(Bool, Win32InputMode);
 
   #define WRITE_SFTP_BUG(BUG) WRITE_DATA_EX(Integer, MB_TEXT("SFTP" #BUG "Bug"), GetSFTPBug(sb##BUG), )
     WRITE_SFTP_BUG(Symlink);

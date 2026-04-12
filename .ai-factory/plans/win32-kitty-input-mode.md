@@ -77,7 +77,7 @@ TSecureShell (interactive mode)
 
 ### Phase 1: Enable PTY and Interactive Seat
 
-#### Task 1: Enable PTY in TSecureShell configuration
+#### ✅ Task 1: Enable PTY in TSecureShell configuration
 
 **Files:** `src/core/SecureShell.cpp`
 
@@ -96,7 +96,7 @@ TSecureShell (interactive mode)
 
 ---
 
-#### Task 2: Implement interactive Seat vtable methods
+#### ✅ Task 2: Implement interactive Seat vtable methods
 
 **Files:** `src/core/PuttyIntf.cpp`, `src/core/PuttyIntf.h`
 
@@ -131,7 +131,7 @@ notify_remote_exit,   // was: nullseat_notify_remote_exit
 
 ### Phase 2: Character-by-Character Input Mode
 
-#### Task 3: Add raw input mode to TSecureShell
+#### ✅ Task 3: Add raw input mode to TSecureShell
 
 **Files:** `src/core/SecureShell.h`, `src/core/SecureShell.cpp`
 
@@ -151,7 +151,7 @@ notify_remote_exit,   // was: nullseat_notify_remote_exit
 
 ---
 
-#### Task 4: Add terminal resize support
+#### ✅ Task 4: Add terminal resize support
 
 **Files:** `src/core/SecureShell.h`, `src/core/SecureShell.cpp`
 
@@ -171,7 +171,7 @@ notify_remote_exit,   // was: nullseat_notify_remote_exit
 
 ### Phase 3: KiTTY Keyboard Protocol
 
-#### Task 5: Implement KiTTY keyboard protocol state machine
+#### ✅ Task 5: Implement KiTTY keyboard protocol state machine
 
 **Files:** `src/core/KittyKeyboard.h` (new), `src/core/KittyKeyboard.cpp` (new)
 
@@ -230,7 +230,7 @@ private:
 
 ---
 
-#### Task 6: Integrate KiTTY protocol parser into data flow
+#### ✅ Task 6: Integrate KiTTY protocol parser into data flow
 
 **Files:** `src/core/SecureShell.h`, `src/core/SecureShell.cpp`, `src/core/PuttyIntf.cpp`
 
@@ -258,7 +258,7 @@ private:
 
 ### Phase 4: Win32 Input Mode
 
-#### Task 7: Implement Win32 input mode encoder
+#### ✅ Task 7: Implement Win32 input mode encoder
 
 **Files:** `src/core/Win32Input.h` (new), `src/core/Win32Input.cpp` (new)
 
@@ -301,7 +301,7 @@ private:
 
 ---
 
-#### Task 8: Integrate Win32 input mode into TSecureShell
+#### ✅ Task 8: Integrate Win32 input mode into TSecureShell
 
 **Files:** `src/core/SecureShell.h`, `src/core/SecureShell.cpp`
 
@@ -323,7 +323,7 @@ private:
 
 ### Phase 5: Integration and Configuration
 
-#### Task 9: Add configuration options for input modes
+#### ✅ Task 9: Add configuration options for input modes
 
 **Files:** `src/core/SessionData.h`, `src/core/SessionData.cpp`, `src/core/Configuration.h`
 
@@ -347,7 +347,7 @@ private:
 
 ---
 
-#### Task 10: Wire input modes to TSecureShell initialization
+#### ✅ Task 10: Wire input modes to TSecureShell initialization
 
 **Files:** `src/core/SecureShell.cpp`, `src/core/Terminal.cpp`
 
@@ -368,7 +368,7 @@ private:
 
 ---
 
-#### Task 11: Add UI configuration dialog for terminal settings
+#### ⏭️ Task 11: Add UI configuration dialog for terminal settings (deferred — configuration works via XML/session settings)
 
 **Files:** `src/NetBox/WinSCPDialogs.cpp`, `src/NetBox/WinSCPDialogs.h`, `src/resource/` (dialog resources)
 
@@ -392,7 +392,7 @@ private:
 
 ### Phase 6: Build Verification and Testing
 
-#### Task 12: CMake integration for new source files
+#### ✅ Task 12: CMake integration for new source files
 
 **Files:** `src/CMakeLists.txt`, `cmake/NetBox.cmake`
 
@@ -410,7 +410,7 @@ private:
 
 ---
 
-#### Task 13: Clean build verification and manual testing
+#### ✅ Task 13: Clean build verification and manual testing
 
 **Deliverable:** Full clean rebuild succeeds with zero warnings. Manual testing of:
 - PTY-enabled session connects successfully
