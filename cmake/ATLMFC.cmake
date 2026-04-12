@@ -27,8 +27,8 @@ set(ATLMFC_COMPILE_FLAGS
     -DAFX_CLASS_IMPORT=
     -DAFX_API_IMPORT=
     -D_ATL_STATIC_REGISTRY
-    -DAFXAPI=
-    -DAFXOLEAPI=
+    # -DAFXAPI=  # Removed: causes calling convention mismatch - AFXAPI already defined as __stdcall in afxver_.h
+    # -DAFXOLEAPI=  # Removed: causes calling convention mismatch - AFXOLEAPI already defined as __stdcall in afxver_.h
 )
 
 if(CMAKE_COMPILER_IS_MINGW)
