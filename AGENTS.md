@@ -58,18 +58,34 @@ cmake -S . -B build-RelWithDebugInfo -G "Ninja" -DCMAKE_BUILD_TYPE=RelWithDebugI
 cmake --build build-RelWithDebugInfo -j
 ```
 
-### Debug Build
+### Debug Build x64
 
 ```cmd
-cmake -S . -B build-Debug -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-Debug -j
+cmake -S . -B build-Debug-x64 -G "Ninja" -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug-x64 -j
+```
+
+### Debug Build Win32
+
+```cmd
+cmake -S . -B build-Debug-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Debug -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Debug-Win32 -j
 ```
 
 ### Release Build (x86, Unity)
 
 ```cmd
-cmake -S . -B build-Release -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
-cmake --build build-Release -j
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+cmake -S . -B build-Release-Win32 -A Win32 -DCMAKE_BUILD_TYPE=Release -DOPT_USE_UNITY_BUILD=ON -DOPT_CREATE_PLUGIN_DIR=ON
+cmake --build build-Release-Win32 -j
+```
+
+### Clean build
+
+```cmd
+
+call "%VS170COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+cmake --build build-RelWithDebugInfo-x64 -A Win32 --clean-first -- -j4
 ```
 
 ### Verify No Warnings
