@@ -31,6 +31,10 @@ Use skills if available:
 - cpp-modern-features
 - git-commit
 
+When compacting, keep
+- Current editable files
+- Test error messages
+- Architectural solutions from this session
 
 ### Task Execution Checklist
 
@@ -230,6 +234,7 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 - **Main branch**: `main` (protected)
 - **Branch naming**: `feature/description`, `fix/description`, `refactor/description`
 - **Commit messages**: Imperative mood, under 72 chars for summary
+ - **Multi-line commit**: Use `git commit -m "title" -m "body"` instead of heredoc
 - **Skip CI**: `[skip ci]` or `[ci skip]` in commit message
 - **CI/CD**: GitHub Actions (`.github/workflows/release.yml`), AppVeyor (legacy)
 
