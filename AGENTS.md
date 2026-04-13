@@ -123,6 +123,31 @@ cmake --build build-RelWithDebugInfo -j
 cmake --build ../build-RelWithDebugInfo --clean-first -- -j4
 ```
 
+### Verify Build with `act` (GitHub Actions locally)
+
+Use `act` to run GitHub Actions workflows locally on a self-hosted runner.
+
+**Prerequisites:**
+- `act` installed: `winget install nektos.act`
+- Self-hosted runner configured and available
+- Docker or runner environment ready
+
+**Test release workflow (create-release job):**
+
+```cmd
+act -W .github/workflows/release.yml -j create-release -P windows-2022=-self-hosted --use-new-action-cache
+```
+
+**Flags explained:**
+| Flag | Purpose |
+|------|---------|
+| `-W .github/workflows/release.yml` | Workflow file to run |
+| `-j create-release` | Run only the `create-release` job |
+| `-P windows-2022=-self-hosted` | Map `windows-2022` runner label to self-hosted |
+| `--use-new-action-cache` | Use action caching for faster re-runs |
+
+**Verify output:** Look for build success in the workflow logs. If the job completes without error, the build is verified.
+
 ## Build Configuration
 
 ### CMake Options
