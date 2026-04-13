@@ -1,3 +1,4 @@
+- **Multi-line commit**: Use `git commit -m "title" -m "body"` instead of heredoc (causes parsing errors)
 # AGENTS.md - NetBox Development Guide
 
 This document provides guidelines for AI coding assistants working on the NetBox project (Far-NetBox SFTP/FTP/SCP/WebDAV/S3 client plugin for Far Manager).
@@ -234,7 +235,7 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 - **Main branch**: `main` (protected)
 - **Branch naming**: `feature/description`, `fix/description`, `refactor/description`
 - **Commit messages**: Imperative mood, under 72 chars for summary
- - **Multi-line commit**: Use `git commit -m "title" -m "body"` instead of heredoc
+- **Multi-line commit**: Use `git commit -m "title" -m "body"` instead of heredoc
 - **Skip CI**: `[skip ci]` or `[ci skip]` in commit message
 - **CI/CD**: GitHub Actions (`.github/workflows/release.yml`), AppVeyor (legacy)
 
