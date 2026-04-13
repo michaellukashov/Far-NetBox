@@ -37,7 +37,7 @@ git:
   base_branch: main
   create_branches: true
   branch_prefix: feature/
-  skip_push_after_commit: false
+  skip_push_after_commit: true
 
 rules:
   base: .ai-factory/rules/base.md

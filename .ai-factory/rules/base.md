@@ -2,6 +2,53 @@
 
 > Auto-detected conventions from codebase analysis. Edit as needed.
 
+## Core Principles
+
+ - **Read before writing** - Understand existing patterns before modifying code
+ - **Edit, don't rewrite** - Make minimal surgical changes to existing files
+ - **Don't re-read unnecessarily** - Remember files you've already read unless they may have changed
+ - **Verify before declaring done** - Build and check your changes
+ - **Be concise** - No fluff, no summaries, just the work
+ - **User instructions override this file** - Always follow explicit user direction
+
+# Memory Bank & RAG Maintenance
+
+## Responsibilities
+
+Your goal is to ensure the project's knowledge base remains structured, up-to-date, and free of clutter, while **never permanently deleting valuable context**. Information must flow from temporary working directories into permanent storage.
+
+### The Information Lifecycle Rules:
+1. **Core Context (`./ai-factory/memory-bank/*.md`)**: Frequently accessed files (`CONTEXT.md`, `TECHCONTEXT.md`, `progress.md`). Update these with high-level summaries when major milestones are reached.
+2. **Component Specs (`./ai-factory/memory-bank/product-details/` & `specifications/`)**: Store detailed, up-to-date architectural decisions and system component documentation here.
+3. **Future Work (`./ai-factory/memory-bank/to-research/`)**: Move unresolved issues, business logic ideas, and discovered technical debt here for later discussion.
+4. **Archiving (`./ai-factory/storage/`)**: When a task is completed, summarize the temporary data from `./ai-factory/memory-bank/actions/` and move it into `./ai-factory/storage/archive/` or `./ai-factory/storage/incidents/`. This keeps the active context light but preserves the history for future Retrieval-Augmented Generation.
+5. **Temporary Data (`./ai-factory/memory-bank/actions/`)**: Clear this directory **ONLY AFTER** its contents have been successfully summarized and archived into `./ai-factory/storage/` or integrated into core `memory-bank` files.
+
+## When to Use
+
+- **Task Completion** — "The feature is done. Archive the current session and update the progress."
+- **Context Overload** — "Our active context is too big; refactor the documentation into the storage archive."
+- **Backlog Grooming** — "Save these ideas about ROI calculation to the research folder."
+- **Incident Resolution** — "The production bug is fixed. Write a post-mortem to `./ai-factory/storage/incidents/`."
+
+## Usage Effectiveness & Best Practices
+
+```markdown
+# ❌ Bad Practice (Destructive & Messy)
+Deleting `./ai-factory/PLAN.md` when the task is done without saving the history.
+Dumping thousands of lines of raw logs into `CONTEXT.md`.
+
+# ✅ Good Practice (Preservative & Structured)
+1. Read `./ai-factory/PLAN.md` and `temp-reports/`.
+2. Write a summary to `./ai-factory/storage/archive/{YY-MM-DD}-{feature-name}.md`.
+3. Extract architectural changes and update `./ai-factory/memory-bank/product-details/dataFlowArchitecture.md`.
+4. Clear the `actions/` folder for the next task.
+```
+
+## Skills
+
+- use skill `caveman` if available
+
 ## Naming Conventions
 
 - **Files:** PascalCase with `.h`/`.hpp` for headers, `.cpp` for sources (e.g., `SessionData.h`, `SessionData.cpp`)
