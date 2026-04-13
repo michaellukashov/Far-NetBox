@@ -242,6 +242,7 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 | Unity build errors | Add `-DOPT_USE_UNITY_BUILD=OFF` |
 | Plugin fails to load | Check architecture match (x86/x64), verify dependencies |
 | Connection failures | Check firewall, test with `ping`/`telnet`, review plugin log |
+| WinXP build failures | Use v141_xp toolset: `-T v141_xp` in CMake or set in VS IDE |
 
 ## AI Context Files
 
@@ -255,6 +256,8 @@ Third-party libraries in `libs/` — **never modify directly**, use patches if n
 | PROJECT.md | Project requirements and scope |
 | CODEBASE.md | Codebase documentation index |
 | DEPENDENCIES.md | Third-party library documentation |
+
+**Last Updated**: 2026-04-13
 
 ## Agent Rules
 
